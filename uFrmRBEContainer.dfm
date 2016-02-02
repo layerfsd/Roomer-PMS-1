@@ -1,0 +1,861 @@
+object FrmRBEContainer: TFrmRBEContainer
+  Left = 0
+  Top = 0
+  Caption = 'FrmRBEContainer'
+  ClientHeight = 713
+  ClientWidth = 1182
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -13
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  OldCreateOrder = False
+  Scaled = False
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  PixelsPerInch = 96
+  TextHeight = 16
+  object pnlRBEContainer: TsPanel
+    Left = 0
+    Top = 0
+    Width = 1182
+    Height = 713
+    Align = alClient
+    BevelOuter = bvNone
+    TabOrder = 0
+    SkinData.SkinSection = 'PANEL'
+    object sPanel3: TsPanel
+      Left = 0
+      Top = 87
+      Width = 1182
+      Height = 626
+      Align = alClient
+      BevelOuter = bvNone
+      TabOrder = 0
+      SkinData.SkinSection = 'PANEL'
+      object pcPages: TsPageControl
+        Left = 0
+        Top = 0
+        Width = 183
+        Height = 591
+        ActivePage = sTabSheet3
+        Align = alLeft
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -17
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        MultiLine = True
+        ParentFont = False
+        TabOrder = 0
+        TabPosition = tpLeft
+        SkinData.SkinSection = 'PAGECONTROL'
+        object sTabSheet1: TsTabSheet
+          Caption = 'Rates & Availability'
+          SkinData.CustomColor = False
+          SkinData.CustomFont = False
+          ExplicitLeft = 0
+          ExplicitTop = 0
+          ExplicitWidth = 0
+          ExplicitHeight = 0
+          object sLabelFX10: TsLabelFX
+            Left = -3
+            Top = -3
+            Width = 154
+            Height = 55
+            Align = alTop
+            Alignment = taCenter
+            AutoSize = False
+            Caption = 'Availability && Rates'
+            ParentFont = False
+            WordWrap = True
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -17
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            Angle = 0
+            Shadow.OffsetKeeper.LeftTop = -3
+            Shadow.OffsetKeeper.RightBottom = 5
+          end
+          object sLabelFX11: TsLabelFX
+            Left = 1
+            Top = 112
+            Width = 146
+            Height = 54
+            Cursor = crHandPoint
+            Alignment = taCenter
+            AutoSize = False
+            Caption = 'Availability && Rates'
+            WordWrap = True
+            OnClick = btnAvailabilityAndRatesClick
+            Angle = 0
+            Shadow.OffsetKeeper.LeftTop = -3
+            Shadow.OffsetKeeper.RightBottom = 5
+          end
+          object btnAvailabilityAndRates: TsButton
+            Left = 48
+            Top = 60
+            Width = 50
+            Height = 49
+            ImageIndex = 40
+            Images = DImages.cxLargeImagesFlat
+            TabOrder = 0
+            OnClick = btnAvailabilityAndRatesClick
+            SkinData.SkinSection = 'SPEEDBUTTON'
+          end
+        end
+        object sTabSheet2: TsTabSheet
+          Caption = 'Rates'
+          SkinData.CustomColor = False
+          SkinData.CustomFont = False
+          ExplicitLeft = 0
+          ExplicitTop = 0
+          ExplicitWidth = 0
+          ExplicitHeight = 0
+          object sLabelFX1: TsLabelFX
+            Left = -3
+            Top = -3
+            Width = 91
+            Height = 29
+            Align = alTop
+            Alignment = taCenter
+            Caption = 'Rate codes'
+            ParentFont = False
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -17
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            Angle = 0
+            Shadow.OffsetKeeper.LeftTop = -3
+            Shadow.OffsetKeeper.RightBottom = 5
+          end
+          object sLabelFX8: TsLabelFX
+            Left = 0
+            Top = 112
+            Width = 147
+            Height = 52
+            Cursor = crHandPoint
+            Alignment = taCenter
+            AutoSize = False
+            Caption = 'Rate Codes'
+            WordWrap = True
+            OnClick = btnRoomTypeGroupsClick
+            Angle = 0
+            Shadow.OffsetKeeper.LeftTop = -3
+            Shadow.OffsetKeeper.RightBottom = 5
+          end
+          object sButton5: TsButton
+            Left = 48
+            Top = 60
+            Width = 50
+            Height = 49
+            ImageIndex = 122
+            Images = DImages.cxLargeImagesFlat
+            TabOrder = 0
+            OnClick = btnRoomTypeGroupsClick
+            SkinData.SkinSection = 'SPEEDBUTTON'
+          end
+        end
+        object sTabSheet3: TsTabSheet
+          Caption = 'Tables'
+          SkinData.CustomColor = False
+          SkinData.CustomFont = False
+          ExplicitLeft = 0
+          ExplicitTop = 0
+          ExplicitWidth = 0
+          ExplicitHeight = 0
+          object sLabelFX3: TsLabelFX
+            Left = -1
+            Top = 112
+            Width = 151
+            Height = 54
+            Cursor = crHandPoint
+            Alignment = taCenter
+            AutoSize = False
+            Caption = 'Room Types'
+            WordWrap = True
+            OnClick = btnRoomTypesClick
+            Angle = 0
+            Shadow.OffsetKeeper.LeftTop = -3
+            Shadow.OffsetKeeper.RightBottom = 5
+          end
+          object sLabelFX2: TsLabelFX
+            Left = -3
+            Top = -3
+            Width = 57
+            Height = 29
+            Align = alTop
+            Alignment = taCenter
+            Caption = 'Tables'
+            ParentFont = False
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -17
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            Angle = 0
+            Shadow.OffsetKeeper.LeftTop = -3
+            Shadow.OffsetKeeper.RightBottom = 5
+          end
+          object sLabelFX4: TsLabelFX
+            Left = -1
+            Top = 214
+            Width = 151
+            Height = 54
+            Cursor = crHandPoint
+            Alignment = taCenter
+            AutoSize = False
+            Caption = 'Countries'
+            WordWrap = True
+            OnClick = btnCountriesClick
+            Angle = 0
+            Shadow.OffsetKeeper.LeftTop = -3
+            Shadow.OffsetKeeper.RightBottom = 5
+          end
+          object sLabelFX5: TsLabelFX
+            Left = -1
+            Top = 317
+            Width = 151
+            Height = 54
+            Cursor = crHandPoint
+            Alignment = taCenter
+            AutoSize = False
+            Caption = 'Currencies'
+            WordWrap = True
+            OnClick = btnRoomTypeGroupsClick
+            Angle = 0
+            Shadow.OffsetKeeper.LeftTop = -3
+            Shadow.OffsetKeeper.RightBottom = 5
+          end
+          object sLabelFX9: TsLabelFX
+            Left = -1
+            Top = 416
+            Width = 151
+            Height = 54
+            Cursor = crHandPoint
+            Alignment = taCenter
+            AutoSize = False
+            Caption = 'Taxes'
+            WordWrap = True
+            OnClick = btnRoomTypesClick
+            Angle = 0
+            Shadow.OffsetKeeper.LeftTop = -3
+            Shadow.OffsetKeeper.RightBottom = 5
+          end
+          object sButton2: TsButton
+            Left = 48
+            Top = 60
+            Width = 50
+            Height = 49
+            ImageIndex = 34
+            Images = DImages.cxLargeImagesFlat
+            TabOrder = 0
+            OnClick = btnRoomTypesClick
+            SkinData.SkinSection = 'SPEEDBUTTON'
+          end
+          object btnCountries: TsButton
+            Left = 48
+            Top = 162
+            Width = 50
+            Height = 49
+            ImageIndex = 100
+            Images = DImages.cxLargeImagesFlat
+            TabOrder = 1
+            OnClick = btnCountriesClick
+            SkinData.SkinSection = 'SPEEDBUTTON'
+          end
+          object btnCurrencies: TsButton
+            Left = 48
+            Top = 265
+            Width = 50
+            Height = 49
+            ImageIndex = 120
+            Images = DImages.cxLargeImagesFlat
+            TabOrder = 2
+            OnClick = btnCurrenciesClick
+            SkinData.SkinSection = 'SPEEDBUTTON'
+          end
+          object btnTaxes: TsButton
+            Left = 48
+            Top = 364
+            Width = 50
+            Height = 49
+            ImageIndex = 108
+            Images = DImages.cxLargeImagesFlat
+            TabOrder = 3
+            OnClick = btnTaxesClick
+            SkinData.SkinSection = 'SPEEDBUTTON'
+          end
+        end
+        object sTabSheet4: TsTabSheet
+          Caption = 'Templates'
+          SkinData.CustomColor = False
+          SkinData.CustomFont = False
+          ExplicitLeft = 0
+          ExplicitTop = 0
+          ExplicitWidth = 0
+          ExplicitHeight = 0
+          object sLabelFX6: TsLabelFX
+            Left = 1
+            Top = 112
+            Width = 146
+            Height = 58
+            Cursor = crHandPoint
+            Alignment = taCenter
+            AutoSize = False
+            Caption = 'Email templates'
+            WordWrap = True
+            OnClick = btnRoomTypeGroupsClick
+            Angle = 0
+            Shadow.OffsetKeeper.LeftTop = -3
+            Shadow.OffsetKeeper.RightBottom = 5
+          end
+          object sLabelFX7: TsLabelFX
+            Left = -3
+            Top = -3
+            Width = 86
+            Height = 29
+            Align = alTop
+            Alignment = taCenter
+            Caption = 'Templates'
+            ParentFont = False
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -17
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            Angle = 0
+            Shadow.OffsetKeeper.LeftTop = -3
+            Shadow.OffsetKeeper.RightBottom = 5
+          end
+          object btnEmailTemplates: TsButton
+            Left = 48
+            Top = 60
+            Width = 50
+            Height = 49
+            ImageIndex = 115
+            Images = DImages.cxLargeImagesFlat
+            TabOrder = 0
+            OnClick = btnEmailTemplatesClick
+            SkinData.SkinSection = 'SPEEDBUTTON'
+          end
+        end
+        object sTabSheet5: TsTabSheet
+          Caption = 'Settings'
+          SkinData.CustomColor = False
+          SkinData.CustomFont = False
+          ExplicitLeft = 0
+          ExplicitTop = 0
+          ExplicitWidth = 0
+          ExplicitHeight = 0
+          object sLabelFX12: TsLabelFX
+            Left = -3
+            Top = -3
+            Width = 68
+            Height = 29
+            Align = alTop
+            Alignment = taCenter
+            Caption = 'Settings'
+            ParentFont = False
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -17
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            Angle = 0
+            Shadow.OffsetKeeper.LeftTop = -3
+            Shadow.OffsetKeeper.RightBottom = 5
+          end
+          object sLabelFX13: TsLabelFX
+            Left = 1
+            Top = 112
+            Width = 146
+            Height = 58
+            Cursor = crHandPoint
+            Alignment = taCenter
+            AutoSize = False
+            Caption = 'User Settings'
+            WordWrap = True
+            OnClick = btnRoomTypeGroupsClick
+            Angle = 0
+            Shadow.OffsetKeeper.LeftTop = -3
+            Shadow.OffsetKeeper.RightBottom = 5
+          end
+          object btnUserSettings: TsButton
+            Left = 48
+            Top = 60
+            Width = 50
+            Height = 49
+            ImageIndex = 76
+            Images = DImages.cxLargeImagesFlat
+            TabOrder = 0
+            OnClick = btnUserSettingsClick
+            SkinData.SkinSection = 'SPEEDBUTTON'
+          end
+        end
+        object sTabSheet6: TsTabSheet
+          Caption = 'Reports'
+          SkinData.CustomColor = False
+          SkinData.CustomFont = False
+          ExplicitLeft = 0
+          ExplicitTop = 0
+          ExplicitWidth = 0
+          ExplicitHeight = 0
+          object sLabelFX14: TsLabelFX
+            Left = 0
+            Top = 112
+            Width = 147
+            Height = 58
+            Cursor = crHandPoint
+            Alignment = taCenter
+            AutoSize = False
+            Caption = 'Reservations'
+            WordWrap = True
+            OnClick = btnRoomTypeGroupsClick
+            Angle = 0
+            Shadow.OffsetKeeper.LeftTop = -3
+            Shadow.OffsetKeeper.RightBottom = 5
+          end
+          object sLabelFX15: TsLabelFX
+            Left = -3
+            Top = -3
+            Width = 66
+            Height = 29
+            Align = alTop
+            Alignment = taCenter
+            Caption = 'Reports'
+            ParentFont = False
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -17
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            Angle = 0
+            Shadow.OffsetKeeper.LeftTop = -3
+            Shadow.OffsetKeeper.RightBottom = 5
+          end
+          object btnReservations: TsButton
+            Left = 48
+            Top = 60
+            Width = 50
+            Height = 49
+            ImageIndex = 114
+            Images = DImages.cxLargeImagesFlat
+            TabOrder = 0
+            OnClick = btnReservationsClick
+            SkinData.SkinSection = 'SPEEDBUTTON'
+          end
+        end
+      end
+      object sPanel1: TsPanel
+        Left = 0
+        Top = 591
+        Width = 1182
+        Height = 35
+        Align = alBottom
+        BevelOuter = bvNone
+        TabOrder = 1
+        SkinData.SkinSection = 'TOOLBAR'
+        DesignSize = (
+          1182
+          35)
+        object btnAbout: TsButton
+          Left = 1149
+          Top = 5
+          Width = 28
+          Height = 26
+          Anchors = [akRight, akBottom]
+          ImageIndex = 19
+          Images = DImages.PngImageList1
+          TabOrder = 0
+          OnClick = btnAboutClick
+          SkinData.SkinSection = 'SPEEDBUTTON'
+        end
+      end
+      object pnlForm: TsPanel
+        Left = 183
+        Top = 0
+        Width = 999
+        Height = 591
+        Align = alClient
+        BevelOuter = bvNone
+        TabOrder = 2
+        SkinData.SkinSection = 'PANEL'
+        object lblHeader: TsLabelFX
+          Left = -3
+          Top = 22
+          Width = 14
+          Height = 32
+          Align = alTop
+          Alignment = taCenter
+          ParentFont = False
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -20
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          Angle = 0
+          Shadow.OffsetKeeper.LeftTop = -3
+          Shadow.OffsetKeeper.RightBottom = 5
+        end
+        object tabWindows: TsPageControl
+          Left = 0
+          Top = 0
+          Width = 999
+          Height = 25
+          Align = alTop
+          TabOrder = 0
+          SkinData.SkinSection = 'PAGECONTROL'
+        end
+      end
+    end
+    object sPanel2: TsPanel
+      Left = 0
+      Top = 0
+      Width = 1182
+      Height = 87
+      Align = alTop
+      BevelOuter = bvNone
+      TabOrder = 1
+      SkinData.SkinSection = 'TOOLBAR'
+      DesignSize = (
+        1182
+        87)
+      object lblUsername: TsLabel
+        Left = 897
+        Top = 9
+        Width = 213
+        Height = 16
+        Alignment = taRightJustify
+        Anchors = [akTop, akRight]
+        AutoSize = False
+        Caption = 'N/A'
+        ParentFont = False
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -13
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ExplicitLeft = 800
+      end
+      object lblLogout: TsLabel
+        Left = 1124
+        Top = 9
+        Width = 49
+        Height = 16
+        Cursor = crHandPoint
+        Anchors = [akTop, akRight]
+        Caption = 'Log out'
+        ParentFont = False
+        OnClick = lblLogoutClick
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -13
+        Font.Name = 'Tahoma'
+        Font.Style = [fsBold]
+        ExplicitLeft = 1027
+      end
+      object Image1: TImage
+        Left = 5
+        Top = 4
+        Width = 390
+        Height = 69
+        Margins.Left = 2
+        Margins.Top = 2
+        Margins.Right = 2
+        Margins.Bottom = 2
+        Picture.Data = {
+          0B546478504E47496D61676589504E470D0A1A0A0000000D4948445200000197
+          00000043080600000050BE4880000000017352474200AECE1CE9000000046741
+          4D410000B18F0BFC6105000000097048597300000EBC00000EBC0195BC724900
+          00000774494D4507DD011E0902034B3CA4FA0000000774455874417574686F72
+          00A9AECC480000000C744558744465736372697074696F6E0013092123000000
+          0A74455874436F7079726967687400AC0FCC3A0000000E744558744372656174
+          696F6E2074696D650035F70F090000000974455874536F667477617265005D70
+          FF3A0000000B74455874446973636C61696D657200B7C0B48F00000008744558
+          745761726E696E6700C01BE6870000000774455874536F7572636500F5FF83EB
+          0000000874455874436F6D6D656E7400F6CC96BF00000006744558745469746C
+          6500A8EED22700001E0549444154785EED9D0994654579C7C528B2888808A820
+          9020381004C4184CE2824980E48493481C8D6B50E211250AE2BE20366840460C
+          78F04471766098856160F681D97A7A66E8D97766A5991966DF997D9F97FFEF32
+          5F9FBAF5AA5FEFB75BCFF7CEF99D7EAF6EDDBA5F7D55F5FDABEADEF7FA75A552
+          C9711CC771DA9464A2E3388EE3B48664A2E3388EE3B48664A2E3388EE3B48664
+          A2E3388EE3B48664A2E3388EE3B48664A2E3388EE3B486646225162D5A34E0F9
+          E79F9FD39959B972E50329DBDB838D1B37FEC3D8B163E7C0F8F1E333264C9830
+          67E2C48973AAABABE74C9A3429A3A6A666CEE4C993E74C9932A5CDA03C2B9F6B
+          714DAE6D76985D6AB38129DBDB8375EBD6DDCA35C78D1B97F307F6993FDAC317
+          D0983FB009DB962C59725FCAF6F660CB962D37A4FA686762DEBC794FA66C6F0F
+          76EEDC7949CA86CEC4D4A9536B53B6B707478E1C3931654367827175F8F0E177
+          A6ECAF4432B1121AB8F31E7DF4D1526746836550CAF6F6A0AEAEAE6BF7EEDD4B
+          3D7AF428F5EAD52BA36FDFBEA5C71F7FBCD4AF5FBF52FFFEFD4B03060C280D1C
+          38B0F4D4534F95060F1E9CF1F4D34F670C1932A4C9D83956C6A04183B2B2B906
+          D7E29A5CDBECC0266C539B2D48D9DE1E2C5FBEBC8A6BF6ECD933B3A177EFDEA5
+          C71E7BACF4C4134F949E7CF2C9CCD6B6F00534D51F7DFAF4C96CC1266C931015
+          164C5F79E595CFA4FA6867820092B2BD3D90D85E95B2A133A17EB42F657B7BA0
+          A07D52CA86CE04E3F6D0A14317A4ECAF4432B1122E2E7910171316821881D444
+          85004AF07BE699674A43870E2D0D1F3EBC3462C488D2C891234BA3468D2A8D1E
+          3DBA3466CC9826437ECEE37CCA19366C585636D7E05A1654B1C1022AB615292E
+          2B56ACA82288232AD84080A77322280800A2F0ECB3CFB6DA1790F207659B3F10
+          1AFC81B02132D8846D2E2E795C5CF2B8B8E4717109285A5C2C9812D42D9012E0
+          1014021F815003B8346EDCB8D28409134A13274E24E0976A6A6A32B4EC6C14F2
+          714E75757576FEF8F1E34B63C78ECDCAE61A0456AEC9B5B1015B2C98EADC42C5
+          0551239813D44D64114104053178EEB9E75AE50BB0FCB13F28DBFC8190D96AC6
+          0406DBA64E9DEAE212E0E292C7C5258F8B4B4091E2F2F2CB2F67E2C22C9D0046
+          203361219012F0087E0442CD984B2FBCF042A9B6B6B6347DFAF4D28C19333266
+          CE9CD928E4E39C69D3A665E72B40664196E04AA066161F0A0CB66013B6295FE1
+          E262421B0A0B811F11404C5AE30BB0FC0DF903D13581C106135C6CD3755D5C02
+          5C5CF2B8B8E4717109285A5C5821B0FDC32C9DE06E81145121E8113C67CD9A85
+          5DA5050B1694162D5A547AF1C5174B8B172FCE58B26449A3908F7360E1C285A5
+          F9F3E797E6CC9993055882344195D511DB430454440E9BB0AD487179E9A597AA
+          5821B01DC5AA816D2A5612047C041621401CE6CE9D9BD5A125BE00CBDF903F10
+          30841D7F20F4080C36619B6C7071097071C9E3E292C7C525A06871B1604A0023
+          90316B26D813F0962D5B56AAABAB2BAD5CB9B2A440535ABB766D69FDFAF5191B
+          366CC8D8B87163A390CFCE5BB76E5D69CD9A35A5D5AB579774FDD2F2E5CBB320
+          4DF046D498B1737F834E816D5A25142A2E881AE286C811DC1116561588808E67
+          36637B4B7D0196DFFC4159E60FAD9E32E1E19A080CE2C6EA89151DB669B5E3E2
+          12E0E292C7C5254FA71017CD469FD8BE7DFB973B9A7DFBF65D9BB2BD3D906874
+          0D83295B61DC4B6086BE6BD72E6529E6A54E9AAD08582DB145160653AD9E0A13
+          17096995092D22C76A0AD1C336B58DB214F79A3D7B76FD0A86D5A409AE56929D
+          425C24BC72C9F6641F0ED1E4E117A9F3413E9E9D3A274682DB2F753E14292EEA
+          A76F4BD9D79978F5D557BF98B2BD3DA8242E1ABF5B52F615CD8E1D3BBE7CF4E8
+          D15353F657229958894AE2A241F08DD4397FCA202EDCDF600B88550BC1941933
+          816DCF9E3DCA52CCEBC89123D94A896D38822981DDB6828A1417AD1CAA6C7B90
+          150342CB7D116CD3A05596E25EAC946CCB10D147FCB1ADB3888B56996B53E7C4
+          68A5F637A9F341ABE46752E7C4A88CDB53E74391E2E2E4A9242E9A0CAD4A9DF3
+          C74232B1122E2E7910170238B36266C7DCB0B660BA77EF5E6529E685B870FF81
+          7B0EAC5E08EC047866EA0AB0858A0BAB38564E6C0F9AD0B24D55E44A8E17F766
+          5831F1F000DB85DCFF6135271FB9B804B8B8741C2E2E012E2E79101702B86D89
+          314B26A011E8F7ED63EBB69817E2C2FD1D0239DB500476023C33F522C545FEA8
+          6215C7CA8915142B071E64E0BE50912B395EDC7BE1263F5B94DCF741FC59CDA9
+          7D5C5C025C5C3A0E17970017973C884B385327B013E09935EFDFBF5F598A791D
+          3D7A340BA63C85C54C9DED399BA9172D2E04705BC511D879428E1BF945AEE478
+          F12005C2C6D37A6CCFB19A6385396BD62C17970017978EC3C525C0C525CFAA55
+          AB32712190232E6C0311E05945142D2E0453BBEF82B8700F087151802F545C08
+          E03C2586B810D879928DA7B88A1617AE89B0D9830EB655E8E292C7C5A5E37071
+          097071C9632B171317560D1D2D2E6C4585E252F4CAC5C485D542671117B62B5D
+          5CD26514292E0AA6676ED9B2E56B9D996DDBB67D25657B7BE0E212E0E2922714
+          17058B6CE5C23EFFD2A54B0B1717B69ED806B227C63A8BB8F0D416C2D711DB62
+          88AD3DE4C03D311797728A1417056FFF9E4B808B4B808B4B1EC4859BE6880BDF
+          2FE9A87B2EDCD00FEFB92074880BC2D751F75CB889CE937376CFA5E81BFA26B6
+          76CF05C143F85C5CF2B8B8E47171691B9289957071C9C33D17C4851BFA888BFC
+          D3E14F8BB17A425C10BC8E1617B6E8EC69B1DDBB772B4B712FAEC92A1281E3FE
+          8F898B3F2D96C7C5258F8B4BDB904CAC848B4B1EC4257E14996D18B6828AFE9E
+          0BAB25CDCA3BD5A3C86CD1B19AC2B6A2C585AD49C49627D610177F14395D868B
+          4B1E1797B62199580917973C6C8B99B8C4DF48E78632BF7BB579F3E6D2D6AD5B
+          B39F3FE15BEA3B77EECCBE5048B035F86CE931611E20DF8E1D3B4ADBB66DCBCA
+          E6F7B52472D9F613C266DF48377129FA6931C4852D39564FF6254A5672D8A820
+          575280C97C413D52BE88EB6AEF8D389FF98332299BDF1CE377C67890805564FC
+          AB052E2E795C5CF2B8B8B40DC9C44AB8B8E4415C08E0F1CF9DB015C436150195
+          1F5524E011F8100482A0614191740428C6F25B3EFBCBB14D9B3665E24520650B
+          0871E1FE42F873276C8B75B4B8B09A425CB8C1AE609BF902510CEB16D21C7F18
+          1C33A1C51FDC7F62F5188B0BB6B9B8E47171C9E3E2D23624132BE1E2920771E1
+          E75F4C5C782AC9C4056121D8D9CA858018AE5C6CD60DA45B80048428CE1FFE25
+          9D401BCED409A6262EDCFF415C585515292E5AAD55F1841AE2A2A09513178485
+          950BF54410625F1861FD1AF387413A659A3FB8566AE582B8F8CFBFE429525CD4
+          4E176BE253DB99A9A9A9A94ED9DE1EB8B804B8B8E489C5C5562EAC220E1D3AA4
+          2C4D7F113009BE40603D76ECD8F1238DBFC8CB4A295EB974C46F8B99B8C42B97
+          03070E284BD35F3C5D66FE40349AFBE269311797D750199D425C9C3C2E2E012E
+          2E79101702782C2EAC228A1617B6C6C27B2E884B47DCD08FC5857B2EFC70E5C1
+          830795A5E9AF505C58BD34F7C5369C6F8BBD86CA7071E984B8B804B8B8E409C5
+          C57EF284A7935A2A2E6CE9005B472D1117562EF653271D212EB672B15F2CB0EF
+          FDB4545CCC1FAD1117FBAD3504CFC5A51C17978EC3C525C0C5258F898B3A42FD
+          8F35F2DD0EB6C59A1B4CB977C03D1A601BA8B9E2C2B618AB26564F880B82876D
+          9AB9172A2E3C44603FE4A9FED2E26D319E06337FF0F042735F6C8BB19263F5C4
+          2A0AC143F87C5B2C8F8B4BC7E1E212E0E2920771E19F85F1882BDB2E7C71906D
+          181E456EAEB870C39A27CB80997A73C585EF92D8773AEC0B831DF5CFC25835F1
+          50015B7404785672CD1517C4D6FCC1EAA5B92F9E18436CC3EFFD207C5ADDB9B8
+          04B8B8741C2E2E012E2E791017FE95706A2BA8B9C194FB2C3C61664F9935475C
+          F86D319E8E8AB78010BE22C5A5AEAEAECA5672E136215FA46CEECFE1F00498F9
+          63CD9A35C7539BFE426C11FAF89FA7B9B8E47171E9385C5C025C5CF2202E8F3D
+          F658766F23BEA9CFD616F751B877C0B7F5819F840102ADBDB763080AB36DE0D1
+          E2A69C471EAEC1AA879F3AB11F6864E5C02C1DDB2438858A4BF86F9FD98E426C
+          59BDE00FB6BAAC5E561F23AC172820D6FB432BA226FB836BB0EA61F5C8B65CF8
+          054A56726A1B17978022C545ED72A1EAFD7467461392FE29DBDB031797001797
+          3C0A7A5DFBF6ED9BCD88095E1650D90E426098B1B3A260164D90E43E00379A09
+          96FCE5B3FC961DE7A637F7260C3E731F85F3EC9CF03C8E91CF7E9C9140CAAA85
+          40CACA019BB0AD4871915D55ACE41036040EB165AB901515F75EB817455DA9B3
+          D549029DC17BF3073FDD92F207E91C275FEC0FD2C963BF84CCBD168405B1654B
+          8CD525B6B9B8E429525C34C1F02F5106B8B804B8B8E45170EBDAA74F9F6CFBC9
+          022ADB410479823D37F77962895505418F7B0F880DC192BF7C261D11622B8D00
+          0CBC078483801C9F471AC7C8CBB613AB030229C1DC022936619B826CA1E2C26A
+          891582892DC19DD51CC11E11345F587D10041312F30775235FEC0FFC94F2079F
+          39873C883AD742D4F04728B6D8267FB9B804B8B8E47171691B9289957071C983
+          B8F4EAD52B5B21D8761002C39363AC6008AA047E66EE080DC19559B54120441C
+          B83700044520BF9DC371F285E7DA3994CD56186286A8212CD84070C7266C2B52
+          5CB4CAAAEADDBB7716C4D92A24A8732F0A8141FC58D1512FECB7FA20BE10FA83
+          7A533FF286FE202DE50F3E9BFFF04728B4D880F0B36AC13695EDE212E0E292C7
+          C5A56D482656C2C5254F5D5D5DD79E3D7B66418B80CAEC985503F75F98B513E0
+          1400B2E0CF4C1AB121F8197CE6A637C13005E7703C3ECFCEA16C0237B373AEC9
+          B56D868E4DD826012A545C1034564C04730486150C411EC1E5093244977A510F
+          C426C4FCC1F1D817407ACA8FE60FCA367F20F2082DC282F09BD84A845C5C025C
+          5CF2B8B8B40DC9C44AB8B8E4415C7AF4E891052D02AA6D09595025E01358111A
+          021E0196154608691C03F2595ECB1F9E835885E75036D7E05A5C936B6303B660
+          13B6A9CD0A1517135B1318135C5610047C5632D86EF509B1BA59FD1AF38761F9
+          29DBFC81A8E00F1316135BAD805C5C025C5CF2B8B8B40DC9C44AB8B8E4415CBA
+          77EF9E0571823910C808AA26320439822BB368821E41D6E033700C2C9F11E70F
+          CFE338659BA8704D9B9D9BB0605B91E2A23E50C53509E2D8602B3A023C2283AD
+          0DF9C2EAD5983F1A3A8FE3297F98D06213B6B9B8E47171C9A37EE4E2D2062413
+          2BB17BF7EE8BB76EDD7A458A03070E9C993AE74F19D5F974ABFFB66DDB726CDF
+          BEBD8C1D3B769491CA17923A07E27CF1F5CD2EB5D92529DBDB03F9E39C943F62
+          5B21552748E58D69CA79E1F5C1ECDAB367CFF929DBDB8383070FBED5AE1BB36B
+          D7AE4B53E7C41C3A74E894D4F9A0322E489D13A332DE9E3A1F54C6C5A973DA03
+          8269CA86CE84FAD2E529DBDB8363C78E9D90B201644797D4397F2C24131DC771
+          1CA73524131DC7711CA73524131DC7711CA73524131DC7711CA73524131DC771
+          1CA73524131DC7711CA73524131DC7711CA73524131DC7711CA73524131DC771
+          1CA73524131DC7711CA73524132B71E8D0A1F356AD5AF59363C78EBDDED28E1C
+          3972D6FAF5EBABC27CC6E2C58B07CF9B376FB8B168D1A221719E3D7BF65CB765
+          CB967FB3CF478F1E7DF32BAFBCF2CB30CFBE7DFB2EB232E6CC9993FD5DB060C1
+          F0C3870FBF39CCD718B2FB8D6BD6ACB943650C9C3D7BF680975E7AE941D97F76
+          2AEFE6CD9B6F993B776EBDEDB063C78EEBE27CB2FF23AAFF17C2B4FDFBF7BF4F
+          75FA5A9806DBB66DFB545CE6D6AD5BFF3DCEA7F3AF0AF3C98FBF3F70E0C07BE2
+          7C86FC73A5EA755BEAD8A64D9B3E4719946765BEFCF2CB0FC4F9366EDCF82DF9
+          E28D713AC8CFA72D59B2A4BBCE7F52BE1BACBA7D22EC0321EA1FF72BFF19619A
+          FC73BFCA7E4B98D6183AE77B71DABA75EB7EAEFEF1B6381DE4B3F3172E5CD81F
+          1B55C721BB76EDFA402ADFFCF9F3331F583F02B5E195619EEDDBB7DF14FA1F54
+          E74F877940D7BC5C6DFACF717A7350BBDD2B7F95FD7492C6C0DD1A6FC9BE0975
+          75750FCBA727A78E81CEBF4B7DE6DD619ADAF84E9579519816A2B6FBF9C18307
+          1BBCA6DAFC0D2AE34B1A3B83E4BFFE4B972EFDAD6C4FFE040DB63346431F6ABC
+          FD26CE870F376CD850365664C7056BD7AEFD7E9CAE3A9FAA76CE95BB6CD9B21E
+          713E58B972E503B2EFAD619AFA5037F5A153C334F9EA7B94138E11E5FB6698A7
+          3164D739B2A31BFD4F0C54BFA88F6986FAF4EDAAD75FD867D9F1265DFB7FC33C
+          209F5CA13A66E34D3EECA3F1FDFE388F7C764B6CB3DAEF9E389F7CF8038E85A8
+          BF5F15E73BDE0FCBC696ECFB99D2CF8AD31B2399580955B2CBA851A30ECA49F5
+          814CCEFA903ADAE4309F316BD6AC71EAE0D707FC639C470E7EE3CC9933C9970D
+          0405BE2A55E8C7519ED3AC0CE59D68EFE9EC61BE4AD0906AA8896A8007F4FE74
+          9D7B92EAF10D0D94F1EA18654ED5C0795041E6B3762D50BE73E37C0A3AFF3162
+          C488FD0A661FB13489D0AD0CBC301FA8B3FF4883F3D6A8CC0BE37CAFBEFAEA75
+          EAA8BFB63C3B77EEBC7EDAB469491F8302FF0313264CD84C078F8FA9635C4419
+          1299DB962F5FDE9DF71AF81F8CF3C937BD95F7A4385DEDDBA5B6B676A57CF119
+          3E2BCFBB5F7CF1C541AACB5D715EA8A9A959A8003E32141FF5830D3AEFED61BE
+          C6D08029FB77B36AAB99B2BD6C60C83F374C9F3E7D1942CF67D97CA9AE390311
+          8CF39A4FC37EA4FE906BFFD5AB577F577DE3BFED38C8FE3F0FF380AEFB3105CC
+          B2C0D81CAAABABA7A9BFDF11A629B874193A74E85EFD2DEB1BA0FA9D3766CC98
+          5DEACBC93600F963D48C1933E686634481659ACA4C8AAEEA77D6B871E3D6AF58
+          B1E2A1D471D024E7591D7F54FE3A5BE59E20FF7E45D799A473CBC605B6AB4F0D
+          087D48AC88F3E1438D9FADEABBB980AF3EF65BB5D1C0300D74AD33D4378645E5
+          D68FBD904993262D910DC3C2BEA832B7E85A39C1519F7A1FE528F6DCA7607C37
+          EF759DCBC23C8D21DF0C50C0FF3AEF295FFD6FACECCA4D1A76EFDE7D2542609F
+          3586EE5550FF619847B69E4CBBA92F67BE52CCBD5C653DA3F43F0BF3C9BE4BB0
+          53FDF4DB9A683CC27BD5E3EA300F308E3816A2F62B9BCCA81F4E573FBC3D4C53
+          1B5E4A3FD4394DFA0DBB906462251017357A370DF2A17A9FCD80E8300D894B2A
+          40A490D32F57DE217434FD1DACCA37B822696A99319A497C4201FFBE385D0EFD
+          B98E7D294E475CF6EEDD5B366862101735EED735C826CAEE1349AB242EFCA862
+          9C1E83B8A8A3DF12A6C9E7C97AAB23BF45D79EAB40F36375B42FA6F2806CBA5A
+          D72F5B0D180D898BDAFB77B2E7DA304D1DFD44D933459DAEECC7F5681FF9E387
+          1AA4B75A5A7B8B8BFADFB31A08B91FE8545B9C21415EA6BF6575824AFD0871D1
+          8A32198443DA425C14EC9E977F86CBA7F522A089C5AF264F9EBCA22171D124E1
+          3EADAC6F53BBD7E8BC135279A89FFAC3E72406FF636995C4853A13E814D8E8C7
+          652B2205BBBFD5A4A16C85A049CBEDBA4E59BFC27605DCFBE3F4187CA889D10A
+          9551BF32D4F5DFA4B65BA2761D10E605C445B3FAFF8BD353E003B5CF5D5A85FC
+          97A5A5C4C5509FFDACFCFAAFA9638DA16B8D569DDF6B9F35CE3FADF8F1E1300F
+          B00BA1BE75BDF276912D33E3E3AAFB696A8359FA5BBF8B20D1FAA1EAFDCE309F
+          A1B23EA21896DCB5804AFD3CE4783F4488CBFA6161E2A259F2CFF4F77D326402
+          81AD92B8C8B0E90A6877180A7037A4F28182E98FC78F1F5FA78AE496F2314D75
+          568CECEEA6D5451624990568B09C2B51CB501DCAB66C94FF4109C4DD66BB06DE
+          1D6AF04C3C42101735EE27245037AAD367DB7E0D898BEAF823E579C0CA64C68A
+          0FE37C888BCEFF8EFC7C2EA803DDA40EF77C9C0F34183EA972EF501DCE563B0C
+          4EE58196880B7E52A79B16A61912B36FE9DAD7C4E9B48FFC74AAFE0E976FFF8E
+          B496888BEAFB8C82E81D21EA1FAB637191FFCE92E88C0CD30C05D31ECA9F9B11
+          1B95FA91EAF65DF9E3C1A89D725B7DD016E2821D2AE31EF5A3AE7C969FCE64A0
+          4BD41F6A485C747C1CC1477DE95105B0E4AFE7522E8162D1A2458FDBD66B2571
+          910F87E9DA6F5540B94F81316BB710D9F81D9593AD5E8189978D1F8DD9B2608D
+          ED53A74E1D6B3E048DB9B215333E54DBFE4075AAB680AABCDF91D8B02D5DD646
+          B2F18C2953A64C0ECB950D65411C385F65BE59E362A4AD04749D761117D5E32A
+          953D5AE2F1F0C68D1B3FDF507FD7B5CF94704ED1986082FE97A93C4C0A284B7E
+          A9525CB9417568704BB9317151BB0E087DA5B293FD155F692272AFFAE127F91C
+          F4C3870B1517DE6B36709B3AE283BAF0871B12170588D16AF86B0CE56D70BF97
+          7F343571E2C415BA46FD9E648A54876B0AB2FB11131735F0E9BA5E3705F06E9A
+          8D7517F726F23FA88E76A3D9AECE790DC136CE67E2A26327A8333C2CBF7CAD92
+          B8A8037F3EF4893ACE9BE27C888B06D068EC83DADADA7E3AF727713E5DF3F5EA
+          A8435597DF31F394FF966AD0273B6C2BC4655E9866A8AC06C585BF0A2E57EADC
+          112AF39C96888B06C553F2C33521F2C3E284B89CABBCCF8569866C69B1B8A84D
+          6F8EDAA96C05D456E2A27171BEC6D0443EAB1DBFA93ED495597F4A5CD48ED7D6
+          D4D42CA2BD95A7B704E3D1380F58FD54FFF319879A7CBCA7217151FDAEAEAEAE
+          5E46991AD3BF557B954D52580198B8D0EFB43ACDFAA682CF6FD407CB6CC076D9
+          D037F4A16C79579C0F1FAA2CC6CB430AA45960D78AAC9A6BA4DA48FDE80CB5F7
+          E0A8DCE484D4CE574C793F7D517DE5EDFADB2EE262284E5CA5BEF355D5615E4A
+          4C81002FD1BF3B75CC507F3B913ECFCA53F59DDAD0F8694C5CD4AFFA87BE527C
+          F8AB54BEE3FDF002E59FC067F585DB65E727D5C77E59B8B8801CD45F03E1570D
+          894BAA73A490133FAC00DF5715BF4C1D7B5A2AE01A4D2D3346B3B18FD281E374
+          35DE77556699B8286F93B7C51017DED321D4796BE59347747E9B6E8BA9B36E0E
+          3F831AFD3CA5D76A505E0DEA105F91C0956DFD414BC405D4DEF7EBDCDC8A13D1
+          51871FA280755E980E61FB6CDAB4E9F3EA9CDDE593CDCD1597543BEB9AC96D31
+          E51DA460967BE04101E414F96682DA24F99042A57E4490D5A02D645BCCECD058
+          EAA5C9CF5F5B106C485C2410FD34E83F6B6DAEC05EA33A9E16E70BEB273BFF5E
+          9F9F15F352E2A26B3DA23E7CAB95795C8C726DABB170A9C668BF300D1490BFF8
+          C20B2F24C5853AC4E931262EEACBEF917D0314DCFF453ECDB6F2C23A18884B73
+          B6C5ECBD561337CB9EDFAB6EDBDA435C144772E34EE3FC5AD5A37E6B383AF669
+          8DEF9B52C7E4F7B76972F3ED304DE5FC446330F97F661A1397940F53583EF5C3
+          DE413F3C533EEB1871D1C54FD6005E224392E222A11821C32E33E4B8B27F90A4
+          CEF20E9D3F52C7B2D9871CF57D05C15FC4F98CA63A2B86802847FD1A45D635CF
+          C17112812FC8C6094A4FAE5CD4A01F0FED4F75CA505C4083EA3CCD0277A7C485
+          958B3AF94D51996537D752E2A2207238FC0CEAD0BFD660A8EFA42AEB2D1A3C88
+          739948B4545C14CC99ED8D52D0F9B8CA3D55ED74C1713F66372F63E2F641D0F9
+          FFF6ED292E9A2172037FA406C5076867F5D3F76AC2334803AFECE93EA3523F62
+          E5A200FEA9A89DCAEC2730AA7EF744F94E8FF355C2ECD0ACF28AC99327CF5220
+          C966B4F27199B8C88717AA2DC631ABB734B5E95D1B366CA8BFA760C4F5537BDD
+          397AF4E8522C2EB2F71CF519EEDDD48BB0C6C5D795BFEC492DF5B79FCABE9FAA
+          0DCE555F385D7DEF46F9FD79894E525CD4A77880A4DE373AAF6C57C2C485F72A
+          A7E7D4A9536BE9737C4EB5917CC00D7D66D9F5E5AA4F26FFE1597C3E6392BEA8
+          3AB7B9B86805F707B6C3E4C737C8FE77A8EEC3141BEAB711432A898B6C3BF578
+          5FCE7605D497AF50FBCC973F934F8B3665E512FA0A18C7713EF395AE7BA556C6
+          B369673E17262E6AC40B79DA294CD3C0EEA28EF8A330CD90836B6574FD4B338E
+          E9711E05BD4FA9113E679FE9E41ADC5574DE309FB166CD9A4667430D41E05143
+          F028F27805AA311A9804868B55A7B240A9017BA7F21DB7FCB5976C2D7BFA4841
+          E17A6629619AEA739D66EDB9C7938FA7DFA2EB1E2FEDB5973AC7CD713ECD123F
+          A4F4DCA38CF2499958C9EFDD54A753C234D97D1B1D284C0395D925752D4301E5
+          1E75ECB27B4AA0C172A606660FD93E5433E7BEAA47B62F9B226E1FB5E3C9CB96
+          2D7B88BF617A63A4DA59693F2518C6E940FD34EB1A241B07A99FFD4141EBA3A9
+          7C46A57E243FFD67DC4EAA735900D7C0FF409C4F22DCAC4793433B14BCAB34C6
+          B2C0AA76FCA6FC9EBB89ABBEF641D9916B43F9F534F5E994AF7269043D95FF0B
+          05E77784E9AAC325EAFFB9C76E692B95D92D4C3324BA37ABCE93343646AABCDF
+          C8C6B3D577CA9E5AC3F6E32EA97F297F9958E043EB4F6AC38B3426EFB463A936
+          52FB9F76BCB8FA97FAD788381FC4E7AB5EA728EFC3FA9BDC19D1F8FE2705D78F
+          A58E3586EC3A49F5BB577E794A260D54FB7D957893CAAB3A5FA63EF6F1D431D0
+          F87D97FA720F95F5A404B7B7ECBA31950F147FDF8F58A58E81E2068F47E75E3A
+          A7ECA9BDA81FDEA37E984D7A558FDBE37ED81492898EE3388ED31A92898EE338
+          8ED31A92898EE3388ED31A92898EE3388ED31A92898EE3388ED31A92898EE338
+          8ED31A92898EE3388ED3724AAFFB7F0AB4B3D0C056EB050000000049454E44AE
+          426082}
+        Proportional = True
+        Stretch = True
+      end
+      object __cbxHotels: TsComboBox
+        AlignWithMargins = True
+        Left = 869
+        Top = 27
+        Width = 304
+        Height = 24
+        Margins.Top = 0
+        Anchors = [akTop, akRight]
+        Alignment = taRightJustify
+        BoundLabel.Indent = 0
+        BoundLabel.Font.Charset = DEFAULT_CHARSET
+        BoundLabel.Font.Color = clWindowText
+        BoundLabel.Font.Height = -13
+        BoundLabel.Font.Name = 'Tahoma'
+        BoundLabel.Font.Style = []
+        BoundLabel.Layout = sclLeft
+        BoundLabel.MaxWidth = 0
+        BoundLabel.UseSkinColor = True
+        SkinData.SkinSection = 'COMBOBOX'
+        VerticalAlignment = taAlignTop
+        Style = csDropDownList
+        Color = 3355443
+        Ctl3D = True
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = 15724527
+        Font.Height = -13
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ItemIndex = -1
+        ParentCtl3D = False
+        ParentFont = False
+        TabOrder = 0
+      end
+    end
+  end
+end

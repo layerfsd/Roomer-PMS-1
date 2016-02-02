@@ -1,0 +1,768 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{436E2CCE-115E-475F-9C3E-19C03F70A4D0}</ProjectGuid>
+        <MainSource>Roomer.dpr</MainSource>
+        <Config Condition="'$(Config)'==''">Release</Config>
+        <DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
+        <ProjectVersion>14.3</ProjectVersion>
+        <FrameworkType>VCL</FrameworkType>
+        <Base>True</Base>
+        <Platform Condition="'$(Platform)'==''">Win32</Platform>
+        <TargetedPlatforms>1</TargetedPlatforms>
+        <AppType>Application</AppType>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">
+        <Base>true</Base>
+    </PropertyGroup>
+    <PropertyGroup Condition="('$(Platform)'=='Win32' and '$(Base)'=='true') or '$(Base_Win32)'!=''">
+        <Base_Win32>true</Base_Win32>
+        <CfgParent>Base</CfgParent>
+        <Base>true</Base>
+    </PropertyGroup>
+    <PropertyGroup Condition="('$(Platform)'=='Win64' and '$(Base)'=='true') or '$(Base_Win64)'!=''">
+        <Base_Win64>true</Base_Win64>
+        <CfgParent>Base</CfgParent>
+        <Base>true</Base>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Config)'=='Release' or '$(Cfg_1)'!=''">
+        <Cfg_1>true</Cfg_1>
+        <CfgParent>Base</CfgParent>
+        <Base>true</Base>
+    </PropertyGroup>
+    <PropertyGroup Condition="('$(Platform)'=='Win32' and '$(Cfg_1)'=='true') or '$(Cfg_1_Win32)'!=''">
+        <Cfg_1_Win32>true</Cfg_1_Win32>
+        <CfgParent>Cfg_1</CfgParent>
+        <Cfg_1>true</Cfg_1>
+        <Base>true</Base>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Config)'=='Debug' or '$(Cfg_2)'!=''">
+        <Cfg_2>true</Cfg_2>
+        <CfgParent>Base</CfgParent>
+        <Base>true</Base>
+    </PropertyGroup>
+    <PropertyGroup Condition="('$(Platform)'=='Win32' and '$(Cfg_2)'=='true') or '$(Cfg_2_Win32)'!=''">
+        <Cfg_2_Win32>true</Cfg_2_Win32>
+        <CfgParent>Cfg_2</CfgParent>
+        <Cfg_2>true</Cfg_2>
+        <Base>true</Base>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Base)'!=''">
+        <DCC_ImageBase>00400000</DCC_ImageBase>
+        <VerInfo_Keys>CompanyName=Beryllium ehf;FileDescription=Hotel Management System Main Module;FileVersion=12.5.11.10670;InternalName=HMS;LegalCopyright=Beryllium ehf 2000-2012;LegalTrademarks=Beryllium 2000-2012;OriginalFilename=home.exe;ProductName=Hotel Organizing and Management System;ProductVersion=12.05.11;Comments=SQL 2005 - Datalayout V12.05;Author=Bjorn Heidarr / Hordur Johannsson;DBversion=SQL 2005 - 1205;SupportEmail=support@berylsoftware.com;SupportHomePage=http://berylsoftware.com;SupportTel=+354 772-2002;Support=Hörður Jóhannsson</VerInfo_Keys>
+        <VerInfo_Locale>1039</VerInfo_Locale>
+        <VerInfo_MinorVer>5</VerInfo_MinorVer>
+        <VerInfo_MajorVer>12</VerInfo_MajorVer>
+        <VerInfo_AutoGenVersion>true</VerInfo_AutoGenVersion>
+        <DCC_Namespace>Vcl;Vcl.Imaging;Vcl.Touch;Vcl.Samples;Vcl.Shell;System;Xml;Data;Datasnap;Web;Soap;Winapi;VCLTee;Data.Win;System.Win;Bde;FMX;$(DCC_Namespace)</DCC_Namespace>
+        <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
+        <VerInfo_Release>11</VerInfo_Release>
+        <VerInfo_Build>10670</VerInfo_Build>
+        <DCC_StrictVarStrings>false</DCC_StrictVarStrings>
+        <DCC_UsePackage>vclx;vcl;vclimg;dbrtl;bdertl;rtl;vclactnband;vcldb;vcltouch;xmlrtl;dsnap;dsnapcon;TeeUI;TeeDB;Tee;vclib;ibxpress;adortl;IndyCore;IndySystem;IndyProtocols;inet;intrawebdb_100_140;Intraweb_100_140;VclSmp;vclie;websnap;webdsnap;inetdb;inetdbbde;inetdbxpress;soaprtl;vclribbon;dbexpress;DbxCommonDriver;DbxClientDriver;DBXInterBaseDriver;DBXMySQLDriver;dbxcds;DBXFirebirdDriver;DBXSybaseASEDriver;DBXSybaseASADriver;DBXOracleDriver;DBXMSSQLDriver;DBXInformixDriver;DBXDb2Driver;tmsexd2010;tmsd2010;FlexCel2010;Vsfd2010;lmdrtl10rt_140;lmdrtlx10rt_140;lmdinspector10rt_140;lmdthemes10rt_140;lmdprint10rt_140;lmdplugin10rt_140;lmdcore10rt_140;lmdgrid10rt_140;lmdtools10rt_140;lmdtoolsdb10rt_140;lmdtxt10rt_140;lmdtxtdb10rt_140;lmdrtf10rt_140;lmdrtfdb10rt_140;lmdshell10rt_140;lmdsys10rt_140;lmdweb10rt_140;lmdsearchdb10rt_140;lmdsearch10rt_140;lmdbar10rt_140;lmdchart10rt_140;lmdchartdb10rt_140;lmdstorage10rt_140;lmdfx10rt_140;lmddocking10rt_140;lmdscriptimp10rt_140;lmdscript10rt_140;lmdsyntax10rt_140;lmddesign10rt_140;lmdide10rt_140;lmdelcore10rt_140;lmdeldb10rt_140;lmdelpro10rt_140;fs14;frx14;fsDB14;frxDB14;fsBDE14;frxBDE14;fsADO14;frxADO14;fsIBX14;frxIBX14;frxDBX14;frxe14;fsTee14;frxTee14;frcd14;fcd14;ipstudiowindataset;ipstudiowin;CPortLib12;dclOfficeXP;kbmMemRunD2010Std;Jcl;JclVcl;JvCoreD14R;JvSystemD14R;JvStdCtrlsD14R;JvAppFrmD14R;JvBandsD14R;JvDBD14R;JvDlgsD14R;JvBDED14R;JvCmpD14R;JvCryptD14R;JvCtrlsD14R;JvCustomD14R;JvDockingD14R;JvDotNetCtrlsD14R;JvEDID14R;JvGlobusD14R;JvHMID14R;JvInterpreterD14R;JvJansD14R;JvManagedThreadsD14R;JvMMD14R;JvNetD14R;JvPageCompsD14R;JvPluginD14R;JvPrintPreviewD14R;JvRuntimeDesignD14R;JvTimeFrameworkD14R;JvValidatorsD14R;JvWizardD14R;JvXPCtrlsD14R;tmsxlsd2010;tmswizd2010;vacommPkgD2010;vcwd2010;TMSASPGRIDD2010;cetoolspkgd2010;advchartd2010;TMSUnicodeD2010;tb2k_d12;S404_r140;S404br140;TSNumbersEdit;SendMail2010;ipstudiowinwordxp;dxCoreD14;cxLibraryD14;dxsbD14;dxComnD14;cxEditorsD14;cxExtEditorsD14;cxPageControlD14;cxBarEditItemD14;dxBarD14;dxBarDBNavD14;dxBarExtDBItemsD14;dxBarExtItemsD14;dxRibbonD14;cxGridD14;cxSchedulerD14;cxSchedulerGridD14;cxTreeListD14;cxTreeListdxBarPopupMenuD14;dxLayoutControlD14;cxVerticalGridD14;dxmdsD14;dxSpellCheckerD14;cxSpreadSheetD14;dxDockingD14;dxNavBarD14;cxPivotGridD14;cxPivotGridChartD14;cxPivotGridOLAPD14;dxdbtrD14;dxtrmdD14;dxorgcD14;dxdborD14;dxFlowChartD14;dcldxSkinsCoreD14;dxSkinsCoreD14;dxSkinscxPCPainterD14;dxSkinscxScheduler3PainterD14;dxSkinsdxBarPainterD14;dxSkinsdxNavBar2PainterD14;dxSkinBlackD14;dxSkinBlueD14;dxSkinCaramelD14;dxSkinCoffeeD14;dxSkinDarkRoomD14;dxSkinDarkSideD14;dxSkinFoggyD14;dxSkinGlassOceansD14;dxSkiniMaginaryD14;dxSkinLilianD14;dxSkinLiquidSkyD14;dxSkinLondonLiquidSkyD14;dxSkinMcSkinD14;dxSkinMoneyTwinsD14;dxSkinOffice2007BlackD14;dxSkinOffice2007BlueD14;dxSkinOffice2007GreenD14;dxSkinOffice2007PinkD14;dxSkinOffice2007SilverD14;dxSkinPumpkinD14;dxSkinsdxDLPainterD14;dxSkinsdxRibbonPainterD14;dxSkinSevenD14;dxSkinSharpD14;dxSkinSilverD14;dxSkinSpringTimeD14;dxSkinStardustD14;dxSkinSummer2008D14;dxSkinValentineD14;dxSkinXmas2008BlueD14;dxPSCoreD14;dxPScxCommonD14;dxPScxExtCommonD14;dxPScxGrid6LnkD14;dxPScxPivotGrid2LnkD14;dxPScxScheduler3LnkD14;dxPScxSSLnkD14;dxPScxTL5LnkD14;dxPScxVGridLnkD14;dxPSTeeChartD14;dxPSdxDBOCLnkD14;dxPSdxDBTVLnkD14;dxPSdxFCLnkD14;dxPSdxLC2LnkD14;dxPSdxOCLnkD14;dxPSLnksD14;dxPSDBTeeChartD14;dxPScxPCProdD14;dxPsPrVwAdvD14;dxPSPrVwRibbonD14;PKIECtrl14;PKIEDB14;TSSUID2010;TSSCoreD2010;$(DCC_UsePackage)</DCC_UsePackage>
+        <DCC_BplOutput>C:\Temp\dcu</DCC_BplOutput>
+        <DCC_DcuOutput>C:\Temp\dcu</DCC_DcuOutput>
+        <DCC_DcpOutput>C:\Temp\dcu</DCC_DcpOutput>
+        <DCC_DependencyCheckOutputName>C:\Program Files\beryl\Home\HOME.exe</DCC_DependencyCheckOutputName>
+        <DCC_ExeOutput>C:\Program Files\beryl\Home\</DCC_ExeOutput>
+        <DCC_WriteableConstants>true</DCC_WriteableConstants>
+        <DCC_Platform>x86</DCC_Platform>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Base_Win32)'!=''">
+        <DCC_UsePackage>svnui;svn;dxCoreRS17;cxLibraryRS17;dxGDIPlusRS17;dxThemeRS17;dxSkinsCoreRS17;dxSkinTheAsphaltWorldRS17;$(DCC_UsePackage)</DCC_UsePackage>
+        <VerInfo_MajorVer>1</VerInfo_MajorVer>
+        <VerInfo_MinorVer>0</VerInfo_MinorVer>
+        <VerInfo_Build>0</VerInfo_Build>
+        <VerInfo_Release>0</VerInfo_Release>
+        <DCC_Namespace>Datasnap.Win;Web.Win;Soap.Win;Xml.Win;$(DCC_Namespace)</DCC_Namespace>
+        <Icon_MainIcon>HOME_Icon2.ico</Icon_MainIcon>
+        <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
+        <Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
+        <VerInfo_Locale>1033</VerInfo_Locale>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Base_Win64)'!=''">
+        <DCC_UsePackage>dxCoreRS17;cxLibraryRS17;dxGDIPlusRS17;dxThemeRS17;dxSkinsCoreRS17;dxSkinTheAsphaltWorldRS17;$(DCC_UsePackage)</DCC_UsePackage>
+        <Icon_MainIcon>HOME_Icon2.ico</Icon_MainIcon>
+        <Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Cfg_1)'!=''">
+        <VerInfo_AutoGenVersion>false</VerInfo_AutoGenVersion>
+        <VerInfo_MinorVer>8</VerInfo_MinorVer>
+        <Icon_MainIcon>Roomer_Icon1.ico</Icon_MainIcon>
+        <VerInfo_MajorVer>1</VerInfo_MajorVer>
+        <Manifest_File>None</Manifest_File>
+        <VerInfo_Build>0</VerInfo_Build>
+        <VerInfo_Release>0</VerInfo_Release>
+        <VerInfo_Keys>CompanyName=Promoir BV, Roomer PMS;FileDescription=Hotel Management System Main Module;FileVersion=1.8.0.0;InternalName=Rpomer PMS;LegalCopyright=Promoir BV, Roomer;LegalTrademarks=Promoir BV, Roomer 2013-2015;OriginalFilename=home.exe;ProductName=Hotel Organizing and Management System;ProductVersion=1.8;Comments=;Author=Promoir BV;SupportEmail=support@roomerpms.com;SupportHomePage=http://roomerpms.com;SupportTel=</VerInfo_Keys>
+        <VerInfo_Locale>1033</VerInfo_Locale>
+        <DCC_ExeOutput>H:\RoomerPMSRelease\</DCC_ExeOutput>
+        <DCC_MaxStackSize>1176576</DCC_MaxStackSize>
+        <DCC_LocalDebugSymbols>false</DCC_LocalDebugSymbols>
+        <DCC_Hints>false</DCC_Hints>
+        <DCC_Warnings>false</DCC_Warnings>
+        <DCC_SymbolReferenceInfo>0</DCC_SymbolReferenceInfo>
+        <DCC_DebugInformation>false</DCC_DebugInformation>
+        <DCC_Define>_ROOMERSSL;TRANSLATION_ACTIVE;TRANSLATION_EXCEPTIONS_ACTIVE;$(DCC_Define)</DCC_Define>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Cfg_1_Win32)'!=''">
+        <VerInfo_Release>1</VerInfo_Release>
+        <VerInfo_Build>1</VerInfo_Build>
+        <DCC_ExeOutput>C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\RoomerPMSRelease\</DCC_ExeOutput>
+        <DCC_BplOutput>dck\</DCC_BplOutput>
+        <DCC_Define>RELEASE;ROOMERSTORE;_TRANSLATION_EXCEPTIONS_ACTIVE;$(DCC_Define)</DCC_Define>
+        <VerInfo_Keys>CompanyName=Promoir BV;FileDescription=Roomer PMS;FileVersion=1.8.1.1;InternalName=;LegalCopyright=(C) 2013, 2014, 2015 Promoir BV;LegalTrademarks=Roomer is a Registered Trademark of Promoir BV;OriginalFilename=Roomer.exe;ProductName=Roomer Open Hospitality Platform;ProductVersion=1.8.1.1;Comments=;ExtraBuild=20160202</VerInfo_Keys>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Cfg_2)'!=''">
+        <Manifest_File>None</Manifest_File>
+        <VerInfo_MajorVer>1</VerInfo_MajorVer>
+        <VerInfo_Keys>CompanyName=Beryllium ehf;FileDescription=Hotel Management System Main Module;FileVersion=1.5.11.10670;InternalName=HMS;LegalCopyright=Beryllium ehf 2000-2012;LegalTrademarks=Beryllium 2000-2012;OriginalFilename=home.exe;ProductName=Hotel Organizing and Management System;ProductVersion=1.5.11;Comments=SQL 2005 - Datalayout V12.05;Author=Bjorn Heidarr / Hordur Johannsson;DBversion=SQL 2005 - 1205;SupportEmail=support@berylsoftware.com;SupportHomePage=http://berylsoftware.com;SupportTel=+354 772-2002;Support=Hörður Jóhannsson</VerInfo_Keys>
+        <DCC_ExeOutput>C:\Program Files\beryl\HomeXE</DCC_ExeOutput>
+        <DCC_OutputXMLDocumentation>true</DCC_OutputXMLDocumentation>
+        <DCC_BplOutput>C:\Program Files\beryl\Home\DCU\</DCC_BplOutput>
+        <DCC_DebugInformation>true</DCC_DebugInformation>
+        <DCC_Define>DEBUG;_USE_INDY;_MONITOR_LEAKAGE;SQLLOG;_USE_JCL;TRANSLATION_ACTIVE;TRANSLATION_EXCEPTIONS_ACTIVE;$(DCC_Define)</DCC_Define>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
+        <DCC_SYMBOL_DEPRECATED>false</DCC_SYMBOL_DEPRECATED>
+        <DCC_UNIT_DEPRECATED>false</DCC_UNIT_DEPRECATED>
+        <DCC_Hints>false</DCC_Hints>
+        <DCC_SYMBOL_PLATFORM>false</DCC_SYMBOL_PLATFORM>
+        <DCC_ExeOutput>C:\Development\Roomer\Frontend\win-pms\</DCC_ExeOutput>
+        <BCC_DebugLineNumbers>true</BCC_DebugLineNumbers>
+        <BCC_SourceDebuggingOn>true</BCC_SourceDebuggingOn>
+        <ILINK_FullDebugInfo>true</ILINK_FullDebugInfo>
+        <DCC_DcuOutput>C:\Temp\dcu\</DCC_DcuOutput>
+        <DCC_DcpOutput>C:\Temp\dcu\</DCC_DcpOutput>
+        <Icon_MainIcon>Roomer_Icon1.ico</Icon_MainIcon>
+        <VerInfo_Debug>true</VerInfo_Debug>
+        <VerInfo_Keys>CompanyName=Promoir Roomer / Beryllium ehf;FileDescription=Roomer PMS;FileVersion=1.2.0.1009;InternalName=Roomer;LegalCopyright=Hordur Johannsson/Bjorn Heidarr;LegalTrademarks=;OriginalFilename=Roomer;ProductName=Roomer PMS;ProductVersion=1.0.0.0;Comments=;ExtraBuild=20151203</VerInfo_Keys>
+        <VerInfo_Locale>1033</VerInfo_Locale>
+        <VerInfo_AutoGenVersion>false</VerInfo_AutoGenVersion>
+        <VerInfo_AutoIncVersion>true</VerInfo_AutoIncVersion>
+        <DCC_BplOutput>dck\</DCC_BplOutput>
+        <VerInfo_Release>0</VerInfo_Release>
+        <VerInfo_MinorVer>2</VerInfo_MinorVer>
+        <VerInfo_Build>1009</VerInfo_Build>
+    </PropertyGroup>
+    <ItemGroup>
+        <DelphiCompile Include="$(MainSource)">
+            <MainSource>MainSource</MainSource>
+        </DelphiCompile>
+        <DCCReference Include="uMain.pas">
+            <Form>frmMain</Form>
+        </DCCReference>
+        <DCCReference Include="uReservationObjects.pas"/>
+        <DCCReference Include="uAppGlobal.pas"/>
+        <DCCReference Include="uPriceOBJ.pas"/>
+        <DCCReference Include="uProvideARoom2.pas">
+            <Form>frmProvideARoom2</Form>
+        </DCCReference>
+        <DCCReference Include="Invoice\uInvoice.pas">
+            <Form>frmInvoice</Form>
+        </DCCReference>
+        <DCCReference Include="uReservationProfile.pas">
+            <Form>frmReservationProfile</Form>
+        </DCCReference>
+        <DCCReference Include="uInvoicePayment.pas">
+            <Form>frmInvoicePayment</Form>
+        </DCCReference>
+        <DCCReference Include="uControlData.pas">
+            <Form>frmControlData</Form>
+        </DCCReference>
+        <DCCReference Include="uAvailability.pas"/>
+        <DCCReference Include="uFinishedInvoices2.pas">
+            <Form>frmFinishedInvoices2</Form>
+        </DCCReference>
+        <DCCReference Include="uCreditPrompt.pas">
+            <Form>frmCreditPrompt</Form>
+        </DCCReference>
+        <DCCReference Include="uInvoiceList.pas">
+            <Form>frmInvoiceList</Form>
+        </DCCReference>
+        <DCCReference Include="uD.pas">
+            <Form>createFiel</Form>
+            <DesignClass>TDataModule</DesignClass>
+        </DCCReference>
+        <DCCReference Include="uG.pas"/>
+        <DCCReference Include="uConverts.pas">
+            <Form>frmConverts</Form>
+        </DCCReference>
+        <DCCReference Include="ufrmSelLang.pas">
+            <Form>frmSelLang</Form>
+        </DCCReference>
+        <DCCReference Include="uMaidActions.pas">
+            <Form>frmMaidActions</Form>
+        </DCCReference>
+        <DCCReference Include="uMaidActionsEdit.pas">
+            <Form>frmMaidActionsEdit</Form>
+        </DCCReference>
+        <DCCReference Include="uInvoiceSummeryOBJ.pas"/>
+        <DCCReference Include="uRoomDatesOBJ.pas"/>
+        <DCCReference Include="uRoomReservationOBJ.pas"/>
+        <DCCReference Include="uRoomDateProblem.pas">
+            <Form>frmRoomDateProblem</Form>
+        </DCCReference>
+        <DCCReference Include="uResProblem.pas">
+            <Form>frmResProblem</Form>
+        </DCCReference>
+        <DCCReference Include="uDayFinical.pas">
+            <Form>frmDayFinical</Form>
+        </DCCReference>
+        <DCCReference Include="uConvertGroups.pas">
+            <Form>frmConvertGroups</Form>
+        </DCCReference>
+        <DCCReference Include="uInvoiceList2.pas">
+            <Form>frmInvoiceList2</Form>
+        </DCCReference>
+        <DCCReference Include="uDayNotes.pas">
+            <Form>frmDayNotes</Form>
+        </DCCReference>
+        <DCCReference Include="uChangeRRdates.pas">
+            <Form>frmChangeRRdates</Form>
+        </DCCReference>
+        <DCCReference Include="uChangeRate.pas">
+            <Form>frmChangeRate</Form>
+        </DCCReference>
+        <DCCReference Include="uOpenInvoicesNew.pas">
+            <Form>frmOpenInvoicesNew</Form>
+        </DCCReference>
+        <DCCReference Include="uResMemos.pas">
+            <Form>frmResMemos</Form>
+        </DCCReference>
+        <DCCReference Include="uHomeDate.pas">
+            <Form>frmHomedate</Form>
+        </DCCReference>
+        <DCCReference Include="uGoToRoomAndDate.pas">
+            <Form>frmGoToRoomandDate</Form>
+        </DCCReference>
+        <DCCReference Include="uHiddenInfo.pas">
+            <Form>frmHiddenInfo</Form>
+        </DCCReference>
+        <DCCReference Include="objPosSale.pas"/>
+        <DCCReference Include="uDownPayment.pas">
+            <Form>frmDownPayment</Form>
+        </DCCReference>
+        <DCCReference Include="..\_units\_Glob.pas"/>
+        <DCCReference Include="uLodgingTaxReport2.pas">
+            <Form>frmLodgingTaxReport2</Form>
+        </DCCReference>
+        <DCCReference Include="uCancelReservation3.pas">
+            <Form>frmCancelReservation3</Form>
+        </DCCReference>
+        <DCCReference Include="uCancelReservation2.pas">
+            <Form>frmCancelReservation2</Form>
+        </DCCReference>
+        <DCCReference Include="uAddAccommodation.pas">
+            <Form>frmAddAccommodation</Form>
+        </DCCReference>
+        <DCCReference Include="objRoomList2.pas"/>
+        <DCCReference Include="objDayFreeRooms.pas"/>
+        <DCCReference Include="uCountries.pas">
+            <Form>frmCountries</Form>
+        </DCCReference>
+        <DCCReference Include="uPayGroups.pas">
+            <Form>frmPayGroups</Form>
+        </DCCReference>
+        <DCCReference Include="uPriceCodes.pas">
+            <Form>frmPriceCodes</Form>
+        </DCCReference>
+        <DCCReference Include="uGuestProfile2.pas">
+            <Form>frmGuestProfile2</Form>
+        </DCCReference>
+        <DCCReference Include="uPayTypes.pas">
+            <Form>frmPayTypes</Form>
+        </DCCReference>
+        <DCCReference Include="uCountryGroups.pas">
+            <Form>frmCountryGroups</Form>
+        </DCCReference>
+        <DCCReference Include="uChannelPlanCodes.pas">
+            <Form>frmChannelPlanCodes</Form>
+        </DCCReference>
+        <DCCReference Include="objRoomTypeRoomCount.pas"/>
+        <DCCReference Include="uRebuildReservationStats.pas">
+            <Form>frmRebuildReservationStats</Form>
+        </DCCReference>
+        <DCCReference Include="uMakeReservationQuick.pas">
+            <Form>frmMakeReservationQuick</Form>
+        </DCCReference>
+        <DCCReference Include="objNewReservation.pas"/>
+        <DCCReference Include="objHomeCustomer.pas"/>
+        <DCCReference Include="objRoomRates.pas"/>
+        <DCCReference Include="uSplashRoomer.pas">
+            <Form>frmRoomerSplash</Form>
+        </DCCReference>
+        <DCCReference Include="RoomerLoginForm.pas">
+            <Form>frmRoomerLoginForm</Form>
+        </DCCReference>
+        <DCCReference Include="uAboutRoomer.pas">
+            <Form>frmAboutRoomer</Form>
+        </DCCReference>
+        <DCCReference Include="uManageFilesOnServer.pas">
+            <Form>frmManageFilesOnServer</Form>
+        </DCCReference>
+        <DCCReference Include="uChannelAvailabilityManager.pas">
+            <Form>frmChannelAvailabilityManager</Form>
+        </DCCReference>
+        <DCCReference Include="ueditRoomPrice.pas">
+            <Form>frmEditRoomPrice</Form>
+        </DCCReference>
+        <DCCReference Include="..\_units\hData.pas"/>
+        <DCCReference Include="uRoomCleanMaintenanceStatus.pas">
+            <Form>frmRoomCleanMaintenanceStatus</Form>
+        </DCCReference>
+        <DCCReference Include="uRunWithElevatedOption.pas"/>
+        <DCCReference Include="uRates.pas">
+            <Form>frmRates</Form>
+        </DCCReference>
+        <DCCReference Include="uSeasons2.pas">
+            <Form>frmSeasons2</Form>
+        </DCCReference>
+        <DCCReference Include="uRoomRates.pas">
+            <Form>frmRoomRates</Form>
+        </DCCReference>
+        <DCCReference Include="uRoomTypesGroups2.pas">
+            <Form>frmRoomTypesGroups2</Form>
+        </DCCReference>
+        <DCCReference Include="uRoomTypes2.pas">
+            <Form>frmRoomTypes2</Form>
+        </DCCReference>
+        <DCCReference Include="uRooms3.pas">
+            <Form>frmRooms3</Form>
+        </DCCReference>
+        <DCCReference Include="uCustomers2.pas">
+            <Form>frmCustomers2</Form>
+        </DCCReference>
+        <DCCReference Include="uStaffEdit2.pas">
+            <Form>frmStaffEdit2</Form>
+        </DCCReference>
+        <DCCReference Include="uStaffMembers2.pas">
+            <Form>frmStaffMembers2</Form>
+        </DCCReference>
+        <DCCReference Include="uCustomerEdit2.pas">
+            <Form>frmCustomerEdit2</Form>
+        </DCCReference>
+        <DCCReference Include="uChannels.pas">
+            <Form>frmChannels</Form>
+        </DCCReference>
+        <DCCReference Include="uStaffTypes2.pas">
+            <Form>frmStaffTypes2</Form>
+        </DCCReference>
+        <DCCReference Include="uItems2.pas">
+            <Form>frmItems2</Form>
+        </DCCReference>
+        <DCCReference Include="uItemTypes2.pas">
+            <Form>frmItemTypes2</Form>
+        </DCCReference>
+        <DCCReference Include="uFileSystemUtils.pas"/>
+        <DCCReference Include="uFileDependencyManager.pas"/>
+        <DCCReference Include="uLocations2.pas">
+            <Form>frmLocations</Form>
+        </DCCReference>
+        <DCCReference Include="uRegistryServices.pas"/>
+        <DCCReference Include="uUtils.pas"/>
+        <DCCReference Include="uPersonContactType.pas">
+            <Form>frmPersonContactType</Form>
+        </DCCReference>
+        <DCCReference Include="..\_units\uSqlDefinitions.pas"/>
+        <DCCReference Include="uChannelManager.pas">
+            <Form>frmChannelManager</Form>
+        </DCCReference>
+        <DCCReference Include="uCommunicationTest.pas">
+            <Form>frmCommunicationTest</Form>
+        </DCCReference>
+        <DCCReference Include="uHouseKeeping.pas">
+            <Form>frmHouseKeeping</Form>
+        </DCCReference>
+        <DCCReference Include="uRubbishCollectors.pas"/>
+        <DCCReference Include="uRptResStatsRooms.pas">
+            <Form>frmRptResStatsRooms</Form>
+        </DCCReference>
+        <DCCReference Include="uGuestSearch.pas">
+            <Form>frmGuestSearch</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="PrjConst.pas"/>
+        <DCCReference Include="uRptResStats.pas">
+            <Form>frmRptResStats</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="uMultiSelection.pas">
+            <Form>frmMultiSelection</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="uVatCodes.pas">
+            <Form>frmVatCodes</Form>
+        </DCCReference>
+        <DCCReference Include="uNationalReport3.pas">
+            <Form>frmNationalReport3</Form>
+        </DCCReference>
+        <DCCReference Include="urptReservationsCust.pas">
+            <Form>frmRptReservationsCust</Form>
+        </DCCReference>
+        <DCCReference Include="uTestData.pas">
+            <Form>frmTestData</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="uDImages.pas">
+            <Form>DImages</Form>
+            <DesignClass>TDataModule</DesignClass>
+        </DCCReference>
+        <DCCReference Include="uAllotmentToRes.pas">
+            <Form>frmAllotmentToRes</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="uColorSelector.pas">
+            <Form>frmColorSelector</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="uFrmCntStatistics.pas">
+            <Form>frmCntStatistics</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="uFrmCntToday.pas">
+            <Form>frmCntToday</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="uFrmChannelTogglingRules.pas">
+            <Form>frmChannelTogglingRules</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="uFrmKeyPairSelector.pas">
+            <Form>frmKeyPairSelector</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="uCurrencies.pas">
+            <Form>frmCurrencies</Form>
+        </DCCReference>
+        <DCCReference Include="uPersonviptypes.pas">
+            <Form>frmPersonviptypes</Form>
+        </DCCReference>
+        <DCCReference Include="uFrmDaysStatistics.pas">
+            <Form>frmDaysStatistics</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="Roomer\XML\performance.pas"/>
+        <DCCReference Include="uRptTurnoverAndPayments2.pas">
+            <Form>frmRptTurnoverAndPayments2</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="uTaxes.pas">
+            <Form>frmTaxes</Form>
+        </DCCReference>
+        <DCCReference Include="ufDownPayments.pas">
+            <Form>frmRptDownPayments</Form>
+        </DCCReference>
+        <DCCReference Include="uAssignPayment.pas">
+            <Form>frmAssignPayment</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="uFrmResources.pas">
+            <Form>FrmResources</Form>
+        </DCCReference>
+        <DCCReference Include="uFrmMessagesTemplates.pas">
+            <Form>FrmMessagesTemplates</Form>
+        </DCCReference>
+        <DCCReference Include="uFrmNotepad.pas">
+            <Form>FrmNotepad</Form>
+        </DCCReference>
+        <DCCReference Include="uFrmGuestReviews.pas">
+            <Form>Form6</Form>
+        </DCCReference>
+        <DCCReference Include="uRptConfirms.pas">
+            <Form>frmrptConfirms</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="u2DMatrix.pas">
+            <Form>frm2DMatrix</Form>
+        </DCCReference>
+        <DCCReference Include="uTaxCalc.pas"/>
+        <DCCReference Include="uRptResInvoices.pas">
+            <Form>frmRptResInvoices</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="uRptManagment.pas">
+            <Form>frmRptManagment</Form>
+        </DCCReference>
+        <DCCReference Include="uRptCustInvoices.pas">
+            <Form>frmRptCustInvoices</Form>
+        </DCCReference>
+        <DCCReference Include="uFrmRBEContainer.pas">
+            <Form>FrmRBEContainer</Form>
+        </DCCReference>
+        <DCCReference Include="uFrmRbePreferences.pas">
+            <Form>frmRbePreferences</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="uRptTotallist.pas">
+            <Form>frmRptTotallist</Form>
+        </DCCReference>
+        <DCCReference Include="uFrmRateQuery.pas">
+            <Form>FrmRateQuery</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="uChart.pas">
+            <Form>frmChart</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="uCustomerTypes2.pas">
+            <Form>frmCustomerTypes2</Form>
+        </DCCReference>
+        <DCCReference Include="uRptbViewer.pas">
+            <Form>frmRptbViewer</Form>
+        </DCCReference>
+        <DCCReference Include="uFrmHandleBookKeepingException.pas">
+            <Form>FrmHandleBookKeepingException</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="uFrmEmbeddedHtmlEditor.pas">
+            <Form>FrmEmbeddedHtmlEditor</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="uFrmChannelCopyFrom.pas">
+            <Form>FrmChannelCopyFrom</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="..\Roomer\Delphi Projects\RoomerVCLs\Source\uRoomerExceptions.pas"/>
+        <DCCReference Include="uFrmBackupInvoice.pas">
+            <Form>FrmBackupInvoice</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="uPackages.pas">
+            <Form>frmPackages</Form>
+        </DCCReference>
+        <DCCReference Include="uPackageItems.pas">
+            <Form>frmPackageItems</Form>
+        </DCCReference>
+        <DCCReference Include="uFrmPostInvoices.pas">
+            <Form>FrmPostInvoices</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="uRoomClassEdit.pas">
+            <Form>FrmRoomClassEdit</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="urptReservations.pas">
+            <Form>frmRptReservations</Form>
+        </DCCReference>
+        <DCCReference Include="uRoomerMessageDialog.pas"/>
+        <DCCReference Include="uRptBreakfastGuests.pas">
+            <Form>frmRptBreakfastGuests</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="uGuestCheckInForm.pas">
+            <Form>FrmGuestCheckInForm</Form>
+        </DCCReference>
+        <DCCReference Include="uLostAndFound.pas">
+            <Form>frmLostAndFound</Form>
+        </DCCReference>
+        <DCCReference Include="uRptGuests.pas">
+            <Form>frmRptGuests</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="uRptNotes.pas">
+            <Form>frmRptNotes</Form>
+        </DCCReference>
+        <DCCReference Include="uReservationHintHolder.pas">
+            <Form>FrmReservationHintHolder</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="Embeddables\uEmbPeriodView.pas">
+            <Form>embPeriodView</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="Embeddables\uEmbOccupancyView.pas">
+            <Form>embOccupancyView</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="uEmailingDialog.pas">
+            <Form>FrmEmailingDialog</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="uMakeKreditInvoice.pas">
+            <Form>frmMakeKreditInvoice</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="uGuestPortfolioEdit.pas">
+            <Form>frmGuestPortfolio</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="uGuestProfiles.pas">
+            <Form>frmGuestProfiles</Form>
+        </DCCReference>
+        <DCCReference Include="uBookKeepingCodes.pas">
+            <Form>frmBookKeepingCodes</Form>
+        </DCCReference>
+        <DCCReference Include="uRptBookkeeping.pas">
+            <Form>frmRptBookkeeping</Form>
+        </DCCReference>
+        <DCCReference Include="uReservationEmailingDialog.pas">
+            <Form>FrmReservationEmailingDialog</Form>
+        </DCCReference>
+        <DCCReference Include="uTemplateFiller.pas"/>
+        <DCCReference Include="uFrmEditEmailProperties.pas">
+            <Form>FrmEditEmailProperties</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="uFrmReservationCancellationDialog.pas">
+            <Form>FrmReservationCancellationDialog</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="uGridUtils.pas"/>
+        <DCCReference Include="uRptCashier.pas">
+            <Form>frmRptCashier</Form>
+        </DCCReference>
+        <DCCReference Include="uRoomerThreadedRequest.pas"/>
+        <DCCReference Include="uGroupGuests.pas">
+            <Form>frmGroupGuests</Form>
+        </DCCReference>
+        <DCCReference Include="uRoomerDefinitions.pas"/>
+        <DCCReference Include="uPhoneRates.pas">
+            <Form>frmPhoneRates</Form>
+        </DCCReference>
+        <DCCReference Include="uEditGuest.pas">
+            <Form>frmEditGuest</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="..\Roomer\Delphi Projects\RoomerVCLs\Tests\TestBed\uExcelProcessors.pas"/>
+        <DCCReference Include="uEmailExcelSheet.pas">
+            <Form>FrmEmailExcelSheet</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="uRptTurnoverAndPayments.pas">
+            <Form>frmRptTurnoverAndPayments</Form>
+        </DCCReference>
+        <DCCReference Include="uInvoice2015.pas">
+            <Form>FrmInvoice2015</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="uActivityLogs.pas"/>
+        <DCCReference Include="uInvoiceContainer.pas"/>
+        <DCCReference Include="XmlUtils.pas"/>
+        <DCCReference Include="uInvoiceLineEdit.pas">
+            <Form>FrmInvoiceLineEdit</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="uFrmMergePortfolios.pas">
+            <Form>frmMergePortfolios</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="uStaffCommunication.pas"/>
+        <DCCReference Include="uStaffComm.pas">
+            <Form>frmStaffComm</Form>
+        </DCCReference>
+        <DCCReference Include="uDynamicRates.pas"/>
+        <DCCReference Include="uFrmCheckOut.pas">
+            <Form>FrmCheckOut</Form>
+        </DCCReference>
+        <DCCReference Include="uFrmStaffNote.pas">
+            <Form>FrmStaffNote</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="uFrmMessageViewer.pas">
+            <Form>FrmMessageViewer</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="uInvoiceCompare.pas">
+            <Form>frmInvoiceCompare</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="Alerts\uAlerts.pas"/>
+        <DCCReference Include="Alerts\uFrmAlertEdit.pas">
+            <Form>FrmAlertEdit</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="Alerts\uFrmAlertDialog.pas">
+            <Form>FrmAlertDialog</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="Alerts\uAlertEditPanel.pas">
+            <Form>FrmAlertPanel</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="Customer\uFrmCustomerDepartmentEdit.pas">
+            <Form>FrmCustomerDepartmentEdit</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="Customer\uCustomerDepartments.pas"/>
+        <DCCReference Include="Persons\uPersons.pas"/>
+        <DCCReference Include="uRoomerContainerClasses.pas"/>
+        <DCCReference Include="AvailabilityManagement\uAvailabilityPerDay.pas"/>
+        <DCCReference Include="Invoice\uInvoiceController.pas"/>
+        <None Include="Roomer.todo"/>
+        <None Include="notes.txt"/>
+        <BuildConfiguration Include="Debug">
+            <Key>Cfg_2</Key>
+            <CfgParent>Base</CfgParent>
+        </BuildConfiguration>
+        <BuildConfiguration Include="Base">
+            <Key>Base</Key>
+        </BuildConfiguration>
+        <BuildConfiguration Include="Release">
+            <Key>Cfg_1</Key>
+            <CfgParent>Base</CfgParent>
+        </BuildConfiguration>
+    </ItemGroup>
+    <Import Project="$(BDS)\Bin\CodeGear.Delphi.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Delphi.Targets')"/>
+    <ProjectExtensions>
+        <Borland.Personality>Delphi.Personality.12</Borland.Personality>
+        <Borland.ProjectType>VCLApplication</Borland.ProjectType>
+        <BorlandProject>
+            <Delphi.Personality>
+                <Source>
+                    <Source Name="MainSource">Roomer.dpr</Source>
+                </Source>
+                <Parameters>
+                    <Parameters Name="UseLauncher">False</Parameters>
+                    <Parameters Name="LoadAllSymbols">True</Parameters>
+                    <Parameters Name="LoadUnspecifiedSymbols">False</Parameters>
+                </Parameters>
+                <Language>
+                    <Language Name="ProjectLang">$0000040F</Language>
+                </Language>
+                <VersionInfo>
+                    <VersionInfo Name="IncludeVerInfo">True</VersionInfo>
+                    <VersionInfo Name="AutoIncBuild">True</VersionInfo>
+                    <VersionInfo Name="MajorVer">12</VersionInfo>
+                    <VersionInfo Name="MinorVer">5</VersionInfo>
+                    <VersionInfo Name="Release">11</VersionInfo>
+                    <VersionInfo Name="Build">12041</VersionInfo>
+                    <VersionInfo Name="Debug">False</VersionInfo>
+                    <VersionInfo Name="PreRelease">False</VersionInfo>
+                    <VersionInfo Name="Special">False</VersionInfo>
+                    <VersionInfo Name="Private">False</VersionInfo>
+                    <VersionInfo Name="DLL">False</VersionInfo>
+                    <VersionInfo Name="Locale">1039</VersionInfo>
+                    <VersionInfo Name="CodePage">65001</VersionInfo>
+                </VersionInfo>
+                <VersionInfoKeys>
+                    <VersionInfoKeys Name="CompanyName">Beryllium ehf</VersionInfoKeys>
+                    <VersionInfoKeys Name="FileDescription">Hotel Management System Main Module</VersionInfoKeys>
+                    <VersionInfoKeys Name="FileVersion">12.5.11.12041</VersionInfoKeys>
+                    <VersionInfoKeys Name="InternalName">HMS</VersionInfoKeys>
+                    <VersionInfoKeys Name="LegalCopyright">Beryllium ehf 2000-2012</VersionInfoKeys>
+                    <VersionInfoKeys Name="LegalTrademarks">Beryllium 2000-2012</VersionInfoKeys>
+                    <VersionInfoKeys Name="OriginalFilename">home.exe</VersionInfoKeys>
+                    <VersionInfoKeys Name="ProductName">Hotel Organizing and Management System</VersionInfoKeys>
+                    <VersionInfoKeys Name="ProductVersion">12.05.11</VersionInfoKeys>
+                    <VersionInfoKeys Name="Comments">SQL 2005 - Datalayout V12.05</VersionInfoKeys>
+                    <VersionInfoKeys Name="Author">Bjorn Heidarr / Hordur Johannsson</VersionInfoKeys>
+                    <VersionInfoKeys Name="DBversion">SQL 2005 - 1205</VersionInfoKeys>
+                    <VersionInfoKeys Name="SupportEmail">support@berylsoftware.com</VersionInfoKeys>
+                    <VersionInfoKeys Name="SupportHomePage">http://berylsoftware.com</VersionInfoKeys>
+                    <VersionInfoKeys Name="SupportTel">+354 772-2002</VersionInfoKeys>
+                    <VersionInfoKeys Name="Support">Hörður Jóhannsson</VersionInfoKeys>
+                </VersionInfoKeys>
+                <Excluded_Packages>
+                    <Excluded_Packages Name="$(BDSBIN)\dcloffice2k170.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
+                    <Excluded_Packages Name="$(BDSBIN)\dclofficexp170.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
+                </Excluded_Packages>
+            </Delphi.Personality>
+            <Platforms>
+                <Platform value="Win32">True</Platform>
+                <Platform value="Win64">False</Platform>
+            </Platforms>
+            <ModelSupport>False</ModelSupport>
+        </BorlandProject>
+        <ProjectFileVersion>12</ProjectFileVersion>
+    </ProjectExtensions>
+    <Import Project="$(APPDATA)\Embarcadero\$(BDSAPPDATABASEDIR)\$(PRODUCTVERSION)\UserTools.proj" Condition="Exists('$(APPDATA)\Embarcadero\$(BDSAPPDATABASEDIR)\$(PRODUCTVERSION)\UserTools.proj')"/>
+</Project>

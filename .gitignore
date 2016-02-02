@@ -1,0 +1,23 @@
+.svn/
+__history/
+_Resource/
+CodeSigning/
+conflicted/
+dck/
+dcu/
+Languages/
+Log/
+Not Used/
+Profiling/
+Reports/
+temp/
+Temp.2/
+testPrograms/
+Win32/
+*.~*
+*.dcu
+* conflicted copy *
+*(Exemplaar met conflict van *
+*.bak
+* - kopie.
+*.$$$
