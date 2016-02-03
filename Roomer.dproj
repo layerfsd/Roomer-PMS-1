@@ -2,7 +2,7 @@
     <PropertyGroup>
         <ProjectGuid>{436E2CCE-115E-475F-9C3E-19C03F70A4D0}</ProjectGuid>
         <MainSource>Roomer.dpr</MainSource>
-        <Config Condition="'$(Config)'==''">Release</Config>
+        <Config Condition="'$(Config)'==''">Debug</Config>
         <DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
         <ProjectVersion>14.3</ProjectVersion>
         <FrameworkType>VCL</FrameworkType>
@@ -134,14 +134,14 @@
         <DCC_DcpOutput>C:\Temp\dcu\</DCC_DcpOutput>
         <Icon_MainIcon>Roomer_Icon1.ico</Icon_MainIcon>
         <VerInfo_Debug>true</VerInfo_Debug>
-        <VerInfo_Keys>CompanyName=Promoir Roomer / Beryllium ehf;FileDescription=Roomer PMS;FileVersion=1.2.0.1009;InternalName=Roomer;LegalCopyright=Hordur Johannsson/Bjorn Heidarr;LegalTrademarks=;OriginalFilename=Roomer;ProductName=Roomer PMS;ProductVersion=1.0.0.0;Comments=;ExtraBuild=20151203</VerInfo_Keys>
+        <VerInfo_Keys>CompanyName=Promoir Roomer / Beryllium ehf;FileDescription=Roomer PMS;FileVersion=1.2.0.1010;InternalName=Roomer;LegalCopyright=Hordur Johannsson/Bjorn Heidarr;LegalTrademarks=;OriginalFilename=Roomer;ProductName=Roomer PMS;ProductVersion=1.0.0.0;Comments=;ExtraBuild=20151203</VerInfo_Keys>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <VerInfo_AutoGenVersion>false</VerInfo_AutoGenVersion>
         <VerInfo_AutoIncVersion>true</VerInfo_AutoIncVersion>
         <DCC_BplOutput>dck\</DCC_BplOutput>
         <VerInfo_Release>0</VerInfo_Release>
         <VerInfo_MinorVer>2</VerInfo_MinorVer>
-        <VerInfo_Build>1009</VerInfo_Build>
+        <VerInfo_Build>1010</VerInfo_Build>
     </PropertyGroup>
     <ItemGroup>
         <DelphiCompile Include="$(MainSource)">
@@ -241,7 +241,7 @@
         <DCCReference Include="uDownPayment.pas">
             <Form>frmDownPayment</Form>
         </DCCReference>
-        <DCCReference Include="..\_units\_Glob.pas"/>
+        <DCCReference Include="Extras\_Glob.pas"/>
         <DCCReference Include="uLodgingTaxReport2.pas">
             <Form>frmLodgingTaxReport2</Form>
         </DCCReference>
@@ -305,7 +305,7 @@
         <DCCReference Include="ueditRoomPrice.pas">
             <Form>frmEditRoomPrice</Form>
         </DCCReference>
-        <DCCReference Include="..\_units\hData.pas"/>
+        <DCCReference Include="Extras\hData.pas"/>
         <DCCReference Include="uRoomCleanMaintenanceStatus.pas">
             <Form>frmRoomCleanMaintenanceStatus</Form>
         </DCCReference>
@@ -362,7 +362,7 @@
         <DCCReference Include="uPersonContactType.pas">
             <Form>frmPersonContactType</Form>
         </DCCReference>
-        <DCCReference Include="..\_units\uSqlDefinitions.pas"/>
+        <DCCReference Include="Extras\uSqlDefinitions.pas"/>
         <DCCReference Include="uChannelManager.pas">
             <Form>frmChannelManager</Form>
         </DCCReference>
@@ -378,16 +378,13 @@
         </DCCReference>
         <DCCReference Include="uGuestSearch.pas">
             <Form>frmGuestSearch</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="PrjConst.pas"/>
         <DCCReference Include="uRptResStats.pas">
             <Form>frmRptResStats</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="uMultiSelection.pas">
             <Form>frmMultiSelection</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="uVatCodes.pas">
             <Form>frmVatCodes</Form>
@@ -400,7 +397,6 @@
         </DCCReference>
         <DCCReference Include="uTestData.pas">
             <Form>frmTestData</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="uDImages.pas">
             <Form>DImages</Form>
@@ -408,27 +404,21 @@
         </DCCReference>
         <DCCReference Include="uAllotmentToRes.pas">
             <Form>frmAllotmentToRes</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="uColorSelector.pas">
             <Form>frmColorSelector</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="uFrmCntStatistics.pas">
             <Form>frmCntStatistics</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="uFrmCntToday.pas">
             <Form>frmCntToday</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="uFrmChannelTogglingRules.pas">
             <Form>frmChannelTogglingRules</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="uFrmKeyPairSelector.pas">
             <Form>frmKeyPairSelector</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="uCurrencies.pas">
             <Form>frmCurrencies</Form>
@@ -438,12 +428,10 @@
         </DCCReference>
         <DCCReference Include="uFrmDaysStatistics.pas">
             <Form>frmDaysStatistics</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="Roomer\XML\performance.pas"/>
         <DCCReference Include="uRptTurnoverAndPayments2.pas">
             <Form>frmRptTurnoverAndPayments2</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="uTaxes.pas">
             <Form>frmTaxes</Form>
@@ -453,7 +441,6 @@
         </DCCReference>
         <DCCReference Include="uAssignPayment.pas">
             <Form>frmAssignPayment</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="uFrmResources.pas">
             <Form>FrmResources</Form>
@@ -469,7 +456,6 @@
         </DCCReference>
         <DCCReference Include="uRptConfirms.pas">
             <Form>frmrptConfirms</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="u2DMatrix.pas">
             <Form>frm2DMatrix</Form>
@@ -477,7 +463,6 @@
         <DCCReference Include="uTaxCalc.pas"/>
         <DCCReference Include="uRptResInvoices.pas">
             <Form>frmRptResInvoices</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="uRptManagment.pas">
             <Form>frmRptManagment</Form>
@@ -490,18 +475,15 @@
         </DCCReference>
         <DCCReference Include="uFrmRbePreferences.pas">
             <Form>frmRbePreferences</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="uRptTotallist.pas">
             <Form>frmRptTotallist</Form>
         </DCCReference>
         <DCCReference Include="uFrmRateQuery.pas">
             <Form>FrmRateQuery</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="uChart.pas">
             <Form>frmChart</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="uCustomerTypes2.pas">
             <Form>frmCustomerTypes2</Form>
@@ -511,20 +493,16 @@
         </DCCReference>
         <DCCReference Include="uFrmHandleBookKeepingException.pas">
             <Form>FrmHandleBookKeepingException</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="uFrmEmbeddedHtmlEditor.pas">
             <Form>FrmEmbeddedHtmlEditor</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="uFrmChannelCopyFrom.pas">
             <Form>FrmChannelCopyFrom</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="..\Roomer\Delphi Projects\RoomerVCLs\Source\uRoomerExceptions.pas"/>
         <DCCReference Include="uFrmBackupInvoice.pas">
             <Form>FrmBackupInvoice</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="uPackages.pas">
             <Form>frmPackages</Form>
@@ -534,11 +512,9 @@
         </DCCReference>
         <DCCReference Include="uFrmPostInvoices.pas">
             <Form>FrmPostInvoices</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="uRoomClassEdit.pas">
             <Form>FrmRoomClassEdit</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="urptReservations.pas">
             <Form>frmRptReservations</Form>
@@ -546,7 +522,6 @@
         <DCCReference Include="uRoomerMessageDialog.pas"/>
         <DCCReference Include="uRptBreakfastGuests.pas">
             <Form>frmRptBreakfastGuests</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="uGuestCheckInForm.pas">
             <Form>FrmGuestCheckInForm</Form>
@@ -556,34 +531,27 @@
         </DCCReference>
         <DCCReference Include="uRptGuests.pas">
             <Form>frmRptGuests</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="uRptNotes.pas">
             <Form>frmRptNotes</Form>
         </DCCReference>
         <DCCReference Include="uReservationHintHolder.pas">
             <Form>FrmReservationHintHolder</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="Embeddables\uEmbPeriodView.pas">
             <Form>embPeriodView</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="Embeddables\uEmbOccupancyView.pas">
             <Form>embOccupancyView</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="uEmailingDialog.pas">
             <Form>FrmEmailingDialog</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="uMakeKreditInvoice.pas">
             <Form>frmMakeKreditInvoice</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="uGuestPortfolioEdit.pas">
             <Form>frmGuestPortfolio</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="uGuestProfiles.pas">
             <Form>frmGuestProfiles</Form>
@@ -600,11 +568,9 @@
         <DCCReference Include="uTemplateFiller.pas"/>
         <DCCReference Include="uFrmEditEmailProperties.pas">
             <Form>FrmEditEmailProperties</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="uFrmReservationCancellationDialog.pas">
             <Form>FrmReservationCancellationDialog</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="uGridUtils.pas"/>
         <DCCReference Include="uRptCashier.pas">
@@ -620,30 +586,25 @@
         </DCCReference>
         <DCCReference Include="uEditGuest.pas">
             <Form>frmEditGuest</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="..\Roomer\Delphi Projects\RoomerVCLs\Tests\TestBed\uExcelProcessors.pas"/>
         <DCCReference Include="uEmailExcelSheet.pas">
             <Form>FrmEmailExcelSheet</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="uRptTurnoverAndPayments.pas">
             <Form>frmRptTurnoverAndPayments</Form>
         </DCCReference>
         <DCCReference Include="uInvoice2015.pas">
             <Form>FrmInvoice2015</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="uActivityLogs.pas"/>
         <DCCReference Include="uInvoiceContainer.pas"/>
         <DCCReference Include="XmlUtils.pas"/>
         <DCCReference Include="uInvoiceLineEdit.pas">
             <Form>FrmInvoiceLineEdit</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="uFrmMergePortfolios.pas">
             <Form>frmMergePortfolios</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="uStaffCommunication.pas"/>
         <DCCReference Include="uStaffComm.pas">
@@ -655,32 +616,25 @@
         </DCCReference>
         <DCCReference Include="uFrmStaffNote.pas">
             <Form>FrmStaffNote</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="uFrmMessageViewer.pas">
             <Form>FrmMessageViewer</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="uInvoiceCompare.pas">
             <Form>frmInvoiceCompare</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="Alerts\uAlerts.pas"/>
         <DCCReference Include="Alerts\uFrmAlertEdit.pas">
             <Form>FrmAlertEdit</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="Alerts\uFrmAlertDialog.pas">
             <Form>FrmAlertDialog</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="Alerts\uAlertEditPanel.pas">
             <Form>FrmAlertPanel</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="Customer\uFrmCustomerDepartmentEdit.pas">
             <Form>FrmCustomerDepartmentEdit</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="Customer\uCustomerDepartments.pas"/>
         <DCCReference Include="Persons\uPersons.pas"/>
@@ -724,7 +678,7 @@
                     <VersionInfo Name="MajorVer">12</VersionInfo>
                     <VersionInfo Name="MinorVer">5</VersionInfo>
                     <VersionInfo Name="Release">11</VersionInfo>
-                    <VersionInfo Name="Build">12041</VersionInfo>
+                    <VersionInfo Name="Build">12042</VersionInfo>
                     <VersionInfo Name="Debug">False</VersionInfo>
                     <VersionInfo Name="PreRelease">False</VersionInfo>
                     <VersionInfo Name="Special">False</VersionInfo>
@@ -736,7 +690,7 @@
                 <VersionInfoKeys>
                     <VersionInfoKeys Name="CompanyName">Beryllium ehf</VersionInfoKeys>
                     <VersionInfoKeys Name="FileDescription">Hotel Management System Main Module</VersionInfoKeys>
-                    <VersionInfoKeys Name="FileVersion">12.5.11.12041</VersionInfoKeys>
+                    <VersionInfoKeys Name="FileVersion">12.5.11.12042</VersionInfoKeys>
                     <VersionInfoKeys Name="InternalName">HMS</VersionInfoKeys>
                     <VersionInfoKeys Name="LegalCopyright">Beryllium ehf 2000-2012</VersionInfoKeys>
                     <VersionInfoKeys Name="LegalTrademarks">Beryllium 2000-2012</VersionInfoKeys>

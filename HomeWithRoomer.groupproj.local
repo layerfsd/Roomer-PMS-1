@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <BorlandProject>
 	<Transactions>
-    <Transaction>1899-12-30 00:00:00.000.476,C:\Users\Bjorn\Dropbox\Hotel\MainProgXE3\HomeWithRoomer.groupproj=C:\Users\Bjorn\Documents\RAD Studio\Projects\ProjectGroup1.groupproj</Transaction>
+    <Transaction>1899-12-30 00:00:00.000.476,C:\Users\Bjorn\Documents\RAD Studio\Projects\ProjectGroup1.groupproj=C:\Users\Bjorn\Dropbox\Hotel\MainProgXE3\HomeWithRoomer.groupproj</Transaction>
   </Transactions>
 	<Default.Personality>
-		<Projects ActiveProject="C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\Roomer\Delphi Projects\RoomerInvoicing\RoomerInvoicing.dproj"/>
+		<Projects ActiveProject="C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\Roomer.dproj"/>
 	</Default.Personality>
 </BorlandProject>
