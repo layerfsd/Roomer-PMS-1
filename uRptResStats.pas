@@ -334,6 +334,8 @@ type
     tvRoomsDatevatDiscountTotal: TcxGridDBColumn;
     tvRoomsDatevatDiscountBilled: TcxGridDBColumn;
     tvRoomsDatevatDiscountUnbilled: TcxGridDBColumn;
+    storeOld: TcxPropertiesStore;
+    sButton1: TsButton;
 
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -434,6 +436,8 @@ type
     procedure LoadLayout(useDefault : boolean);
     procedure GetUseStatusDefault;
     procedure SetUseStatusDefault;
+    procedure SaveLayout2new;
+
 
 //    function calcStayTax(Taxholder : recTaxesHolder; rentAmount : double; currency : string; Customer : string; taxnights,taxguests : integer; Reservation : integer): recCityTaxResultHolder;
 
@@ -2733,7 +2737,6 @@ var
   aNewName : string;
 //  notes : string;
 begin
-
   Store1.StorageStream := TMemoryStream.Create;
   Store1.StoreTo(false);
   Store1.StorageStream.Position := 0;
@@ -2790,6 +2793,82 @@ begin
     GetSel;
   end;
 end;
+
+
+procedure TfrmRptResStats.SaveLayout2new;
+var
+  s : string;
+
+  Description : string;
+  AccessLevel : integer;
+  AccessOwner : string;
+  FormName    : string;
+  StoreType   : string;
+  StoreName   : string;
+
+  TextContainer1   : string;
+  StringContainer1 : string;
+
+  aNewName : string;
+//  notes : string;
+begin
+  Store1.StorageStream := TMemoryStream.Create;
+  Store1.StoreTo(false);
+  Store1.StorageStream.Position := 0;
+//  memo1.text := Bin2Hex(Store1.StorageStream AS TMemoryStream);
+  TextContainer1    := Bin2Hex(Store1.StorageStream AS TMemoryStream);
+  StringContainer1  := '';
+
+  Description := GetAutoName;
+//  EdlayoutName.text := Description;
+  Description := copy(Description,1,254);
+
+  if StoreDescriptionExist(Description) then
+  begin
+    Showmessage('This Already Exists : '+Description );
+    exit;
+  end;
+
+  AccessLevel := 1;
+  AccessOwner := '';
+  FormName    := name;
+  StoreType   := 'TcxPivotGridDataLayout';
+  StoreName   := 'store1';
+//  Notes := memLayoutNotes.Text;
+
+  s := s+ 'INSERT INTO propertiesstore '+#10;
+  s := s+ '   (Description '+#10;
+  s := s+ '   ,AccessLevel '+#10;
+  s := s+ '   ,AccessOwner '+#10;
+  s := s+ '   ,FormName '+#10;
+  s := s+ '   ,StoreType '+#10;
+  s := s+ '   ,StoreName '+#10;
+  s := s+ '   ,TextContainer1 '+#10;
+//  s := s+ '   ,TextContainer2 '+#10;
+  s := s+ '   ,StringContainer1 '+#10;
+  s := s+ ' ) '+#10;
+  s := s+ ' VALUES '+#10;
+  s := s+ ' ( '+#10;
+  s := s+ '   ' + _db(Description)+#10;
+  s := s+ ' , ' + _db(AccessLevel)+#10;
+  s := s+ ' , ' + _db(AccessOwner)+#10;
+  s := s+ ' , ' + _db(FormName)+#10;
+  s := s+ ' , ' + _db(StoreType)+#10;
+  s := s+ ' , ' + _db(storeName)+#10;
+  s := s+ ' , ' + _db(TextContainer1)+#10;
+//  s := s+ ' , ' + _db(notes)+#10;
+  s := s+ ' , ' + _db(StringContainer1)+#10;
+  s := s+ ' )';
+
+  if not cmd_bySQL(s) then
+  begin
+    showmessage('Could not insert!')
+  end else
+  begin
+    GetSel;
+  end;
+end;
+
 
 procedure TfrmRptResStats.btnSetDefaultLayoutClick(Sender: TObject);
 var
@@ -2906,12 +2985,12 @@ begin
       if itemindex >= 0 then
         sSpeedButton1.Hint := propertiesstoreGetText(LayoutName);
 
-      store1.StorageStream := TMemoryStream.Create;
+      storeOld.StorageStream := TMemoryStream.Create;
       try
-        Store1.StorageStream.Position := 0;
+        StoreOld.StorageStream.Position := 0;
         TextContainer1 := rSet.FieldByName('TextContainer1').asstring;
-        Hex2Bin(TextContainer1, Store1.StorageStream AS TMemoryStream);
-        Store1.RestoreFrom;
+        Hex2Bin(TextContainer1, StoreOld.StorageStream AS TMemoryStream);
+        StoreOld.RestoreFrom;
       finally
       end;
     end;

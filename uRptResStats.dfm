@@ -57,7 +57,7 @@ object frmRptResStats: TfrmRptResStats
         MaxLength = 10
         ParentFont = False
         TabOrder = 0
-        Text = '  -  -    '
+        Text = '  .  .    '
         OnChange = dtDateFromChange
         CheckOnExit = True
         SkinData.SkinSection = 'EDIT'
@@ -80,7 +80,7 @@ object frmRptResStats: TfrmRptResStats
         MaxLength = 10
         ParentFont = False
         TabOrder = 1
-        Text = '  -  -    '
+        Text = '  .  .    '
         OnChange = dtDateToChange
         CheckOnExit = True
         SkinData.SkinSection = 'EDIT'
@@ -217,8 +217,8 @@ object frmRptResStats: TfrmRptResStats
         object chkExcluteWaitingList: TsCheckBox
           Left = 14
           Top = 17
-          Width = 77
-          Height = 19
+          Width = 69
+          Height = 20
           Caption = 'Waitinglist'
           Checked = True
           State = cbChecked
@@ -231,8 +231,8 @@ object frmRptResStats: TfrmRptResStats
         object chkExcluteAlotment: TsCheckBox
           Left = 14
           Top = 34
-          Width = 73
-          Height = 19
+          Width = 65
+          Height = 20
           Caption = 'Allotment'
           Checked = True
           State = cbChecked
@@ -245,8 +245,8 @@ object frmRptResStats: TfrmRptResStats
         object chkExcluteOrder: TsCheckBox
           Left = 14
           Top = 51
-          Width = 83
-          Height = 19
+          Width = 75
+          Height = 20
           Caption = 'Not Arrived'
           Checked = True
           State = cbChecked
@@ -259,8 +259,8 @@ object frmRptResStats: TfrmRptResStats
         object chkExcluteNoShow: TsCheckBox
           Left = 227
           Top = 34
-          Width = 69
-          Height = 19
+          Width = 61
+          Height = 20
           Caption = 'No show'
           Checked = True
           State = cbChecked
@@ -273,8 +273,8 @@ object frmRptResStats: TfrmRptResStats
         object chkExcluteDeparted: TsCheckBox
           Left = 129
           Top = 17
-          Width = 73
-          Height = 19
+          Width = 65
+          Height = 20
           Caption = 'Departed'
           Checked = True
           State = cbChecked
@@ -287,8 +287,8 @@ object frmRptResStats: TfrmRptResStats
         object chkExcluteBlocked: TsCheckBox
           Left = 227
           Top = 17
-          Width = 64
-          Height = 19
+          Width = 56
+          Height = 20
           Caption = 'Blocked'
           TabOrder = 5
           OnClick = chkExcluteWaitingListClick
@@ -299,8 +299,8 @@ object frmRptResStats: TfrmRptResStats
         object chkExcluteGuest: TsCheckBox
           Left = 129
           Top = 34
-          Width = 56
-          Height = 19
+          Width = 48
+          Height = 20
           Caption = 'Guest'
           Checked = True
           State = cbChecked
@@ -324,8 +324,8 @@ object frmRptResStats: TfrmRptResStats
         object chkExcluteWaitingListNoRooms: TsCheckBox
           Left = 14
           Top = 17
-          Width = 77
-          Height = 19
+          Width = 69
+          Height = 20
           Caption = 'Waitinglist'
           Checked = True
           State = cbChecked
@@ -338,8 +338,8 @@ object frmRptResStats: TfrmRptResStats
         object chkExcluteAlotmentNoRooms: TsCheckBox
           Left = 14
           Top = 34
-          Width = 73
-          Height = 19
+          Width = 65
+          Height = 20
           Caption = 'Allotment'
           Checked = True
           State = cbChecked
@@ -352,8 +352,8 @@ object frmRptResStats: TfrmRptResStats
         object chkExcluteOrderNorooms: TsCheckBox
           Left = 14
           Top = 49
-          Width = 83
-          Height = 19
+          Width = 75
+          Height = 20
           Caption = 'Not Arrived'
           Checked = True
           State = cbChecked
@@ -366,8 +366,8 @@ object frmRptResStats: TfrmRptResStats
         object chkExcluteNoShowNoRooms: TsCheckBox
           Left = 215
           Top = 34
-          Width = 69
-          Height = 19
+          Width = 61
+          Height = 20
           Caption = 'No show'
           Checked = True
           State = cbChecked
@@ -380,8 +380,8 @@ object frmRptResStats: TfrmRptResStats
         object chkExcluteDepartedNoRooms: TsCheckBox
           Left = 129
           Top = 17
-          Width = 73
-          Height = 19
+          Width = 65
+          Height = 20
           Caption = 'Departed'
           Checked = True
           State = cbChecked
@@ -394,8 +394,8 @@ object frmRptResStats: TfrmRptResStats
         object chkExcluteBlockedNoRooms: TsCheckBox
           Left = 217
           Top = 17
-          Width = 64
-          Height = 19
+          Width = 56
+          Height = 20
           Caption = 'Blocked'
           TabOrder = 5
           OnClick = chkExcluteWaitingListClick
@@ -406,8 +406,8 @@ object frmRptResStats: TfrmRptResStats
         object chkExcluteGuestNoRooms: TsCheckBox
           Left = 129
           Top = 34
-          Width = 56
-          Height = 19
+          Width = 48
+          Height = 20
           Caption = 'Guest'
           Checked = True
           State = cbChecked
@@ -440,6 +440,14 @@ object frmRptResStats: TfrmRptResStats
         OnClick = btnGetUseStatusAsDefaultClick
         SkinData.SkinSection = 'BUTTON'
       end
+    end
+    object sButton1: TsButton
+      Left = 168
+      Top = 85
+      Width = 75
+      Height = 25
+      Caption = 'sButton1'
+      TabOrder = 4
     end
   end
   object pageMain: TsPageControl
@@ -1364,7 +1372,7 @@ object frmRptResStats: TfrmRptResStats
             OnCloseUp = cbxSelCloseUp
           end
           object btnSetDefaultLayout: TsButton
-            Left = 105
+            Left = 103
             Top = 30
             Width = 96
             Height = 26
@@ -1406,7 +1414,7 @@ object frmRptResStats: TfrmRptResStats
             SkinData.SkinSection = 'BUTTON'
           end
           object cxButton1: TsButton
-            Left = 205
+            Left = 201
             Top = 30
             Width = 96
             Height = 26
@@ -2632,7 +2640,7 @@ object frmRptResStats: TfrmRptResStats
     LoadedCompletely = False
     SavedCompletely = False
     FilterOptions = []
-    Version = '7.22.00 Standard Edition'
+    Version = '7.62.00 Standard Edition'
     LanguageID = 0
     SortID = 0
     SubLanguageID = 1
@@ -2714,7 +2722,7 @@ object frmRptResStats: TfrmRptResStats
     LoadedCompletely = False
     SavedCompletely = False
     FilterOptions = []
-    Version = '7.22.00 Standard Edition'
+    Version = '7.62.00 Standard Edition'
     LanguageID = 0
     SortID = 0
     SubLanguageID = 1
@@ -2781,7 +2789,7 @@ object frmRptResStats: TfrmRptResStats
     LoadedCompletely = False
     SavedCompletely = False
     FilterOptions = []
-    Version = '7.22.00 Standard Edition'
+    Version = '7.62.00 Standard Edition'
     LanguageID = 0
     SortID = 0
     SubLanguageID = 1
@@ -2835,7 +2843,6 @@ object frmRptResStats: TfrmRptResStats
     end
     object prLinkGrDrill: TdxGridReportLink
       Component = grDrill
-      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.GrayShading = True
@@ -2848,7 +2855,6 @@ object frmRptResStats: TfrmRptResStats
       PrinterPage.PageSize.Y = 297000
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
-      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       BuiltInReportLink = True
     end
   end
@@ -3411,5 +3417,349 @@ object frmRptResStats: TfrmRptResStats
     StorageType = stRegistry
     Left = 34
     Top = 446
+  end
+  object storeOld: TcxPropertiesStore
+    Components = <
+      item
+        Component = pg001aDate
+        Properties.Strings = (
+          'Area'
+          'AreaIndex'
+          'Visible')
+      end
+      item
+        Component = pg001Country
+        Properties.Strings = (
+          'AllowedAreas'
+          'Area'
+          'AreaIndex'
+          'Visible')
+      end
+      item
+        Component = pg001currency
+        Properties.Strings = (
+          'Area'
+          'AreaIndex'
+          'Visible')
+      end
+      item
+        Component = pg001CurrencyRate
+        Properties.Strings = (
+          'Area'
+          'AreaIndex'
+          'Visible')
+      end
+      item
+        Component = pg001CustomerType
+        Properties.Strings = (
+          'Area'
+          'AreaIndex'
+          'Visible')
+      end
+      item
+        Component = pg001DayCount
+        Properties.Strings = (
+          'AllowedAreas'
+          'Area'
+          'AreaIndex'
+          'Visible')
+      end
+      item
+        Component = pg001discount
+        Properties.Strings = (
+          'Area'
+          'AreaIndex'
+          'Visible')
+      end
+      item
+        Component = pg001discountAmount
+        Properties.Strings = (
+          'AllowedAreas'
+          'Area'
+          'AreaIndex'
+          'Visible')
+      end
+      item
+        Component = pg001dtDate
+        Properties.Strings = (
+          'AllowedAreas'
+          'Area'
+          'AreaIndex'
+          'Visible')
+      end
+      item
+        Component = pg001FilterFlag
+        Properties.Strings = (
+          'AllowedAreas'
+          'Area'
+          'AreaIndex'
+          'Visible')
+      end
+      item
+        Component = pg001incomeTotal
+        Properties.Strings = (
+          'Area'
+          'AreaIndex'
+          'Visible')
+      end
+      item
+        Component = pg001Invoicenumbers
+        Properties.Strings = (
+          'AllowedAreas'
+          'Area'
+          'AreaIndex'
+          'Visible')
+      end
+      item
+        Component = pg001isNoroom
+        Properties.Strings = (
+          'AllowedAreas'
+          'Area'
+          'AreaIndex'
+          'Visible')
+      end
+      item
+        Component = pg001isPercentage
+        Properties.Strings = (
+          'AllowedAreas'
+          'Area'
+          'AreaIndex'
+          'Visible')
+      end
+      item
+        Component = pg001ItemsBilled
+        Properties.Strings = (
+          'AllowedAreas'
+          'Area'
+          'AreaIndex'
+          'Visible')
+      end
+      item
+        Component = pg001ItemsTotal
+        Properties.Strings = (
+          'AllowedAreas'
+          'Area'
+          'AreaIndex'
+          'Visible')
+      end
+      item
+        Component = pg001itemsUnBilled
+        Properties.Strings = (
+          'AllowedAreas'
+          'Area'
+          'AreaIndex'
+          'Visible')
+      end
+      item
+        Component = pg001Location
+        Properties.Strings = (
+          'AllowedAreas'
+          'Area'
+          'AreaIndex'
+          'Visible')
+      end
+      item
+        Component = pg001MainGuests
+        Properties.Strings = (
+          'AllowedAreas'
+          'Area'
+          'AreaIndex'
+          'Visible')
+      end
+      item
+        Component = pg001Month
+        Properties.Strings = (
+          'AllowedAreas'
+          'Area'
+          'AreaIndex'
+          'Visible')
+      end
+      item
+        Component = pg001NativeRate
+        Properties.Strings = (
+          'AllowedAreas'
+          'Area'
+          'AreaIndex'
+          'Visible')
+      end
+      item
+        Component = pg001paid
+        Properties.Strings = (
+          'AllowedAreas'
+          'Area'
+          'AreaIndex'
+          'Visible')
+      end
+      item
+        Component = pg001Reservation
+        Properties.Strings = (
+          'AllowedAreas'
+          'Area'
+          'AreaIndex'
+          'Visible')
+      end
+      item
+        Component = pg001ResFlag
+        Properties.Strings = (
+          'AllowedAreas'
+          'Area'
+          'AreaIndex'
+          'Visible')
+      end
+      item
+        Component = pg001Room
+        Properties.Strings = (
+          'AllowedAreas'
+          'Area'
+          'AreaIndex'
+          'Visible')
+      end
+      item
+        Component = pg001RoomCount
+        Properties.Strings = (
+          'AllowedAreas'
+          'Area'
+          'AreaIndex'
+          'Visible')
+      end
+      item
+        Component = pg001RoomDiscountBilled
+        Properties.Strings = (
+          'AllowedAreas'
+          'Area'
+          'AreaIndex'
+          'Visible')
+      end
+      item
+        Component = pg001RoomDiscountTotal
+        Properties.Strings = (
+          'AllowedAreas'
+          'Area'
+          'AreaIndex'
+          'Visible')
+      end
+      item
+        Component = pg001RoomDiscountUnBilled
+        Properties.Strings = (
+          'AllowedAreas'
+          'Area'
+          'AreaIndex'
+          'Visible')
+      end
+      item
+        Component = pg001RoomRentBilled
+        Properties.Strings = (
+          'AllowedAreas'
+          'Area'
+          'AreaIndex'
+          'Visible')
+      end
+      item
+        Component = pg001RoomRentTotal
+        Properties.Strings = (
+          'AllowedAreas'
+          'Area'
+          'AreaIndex'
+          'Visible')
+      end
+      item
+        Component = pg001RoomRentUnBilled
+        Properties.Strings = (
+          'AllowedAreas'
+          'Area'
+          'AreaIndex'
+          'Visible')
+      end
+      item
+        Component = pg001roomReservation
+        Properties.Strings = (
+          'AllowedAreas'
+          'Area'
+          'AreaIndex'
+          'Visible')
+      end
+      item
+        Component = pg001RoomType
+        Properties.Strings = (
+          'AllowedAreas'
+          'Area'
+          'AreaIndex'
+          'Visible')
+      end
+      item
+        Component = pg001RRGuestCount
+        Properties.Strings = (
+          'Area'
+          'AreaIndex'
+          'Visible')
+      end
+      item
+        Component = pg001RvGuestCount
+        Properties.Strings = (
+          'AllowedAreas'
+          'Area'
+          'AreaIndex'
+          'Visible')
+      end
+      item
+        Component = pg001sArrival
+        Properties.Strings = (
+          'AllowedAreas'
+          'Area'
+          'AreaIndex'
+          'Visible')
+      end
+      item
+        Component = pg001sDeparture
+        Properties.Strings = (
+          'AllowedAreas'
+          'Area'
+          'AreaIndex'
+          'Visible')
+      end
+      item
+        Component = pg001StatusText
+        Properties.Strings = (
+          'AllowedAreas'
+          'Area'
+          'AreaIndex'
+          'Visible')
+      end
+      item
+        Component = pg001TaxesBilled
+        Properties.Strings = (
+          'AllowedAreas'
+          'Area'
+          'AreaIndex'
+          'Visible')
+      end
+      item
+        Component = pg001TaxesTotal
+        Properties.Strings = (
+          'AllowedAreas'
+          'Area'
+          'AreaIndex'
+          'Visible')
+      end
+      item
+        Component = pg001TaxesUnbilled
+        Properties.Strings = (
+          'AllowedAreas'
+          'Area'
+          'AreaIndex'
+          'Visible')
+      end
+      item
+        Component = pg00Week
+        Properties.Strings = (
+          'AllowedAreas'
+          'Area'
+          'AreaIndex'
+          'Visible')
+      end>
+    StorageName = 'storeMain'
+    StorageType = stStream
+    Left = 896
+    Top = 232
   end
 end
