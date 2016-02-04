@@ -33,12 +33,17 @@ requires
   vclx,
   rtl,
   vclie,
-  vclimg;
+  vclimg,
+  PngComponents,
+  dxCoreRS17,
+  cxLibraryRS17,
+  dxGDIPlusRS17,
+  dxThemeRS17,
+  cxPageControlRS17,
+  dxBarRS17;
 
 contains
-{$IFNDEF NOJPG}
   acTinyJPG in 'acTinyJPG.pas',
-{$ENDIF}
   sEdit in 'sEdit.pas',
   sMemo in 'sMemo.pas',
   sComboBoxes in 'sComboBoxes.pas',
