@@ -1,0 +1,48 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{56F822D3-28D7-4FA2-AA73-D230124CEF89}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="acntDelphiXE8_R.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="acntDelphiXE8.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="acntDelphiXE8_R">
+        <MSBuild Projects="acntDelphiXE8_R.dproj"/>
+    </Target>
+    <Target Name="acntDelphiXE8_R:Clean">
+        <MSBuild Projects="acntDelphiXE8_R.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="acntDelphiXE8_R:Make">
+        <MSBuild Projects="acntDelphiXE8_R.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="acntDelphiXE8">
+        <MSBuild Projects="acntDelphiXE8.dproj"/>
+    </Target>
+    <Target Name="acntDelphiXE8:Clean">
+        <MSBuild Projects="acntDelphiXE8.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="acntDelphiXE8:Make">
+        <MSBuild Projects="acntDelphiXE8.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="acntDelphiXE8_R;acntDelphiXE8"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="acntDelphiXE8_R:Clean;acntDelphiXE8:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="acntDelphiXE8_R:Make;acntDelphiXE8:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>
