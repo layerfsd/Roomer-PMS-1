@@ -1,0 +1,897 @@
+:Base ahelp.hlp>Main
+:Title AlphaControls 2015
+1 Welcome=idh_welcome
+1 Installation notes=idh_installation
+1 First application with AlphaSkins=idh_gettingstarted
+1 Standard and third-party components=idh_party
+1 Migrating to AC=idh_migrating
+1 Support and feedback=idh_support
+1 Frequently asked questions=idh_faq
+1 Library overview=IDH_Library_ahelp
+1 Components
+2 TsAlphaHints
+3 TsAlphaHints=IDH_Class_TsAlphaHints
+3 Properties
+4 Active=IDH_TsAlphaHints_Active
+4 Animated=IDH_TsAlphaHints_Animated
+4 AutoAlignment=IDH_TsAlphaHints_AutoAlignment
+4 HTMLMode=IDH_TsAlphaHints_HTMLMode
+4 MaxWidth=IDH_TsAlphaHints_MaxWidth
+4 OnShowHint=IDH_TsAlphaHints_OnShowHint
+4 PauseHide=IDH_TsAlphaHints_PauseHide
+4 SkinSection=IDH_TsAlphaHints_SkinSection
+4 TemplateName=IDH_TsAlphaHints_TemplateName
+4 Templates=IDH_TsAlphaHints_Templates
+4 TextAlignment=IDH_TsAlphaHints_TextAlignment
+4 UseSkinData=IDH_TsAlphaHints_UseSkinData
+3 Events
+4 OnHideHint=IDH_TsAlphaHints_OnHideHint
+2 TsAlphaImageList
+3 TsAlphaImageList=IDH_Class_TsAlphaImageList
+2 TsBevel
+3 TsBevel=IDH_Class_TsBevel
+2 TsBitBtn
+3 TsBitBtn=IDH_Class_TsBitBtn
+3 Properties
+4 AcceptsControls=IDH_TsBitBtn_AcceptsControls
+4 Alignment=IDH_TsBitBtn_Alignment
+4 AnimatEvents=IDH_TsBitBtn_AnimatEvents
+4 Blend=IDH_TsBitBtn_Blend
+4 DisabledGlyphKind=IDH_TsBitBtn_DisabledGlyphKind
+4 DisabledKind=IDH_TsBitBtn_DisabledKind
+4 Down=IDH_TsBitBtn_Down
+4 DrawOverBorder=IDH_TsBitBtn_DrawOverBorder
+4 FocusMargin=IDH_TsBitBtn_FocusMargin
+4 Grayed=IDH_TsBitBtn_Grayed
+4 ImageIndex=IDH_TsBitBtn_ImageIndex
+4 Images=IDH_TsBitBtn_Images
+4 Reflected=IDH_TsBitBtn_Reflected
+4 ShowCaption=IDH_TsBitBtn_ShowCaption
+4 ShowFocus=IDH_TsBitBtn_ShowFocus
+4 SkinData=IDH_TsBitBtn_SkinData
+4 TextAlignment=IDH_TsBitBtn_TextAlignment
+4 TextOffset=IDH_TsBitBtn_TextOffset
+4 VerticalAlignment=IDH_TsBitBtn_VerticalAlignment
+4 WordWrap=IDH_TsBitBtn_WordWrap
+3 Events
+4 OnMouseEnter=IDH_TsBitBtn_OnMouseEnter
+4 OnMouseLeave=IDH_TsBitBtn_OnMouseLeave
+2 TsButton
+3 TsButton=IDH_Class_TsButton
+3 Properties
+4 AnimatEvents=IDH_TsButton_AnimatEvents
+4 ContentMargin=IDH_TsButton_ContentMargin
+4 DisabledKind=IDH_TsButton_DisabledKind
+4 Down=IDH_TsButton_Down
+4 FocusMargin=IDH_TsButton_FocusMargin
+4 Reflected=IDH_TsButton_Reflected
+4 ShowFocus=IDH_TsButton_ShowFocus
+4 SkinData=IDH_TsButton_SkinData
+4 WordWrap=IDH_TsButton_WordWrap
+2 TsCalcEdit
+3 TsCalcEdit=IDH_Class_TsCalcEdit
+3 Properties
+4 Alignment=IDH_TsCalcEdit_Alignment
+4 AsInteger=IDH_TsCalcEdit_AsInteger
+4 CheckOnExit=IDH_TsCalcEdit_CheckOnExit
+4 DisplayFormat=IDH_TsCalcEdit_DisplayFormat
+4 MaxValue=IDH_TsCalcEdit_MaxValue
+4 MinValue=IDH_TsCalcEdit_MinValue
+4 Text=IDH_TsCalcEdit_Text
+4 Value=IDH_TsCalcEdit_Value
+2 TsCalculator
+3 TsCalculator=IDH_Class_TsCalculator
+3 Properties
+4 BeepOnError=IDH_TsCalculator_BeepOnError
+4 Caption=IDH_TsCalculator_Caption
+4 Precision=IDH_TsCalculator_Precision
+4 ScaleIncrement=IDH_TsCalculator_ScaleIncrement
+4 TitleButtons=IDH_TsCalculator_TitleButtons
+4 Value=IDH_TsCalculator_Value
+3 Methods
+4 Execute=IDH_TsCalculator_Execute
+2 TsCheckBox
+3 TsCheckBox=IDH_Class_TsCheckBox
+3 Properties
+4 AnimatEvents=IDH_TsCheckBox_AnimatEvents
+4 DisabledKind=IDH_TsCheckBox_DisabledKind
+4 GlyphChecked=IDH_TsCheckBox_GlyphChecked
+4 GlyphUnChecked=IDH_TsCheckBox_GlyphUnChecked
+4 Images=IDH_TsCheckBox_Images
+4 ImgChecked=IDH_TsCheckBox_ImgChecked
+4 ImgUnchecked=IDH_TsCheckBox_ImgUnchecked
+4 ReadOnly=IDH_TsCheckBox_ReadOnly
+4 ShowFocus=IDH_TsCheckBox_ShowFocus
+4 SkinData=IDH_TsCheckBox_SkinData
+4 TextIndent=IDH_TsCheckBox_TextIndent
+4 VerticalAlign=IDH_TsCheckBox_VerticalAlign
+4 WordWrap=IDH_TsCheckBox_WordWrap
+3 Events
+4 OnValueChanged=IDH_TsCheckBox_OnValueChanged
+2 TsCheckListBox
+3 TsCheckListBox=IDH_Class_TsCheckListBox
+3 Properties
+4 AllowGrayed=IDH_TsCheckListBox_AllowGrayed
+4 Checked=IDH_TsCheckListBox_Checked
+4 Header=IDH_TsCheckListBox_Header
+4 HeaderBackgroundColor=IDH_TsCheckListBox_HeaderBackgroundColor
+4 HeaderColor=IDH_TsCheckListBox_HeaderColor
+4 HeaderSkin=IDH_TsCheckListBox_HeaderSkin
+4 ItemEnabled=IDH_TsCheckListBox_ItemEnabled
+4 State=IDH_TsCheckListBox_State
+3 Events
+4 OnClickCheck=IDH_TsCheckListBox_OnClickCheck
+2 TsColorBox
+3 TsColorBox=IDH_Class_TsColorBox
+3 Properties
+4 DefaultColorColor=IDH_TsColorBox_DefaultColorColor
+4 Margin=IDH_TsColorBox_Margin
+4 NoneColorColor=IDH_TsColorBox_NoneColorColor
+4 Selected=IDH_TsColorBox_Selected
+4 ShowColorName=IDH_TsColorBox_ShowColorName
+4 SkinData=IDH_TsColorBox_SkinData
+4 Style=IDH_TsColorBox_Style
+2 TsColorDialog
+3 TsColorDialog=IDH_Class_TsColorDialog
+3 Properties
+4 MainColors=IDH_TsColorDialog_MainColors
+4 StandardDlg=IDH_TsColorDialog_StandardDlg
+2 TsColorSelect
+3 TsColorSelect=IDH_Class_TsColorSelect
+3 Properties
+4 Alignment    (TsSpeedButton)=IDH_TsSpeedButton_Alignment
+4 AnimatEvents    (TsSpeedButton)=IDH_TsSpeedButton_AnimatEvents
+4 Blend    (TsSpeedButton)=IDH_TsSpeedButton_Blend
+4 ButtonStyle    (TsSpeedButton)=IDH_TsSpeedButton_ButtonStyle
+4 ColorValue=IDH_TsColorSelect_ColorValue
+4 DisabledGlyphKind    (TsSpeedButton)=IDH_TsSpeedButton_DisabledGlyphKind
+4 DisabledKind    (TsSpeedButton)=IDH_TsSpeedButton_DisabledKind
+4 DrawOverBorder    (TsSpeedButton)=IDH_TsSpeedButton_DrawOverBorder
+4 DropdownMenu    (TsSpeedButton)=IDH_TsSpeedButton_DropdownMenu
+4 Grayed    (TsSpeedButton)=IDH_TsSpeedButton_Grayed
+4 GrayedMode    (TsSpeedButton)=IDH_TsSpeedButton_GrayedMode
+4 ImageIndex    (TsSpeedButton)=IDH_TsSpeedButton_ImageIndex
+4 Images    (TsSpeedButton)=IDH_TsSpeedButton_Images
+4 ImgHeight=IDH_TsColorSelect_ImgHeight
+4 ImgWidth=IDH_TsColorSelect_ImgWidth
+4 OnPaint    (TsSpeedButton)=IDH_TsSpeedButton_OnPaint
+4 Reflected    (TsSpeedButton)=IDH_TsSpeedButton_Reflected
+4 ShowCaption    (TsSpeedButton)=IDH_TsSpeedButton_ShowCaption
+4 SkinData    (TsSpeedButton)=IDH_TsSpeedButton_SkinData
+4 StandardDlg=IDH_TsColorSelect_StandardDlg
+4 TextAlignment    (TsSpeedButton)=IDH_TsSpeedButton_TextAlignment
+4 TextOffset    (TsSpeedButton)=IDH_TsSpeedButton_TextOffset
+4 UseEllipsis    (TsSpeedButton)=IDH_TsSpeedButton_UseEllipsis
+4 WordWrap    (TsSpeedButton)=IDH_TsSpeedButton_WordWrap
+3 Events
+4 OnMouseEnter    (TsSpeedButton)=IDH_TsSpeedButton_OnMouseEnter
+4 OnMouseLeave    (TsSpeedButton)=IDH_TsSpeedButton_OnMouseLeave
+2 TsComboBoxEx
+3 TsComboBoxEx=IDH_Class_TsComboBoxEx
+3 Properties
+4 BoundLabel=IDH_TsComboBoxEx_BoundLabel
+4 DisabledKind=IDH_TsComboBoxEx_DisabledKind
+4 ReadOnly=IDH_TsComboBoxEx_ReadOnly
+4 ShowButton=IDH_TsComboBoxEx_ShowButton
+4 SkinData=IDH_TsComboBoxEx_SkinData
+2 TsComboEdit
+3 TsComboEdit=IDH_Class_TsComboEdit
+3 Properties
+4 BoundLabel    (TsMaskEdit)=IDH_TsMaskEdit_BoundLabel
+4 CheckOnExit    (TsMaskEdit)=IDH_TsMaskEdit_CheckOnExit
+4 ClickKey    (TsCustomComboEdit)=IDH_TsCustomComboEdit_ClickKey
+4 DirectInput    (TsCustomComboEdit)=IDH_TsCustomComboEdit_DirectInput
+4 DisabledKind    (TsCustomComboEdit)=IDH_TsCustomComboEdit_DisabledKind
+4 GlyphMode    (TsCustomComboEdit)=IDH_TsCustomComboEdit_GlyphMode
+4 ReadOnly    (TsCustomComboEdit)=IDH_TsCustomComboEdit_ReadOnly
+4 ShowButton    (TsCustomComboEdit)=IDH_TsCustomComboEdit_ShowButton
+4 SkinData    (TsMaskEdit)=IDH_TsMaskEdit_SkinData
+3 Events
+4 OnButtonClick    (TsCustomComboEdit)=IDH_TsCustomComboEdit_OnButtonClick
+4 OnValidateError    (TsMaskEdit)=IDH_TsMaskEdit_OnValidateError
+2 TsCoolBar
+3 TsCoolBar=IDH_Class_TsCoolBar
+3 Properties
+4 SkinData=IDH_TsCoolBar_SkinData
+2 TsCurrencyEdit
+3 TsCurrencyEdit=IDH_Class_TsCurrencyEdit
+2 TsDateEdit
+3 TsDateEdit=IDH_Class_TsDateEdit
+3 Properties
+4 Animated    (TsCustomDateEdit)=IDH_TsCustomDateEdit_Animated
+4 BlanksChar    (TsCustomDateEdit)=IDH_TsCustomDateEdit_BlanksChar
+4 BoundLabel    (TsMaskEdit)=IDH_TsMaskEdit_BoundLabel
+4 CalendarHints    (TsCustomDateEdit)=IDH_TsCustomDateEdit_CalendarHints
+4 CheckOnExit    (TsCustomDateEdit)=IDH_TsCustomDateEdit_CheckOnExit
+4 ClickKey    (TsCustomComboEdit)=IDH_TsCustomComboEdit_ClickKey
+4 Date    (TsCustomDateEdit)=IDH_TsCustomDateEdit_Date
+4 DefaultToday    (TsCustomDateEdit)=IDH_TsCustomDateEdit_DefaultToday
+4 DirectInput    (TsCustomComboEdit)=IDH_TsCustomComboEdit_DirectInput
+4 DisabledKind    (TsCustomComboEdit)=IDH_TsCustomComboEdit_DisabledKind
+4 GlyphMode    (TsCustomComboEdit)=IDH_TsCustomComboEdit_GlyphMode
+4 MaxDate    (TsCustomDateEdit)=IDH_TsCustomDateEdit_MaxDate
+4 MaxLength    (TsCustomDateEdit)=IDH_TsCustomDateEdit_MaxLength
+4 MinDate    (TsCustomDateEdit)=IDH_TsCustomDateEdit_MinDate
+4 OnGetCellParams    (TsCustomDateEdit)=IDH_TsCustomDateEdit_OnGetCellParams
+4 OnGetPopupFont    (TsCustomDateEdit)=IDH_TsCustomDateEdit_OnGetPopupFont
+4 ReadOnly    (TsCustomComboEdit)=IDH_TsCustomComboEdit_ReadOnly
+4 ShowButton    (TsCustomComboEdit)=IDH_TsCustomComboEdit_ShowButton
+4 ShowCurrentDate    (TsCustomDateEdit)=IDH_TsCustomDateEdit_ShowCurrentDate
+4 ShowTodayBtn    (TsCustomDateEdit)=IDH_TsCustomDateEdit_ShowTodayBtn
+4 ShowWeeks    (TsCustomDateEdit)=IDH_TsCustomDateEdit_ShowWeeks
+4 SkinData    (TsMaskEdit)=IDH_TsMaskEdit_SkinData
+4 StartOfWeek    (TsCustomDateEdit)=IDH_TsCustomDateEdit_StartOfWeek
+4 Text    (TsCustomDateEdit)=IDH_TsCustomDateEdit_Text
+4 WeekendColor    (TsCustomDateEdit)=IDH_TsCustomDateEdit_WeekendColor
+4 Weekends    (TsCustomDateEdit)=IDH_TsCustomDateEdit_Weekends
+4 YearDigits    (TsCustomDateEdit)=IDH_TsCustomDateEdit_YearDigits
+3 Events
+4 OnAcceptDate    (TsCustomDateEdit)=IDH_TsCustomDateEdit_OnAcceptDate
+4 OnButtonClick    (TsCustomComboEdit)=IDH_TsCustomComboEdit_OnButtonClick
+4 OnCloseUp    (TsCustomDateEdit)=IDH_TsCustomDateEdit_OnCloseUp
+4 OnValidateError    (TsMaskEdit)=IDH_TsMaskEdit_OnValidateError
+2 TsDecimalSpinEdit
+3 TsDecimalSpinEdit=IDH_Class_TsDecimalSpinEdit
+3 Properties
+4 Alignment    (TsBaseSpinEdit)=IDH_TsBaseSpinEdit_Alignment
+4 AllowNegative    (TsBaseSpinEdit)=IDH_TsBaseSpinEdit_AllowNegative
+4 BoundLabel    (TsEdit)=IDH_TsEdit_BoundLabel
+4 DecimalPlaces=IDH_TsDecimalSpinEdit_DecimalPlaces
+4 DisabledKind    (TsEdit)=IDH_TsEdit_DisabledKind
+4 EditorEnabled    (TsBaseSpinEdit)=IDH_TsBaseSpinEdit_EditorEnabled
+4 FlatSpinButtons    (TsBaseSpinEdit)=IDH_TsBaseSpinEdit_FlatSpinButtons
+4 HideExcessZeros=IDH_TsDecimalSpinEdit_HideExcessZeros
+4 Increment=IDH_TsDecimalSpinEdit_Increment
+4 MaxValue=IDH_TsDecimalSpinEdit_MaxValue
+4 MinValue=IDH_TsDecimalSpinEdit_MinValue
+4 ShowSpinButtons    (TsBaseSpinEdit)=IDH_TsBaseSpinEdit_ShowSpinButtons
+4 SkinData    (TsEdit)=IDH_TsEdit_SkinData
+4 UseSystemDecSeparator=IDH_TsDecimalSpinEdit_UseSystemDecSeparator
+4 Value=IDH_TsDecimalSpinEdit_Value
+3 Events
+4 OnDownClick    (TsBaseSpinEdit)=IDH_TsBaseSpinEdit_OnDownClick
+4 OnUpClick    (TsBaseSpinEdit)=IDH_TsBaseSpinEdit_OnUpClick
+2 TsDirectoryEdit
+3 TsDirectoryEdit=IDH_Class_TsDirectoryEdit
+3 Properties
+4 AcceptFiles    (TsFileDirEdit)=IDH_TsFileDirEdit_AcceptFiles
+4 BoundLabel    (TsMaskEdit)=IDH_TsMaskEdit_BoundLabel
+4 CheckOnExit    (TsMaskEdit)=IDH_TsMaskEdit_CheckOnExit
+4 ClickKey    (TsCustomComboEdit)=IDH_TsCustomComboEdit_ClickKey
+4 DialogOptions=IDH_TsDirectoryEdit_DialogOptions
+4 DialogText=IDH_TsDirectoryEdit_DialogText
+4 DirectInput    (TsCustomComboEdit)=IDH_TsCustomComboEdit_DirectInput
+4 DisabledKind    (TsCustomComboEdit)=IDH_TsCustomComboEdit_DisabledKind
+4 GlyphMode    (TsCustomComboEdit)=IDH_TsCustomComboEdit_GlyphMode
+4 LongName    (TsFileDirEdit)=IDH_TsFileDirEdit_LongName
+4 MultipleDirs=IDH_TsDirectoryEdit_MultipleDirs
+4 NoChangeDir=IDH_TsDirectoryEdit_NoChangeDir
+4 OnAfterDialog    (TsFileDirEdit)=IDH_TsFileDirEdit_OnAfterDialog
+4 OnBeforeDialog    (TsFileDirEdit)=IDH_TsFileDirEdit_OnBeforeDialog
+4 ReadOnly    (TsCustomComboEdit)=IDH_TsCustomComboEdit_ReadOnly
+4 Root=IDH_TsDirectoryEdit_Root
+4 ShortName    (TsFileDirEdit)=IDH_TsFileDirEdit_ShortName
+4 ShowButton    (TsCustomComboEdit)=IDH_TsCustomComboEdit_ShowButton
+4 ShowRootBtns=IDH_TsDirectoryEdit_ShowRootBtns
+4 SkinData    (TsMaskEdit)=IDH_TsMaskEdit_SkinData
+3 Events
+4 OnButtonClick    (TsCustomComboEdit)=IDH_TsCustomComboEdit_OnButtonClick
+4 OnDropFiles    (TsFileDirEdit)=IDH_TsFileDirEdit_OnDropFiles
+4 OnValidateError    (TsMaskEdit)=IDH_TsMaskEdit_OnValidateError
+2 TsDragBar
+3 TsDragBar=IDH_Class_TsDragBar
+3 Properties
+4 DraggedControl=IDH_TsDragBar_DraggedControl
+4 OnPaint    (TsPanel)=IDH_TsPanel_OnPaint
+4 SkinData    (TsPanel)=IDH_TsPanel_SkinData
+3 Events
+4 OnMouseEnter    (TsPanel)=IDH_TsPanel_OnMouseEnter
+4 OnMouseLeave    (TsPanel)=IDH_TsPanel_OnMouseLeave
+2 TsEdit
+3 TsEdit=IDH_Class_TsEdit
+3 Properties
+4 BoundLabel=IDH_TsEdit_BoundLabel
+4 DisabledKind=IDH_TsEdit_DisabledKind
+4 SkinData=IDH_TsEdit_SkinData
+2 TsFilenameEdit
+3 TsFilenameEdit=IDH_Class_TsFilenameEdit
+3 Properties
+4 AcceptFiles=IDH_TsFilenameEdit_AcceptFiles
+4 BoundLabel    (TsMaskEdit)=IDH_TsMaskEdit_BoundLabel
+4 CheckOnExit    (TsMaskEdit)=IDH_TsMaskEdit_CheckOnExit
+4 ClickKey    (TsCustomComboEdit)=IDH_TsCustomComboEdit_ClickKey
+4 DialogFiles=IDH_TsFilenameEdit_DialogFiles
+4 DialogKind=IDH_TsFilenameEdit_DialogKind
+4 DialogOptions=IDH_TsFilenameEdit_DialogOptions
+4 DialogTitle=IDH_TsFilenameEdit_DialogTitle
+4 DirectInput    (TsCustomComboEdit)=IDH_TsCustomComboEdit_DirectInput
+4 DisabledKind    (TsCustomComboEdit)=IDH_TsCustomComboEdit_DisabledKind
+4 FileName=IDH_TsFilenameEdit_FileName
+4 Filter=IDH_TsFilenameEdit_Filter
+4 GlyphMode    (TsCustomComboEdit)=IDH_TsCustomComboEdit_GlyphMode
+4 HistoryList=IDH_TsFilenameEdit_HistoryList
+4 LongName    (TsFileDirEdit)=IDH_TsFileDirEdit_LongName
+4 OnAfterDialog    (TsFileDirEdit)=IDH_TsFileDirEdit_OnAfterDialog
+4 OnBeforeDialog    (TsFileDirEdit)=IDH_TsFileDirEdit_OnBeforeDialog
+4 ReadOnly    (TsCustomComboEdit)=IDH_TsCustomComboEdit_ReadOnly
+4 ShortName    (TsFileDirEdit)=IDH_TsFileDirEdit_ShortName
+4 ShowButton    (TsCustomComboEdit)=IDH_TsCustomComboEdit_ShowButton
+4 SkinData    (TsMaskEdit)=IDH_TsMaskEdit_SkinData
+3 Events
+4 OnButtonClick    (TsCustomComboEdit)=IDH_TsCustomComboEdit_OnButtonClick
+4 OnDropFiles    (TsFileDirEdit)=IDH_TsFileDirEdit_OnDropFiles
+4 OnValidateError    (TsMaskEdit)=IDH_TsMaskEdit_OnValidateError
+2 TsFilterComboBox
+3 TsFilterComboBox=IDH_Class_TsFilterComboBox
+3 Properties
+4 Filter=IDH_TsFilterComboBox_Filter
+2 TsFontComboBox
+3 TsFontComboBox=IDH_Class_TsFontComboBox
+3 Properties
+4 DrawFont=IDH_TsFontComboBox_DrawFont
+4 FilterOptions=IDH_TsFontComboBox_FilterOptions
+2 TsFontListBox
+3 TsFontListBox=IDH_Class_TsFontListBox
+3 Properties
+4 DrawFont=IDH_TsFontListBox_DrawFont
+4 FilterOptions=IDH_TsFontListBox_FilterOptions
+2 TsFrameAdapter
+3 TsFrameAdapter=IDH_Class_TsFrameAdapter
+3 Properties
+4 SkinData=IDH_TsFrameAdapter_SkinData
+2 TsFrameBar
+3 TsFrameBar=IDH_Class_TsFrameBar
+3 Properties
+4 ActiveFrameIndex=IDH_TsFrameBar_ActiveFrameIndex
+4 AllowAllClose=IDH_TsFrameBar_AllowAllClose
+4 AllowAllOpen=IDH_TsFrameBar_AllowAllOpen
+4 Animation=IDH_TsFrameBar_Animation
+4 AutoFrameSize=IDH_TsFrameBar_AutoFrameSize
+4 Images=IDH_TsFrameBar_Images
+4 Items=IDH_TsFrameBar_Items
+4 SkinData    (TsScrollBox)=IDH_TsScrollBox_SkinData
+4 Spacing=IDH_TsFrameBar_Spacing
+4 TitleHeight=IDH_TsFrameBar_TitleHeight
+3 Methods
+4 ArrangeTitles=IDH_TsFrameBar_ArrangeTitles
+4 ChangeSize=IDH_TsFrameBar_ChangeSize
+4 CloseItem=IDH_TsFrameBar_CloseItem
+4 CollapseAll=IDH_TsFrameBar_CollapseAll
+4 ExpandAll=IDH_TsFrameBar_ExpandAll
+4 OpenItem=IDH_TsFrameBar_OpenItem
+4 Rearrange=IDH_TsFrameBar_Rearrange
+4 UpdatePositions=IDH_TsFrameBar_UpdatePositions
+3 Events
+4 OnChange=IDH_TsFrameBar_OnChange
+4 OnChanging=IDH_TsFrameBar_OnChanging
+4 OnClosing=IDH_TsFrameBar_OnClosing
+4 OnPaint    (TsScrollBox)=IDH_TsScrollBox_OnPaint
+2 TsGauge
+3 TsGauge=IDH_Class_TsGauge
+3 Properties
+4 Animated=IDH_TsGauge_Animated
+4 BackColor=IDH_TsGauge_BackColor
+4 ForeColor=IDH_TsGauge_ForeColor
+4 MaxValue=IDH_TsGauge_MaxValue
+4 MinValue=IDH_TsGauge_MinValue
+4 Progress=IDH_TsGauge_Progress
+4 ProgressSkin=IDH_TsGauge_ProgressSkin
+4 ShowText=IDH_TsGauge_ShowText
+4 SkinData=IDH_TsGauge_SkinData
+4 Suffix=IDH_TsGauge_Suffix
+3 Events
+4 OnPaintText=IDH_TsGauge_OnPaintText
+2 TsGroupBox
+3 TsGroupBox=IDH_Class_TsGroupBox
+3 Properties
+4 CaptionLayout=IDH_TsGroupBox_CaptionLayout
+4 CaptionMargin=IDH_TsGroupBox_CaptionMargin
+4 CaptionSkin=IDH_TsGroupBox_CaptionSkin
+4 CaptionWidth=IDH_TsGroupBox_CaptionWidth
+4 CaptionYOffset=IDH_TsGroupBox_CaptionYOffset
+4 CheckBoxVisible=IDH_TsGroupBox_CheckBoxVisible
+4 Checked=IDH_TsGroupBox_Checked
+4 SkinData=IDH_TsGroupBox_SkinData
+3 Events
+4 OnCheckBoxChanged=IDH_TsGroupBox_OnCheckBoxChanged
+2 TsHeaderControl
+3 TsHeaderControl=IDH_Class_TsHeaderControl
+3 Properties
+4 SkinData=IDH_TsHeaderControl_SkinData
+2 TsHTMLLabel
+3 TsHTMLLabel=IDH_Class_TsHTMLLabel
+3 Properties
+4 PlainCaption=IDH_TsHTMLLabel_PlainCaption
+4 ShowMode=IDH_TsHTMLLabel_ShowMode
+4 UseHTML=IDH_TsHTMLLabel_UseHTML
+4 UseSkinColor    (TsLabel)=IDH_TsLabel_UseSkinColor
+2 TsImage
+3 TsImage=IDH_Class_TsImage
+3 Properties
+4 Blend=IDH_TsImage_Blend
+4 Grayed=IDH_TsImage_Grayed
+4 ImageIndex=IDH_TsImage_ImageIndex
+4 Images=IDH_TsImage_Images
+4 Reflected=IDH_TsImage_Reflected
+4 SkinData=IDH_TsImage_SkinData
+4 UseFullSize=IDH_TsImage_UseFullSize
+2 TsLabel
+3 TsLabel=IDH_Class_TsLabel
+3 Properties
+4 UseSkinColor=IDH_TsLabel_UseSkinColor
+2 TsLabelFX
+3 TsLabelFX=IDH_Class_TsLabelFX
+3 Properties
+4 Angle=IDH_TsLabelFX_Angle
+4 Kind=IDH_TsLabelFX_Kind
+4 Shadow=IDH_TsLabelFX_Shadow
+2 TsListBox
+3 TsListBox=IDH_Class_TsListBox
+2 TsListView
+3 TsListView=IDH_Class_TsListView
+3 Properties
+4 BoundLabel    (TsCustomListView)=IDH_TsCustomListView_BoundLabel
+4 HighlightHeaders    (TsCustomListView)=IDH_TsCustomListView_HighlightHeaders
+4 SkinData    (TsCustomListView)=IDH_TsCustomListView_SkinData
+3 Events
+4 OnBeginColumnResize    (TsCustomListView)=IDH_TsCustomListView_OnBeginColumnResize
+4 OnColumnResize    (TsCustomListView)=IDH_TsCustomListView_OnColumnResize
+4 OnEndColumnResize    (TsCustomListView)=IDH_TsCustomListView_OnEndColumnResize
+4 OnMeasureItem    (TsCustomListView)=IDH_TsCustomListView_OnMeasureItem
+2 TsMagnifier
+3 TsMagnifier=IDH_Class_TsMagnifier
+3 Properties
+4 Height=IDH_TsMagnifier_Height
+4 PopupMenu=IDH_TsMagnifier_PopupMenu
+4 Scaling=IDH_TsMagnifier_Scaling
+4 SizingMode=IDH_TsMagnifier_SizingMode
+4 Style=IDH_TsMagnifier_Style
+4 Width=IDH_TsMagnifier_Width
+3 Methods
+4 Execute=IDH_TsMagnifier_Execute
+4 GetPixelColor=IDH_TsMagnifier_GetPixelColor
+4 GetPosition=IDH_TsMagnifier_GetPosition
+4 Hide=IDH_TsMagnifier_Hide
+4 IsVisible=IDH_TsMagnifier_IsVisible
+4 Refresh=IDH_TsMagnifier_Refresh
+3 Events
+4 OnDblClick=IDH_TsMagnifier_OnDblClick
+4 OnMouseDown=IDH_TsMagnifier_OnMouseDown
+4 OnMouseUp=IDH_TsMagnifier_OnMouseUp
+4 OnPosChanging=IDH_TsMagnifier_OnPosChanging
+2 TsMaskEdit
+3 TsMaskEdit=IDH_Class_TsMaskEdit
+3 Properties
+4 BoundLabel=IDH_TsMaskEdit_BoundLabel
+4 CheckOnExit=IDH_TsMaskEdit_CheckOnExit
+4 DisabledKind=IDH_TsMaskEdit_DisabledKind
+4 SkinData=IDH_TsMaskEdit_SkinData
+3 Events
+4 OnValidateError=IDH_TsMaskEdit_OnValidateError
+2 TsMemo
+3 TsMemo=IDH_Class_TsMemo
+3 Properties
+4 BoundLabel=IDH_TsMemo_BoundLabel
+4 DisabledKind=IDH_TsMemo_DisabledKind
+4 SkinData=IDH_TsMemo_SkinData
+2 TsMeter
+3 TsMeter=IDH_Class_TsMeter
+3 Properties
+4 ContentType=IDH_TsMeter_ContentType
+4 GlyphIndex=IDH_TsMeter_GlyphIndex
+4 IgnoreBounds=IDH_TsMeter_IgnoreBounds
+4 Images=IDH_TsMeter_Images
+4 Max=IDH_TsMeter_Max
+4 Min=IDH_TsMeter_Min
+4 PaintData=IDH_TsMeter_PaintData
+4 Position=IDH_TsMeter_Position
+4 ShowCaption=IDH_TsMeter_ShowCaption
+4 ShowCaptionValue=IDH_TsMeter_ShowCaptionValue
+4 ShowMinMax=IDH_TsMeter_ShowMinMax
+4 ShowMinMaxValue=IDH_TsMeter_ShowMinMaxValue
+4 ShowTicks=IDH_TsMeter_ShowTicks
+4 TextMax=IDH_TsMeter_TextMax
+4 TextMin=IDH_TsMeter_TextMin
+4 TickStepBig=IDH_TsMeter_TickStepBig
+4 TickStepSmall=IDH_TsMeter_TickStepSmall
+2 TsMonthCalendar
+3 TsMonthCalendar=IDH_Class_TsMonthCalendar
+3 Properties
+4 Animated=IDH_TsMonthCalendar_Animated
+4 CalendarDate=IDH_TsMonthCalendar_CalendarDate
+4 Day=IDH_TsMonthCalendar_Day
+4 Month=IDH_TsMonthCalendar_Month
+4 OnGetCellParams=IDH_TsMonthCalendar_OnGetCellParams
+4 OnPaint    (TsPanel)=IDH_TsPanel_OnPaint
+4 ReadOnly=IDH_TsMonthCalendar_ReadOnly
+4 ShowCurrentDate=IDH_TsMonthCalendar_ShowCurrentDate
+4 ShowMonthBtns=IDH_TsMonthCalendar_ShowMonthBtns
+4 ShowSelectAlways=IDH_TsMonthCalendar_ShowSelectAlways
+4 ShowTitle=IDH_TsMonthCalendar_ShowTitle
+4 ShowTodayBtn=IDH_TsMonthCalendar_ShowTodayBtn
+4 ShowWeeks=IDH_TsMonthCalendar_ShowWeeks
+4 ShowYearBtns=IDH_TsMonthCalendar_ShowYearBtns
+4 SkinData    (TsPanel)=IDH_TsPanel_SkinData
+4 StartOfWeek=IDH_TsMonthCalendar_StartOfWeek
+4 UseCurrentDate=IDH_TsMonthCalendar_UseCurrentDate
+4 WeekendColor=IDH_TsMonthCalendar_WeekendColor
+4 Weekends=IDH_TsMonthCalendar_Weekends
+4 Year=IDH_TsMonthCalendar_Year
+3 Events
+4 OnChange=IDH_TsMonthCalendar_OnChange
+4 OnMouseEnter    (TsPanel)=IDH_TsPanel_OnMouseEnter
+4 OnMouseLeave    (TsPanel)=IDH_TsPanel_OnMouseLeave
+2 TsNotebook
+3 TsNotebook=IDH_Class_TsNotebook
+3 Properties
+4 SkinData=IDH_TsNotebook_SkinData
+2 TsOpenDialog
+3 TsOpenDialog=IDH_Class_TsOpenDialog
+3 Properties
+4 ZipShowing=IDH_TsOpenDialog_ZipShowing
+2 TsOpenPictureDialog
+3 TsOpenPictureDialog=IDH_Class_TsOpenPictureDialog
+2 TsPageControl
+3 TsPageControl=IDH_Class_TsPageControl
+3 Properties
+4 ActiveIsBold=IDH_TsPageControl_ActiveIsBold
+4 CloseBtnSkin=IDH_TsPageControl_CloseBtnSkin
+4 OnCloseBtnClick=IDH_TsPageControl_OnCloseBtnClick
+4 OnPageChanging=IDH_TsPageControl_OnPageChanging
+4 OnTabMouseEnter=IDH_TsPageControl_OnTabMouseEnter
+4 OnTabMouseLeave=IDH_TsPageControl_OnTabMouseLeave
+4 ReflectedGlyphs=IDH_TsPageControl_ReflectedGlyphs
+4 RotateCaptions=IDH_TsPageControl_RotateCaptions
+4 ShowCloseBtns=IDH_TsPageControl_ShowCloseBtns
+4 ShowFocus=IDH_TsPageControl_ShowFocus
+4 SkinData=IDH_TsPageControl_SkinData
+4 TabAlignment=IDH_TsPageControl_TabAlignment
+4 TabMargin=IDH_TsPageControl_TabMargin
+4 TabPadding=IDH_TsPageControl_TabPadding
+4 TabsLineSkin=IDH_TsPageControl_TabsLineSkin
+4 TabSpacing=IDH_TsPageControl_TabSpacing
+3 Events
+4 OnDblClick=IDH_TsPageControl_OnDblClick
+2 TsPageScroller
+3 TsPageScroller=IDH_Class_TsPageScroller
+3 Properties
+4 Animated=IDH_TsPageScroller_Animated
+4 ButtonSize=IDH_TsPageScroller_ButtonSize
+4 Margin=IDH_TsPageScroller_Margin
+4 OnPaint    (TsPanel)=IDH_TsPanel_OnPaint
+4 Orientation=IDH_TsPageScroller_Orientation
+4 Position=IDH_TsPageScroller_Position
+4 ScrollPosition=IDH_TsPageScroller_ScrollPosition
+4 ScrollStep=IDH_TsPageScroller_ScrollStep
+4 SkinData    (TsPanel)=IDH_TsPanel_SkinData
+3 Events
+4 OnMouseEnter    (TsPanel)=IDH_TsPanel_OnMouseEnter
+4 OnMouseLeave    (TsPanel)=IDH_TsPanel_OnMouseLeave
+2 TsPanel
+3 TsPanel=IDH_Class_TsPanel
+3 Properties
+4 OnPaint=IDH_TsPanel_OnPaint
+4 SkinData=IDH_TsPanel_SkinData
+3 Events
+4 OnMouseEnter=IDH_TsPanel_OnMouseEnter
+4 OnMouseLeave=IDH_TsPanel_OnMouseLeave
+2 TsProgressBar
+3 TsProgressBar=IDH_Class_TsProgressBar
+3 Properties
+4 MarqueeInterval=IDH_TsProgressBar_MarqueeInterval
+4 ProgressSkin=IDH_TsProgressBar_ProgressSkin
+4 SkinData=IDH_TsProgressBar_SkinData
+4 Style=IDH_TsProgressBar_Style
+2 TsRadioButton
+3 TsRadioButton=IDH_Class_TsRadioButton
+3 Properties
+4 AnimatEvents=IDH_TsRadioButton_AnimatEvents
+4 DisabledKind=IDH_TsRadioButton_DisabledKind
+4 GlyphChecked=IDH_TsRadioButton_GlyphChecked
+4 GlyphUnChecked=IDH_TsRadioButton_GlyphUnChecked
+4 Margin=IDH_TsRadioButton_Margin
+4 ReadOnly=IDH_TsRadioButton_ReadOnly
+4 ShowFocus=IDH_TsRadioButton_ShowFocus
+4 SkinData=IDH_TsRadioButton_SkinData
+4 TextIndent=IDH_TsRadioButton_TextIndent
+4 VerticalAlign=IDH_TsRadioButton_VerticalAlign
+4 WordWrap=IDH_TsRadioButton_WordWrap
+3 Events
+4 OnValueChanged=IDH_TsRadioButton_OnValueChanged
+2 TsRadioGroup
+3 TsRadioGroup=IDH_Class_TsRadioGroup
+3 Properties
+4 CaptionLayout    (TsGroupBox)=IDH_TsGroupBox_CaptionLayout
+4 CaptionMargin    (TsGroupBox)=IDH_TsGroupBox_CaptionMargin
+4 CaptionSkin    (TsGroupBox)=IDH_TsGroupBox_CaptionSkin
+4 CaptionWidth    (TsGroupBox)=IDH_TsGroupBox_CaptionWidth
+4 CaptionYOffset    (TsGroupBox)=IDH_TsGroupBox_CaptionYOffset
+4 CheckBoxVisible    (TsGroupBox)=IDH_TsGroupBox_CheckBoxVisible
+4 Checked    (TsGroupBox)=IDH_TsGroupBox_Checked
+4 Columns=IDH_TsRadioGroup_Columns
+4 ItemIndex=IDH_TsRadioGroup_ItemIndex
+4 Items=IDH_TsRadioGroup_Items
+4 OnChanging=IDH_TsRadioGroup_OnChanging
+4 ShowFocus=IDH_TsRadioGroup_ShowFocus
+4 SkinData    (TsGroupBox)=IDH_TsGroupBox_SkinData
+3 Events
+4 OnCheckBoxChanged    (TsGroupBox)=IDH_TsGroupBox_OnCheckBoxChanged
+2 TsRichEdit
+3 TsRichEdit=IDH_Class_TsRichEdit
+3 Properties
+4 BoundLabel=IDH_TsRichEdit_BoundLabel
+4 DisabledKind=IDH_TsRichEdit_DisabledKind
+4 SkinData=IDH_TsRichEdit_SkinData
+2 TsSaveDialog
+3 TsSaveDialog=IDH_Class_TsSaveDialog
+2 TsSavePictureDialog
+3 TsSavePictureDialog=IDH_Class_TsSavePictureDialog
+2 TsScrollBar
+3 TsScrollBar=IDH_Class_TsScrollBar
+3 Properties
+4 DisabledKind=IDH_TsScrollBar_DisabledKind
+4 SkinManager=IDH_TsScrollBar_SkinManager
+2 TsScrollBox
+3 TsScrollBox=IDH_Class_TsScrollBox
+3 Properties
+4 SkinData=IDH_TsScrollBox_SkinData
+3 Events
+4 OnPaint=IDH_TsScrollBox_OnPaint
+2 TsShellComboBox
+3 TsShellComboBox=IDH_Class_TsShellComboBox
+3 Properties
+4 Path=IDH_TsShellComboBox_Path
+4 Root=IDH_TsShellComboBox_Root
+4 ShellListView=IDH_TsShellComboBox_ShellListView
+4 ShellTreeView=IDH_TsShellComboBox_ShellTreeView
+4 UseShellImages=IDH_TsShellComboBox_UseShellImages
+2 TsShellListView
+3 TsShellListView=IDH_Class_TsShellListView
+3 Properties
+4 AutoContextMenus=IDH_TsShellListView_AutoContextMenus
+4 AutoNavigate=IDH_TsShellListView_AutoNavigate
+4 AutoRefresh=IDH_TsShellListView_AutoRefresh
+4 Mask=IDH_TsShellListView_Mask
+4 ObjectTypes=IDH_TsShellListView_ObjectTypes
+4 Root=IDH_TsShellListView_Root
+4 ShellComboBox=IDH_TsShellListView_ShellComboBox
+4 ShellTreeView=IDH_TsShellListView_ShellTreeView
+4 ShowColumnHeaders=IDH_TsShellListView_ShowColumnHeaders
+4 ShowExt=IDH_TsShellListView_ShowExt
+2 TsShellTreeView
+3 TsShellTreeView=IDH_Class_TsShellTreeView
+3 Properties
+4 AutoContextMenus=IDH_TsShellTreeView_AutoContextMenus
+4 AutoRefresh=IDH_TsShellTreeView_AutoRefresh
+4 ObjectTypes=IDH_TsShellTreeView_ObjectTypes
+4 Root=IDH_TsShellTreeView_Root
+4 ShellComboBox=IDH_TsShellTreeView_ShellComboBox
+4 ShellListView=IDH_TsShellTreeView_ShellListView
+4 ShowExt=IDH_TsShellTreeView_ShowExt
+4 UseShellImages=IDH_TsShellTreeView_UseShellImages
+2 TsSkinManager
+3 TsSkinManager=IDH_Class_TsSkinManager
+3 Properties
+4 Active=IDH_TsSkinManager_Active
+4 AnimEffects=IDH_TsSkinManager_AnimEffects
+4 Brightness=IDH_TsSkinManager_Brightness
+4 ButtonsOptions=IDH_TsSkinManager_ButtonsOptions
+4 CommonSections=IDH_TsSkinManager_CommonSections
+4 Effects=IDH_TsSkinManager_Effects
+4 ExtendedBorders=IDH_TsSkinManager_ExtendedBorders
+4 HueOffset=IDH_TsSkinManager_HueOffset
+4 InternalSkins=IDH_TsSkinManager_InternalSkins
+4 IsDefault=IDH_TsSkinManager_IsDefault
+4 KeyList=IDH_TsSkinManager_KeyList
+4 LabelsOptions=IDH_TsSkinManager_LabelsOptions
+4 MenuSupport=IDH_TsSkinManager_MenuSupport
+4 Options=IDH_TsSkinManager_Options
+4 Saturation=IDH_TsSkinManager_Saturation
+4 ScrollsOptions=IDH_TsSkinManager_ScrollsOptions
+4 SkinDirectory=IDH_TsSkinManager_SkinDirectory
+4 SkinInfo=IDH_TsSkinManager_SkinInfo
+4 SkinName=IDH_TsSkinManager_SkinName
+4 SkinnedPopups=IDH_TsSkinManager_SkinnedPopups
+4 SkinningRules=IDH_TsSkinManager_SkinningRules
+4 ThirdParty=IDH_TsSkinManager_ThirdParty
+4 Version=IDH_TsSkinManager_Version
+3 Methods
+4 ExtractByIndex=IDH_TsSkinManager_ExtractByIndex
+4 ExtractInternalSkin=IDH_TsSkinManager_ExtractInternalSkin
+4 GetActiveEditColor=IDH_TsSkinManager_GetActiveEditColor
+4 GetActiveEditFontColor=IDH_TsSkinManager_GetActiveEditFontColor
+4 GetExternalSkinNames=IDH_TsSkinManager_GetExternalSkinNames
+4 GetFullSkinDirectory=IDH_TsSkinManager_GetFullSkinDirectory
+4 GetGlobalColor=IDH_TsSkinManager_GetGlobalColor
+4 GetGlobalFontColor=IDH_TsSkinManager_GetGlobalFontColor
+4 GetHighLightColor=IDH_TsSkinManager_GetHighLightColor
+4 GetHighLightFontColor=IDH_TsSkinManager_GetHighLightFontColor
+4 GetRandomSkin=IDH_TsSkinManager_GetRandomSkin
+4 GetSkinNames=IDH_TsSkinManager_GetSkinNames
+4 GetSkinSections=IDH_TsSkinManager_GetSkinSections
+4 UpdateSkin=IDH_TsSkinManager_UpdateSkin
+3 Events
+4 OnActivate=IDH_TsSkinManager_OnActivate
+4 OnAfterChange=IDH_TsSkinManager_OnAfterChange
+4 OnBeforeChange=IDH_TsSkinManager_OnBeforeChange
+4 OnDeactivate=IDH_TsSkinManager_OnDeactivate
+4 OnGetMenuExtraLineData=IDH_TsSkinManager_OnGetMenuExtraLineData
+4 OnGetPopupItemData=IDH_TsSkinManager_OnGetPopupItemData
+4 OnSkinListChanged=IDH_TsSkinManager_OnSkinListChanged
+4 OnSkinLoading=IDH_TsSkinManager_OnSkinLoading
+4 OnSysDlgInit=IDH_TsSkinManager_OnSysDlgInit
+2 TsSkinProvider
+3 TsSkinProvider=IDH_Class_TsSkinProvider
+3 Properties
+4 AddedTitle=IDH_TsSkinProvider_AddedTitle
+4 AllowAnimation=IDH_TsSkinProvider_AllowAnimation
+4 AllowBlendOnMoving=IDH_TsSkinProvider_AllowBlendOnMoving
+4 AllowExtBorders=IDH_TsSkinProvider_AllowExtBorders
+4 AllowSkin3rdParty=IDH_TsSkinProvider_AllowSkin3rdParty
+4 CaptionAlignment=IDH_TsSkinProvider_CaptionAlignment
+4 DisabledBlendValue=IDH_TsSkinProvider_DisabledBlendValue
+4 DrawClientArea=IDH_TsSkinProvider_DrawClientArea
+4 DrawNonClientArea=IDH_TsSkinProvider_DrawNonClientArea
+4 FormHeader=IDH_TsSkinProvider_FormHeader
+4 GluedForms=IDH_TsSkinProvider_GluedForms
+4 GripMode=IDH_TsSkinProvider_GripMode
+4 MakeSkinMenu=IDH_TsSkinProvider_MakeSkinMenu
+4 MenuLineSkin=IDH_TsSkinProvider_MenuLineSkin
+4 OnExtHitTest=IDH_TsSkinProvider_OnExtHitTest
+4 ResizeMode=IDH_TsSkinProvider_ResizeMode
+4 ScreenSnap=IDH_TsSkinProvider_ScreenSnap
+4 ShowAppIcon=IDH_TsSkinProvider_ShowAppIcon
+4 SkinData=IDH_TsSkinProvider_SkinData
+4 SnapBuffer=IDH_TsSkinProvider_SnapBuffer
+4 SysSubMenu=IDH_TsSkinProvider_SysSubMenu
+4 ThirdParty=IDH_TsSkinProvider_ThirdParty
+4 TitleBar=IDH_TsSkinProvider_TitleBar
+4 TitleButtons=IDH_TsSkinProvider_TitleButtons
+4 TitleIcon=IDH_TsSkinProvider_TitleIcon
+4 TitleSkin=IDH_TsSkinProvider_TitleSkin
+4 UseGlobalColor=IDH_TsSkinProvider_UseGlobalColor
+3 Events
+4 OnAfterAnimation=IDH_TsSkinProvider_OnAfterAnimation
+4 OnSkinItem=IDH_TsSkinProvider_OnSkinItem
+4 OnSkinItemEx=IDH_TsSkinProvider_OnSkinItemEx
+2 TsSlider
+3 TsSlider=IDH_Class_TsSlider
+3 Properties
+4 BoundLabel=IDH_TsSlider_BoundLabel
+4 ContentPlacing=IDH_TsSlider_ContentPlacing
+4 FontOn=IDH_TsSlider_FontOn
+4 GlyphIndexOff=IDH_TsSlider_GlyphIndexOff
+4 GlyphIndexOn=IDH_TsSlider_GlyphIndexOn
+4 ImageIndexOff=IDH_TsSlider_ImageIndexOff
+4 ImageIndexOn=IDH_TsSlider_ImageIndexOn
+4 Images=IDH_TsSlider_Images
+4 OnPaint    (TsPanel)=IDH_TsPanel_OnPaint
+4 Orientation=IDH_TsSlider_Orientation
+4 Reversed=IDH_TsSlider_Reversed
+4 ShowCaption=IDH_TsSlider_ShowCaption
+4 SkinData    (TsPanel)=IDH_TsPanel_SkinData
+4 SliderCaptionOff=IDH_TsSlider_SliderCaptionOff
+4 SliderCaptionOn=IDH_TsSlider_SliderCaptionOn
+4 SliderCursor=IDH_TsSlider_SliderCursor
+4 SliderOn=IDH_TsSlider_SliderOn
+4 ThumbIndexOff=IDH_TsSlider_ThumbIndexOff
+4 ThumbIndexOn=IDH_TsSlider_ThumbIndexOn
+4 ThumbSizeInPercent=IDH_TsSlider_ThumbSizeInPercent
+4 UseSymbols=IDH_TsSlider_UseSymbols
+3 Events
+4 OnChanging=IDH_TsSlider_OnChanging
+4 OnMouseEnter    (TsPanel)=IDH_TsPanel_OnMouseEnter
+4 OnMouseLeave    (TsPanel)=IDH_TsPanel_OnMouseLeave
+4 OnSliderChange=IDH_TsSlider_OnSliderChange
+2 TsSpeedButton
+3 TsSpeedButton=IDH_Class_TsSpeedButton
+3 Properties
+4 Alignment=IDH_TsSpeedButton_Alignment
+4 AnimatEvents=IDH_TsSpeedButton_AnimatEvents
+4 Blend=IDH_TsSpeedButton_Blend
+4 ButtonStyle=IDH_TsSpeedButton_ButtonStyle
+4 DisabledGlyphKind=IDH_TsSpeedButton_DisabledGlyphKind
+4 DisabledKind=IDH_TsSpeedButton_DisabledKind
+4 DrawOverBorder=IDH_TsSpeedButton_DrawOverBorder
+4 DropdownMenu=IDH_TsSpeedButton_DropdownMenu
+4 Grayed=IDH_TsSpeedButton_Grayed
+4 GrayedMode=IDH_TsSpeedButton_GrayedMode
+4 ImageIndex=IDH_TsSpeedButton_ImageIndex
+4 Images=IDH_TsSpeedButton_Images
+4 OnPaint=IDH_TsSpeedButton_OnPaint
+4 Reflected=IDH_TsSpeedButton_Reflected
+4 ShowCaption=IDH_TsSpeedButton_ShowCaption
+4 SkinData=IDH_TsSpeedButton_SkinData
+4 TextAlignment=IDH_TsSpeedButton_TextAlignment
+4 TextOffset=IDH_TsSpeedButton_TextOffset
+4 UseEllipsis=IDH_TsSpeedButton_UseEllipsis
+4 WordWrap=IDH_TsSpeedButton_WordWrap
+3 Events
+4 OnMouseEnter=IDH_TsSpeedButton_OnMouseEnter
+4 OnMouseLeave=IDH_TsSpeedButton_OnMouseLeave
+2 TsSpinEdit
+3 TsSpinEdit=IDH_Class_TsSpinEdit
+3 Properties
+4 Alignment    (TsBaseSpinEdit)=IDH_TsBaseSpinEdit_Alignment
+4 AllowNegative    (TsBaseSpinEdit)=IDH_TsBaseSpinEdit_AllowNegative
+4 BoundLabel    (TsEdit)=IDH_TsEdit_BoundLabel
+4 DisabledKind    (TsEdit)=IDH_TsEdit_DisabledKind
+4 EditorEnabled    (TsBaseSpinEdit)=IDH_TsBaseSpinEdit_EditorEnabled
+4 FlatSpinButtons    (TsBaseSpinEdit)=IDH_TsBaseSpinEdit_FlatSpinButtons
+4 Increment=IDH_TsSpinEdit_Increment
+4 MaxValue=IDH_TsSpinEdit_MaxValue
+4 MinValue=IDH_TsSpinEdit_MinValue
+4 ShowSpinButtons    (TsBaseSpinEdit)=IDH_TsBaseSpinEdit_ShowSpinButtons
+4 SkinData    (TsEdit)=IDH_TsEdit_SkinData
+4 Value=IDH_TsSpinEdit_Value
+3 Events
+4 OnDownClick    (TsBaseSpinEdit)=IDH_TsBaseSpinEdit_OnDownClick
+4 OnUpClick    (TsBaseSpinEdit)=IDH_TsBaseSpinEdit_OnUpClick
+2 TsSplitter
+3 TsSplitter=IDH_Class_TsSplitter
+3 Properties
+4 SkinData=IDH_TsSplitter_SkinData
+2 TsStatusBar
+3 TsStatusBar=IDH_Class_TsStatusBar
+3 Properties
+4 SkinData=IDH_TsStatusBar_SkinData
+2 TsStickyLabel
+3 TsStickyLabel=IDH_Class_TsStickyLabel
+3 Properties
+4 AlignTo=IDH_TsStickyLabel_AlignTo
+4 AttachTo=IDH_TsStickyLabel_AttachTo
+4 Gap=IDH_TsStickyLabel_Gap
+4 UseSkinColor    (TsLabel)=IDH_TsLabel_UseSkinColor
+2 TsTitleBar
+3 TsTitleBar=IDH_Class_TsTitleBar
+3 Properties
+4 Images=IDH_TsTitleBar_Images
+4 Items=IDH_TsTitleBar_Items
+4 ItemsMargin=IDH_TsTitleBar_ItemsMargin
+4 ItemsSpacing=IDH_TsTitleBar_ItemsSpacing
+4 ShowCaption=IDH_TsTitleBar_ShowCaption
+2 TsToolBar
+3 TsToolBar=IDH_Class_TsToolBar
+3 Properties
+4 BtnDisabledKind=IDH_TsToolBar_BtnDisabledKind
+4 SkinData=IDH_TsToolBar_SkinData
+2 TsTrackBar
+3 TsTrackBar=IDH_Class_TsTrackBar
+3 Properties
+4 AnimatEvents=IDH_TsTrackBar_AnimatEvents
+4 BarOffsetH=IDH_TsTrackBar_BarOffsetH
+4 BarOffsetV=IDH_TsTrackBar_BarOffsetV
+4 DisabledKind=IDH_TsTrackBar_DisabledKind
+4 Reversed=IDH_TsTrackBar_Reversed
+4 ShowFocus=IDH_TsTrackBar_ShowFocus
+4 ShowProgress=IDH_TsTrackBar_ShowProgress
+4 ShowProgressFrom=IDH_TsTrackBar_ShowProgressFrom
+4 SkinData=IDH_TsTrackBar_SkinData
+4 ThumbGlyph=IDH_TsTrackBar_ThumbGlyph
+2 TsTreeView
+3 TsTreeView=IDH_Class_TsTreeView
+3 Properties
+4 BoundLabel=IDH_TsTreeView_BoundLabel
+4 SkinData=IDH_TsTreeView_SkinData
+2 TsUpDown
+3 TsUpDown=IDH_Class_TsUpDown
+3 Properties
+4 ButtonSkin=IDH_TsUpDown_ButtonSkin
+4 DisabledKind=IDH_TsUpDown_DisabledKind
+4 ShowInaccessibility=IDH_TsUpDown_ShowInaccessibility
+2 TsVirtualImageList
+3 TsVirtualImageList=IDH_Class_TsVirtualImageList
+3 Properties
+4 AlphaImageList=IDH_TsVirtualImageList_AlphaImageList
+4 UseCache=IDH_TsVirtualImageList_UseCache
+2 TsWebBrowser
+3 TsWebBrowser=IDH_Class_TsWebBrowser
+3 Properties
+4 SkinData=IDH_TsWebBrowser_SkinData
+2 TsWebLabel
+3 TsWebLabel=IDH_Class_TsWebLabel
+3 Properties
+4 HoverFont=IDH_TsWebLabel_HoverFont
+4 ShowMode=IDH_TsWebLabel_ShowMode
+4 URL=IDH_TsWebLabel_URL
+4 UseSkinColor    (TsLabel)=IDH_TsLabel_UseSkinColor

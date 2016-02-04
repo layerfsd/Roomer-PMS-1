@@ -1,0 +1,48 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{56F822D3-28D7-4FA2-AA73-D230124CEF89}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="acntDX10_R.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="acntDX10.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="acntDX10_R">
+        <MSBuild Projects="acntDX10_R.dproj"/>
+    </Target>
+    <Target Name="acntDX10_R:Clean">
+        <MSBuild Projects="acntDX10_R.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="acntDX10_R:Make">
+        <MSBuild Projects="acntDX10_R.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="acntDX10">
+        <MSBuild Projects="acntDX10.dproj"/>
+    </Target>
+    <Target Name="acntDX10:Clean">
+        <MSBuild Projects="acntDX10.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="acntDX10:Make">
+        <MSBuild Projects="acntDX10.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="acntDX10_R;acntDX10"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="acntDX10_R:Clean;acntDX10:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="acntDX10_R:Make;acntDX10:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

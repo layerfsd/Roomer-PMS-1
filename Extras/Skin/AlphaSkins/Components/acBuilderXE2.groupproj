@@ -1,0 +1,48 @@
+﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+		<PropertyGroup>
+			<ProjectGuid>{F197CECE-13B7-4BFB-8F1F-22DA4F1F18DF}</ProjectGuid>
+		</PropertyGroup>
+		<ItemGroup>
+			<Projects Include="acntBuilderXE2.cbproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="acntBuilderXE2_R.cbproj">
+				<Dependencies/>
+			</Projects>
+		</ItemGroup>
+		<ProjectExtensions>
+			<Borland.Personality>Default.Personality.12</Borland.Personality>
+			<Borland.ProjectType/>
+			<BorlandProject>
+				<Default.Personality/>
+			</BorlandProject>
+		</ProjectExtensions>
+		<Target Name="acntBuilderXE2">
+			<MSBuild Projects="acntBuilderXE2.cbproj"/>
+		</Target>
+		<Target Name="acntBuilderXE2:Clean">
+			<MSBuild Projects="acntBuilderXE2.cbproj" Targets="Clean"/>
+		</Target>
+		<Target Name="acntBuilderXE2:Make">
+			<MSBuild Projects="acntBuilderXE2.cbproj" Targets="Make"/>
+		</Target>
+		<Target Name="acntBuilderXE2_R">
+			<MSBuild Projects="acntBuilderXE2_R.cbproj"/>
+		</Target>
+		<Target Name="acntBuilderXE2_R:Clean">
+			<MSBuild Projects="acntBuilderXE2_R.cbproj" Targets="Clean"/>
+		</Target>
+		<Target Name="acntBuilderXE2_R:Make">
+			<MSBuild Projects="acntBuilderXE2_R.cbproj" Targets="Make"/>
+		</Target>
+		<Target Name="Build">
+			<CallTarget Targets="acntBuilderXE2;acntBuilderXE2_R"/>
+		</Target>
+		<Target Name="Clean">
+			<CallTarget Targets="acntBuilderXE2:Clean;acntBuilderXE2_R:Clean"/>
+		</Target>
+		<Target Name="Make">
+			<CallTarget Targets="acntBuilderXE2:Make;acntBuilderXE2_R:Make"/>
+		</Target>
+		<Import Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')" Project="$(BDS)\Bin\CodeGear.Group.Targets"/>
+	</Project>
