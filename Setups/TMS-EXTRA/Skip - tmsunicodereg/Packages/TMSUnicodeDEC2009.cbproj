@@ -1,0 +1,248 @@
+﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+		<PropertyGroup>
+			<ProjectGuid>{a0e7d93a-65f6-4ec5-a833-5a3ba776b1a7}</ProjectGuid>
+			<ProjectType>CppPackage</ProjectType>
+			<MainSource>TMSUnicodeDEC2009.cpp</MainSource>
+			<Config Condition="'$(Config)'==''">Debug Build</Config>
+			<ProjectVersion>12.0</ProjectVersion>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">
+			<Base>true</Base>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Config)'=='Debug Build' or '$(Cfg_1)'!=''">
+			<Cfg_1>true</Cfg_1>
+			<CfgParent>Base</CfgParent>
+			<Base>true</Base>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Config)'=='Release Build' or '$(Cfg_2)'!=''">
+			<Cfg_2>true</Cfg_2>
+			<CfgParent>Base</CfgParent>
+			<Base>true</Base>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Base)'!=''">
+			<LinkPackageStatics>adortl.lib;bdertl.lib;vcldbx.lib;dsnap.lib;dsnapcon.lib;teeui.lib;teedb.lib;tee.lib;ibxpress.lib;inet.lib;inetdbbde.lib;inetdb.lib;inetdbxpress.lib;dbexpress.lib;soaprtl.lib;dbxcds.lib;indycore.lib;indysystem.lib;bcboffice2k.lib</LinkPackageStatics>
+			<DesignOnlyPackage>true</DesignOnlyPackage>
+			<LinkPackageImports>rtl.bpi;vcldb.bpi;dbrtl.bpi;xmlrtl.bpi;designide.bpi;dcldb.bpi;vcl.bpi</LinkPackageImports>
+			<OutputExt>bpl</OutputExt>
+			<DCC_CBuilderOutput>JPHNE</DCC_CBuilderOutput>
+			<ILINK_IntermediateOutputPath>.</ILINK_IntermediateOutputPath>
+			<DCC_ObjPath>..\Packages;..\Design;..\Source</DCC_ObjPath>
+			<DynamicRTL>true</DynamicRTL>
+			<ILINK_GenerateLibFile>true</ILINK_GenerateLibFile>
+			<BCC_InstructionSet>6</BCC_InstructionSet>
+			<ILINK_AppType>Windows</ILINK_AppType>
+			<DCC_DebugInformation>false</DCC_DebugInformation>
+			<ILINK_GenerateImportLibrary>true</ILINK_GenerateImportLibrary>
+			<UsePackages>true</UsePackages>
+			<ILINK_ObjectSearchPath>..\Packages;C:\Documents and Settings\Bruno Fierens\My Documents\Borland Studio Projects\Bpl;..\Design;..\Source</ILINK_ObjectSearchPath>
+			<DCC_HppOutput>.</DCC_HppOutput>
+			<BCC_ZeroLengthEmptyMemberFuncs>true</BCC_ZeroLengthEmptyMemberFuncs>
+			<FinalOutputDir>.</FinalOutputDir>
+			<PackageImports>designide.bpi;dcldb.bpi;designdgm.bpi;dclstd.bpi;dclact.bpi;rtl.bpi;vcl.bpi;vclx.bpi;vcldb.bpi;dbrtl.bpi;vclactnband.bpi;xmlrtl.bpi</PackageImports>
+			<TASM_AdditionalSwitches> /w2</TASM_AdditionalSwitches>
+			<DCC_UnitSearchPath>..\Packages;..\Design;..\Source;$(BDS)\lib;$(BDS)\lib\obj</DCC_UnitSearchPath>
+			<ILINK_Description>TMS Unicode Component Pack</ILINK_Description>
+			<BRCC_UserSuppliedOptions> -I$(BDS)\TU\Source;$(BDS)\TU\Design;..\Source;..;$(BDS)\include;$(BDS)\include\vcl;..\Design;$(BDS)\include\dinkumware</BRCC_UserSuppliedOptions>
+			<ILINK_WinAppType>Package</ILINK_WinAppType>
+			<BCC_GenerateMultithreaded>true</BCC_GenerateMultithreaded>
+			<DCC_DcuOutput>.</DCC_DcuOutput>
+			<DCC_UsePackage>dclstd</DCC_UsePackage>
+			<BCC_PCHCache>true</BCC_PCHCache>
+			<IncludePath>..\Source;..\Design</IncludePath>
+			<ILINK_BpiLibOutputDir>.</ILINK_BpiLibOutputDir>
+			<BCC_IntegerSizedEnums>false</BCC_IntegerSizedEnums>
+			<BRCC_IncludePath>..\Packages;..\Design;..\Source;$(BDS)\include;$(BDS)\include\vcl;$(BDS)\include\dinkumware</BRCC_IncludePath>
+			<AllPackageLibs>rtl.lib;vcldb.lib;dbrtl.lib;adortl.lib;bdertl.lib;vcldbx.lib;dsnap.lib;dsnap.lib;dsnapcon.lib;teeui.lib;teedb.lib;tee.lib;ibxpress.lib;xmlrtl.lib;inet.lib;inetdbbde.lib;inetdb.lib;inetdbxpress.lib;dbexpress.lib;soaprtl.lib;dbxcds.lib;indycore.lib;indysystem.lib;bcboffice2k.lib;designide.lib;dcldb.lib;vcl.lib</AllPackageLibs>
+			<TASM_IncludePath>$(BDS)\TU\Source;$(BDS)\TU\Design;..\Source;..;$(BDS)\include;$(BDS)\include\vcl;..\Design;$(BDS)\include\dinkumware</TASM_IncludePath>
+			<DCC_IncludePath>..\Packages;..\Design;..\Source;$(BDS)\lib;$(BDS)\lib\obj</DCC_IncludePath>
+			<BCC_IncludePath>..\Packages;..\Design;..\Source;$(BDS)\include;$(BDS)\include\vcl;$(BDS)\include\dinkumware</BCC_IncludePath>
+			<ILINK_LibraryPath>..\Packages;..\Design;..\Source;$(BDS)\lib\obj;$(BDS)\lib</ILINK_LibraryPath>
+			<BCC_ZeroLengthEmptyBaseClass>true</BCC_ZeroLengthEmptyBaseClass>
+			<BCC_DisableOptimizations>true</BCC_DisableOptimizations>
+			<Multithreaded>true</Multithreaded>
+			<TASM_Defines>_RTLDLL;NO_STRICT;USEPACKAGES</TASM_Defines>
+			<BRCC_Defines>_RTLDLL;NO_STRICT;USEPACKAGES</BRCC_Defines>
+			<BCC_Defines>NO_STRICT</BCC_Defines>
+			<TASM_Debugging>None</TASM_Debugging>
+			<DCC_LocalDebugSymbols>false</DCC_LocalDebugSymbols>
+			<DCC_SymbolReferenceInfo>2</DCC_SymbolReferenceInfo>
+			<DCC_ResourcePath>..\Packages;..\Design;..\Source</DCC_ResourcePath>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Cfg_1)'!=''">
+			<DCC_Optimize>false</DCC_Optimize>
+			<ILINK_FullDebugInfo>true</ILINK_FullDebugInfo>
+			<BCC_InlineFunctionExpansion>false</BCC_InlineFunctionExpansion>
+			<ILINK_DisableIncrementalLinking>true</ILINK_DisableIncrementalLinking>
+			<DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>
+			<DCC_DebugInformation>true</DCC_DebugInformation>
+			<BCC_DebugLineNumbers>true</BCC_DebugLineNumbers>
+			<IntermediateOutputDir>Debug_Build</IntermediateOutputDir>
+			<TASM_DisplaySourceLines>true</TASM_DisplaySourceLines>
+			<BCC_StackFrames>true</BCC_StackFrames>
+			<ILINK_LibraryPath>$(BDS)\lib\debug;$(ILINK_LibraryPath)</ILINK_LibraryPath>
+			<BCC_Defines>_DEBUG;$(BCC_Defines)</BCC_Defines>
+			<TASM_Debugging>Full</TASM_Debugging>
+			<BCC_SourceDebuggingOn>true</BCC_SourceDebuggingOn>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Cfg_2)'!=''">
+			<BCC_OptimizeForSpeed>true</BCC_OptimizeForSpeed>
+			<IntermediateOutputDir>Release_Build</IntermediateOutputDir>
+			<ILINK_LibraryPath>$(BDS)\lib\release;$(ILINK_LibraryPath)</ILINK_LibraryPath>
+			<BCC_Defines>NDEBUG;$(BCC_Defines)</BCC_Defines>
+		</PropertyGroup>
+		<ProjectExtensions>
+			<Borland.Personality>CPlusPlusBuilder.Personality.12</Borland.Personality>
+			<Borland.ProjectType>CppPackage</Borland.ProjectType>
+			<BorlandProject>
+				<CPlusPlusBuilder.Personality>
+					<VersionInfo>
+						<VersionInfo Name="IncludeVerInfo">True</VersionInfo>
+						<VersionInfo Name="AutoIncBuild">False</VersionInfo>
+						<VersionInfo Name="MajorVer">1</VersionInfo>
+						<VersionInfo Name="MinorVer">0</VersionInfo>
+						<VersionInfo Name="Release">0</VersionInfo>
+						<VersionInfo Name="Build">0</VersionInfo>
+						<VersionInfo Name="Debug">False</VersionInfo>
+						<VersionInfo Name="PreRelease">False</VersionInfo>
+						<VersionInfo Name="Special">False</VersionInfo>
+						<VersionInfo Name="Private">False</VersionInfo>
+						<VersionInfo Name="DLL">False</VersionInfo>
+						<VersionInfo Name="Locale">2067</VersionInfo>
+						<VersionInfo Name="CodePage">1252</VersionInfo>
+					</VersionInfo>
+					<VersionInfoKeys>
+						<VersionInfoKeys Name="CompanyName"/>
+						<VersionInfoKeys Name="FileDescription"/>
+						<VersionInfoKeys Name="FileVersion">1.0.0.0</VersionInfoKeys>
+						<VersionInfoKeys Name="InternalName"/>
+						<VersionInfoKeys Name="LegalCopyright"/>
+						<VersionInfoKeys Name="LegalTrademarks"/>
+						<VersionInfoKeys Name="OriginalFilename"/>
+						<VersionInfoKeys Name="ProductName"/>
+						<VersionInfoKeys Name="ProductVersion">1.0.0.0</VersionInfoKeys>
+					</VersionInfoKeys>
+					<Debugging>
+						<Debugging Name="DebugSourceDirs">$(BCB)\source\vcl</Debugging>
+					</Debugging>
+					<Parameters>
+						<Parameters Name="RunParams"/>
+						<Parameters Name="Launcher"/>
+						<Parameters Name="UseLauncher">False</Parameters>
+						<Parameters Name="DebugCWD"/>
+						<Parameters Name="HostApplication"/>
+						<Parameters Name="RemoteHost"/>
+						<Parameters Name="RemotePath"/>
+						<Parameters Name="RemoteParams"/>
+						<Parameters Name="RemoteLauncher"/>
+						<Parameters Name="UseRemoteLauncher">False</Parameters>
+						<Parameters Name="RemoteCWD"/>
+						<Parameters Name="RemoteDebug">False</Parameters>
+						<Parameters Name="Debug Symbols Search Path"/>
+						<Parameters Name="LoadAllSymbols">True</Parameters>
+						<Parameters Name="LoadUnspecifiedSymbols">False</Parameters>
+					</Parameters>
+					<Linker>
+						<Linker Name="LibPrefix"/>
+						<Linker Name="LibSuffix"/>
+						<Linker Name="LibVersion"/>
+					</Linker>
+					<Source>
+						<Source Name="MainSource">TMSUnicodeDEC2009.cpp</Source>
+					</Source>
+					<ProjectProperties>
+						<ProjectProperties Name="AutoShowDeps">False</ProjectProperties>
+						<ProjectProperties Name="ManagePaths">True</ProjectProperties>
+						<ProjectProperties Name="VerifyPackages">False</ProjectProperties>
+					</ProjectProperties>
+				</CPlusPlusBuilder.Personality>
+			</BorlandProject>
+			<ProjectFileVersion>12</ProjectFileVersion>
+		</ProjectExtensions>
+		<ItemGroup>
+			<DelphiCompile Include="..\Design\TntEditMask_Editor.pas">
+				<BuildOrder>20</BuildOrder>
+			</DelphiCompile>
+			<DelphiCompile Include="..\Design\TntMaskEditText_Editor.pas">
+				<BuildOrder>22</BuildOrder>
+			</DelphiCompile>
+			<DelphiCompile Include="..\Design\TntActions_Design.pas">
+				<BuildOrder>14</BuildOrder>
+			</DelphiCompile>
+			<DelphiCompile Include="..\Design\TntComCtrls_Design.pas">
+				<BuildOrder>15</BuildOrder>
+			</DelphiCompile>
+			<DelphiCompile Include="..\Design\TntDesignEditors_Design.pas">
+				<BuildOrder>19</BuildOrder>
+			</DelphiCompile>
+			<DelphiCompile Include="..\Design\TntMaskEdit_Design.pas">
+				<BuildOrder>21</BuildOrder>
+			</DelphiCompile>
+			<DelphiCompile Include="..\Source\TntBandActn.pas">
+				<BuildOrder>23</BuildOrder>
+			</DelphiCompile>
+			<CppCompile Include="TMSUnicodeDEC2009.cpp">
+				<BuildOrder>24</BuildOrder>
+			</CppCompile>
+			<ResFiles Include="TMSUnicodeDEC2009.res">
+				<ModuleName>TMSUnicodeDEC2009.res</ModuleName>
+				<BuildOrder>25</BuildOrder>
+			</ResFiles>
+			<DelphiCompile Include="..\Design\TntStrEdit_Design.pas">
+				<BuildOrder>18</BuildOrder>
+			</DelphiCompile>
+			<DelphiCompile Include="..\Design\TntUnicodeVcl_Register.pas">
+				<BuildOrder>13</BuildOrder>
+			</DelphiCompile>
+			<PackageImport Include="dclstd.bpi">
+				<BuildOrder>3</BuildOrder>
+			</PackageImport>
+			<PackageImport Include="designdgm.bpi">
+				<BuildOrder>4</BuildOrder>
+			</PackageImport>
+			<PackageImport Include="designide.bpi">
+				<BuildOrder>5</BuildOrder>
+			</PackageImport>
+			<PackageImport Include="dbrtl.bpi">
+				<BuildOrder>0</BuildOrder>
+			</PackageImport>
+			<PackageImport Include="dclact.bpi">
+				<BuildOrder>1</BuildOrder>
+			</PackageImport>
+			<PackageImport Include="dcldb.bpi">
+				<BuildOrder>2</BuildOrder>
+			</PackageImport>
+			<PackageImport Include="rtl.bpi">
+				<BuildOrder>6</BuildOrder>
+			</PackageImport>
+			<PackageImport Include="vcldb.bpi">
+				<BuildOrder>10</BuildOrder>
+			</PackageImport>
+			<PackageImport Include="vclx.bpi">
+				<BuildOrder>11</BuildOrder>
+			</PackageImport>
+			<PackageImport Include="xmlrtl.bpi">
+				<BuildOrder>12</BuildOrder>
+			</PackageImport>
+			<PackageImport Include="vcl.bpi">
+				<BuildOrder>8</BuildOrder>
+			</PackageImport>
+			<PackageImport Include="vclactnband.bpi">
+				<BuildOrder>9</BuildOrder>
+			</PackageImport>
+			<PackageImport Include="TMSUnicodeC2009.bpi">
+				<BuildOrder>25</BuildOrder>
+			</PackageImport>
+			<BuildConfiguration Include="Base">
+				<Key>Base</Key>
+			</BuildConfiguration>
+			<BuildConfiguration Include="Release Build">
+				<Key>Cfg_2</Key>
+				<CfgParent>Base</CfgParent>
+			</BuildConfiguration>
+			<BuildConfiguration Include="Debug Build">
+				<Key>Cfg_1</Key>
+				<CfgParent>Base</CfgParent>
+			</BuildConfiguration>
+		</ItemGroup>
+		<Import Project="$(BDS)\Bin\CodeGear.Cpp.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Cpp.Targets')"/>
+	</Project>

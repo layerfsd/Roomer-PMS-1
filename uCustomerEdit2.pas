@@ -718,10 +718,10 @@ begin
 
 
   zData.Active           :=  chkActive.checked        ;
-  zData.Customer         :=  edCustomer.Text          ;
+  zData.Customer         :=  TRIM(edCustomer.Text)    ;
   zData.Surname          :=  edSurname.Text           ;
   zData.PID              :=  edPID.Text               ;
-  zData.CustomerType     :=  edCustomerType.Text      ;
+  zData.CustomerType     :=  TRIM(edCustomerType.Text);
   zData.Address1         :=  edAddress1.Text          ;
   zData.Address2         :=  edAddress2.Text          ;
   zData.Address3         :=  edAddress3.Text          ;

@@ -561,6 +561,8 @@ procedure TfrmVatCodes.tvDataVATCodePropertiesValidate(Sender: TObject; var Disp
 var
   CurrValue : string;
 begin
+  DisplayValue := TRIM(DisplayValue);
+
   currValue := m_.fieldbyname('VatCode').asstring;
 
   error := false;

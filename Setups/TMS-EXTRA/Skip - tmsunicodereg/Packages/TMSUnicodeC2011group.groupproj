@@ -1,0 +1,48 @@
+﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+		<PropertyGroup>
+			<ProjectGuid>{6950BE6C-D4EA-4253-8C52-BA8459599860}</ProjectGuid>
+		</PropertyGroup>
+		<ItemGroup>
+			<Projects Include="TMSUnicodeDEC2011.cbproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="TMSUnicodeC2011.cbproj">
+				<Dependencies/>
+			</Projects>
+		</ItemGroup>
+		<ProjectExtensions>
+			<Borland.Personality>Default.Personality.12</Borland.Personality>
+			<Borland.ProjectType/>
+			<BorlandProject>
+				<Default.Personality/>
+			</BorlandProject>
+		</ProjectExtensions>
+		<Target Name="TMSUnicodeDEC2011">
+			<MSBuild Projects="TMSUnicodeDEC2011.cbproj"/>
+		</Target>
+		<Target Name="TMSUnicodeDEC2011:Clean">
+			<MSBuild Targets="Clean" Projects="TMSUnicodeDEC2011.cbproj"/>
+		</Target>
+		<Target Name="TMSUnicodeDEC2011:Make">
+			<MSBuild Targets="Make" Projects="TMSUnicodeDEC2011.cbproj"/>
+		</Target>
+		<Target Name="TMSUnicodeC2011">
+			<MSBuild Projects="TMSUnicodeC2011.cbproj"/>
+		</Target>
+		<Target Name="TMSUnicodeC2011:Clean">
+			<MSBuild Targets="Clean" Projects="TMSUnicodeC2011.cbproj"/>
+		</Target>
+		<Target Name="TMSUnicodeC2011:Make">
+			<MSBuild Targets="Make" Projects="TMSUnicodeC2011.cbproj"/>
+		</Target>
+		<Target Name="Build">
+			<CallTarget Targets="TMSUnicodeDEC2011;TMSUnicodeC2011"/>
+		</Target>
+		<Target Name="Clean">
+			<CallTarget Targets="TMSUnicodeDEC2011:Clean;TMSUnicodeC2011:Clean"/>
+		</Target>
+		<Target Name="Make">
+			<CallTarget Targets="TMSUnicodeDEC2011:Make;TMSUnicodeC2011:Make"/>
+		</Target>
+		<Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+	</Project>

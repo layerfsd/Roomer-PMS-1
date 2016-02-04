@@ -30,7 +30,6 @@ object frmVatCodes: TfrmVatCodes
     Panels = <>
     SimplePanel = True
     SkinData.SkinSection = 'STATUSBAR'
-    ExplicitWidth = 487
   end
   object PanTop: TsPanel
     Left = 0
@@ -40,7 +39,6 @@ object frmVatCodes: TfrmVatCodes
     Align = alTop
     TabOrder = 1
     SkinData.SkinSection = 'PANEL'
-    ExplicitWidth = 487
     object btnClear: TsSpeedButton
       Left = 259
       Top = 39
@@ -49,8 +47,8 @@ object frmVatCodes: TfrmVatCodes
       Caption = 'Clear'
       OnClick = btnClearClick
       SkinData.SkinSection = 'SPEEDBUTTON'
-      ImageIndex = 10
       Images = DImages.PngImageList1
+      ImageIndex = 10
     end
     object cLabFilter: TsLabel
       Left = 14
@@ -113,15 +111,6 @@ object frmVatCodes: TfrmVatCodes
       TabOrder = 2
       OnChange = edFilterChange
       SkinData.SkinSection = 'EDIT'
-      BoundLabel.Indent = 0
-      BoundLabel.Font.Charset = DEFAULT_CHARSET
-      BoundLabel.Font.Color = clWindowText
-      BoundLabel.Font.Height = -11
-      BoundLabel.Font.Name = 'Tahoma'
-      BoundLabel.Font.Style = []
-      BoundLabel.Layout = sclLeft
-      BoundLabel.MaxWidth = 0
-      BoundLabel.UseSkinColor = True
     end
     object btnInsert: TsButton
       Left = 6
@@ -162,7 +151,6 @@ object frmVatCodes: TfrmVatCodes
     Align = alBottom
     TabOrder = 2
     SkinData.SkinSection = 'PANEL'
-    ExplicitWidth = 487
     DesignSize = (
       755
       33)
@@ -181,7 +169,6 @@ object frmVatCodes: TfrmVatCodes
       TabOrder = 0
       OnClick = btnCancelClick
       SkinData.SkinSection = 'BUTTON'
-      ExplicitLeft = 398
     end
     object BtnOk: TsButton
       Left = 578
@@ -197,7 +184,6 @@ object frmVatCodes: TfrmVatCodes
       TabOrder = 1
       OnClick = BtnOkClick
       SkinData.SkinSection = 'BUTTON'
-      ExplicitLeft = 310
     end
   end
   object grData: TcxGrid
@@ -208,7 +194,6 @@ object frmVatCodes: TfrmVatCodes
     Align = alClient
     TabOrder = 3
     LookAndFeel.NativeStyle = False
-    ExplicitWidth = 487
     object tvData: TcxGridDBTableView
       OnDblClick = tvDataDblClick
       Navigator.Buttons.CustomButtons = <>
@@ -395,6 +380,7 @@ object frmVatCodes: TfrmVatCodes
     object prLink_grData: TdxGridReportLink
       Active = True
       Component = grData
+      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.GrayShading = True
@@ -407,7 +393,8 @@ object frmVatCodes: TfrmVatCodes
       PrinterPage.PageSize.Y = 297000
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
-      ReportDocument.CreationDate = 42067.405651886580000000
+      ReportDocument.CreationDate = 42404.494558090280000000
+      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       BuiltInReportLink = True
     end
   end

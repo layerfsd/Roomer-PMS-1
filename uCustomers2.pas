@@ -276,6 +276,7 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure C2Click(Sender: TObject);
     procedure chkActiveClick(Sender: TObject);
+    procedure tvDataCustomerPropertiesValidate(Sender: TObject; var DisplayValue: Variant; var ErrorText: TCaption; var Error: Boolean);
   private
     { Private declarations }
     financeLookupList : TKeyPairList;
@@ -979,6 +980,11 @@ begin
   StaticResources('Customer Resources',
         format(CUSTOMER_DOCUMENTS_STATIC_RESOURCE_PATTERN, [m_['Customer']]),
         ACCESS_RESTRICTED);
+end;
+
+procedure TfrmCustomers2.tvDataCustomerPropertiesValidate(Sender: TObject; var DisplayValue: Variant; var ErrorText: TCaption; var Error: Boolean);
+begin
+  DisplayValue := TRIM(DisplayValue);
 end;
 
 procedure TfrmCustomers2.tvDataDataControllerFilterChanged(Sender: TObject);
