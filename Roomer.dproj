@@ -134,14 +134,14 @@
         <DCC_DcpOutput>C:\Temp\dcu\</DCC_DcpOutput>
         <Icon_MainIcon>Roomer_Icon1.ico</Icon_MainIcon>
         <VerInfo_Debug>true</VerInfo_Debug>
-        <VerInfo_Keys>CompanyName=Promoir Roomer / Beryllium ehf;FileDescription=Roomer PMS;FileVersion=1.2.0.1010;InternalName=Roomer;LegalCopyright=Hordur Johannsson/Bjorn Heidarr;LegalTrademarks=;OriginalFilename=Roomer;ProductName=Roomer PMS;ProductVersion=1.0.0.0;Comments=;ExtraBuild=20151203</VerInfo_Keys>
+        <VerInfo_Keys>CompanyName=Promoir Roomer / Beryllium ehf;FileDescription=Roomer PMS;FileVersion=1.2.0.1011;InternalName=Roomer;LegalCopyright=Hordur Johannsson/Bjorn Heidarr;LegalTrademarks=;OriginalFilename=Roomer;ProductName=Roomer PMS;ProductVersion=1.0.0.0;Comments=;ExtraBuild=20151203</VerInfo_Keys>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <VerInfo_AutoGenVersion>false</VerInfo_AutoGenVersion>
         <VerInfo_AutoIncVersion>true</VerInfo_AutoIncVersion>
         <DCC_BplOutput>dck\</DCC_BplOutput>
         <VerInfo_Release>0</VerInfo_Release>
         <VerInfo_MinorVer>2</VerInfo_MinorVer>
-        <VerInfo_Build>1010</VerInfo_Build>
+        <VerInfo_Build>1011</VerInfo_Build>
     </PropertyGroup>
     <ItemGroup>
         <DelphiCompile Include="$(MainSource)">
@@ -500,7 +500,7 @@
         <DCCReference Include="uFrmChannelCopyFrom.pas">
             <Form>FrmChannelCopyFrom</Form>
         </DCCReference>
-        <DCCReference Include="..\Roomer\Delphi Projects\RoomerVCLs\Source\uRoomerExceptions.pas"/>
+        <DCCReference Include="RoomerVCLs\Source\uRoomerExceptions.pas"/>
         <DCCReference Include="uFrmBackupInvoice.pas">
             <Form>FrmBackupInvoice</Form>
         </DCCReference>
@@ -587,7 +587,7 @@
         <DCCReference Include="uEditGuest.pas">
             <Form>frmEditGuest</Form>
         </DCCReference>
-        <DCCReference Include="..\Roomer\Delphi Projects\RoomerVCLs\Tests\TestBed\uExcelProcessors.pas"/>
+        <DCCReference Include="RoomerVCLs\Source\uExcelProcessors.pas"/>
         <DCCReference Include="uEmailExcelSheet.pas">
             <Form>FrmEmailExcelSheet</Form>
         </DCCReference>
@@ -678,7 +678,7 @@
                     <VersionInfo Name="MajorVer">12</VersionInfo>
                     <VersionInfo Name="MinorVer">5</VersionInfo>
                     <VersionInfo Name="Release">11</VersionInfo>
-                    <VersionInfo Name="Build">12042</VersionInfo>
+                    <VersionInfo Name="Build">12043</VersionInfo>
                     <VersionInfo Name="Debug">False</VersionInfo>
                     <VersionInfo Name="PreRelease">False</VersionInfo>
                     <VersionInfo Name="Special">False</VersionInfo>
@@ -690,7 +690,7 @@
                 <VersionInfoKeys>
                     <VersionInfoKeys Name="CompanyName">Beryllium ehf</VersionInfoKeys>
                     <VersionInfoKeys Name="FileDescription">Hotel Management System Main Module</VersionInfoKeys>
-                    <VersionInfoKeys Name="FileVersion">12.5.11.12042</VersionInfoKeys>
+                    <VersionInfoKeys Name="FileVersion">12.5.11.12043</VersionInfoKeys>
                     <VersionInfoKeys Name="InternalName">HMS</VersionInfoKeys>
                     <VersionInfoKeys Name="LegalCopyright">Beryllium ehf 2000-2012</VersionInfoKeys>
                     <VersionInfoKeys Name="LegalTrademarks">Beryllium 2000-2012</VersionInfoKeys>
