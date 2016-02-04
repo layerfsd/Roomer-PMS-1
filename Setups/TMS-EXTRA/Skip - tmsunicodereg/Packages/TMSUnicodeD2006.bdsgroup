@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<PersonalityInfo>
+		<Option>
+			<Option Name="Personality">Default.Personality</Option>
+			<Option Name="ProjectType"></Option>
+			<Option Name="Version">1.0</Option>
+			<Option Name="GUID">{50DD61B3-DBE2-4C15-8DA2-6DCAD7A4C3C8}</Option>
+		</Option>
+	</PersonalityInfo>
+	<Default.Personality>  
+    
+    <Projects>
+      <Projects Name="TMSUnicodeD2006.bpl">TMSUnicodeD2006.bdsproj</Projects>
+      <Projects Name="TMSUnicodeDED2006.bpl">TMSUnicodeDED2006.bdsproj</Projects>
+      <Projects Name="Targets">TMSUnicodeD2006.bpl TMSUnicodeDED2006.bpl</Projects>
+    </Projects>
+    <Dependencies/>
+  </Default.Personality>  <StarTeamAssociation></StarTeamAssociation>
+  <StarTeamNonRelativeFiles></StarTeamNonRelativeFiles>
+</BorlandProject>

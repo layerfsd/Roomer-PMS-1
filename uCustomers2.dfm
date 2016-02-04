@@ -87,7 +87,7 @@ object frmCustomers2: TfrmCustomers2
       Height = 21
       Color = clWhite
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = clBlack
+      Font.Color = 2302755
       Font.Height = -11
       Font.Name = 'Tahoma'
       Font.Style = []
@@ -155,7 +155,7 @@ object frmCustomers2: TfrmCustomers2
     object chkActive: TsCheckBox
       Left = 52
       Top = 64
-      Width = 242
+      Width = 239
       Height = 19
       Caption = 'Active (if checked then just active are visible'
       Checked = True
@@ -422,6 +422,7 @@ object frmCustomers2: TfrmCustomers2
           DataBinding.FieldName = 'Customer'
           PropertiesClassName = 'TcxTextEditProperties'
           Properties.CharCase = ecUpperCase
+          Properties.OnValidate = tvDataCustomerPropertiesValidate
           Width = 115
         end
         object tvDataPID: TcxGridDBColumn
@@ -620,7 +621,6 @@ object frmCustomers2: TfrmCustomers2
     Left = 248
     Top = 280
     object prLink_grData: TdxGridReportLink
-      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 5080
       PrinterPage.GrayShading = True
@@ -634,7 +634,6 @@ object frmCustomers2: TfrmCustomers2
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
       ReportDocument.CreationDate = 41334.495374884260000000
-      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       BuiltInReportLink = True
     end
   end

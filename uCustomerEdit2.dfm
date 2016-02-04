@@ -87,6 +87,7 @@ object frmCustomerEdit2: TfrmCustomerEdit2
         Caption = 'Address'
         TabOrder = 0
         SkinData.SkinSection = 'GROUPBOX'
+        Checked = False
         DesignSize = (
           464
           132)
@@ -134,15 +135,6 @@ object frmCustomerEdit2: TfrmCustomerEdit2
           ParentFont = False
           TabOrder = 0
           SkinData.SkinSection = 'EDIT'
-          BoundLabel.Indent = 0
-          BoundLabel.Font.Charset = DEFAULT_CHARSET
-          BoundLabel.Font.Color = clWindowText
-          BoundLabel.Font.Height = -11
-          BoundLabel.Font.Name = 'Tahoma'
-          BoundLabel.Font.Style = []
-          BoundLabel.Layout = sclLeft
-          BoundLabel.MaxWidth = 0
-          BoundLabel.UseSkinColor = True
         end
         object edAddress2: TsEdit
           AlignWithMargins = True
@@ -160,15 +152,6 @@ object frmCustomerEdit2: TfrmCustomerEdit2
           ParentFont = False
           TabOrder = 1
           SkinData.SkinSection = 'EDIT'
-          BoundLabel.Indent = 0
-          BoundLabel.Font.Charset = DEFAULT_CHARSET
-          BoundLabel.Font.Color = clWindowText
-          BoundLabel.Font.Height = -11
-          BoundLabel.Font.Name = 'Tahoma'
-          BoundLabel.Font.Style = []
-          BoundLabel.Layout = sclLeft
-          BoundLabel.MaxWidth = 0
-          BoundLabel.UseSkinColor = True
         end
         object edAddress3: TsEdit
           AlignWithMargins = True
@@ -186,15 +169,6 @@ object frmCustomerEdit2: TfrmCustomerEdit2
           ParentFont = False
           TabOrder = 2
           SkinData.SkinSection = 'EDIT'
-          BoundLabel.Indent = 0
-          BoundLabel.Font.Charset = DEFAULT_CHARSET
-          BoundLabel.Font.Color = clWindowText
-          BoundLabel.Font.Height = -11
-          BoundLabel.Font.Name = 'Tahoma'
-          BoundLabel.Font.Style = []
-          BoundLabel.Layout = sclLeft
-          BoundLabel.MaxWidth = 0
-          BoundLabel.UseSkinColor = True
         end
         object edAddress4: TsEdit
           AlignWithMargins = True
@@ -212,15 +186,6 @@ object frmCustomerEdit2: TfrmCustomerEdit2
           ParentFont = False
           TabOrder = 3
           SkinData.SkinSection = 'EDIT'
-          BoundLabel.Indent = 0
-          BoundLabel.Font.Charset = DEFAULT_CHARSET
-          BoundLabel.Font.Color = clWindowText
-          BoundLabel.Font.Height = -11
-          BoundLabel.Font.Name = 'Tahoma'
-          BoundLabel.Font.Style = []
-          BoundLabel.Layout = sclLeft
-          BoundLabel.MaxWidth = 0
-          BoundLabel.UseSkinColor = True
         end
       end
       object cbxName: TsGroupBox
@@ -232,6 +197,7 @@ object frmCustomerEdit2: TfrmCustomerEdit2
         Caption = 'Name'
         TabOrder = 1
         SkinData.SkinSection = 'GROUPBOX'
+        Checked = False
         DesignSize = (
           464
           101)
@@ -311,15 +277,6 @@ object frmCustomerEdit2: TfrmCustomerEdit2
           TabOrder = 0
           OnExit = edCustomerExit
           SkinData.SkinSection = 'EDIT'
-          BoundLabel.Indent = 0
-          BoundLabel.Font.Charset = DEFAULT_CHARSET
-          BoundLabel.Font.Color = clWindowText
-          BoundLabel.Font.Height = -11
-          BoundLabel.Font.Name = 'Tahoma'
-          BoundLabel.Font.Style = []
-          BoundLabel.Layout = sclLeft
-          BoundLabel.MaxWidth = 0
-          BoundLabel.UseSkinColor = True
         end
         object edSurName: TsEdit
           AlignWithMargins = True
@@ -337,21 +294,12 @@ object frmCustomerEdit2: TfrmCustomerEdit2
           ParentFont = False
           TabOrder = 4
           SkinData.SkinSection = 'EDIT'
-          BoundLabel.Indent = 0
-          BoundLabel.Font.Charset = DEFAULT_CHARSET
-          BoundLabel.Font.Color = clWindowText
-          BoundLabel.Font.Height = -11
-          BoundLabel.Font.Name = 'Tahoma'
-          BoundLabel.Font.Style = []
-          BoundLabel.Layout = sclLeft
-          BoundLabel.MaxWidth = 0
-          BoundLabel.UseSkinColor = True
         end
         object chkActive: TsCheckBox
           Left = 329
           Top = 16
-          Width = 50
-          Height = 20
+          Width = 55
+          Height = 19
           Caption = 'Active'
           TabOrder = 1
           SkinData.SkinSection = 'CHECKBOX'
@@ -374,21 +322,12 @@ object frmCustomerEdit2: TfrmCustomerEdit2
           OnDblClick = edPIDDblClick
           OnExit = edCustomerExit
           SkinData.SkinSection = 'EDIT'
-          BoundLabel.Indent = 0
-          BoundLabel.Font.Charset = DEFAULT_CHARSET
-          BoundLabel.Font.Color = clWindowText
-          BoundLabel.Font.Height = -11
-          BoundLabel.Font.Name = 'Tahoma'
-          BoundLabel.Font.Style = []
-          BoundLabel.Layout = sclLeft
-          BoundLabel.MaxWidth = 0
-          BoundLabel.UseSkinColor = True
         end
         object chkTravelAgency: TsCheckBox
           Left = 329
           Top = 42
-          Width = 89
-          Height = 20
+          Width = 94
+          Height = 19
           Caption = 'Travel Agency'
           TabOrder = 3
           SkinData.SkinSection = 'CHECKBOX'
@@ -405,6 +344,7 @@ object frmCustomerEdit2: TfrmCustomerEdit2
         Caption = 'Contact Information'
         TabOrder = 2
         SkinData.SkinSection = 'GROUPBOX'
+        Checked = False
         DesignSize = (
           464
           153)
@@ -506,15 +446,6 @@ object frmCustomerEdit2: TfrmCustomerEdit2
           ParentFont = False
           TabOrder = 2
           SkinData.SkinSection = 'EDIT'
-          BoundLabel.Indent = 0
-          BoundLabel.Font.Charset = DEFAULT_CHARSET
-          BoundLabel.Font.Color = clWindowText
-          BoundLabel.Font.Height = -11
-          BoundLabel.Font.Name = 'Tahoma'
-          BoundLabel.Font.Style = []
-          BoundLabel.Layout = sclLeft
-          BoundLabel.MaxWidth = 0
-          BoundLabel.UseSkinColor = True
         end
         object edTel2: TsEdit
           AlignWithMargins = True
@@ -532,15 +463,6 @@ object frmCustomerEdit2: TfrmCustomerEdit2
           ParentFont = False
           TabOrder = 1
           SkinData.SkinSection = 'EDIT'
-          BoundLabel.Indent = 0
-          BoundLabel.Font.Charset = DEFAULT_CHARSET
-          BoundLabel.Font.Color = clWindowText
-          BoundLabel.Font.Height = -11
-          BoundLabel.Font.Name = 'Tahoma'
-          BoundLabel.Font.Style = []
-          BoundLabel.Layout = sclLeft
-          BoundLabel.MaxWidth = 0
-          BoundLabel.UseSkinColor = True
         end
         object edTel1: TsEdit
           Left = 166
@@ -556,15 +478,6 @@ object frmCustomerEdit2: TfrmCustomerEdit2
           ParentFont = False
           TabOrder = 0
           SkinData.SkinSection = 'EDIT'
-          BoundLabel.Indent = 0
-          BoundLabel.Font.Charset = DEFAULT_CHARSET
-          BoundLabel.Font.Color = clWindowText
-          BoundLabel.Font.Height = -11
-          BoundLabel.Font.Name = 'Tahoma'
-          BoundLabel.Font.Style = []
-          BoundLabel.Layout = sclLeft
-          BoundLabel.MaxWidth = 0
-          BoundLabel.UseSkinColor = True
         end
         object edEmailAddress: TsEdit
           AlignWithMargins = True
@@ -582,15 +495,6 @@ object frmCustomerEdit2: TfrmCustomerEdit2
           ParentFont = False
           TabOrder = 3
           SkinData.SkinSection = 'EDIT'
-          BoundLabel.Indent = 0
-          BoundLabel.Font.Charset = DEFAULT_CHARSET
-          BoundLabel.Font.Color = clWindowText
-          BoundLabel.Font.Height = -11
-          BoundLabel.Font.Name = 'Tahoma'
-          BoundLabel.Font.Style = []
-          BoundLabel.Layout = sclLeft
-          BoundLabel.MaxWidth = 0
-          BoundLabel.UseSkinColor = True
         end
         object edContactPerson: TsEdit
           AlignWithMargins = True
@@ -608,15 +512,6 @@ object frmCustomerEdit2: TfrmCustomerEdit2
           ParentFont = False
           TabOrder = 5
           SkinData.SkinSection = 'EDIT'
-          BoundLabel.Indent = 0
-          BoundLabel.Font.Charset = DEFAULT_CHARSET
-          BoundLabel.Font.Color = clWindowText
-          BoundLabel.Font.Height = -11
-          BoundLabel.Font.Name = 'Tahoma'
-          BoundLabel.Font.Style = []
-          BoundLabel.Layout = sclLeft
-          BoundLabel.MaxWidth = 0
-          BoundLabel.UseSkinColor = True
         end
         object edHomepage: TsEdit
           AlignWithMargins = True
@@ -634,15 +529,6 @@ object frmCustomerEdit2: TfrmCustomerEdit2
           ParentFont = False
           TabOrder = 4
           SkinData.SkinSection = 'EDIT'
-          BoundLabel.Indent = 0
-          BoundLabel.Font.Charset = DEFAULT_CHARSET
-          BoundLabel.Font.Color = clWindowText
-          BoundLabel.Font.Height = -11
-          BoundLabel.Font.Name = 'Tahoma'
-          BoundLabel.Font.Style = []
-          BoundLabel.Layout = sclLeft
-          BoundLabel.MaxWidth = 0
-          BoundLabel.UseSkinColor = True
         end
       end
       object gbxGuest: TsGroupBox
@@ -654,6 +540,7 @@ object frmCustomerEdit2: TfrmCustomerEdit2
         Caption = 'Default values for this customer'
         TabOrder = 3
         SkinData.SkinSection = 'GROUPBOX'
+        Checked = False
         object clabMarkedSegment: TsLabel
           Left = 73
           Top = 22
@@ -865,15 +752,6 @@ object frmCustomerEdit2: TfrmCustomerEdit2
           ReadOnly = True
           TabOrder = 0
           SkinData.SkinSection = 'EDIT'
-          BoundLabel.Indent = 0
-          BoundLabel.Font.Charset = DEFAULT_CHARSET
-          BoundLabel.Font.Color = clWindowText
-          BoundLabel.Font.Height = -11
-          BoundLabel.Font.Name = 'Tahoma'
-          BoundLabel.Font.Style = []
-          BoundLabel.Layout = sclLeft
-          BoundLabel.MaxWidth = 0
-          BoundLabel.UseSkinColor = True
         end
         object edCountry: TsEdit
           Left = 161
@@ -891,15 +769,6 @@ object frmCustomerEdit2: TfrmCustomerEdit2
           ReadOnly = True
           TabOrder = 1
           SkinData.SkinSection = 'EDIT'
-          BoundLabel.Indent = 0
-          BoundLabel.Font.Charset = DEFAULT_CHARSET
-          BoundLabel.Font.Color = clWindowText
-          BoundLabel.Font.Height = -11
-          BoundLabel.Font.Name = 'Tahoma'
-          BoundLabel.Font.Style = []
-          BoundLabel.Layout = sclLeft
-          BoundLabel.MaxWidth = 0
-          BoundLabel.UseSkinColor = True
         end
         object edCurrency: TsEdit
           Left = 161
@@ -917,15 +786,6 @@ object frmCustomerEdit2: TfrmCustomerEdit2
           ReadOnly = True
           TabOrder = 2
           SkinData.SkinSection = 'EDIT'
-          BoundLabel.Indent = 0
-          BoundLabel.Font.Charset = DEFAULT_CHARSET
-          BoundLabel.Font.Color = clWindowText
-          BoundLabel.Font.Height = -11
-          BoundLabel.Font.Name = 'Tahoma'
-          BoundLabel.Font.Style = []
-          BoundLabel.Layout = sclLeft
-          BoundLabel.MaxWidth = 0
-          BoundLabel.UseSkinColor = True
         end
         object edPcCode: TsEdit
           Left = 161
@@ -944,15 +804,6 @@ object frmCustomerEdit2: TfrmCustomerEdit2
           ReadOnly = True
           TabOrder = 3
           SkinData.SkinSection = 'EDIT'
-          BoundLabel.Indent = 0
-          BoundLabel.Font.Charset = DEFAULT_CHARSET
-          BoundLabel.Font.Color = clWindowText
-          BoundLabel.Font.Height = -11
-          BoundLabel.Font.Name = 'Tahoma'
-          BoundLabel.Font.Style = []
-          BoundLabel.Layout = sclLeft
-          BoundLabel.MaxWidth = 0
-          BoundLabel.UseSkinColor = True
         end
         object edDiscountPercent: TsCalcEdit
           Left = 161
@@ -968,15 +819,6 @@ object frmCustomerEdit2: TfrmCustomerEdit2
           Font.Style = []
           ParentFont = False
           TabOrder = 4
-          BoundLabel.Indent = 0
-          BoundLabel.Font.Charset = DEFAULT_CHARSET
-          BoundLabel.Font.Color = clWindowText
-          BoundLabel.Font.Height = -11
-          BoundLabel.Font.Name = 'Tahoma'
-          BoundLabel.Font.Style = []
-          BoundLabel.Layout = sclLeft
-          BoundLabel.MaxWidth = 0
-          BoundLabel.UseSkinColor = True
           SkinData.SkinSection = 'EDIT'
           GlyphMode.Blend = 0
           GlyphMode.Grayed = False
@@ -984,8 +826,8 @@ object frmCustomerEdit2: TfrmCustomerEdit2
         object chkStayTaxIncluted: TsCheckBox
           Left = 161
           Top = 180
-          Width = 98
-          Height = 20
+          Width = 103
+          Height = 19
           Caption = 'Staytax incluted'
           TabOrder = 5
           SkinData.SkinSection = 'CHECKBOX'
@@ -1009,15 +851,6 @@ object frmCustomerEdit2: TfrmCustomerEdit2
           ReadOnly = True
           TabOrder = 6
           SkinData.SkinSection = 'EDIT'
-          BoundLabel.Indent = 0
-          BoundLabel.Font.Charset = DEFAULT_CHARSET
-          BoundLabel.Font.Color = clWindowText
-          BoundLabel.Font.Height = -11
-          BoundLabel.Font.Name = 'Tahoma'
-          BoundLabel.Font.Style = []
-          BoundLabel.Layout = sclLeft
-          BoundLabel.MaxWidth = 0
-          BoundLabel.UseSkinColor = True
         end
       end
     end
@@ -1034,6 +867,7 @@ object frmCustomerEdit2: TfrmCustomerEdit2
         Caption = 'Notes'
         TabOrder = 0
         SkinData.SkinSection = 'GROUPBOX'
+        Checked = False
         object memNotes: TsMemo
           Left = 2
           Top = 15
@@ -1052,15 +886,6 @@ object frmCustomerEdit2: TfrmCustomerEdit2
           ScrollBars = ssVertical
           TabOrder = 0
           Text = #13#10
-          BoundLabel.Indent = 0
-          BoundLabel.Font.Charset = DEFAULT_CHARSET
-          BoundLabel.Font.Color = clWindowText
-          BoundLabel.Font.Height = -11
-          BoundLabel.Font.Name = 'Tahoma'
-          BoundLabel.Font.Style = []
-          BoundLabel.Layout = sclLeft
-          BoundLabel.MaxWidth = 0
-          BoundLabel.UseSkinColor = True
           SkinData.SkinSection = 'EDIT'
         end
       end
@@ -1093,15 +918,6 @@ object frmCustomerEdit2: TfrmCustomerEdit2
           Top = 51
           Width = 179
           Height = 544
-          BoundLabel.Indent = 0
-          BoundLabel.Font.Charset = DEFAULT_CHARSET
-          BoundLabel.Font.Color = clWindowText
-          BoundLabel.Font.Height = -11
-          BoundLabel.Font.Name = 'Tahoma'
-          BoundLabel.Font.Style = []
-          BoundLabel.Layout = sclLeft
-          BoundLabel.MaxWidth = 0
-          BoundLabel.UseSkinColor = True
           SkinData.SkinSection = 'EDIT'
           Align = alClient
           Color = clWhite
@@ -1213,15 +1029,6 @@ object frmCustomerEdit2: TfrmCustomerEdit2
           Top = 51
           Width = 267
           Height = 544
-          BoundLabel.Indent = 0
-          BoundLabel.Font.Charset = DEFAULT_CHARSET
-          BoundLabel.Font.Color = clWindowText
-          BoundLabel.Font.Height = -11
-          BoundLabel.Font.Name = 'Tahoma'
-          BoundLabel.Font.Style = []
-          BoundLabel.Layout = sclLeft
-          BoundLabel.MaxWidth = 0
-          BoundLabel.UseSkinColor = True
           SkinData.SkinSection = 'EDIT'
           Align = alClient
           Color = clWhite

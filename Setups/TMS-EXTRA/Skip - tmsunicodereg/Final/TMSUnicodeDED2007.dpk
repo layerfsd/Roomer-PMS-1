@@ -1,0 +1,54 @@
+package TMSUnicodeDED2007;
+
+{$R *.res}
+{$ALIGN 8}
+{$ASSERTIONS ON}
+{$BOOLEVAL OFF}
+{$DEBUGINFO ON}
+{$EXTENDEDSYNTAX ON}
+{$IMPORTEDDATA ON}
+{$IOCHECKS ON}
+{$LOCALSYMBOLS ON}
+{$LONGSTRINGS ON}
+{$OPENSTRINGS ON}
+{$OPTIMIZATION ON}
+{$OVERFLOWCHECKS ON}
+{$RANGECHECKS ON}
+{$REFERENCEINFO ON}
+{$SAFEDIVIDE OFF}
+{$STACKFRAMES OFF}
+{$TYPEDADDRESS ON}
+{$VARSTRINGCHECKS ON}
+{$WRITEABLECONST OFF}
+{$MINENUMSIZE 1}
+{$IMAGEBASE $400000}
+{$DESCRIPTION 'TMS Unicode Component Pack'}
+{$DESIGNONLY}
+{$IMPLICITBUILD ON}
+
+requires
+  dclact,
+  dcldb,
+  designide,
+  TMSUnicodeD2007,
+  rtl,
+  vcl,
+  xmlrtl,
+  vclactnband,
+  vclx;
+
+contains
+  TntUnicodeVcl_Register in 'TntUnicodeVcl_Register.pas',
+  TntActions_Design in 'TntActions_Design.pas',
+  TntComCtrls_Design in 'TntComCtrls_Design.pas',
+  TntDesignEditors_Design in 'TntDesignEditors_Design.pas',
+  TntDBClientActns_Design in 'TntDBClientActns_Design.pas',
+  TntDBGrids_Design in 'TntDBGrids_Design.pas',
+  TntForms_Design in 'TntForms_Design.pas',
+  TntMenus_Design in 'TntMenus_Design.pas',
+  TntStrEdit_Design in 'TntStrEdit_Design.pas',
+  TntEditMask_Editor in 'TntEditMask_Editor.pas',
+  TntMaskEdit_Design in 'TntMaskEdit_Design.pas',
+  TntMaskEditText_Editor in 'TntMaskEditText_Editor.pas';
+
+end.

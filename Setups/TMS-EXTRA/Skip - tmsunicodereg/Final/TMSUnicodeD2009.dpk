@@ -1,0 +1,76 @@
+package TMSUnicodeD2009;
+
+{$R *.res}
+{$ALIGN 8}
+{$ASSERTIONS ON}
+{$BOOLEVAL OFF}
+{$DEBUGINFO ON}
+{$EXTENDEDSYNTAX ON}
+{$IMPORTEDDATA ON}
+{$IOCHECKS ON}
+{$LOCALSYMBOLS ON}
+{$LONGSTRINGS ON}
+{$OPENSTRINGS ON}
+{$OPTIMIZATION ON}
+{$OVERFLOWCHECKS ON}
+{$RANGECHECKS ON}
+{$REFERENCEINFO ON}
+{$SAFEDIVIDE OFF}
+{$STACKFRAMES OFF}
+{$TYPEDADDRESS ON}
+{$VARSTRINGCHECKS ON}
+{$WRITEABLECONST OFF}
+{$MINENUMSIZE 1}
+{$IMAGEBASE $400000}
+{$DESCRIPTION 'TMS Unicode Component Pack runtime'}
+
+{$IMPLICITBUILD ON}
+
+requires
+  vclx,
+  vcldb,
+  vcl,
+  rtl,
+  vclactnband;
+
+contains
+  ActiveIMM_TLB in 'ActiveIMM_TLB.pas',
+  TntSystem in 'TntSystem.pas',
+  TntClipBrd in 'TntClipBrd.pas',
+  TntWindows in 'TntWindows.pas',
+  TntSysUtils in 'TntSysUtils.pas',
+  TntClasses in 'TntClasses.pas',
+  TntDialogs in 'TntDialogs.pas',
+  TntFileCtrl in 'TntFileCtrl.pas',
+  TntExtDlgs in 'TntExtDlgs.pas',
+  TntRegistry in 'TntRegistry.pas',
+  TntGraphics in 'TntGraphics.pas',
+  TntActnList in 'TntActnList.pas',
+  TntMenus in 'TntMenus.pas',
+  TntForms in 'TntForms.pas',
+  TntStdCtrls in 'TntStdCtrls.pas',
+  TntExtCtrls in 'TntExtCtrls.pas',
+  TntButtons in 'TntButtons.pas',
+  TntCheckLst in 'TntCheckLst.pas',
+  TntGrids in 'TntGrids.pas',
+  TntComCtrls in 'TntComCtrls.pas',
+  TntDB in 'TntDB.pas',
+  TntDBCtrls in 'TntDBCtrls.pas',
+  TntDBGrids in 'TntDBGrids.pas',
+  TntStdActns in 'TntStdActns.pas',
+  TntExtActns in 'TntExtActns.pas',
+  TntListActns in 'TntListActns.pas',
+  TntDBActns in 'TntDBActns.pas',
+  TntBandActn in 'TntBandActn.pas',
+  TntDBLogDlg in 'TntDBLogDlg.pas',
+  TntWideStrUtils in 'TntWideStrUtils.pas',
+  TntTaskDialog in 'TntTaskDialog.pas',
+  TntPictures in 'TntPictures.pas',
+  TntShlObj in 'TntShlObj.pas',
+  TntMaskUtils in 'TntMaskUtils.pas',
+  TntControls in 'TntControls.pas',
+  TntTabs in 'TntTabs.pas',
+  TntHeader in 'TntHeader.pas',
+  TntIniFiles in 'TntIniFiles.pas';
+
+end.

@@ -89,7 +89,7 @@ uses
   , cmpRoomerDataSet
   , cmpRoomerConnection, dxSkinsCore, dxSkinDarkSide, dxSkinDevExpressDarkStyle, dxSkinMcSkin, dxSkinOffice2013White,
   dxSkinsDefaultPainters, dxSkinscxPCPainter, cxSpinEdit, dxSkinsdxBarPainter, dxSkinsdxRibbonPainter, dxmdaset, dxSkinCaramel, dxSkinCoffee,
-  dxSkinTheAsphaltWorld
+  dxSkinTheAsphaltWorld, dxPScxPivotGridLnk
 
 
   ;
@@ -609,6 +609,8 @@ var
   CurrValue : string;
   currID : integer;
 begin
+  DisplayValue := TRIM(DisplayValue);
+
   currValue := m_.fieldbyname('CustomerType').asstring;
   currID    := m_.fieldbyname('ID').asInteger;
 

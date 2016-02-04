@@ -66,8 +66,8 @@ object frmRptNotes: TfrmRptNotes
       Caption = 'Clear'
       OnClick = btnClearClick
       SkinData.SkinSection = 'SPEEDBUTTON'
-      ImageIndex = 10
       Images = DImages.PngImageList1
+      ImageIndex = 10
     end
     object labRecordCount: TsLabel
       Left = 474
@@ -103,6 +103,7 @@ object frmRptNotes: TfrmRptNotes
       Caption = 'Select Dates'
       TabOrder = 1
       SkinData.SkinSection = 'GROUPBOX'
+      Checked = False
       object LMDSimpleLabel1: TsLabel
         Left = 67
         Top = 15
@@ -148,15 +149,7 @@ object frmRptNotes: TfrmRptNotes
         ParentFont = False
         TabOrder = 0
         Text = '25-12-2012'
-        BoundLabel.Indent = 0
-        BoundLabel.Font.Charset = DEFAULT_CHARSET
-        BoundLabel.Font.Color = clWindowText
-        BoundLabel.Font.Height = -11
-        BoundLabel.Font.Name = 'Tahoma'
-        BoundLabel.Font.Style = []
-        BoundLabel.Layout = sclLeft
-        BoundLabel.MaxWidth = 0
-        BoundLabel.UseSkinColor = True
+        CheckOnExit = True
         SkinData.SkinSection = 'EDIT'
         GlyphMode.Blend = 0
         GlyphMode.Grayed = False
@@ -179,15 +172,7 @@ object frmRptNotes: TfrmRptNotes
         ParentFont = False
         TabOrder = 1
         Text = '25-12-2012'
-        BoundLabel.Indent = 0
-        BoundLabel.Font.Charset = DEFAULT_CHARSET
-        BoundLabel.Font.Color = clWindowText
-        BoundLabel.Font.Height = -11
-        BoundLabel.Font.Name = 'Tahoma'
-        BoundLabel.Font.Style = []
-        BoundLabel.Layout = sclLeft
-        BoundLabel.MaxWidth = 0
-        BoundLabel.UseSkinColor = True
+        CheckOnExit = True
         SkinData.SkinSection = 'EDIT'
         GlyphMode.Blend = 0
         GlyphMode.Grayed = False
@@ -209,15 +194,6 @@ object frmRptNotes: TfrmRptNotes
       TabOrder = 2
       OnChange = edFilterChange
       SkinData.SkinSection = 'EDIT'
-      BoundLabel.Indent = 0
-      BoundLabel.Font.Charset = DEFAULT_CHARSET
-      BoundLabel.Font.Color = clWindowText
-      BoundLabel.Font.Height = -11
-      BoundLabel.Font.Name = 'Tahoma'
-      BoundLabel.Font.Style = []
-      BoundLabel.Layout = sclLeft
-      BoundLabel.MaxWidth = 0
-      BoundLabel.UseSkinColor = True
     end
     object chkOneday: TsCheckBox
       Left = 23
@@ -242,6 +218,7 @@ object frmRptNotes: TfrmRptNotes
       Caption = 'Use Room with status of : '
       TabOrder = 4
       SkinData.SkinSection = 'GROUPBOX'
+      Checked = False
       object chkExcluteWaitingList: TsCheckBox
         Left = 14
         Top = 17

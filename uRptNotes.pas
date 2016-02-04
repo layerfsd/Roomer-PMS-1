@@ -430,10 +430,12 @@ var
 
   rvList : string;
 
+  inStr : String;
 begin
 
   screen.Cursor := crHourglass;
   try
+    instr := StatusSQL;
     ExecutionPlan := d.roomerMainDataSet.CreateExecutionPlan;
     try
       rvList := GetRVinList;
@@ -445,8 +447,9 @@ begin
       s := s+'  ,rv.customer '#10;
       s := s+'  ,rv.ContactName '#10;
       s := s+'  ,rv.ContactEmail '#10;
-      s := s+'  ,(SELECT GROUP_CONCAT(Name ORDER BY (SELECT Room FROM roomreservations rr WHERE rr.RoomReservation =persons.RoomReservation) SEPARATOR ''\n'') FROM persons WHERE Reservation=rv.Reservation AND MainName=1) AS Guests '#10;
-      s := s+'  ,(SELECT GROUP_CONCAT(Room ORDER BY Room SEPARATOR ''\n'') FROM roomreservations WHERE Reservation=rv.Reservation) AS Rooms '#10;
+      s := s+'  ,(SELECT GROUP_CONCAT(Name ORDER BY (SELECT Room FROM roomreservations rr WHERE rr.RoomReservation = persons.RoomReservation) SEPARATOR ''\n'') FROM persons WHERE '+#10 +
+             'RoomReservation IN ((SELECT RoomReservation FROM roomreservations WHERE Reservation=rv.Reservation AND (Status in '+inStr+'))) AND MainName=1) AS Guests '#10;
+      s := s+'  ,(SELECT GROUP_CONCAT(Room ORDER BY Room SEPARATOR ''\n'') FROM roomreservations WHERE Reservation=rv.Reservation AND (Status in '+inStr+')) AS Rooms '#10;
       s := s+'  ,(SELECT customers.surName from customers WHERE customers.customer = rv.customer) as CustomerName '#10;
       s := s+'  ,rv.Name as ReservationName '#10;
       s := s+'  ,(Select channels.name from channels where channels.id = rv.channel) as Channel '#10;

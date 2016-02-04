@@ -694,6 +694,9 @@ var
 begin
   if zFirstTime then exit;
   initItemHolder(zData);
+
+//  dataset['Item'] := trim(dataset['Item']);
+
   zData.ID       := dataset.FieldByName('ID').AsInteger;
   zData.Active              := dataset['Active'];
   zData.Description         := dataset['Description'];
@@ -840,6 +843,7 @@ procedure TfrmItems2.tvDataItemPropertiesValidate(Sender: TObject; var DisplayVa
 var
   CurrValue : string;
 begin
+  DisplayValue := TRIM(DisplayValue);
   currValue := m_.fieldbyname('Item').asstring;
 
   error := false;
