@@ -335,7 +335,6 @@ type
     tvRoomsDatevatDiscountBilled: TcxGridDBColumn;
     tvRoomsDatevatDiscountUnbilled: TcxGridDBColumn;
     storeOld: TcxPropertiesStore;
-    sButton1: TsButton;
 
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -436,9 +435,10 @@ type
     procedure LoadLayout(useDefault : boolean);
     procedure GetUseStatusDefault;
     procedure SetUseStatusDefault;
-    procedure SaveLayout2new;
-
-
+    function SaveLayout2new : boolean;
+    procedure deleteLayout(description : string);
+    function updateLayoutName(oldName, newname : string) : boolean;
+    procedure LoadLayoutOld(useDefault : boolean);
 //    function calcStayTax(Taxholder : recTaxesHolder; rentAmount : double; currency : string; Customer : string; taxnights,taxguests : integer; Reservation : integer): recCityTaxResultHolder;
 
   public
@@ -967,6 +967,8 @@ begin
 //  end;
 end;
 
+
+
 procedure TfrmRptResStats.sTabSheet2Show(Sender: TObject);
 begin
   pg001.Customization.Visible :=  TRUE;
@@ -1229,7 +1231,7 @@ begin
 end;
 
 
-{$Optimization off}
+
 
 procedure TfrmRptResStats.AddGroupInvoiceSumsData;
 var
@@ -1983,11 +1985,6 @@ begin
 end;
 
 
-
-{$Optimization on}
-
-
-
 //****************************************
 procedure TfrmRptResStats.btnExcelInvoiceLinesClick(Sender: TObject);
 var
@@ -2185,6 +2182,30 @@ begin
     end;
   end;
 end;
+
+procedure TfrmRptResStats.deleteLayout(description : string);
+var
+  s : string;
+begin
+  if cbxSel.Items.Count = 0 then exit;
+  Description := cbxSel.Items[cbxSel.ItemIndex];
+
+  //**Translate
+//  if MessageDlg('Delete '+description, mtConfirmation, [mbYes, mbNo], 0) = mrYes then
+//  begin
+    s := '';
+    s := s + ' DELETE '+#10;
+    s := s + '   FROM '+#10;
+    s := s + '     propertiesstore '+#10;
+    s := s + ' WHERE '+#10;
+    s := s + '   description = '+ _db(description);
+    if cmd_bySQL(s) then
+    begin
+      GetSel;
+    end;
+//  end;
+end;
+
 
 procedure TfrmRptResStats.btnUpdateLayoutClick(Sender: TObject);
 var
@@ -2795,79 +2816,6 @@ begin
 end;
 
 
-procedure TfrmRptResStats.SaveLayout2new;
-var
-  s : string;
-
-  Description : string;
-  AccessLevel : integer;
-  AccessOwner : string;
-  FormName    : string;
-  StoreType   : string;
-  StoreName   : string;
-
-  TextContainer1   : string;
-  StringContainer1 : string;
-
-  aNewName : string;
-//  notes : string;
-begin
-  Store1.StorageStream := TMemoryStream.Create;
-  Store1.StoreTo(false);
-  Store1.StorageStream.Position := 0;
-//  memo1.text := Bin2Hex(Store1.StorageStream AS TMemoryStream);
-  TextContainer1    := Bin2Hex(Store1.StorageStream AS TMemoryStream);
-  StringContainer1  := '';
-
-  Description := GetAutoName;
-//  EdlayoutName.text := Description;
-  Description := copy(Description,1,254);
-
-  if StoreDescriptionExist(Description) then
-  begin
-    Showmessage('This Already Exists : '+Description );
-    exit;
-  end;
-
-  AccessLevel := 1;
-  AccessOwner := '';
-  FormName    := name;
-  StoreType   := 'TcxPivotGridDataLayout';
-  StoreName   := 'store1';
-//  Notes := memLayoutNotes.Text;
-
-  s := s+ 'INSERT INTO propertiesstore '+#10;
-  s := s+ '   (Description '+#10;
-  s := s+ '   ,AccessLevel '+#10;
-  s := s+ '   ,AccessOwner '+#10;
-  s := s+ '   ,FormName '+#10;
-  s := s+ '   ,StoreType '+#10;
-  s := s+ '   ,StoreName '+#10;
-  s := s+ '   ,TextContainer1 '+#10;
-//  s := s+ '   ,TextContainer2 '+#10;
-  s := s+ '   ,StringContainer1 '+#10;
-  s := s+ ' ) '+#10;
-  s := s+ ' VALUES '+#10;
-  s := s+ ' ( '+#10;
-  s := s+ '   ' + _db(Description)+#10;
-  s := s+ ' , ' + _db(AccessLevel)+#10;
-  s := s+ ' , ' + _db(AccessOwner)+#10;
-  s := s+ ' , ' + _db(FormName)+#10;
-  s := s+ ' , ' + _db(StoreType)+#10;
-  s := s+ ' , ' + _db(storeName)+#10;
-  s := s+ ' , ' + _db(TextContainer1)+#10;
-//  s := s+ ' , ' + _db(notes)+#10;
-  s := s+ ' , ' + _db(StringContainer1)+#10;
-  s := s+ ' )';
-
-  if not cmd_bySQL(s) then
-  begin
-    showmessage('Could not insert!')
-  end else
-  begin
-    GetSel;
-  end;
-end;
 
 
 procedure TfrmRptResStats.btnSetDefaultLayoutClick(Sender: TObject);
@@ -2919,7 +2867,7 @@ begin
 
 end;
 
-procedure TfrmRptResStats.LoadLayout(useDefault : boolean);
+procedure TfrmRptResStats.LoadLayoutOld(useDefault : boolean);
 var
   s : string;
   Description : string;
@@ -3000,6 +2948,111 @@ begin
   dril001.SynchronizeData := true;
 end;
 
+procedure TfrmRptResStats.LoadLayout(useDefault : boolean);
+var
+  s : string;
+  Description : string;
+  AccessLevel : integer;
+  AccessOwner : string;
+  FormName    : string;
+  StoreType   : string;
+  StoreName   : string;
+  TextContainer1   : string;
+  StringContainer1 : string;
+  rSet : TRoomerDataset;
+
+  itemindex : integer;
+
+  layoutName : string;
+
+  isOld : boolean;
+
+begin
+  dril001.SynchronizeData := false;
+  isOld := false;
+
+  if useDefault then
+  begin
+    s := '';
+    s:= s+'SELECT '#10;
+    s:= s+'   Description '#10;
+    s:= s+' , FormName '#10;
+    s:= s+' , StoreType '#10;
+    s:= s+' , StoreName '#10;
+    s:= s+' , TextContainer1 '#10;
+    s:= s+' , TextContainer2 '#10;
+    s:= s+' , StringContainer1 '#10;
+    s:= s+' , length(Textcontainer1) AS iLength '#10;
+    s:= s+'FROM '#10;
+    s:= s+' propertiesstore '#10;
+    s:= s+'WHERE '#10;
+    s:= s+' isDefault = 1 '#10;
+  end else
+  begin
+    if cbxSel.Items.Count = 0 then exit;
+    Description := cbxSel.Items[cbxSel.ItemIndex];
+    s := '';
+    s:= s+'SELECT '#10;
+    s:= s+'   Description '#10;
+    s:= s+' , FormName '#10;
+    s:= s+' , StoreType '#10;
+    s:= s+' , StoreName '#10;
+    s:= s+' , TextContainer1 '#10;
+    s:= s+' , TextContainer2 '#10;
+    s:= s+' , StringContainer1 '#10;
+    s:= s+' , length(Textcontainer1)  AS iLength '#10;
+    s:= s+'FROM '#10;
+    s:= s+' propertiesstore '#10;
+    s:= s+'WHERE '#10;
+    s:= s+' Description = '+_db(Description)+' '#10;
+  end;
+
+  rSet := CreateNewDataSet;
+  try
+    if rSet_bySQL(rSet,s) then
+    begin
+      isOld := (rSet.FieldByName('iLength').asInteger < 14500) and (rSet.FieldByName('iLength').asInteger > 500);
+
+      if isOld then
+      begin
+        showmessage('Old dataformat - Converting');
+        try
+          LoadLayoutOld(false);
+          SaveLayout2new;
+        Except
+          on e: exception do
+          begin
+           showMessage('Error converting - Contact Support '+e.message);
+           exit;
+          end;
+        end;
+        exit;
+      end;
+
+      LayoutName := rSet.FieldByName('Description').asstring;
+//    memLayoutNotes.Text := rSet.FieldByName('TextContainer2').Text;
+
+      itemindex := cbxSel.Items.IndexOf(LayoutName);
+      cbxSel.ItemIndex := itemindex;
+      if itemindex >= 0 then
+        sSpeedButton1.Hint := propertiesstoreGetText(LayoutName);
+
+      store1.StorageStream := TMemoryStream.Create;
+      try
+        Store1.StorageStream.Position := 0;
+        TextContainer1 := rSet.FieldByName('TextContainer1').asstring;
+        Hex2Bin(TextContainer1, Store1.StorageStream AS TMemoryStream);
+        Store1.RestoreFrom;
+      finally
+      end;
+    end;
+  finally
+    freeandnil(rSet);
+  end;
+  dril001.SynchronizeData := true;
+end;
+
+
 procedure TfrmRptResStats.GetSel;
 var
   s : string;
@@ -3044,6 +3097,114 @@ begin
   end;
 end;
 
+function TfrmRptResStats.updateLayoutName(oldName, newname : string) : boolean;
+var
+  s : string;
+  itemindex : integer;
+begin
+  result := false;
+  s := '';
+  s := s + ' UPDATE propertiesstore '+#10;
+  s := s + '   SET '+#10;
+  s := s+ '    Description =' + _db(newName)+#10;
+  s := s + ' WHERE '+#10;
+  s := s + '   description = ' + _db(oldName);
+
+  if cmd_bySQL(s) then
+  begin
+    cbxSel.Items[cbxSel.ItemIndex] := newName;
+    itemindex := cbxSel.Items.IndexOf(NewName);
+    cbxSel.ItemIndex := itemindex;
+    result := true;
+  end;
+end;
+
+
+
+function TfrmRptResStats.SaveLayout2new : boolean;
+var
+  s : string;
+
+  Description : string;
+  AccessLevel : integer;
+  AccessOwner : string;
+  FormName    : string;
+  StoreType   : string;
+  StoreName   : string;
+
+  TextContainer1   : string;
+  StringContainer1 : string;
+
+  aNewName : string;
+  oldDescription : string;
+  sText : string;
+//  notes : string;
+begin
+  result := false;
+  Store1.StorageStream := TMemoryStream.Create;
+  Store1.StoreTo(false);
+  Store1.StorageStream.Position := 0;
+//  memo1.text := Bin2Hex(Store1.StorageStream AS TMemoryStream);
+  TextContainer1    := Bin2Hex(Store1.StorageStream AS TMemoryStream);
+  StringContainer1  := '';
+
+  Description := cbxSel.Items[cbxSel.ItemIndex];
+  sText := propertiesstoreGetText(Description);
+  oldDescription := Description;
+
+
+  Description := '** '+Description;
+//  EdlayoutName.text := Description;
+  Description := copy(Description,1,254);
+
+  if StoreDescriptionExist(Description) then
+  begin
+    Showmessage('This Already Exists : '+Description );
+    exit;
+  end;
+
+  AccessLevel := 1;
+  AccessOwner := '';
+  FormName    := name;
+  StoreType   := 'TcxPivotGridDataLayout';
+  StoreName   := 'store1';
+//  Notes := memLayoutNotes.Text;
+
+  s := s+ 'INSERT INTO propertiesstore '+#10;
+  s := s+ '   (Description '+#10;
+  s := s+ '   ,AccessLevel '+#10;
+  s := s+ '   ,AccessOwner '+#10;
+  s := s+ '   ,FormName '+#10;
+  s := s+ '   ,StoreType '+#10;
+  s := s+ '   ,StoreName '+#10;
+  s := s+ '   ,TextContainer1 '+#10;
+//  s := s+ '   ,TextContainer2 '+#10;
+  s := s+ '   ,StringContainer1 '+#10;
+  s := s+ ' ) '+#10;
+  s := s+ ' VALUES '+#10;
+  s := s+ ' ( '+#10;
+  s := s+ '   ' + _db(Description)+#10;
+  s := s+ ' , ' + _db(AccessLevel)+#10;
+  s := s+ ' , ' + _db(AccessOwner)+#10;
+  s := s+ ' , ' + _db(FormName)+#10;
+  s := s+ ' , ' + _db(StoreType)+#10;
+  s := s+ ' , ' + _db(storeName)+#10;
+  s := s+ ' , ' + _db(TextContainer1)+#10;
+//  s := s+ ' , ' + _db(notes)+#10;
+  s := s+ ' , ' + _db(StringContainer1)+#10;
+  s := s+ ' )';
+
+  if not cmd_bySQL(s) then
+  begin
+    showmessage('Could not insert!')
+  end else
+  begin
+    // GetSel;
+    result := true;
+    deleteLayout(oldDescription);
+    updateLayoutName(description, oldDescription);
+  end;
+end;
 
 end.
 

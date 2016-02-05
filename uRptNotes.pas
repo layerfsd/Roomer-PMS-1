@@ -455,8 +455,8 @@ begin
       s := s+'  ,(Select channels.name from channels where channels.id = rv.channel) as Channel '#10;
       s := s+'  ,(SELECT Min(roomreservations.rrArrival) from roomreservations WHERE roomreservations.reservation = rv.Reservation) as FirstArrival '#10;
       s := s+'  ,(SELECT Max(roomreservations.rrdeparture) from roomreservations WHERE roomreservations.reservation = rv.Reservation) as LastDeparture '#10;
-      s := s+'  ,(SELECT count(roomreservations.id) from roomreservations WHERE roomreservations.reservation = rv.Reservation) as RoomCount '#10;
-      s := s+'  ,(SELECT count(persons.id) from persons WHERE persons.reservation = rv.Reservation) as GuestCount '#10;
+      s := s+'  ,(SELECT count(roomreservations.id) from roomreservations WHERE roomreservations.reservation = rv.Reservation AND (Status in '+inStr+')) as RoomCount '#10;
+      s := s+'  ,(SELECT count(persons.id) from persons WHERE persons.RoomReservation IN (SELECT RoomReservation FROM roomreservations WHERE Reservation=rv.Reservation AND (Status in '+inStr+'))) as GuestCount '#10;
       s := s+'FROM '#10;
       s := s+'  reservations rv '#10;
       s := s+' WHERE '#10;

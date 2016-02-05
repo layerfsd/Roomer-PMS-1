@@ -260,7 +260,7 @@ procedure Register;
 
 implementation
 
-{$R ..\resource\ALWinHttpClient.dcr}
+//{$R resource\ALWinHttpClient.dcr}
 
 Uses SysUtils,
      AlFcnString;

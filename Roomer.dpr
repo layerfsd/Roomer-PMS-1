@@ -197,7 +197,8 @@ uses
   uPersons in 'Persons\uPersons.pas',
   uRoomerContainerClasses in 'uRoomerContainerClasses.pas',
   uAvailabilityPerDay in 'AvailabilityManagement\uAvailabilityPerDay.pas',
-  uInvoiceController in 'Invoice\uInvoiceController.pas';
+  uInvoiceController in 'Invoice\uInvoiceController.pas',
+  OfflineReportGenerator in 'OfflineReports\OfflineReportGenerator.pas';
 
 {$R *.RES}
 

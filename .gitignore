@@ -21,3 +21,26 @@ Win32/
 *.bak
 * - kopie.*
 *.$$$
+*.identcache
+*.dpk
+*.bkm 
+*.ddp 
+*.cfg 
+*.dof 
+*.dsk 
+*.ini 
+*.hlp 
+*.gid 
+*.log 
+*.map 
+*.bkf 
+Thumbs.db 
+*.stat 
+*.ddp 
+*.bpl 
+*.GID 
+*.backup 
+__history 
+*.local 
+*.bak 
+*.gex

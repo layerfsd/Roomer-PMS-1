@@ -56,26 +56,7 @@ implementation
 uses ActiveX, uD;
 
 procedure TGetThreadedData.Execute(const sql : String; handler : TNotifyEvent);
-//var
-//  FDArray: TFieldInfoArray;
-//  I: Integer;
 begin
-  // prepare parameterinformations
-//  SetLength(FDArray, 1);
-//  FDArray[0].Name := 'cn';
-//  FDArray[0].DataType := ftString;
-//  FDArray[0].Size := 20;
-//  FDArray[0].Value := '%ue%';
-
-//  for I := 0 to 10 do // testrun with 11 threads
-//
-//    With TDBThread.Create('select * from Composition where Componame like :cn', FDArray) do
-//    begin
-//      FreeOnTerminate := true;
-//      // assign the wished procedure to ba called on terminate
-//      OnTerminate := ThreadTerminate;
-//    end;
-
   FEventHandler := handler;
   With TDBThread.Create(sql, nil) do
   begin
@@ -84,7 +65,6 @@ begin
     // assign the procedure to be called on terminate
     OnTerminate := ThreadTerminate;
   end;
-
 end;
 
 procedure TGetThreadedData.Post(const url, data: String; handler: TNotifyEvent);

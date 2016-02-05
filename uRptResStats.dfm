@@ -441,14 +441,6 @@ object frmRptResStats: TfrmRptResStats
         SkinData.SkinSection = 'BUTTON'
       end
     end
-    object sButton1: TsButton
-      Left = 168
-      Top = 85
-      Width = 75
-      Height = 25
-      Caption = 'sButton1'
-      TabOrder = 4
-    end
   end
   object pageMain: TsPageControl
     Left = 0
@@ -511,6 +503,7 @@ object frmRptResStats: TfrmRptResStats
                 OptionsView.FilterFields = False
                 OptionsView.RowFields = False
                 TabOrder = 0
+                ExplicitTop = 32
                 object pg001incomeTotal: TcxDBPivotGridField
                   Area = faData
                   AreaIndex = 2
@@ -2843,6 +2836,7 @@ object frmRptResStats: TfrmRptResStats
     end
     object prLinkGrDrill: TdxGridReportLink
       Component = grDrill
+      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.GrayShading = True
@@ -2855,6 +2849,7 @@ object frmRptResStats: TfrmRptResStats
       PrinterPage.PageSize.Y = 297000
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
+      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       BuiltInReportLink = True
     end
   end
