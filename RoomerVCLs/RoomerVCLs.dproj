@@ -164,6 +164,30 @@
         <DCCReference Include="Source\RoomerReservationsController.pas"/>
         <DCCReference Include="Source\CheckComboBox.pas"/>
         <DCCReference Include="Source\RoomerMultipartFormData.pas"/>
+        <DCCReference Include="http\ALAVLBinaryTree.pas"/>
+        <DCCReference Include="http\ALWininetHttpClient.pas"/>
+        <DCCReference Include="http\ALWinHttpWrapper.pas"/>
+        <DCCReference Include="http\ALWinHttpClient.pas"/>
+        <DCCReference Include="http\ALStringList.pas"/>
+        <DCCReference Include="http\ALMultiPartFormDataParser.pas"/>
+        <DCCReference Include="http\ALMultiPartBaseParser.pas"/>
+        <DCCReference Include="http\ALHttpCommon.pas"/>
+        <DCCReference Include="http\ALHttpClient.pas"/>
+        <DCCReference Include="http\ALFcnString.pas"/>
+        <DCCReference Include="http\ALFcnMisc.pas"/>
+        <DCCReference Include="http\ALFcnMime.pas"/>
+        <DCCReference Include="Source\RoomerJson.pas"/>
+        <DCCReference Include="Source\RoomerJsonParser.pas"/>
+        <DCCReference Include="Source\md5hash.pas"/>
+        <DCCReference Include="Source\hmac.pas"/>
+        <DCCReference Include="Source\btypes.pas"/>
+        <DCCReference Include="Source\hash.pas"/>
+        <DCCReference Include="Source\uRoomerExceptions.pas"/>
+        <DCCReference Include="..\uFileSystemUtils.pas"/>
+        <DCCReference Include="Source\FlatUtilitys.pas"/>
+        <DCCReference Include="Source\HSLUtils.pas"/>
+        <DCCReference Include="Source\uPopupListEx.pas"/>
+        <DCCReference Include="Source\UbuntuProgressColors.pas"/>
         <BuildConfiguration Include="Debug">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

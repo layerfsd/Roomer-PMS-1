@@ -9,37 +9,42 @@ uses
 
 type
   TfrmRoomerLoginForm = class(TForm)
-    Label1: TLabel;
+    lbHotel: TLabel;
     edtHotelCode: TEdit;
-    Label2: TLabel;
+    lbUsername: TLabel;
     edtUsername: TEdit;
-    Label3: TLabel;
+    lbPassword: TLabel;
     edtPassword: TEdit;
-    Panel1: TPanel;
-    Button1: TcxButton;
-    Button2: TcxButton;
-    Image1: TImage;
+    pnlButtons: TPanel;
+    btLogin: TcxButton;
+    btCancel: TcxButton;
+    imgRoomer: TImage;
     StoreLogin: TcxPropertiesStore;
     lblMessage: TsLabel;
     lblServerProblem: TsLabel;
-    procedure Button1Click(Sender: TObject);
-    procedure Button2Click(Sender: TObject);
+    btOffline: TcxButton;
+    procedure btLoginClick(Sender: TObject);
+    procedure btCancelClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
   private
     { Private declarations }
-    NoInternet,
-    ServerUnreachable : Boolean;
+    FNoInternet: boolean;
+    FServerUnreachable : Boolean;
+    procedure SetNoInternet(const Value: boolean);
+    procedure SetServerUnreachable(const Value: boolean);
+    procedure UpdateControls;
+  protected
+    function GetLoginParameters(var aUsername, aPassword, aHotelId: String): Boolean;
+    property NoInternet: boolean read FNoInternet write SetNoInternet;
+    property ServerUnreachable: boolean read FServerUnreachable write SetServerUnreachable;
   public
     { Public declarations }
-    function GetLoginParameters(var username, password, hotelId: String): Boolean;
   end;
 
-var
-  frmRoomerLoginForm: TfrmRoomerLoginForm;
-
-function LoginToRoomer(var username: String; var password: String; var hotelId : String; lastMessage : String): boolean;
+// Ask the user for authentication credentials using the RoomerLoginForm, return true if user confirmed dialog
+function AskUserForCredentials(var aUsername: String; var aPassword: String; var aHotelId : String; aLastMessage : String): boolean;
 
 implementation
 
@@ -52,63 +57,92 @@ uses uUtils,
      uStringUtils,
      uMain;
 
-function LoginToRoomer(var username: String; var password: String; var hotelId : String; lastMessage : String): boolean;
-var LoginForm: TfrmRoomerLoginForm;
+function AskUserForCredentials(var aUsername: String; var aPassword: String; var aHotelId : String; aLastMessage : String): boolean;
+var
+  lLoginForm: TfrmRoomerLoginForm;
 begin
   result := false;
-  LoginForm := TfrmRoomerLoginForm.Create(nil);
+  lLoginForm := TfrmRoomerLoginForm.Create(nil);
   try
-    if LoginForm.GetLoginParameters(username, password, hotelId) then
+    if lLoginForm.GetLoginParameters(aUsername, aPassword, aHotelId) then
     begin
       result := true;
       exit;
     end;
-    if (hotelId <> '') then loginForm.edtHotelCode.Text := hotelId;
-    if (username <> '') then loginForm.edtUsername.Text := username;
-    loginForm.edtPassword.Text := '';
-    loginForm.lblMessage.Caption := lastMessage;
-    loginForm.lblMessage.Visible := lastMessage <> '';
-    LoginForm.ShowModal;
-    if LoginForm.Tag = mrOk then
+    if (aHotelId <> '') then lLoginForm.edtHotelCode.Text := aHotelId;
+    if (aUsername <> '') then lLoginForm.edtUsername.Text := aUsername;
+    lLoginForm.edtPassword.Text := '';
+    lLoginForm.lblMessage.Caption := aLastMessage;
+    lLoginForm.lblMessage.Visible := aLastMessage <> '';
+
+    lLoginForm.ShowModal;
+    if (lLoginForm.Tag = mrOk) then
     begin
-      hotelId := UpperCase(loginForm.edtHotelCode.Text);
-      username := loginForm.edtUsername.Text;
-      password := loginForm.edtPassword.Text;
+      aHotelId := UpperCase(lLoginForm.edtHotelCode.Text);
+      aUsername := lLoginForm.edtUsername.Text;
+      aPassword := lLoginForm.edtPassword.Text;
       result := true;
     end;
   finally
-    LoginForm.Free;
+    lLoginForm.Free;
   end;
 end;
 
-function TfrmRoomerLoginForm.GetLoginParameters(var username, password, hotelId : String) : Boolean;
+function TfrmRoomerLoginForm.GetLoginParameters(var aUsername, aPassword, aHotelId : String) : Boolean;
 var temp : String;
 begin
   temp := ParameterByName('username');
-  if temp <> '' then username := temp;
+  if temp <> '' then aUsername := temp;
 
   temp := ParameterByName('password');
-  if temp <> '' then password := temp;
+  if temp <> '' then aPassword := temp;
 
   temp := ParameterByName('hotelId');
-  if temp <> '' then hotelId := temp;
+  if temp <> '' then aHotelId := temp;
 
-  result := (username<>'') AND (password<>'') AND (hotelId<>'');
+  result := (aUsername<>'') AND (aPassword<>'') AND (aHotelId<>'');
 end;
 
 
-procedure TfrmRoomerLoginForm.Button1Click(Sender: TObject);
+procedure TfrmRoomerLoginForm.SetNoInternet(const Value: boolean);
+begin
+  FNoInternet := Value;
+  UpdateControls;
+end;
+
+procedure TfrmRoomerLoginForm.SetServerUnreachable(const Value: boolean);
+begin
+  FServerUnreachable := Value;
+  UpdateControls;
+end;
+
+procedure TfrmRoomerLoginForm.UpdateControls;
+var
+  lOffLine: boolean;
+const
+  cNoInternet = 'No internet connection. ';
+  cPlatformUnreachable = 'Roomer platform unreachable. ';
+  cOfflineMessage = 'Roomer will not be able to work normally';
+begin
+  lOffLine := NoInternet or FServerUnreachable;
+  btLogin.Enabled := not lOffLine;
+  btOffline.Visible := lOffLine;
+  if NoInternet then
+    lblServerProblem.Caption := cNoInternet + cOfflineMessage
+  else
+  if ServerUnreachable then
+    lblServerProblem.Caption := cPlatformUnreachable + cOfflineMessage
+  else
+    lblServerProblem.Caption := '';
+end;
+
+procedure TfrmRoomerLoginForm.btLoginClick(Sender: TObject);
 begin
   Tag := mrOK;
-
-//  frmMain.OffLineMode :=  (NoInternet OR ServerUnreachable) AND
-//    d.roomerMainDataSet.OfflineFilesAvailable(edtHotelCode.Text);
-//
-
   Close;
 end;
 
-procedure TfrmRoomerLoginForm.Button2Click(Sender: TObject);
+procedure TfrmRoomerLoginForm.btCancelClick(Sender: TObject);
 begin
   Tag := mrCancel;
   Close;
@@ -128,14 +162,11 @@ procedure TfrmRoomerLoginForm.FormShow(Sender: TObject);
 begin
   if edtHotelCode.Text <> '' then
      ActiveControl := edtUsername;
+{$IFNDEF DEBUG}
   SetFormTopmostOn(self);
+{$ENDIF}
   NoInternet := NOT d.roomerMainDataSet.IsConnectedToInternet;
   ServerUnreachable := NOT d.roomerMainDataSet.RoomerPlatformAvailable;
-  if NoInternet then
-    lblServerProblem.Caption := 'No internet connection. Roomer will not be able to work normally.'
-  else
-  if ServerUnreachable then
-    lblServerProblem.Caption := 'Roomer platform unreachable. Roomer will not be able to work normally.'
 end;
 
 end.

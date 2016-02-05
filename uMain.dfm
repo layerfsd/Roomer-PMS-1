@@ -52,6 +52,7 @@ object frmMain: TfrmMain
     SunkenBorder = True
     UseOwnColor = True
     UseOwnSunkenBorder = True
+    ExplicitTop = 122
   end
   object panMain: TsPanel
     Left = 3
@@ -94,23 +95,26 @@ object frmMain: TfrmMain
       Left = 0
       Top = 173
       Width = 937
-      Height = 476
+      Height = 332
       ActivePage = tabOneDayView
       Align = alClient
       TabOrder = 3
       OnChange = pageMainGridsChange
       SkinData.SkinSection = 'PAGECONTROL'
-      ExplicitHeight = 476
       object tabOneDayView: TsTabSheet
         Caption = 'tabOneDayView'
         ImageIndex = 8
         SkinData.CustomColor = False
         SkinData.CustomFont = False
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object grOneDayRooms: TAdvStringGrid
           Left = 0
           Top = 0
           Width = 929
-          Height = 448
+          Height = 304
           Cursor = crDefault
           Align = alClient
           BevelEdges = []
@@ -144,6 +148,8 @@ object frmMain: TfrmMain
           OnMouseUp = grOneDayRoomsMouseUp
           OnStartDrag = grOneDayRoomsStartDrag
           ActiveRowColor = clWhite
+          GridLineColor = 15527152
+          GridFixedLineColor = 13947601
           HoverRowCells = [hcNormal, hcSelected]
           OnGridHint = grOneDayRoomsGridHint
           OnClickCell = grOneDayRoomsClickCell
@@ -277,6 +283,7 @@ object frmMain: TfrmMain
           SortSettings.HeaderMirrorColor = 16380385
           SortSettings.HeaderMirrorColorTo = 16182488
           Version = '7.9.1.0'
+          ExplicitHeight = 448
           ColWidths = (
             47
             49
@@ -412,7 +419,7 @@ object frmMain: TfrmMain
             object lblNoRoom: TsLabel
               Left = 3
               Top = 59
-              Width = 76
+              Width = 50
               Height = 13
               Align = alBottom
               Alignment = taCenter
@@ -423,7 +430,6 @@ object frmMain: TfrmMain
               Font.Height = -11
               Font.Name = 'Tahoma'
               Font.Style = [fsBold]
-              ExplicitWidth = 50
             end
           end
         end
@@ -434,7 +440,6 @@ object frmMain: TfrmMain
         SkinData.CustomColor = False
         SkinData.CustomFont = False
         ExplicitWidth = 932
-        ExplicitHeight = 448
         object Panel3: TsPanel
           Left = 0
           Top = 0
@@ -444,6 +449,7 @@ object frmMain: TfrmMain
           BevelOuter = bvNone
           TabOrder = 0
           SkinData.SkinSection = 'TRANSPARENT'
+          ExplicitWidth = 932
           object rgrGroupreportStayType: TsRadioGroup
             Left = 2
             Top = 4
@@ -572,7 +578,7 @@ object frmMain: TfrmMain
           Left = 0
           Top = 100
           Width = 929
-          Height = 348
+          Height = 204
           Align = alClient
           BevelInner = bvNone
           BevelOuter = bvRaised
@@ -586,6 +592,7 @@ object frmMain: TfrmMain
           PopupMenu = pupGroups
           TabOrder = 1
           LookAndFeel.NativeStyle = False
+          ExplicitHeight = 348
           object tvAllReservations: TcxGridDBTableView
             Navigator.Buttons.CustomButtons = <>
             Navigator.Buttons.First.Visible = True
@@ -843,6 +850,9 @@ object frmMain: TfrmMain
         ImageIndex = 2
         SkinData.CustomColor = False
         SkinData.CustomFont = False
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
         ExplicitHeight = 448
         object sLabel2: TsLabel
           Left = 224
@@ -1309,7 +1319,8 @@ object frmMain: TfrmMain
           OnMoved = splitPeriodMoved
           Color = 6842472
           ParentColor = False
-          ExplicitTop = 298
+          ExplicitTop = 187
+          ExplicitWidth = 932
         end
         object pnlPeriodNoRooms: TsPanel
           Left = 0
@@ -1632,17 +1643,29 @@ object frmMain: TfrmMain
         Caption = 'tabFreeRooms'
         SkinData.CustomColor = False
         SkinData.CustomFont = False
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
       end
       object tabDashboard: TsTabSheet
         Caption = 'tabDashboard'
         SkinData.CustomColor = False
         SkinData.CustomFont = False
         SkinData.SkinSection = 'TRANSPARENT'
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
       end
       object tabRateQuery: TsTabSheet
         Caption = 'tabRateQuery'
         SkinData.CustomColor = False
         SkinData.CustomFont = False
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
       end
     end
     object panMainTop: TsPanel
@@ -1914,7 +1937,7 @@ object frmMain: TfrmMain
             Left = 159
             Top = 4
             Width = 94
-            Height = 24
+            Height = 23
             Margins.Left = 10
             Margins.Top = 4
             Align = alLeft
@@ -1927,7 +1950,6 @@ object frmMain: TfrmMain
             Font.Height = -17
             Font.Name = 'Segoe UI'
             Font.Style = [fsBold]
-            ExplicitHeight = 23
           end
           object dtDate: TsDateEdit
             AlignWithMargins = True
@@ -2568,8 +2590,8 @@ object frmMain: TfrmMain
           object lblPropertyStatus: TsLabel
             Left = 1
             Top = 1
-            Width = 271
-            Height = 24
+            Width = 158
+            Height = 21
             Margins.Left = 10
             Margins.Top = 0
             Margins.Right = 0
@@ -2583,8 +2605,6 @@ object frmMain: TfrmMain
             Font.Height = -17
             Font.Name = 'Tahoma'
             Font.Style = []
-            ExplicitWidth = 158
-            ExplicitHeight = 21
           end
         end
         object Chart1: TChart
@@ -3244,7 +3264,7 @@ object frmMain: TfrmMain
     UseOwnColor = True
     Visible = False
     ExplicitTop = 125
-    ExplicitHeight = 682
+    ExplicitHeight = 538
   end
   object pnlRoomerLogoOld: TsPanel
     Left = 668
@@ -3497,7 +3517,7 @@ object frmMain: TfrmMain
     object lblHotelName: TsLabel
       Left = 0
       Top = 33
-      Width = 301
+      Width = 140
       Height = 22
       Align = alBottom
       Alignment = taCenter
@@ -3508,7 +3528,6 @@ object frmMain: TfrmMain
       Font.Height = -18
       Font.Name = 'Tahoma'
       Font.Style = []
-      ExplicitWidth = 140
     end
   end
   object pnlRBE: TsPanel
@@ -23336,7 +23355,7 @@ object frmMain: TfrmMain
     Left = 928
     Top = 456
     Bitmap = {
-      494C010102000800E40F10001000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
+      494C010102000800E80F10001000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
       0000000000000000000000000000000000000000000000000000000000000000
       00000000000000000000000000000000000000000000484C4371617545C6729D

@@ -1588,7 +1588,11 @@ begin
   frmRebuildReservationStats := TfrmRebuildReservationStats.Create(nil); frmRebuildReservationStats.Free; frmRebuildReservationStats := nil;
   frmMakeReservationQuick := TfrmMakeReservationQuick.Create(nil); frmMakeReservationQuick.Free; frmMakeReservationQuick := nil;
   frmRoomerSplash := TfrmRoomerSplash.Create(nil); frmRoomerSplash.Free; frmRoomerSplash := nil;
-  frmRoomerLoginForm := TfrmRoomerLoginForm.Create(nil); frmRoomerLoginForm.Free; frmRoomerLoginForm := nil;
+
+  // No need for global variable
+  //  frmRoomerLoginForm := TfrmRoomerLoginForm.Create(nil); frmRoomerLoginForm.Free; frmRoomerLoginForm := nil;
+  TfrmRoomerLoginForm.Create(nil).Free;
+
   frmAboutRoomer := TfrmAboutRoomer.Create(nil); frmAboutRoomer.Free; frmAboutRoomer := nil;
   frmManageFilesOnServer := TfrmManageFilesOnServer.Create(nil); frmManageFilesOnServer.Free; frmManageFilesOnServer := nil;
   frmChannelAvailabilityManager := TfrmChannelAvailabilityManager.Create(nil); frmChannelAvailabilityManager.Free; frmChannelAvailabilityManager := nil;

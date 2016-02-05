@@ -4,8 +4,8 @@ object frmRoomerLoginForm: TfrmRoomerLoginForm
   AlphaBlendValue = 180
   BorderStyle = bsDialog
   Caption = 'Roomer Login'
-  ClientHeight = 315
-  ClientWidth = 446
+  ClientHeight = 317
+  ClientWidth = 440
   Color = clWhite
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -19,7 +19,7 @@ object frmRoomerLoginForm: TfrmRoomerLoginForm
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 12
-  object Label1: TLabel
+  object lbHotel: TLabel
     Left = 94
     Top = 124
     Width = 76
@@ -37,7 +37,7 @@ object frmRoomerLoginForm: TfrmRoomerLoginForm
     Font.Style = []
     ParentFont = False
   end
-  object Label2: TLabel
+  object lbUsername: TLabel
     Left = 98
     Top = 154
     Width = 72
@@ -55,7 +55,7 @@ object frmRoomerLoginForm: TfrmRoomerLoginForm
     Font.Style = []
     ParentFont = False
   end
-  object Label3: TLabel
+  object lbPassword: TLabel
     Left = 104
     Top = 184
     Width = 66
@@ -73,10 +73,10 @@ object frmRoomerLoginForm: TfrmRoomerLoginForm
     Font.Style = []
     ParentFont = False
   end
-  object Image1: TImage
+  object imgRoomer: TImage
     Left = 0
     Top = 0
-    Width = 446
+    Width = 440
     Height = 61
     Margins.Left = 0
     Margins.Top = 0
@@ -313,11 +313,12 @@ object frmRoomerLoginForm: TfrmRoomerLoginForm
     Proportional = True
     Stretch = True
     Transparent = True
+    ExplicitWidth = 446
   end
   object lblMessage: TsLabel
     Left = 0
-    Top = 211
-    Width = 446
+    Top = 213
+    Width = 440
     Height = 71
     Margins.Left = 2
     Margins.Top = 2
@@ -336,11 +337,12 @@ object frmRoomerLoginForm: TfrmRoomerLoginForm
     Font.Style = [fsBold]
     UseSkinColor = False
     ExplicitTop = 192
+    ExplicitWidth = 446
   end
   object lblServerProblem: TsLabel
     Left = 0
     Top = 61
-    Width = 446
+    Width = 440
     Height = 56
     Margins.Left = 2
     Margins.Top = 2
@@ -358,6 +360,7 @@ object frmRoomerLoginForm: TfrmRoomerLoginForm
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
     UseSkinColor = False
+    ExplicitWidth = 446
   end
   object edtHotelCode: TEdit
     Left = 186
@@ -414,10 +417,10 @@ object frmRoomerLoginForm: TfrmRoomerLoginForm
     PasswordChar = '*'
     TabOrder = 2
   end
-  object Panel1: TPanel
+  object pnlButtons: TPanel
     Left = 0
-    Top = 282
-    Width = 446
+    Top = 284
+    Width = 440
     Height = 33
     Margins.Left = 0
     Margins.Top = 0
@@ -426,7 +429,7 @@ object frmRoomerLoginForm: TfrmRoomerLoginForm
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 3
-    object Button1: TcxButton
+    object btLogin: TcxButton
       Left = 224
       Top = 4
       Width = 111
@@ -438,15 +441,16 @@ object frmRoomerLoginForm: TfrmRoomerLoginForm
       Caption = 'Login'
       Default = True
       LookAndFeel.NativeStyle = False
+      ModalResult = 1
       OptionsImage.ImageIndex = 26
       OptionsImage.Images = DImages.PngImageList1
       SpeedButtonOptions.Flat = True
       SpeedButtonOptions.Transparent = True
-      TabOrder = 0
-      OnClick = Button1Click
+      TabOrder = 1
+      OnClick = btLoginClick
     end
-    object Button2: TcxButton
-      Left = 341
+    object btCancel: TcxButton
+      Left = 339
       Top = 4
       Width = 97
       Height = 25
@@ -457,12 +461,32 @@ object frmRoomerLoginForm: TfrmRoomerLoginForm
       Cancel = True
       Caption = 'Cancel'
       LookAndFeel.NativeStyle = False
+      ModalResult = 2
       OptionsImage.ImageIndex = 10
       OptionsImage.Images = DImages.PngImageList1
       SpeedButtonOptions.CanBeFocused = False
       SpeedButtonOptions.Flat = True
-      TabOrder = 1
-      OnClick = Button2Click
+      TabOrder = 2
+      OnClick = btCancelClick
+    end
+    object btOffline: TcxButton
+      Left = 109
+      Top = 4
+      Width = 111
+      Height = 25
+      Margins.Left = 2
+      Margins.Top = 2
+      Margins.Right = 2
+      Margins.Bottom = 2
+      Caption = 'Offline Login'
+      LookAndFeel.NativeStyle = False
+      ModalResult = 1
+      OptionsImage.ImageIndex = 26
+      OptionsImage.Images = DImages.PngImageList1
+      SpeedButtonOptions.Flat = True
+      SpeedButtonOptions.Transparent = True
+      TabOrder = 0
+      OnClick = btLoginClick
     end
   end
   object StoreLogin: TcxPropertiesStore
