@@ -24,7 +24,6 @@ Win32/
 *.identcache
 *.dpk
 *.exe 
-*.zip 
 *.bkm 
 *.ddp 
 *.cfg 
@@ -35,11 +34,14 @@ Win32/
 *.gid 
 *.log 
 *.map 
-*.bkf Thumbs.db 
-*.stat *.ddp 
+*.bkf 
+Thumbs.db 
+*.stat 
+*.ddp 
 *.bpl 
 *.GID 
 *.backup 
 __history 
 *.local 
 *.bak 
+*.gex
