@@ -71,6 +71,7 @@ type
     FLangCode : String;
     FDictionary : TDictionary<String,TDictionaryItem>;
     function GetKeyDictionaryItem(key : String): TDictionaryItem;
+    procedure ValueNotification(Sender: TObject; const Item: TDictionaryItem; Action: TCollectionNotification);
   public
     constructor Create;
     destructor Destroy; override;
@@ -190,6 +191,10 @@ type
     procedure PrepareLanguageItem(languageId: integer);
     procedure SetSystemConstants;
     procedure RemoveDictionaries;
+    procedure LanguageValueNotification(Sender: TObject; const Item: TLanguageDictionary;
+      Action: TCollectionNotification);
+    procedure LanguageIdsNotification(Sender: TObject; const Item: TRoomerLanguageItem;
+      Action: TCollectionNotification);
     { Private declarations }
   protected
     { Protected declarations }
@@ -268,9 +273,16 @@ CONST KEY_MASK = '%s.%s.%s';
 
 { TLanguageDictionary }
 
+procedure TLanguageDictionary.ValueNotification(Sender: TObject; const Item: TDictionaryItem; Action: TCollectionNotification);
+begin
+  if (Action = cnRemoved) then
+    Item.Free;
+end;
+
 constructor TLanguageDictionary.Create;
 begin
   FDictionary := TDictionary<String,TDictionaryItem>.Create;
+  FDictionary.OnValueNotify := ValueNotification;
   FLangId := -1;
   FLangCode := '---';
 end;
@@ -391,10 +403,24 @@ begin
 //  FreeAndNil(FLangIds);
 end;
 
+procedure TRoomerLanguage.LanguageValueNotification(Sender: TObject; const Item: TLanguageDictionary; Action: TCollectionNotification);
+begin
+  if (Action = cnRemoved) then
+    Item.Free;
+end;
+
+procedure TRoomerLanguage.LanguageIdsNotification(Sender: TObject; const Item: TRoomerLanguageItem; Action: TCollectionNotification);
+begin
+  if (Action = cnRemoved) then
+    Item.Free;
+end;
+
 procedure TRoomerLanguage.CreateDictionaries;
 begin
   FLanguages := TDictionary<String,TLanguageDictionary>.Create;
+  FLanguages.OnValueNotify := LanguageValueNotification;
   FLangIds := TList<TRoomerLanguageItem>.Create;
+  FLangIds.OnNotify := LanguageIdsNotification;
 end;
 
 procedure TRoomerLanguage.RemoveDictionaries;
