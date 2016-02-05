@@ -57,7 +57,7 @@ uses
   dxSkiniMaginary, dxSkinLilian, dxSkinLiquidSky, dxSkinLondonLiquidSky, dxSkinMoneyTwins, dxSkinOffice2007Black, dxSkinOffice2007Blue,
   dxSkinOffice2007Green, dxSkinOffice2007Pink, dxSkinOffice2007Silver, dxSkinOffice2010Black, dxSkinOffice2010Blue, dxSkinOffice2010Silver,
   dxSkinPumpkin, dxSkinSeven, dxSkinSevenClassic, dxSkinSharp, dxSkinSharpPlus, dxSkinSilver, dxSkinSpringTime, dxSkinStardust,
-  dxSkinSummer2008, dxSkinValentine, dxSkinVS2010, dxSkinWhiteprint, dxSkinXmas2008Blue, sScrollBox, acImage
+  dxSkinSummer2008, dxSkinValentine, dxSkinVS2010, dxSkinWhiteprint, dxSkinXmas2008Blue, sScrollBox, acImage, AdvUtil
 
     ;
 
@@ -1381,7 +1381,7 @@ type
     procedure checkFilterStatuses;
     procedure SetRBEMode(const Value: boolean);
     function CheckInARoom(name: String; iRoomReservation: integer): boolean;
-    function CheckOutARoom(Room: String; iRoomReservation, iReservation: integer): boolean;
+    procedure CheckOutARoom(Room: String; iRoomReservation, iReservation: integer);
     procedure SetDateWithoutEvents(aDate: TdateTime);
     procedure ActivateHint(HintPoint: TPoint; comp: TWinControl);
     procedure EnterRateQueryView(aDate: integer);
@@ -3174,6 +3174,8 @@ begin
           result := true;
           exit;
         end;
+
+        iActiveHotel := 0;
         try
           if AutoLogin = '' then
           begin
@@ -3185,7 +3187,6 @@ begin
 
               prepareDependencyManager;
 
-              iActiveHotel := 0;
               __cbxHotels.Items.BeginUpdate;
               __cbxHotels.Items.Clear;
               if d.roomerMainDataSet.hotels.Count = 0 then
@@ -3773,7 +3774,7 @@ begin
   pressedEsc := false;
   lastMessage := '';
   repeat
-    if (AutoLogin <> '') OR LoginToRoomer(userName, password, hotelId, lastMessage) then
+    if (AutoLogin <> '') OR AskUserForCredentials(userName, password, hotelId, lastMessage) then
     begin
       result := true;
       lblAuthStatus.Caption := GetTranslatedText('shTx_Authenticating');
@@ -3788,8 +3789,7 @@ begin
           d.roomerMainDataSet.Login(hotelId, userName, password, 'ROOMERPMS', GetVersion(Application.ExeName))
         else
         begin
-          if NOT OffLineMode then
-            OffLineMode := true;
+          OffLineMode := true;
           d.roomerMainDataSet.hotelId := hotelId;
           d.roomerMainDataSet.userName := userName;
           d.roomerMainDataSet.password := password;
@@ -4401,7 +4401,7 @@ end;
 procedure TfrmMain.RefreshStats(force: boolean = false);
 var
   OCC, ADR, REVPAR: Double;
-  RoomsSold, OOORooms: integer;
+  RoomsSold: integer;
   s: String;
   rSet: TRoomerDataSet;
 begin
@@ -4410,6 +4410,11 @@ begin
 
   if force OR (trunc(dtDate.Date) = trunc(now + cbxStatDay.ItemIndex)) OR (trunc(dtDate.Date + cbxStatDay.ItemIndex) = trunc(now + cbxStatDay.ItemIndex)) then
   begin
+    OCC := 0;
+    ADR := 0;
+    REVPAR := 0;
+    RoomsSold := 0;
+
     s := Format(HOTEL_PERFORMANCE_QUERY_BETWEEN_DATES,
         [
         dateToSqlString(now + cbxStatDay.ItemIndex),
@@ -4432,7 +4437,6 @@ begin
         ADR := rSet['ADR'];
         REVPAR := rSet['RevPar'];
         RoomsSold := rSet['RoomsSold'];
-        OOORooms := rSet['OOO'];
       end;
     finally
       freeandNil(rSet);
@@ -4801,10 +4805,10 @@ var
   GuestCount: integer;
 
 begin
+  result := false;
   if NOT assigned(CurrentlyActiveGrid) then
     exit;
 
-  result := false;
   iReservation := -1;
   iRoom := -1;
   sRoom := '';
@@ -4978,6 +4982,8 @@ begin
       Grid := grOneDayRooms;
     1:
       Grid := grPeriodRooms;
+  else
+    Exit;
   end;
   dlgAdvGridPrintSettings.Grid := Grid;
   dlgAdvGridPrintSettings.IniFile := IniPath;
@@ -5164,6 +5170,8 @@ begin
           exit;
         Date := Period_ColToDate(grPeriodRooms.col);
       end;
+  else
+    Exit;
   end;
 
   if ReservationIdInClipboard(hotelId, iReservation) then
@@ -5463,7 +5471,7 @@ begin
   end;
 end;
 
-function TfrmMain.CheckOutARoom(Room: String; iRoomReservation, iReservation: integer): boolean;
+procedure TfrmMain.CheckOutARoom(Room: String; iRoomReservation, iReservation: integer);
 begin
   if ctrlGetBoolean('CheckOutWithPaymentsDialog') OR
      (MessageDlg(Format(GetTranslatedText('shCheckOutSelectedRoom'), [Room]), mtConfirmation, [mbYes, mbNo], 0) = mrYes) then
@@ -8306,7 +8314,10 @@ begin
       timMessages.Enabled := false;
       lblCacheNotification.Visible := true;
       lblCacheNotification.Update;
-//      Beep;
+
+      anySystemMessage := false;
+
+      //      Beep;
       try
         if NOT OffLineMode then
         begin
@@ -8319,7 +8330,6 @@ begin
 
             if iMinute IN [0] then
               glb.ReloadPreviousGuests;
-            anySystemMessage := false;
             RoomerMessages.Refresh;
             for i := RoomerMessages.Count - 1 downto 0 do
             begin
@@ -9148,6 +9158,7 @@ begin
     if lastDate = Date then
       exit;
 
+    dcField := nil;
     lastDate := Date;
 
     pnlDateStatistics.Caption := ' ' + DateToStr(Date) + ' ' + FormatDateTime('dddd', Date);
@@ -10073,7 +10084,10 @@ begin
   if gridTag = 1 then
     Grid := grPeriodRooms
   else if gridTag = 2 then
-    Grid := grPeriodRooms_NO;
+    Grid := grPeriodRooms_NO
+  else
+    Exit;
+
   if (ACol <0) OR (ARow <0) then exit;
 
 
@@ -10660,10 +10674,10 @@ var
   i: integer;
 begin
   // Deactivate!
+  FOffLineMode := Value;
   exit;
 
 
-  FOffLineMode := Value;
   d.roomerMainDataSet.OffLineMode := OffLineMode;
   btnToDay.Click;
 
@@ -14572,6 +14586,9 @@ begin
   langExt := '';
   langId := g.qUserLanguage;
 
+  iSaved1 := -1;
+  iSaved2 := -1;
+  iSaved3 := -1;
   g.openSelectLanguage(langName, langExt, langId);
   try
     iSaved1 := cbxNameOrderPeriod.ItemIndex;
