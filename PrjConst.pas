@@ -1477,15 +1477,14 @@ begin
 
   constants.Add('shTxExtraBedInvoiceText', 'Extra bed');
 
-  constants.Add('shTxThisConfirmAllottedBooking', 'This will change the full booking into a confirmed reservation.' + #10#10 +
-                                                                                                'Do you want to continue?');
-
+  constants.Add('shTxThisConfirmAllottedBooking', 'This will change the full booking into a confirmed reservation.' + #10#10 +                                                                                                'Do you want to continue?');
 end;
 
 procedure AddConstants_7; // Baettu vid thennan ad vild
 begin
   constants.Add('shTx_RptTurnoverPayments_ReportPerType', 'Report per product type');
   constants.Add('shTx_RptTurnoverPayments_ReportPerItem', 'Report per product');
+  constants.Add('shTx_RptTurnoverPayments_NoConfirmedReports', 'No previously confirmed reports were selected.');
 
   constants.Add('shTx_FrmMain_UnassignedItemsButton', 'Unassigned Rooms (%d)');
 

@@ -408,7 +408,7 @@ begin
       kbmConfirms_.LoadFromDataSet(rSet1,[]);
       // LoadKbmMemtableFromDataSetQuiet(kbmConfirms_,rSet1,[]);
       kbmConfirms_.First;
-
+      btnOk.Enabled := (rSet1.RecordCount > 0);
     finally
       kbmConfirms_.EnableControls;
     end;

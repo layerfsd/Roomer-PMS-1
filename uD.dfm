@@ -493,7 +493,7 @@ object d: Td
     Indexes = <>
     SortOptions = []
     Left = 368
-    Top = 88
+    Top = 96
     object memImportTypesID: TIntegerField
       FieldName = 'ID'
     end

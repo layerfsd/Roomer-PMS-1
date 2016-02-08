@@ -5266,12 +5266,21 @@ end;
 procedure TfrmMain.C4Click(Sender: TObject);
 var
   iRoomReservation: integer;
-  name: String;
+  sText, status, room, name: String;
 begin
   if mAllReservations.eof OR mAllReservations.BOF then
     exit;
   iRoomReservation := mAllReservations['RoomReservation'];
   name := mAllReservations['ReservationName'];
+  room := mAllReservations['Room'];
+  status := mAllReservations['Room'];
+
+  if g.qWarnCheckInDirtyRoom AND (NOT ((status = 'R') OR (status = 'C'))) then
+  begin
+    sText := format(getTranslatedText('shTx_Various_RoomNotClean'), [room]);
+    if MessageDlg(sText, mtWarning, [mbYes, mbCancel], 0) <> mrYes then exit;
+  end;
+
   CheckInARoom(name, iRoomReservation);
 end;
 

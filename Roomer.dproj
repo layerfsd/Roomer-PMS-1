@@ -110,6 +110,7 @@
         <VerInfo_Keys>CompanyName=Promoir BV;FileDescription=Roomer PMS;FileVersion=1.8.1.1;InternalName=;LegalCopyright=(C) 2013, 2014, 2015 Promoir BV;LegalTrademarks=Roomer is a Registered Trademark of Promoir BV;OriginalFilename=Roomer.exe;ProductName=Roomer Open Hospitality Platform;ProductVersion=1.8.1.1;Comments=;ExtraBuild=20160202</VerInfo_Keys>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2)'!=''">
+        <DCC_ExeOutput>$(ROOMER_DEBUG_DIR)</DCC_ExeOutput>
         <VerInfo_MajorVer>1</VerInfo_MajorVer>
         <VerInfo_Keys>CompanyName=Beryllium ehf;FileDescription=Hotel Management System Main Module;FileVersion=1.5.11.10670;InternalName=HMS;LegalCopyright=Beryllium ehf 2000-2012;LegalTrademarks=Beryllium 2000-2012;OriginalFilename=home.exe;ProductName=Hotel Organizing and Management System;ProductVersion=1.5.11;Comments=SQL 2005 - Datalayout V12.05;Author=Bjorn Heidarr / Hordur Johannsson;DBversion=SQL 2005 - 1205;SupportEmail=support@berylsoftware.com;SupportHomePage=http://berylsoftware.com;SupportTel=+354 772-2002;Support=Hörður Jóhannsson</VerInfo_Keys>
         <DCC_OutputXMLDocumentation>true</DCC_OutputXMLDocumentation>
@@ -128,13 +129,13 @@
         <DCC_DcuOutput>C:\Temp\dcu\</DCC_DcuOutput>
         <DCC_DcpOutput>C:\Temp\dcu\</DCC_DcpOutput>
         <VerInfo_Debug>true</VerInfo_Debug>
-        <VerInfo_Keys>CompanyName=Promoir Roomer / Beryllium ehf;FileDescription=Roomer PMS;FileVersion=1.2.0.1014;InternalName=Roomer;LegalCopyright=Hordur Johannsson/Bjorn Heidarr;LegalTrademarks=;OriginalFilename=Roomer;ProductName=Roomer PMS;ProductVersion=1.0.0.0;Comments=;ExtraBuild=20151203</VerInfo_Keys>
+        <VerInfo_Keys>CompanyName=Promoir Roomer / Beryllium ehf;FileDescription=Roomer PMS;FileVersion=1.2.0.1016;InternalName=Roomer;LegalCopyright=Hordur Johannsson/Bjorn Heidarr;LegalTrademarks=;OriginalFilename=Roomer;ProductName=Roomer PMS;ProductVersion=1.0.0.0;Comments=;ExtraBuild=20151203</VerInfo_Keys>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <VerInfo_AutoGenVersion>false</VerInfo_AutoGenVersion>
         <VerInfo_AutoIncVersion>true</VerInfo_AutoIncVersion>
         <VerInfo_Release>0</VerInfo_Release>
         <VerInfo_MinorVer>2</VerInfo_MinorVer>
-        <VerInfo_Build>1014</VerInfo_Build>
+        <VerInfo_Build>1016</VerInfo_Build>
     </PropertyGroup>
     <ItemGroup>
         <DelphiCompile Include="$(MainSource)">
@@ -635,8 +636,6 @@
         <DCCReference Include="AvailabilityManagement\uAvailabilityPerDay.pas"/>
         <DCCReference Include="Invoice\uInvoiceController.pas"/>
         <DCCReference Include="OfflineReports\OfflineReportGenerator.pas"/>
-        <DCCReference Include="RoomerVCLs\Source\uPopupListEx.pas"/>
-        <DCCReference Include="RoomerVCLs\Source\uDateUtils.pas"/>
         <None Include="Roomer.todo"/>
         <None Include="notes.txt"/>
         <BuildConfiguration Include="Debug">
@@ -674,7 +673,7 @@
                     <VersionInfo Name="MajorVer">12</VersionInfo>
                     <VersionInfo Name="MinorVer">5</VersionInfo>
                     <VersionInfo Name="Release">11</VersionInfo>
-                    <VersionInfo Name="Build">12046</VersionInfo>
+                    <VersionInfo Name="Build">12048</VersionInfo>
                     <VersionInfo Name="Debug">False</VersionInfo>
                     <VersionInfo Name="PreRelease">False</VersionInfo>
                     <VersionInfo Name="Special">False</VersionInfo>
@@ -686,7 +685,7 @@
                 <VersionInfoKeys>
                     <VersionInfoKeys Name="CompanyName">Beryllium ehf</VersionInfoKeys>
                     <VersionInfoKeys Name="FileDescription">Hotel Management System Main Module</VersionInfoKeys>
-                    <VersionInfoKeys Name="FileVersion">12.5.11.12046</VersionInfoKeys>
+                    <VersionInfoKeys Name="FileVersion">12.5.11.12048</VersionInfoKeys>
                     <VersionInfoKeys Name="InternalName">HMS</VersionInfoKeys>
                     <VersionInfoKeys Name="LegalCopyright">Beryllium ehf 2000-2012</VersionInfoKeys>
                     <VersionInfoKeys Name="LegalTrademarks">Beryllium 2000-2012</VersionInfoKeys>
@@ -702,8 +701,6 @@
                     <VersionInfoKeys Name="Support">Hörður Jóhannsson</VersionInfoKeys>
                 </VersionInfoKeys>
                 <Excluded_Packages>
-                    <Excluded_Packages Name="$(BDSBIN)\bcboffice2k170.bpl">Embarcadero C++Builder Office 2000 Servers Package</Excluded_Packages>
-                    <Excluded_Packages Name="$(BDSBIN)\bcbofficexp170.bpl">Embarcadero C++Builder Office XP Servers Package</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\dcloffice2k170.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\dclofficexp170.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
                 </Excluded_Packages>
