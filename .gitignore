@@ -22,11 +22,6 @@ Win32/
 * - kopie.*
 *.$$$
 *.identcache
-*.dpk
-<<<<<<< HEAD
-=======
-*.exe 
->>>>>>> c09f4729b12ac1aadb094f2d9063e0f94e81bcdb
 *.bkm 
 *.ddp 
 *.cfg 
