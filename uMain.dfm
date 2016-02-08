@@ -68,7 +68,6 @@ object frmMain: TfrmMain
     ParentDoubleBuffered = False
     TabOrder = 1
     SkinData.SkinSection = 'PANEL'
-    ExplicitHeight = 649
     object lblSearchFilterActive: TsLabel
       Left = 0
       Top = 170
@@ -95,7 +94,7 @@ object frmMain: TfrmMain
       Top = 173
       Width = 937
       Height = 332
-      ActivePage = tabOneDayView
+      ActivePage = tabGuestList
       Align = alClient
       TabOrder = 3
       OnChange = pageMainGridsChange
@@ -105,10 +104,6 @@ object frmMain: TfrmMain
         ImageIndex = 8
         SkinData.CustomColor = False
         SkinData.CustomFont = False
-        ExplicitLeft = 0
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
         object grOneDayRooms: TAdvStringGrid
           Left = 0
           Top = 0
@@ -281,8 +276,7 @@ object frmMain: TfrmMain
           SortSettings.HeaderColorTo = 16579058
           SortSettings.HeaderMirrorColor = 16380385
           SortSettings.HeaderMirrorColorTo = 16182488
-          Version = '7.9.1.0'
-          ExplicitHeight = 448
+          Version = '7.8.9.0'
           ColWidths = (
             47
             49
@@ -418,7 +412,7 @@ object frmMain: TfrmMain
             object lblNoRoom: TsLabel
               Left = 3
               Top = 59
-              Width = 50
+              Width = 76
               Height = 13
               Align = alBottom
               Alignment = taCenter
@@ -429,6 +423,7 @@ object frmMain: TfrmMain
               Font.Height = -11
               Font.Name = 'Tahoma'
               Font.Style = [fsBold]
+              ExplicitWidth = 50
             end
           end
         end
@@ -438,7 +433,6 @@ object frmMain: TfrmMain
         ImageIndex = 9
         SkinData.CustomColor = False
         SkinData.CustomFont = False
-        ExplicitWidth = 932
         object Panel3: TsPanel
           Left = 0
           Top = 0
@@ -448,7 +442,6 @@ object frmMain: TfrmMain
           BevelOuter = bvNone
           TabOrder = 0
           SkinData.SkinSection = 'TRANSPARENT'
-          ExplicitWidth = 932
           object rgrGroupreportStayType: TsRadioGroup
             Left = 2
             Top = 4
@@ -519,7 +512,7 @@ object frmMain: TfrmMain
             object chkNewPage: TsCheckBox
               Left = 3
               Top = 15
-              Width = 148
+              Width = 151
               Height = 19
               Caption = 'Reservation on new page'
               Font.Charset = DEFAULT_CHARSET
@@ -536,7 +529,7 @@ object frmMain: TfrmMain
             object chkPrintMemo: TsCheckBox
               Left = 3
               Top = 36
-              Width = 78
+              Width = 81
               Height = 19
               Caption = 'Print memo'
               Font.Charset = DEFAULT_CHARSET
@@ -591,7 +584,8 @@ object frmMain: TfrmMain
           PopupMenu = pupGroups
           TabOrder = 1
           LookAndFeel.NativeStyle = False
-          ExplicitHeight = 348
+          ExplicitLeft = 3
+          ExplicitTop = 101
           object tvAllReservations: TcxGridDBTableView
             Navigator.Buttons.CustomButtons = <>
             Navigator.Buttons.First.Visible = True
@@ -849,10 +843,6 @@ object frmMain: TfrmMain
         ImageIndex = 2
         SkinData.CustomColor = False
         SkinData.CustomFont = False
-        ExplicitLeft = 0
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 448
         object sLabel2: TsLabel
           Left = 224
           Top = 400
@@ -869,7 +859,6 @@ object frmMain: TfrmMain
           BevelOuter = bvNone
           TabOrder = 0
           SkinData.SkinSection = 'PANEL'
-          ExplicitHeight = 298
           object lblLoading: TsLabel
             Left = 0
             Top = 0
@@ -1097,7 +1086,7 @@ object frmMain: TfrmMain
             SortSettings.HeaderColorTo = 16579058
             SortSettings.HeaderMirrorColor = 16380385
             SortSettings.HeaderMirrorColorTo = 16182488
-            Version = '7.9.1.0'
+            Version = '7.8.9.0'
             ColWidths = (
               73
               20
@@ -1124,7 +1113,7 @@ object frmMain: TfrmMain
               Style = csDropDownList
               Color = clWhite
               Font.Charset = DEFAULT_CHARSET
-              Font.Color = 2302755
+              Font.Color = clBlack
               Font.Height = -11
               Font.Name = 'Tahoma'
               Font.Style = []
@@ -1148,7 +1137,6 @@ object frmMain: TfrmMain
             BevelOuter = bvNone
             TabOrder = 2
             SkinData.SkinSection = 'TRANSPARENT'
-            ExplicitTop = 276
             object sPanel2: TsPanel
               Left = -51
               Top = 0
@@ -1318,8 +1306,6 @@ object frmMain: TfrmMain
           OnMoved = splitPeriodMoved
           Color = 6842472
           ParentColor = False
-          ExplicitTop = 187
-          ExplicitWidth = 932
         end
         object pnlPeriodNoRooms: TsPanel
           Left = 0
@@ -1330,7 +1316,6 @@ object frmMain: TfrmMain
           Align = alBottom
           TabOrder = 2
           SkinData.SkinSection = 'PANEL'
-          ExplicitTop = 339
           object grPeriodRooms_NO: TAdvStringGrid
             Tag = 2
             Left = 1
@@ -1459,7 +1444,7 @@ object frmMain: TfrmMain
             SearchFooter.HintHighlight = 'Highlight occurences'
             SearchFooter.MatchCaseCaption = 'Match case'
             SortSettings.DefaultFormat = ssAutomatic
-            Version = '7.9.1.0'
+            Version = '7.8.9.0'
             ColWidths = (
               64
               64
@@ -1477,7 +1462,6 @@ object frmMain: TfrmMain
           TabOrder = 3
           OnMouseEnter = pnlNoRoomButtonsMouseEnter
           SkinData.SkinSection = 'PANEL'
-          ExplicitTop = 306
           object pnlOccupancyViewButtons: TPanel
             Left = 559
             Top = 1
@@ -1642,29 +1626,17 @@ object frmMain: TfrmMain
         Caption = 'tabFreeRooms'
         SkinData.CustomColor = False
         SkinData.CustomFont = False
-        ExplicitLeft = 0
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
       end
       object tabDashboard: TsTabSheet
         Caption = 'tabDashboard'
         SkinData.CustomColor = False
         SkinData.CustomFont = False
         SkinData.SkinSection = 'TRANSPARENT'
-        ExplicitLeft = 0
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
       end
       object tabRateQuery: TsTabSheet
         Caption = 'tabRateQuery'
         SkinData.CustomColor = False
         SkinData.CustomFont = False
-        ExplicitLeft = 0
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
       end
     end
     object panMainTop: TsPanel
@@ -1936,7 +1908,7 @@ object frmMain: TfrmMain
             Left = 159
             Top = 4
             Width = 94
-            Height = 23
+            Height = 24
             Margins.Left = 10
             Margins.Top = 4
             Align = alLeft
@@ -1949,6 +1921,7 @@ object frmMain: TfrmMain
             Font.Height = -17
             Font.Name = 'Segoe UI'
             Font.Style = [fsBold]
+            ExplicitHeight = 23
           end
           object dtDate: TsDateEdit
             AlignWithMargins = True
@@ -1966,7 +1939,7 @@ object frmMain: TfrmMain
             Color = clWhite
             EditMask = '!99/99/9999;1; '
             Font.Charset = DEFAULT_CHARSET
-            Font.Color = 2302755
+            Font.Color = clBlack
             Font.Height = -13
             Font.Name = 'Segoe UI'
             Font.Style = [fsBold]
@@ -2246,8 +2219,7 @@ object frmMain: TfrmMain
             BackgroundPosition = bpTiled
             BevelOuter = bvNone
             BorderWidth = 1
-            CaptionColor = clNone
-            CaptionTextColor = clBlack
+            Look = lookFlat
             DateDownColor = clNone
             DateHoverColor = clNone
             DayFont.Charset = DEFAULT_CHARSET
@@ -2255,13 +2227,20 @@ object frmMain: TfrmMain
             DayFont.Height = -11
             DayFont.Name = 'Tahoma'
             DayFont.Style = []
-            FocusColor = clHighlight
-            HeaderColor = clNone
+            WeekFont.Charset = DEFAULT_CHARSET
+            WeekFont.Color = clWindowText
+            WeekFont.Height = -11
+            WeekFont.Name = 'Tahoma'
+            WeekFont.Style = []
+            WeekName = 'Wk'
+            TextColor = clBlack
+            SelectColor = clTeal
+            SelectFontColor = clWhite
             InActiveColor = clGray
+            HeaderColor = clNone
+            FocusColor = clHighlight
             InversColor = clTeal
-            LineColor = clGray
-            Line3D = True
-            Look = lookFlat
+            WeekendColor = clRed
             NameOfDays.Monday = 'ma'
             NameOfDays.Tuesday = 'di'
             NameOfDays.Wednesday = 'wo'
@@ -2282,28 +2261,22 @@ object frmMain: TfrmMain
             NameOfMonths.November = 'nov'
             NameOfMonths.December = 'dec'
             NameOfMonths.UseIntlNames = True
-            WeekFont.Charset = DEFAULT_CHARSET
-            WeekFont.Color = clWindowText
-            WeekFont.Height = -11
-            WeekFont.Name = 'Tahoma'
-            WeekFont.Style = []
-            WeekName = 'Wk'
-            SelectColor = clTeal
-            SelectFontColor = clWhite
             StartDay = 7
-            TextColor = clBlack
             TodayFormat = '"Today" DDD/mm, YYYY'
-            WeekendColor = clRed
             Day = 7
             Month = 12
             Year = 2012
+            ParentFont = False
+            TabOrder = 0
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
-            ParentFont = False
-            TabOrder = 0
+            CaptionColor = clNone
+            CaptionTextColor = clBlack
+            LineColor = clGray
+            Line3D = True
             GradientStartColor = clWhite
             GradientEndColor = clBtnFace
             GradientDirection = gdVertical
@@ -2314,7 +2287,7 @@ object frmMain: TfrmMain
             HintPrevMonth = 'Previous Month'
             HintNextMonth = 'Next Month'
             HintNextYear = 'Next Year'
-            Version = '2.2.2.1'
+            Version = '2.2.1.1'
             TMSStyle = 0
           end
         end
@@ -2457,7 +2430,7 @@ object frmMain: TfrmMain
         ParentColor = False
         Transparent = True
         OnAnchorClick = mmoMessageAnchorClick
-        Version = '1.9.2.2'
+        Version = '1.9.2.1'
         ExplicitLeft = 87
       end
       object sPanel1: TsPanel
@@ -2500,7 +2473,6 @@ object frmMain: TfrmMain
       TabOrder = 0
       Visible = False
       SkinData.SkinSection = 'TRANSPARENT'
-      ExplicitHeight = 476
       object PanStat: TsScrollBox
         AlignWithMargins = True
         Left = 10
@@ -2515,7 +2487,6 @@ object frmMain: TfrmMain
         Align = alClient
         TabOrder = 0
         SkinData.SkinSection = 'PANEL'
-        ExplicitHeight = 476
         object sSplitter1: TsSplitter
           Left = 0
           Top = 492
@@ -2589,8 +2560,8 @@ object frmMain: TfrmMain
           object lblPropertyStatus: TsLabel
             Left = 1
             Top = 1
-            Width = 158
-            Height = 21
+            Width = 271
+            Height = 24
             Margins.Left = 10
             Margins.Top = 0
             Margins.Right = 0
@@ -2604,6 +2575,8 @@ object frmMain: TfrmMain
             Font.Height = -17
             Font.Name = 'Tahoma'
             Font.Style = []
+            ExplicitWidth = 158
+            ExplicitHeight = 21
           end
         end
         object Chart1: TChart
@@ -2790,7 +2763,7 @@ object frmMain: TfrmMain
           SelectionColor = 15790320
           SelectionColorTo = 15387318
           SortSettings.DefaultFormat = ssAutomatic
-          Version = '7.9.1.0'
+          Version = '7.8.9.0'
           ColWidths = (
             70
             12
@@ -2949,7 +2922,7 @@ object frmMain: TfrmMain
           SelectionColor = 15790320
           SelectionColorTo = 15387318
           SortSettings.DefaultFormat = ssAutomatic
-          Version = '7.9.1.0'
+          Version = '7.8.9.0'
           RowHeights = (
             19
             19
@@ -3514,7 +3487,7 @@ object frmMain: TfrmMain
     object lblHotelName: TsLabel
       Left = 0
       Top = 33
-      Width = 140
+      Width = 301
       Height = 22
       Align = alBottom
       Alignment = taCenter
@@ -3525,6 +3498,7 @@ object frmMain: TfrmMain
       Font.Height = -18
       Font.Name = 'Tahoma'
       Font.Style = []
+      ExplicitWidth = 140
     end
   end
   object pnlRBE: TsPanel
@@ -3553,7 +3527,7 @@ object frmMain: TfrmMain
       Caption = '  Authentication needed...  '
       ParentFont = False
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = 2302755
+      Font.Color = clBlack
       Font.Height = -11
       Font.Name = 'Segoe UI'
       Font.Style = []
@@ -3623,7 +3597,7 @@ object frmMain: TfrmMain
       Color = clWhite
       Ctl3D = True
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = 2302755
+      Font.Color = clBlack
       Font.Height = -11
       Font.Name = 'Segoe UI'
       Font.Style = []
@@ -3648,7 +3622,6 @@ object frmMain: TfrmMain
     SkinData.CustomColor = True
     SkinData.CustomFont = True
     SkinData.SkinSection = 'PANEL'
-    ExplicitTop = 807
     object lblOccupancy: TsLabel
       AlignWithMargins = True
       Left = 184
@@ -23188,7 +23161,7 @@ object frmMain: TfrmMain
     Options.NativeBordersMaximized = True
     SkinDirectory = 'H:\Roomer\DelphiPackages\Skin\AlphaSkins\Components\Skins'
     SkinName = 'AlterMetro'
-    SkinInfo = '9.19'
+    SkinInfo = '8.12'
     ThirdParty.ThirdEdits = 
       'TEdit'#13#10'TMemo'#13#10'TMaskEdit'#13#10'TLabeledEdit'#13#10'THotKey'#13#10'TListBox'#13#10'TCheck' +
       'ListBox'#13#10'TRichEdit'#13#10'TDateTimePicker'#13#10'TDBLUEdit'#13#10'TAdvSpinEdit'#13#10'TA' +

@@ -21,7 +21,7 @@ Win32/
 *.bak
 * - kopie.*
 *.$$$
-*.identcache
+*.tmp 
 *.bkm 
 *.ddp 
 *.cfg 

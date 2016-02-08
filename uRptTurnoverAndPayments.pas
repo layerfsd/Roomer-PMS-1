@@ -744,8 +744,11 @@ var
 begin
   s := '';
   confirmDate := 2;
-  OpenRptConfirms(confirmDate,s);
-  getPrevius(confirmDate, true);
+  if OpenRptConfirms(confirmDate,s) then
+  begin
+    getPrevius(confirmDate, true);
+  end else
+    MessageDlg(GetTranslatedText('shTx_RptTurnoverPayments_NoConfirmedReports'), mtError, [mbOk], 0);
 end;
 
 procedure TfrmRptTurnoverAndPayments.btnRefreshClick(Sender: TObject);

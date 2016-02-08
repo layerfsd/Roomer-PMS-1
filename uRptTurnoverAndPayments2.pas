@@ -675,10 +675,13 @@ var
 begin
   sConfirmedDates := _dbDateAndTime(2);
   confirmDate := 2;
-  OpenRptConfirms(confirmDate,sConfirmedDates);
-  zsConfirmedDates := sConfirmedDates;
-  getPrevius(confirmDate, true,zsConfirmedDates, __chkShowAsItem.checked);
-  __chkShowAsItem.Visible := true;
+  if OpenRptConfirms(confirmDate,sConfirmedDates) then
+  begin
+    zsConfirmedDates := sConfirmedDates;
+    getPrevius(confirmDate, true,zsConfirmedDates, __chkShowAsItem.checked);
+    __chkShowAsItem.Visible := true;
+  end else
+    MessageDlg(GetTranslatedText('shTx_RptTurnoverPayments_NoConfirmedReports'), mtError, [mbOk], 0);
 end;
 
 
