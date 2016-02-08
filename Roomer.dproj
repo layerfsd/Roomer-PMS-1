@@ -129,13 +129,13 @@
         <DCC_DcuOutput>C:\Temp\dcu\</DCC_DcuOutput>
         <DCC_DcpOutput>C:\Temp\dcu\</DCC_DcpOutput>
         <VerInfo_Debug>true</VerInfo_Debug>
-        <VerInfo_Keys>CompanyName=Promoir Roomer / Beryllium ehf;FileDescription=Roomer PMS;FileVersion=1.2.0.1016;InternalName=Roomer;LegalCopyright=Hordur Johannsson/Bjorn Heidarr;LegalTrademarks=;OriginalFilename=Roomer;ProductName=Roomer PMS;ProductVersion=1.0.0.0;Comments=;ExtraBuild=20151203</VerInfo_Keys>
+        <VerInfo_Keys>CompanyName=Promoir Roomer / Beryllium ehf;FileDescription=Roomer PMS;FileVersion=1.2.0.1017;InternalName=Roomer;LegalCopyright=Hordur Johannsson/Bjorn Heidarr;LegalTrademarks=;OriginalFilename=Roomer;ProductName=Roomer PMS;ProductVersion=1.0.0.0;Comments=;ExtraBuild=20151203</VerInfo_Keys>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <VerInfo_AutoGenVersion>false</VerInfo_AutoGenVersion>
         <VerInfo_AutoIncVersion>true</VerInfo_AutoIncVersion>
         <VerInfo_Release>0</VerInfo_Release>
         <VerInfo_MinorVer>2</VerInfo_MinorVer>
-        <VerInfo_Build>1016</VerInfo_Build>
+        <VerInfo_Build>1017</VerInfo_Build>
     </PropertyGroup>
     <ItemGroup>
         <DelphiCompile Include="$(MainSource)">
@@ -673,7 +673,7 @@
                     <VersionInfo Name="MajorVer">12</VersionInfo>
                     <VersionInfo Name="MinorVer">5</VersionInfo>
                     <VersionInfo Name="Release">11</VersionInfo>
-                    <VersionInfo Name="Build">12048</VersionInfo>
+                    <VersionInfo Name="Build">12049</VersionInfo>
                     <VersionInfo Name="Debug">False</VersionInfo>
                     <VersionInfo Name="PreRelease">False</VersionInfo>
                     <VersionInfo Name="Special">False</VersionInfo>
@@ -685,7 +685,7 @@
                 <VersionInfoKeys>
                     <VersionInfoKeys Name="CompanyName">Beryllium ehf</VersionInfoKeys>
                     <VersionInfoKeys Name="FileDescription">Hotel Management System Main Module</VersionInfoKeys>
-                    <VersionInfoKeys Name="FileVersion">12.5.11.12048</VersionInfoKeys>
+                    <VersionInfoKeys Name="FileVersion">12.5.11.12049</VersionInfoKeys>
                     <VersionInfoKeys Name="InternalName">HMS</VersionInfoKeys>
                     <VersionInfoKeys Name="LegalCopyright">Beryllium ehf 2000-2012</VersionInfoKeys>
                     <VersionInfoKeys Name="LegalTrademarks">Beryllium 2000-2012</VersionInfoKeys>
