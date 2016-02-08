@@ -50,9 +50,11 @@ Type
       newDate : TDateTime;
     end;
 
+    TRoomerMessageList = TObjectList<TRoomermessage>;
+
     TMessageList = class
     private
-      MessageList : TList<TRoomerMessage>;
+      MessageList : TRoomerMessageList;
       LastTableCheckStamp : TDateTime;
       TableStatusses : TDictionary<String, TDatePair>;
 
@@ -126,17 +128,13 @@ end;
 
 procedure TMessageList.Clear;
 begin
-  while Count > 0 do
-  begin
-    MessageList[0].Free;
-    MessageList.Delete(0);
-  end;
+  MessageList.Clear;
 end;
 
 constructor TMessageList.Create;
 begin
   inherited;
-  MessageList := TList<TRoomerMessage>.Create;
+  MessageList := TRoomerMessageList.Create(True);
   LastTableCheckStamp := now;
   TableStatusses := TDictionary<String, TDatePair>.Create;
 end;
@@ -148,10 +146,8 @@ end;
 
 destructor TMessageList.Destroy;
 begin
-  Clear;
   MessageList.Free;
   TableStatusses.Free;
-
   inherited;
 end;
 
@@ -343,11 +339,9 @@ end;
 
 
 initialization
-
   RoomerMessages := TMessageList.Create;
 
 finalization
-
   RoomerMessages.free;
 
 end.

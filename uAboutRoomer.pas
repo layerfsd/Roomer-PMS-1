@@ -262,7 +262,11 @@ begin
                     'Click [OK] to perform the update now.'+ #13#10 +
                     'Click [Cancel] to do this later', mtConfirmation, [mbOK,mbCancel], 0) = mrOk then *)
       with TRoomerRegistryIniFile.Create(GetRoomerIniFilename) do
+      try
         NumDialogShown := ReadInteger('RoomerPMSVersion', version, 0) + 1;
+      finally
+        Free;
+      end;
 
       if NumDialogShown > MAX_NUMBER_OF_IGNORES then
       begin
@@ -281,7 +285,11 @@ begin
       end
       else
         with TRoomerRegistryIniFile.Create(GetRoomerIniFilename) do
+        try
           WriteInteger('RoomerPMSVersion', version, NumDialogShown);
+        finally
+          Free;
+        end;
     end;
 
   except

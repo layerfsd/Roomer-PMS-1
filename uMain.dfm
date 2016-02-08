@@ -52,6 +52,7 @@ object frmMain: TfrmMain
     SunkenBorder = True
     UseOwnColor = True
     UseOwnSunkenBorder = True
+    ExplicitTop = 122
   end
   object panMain: TsPanel
     Left = 3
@@ -104,6 +105,10 @@ object frmMain: TfrmMain
         ImageIndex = 8
         SkinData.CustomColor = False
         SkinData.CustomFont = False
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object grOneDayRooms: TAdvStringGrid
           Left = 0
           Top = 0
@@ -276,7 +281,7 @@ object frmMain: TfrmMain
           SortSettings.HeaderColorTo = 16579058
           SortSettings.HeaderMirrorColor = 16380385
           SortSettings.HeaderMirrorColorTo = 16182488
-          Version = '7.8.9.0'
+          Version = '7.9.1.0'
           ColWidths = (
             47
             49
@@ -412,7 +417,7 @@ object frmMain: TfrmMain
             object lblNoRoom: TsLabel
               Left = 3
               Top = 59
-              Width = 76
+              Width = 50
               Height = 13
               Align = alBottom
               Alignment = taCenter
@@ -423,7 +428,6 @@ object frmMain: TfrmMain
               Font.Height = -11
               Font.Name = 'Tahoma'
               Font.Style = [fsBold]
-              ExplicitWidth = 50
             end
           end
         end
@@ -433,6 +437,7 @@ object frmMain: TfrmMain
         ImageIndex = 9
         SkinData.CustomColor = False
         SkinData.CustomFont = False
+        ExplicitWidth = 932
         object Panel3: TsPanel
           Left = 0
           Top = 0
@@ -442,6 +447,7 @@ object frmMain: TfrmMain
           BevelOuter = bvNone
           TabOrder = 0
           SkinData.SkinSection = 'TRANSPARENT'
+          ExplicitWidth = 932
           object rgrGroupreportStayType: TsRadioGroup
             Left = 2
             Top = 4
@@ -843,6 +849,10 @@ object frmMain: TfrmMain
         ImageIndex = 2
         SkinData.CustomColor = False
         SkinData.CustomFont = False
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object sLabel2: TsLabel
           Left = 224
           Top = 400
@@ -1086,7 +1096,7 @@ object frmMain: TfrmMain
             SortSettings.HeaderColorTo = 16579058
             SortSettings.HeaderMirrorColor = 16380385
             SortSettings.HeaderMirrorColorTo = 16182488
-            Version = '7.8.9.0'
+            Version = '7.9.1.0'
             ColWidths = (
               73
               20
@@ -1306,6 +1316,8 @@ object frmMain: TfrmMain
           OnMoved = splitPeriodMoved
           Color = 6842472
           ParentColor = False
+          ExplicitTop = 187
+          ExplicitWidth = 932
         end
         object pnlPeriodNoRooms: TsPanel
           Left = 0
@@ -1444,7 +1456,7 @@ object frmMain: TfrmMain
             SearchFooter.HintHighlight = 'Highlight occurences'
             SearchFooter.MatchCaseCaption = 'Match case'
             SortSettings.DefaultFormat = ssAutomatic
-            Version = '7.8.9.0'
+            Version = '7.9.1.0'
             ColWidths = (
               64
               64
@@ -1626,17 +1638,29 @@ object frmMain: TfrmMain
         Caption = 'tabFreeRooms'
         SkinData.CustomColor = False
         SkinData.CustomFont = False
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
       end
       object tabDashboard: TsTabSheet
         Caption = 'tabDashboard'
         SkinData.CustomColor = False
         SkinData.CustomFont = False
         SkinData.SkinSection = 'TRANSPARENT'
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
       end
       object tabRateQuery: TsTabSheet
         Caption = 'tabRateQuery'
         SkinData.CustomColor = False
         SkinData.CustomFont = False
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
       end
     end
     object panMainTop: TsPanel
@@ -1908,7 +1932,7 @@ object frmMain: TfrmMain
             Left = 159
             Top = 4
             Width = 94
-            Height = 24
+            Height = 23
             Margins.Left = 10
             Margins.Top = 4
             Align = alLeft
@@ -1921,7 +1945,6 @@ object frmMain: TfrmMain
             Font.Height = -17
             Font.Name = 'Segoe UI'
             Font.Style = [fsBold]
-            ExplicitHeight = 23
           end
           object dtDate: TsDateEdit
             AlignWithMargins = True
@@ -2219,7 +2242,8 @@ object frmMain: TfrmMain
             BackgroundPosition = bpTiled
             BevelOuter = bvNone
             BorderWidth = 1
-            Look = lookFlat
+            CaptionColor = clNone
+            CaptionTextColor = clBlack
             DateDownColor = clNone
             DateHoverColor = clNone
             DayFont.Charset = DEFAULT_CHARSET
@@ -2227,20 +2251,13 @@ object frmMain: TfrmMain
             DayFont.Height = -11
             DayFont.Name = 'Tahoma'
             DayFont.Style = []
-            WeekFont.Charset = DEFAULT_CHARSET
-            WeekFont.Color = clWindowText
-            WeekFont.Height = -11
-            WeekFont.Name = 'Tahoma'
-            WeekFont.Style = []
-            WeekName = 'Wk'
-            TextColor = clBlack
-            SelectColor = clTeal
-            SelectFontColor = clWhite
-            InActiveColor = clGray
-            HeaderColor = clNone
             FocusColor = clHighlight
+            HeaderColor = clNone
+            InActiveColor = clGray
             InversColor = clTeal
-            WeekendColor = clRed
+            LineColor = clGray
+            Line3D = True
+            Look = lookFlat
             NameOfDays.Monday = 'ma'
             NameOfDays.Tuesday = 'di'
             NameOfDays.Wednesday = 'wo'
@@ -2261,22 +2278,28 @@ object frmMain: TfrmMain
             NameOfMonths.November = 'nov'
             NameOfMonths.December = 'dec'
             NameOfMonths.UseIntlNames = True
+            WeekFont.Charset = DEFAULT_CHARSET
+            WeekFont.Color = clWindowText
+            WeekFont.Height = -11
+            WeekFont.Name = 'Tahoma'
+            WeekFont.Style = []
+            WeekName = 'Wk'
+            SelectColor = clTeal
+            SelectFontColor = clWhite
             StartDay = 7
+            TextColor = clBlack
             TodayFormat = '"Today" DDD/mm, YYYY'
+            WeekendColor = clRed
             Day = 7
             Month = 12
             Year = 2012
-            ParentFont = False
-            TabOrder = 0
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
-            CaptionColor = clNone
-            CaptionTextColor = clBlack
-            LineColor = clGray
-            Line3D = True
+            ParentFont = False
+            TabOrder = 0
             GradientStartColor = clWhite
             GradientEndColor = clBtnFace
             GradientDirection = gdVertical
@@ -2287,7 +2310,7 @@ object frmMain: TfrmMain
             HintPrevMonth = 'Previous Month'
             HintNextMonth = 'Next Month'
             HintNextYear = 'Next Year'
-            Version = '2.2.1.1'
+            Version = '2.2.2.1'
             TMSStyle = 0
           end
         end
@@ -2430,7 +2453,7 @@ object frmMain: TfrmMain
         ParentColor = False
         Transparent = True
         OnAnchorClick = mmoMessageAnchorClick
-        Version = '1.9.2.1'
+        Version = '1.9.2.2'
         ExplicitLeft = 87
       end
       object sPanel1: TsPanel
@@ -2560,8 +2583,8 @@ object frmMain: TfrmMain
           object lblPropertyStatus: TsLabel
             Left = 1
             Top = 1
-            Width = 271
-            Height = 24
+            Width = 158
+            Height = 21
             Margins.Left = 10
             Margins.Top = 0
             Margins.Right = 0
@@ -2575,8 +2598,6 @@ object frmMain: TfrmMain
             Font.Height = -17
             Font.Name = 'Tahoma'
             Font.Style = []
-            ExplicitWidth = 158
-            ExplicitHeight = 21
           end
         end
         object Chart1: TChart
@@ -2763,7 +2784,7 @@ object frmMain: TfrmMain
           SelectionColor = 15790320
           SelectionColorTo = 15387318
           SortSettings.DefaultFormat = ssAutomatic
-          Version = '7.8.9.0'
+          Version = '7.9.1.0'
           ColWidths = (
             70
             12
@@ -2922,7 +2943,7 @@ object frmMain: TfrmMain
           SelectionColor = 15790320
           SelectionColorTo = 15387318
           SortSettings.DefaultFormat = ssAutomatic
-          Version = '7.8.9.0'
+          Version = '7.9.1.0'
           RowHeights = (
             19
             19
@@ -3235,6 +3256,8 @@ object frmMain: TfrmMain
     ParentColor = False
     UseOwnColor = True
     Visible = False
+    ExplicitTop = 125
+    ExplicitHeight = 538
   end
   object pnlRoomerLogoOld: TsPanel
     Left = 668
@@ -3487,7 +3510,7 @@ object frmMain: TfrmMain
     object lblHotelName: TsLabel
       Left = 0
       Top = 33
-      Width = 301
+      Width = 140
       Height = 22
       Align = alBottom
       Alignment = taCenter
@@ -3498,7 +3521,6 @@ object frmMain: TfrmMain
       Font.Height = -18
       Font.Name = 'Tahoma'
       Font.Style = []
-      ExplicitWidth = 140
     end
   end
   object pnlRBE: TsPanel
@@ -23161,7 +23183,7 @@ object frmMain: TfrmMain
     Options.NativeBordersMaximized = True
     SkinDirectory = 'H:\Roomer\DelphiPackages\Skin\AlphaSkins\Components\Skins'
     SkinName = 'AlterMetro'
-    SkinInfo = '8.12'
+    SkinInfo = '9.19'
     ThirdParty.ThirdEdits = 
       'TEdit'#13#10'TMemo'#13#10'TMaskEdit'#13#10'TLabeledEdit'#13#10'THotKey'#13#10'TListBox'#13#10'TCheck' +
       'ListBox'#13#10'TRichEdit'#13#10'TDateTimePicker'#13#10'TDBLUEdit'#13#10'TAdvSpinEdit'#13#10'TA' +
@@ -23325,7 +23347,7 @@ object frmMain: TfrmMain
     Left = 928
     Top = 456
     Bitmap = {
-      494C010102000800EC0F10001000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
+      494C010102000800F00F10001000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
       0000000000000000000000000000000000000000000000000000000000000000
       00000000000000000000000000000000000000000000484C4371617545C6729D

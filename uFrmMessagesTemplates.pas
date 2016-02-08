@@ -127,8 +127,6 @@ type
 
   end;
 
-var
-  FrmMessagesTemplates: TFrmMessagesTemplates;
 
 implementation
 
@@ -189,12 +187,12 @@ begin
   end;
   for i := 0 to List.Count - 1 do
   begin
-    idx := FrmMessagesTemplates.MessageIndex(MessageType, List[i]);
+    idx := MessageIndex(MessageType, List[i]);
     if idx >= 0 then
     begin
-      MessagePanel := FrmMessagesTemplates.MessageList[idx];
+      MessagePanel := MessageList[idx];
       MessagePanel.Free;
-      FrmMessagesTemplates.MessageList.Delete(idx);
+      MessageList.Delete(idx);
     end;
   end;
 end;
@@ -430,13 +428,10 @@ begin
 end;
 
 procedure TFrmMessagesTemplates.FormDestroy(Sender: TObject);
-var i : Integer;
 begin
   timBlink.Enabled := False;
-  BlinkingList.Clear;
-  MessageList.Clear;
-  FreeAndNil(BlinkingList);
-  FreeAndNil(MessageList);
+  MessageList.Free; //Messagelist first so notifications still have access to Blinkinglist
+  BlinkingList.Free;
 end;
 
 function TFrmMessagesTemplates.HeightNeeded: Integer;
@@ -484,11 +479,11 @@ begin
 
     rmtReview: ; // FImage.ImageIndex := IMAGE_INDEX_REVIEWS;
   end;
-  idx := FrmMessagesTemplates.MessageIndex(MessagePanel.FMessageType, MessagePanel.FMessageId);
+  idx := MessageIndex(MessagePanel.FMessageType, MessagePanel.FMessageId);
   if idx >= 0 then
   begin
     MessagePanel.Free;
-    FrmMessagesTemplates.MessageList.Delete(idx);
+    MessageList.Delete(idx);
   end;
 
 end;

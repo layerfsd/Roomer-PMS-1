@@ -1258,18 +1258,18 @@ var
 begin
 //  reg := TRoomerRegistryIniFile.Create('RoomerLocalSettings_' + g.qHotelCode + '.ini');
   reg := TRoomerRegistryIniFile.Create('RoomerLocalSettings.ini');
-  reg.RegIniFile.RootKey := HKEY_CURRENT_USER;
-  if (aMethod = 1) OR reg.RegIniFile.KeyExists(GetHotelIniFilename(True)) then
-  begin
-    reg.Free;
-    reg := TRoomerRegistryIniFile.Create(GetHotelIniFilename);
-  end;
-
-  AppRegGroup := secAppRegistration;
-  if Assigned(d) AND Assigned(d.roomerMainDataSet) AND (d.roomerMainDataSet.OpenApiUri <> '') then
-     AppRegGroup := d.roomerMainDataSet.OpenApiUri;
-
   try
+    reg.RegIniFile.RootKey := HKEY_CURRENT_USER;
+    if (aMethod = 1) OR reg.RegIniFile.KeyExists(GetHotelIniFilename(True)) then
+    begin
+      FreeAndNil(reg);
+      reg := TRoomerRegistryIniFile.Create(GetHotelIniFilename);
+    end;
+
+    AppRegGroup := secAppRegistration;
+    if Assigned(d) AND Assigned(d.roomerMainDataSet) AND (d.roomerMainDataSet.OpenApiUri <> '') then
+       AppRegGroup := d.roomerMainDataSet.OpenApiUri;
+
     case aMethod of
       0 : // Read
           with reg do
@@ -1890,7 +1890,9 @@ end;
 function TGlobalApplication.ConfirmAllottedReservation(Reservation : integer) : boolean;
 var s : String;
 begin
-  if MessageDlg(GetTranslatedText('shTxThisConfirmAllottedBooking'), mtConfirmation, [mbYes, mbNo], 0) <> mrYes then exit;
+  Result := false;
+  if MessageDlg(GetTranslatedText('shTxThisConfirmAllottedBooking'), mtConfirmation, [mbYes, mbNo], 0) <> mrYes then
+    Exit;
 
   s := format('UPDATE reservations r ' +
        '       JOIN roomreservations rr ON rr.Reservation=r.Reservation ' +
@@ -1904,7 +1906,7 @@ begin
        'AND rr.Status=_status.oldStatus ' +
        'AND rd.ResFlag=_status.oldStatus', [Reservation]);
 
-  d.roomerMainDataSet.DoCommand(s);
+  Result := (d.roomerMainDataSet.DoCommand(s) > 0);
 end;
 
 function TGlobalApplication.OpenRemoveReservation(RoomReservation : integer) : boolean;
