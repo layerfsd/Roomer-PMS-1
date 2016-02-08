@@ -88,7 +88,7 @@ TYPE
 //  TSelectedRoomItem
 //////////////////////////////////////////////////////////////////////////////
 
-  TRateItemsList = TList<TRateItem>;
+  TRateItemsList = TObjectList<TRateItem>;
 
   //////////////////////////////////////////////////////////////////////////////////////
   /// TRates
@@ -293,7 +293,7 @@ constructor TRates.Create(aHotelCode : string);
 begin
   inherited Create;
   try
-    FRateList := TRateItemsList.Create;
+    FRateList := TRateItemsList.Create(True);
   Except
     //TODO Loga
   end;

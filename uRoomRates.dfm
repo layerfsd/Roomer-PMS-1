@@ -53,8 +53,8 @@ object frmRoomRates: TfrmRoomRates
       Caption = 'Clear'
       OnClick = btnClearClick
       SkinData.SkinSection = 'SPEEDBUTTON'
-      ImageIndex = 10
       Images = DImages.PngImageList1
+      ImageIndex = 10
     end
     object btnDelete: TsButton
       Left = 199
@@ -97,15 +97,6 @@ object frmRoomRates: TfrmRoomRates
       TabOrder = 2
       OnChange = edFilterChange
       SkinData.SkinSection = 'EDIT'
-      BoundLabel.Indent = 0
-      BoundLabel.Font.Charset = DEFAULT_CHARSET
-      BoundLabel.Font.Color = clWindowText
-      BoundLabel.Font.Height = -11
-      BoundLabel.Font.Name = 'Tahoma'
-      BoundLabel.Font.Style = []
-      BoundLabel.Layout = sclLeft
-      BoundLabel.MaxWidth = 0
-      BoundLabel.UseSkinColor = True
     end
     object gbxFilter: TsGroupBox
       Left = 466
@@ -115,6 +106,7 @@ object frmRoomRates: TfrmRoomRates
       Caption = 'Filter'
       TabOrder = 3
       SkinData.SkinSection = 'GROUPBOX'
+      Checked = False
       object sSpeedButton1: TsSpeedButton
         Left = 312
         Top = 67
@@ -122,8 +114,8 @@ object frmRoomRates: TfrmRoomRates
         Height = 22
         OnClick = sSpeedButton1Click
         SkinData.SkinSection = 'SPEEDBUTTON'
-        ImageIndex = 8
         Images = DImages.PngImageList1
+        ImageIndex = 8
       end
       object labSeason: TsLabel
         Left = 128
@@ -188,7 +180,7 @@ object frmRoomRates: TfrmRoomRates
         Width = 218
         Height = 22
         Color = clWindow
-        Version = '1.4.1.3'
+        Version = '1.5.0.0'
         Visible = True
         Ctl3D = True
         Columns = <
@@ -217,6 +209,8 @@ object frmRoomRates: TfrmRoomRates
         ComboItems = <>
         EditColumn = -1
         EditHeight = 16
+        EmptyText = ''
+        EmptyTextStyle = []
         DropWidth = 145
         DropHeight = 200
         Enabled = True
@@ -241,7 +235,7 @@ object frmRoomRates: TfrmRoomRates
         Width = 218
         Height = 22
         Color = clWindow
-        Version = '1.4.1.3'
+        Version = '1.5.0.0'
         Visible = True
         Ctl3D = True
         Columns = <
@@ -270,6 +264,8 @@ object frmRoomRates: TfrmRoomRates
         ComboItems = <>
         EditColumn = -1
         EditHeight = 16
+        EmptyText = ''
+        EmptyTextStyle = []
         DropWidth = 145
         DropHeight = 200
         Enabled = True
@@ -305,15 +301,7 @@ object frmRoomRates: TfrmRoomRates
         ParentFont = False
         TabOrder = 2
         OnChange = dtFromChange
-        BoundLabel.Indent = 0
-        BoundLabel.Font.Charset = DEFAULT_CHARSET
-        BoundLabel.Font.Color = clWindowText
-        BoundLabel.Font.Height = -11
-        BoundLabel.Font.Name = 'Tahoma'
-        BoundLabel.Font.Style = []
-        BoundLabel.Layout = sclLeft
-        BoundLabel.MaxWidth = 0
-        BoundLabel.UseSkinColor = True
+        CheckOnExit = True
         SkinData.SkinSection = 'EDIT'
         GlyphMode.Blend = 0
         GlyphMode.Grayed = False
@@ -339,15 +327,7 @@ object frmRoomRates: TfrmRoomRates
         TabOrder = 3
         Text = '  -  -    '
         OnChange = dtToChange
-        BoundLabel.Indent = 0
-        BoundLabel.Font.Charset = DEFAULT_CHARSET
-        BoundLabel.Font.Color = clWindowText
-        BoundLabel.Font.Height = -11
-        BoundLabel.Font.Name = 'Tahoma'
-        BoundLabel.Font.Style = []
-        BoundLabel.Layout = sclLeft
-        BoundLabel.MaxWidth = 0
-        BoundLabel.UseSkinColor = True
+        CheckOnExit = True
         SkinData.SkinSection = 'EDIT'
         GlyphMode.Blend = 0
         GlyphMode.Grayed = False
@@ -804,7 +784,6 @@ object frmRoomRates: TfrmRoomRates
     Left = 48
     Top = 176
     object prLink_grData: TdxGridReportLink
-      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.GrayShading = True
@@ -818,7 +797,6 @@ object frmRoomRates: TfrmRoomRates
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
       ReportDocument.CreationDate = 41334.495374884260000000
-      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       BuiltInReportLink = True
     end
   end

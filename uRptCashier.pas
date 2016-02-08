@@ -28,7 +28,8 @@ uses
   dxSkinOffice2007Green, dxSkinOffice2007Pink, dxSkinOffice2007Silver, dxSkinOffice2010Black, dxSkinOffice2010Blue, dxSkinOffice2010Silver,
   dxSkinOffice2013White, dxSkinPumpkin, dxSkinSeven, dxSkinSevenClassic, dxSkinSharp, dxSkinSharpPlus, dxSkinSilver, dxSkinSpringTime,
   dxSkinStardust, dxSkinSummer2008, dxSkinTheAsphaltWorld, dxSkinsDefaultPainters, dxSkinValentine, dxSkinVS2010, dxSkinWhiteprint,
-  dxSkinXmas2008Blue, dxSkinscxPCPainter, ppStrtch, ppSubRpt, Vcl.Menus, cxButtons, cxExtEditRepositoryItems, cxEditRepositoryItems;
+  dxSkinXmas2008Blue, dxSkinscxPCPainter, ppStrtch, ppSubRpt, Vcl.Menus, cxButtons, cxExtEditRepositoryItems, cxEditRepositoryItems,
+  AdvUtil;
 
 type
   TPaymentTotal = class
@@ -40,6 +41,8 @@ type
     constructor Create(_Code, _Description: String; _Amount: Double);
     procedure Add(_Amount: Double);
   end;
+
+  TPaymentTotalDictionary = TObjectDictionary<String, TPaymentTotal>;
 
   TfrmRptCashier = class(TForm)
     Panel3: TsPanel;
@@ -1078,7 +1081,7 @@ var
   lastNumber: Integer;
   totalNumber: Integer;
 
-  payment: TDictionary<String, TPaymentTotal>;
+  payment: TPaymentTotalDictionary;
   item: TPaymentTotal;
   i: Integer;
 
@@ -1152,7 +1155,6 @@ begin
   grReport.ClearRows(1, grReport.RowCount - 1);
   grReport.RowCount := 1;
 
-  payment := TDictionary<String, TPaymentTotal>.Create;
   subTotalDebet := 0.00;
   subTotalCredit := 0.00;
   totalDebet := 0.00;
@@ -1185,8 +1187,9 @@ begin
   kbmPaymentsDS.DataSet := kbmPayments;
   tvPayments.DataController.DataSource := kbmPaymentsDS;
 
-  screen.Cursor := crHourglass;
+  payment := TPaymentTotalDictionary.Create([doOwnsValues]);
   try
+    screen.Cursor := crHourglass;
     d.roomerMainDataSet.SetTimeZoneComparedToUTC('');
     try
       Strings := TStringList.Create;
@@ -1453,6 +1456,7 @@ begin
       d.roomerMainDataSet.SetTimeZoneComparedToUTC('+00:00');
     end;
   finally
+    payment.Free;
     screen.Cursor := crDefault;
   end;
   __Totalsale.Caption := FloatToStrF(zTotalSale, ffCurrency, 8, 2);;
@@ -1462,7 +1466,6 @@ begin
 end;
 
 procedure TfrmRptCashier.UserSelectVisible(MakeVisible: boolean);
-
 begin
   sLabel2.visible := MakeVisible;
   cbxStaff.visible := MakeVisible;

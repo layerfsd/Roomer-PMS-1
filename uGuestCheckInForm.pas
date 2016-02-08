@@ -553,9 +553,9 @@ end;
 procedure TFrmGuestCheckInForm.LoadGuestInfo;
 var
   param: String;
-  taxes: TList<TInvoiceTaxEntity>;
-  RoomTaxEntities: TList<TInvoiceRoomEntity>;
-  ItemTaxEntities: TList<TInvoiceItemEntity>;
+  taxes: TInvoiceTaxEntityList;
+  RoomTaxEntities: TInvoiceRoomEntityList;
+  ItemTaxEntities: TInvoiceItemEntityList;
 
   ExtraTaxes: Double;
   ItemTypeInfo: TItemTypeInfo;
@@ -594,14 +594,18 @@ begin
 
         if rSet_bySQL(tempRSet, s) then
         begin
-          RoomTaxEntities := TList<TInvoiceRoomEntity>.Create;
-          RoomTaxEntities.Add(TInvoiceRoomEntity.Create(tempRSet['RoomRentItem'], tempRSet['Guests'], tempRSet['Nights'],
-            tempRSet['Price'] / tempRSet['Nights'], tempRSet['VAT'] / tempRSet['Nights']));
-          ItemTaxEntities := TList<TInvoiceItemEntity>.Create;
-
-          ItemTypeInfo := d.Item_Get_ItemTypeInfo(trim(g.qRoomRentItem));
-          taxes := GetTaxesForInvoice(RoomTaxEntities, ItemTaxEntities, ItemTypeInfo, ctrlGetBoolean('StayTaxIncluted'));
+          RoomTaxEntities := nil;
+          ItemTaxEntities := nil;
+          taxes := nil;
           try
+            RoomTaxEntities := TInvoiceRoomEntityList.Create(True);
+            RoomTaxEntities.Add(TInvoiceRoomEntity.Create(tempRSet['RoomRentItem'], tempRSet['Guests'], tempRSet['Nights'],
+              tempRSet['Price'] / tempRSet['Nights'], tempRSet['VAT'] / tempRSet['Nights']));
+            ItemTaxEntities := TInvoiceItemEntityList.Create(True);
+
+            ItemTypeInfo := d.Item_Get_ItemTypeInfo(trim(g.qRoomRentItem));
+            taxes := GetTaxesForInvoice(RoomTaxEntities, ItemTaxEntities, ItemTypeInfo, ctrlGetBoolean('StayTaxIncluted'));
+
             for i := 0 to taxes.Count - 1 do
               ExtraTaxes := ExtraTaxes + taxes[i].total;
           finally

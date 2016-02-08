@@ -122,6 +122,8 @@ type
     property ExecException: String read FExecException;
   end;
 
+  THotelsEntityList =  TObjectList<TRoomerHotelsEntity>;
+
   TRoomerDataSet = class(TADODataSet)
   private
     FRoomerDataSet: TRoomerDataSet;
@@ -144,7 +146,7 @@ type
     FLastAccess: TDateTime;
     FNumberOfAffectedRows: Integer;
     FStoreUri: String;
-    hotelsList: TList<TRoomerHotelsEntity>;
+    hotelsList: THotelsEntityList;
     FApplicationID: String;
     FAppSecret: String;
     FAppKey: String;
@@ -162,7 +164,7 @@ type
       DisplayText: Boolean);
     function loginViaPost(url, Data: String;
       SetLastAccess: Boolean = true): String;
-    function getHotelsList: TList<TRoomerHotelsEntity>;
+    function getHotelsList: THotelsEntityList;
     procedure SetAuthHeaders(hdrs:
       {$IFDEF USE_INDY}TIdHeaderList{$ELSE}TAlHttpRequestHeader{$ENDIF};
       hotel, user, password: String);
@@ -339,7 +341,7 @@ type
    // For testing purposes...
     function TestSpecificOpenApiAuthHeaders(AppKey, ApplicationId, AppSecret, url : String; tim : Extended = 0) : String;
 
-    property hotels: TList<TRoomerHotelsEntity> read getHotelsList;
+    property hotels: THotelsEntityList read getHotelsList;
 
     property OfflineMode : Boolean read FOfflineMode write SetOfflineMode;
     property LoggedIn : Boolean read FLoggedIn write FLoggedIn;
@@ -385,6 +387,8 @@ type
 
   end;
 
+  TRoomerDatasetList = TObjectList<TRoomerDataset>;
+
 procedure Register;
 
 implementation
@@ -425,7 +429,7 @@ begin
   FOnSessionExpired := nil;
   FOfflineMode := False;
   FSql := TStringList.Create;
-  hotelsList := TList<TRoomerHotelsEntity>.Create;
+  hotelsList := THotelsEntityList.Create(True);
   FDataActive := false;
 {$IFDEF LOCALRESOURCE}
   FStoreUri := 'http://localhost:8080/services/';
@@ -1975,7 +1979,7 @@ begin
   result := LocalizedFloatValue(Field.Value);
 end;
 
-function TRoomerDataSet.getHotelsList: TList<TRoomerHotelsEntity>;
+function TRoomerDataSet.getHotelsList: THotelsEntityList;
 begin
   result := hotelsList;
 end;

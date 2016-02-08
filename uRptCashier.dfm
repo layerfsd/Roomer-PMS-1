@@ -136,7 +136,7 @@ object frmRptCashier: TfrmRptCashier
         TextEndChar = ''
         TextStartChar = ''
         OnClickCheck = cbxStaffClickCheck
-        Version = '1.3.9.1'
+        Version = '1.3.9.2'
       end
       object btnClearStaff: TsButton
         Left = 503
@@ -495,7 +495,7 @@ object frmRptCashier: TfrmRptCashier
         SearchFooter.HintHighlight = 'Highlight occurrences'
         SearchFooter.MatchCaseCaption = 'Match case'
         SortSettings.DefaultFormat = ssAutomatic
-        Version = '7.8.9.0'
+        Version = '7.9.1.0'
         WordWrap = False
       end
     end

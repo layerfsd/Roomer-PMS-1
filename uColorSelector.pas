@@ -7,7 +7,7 @@ uses
   System.SysUtils, System.Variants, System.Classes, System.Generics.Collections,
   Vcl.Graphics,uAppGlobal,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, sPanel, Vcl.Grids, AdvObj, BaseGrid, AdvGrid,
-  Vcl.StdCtrls, sButton, cmpRoomerDataSet;
+  Vcl.StdCtrls, sButton, cmpRoomerDataSet, AdvUtil;
 
 type
 
@@ -18,6 +18,8 @@ type
   public
     constructor Create(id, value : Integer; description : String);
   end;
+
+  TRoomerColorList = TObjectList<TRoomerColor>;
 
   TfrmColorSelector = class(TForm)
     gridColors: TAdvStringGrid;
@@ -34,7 +36,7 @@ type
     procedure gridColorsDblClickCell(Sender: TObject; ARow, ACol: Integer);
   private
     { Private declarations }
-    colors : TList<TRoomerColor>;
+    colors : TRoomerColorList;
     procedure GetColors;
     procedure DisplayColors;
   public
@@ -100,7 +102,7 @@ end;
 procedure TfrmColorSelector.GetColors;
 var ASet : TRoomerDataSet;
 begin
-  colors := TList<TRoomerColor>.Create;
+  colors := TRoomerColorList.Create(True);
   ASet := d.roomerMainDataSet.ActivateNewDataset(
           d.roomerMainDataSet.SystemFreeQuery('SELECT * FROM colors WHERE Active'));
   ASet.First;

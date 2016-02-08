@@ -218,7 +218,7 @@ type
     Procedure chkFilter;
     procedure applyFilter;
     function AssertCorrectness : Boolean;
-    procedure GetSelectedItems(theData: TList<TrecItemHolder>);
+    procedure GetSelectedItems(theData: TrecItemHolderList);
     function NumItemsSelected: Integer;
     procedure StopFilter;
 
@@ -229,7 +229,7 @@ type
   end;
 
 function openItems(act : TActTableAction; Lookup : Boolean; var theData : recItemHolder) : boolean;
-function openMultipleItems(act : TActTableAction; Lookup : Boolean; theData : TList<TrecItemHolder>) : boolean;
+function openMultipleItems(act : TActTableAction; Lookup : Boolean; theData : TrecItemHolderList) : boolean;
 
 var
   frmItems2: TfrmItems2;
@@ -279,7 +279,7 @@ begin
   end;
 end;
 
-function openMultipleItems(act : TActTableAction; Lookup : Boolean; theData : TList<TrecItemHolder>) : boolean;
+function openMultipleItems(act : TActTableAction; Lookup : Boolean; theData : TrecItemHolderList) : boolean;
 var _frmItems2 : TfrmItems2;
 begin
   result := false;
@@ -315,7 +315,7 @@ begin
   result := tvData.Controller.SelectedRecordCount-1;
 end;
 
-procedure TfrmItems2.GetSelectedItems(theData : TList<TrecItemHolder>);
+procedure TfrmItems2.GetSelectedItems(theData : TrecItemHolderList);
 var item : TrecItemHolder;
     i : Integer;
     RecID : Integer;

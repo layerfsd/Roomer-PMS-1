@@ -21,28 +21,29 @@ var
  ClassNameBuffer: Array[0..ClassNameBufferSize-1] of Char;
   i: Integer;
 begin
-   if RoomerLanguage = nil then
+  Result := 0;
+  if RoomerLanguage = nil then
      exit;
-   Result := CallNextHookEx(hhk, nCode, wParam, lParam);
-   if nCode<0 then exit;
-   case nCode of
-     HCBT_ACTIVATE:
+  Result := CallNextHookEx(hhk, nCode, wParam, lParam);
+  if nCode<0 then exit;
+  case nCode of
+    HCBT_ACTIVATE:
 //     HCBT_CREATEWND:
-     begin
-       hWindow := HWND(wParam);
-       if (hWindow>0) then
-       begin
-          RetVal := GetClassName(wParam, ClassNameBuffer, SizeOf(ClassNameBuffer));
-          if RetVal>0 then
-          begin
-             for i := 0 to Application.ComponentCount - 1 do
-               if Application.Components[i] is TForm then
-                 if TForm(Application.Components[i]).Handle = hWindow then
-                   RoomerLanguage.TranslateThisForm(TForm(Application.Components[i]));
-          end;
-       end;
-     end;
-   end;
+    begin
+      hWindow := HWND(wParam);
+      if (hWindow>0) then
+      begin
+         RetVal := GetClassName(wParam, ClassNameBuffer, SizeOf(ClassNameBuffer));
+         if RetVal>0 then
+         begin
+            for i := 0 to Application.ComponentCount - 1 do
+              if Application.Components[i] is TForm then
+                if TForm(Application.Components[i]).Handle = hWindow then
+                  RoomerLanguage.TranslateThisForm(TForm(Application.Components[i]));
+         end;
+      end;
+    end;
+  end;
 
 end;
 

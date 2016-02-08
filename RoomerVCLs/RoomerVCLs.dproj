@@ -52,6 +52,7 @@
         <Base>true</Base>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
+        <DCC_DUPLICATE_CTOR_DTOR>false</DCC_DUPLICATE_CTOR_DTOR>
         <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
         <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Winapi;Vcl;Vcl.Imaging;Vcl.Touch;Vcl.Samples;Vcl.Shell;$(DCC_Namespace)</DCC_Namespace>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
@@ -164,30 +165,29 @@
         <DCCReference Include="Source\RoomerReservationsController.pas"/>
         <DCCReference Include="Source\CheckComboBox.pas"/>
         <DCCReference Include="Source\RoomerMultipartFormData.pas"/>
-        <DCCReference Include="http\ALAVLBinaryTree.pas"/>
+        <DCCReference Include="http\ALHttpClient.pas"/>
+        <DCCReference Include="http\ALHttpCommon.pas"/>
         <DCCReference Include="http\ALWininetHttpClient.pas"/>
-        <DCCReference Include="http\ALWinHttpWrapper.pas"/>
-        <DCCReference Include="http\ALWinHttpClient.pas"/>
-        <DCCReference Include="http\ALStringList.pas"/>
         <DCCReference Include="http\ALMultiPartFormDataParser.pas"/>
         <DCCReference Include="http\ALMultiPartBaseParser.pas"/>
-        <DCCReference Include="http\ALHttpCommon.pas"/>
-        <DCCReference Include="http\ALHttpClient.pas"/>
+        <DCCReference Include="http\ALStringList.pas"/>
+        <DCCReference Include="http\ALAVLBinaryTree.pas"/>
         <DCCReference Include="http\ALFcnString.pas"/>
         <DCCReference Include="http\ALFcnMisc.pas"/>
         <DCCReference Include="http\ALFcnMime.pas"/>
         <DCCReference Include="Source\RoomerJson.pas"/>
         <DCCReference Include="Source\RoomerJsonParser.pas"/>
+        <DCCReference Include="crc-hash\hmac_md5.pas"/>
+        <DCCReference Include="crc-hash\md5.pas"/>
         <DCCReference Include="Source\md5hash.pas"/>
-        <DCCReference Include="Source\hmac.pas"/>
-        <DCCReference Include="Source\btypes.pas"/>
         <DCCReference Include="Source\hash.pas"/>
+        <DCCReference Include="Source\btypes.pas"/>
+        <DCCReference Include="Source\hmac.pas"/>
         <DCCReference Include="Source\uRoomerExceptions.pas"/>
         <DCCReference Include="..\uFileSystemUtils.pas"/>
+        <DCCReference Include="Source\UbuntuProgressColors.pas"/>
         <DCCReference Include="Source\FlatUtilitys.pas"/>
         <DCCReference Include="Source\HSLUtils.pas"/>
-        <DCCReference Include="Source\uPopupListEx.pas"/>
-        <DCCReference Include="Source\UbuntuProgressColors.pas"/>
         <BuildConfiguration Include="Debug">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
@@ -242,7 +242,8 @@
                     <VersionInfoKeys Name="Comments"/>
                 </VersionInfoKeys>
                 <Excluded_Packages>
-                    <Excluded_Packages Name="C:\Program Files (x86)\MicroOLAP DAC for MySQL Trial\Packages\RAD Studio XE3\dcl_MySQLDAC17.bpl">MicroOLAP Direct Access Components for MySQL</Excluded_Packages>
+                    <Excluded_Packages Name="C:\Users\Bas\Documents\bpl\Win32\rbRTL1417.bpl">(untitled)</Excluded_Packages>
+                    <Excluded_Packages Name="$(BDSBIN)\bcboffice2k170.bpl">Embarcadero C++Builder Office 2000 Servers Package</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\bcbofficexp170.bpl">Embarcadero C++Builder Office XP Servers Package</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\dcloffice2k170.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\dclofficexp170.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>

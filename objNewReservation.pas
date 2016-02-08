@@ -149,7 +149,7 @@ TYPE
   //
   /// ///////////////////////////////////////////////////////////////////////////
 
-  TnewRoomReservationItemsList = TList<TnewRoomReservationItem>;
+  TnewRoomReservationItemsList = TObjectList<TnewRoomReservationItem>;
 
   /// ///////////////////////////////////////////////////////////////////////////////////
   /// TSelectedRooms
@@ -494,7 +494,7 @@ constructor TnewRoomReservation.Create(aHotelCode: string);
 begin
   inherited Create;
   try
-    FRoomList := TnewRoomReservationItemsList.Create;
+    FRoomList := TnewRoomReservationItemsList.Create(True);
   Except
     // TODO Loga
   end;

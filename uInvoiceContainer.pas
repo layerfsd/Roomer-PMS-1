@@ -70,6 +70,8 @@ type
     property Xml : String read GetXml write SetXml;
   end;
 
+  TPaymentLineList = TObjectList<TpaymentLine>;
+
   TInvoiceLine = class
     InvoiceLineType : TInvoiceLineType;
     ID : Integer;
@@ -135,9 +137,11 @@ type
     property Xml : String read GetXml write SetXml;
   end;
 
+  TInvoiceLineList = TObjectlist<TInvoiceLine>;
+
   TInvoice = class
-    InvoiceLines : TList<TInvoiceLine>;
-    payments : TList<TPaymentLine>;
+    InvoiceLines : TInvoiceLineList;
+    payments : TPaymentLineList;
 
     Reservation : Integer;
     RoomReservation : Integer;
@@ -179,8 +183,8 @@ type
     FXml : String;
   private
     FChanged: Boolean;
-    DeletedItems : TList<TInvoiceLine>;
-    DeletedPayments : TList<TPaymentLine>;
+    DeletedItems : TInvoiceLineList;
+    DeletedPayments : TPaymentLineList;
     FExpanded: Boolean;
     procedure LoadInvoice;
     procedure LoadRoomRent;
@@ -210,7 +214,7 @@ type
     function GetNumberOfRentLines: Integer;
   public
     constructor Create(_Type : TRoomerInvoiceType; _ID : Integer; _Reservation, _RoomReservation, _SplitNumber, _InvoiceNumber : Integer; _RoomNumber : String; _expanded : Boolean);
-    destructor Destroy;
+    destructor Destroy; override;
 
     procedure DeleteItem(line : TInvoiceLine);
     procedure DeletePayment(line : TPaymentLine);
@@ -390,10 +394,10 @@ end;
 
 constructor TInvoice.Create(_Type: TRoomerInvoiceType; _ID : Integer; _Reservation, _RoomReservation, _SplitNumber, _InvoiceNumber: Integer; _RoomNumber : String; _expanded : Boolean);
 begin
-  InvoiceLines := TList<TInvoiceLine>.Create;
-  payments := TList<TPaymentLine>.Create;
-  DeletedItems := TList<TInvoiceLine>.Create;
-  DeletedPayments := TList<TPaymentLine>.Create;
+  InvoiceLines := TInvoiceLineList.Create(True);
+  payments := TPaymentLineList.Create(True);
+  DeletedItems := TInvoiceLineList.Create(True);
+  DeletedPayments := TPaymentLineList.Create(True);
 
   InvoiceType := _Type;
   Reservation := _Reservation;
@@ -414,20 +418,22 @@ procedure TInvoice.DeleteItem(line: TInvoiceLine);
 begin
   if line.ID > 0 then
     DeletedItems.Add(line);
-  InvoiceLines.Remove(line);
+  InvoiceLines.Extract(line); // don't kill the object
 end;
 
 procedure TInvoice.DeletePayment(line: TPaymentLine);
 begin
   if line.ID > 0 then
     DeletedPayments.Add(line);
-  payments.Remove(line);
+  payments.Extract(line);  // don't kill the object
 end;
 
 destructor TInvoice.Destroy;
 begin
   InvoiceLines.Free;
   payments.Free;
+  DeletedItems.Free;
+  DeletedPayments.Free;
 end;
 
 function TInvoice.GetLinesChanged: Boolean;

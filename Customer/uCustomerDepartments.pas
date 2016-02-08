@@ -44,7 +44,7 @@ type
     procedure SetCustomerId(const Value: Integer);
     procedure SetId(const Value: Integer);
   public
-    Contacts : TList<TPerson>;
+    Contacts : TPersonList;
     constructor Create; overload;
     constructor Create(_ID : Integer;
                        _CustomerId : Integer;
@@ -61,7 +61,7 @@ type
                        _Notes: String;
                        _RetrieveContacts : Boolean = True); overload;
 
-    destructor Destroy;
+    destructor Destroy; override;
     procedure PostChanges;
     procedure Delete;
 
@@ -92,7 +92,7 @@ type
     procedure SetCustomerId(const Value: Integer);
    public
      constructor Create(_CustomerId : Integer);
-     destructor Destroy;
+     destructor Destroy; override;
 
      function Add(Item : TCustomerDepartment) : Integer;
      procedure Remove(Item : TCustomerDepartment);
@@ -178,7 +178,7 @@ begin
   FCity := '';
   FEmailAddress := '';
 
-  Contacts := TList<TPerson>.Create;
+  Contacts := TPersonList.Create(True);
 
   FEdited := False;
 end;
@@ -198,6 +198,8 @@ constructor TCustomerDepartment.Create(_ID : Integer;
                                        _Notes: String;
                                        _RetrieveContacts : Boolean = True);
 begin
+  Create;
+
   FID := _ID;
   FCustomerId := _CustomerId;
   FDepartmentName := _DepartmentName;
@@ -212,12 +214,8 @@ begin
   FCity := _City;
   FEmailAddress := _EmailAddress;
 
-  FEdited := False;
-
   if _RetrieveContacts then
     RetrieveContacts
-  else
-    Contacts := TList<TPerson>.Create;
 end;
 
 procedure TCustomerDepartment.Delete;
@@ -228,8 +226,7 @@ end;
 
 destructor TCustomerDepartment.Destroy;
 begin
-  if assigned(Contacts) then
-    Contacts.Free;
+  Contacts.Free;
 end;
 
 procedure TCustomerDepartment.PostChanges;
@@ -325,8 +322,7 @@ end;
 
 procedure TCustomerDepartment.RetrieveContacts;
 begin
-  if Assigned(Contacts) then
-    Contacts.Free;
+  Contacts.Free;
   Contacts := GetPersonsListForCustomerDepartment(FID);
 end;
 

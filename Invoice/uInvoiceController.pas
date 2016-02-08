@@ -46,6 +46,7 @@ type
     property Paid : Boolean read FPaid write FPaid;
   end;
 
+  TRoomRentPerdayDictionary = TObjectDictionary<String, TRoomRentPerDay>;
 
   TInvoicePayment = class
     FReservation : Integer;
@@ -112,6 +113,7 @@ type
     property IsDirty : Boolean read FDirty write SetDirty;
   end;
 
+  TInvoicePaymentList = TObjectList<TInvoicePayment>;
 
   TInvoiceLine = class
     FAutoGen : String;
@@ -275,6 +277,8 @@ type
     property IsDirty : Boolean read FDirty write SetDirty;
   end;
 
+  TInvoiceLineList = TObjectlist<TInvoiceLine>;
+
   TInvoice = class
     FReservation : Integer;
     FRoomReservation : Integer;
@@ -313,9 +317,9 @@ type
     Flocation : String;
     FexternalInvoiceId : Integer;
   private
-    InvoiceLines : TList<TInvoiceLine>;
-    Payments : TList<TInvoicePayment>;
-    RoomRentsPerDay : TDictionary<String, TRoomRentPerDay>;
+    InvoiceLines : TInvoiceLineList;
+    Payments : TInvoicePaymentList;
+    RoomRentsPerDay : TRoomRentPerdayDictionary;
 
     FInvoiceIndex : Integer;
 
@@ -372,7 +376,7 @@ type
     procedure ReadRoomRentPerDay(RecSet: TRoomerDataSet);
   public
     constructor Create(Reservation, RoomReservation, SplitNumber, InvoiceNumber, InvoiceIndex : Integer);
-    destructor Destroy;
+    destructor Destroy; override;
 
     procedure Save;
 
@@ -816,9 +820,9 @@ end;
 
 constructor TInvoice.Create(Reservation, RoomReservation, SplitNumber, InvoiceNumber, InvoiceIndex: Integer);
 begin
-  InvoiceLines := TList<TInvoiceLine>.Create;
-  Payments := TList<TInvoicePayment>.Create;
-  RoomRentsPerDay := TDictionary<String, TRoomRentPerDay>.Create;
+  InvoiceLines := TInvoiceLineList.Create(True);
+  Payments := TInvoicePaymentList.Create(True);
+  RoomRentsPerDay := TRoomRentPerdayDictionary.Create([doOwnsValues]);
 
   FReservation := Reservation;
   FRoomReservation := RoomReservation;
@@ -844,9 +848,6 @@ end;
 
 destructor TInvoice.Destroy;
 begin
-  InvoiceLines.Clear;
-  Payments.Clear;
-
   InvoiceLines.Free;
   Payments.Free;
 end;
@@ -1146,7 +1147,7 @@ begin
      (Line.InvoiceIndex <> InvoiceIndex) then
   begin
     Line.Save;
-    InvoiceLines.Remove(Line);
+    InvoiceLines.Remove(Line);   // Shouldnt be this .Extract() ?
     IsDirty := True;
   end;
 end;
@@ -1162,7 +1163,7 @@ begin
      (Payment.InvoiceIndex <> InvoiceIndex) then
   begin
     Payment.Save;
-    Payments.Remove(Payment);
+    Payments.Remove(Payment);   // Shouldnt be this .Extract() ?
     IsDirty := True;
   end;
 end;

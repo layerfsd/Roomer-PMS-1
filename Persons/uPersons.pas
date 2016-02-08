@@ -235,9 +235,11 @@ type
     property New : Boolean read FNew write FNew;
   end;
 
-function GetPersonsListForCustomerDepartment(CustomerDepartmentId : Integer) : TList<TPerson>;
+  TPersonList = TObjectList<TPerson>;
+
+function GetPersonsListForCustomerDepartment(CustomerDepartmentId : Integer) : TPersonList;
 function CreatePersonFromRecord(rSet : TDataSet) : TPerson;
-procedure PostPersons(CustomerDepartmentId : Integer; List : TList<TPerson>);
+procedure PostPersons(CustomerDepartmentId : Integer; List : TPersonList);
 function GetPersonsFromID(ID: Integer) : TPerson;
 procedure UpdatePersonsFromID(Person : TPerson; ID: Integer);
 
@@ -355,11 +357,11 @@ begin
   Person.CompEmail := rSet['CompEmail'];
 end;
 
-function GetPersonsListForCustomerDepartment(CustomerDepartmentId : Integer) : TList<TPerson>;
+function GetPersonsListForCustomerDepartment(CustomerDepartmentId : Integer) : TPersonList;
 var rSet : TRoomerDataSet;
     Person : TPerson;
 begin
-  result := TList<TPerson>.Create;
+  result := TPersonList.Create(True);
   rSet := CreateNewDataSet;
   try
   if rSet_bySQL(rSet, format('SELECT * FROM personprofiles WHERE ID IN (SELECT PersonsId FROM customerdepartments_persons_links WHERE CustomerDepartmentsId=%d)', [CustomerDepartmentId])) then
@@ -408,7 +410,7 @@ begin
   end;
 end;
 
-procedure PostPersons(CustomerDepartmentId : Integer; List : TList<TPerson>);
+procedure PostPersons(CustomerDepartmentId : Integer; List : TPersonList);
 var i: Integer;
 begin
   for i := 0 to List.Count - 1 do

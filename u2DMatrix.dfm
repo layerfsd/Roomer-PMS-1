@@ -14,8 +14,9 @@ object frm2DMatrix: Tfrm2DMatrix
   Position = poMainFormCenter
   Scaled = False
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
   OnShow = FormShow
-  PixelsPerInch = 120
+  PixelsPerInch = 96
   TextHeight = 16
   object panBtn: TsPanel
     AlignWithMargins = True
@@ -108,6 +109,16 @@ object frm2DMatrix: Tfrm2DMatrix
     FilterDropDown.Font.Name = 'Tahoma'
     FilterDropDown.Font.Style = []
     FilterDropDownClear = '(All)'
+    FilterEdit.TypeNames.Strings = (
+      'Starts with'
+      'Ends with'
+      'Contains'
+      'Not contains'
+      'Equal'
+      'Not equal'
+      'Larger than'
+      'Smaller than'
+      'Clear')
     FixedRowHeight = 22
     FixedFont.Charset = DEFAULT_CHARSET
     FixedFont.Color = clWindowText
@@ -115,6 +126,10 @@ object frm2DMatrix: Tfrm2DMatrix
     FixedFont.Name = 'Tahoma'
     FixedFont.Style = [fsBold]
     FloatFormat = '%.2f'
+    HoverButtons.Buttons = <>
+    HoverButtons.Position = hbLeftFromColumnLeft
+    HTMLSettings.ImageFolder = 'images'
+    HTMLSettings.ImageBaseName = 'img'
     PrintSettings.DateFormat = 'dd/mm/yyyy'
     PrintSettings.Font.Charset = DEFAULT_CHARSET
     PrintSettings.Font.Color = clWindowText
@@ -151,7 +166,8 @@ object frm2DMatrix: Tfrm2DMatrix
     SearchFooter.HintFindPrev = 'Find previous occurrence'
     SearchFooter.HintHighlight = 'Highlight occurrences'
     SearchFooter.MatchCaseCaption = 'Match case'
-    Version = '6.2.7.0'
+    SortSettings.DefaultFormat = ssAutomatic
+    Version = '7.9.1.0'
   end
   object pnlHeader: TsPanel
     AlignWithMargins = True
@@ -186,19 +202,16 @@ object frm2DMatrix: Tfrm2DMatrix
         Width = 153
         Height = 24
         Alignment = taLeftJustify
-        BoundLabel.Indent = 0
         BoundLabel.Font.Charset = DEFAULT_CHARSET
         BoundLabel.Font.Color = clWindowText
         BoundLabel.Font.Height = -13
         BoundLabel.Font.Name = 'Tahoma'
         BoundLabel.Font.Style = []
-        BoundLabel.Layout = sclLeft
-        BoundLabel.MaxWidth = 0
-        BoundLabel.UseSkinColor = True
         SkinData.SkinSection = 'COMBOBOX'
+        VerticalAlignment = taAlignTop
         Color = clWhite
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = clBlack
+        Font.Color = 2302755
         Font.Height = -13
         Font.Name = 'Tahoma'
         Font.Style = []

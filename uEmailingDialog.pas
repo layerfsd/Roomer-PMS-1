@@ -17,6 +17,8 @@ type
     constructor Create(_name, _uri : String; _id : Integer);
   end;
 
+  TEmailTemplateInfoList = TObjectList<TEmailTemplateInfo>;
+
   TFrmEmailingDialog = class(TForm)
     sPanel1: TsPanel;
     sLabel1: TsLabel;
@@ -45,7 +47,7 @@ type
     procedure cbxTemplatesCloseUp(Sender: TObject);
   private
     FFiles: TStringList;
-    FTemplate : TList<TEmailTemplateInfo>;
+    FTemplates : TEmailTemplateInfoList;
     procedure SetFiles(const Value: TStringList);
     procedure LoadEmailTemplates;
     function Download(template : TEmailTemplateInfo): String;
@@ -126,12 +128,12 @@ procedure TFrmEmailingDialog.FormCreate(Sender: TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
   glb.PerformAuthenticationAssertion(self);
-  FTemplate := TList<TEmailTemplateInfo>.Create;
+  FTemplates := TEmailTemplateInfoList.Create(True);
 end;
 
 procedure TFrmEmailingDialog.FormDestroy(Sender: TObject);
 begin
-  FTemplate.Free;
+  FTemplates.Free;
 end;
 
 procedure TFrmEmailingDialog.FormShow(Sender: TObject);
@@ -180,7 +182,7 @@ begin
     while NOT rSet.Eof do
     begin
       template := TEmailTemplateInfo.Create(rSet['ORIGINAL_NAME'], rSet['URI'], rSet['ID']);
-      FTemplate.Add(template);
+      FTemplates.Add(template);
       cbxTemplates.Items.AddObject(template.Name, template);
       rSet.Next;
     end;

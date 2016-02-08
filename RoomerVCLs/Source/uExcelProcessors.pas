@@ -25,6 +25,8 @@ type
     constructor Create(_TopClass : String; _Rooms : Integer);
   end;
 
+  TTopClassEntityDictionary = TObjectDictionary<String, TTopClassEntity>;
+
   TDateRange = class
     StartDate : TDate;
     EndDate : TDate;
@@ -85,7 +87,7 @@ type
     Excel: TcxSpreadSheetBook;
     FProcessorType : TProcessorType;
     FTopClassStatuses : TObjectList<TOccEntity>;
-    FTopClasses : TDictionary<String, TTopClassEntity>;
+    FTopClasses : TTopClassEntityDictionary;
     FDateRanges : TObjectList<TDateRange>;
     FChannels : TObjectList<TChannelEntity>;
     FTemplateFile : String;
@@ -163,7 +165,7 @@ var
 
 constructor TExcelProcessors.Create;
 begin
-  FTopClasses := TDictionary<String, TTopClassEntity>.Create;
+  FTopClasses := TTopClassEntityDictionary.Create([doOwnsValues]);
 
   OccComparison :=  function(const Left, Right: TOccEntity): Integer
                     begin

@@ -2416,16 +2416,8 @@ procedure TfrmControlData.FormDestroy(Sender : TObject);
 begin
   gridFont.Free;
   grid5DayFont.Free;
-  if assigned(financeCustomerList) then
-  begin
-    financeCustomerList.Clear;
-    financeCustomerList.Free;
-  end;
-  if assigned(financeLookupList) then
-  begin
-    financeLookupList.Clear;
-    financeLookupList.Free;
-  end;
+  financeCustomerList.Free;
+  financeLookupList.Free;
 end;
 
 procedure TfrmControlData.itemLookup(edit : TsComboEdit; lab : TsLabel);

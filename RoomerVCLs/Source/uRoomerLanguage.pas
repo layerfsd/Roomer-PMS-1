@@ -65,13 +65,13 @@ type
     property TemporaryValue : Boolean read FTemporaryValue write FTemporaryValue;
   end;
 
+  TDictionaryItemDictionary = TObjectDictionary<String,TDictionaryItem>;
   TLanguageDictionary = class
   private
     FLangId : Integer;
     FLangCode : String;
-    FDictionary : TDictionary<String,TDictionaryItem>;
+    FDictionary : TDictionaryItemDictionary;
     function GetKeyDictionaryItem(key : String): TDictionaryItem;
-    procedure ValueNotification(Sender: TObject; const Item: TDictionaryItem; Action: TCollectionNotification);
   public
     constructor Create;
     destructor Destroy; override;
@@ -91,7 +91,7 @@ type
 
     property LangId : Integer read FLangId;
     property LangCode : String read FLangCode;
-    property Dictionary : TDictionary<String,TDictionaryItem> read FDictionary;
+    property Dictionary : TDictionaryItemDictionary read FDictionary;
   end;
 
   TRoomerLanguageItem = class
@@ -110,15 +110,17 @@ type
     property EnglishName : String read FEnglishName;
     property LocalName : String read FLocalName;
     property _Default : Boolean read FDefault;
-  published
   end;
+
+  TLanguageObjectDictionary = TObjectDictionary<String,TLanguageDictionary>;
+  TLanguageItemList = TObjectList<TRoomerLanguageItem>;
 
   TRoomerLanguage = class(TComponent)
   private
     FRSet: TRoomerDataSet;
     FLanguageCode: String;
     FLanguageId: Integer;
-    FLangIds : TList<TRoomerLanguageItem>;
+    FLangIds : TLanguageItemList;
     FPerformDBUpdatesWhenUnknownEntitiesFound: Boolean;
     procedure SetLanguageCode(const Value: String);
     procedure Clear;
@@ -130,9 +132,6 @@ type
     function GetLanguageById(id: Integer): TRoomerLanguageItem;
     procedure CheckHintComponentName(comp: TControl; hint: String);
     function AddNameOfComponentToHintIfNeeded(comp: TComponent): String;
-
-    procedure FormModalBegin(Sender: TObject) ;
-    procedure FormModalEnd(Sender: TObject) ;
 
     function LanguageExistsLocallyOrNeedsRefresh(languageId: Integer): Boolean;
 
@@ -172,7 +171,7 @@ type
     procedure TranslateThis(comp: TAdvEditBtn; key: String); overload;
     procedure TranslateThis(comp: TcxGridDBColumn; key: String); overload;
     procedure TranslateThis(comp: TcxGrid; key: String); overload;
-    procedure TranslateThis(comp : TcxDBPivotGrid; key : String); overload;
+//    procedure TranslateThis(comp : TcxDBPivotGrid; key : String); overload;
     procedure TranslateThis(comp: TcxGridDBBandedColumn; key: String); overload;
     procedure TranslateThis(comp: TcxDBPivotGridField; key: String); overload;
     procedure TranslateThis(comp: TsTabControl; key: String); overload;
@@ -182,8 +181,6 @@ type
     procedure TranslateThis(comp: TChart; key: String); overload;
     procedure TranslateThis(comp: TcxGridDBBandedTableView; key: String); overload;
 
-    function Md5OfLanguageFile(languageId: Integer): String;
-    function Md5OfLanguageRemote(languageId: Integer): String;
     procedure SaveLanguageLocally;
     procedure LoadFromStream(stream: TStream);
     procedure SaveToStream(stream: TStream);
@@ -191,14 +188,10 @@ type
     procedure PrepareLanguageItem(languageId: integer);
     procedure SetSystemConstants;
     procedure RemoveDictionaries;
-    procedure LanguageValueNotification(Sender: TObject; const Item: TLanguageDictionary;
-      Action: TCollectionNotification);
-    procedure LanguageIdsNotification(Sender: TObject; const Item: TRoomerLanguageItem;
-      Action: TCollectionNotification);
     { Private declarations }
   protected
     { Protected declarations }
-    FLanguages : TDictionary<String,TLanguageDictionary>;
+    FLanguages : TLanguageObjectDictionary;
     ExecutionPlan : TRoomerExecutionPlan;
     CurrentCollection : TStringList;
     LanguageCollectionActive : Boolean;
@@ -273,16 +266,9 @@ CONST KEY_MASK = '%s.%s.%s';
 
 { TLanguageDictionary }
 
-procedure TLanguageDictionary.ValueNotification(Sender: TObject; const Item: TDictionaryItem; Action: TCollectionNotification);
-begin
-  if (Action = cnRemoved) then
-    Item.Free;
-end;
-
 constructor TLanguageDictionary.Create;
 begin
-  FDictionary := TDictionary<String,TDictionaryItem>.Create;
-  FDictionary.OnValueNotify := ValueNotification;
+  FDictionary := TDictionaryItemDictionary.Create([doOwnsValues]);
   FLangId := -1;
   FLangCode := '---';
 end;
@@ -302,7 +288,6 @@ procedure TLanguageDictionary.FillLanguageFromDataset(RSet: TRoomerDataSet;
             ComponentNameFieldName,
             extraIdentityFieldName,
             TextFieldName: String);
-var key : String;
 begin
   FLangCode := LanguageCode;
   RSet.First;
@@ -373,16 +358,6 @@ begin
   inherited;
 end;
 
-procedure TRoomerLanguage.FormModalBegin(Sender: TObject);
-begin
-  //
-end;
-
-procedure TRoomerLanguage.FormModalEnd(Sender: TObject);
-begin
-  //
-end;
-
 procedure TRoomerLanguage.ActivateDBLanguageCollection;
 begin
   if FPerformDBUpdatesWhenUnknownEntitiesFound then
@@ -398,29 +373,13 @@ procedure TRoomerLanguage.Clear;
 begin
   RoomerLanguageActivated := False;
   RemoveDictionaries;
-//  FLanguages.Clear;
-//  FreeAndNil(FLanguages);
-//  FreeAndNil(FLangIds);
 end;
 
-procedure TRoomerLanguage.LanguageValueNotification(Sender: TObject; const Item: TLanguageDictionary; Action: TCollectionNotification);
-begin
-  if (Action = cnRemoved) then
-    Item.Free;
-end;
-
-procedure TRoomerLanguage.LanguageIdsNotification(Sender: TObject; const Item: TRoomerLanguageItem; Action: TCollectionNotification);
-begin
-  if (Action = cnRemoved) then
-    Item.Free;
-end;
 
 procedure TRoomerLanguage.CreateDictionaries;
 begin
-  FLanguages := TDictionary<String,TLanguageDictionary>.Create;
-  FLanguages.OnValueNotify := LanguageValueNotification;
-  FLangIds := TList<TRoomerLanguageItem>.Create;
-  FLangIds.OnNotify := LanguageIdsNotification;
+  FLanguages := TLanguageObjectDictionary.Create([doOwnsValues]);
+  FLangIds := TLanguageItemList.Create(True); // owns objects!
 end;
 
 procedure TRoomerLanguage.RemoveDictionaries;
@@ -542,7 +501,6 @@ end;
 procedure TRoomerLanguage.PrepareDictionaries(languageId : integer; forceRefresh : Boolean = False);
 var Dictionary : TLanguageDictionary;
     RSetDictionary: TRoomerDataSet;
-    LangItem : TRoomerLanguageItem;
 begin
   PrepareLanguageItem(LanguageId);
 
@@ -598,26 +556,16 @@ begin
     end;
 end;
 
-function TRoomerLanguage.Md5OfLanguageRemote(languageId : Integer) : String;
-begin
-
-end;
-
-function TRoomerLanguage.Md5OfLanguageFile(languageId : Integer) : String;
-begin
-
-end;
 
 function TRoomerLanguage.LanguageExistsLocallyOrNeedsRefresh(languageId : Integer) : Boolean;
 var filename : String;
-    iAge : Integer;
     fileDate : TDateTime;
 begin
   filename := GetLanguageFilename;
   result := FileExists(filename);
   if result then
   begin
-    fileDate := FileDateToDateTime(FileAge(filename));
+    FileAge(filename, FileDate);
     if now - fileDate > 2 then
     begin
       result := False;
@@ -706,12 +654,10 @@ end;
 
 procedure TRoomerLanguage.LoadFromStream(stream: TStream);
 var
-  size: Integer;
   i: Integer;
   Key, Value: string;
   reader: TStreamReader;
   Dictionary : TLanguageDictionary;
-  TempItem : TDictionaryItem;
 begin
   IF NOT FLanguages.TryGetValue(FLanguageCode, Dictionary) then
   begin
@@ -773,7 +719,6 @@ begin
 end;
 
 procedure TRoomerLanguage.LoadLanguage(forceRefresh : Boolean = False);
-var list : TStringList;
 begin
   if NOT LanguageExistsLocallyOrNeedsRefresh(FLanguageId) then
   begin
@@ -785,16 +730,15 @@ begin
 end;
 
 procedure TRoomerLanguage.PrepareLanguages(RoomerDataset: TRoomerDataSet);
-var Dictionary : TLanguageDictionary;
-    RSetLanguages,
-    RSetDictionary: TRoomerDataSet;
-    langCode : String;
+var
+    RSetLanguages: TRoomerDataset;
 begin
 
   if FLangIds.Count > 0 then
     exit;
 
-  Clear; CreateDictionaries;
+  Clear;
+  CreateDictionaries;
 
   FRSet := RoomerDataset;
   KillFormCreateHook;
@@ -1348,22 +1292,22 @@ begin
     end;
 end;
 
-procedure TRoomerLanguage.TranslateThis(comp : TcxDBPivotGrid; key : String);
-var i, l : integer;
-    tv : TcxGridDBBandedTableView;
-begin
-  try
-    for i := 0 to comp.ComponentCount - 1 do
-      if comp.Components[i] IS TcxGridDBBandedTableView then
-      begin
-        tv := (comp.Components[i] AS TcxGridDBBandedTableView);
-        for l := 0 to tv.Bands.Count - 1 do
-          tv.Bands[l].Caption := GetTranslationOfSpecifiedKey(key + 'TVBandItems' + inttostr(l), tv.Bands[l].Caption);
-      end;
-  except
-
-  end;
-end;
+//procedure TRoomerLanguage.TranslateThis(comp : TcxDBPivotGrid; key : String);
+//var i, l : integer;
+//    tv : TcxGridDBBandedTableView;
+//begin
+//  try
+//    for i := 0 to comp.ComponentCount - 1 do
+//      if comp.Components[i] IS TcxGridDBBandedTableView then
+//      begin
+//        tv := (comp.Components[i] AS TcxGridDBBandedTableView);
+//        for l := 0 to tv.Bands.Count - 1 do
+//          tv.Bands[l].Caption := GetTranslationOfSpecifiedKey(key + 'TVBandItems' + inttostr(l), tv.Bands[l].Caption);
+//      end;
+//  except
+//
+//  end;
+//end;
 
 procedure TRoomerLanguage.TranslateThis(comp : TcxGridDBBandedColumn; key : String);
 begin

@@ -57,7 +57,7 @@ TYPE
 
 
 
-  TFreeRoomItemsList = TList<TFreeRoomItem>;
+  TFreeRoomItemsList = TObjectList<TFreeRoomItem>;
 
 
   //////////////////////////////////////////////////////////////////////////////////////
@@ -185,7 +185,7 @@ begin
   inherited Create;
 
   try
-    FRoomList := TFreeRoomItemsList.Create;
+    FRoomList := TFreeRoomItemsList.Create(True);
   Except
     //TODO Loga
   end;
@@ -213,12 +213,7 @@ begin
 end;
 
 procedure TFreeRooms.ClearRoomList;
-var i : integer;
 begin
-  for i := 0 to FRoomList.Count - 1 do
-  begin
-    TFreeRoomItem(FRoomList[i]).Free;
-  end;
   FRoomList.Clear;
 end;
 

@@ -38,7 +38,7 @@ type
                        _value : Variant);
   end;
 
-
+  TChannelValueEnityList = TObjectList<TChannelValueEnity>;
 
   TFrmChannelCopyFrom = class(TForm)
     sPanel1: TsPanel;
@@ -92,10 +92,8 @@ type
     channelManagers : TRoomerDataset;
   end;
 
-var
-  FrmChannelCopyFrom: TFrmChannelCopyFrom;
-
-var ValueList : TList<TChannelValueEnity>;
+// TODO: thsi global var is Only used in TfrmChannelAvailabilityManager.AssignChanges, should be made a resuling object from CopyChannelSettings(
+var ValueList : TChannelValueEnityList;
 
 function CopyChannelSettings(var _toChannel : Integer; _channelManager, _planId : Integer) : Boolean;
 
@@ -112,19 +110,19 @@ uses uAppGlobal
 
 function CopyChannelSettings(var _toChannel : Integer; _channelManager, _planId : Integer) : Boolean;
 var
-  _FrmChannelCopyFrom: TFrmChannelCopyFrom;
+  lFrmChannelCopyFrom: TFrmChannelCopyFrom;
 begin
-  _FrmChannelCopyFrom := TFrmChannelCopyFrom.Create(nil);
+  lFrmChannelCopyFrom := TFrmChannelCopyFrom.Create(nil);
   try
-    _FrmChannelCopyFrom.toChannel := _toChannel;
-    _FrmChannelCopyFrom.channelManager := _channelManager;
-    _FrmChannelCopyFrom.planId := _planId;
+    lFrmChannelCopyFrom.toChannel := _toChannel;
+    lFrmChannelCopyFrom.channelManager := _channelManager;
+    lFrmChannelCopyFrom.planId := _planId;
 
-    _FrmChannelCopyFrom.ShowModal;
-    result := _FrmChannelCopyFrom.copyPerformed;
-    _toChannel := _FrmChannelCopyFrom.toChannel;
+    lFrmChannelCopyFrom.ShowModal;
+    result := lFrmChannelCopyFrom.copyPerformed;
+    _toChannel := lFrmChannelCopyFrom.toChannel;
   finally
-    _FrmChannelCopyFrom.Free;
+    lFrmChannelCopyFrom.Free;
   end;
 end;
 
@@ -190,7 +188,7 @@ begin
                      channelManager, planId,
                      roomClassList]));
 
-  ValueList := TList<TChannelValueEnity>.Create;
+  ValueList.Clear;
   rSet.First;
   while NOT rSet.Eof do
   begin
@@ -407,14 +405,9 @@ begin
 end;
 
 initialization
+  ValueList := TChannelValueEnityList.Create(True);
 
-   ValueList := nil;
 
 finalization
-   if assigned(ValueList) then
-   begin
-      ValueList.Clear;
-      ValueList.Free;
-   end;
-
+  ValueList.Free;
 end.

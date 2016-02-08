@@ -90,7 +90,7 @@ uses
   , cmpRoomerConnection, dxSkinsCore, dxSkinDarkSide, dxSkinDevExpressDarkStyle, dxSkinMcSkin, dxSkinOffice2013White,
   dxSkinsDefaultPainters, dxSkinscxPCPainter, cxButtonEdit, cxCalendar, cxLabel, dxSkinsdxBarPainter, dxSkinsdxRibbonPainter,
   cxPropertiesStore, dxmdaset, sCheckBox, Vcl.Mask, sMaskEdit, sCustomComboEdit, sTooledit, AdvCombo, ColCombo, sGroupBox,
-  dxPScxPivotGridLnk
+  dxPScxPivotGridLnk, dxSkinCaramel, dxSkinCoffee, dxSkinTheAsphaltWorld
 
 
 
@@ -989,7 +989,7 @@ end;
 
 function TfrmRoomRates.getDefaults(PriceCodeID, RateID, SeasonId, RoomTypeID, CurrencyID : integer ) : recwRoomRateHolder;
 var
-  lstRSets : TList<TRoomerDataSet>;
+  lstRSets : TRoomerDataSetList;
   queries : TList<String>;
 
   s,
@@ -1000,7 +1000,7 @@ begin
   initwRoomRateHolder(result);
 
   queries := TList<String>.Create;
-  lstRSets := TList<TRoomerDataSet>.Create;
+  lstRSets := TRoomerDataSetList.Create(True);
   try
 
     queries.Add(format(
@@ -1145,8 +1145,6 @@ begin
 //    end;
 
   finally
-    for i := 0 to 1 do
-      lstRSets[i].Free;
     FreeAndNil(lstRSets);
     freeAndNil(queries);
   end;

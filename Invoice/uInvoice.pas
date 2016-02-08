@@ -93,6 +93,8 @@ type
     property name: string read FName write FName;
   end;
 
+  TRoomInfoList = TObjectlist<TRoomInfo>;
+
   // ------------------------------------------------------------------------------
   //
   // TInvoiceLine
@@ -532,7 +534,7 @@ type
     zCountry: string;
 
     zLstRooms: TList;
-    SelectableRooms: TList<TRoomInfo>;
+    SelectableRooms: TRoomInfoList;
     zInvoiceNumber: integer;
     zInvoiceDate: TDate;
     zConfirmDate: TDate;
@@ -572,7 +574,7 @@ type
     useStayTaxAlreadyFetched: boolean;
     useStayTaxOutcome: boolean;
 
-    tempInvoiceItemList: TList<TInvoiceItemEntity>;
+    tempInvoiceItemList: TInvoiceItemEntityList;
 
     selectedRoomReservation: integer;
 
@@ -691,14 +693,13 @@ type
 
     function LocateDate(recordSet: TRoomerDataset; field: String;
       Value: TDateTime): boolean;
-    procedure GetTaxTypes(TaxResultInvoiceLines: TList<TInvoiceTaxEntity>);
+    procedure GetTaxTypes(TaxResultInvoiceLines: TInvoiceTaxEntityList);
     procedure HandleExceptionListFromBookKeepingSystem(invoiceNumber: integer;
       ErrorList: String);
     function FindLastRoomRentLine: integer;
     procedure CollectInvoice(iInvoiceNumber: integer);
-    function GetItemIvoiceLinesForTaxCalculations: TList<TInvoiceItemEntity>;
-    procedure RemoveTempInvoiceItemList(_tempInvoiceItemList
-      : TList<TInvoiceItemEntity> = nil);
+    function GetItemIvoiceLinesForTaxCalculations: TInvoiceItemEntityList;
+    procedure RemoveTempInvoiceItemList(_tempInvoiceItemList : TInvoiceItemEntityList = nil);
     function CheckIfWithdrawlAllowed(removeIfNotAllowed: boolean;
       Editing: boolean): boolean;
     function CheckIfWithdrawlAllowed_X(Editing: boolean; Value: String)
@@ -4470,8 +4471,7 @@ begin
   end;
 end;
 
-procedure TfrmInvoice.RemoveTempInvoiceItemList(_tempInvoiceItemList
-  : TList<TInvoiceItemEntity> = nil);
+procedure TfrmInvoice.RemoveTempInvoiceItemList(_tempInvoiceItemList : TInvoiceItemEntityList = nil);
 var
   i: integer;
   wasNil: boolean;
@@ -4479,17 +4479,12 @@ begin
   wasNil := _tempInvoiceItemList = nil;
   if wasNil then
     _tempInvoiceItemList := tempInvoiceItemList;
-  for i := 0 to _tempInvoiceItemList.Count - 1 do
-  begin
-    _tempInvoiceItemList[i].free;
-  end;
   _tempInvoiceItemList.Clear;
   if wasNil then
     tempInvoiceItemList.free;
 end;
 
-function TfrmInvoice.GetItemIvoiceLinesForTaxCalculations
-  : TList<TInvoiceItemEntity>;
+function TfrmInvoice.GetItemIvoiceLinesForTaxCalculations: TInvoiceItemEntityList;
 var
   taxGuests: integer;
   taxNights: Double;
@@ -4504,7 +4499,7 @@ var
   TotalPrice: Double;
   Item: string;
   //
-  ItemInvoiceLines: TList<TInvoiceItemEntity>;
+  ItemInvoiceLines: TInvoiceItemEntityList;
   //
   TotalVAT: Double;
   itemVAT: Double;
@@ -4528,59 +4523,63 @@ begin
   TotalVAT := 0.00;
   itemVAT := 0.00;
 
-  ItemInvoiceLines := TList<TInvoiceItemEntity>.create;
-
-  for i := 1 to agrLines.RowCount - 1 do
-  begin
-    Item := _trimlower(agrLines.Cells[col_Item, i]);
-    if trim(Item) <> '' then
+  ItemInvoiceLines := TInvoiceItemEntityList.create(True);
+  try
+    for i := 1 to agrLines.RowCount - 1 do
     begin
-      ItemTypeInfo := d.Item_Get_ItemTypeInfo(Item,
-        agrLines.Cells[col_Source, i]);
-
-      sTmp := trim(agrLines.Cells[col_NoGuests, i]);
-      if sTmp <> '' then
+      Item := _trimlower(agrLines.Cells[col_Item, i]);
+      if trim(Item) <> '' then
       begin
-        taxGuests := strToInt(sTmp);
-      end;
+        ItemTypeInfo := d.Item_Get_ItemTypeInfo(Item,
+          agrLines.Cells[col_Source, i]);
 
-      sTmp := trim(agrLines.Cells[col_ItemCount, i]);
-      if sTmp <> '' then
-      begin
-        taxNights := _StrToFloat(agrLines.Cells[col_ItemCount, i]); // -96
-      end;
+        sTmp := trim(agrLines.Cells[col_NoGuests, i]);
+        if sTmp <> '' then
+        begin
+          taxGuests := strToInt(sTmp);
+        end;
 
-      dNumItems := 0;
-      sTmp := trim(agrLines.Cells[col_ItemCount, i]);
-      if sTmp <> '' then
-      begin
-        dNumItems := _StrToFloat(sTmp);
-      end;
+        sTmp := trim(agrLines.Cells[col_ItemCount, i]);
+        if sTmp <> '' then
+        begin
+          taxNights := _StrToFloat(agrLines.Cells[col_ItemCount, i]); // -96
+        end;
 
-      ItemPrice := 0;
-      sTmp := trim(agrLines.Cells[col_ItemPrice, i]);
-      if sTmp <> '' then
-      begin
-        ItemPrice := _StrToFloat(sTmp);
-      end;
-      if ItemPrice <> 0 then
-      begin
-        // Formula
-        // if Item = _trimlower(g.qRoomRentItem) then
-        itemVAT := GetVATForItem(Item, ItemPrice, 1,
-          TInvoiceRoomEntity.create(Item, taxGuests, taxNights, ItemPrice, 0),
-          nil, ItemTypeInfo, edtCustomer.Text)
-        // else
-        // itemVAT := _calcVAT(itemPrice, ItemTypeInfo.VATPercentage);
-      end;
+        dNumItems := 0;
+        sTmp := trim(agrLines.Cells[col_ItemCount, i]);
+        if sTmp <> '' then
+        begin
+          dNumItems := _StrToFloat(sTmp);
+        end;
 
-      TotalPrice := 0;
-      sTmp := trim(agrLines.Cells[col_TotalPrice, i]);
-      TotalVAT := itemVAT * dNumItems;
+        ItemPrice := 0;
+        sTmp := trim(agrLines.Cells[col_ItemPrice, i]);
+        if sTmp <> '' then
+        begin
+          ItemPrice := _StrToFloat(sTmp);
+        end;
+        if ItemPrice <> 0 then
+        begin
+          // Formula
+          // if Item = _trimlower(g.qRoomRentItem) then
+          itemVAT := GetVATForItem(Item, ItemPrice, 1,
+            TInvoiceRoomEntity.create(Item, taxGuests, taxNights, ItemPrice, 0),
+            nil, ItemTypeInfo, edtCustomer.Text)
+          // else
+          // itemVAT := _calcVAT(itemPrice, ItemTypeInfo.VATPercentage);
+        end;
 
-      ItemInvoiceLines.add(TInvoiceItemEntity.create(Item, taxNights, ItemPrice,
-        itemVAT));
+        TotalPrice := 0;
+        sTmp := trim(agrLines.Cells[col_TotalPrice, i]);
+        TotalVAT := itemVAT * dNumItems;
+
+        ItemInvoiceLines.add(TInvoiceItemEntity.create(Item, taxNights, ItemPrice,
+          itemVAT));
+      end;
     end;
+  except
+    ItemInvoiceLines.Free;
+    raise;
   end;
   result := ItemInvoiceLines;
 end;
@@ -4608,9 +4607,9 @@ var
   TotalPrice: Double;
   Item: string;
   //
-  RoomInvoiceLines: TList<TInvoiceRoomEntity>;
-  ItemInvoiceLines: TList<TInvoiceItemEntity>;
-  TaxResultInvoiceLines: TList<TInvoiceTaxEntity>;
+  RoomInvoiceLines: TInvoiceRoomEntityList;
+  ItemInvoiceLines: TInvoiceItemEntityList;
+  TaxResultInvoiceLines: TInvoiceTaxEntityList;
 
   ttTaxIncluted: Double;
   ttTaxExcluted: Double;
@@ -4665,8 +4664,8 @@ begin
   itemVAT := 0.00;
 
   iAddAt := FindLastRoomRentLine + 1;
-  ItemInvoiceLines := TList<TInvoiceItemEntity>.create;
-  RoomInvoiceLines := TList<TInvoiceRoomEntity>.create;
+  ItemInvoiceLines := TInvoiceItemEntityList.Create(True);
+  RoomInvoiceLines := TInvoiceRoomEntityList.create(True);
   // tempInvoiceItemList := GetItemIvoiceLinesForTaxCalculations;
   try
     for i := 1 to agrLines.RowCount - 1 do
@@ -4746,90 +4745,95 @@ begin
         ItemInvoiceLines, ItemTypeInfo, isIncluted);
     end
     else
-      TaxResultInvoiceLines := TList<TInvoiceTaxEntity>.create;
+      TaxResultInvoiceLines := TInvoiceTaxEntityList.create(True);
 
-    StayTaxUnitCount := 0.00;
-    ttTax := 0.00;
-    // ttNative := 0.00;
-    ttTaxIncluted := 0.00;
-    ttTaxExcluted := 0.00;
+    try
 
-    StayTaxUnitCountIncluted := 0.00;
-    StayTaxUnitCountExcluted := 0.00;
+      StayTaxUnitCount := 0.00;
+      ttTax := 0.00;
+      // ttNative := 0.00;
+      ttTaxIncluted := 0.00;
+      ttTaxExcluted := 0.00;
 
-    isIncluted := false;
+      StayTaxUnitCountIncluted := 0.00;
+      StayTaxUnitCountExcluted := 0.00;
 
-    GetTaxTypes(TaxResultInvoiceLines);
-    for l := 0 to TaxTypes.Count - 1 do
-    begin
-      ttTaxExcluted := 0;
-      StayTaxUnitCountExcluted := 0;
-      for i := 0 to TaxResultInvoiceLines.Count - 1 do
-        if TaxResultInvoiceLines[i].BookingItem = TaxTypes[l] then
-        begin
-          Total := TaxResultInvoiceLines[i].Total;
+      isIncluted := false;
 
-          // ttNative := ttNative + Total;
-          StayTaxUnitCount := StayTaxUnitCount + TaxResultInvoiceLines
-            [i].NumItems;
-
-          // if _trimlower(zNativeCurrency) <> _trimlower(zCurrenctCurrency) then
-          // begin
-          // if ttNative <> 0 then
-          // ttNative := _RoundN(ttNative / zCurrencyRate, 2);
-          // end;
-
-          if TaxResultInvoiceLines[i].IncludedInPrice = TIE_PER_CUSTOMER then
-          begin
-            glb.LocateSpecificRecordAndGetValue('customers', 'Customer',
-              edtCustomer.Text, 'StayTaxIncluted', isIncluted);
-          end;
-
-          if TaxResultInvoiceLines[i].IncludedInPrice = TIE_INCLUDED then
-          begin
-            isIncluted := True;
-          end;
-
-          if TaxResultInvoiceLines[i].IncludedInPrice = TIE_EXCLUDED then
-          begin
-            isIncluted := false;
-          end;
-
-          if isIncluted then
-          begin
-            // if NOT TaxResultInvoiceLines[i].Percentage then
-            // ttTaxIncluted := ttTaxIncluted + _RoundN(Total / zCurrencyRate, 2)
-            // else
-            ttTaxIncluted := ttTaxIncluted + Total;
-            StayTaxUnitCountIncluted := StayTaxUnitCountIncluted +
-              TaxResultInvoiceLines[i].NumItems;
-          end
-          else
-          begin
-            if NOT TaxResultInvoiceLines[i].Percentage then
-              ttTaxExcluted := ttTaxExcluted + _RoundN(Total / zCurrencyRate, 2)
-            else
-              ttTaxExcluted := ttTaxExcluted + Total;
-            StayTaxUnitCountExcluted := StayTaxUnitCountExcluted +
-              TaxResultInvoiceLines[i].NumItems;
-          end;
-
-        end;
-
-      // if _trimlower(zNativeCurrency) <> _trimlower(zCurrenctCurrency) then
-      // begin
-      // if ttTaxIncluted <> 0 then
-      // ttTaxIncluted := _RoundN(ttTaxIncluted / zCurrencyRate, 2);
-
-      // if ttTaxExcluted <> 0 then
-      // ttTaxExcluted := _RoundN(ttTaxExcluted / zCurrencyRate, 2);
-      // end;
-
-      if (StayTaxUnitCountExcluted <> 0) then
+      GetTaxTypes(TaxResultInvoiceLines);
+      for l := 0 to TaxTypes.Count - 1 do
       begin
-        AddRoomTax(ttTaxExcluted, StayTaxUnitCountExcluted,
-          TaxTypes[l], iAddAt);
+        ttTaxExcluted := 0;
+        StayTaxUnitCountExcluted := 0;
+        for i := 0 to TaxResultInvoiceLines.Count - 1 do
+          if TaxResultInvoiceLines[i].BookingItem = TaxTypes[l] then
+          begin
+            Total := TaxResultInvoiceLines[i].Total;
+
+            // ttNative := ttNative + Total;
+            StayTaxUnitCount := StayTaxUnitCount + TaxResultInvoiceLines
+              [i].NumItems;
+
+            // if _trimlower(zNativeCurrency) <> _trimlower(zCurrenctCurrency) then
+            // begin
+            // if ttNative <> 0 then
+            // ttNative := _RoundN(ttNative / zCurrencyRate, 2);
+            // end;
+
+            if TaxResultInvoiceLines[i].IncludedInPrice = TIE_PER_CUSTOMER then
+            begin
+              glb.LocateSpecificRecordAndGetValue('customers', 'Customer',
+                edtCustomer.Text, 'StayTaxIncluted', isIncluted);
+            end;
+
+            if TaxResultInvoiceLines[i].IncludedInPrice = TIE_INCLUDED then
+            begin
+              isIncluted := True;
+            end;
+
+            if TaxResultInvoiceLines[i].IncludedInPrice = TIE_EXCLUDED then
+            begin
+              isIncluted := false;
+            end;
+
+            if isIncluted then
+            begin
+              // if NOT TaxResultInvoiceLines[i].Percentage then
+              // ttTaxIncluted := ttTaxIncluted + _RoundN(Total / zCurrencyRate, 2)
+              // else
+              ttTaxIncluted := ttTaxIncluted + Total;
+              StayTaxUnitCountIncluted := StayTaxUnitCountIncluted +
+                TaxResultInvoiceLines[i].NumItems;
+            end
+            else
+            begin
+              if NOT TaxResultInvoiceLines[i].Percentage then
+                ttTaxExcluted := ttTaxExcluted + _RoundN(Total / zCurrencyRate, 2)
+              else
+                ttTaxExcluted := ttTaxExcluted + Total;
+              StayTaxUnitCountExcluted := StayTaxUnitCountExcluted +
+                TaxResultInvoiceLines[i].NumItems;
+            end;
+
+          end;
+
+        // if _trimlower(zNativeCurrency) <> _trimlower(zCurrenctCurrency) then
+        // begin
+        // if ttTaxIncluted <> 0 then
+        // ttTaxIncluted := _RoundN(ttTaxIncluted / zCurrencyRate, 2);
+
+        // if ttTaxExcluted <> 0 then
+        // ttTaxExcluted := _RoundN(ttTaxExcluted / zCurrencyRate, 2);
+        // end;
+
+        if (StayTaxUnitCountExcluted <> 0) then
+        begin
+          AddRoomTax(ttTaxExcluted, StayTaxUnitCountExcluted,
+            TaxTypes[l], iAddAt);
+        end;
       end;
+    finally
+      TaxResultInvoiceLines.Free;
     end;
 
     grbInclutedTaxes.visible := (StayTaxUnitCountIncluted <> 0);
@@ -4845,8 +4849,7 @@ begin
   end;
 end;
 
-procedure TfrmInvoice.GetTaxTypes(TaxResultInvoiceLines
-  : TList<TInvoiceTaxEntity>);
+procedure TfrmInvoice.GetTaxTypes(TaxResultInvoiceLines: TInvoiceTaxEntityList);
 var
   i: integer;
   Item: String;
@@ -4934,7 +4937,7 @@ begin
   glb.PerformAuthenticationAssertion(self);
   // _RestoreWinPos(g.qAppInifile, TForm(Self).name, TForm(Self));
 
-  SelectableRooms := TList<TRoomInfo>.create;
+  SelectableRooms := TRoomInfoList.create(True);
   TaxTypes := TStringList.create;
 
   useStayTaxAlreadyFetched := false;
@@ -6536,7 +6539,7 @@ var
   // i : integer;
   //
 
-  theData: TList<TrecItemHolder>;
+  theData: TrecItemHolderList;
   rec: TrecItemHolder;
 
   VATCode, ItemType, Item: string;
@@ -6554,7 +6557,7 @@ begin
   Item := agrLines.Cells[col_Item, agrLines.row];
   // theData.Item := Item;
 
-  theData := TList<TrecItemHolder>.create;
+  theData := TrecItemHolderList.create(True);
   try
     rec := TrecItemHolder.create;
     rec.recHolder.Item := Item;

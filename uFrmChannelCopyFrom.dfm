@@ -70,15 +70,11 @@ object FrmChannelCopyFrom: TFrmChannelCopyFrom
       Margins.Right = 2
       Margins.Bottom = 2
       Alignment = taLeftJustify
-      BoundLabel.Indent = 0
       BoundLabel.Font.Charset = DEFAULT_CHARSET
       BoundLabel.Font.Color = clWindowText
       BoundLabel.Font.Height = -13
       BoundLabel.Font.Name = 'Tahoma'
       BoundLabel.Font.Style = []
-      BoundLabel.Layout = sclLeft
-      BoundLabel.MaxWidth = 0
-      BoundLabel.UseSkinColor = True
       SkinData.SkinSection = 'COMBOBOX'
       VerticalAlignment = taAlignTop
       Color = 3355443
@@ -103,15 +99,11 @@ object FrmChannelCopyFrom: TFrmChannelCopyFrom
       Margins.Right = 2
       Margins.Bottom = 2
       Alignment = taLeftJustify
-      BoundLabel.Indent = 0
       BoundLabel.Font.Charset = DEFAULT_CHARSET
       BoundLabel.Font.Color = clWindowText
       BoundLabel.Font.Height = -13
       BoundLabel.Font.Name = 'Tahoma'
       BoundLabel.Font.Style = []
-      BoundLabel.Layout = sclLeft
-      BoundLabel.MaxWidth = 0
-      BoundLabel.UseSkinColor = True
       SkinData.SkinSection = 'COMBOBOX'
       VerticalAlignment = taAlignTop
       Color = 3355443
@@ -192,15 +184,12 @@ object FrmChannelCopyFrom: TFrmChannelCopyFrom
       ParentFont = False
       TabOrder = 0
       Text = '  -  -    '
-      BoundLabel.Indent = 0
+      CheckOnExit = True
       BoundLabel.Font.Charset = DEFAULT_CHARSET
       BoundLabel.Font.Color = clWindowText
       BoundLabel.Font.Height = -13
       BoundLabel.Font.Name = 'Tahoma'
       BoundLabel.Font.Style = []
-      BoundLabel.Layout = sclLeft
-      BoundLabel.MaxWidth = 0
-      BoundLabel.UseSkinColor = True
       SkinData.SkinSection = 'EDIT'
       GlyphMode.Blend = 0
       GlyphMode.Grayed = False
@@ -227,15 +216,12 @@ object FrmChannelCopyFrom: TFrmChannelCopyFrom
       ParentFont = False
       TabOrder = 1
       Text = '  -  -    '
-      BoundLabel.Indent = 0
+      CheckOnExit = True
       BoundLabel.Font.Charset = DEFAULT_CHARSET
       BoundLabel.Font.Color = clWindowText
       BoundLabel.Font.Height = -13
       BoundLabel.Font.Name = 'Tahoma'
       BoundLabel.Font.Style = []
-      BoundLabel.Layout = sclLeft
-      BoundLabel.MaxWidth = 0
-      BoundLabel.UseSkinColor = True
       SkinData.SkinSection = 'EDIT'
       GlyphMode.Blend = 0
       GlyphMode.Grayed = False
@@ -256,6 +242,7 @@ object FrmChannelCopyFrom: TFrmChannelCopyFrom
       ParentFont = False
       TabOrder = 2
       SkinData.SkinSection = 'GROUPBOX'
+      Checked = False
       object cbxRestrictions: TsCheckBox
         Left = 14
         Top = 80
@@ -337,6 +324,7 @@ object FrmChannelCopyFrom: TFrmChannelCopyFrom
       ParentFont = False
       TabOrder = 3
       SkinData.SkinSection = 'GROUPBOX'
+      Checked = False
       object sbRoomClasses: TsScrollBox
         Left = 2
         Top = 15

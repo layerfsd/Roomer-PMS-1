@@ -12,7 +12,7 @@ uses
   uRoomerLanguage, uAppGlobal,
   Vcl.ExtCtrls, sPanel, sComboEdit, cxGraphics, cxControls, cxLookAndFeels, cxLookAndFeelPainters, cxContainer, cxEdit, Vcl.ComCtrls, dxCore, cxDateUtils,
   dxSkinsCore, dxSkinDarkSide, dxSkinDevExpressDarkStyle, dxSkinMcSkin, dxSkinOffice2013White, dxSkinsDefaultPainters, cxTextEdit, cxMaskEdit, cxDropDownEdit,
-  cxCalendar, dxSkinCaramel, dxSkinCoffee, dxSkinTheAsphaltWorld;
+  cxCalendar, dxSkinCaramel, dxSkinCoffee, dxSkinTheAsphaltWorld, AdvUtil;
 
 const WM_SET_DATE_FROM_MAIN = WM_User + 31;
 
@@ -27,24 +27,28 @@ type
     procedure SetAvailability(const Value: Integer);
   public
     constructor Create(_RateCode, _Description: String; _Rate: Double; _Availability : Integer);
-    destructor Destroy;
+    destructor Destroy; override;
 
     procedure AddRateAndAvailability(_Rate : Double; _Availability : Integer);
     property Availability : Integer read FAvailability write SetAvailability;
   end;
 
+  TRateEntityList = TObjectList<TRateEntity>;
+
   TRoomTypeEntity = class
     RoomType: String;
     Description: String;
-    FRates: TList<TRateEntity>;
+    FRates: TRateEntityList;
   public
     constructor Create(_RoomType, _Description: String);
-    destructor Destroy;
+    destructor Destroy; override;
 
     function RateIndex(Rate: String): Integer;
 
-    property Rates: TList<TRateEntity> read FRates;
+    property Rates: TRateEntityList read FRates;
   end;
+
+  TRoomTypeEntityList = TObjectList<TRoomTypeEntity>;
 
   TFrmRateQuery = class(TForm)
     pnlHolder: TsPanel;
@@ -89,7 +93,7 @@ type
   private
     { Private declarations }
     RatesSet: TRoomerDataSet;
-    RoomTypes: TList<TRoomTypeEntity>;
+    RoomTypes: TRoomTypeEntityList;
     FBeingViewed: Boolean;
     FShowDateFrom: TDateTime;
     FShowDateTo: TDateTime;
@@ -136,13 +140,13 @@ constructor TRoomTypeEntity.Create(_RoomType, _Description: String);
 begin
   RoomType := _RoomType;
   Description := _Description;
-  FRates := TList<TRateEntity>.Create;
+  FRates := TRateEntityList.Create(True);
 end;
 
 destructor TRoomTypeEntity.Destroy;
 begin
-  FRates.Clear;
   FRates.Free;
+  inherited;
 end;
 
 function TRoomTypeEntity.RateIndex(Rate: String): Integer;
@@ -189,7 +193,7 @@ procedure TFrmRateQuery.FormCreate(Sender: TObject);
 begin
   RatesSet := CreateNewDataSet;
   FBeingViewed := False;
-  RoomTypes := TList<TRoomTypeEntity>.Create;
+  RoomTypes := TRoomTypeEntityList.Create(True);
   ClearGrid;
 end;
 
@@ -616,14 +620,8 @@ begin
 end;
 
 procedure TFrmRateQuery.ClearRates;
-var i : Integer;
 begin
-  if assigned(RoomTypes) then
-  begin
-    for i := RoomTypes.Count - 1 downto 0 do
-      RoomTypes[i].Free;
-    RoomTypes.Clear;
-  end;
+  RoomTypes.Clear;
 end;
 
 procedure TFrmRateQuery.ClearGrid;

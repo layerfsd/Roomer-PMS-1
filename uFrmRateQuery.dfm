@@ -133,15 +133,11 @@ object FrmRateQuery: TFrmRateQuery
         ParentFont = False
         TabOrder = 1
         SkinData.SkinSection = 'EDIT'
-        BoundLabel.Indent = 0
         BoundLabel.Font.Charset = DEFAULT_CHARSET
         BoundLabel.Font.Color = clWindowText
         BoundLabel.Font.Height = -13
         BoundLabel.Font.Name = 'Tahoma'
         BoundLabel.Font.Style = []
-        BoundLabel.Layout = sclLeft
-        BoundLabel.MaxWidth = 0
-        BoundLabel.UseSkinColor = True
         OnDownClick = edNightsDownClick
         OnUpClick = edNightsUpClick
         MaxValue = 365
@@ -154,15 +150,6 @@ object FrmRateQuery: TFrmRateQuery
         Width = 109
         Height = 21
         Alignment = taLeftJustify
-        BoundLabel.Indent = 0
-        BoundLabel.Font.Charset = DEFAULT_CHARSET
-        BoundLabel.Font.Color = clWindowText
-        BoundLabel.Font.Height = -11
-        BoundLabel.Font.Name = 'Tahoma'
-        BoundLabel.Font.Style = []
-        BoundLabel.Layout = sclLeft
-        BoundLabel.MaxWidth = 0
-        BoundLabel.UseSkinColor = True
         SkinData.SkinSection = 'COMBOBOX'
         VerticalAlignment = taAlignTop
         Color = clWhite
@@ -197,15 +184,11 @@ object FrmRateQuery: TFrmRateQuery
         TabOrder = 3
         Visible = False
         SkinData.SkinSection = 'EDIT'
-        BoundLabel.Indent = 0
         BoundLabel.Font.Charset = DEFAULT_CHARSET
         BoundLabel.Font.Color = clWindowText
         BoundLabel.Font.Height = -13
         BoundLabel.Font.Name = 'Tahoma'
         BoundLabel.Font.Style = []
-        BoundLabel.Layout = sclLeft
-        BoundLabel.MaxWidth = 0
-        BoundLabel.UseSkinColor = True
         MaxValue = 365
         MinValue = 1
         Value = 0
@@ -225,15 +208,11 @@ object FrmRateQuery: TFrmRateQuery
         TabOrder = 4
         Visible = False
         SkinData.SkinSection = 'EDIT'
-        BoundLabel.Indent = 0
         BoundLabel.Font.Charset = DEFAULT_CHARSET
         BoundLabel.Font.Color = clWindowText
         BoundLabel.Font.Height = -13
         BoundLabel.Font.Name = 'Tahoma'
         BoundLabel.Font.Style = []
-        BoundLabel.Layout = sclLeft
-        BoundLabel.MaxWidth = 0
-        BoundLabel.UseSkinColor = True
         MaxValue = 365
         MinValue = 1
         Value = 0
@@ -253,15 +232,11 @@ object FrmRateQuery: TFrmRateQuery
         TabOrder = 5
         Visible = False
         SkinData.SkinSection = 'EDIT'
-        BoundLabel.Indent = 0
         BoundLabel.Font.Charset = DEFAULT_CHARSET
         BoundLabel.Font.Color = clWindowText
         BoundLabel.Font.Height = -13
         BoundLabel.Font.Name = 'Tahoma'
         BoundLabel.Font.Style = []
-        BoundLabel.Layout = sclLeft
-        BoundLabel.MaxWidth = 0
-        BoundLabel.UseSkinColor = True
         MaxValue = 365
         MinValue = 1
         Value = 0
@@ -281,15 +256,11 @@ object FrmRateQuery: TFrmRateQuery
         TabOrder = 6
         Visible = False
         SkinData.SkinSection = 'EDIT'
-        BoundLabel.Indent = 0
         BoundLabel.Font.Charset = DEFAULT_CHARSET
         BoundLabel.Font.Color = clWindowText
         BoundLabel.Font.Height = -13
         BoundLabel.Font.Name = 'Tahoma'
         BoundLabel.Font.Style = []
-        BoundLabel.Layout = sclLeft
-        BoundLabel.MaxWidth = 0
-        BoundLabel.UseSkinColor = True
         MaxValue = 365
         MinValue = 1
         Value = 0
@@ -333,15 +304,6 @@ object FrmRateQuery: TFrmRateQuery
         Width = 110
         Height = 21
         Alignment = taLeftJustify
-        BoundLabel.Indent = 0
-        BoundLabel.Font.Charset = DEFAULT_CHARSET
-        BoundLabel.Font.Color = clWindowText
-        BoundLabel.Font.Height = -11
-        BoundLabel.Font.Name = 'Tahoma'
-        BoundLabel.Font.Style = []
-        BoundLabel.Layout = sclLeft
-        BoundLabel.MaxWidth = 0
-        BoundLabel.UseSkinColor = True
         SkinData.SkinSection = 'COMBOBOX'
         VerticalAlignment = taAlignTop
         Color = clWhite
@@ -471,6 +433,16 @@ object FrmRateQuery: TFrmRateQuery
       FilterDropDown.Font.Name = 'Tahoma'
       FilterDropDown.Font.Style = []
       FilterDropDownClear = '(All)'
+      FilterEdit.TypeNames.Strings = (
+        'Starts with'
+        'Ends with'
+        'Contains'
+        'Not contains'
+        'Equal'
+        'Not equal'
+        'Larger than'
+        'Smaller than'
+        'Clear')
       FixedColWidth = 120
       FixedRowHeight = 22
       FixedFont.Charset = DEFAULT_CHARSET
@@ -479,6 +451,10 @@ object FrmRateQuery: TFrmRateQuery
       FixedFont.Name = 'Tahoma'
       FixedFont.Style = [fsBold]
       FloatFormat = '%.2f'
+      HoverButtons.Buttons = <>
+      HoverButtons.Position = hbLeftFromColumnLeft
+      HTMLSettings.ImageFolder = 'images'
+      HTMLSettings.ImageBaseName = 'img'
       PrintSettings.DateFormat = 'dd/mm/yyyy'
       PrintSettings.Font.Charset = DEFAULT_CHARSET
       PrintSettings.Font.Color = clWindowText
@@ -514,7 +490,8 @@ object FrmRateQuery: TFrmRateQuery
       SearchFooter.HintFindPrev = 'Find previous occurrence'
       SearchFooter.HintHighlight = 'Highlight occurrences'
       SearchFooter.MatchCaseCaption = 'Match case'
-      Version = '6.2.7.0'
+      SortSettings.DefaultFormat = ssAutomatic
+      Version = '7.9.1.0'
     end
   end
   object timRefresh: TTimer

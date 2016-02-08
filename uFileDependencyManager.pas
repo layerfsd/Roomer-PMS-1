@@ -39,7 +39,7 @@ type
      constructor Create(_Filename : String; _Timestamp : TDateTime; _Size : Integer; _URI : String);
    end;
 
-var fileList : TList<TResourceInfo>;
+var fileList : TObjectList<TResourceInfo>;
 
 procedure prepareDependencyManager;
 function getAnyFilePath(filename : String) : String;
@@ -506,7 +506,7 @@ end;
 
 initialization
 
-  fileList := TList<TResourceInfo>.Create;
+  fileList := TObjectList<TResourceInfo>.Create(True);
 
 finalization
   fileList.Clear;

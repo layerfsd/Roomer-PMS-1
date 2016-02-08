@@ -1143,6 +1143,10 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           Caption = 'Availabilities'
           SkinData.CustomColor = False
           SkinData.CustomFont = False
+          ExplicitLeft = 0
+          ExplicitTop = 0
+          ExplicitWidth = 0
+          ExplicitHeight = 0
           object Panel2: TsPanel
             Left = 0
             Top = 467
@@ -1373,7 +1377,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
               URLColor = clBlack
               ValidChars = '0123456789'
               VAlignment = vtaCenter
-              Version = '7.8.9.0'
+              Version = '7.9.1.0'
               WordWrap = False
               ColWidths = (
                 250
@@ -1428,6 +1432,10 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           Caption = 'Rates'
           SkinData.CustomColor = False
           SkinData.CustomFont = False
+          ExplicitLeft = 0
+          ExplicitTop = 0
+          ExplicitWidth = 0
+          ExplicitHeight = 0
           object rateGrid: TAdvStringGrid
             Left = 0
             Top = 48
@@ -1595,7 +1603,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
             URLColor = clBlack
             ValidChars = '0123456789+-!%*/'
             VAlignment = vtaCenter
-            Version = '7.8.9.0'
+            Version = '7.9.1.0'
             WordWrap = False
             ColWidths = (
               400
@@ -2043,7 +2051,8 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
             BackgroundPosition = bpTiled
             BevelOuter = bvNone
             BorderWidth = 1
-            Look = lookFlat
+            CaptionColor = clNone
+            CaptionTextColor = clBlack
             DateDownColor = clNone
             DateHoverColor = clNone
             DayFont.Charset = DEFAULT_CHARSET
@@ -2051,20 +2060,13 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
             DayFont.Height = -11
             DayFont.Name = 'Tahoma'
             DayFont.Style = []
-            WeekFont.Charset = DEFAULT_CHARSET
-            WeekFont.Color = clWindowText
-            WeekFont.Height = -11
-            WeekFont.Name = 'Tahoma'
-            WeekFont.Style = []
-            WeekName = 'Wk'
-            TextColor = clBlack
-            SelectColor = clTeal
-            SelectFontColor = clWhite
-            InActiveColor = clGray
-            HeaderColor = clNone
             FocusColor = clHighlight
+            HeaderColor = clNone
+            InActiveColor = clGray
             InversColor = clTeal
-            WeekendColor = clRed
+            LineColor = clGray
+            Line3D = True
+            Look = lookFlat
             NameOfDays.Monday = 'ma'
             NameOfDays.Tuesday = 'di'
             NameOfDays.Wednesday = 'wo'
@@ -2085,22 +2087,28 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
             NameOfMonths.November = 'nov'
             NameOfMonths.December = 'dec'
             NameOfMonths.UseIntlNames = True
+            WeekFont.Charset = DEFAULT_CHARSET
+            WeekFont.Color = clWindowText
+            WeekFont.Height = -11
+            WeekFont.Name = 'Tahoma'
+            WeekFont.Style = []
+            WeekName = 'Wk'
+            SelectColor = clTeal
+            SelectFontColor = clWhite
             StartDay = 7
+            TextColor = clBlack
             TodayFormat = '"Today" DDD/mm, YYYY'
+            WeekendColor = clRed
             Day = 7
             Month = 12
             Year = 2012
-            ParentFont = False
-            TabOrder = 0
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
-            CaptionColor = clNone
-            CaptionTextColor = clBlack
-            LineColor = clGray
-            Line3D = True
+            ParentFont = False
+            TabOrder = 0
             GradientStartColor = clWhite
             GradientEndColor = clBtnFace
             GradientDirection = gdVertical
@@ -2111,7 +2119,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
             HintPrevMonth = 'Previous Month'
             HintNextMonth = 'Next Month'
             HintNextYear = 'Next Year'
-            Version = '2.2.1.1'
+            Version = '2.2.2.1'
             TMSStyle = 0
           end
         end
@@ -2503,7 +2511,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
     Left = 512
     Top = 304
     Bitmap = {
-      494C010102000800AC0320002000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010102000800B00320002000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000800000002000000001002000000000000040
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000060000

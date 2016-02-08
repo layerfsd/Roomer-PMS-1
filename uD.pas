@@ -64,6 +64,7 @@ uses
 
 type
 
+// Todo: Redefine TKeyValuePairList as a dictionary where TKeyAndValue is a simple TPair<string, string>
   TKeyAndValue = class
     private
     FKey: String;
@@ -74,9 +75,9 @@ type
     property Value : String read FValue write FValue;
   end;
 
-  type
     TKeyPairType = (FKP_CUSTOMERS, FKP_PRODUCTS, FKP_PAYTYPES);
-    TKeyPairList = TList<TKeyAndValue>;
+    TKeyPairList = TObjectList<TKeyAndValue>;
+
 
 
   TRoomPackageLineEntry = class
@@ -123,6 +124,8 @@ type
     property ItemCount          : double read FItemCount write FItemCount;
 
   end;
+
+  TRoomPackageLineEntryList = TObjectList<TRoomPackageLineEntry>;
 
   Td = class(TDataModule)
     ItemsDS: TDataSource;
@@ -281,7 +284,7 @@ type
     lstValues : tstringList;
     zLstParams : tstringList;
 
-    lstMaintenanceCodes : TList<TKeyAndValue>;
+    lstMaintenanceCodes : TKeyPairList;
 
     procedure DoMessageClick(Sender: TObject);
     procedure SetMainRoomerDataSet(ds : TRoomerDataSet; ConnectAllDatasets : Boolean = True);
@@ -874,7 +877,7 @@ type
     procedure TurnoverAndPayemnetsClearAllData(justClose : boolean);
 
     function getCurrencyProperties(Currency : String) : TcxCustomEditProperties;
-    procedure AddOrCreateToPackage(pckTotalsList : TList<TRoomPackageLineEntry>;
+    procedure AddOrCreateToPackage(pckTotalsList : TRoomPackageLineEntryList;
         code : String;
         _description : string;
         RoomReservation : Integer;
@@ -1098,7 +1101,7 @@ begin
   RoomerApiDatasetsUri := _RoomerBase + ':' + _RoomerBasePort + '/services/datasets/';
   roomerMainDataSet.OnSessionExpired := roomerMainDataSetSessionExpired;
 
-  lstMaintenanceCodes := TList<TKeyAndValue>.Create;
+  lstMaintenanceCodes := TKeyPairList.Create(True);
   SetMainRoomerDataSet(roomerMainDataSet);
 
   kbmInvoicelines.Open;
@@ -7070,7 +7073,7 @@ end;
 
    lst : Tstringlist;
 
-   pckTotalsList : TList<TRoomPackageLineEntry>;
+   pckTotalsList : TRoomPackageLineEntryList;
    packageCode : string;
    packageDescription : string;
 
@@ -7078,7 +7081,7 @@ end;
   begin
     initPaymentHolderRec(PaymentData);
     initInvoiceHeadHolderRec(invoiceData);
-    pckTotalsList := TList<TRoomPackageLineEntry>.Create;
+    pckTotalsList := TRoomPackageLineEntryList.Create(True);
     try
       IvI := TInvoiceInfo.Create(InvoiceNumber,paymentData,invoiceData);
       try
@@ -12267,10 +12270,7 @@ end;
 procedure Td.ClearMaintenanceCodes;
 begin
   while lstMaintenanceCodes.Count > 0 do
-  begin
-    TKeyAndValue(lstMaintenanceCodes[0]).Free;
     lstMaintenanceCodes.delete(0);
-  end;
 end;
 
 procedure Td.LoadMaintenanceCodes;
@@ -12710,7 +12710,7 @@ end;
       end;
 
       sa := SplitString(#10, s);
-      result := TKeyPairList.Create;
+      result := TKeyPairList.Create(True);
       for i := LOW(sa) to HIGH(sa) do
       begin
         s := sa[i];
@@ -17810,7 +17810,7 @@ end;
 
 { TRoomPackageLineEntry }
 
-procedure td.AddOrCreateToPackage(pckTotalsList : TList<TRoomPackageLineEntry>;
+procedure td.AddOrCreateToPackage(pckTotalsList : TRoomPackageLineEntryList;
                                   Code : String;
                                   _description : string;
                                   RoomReservation : Integer;

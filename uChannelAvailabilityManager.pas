@@ -16,7 +16,8 @@ uses
   uUtils, Vcl.Menus, uD, sGroupBox, sBevel, UbuntuProgress, ActiveX, HTMLabel,
   cxClasses, acImage, clisted, uRoomerThreadedRequest, cxGraphics, cxLookAndFeels, cxLookAndFeelPainters, dxSkinsCore, dxSkinCaramel, dxSkinCoffee,
   dxSkinDarkSide, dxSkinTheAsphaltWorld, dxSkinsDefaultPainters, cxButtons, AdvEdit, AdvEdBtn, PlannerDatePicker,
-  dxSkinBlack, dxSkinBlue, dxSkinDevExpressDarkStyle, dxSkinFoggy, dxSkinLiquidSky, dxSkinMcSkin, dxSkinOffice2013White, dxSkinWhiteprint, CheckComboBox;
+  dxSkinBlack, dxSkinBlue, dxSkinDevExpressDarkStyle, dxSkinFoggy, dxSkinLiquidSky, dxSkinMcSkin, dxSkinOffice2013White, dxSkinWhiteprint, CheckComboBox,
+  AdvUtil;
 
 type
 
@@ -200,6 +201,8 @@ type
 
   TColumns = Array Of TCellData;
   TRowsOfColumns = Array Of TColumns;
+
+  TDictItemObjectDictionary = TObjectDictionary<String, TDictionaryItem>;
 
   TfrmChannelAvailabilityManager = class(TForm)
     timStart: TTimer;
@@ -416,7 +419,7 @@ type
     RoomerDataSet: TRoomerDataSet;
     Halting: Boolean;
     FCurrentNumDays: integer;
-    AvailDict: TDictionary<String, TDictionaryItem>;
+    AvailDict: TDictItemObjectDictionary;
     CurrentChannelMan: TChannelManagerValue;
     ARoomTypeSet: TRoomerDataSet;
 
@@ -1091,7 +1094,7 @@ begin
 
   Halting := false;
   FCurrentNumDays := 400;
-  AvailDict := TDictionary<String, TDictionaryItem>.Create;
+  AvailDict := TDictItemObjectDictionary.Create([doOwnsValues]);
 
   sPanel4Click(nil);
 

@@ -86,6 +86,8 @@ type
     property Text : TsLabel read FText;
   end;
 
+  TMessagePanelList = TObjectList<TMessagePanel>;
+
   TFrmMessagesTemplates = class(TForm)
     sbMessageContainer: TsScrollBox;
     pnlDesignTime: TsPanel;
@@ -105,16 +107,17 @@ type
     procedure timBlinkTimer(Sender: TObject);
     procedure HTMLabel2Click(Sender: TObject);
   private
-    BlinkingList : TList<TMessagePanel>;
+    BlinkingList : TMessagePanelList;
     procedure PanelButtonClick(Sender: TObject);
     procedure Blink;
     procedure CheckBlinkTimer;
     procedure StartBlink;
     function MessageIndex(msgType: TRoomerMessageType; msgId: String): Integer;
+    procedure evtMessageListNotification(Sender: TObject; const Item: TMessagePanel; Action: TCollectionNotification);
     { Private declarations }
   public
     { Public declarations }
-    MessageList : TList<TMessagePanel>;
+    MessageList : TMessagePanelList;
     procedure AddMessage(MessageType : TRoomerMessageType;
                          MessageText,
                          MessageLink,
@@ -411,12 +414,19 @@ begin
   end;
 end;
 
+procedure TFrmMessagesTemplates.evtMessageListNotification(Sender: TObject; const Item: TMessagePanel; Action: TCollectionNotification);
+begin
+  if (Action in [cnRemoved, cnExtracted]) and BlinkingList.Contains(Item) then
+    BlinkingList.Remove(Item);
+end;
+
 procedure TFrmMessagesTemplates.FormCreate(Sender: TObject);
 begin
   //sbMessageContainer.
   FreeAndNil(pnlDesignTime);
-  MessageList := TList<TMessagePanel>.Create;
-  BlinkingList := TList<TMessagePanel>.Create;
+  MessageList := TMessagePanelList.Create(True);
+  MessageList.OnNotify := evtMessageListNotification; // Notify blinklist when item is removed
+  BlinkingList := TMessagePanelList.Create(False); // MessagePanels are owned by MessageList!
 end;
 
 procedure TFrmMessagesTemplates.FormDestroy(Sender: TObject);
@@ -424,8 +434,6 @@ var i : Integer;
 begin
   timBlink.Enabled := False;
   BlinkingList.Clear;
-  for i := 0 to MessageList.Count - 1 do
-    MessageList[i].Free;
   MessageList.Clear;
   FreeAndNil(BlinkingList);
   FreeAndNil(MessageList);

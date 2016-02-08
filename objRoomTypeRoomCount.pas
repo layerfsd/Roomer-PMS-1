@@ -63,7 +63,7 @@ TYPE
 
 
 
-  TRoomTypeList = TList<TRoomTypeItem>;
+  TRoomTypeList = TObjectList<TRoomTypeItem>;
 
   //////////////////////////////////////////////////////////////////////////////////////
   ///
@@ -193,7 +193,7 @@ begin
   inherited Create;
 
   try
-    FRoomTypeList := TRoomTypeList.Create;
+    FRoomTypeList := TRoomTypeList.Create(True);
   Except
     //TODO Loga
   end;
@@ -218,12 +218,7 @@ begin
 end;
 
 procedure TRoomTypeRoomCount.ClearList;
-var i : integer;
 begin
-  for i := 0 to FRoomTypeList.Count - 1 do
-  begin
-    TRoomTypeItem(FRoomTypeList[i]).free;
-  end;
   FRoomTypeList.Clear;
 end;
 

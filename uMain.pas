@@ -78,6 +78,8 @@ type
     property RoomClass: String read FRoomClass;
   end;
 
+  TRoomAvailabilityEntityList = TObjectList<TRoomAvailabilityEntity>;
+
   TRoomClassChannelAvailabilityContainer = class
     RoomTypeGroup: String;
     NumRooms: integer;
@@ -90,6 +92,8 @@ type
     constructor Create(_RoomTypeGroup: String; _NumRooms: integer; _Reserved: integer; _ChannelAvailable: integer; _ChannelMaxAvailable: integer;
       _GridIndex: integer; _AnyStop: boolean);
   end;
+
+  TRoomClassChannelAvailabilityContainerDictionary = TObjectList<TRoomClassChannelAvailabilityContainer>;
 
 type
   recColRow = record
@@ -1011,7 +1015,7 @@ type
     LoggedIn: boolean;
     grPeriodViewFilterOn: boolean;
 
-    GroupList: TList<TGroupEntity>;
+    GroupList: TGroupEntityList;
 
     ExceptionsLoggingActive: boolean;
     ExceptionLogPath: String;
@@ -1019,8 +1023,8 @@ type
     HoverPointOneDay: TPoint;
     HoverPointPeriod: TPoint;
     lastDate: TdateTime;
-    availListContainer: TList<TRoomClassChannelAvailabilityContainer>;
-    MoveFunctionAvailRooms: TList<TRoomAvailabilityEntity>;
+    availListContainer: TRoomClassChannelAvailabilityContainerDictionary;
+    MoveFunctionAvailRooms: TRoomAvailabilityEntityList;
 
     CurrentlyActiveGrid: TAdvStringGrid;
     FRBEMode: boolean;
@@ -2077,11 +2081,7 @@ end;
 
 procedure TfrmMain.ClearGroupList;
 begin
-  while (GroupList.Count > 0) do
-  begin
-    GroupList[0].Free;
-    GroupList.Delete(0);
-  end;
+  GroupList.Clear;
 end;
 
 
@@ -2847,10 +2847,10 @@ begin
       DeleteFile(Application.ExeName + '.log');
     except
     end;
-  availListContainer := TList<TRoomClassChannelAvailabilityContainer>.Create;
+  availListContainer := TRoomClassChannelAvailabilityContainerDictionary.Create(True);
 
-  GroupList := TList<TGroupEntity>.Create;
-  MoveFunctionAvailRooms := TList<TRoomAvailabilityEntity>.Create;
+  GroupList := TGroupEntityList.Create(True);
+  MoveFunctionAvailRooms := TRoomAvailabilityEntityList.Create(True);
 
   LoginCancelled := false;
   zJustClicked := false;
@@ -2930,6 +2930,7 @@ end;
 procedure TfrmMain.FormDestroy(Sender: TObject);
 begin
   try
+    MoveFunctionAvailRooms.Free;
     StaffComm.Free;
     availListContainer.Free;
     GetThreadedData.Free;
@@ -3179,6 +3180,7 @@ begin
         try
           if AutoLogin = '' then
           begin
+            __cbxHotels.Items.BeginUpdate;
             try
               if g.qAppSecret = '' then
               begin
@@ -3187,7 +3189,6 @@ begin
 
               prepareDependencyManager;
 
-              __cbxHotels.Items.BeginUpdate;
               __cbxHotels.Items.Clear;
               if d.roomerMainDataSet.hotels.Count = 0 then
               begin
@@ -3440,8 +3441,7 @@ var
   rSet: TRoomerDataSet;
   idx: integer;
 begin
-  availListContainer.Free;
-  availListContainer := TList<TRoomClassChannelAvailabilityContainer>.Create;
+  availListContainer.Clear;
   // rSet := d.roomerMainDataSet.ActivateNewDataset
   // (d.roomerMainDataSet.SystemFreeQuery('SELECT rt.RoomType,' +
   // ' (SELECT COUNT(Room) FROM rooms WHERE rooms.RoomType=rt.RoomType AND Active=1 AND NOT Hidden) AS NumRooms'
@@ -3858,14 +3858,8 @@ begin
     except
     end;
 
-    try
-      ClearGroupList;
-    except
-    end;
-    try
-      GroupList.Free;
-    except
-    end;
+    GroupList.Free;
+
     try
       ClearStringGridFromTo(grOneDayRooms, 1, 1);
     except

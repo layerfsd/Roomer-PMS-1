@@ -9,7 +9,7 @@ uses
     ;
 
 var
-   RoomCellCollection : TList<TRoomCell>;
+   RoomCellCollection : TObjectList<TRoomCell>;
 
 procedure InitRoomCells;
 procedure ClearRoomCells;
@@ -18,14 +18,12 @@ implementation
 
 procedure InitRoomCells;
 begin
-  RoomCellCollection := TList<TRoomCell>.Create;
+  RoomCellCollection := TObjectList<TRoomCell>.Create(True);
 end;
 
 procedure ClearRoomCells;
 var i : Integer;
 begin
-  for i := 0 to RoomCellCollection.Count - 1 do
-    RoomCellCollection[i].Free;
   RoomCellCollection.Clear;
 end;
 

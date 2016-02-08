@@ -82,6 +82,16 @@ object frmColorSelector: TfrmColorSelector
     FilterDropDown.Font.Name = 'Tahoma'
     FilterDropDown.Font.Style = []
     FilterDropDownClear = '(All)'
+    FilterEdit.TypeNames.Strings = (
+      'Starts with'
+      'Ends with'
+      'Contains'
+      'Not contains'
+      'Equal'
+      'Not equal'
+      'Larger than'
+      'Smaller than'
+      'Clear')
     FixedRowHeight = 22
     FixedFont.Charset = DEFAULT_CHARSET
     FixedFont.Color = clWindowText
@@ -90,6 +100,10 @@ object frmColorSelector: TfrmColorSelector
     FixedFont.Style = [fsBold]
     Flat = True
     FloatFormat = '%.2f'
+    HoverButtons.Buttons = <>
+    HoverButtons.Position = hbLeftFromColumnLeft
+    HTMLSettings.ImageFolder = 'images'
+    HTMLSettings.ImageBaseName = 'img'
     PrintSettings.DateFormat = 'dd/mm/yyyy'
     PrintSettings.Font.Charset = DEFAULT_CHARSET
     PrintSettings.Font.Color = clWindowText
@@ -126,7 +140,8 @@ object frmColorSelector: TfrmColorSelector
     SearchFooter.HintFindPrev = 'Find previous occurrence'
     SearchFooter.HintHighlight = 'Highlight occurrences'
     SearchFooter.MatchCaseCaption = 'Match case'
-    Version = '6.2.7.0'
+    SortSettings.DefaultFormat = ssAutomatic
+    Version = '7.9.1.0'
     ColWidths = (
       64
       173)

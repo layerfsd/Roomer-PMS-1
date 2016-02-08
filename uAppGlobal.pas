@@ -154,6 +154,8 @@ Type
    end;
 
 {$M+}
+  TTableDictionary = TObjectDictionary<String, TTableEntity>;
+
    TGlobalSettings = class( TObject )
    private
 
@@ -161,7 +163,7 @@ Type
       FNumAvailType   : TStringList;
       FRoomFloors     : TList<Integer>;
 
-    tablesList : TDictionary<String, TTableEntity>;
+    tablesList : TTableDictionary;
     FPreviousGuestsSet: TRoomerDataSet;
 
       procedure AddRoomType( sType : string; iNumber, NumGuests : integer );
@@ -390,7 +392,7 @@ end;
 
 constructor TGlobalSettings.Create;
 begin
-  tablesList := TDictionary<String, TTableEntity>.Create;
+  tablesList := TTableDictionary.Create([doOwnsValues]);
 
   FRoomFloors := TList<Integer>.Create;
 

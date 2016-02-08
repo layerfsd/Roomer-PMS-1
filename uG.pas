@@ -31,6 +31,7 @@ uses
   , uFileSystemUtils
   , uRegistryServices
   , uRoomerDefinitions
+  , System.Generics.Collections
   ;
 
 
@@ -62,6 +63,8 @@ type
     property Reservation : integer read FReservation;
     property Name : String read FName;
   end;
+
+  TGroupEntityList = TObjectList<TGroupEntity>;
 
   TRoomCell = class
   private

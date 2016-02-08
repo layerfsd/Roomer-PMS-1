@@ -8,7 +8,7 @@ uses
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, sButton, Vcl.ExtCtrls,
   sPanel,
   Generics.Collections, cmpRoomerDataSet, Vcl.Grids, AdvObj, BaseGrid, AdvGrid,
-  cxClasses, cxPropertiesStore, sComboBox;
+  cxClasses, cxPropertiesStore, sComboBox, AdvUtil;
 
 type
 
@@ -28,6 +28,8 @@ type
 
   end;
 
+  TMatrixList = TObjectList<TMatrix>;
+
   Tfrm2DMatrix = class(TForm)
     panBtn: TsPanel;
     sPanel1: TsPanel;
@@ -45,7 +47,9 @@ type
       var CanEdit: Boolean);
     procedure grdMatrixGetAlignment(Sender: TObject; ARow, ACol: Integer;
       var HAlign: TAlignment; var VAlign: TVAlignment);
+    procedure FormDestroy(Sender: TObject);
   private
+    matrix: TMatrixList;
     function CountColumns: Integer;
     procedure PrepareGrid;
     function CountRows: Integer;
@@ -58,14 +62,11 @@ type
   public
     { Public declarations }
     MatrixType : TMatrixType;
-    matrix: TList<TMatrix>;
-    selection: TStrings;
     colNames: TStrings;
     rowNames: TStrings;
+    procedure AddItems(const aItems: TStrings);
   end;
 
-var
-  frm2DMatrix: Tfrm2DMatrix;
 
 procedure EditPaymentAssuranceForChannels;
 procedure EditChannelsEmailConfirmationMatrix;
@@ -79,7 +80,6 @@ uses ud, RoomerCloudEntities;
 
 procedure EditPaymentAssuranceForChannels;
 var
-  matrix: TList<TMatrix>;
   i: Integer;
   selection: TStrings;
   channelManagers: Array_Of_TChannelmanagersEntity;
@@ -91,13 +91,10 @@ begin
     if channelManagers[i].active <> 0 then
       selection.Add(channelManagers[i].code);
 
-  matrix := TList<TMatrix>.Create;
   frm2DMatrix := Tfrm2DMatrix.Create(nil);
   try
-    frm2DMatrix.matrix := matrix;
-    frm2DMatrix.selection := selection;
     frm2DMatrix.cbxSelection.Items.Clear;
-    frm2DMatrix.cbxSelection.Items.AddStrings(selection);
+    frm2DMatrix.AddItems(selection);
     frm2DMatrix.pnlHeader.Caption := '  Channel Payment Assurance Matrix';
     frm2DMatrix.cbxSelection.OnChange :=
       frm2DMatrix.PaymentsComboboxSelectionChange;
@@ -105,58 +102,47 @@ begin
     frm2DMatrix.ShowModal;
   finally
     FreeAndNil(frm2DMatrix);
+    Selection.Free;
   end;
 end;
 
 procedure EditChannelsEmailConfirmationMatrix;
 var
-  matrix: TList<TMatrix>;
-  i: Integer;
   selection: TStrings;
-  channelManagers: Array_Of_TChannelmanagersEntity;
   frm2DMatrix: Tfrm2DMatrix;
 begin
   selection := TStringList.Create;
-  matrix := TList<TMatrix>.Create;
   frm2DMatrix := Tfrm2DMatrix.Create(nil);
   try
-    frm2DMatrix.matrix := matrix;
-    frm2DMatrix.selection := selection;
     frm2DMatrix.cbxSelection.Visible := False; // .Items.Clear;
-    frm2DMatrix.cbxSelection.Items.AddStrings(selection);
+    frm2DMatrix.AddItems(selection);
     frm2DMatrix.pnlHeader.Caption := '  Confirmation Email Matrix';
-    frm2DMatrix.cbxSelection.OnChange := nil; // frm2DMatrix.PaymentsComboboxSelectionChange;
     frm2DMatrix.MatrixType := mtConfirmationEmail;
     frm2DMatrix.ReadChannelConfirmationEmailMatrix;
     frm2DMatrix.ShowModal;
   finally
     FreeAndNil(frm2DMatrix);
+    Selection.Free;
   end;
 end;
 
 procedure EditChannelsHotelEmailMatrix;
 var
-  matrix: TList<TMatrix>;
-  i: Integer;
   selection: TStrings;
-  channelManagers: Array_Of_TChannelmanagersEntity;
   frm2DMatrix: Tfrm2DMatrix;
 begin
   selection := TStringList.Create;
-  matrix := TList<TMatrix>.Create;
   frm2DMatrix := Tfrm2DMatrix.Create(nil);
   try
-    frm2DMatrix.matrix := matrix;
-    frm2DMatrix.selection := selection;
     frm2DMatrix.cbxSelection.Visible := False; // .Items.Clear;
-    frm2DMatrix.cbxSelection.Items.AddStrings(selection);
+    frm2DMatrix.AddItems(Selection);
     frm2DMatrix.pnlHeader.Caption := '  Hotel Notification Email Matrix';
-    frm2DMatrix.cbxSelection.OnChange := nil; // frm2DMatrix.PaymentsComboboxSelectionChange;
     frm2DMatrix.MatrixType := mtHotelEmail;
     frm2DMatrix.ReadChannelHotelEmailMatrix;
     frm2DMatrix.ShowModal;
   finally
     FreeAndNil(frm2DMatrix);
+    Selection.Free;
   end;
 end;
 
@@ -185,6 +171,14 @@ procedure Tfrm2DMatrix.FormCreate(Sender: TObject);
 begin
   colNames := TStringList.Create;
   rowNames := TStringList.Create;
+  Matrix := TMatrixList.Create(True);
+end;
+
+procedure Tfrm2DMatrix.FormDestroy(Sender: TObject);
+begin
+ Matrix.Free;
+ colNames.Free;
+ rowNames.Free;
 end;
 
 procedure Tfrm2DMatrix.FormShow(Sender: TObject);
@@ -346,6 +340,11 @@ end;
 procedure Tfrm2DMatrix.PaymentsComboboxSelectionChange(Sender: TObject);
 begin
   ReadPaymentAssuranceMatrix(cbxSelection.Items[cbxSelection.ItemIndex]);
+end;
+
+procedure Tfrm2DMatrix.AddItems(const aItems: TStrings);
+begin
+  cbxSelection.Items.AddStrings(aItems);
 end;
 
 function Tfrm2DMatrix.CountColumns: Integer;

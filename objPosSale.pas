@@ -79,7 +79,7 @@ TYPE
 
 
 
-  TPosSaleItemsList = TList<TPosSaleItem>;
+  TPosSaleItemsList = TObjectList<TPosSaleItem>;
 
 ////////////////////////////////////////////////////////////////////
 ///  TPosItem
@@ -133,7 +133,7 @@ TYPE
   end;
 
 
-  TPosItemsList = TList<TPosItem>;
+  TPosItemsList = TObjectList<TPosItem>;
 
   //////////////////////////////////////////////////////////////////////////////////////
   ///
@@ -435,28 +435,15 @@ end;
 constructor TPosSale.Create(aXmlFileName: string);
 begin
   inherited Create;
-  try
-    FPosSaleItemsList := TPosSaleItemsList.Create;
-  Except
-    //loga
-  end;
-
-  try
-    FPosItemsList := TPosItemsList.Create;
-  Except
-    //Loga
-  end;
+  FPosSaleItemsList := TPosSaleItemsList.Create(True);
+  FPosItemsList := TPosItemsList.Create(True);
 
   FXmlFileName := aXmlFileName;
 
   FPosSaleItemsCount := 0;
   FPosItemsCount := 0;
 
-  try
-    FillLists(FPosSaleItemsCount,FPosItemsCount);
-  Except
-    // logga
-  end;
+  FillLists(FPosSaleItemsCount,FPosItemsCount);
 end;
 
 destructor TPosSale.Destroy;

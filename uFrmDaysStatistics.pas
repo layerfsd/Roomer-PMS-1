@@ -72,6 +72,8 @@ type
                        _rate : Double);
   end;
 
+  TRatesAndAvailsList = TObjectlist<TRatesAndAvails>;
+
   TIdChannelValues = class
     id : Integer;
     name : String;
@@ -93,7 +95,7 @@ type
     noShow : Integer;
     totalDiscounts : Double;
 
-    RatesAndAvailabilities : TList<TRatesAndAvails>;
+    RatesAndAvailabilities : TRatesAndAvailsList;
   public
     constructor Create(_id : Integer;
               _name : String;
@@ -116,8 +118,10 @@ type
               _noShow : Integer;
 
               _totalDiscounts : Double);
+    destructor Destroy; override;
   end;
 
+  TIdChannelValuesDictionary = TObjectDictionary<integer, TIdChannelValues>;
 
   TfrmDaysStatistics = class(TForm)
     sPanel1: TsPanel;
@@ -183,7 +187,7 @@ type
     procedure FormKeyPress(Sender: TObject; var Key: Char);
   private
     { Private declarations }
-    channels : TDictionary<integer, TIdChannelValues>;
+    channels : TIdChannelValuesDictionary;
     FViewDate : TDateTime;
     FBeingViewed: Boolean;
     procedure btnBackClick(Sender: TObject);
@@ -248,7 +252,7 @@ begin
   // hotel=kef host=https://secure.roomercloud.net port=8443 user=hj pass=hordur date=2014-01-01
   RoomerLanguage.TranslateThisForm(self);
      glb.PerformAuthenticationAssertion(self);
-  channels := TDictionary<integer, TIdChannelValues>.Create;
+  channels := TIdChannelValuesDictionary.Create([doOWnsValues]);
   FBeingViewed := False;
 end;
 
@@ -465,8 +469,9 @@ var i, l : Integer;
     ch : IXMLChannelType;
     day : IXMLDayType;
 begin
-  channels.Free;
-  channels := TDictionary<integer, TIdChannelValues>.Create;
+  Channels.Clear;
+//  channels.Free;
+//  channels := TDictionary<integer, TIdChannelValues>.Create;
   if performance.Count = 0 then
   begin
     channel := TIdChannelValues.Create(0,
@@ -606,7 +611,7 @@ constructor TIdChannelValues.Create(_id: Integer; _name : String; _color : Integ
   _noShow : Integer;
   _totalDiscounts: Double);
 begin
-  RatesAndAvailabilities := TList<TRatesAndAvails>.Create;
+  RatesAndAvailabilities := TRatesAndAvailsList.Create(True);
   id := _id;
   name := _name;
   color := _color;
@@ -626,6 +631,12 @@ begin
   departed := _departed;
   noShow := _noShow;
   totalDiscounts := _totalDiscounts;
+end;
+
+destructor TIdChannelValues.Destroy;
+begin
+  RatesAndAvailabilities.Free;
+  inherited;
 end;
 
 { TRatesAndAvails }

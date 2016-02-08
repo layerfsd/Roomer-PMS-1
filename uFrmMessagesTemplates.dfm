@@ -31,7 +31,7 @@ object FrmMessagesTemplates: TFrmMessagesTemplates
     object sLabel2: TsLabel
       Left = 0
       Top = 0
-      Width = 194
+      Width = 151
       Height = 16
       Margins.Left = 2
       Margins.Top = 2
@@ -45,7 +45,6 @@ object FrmMessagesTemplates: TFrmMessagesTemplates
       Font.Height = -13
       Font.Name = 'Tahoma'
       Font.Style = []
-      ExplicitWidth = 151
     end
     object sbMessageContainer: TsScrollBox
       Left = 0
@@ -109,7 +108,7 @@ object FrmMessagesTemplates: TFrmMessagesTemplates
           OnClick = HTMLabel2Click
           OnMouseLeave = MessageAreaMouseLeave
           OnMouseEnter = MessageAreaMouseEnter
-          Version = '1.8.4.0'
+          Version = '1.9.2.2'
           ExplicitWidth = 164
         end
         object sPanel1: TsPanel
@@ -3981,7 +3980,12 @@ object FrmMessagesTemplates: TFrmMessagesTemplates
       end>
     Left = 64
     Top = 144
-    Bitmap = {}
+    Bitmap = {
+      494C010100000800080001000100FFFFFFFF0400FFFFFFFFFFFFFFFF424D7600
+      0000000000007600000028000000040000000100000001000400000000000400
+      0000000000000000000000000000000000000000000000008000008000000080
+      8000800000008000800080800000C0C0C000808080000000FF0000FF000000FF
+      FF00FF000000FF00FF00FFFF0000FFFFFF0000000000}
   end
   object timBlink: TTimer
     Enabled = False

@@ -17,7 +17,9 @@ uses
   , cmpRoomerDataSet
 
   , kbmMemTable
-  , dxMdaSet;
+  , dxMdaSet
+  , System.Generics.Collections
+  ;
 
 const
   cHotelInvoice = 0;
@@ -1244,6 +1246,8 @@ type
   public
     constructor Create;
   end;
+
+  TrecItemHolderList = TObjectList<TrecitemHolder>;
 
   recLocationHolder = record
     id: integer;

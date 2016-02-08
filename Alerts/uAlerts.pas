@@ -51,7 +51,7 @@ type
   end;
 
   TAlertList = class
-    FList : TList<TAlert>;
+    FList : TObjectList<TAlert>;
   private
     FReservation: Integer;
     FRoomReservation: Integer;
@@ -60,7 +60,7 @@ type
     procedure SetReservation(const Value: Integer);
   public
     constructor Create(_Reservation : Integer; _RoomReservation : Integer; AlertType : TAlertType);
-    destructor Destroy;
+    destructor Destroy; override;
 
     procedure postChanges;
     function Add(Alert : TAlert) : Integer;
@@ -73,7 +73,7 @@ type
     property Count : Integer read GetCount;
     property Reservation : Integer read FReservation write SetReservation;
     property RoomReservation : Integer read FRoomReservation write SetRoomReservation;
-    property Alerts : TList<TAlert> read FList;
+    property Alerts : TObjectList<TAlert> read FList;
   end;
 
 function ReadAlertsForRoomReservation(Reservation: Integer; RoomReservation: Integer; AlertType : TAlertType) : TAlertList;
@@ -282,7 +282,7 @@ constructor TAlertList.Create(_Reservation: Integer; _RoomReservation: Integer; 
 var sql : String;
     rSet : TRoomerDataSet;
 begin
-  FList := TList<TAlert>.Create;
+  FList := TObjectList<TAlert>.Create(True);
 
   FReservation := _Reservation;
   FRoomReservation := _RoomReservation;

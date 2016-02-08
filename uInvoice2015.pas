@@ -23,13 +23,15 @@ type
 
   end;
 
+  TOpenInvoiceList = TObjectList<TOpenInvoice>;
+
   TOpenInvoices = class
-    List: TList<TOpenInvoice>;
+    FOpenInvoices: TOpenInvoiceList;
     function Add(OpenInvoice: TOpenInvoice): Integer;
     function FindForm(Reservation, RoomReservation, SplitNumber: Integer; Credit: boolean): TFrmInvoice2015;
     procedure RemoveForm(Form: TFrmInvoice2015);
     constructor Create;
-    destructor Destroy;
+    destructor Destroy; override;
   private
     procedure CloseAllForms;
   end;
@@ -788,27 +790,27 @@ end;
 
 constructor TOpenInvoices.Create;
 begin
-  List := TList<TOpenInvoice>.Create;
+  FOpenInvoices := TOpenInvoiceList.Create(True);
 end;
 
 destructor TOpenInvoices.Destroy;
 begin
   CloseAllForms;
-  List.Clear;
-  List.Free;
+  FOpenInvoices.Clear;
+  FOpenInvoices.Free;
 end;
 
 function TOpenInvoices.Add(OpenInvoice: TOpenInvoice): Integer;
 begin
-  result := List.Add(OpenInvoice);
+  result := FOpenInvoices.Add(OpenInvoice);
 end;
 
 procedure TOpenInvoices.CloseAllForms;
 var
-  i: Integer;
+  i: integer;
 begin
-  while List.Count > 0 do
-    List[i].Form.Close;
+  for i := FOpenInvoices.Count-1 downto 0 do
+    FOpenInvoices[i].Form.Close;
 end;
 
 function TOpenInvoices.FindForm(Reservation, RoomReservation, SplitNumber: Integer; Credit: boolean): TFrmInvoice2015;
@@ -816,11 +818,11 @@ var
   i: Integer;
 begin
   result := nil;
-  for i := 0 to List.Count - 1 do
-    if (List[i].Reservation = Reservation) AND (List[i].RoomReservation = RoomReservation) AND (List[i].SplitNumber = SplitNumber) AND (List[i].Credit = Credit)
+  for i := 0 to FOpenInvoices.Count - 1 do
+    if (FOpenInvoices[i].Reservation = Reservation) AND (FOpenInvoices[i].RoomReservation = RoomReservation) AND (FOpenInvoices[i].SplitNumber = SplitNumber) AND (FOpenInvoices[i].Credit = Credit)
     then
     begin
-      result := List[i].Form;
+      result := FOpenInvoices[i].Form;
       Break;
     end;
 end;
@@ -829,11 +831,10 @@ procedure TOpenInvoices.RemoveForm(Form: TFrmInvoice2015);
 var
   i: Integer;
 begin
-  for i := 0 to List.Count - 1 do
-    if List[i].Form = Form then
+  for i := 0 to FOpenInvoices.Count - 1 do
+    if FOpenInvoices[i].Form = Form then
     begin
-      List.Delete(i);
-      FreeAndNil(Form);
+      FOpenInvoices.Delete(i);
       Break;
     end;
 end;
