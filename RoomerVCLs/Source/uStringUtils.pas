@@ -41,7 +41,8 @@ function AddLeadingZeroes(const aNumber, Length: Integer): string;
 function findObject(owner: TComponent; PreName: String; index: Integer): TObject;
 function KeyValueFromString(source, key: String): String;
 function SplitString(const aSeparator, aString: String; aMax: Integer = 0): TArrayOfString;
-function SplitStringToTStrings(const aSeparator, aString: String; aMax: Integer = 0): TStrings;
+procedure SplitStringToTStrings(const aSeparator, aString: String; aList: TStrings; aMax: Integer = 0); overload;
+function SplitStringToTStrings(const aSeparator, aString: String; aMax: Integer = 0): TStrings; overload;
 function DelChars(const S: string; Chr: char): string;
 function FormattedStringToFloat(value: String): Double;
 function LocalizedFloatValue(value: String; save: boolean = true): Double;
@@ -505,17 +506,26 @@ begin
   SetLength(result, cnt);
 end;
 
+
 function SplitStringToTStrings(const aSeparator, aString: String; aMax: Integer = 0): TStrings;
+begin
+  result := TStringList.Create;
+  SplitStringToTStrings(aSeparator, aString, Result, aMax);
+end;
+
+procedure SplitStringToTStrings(const aSeparator, aString: String; aList: TStrings; aMax: Integer = 0);
 var
   strt: Integer;
   S, sTemp: String;
 begin
+  Assert(assigned(aList), 'SplitStringToTStrings must called with assigned aList');
+
+  aList.Clear;
   S := aString;
-  result := TStringList.Create;
   if S <> '' then
   begin
     if pos(aSeparator, S) = 0 then
-      result.Add(S)
+      aList.Add(S)
     else
     begin
       S := S + aSeparator;
@@ -523,7 +533,7 @@ begin
       while strt > 0 do
       begin
         sTemp := copy(S, 1, strt - 1);
-        result.Add(sTemp);
+        aList.Add(sTemp);
         S := copy(S, strt + Length(aSeparator), Length(S));
         strt := pos(aSeparator, S);
       end;

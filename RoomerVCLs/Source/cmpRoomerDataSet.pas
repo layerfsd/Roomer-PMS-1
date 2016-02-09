@@ -925,7 +925,6 @@ var
   stream: TStringStream;
   _roomerClient: TALWininetHttpClient;
 
-var retries : Integer;
 begin
   _roomerClient := CreateRoomerClient;
   try
@@ -961,7 +960,6 @@ function TRoomerDataSet.PostStreamAsString(roomerClient:
 var
   _roomerClient: {$IFDEF USE_INDY}TIdHTTP{$ELSE}TALWininetHttpClient{$ENDIF};
 
-var retries : Integer;
 begin
   _roomerClient := CreateRoomerClient;
   try
@@ -2306,15 +2304,19 @@ var list : TStrings;
     ds : TRoomerDataSet;
 begin
   list := SplitStringToTStrings(ROOMER_SPLIT, res);
-  result := TList<TRoomerDataSet>.Create;
-  for I := 0 to list.Count - 1 do
-  begin
-    if list[i] <> '' then
+  try
+    result := TList<TRoomerDataSet>.Create;
+    for I := 0 to list.Count - 1 do
     begin
-      ds := CreateNewDataset;
-      ds.OpenDataset(list[I]);
-      result.add(ds);
+      if list[i] <> '' then
+      begin
+        ds := CreateNewDataset;
+        ds.OpenDataset(list[I]);
+        result.add(ds);
+      end;
     end;
+  finally
+    list.Free;
   end;
 end;
 
@@ -2423,6 +2425,7 @@ function TRoomerExecutionPlan.Execute(PlanType: Integer = ptAll;
 var
   i: Integer;
   res: String;
+  lSQLList: TList<string>;
 begin
   if transaction then
     FRoomerDataSet.SystemStartTransaction;
@@ -2432,12 +2435,24 @@ begin
       for i := 0 to QueryCount - 1 do
         queryResults.Add(FRoomerDataSet.CreateNewDataset);
 
-      res := RoomerDataSet.SystemFreeMultipleQuery(queryResults, getSqlsAsTList(PlanType));
+      lSQLList := getSqlsAsTList(PlanType);
+      try
+        res := RoomerDataSet.SystemFreeMultipleQuery(queryResults, lSQLList);
+      finally
+        lSQLList.Free;
+      end;
+
     end
     else if PlanType = ptExec then
     begin
-      res := RoomerDataSet.SystemFreeExecuteMultiple(getSqlsAsTList(PlanType));
+      lSQLList := getSqlsAsTList(PlanType);
+      try
+        res := RoomerDataSet.SystemFreeExecuteMultiple(lSQLList);
+      finally
+        lSQLList.Free;
+      end;
     end;
+
     if transaction then
       FRoomerDataSet.SystemCommitTransaction;
     result := true;
@@ -2487,10 +2502,10 @@ function TRoomerExecutionPlan.getSqlsAsTList(PlanType: Integer): TList<String>;
 var
   i: Integer;
 begin
-  result := TList<String>.Create;
+  Result := TList<String>.Create;
   for i := 0 to sqlList.Count - 1 do
     if sqlList[i].PlanType = PlanType then
-      result.Add(sqlList[i].Sql);
+      Result.Add(sqlList[i].Sql);
 end;
 
 procedure TRoomerExecutionPlan.RollbackTransaction;
