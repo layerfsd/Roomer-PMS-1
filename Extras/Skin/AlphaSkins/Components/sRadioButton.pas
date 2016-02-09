@@ -203,25 +203,30 @@ end;
 
 function TsRadioButton.CheckRect: TRect;
 var
-  i, GlyphTop: integer;
-begin
-  case FVerticalAlign of
-    vaTop:    GlyphTop := 0;
-    vaMiddle: GlyphTop := (Height - GlyphHeight) div 2
-    else      GlyphTop := (Height - GlyphHeight);
+  GlyphTop: integer;
+
+  function GetGlyphTop: integer;
+  begin
+    case FVerticalAlign of
+      vaTop:    Result := 0;
+      vaMiddle: Result := (Height - GlyphHeight) div 2
+      else      Result := (Height - GlyphHeight);
+    end;
   end;
-  if FGlyphChecked.Width > 0 then
+
+begin
+  if FGlyphChecked.Width > 0 then begin
+    GlyphTop := GetGlyphTop;
     if GetControlsAlignment = taRightJustify then
       Result := Rect(Margin, GlyphTop, Margin + GlyphWidth, GlyphHeight + GlyphTop)
     else
       Result := Rect(Width - GlyphWidth - Margin, GlyphTop, Width - Margin, GlyphHeight + GlyphTop)
-  else begin
-    i := GlyphMaskIndex(Checked);
-    if SkinData.SkinManager.IsValidImgIndex(i) then
-      Result := SkinCheckRect(i)
+  end
+  else
+    if SkinData.SkinManager.IsValidImgIndex(FCommonData.SkinManager.ConstData.RadioButton[Checked]) then
+      Result := SkinCheckRect(FCommonData.SkinManager.ConstData.RadioButton[Checked])
     else
       Result := MkRect(16, 16);
-  end;
 end;
 
 
@@ -295,7 +300,7 @@ end;
 
 procedure TsRadioButton.DrawCheckArea;
 var
-  i, GlyphCount, GlyphIndex: integer;
+  GlyphCount, GlyphIndex: integer;
 begin
   if Glyph <> nil then begin
     GlyphCount := Glyph.Width div Glyph.Height;
@@ -309,11 +314,9 @@ begin
 
     PaintGlyph(Glyph, GlyphIndex);
   end
-  else begin
-    i := GlyphMaskIndex(Checked);
-    if SkinData.SkinManager.IsValidImgIndex(i) then
-      DrawSkinGlyph(i);
-  end;
+  else
+    if SkinData.SkinManager.IsValidImgIndex(FCommonData.SkinManager.ConstData.RadioButton[Checked]) then
+      DrawSkinGlyph(FCommonData.SkinManager.ConstData.RadioButton[Checked]);
 end;
 
 
@@ -360,7 +363,7 @@ begin
     FCommonData.FCacheBmp.Canvas.Pen.Style := psClear;
     FCommonData.FCacheBmp.Canvas.Brush.Style := bsSolid;
     if Focused and ShowFocus then begin
-      dec(rText.Bottom, integer(not WordWrap));
+//      dec(rText.Bottom, integer(not WordWrap));
       inc(rText.Top);
       InflateRect(rText, 2, 1);
       State := min(ac_MaxPropsIndex, SkinData.SkinManager.gd[SkinData.SkinIndex].States);
@@ -468,7 +471,7 @@ end;
 procedure TsRadioButton.PaintControl(DC: HDC);
 begin
   if not InUpdating(FCommonData) and not TimerIsActive(SkinData) then
-    if PrepareCache then begin
+    if not SkinData.BGChanged or PrepareCache then begin
       UpdateCorners(FCommonData, 0);
       BitBlt(DC, 0, 0, Width, Height, FCommonData.FCacheBmp.Canvas.Handle, 0, 0, SRCCOPY);
     end;
@@ -839,7 +842,9 @@ begin
             Exit;
 
         BM_SETCHECK: begin
+          Perform(WM_SETREDRAW, 0, 0);
           inherited;
+          Perform(WM_SETREDRAW, 1, 0);
           FCommonData.BGChanged := True;
           if not TimerIsActive(SkinData) then begin
             StopTimer(SkinData);
@@ -874,60 +879,54 @@ begin
 
         WM_KEYDOWN:
           if Enabled and not (csDesigning in ComponentState) and (TWMKey(Message).CharCode = VK_SPACE) then begin
-            if ReadOnly then
-              Exit;
-
-            FPressed := True;
-            if not Focused then begin
-              ClicksDisabled := True;
-              Windows.SetFocus(Handle);
-              ClicksDisabled := False;
+            if not ReadOnly then begin
+              FPressed := True;
+              if not Focused then begin
+                ClicksDisabled := True;
+                Windows.SetFocus(Handle);
+                ClicksDisabled := False;
+              end;
+              Repaint;
+              if Assigned(OnKeyDown) then
+                OnKeydown(Self, TWMKeyDown(Message).CharCode, KeysToShiftState(word(TWMKeyDown(Message).KeyData)));
             end;
-            Repaint;
-            if Assigned(OnKeyDown) then
-              OnKeydown(Self, TWMKeyDown(Message).CharCode, KeysToShiftState(word(TWMKeyDown(Message).KeyData)));
-
             Exit;
           end;
 
         WM_LBUTTONDBLCLK, WM_LBUTTONDOWN:
           if not (csDesigning in ComponentState) and Enabled and (DragMode = dmManual) then begin
-            if ReadOnly then
-              Exit;
+            if not ReadOnly then begin
+              FPressed := True;
+              DoChangePaint(FCommonData, 2, UpdateWindow_CB, EventEnabled(aeMouseDown, FAnimatEvents), False);
 
-            FPressed := True;
-            DoChangePaint(FCommonData, 2, UpdateWindow_CB, EventEnabled(aeMouseDown, FAnimatEvents), False);
+              if not Focused then begin
+                ClicksDisabled := True;
+                Windows.SetFocus(Handle);
+                ClicksDisabled := False;
+              end;
 
-            if not Focused then begin
-              ClicksDisabled := True;
-              Windows.SetFocus(Handle);
-              ClicksDisabled := False;
+              if WM_LBUTTONDBLCLK = Message.Msg then begin
+                if Assigned(OnDblClick) then
+                  OnDblClick(Self)
+              end
+              else
+                if Assigned(OnMouseDown) then
+                  OnMouseDown(Self, mbLeft, KeysToShiftState(TWMMouse(Message).Keys), TWMMouse(Message).XPos, TWMMouse(Message).YPos);
             end;
-
-            if WM_LBUTTONDBLCLK = Message.Msg then begin
-              if Assigned(OnDblClick) then
-                OnDblClick(Self)
-            end
-            else
-              if Assigned(OnMouseDown) then
-                OnMouseDown(Self, mbLeft, KeysToShiftState(TWMMouse(Message).Keys), TWMMouse(Message).XPos, TWMMouse(Message).YPos);
-
             Exit;
           end;
 
         WM_KEYUP:
           if Enabled and not (csDesigning in ComponentState) and (TWMKey(Message).CharCode = VK_SPACE) then begin
-            if ReadOnly then
-              Exit;
-
-            if FPressed then begin
-              FPressed := False;
-              Checked := True;
+            if not ReadOnly then begin
+              if FPressed then begin
+                FPressed := False;
+                Checked := True;
+              end;
+              Repaint;
+              if Assigned(OnKeyUp) then
+                OnKeyUp(Self, TWMKey(Message).CharCode, KeysToShiftState(TWMKey(Message).KeyData));
             end;
-            Repaint;
-            if Assigned(OnKeyUp) then
-              OnKeyUp(Self, TWMKey(Message).CharCode, KeysToShiftState(TWMKey(Message).KeyData));
-
             Exit;
           end;
 

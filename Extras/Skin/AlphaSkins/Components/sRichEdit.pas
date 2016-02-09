@@ -51,6 +51,9 @@ uses
 procedure TsRichEdit.AfterConstruction;
 begin
   inherited AfterConstruction;
+  if HandleAllocated then
+    RefreshEditScrolls(SkinData, ListSW);
+
   UpdateData(FCommonData);
 end;
 
@@ -82,7 +85,8 @@ end;
 procedure TsRichEdit.Loaded;
 begin
   inherited Loaded;
-  FCommonData.Loaded;
+  FCommonData.Loaded(False);
+  RefreshEditScrolls(SkinData, ListSW);
 end;
 
 
@@ -164,32 +168,30 @@ begin
 
       AC_REMOVESKIN:
         if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) and not (csDestroying in ComponentState) then begin
-          if ListSW <> nil then
+          if ListSW <> nil then begin
             FreeAndNil(ListSW);
-
-          CommonWndProc(Message, FCommonData);
-          if not FCommonData.CustomFont then
+//            if not FCommonData.CustomFont then
             DefAttributes.Color := Font.Color;
-
-          RecreateWnd;
+            RecreateWnd;
+          end;
           Exit;
         end;
 
       AC_REFRESH:
         if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) and Visible then begin
-          CommonWndProc(Message, FCommonData);
+          RefreshEditScrolls(SkinData, ListSW);
+          CommonMessage(Message, FCommonData);
           if FCommonData.Skinned then
             if not FCommonData.CustomFont and (DefAttributes.Color <> FCommonData.SkinManager.gd[FCommonData.SkinIndex].Props[0].FontColor.Color) then
               DefAttributes.Color := FCommonData.SkinManager.gd[FCommonData.SkinIndex].Props[0].FontColor.Color;
 
-          RefreshEditScrolls(SkinData, ListSW);
-          SendMessage(Handle, WM_NCPaint, 0, 0);
+          Perform(WM_NCPAINT, 0, 0);
           Exit;
         end;
 
       AC_SETNEWSKIN:
         if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
-          CommonWndProc(Message, FCommonData);
+          CommonMessage(Message, FCommonData);
           Exit;
         end;
 
@@ -223,7 +225,7 @@ begin
     inherited;
     case Message.Msg of
       TB_SETANCHORHIGHLIGHT, WM_SIZE:
-        SendMessage(Handle, WM_NCPAINT, 0, 0);
+        Perform(WM_NCPAINT, 0, 0);
 
       CM_SHOWINGCHANGED:
         RefreshEditScrolls(SkinData, ListSW);

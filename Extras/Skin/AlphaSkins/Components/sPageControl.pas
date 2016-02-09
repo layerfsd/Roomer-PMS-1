@@ -31,8 +31,8 @@ type
     procedure SetCustomFont (const Value: boolean);
     procedure SetSkinSection(const Value: string);
   published
-    property CustomColor: boolean read FCustomColor write FCustomColor;
-    property CustomFont:  boolean read FCustomFont  write SetCustomFont;
+    property CustomColor: boolean read FCustomColor write FCustomColor default False;
+    property CustomFont:  boolean read FCustomFont  write SetCustomFont default False;
     property SkinSection: TsSkinSection read FSkinSection write SetSkinSection;
   end;
 
@@ -650,17 +650,14 @@ begin
         TempBmp.Canvas.Brush.Style := bsClear;
         if (TabIndex >= 0) and (SM.gd[TabIndex].States <= TabState) then
           TabState := SM.gd[TabIndex].States - 1;
-{
-        if FTabsLineIndex >= 0 then
-          CI := MakeCacheInfo(SkinData.FCacheBmp)
-        else
-          if TabsCovering = 0 then
-            CI := GetParentCache(FCommonData)
-          else
-            CI := MakeCacheInfo(FCommonData.FCacheBmp);
-}
-        rTabs := TabsBGRect;
-        CI := MakeCacheInfo(TabsBG, TabsBGOffset[TabPosition].X - rTabs.Left, TabsBGOffset[TabPosition].Y - rTabs.Top);
+
+        if TabsCovering > 0 then
+          CI := MakeCacheInfo(FCommonData.FCacheBmp)
+        else begin
+          rTabs := TabsBGRect;
+          CI := MakeCacheInfo(TabsBG, TabsBGOffset[TabPosition].X - rTabs.Left, TabsBGOffset[TabPosition].Y - rTabs.Top);
+        end;
+
         PaintItem(TabIndex, CI, True, TabState, rBmp, rTab.TopLeft, TempBmp, SM);
         // End of tabs drawing
         if TabPosition in [tpTop, tpBottom] then begin
@@ -762,7 +759,7 @@ begin
     R := TabsRect;
 
     if ActivePage <> nil then begin
-      RTabsBG := RectsAnd(PageRect, SkinTabRect(ActivePage.PageIndex, True));
+      RTabsBG := RectsAnd(PageRect, SkinTabRect(ActivePage.TabIndex, True));
       if not IsRectEmpty(RTabsBG) then
         if not ci.Ready then
           FillDC(Bmp.Canvas.Handle, RTabsBG, CI.FillColor)
@@ -780,7 +777,6 @@ begin
       else
         BitBlt(Bmp.Canvas.Handle, R.Left, R.Top, min(WidthOf(R), ci.Bmp.Width), min(HeightOf(R), ci.Bmp.Height),
                ci.Bmp.Canvas.Handle, ci.X + Left + R.Left, ci.Y + Top + R.Top, SRCCOPY);
-
 
     if Bmp = SkinData.FCacheBmp then begin
       RTabsBG := TabsBGRect;
@@ -2780,7 +2776,7 @@ var
 begin
   InitCacheBmp(SkinData);
   Result := True;
-  InitCacheBmp(SkinData);
+//  InitCacheBmp(SkinData);
   CI := GetParentCache(FCommonData);
   R := PageRect;
   PaintItemBG(FCommonData, CI, 0, R, Point(Left + R.Left, Top + r.Top), FCommonData.FCacheBmp);

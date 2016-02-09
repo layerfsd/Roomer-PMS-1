@@ -333,7 +333,7 @@ type
     procedure DrawTrackBarTrack(ACanvas: TcxCanvas; const ARect, ASelection: TRect; AShowSelection, AEnabled, AHorizontal: Boolean; ATrackColor: TColor); override;
     procedure DrawTrackBarTrackBounds(ACanvas: TcxCanvas; const ARect: TRect); override;
 {$IFDEF VER14_1_2}
-    procedure DrawTrackBarThumbBorderUpDown(ACanvas: TcxCanvas; const ALightPolyLine, AShadowPolyLine, ADarkPolyLine: dxCore.TPoints); override;
+    procedure DrawTrackBarThumbBorderUpDown(ACanvas: TcxCanvas; const ALightPolyLine, AShadowPolyLine, ADarkPolyLine: TPoints); override;
 {$ELSE}
     procedure DrawTrackBarThumbBorderUpDown(ACanvas: TcxCanvas; const ALightPolyLine, AShadowPolyLine, ADarkPolyLine: TPointArray); override;
 {$ENDIF}
@@ -376,8 +376,7 @@ type
     class procedure DrawPanelSeparator(AStatusBar: TdxCustomStatusBar; ACanvas: TcxCanvas; const R: TRect); override;
     class procedure DrawTopBorder(AStatusBar: TdxCustomStatusBar; ACanvas: TcxCanvas; const R: TRect); override;
     class function GetPanelColor(AStatusBar: TdxCustomStatusBar; APanel: TdxStatusBarPanel): TColor; override;
-//    class procedure DrawSizeGrip(AStatusBar: TdxCustomStatusBar; ACanvas: TcxCanvas; R: TRect{$IFNDEF VER14_1_2}; AOverlapped: Boolean{$ENDIF}); override;
-    class procedure DrawSizeGrip(AStatusBar: TdxCustomStatusBar; ACanvas: TcxCanvas; R: TRect{$IFDEF VER14_1_2}; AOverlapped: Boolean{$ENDIF}); override;
+    class procedure DrawSizeGrip(AStatusBar: TdxCustomStatusBar; ACanvas: TcxCanvas; R: TRect); override;
   end;
 {$endif}
 
@@ -3453,7 +3452,7 @@ begin
 end;
 
 
-class procedure TdxACStatusBarSkinPainter.DrawSizeGrip(AStatusBar: TdxCustomStatusBar; ACanvas: TcxCanvas; R: TRect{$IFDEF VER14_1_2}; AOverlapped: Boolean{$ENDIF});
+class procedure TdxACStatusBarSkinPainter.DrawSizeGrip(AStatusBar: TdxCustomStatusBar; ACanvas: TcxCanvas; R: TRect);
 var
   Bmp: TBitmap;
 begin

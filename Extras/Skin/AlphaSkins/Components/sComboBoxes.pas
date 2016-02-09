@@ -19,7 +19,8 @@ type
   TsCustomComboBoxEx = class(TCustomComboBoxEx)
   private
     FReadOnly,
-    FShowButton: boolean;
+    FShowButton,
+    FAllowMouseWheel: boolean;
 
     ExHandle: hwnd;
     State: integer;
@@ -56,6 +57,7 @@ type
     procedure WndProc(var Message: TMessage); override;
     property SelectedItem: TComboExItem read GetSelectedItem;
   published
+    property AllowMouseWheel: boolean read FAllowMouseWheel write FAllowMouseWheel default True;
     property BoundLabel: TsBoundLabel read FBoundLabel write FBoundLabel;
     property DisabledKind: TsDisabledKind read FDisabledKind write SetDisabledKind default DefDisabledKind;
     property ShowButton: boolean read FShowButton write SetShowButton default True;
@@ -557,6 +559,7 @@ begin
   FDisabledKind := DefDisabledKind;
   FCommonData := TsCtrlSkinData.Create(Self, True);
   FCommonData.COC := COC_TsComboBox;
+  FAllowMouseWheel := True;
   FBoundLabel := TsBoundLabel.Create(Self, FCommonData);
   FReadOnly := False;
   FDropDown := False;
@@ -997,6 +1000,9 @@ begin
           AC_MOUSELEAVE:
             SendMessage(Handle, CM_MOUSELEAVE, 0, 0);
         end;
+
+      WM_MOUSEWHEEL: if not FAllowMouseWheel then
+        Exit;
 
       WM_SYSCHAR, WM_SYSKEYDOWN, CN_SYSCHAR, CN_SYSKEYDOWN, WM_KEYDOWN, CN_KEYDOWN:
         case TWMKey(Message).CharCode of

@@ -586,6 +586,7 @@ type
 
     FPressedColumn,
     HoverColIndex: integer;
+    function AutoSizedCols: boolean;
     function ViewStyle: TViewStyle;
     procedure AfterCreation;    override;
     procedure SaveStdParams;    override;
@@ -654,11 +655,9 @@ type
   protected
     SkipBG: boolean;
   public
-    constructor Create(AHandle: hwnd; ASkinData: TsCommonData; ASkinManager: TsSkinManager; const SkinParams: TacSkinParams; Repaint: boolean = True); override;
     procedure acWndProc(var Message: TMessage); override;
     procedure SetSkinParams; override;
     procedure RestoreStdParams; override;
-    destructor Destroy; override;
   end;
 
 
@@ -1469,7 +1468,6 @@ begin
 
     if SkipBGMessage then
       TacTreeViewWnd(ListSW).SkipBG := SkipBGMessage;
-
   end
   else
     if ListSW <> nil then
@@ -2637,6 +2635,8 @@ var
   nwStyle, dwStyle: ACNativeInt;
   sb: TacScrollBar;
 begin
+//Result := sw.CallPrevWndProc(Handle, WM_NCCALCSIZE, wParam, lParam);
+//Exit;
   OldRect := TNCCalcSizeParams(Pointer(lParam)^).rgrc[0];
   dwStyle := GetWindowLong(Handle, GWL_STYLE);
   if ((dwStyle and WS_VSCROLL = WS_VSCROLL) or (dwStyle and WS_HSCROLL = WS_HSCROLL)) then begin
@@ -2650,7 +2650,8 @@ begin
   else
     Result := sw.CallPrevWndProc(Handle, WM_NCCALCSIZE, wParam, lParam);
 
-  if not (sw.SkinData.FOwnerObject is TsSkinProvider) then
+
+  if not (sw.SkinData.FOwnerObject is TsSkinProvider) and not ((sw is TacListViewWnd) and TacListViewWnd(sw).AutoSizedCols) then
     if (sw.SkinManager.gd[sw.SkinData.SkinIndex].ScrollBorderOffset < 0) and (TNCCalcSizeParams(Pointer(lParam)^).rgrc[0].left - oldrect.left > 1) then
       InflateRect(TNCCalcSizeParams(Pointer(lParam)^).rgrc[0], -sw.SkinManager.gd[sw.SkinData.SkinIndex].ScrollBorderOffset, -sw.SkinManager.gd[sw.SkinData.SkinIndex].ScrollBorderOffset);
 
@@ -3817,6 +3818,13 @@ var
   DC, SavedDC: hdc;
   PS: TPaintStruct;
   R: TRect;
+
+  procedure EmulPaint;
+  begin
+    BeginPaint(CtrlHandle, {$IFDEF FPC}@PS{$ELSE}PS{$ENDIF});
+    EndPaint(CtrlHandle, {$IFDEF FPC}@PS{$ELSE}PS{$ENDIF});
+  end;
+
 begin
 {$IFDEF LOGGED}
 //  if (SkinData <> nil) {and (SkinData.FOwnerControl.Tag = 1) }then
@@ -3937,9 +3945,10 @@ begin
 
     WM_PAINT:
       if IsWindowVisible(CtrlHandle) and not bPreventStyleChange then begin
-        if (TWMPaint(Message).DC <> SkinData.PrintDC) and (GetClipBox(TWMPaint(Message).DC, R) = NULLREGION) then
+        if (TWMPaint(Message).DC <> SkinData.PrintDC) and (GetClipBox(TWMPaint(Message).DC, R) = NULLREGION) then begin
+          EmulPaint;
           Exit;
-
+        end;
         if SingleLineEdit and not IsWindowEnabled(CtrlHandle) then begin
           BeginPaint(CtrlHandle, {$IFDEF FPC}@PS{$ELSE}PS{$ENDIF});
           DC := GetWindowDC(CtrlHandle);
@@ -3954,8 +3963,7 @@ begin
           Exit;
         end;
         if InUpdating(SkinData) or (InAnimationProcess and (SkinData.PrintDC = 0)) then begin
-          BeginPaint(CtrlHandle, {$IFDEF FPC}@PS{$ELSE}PS{$ENDIF});
-          EndPaint(CtrlHandle, {$IFDEF FPC}@PS{$ELSE}PS{$ENDIF});
+          EmulPaint;
           Exit;
         end
         else
@@ -4263,11 +4271,18 @@ begin
       end;
 {$ENDIF}
       if Assigned(FOwnerControl) and not (csDestroying in FOwnerControl.ComponentState) then begin
-        TsHackedControl(FOwnerControl).Color := StdColor;
+        if SkinData.CustomColor then
+          TsHackedControl(FOwnerControl).Color := StdColor
+        else
+          TsHackedControl(FOwnerControl).Color := clWindow;
 
         CtrlSkinState := CtrlSkinState or ACS_CHANGING;
-        TsHackedControl(FOwnerControl).Font.OnChange := nil;
-        TsHackedControl(FOwnerControl).Font.Color := StdFontColor; // Some controls are recreated here !!!
+        TsHackedControl(FOwnerControl).Font.OnChange := nil; // Prevent recreating of some controls
+        if SkinData.CustomFont then
+          TsHackedControl(FOwnerControl).Font.Color := StdFontColor
+        else
+          TsHackedControl(FOwnerControl).Font.Color := clWindowText;
+
         CtrlSkinState := CtrlSkinState and not ACS_CHANGING;
 
         if (SkinData <> nil) and HasProperty(SkinData.FOwnerControl, acFocusColor) then
@@ -4290,7 +4305,7 @@ begin
   end;
 {$ENDIF}
   if Assigned(SkinData) and Assigned(SkinData.FOwnerControl) then begin
-    StdColor     := TsHackedControl(SkinData.FOwnerControl).Color;
+    StdColor := TsHackedControl(SkinData.FOwnerControl).Color;
     StdFontColor := TsHackedControl(SkinData.FOwnerControl).Font.Color;
     if HasProperty(SkinData.FOwnerControl, acFocusColor) then
       FocusColor := GetIntProp(SkinData.FOwnerControl, acFocusColor);
@@ -4542,6 +4557,21 @@ begin
       FhDefHeaderProc := Pointer(GetWindowLong(FhWndHeader, GWL_WNDPROC));
       SetWindowLong(FhWndHeader, GWL_WNDPROC, LONG_PTR(FhHeaderProc));
     end;
+end;
+
+
+function TacListViewWnd.AutoSizedCols: boolean;
+var
+  i: integer;
+begin
+  Result := False;
+  if SkinData.FOwnerControl is TCustomListView then
+    with TListView(SkinData.FOwnerControl) do
+      for i := 0 to Columns.Count - 1 do
+        if Columns[i].AutoSize then begin
+          Result := True;
+          Exit;
+        end;
 end;
 
 
@@ -5242,7 +5272,6 @@ begin
         end
         else
           inherited;
-
       else
         inherited;
     end
@@ -5251,23 +5280,13 @@ begin
 end;
 
 
-constructor TacTreeViewWnd.Create(AHandle: hwnd; ASkinData: TsCommonData; ASkinManager: TsSkinManager; const SkinParams: TacSkinParams; Repaint: boolean);
-begin
-  inherited;
-end;
-
-
-destructor TacTreeViewWnd.Destroy;
-begin
-  inherited;
-end;
-
-
 procedure TacTreeViewWnd.RestoreStdParams;
 begin
   inherited;
-  if IsWindowVisible(CtrlHandle) then
-    TreeView_SetBkColor(CtrlHandle, ColorToRGB(clWindow));
+  if IsWindowVisible(CtrlHandle) then begin
+    TreeView_SetBkColor(CtrlHandle, ColorToRGB(StdColor));
+    TreeView_SetTextColor(CtrlHandle, ColorToRGB(StdFontColor));
+  end;
 end;
 
 
@@ -5276,7 +5295,7 @@ var
   C, fC: TColor;
   State: integer;
 begin
-  ParamsChanged := True;
+  inherited;
   C := 0;
   fC := 0;
   if DlgMode then begin
@@ -5353,6 +5372,7 @@ begin
         else
           inherited;
       end;
+
     WM_DRAWITEM: begin
       Message.Result := CallPrevWndProc(CtrlHandle, Message.Msg, Message.WParam, Message.LParam);
       Invalidate;
@@ -5608,11 +5628,20 @@ function TacComboBoxWnd.ButtonRect: TRect;
 var
   w: integer;
   r: TRect;
+  Style: Longint;
 begin
-  if GetWindowLong(CtrlHandle, GWL_STYLE) and CBS_DROPDOWN = CBS_DROPDOWN then
+  Style := GetWindowLong(CtrlHandle, GWL_STYLE);
+  if not DlgMode or (Style and CBS_DROPDOWNLIST = CBS_DROPDOWNLIST) then begin
     w := GetComboBtnSize(Skindata.SkinManager) + 2
+  end
   else
-    w := 0;
+    if Style and CBS_DROPDOWN = CBS_DROPDOWN then begin
+      w := GetComboBtnSize(Skindata.SkinManager);
+//      if not DlgMode {or (GetWindowLong(CtrlHandle, GWL_STYLE) and CBS_DROPDOWN <> CBS_DROPDOWN)} then
+//        inc(w, 2);
+    end
+    else
+      w := 0;
 
   GetWindowRect(CtrlHandle, r);
   if GetWindowLong(CtrlHandle, GWL_EXSTYLE) and WS_EX_RTLREADING = WS_EX_RTLREADING {SysLocale.MiddleEast }then
@@ -7419,7 +7448,10 @@ begin
               Ac_SetWindowTheme(CtrlHandle, nil, nil);
 
         Destroyed := True;
-      end;
+      end
+      else
+        if (SkinData.FOwnerControl <> nil) and not (csDestroying in SkinData.FOwnerControl.ComponentState) then
+          RestoreStdParams;
 
     if OwnSkinData then
       FreeAndNil(SkinData)
@@ -8131,7 +8163,7 @@ end;
 procedure TacSizerWnd.AfterCreation;
 begin
   if SkinData.SkinSection = '' then
-    SkinData.SkinSection := s_CheckBox;
+    SkinData.SkinSection := s_Transparent;
 
   inherited;
 end;
@@ -8473,7 +8505,7 @@ end;
 procedure TacTransPanelWnd.AfterCreation;
 begin
   if SkinData.SkinSection = '' then
-    SkinData.SkinSection := s_CheckBox;
+    SkinData.SkinSection := s_Transparent;
 
   inherited;
 end;
@@ -10409,7 +10441,7 @@ begin
       case Panel.BevelOuter of // If not custom SkinSection
         bvRaised:  SkinData.SkinSection := iff(Panel.BevelInner = bvLowered, s_GroupBox, s_Panel);
         bvLowered: SkinData.SkinSection := iff(Panel.BevelInner = bvRaised,  s_GroupBox, s_PanelLow)
-        else       SkinData.SkinSection := iff(Panel.BorderStyle = bsNone,   s_CheckBox, s_PanelLow);
+        else       SkinData.SkinSection := iff(Panel.BorderStyle = bsNone,   s_Transparent, s_PanelLow);
       end;
 
     SkinData.Updating := b;
@@ -10446,7 +10478,7 @@ begin
       // If transparent and form resizing processed
       SkinData.BGChanged := True;
       if TabCount < 1 then
-        ChangedSkinSection := s_CheckBox
+        ChangedSkinSection := s_Transparent
       else
         if SkinData.SkinSection = s_PageControl then
           ChangedSkinSection := s_PageControl + sTabPositions[TabPosition]
@@ -11102,7 +11134,7 @@ begin
       if ServWndList = nil then
         ServWndList := TList.Create;
 
-      sp.SkinSection := s_CheckBox; {Fully transparent}
+      sp.SkinSection := s_Transparent; {Fully transparent}
       sp.Control := nil;
       ServWndList.Add(TacPageWnd.Create(Child, nil, TsSkinManager(SkinManager), sp));
     end;
@@ -11474,7 +11506,7 @@ begin
           if ServWndList = nil then
             ServWndList := TList.Create;
 
-          sp.SkinSection := s_CheckBox;
+          sp.SkinSection := s_Transparent;
           sp.Control := nil;
           pw := TacPageWnd.Create(Pages[i].Handle, nil, TsSkinManager(SkinManager), sp);
           pw.Page := Pages[i];
@@ -13943,7 +13975,7 @@ end;
 procedure TacSBWnd.AfterCreation;
 begin
   if SkinData.SkinSection = '' then
-    SkinData.SkinSection := s_CheckBox;
+    SkinData.SkinSection := s_Transparent;
 
   if SkinData.FOwnerControl is TWinControl then begin
     Control := TScrollBar(SkinData.FOwnerControl);
@@ -14308,7 +14340,7 @@ end;
 procedure TacContainerWnd.AfterCreation;
 begin
   if SkinData.SkinSection = '' then
-    SkinData.SkinSection := s_CheckBox;
+    SkinData.SkinSection := s_Transparent;
 
   inherited;
 end;
@@ -14380,7 +14412,7 @@ end;
 procedure TacSearchWnd.AfterCreation;
 begin
   if SkinData.SkinSection = '' then
-    SkinData.SkinSection := s_CheckBox;
+    SkinData.SkinSection := s_Transparent;
 
   inherited;
 end;
@@ -14680,14 +14712,14 @@ begin
         case TAccessWinControl(Control).BevelOuter of // If not custom SkinSection
           bvRaised:  SkinData.SkinSection := iff(TAccessWinControl(Control).BevelInner = bvLowered, s_GroupBox, s_Panel);
           bvLowered: SkinData.SkinSection := iff(TAccessWinControl(Control).BevelInner = bvRaised, s_GroupBox, s_PanelLow);
-          else       SkinData.SkinSection := s_CheckBox
+          else       SkinData.SkinSection := s_Transparent
         end
 {$ENDIF}
       else
         if (SkinData.FOwnerControl is TStaticText) and (TStaticText(SkinData.FOwnerControl).BorderStyle <> sbsNone) then
           SkinData.SkinSection := s_GroupBox
         else
-          SkinData.SkinSection := s_CheckBox;
+          SkinData.SkinSection := s_Transparent;
 
     SkinData.Updating := b;
   end

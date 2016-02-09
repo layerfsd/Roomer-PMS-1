@@ -34,8 +34,8 @@ procedure IterateControls(Owner: TWinControl; Data: integer; CallBack: TacIterPr
 procedure PaintChildCtrls(Ctrl: TWinControl; Bmp: TBitmap);
 procedure SkinPaintTo(const Bmp: TBitmap; const Ctrl: TControl; const Left: integer = 0; const Top: integer = 0; const SkinProvider: TComponent = nil);
 
-procedure AnimShowDlg(ListSW: TacDialogWnd;  wTime: word = 0; MaxTransparency: integer = MaxByte; AnimType: TacAnimType = atAero);
-procedure AnimShowForm(sp: TsSkinProvider;   wTime: word = 0; MaxTransparency: integer = MaxByte; AnimType: TacAnimType = atAero);
+procedure AnimShowDlg(ListSW: TacDialogWnd; wTime: word = 0; MaxTransparency: integer = MaxByte; AnimType: TacAnimType = atAero);
+procedure AnimShowForm(sp: TsSkinProvider;  wTime: word = 0; MaxTransparency: integer = MaxByte; AnimType: TacAnimType = atAero);
 
 procedure PrepareForAnimation(const Ctrl: TWinControl; AnimType: TacAnimTypeCtrl = atcFade);
 procedure AnimShowControl(Ctrl: TWinControl; wTime: word = 0; MaxTransparency: integer = MaxByte; AnimType: TacAnimTypeCtrl = atcFade);
@@ -57,6 +57,7 @@ procedure SetParentUpdated(const wc: TWinControl); overload;
 procedure SetParentUpdated(const pHwnd: hwnd); overload;
 function GetControlColor(const Control: TControl): TColor; overload;
 function GetControlColor(const Handle: THandle): TColor; overload;
+function GetControlFontColor(const Control: TControl; SkinManager: TObject): TColor;
 function AllEditSelected(Ctrl: TCustomEdit): Boolean;
 
 procedure PaintControls(DC: HDC; OwnerControl: TWinControl; ChangeCache: boolean; Offset: TPoint; AHandle: THandle = 0; CheckVisible: boolean = True);
@@ -270,8 +271,8 @@ end;
 
 procedure SkinPaintTo(const Bmp: TBitmap; const Ctrl: TControl; const Left: integer = 0; const Top: integer = 0; const SkinProvider: TComponent = nil);
 var
-  DC: hdc;
-  cR: TRect;
+  cDC, DC: hdc;
+  cR, ClipR: TRect;
   I: Integer;
   SaveIndex: hdc;
   ParentBG: TacBGInfo;
@@ -287,10 +288,21 @@ begin
   end
   else begin
     DC := Bmp.Canvas.Handle;
-    if (SkinProvider = nil) or (TsSkinProvider(SkinProvider).BorderForm = nil) then begin
-      GetWindowRect(TWinControl(Ctrl).Handle, cR);
-      IntersectClipRect(DC, 0, 0, Ctrl.Width, Ctrl.Height);
-    end;
+    if (SkinProvider = nil) or (TsSkinProvider(SkinProvider).BorderForm = nil) then
+      if ((Ctrl.Width > Bmp.Width) or (Ctrl.Height > Bmp.Height)) and (Ctrl is TWinControl) and IsWindowVisible(TWinControl(Ctrl).Handle) then begin
+        cDC := GetWindowDC(TWinControl(Ctrl).Handle);
+        try
+          GetClipBox(cDC, ClipR);
+          IntersectClipRect(DC, ClipR.Left, ClipR.Top, ClipR.Right, ClipR.Bottom);
+        finally
+          ReleaseDC(TWinControl(Ctrl).Handle, DC);
+        end;
+      end
+      else begin
+        GetWindowRect(TWinControl(Ctrl).Handle, cR);
+        IntersectClipRect(DC, 0, 0, Ctrl.Width, Ctrl.Height);
+      end;
+
     if Ctrl is TWinControl then begin
       if (Ctrl is TForm) and (TForm(Ctrl).FormStyle = fsMDIForm) then
         for I := 0 to TForm(Ctrl).MDIChildCount - 1 do begin
@@ -336,7 +348,8 @@ end;
 
 
 type
-  TacWinControl = class(TWinControl);
+  TAccessWinControl = class(TWinControl);
+  TAccessProvider = class(TsSkinProvider);
 
 
 procedure SetChildOrderAfter(Child: TWinControl; Control: TControl);
@@ -345,18 +358,14 @@ var
 begin
   for i := 0 to Child.Parent.ControlCount do
     if Child.Parent.Controls[i] = Control then begin
-      TacWinControl(Child.Parent).SetChildOrder(Child, i + 1);
+      TAccessWinControl(Child.Parent).SetChildOrder(Child, i + 1);
       break;
     end;
 end;
 
 
-type
-  TAccessProvider = class(TsSkinProvider);
-
-
 const
-  acwDivider = 8;
+  acwDivider = 16;//8;
 
 
 procedure CleanPixelsByArOR(const ArOR: TAOR; Bmp: TBitmap);
@@ -369,6 +378,9 @@ end;
 
 
 procedure AnimShowForm(sp: TsSkinProvider; wTime: word = 0; MaxTransparency: integer = MaxByte; AnimType: TacAnimType = atAero);
+const
+//  DebugOffsX = 100; DebugOffsY = -100;
+  DebugOffsX = 0; DebugOffsY = 0;
 var
   DC: hdc;
   h: hwnd;
@@ -518,7 +530,7 @@ begin
           SetWindowLong(AnimForm.Handle, GWL_EXSTYLE, GetWindowLong(AnimForm.Handle, GWL_EXSTYLE) or WS_EX_LAYERED);
 
         UpdateLayeredWindow(AnimForm.Handle, DC, nil, @FBmpSize, acDstBmp.Canvas.Handle, @FBmpTopLeft, clNone, @FBlend, ULW_ALPHA);
-        AnimForm.SetBounds(fR.Left - cx, fR.Top - cy, acDstBmp.Width, acDstBmp.Height);
+        AnimForm.SetBounds(fR.Left - cx + DebugOffsX, fR.Top - cy + DebugOffsY, acDstBmp.Width, acDstBmp.Height);
 
         ShowWindow(AnimForm.Handle, SW_SHOWNOACTIVATE);
 
@@ -541,7 +553,7 @@ begin
           end;
           FBlend.SourceConstantAlpha := MaxTransparency;
         end;
-        SetWindowPos(AnimForm.Handle, 0, fR.Left - cx, fr.Top - cy, FBmpSize.cx, FBmpSize.cy, Flags or SWP_NOZORDER);
+        SetWindowPos(AnimForm.Handle, 0, fR.Left - cx + DebugOffsX, fr.Top - cy + DebugOffsY, FBmpSize.cx, FBmpSize.cy, Flags or SWP_NOZORDER);
         UpdateLayeredWindow(AnimForm.Handle, DC, nil, @FBmpSize, acDstBmp.Canvas.Handle, @FBmpTopLeft, clNone, @FBlend, ULW_ALPHA);
 
         FreeAndNil(AnimBmp);
@@ -554,33 +566,37 @@ begin
 
           else
 {$ENDIF}
-            SetWindowLong(sp.Form.Handle, GWL_EXSTYLE, GetWindowLong(sp.Form.Handle, GWL_EXSTYLE) and not WS_EX_LAYERED);
+            while SetWindowLong(sp.Form.Handle, GWL_EXSTYLE, GetWindowLong(sp.Form.Handle, GWL_EXSTYLE) and not WS_EX_LAYERED) = 0 do;
 
-          SetWindowPos(sp.Form.Handle, AnimForm.Handle, 0, 0, 0, 0, SWP_NOMOVE or SWP_NOSIZE or SWP_NOREDRAW or SWP_NOACTIVATE or SWP_NOSENDCHANGING or SWP_NOOWNERZORDER);
+          SetWindowPos(sp.Form.Handle, AnimForm.Handle, 0, 0, 0, 0, Flags or SWP_NOMOVE or SWP_NOSIZE);
           InAnimationProcess := False;
           if sp.BorderForm <> nil then
             sp.BorderForm.ExBorderShowing := True; // Do not update extended borders
 
           if (Win32MajorVersion = 6) and (Win32MinorVersion = 0) then // Patch for Vista
             SetWindowLong(sp.Form.Handle, GWL_STYLE, GetWindowLong(sp.Form.Handle, GWL_STYLE) or WS_VISIBLE); // Form must be visible
-//          ShowWindow(sp.Form.Handle, SW_SHOW); // Form must be visible
 
-          SendMessage(sp.Form.Handle, WM_SETREDRAW, 1, 0); // Vista and newer
+          sp.Form.Perform(WM_SETREDRAW, 1, 0); // Vista and newer
 
-          RedrawWindow(sp.Form.Handle, nil, 0, RDW_FRAME or RDW_ALLCHILDREN or RDW_INVALIDATE or RDW_ERASE or RDW_UPDATENOW or RDW_ERASENOW);
+          if sp.BorderForm <> nil then
+            sSkinProvider.UpdateRgn(sp, True, True); // Guarantees that region is updated
+
+          while not RedrawWindow(sp.Form.Handle, nil, 0, RDW_FRAME or RDW_ALLCHILDREN or RDW_INVALIDATE or RDW_ERASE or RDW_UPDATENOW or RDW_ERASENOW) do;
+
           if sp.BorderForm <> nil then
             sp.BorderForm.ExBorderShowing := False;
 
           FreeAndNil(acDstBmp);
           if AeroIsEnabled then
-            Sleep(4 * acTimerInterval); // Blinking in Aero removing
+            Sleep(2 * acTimerInterval); // Removing of blinking in Aero
+
+          Application.ProcessMessages;
 
           SetWindowPos(AnimForm.Handle, sp.Form.Handle, 0, 0, 0, 0, Flags or SWP_NOSIZE or SWP_NOMOVE);
           if sp.BorderForm = nil then
             FreeAndNil(AnimForm)
           else begin
-            sSkinProvider.UpdateRgn(sp, True, True); // Guarantees that region is updated
-//            sSkinProvider.UpdateRgn(sp, False); // Guarantees that region is updated
+//            sSkinProvider.UpdateRgn(sp, True, True); // Guarantees that region is updated
             SetWindowRgn(AnimForm.Handle, sp.BorderForm.MakeRgn, False);
             if sp.SkinData.SkinManager.CommonSkinData.UseAeroBluring {$IFNDEF NOFONTSCALEPATCH} or (sp.SkinData.SkinManager.SysFontScale > 0) and (acWinVer > 7){$ENDIF} then
               sp.BorderForm.UpdateExBordersPos(True);
@@ -726,7 +742,7 @@ begin
         CleanPixelsByArOR(sp.ArOR, acDstBmp);
       end;
       ////////////////////////////////
-      HideAnimForm(AnimForm, acDstBmp, sp.SkinData.SkinManager.AnimEffects.FormHide.Time, MaxByte, sp.SkinData.SkinManager.AnimEffects.FormHide.Mode, sp.Form.Handle);
+      HideAnimForm(AnimForm, acDstBmp, sp.SkinData.SkinManager.AnimEffects.FormHide.Time, b{MaxByte}, sp.SkinData.SkinManager.AnimEffects.FormHide.Mode, sp.Form.Handle);
       if sp.Form <> nil then
         DoLayered(sp.Form.Handle, b <> MaxByte, b);
 
@@ -946,20 +962,18 @@ end;
 
 procedure AnimShowDlg(ListSW: TacDialogWnd; wTime: word = 0; MaxTransparency: integer = MaxByte; AnimType: TacAnimType = atAero);
 var
-  PrintDC, DC: hdc;
-  DstBmp: TBitmap;
-  i, StepCount: integer;
-  h: hwnd;
-  fR, cR: TRect;
-  cy, cx: integer;
   dx, dy, l, t, r, b, trans, p: real;
+  cy, cx, i, StepCount: integer;
+  DstBmp, AnimBmp: TBitmap;
+  FBlend: TBlendFunction;
+  FBmpTopLeft: TPoint;
+  PrintDC, DC: hdc;
+  AnimForm: TForm;
   Flags: Cardinal;
   FBmpSize: TSize;
-  FBmpTopLeft: TPoint;
-  FBlend: TBlendFunction;
-  AnimForm: TForm;
-  AnimBmp: TBitmap;
   lTicks: DWord;
+  fR, cR: TRect;
+  h: hwnd;
 
   procedure Anim_Init;
   begin
@@ -1154,14 +1168,14 @@ var
 
 procedure PrepareForAnimation(const Ctrl: TWinControl; AnimType: TacAnimTypeCtrl = atcFade);
 var
-  Flags: dword;
-  R: TRect;
+  Y, X, j, DeltaS, DeltaD: integer;
+  CtrlsParent: TWinControl;
+  D0, D: PRGBAArray_RGB;
+  S0, S: PRGBAArray;
   ScrDC, SavedDC: hdc;
   BGInfo: TacBGInfo;
-  CtrlsParent: TWinControl;
-  S0, S: PRGBAArray;
-  D0, D: PRGBAArray_RGB;
-  Y, X, j, DeltaS, DeltaD: integer;
+  Flags: dword;
+  R: TRect;
 
 begin
   if IsWindowVisible(Ctrl.Handle) and not IsIconic(GetRootParent(Ctrl.Handle)) then begin
@@ -1517,7 +1531,7 @@ begin
       if sp.Form.AlphaBlend then
         sp.Form.AlphaBlendValue := MaxTransparency;
   {$ENDIF}
-      SendMessage(Ctrl.Handle, WM_SETREDRAW, 1, 0); // Vista
+      Ctrl.Perform(WM_SETREDRAW, 1, 0); // Vista
 
       RedrawWindow(Ctrl.Handle, nil, 0, RDW_ERASE or RDW_FRAME or RDW_ALLCHILDREN or RDW_INVALIDATE or RDW_UPDATENOW);
       SetWindowRgn(sp.BorderForm.AForm.Handle, sp.BorderForm.MakeRgn, False);
@@ -1578,7 +1592,7 @@ begin
       if sp.Form.AlphaBlend then
         sp.Form.AlphaBlendValue := MaxTransparency;
   {$ENDIF}
-      SendMessage(Ctrl.Handle, WM_SETREDRAW, 1, 0); // Vista
+      Ctrl.Perform(WM_SETREDRAW, 1, 0); // Vista
       RedrawWindow(Ctrl.Handle, nil, 0, RDW_ERASE or RDW_FRAME or RDW_ALLCHILDREN or RDW_INVALIDATE or RDW_UPDATENOW);
       FreeAndNil(ow);
     end;
@@ -1709,7 +1723,7 @@ begin
 
     InAnimationProcess := False;
     if Ctrl.Visible then begin
-      SendMessage(Ctrl.Handle, WM_SETREDRAW, 1, 0); // Vista
+      Ctrl.Perform(WM_SETREDRAW, 1, 0); // Vista
       SetFormBlendValue(ow.Handle, NewBmp, MaxByte);
       if Win32MajorVersion >= 6 then
         RedrawWindow(Ctrl.Handle, nil, 0, RDW_ERASE or RDW_FRAME or RDW_ALLCHILDREN or RDW_INVALIDATE or RDW_UPDATENOW);
@@ -1786,6 +1800,24 @@ begin
   Result := clFuchsia;
   if Handle <> 0 then
     Result := ColorToRGB(SendMessage(Handle, SM_ALPHACMD, MakeWParam(0, AC_GETCONTROLCOLOR), Result));
+end;
+
+
+function GetControlFontColor(const Control: TControl; SkinManager: TObject): TColor;
+var
+  SkinIndex: integer;
+  SM: TsSkinManager;
+begin
+  if SkinManager = nil then
+    SM := DefaultManager
+  else
+    SM := TsSkinManager(SkinManager);
+
+  SkinIndex := GetFontIndex(Control, -1, SM);
+  if SkinIndex >= 0 then
+    Result := SM.gd[SkinIndex].Props[0].FontColor.Color
+  else
+    Result := 0;
 end;
 
 

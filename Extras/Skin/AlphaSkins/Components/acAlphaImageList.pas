@@ -25,12 +25,12 @@ type
     FImageFormat: TsImageFormat;
     FPixelFormat: TPixelFormat;
   protected
-    OrigWidth,
-    OrigHeight: integer;
     procedure DefineProperties(Filer: TFiler); override;
     procedure ReadData(Reader: TStream);
     procedure WriteData(Writer: TStream);
   public
+    OrigWidth,
+    OrigHeight: integer;
     CacheBmp: TBitmap;
     ImgData: TMemoryStream;
     procedure Assign(Source: TPersistent); override;

@@ -259,7 +259,7 @@ end;
 procedure TsPageScroller.SetPosition(const Value: Integer);
 begin
   if Position <> Value then
-    SendMessage(Handle, PGM_SETPOS, 0, Value);
+    Perform(PGM_SETPOS, 0, Value);
 end;
 
 
@@ -282,6 +282,7 @@ begin
   case Message.Msg of
     SM_ALPHACMD: 
       case Message.WParamHi of
+{
         AC_GETBG: begin
           inherited;
           if Orientation = soHorizontal then
@@ -291,7 +292,7 @@ begin
 
           Exit;
         end;
-
+}
         AC_MOUSELEAVE:
           DoMouseLeave;
 
@@ -299,7 +300,7 @@ begin
           if SkinData.FUpdating then begin
             if not InUpdating(SkinData, True) then begin
               Repaint;
-              SendMessage(Handle, WM_NCPAINT, 0, 0);
+              Perform(WM_NCPAINT, 0, 0);
             end;
 
             SetParentUpdated(Self);
@@ -358,21 +359,23 @@ begin
       end;
 
     WM_NCPAINT: begin
-      if not InUpdating(SkinData) or not SkinData.Skinned then
+      if not InUpdating(SkinData) or not SkinData.Skinned or not IsCached(SkinData) then
         for i := 0 to 1 do
           if BtnVisible(i) then begin
             if SkinData.BGChanged and SkinData.Skinned then
               PrepareCache;
-
-            if FMargin > 0 then begin
-              DC := GetWindowDC(Handle);
-              try
-                R := BtnRect(i);
-                DstR := BtnRect(i, False);
-                ExcludeClipRect(DC, R.Left, R.Top, R.Right, R.Bottom);
-                BitBlt(DC, DstR.Left, DstR.Top, WidthOf(DstR), HeightOf(DstR), SkinData.FCacheBmp.Canvas.Handle, DstR.Left, DstR.Top, SRCCOPY);
-              finally
-                ReleaseDC(Handle, DC);
+              
+            if not SkinData.Skinned or IsCached(SkinData) then begin
+              if FMargin > 0 then begin
+                DC := GetWindowDC(Handle);
+                try
+                  R := BtnRect(i);
+                  DstR := BtnRect(i, False);
+                  ExcludeClipRect(DC, R.Left, R.Top, R.Right, R.Bottom);
+                  BitBlt(DC, DstR.Left, DstR.Top, WidthOf(DstR), HeightOf(DstR), SkinData.FCacheBmp.Canvas.Handle, DstR.Left, DstR.Top, SRCCOPY);
+                finally
+                  ReleaseDC(Handle, DC);
+                end;
               end;
             end;
             PaintBtn(0, i, SkinData.Skinned);
@@ -497,7 +500,7 @@ begin
     end;
     FPressedIndex := APressed;
     FHoverIndex := AHover;
-    SendMessage(Handle, WM_NCPAINT, 0, 0);
+    Perform(WM_NCPAINT, 0, 0);
   end;
 end;
 
@@ -799,11 +802,11 @@ begin
         if not BtnVisible(1) and (Delta > 0) then begin
           j1 := ButtonSize;
           if SkinData.Skinned then
-            SendMessage(Handle, WM_SETREDRAW, 0, 0);
+            Perform(WM_SETREDRAW, 0, 0);
 
           Position := j1;
           if SkinData.Skinned then
-            SendMessage(Handle, WM_SETREDRAW, 1, 0);
+            Perform(WM_SETREDRAW, 1, 0);
         end;
       end
       else
@@ -821,16 +824,16 @@ begin
       Step := 0;
       for i := 0 to Steps - 1 do begin
         lTicks := GetTickCount;
-        SendMessage(Handle, WM_SETREDRAW, 0, 0);
+        Perform(WM_SETREDRAW, 0, 0);
 
         r := (cx - Step) / Speed;
         Pos := Pos + r;
         Step := Step + r;
         Position := Round(Pos);
 
-        SendMessage(Handle, WM_SETREDRAW, 1, 0);
+        Perform(WM_SETREDRAW, 1, 0);
         RedrawWindow(Control.Handle, nil, 0, Flags);
-        SendMessage(Handle, WM_NCPAINT, 0, 0);
+        Perform(WM_NCPAINT, 0, 0);
         while lTicks + acTimerInterval > GetTickCount do
           ; // wait here
 
@@ -899,7 +902,7 @@ begin
   case FHoverIndex of
     0:
       if FPosition > 0 then begin
-        SendMessage(Handle, WM_SETREDRAW, 0, 0);
+        Perform(WM_SETREDRAW, 0, 0);
         if (FPosition <= ButtonSize) then begin // Repaint when button is hiding
           Position := 0;
           b := True;
@@ -908,17 +911,17 @@ begin
           Position := FPosition - ButtonSize;
           b := False;
         end;
-        SendMessage(Handle, WM_SETREDRAW, 1, 0);
+        Perform(WM_SETREDRAW, 1, 0);
         RedrawWindow(Control.Handle, nil, 0, RDW_INVALIDATE or RDW_UPDATENOW or RDW_ALLCHILDREN);
         if b then
-          SendMessage(Handle, WM_NCPAINT, 1, 0);
+          Perform(WM_NCPAINT, 1, 0);
 
         Result := True;
       end;
 
     1:
       if FPosition < Range then begin
-        SendMessage(Handle, WM_SETREDRAW, 0, 0);
+        Perform(WM_SETREDRAW, 0, 0);
         if not BtnVisible(0) then begin // Repaint when button is showing
           Position := FPosition + ButtonSize;
           b := True;
@@ -927,10 +930,10 @@ begin
           Position := FPosition + ButtonSize;
           b := False;
         end;
-        SendMessage(Handle, WM_SETREDRAW, 1, 0);
+        Perform(WM_SETREDRAW, 1, 0);
         RedrawWindow(Control.Handle, nil, 0, RDW_INVALIDATE or RDW_UPDATENOW or RDW_ALLCHILDREN);
         if b then
-          SendMessage(Handle, WM_NCPAINT, 1, 0);
+          Perform(WM_NCPAINT, 1, 0);
 
         Result := True;
       end;
@@ -948,6 +951,7 @@ var
   b: boolean;
   Bmp: TBitmap;
   CI: TCacheInfo;
+  BGInfo: TacBGInfo;
   BtnNdx, State, iNdx: integer;
 begin
   R := BtnRect(Btn);
@@ -963,7 +967,11 @@ begin
       BtnNdx := SkinData.SkinManager.ConstData.Sections[ssSpeedButton_Small];
       C := 0;
       if BtnNdx >= 0 then begin
-        CI := MakeCacheInfo(SkinData.FCacheBmp, R.Left, R.Top);
+        GetBGInfo(@BGInfo, Self);
+        inc(BGInfo.Offset.X, R.Left);
+        inc(BGInfo.Offset.Y, R.Top);
+        CI := BGInfoToCI(@BGInfo);
+//        CI := MakeCacheInfo(SkinData.FCacheBmp, R.Left, R.Top);
         State := BtnState(Btn);
         if State > 2 then begin
           State := 0;

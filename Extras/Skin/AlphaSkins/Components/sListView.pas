@@ -87,6 +87,7 @@ type
     function FindColumnWidth(const pHeader: pNMHdr): integer;
     procedure WndProc      (var Message: TMessage); override;
     procedure HeaderWndProc(var Message: TMessage);
+    function HeaderOffset: integer;
     procedure InitSkinParams;
     function AllColWidth: integer;
     function FullRepaint: boolean;
@@ -403,23 +404,24 @@ begin
 
       AC_REMOVESKIN:
         if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then begin
-          Items.BeginUpdate;
-          CommonWndProc(Message, FCommonData);
-          if ListSW <> nil then
+//          CommonWndProc(Message, FCommonData);
+          if ListSW <> nil then begin
+            Items.BeginUpdate;
             FreeAndNil(ListSW);
 
-          // ScrollBars update
-          SetWindowPos(Handle, 0, 0, 0, 0, 0, SWP_NOSIZE or SWP_NOMOVE or SWP_NOZORDER or SWP_NOREPOSITION or SWP_FRAMECHANGED);
-          if not FCommonData.CustomColor then begin
-            Color := clWindow;
-            ListView_SetBkColor    (Handle, ColorToRgb(clWindow));
-            ListView_SetTextBkColor(Handle, ColorToRgb(clWindow));
+            // ScrollBars update
+            SetWindowPos(Handle, 0, 0, 0, 0, 0, SWP_NOSIZE or SWP_NOMOVE or SWP_NOZORDER or SWP_NOREPOSITION or SWP_FRAMECHANGED);
+            if not FCommonData.CustomColor then begin
+  //            Color := clWindow;
+              ListView_SetBkColor    (Handle, ColorToRGB(Color));
+              ListView_SetTextBkColor(Handle, ColorToRGB(Color));
+            end;
+            Items.EndUpdate;
+            InitControl(False);
+  //          Font.Color := clWindowText;
+            ListView_SetTextColor(Handle, ColorToRGB(Font.Color));
+            RedrawWindow(Handle, nil, 0, RDW_FRAME or RDW_INVALIDATE or RDW_ERASE);
           end;
-          Items.EndUpdate;
-          InitControl(False);
-          Font.Color := clWindowText;
-          ListView_SetTextColor(Handle, ColorToRGB(Font.Color));
-          RedrawWindow(Handle, nil, 0, RDW_FRAME or RDW_INVALIDATE or RDW_ERASE);
           Exit;
         end;
 
@@ -434,15 +436,15 @@ begin
         if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
           Items.BeginUpdate;
           InitControl(True);
+          if HandleAllocated and Assigned(Ac_UninitializeFlatSB) then
+            Ac_UninitializeFlatSB(Handle);
+
+          RefreshEditScrolls(SkinData, ListSW);
           CommonWndProc(Message, FCommonData);
           if FCommonData.Skinned and not Loading then begin
             if not FCommonData.CustomColor then
               Color := FCommonData.SkinManager.gd[FCommonData.SkinIndex].Props[0].Color;
 
-            if HandleAllocated and Assigned(Ac_UninitializeFlatSB) then
-              Ac_UninitializeFlatSB(Handle);
-
-            RefreshEditScrolls(SkinData, ListSW);
             InitSkinParams;
             PrepareCache;
             RedrawWindow(Handle, nil, 0, RDW_FRAME or RDW_INVALIDATE or RDW_UPDATENOW or RDW_ALLCHILDREN);
@@ -500,7 +502,7 @@ begin
         if (ViewStyle = vsReport) and (ListSW <> nil) then
           with ListSW do begin
             SavedDC := SaveDC(TWMPaint(Message).DC);
-            MoveWindowOrg(TWMPaint(Message).DC, cxLeftEdge, cxLeftEdge);
+            MoveWindowOrg(TWMPaint(Message).DC, cxLeftEdge + HeaderOffset, cxLeftEdge);
             IntersectClipRect(TWMPaint(Message).DC, 0, 0,
                               SkinData.FCacheBmp.Width  - 2 * cxLeftEdge - integer(sBarVert.fScrollVisible) * GetScrollMetric(sBarVert, SM_SCROLLWIDTH),
                               SkinData.FCacheBmp.Height - 2 * cxLeftEdge - integer(sBarHorz.fScrollVisible) * GetScrollMetric(sBarHorz, SM_SCROLLWIDTH));
@@ -764,6 +766,12 @@ begin
 end;
 
 
+function TsCustomListView.HeaderOffset: integer;
+begin
+  Result := integer(BorderStyle <> bsNone);
+end;
+
+
 procedure TsCustomListView.HeaderWndProc(var Message: TMessage);
 var
   Info: THDHitTestInfo;
@@ -845,6 +853,9 @@ begin
             FhDefHeaderProc := nil;
             Exit;
           end;
+
+          WM_WINDOWPOSCHANGING:
+            TWMWindowPosChanging(Message).WindowPos^.X := HeaderOffset;
         end;
         Result := CallWindowProc(FhDefHeaderProc, FhWndHeader, Msg, WParam, LParam);
         case Msg of
@@ -1365,7 +1376,9 @@ var
 begin
   inherited;
   try
-    FCommonData.Loaded;
+    FCommonData.Loaded(False);
+    if HandleAllocated then
+      RefreshEditScrolls(SkinData, ListSW);
   except
     Application.HandleException(Self);
   end;
@@ -1635,6 +1648,7 @@ var
       FillDC(ACanvas.Handle, aRect, Canvas.Brush.Color);
 
     ACanvas.Brush.Style := bsClear; // Text will be drawn later
+    ACanvas.Brush.Color := Canvas.Brush.Color;
     SetBkMode(ACanvas.Handle, TRANSPARENT);
 
     if (StateImages <> nil) then begin
@@ -1695,9 +1709,11 @@ var
     end;
 
     if GridLines and (Mouse.Capture = 0) {If column is not resized} then begin // Draw grid horz line
-      ACanvas.Pen.Color := $EFEFEF;
-      ACanvas.MoveTo(0, iRect.Bottom - 1);
-      ACanvas.LineTo(Width, iRect.Bottom - 1);
+//      if SkinData.SkinManager.Options.ChangeSysColors then
+      ACanvas.Pen.Color := SkinData.SkinManager.CommonSkinData.SysInactiveBorderColor;
+//      ACanvas.Pen.Color := clBtnFace;//ColorToRGB(clBtnFace);//clMenuBar;//clScrollBar;
+      ACanvas.MoveTo(0, Bmp.Height - 1);
+      ACanvas.LineTo(Width, Bmp.Height - 1);
     end;
     cw := Columns[0].Width;
     i := Columns.Count;
@@ -1708,13 +1724,12 @@ var
       ActNdx := SectionOrder[i];
       if (ActNdx <> 0) and (Columns[i].Width <> 0) then begin
         if (ActNdx <= Columns.Count - 1) then begin
-//        if ActNdx <= Item.SubItems.Count then begin
           b := True;
           NewAdvancedCustomDrawSubItem(Self, Item, ActNdx - 1, State, Stage, b, Bmp)
         end;
         if GridLines and (Mouse.Capture = 0) {If column is not resized} then begin // Draw grid vert lines
-          ACanvas.MoveTo(cw, iRect.Top);
-          ACanvas.LineTo(cw, iRect.Bottom);
+          ACanvas.MoveTo(cw, 0);
+          ACanvas.LineTo(cw, Bmp.Height - 1);
         end;
         inc(cw, Columns[ActNdx].Width);
       end;
@@ -1839,9 +1854,10 @@ var
     end;
     if (vStyle = vsReport) then begin
       if GridLines and (Mouse.Capture = 0) {If column is not in resizing}then begin // Draw grid horz line
-        ACanvas.Pen.Color := $EFEFEF;
-        ACanvas.MoveTo(0, aRect.Bottom);
-        ACanvas.LineTo(Width, aRect.Bottom);
+//        ACanvas.Pen.Color := ColorToRGB(clBtnFace);//$EFEFEF;
+        ACanvas.Pen.Color := SkinData.SkinManager.CommonSkinData.SysInactiveBorderColor;
+        ACanvas.MoveTo(0, Bmp.Height - 1);//aRect.Bottom);
+        ACanvas.LineTo(Width, Bmp.Height - 1);//aRect.Bottom);
         cw := Columns[0].Width;
       end;
       SetLength(SectionOrder, Columns.Count);
@@ -1853,8 +1869,8 @@ var
           b := True;
           NewAdvancedCustomDrawSubItem(Self, Item, ActNdx - 1, State, Stage, b, Bmp);
           if GridLines and (Mouse.Capture = 0) {If column is not in resizing}then begin // Draw grid vert lines
-            ACanvas.MoveTo(cw, aRect.Top);
-            ACanvas.LineTo(cw, aRect.Bottom);
+            ACanvas.MoveTo(cw, 0);//aRect.Top);
+            ACanvas.LineTo(cw, Bmp.Height - 1);//aRect.Bottom);
             inc(cw, Columns[ActNdx].Width);
           end;
         end;
@@ -1923,7 +1939,7 @@ begin
 
         Bmp := CreateBmp32(iRect);
         ACanvas := Bmp.Canvas;
-        aRect := MkRect(Bmp.Width - integer(GridLines), Bmp.Height - integer(GridLines));
+        aRect := MkRect(Bmp);//.Width - integer(GridLines), Bmp.Height - integer(GridLines));
         ACanvas.Brush.Color := Canvas.Brush.Color;
         ACanvas.FillRect(aRect); // Fill if other color has been defined
         ACanvas.Font.Assign(Canvas.Font);

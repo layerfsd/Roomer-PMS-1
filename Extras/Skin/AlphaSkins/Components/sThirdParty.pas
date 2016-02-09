@@ -376,7 +376,10 @@ begin
             DrawData.Grayed := Grayed or SkinData.SkinManager.Effects.DiscoloredGlyphs or (not Enabled and (dkGrayed in DisabledKind))
           else
             DrawData.Grayed := Grayed or (not Enabled and (dkGrayed in DisabledKind));
-            
+
+        if not Enabled and (dgGrayed in DisabledGlyphKind) then
+          DrawData.Grayed := True;
+
         DrawData.CurrentState      := CurrentState;
         DrawData.DisabledGlyphKind := DisabledGlyphKind;
         DrawData.Reflected         := Reflected;
@@ -398,6 +401,9 @@ begin
             DrawData.Grayed := (GrayedMode = gmAlways) or (Grayed or SkinData.SkinManager.Effects.DiscoloredGlyphs) and (CurrentState = 0) or (not Enabled and (dkGrayed in DisabledKind))
           else
             DrawData.Grayed := Grayed or (not Enabled and (dkGrayed in DisabledKind));
+
+          if not Enabled and (dgGrayed in DisabledGlyphKind) then
+            DrawData.Grayed := True;
 
           DrawData.DisabledGlyphKind := DisabledGlyphKind;
           DrawData.Reflected         := Reflected;

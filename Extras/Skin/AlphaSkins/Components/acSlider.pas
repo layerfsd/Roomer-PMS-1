@@ -81,6 +81,7 @@ type
     procedure UpdateButton;
     function BtnInBeginning: boolean;
     function StateFromPos: boolean;
+    function ThumbMargin(Side: TacSide): integer;
     function CanAutoSize(var NewWidth, NewHeight: Integer): Boolean; override;
     procedure ChangeValueAnim(DoChange: boolean = False);
     procedure ButtonMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
@@ -197,50 +198,50 @@ begin
     FButton.SkinData.BeginUpdate;
     Dragged := (ClickPoint.X <> X) or (ClickPoint.Y <> Y);
     if Orientation = coHorizontal then begin
-      if (FButton.Left - ThumbOffsetX1 - (MouseDownSpot.X - X) > 0) and (FButton.Left - (MouseDownSpot.X - X) + FButton.Width < Width - ThumbOffsetX2) then begin
+      if (FButton.Left - ThumbMargin(asLeft) - (MouseDownSpot.X - X) > 0) and (FButton.Left - (MouseDownSpot.X - X) + FButton.Width < Width - ThumbMargin(asRight)) then begin
         FButton.Left := FButton.Left - (MouseDownSpot.X - X);
         if BtnInBeginning then begin
-          if (FButton.Left > Width - FButton.Width - 3 - ThumbOffsetX2) and (OldState = FSliderOn) then
+          if (FButton.Left > Width - FButton.Width - 3 - ThumbMargin(asRight)) and (OldState = FSliderOn) then
             SliderOn := not SliderOn;
         end
         else
-          if FButton.Left < 3 + ThumbOffsetX1 then
+          if FButton.Left < 3 + ThumbMargin(asLeft) then
             SliderOn := not SliderOn;
       end
       else
-        if (FButton.Left - (MouseDownSpot.X - X) - ThumbOffsetX1 < 0) then begin
-          if FButton.Left <> ThumbOffsetX1 then begin
-            FButton.Left := ThumbOffsetX1;
+        if (FButton.Left - (MouseDownSpot.X - X) - ThumbMargin(asLeft) < 0) then begin
+          if FButton.Left <> ThumbMargin(asLeft) then begin
+            FButton.Left := ThumbMargin(asLeft);
             SliderOn := StateFromPos;
           end;
         end
         else
           if (FButton.Left - (MouseDownSpot.X - X) + FButton.Width > Width) then begin
-            FButton.Left := Width - FButton.Width - ThumbOffsetX2;
+            FButton.Left := Width - FButton.Width - ThumbMargin(asRight);
             SliderOn := StateFromPos;
           end;
     end
     else
-      if (FButton.Top - ThumbOffsetY1 - (MouseDownSpot.Y - Y) > 0) and (FButton.Top - (MouseDownSpot.Y - Y) + FButton.Height < Height - ThumbOffsetY2) then begin
+      if (FButton.Top - ThumbMargin(asTop) - (MouseDownSpot.Y - Y) > 0) and (FButton.Top - (MouseDownSpot.Y - Y) + FButton.Height < Height - ThumbMargin(asBottom)) then begin
         FButton.Top := FButton.Top - (MouseDownSpot.Y - Y);
         if BtnInBeginning then begin
-          if (FButton.Top > Height - FButton.Height - 3 - ThumbOffsetY2) and (OldState = FSliderOn) then
+          if (FButton.Top > Height - FButton.Height - 3 - ThumbMargin(asBottom)) and (OldState = FSliderOn) then
             SliderOn := not SliderOn;
         end
         else
-          if FButton.Top < 3 + ThumbOffsetY1 then
+          if FButton.Top < 3 + ThumbMargin(asTop) then
             SliderOn := not SliderOn;
       end
       else
-        if (FButton.Top - (MouseDownSpot.Y - Y) - ThumbOffsetY1 < 0) then begin
-          if FButton.Top <> ThumbOffsetY1 then begin
-            FButton.Top := ThumbOffsetY1;
+        if (FButton.Top - (MouseDownSpot.Y - Y) - ThumbMargin(asTop) < 0) then begin
+          if FButton.Top <> ThumbMargin(asTop) then begin
+            FButton.Top := ThumbMargin(asTop);
             SliderOn := StateFromPos;
           end;
         end
         else
           if (FButton.Top - (MouseDownSpot.Y - Y) + FButton.Height > Height) then begin
-            FButton.Top := Height - FButton.Height - ThumbOffsetY2;
+            FButton.Top := Height - FButton.Height - ThumbMargin(asBottom);
             SliderOn := StateFromPos;
           end;
 
@@ -372,9 +373,9 @@ begin
     Flags := RDW_UPDATENOW or RDW_INVALIDATE{ or RDW_ERASE} or RDW_ALLCHILDREN;
     if Orientation = coHorizontal then begin
       if BtnInBeginning then
-        Target := Width - FButton.Width - ThumbOffsetX2
+        Target := Width - FButton.Width - ThumbMargin(asRight)
       else
-        Target := ThumbOffsetX1;
+        Target := ThumbMargin(asLeft);
 
       if (SkinData.SkinManager = nil) or SkinData.SkinManager.Effects.AllowAnimation then begin
         ThumbPos := FButton.Left;
@@ -459,9 +460,9 @@ begin
     end
     else begin
       if BtnInBeginning then
-        Target := Height - FButton.Height - ThumbOffsetY2
+        Target := Height - FButton.Height - ThumbMargin(asBottom)
       else
-        Target := ThumbOffsetY1;
+        Target := ThumbMargin(asTop);
 
       ThumbPos := FButton.Top;
       while abs(ThumbPos - Target) > 0.4 do begin
@@ -544,10 +545,6 @@ begin
   FSliderCursor := crDefault;
   TabStop := False;
   BevelOuter := bvLowered;
-  ThumbOffsetX1 := 1;
-  ThumbOffsetY1 := 1;
-  ThumbOffsetX2 := 1;
-  ThumbOffsetY2 := 1;
   Width := 57;
   Height := 21;
   FImageChangeLink := TChangeLink.Create;
@@ -614,6 +611,10 @@ end;
 procedure TsSlider.Loaded;
 begin
   inherited;
+  ThumbOffsetX1 := 1;
+  ThumbOffsetY1 := 1;
+  ThumbOffsetX2 := 1;
+  ThumbOffsetY2 := 1;
   UpdateButton;
   if FFontOn.Height = 100 then
     FFontOn.Assign(Font);
@@ -905,14 +906,14 @@ function TsSlider.StateFromPos: boolean;
 begin
   if Orientation = coHorizontal then
     if not Reversed then
-      Result := (FButton.Left < Round((Width - FButton.Width) * FThumbSizeInPercent / 100) - ThumbOffsetX2)
+      Result := (FButton.Left < Round((Width - FButton.Width) * FThumbSizeInPercent / 100) - ThumbMargin(asRight))
     else
-      Result := (FButton.Left > Round(FButton.Width * FThumbSizeInPercent / 100) + ThumbOffsetX1)
+      Result := (FButton.Left > Round(FButton.Width * FThumbSizeInPercent / 100) + ThumbMargin(asLeft))
   else
     if not Reversed then
-      Result := (FButton.Top < Round((Height - FButton.Height) * FThumbSizeInPercent / 100) - ThumbOffsetY2)
+      Result := (FButton.Top < Round((Height - FButton.Height) * FThumbSizeInPercent / 100) - ThumbMargin(asBottom))
     else
-      Result := (FButton.Top < Round(FButton.Height * FThumbSizeInPercent / 100) + ThumbOffsetY1)
+      Result := (FButton.Top < Round(FButton.Height * FThumbSizeInPercent / 100) + ThumbMargin(asTop))
 end;
 
 
@@ -950,38 +951,25 @@ end;
 procedure TsSlider.UpdateButton;
 begin
   if Orientation = coHorizontal then begin
-    if (Images <> nil) and (ThumbImgIndex >= 0) then begin
-      FButton.Width := Round(Width * FThumbSizeInPercent / 100);
-      FButton.Height := Height - 2;
-      if not Capturing then
-        if BtnInBeginning then
-          FButton.Left := ThumbOffsetX1
-        else
-          FButton.Left := Width - FButton.Width - ThumbOffsetX2;
-
-      FButton.Top := ThumbOffsetY1;
-    end
-    else begin
-      FButton.Width := Round(Width * FThumbSizeInPercent / 100);
-      FButton.Height := Height - 2;
-      if not Capturing then
-        if BtnInBeginning then
-          FButton.Left := ThumbOffsetX1
-        else
-          FButton.Left := Width - FButton.Width - ThumbOffsetX2;
-
-      FButton.Top := ThumbOffsetY1;
-    end;
-  end
-  else begin
-    FButton.Width := Width - 2;
-    FButton.Height := Round(Height * FThumbSizeInPercent / 100);
-    FButton.Left := ThumbOffsetX1;
+    FButton.Width := Round(Width * FThumbSizeInPercent / 100);
+    FButton.Height := Height - ThumbMargin(asTop) - ThumbMargin(asBottom);
     if not Capturing then
       if BtnInBeginning then
-        FButton.Top := ThumbOffsetY1
+        FButton.Left := ThumbMargin(asLeft)
       else
-        FButton.Top := Height - FButton.Height - ThumbOffsetY2;
+        FButton.Left := Width - FButton.Width - ThumbMargin(asRight);
+
+    FButton.Top := ThumbMargin(asTop);
+  end
+  else begin
+    FButton.Width := Width - ThumbMargin(asLeft) - ThumbMargin(asRight);
+    FButton.Height := Round(Height * FThumbSizeInPercent / 100);
+    FButton.Left := ThumbMargin(asLeft);
+    if not Capturing then
+      if BtnInBeginning then
+        FButton.Top := ThumbMargin(asTop)
+      else
+        FButton.Top := Height - FButton.Height - ThumbMargin(asBottom);
   end;
   FButton.SkinData.BGChanged := True;
   UpdateThumbSkin;
@@ -1040,12 +1028,24 @@ begin
           Exit;
         end;
 
+        AC_REFRESH: begin
+          inherited;
+          UpdateButton;
+          Exit;
+        end;
+
         AC_SETCHANGEDIFNECESSARY: begin
           SkinData.BGChanged := True;
           FButton.SkinData.BGChanged := True;
           if (Message.WParamLo = 1) then
             RedrawWindow(Handle, nil, 0, RDW_NOERASE + RDW_NOINTERNALPAINT + RDW_INVALIDATE + RDW_ALLCHILDREN);
 
+          Exit;
+        end;
+
+        AC_REMOVESKIN: begin
+          inherited;
+          FButton.Color := clBtnFace;
           Exit;
         end;
       end;
@@ -1168,6 +1168,23 @@ begin
     else
       inherited;
   end;
+end;
+
+
+function TsSlider.ThumbMargin(Side: TacSide): integer;
+begin
+  if (Images <> nil) and (ThumbImgIndex >= 0) then // If custome images used
+    case Side of
+      asLeft:   Result := ThumbOffsetX1;
+      asTop:    Result := ThumbOffsetY1;
+      asRight:  Result := ThumbOffsetX2
+      else      Result := ThumbOffsetY2
+    end
+  else
+    if SkinData.Skinned then
+      Result := SkinData.SkinManager.CommonSkinData.SliderMargin
+    else
+      Result := 1;
 end;
 
 end.

@@ -21,7 +21,8 @@ type
 {$ENDIF}
   private
     FReadOnly,
-    FShowButton: boolean;
+    FShowButton,
+    FAllowMouseWheel: boolean;
 
     FAlignment: TAlignment;
     FCommonData: TsCtrlSkinData;
@@ -38,9 +39,10 @@ type
     actD,
     State,
     FGlyphIndex: integer;
-    
+
     lboxhandle: hwnd;
     ListSW: TacScrollWnd;
+    FDropDown: boolean;
     procedure PrepareCache;
     function AllowBtnStyle: boolean;
     procedure ChangeScale(M, D: Integer); override;
@@ -60,7 +62,7 @@ type
     procedure CNDrawItem      (var Message: TWMDrawItem);    message CN_DRAWITEM;
     procedure WMLButtonDblClk (var Message: TMessage);       message WM_LBUTTONDBLCLK;
   public
-    FDropDown: boolean;
+    AllowDropDown: boolean;
     constructor Create(AOwner:TComponent); override;
     destructor Destroy; override;
     function IndexOf(const s: acString): integer;
@@ -68,6 +70,7 @@ type
     function ButtonRect: TRect;
     procedure UpdateIndexes;
     procedure PaintButton;
+    procedure DoDropDown;
     function ButtonHeight: integer;
     procedure CreateWnd; override;
     function Focused: Boolean; override;
@@ -80,6 +83,7 @@ type
     property Align;
     property Anchors;
     property Alignment: TAlignment read FAlignment write SetAlignment;
+    property AllowMouseWheel: boolean read FAllowMouseWheel write FAllowMouseWheel default True;
 {$IFDEF D2005}
     property AutoCompleteDelay;
 {$ENDIF}
@@ -272,12 +276,18 @@ end;
 
 
 procedure TsCustomComboBox.AnimateCtrl(AState: integer);
+var
+  R: TRect;
 begin
   FCommonData.BGChanged := False;
   FCommonData.FMouseAbove := AState <> 0;
   if (AState in [1, 3]) and AllowBtnStyle then
     ShowGlowingIfNeeded(SkinData, AState > 1, Handle, MaxByte * integer(not SkinData.SkinManager.Effects.AllowAnimation), False, SkinData.SkinManager.ConstData.Sections[ssButton]);
 
+  if (AState = 1) and not AllowBtnStyle then begin // Refresh of background sometimes required
+    R := Rect(2, 2, ButtonRect.Left - 2, Height - 2);
+    RedrawWindow(Handle, @R, 0, RDW_INVALIDATE or RDW_ERASE or RDW_UPDATENOW or RDW_NOFRAME);
+  end;
   DoChangePaint(SkinData, AState, UpdateCombo_CB, SkinData.SkinManager.Effects.AllowAnimation, AState in [2, 4], not AllowBtnStyle and (SkinData.GlowID < 0));
 end;
 
@@ -297,7 +307,7 @@ var
   w: integer;
 begin
   if (Style <> csSimple) and FShowButton then
-    w := GetComboBtnSize(SkinData.SkinManager) - 1
+    w := GetComboBtnSize(SkinData.SkinManager) {+ SkinData.SkinManager.CommonSkinData.ComboBoxMargin} - 1
   else
     w := 0;
 
@@ -319,7 +329,7 @@ begin
 {$IFDEF LOGGED}
   AddToLog(Message);
 {$ENDIF}
-  if ReadOnly then
+  if ReadOnly or not AllowDropDown then
     case Message.Msg of
       WM_KEYDOWN, WM_CHAR, WM_KEYUP, WM_SYSKEYUP, CN_KEYDOWN, CN_CHAR, CN_SYSKEYDOWN, CN_SYSCHAR, WM_PASTE, WM_CUT, WM_CLEAR, WM_UNDO:
         Exit;
@@ -332,13 +342,13 @@ begin
           SkinData.SkinManager.ActiveControl := Handle;
 
       WM_ERASEBKGND, WM_NCPAINT:
-        if (Style <> csSimple) and (not (Focused or FCommonData.FFocused) or not Enabled or ReadOnly) then begin
+        if (Style <> csSimple) and (not (Focused or FCommonData.FFocused) or not Enabled or ReadOnly or not AllowDropDown) then begin
           Message.Result := 1;
           Exit;
         end;
 
       WM_PAINT:
-        if (Style <> csSimple) and (not (Focused or FCommonData.FFocused) or not Enabled or ReadOnly) then begin
+        if (Style <> csSimple) and (not (Focused or FCommonData.FFocused) or not Enabled or ReadOnly or not AllowDropDown) then begin
           BeginPaint(ComboWnd, PS);
           EndPaint(ComboWnd, PS);
           Exit;
@@ -352,10 +362,12 @@ end;
 constructor TsCustomComboBox.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
+  AllowDropDown := True;
   DropDownCount := 16;
   FCommonData := TsCtrlSkinData.Create(Self, True);
   FCommonData.COC := COC_TsComboBox;
   FDisabledKind := DefDisabledKind;
+  FAllowMouseWheel := True;
   actM := 1;
   actD := 1;
   FBoundLabel := TsBoundLabel.Create(Self, FCommonData);
@@ -373,10 +385,22 @@ begin
     lBoxHandle := 0;
   end;
   FreeAndNil(FBoundLabel);
-  if Assigned(FCommonData) then
-    FreeAndNil(FCommonData);
-
+  FreeAndNil(FCommonData);
   inherited Destroy;
+end;
+
+
+procedure TsCustomComboBox.DoDropDown;
+begin
+  if CanFocus then
+    SetFocus;
+
+  if Assigned(OnDropDown) then begin
+    FDropDown := True;
+    State := 2;
+    AnimateCtrl(2);
+    OnDropDown(Self);
+  end;
 end;
 
 
@@ -444,6 +468,7 @@ begin
             if Focused then begin
               BitBltBorder(DC, 0, 0, Width, FCommonData.FCacheBmp.Height, FCommonData.FCacheBmp.Canvas.Handle, 0, 0, BordWidth);
               R := ButtonRect;
+              dec(R.Left, 2);
               BitBlt(DC, R.Left, R.Top, WidthOf(R), HeightOf(R), FCommonData.FCacheBmp.Canvas.Handle, R.Left, R.Top, SRCCOPY);
             end
             else
@@ -490,10 +515,13 @@ begin
         DrawSkinGlyph(FCommonData.FCacheBmp, Point(R.Left + (WidthOf(R) - WidthOfImage(FCommonData.SkinManager.ma[FGlyphIndex])) div 2,
                       (Height - ButtonHeight) div 2), Mode, 1, FCommonData.SkinManager.ma[FGlyphIndex], MakeCacheInfo(SkinData.FCacheBmp))
       else begin // Paint without glyph
-        if SkinIndex >= 0 then
+        if SkinIndex >= 0 then // If COMBOBTN used
           C := FCommonData.SkinManager.gd[SkinIndex].Props[min(Mode, ac_MaxPropsIndex)].FontColor.Color
         else
-          C := ColorToRGB(clWindowText);
+          if SkinData.SkinIndex >= 0 then
+            C := FCommonData.SkinManager.gd[SkinData.SkinIndex].Props[min(Mode, ac_MaxPropsIndex)].FontColor.Color
+          else
+            C := ColorToRGB(clWindowText);
 
         DrawColorArrow(FCommonData.FCacheBmp.Canvas, C, R, asBottom);
       end;
@@ -593,7 +621,10 @@ begin
       OnDblClick(Self);
   end
   else
-    inherited;
+    if not AllowDropDown then
+      DoDropDown
+    else
+      inherited;
 end;
 
 
@@ -602,7 +633,10 @@ begin
   if FReadOnly then
     SetFocus
   else
-    inherited
+    if not AllowDropDown then
+      DoDropDown
+    else
+      inherited
 end;
 
 
@@ -634,16 +668,19 @@ begin
     WM_SYSCHAR, WM_SYSKEYDOWN, CN_SYSCHAR, CN_SYSKEYDOWN, WM_KEYDOWN, CN_KEYDOWN:
       case TWMKey(Message).CharCode of
         VK_F4, VK_SPACE..VK_DOWN, $39..$39, $41..$5A:
-          if ReadOnly then
+          if ReadOnly or not AllowDropDown then
             Exit;
       end;
 
+    WM_MOUSEWHEEL: if not FAllowMouseWheel then
+      Exit;
+
     WM_CHAR:
-      if ReadOnly then
+      if ReadOnly or not AllowDropDown then
         Exit;
 
     WM_COMMAND, CN_COMMAND:
-      if (TWMCommand(Message).NotifyCode = CBN_DROPDOWN) and ReadOnly then
+      if (TWMCommand(Message).NotifyCode = CBN_DROPDOWN) and (ReadOnly or not AllowDropDown) then
         Exit;
   end;
 
@@ -818,7 +855,7 @@ begin
         end;
 
       WM_COMMAND: begin
-        if not ReadOnly then begin
+        if not ReadOnly and AllowDropDown then begin
           FDropDown := False;
           FCommonData.BGChanged := True;
           FinishTimer(SkinData.AnimTimer);

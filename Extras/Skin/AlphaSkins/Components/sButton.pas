@@ -708,6 +708,16 @@ var
   DC, SavedDC: hdc;
   PS: TPaintStruct;
   l, t, right, bottom: integer;
+
+  procedure ToFinish;
+  begin
+    if aDC <> DC then
+      ReleaseDC(Handle, DC);
+
+    if not InanimationProcess then
+      EndPaint(Handle, {$IFDEF FPC}@{$ENDIF}PS);
+  end;
+
 begin
   if InAnimationProcess and ((aDC <> SkinData.PrintDC) or (aDC = 0)) then
     Exit;
@@ -719,11 +729,17 @@ begin
 
   if not InanimationProcess then
     BeginPaint(Handle, {$IFDEF FPC}@{$ENDIF}PS);
-    
+
   try
     if not InUpdating(FCommonData) and not TimerIsActive(SkinData) then begin
-      FCommonData.BGChanged := FCommonData.BGChanged or FCommonData.HalfVisible or GetBoolMsg(Parent, AC_GETHALFVISIBLE);
-      FCommonData.HalfVisible := not RectInRect(Parent.ClientRect, BoundsRect);
+      if (GetClipBox(DC, R) = 0) {or IsRectEmpty(R) is not redrawn while resizing }then begin
+        ToFinish;
+        Exit;
+      end;
+
+      FCommonData.BGChanged := FCommonData.BGChanged or FCommonData.HalfVisible;// or GetBoolMsg(Parent, AC_GETHALFVISIBLE);
+//      FCommonData.HalfVisible := not RectInRect(Parent.ClientRect, BoundsRect);
+      FCommonData.HalfVisible := (WidthOf(R, True) <> Width) or (HeightOf(R, True) <> Height);
       b := (FRegion = 1) or aSkinChanging;
       FRegion := 0;
       if RegionChanged and
@@ -731,14 +747,14 @@ begin
              (SkinData.SkinManager.ma[SkinData.BorderIndex].CornerType = 2) and
                not (csDesigning in ComponentState) then begin
 
-        if not PrepareCache then
+        if not PrepareCache then begin
+          ToFinish;
           Exit;
-
+        end;
         UpdateCorners(FCommonData, CurrentState);
-
         l :=      FCommonData.SkinManager.MaskWidthLeft  (FCommonData.BorderIndex);
         t :=      FCommonData.SkinManager.MaskWidthTop   (FCommonData.BorderIndex);
-        right :=  FCommonData.SkinManager.MaskWidthRight (FCommonData.BorderIndex);
+        right  := FCommonData.SkinManager.MaskWidthRight (FCommonData.BorderIndex);
         bottom := FCommonData.SkinManager.MaskWidthBottom(FCommonData.BorderIndex);
         BitBlt(DC, 0, 0, l, t, FCommonData.FCacheBmp.Canvas.Handle, 0, 0, SRCCOPY);
         BitBlt(DC, 0, Height - bottom, Width, bottom, FCommonData.FCacheBmp.Canvas.Handle, 0, Height - bottom, SRCCOPY);
@@ -763,8 +779,10 @@ begin
           end;
       end
       else
-        if FCommonData.BGChanged and not PrepareCache then
+        if FCommonData.BGChanged and not PrepareCache then begin
+          ToFinish;
           Exit;
+        end;
 
       SavedDC := SaveDC(DC);
       try
@@ -774,11 +792,7 @@ begin
       end;
     end;
   finally
-    if aDC <> DC then
-      ReleaseDC(Handle, DC);
-
-    if not InanimationProcess then
-      EndPaint(Handle, {$IFDEF FPC}@{$ENDIF}PS);
+    ToFinish;
   end;
 end;
 
@@ -835,7 +849,7 @@ begin
       FCommonData.FCacheBmp.Canvas.LineTo(Width - DropWidth + 1, Height - 4);
       DrawColorArrow(FCommonData.FCacheBmp.Canvas, FCommonData.FCacheBmp.Canvas.Pen.Color, Rect(Width - DropWidth, 0, Width, Height), asBottom);
     end;
-    if not Enabled or ((Action <> nil) and not TAction(Action).Enabled) then
+    if not Enabled or ((Action <> nil) and not Assigned(TAction(Action).OnExecute){ not TAction(Action).Enabled // Button not repainted immediately if Action.Enabled changed }) then
       BmpDisabledKind(FCommonData.FCacheBmp, FDisabledKind, Parent, CI, Point(Left, Top));
 
     FCommonData.BGChanged := False;
@@ -1147,16 +1161,16 @@ begin
         end;
 
       CM_FOCUSCHANGED:
-        if Visible then begin
-          if not bFocusChanging then
+        if Visible then
+          if not bFocusChanging then begin // Avoiding of blinking
             Perform(WM_SETREDRAW, 0, 0);
-
-          inherited;
-          if not bFocusChanging then
+            inherited;
             Perform(WM_SETREDRAW, 1, 0);
-        end;     // Avoiding of blinking
+          end
+          else
+            inherited;
 
-      WM_ENABLE:
+      WM_ENABLE: 
         Exit; // Avoiding of blinking when switched
     end;
     if CommonWndProc(Message, FCommonData) then

@@ -468,7 +468,7 @@ begin
     DrawRect := R;
     DrawState := 0;
 
-    w := CheckWidth(SkinManager, SmallGlyphs);
+    w := CheckWidth (SkinManager, SmallGlyphs);
     h := CheckHeight(SkinManager, SmallGlyphs);
 
     if not SkinnedGlyph then begin
@@ -1190,9 +1190,9 @@ begin
   BGInfo^.PleaseDraw := PleaseDraw;
   BGInfo^.FillRect := MkRect;
   b := BGInfo^.PleaseDraw;
-  {if (Control is TWinControl) and (TWinControl(Control)).HandleAllocated then
+  if (Control is TWinControl) and (TWinControl(Control)).HandleAllocated then
     SendMessage(TWinControl(Control).Handle, SM_ALPHACMD, MakeWParam(0, AC_GETBG), LPARAM(BGInfo))
-  else}
+  else
     Control.Perform(SM_ALPHACMD, MakeWParam(0, AC_GETBG), LPARAM(BGInfo));
 
   if BGInfo^.BgType = btUnknown then
@@ -1577,7 +1577,7 @@ begin
           if ci.Ready or (GradientPercent + ImagePercent <> 0) then begin
             TempBmp := CreateBmp32(aRect);
             try
-              OffsetRect(aRect, - aRect.Left, - aRect.Top);
+              OffsetRect(aRect, -aRect.Left, -aRect.Top);
               PaintAddons(TempBmp);
               aRect := R;
               if ci.Ready then begin
@@ -3207,28 +3207,28 @@ begin
             if not SkinData.CustomFont then begin
               if SM.gd[SkinIndex].Props[State].FontColor.Left <> -1 then begin
                 C := UpdateColor(SM.gd[SkinIndex].Props[State].FontColor.Left, SkinData);
-                Rd := Rect(R.Left - 1, R.Top, R.Right - 1, R.Bottom);
+                Rd := OffsRect(R, -1, 0);
                 SetTextColor(Canvas.Handle, C);
                 DrawText(Canvas.Handle, Text, nLength, Rd, Flags);
               end;
               // Top
               if SM.gd[SkinIndex].Props[State].FontColor.Top <> -1 then begin
                 C := UpdateColor(SM.gd[SkinIndex].Props[State].FontColor.Top, SkinData);
-                Rd := Rect(R.Left, R.Top - 1, R.Right, R.Bottom - 1);
+                Rd := OffsRect(R, 0, -1);
                 SetTextColor(Canvas.Handle, C);
                 DrawText(Canvas.Handle, Text, nLength, Rd, Flags);
               end;
               // Right
               if SM.gd[SkinIndex].Props[State].FontColor.Right <> -1 then begin
                 C := UpdateColor(SM.gd[SkinIndex].Props[State].FontColor.Right, SkinData);
-                Rd := Rect(R.Left + 1, R.Top, R.Right + 1, R.Bottom);
+                Rd := OffsRect(R, 1, 0);
                 SetTextColor(Canvas.Handle, C);
                 DrawText(Canvas.Handle, Text, nLength, Rd, Flags);
               end;
               // Bottom
               if SM.gd[SkinIndex].Props[State].FontColor.Bottom <> -1 then begin
                 C := UpdateColor(SM.gd[SkinIndex].Props[State].FontColor.Bottom, SkinData);
-                Rd := Rect(R.Left, R.Top + 1, R.Right, R.Bottom + 1);
+                Rd := OffsRect(R, 0, 1);
                 SetTextColor(Canvas.Handle, ColorToRGB(C));
                 DrawText(Canvas.Handle, Text, nLength, Rd, Flags);
               end;
@@ -3254,10 +3254,9 @@ begin
         if Enabled then
           DrawText(Canvas.Handle, Text, nLength, R, Flags)
         else begin
-          OffsetRect(R, 1, 1);
+          Rd := OffsRect(R, 1);
           Canvas.Font.Color := clBtnHighlight;
-          DrawText(Canvas.Handle, Text, nLength, R, Flags);
-          OffsetRect(R, -1, -1);
+          DrawText(Canvas.Handle, Text, nLength, Rd, Flags);
           Canvas.Font.Color := clBtnShadow;
           DrawText(Canvas.Handle, Text, nLength, R, Flags);
         end;

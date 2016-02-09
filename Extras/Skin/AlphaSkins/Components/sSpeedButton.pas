@@ -562,10 +562,9 @@ begin
     Canvas.Brush.Style := bsClear;
     SelectObject(Canvas.Handle, Canvas.Font.Handle);
     if not Enabled then begin
-      OffsetRect(R, 1, 1);
+      aRect := OffsRect(R, 1);
       Canvas.Font.Color := clBtnHighlight;
-      acDrawText(Canvas.Handle, PacChar(Caption), R, Flags);
-      OffsetRect(R, -1, -1);
+      acDrawText(Canvas.Handle, PacChar(Caption), aRect, Flags);
       Canvas.Font.Color := clBtnShadow;
     end;
     Canvas.Brush.Color := Color;
@@ -587,7 +586,10 @@ begin
   if ShowCaption then begin
     FCommonData.FCacheBmp.Canvas.Font.Assign(Font);
     FCommonData.FCacheBMP.Canvas.Brush.Style := bsClear;
-    Flags := DT_WORDBREAK or GetStringFlags(Self, FTextAlignment);
+    Flags := GetStringFlags(Self, FTextAlignment);
+    if WordWrap then
+      Flags := Flags or DT_WORDBREAK;
+
     R := CaptionRect;
     if UseEllipsis then
       Flags := Flags or EllipsFlags;

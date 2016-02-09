@@ -84,7 +84,7 @@ type
     function CheckRect: TRect;
     function GlyphWidth: integer;
     function GlyphHeight: integer;
-    function GlyphMaskIndex(State: TCheckBoxState): smallint;
+//    function GlyphMaskIndex(State: TCheckBoxState): smallint;
     function PrepareCache: boolean;
 {$IFDEF TNTUNICODE}
     procedure CreateWindowHandle(const Params: TCreateParams); override;
@@ -231,7 +231,7 @@ begin
       ss := GetStringSize(Font.Handle, Caption, DT_WORDBREAK, WordWrap);
       R := CheckRect;
       NewWidth := WidthOf(R) + 2 * Margin + (ss.cx + FTextIndent + 8) * integer(Caption <> '');
-      NewHeight := Max(HeightOf(R), 2 * Margin + ss.cy * integer(Caption <> '')) + 2;
+      NewHeight := Max(HeightOf(R), 2 * Margin + ss.cy * integer(Caption <> ''));// + 2;
       Result := True;
     end;
   end
@@ -252,29 +252,36 @@ end;
 
 function TsCheckBox.CheckRect: TRect;
 var
-  i: integer;
   GlyphTop: integer;
-begin
-  case FVerticalAlign of
-    vaTop:    GlyphTop := 0;
-    vaMiddle: GlyphTop := (Height - GlyphHeight) div 2
-    else      GlyphTop := (Height - GlyphHeight);
+
+  function GetGlyphTop: integer;
+  begin
+    case FVerticalAlign of
+      vaTop:    Result := 0;
+      vaMiddle: Result := (Height - GlyphHeight) div 2
+      else      Result := (Height - GlyphHeight);
+    end;
   end;
-  if Assigned(Images) and (ImgChecked > -1) and (ImgUnChecked > -1) then
+
+begin
+  if Assigned(Images) and (ImgChecked >= 0) and (ImgUnChecked >= 0) then begin
+    GlyphTop := GetGlyphTop;
     if GetControlsAlignment = taRightJustify then
       Result := Rect(Margin, GlyphTop, Margin + GlyphWidth, GlyphHeight + GlyphTop)
     else
       Result := Rect(Width - GlyphWidth - Margin, GlyphTop, Width - Margin, GlyphHeight + GlyphTop)
+  end
   else
-    if FGlyphChecked.Width > 0 then
+    if FGlyphChecked.Width > 0 then begin
+      GlyphTop := GetGlyphTop;
       if GetControlsAlignment = taRightJustify then
         Result := Rect(Margin, GlyphTop, Margin + GlyphWidth, GlyphHeight + GlyphTop)
       else
         Result := Rect(Width - GlyphWidth - Margin, GlyphTop, Width - Margin, GlyphHeight + GlyphTop)
+    end
     else begin
-      i := GlyphMaskIndex(cbChecked);
-      if FCommonData.SkinManager.IsValidImgIndex(i) then
-        Result := SkinCheckRect(i)
+      if FCommonData.SkinManager.IsValidImgIndex(FCommonData.SkinManager.ConstData.CheckBox[State]) then
+        Result := SkinCheckRect(FCommonData.SkinManager.ConstData.CheckBox[State])
       else
         Result := MkRect(16, 16);
     end;
@@ -358,7 +365,7 @@ var
   TempBmp: TBitmap;
   R: TRect;
 begin
-  if Assigned(Images) and (ImgChecked > -1) and (ImgUnChecked > -1) then begin
+  if Assigned(Images) and (ImgChecked >= 0) and (ImgUnChecked >= 0) then begin
     ImgIndex := iff(Checked, ImgChecked, ImgUnChecked);
     if (ImgIndex >= 0) then begin
       R := CheckRect;
@@ -406,10 +413,10 @@ begin
         PaintGlyph(Glyph, GlyphIndex);
     end
     else begin
-      if PaintState <> - 1 then
-        i := GlyphMaskIndex(sConst.CheckBoxStates[PaintState])
+      if PaintState >= 0 then
+        i := FCommonData.SkinManager.ConstData.CheckBox[sConst.CheckBoxStates[PaintState]]
       else
-        i := GlyphMaskIndex(State);
+        i := FCommonData.SkinManager.ConstData.CheckBox[State];
 
       if SkinData.SkinManager.IsValidImgIndex(i) then
         DrawSkinGlyph(i);
@@ -455,7 +462,7 @@ begin
     FCommonData.FCacheBmp.Canvas.Pen.Style := psClear;
     FCommonData.FCacheBmp.Canvas.Brush.Style := bsSolid;
     if Focused and ShowFocus then begin
-      dec(rText.Bottom, integer(not WordWrap));
+//      dec(rText.Bottom, integer(not WordWrap));
       inc(rText.Top);
       InflateRect(rText, 2, 1);
       State := min(ac_MaxPropsIndex, SkinData.SkinManager.gd[SkinData.SkinIndex].States);
@@ -501,7 +508,7 @@ end;
 
 function TsCheckBox.GlyphHeight: integer;
 begin
-  if Assigned(Images) and (ImgChecked > -1) and (ImgUnChecked > -1) then
+  if Assigned(Images) and (ImgChecked >= 0) and (ImgUnChecked >= 0) then
     Result := Images.Height
   else
     if Glyph <> nil then
@@ -510,16 +517,16 @@ begin
       Result := 16;
 end;
 
-
+{
 function TsCheckBox.GlyphMaskIndex(State: TCheckBoxState): smallint;
 begin
   Result := FCommonData.SkinManager.ConstData.CheckBox[State];
 end;
-
+}
 
 function TsCheckBox.GlyphWidth: integer;
 begin
-  if Assigned(Images) and (ImgChecked > -1) and (ImgUnChecked > -1) then
+  if Assigned(Images) and (ImgChecked >= 0) and (ImgUnChecked >= 0) then
     if Images.Width mod Images.Height = 0 then
       Result := Images.Width div (Images.Width div Images.Height)
     else

@@ -363,10 +363,14 @@ var
 {$ENDIF}
   l: longint;
 begin
+{  if (code in [HCBT_SETFOCUS, HCBT_ACTIVATE]) and (GetProp(THandle(WParam), s_NoFocusProp) <> 0) then begin
+    Result := 1; // Prevent
+    Exit;
+  end;}
   Result := CallNextHookEx(HookCallback, Code, wParam, lParam);
   if (Application <> nil) and not (csDestroying in Application.ComponentState) then
     case code of
-      HCBT_CREATEWND: 
+      HCBT_CREATEWND:
         if wParam <> 0 then begin
           wHandle := Thandle(wParam);
           cw := pointer(lparam);
@@ -586,7 +590,7 @@ begin
         Wnd := TacTransPanelWnd.Create(aHwnd, nil, ListSW.SkinData.SkinManager, sp)
       else
         if (pClassName = 'tpanel') then begin
-          sp.SkinSection := s_CheckBox;
+          sp.SkinSection := s_Transparent;
           Wnd := TacPanelWnd.Create(aHwnd, nil, ListSW.SkinData.SkinManager, sp);
           Wnd.SkinData.FOwnerControl := FindControl(aHwnd);
           if (Wnd.SkinData.FOwnerControl <> nil) and (Wnd.SkinData.FOwnerControl is TWinControl) then begin
@@ -713,7 +717,7 @@ begin
                                         Wnd := TacToolBarWnd.Create(aHwnd, nil, ListSW.SkinData.SkinManager, sp)
                                       end
                                       else begin
-                                        sp.SkinSection := s_CheckBox;
+                                        sp.SkinSection := s_Transparent;
                                         Wnd := TacToolBarWnd.Create(aHwnd, nil, ListSW.SkinData.SkinManager, sp);
                                       end;
                                     end
@@ -751,7 +755,7 @@ begin
   {
                                               else
                                                 if pClassName = 'searcheditboxwrapperclass' then
-                                                  Wnd := TacContainerWnd.Create(aHwnd, nil, ListSW.SkinData.SkinManager, s_CheckBox)};
+                                                  Wnd := TacContainerWnd.Create(aHwnd, nil, ListSW.SkinData.SkinManager, s_Transparent)};
     if Wnd <> nil then begin
       acSkinnedCtrls.Add(Wnd);
       InitCtrlData(CtrlHandle, Wnd.ParentWnd, Wnd.WndRect, Wnd.ParentRect, Wnd.WndSize, Wnd.WndPos);

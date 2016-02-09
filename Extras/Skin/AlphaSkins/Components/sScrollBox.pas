@@ -127,7 +127,9 @@ uses
 procedure TsScrollBox.AfterConstruction;
 begin
   inherited AfterConstruction;
-  FCommonData.Loaded;
+  FCommonData.Loaded(False);
+  if HandleAllocated then
+    RefreshScrolls(SkinData, ListSW);
 end;
 
 
@@ -196,6 +198,7 @@ end;
 procedure TsScrollBox.Loaded;
 begin
   inherited Loaded;
+  RefreshScrolls(SkinData, ListSW);
   FCommonData.Loaded;
 end;
 
@@ -508,14 +511,14 @@ begin
             if Assigned(Ac_InitializeFlatSB) then
               Ac_InitializeFlatSB(Handle);
           end;
-          CommonWndProc(Message, FCommonData);
-          if not (csDestroying in ComponentState) then begin
-            FCommonData.BorderIndex := -1;
-            FCommonData.SkinIndex := -1;
+//          CommonWndProc(Message, FCommonData);
+          AlphaBroadCast(Self, Message);
+          if not (csDestroying in ComponentState) then
             RecreateWnd;
-          end;
-        end;
-        AlphaBroadCast(Self, Message);
+        end
+        else
+          AlphaBroadCast(Self, Message);
+
         Exit;
       end;
 

@@ -115,7 +115,7 @@ type
   {$ENDIF}
 {$ENDIF} // UNICODE
 
-{$IFDEF DELPHI7}
+{$IFDEF DELPHI_XE2}
   ACNativeInt = NativeInt;
 {$ELSE}
   ACNativeInt = LongInt;
@@ -307,6 +307,7 @@ const
   s_RegName      = 'AlphaSkins';
   s_IntSkinsPath = 'IntSkinsPath';
   s_WinControlForm = 'TWinControlForm';
+  s_NoFocusProp = 'ACNOFOCUS';
 
 {$IFNDEF DISABLEPREVIEWMODE} // Used with ASkinEditor
   s_PreviewKey   = '/acpreview';           //
@@ -510,14 +511,6 @@ var
   DrawSkinnedMDIWall:    boolean = True;    // Use skinning for MDI area
   DrawSkinnedMDIScrolls: boolean = True;    // Use skinning for MDI area scrolls
 
-  // Options moved to DefaultManager.Options property
-{
-  ac_CheckEmptyAlpha   : boolean = False;   // Deprecated // Checking of an empty alpha-channel in glyphs is required
-  MouseForbidden       : boolean = False;   // Deprecated // If true then mouse hot events are forbidden
-  ac_NoExtBordersIfMax : boolean = False;   // Deprecated // Do not use Extended borders when form is maximized
-  acOldGlyphsOrder     : boolean = False;   // Deprecated // Used when NumGlyphs more than 1 and defines that second image must be used for disabled state (this image used for Hot state in new mode)
-  ac_OptimizeMemory    : boolean = True;    // Deprecated // Cache is cleared always when control is invisible
-}
 {$IFNDEF NOTFORHELP}
   ac_DialogsLevel:        integer = 2;     // Deep of system dialogs skinning
   ac_ChangeThumbPreviews: boolean = False; // Allow a changing of Aero preview window by AlphaControls (is not ready currently)
@@ -620,12 +613,12 @@ var
   acs_PreviewHint          : acString; // "Preview of the future hint window"
 {$ENDIF}
   // File dialogs
-  acs_Root                 : acString; // "Root :"
+  acs_Root                 : acString; // "Root:"
   acs_SelectDir            : acString; // "Select directory"
   acs_Create               : acString; // "Create"
 
   // Select skin dialog
-  acs_DirWithSkins         : acString; // "Directory with skins :"
+  acs_DirWithSkins         : acString; // "Directory with skins:"
   acs_SelectSkinTitle      : acString; // "Select skin"
   acs_SkinPreview          : acString; // "Skin preview"
 
