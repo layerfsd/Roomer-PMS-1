@@ -17,7 +17,7 @@ Win32/
 *.~*
 *.dcu
 * conflicted copy *
-*(Exemplaar met conflict van *
+*Exemplaar met conflict van *
 *.bak
 * - kopie.*
 *.$$$
@@ -39,7 +39,6 @@ Thumbs.db
 *.bpl 
 *.GID 
 *.backup 
-__history 
 *.local 
 *.bak 
 *.gex
