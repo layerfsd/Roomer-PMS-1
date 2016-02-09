@@ -112,8 +112,12 @@ var
 begin
   Key := g.qUser + '_' + ValueName;
   reg := TRoomerRegistryIniFile.Create(GetHotelIniFilename);
-  reg.RegIniFile.RootKey := HKEY_CURRENT_USER;
-  result := reg.ReadBool('RoomerMessageDialogs', Key, false);
+  try
+    reg.RegIniFile.RootKey := HKEY_CURRENT_USER;
+    result := reg.ReadBool('RoomerMessageDialogs', Key, false);
+  finally
+    reg.Free;
+  end;
 end;
 
 procedure PutMessageDlgBooleanRegistryValue(ValueName : String; Value : Boolean);
@@ -123,8 +127,12 @@ var
 begin
   Key := g.qUser + '_' + ValueName;
   reg := TRoomerRegistryIniFile.Create(GetHotelIniFilename);
-  reg.RegIniFile.RootKey := HKEY_CURRENT_USER;
-  reg.WriteBool('RoomerMessageDialogs', Key, Value);
+  try
+    reg.RegIniFile.RootKey := HKEY_CURRENT_USER;
+    reg.WriteBool('RoomerMessageDialogs', Key, Value);
+  finally
+    reg.Free;
+  end;
 end;
 
 end.

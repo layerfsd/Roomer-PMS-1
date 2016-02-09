@@ -21,6 +21,7 @@ uses
     , PrjConst, uReservationObjects, uRoomDatesOBJ, objRoomList2, objDayFreeRooms, objRoomTypeRoomCount, _Glob, hData, ug, uDImages, uAppGlobal, uHomedate,
   uPackages, cmpRoomerConnection, objNewReservation, uChannelAvailabilityManager, cmpRoomerDataSet, RoomerLoginForm, uUtils, uFileSystemUtils,
   uTransparentPanel, uAlerts
+  , uFrmMessagesTemplates
   // Other
     , NativeXML, kbmMemTable
 
@@ -965,6 +966,7 @@ type
     procedure sPanel3DblClick(Sender: TObject);
 
   private
+    FrmMessagesTemplates: TFrmMessagesTemplates;
     { Private declarations }
     ShowComponentNameOnHint: boolean;
 
@@ -1532,7 +1534,7 @@ uses
   uRptTurnoverAndPayments, uRptTurnoverAndPayments2,
   ufDownPayments
   // , uFrmDevAndTestBed
-    , uFrmMessagesTemplates, uFrmResources, uFileDependencyManager, uMaidActions, uTaxCalc, uRptCustInvoices, uRptResInvoices, uFrmRBEContainer, uRptManagment,
+    , uFrmResources, uFileDependencyManager, uMaidActions, uTaxCalc, uRptCustInvoices, uRptResInvoices, uFrmRBEContainer, uRptManagment,
   uChart, uRoomerExceptions, uRoomerMessageDialog, uRptBreakfastGuests, uLostAndFound, uRunWithElevatedOption, urptNotes, uRptGuests, umakeKreditInvoice,
   uBookKeepingCodes, uRptBookkeeping, uReservationEmailingDialog, uFrmReservationCancellationDialog,
   uRptCashier, uPhoneRates, uGroupGuests,
@@ -2416,9 +2418,9 @@ var
   RoomerMessage: TRoomerMessage;
 begin
   RoomerMessage := RoomerMessages.MessageById(mmoMessage.Tag);
-  if RoomerMessage <> nil then
-    RoomerMessage.MarkedAsRead := true;
-  timMessagesTimer(timMessages);
+    if RoomerMessage <> nil then
+      RoomerMessage.MarkedAsRead := true;
+    timMessagesTimer(timMessages);
 end;
 
 procedure TfrmMain.btnBackForwardClick(Sender: TObject);
@@ -2930,10 +2932,12 @@ end;
 procedure TfrmMain.FormDestroy(Sender: TObject);
 begin
   try
+    GroupList.Free;
     MoveFunctionAvailRooms.Free;
     StaffComm.Free;
     availListContainer.Free;
     GetThreadedData.Free;
+    FrmMessagesTemplates.Free;
   except
   end;
 end;
@@ -3857,8 +3861,6 @@ begin
         freeandNil(g.oRooms);
     except
     end;
-
-    GroupList.Free;
 
     try
       ClearStringGridFromTo(grOneDayRooms, 1, 1);
@@ -15655,7 +15657,6 @@ end;
 
 destructor TRoomAvailabilityEntity.Destroy;
 begin
-
   inherited;
 end;
 

@@ -1635,7 +1635,9 @@ begin
   frmAssignPayment := TfrmAssignPayment.Create(nil); frmAssignPayment.Free; frmAssignPayment := nil;
   frmRptDownPayments := TfrmRptDownPayments.Create(nil); frmRptDownPayments.Free; frmRptDownPayments := nil;
   frmTaxes := TfrmTaxes.Create(nil); frmTaxes.Free; frmTaxes := nil;
-  FrmMessagesTemplates := TFrmMessagesTemplates.Create(nil); FrmMessagesTemplates.Free; FrmMessagesTemplates := nil;
+
+  TFrmMessagesTemplates.Create(nil).Free;
+
   FrmNotepad := TFrmNotepad.Create(nil); FrmNotepad.Free; FrmNotepad := nil;
   frmRptResInvoices := TfrmRptResInvoices.Create(nil); frmRptResInvoices.Free; frmRptResInvoices := nil;
   frmRptTotallist := TfrmRptTotallist.Create(nil); frmRptTotallist.Free; frmRptTotallist := nil;
