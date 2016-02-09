@@ -91,63 +91,60 @@ begin
 end;
 
 function TRoomerReservationsController.RetrieveInvoiceList(FromDate, ToDate: TDateTime): TList<TReservation>;
-var iNumRes,
-    iNumRoomRes,
-    iNumPers,
-    iNumDays : Integer;
-
-    iLastRes,
-    iLastRoomRes,
-    iLastPers,
-    iLastDays : Integer;
-
-    Reservation : TReservation;
-    RoomReservation : TRoomReservation;
-    Person : TPerson;
-    Day : TDay;
+//var iNumRes,
+//    iNumRoomRes,
+//    iNumPers,
+//    iNumDays : Integer;
+//
+//    iLastRes,
+//    iLastRoomRes,
+//    iLastPers,
+//    iLastDays : Integer;
+//
+//    Reservation : TReservation;
+//    RoomReservation : TRoomReservation;
+//    Person : TPerson;
 begin
-  iNumRes := 0;
-
-  iLastRes := 0;
-  iLastRoomRes := 0;
-  iLastPers := 0;
-  iLastDays := 0;
-
-  RoomerDataSet.ActivateNewDataset(RoomerDataSet.SystemListReservations(FromDate, ToDate));
-  result := TList<TReservation>.Create;
-  RoomerDataSet.First;
-  while NOT RoomerDataSet.Eof do
-  begin
-    if iLastRes <> RoomerDataSet['rReservation'] then
-    begin
-      Reservation := CreateReservation(result);
-      iLastRes := RoomerDataSet['rReservation'];
-    end;
-
-    if iLastRoomRes <> RoomerDataSet['rrRoomReservation'] then
-    begin
-      RoomReservation := CreateRoomReservation(Reservation);
-      iLastRoomRes := RoomerDataSet['rrRoomReservation'];
-    end;
-
-    if iLastPers <> RoomerDataSet['pePerson'] then
-    begin
-      Person := CreatePerson(RoomReservation);
-      iLastPers := RoomerDataSet['pePerson'];
-    end;
-
-    RoomerDataSet.First;
-  end;
-  RoomerDataSet.First;
-  while NOT RoomerDataSet.Eof do
-  begin
-    iNumRoomRes := GetNumberOfRecsInt(RoomerDataSet, 'Reservation', 'RoomReservation', RoomerDataSet['Reservation']);
-    iNumPers := GetNumberOfRecsInt(RoomerDataSet, 'RoomReservation', 'peId', RoomerDataSet['RoomReservation']);
-    iNumDays := GetNumberOfRecsInt(RoomerDataSet, 'RoomReservation', 'ADate', RoomerDataSet['RoomReservation']);
-
-
-    RoomerDataSet.Next;
-  end;
+//  iLastRes := 0;
+//  iLastRoomRes := 0;
+//  iLastPers := 0;
+//  iLastDays := 0;
+//
+//  RoomerDataSet.ActivateNewDataset(RoomerDataSet.SystemListReservations(FromDate, ToDate));
+//  result := TList<TReservation>.Create;
+//  RoomerDataSet.First;
+//  while NOT RoomerDataSet.Eof do
+//  begin
+//    if iLastRes <> RoomerDataSet['rReservation'] then
+//    begin
+//      Reservation := CreateReservation(result);
+//      iLastRes := RoomerDataSet['rReservation'];
+//
+//      if iLastRoomRes <> RoomerDataSet['rrRoomReservation'] then
+//      begin
+//        RoomReservation := CreateRoomReservation(Reservation);
+//        iLastRoomRes := RoomerDataSet['rrRoomReservation'];
+//
+//        if iLastPers <> RoomerDataSet['pePerson'] then
+//        begin
+//          Person := CreatePerson(RoomReservation);
+//          iLastPers := RoomerDataSet['pePerson'];
+//        end;
+//      end;
+//    end;
+//
+//    RoomerDataSet.Next;
+//  end;
+//
+//  while NOT RoomerDataSet.Eof do
+//  begin
+//    iNumRoomRes := GetNumberOfRecsInt(RoomerDataSet, 'Reservation', 'RoomReservation', RoomerDataSet['Reservation']);
+//    iNumPers := GetNumberOfRecsInt(RoomerDataSet, 'RoomReservation', 'peId', RoomerDataSet['RoomReservation']);
+//    iNumDays := GetNumberOfRecsInt(RoomerDataSet, 'RoomReservation', 'ADate', RoomerDataSet['RoomReservation']);
+//
+//
+//    RoomerDataSet.Next;
+//  end;
 end;
 
 function TRoomerReservationsController.CreatePerson(RoomReservation : TRoomReservation) : TPerson;

@@ -55,6 +55,8 @@ const
 type
 
   TRoomerDataSet = class;
+  TRoomerDatasetList = TObjectList<TRoomerDataset>;
+
   SET_OF_TRoomerDataSet = Array OF TObject;
   SET_OF_String = Array OF String;
 
@@ -76,6 +78,8 @@ type
     constructor Create(_planType: Integer; _sql: String);
   end;
 
+  TRoomerPlanEntityList = TObjectlist<TRoomerPlanEntity>;
+
   TRoomerHotelsEntity = class
   public
     hotelCode: String;
@@ -87,8 +91,8 @@ type
   TRoomerExecutionPlan = class
   private
     FRoomerDataSet: TRoomerDataSet;
-    queryResults: TList<TRoomerDataSet>;
-    sqlList: TList<TRoomerPlanEntity>;
+    queryResults: TRoomerDatasetList;
+    sqlList: TRoomerPlanEntityList;
     FExecException: String;
     function getSqlsAsTList(PlanType: Integer): TList<String>;
 
@@ -387,7 +391,6 @@ type
 
   end;
 
-  TRoomerDatasetList = TObjectList<TRoomerDataset>;
 
 procedure Register;
 
@@ -2390,10 +2393,8 @@ end;
 
 procedure TRoomerExecutionPlan.Clear;
 begin
-  self.sqlList.Free;
-  self.queryResults.Free;
-  queryResults := TList<TRoomerDataSet>.Create;
-  sqlList := TList<TRoomerPlanEntity>.Create;
+  sqlList.Clear;
+  queryResults.Clear;
 end;
 
 procedure TRoomerExecutionPlan.CommitTransaction;
@@ -2404,29 +2405,15 @@ end;
 constructor TRoomerExecutionPlan.Create(_RoomerDataSet: TRoomerDataSet = nil);
 begin
   inherited Create;
-  queryResults := TList<TRoomerDataSet>.Create;
-  sqlList := TList<TRoomerPlanEntity>.Create;
+  queryResults := TRoomerDatasetList.Create(True);
+  sqlList := TRoomerPlanEntityList.Create(True);
   FRoomerDataSet := _RoomerDataSet;
 end;
 
 destructor TRoomerExecutionPlan.Destroy;
 begin
-  while queryResults.Count > 0 do
-  begin
-    if assigned(queryResults[0]) then
-      TRoomerDataSet(queryResults[0]).Free;
-    queryResults.Delete(0);
-  end;
   queryResults.Free;
-
-  while sqlList.Count > 0 do
-  begin
-    if assigned(sqlList[0]) then
-      TRoomerPlanEntity(sqlList[0]).Free;
-    sqlList.Delete(0);
-  end;
   sqlList.Free;
-
   inherited;
 end;
 
