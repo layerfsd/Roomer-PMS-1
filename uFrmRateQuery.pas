@@ -208,107 +208,105 @@ var
   s, sDateFrom, sDateTo: String;
 begin
   Screen.Cursor := crHourglass;
-  Application.ProcessMessages;
   try
-  sDateFrom := dateToSqlString(ADateFrom);
-  sDateTo := dateToSqlString(ADateTo);
-  s := 'SELECT crId, crDate, Rate, stop, minStay, ' +
-        '       IF(availability=-1, ' +
-        '          ((SELECT COUNT(id) FROM rooms WHERE active AND RoomType=rtRoomType AND NOT Hidden) - ' +
-        '          (SELECT COUNT(id) FROM roomsdate WHERE RoomType=rtRoomType AND Adate=crDate AND (NOT ResFlag IN (''X'',''C'',''B'',''Q'',''Z'',''N'')))), ' +
-        '          availability) AS availability, ' +
-        ' ' +
-        '       rtId, rtRoomType, rtDescription, ' +
-        '	   rtgId, rtgCode, rtgTopClass, rtgDescription, ' +
-        '       chId, chCode, chName, ' +
-        '       cmId, cmCode, cmDescription ' +
-        'FROM ' +
-        '( ' +
-        'SELECT cr.Id AS crId, cr.Date as crDate, cr.Price AS Rate, cr.stop, cr.minStay, ' +
-        '       (SELECT availability FROM channelratesavailabilities ' +
-        '        WHERE roomClassId=(SELECT id FROM roomtypegroups WHERE Code=rtg.TopClass LIMIT 1) ' +
-        '       AND date=cr.date AND planCodeId=cr.planCodeId AND channelManagerId=cm.Id) AS availability, ' +
-        '       rt.Id AS rtId, rt.RoomType AS rtRoomType, rt.Description AS rtDescription, ' +
-        '	   rtg.Id AS rtgId, rtg.Code AS rtgCode, rtg.TopClass AS rtgTopClass, rtg.Description AS rtgDescription, ' +
-        '       ch.id AS chId, ch.channelManagerId AS chCode, ch.name AS chName, ' +
-        '       cm.Id AS cmId, cm.Code AS cmCode, cm.Description AS cmDescription ' +
-        'FROM channelrates cr, ' +
-        '     roomtypegroups rtg, ' +
-        '     roomtypes rt, ' +
-        '	 channels ch, ' +
-        '     channelmanagers cm ' +
-        ' ' +
-        'WHERE cr.roomClassId = rtg.Id ' +
-        'AND ch.Id=cr.channelId ' +
-        'AND rt.Active ' +
-        'AND rtg.Active ' +
-        'AND ch.Active ' +
-        'AND cm.Active ' +
-        'AND cm.Id=cr.ChannelManager ' +
-        'AND rt.RoomTypeGroup=rtg.TopClass ' +
-//        '-- AND FIND_IN_SET(rt.RoomType, rtg.PriorityRule) ' +
-        'AND (cr.date >= ''' + sDateFrom + ''' AND cr.date <= ''' + sDateTo + ''') ' +
-        ') q1 ' +
-        ' ' +
-        'UNION ' +
-        ' ' +
-        'SELECT * FROM ( ' +
-        'SELECT 0 AS crId, pdd.Date as crDate, ' +
-        '       IF(rt.NumberGuests=1, r.Rate1Person, ' +
-        '         IF(rt.NumberGuests=2, r.Rate2Persons, ' +
-        '           IF(rt.NumberGuests=3, r.Rate3Persons, ' +
-        '             IF(rt.NumberGuests=4, r.Rate4Persons, ' +
-        '               IF(rt.NumberGuests=5, r.Rate5Persons, ' +
-        '                 IF(rt.NumberGuests=6, r.Rate6Persons, ' +
-        '                      IF(r.Rate6Persons>0, r.Rate6Persons + ((rt.NumberGuests-6) * r.RateExtraPerson), ' +
-        '                      IF(r.Rate5Persons>0, r.Rate5Persons + ((rt.NumberGuests-5) * r.RateExtraPerson), ' +
-        '                      IF(r.Rate4Persons>0, r.Rate4Persons + ((rt.NumberGuests-4) * r.RateExtraPerson), ' +
-        '                      IF(r.Rate3Persons>0, r.Rate3Persons + ((rt.NumberGuests-3) * r.RateExtraPerson), ' +
-        '                      IF(r.Rate2Persons>0, r.Rate2Persons + ((rt.NumberGuests-2) * r.RateExtraPerson), ' +
-        '                      IF(r.Rate1Person>0, r.Rate1Person + ((rt.NumberGuests-1) * r.RateExtraPerson), ' +
-        '								rt.NumberGuests * r.RateExtraPerson)))))))))))) AS Rate, ' +
-        '          0 AS stop, 1 AS minStay, ' +
-        '       ((SELECT COUNT(id) FROM rooms WHERE active AND RoomType=rt.RoomType AND NOT Hidden) - ' +
-        '	    (SELECT COUNT(id) FROM roomsdate WHERE RoomType=rt.RoomType AND Adate=pdd.Date AND (NOT ResFlag IN (''X'',''C'',''B'',''Q'',''Z'',''N'')))) AS availability, ' +
-        '	   rt.Id AS rtId, rt.RoomType AS rtRoomType, rt.Description AS rtDescription, ' +
-        '	   0 AS rtgId, pcCode AS rtgCode, pcCode AS rtgTopClass, pc.pcDescription AS rtgDescription, ' +
-        '       0 AS chId,  (SELECT companyID FROM control LIMIT 1) AS chCode, (SELECT companyName FROM control LIMIT 1) AS chName, ' +
-        '       0 AS cmId, (SELECT companyID FROM control LIMIT 1) AS cmCode, (SELECT companyName FROM control LIMIT 1) AS cmDescription ' +
-        ' ' +
-        'FROM roomrates rr, ' +
-        '     rates r, ' +
-        '     roomtypes rt, ' +
-        '     tblpricecodes pc, ' +
-        '     predefineddates pdd ' +
-        'WHERE (pdd.Date>=''' + sDateFrom + ''' AND pdd.Date<=''' + sDateTo + ''') ' +
-        'AND pc.Active ' +
-        'AND r.Active ' +
-        'AND rr.Active ' +
-        'AND rt.Active ' +
-        'AND pc.Id=rr.PriceCodeId ' +
-        'AND rt.Id=rr.RoomTypeId ' +
-        'AND r.Id=rr.RateID ' +
-        'AND (rr.DateFrom<=pdd.Date AND pdd.Date<=rr.DateTo) ' +
-        ' ' +
-        'GROUP BY crDate, chCode, rtId ' +
-        ') q ' +
-        ' ' +
-        'ORDER BY crDate, chCode, rtgId, rtRoomType ';
+    sDateFrom := dateToSqlString(ADateFrom);
+    sDateTo := dateToSqlString(ADateTo);
+    s := 'SELECT crId, crDate, Rate, stop, minStay, ' +
+          '       IF(availability=-1, ' +
+          '          ((SELECT COUNT(id) FROM rooms WHERE active AND RoomType=rtRoomType AND NOT Hidden) - ' +
+          '          (SELECT COUNT(id) FROM roomsdate WHERE RoomType=rtRoomType AND Adate=crDate AND (NOT ResFlag IN (''X'',''C'',''B'',''Q'',''Z'',''N'')))), ' +
+          '          availability) AS availability, ' +
+          ' ' +
+          '       rtId, rtRoomType, rtDescription, ' +
+          '	   rtgId, rtgCode, rtgTopClass, rtgDescription, ' +
+          '       chId, chCode, chName, ' +
+          '       cmId, cmCode, cmDescription ' +
+          'FROM ' +
+          '( ' +
+          'SELECT cr.Id AS crId, cr.Date as crDate, cr.Price AS Rate, cr.stop, cr.minStay, ' +
+          '       (SELECT availability FROM channelratesavailabilities ' +
+          '        WHERE roomClassId=(SELECT id FROM roomtypegroups WHERE Code=rtg.TopClass LIMIT 1) ' +
+          '       AND date=cr.date AND planCodeId=cr.planCodeId AND channelManagerId=cm.Id) AS availability, ' +
+          '       rt.Id AS rtId, rt.RoomType AS rtRoomType, rt.Description AS rtDescription, ' +
+          '	   rtg.Id AS rtgId, rtg.Code AS rtgCode, rtg.TopClass AS rtgTopClass, rtg.Description AS rtgDescription, ' +
+          '       ch.id AS chId, ch.channelManagerId AS chCode, ch.name AS chName, ' +
+          '       cm.Id AS cmId, cm.Code AS cmCode, cm.Description AS cmDescription ' +
+          'FROM channelrates cr, ' +
+          '     roomtypegroups rtg, ' +
+          '     roomtypes rt, ' +
+          '	 channels ch, ' +
+          '     channelmanagers cm ' +
+          ' ' +
+          'WHERE cr.roomClassId = rtg.Id ' +
+          'AND ch.Id=cr.channelId ' +
+          'AND rt.Active ' +
+          'AND rtg.Active ' +
+          'AND ch.Active ' +
+          'AND cm.Active ' +
+          'AND cm.Id=cr.ChannelManager ' +
+          'AND rt.RoomTypeGroup=rtg.TopClass ' +
+  //        '-- AND FIND_IN_SET(rt.RoomType, rtg.PriorityRule) ' +
+          'AND (cr.date >= ''' + sDateFrom + ''' AND cr.date <= ''' + sDateTo + ''') ' +
+          ') q1 ' +
+          ' ' +
+          'UNION ' +
+          ' ' +
+          'SELECT * FROM ( ' +
+          'SELECT 0 AS crId, pdd.Date as crDate, ' +
+          '       IF(rt.NumberGuests=1, r.Rate1Person, ' +
+          '         IF(rt.NumberGuests=2, r.Rate2Persons, ' +
+          '           IF(rt.NumberGuests=3, r.Rate3Persons, ' +
+          '             IF(rt.NumberGuests=4, r.Rate4Persons, ' +
+          '               IF(rt.NumberGuests=5, r.Rate5Persons, ' +
+          '                 IF(rt.NumberGuests=6, r.Rate6Persons, ' +
+          '                      IF(r.Rate6Persons>0, r.Rate6Persons + ((rt.NumberGuests-6) * r.RateExtraPerson), ' +
+          '                      IF(r.Rate5Persons>0, r.Rate5Persons + ((rt.NumberGuests-5) * r.RateExtraPerson), ' +
+          '                      IF(r.Rate4Persons>0, r.Rate4Persons + ((rt.NumberGuests-4) * r.RateExtraPerson), ' +
+          '                      IF(r.Rate3Persons>0, r.Rate3Persons + ((rt.NumberGuests-3) * r.RateExtraPerson), ' +
+          '                      IF(r.Rate2Persons>0, r.Rate2Persons + ((rt.NumberGuests-2) * r.RateExtraPerson), ' +
+          '                      IF(r.Rate1Person>0, r.Rate1Person + ((rt.NumberGuests-1) * r.RateExtraPerson), ' +
+          '								rt.NumberGuests * r.RateExtraPerson)))))))))))) AS Rate, ' +
+          '          0 AS stop, 1 AS minStay, ' +
+          '       ((SELECT COUNT(id) FROM rooms WHERE active AND RoomType=rt.RoomType AND NOT Hidden) - ' +
+          '	    (SELECT COUNT(id) FROM roomsdate WHERE RoomType=rt.RoomType AND Adate=pdd.Date AND (NOT ResFlag IN (''X'',''C'',''B'',''Q'',''Z'',''N'')))) AS availability, ' +
+          '	   rt.Id AS rtId, rt.RoomType AS rtRoomType, rt.Description AS rtDescription, ' +
+          '	   0 AS rtgId, pcCode AS rtgCode, pcCode AS rtgTopClass, pc.pcDescription AS rtgDescription, ' +
+          '       0 AS chId,  (SELECT companyID FROM control LIMIT 1) AS chCode, (SELECT companyName FROM control LIMIT 1) AS chName, ' +
+          '       0 AS cmId, (SELECT companyID FROM control LIMIT 1) AS cmCode, (SELECT companyName FROM control LIMIT 1) AS cmDescription ' +
+          ' ' +
+          'FROM roomrates rr, ' +
+          '     rates r, ' +
+          '     roomtypes rt, ' +
+          '     tblpricecodes pc, ' +
+          '     predefineddates pdd ' +
+          'WHERE (pdd.Date>=''' + sDateFrom + ''' AND pdd.Date<=''' + sDateTo + ''') ' +
+          'AND pc.Active ' +
+          'AND r.Active ' +
+          'AND rr.Active ' +
+          'AND rt.Active ' +
+          'AND pc.Id=rr.PriceCodeId ' +
+          'AND rt.Id=rr.RoomTypeId ' +
+          'AND r.Id=rr.RateID ' +
+          'AND (rr.DateFrom<=pdd.Date AND pdd.Date<=rr.DateTo) ' +
+          ' ' +
+          'GROUP BY crDate, chCode, rtId ' +
+          ') q ' +
+          ' ' +
+          'ORDER BY crDate, chCode, rtgId, rtRoomType ';
 
 
-  if Assigned(RatesSet) then
-    FreeAndNil(RatesSet);
+    if Assigned(RatesSet) then
+      FreeAndNil(RatesSet);
 
-  RatesSet := CreateNewDataSet;
-  if rSet_bySQL(RatesSet, s) then
-  begin
-    CollectChannels;
-    if cbxChannels.ItemIndex >= 0 then
-      CollectRatesForSelectedChannel(cbxChannels.Items[cbxChannels.ItemIndex]);
-  end;
+    RatesSet := CreateNewDataSet;
+    if rSet_bySQL(RatesSet, s) then
+    begin
+      CollectChannels;
+      if cbxChannels.ItemIndex >= 0 then
+        CollectRatesForSelectedChannel(cbxChannels.Items[cbxChannels.ItemIndex]);
+    end;
   finally
     Screen.Cursor := crDefault;
-    Application.ProcessMessages;
   end;
 end;
 

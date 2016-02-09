@@ -5,10 +5,8 @@ unit acLFPainter;
 // WARNING! This unit is compatible with Devexpress version 2011
 // for older versions used the acLFPainter6.pas unit
 
-{..$DEFINE VER14_1_2} // cxGrid version 14.1.2 and newer
-{..$DEFINE VER13_2_2}
-{$UNDEF VER14_1_2} // cxGrid version 14.1.2 and newer
-{$UNDEF VER13_2_2}
+//{$DEFINE VER14_1_2} // cxGrid version 14.1.2 and newer
+//{$DEFINE VER13_2_2}
 {$DEFINE VER12_2_3}
 {$DEFINE VER12_1_6}
 {$DEFINE VER26}
@@ -335,7 +333,7 @@ type
     procedure DrawTrackBarTrack(ACanvas: TcxCanvas; const ARect, ASelection: TRect; AShowSelection, AEnabled, AHorizontal: Boolean; ATrackColor: TColor); override;
     procedure DrawTrackBarTrackBounds(ACanvas: TcxCanvas; const ARect: TRect); override;
 {$IFDEF VER14_1_2}
-    procedure DrawTrackBarThumbBorderUpDown(ACanvas: TcxCanvas; const ALightPolyLine, AShadowPolyLine, ADarkPolyLine: TPoints); override;
+    procedure DrawTrackBarThumbBorderUpDown(ACanvas: TcxCanvas; const ALightPolyLine, AShadowPolyLine, ADarkPolyLine: dxCore.TPoints); override;
 {$ELSE}
     procedure DrawTrackBarThumbBorderUpDown(ACanvas: TcxCanvas; const ALightPolyLine, AShadowPolyLine, ADarkPolyLine: TPointArray); override;
 {$ENDIF}
@@ -378,6 +376,7 @@ type
     class procedure DrawPanelSeparator(AStatusBar: TdxCustomStatusBar; ACanvas: TcxCanvas; const R: TRect); override;
     class procedure DrawTopBorder(AStatusBar: TdxCustomStatusBar; ACanvas: TcxCanvas; const R: TRect); override;
     class function GetPanelColor(AStatusBar: TdxCustomStatusBar; APanel: TdxStatusBarPanel): TColor; override;
+//    class procedure DrawSizeGrip(AStatusBar: TdxCustomStatusBar; ACanvas: TcxCanvas; R: TRect{$IFNDEF VER14_1_2}; AOverlapped: Boolean{$ENDIF}); override;
     class procedure DrawSizeGrip(AStatusBar: TdxCustomStatusBar; ACanvas: TcxCanvas; R: TRect{$IFDEF VER14_1_2}; AOverlapped: Boolean{$ENDIF}); override;
   end;
 {$endif}

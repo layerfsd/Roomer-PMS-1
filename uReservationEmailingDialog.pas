@@ -130,10 +130,10 @@ begin
   Strings := TStringlist.Create;
   att := TStringlist.Create;
   try
-    att.Text := format('Sent from %s by %s', [hData.ctrlGetString('CompanyName'), d.roomerMainDataSet.username]);
-    attName := GetTempFileName('.dat');
-    att.SaveToFile(attName);
-    files.Add(attName + '=sender.dat');
+//    att.Text := format('Sent from %s by %s', [hData.ctrlGetString('CompanyName'), d.roomerMainDataSet.username]);
+//    attName := GetTempFileName('.dat');
+//    att.SaveToFile(attName);
+//    files.Add(attName + '=sender.dat');
     try
     Strings.LoadFromFile(tempFilename, TEncoding.UTF8);
 
