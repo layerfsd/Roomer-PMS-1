@@ -12,7 +12,7 @@ interface
 
 uses
   Windows, Messages, IOUtils, System.Generics.Collections, IdComponent, SysUtils, Classes, Graphics, Controls, Forms, Dialogs, ExtCtrls, Grids, ComCtrls, Db,
-  ADODB, ActiveX, StdCtrls, Menus, Mask, ComObj, ShellApi, Inifiles, ImgList, Buttons, Vcl.AppEvnts, BaseGrid,
+  ADODB, ActiveX, StdCtrls, Menus, Mask, ComObj, ShellApi, Inifiles, ImgList, Buttons, Vcl.AppEvnts,
   uReservationHintHolder, uEmbOccupancyView, uEmbPeriodView, uGuestProfiles, uStaffCommunication
   , uAllotmentToRes
   , uRoomerContainerClasses
@@ -26,7 +26,7 @@ uses
     , NativeXML, kbmMemTable
 
   // TMS
-    , AdvGrid, AdvEdit, AdvEdBtn, PlannerDatePicker, AdvObj, asgprint
+    , AdvGrid, AdvEdit, AdvEdBtn, PlannerDatePicker, AdvObj, asgprint, BaseGrid
 
   // ReportBuilder
     , ppDB, ppDBPipe, ppParameter, ppDesignLayer, ppCtrls, ppBands, ppStrtch, ppMemo, ppClass, ppPrnabl, ppCache, ppComm, ppRelatv, ppProd, ppReport

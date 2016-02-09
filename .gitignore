@@ -4,7 +4,9 @@ _Resource/
 CodeSigning/
 conflicted/
 dck/
+_dcu/
 dcu/
+_bin/
 Languages/
 Log/
 Not Used/
@@ -42,3 +44,4 @@ Thumbs.db
 *.local 
 *.bak 
 *.gex
+*.identcache

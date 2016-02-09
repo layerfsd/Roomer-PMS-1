@@ -61,6 +61,7 @@ object frmHouseKeeping: TfrmHouseKeeping
       Caption = 'Select date'
       TabOrder = 0
       SkinData.SkinSection = 'GROUPBOX'
+      Checked = False
       object sLabel1: TsLabel
         Left = 4
         Top = 20
@@ -87,15 +88,7 @@ object frmHouseKeeping: TfrmHouseKeeping
         ParentFont = False
         TabOrder = 0
         Text = '  -  -    '
-        BoundLabel.Indent = 0
-        BoundLabel.Font.Charset = DEFAULT_CHARSET
-        BoundLabel.Font.Color = clWindowText
-        BoundLabel.Font.Height = -11
-        BoundLabel.Font.Name = 'Tahoma'
-        BoundLabel.Font.Style = []
-        BoundLabel.Layout = sclLeft
-        BoundLabel.MaxWidth = 0
-        BoundLabel.UseSkinColor = True
+        CheckOnExit = True
         SkinData.SkinSection = 'EDIT'
         GlyphMode.Blend = 0
         GlyphMode.Grayed = False
@@ -183,6 +176,16 @@ object frmHouseKeeping: TfrmHouseKeeping
         FilterDropDown.Font.Name = 'Tahoma'
         FilterDropDown.Font.Style = []
         FilterDropDownClear = '(All)'
+        FilterEdit.TypeNames.Strings = (
+          'Starts with'
+          'Ends with'
+          'Contains'
+          'Not contains'
+          'Equal'
+          'Not equal'
+          'Larger than'
+          'Smaller than'
+          'Clear')
         FixedRowHeight = 22
         FixedFont.Charset = DEFAULT_CHARSET
         FixedFont.Color = clWindowText
@@ -190,6 +193,10 @@ object frmHouseKeeping: TfrmHouseKeeping
         FixedFont.Name = 'Tahoma'
         FixedFont.Style = [fsBold]
         FloatFormat = '%.2f'
+        HoverButtons.Buttons = <>
+        HoverButtons.Position = hbLeftFromColumnLeft
+        HTMLSettings.ImageFolder = 'images'
+        HTMLSettings.ImageBaseName = 'img'
         PrintSettings.DateFormat = 'dd/mm/yyyy'
         PrintSettings.Font.Charset = DEFAULT_CHARSET
         PrintSettings.Font.Color = clWindowText
@@ -226,7 +233,8 @@ object frmHouseKeeping: TfrmHouseKeeping
         SearchFooter.HintFindPrev = 'Find previous occurence'
         SearchFooter.HintHighlight = 'Highlight occurences'
         SearchFooter.MatchCaseCaption = 'Match case'
-        Version = '6.2.7.0'
+        SortSettings.DefaultFormat = ssAutomatic
+        Version = '7.9.1.0'
         RowHeights = (
           22
           22
@@ -721,7 +729,7 @@ object frmHouseKeeping: TfrmHouseKeeping
     GridStartCol = 0
     DateFormat = 'dd.mm.yyyy'
     TimeFormat = 'hh:nn:ss'
-    Version = '3.4.1'
+    Version = '3.13'
     Left = 160
     Top = 217
   end

@@ -175,10 +175,14 @@ begin
   for I := 0 to list.Count - 1 do
   begin
     sValues := SplitStringToTStrings('|', list[I]);
-    if StrToInt(sValues[0]) < value then
-    begin
-      result := true;
-      break;
+    try
+      if StrToInt(sValues[0]) < value then
+      begin
+        result := true;
+        break;
+      end;
+    finally
+      sValues.Free;
     end;
   end;
 end;
@@ -190,7 +194,7 @@ end;
 
 procedure TfrmCommunicationTest.AddToTop(value : integer; text : String; whichList : integer);
 var I: Integer;
-    sValues : TStrings;
+    sValues : TStringList;
     list : TStringlist;
 begin
   if whichList = 0 then
@@ -199,33 +203,28 @@ begin
     list := TopListBiggerTable;
   if ShouldAddToTop(value, list) then
   begin
-    list.Add(AddLeadingZeroes(value, 7) + '|' + text);
+    list.Add(AddLeadingZeroes(value, 7) + '|' + text + ' ms');
     list.Sort;
     if list.Count > 10 then
       list.Delete(0);
     mmoTop.Lines.BeginUpdate;
+    sValues := TStringlist.Create;
     try
       mmoTop.Lines.Clear;
+
       for I := 0 to TopListTinyTable.Count - 1 do
       begin
-        sValues := SplitStringToTStrings('|', TopListTinyTable[I]);
-        try
-          mmoTop.Lines.Insert(0, sValues[1] + ' ' + inttostr(strtoint(sValues[0])));
-        finally
-          sValues.Free;
-        end;
+        SplitStringToTStrings('|', TopListTinyTable[I], sValues);
+        mmoTop.Lines.Insert(0, sValues[1] + ' ' + inttostr(strtoint(sValues[0])));
       end;
       for I := 0 to TopListBiggerTable.Count - 1 do
       begin
-        sValues := SplitStringToTStrings('|', TopListBiggerTable[I]);
-        try
-          mmoTop.Lines.Insert(0, sValues[1] + ' ' + inttostr(strtoint(sValues[0])));
-        finally
-          sValues.Free;
-        end;
+        SplitStringToTStrings('|', TopListBiggerTable[I], sValues);
+        mmoTop.Lines.Insert(0, sValues[1] + ' ' + inttostr(strtoint(sValues[0])));
       end;
     finally
       mmoTop.Lines.EndUpdate;
+      sValues.Free;
     end;
     mmoTop.Update;
   end;

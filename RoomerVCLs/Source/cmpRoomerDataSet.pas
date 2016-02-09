@@ -55,6 +55,8 @@ const
 type
 
   TRoomerDataSet = class;
+  TRoomerDatasetList = TObjectList<TRoomerDataset>;
+
   SET_OF_TRoomerDataSet = Array OF TObject;
   SET_OF_String = Array OF String;
 
@@ -76,6 +78,8 @@ type
     constructor Create(_planType: Integer; _sql: String);
   end;
 
+  TRoomerPlanEntityList = TObjectlist<TRoomerPlanEntity>;
+
   TRoomerHotelsEntity = class
   public
     hotelCode: String;
@@ -87,8 +91,8 @@ type
   TRoomerExecutionPlan = class
   private
     FRoomerDataSet: TRoomerDataSet;
-    queryResults: TList<TRoomerDataSet>;
-    sqlList: TList<TRoomerPlanEntity>;
+    queryResults: TRoomerDatasetList;
+    sqlList: TRoomerPlanEntityList;
     FExecException: String;
     function getSqlsAsTList(PlanType: Integer): TList<String>;
 
@@ -387,7 +391,6 @@ type
 
   end;
 
-  TRoomerDatasetList = TObjectList<TRoomerDataset>;
 
 procedure Register;
 
@@ -922,7 +925,6 @@ var
   stream: TStringStream;
   _roomerClient: TALWininetHttpClient;
 
-var retries : Integer;
 begin
   _roomerClient := CreateRoomerClient;
   try
@@ -958,7 +960,6 @@ function TRoomerDataSet.PostStreamAsString(roomerClient:
 var
   _roomerClient: {$IFDEF USE_INDY}TIdHTTP{$ELSE}TALWininetHttpClient{$ENDIF};
 
-var retries : Integer;
 begin
   _roomerClient := CreateRoomerClient;
   try
@@ -2303,15 +2304,19 @@ var list : TStrings;
     ds : TRoomerDataSet;
 begin
   list := SplitStringToTStrings(ROOMER_SPLIT, res);
-  result := TList<TRoomerDataSet>.Create;
-  for I := 0 to list.Count - 1 do
-  begin
-    if list[i] <> '' then
+  try
+    result := TList<TRoomerDataSet>.Create;
+    for I := 0 to list.Count - 1 do
     begin
-      ds := CreateNewDataset;
-      ds.OpenDataset(list[I]);
-      result.add(ds);
+      if list[i] <> '' then
+      begin
+        ds := CreateNewDataset;
+        ds.OpenDataset(list[I]);
+        result.add(ds);
+      end;
     end;
+  finally
+    list.Free;
   end;
 end;
 
@@ -2390,10 +2395,8 @@ end;
 
 procedure TRoomerExecutionPlan.Clear;
 begin
-  self.sqlList.Free;
-  self.queryResults.Free;
-  queryResults := TList<TRoomerDataSet>.Create;
-  sqlList := TList<TRoomerPlanEntity>.Create;
+  sqlList.Clear;
+  queryResults.Clear;
 end;
 
 procedure TRoomerExecutionPlan.CommitTransaction;
@@ -2404,29 +2407,15 @@ end;
 constructor TRoomerExecutionPlan.Create(_RoomerDataSet: TRoomerDataSet = nil);
 begin
   inherited Create;
-  queryResults := TList<TRoomerDataSet>.Create;
-  sqlList := TList<TRoomerPlanEntity>.Create;
+  queryResults := TRoomerDatasetList.Create(True);
+  sqlList := TRoomerPlanEntityList.Create(True);
   FRoomerDataSet := _RoomerDataSet;
 end;
 
 destructor TRoomerExecutionPlan.Destroy;
 begin
-  while queryResults.Count > 0 do
-  begin
-    if assigned(queryResults[0]) then
-      TRoomerDataSet(queryResults[0]).Free;
-    queryResults.Delete(0);
-  end;
   queryResults.Free;
-
-  while sqlList.Count > 0 do
-  begin
-    if assigned(sqlList[0]) then
-      TRoomerPlanEntity(sqlList[0]).Free;
-    sqlList.Delete(0);
-  end;
   sqlList.Free;
-
   inherited;
 end;
 
@@ -2436,6 +2425,7 @@ function TRoomerExecutionPlan.Execute(PlanType: Integer = ptAll;
 var
   i: Integer;
   res: String;
+  lSQLList: TList<string>;
 begin
   if transaction then
     FRoomerDataSet.SystemStartTransaction;
@@ -2445,12 +2435,24 @@ begin
       for i := 0 to QueryCount - 1 do
         queryResults.Add(FRoomerDataSet.CreateNewDataset);
 
-      res := RoomerDataSet.SystemFreeMultipleQuery(queryResults, getSqlsAsTList(PlanType));
+      lSQLList := getSqlsAsTList(PlanType);
+      try
+        res := RoomerDataSet.SystemFreeMultipleQuery(queryResults, lSQLList);
+      finally
+        lSQLList.Free;
+      end;
+
     end
     else if PlanType = ptExec then
     begin
-      res := RoomerDataSet.SystemFreeExecuteMultiple(getSqlsAsTList(PlanType));
+      lSQLList := getSqlsAsTList(PlanType);
+      try
+        res := RoomerDataSet.SystemFreeExecuteMultiple(lSQLList);
+      finally
+        lSQLList.Free;
+      end;
     end;
+
     if transaction then
       FRoomerDataSet.SystemCommitTransaction;
     result := true;
@@ -2500,10 +2502,10 @@ function TRoomerExecutionPlan.getSqlsAsTList(PlanType: Integer): TList<String>;
 var
   i: Integer;
 begin
-  result := TList<String>.Create;
+  Result := TList<String>.Create;
   for i := 0 to sqlList.Count - 1 do
     if sqlList[i].PlanType = PlanType then
-      result.Add(sqlList[i].Sql);
+      Result.Add(sqlList[i].Sql);
 end;
 
 procedure TRoomerExecutionPlan.RollbackTransaction;

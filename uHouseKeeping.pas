@@ -105,7 +105,8 @@ uses
 
   , dxSkinCaramel
   , dxSkinCoffee
-  , dxSkinTheAsphaltWorld, dxSkinBlack, dxSkinBlue, dxSkinFoggy, dxSkinLiquidSky, dxSkinWhiteprint
+  , dxSkinTheAsphaltWorld, dxSkinBlack, dxSkinBlue, dxSkinFoggy, dxSkinLiquidSky, dxSkinWhiteprint,
+  AdvUtil
 
   ;
 

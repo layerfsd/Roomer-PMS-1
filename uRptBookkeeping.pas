@@ -53,7 +53,8 @@ uses
   dxSkinLondonLiquidSky, dxSkinMoneyTwins, dxSkinOffice2007Black, dxSkinOffice2007Blue, dxSkinOffice2007Green, dxSkinOffice2007Pink,
   dxSkinOffice2007Silver, dxSkinOffice2010Black, dxSkinOffice2010Blue, dxSkinOffice2010Silver, dxSkinPumpkin, dxSkinSeven,
   dxSkinSevenClassic, dxSkinSharp, dxSkinSharpPlus, dxSkinSilver, dxSkinSpringTime, dxSkinStardust, dxSkinSummer2008, dxSkinValentine,
-  dxSkinVS2010, dxSkinWhiteprint, dxSkinXmas2008Blue, sLabel, dxmdaset, Vcl.Grids, AdvObj, BaseGrid, AdvGrid
+  dxSkinVS2010, dxSkinWhiteprint, dxSkinXmas2008Blue, sLabel, dxmdaset, Vcl.Grids, AdvObj, BaseGrid, AdvGrid,
+  AdvUtil
 
   ;
 

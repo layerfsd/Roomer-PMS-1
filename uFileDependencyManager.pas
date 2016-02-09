@@ -2,11 +2,6 @@ unit uFileDependencyManager;
 
 interface
 
-{$IFDEF DEBUG}
-  {$DEFINE ROOMERSTORE}
-{$ENDIF}
-
-
 uses Generics.Collections,
     SysUtils,
     IOUtils,

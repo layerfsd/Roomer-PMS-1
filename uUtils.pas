@@ -222,15 +222,8 @@ begin
 end;
 
 procedure LoadKbmMemtableFromDataSetQuiet(kbmTable : TkbmCustomMemTable; Source:TDataSet; CopyOptions:TkbmMemTableCopyTableOptions);
-var oldDecimalSeparator : char;
 begin
-//  oldDecimalSeparator := FormatSettings.DecimalSeparator;
-//  try
-//    FormatSettings.DecimalSeparator := '.';
-    kbmTable.LoadFromDataSet(Source, CopyOptions);
-//  finally
-//    FormatSettings.DecimalSeparator := oldDecimalSeparator;
-//  end;
+  kbmTable.LoadFromDataSet(Source, CopyOptions);
 end;
 
 procedure CloseWindowToRight(handle : THandle);
@@ -330,14 +323,18 @@ var s : String;
 begin
   s := ReplaceString(fullname, '  ', ' ');
   strings := SplitStringToTStrings(' ', s);
-  firstName := Fullname;
-  lastName := '';
-  if strings.Count > 1 then
-  begin
-    lastName := strings[strings.count - 1];
-    firstName := '';
-    for i := 0 to strings.count - 2 do
-      firstName := firstName + ' ' + strings[i];
+  try
+    firstName := Fullname;
+    lastName := '';
+    if strings.Count > 1 then
+    begin
+      lastName := strings[strings.count - 1];
+      firstName := '';
+      for i := 0 to strings.count - 2 do
+        firstName := firstName + ' ' + strings[i];
+    end;
+  finally
+    strings.Free;
   end;
 end;
 
@@ -606,7 +603,7 @@ begin
 end;
 
 function GetValidDecimalChar : Char;
-var s, value : String;
+var value : String;
 begin
   result := '.';
   value := '0.01';
@@ -780,7 +777,6 @@ end;
 function ReadStringValueFromAnyRegistry(location, key, defaultValue : String) : String;
 var
   RegistryEntry: TRegistry;
-  RegistryString: string;
   RegistryKey : String;
 begin
   RegistryKey := location;
@@ -811,7 +807,6 @@ end;
 procedure DeleteRegistryLocation(location : String);
 var
   RegistryEntry: TRegistry;
-  RegistryString: string;
   RegistryKey : String;
 begin
   RegistryKey := location;
@@ -831,7 +826,6 @@ end;
 procedure WriteStringValueToAnyRegistry(location, key, value : String);
 var
   RegistryEntry: TRegistry;
-  RegistryString: string;
   RegistryKey : String;
 begin
   RegistryKey := location;
@@ -855,7 +849,6 @@ Const
   C_KEY='Software\Roomer\SavedValues\user_%s';
 var
   RegistryEntry: TRegistry;
-  RegistryString: string;
   RegistryKey : String;
 begin
   RegistryKey := format(C_KEY, [user]);
@@ -879,32 +872,6 @@ begin
       RegistryEntry.CloseKey();
     end;
 
-//    if RegistryEntry.OpenKey(RegistryKey, false) then
-//    begin
-//      if RegistryEntry.ValueExists(key) then
-//        result := RegistryEntry.ReadString(key)
-//      else
-//      begin
-//        RegistryEntry.WriteString(key, defaultValue);
-//        result := defaultValue;
-//      end;
-//    end;
-
-//    if (not RegistryEntry.KeyExists(RegistryKey)) then
-//    begin
-//      RegistryEntry.Access := KEY_WRITE or KEY_WOW64_64KEY;
-//      if RegistryEntry.OpenKey(RegistryKey, true) then
-//        RegistryEntry.WriteString(key, defaultValue);
-//      result := defaultValue;
-//    end
-//    else
-//    begin
-//      RegistryEntry.Access := KEY_READ or KEY_WOW64_64KEY;
-//      if RegistryEntry.OpenKey(RegistryKey, false) then
-//      begin
-//        result := RegistryEntry.ReadString(key);
-//      end;
-//    end;
   finally
     RegistryEntry.Free;
   end;
@@ -915,7 +882,6 @@ Const
   C_KEY='Software\Roomer\SavedValues\user_%s';
 var
   RegistryEntry: TRegistry;
-  RegistryString: string;
   RegistryKey : String;
 begin
   RegistryKey := format(C_KEY, [user]);
@@ -1099,61 +1065,63 @@ function ResizeImageToNewTempFile(filename : String; maxWidth, maxHeight : Integ
 var Bmp : TBitmap;
     iWidth, iHeight : Integer;
     imgType : TImageFileType;
-    oPNGDest: TPNGObject;
+    oPNGDest: TPNGImage;
     oJPGDest : TJPegImage;
     oGIFDest : TGifImage;
 begin
   Bmp := TBitmap.Create;
-  imgType := DetectImage(filename, Bmp);
+  try
+    imgType := DetectImage(filename, Bmp);
 
-  if maxHeight = -1 then
-  begin
-    iHeight := Round(Bmp.Height * (maxWidth / Bmp.Width));
-    iWidth := maxWidth;
-  end
-  else
-  if maxWidth = -1 then
-  begin
-    iWidth := Round(Bmp.Width * (maxHeight / Bmp.Height));
-    iHeight := maxHeight;
+    if maxHeight = -1 then
+      iHeight := Round(Bmp.Height * (maxWidth / Bmp.Width))
+    else
+      iHeight := maxHeight;
+
+    if maxWidth = -1 then
+      iWidth := Round(Bmp.Width * (maxHeight / Bmp.Height))
+    else
+      iWidth := maxWidth;
+
+    ResizeBitmap(Bmp, iWidth, iHeight, BackColor);
+    result := ChangeFileExt(TPath.GetTempFileName, ExtractFileExt(filename));
+
+    case imgType of
+      IFT_BMP: begin
+                   Bmp.SaveToFile(result);
+      end;
+      IFT_PNG: begin
+                 oPNGDest := TPNGImage.Create;
+                 try
+                   oPNGDest.Assign(Bmp);
+                   oPNGDest.SaveToFile(result);
+                 finally
+                   oPNGDest.Free;
+                 end;
+      end;
+      IFT_JPG: begin
+                 oJPGDest := TJPegImage.Create;
+                 try
+                   oJPGDest.Assign(Bmp);
+                   oJPGDest.SaveToFile(result);
+                 finally
+                   oJPGDest.Free;
+                 end;
+      end;
+      IFT_GIF: begin
+                 oGIFDest := TGifImage.Create;
+                 try
+                   oGIFDest.Assign(Bmp);
+                   oGIFDest.SaveToFile(result);
+                 finally
+                   oGIFDest.Free;
+                 end;
+      end;
+    end;
+  finally
+    Bmp.Free;
   end;
-  
-  ResizeBitmap(Bmp, iWidth, iHeight, BackColor);
-  result := ChangeFileExt(TPath.GetTempFileName, ExtractFileExt(filename));
-  
-  case imgType of
-    IFT_BMP: begin
-                 Bmp.SaveToFile(result); 
-    end;
-    IFT_PNG: begin
-               oPNGDest := TPNGObject.Create;
-               try
-                 oPNGDest.Assign(Bmp);
-                 oPNGDest.SaveToFile(result); 
-               finally
-                 oPNGDest.Free;
-               end;
-    end;
-    IFT_JPG: begin
-               oJPGDest := TJPegImage.Create;
-               try
-                 oJPGDest.Assign(Bmp);
-                 oJPGDest.SaveToFile(result); 
-               finally
-                 oJPGDest.Free;
-               end;
-    end;
-    IFT_GIF: begin
-               oGIFDest := TGifImage.Create;
-               try
-                 oGIFDest.Assign(Bmp);
-                 oGIFDest.SaveToFile(result); 
-               finally
-                 oGIFDest.Free;
-               end;
-    end;
-  end;
-  
+
 end;
 
 function LoadImageToBitmap(Filename : String) : TBitmap;
@@ -1179,6 +1147,7 @@ var
   Graphic: TGraphic;
 begin
   Graphic := nil;
+  Result := IFT_BMP;
   FS := TFileStream.Create(InputFileName, fmOpenRead);
   try
     SetLength(FirstBytes, 8);
@@ -1217,45 +1186,20 @@ begin
     FS.Free;
   end;
 end;
+
 procedure ResizeBitmap(Bitmap: TBitmap; Width, Height: Integer; Background: TColor);
 var
-  R: TRect;
   B: TBitmap;
-  X, Y: Integer;
 begin
-  if assigned(Bitmap) then 
-  begin   
+  if assigned(Bitmap) then
+  begin
     B:= TBitmap.Create;
-    ScaleImage(Bitmap, B, Width / Bitmap.Width);
-    Bitmap.Assign(B);
-//    try
-//      if Bitmap.Width > Bitmap.Height then begin
-//        R.Right:= Width;
-//        R.Bottom:= ((Width * Bitmap.Height) div Bitmap.Width);    
-//        X:= 0;
-//        Y:= (Height div 2) - (R.Bottom div 2);
-//      end else begin
-//        R.Right:= ((Height * Bitmap.Width) div Bitmap.Height);
-//        R.Bottom:= Height;
-//        X:= (Width div 2) - (R.Right div 2);
-//        Y:= 0;
-//      end;           
-//      R.Left:= 0;
-//      R.Top:= 0;
-//      B.PixelFormat:= Bitmap.PixelFormat;
-//      B.Width:= Width;
-//      B.Height:= Height;
-//      B.Canvas.Brush.Color:= Background;
-//      B.Canvas.FillRect(B.Canvas.ClipRect);
-//      B.Canvas.StretchDraw(R, Bitmap);
-//      Bitmap.Width:= Width;
-//      Bitmap.Height:= Height;
-//      Bitmap.Canvas.Brush.Color:= Background;
-//      Bitmap.Canvas.FillRect(Bitmap.Canvas.ClipRect);
-//      Bitmap.Canvas.Draw(X, Y, B);
-//    finally
-//      B.Free;
-//    end;
+    try
+      ScaleImage(Bitmap, B, Width / Bitmap.Width);
+      Bitmap.Assign(B);
+    finally
+      B.Free;
+    end;
   end;
 end;
 
@@ -1394,11 +1338,10 @@ var
   FileHandle : THandle;
   FileSetDateResult : Integer;
 begin
+  Result := False;
+  FileHandle := FileOpen(FileName, fmOpenWrite OR fmShareDenyNone) ;
   try
     try
-      FileHandle := FileOpen
-         (FileName,
-          fmOpenWrite OR fmShareDenyNone) ;
       if FileHandle > 0 Then
       begin
        FileSetDateResult :=
@@ -1416,11 +1359,10 @@ begin
 end;
 
 function GetFileTimeStamp(filename : String) : TDateTime;
-var stl : TStringList;
 begin
   result := 0;
   if FileExists(filename) then
-    result := FileDateToDateTime(FileAge(filename));
+    FileAge(filename, Result);
 end;
 
 function GetCursorPosForControl(AControl: TWinControl): TPoint;
