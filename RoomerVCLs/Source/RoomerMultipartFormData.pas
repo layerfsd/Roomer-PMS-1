@@ -123,7 +123,6 @@ implementation
 function TRoomerMultiPartFormData.AddRoomerFile(const RoomerFilename, AFieldName, AFileName: String;
   const AContentType: string = ''): TIdFormDataField;
 var
-  LStream: TIdReadFileExclusiveStream;
   LItem: TIdFormDataField;
 begin
   Litem := AddFile(AFieldName, AFileName, AContentType);

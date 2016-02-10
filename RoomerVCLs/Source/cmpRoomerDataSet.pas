@@ -192,9 +192,9 @@ type
     function UploadFile(roomerClient:
       {$IFDEF USE_INDY}TIdHTTP{$ELSE}TALWininetHttpClient{$ENDIF}
       ; url, filename: String): Boolean;
-    function GetAsJSON(roomerClient:
-      {$IFDEF USE_INDY}TIdHTTP{$ELSE}TALWininetHttpClient{$ENDIF}
-      ; url: String): String;
+//    function GetAsJSON(roomerClient:
+//      {$IFDEF USE_INDY}TIdHTTP{$ELSE}TALWininetHttpClient{$ENDIF}
+//      ; url: String): String;
     function PostAsJSON(roomerClient:
       {$IFDEF USE_INDY}TIdHTTP{$ELSE}TALWininetHttpClient{$ENDIF}
       ; url, Data: String): String;
@@ -222,7 +222,7 @@ type
       ; url: String; Data: TStream; contentType: String = ''): String;
     procedure SetOpenApiAuthHeaders(hdrs:
       {$IFDEF USE_INDY}TIdHeaderList{$ELSE}TAlHttpRequestHeader{$ENDIF});
-    function GetOpenAPIResourcePath(Endpoint, URI: String): String;
+//    function GetOpenAPIResourcePath(Endpoint, URI: String): String;
     procedure SetOfflineMode(const Value: Boolean);
     procedure AssertOnlineMode(param : TRoomerOfflineAssertonParameter = roapGet; sql : String = '');
     function GetFilenameFromParameter(param : TRoomerOfflineAssertonParameter) : String;
@@ -741,6 +741,7 @@ begin
   SetOpenApiAuthHeaders(roomerClient.RequestHeader);
 end;
 
+(*
 function TRoomerDataSet.GetAsJSON(roomerClient:
   {$IFDEF USE_INDY}TIdHTTP{$ELSE}TALWininetHttpClient{$ENDIF}
   ; url: String): String;
@@ -770,6 +771,7 @@ begin
   end;
 end;
 
+*)
 function TRoomerDataSet.PostAsJSON(roomerClient:
   {$IFDEF USE_INDY}TIdHTTP{$ELSE}TALWininetHttpClient{$ENDIF}
   ; url, Data: String): String;
@@ -888,7 +890,6 @@ var
   stream: TStringStream;
   _roomerClient: {$IFDEF USE_INDY}TIdHTTP{$ELSE}TALWininetHttpClient{$ENDIF};
 
-var retries : Integer;
 begin
   _roomerClient := CreateRoomerClient;
   try
@@ -993,7 +994,6 @@ var
   stream: TStringStream;
   _roomerClient: {$IFDEF USE_INDY}TIdHTTP{$ELSE}TALWininetHttpClient{$ENDIF};
 
-var retries : Integer;
 begin
   _roomerClient := CreateRoomerClient;
   try
@@ -1030,7 +1030,6 @@ function TRoomerDataSet.DeleteAsString(roomerClient:
   ; url: String): String;
 
 var
-  stream: TStringStream;
   _roomerClient: {$IFDEF USE_INDY}TIdHTTP{$ELSE}TALWininetHttpClient{$ENDIF};
 
 var retries : Integer;
@@ -1060,39 +1059,45 @@ function TRoomerDataSet.DownloadFile(roomerClient:
   ; url, filename: String): Boolean;
 var
   stream: TFileStream;
-{$IFNDEF USE_INDY}aResponseContentHeader: TALHTTPResponseHeader; {$ENDIF}
-var retries : Integer;
+  retries : Integer;
+{$IFNDEF USE_INDY}
+  aResponseContentHeader: TALHTTPResponseHeader;
+{$ENDIF}
+
 begin
-{$IFNDEF USE_INDY}aResponseContentHeader := TALHTTPResponseHeader.Create;
+  {$IFNDEF USE_INDY}
+  aResponseContentHeader := TALHTTPResponseHeader.Create;
   {$ENDIF}
+
+  result := false;
   stream := TFileStream.Create(filename, fmCreate);
   try
     try
       AddAuthenticationHeaders(roomerClient);
-{$IFDEF USE_INDY}
-      roomerClient.handleRedirects := true; // Handle redirects
-      roomerClient.Get(url, stream);
-{$ELSE}
-      for retries := 1 to 3 do
-      begin
-        try
-          roomerClient.Get(AnsiString(url), stream, aResponseContentHeader);
-        Break;
-        except
-          if retries = 3 then
-            raise;
+      {$IFDEF USE_INDY}
+        roomerClient.handleRedirects := true; // Handle redirects
+        roomerClient.Get(url, stream);
+      {$ELSE}
+        for retries := 1 to 3 do
+        begin
+          try
+            roomerClient.Get(AnsiString(url), stream, aResponseContentHeader);
+            Break;
+          except
+            if retries = 3 then
+              raise;
+          end;
         end;
-      end;
-{$ENDIF}
+      {$ENDIF}
       result := true;
     except
       result := false;
     end;
   finally
     stream.Free;
-{$IFNDEF USE_INDY}
-    aResponseContentHeader.Free;
-{$ENDIF}
+    {$IFNDEF USE_INDY}
+      aResponseContentHeader.Free;
+    {$ENDIF}
   end;
 end;
 
@@ -1104,6 +1109,7 @@ var
   contentType: String;
 var retries : Integer;
 begin
+  Result := false;
   stream := TMemoryStream.Create;
   try
     try
@@ -1235,7 +1241,6 @@ function TRoomerDataSet.downloadUrlAsStringUsingPost(url: String; Data: String;
   loggingInOut: Integer = 0 { 0/1/2 = neither/login/logout }
   ; contentType: String = ''): String;
 var
-  stream: TStringStream;
   doRetry: Boolean;
 begin
   doRetry := true;
@@ -1301,7 +1306,6 @@ function TRoomerDataSet.downloadUrlAsStringUsingPostAsync(url: String; Data: Str
   loggingInOut: Integer = 0 { 0/1/2 = neither/login/logout }
   ; contentType: String = ''): String;
 var
-  stream: TStringStream;
   doRetry: Boolean;
 begin
   doRetry := true;
@@ -1361,7 +1365,6 @@ function TRoomerDataSet.downloadUrlAsStringUsingPut(url: String; Data: String;
   ; retryOnError : Boolean = true
   ): String;
 var
-  stream: TStringStream;
   doRetry: Boolean;
 begin
   doRetry := true;
@@ -1425,8 +1428,6 @@ end;
 
 function TRoomerDataSet.loginViaPost(url: String; Data: String;
   SetLastAccess: Boolean = true): String;
-var
-  stream: TStringStream;
 begin
   try
     result := PostAsString(activeRoomerDataSet.roomerClient, url, Data);
@@ -1532,6 +1533,7 @@ begin
   result := FileExists(filePath);
 end;
 
+(*
 function TRoomerDataSet.GetOpenAPIResourcePath(Endpoint, URI: String): String;
 begin
   // https://dev1.roomerdev.net/openAPI/REST/sdsdsd/sdsdsd/sdsdsd.png
@@ -1539,10 +1541,10 @@ begin
   // 1        11        21        31        41        51        61
   result := copy(URI, length(Endpoint) + 1, maxInt);
 end;
+*)
 
 function TRoomerDataSet.DeleteFileResourceOpenAPI(URI: String): String;
 var
-  SentUri: String;
   _roomerClient: {$IFDEF USE_INDY}TIdHTTP{$ELSE}TALWininetHttpClient{$ENDIF};
 begin
   _roomerClient := CreateRoomerClient;
@@ -1559,7 +1561,6 @@ end;
 function TRoomerDataSet.DownloadFileResourceOpenAPI(URI,
   destFilename: String): Boolean;
 var
-  SentUri: String;
   stream: TFileStream;
 var
   _roomerClient: {$IFDEF USE_INDY}TIdHTTP{$ELSE}TALWininetHttpClient{$ENDIF};
@@ -2034,7 +2035,6 @@ end;
 
 function TRoomerDataSet.HeadOfURI(URI: String): TALHTTPResponseHeader;
 var
-  SentUri: String;
   _roomerClient: {$IFDEF USE_INDY}TIdHTTP{$ELSE}TALWininetHttpClient{$ENDIF};
   ResponseContentStream: TMemoryStream;
   ResponseContentHeader: TALHTTPResponseHeader;

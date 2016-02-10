@@ -181,7 +181,6 @@ type
     procedure TranslateThis(comp: TChart; key: String); overload;
     procedure TranslateThis(comp: TcxGridDBBandedTableView; key: String); overload;
 
-    procedure SaveLanguageLocally;
     procedure LoadFromStream(stream: TStream);
     procedure SaveToStream(stream: TStream);
     function GetLanguageFilename: String;
@@ -575,10 +574,6 @@ begin
 
 end;
 
-procedure TRoomerLanguage.SaveLanguageLocally;
-begin
-
-end;
 
 procedure TRoomerLanguage.LoadFromZip(const AFileName: string);
 var

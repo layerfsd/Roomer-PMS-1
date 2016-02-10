@@ -17,7 +17,7 @@ type
     FActive : Boolean;
     FStoredItems: TList<TRoomerFilterItem>;
     procedure FilterItems;
-    procedure StoredItemsChange(Sender: TObject);
+//    procedure StoredItemsChange(Sender: TObject);
     procedure SetStoredItems(const value : TList<TRoomerFilterItem>);
   protected
   public
@@ -82,7 +82,6 @@ var
   Selection: TSelection;
   sTemp,
   xText: string;
-  iPos : Integer;
 begin
   // store the current combo edit selection
   SendMessage(Handle, CB_GETEDITSEL, WPARAM(@Selection.StartPos), LPARAM(@Selection.EndPos));
@@ -143,11 +142,11 @@ begin
   FActive := False;
 end;
 
-procedure TRoomerFilterComboBox.StoredItemsChange(Sender: TObject);
-begin
-  if FActive AND Assigned(FStoredItems) then
-    FilterItems;
-end;
+//procedure TRoomerFilterComboBox.StoredItemsChange(Sender: TObject);
+//begin
+//  if FActive AND Assigned(FStoredItems) then
+//    FilterItems;
+//end;
 
 procedure TRoomerFilterComboBox.SetStoredItems(const Value: TList<TRoomerFilterItem>);
 var i : Integer;

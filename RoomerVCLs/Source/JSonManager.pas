@@ -209,15 +209,16 @@ var
   c: TRttiContext;
   t: TRttiInstanceType;
   ts : TTimeStamp;
-  r: TValue;
   parameters: TArray<TRttiParameter>;
   aUnixTime : Cardinal;
   code : Integer;
   method : TRttiMethod;
+  r: TValue;
 begin
   try
     c := TRttiContext.create;
     t := (c.GetType(aObj.ClassType) as TRttiInstanceType);
+    r := TValue.Empty;
 
     method := t.GetMethod(MethodName);
     if method = nil then exit;

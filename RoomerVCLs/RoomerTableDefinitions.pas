@@ -39,7 +39,7 @@ type
     constructor Create(_ID, _Room, _Description, _RoomType, _Equipments, _Location : String; _Status : Char;
                        _Active, _WildCard, _Bookable, _Statistics, _Hidden, _UseInNationalReports : Boolean;
                        _Floor, _OrderIndex, _SquareMeters : Integer);
-    destructor Destroy;
+    destructor Destroy; override;
 
     property ID : String read FID write FID;
     property Room : String read FRoom write FRoom;
