@@ -1330,6 +1330,8 @@ begin
             if Message.WParamHi in [AC_REFRESH, AC_REMOVESKIN] then begin
               FButton.FUpButton.Invalidate;
               FButton.FDownButton.Invalidate;
+              if Message.WParamHi = AC_REMOVESKIN then
+                FButton.RecreateWnd;
             end
             else begin
               FButton.FUpButton.Enabled := True;

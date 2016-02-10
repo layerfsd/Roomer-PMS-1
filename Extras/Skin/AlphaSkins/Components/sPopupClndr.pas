@@ -39,7 +39,7 @@ type
     procedure CloseUp;
     procedure CreateWnd; override;
     procedure CreateParams(var Params: TCreateParams); override;
-    procedure WndProc (var Message: TMessage); override;
+    procedure WndProc(var Message: TMessage); override;
     property FCalendar: TsMonthCalendar read sMonthCalendar1 write sMonthCalendar1;
     property OnCloseUp: TNotifyEvent read FCloseUp write FCloseUp;
   end;
@@ -253,12 +253,13 @@ end;
 
 function TsPopupCalendar.IsValidDate(Date: TDateTime): boolean;
 begin
-  Result := True;
   if (TsCustomDateEdit(FEditor).MinDate <> 0) and (Date < TsCustomDateEdit(FEditor).MinDate) then
-    Result := False;
-
-  if (TsCustomDateEdit(FEditor).MaxDate <> 0) and (Date > TsCustomDateEdit(FEditor).MaxDate) then
-    Result := False;
+    Result := False
+  else
+    if (TsCustomDateEdit(FEditor).MaxDate <> 0) and (Date > TsCustomDateEdit(FEditor).MaxDate) then
+      Result := False
+    else
+      Result := True;
 end;
 
 

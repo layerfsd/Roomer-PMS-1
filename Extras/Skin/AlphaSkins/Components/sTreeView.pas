@@ -27,6 +27,9 @@ type
     FOldDrawItem: TTVAdvancedCustomDrawItemEvent;
   protected
     procedure WndProc(var Message: TMessage); override;
+{$IFDEF DELPHI7UP}
+    function IsCustomDrawn(Target: TCustomDrawTarget; Stage: TCustomDrawStage): Boolean; override;
+{$ENDIF}    
     procedure Loaded; override;
     procedure InitEvents; virtual;
     procedure SkinCustomDrawItem(Sender: TCustomTreeView; Node: TTreeNode; State: TCustomDrawState; Stage: TCustomDrawStage; var PaintImages, DefaultDraw: Boolean);
@@ -58,6 +61,7 @@ type
     procedure WMEraseBkGnd(var Message: TWMPaint);
     procedure WMNCPaint(var Message: TMessage);
   protected
+    procedure UpdateColors;
     procedure InitEvents; override;
     procedure DrawItem(aDC: hdc; Node: TTreeNode; State: TCustomDrawState);
     procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
@@ -101,7 +105,9 @@ end;
 procedure TsTreeView.AfterConstruction;
 begin
   inherited;
-  SkinData.Loaded;
+  FCommonData.Loaded(False);
+  if HandleAllocated then
+    RefreshTreeScrolls(SkinData, ListSW, Self is TsTreeViewEx);
 end;
 
 
@@ -145,10 +151,21 @@ begin
 end;
 
 
+{$IFDEF DELPHI7UP}
+function TsTreeView.IsCustomDrawn(Target: TCustomDrawTarget; Stage: TCustomDrawStage): Boolean;
+begin
+  if SkinData.FUpdateCount > 0 then
+    Result := False
+  else
+    Result := inherited IsCustomDrawn(Target, Stage);
+end;
+{$ENDIF}
+
+
 procedure TsTreeView.Loaded;
 begin
   inherited Loaded;
-  FCommonData.Loaded;
+  FCommonData.Loaded(False);
   RefreshTreeScrolls(SkinData, ListSW, Self is TsTreeViewEx);
   InitEvents;
 end;
@@ -184,9 +201,12 @@ begin
       Canvas.Font.Color := Font.Color;
       CallEvents;
       if (Stage in [cdPostPaint]) then begin
+        if not DefaultDraw then
+          Exit;
+
         DefaultDraw := False;
         nRect := Node.DisplayRect(True);
-        if HotTrack and (Images <> nil) then begin
+        if HotTrack and (Images <> nil) then begin // Fix of glyphs painting std bug
           cx := 5 + Images.Width;
           dec(nRect.Left, cx);
         end
@@ -219,7 +239,7 @@ begin
           else
             PaintItem(sNdx, CI, True, integer(Focused and bSelected or (NodeAtPos <> nil)), aRect, MkPoint, Bmp, SkinData.SkinManager);
 
-          if HotTrack and (cdsHot in State) and not ({cdsSelected in State}Selected <> Node) then begin
+          if HotTrack and (cdsHot in State) and (Selected <> Node) then begin
             DisabledKind := [dkBlended];
             BmpDisabledKind(Bmp, DisabledKind, Parent, CI, Point(nRect.Left + 3, nRect.Top + 3));
           end;
@@ -228,7 +248,7 @@ begin
           sNdx := -1;
           FillDC(Bmp.Canvas.Handle, aRect, CI.FillColor)
         end;
-        if HotTrack and (Images <> nil) then
+        if HotTrack and (Images <> nil) then  // Fix of glyphs painting std bug
           Images.Draw(Bmp.Canvas, 2, (Bmp.Height - Images.Height) div 2, Node.ImageIndex);
 
         Bmp.Canvas.Font.Assign(Canvas.Font);
@@ -285,81 +305,72 @@ var
   b: boolean;
 begin
 {$IFDEF LOGGED}
-  AddToLog(Message);
+//  if Tag = 1 then
+    AddToLog(Message);
 {$ENDIF}
-  if Message.Msg = SM_ALPHACMD then
-    case Message.WParamHi of
-      AC_CTRLHANDLED: begin
-        Message.Result := 1;
-        Exit;
-      end;
-
-      AC_REMOVESKIN:
-        if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then begin
-          UninitializeACScroll(Handle, True, False, ListSW);
-          CommonWndProc(Message, FCommonData);
-          if not FCommonData.CustomColor then
-            Color := clWindow;
-
-          if not FCommonData.CustomFont then
-            Font.Color := clWindowText;
-
+  case Message.Msg of
+    SM_ALPHACMD:
+      case Message.WParamHi of
+        AC_CTRLHANDLED: begin
+          Message.Result := 1;
           Exit;
         end;
 
-      AC_SETNEWSKIN:
-        if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
-          CommonWndProc(Message, FCommonData);
-          Exit;
-        end;
+        AC_REMOVESKIN:
+          if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then begin
+            if ListSW <> nil then
+              FreeAndNil(ListSW);
 
-      AC_REFRESH:
-        if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
-          if FCommonData.Skinned then begin
-            if not FCommonData.CustomColor then
-{$IFNDEF DELPHI6UP}
-              TreeView_SetBkColor(Handle, ColorToRGB(FCommonData.SkinManager.gd[FCommonData.SkinIndex].Props[0].Color))
-{$ELSE}
-              Color := FCommonData.SkinManager.gd[FCommonData.SkinIndex].Props[0].Color
-{$ENDIF}
-            else
-              if ListSW <> nil then
-                TacTreeViewWnd(ListSW).Color := Color;
-
-            if not FCommonData.CustomFont then
-              Font.Color := FCommonData.SkinManager.gd[FCommonData.SkinIndex].Props[0].FontColor.Color;
+            Exit;
           end;
-          SetWindowPos(Handle, 0, 0, 0, 0, 0, SWP_NOMOVE or SWP_NOSIZE or SWP_NOZORDER or SWP_NOACTIVATE or SWP_FRAMECHANGED);
-          RefreshTreeScrolls(SkinData, ListSW, Self is TsTreeViewEx);
+
+        AC_SETNEWSKIN:
+          if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
+            CommonWndProc(Message, FCommonData);
+            Exit;
+          end;
+
+        AC_REFRESH:
+          if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
+            RefreshTreeScrolls(SkinData, ListSW, Self is TsTreeViewEx);
+            if FCommonData.Skinned then begin
+              if not FCommonData.CustomColor then
+  {$IFNDEF DELPHI6UP}
+                TreeView_SetBkColor(Handle, ColorToRGB(FCommonData.SkinManager.gd[FCommonData.SkinIndex].Props[0].Color))
+  {$ELSE}
+                Color := FCommonData.SkinManager.gd[FCommonData.SkinIndex].Props[0].Color
+  {$ENDIF}
+              else
+                if ListSW <> nil then
+                  TacTreeViewWnd(ListSW).Color := Color;
+            end;
+            SetWindowPos(Handle, 0, 0, 0, 0, 0, SWP_NOMOVE or SWP_NOSIZE or SWP_NOZORDER or SWP_NOACTIVATE or SWP_FRAMECHANGED);
+            Exit;
+          end;
+
+        AC_PREPARECACHE: begin
+          CommonMessage(Message, SkinData);
           Exit;
         end;
-{
-      AC_ENDPARENTUPDATE:
-        if not InUpdating(FCommonData) then begin
-          RedrawWindow(Handle, nil, 0, RDW_INVALIDATE or RDW_FRAME or RDW_UPDATENOW or RDW_NOERASE);
+
+        AC_GETDEFINDEX: begin
+          if FCommonData.SkinManager <> nil then
+            Message.Result := FCommonData.SkinManager.ConstData.Sections[ssEdit] + 1;
+
           Exit;
-        end;
-}
-      AC_PREPARECACHE: begin
-        CommonMessage(Message, SkinData);
-        Exit;
+        end
+
+        else
+          CommonMessage(Message, SkinData);
       end;
-
-      AC_GETDEFINDEX: begin
-        if FCommonData.SkinManager <> nil then
-          Message.Result := FCommonData.SkinManager.ConstData.Sections[ssEdit] + 1;
-
-        Exit;
-      end
-
-      else
-        CommonMessage(Message, SkinData);
-    end;
+  end;
 
   if not ControlIsReady(Self) or not FCommonData.Skinned then
     inherited
   else begin
     case Message.Msg of
+//      CN_NOTIFY, TVM_GETITEMW: Exit;
+
       CM_VISIBLECHANGED, CM_ENABLEDCHANGED, WM_MOVE:
         FCommonData.BGChanged := True;
 
@@ -437,7 +448,6 @@ type
   TBtnArray = array [0..BtnSize - 1, 0..BtnSize - 1] of byte;
 
 
-
 const
   BArrayClosed: TBtnArray = (
     ($D0, $D0, $D0, $D0, $D0, $D0, $D0, $D0, $D0),
@@ -475,6 +485,8 @@ procedure TsTreeViewEx.CreateWnd;
 begin
   inherited;
   SetCheckBoxes(FCheckBoxes);
+  if HandleAllocated then
+    RefreshTreeScrolls(SkinData, ListSW, Self is TsTreeViewEx);
 end;
 
 
@@ -617,7 +629,7 @@ begin
           nRect.Right := rText.Right + 1;
 
         OffsetRect(rText, 0, - nRect.Top);
-        if HotTrack and (Images <> nil) then begin
+        if HotTrack and (Images <> nil) then begin // Fix of glyphs painting std bug
           cx := 5 + Images.Width;
           dec(nRect.Left, cx);
         end
@@ -652,7 +664,7 @@ begin
           else
             PaintItem(sNdx, CI, True, integer(Focused and bSelected or (NodeAtPos <> nil)), rText, MkPoint, Bmp, SkinData.SkinManager);
 
-          if HotTrack and (cdsHot in State) and not ({cdsSelected in State}Selected <> Node) then begin
+          if HotTrack and (cdsHot in State) and (Selected <> Node) then begin
             DisabledKind := [dkBlended];
             BmpDisabledKind(Bmp, DisabledKind, Parent, CI, Point(rText.Left + bw, rText.Top + bw));
           end;
@@ -661,8 +673,7 @@ begin
         else
           sNdx := -1;
 
-
-        if HotTrack and (Images <> nil) then
+        if HotTrack and (Images <> nil) then // Fix of glyphs painting std bug
           Images.Draw(Bmp.Canvas, 2, (Bmp.Height - Images.Height) div 2, Node.ImageIndex);
 
         Bmp.Canvas.Font.Assign(Canvas.Font);
@@ -677,7 +688,7 @@ begin
           Bmp.Canvas.Brush.Style := bsClear;
           AcDrawText(Bmp.Canvas.Handle, {$IFDEF TNTUNICODE}TTntTreeNode{$ENDIF}(Node).Text, rText, DrawStyle);
         end
-        else
+        else                                                                                                               
           acWriteTextEx(Bmp.Canvas, PacChar({$IFDEF TNTUNICODE}TTntTreeNode{$ENDIF}(Node).Text), True, rText, DrawStyle, sNdx, Focused or SkinData.FMouseAbove and MayBeHot(SkinData), SkinData.SkinManager);
 
         dec(rText.Left, 2);
@@ -789,6 +800,21 @@ end;
 procedure TsTreeViewEx.InitEvents;
 begin
   // Do nothing
+end;
+
+
+procedure TsTreeViewEx.UpdateColors;
+var
+  i: integer;
+begin
+  i := GetFontIndex(Self, SkinData.SkinIndex, SkinData.SkinManager);
+  if i >= 0 then
+    Font.Color := FCommonData.SkinManager.gd[i].Props[0].FontColor.Color
+  else
+    Font.Color := FCommonData.SkinManager.gd[FCommonData.SkinIndex].Props[0].FontColor.Color;
+
+  if HandleAllocated then
+    TreeView_SetTextColor(Handle, Font.Color);
 end;
 
 
@@ -951,6 +977,7 @@ var
   PS: TPaintStruct;
 begin
   if SkinData.Skinned then begin
+    UpdateColors;
     BeginPaint(Handle, PS);
     if not InUpdating(SkinData) then begin
       if Message.DC <> 0 then

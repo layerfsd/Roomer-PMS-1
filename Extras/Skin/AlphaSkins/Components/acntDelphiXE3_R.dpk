@@ -34,7 +34,6 @@ requires
   rtl,
   vclie,
   vclimg,
-  PngComponents,
   dxCoreRS17,
   cxLibraryRS17,
   dxGDIPlusRS17,

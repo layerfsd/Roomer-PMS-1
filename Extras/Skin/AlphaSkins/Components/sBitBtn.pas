@@ -91,8 +91,8 @@ type
     CaptionRect: TRect;
     OldLayout: TButtonLayout;
     procedure StdDrawItem(const DrawItemStruct: TDrawItemStruct);
-    procedure MouseDown (Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
-    procedure MouseUp   (Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
+    procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
+    procedure MouseUp  (Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
     procedure ActionChange(Sender: TObject; CheckDefaults: Boolean); override;
     procedure OurPaintHandler(aDC: hdc);
@@ -112,7 +112,7 @@ type
     procedure Loaded; override;
     function ImgRect: TRect;
     procedure Invalidate; override;
-    procedure WndProc (var Message: TMessage); override;
+    procedure WndProc(var Message: TMessage); override;
     procedure SetButtonStyle(ADefault: Boolean); {$IFNDEF FPC} override; {$ENDIF}
   published
     property OnPaint: TBmpPaintEvent read FOnPaint write FOnPaint;
@@ -283,9 +283,9 @@ end;
 
 procedure TsBitBtn.DrawCaption(Canvas: TCanvas = nil);
 var
-  R: TRect;
   DrawStyle: Cardinal;
   State: integer;
+  R: TRect;
 begin
   if Canvas = nil then
     Canvas := FCommonData.FCacheBmp.Canvas;
@@ -472,11 +472,21 @@ end;
 
 procedure TsBitBtn.OurPaintHandler;
 var
+  l, t, right, bottom: integer;
   DC, SavedDC: hdc;
   PS: TPaintStruct;
   b: boolean;
   R: TRect;
-  l, t, right, bottom: integer;
+
+  procedure ToFinish;
+  begin
+    if aDC <> DC then
+      ReleaseDC(Handle, DC);
+
+    if not InanimationProcess then
+      EndPaint(Handle, {$IFDEF FPC}@{$ENDIF}PS);
+  end;
+
 begin
   if InAnimationProcess and ((aDC <> SkinData.PrintDC) or (aDC = 0)) then
     Exit;
@@ -504,9 +514,7 @@ begin
       with FCommonData.SkinManager do
         if RegionChanged and IsValidImgIndex(FCommonData.BorderIndex) and (ma[SkinData.BorderIndex].CornerType = 2) and not (csDesigning in ComponentState) then begin
           if not PrepareCache then begin
-            if aDC = 0 then
-              ReleaseDC(Handle, DC);
-
+            ToFinish;
             Exit;
           end;
           UpdateCorners(FCommonData, CurrentState);
@@ -537,8 +545,10 @@ begin
         end
         else
           if (FCommonData.BGChanged or (csDesigning in ComponentState {for glyph changing})) then
-            if not PrepareCache then
+            if not PrepareCache then begin
+              ToFinish;
               Exit;
+            end;
 
       SavedDC := SaveDC(DC);
       try
@@ -549,11 +559,7 @@ begin
       end;
     end;
   finally
-    if aDC = 0 then
-      ReleaseDC(Handle, DC);
-
-    if not InanimationProcess then
-      EndPaint(Handle, PS);
+    ToFinish;
   end;
 end;
 
@@ -616,7 +622,7 @@ begin
         else
           DrawSkinRect(FCommonData.FCacheBmp, MkRect(FCommonData.FCacheBmp), CI, sm.ma[FCommonData.BorderIndex], State, True);
 
-    if not Enabled or ((Action <> nil) and not TAction(Action).Enabled) then
+    if not Enabled or ((Action <> nil) and not Assigned(TAction(Action).OnExecute){ not TAction(Action).Enabled // Button not repainted immediately if Action.Enabled changed }) then
       BmpDisabledKind(FCommonData.FCacheBmp, FDisabledKind, Parent, CI, Point(Left, Top));
 
     if Assigned(FOnPaint) then
@@ -839,6 +845,7 @@ begin
 
       AC_REMOVESKIN:
         if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) and not (csDestroying in ComponentState) then begin
+          AlphaBroadCast(Self, Message);
           CommonWndProc(Message, FCommonData);
           FRegion := 0;
           SetWindowRgn(Handle, 0, False);

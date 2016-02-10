@@ -80,6 +80,9 @@ function MkSize(R: TRect): TSize; overload;
 
 function MkPoint(const X: integer = 0; const Y: integer = 0): TPoint; overload;
 function MkPoint(Control: TControl): TPoint; overload;
+
+function OffsRect(const aRect: TRect; aOffset: integer): TRect; overload;
+function OffsRect(const aRect: TRect; aOffsetX, aOffsetY: integer): TRect; overload;
 { Returns width of rectangle}
 function WidthOf(const r: TRect; const CheckNegative: boolean = False): integer;
 { Returns height of rectangle}
@@ -338,11 +341,15 @@ function ReadRegInt(Key: HKEY; const Section, Named: string): integer;
 var
   r: TRegistry;
 begin
+  Result := 0;
   r := TRegistry.Create;
   r.RootKey := Key;
-  r.OpenKey(Section, False);
   try
-    Result := r.ReadInteger(Named);
+    if r.KeyExists(Section) then begin
+      r.OpenKey(Section, False);
+      if r.ValueExists(Named) then
+        Result := r.ReadInteger(Named)
+    end;
   finally
     r.Free;
   end;
@@ -669,6 +676,24 @@ function MkSize(Width: integer = 0; Height: integer = 0): TSize; overload;
 begin
   Result.cx := Width;
   Result.cy := Height;
+end;
+
+
+function OffsRect(const aRect: TRect; aOffset: integer): TRect;
+begin
+  Result.Left   := aRect.Left   + aOffset;
+  Result.Top    := aRect.Top    + aOffset;
+  Result.Right  := aRect.Right  + aOffset;
+  Result.Bottom := aRect.Bottom + aOffset;
+end;
+
+
+function OffsRect(const aRect: TRect; aOffsetX, aOffsetY: integer): TRect; overload;
+begin
+  Result.Left   := aRect.Left   + aOffsetX;
+  Result.Top    := aRect.Top    + aOffsetY;
+  Result.Right  := aRect.Right  + aOffsetX;
+  Result.Bottom := aRect.Bottom + aOffsetY;
 end;
 
 

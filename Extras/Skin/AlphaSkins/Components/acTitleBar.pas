@@ -153,13 +153,13 @@ type
   protected
     FDown: boolean;
     FState: integer;
-    FPressed: boolean;
   public
 {$IFDEF TNTUNICODE}
     HintWnd: TTntHintWindow;
 {$ELSE}
     HintWnd: THintWindow;
 {$ENDIF}
+    FPressed: boolean;
     Rect: TRect;
     Data: ^TObject;
     Timer: TacItemAnimation;
@@ -858,6 +858,8 @@ begin
           Invalidate;
           FDropDownMenu.Popup(p.X, p.Y);
           FDroppedDown := False;
+//          biClicked := False;
+          FPressed := False;
           FState := 0;
           if Timer <> nil then
             FreeAndNil(Timer);

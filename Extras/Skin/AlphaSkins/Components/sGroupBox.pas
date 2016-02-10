@@ -486,9 +486,7 @@ var
     OuterRect: TRect;
     Box: TThemedButton;
     Details: TThemedElementDetails;
-{$IFDEF DELPHI_XE2}
     R: TRect;
-{$ENDIF}    
   begin
     with Canvas do begin
       OuterRect := ClientRect;
@@ -504,7 +502,14 @@ var
       Details := acThemeServices.GetElementDetails(Box);
       acThemeServices.DrawElement(Handle, Details, OuterRect);
       SelectClipRgn(Handle, 0);
-      if Text <> '' then
+      if Text <> '' then begin
+        R := CaptionRect;
+        SelectObject(DC, Font.Handle);
+        SetTextColor(DC, ColorToRGB(Font.Color));
+        SetBkMode(DC, TRANSPARENT);
+        acDrawText(DC, Text, R, DrawTextBiDiModeFlags(DT_SINGLELINE or DT_CENTER));
+      end;
+(*
 {$IFDEF DELPHI_XE2}
       begin
         R := CaptionRect;
@@ -513,6 +518,7 @@ var
 {$ELSE}
         acThemeServices.DrawText(Handle, Details, Caption, CaptionRect, DT_LEFT, 0);
 {$ENDIF}
+*)
     end;
   end;
 {$ENDIF}
@@ -859,7 +865,7 @@ begin
   else begin
     if Message.Msg = SM_ALPHACMD then
       case Message.WParamHi of
-        AC_PREPARING: begin
+        AC_PREPARING: begin // Remove this case in the Beta
           Message.Result := LRESULT(FCommonData.BGChanged or FCommonData.Updating);
           Exit
         end;

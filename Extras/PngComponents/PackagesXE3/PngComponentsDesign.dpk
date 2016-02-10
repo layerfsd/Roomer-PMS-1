@@ -33,7 +33,8 @@ package PngComponentsDesign;
 
 requires
   designide,
-  PngComponents;
+  vclimg,
+  acntDelphiXE3_R;
 
 contains
   PngComponentsRegister in '..\Design\PngComponentsRegister.pas',

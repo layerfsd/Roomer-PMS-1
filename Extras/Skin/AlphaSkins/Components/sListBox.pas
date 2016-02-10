@@ -40,6 +40,7 @@ type
     ListSW: TacScrollWnd;
     constructor Create(AOwner: TComponent); override;
     procedure CreateWnd; override;
+    procedure Loaded; override;
     destructor Destroy; override;
     procedure WndProc(var Message: TMessage); override;
 {$IFNDEF DELPHI6UP}
@@ -70,7 +71,6 @@ uses math,
 procedure TsCustomListBox.CNDrawItem(var Message: TWMDrawItem);
 var
   State: TOwnerDrawState;
-//  bw,
   XOffset: integer;
 begin
   with Message.DrawItemStruct^ do begin
@@ -85,12 +85,9 @@ begin
       OffsetRect(rcItem, XOffset, 0);
       State := State + [odReserved1];
     end;
-{    bw := integer(BorderStyle = bsSingle) * (1 + integer(Ctl3D));
-    if ListSW.cxLeftEdge < bw then begin
-///      bw, ListSW.cxLeftEdge);
-      inc(rcItem.Left);//, bw - ListSW.cxLeftEdge);
-    end;                 }
+    Canvas.Lock;
     DrawItem(integer(itemID), rcItem, State);
+    Canvas.UnLock;
     Canvas.Handle := 0;
   end;
 end;
@@ -127,7 +124,7 @@ end;
 procedure TsCustomListBox.CreateWnd;
 begin
   inherited;
-  FCommonData.Loaded;
+  FCommonData.Loaded(False);
   if HandleAllocated then
     RefreshEditScrolls(SkinData, ListSW);
 end;
@@ -148,7 +145,7 @@ procedure TsCustomListBox.DrawItem(Index: Integer; Rect: TRect; State: TOwnerDra
 var
   w, h, XOffset, sNdx, l: integer;
   Bmp: Graphics.TBitmap;
-  SavedDC, TmpDC: hdc;
+  SavedDC: hdc;
   DrawStyle: Cardinal;
   bSelected: boolean;
   TmpColor: TColor;
@@ -185,11 +182,8 @@ begin
           BitBlt(Bmp.Canvas.Handle, 0, 0, Bmp.Width, Bmp.Height, SkinData.FCacheBmp.Canvas.Handle, Rect.Left + CI.X - XOffset, Rect.Top + CI.Y, SRCCOPY);
 
         if Assigned(OnDrawItem) then begin
-          TmpDC := Canvas.Handle;
-          Canvas.Handle := Bmp.Canvas.Handle;
-          Bmp.Canvas.Lock;
+          Canvas.Lock;
           SavedDC := SaveDC(Canvas.Handle);
-          MoveWindowOrg(Canvas.Handle, -Rect.Left, -Rect.Top);
           if bSelected then begin
             Canvas.Brush.Color := SkinData.SkinManager.GetHighLightColor(odFocused in State);
             Canvas.Font.Color := SkinData.SkinManager.GetHighLightFontColor(odFocused in State);
@@ -199,10 +193,33 @@ begin
             Canvas.Font.Color := Font.Color;
           end;
           OnDrawItem(Self, Index, Rect, State);
+          RestoreDC(Canvas.Handle, SavedDC);
+          Canvas.UnLock;
+//          Canvas.Handle := TmpDC;
+{
+          Bmp.Canvas.Lock;
+
+          SavedDC := SaveDC(Bmp.Canvas.Handle);
+          MoveWindowOrg(Bmp.Canvas.Handle, -Rect.Left, -Rect.Top);
+          if bSelected then begin
+            Bmp.Canvas.Brush.Color := SkinData.SkinManager.GetHighLightColor(odFocused in State);
+            Bmp.Canvas.Font.Color := SkinData.SkinManager.GetHighLightFontColor(odFocused in State);
+          end
+          else begin
+            Bmp.Canvas.Brush.Color := Color;
+            Bmp.Canvas.Font.Color := Font.Color;
+          end;
+          TmpDC := Canvas.Handle;
+          Canvas.Handle := Bmp.Canvas.Handle;
+
+          OnDrawItem(Self, Index, Rect, State);
           MoveWindowOrg(Canvas.Handle, Rect.Left, Rect.Top);
+
           RestoreDC(Canvas.Handle, SavedDC);
           Bmp.Canvas.UnLock;
           Canvas.Handle := TmpDC;
+}
+          Exit;
         end
         else begin
           if bSelected then begin
@@ -433,14 +450,14 @@ begin
             if ListSW <> nil then
               FreeAndNil(ListSW);
 
-            CommonWndProc(Message, FCommonData);
-            Color := clWindow;
-            Font.Color := clWindowText;
             Exit;
           end;
 
         AC_REFRESH:
           if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
+            if HandleAllocated then
+              RefreshEditScrolls(SkinData, ListSW);
+
             CommonWndProc(Message, FCommonData);
             if not InAnimationProcess then
               RedrawWindow(Handle, nil, 0, RDW_INVALIDATE or RDW_ERASE or RDW_FRAME);
@@ -451,9 +468,6 @@ begin
         AC_SETNEWSKIN:
           if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
             CommonWndProc(Message, FCommonData);
-            if HandleAllocated then
-              RefreshEditScrolls(SkinData, ListSW);
-
             Exit;
           end;
 
@@ -569,6 +583,15 @@ begin
   Result := Items.Count;
 end;
 {$ENDIF}
+
+
+procedure TsCustomListBox.Loaded;
+begin
+  inherited;
+  FCommonData.Loaded(False);
+  if HandleAllocated then
+    RefreshEditScrolls(SkinData, ListSW);
+end;
 
 end.
 

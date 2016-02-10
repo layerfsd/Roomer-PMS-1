@@ -236,12 +236,12 @@ type
     FAutoAlignment: boolean;
 
     FHintPos: TPoint;
-    FTextAlignment: TAlignment;
     FOnPaint: TacPaintEvent;
+    FTextAlignment: TAlignment;
     FOnMeasure: TacMeasureEvent;
+    TmpShowData: TacShowHintData;
     FOnShowHint: TacShowHintEvent;
     FDefaultMousePos: TacMousePosition;
-    TmpShowData: TacShowHintData;
 {$IFNDEF ACHINTS}
     FActive,
     FUseSkinData: boolean;
@@ -249,11 +249,11 @@ type
     FOnChange,
     FOnHideHint: TNotifyEvent;
 
+    HintTimeCtrl: TControl;
     FTemplateIndex: integer;
     FTemplateName: TacStrValue;
     FSkinSection: TsSkinSection;
     FTemplates: TacHintTemplates;
-    HintTimeCtrl: TControl;
 {$ENDIF}
     function GetAnimated: boolean;
 {$IFNDEF ACHINTS}
@@ -470,6 +470,7 @@ begin
   FreeAndNil(FTemplates);
   FreeAndNil(FCacheBmp);
 
+  HideTimer.Free;
   if ShowTimer <> nil then
     FreeAndNil(ShowTimer);
 
@@ -536,7 +537,12 @@ var
   NewText: string;
   HintInfo: {$IFDEF D2009}Controls.{$ENDIF}THintInfo;
 begin
-  FreeAndNil(AnimWindow);
+  if (ShowTimer <> nil) and ShowTimer.Enabled then begin
+    FreeAndNil(AnimWindow);
+    AnimWindow := NewWindow;
+    NewWindow := nil;
+    FreeAndNil(ShowTimer);
+  end;
   if Assigned(TheControl) then begin
     HintTimeCtrl := TheControl;
     HL := MkPoint;
@@ -588,7 +594,12 @@ var
   HintRect: TRect;
   NewText: string;
 begin
-  FreeAndNil(AnimWindow);
+  if (ShowTimer <> nil) and ShowTimer.Enabled then begin
+    FreeAndNil(AnimWindow);
+    AnimWindow := NewWindow;
+    NewWindow := nil;
+    FreeAndNil(ShowTimer);
+  end;
   if Manager <> nil then begin
     if ShowHintData.Control <> nil then
       HintTimeCtrl := ShowHintData.Control
@@ -837,12 +848,20 @@ var
   b: boolean;
   HintRect: TRect;
   NewText: string;
+  TmpCtrl: TControl;
   HintInfo: {$IFDEF D2009}Controls.{$ENDIF}THintInfo;
 begin
-  if HintTimeCtrl <> CtrlUnderMouse then 
+  if (ShowTimer <> nil) and ShowTimer.Enabled then begin
+    FreeAndNil(AnimWindow);
+    AnimWindow := NewWindow;
+    NewWindow := nil;
+    FreeAndNil(ShowTimer);
+  end;
+  TmpCtrl := CtrlUnderMouse;
+  if HintTimeCtrl <> TmpCtrl then
     HideAll;
 
-  HintTimeCtrl := CtrlUnderMouse;
+  HintTimeCtrl := TmpCtrl;
   // Does hint need to be created?
   if not Assigned(HintWindow) then
     HintWindow := TacPngHintWindow.Create(Self);
@@ -965,7 +984,7 @@ begin
     OffsetRect(Rect, p.x - Rect.Left - ShadowSizes.Left, p.y - Rect.Top - ShadowSizes.Top);
 
     // Show std window as fully transparent //
-    SetWindowLong(Handle, GWL_EXSTYLE, GetWindowLong(Handle, GWL_EXSTYLE) or WS_EX_LAYERED);
+    SetWindowLong(Handle, GWL_EXSTYLE, GetWindowLong(Handle, GWL_EXSTYLE) or WS_EX_LAYERED or WS_EX_NOACTIVATE);
     SetBounds(Rect.Left, Rect.Top, w, h);
     SetClassLong(Handle, GCL_STYLE, GetClassLong(Handle, GCL_STYLE) and not NCS_DROPSHADOW);
     ShowWindow(Handle, SW_SHOWNOACTIVATE);
@@ -985,6 +1004,7 @@ begin
 
     if acLayered then
       if Manager.Animated then begin
+        FreeAndNil(Manager.ShowTimer);
         Manager.ShowTimer := TsShowTimer.Create(nil);
         Manager.ShowTimer.Enabled := False;
         Manager.ShowTimer.Init(Self, w, h)
@@ -1373,11 +1393,13 @@ begin
   OnCloseHint;
   if Manager <> nil then begin
     Manager.HintShowing := False;
-    if Manager.OldAlphaBmp <> nil then
-      FreeAndNil(Manager.OldAlphaBmp);
+    if AlphaBmp <> nil then begin
+      if Manager.OldAlphaBmp <> nil then
+        FreeAndNil(Manager.OldAlphaBmp);
 
-    Manager.OldAlphaBmp := AlphaBmp;
-    AlphaBmp := nil;
+      Manager.OldAlphaBmp := AlphaBmp;
+      AlphaBmp := nil;
+    end;
   end
   else
     if Assigned(AlphaBmp) then
@@ -2632,15 +2654,16 @@ begin
   Result := TForm.Create(nil);
   Result.Visible := False;
   Result.BorderStyle := bsNone;
-  Result.FormStyle := fsStayOnTop;
   Result.Tag := ExceptTag;
+
+  SetWindowLong(Result.Handle, GWL_EXSTYLE, GetWindowLong(Result.Handle, GWL_EXSTYLE) or WS_EX_NOACTIVATE or WS_EX_LAYERED or WS_EX_TRANSPARENT or WS_EX_TOPMOST);// or WS_EX_TOOLWINDOW);
+  SetWindowPos(Result.Handle, HWND_TOPMOST, R.Left, R.Top, WidthOf(R), HeightOf(R), SWP_NOACTIVATE or SWP_NOOWNERZORDER);
   if FullLayer then
     SetClassLong(Result.Handle, GCL_STYLE, GetClassLong(Result.Handle, GCL_STYLE) and not NCS_DROPSHADOW)
   else
     SetClassLong(Result.Handle, GCL_STYLE, GetClassLong(Result.Handle, GCL_STYLE) or NCS_DROPSHADOW);
 
-  SetWindowLong(Result.Handle, GWL_EXSTYLE, GetWindowLong(Result.Handle, GWL_EXSTYLE) or WS_EX_LAYERED or WS_EX_TRANSPARENT);// or WS_EX_TOOLWINDOW);
-  SetWindowPos(Result.Handle, HWND_TOPMOST, R.Left, R.Top, WidthOf(R), HeightOf(R), SWP_NOACTIVATE or SWP_NOOWNERZORDER);
+//  Result.FormStyle := fsStayOnTop;
   ShowWindow(Result.Handle, SW_SHOWNOACTIVATE);
 end;
 
@@ -2667,7 +2690,9 @@ begin
     HideTimer.Free;
   end;
 }
-  HideTimer := TacThreadedTimer.Create(Self);
+  if HideTimer = nil then
+    HideTimer := TacThreadedTimer.Create(Self);
+
   HideTimer.Enabled := False;
   if HideTime <> 0 then begin
     HideTimer.Interval := HideTime;

@@ -62,7 +62,9 @@ uses Menus,
 procedure TsMemo.AfterConstruction;
 begin
   inherited AfterConstruction;
-  FCommonData.Loaded;
+  FCommonData.Loaded(False);
+  if HandleAllocated then
+    RefreshEditScrolls(SkinData, ListSW);
 end;
 
 
@@ -93,7 +95,7 @@ end;
 procedure TsMemo.Loaded;
 begin
   inherited Loaded;
-  FCommonData.Loaded;
+  FCommonData.Loaded(False);
   RefreshEditScrolls(SkinData, ListSW);
 end;
 
@@ -125,24 +127,24 @@ begin
 
         AC_SETNEWSKIN:
           if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
-            CommonWndProc(Message, FCommonData);
+            CommonMessage(Message, FCommonData);
             Exit;
           end;
 
         AC_REMOVESKIN:
           if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then begin
-            if ListSW <> nil then
+            if ListSW <> nil then begin
               FreeAndNil(ListSW);
-
-            CommonWndProc(Message, FCommonData);
-            RecreateWnd;
+//            CommonWndProc(Message, FCommonData);
+              RecreateWnd;
+            end;
             Exit;
           end;
 
         AC_REFRESH:
           if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
-            CommonWndProc(Message, FCommonData);
             RefreshEditScrolls(SkinData, ListSW);
+            CommonMessage(Message, FCommonData);
             if HandleAllocated and Visible then
               RedrawWindow(Handle, nil, 0, RDW_INVALIDATE or RDW_ERASE or RDW_FRAME);
 
@@ -181,9 +183,10 @@ begin
         if InUpdating(FCommonData) then begin // Exit if parent is not ready yet
           BeginPaint(Handle, PS);
           EndPaint  (Handle, PS);
-          Exit;
-        end;
-        inherited;
+        end
+        else
+          inherited;
+
         Exit;
       end;
     end;

@@ -1,5 +1,16 @@
 AlphaControls :: history
 
+09.02.2016 AlphaControls v10.25 Stable released
+
+  * Fixed Range Check Error in the 64 bit mode
+  * Improved repaint of grid in the TsListView component
+  * Improved showing of hints of title bar items
+  * Raised speed of items adding in TsTreeView if SkinData.BeginUpdate|EndUpdate used
+  * Removed memory leak in the TsAlphaHints component
+  * Solved issue with transparency in standard labels and some other controls
+  * Solved issue with refresh of the TsComboBox component
+  * Added AllowMouseWheel property in the TsComboBox and TsComboBoxEx components
+
 16.01.2016 AlphaControls v10.24 Stable released
 
   * Added CustomColors property in the TsColorSelect component

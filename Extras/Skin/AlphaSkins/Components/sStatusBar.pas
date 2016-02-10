@@ -325,7 +325,10 @@ begin
           Message.Result := FCommonData.SkinManager.ConstData.Sections[ssStatusBar] + 1;
 
         Exit;
-      end;
+      end
+
+      else if CommonMessage(Message, FCommonData) then
+        Exit;
     end;
 
   if not ControlIsReady(Self) or not FCommonData.Skinned then
@@ -363,7 +366,7 @@ begin
           DC := TWMPaint(Message).DC;
           cr := Rect(1, 1, 1, 1);
           GetClipBox(DC, cR);
-          if not InUpdating(SkinData) then begin
+          if not InUpdating(SkinData, True) then begin
             PrepareCache;
             if (BorderWidth <> 0) then
               BitBltBorder(DC, 0, 0, Width, Height, FCommonData.FCacheBmp.Canvas.Handle, 0, 0, BorderWidth);

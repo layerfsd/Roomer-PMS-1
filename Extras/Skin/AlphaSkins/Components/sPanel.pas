@@ -887,6 +887,7 @@ begin
     case Message.WParamHi of
       AC_REMOVESKIN: begin
         Color := clActiveCaption;
+        Font.Color := clCaptionText;
 {$IFDEF DELPHI7UP}
         ParentBackGround := False;
 {$ENDIF}

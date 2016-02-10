@@ -35,7 +35,6 @@ type
     FCustomFont,
     FCustomColor: boolean;
     FOuterCache: TBitmap;
-    FUpdateCount: Integer;
     FSkinSection: TsSkinSection;
     FOuterEffects: TacOuterEffects;
     function GetUpdating: boolean;
@@ -67,6 +66,7 @@ type
     FHUEOffset,
     FSaturation,
     BorderIndex,
+    FUpdateCount,
     HotTexture: integer;
 
     PrintDC: hdc;
@@ -103,7 +103,7 @@ type
     destructor Destroy; override;
     procedure InitCommonProp;
     procedure RemoveCommonProp;
-    procedure Loaded;
+    procedure Loaded(UpdateColors: boolean = True);
     function RepaintIfMoved: boolean;
     function ManagerStored: boolean;
     function OwnerHandle: THandle;
@@ -238,6 +238,7 @@ procedure InitCacheBmp     (const SkinData: TsCommonData);
 function SkinBorderMaxWidth(const SkinData: TsCommonData): integer;
 
 procedure InitIndexes(const SkinData: TsCommonData; const Sections: array of string);
+procedure InitBGType(const SkinData: TsCommonData);
 procedure UpdateData (const SkinData: TsCommonData);
 procedure UpdateControlColors(SkinData: TsCommonData; AllowRepaint: boolean = True);
 procedure UpdateSkinState(const SkinData: TsCommonData; const UpdateChildren: boolean = True);
@@ -1352,7 +1353,7 @@ begin
 end;
 
 
-procedure TsCommonData.Loaded;
+procedure TsCommonData.Loaded(UpdateColors: boolean = True);
 begin
   Loading := False;
   UpdateData(Self);
@@ -1360,7 +1361,8 @@ begin
     if FOwnerControl is TWinControl then
       AddToAdapter(TWinControl(FOwnerControl));
 
-    UpdateCtrlColors(Self, False);
+    if UpdateColors then
+      UpdateCtrlColors(Self, False);
   end;
 end;
 
@@ -1846,34 +1848,36 @@ begin
 
           AC_REMOVESKIN:
             if ACUInt(Message.LParam) = ACUInt(SkinManager) then begin
-              StopTimer(SkinData);
-              if (SkinManager <> nil) and (csDestroying in SkinManager.ComponentState) then
-                FSkinManager := nil;
+              if SkinIndex >= 0 then begin
+                StopTimer(SkinData);
+                if (SkinManager <> nil) and (csDestroying in SkinManager.ComponentState) then
+                  FSkinManager := nil;
 
-              BorderIndex := -1;
-              SkinIndex := -1;
-              Texture := -1;
-              HotTexture := -1;
-              Updating := True;
-              Result := False;
-              if Assigned(FCacheBmp) then begin
-                FCacheBmp.Width := 0;
-                FCacheBmp.Height := 0;
+                BorderIndex := -1;
+                SkinIndex := -1;
+                Texture := -1;
+                HotTexture := -1;
+                Updating := True;
+                Result := False;
+                if Assigned(FCacheBmp) then begin
+                  FCacheBmp.Width := 0;
+                  FCacheBmp.Height := 0;
+                end;
+                if (FOwnerControl is TCustomEdit) then begin
+                  if not CustomColor then
+                    TsHackedControl(FOwnerControl).Color := clWindow;
+
+                  if not CustomFont then
+                    TsHackedControl(FOwnerControl).Font.Color := clWindowText;
+
+                  RedrawWindow(TCustomEdit(FOwnerControl).Handle, nil, 0, RDW_FRAME or RDW_INVALIDATE);
+                end
+                else
+                  if (FOwnerControl is TWinControl) then
+                    for i := 0 to TWinControl(FOwnerControl).ControlCount - 1 do
+                      if TWinControl(FOwnerControl).Controls[i] is TLabel then
+                        TLabel(TWinControl(FOwnerControl).Controls[i]).Font.Color := clWindowText;
               end;
-              if (FOwnerControl is TCustomEdit) then begin
-                if not CustomColor then
-                  TsHackedControl(FOwnerControl).Color := clWindow;
-
-                if not CustomFont then
-                  TsHackedControl(FOwnerControl).Font.Color := clWindowText;
-
-                RedrawWindow(TCustomEdit(FOwnerControl).Handle, nil, 0, RDW_FRAME or RDW_INVALIDATE);
-              end
-              else
-                if (FOwnerControl is TWinControl) then
-                  for i := 0 to TWinControl(FOwnerControl).ControlCount - 1 do
-                    if TWinControl(FOwnerControl).Controls[i] is TLabel then
-                      TLabel(TWinControl(FOwnerControl).Controls[i]).Font.Color := clWindowText;
             end;
 
           AC_GETCONTROLCOLOR:
@@ -2457,8 +2461,10 @@ begin
     FTheLabel.Align := alNone;
     case Layout of
       sclLeft: begin
-        if FTheLabel.FocusControl.Align = alLeft then
+        if FTheLabel.FocusControl.Align = alLeft then begin
           FTheLabel.Align := alLeft;
+          TLabel(FTheLabel).Layout := tlCenter;
+        end;
 
         FTheLabel.Left := FTheLabel.FocusControl.Left - FTheLabel.Width - 4 - Indent;
         FTheLabel.Top  := FTheLabel.FocusControl.Top  + (FTheLabel.FocusControl.Height - FTheLabel.Height) div 2 - 1;

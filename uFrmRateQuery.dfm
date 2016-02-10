@@ -125,7 +125,7 @@ object FrmRateQuery: TFrmRateQuery
         Height = 21
         Color = clWhite
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 2302755
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -154,7 +154,7 @@ object FrmRateQuery: TFrmRateQuery
         VerticalAlignment = taAlignTop
         Color = clWhite
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 2302755
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -176,7 +176,7 @@ object FrmRateQuery: TFrmRateQuery
         Height = 21
         Color = clWhite
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 2302755
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -200,7 +200,7 @@ object FrmRateQuery: TFrmRateQuery
         Height = 21
         Color = clWhite
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 2302755
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -224,7 +224,7 @@ object FrmRateQuery: TFrmRateQuery
         Height = 21
         Color = clWhite
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 2302755
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -248,7 +248,7 @@ object FrmRateQuery: TFrmRateQuery
         Height = 21
         Color = clWhite
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 2302755
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -268,7 +268,7 @@ object FrmRateQuery: TFrmRateQuery
       object rbTotal: TsRadioButton
         Left = 549
         Top = 52
-        Width = 72
+        Width = 75
         Height = 19
         Caption = 'Total rate'
         Checked = True
@@ -280,7 +280,7 @@ object FrmRateQuery: TFrmRateQuery
       object rbAverage: TsRadioButton
         Left = 549
         Top = 77
-        Width = 124
+        Width = 127
         Height = 19
         Caption = 'Average nightly rate'
         TabOrder = 7
@@ -308,7 +308,7 @@ object FrmRateQuery: TFrmRateQuery
         VerticalAlignment = taAlignTop
         Color = clWhite
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 2302755
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -320,7 +320,7 @@ object FrmRateQuery: TFrmRateQuery
       end
       object dtArrival: TcxDateEdit
         Left = 132
-        Top = 24
+        Top = 28
         ParentFont = False
         Properties.ShowTime = False
         Properties.WeekNumbers = True
@@ -491,7 +491,7 @@ object FrmRateQuery: TFrmRateQuery
       SearchFooter.HintHighlight = 'Highlight occurrences'
       SearchFooter.MatchCaseCaption = 'Match case'
       SortSettings.DefaultFormat = ssAutomatic
-      Version = '7.9.1.0'
+      Version = '7.8.9.0'
     end
   end
   object timRefresh: TTimer

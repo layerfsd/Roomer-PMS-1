@@ -61,8 +61,9 @@ type
     BIMaxGlowMargin,
     BIMinGlow,
     BIMinGlowMargin,
-    // Borders bluring
+
     ComboBoxMargin,
+    SliderMargin,
 
     BrightMin,
     BrightMax,
@@ -71,7 +72,8 @@ type
     RibbonCovering: integer;
 
     FXColor,
-    Shadow1Color: TColor;
+    Shadow1Color,
+    SysInactiveBorderColor: TColor;
 
     Version: real;
   public
@@ -244,7 +246,7 @@ begin
     end;
     SetWindowRgn(sp.BorderForm.AForm.Handle, sp.BorderForm.MakeRgn, False);
   end;
-  SendMessage(sp.Form.Handle, WM_SETREDRAW, 0, 0);
+  sp.Form.Perform(WM_SETREDRAW, 0, 0);
 end;
 
 
@@ -266,7 +268,7 @@ var
 procedure AllowRedrawCB(sp: TAccessSkinProvider; Data: integer);
 begin
   if sp.FormState and FS_LOCKED = FS_LOCKED then
-    SendMessage(sp.Form.Handle, WM_SETREDRAW, 1, 0);
+    sp.Form.Perform(WM_SETREDRAW, 1, 0);
 end;
 
 

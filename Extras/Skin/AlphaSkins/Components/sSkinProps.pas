@@ -280,6 +280,7 @@ const
   s_UseAeroBluring       = 'AEROBLUR';
 
   s_ComboMargin          = 'COMBOMARGIN';
+  s_SliderMargin         = 'SLIDERMARGIN';
 
   // Outer effects
   s_OuterOffsL           = 'OUTOFFSL';

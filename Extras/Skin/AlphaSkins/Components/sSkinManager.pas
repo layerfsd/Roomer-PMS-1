@@ -16,7 +16,7 @@ uses
   
 {$IFNDEF NOTFORHELP}
 const
-  acCurrentVersion = '10.24';
+  acCurrentVersion = '10.25';
 
 {$R sXB.res}   // Default ext borders
 {$R sOEff.res} // Default outer masks
@@ -464,21 +464,21 @@ type
     function MainWindowHook(var Message: TMessage): boolean;
     function GetExtendedBorders: boolean;
 
-    procedure SetSkinName           (const Value: TsSkinName);
+    procedure SetActiveControl      (const Value: hwnd);
     procedure SetSkinDirectory      (const Value: string);
     procedure SetActive             (const Value: boolean);
-    procedure SetBuiltInSkins       (const Value: TsStoredSkins);
     procedure SetVersion            (const Value: string);
-    procedure SetSkinInfo           (const Value: TacSkinInfo);
     procedure SetHueOffset          (const Value: integer);
     procedure SetBrightness         (const Value: integer);
     procedure SetSaturation         (const Value: integer);
     procedure SetIsDefault          (const Value: boolean);
-    procedure SetActiveControl      (const Value: hwnd);
+    procedure SetExtendedBorders    (const Value: boolean);
+    procedure SetSkinName           (const Value: TsSkinName);
+    procedure SetSkinInfo           (const Value: TacSkinInfo);
+    procedure SetKeyList            (const Value: TStringList);
+    procedure SetBuiltInSkins       (const Value: TsStoredSkins);
     procedure SetActiveGraphControl (const Value: TGraphicControl);
     procedure SetFSkinningRules     (const Value: TacSkinningRules);
-    procedure SetExtendedBorders    (const Value: boolean);
-    procedure SetKeyList            (const Value: TStringList);
   protected
     NoAutoUpdate: boolean;
     FActiveGraphControl: TGraphicControl;
@@ -871,6 +871,10 @@ begin
                   ma[i].Bmp := TBitmap.Create;
 
                 ma[i].Bmp.LoadFromFile(FileName);
+                if ma[i].Bmp.PixelFormat <> pf32bit then begin
+                  ma[i].Bmp.PixelFormat := pf32bit;
+                  FillAlphaRect(ma[i].Bmp, MkRect(ma[i].Bmp), MaxByte);
+                end;
                 ma[i].R := MkRect(ma[i].Bmp);
                 // To exit
                 Result := True;
@@ -1232,35 +1236,17 @@ function acCreatePen(Style, Width: Integer; Color: COLORREF): HPEN; stdcall;
 begin
   if DefaultManager <> nil then
     case Color of
-      COLOR_HIGHLIGHT:
-        Color := DefaultManager.Palette[pcSelectionBG_Focused];
-
-      COLOR_HIGHLIGHTTEXT:
-        Color := DefaultManager.Palette[pcSelectionText_Focused];
-
-      COLOR_WINDOW:
-        Color := DefaultManager.Palette[pcEditBG];
-
-      COLOR_BTNSHADOW:
-        Color := MixColors(DefaultManager.Palette[pcMainColor], 0, 0.8);
-
-      COLOR_3DDKSHADOW:
-        Color := MixColors(DefaultManager.Palette[pcMainColor], 0, 0.8);
-
-      COLOR_3DLIGHT:
-        Color := MixColors(DefaultManager.Palette[pcMainColor], $FFFFFF, 0.8);
-
-      COLOR_BTNFACE:
-        Color := DefaultManager.Palette[pcMainColor];
-
-      COLOR_WINDOWFRAME:
-        Color := DefaultManager.Palette[pcBorder];
-
-      clSilver:
-        Color := MixColors(DefaultManager.Palette[pcEditText], DefaultManager.Palette[pcEditBG], 0.15);
-
-      $F0F0F0:
-        Color := MixColors(DefaultManager.Palette[pcEditText], DefaultManager.Palette[pcEditBG], 0.15);
+      COLOR_INACTIVEBORDER:Color := DefaultManager.CommonSkinData.SysInactiveBorderColor;
+      COLOR_HIGHLIGHT:     Color := DefaultManager.Palette[pcSelectionBG_Focused];
+      COLOR_HIGHLIGHTTEXT: Color := DefaultManager.Palette[pcSelectionText_Focused];
+      COLOR_WINDOW:        Color := DefaultManager.Palette[pcEditBG];
+      COLOR_BTNFACE:       Color := DefaultManager.Palette[pcMainColor];
+      COLOR_WINDOWFRAME:   Color := DefaultManager.Palette[pcBorder];
+      COLOR_BTNSHADOW:     Color := MixColors(DefaultManager.Palette[pcMainColor], 0, 0.8);
+      COLOR_3DDKSHADOW:    Color := MixColors(DefaultManager.Palette[pcMainColor], 0, 0.8);
+      COLOR_3DLIGHT:       Color := MixColors(DefaultManager.Palette[pcMainColor], $FFFFFF, 0.8);
+      clSilver:            Color := MixColors(DefaultManager.Palette[pcEditText], DefaultManager.Palette[pcEditBG], 0.15);
+      $F0F0F0:             Color := MixColors(DefaultManager.Palette[pcEditText], DefaultManager.Palette[pcEditBG], 0.15);
     end;
 
   UnHookCreatePen;
@@ -1273,33 +1259,15 @@ function acGetSysColor(nIndex: Integer): DWORD; stdcall;
 begin
   if DefaultManager <> nil then
     case nIndex of
-      COLOR_HIGHLIGHT:
-        Result := DefaultManager.Palette[pcSelectionBG_Focused];
-
-      COLOR_HIGHLIGHTTEXT:
-        Result := DefaultManager.Palette[pcSelectionText_Focused];
-
-      COLOR_WINDOW:
-        Result := DefaultManager.Palette[pcEditBG];
-
-      COLOR_WINDOWTEXT:
-        Result := DefaultManager.Palette[pcEditText];
-
-      COLOR_BTNSHADOW:
-        Result := MixColors(DefaultManager.Palette[pcMainColor], 0, 0.8);
-
-      COLOR_3DDKSHADOW:
-        Result := MixColors(DefaultManager.Palette[pcMainColor], 0, 0.8);
-
-      COLOR_3DLIGHT:
-        Result := MixColors(DefaultManager.Palette[pcMainColor], $FFFFFF, 0.8);
-
-//      COLOR_BTNFACE:
-//        Result := DefaultManager.Palette[pcMainColor];
-
-      COLOR_WINDOWFRAME:
-        Result := DefaultManager.Palette[pcBorder]
-
+      COLOR_INACTIVEBORDER:Result := DefaultManager.CommonSkinData.SysInactiveBorderColor;
+      COLOR_HIGHLIGHT:     Result := DefaultManager.Palette[pcSelectionBG_Focused];
+      COLOR_HIGHLIGHTTEXT: Result := DefaultManager.Palette[pcSelectionText_Focused];
+      COLOR_WINDOW:        Result := DefaultManager.Palette[pcEditBG];
+      COLOR_WINDOWTEXT:    Result := DefaultManager.Palette[pcEditText];
+      COLOR_WINDOWFRAME:   Result := DefaultManager.Palette[pcBorder];
+      COLOR_BTNSHADOW:     Result := MixColors(DefaultManager.Palette[pcMainColor], 0, 0.8);
+      COLOR_3DDKSHADOW:    Result := MixColors(DefaultManager.Palette[pcMainColor], 0, 0.8);
+      COLOR_3DLIGHT:       Result := MixColors(DefaultManager.Palette[pcMainColor], $FFFFFF, 0.8)
       else begin
         UnHookGetSysColor;
         Result := GetSysColor(nIndex);
@@ -1315,21 +1283,10 @@ function acGetSysColorBrush(nIndex: Integer): HBRUSH; stdcall;
 begin
   if DefaultManager <> nil then
     case nIndex of
-      COLOR_HIGHLIGHT:
-        Result := CreateSolidBrush(Cardinal(DefaultManager.Palette[pcSelectionBG_Focused]));
-
-      COLOR_HIGHLIGHTTEXT:
-        Result := CreateSolidBrush(Cardinal(DefaultManager.Palette[pcSelectionText_Focused]));
-
-      COLOR_WINDOW:
-        Result := CreateSolidBrush(Cardinal(DefaultManager.Palette[pcEditBG]));
-
-      COLOR_WINDOWTEXT:
-        Result := CreateSolidBrush(Cardinal(DefaultManager.Palette[pcEditText]));
-
-//      COLOR_BTNFACE:
-//        Result := CreateSolidBrush(Cardinal(DefaultManager.Palette[pcMainColor]))
-
+      COLOR_HIGHLIGHT:     Result := CreateSolidBrush(Cardinal(DefaultManager.Palette[pcSelectionBG_Focused]));
+      COLOR_HIGHLIGHTTEXT: Result := CreateSolidBrush(Cardinal(DefaultManager.Palette[pcSelectionText_Focused]));
+      COLOR_WINDOW:        Result := CreateSolidBrush(Cardinal(DefaultManager.Palette[pcEditBG]));
+      COLOR_WINDOWTEXT:    Result := CreateSolidBrush(Cardinal(DefaultManager.Palette[pcEditText]))
       else begin
         UnHookGetSysColorBrush;
         Result := GetSysColorBrush(nIndex);
@@ -1499,6 +1456,7 @@ begin
   end;
   CommonSkinData := TsSkinData.Create;
   CommonSkinData.Active := False;
+  CommonSkinData.SysInactiveBorderColor := ColorToRGB(clInactiveBorder);
   FBuiltInSkins := TsStoredSkins.Create(Self);
   FCommonSections := TStringList.Create;
   FKeyList := TStringList.Create;
@@ -2001,10 +1959,10 @@ begin
     if not (csDesigning in ComponentState) and Repaint then
       LockForms(Self);
 
-  {$IFNDEF FPC}
+{$IFNDEF FPC}
     if SkinableMenus <> nil then
       SkinableMenus.SkinBorderWidth := -1;
-  {$ENDIF}
+{$ENDIF}
 
     CommonSkinData.Active := False;
     RestrictDrawing := True;
@@ -2180,7 +2138,6 @@ begin
     if FActive then begin
       if not NoAutoUpdate then
         SendNewSkin;
-
     end
     else
       SendRemoveSkin;
@@ -3012,6 +2969,7 @@ var
       Shadow1Transparency := GlobalInteger(s_Shadow1Transparency, 0);
 
       ComboBoxMargin      := GlobalInteger(s_ComboMargin,  2);
+      SliderMargin        := GlobalInteger(s_SliderMargin, 1);
       // Outer effects
       SetLength(oe, 2);
       with oe[1] do begin // Main shadow
@@ -3642,7 +3600,7 @@ begin
 {$IFNDEF NOWNDANIMATION}
           if not IsIconic(Application.{$IFDEF FPC}MainFormHandle{$ELSE}Handle{$ENDIF}) and ((Application.MainForm <> nil) and Application.MainForm.Visible) then begin
             sp := TsSkinProvider(SendAMessage(Application.MainForm.Handle, AC_GETPROVIDER));
-            if sp <> nil then begin
+            if sp <> nil then
               if AnimEffects.Minimizing.Active and Effects.AllowAnimation then begin
                 if sp.DrawNonClientArea then begin
                   sp.SkipAnimation := True;
@@ -3668,7 +3626,6 @@ begin
                   FreeAndNil(sp.BorderForm.AForm);
 //                  sp.BorderForm.ExBorderShowing := False; Restored later
                 end;
-            end;
           end;
 {$ENDIF}
         end;

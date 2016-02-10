@@ -216,7 +216,7 @@ type
   public
     constructor Create(AOwner: TsSkinProvider);
   published
-    property AdditionalHeight: integer read FAdditionalHeight write SetAdditionalHeight;
+    property AdditionalHeight: integer read FAdditionalHeight write SetAdditionalHeight default 0;
   end;
 
 
@@ -231,7 +231,6 @@ type
     UserBtnIndex,
     FSnapBuffer: integer;
 
-    RgnChanged,
     FScreenSnap,
     FShowAppIcon,
     FMakeSkinMenu,
@@ -290,6 +289,7 @@ type
     procedure InitIndexes;
   protected
     bCapture,
+    RgnChanged,
     bInProcess,
     FSysExHeight,
     ClearButtons,
@@ -622,6 +622,7 @@ type
     LastMousePos: TPoint;
 
     LeftPressed,
+    MainRgnReady,
     acInMouseMsg,
     MovRgnChanged,
     MaxMoving: boolean;
@@ -659,7 +660,7 @@ type
     procedure PaintAll;
     function MinTopCoord: integer;
     function MakeRgn(NewWidth: integer = 0; NewHeight: integer = 0): HRGN;
-    function FormState: cardinal;
+    function FormState: Cardinal;
     procedure UpdateRgn;
 
     procedure SendOwnerToBack;
@@ -806,7 +807,6 @@ const
 var
   ItemsRemoving: boolean = False;
 
-
 function AeroIsEnabled: boolean;
 function ForbidSysAnimating: boolean;
 procedure InitDwm(const Handle: THandle; const Skinned: boolean; const Repaint: boolean = False);
@@ -835,7 +835,7 @@ function SysCaptHeight(Form: TForm): integer;
 
 {$IFNDEF NOWNDANIMATION}
 function StartMinimizing(sp: TsSkinProvider): boolean;
-function  StartRestoring (sp: TsSkinProvider): boolean;
+function StartRestoring (sp: TsSkinProvider): boolean;
 
 procedure StartBlendOnMoving (sp: TsSkinProvider; ToMove: boolean = True);
 procedure FinishBlendOnMoving(sp: TsSkinProvider; CoverForm: TForm = nil);
@@ -1965,7 +1965,6 @@ begin
 
       if ((sp.Form.Parent = nil) or (TForm(sp.Form).DragKind <> dkDock)) {regions changing disabled when docking used} then begin
         RgnChanging := True;
-
         if (BorderForm <> nil) then begin
           sbw := SysBorderWidth(sp.Form.Handle, sp.BorderForm, False);
           if sp.FSysExHeight then
@@ -1991,9 +1990,9 @@ begin
 
         sp.RgnChanged := False;
         if AllChildren then
-          SetWindowRgn(Form.Handle, rgn, Repaint{ True - repainting is required })
+          while SetWindowRgn(Form.Handle, rgn, Repaint{ True - repainting is required }) = 0 do
         else begin
-          SetWindowRgn(Form.Handle, rgn, False);
+          while SetWindowRgn(Form.Handle, rgn, False) = 0 do;
           if Repaint then begin
             RedrawWindow(sp.Form.Handle, nil, 0, RDW_INVALIDATE or RDW_NOCHILDREN {or RDW_FRAME or RDW_NOERASE});//
             sp.ProcessMessage(WM_NCPAINT, 0, 0);
@@ -3151,7 +3150,6 @@ end;
 procedure TsSkinProvider.NewWndProc(var Message: TMessage);
 begin
 {$IFDEF LOGGED}
-//  if Form.Tag = 1 then
     AddToLog(Message);
 {$ENDIF}
   if (Message.Msg <> SM_ALPHACMD) or not AC_SMAlphaCmd_Common(Message) then
@@ -3515,10 +3513,13 @@ begin
 
     if not ((CurrentHT = i) or (CurrentHT = -1) and (i = 0)) then
       if (CurrentHT > 0) then begin
-  {$IFNDEF ALITE}
-        if (acAlphaHints.Manager <> nil) and (TAccessAlphaHints(acAlphaHints.Manager).HideTimer <> nil) and TAccessAlphaHints(acAlphaHints.Manager).HideTimer.Enabled then
-          TAccessAlphaHints(acAlphaHints.Manager).HideTimer.OnTimer(TAccessAlphaHints(acAlphaHints.Manager).HideTimer);
-  {$ENDIF}
+{$IFNDEF ALITE}
+        if (acAlphaHints.Manager <> nil) and (TAccessAlphaHints(acAlphaHints.Manager).HideTimer <> nil) {and TAccessAlphaHints(acAlphaHints.Manager).HideTimer.Enabled} then
+          if i > 0 then
+            TAccessAlphaHints(acAlphaHints.Manager).StartHideTimer
+          else
+            TAccessAlphaHints(acAlphaHints.Manager).HideTimer.OnTimer(TAccessAlphaHints(acAlphaHints.Manager).HideTimer);
+{$ENDIF}
         case CurrentHT of
           HTCLOSE:      ButtonClose.State := 0;
           HTMAXBUTTON:  ButtonMax.State   := 0;
@@ -3570,8 +3571,8 @@ begin
             FTitleBar.Items[CurrentHT - HTITEM].OnMouseEnter(FTitleBar.Items[CurrentHT - HTITEM]);
 
           FTitleBar.Items[CurrentHT - HTITEM].State := 1;
-          if SkinData.SkinManager.Effects.AllowAnimation then
-            StartHintTimer(FTitleBar.Items[CurrentHT - HTITEM]);
+//          if SkinData.SkinManager.Effects.AllowAnimation then
+          StartHintTimer(FTitleBar.Items[CurrentHT - HTITEM]);
         end;
     end;
     if Repaint then begin
@@ -4630,33 +4631,33 @@ var
   var
     i: integer;
   begin
-    if (c <> nil) then begin
+    if (c <> nil) then
       if (c is TFrame) then
         for i := 0 to c.ComponentCount - 1 do
           ProcessComponent(c.Components[i])
       else
-        if (c is TMainMenu) then begin
-          FCommonData.SkinManager.SkinableMenus.InitMenuLine(TMainMenu(c), A and FDrawNonCLientArea);
-          for i := 0 to TMainMenu(c).Items.Count - 1 do
-            FCommonData.SkinManager.SkinableMenus.HookItem(TMainMenu(c).Items[i], A and FCommonData.SkinManager.SkinnedPopups);
-        end
-        else
-          if (c is TPopupMenu) then
-            FCommonData.SkinManager.SkinableMenus.HookPopupMenu(TPopupMenu(c), A and FCommonData.SkinManager.SkinnedPopups)
+        with FCommonData.SkinManager do
+          if (c is TMainMenu) then begin
+            if DrawNonClientArea then begin
+              SkinableMenus.InitMenuLine(TMainMenu(c), A and FDrawNonCLientArea);
+              for i := 0 to TMainMenu(c).Items.Count - 1 do
+                SkinableMenus.HookItem(TMainMenu(c).Items[i], A and SkinnedPopups);
+            end;
+          end
           else
-            if (c is TMenuItem) then
-              if not (TMenuItem(c).GetParentMenu is TMainMenu) then
-                FCommonData.SkinManager.SkinableMenus.HookItem(TMenuItem(c), A and FCommonData.SkinManager.SkinnedPopups)
-              else
-                for i := 0 to c.ComponentCount - 1 do
-                  ProcessComponent(c.Components[i]);
-    end;
+            if (c is TPopupMenu) then
+              SkinableMenus.HookPopupMenu(TPopupMenu(c), A and SkinnedPopups)
+            else
+              if (c is TMenuItem) then
+                if not (TMenuItem(c).GetParentMenu is TMainMenu) then
+                  SkinableMenus.HookItem(TMenuItem(c), A and SkinnedPopups)
+                else
+                  for i := 0 to c.ComponentCount - 1 do
+                    ProcessComponent(c.Components[i]);
   end;
 
 begin
-  if (csDesigning in Form.ComponentState) or
-       (FCommonData.SkinManager.SkinableMenus = nil) or
-         not FCommonData.SkinManager.IsDefault then
+  if (csDesigning in Form.ComponentState) or (FCommonData.SkinManager.SkinableMenus = nil) or not FCommonData.SkinManager.IsDefault {or not DrawNonClientArea }then
     Exit;
 
   for i := 0 to Form.ComponentCount - 1 do
@@ -4910,7 +4911,7 @@ end;
 
 procedure TsSkinProvider.TryInitMenu;
 begin
-  if not MenusInitialized then begin
+  if not MenusInitialized and DrawNonClientArea then begin
 {$IFNDEF FPC}
     if Form.Menu <> nil then
       SkinData.SkinManager.SkinableMenus.InitMenuLine(Form.Menu, FDrawNonClientArea);
@@ -4942,7 +4943,7 @@ begin
     Exit;
 
 {$IFNDEF FPC}
-  if (Form.Menu <> nil) and Form.Menu.OwnerDraw then begin
+  if (Form.Menu <> nil) and Form.Menu.OwnerDraw and DrawNonClientArea then begin
     FMenuOwnerDraw := Form.Menu.OwnerDraw;
     MenusInitialized := True;
   end
@@ -5401,7 +5402,7 @@ begin
         FreeAndNil(BorderForm);
 
 {$IFNDEF FPC}
-      if SkinData.SkinManager <> nil then
+      if (SkinData.SkinManager <> nil) and DrawNonClientArea then
         SkinData.SkinManager.SkinableMenus.InitMenuLine(Form.Menu, False);
 {$ENDIF}
 
@@ -6301,9 +6302,9 @@ begin
             SavedLabelColors[l].Color := TLabel(Control).Font.Color;
             SavedLabelColors[l].ParentFont := ParentFont;
 
-            if Transparent or SkinData.SkinManager.LabelsOptions.TransparentAlways then
-              ControlStyle := ControlStyle - [csOpaque];
           end;
+          if Transparent or SkinData.SkinManager.LabelsOptions.TransparentAlways then
+            ControlStyle := ControlStyle - [csOpaque];
           // Otherwise, just change a color when skin is changed
           Font.Color := DefaultManager.GetGlobalFontColor;
         end;
@@ -6430,8 +6431,13 @@ begin
           if not (fsShowing in Form.FormState) {not FormActive} and ((BorderForm = nil) or IsMenuVisible(Self)) and not Assigned(Form.OnPaint) {Problem with specifically handled events} then
             MakeCaptForm(Self);
 
-      if (BorderForm <> nil) and not fAnimating and (FormState and FS_BLENDMOVING <> FS_BLENDMOVING) and not AeroIsEnabled then // Forbid a borders painting by system
-        UpdateRgn(Self, False);
+      if not fAnimating and (FormState and FS_BLENDMOVING <> FS_BLENDMOVING) and not AeroIsEnabled then // Forbid a borders painting by system
+        if (BorderForm <> nil) then
+          UpdateRgn(Self, False)
+        else
+          if Application.Mainform <> Form then
+            RgnChanged := True;
+
 
       OldWndProc(TMessage(Message));
 
@@ -6467,7 +6473,7 @@ begin
           end;
 
         if RTInit then
-          RedrawWindow(Form.Handle, nil, 0, RDW_ALLCHILDREN or RDW_INVALIDATE or RDW_ERASE or RDW_INVALIDATE);
+          RedrawWindow(Form.Handle, nil, 0, RDW_ALLCHILDREN or RDW_INVALIDATE or RDW_NOERASE or RDW_INVALIDATE);
       end;
     end
     else
@@ -6526,13 +6532,7 @@ begin
                 BorderForm.UpdateExBordersPos;
           end;
       end;
-    end{
-    else
-      if (FormTimer is TacMinTimer) and (TacMinTimer(FormTimer).AnimForm <> nil) then begin
-        FreeAndNil(TacMinTimer(FormTimer).AnimForm);
-        SkinData.BGChanged := True;
-        UpdateSkinCaption(Self);
-      end};
+    end;
 
     TryInitMenu;
     if FCommonData.Skinned and (Adapter = nil) then
@@ -7350,7 +7350,7 @@ begin
         Message.Result := 1;
       end
       else
-        if SkinData.SkinManager.gd[SkinData.SkinIndex].GiveOwnFont {and True {Remove it with updating of all skins} then begin
+        if (SkinData.SkinManager.CommonSkinData.Version >= 10.25) or SkinData.SkinManager.gd[SkinData.SkinIndex].GiveOwnFont {and True {Remove it with updating of all skins} then begin
           PacPaintInfo(Message.LParam)^.FontIndex := SkinData.SkinIndex;
           Message.Result := 1;
         end;
@@ -7387,7 +7387,7 @@ begin
       end
       else
         if GetWindowLong(Form.Handle, GWL_EXSTYLE) and WS_EX_LAYERED = WS_EX_LAYERED then
-          SetWindowLong(Form.Handle, GWL_EXSTYLE, GetWindowLong(Form.Handle, GWL_EXSTYLE) and not WS_EX_LAYERED);
+          while SetWindowLong(Form.Handle, GWL_EXSTYLE, GetWindowLong(Form.Handle, GWL_EXSTYLE) and not WS_EX_LAYERED) = 0 do;
     end;
 
     AC_NCPAINT: begin
@@ -7531,11 +7531,11 @@ begin
 
     AC_BEFORESCROLL:
       if FCommonData.RepaintIfMoved then
-        SendMessage(Form.Handle, WM_SETREDRAW, 0, 0);
+        Form.Perform(WM_SETREDRAW, 0, 0);
 
     AC_AFTERSCROLL:
       if FCommonData.RepaintIfMoved then begin
-        SendMessage(Form.Handle, WM_SETREDRAW, 1, 0);
+        Form.Perform(WM_SETREDRAW, 1, 0);
         RedrawWindow(Form.Handle, nil, 0, {RDW_NOERASE or }RDW_UPDATENOW or RDW_INVALIDATE or RDW_ALLCHILDREN or RDW_FRAME or RDW_ERASE);
         if MDISkinProvider = Self then
           RedrawWindow(Form.ClientHandle, nil, 0, RDW_UPDATENOW or RDW_INVALIDATE or RDW_ALLCHILDREN or RDW_FRAME);
@@ -7552,9 +7552,6 @@ var
   lInted: boolean;
 {$ENDIF}
 begin
-{$IFNDEF NOWNDANIMATION}
-  x := MaxByte;
-{$ENDIF}
   if FDrawNonClientArea and FDrawClientArea then begin // If first showing
     if Form.Showing then begin
       if (Form.FormStyle = fsMDIChild){ and ((MDISkinProvider = nil) or TsSkinProvider(MDISkinProvider).FInAnimation) }then begin
@@ -7590,11 +7587,18 @@ begin
                     SkinData.SkinManager.AnimEffects.FormShow.Active{$IFNDEF DISABLEPREVIEWMODE} and (acPreviewHandle <> Form.Handle){$ENDIF};
 
       lInted := False;
+{$IFDEF DELPHI7UP}
+      if Form.AlphaBlend then
+        X := Form.AlphaBlendValue
+      else
+{$ENDIF}
+        X := MaxByte;
+
       if fAnimating then begin
         FCommonData.Updating := True; // Don't draw child controls
         FInAnimation := True;
         lInted := DoLayered(Form.Handle, True);
-        X := MaxByte;
+//        X := MaxByte;
         if lInted then begin
           if BorderForm = nil then
             FillArOR(Self);
@@ -7606,7 +7610,7 @@ begin
 {$IFDEF DELPHI7UP}
         end
         else begin
-          X := Form.AlphaBlendValue;
+//          X := Form.AlphaBlendValue;
 //          Form.AlphaBlendValue := 0;
 {$ENDIF}
         end;
@@ -7627,7 +7631,7 @@ begin
             if Form.Controls[i].Visible then
               Form.Controls[i].Perform(WM_SETREDRAW, 1, 0);
 
-          SetWindowLong(Form.Handle, GWL_EXSTYLE, GetWindowLong(Form.Handle, GWL_EXSTYLE) and not WS_EX_LAYERED);
+          while SetWindowLong(Form.Handle, GWL_EXSTYLE, GetWindowLong(Form.Handle, GWL_EXSTYLE) and not WS_EX_LAYERED) = 0 do;
           RedrawWindow(Form.Handle, nil, 0, RDW_ALLCHILDREN or RDW_INVALIDATE);
           RgnChanging := False;
           Exit;
@@ -7695,7 +7699,7 @@ begin
   else begin // Backgrounds must be drawn by all controls for a blinking prevent
     OldWndProc(Message);
     if AeroIsEnabled and Form.Showing then
-      SendMessage(Form.Handle, WM_SETREDRAW, 1, 0);
+      Form.Perform(WM_SETREDRAW, 1, 0);
 
     SkinData.FUpdating := False;
     if AeroIsEnabled then
@@ -7798,11 +7802,11 @@ procedure TsSkinProvider.AC_WMSetIcon(var Message: TMessage);
 begin
   if not (csLoading in ComponentState) and (Message.LParam <> 0) and not InAnimationProcess and Form.Showing then begin
     if not AeroIsEnabled then
-      SendMessage(Form.Handle, WM_SETREDRAW, 0, 0);
+      Form.Perform(WM_SETREDRAW, 0, 0);
 
     OldWndProc(Message);
     if not AeroIsEnabled then
-      SendMessage(Form.Handle, WM_SETREDRAW, 1, 0);
+      Form.Perform(WM_SETREDRAW, 1, 0);
 
     UpdateSkinCaption(Self);
   end
@@ -8508,11 +8512,20 @@ begin
         if BetWeen(Message.HitTest, HTUDBTN, HTUDBTN + TitleButtons.Count - 1) then begin
           SetPressedHT(Message.HitTest);
           TitleButtons.Items[Message.HitTest - HTUDBTN].MouseDown(Message.HitTest - HTUDBTN, mbLeft, [], Message.XCursor, Message.YCursor);
+          HideHint(TitleButtons.Items[CurrentHT - HTUDBTN]);
         end
         else
           if BetWeen(Message.HitTest, HTITEM, HTITEM + MaxByte) then begin
             if Assigned(FTitleBar) then
               with FTitleBar.Items[Message.HitTest - HTITEM] do begin
+{$IFNDEF ALITE}
+                if (acAlphaHints.Manager <> nil) and (TAccessAlphaHints(acAlphaHints.Manager).HideTimer <> nil) then
+                  TAccessAlphaHints(acAlphaHints.Manager).HideTimer.OnTimer(TAccessAlphaHints(acAlphaHints.Manager).HideTimer);
+{$ENDIF}
+
+                if FHintTimer <> nil then
+                  FreeAndNil(FHintTimer);
+
                 if Style <> bsTab then begin
                   SetPressedHT(Message.HitTest);
 {$IFNDEF FPC}
@@ -8522,6 +8535,7 @@ begin
 {$ENDIF}
                 end;
                 DoMouseDown(mbLeft, [], Message.XCursor, Message.YCursor);
+                biClicked := FPressed;
               end;
           end
           else
@@ -9162,7 +9176,7 @@ begin
     MDISkinProvider := Self;
 
 {$IFNDEF FPC}
-  if IsMenuVisible(Self) and Assigned(SkinData.SkinManager) and (PMeasureItemStruct(Message.LParam)^.CtlType = ODT_MENU) then begin
+  if IsMenuVisible(Self) and Assigned(SkinData.SkinManager) and DrawNonClientArea and (PMeasureItemStruct(Message.LParam)^.CtlType = ODT_MENU) then begin
     mi := Form.Menu.FindItem(PMeasureItemStruct(Message.LParam)^.itemID, fkCommand);
     if mi <> nil then
       SkinData.SkinManager.SkinableMenus.InitItem(mi, True);
@@ -9193,7 +9207,7 @@ begin
 {$IFNDEF NOWNDANIMATION}
     if (TWMWindowPosChanged(Message).WindowPos.Flags and SWP_HIDEWINDOW = SWP_HIDEWINDOW) then
       if not SkipAnimation{ and (Form = Application.MainForm)} and (SkinData.FCacheBmp <> nil {it's possible under Aero}) then // Window will be hidden
-        if not IsIconic(Form.Handle) then begin
+        if not IsIconic(Form.Handle) then
           if (SkinData.SkinManager.ShowState = saMinimize) and (Form = Application.MainForm) then begin
             if SkinData.SkinManager.AnimEffects.Minimizing.Active then begin
               OldWndProc(Message);
@@ -9229,24 +9243,29 @@ begin
               if BorderForm <> nil then
                 if BorderForm.AForm <> nil then
                   FreeAndNil(BorderForm.AForm);
-        end;
-
 {$ENDIF}
     OldWndProc(Message);
-    if not FInAnimation and (BorderForm <> nil) and Form.Visible and not IsIconic(Form.Handle) then
-      if (TWMWindowPosChanged(Message).WindowPos^.Flags and SWP_NOREDRAW <> SWP_NOREDRAW) and
-           (TWMWindowPosChanged(Message).WindowPos^.Flags and SWP_DRAWFRAME <> SWP_DRAWFRAME) and
-             (FormState and FS_BLENDMOVING <> FS_BLENDMOVING) then
-        if (FormState and FS_DISABLED <> FS_DISABLED) then
-          if (TWMWindowPosChanged(Message).WindowPos^.Flags and 3 = 3) and (BorderForm.AForm <> nil) then
-            if AeroIsEnabled and (Application.MainForm = Form) and (GetActiveWindow = Form.Handle) then
-              SetWindowPos(BorderForm.AForm.Handle, BorderForm.GetTopWnd{HWND_TOPMOST}, 0, 0, 0, 0, SWP_NOSIZE or SWP_NOMOVE or SWP_NOACTIVATE or SWP_NOREDRAW or SWP_SHOWWINDOW or SWP_NOSENDCHANGING or SWP_NOOWNERZORDER)
+    if not FInAnimation and (BorderForm <> nil) then begin
+      if Form.Visible and not IsIconic(Form.Handle) then begin
+        if (TWMWindowPosChanged(Message).WindowPos^.Flags and SWP_NOREDRAW <> SWP_NOREDRAW) and
+             (TWMWindowPosChanged(Message).WindowPos^.Flags and SWP_DRAWFRAME <> SWP_DRAWFRAME) and
+               (FormState and FS_BLENDMOVING <> FS_BLENDMOVING) then
+          if (FormState and FS_DISABLED <> FS_DISABLED) then
+            if (TWMWindowPosChanged(Message).WindowPos^.Flags and 3 = 3) and (BorderForm.AForm <> nil) then
+              if AeroIsEnabled and (Application.MainForm = Form) and (GetActiveWindow = Form.Handle) then
+                SetWindowPos(BorderForm.AForm.Handle, BorderForm.GetTopWnd{HWND_TOPMOST}, 0, 0, 0, 0, SWP_NOSIZE or SWP_NOMOVE or SWP_NOACTIVATE or SWP_NOREDRAW or SWP_SHOWWINDOW or SWP_NOSENDCHANGING or SWP_NOOWNERZORDER)
+              else
+                SetWindowPos(BorderForm.AForm.Handle, Form.Handle, 0, 0, 0, 0, SWP_NOSIZE or SWP_NOMOVE or SWP_NOACTIVATE or SWP_NOREDRAW or SWP_SHOWWINDOW or SWP_NOSENDCHANGING or SWP_NOOWNERZORDER)
             else
-              SetWindowPos(BorderForm.AForm.Handle, Form.Handle, 0, 0, 0, 0, SWP_NOSIZE or SWP_NOMOVE or SWP_NOACTIVATE or SWP_NOREDRAW or SWP_SHOWWINDOW or SWP_NOSENDCHANGING or SWP_NOOWNERZORDER)
-          else
-            BorderForm.UpdateExBordersPos(False); // Update z-order ( BDS )
+              BorderForm.UpdateExBordersPos(False); // Update z-order ( BDS )
 
-          SendOwnerToBack;
+            SendOwnerToBack;
+      end
+      else
+        if (BorderForm <> nil) and (FormState and FS_ANIMMINIMIZING <> FS_ANIMMINIMIZING) and (FormState and FS_ANIMRESTORING <> FS_ANIMRESTORING) and
+            IsIconic(Form.Handle) and not Application.Terminated and not (csDestroying in Form.ComponentState) and (Form = Application.MainForm) then
+          FreeAndNil(BorderForm.AForm);
+    end
   end
   else
     OldWndProc(Message);
@@ -10777,6 +10796,7 @@ begin
   LeftPressed := False;
   LastMousePos := Point(-9999, -9999);
   ParentHandle := 0;
+  MainRgnReady := False;
   ExBorderShowing := False;
   ResetRgn := False;
   MovRgnChanged := False;
@@ -11166,7 +11186,7 @@ end;
 
 
 const
-  wScreenOffset = {$IFDEF D2010}90{$ELSE}{$IFDEF D2009}86{$ELSE}90{$ENDIF}{$ENDIF};
+  wScreenOffset = {$IFDEF D2010} 90 {$ELSE} {$IFDEF D2009} 86 {$ELSE} 90 {$ENDIF} {$ENDIF};
 
 type
   TOffsetArray = array [0..wScreenOffset] of byte;
@@ -11179,6 +11199,9 @@ type
 
   
 procedure TacBorderForm.UpdateExBordersPos(Redraw: boolean = True; Blend: byte = MaxByte);
+const
+//  DebugOffsX = 100; DebugOffsY = -100;
+  DebugOffsX = 0; DebugOffsY = 0;
 var
   bRgn: hrgn;
   oWnd: THandle;
@@ -11375,7 +11398,7 @@ begin
     if not Redraw then
       Flags := Flags or SWP_NOREDRAW;
 
-    p := Point(fR.Left - cx {+ 100}, fr.Top - cy);
+    p := Point(fR.Left - cx + DebugOffsX, fr.Top - cy + DebugOffsY);
     if acLayered and bSizeChanged and not acInMouseMsg then begin
       FBmpSize := MkSize(SkinData.FCacheBmp);
       FBmpTopLeft := MkPoint;
@@ -11427,22 +11450,28 @@ begin
           if Blend = 0 then
             SetWindowLong(oWnd, GWL_STYLE, GetWindowLong(oWnd, GWL_STYLE) or WS_VISIBLE);
 
-          if (Blend = MaxByte) and (FormState and FS_SIZING <> FS_SIZING) then
+          if not MainRgnReady and (Blend = MaxByte) and (FormState and FS_SIZING <> FS_SIZING) then begin
             // Additional update of the form region (avoiding of the empty form issue)
             if sp <> nil then
               sSkinProvider.UpdateRgn(sp, True, True)
             else
               aCDials.UpdateRgn(TacDialogWnd(FOwner), True);
+
+            MainRgnReady := True;
+          end;
         end
         else begin
           SetWindowPos(AForm.Handle, iInsAfter, 0, 0, 0, 0, Flags or SWP_NOSIZE or SWP_NOMOVE);
           SendOwnerToBack;
-          if (Blend = MaxByte) and (FormState and FS_SIZING <> FS_SIZING) then
+          if not MainRgnReady and (Blend = MaxByte) and (FormState and FS_SIZING <> FS_SIZING) then begin
             // Additional update of the form region (avoiding of the empty form issue)
             if sp <> nil then
               sSkinProvider.UpdateRgn(sp, Redraw)
             else
               aCDials.UpdateRgn(TacDialogWnd(FOwner), Redraw);
+
+            MainRgnReady := True;
+          end;
         end;
       end;
     end
@@ -11600,6 +11629,7 @@ function TacBorderForm.MakeRgn(NewWidth: integer = 0; NewHeight: integer = 0): H
 var
   R: TRect;
   SubRgn: hrgn;
+  fState: Cardinal;
   i, cx, dx: integer;
 
   function ClientRgn: hrgn;
@@ -11610,7 +11640,7 @@ var
       cR.Left := sp.OffsetX;
       cR.Top := sp.OffsetY;
 
-      if (FormState and FS_SIZING = FS_SIZING) and not (fsShowing in sp.Form.FormState) then begin
+      if (fState and FS_SIZING = FS_SIZING) and not (fsShowing in sp.Form.FormState) then begin
         if sp.LastClientRect.Right < sp.Form.ClientWidth then
           cR.Right := cR.Left + sp.LastClientRect.Right
         else
@@ -11638,13 +11668,13 @@ var
             cR.Bottom := cR.Bottom + GetScrollMetric(sp.ListSW.sBarHorz, SM_SCROLLWIDTH);
         end;
       end;
-      if (sp.LinesCount > 0) and (FormState and FS_ACTIVATE <> FS_ACTIVATE) then
+      if (sp.LinesCount > 0) and (fState and FS_ACTIVATE <> FS_ACTIVATE) then
         dec(cR.Top, sp.LinesCount * sp.MenuHeight);
     end
     else begin
       cR.Left := TacDialogWnd(FOwner).OffsetX;
       cR.Top := TacDialogWnd(FOwner).OffsetY;
-      if (FormState and FS_SIZING = FS_SIZING) then begin
+      if (fState and FS_SIZING = FS_SIZING) then begin
         GetClientRect(TacDialogWnd(FOwner).CtrlHandle, rClient);
         if TacDialogWnd(FOwner).LastClientRect.Right < WidthOf(rClient) then
           cR.Right := cR.Left + TacDialogWnd(FOwner).LastClientRect.Right
@@ -11684,35 +11714,42 @@ begin
     else
       Result := 0;
 
-    if (FormState and FS_FULLPAINTING = 0) and (FormState and FS_ANIMCLOSING <> FS_ANIMCLOSING) {or (FOwner is TsSkinProvider) and sp.Form.Showing)} then begin
+    fState := FormState;
+
+    if (fState and FS_CHANGING = FS_CHANGING) then begin
       if Result = 0 then
         Result := CreateRectRgn(0, 0, AForm.Width, AForm.Height);
-
-//      if (FormState and FS_DISABLED <> FS_DISABLED) then begin
-      SubRgn := ClientRgn;
-      CombineRgn(Result, Result, SubRgn, RGN_XOR);
-      DeleteObject(SubRgn);
-//      end;
     end
     else
-      if AForm.Top < MinTopCoord then begin
+      if (fState and FS_FULLPAINTING = 0) and (fState and FS_ANIMCLOSING <> FS_ANIMCLOSING) {or (FOwner is TsSkinProvider) and sp.Form.Showing)} then begin
         if Result = 0 then
           Result := CreateRectRgn(0, 0, AForm.Width, AForm.Height);
 
-        SubRgn := CreateRectRgn(0, 0, AForm.Width, MinTopCoord - AForm.Top);
+  //      if (FormState and FS_DISABLED <> FS_DISABLED) then begin
+        SubRgn := ClientRgn;
         CombineRgn(Result, Result, SubRgn, RGN_XOR);
         DeleteObject(SubRgn);
-        MovRgnChanged := True;
+  //      end;
       end
       else
-        MovRgnChanged := False;
+        if AForm.Top < MinTopCoord then begin
+          if Result = 0 then
+            Result := CreateRectRgn(0, 0, AForm.Width, AForm.Height);
+
+          SubRgn := CreateRectRgn(0, 0, AForm.Width, MinTopCoord - AForm.Top);
+          CombineRgn(Result, Result, SubRgn, RGN_XOR);
+          DeleteObject(SubRgn);
+          MovRgnChanged := True;
+        end
+        else
+          MovRgnChanged := False;
   end
   else
     Result := 0;
 end;
 
 
-function TacBorderForm.FormState: cardinal;
+function TacBorderForm.FormState: Cardinal;
 begin
   if FOwner is TsSkinProvider then
     Result := TsSkinProvider(FOwner).FormState
@@ -11737,6 +11774,7 @@ procedure TacBorderForm.CreateNewForm;
 var
   Flags: ACNativeInt;
 begin
+  MainRgnReady := False;
   AForm := TForm.Create(nil);
   AForm.Visible := False;
   AForm.BorderStyle := bsNone;
@@ -12481,7 +12519,7 @@ begin
           sp.fAnimating := False;
           sp.SetHotHT(0);
           sp.FormState := sp.FormState and not FS_ANIMMINIMIZING;
-          SetWindowLong(sp.Form.Handle, GWL_EXSTYLE, GetWindowLong(sp.Form.Handle, GWL_EXSTYLE) and not WS_EX_LAYERED);
+          while SetWindowLong(sp.Form.Handle, GWL_EXSTYLE, GetWindowLong(sp.Form.Handle, GWL_EXSTYLE) and not WS_EX_LAYERED) = 0 do;
           if sp.BorderForm <> nil then begin
             FreeAndNil(sp.BorderForm.AForm);
             AnimForm := nil;
@@ -12558,7 +12596,7 @@ begin
           SetLayeredWindowAttributes(sp.Form.Handle, clNone, sp.Form.AlphaBlendValue, ULW_ALPHA)
         else
 {$ENDIF}
-          SetWindowLong(FormHandle, GWL_EXSTYLE, GetWindowLong(FormHandle, GWL_EXSTYLE) and not WS_EX_LAYERED);
+          while SetWindowLong(FormHandle, GWL_EXSTYLE, GetWindowLong(FormHandle, GWL_EXSTYLE) and not WS_EX_LAYERED) = 0 do;
 
 //        if sp.BorderForm = nil then
 //          SetWindowLong(FormHandle, GWL_STYLE, GetWindowLong(FormHandle, GWL_STYLE) or WS_VISIBLE);
@@ -12581,14 +12619,13 @@ begin
 
         RedrawWindow(FormHandle, nil, 0, RDW_INVALIDATE or RDW_ALLCHILDREN or RDW_UPDATENOW or RDW_FRAME or RDW_INTERNALPAINT);
         Minimized := False;
+        SetWindowPos(AnimForm.Handle, FormHandle, 0, 0, 0, 0, SWP_NOMOVE or SWP_NOSIZE or SWP_NOREDRAW or SWP_NOACTIVATE or SWP_NOSENDCHANGING or SWP_NOOWNERZORDER);
         if (sp <> nil) and (sp.BorderForm <> nil) and (sp.BorderForm.AForm = AnimForm) then begin
           sp.BorderForm.UpdateExBordersPos(True);
           AnimForm := nil;
         end
-        else begin
-          SetWindowPos(AnimForm.Handle, FormHandle, 0, 0, 0, 0, SWP_NOMOVE or SWP_NOSIZE or SWP_NOREDRAW or SWP_NOACTIVATE or SWP_NOSENDCHANGING or SWP_NOOWNERZORDER);
+        else
           FreeAndnil(AnimForm);
-        end;
 
         if IsWindowEnabled(FormHandle) and IsWindowVisible(FormHandle) then
           if (sp.Form.FormStyle = fsMDIForm) and (sp.Form.ActiveMDIChild <> nil) then begin
@@ -12608,9 +12645,8 @@ begin
               SetFocus(FormHandle);
           end;
 
-          if sp.FormState and FS_DISABLED = FS_DISABLED then begin
+          if sp.FormState and FS_DISABLED = FS_DISABLED then
             sp.UpdateLayerForm;
-          end;
 
         if Assigned(Application.OnRestore) then
           Application.OnRestore(Application);
@@ -12847,6 +12883,7 @@ end;
 constructor TacFormHeader.Create(AOwner: TsSkinProvider);
 begin
   FOwner := AOwner;
+  FAdditionalHeight := 0;
 end;
 
 
@@ -12930,6 +12967,7 @@ finalization
     FreeLibrary(hDWMAPI);
 
 end.
+
 
 
 
