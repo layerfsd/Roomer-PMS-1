@@ -171,7 +171,7 @@ end;
 procedure TCheckComboBox.UpdateChecked;
 begin
   while FChecked.Count < ItemCount do
-    FChecked.Add(0);
+    FChecked.Add(nil);
   while FChecked.Count > ItemCount do
     FChecked.Delete(FChecked.Count - 1);
 end;

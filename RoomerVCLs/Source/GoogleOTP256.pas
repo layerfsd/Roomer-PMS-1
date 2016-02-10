@@ -44,7 +44,6 @@ var ctx: THMAC_Context;
     dlen, klen: word;
     mac: THashDigest;
     AlgoName: THashName;
-    i : Integer;
 begin
   klen := HIGH(_Key) + 1;
   dlen := HIGH(Buffer) + 1;
@@ -103,7 +102,6 @@ end;
 function HexStrToIdBytes(hexStr : String) : TIdBytes;
 var c : Integer;
     i, l : Integer;
-    s : String;
 begin
   l := 0;
   SetLength(result, Length(hexStr) div 2);
@@ -131,7 +129,6 @@ end;
 
 function CalculateOTP(const Secret: String; const Counter: Integer = -1): String;
 var
-  Hash: String;
   Offset: Integer;
   Part1, Part2, Part3, Part4: Integer;
   Key: Integer;
@@ -159,7 +156,6 @@ end;
 
 function CalculateOTPOnSpecifiedTime(const Secret: String; tim : Extended): String;
 var
-  Hash: String;
   Offset: Integer;
   Part1, Part2, Part3, Part4: Integer;
   Key: Integer;

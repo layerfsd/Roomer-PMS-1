@@ -3,7 +3,7 @@
         <ProjectGuid>{EF15D434-1B5F-4B39-AF5E-24586022F9CF}</ProjectGuid>
         <MainSource>RoomerVCLs.dpk</MainSource>
         <ProjectVersion>14.3</ProjectVersion>
-        <Config Condition="'$(Config)'==''">Debug</Config>
+        <Config Condition="'$(Config)'==''">DebugBas</Config>
         <DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
         <FrameworkType>VCL</FrameworkType>
         <Base>True</Base>
@@ -51,6 +51,17 @@
         <Cfg_2>true</Cfg_2>
         <Base>true</Base>
     </PropertyGroup>
+    <PropertyGroup Condition="'$(Config)'=='DebugBas' or '$(Cfg_3)'!=''">
+        <Cfg_3>true</Cfg_3>
+        <CfgParent>Base</CfgParent>
+        <Base>true</Base>
+    </PropertyGroup>
+    <PropertyGroup Condition="('$(Platform)'=='Win32' and '$(Cfg_3)'=='true') or '$(Cfg_3_Win32)'!=''">
+        <Cfg_3_Win32>true</Cfg_3_Win32>
+        <CfgParent>Cfg_3</CfgParent>
+        <Cfg_3>true</Cfg_3>
+        <Base>true</Base>
+    </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
         <RuntimeOnlyPackage>true</RuntimeOnlyPackage>
         <DCC_DUPLICATE_CTOR_DTOR>false</DCC_DUPLICATE_CTOR_DTOR>
@@ -76,11 +87,9 @@
     <PropertyGroup Condition="'$(Base_Win32)'!=''">
         <Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
         <VerInfo_Locale>1033</VerInfo_Locale>
-        <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <DCC_Namespace>System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;$(DCC_Namespace)</DCC_Namespace>
         <Icon_MainIcon>RoomerVCLs_Icon.ico</Icon_MainIcon>
         <DCC_UsePackage>rtl;vcl;xmlrtl;soaprtl;inet;dbrtl;adortl;IndySystem;IndyProtocols;IndyCore;vclx;vclie;vclimg;dxCoreRS17;cxLibraryRS17;dxGDIPlusRS17;dxThemeRS17;cxPageControlRS17;cxEditorsRS17;acntDelphiXE3_R;rbRCL1417;rbRTL1417;tmsdxe3;cxGridRS17;cxPivotGridRS17;dxComnRS17;dxBarRS17;dxRibbonRS17;vclactnband;VclSmp;vcldb;bdertl;Tee;dxDockingRS17;$(DCC_UsePackage)</DCC_UsePackage>
-        <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win64)'!=''">
         <Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
@@ -103,6 +112,16 @@
         <DCC_DcuOutput>C:\Temp\dcu\</DCC_DcuOutput>
         <Debugger_RunParams>RoomerBase=http://localhost Port=8080 OpenApiBase=http://dev1.roomerdev.net</Debugger_RunParams>
         <VerInfo_Locale>1033</VerInfo_Locale>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Cfg_3)'!=''">
+        <DCC_Define>DEBUG;_USE_INDY;$(DCC_Define)</DCC_Define>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Cfg_3_Win32)'!=''">
+        <DCC_SYMBOL_PLATFORM>false</DCC_SYMBOL_PLATFORM>
+        <DCC_DcpOutput>..\dcp\$(Platform)</DCC_DcpOutput>
+        <VerInfo_Locale>1033</VerInfo_Locale>
+        <DCC_DcuOutput>_dcu</DCC_DcuOutput>
+        <DCC_BplOutput>..\bin\$(Platform)</DCC_BplOutput>
     </PropertyGroup>
     <ItemGroup>
         <DelphiCompile Include="$(MainSource)">
@@ -160,10 +179,7 @@
         <DCCReference Include="Source\uRoomerFilterComboBox.pas"/>
         <DCCReference Include="Source\uTransparentPanel.pas"/>
         <DCCReference Include="Source\TFlatButtonUnit.pas"/>
-        <DCCReference Include="Source\RoomerPeriodGrid.pas"/>
-        <DCCReference Include="Source\RoomerReservationDefinitions.pas"/>
         <DCCReference Include="RoomerTableDefinitions.pas"/>
-        <DCCReference Include="Source\RoomerReservationsController.pas"/>
         <DCCReference Include="Source\CheckComboBox.pas"/>
         <DCCReference Include="Source\RoomerMultipartFormData.pas"/>
         <DCCReference Include="http\ALHttpClient.pas"/>
@@ -191,6 +207,10 @@
         <DCCReference Include="Source\HSLUtils.pas"/>
         <BuildConfiguration Include="Debug">
             <Key>Cfg_2</Key>
+            <CfgParent>Base</CfgParent>
+        </BuildConfiguration>
+        <BuildConfiguration Include="DebugBas">
+            <Key>Cfg_3</Key>
             <CfgParent>Base</CfgParent>
         </BuildConfiguration>
         <BuildConfiguration Include="Base">

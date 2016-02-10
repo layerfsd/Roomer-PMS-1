@@ -90,7 +90,6 @@ begin
 end;
 
 function TRoomerDataSet.SystemFreeExecuteAsync(statement : String): String;
-var res : String;
 begin
   downloadUrlAsStringUsingPostAsync(  RoomerUri + 'pms/business/execute', 'statement=' + UrlEncode(statement));
   Result := '0';
@@ -816,19 +815,19 @@ end;
 
 function TRoomerDataSet.SystemFinanceListCustomers(): String;
 begin
-  Result := Utf8Decode(downloadUrlAsString(  RoomerUri + 'financekeys/customers'));
+  Result := Utf8ToString(downloadUrlAsString(  RoomerUri + 'financekeys/customers'));
 end;
 
 
 function TRoomerDataSet.SystemFinanceListProducts(): String;
 begin
-  Result := Utf8Decode(downloadUrlAsString(  RoomerUri + 'financekeys/products'));
+  Result := Utf8ToString(downloadUrlAsString(  RoomerUri + 'financekeys/products'));
 end;
 
 
 function TRoomerDataSet.SystemFinanceListPaymentTypes(): String;
 begin
-  Result := Utf8Decode(downloadUrlAsString(  RoomerUri + 'financekeys/paymenttypes'));
+  Result := Utf8ToString(downloadUrlAsString(  RoomerUri + 'financekeys/paymenttypes'));
 end;
 
 
