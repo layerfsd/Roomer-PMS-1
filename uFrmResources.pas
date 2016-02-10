@@ -68,8 +68,6 @@ type
     ResourceSet : TRoomerDataSet;
     CollectionOfOpenedFiles : TStringList;
     olmdd : TOlMailDragDrop;
-    procedure CreateWnd; override;
-    procedure DestroyWnd; override;
     procedure WMDROPFILES(var msg : TWMDropFiles) ; message WM_DROPFILES;
 
     procedure GetResources;
@@ -85,6 +83,9 @@ type
     function FilenameInList(filename: String): Boolean;
     function GetUri: String;
     function GetTableInfo(KeyString: String): TRoomerDataSet;
+  protected
+    procedure CreateWnd; override;
+    procedure DestroyWnd; override;
   public
     { Public declarations }
     keyString, access : String;

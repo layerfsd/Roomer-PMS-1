@@ -79,6 +79,7 @@ object frmDownPayment: TfrmDownPayment
     ParentFont = False
     TabOrder = 0
     SkinData.SkinSection = 'GROUPBOX'
+    Checked = False
     ExplicitWidth = 388
     object labReservation: TsLabel
       Left = 96
@@ -163,15 +164,6 @@ object frmDownPayment: TfrmDownPayment
       TabOrder = 1
       Text = 'Downpayment'
       SkinData.SkinSection = 'EDIT'
-      BoundLabel.Indent = 0
-      BoundLabel.Font.Charset = DEFAULT_CHARSET
-      BoundLabel.Font.Color = clWindowText
-      BoundLabel.Font.Height = -11
-      BoundLabel.Font.Name = 'Tahoma'
-      BoundLabel.Font.Style = []
-      BoundLabel.Layout = sclLeft
-      BoundLabel.MaxWidth = 0
-      BoundLabel.UseSkinColor = True
     end
     object edAmount: TsCalcEdit
       Left = 157
@@ -187,15 +179,6 @@ object frmDownPayment: TfrmDownPayment
       Font.Style = []
       ParentFont = False
       TabOrder = 0
-      BoundLabel.Indent = 0
-      BoundLabel.Font.Charset = DEFAULT_CHARSET
-      BoundLabel.Font.Color = clWindowText
-      BoundLabel.Font.Height = -11
-      BoundLabel.Font.Name = 'Tahoma'
-      BoundLabel.Font.Style = []
-      BoundLabel.Layout = sclLeft
-      BoundLabel.MaxWidth = 0
-      BoundLabel.UseSkinColor = True
       SkinData.SkinSection = 'EDIT'
       GlyphMode.Blend = 0
       GlyphMode.Grayed = False
@@ -216,6 +199,7 @@ object frmDownPayment: TfrmDownPayment
     ParentFont = False
     TabOrder = 1
     SkinData.SkinSection = 'GROUPBOX'
+    Checked = False
     ExplicitWidth = 388
     object memNotes: TsMemo
       AlignWithMargins = True
@@ -236,15 +220,11 @@ object frmDownPayment: TfrmDownPayment
       Font.Style = []
       ParentFont = False
       TabOrder = 0
-      BoundLabel.Indent = 0
       BoundLabel.Font.Charset = DEFAULT_CHARSET
       BoundLabel.Font.Color = clWindowText
       BoundLabel.Font.Height = -13
       BoundLabel.Font.Name = 'Tahoma'
       BoundLabel.Font.Style = []
-      BoundLabel.Layout = sclLeft
-      BoundLabel.MaxWidth = 0
-      BoundLabel.UseSkinColor = True
       SkinData.SkinSection = 'EDIT'
       ExplicitLeft = 2
       ExplicitTop = 15

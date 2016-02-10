@@ -33,6 +33,7 @@ function THotelStatusReport.PrepareData : Boolean;
 begin
   DataSet := CreateNewDataSet;
 //  result := rSet_bySQL(DataSet, TheSql);
+  Result := true;
 end;
 
 procedure THotelStatusReport.CreateReport;

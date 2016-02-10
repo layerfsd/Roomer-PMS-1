@@ -170,7 +170,7 @@ Type
       procedure Clear;
     procedure ClearTables;
     procedure ClearRoomFloors;
-    procedure ClearSingleTable(Table: TRoomerDataSet);
+//    procedure ClearSingleTable(Table: TRoomerDataSet);
     function GetChannelsSet: TRoomerDataSet;
     function GetControlSet: TRoomerDataSet;
     function GetCountries: TRoomerDataSet;
@@ -196,7 +196,7 @@ Type
     procedure ReadTableByName(table: String; startingUp : Boolean = False);
     procedure AssertComponent(Comp: TComponent);
     function ValidateHelpContext(ctx: Integer): Boolean;
-    Function ValidateHelpContext2(ctx : Integer) : Boolean;
+//    Function ValidateHelpContext2(ctx : Integer) : Boolean;
     function GetPackages: TRoomerDataSet;
     function GetPackageItems: TRoomerDataSet;
     function GetPersonProfiles: TRoomerDataSet;
@@ -522,7 +522,6 @@ end;
 
 function TGlobalSettings.LocationSQLInString(locationlist : TSet_Of_Integer) : string;
 var
-  i : integer;
   locationID : integer;
   s : string;
 
@@ -694,13 +693,13 @@ begin
 //  FLocations.First;
 //
 end;
-
+(*
 procedure TGlobalSettings.ClearSingleTable(Table : TRoomerDataSet);
 begin
   If Table <> nil then
     try Table.free; except end;
 end;
-
+*)
 procedure TGlobalSettings.ClearTables;
 begin
 //  ClearSingleTable(FVAT);
@@ -730,7 +729,6 @@ end;
 
 procedure TGlobalSettings.FillLocationsMenu(mnu: TPopupMenu; event : TNotifyEvent);
 var item : TMenuItem;
-    list : TStrings;
     i : integer;
 begin
   mnu.Items.Clear;
@@ -1241,7 +1239,7 @@ begin
       AssertComponent(Form.Components[i]);
 
 end;
-
+(*
 Function TGlobalSettings.ValidateHelpContext2(ctx : Integer) : Boolean;
 begin
   result := (ctx = 0) OR
@@ -1256,10 +1254,10 @@ begin
             (ctx = g.qUserAuthValue4) OR
             (ctx = g.qUserAuthValue5);
 end;
-
+*)
 Function TGlobalSettings.ValidateHelpContext(ctx : Integer) : Boolean;
 var
-  s1,s2,s3,s4,s5,s6 : string;
+  s1,s2,s3,s4,s5 : string;
 begin
 
   if ctx = 0 then
@@ -1811,7 +1809,6 @@ procedure TGlobalSettings.LoadCurrentRecordFromDataSet(ToSet, DataSet : TDataSet
 var
   i : Integer;
   AField : TField;
-  mField: TdxMemField;
 begin
   with ToSet do
   begin

@@ -82,8 +82,8 @@ object frmCountries: TfrmCountries
         Caption = 'Clear'
         OnClick = edFilterClickBtn
         SkinData.SkinSection = 'SPEEDBUTTON'
-        ImageIndex = 4
         Images = DImages.PngImageList1
+        ImageIndex = 4
       end
       object btnInsert: TsButton
         Left = 7
@@ -193,15 +193,6 @@ object frmCountries: TfrmCountries
         TabOrder = 6
         OnChange = edFilterChange
         SkinData.SkinSection = 'EDIT'
-        BoundLabel.Indent = 0
-        BoundLabel.Font.Charset = DEFAULT_CHARSET
-        BoundLabel.Font.Color = clWindowText
-        BoundLabel.Font.Height = -11
-        BoundLabel.Font.Name = 'Tahoma'
-        BoundLabel.Font.Style = []
-        BoundLabel.Layout = sclLeft
-        BoundLabel.MaxWidth = 0
-        BoundLabel.UseSkinColor = True
       end
     end
     object panBtn: TsPanel
@@ -534,7 +525,6 @@ object frmCountries: TfrmCountries
     Top = 184
     object prLink_grData: TdxGridReportLink
       Component = grData
-      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.GrayShading = True
@@ -547,7 +537,6 @@ object frmCountries: TfrmCountries
       PrinterPage.PageSize.Y = 297000
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
-      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       BuiltInReportLink = True
     end
   end

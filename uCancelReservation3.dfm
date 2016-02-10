@@ -50,6 +50,7 @@ object frmCancelReservation3: TfrmCancelReservation3
       ParentFont = False
       TabOrder = 0
       SkinData.SkinSection = 'GROUPBOX'
+      Checked = False
       ExplicitWidth = 530
       object memReason: TsMemo
         AlignWithMargins = True
@@ -70,15 +71,11 @@ object frmCancelReservation3: TfrmCancelReservation3
         Font.Style = []
         ParentFont = False
         TabOrder = 0
-        BoundLabel.Indent = 0
         BoundLabel.Font.Charset = DEFAULT_CHARSET
         BoundLabel.Font.Color = clWindowText
         BoundLabel.Font.Height = -13
         BoundLabel.Font.Name = 'Tahoma'
         BoundLabel.Font.Style = []
-        BoundLabel.Layout = sclLeft
-        BoundLabel.MaxWidth = 0
-        BoundLabel.UseSkinColor = True
         SkinData.SkinSection = 'EDIT'
         ExplicitWidth = 514
       end
@@ -103,6 +100,7 @@ object frmCancelReservation3: TfrmCancelReservation3
       ParentFont = False
       TabOrder = 1
       SkinData.SkinSection = 'GROUPBOX'
+      Checked = False
       ExplicitWidth = 530
       DesignSize = (
         490
@@ -114,16 +112,13 @@ object frmCancelReservation3: TfrmCancelReservation3
         Height = 21
         Anchors = [akLeft, akTop, akRight]
         Alignment = taLeftJustify
-        BoundLabel.Indent = 0
         BoundLabel.Font.Charset = DEFAULT_CHARSET
         BoundLabel.Font.Color = clWindowText
         BoundLabel.Font.Height = -13
         BoundLabel.Font.Name = 'Tahoma'
         BoundLabel.Font.Style = []
-        BoundLabel.Layout = sclLeft
-        BoundLabel.MaxWidth = 0
-        BoundLabel.UseSkinColor = True
         SkinData.SkinSection = 'COMBOBOX'
+        VerticalAlignment = taAlignTop
         Color = clWhite
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clBlack

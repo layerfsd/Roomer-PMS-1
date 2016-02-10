@@ -213,7 +213,6 @@ end;
 
   procedure TfrmHiddenInfo.FormShow(Sender : TObject);
   var
-    s : string;
     ok : boolean;
 
     outLst, innLst : TstringList;

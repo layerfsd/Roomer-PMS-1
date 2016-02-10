@@ -46,10 +46,22 @@
         <Cfg_2>true</Cfg_2>
         <Base>true</Base>
     </PropertyGroup>
+    <PropertyGroup Condition="'$(Config)'=='DebugBas' or '$(Cfg_3)'!=''">
+        <Cfg_3>true</Cfg_3>
+        <CfgParent>Base</CfgParent>
+        <Base>true</Base>
+    </PropertyGroup>
+    <PropertyGroup Condition="('$(Platform)'=='Win32' and '$(Cfg_3)'=='true') or '$(Cfg_3_Win32)'!=''">
+        <Cfg_3_Win32>true</Cfg_3_Win32>
+        <CfgParent>Cfg_3</CfgParent>
+        <Cfg_3>true</Cfg_3>
+        <Base>true</Base>
+    </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
+        <DCC_Define>roomerstore;$(DCC_Define)</DCC_Define>
         <Icon_MainIcon>Roomer_Icon1.ico</Icon_MainIcon>
         <Manifest_File>None</Manifest_File>
-        <DCC_UnitSearchPath>..\kbmMemTable\Source;C:\Users\Bas\Documents\Sources\Roomer-PMS-1\RoomerVCLs\Source;RoomerVCLs\Source;RoomerVCLs\http;Extras\NativeXml407\nativexml;Extras\NativeXml407\general;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+        <DCC_UnitSearchPath>..\kbmMemTable\Source;RoomerVCLs\Source;RoomerVCLs\http;Extras\NativeXml407\nativexml;Extras\NativeXml407\general;RoomerVCLs\Source ;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
         <DCC_ImageBase>00400000</DCC_ImageBase>
         <VerInfo_Keys>CompanyName=Beryllium ehf;FileDescription=Hotel Management System Main Module;FileVersion=12.5.11.10670;InternalName=HMS;LegalCopyright=Beryllium ehf 2000-2012;LegalTrademarks=Beryllium 2000-2012;OriginalFilename=home.exe;ProductName=Hotel Organizing and Management System;ProductVersion=12.5.11;Comments=SQL 2005 - Datalayout V12.05;Author=Bjorn Heidarr / Hordur Johannsson;DBversion=SQL 2005 - 1205;SupportEmail=support@berylsoftware.com;SupportHomePage=http://berylsoftware.com;SupportTel=+354 772-2002;Support=Hörður Jóhannsson</VerInfo_Keys>
         <VerInfo_Locale>1039</VerInfo_Locale>
@@ -106,7 +118,7 @@
         <VerInfo_Release>1</VerInfo_Release>
         <VerInfo_Build>1</VerInfo_Build>
         <DCC_BplOutput>dck\</DCC_BplOutput>
-        <DCC_Define>RELEASE;ROOMERSTORE;_TRANSLATION_EXCEPTIONS_ACTIVE;$(DCC_Define)</DCC_Define>
+        <DCC_Define>RELEASE;$(DCC_Define)</DCC_Define>
         <VerInfo_Keys>CompanyName=Promoir BV;FileDescription=Roomer PMS;FileVersion=1.8.1.1;InternalName=;LegalCopyright=(C) 2013, 2014, 2015 Promoir BV;LegalTrademarks=Roomer is a Registered Trademark of Promoir BV;OriginalFilename=Roomer.exe;ProductName=Roomer Open Hospitality Platform;ProductVersion=1.8.1.1;Comments=;ExtraBuild=20160202</VerInfo_Keys>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2)'!=''">
@@ -115,7 +127,7 @@
         <VerInfo_Keys>CompanyName=Beryllium ehf;FileDescription=Hotel Management System Main Module;FileVersion=1.5.11.10670;InternalName=HMS;LegalCopyright=Beryllium ehf 2000-2012;LegalTrademarks=Beryllium 2000-2012;OriginalFilename=home.exe;ProductName=Hotel Organizing and Management System;ProductVersion=1.5.11;Comments=SQL 2005 - Datalayout V12.05;Author=Bjorn Heidarr / Hordur Johannsson;DBversion=SQL 2005 - 1205;SupportEmail=support@berylsoftware.com;SupportHomePage=http://berylsoftware.com;SupportTel=+354 772-2002;Support=Hörður Jóhannsson</VerInfo_Keys>
         <DCC_OutputXMLDocumentation>true</DCC_OutputXMLDocumentation>
         <DCC_DebugInformation>true</DCC_DebugInformation>
-        <DCC_Define>DEBUG;_USE_INDY;_MONITOR_LEAKAGE;SQLLOG;_USE_JCL;TRANSLATION_ACTIVE;TRANSLATION_EXCEPTIONS_ACTIVE;$(DCC_Define)</DCC_Define>
+        <DCC_Define>DEBUG;TRANSLATION_ACTIVE;TRANSLATION_EXCEPTIONS_ACTIVE;$(DCC_Define)</DCC_Define>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
         <Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
@@ -136,6 +148,22 @@
         <VerInfo_Release>0</VerInfo_Release>
         <VerInfo_MinorVer>2</VerInfo_MinorVer>
         <VerInfo_Build>1017</VerInfo_Build>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Cfg_3)'!=''">
+        <DCC_Define>Debug;$(DCC_Define)</DCC_Define>
+        <DCC_DcpOutput>_dcu</DCC_DcpOutput>
+        <DCC_ExeOutput>_bin\$(Platform)</DCC_ExeOutput>
+        <DCC_DcuOutput>_dcu</DCC_DcuOutput>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Cfg_3_Win32)'!=''">
+        <DCC_SYMBOL_PLATFORM>false</DCC_SYMBOL_PLATFORM>
+        <VerInfo_MajorVer>1</VerInfo_MajorVer>
+        <VerInfo_Locale>1033</VerInfo_Locale>
+        <VerInfo_Release>0</VerInfo_Release>
+        <VerInfo_MinorVer>0</VerInfo_MinorVer>
+        <Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
+        <VerInfo_Build>0</VerInfo_Build>
+        <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
     </PropertyGroup>
     <ItemGroup>
         <DelphiCompile Include="$(MainSource)">
@@ -642,6 +670,10 @@
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
         </BuildConfiguration>
+        <BuildConfiguration Include="DebugBas">
+            <Key>Cfg_3</Key>
+            <CfgParent>Base</CfgParent>
+        </BuildConfiguration>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>
@@ -673,7 +705,7 @@
                     <VersionInfo Name="MajorVer">12</VersionInfo>
                     <VersionInfo Name="MinorVer">5</VersionInfo>
                     <VersionInfo Name="Release">11</VersionInfo>
-                    <VersionInfo Name="Build">12049</VersionInfo>
+                    <VersionInfo Name="Build">12053</VersionInfo>
                     <VersionInfo Name="Debug">False</VersionInfo>
                     <VersionInfo Name="PreRelease">False</VersionInfo>
                     <VersionInfo Name="Special">False</VersionInfo>
@@ -685,7 +717,7 @@
                 <VersionInfoKeys>
                     <VersionInfoKeys Name="CompanyName">Beryllium ehf</VersionInfoKeys>
                     <VersionInfoKeys Name="FileDescription">Hotel Management System Main Module</VersionInfoKeys>
-                    <VersionInfoKeys Name="FileVersion">12.5.11.12049</VersionInfoKeys>
+                    <VersionInfoKeys Name="FileVersion">12.5.11.12053</VersionInfoKeys>
                     <VersionInfoKeys Name="InternalName">HMS</VersionInfoKeys>
                     <VersionInfoKeys Name="LegalCopyright">Beryllium ehf 2000-2012</VersionInfoKeys>
                     <VersionInfoKeys Name="LegalTrademarks">Beryllium 2000-2012</VersionInfoKeys>
@@ -701,6 +733,8 @@
                     <VersionInfoKeys Name="Support">Hörður Jóhannsson</VersionInfoKeys>
                 </VersionInfoKeys>
                 <Excluded_Packages>
+                    <Excluded_Packages Name="D:\Development\Bpl\Win32\dclfrxADO16.bpl">FastReport 4.0 ADO Components</Excluded_Packages>
+                    <Excluded_Packages Name="D:\Development\Bpl\Win32\dclfsIBX16.bpl">FastScript 1.9 IBX Components</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\dcloffice2k170.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\dclofficexp170.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
                 </Excluded_Packages>

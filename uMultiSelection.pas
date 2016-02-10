@@ -85,7 +85,7 @@ function LookupForDataItem(Caption : String;
                             ActiveInActiveField : String = '';
                             destinationDataSet : TDataSet = nil;
                             destinationFieldName : String = '') : String;
-var i : Integer;
+var
     codes : TStrings;
     names : TStrings;
     newValue : String;

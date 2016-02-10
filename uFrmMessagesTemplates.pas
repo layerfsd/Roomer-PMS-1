@@ -176,7 +176,6 @@ end;
 
 procedure TFrmMessagesTemplates.RemoveThoseNotInList(MessageType: TRoomerMessageType; List : TStrings);
 var i, idx : Integer;
-    found : Boolean;
     MessagePanel : TMessagePanel;
 begin
   for i := MessageList.Count - 1 downto 0 do
@@ -441,7 +440,6 @@ end;
 
 procedure TFrmMessagesTemplates.HTMLabel2Click(Sender: TObject);
 var MessagePanel : TMessagePanel;
-    idx : Integer;
 begin
   MessagePanel := TMessagePanel(TsLabel(Sender).Parent);
   case MessagePanel.FMessageType of
@@ -501,22 +499,16 @@ begin
 end;
 
 procedure TFrmMessagesTemplates.CheckBlinkTimer;
-var i : Integer;
 begin
   if Assigned(BlinkingList) then
   begin
     timBlink.Enabled := (timBlink.Tag > 0) AND (BlinkingList.Count > 0);
     if NOT timBlink.Enabled then
-    begin
-//      for i := 0 to BlinkingList.Count - 1 do
-//        BlinkingList[i].FText.BorderColor := clBlack;
       BlinkingList.Clear;
-    end;
   end;
 end;
 
 procedure TFrmMessagesTemplates.Blink;
-var i: Integer;
 begin
 //  if Assigned(BlinkingList) then
 //    for i := 0 to BlinkingList.Count - 1 do

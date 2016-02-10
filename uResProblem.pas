@@ -27,7 +27,7 @@ uses
 
   , cmpRoomerDataSet
   , cmpRoomerConnection
-  , uUtils, sMemo, sGroupBox, sButton, sPanel
+  , uUtils, sMemo, sGroupBox, sButton, sPanel, AdvUtil
   ;
 
 type
@@ -273,7 +273,6 @@ var
   s      : string;
   dtTemp : TdateTime;
   roomStatus  : string;
-  per : integer;
 
 begin
   GridInit;

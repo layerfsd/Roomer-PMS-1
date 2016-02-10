@@ -283,10 +283,6 @@ end;
 
 
 function THomeCustomer.Customer_Get(customer : string) : boolean;
-var
-  s     : string;
-  Rset  : TRoomerDataSet;
-
 begin
   result := False;
   FCustomer := Customer;

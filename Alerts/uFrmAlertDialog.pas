@@ -67,8 +67,9 @@ begin
     atCHECK_OUT: img := imgCheckOut;
     atOPEN_RESERVATION: img := imgOpenReservation;
     atTIME: img := imgTime;
+  else
+    Exit;
   end;
-  if NOT Assigned(img) then exit;
 
   with img do
   begin

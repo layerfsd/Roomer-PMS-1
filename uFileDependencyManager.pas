@@ -158,7 +158,6 @@ begin
 end;
 
 procedure prepareDependencyManager;
-var ASet : TRoomerDataSet;
 begin
   if d.roomerMainDataSet.OfflineMode then
     exit;
@@ -385,7 +384,7 @@ end;
 //end;
 
 function getHtmlEditorFilePath(throwExceptionOnError : Boolean = true) : String;
-var sPath, regApp, parameters : String;
+var sPath, parameters : String;
 begin
   sPath := TPath.Combine(LocalAppDataPath, 'Roomer');
   forceDirectories(sPath);

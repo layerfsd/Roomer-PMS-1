@@ -46,10 +46,11 @@ type
     procedure ShowSelectedFileGroup;
     procedure ListViewEditorExit(Sender: TObject);
     function GetFilePathForListView(filename: String; stamp : TDateTime): String;
-    procedure CreateWnd; override;
-    procedure DestroyWnd; override;
     procedure UploadKnownFilesToStaticResources;
     function DownloadFile(RemoteName, LocalName: String): String;
+  protected
+    procedure CreateWnd; override;
+    procedure DestroyWnd; override;
     { Private declarations }
   public
     { Public declarations }

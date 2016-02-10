@@ -31,7 +31,7 @@ uses
 
   , cmpRoomerDataSet
   , cmpRoomerConnection
-  , uUtils, sGroupBox, sButton, sPanel
+  , uUtils, sGroupBox, sButton, sPanel, AdvUtil
   ;
 
 type
@@ -274,7 +274,6 @@ var
 
   sRoom         : string;
   sRoomType     : string;
-  sReservation  : string;
   sStatus       : string;
   sStatusText   : string;
   sArrival      : string;
@@ -437,8 +436,6 @@ var
   roomStatus : string;
   aStyle : TFontStyles;
 begin
-   descIndex := 0;
-   ascIndex := 0;
    status     := gr.cells[6,arow];
    roomStatus := gr.cells[7,arow];
 

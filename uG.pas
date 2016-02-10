@@ -607,7 +607,8 @@ uses
   uCancelReservation3,
   uChangeRRdates,
   ufrmSelLang,
-  PrjConst
+  PrjConst,
+  System.UITypes
   ;
 
 
@@ -671,8 +672,7 @@ end;
 
 function StatusToColor(Status : string; var backColor, fontColor : TColor; var fStyle : TFontStyles) : boolean;
 var
-  cRoomStatus,
-  ch : char;
+  cRoomStatus : Char;
   Room,
   sRoomStatus : String;
 begin
@@ -1089,7 +1089,6 @@ var
   s : string;
   ch : char;
 begin
-  result := false;
 //  strResult := 'Connection failure!';
    strResult := GetTranslatedText('shTx_G_ConnectionFail');
 
@@ -1143,7 +1142,7 @@ var
   xml: IXMLDOMDocument;
   node, node1: IXMLDomNode;
   nodeName : String;
-  nodes_row, nodes_se: IXMLDomNodeList;
+  nodes_row: IXMLDomNodeList;
   i, l : Integer;
 begin
   key := ''; secret := '';
@@ -1253,7 +1252,6 @@ const
 
 var
   reg        : TRoomerRegistryIniFile;
-  openResult : Boolean;
   AppRegGroup : String;
 begin
 //  reg := TRoomerRegistryIniFile.Create('RoomerLocalSettings_' + g.qHotelCode + '.ini');
@@ -1519,9 +1517,6 @@ end;
 //end;
 
 function TGlobalApplication.ChangeLang(newLangId : integer; doUpdate : boolean=true) : boolean;
-var
-  Line    : string;
-  langExt : string;
 begin
   result := false;
   if NewLangId = g.qUserLanguage then exit;
@@ -1537,8 +1532,6 @@ begin
 end;
 
 function TGlobalApplication.openSelectLanguage(var langName,langExt : string; var langId : integer) : boolean;
-var
-  i : integer;
 begin
 (*
   zLangId   := cbxSelLang.itemindex;
@@ -2022,7 +2015,6 @@ end;
 
 function TGlobalApplication.openHiddenInfo(Refrence, RefrenceType : integer): boolean;
 begin
-  result := false;
   frmHiddenInfo := TfrmHiddenInfo.Create(frmHiddenInfo);
   try
     frmHiddenInfo.zRefrence := Refrence;
@@ -2095,8 +2087,6 @@ end;
 
 function TGlobalApplication.strToStatusAttr(const aValue : string) : recStatusAttr;
 var
-  s : string;
-
   sTmp : string;
 
 begin
@@ -2180,7 +2170,6 @@ end;
 // **
 function TGlobalApplication.OpenResProblem(var lst : TstringList) : integer;
 begin
-  result := - 1;
   frmResProblem := TfrmResProblem.Create(frmResProblem);
   try
     frmResProblem.lst.Assign(lst);
@@ -2201,7 +2190,6 @@ end;
 
 function TGlobalApplication.OpenRoomDateProblem(var lst : TstringList) : integer;
 begin
-  result := - 1;
   frmRoomDateProblem := TfrmRoomDateProblem.Create(frmRoomDateProblem);
   try
     frmRoomDateProblem.lst.Assign(lst);
@@ -2460,7 +2448,6 @@ begin
 end;
 
 procedure ClearStringGridRows(Grid : TAdvStringGrid; FromRow, RowCount : Integer);
-var iRow, iCol : integer;
 begin
 //  for iRow := FromRow to FromRow + RowCount - 1 do
 //     for iCol := 0 to Grid.ColCount - 1 do

@@ -45,7 +45,7 @@ object frmCountryGroups: TfrmCountryGroups
     object labFilterWarning: TsLabel
       Left = 1
       Top = 66
-      Width = 558
+      Width = 4
       Height = 14
       Align = alBottom
       Alignment = taCenter
@@ -58,7 +58,6 @@ object frmCountryGroups: TfrmCountryGroups
       Font.Height = -12
       Font.Name = 'Tahoma'
       Font.Style = []
-      ExplicitWidth = 4
     end
     object btnClear: TsSpeedButton
       Left = 274
@@ -68,8 +67,8 @@ object frmCountryGroups: TfrmCountryGroups
       Caption = 'Clear'
       OnClick = btnClearClick
       SkinData.SkinSection = 'SPEEDBUTTON'
-      ImageIndex = 4
       Images = DImages.PngImageList1
+      ImageIndex = 4
     end
     object cLabFilter: TsLabel
       Left = 12
@@ -160,15 +159,6 @@ object frmCountryGroups: TfrmCountryGroups
       TabOrder = 4
       OnChange = edFilterChange
       SkinData.SkinSection = 'EDIT'
-      BoundLabel.Indent = 0
-      BoundLabel.Font.Charset = DEFAULT_CHARSET
-      BoundLabel.Font.Color = clWindowText
-      BoundLabel.Font.Height = -11
-      BoundLabel.Font.Name = 'Tahoma'
-      BoundLabel.Font.Style = []
-      BoundLabel.Layout = sclLeft
-      BoundLabel.MaxWidth = 0
-      BoundLabel.UseSkinColor = True
     end
   end
   object panBtn: TsPanel
@@ -347,7 +337,6 @@ object frmCountryGroups: TfrmCountryGroups
     Top = 112
     object prLink_grData: TdxGridReportLink
       Component = grData
-      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.GrayShading = True
@@ -360,7 +349,6 @@ object frmCountryGroups: TfrmCountryGroups
       PrinterPage.PageSize.Y = 297000
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
-      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       BuiltInReportLink = True
     end
   end

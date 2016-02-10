@@ -107,7 +107,7 @@ uses
   , cmpRoomerDataSet
   , cmpRoomerConnection, dxSkinsCore, dxSkinDarkSide, dxSkinDevExpressDarkStyle, dxSkinMcSkin, dxSkinOffice2013White,
   dxSkinsDefaultPainters, dxSkinscxPCPainter, dxSkinsdxBarPainter, dxSkinsdxRibbonPainter, cxPropertiesStore, sEdit, sButton, sSpeedButton,
-  sLabel, sPanel, sStatusBar, dxPScxPivotGridLnk
+  sLabel, sPanel, sStatusBar, dxPScxPivotGridLnk, dxSkinCaramel, dxSkinCoffee, dxSkinTheAsphaltWorld
 
   ;
 
@@ -252,7 +252,6 @@ var
   theData : recCountrygroupHolder;
 begin
   //*NOT TESTED*//
-  result := false;
   initCountryGroupHolder(theData);
   theData.countryGroup := trim(ed.text);
   result := countryGroups(actLookup,theData);
@@ -273,7 +272,6 @@ end;
 function countryGroupValidate(ed : TAdvEdit; lab : TLabel) : boolean;
 var
   sValue : string;
-  pcCode : string;
   theData : recCountryGroupHolder;
 begin
   //*NOT TESTED*//

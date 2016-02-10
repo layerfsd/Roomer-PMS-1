@@ -143,7 +143,7 @@ end;
 
 function StringToAlertType(AlertType : String) : TAlertType;
 begin
-  if AlertType = 'UNKNOWN' then result := atUNKNOWN else
+  result := atUNKNOWN;
   if AlertType = 'CHECK_IN' then result := atCHECK_IN else
   if AlertType = 'CHECK_OUT' then result := atCHECK_OUT else
   if AlertType = 'OPEN_RESERVATION' then result := atOPEN_RESERVATION else
@@ -251,7 +251,7 @@ end;
 
 function TAlertList.Add(Alert: TAlert): Integer;
 begin
-  FList.Add(Alert);
+  Result := FList.Add(Alert);
 end;
 
 function TAlertList.AlertByTypeAndIndex(AlertType: TAlertType; Index: Integer): TAlert;
