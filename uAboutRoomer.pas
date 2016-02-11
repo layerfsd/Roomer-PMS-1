@@ -2,9 +2,7 @@ unit uAboutRoomer;
 
 interface
 
-{$IFDEF DEBUG}
-  {$DEFINE ROOMERSTORE}
-{$ENDIF}
+{$include roomer.inc}
 
 uses
     Winapi.Windows

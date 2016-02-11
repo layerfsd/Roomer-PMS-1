@@ -52,6 +52,7 @@ object frmMain: TfrmMain
     SunkenBorder = True
     UseOwnColor = True
     UseOwnSunkenBorder = True
+    ExplicitTop = 122
   end
   object panMain: TsPanel
     Left = 3
@@ -846,10 +847,6 @@ object frmMain: TfrmMain
         ImageIndex = 2
         SkinData.CustomColor = False
         SkinData.CustomFont = False
-        ExplicitLeft = 0
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
         object sLabel2: TsLabel
           Left = 224
           Top = 400
@@ -1732,8 +1729,6 @@ object frmMain: TfrmMain
           OnMouseEnter = tabsViewMouseEnter
           SkinData.SkinSection = 'PAGECONTROL'
           SkinData.OuterEffects.Visibility = ovAlways
-          ExplicitLeft = -2
-          ExplicitTop = -3
         end
       end
       object __PanGridsHeader: TsPanel
@@ -3255,6 +3250,8 @@ object frmMain: TfrmMain
     ParentColor = False
     UseOwnColor = True
     Visible = False
+    ExplicitTop = 125
+    ExplicitHeight = 538
   end
   object pnlRoomerLogoOld: TsPanel
     Left = 668
@@ -24340,7 +24337,7 @@ object frmMain: TfrmMain
     Left = 928
     Top = 456
     Bitmap = {
-      494C010102000800F40F10001000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
+      494C010102000800FC0F10001000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
       0000000000000000000000000000000000000000000000000000000000000000
       00000000000000000000000000000000000000000000484C4371617545C6729D

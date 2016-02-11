@@ -203,35 +203,42 @@ uses
 {$R *.RES}
 
 begin
-  {$IFDEF DEBUG}
-    {$IFDEF MONITOR_LEAKAGE}
-      ReportMemoryLeaksOnShutdown := DebugHook <> 0;
-    {$ENDIF}
-  {$ENDIF}
+  {$IFDEF rmMONITOR_LEAKAGE}
+    ReportMemoryLeaksOnShutdown := DebugHook <> 0;
+  {$ENDIF rmMONITOR_LEAKAGE}
   Application.MainformOnTaskbar := True;
   Application.Initialize;
   Application.Title := 'ROOMER - Next Generation Hotel Management System';
   ShowRoomerSplash;
   Application.CreateForm(TD, D);
   frmRoomerSplash.PrepareBusyNotificator;
-  Application.CreateForm(TDImages, DImages);
-  frmRoomerSplash.UpdateBusySignal;
-  Application.CreateForm(TfrmMain, frmMain);
-  frmRoomerSplash.UpdateBusySignal;
-  Application.CreateForm(TfrmDaysStatistics, frmDaysStatistics);
-  Application.CreateForm(TfrmRateQuery, frmRateQuery);
-  frmRoomerSplash.UpdateBusySignal;
-  Application.CreateForm(TfrmHomedate, frmHomedate);
-  frmRoomerSplash.UpdateBusySignal;
-  Application.CreateForm(TfrmDayNotes, frmDayNotes);
-  frmRoomerSplash.UpdateBusySignal;
-  Application.CreateForm(TfrmGoToRoomandDate, frmGoToRoomandDate);
-  frmRoomerSplash.UpdateBusySignal;
-  Application.CreateForm(TFrmReservationHintHolder, FrmReservationHintHolder);
-  frmRoomerSplash.UpdateBusySignal;
-  Application.CreateForm(TembPeriodView, embPeriodView);
-  frmRoomerSplash.UpdateBusySignal;
-  Application.CreateForm(TembOccupancyView, embOccupancyView);
-  frmRoomerSplash.UpdateBusySignal;
+
+  if D.roomerMainDataSet.IsConnectedToInternet then
+  begin
+    Application.CreateForm(TDImages, DImages);
+    frmRoomerSplash.UpdateBusySignal;
+    Application.CreateForm(TfrmMain, frmMain);
+    frmRoomerSplash.UpdateBusySignal;
+    Application.CreateForm(TfrmDaysStatistics, frmDaysStatistics);
+    Application.CreateForm(TfrmRateQuery, frmRateQuery);
+    frmRoomerSplash.UpdateBusySignal;
+    Application.CreateForm(TfrmHomedate, frmHomedate);
+    frmRoomerSplash.UpdateBusySignal;
+    Application.CreateForm(TfrmDayNotes, frmDayNotes);
+    frmRoomerSplash.UpdateBusySignal;
+    Application.CreateForm(TfrmGoToRoomandDate, frmGoToRoomandDate);
+    frmRoomerSplash.UpdateBusySignal;
+    Application.CreateForm(TFrmReservationHintHolder, FrmReservationHintHolder);
+    frmRoomerSplash.UpdateBusySignal;
+    Application.CreateForm(TembPeriodView, embPeriodView);
+    frmRoomerSplash.UpdateBusySignal;
+    Application.CreateForm(TembOccupancyView, embOccupancyView);
+    frmRoomerSplash.UpdateBusySignal;
+  end
+  else
+  begin
+
+  end;
+
   Application.Run;
 end.

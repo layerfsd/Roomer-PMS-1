@@ -172,7 +172,7 @@ begin
   hotelId     := g.qHotelCode;
 //  showmessage(username+' // '+password);
 
-  if AskUserForCredentials(userName, password, hotelId, lastMessage) then
+  if (AskUserForCredentials(userName, password, hotelId, lastMessage)  in cLoginFormSuccesfull) then
   begin
       try
         d.roomerMainDataSet.Login(hotelId, username, password, 'ROOMERPMS', GetVersion(Application.ExeName));

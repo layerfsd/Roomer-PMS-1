@@ -1,14 +1,6 @@
 unit uMain;
 
-(*
-  sDefs.inc   acLFPainter
-*)
-
 interface
-
-{$IFDEF DEBUG}
-{$DEFINE ROOMERSTORE}
-{$ENDIF}
 
 uses
   Windows, Messages, IOUtils, System.Generics.Collections, IdComponent, SysUtils, Classes, Graphics, Controls, Forms, Dialogs, ExtCtrls, Grids, ComCtrls, Db,
@@ -1092,7 +1084,7 @@ type
 
     // FILE
     // Procedure Logout;
-    function StartHotel(appstart: boolean; ForcefulRestart: boolean = false; AutoLogin: String = ''): boolean;
+    function StartHotel(aFirstLogin: boolean; ForcefulRestart: boolean = false; AutoLogin: String = ''): boolean;
     procedure SaveGridFont(OneDayFont, PeriodFont: TFont);
 
     function doLogin(var userName, password, WrongLoginMessage, ExpiredMessage: string; var pressedEsc: boolean; AutoLogin: String = ''): boolean;
@@ -1421,6 +1413,7 @@ type
     procedure ActivateMessagesIfApplicable;
     procedure ConfirmABooking;
     procedure NillifyEventHandlers(grid: TAdvStringGrid);
+    procedure UpdateHotelsList;
 {$IFDEF USE_JCL}
     procedure LogException(ExceptObj: TObject; ExceptAddr: Pointer; IsOS: boolean);
 {$ENDIF}
@@ -1508,32 +1501,21 @@ uses
     clipbrd,
     sndkey32, uReservationProfile, uGuestProfile2, uSplashRoomer, uAboutRoomer,
   uManageFilesOnServer, uControlData, uInvoiceList, uGuestCheckInForm
-  // , uMakeReservation
     , uFinishedInvoices2
-  // , uRoomStatus
     , uRoomCleanMaintenanceStatus
-  // , uGuestsSearch
     , uDayFinical
-  // , uResGuestList
     , uInvoiceList2, uDayNotes, uNationalReport3, uLodgingTaxReport2, uBlinker, ufrmSelLang
-  // , ufrmCustInvoicesMD
     , uRptbViewer
-  // , uRptCustomer
     , uColorSelector, uCountryGroups, uCountries, uCurrencies, uConverts, uConvertGroups, uPayGroups, uPayTypes, uVatCodes, uChannelPlanCodes, uPriceCodes
-  // , uStatisticsForcast
     , uResGuestList, uRebuildReservationStats, uMakereseRvationQuick, objHomeCustomer
-  // , uTest
     , uSqlDefinitions, uRoomRates, uRates, uGotoRoomAndDate, uStringUtils, uRoomTypes2, uRoomTypesGroups2, uSeasons2, uItemTypes2, uItems2, uLocations2,
   uRooms3, uCustomerTypes2, uCustomers2, uStaffTypes2, uStaffMembers2, uChannels, uRegistryServices, uChannelManager, uCommunicationTest, uMessageList,
   uHouseKeeping
-  // , uRptResDates
     , uRptResStats, uRptResStatsRooms, uGuestSearch, uDateUtils, urptReservations, urptReservationsCust
 
-  // , urptChannceldReservations
     , uTestData, urptTotallist, uFrmChannelTogglingRules, uPersonviptypes, uFrmDaysStatistics, uFrmRateQuery, uPersonContactType,
   uRptTurnoverAndPayments, uRptTurnoverAndPayments2,
   ufDownPayments
-  // , uFrmDevAndTestBed
     , uFrmResources, uFileDependencyManager, uMaidActions, uTaxCalc, uRptCustInvoices, uRptResInvoices, uFrmRBEContainer, uRptManagment,
   uChart, uRoomerExceptions, uRoomerMessageDialog, uRptBreakfastGuests, uLostAndFound, uRunWithElevatedOption, urptNotes, uRptGuests, umakeKreditInvoice,
   uBookKeepingCodes, uRptBookkeeping, uReservationEmailingDialog, uFrmReservationCancellationDialog,
@@ -1542,12 +1524,12 @@ uses
   uFrmCheckOut,
   uInvoiceCompare,
   GoogleOTP256,
-  uInvoiceController
+  uInvoiceController,
+  Math
   ;
 
 {$R *.DFM}
 {$R Cursors.res}
-{ , uMaidActions$R working.res }
 
 var
   cHomeStatus: integer = 0;
@@ -3108,16 +3090,51 @@ begin
 
 end;
 
-function TfrmMain.StartHotel(appstart: boolean; ForcefulRestart: boolean = false; AutoLogin: String = ''): boolean;
+procedure TfrmMain.UpdateHotelsList;
+var
+  i: integer;
+  iActiveHotel: integer;
+
+  function lclFormatHotelName(const aID, aName: string): string;
+  begin
+    Result := Format('%s - %s', [ANSIUpperCase(aId), aName]);
+  end;
+
+begin
+  __cbxHotels.Items.BeginUpdate;
+  try
+    iActiveHotel := 0;
+
+    __cbxHotels.Items.Clear;
+    with d.roomerMainDataSet do
+      if d.roomerMainDataSet.hotels.Count = 0 then
+        __cbxHotels.Items.AddObject(lclFormatHotelName(HotelId, g.qHotelName), nil)
+      else
+      begin
+        for i := 0 to Hotels.Count - 1 do
+        begin
+          __cbxHotels.Items.AddObject(lclFormatHotelName(hotels[i].hotelCode, hotels[i].hotelName), hotels[i]);
+          if LowerCase(hotels[i].hotelCode) = LowerCase(hotelId) then
+            iActiveHotel := i;
+        end;
+      end;
+    __cbxHotels.ItemIndex := iActiveHotel;
+  finally
+    __cbxHotels.Items.endUpdate;
+  end;
+
+end;
+
+function TfrmMain.StartHotel(aFirstLogin: boolean; ForcefulRestart: boolean = false; AutoLogin: String = ''): boolean;
 var
   userName, password, WrongLoginMessage, ExpiredMessage: string;
   okLogin: boolean;
   tries: integer;
-  iActiveHotel, i, ii: integer;
+  i, ii: integer;
   sTmp: string;
 
   tmpUserLang: integer;
-  esc: boolean;
+  lLoginFormCancelled: boolean;
   hotel: TRoomerHotelsEntity;
 
   didPostProcess: boolean;
@@ -3129,7 +3146,7 @@ begin
 
   EnableDisableFunctions(false);
 
-  if not appstart then
+  if not aFirstLogin then
     g.ProcessAppIni(1);
 
   for i := 0 to pageMainGrids.PageCount - 1 do
@@ -3138,7 +3155,7 @@ begin
     pageMainGrids.Pages[i].TabVisible := false;
   end;
 
-  if appstart then
+  if aFirstLogin then
     HideRoomerSplash;
 
   userName := g.qUser;
@@ -3162,81 +3179,37 @@ begin
                            'User ' + d.roomerMainDataSet.username + ' tried to log in without success.');
     end;
 
-    if doLogin(userName, password, WrongLoginMessage, ExpiredMessage, esc, AutoLogin) then
-    begin
+    if doLogin(userName, password, WrongLoginMessage, ExpiredMessage, lLoginFormCancelled, AutoLogin) then
       okLogin := d.doLogin(userName, password);
-      if okLogin then
-      begin
-        g.ProcessAppIni(0);
 
-        d.roomerMainDataSet.ApplicationID := g.qApplicationID;
-        d.roomerMainDataSet.AppSecret := g.qAppSecret;
-        d.roomerMainDataSet.AppKey := g.qAppKey;
-        initializeTaxes;
+  until okLogin OR lLoginFormCancelled OR (tries >= 15);
 
-        if ForcefulRestart then
-        begin
-          result := true;
-          exit;
-        end;
-
-        iActiveHotel := 0;
-        try
-          if AutoLogin = '' then
-          begin
-            __cbxHotels.Items.BeginUpdate;
-            try
-              if g.qAppSecret = '' then
-              begin
-                g.RegisterApplication;
-              end;
-
-              prepareDependencyManager;
-
-              __cbxHotels.Items.Clear;
-              if d.roomerMainDataSet.hotels.Count = 0 then
-              begin
-                __cbxHotels.Items.AddObject(Format('%s - %s', [ANSIUpperCase(d.roomerMainDataSet.hotelId), g.qHotelName]), nil);
-              end
-              else
-              begin
-                for i := 0 to d.roomerMainDataSet.hotels.Count - 1 do
-                begin
-                  __cbxHotels.Items.AddObject(Format('%s - %s', [ANSIUpperCase(d.roomerMainDataSet.hotels[i].hotelCode),
-                    d.roomerMainDataSet.hotels[i].hotelName]), d.roomerMainDataSet.hotels[i]);
-                  if LowerCase(d.roomerMainDataSet.hotels[i].hotelCode) = LowerCase(d.roomerMainDataSet.hotelId) then
-                    iActiveHotel := i;
-                end;
-              end;
-              __cbxHotels.ItemIndex := iActiveHotel;
-            finally
-              __cbxHotels.Items.endUpdate;
-            end;
-
-          end;
-          didPostProcess := true;
-          PostLoginProcess(AutoLogin = '');
-        except
-          on E: Exception do
-            MessageDlg(E.message, mtError, [mbOk], 0);
-        end;
-        if AutoLogin = '' then
-          __cbxHotels.ItemIndex := iActiveHotel;
-      end;
-    end
-    else
-    begin
-      // tries := 10;
-    end;
-  until okLogin OR esc OR (tries >= 15);
-
-  if okLogin then
+  if not okLogin then
+  begin
+    LoginCancelled := true;
+    result := false;
+    Close;
+    exit;
+  end
+  else
   begin
     AddRoomerActivityLog(d.roomerMainDataSet.username,
                          uActivityLogs.LOGIN,
                          'Success',
                          'User ' + d.roomerMainDataSet.username + ' successfully logged in.');
-    if (NOT ForcefulRestart) AND CheckForUpdatedRelease then
+    g.ProcessAppIni(0);
+
+    d.roomerMainDataSet.ApplicationID := g.qApplicationID;
+    d.roomerMainDataSet.AppSecret := g.qAppSecret;
+    d.roomerMainDataSet.AppKey := g.qAppKey;
+
+    if ForcefulRestart then
+    begin
+      result := true;
+      exit;
+    end;
+
+    if CheckForUpdatedRelease then
     begin
       LoginCancelled := true;
       try
@@ -3248,17 +3221,31 @@ begin
       Close;
       exit;
     end;
-  end;
 
-  if not okLogin then
-  begin
-    LoginCancelled := true;
-    result := false;
-    Close;
-    exit;
-  end
-  else
-  begin
+    if OffLineMode then
+    begin
+      MessageDlg('Running offline reportsform', mtInformation, [mbOK], 0);
+      Close;
+      Exit;
+    end;
+
+    try
+      if AutoLogin = '' then
+      begin
+        prepareDependencyManager;
+        UpdateHotelsList;
+      end;
+
+      didPostProcess := true;
+      PostLoginProcess(AutoLogin = '');
+
+    except
+      on E: Exception do
+        MessageDlg(E.message, mtError, [mbOk], 0);
+    end;
+
+    initializeTaxes;
+
     result := true;
     lblHotelName.Caption := g.qHotelName;
     timMessagesTimer(timMessages);
@@ -3266,8 +3253,7 @@ begin
     try
       CloseAppSettings;
       OpenAppSettings;
-      if g.oRooms <> nil then
-        freeandNil(g.oRooms);
+      g.oRooms.Free;
       g.oRooms := TRooms.Create(g.qHotelCode);
     except
       on E: Exception do
@@ -3770,44 +3756,49 @@ end;
 
 function TfrmMain.doLogin(var userName, password, WrongLoginMessage, ExpiredMessage: string; var pressedEsc: boolean; AutoLogin: String = ''): boolean;
 var
-  hotelId: String;
+  lHotelID: String;
   lastMessage: String;
   iLoc: integer;
+  lLoginFormResult: TLoginFormResult;
 begin
   result := false;
   pressedEsc := false;
   lastMessage := '';
   repeat
-    if (AutoLogin <> '') OR AskUserForCredentials(userName, password, hotelId, lastMessage) then
+    if (AutoLogin = '') then
+      lLoginFormResult := AskUserForCredentials(userName, password, lHotelId, lastMessage);
+
+
+    if (AutoLogin <> '') OR (lLoginFormResult in cLoginFormSuccesfull) then
     begin
       result := true;
       lblAuthStatus.Caption := GetTranslatedText('shTx_Authenticating');
       try
         if (AutoLogin <> '') then
         begin
-          hotelId := AutoLogin;
-          sleep(1000);
-          d.roomerMainDataSet.SwapHotel(hotelId, userName, password)
+          lHotelId := AutoLogin;
+//          sleep(1000);
+          d.roomerMainDataSet.SwapHotel(lHotelId, userName, password)
         end
-        else if (NOT OffLineMode) AND d.roomerMainDataSet.IsConnectedToInternet AND d.roomerMainDataSet.RoomerPlatformAvailable then
-          d.roomerMainDataSet.Login(hotelId, userName, password, 'ROOMERPMS', GetVersion(Application.ExeName))
+        else if (lLoginFormResult = lrLogin) and (NOT OffLineMode) AND d.roomerMainDataSet.IsConnectedToInternet AND d.roomerMainDataSet.RoomerPlatformAvailable then
+          d.roomerMainDataSet.Login(lHotelId, userName, password, 'ROOMERPMS', GetVersion(Application.ExeName))
         else
         begin
           OffLineMode := true;
-          d.roomerMainDataSet.hotelId := hotelId;
+          d.roomerMainDataSet.hotelId := lHotelId;
           d.roomerMainDataSet.userName := userName;
           d.roomerMainDataSet.password := password;
           d.roomerMainDataSet.SessionLengthSeconds := 1;
         end;
         lblAuthStatus.Caption := GetTranslatedText('shTx_AuthSuccess');
-        g.qHotelCode := hotelId;
+        g.qHotelCode := lHotelId;
         timCheckSessionExpired.Enabled := true;
       except
         on E: Exception do
         begin
           AutoLogin := '';
           lastMessage := E.message;
-          iLoc := pos(' - ''http://', lastMessage);
+          iLoc := max(pos(' - ''http://', lastMessage), pos(' - ''https://', lastMessage));
           if iLoc > 0 then
             lastMessage := Copy(lastMessage, 1, iLoc - 1);
           lblAuthStatus.Caption := lastMessage;
@@ -10678,12 +10669,13 @@ procedure TfrmMain.SetOffLineMode(const Value: boolean);
 var
   i: integer;
 begin
-  // Deactivate!
   FOffLineMode := Value;
-  exit;
-
 
   d.roomerMainDataSet.OffLineMode := OffLineMode;
+
+  Enabled := False;
+
+(*
   btnToDay.Click;
 
   if FOffLineMode then
@@ -10724,6 +10716,7 @@ begin
   pmnuCheckOutRoom.Enabled := NOT OffLineMode;
   pmnuCheckInGroup.Enabled := NOT OffLineMode;
   mnuRoomNumber.Enabled := NOT OffLineMode;
+*)
 end;
 
 procedure TfrmMain.SetRBEMode(const Value: boolean);

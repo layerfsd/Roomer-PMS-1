@@ -396,8 +396,6 @@ begin
 
   FRoomFloors := TList<Integer>.Create;
 
-
-
   FRoomTypes    := TList.Create;
   FNumAvailType := TStringlist.create;
 

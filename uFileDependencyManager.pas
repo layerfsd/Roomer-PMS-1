@@ -2,6 +2,8 @@ unit uFileDependencyManager;
 
 interface
 
+{$include roomer.inc}
+
 uses Generics.Collections,
     SysUtils,
     IOUtils,
@@ -164,11 +166,11 @@ begin
 
   ReadFilesFromStaticResources;
   try
-  if fileList.Count = 0 then
-  begin
-    UploadKnownFilesToStaticResourceBundle(d.roomerMainDataSet);
-    ReadFilesFromStaticResources;
-  end;
+    if fileList.Count = 0 then
+    begin
+      UploadKnownFilesToStaticResourceBundle(d.roomerMainDataSet);
+      ReadFilesFromStaticResources;
+    end;
   except
     // Ignore any error here!
   end;

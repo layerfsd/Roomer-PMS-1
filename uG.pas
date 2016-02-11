@@ -253,6 +253,7 @@ type
     // END ///////////  INI FILE GLOBALS ////////////////
 
     procedure InitializeApplicationGlobals;
+    function GetAppSecret: string;
   public
     qConnected : boolean;
     mHelpFile : string;
@@ -494,7 +495,7 @@ type
 
     property qApplicationID : string read FqApplicationID write FqApplicationID;
     property qAppKey : string read FqAppKey write FqAppKey;
-    property qAppSecret : string read FqAppSecret write FqAppSecret;
+    property qAppSecret : string read GetAppSecret write FqAppSecret;
 
 
 
@@ -1413,6 +1414,14 @@ begin
     finally
       free;
     end;
+end;
+
+function TGlobalApplication.GetAppSecret: string;
+begin
+  if FqAppSecret = ''  then
+    RegisterApplication;
+
+  Result := FqAppSecret;
 end;
 
 function TGlobalApplication.GetHotelIndex : integer;

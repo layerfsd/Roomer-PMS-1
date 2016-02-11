@@ -899,14 +899,14 @@ function GenerateProformaInvoiceNumber : Integer;
 
 var PROFORMA_INVOICE_NUMBER : integer;
 
-{$IFDEF LOCALRESOURCE}
+{$IFDEF rmLOCALRESOURCE}
   const RoomerOpenAPIBase : String = 'http://localhost:8080';
   const RoomerBase : String = 'http://localhost';
   const RoomerStoreBase : String = 'http://localhost';
   const RoomerBasePort : String = '8080';
   const RoomerStoreBasePort : String = '8080';
 {$ELSE}
-  {$IFDEF ROOMERSSL}
+  {$IFDEF rmROOMERSSL}
     const RoomerBase : String = 'https://secure.roomercloud.net';
     const RoomerBasePort : String = '443';
     const RoomerOpenAPIBase : String = 'https://secure.roomercloud.net';
@@ -3548,36 +3548,41 @@ begin
       freeandNil(rSet);
     end;
   end else
-  begin
-    sPath := TPath.Combine(uStringUtils.LocalAppDataPath, 'Roomer');
-    sPath := TPath.Combine(sPath, format('%s\datacache',[d.roomerMainDataSet.hotelId]));
-    forceDirectories(sPath);
+  begin // Offline login
+//    sPath := TPath.Combine(uStringUtils.LocalAppDataPath, 'Roomer');
+//    sPath := TPath.Combine(sPath, format('%s\datacache',[d.roomerMainDataSet.hotelId]));
+//    forceDirectories(sPath);
+    sPath := glb.GetDataCacheLocation;
     rSet := d.roomerMainDataSet.ActivateNewDataset(ReadFromTextFile(TPath.Combine(sPath, format(RoomerTableFileName, ['staffmembers']))));
-    if LocateRecord(rSet, 'initials', login) then
-       result := LowerCase(rSet['Password']) = LowerCase(password);
-    if result then
-    begin
-      g.qUser := trim(rSet.fieldbyname('Initials').asString);
-      g.qUserName := trim(rSet.fieldbyname('Name').asString);
-      g.qUserPID := trim(rSet.fieldbyname('StaffPID').asString);
-      g.qUserType := trim(rSet.fieldbyname('StaffType').asString);
-      g.qHotelName := d.roomerMainDataSet.hotelId;
-      g.qUserPriv1 := 90;
-      g.qUserPriv2 := g.qUserPriv1;
-      g.qUserPriv3 := g.qUserPriv1;
-      g.qUserPriv4 := g.qUserPriv1;
-      g.qUserPriv5 := g.qUserPriv1;
-      g.qUserAuthValue1 := 1111111;
-      g.qUserAuthValue2 := g.qUserAuthValue1;
-      g.qUserAuthValue3 := g.qUserAuthValue1;
-      g.qUserAuthValue4 := g.qUserAuthValue1;
-      g.qUserAuthValue5 := g.qUserAuthValue1;
-      g.qNumberOfShifts := 3;
-      g.qRatesManagedByRoomer := False;
+    try
+      if LocateRecord(rSet, 'initials', login) then
+         result := LowerCase(rSet['Password']) = LowerCase(password);
+      if result then
+      begin
+        g.qUser := trim(rSet['Initials']);
+        g.qUserName := trim(rSet['Name']);
+        g.qUserPID := trim(rSet['StaffPID']);
+        g.qUserType := trim(rSet['StaffType']);
+        g.qHotelName := d.roomerMainDataSet.hotelId;
+        g.qUserPriv1 := 90;
+        g.qUserPriv2 := g.qUserPriv1;
+        g.qUserPriv3 := g.qUserPriv1;
+        g.qUserPriv4 := g.qUserPriv1;
+        g.qUserPriv5 := g.qUserPriv1;
+        g.qUserAuthValue1 := 1111111;
+        g.qUserAuthValue2 := g.qUserAuthValue1;
+        g.qUserAuthValue3 := g.qUserAuthValue1;
+        g.qUserAuthValue4 := g.qUserAuthValue1;
+        g.qUserAuthValue5 := g.qUserAuthValue1;
+        g.qNumberOfShifts := 3;
+        g.qRatesManagedByRoomer := False;
 
-      newStaffLang := rSet.fieldbyname('StaffLanguage').asInteger;
+        newStaffLang := rSet['StaffLanguage'];
 
-      g.ChangeLang(newStaffLang,false);
+        g.ChangeLang(newStaffLang,false);
+      end;
+    finally
+      rSet.Free;
     end;
   end;
 end;

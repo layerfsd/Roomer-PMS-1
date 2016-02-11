@@ -169,24 +169,28 @@ begin
   end;
 
   rSet := d.roomerMainDataSet.ActivateNewDataset(s);
-  rSet.First;
-  while Not RSet.Eof do
-  begin
-    taxList.Add(TTax.Create(rSet['ID'],
-        rSet['Description'],
-        rSet['Amount'],
-        rSet['Tax_Type'],
-        rSet['Tax_Base'],
-        rSet['Time_Due'],
-        rSet['Retaxable'],
-        rSet['Booking_Item'],
-        rSet['INCL_EXCL'],
-        rSet['NETTO_AMOUNT_BASED'],
-        rSet['VALUE_FORMULA'],
-        rSet['ROUND_VALUE'],
-        rSet['VALID_FROM'] ,
-        rSet['VALID_TO']));
-    RSet.Next;
+  try
+    rSet.First;
+    while Not RSet.Eof do
+    begin
+      taxList.Add(TTax.Create(rSet['ID'],
+          rSet['Description'],
+          rSet['Amount'],
+          rSet['Tax_Type'],
+          rSet['Tax_Base'],
+          rSet['Time_Due'],
+          rSet['Retaxable'],
+          rSet['Booking_Item'],
+          rSet['INCL_EXCL'],
+          rSet['NETTO_AMOUNT_BASED'],
+          rSet['VALUE_FORMULA'],
+          rSet['ROUND_VALUE'],
+          rSet['VALID_FROM'] ,
+          rSet['VALID_TO']));
+      RSet.Next;
+    end;
+  finally
+    rSet.Free;
   end;
 
   itemTypeInfoRent.Itemtype := '';

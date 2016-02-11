@@ -2,6 +2,8 @@ unit cmpRoomerDataSet;
 
 interface
 
+{$include roomer.inc}
+
 uses
   WinApi.Windows,
   WinInet,
@@ -434,7 +436,7 @@ begin
   FSql := TStringList.Create;
   hotelsList := THotelsEntityList.Create(True);
   FDataActive := false;
-{$IFDEF LOCALRESOURCE}
+{$IFDEF rmUseLOCALRESOURCE}
   FStoreUri := 'http://localhost:8080/services/';
   FUri := 'http://localhost:8080/services/';
   FRoomerEntitiesUri := 'http://localhost:8080/services/entities/';
@@ -524,7 +526,13 @@ begin
     INTERNET_CONNECTION_MODEM +
     INTERNET_CONNECTION_LAN +
     INTERNET_CONNECTION_PROXY;
+
+{$ifdef rmForceOffline}
+  Result := false;
+{$else}
   Result := InternetGetConnectedState(@dwConnectionTypes, 0);
+{$endif rmForceOffline}
+
 end;
 
 function TRoomerDataSet.RoomerPlatformAvailable: Boolean;
@@ -1720,6 +1728,9 @@ procedure TRoomerDataSet.OpenDataset(SqlResult: String);
 var
   i: Integer;
 begin
+  if (SqlResult = '') then
+    Exit;
+
   try
     FSavedLastResult := SqlResult;
     FSavedResult := XMLToRecordset(SqlResult);
