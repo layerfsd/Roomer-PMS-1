@@ -272,6 +272,7 @@ Type
       function GET_RoomTypeNumberGuests_byRoomType(RoomType: String): integer;
 
       function GetDataCacheLocation : String;
+      function GetOfflineReportLocation: string;
       function GetLanguageLocation: String;
 
       property RoomTypes[ aType : string ] : integer read GetNumberOfItems;
@@ -347,6 +348,9 @@ const
   RIGHTS_BASE_TABLES = 90;
   RIGHTS_PRICES = 90;
   RIGHTS_BOOKINGS = 90;
+
+  cOfflinefoldername = 'offlinereports';
+  cDatacachefoldername = 'datacache';
 
 procedure OpenAppSettings;
 procedure CloseAppSettings;
@@ -995,13 +999,23 @@ end;
 
 function TGlobalSettings.GetDataCacheLocation: String;
 var AppDataPath : String;
-    DataCache : String;
+    DataCache: String;
 begin
   AppDataPath := TPath.Combine(uStringUtils.LocalAppDataPath, 'Roomer');
-  DataCache := format('%s\datacache',[d.roomerMainDataSet.hotelId]);
+  DataCache := format('%s\' + cDatacachefoldername, [d.roomerMainDataSet.hotelId]);
   result := TPath.Combine(AppDataPath, DataCache);
   forceDirectories(result);
 end;
+
+function TGlobalSettings.GetOfflineReportLocation: string;
+var AppDataPath : String;
+begin
+  AppDataPath := TPath.Combine(uStringUtils.LocalAppDataPath, 'Roomer');
+  result := format('%s\' + cofflinefoldername,[d.roomerMainDataSet.hotelId]);
+  result := TPath.Combine(AppDataPath, Result);
+  forceDirectories(result);
+end;
+
 
 function TGlobalSettings.GetLanguageLocation: String;
 begin

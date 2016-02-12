@@ -887,7 +887,7 @@ type
         _adate : Tdate;
         _count : Double
         );
-
+    procedure GenerateOfflineReports;
   end;
 
 
@@ -948,7 +948,7 @@ uses
   , uRoomerDefinitions
   , uTaxCalc
   , uActivityLogs
-  ;
+  , uOfflineReportGenerator;
 
 
 {$R *.dfm}
@@ -11470,6 +11470,11 @@ end;
 function Td.GetBackupTodaysGuests : String;
 begin
   result := ReadFromTextFile(TPath.Combine(GetBackupPath, format('Backup_Guests_%s.src', [dateToSqlString(now)])));
+end;
+
+procedure Td.GenerateOfflineReports;
+begin
+  TOfflineReportGenerator.ExecuteRegisteredReports;
 end;
 
 function Td.GetBackupControlTable : String;

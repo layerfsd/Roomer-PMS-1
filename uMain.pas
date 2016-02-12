@@ -662,6 +662,7 @@ type
     mnuConfirmBooking: TMenuItem;
     btnConfirmAllottedBooking: TdxBarLargeButton;
     HTMLHint1: THTMLHint;
+    timOfflineReports: TTimer;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
@@ -956,6 +957,7 @@ type
     procedure btnConfirmAllottedBookingClick(Sender: TObject);
     procedure sSkinManager1SkinLoading(Sender: TObject);
     procedure sPanel3DblClick(Sender: TObject);
+    procedure timOfflineReportsTimer(Sender: TObject);
 
   private
     FrmMessagesTemplates: TFrmMessagesTemplates;
@@ -3020,19 +3022,9 @@ begin
 
     embOccupancyView.InitEmbededOccupancyView(pnlPeriodNoRooms);
 
-    // btnCashierReport.Visible := ivNever;
-
     Application.ShowHint := true; // definitions for hints
-    // try
-    // if LoadOneDayViewGridStatus then
-    // begin
-    // grAutoSizeGrids;
-    // AutoSizePeriodColumns;
-    // AutoResizeOneDayGrid;
-    // end;
-    // except
-    // end;
 
+    timOfflineReports.OnTimer(timOfflineReports);
   end
   else
     ExitProcess(0);
@@ -8401,6 +8393,16 @@ begin
     end;
   finally
     FMessagesBeingDownloaded := false;
+  end;
+end;
+
+procedure TfrmMain.timOfflineReportsTimer(Sender: TObject);
+begin
+  TTimer(Sender).Enabled := false;
+  try
+    d.GenerateOfflineReports;
+  finally
+    TTimer(Sender).Enabled := True;
   end;
 end;
 

@@ -1,5 +1,7 @@
 program Roomer;
 
+
+
 uses
   Forms,
   uMain in 'uMain.pas' {frmMain},
@@ -198,7 +200,11 @@ uses
   uRoomerContainerClasses in 'uRoomerContainerClasses.pas',
   uAvailabilityPerDay in 'AvailabilityManagement\uAvailabilityPerDay.pas',
   uInvoiceController in 'Invoice\uInvoiceController.pas',
-  OfflineReportGenerator in 'OfflineReports\OfflineReportGenerator.pas';
+  uOfflineReportGenerator in 'OfflineReports\uOfflineReportGenerator.pas',
+  uOffLineReport in 'OfflineReports\uOffLineReport.pas',
+  uHotelStatusOfflineReport in 'OfflineReports\uHotelStatusOfflineReport.pas',
+  uOfflineReportDesign in 'OfflineReports\uOfflineReportDesign.pas' {BaseOfflineReportDesign: TDataModule},
+  uHotelStatusOfflineReportDesign in 'OfflineReports\uHotelStatusOfflineReportDesign.pas';
 
 {$R *.RES}
 
@@ -209,14 +215,17 @@ begin
   Application.MainformOnTaskbar := True;
   Application.Initialize;
   Application.Title := 'ROOMER - Next Generation Hotel Management System';
+
   ShowRoomerSplash;
+
   Application.CreateForm(TD, D);
   frmRoomerSplash.PrepareBusyNotificator;
 
+  Application.CreateForm(TDImages, DImages);
+  frmRoomerSplash.UpdateBusySignal;
+
   if D.roomerMainDataSet.IsConnectedToInternet then
   begin
-    Application.CreateForm(TDImages, DImages);
-    frmRoomerSplash.UpdateBusySignal;
     Application.CreateForm(TfrmMain, frmMain);
     frmRoomerSplash.UpdateBusySignal;
     Application.CreateForm(TfrmDaysStatistics, frmDaysStatistics);
@@ -242,3 +251,4 @@ begin
 
   Application.Run;
 end.
+
