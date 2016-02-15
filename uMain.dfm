@@ -2147,149 +2147,6 @@ object frmMain: TfrmMain
         SkinData.CustomColor = True
         SkinData.CustomFont = True
         SkinData.SkinSection = 'PANEL'
-        object wwDBDateTimePicker1: TPlannerDatePicker
-          Left = 743
-          Top = 0
-          Width = 23
-          Height = 31
-          EmptyTextStyle = []
-          Flat = False
-          LabelFont.Charset = DEFAULT_CHARSET
-          LabelFont.Color = clWindowText
-          LabelFont.Height = -11
-          LabelFont.Name = 'Tahoma'
-          LabelFont.Style = []
-          Lookup.Font.Charset = DEFAULT_CHARSET
-          Lookup.Font.Color = clWindowText
-          Lookup.Font.Height = -11
-          Lookup.Font.Name = 'Arial'
-          Lookup.Font.Style = []
-          Lookup.Separator = ';'
-          Color = clWindow
-          ReadOnly = True
-          TabOrder = 0
-          Text = ''
-          Visible = False
-          OnChange = dtDateChange
-          Version = '1.9.0.0'
-          ButtonStyle = bsDropDown
-          ButtonWidth = 16
-          Etched = False
-          Glyph.Data = {
-            DA020000424DDA0200000000000036000000280000000D0000000D0000000100
-            200000000000A402000000000000000000000000000000000000F0F0F000F0F0
-            F000F0F0F000F0F0F000F0F0F000F0F0F000F0F0F000F0F0F000F0F0F000F0F0
-            F000F0F0F000F0F0F000F0F0F000F0F0F000F0F0F000F0F0F000F0F0F000F0F0
-            F000F0F0F000F0F0F000F0F0F000F0F0F000F0F0F000F0F0F000F0F0F000F0F0
-            F000F0F0F000F0F0F000F0F0F000F0F0F000F0F0F000F0F0F000F0F0F000F0F0
-            F000F0F0F000F0F0F000F0F0F000F0F0F000F0F0F000F0F0F000F0F0F000F0F0
-            F000F0F0F000F0F0F000F0F0F000F0F0F000F0F0F000F0F0F000F0F0F000F0F0
-            F000F0F0F000F0F0F000F0F0F000F0F0F000F0F0F000F0F0F000F0F0F000F0F0
-            F00000000000F0F0F000F0F0F000F0F0F000F0F0F000F0F0F000F0F0F000F0F0
-            F000F0F0F000F0F0F000F0F0F000F0F0F000000000000000000000000000F0F0
-            F000F0F0F000F0F0F000F0F0F000F0F0F000F0F0F000F0F0F000F0F0F000F0F0
-            F0000000000000000000000000000000000000000000F0F0F000F0F0F000F0F0
-            F000F0F0F000F0F0F000F0F0F000F0F0F0000000000000000000000000000000
-            0000000000000000000000000000F0F0F000F0F0F000F0F0F000F0F0F000F0F0
-            F000F0F0F000F0F0F000F0F0F000F0F0F000F0F0F000F0F0F000F0F0F000F0F0
-            F000F0F0F000F0F0F000F0F0F000F0F0F000F0F0F000F0F0F000F0F0F000F0F0
-            F000F0F0F000F0F0F000F0F0F000F0F0F000F0F0F000F0F0F000F0F0F000F0F0
-            F000F0F0F000F0F0F000F0F0F000F0F0F000F0F0F000F0F0F000F0F0F000F0F0
-            F000F0F0F000F0F0F000F0F0F000F0F0F000F0F0F000F0F0F000F0F0F000F0F0
-            F000F0F0F000F0F0F000F0F0F000F0F0F000F0F0F000F0F0F000F0F0F000F0F0
-            F000F0F0F000F0F0F000F0F0F000F0F0F000F0F0F000F0F0F000F0F0F000F0F0
-            F000F0F0F000F0F0F000F0F0F000F0F0F000F0F0F000F0F0F000F0F0F000}
-          Calendar = cal89_.Owner
-          HideCalendarAfterSelection = True
-          TMSStyle = 0
-          object cal89_: TPlannerCalendar
-            Left = 0
-            Top = 0
-            Width = 180
-            Height = 180
-            EventDayColor = clBlack
-            EventFont.Charset = DEFAULT_CHARSET
-            EventFont.Color = clWindowText
-            EventFont.Height = -11
-            EventFont.Name = 'Tahoma'
-            EventFont.Style = [fsBold]
-            EventMarkerColor = clYellow
-            EventMarkerShape = evsCircle
-            BackgroundPosition = bpTiled
-            BevelOuter = bvNone
-            BorderWidth = 1
-            CaptionColor = clNone
-            CaptionTextColor = clBlack
-            DateDownColor = clNone
-            DateHoverColor = clNone
-            DayFont.Charset = DEFAULT_CHARSET
-            DayFont.Color = clWindowText
-            DayFont.Height = -11
-            DayFont.Name = 'Tahoma'
-            DayFont.Style = []
-            FocusColor = clHighlight
-            HeaderColor = clNone
-            InActiveColor = clGray
-            InversColor = clTeal
-            LineColor = clGray
-            Line3D = True
-            Look = lookFlat
-            NameOfDays.Monday = 'ma'
-            NameOfDays.Tuesday = 'di'
-            NameOfDays.Wednesday = 'wo'
-            NameOfDays.Thursday = 'do'
-            NameOfDays.Friday = 'vr'
-            NameOfDays.Saturday = 'za'
-            NameOfDays.Sunday = 'zo'
-            NameOfMonths.January = 'jan'
-            NameOfMonths.February = 'feb'
-            NameOfMonths.March = 'mrt'
-            NameOfMonths.April = 'apr'
-            NameOfMonths.May = 'mei'
-            NameOfMonths.June = 'jun'
-            NameOfMonths.July = 'jul'
-            NameOfMonths.August = 'aug'
-            NameOfMonths.September = 'sep'
-            NameOfMonths.October = 'okt'
-            NameOfMonths.November = 'nov'
-            NameOfMonths.December = 'dec'
-            NameOfMonths.UseIntlNames = True
-            WeekFont.Charset = DEFAULT_CHARSET
-            WeekFont.Color = clWindowText
-            WeekFont.Height = -11
-            WeekFont.Name = 'Tahoma'
-            WeekFont.Style = []
-            WeekName = 'Wk'
-            SelectColor = clTeal
-            SelectFontColor = clWhite
-            StartDay = 7
-            TextColor = clBlack
-            TodayFormat = '"Today" DDD/mm, YYYY'
-            WeekendColor = clRed
-            Day = 7
-            Month = 12
-            Year = 2012
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clWindowText
-            Font.Height = -11
-            Font.Name = 'Tahoma'
-            Font.Style = []
-            ParentFont = False
-            TabOrder = 0
-            GradientStartColor = clWhite
-            GradientEndColor = clBtnFace
-            GradientDirection = gdVertical
-            MonthGradientStartColor = clNone
-            MonthGradientEndColor = clNone
-            MonthGradientDirection = gdHorizontal
-            HintPrevYear = 'Previous Year'
-            HintPrevMonth = 'Previous Month'
-            HintNextMonth = 'Next Month'
-            HintNextYear = 'Next Year'
-            Version = '2.2.2.1'
-            TMSStyle = 0
-          end
-        end
         object btnRefreshOneDay: TcxButton
           AlignWithMargins = True
           Left = 6
@@ -2308,7 +2165,7 @@ object frmMain: TfrmMain
           SpeedButtonOptions.CanBeFocused = False
           SpeedButtonOptions.Flat = True
           SpeedButtonOptions.Transparent = True
-          TabOrder = 1
+          TabOrder = 0
           OnMouseEnter = tabsViewMouseEnter
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clCaptionText
@@ -2336,7 +2193,7 @@ object frmMain: TfrmMain
           SpeedButtonOptions.CanBeFocused = False
           SpeedButtonOptions.Flat = True
           SpeedButtonOptions.Transparent = True
-          TabOrder = 2
+          TabOrder = 1
           OnMouseEnter = tabsViewMouseEnter
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clCaptionText
@@ -2363,7 +2220,7 @@ object frmMain: TfrmMain
           SpeedButtonOptions.CanBeFocused = False
           SpeedButtonOptions.Flat = True
           SpeedButtonOptions.Transparent = True
-          TabOrder = 3
+          TabOrder = 2
           OnMouseEnter = tabsViewMouseEnter
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clCaptionText
@@ -2391,7 +2248,7 @@ object frmMain: TfrmMain
           SpeedButtonOptions.CanBeFocused = False
           SpeedButtonOptions.Flat = True
           SpeedButtonOptions.Transparent = True
-          TabOrder = 4
+          TabOrder = 3
           OnMouseEnter = tabsViewMouseEnter
           OnClick = btnBackForwardClick
         end
@@ -2431,6 +2288,7 @@ object frmMain: TfrmMain
         OnAnchorClick = mmoMessageAnchorClick
         Version = '1.9.2.2'
         ExplicitLeft = 87
+        ExplicitTop = 0
       end
       object sPanel1: TsPanel
         Left = 3
@@ -8751,8 +8609,8 @@ object frmMain: TfrmMain
     object dplGroupsppField3: TppField
       FieldAlias = 'ReservationName'
       FieldName = 'ReservationName'
-      FieldLength = 100
-      DisplayWidth = 100
+      FieldLength = 0
+      DisplayWidth = 0
       Position = 2
     end
     object dplGroupsppField4: TppField
@@ -8774,22 +8632,22 @@ object frmMain: TfrmMain
     object dplGroupsppField6: TppField
       FieldAlias = 'Room'
       FieldName = 'Room'
-      FieldLength = 10
-      DisplayWidth = 10
+      FieldLength = 30
+      DisplayWidth = 30
       Position = 5
     end
     object dplGroupsppField7: TppField
       FieldAlias = 'RoomType'
       FieldName = 'RoomType'
-      FieldLength = 10
-      DisplayWidth = 10
+      FieldLength = 30
+      DisplayWidth = 30
       Position = 6
     end
     object dplGroupsppField8: TppField
       FieldAlias = 'Status'
       FieldName = 'Status'
-      FieldLength = 5
-      DisplayWidth = 5
+      FieldLength = 30
+      DisplayWidth = 30
       Position = 7
     end
     object dplGroupsppField9: TppField
@@ -8811,8 +8669,8 @@ object frmMain: TfrmMain
     object dplGroupsppField11: TppField
       FieldAlias = 'RoomDescription'
       FieldName = 'RoomDescription'
-      FieldLength = 30
-      DisplayWidth = 30
+      FieldLength = 60
+      DisplayWidth = 60
       Position = 10
     end
     object dplGroupsppField12: TppField
@@ -8842,8 +8700,8 @@ object frmMain: TfrmMain
     object dplGroupsppField15: TppField
       FieldAlias = 'Location'
       FieldName = 'Location'
-      FieldLength = 10
-      DisplayWidth = 10
+      FieldLength = 30
+      DisplayWidth = 30
       Position = 14
     end
     object dplGroupsppField16: TppField
@@ -8858,15 +8716,15 @@ object frmMain: TfrmMain
     object dplGroupsppField17: TppField
       FieldAlias = 'Equipments'
       FieldName = 'Equipments'
-      FieldLength = 100
-      DisplayWidth = 100
+      FieldLength = 60
+      DisplayWidth = 60
       Position = 16
     end
     object dplGroupsppField18: TppField
       FieldAlias = 'LocationDescription'
       FieldName = 'LocationDescription'
-      FieldLength = 35
-      DisplayWidth = 35
+      FieldLength = 60
+      DisplayWidth = 60
       Position = 17
     end
     object dplGroupsppField19: TppField
@@ -8880,43 +8738,43 @@ object frmMain: TfrmMain
     object dplGroupsppField20: TppField
       FieldAlias = 'marketSegment'
       FieldName = 'marketSegment'
-      FieldLength = 5
-      DisplayWidth = 5
+      FieldLength = 15
+      DisplayWidth = 15
       Position = 19
     end
     object dplGroupsppField21: TppField
       FieldAlias = 'marketSegmentDescription'
       FieldName = 'marketSegmentDescription'
-      FieldLength = 30
-      DisplayWidth = 30
+      FieldLength = 60
+      DisplayWidth = 60
       Position = 20
     end
     object dplGroupsppField22: TppField
       FieldAlias = 'Email'
       FieldName = 'Email'
-      FieldLength = 100
-      DisplayWidth = 100
+      FieldLength = 200
+      DisplayWidth = 200
       Position = 21
     end
     object dplGroupsppField23: TppField
       FieldAlias = 'Website'
       FieldName = 'Website'
-      FieldLength = 100
-      DisplayWidth = 100
+      FieldLength = 200
+      DisplayWidth = 200
       Position = 22
     end
     object dplGroupsppField24: TppField
       FieldAlias = 'Customer'
       FieldName = 'Customer'
-      FieldLength = 15
-      DisplayWidth = 15
+      FieldLength = 30
+      DisplayWidth = 30
       Position = 23
     end
     object dplGroupsppField25: TppField
       FieldAlias = 'CustomerName'
       FieldName = 'CustomerName'
-      FieldLength = 100
-      DisplayWidth = 100
+      FieldLength = 60
+      DisplayWidth = 60
       Position = 24
     end
     object dplGroupsppField26: TppField
@@ -8929,15 +8787,15 @@ object frmMain: TfrmMain
     object dplGroupsppField27: TppField
       FieldAlias = 'Statustext'
       FieldName = 'Statustext'
-      FieldLength = 30
-      DisplayWidth = 30
+      FieldLength = 60
+      DisplayWidth = 60
       Position = 26
     end
     object dplGroupsppField28: TppField
       FieldAlias = 'resInfo'
       FieldName = 'resInfo'
-      FieldLength = 120
-      DisplayWidth = 120
+      FieldLength = 80
+      DisplayWidth = 80
       Position = 27
     end
     object dplGroupsppField29: TppField
@@ -8970,8 +8828,8 @@ object frmMain: TfrmMain
     object dplGroupsppField32: TppField
       FieldAlias = 'mainGuests'
       FieldName = 'mainGuests'
-      FieldLength = 70
-      DisplayWidth = 70
+      FieldLength = 60
+      DisplayWidth = 60
       Position = 31
     end
     object dplGroupsppField33: TppField
@@ -8986,21 +8844,21 @@ object frmMain: TfrmMain
     object dplGroupsppField34: TppField
       FieldAlias = 'GroupReservationName'
       FieldName = 'GroupReservationName'
-      FieldLength = 50
-      DisplayWidth = 50
+      FieldLength = 60
+      DisplayWidth = 60
       Position = 33
     end
     object dplGroupsppField35: TppField
       FieldAlias = 'ResLine'
       FieldName = 'ResLine'
-      FieldLength = 100
-      DisplayWidth = 100
+      FieldLength = 200
+      DisplayWidth = 200
       Position = 34
     end
     object dplGroupsppField36: TppField
       FieldAlias = 'mem'
       FieldName = 'mem'
-      FieldLength = 0
+      FieldLength = 255
       DataType = dtMemo
       DisplayWidth = 10
       Position = 35
@@ -24322,7 +24180,7 @@ object frmMain: TfrmMain
     Left = 928
     Top = 456
     Bitmap = {
-      494C010102000800041010001000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
+      494C010102000800181010001000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
       0000000000000000000000000000000000000000000000000000000000000000
       00000000000000000000000000000000000000000000484C4371617545C6729D

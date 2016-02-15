@@ -46,7 +46,7 @@ uses
   dxSkinSevenClassic, dxSkinSharp, dxSkinSharpPlus, dxSkinSilver,
   dxSkinSpringTime, dxSkinStardust, dxSkinSummer2008, dxSkinValentine,
   dxSkinVS2010, dxSkinWhiteprint, dxSkinXmas2008Blue, cxButtons, sComboBox,
-  sSpeedButton
+  sSpeedButton, AdvUtil
 
     ;
 
@@ -336,7 +336,18 @@ type
     mRoomRatesReservation: TIntegerField;
     mRoomRatesroomreservation: TIntegerField;
     mRoomRatesTmp: TdxMemData;
+    mRoomRatesRoomNumber: TStringField;
+    mRoomRatesPriceCode: TStringField;
+    mRoomRatesRateDate: TDateTimeField;
+    mRoomRatesRate: TFloatField;
+    mRoomRatesDiscount: TFloatField;
+    mRoomRatesisPercentage: TBooleanField;
+    mRoomRatesShowDiscount: TBooleanField;
+    mRoomRatesIsPaid: TBooleanField;
+    mRoomRatesDiscountAmount: TFloatField;
+    mRoomRatesRentAmount: TFloatField;
     IntegerField1: TIntegerField;
+    mRoomRatesNativeAmount: TFloatField;
     IntegerField2: TIntegerField;
     StringField1: TStringField;
     DateTimeField1: TDateTimeField;
@@ -350,7 +361,32 @@ type
     FloatField4: TFloatField;
     FloatField5: TFloatField;
     mRoomRes: TdxMemData;
+    mRoomResReservation: TIntegerField;
+    mRoomResroomreservation: TIntegerField;
+    mRoomResRoom: TStringField;
+    mRoomResRoomType: TStringField;
+    mRoomResGuests: TIntegerField;
+    mRoomResAvragePrice: TFloatField;
+    mRoomResRateCount: TIntegerField;
+    mRoomResRoomDescription: TStringField;
+    mRoomResRoomTypeDescription: TStringField;
+    mRoomResArrival: TDateTimeField;
+    mRoomResDeparture: TDateTimeField;
+    mRoomResChildrenCount: TIntegerField;
+    mRoomResinfantCount: TIntegerField;
+    mRoomResPriceCode: TStringField;
+    mRoomResAvrageDiscount: TFloatField;
+    mRoomResisPercentage: TBooleanField;
+    mRoomResPackage: TWideStringField;
     mPayments: TdxMemData;
+    mPaymentsPayDate: TDateField;
+    mPaymentsPayType: TWideStringField;
+    mPaymentsAmount: TFloatField;
+    mPaymentsDescription: TWideStringField;
+    mPaymentsPayGroup: TWideStringField;
+    mPaymentsMemo: TMemoField;
+    mPaymentsconfirmDate: TDateTimeField;
+    mPaymentsid: TIntegerField;
     mPaymentsssss: TMemoField;
     mPaymentswww: TWideStringField;
     mPaymentsdddd: TDateField;
