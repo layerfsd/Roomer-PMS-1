@@ -2288,7 +2288,6 @@ object frmMain: TfrmMain
         OnAnchorClick = mmoMessageAnchorClick
         Version = '1.9.2.2'
         ExplicitLeft = 87
-        ExplicitTop = 0
       end
       object sPanel1: TsPanel
         Left = 3
@@ -24180,7 +24179,7 @@ object frmMain: TfrmMain
     Left = 928
     Top = 456
     Bitmap = {
-      494C010102000800181010001000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
+      494C0101020008001C1010001000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
       0000000000000000000000000000000000000000000000000000000000000000
       00000000000000000000000000000000000000000000484C4371617545C6729D
@@ -24599,7 +24598,7 @@ object frmMain: TfrmMain
   end
   object timOfflineReports: TTimer
     Enabled = False
-    Interval = 18000000
+    Interval = 1800000
     OnTimer = timOfflineReportsTimer
     Left = 328
     Top = 208

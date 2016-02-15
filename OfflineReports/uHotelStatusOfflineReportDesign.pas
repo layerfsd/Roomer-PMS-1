@@ -20,5 +20,9 @@ implementation
 
 {$R *.dfm}
 
+uses
+  Dialogs
+  ;
+
 
 end.

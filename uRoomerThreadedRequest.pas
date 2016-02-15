@@ -38,6 +38,7 @@ type
     procedure ExecutePOST(const aCommand, aData: string);
   public
     Property RecordSet: _RecordSet read FRecordSet;
+    property Dataset: TRoomerDataset read FDataset;
   end;
 
   TDBThread = Class(TBaseDBThread)

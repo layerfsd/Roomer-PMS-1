@@ -8437,6 +8437,10 @@ begin
   TTimer(Sender).Enabled := false;
   try
     d.GenerateOfflineReports;
+
+{$ifdef Debug}
+    TTimer(sender).Interval := 3 * 60 * 1000; // 3 min for debugging
+{$endif}
   finally
     TTimer(Sender).Enabled := True;
   end;

@@ -68,7 +68,7 @@ begin
   begin
     lDesign := ReportDesign.Create(nil);
     try
-      lDesign.Recordset := Self.RecordSet;
+      lDesign.Dataset := Self.DataSet;
       lDesign.PrintToPDF(GetReportPDFFilename);
     finally
       lDesign.Free;
@@ -87,7 +87,7 @@ var
 const
   cNameFormat = '%s-%s';
 begin
-  lFile := ChangeFileExt(Format(cNameFormat, [ReportName, FormatDateTime('-yyyyddmmhhnn', FDateTime)]), '.PDF');
+  lFile := ChangeFileExt(Format(cNameFormat, [ReportName, FormatDateTime('yyyyddmmhhnn', FDateTime)]), '.PDF');
   Result := TPath.Combine(glb.GetOfflinereportLocation, lFile);
 end;
 
