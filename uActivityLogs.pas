@@ -8,7 +8,7 @@ uses SysUtils, Classes, uUtils, TypInfo,
 
 type
 
-  TActivityType = (ROOMER, INVOICE, RESERVATION, AVAILABILITY, RATE, TABLE_CHANGE);
+  TActivityType = (ROOMER, INVOICE, RESERVATION, AVAILABILITY, RATE, TABLE_CHANGE, OFFLINEREPORT);
   TRoomerAction = (LOGIN, LOGOUT, BUTTON_CLICK, ERROR);
 
   TInvoiceAction = (ADD_LINE, DELETE_LINE, CHANGE_ITEM, ADD_PAYMENT, DELETE_PAYMENT, CHANGE_PAYMENT, PRINT_PROFORMA, PAY_AND_PRINT);
@@ -30,78 +30,89 @@ type
   TAvailabilityAction = (EDIT, BULK);
   TRateAction = (RATE_EDIT, STOP_EDIT, MIN_EDIT, MAX_EDIT);
 
-procedure AddRoomerActivityLog(user : String;
-                               action : TRoomerAction;
-                               result : String;
-                               moreInfo : String);
+  TOfflineReportAction = (REPORTEXCEPTION);
 
-procedure AddInvoiceActivityLog(user : String;
+procedure AddOfflineReportActivityLog(const user : String;
+                               action : TOfflineReportAction;
+                               const reportname: string;
+                               const result : String;
+                               const moreInfo : String);
+
+procedure AddRoomerActivityLog(const user : String;
+                               action : TRoomerAction;
+                               const result : String;
+                               const moreInfo : String);
+
+procedure AddInvoiceActivityLog(const user : String;
                                 iReservation,
                                 iRoomReservation,
                                 invoiceIndex : Integer;
                                 action : TInvoiceAction;
-                                code : String;
+                                const code : String;
                                 value : Double;
                                 lineId : Integer;
-                                moreInfo : String);
+                                const moreInfo : String);
 
-procedure AddReservationActivityLog(user : String;
+procedure AddReservationActivityLog(const user : String;
                                     iReservation,
                                     iRoomReservation : Integer;
                                     action : TReservationAction;
-                                    OldValue : String;
-                                    NewValue : String;
-                                    moreInfo : String);
+                                    const OldValue : String;
+                                    const NewValue : String;
+                                    const moreInfo : String);
 
-procedure AddAvailabilityActivityLog(user : String;
+procedure AddAvailabilityActivityLog(const user : String;
                                      action : TAvailabilityAction;
-                                     roomClass : String;
+                                     const roomClass : String;
                                      iAvailability : Integer;
                                      date : TDate;
-                                     moreInfo : String);
+                                     const moreInfo : String);
 
-procedure AddRateActivityLog(user : String;
+procedure AddRateActivityLog(const user : String;
                              action : TRateAction;
-                             roomClass : String;
+                             const roomClass : String;
                              rate : Double;
                              stop : Boolean;
                              min : Integer;
                              max : Integer;
                              date : TDate;
-                             moreInfo : String);
+                             const moreInfo : String);
 
 procedure PushActivityLogs;
 
 procedure UserClickedDxLargeButton(Sender: TObject);
 
-function CreateInvoiceActivityLog(user : String;
+function CreateInvoiceActivityLog(const user : String;
                                 iReservation,
                                 iRoomReservation,
                                 invoiceIndex : Integer;
                                 action : TInvoiceAction;
-                                code : String;
+                                const code : String;
                                 value : Double;
                                 lineId : Integer;
-                                moreInfo : String) : String;
+                                const moreInfo : String) : String;
 
-function WriteInvoiceActivityLog(sLine : String) : String;
+function WriteInvoiceActivityLog(const sLine : String) : String;
 
 
-function CreateReservationActivityLog(user : String;
+function CreateReservationActivityLog(const user : String;
                                     iReservation,
                                     iRoomReservation : Integer;
                                     action : TReservationAction;
-                                    OldValue : String;
-                                    NewValue : String;
-                                    moreInfo : String) : String;
+                                    const OldValue : String;
+                                    const NewValue : String;
+                                    const moreInfo : String) : String;
 
-function WriteReservationActivityLog(sLine : String) : String;
-
-var GetThreadedData : TGetThreadedData = nil;
+function WriteReservationActivityLog(const sLine : String) : String;
 
 implementation
 
-uses Menus, sButton, sLabel, ud, ioUtils, uAppGlobal, uDateUtils, uStringUtils, dxBar;
+uses Menus, sButton, sLabel, ud, ioUtils, uAppGlobal, uDateUtils, uStringUtils, dxBar
+    , WinApi.Windows
+    ;
+
+var GetThreadedData : TGetThreadedData = nil;
+
 
 function GetDataFileLocationWithName(activity: TActivityType): String;
 var filename : String;
@@ -110,21 +121,21 @@ begin
   result := TPath.Combine(glb.GetDataCacheLocation, filename);
 end;
 
-function CreateXmlElement(User : String;
-                          When : String;
-                          Category : String;
-                          Action : String;
-                          Description : String;
-                          DetailedDescription : String;
-                          OldValue : String;
-                          NewValue : String;
-                          Code : String;
+function CreateXmlElement(const User : String;
+                          const When : String;
+                          const Category : String;
+                          const Action : String;
+                          const Description : String;
+                          const DetailedDescription : String;
+                          const OldValue : String;
+                          const NewValue : String;
+                          const Code : String;
                           Reservation : Integer;
                           RoomReservation : Integer;
                           ID_1 : Integer;
                           ID_2 : Integer;
                           ID_3 : Integer;
-                          ADate : String) : String;
+                          const ADate : String) : String;
 begin
   result := '<log user="%s" type="%s" action="%s" when="%s">' +
             '<description>%s</description>' +
@@ -160,15 +171,16 @@ begin
                    ]);
 end;
 
-function CreateInvoiceActivityLog(user : String;
+
+function CreateInvoiceActivityLog(const user : String;
                                 iReservation,
                                 iRoomReservation,
                                 invoiceIndex : Integer;
                                 action : TInvoiceAction;
-                                code : String;
+                                const code : String;
                                 value : Double;
                                 lineId : Integer;
-                                moreInfo : String) : String;
+                                const moreInfo : String) : String;
 var categoryName, actionName : String;
 begin
   categoryName := GetEnumName(TypeInfo(TActivityType), Ord(INVOICE));
@@ -193,20 +205,20 @@ end;
 
 
 
-function WriteInvoiceActivityLog(sLine : String) : String;
+function WriteInvoiceActivityLog(const sLine : String) : String;
 begin
   AddToTextFile(GetDataFileLocationWithName(INVOICE), sLine);
 end;
 
-procedure AddInvoiceActivityLog(user : String;
+procedure AddInvoiceActivityLog(const user : String;
                                 iReservation,
                                 iRoomReservation,
                                 invoiceIndex : Integer;
                                 action : TInvoiceAction;
-                                code : String;
+                                const code : String;
                                 value : Double;
                                 lineId : Integer;
-                                moreInfo : String);
+                                const moreInfo : String);
 begin
   WriteInvoiceActivityLog(
      CreateInvoiceActivityLog(user,
@@ -220,13 +232,13 @@ begin
                               moreInfo));
 end;
 
-procedure AddReservationActivityLog(user : String;
+procedure AddReservationActivityLog(const user : String;
                                     iReservation,
                                     iRoomReservation : Integer;
                                     action : TReservationAction;
-                                    OldValue : String;
-                                    NewValue : String;
-                                    moreInfo : String);
+                                    const OldValue : String;
+                                    const NewValue : String;
+                                    const moreInfo : String);
 var categoryName, actionName, sLine : String;
 begin
   categoryName := GetEnumName(TypeInfo(TActivityType), Ord(RESERVATION));
@@ -251,13 +263,13 @@ begin
 end;
 
 
-function CreateReservationActivityLog(user : String;
+function CreateReservationActivityLog(const user : String;
                                     iReservation,
                                     iRoomReservation : Integer;
                                     action : TReservationAction;
-                                    OldValue : String;
-                                    NewValue : String;
-                                    moreInfo : String) : String;
+                                    const OldValue : String;
+                                    const NewValue : String;
+                                    const moreInfo : String) : String;
 
 var categoryName, actionName : String;
 begin
@@ -282,7 +294,7 @@ begin
 
 end;
 
-function WriteReservationActivityLog(sLine : String) : String;
+function WriteReservationActivityLog(const sLine : String) : String;
 begin
   AddToTextFile(GetDataFileLocationWithName(RESERVATION), sLine);
 end;
@@ -290,11 +302,45 @@ end;
 
 //****************************************
 
+procedure AddOfflineReportActivityLog(const user : String;
+                               action : TOfflineReportAction;
+                               const reportname: string;
+                               const result : String;
+                               const moreInfo : String);
+var
+  sLine: string;
+  categoryName: string;
+  actionName: string;
+begin
 
-procedure AddRoomerActivityLog(user : String;
+  categoryName := GetEnumName(TypeInfo(TActivityType), ORD(OFFLINEREPORT));
+  actionName := GetEnumName(TypeInfo(TRoomerAction), ORD(action));
+
+
+
+  sLine := CreateXmlElement(user,
+                            uDateUtils.dateTimeToXmlString(now),
+                            categoryName + ': ' + reportname,
+                            actionName,
+                            result,
+                            moreinfo,
+                            '',
+                            '',
+                            '',
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            '');
+  AddToTextFile(GetDataFileLocationWithName(OFFLINEREPORT), sLine);
+
+end;
+
+procedure AddRoomerActivityLog(const user : String;
                                action : TRoomerAction;
-                               result : String;
-                               moreInfo : String);
+                               const result : String;
+                               const moreInfo : String);
 var categoryName, actionName, sLine : String;
 begin
   try
@@ -322,12 +368,12 @@ begin
   AddToTextFile(GetDataFileLocationWithName(ROOMER), sLine);
 end;
 
-procedure AddAvailabilityActivityLog(user : String;
+procedure AddAvailabilityActivityLog(const user : String;
                                      action : TAvailabilityAction;
-                                     roomClass : String;
+                                     const roomClass : String;
                                      iAvailability : Integer;
                                      date : TDate;
-                                     moreInfo : String);
+                                     const moreInfo : String);
 var categoryName, actionName, sLine : String;
 begin
   categoryName := GetEnumName(TypeInfo(TActivityType), ORD(AVAILABILITY));
@@ -351,15 +397,15 @@ begin
   AddToTextFile(GetDataFileLocationWithName(AVAILABILITY), sLine);
 end;
 
-procedure AddRateActivityLog(user : String;
+procedure AddRateActivityLog(const user : String;
                              action : TRateAction;
-                             roomClass : String;
+                             const roomClass : String;
                              rate : Double;
                              stop : Boolean;
                              min : Integer;
                              max : Integer;
                              date : TDate;
-                             moreInfo : String);
+                             const moreInfo : String);
 var categoryName, actionName, sLine : String;
 begin
   categoryName := GetEnumName(TypeInfo(TActivityType), ORD(AVAILABILITY));
@@ -400,28 +446,18 @@ begin
       if FileExists(filename) then
       begin
         if FileExists(filename + '.busy') then
-          DeleteFile(filename + '.busy');
-        if RenameFile(filename, filename + '.busy') then
+          SysUtils.DeleteFile(filename + '.busy');
+        if SysUtils.RenameFile(filename, filename + '.busy') then
         begin
           filename := filename + '.busy';
           content := TStringList.Create;
           try
             content.LoadFromFile(filename);
             for i := 0 to content.Count - 1 do
-            begin
-              // Send to Roomer ...
-              case activity of
-                ROOMER,
-                INVOICE,
-                RESERVATION,
-                AVAILABILITY,
-                RATE,
-                TABLE_CHANGE: list.Add(content[i]);
-              end;
+              list.Add(content[i]);
 
-            end;
             // Then delete the file...
-            deleteFile(filename);
+            SysUtils.DeleteFile(filename);
           finally
             content.Free;
           end;
@@ -469,5 +505,11 @@ begin
     else
        AddRoomerActivityLog(d.roomerMainDataSet.username, uActivityLogs.BUTTON_CLICK, '<UNKNOWN>', 'User ' + d.roomerMainDataSet.username + ' clicked <UNKNOWN> (<UNKNOWN>)');
 end;
+
+
+initialization
+
+finalization
+  FreeAndNil(GetThreadedData);
 
 end.

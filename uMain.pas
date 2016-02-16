@@ -2956,7 +2956,6 @@ begin
     MoveFunctionAvailRooms.Free;
     StaffComm.Free;
     availListContainer.Free;
-    GetThreadedData.Free;
     FrmMessagesTemplates.Free;
   except
   end;
