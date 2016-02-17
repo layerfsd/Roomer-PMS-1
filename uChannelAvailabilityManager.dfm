@@ -1143,10 +1143,6 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           Caption = 'Availabilities'
           SkinData.CustomColor = False
           SkinData.CustomFont = False
-          ExplicitLeft = 0
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
           object Panel2: TsPanel
             Left = 0
             Top = 467
@@ -1408,7 +1404,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
               object cbxShowLinkedCells: TsCheckBox
                 Left = 5
                 Top = 2
-                Width = 118
+                Width = 121
                 Height = 19
                 Margins.Left = 2
                 Margins.Top = 2
@@ -2507,7 +2503,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
     Left = 512
     Top = 304
     Bitmap = {
-      494C010102000800BC0320002000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010102000800C00320002000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000800000002000000001002000000000000040
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000060000

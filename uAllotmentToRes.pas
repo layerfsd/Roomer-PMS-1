@@ -58,7 +58,7 @@ uses
   dxSkiniMaginary, dxSkinLilian, dxSkinLiquidSky, dxSkinLondonLiquidSky, dxSkinMoneyTwins, dxSkinOffice2007Black, dxSkinOffice2007Blue,
   dxSkinOffice2007Green, dxSkinOffice2007Pink, dxSkinOffice2007Silver, dxSkinOffice2010Black, dxSkinOffice2010Blue, dxSkinOffice2010Silver,
   dxSkinPumpkin, dxSkinSeven, dxSkinSevenClassic, dxSkinSharp, dxSkinSharpPlus, dxSkinSilver, dxSkinSpringTime, dxSkinStardust,
-  dxSkinSummer2008, dxSkinValentine, dxSkinVS2010, dxSkinWhiteprint, dxSkinXmas2008Blue
+  dxSkinSummer2008, dxSkinValentine, dxSkinVS2010, dxSkinWhiteprint, dxSkinXmas2008Blue, AdvUtil
   ;
 
 
@@ -464,9 +464,10 @@ function TfrmAllotmentToRes.RoomAndTypeToRow(room,roomType : string) : integer;
 var
   i : integer;
 begin
+  Result := 0;
   for i := cCountFixedRows to grProvide.RowCount-(cCountFixedRows) do
   begin
-    if (uppercase(room) = grProvide.Cells[0,i]) and (uppercase(roomtype) = grProvide.Cells[1,i])  then
+    if Sametext(room, grProvide.Cells[0,i]) and Sametext(roomtype, grProvide.Cells[1,i])  then
     begin
       result := i;
       break;
@@ -670,9 +671,10 @@ function TfrmAllotmentToRes.infoAndTypeToRow(info,roomType : string) : integer;
 var
   i : integer;
 begin
+  Result := 0;
   for i := cCountFixedRows to grProvide.ColCount-(cCountFixedRows+1) do
   begin
-    if (uppercase(info) = uppercase(grProvide.Cells[cColInfo,i])) and (uppercase(roomtype) = uppercase(grProvide.Cells[cColRoomType,i]))  then
+    if (SameText(info, grProvide.Cells[cColInfo,i])) and (Sametext(roomtype, grProvide.Cells[cColRoomType,i]))  then
     begin
       result := i;
       break;
@@ -2275,7 +2277,9 @@ begin
       CurrencyRate  := hData.GetRate(currency);
 
       tmpDeparture := 0;
+      Departure := tmpDeparture;
       tmpArrival:= date+10000;
+      Arrival := tmpArrival;
       mRRinfo.First;
       while not mRRinfo.eof do
       begin
@@ -2287,8 +2291,10 @@ begin
         ttPrice      := ttPrice   + RoomRate;
         ttDiscount   := ttDiscount+ discount;
 
-        if tmpArrival >= mRRinfo.FieldByName('dtDate').asDateTime then arrival :=  mRRinfo.FieldByName('dtDate').asDateTime;
-        if tmpDeparture <= mRRinfo.FieldByName('dtDate').asDateTime then departure := mRRinfo.FieldByName('dtDate').asDateTime;
+        if tmpArrival >= mRRinfo.FieldByName('dtDate').asDateTime then
+          arrival :=  mRRinfo.FieldByName('dtDate').asDateTime;
+        if tmpDeparture <= mRRinfo.FieldByName('dtDate').asDateTime then
+          departure := mRRinfo.FieldByName('dtDate').asDateTime;
 
         tmpArrival   := Arrival;
         tmpDeparture := Departure;

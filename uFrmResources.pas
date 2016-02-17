@@ -988,6 +988,7 @@ end;
 function TFrmResources.DownloadSelectedFile(destFilename : String) : Boolean;
 var item : TListItem;
 begin
+  Result := false;
   if lvResources.Selected <> nil then
   begin
     item := lvResources.Selected;

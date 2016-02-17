@@ -163,7 +163,7 @@ begin
   if Sender IS TfrmChannelAvailabilityManager then
     result := rwAvailabilityAndRate
   else
-  if Sender IS TfrmRptReservations then
+//  if Sender IS TfrmRptReservations then
     result := rwReportReservations
 end;
 
