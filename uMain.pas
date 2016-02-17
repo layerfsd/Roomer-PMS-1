@@ -8447,19 +8447,19 @@ end;
 
 procedure TfrmMain.timOfflineReportsTimer(Sender: TObject);
 begin
-//  TTimer(Sender).Enabled := false;
-//  try
-//    d.GenerateOfflineReports;
-//
-//{$ifdef Debug}
-//    TTimer(sender).Interval := 3 * 60 * 1000; // 3 min for debugging
-//{$else}
-//    TTimer(sender).Interval := 30 * 60 * 1000; // 30 min normal
-//{$endif}
-//
-//  finally
-//    TTimer(Sender).Enabled := True;
-//  end;
+  TTimer(Sender).Enabled := false;
+  try
+    d.GenerateOfflineReports;
+
+{$ifdef Debug}
+    TTimer(sender).Interval := 3 * 60 * 1000; // 3 min for debugging
+{$else}
+    TTimer(sender).Interval := 30 * 60 * 1000; // 30 min normal
+{$endif}
+
+  finally
+    TTimer(Sender).Enabled := True;
+  end;
 end;
 
 procedure TfrmMain.timRetryRefreshTimer(Sender: TObject);
