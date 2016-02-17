@@ -76,7 +76,7 @@ type
     property Alerts : TObjectList<TAlert> read FList;
   end;
 
-function ReadAlertsForRoomReservation(Reservation: Integer; RoomReservation: Integer; AlertType : TAlertType) : TAlertList;
+function CreateAlertsForRoomReservation(Reservation: Integer; RoomReservation: Integer; AlertType : TAlertType) : TAlertList;
 function AlertTypeToDescriptiveString(AlertType : TAlertType) : String;
 procedure ShowAlerts(AlertList : TAlertList);
 procedure ShowAlertsForReservation(Reservation, RoomReservation : Integer; AlertType : TAlertType);
@@ -85,7 +85,7 @@ implementation
 
 uses uD, hData, _Glob, Dialogs, uFrmAlertDialog;
 
-function ReadAlertsForRoomReservation(Reservation: Integer; RoomReservation: Integer; AlertType : TAlertType) : TAlertList;
+function CreateAlertsForRoomReservation(Reservation: Integer; RoomReservation: Integer; AlertType : TAlertType) : TAlertList;
 begin
   result := TAlertList.Create(Reservation, RoomReservation, AlertType);
 end;
@@ -100,8 +100,12 @@ end;
 procedure ShowAlertsForReservation(Reservation, RoomReservation : Integer; AlertType : TAlertType);
 var AlertList : TAlertList;
 begin
-  AlertList := ReadAlertsForRoomReservation(Reservation, RoomReservation, AlertType);
-  ShowAlerts(AlertList);
+  AlertList := CreateAlertsForRoomReservation(Reservation, RoomReservation, AlertType);
+  try
+    ShowAlerts(AlertList);
+  finally
+    AlertList.Free;
+  end;
 end;
 
 //////
