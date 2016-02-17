@@ -3044,6 +3044,8 @@ object frmMain: TfrmMain
       SkinData.CustomColor = True
       SkinData.CustomFont = True
       SkinData.SkinSection = 'UNKNOWN'
+      ExplicitLeft = 6
+      ExplicitTop = 105
       object btnGoOnline: TsButton
         Left = 4
         Top = 3

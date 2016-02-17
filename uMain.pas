@@ -1573,7 +1573,7 @@ uses
   GoogleOTP256,
   uInvoiceController,
   Math
-  ;
+  , uOfflineReportGrid;
 
 {$R *.DFM}
 {$R Cursors.res}
@@ -3264,7 +3264,15 @@ begin
 
     if OffLineMode then
     begin
-      MessageDlg('Running offline reportsform', mtInformation, [mbOK], 0);
+
+      with TfrmOfflineReports.Create(nil) do
+      try
+        RoomerOffline := True;
+        ShowModal;
+      finally
+        Free;
+      end;
+
       Close;
       Exit;
     end;

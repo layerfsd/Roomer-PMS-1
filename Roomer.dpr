@@ -205,7 +205,8 @@ uses
   uOffLineReport in 'OfflineReports\uOffLineReport.pas',
   uHotelStatusOfflineReport in 'OfflineReports\uHotelStatusOfflineReport.pas',
   uOfflineReportDesign in 'OfflineReports\uOfflineReportDesign.pas' {BaseOfflineReportDesign: TDataModule},
-  uHotelStatusOfflineReportDesign in 'OfflineReports\uHotelStatusOfflineReportDesign.pas';
+  uHotelStatusOfflineReportDesign in 'OfflineReports\uHotelStatusOfflineReportDesign.pas',
+  uOfflineReportGrid in 'OfflineReports\uOfflineReportGrid.pas' {frmOfflineReports};
 
 {$R *.RES}
 

@@ -90,7 +90,7 @@ var
 const
   cNameFormat = '%s-%s';
 begin
-  lFile := ChangeFileExt(Format(cNameFormat, [ReportName, FormatDateTime('yyyyddmmhhnn', FDateTime)]), '.PDF');
+  lFile := ChangeFileExt(Format(cNameFormat, [ReportName, FormatDateTime('yyyymmddhhnn', FDateTime)]), '.PDF');
   Result := TPath.Combine(glb.GetOfflinereportLocation, lFile);
 end;
 
