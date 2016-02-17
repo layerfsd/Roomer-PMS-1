@@ -110,8 +110,8 @@ type
     procedure CommitTransaction;
     procedure RollbackTransaction;
 
-    function AddQuery(Sql: String): Integer;
-    function AddExec(Sql: String): Integer;
+    function AddQuery(aSql: String): Integer;
+    function AddExec(aSql: String): Integer;
 
     procedure Clear;
 
@@ -226,7 +226,7 @@ type
       {$IFDEF USE_INDY}TIdHeaderList{$ELSE}TAlHttpRequestHeader{$ENDIF});
 //    function GetOpenAPIResourcePath(Endpoint, URI: String): String;
     procedure SetOfflineMode(const Value: Boolean);
-    procedure AssertOnlineMode(param : TRoomerOfflineAssertonParameter = roapGet; sql : String = '');
+    procedure AssertOnlineMode(param : TRoomerOfflineAssertonParameter = roapGet; aSql : String = '');
     function GetFilenameFromParameter(param : TRoomerOfflineAssertonParameter) : String;
     function GetParameterTypeName(param: TRoomerOfflineAssertonParameter): String;
     procedure DoSessionExpired;
@@ -248,8 +248,8 @@ type
     function GetFloatValue(Field: TField): Double;
     procedure Post; override;
     procedure OpenDataset(SqlResult: String);
-    procedure DoQuery(Sql: String);
-    function DoCommand(Sql: String; async : Boolean = false): Integer;
+    procedure DoQuery(aSql: String);
+    function DoCommand(aSql: String; async : Boolean = false): Integer;
     procedure Open(doLowerCase: Boolean = true; setLastAccess: Boolean = true);
     procedure GetMessages;
     procedure GetTableUpdateTimeStamps;
@@ -311,7 +311,7 @@ type
     function DownloadFileResourceOpenAPI(URI, destFilename: String): Boolean;
     function HeadOfURI(URI: String): TALHTTPResponseHeader;
 
-    function queryRoomer(Sql: String; SetLastAccess: Boolean = true): String;
+    function queryRoomer(aSql: String; SetLastAccess: Boolean = true): String;
     function downloadUrlAsString(url: String; loggingInOut: Integer = 0;
       SetLastAccess: Boolean = true; contentType: String = ''): String;
     function downloadUrlAsStringUsingPost(url: String; Data: String;
@@ -357,7 +357,7 @@ type
   published
     { Published declarations }
     property SavedLastResult: String read FSavedLastResult;
-    property Sql: TStringList read FSql write FSql;
+    property Sql: TStringList read FSql;
     property DataActive: Boolean read FDataActive write SetDataActive;
     property RoomerStoreUri: String read FStoreUri write FStoreUri;
     property OpenApiUri: String read GetOpenApiUri write SetOpenApiUri;
@@ -484,10 +484,10 @@ end;
 
 destructor TRoomerDataSet.Destroy;
 begin
+  inherited;
   FSql.Free;
   hotelsList.Free;
   FreeAndNil(FroomerClient);
-  inherited;
 end;
 
 function TRoomerDataSet.CreateNewDataset: TRoomerDataSet;
@@ -648,10 +648,10 @@ begin
   result := downloadUrlAsString(RoomerUri + 'sessions/pulse', 0, true);
 end;
 
-function TRoomerDataSet.queryRoomer(Sql: String; SetLastAccess: Boolean = true): String;
+function TRoomerDataSet.queryRoomer(aSql: String; SetLastAccess: Boolean = true): String;
 begin
-  FLastSql := Sql;
-  result := activeRoomerDataSet.SystemFreeQuery(Sql, SetLastAccess);
+  FLastSql := aSql;
+  result := activeRoomerDataSet.SystemFreeQuery(aSql, SetLastAccess);
 end;
 
 function TRoomerDataSet.ReLogin: Boolean;
@@ -699,15 +699,15 @@ begin
   result := TPath.Combine(sPath, format('Offline_%s_Commands.src', [GetParameterTypeName(param)]));
 end;
 
-procedure TRoomerDataSet.AssertOnlineMode(param : TRoomerOfflineAssertonParameter = roapGet; sql : String = '');
+procedure TRoomerDataSet.AssertOnlineMode(param : TRoomerOfflineAssertonParameter = roapGet; asql : String = '');
 begin
   if OfflineMode then
   begin
     case param of
       roapGet: ;
-      roapPut: AddToTextFile(GetFilenameFromParameter(param), sql);
-      roapDelete: AddToTextFile(GetFilenameFromParameter(param), sql);
-      roapPost: AddToTextFile(GetFilenameFromParameter(param), sql);
+      roapPut: AddToTextFile(GetFilenameFromParameter(param), asql);
+      roapDelete: AddToTextFile(GetFilenameFromParameter(param), asql);
+      roapPost: AddToTextFile(GetFilenameFromParameter(param), asql);
     end;
     raise ERoomerOfflineAssertionException.CreateErrCode(
               format('Roomer is in Off-line mode while trying %s mode SQL.', [GetParameterTypeName(param)]),
@@ -1810,26 +1810,26 @@ procedure TRoomerDataSet.Post;
     end;
   end;
 
-  procedure PerformUpdate(tableName: String; Sql: String);
+  procedure PerformUpdate(aTableName: String; aSql: String);
   begin
-    if Sql <> '' then
+    if aSql <> '' then
     begin
-      Sql := format('UPDATE %s SET %s WHERE id=%d',
-        [tableName, Sql, FieldByName('id').AsInteger]);
-      self.activeRoomerDataSet.SystemFreeExecute(Sql);
+      aSql := format('UPDATE %s SET %s WHERE id=%d',
+        [aTableName, aSql, FieldByName('id').AsInteger]);
+      self.activeRoomerDataSet.SystemFreeExecute(aSql);
       GlueToRecordSet;
     end;
   end;
 
   procedure UpdateTable(table: String);
   var
-    Sql: String;
+    lSql: String;
     fieldName, fieldValue, tableName: String;
     Field: TField;
     i, iFieldSize: Integer;
 
   begin
-    Sql := '';
+    lSql := '';
     for i := 0 to RecordSet.Fields.Count - 1 do
     begin
       tableName := RecordSet.Fields[i].Properties['BASETABLENAME'].Value;
@@ -1843,36 +1843,36 @@ procedure TRoomerDataSet.Post;
           fieldValue := ProvideFieldValue(Field, iFieldSize);
           if fieldValue <> '' then
           begin
-            if Sql = '' then
-              Sql := format('%s=%s', [fieldName, fieldValue])
+            if lSql = '' then
+              lSql := format('%s=%s', [fieldName, fieldValue])
             else
-              Sql := Sql + format(',%s=%s', [fieldName, fieldValue]);
+              lSql := lSql + format(',%s=%s', [fieldName, fieldValue]);
           end;
         end;
       end;
     end;
-    PerformUpdate(table, Sql);
+    PerformUpdate(table, lSql);
   end;
 
-  procedure PerformInsert(tableName: String; sFields, Sql: String);
+  procedure PerformInsert(aTableName: String; aFields, aSql: String);
   begin
-    if Sql <> '' then
+    if aSql <> '' then
     begin
-      Sql := format('INSERT INTO %s (%s) VALUES(%s)',
-        [LowerCase(tableName), sFields, Sql]);
-      self.activeRoomerDataSet.SystemFreeExecute(Sql);
+      aSql := format('INSERT INTO %s (%s) VALUES(%s)',
+        [LowerCase(aTableName), aFields, aSql]);
+      self.activeRoomerDataSet.SystemFreeExecute(aSql);
       GlueToRecordSet;
     end;
   end;
 
   procedure InsertTable(table: String);
   var
-    sFields, Sql: String;
+    sFields, lSql: String;
     fieldName, fieldValue, tableName: String;
     Field: TField;
     i, iFieldSize: Integer;
   begin
-    Sql := '';
+    lSql := '';
     sFields := '';
     for i := 0 to RecordSet.Fields.Count - 1 do
     begin
@@ -1890,14 +1890,14 @@ procedure TRoomerDataSet.Post;
           else
             sFields := sFields + format(',%s', [fieldName]);
 
-          if Sql = '' then
-            Sql := format('%s', [fieldValue])
+          if lSql = '' then
+            lSql := format('%s', [fieldValue])
           else
-            Sql := Sql + format(',%s', [fieldValue]);
+            lSql := lSql + format(',%s', [fieldValue]);
         end;
       end;
     end;
-    PerformInsert(table, sFields, Sql);
+    PerformInsert(table, sFields, lSql);
   end;
 
 var
@@ -1946,21 +1946,21 @@ begin
     First;
 end;
 
-function TRoomerDataSet.DoCommand(Sql: String; async : Boolean = false): Integer;
+function TRoomerDataSet.DoCommand(aSql: String; async : Boolean = false): Integer;
 var
   sResult: String;
 begin
   if async then
-    sResult := self.activeRoomerDataSet.SystemFreeExecuteAsync(Sql)
+    sResult := self.activeRoomerDataSet.SystemFreeExecuteAsync(aSql)
   else
-    sResult := self.activeRoomerDataSet.SystemFreeExecute(Sql);
+    sResult := self.activeRoomerDataSet.SystemFreeExecute(aSql);
   result := StrToIntDef(sResult, -99999999);
   if result <= 0 then
   begin
     if result = -99999999 then
     begin
 {$IFDEF DEBUG}
-      CopyToClipboard(Sql + #13#10#13#10 + '-- ' + sResult);
+      CopyToClipboard(aSql + #13#10#13#10 + '-- ' + sResult);
 {$ENDIF}
       raise Exception.Create('command execution failed');
     end;
@@ -1968,9 +1968,9 @@ begin
   FNumberOfAffectedRows := result;
 end;
 
-procedure TRoomerDataSet.DoQuery(Sql: String);
+procedure TRoomerDataSet.DoQuery(aSql: String);
 begin
-  OpenDataset(queryRoomer(Sql));
+  OpenDataset(queryRoomer(aSql));
 end;
 
 function TRoomerDataSet.GetCommandText: String;
@@ -2389,14 +2389,14 @@ end;
 
 { TRoomerExecutionPlan }
 
-function TRoomerExecutionPlan.AddExec(Sql: String): Integer;
+function TRoomerExecutionPlan.AddExec(aSql: String): Integer;
 begin
-  result := sqlList.Add(TRoomerPlanEntity.Create(ptExec, Sql));
+  result := sqlList.Add(TRoomerPlanEntity.Create(ptExec, aSql));
 end;
 
-function TRoomerExecutionPlan.AddQuery(Sql: String): Integer;
+function TRoomerExecutionPlan.AddQuery(aSql: String): Integer;
 begin
-  result := sqlList.Add(TRoomerPlanEntity.Create(ptQuery, Sql));
+  result := sqlList.Add(TRoomerPlanEntity.Create(ptQuery, aSql));
 end;
 
 procedure TRoomerExecutionPlan.BeginTransaction;
