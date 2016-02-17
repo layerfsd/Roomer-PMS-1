@@ -246,7 +246,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           Color = clWhite
           Enabled = False
           Font.Charset = DEFAULT_CHARSET
-          Font.Color = 2302755
+          Font.Color = clBlack
           Font.Height = -11
           Font.Name = 'Tahoma'
           Font.Style = []
@@ -298,7 +298,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           Color = clWhite
           EditMask = '!99/99/9999;1; '
           Font.Charset = DEFAULT_CHARSET
-          Font.Color = 2302755
+          Font.Color = clBlack
           Font.Height = -11
           Font.Name = 'Tahoma'
           Font.Style = []
@@ -330,7 +330,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           Color = clWhite
           EditMask = '!99/99/9999;1; '
           Font.Charset = DEFAULT_CHARSET
-          Font.Color = 2302755
+          Font.Color = clBlack
           Font.Height = -11
           Font.Name = 'Tahoma'
           Font.Style = []
@@ -352,7 +352,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
         object cbMon: TsCheckBox
           Left = 96
           Top = 383
-          Width = 62
+          Width = 65
           Height = 18
           Margins.Left = 2
           Margins.Top = 2
@@ -369,7 +369,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
         object cbTue: TsCheckBox
           Left = 96
           Top = 400
-          Width = 63
+          Width = 66
           Height = 18
           Margins.Left = 2
           Margins.Top = 2
@@ -386,7 +386,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
         object cbWen: TsCheckBox
           Left = 96
           Top = 417
-          Width = 78
+          Width = 81
           Height = 18
           Margins.Left = 2
           Margins.Top = 2
@@ -403,7 +403,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
         object cbThu: TsCheckBox
           Left = 96
           Top = 435
-          Width = 68
+          Width = 71
           Height = 18
           Margins.Left = 2
           Margins.Top = 2
@@ -420,7 +420,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
         object cbFri: TsCheckBox
           Left = 216
           Top = 383
-          Width = 54
+          Width = 57
           Height = 18
           Margins.Left = 2
           Margins.Top = 2
@@ -437,7 +437,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
         object cbSat: TsCheckBox
           Left = 216
           Top = 400
-          Width = 66
+          Width = 69
           Height = 18
           Margins.Left = 2
           Margins.Top = 2
@@ -454,7 +454,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
         object cbSun: TsCheckBox
           Left = 216
           Top = 417
-          Width = 60
+          Width = 63
           Height = 18
           Margins.Left = 2
           Margins.Top = 2
@@ -541,7 +541,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           Color = clWhite
           Enabled = False
           Font.Charset = DEFAULT_CHARSET
-          Font.Color = 2302755
+          Font.Color = clBlack
           Font.Height = -11
           Font.Name = 'Tahoma'
           Font.Style = []
@@ -605,7 +605,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           Color = clWhite
           Enabled = False
           Font.Charset = DEFAULT_CHARSET
-          Font.Color = 2302755
+          Font.Color = clBlack
           Font.Height = -11
           Font.Name = 'Tahoma'
           Font.Style = []
@@ -622,8 +622,8 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
         object __cbxRate: TsCheckBox
           Left = 114
           Top = 62
-          Width = 17
-          Height = 15
+          Width = 20
+          Height = 18
           Margins.Left = 2
           Margins.Top = 2
           Margins.Right = 2
@@ -637,8 +637,8 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
         object __cbxAvailability: TsCheckBox
           Left = 114
           Top = 112
-          Width = 17
-          Height = 15
+          Width = 20
+          Height = 18
           Margins.Left = 2
           Margins.Top = 2
           Margins.Right = 2
@@ -762,8 +762,8 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           object __cbxMinimumStayActive: TsCheckBox
             Left = 13
             Top = 28
-            Width = 17
-            Height = 15
+            Width = 20
+            Height = 18
             Margins.Left = 2
             Margins.Top = 2
             Margins.Right = 2
@@ -787,7 +787,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
             Color = clWhite
             Enabled = False
             Font.Charset = DEFAULT_CHARSET
-            Font.Color = 2302755
+            Font.Color = clBlack
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
@@ -817,7 +817,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
             Color = clWhite
             Enabled = False
             Font.Charset = DEFAULT_CHARSET
-            Font.Color = 2302755
+            Font.Color = clBlack
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
@@ -936,8 +936,8 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           object cbxStayThrough: TsCheckBox
             Left = 222
             Top = 26
-            Width = 17
-            Height = 15
+            Width = 20
+            Height = 18
             Enabled = False
             TabOrder = 12
             SkinData.SkinSection = 'CHECKBOX'
@@ -947,8 +947,8 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           object cbxBasedOnArrival: TsCheckBox
             Left = 336
             Top = 25
-            Width = 17
-            Height = 15
+            Width = 20
+            Height = 18
             Enabled = False
             TabOrder = 13
             SkinData.SkinSection = 'CHECKBOX'
@@ -969,7 +969,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           Color = clWhite
           Enabled = False
           Font.Charset = DEFAULT_CHARSET
-          Font.Color = 2302755
+          Font.Color = clBlack
           Font.Height = -11
           Font.Name = 'Tahoma'
           Font.Style = []
@@ -988,8 +988,8 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
         object __cbxSingleUsePriceActive: TsCheckBox
           Left = 114
           Top = 87
-          Width = 17
-          Height = 15
+          Width = 20
+          Height = 18
           Hint = 'Enable Single Use Price settings'
           Margins.Left = 2
           Margins.Top = 2
@@ -1432,10 +1432,6 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           Caption = 'Rates'
           SkinData.CustomColor = False
           SkinData.CustomFont = False
-          ExplicitLeft = 0
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
           object rateGrid: TAdvStringGrid
             Left = 0
             Top = 48
@@ -1848,7 +1844,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
             object cbxStopMinOptions: TsCheckBox
               Left = 5
               Top = 4
-              Width = 260
+              Width = 263
               Height = 19
               Margins.Left = 2
               Margins.Top = 2
@@ -1864,7 +1860,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
             object cbxExtraRestrictions: TsCheckBox
               Left = 319
               Top = 4
-              Width = 142
+              Width = 145
               Height = 19
               Margins.Left = 2
               Margins.Top = 2
@@ -1899,7 +1895,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
             object cbxShowSubrates: TsCheckBox
               Left = 319
               Top = 24
-              Width = 100
+              Width = 103
               Height = 19
               Margins.Left = 2
               Margins.Top = 2
@@ -2211,7 +2207,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           Color = clWhite
           EditMask = '!99/99/9999;1; '
           Font.Charset = DEFAULT_CHARSET
-          Font.Color = 2302755
+          Font.Color = clBlack
           Font.Height = -11
           Font.Name = 'Tahoma'
           Font.Style = []
@@ -2252,7 +2248,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           VerticalAlignment = taAlignTop
           Color = clWhite
           Font.Charset = DEFAULT_CHARSET
-          Font.Color = 2302755
+          Font.Color = clBlack
           Font.Height = -11
           Font.Name = 'Tahoma'
           Font.Style = []
@@ -2409,7 +2405,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           Style = csDropDownList
           Color = clWhite
           Font.Charset = DEFAULT_CHARSET
-          Font.Color = 2302755
+          Font.Color = clBlack
           Font.Height = -11
           Font.Name = 'Tahoma'
           Font.Style = []
@@ -2438,7 +2434,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           Style = csDropDownList
           Color = clWhite
           Font.Charset = DEFAULT_CHARSET
-          Font.Color = 2302755
+          Font.Color = clBlack
           Font.Height = -11
           Font.Name = 'Tahoma'
           Font.Style = []
@@ -2511,7 +2507,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
     Left = 512
     Top = 304
     Bitmap = {
-      494C010102000800B00320002000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010102000800BC0320002000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000800000002000000001002000000000000040
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000060000

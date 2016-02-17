@@ -3532,7 +3532,7 @@ begin
 
   ShowAlertsForReservation(zReservation, 0, atOPEN_RESERVATION);
   FrmAlertPanel := TFrmAlertPanel.Create(nil);
-  AlertList := ReadAlertsForRoomReservation(zReservation, 0, atUNKNOWN);
+  AlertList := CreateAlertsForRoomReservation(zReservation, 0, atUNKNOWN);
   FrmAlertPanel.PlaceEditPanel(pnlAlertHolder, AlertList);
 {$IFNDEF DEBUG}
   sButton6.Visible := False;

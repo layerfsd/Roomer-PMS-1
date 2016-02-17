@@ -29,7 +29,7 @@ type
   TBaseDBThread = class abstract(TThread)
   private
     FRecordSet: _RecordSet;
-    FDataSet: TRoomerDataSet;
+    FRoomerDataSet: TRoomerDataSet;
   protected
     Procedure Execute; override;
     procedure InternalExecute; virtual; abstract;
@@ -38,7 +38,7 @@ type
     procedure ExecutePOST(const aCommand, aData: string);
   public
     Property RecordSet: _RecordSet read FRecordSet;
-    property Dataset: TRoomerDataset read FDataset;
+    property Dataset: TRoomerDataset read FRoomerDataSet;
   end;
 
   TDBThread = Class(TBaseDBThread)
@@ -58,8 +58,7 @@ type
   // supplied TNotifyEvent is called.
   TGetThreadedData = class(TObject)
   private
-    FDBThread: TDBThread;
-    FDataSet: TRoomerDataSet;
+    FRoomerDataSet: TRoomerDataSet;
     FEventHandler: TNotifyEvent;
     procedure ThreadTerminate(Sender: TObject);
   protected
@@ -73,7 +72,7 @@ type
     procedure Put(const url, data: String; aOnCompletionHandler: TNotifyEvent);
     procedure Post(const url, data: String; aOnCompletionHandler: TNotifyEvent);
 
-    property DataSet: TRoomerDataSet read FDataSet;
+    property RoomerDataSet: TRoomerDataSet read FRoomerDataSet;
   end;
 
 implementation
@@ -92,20 +91,19 @@ begin
   begin
     FOperationType := OT_EXECUTE;
     FreeOnTerminate := true;
-    // assign the procedure to be called on terminate
     OnTerminate := ThreadTerminate;
+    Start;
   end;
 end;
 
 procedure TGetThreadedData.Post(const url, data: String; aOnCompletionHandler: TNotifyEvent);
 begin
   FEventHandler := aOnCompletionHandler;
-  FDBThread := TDBThread.Create(url, data, OT_POST);
-  with FDBThread do
+  with TDBThread.Create(url, data, OT_POST) do
   begin
     FreeOnTerminate := false;
-    // assign the procedure to be called on terminate
     OnTerminate := ThreadTerminate;
+    Start;
   end;
 end;
 
@@ -115,14 +113,14 @@ begin
   With TDBThread.Create(url, data, OT_PUT) do
   begin
     FreeOnTerminate := true;
-    // assign the procedure to be called on terminate
     OnTerminate := ThreadTerminate;
+    Start;
   end;
 end;
 
 procedure TGetThreadedData.ThreadTerminate(Sender: TObject);
 begin
-  FDataSet.RecordSet := TDBThread(Sender).RecordSet;
+  FRoomerDataSet.RecordSet := TDBThread(Sender).RecordSet;
   if assigned(FEventHandler) then
     FEventHandler(self);
 end;
@@ -133,13 +131,13 @@ begin
 {$IFDEF rmMONITOR_LEAKAGE}
   ReportMemoryLeaksOnShutDown := IsDebuggerPresent();
 {$ENDIF}
-  FDataSet := CreateNewDataSet;
-  FDataSet.RoomerDataSet := nil;
+  FRoomerDataSet := CreateNewDataSet;
+  FRoomerDataSet.RoomerDataSet := nil;
 end;
 
 destructor TGetThreadedData.Destroy;
 begin
-  FDataSet.Free;
+  FRoomerDataSet.Free;
   inherited;
 end;
 
@@ -147,14 +145,14 @@ end;
 
 constructor TDBThread.Create(const aSQL: String; aFDArray: TFieldInfoArray);
 begin
-  inherited Create(false);
+  inherited Create(True);
   FSQL := aSQL;
   FFDArray := aFDArray;
 end;
 
 constructor TDBThread.Create(const sql, data: String; OperationType: TOperationType);
 begin
-  inherited Create(false);
+  inherited Create(True);
   FSQL := sql;
   FOperationType := OperationType;
   FData := data;
@@ -166,14 +164,14 @@ begin
   CoInitialize(nil);
   try
     NameThreadForDebugging(Classname);
-    FDataSet := CreateNewDataSet;
+    FRoomerDataSet := CreateNewDataSet;
     try
-      FDataSet.RoomerDataSet := nil;
+      FRoomerDataSet.RoomerDataSet := nil;
 
       InternalExecute;
 
     finally
-      FDataSet.Free;
+      FRoomerDataSet.Free;
     end;
   finally
     CoUnInitialize;
@@ -197,21 +195,21 @@ end;
 
 procedure TBaseDBThread.ExecutePOST(const aCommand, aData: string);
 begin
-  FDataSet.PostData(aCommand, aData);
+  FRoomerDataSet.PostData(aCommand, aData);
 end;
 
 procedure TBaseDBThread.ExecutePUT(const aCommand, aData: string);
 begin
-  FDataSet.PutData(aCommand, aData);
+  FRoomerDataSet.PutData(aCommand, aData);
 end;
 
 procedure TBaseDBThread.ExecuteSQL(const aCommand: string);
 begin
   FreeAndNil(FRecordSet);
-  FDataSet.CommandType := cmdText;
-  FDataSet.CommandText := aCommand;
-  FDataSet.Open(false);
-  FRecordSet := FDataSet.RecordSet; // keep recordset
+  FRoomerDataSet.CommandType := cmdText;
+  FRoomerDataSet.CommandText := aCommand;
+  FRoomerDataSet.Open(false);
+  FRecordSet := FRoomerDataSet.RecordSet; // keep recordset
 end;
 
 end.

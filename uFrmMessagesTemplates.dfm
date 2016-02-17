@@ -31,7 +31,7 @@ object FrmMessagesTemplates: TFrmMessagesTemplates
     object sLabel2: TsLabel
       Left = 0
       Top = 0
-      Width = 151
+      Width = 194
       Height = 16
       Margins.Left = 2
       Margins.Top = 2
@@ -45,6 +45,7 @@ object FrmMessagesTemplates: TFrmMessagesTemplates
       Font.Height = -13
       Font.Name = 'Tahoma'
       Font.Style = []
+      ExplicitWidth = 151
     end
     object sbMessageContainer: TsScrollBox
       Left = 0
@@ -142,6 +143,8 @@ object FrmMessagesTemplates: TFrmMessagesTemplates
             SkinData.CustomColor = True
             SkinData.CustomFont = True
             SkinData.SkinSection = 'BUTTON'
+            ExplicitLeft = 4
+            ExplicitTop = 4
           end
         end
         object sPanel2: TsPanel

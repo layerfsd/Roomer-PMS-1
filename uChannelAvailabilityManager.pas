@@ -430,7 +430,7 @@ type
 
     startDate : TDateTime;
 
-    GetThreadedData : TGetThreadedData;
+    ThreadedDataGetter : TGetThreadedData;
 
 
     procedure ShowAvailabilityForSelectedChannelManager;
@@ -1059,7 +1059,7 @@ begin
   timStart.enabled := false;
   Halting := true;
   try
-    GetThreadedData.Free;
+    ThreadedDataGetter.Free;
   except end;
 
   try
@@ -1101,7 +1101,7 @@ begin
   pgcPages.ActivePageIndex := 0;
 
   startDate := TRUNC(now); //AvailSet['today'];
-  GetThreadedData := TGetThreadedData.Create;
+  ThreadedDataGetter := TGetThreadedData.Create;
   timStart.enabled := true;
 end;
 
@@ -2668,7 +2668,7 @@ begin
 
     'WHERE rtg.Active ' + 'AND rtg.Code=rtg.searchCode ' + 'AND pdd.date>=''%s'' AND pdd.date<=DATE_ADD(''%s'',INTERVAL %d DAY) ' +
     'GROUP BY pdd.date, rtg.code ' + 'ORDER BY pdd.date, rtg.code ', [sFrom, sFrom, FCurrentNumDays{ChannelMan.FNumDays}]);
-  GetThreadedData.execute(sql, BackgroundAvailabilityFetchHandler);
+  ThreadedDataGetter.execute(sql, BackgroundAvailabilityFetchHandler);
 end;
 
 procedure TfrmChannelAvailabilityManager.BackgroundAvailabilityFetchHandler(Sender : TObject);
@@ -2676,10 +2676,10 @@ var
   AvailabilitySet: TRoomerDataSet;
 begin
   try
-    AvailabilitySet := GetThreadedData.DataSet;
+    AvailabilitySet := ThreadedDataGetter.RoomerDataSet;
     PrepareAvailDictionary(AvailabilitySet);
-    GetThreadedData.DataSet.Close;
-    GetThreadedData.DataSet.Recordset := nil;
+    ThreadedDataGetter.RoomerDataSet.Close;
+    ThreadedDataGetter.RoomerDataSet.Recordset := nil;
   except
   end;
 end;

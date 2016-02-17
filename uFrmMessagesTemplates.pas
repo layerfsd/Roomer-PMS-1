@@ -190,7 +190,7 @@ begin
     if idx >= 0 then
     begin
       MessagePanel := MessageList[idx];
-      MessagePanel.Free;
+//      MessagePanel.Free;
       MessageList.Delete(idx);
     end;
   end;
