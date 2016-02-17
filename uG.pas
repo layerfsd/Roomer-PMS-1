@@ -184,6 +184,8 @@ type
 type
   TGlobalApplication = class(Tobject)
   private
+    FLock: TRTLCriticalSection;
+
     // Program folder
     FqProgramPath : string; // Path to Program
 
@@ -1022,55 +1024,69 @@ end;
 
 procedure TGlobalApplication.InitializeApplicationGlobals;
 begin
-  qProgramPath := GetTempPath + 'Roomer\'; // LocalAppDataPath; // _AddSlash(ExtractFileDir(Application.ExeName));
-  qProgramExePath := LocalAppDataPath + 'Roomer\Storage\';
-  ForceDirectories(qProgramPath);
-  ForceDirectories(qProgramExePath);
-  ForceDirectories(qProgramExePath + 'Data');
-  qAppIniFile := GetRoomerIniFilename;
+  EnterCriticalSection(FLock);
+  try
+
+    qProgramPath := GetTempPath + 'Roomer\'; // LocalAppDataPath; // _AddSlash(ExtractFileDir(Application.ExeName));
+    qProgramExePath := LocalAppDataPath + 'Roomer\Storage\';
+    ForceDirectories(qProgramPath);
+    ForceDirectories(qProgramExePath);
+    ForceDirectories(qProgramExePath + 'Data');
+    qAppIniFile := GetRoomerIniFilename;
 
 
-//  qComputerName    := _getComputerNetName;
-  qWindowsUser     := _getWindowsUser;
+  //  qComputerName    := _getComputerNetName;
+    qWindowsUser     := _getWindowsUser;
 
 
-  qColorIsTakenBack := $0099CCFF;
-  qColorIsTakenFont := clRed;
+    qColorIsTakenBack := $0099CCFF;
+    qColorIsTakenFont := clRed;
 
-  qColorOneDayGridBack := $00DFEFFF;
-  qColorOneDayGridFont := clWhite;
+    qColorOneDayGridBack := $00DFEFFF;
+    qColorOneDayGridFont := clWhite;
 
-  qColorOneDayRoomColBack := $00A8D3FF;
-  qColorOneDayRoomColFont := clBlack;
+    qColorOneDayRoomColBack := $00A8D3FF;
+    qColorOneDayRoomColFont := clBlack;
 
 
 
-  qColorRoomCleanBack      := clMaroon;
-  qColorRoomUncleanBack    := clBlue;
-  qColorRoomOutOfOrderBack := clRed;
-  qColorRoomOther1Back     := clGreen;
-  qColorRoomOther2Back     := clPurple;
-  qColorRoomOther3Back     := clFuchsia;
+    qColorRoomCleanBack      := clMaroon;
+    qColorRoomUncleanBack    := clBlue;
+    qColorRoomOutOfOrderBack := clRed;
+    qColorRoomOther1Back     := clGreen;
+    qColorRoomOther2Back     := clPurple;
+    qColorRoomOther3Back     := clFuchsia;
 
-  qColorRoomCleanFont      := clWhite;
-  qColorRoomUncleanFont    := clWhite;
-  qColorRoomOutOfOrderFont := clWhite;
-  qColorRoomOther1Font     := clWhite;
-  qColorRoomOther2Font     := clWhite;
-  qColorRoomOther3Font     := clWhite;
+    qColorRoomCleanFont      := clWhite;
+    qColorRoomUncleanFont    := clWhite;
+    qColorRoomOutOfOrderFont := clWhite;
+    qColorRoomOther1Font     := clWhite;
+    qColorRoomOther2Font     := clWhite;
+    qColorRoomOther3Font     := clWhite;
+  finally
+    LeaveCriticalSection(FLock);
+  end;
 
 end;
 
 constructor TGlobalApplication.Create;
 begin
   inherited;
-  FqHotelList := TstringList.Create;
-  FqHotelIndex := 0;
-  FBackupMachine := False;
-  qlstLang := TStringList.create;
-  qlstLang.Add('English|ntv');
-  qlstLang.Add('Íslenska|ISL');
-  qlstLang.Add('Dutch|NL');
+  InitializeCriticalSection(FLock);
+
+  EnterCriticalSection(FLock);
+  try
+    FqHotelList := TstringList.Create;
+    FqHotelIndex := 0;
+    FBackupMachine := False;
+    qlstLang := TStringList.create;
+    qlstLang.Add('English|ntv');
+    qlstLang.Add('Íslenska|ISL');
+    qlstLang.Add('Dutch|NL');
+  finally
+    LeaveCriticalSection(FLock);
+  end;
+
   InitializeApplicationGlobals;
 end;
 
@@ -1078,6 +1094,7 @@ destructor TGlobalApplication.destroy;
 begin
   FqHotelList.free;
   freeandNil(qlstLang);
+  DeleteCriticalSection(Flock);
   /// ---
   inherited;
 end;

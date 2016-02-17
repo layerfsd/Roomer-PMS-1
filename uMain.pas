@@ -2891,7 +2891,7 @@ begin
 {$IFNDEF MONITOR_LEAKAGE}
   ExceptionsLoggingActive := true;
   ExceptionLogPath := ExtractFileDir(Application.ExeName);
-  ExceptionLogPath := TPath.Combine(LocalAppDataPath, 'Roomer\logs');
+//  ExceptionLogPath := TPath.Combine(LocalAppDataPath, 'Roomer\logs');
   if ParameterByName('LogPath') <> '' then
     ExceptionLogPath := ParameterByName('LogPath');
   forceDirectories(ExceptionLogPath);
@@ -2951,14 +2951,17 @@ end;
 
 procedure TfrmMain.FormDestroy(Sender: TObject);
 begin
-  try
+//  try
     GroupList.Free;
     MoveFunctionAvailRooms.Free;
     StaffComm.Free;
     availListContainer.Free;
     FrmMessagesTemplates.Free;
-  except
-  end;
+
+//  except
+//  end;
+  // Strange place, but destroying in finalization of uActivityLogs gives a InvalidPointer when freeing FSQL TStringlist of TRoomerDataset
+  FreeAndNil(ActivityLogGetThreadedData);
 end;
 
 procedure TfrmMain.SetDateWithoutEvents(aDate: TdateTime);
@@ -3059,7 +3062,12 @@ begin
 
     Application.ShowHint := true; // definitions for hints
 
-    timOfflineReports.OnTimer(timOfflineReports);
+    // First time wait a few minutes for initialization to complete
+    with timOfflineReports do
+    begin
+      Interval := 2 * 50 * 1000; // 2 minutes
+      Enabled := True;
+    end;
   end
   else
     ExitProcess(0);
@@ -8433,16 +8441,19 @@ end;
 
 procedure TfrmMain.timOfflineReportsTimer(Sender: TObject);
 begin
-  TTimer(Sender).Enabled := false;
-  try
-    d.GenerateOfflineReports;
-
-{$ifdef Debug}
-    TTimer(sender).Interval := 3 * 60 * 1000; // 3 min for debugging
-{$endif}
-  finally
-    TTimer(Sender).Enabled := True;
-  end;
+//  TTimer(Sender).Enabled := false;
+//  try
+//    d.GenerateOfflineReports;
+//
+//{$ifdef Debug}
+//    TTimer(sender).Interval := 3 * 60 * 1000; // 3 min for debugging
+//{$else}
+//    TTimer(sender).Interval := 30 * 60 * 1000; // 30 min normal
+//{$endif}
+//
+//  finally
+//    TTimer(Sender).Enabled := True;
+//  end;
 end;
 
 procedure TfrmMain.timRetryRefreshTimer(Sender: TObject);

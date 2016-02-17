@@ -43,12 +43,13 @@ implementation
 
 uses
   uD,
+  uG,
   uAppGlobal,
   SysUtils,
   Types,
   IOUtils,
   uRoomerDefinitions
-  ;
+  , uActivityLogs;
 
 const
   cReportFilesTokeep = 10; // maximum number of PDF files from the same report to keep
@@ -68,7 +69,7 @@ begin
   begin
     lDesign := ReportDesign.Create(nil);
     try
-      lDesign.Dataset := Self.DataSet;
+      lDesign.RoomerDataset := Self.DataSet;
       lDesign.PrintToPDF(GetReportPDFFilename);
     finally
       lDesign.Free;
@@ -93,12 +94,17 @@ end;
 
 procedure TOfflineReport.InternalExecute;
 begin
-  inherited;
+  try
+    inherited;
 
-  if PrepareData then
-    CreateReport;
+    if PrepareData then
+      CreateReport;
 
-  PurgeReports;
+    PurgeReports;
+  except
+    on E: Exception do
+      AddOfflineReportActivityLog(g.quser, REPORTEXCEPTION, ReportName, E.ClassName, E.Message);
+  end;
 end;
 
 

@@ -52,6 +52,7 @@ object frmMain: TfrmMain
     SunkenBorder = True
     UseOwnColor = True
     UseOwnSunkenBorder = True
+    ExplicitTop = 122
   end
   object panMain: TsPanel
     Left = 3
@@ -94,7 +95,7 @@ object frmMain: TfrmMain
       Top = 173
       Width = 937
       Height = 332
-      ActivePage = tabRateQuery
+      ActivePage = tabPeriod
       Align = alClient
       TabOrder = 3
       OnChange = pageMainGridsChange
@@ -846,10 +847,6 @@ object frmMain: TfrmMain
         ImageIndex = 2
         SkinData.CustomColor = False
         SkinData.CustomFont = False
-        ExplicitLeft = 0
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
         object sLabel2: TsLabel
           Left = 224
           Top = 400
@@ -1313,8 +1310,6 @@ object frmMain: TfrmMain
           OnMoved = splitPeriodMoved
           Color = 6842472
           ParentColor = False
-          ExplicitTop = 187
-          ExplicitWidth = 932
         end
         object pnlPeriodNoRooms: TsPanel
           Left = 0
@@ -1929,7 +1924,7 @@ object frmMain: TfrmMain
             Left = 159
             Top = 4
             Width = 94
-            Height = 23
+            Height = 24
             Margins.Left = 10
             Margins.Top = 4
             Align = alLeft
@@ -1942,6 +1937,7 @@ object frmMain: TfrmMain
             Font.Height = -17
             Font.Name = 'Segoe UI'
             Font.Style = [fsBold]
+            ExplicitHeight = 23
           end
           object dtDate: TsDateEdit
             AlignWithMargins = True
@@ -2437,8 +2433,8 @@ object frmMain: TfrmMain
           object lblPropertyStatus: TsLabel
             Left = 1
             Top = 1
-            Width = 158
-            Height = 21
+            Width = 271
+            Height = 24
             Margins.Left = 10
             Margins.Top = 0
             Margins.Right = 0
@@ -2452,6 +2448,8 @@ object frmMain: TfrmMain
             Font.Height = -17
             Font.Name = 'Tahoma'
             Font.Style = []
+            ExplicitWidth = 158
+            ExplicitHeight = 21
           end
         end
         object Chart1: TChart
@@ -2936,6 +2934,7 @@ object frmMain: TfrmMain
     TabOrder = 3
     TabStop = False
     object rbTabHome: TdxRibbonTab
+      Active = True
       Caption = 'Roomer'
       Groups = <
         item
@@ -2958,7 +2957,6 @@ object frmMain: TfrmMain
       Index = 0
     end
     object rbTabReservation: TdxRibbonTab
-      Active = True
       Caption = 'Reservation'
       Groups = <
         item
@@ -3110,6 +3108,8 @@ object frmMain: TfrmMain
     ParentColor = False
     UseOwnColor = True
     Visible = False
+    ExplicitTop = 125
+    ExplicitHeight = 538
   end
   object pnlRoomerLogoOld: TsPanel
     Left = 668
@@ -3362,7 +3362,7 @@ object frmMain: TfrmMain
     object lblHotelName: TsLabel
       Left = 0
       Top = 33
-      Width = 140
+      Width = 301
       Height = 22
       Align = alBottom
       Alignment = taCenter
@@ -3373,6 +3373,7 @@ object frmMain: TfrmMain
       Font.Height = -18
       Font.Name = 'Tahoma'
       Font.Style = []
+      ExplicitWidth = 140
     end
   end
   object pnlRBE: TsPanel
@@ -24195,7 +24196,7 @@ object frmMain: TfrmMain
     Left = 928
     Top = 456
     Bitmap = {
-      494C010102000800201010001000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
+      494C010102000800281010001000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
       0000000000000000000000000000000000000000000000000000000000000000
       00000000000000000000000000000000000000000000484C4371617545C6729D

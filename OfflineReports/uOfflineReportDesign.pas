@@ -18,16 +18,16 @@ type
     frxDBDataset: TfrxDBDataset;
     frxOfflinePDFExport: TfrxPDFExport;
     kbmOfflineReportDS: TkbmMemTable;
-    kbmOfflineReportDSDummy: TStringField;
   private
-    FDataset: TRoomerDataset;
-    procedure SetDataset(const Value: TRoomerDataset);
+    FRoomerDataset: TRoomerDataset;
+    procedure SetRoomerDataset(const Value: TRoomerDataset);
     procedure SetreportProperties;
     { Private declarations }
   public
     { Public declarations }
+    constructor Create(AOwner: TComponent); override;
     procedure PrintToPDF(const aFileName: string);
-    property Dataset: TRoomerDataset read FDataset write SetDataset;
+    property RoomerDataset: TRoomerDataset read FRoomerDataset write SetRoomerDataset;
   end;
 
   TOfflinereportDesignClass = class of TBaseOfflineReportDesign;
@@ -49,8 +49,24 @@ procedure TBaseOfflineReportDesign.SetreportProperties;
 begin
   with frxOfflineReport do
   begin
-    reportOptions.CreateDate := Now();
+    EnabledDataSets.Add(frxDBDataset);
+    ReportOptions.CreateDate := Now();
+
   end;
+end;
+
+constructor TBaseOfflineReportDesign.Create(aOwner: TComponent);
+begin
+  inherited;
+
+  with frxOfflineReport.EngineOptions do
+  begin
+    NewSilentMode := simReThrow;
+    DestroyForms := false;
+    { This property switches off the search through global list, which is not thread safe}
+    UseGlobalDataSetList := False;
+  end;
+
 end;
 
 procedure TBaseOfflineReportDesign.PrintToPDF(const aFileName: string);
@@ -68,9 +84,9 @@ begin
   frxOfflineReport.Export(frxOfflinePDFExport);
 end;
 
-procedure TBaseOfflineReportDesign.SetDataset(const Value: TRoomerDataset);
+procedure TBaseOfflineReportDesign.SetRoomerDataset(const Value: TRoomerDataset);
 begin
-  FDataset := Value;
+  FRoomerDataset := Value;
   frxDBDataset.Close;
   frxDBDataset.Dataset := nil;
   frxDBdataset.FieldAliases.Clear;

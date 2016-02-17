@@ -29,7 +29,9 @@ uses
 resourcestring
   rsReportName = 'Hotel Status Report'; // Must be replaced by translation
 
-  cSQL = 'SELECT r.Reservation, ' +
+  cSQL = 'SELECT co.CompanyID, ' +
+         'co.CompanyName, '+
+         'r.Reservation, ' +
          'r.Name AS ReservationName, ' +
          'rr.Arrival, ' +
          'rr.Departure, ' +

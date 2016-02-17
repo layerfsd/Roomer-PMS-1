@@ -4,8 +4,6 @@ object BaseOfflineReportDesign: TBaseOfflineReportDesign
   Width = 270
   object frxOfflineReport: TfrxReport
     Version = '4.13.2'
-    DataSet = frxDBDataset
-    DataSetName = 'frxDBDataset'
     DotMatrixReport = False
     IniFile = '\Software\Roomer\Reports'
     PreviewOptions.Buttons = [pbPrint, pbLoad, pbSave, pbExport, pbZoom, pbFind, pbOutline, pbPageSetup, pbTools, pbEdit, pbNavigator, pbExportQuick]
@@ -14,7 +12,7 @@ object BaseOfflineReportDesign: TBaseOfflineReportDesign
     PrintOptions.PrintOnSheet = 0
     PrintOptions.ShowDialog = False
     ReportOptions.CreateDate = 42412.493217257000000000
-    ReportOptions.LastChange = 42415.535818217590000000
+    ReportOptions.LastChange = 42415.535818217600000000
     ScriptLanguage = 'PascalScript'
     ScriptText.Strings = (
       ''
@@ -91,7 +89,7 @@ object BaseOfflineReportDesign: TBaseOfflineReportDesign
         object Memo5: TfrxMemoView
           Left = 7.559060000000000000
           Top = 3.779530000000000000
-          Width = 321.260050000000000000
+          Width = 729.449290000000000000
           Height = 45.354360000000000000
           ShowHint = False
           AutoWidth = True
@@ -205,9 +203,5 @@ object BaseOfflineReportDesign: TBaseOfflineReportDesign
     LocaleID = 1024
     Left = 40
     Top = 128
-    object kbmOfflineReportDSDummy: TStringField
-      FieldName = 'Dummy'
-      Size = 80
-    end
   end
 end
