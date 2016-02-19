@@ -153,6 +153,26 @@ object FrmResources: TFrmResources
         OnClick = btnRenameClick
         SkinData.SkinSection = 'BUTTON'
       end
+      object btnSource: TsButton
+        AlignWithMargins = True
+        Left = 603
+        Top = 3
+        Width = 114
+        Height = 43
+        Hint = 'Delete current record'
+        Align = alLeft
+        Caption = 'Source'
+        Enabled = False
+        ImageIndex = 115
+        Images = DImages.PngImageList1
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 6
+        Visible = False
+        OnClick = btnSourceClick
+        SkinData.SkinSection = 'BUTTON'
+        ExplicitLeft = 659
+      end
     end
     object lvResources: TListView
       AlignWithMargins = True
@@ -197,6 +217,7 @@ object FrmResources: TFrmResources
       OnDragDrop = lvResourcesDragDrop
       OnDragOver = lvResourcesDragOver
       OnSelectItem = lvResourcesSelectItem
+      ExplicitLeft = 3
     end
     object sPanel2: TsPanel
       Left = 0

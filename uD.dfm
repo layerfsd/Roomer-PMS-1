@@ -505,8 +505,8 @@ object d: Td
   object memImportResults: TdxMemData
     Indexes = <>
     SortOptions = []
-    Left = 432
-    Top = 32
+    Left = 424
+    Top = 40
     object IntegerField1: TIntegerField
       FieldName = 'ID'
     end

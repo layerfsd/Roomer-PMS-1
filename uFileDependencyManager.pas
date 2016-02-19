@@ -74,68 +74,6 @@ uses
   , Dialogs
   ;
 
-{$IFNDEF ROOMERSTORE}
-procedure prepareDependencyManager;
-begin
-  ReadFileList(d.roomerMainDataSet, rftTemplates);
-end;
-
-procedure AssertResource;
-begin
-  if (_FileType <> rftTemplates) OR (_FileList=nil) then
-    prepareDependencyManager;
-end;
-
-procedure ResetDependencyFileList;
-begin
-  _FileList.Free; _FileList := nil;
-  prepareDependencyManager;
-end;
-
-function getRegistrationFormFilePath : String;
-begin
-  AssertResource;
-  result := getFilePath('Registration_Form.fr3'); //g.qInvoiceFormFileERL);
-end;
-
-function getForeignInvoiceFilePath : String;
-begin
-  AssertResource;
-  result := getFilePath('erlInvoice.fr3'); //g.qInvoiceFormFileERL);
-end;
-
-function getLocalInvoiceFilePath : String;
-begin
-  AssertResource;
-  result := getFilePath('islInvoice.fr3'); //g.qInvoiceFormFileISL);
-end;
-
-function getGuestListReportFilePath : String;
-begin
-  AssertResource;
-  result := getFilePath('rptResGuests01.fr3');
-end;
-
-function getCustomerStayReportFilePath : String;
-begin
-  AssertResource;
-  result := getFilePath('rptCustomerStayInvoice.fr3');
-end;
-
-function getOneCustomerInvoiceFilePath : String;
-begin
-  AssertResource;
-  result := getFilePath('rptOneCustInvoice.fr3');
-end;
-
-function getMaidsListReportFilePath : String;
-begin
-  AssertResource;
-  result := getFilePath('rptMaidList001.fr3');
-end;
-
-
-{$ELSE}
 procedure ReadFilesFromStaticResources;
 var ASet : TRoomerDataSet;
 begin
@@ -410,12 +348,8 @@ begin
 end;
 
 
-
-{$ENDIF}
-
 // *********************************************************************
 
-{$IFDEF ROOMERSTORE}
 function getRoomerUpgradeAgentFilePath(ToFile : String) : String;
 begin
   result := getExeFilePath('RoomerUpgradeAgent.exe', ToFile);
@@ -451,40 +385,6 @@ begin
     FreeAndNil(FrmResources);
   end;
 end;
-
-
-{$ELSE}
-
-procedure prepareRoomerDependencyManager;
-begin
-  ReadFileList(d.roomerMainDataSet, rftRoomer);
-end;
-
-function getRoomerUpgradeAgentFilePath(ToFile : String) : String;
-begin
-  prepareRoomerDependencyManager;
-  result := getilePath('RoomerUpgradeAgent.exe', ToFile);
-end;
-
-function getRoomerVersionXmlFilePath(ToFile : String) : String;
-begin
-  prepareRoomerDependencyManager;
-  result := getExeFilePath('Roomer.xml', ToFile);
-end;
-
-function getAnyFuleFromRoomerStore(FromFile, ToFile : String) : String;
-begin
-  prepareRoomerDependencyManager;
-  result := getExeFilePath(FromFile, ToFile);
-end;
-
-procedure sendChangedFile(filename : String);
-begin
-  d.roomerMainDataSet.SystemUploadFile(filename, ORD(rftTemplates));
-end;
-
-{$ENDIF}
-
 
 // *********************************************************************
 

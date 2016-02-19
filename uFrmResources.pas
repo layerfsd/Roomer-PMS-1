@@ -48,6 +48,7 @@ type
     btnRename: TsButton;
     N1: TMenuItem;
     C1: TMenuItem;
+    btnSource: TsButton;
     procedure FormCreate(Sender: TObject);
     procedure btnInsertClick(Sender: TObject);
     procedure lvResourcesSelectItem(Sender: TObject; Item: TListItem; Selected: Boolean);
@@ -63,6 +64,7 @@ type
     procedure lvResourcesEdited(Sender: TObject; Item: TListItem; var S: string);
     procedure btnRenameClick(Sender: TObject);
     procedure C1Click(Sender: TObject);
+    procedure btnSourceClick(Sender: TObject);
   private
     { Private declarations }
     ResourceSet : TRoomerDataSet;
@@ -699,6 +701,44 @@ begin
   end;
 end;
 
+procedure TFrmResources.btnSourceClick(Sender: TObject);
+var filename : String;
+    Strings : TStrings;
+    cmd,
+    OrigName,
+    Subject,
+    path : String;
+begin
+  fileName := Download;
+  if filename <> '' then
+  begin
+    if (ResourceParameters IS THtmlResourceParameters) then
+    begin
+      Subject := lvResources.Selected.SubItems[0];
+      OrigName := lvResources.Selected.Caption;
+      if EditHtmlSource(filename) then
+      begin
+        DeleteCurrent;
+        ReCodeFile(filename);
+        path := UploadFile(keyString, access, filename);
+
+        cmd := format('UPDATE home100.HOTEL_RESOURCES SET ORIGINAL_NAME=''%s'', EXTRA_INFO=''%s'' WHERE HOTEL_ID=''%s'' AND ORIGINAL_NAME=''%s'' AND URI=''%s'' AND KEY_STRING=''%s''',
+                   [ OrigName,
+                     Subject,
+                     d.roomerMainDataSet.HotelId,
+                     OrigName,
+                     path,
+                     KeyString
+                   ]);
+        d.roomerMainDataSet.DoCommand(cmd);
+
+        GetResources;
+        DisplayResources;
+      end;
+    end;
+  end;
+end;
+
 function TFrmResources.getPrivateUriAdditionIfApplicable(slashBefore : Boolean) : String;
 begin
   if ACCESS_RESTRICTED = access then
@@ -1011,9 +1051,17 @@ begin
                        (ResourceParameters IS TTextResourceParameters)
                      );
   btnEdit.Visible := btnEdit.Enabled;
+
+  btnSource.Enabled := (lvResources.Selected <> nil) AND
+                        Assigned(ResourceParameters) AND
+                       (ResourceParameters IS THtmlResourceParameters);
+  btnSource.Visible := btnSource.Enabled;
+
   v1.Enabled := lvResources.Selected <> nil;
   d1.Enabled := lvResources.Selected <> nil;
   d2.Enabled := lvResources.Selected <> nil;
+
+  btnSource.Left := 4000;
 end;
 
 procedure TFrmResources.PrepareUserInterface;

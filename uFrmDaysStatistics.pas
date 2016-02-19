@@ -185,6 +185,7 @@ type
     sLabel24: TsLabel;
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure FormKeyPress(Sender: TObject; var Key: Char);
+    procedure FormCreate(Sender: TObject);
   private
     { Private declarations }
     channels : TIdChannelValuesDictionary;
@@ -192,7 +193,6 @@ type
     FBeingViewed: Boolean;
     procedure btnBackClick(Sender: TObject);
     procedure btnForwardClick(Sender: TObject);
-    procedure FormCreate(Sender: TObject);
     procedure getChannels(performance: IXMLPerformanceType);
     function getTotalRevenue(performance: IXMLPerformanceType): Double;
     function getUrl: String;
@@ -232,7 +232,11 @@ end;
 
 function TfrmDaysStatistics.getUrl : String;
 begin
-  result := format('statistics/performance1?startdate=%s&enddate=%s', [uDateUtils.dateToSqlString(viewDate), uDateUtils.dateToSqlString(viewDate)]);
+  result := format('statistics/performance1?startdate=%s&enddate=%s&hotel=%s&authUser=%s&authPassMD5=%s',
+            [uDateUtils.dateToSqlString(viewDate), uDateUtils.dateToSqlString(viewDate),
+             d.roomerMainDataSet.hotelId,
+             d.roomerMainDataSet.username,
+             d.roomerMainDataSet.HashedPassword(d.roomerMainDataSet.password)]);
 end;
 
 

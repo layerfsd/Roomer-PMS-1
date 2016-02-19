@@ -55,7 +55,8 @@ uses uUtils,
      ud,
      IOUtils,
      uStringUtils,
-     uMain;
+     uMain,
+     uAboutRoomer;
 
 function AskUserForCredentials(var aUsername: String; var aPassword: String; var aHotelId : String; aLastMessage : String): boolean;
 var
@@ -139,6 +140,8 @@ end;
 procedure TfrmRoomerLoginForm.btLoginClick(Sender: TObject);
 begin
   Tag := mrOK;
+  if IsControlKeyPressed then
+     SetIgnoresToZero(d.roomerMainDataSet);
   Close;
 end;
 
@@ -165,6 +168,7 @@ begin
   SetFormTopmostOn(self);
   NoInternet := NOT d.roomerMainDataSet.IsConnectedToInternet;
   ServerUnreachable := NOT d.roomerMainDataSet.RoomerPlatformAvailable;
+  btOffline.Visible := NoInternet OR ServerUnreachable;
 end;
 
 end.

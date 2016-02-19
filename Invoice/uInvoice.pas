@@ -3893,7 +3893,15 @@ begin
 
       if not zRoomRSet.eof then
       begin
-        zEmailAddress := trim(zRoomRSet.FieldByName('ContactEmail').asString);
+        zEmailAddress := QuotedStr(trim(zRoomRSet.FieldByName('ContactEmail').asString));
+        if trim(zRoomRSet.FieldByName('GuestEmail').asString) <> '' then
+        begin
+          if zEmailAddress = '' then
+            zEmailAddress := QuotedStr(trim(zRoomRSet.FieldByName('GuestEmail').asString))
+          else
+            zEmailAddress := zEmailAddress + ';' + QuotedStr(trim(zRoomRSet.FieldByName('GuestEmail').asString));
+        end;
+
         edtCurrency.Text := trim(zRoomRSet.FieldByName('Currency').asString);
         zCurrentCurrency := edtCurrency.Text;
         zCurrencyRate := GetRate(zCurrentCurrency);
@@ -10408,8 +10416,7 @@ begin
   try
     PROFORMA_INVOICE_NUMBER := CreateProformaID;
     SaveProforma(PROFORMA_INVOICE_NUMBER);
-    ViewInvoice2(PROFORMA_INVOICE_NUMBER, True, false, false, showPackage,
-      zEmailAddress);
+    ViewInvoice2(PROFORMA_INVOICE_NUMBER, True, false, false, showPackage, zEmailAddress);
   finally
     d.roomerMainDataSet.SystemRollbackTransaction;
   end;

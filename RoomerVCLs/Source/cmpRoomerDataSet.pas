@@ -27,14 +27,14 @@ uses
   IdIOHandler,
   IdIOHandlerSocket,
   IdIOHandlerStack,
-  IdSSL,
-  IdSSLOpenSSL,
   {.$.ELSE}
   ALWininetHttpClient,
   AlHttpCommon,
   ALHttpClient,
   {.$.ENDIF}
   MSXML2_TLB,
+  IdSSL,
+  IdSSLOpenSSL,
   RoomerCloudEntities,
   Generics.Collections,
   Vcl.Dialogs,
@@ -1602,6 +1602,7 @@ var
   multi: TRoomerMultipartFormData;
   http: TIdHTTP;
   privRes: String;
+  IdSSLIOHandlerSocketOpenSSL1 : TIdSSLIOHandlerSocketOpenSSL;
 begin
   multi := TRoomerMultipartFormData.Create;
   try
@@ -1615,6 +1616,12 @@ begin
     http := TIdHTTP.Create(nil);
     try
       // http.Request.CustomHeaders.AddValue(PROMOIR_ROOMER_HOTEL_PATH, keyString);
+      if LowerCase(Copy(OpenApiUri, 1, 8)) = 'https://' then
+      begin
+        IdSSLIOHandlerSocketOpenSSL1 := TIdSSLIOHandlerSocketOpenSSL.Create(nil);
+        http.IOHandler := IdSSLIOHandlerSocketOpenSSL1;
+      end;
+
       http.Request.CustomHeaders.AddValue
         (PROMOIR_ROOMER_HOTEL_IDENTIFIER, AppKey);
       http.Request.CustomHeaders.AddValue(PROMOIR_ROOMER_HOTEL_APPLICATION_ID,
@@ -1625,6 +1632,8 @@ begin
         (PROMOIR_ROOMER_HOTEL_ADD_PRIVATE_RESOURCES, privRes);
       result := http.Post(OpenApiUri + url + '/' + keyString, multi);
     finally
+      if LowerCase(Copy(OpenApiUri, 1, 8)) = 'https://' then
+        IdSSLIOHandlerSocketOpenSSL1.Free;
       http.Free;
     end;
   finally
@@ -1638,9 +1647,15 @@ var
   http: TIdHTTP;
   URL : String;
   stream : TStringStream;
+  IdSSLIOHandlerSocketOpenSSL1 : TIdSSLIOHandlerSocketOpenSSL;
 begin
   http := TIdHTTP.Create(nil);
+  if LowerCase(Copy(OpenApiUri, 1, 8)) = 'https://' then
+    IdSSLIOHandlerSocketOpenSSL1 := TIdSSLIOHandlerSocketOpenSSL.Create(nil);
   try
+    if LowerCase(Copy(OpenApiUri, 1, 8)) = 'https://' then
+      http.IOHandler := IdSSLIOHandlerSocketOpenSSL1;
+
     http.Request.CustomHeaders.AddValue
       (PROMOIR_ROOMER_HOTEL_IDENTIFIER, AppKey);
     http.Request.CustomHeaders.AddValue(PROMOIR_ROOMER_HOTEL_APPLICATION_ID,
@@ -1657,6 +1672,8 @@ begin
       stream.Free;
     end;
   finally
+    if LowerCase(Copy(OpenApiUri, 1, 8)) = 'https://' then
+      IdSSLIOHandlerSocketOpenSSL1.Free;
     http.Free;
   end;
 end;
@@ -1668,6 +1685,7 @@ var
   i: Integer;
   filename, filePath : String;
   att : TIdFormDataField;
+  IdSSLIOHandlerSocketOpenSSL1 : TIdSSLIOHandlerSocketOpenSSL;
 begin
   multi := TIdMultipartFormDataStream.Create;
   try
@@ -1692,7 +1710,11 @@ begin
 
 
     http := TIdHTTP.Create(nil);
+    if LowerCase(Copy(OpenApiUri, 1, 8)) = 'https://' then
+      IdSSLIOHandlerSocketOpenSSL1 := TIdSSLIOHandlerSocketOpenSSL.Create(nil);
     try
+      if LowerCase(Copy(OpenApiUri, 1, 8)) = 'https://' then
+        http.IOHandler := IdSSLIOHandlerSocketOpenSSL1;
       http.Request.CustomHeaders.AddValue
         (PROMOIR_ROOMER_HOTEL_IDENTIFIER, AppKey);
       http.Request.CustomHeaders.AddValue(PROMOIR_ROOMER_HOTEL_APPLICATION_ID,
@@ -1702,6 +1724,8 @@ begin
 
       result := http.Post(OpenApiUri + 'hotelservices/email', multi);
     finally
+      if LowerCase(Copy(OpenApiUri, 1, 8)) = 'https://' then
+        IdSSLIOHandlerSocketOpenSSL1.Free;
       http.Free;
     end;
   finally

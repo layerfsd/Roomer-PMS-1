@@ -457,6 +457,11 @@ begin
       edMobile.Text := glb.PreviousGuestsSet['Tel2'];
       edEmail.Text := glb.PreviousGuestsSet['Email'];
       edCardId.Text := ResSetGuest['PassPortNumber'];
+
+      if edCountry.Text = '' then
+        edCountry.Text := glb.PersonProfiles['Country'];
+      if edCity.Text = '' then
+        edCity.Text := glb.PersonProfiles['City'];
     end
     else
     begin
@@ -479,6 +484,11 @@ begin
       edTel1.Text := glb.PersonProfiles['TelLandLine'];
       edMobile.Text := glb.PersonProfiles['TelMobile'];
       edEmail.Text := glb.PersonProfiles['Email'];
+
+      if edCountry.Text = '' then
+        edCountry.Text := glb.PreviousGuestsSet['Country'];
+      if edCity.Text = '' then
+        edCity.Text := glb.PreviousGuestsSet['Address4'];
     end;
   end;
 end;

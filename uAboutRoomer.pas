@@ -2,10 +2,6 @@ unit uAboutRoomer;
 
 interface
 
-{$IFDEF DEBUG}
-  {$DEFINE ROOMERSTORE}
-{$ENDIF}
-
 uses
     Winapi.Windows
   , Winapi.Messages
@@ -42,7 +38,8 @@ type
     sLabel4: TsLabel;
     lblEndpoint: TsLabel;
     Image1: TImage;
-    sLabel5: TsLabel;
+    labExtraBuild: TsLabel;
+    labExtraBuildText: TsLabel;
     procedure btnCloseClick(Sender: TObject);
     procedure LabSupportHomepageClick(Sender: TObject);
     procedure Label1Click(Sender: TObject);
@@ -51,6 +48,7 @@ type
     procedure LabDBVerNameMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure FormCreate(Sender: TObject);
   private
+    function getSpecialVersionInfo(filename, StringName: String): String;
     { Private declarations }
   public
     { Public declarations }
@@ -65,6 +63,7 @@ function checkNewVersion(Handle : THandle; RoomerDataSet : TRoomerDataSet) : boo
 function findVersionOfRoomerOnServer(xml: IXMLDOMDocument2; RoomerDataSet : TRoomerDataSet) : String;
 procedure StartRemoteSupport(Handle : THandle; RoomerDataSet : TRoomerDataSet);
 procedure ShowDashboard(Handle : THandle; RoomerDataSet : TRoomerDataSet);
+procedure SetIgnoresToZero(RoomerDataSet : TRoomerDataSet);
 
 implementation
 
@@ -86,9 +85,11 @@ uses uMain
      , PrjConst
      , uUtils
      , _Glob
+     , VersionInfo
      ;
 
-const MAX_NUMBER_OF_IGNORES = 5;
+const MAX_NUMBER_OF_IGNORES = 6;
+      WARNING_IGNORES = 3;
 
 procedure ShowRoomerAboutBox;
 begin
@@ -110,10 +111,19 @@ begin
   RoomerLanguage.TranslateThisForm(self);
 end;
 
+function TfrmAboutRoomer.getSpecialVersionInfo(filename, StringName : String) : String;
+var verInfo : TVersionInfo;
+begin
+  verInfo := TVersionInfo.Create(nil);
+  verInfo.FileName := filename;
+  result := verInfo.StringFileInfo[StringName];
+end;
+
 procedure TfrmAboutRoomer.FormShow(Sender: TObject);
 begin
   lblEndpoint.Caption := d.roomerMainDataSet.RoomerUri;
   LabDBVerName.Caption := getVersion(Application.ExeName);
+  labExtraBuild.Caption := getSpecialVersionInfo(Application.ExeName,'ExtraBuild');
 end;
 
 procedure TfrmAboutRoomer.LabDBVerNameMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
@@ -209,8 +219,6 @@ begin
   ExecuteFile(Handle, RemoteSupportFilenameAndPath, '', []);
 end;
 
-{$IFDEF ROOMERSTORE}
-
 procedure downloadCurrentVersion(Handle : THandle; RoomerDataSet : TRoomerDataSet);
 var FileInfo : TFileEntity;
     sPath,
@@ -224,6 +232,44 @@ begin
     getRoomerUpgradeAgentFilePath(UpgradeManagerPath);
     ExecuteFile(Handle, UpgradeManagerPath, '"' + Application.ExeName + '"', [eoElevate]);
   except
+  end;
+end;
+
+procedure SetIgnoresToZero(RoomerDataSet : TRoomerDataSet);
+var sTempName : String;
+    xml: IXMLDOMDocument2;
+    node : IXMLDomNode;
+    currentVersion, version : String;
+begin
+  sTempName := GetEnvironmentVariable('TEMP') + '\roomerversion.xml';
+
+  try
+    getRoomerVersionXmlFilePath(sTempName);
+  except
+    exit;
+  end;
+
+  currentVersion := getVersion(Application.ExeName);
+  xml := CreateXmlDocument; // CoDOMDocument40.Create;
+  xml.Load(sTempName);
+  try
+
+    version := findVersionOfRoomerOnServer(xml, RoomerDataSet);
+    if version <> currentVersion then
+    begin
+    (*  if MessageDlg('There is a new version of ROOMER (' + version + ').' + #13#10 +
+                    'ROOMER needs to be updated.' + #13#10#13#10 +
+                    'Click [OK] to perform the update now.'+ #13#10 +
+                    'Click [Cancel] to do this later', mtConfirmation, [mbOK,mbCancel], 0) = mrOk then *)
+      with TRoomerRegistryIniFile.Create(GetRoomerIniFilename) do
+      try
+        WriteInteger('RoomerPMSVersion', version, 0);
+      finally
+        Free;
+      end;
+    end;
+  except
+
   end;
 end;
 
@@ -273,6 +319,11 @@ begin
         s := format(GetTranslatedText('shTx_AboutRoomer_NewVersionAvailableExpired'), [version, MAX_NUMBER_OF_IGNORES]);
         Buttons := [mbOK];
       end else
+      if NumDialogShown > WARNING_IGNORES then
+      begin
+        s := format(GetTranslatedText('shTx_AboutRoomer_NewVersionAvailableExpireWarning'), [version, NumDialogShown - 1, MAX_NUMBER_OF_IGNORES - (NumDialogShown - 1)]);
+        Buttons := [mbOK,mbCancel];
+      end else
       begin
         s := format(GetTranslatedText('shTx_AboutRoomer_NewVersionAvailable'), [version]);
         Buttons := [mbOK,mbCancel];
@@ -297,54 +348,6 @@ begin
   end;
   {$ENDIF}
 end;
-
-{$ELSE}
-
-function checkNewVersion(Handle : THandle; RoomerDataSet : TRoomerDataSet) : boolean;
-var sTempName : String;
-    xml: IXMLDOMDocument2;
-    node : IXMLDomNode;
-    currentVersion, version : String;
-    FileInfo : TFileEntity;
-    sPath,
-    UpgradeManagerPath : String;
-begin
-  result := false;
-  {$IFNDEF DEBUG}
-  sTempName := GetEnvironmentVariable('TEMP') + '\roomerversion.xml';
-
-  //ATH-HJ130301 Ef skráin finnst ekki þá kemur villa
-  RoomerDataSet.SystemDownloadRoomerFile(
-      'Roomer.xml',
-      sTempName);
-
-  currentVersion := getVersion(Application.ExeName);
-  xml := CreateXmlDocument; // CoDOMDocument40.Create;
-  xml.Load(sTempName);
-  try
-
-    version := findVersionOfRoomerOnServer(xml, RoomerDataSet);
-    if version <> currentVersion then
-    begin
-    (*  if MessageDlg('There is a new version of ROOMER (' + version + ').' + #13#10 +
-                    'ROOMER needs to be updated.' + #13#10#13#10 +
-                    'Click [OK] to perform the update now.'+ #13#10 +
-                    'Click [Cancel] to do this later', mtConfirmation, [mbOK,mbCancel], 0) = mrOk then *)
-		if MessageDlg(format(GetTranslatedText('shTx_AboutRoomer_NewVersionAvailable'), [version]), mtConfirmation, [mbOK,mbCancel], 0) = mrOk then
-      begin
-        downloadCurrentVersion(Handle, RoomerDataSet);
-        result := true;
-      end;
-    end;
-
-  except
-  end;
-  {$ENDIF}
-end;
-
-
-{$ENDIF}
-
 
 function findVersionOfRoomerOnServer(xml: IXMLDOMDocument2; RoomerDataSet : TRoomerDataSet) : String;
 var node : IXMLDomNode;

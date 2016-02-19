@@ -22,11 +22,11 @@ type
   TFrmEmailingDialog = class(TForm)
     sPanel1: TsPanel;
     sLabel1: TsLabel;
-    edRecipient: TsEdit;
+    edRecipient: TsComboBox;
     StoreMain: TcxPropertiesStore;
     sLabel2: TsLabel;
-    edCC: TsEdit;
-    edBCC: TsEdit;
+    edCC: TsComboBox;
+    edBCC: TsComboBox;
     sLabel3: TsLabel;
     sLabel4: TsLabel;
     edSubject: TsEdit;
@@ -60,7 +60,8 @@ type
 var
   FrmEmailingDialog: TFrmEmailingDialog;
 
-function sendFileAsAttachment(recipient, _caption : String; attachments : TStringList) : Boolean;
+function sendFileAsAttachment(recipient, _caption : String; attachments : TStringList) : Boolean; overload;
+function sendFileAsAttachment(recipients : TStrings; _caption : String; attachments : TStringList) : Boolean; overload;
 
 implementation
 
@@ -77,14 +78,35 @@ uses uRoomerLanguage,
     ;
 
 function sendFileAsAttachment(recipient, _caption : String; attachments : TStringList) : Boolean;
-var _frmEmailingDialog: TFrmEmailingDialog;
+var list : TStrings;
 begin
+  list := TStringList.Create;
+  try
+    SplitString(recipient, list, ';');
+    result := sendFileAsAttachment(list, _caption, attachments);
+  finally
+    FreeAndNil(list);
+  end;
+end;
+
+function sendFileAsAttachment(recipients : TStrings; _caption : String; attachments : TStringList) : Boolean;
+var _frmEmailingDialog: TFrmEmailingDialog;
+  i: Integer;
+begin
+  result := True;
   _frmEmailingDialog := TFrmEmailingDialog.Create(nil);
   try
     _frmEmailingDialog.Caption := _Caption;
     _frmEmailingDialog.files := attachments;
-    _frmEmailingDialog.edRecipient.Text := recipient;
-    _frmEmailingDialog.ShowModal;
+    _frmEmailingDialog.edRecipient.Items.Clear;
+    _frmEmailingDialog.edCC.Items.Clear;
+    _frmEmailingDialog.edBCC.Items.Clear;
+    for i := 0 to recipients.Count - 1 do
+      _frmEmailingDialog.edRecipient.Items.Add(recipients[i]);
+    _frmEmailingDialog.edCC.Items.Assign(_frmEmailingDialog.edRecipient.Items);
+    _frmEmailingDialog.edBCC.Items.Assign(_frmEmailingDialog.edRecipient.Items);
+    _frmEmailingDialog.edRecipient.ItemIndex := ABS(ORD(_frmEmailingDialog.edRecipient.Items.Count > 0)) - 1;
+    result := _frmEmailingDialog.ShowModal = mrOk;
   finally
     FreeAndNil(_frmEmailingDialog);
   end;

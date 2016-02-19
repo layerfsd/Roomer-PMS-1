@@ -814,7 +814,7 @@ begin
   result :=  glb.CustomersSet.Locate('customer',scustomer,[]);
   if not result then
   begin
-    edRackCustomer.SetFocus;
+    try edRackCustomer.SetFocus; except end;
     labRackCustomerName.Caption := GetTranslatedText('shNotF_star');
   end else
   begin

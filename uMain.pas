@@ -1033,6 +1033,11 @@ type
     FOffLineMode: boolean;
     FMessagesBeingDownloaded: boolean;
 
+    OneDayFont: string;
+    OneDayGridFont: TFont;
+    TempGridFont: TFont;
+
+
     // *s    zRoomsOBJ : TRoom;
 
     procedure Open_RR_EdForm(_grid: TAdvStringGrid);
@@ -2625,45 +2630,38 @@ end;
 procedure TfrmMain.RestoreCurrentFont;
 var
   po: TPoint;
-  OneDayFont: string;
-  tmpfont: TFont;
 
 begin
   with TRoomerRegistryIniFile.Create(AppInifile) do
     try
-      tmpfont := TFont.Create;
 
       OneDayFont := readString('GridFonts', grOneDayRooms.name, '');
 
-      tmpfont := _StrToFont(OneDayFont);
+      OneDayGridFont := _StrToFont(OneDayFont);
       try
-        grOneDayRooms.Font.name := tmpfont.name;
-        grOneDayRooms.Font.size := tmpfont.size;
+        grOneDayRooms.Font.name := OneDayGridFont.name;
+        grOneDayRooms.Font.size := OneDayGridFont.size;
       finally
-        tmpfont.Free;
+        OneDayGridFont.Free;
       end;
 
       OneDayFont := readString('Grid5dayFonts', grPeriodRooms.name, '');
 
-      tmpfont := _StrToFont(OneDayFont);
-      try
-        grPeriodRooms.Font.name := tmpfont.name;
-        grPeriodRooms.Font.size := tmpfont.size;
+      TempGridFont := _StrToFont(OneDayFont);
 
-        grPeriodRooms.FixedFont := grPeriodRooms.Font;
-        grPeriodRooms.Canvas.Font := grPeriodRooms.Font;
+      grPeriodRooms.Font.name := TempGridFont.name;
+      grPeriodRooms.Font.size := TempGridFont.size;
 
-        grPeriodRooms_NO.Font := grPeriodRooms.Font;
-        grPeriodRooms_NO.FixedFont := grPeriodRooms.Font;
+      grPeriodRooms.FixedFont := grPeriodRooms.Font;
+      grPeriodRooms.Canvas.Font := grPeriodRooms.Font;
 
-        grPeriodRooms_NO.Canvas.Font := grPeriodRooms.Font;
+      grPeriodRooms_NO.Font := grPeriodRooms.Font;
+      grPeriodRooms_NO.FixedFont := grPeriodRooms.Font;
+
+      grPeriodRooms_NO.Canvas.Font := grPeriodRooms.Font;
 
         // grPeriodRooms.font.Color      := clBlack;
         // grPeriodRooms.fixedfont.Color := clBlack;
-
-      finally
-        tmpfont.Free;
-      end;
 
     finally
       Free;
@@ -2824,6 +2822,7 @@ var
   recVer: TEXEVersionData;
   temp: String;
 begin
+  OneDayGridFont := nil;
   FMessagesBeingDownloaded := false;
   StaffComm := nil;
   _InvoiceIndex := 0;
@@ -7676,9 +7675,27 @@ begin
   if not(ACol in c_ALL) then
     exit;
 
+
   Grid := TAdvStringGrid(Sender);
   With Grid.Canvas do
   begin
+
+    if (ACol = Splitter) then
+    begin
+      Brush.Color := sSkinManager1.GetGlobalFontColor;
+      Brush.Style := bsSolid;
+      FillRect(Rect);
+      exit;
+    end;
+
+    if Assigned(OneDayGridFont) then
+    begin
+      Font.Name := OneDayGridFont.Name;
+      Font.Size := OneDayGridFont.Size;
+      Font.Style := OneDayGridFont.Style;
+    end;
+//    Font.name := 'Segoe UI';
+//    Font.size := 12;
     try
       if (ARow < Grid.FixedRows) then
       begin
@@ -8201,6 +8218,7 @@ begin
             end;
             Brush.Color := sSkinManager1.GetGlobalColor;
             Font.Color := sSkinManager1.GetGlobalFontColor;
+            Font.Style := [fsBold];
           end
           else
           /// Room Column  NO rooms

@@ -12,7 +12,7 @@ uses
   uRoomerLanguage, uAppGlobal,
   Vcl.ExtCtrls, sPanel, sComboEdit, cxGraphics, cxControls, cxLookAndFeels, cxLookAndFeelPainters, cxContainer, cxEdit, Vcl.ComCtrls, dxCore, cxDateUtils,
   dxSkinsCore, dxSkinDarkSide, dxSkinDevExpressDarkStyle, dxSkinMcSkin, dxSkinOffice2013White, dxSkinsDefaultPainters, cxTextEdit, cxMaskEdit, cxDropDownEdit,
-  cxCalendar, dxSkinCaramel, dxSkinCoffee, dxSkinTheAsphaltWorld, AdvUtil;
+  cxCalendar, dxSkinCaramel, dxSkinCoffee, dxSkinTheAsphaltWorld, AdvUtil, Vcl.Samples.Spin;
 
 const WM_SET_DATE_FROM_MAIN = WM_User + 31;
 
@@ -51,30 +51,30 @@ type
   TRoomTypeEntityList = TObjectList<TRoomTypeEntity>;
 
   TFrmRateQuery = class(TForm)
-    pnlHolder: TsPanel;
-    pnlTop: TsPanel;
-    lblArrival: TsLabel;
-    sLabel1: TsLabel;
-    edNights: TsSpinEdit;
-    sLabel2: TsLabel;
-    sComboBox1: TsComboBox;
-    sLabel3: TsLabel;
-    sLabel4: TsLabel;
-    sSpinEdit1: TsSpinEdit;
-    sLabel5: TsLabel;
-    sSpinEdit2: TsSpinEdit;
-    sLabel6: TsLabel;
-    sSpinEdit3: TsSpinEdit;
-    sSpinEdit4: TsSpinEdit;
-    sLabel7: TsLabel;
-    sLabel8: TsLabel;
-    rbTotal: TsRadioButton;
-    rbAverage: TsRadioButton;
-    btnRefresh: TsButton;
+    pnlHolder: TPanel;
+    pnlTop: TPanel;
+    lblArrival: TLabel;
+    sLabel1: TLabel;
+    edNights: TSpinEdit;
+    sLabel2: TLabel;
+    sComboBox1: TComboBox;
+    sLabel3: TLabel;
+    sLabel4: TLabel;
+    sSpinEdit1: TSpinEdit;
+    sLabel5: TLabel;
+    sSpinEdit2: TSpinEdit;
+    sLabel6: TLabel;
+    sSpinEdit3: TSpinEdit;
+    sSpinEdit4: TSpinEdit;
+    sLabel7: TLabel;
+    sLabel8: TLabel;
+    rbTotal: TRadioButton;
+    rbAverage: TRadioButton;
+    btnRefresh: TButton;
     grdRates: TAdvStringGrid;
     timRefresh: TTimer;
-    sLabel9: TsLabel;
-    cbxChannels: TsComboBox;
+    sLabel9: TLabel;
+    cbxChannels: TComboBox;
     dtArrival: TcxDateEdit;
     dtDeparture: TcxDateEdit;
     procedure FormCreate(Sender: TObject);
@@ -90,6 +90,7 @@ type
     procedure grdRatesDrawCell(Sender: TObject; ACol, ARow: Integer; Rect: TRect; State: TGridDrawState);
     procedure dtArrivalPropertiesCloseUp(Sender: TObject);
     procedure dtDeparturePropertiesCloseUp(Sender: TObject);
+    procedure edNightsChange(Sender: TObject);
   private
     { Private declarations }
     RatesSet: TRoomerDataSet;
@@ -551,6 +552,16 @@ end;
 procedure TFrmRateQuery.DepartureDateChange;
 begin
   edNights.Value := Trunc(dtDeparture.Date) - Trunc(dtArrival.Date);
+end;
+
+procedure TFrmRateQuery.edNightsChange(Sender: TObject);
+var dtA, dtD : TDateTime;
+begin
+  dtA := dtArrival.Date;
+  dtD := dtDeparture.Date;
+  dtD := dtA + edNights.Value;
+  dtDeparture.Date := dtD;
+  dtArrival.Date := dtA;
 end;
 
 procedure TFrmRateQuery.edNightsDownClick(Sender: TObject);

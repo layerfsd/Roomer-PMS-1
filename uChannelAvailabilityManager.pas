@@ -1687,7 +1687,7 @@ var
   dirtyValue : Integer;
 begin
 // MIN Stay
-  if minDirty AND (minValue <= maxValue) then
+  if minDirty AND ((minValue <= maxValue) OR (maxValue = 0)) then
     dirtyValue := 1
   else
     dirtyValue := 2;
@@ -1698,7 +1698,7 @@ begin
     oldResultValue := oldResultValue + ',' + #10 + S;
 
 // MAX Stay
-  if maxDirty AND (minValue <= maxValue) then
+  if maxDirty AND ((minValue <= maxValue) OR (maxValue = 0)) then
     dirtyValue := 1
   else
     dirtyValue := 2;
@@ -4970,18 +4970,20 @@ begin
 end;
 
 procedure TfrmChannelAvailabilityManager.rateGridEditCellDone(Sender: TObject; ACol, ARow: integer);
+var PriceData : TPriceData;
 begin
   if Halting then
     exit;
   if rateGrid.RowHeights[ARow] = 0 then
     exit;
 
+  PriceData := GetPriceDataOfRow(ACol, ARow);
   if isAvailabilityRow(ARow) then
-    TPriceData(rateGrid.Objects[ACol, ARow - 1]).Availability := StrToIntDef(rateGrid.Cells[ACol, ARow], 0)
+    PriceData.Availability := StrToIntDef(rateGrid.Cells[ACol, ARow], 0)
   else if isMinStayRow(ARow) then
-    TPriceData(rateGrid.Objects[ACol, ARow - 1]).minStay := StrToIntDef(rateGrid.Cells[ACol, ARow], 0)
+    PriceData.minStay := StrToIntDef(rateGrid.Cells[ACol, ARow], 0)
   else if isMaxStayRow(ARow) then
-    TPriceData(rateGrid.Objects[ACol, ARow - 1]).MaxStay := StrToIntDef(rateGrid.Cells[ACol, ARow], 0)
+    PriceData.MaxStay := StrToIntDef(rateGrid.Cells[ACol, ARow], 0)
   else if NOT isAnyCheckBoxRow(ARow) then
     SetRateValue(ACol, ARow, rateGrid.Cells[ACol, ARow], rateGrid, isSingleUsePriceRow(ARow));
 end;

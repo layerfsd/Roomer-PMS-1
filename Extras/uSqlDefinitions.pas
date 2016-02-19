@@ -6176,7 +6176,8 @@ begin
   s := s+' SELECT '+#10;
   s := s+' rr.*, '+#10;
 
-  s := s+' (SELECT ContactEmail FROM reservations WHERE reservations.Reservation=rr.Reservation) AS ContactEmail, '+#10;
+  s := s+' (SELECT ContactEmail FROM reservations r WHERE r.Reservation=rr.Reservation) AS ContactEmail, '+#10;
+  s := s+' (SELECT Email FROM persons p WHERE p.RoomReservation=rr.RoomReservation AND p.MainName=1 LIMIT 1) AS GuestEmail, '+#10;
 
   s := s+' r.Description AS RoomDescription, '+#10;
   s := s+' rt.Description AS RoomTypeDescription, '+#10;

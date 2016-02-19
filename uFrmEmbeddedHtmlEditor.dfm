@@ -2,8 +2,8 @@ object FrmEmbeddedHtmlEditor: TFrmEmbeddedHtmlEditor
   Left = 0
   Top = 0
   Caption = 'HTML Editor'
-  ClientHeight = 489
-  ClientWidth = 685
+  ClientHeight = 633
+  ClientWidth = 909
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -12,25 +12,27 @@ object FrmEmbeddedHtmlEditor: TFrmEmbeddedHtmlEditor
   Font.Style = []
   Menu = MainMenu1
   OldCreateOrder = False
+  Position = poMainFormCenter
   OnCreate = FormCreate
-  OnDestroy = FormDestroy
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
   object sPanel1: TsPanel
     Left = 0
-    Top = 453
-    Width = 685
+    Top = 597
+    Width = 909
     Height = 36
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 0
     SkinData.SkinSection = 'PANEL'
+    ExplicitTop = 453
+    ExplicitWidth = 685
     DesignSize = (
-      685
+      909
       36)
     object btnClose: TsButton
-      Left = 596
+      Left = 820
       Top = 5
       Width = 79
       Height = 26
@@ -42,9 +44,10 @@ object FrmEmbeddedHtmlEditor: TFrmEmbeddedHtmlEditor
       ModalResult = 2
       TabOrder = 0
       SkinData.SkinSection = 'BUTTON'
+      ExplicitLeft = 596
     end
     object sButton1: TsButton
-      Left = 505
+      Left = 729
       Top = 5
       Width = 79
       Height = 26
@@ -56,186 +59,149 @@ object FrmEmbeddedHtmlEditor: TFrmEmbeddedHtmlEditor
       TabOrder = 1
       OnClick = btnOkClick
       SkinData.SkinSection = 'BUTTON'
+      ExplicitLeft = 505
     end
   end
-  object wbEditor: TWebBrowser
-    Left = 0
-    Top = 26
-    Width = 685
-    Height = 427
-    Align = alClient
-    TabOrder = 1
-    OnDocumentComplete = wbEditorDocumentComplete
-    ExplicitTop = 25
-    ControlData = {
-      4C000000CC460000222C00000000000000000000000000000000000000000000
-      000000004C000000000000000000000001000000E0D057007335CF11AE690800
-      2B2E12620A000000000000004C0000000114020000000000C000000000000046
-      8000000000000000000000000000000000000000000000000000000000000000
-      00000000000000000100000000000000000000000000000000000000}
-  end
-  object tbButtons: TsToolBar
+  object pgPages: TsPageControl
     Left = 0
     Top = 0
-    Width = 685
-    Height = 26
-    Caption = 'tbButtons'
-    DoubleBuffered = True
-    Images = ImageList1
-    ParentDoubleBuffered = False
-    TabOrder = 2
-    SkinData.SkinSection = 'TOOLBAR'
-    object ToolButton1: TToolButton
-      Left = 0
-      Top = 0
-      Caption = 'Cu&t'
-      ImageIndex = 0
-      MenuItem = mnuEditCut
-    end
-    object ToolButton2: TToolButton
-      Left = 23
-      Top = 0
-      Caption = '&Copy'
-      ImageIndex = 1
-      MenuItem = mnuEditCopy
-    end
-    object ToolButton3: TToolButton
-      Left = 46
-      Top = 0
-      Caption = '&Paste'
-      ImageIndex = 2
-      MenuItem = mnuEditPaste
-    end
-    object ToolButton4: TToolButton
-      Left = 69
-      Top = 0
-      Width = 8
-      Caption = 'ToolButton4'
-      ImageIndex = 3
-      Style = tbsSeparator
-    end
-    object ToolButton5: TToolButton
-      Left = 77
-      Top = 0
-      Caption = '&Left'
-      ImageIndex = 3
-      MenuItem = mnyAlignLeft
-    end
-    object ToolButton6: TToolButton
-      Left = 100
-      Top = 0
-      Caption = '&Center'
-      ImageIndex = 4
-      MenuItem = mnuAlignCenter
-    end
-    object ToolButton7: TToolButton
-      Left = 123
-      Top = 0
-      Caption = '&Right'
-      ImageIndex = 5
-      MenuItem = mnuAlignRight
-    end
-    object ToolButton8: TToolButton
-      Left = 146
-      Top = 0
-      Width = 8
-      Caption = 'ToolButton8'
-      ImageIndex = 6
-      Style = tbsSeparator
-    end
-    object sSpeedButton1: TsSpeedButton
-      Left = 154
-      Top = 0
-      Width = 23
-      Height = 22
-      Caption = 'B'
-      Flat = True
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -16
-      Font.Name = 'Tahoma'
-      Font.Style = [fsBold]
-      ParentFont = False
-      OnClick = FontBoldClick
-      SkinData.SkinSection = 'SPEEDBUTTON'
-    end
-    object sSpeedButton2: TsSpeedButton
-      Left = 177
-      Top = 0
-      Width = 23
-      Height = 22
-      Caption = 'I'
-      Flat = True
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -16
-      Font.Name = 'Tahoma'
-      Font.Style = [fsItalic]
-      ParentFont = False
-      OnClick = FontItalicClick
-      SkinData.SkinSection = 'SPEEDBUTTON'
-    end
-    object sSpeedButton3: TsSpeedButton
-      Left = 200
-      Top = 0
-      Width = 23
-      Height = 22
-      Caption = 'U'
-      Flat = True
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -16
-      Font.Name = 'Tahoma'
-      Font.Style = [fsUnderline]
-      ParentFont = False
-      OnClick = FontUnderlineClick
-      SkinData.SkinSection = 'SPEEDBUTTON'
-    end
-    object ToolButton9: TToolButton
-      Left = 223
-      Top = 0
-      Width = 8
-      Caption = 'ToolButton9'
-      ImageIndex = 7
-      Style = tbsSeparator
-    end
-    object sSpeedButton4: TsSpeedButton
-      Left = 231
-      Top = 0
-      Width = 23
-      Height = 22
-      Caption = 'A'
-      Flat = True
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -16
-      Font.Name = 'Tahoma'
-      Font.Style = [fsBold]
-      ParentFont = False
-      SkinData.SkinSection = 'SPEEDBUTTON'
-    end
-    object sSpeedButton5: TsSpeedButton
-      Left = 254
-      Top = 0
-      Width = 23
-      Height = 22
-      Flat = True
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -16
-      Font.Name = 'Tahoma'
-      Font.Style = [fsBold]
-      ParentFont = False
-      SkinData.SkinSection = 'SPEEDBUTTON'
-      ImageIndex = 6
-      Images = ImageList1
+    Width = 909
+    Height = 597
+    ActivePage = sTabSheet1
+    Align = alClient
+    TabOrder = 1
+    ExplicitWidth = 685
+    ExplicitHeight = 453
+    object sTabSheet1: TsTabSheet
+      Caption = 'Source'
+      ExplicitLeft = 8
+      ExplicitTop = 22
+      ExplicitWidth = 677
+      ExplicitHeight = 425
+      object mmoSource: TAdvMemo
+        Left = 0
+        Top = 0
+        Width = 901
+        Height = 569
+        Cursor = crIBeam
+        ActiveLineSettings.ShowActiveLine = False
+        ActiveLineSettings.ShowActiveLineIndicator = False
+        Align = alClient
+        AutoCompletion.Font.Charset = DEFAULT_CHARSET
+        AutoCompletion.Font.Color = clWindowText
+        AutoCompletion.Font.Height = -11
+        AutoCompletion.Font.Name = 'Tahoma'
+        AutoCompletion.Font.Style = []
+        AutoCompletion.StartToken = '(.'
+        AutoCorrect.Active = True
+        AutoHintParameterPosition = hpBelowCode
+        BookmarkGlyph.Data = {
+          36050000424D3605000000000000360400002800000010000000100000000100
+          0800000000000001000000000000000000000001000000000000000000000000
+          80000080000000808000800000008000800080800000C0C0C000C0DCC000F0CA
+          A6000020400000206000002080000020A0000020C0000020E000004000000040
+          20000040400000406000004080000040A0000040C0000040E000006000000060
+          20000060400000606000006080000060A0000060C0000060E000008000000080
+          20000080400000806000008080000080A0000080C0000080E00000A0000000A0
+          200000A0400000A0600000A0800000A0A00000A0C00000A0E00000C0000000C0
+          200000C0400000C0600000C0800000C0A00000C0C00000C0E00000E0000000E0
+          200000E0400000E0600000E0800000E0A00000E0C00000E0E000400000004000
+          20004000400040006000400080004000A0004000C0004000E000402000004020
+          20004020400040206000402080004020A0004020C0004020E000404000004040
+          20004040400040406000404080004040A0004040C0004040E000406000004060
+          20004060400040606000406080004060A0004060C0004060E000408000004080
+          20004080400040806000408080004080A0004080C0004080E00040A0000040A0
+          200040A0400040A0600040A0800040A0A00040A0C00040A0E00040C0000040C0
+          200040C0400040C0600040C0800040C0A00040C0C00040C0E00040E0000040E0
+          200040E0400040E0600040E0800040E0A00040E0C00040E0E000800000008000
+          20008000400080006000800080008000A0008000C0008000E000802000008020
+          20008020400080206000802080008020A0008020C0008020E000804000008040
+          20008040400080406000804080008040A0008040C0008040E000806000008060
+          20008060400080606000806080008060A0008060C0008060E000808000008080
+          20008080400080806000808080008080A0008080C0008080E00080A0000080A0
+          200080A0400080A0600080A0800080A0A00080A0C00080A0E00080C0000080C0
+          200080C0400080C0600080C0800080C0A00080C0C00080C0E00080E0000080E0
+          200080E0400080E0600080E0800080E0A00080E0C00080E0E000C0000000C000
+          2000C0004000C0006000C0008000C000A000C000C000C000E000C0200000C020
+          2000C0204000C0206000C0208000C020A000C020C000C020E000C0400000C040
+          2000C0404000C0406000C0408000C040A000C040C000C040E000C0600000C060
+          2000C0604000C0606000C0608000C060A000C060C000C060E000C0800000C080
+          2000C0804000C0806000C0808000C080A000C080C000C080E000C0A00000C0A0
+          2000C0A04000C0A06000C0A08000C0A0A000C0A0C000C0A0E000C0C00000C0C0
+          2000C0C04000C0C06000C0C08000C0C0A000F0FBFF00A4A0A000808080000000
+          FF0000FF000000FFFF00FF000000FF00FF00FFFF0000FFFFFF00FDFD25252525
+          2525252525252525FDFDFD2E25FFFFFFFFFFFFFFFFFFFF25FDFDFD2525252525
+          2525252525252525FDFD9A9AB7B7B7B7B7B7B7B7B7B72525FDFDFD25B7B7B7B7
+          B7B7B7B7B7B72525FDFD9A9AB7B7B7B7B7B7B7B7B7B72525FDFDFD25BFB7BFBF
+          B7B7B7B7B7B72525FDFD9A9ABFBFBFB7BFBFB7B7B7B72525FDFDFD25BFBFBFBF
+          BFB7BFBFB7B72525FDFD9A9ABFBFBFB7BFBFBFB7BFB72525FDFDFD25BFBFBFBF
+          BFBFBFBFBFB72525FDFD9A9ABFBFBFBFBFB7BFBFB7B72525FDFDFD25BFBFBFBF
+          BFBFBFBFBFB72525FDFD9A9ABFBFBFBFBFBFBFBFBFB725FDFDFDFD2525252525
+          25252525252525FDFDFDFDFDFDFDFDFDFDFDFDFDFDFDFDFDFDFD}
+        BorderStyle = bsSingle
+        ClipboardFormats = [cfText]
+        CodeFolding.Enabled = False
+        CodeFolding.LineColor = clGray
+        Ctl3D = False
+        DelErase = True
+        EnhancedHomeKey = False
+        Gutter.Font.Charset = DEFAULT_CHARSET
+        Gutter.Font.Color = clWindowText
+        Gutter.Font.Height = -13
+        Gutter.Font.Name = 'Courier New'
+        Gutter.Font.Style = []
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clBlack
+        Font.Height = -13
+        Font.Name = 'COURIER NEW'
+        Font.Style = []
+        HiddenCaret = False
+        Lines.Strings = (
+          '')
+        MarkerList.UseDefaultMarkerImageIndex = False
+        MarkerList.DefaultMarkerImageIndex = -1
+        MarkerList.ImageTransparentColor = -1
+        MemoSource = AdvMemoSource1
+        OleDropTarget = []
+        PrintOptions.MarginLeft = 0
+        PrintOptions.MarginRight = 0
+        PrintOptions.MarginTop = 0
+        PrintOptions.MarginBottom = 0
+        PrintOptions.PageNr = False
+        PrintOptions.PrintLineNumbers = False
+        RightMarginColor = 14869218
+        ScrollHint = False
+        SelColor = clWhite
+        SelBkColor = clNavy
+        ShowRightMargin = True
+        SmartTabs = False
+        TabOrder = 0
+        TabStop = True
+        TrimTrailingSpaces = False
+        UILanguage.ScrollHint = 'Row'
+        UILanguage.Undo = 'Undo'
+        UILanguage.Redo = 'Redo'
+        UILanguage.Copy = 'Copy'
+        UILanguage.Cut = 'Cut'
+        UILanguage.Paste = 'Paste'
+        UILanguage.Delete = 'Delete'
+        UILanguage.SelectAll = 'Select All'
+        UrlStyle.TextColor = clBlue
+        UrlStyle.BkColor = clWhite
+        UrlStyle.Style = [fsUnderline]
+        UseStyler = True
+        Version = '3.4.6.2'
+        WordWrap = wwClientWidth
+        ExplicitLeft = 3
+        ExplicitTop = 3
+      end
     end
   end
   object ImageList1: TImageList
     Left = 56
     Top = 376
     Bitmap = {
-      494C010107004800840010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010107004800900010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000002000000001002000000000000020
       0000000000000000000000000000000000000000000072727200181818000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -544,54 +510,13 @@ object FrmEmbeddedHtmlEditor: TFrmEmbeddedHtmlEditor
         OnClick = EditPasteClick
       end
     end
-    object N2: TMenuItem
-      Caption = 'F&ont'
-      object mnuFontBold: TMenuItem
-        Caption = '&Bold'
-        ShortCut = 16450
-        OnClick = FontBoldClick
-      end
-      object mnuFontItalic: TMenuItem
-        Caption = '&Italic'
-        ShortCut = 16457
-        OnClick = FontItalicClick
-      end
-      object mnuFontUnderline: TMenuItem
-        Caption = '&Underline'
-        ShortCut = 16469
-        OnClick = FontUnderlineClick
-      end
-      object N4: TMenuItem
-        Caption = '-'
-      end
-      object mnuFont: TMenuItem
-        Caption = '&Font'
-        OnClick = mnuFontClick
-      end
-      object mnuFontColor: TMenuItem
-        Caption = 'Font &Color'
-        ImageIndex = 6
-      end
-    end
-    object N7: TMenuItem
-      Caption = '&Align'
-      object mnyAlignLeft: TMenuItem
-        Caption = '&Left'
-        ImageIndex = 3
-        ShortCut = 32844
-        OnClick = JustifyLeftClick
-      end
-      object mnuAlignCenter: TMenuItem
-        Caption = '&Center'
-        ImageIndex = 4
-        ShortCut = 32835
-        OnClick = JustifyCenterClick
-      end
-      object mnuAlignRight: TMenuItem
-        Caption = '&Right'
-        ImageIndex = 5
-        ShortCut = 32850
-        OnClick = JustifyRightClick
+    object O1: TMenuItem
+      Caption = '&Options'
+      object mnuWordWrap: TMenuItem
+        Caption = 'Wordwrap'
+        Checked = True
+        ShortCut = 16471
+        OnClick = mnuWordWrapClick
       end
     end
   end
@@ -603,5 +528,297 @@ object FrmEmbeddedHtmlEditor: TFrmEmbeddedHtmlEditor
     Font.Style = []
     Left = 216
     Top = 88
+  end
+  object AdvMemoSource1: TAdvMemoSource
+    SyntaxStyler = AdvHTMLMemoStyler1
+    ReadOnly = False
+    Left = 264
+    Top = 200
+  end
+  object AdvHTMLMemoStyler1: TAdvHTMLMemoStyler
+    LineComment = '//'
+    MultiCommentLeft = '<!--'
+    MultiCommentRight = '-->'
+    CommentStyle.TextColor = clSilver
+    CommentStyle.BkColor = clWhite
+    CommentStyle.Style = [fsItalic]
+    NumberStyle.TextColor = clBlack
+    NumberStyle.BkColor = clWhite
+    NumberStyle.Style = []
+    HighlightStyle.TextColor = clWhite
+    HighlightStyle.BkColor = clRed
+    HighlightStyle.Style = [fsBold]
+    AllStyles = <
+      item
+        KeyWords.Strings = (
+          '&lt'
+          'ABREV'
+          'ACRONYM'
+          'ADDRESS'
+          'APPLET'
+          'AREA'
+          'AU'
+          'AUTHOR'
+          'B'
+          'BANNER'
+          'BASE'
+          'BASEFONT'
+          'BGSOUND'
+          'BIG'
+          'BLINK'
+          'BLOCQUOTE'
+          'BODY'
+          'BQ'
+          'BR'
+          'CAPTION'
+          'CENTER'
+          'CITE'
+          'CODE'
+          'COL'
+          'COLGROUP'
+          'COMMENT'
+          'CREDIT'
+          'DEL'
+          'DFN'
+          'DIR'
+          'DIV'
+          'DL'
+          'DT'
+          'DD'
+          'EM'
+          'EMBED'
+          'FIG'
+          'FN'
+          'FONT'
+          'FORM'
+          'FRAME'
+          'FRAMESET'
+          'HEAD'
+          'H1'
+          'H2'
+          'H3'
+          'H4'
+          'H5'
+          'H6'
+          'HR'
+          'HTML'
+          'I'
+          'IFRAME'
+          'IMG'
+          'INPUT'
+          'INS'
+          'ISINDEX'
+          'KBD'
+          'LANG'
+          'LH'
+          'LI'
+          'LINK'
+          'LISTING'
+          'MAP'
+          'MARQUEE'
+          'MATH'
+          'MENU'
+          'META'
+          'MULTICOL'
+          'NOBR'
+          'NOFRAMES'
+          'NOTE'
+          'OL'
+          'OVERLAY'
+          'P'
+          'PARAM'
+          'PERSON'
+          'PLAINTEXT'
+          'PRE'
+          'Q'
+          'RANGE'
+          'SAMP'
+          'SCRIPT'
+          'SELECT'
+          'SMALL'
+          'SPACER'
+          'SPOT'
+          'STRIKE'
+          'STRONG'
+          'SUB'
+          'SUP'
+          'TAB'
+          'TBODY'
+          'TEXTAREA'
+          'TEXTFLOW'
+          'TFOOT'
+          'TH'
+          'THEAD'
+          'TITLE'
+          'TT'
+          'U'
+          'UL'
+          'VAR'
+          'WBR'
+          'XMP'
+          'DOCTYPE'
+          'PUBLIC')
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clNavy
+        Font.Height = -11
+        Font.Name = 'Courier New'
+        Font.Style = []
+        BGColor = clWhite
+        StyleType = stKeyword
+        BracketStart = #0
+        BracketEnd = #0
+        Info = 'HTML Standard Default'
+      end
+      item
+        KeyWords.Strings = (
+          'TABLE'
+          'BORDER'
+          'TD'
+          'TR'
+          'STYLE'
+          'BORDERCOLOR'
+          'WIDTH'
+          'ID'
+          'BORDERCOLORLIGHT'
+          'BORDERCOLORDARK')
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clOlive
+        Font.Height = -11
+        Font.Name = 'Courier New'
+        Font.Style = []
+        BGColor = clWhite
+        StyleType = stKeyword
+        BracketStart = #0
+        BracketEnd = #0
+        Info = 'HTML Table Keywords'
+      end
+      item
+        KeyWords.Strings = (
+          'A'
+          'HREF')
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clRed
+        Font.Height = -11
+        Font.Name = 'Courier New'
+        Font.Style = []
+        BGColor = clWhite
+        StyleType = stKeyword
+        BracketStart = #0
+        BracketEnd = #0
+        Info = 'HTML Link Keywords'
+      end
+      item
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clBackground
+        Font.Height = -11
+        Font.Name = 'Courier New'
+        Font.Style = []
+        BGColor = clWhite
+        StyleType = stBracket
+        BracketStart = #39
+        BracketEnd = #39
+        Info = 'Simple Bracket'
+      end
+      item
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clBlue
+        Font.Height = -11
+        Font.Name = 'Courier New'
+        Font.Style = []
+        BGColor = clWhite
+        StyleType = stBracket
+        BracketStart = '"'
+        BracketEnd = '"'
+        Info = 'Double Bracket'
+      end
+      item
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clTeal
+        Font.Height = -11
+        Font.Name = 'Courier New'
+        Font.Style = []
+        BGColor = clWhite
+        StyleType = stSymbol
+        BracketStart = #0
+        BracketEnd = #0
+        Symbols = ' ,;:.()[]=-*/^%<>#'#13#10
+        Info = 'Symbols Delimiters'
+      end>
+    Description = 'Web pages'
+    Filter = 'HTML Document (*.htm,*.html)|*.htm;*.html'
+    DefaultExtension = '.html'
+    StylerName = 'HTML document'
+    Extensions = 'htm;html'
+    RegionDefinitions = <
+      item
+        Identifier = '<BODY>'
+        RegionStart = '<BODY>'
+        RegionEnd = '</BODY>'
+        RegionType = rtClosed
+        ShowComments = False
+      end
+      item
+        Identifier = '<HEAD>'
+        RegionStart = '<HEAD>'
+        RegionEnd = '</HEAD>'
+        RegionType = rtClosed
+        ShowComments = False
+      end
+      item
+        Identifier = '<HTML>'
+        RegionStart = '<HTML>'
+        RegionEnd = '</HTML>'
+        RegionType = rtClosed
+        ShowComments = False
+      end
+      item
+        Identifier = '<SCRIPT>'
+        RegionStart = '<SCRIPT>'
+        RegionEnd = '</SCRIPT>'
+        RegionType = rtClosed
+        ShowComments = False
+      end
+      item
+        Identifier = '<STYLE>'
+        RegionStart = '<STYLE>'
+        RegionEnd = '</STYLE>'
+        RegionType = rtClosed
+        ShowComments = False
+      end
+      item
+        Identifier = '<FORM>'
+        RegionStart = '<FORM>'
+        RegionEnd = '</FORM>'
+        RegionType = rtClosed
+        ShowComments = False
+      end>
+    Left = 264
+    Top = 256
+  end
+  object FormStore: TcxPropertiesStore
+    Components = <
+      item
+        Component = Owner
+        Properties.Strings = (
+          'Height'
+          'Left'
+          'Position'
+          'Top'
+          'Width')
+      end
+      item
+        Component = mmoSource
+        Properties.Strings = (
+          'WordWrap')
+      end
+      item
+        Component = mnuWordWrap
+        Properties.Strings = (
+          'Checked')
+      end>
+    StorageName = 'Software\Roomer\FormStatus\HtmlSourceEditor'
+    StorageType = stRegistry
+    Left = 311
+    Top = 176
   end
 end

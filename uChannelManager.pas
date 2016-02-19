@@ -346,7 +346,7 @@ begin
   try
     if not result then
     begin
-      ed.SetFocus;
+      try ed.SetFocus; except end;
       lab.Color := clRed;
       lab.caption := GetTranslatedText('shNotF_star');
     end else

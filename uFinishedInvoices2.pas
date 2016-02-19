@@ -577,7 +577,7 @@ begin
         agrVSK.RowCount := iRowIndex + 1;
 //      agrVSK.RowHeights[iRowIndex] := 18;
         agrVSK.Cells[colvatType      ,iRowIndex] := ivi.VATList[i].VATDescription;
-        agrVSK.Cells[colvatTotalWoWat,iRowIndex] := _PriceRoundToStr(ivi.VATList[i].Price_woVAT   ,50,  3,  '',  ' '+zNative);
+        agrVSK.Cells[colvatTotalWoWat,iRowIndex] := _PriceRoundToStr(ivi.VATList[i].Price_woVAT   ,50,  1,  '',  ' '+zNative);
         agrVSK.Cells[colvatVatProcent,iRowIndex] := _PriceRoundToStr(ivi.VATList[i].VATPercentage ,50,  2,  '',  '%'  );
         agrVSK.Cells[colvatVat       ,iRowIndex] := _PriceRoundToStr(ivi.VATList[i].VATAmount     ,50,  1,  '',  ' '+zNative);
       end;
@@ -791,6 +791,7 @@ begin
   frxJPEGExport1.FileName := 'Invoice_'+inttostr(zInvoiceNumber)+'.jpg';
 
   frxMailExport1.Address := zEmailAddress;  // get from customer table
+
 //  frxMailExport1.Subject := '';  // get from controle
 //
 //  frxMailExport1.Lines := ''; //Get from controle (some kind of template)
@@ -1075,7 +1076,7 @@ begin
      frxPDFExport1.ShowProgress := True;
    end;
    try
-     if sendFileAsAttachment(ToField, GetTranslatedText('shTxEmailInvoice'), list) then;
+     if sendFileAsAttachment(zEmailAddress {ToField}, GetTranslatedText('shTxEmailInvoice'), list) then;
    finally
      if fileExists(filename) then
        try

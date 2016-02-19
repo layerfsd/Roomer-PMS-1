@@ -117,8 +117,8 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
     object chkShowPackage: TsCheckBox
       Left = 5
       Top = 47
-      Width = 145
-      Height = 19
+      Width = 148
+      Height = 17
       Caption = 'Show Package on invoice'
       TabOrder = 5
       SkinData.SkinSection = 'CHECKBOX'
@@ -352,6 +352,7 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
           Height = 230
           TabOrder = 0
           SkinData.SkinSection = 'GROUPBOX'
+          Checked = False
           object Label1: TsLabel
             Left = 67
             Top = 58
@@ -469,7 +470,7 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
             BorderStyle = bsNone
             Color = clWhite
             Font.Charset = DEFAULT_CHARSET
-            Font.Color = 2302755
+            Font.Color = clBlack
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
@@ -477,15 +478,11 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
             ReadOnly = True
             TabOrder = 1
             SkinData.SkinSection = 'EDIT'
-            BoundLabel.Indent = 0
             BoundLabel.Font.Charset = DEFAULT_CHARSET
             BoundLabel.Font.Color = clWindowText
             BoundLabel.Font.Height = -13
             BoundLabel.Font.Name = 'Tahoma'
             BoundLabel.Font.Style = []
-            BoundLabel.Layout = sclLeft
-            BoundLabel.MaxWidth = 0
-            BoundLabel.UseSkinColor = True
           end
           object edtAddress1: TsEdit
             Left = 106
@@ -496,7 +493,7 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
             BorderStyle = bsNone
             Color = clWhite
             Font.Charset = DEFAULT_CHARSET
-            Font.Color = 2302755
+            Font.Color = clBlack
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
@@ -504,15 +501,11 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
             ReadOnly = True
             TabOrder = 2
             SkinData.SkinSection = 'EDIT'
-            BoundLabel.Indent = 0
             BoundLabel.Font.Charset = DEFAULT_CHARSET
             BoundLabel.Font.Color = clWindowText
             BoundLabel.Font.Height = -13
             BoundLabel.Font.Name = 'Tahoma'
             BoundLabel.Font.Style = []
-            BoundLabel.Layout = sclLeft
-            BoundLabel.MaxWidth = 0
-            BoundLabel.UseSkinColor = True
           end
           object edtAddress2: TsEdit
             Left = 106
@@ -523,7 +516,7 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
             BorderStyle = bsNone
             Color = clWhite
             Font.Charset = DEFAULT_CHARSET
-            Font.Color = 2302755
+            Font.Color = clBlack
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
@@ -531,15 +524,11 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
             ReadOnly = True
             TabOrder = 3
             SkinData.SkinSection = 'EDIT'
-            BoundLabel.Indent = 0
             BoundLabel.Font.Charset = DEFAULT_CHARSET
             BoundLabel.Font.Color = clWindowText
             BoundLabel.Font.Height = -13
             BoundLabel.Font.Name = 'Tahoma'
             BoundLabel.Font.Style = []
-            BoundLabel.Layout = sclLeft
-            BoundLabel.MaxWidth = 0
-            BoundLabel.UseSkinColor = True
           end
           object edtAddress3: TsEdit
             Left = 106
@@ -550,7 +539,7 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
             BorderStyle = bsNone
             Color = clWhite
             Font.Charset = DEFAULT_CHARSET
-            Font.Color = 2302755
+            Font.Color = clBlack
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
@@ -558,15 +547,11 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
             ReadOnly = True
             TabOrder = 4
             SkinData.SkinSection = 'EDIT'
-            BoundLabel.Indent = 0
             BoundLabel.Font.Charset = DEFAULT_CHARSET
             BoundLabel.Font.Color = clWindowText
             BoundLabel.Font.Height = -13
             BoundLabel.Font.Name = 'Tahoma'
             BoundLabel.Font.Style = []
-            BoundLabel.Layout = sclLeft
-            BoundLabel.MaxWidth = 0
-            BoundLabel.UseSkinColor = True
           end
           object edtCustomer: TsEdit
             Left = 106
@@ -577,7 +562,7 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
             BorderStyle = bsNone
             Color = clWhite
             Font.Charset = DEFAULT_CHARSET
-            Font.Color = 2302755
+            Font.Color = clBlack
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
@@ -585,15 +570,11 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
             ReadOnly = True
             TabOrder = 0
             SkinData.SkinSection = 'EDIT'
-            BoundLabel.Indent = 0
             BoundLabel.Font.Charset = DEFAULT_CHARSET
             BoundLabel.Font.Color = clWindowText
             BoundLabel.Font.Height = -13
             BoundLabel.Font.Name = 'Tahoma'
             BoundLabel.Font.Style = []
-            BoundLabel.Layout = sclLeft
-            BoundLabel.MaxWidth = 0
-            BoundLabel.UseSkinColor = True
           end
           object edtPersonalId: TsEdit
             Left = 106
@@ -604,7 +585,7 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
             BorderStyle = bsNone
             Color = clWhite
             Font.Charset = DEFAULT_CHARSET
-            Font.Color = 2302755
+            Font.Color = clBlack
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
@@ -612,15 +593,11 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
             ReadOnly = True
             TabOrder = 5
             SkinData.SkinSection = 'EDIT'
-            BoundLabel.Indent = 0
             BoundLabel.Font.Charset = DEFAULT_CHARSET
             BoundLabel.Font.Color = clWindowText
             BoundLabel.Font.Height = -13
             BoundLabel.Font.Name = 'Tahoma'
             BoundLabel.Font.Style = []
-            BoundLabel.Layout = sclLeft
-            BoundLabel.MaxWidth = 0
-            BoundLabel.UseSkinColor = True
           end
           object edtGuestName: TsEdit
             Left = 106
@@ -631,7 +608,7 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
             BorderStyle = bsNone
             Color = clWhite
             Font.Charset = ANSI_CHARSET
-            Font.Color = 2302755
+            Font.Color = clBlack
             Font.Height = -11
             Font.Name = 'Courier New'
             Font.Style = []
@@ -639,15 +616,11 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
             ReadOnly = True
             TabOrder = 6
             SkinData.SkinSection = 'EDIT'
-            BoundLabel.Indent = 0
             BoundLabel.Font.Charset = DEFAULT_CHARSET
             BoundLabel.Font.Color = clWindowText
             BoundLabel.Font.Height = -13
             BoundLabel.Font.Name = 'Tahoma'
             BoundLabel.Font.Style = []
-            BoundLabel.Layout = sclLeft
-            BoundLabel.MaxWidth = 0
-            BoundLabel.UseSkinColor = True
           end
           object edtRoom: TsEdit
             Left = 106
@@ -658,7 +631,7 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
             BorderStyle = bsNone
             Color = clWhite
             Font.Charset = ANSI_CHARSET
-            Font.Color = 2302755
+            Font.Color = clBlack
             Font.Height = -11
             Font.Name = 'Courier New'
             Font.Style = []
@@ -666,15 +639,11 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
             ReadOnly = True
             TabOrder = 7
             SkinData.SkinSection = 'EDIT'
-            BoundLabel.Indent = 0
             BoundLabel.Font.Charset = DEFAULT_CHARSET
             BoundLabel.Font.Color = clWindowText
             BoundLabel.Font.Height = -13
             BoundLabel.Font.Name = 'Tahoma'
             BoundLabel.Font.Style = []
-            BoundLabel.Layout = sclLeft
-            BoundLabel.MaxWidth = 0
-            BoundLabel.UseSkinColor = True
           end
           object edtAddress4: TsEdit
             Left = 216
@@ -693,15 +662,11 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
             TabOrder = 8
             Visible = False
             SkinData.SkinSection = 'EDIT'
-            BoundLabel.Indent = 0
             BoundLabel.Font.Charset = DEFAULT_CHARSET
             BoundLabel.Font.Color = clWindowText
             BoundLabel.Font.Height = -13
             BoundLabel.Font.Name = 'Tahoma'
             BoundLabel.Font.Style = []
-            BoundLabel.Layout = sclLeft
-            BoundLabel.MaxWidth = 0
-            BoundLabel.UseSkinColor = True
           end
         end
         object edtDate: TsEdit
@@ -713,7 +678,7 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
           BorderStyle = bsNone
           Color = clWhite
           Font.Charset = ANSI_CHARSET
-          Font.Color = 2302755
+          Font.Color = clBlack
           Font.Height = -11
           Font.Name = 'Courier New'
           Font.Style = []
@@ -721,15 +686,11 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
           ReadOnly = True
           TabOrder = 1
           SkinData.SkinSection = 'EDIT'
-          BoundLabel.Indent = 0
           BoundLabel.Font.Charset = DEFAULT_CHARSET
           BoundLabel.Font.Color = clWindowText
           BoundLabel.Font.Height = -13
           BoundLabel.Font.Name = 'Tahoma'
           BoundLabel.Font.Style = []
-          BoundLabel.Layout = sclLeft
-          BoundLabel.MaxWidth = 0
-          BoundLabel.UseSkinColor = True
         end
         object edtCurrency: TsEdit
           Left = 773
@@ -740,7 +701,7 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
           BorderStyle = bsNone
           Color = clWhite
           Font.Charset = ANSI_CHARSET
-          Font.Color = 2302755
+          Font.Color = clBlack
           Font.Height = -11
           Font.Name = 'Courier New'
           Font.Style = []
@@ -748,15 +709,11 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
           ReadOnly = True
           TabOrder = 2
           SkinData.SkinSection = 'EDIT'
-          BoundLabel.Indent = 0
           BoundLabel.Font.Charset = DEFAULT_CHARSET
           BoundLabel.Font.Color = clWindowText
           BoundLabel.Font.Height = -13
           BoundLabel.Font.Name = 'Tahoma'
           BoundLabel.Font.Style = []
-          BoundLabel.Layout = sclLeft
-          BoundLabel.MaxWidth = 0
-          BoundLabel.UseSkinColor = True
         end
         object edtBreakfast: TsEdit
           Left = 505
@@ -767,7 +724,7 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
           BorderStyle = bsNone
           Color = clWhite
           Font.Charset = ANSI_CHARSET
-          Font.Color = 2302755
+          Font.Color = clBlack
           Font.Height = -11
           Font.Name = 'Courier New'
           Font.Style = []
@@ -776,15 +733,11 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
           TabOrder = 3
           Text = '0'
           SkinData.SkinSection = 'EDIT'
-          BoundLabel.Indent = 0
           BoundLabel.Font.Charset = DEFAULT_CHARSET
           BoundLabel.Font.Color = clWindowText
           BoundLabel.Font.Height = -13
           BoundLabel.Font.Name = 'Tahoma'
           BoundLabel.Font.Style = []
-          BoundLabel.Layout = sclLeft
-          BoundLabel.MaxWidth = 0
-          BoundLabel.UseSkinColor = True
         end
         object memExtraText: TsMemo
           Left = 296
@@ -796,21 +749,17 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
           BorderStyle = bsNone
           Color = clWhite
           Font.Charset = ANSI_CHARSET
-          Font.Color = 2302755
+          Font.Color = clBlack
           Font.Height = -11
           Font.Name = 'Courier New'
           Font.Style = []
           ParentFont = False
           TabOrder = 4
-          BoundLabel.Indent = 0
           BoundLabel.Font.Charset = DEFAULT_CHARSET
           BoundLabel.Font.Color = clWindowText
           BoundLabel.Font.Height = -13
           BoundLabel.Font.Name = 'Tahoma'
           BoundLabel.Font.Style = []
-          BoundLabel.Layout = sclLeft
-          BoundLabel.MaxWidth = 0
-          BoundLabel.UseSkinColor = True
           SkinData.SkinSection = 'EDIT'
         end
         object edtCurrencyRate: TsEdit
@@ -822,7 +771,7 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
           BorderStyle = bsNone
           Color = clWhite
           Font.Charset = ANSI_CHARSET
-          Font.Color = 2302755
+          Font.Color = clBlack
           Font.Height = -11
           Font.Name = 'Courier New'
           Font.Style = []
@@ -830,15 +779,11 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
           ReadOnly = True
           TabOrder = 5
           SkinData.SkinSection = 'EDIT'
-          BoundLabel.Indent = 0
           BoundLabel.Font.Charset = DEFAULT_CHARSET
           BoundLabel.Font.Color = clWindowText
           BoundLabel.Font.Height = -13
           BoundLabel.Font.Name = 'Tahoma'
           BoundLabel.Font.Style = []
-          BoundLabel.Layout = sclLeft
-          BoundLabel.MaxWidth = 0
-          BoundLabel.UseSkinColor = True
         end
         object edtPaydate: TsEdit
           Left = 773
@@ -849,7 +794,7 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
           BorderStyle = bsNone
           Color = clWhite
           Font.Charset = ANSI_CHARSET
-          Font.Color = 2302755
+          Font.Color = clBlack
           Font.Height = -11
           Font.Name = 'Courier New'
           Font.Style = []
@@ -857,15 +802,11 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
           ReadOnly = True
           TabOrder = 6
           SkinData.SkinSection = 'EDIT'
-          BoundLabel.Indent = 0
           BoundLabel.Font.Charset = DEFAULT_CHARSET
           BoundLabel.Font.Color = clWindowText
           BoundLabel.Font.Height = -13
           BoundLabel.Font.Name = 'Tahoma'
           BoundLabel.Font.Style = []
-          BoundLabel.Layout = sclLeft
-          BoundLabel.MaxWidth = 0
-          BoundLabel.UseSkinColor = True
         end
         object edtReservation: TsEdit
           Left = 773
@@ -876,7 +817,7 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
           BorderStyle = bsNone
           Color = clWhite
           Font.Charset = ANSI_CHARSET
-          Font.Color = 2302755
+          Font.Color = clBlack
           Font.Height = -11
           Font.Name = 'Courier New'
           Font.Style = []
@@ -884,15 +825,11 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
           ReadOnly = True
           TabOrder = 7
           SkinData.SkinSection = 'EDIT'
-          BoundLabel.Indent = 0
           BoundLabel.Font.Charset = DEFAULT_CHARSET
           BoundLabel.Font.Color = clWindowText
           BoundLabel.Font.Height = -13
           BoundLabel.Font.Name = 'Tahoma'
           BoundLabel.Font.Style = []
-          BoundLabel.Layout = sclLeft
-          BoundLabel.MaxWidth = 0
-          BoundLabel.UseSkinColor = True
         end
         object edtKreditInvoice: TsEdit
           Left = 774
@@ -903,7 +840,7 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
           BorderStyle = bsNone
           Color = clWhite
           Font.Charset = ANSI_CHARSET
-          Font.Color = 2302755
+          Font.Color = clBlack
           Font.Height = -11
           Font.Name = 'Courier New'
           Font.Style = []
@@ -911,15 +848,11 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
           ReadOnly = True
           TabOrder = 8
           SkinData.SkinSection = 'EDIT'
-          BoundLabel.Indent = 0
           BoundLabel.Font.Charset = DEFAULT_CHARSET
           BoundLabel.Font.Color = clWindowText
           BoundLabel.Font.Height = -13
           BoundLabel.Font.Name = 'Tahoma'
           BoundLabel.Font.Style = []
-          BoundLabel.Layout = sclLeft
-          BoundLabel.MaxWidth = 0
-          BoundLabel.UseSkinColor = True
         end
         object edtOrginalInvoice: TsEdit
           Left = 773
@@ -930,7 +863,7 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
           BorderStyle = bsNone
           Color = clWhite
           Font.Charset = ANSI_CHARSET
-          Font.Color = 2302755
+          Font.Color = clBlack
           Font.Height = -11
           Font.Name = 'Courier New'
           Font.Style = []
@@ -938,15 +871,11 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
           ReadOnly = True
           TabOrder = 9
           SkinData.SkinSection = 'EDIT'
-          BoundLabel.Indent = 0
           BoundLabel.Font.Charset = DEFAULT_CHARSET
           BoundLabel.Font.Color = clWindowText
           BoundLabel.Font.Height = -13
           BoundLabel.Font.Name = 'Tahoma'
           BoundLabel.Font.Style = []
-          BoundLabel.Layout = sclLeft
-          BoundLabel.MaxWidth = 0
-          BoundLabel.UseSkinColor = True
         end
         object edtCountry: TsEdit
           Left = 110
@@ -957,7 +886,7 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
           BorderStyle = bsNone
           Color = clWhite
           Font.Charset = DEFAULT_CHARSET
-          Font.Color = 2302755
+          Font.Color = clBlack
           Font.Height = -11
           Font.Name = 'Tahoma'
           Font.Style = []
@@ -965,15 +894,11 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
           ReadOnly = True
           TabOrder = 10
           SkinData.SkinSection = 'EDIT'
-          BoundLabel.Indent = 0
           BoundLabel.Font.Charset = DEFAULT_CHARSET
           BoundLabel.Font.Color = clWindowText
           BoundLabel.Font.Height = -13
           BoundLabel.Font.Name = 'Tahoma'
           BoundLabel.Font.Style = []
-          BoundLabel.Layout = sclLeft
-          BoundLabel.MaxWidth = 0
-          BoundLabel.UseSkinColor = True
         end
         object edtStaff: TsEdit
           Left = 773
@@ -984,7 +909,7 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
           BorderStyle = bsNone
           Color = clWhite
           Font.Charset = ANSI_CHARSET
-          Font.Color = 2302755
+          Font.Color = clBlack
           Font.Height = -11
           Font.Name = 'Courier New'
           Font.Style = []
@@ -992,15 +917,11 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
           ReadOnly = True
           TabOrder = 11
           SkinData.SkinSection = 'EDIT'
-          BoundLabel.Indent = 0
           BoundLabel.Font.Charset = DEFAULT_CHARSET
           BoundLabel.Font.Color = clWindowText
           BoundLabel.Font.Height = -13
           BoundLabel.Font.Name = 'Tahoma'
           BoundLabel.Font.Style = []
-          BoundLabel.Layout = sclLeft
-          BoundLabel.MaxWidth = 0
-          BoundLabel.UseSkinColor = True
         end
         object edtRefrence: TsEdit
           Left = 773
@@ -1011,7 +932,7 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
           BorderStyle = bsNone
           Color = clWhite
           Font.Charset = ANSI_CHARSET
-          Font.Color = 2302755
+          Font.Color = clBlack
           Font.Height = -11
           Font.Name = 'Courier New'
           Font.Style = []
@@ -1019,15 +940,11 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
           ReadOnly = True
           TabOrder = 12
           SkinData.SkinSection = 'EDIT'
-          BoundLabel.Indent = 0
           BoundLabel.Font.Charset = DEFAULT_CHARSET
           BoundLabel.Font.Color = clWindowText
           BoundLabel.Font.Height = -13
           BoundLabel.Font.Name = 'Tahoma'
           BoundLabel.Font.Style = []
-          BoundLabel.Layout = sclLeft
-          BoundLabel.MaxWidth = 0
-          BoundLabel.UseSkinColor = True
         end
       end
       object LMDSimplePanel1: TsPanel
@@ -1144,7 +1061,7 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
             BorderStyle = bsNone
             Color = clWhite
             Font.Charset = ANSI_CHARSET
-            Font.Color = 2302755
+            Font.Color = clBlack
             Font.Height = -11
             Font.Name = 'Courier New'
             Font.Style = []
@@ -1152,15 +1069,11 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
             ReadOnly = True
             TabOrder = 0
             SkinData.SkinSection = 'EDIT'
-            BoundLabel.Indent = 0
             BoundLabel.Font.Charset = DEFAULT_CHARSET
             BoundLabel.Font.Color = clWindowText
             BoundLabel.Font.Height = -13
             BoundLabel.Font.Name = 'Tahoma'
             BoundLabel.Font.Style = []
-            BoundLabel.Layout = sclLeft
-            BoundLabel.MaxWidth = 0
-            BoundLabel.UseSkinColor = True
           end
           object edtVat: TsEdit
             Left = 121
@@ -1171,7 +1084,7 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
             BorderStyle = bsNone
             Color = clWhite
             Font.Charset = ANSI_CHARSET
-            Font.Color = 2302755
+            Font.Color = clBlack
             Font.Height = -11
             Font.Name = 'Courier New'
             Font.Style = []
@@ -1179,15 +1092,11 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
             ReadOnly = True
             TabOrder = 1
             SkinData.SkinSection = 'EDIT'
-            BoundLabel.Indent = 0
             BoundLabel.Font.Charset = DEFAULT_CHARSET
             BoundLabel.Font.Color = clWindowText
             BoundLabel.Font.Height = -13
             BoundLabel.Font.Name = 'Tahoma'
             BoundLabel.Font.Style = []
-            BoundLabel.Layout = sclLeft
-            BoundLabel.MaxWidth = 0
-            BoundLabel.UseSkinColor = True
           end
           object edtInvoiceTotal: TsEdit
             Left = 121
@@ -1198,7 +1107,7 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
             BorderStyle = bsNone
             Color = clWhite
             Font.Charset = ANSI_CHARSET
-            Font.Color = 2302755
+            Font.Color = clBlack
             Font.Height = -11
             Font.Name = 'Courier New'
             Font.Style = []
@@ -1206,15 +1115,11 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
             ReadOnly = True
             TabOrder = 2
             SkinData.SkinSection = 'EDIT'
-            BoundLabel.Indent = 0
             BoundLabel.Font.Charset = DEFAULT_CHARSET
             BoundLabel.Font.Color = clWindowText
             BoundLabel.Font.Height = -13
             BoundLabel.Font.Name = 'Tahoma'
             BoundLabel.Font.Style = []
-            BoundLabel.Layout = sclLeft
-            BoundLabel.MaxWidth = 0
-            BoundLabel.UseSkinColor = True
           end
           object edtForeignCurrency: TsEdit
             Left = 115
@@ -1233,15 +1138,11 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
             TabOrder = 3
             Visible = False
             SkinData.SkinSection = 'EDIT'
-            BoundLabel.Indent = 0
             BoundLabel.Font.Charset = DEFAULT_CHARSET
             BoundLabel.Font.Color = clWindowText
             BoundLabel.Font.Height = -13
             BoundLabel.Font.Name = 'Tahoma'
             BoundLabel.Font.Style = []
-            BoundLabel.Layout = sclLeft
-            BoundLabel.MaxWidth = 0
-            BoundLabel.UseSkinColor = True
           end
           object edtPayments: TsEdit
             Left = 120
@@ -1252,7 +1153,7 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
             BorderStyle = bsNone
             Color = clWhite
             Font.Charset = ANSI_CHARSET
-            Font.Color = 2302755
+            Font.Color = clBlack
             Font.Height = -11
             Font.Name = 'Courier New'
             Font.Style = []
@@ -1260,15 +1161,11 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
             ReadOnly = True
             TabOrder = 4
             SkinData.SkinSection = 'EDIT'
-            BoundLabel.Indent = 0
             BoundLabel.Font.Charset = DEFAULT_CHARSET
             BoundLabel.Font.Color = clWindowText
             BoundLabel.Font.Height = -13
             BoundLabel.Font.Name = 'Tahoma'
             BoundLabel.Font.Style = []
-            BoundLabel.Layout = sclLeft
-            BoundLabel.MaxWidth = 0
-            BoundLabel.UseSkinColor = True
           end
         end
         object LMDSimplePanel2: TsPanel
@@ -1293,8 +1190,8 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
             object LMDSimpleLabel1: TsLabel
               Left = 0
               Top = 0
-              Width = 338
-              Height = 21
+              Width = 80
+              Height = 13
               Align = alClient
               Alignment = taCenter
               Caption = 'VAT Summary'
@@ -1307,8 +1204,6 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
               Font.Height = -11
               Font.Name = 'Tahoma'
               Font.Style = [fsBold]
-              ExplicitWidth = 80
-              ExplicitHeight = 13
             end
           end
           object agrVSK: TAdvStringGrid
@@ -1365,6 +1260,16 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
             FilterDropDown.Font.Name = 'Tahoma'
             FilterDropDown.Font.Style = []
             FilterDropDownClear = '(All)'
+            FilterEdit.TypeNames.Strings = (
+              'Starts with'
+              'Ends with'
+              'Contains'
+              'Not contains'
+              'Equal'
+              'Not equal'
+              'Larger than'
+              'Smaller than'
+              'Clear')
             FixedRowHeight = 18
             FixedFont.Charset = DEFAULT_CHARSET
             FixedFont.Color = clWindowText
@@ -1372,6 +1277,10 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
             FixedFont.Name = 'Tahoma'
             FixedFont.Style = [fsBold]
             FloatFormat = '%.2f'
+            HoverButtons.Buttons = <>
+            HoverButtons.Position = hbLeftFromColumnLeft
+            HTMLSettings.ImageFolder = 'images'
+            HTMLSettings.ImageBaseName = 'img'
             PrintSettings.DateFormat = 'dd/mm/yyyy'
             PrintSettings.Font.Charset = DEFAULT_CHARSET
             PrintSettings.Font.Color = clWindowText
@@ -1408,7 +1317,8 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
             SearchFooter.HintFindPrev = 'Find previous occurence'
             SearchFooter.HintHighlight = 'Highlight occurences'
             SearchFooter.MatchCaseCaption = 'Match case'
-            Version = '6.2.7.0'
+            SortSettings.DefaultFormat = ssAutomatic
+            Version = '7.8.9.0'
             RowHeights = (
               18
               21
@@ -1437,8 +1347,8 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
             object LMDSimpleLabel2: TsLabel
               Left = 0
               Top = 0
-              Width = 343
-              Height = 21
+              Width = 109
+              Height = 13
               Align = alClient
               Alignment = taCenter
               Caption = 'Payment Summary'
@@ -1451,8 +1361,6 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
               Font.Height = -11
               Font.Name = 'Tahoma'
               Font.Style = [fsBold]
-              ExplicitWidth = 109
-              ExplicitHeight = 13
             end
           end
           object agrPayments: TAdvStringGrid
@@ -1509,6 +1417,16 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
             FilterDropDown.Font.Name = 'Tahoma'
             FilterDropDown.Font.Style = []
             FilterDropDownClear = '(All)'
+            FilterEdit.TypeNames.Strings = (
+              'Starts with'
+              'Ends with'
+              'Contains'
+              'Not contains'
+              'Equal'
+              'Not equal'
+              'Larger than'
+              'Smaller than'
+              'Clear')
             FixedRowHeight = 19
             FixedFont.Charset = DEFAULT_CHARSET
             FixedFont.Color = clWindowText
@@ -1516,6 +1434,10 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
             FixedFont.Name = 'Tahoma'
             FixedFont.Style = [fsBold]
             FloatFormat = '%.2f'
+            HoverButtons.Buttons = <>
+            HoverButtons.Position = hbLeftFromColumnLeft
+            HTMLSettings.ImageFolder = 'images'
+            HTMLSettings.ImageBaseName = 'img'
             PrintSettings.DateFormat = 'dd/mm/yyyy'
             PrintSettings.Font.Charset = DEFAULT_CHARSET
             PrintSettings.Font.Color = clWindowText
@@ -1552,7 +1474,8 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
             SearchFooter.HintFindPrev = 'Find previous occurence'
             SearchFooter.HintHighlight = 'Highlight occurences'
             SearchFooter.MatchCaseCaption = 'Match case'
-            Version = '6.2.7.0'
+            SortSettings.DefaultFormat = ssAutomatic
+            Version = '7.8.9.0'
             RowHeights = (
               19
               21
@@ -1613,6 +1536,16 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
         FilterDropDown.Font.Name = 'Tahoma'
         FilterDropDown.Font.Style = []
         FilterDropDownClear = '(All)'
+        FilterEdit.TypeNames.Strings = (
+          'Starts with'
+          'Ends with'
+          'Contains'
+          'Not contains'
+          'Equal'
+          'Not equal'
+          'Larger than'
+          'Smaller than'
+          'Clear')
         FixedRowHeight = 19
         FixedFont.Charset = ANSI_CHARSET
         FixedFont.Color = clWindowText
@@ -1620,6 +1553,10 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
         FixedFont.Name = 'Tahoma'
         FixedFont.Style = [fsBold]
         FloatFormat = '%.2f'
+        HoverButtons.Buttons = <>
+        HoverButtons.Position = hbLeftFromColumnLeft
+        HTMLSettings.ImageFolder = 'images'
+        HTMLSettings.ImageBaseName = 'img'
         PrintSettings.DateFormat = 'dd/mm/yyyy'
         PrintSettings.Font.Charset = DEFAULT_CHARSET
         PrintSettings.Font.Color = clWindowText
@@ -1656,7 +1593,8 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
         SearchFooter.HintFindPrev = 'Find previous occurence'
         SearchFooter.HintHighlight = 'Highlight occurences'
         SearchFooter.MatchCaseCaption = 'Match case'
-        Version = '6.2.7.0'
+        SortSettings.DefaultFormat = ssAutomatic
+        Version = '7.8.9.0'
         RowHeights = (
           19
           21

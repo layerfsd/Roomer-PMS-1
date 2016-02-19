@@ -1172,6 +1172,11 @@ begin
   constants.Add('shTx_AboutRoomer_NewVersionAvailableExpired', 'There is a new version of ROOMER available (%s).' + #13 +
                                     'You have already ignored the update %d times, but ROOMER needs to be immediately updated.' + #13#13 +
                                     'Click [OK] to start the update.');
+  constants.Add('shTx_AboutRoomer_NewVersionAvailableExpireWarning', 'There is a new version of ROOMER available (%s).' + #13 +
+                                    'You have already ignored the update %d times! You will only get %d more possibilities to ignore.' + #13 +
+                                    'After that ROOMER will stop working on the old version.' + #13#13 +
+                                    'Click [OK] to start the update.' + #13 +
+                                    'Click [Cancel] to update later');
   constants.Add('shTx_Utils_EnterLogin', 'Please enter a login.');
   constants.Add('shTx_Utils_MustEnterPassword', 'Password can''t be empty.You must enter a password.');
   constants.Add('shTx_Utils_CannotClipboard', 'Cannot set clipboard');

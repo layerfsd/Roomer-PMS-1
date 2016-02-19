@@ -15,7 +15,7 @@ object FrmRateQuery: TFrmRateQuery
   OnDestroy = FormDestroy
   PixelsPerInch = 96
   TextHeight = 13
-  object pnlHolder: TsPanel
+  object pnlHolder: TPanel
     Left = 0
     Top = 0
     Width = 826
@@ -23,8 +23,7 @@ object FrmRateQuery: TFrmRateQuery
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 0
-    SkinData.SkinSection = 'PANEL'
-    object pnlTop: TsPanel
+    object pnlTop: TPanel
       Left = 0
       Top = 0
       Width = 826
@@ -32,8 +31,7 @@ object FrmRateQuery: TFrmRateQuery
       Align = alTop
       BevelOuter = bvNone
       TabOrder = 0
-      SkinData.SkinSection = 'PANEL'
-      object lblArrival: TsLabel
+      object lblArrival: TLabel
         Left = 77
         Top = 27
         Width = 35
@@ -41,7 +39,7 @@ object FrmRateQuery: TFrmRateQuery
         Alignment = taRightJustify
         Caption = 'Arrival:'
       end
-      object sLabel1: TsLabel
+      object sLabel1: TLabel
         Left = 59
         Top = 81
         Width = 53
@@ -49,7 +47,7 @@ object FrmRateQuery: TFrmRateQuery
         Alignment = taRightJustify
         Caption = 'Departure:'
       end
-      object sLabel2: TsLabel
+      object sLabel2: TLabel
         Left = 78
         Top = 54
         Width = 34
@@ -57,7 +55,7 @@ object FrmRateQuery: TFrmRateQuery
         Alignment = taRightJustify
         Caption = 'Nights:'
       end
-      object sLabel3: TsLabel
+      object sLabel3: TLabel
         Left = 66
         Top = 108
         Width = 46
@@ -66,7 +64,7 @@ object FrmRateQuery: TFrmRateQuery
         Caption = 'Mealplan:'
         Visible = False
       end
-      object sLabel4: TsLabel
+      object sLabel4: TLabel
         Left = 324
         Top = 27
         Width = 36
@@ -75,7 +73,7 @@ object FrmRateQuery: TFrmRateQuery
         Caption = 'Rooms:'
         Visible = False
       end
-      object sLabel5: TsLabel
+      object sLabel5: TLabel
         Left = 326
         Top = 54
         Width = 34
@@ -84,7 +82,7 @@ object FrmRateQuery: TFrmRateQuery
         Caption = 'Adults:'
         Visible = False
       end
-      object sLabel6: TsLabel
+      object sLabel6: TLabel
         Left = 677
         Top = 81
         Width = 43
@@ -93,7 +91,7 @@ object FrmRateQuery: TFrmRateQuery
         Caption = 'Children:'
         Visible = False
       end
-      object sLabel7: TsLabel
+      object sLabel7: TLabel
         Left = 681
         Top = 108
         Width = 39
@@ -102,7 +100,7 @@ object FrmRateQuery: TFrmRateQuery
         Caption = 'Infants:'
         Visible = False
       end
-      object sLabel8: TsLabel
+      object sLabel8: TLabel
         Left = 549
         Top = 27
         Width = 66
@@ -110,7 +108,7 @@ object FrmRateQuery: TFrmRateQuery
         Alignment = taRightJustify
         Caption = 'Display rates:'
       end
-      object sLabel9: TsLabel
+      object sLabel9: TLabel
         Left = 317
         Top = 81
         Width = 43
@@ -118,40 +116,29 @@ object FrmRateQuery: TFrmRateQuery
         Alignment = taRightJustify
         Caption = 'Channel:'
       end
-      object edNights: TsSpinEdit
+      object edNights: TSpinEdit
         Left = 132
         Top = 51
         Width = 65
-        Height = 21
+        Height = 22
         Color = clWhite
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
-        NumbersOnly = True
+        MaxValue = 365
+        MinValue = 1
         ParentFont = False
         TabOrder = 1
-        SkinData.SkinSection = 'EDIT'
-        BoundLabel.Font.Charset = DEFAULT_CHARSET
-        BoundLabel.Font.Color = clWindowText
-        BoundLabel.Font.Height = -13
-        BoundLabel.Font.Name = 'Tahoma'
-        BoundLabel.Font.Style = []
-        OnDownClick = edNightsDownClick
-        OnUpClick = edNightsUpClick
-        MaxValue = 365
-        MinValue = 0
         Value = 0
+        OnChange = edNightsChange
       end
-      object sComboBox1: TsComboBox
+      object sComboBox1: TComboBox
         Left = 132
         Top = 105
         Width = 109
         Height = 21
-        Alignment = taLeftJustify
-        SkinData.SkinSection = 'COMBOBOX'
-        VerticalAlignment = taAlignTop
         Color = clWhite
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clBlack
@@ -169,103 +156,75 @@ object FrmRateQuery: TFrmRateQuery
           'Halfboard'
           'Fullboard')
       end
-      object sSpinEdit1: TsSpinEdit
+      object sSpinEdit1: TSpinEdit
         Left = 380
         Top = 24
         Width = 65
-        Height = 21
-        Color = clWhite
+        Height = 22
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = clBlack
+        Font.Color = clWindowText
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
-        ParentFont = False
-        TabOrder = 3
-        Visible = False
-        SkinData.SkinSection = 'EDIT'
-        BoundLabel.Font.Charset = DEFAULT_CHARSET
-        BoundLabel.Font.Color = clWindowText
-        BoundLabel.Font.Height = -13
-        BoundLabel.Font.Name = 'Tahoma'
-        BoundLabel.Font.Style = []
         MaxValue = 365
         MinValue = 1
-        Value = 0
+        ParentFont = False
+        TabOrder = 3
+        Value = 1
+        Visible = False
       end
-      object sSpinEdit2: TsSpinEdit
+      object sSpinEdit2: TSpinEdit
         Left = 380
         Top = 51
         Width = 65
-        Height = 21
-        Color = clWhite
+        Height = 22
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = clBlack
+        Font.Color = clWindowText
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
-        ParentFont = False
-        TabOrder = 4
-        Visible = False
-        SkinData.SkinSection = 'EDIT'
-        BoundLabel.Font.Charset = DEFAULT_CHARSET
-        BoundLabel.Font.Color = clWindowText
-        BoundLabel.Font.Height = -13
-        BoundLabel.Font.Name = 'Tahoma'
-        BoundLabel.Font.Style = []
         MaxValue = 365
         MinValue = 1
-        Value = 0
+        ParentFont = False
+        TabOrder = 4
+        Value = 1
+        Visible = False
       end
-      object sSpinEdit3: TsSpinEdit
+      object sSpinEdit3: TSpinEdit
         Left = 740
         Top = 78
         Width = 65
-        Height = 21
-        Color = clWhite
+        Height = 22
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = clBlack
+        Font.Color = clWindowText
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
-        ParentFont = False
-        TabOrder = 5
-        Visible = False
-        SkinData.SkinSection = 'EDIT'
-        BoundLabel.Font.Charset = DEFAULT_CHARSET
-        BoundLabel.Font.Color = clWindowText
-        BoundLabel.Font.Height = -13
-        BoundLabel.Font.Name = 'Tahoma'
-        BoundLabel.Font.Style = []
         MaxValue = 365
         MinValue = 1
-        Value = 0
+        ParentFont = False
+        TabOrder = 5
+        Value = 1
+        Visible = False
       end
-      object sSpinEdit4: TsSpinEdit
+      object sSpinEdit4: TSpinEdit
         Left = 740
         Top = 105
         Width = 65
-        Height = 21
-        Color = clWhite
+        Height = 22
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = clBlack
+        Font.Color = clWindowText
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
-        ParentFont = False
-        TabOrder = 6
-        Visible = False
-        SkinData.SkinSection = 'EDIT'
-        BoundLabel.Font.Charset = DEFAULT_CHARSET
-        BoundLabel.Font.Color = clWindowText
-        BoundLabel.Font.Height = -13
-        BoundLabel.Font.Name = 'Tahoma'
-        BoundLabel.Font.Style = []
         MaxValue = 365
         MinValue = 1
-        Value = 0
+        ParentFont = False
+        TabOrder = 6
+        Value = 1
+        Visible = False
       end
-      object rbTotal: TsRadioButton
+      object rbTotal: TRadioButton
         Left = 549
         Top = 52
         Width = 75
@@ -275,9 +234,8 @@ object FrmRateQuery: TFrmRateQuery
         TabOrder = 8
         TabStop = True
         OnClick = rbTotalClick
-        SkinData.SkinSection = 'CHECKBOX'
       end
-      object rbAverage: TsRadioButton
+      object rbAverage: TRadioButton
         Left = 549
         Top = 77
         Width = 127
@@ -285,9 +243,8 @@ object FrmRateQuery: TFrmRateQuery
         Caption = 'Average nightly rate'
         TabOrder = 7
         OnClick = rbTotalClick
-        SkinData.SkinSection = 'CHECKBOX'
       end
-      object btnRefresh: TsButton
+      object btnRefresh: TButton
         Left = 380
         Top = 103
         Width = 75
@@ -296,23 +253,18 @@ object FrmRateQuery: TFrmRateQuery
         Default = True
         TabOrder = 0
         OnClick = btnRefreshClick
-        SkinData.SkinSection = 'BUTTON'
       end
-      object cbxChannels: TsComboBox
+      object cbxChannels: TComboBox
         Left = 380
         Top = 78
         Width = 110
         Height = 21
-        Alignment = taLeftJustify
-        SkinData.SkinSection = 'COMBOBOX'
-        VerticalAlignment = taAlignTop
         Color = clWhite
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
-        ItemIndex = -1
         ParentFont = False
         TabOrder = 9
         Text = 'cbxChannels'

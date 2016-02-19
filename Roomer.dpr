@@ -198,7 +198,8 @@ uses
   uRoomerContainerClasses in 'uRoomerContainerClasses.pas',
   uAvailabilityPerDay in 'AvailabilityManagement\uAvailabilityPerDay.pas',
   uInvoiceController in 'Invoice\uInvoiceController.pas',
-  OfflineReportGenerator in 'OfflineReports\OfflineReportGenerator.pas';
+  OfflineReportGenerator in 'OfflineReports\OfflineReportGenerator.pas',
+  VersionInfo in 'Extras\VersionInfo.pas';
 
 {$R *.RES}
 

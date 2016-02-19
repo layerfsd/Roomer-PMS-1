@@ -140,6 +140,9 @@ procedure SetFormTopmostOff(Form : TForm);
 
 function GetEnumAsString(enum : PTypeInfo; value : Integer) : String;
 
+function JoinStrings(list : TStrings; Delimiter : Char; QuoteChar : Char = '''') : String;
+procedure SplitString(text : String; list : TStrings; Delimiter : Char; QuoteChar : Char = '''');
+
 var SystemDecimalSeparator : char;
 
 
@@ -147,6 +150,22 @@ implementation
 
 uses System.SysUtils, clipbrd{$IFNDEF RBE_BUILD}, PrjConst{$ENDIF};
 
+function JoinStrings(list : TStrings; Delimiter : Char; QuoteChar : Char = '''') : String;
+begin
+  list.Delimiter := Delimiter;
+  list.QuoteChar := QuoteChar;
+  result := list.CommaText;
+end;
+
+procedure SplitString(text : String; list : TStrings; Delimiter : Char; QuoteChar : Char = '''');
+begin
+  Assert(Assigned(list));
+  list.Clear;
+  list.Delimiter := Delimiter;
+  list.QuoteChar := QuoteChar;
+  list.StrictDelimiter := True; // needed otherwise whitespace is used to delimit
+  list.DelimitedText := text;
+end;
 
 procedure LoadRichEditFromString(RichEdit : TsRichEdit; text : AnsiString);
 var stream : TMemoryStream;

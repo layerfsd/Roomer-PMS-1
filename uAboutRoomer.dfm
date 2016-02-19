@@ -87,7 +87,7 @@ object frmAboutRoomer: TfrmAboutRoomer
   end
   object sLabel1: TsLabel
     Left = 42
-    Top = 372
+    Top = 371
     Width = 39
     Height = 13
     Margins.Left = 2
@@ -447,7 +447,7 @@ object frmAboutRoomer: TfrmAboutRoomer
     Font.Style = [fsUnderline]
     UseSkinColor = False
     HoverFont.Charset = DEFAULT_CHARSET
-    HoverFont.Color = clWindowText
+    HoverFont.Color = clYellow
     HoverFont.Height = -13
     HoverFont.Name = 'Tahoma'
     HoverFont.Style = []
@@ -469,7 +469,7 @@ object frmAboutRoomer: TfrmAboutRoomer
     Font.Style = [fsUnderline]
     UseSkinColor = False
     HoverFont.Charset = DEFAULT_CHARSET
-    HoverFont.Color = clWindowText
+    HoverFont.Color = clYellow
     HoverFont.Height = -13
     HoverFont.Name = 'Tahoma'
     HoverFont.Style = []
@@ -493,7 +493,7 @@ object frmAboutRoomer: TfrmAboutRoomer
     Font.Style = [fsBold]
     UseSkinColor = False
   end
-  object sLabel5: TsLabel
+  object labExtraBuild: TsLabel
     Left = 306
     Top = 390
     Width = 131
@@ -505,6 +505,25 @@ object frmAboutRoomer: TfrmAboutRoomer
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWhite
     Font.Height = -13
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    UseSkinColor = False
+  end
+  object labExtraBuildText: TsLabel
+    Left = 296
+    Top = 371
+    Width = 55
+    Height = 13
+    Margins.Left = 2
+    Margins.Top = 2
+    Margins.Right = 2
+    Margins.Bottom = 2
+    Caption = 'Extra build:'
+    ParentFont = False
+    OnClick = btnCloseClick
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clSilver
+    Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = []
     UseSkinColor = False

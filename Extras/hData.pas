@@ -11389,8 +11389,8 @@ function UPD_DayNotes(var rec: recDayNotesHolder) : Boolean;
 var sql: String;
 begin
   with rec do
-    sql := format('UPDATE daynotes SET date=''%s'', notes=''%s'', action=''%s'', lastChangedBy=''%s'' WHERE id=%d',
-          [uDateUtils.dateToSqlString(ADate), Notes, AAction, user, id]);
+    sql := format('UPDATE daynotes SET date=''%s'', notes=%s, action=''%s'', lastChangedBy=%s WHERE id=%d',
+          [uDateUtils.dateToSqlString(ADate), _db(Notes), AAction, _db(user), id]);
   try
     d.roomerMainDataSet.DoCommand(sql);
     result := True;
@@ -11403,8 +11403,8 @@ function INS_DayNotes(var rec: recDayNotesHolder; var newId : Integer) : Boolean
 var sql: String;
 begin
   with rec do
-    sql := format('INSERT INTO daynotes (user, date, notes, action, lastChangedBy) VALUES(''%s'', ''%s'', ''%s'', ''%s'', ''%s'')',
-          [user, uDateUtils.dateToSqlString(ADate), Notes, AAction, user]);
+    sql := format('INSERT INTO daynotes (user, date, notes, action, lastChangedBy) VALUES(%s, ''%s'', %s, ''%s'', %s)',
+          [_db(user), uDateUtils.dateToSqlString(ADate), _db(Notes), AAction, _db(user)]);
   try
     newId := d.roomerMainDataSet.DoCommand(sql);
     result := True;

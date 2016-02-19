@@ -36,12 +36,12 @@ object FrmEmailingDialog: TFrmEmailingDialog
       Caption = 'Email of recipient:'
     end
     object sLabel2: TsLabel
-      Left = 76
+      Left = 75
       Top = 38
-      Width = 64
+      Width = 65
       Height = 13
       Alignment = taRightJustify
-      Caption = 'Carboc copy:'
+      Caption = 'Carbon copy:'
     end
     object sLabel3: TsLabel
       Left = 52
@@ -295,50 +295,59 @@ object FrmEmailingDialog: TFrmEmailingDialog
       Visible = False
       SkinData.SkinSection = 'CHECKBOX'
     end
-    object edRecipient: TsEdit
+    object edRecipient: TsComboBox
       Left = 146
       Top = 8
       Width = 460
       Height = 21
+      Alignment = taLeftJustify
+      SkinData.SkinSection = 'EDIT'
+      VerticalAlignment = taAlignTop
       Color = clWhite
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = 2302755
+      Font.Color = clBlack
       Font.Height = -11
       Font.Name = 'Tahoma'
       Font.Style = []
+      ItemIndex = -1
       ParentFont = False
       TabOrder = 0
-      SkinData.SkinSection = 'EDIT'
     end
-    object edCC: TsEdit
+    object edCC: TsComboBox
       Left = 146
       Top = 35
       Width = 460
       Height = 21
+      Alignment = taLeftJustify
+      SkinData.SkinSection = 'EDIT'
+      VerticalAlignment = taAlignTop
       Color = clWhite
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = 2302755
+      Font.Color = clBlack
       Font.Height = -11
       Font.Name = 'Tahoma'
       Font.Style = []
+      ItemIndex = -1
       ParentFont = False
       TabOrder = 1
-      SkinData.SkinSection = 'EDIT'
     end
-    object edBCC: TsEdit
+    object edBCC: TsComboBox
       Left = 146
       Top = 62
       Width = 460
       Height = 21
+      Alignment = taLeftJustify
+      SkinData.SkinSection = 'EDIT'
+      VerticalAlignment = taAlignTop
       Color = clWhite
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = 2302755
+      Font.Color = clBlack
       Font.Height = -11
       Font.Name = 'Tahoma'
       Font.Style = []
+      ItemIndex = -1
       ParentFont = False
       TabOrder = 2
-      SkinData.SkinSection = 'EDIT'
     end
     object edSubject: TsEdit
       Left = 146
@@ -347,7 +356,7 @@ object FrmEmailingDialog: TFrmEmailingDialog
       Height = 21
       Color = clWhite
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = 2302755
+      Font.Color = clBlack
       Font.Height = -11
       Font.Name = 'Tahoma'
       Font.Style = []
@@ -366,7 +375,7 @@ object FrmEmailingDialog: TFrmEmailingDialog
       Style = csDropDownList
       Color = clWhite
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = 2302755
+      Font.Color = clBlack
       Font.Height = -11
       Font.Name = 'Tahoma'
       Font.Style = []
@@ -403,13 +412,14 @@ object FrmEmailingDialog: TFrmEmailingDialog
         HelpContext = 2
         Caption = 'Send'
         Default = True
+        ModalResult = 1
         TabOrder = 0
         OnClick = sButton1Click
         SkinData.SkinSection = 'BUTTON'
       end
       object sButton2: TsButton
         Left = 123
-        Top = 8
+        Top = 6
         Width = 117
         Height = 25
         Cancel = True
@@ -428,7 +438,7 @@ object FrmEmailingDialog: TFrmEmailingDialog
     Align = alClient
     Color = clWhite
     Font.Charset = DEFAULT_CHARSET
-    Font.Color = 2302755
+    Font.Color = clBlack
     Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = []
