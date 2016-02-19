@@ -31,6 +31,7 @@ type
     procedure FormShow(Sender: TObject);
     procedure btnOpenReportClick(Sender: TObject);
     procedure agrReportsDblClickCell(Sender: TObject; ARow, ACol: Integer);
+    procedure FormCreate(Sender: TObject);
   private
     FFileList: TStringlist;
     FOffline: boolean;
@@ -48,6 +49,12 @@ type
     property RoomerOffline: boolean read FOffline write SetOffline;
   end;
 
+const
+  cshTx_OflineReports_OfflineMessage = 'shTx_OflineReports_OfflineMessage';
+  cshTx_OflineReports_NameHeader     = 'shTx_OflineReports_NameHeader';
+  cshTx_OflineReports_DateGenHeader  = 'shTx_OflineReports_DateGenHeader';
+
+
 implementation
 
 uses
@@ -58,14 +65,15 @@ uses
   ShellAPI,
   uDateUtils,
   uAppGlobal,
-  Math
+  Math,
+  PrjConst
   ;
 
 {$R *.dfm}
 
 const
   cTopPanelColor: array[boolean] of TColor = (clBtnFace, clRed);
-  cTopPanelCaption: array[Boolean] of string = ('', 'No connection with Roomer, working offline');
+  cTopPanelCaption: array[Boolean] of string = ('', 'shTx_OflineReports_OfflineMessage');
 
 function SortByDateDesc(List: TStringList; Index1, Index2: Integer): Integer;
 var
@@ -103,6 +111,7 @@ begin
       end;
 
       AutoSizeColumns(False);
+      AutoSizeRows(False);
 
     finally
       EndUpdate;
@@ -114,8 +123,8 @@ procedure TfrmOfflineReports.UpdateGridHeader;
 begin
   with agrReports do
   begin
-    Cells[0,0] := 'Report Name';
-    Cells[0,1] := 'Date generated';
+    Cells[0,0] := GetTranslatedText(cshTx_OflineReports_NameHeader);
+    Cells[1,0] := GetTranslatedText(cshTx_OflineReports_DateGenHeader);
   end;
 
 end;
@@ -130,6 +139,11 @@ procedure TfrmOfflineReports.btnOpenReportClick(Sender: TObject);
 begin
   if InRange(agrReports.Row, 1, FFileList.Count) then
     OpenReport(FFileList[agrReports.Row-1]);
+end;
+
+procedure TfrmOfflineReports.FormCreate(Sender: TObject);
+begin
+  RoomerLanguage.TranslateThisForm(self);
 end;
 
 constructor TfrmOfflineReports.Create(aOwner: TComponent);
@@ -168,7 +182,7 @@ begin
     FUpdatingControls := True;
 
     pnlTop.Color := cTopPanelColor[FOffline];
-    pnlTop.Caption := cTopPanelCaption[FOffLine];
+    pnlTop.Caption := GetTranslatedText(cTopPanelCaption[FOffLine]);
 
     UpdateGrid;
   finally

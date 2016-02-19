@@ -177,7 +177,7 @@ uses uAppGlobal,
   uAlertEditPanel,
   uFrmCustomerDepartmentEdit
 
-  ;
+  , uOfflineReportGrid;
 
 
 Type
@@ -1509,6 +1509,13 @@ begin
                 'After conversion though, the report will not work correctly in the older version of ROOMER PMS.');
 end;
 
+procedure AddConstants_OfflineReports;
+begin
+  constants.Add(cshTx_OflineReports_NameHeader, 'Report name');
+  constants.Add(cshTx_OflineReports_DateGenHeader, 'Date Generated');
+  constants.Add(cshTx_OflineReports_OfflineMessage,   'No connection with Roomer, working offline');
+end;
+
 procedure prepareConstants;
 begin
   constants := TDictionary<String, String>.Create(TCustomEqualityComparer.Create());
@@ -1522,6 +1529,7 @@ begin
   AddConstants_CLang;
   AddConstants_6;
   AddConstants_7;
+  AddConstants_OfflineReports;
 
   AddConstants_SystemConstants;
   AddConstants_NewUIConstants;
@@ -1723,6 +1731,8 @@ begin
   FrmRateQuery := TFrmRateQuery.Create(nil);
   RoomerLanguage.TranslateThisForm(FrmRateQuery);
   FrmRateQuery.Free; FrmRateQuery := nil;
+
+  TfrmOfflineReports.Create(nil).Free;
 
 end;
 

@@ -10,7 +10,7 @@ uses
   ;
 
 type
-  // A base definition of a Offline report, actual implementations should be derived from this abstract class
+  // A base definition of an Offline report, actual implementations should be derived from this abstract class
   TOfflineReport = class abstract(TBaseDBThread)
   private
     FDesign: TBaseOfflineReportDesign;
@@ -19,7 +19,9 @@ type
     FDateTime: TDatetime;
     FSQL: string;
 
+    // User friendly name of the report used a.o. in the resulting filename and the grid displaying the available offline reports
     class function ReportName: string; virtual; abstract;
+
     // Reference to the designclass that contains the actrual report design and will be used to generate the report
     class function ReportDesign: TOfflinereportDesignClass; virtual; abstract;
 
@@ -38,7 +40,6 @@ type
   end;
 
   TOfflineReportClass = class of TOffLineReport;
-  TOfflinereportClassArr = array of TOfflineReportClass;
 
 implementation
 

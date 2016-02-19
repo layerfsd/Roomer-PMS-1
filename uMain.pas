@@ -3026,9 +3026,7 @@ begin
   FrmMessagesTemplates := TFrmMessagesTemplates.Create(nil);
   FrmMessagesTemplates.pnlContainer.Parent := pnlNotifications;
 
-  StartHotel(true);
-
-  if NOT LoginCancelled then
+  if StartHotel(true) and NOT LoginCancelled then
   begin
     try
       frmDayNotes.edCurrentDate.Text := DateToStr(dtDate.Date);
@@ -3189,12 +3187,6 @@ begin
   if not aFirstLogin then
     g.ProcessAppIni(1);
 
-  for i := 0 to pageMainGrids.PageCount - 1 do
-  begin
-    pageMainGrids.TabHeight := 0;
-    pageMainGrids.Pages[i].TabVisible := false;
-  end;
-
   if aFirstLogin then
     HideRoomerSplash;
 
@@ -3202,9 +3194,6 @@ begin
   password := '';
   WrongLoginMessage := '';
   ExpiredMessage := '';
-
-  pageMainGrids.ActivePage := tabOneDayView;
-  ViewMode := vmOneDay;
 
   okLogin := false;
   tries := 0;
@@ -3224,75 +3213,82 @@ begin
 
   until okLogin OR lLoginFormCancelled OR (tries >= 15);
 
-  if not okLogin then
+  if not okLogin or lLoginFormCancelled then
   begin
     LoginCancelled := true;
     result := false;
-    Close;
     exit;
-  end
-  else
+  end;
+
+  if ForcefulRestart then
   begin
-    AddRoomerActivityLog(d.roomerMainDataSet.username,
-                         uActivityLogs.LOGIN,
-                         'Success',
-                         'User ' + d.roomerMainDataSet.username + ' successfully logged in.');
-    g.ProcessAppIni(0);
+    result := true;
+    exit;
+  end;
 
-    d.roomerMainDataSet.ApplicationID := g.qApplicationID;
-    d.roomerMainDataSet.AppSecret := g.qAppSecret;
-    d.roomerMainDataSet.AppKey := g.qAppKey;
+  if OffLineMode then
+  begin
 
-    if ForcefulRestart then
-    begin
-      result := true;
-      exit;
-    end;
-
-    if CheckForUpdatedRelease then
-    begin
-      LoginCancelled := true;
-      try
-        d.roomerMainDataSet.Logout;
-        lblUsername.Caption := 'N/A';
-      except
-      end;
-      result := false;
-      Close;
-      exit;
-    end;
-
-    if OffLineMode then
-    begin
-
-      with TfrmOfflineReports.Create(nil) do
-      try
-        RoomerOffline := True;
-        ShowModal;
-      finally
-        Free;
-      end;
-
-      Close;
-      Exit;
-    end;
-
+    with TfrmOfflineReports.Create(nil) do
     try
-      if AutoLogin = '' then
-      begin
-        prepareDependencyManager;
-        UpdateHotelsList;
-      end;
-
-      didPostProcess := true;
-      PostLoginProcess(AutoLogin = '');
-
-    except
-      on E: Exception do
-        MessageDlg(E.message, mtError, [mbOk], 0);
+      Result := false;
+      RoomerOffline := True;
+      ShowModal;
+    finally
+      Free;
     end;
 
-    initializeTaxes;
+    Exit;
+  end;
+
+  if CheckForUpdatedRelease then
+  begin
+    LoginCancelled := true;
+    try
+      d.roomerMainDataSet.Logout;
+      lblUsername.Caption := 'N/A';
+    except
+    end;
+    result := false;
+    exit;
+  end;
+
+
+  result := true;
+
+  AddRoomerActivityLog(d.roomerMainDataSet.username,
+                       uActivityLogs.LOGIN,
+                       'Success',
+                       'User ' + d.roomerMainDataSet.username + ' successfully logged in.');
+  g.ProcessAppIni(0);
+
+  d.roomerMainDataSet.ApplicationID := g.qApplicationID;
+  d.roomerMainDataSet.AppSecret := g.qAppSecret;
+  d.roomerMainDataSet.AppKey := g.qAppKey;
+
+  for i := 0 to pageMainGrids.PageCount - 1 do
+  begin
+    pageMainGrids.TabHeight := 0;
+    pageMainGrids.Pages[i].TabVisible := false;
+  end;
+
+  pageMainGrids.ActivePage := tabOneDayView;
+  ViewMode := vmOneDay;
+
+  try
+    if AutoLogin = '' then
+    begin
+      prepareDependencyManager;
+      UpdateHotelsList;
+    end;
+
+    didPostProcess := true;
+    PostLoginProcess(AutoLogin = '');
+
+  except
+    on E: Exception do
+      MessageDlg(E.message, mtError, [mbOk], 0);
+  end;
 
     result := true;
     lblHotelName.Caption := g.qHotelName;
@@ -3306,42 +3302,41 @@ begin
         MessageDlg(E.message, mtError, [mbOk], 0);
     end;
 
-    d.PrepareFixedTables;
 
-    if g.qUserLanguage <> tmpUserLang then
-    begin
-      g.ChangeLang(g.qUserLanguage, false);
-    end;
+  d.PrepareFixedTables;
 
-    d.Get_All_StatusAttributes;
-
-    g.qDebug1 := 'StartHotel(appstart : boolean);';
-
-    g.qUser := userName;
-
-    pageMainGrids.ActivePage := tabOneDayView;
-
-    d.ctrlGetGlobalValues;
-
-    cbxNameOrder.ItemIndex := g.qNameOrder;
-    cbxNameOrderPeriod.ItemIndex := g.qNameOrderPeriod;
-
-    d.chkInPosMonitor;
-    d.chkConfirmMonitor;
-
-    try
-      RestoreCurrentFont
-    except
-    end;
-    StartOneDay;
-
-    cbxNameOrder.ItemIndex := g.qNameOrder;
-    grOneDayRooms.DefaultRowHeight := g.qOneDayRowHeight;
-    g.updateCurrentGuestlist;
-
-    HideRoomerSplash;
-
+  if g.qUserLanguage <> tmpUserLang then
+  begin
+    g.ChangeLang(g.qUserLanguage, false);
   end;
+
+  d.Get_All_StatusAttributes;
+
+  g.qDebug1 := 'StartHotel(appstart : boolean);';
+
+  g.qUser := userName;
+
+  pageMainGrids.ActivePage := tabOneDayView;
+
+  d.ctrlGetGlobalValues;
+
+  cbxNameOrder.ItemIndex := g.qNameOrder;
+  cbxNameOrderPeriod.ItemIndex := g.qNameOrderPeriod;
+
+  d.chkInPosMonitor;
+  d.chkConfirmMonitor;
+
+  try
+    RestoreCurrentFont
+  except
+  end;
+  StartOneDay;
+
+  cbxNameOrder.ItemIndex := g.qNameOrder;
+  grOneDayRooms.DefaultRowHeight := g.qOneDayRowHeight;
+  g.updateCurrentGuestlist;
+
+  HideRoomerSplash;
 
   frmRoomerSplash.NilInternetEvents;
 

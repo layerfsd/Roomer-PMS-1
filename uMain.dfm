@@ -437,7 +437,7 @@ object frmMain: TfrmMain
         ImageIndex = 9
         SkinData.CustomColor = False
         SkinData.CustomFont = False
-        ExplicitWidth = 773
+        ExplicitWidth = 932
         object Panel3: TsPanel
           Left = 0
           Top = 0
@@ -447,7 +447,7 @@ object frmMain: TfrmMain
           BevelOuter = bvNone
           TabOrder = 0
           SkinData.SkinSection = 'TRANSPARENT'
-          ExplicitWidth = 773
+          ExplicitWidth = 932
           object rgrGroupreportStayType: TsRadioGroup
             Left = 2
             Top = 4
@@ -1310,6 +1310,8 @@ object frmMain: TfrmMain
           OnMoved = splitPeriodMoved
           Color = 6842472
           ParentColor = False
+          ExplicitTop = 159
+          ExplicitWidth = 773
         end
         object pnlPeriodNoRooms: TsPanel
           Left = 0
@@ -2448,7 +2450,7 @@ object frmMain: TfrmMain
         OnAnchorClick = mmoMessageAnchorClick
         Version = '1.9.2.2'
         ExplicitLeft = 87
-        ExplicitWidth = 1150
+        ExplicitTop = 6
       end
       object sPanel1: TsPanel
         Left = 3
@@ -3044,8 +3046,6 @@ object frmMain: TfrmMain
       SkinData.CustomColor = True
       SkinData.CustomFont = True
       SkinData.SkinSection = 'UNKNOWN'
-      ExplicitLeft = 6
-      ExplicitTop = 105
       object btnGoOnline: TsButton
         Left = 4
         Top = 3
@@ -24342,7 +24342,7 @@ object frmMain: TfrmMain
     Left = 928
     Top = 456
     Bitmap = {
-      494C010102000500040010001000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
+      494C0101020008003C1010001000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
       0000000000000000000000000000000000000000000000000000000000000000
       00000000000000000000000000000000000000000000484C4371617545C6729D

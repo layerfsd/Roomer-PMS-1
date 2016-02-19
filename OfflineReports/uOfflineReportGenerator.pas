@@ -40,6 +40,7 @@ var
 begin
   if assigned(FRegisteredReports) then
     for lReportClass in FRegisteredReports do
+      // Notice that Reportclass is derived from TTHread and has FreeOnterminate set to True
        lReportClass.Create(Now()).Start;
 end;
 

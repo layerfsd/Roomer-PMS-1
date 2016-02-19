@@ -14,6 +14,7 @@ object frmOfflineReports: TfrmOfflineReports
   OldCreateOrder = False
   Position = poScreenCenter
   Scaled = False
+  OnCreate = FormCreate
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
@@ -28,7 +29,7 @@ object frmOfflineReports: TfrmOfflineReports
     Color = clRed
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWhite
-    Font.Height = -16
+    Font.Height = -15
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
     ParentBackground = False
@@ -37,8 +38,6 @@ object frmOfflineReports: TfrmOfflineReports
     SkinData.CustomColor = True
     SkinData.CustomFont = True
     SkinData.SkinSection = 'UNKNOWN'
-    ExplicitTop = -2
-    ExplicitWidth = 635
     object btnOpenReport: TsButton
       Left = 7
       Top = 6
@@ -48,7 +47,7 @@ object frmOfflineReports: TfrmOfflineReports
       Default = True
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
-      Font.Height = -11
+      Font.Height = -15
       Font.Name = 'Segoe UI'
       Font.Style = []
       ImageIndex = 0
@@ -67,8 +66,6 @@ object frmOfflineReports: TfrmOfflineReports
     Align = alClient
     TabOrder = 1
     SkinData.SkinSection = 'PANEL'
-    ExplicitWidth = 635
-    ExplicitHeight = 280
     object agrReports: TAdvStringGrid
       AlignWithMargins = True
       Left = 4
@@ -83,7 +80,7 @@ object frmOfflineReports: TfrmOfflineReports
       FixedCols = 0
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
-      Font.Height = -9
+      Font.Height = -15
       Font.Name = 'Arial'
       Font.Style = []
       Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goDrawFocusSelected, goColSizing, goRowSelect]
@@ -135,7 +132,7 @@ object frmOfflineReports: TfrmOfflineReports
         'Smaller than'
         'Clear')
       FixedColWidth = 52
-      FixedRowHeight = 18
+      FixedRowHeight = 22
       FixedFont.Charset = DEFAULT_CHARSET
       FixedFont.Color = clWindowText
       FixedFont.Height = -11
@@ -188,11 +185,22 @@ object frmOfflineReports: TfrmOfflineReports
       SortSettings.DefaultFormat = ssAutomatic
       Version = '7.9.1.0'
       WordWrap = False
-      ExplicitWidth = 627
-      ExplicitHeight = 272
+      ExplicitLeft = 7
+      ExplicitTop = 2
       ColWidths = (
         52
         64)
+      RowHeights = (
+        22
+        18
+        18
+        18
+        18
+        18
+        18
+        18
+        18
+        18)
     end
   end
   object pnlButtons: TsPanel
@@ -203,7 +211,6 @@ object frmOfflineReports: TfrmOfflineReports
     Align = alBottom
     TabOrder = 2
     SkinData.SkinSection = 'PANEL'
-    ExplicitWidth = 635
     DesignSize = (
       659
       42)
@@ -216,12 +223,17 @@ object frmOfflineReports: TfrmOfflineReports
       Anchors = [akTop, akRight]
       Cancel = True
       Caption = 'Close'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -15
+      Font.Name = 'Segoe UI'
+      Font.Style = []
       ImageIndex = 27
       Images = DImages.PngImageList1
       ModalResult = 2
+      ParentFont = False
       TabOrder = 0
       SkinData.SkinSection = 'BUTTON'
-      ExplicitLeft = 539
     end
   end
 end

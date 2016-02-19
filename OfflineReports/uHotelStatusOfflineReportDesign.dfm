@@ -14,10 +14,12 @@ inherited HotelStatusOfflineReportDesign: THotelStatusOfflineReportDesign
     inherited Page1: TfrxReportPage
       inherited ReportTitle1: TfrxReportTitle
         inherited Memo2: TfrxMemoView
+          Left = 850.394250000000000000
           Memo.UTF8W = (
             '[frxDBDataset."CompanyID"] - [frxDBDataset."CompanyName"]')
         end
         inherited Memo3: TfrxMemoView
+          Left = 854.173780000000000000
           Top = 20.015770000000000000
           DisplayFormat.FormatStr = 'hh:mm'
           Memo.UTF8W = (
@@ -25,6 +27,7 @@ inherited HotelStatusOfflineReportDesign: THotelStatusOfflineReportDesign
         end
         inherited Memo5: TfrxMemoView
           Left = 3.779527559055120000
+          Top = 3.779530000000000000
           Width = 472.441250000000000000
           Height = 26.456710000000000000
           Memo.UTF8W = (
@@ -143,10 +146,12 @@ inherited HotelStatusOfflineReportDesign: THotelStatusOfflineReportDesign
       inherited PageFooter1: TfrxPageFooter
         Top = 279.685220000000000000
         inherited Memo1: TfrxMemoView
+          Top = 3.779530000000000000
           Memo.UTF8W = (
             '[Page#]')
         end
         inherited Memo4: TfrxMemoView
+          Top = 3.779530000000000000
           Memo.UTF8W = (
             'Printed: [Date]')
         end

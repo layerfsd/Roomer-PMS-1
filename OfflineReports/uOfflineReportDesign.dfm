@@ -175,8 +175,8 @@ object BaseOfflineReportDesign: TBaseOfflineReportDesign
     FitWindow = False
     CenterWindow = False
     PrintScaling = True
-    Left = 148
-    Top = 124
+    Left = 156
+    Top = 132
   end
   object kbmOfflineReportDS: TkbmMemTable
     Active = True
