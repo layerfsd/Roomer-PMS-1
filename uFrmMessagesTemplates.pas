@@ -187,11 +187,7 @@ begin
   begin
     idx := MessageIndex(MessageType, List[i]);
     if idx >= 0 then
-    begin
-      MessagePanel := MessageList[idx];
-//      MessagePanel.Free;
       MessageList.Delete(idx);
-    end;
   end;
 end;
 

@@ -62,7 +62,7 @@ begin
   with frxOfflineReport.EngineOptions do
   begin
     NewSilentMode := simReThrow;
-    DestroyForms := false;
+//    DestroyForms := false;
     { This property switches off the search through global list, which is not thread safe}
     UseGlobalDataSetList := False;
   end;

@@ -30,13 +30,15 @@ type
 
     // First fase in generating the offline report: should populate FRecordset with the data to print
     function PrepareData : Boolean; virtual;
-    //Second fase in generating the offline report: actual running the report and storing as .PDF file
+
+    //Second fase in generating the offline report: actual running the report and storing as .PDF file, using the
+    // Offlinereport design sepcified by ReportDesign class function
     procedure CreateReport; virtual;
+
     //Purge older report PDF files to leave only a recent collection of data
     procedure PurgeReports; virtual;
   public
     constructor Create(const aDate: TDateTime); overload; virtual;
-    destructor Destroy; override;
   end;
 
   TOfflineReportClass = class of TOffLineReport;
@@ -143,7 +145,6 @@ begin
       while (lFileList.Count > cReportFilesToKeep) do
       begin
         DeleteFile(lFileList[0]);
-        // TODO: Add avtivitylog when deletion has failed
         lFileList.Delete(0);
       end;
 

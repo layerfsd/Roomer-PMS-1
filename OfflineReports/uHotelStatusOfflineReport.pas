@@ -8,6 +8,7 @@ uses
   ;
 
 type
+  // Offline report shown the current hotel status
   THotelStatusReport = class(TOffLinereport)
   private
   protected
@@ -66,10 +67,6 @@ resourcestring
          'control co '
          + 'WHERE EXISTS((SELECT ADate FROM roomsdate WHERE RoomReservation=rr.RoomReservation AND ResFlag IN (''P'',''G'') AND ADate=''%s''))'
          ;
-
-{ THotelStatusReport }
-
-
 
 
 function THotelStatusReport.PrepareData: Boolean;
