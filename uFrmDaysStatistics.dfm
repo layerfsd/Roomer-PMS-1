@@ -13,6 +13,7 @@ object frmDaysStatistics: TfrmDaysStatistics
   KeyPreview = True
   OldCreateOrder = False
   Position = poDesigned
+  OnCreate = FormCreate
   OnKeyDown = FormKeyDown
   OnKeyPress = FormKeyPress
   PixelsPerInch = 96
@@ -486,7 +487,6 @@ object frmDaysStatistics: TfrmDaysStatistics
               SkinData.CustomColor = True
               SkinData.CustomFont = True
               SkinData.SkinSection = 'UNKNOWN'
-              ExplicitTop = -1
               object txtRoomType: TsLabel
                 Left = 11
                 Top = 4
@@ -768,8 +768,6 @@ object frmDaysStatistics: TfrmDaysStatistics
           SkinData.CustomColor = True
           SkinData.CustomFont = True
           SkinData.SkinSection = 'BARPANEL'
-          ExplicitLeft = 1
-          ExplicitTop = -3
           object sLabel1: TsLabel
             Left = 156
             Top = 8

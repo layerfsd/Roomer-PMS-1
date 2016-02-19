@@ -342,6 +342,8 @@ type
     function CreateNewDataset: TRoomerDataSet;
     procedure AssignPropertiesToDataSet(DataSet: TRoomerDataSet);
 
+    function CloneToRecordset: _RecordSet;
+
     function OfflineFilesAvailable(_hotelId : String = ''): Boolean;
 
    // For testing purposes...
@@ -422,6 +424,19 @@ end;
 
 const
   ROOMER_SPLIT: String = '[\ROOMER-SPLIT\]';
+
+function TRoomerDataSet.CloneToRecordset: _RecordSet;
+var
+  newRec: _Recordset;
+  stm: Stream;
+begin
+  newRec := CoRecordset.Create as _Recordset;
+  stm := CoStream.Create;
+  Recordset.Save(stm, adPersistADTG);
+  newRec.Open(stm, EmptyParam, CursorTypeEnum(adOpenUnspecified),
+      LockTypeEnum(adLockUnspecified), 0);
+  Result := newRec;
+end;
 
 constructor TRoomerDataSet.Create(AOwner: TComponent);
 begin
@@ -2425,6 +2440,7 @@ end;
 
 destructor TRoomerExecutionPlan.Destroy;
 begin
+  FRoomerDataset := nil;
   queryResults.Free;
   sqlList.Free;
   inherited;

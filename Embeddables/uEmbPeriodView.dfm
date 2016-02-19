@@ -21,10 +21,6 @@ object embPeriodView: TembPeriodView
     Align = alClient
     TabOrder = 0
     SkinData.SkinSection = 'TRANSPARENT'
-    ExplicitLeft = 240
-    ExplicitTop = 96
-    ExplicitWidth = 185
-    ExplicitHeight = 41
     object lblLoading: TsLabel
       Left = 1
       Top = 1
@@ -66,8 +62,7 @@ object embPeriodView: TembPeriodView
       Font.Name = 'Tahoma'
       Font.Style = [fsBold]
       UseSkinColor = False
-      ExplicitLeft = 0
-      ExplicitTop = 6
+      ExplicitWidth = 27
     end
     object grPeriodRooms: TAdvStringGrid
       Tag = 1
@@ -140,6 +135,16 @@ object embPeriodView: TembPeriodView
       FilterDropDown.Font.Name = 'Tahoma'
       FilterDropDown.Font.Style = []
       FilterDropDownClear = '(All)'
+      FilterEdit.TypeNames.Strings = (
+        'Starts with'
+        'Ends with'
+        'Contains'
+        'Not contains'
+        'Equal'
+        'Not equal'
+        'Larger than'
+        'Smaller than'
+        'Clear')
       FixedColWidth = 73
       FixedRowHeight = 18
       FixedFont.Charset = DEFAULT_CHARSET
@@ -149,6 +154,10 @@ object embPeriodView: TembPeriodView
       FixedFont.Style = [fsBold]
       Flat = True
       FloatFormat = '%.2f'
+      HoverButtons.Buttons = <>
+      HoverButtons.Position = hbLeftFromColumnLeft
+      HTMLSettings.ImageFolder = 'images'
+      HTMLSettings.ImageBaseName = 'img'
       Look = glSoft
       MouseActions.AllColumnSize = True
       MouseActions.AllRowSize = True
@@ -220,8 +229,8 @@ object embPeriodView: TembPeriodView
       SelectionColor = clHighlight
       SelectionTextColor = clHighlightText
       SizeWhileTyping.Height = True
-      Version = '6.2.7.0'
-      ExplicitTop = 35
+      SortSettings.DefaultFormat = ssAutomatic
+      Version = '7.9.1.0'
       ColWidths = (
         73
         20
@@ -243,15 +252,6 @@ object embPeriodView: TembPeriodView
         Height = 21
         Align = alTop
         Alignment = taLeftJustify
-        BoundLabel.Indent = 0
-        BoundLabel.Font.Charset = DEFAULT_CHARSET
-        BoundLabel.Font.Color = clWindowText
-        BoundLabel.Font.Height = -11
-        BoundLabel.Font.Name = 'Tahoma'
-        BoundLabel.Font.Style = []
-        BoundLabel.Layout = sclLeft
-        BoundLabel.MaxWidth = 0
-        BoundLabel.UseSkinColor = True
         SkinData.SkinSection = 'COMBOBOX'
         VerticalAlignment = taAlignTop
         Style = csDropDownList

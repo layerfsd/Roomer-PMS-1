@@ -675,7 +675,7 @@ type
 
     // procedure RemoveInvoice;
     procedure SaveHeader(FTotal, fVat, fWOVat: Double;
-      ExecutionPlan: TRoomerExecutionPlan);
+      aExecutionPlan: TRoomerExecutionPlan);
 
     function SaveInvoice(iInvoiceNumber: integer): boolean;
 
@@ -724,7 +724,7 @@ type
 
     Procedure InitInvoiceGrid;
     function GenerateInvoiceNumber: integer;
-    procedure AddDeleteFromInvoiceToExecutionPlan(ExecutionPlan
+    procedure AddDeleteFromInvoiceToExecutionPlan(aExecutionPlan
       : TRoomerExecutionPlan);
 
     function LocateDate(recordSet: TRoomerDataset; field: String;
@@ -927,7 +927,7 @@ begin
 end;
 
 procedure TfrmInvoice.AddDeleteFromInvoiceToExecutionPlan
-  (ExecutionPlan: TRoomerExecutionPlan);
+  (aExecutionPlan: TRoomerExecutionPlan);
 var
   s: string;
 begin
@@ -938,14 +938,14 @@ begin
   s := s + '   and SplitNumber = ' + inttostr(FnewSplitNumber);
   s := s + '   and InvoiceNumber = -1' + ''#10'';
   s := s + '   and InvoiceIndex = ' + inttostr(FInvoiceIndex);
-  ExecutionPlan.AddExec(s);
+  aExecutionPlan.AddExec(s);
   s := '';
   s := s + 'DELETE FROM invoiceheads ' + ''#10'';
   s := s + ' where Reservation = ' + inttostr(publicReservation);
   s := s + '   and RoomReservation = ' + inttostr(FRoomReservation);
   s := s + '   and SplitNumber = ' + inttostr(FnewSplitNumber);
   s := s + '   and InvoiceNumber = -1';
-  ExecutionPlan.AddExec(s);
+  aExecutionPlan.AddExec(s);
 end;
 
 procedure TfrmInvoice.cxButton3Click(Sender: TObject);
@@ -3523,7 +3523,7 @@ var
   GuestName: String;
   NumGuests: integer;
 
-  ExecutionPlan: TRoomerExecutionPlan;
+  lExecutionPlan: TRoomerExecutionPlan;
   Index: integer;
 
   iNumNights: integer;
@@ -3924,7 +3924,7 @@ begin
     edtRate.Text := floattostr(zCurrencyRate);
 
     zRoomRSet.first;
-    ExecutionPlan := d.roomerMainDataSet.CreateExecutionPlan;
+    lExecutionPlan := d.roomerMainDataSet.CreateExecutionPlan;
     try
 
       if not zRoomRSet.eof then
@@ -3971,11 +3971,11 @@ begin
 
           // copyToclipboard(s);
           // debugmessage(s);
-          ExecutionPlan.AddQuery(s);
+          lExecutionPlan.AddQuery(s);
           zRoomRSet.Next;
         end;
 
-      if ExecutionPlan.Execute(ptQuery) then
+      if lExecutionPlan.Execute(ptQuery) then
       begin
         zRoomRSet.first;
         index := 0;
@@ -4039,7 +4039,7 @@ begin
           ttDiscount := 0;
           UnpaidDays := 0;
 
-          rSet := ExecutionPlan.Results[index];
+          rSet := lExecutionPlan.Results[index];
 
           rSet.first;
           GuestName := rSet.FieldByName('guestName').asString;
@@ -4255,13 +4255,13 @@ begin
         end;
       end;
     finally
-      ExecutionPlan.free;
+      lExecutionPlan.free;
     end;
 
     if not zFakeGroup then
     begin
 
-      ExecutionPlan := d.roomerMainDataSet.CreateExecutionPlan;
+      lExecutionPlan := d.roomerMainDataSet.CreateExecutionPlan;
       try
         iCurrentRow := agrLines.RowCount;
 
@@ -4275,14 +4275,14 @@ begin
             '   and InvoiceNumber = -1 AND InvoiceIndex = %d';
           zS := format(sql, [publicReservation, FRoomReservation,
             FnewSplitNumber, FInvoiceIndex]);
-          ExecutionPlan.AddQuery(zS);
+          lExecutionPlan.AddQuery(zS);
 
           sql := 'SELECT * FROM payments ' + ' where Reservation = %d ' +
             '   and RoomReservation = %d ' +
             '   and InvoiceNumber = -1 AND InvoiceIndex = %d';
           zS := format(sql, [publicReservation, FRoomReservation,
             FInvoiceIndex]);
-          ExecutionPlan.AddQuery(zS);
+          lExecutionPlan.AddQuery(zS);
 
           sql := 'SELECT SUM(IF(xxx.RoomReservation>0 AND xxx.Reservation>0, xxx.NumberOfGuests * xxx.NumberOfDays, ' +
                  ' (SELECT SUM((SELECT COUNT(id) FROM roomsdate WHERE RoomReservation = pe.RoomReservation AND NOT (ResFlag IN (''X'',''C'',''N'')))) AS GuestNights ' +
@@ -4303,12 +4303,12 @@ begin
                  'where (%d <= 0 AND Reservation=%d) OR (RoomReservation = %d) ' +
                  ')xxx';
           zS := format(sql, [FRoomReservation, publicReservation, FRoomReservation]);
-          ExecutionPlan.AddQuery(zS);
+          lExecutionPlan.AddQuery(zS);
 
-          ExecutionPlan.Execute(ptQuery);
+          lExecutionPlan.Execute(ptQuery);
 
-          eSet := ExecutionPlan.Results[0];
-          reservationSet := ExecutionPlan.Results[2];
+          eSet := lExecutionPlan.Results[0];
+          reservationSet := lExecutionPlan.Results[2];
           // hData.rSet_bySQL(zrSet, zS);
 
           if zFirsttime then // **15-10-16
@@ -4381,7 +4381,7 @@ begin
             eSet.Next;
           end;
 
-          eSet := ExecutionPlan.Results[1];
+          eSet := lExecutionPlan.Results[1];
 
           if (publicReservation = 0) and (FRoomReservation = 0) then
           begin
@@ -4450,7 +4450,7 @@ begin
           loadInvoiceToMemtable(d.mInvoicelines_before);
         end;
       finally
-        ExecutionPlan.free;
+        lExecutionPlan.free;
       end;
     end;
 
@@ -5532,7 +5532,7 @@ begin
 end;
 
 procedure TfrmInvoice.SaveHeader(FTotal, fVat, fWOVat: Double;
-  ExecutionPlan: TRoomerExecutionPlan);
+  aExecutionPlan: TRoomerExecutionPlan);
 var
   iMultiplier: integer;
 var
@@ -5669,7 +5669,7 @@ begin
 //  copytoclipboard(s);
 //  debugmessage(s);
 
-  ExecutionPlan.AddExec(s);
+  aExecutionPlan.AddExec(s);
   // if not cmd_bySQL(s) then
   // begin
   // end;
@@ -5755,7 +5755,7 @@ begin
         _db(edtCurrency.Text)
        ]);
 
-  ExecutionPlan.AddExec(s);
+  aExecutionPlan.AddExec(s);
 //  CopyToClipboard(s);
 end;
 
@@ -5798,7 +5798,6 @@ var
   isPackage: boolean;
   sTmp: string;
 
-  ExecutionPlan: TRoomerExecutionPlan;
   LineHolder: hData.recInvoiceLineHolder;
 
   confirmDate: TDateTime;
@@ -6086,7 +6085,7 @@ var
   isPackage: boolean;
   sTmp: string;
 
-  ExecutionPlan: TRoomerExecutionPlan;
+  lExecutionPlan: TRoomerExecutionPlan;
   LineHolder: hData.recInvoiceLineHolder;
 
   confirmDate: TDateTime;
@@ -6108,7 +6107,7 @@ begin
 
   result := True;
 
-    ExecutionPlan := d.roomerMainDataSet.CreateExecutionPlan;
+    lExecutionPlan := d.roomerMainDataSet.CreateExecutionPlan;
     try
 
       s := '';
@@ -6119,14 +6118,14 @@ begin
       s := s + '   and InvoiceIndex = ' + _db(FInvoiceIndex);
       s := s + '   and InvoiceNumber = -1 ' + #10;
 
-      ExecutionPlan.AddExec(s);
+      lExecutionPlan.AddExec(s);
       s := '';
       s := s + 'DELETE FROM invoiceheads ' + #10;
       s := s + ' where Reservation = ' + inttostr(publicReservation);
       s := s + '   and RoomReservation = ' + inttostr(FRoomReservation);
       s := s + '   and SplitNumber = ' + inttostr(FnewSplitNumber);
       s := s + '   and InvoiceNumber = -1' + #10;
-      ExecutionPlan.AddExec(s);
+      lExecutionPlan.AddExec(s);
 
       try
         // --
@@ -6387,17 +6386,17 @@ begin
 
           s := s + ')' + #10;
 
-          ExecutionPlan.AddExec(s);
+          lExecutionPlan.AddExec(s);
 
           copytoclipboard(s);
           debugmessage(s);
 
         end;
 
-        SaveHeader(FTotal, fTotalVAT, fTotalWOVat, ExecutionPlan);
+        SaveHeader(FTotal, fTotalVAT, fTotalWOVat, lExecutionPlan);
 
-        if NOT ExecutionPlan.Execute(ptExec, True) then
-          raise Exception.create(ExecutionPlan.ExecException);
+        if NOT lExecutionPlan.Execute(ptExec, True) then
+          raise Exception.create(lExecutionPlan.ExecException);
 
         zInitString := createAllStr;
         zDataChanged := chkChanged;
@@ -6418,7 +6417,7 @@ begin
       end;
 
     finally
-      FreeAndNil(ExecutionPlan);
+      FreeAndNil(lExecutionPlan);
     end;
 
     if not zApply then
@@ -7052,7 +7051,7 @@ var
 
   doRestore: boolean;
 
-  ExecutionPlan: TRoomerExecutionPlan;
+  lExecutionPlan: TRoomerExecutionPlan;
 
   confirmDate: TDateTime;
   confirmAmount: Double;
@@ -7135,12 +7134,12 @@ begin
       // Save invoice starts
       // **************************************************************************
 
-      ExecutionPlan := d.roomerMainDataSet.CreateExecutionPlan;
-      ExecutionPlan.BeginTransaction;
+      lExecutionPlan := d.roomerMainDataSet.CreateExecutionPlan;
+      lExecutionPlan.BeginTransaction;
       try
         _CurrencyValueSell := zCurrencyRate;
 
-        AddDeleteFromInvoiceToExecutionPlan(ExecutionPlan);
+        AddDeleteFromInvoiceToExecutionPlan(lExecutionPlan);
 
         iMultiplier := 1; // til þess að setja í mínus ef Kredit
         if FCredit then
@@ -7403,7 +7402,7 @@ begin
           // copytoclipboard(s);
           // debugmessage(s);
 
-          ExecutionPlan.AddExec(s);
+          lExecutionPlan.AddExec(s);
 
           try
             lstActivity.add(CreateInvoiceActivityLog(g.qUser, publicReservation,
@@ -7424,7 +7423,7 @@ begin
                 _db(zInvoiceNumber) + #10;
               s := s + 'WHERE RoomReservation = ' +
                 _db(invRoomReservation) + #10;
-              ExecutionPlan.AddExec(s);
+              lExecutionPlan.AddExec(s);
 
               // update isPaid ef groupInvoice
 
@@ -7444,7 +7443,7 @@ begin
 
               // copyToClipboard(s);
               // debugMessage(s);
-              ExecutionPlan.AddExec(s);
+              lExecutionPlan.AddExec(s);
             end;
         end;
 
@@ -7543,7 +7542,7 @@ begin
         // copytoclipboard(s);
         // debugmessage(s);
 
-        ExecutionPlan.AddExec(s);
+        lExecutionPlan.AddExec(s);
 
 
 
@@ -7625,7 +7624,7 @@ begin
           s := s + ', ' + _db(FInvoiceIndex);
           s := s + ')';
 
-          ExecutionPlan.AddExec(s);
+          lExecutionPlan.AddExec(s);
           try
             paymentValue := iMultiplier *
               _StrToFloat(_strTokenAt(stlPaySelections[i], '|', 1));
@@ -7649,15 +7648,15 @@ begin
         s := s + ' `invoicenumber` = ' + _db(zInvoiceNumber) + ' '#10;
         s := s + ' WHERE (`reservation` = %d) and (`Roomreservation` = %d) and (Invoicenumber=-1) and (InvoiceIndex=%d) and (typeindex=1); ';
         s := format(s, [publicReservation, FRoomReservation, FInvoiceIndex]);
-        ExecutionPlan.AddExec(s);
+        lExecutionPlan.AddExec(s);
 
-        if ExecutionPlan.Execute(ptExec, false, false) then
+        if lExecutionPlan.Execute(ptExec, false, false) then
         begin
-          ExecutionPlan.CommitTransaction;
+          lExecutionPlan.CommitTransaction;
           // NO REFRESH        frmMain.btnRefresh.Click;
         end
         else
-          raise Exception.create(ExecutionPlan.ExecException);
+          raise Exception.create(lExecutionPlan.ExecException);
 
         result := True;
 
@@ -7670,7 +7669,7 @@ begin
             e.message);
           // MessageDlg('Problem: Unable to Book the Invoice !' + #13#13 + 'While saving invoice The following Error came up:' + #13#13 +
           // e.message + #13#13 + 'Please write this message down or' + #13 + 'call support with this dialog open!', mtError, [mbOK],
-          ExecutionPlan.RollbackTransaction;
+          lExecutionPlan.RollbackTransaction;
           // MessageDlg(format(GetTranslatedText('shTx_Invoice_UnableToSaveInvoiceMessage'), [e.message]), mtError, [mbOk], 0);
           if MessageDlg
             ('We are unable to save the invoice. Select [Retry] to try again or [Cancel] '
@@ -7685,7 +7684,7 @@ begin
         end;
       end;
 
-      FreeAndNil(ExecutionPlan);
+      FreeAndNil(lExecutionPlan);
 
       if AllOk then
       begin
@@ -10476,7 +10475,6 @@ var
   Source: string;
   isPackage: boolean;
 
-  ExecutionPlan: TRoomerExecutionPlan;
   LineHolder: hData.recInvoiceLineHolder;
 
   confirmDate: TDateTime;

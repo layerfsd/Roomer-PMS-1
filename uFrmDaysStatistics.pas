@@ -55,7 +55,7 @@ type
     id : Integer;
     Value : String;
   public
-    constructor Create(_id : Integer; _value : String);
+    constructor Create(_id : Integer; const _value : String);
   end;
 
   TRatesAndAvails = class
@@ -65,7 +65,7 @@ type
     totalAvailable : Integer;
     rate : Double;
 
-    constructor Create(_roomType : String;
+    constructor Create(const _roomType : String;
                        _totalRooms,
                        _totalOccupied,
                        _totalAvailable : Integer;
@@ -98,7 +98,7 @@ type
     RatesAndAvailabilities : TRatesAndAvailsList;
   public
     constructor Create(_id : Integer;
-              _name : String;
+              const _name : String;
               _color : Integer;
               _adr : Double;
               _guests : Integer;
@@ -185,26 +185,24 @@ type
     sLabel24: TsLabel;
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure FormKeyPress(Sender: TObject; var Key: Char);
+    procedure FormCreate(Sender: TObject);
   private
     { Private declarations }
     channels : TIdChannelValuesDictionary;
     FViewDate : TDateTime;
     FBeingViewed: Boolean;
-    procedure btnBackClick(Sender: TObject);
-    procedure btnForwardClick(Sender: TObject);
-    procedure FormCreate(Sender: TObject);
     procedure getChannels(performance: IXMLPerformanceType);
-    function getTotalRevenue(performance: IXMLPerformanceType): Double;
     function getUrl: String;
-    procedure PlaceRateAvailLabel(line, index: Integer; labelValue: String);
-    procedure ProcessHttpResult(result: String);
+    procedure PlaceRateAvailLabel(line, index: Integer; const labelValue: String);
+    procedure ProcessHttpResult(const result: String);
     procedure RemoveTodaysRates;
     procedure SetViewDate(const Value: TDateTime);
     procedure ShowRevenueGraph;
     procedure showTodaysRates(channel: TIdChannelValues);
-    procedure txtHeaderDblClick(Sender: TObject);
+
     procedure PerformRequest;
   public
+    destructor Destroy; override;
     { Public declarations }
     procedure GetDaysNumbers(var OCC, ADR, REVPAR: Double; var RoomsSold: Integer);
     property BeingViewed : Boolean read FBeingViewed write FBeingViewed;
@@ -236,14 +234,10 @@ begin
 end;
 
 
-procedure TfrmDaysStatistics.btnBackClick(Sender: TObject);
+destructor TfrmDaysStatistics.Destroy;
 begin
-  viewDate := viewDate - 1 - (6 * ABS(ORD(IsControlKeyPressed)));
-end;
-
-procedure TfrmDaysStatistics.btnForwardClick(Sender: TObject);
-begin
-  viewDate := viewDate + 1 + (6 * ABS(ORD(IsControlKeyPressed)));
+  Channels.Free;
+  inherited;
 end;
 
 procedure TfrmDaysStatistics.FormCreate(Sender: TObject);
@@ -251,7 +245,7 @@ begin
   // hotel=berg host=http://localhost port=8080 user=hj pass=hordur.berg date=2014-01-01
   // hotel=kef host=https://secure.roomercloud.net port=8443 user=hj pass=hordur date=2014-01-01
   RoomerLanguage.TranslateThisForm(self);
-     glb.PerformAuthenticationAssertion(self);
+  glb.PerformAuthenticationAssertion(self);
   channels := TIdChannelValuesDictionary.Create([doOWnsValues]);
   FBeingViewed := False;
 end;
@@ -300,19 +294,23 @@ begin
   end;
 end;
 
-procedure TfrmDaysStatistics.PlaceRateAvailLabel(line, index : Integer; labelValue : String);
+procedure TfrmDaysStatistics.PlaceRateAvailLabel(line, index : Integer; const labelValue : String);
 var ALabel, likeLabel : TsLabel;
     AName : String;
 begin
   AName := format('TR_%d_', [line]);
-  ALabel := TsLabel.Create(frmDaysStatistics);
+
   case index of
     1 : likeLabel := txtRoomType;
     2 : likeLabel := txtPrice;
     3 : likeLabel := txtTotal;
     4 : likeLabel := txtOccupied;
     5 : likeLabel := txtAvailable;
+  else
+    Exit;
   end;
+
+  ALabel := TsLabel.Create(frmDaysStatistics);
 
   likeLabel.Visible := False;
   ALabel.Font.Size := likeLabel.Font.Size;
@@ -373,7 +371,7 @@ begin
 
 end;
 
-procedure TfrmDaysStatistics.ProcessHttpResult(result : String);
+procedure TfrmDaysStatistics.ProcessHttpResult(const result : String);
 var performance : IXMLPerformanceType;
     channel : TIdChannelValues;
 begin
@@ -437,9 +435,7 @@ begin
 end;
 
 procedure TfrmDaysStatistics.ShowRevenueGraph;
-var RevenueSeries,
-    RevParSeries : TPieSeries;// ChartSeries;
-  i: Integer;
+var
   channel : TIdChannelValues;
   KeyName : Integer;
 begin
@@ -456,11 +452,6 @@ begin
     end;
   end;
 
-end;
-
-procedure TfrmDaysStatistics.txtHeaderDblClick(Sender: TObject);
-begin
-  viewDate := Trunc(now);
 end;
 
 procedure TfrmDaysStatistics.getChannels(performance : IXMLPerformanceType);
@@ -581,13 +572,6 @@ begin
   end;
 end;
 
-function TfrmDaysStatistics.getTotalRevenue(performance : IXMLPerformanceType) : Double;
-var i : Integer;
-begin
-  result := 0.00;
-  for i := 0 to performance.Count - 1 do
-    result := result + performance.Day[i].Revenue;
-end;
 
 
 { TIdDValue }
@@ -600,7 +584,7 @@ end;
 
 { TIdChannelValues }
 
-constructor TIdChannelValues.Create(_id: Integer; _name : String; _color : Integer; _adr: Double;
+constructor TIdChannelValues.Create(_id: Integer; const _name : String; _color : Integer; _adr: Double;
   _guests: Integer; _maxRate, _minRate, _occ, _revPar, _revenue: Double; _rooms,
   _sold: Integer;
   _arrivals : Integer;
@@ -641,7 +625,7 @@ end;
 
 { TRatesAndAvails }
 
-constructor TRatesAndAvails.Create(_roomType: String; _totalRooms,
+constructor TRatesAndAvails.Create(const _roomType: String; _totalRooms,
   _totalOccupied, _totalAvailable: Integer; _rate: Double);
 begin
   roomType := _roomType;
@@ -653,7 +637,7 @@ end;
 
 { TIdSValue }
 
-constructor TIdSValue.Create(_id: Integer; _value: String);
+constructor TIdSValue.Create(_id: Integer; const _value: String);
 begin
   id := _id;
   value := _value;
