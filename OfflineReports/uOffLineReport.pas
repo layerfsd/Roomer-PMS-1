@@ -13,6 +13,7 @@ type
   // A base definition of a Offline report, actual implementations should be derived from this abstract class
   TOfflineReport = class abstract(TBaseDBThread)
   private
+    FDesign: TBaseOfflineReportDesign;
     function GetReportPDFFilename: string;
   protected
     FDateTime: TDatetime;
@@ -62,23 +63,24 @@ begin
 end;
 
 procedure TOfflineReport.CreateReport;
-var
-  lDesign: TBaseOffLineReportDesign;
+//var
+//  lDesign: TBaseOffLineReportDesign;
 begin
   if (ReportDesign <> nil) then
   begin
-    lDesign := ReportDesign.Create(nil);
-    try
-      lDesign.RoomerDataset := Self.DataSet;
-      lDesign.PrintToPDF(GetReportPDFFilename);
-    finally
-      lDesign.Free;
-    end;
+    FDesign := ReportDesign.Create(nil);
+//    try
+      FDesign.RoomerDataset := Self.DataSet;
+      FDesign.PrintToPDF(GetReportPDFFilename);
+//    finally
+//      lDesign.Free;
+//    end;
   end;
 end;
 
 destructor TOfflineReport.Destroy;
 begin
+  FDesign.Free;
   inherited;
 end;
 

@@ -62,7 +62,6 @@ type
     function GetMessageTypeText: String;
   public
     constructor Create(AOwner: TComponent); override;
-    destructor Destroy; override;
 
     procedure Prepare;
 
@@ -194,16 +193,6 @@ begin
       MessageList.Delete(idx);
     end;
   end;
-end;
-
-destructor TMessagePanel.Destroy;
-begin
-  FreeAndNil(FReadButton);
-  FreeAndNil(FButtonPanel);
-  FreeAndNil(FImage);
-  FreeAndNil(FImagePanel);
-  FreeAndNil(FText);
-  inherited;
 end;
 
 procedure TMessagePanel.CreateButtonPanel;
