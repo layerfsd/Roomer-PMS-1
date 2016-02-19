@@ -479,10 +479,7 @@ begin
   end;
   idx := MessageIndex(MessagePanel.FMessageType, MessagePanel.FMessageId);
   if idx >= 0 then
-  begin
-    MessagePanel.Free;
     MessageList.Delete(idx);
-  end;
 
 end;
 

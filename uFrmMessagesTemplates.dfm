@@ -143,8 +143,6 @@ object FrmMessagesTemplates: TFrmMessagesTemplates
             SkinData.CustomColor = True
             SkinData.CustomFont = True
             SkinData.SkinSection = 'BUTTON'
-            ExplicitLeft = 4
-            ExplicitTop = 4
           end
         end
         object sPanel2: TsPanel
