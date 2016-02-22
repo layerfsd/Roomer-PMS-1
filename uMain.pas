@@ -6,10 +6,6 @@ unit uMain;
 
 interface
 
-{$IFDEF DEBUG}
-{$DEFINE ROOMERSTORE}
-{$ENDIF}
-
 uses
   Windows, Messages, IOUtils, System.Generics.Collections, IdComponent, SysUtils, Classes, Graphics, Controls, Forms, Dialogs, ExtCtrls, Grids, ComCtrls, Db,
   ADODB, ActiveX, StdCtrls, Menus, Mask, ComObj, ShellApi, Inifiles, ImgList, Buttons, Vcl.AppEvnts,
@@ -1037,6 +1033,9 @@ type
     OneDayGridFont: TFont;
     TempGridFont: TFont;
 
+    PeriodViewSelectedCol,
+    PeriodViewSelectedRow : Integer;
+
 
     // *s    zRoomsOBJ : TRoom;
 
@@ -1426,6 +1425,7 @@ type
     procedure ActivateMessagesIfApplicable;
     procedure ConfirmABooking;
     procedure NillifyEventHandlers(grid: TAdvStringGrid);
+    procedure RemoveHandlersAndObjects;
 {$IFDEF USE_JCL}
     procedure LogException(ExceptObj: TObject; ExceptAddr: Pointer; IsOS: boolean);
 {$ENDIF}
@@ -2931,6 +2931,7 @@ end;
 procedure TfrmMain.FormDestroy(Sender: TObject);
 begin
   try
+    RemoveHandlersAndObjects;
     GroupList.Free;
     MoveFunctionAvailRooms.Free;
     StaffComm.Free;
@@ -3832,6 +3833,13 @@ end;
 
 procedure TfrmMain.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
+{$IFNDEF DEBUG}
+  timHalt.Enabled := true;
+{$ENDIF}
+end;
+
+procedure TfrmMain.RemoveHandlersAndObjects;
+begin
   try
     NillifyEventHandlers(grOneDayRooms);
     NillifyEventHandlers(grPeriodRooms);
@@ -3882,9 +3890,6 @@ begin
   except
   end;
 
-{$IFNDEF DEBUG}
-  timHalt.Enabled := true;
-{$ENDIF}
 {$IFDEF USE_JCL}
   try
     JclRemoveExceptNotifier(LogException);
@@ -10442,7 +10447,7 @@ var
   _grid: TAdvStringGrid;
 begin
   _grid := grPeriodRooms;
-  rri := Period_GetResInfo(_grid.col, _grid.row, _grid.Tag);
+  rri := Period_GetResInfo(PeriodViewSelectedCol, PeriodViewSelectedRow, _grid.Tag); // _grid.col, _grid.row, _grid.Tag);
   if rri.Reservation > -1 then
     if rri.BlockMove AND (Copy(rri.Room, 1, 1) <> '<') then
     begin
@@ -11224,6 +11229,8 @@ begin
   if Button = mbRight then
     exit;
   grPeriodRooms.MouseToCell(X, Y, ACol, ARow);
+  PeriodViewSelectedCol := ACol;
+  PeriodViewSelectedRow := ARow;
   cellContent := grPeriodRooms.cells[ACol, ARow];
 
   iRoomReservation := 0;

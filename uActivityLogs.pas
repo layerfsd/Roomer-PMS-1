@@ -439,7 +439,6 @@ begin
       if NOT Assigned(GetThreadedData) then
          GetThreadedData := TGetThreadedData.Create;
       GetThreadedData.Put('userlogs', 'logs=' + d.roomerMainDataSet.UrlEncode(sql), nil);
-//      d.roomerMainDataSet.PutData('userlogs', 'logs=' + d.roomerMainDataSet.UrlEncode(sql));
     end;
   finally
     list.Free;

@@ -1500,6 +1500,11 @@ begin
                 'Are you sure you want to continue?');
   constants.Add('shTx_Various_WouldCreateOverbooking', 'This would cause an overbooking for the following room type(s):' + #10#10);
   constants.Add('shTx_Various_AreYoySureYouWantToContinue', 'Are you sure you want to continue?');
+
+  constants.Add('shTx_FinanceForecast_DoYouWantToConvertLayoutToNewVersion', 'The selected report is saved in an older format.' + #10 +
+                'Do you want to convert it to the new format now?' + #10#10 +
+                'Note: The report will not work correctly until you accept and convert the report to the newer format.' + #10 +
+                'After conversion though, the report will not work correctly in the older version of ROOMER PMS.');
 end;
 
 procedure prepareConstants;

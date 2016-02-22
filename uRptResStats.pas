@@ -443,6 +443,7 @@ type
 
   public
     { Public declarations }
+    procedure WndProc(var message: TMessage); override;
   end;
 
 var
@@ -467,6 +468,8 @@ uses
   , uFinanceForcastLayout
   ;
 
+const WM_LOAD_LAYOUT = WM_User + 401;
+      WM_START_LOAD = WM_User + 402;
 
 
 function cust_isTaxIncluted(Customer : string): boolean;
@@ -604,6 +607,17 @@ end;
 //
 //end;
 
+
+procedure TfrmRptResStats.WndProc(var message: TMessage);
+begin
+  if Message.Msg = WM_LOAD_LAYOUT then
+    loadLayout(false)
+  else
+  if Message.Msg = WM_START_LOAD then
+    loadLayout(true);
+
+  inherited WndProc(message);
+end;
 
 
 procedure TfrmRptResStats.SetColumnProperties(ATableView: TcxGridTableView);
@@ -798,11 +812,10 @@ begin
     zRoomRentVATPercentage := glb.Items.GetFloatValue(glb.VAT.FieldByName('VATPercentage'));
   end;
 
-  loadLayout(true);
-
   gbxCustomization.Visible :=  true;
   pg001.Customization.Visible :=  TRUE;
 
+  PostMessage(handle, WM_START_LOAD, 0, 0);
 
 end;
 
@@ -831,7 +844,7 @@ end;
 
 procedure TfrmRptResStats.cbxSelCloseUp(Sender: TObject);
 begin
-  loadLayout(false);
+  PostMessage(handle, WM_LOAD_LAYOUT, 0, 0);
 end;
 
 procedure TfrmRptResStats.chkExcluteWaitingListClick(Sender: TObject);
@@ -2168,7 +2181,7 @@ begin
   Description := cbxSel.Items[cbxSel.ItemIndex];
 
   //**Translate
-  if MessageDlg('Delate '+description, mtConfirmation, [mbYes, mbNo], 0) = mrYes then
+  if MessageDlg('Delete '+description, mtConfirmation, [mbYes, mbNo], 0) = mrYes then
   begin
     s := '';
     s := s + ' DELETE '+#10;
@@ -3015,15 +3028,17 @@ begin
 
       if isOld then
       begin
-        showmessage('Old dataformat - Converting');
-        try
-          LoadLayoutOld(false);
-          SaveLayout2new;
-        Except
-          on e: exception do
-          begin
-           showMessage('Error converting - Contact Support '+e.message);
-           exit;
+        if MessageDlg(GetTranslatedText('shTx_FinanceForecast_DoYouWantToConvertLayoutToNewVersion'), mtConfirmation, [mbYes, mbNo], 0) = mrYes then
+        begin
+          try
+            LoadLayoutOld(false);
+            SaveLayout2new;
+          Except
+            on e: exception do
+            begin
+             MessageDlg(GetTranslatedText('shTx_FinanceForecast_ErrorConvertingReport'), mtError, [mbOk], 0);
+             exit;
+            end;
           end;
         end;
         exit;
