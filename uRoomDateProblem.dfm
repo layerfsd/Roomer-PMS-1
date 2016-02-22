@@ -70,6 +70,7 @@ object frmRoomDateProblem: TfrmRoomDateProblem
       Caption = 'Select method to resolve reservation conflict'
       TabOrder = 0
       SkinData.SkinSection = 'GROUPBOX'
+      Checked = False
       Items.Strings = (
         '1.  Set current rooms as no-room'
         '2.  Set conflict rooms as no-room'
@@ -125,6 +126,16 @@ object frmRoomDateProblem: TfrmRoomDateProblem
     FilterDropDown.Font.Name = 'Tahoma'
     FilterDropDown.Font.Style = []
     FilterDropDownClear = '(All)'
+    FilterEdit.TypeNames.Strings = (
+      'Starts with'
+      'Ends with'
+      'Contains'
+      'Not contains'
+      'Equal'
+      'Not equal'
+      'Larger than'
+      'Smaller than'
+      'Clear')
     FixedRowHeight = 22
     FixedFont.Charset = DEFAULT_CHARSET
     FixedFont.Color = clWindowText
@@ -132,6 +143,10 @@ object frmRoomDateProblem: TfrmRoomDateProblem
     FixedFont.Name = 'Tahoma'
     FixedFont.Style = [fsBold]
     FloatFormat = '%.2f'
+    HoverButtons.Buttons = <>
+    HoverButtons.Position = hbLeftFromColumnLeft
+    HTMLSettings.ImageFolder = 'images'
+    HTMLSettings.ImageBaseName = 'img'
     PrintSettings.DateFormat = 'dd/mm/yyyy'
     PrintSettings.Font.Charset = DEFAULT_CHARSET
     PrintSettings.Font.Color = clWindowText
@@ -168,7 +183,8 @@ object frmRoomDateProblem: TfrmRoomDateProblem
     SearchFooter.HintFindPrev = 'Find previous occurence'
     SearchFooter.HintHighlight = 'Highlight occurences'
     SearchFooter.MatchCaseCaption = 'Match case'
-    Version = '6.2.7.1'
+    SortSettings.DefaultFormat = ssAutomatic
+    Version = '7.9.1.0'
     ColWidths = (
       64
       64

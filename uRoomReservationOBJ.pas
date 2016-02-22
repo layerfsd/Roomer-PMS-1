@@ -425,8 +425,10 @@ begin
 
       if Assigned(rExtraSet) then
       begin
-        FreeAndNil(rExtraSet);
-        rExtraSet := exePlan.Results[1];
+        // Resultset are owned by execeutionplan, cannot just copy the link because executionplan is freed at the end of this method
+        //        FreeAndNil(rExtraSet);
+        //        rExtraSet := exePlan.Results[1]
+        rExtraSet.Recordset := exePlan.Results[1].CloneToRecordset;
         rExtraSet.First;
       end;
 
@@ -459,8 +461,8 @@ begin
          rSet.Next;
        end;
      end;
-   finally
-    freeandnil(rSet);
+  finally
+    exePlan.Free;
   end;
 
   refresh(FFilter,FSortOn);

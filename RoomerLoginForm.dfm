@@ -486,7 +486,7 @@ object frmRoomerLoginForm: TfrmRoomerLoginForm
       SpeedButtonOptions.Flat = True
       SpeedButtonOptions.Transparent = True
       TabOrder = 0
-      OnClick = btLoginClick
+      OnClick = btOfflineClick
     end
   end
   object StoreLogin: TcxPropertiesStore

@@ -17,7 +17,7 @@ type
     procedure Clear;
   public
     constructor Create;
-    destructor Destroy;
+    destructor Destroy; override;
 
     procedure Prepare(_arrival, _departure : TDate; _channelCode, _chManCode : String);
     function findRateByRateCode(ADate : TDate; numGuests : Integer; var roomPrice : Double; rateId : String) : Boolean;
@@ -150,6 +150,7 @@ end;
 destructor TDynamicRates.Destroy;
 begin
   Clear;
+  inherited;
 end;
 
 function TDynamicRates.findRateByRateCode(ADate : TDate; numGuests : Integer; var roomPrice : Double; rateId : String) : Boolean;

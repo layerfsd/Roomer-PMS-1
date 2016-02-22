@@ -1108,10 +1108,12 @@ begin
   
   constants.Add('shTx_RoomDateProblem_NoShow', 'No Show');
   constants.Add('shTx_RoomDateProblem_Allotment', 'Allotment');
-  constants.Add('shTx_StaffEdit2_InitialsRequired', 'Initials is required');
-  constants.Add('shTx_StaffEdit2_InitialExists', 'This initial exists ');
+  constants.Add('shTx_StaffEdit2_InitialsRequired', 'Initials are required');
+  constants.Add('shTx_StaffEdit2_InitialExists', 'This already initial exists ');
   constants.Add('shTx_StaffEdit2_NameRequired', 'Name is required');
-  
+  constants.Add('shTx_StaffEdit2_RightsRequired', 'Set access rights of this staffmember');
+  constants.Add('shTx_StaffEdit2_LanguageRequired', 'Language is required');
+
  (* constants.Add('shTx_ResProblem_NotArrived', 'Ekki kominn');
   constants.Add('shTx_ResProblem_Guest', 'Gestur');
   constants.Add('shTx_ResProblem_Gone', 'Farinn');
@@ -1615,7 +1617,7 @@ begin
   frmPackageItems := TfrmPackageItems.Create(nil); frmPackageItems.Free; frmPackageItems := nil;
   frmRooms3 := TfrmRooms3.Create(nil); frmRooms3.Free; frmRooms3 := nil;
   frmCustomers2 := TfrmCustomers2.Create(nil); frmCustomers2.Free; frmCustomers2 := nil;
-  frmStaffEdit2 := TfrmStaffEdit2.Create(nil); frmStaffEdit2.Free; frmStaffEdit2 := nil;
+  TfrmStaffEdit2.Create(nil).Free;
   frmStaffMembers2 := TfrmStaffMembers2.Create(nil); frmStaffMembers2.Free; frmStaffMembers2 := nil;
   frmCustomerEdit2 := TfrmCustomerEdit2.Create(nil); frmCustomerEdit2.Free; frmCustomerEdit2 := nil;
   frmChannels := TfrmChannels.Create(nil); frmChannels.Free; frmChannels := nil;

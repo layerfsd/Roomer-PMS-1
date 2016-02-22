@@ -5,7 +5,7 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Grids, AdvObj, BaseGrid, AdvGrid, Vcl.ExtCtrls, sPanel,
-  uD, HData, PrjConst, cmpRoomerDataSet, uSqlDefinitions, uDateUtils, uUtils, uRoomerLanguage, uAppGlobal;
+  uD, HData, PrjConst, cmpRoomerDataSet, uSqlDefinitions, uDateUtils, uUtils, uRoomerLanguage, uAppGlobal, AdvUtil;
 
 type
 
@@ -93,8 +93,8 @@ end;
 
 procedure TembOccupancyView.RefreshStats;
 var
-  OCC, ADR, REVPAR, Revenue, BAR : Double;
-  RoomsSold, RoomCount, Availability, OOO : Integer;
+  OCC, ADR, REVPAR, Revenue{, BAR} : Double;
+  RoomsSold, {RoomCount,} Availability, OOO : Integer;
   s : String;
   rSet : TRoomerDataSet;
   col : Integer;
@@ -139,7 +139,7 @@ begin
             Revenue := rSet['Revenue'];
             RoomsSold := rSet['RoomsSold'];
             ADR := rSet['ADR'];
-            BAR := 0.00;
+//            BAR := 0.00;
 
             grdOccupancy.Cells[col,3] := formatFloat('#,##0.00', Revenue);
             grdOccupancy.Cells[col,4] := inttostr(RoomsSold);

@@ -3,7 +3,7 @@
         <ProjectGuid>{EF15D434-1B5F-4B39-AF5E-24586022F9CF}</ProjectGuid>
         <MainSource>RoomerVCLs.dpk</MainSource>
         <ProjectVersion>14.3</ProjectVersion>
-        <Config Condition="'$(Config)'==''">DebugBas</Config>
+        <Config Condition="'$(Config)'==''">Debug</Config>
         <DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
         <FrameworkType>VCL</FrameworkType>
         <Base>True</Base>
@@ -63,7 +63,7 @@
         <Base>true</Base>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
-        <RuntimeOnlyPackage>true</RuntimeOnlyPackage>
+        <DesignOnlyPackage>true</DesignOnlyPackage>
         <DCC_DUPLICATE_CTOR_DTOR>false</DCC_DUPLICATE_CTOR_DTOR>
         <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
         <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Winapi;Vcl;Vcl.Imaging;Vcl.Touch;Vcl.Samples;Vcl.Shell;$(DCC_Namespace)</DCC_Namespace>
@@ -109,11 +109,13 @@
         <DCC_Define>DEBUG;_USE_INDY;$(DCC_Define)</DCC_Define>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
+        <DCC_UnitSearchPath>..;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
         <DCC_DcuOutput>C:\Temp\dcu\</DCC_DcuOutput>
         <Debugger_RunParams>RoomerBase=http://localhost Port=8080 OpenApiBase=http://dev1.roomerdev.net</Debugger_RunParams>
         <VerInfo_Locale>1033</VerInfo_Locale>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_3)'!=''">
+        <DCC_UnitSearchPath>..;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
         <DCC_Define>DEBUG;_USE_INDY;$(DCC_Define)</DCC_Define>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_3_Win32)'!=''">

@@ -52,6 +52,7 @@ var
   Doc          : TXmlDocument;
 begin
   SelectedNode := nil;
+  Doc := nil;
   if assigned( FocusNode) and
      Supports( FocusNode.DOMNode, IDomNodeSelect, DomNodeSelect) then
     DOMNode := DomNodeSelect.selectNode( sXPath);

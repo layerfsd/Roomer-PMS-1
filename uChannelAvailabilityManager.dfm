@@ -623,7 +623,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           Left = 114
           Top = 62
           Width = 20
-          Height = 16
+          Height = 18
           Margins.Left = 2
           Margins.Top = 2
           Margins.Right = 2
@@ -638,7 +638,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           Left = 114
           Top = 112
           Width = 20
-          Height = 16
+          Height = 18
           Margins.Left = 2
           Margins.Top = 2
           Margins.Right = 2
@@ -763,7 +763,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
             Left = 13
             Top = 28
             Width = 20
-            Height = 16
+            Height = 18
             Margins.Left = 2
             Margins.Top = 2
             Margins.Right = 2
@@ -937,7 +937,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
             Left = 222
             Top = 26
             Width = 20
-            Height = 16
+            Height = 18
             Enabled = False
             TabOrder = 12
             SkinData.SkinSection = 'CHECKBOX'
@@ -948,7 +948,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
             Left = 336
             Top = 25
             Width = 20
-            Height = 16
+            Height = 18
             Enabled = False
             TabOrder = 13
             SkinData.SkinSection = 'CHECKBOX'
@@ -989,7 +989,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           Left = 114
           Top = 87
           Width = 20
-          Height = 16
+          Height = 18
           Hint = 'Enable Single Use Price settings'
           Margins.Left = 2
           Margins.Top = 2
@@ -1141,6 +1141,8 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           Margins.Right = 2
           Margins.Bottom = 2
           Caption = 'Availabilities'
+          SkinData.CustomColor = False
+          SkinData.CustomFont = False
           object Panel2: TsPanel
             Left = 0
             Top = 467
@@ -1424,6 +1426,8 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           Margins.Right = 2
           Margins.Bottom = 2
           Caption = 'Rates'
+          SkinData.CustomColor = False
+          SkinData.CustomFont = False
           object rateGrid: TAdvStringGrid
             Left = 0
             Top = 48
@@ -2499,7 +2503,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
     Left = 512
     Top = 304
     Bitmap = {
-      494C010102000800B40320002000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010102000800C00320002000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000800000002000000001002000000000000040
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000060000

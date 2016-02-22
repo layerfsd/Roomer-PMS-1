@@ -2855,10 +2855,8 @@ begin
 end;
 
 
-end.
 
-
-
+(*
 CREATE  TABLE `home100_kef`.`dictionary` (
   `ID` INT NOT NULL AUTO_INCREMENT ,
   `Code` VARCHAR(45) NULL ,
@@ -2875,4 +2873,8 @@ INSERT INTO `home100_kef`.`dictionary` (`Code`, `Result`, `LangId`) VALUES ('O',
 INSERT INTO `home100_kef`.`dictionary` (`Code`, `Result`, `LangId`) VALUES ('A', 'Alotment', '0');
 INSERT INTO `home100_kef`.`dictionary` (`Code`, `Result`, `LangId`) VALUES ('N', 'No-show', '0');
 INSERT INTO `home100_kef`.`dictionary` (`Code`, `Result`, `LangId`) VALUES ('B', 'Blocked', '0');
+*)
+
+end.
+
 

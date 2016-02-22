@@ -184,6 +184,8 @@ type
 type
   TGlobalApplication = class(Tobject)
   private
+    FLock: TRTLCriticalSection;
+
     // Program folder
     FqProgramPath : string; // Path to Program
 
@@ -253,6 +255,7 @@ type
     // END ///////////  INI FILE GLOBALS ////////////////
 
     procedure InitializeApplicationGlobals;
+    function GetAppSecret: string;
   public
     qConnected : boolean;
     mHelpFile : string;
@@ -494,7 +497,7 @@ type
 
     property qApplicationID : string read FqApplicationID write FqApplicationID;
     property qAppKey : string read FqAppKey write FqAppKey;
-    property qAppSecret : string read FqAppSecret write FqAppSecret;
+    property qAppSecret : string read GetAppSecret write FqAppSecret;
 
 
 
@@ -607,7 +610,8 @@ uses
   uCancelReservation3,
   uChangeRRdates,
   ufrmSelLang,
-  PrjConst
+  PrjConst,
+  System.UITypes
   ;
 
 
@@ -671,8 +675,7 @@ end;
 
 function StatusToColor(Status : string; var backColor, fontColor : TColor; var fStyle : TFontStyles) : boolean;
 var
-  cRoomStatus,
-  ch : char;
+  cRoomStatus : Char;
   Room,
   sRoomStatus : String;
 begin
@@ -1021,55 +1024,69 @@ end;
 
 procedure TGlobalApplication.InitializeApplicationGlobals;
 begin
-  qProgramPath := GetTempPath + 'Roomer\'; // LocalAppDataPath; // _AddSlash(ExtractFileDir(Application.ExeName));
-  qProgramExePath := LocalAppDataPath + 'Roomer\Storage\';
-  ForceDirectories(qProgramPath);
-  ForceDirectories(qProgramExePath);
-  ForceDirectories(qProgramExePath + 'Data');
-  qAppIniFile := GetRoomerIniFilename;
+  EnterCriticalSection(FLock);
+  try
+
+    qProgramPath := GetTempPath + 'Roomer\'; // LocalAppDataPath; // _AddSlash(ExtractFileDir(Application.ExeName));
+    qProgramExePath := LocalAppDataPath + 'Roomer\Storage\';
+    ForceDirectories(qProgramPath);
+    ForceDirectories(qProgramExePath);
+    ForceDirectories(qProgramExePath + 'Data');
+    qAppIniFile := GetRoomerIniFilename;
 
 
-//  qComputerName    := _getComputerNetName;
-  qWindowsUser     := _getWindowsUser;
+  //  qComputerName    := _getComputerNetName;
+    qWindowsUser     := _getWindowsUser;
 
 
-  qColorIsTakenBack := $0099CCFF;
-  qColorIsTakenFont := clRed;
+    qColorIsTakenBack := $0099CCFF;
+    qColorIsTakenFont := clRed;
 
-  qColorOneDayGridBack := $00DFEFFF;
-  qColorOneDayGridFont := clWhite;
+    qColorOneDayGridBack := $00DFEFFF;
+    qColorOneDayGridFont := clWhite;
 
-  qColorOneDayRoomColBack := $00A8D3FF;
-  qColorOneDayRoomColFont := clBlack;
+    qColorOneDayRoomColBack := $00A8D3FF;
+    qColorOneDayRoomColFont := clBlack;
 
 
 
-  qColorRoomCleanBack      := clMaroon;
-  qColorRoomUncleanBack    := clBlue;
-  qColorRoomOutOfOrderBack := clRed;
-  qColorRoomOther1Back     := clGreen;
-  qColorRoomOther2Back     := clPurple;
-  qColorRoomOther3Back     := clFuchsia;
+    qColorRoomCleanBack      := clMaroon;
+    qColorRoomUncleanBack    := clBlue;
+    qColorRoomOutOfOrderBack := clRed;
+    qColorRoomOther1Back     := clGreen;
+    qColorRoomOther2Back     := clPurple;
+    qColorRoomOther3Back     := clFuchsia;
 
-  qColorRoomCleanFont      := clWhite;
-  qColorRoomUncleanFont    := clWhite;
-  qColorRoomOutOfOrderFont := clWhite;
-  qColorRoomOther1Font     := clWhite;
-  qColorRoomOther2Font     := clWhite;
-  qColorRoomOther3Font     := clWhite;
+    qColorRoomCleanFont      := clWhite;
+    qColorRoomUncleanFont    := clWhite;
+    qColorRoomOutOfOrderFont := clWhite;
+    qColorRoomOther1Font     := clWhite;
+    qColorRoomOther2Font     := clWhite;
+    qColorRoomOther3Font     := clWhite;
+  finally
+    LeaveCriticalSection(FLock);
+  end;
 
 end;
 
 constructor TGlobalApplication.Create;
 begin
   inherited;
-  FqHotelList := TstringList.Create;
-  FqHotelIndex := 0;
-  FBackupMachine := False;
-  qlstLang := TStringList.create;
-  qlstLang.Add('English|ntv');
-  qlstLang.Add('Íslenska|ISL');
-  qlstLang.Add('Dutch|NL');
+  InitializeCriticalSection(FLock);
+
+  EnterCriticalSection(FLock);
+  try
+    FqHotelList := TstringList.Create;
+    FqHotelIndex := 0;
+    FBackupMachine := False;
+    qlstLang := TStringList.create;
+    qlstLang.Add('English|ntv');
+    qlstLang.Add('Íslenska|ISL');
+    qlstLang.Add('Dutch|NL');
+  finally
+    LeaveCriticalSection(FLock);
+  end;
+
   InitializeApplicationGlobals;
 end;
 
@@ -1077,6 +1094,7 @@ destructor TGlobalApplication.destroy;
 begin
   FqHotelList.free;
   freeandNil(qlstLang);
+  DeleteCriticalSection(Flock);
   /// ---
   inherited;
 end;
@@ -1089,7 +1107,6 @@ var
   s : string;
   ch : char;
 begin
-  result := false;
 //  strResult := 'Connection failure!';
    strResult := GetTranslatedText('shTx_G_ConnectionFail');
 
@@ -1170,7 +1187,6 @@ begin
     end;
   end;
 end;
-
 procedure TGlobalApplication.RegisterApplication;
 var res, key, secret : String;
 begin
@@ -1256,7 +1272,6 @@ const
 
 var
   reg        : TRoomerRegistryIniFile;
-  openResult : Boolean;
   AppRegGroup : String;
 begin
 //  reg := TRoomerRegistryIniFile.Create('RoomerLocalSettings_' + g.qHotelCode + '.ini');
@@ -1420,6 +1435,14 @@ begin
     end;
 end;
 
+function TGlobalApplication.GetAppSecret: string;
+begin
+  if FqAppSecret = ''  then
+    RegisterApplication;
+
+  Result := FqAppSecret;
+end;
+
 function TGlobalApplication.GetHotelIndex : integer;
 //var
 //  sIniName : string;
@@ -1522,9 +1545,6 @@ end;
 //end;
 
 function TGlobalApplication.ChangeLang(newLangId : integer; doUpdate : boolean=true) : boolean;
-var
-  Line    : string;
-  langExt : string;
 begin
   result := false;
   if NewLangId = g.qUserLanguage then exit;
@@ -1540,8 +1560,6 @@ begin
 end;
 
 function TGlobalApplication.openSelectLanguage(var langName,langExt : string; var langId : integer) : boolean;
-var
-  i : integer;
 begin
 (*
   zLangId   := cbxSelLang.itemindex;
@@ -2025,7 +2043,6 @@ end;
 
 function TGlobalApplication.openHiddenInfo(Refrence, RefrenceType : integer): boolean;
 begin
-  result := false;
   frmHiddenInfo := TfrmHiddenInfo.Create(frmHiddenInfo);
   try
     frmHiddenInfo.zRefrence := Refrence;
@@ -2098,8 +2115,6 @@ end;
 
 function TGlobalApplication.strToStatusAttr(const aValue : string) : recStatusAttr;
 var
-  s : string;
-
   sTmp : string;
 
 begin
@@ -2183,7 +2198,6 @@ end;
 // **
 function TGlobalApplication.OpenResProblem(var lst : TstringList) : integer;
 begin
-  result := - 1;
   frmResProblem := TfrmResProblem.Create(frmResProblem);
   try
     frmResProblem.lst.Assign(lst);
@@ -2204,7 +2218,6 @@ end;
 
 function TGlobalApplication.OpenRoomDateProblem(var lst : TstringList) : integer;
 begin
-  result := - 1;
   frmRoomDateProblem := TfrmRoomDateProblem.Create(frmRoomDateProblem);
   try
     frmRoomDateProblem.lst.Assign(lst);
@@ -2463,7 +2476,6 @@ begin
 end;
 
 procedure ClearStringGridRows(Grid : TAdvStringGrid; FromRow, RowCount : Integer);
-var iRow, iCol : integer;
 begin
 //  for iRow := FromRow to FromRow + RowCount - 1 do
 //     for iCol := 0 to Grid.ColCount - 1 do

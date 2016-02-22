@@ -108,7 +108,6 @@ end;
 
 procedure TfrmDownPayment.btnOkClick(Sender: TObject);
 var
-  dq : double;
   balance : double;
 
 begin

@@ -63,6 +63,8 @@ end;
 
 procedure TfrmRoomerSplash.NilInternetEvents;
 begin
+  if assigned(d.roomerMainDataSet.roomerClient) then
+  begin
 {$IFDEF USE_INDY}
      d.roomerMainDataSet.roomerClient.OnWork := nil;
      d.roomerMainDataSet.roomerClient.OnRedirect := nil;
@@ -71,6 +73,7 @@ begin
      d.roomerMainDataSet.roomerClient.OnUploadProgress := nil;
      d.roomerMainDataSet.roomerClient.OnRedirect := nil;
 {$ENDIF}
+  end;
 end;
 
 procedure TfrmRoomerSplash.FormClose(Sender: TObject; var Action: TCloseAction);

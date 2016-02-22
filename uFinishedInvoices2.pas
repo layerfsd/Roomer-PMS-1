@@ -62,7 +62,7 @@ uses
   , sCheckBox
 
   , cxPropertiesStore
-  , cxClasses
+  , cxClasses, AdvUtil
 
 
   ;
@@ -79,7 +79,6 @@ TYPE
     LMDBackPanel1: TsPanel;
     btnPrint: TsButton;
     LMDSpeedButton5: TsButton;
-    frxReport1: TfrxReport;
     frxDesigner1: TfrxDesigner;
     btnDesign: TsButton;
     rptDsLines: TfrxDBDataset;
@@ -167,7 +166,7 @@ TYPE
     Label3: TsLabel;
     Label11: TsLabel;
     edtPayments: TsEdit;
-
+    frxReport1: TfrxReport;
     procedure btnCloseClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure tcPagesChange(Sender: TObject);
@@ -247,7 +246,8 @@ procedure ViewInvoice2(invoiceNumber : integer;
 implementation
 
 uses
-    ADODB
+    UITypes
+  , ADODB
   , DBTables
   , uMain
   , uSqlDefinitions
@@ -893,7 +893,6 @@ Procedure TfrmFinishedInvoices2.doSend;
 var
   FileName : string;
   Currency       : string;
-  Rate            : double;
 begin
   d.InsertMTdata(zInvoiceNumber,zXML_export,false,false);
 
@@ -985,7 +984,6 @@ procedure TfrmFinishedInvoices2.btnDesignClick(Sender: TObject);
 var
   fileName : string;
   currency : string;
-  rate     : double;
 begin
   d.InsertMTdata(zInvoiceNumber,false,false,chkShowPackage.Checked);
   TRY
@@ -1088,8 +1086,8 @@ begin
 end;
 
 procedure TfrmFinishedInvoices2.frxPDFExport1BeginExport(Sender: TObject);
-var
-  s : string;
+//var
+//  s : string;
 begin
 //  datetimetostring(s,'yyyy-dd-mm hh-nn',now);
 //  frxPDFExport1.FileName := 'Invoice_'+inttostr(zInvoiceNumber)+s+'.pdf';

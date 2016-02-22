@@ -2,15 +2,21 @@ unit uRoomerThreadedRequest;
 
 interface
 
+{$INCLUDE roomer.inc}
+
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls,
-  Dialogs, StdCtrls, DB, ADODB, Grids, DBGrids, cmpRoomerDataSet;
+  Classes,
+  DB,
+  cmpRoomerDataSet,
+  ADODB
+  ;
 
 type
 
   TOperationType = (OT_EXECUTE, OT_PUT, OT_POST);
 
-  TFieldInfoRecord = Record // as far as sometimes parametertypes can not be detected by
+  TFieldInfoRecord = Record
+    // as far as sometimes parametertypes can not be detected by
     DataType: TFieldType; // Ado on his own, provide all needed informations
     Name: String;
     Size: Integer;
@@ -19,79 +25,102 @@ type
 
   TFieldInfoArray = Array of TFieldInfoRecord;
 
-  TDBThread = Class(TThread)
-    Constructor Create(Const SQL: String; FDArray: TFieldInfoArray); overload;
-    Constructor Create(Const SQL, Data: String; OperationType : TOperationType); overload;
+type
+  TBaseDBThread = class abstract(TThread)
+  private
+    FRecordSet: _RecordSet;
+    FRoomerDataSet: TRoomerDataSet;
+  protected
+    Procedure Execute; override;
+    procedure InternalExecute; virtual; abstract;
+    procedure ExecuteSQL(const aCommand: string);
+    procedure ExecutePUT(const aCommand, aData : string);
+    procedure ExecutePOST(const aCommand, aData: string);
+  public
+    Property RecordSet: _RecordSet read FRecordSet;
+    property Dataset: TRoomerDataset read FRoomerDataSet;
+  end;
+
+  TDBThread = Class(TBaseDBThread)
   private
     FSQL: String;
     FData: String;
-    FOperationType : TOperationType;
+    FOperationType: TOperationType;
     FFDArray: TFieldInfoArray;
-    FRecordSet: _RecordSet;
-  Protected
-    Procedure Execute; override;
+  protected
+    procedure InternalExecute; override;
   public
-    Property RecordSet: _RecordSet read FRecordSet;
-  End;
+    constructor Create(Const aSQL: String; aFDArray: TFieldInfoArray); overload;
+    constructor Create(Const sql, data: String; OperationType: TOperationType); overload;
+  end;
 
-  TGetThreadedData = class
-    FDataSet : TRoomerDataSet;
-    FEventHandler : TNotifyEvent;
-    procedure Execute(const sql : String; handler : TNotifyEvent);
-    procedure Put(const url, data : String; handler : TNotifyEvent);
-    procedure Post(const url, data : String; handler : TNotifyEvent);
+  // Execute a sql statement or REST call in a separate thread, on termination of that thread the
+  // supplied TNotifyEvent is called.
+  TGetThreadedData = class(TObject)
   private
+    FRoomerDataSet: TRoomerDataSet;
+    FEventHandler: TNotifyEvent;
     procedure ThreadTerminate(Sender: TObject);
-    { Private-Deklarationen }
+  protected
+
   public
-    { Public-Deklarationen }
-    constructor Create; overload;
-    constructor Create(OperationType : TOperationType); overload;
-    destructor Destroy;
-    property DataSet : TRoomerDataSet read FDataSet;
+    constructor Create;
+    destructor Destroy; override;
+
+    // Execute SQL statement, on completion the result is in Dataset
+    procedure Execute(const sql: String; aOnCompletionHandler: TNotifyEvent);
+    procedure Put(const url, data: String; aOnCompletionHandler: TNotifyEvent);
+    procedure Post(const url, data: String; aOnCompletionHandler: TNotifyEvent);
+
+    property RoomerDataSet: TRoomerDataSet read FRoomerDataSet;
   end;
 
 implementation
 
-uses ActiveX, uD;
+uses
+  Windows,
+  ActiveX,
+  uD,
+  SysUtils;
 
-procedure TGetThreadedData.Execute(const sql : String; handler : TNotifyEvent);
+
+procedure TGetThreadedData.Execute(const sql: String; aOnCompletionHandler: TNotifyEvent);
 begin
-  FEventHandler := handler;
+  FEventHandler := aOnCompletionHandler;
   With TDBThread.Create(sql, nil) do
   begin
     FOperationType := OT_EXECUTE;
     FreeOnTerminate := true;
-    // assign the procedure to be called on terminate
     OnTerminate := ThreadTerminate;
+    Start;
   end;
 end;
 
-procedure TGetThreadedData.Post(const url, data: String; handler: TNotifyEvent);
+procedure TGetThreadedData.Post(const url, data: String; aOnCompletionHandler: TNotifyEvent);
 begin
-  FEventHandler := handler;
-  With TDBThread.Create(url, data, OT_POST) do
+  FEventHandler := aOnCompletionHandler;
+  with TDBThread.Create(url, data, OT_POST) do
   begin
-    FreeOnTerminate := true;
-    // assign the procedure to be called on terminate
+    FreeOnTerminate := false;
     OnTerminate := ThreadTerminate;
+    Start;
   end;
 end;
 
-procedure TGetThreadedData.Put(const url, data: String; handler: TNotifyEvent);
+procedure TGetThreadedData.Put(const url, data: String; aOnCompletionHandler: TNotifyEvent);
 begin
-  FEventHandler := handler;
+  FEventHandler := aOnCompletionHandler;
   With TDBThread.Create(url, data, OT_PUT) do
   begin
     FreeOnTerminate := true;
-    // assign the procedure to be called on terminate
     OnTerminate := ThreadTerminate;
+    Start;
   end;
 end;
 
 procedure TGetThreadedData.ThreadTerminate(Sender: TObject);
 begin
-  FDataSet.RecordSet := TDBThread(Sender).RecordSet;
+  FRoomerDataSet.RecordSet := TDBThread(Sender).RecordSet;
   if assigned(FEventHandler) then
     FEventHandler(self);
 end;
@@ -99,84 +128,88 @@ end;
 constructor TGetThreadedData.Create;
 begin
   inherited;
-{$IFDEF DEBUG}
+{$IFDEF rmMONITOR_LEAKAGE}
   ReportMemoryLeaksOnShutDown := IsDebuggerPresent();
 {$ENDIF}
-  FDataSet := CreateNewDataSet;
-  FDataSet.RoomerDataSet := nil;
-end;
-
-constructor TGetThreadedData.Create(OperationType: TOperationType);
-begin
-  inherited Create;
-{$IFDEF DEBUG}
-  ReportMemoryLeaksOnShutDown := IsDebuggerPresent();
-{$ENDIF}
-  FDataSet := CreateNewDataSet;
-  FDataSet.RoomerDataSet := nil;
+  FRoomerDataSet := CreateNewDataSet;
+  FRoomerDataSet.RoomerDataSet := nil;
 end;
 
 destructor TGetThreadedData.Destroy;
 begin
-  FDataSet.Free;
+  FRoomerDataSet.Free;
   inherited;
 end;
 
 { TDBThread }
 
-constructor TDBThread.Create(const SQL: String;
-  FDArray: TFieldInfoArray);
-var
-  I: Integer;
+constructor TDBThread.Create(const aSQL: String; aFDArray: TFieldInfoArray);
 begin
-  inherited Create(false);
-  FSQL := SQL;
+  inherited Create(True);
+  FSQL := aSQL;
+  FFDArray := aFDArray;
 end;
 
-constructor TDBThread.Create(const SQL, Data: String; OperationType: TOperationType);
+constructor TDBThread.Create(const sql, data: String; OperationType: TOperationType);
 begin
-  inherited Create(false);
-  FSQL := SQL;
+  inherited Create(True);
+  FSQL := sql;
   FOperationType := OperationType;
   FData := data;
 end;
 
-procedure TDBThread.Execute;
-var
-  I: Integer;
-  DataSet : TRoomerDataset;
+procedure TBaseDBThread.Execute;
 begin
   inherited;
   CoInitialize(nil);
   try
-    DataSet := CreateNewDataSet;
-    DataSet.RoomerDataSet := nil;
-    With DataSet do
-      case FOperationType of
-        OT_EXECUTE : begin
-          try
-            DataSet.CommandType := cmdText;
-            DataSet.CommandText := FSQL;
-            try
-              DataSet.open(false);
-            except
-              on e: exception do
-              begin
-                raise;
-              end;
-            end;
+    NameThreadForDebugging(Classname);
+    FRoomerDataSet := CreateNewDataSet;
+    try
+      FRoomerDataSet.RoomerDataSet := nil;
 
-            FRecordSet := RecordSet; // keep recordset
-          finally
-            Free;
-          end;
-        end;
-        OT_PUT : DataSet.PutData(FSql, FData);
-        OT_POST : DataSet.PostData(FSql, FData);
-      end;
+      InternalExecute;
+
+    finally
+      FRoomerDataSet.Free;
+    end;
   finally
     CoUnInitialize;
   end;
+end;
+
+
+procedure TDBThread.InternalExecute;
+begin
+  inherited;
+  try
+    case FOperationType of
+      OT_EXECUTE:  ExecuteSQL(FSQL);
+      OT_PUT:      ExecutePut(FSQL, FData);
+      OT_POST:     ExecutePost(FSQL, FData);
+    end;
+  except
+    // what to do here ...
+  end;
+end;
+
+procedure TBaseDBThread.ExecutePOST(const aCommand, aData: string);
+begin
+  FRoomerDataSet.PostData(aCommand, aData);
+end;
+
+procedure TBaseDBThread.ExecutePUT(const aCommand, aData: string);
+begin
+  FRoomerDataSet.PutData(aCommand, aData);
+end;
+
+procedure TBaseDBThread.ExecuteSQL(const aCommand: string);
+begin
+  FreeAndNil(FRecordSet);
+  FRoomerDataSet.CommandType := cmdText;
+  FRoomerDataSet.CommandText := aCommand;
+  FRoomerDataSet.Open(false);
+  FRecordSet := FRoomerDataSet.RecordSet; // keep recordset
 end;
 
 end.

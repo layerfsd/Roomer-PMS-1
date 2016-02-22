@@ -1663,7 +1663,6 @@ function INS_currency(theData: recCurrencyHolder; var NewID: integer): boolean;
 function Del_currencyBycurrency(sCurrency: string): boolean;
 function currencyExistsInOther(sCurrency: string): boolean;
 function CurrencyExist(sCurrency: string): boolean;
-function CurrencySwUpdateHomeRates(RateType, CalcStudull: integer; var isConnected: boolean; udlPath: string): double;
 
 // convert
 procedure initConvertHolder(var rec: recConvertHolder);
@@ -2167,7 +2166,6 @@ begin
   frmdayNotes.memLog.Lines.Add('-----');
   frmdayNotes.memLog.Lines.Add('');
 {$ENDIF}
-  result := false;
   errMsg := '';
   try
     if performFilterTableNames then
@@ -4146,7 +4144,6 @@ var
   rSet: TRoomerDataSet;
   sDate: string;
   ii: integer;
-  s: string;
   theData: recRoomsDateHolder;
   Rate: double;
 begin
@@ -4682,7 +4679,6 @@ var
   rSet: TRoomerDataSet;
   s: string;
 begin
-  result := false;
   // s := s + ' SELECT ItemType FROM [ItemTypes] '+#10;
   // s := s + ' WHERE (ItemType = ' + _db(sItemType) + ') '+#10;
 
@@ -4913,10 +4909,8 @@ begin
 end;
 
 function ExclutedTax(Invoicenumber : integer; Amount,Nights : double): boolean;
-var
-  rSet: TRoomerDataSet;
-  s: string;
 begin
+  Result := false;
 //  result := 0;
 //  rSet := CreateNewDataSet;
 //  try
@@ -4958,7 +4952,6 @@ var
   rSet: TRoomerDataSet;
   s: string;
 begin
-  result := false;
   rSet := CreateNewDataSet;
   try
     s := format(select_RV_Exists, [iReservation]);
@@ -5336,9 +5329,6 @@ begin
 end;
 
 function GetRate(Currency: string): double;
-var
-  rSet: TRoomerDataSet;
-  s: string;
 begin
   result := 1;
   if glb.LocateCurrency(Currency) then
@@ -5405,7 +5395,6 @@ var
   GuestName: string;
   Staff: string;
   Currency: string;
-  CurrencyRate: double;
 
   s: string;
 begin
@@ -5467,8 +5456,6 @@ begin
   finally
     freeandnil(rSet);
   end;
-
-  CurrencyRate := GetRate(Currency);
 
   Staff := user;
   InvoiceDate := date;
@@ -5578,7 +5565,6 @@ var
   rSet: TRoomerDataSet;
   s: string;
 begin
-  result := false;
   rSet := CreateNewDataSet;
   try
     // s := s + 'SELECT '+#10;
@@ -5595,12 +5581,9 @@ begin
 end;
 
 function PriceCodes_GETRack(): integer;
-var
-  rSet: TRoomerDataSet;
-  s: string;
 begin
   // TOOPT
-
+  Result := -1;
   glb.TblpricecodesSet.First;
   if glb.TblpricecodesSet.Locate('PcRack', 1, []) then
   begin
@@ -5621,9 +5604,6 @@ begin
 end;
 
 function CustomerTypes_GetDefault(): string;
-var
-  rSet: TRoomerDataSet;
-  s: string;
 begin
   // TOOPT
 
@@ -6033,9 +6013,6 @@ var
   TotalDiscount: double;
   RentDays: integer;
 
-  RoomRate: double;
-  DiscountAmount: double;
-
 begin
   initRentInfoRec(result);
 
@@ -6225,8 +6202,6 @@ var
   reservationRec: recReservationHolder;
   personRec: recPersonHolder;
 
-  Reservation: integer;
-  Person: integer;
   rSet: TRoomerDataSet;
 begin
   roomReservationRec := SP_GET_RoomReservation(RoomReservation);
@@ -6446,13 +6421,10 @@ var
   rSet: TRoomerDataSet;
 
   Arrival: Tdate;
-  Departure: Tdate;
-  Reservation: integer;
   guestStatus: string;
 
   ADate: Tdate;
   CheckIn: integer;
-  CheckOut: integer;
 
   ArrivalText: string;
   StatusText: string;
@@ -6461,7 +6433,6 @@ begin
   result := '';
 
   Arrival := now;
-  Departure := now;
   rSet := CreateNewDataSet;
   try
     ADate := date;
@@ -6480,13 +6451,10 @@ begin
     if hData.rSet_bySQL(rSet, s) then
     begin
       Arrival := rSet.fieldbyname('rrArrival').AsDateTime;
-      Departure := rSet.fieldbyname('rrDeparture').AsDateTime;
-      Reservation := rSet.fieldbyname('Reservation').asInteger;
       guestStatus := rSet.fieldbyname('Status').asString;
     end;
 
     CheckIn := (trunc(Arrival) - trunc(ADate));
-    CheckOut := (trunc(Departure) - trunc(ADate));
 
     if CheckIn = 0 then
     begin
@@ -6597,7 +6565,6 @@ end;
 
 function GET_ChannelManagerHolderById(var theData: recChannelManagerHolder): boolean;
 var
-  getItem: string;
   s: string;
   rSet: TRoomerDataSet;
 begin
@@ -6688,7 +6655,6 @@ end;
 
 function GET_CountryGroupDefault(): string;
 var
-  getItem: string;
   s: string;
   rSet: TRoomerDataSet;
 begin
@@ -6719,7 +6685,6 @@ function UPD_CountryGroup(theData: recCountryGroupHolder): boolean;
 var
   s: string;
 begin
-  result := false;
   if theData.tmp = '' then
     theData.tmp := theData.CountryGroup;
 
@@ -6740,7 +6705,6 @@ function UPD_CHannelManager(theData: recChannelManagerHolder): boolean;
 var
   s: string;
 begin
-  result := false;
   if theData.tmp = '' then
     theData.tmp := inttostr(theData.id);
 
@@ -6777,7 +6741,6 @@ var
   s: string;
   i: integer;
 begin
-  result := false;
   if theData.tmp = '' then
     theData.tmp := inttostr(theData.id);
   s := '';
@@ -6834,7 +6797,6 @@ function INS_CountryGroup(theData: recCountryGroupHolder): boolean;
 var
   s: string;
 begin
-  result := false;
   if theData.tmp = '' then
     theData.tmp := theData.CountryGroup;
   s := '';
@@ -6884,7 +6846,6 @@ var
   s: string;
   rSet: TRoomerDataSet;
 begin
-  result := false;
 
   // s := '';
   // s := s + ' SELECT CountryGroup FROM [Countries] '+chr(10);
@@ -6903,7 +6864,6 @@ var
   s: string;
   rSet: TRoomerDataSet;
 begin
-  result := false;
   // s := s + ' SELECT CountryGroup FROM [CountryGroups] '+#10;
   // s := s + ' WHERE (CountryGroup = ' + quotedstr(sCode) + ') ';
 
@@ -6992,7 +6952,6 @@ var
   s: string;
   rSet: TRoomerDataSet;
 begin
-  result := false;
 
   rSet := CreateNewDataSet;
   try
@@ -7035,7 +6994,6 @@ var
   s: string;
   rSet: TRoomerDataSet;
 begin
-  result := false;
   s := format(select_CountryExists, [quotedstr(sCode)]);
   rSet := CreateNewDataSet;
   try
@@ -7049,7 +7007,6 @@ function UPD_Country(theData: recCountryHolder): boolean;
 var
   s: string;
 begin
-  result := false;
   if theData.tmp = '' then
     theData.tmp := theData.Country;
   s := '';
@@ -7083,7 +7040,6 @@ function INS_Country(theData: recCountryHolder; var NewID: integer): boolean;
 var
   s: string;
 begin
-  result := false;
   s := '';
   s := s + 'INSERT INTO countries ' + #10;
   s := s + '   ( ' + #10;
@@ -7257,7 +7213,6 @@ function UPD_currency(theData: recCurrencyHolder): boolean;
 var
   s: string;
 begin
-  result := false;
   if theData.tmp = '' then
     theData.tmp := theData.Currency;
   s := '';
@@ -7276,7 +7231,6 @@ function UPD_currencyRate(Currency: string; Rate: double): boolean;
 var
   s: string;
 begin
-  result := false;
   s := '';
   s := s + ' UPDATE currencies ' + #10;
   s := s + ' SET ' + #10;
@@ -7290,7 +7244,6 @@ function INS_currency(theData: recCurrencyHolder; var NewID: integer): boolean;
 var
   s: string;
 begin
-  result := false;
   s := '';
   s := s + 'INSERT INTO currencies ' + #10;
   s := s + '   ( ' + #10;
@@ -7319,7 +7272,6 @@ var
   s: string;
   rSet: TRoomerDataSet;
 begin
-  result := false;
   rSet := CreateNewDataSet;
   try
 
@@ -7406,7 +7358,6 @@ var
   s: string;
   rSet: TRoomerDataSet;
 begin
-  result := false;
   // s := s + 'SELECT '+chr(10);
   // s := s + 'Currency '+chr(10);
   // s := s + 'FROM '+chr(10);
@@ -7423,155 +7374,6 @@ begin
   end;
 end;
 
-procedure swOpenConnection(var isConnected: boolean; udlPath: string);
-var
-  s: string;
-  F: textfile;
-  sTime: string;
-  Fname: string;
-  connText: string;
-  companyID: string;
-
-  connected: boolean;
-
-begin
-  companyID := ctrlGetString('CompanyID');
-  if isConnected then
-    exit;
-
-  connText := 'FILE NAME=' + udlPath + 'Stowin_' + companyID + '.udl';
-
-  connected := true;
-  try
-
-  except
-//    if Connection.Errors <> nil then
-    begin
-      connected := false;
-      s := '';
-      s := s + 'Tenging við gagnagrunn Stólpa mistókst ' + #10;
-      s := s + 'Sjá nánar í StolpiConnErr.txt í forritamöppu';
-      Showmessage(s);
-
-      datetimetostring(sTime, 'dd.mm.yyyy hh:nn:ss', now);
-      s := sTime + #13#10;
-      if trim(connText) = '' then
-      begin
-        s := s + 'Tengistrengur tónur';
-      end
-      else
-      begin
-        s := s + connText;
-      end;
-
-      Fname := udlPath + 'StolpiConnErr.txt';
-      try
-        AssignFile(F, Fname);
-        Rewrite(F);
-        writeln(F, s);
-        CloseFile(F);
-      except
-        on e: exception do
-        begin
-          MessageDlg(e.message, mtError, [mbOK], 0);
-        end;
-      end;
-    end;
-  end;
-end;
-
-function CurrencySwUpdateHomeRates(RateType, CalcStudull: integer; var isConnected: boolean; udlPath: string): double;
-// RateType 1 Kaupgengi - 2 Sölugengi - 3 tollgengi
-var
-  rSet: TRoomerDataSet;
-  rSetCurrencies: TRoomerDataSet;
-  s: string;
-
-  currencyData: recCurrencyHolder;
-
-  Currency: string;
-  CurrValue: double;
-  CurrSellValue: double;
-begin
-  // *NOI TESTED
-
-  if CalcStudull = 0 then
-    CalcStudull := 1;
-  result := 0.00;
-  try
-    swOpenConnection(isConnected, udlPath);
-  except
-    exit
-  end;
-
-
-  // s := '';
-  // s := s+ ' SELECT '+#10;
-  // s := s+ '    [Currency] '+#10;
-  // s := s+ '   ,[Description] '+#10;
-  // s := s+ '   ,[AValue] '+#10;
-  // s := s+ ' FROM '+#10;
-  // s := s+ '   currencies '+#10;
-  // s := s+ ' ORDER BY '+#10;
-  // s := s+ '   currency '+#10;
-
-  rSetCurrencies := CreateNewDataSet;
-  try
-    s := format(select_CurrencySwUpdateHomeRates, []);
-    if rSet_bySQL(rSetCurrencies, s) then
-    begin
-      while not rSetCurrencies.Eof do
-      begin
-        Currency := rSetCurrencies.fieldbyname('Currency').asString;
-        // s := '';
-        // s := s + ' SELECT '+chr(10);
-        // s := s + '     t_RateValues.sNumber '+chr(10);
-        // s := s + '   , t_RateValues.dRateCost '+chr(10);
-        // s := s + '   , t_RateValues.dRateSalesCost '+chr(10);
-        // s := s + '   , t_RateValues.dTollCost '+chr(10);
-        // s := s + ' FROM '+chr(10);
-        // s := s + '   t_RateValues '+chr(10);
-        // s := s + ' WHERE '+chr(10);
-        // s := s + '   (((t_RateValues.sNumber)=' + quotedstr(Currency) + ')) '+chr(10);
-
-        CurrValue := 0.00;
-        CurrSellValue := 0.00;
-
-        rSet := CreateNewDataSet;
-        try
-          s := format(select_CurrencySwUpdateHomeRates2, [quotedstr(Currency)]);
-          if rSet_bySQL(rSet, s) then
-          begin
-            CurrValue := LocalFloatValue(rSet.fieldbyname('dRateCost').asString);
-            CurrSellValue := LocalFloatValue(rSet.fieldbyname('dRateSalesCost').asString);
-          end;
-        finally
-          freeandnil(rSet);
-        end;
-
-        if CurrValue <> 0.00 then
-        begin
-          currencyData.Currency := Currency;
-          currencyData.Description := rSetCurrencies.fieldbyname('Description').asString;;
-
-          if RateType = 1 then
-          begin
-            currencyData.Value := CurrValue * CalcStudull;
-          end
-          else
-          begin
-            currencyData.Value := CurrSellValue * CalcStudull;
-          end;
-
-          UPD_currency(currencyData);
-        end;
-        rSetCurrencies.Next;
-      end;
-    end;
-  finally
-    freeandnil(rSetCurrencies);
-  end;
-end;
 
 function invoiceList_FromTo(DateFrom, DateTo: Tdate; Location : string = ''): TstringList;
 var
@@ -7771,7 +7573,6 @@ function UPD_convert(theData: recConvertHolder): boolean;
 var
   s: string;
 begin
-  result := false;
   if theData.tmp = 0 then
     theData.tmp := theData.cvID;
   if theData.cvID = 0 then
@@ -7793,7 +7594,6 @@ function INS_convert(theData: recConvertHolder): boolean;
 var
   s: string;
 begin
-  result := false;
 
   s := '';
   s := s + 'INSERT INTO tblconverts ' + #10;
@@ -7830,7 +7630,6 @@ var
   s: string;
   rSet: TRoomerDataSet;
 begin
-  result := false;
 
   // s := '';
   // s := s + 'SELECT '+chr(10);
@@ -7917,7 +7716,6 @@ function UPD_convertGroup(theData: recConvertGroupHolder): boolean;
 var
   s: string;
 begin
-  result := false;
   s := '';
   s := s + ' UPDATE tblconvertgroups ' + #10;
   s := s + ' SET ' + #10;
@@ -7933,7 +7731,6 @@ function INS_convertGroup(theData: recConvertGroupHolder): boolean;
 var
   s: string;
 begin
-  result := false;
 
   s := '';
   s := s + 'INSERT INTO tblconvertgroups ' + #10;
@@ -7993,7 +7790,6 @@ var
   s: string;
   rSet: TRoomerDataSet;
 begin
-  result := false;
   // s := s + ' SELECT cvType FROM [tblConverts] '+#10;
   // s := s + ' WHERE (cvType = ' + quotedstr(sCode) + ') ';
   rSet := CreateNewDataSet;
@@ -8010,7 +7806,6 @@ var
   s: string;
   rSet: TRoomerDataSet;
 begin
-  result := false;
 
   // s := '';
   // s := s + 'SELECT '+chr(10);
@@ -8083,7 +7878,6 @@ function UPD_PayType(theData: recPayTypeHolder): boolean;
 var
   s: string;
 begin
-  result := false;
   if theData.tmp = '' then
     theData.tmp := theData.PayType;
   s := '';
@@ -8107,7 +7901,6 @@ function INS_PayType(theData: recPayTypeHolder; var NewID: integer): boolean;
 var
   s: string;
 begin
-  result := false;
 
   s := '';
   s := s + 'INSERT INTO paytypes ' + #10;
@@ -8159,7 +7952,6 @@ var
   s: string;
   rSet: TRoomerDataSet;
 begin
-  result := false;
   // s := s + ' SELECT PayType FROM [Payments] '+chr(10);
   // s := s + ' WHERE (PayType = ' + quotedstr(sCode) + ') '+chr(10);
   rSet := CreateNewDataSet;
@@ -8176,7 +7968,6 @@ var
   s: string;
   rSet: TRoomerDataSet;
 begin
-  result := false;
   // s := '';
   // s := s + ' SELECT '+chr(10);
   // s := s + '   PayType '+chr(10);
@@ -8264,7 +8055,6 @@ function UPD_PhoneRate(theData: recPhoneRateHolder): boolean;
 var
   s: string;
 begin
-  result := false;
   s := '';
   s := s + ' UPDATE phonerates ' + #10;
   s := s + ' SET ' + #10;
@@ -8281,7 +8071,6 @@ function INS_PhoneRate(theData: recPhoneRateHolder; var NewID: integer): boolean
 var
   s: string;
 begin
-  result := false;
 
   s := '';
   s := s + 'INSERT INTO phonerates ' + #10;
@@ -8368,7 +8157,6 @@ function UPD_PayGroup(theData: recPayGroupHolder): boolean;
 var
   s: string;
 begin
-  result := false;
   if theData.tmp = '' then
     theData.tmp := theData.payGroup;
   s := '';
@@ -8387,7 +8175,6 @@ function INS_PayGroup(theData: recPayGroupHolder; var NewID: integer): boolean;
 var
   s: string;
 begin
-  result := false;
 
   s := '';
   s := s + 'INSERT INTO paygroups ' + #10;
@@ -8428,7 +8215,6 @@ var
   s: string;
   rSet: TRoomerDataSet;
 begin
-  result := false;
   rSet := CreateNewDataSet;
   try
     s := format(select_PayGroupExistsInOther, [quotedstr(sCode)]);
@@ -8443,7 +8229,6 @@ var
   s: string;
   rSet: TRoomerDataSet;
 begin
-  result := false;
   rSet := CreateNewDataSet;
   try
     s := format(select_PayGroupExist, [_db(sCode)]);
@@ -8499,7 +8284,6 @@ function UPD_VatCode(theData: recVatCodeHolder): boolean;
 var
   s: string;
 begin
-  result := false;
   if theData.tmp = '' then
     theData.tmp := theData.VatCode;
   s := '';
@@ -8519,7 +8303,6 @@ function INS_VatCode(theData: recVatCodeHolder): boolean;
 var
   s: string;
 begin
-  result := false;
 
   s := '';
   s := s + 'INSERT INTO vatcodes ' + #10;
@@ -8558,7 +8341,6 @@ var
   s: string;
   rSet: TRoomerDataSet;
 begin
-  result := false;
   // s := s + ' SELECT VatCode FROM [Itemtypes] '+chr(10);
   // s := s + ' WHERE (VatCode = ' + quotedstr(sCode) + ') '+chr(10);
   rSet := CreateNewDataSet;
@@ -8575,7 +8357,6 @@ var
   s: string;
   rSet: TRoomerDataSet;
 begin
-  result := false;
 
   // s := '';
   // s := s + 'SELECT '+chr(10);
@@ -8641,7 +8422,6 @@ function UPD_ChannelPlanCode(theData: recChannelPlanCodeHolder): boolean;
 var
   s: string;
 begin
-  result := false;
   if theData.tmp = '' then
     theData.tmp := theData.Code;
   s := '';
@@ -8660,7 +8440,6 @@ function INS_ChannelPlanCode(theData: recChannelPlanCodeHolder): boolean;
 var
   s: string;
 begin
-  result := false;
 
   s := '';
   s := s + 'INSERT INTO channelplancodes ' + #10;
@@ -8693,9 +8472,6 @@ begin
 end;
 
 function ChannelPlanCodeExistsInOther(sCode: string): boolean;
-var
-  s: string;
-  rSet: TRoomerDataSet;
 begin
   result := false;
   exit;
@@ -8715,7 +8491,6 @@ var
   s: string;
   rSet: TRoomerDataSet;
 begin
-  result := false;
 
   s := '';
   s := s + 'SELECT ' + chr(10);
@@ -8761,9 +8536,6 @@ begin
 end;
 
 function GET_PriceCodeRackID(): integer;
-var
-  s: string;
-  rSet: TRoomerDataSet;
 begin
   result := -1;
 
@@ -8796,7 +8568,6 @@ end;
 
 function GET_PriceCodeHolder(var theData: recPriceCodeHolder): boolean;
 var
-  getCode: string;
   s: string;
   rSet: TRoomerDataSet;
 begin
@@ -8856,7 +8627,6 @@ function UPD_PriceCode(theData: recPriceCodeHolder): boolean;
 var
   s: string;
 begin
-  result := false;
   if theData.tmp = '' then
     theData.tmp := theData.pcCode;
   s := '';
@@ -8884,8 +8654,6 @@ function INS_PriceCode(theData: recPriceCodeHolder; var NewID: integer): boolean
 var
   s: string;
 begin
-  result := false;
-
   s := '';
   s := s + 'INSERT INTO tblpricecodes ' + #10;
   s := s + '   ( ' + #10;
@@ -8939,9 +8707,6 @@ begin
 end;
 
 function PriceCoceExistsInOther(id: integer): boolean;
-var
-  s: string;
-  rSet: TRoomerDataSet;
 begin
   result := false;
   (*
@@ -8968,8 +8733,6 @@ var
   s: string;
   rSet: TRoomerDataSet;
 begin
-  result := false;
-
   // s := '';
   // s := s + 'SELECT '+chr(10);
   // s := s + '  pcCode '+chr(10);
@@ -9067,9 +8830,6 @@ begin
 end;
 
 function priceCode_RackID: integer;
-var
-  rSet: TRoomerDataSet;
-  s: string;
 begin
   result := -1;
   // s := '';
@@ -9157,7 +8917,6 @@ var
   s: string;
   rSet: TRoomerDataSet;
 begin
-  result := false;
   // s := s + ' SELECT [PcCode] FROM [ViewRoomPrices1] WHERE PcCode =' + quotedstr(sPriceType) + ' ';
   rSet := CreateNewDataSet;
   try
@@ -9256,7 +9015,6 @@ begin
     for ii := 0 to lstRoomTypes.Count - 1 do
     begin
       RoomType := lstRoomTypes[ii];
-      freeRooms := 0;
       freeRooms := oRoomTypeRoomCount.FindRoomTypeCount(RoomType, 0);
       lstRoomTypes[ii] := lstRoomTypes[ii] + '|' + inttostr(freeRooms);
     end;
@@ -9299,13 +9057,11 @@ end;
 
 function RoomStatus_updByRangeAndType(FromDate: Tdate; dateCount: integer; roomType1, roomType2: string): boolean;
 var
-  s: string;
 
   ToDate: Tdate;
 
   sFromDate: string;
   sToDate: string;
-  sDate: string;
 
   i: integer;
 
@@ -9343,8 +9099,6 @@ begin
       begin
         RoomType := lstRoomTypes[i];
 
-        freeRooms := 0;
-
         if (_trimlower(roomType1) = '') or (_trimlower(RoomType) = _trimlower(roomType1)) or (_trimlower(RoomType) = _trimlower(roomType2)) then
         begin
           freeRooms := oRoomTypeRoomCount.FindRoomTypeCount(RoomType, 0);
@@ -9372,7 +9126,6 @@ var
   rSet: TRoomerDataSet;
 
   s: string;
-  bTransaction: boolean;
 
   RoomType: string;
 
@@ -9389,9 +9142,6 @@ var
   countProcessed: integer;
 
   freeRooms: integer;
-
-  start, stop: longint;
-  iDateCount: integer;
 
   sql: string;
 
@@ -9439,8 +9189,6 @@ begin
       freeandnil(rSet);
     end;
 
-    iDateCount := lstDates.Count;
-
     for i := 0 to lstDates.Count - 1 do
     begin
       sDate := lstDates[i];
@@ -9460,7 +9208,6 @@ begin
             RoomType := rSet.fieldbyname('RoomType').asString;
             aCount := rSet.fieldbyname('aCount').asInteger;
 
-            freeRooms := 0;
             if (_trimlower(roomType1) = '') or (_trimlower(RoomType) = _trimlower(roomType1)) or (_trimlower(RoomType) = _trimlower(roomType2)) then
             begin
               freeRooms := oRoomTypeRoomCount.FindRoomTypeCount(RoomType, 0);
@@ -9502,8 +9249,6 @@ var
   rSet: TRoomerDataSet;
   s: string;
 begin
-  result := false;
-
   rSet := CreateNewDataSet;
   try
     // s := s + ' SELECT '+chr(10);
@@ -9531,6 +9276,7 @@ function getNewInvoiceNumber(): integer;
 var
   rSet: TRoomerDataSet;
 begin
+  Result := 0;
   d.roomerMainDataSet.SystemStartTransaction;
   try
     rSet := CreateNewDataSet;
@@ -9797,8 +9543,6 @@ end;
 
 function GET_NumberOfGuestsbyRoom(sRoom: string): integer;
 var
-  rSet: TRoomerDataSet;
-  s: string;
   RoomType: string;
 begin
   result := 0;
@@ -9875,7 +9619,6 @@ begin
   exit;
 
   // start := GetTickCount;
-  dateCount := 0;
   FirstDate := 1;
   LastDate := 1;
 
@@ -9940,7 +9683,6 @@ function UPD_rateRule(theData: recRateRuleHolder): boolean;
 var
   s: string;
 begin
-  result := false;
   // if theData.tmp = '' then thedata.tmp := theData.PayType;
   s := '';
   s := s + ' UPDATE pricerules ' + #10;
@@ -9962,7 +9704,6 @@ function INS_RateRule(theData: recRateRuleHolder; var NewID: integer): boolean;
 var
   s: string;
 begin
-  result := false;
 
   s := '';
   s := s + 'INSERT INTO pricerules ' + #10;
@@ -10001,7 +9742,6 @@ var
   s: string;
   rSet: TRoomerDataSet;
 begin
-  result := false;
   s := '';
   s := s + ' SELECT ' + chr(10);
   s := s + '   Description ' + chr(10);
@@ -10118,7 +9858,6 @@ function UPD_Taxes(theData: recTaxesHolder): boolean;
 var
   s: string;
 begin
-  result := false;
   s := '';
   s := s + ' UPDATE home100.TAXES ' + #10;
   s := s + ' SET ' + #10;
@@ -10146,7 +9885,6 @@ function INS_Taxes(theData: recTaxesHolder; var NewID: integer): boolean;
 var
   s: string;
 begin
-  result := false;
 
   s := '';
   s := s + 'INSERT INTO home100.TAXES ' + #10;
@@ -10312,7 +10050,6 @@ function UPD_RoomRate(theData: recwRoomRateHolder): boolean;
 var
   s: string;
 begin
-  result := false;
   s := '';
   s := s + ' UPDATE roomrates ' + #10;
   s := s + ' SET ' + #10;
@@ -10335,7 +10072,6 @@ function INS_RoomRate(theData: recwRoomRateHolder; var NewID: integer): boolean;
 var
   s: string;
 begin
-  result := false;
   s := '';
   s := s + 'INSERT INTO roomrates ' + #10;
   s := s + '   ( ' + #10;
@@ -10378,7 +10114,6 @@ var
   s: string;
   rSet: TRoomerDataSet;
 begin
-  result := false;
   s := '';
   s := s + ' SELECT ' + chr(10);
   s := s + '   Description ' + chr(10);
@@ -10437,7 +10172,6 @@ function UPD_Rate(theData: recRateHolder): boolean;
 var
   s: string;
 begin
-  result := false;
   s := '';
   s := s + ' UPDATE rates ' + #10;
   s := s + ' SET ' + #10;
@@ -10464,7 +10198,6 @@ function INS_Rate(theData: recRateHolder; var NewID: integer): boolean;
 var
   s: string;
 begin
-  result := false;
 
   s := '';
   s := s + 'INSERT INTO rates ' + #10;
@@ -10516,7 +10249,6 @@ var
   s: string;
   rSet: TRoomerDataSet;
 begin
-  result := false;
   s := '';
   s := s + ' SELECT ' + chr(10);
   s := s + '   Description ' + chr(10);
@@ -10537,10 +10269,8 @@ function rateDefaultExist(sCurrency: string; bDefault: boolean): boolean;
 var
   s: string;
   rSet: TRoomerDataSet;
-  isDefault: boolean;
 
 begin
-  result := false;
   s := '';
   s := s + ' SELECT ' + chr(10);
   s := s + '   Currency ' + chr(10);
@@ -10643,7 +10373,6 @@ function UPD_roomType(theData: recRoomTypeHolder): boolean;
 var
   s: string;
 begin
-  result := false;
   s := '';
   s := s + ' UPDATE roomtypes ' + #10;
   s := s + ' SET ' + #10;
@@ -10666,7 +10395,6 @@ function INS_roomType(theData: recRoomTypeHolder; var NewID: integer): boolean;
 var
   s: string;
 begin
-  result := false;
   s := '';
   s := s + 'INSERT INTO roomtypes ' + #10;
   s := s + '   ( ' + #10;
@@ -10707,7 +10435,6 @@ var
   s: string;
   rSet: TRoomerDataSet;
 begin
-  result := false;
   s := '';
   s := s + ' SELECT ' + chr(10);
   s := s + '   RoomType ' + chr(10);
@@ -10812,7 +10539,6 @@ const TABLES_WITH_ROOMTYPE_GROUP_CODE : Array [0..2] of String =
      'tbldelroomreservations,RoomClass');
 
 procedure UpdateRoomTypeGroupCode(oldCode, newCode : String);
-var s : String;
 begin
   UpdateCodeOfTable(TABLES_WITH_ROOMTYPE_GROUP_CODE, oldCode, newCode);
 end;
@@ -10890,7 +10616,6 @@ function UPD_roomTypeGroup(theData: recRoomTypeGroupHolder): boolean;
 var
   s: string;
 begin
-  result := false;
   s := '';
   s := s + ' UPDATE roomtypegroups ' + #10;
   s := s + ' SET ' + #10;
@@ -10949,7 +10674,6 @@ function INS_roomTypeGroup(theData: recRoomTypeGroupHolder; var NewID: integer):
 var
   s: string;
 begin
-  result := false;
   s := '';
   s := s + 'INSERT INTO roomtypegroups ' + #10;
   s := s + '  ( ' + #10;
@@ -11062,7 +10786,6 @@ var
   s: string;
   rSet: TRoomerDataSet;
 begin
-  result := false;
   s := '';
   s := s + ' SELECT ' + chr(10);
   s := s + '   Code ' + chr(10);
@@ -11138,7 +10861,6 @@ function UPD_Season(theData: recSeasonHolder): boolean;
 var
   s: string;
 begin
-  result := false;
   s := '';
   s := s + ' UPDATE tblseasons ' + #10;
   s := s + ' SET ' + #10;
@@ -11155,7 +10877,6 @@ function INS_Season(theData: recSeasonHolder; var NewID: integer): boolean;
 var
   s: string;
 begin
-  result := false;
   s := '';
   s := s + 'INSERT INTO tblseasons ' + #10;
   s := s + '  ( ' + #10;
@@ -11184,7 +10905,6 @@ var
   s: string;
   rSet: TRoomerDataSet;
 begin
-  result := false;
   s := '';
   s := s + ' SELECT ' + chr(10);
   s := s + '   seDescription ' + chr(10);
@@ -11261,7 +10981,6 @@ function UPD_itemtype(theData: recItemTypeHolder): boolean;
 var
   s: string;
 begin
-  result := false;
   s := '';
   s := s + ' UPDATE itemtypes ' + #10;
   s := s + ' SET ' + #10;
@@ -11334,7 +11053,6 @@ var
   s: string;
   rSet: TRoomerDataSet;
 begin
-  result := false;
   s := '';
   s := s + ' SELECT ' + chr(10);
   s := s + '   itemType ' + chr(10);
@@ -11356,7 +11074,6 @@ var
   s: string;
   rSet: TRoomerDataSet;
 begin
-  result := false;
   s := s + ' SELECT itemType FROM items ' + chr(10);
   s := s + ' WHERE (itemType =  %s ) ' + chr(10);
   s := s + ' LIMIT 0,1 ' + chr(10);
@@ -11458,7 +11175,6 @@ function UPD_item(theData: recItemHolder): boolean;
 var
   s: string;
 begin
-  result := false;
   s := '';
   s := s + ' UPDATE items ' + #10;
   s := s + ' SET ' + #10;
@@ -11570,7 +11286,6 @@ var
   s: string;
   rSet: TRoomerDataSet;
 begin
-  result := false;
   s := '';
   s := s + ' SELECT ' + chr(10);
   s := s + '   item ' + chr(10);
@@ -11592,7 +11307,6 @@ var
   s: string;
   rSet: TRoomerDataSet;
 begin
-  result := false;
   s := s + ' SELECT itemID FROM invoicelines ' + chr(10);
   s := s + ' WHERE (itemID =  %s ) ' + chr(10);
   s := s + ' LIMIT 0,1 ' + chr(10);
@@ -11684,7 +11398,6 @@ function UPD_location(theData: recLocationHolder): boolean;
 var
   s: string;
 begin
-  result := false;
   s := '';
   s := s + ' UPDATE locations ' + #10;
   s := s + ' SET ' + #10;
@@ -11813,7 +11526,6 @@ function UPD_room(theData: recRoomHolder): boolean;
 var
   s: string;
 begin
-  result := false;
   s := '';
   s := s + ' UPDATE rooms ' + #10;
   s := s + ' SET ' + #10;
@@ -11859,7 +11571,6 @@ function UPD_roomLocation(Roomtype, newLocation : string): boolean;
 var
   s: string;
 begin
-  result := false;
   s := '';
   s := s + ' UPDATE rooms ' + #10;
   s := s + ' SET ' + #10;
@@ -12013,7 +11724,6 @@ var
   s: string;
   rSet: TRoomerDataSet;
 begin
-  result := false;
   s := s + 'SELECT ' + chr(10);
   s := s + 'Room ' + chr(10);
   s := s + 'FROM ' + chr(10);
@@ -12035,7 +11745,6 @@ var
   s: string;
   rSet: TRoomerDataSet;
 begin
-  result := false;
   rSet := CreateNewDataSet;
   try
 
@@ -12124,7 +11833,6 @@ function UPD_CustomerType(theData: recCustomerTypeHolder): boolean;
 var
   s: string;
 begin
-  result := false;
   s := '';
   s := s + ' UPDATE customertypes ' + #10;
   s := s + ' SET ' + #10;
@@ -12193,7 +11901,6 @@ var
   s: string;
   rSet: TRoomerDataSet;
 begin
-  result := false;
   rSet := CreateNewDataSet;
   try
     s := format(select_CustomerTypeExists, [_db(Code)]);
@@ -12290,7 +11997,6 @@ function UPD_Customer(theData: recCustomerHolder): boolean;
 var
   s: string;
 begin
-  result := false;
   s := '';
   s := s + ' UPDATE customers ' + #10;
   s := s + ' SET ' + #10;
@@ -12482,7 +12188,6 @@ var
   s: string;
   rSet: TRoomerDataSet;
 begin
-  result := false;
   rSet := CreateNewDataSet;
   try
     s := '';
@@ -12507,17 +12212,15 @@ begin
 
     if id >0 then
     begin
-    s := '';
-    s := s+ ' SELECT customerID FROM channels ';
-    s := s+ ' WHERE (id = '+_db(id)+' ) ';
-    s := format(s, [_db(customer)]);
-    if hData.rSet_bySQL(rSet, s) then
-    begin
-      result := true;
-      exit;
-    end;
-
-
+      s := '';
+      s := s+ ' SELECT customerID FROM channels ';
+      s := s+ ' WHERE (id = '+_db(id)+' ) ';
+      s := format(s, [_db(customer)]);
+      if hData.rSet_bySQL(rSet, s) then
+      begin
+        result := true;
+        exit;
+      end;
     end;
 
   finally
@@ -12565,7 +12268,6 @@ function UPD_StaffType(theData: recStaffTypeHolder): boolean;
 var
   s: string;
 begin
-  result := false;
   s := '';
   s := s + ' UPDATE stafftypes ' + #10;
   s := s + ' SET ' + #10;
@@ -12637,7 +12339,6 @@ var
   s: string;
   rSet: TRoomerDataSet;
 begin
-  result := false;
   rSet := CreateNewDataSet;
   try
     s := format(select_StaffTypeExist, [_db(Code)]);
@@ -12718,7 +12419,6 @@ function UPD_Staffmember(theData: recStaffMemberHolder): boolean;
 var
   s: string;
 begin
-  result := false;
   s := '';
   s := s + ' UPDATE staffmembers ' + #10;
   s := s + ' SET ' + #10;
@@ -12755,7 +12455,6 @@ function UPD_StaffMember_StaffType1(theData: recStaffMemberHolder): boolean;
 var
   s: string;
 begin
-  result := false;
   s := '';
   s := s + ' UPDATE staffmembers ' + #10;
   s := s + ' SET ' + #10;
@@ -12917,7 +12616,6 @@ var
   s: string;
   rSet: TRoomerDataSet;
 begin
-  result := false;
   rSet := CreateNewDataSet;
   try
     s := format(select_StaffMemberExists, [_db(Initials)]);
@@ -12932,7 +12630,6 @@ var
   s: string;
   rSet: TRoomerDataSet;
 begin
-  result := false;
   rSet := CreateNewDataSet;
   try
     s := format(select_StaffMemberExistsInOther, [quotedstr(sCode)]);
@@ -13003,7 +12700,6 @@ function UPD_Channel(theData: recChannelHolder): boolean;
 var
   s: string;
 begin
-  result := false;
   s := '';
   s := s + 'UPDATE channels ' + #10;
   s := s + ' SET ' + #10;
@@ -13108,8 +12804,6 @@ end;
 
 
 function channels_GetDefaultCode: String;
-var
-  rSet: TRoomerDataSet;
 begin
   result := '';
   glb.ChannelsSet.First;
@@ -13120,8 +12814,6 @@ begin
 end;
 
 function channels_GetDefault: integer;
-var
-  rSet: TRoomerDataSet;
 begin
   result := 0;
   glb.ChannelsSet.First;
@@ -13136,7 +12828,6 @@ var
   s: string;
   rSet: TRoomerDataSet;
 begin
-  result := false;
   rSet := CreateNewDataSet;
   try
     s := format(select_ChannelExists, [_db(channelManagerId)]);
@@ -13192,7 +12883,6 @@ function UPD_systemserver(theData: recSystemServerHolder): boolean;
 var
   s: string;
 begin
-  result := false;
   s := '';
   s := s + ' UPDATE systemservers ' + #10;
   s := s + ' SET ' + #10;
@@ -13295,7 +12985,6 @@ function UPD_SystemAction(theData: recSystemActionHolder): boolean;
 var
   s: string;
 begin
-  result := false;
   s := '';
   s := s + ' UPDATE systemactions ' + #10;
   s := s + ' SET ' + #10;
@@ -13318,7 +13007,6 @@ function UPD_systemaction_justDetails(id: integer; subject, content, contentfile
 var
   s: string;
 begin
-  result := false;
   s := '';
   s := s + ' UPDATE systemactions ' + #10;
   s := s + ' SET ' + #10;
@@ -13408,7 +13096,6 @@ function UPD_SystemTrigger(theData: recSystemTriggerHolder): boolean;
 var
   s: string;
 begin
-  result := false;
   s := '';
   s := s + ' UPDATE systemtriggers ' + #10;
   s := s + ' SET ' + #10;
@@ -13488,7 +13175,6 @@ function UPD_Package(theData: recPackageHolder): boolean;
 var
   s: string;
 begin
-  result := false;
   s := '';
   s := s + ' UPDATE packages ' + #10;
   s := s + ' SET ' + #10;
@@ -13538,7 +13224,6 @@ var
   s: string;
   rSet: TRoomerDataSet;
 begin
-  result := false;
   s := '';
   s := s + ' SELECT ' + chr(10);
   s := s + '   package ' + chr(10);
@@ -13560,7 +13245,6 @@ var
   s: string;
   rSet: TRoomerDataSet;
 begin
-  result := false;
   s := '';
   s := s + ' SELECT ' + chr(10);
   s := s + '   item ' + chr(10);
@@ -13582,7 +13266,6 @@ var
   s: string;
   rSet: TRoomerDataSet;
 begin
-  result := false;
   s := s + ' SELECT itemID FROM invoicelines ' + chr(10);
   s := s + ' WHERE (itemID =  %s ) ' + chr(10);
   s := s + ' LIMIT 0,1 ' + chr(10);
@@ -13596,9 +13279,6 @@ begin
 end;
 
 function Package_Description(Code: string): string;
-var
-  rSet: TRoomerDataSet;
-  s: string;
 begin
   result := '';
   glb.LocateSpecificRecordAndGetValue('packageitems', 'package', Code, 'Description', result);
@@ -13647,9 +13327,6 @@ begin
 end;
 
 function Package_getID(Code: string): integer;
-var
-  rSet: TRoomerDataSet;
-  s: string;
 begin
   result := 0;
   glb.LocateSpecificRecordAndGetValue('packageitems', 'package', Code, 'Id', result);
@@ -13687,21 +13364,19 @@ begin
   aRoomPrice := 0;
   aItemPrice := 0;
 
-  roomRentID := -1;
-
   if glb.Packages.Locate('package', Code, []) then
-  begin
-    packageId := glb.Packages.fieldbyname('ID').asInteger;
-  end;
+    packageId := glb.Packages.fieldbyname('ID').asInteger
+  else
+    Exit;
 
 
   // theData := Package_getHolder(Code);
 
   RoomRentItem := trim(uppercase(ctrlGetString('RoomRentItem')));
   if glb.Items.Locate('Item', RoomRentItem, []) then
-  begin
-    roomRentID := glb.Items.fieldbyname('ID').asInteger;
-  end;
+    roomRentID := glb.Items.fieldbyname('ID').asInteger
+  else
+    Exit;
 
   // ***ToDO
   // Add parameters like daycount and guests
@@ -13755,26 +13430,23 @@ end;
 
 function Package_getRoomDescription(Code: string; Room: String; Arrival, Departure: TdateTime; guestname : string=''): string;
 var
-  rSet: TRoomerDataSet;
-  s: string;
   packageId: integer;
   RoomRentItem: string;
   roomRentID: integer;
 
 begin
   result := '';
-  roomRentID := -1;
 
   if glb.Packages.Locate('package', Code, []) then
-  begin
-    packageId := glb.Packages.fieldbyname('ID').asInteger;
-  end;
+    packageId := glb.Packages.fieldbyname('ID').asInteger
+  else
+    Exit;
 
   RoomRentItem := trim(uppercase(ctrlGetString('RoomRentItem')));
   if glb.Items.Locate('Item', RoomRentItem, []) then
-  begin
-    roomRentID := glb.Items.fieldbyname('ID').asInteger;
-  end;
+    roomRentID := glb.Items.fieldbyname('ID').asInteger
+  else
+    Exit;
 
   if glb.LocateSpecificRecord('packageitems', 'packageId', packageId) then
   begin
@@ -13876,7 +13548,6 @@ function UPD_PackageItem(theData: recPackageItemHolder): boolean;
 var
   s: string;
 begin
-  result := false;
   s := '';
   s := s + ' UPDATE packageitems ' + #10;
   s := s + ' SET ' + #10;
@@ -14251,9 +13922,9 @@ begin
 end;
 
 function PersonIDExistsInOther(id: integer): boolean;
-var
-  s: string;
-  rSet: TRoomerDataSet;
+//var
+//  s: string;
+//  rSet: TRoomerDataSet;
 begin
   result := false;
   // s := '';
@@ -14274,9 +13945,9 @@ begin
 end;
 
 function PersonExistsInOther(Person: integer): boolean;
-var
-  s: string;
-  rSet: TRoomerDataSet;
+//var
+//  s: string;
+//  rSet: TRoomerDataSet;
 begin
   result := false;
   // s := '';
@@ -14300,7 +13971,6 @@ function UPD_person(theData: recPersonHolder): boolean;
 var
   s: string;
 begin
-  result := false;
   s := '';
   s := s + ' UPDATE persons ' + #10;
   s := s + ' SET ' + #10;
@@ -14439,7 +14109,6 @@ function UPD_PersonVipTypes(theData: recPersonVipTypesHolder): boolean;
 var
   s: string;
 begin
-  result := false;
   if theData.tmp = '' then
     theData.tmp := theData.Code;
   s := '';
@@ -14458,7 +14127,6 @@ function INS_PersonVipTypes(theData: recPersonVipTypesHolder; var NewID: integer
 var
   s: string;
 begin
-  result := false;
   s := '';
   s := s + 'INSERT INTO personviptypes ' + #10;
   s := s + '   ( ' + #10;
@@ -14483,9 +14151,9 @@ begin
 end;
 
 function PersonVipTypesExistsInOther(Code: string): boolean;
-var
-  s: string;
-  rSet: TRoomerDataSet;
+//var
+//  s: string;
+//  rSet: TRoomerDataSet;
 begin
   result := false;
   // RSet := CreateNewDataSet;
@@ -14555,7 +14223,6 @@ var
   s: string;
   rSet: TRoomerDataSet;
 begin
-  result := false;
   s := s + 'SELECT ' + chr(10);
   s := s + 'Code ' + chr(10);
   s := s + 'FROM ' + chr(10);
@@ -14677,7 +14344,6 @@ function UPD_PersonContactType(theData: recPersonContactTypeHolder): boolean;
 var
   s: string;
 begin
-  result := false;
   if theData.tmp = '' then
     theData.tmp := theData.Code;
   s := '';
@@ -14696,7 +14362,6 @@ function INS_PersonContactType(theData: recPersonContactTypeHolder; var NewID: i
 var
   s: string;
 begin
-  result := false;
   s := '';
   s := s + 'INSERT INTO personcontacttype ' + #10;
   s := s + '   ( ' + #10;
@@ -14721,9 +14386,9 @@ begin
 end;
 
 function PersonContactTypeExistsInOther(Code: string): boolean;
-var
-  s: string;
-  rSet: TRoomerDataSet;
+//var
+//  s: string;
+//  rSet: TRoomerDataSet;
 begin
   result := false;
   // RSet := CreateNewDataSet;
@@ -14793,7 +14458,6 @@ var
   s: string;
   rSet: TRoomerDataSet;
 begin
-  result := false;
   s := s + 'SELECT ' + chr(10);
   s := s + 'Code ' + chr(10);
   s := s + 'FROM ' + chr(10);
@@ -14852,7 +14516,6 @@ function UPD_LostAndFound(theData: recLostAndFoundHolder): boolean;
 var
   s: string;
 begin
-  result := false;
   s := '';
   s := s + ' UPDATE lostandfound ' + #10;
   s := s + ' SET ' + #10;
@@ -14945,14 +14608,12 @@ var
   p1, p2, p3, p4, p5, p6: double;
   // Price: double;
   extraPersons: double;
-  iDateCount: integer;
   Description: string;
 
   RateExtraChildren: double;
   RateExtraInfant: double;
 
 begin
-  result := 0;
   extraPersons := GuestCount - 5;
   // Price      := 0.00;
 
@@ -15016,7 +14677,6 @@ begin
 
     if not rSet.Eof then
     begin
-      iDateCount := rSet.fieldbyname('DateCount').asInteger;
       Description := rSet.fieldbyname('description').asString;
 
       RateExtraChildren := rSet.GetFloatValue(rSet.fieldbyname('RateExtraChildren'));
@@ -15027,7 +14687,6 @@ begin
       p2 := rSet.GetFloatValue(rSet.fieldbyname('Rate2Persons'));
       p3 := rSet.GetFloatValue(rSet.fieldbyname('Rate3Persons'));
       p4 := rSet.GetFloatValue(rSet.fieldbyname('Rate4Persons'));
-      p5 := rSet.GetFloatValue(rSet.fieldbyname('Rate5Persons'));
       p5 := rSet.GetFloatValue(rSet.fieldbyname('Rate5Persons'));
       p6 := rSet.GetFloatValue(rSet.fieldbyname('Rate6Persons'));
 
@@ -15161,10 +14820,7 @@ end;
 
 Function changeNoRoomRoomtype(Reservation, RoomReservation: integer; oldType: string): boolean;
 var
-  rSet: TRoomerDataSet;
-  s: string;
   ss: string;
-  Room: string;
   newRoomType: string;
   theData: recRoomTypeHolder;
   realType: boolean;
@@ -15484,7 +15140,6 @@ var
   s: string;
   rSet: TRoomerDataSet;
 begin
-  result := false;
    s := '';
    s := s + 'SELECT '+chr(10);
    s := s + '  Description '+chr(10);

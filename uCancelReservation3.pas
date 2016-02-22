@@ -62,7 +62,8 @@ uses
   , uUtils
   , uAppGlobal
   , cmpRoomerDataSet, dxSkinsCore, dxSkinDarkSide, dxSkinDevExpressDarkStyle, dxSkinMcSkin, dxSkinOffice2013White, dxSkinsDefaultPainters,
-  dxSkinscxPCPainter, Vcl.Buttons, sButton, sLabel, sComboBox, sMemo, sGroupBox, sPanel
+  dxSkinscxPCPainter, Vcl.Buttons, sButton, sLabel, sComboBox, sMemo, sGroupBox, sPanel, dxSkinCaramel, dxSkinCoffee,
+  dxSkinTheAsphaltWorld
   ;
 
 type
@@ -346,11 +347,8 @@ end;
 
 procedure TfrmCancelReservation3.GetInfo;
 var
-  roomRec      : recRoomInfo;
   customerRec  : recCustomerHolderEX;
-  room         : string;
   customer     : string;
-  Arrival, Departure : TDate;
 begin
   zRoomInfo := GetTranslatedText('shTx_CancelReservation3_RemovingAllRooms');
   zCustomerInfo := '';

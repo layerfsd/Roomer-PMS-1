@@ -1318,7 +1318,7 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
             SearchFooter.HintHighlight = 'Highlight occurences'
             SearchFooter.MatchCaseCaption = 'Match case'
             SortSettings.DefaultFormat = ssAutomatic
-            Version = '7.8.9.0'
+            Version = '7.9.1.0'
             RowHeights = (
               18
               21
@@ -1475,7 +1475,7 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
             SearchFooter.HintHighlight = 'Highlight occurences'
             SearchFooter.MatchCaseCaption = 'Match case'
             SortSettings.DefaultFormat = ssAutomatic
-            Version = '7.8.9.0'
+            Version = '7.9.1.0'
             RowHeights = (
               19
               21
@@ -1594,7 +1594,7 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
         SearchFooter.HintHighlight = 'Highlight occurences'
         SearchFooter.MatchCaseCaption = 'Match case'
         SortSettings.DefaultFormat = ssAutomatic
-        Version = '7.8.9.0'
+        Version = '7.9.1.0'
         RowHeights = (
           19
           21
@@ -1608,6 +1608,178 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
           21)
       end
     end
+  end
+  object frxDesigner1: TfrxDesigner
+    DefaultScriptLanguage = 'PascalScript'
+    DefaultFont.Charset = DEFAULT_CHARSET
+    DefaultFont.Color = clWindowText
+    DefaultFont.Height = -13
+    DefaultFont.Name = 'Arial'
+    DefaultFont.Style = []
+    DefaultLeftMargin = 10.000000000000000000
+    DefaultRightMargin = 10.000000000000000000
+    DefaultTopMargin = 10.000000000000000000
+    DefaultBottomMargin = 10.000000000000000000
+    DefaultPaperSize = 9
+    DefaultOrientation = poPortrait
+    GradientEnd = 11982554
+    GradientStart = clWindow
+    TemplatesExt = 'fr3'
+    Restrictions = []
+    RTLLanguage = False
+    MemoParentFont = False
+    Left = 464
+    Top = 296
+  end
+  object rptDsLines: TfrxDBDataset
+    UserName = 'rptDsLines'
+    CloseDataSource = False
+    DataSet = d.mtLines_
+    BCDToCurrency = False
+    Left = 336
+    Top = 328
+  end
+  object rptDs1: TfrxDBDataset
+    UserName = 'rptDSHead'
+    CloseDataSource = False
+    DataSet = d.mtHead_
+    BCDToCurrency = False
+    Left = 480
+    Top = 352
+  end
+  object rptDsPayments: TfrxDBDataset
+    UserName = 'rptDsPayments'
+    CloseDataSource = False
+    DataSet = d.mtPayments_
+    BCDToCurrency = False
+    Left = 372
+    Top = 296
+  end
+  object rptDsVAT: TfrxDBDataset
+    UserName = 'rptDsVAT'
+    CloseDataSource = False
+    DataSet = d.mtVAT_
+    BCDToCurrency = False
+    Left = 644
+    Top = 240
+  end
+  object rptDsCompany: TfrxDBDataset
+    UserName = 'rptDsCompany'
+    CloseDataSource = False
+    DataSet = d.mtCompany_
+    BCDToCurrency = False
+    Left = 556
+    Top = 356
+  end
+  object rptDsCaptions: TfrxDBDataset
+    UserName = 'rptDsCaptions'
+    CloseDataSource = False
+    DataSet = d.mtCaptions_
+    BCDToCurrency = False
+    Left = 644
+    Top = 300
+  end
+  object frxPDFExport1: TfrxPDFExport
+    UseFileCache = True
+    ShowProgress = True
+    OverwritePrompt = False
+    DataOnly = False
+    OnBeginExport = frxPDFExport1BeginExport
+    EmbeddedFonts = True
+    PrintOptimized = True
+    Outline = False
+    Background = False
+    HTMLTags = True
+    Quality = 100
+    Title = 'Hotel Invoice'
+    Author = 'Roomer'
+    Subject = 'Roomer Invoice'
+    Creator = 'Roomer'
+    Producer = 'Roomer PMS'
+    ProtectionFlags = [ePrint, eModify, eCopy, eAnnot]
+    HideToolbar = False
+    HideMenubar = False
+    HideWindowUI = False
+    FitWindow = False
+    CenterWindow = False
+    PrintScaling = True
+    Left = 645
+    Top = 352
+  end
+  object frxHTMLExport1: TfrxHTMLExport
+    UseFileCache = True
+    ShowProgress = True
+    OverwritePrompt = False
+    DataOnly = False
+    FixedWidth = True
+    Background = False
+    Centered = False
+    EmptyLines = True
+    Print = False
+    PictureType = gpPNG
+    Left = 405
+    Top = 368
+  end
+  object frxRTFExport1: TfrxRTFExport
+    UseFileCache = True
+    ShowProgress = True
+    OverwritePrompt = False
+    DataOnly = False
+    PictureType = gpPNG
+    Wysiwyg = True
+    Creator = 'FastReport'
+    SuppressPageHeadersFooters = False
+    HeaderFooterMode = hfText
+    AutoSize = False
+    Left = 565
+    Top = 416
+  end
+  object frxJPEGExport1: TfrxJPEGExport
+    UseFileCache = True
+    ShowProgress = True
+    OverwritePrompt = False
+    DataOnly = False
+    Left = 657
+    Top = 416
+  end
+  object timClose: TTimer
+    Enabled = False
+    Interval = 100
+    OnTimer = timCloseTimer
+    Left = 633
+    Top = 77
+  end
+  object frxMailExport1: TfrxMailExport
+    ShowDialog = False
+    UseFileCache = True
+    ShowProgress = False
+    OverwritePrompt = False
+    DataOnly = False
+    ShowExportDialog = False
+    SmtpPort = 25
+    UseIniFile = True
+    TimeOut = 60
+    ConfurmReading = False
+    OnSendMail = frxMailExport1SendMail
+    UseMAPI = False
+    Left = 497
+    Top = 416
+  end
+  object FormStore: TcxPropertiesStore
+    Components = <
+      item
+        Component = Owner
+        Properties.Strings = (
+          'Height'
+          'Left'
+          'Position'
+          'Top'
+          'Width')
+      end>
+    StorageName = 'Software\Roomer\FormStatus\FinishedInvoices'
+    StorageType = stRegistry
+    Left = 398
+    Top = 440
   end
   object frxReport1: TfrxReport
     Version = '4.13.2'
@@ -3221,177 +3393,5 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
         end
       end
     end
-  end
-  object frxDesigner1: TfrxDesigner
-    DefaultScriptLanguage = 'PascalScript'
-    DefaultFont.Charset = DEFAULT_CHARSET
-    DefaultFont.Color = clWindowText
-    DefaultFont.Height = -13
-    DefaultFont.Name = 'Arial'
-    DefaultFont.Style = []
-    DefaultLeftMargin = 10.000000000000000000
-    DefaultRightMargin = 10.000000000000000000
-    DefaultTopMargin = 10.000000000000000000
-    DefaultBottomMargin = 10.000000000000000000
-    DefaultPaperSize = 9
-    DefaultOrientation = poPortrait
-    GradientEnd = 11982554
-    GradientStart = clWindow
-    TemplatesExt = 'fr3'
-    Restrictions = []
-    RTLLanguage = False
-    MemoParentFont = False
-    Left = 464
-    Top = 296
-  end
-  object rptDsLines: TfrxDBDataset
-    UserName = 'rptDsLines'
-    CloseDataSource = False
-    DataSet = d.mtLines_
-    BCDToCurrency = False
-    Left = 336
-    Top = 328
-  end
-  object rptDs1: TfrxDBDataset
-    UserName = 'rptDSHead'
-    CloseDataSource = False
-    DataSet = d.mtHead_
-    BCDToCurrency = False
-    Left = 480
-    Top = 352
-  end
-  object rptDsPayments: TfrxDBDataset
-    UserName = 'rptDsPayments'
-    CloseDataSource = False
-    DataSet = d.mtPayments_
-    BCDToCurrency = False
-    Left = 372
-    Top = 296
-  end
-  object rptDsVAT: TfrxDBDataset
-    UserName = 'rptDsVAT'
-    CloseDataSource = False
-    DataSet = d.mtVAT_
-    BCDToCurrency = False
-    Left = 644
-    Top = 240
-  end
-  object rptDsCompany: TfrxDBDataset
-    UserName = 'rptDsCompany'
-    CloseDataSource = False
-    DataSet = d.mtCompany_
-    BCDToCurrency = False
-    Left = 556
-    Top = 356
-  end
-  object rptDsCaptions: TfrxDBDataset
-    UserName = 'rptDsCaptions'
-    CloseDataSource = False
-    DataSet = d.mtCaptions_
-    BCDToCurrency = False
-    Left = 644
-    Top = 300
-  end
-  object frxPDFExport1: TfrxPDFExport
-    UseFileCache = True
-    ShowProgress = True
-    OverwritePrompt = False
-    DataOnly = False
-    OnBeginExport = frxPDFExport1BeginExport
-    EmbeddedFonts = True
-    PrintOptimized = True
-    Outline = False
-    Background = False
-    HTMLTags = True
-    Quality = 100
-    Title = 'Hotel Invoice'
-    Author = 'Roomer'
-    Subject = 'Roomer Invoice'
-    Creator = 'Roomer'
-    Producer = 'Roomer PMS'
-    ProtectionFlags = [ePrint, eModify, eCopy, eAnnot]
-    HideToolbar = False
-    HideMenubar = False
-    HideWindowUI = False
-    FitWindow = False
-    CenterWindow = False
-    PrintScaling = True
-    Left = 645
-    Top = 352
-  end
-  object frxHTMLExport1: TfrxHTMLExport
-    UseFileCache = True
-    ShowProgress = True
-    OverwritePrompt = False
-    DataOnly = False
-    FixedWidth = True
-    Background = False
-    Centered = False
-    EmptyLines = True
-    Print = False
-    PictureType = gpPNG
-    Left = 405
-    Top = 368
-  end
-  object frxRTFExport1: TfrxRTFExport
-    UseFileCache = True
-    ShowProgress = True
-    OverwritePrompt = False
-    DataOnly = False
-    PictureType = gpPNG
-    Wysiwyg = True
-    Creator = 'FastReport'
-    SuppressPageHeadersFooters = False
-    HeaderFooterMode = hfText
-    AutoSize = False
-    Left = 565
-    Top = 416
-  end
-  object frxJPEGExport1: TfrxJPEGExport
-    UseFileCache = True
-    ShowProgress = True
-    OverwritePrompt = False
-    DataOnly = False
-    Left = 657
-    Top = 416
-  end
-  object timClose: TTimer
-    Enabled = False
-    Interval = 100
-    OnTimer = timCloseTimer
-    Left = 633
-    Top = 77
-  end
-  object frxMailExport1: TfrxMailExport
-    ShowDialog = False
-    UseFileCache = True
-    ShowProgress = False
-    OverwritePrompt = False
-    DataOnly = False
-    ShowExportDialog = False
-    SmtpPort = 25
-    UseIniFile = True
-    TimeOut = 60
-    ConfurmReading = False
-    OnSendMail = frxMailExport1SendMail
-    UseMAPI = False
-    Left = 497
-    Top = 416
-  end
-  object FormStore: TcxPropertiesStore
-    Components = <
-      item
-        Component = Owner
-        Properties.Strings = (
-          'Height'
-          'Left'
-          'Position'
-          'Top'
-          'Width')
-      end>
-    StorageName = 'Software\Roomer\FormStatus\FinishedInvoices'
-    StorageType = stRegistry
-    Left = 398
-    Top = 440
   end
 end

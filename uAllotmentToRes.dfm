@@ -33,7 +33,6 @@ object frmAllotmentToRes: TfrmAllotmentToRes
     Align = alBottom
     TabOrder = 0
     SkinData.SkinSection = 'PANEL'
-    ExplicitWidth = 954
     DesignSize = (
       1086
       33)
@@ -62,7 +61,6 @@ object frmAllotmentToRes: TfrmAllotmentToRes
       TabOrder = 1
       OnClick = sButton5Click
       SkinData.SkinSection = 'BUTTON'
-      ExplicitLeft = 794
     end
     object sButton6: TsButton
       Left = 1007
@@ -76,7 +74,6 @@ object frmAllotmentToRes: TfrmAllotmentToRes
       ModalResult = 2
       TabOrder = 2
       SkinData.SkinSection = 'BUTTON'
-      ExplicitLeft = 875
     end
   end
   object panLeft: TsPanel
@@ -120,10 +117,11 @@ object frmAllotmentToRes: TfrmAllotmentToRes
         Caption = 'Show in cells'
         TabOrder = 1
         SkinData.SkinSection = 'GROUPBOX'
+        Checked = False
         object chkRoomCount: TsCheckBox
           Left = 14
           Top = 18
-          Width = 110
+          Width = 113
           Height = 19
           Caption = 'Number of Rooms'
           Checked = True
@@ -136,7 +134,7 @@ object frmAllotmentToRes: TfrmAllotmentToRes
         object chkGuestName: TsCheckBox
           Left = 14
           Top = 53
-          Width = 82
+          Width = 85
           Height = 19
           Caption = 'Guest name'
           Checked = True
@@ -149,7 +147,7 @@ object frmAllotmentToRes: TfrmAllotmentToRes
         object chkPrice: TsCheckBox
           Left = 14
           Top = 70
-          Width = 189
+          Width = 192
           Height = 19
           Caption = 'Price info (Code - Price - Discount)'
           TabOrder = 2
@@ -160,7 +158,7 @@ object frmAllotmentToRes: TfrmAllotmentToRes
         object chkNumGuests: TsCheckBox
           Left = 13
           Top = 36
-          Width = 110
+          Width = 113
           Height = 19
           Caption = 'Number of guests'
           TabOrder = 3
@@ -171,7 +169,7 @@ object frmAllotmentToRes: TfrmAllotmentToRes
         object chkShowRoomdescription: TsCheckBox
           Left = 14
           Top = 105
-          Width = 133
+          Width = 136
           Height = 19
           Caption = 'Show room description'
           Checked = True
@@ -185,7 +183,7 @@ object frmAllotmentToRes: TfrmAllotmentToRes
         object sCheckBox1: TsCheckBox
           Left = 14
           Top = 128
-          Width = 78
+          Width = 81
           Height = 19
           Caption = 'Fit columns'
           TabOrder = 5
@@ -230,6 +228,7 @@ object frmAllotmentToRes: TfrmAllotmentToRes
         Caption = 'Allotment'
         TabOrder = 3
         SkinData.SkinSection = 'GROUPBOX'
+        Checked = False
         object clabFirstDate: TsLabel
           Left = 8
           Top = 22
@@ -394,16 +393,30 @@ object frmAllotmentToRes: TfrmAllotmentToRes
       FilterDropDown.Font.Name = 'Tahoma'
       FilterDropDown.Font.Style = []
       FilterDropDownClear = '(All)'
+      FilterEdit.TypeNames.Strings = (
+        'Starts with'
+        'Ends with'
+        'Contains'
+        'Not contains'
+        'Equal'
+        'Not equal'
+        'Larger than'
+        'Smaller than'
+        'Clear')
       FixedColWidth = 132
       FixedRowHeight = 18
       FixedColAlways = True
       FixedFont.Charset = DEFAULT_CHARSET
-      FixedFont.Color = clWhite
+      FixedFont.Color = clBlack
       FixedFont.Height = -11
       FixedFont.Name = 'Tahoma'
       FixedFont.Style = [fsBold]
       Flat = True
       FloatFormat = '%.2f'
+      HoverButtons.Buttons = <>
+      HoverButtons.Position = hbLeftFromColumnLeft
+      HTMLSettings.ImageFolder = 'images'
+      HTMLSettings.ImageBaseName = 'img'
       Look = glWin7
       MouseActions.AllColumnSize = True
       MouseActions.AllRowSize = True
@@ -448,11 +461,12 @@ object frmAllotmentToRes: TfrmAllotmentToRes
       SearchFooter.HintHighlight = 'Highlight occurences'
       SearchFooter.MatchCaseCaption = 'Match case'
       SizeWhileTyping.Height = True
+      SortSettings.DefaultFormat = ssAutomatic
       SortSettings.HeaderColor = 16579058
       SortSettings.HeaderColorTo = 16579058
       SortSettings.HeaderMirrorColor = 16380385
       SortSettings.HeaderMirrorColorTo = 16182488
-      Version = '6.2.7.1'
+      Version = '7.9.1.0'
       ColWidths = (
         132)
       RowHeights = (
@@ -476,7 +490,6 @@ object frmAllotmentToRes: TfrmAllotmentToRes
     Align = alClient
     TabOrder = 2
     SkinData.SkinSection = 'PANEL'
-    ExplicitWidth = 363
     object sLabel2: TsLabel
       Left = 240
       Top = 48
@@ -491,7 +504,6 @@ object frmAllotmentToRes: TfrmAllotmentToRes
       Align = alTop
       TabOrder = 0
       SkinData.SkinSection = 'PANEL'
-      ExplicitWidth = 361
       object sPanel7: TsPanel
         Left = 1
         Top = 1
@@ -508,7 +520,6 @@ object frmAllotmentToRes: TfrmAllotmentToRes
         TabOrder = 0
         OnDblClick = sPanel7DblClick
         SkinData.SkinSection = 'MENUCAPTION'
-        ExplicitWidth = 359
       end
       object sGroupBox3: TsGroupBox
         Left = 1
@@ -519,6 +530,7 @@ object frmAllotmentToRes: TfrmAllotmentToRes
         Caption = 'Reservation'
         TabOrder = 1
         SkinData.SkinSection = 'GROUPBOX'
+        Checked = False
         object cLabCountry: TsLabel
           Left = 19
           Top = 72
@@ -633,7 +645,7 @@ object frmAllotmentToRes: TfrmAllotmentToRes
       object chkIsGroupInvoice: TsCheckBox
         Left = 287
         Top = 180
-        Width = 97
+        Width = 100
         Height = 19
         Caption = 'is Groupinvoice'
         TabOrder = 2
@@ -649,7 +661,6 @@ object frmAllotmentToRes: TfrmAllotmentToRes
         Align = alBottom
         TabOrder = 3
         SkinData.SkinSection = 'PANEL'
-        ExplicitWidth = 359
         object sButton2: TsButton
           Left = 4
           Top = 9
@@ -671,6 +682,7 @@ object frmAllotmentToRes: TfrmAllotmentToRes
         Caption = 'Recalculate Roomprices'
         TabOrder = 4
         SkinData.SkinSection = 'GROUPBOX'
+        Checked = False
         object btnReCalc: TsButton
           Left = 12
           Top = 23
@@ -701,7 +713,6 @@ object frmAllotmentToRes: TfrmAllotmentToRes
       Align = alClient
       TabOrder = 1
       LookAndFeel.NativeStyle = False
-      ExplicitWidth = 361
       object tvRoomRes: TcxGridDBTableView
         Navigator.Buttons.CustomButtons = <>
         DataController.DataSource = mRoomResDS

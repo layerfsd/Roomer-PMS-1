@@ -286,14 +286,11 @@ type
 
     lstMaintenanceCodes : TKeyPairList;
 
-    procedure DoMessageClick(Sender: TObject);
     procedure SetMainRoomerDataSet(ds : TRoomerDataSet; ConnectAllDatasets : Boolean = True);
     procedure LoadMaintenanceCodes;
     function LocateWRoom(Room: String): Boolean;
     procedure ClearMaintenanceCodes;
     procedure ProcessInvoiceBackupsForDate(sourceRSet : TRoomerDataSet; sPath : String; rSet: TRoomerDataset);
-    procedure RemoveBackups(Location : String);
-    procedure DownloadControlTable(sourceRSet : TRoomerDataSet; sPath: String);
     procedure ProcessReservationBackupsForDate(sourceRSet : TRoomerDataSet; sPath: String; rSet: TRoomerDataset);
     procedure SaveRoomerDataAsKbmMemTable(filename: String; res : String);
     procedure SaveRoomerDataSetAsKbmMemTable(filename : String; sourceSet : TRoomerDataSet);
@@ -833,7 +830,6 @@ type
 
     function AddInvoiceLinesTMP(LastLineNumber,iReservation : integer) : boolean;
 
-    function printReceipt(paymentId : integer; silent : boolean=true) : boolean;
     procedure InsertReciptData(PaymentData : recPaymentHolder; invoiceData : recInvoiceHeadHolder);
 
     function GetBackupPath: String;
@@ -891,7 +887,7 @@ type
         _adate : Tdate;
         _count : Double
         );
-
+    procedure GenerateOfflineReports;
   end;
 
 
@@ -903,14 +899,14 @@ function GenerateProformaInvoiceNumber : Integer;
 
 var PROFORMA_INVOICE_NUMBER : integer;
 
-{$IFDEF LOCALRESOURCE}
+{$IFDEF rmLOCALRESOURCE}
   const RoomerOpenAPIBase : String = 'http://localhost:8080';
   const RoomerBase : String = 'http://localhost';
   const RoomerStoreBase : String = 'http://localhost';
   const RoomerBasePort : String = '8080';
   const RoomerStoreBasePort : String = '8080';
 {$ELSE}
-  {$IFDEF ROOMERSSL}
+  {$IFDEF rmROOMERSSL}
     const RoomerBase : String = 'https://secure.roomercloud.net';
     const RoomerBasePort : String = '443';
     const RoomerOpenAPIBase : String = 'https://secure.roomercloud.net';
@@ -952,13 +948,12 @@ uses
   , uRoomerDefinitions
   , uTaxCalc
   , uActivityLogs
-  ;
+  , uOfflineReportGenerator;
 
 
 {$R *.dfm}
 
 var
-  select_x : string;
   RoomerStoreUri : String;
   RoomerOpenApiUri : String;
   RoomerApiUri : String;
@@ -1001,39 +996,6 @@ begin
   end;
 end;
 
-
-procedure Td.DoMessageClick(Sender:TObject);
-begin
-  if frmDayNotes.V then
-  begin
-    frmDayNotes.pageMain.ActivePage := frmDayNotes.tabLog;
-    frmDayNotes.pageLog.ActivePage  := frmDayNotes.tabImportLog;
-  end else
-  begin
-    frmDayNotes.V := true;
-    frmDayNotes.show;
-    frmDayNotes.pageMain.ActivePage := frmDayNotes.tabLog;
-    frmDayNotes.pageLog.ActivePage  := frmDayNotes.tabImportLog;
-  end;
-end;
-
-
-
-
-
-
-
-
-
-
-
-
-
- procedure einn ;
-begin
-
-
-end;
 
 procedure Td.chkInPosMonitor;
 var
@@ -1120,11 +1082,11 @@ begin
     use := g.qConfirmAuto;
     interval := 120000;
     g.qLastConfirm := getLastConfirm;
+    confirmMonitor.Interval := interval;
   except
     use := false;
   end;
 
-  confirmMonitor.Interval := interval;
   confirmmonitor.Enabled := use;
 end;
 
@@ -1301,14 +1263,11 @@ var
 
   importRefrence : string;
   ImportSource   : string;
-  tmpType        : integer;
-  tmpData        : string;
   isPackage      : boolean;
 
   s : string;
   Rset : TRoomerDataSet;
 
-  unpaid : boolean;
   sql : string;
 
 begin
@@ -1317,8 +1276,6 @@ begin
   d.kbmInvoiceLines.Open;
 
   //check if there is unpaid items for this roomreservation if not groupinvoice
-
-  unpaid := false;
 
   qRes     := -1;
   qRRes    := -1;
@@ -1397,6 +1354,8 @@ begin
     s := format(sql , [Invoice]);
     if hData.rSet_bySQL(rSet,s) then
     begin
+      Roomreservation := 0;
+      Reservation := 0;
       while not rSet.Eof do
       begin
         reservation      := Rset.fieldbyname('Reservation').asInteger;
@@ -1452,7 +1411,8 @@ begin
         Rset.Next;
       end;
 
-      d.addInvoiceLinesTmp(0,Reservation);
+      if (Reservation <> 0) then
+        d.addInvoiceLinesTmp(0,Reservation);
 
 
       if not FromKredit then
@@ -1498,9 +1458,6 @@ end;
 
 
 function Td.GetCustomerCurrency(sCustomer : string) : string;
-var
-  s : string;
-  rSet : TRoomerDataSet;
 begin
   //DOOPT
   result := '';
@@ -1554,7 +1511,6 @@ var
   s : string;
  rSet : TRoomerDataSet;
 begin
-  result := true;
   rSet := CreateNewDataSet;
   try
     s := format(select_MaidActionExist , [_db(sCode)]);
@@ -1619,7 +1575,6 @@ var
   s : string;
   rSet : TRoomerDataSet;
 begin
-  result := true;
   rSet := CreateNewDataSet;
   try
     s := format(select_PriceGroupExist , [_db(code)]);
@@ -1692,7 +1647,6 @@ var
   s : string;
   rSet : TRoomerDataSet;
 begin
-  result := true;
   rSet := CreateNewDataSet;
   try
     s := format(select_PriceRuleExist , [_db(code)]);
@@ -1718,7 +1672,6 @@ var
   iCustlength : integer;
   sCustFill : string;
   sCustLast : string;
-  rCount : integer;
   rSet : TRoomerDataSet;
 begin
   ch := '0';
@@ -1757,7 +1710,6 @@ function Td.getTblINC_Last : integer;
 var
   s : string;
   iCustLast : integer;
-  rCount : integer;
   rSet : TRoomerDataSet;
 begin
   result := 0;
@@ -1778,7 +1730,6 @@ function Td.getTblINC_Length : integer;
 var
   s : string;
   iCustlength : integer;
-  rCount : integer;
   rSet : TRoomerDataSet;
 begin
   result := 0;
@@ -1799,7 +1750,6 @@ function Td.getTblINC_Fill : string;
 var
   s : string;
   sCustFill : string;
-  rCount : integer;
   rSet : TRoomerDataSet;
 begin
   result := '0';
@@ -1908,10 +1858,8 @@ end;
 function Td.RoomExists_InRoomReservation(sRoom : string) : integer;
 var
   s : string;
-  rCount : integer;
   rSet : TRoomerDataSet;
 begin
-  result := 0;
   rSet := CreateNewDataSet;
   try
     s := format(select_RoomExists_InRoomReservation , [_db(sRoom)]);
@@ -1999,7 +1947,6 @@ var
   s : string;
   rSet : TRoomerDataSet;
 begin
-  result := false;
   s := '';
   s := s + 'SELECT Groupaccount from roomreservations where roomreservation=%d ';
 
@@ -2019,7 +1966,6 @@ var
   s : string;
   rSet : TRoomerDataSet;
 begin
-  result := 0;
   s := '';
   s := s+'Select DISTINCT '#10;
   s := s+'   rv.reservation '#10;
@@ -2055,7 +2001,6 @@ var
   s : string;
   rSet : TRoomerDataSet;
 begin
-  result := 0;
   s := '';
   s := s+'Select '#10;
   s := s+'    rr.roomreservation '#10;
@@ -2300,8 +2245,6 @@ end;
 function Td.getRoomText(sRoom : string) : string;
 var
   s : string;
-  sql : string;
-  rSet : TRoomerDataSet;
   iRoomIndex : integer;
   RoomItem : TRoomItem;
   StatusColor : TColor;
@@ -2408,8 +2351,6 @@ begin
 end;
 
 function Td.qryGetViewRooms(Orderstr : string) : string;
-var
-  s : string;
 begin
 //    s := '';
 //    s := s + 'SELECT '+chr(10);
@@ -2755,7 +2696,6 @@ end;
 function Td.Item_Get_AccountKey(sItem : string) : string;
 var
   s : string;
-  rCount : integer;
   rSet : TRoomerDataSet;
 begin
   result := '';
@@ -2925,7 +2865,6 @@ end;
 function Td.GET_StaffMemberName_byInitials(sInitials : string) : string;
 var
   s : string;
-  rCount : integer;
   rSet : TRoomerDataSet;
 begin
   result := '';
@@ -2944,7 +2883,6 @@ end;
 function Td.GET_StaffMemberPID_byInitials(sInitials : string) : string;
 var
   s : string;
-  rCount : integer;
   rSet : TRoomerDataSet;
 begin
   result := '';
@@ -3027,14 +2965,6 @@ end;
 
       if persons < 0 then
         persons := 0;
-
-      ExtraPrice := 0.00;
-      p1 := 0.00;
-      p2 := 0.00;
-      p3 := 0.00;
-      p4 := 0.00;
-      p5 := 0.00;
-      Price := 0.00;
 
       result := 0;
 
@@ -3125,14 +3055,6 @@ end;
 
       if persons < 0 then
         persons := 0;
-
-      ExtraPrice := 0.00;
-      p1 := 0.00;
-      p2 := 0.00;
-      p3 := 0.00;
-      p4 := 0.00;
-      p5 := 0.00;
-      Price := 0.00;
 
       result := 0;
 
@@ -3267,7 +3189,6 @@ var
   s : string;
   rSet : TRoomerDataSet;
 begin
-  result := false;
   rSet := CreateNewDataSet;
   try
     s := format(select_SeasonExists_byID , [seasonId]);
@@ -3377,10 +3298,8 @@ end;
 function Td.SeasonExist(aDateFrom, aDateTo : TdateTime) : boolean;
 var
   s : string;
-  rCount : integer;
   rSet : TRoomerDataSet;
 begin
-  result := true;
   rSet := CreateNewDataSet;
   try
     s := format(select_SeasonExist , [ _DateToDBDate(aDateFrom,true),_DateToDBDate(aDateTo,true)]);
@@ -3510,7 +3429,6 @@ var
   s : string;
   rSet : TRoomerDataSet;
 begin
-  result := false;
   rSet := CreateNewDataSet;
   try
     s := format(select_InvoiceLinesTmp_exists , [iRoomReservation]);
@@ -3630,36 +3548,41 @@ begin
       freeandNil(rSet);
     end;
   end else
-  begin
-    sPath := TPath.Combine(uStringUtils.LocalAppDataPath, 'Roomer');
-    sPath := TPath.Combine(sPath, format('%s\datacache',[d.roomerMainDataSet.hotelId]));
-    forceDirectories(sPath);
+  begin // Offline login
+//    sPath := TPath.Combine(uStringUtils.LocalAppDataPath, 'Roomer');
+//    sPath := TPath.Combine(sPath, format('%s\datacache',[d.roomerMainDataSet.hotelId]));
+//    forceDirectories(sPath);
+    sPath := glb.GetDataCacheLocation;
     rSet := d.roomerMainDataSet.ActivateNewDataset(ReadFromTextFile(TPath.Combine(sPath, format(RoomerTableFileName, ['staffmembers']))));
-    if LocateRecord(rSet, 'initials', login) then
-       result := LowerCase(rSet['Password']) = LowerCase(password);
-    if result then
-    begin
-      g.qUser := trim(rSet.fieldbyname('Initials').asString);
-      g.qUserName := trim(rSet.fieldbyname('Name').asString);
-      g.qUserPID := trim(rSet.fieldbyname('StaffPID').asString);
-      g.qUserType := trim(rSet.fieldbyname('StaffType').asString);
-      g.qHotelName := d.roomerMainDataSet.hotelId;
-      g.qUserPriv1 := 90;
-      g.qUserPriv2 := g.qUserPriv1;
-      g.qUserPriv3 := g.qUserPriv1;
-      g.qUserPriv4 := g.qUserPriv1;
-      g.qUserPriv5 := g.qUserPriv1;
-      g.qUserAuthValue1 := 1111111;
-      g.qUserAuthValue2 := g.qUserAuthValue1;
-      g.qUserAuthValue3 := g.qUserAuthValue1;
-      g.qUserAuthValue4 := g.qUserAuthValue1;
-      g.qUserAuthValue5 := g.qUserAuthValue1;
-      g.qNumberOfShifts := 3;
-      g.qRatesManagedByRoomer := False;
+    try
+      if LocateRecord(rSet, 'initials', login) then
+         result := LowerCase(rSet['Password']) = LowerCase(password);
+      if result then
+      begin
+        g.qUser := trim(rSet['Initials']);
+        g.qUserName := trim(rSet['Name']);
+        g.qUserPID := trim(rSet['StaffPID']);
+        g.qUserType := trim(rSet['StaffType']);
+        g.qHotelName := d.roomerMainDataSet.hotelId;
+        g.qUserPriv1 := 90;
+        g.qUserPriv2 := g.qUserPriv1;
+        g.qUserPriv3 := g.qUserPriv1;
+        g.qUserPriv4 := g.qUserPriv1;
+        g.qUserPriv5 := g.qUserPriv1;
+        g.qUserAuthValue1 := 1111111;
+        g.qUserAuthValue2 := g.qUserAuthValue1;
+        g.qUserAuthValue3 := g.qUserAuthValue1;
+        g.qUserAuthValue4 := g.qUserAuthValue1;
+        g.qUserAuthValue5 := g.qUserAuthValue1;
+        g.qNumberOfShifts := 3;
+        g.qRatesManagedByRoomer := False;
 
-      newStaffLang := rSet.fieldbyname('StaffLanguage').asInteger;
+        newStaffLang := rSet['StaffLanguage'];
 
-      g.ChangeLang(newStaffLang,false);
+        g.ChangeLang(newStaffLang,false);
+      end;
+    finally
+      rSet.Free;
     end;
   end;
 end;
@@ -3668,7 +3591,6 @@ end;
 
   procedure Td.inPosMonitorTimer(Sender: TObject);
   var
-    sProcessIDs : string;
     invoiceNumber : integer;
     iTmp : integer;
   begin
@@ -3918,7 +3840,6 @@ end;
 procedure Td.UpdateGroupAccountAll(reservation, RoomReservation, RoomReservationAlias : integer; GroupAccount : boolean);
 var
   s : string;
-  rr : integer;
   ExecutionPlan: TRoomerExecutionPlan;
   AllOk : boolean;
 begin
@@ -3999,7 +3920,6 @@ end;
 procedure Td.UpdateGroupAccountOne(reservation, RoomReservation, RoomReservationAlias : integer; GroupAccount : boolean; InvoiceIndex : Integer = -1);
 var
   s : string;
-  rr : integer;
   ExecutionPlan: TRoomerExecutionPlan;
   AllOk : boolean;
 begin
@@ -4086,7 +4006,6 @@ var
   rSet : TRoomerDataset;
   s : string;
   resList : string;
-  rr : integer;
 begin
   if roomreservation = 0 then // Change all in reservation
   begin
@@ -4191,8 +4110,6 @@ procedure Td.UpdPaymentsWhenChangingReservationToRoom(reservation,roomreservatio
 var
   rSet : TRoomerDataset;
   s : string;
-  resList : string;
-  rr : integer;
 begin
 //    if roomreservation = 0 then exit;
 
@@ -4522,12 +4439,6 @@ var
   s,
   sInvoices     : string;
   doIt : boolean;
-
-  Room : string;
-  RoomType : string;
-  RoomClass : string;
-  Arrival, departure : TDate;
-  status : string;
 begin
   // Check if there is booked invoices for this roomreservation
 
@@ -4602,8 +4513,6 @@ var
   s : string;
   reservation : integer;
 begin
-  reservation := - 1;
-
   //sPrompt := 'Villtu örugglega setja þetta þessa herbergjapöntunn utan herbergja ?';
  sPrompt := GetTranslatedText('shTx_D_OrderConfirm');
 
@@ -5050,9 +4959,6 @@ begin
 end;
 
 function Td.VATDescription(code : string) : string;
-var
-  Rset : TRoomerDataSet;
-  s : string;
 begin
   result := '';
   try
@@ -5146,8 +5052,6 @@ end;
 
 function Td.Item_Get_ItemTypeInfo(Item : string; package : String = '') : TItemTypeInfo;
 var
-  Rset : TRoomerDataSet;
-  s : string;
   Itemtype : string;
   tmpStr : String;
   tmpDbl : Double;
@@ -5321,7 +5225,6 @@ var
   s : string;
   rSet : TRoomerDataSet;
 begin
-  result := false;
   rSet := CreateNewDataSet;
   try
     s := format(select_PriceExistsByCodes , [_db(pcCode),_db(seDescription),_db(RoomType),_db(Currency)]);
@@ -5349,7 +5252,6 @@ var
   s : string;
   rSet : TRoomerDataSet;
 begin
-  result := false;
   rSet := CreateNewDataSet;
   try
     s := format(select_PriceExistsByCodesAndCurrency , [_db(pcCode),_db(Currency)]);
@@ -5519,7 +5421,6 @@ end;
     Rset : TRoomerDataSet;
     s : string;
   begin
-    result := false;
     Rset := CreateNewDataSet;
     try
       s := format(select_isUnPaid , [RoomReservation]);
@@ -5534,7 +5435,6 @@ end;
     Rset : TRoomerDataSet;
     s : string;
   begin
-    result := false;
     Rset := CreateNewDataSet;
     try
       s := format(select_isUnPaidRes , [Reservation]);
@@ -6016,8 +5916,6 @@ end;
 
 
   function Td.getCountryCode(aText : string) : string;
-  var
-    s : string;
   begin
     result := '00';
     aText := trim(aText);
@@ -6335,31 +6233,12 @@ end;
       addLine('102', sTmp);
 
       // Write payments
-      counter := 0;
       d.mtPayments_.First;
-      while not d.mtPayments_.Eof do
-      begin
-        inc(counter);
-
-        if isCurrency then
-        begin
-          fTmp := LocalFloatValue(d.mtPayments_.fieldbyname('foAmount').asString)
-        end
-        else
-        begin
-          fTmp := LocalFloatValue(d.mtPayments_.fieldbyname('Amount').asString);
-        end;
-        sCode := d.mtPayments_.fieldbyname('Code').asString;
-
-        d.mtPayments_.Next;
-      end;
 
       // Write invoiceLines
-      counter := 0;
       d.mtLines_.First;
       while not d.mtLines_.Eof do
       begin
-        inc(counter);
         sCode := d.mtLines_.fieldbyname('Code').asString;
 
         sVatCode := d.mtLines_.fieldbyname('VatCode').asString;
@@ -6644,12 +6523,8 @@ end;
       justLog := true;
     end;
 
-    iInvoiceCounter := 0;
-
     Adoc := TNativeXml.CreateName('invoices');
     try
-      inc(iInvoiceCounter);
-
       lstSnerta := tstringList.Create;
       try
         snertaPathXML := g.qsnPathXML;
@@ -6768,22 +6643,6 @@ end;
         dDueDate := trunc(dTmp);
         datetimetostring(s, 'yyyy-mm-dd', dDueDate);
         sDueDate := s;
-
-        if isCurrency then
-        begin
-          fAmount := LocalFloatValue(d.mtHead_.fieldbyname('foTotal').asString)
-        end
-        else
-        begin
-          fAmount := LocalFloatValue(d.mtHead_.fieldbyname('Total').asString);
-        end;
-
-        if isKredit then
-        begin
-
-          if fAmount > 0 then
-            fAmount := fAmount * - 1;
-        end;
 
         sMemo := d.mtHead_.fieldbyname('ExtraText').asString;
         sInvoiceRefrence := d.mtHead_.fieldbyname('invRefrence').asString;
@@ -7022,11 +6881,6 @@ end;
     d.InsInvoiceAction(ar);
   end;
 
-  function Td.printReceipt(paymentId: integer; silent: boolean): boolean;
-  begin
-
-  end;
-
 
   procedure Td.InsertMTdata(InvoiceNumber : integer; doExport, silent : boolean; ShowPackage : boolean);
   var
@@ -7069,14 +6923,7 @@ end;
    tmpfoAmountWoVat  : double;
    tmpfoVatAmount    : double;
 
-   tmpRoomName : String;
-
-   lst : Tstringlist;
-
    pckTotalsList : TRoomPackageLineEntryList;
-   packageCode : string;
-   packageDescription : string;
-
 
   begin
     initPaymentHolderRec(PaymentData);
@@ -7213,8 +7060,6 @@ end;
           d.mtLines_.close;
         d.mtLines_.open;
 
-         tmpLineNo         := 0;
-         tmpDate           := now ;
          tmpCode           := ''  ;
          tmpDescription    := ''  ;
          tmpVatCode        := ''  ;
@@ -7222,17 +7067,7 @@ end;
          tmpimportSource   := ''  ;
          tmpimportRefrence := ''  ;
 
-
-         tmpCount          := 0.00;
-         tmpPrice          := 0.00;
-
-         tmpAmount         := 0.00;
-         tmpAmountWoVat    := 0.00;
-         tmpVatAmount      := 0.00;
          tmpfoPrice        := 0.00;
-         tmpfoAmount       := 0.00;
-         tmpfoAmountWoVat  := 0.00;
-         tmpfoVatAmount    := 0.00;
 
          ii := 0;
 
@@ -8236,7 +8071,6 @@ var
 
   rCount : integer;
 
-  Person               : integer;
   Reservation          : integer;
   RoomReservation      : integer;
   Status               : string;
@@ -9750,13 +9584,12 @@ end;
     result := false;
     if iRoomReservation < 1 then
       exit;
-      result := true;
-      s := '';
-      s := s + ' UPDATE roomreservations '+chr(10);
-      s := s + ' SET '+chr(10);
-      s := s + ' Package=' + _db(package)+' '+chr(10);
-      s := s + ' WHERE (roomreservation = ' + inttostr(iRoomReservation) + ') '+chr(10);
-      result :=  cmd_bySQL(s)
+    s := '';
+    s := s + ' UPDATE roomreservations '+chr(10);
+    s := s + ' SET '+chr(10);
+    s := s + ' Package=' + _db(package)+' '+chr(10);
+    s := s + ' WHERE (roomreservation = ' + inttostr(iRoomReservation) + ') '+chr(10);
+    result :=  cmd_bySQL(s)
   end;
 
 
@@ -9767,13 +9600,12 @@ end;
     result := false;
     if iRoomReservation < 1 then
       exit;
-      result := true;
-      s := '';
-      s := s + ' UPDATE roomreservations '+chr(10);
-      s := s + ' SET '+chr(10);
-      s := s + ' Package=' + _db(package)+' '+chr(10);
-      s := s + ' WHERE (roomreservation = ' + inttostr(iRoomReservation) + ') '+chr(10);
-      result :=  cmd_bySQL(s)
+    s := '';
+    s := s + ' UPDATE roomreservations '+chr(10);
+    s := s + ' SET '+chr(10);
+    s := s + ' Package=' + _db(package)+' '+chr(10);
+    s := s + ' WHERE (roomreservation = ' + inttostr(iRoomReservation) + ') '+chr(10);
+    result :=  cmd_bySQL(s)
   end;
 
 
@@ -11092,7 +10924,6 @@ var
   Rset : TRoomerDataSet;
   s : string;
 begin
-  result := false;
   Rset := CreateNewDataSet;
   try
     // s := s + ' SELECT'+chr(10);
@@ -11111,8 +10942,6 @@ begin
 end;
 
 procedure Td.ApplyFieldsToKbmMemTable(sourceSet: TRoomerDataSet; destSet: TdxMemData; loadDataSet : Boolean = True);
-var i : integer;
-    FieldDef : TFieldDef;
 begin
   destSet.FieldDefs.Assign(sourceSet.FieldDefs);
   destSet.CreateFieldsFromDataSet(sourceSet);
@@ -11439,11 +11268,6 @@ const GET_ALL_INVOICE_ITEMS_FOR_A_SPECIFIED_ROOM_RESERVATION =
 ' ' + #10 +
 'ORDER BY ItemNumber ' + #10;
 
-procedure Td.RemoveBackups(Location : String);
-begin
-  DeleteAllFiles(TPath.Combine(Location, 'Backup_*.src'));
-  DeleteAllFiles(TPath.Combine(Location, 'Backup_*.src.*'));
-end;
 
 procedure Td.ProcessInvoiceBackupsForDate(sourceRSet : TRoomerDataSet; sPath : String; rSet : TRoomerDataset);
 var RoomReservation : Integer;
@@ -11584,15 +11408,6 @@ begin
   end;
 end;
 
-procedure Td.DownloadControlTable(sourceRSet : TRoomerDataSet; sPath : String);
-var res : String;
-    sql : String;
-begin
-  sql := 'SELECT * FROM control LIMIT 1';
-  res := sourceRSet.queryRoomer(sql);
-  SaveToUtf8TextFile(TPath.Combine(sPath, 'Backup_Control_Table.src'), res);
-end;
-
 procedure Td.BackupTaxes(sourceRSet : TRoomerDataSet; sPath : String);
 var s, filename : String;
 begin
@@ -11628,7 +11443,7 @@ begin
 end;
 
 procedure Td.BackupPayments(rSet : TdxMemData);
-var Reservation, RoomReservation, Split : Integer;
+var Reservation, RoomReservation: Integer;
 begin
   rset.First;
   Reservation := rSet['Reservation'];
@@ -11655,6 +11470,11 @@ end;
 function Td.GetBackupTodaysGuests : String;
 begin
   result := ReadFromTextFile(TPath.Combine(GetBackupPath, format('Backup_Guests_%s.src', [dateToSqlString(now)])));
+end;
+
+procedure Td.GenerateOfflineReports;
+begin
+  TOfflineReportGenerator.ExecuteRegisteredReports;
 end;
 
 function Td.GetBackupControlTable : String;
@@ -12013,25 +11833,6 @@ end;
 
 
 procedure Td.UpdateStatusSimple(Reservation, RoomReservation: Integer; newStatus : string);
-var
-  Rset : TRoomerDataSet;
-  s : string;
-//  rr        : integer;
-//  Room      : string;
-//  DayCount  : integer;
-//  Processed : integer;
-//  FirstDate : Tdate;
-
-//  LastDate  : Tdate;
-//
-//  oldStatus : string;
-//
-//  Roomtype  : string;
-//  Arrival   : Tdate;
-//  Departure : Tdate;
-//
-//  subtract : boolean;
-
 begin
 
   if (Roomreservation <> 0) then
@@ -12172,13 +11973,6 @@ var
   sRoomType: string;
     NewRoom : string;
     Rset : TRoomerDataSet;
-
-    DayCount : integer;
-    Processed : integer;
-    FirstDate : Tdate;
-    LastDate : Tdate;
-    reservation : integer;
-
   begin
     result := true;
 //    s := s + ' SELECT '+chr(10);
@@ -12465,13 +12259,6 @@ var
   sChkRoomreservation : string;
   chkDate : Tdate;
 
-  DayCount : integer;
-  Processed : integer;
-  FirstDate : Tdate;
-  LastDate : Tdate;
-
-  rate : double;
-  aDate : TDate;
   guestCount  : integer;
   childCount  : integer;
   infantCount : integer;
@@ -12494,8 +12281,6 @@ begin
     Showmessage (GetTranslatedText('shTx_D_CheckDates'));
   end;
 
-  Discount     := 0.00;
-  isPercentage := true;
   showDiscount := true;
 
   lst := tstringList.Create;
@@ -12632,26 +12417,13 @@ end;
     s : string;
 
     DayCount : integer;
-    Processed : integer;
     FirstDate : Tdate;
     LastDate : Tdate;
 
     RoomReservation : integer;
     RoomReservationCount : integer;
-    lstRoomReservations : TstringList;
-    i : integer;
-
     invoices : string;
-    RoomType : string;
-    Arrival : Tdate;
-    Departure : Tdate;
-    Status : string;
   begin
-    RoomReservation  := 0;
-    RoomReservationCount := 0;
-
-    DayCount := hdata.RE_GetFirstAndLastDate(iReservation, FirstDate, LastDate);
-
     invoices := '';
 
     Rset := CreateNewDataSet;
@@ -12741,22 +12513,6 @@ end;
 
 
   procedure Td.CheckInGuest(RoomReservation : integer);
-  var
-    s : string;
-    Rset : TRoomerDataSet;
-
-    DayCount : integer;
-    Processed : integer;
-    FirstDate : Tdate;
-    LastDate : Tdate;
-    reservation : integer;
-
-    Room      : string;
-    Arrival   : TDate;
-    Departure : Tdate;
-    RoomType  : string;
-    oldStatus : string;
-
   begin
     d.roomerMainDataSet.SystemSetRoomStatus(RoomReservation, STATUS_ARRIVED);
     g.updateCurrentGuestlist;
@@ -12872,11 +12628,6 @@ end;
   function Td.RemoveRoomsDatebyReservation(iReservation : integer) : boolean;
   var
     s : string;
-
-    DayCount : integer;
-    Processed : integer;
-    FirstDate : Tdate;
-    LastDate : Tdate;
   begin
     result := false;
 
@@ -13293,15 +13044,11 @@ var
   stopTick: integer;
   SQLms: integer;
 
-  statusIn: string;
-
-  dtTmp: TdateTime;
   lst: TstringList;
 
   dateFrom: Tdate;
   dateTo: Tdate;
 
-  unconfirmedDate : TdateTime;
   sUnconfirmedDate : string;
 
   debug_s  : string;
@@ -13325,8 +13072,6 @@ begin
   try
     if zglob.ConfirmState = 1 then
     begin
-      dateFrom := 2;
-      dateTo := 2;
       lst := invoiceList_Unconfirmed();
       try
         zglob.Invoicelist := CreateSQLInText(lst);
@@ -13342,7 +13087,6 @@ begin
   screen.Cursor := crHourGlass;
   ExecutionPlan := d.roomerMainDataSet.CreateExecutionPlan;
   try
-    startTick := GetTickCount;
     s := '';
     s := s + ' SELECT '#10;
     s := s + '     il.ItemID '#10;
@@ -13857,8 +13601,6 @@ begin
 //      LoadKbmMemtableFromDataSetQuiet(mInvoiceLines,rset6,[]);
       d.mInvoiceLines.First;
 
-      rset7 := ExecutionPlan.Results[6];
-
 
       rset8 := ExecutionPlan.Results[7];
       if d.kbmUnconfirmedInvoicelines_.active then
@@ -13958,10 +13700,6 @@ begin
     d.kbmPayments_.First;
 
 
-    stopTick := GetTickCount;
-    SQLms := stopTick - startTick;
-//ATH    labExecuteTime.Caption := inttostr(SQLms);
-
   finally
     ExecutionPlan.Free;
     screen.Cursor := crDefault;
@@ -13974,8 +13712,6 @@ end;
 
 procedure Td.TurnoverAndPaymentsUpdateTurnover(var zGlob : recTurnoverAndPaymentsGlobals);
 var
-  s: string;
-
   rentAmount: double;
   rentVat: double;
   rentItemCount: Double;  //-96
@@ -13999,19 +13735,15 @@ var
 begin
 
   rentAmount := 0;
-  rentVat := 0;
   rentItemCount := 0.00; //-96
 
   discountAmount := 0;
-  discountVat := 0;
   discountItemCount := 0.00; //-96
 
   cityTaxAmount := 0;
-  cityTaxVat := 0;
   cityTaxItemCount := 0.00;  //-96
 
   incl_cityTaxAmount := 0;
-  incl_cityTaxVat := 0;
   incl_cityTaxItemCount := 0.00; //-96
 
   d.kbmTurnover_.DisableControls;
@@ -14181,19 +13913,15 @@ begin
   if d.kbmRoomsDateChange_.recordcount > 0 then
   begin
     rentAmount := 0;
-    rentVat := 0;
     rentItemCount := 0;
 
     discountAmount := 0;
-    discountVat := 0;
     discountItemCount := 0;
 
     cityTaxAmount := 0;
-    cityTaxVat := 0;
     cityTaxItemCount := 0;
 
     incl_cityTaxAmount := 0;
-    incl_cityTaxVat := 0;
     incl_cityTaxItemCount := 0;
 
     d.kbmTurnover_.DisableControls;
@@ -14377,7 +14105,6 @@ begin
   cityTaxItemCount := 0;
 
   incl_cityTaxAmount := 0;
-  incl_cityTaxVat := 0;
   incl_cityTaxItemCount := 0;
 
   if d.kbmRoomRentOnInvoice_.recordcount > 0 then
@@ -14547,18 +14274,12 @@ end;
 
 procedure Td.TurnoverAndPaymentsUpdateTurnoverItemPriceChange(var rec : recTurnoverAndPaymentsGlobals );
 var
-  s: string;
-
   Amount: double;
   VAT: double;
   ItemCount: double;
 
   item: string;
 begin
-  Amount := 0;
-  VAT := 0;
-  ItemCount := 0.00; //-96
-
   if d.kbmInvoiceLinePriceChange_.recordcount = 0 then
     exit;
 
@@ -15057,7 +14778,6 @@ begin
       discountChange  := d.kbmRoomsDateChange_.FieldByName('discountChange').AsFloat;
       taxChange       := d.kbmRoomsDateChange_.FieldByName('taxChange').AsFloat;
       rentChange      := d.kbmRoomsDateChange_.FieldByName('rentChange').AsFloat;
-      confirmDate     := d.kbmRoomsDateChange_.FieldByName('Confirmdate').asDateTime;
       s := '';
       s := s + ' INSERT INTO roomsdatechange '#10;
       s := s + ' ('#10;
@@ -15171,6 +14891,7 @@ var
   rSet : TRoomerDataSet;
   s : string;
 begin
+  Result := 0;
   if frmMain.OffLineMode then
     exit;
 
@@ -15258,20 +14979,15 @@ var
   stopTick: integer;
   SQLms: integer;
 
-  statusIn: string;
-
-  dtTmp: TdateTime;
   lst: TstringList;
 
   dateFrom: Tdate;
   dateTo: Tdate;
 
-  unconfirmedDate : TdateTime;
   sUnconfirmedDate : string;
 
   debug_s : string;
 
-  dTmp : double;
 
 begin
 
@@ -15292,8 +15008,6 @@ begin
   try
     if zglob.ConfirmState = 1 then
     begin
-      dateFrom := 2;
-      dateTo := 2;
       lst := invoiceList_Unconfirmed();
       try
         zglob.Invoicelist := CreateSQLInText(lst);
@@ -15311,7 +15025,6 @@ begin
   screen.Cursor := crHourGlass;
   ExecutionPlan := d.roomerMainDataSet.CreateExecutionPlan;
   try
-    startTick := GetTickCount;
     s := '';
     s := s + ' SELECT '#10;
     s := s + '     il.ItemID '#10;
@@ -15926,8 +15639,6 @@ begin
       LoadKbmMemtableFromDataSetQuiet(mInvoiceLines,rset6,[]);
       d.mInvoiceLines.First;
 
-      rset7 := ExecutionPlan.Results[6];
-
 
       rset8 := ExecutionPlan.Results[7];
       if d.kbmUnconfirmedInvoicelines_.active then
@@ -16030,11 +15741,6 @@ begin
     end;
     d.kbmPayments_.First;
 
-
-    stopTick := GetTickCount;
-    SQLms := stopTick - startTick;
-//ATH    labExecuteTime.Caption := inttostr(SQLms);
-
   finally
     ExecutionPlan.Free;
     screen.Cursor := crDefault;
@@ -16045,7 +15751,6 @@ end;
 
 procedure Td.TurnoverAndPaymentsUpdateTurnover_II(var zGlob : recTurnoverAndPaymentsGlobals_II);
 var
-  s: string;
 
   rentAmount: double;
   rentVat: double;
@@ -16071,19 +15776,15 @@ var
 
 begin
   rentAmount := 0;
-  rentVat := 0;
   rentItemCount := 0.00; //-96
 
   discountAmount := 0;
-  discountVat := 0;
   discountItemCount := 0.00; //-96
 
   cityTaxAmount := 0;
-  cityTaxVat := 0;
   cityTaxItemCount := 0.00;  //-96
 
   incl_cityTaxAmount := 0;
-  incl_cityTaxVat := 0;
   incl_cityTaxItemCount := 0.00; //-96
 
 
@@ -16246,19 +15947,15 @@ begin
   if d.kbmRoomsDateChange_.recordcount > 0 then
   begin
     rentAmount := 0;
-    rentVat := 0;
     rentItemCount := 0;
 
     discountAmount := 0;
-    discountVat := 0;
     discountItemCount := 0;
 
     cityTaxAmount := 0;
-    cityTaxVat := 0;
     cityTaxItemCount := 0;
 
     incl_cityTaxAmount := 0;
-    incl_cityTaxVat := 0;
     incl_cityTaxItemCount := 0;
 
     d.kbmTurnover_.DisableControls;
@@ -16438,9 +16135,6 @@ begin
   cityTaxVat := 0;
   cityTaxItemCount := 0;
 
-  incl_cityTaxAmount := 0;
-  incl_cityTaxVat := 0;
-  incl_cityTaxItemCount := 0;
 
   if d.kbmRoomRentOnInvoice_.recordcount > 0 then
   begin
@@ -17073,7 +16767,6 @@ end;
 
 procedure Td.TurnoverAndPaymentsUpdateTurnoverItemPriceChange_II(var rec : recTurnoverAndPaymentsGlobals_II);
 var
-  s: string;
 
   Amount: double;
   VAT: double;
@@ -17081,9 +16774,6 @@ var
 
   item: string;
 begin
-  Amount := 0;
-  VAT := 0;
-  ItemCount := 0.00; //-96
 
   if d.kbmInvoiceLinePriceChange_.recordcount = 0 then exit;
 
@@ -17574,7 +17264,6 @@ begin
       discountChange  := d.kbmRoomsDateChange_.FieldByName('discountChange').AsFloat;
       taxChange       := d.kbmRoomsDateChange_.FieldByName('taxChange').AsFloat;
       rentChange      := d.kbmRoomsDateChange_.FieldByName('rentChange').AsFloat;
-      confirmDate     := d.kbmRoomsDateChange_.FieldByName('Confirmdate').asDateTime;
       s := '';
       s := s + ' INSERT INTO roomsdatechange '#10;
       s := s + ' ('#10;
@@ -17637,12 +17326,10 @@ end;
 procedure td.insertActivityLogFromMemTable;
 var
   s : string;
-  rSet : TRoomerDataSet;
   iReservation , iroomreservation : integer;
   iSplitnumber : integer;
   Item : string;
   Total : double;
-  itemCount : double;
   lineNumber : integer;
   Autogen : string;
   bSystemline : boolean;
@@ -17912,6 +17599,8 @@ begin
     0 : result := g.qPeriodRowHeight;
     1 : result := 49;
     2 : result := 75;
+  else
+    Result := 0;
   end;
 end;
 

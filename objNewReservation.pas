@@ -318,6 +318,7 @@ end;
 
 destructor TnewRoomReservationItem.Destroy;
 begin
+  FRates.Free;
   inherited;
 end;
 
@@ -505,7 +506,7 @@ end;
 
 destructor TnewRoomReservation.Destroy;
 begin
-  freeandnil(FRoomList);
+  FRoomList.Free;
   inherited;
 end;
 
@@ -665,6 +666,8 @@ end;
 destructor TNewReservation.Destroy;
 begin
   FAlertList.Free;
+  FHomeCustomer.Free;
+  FNewRoomReservations.Free;
   inherited;
 end;
 

@@ -46,10 +46,11 @@ type
     procedure ShowSelectedFileGroup;
     procedure ListViewEditorExit(Sender: TObject);
     function GetFilePathForListView(filename: String; stamp : TDateTime): String;
-    procedure CreateWnd; override;
-    procedure DestroyWnd; override;
     procedure UploadKnownFilesToStaticResources;
     function DownloadFile(RemoteName, LocalName: String): String;
+  protected
+    procedure CreateWnd; override;
+    procedure DestroyWnd; override;
     { Private declarations }
   public
     { Public declarations }
@@ -227,6 +228,7 @@ var i : integer;
     sel : integer;
 begin
   allSelected := false;
+  sel := 0;
   for i := 0 to Pred(lvfileList.Items.Count) do
     if lvfileList.Items[i].Selected then
     begin
@@ -234,13 +236,13 @@ begin
       begin
       //   sel := MessageDlg(format('Do you want to delete file "%s"?', [lvfileList.Items[i].SubItems[0]]),
                 //  mtConfirmation, [mbYes, mbNo, mbAll, mbCancel], 0);
-		sel := MessageDlg(format(GetTranslatedText('shTx_ManageFiles_Delete'), [lvfileList.Items[i].SubItems[0]]),
-                  mtConfirmation, [mbYes, mbNo, mbAll, mbCancel], 0);
-         if sel = mrAll then
-           allSelected := true
-         else
-         if sel = mrCancel then
-           exit;
+    		sel := MessageDlg(format(GetTranslatedText('shTx_ManageFiles_Delete'), [lvfileList.Items[i].SubItems[0]]),
+               mtConfirmation, [mbYes, mbNo, mbAll, mbCancel], 0);
+        if sel = mrAll then
+          allSelected := true
+        else
+          if sel = mrCancel then
+            exit;
       end;
       if allSelected OR (sel = mrYes) then
         RoomerDataSet1.SystemDeleteFile(cbxFileTypes.ItemIndex,

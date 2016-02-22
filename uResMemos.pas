@@ -297,8 +297,6 @@ var
   sArrival : string;
   sDeparture : string;
   sCustomer : string;
-  sStatusText : string;
-  sGuestText : string;
   sReservarionName : string;
 
   dtArrival : Tdate;

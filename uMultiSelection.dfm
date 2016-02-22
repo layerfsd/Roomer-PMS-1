@@ -129,15 +129,11 @@ object frmMultiSelection: TfrmMultiSelection
     ParentFont = False
     TabOrder = 2
     OnClick = lstItemsClick
-    BoundLabel.Indent = 0
     BoundLabel.Font.Charset = DEFAULT_CHARSET
     BoundLabel.Font.Color = clWindowText
     BoundLabel.Font.Height = -13
     BoundLabel.Font.Name = 'Tahoma'
     BoundLabel.Font.Style = []
-    BoundLabel.Layout = sclLeft
-    BoundLabel.MaxWidth = 0
-    BoundLabel.UseSkinColor = True
     SkinData.SkinSection = 'EDIT'
   end
 end

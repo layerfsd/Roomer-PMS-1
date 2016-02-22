@@ -142,7 +142,6 @@ type
 
     zRRInList   : string;
     zRVInList   : string;
-    zRVGroupInList   : string;
 
     zReservationCount : integer;
     zRoomReservationCount : integer;
@@ -150,11 +149,9 @@ type
     NativeCurrency : string;
     zFirstTime : boolean;
 
-    function Execute(aType : integer) : integer;
-    function Execute2(aType : integer) : integer;
+    procedure Execute2(aType : integer);
 
     function GetRVinList : string;
-    function GetRVGroupinList : string;
     function GetRRinList : string;
 
     procedure AddInvoiceData;
@@ -276,6 +273,11 @@ begin
   ShellExecute(Handle, 'OPEN', PChar(sFilename + '.xls'), nil, nil, sw_shownormal);
 end;
 
+procedure TfrmOpenInvoicesNew.btnExecuteClick(Sender: TObject);
+begin
+  Execute2(0);
+end;
+
 procedure TfrmOpenInvoicesNew.dtEdFromPropertiesChange(Sender : TObject);
 begin
   zdtFromDate := dtEdFrom.date;
@@ -288,16 +290,6 @@ begin
   zdtToDate := dtEdTo.date;
   zsDateTo := _DateToDBDate(dtEdTo.date, false);
 end;
-
-function TfrmOpenInvoicesNew.Execute(aType : integer) : integer;
-begin
-end;
-
-procedure TfrmOpenInvoicesNew.btnExecuteClick(Sender : TObject);
-begin
-  Execute2(0);
-end;
-
 
 function TfrmOpenInvoicesNew.GetRRinList : string;
 var
@@ -329,8 +321,6 @@ begin
   end;
   result := s;
 end;
-
-
 
 function TfrmOpenInvoicesNew.GetRVinList : string;
 var
@@ -365,41 +355,6 @@ begin
   result := s;
 end;
 
-function TfrmOpenInvoicesNew.GetRVGroupinList : string;
-var
-  s      : string;
-  rvList : TstringList;
-  i      : integer;
-
-
-  dateFrom, DateTo : Tdate;
-begin
-  dateFrom := dtEdFrom.Date;
-  dateTo   := dtEdTo.Date;
-
-  result := '';
-  rvList := d.Rvlst_FromToGroup(DateFrom, DateTo);
-  try
-    s := '';
-    for i := 0 to rvList.Count - 1 do
-    begin
-      if rvList[i] <> '0' then
-        s := s+rvList[i]+',';
-    end;
-    if length(s) > 0 then
-    begin
-      delete(s,length(s),1);
-      s := '('+s+')';
-      result := s;
-    end;
-    zReservationCount := rvList.count;
-  finally
-    freeandNil(rvList);
-  end;
-  result := s;
-end;
-
-
 
 procedure TfrmOpenInvoicesNew.kbmRoomsDate_BeforePost(DataSet: TDataSet);
 
@@ -411,7 +366,6 @@ var
   nativerate : double;
   currencyRate : double;
   TotalItems   : double;
-  Total : double;
 
 begin
   if not zFirsttime then exit;
@@ -442,7 +396,6 @@ var
   RoomReservation : integer;
 begin
   Reservation := kbmRoomsDate_.FieldByName('Reservation').AsInteger;
-  RoomReservation := kbmRoomsDate_.FieldByName('RoomReservation').AsInteger;
 
   EditInvoice(Reservation, 0, 0, 0, 0, 0, false, true,false);
 end;
@@ -456,8 +409,6 @@ var
 begin
   Reservation := kbmRoomsDate_.FieldByName('Reservation').AsInteger;
   RoomReservation := kbmRoomsDate_.FieldByName('RoomReservation').AsInteger;
-  Arrival := kbmRoomsDate_.FieldByName('Arrival').AsDateTime;
-  Departure := kbmRoomsDate_.FieldByName('departure').AsDateTime;
   EditInvoice(Reservation, RoomReservation, 0, 0, 0, 0, false, true,false);
 end;
 
@@ -472,7 +423,6 @@ begin
 
   if MessageDlg(s,mtConfirmation, [mbYes, mbNo], 0) = mrYes then
   begin
-    Reservation := kbmRoomsDate_.FieldByName('Reservation').AsInteger;
     RoomReservation := kbmRoomsDate_.FieldByName('RoomReservation').AsInteger;
     d.RR_ExcluteFromOpenInvoices(RoomReservation);
   end;
@@ -498,7 +448,7 @@ begin
   AProperties := d.getCurrencyProperties(g.qNativeCurrency);
 end;
 
-function TfrmOpenInvoicesNew.Execute2(aType : integer) : integer;
+procedure TfrmOpenInvoicesNew.Execute2(aType : integer);
 var
   rSet1 : TRoomerDataSet;
   rSet2 : TRoomerDataSet;
@@ -521,7 +471,6 @@ var
 begin
   ExecutionPlan := d.roomerMainDataSet.CreateExecutionPlan;
   try
-    tickCountStart := getTickCount;
     screen.Cursor  := crHourGlass;
     kbmInvoicelines_.DisableControls;
     kbmRoomsdate_.DisableControls;
@@ -722,8 +671,6 @@ begin
     AddInvoiceData;
     tvRoomsDate.ApplyBestFit();
 
-    tickCountEnd := GetTickCount;
-    ms := tickCountEnd - tickCountStart;
   finally
     ExecutionPlan.Free;
   end;
@@ -732,10 +679,6 @@ end;
 
 procedure TfrmOpenInvoicesNew.AddInvoiceData;
 var
-  startTick : integer;
-  stopTick  : integer;
-  SQLms     : integer;
-
   RoomReservation         : integer;
   Reservation             : Integer ;
   Room                    : String  ;
@@ -759,7 +702,6 @@ var
   CurrencyRate            : double  ;
   statusDescription       : String  ;
   TotalItems              : double  ;
-  Amount                  : double;
   nativeCurrency : string;
 
 begin
@@ -767,7 +709,6 @@ begin
   kbmRoomsDate_.DisableControls;
   screen.Cursor := crHourGlass;
   try
-    startTick := GetTickCount;
 
     kbmInvoicelines_.SortFields := 'RoomReservation';
     kbmInvoicelines_.Sort([]);
@@ -775,34 +716,32 @@ begin
     kbmInvoicelines_.First;
     while not kbmInvoicelines_.eof do
     begin
-     RoomReservation         := RoomReservation;
-     Room                    := kbmInvoicelines_.FieldByName('Room').AsString;
-     RoomType                := kbmInvoicelines_.FieldByName('RoomType').AsString;
-     isNoroom                := kbmInvoicelines_.FieldByName('isNoroom').AsBoolean;
-     ResFlag                 := kbmInvoicelines_.FieldByName('Status').AsString;
-     currency                := kbmInvoicelines_.FieldByName('Currency').AsString;
-     discount                := 0;
-     isPercentage            := false;
-     Arrival                 := kbmInvoicelines_.FieldByName('Arrival').AsDateTime;
-     Departure               := kbmInvoicelines_.FieldByName('Departure').AsDateTime;
-     GroupAccount            := kbmInvoicelines_.FieldByName('isGroupAccount').AsBoolean;
-     RoomRentPaymentInvoice  := kbmInvoicelines_.FieldByName('RoomRentPaymentInvoice').AsInteger;
-     Customer                := kbmInvoicelines_.FieldByName('Customer').AsString;
-     ReservationName         := kbmInvoicelines_.FieldByName('ReservationName').AsString;;
-     GuestName               := kbmInvoicelines_.FieldByName('GuestName').AsString;
-     unPaidRoomRent          := 0;
-     DiscountUnPaidRoomRent  := 0;
-     TotalUnpaidRoomRent     := 0;
-     TotalItems              := 0;
-     TotalRate               := 0;
+      Room                    := kbmInvoicelines_.FieldByName('Room').AsString;
+      RoomType                := kbmInvoicelines_.FieldByName('RoomType').AsString;
+      isNoroom                := kbmInvoicelines_.FieldByName('isNoroom').AsBoolean;
+      ResFlag                 := kbmInvoicelines_.FieldByName('Status').AsString;
+      currency                := kbmInvoicelines_.FieldByName('Currency').AsString;
+      discount                := 0;
+      isPercentage            := false;
+      Arrival                 := kbmInvoicelines_.FieldByName('Arrival').AsDateTime;
+      Departure               := kbmInvoicelines_.FieldByName('Departure').AsDateTime;
+      GroupAccount            := kbmInvoicelines_.FieldByName('isGroupAccount').AsBoolean;
+      RoomRentPaymentInvoice  := kbmInvoicelines_.FieldByName('RoomRentPaymentInvoice').AsInteger;
+      Customer                := kbmInvoicelines_.FieldByName('Customer').AsString;
+      ReservationName         := kbmInvoicelines_.FieldByName('ReservationName').AsString;;
+      GuestName               := kbmInvoicelines_.FieldByName('GuestName').AsString;
+      unPaidRoomRent          := 0;
+      DiscountUnPaidRoomRent  := 0;
+      TotalUnpaidRoomRent     := 0;
+      TotalRate               := 0;
 
-     RoomReservation   := kbmInvoicelines_.FieldByName('RoomReservation').AsInteger;
-     Reservation       := kbmInvoicelines_.FieldByName('Reservation').AsInteger;
-     TotalItems        := kbmInvoiceLines_.FieldByName('Amount').asfloat;
-     CurrencyRate      := kbmInvoiceLines_.FieldByName('CurrencyRate').asfloat;
-     statusDescription := kbmInvoiceLines_.FieldByName('statusDescription').asString;
+      RoomReservation   := kbmInvoicelines_.FieldByName('RoomReservation').AsInteger;
+      Reservation       := kbmInvoicelines_.FieldByName('Reservation').AsInteger;
+      TotalItems        := kbmInvoiceLines_.FieldByName('Amount').asfloat;
+      CurrencyRate      := kbmInvoiceLines_.FieldByName('CurrencyRate').asfloat;
+      statusDescription := kbmInvoiceLines_.FieldByName('statusDescription').asString;
 
-      if kbmRoomsDate_.Locate('roomReservation',roomReservation,[]) then
+      if kbmRoomsDate_.Locate('roomReservation',RoomReservation,[]) then
       begin
         kbmRoomsDate_.Edit;
         kbmRoomsDate_.FieldByName('TotalItems').AsFloat := TotalItems;
@@ -848,8 +787,6 @@ begin
     while not kbmGroupInvoiceLines_.eof do
     begin
      ResFlag                 := 'X';
-     discount                := 0;
-     isPercentage            := false;
      Arrival                 := kbmGroupInvoiceLines_.FieldByName('dtArrival').AsDateTime;
      Departure               := kbmGroupInvoiceLines_.FieldByName('dtDeparture').AsDateTime;
      GroupAccount            := true;
@@ -860,8 +797,6 @@ begin
      unPaidRoomRent          := 0;
      DiscountUnPaidRoomRent  := 0;
      TotalUnpaidRoomRent     := 0;
-     TotalItems              := 0;
-     TotalRate               := 0;
 
      RoomReservation   := kbmGroupInvoiceLines_.FieldByName('RoomReservation').AsInteger;
      Reservation       := kbmGroupInvoiceLines_.FieldByName('Reservation').AsInteger;
@@ -898,8 +833,6 @@ begin
       kbmGroupInvoiceLines_.next;
     end;
 
-    stopTick := GetTickCount;
-    SQLms    := stopTick - startTick;
   finally
     kbmRoomsDate_.EnableControls;
     kbmInvoicelines_.EnableControls;

@@ -107,8 +107,6 @@ type
     chkWindowsAuth: TsCheckBox;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure FormClose(Sender: TObject; var Action: TCloseAction);
-    procedure FormDestroy(Sender: TObject);
     procedure BtnOkClick(Sender: TObject);
     procedure btnGetStaffType2Click(Sender: TObject);
     procedure btnGetStaffType1Click(Sender: TObject);
@@ -117,7 +115,6 @@ type
     procedure btnGetStaffType4Click(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure btnCancelClick(Sender: TObject);
-    procedure sSkinProvider1AfterAnimation(AnimType: TacAnimEvent);
     procedure btnGetGountryClick(Sender: TObject);
     procedure btnAddCurrentClick(Sender: TObject);
   private
@@ -141,9 +138,6 @@ type
   function openStaffMemberEdit(var theData : recStaffMemberHolder; isInsert : boolean) : boolean;
 
 
-var
-  frmStaffEdit2: TfrmStaffEdit2;
-
 implementation
 
 {$R *.dfm}
@@ -162,9 +156,11 @@ uses
 
 
 function openStaffMemberEdit(var theData : recStaffMemberHolder; isInsert : boolean) : boolean;
+var
+  frmStaffEdit2: TfrmStaffEdit2;
 begin
   result := false;
-  frmStaffEdit2 := TfrmStaffEdit2.Create(frmStaffEdit2);
+  frmStaffEdit2 := TfrmStaffEdit2.Create(nil);
   try
     frmStaffEdit2.zData := theData;
     frmStaffEdit2.zInsert := isInsert;
@@ -175,7 +171,7 @@ begin
       result := true;
     end
   finally
-    freeandnil(frmStaffEdit2);
+    frmStaffEdit2.Free;
   end;
 end;
 
@@ -207,11 +203,6 @@ begin
 end;
 
 
-procedure TfrmStaffEdit2.sSkinProvider1AfterAnimation(AnimType: TacAnimEvent);
-begin
-
-end;
-
 ///////////////////////////////////////////////////////////////////////////////////
 ///
 ///
@@ -221,7 +212,7 @@ end;
 procedure TfrmStaffEdit2.FormCreate(Sender: TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
-     glb.PerformAuthenticationAssertion(self);
+  glb.PerformAuthenticationAssertion(self);
 end;
 
 procedure TfrmStaffEdit2.FormShow(Sender: TObject);
@@ -288,22 +279,11 @@ begin
     end;
 end;
 
-procedure TfrmStaffEdit2.FormClose(Sender: TObject; var Action: TCloseAction);
-begin
-   //**
-end;
-
 
 procedure TfrmStaffEdit2.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 begin
   canclose := zCanClose;
 end;
-
-procedure TfrmStaffEdit2.FormDestroy(Sender: TObject);
-begin
-  //**
-end;
-
 
 procedure TfrmStaffEdit2.btnGetStaffType2Click(Sender: TObject);
 var
@@ -442,8 +422,17 @@ begin
   then
   begin
    // showmessage('Name is required');
-	  showmessage('Set at least one rights');
-    edStaffType.Text;
+	  showmessage(GetTranslatedText('shTx_StaffEdit2_RightsRequired'));
+    pageMain.ActivePage := sTabSheet2;
+    edStaffType.SetFocus;
+    Exit;
+  end;
+
+  if __cbxLanguage.ItemIndex = -1 then
+  begin
+   // showmessage('Name is required');
+	  showmessage(GetTranslatedText('shTx_StaffEdit2_LanguageRequired'));
+    __cbxLanguage.SetFocus;
     Exit;
   end;
 

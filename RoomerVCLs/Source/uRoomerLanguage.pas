@@ -844,11 +844,11 @@ end;
 
 procedure TRoomerLanguage.DeactivateDBLanguageCollection;
 begin
-  if LanguageCollectionActive AND FPerformDBUpdatesWhenUnknownEntitiesFound then
-  begin
+//  if LanguageCollectionActive AND FPerformDBUpdatesWhenUnknownEntitiesFound then
+//  begin
     ExecutionPlan.Free;
     CurrentCollection.Free;
-  end;
+//  end;
   ExecutionPlan := nil;
   CurrentCollection := nil;
   LanguageCollectionActive := false;

@@ -2,6 +2,8 @@ unit uFileDependencyManager;
 
 interface
 
+{$include roomer.inc}
+
 uses Generics.Collections,
     SysUtils,
     IOUtils,
@@ -96,18 +98,17 @@ begin
 end;
 
 procedure prepareDependencyManager;
-var ASet : TRoomerDataSet;
 begin
   if d.roomerMainDataSet.OfflineMode then
     exit;
 
   ReadFilesFromStaticResources;
   try
-  if fileList.Count = 0 then
-  begin
-    UploadKnownFilesToStaticResourceBundle(d.roomerMainDataSet);
-    ReadFilesFromStaticResources;
-  end;
+    if fileList.Count = 0 then
+    begin
+      UploadKnownFilesToStaticResourceBundle(d.roomerMainDataSet);
+      ReadFilesFromStaticResources;
+    end;
   except
     // Ignore any error here!
   end;
@@ -323,7 +324,7 @@ end;
 //end;
 
 function getHtmlEditorFilePath(throwExceptionOnError : Boolean = true) : String;
-var sPath, regApp, parameters : String;
+var sPath, parameters : String;
 begin
   sPath := TPath.Combine(LocalAppDataPath, 'Roomer');
   forceDirectories(sPath);

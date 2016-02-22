@@ -2,6 +2,8 @@ unit uAboutRoomer;
 
 interface
 
+{$include roomer.inc}
+
 uses
     Winapi.Windows
   , Winapi.Messages

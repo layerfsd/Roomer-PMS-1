@@ -222,14 +222,13 @@ type
     zFirstTime       : boolean;
     zAllowGridEdit   : boolean;
     zPostData        : boolean;
-    zPostState       : integer;
-    zFilterOn          : boolean;
+//    zPostState       : integer;
+//    zFilterOn          : boolean;
     zSortStr           : string;
 
     Procedure fillGridFromDataset(sGoto : string);
     procedure fillHolder;
     procedure changeAllowgridEdit;
-    function  GetPrevCode : string;
     procedure ApplyFilter;
   public
     { Public declarations }
@@ -339,7 +338,6 @@ var
   theData : recCountryHolder;
 begin
   //*TESTED*//
-    result := false;
     initCountryHolder(theData);
     theData.country := trim(ed.text);
     result := countries(actLookup,theData);
@@ -362,7 +360,6 @@ var
   theData : recCountryHolder;
 begin
   //*TESTED*//
-  result := false;
   initCountryHolder(theData);
   theData.country := trim(ed.text);
   result := countries(actLookup,theData);
@@ -395,13 +392,14 @@ begin
 end;
 
 function countryValidate(ed : TsEdit; lab : TsLabel) : boolean;
-var
-  sValue : string;
+//var
+//  sValue : string;
 //  pcCode : string;
 //  theData : recCountryHolder;
 begin
   //*NOT TESTED*//
-  if NOT countryValidateCode(ed.Text, lab) then
+  Result := countryValidateCode(ed.Text, lab);
+  if NOT Result then
   begin
     ed.SetFocus;
     lab.Color := clRed;
@@ -433,7 +431,8 @@ var
 //  theData : recCountryHolder;
 begin
   //*NOT TESTED*//
-  if NOT countryValidateCode(ed.Text, lab) then
+  Result := countryValidateCode(ed.Text, lab);
+  if NOT Result then
   begin
     ed.SetFocus;
     lab.Color := clRed;
@@ -562,11 +561,6 @@ begin
   end;
   fillGridFromDataset(zData.Country);
   zFirstTime := false;
-end;
-
-function TfrmCountries.GetPrevCode : string;
-begin
-  //**
 end;
 
 

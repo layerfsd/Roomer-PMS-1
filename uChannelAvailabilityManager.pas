@@ -430,18 +430,15 @@ type
 
     startDate : TDateTime;
 
-    GetThreadedData : TGetThreadedData;
+    ThreadedDataGetter : TGetThreadedData;
 
 
     procedure ShowAvailabilityForSelectedChannelManager;
     function GetDateLabel(date: TDateTime): String;
-    procedure findAvailabilityDate(date: TDateTime);
-    function findExactRow(i: integer; _grid: TAdvStringGrid): integer;
     function EditableCell(_grid: TAdvStringGrid; ARow, ACol: integer): Boolean;
     function LoadRoomTypeGroups: Boolean;
     function DayOfWeekIsIncludes(date: TDateTime): Boolean;
     procedure EmptyBulkOperation;
-    function GetFormByName(document: IHTMLDocument2; const formName: string): IHTMLFormElement;
     function IsWeekend(ACol: integer): Boolean;
     procedure ShowRatesForSelectedChannelManager;
     procedure FreeGridObject;
@@ -458,12 +455,8 @@ type
     function getPriceForOnCell(ACol, ARow: integer): Double;
     procedure GetStatusOfRoomClasses;
     function locateAvailabilityFromRoomTypeCodeAndDate(Code: String; date: TDateTime): integer;
-    function FindPriceForDateAndType(ACol, ARow: integer; var roomType: String; var date: TDateTime): Double;
-    function findDateColumn(date: TDateTime): integer;
     function RoundValue(RoundType: integer; value: Double): Double;
     function NumDecimals(RoundType: integer): integer;
-    function CheckableCell(_grid: TAdvStringGrid; ARow, ACol: integer): Boolean;
-    function MinStayCell(_grid: TAdvStringGrid; ARow, ACol: integer): Boolean;
     function LoadPlanCodes: Boolean;
     function SeekRecordValue(ASet: TRoomerDataSet; fieldNameToSeek: String; fieldValue: integer): Boolean;
     procedure GridPostPasteAction(_grid: TAdvStringGrid);
@@ -490,14 +483,12 @@ type
     function isSingleUsePriceRow(iRow: integer): Boolean;
     function isStopSellRow(iRow: integer): Boolean;
     function isAnySpecRow(iRow: integer): Boolean;
-    function isRestrictionRow(iRow: integer): Boolean;
     function isAnyCheckBoxRow(iRow: integer): Boolean;
     function isAnyEditBoxRow(iRow: integer): Boolean;
     function isPriceRow(iRow: integer): Boolean;
     function isAnyEditableRow(iRow: integer): Boolean;
     function findPriceRowFrom(iRow: integer): integer;
     function getPriceDataOfRow(iCol, iRow: integer): TPriceData;
-    function isEdited(iCol, iRow: integer): Boolean;
     function isCurrentlySelectedValueEdited(iCol, iRow: integer): Boolean;
     function buildSetStatement(dirty: Boolean; var oldResultValue: String; dirtyName, valueName, value: String): String;
     function isPriceCell(iCol, iRow: integer): Boolean;
@@ -517,7 +508,6 @@ type
     function SameTypeRows(iRow1, iRow2: integer): Boolean;
     function findIdInCheckListCombo(cbx : TCheckComboBox; id: Integer): Integer;
     function IsIdCheckedInCheckListCombo(cbx: TCheckComboBox; id: Integer): Boolean;
-    procedure CorrectMasterRateLinkedSubRateCells(PriceData: TPriceData; ACol, ARow: integer);
     function isHiddenUnusedRow(iRow: integer): Boolean;
     function LoadRoomTypeGroupsForBulk: Boolean;
     procedure CheckOrUnCheckAllInCheckList(cl: TCheckComboBox; checked : Boolean; skipMinValues : Boolean = False);
@@ -533,11 +523,11 @@ type
     procedure SetButtonOnOff(btn: TSButton; SetOn: Boolean);
     procedure PostRatesList(tableName : String; list: TList<String>);
     procedure PublishSheet(OnlyCreateExcel: Boolean; AllowEditAndSendEmail : Boolean);
-    procedure CreateParams(var Params: TCreateParams); override;
     procedure ShowHideExtraOptions;
     procedure BlinkCombo;
     function buildSetStatementMinMax(var oldResultValue: String; minDirty, maxDirty: Boolean; minValue, maxValue: Integer): String;
   protected
+    procedure CreateParams(var Params: TCreateParams); override;
   public
     { Public declarations }
     embedded: Boolean;
@@ -561,7 +551,9 @@ implementation
 
 uses ioUtils, uMain, uDateUtils, uStringUtils, _glob, uAppGlobal, PrjConst,
   uFrmChannelCopyFrom, uRoomerMessageDialog, uDImages, uExcelProcessors, uG, uEmailExcelSheet, hData,
-  uActivityLogs;
+  uActivityLogs,
+  UITypes
+  ;
 
 const
   AVAILABILITY_FORMAT = '';
@@ -641,10 +633,9 @@ end;
 
 procedure TfrmChannelAvailabilityManager.btnApplyBulkClick(Sender: TObject);
 var
-  iRowCounter, iColCounter, iIntValue: integer;
+  iRowCounter, iColCounter: integer;
   value: String;
   _grid: TAdvStringGrid;
-  PriceData: TPriceData;
   Msg, MsgType : String;
 begin
 
@@ -659,6 +650,8 @@ begin
          Msg := GetTranslatedText('shUI_ChannelManager_RatesPublishWarning');
          MsgType := 'ChannelMngrAskBeforeRatesPublish';
        end;
+  else
+    Exit;
   end;
 
 //  if RoomerMessageDialog(Msg + #13#13 +
@@ -782,31 +775,6 @@ begin
   end;
 end;
 
-procedure TfrmChannelAvailabilityManager.findAvailabilityDate(date: TDateTime);
-var
-  i: integer;
-begin
-  //
-  i := findDateColumn(date);
-  if i >= 0 then
-    grid.ScrollInView(i + 1, grid.Row);
-end;
-
-function TfrmChannelAvailabilityManager.findDateColumn(date: TDateTime): integer;
-var
-  i: integer;
-begin
-  //
-  result := -1;
-  if grid.RowCount > 1 then
-    for i := 1 to grid.ColCount - 1 do
-      if Assigned(grid.Objects[i, 1]) AND (grid.Objects[i, 1] IS TCellData) AND (trunc(TCellData(grid.Objects[i, 1]).FDate) = trunc(date)) then
-      begin
-        result := i + 1;
-        break;
-      end;
-end;
-
 procedure TfrmChannelAvailabilityManager.RemoveData;
 begin
   FreeGridObject;
@@ -896,43 +864,8 @@ begin
     result := TPriceData(rateGrid.Objects[iCol, iPriceRow])
 end;
 
-function TfrmChannelAvailabilityManager.isEdited(iCol, iRow: integer): Boolean;
-var
-  iPriceRow: integer;
-  PriceData: TPriceData;
-begin
-  result := false;
-  if (iCol < 1) OR (iRow < 1) then
-    exit;
-  PriceData := getPriceDataOfRow(iCol, iRow);
-  if Assigned(PriceData) then
-  begin
-    if isPriceRow(iRow) then
-      result := PriceData.FPriceDirty
-    else if isAvailabilityRow(iRow) then
-      result := PriceData.FAvailabilityDirty
-    else if isStopSellRow(iRow) then
-      result := PriceData.FStopSellDirty
-    else if isMinStayRow(iRow) then
-      result := PriceData.FMinStayDirty
-    else if isMaxStayRow(iRow) then
-      result := PriceData.FMinStayDirty
-    else if isCloseOnArrivalRow(iRow) then
-      result := PriceData.FCOADirty
-    else if isClosedOnDepartureRow(iRow) then
-      result := PriceData.FCODDirty
-    else if isLOSArrivalDateBasedRow(iRow) then
-      result := PriceData.FLOSArrivalDateBasedDirty
-    else if isSingleUsePriceRow(iRow) then
-      result := PriceData.FSingleUsePriceDirty
-    else if isStopSellRow(iRow) then
-      result := PriceData.FSingleUsePriceDirty;
-  end;
-end;
-
 function TfrmChannelAvailabilityManager.isCurrentlySelectedValueEdited(iCol, iRow: integer): Boolean;
 var
-  iPriceRow: integer;
   PriceData: TPriceData;
 begin
   result := false;
@@ -1006,12 +939,6 @@ begin
     end;
 end;
 
-function TfrmChannelAvailabilityManager.isRestrictionRow(iRow: integer): Boolean;
-begin
-  result := isStopSellRow(iRow) OR isMinStayRow(iRow) OR isMaxStayRow(iRow) OR isCloseOnArrivalRow(iRow) OR isClosedOnDepartureRow(iRow) OR
-    isLOSArrivalDateBasedRow(iRow) OR isSingleUsePriceRow(iRow);
-end;
-
 procedure TfrmChannelAvailabilityManager.FreeGridObject;
 var
   iRow, iCol: integer;
@@ -1059,7 +986,7 @@ begin
   timStart.enabled := false;
   Halting := true;
   try
-    GetThreadedData.Free;
+    ThreadedDataGetter.Free;
   except end;
 
   try
@@ -1101,7 +1028,7 @@ begin
   pgcPages.ActivePageIndex := 0;
 
   startDate := TRUNC(now); //AvailSet['today'];
-  GetThreadedData := TGetThreadedData.Create;
+  ThreadedDataGetter := TGetThreadedData.Create;
   timStart.enabled := true;
 end;
 
@@ -1130,14 +1057,14 @@ var
   ReadTime : Integer;
   DrawTime : Integer;
 
-  procedure StartTimer(var timer : Integer);
+  procedure StartTimer(var timer : integer);
   begin
     timer := GetTickCount;
   end;
 
-  procedure EndTimer(timer : Integer; lab : TsLabel);
+  procedure EndTimer(timer : integer; lab : TsLabel);
   begin
-    timer := GetTickCount - timer;
+    timer := integer(GetTickCount) - timer;
     if lab.Caption = '' then
       lab.Caption := inttostr(timer)
     else
@@ -1238,8 +1165,6 @@ end;
 
 function TfrmChannelAvailabilityManager.GetDateLabel(date: TDateTime): String;
 var
-  fs: TFormatSettings;
-  FWeekNumber: integer;
   FYear: Word;
   FMonthDay: Word;
   FMonth: Word;
@@ -1250,7 +1175,6 @@ var
   sBgBegin, sBgEnd: String;
 begin
   DecodeDate(date, FYear, FMonth, FMonthDay);
-  FWeekNumber := uDateUtils.WeekNumber(date);
   FDayOfWeek := DayOfWeek(date);
   FMonthName := FormatDateTime('mmm', date);
   FDayOfWeekName := FormatDateTime('ddd', date);
@@ -1268,17 +1192,6 @@ begin
     '<font size="12">' + '<b>' + String(sTemp) + '</b></font></p>' + '<p align="center">' + format('%s ''%d', [FMonthName, FYear - 2000]) + '</p>' + sBgEnd;
 end;
 
-function TfrmChannelAvailabilityManager.findExactRow(i: integer; _grid: TAdvStringGrid): integer;
-var
-  iCount, iNum: integer;
-begin
-  iNum := 1;
-  for iCount := 1 to i do // 1234567890123
-    if copy(_grid.Cells[0, iCount], 1, 13) = '<font></font>' then
-      inc(iNum);
-  result := i - iNum;
-end;
-
 procedure TfrmChannelAvailabilityManager.gridCanEditCell(Sender: TObject; ARow, ACol: integer; var CanEdit: Boolean);
 begin
   if Halting then
@@ -1287,8 +1200,6 @@ begin
 end;
 
 procedure TfrmChannelAvailabilityManager.gridCellValidate(Sender: TObject; ACol, ARow: integer; var value: string; var Valid: Boolean);
-var
-  iValue: integer;
 begin
   if Halting then
     exit;
@@ -1326,22 +1237,13 @@ begin
   result := TCellData(grid.Objects[iCol, iRow]);
 end;
 
-function TfrmChannelAvailabilityManager.CheckableCell(_grid: TAdvStringGrid; ARow, ACol: integer): Boolean;
-begin
-  result := rateGrid.HasCheckBox(ACol, ARow); // Objects[0, ARow] = TObject(-1);
-end;
-
-function TfrmChannelAvailabilityManager.MinStayCell(_grid: TAdvStringGrid; ARow, ACol: integer): Boolean;
-begin
-  result := (ACol > 0) AND isMinStayRow(ARow);
-end;
 
 procedure TfrmChannelAvailabilityManager.gridDrawCell(Sender: TObject; ACol, ARow: integer; Rect: TRect; State: TGridDrawState);
 var
   fColor, bColor: TColor;
   SavedAlign: Word;
   S: String;
-  available, iRow: integer;
+  available: integer;
 begin
   if Halting then
     exit;
@@ -1432,17 +1334,7 @@ begin
       (TCellData(grid.Objects[ACol, ARow]).originalValue <> StrToIntDef(grid.Cells[ACol, ARow], 0)) then
     begin
       TCellData(grid.Objects[ACol, ARow]).CurrentValue := StrToIntDef(grid.Cells[ACol, ARow], 0);
-      fColor := clWhite;
-      bColor := clBlue;
-      if IsWeekend(ACol) then
-        bColor := clAqua;
-      if StrToIntDef(grid.Cells[ACol, ARow], 0) = 0 then
-      begin
-        fColor := clWhite;
-        bColor := $00F7C98A;
-        if IsWeekend(ACol) then
-          bColor := $00FCEBD3;
-      end;
+
       if (gdSelected in State) then
       begin
         fColor := InvertColor(clWhite);
@@ -1457,6 +1349,7 @@ begin
         if IsWeekend(ACol) then
           bColor := $00FF4D4D;
       end;
+
       available := locateAvailabilityFromRoomTypeCodeAndDate(TCellData(grid.Objects[ACol, ARow]).FRoomClassCode, TCellData(grid.Objects[ACol, ARow]).date);
       if available < TCellData(grid.Objects[ACol, ARow]).FCurrentValue then
       begin
@@ -1540,9 +1433,6 @@ end;
 
 procedure TfrmChannelAvailabilityManager.gridGridHint(Sender: TObject; ARow, ACol: integer; var hintstr: string);
 var
-  price: Double;
-  date: TDateTime;
-  roomType: String;
   available: integer;
 begin
   if Halting then
@@ -1560,37 +1450,6 @@ begin
     // [sBodyStart, FormatDateTime('dd mmm yyyy', date),
     // sFontStart, Trim(FloatToStrF(price, ffNumber, 12, 2)), sFontEnd
     // ]);
-  end;
-end;
-
-function TfrmChannelAvailabilityManager.FindPriceForDateAndType(ACol, ARow: integer; var roomType: String; var date: TDateTime): Double;
-var
-  i, i1, iRow, iCol: integer;
-  PriceData: TPriceData;
-  RoomTypeId: integer;
-begin
-  result := 0.00;
-  iRow := ARow; // findExactRow(ARow, grid);
-  date := TCellData(grid.Objects[ACol, 0]).FDate;
-  RoomTypeId := TCellData(rateGrid.Objects[ACol, ARow]).FRoomClassId;
-  if glb.LocateRoomTypeGroupById(RoomTypeId) then
-    roomType := glb.RoomTypeGroups['Code'];
-  for i := 1 to rateGrid.RowCount - 1 do
-  begin
-    for i1 := 1 to rateGrid.ColCount - 1 do
-    begin
-      if (rateGrid.Objects[i1, i] <> nil) AND (rateGrid.Objects[i1, i] IS TPriceData) then
-      begin
-        PriceData := TPriceData(rateGrid.Objects[i1, i]);
-        if (RoomTypeId = PriceData.FRoomTypeGroupId) AND (trunc(date) = trunc(PriceData.date)) then
-        begin
-          result := FormattedStringToFloat(rateGrid.Cells[i1, i]);
-          break;
-        end;
-      end;
-    end;
-    if result <> 0.00 then
-      break;
   end;
 end;
 
@@ -1714,16 +1573,12 @@ var
   list: TList<String>;
   iRow, iCol: integer;
   sql: String;
-  ChannelManagerId: integer;
 
   iNumRooms : Integer;
 
   PriceData: TPriceData;
 
-  cbState: Boolean;
-  bStop: String;
-  tableName : String;
-  i, iMaster: Integer;
+  iMaster: Integer;
 
   firstDate,
   lastDate : TDate;
@@ -1737,7 +1592,7 @@ var
       var ExcelP : TExcelProcessors;
           ChEntity : TChannelEntity;
           ClEntity : TClassEntity;
-          LastChannelCode, LastChannelName, LastHeader, LastClass : String;
+          LastChannelCode, LastChannelName: String;
 
       function NumRoomsOfTopClass(TopClass : String) : Integer;
       var RoomType : String;
@@ -1876,7 +1731,7 @@ var
                            '');
       end;
 
-var ratesExcludingTaxes : Boolean;
+var
     compensationPercentage : Double;
     PriceToHotel : Double;
 
@@ -1909,7 +1764,6 @@ begin
             begin
               if PriceData.isEdited OR PriceData.ForcingUpdate then
               begin
-                ChannelManagerId := PriceData.channelManager;
                 sql := '';
 
                 buildSetStatement(PriceData.ForcingUpdate OR PriceData.FPriceDirty, sql, 'dirty', 'price', _db(PriceData.FPrice));
@@ -1966,7 +1820,6 @@ begin
                   AddTopClassToRatesExcelSheet(PriceData.FRoomTypeGroupCode, iNumRooms);
                   if glb.LocateSpecificRecord('channels', 'id', PriceData.FChannelId) then
                   begin
-                    ratesExcludingTaxes := glb.ChannelsSet['ratesExcludingTaxes'];
                     compensationPercentage := glb.ChannelsSet['compensationPercentage'];
                     PriceToHotel := RoundTo(PriceData.FPrice / (1 + (compensationPercentage/100)), 0.01);
                     AddChannelToRatesExcelSheet(glb.ChannelsSet['channelManagerId'], glb.ChannelsSet['name'], '-------');
@@ -2264,12 +2117,10 @@ end;
 
 procedure TfrmChannelAvailabilityManager.btnSaveClick(Sender: TObject);
 var
-  list: TList<String>;
   iRow, iCol: integer;
-  S, s1: String;
 
   force: Boolean;
-  Id, dirty, Availability, SetAvailability, ChannelManagerId, PlanCodeId: TList<integer>;
+  Id, dirty, Availability, SetAvailability: TList<integer>;
   sql : TList<String>;
   temp,
   tempStr : String;
@@ -2648,16 +2499,13 @@ end;
 
 procedure TfrmChannelAvailabilityManager.GetStatusOfRoomClasses;
 var
-  cmIndex, cmId: integer;
+  cmIndex: integer;
   sFrom, sTo: String;
   sql: String;
-  ChannelMan: TChannelManagerValue;
 begin
   cmIndex := cbxChannelManagers.ItemIndex;
   if cmIndex < 0 then
     exit;
-  ChannelMan := TChannelManagerValue(cbxChannelManagers.Items.Objects[cmIndex]);
-  cmId := ChannelMan.FId;
   FCurrentNumDays := NUMBER_OF_DAYS_DISPLAYED; // ChannelMan.FNumDays;
 
   sFrom := uDateUtils.dateToSqlString(startDate);
@@ -2667,8 +2515,8 @@ begin
     ' FROM (SELECT Active, Code, Description, TopClass AS searchCode FROM ' + '     roomtypegroups) rtg, ' + '     predefineddates pdd ' +
 
     'WHERE rtg.Active ' + 'AND rtg.Code=rtg.searchCode ' + 'AND pdd.date>=''%s'' AND pdd.date<=DATE_ADD(''%s'',INTERVAL %d DAY) ' +
-    'GROUP BY pdd.date, rtg.code ' + 'ORDER BY pdd.date, rtg.code ', [sFrom, sFrom, FCurrentNumDays{ChannelMan.FNumDays}]);
-  GetThreadedData.execute(sql, BackgroundAvailabilityFetchHandler);
+    'GROUP BY pdd.date, rtg.code ' + 'ORDER BY pdd.date, rtg.code ', [sFrom, sFrom, FCurrentNumDays]);
+  ThreadedDataGetter.execute(sql, BackgroundAvailabilityFetchHandler);
 end;
 
 procedure TfrmChannelAvailabilityManager.BackgroundAvailabilityFetchHandler(Sender : TObject);
@@ -2676,10 +2524,10 @@ var
   AvailabilitySet: TRoomerDataSet;
 begin
   try
-    AvailabilitySet := GetThreadedData.DataSet;
+    AvailabilitySet := ThreadedDataGetter.RoomerDataSet;
     PrepareAvailDictionary(AvailabilitySet);
-    GetThreadedData.DataSet.Close;
-    GetThreadedData.DataSet.Recordset := nil;
+    ThreadedDataGetter.RoomerDataSet.Close;
+    ThreadedDataGetter.RoomerDataSet.Recordset := nil;
   except
   end;
 end;
@@ -2891,10 +2739,7 @@ end;
 
 procedure TfrmChannelAvailabilityManager.ShowAvailabilityForSelectedChannelManager;
 var
-  AvailSet, RateSet, ASet: TRoomerDataSet;
-  sList: TSTrings;
-  cols: TColumns;
-  iStart, iLastId: integer;
+  AvailSet, ASet: TRoomerDataSet;
   iRow: integer;
   iCol: integer;
 
@@ -2905,8 +2750,6 @@ var
 
   iIndex: integer;
   Editable: Boolean;
-
-  isTop: Boolean;
 
   sql: String;
 
@@ -2945,7 +2788,6 @@ begin
     try
       grid.RowCount := AvailSet.RecordCount + 1;
       grid.ColCount := FCurrentNumDays + 2;
-      iLastId := -1;
       iRow := 0;
 {$IFDEF DEBUG}
       StartTimer(ReadTime);
@@ -3340,6 +3182,7 @@ begin
           chId := AvailSet['chid'];
   //        if chId = -1 then
   //           chId := -2;
+          iRateRow := 0;
           RateSet.First;
           while (NOT RateSet.EOF) do
           begin
@@ -3404,7 +3247,6 @@ begin
 
                 rateGrid.Cells[0, iRateRow + iCountLine] := '<font></font><p align="right"><b>LOS based on Arrival</p>';
                 rateGrid.Objects[0, iRateRow + iCountLine] := Pointer(7);
-                inc(iCountLine);
 
               end;
 
@@ -3474,7 +3316,6 @@ begin
               inc(iCountLine);
               rateGrid.AddCheckBox(iRateCol, iRateRow + iCountLine, RateSet.FieldByName('lengthOfStayArrivalDateBased').AsBoolean, false);
               rateGrid.RowHeights[iRateRow + iCountLine] := 8;
-              inc(iCountLine);
 
             end;
             RateSet.next;
@@ -3615,17 +3456,7 @@ var
   ptr: Pointer;
 begin
   result := -1;
-  case pointerType of
-    1: ptr := Pointer(1);
-    2: ptr := Pointer(2);
-    3: ptr := Pointer(3);
-    4: ptr := Pointer(4);
-    5: ptr := Pointer(5);
-    6: ptr := Pointer(6);
-    7: ptr := Pointer(7);
-    8: ptr := Pointer(8);
-    9: ptr := Pointer(9);
-  end;
+  ptr := Pointer(pointertype);
 
   for i := startAt to startAt + NumLinesPerRateEntity do
     if rateGrid.Objects[0, i] = ptr then
@@ -3709,7 +3540,6 @@ end;
 procedure TfrmChannelAvailabilityManager.SetRateValue(iCol, iRow: integer; value: string; _grid: TAdvStringGrid; InPlaceEditing: Boolean = false);
 var
   PriceData: TPriceData;
-  currentCheckState: Boolean;
   iIntValue, iTypeIndex: integer;
 begin
   if isPriceCell(iCol, iRow) then
@@ -3754,6 +3584,7 @@ begin
             // 2  Set Auto Availability
             // 3  Set Current Availability
             iTypeIndex := findRowTypeIndex(iRow, 1);
+            iIntValue := -MaxInt;
             if iTypeIndex > -1 then
             begin
               if (cbDCAvailabilityType.ItemIndex <= 0) then // Typed in
@@ -3763,7 +3594,7 @@ begin
               else if cbDCAvailabilityType.ItemIndex in [2] then // Current
                 iIntValue := locateAvailabilityFromRoomTypeCodeAndDate(PriceData.FRoomTypeTopClass, PriceData.date);
 
-              if iIntValue = -9999999 then
+              if (iIntValue = -MaxInt) then
                 raise Exception.Create('Incorrect availability value');
 
               SetAvailabilityCellValue(iCol, iTypeIndex, PriceData, iIntValue);
@@ -3855,6 +3686,7 @@ var
   PriceData : TPriceData;
 
 begin
+  Result := 0;
   originalValue := value[1] = '!';
   if originalValue then
   begin
@@ -3862,7 +3694,7 @@ begin
   end;
 
   sign := value[1];
-  if sign in ['-', '+', '*', '/'] then
+  if CharInSet(sign, ['-', '+', '*', '/']) then
   begin
     PriceData := getPriceDataOfRow(ACol, ARow);
     if assigned(PriceData) then
@@ -3903,36 +3735,32 @@ end;
 
 function TfrmChannelAvailabilityManager.RoundValue(RoundType: integer; value: Double): Double;
 begin
-  if RoundType in [4 .. 6] then
-    result := _RoundN(value, RoundType - 3)
+  case RoundType Of
+    0:
+      result := value;
+    1:
+      result := Round(value);
+    2:
+      result := trunc(value + 0.9);
+    3:
+      result := trunc(value);
+    4..6:
+      result := _RoundN(value, RoundType - 3);
   else
-    case RoundType Of
-      0:
-        result := value;
-      1:
-        result := Round(value);
-      2:
-        result := trunc(value + 0.9);
-      3:
-        result := trunc(value);
-    end;
+    Result := 0;
+  end;
 end;
 
 function TfrmChannelAvailabilityManager.NumDecimals(RoundType: integer): integer;
 begin
-  if RoundType in [4 .. 6] then
-    result := RoundType - 3
+  case RoundType Of
+    0:
+      result := 3;
+    4..6:
+      Result := RoundType -3
   else
-    case RoundType Of
-      0:
-        result := 3;
-      1:
-        result := 0;
-      2:
-        result := 0;
-      3:
-        result := 0;
-    end;
+    Result := 0;
+  end;
 end;
 
 procedure TfrmChannelAvailabilityManager.EmptyBulkOperation;
@@ -3952,13 +3780,9 @@ begin
 end;
 
 procedure TfrmChannelAvailabilityManager.InitializeBulkOperation;
-var
-  i: Integer;
 begin
   dtBulkFrom.date := startDate;
   dtBulkTo.date := startDate;
-//  for i := 0 to cbxRoomTypes.Items.Count - 1 do
-//    cbxRoomTypes.Checked[i] := True;
   edtAvail.Text := '';
   cbMon.Checked := true;
   cbTue.Checked := true;
@@ -4397,7 +4221,6 @@ end;
 procedure TfrmChannelAvailabilityManager.HideShowLinkedClasses;
 var
   iRow: integer;
-  S: String;
 begin
   for iRow := 1 to grid.RowCount - 1 do
     if (grid.ColCount > 1) then
@@ -4408,7 +4231,6 @@ end;
 procedure TfrmChannelAvailabilityManager.HideShowExtraCells;
 var
   iRow, iHeight: integer;
-  S: String;
   PriceData : TPriceData;
 CONST CHECK_BOX_CELL_HEIGHT = 22;
 begin
@@ -4513,90 +4335,6 @@ begin
   Allow := isAnyEditableRow(NewRow);
 end;
 
-procedure TfrmChannelAvailabilityManager.CorrectMasterRateLinkedSubRateCells(PriceData : TPriceData; ACol, ARow: integer);
-var
-  i: Integer;
-  DestPriceData : TPriceData;
-  cbValue : Boolean;
-begin
-  if PriceData.FRoomTypeGroupCode = PriceData.FRoomTypeTopClass then
-  begin
-    for i := 1 to rateGrid.RowCount - 1 do
-    begin
-      DestPriceData := getPriceDataOfRow(ACol, i);
-      if assigned(DestPriceData) then
-      begin
-        if (DestPriceData.roomtypeGroupCode <> PriceData.roomtypeGroupCode) AND (DestPriceData.channelId > -1) then
-        begin
-          if (DestPriceData.RoomTypeTopClass = PriceData.RoomTypeGroupCode) AND SameTypeRows(ARow, i) then
-          begin
-            if (DestPriceData.connectRateToMasterRate AND isPriceRow(ARow)) then
-            begin
-               if DestPriceData.RateDeviationType = 'FIXED_AMOUNT' then
-                 DestPriceData.price := PriceData.price + DestPriceData.masterRateRateDeviation
-               else
-                 DestPriceData.price := PriceData.price * (1 + DestPriceData.masterRateRateDeviation / 100);
-               SetRateCellValue(ACol, i, DestPriceData, DestPriceData.price);
-            end else
-
-            if (DestPriceData.connectSingleUseRateToMasterRate AND isSingleUsePriceRow(ARow)) then
-            begin
-               if DestPriceData.SingleUseRateDeviationType = 'FIXED_AMOUNT' then
-                 DestPriceData.price := PriceData.price + DestPriceData.masterRateSingleUseRateDeviation
-               else
-                 DestPriceData.price := PriceData.SingleUsePrice * (1 + DestPriceData.masterRateSingleUseRateDeviation / 100);
-               SetSingleUsePriceCellValue(ACol, i, DestPriceData, DestPriceData.SingleUsePrice);
-            end else
-
-            if (DestPriceData.connectMaxStayToMasterRate AND isMaxStayRow(ARow)) then
-            begin
-              DestPriceData.MaxStay := PriceData.MaxStay;
-              SetMaxStayCellValue(ACol, i, DestPriceData, DestPriceData.MaxStay);
-            end else
-
-            if (DestPriceData.connectMinStayToMasterRate AND isMinStayRow(ARow)) then
-            begin
-              DestPriceData.MinStay := PriceData.MinStay;
-              SetMinStayCellValue(ACol, i, DestPriceData, DestPriceData.MinStay);
-            end else
-
-            if (DestPriceData.connectStopSellToMasterRate AND isStopSellRow(ARow)) then
-            begin
-              DestPriceData.stopSell := PriceData.StopSell;
-              cbValue := PriceData.StopSell;
-            end else
-
-            if (DestPriceData.connectCODToMasterRate AND isClosedOnDepartureRow(ARow)) then
-            begin
-              DestPriceData.COD := PriceData.COD;
-              cbValue := PriceData.COD;
-            end else
-
-            if (DestPriceData.connectCOAToMasterRate AND isCloseOnArrivalRow(ARow)) then
-            begin
-              DestPriceData.COA := PriceData.COA;
-              cbValue := PriceData.COA;
-            end else
-
-            if (DestPriceData.connectAvailabilityToMasterRate AND isAvailabilityRow(ARow)) then
-              DestPriceData.Availability := PriceData.Availability
-            else
-
-            if (DestPriceData.connectLOSToMasterRate AND isLOSArrivalDateBasedRow(ARow)) then
-            begin
-              DestPriceData.LOSArrivalDateBased := PriceData.LOSArrivalDateBased;
-              cbValue := PriceData.LOSArrivalDateBased;
-            end;
-
-            if isAnyCheckBoxRow(ARow) then
-              rateGrid.SetCheckBoxState(ACol, i, cbValue);
-
-          end;
-        end;
-      end;
-    end;
-  end;
-end;
 
 procedure TfrmChannelAvailabilityManager.CorrectMasterRateLinkedCells(PriceData : TPriceData; ACol, ARow: integer);
 var
@@ -4690,7 +4428,7 @@ end;
 procedure TfrmChannelAvailabilityManager.rateGridCellValidate(Sender: TObject; ACol, ARow: integer; var value: string; var Valid: Boolean);
 var
   dValue: Double;
-  iValue, iPriceRow: integer;
+  iValue: integer;
   PriceData: TPriceData;
 begin
   if Halting then
@@ -4807,7 +4545,6 @@ procedure TfrmChannelAvailabilityManager.rateGridClipboardAfterPasteCell(Sender:
 var
   dValue: Double;
   iValue: integer;
-  Valid: Boolean;
   PriceData: TPriceData;
 begin
   if Halting then
@@ -4819,27 +4556,23 @@ begin
     begin
       timRecalc.enabled := false;
       dValue := getRateValueForCell(value, ACol, ARow, false);
-      Valid := dValue <> 0;
-      if Valid then
-        if dValue <> PriceData.price then
-        begin
-          SetRateValue(ACol, ARow, FloatToStr(dValue), rateGrid, true);
-          CorrectMasterRateLinkedCells(PriceData, ACol, ARow);
-          timRecalc.enabled := true;
-        end;
+      if dValue <> PriceData.price then
+      begin
+        SetRateValue(ACol, ARow, FloatToStr(dValue), rateGrid, true);
+        CorrectMasterRateLinkedCells(PriceData, ACol, ARow);
+        timRecalc.enabled := true;
+      end;
     end else
     if isSingleUsePriceRow(ARow) then
     begin
       timRecalc.enabled := false;
       dValue := getRateValueForCell(value, ACol, ARow, true);
-      Valid := dValue <> 0;
-      if Valid then
-        if dValue <> PriceData.SingleUsePrice then
-        begin
-          SetSingleUsePriceCellValue(ACol, ARow, PriceData, dValue);
-          CorrectMasterRateLinkedCells(PriceData, ACol, ARow);
-          timRecalc.enabled := true;
-        end;
+      if dValue <> PriceData.SingleUsePrice then
+      begin
+        SetSingleUsePriceCellValue(ACol, ARow, PriceData, dValue);
+        CorrectMasterRateLinkedCells(PriceData, ACol, ARow);
+        timRecalc.enabled := true;
+      end;
     end else
     begin
       iValue := StrToIntDef(value, -9999999);
@@ -4853,8 +4586,6 @@ begin
           PriceData.MaxStay := iValue;
         CorrectMasterRateLinkedCells(PriceData, ACol, ARow);
       end
-      else
-        Valid := false;
     end;
   end;
 end;
@@ -4875,11 +4606,8 @@ CONST BOX_WIDTH = 8;
 
 procedure TfrmChannelAvailabilityManager.rateGridDrawCell(Sender: TObject; ACol, ARow: integer; Rect: TRect; State: TGridDrawState);
 var
-  fColor, bColor: TColor;
   SavedAlign: Word;
   S: String;
-  iRow: integer;
-  cbState: Boolean;
 
   PriceData: TPriceData;
   ARect: TRect;
@@ -5136,7 +4864,6 @@ procedure TfrmChannelAvailabilityManager.rateGridGridHint(Sender: TObject; ARow,
 var
   available: integer;
   PriceData: TPriceData;
-  s : String;
 
   ExtraLine: String;
   function getExtraLine: String;
@@ -5261,10 +4988,9 @@ end;
 
 procedure TfrmChannelAvailabilityManager.GridPostPasteAction(_grid: TAdvStringGrid);
 var
-  iRowCounter, iColCounter, iRow: integer;
+  iRowCounter, iColCounter: integer;
   value: String;
   Checked: Boolean;
-  minValue: integer;
 begin
   for iRowCounter := 1 to _grid.RowCount - 1 do
   begin
@@ -5294,14 +5020,6 @@ begin
       end;
     end;
   end;
-end;
-
-function TfrmChannelAvailabilityManager.GetFormByName(document: IHTMLDocument2; const formName: string): IHTMLFormElement;
-var
-  Forms: IHTMLElementCollection;
-begin
-  Forms := document.Forms as IHTMLElementCollection;
-  result := Forms.Item(formName, '') as IHTMLFormElement
 end;
 
 procedure TfrmChannelAvailabilityManager.getPriceOfSpecificCell;
@@ -5371,6 +5089,7 @@ var
   PriceData: TPriceData;
   RSet: TRoomerDataSet;
 begin
+  Result := 0;
   if EditableCell(rateGrid, ARow, ACol) then
   begin
     sql := 'SELECT rtg.id AS rtgId, rtg.Code, ' + '	IF(rtg.numGuests=1, rt.Rate1Person, ' + '         IF(rtg.numGuests=2, rt.Rate2Persons, ' +

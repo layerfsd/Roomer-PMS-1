@@ -73,6 +73,7 @@ object frmResProblem: TfrmResProblem
       Caption = 'Pick Solution'
       TabOrder = 0
       SkinData.SkinSection = 'GROUPBOX'
+      Checked = False
       Items.Strings = (
         'Place current booking outside of rooms (As no-room )'
         'Move the other booking/s outside of room/s (As no-room)'
@@ -103,15 +104,6 @@ object frmResProblem: TfrmResProblem
         'Unable to move rooms as some of the destination'#13#10' rooms are alre' +
         'ady taken.'#13#10'In the below list you can see those rooms.'#13#10#13#10'Either' +
         ' reservations will need to subside.'#13#10
-      BoundLabel.Indent = 0
-      BoundLabel.Font.Charset = DEFAULT_CHARSET
-      BoundLabel.Font.Color = clWindowText
-      BoundLabel.Font.Height = -11
-      BoundLabel.Font.Name = 'Tahoma'
-      BoundLabel.Font.Style = []
-      BoundLabel.Layout = sclLeft
-      BoundLabel.MaxWidth = 0
-      BoundLabel.UseSkinColor = True
       SkinData.SkinSection = 'EDIT'
     end
   end
@@ -165,6 +157,16 @@ object frmResProblem: TfrmResProblem
     FilterDropDown.Font.Name = 'Tahoma'
     FilterDropDown.Font.Style = []
     FilterDropDownClear = '(All)'
+    FilterEdit.TypeNames.Strings = (
+      'Starts with'
+      'Ends with'
+      'Contains'
+      'Not contains'
+      'Equal'
+      'Not equal'
+      'Larger than'
+      'Smaller than'
+      'Clear')
     FixedRowHeight = 22
     FixedFont.Charset = DEFAULT_CHARSET
     FixedFont.Color = clWindowText
@@ -172,6 +174,10 @@ object frmResProblem: TfrmResProblem
     FixedFont.Name = 'Tahoma'
     FixedFont.Style = [fsBold]
     FloatFormat = '%.2f'
+    HoverButtons.Buttons = <>
+    HoverButtons.Position = hbLeftFromColumnLeft
+    HTMLSettings.ImageFolder = 'images'
+    HTMLSettings.ImageBaseName = 'img'
     PrintSettings.DateFormat = 'dd/mm/yyyy'
     PrintSettings.Font.Charset = DEFAULT_CHARSET
     PrintSettings.Font.Color = clWindowText
@@ -208,7 +214,8 @@ object frmResProblem: TfrmResProblem
     SearchFooter.HintFindPrev = 'Find previous occurence'
     SearchFooter.HintHighlight = 'Highlight occurences'
     SearchFooter.MatchCaseCaption = 'Match case'
-    Version = '6.2.7.0'
+    SortSettings.DefaultFormat = ssAutomatic
+    Version = '7.9.1.0'
     ExplicitWidth = 524
     ExplicitHeight = 248
     ColWidths = (

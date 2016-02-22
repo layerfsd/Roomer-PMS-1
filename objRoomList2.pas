@@ -429,7 +429,6 @@ procedure TRooms.FillList(var RoomCount: integer);
 var
   RoomItem : TRoomItem;
 
-  s : string;
   rSet : TRoomerDataSet;
 
   Room                : string  ;
