@@ -10,7 +10,9 @@ uses
 type
   // Offlinereports design for the HotelStatus report
   THotelStatusOfflineReportDesign = class(TBaseOfflineReportDesign)
+    frxHotelStatusReport: TfrxReport;
   public
+    procedure PrintToPDF(const aFileName: string); override;
   end;
 
 
@@ -24,5 +26,13 @@ uses
   Dialogs
   ;
 
+
+{ THotelStatusOfflineReportDesign }
+
+procedure THotelStatusOfflineReportDesign.PrintToPDF(const aFileName: string);
+begin
+  inherited;
+  InternalPrintToPDF(aFileName, frxHotelStatusReport);
+end;
 
 end.

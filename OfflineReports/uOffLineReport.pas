@@ -39,6 +39,7 @@ type
     procedure PurgeReports; virtual;
   public
     constructor Create(const aDate: TDateTime); overload; virtual;
+    destructor Destroy; override;
   end;
 
   TOfflineReportClass = class of TOffLineReport;
@@ -46,6 +47,7 @@ type
 implementation
 
 uses
+  Windows,
   uD,
   uG,
   uAppGlobal,
@@ -99,6 +101,9 @@ end;
 
 procedure TOfflineReport.InternalExecute;
 begin
+  {$ifdef DEBUG}
+    OutputDebugString(PChar('Printing Offlinereport ' + ReportName));
+  {$endif}
   try
     inherited;
 
