@@ -5,7 +5,7 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, uInvoice, Vcl.Grids, AdvObj, BaseGrid, AdvGrid, asgprint,
-  System.UITypes, Printers;
+  System.UITypes, Printers, AdvUtil;
 
 type
   TFrmBackupInvoice = class(TForm)
@@ -24,7 +24,6 @@ type
     linesStartRow : Integer;
     linesEndRow : Integer;
     totalsRow : Integer;
-    taxesRow : Integer;
     paymentRow : Integer;
     GridInfoReady : Boolean;
     procedure ListInvoiceLines;

@@ -145,10 +145,8 @@ begin
 end;
 
 procedure ShowDashboard(Handle : THandle; RoomerDataSet : TRoomerDataSet);
-var localFilename,
-    remoteFilename : String;
+var
     filename : String;
-    FileInfo : TFileEntity;
     parameters : String;
     sPath,
     DashboardExeFilenameAndPath : String;
@@ -165,24 +163,7 @@ begin
             RoomerDataset.Password ]);
 
   DashboardExeFilenameAndPath := TPath.Combine(sPath, filename);
-  FileInfo :=  RoomerDataSet.SystemRoomerFile(filename);
   getAnyFileFromRoomerStore(filename, DashboardExeFilenameAndPath);
-// if (NOT FileExists(UpgradeManagerPath)) OR (FileInfo=nil) OR  (FileSizeByName(UpgradeManagerPath) <> FileInfo.Size) then
-//  begin
-//    RoomerDataSet.roomerClient.{$IFDEF USE_INDY}OnWork := frmMain.IdHTTP1Work{$ELSE}OnDownloadProgress := frmMain.DownloadProgress{$ENDIF};
-//    frmMain.lblBusyDownloading.Caption := GetTranslatedText('shTx_Main_Downloading');
-//    frmMain.lblBusyDownloading.Visible := True;
-//    try
-//      RoomerDataSet.SystemDownloadRoomerFile(filename, UpgradeManagerPath);
-//    finally
-//      frmRoomerSplash.NilInternetEvents;
-//     // lblBusyDownloading.Caption := 'Ready.';
-//	    frmMain.lblBusyDownloading.Caption := GetTranslatedText('shTx_Main_Ready');
-//      frmMain.lblBusyDownloading.Update;
-//      Sleep(1000);
-//      frmMain.lblBusyDownloading.Visible := False;
-//    end;
-//  end;
   ExecuteFile(Handle, DashboardExeFilenameAndPath, parameters, []);
 end;
 
@@ -199,11 +180,9 @@ begin
 end;
 
 procedure StartRemoteSupport(Handle : THandle; RoomerDataSet : TRoomerDataSet);
-var localFilename,
-    remoteFilename : String;
+var
     filename : String;
     language : String;
-    FileInfo : TFileEntity;
     sPath,
     RemoteSupportFilenameAndPath : String;
 begin
@@ -215,14 +194,11 @@ begin
   forceDirectories(sPath);
   RemoteSupportFilenameAndPath := TPath.Combine(sPath, filename);
   getAnyFileFromRoomerStore(filename, RemoteSupportFilenameAndPath);
-//  FileInfo :=  RoomerDataSet.SystemRoomerFile(filename);
-//  if (NOT FileExists(UpgradeManagerPath)) OR (FileInfo=nil) OR  (FileSizeByName(UpgradeManagerPath) <> FileInfo.Size) then
-//    RoomerDataSet.SystemDownloadRoomerFile(filename, UpgradeManagerPath);
   ExecuteFile(Handle, RemoteSupportFilenameAndPath, '', []);
 end;
 
 procedure downloadCurrentVersion(Handle : THandle; RoomerDataSet : TRoomerDataSet);
-var FileInfo : TFileEntity;
+var
     sPath,
     UpgradeManagerPath : String;
 begin
@@ -240,7 +216,6 @@ end;
 procedure SetIgnoresToZero(RoomerDataSet : TRoomerDataSet);
 var sTempName : String;
     xml: IXMLDOMDocument2;
-    node : IXMLDomNode;
     currentVersion, version : String;
 begin
   sTempName := GetEnvironmentVariable('TEMP') + '\roomerversion.xml';
@@ -276,6 +251,7 @@ begin
 end;
 
 function checkNewVersion(Handle : THandle; RoomerDataSet : TRoomerDataSet) : boolean;
+{$IFNDEF DEBUG}
 var sTempName : String;
     xml: IXMLDOMDocument2;
     node : IXMLDomNode;
@@ -286,6 +262,7 @@ var sTempName : String;
     NumDialogShown : Integer;
     s : String;
     Buttons: TMsgDlgButtons;
+{$endif}
 begin
   result := false;
   {$IFNDEF DEBUG}
