@@ -45,3 +45,4 @@ Thumbs.db
 *.bak 
 *.gex
 *.identcache
+*.orig
