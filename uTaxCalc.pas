@@ -434,15 +434,19 @@ begin
     if Trim(ItemTypeInfo.valueFormula) <> '' then
     begin
       map := FillHashMapWithValues(ItemTaxEntities);
-      formula := GetFilledInFormula(ItemTypeInfo.valueFormula, RoomTaxEntity, map);
-      if (trim(formula) <> '') then
-      begin
-        parser := TRoomerMathParser.Create(nil);
-        parser.Expression := formula;
-        if parser.Parse then
-          result := parser.ParserResult * numItems
-        else
-          result := _calcVAT(Price, ItemTypeInfo.VATPercentage)
+      try
+        formula := GetFilledInFormula(ItemTypeInfo.valueFormula, RoomTaxEntity, map);
+        if (trim(formula) <> '') then
+        begin
+          parser := TRoomerMathParser.Create(nil);
+          parser.Expression := formula;
+          if parser.Parse then
+            result := parser.ParserResult * numItems
+          else
+            result := _calcVAT(Price, ItemTypeInfo.VATPercentage)
+        end;
+      finally
+        map.Free;
       end;
     end else
     begin

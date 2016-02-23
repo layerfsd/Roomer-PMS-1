@@ -69,6 +69,16 @@ object FrmBackupInvoice: TFrmBackupInvoice
     FilterDropDown.Font.Name = 'Tahoma'
     FilterDropDown.Font.Style = []
     FilterDropDownClear = '(All)'
+    FilterEdit.TypeNames.Strings = (
+      'Starts with'
+      'Ends with'
+      'Contains'
+      'Not contains'
+      'Equal'
+      'Not equal'
+      'Larger than'
+      'Smaller than'
+      'Clear')
     FixedRowHeight = 22
     FixedFont.Charset = DEFAULT_CHARSET
     FixedFont.Color = clWindowText
@@ -76,6 +86,10 @@ object FrmBackupInvoice: TFrmBackupInvoice
     FixedFont.Name = 'Tahoma'
     FixedFont.Style = [fsBold]
     FloatFormat = '%.2f'
+    HoverButtons.Buttons = <>
+    HoverButtons.Position = hbLeftFromColumnLeft
+    HTMLSettings.ImageFolder = 'images'
+    HTMLSettings.ImageBaseName = 'img'
     PrintSettings.FooterSize = 100
     PrintSettings.HeaderSize = 50
     PrintSettings.Time = ppBottomRight
@@ -124,13 +138,13 @@ object FrmBackupInvoice: TFrmBackupInvoice
     SearchFooter.HintFindPrev = 'Find previous occurrence'
     SearchFooter.HintHighlight = 'Highlight occurrences'
     SearchFooter.MatchCaseCaption = 'Match case'
-    Version = '6.2.7.0'
+    SortSettings.DefaultFormat = ssAutomatic
+    Version = '7.9.1.0'
   end
   object AdvGridPrintSettings: TAdvGridPrintSettingsDialog
     Caption = 'Print temporary Invoice'
     Grid = sgInvoice
     Options = [psGeneral, psFonts, psDateTime, psTitle, psPages, psMargins, psSpacing, psOrientation, psSaveSettings]
-    PrintPreview = True
     PrintDimensions = pdmm
     Left = 328
     Top = 264
