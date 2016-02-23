@@ -50,9 +50,9 @@ type
   end;
 
 const
-  cshTx_OflineReports_OfflineMessage = 'shTx_OflineReports_OfflineMessage';
-  cshTx_OflineReports_NameHeader     = 'shTx_OflineReports_NameHeader';
-  cshTx_OflineReports_DateGenHeader  = 'shTx_OflineReports_DateGenHeader';
+  cshTx_OfflineReports_OfflineMessage = 'shTx_OflineReports_OfflineMessage';
+  cshTx_OfflineReports_NameHeader     = 'shTx_OflineReports_NameHeader';
+  cshTx_OfflineReports_DateGenHeader  = 'shTx_OflineReports_DateGenHeader';
 
 
 implementation
@@ -123,8 +123,8 @@ procedure TfrmOfflineReports.UpdateGridHeader;
 begin
   with agrReports do
   begin
-    Cells[0,0] := GetTranslatedText(cshTx_OflineReports_NameHeader);
-    Cells[1,0] := GetTranslatedText(cshTx_OflineReports_DateGenHeader);
+    Cells[0,0] := GetTranslatedText(cshTx_OfflineReports_NameHeader);
+    Cells[1,0] := GetTranslatedText(cshTx_OfflineReports_DateGenHeader);
   end;
 
 end;

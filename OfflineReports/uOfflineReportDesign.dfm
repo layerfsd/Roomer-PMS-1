@@ -5,7 +5,6 @@ object BaseOfflineReportDesign: TBaseOfflineReportDesign
   object frxDBDataset: TfrxDBDataset
     UserName = 'frxDBDataset'
     CloseDataSource = False
-    DataSet = kbmOfflineReportDS
     BCDToCurrency = False
     Left = 144
     Top = 40
@@ -35,30 +34,10 @@ object BaseOfflineReportDesign: TBaseOfflineReportDesign
     Left = 156
     Top = 132
   end
-  object kbmOfflineReportDS: TkbmMemTable
-    Active = True
-    DesignActivation = True
-    AttachedAutoRefresh = True
-    AttachMaxCount = 1
-    FieldDefs = <
-      item
-        Name = 'Dummy'
-        DataType = ftString
-        Size = 80
-      end>
-    IndexDefs = <>
+  object dxOfflineData: TdxMemData
+    Indexes = <>
     SortOptions = []
-    PersistentBackup = False
-    ProgressFlags = [mtpcLoad, mtpcSave, mtpcCopy]
-    LoadedCompletely = False
-    SavedCompletely = False
-    FilterOptions = []
-    Version = '7.22.00 Standard Edition'
-    LanguageID = 0
-    SortID = 0
-    SubLanguageID = 1
-    LocaleID = 1024
-    Left = 40
-    Top = 128
+    Left = 48
+    Top = 136
   end
 end

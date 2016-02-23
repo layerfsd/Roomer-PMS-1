@@ -14,17 +14,22 @@ inherited HotelStatusOfflineReportDesign: THotelStatusOfflineReportDesign
     PrintOptions.PrintOnSheet = 0
     PrintOptions.ShowDialog = False
     ReportOptions.CreateDate = 42412.493217257000000000
-    ReportOptions.LastChange = 42422.480966597200000000
+    ReportOptions.LastChange = 42423.550791932900000000
     ScriptLanguage = 'PascalScript'
     ScriptText.Strings = (
       'procedure Memo27OnBeforePrint(Sender: TfrxComponent);'
       'begin'
-      ''
+      
+        '  TfrxMemoView(Sender).text := <frxDBDataset."ResStatus">;      ' +
+        '                                                                ' +
+        '                                                                ' +
+        '                                    '
       'end;'
       ''
       'begin'
       'end.          ')
     ShowProgress = False
+    OnBeforePrint = frxHotelStatusReportBeforePrint
     Left = 40
     Top = 40
     Datasets = <
@@ -87,9 +92,9 @@ inherited HotelStatusOfflineReportDesign: THotelStatusOfflineReportDesign
           ParentFont = False
         end
         object Memo5: TfrxMemoView
-          Left = 3.779527559055120000
+          Left = 3.779527560000000000
           Top = 3.779530000000000000
-          Width = 472.441250000000000000
+          Width = 725.669760000000000000
           Height = 26.456710000000000000
           ShowHint = False
           AutoWidth = True
@@ -118,24 +123,6 @@ inherited HotelStatusOfflineReportDesign: THotelStatusOfflineReportDesign
         DataSetName = 'frxDBDataset'
         RowCount = 0
         Stretched = True
-        object Memo8: TfrxMemoView
-          Left = -0.653370000000000000
-          Top = 3.779530000000000000
-          Width = 79.370130000000000000
-          Height = 18.897650000000000000
-          ShowHint = False
-          DisplayFormat.FormatStr = 'dd mmm yyyy'
-          DisplayFormat.Kind = fkDateTime
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clBlack
-          Font.Height = -11
-          Font.Name = 'Arial'
-          Font.Style = []
-          Memo.UTF8W = (
-            '[frxDBDataset."Arrival"]')
-          ParentFont = False
-          SuppressRepeated = True
-        end
         object Memo9: TfrxMemoView
           Left = 80.055350000000000000
           Width = 75.590600000000000000
@@ -266,8 +253,9 @@ inherited HotelStatusOfflineReportDesign: THotelStatusOfflineReportDesign
         end
         object Memo27: TfrxMemoView
           Left = 279.354670000000000000
-          Width = 34.015770000000000000
+          Width = 37.795275590000000000
           Height = 18.897650000000000000
+          OnBeforePrint = 'Memo27OnBeforePrint'
           ShowHint = False
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clBlack
@@ -279,7 +267,7 @@ inherited HotelStatusOfflineReportDesign: THotelStatusOfflineReportDesign
           ParentFont = False
         end
         object Memo34: TfrxMemoView
-          Left = 641.669760000000000000
+          Left = 605.669760000000000000
           Width = 83.149660000000000000
           Height = 18.897650000000000000
           ShowHint = False
@@ -296,7 +284,7 @@ inherited HotelStatusOfflineReportDesign: THotelStatusOfflineReportDesign
           ParentFont = False
         end
         object Memo35: TfrxMemoView
-          Left = 725.701300000000000000
+          Left = 689.701300000000000000
           Width = 45.354360000000000000
           Height = 18.897650000000000000
           ShowHint = False
@@ -307,12 +295,13 @@ inherited HotelStatusOfflineReportDesign: THotelStatusOfflineReportDesign
           Font.Height = -11
           Font.Name = 'Arial'
           Font.Style = []
+          HAlign = haRight
           Memo.UTF8W = (
             '[frxDBDataset."AvgDiscount"]')
           ParentFont = False
         end
         object Memo36: TfrxMemoView
-          Left = 777.717070000000000000
+          Left = 741.717070000000000000
           Width = 79.370130000000000000
           Height = 18.897650000000000000
           ShowHint = False
@@ -329,7 +318,7 @@ inherited HotelStatusOfflineReportDesign: THotelStatusOfflineReportDesign
           ParentFont = False
         end
         object Memo11: TfrxMemoView
-          Left = 867.819420000000000000
+          Left = 831.819420000000000000
           Width = 128.504020000000000000
           Height = 18.897650000000000000
           ShowHint = False
@@ -344,6 +333,22 @@ inherited HotelStatusOfflineReportDesign: THotelStatusOfflineReportDesign
           Memo.UTF8W = (
             '[frxDBDataset."TotalSales"]')
           ParentFont = False
+        end
+        object Memo8: TfrxMemoView
+          Width = 79.370130000000000000
+          Height = 18.897650000000000000
+          ShowHint = False
+          DisplayFormat.FormatStr = 'dd mmm yyyy'
+          DisplayFormat.Kind = fkDateTime
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -11
+          Font.Name = 'Arial'
+          Font.Style = []
+          Memo.UTF8W = (
+            '[frxDBDataset."Arrival"]')
+          ParentFont = False
+          SuppressRepeated = True
         end
       end
       object PageFooter1: TfrxPageFooter
@@ -579,7 +584,7 @@ inherited HotelStatusOfflineReportDesign: THotelStatusOfflineReportDesign
         end
         object Memo31: TfrxMemoView
           Align = baBottom
-          Left = 642.669760000000000000
+          Left = 606.669760000000000000
           Top = 18.897650000000000000
           Width = 83.149660000000000000
           Height = 18.897650000000000000
@@ -597,7 +602,7 @@ inherited HotelStatusOfflineReportDesign: THotelStatusOfflineReportDesign
         end
         object Memo32: TfrxMemoView
           Align = baBottom
-          Left = 726.701300000000000000
+          Left = 690.701300000000000000
           Top = 18.897650000000000000
           Width = 45.354360000000000000
           Height = 18.897650000000000000
@@ -615,7 +620,7 @@ inherited HotelStatusOfflineReportDesign: THotelStatusOfflineReportDesign
         end
         object Memo33: TfrxMemoView
           Align = baBottom
-          Left = 778.717070000000000000
+          Left = 742.717070000000000000
           Top = 18.897650000000000000
           Width = 79.370130000000000000
           Height = 18.897650000000000000
@@ -633,7 +638,7 @@ inherited HotelStatusOfflineReportDesign: THotelStatusOfflineReportDesign
         end
         object Memo7: TfrxMemoView
           Align = baBottom
-          Left = 867.819420000000000000
+          Left = 831.819420000000000000
           Top = 18.897650000000000000
           Width = 128.504020000000000000
           Height = 18.897650000000000000
@@ -651,6 +656,7 @@ inherited HotelStatusOfflineReportDesign: THotelStatusOfflineReportDesign
         end
         object Line3: TfrxLineView
           Align = baBottom
+          Left = -36.000000000000000000
           Top = 37.795300000000000000
           Width = 1050.709340000000000000
           ShowHint = False

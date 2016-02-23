@@ -13,5 +13,7 @@
   {.$define rmUseLOCALRESOURCE}
   {.$define rmROOMERSSL}
   {$define rmMONITOR_LEAKAGE} // Report memory leaks on shutdown
+
+  {$define UseFastMM}
 {$endif DEBUG}
 

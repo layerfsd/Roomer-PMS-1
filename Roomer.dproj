@@ -58,6 +58,7 @@
         <Base>true</Base>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
+        <DCC_MapFile>3</DCC_MapFile>
         <DCC_Define>roomerstore;$(DCC_Define)</DCC_Define>
         <Icon_MainIcon>Roomer_Icon1.ico</Icon_MainIcon>
         <Manifest_File>None</Manifest_File>
@@ -151,12 +152,14 @@
         <VerInfo_Build>1036</VerInfo_Build>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_3)'!=''">
+        <DCC_Optimize>false</DCC_Optimize>
         <DCC_Define>Debug;$(DCC_Define)</DCC_Define>
         <DCC_DcpOutput>_dcu</DCC_DcpOutput>
         <DCC_ExeOutput>_bin\$(Platform)</DCC_ExeOutput>
         <DCC_DcuOutput>_dcu</DCC_DcuOutput>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_3_Win32)'!=''">
+        <DCC_DebugDCUs>true</DCC_DebugDCUs>
         <DCC_SYMBOL_PLATFORM>false</DCC_SYMBOL_PLATFORM>
         <VerInfo_MajorVer>1</VerInfo_MajorVer>
         <VerInfo_Locale>1033</VerInfo_Locale>
@@ -170,6 +173,7 @@
         <DelphiCompile Include="$(MainSource)">
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
+        <DCCReference Include="FastMM\FastMM4.pas"/>
         <DCCReference Include="uMain.pas">
             <Form>frmMain</Form>
         </DCCReference>
@@ -202,7 +206,7 @@
             <Form>frmInvoiceList</Form>
         </DCCReference>
         <DCCReference Include="uD.pas">
-            <Form>createFiel</Form>
+            <Form>forceoffline</Form>
             <DesignClass>TDataModule</DesignClass>
         </DCCReference>
         <DCCReference Include="uG.pas"/>
@@ -664,23 +668,22 @@
         <DCCReference Include="uRoomerContainerClasses.pas"/>
         <DCCReference Include="AvailabilityManagement\uAvailabilityPerDay.pas"/>
         <DCCReference Include="Invoice\uInvoiceController.pas"/>
-		<DCCReference Include="Extras\VersionInfo.pas"/>
+        <DCCReference Include="Extras\VersionInfo.pas"/>
         <DCCReference Include="OfflineReports\uOfflineReportGenerator.pas"/>
         <DCCReference Include="OfflineReports\uOffLineReport.pas"/>
         <DCCReference Include="OfflineReports\uHotelStatusOfflineReport.pas"/>
         <DCCReference Include="OfflineReports\uOfflineReportDesign.pas">
             <Form>BaseOfflineReportDesign</Form>
-            <FormType>dfm</FormType>
             <DesignClass>TDataModule</DesignClass>
         </DCCReference>
         <DCCReference Include="OfflineReports\uHotelStatusOfflineReportDesign.pas"/>
         <DCCReference Include="OfflineReports\uOfflineReportGrid.pas">
             <Form>frmOfflineReports</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <None Include="Roomer.todo"/>
         <None Include="notes.txt"/>
         <None Include="Roomer.inc"/>
+        <None Include="FastMM\FastMM4Options.inc"/>
         <BuildConfiguration Include="Debug">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
@@ -720,7 +723,7 @@
                     <VersionInfo Name="MajorVer">12</VersionInfo>
                     <VersionInfo Name="MinorVer">5</VersionInfo>
                     <VersionInfo Name="Release">11</VersionInfo>
-                    <VersionInfo Name="Build">12056</VersionInfo>
+                    <VersionInfo Name="Build">12059</VersionInfo>
                     <VersionInfo Name="Debug">False</VersionInfo>
                     <VersionInfo Name="PreRelease">False</VersionInfo>
                     <VersionInfo Name="Special">False</VersionInfo>
@@ -732,7 +735,7 @@
                 <VersionInfoKeys>
                     <VersionInfoKeys Name="CompanyName">Beryllium ehf</VersionInfoKeys>
                     <VersionInfoKeys Name="FileDescription">Hotel Management System Main Module</VersionInfoKeys>
-                    <VersionInfoKeys Name="FileVersion">12.5.11.12056</VersionInfoKeys>
+                    <VersionInfoKeys Name="FileVersion">12.5.11.12059</VersionInfoKeys>
                     <VersionInfoKeys Name="InternalName">HMS</VersionInfoKeys>
                     <VersionInfoKeys Name="LegalCopyright">Beryllium ehf 2000-2012</VersionInfoKeys>
                     <VersionInfoKeys Name="LegalTrademarks">Beryllium 2000-2012</VersionInfoKeys>

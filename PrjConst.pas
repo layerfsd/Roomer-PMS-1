@@ -177,7 +177,7 @@ uses uAppGlobal,
   uAlertEditPanel,
   uFrmCustomerDepartmentEdit
 
-  , uOfflineReportGrid;
+  , uOfflineReportGrid, uHotelStatusOfflineReport;
 
 
 Type
@@ -1511,9 +1511,11 @@ end;
 
 procedure AddConstants_OfflineReports;
 begin
-  constants.Add(cshTx_OflineReports_NameHeader, 'Report name');
-  constants.Add(cshTx_OflineReports_DateGenHeader, 'Date Generated');
-  constants.Add(cshTx_OflineReports_OfflineMessage,   'No connection with Roomer, working offline');
+  constants.Add(cshTx_OfflineReports_NameHeader, 'Report name');
+  constants.Add(cshTx_OfflineReports_DateGenHeader, 'Date Generated');
+  constants.Add(cshTx_OfflineReports_OfflineMessage,   'No connection with Roomer, working offline');
+
+  constants.Add(cshTx_HotelStatusOfflineReport_Name, 'Hotel Status Report');
 end;
 
 procedure prepareConstants;

@@ -5,9 +5,8 @@ interface
 uses
   System.SysUtils, System.Classes,
 
-  Data.DB, frxClass, frxExportPDF, frxDBSet, kbmMemTable,
-
-  cmpRoomerDataset
+  Data.DB, frxClass, frxExportPDF, frxDBSet,
+  cmpRoomerDataset, dxmdaset
   ;
 
 type
@@ -16,7 +15,7 @@ type
   TBaseOfflineReportDesign = class(TDataModule)
     frxDBDataset: TfrxDBDataset;
     frxOfflinePDFExport: TfrxPDFExport;
-    kbmOfflineReportDS: TkbmMemTable;
+    dxOfflineData: TdxMemData;
   private
     FRoomerDataset: TRoomerDataset;
     procedure SetRoomerDataset(const Value: TRoomerDataset);
@@ -48,11 +47,6 @@ uses
 
 procedure TBaseOfflineReportDesign.SetReportProperties(const aReport: TfrxReport);
 begin
-  with aReport do
-  begin
-    EnabledDataSets.Add(frxDBDataset);
-    ReportOptions.CreateDate := Now();
-  end;
 
   with aReport.EngineOptions do
   begin
@@ -60,7 +54,15 @@ begin
 //    DestroyForms := false;
     { This property switches off the search through global list, which is not thread safe}
     UseGlobalDataSetList := False;
+    EnableThreadSafe := True;
   end;
+
+  with aReport do
+  begin
+    EnabledDataSets.Add(frxDBDataset);
+    ReportOptions.CreateDate := Now();
+  end;
+
 end;
 
 constructor TBaseOfflineReportDesign.Create(AOwner: TComponent);
@@ -93,14 +95,18 @@ end;
 procedure TBaseOfflineReportDesign.SetRoomerDataset(const Value: TRoomerDataset);
 begin
   FRoomerDataset := Value;
-  frxDBDataset.Close;
-  frxDBDataset.Dataset := nil;
+  if assigned(frxDBDataset.DataSet) then
+  begin
+    frxDBDataset.Close;
+    frxDBDataset.Dataset := nil;
+  end;
   frxDBdataset.FieldAliases.Clear;
   if (Value <> nil) then
   begin
-    kbmOfflineReportDS.CreateTableAs(Value, [mtcpoStructure, mtcpoProperties]);
-    kbmOfflIneReportDS.LoadFromDataSet(Value, []);
-    frxDBDataset.Dataset := kbmOfflineReportDS;
+    dxOfflineData.CreateFieldsFromDataSet(Value);
+    dxOfflineData.LoadFromDataSet(Value);
+
+    frxDBDataset.Dataset := dxOfflineData;
     frxDBDataset.Open;
   end;
 end;

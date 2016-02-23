@@ -4,13 +4,14 @@ interface
 
 uses
   System.SysUtils, System.Classes,
-  uOfflineReportDesign, Data.DB, kbmMemTable, frxClass, frxExportPDF, frxDBSet
+  uOfflineReportDesign, Data.DB, frxClass, frxExportPDF, frxDBSet, dxmdaset
   ;
 
 type
   // Offlinereports design for the HotelStatus report
   THotelStatusOfflineReportDesign = class(TBaseOfflineReportDesign)
     frxHotelStatusReport: TfrxReport;
+    procedure frxHotelStatusReportBeforePrint(Sender: TfrxReportComponent);
   public
     procedure PrintToPDF(const aFileName: string); override;
   end;
@@ -28,6 +29,12 @@ uses
 
 
 { THotelStatusOfflineReportDesign }
+
+procedure THotelStatusOfflineReportDesign.frxHotelStatusReportBeforePrint(Sender: TfrxReportComponent);
+begin
+  inherited;
+  //
+end;
 
 procedure THotelStatusOfflineReportDesign.PrintToPDF(const aFileName: string);
 begin

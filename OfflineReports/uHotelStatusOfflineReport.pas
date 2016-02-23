@@ -19,17 +19,20 @@ type
   public
   end;
 
+const
+  cshTx_HotelStatusOfflineReport_Name = 'shTx_HotelStatusOfflineReport_Name';
+
 implementation
 
 uses
   uHotelStatusOfflineReportDesign
   , uOfflineReportGenerator
   , SysUtils
+  , PrjConst
   ;
 
-resourcestring
-  rsReportName = 'Hotel Status Report'; // Must be replaced by translation
 
+const
   cSQL = 'SELECT co.CompanyID, ' +
          'co.CompanyName, '+
          'r.Reservation, ' +
@@ -40,12 +43,12 @@ resourcestring
          'rr.RoomReservation, ' +
          'rr.Room, ' +
          'rr.RoomType, ' +
-         'concat(rr.Status, ''test'') as ResStatus, '+
          'FORMAT((SELECT AVG(RoomRate) FROM roomsdate WHERE RoomReservation=rr.RoomReservation AND ResFlag=rr.Status), 2) AS AvgRate, '+
          'FORMAT((SELECT AVG(Discount) FROM roomsdate WHERE RoomReservation=rr.RoomReservation AND ResFlag=rr.Status), 2) AS AvgDiscountValue, '+
          'FORMAT((SELECT IsPercentage FROM roomsdate WHERE RoomReservation=rr.RoomReservation AND ResFlag=rr.Status LIMIT 1), 2) AS DiscountIsPercentage, '+
          'FORMAT((SELECT AVG(IF(IsPercentage, RoomRate*Discount/100, Discount)) FROM roomsdate WHERE RoomReservation=rr.RoomReservation AND ResFlag=rr.Status), 2) AS AvgDiscount, '+
          'FORMAT((SELECT AVG(IF(IsPercentage, RoomRate-RoomRate*Discount/100, RoomRate-Discount)) FROM roomsdate WHERE RoomReservation=rr.RoomReservation AND ResFlag=rr.Status), 2) AS AvgRateAfterDiscount, '+
+         'rr.Status as ResStatus, '+
          'rr.Currency, ' +
          'rr.NumGuests, ' +
          'rr.NumChildren, ' +
@@ -82,7 +85,7 @@ end;
 
 class function THotelStatusReport.reportName: string;
 begin
-  Result := rsReportName;
+  Result := GetTranslatedtext(cshTx_HotelStatusOfflineReport_Name);
 end;
 
 initialization

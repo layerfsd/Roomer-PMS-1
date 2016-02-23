@@ -1,8 +1,18 @@
 program Roomer;
 
+{$I Roomer.inc}
 
+// first lines of uses clause should read as follows:
+//  {$ifdef UseFastMM}
+//  FastMM4 in 'FastMM\FastMM4.pas',
+//  FastMM4Messages in 'FastMM\FastMM4Messages.pas',
+//  {$endif}
 
 uses
+  {$ifdef UseFastMM}
+  FastMM4 in 'FastMM\FastMM4.pas',
+  FastMM4Messages in 'FastMM\FastMM4Messages.pas',
+  {$endif}
   Forms,
   uMain in 'uMain.pas' {frmMain},
   uReservationObjects in 'uReservationObjects.pas',
