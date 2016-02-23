@@ -145,8 +145,15 @@ begin
 end;
 
 procedure TFrmEmbeddedHtmlEditor.saveTo(filename : String);
+var list : TStringList;
 begin
-  mmoSource.MemoSource.Lines.SaveToFile(filename);
+  list := TStringList.Create;
+  TRY
+    list.Assign(mmoSource.MemoSource.Lines);
+    list.SaveToFile(filename);
+  FINALLY
+    list.Free;
+  END;
 end;
 
 procedure TFrmEmbeddedHtmlEditor.mnuWordWrapClick(Sender: TObject);

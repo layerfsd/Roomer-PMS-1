@@ -463,8 +463,7 @@ begin
     end;
 end;
 
-const NEW_RESERVATION_SOURCE = '<DIV class=WordSection1> ' +
-                                  '<P style="TEXT-ALIGN: right" align=right><FONT face=Verdana><STRONG><FONT color=maroon><FONT size=5>Test Hotel Roomer</FONT><BR></FONT></STRONG> ' +
+const NEW_RESERVATION_SOURCE = '<P style="TEXT-ALIGN: right" align=right><FONT face=Verdana><STRONG><FONT color=maroon><FONT size=5>Test Hotel Roomer</FONT><BR></FONT></STRONG> ' +
                                   '<FONT size=1>Bosscheweg 107&nbsp;12-14<BR>5282 WV Boxtel<BR>Netherlands<BR>Tel: +31 85 27 36 150<BR>date/time: ${currentDatetime}<BR>---<BR></FONT><FONT size=2>Booking date: ${bookingDatetime}<BR>Hotel Booking id: ${bookingRoomerId}</FONT></FONT></P> ' +
                                   '<P><FONT face=Verdana>Dear ${bookingGuestName},</FONT></P> ' +
                                   '<P><FONT face=Verdana>Thank you for choosing Test Hotel&nbsp;Roomer as a destination during your stay in the Netherlands. We hope that your stay will be a pleasant one.</FONT></P> ' +
@@ -497,7 +496,7 @@ const CANCEL_RESERVATION_SOURCE = '<DIV class=WordSection1> ' +
                                   '<P><FONT face=Verdana>Total price: ${bookingTotalPrice}<BR>Booking payment type: ${bookingPaymentType}<BR>Payment status: ${bookingPaymentStatus}<BR>Amount paid: ${bookingPaymentAmount}<BR>Credit card: ${bookingPaymentCreditCard}<o:p></o:p></FONT></P> ' +
                                   '<P><FONT face=Verdana>At your service,</FONT></P> ' +
                                   '<P><FONT face=Verdana>Test Hotel Roomer</FONT></P> ' +
-                                  '<P><FONT face=Verdana>T. 085 27 36 150</FONT></P></DIV>';
+                                  '<P><FONT face=Verdana>T. 085 27 36 150</FONT></P>';
 
 
 procedure TFrmResources.btnInsertClick(Sender: TObject);

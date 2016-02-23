@@ -52,6 +52,7 @@ object frmMain: TfrmMain
     SunkenBorder = True
     UseOwnColor = True
     UseOwnSunkenBorder = True
+    ExplicitTop = 122
   end
   object panMain: TsPanel
     Left = 3
@@ -840,10 +841,6 @@ object frmMain: TfrmMain
       object tabPeriod: TsTabSheet
         Caption = 'tabPeriod'
         ImageIndex = 2
-        ExplicitLeft = 0
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
         object sLabel2: TsLabel
           Left = 224
           Top = 400
@@ -1307,8 +1304,6 @@ object frmMain: TfrmMain
           OnMoved = splitPeriodMoved
           Color = 6842472
           ParentColor = False
-          ExplicitTop = 159
-          ExplicitWidth = 773
         end
         object pnlPeriodNoRooms: TsPanel
           Left = 0
@@ -1917,7 +1912,7 @@ object frmMain: TfrmMain
             Left = 159
             Top = 4
             Width = 94
-            Height = 23
+            Height = 24
             Margins.Left = 10
             Margins.Top = 4
             Align = alLeft
@@ -1930,6 +1925,7 @@ object frmMain: TfrmMain
             Font.Height = -17
             Font.Name = 'Segoe UI'
             Font.Style = [fsBold]
+            ExplicitHeight = 23
           end
           object dtDate: TsDateEdit
             AlignWithMargins = True
@@ -2569,8 +2565,8 @@ object frmMain: TfrmMain
           object lblPropertyStatus: TsLabel
             Left = 1
             Top = 1
-            Width = 158
-            Height = 21
+            Width = 271
+            Height = 24
             Margins.Left = 10
             Margins.Top = 0
             Margins.Right = 0
@@ -2584,6 +2580,8 @@ object frmMain: TfrmMain
             Font.Height = -17
             Font.Name = 'Tahoma'
             Font.Style = []
+            ExplicitWidth = 158
+            ExplicitHeight = 21
           end
         end
         object Chart1: TChart
@@ -3120,7 +3118,6 @@ object frmMain: TfrmMain
       Index = 2
     end
     object dxRibbon1Tab1: TdxRibbonTab
-      Active = True
       Caption = 'Reports'
       Groups = <
         item
@@ -3171,6 +3168,7 @@ object frmMain: TfrmMain
       Index = 4
     end
     object System: TdxRibbonTab
+      Active = True
       Caption = 'System'
       Groups = <
         item
@@ -3242,6 +3240,8 @@ object frmMain: TfrmMain
     ParentColor = False
     UseOwnColor = True
     Visible = False
+    ExplicitTop = 125
+    ExplicitHeight = 510
   end
   object pnlRoomerLogoOld: TsPanel
     Left = 668
@@ -3494,7 +3494,7 @@ object frmMain: TfrmMain
     object lblHotelName: TsLabel
       Left = 0
       Top = 33
-      Width = 140
+      Width = 301
       Height = 22
       Align = alBottom
       Alignment = taCenter
@@ -3505,6 +3505,7 @@ object frmMain: TfrmMain
       Font.Height = -18
       Font.Name = 'Tahoma'
       Font.Style = []
+      ExplicitWidth = 140
     end
   end
   object pnlRBE: TsPanel
@@ -5200,7 +5201,7 @@ object frmMain: TfrmMain
     object barinnBar5: TdxBar
       Caption = 'System Actions'
       CaptionButtons = <>
-      DockedLeft = 753
+      DockedLeft = 661
       DockedTop = 0
       FloatLeft = 1337
       FloatTop = 8
@@ -5232,7 +5233,7 @@ object frmMain: TfrmMain
     object barinnBar9: TdxBar
       Caption = 'Templates'
       CaptionButtons = <>
-      DockedLeft = 977
+      DockedLeft = 873
       DockedTop = 0
       FloatLeft = 1278
       FloatTop = 8

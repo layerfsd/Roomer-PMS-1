@@ -171,7 +171,6 @@ object FrmResources: TFrmResources
         Visible = False
         OnClick = btnSourceClick
         SkinData.SkinSection = 'BUTTON'
-        ExplicitLeft = 659
       end
     end
     object lvResources: TListView
@@ -206,6 +205,7 @@ object FrmResources: TFrmResources
       Font.Name = 'Tahoma'
       Font.Style = []
       FlatScrollBars = True
+      Items.ItemData = {}
       MultiSelect = True
       RowSelect = True
       ParentFont = False

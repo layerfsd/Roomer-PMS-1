@@ -26,8 +26,6 @@ object FrmEmbeddedHtmlEditor: TFrmEmbeddedHtmlEditor
     BevelOuter = bvNone
     TabOrder = 0
     SkinData.SkinSection = 'PANEL'
-    ExplicitTop = 453
-    ExplicitWidth = 685
     DesignSize = (
       909
       36)
@@ -44,7 +42,6 @@ object FrmEmbeddedHtmlEditor: TFrmEmbeddedHtmlEditor
       ModalResult = 2
       TabOrder = 0
       SkinData.SkinSection = 'BUTTON'
-      ExplicitLeft = 596
     end
     object sButton1: TsButton
       Left = 729
@@ -59,7 +56,6 @@ object FrmEmbeddedHtmlEditor: TFrmEmbeddedHtmlEditor
       TabOrder = 1
       OnClick = btnOkClick
       SkinData.SkinSection = 'BUTTON'
-      ExplicitLeft = 505
     end
   end
   object pgPages: TsPageControl
@@ -70,14 +66,8 @@ object FrmEmbeddedHtmlEditor: TFrmEmbeddedHtmlEditor
     ActivePage = sTabSheet1
     Align = alClient
     TabOrder = 1
-    ExplicitWidth = 685
-    ExplicitHeight = 453
     object sTabSheet1: TsTabSheet
       Caption = 'Source'
-      ExplicitLeft = 8
-      ExplicitTop = 22
-      ExplicitWidth = 677
-      ExplicitHeight = 425
       object mmoSource: TAdvMemo
         Left = 0
         Top = 0
@@ -160,7 +150,7 @@ object FrmEmbeddedHtmlEditor: TFrmEmbeddedHtmlEditor
           '')
         MarkerList.UseDefaultMarkerImageIndex = False
         MarkerList.DefaultMarkerImageIndex = -1
-        MarkerList.ImageTransparentColor = -1
+        MarkerList.ImageTransparentColor = 33554432
         MemoSource = AdvMemoSource1
         OleDropTarget = []
         PrintOptions.MarginLeft = 0
@@ -192,8 +182,6 @@ object FrmEmbeddedHtmlEditor: TFrmEmbeddedHtmlEditor
         UseStyler = True
         Version = '3.4.6.2'
         WordWrap = wwClientWidth
-        ExplicitLeft = 3
-        ExplicitTop = 3
       end
     end
   end
@@ -201,7 +189,7 @@ object FrmEmbeddedHtmlEditor: TFrmEmbeddedHtmlEditor
     Left = 56
     Top = 376
     Bitmap = {
-      494C010107004800900010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010107000900040010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000002000000001002000000000000020
       0000000000000000000000000000000000000000000072727200181818000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -531,6 +519,8 @@ object FrmEmbeddedHtmlEditor: TFrmEmbeddedHtmlEditor
   end
   object AdvMemoSource1: TAdvMemoSource
     SyntaxStyler = AdvHTMLMemoStyler1
+    Lines.Strings = (
+      '')
     ReadOnly = False
     Left = 264
     Top = 200
