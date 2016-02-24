@@ -19,6 +19,9 @@ function Year(ADate : TDateTime) : Integer;
 function DayOfMonth(ADate : TDateTime) : Integer;
 function CreateDate(aYear, aMonth, aDay : Integer) : TDate;
 
+function DateTimeFromYYMMDD(const aYYMMDD: string): TDateTime;
+
+
 implementation
 
 function CreateDate(aYear, aMonth, aDay : Integer) : TDate;
@@ -135,5 +138,36 @@ begin
     Result := StrToDateTime(dateStr, FormatSettings);
   end;
 end;
+
+function DateTimeFromYYMMDD(const aYYMMDD: string): TDateTime;
+var
+  y,m,d,h,n: integer;
+begin
+  if length(aYYMMDD) > 0 then
+    y := StrToIntDef(Copy(aYYMMDD, 1, 4), 0)
+  else
+    y := 0;
+
+  if length(aYYMMDD) > 4 then
+    m := StrToIntDef(Copy(aYYMMDD, 5, 2), 0)
+  else
+    m := 0;
+  if length(aYYMMDD) > 6 then
+    d := StrToIntDef(Copy(aYYMMDD, 7, 2), 0)
+  else
+    d := 0;
+  if length(aYYMMDD) > 8 then
+    h := StrToIntDef(Copy(aYYMMDD, 9, 2), 0)
+  else
+    h := 0;
+  if length(aYYMMDD) > 10 then
+    n := StrToIntDef(Copy(aYYMMDD, 11, 2), 0)
+  else
+    n := 0;
+
+
+  Result := EncodeDate(y, m, d) + EncodeTime(h, n, 0, 0);
+end;
+
 
 end.

@@ -2,13 +2,13 @@ unit uOfflineReportGenerator;
 
 interface
 
-uses uRoomerThreadedRequest,
-     generics.Collections,
-     uD,
-     uOfflineReport,
-     cmpRoomerDataSet;
+uses Generics.Collections,
+     uOfflineReport;
 
 type
+  //Starting point for generating offline reports.
+  // This class contains a list of registered offlinereportclasses, which will all be started when the ExecuteRegisteredReports
+  // class method is called
   TOfflineReportGenerator = class
   private
     class var FRegisteredReports: TList<TOfflineReportClass>;
@@ -16,6 +16,8 @@ type
     class destructor ClassDestroy;
     class procedure RegisterOfflineReport(const aReportClass: TOfflineReportClass);
     class procedure UnRegisterOfflineReport(const aReportClass: TOfflineReportClass);
+    // Start generation of all registered Offlinereports. This done creating an instance of the TOfflineReportClass and
+    // by calling its Start method.
     class procedure ExecuteRegisteredReports;
   end;
 
@@ -40,6 +42,7 @@ var
 begin
   if assigned(FRegisteredReports) then
     for lReportClass in FRegisteredReports do
+      // Notice that Reportclass is derived from TTHread and has FreeOnterminate set to True so freeing is not needed here
        lReportClass.Create(Now()).Start;
 end;
 

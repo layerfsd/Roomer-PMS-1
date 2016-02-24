@@ -31,7 +31,7 @@ object FrmMessagesTemplates: TFrmMessagesTemplates
     object sLabel2: TsLabel
       Left = 0
       Top = 0
-      Width = 194
+      Width = 151
       Height = 16
       Margins.Left = 2
       Margins.Top = 2
@@ -45,7 +45,6 @@ object FrmMessagesTemplates: TFrmMessagesTemplates
       Font.Height = -13
       Font.Name = 'Tahoma'
       Font.Style = []
-      ExplicitWidth = 151
     end
     object sbMessageContainer: TsScrollBox
       Left = 0

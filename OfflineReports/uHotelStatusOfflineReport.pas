@@ -8,6 +8,7 @@ uses
   ;
 
 type
+  // Offline report shown the current hotel status
   THotelStatusReport = class(TOffLinereport)
   private
   protected
@@ -18,33 +19,36 @@ type
   public
   end;
 
+const
+  cshTx_HotelStatusOfflineReport_Name = 'shTx_HotelStatusOfflineReport_Name';
+
 implementation
 
 uses
   uHotelStatusOfflineReportDesign
   , uOfflineReportGenerator
   , SysUtils
+  , PrjConst
   ;
 
-resourcestring
-  rsReportName = 'Hotel Status Report'; // Must be replaced by translation
 
+const
   cSQL = 'SELECT co.CompanyID, ' +
          'co.CompanyName, '+
          'r.Reservation, ' +
          'r.Name AS ReservationName, ' +
-         'rr.Arrival, ' +
-         'rr.Departure, ' +
+         'Cast(rr.Arrival as Date) as Arrival, ' +
+         'Cast(rr.Departure as Date) as Departure, ' +
          'DATEDIFF(rr.Departure, rr.Arrival) AS Nights, '+
          'rr.RoomReservation, ' +
          'rr.Room, ' +
          'rr.RoomType, ' +
-         'rr.Status, '+
          'FORMAT((SELECT AVG(RoomRate) FROM roomsdate WHERE RoomReservation=rr.RoomReservation AND ResFlag=rr.Status), 2) AS AvgRate, '+
          'FORMAT((SELECT AVG(Discount) FROM roomsdate WHERE RoomReservation=rr.RoomReservation AND ResFlag=rr.Status), 2) AS AvgDiscountValue, '+
          'FORMAT((SELECT IsPercentage FROM roomsdate WHERE RoomReservation=rr.RoomReservation AND ResFlag=rr.Status LIMIT 1), 2) AS DiscountIsPercentage, '+
          'FORMAT((SELECT AVG(IF(IsPercentage, RoomRate*Discount/100, Discount)) FROM roomsdate WHERE RoomReservation=rr.RoomReservation AND ResFlag=rr.Status), 2) AS AvgDiscount, '+
          'FORMAT((SELECT AVG(IF(IsPercentage, RoomRate-RoomRate*Discount/100, RoomRate-Discount)) FROM roomsdate WHERE RoomReservation=rr.RoomReservation AND ResFlag=rr.Status), 2) AS AvgRateAfterDiscount, '+
+         'rr.Status as ResStatus, '+
          'rr.Currency, ' +
          'rr.NumGuests, ' +
          'rr.NumChildren, ' +
@@ -54,7 +58,7 @@ resourcestring
          'p.Name AS GuestName, ' +
          'r.ContactName, '+
          'co.NativeCurrency, '+
-         '(SELECT GROUP_CONCAT(Name ORDER BY MainName DESC) FROM persons pe1 WHERE pe1.RoomReservation=rr.RoomReservation) AS Guests, '+
+         '(SELECT GROUP_CONCAT(Name ORDER BY MainName DESC SEPARATOR '' , '') FROM persons pe1 WHERE pe1.RoomReservation=rr.RoomReservation) AS Guests, '+
          '(SELECT Location FROM rooms WHERE Room=rr.Room) AS Location, '+
          '(SELECT Floor FROM rooms WHERE Room=rr.Room) AS Floor, '+
          '(SELECT SUM(Price * Number) FROM invoicelines WHERE RoomReservation=rr.RoomReservation) AS TotalSales '+
@@ -63,13 +67,10 @@ resourcestring
          'JOIN roomreservations rr ON rr.Reservation=r.Reservation '+
          'JOIN currencies c ON c.Currency=rr.Currency '+
          'JOIN persons p ON p.RoomReservation=rr.RoomReservation AND MainName=1, '+
-         'control co '
-         + 'WHERE EXISTS((SELECT ADate FROM roomsdate WHERE RoomReservation=rr.RoomReservation AND ResFlag IN (''P'',''G'') AND ADate=''%s''))'
+         'control co ' +
+         'WHERE EXISTS((SELECT ADate FROM roomsdate WHERE RoomReservation=rr.RoomReservation AND ResFlag IN (''P'',''G'') AND ADate=''%s'')) ' +
+         'ORDER BY rr.Arrival '
          ;
-
-{ THotelStatusReport }
-
-
 
 
 function THotelStatusReport.PrepareData: Boolean;
@@ -85,7 +86,7 @@ end;
 
 class function THotelStatusReport.reportName: string;
 begin
-  Result := rsReportName;
+  Result := GetTranslatedtext(cshTx_HotelStatusOfflineReport_Name);
 end;
 
 initialization

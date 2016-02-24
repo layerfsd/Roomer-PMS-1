@@ -155,7 +155,7 @@ TYPE
     function FindRoomStatus(RoomNumber: string): string;
 
 
-    property RoomItemsList : TRoomItemsList read FRoomList write FRoomList;
+    property RoomItemsList : TRoomItemsList read FRoomList;
     property RoomCount : integer read getRoomCount;
 
 
@@ -396,20 +396,12 @@ constructor TRooms.Create(aHotelCode : string);
 begin
   inherited Create;
 
-  try
-    FRoomList := TRoomItemsList.Create(True);
-  Except
-    //TODO Loga
-  end;
+  FRoomList := TRoomItemsList.Create(True);
 
   FHotelCode := aHotelCode;
   FRoomCount := 0;
 
-  try
-    FillList(FRoomCount);
-  Except
-    // logga
-  end;
+  FillList(FRoomCount);
 
 end;
 

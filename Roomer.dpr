@@ -1,8 +1,18 @@
 program Roomer;
 
+{$I Roomer.inc}
 
+// first lines of uses clause should read as follows:
+//  {$ifdef UseFastMM}
+//  FastMM4 in 'FastMM\FastMM4.pas',
+//  FastMM4Messages in 'FastMM\FastMM4Messages.pas',
+//  {$endif}
 
 uses
+  {$ifdef UseFastMM}
+  FastMM4 in 'FastMM\FastMM4.pas',
+  FastMM4Messages in 'FastMM\FastMM4Messages.pas',
+  {$endif}
   Forms,
   uMain in 'uMain.pas' {frmMain},
   uReservationObjects in 'uReservationObjects.pas',
@@ -17,7 +27,7 @@ uses
   uFinishedInvoices2 in 'uFinishedInvoices2.pas' {frmFinishedInvoices2},
   uCreditPrompt in 'uCreditPrompt.pas' {frmCreditPrompt},
   uInvoiceList in 'uInvoiceList.pas' {frmInvoiceList},
-  uD in 'uD.pas' {createFiel: TDataModule},
+  uD in 'uD.pas' {forceoffline: TDataModule},
   uG in 'uG.pas',
   uConverts in 'uConverts.pas' {frmConverts},
   ufrmSelLang in 'ufrmSelLang.pas' {frmSelLang},
@@ -205,7 +215,8 @@ uses
   uOffLineReport in 'OfflineReports\uOffLineReport.pas',
   uHotelStatusOfflineReport in 'OfflineReports\uHotelStatusOfflineReport.pas',
   uOfflineReportDesign in 'OfflineReports\uOfflineReportDesign.pas' {BaseOfflineReportDesign: TDataModule},
-  uHotelStatusOfflineReportDesign in 'OfflineReports\uHotelStatusOfflineReportDesign.pas';
+  uHotelStatusOfflineReportDesign in 'OfflineReports\uHotelStatusOfflineReportDesign.pas',
+  uOfflineReportGrid in 'OfflineReports\uOfflineReportGrid.pas' {frmOfflineReports};
 
 {$R *.RES}
 
@@ -225,10 +236,11 @@ begin
   Application.CreateForm(TDImages, DImages);
   frmRoomerSplash.UpdateBusySignal;
 
+  Application.CreateForm(TfrmMain, frmMain);
+  frmRoomerSplash.UpdateBusySignal;
+
   if D.roomerMainDataSet.IsConnectedToInternet then
   begin
-    Application.CreateForm(TfrmMain, frmMain);
-    frmRoomerSplash.UpdateBusySignal;
     Application.CreateForm(TfrmDaysStatistics, frmDaysStatistics);
     Application.CreateForm(TfrmRateQuery, frmRateQuery);
     frmRoomerSplash.UpdateBusySignal;

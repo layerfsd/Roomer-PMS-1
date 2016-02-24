@@ -10,7 +10,7 @@ uses
   ;
 
 type
-  // A base definition of a Offline report, actual implementations should be derived from this abstract class
+  // A base definition of an Offline report, actual implementations should be derived from this abstract class
   TOfflineReport = class abstract(TBaseDBThread)
   private
     FDesign: TBaseOfflineReportDesign;
@@ -19,7 +19,9 @@ type
     FDateTime: TDatetime;
     FSQL: string;
 
+    // User friendly name of the report used a.o. in the resulting filename and the grid displaying the available offline reports
     class function ReportName: string; virtual; abstract;
+
     // Reference to the designclass that contains the actrual report design and will be used to generate the report
     class function ReportDesign: TOfflinereportDesignClass; virtual; abstract;
 
@@ -28,8 +30,11 @@ type
 
     // First fase in generating the offline report: should populate FRecordset with the data to print
     function PrepareData : Boolean; virtual;
-    //Second fase in generating the offline report: actual running the report and storing as .PDF file
+
+    //Second fase in generating the offline report: actual running the report and storing as .PDF file, using the
+    // Offlinereport design sepcified by ReportDesign class function
     procedure CreateReport; virtual;
+
     //Purge older report PDF files to leave only a recent collection of data
     procedure PurgeReports; virtual;
   public
@@ -38,11 +43,11 @@ type
   end;
 
   TOfflineReportClass = class of TOffLineReport;
-  TOfflinereportClassArr = array of TOfflineReportClass;
 
 implementation
 
 uses
+  Windows,
   uD,
   uG,
   uAppGlobal,
@@ -90,12 +95,15 @@ var
 const
   cNameFormat = '%s-%s';
 begin
-  lFile := ChangeFileExt(Format(cNameFormat, [ReportName, FormatDateTime('yyyyddmmhhnn', FDateTime)]), '.PDF');
+  lFile := ChangeFileExt(Format(cNameFormat, [ReportName, FormatDateTime('yyyymmddhhnn', FDateTime)]), '.PDF');
   Result := TPath.Combine(glb.GetOfflinereportLocation, lFile);
 end;
 
 procedure TOfflineReport.InternalExecute;
 begin
+  {$ifdef DEBUG}
+    OutputDebugString(PChar('Printing Offlinereport ' + ReportName));
+  {$endif}
   try
     inherited;
 
@@ -142,7 +150,6 @@ begin
       while (lFileList.Count > cReportFilesToKeep) do
       begin
         DeleteFile(lFileList[0]);
-        // TODO: Add avtivitylog when deletion has failed
         lFileList.Delete(0);
       end;
 

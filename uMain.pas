@@ -1355,7 +1355,6 @@ type
     procedure FillRoomTypesGrid;
     function RoomTypeIndexInGrid(Grid: TAdvStringGrid; RoomType: String): integer;
     function GetAvailableCellText(Value: integer): String;
-    procedure RefreshRoomList;
     procedure Period_UnMergeGrid;
     procedure grNoRooms_UnMergeGrid;
     procedure EnableDisableFunctions(Enable: boolean);
@@ -1480,6 +1479,7 @@ type
     zHintComp: TWinControl;
     zHintObj: TCustomHint;
 
+    constructor Create(aOwner: TComponent); override;
     procedure WndProc(var message: TMessage); override;
     procedure DownloadProgress(Sender: TObject; Read, Total: integer);
     procedure IdHTTP1Work(ASender: TObject; AWorkMode: TWorkMode; AWorkCount: Int64);
@@ -1573,7 +1573,7 @@ uses
   GoogleOTP256,
   uInvoiceController,
   Math
-  ;
+  , uOfflineReportGrid;
 
 {$R *.DFM}
 {$R Cursors.res}
@@ -1706,10 +1706,7 @@ begin
   LoggedIn := true;
   CloseAppSettings;
   OpenAppSettings;
-  if g.oRooms <> nil then
-    freeandNil(g.oRooms);
-  g.oRooms := TRooms.Create(g.qHotelCode);
-
+  g.RefreshRoomList;
   // ******
   glb.PerformAuthenticationAssertion(self);
 
@@ -2841,6 +2838,20 @@ end;
 
 // ** START OF FORM FUNCTIONS ---------------------------------------------------
 
+constructor TfrmMain.Create(aOwner: TComponent);
+begin
+  inherited;
+
+  zHintObj := TCustomHint.Create(self);
+  availListContainer := TRoomClassChannelAvailabilityContainerDictionary.Create(True);
+
+  GroupList := TGroupEntityList.Create(True);
+  MoveFunctionAvailRooms := TRoomAvailabilityEntityList.Create(True);
+
+  ug.OpenApplication;
+
+end;
+
 procedure TfrmMain.FormCreate(Sender: TObject);
 var
   recVer: TEXEVersionData;
@@ -2852,7 +2863,6 @@ begin
   _InvoiceIndex := 0;
 
   HintWindowShowing := false;
-  zHintObj := TCustomHint.Create(self);
   try
     temp := ReadStringValueFromAnyRegistry('Software\Roomer\FormStatus\StoreMainV2\sSkinManager1', 'SkinName', 'RoomerUI');
     if pos('(internal)', temp) > 0 then
@@ -2872,10 +2882,6 @@ begin
       DeleteFile(Application.ExeName + '.log');
     except
     end;
-  availListContainer := TRoomClassChannelAvailabilityContainerDictionary.Create(True);
-
-  GroupList := TGroupEntityList.Create(True);
-  MoveFunctionAvailRooms := TRoomAvailabilityEntityList.Create(True);
 
   LoginCancelled := false;
   zJustClicked := false;
@@ -2907,7 +2913,6 @@ begin
   Application.OnException := ExceptionHandler;
 {$ENDIF}
   pageMainGrids.ActivePageIndex := 0;
-  ug.OpenApplication;
   zShowCaptions := true;
   barinn.HideAll;
   // FIX   StateSaver1.theOwner := TForm(Self);
@@ -3021,9 +3026,7 @@ begin
   FrmMessagesTemplates := TFrmMessagesTemplates.Create(nil);
   FrmMessagesTemplates.pnlContainer.Parent := pnlNotifications;
 
-  StartHotel(true);
-
-  if NOT LoginCancelled then
+  if StartHotel(true) and NOT LoginCancelled then
   begin
     try
       frmDayNotes.edCurrentDate.Text := DateToStr(dtDate.Date);
@@ -3065,7 +3068,7 @@ begin
     // First time wait a few minutes for initialization to complete
     with timOfflineReports do
     begin
-      Interval := 2 * 50 * 1000; // 2 minutes
+      Interval := 1 * 60 * 1000; // 2 minutes
       Enabled := True;
     end;
   end
@@ -3184,12 +3187,6 @@ begin
   if not aFirstLogin then
     g.ProcessAppIni(1);
 
-  for i := 0 to pageMainGrids.PageCount - 1 do
-  begin
-    pageMainGrids.TabHeight := 0;
-    pageMainGrids.Pages[i].TabVisible := false;
-  end;
-
   if aFirstLogin then
     HideRoomerSplash;
 
@@ -3197,9 +3194,6 @@ begin
   password := '';
   WrongLoginMessage := '';
   ExpiredMessage := '';
-
-  pageMainGrids.ActivePage := tabOneDayView;
-  ViewMode := vmOneDay;
 
   okLogin := false;
   tries := 0;
@@ -3219,67 +3213,82 @@ begin
 
   until okLogin OR lLoginFormCancelled OR (tries >= 15);
 
-  if not okLogin then
+  if not okLogin or lLoginFormCancelled then
   begin
     LoginCancelled := true;
     result := false;
-    Close;
     exit;
-  end
-  else
+  end;
+
+  if ForcefulRestart then
   begin
-    AddRoomerActivityLog(d.roomerMainDataSet.username,
-                         uActivityLogs.LOGIN,
-                         'Success',
-                         'User ' + d.roomerMainDataSet.username + ' successfully logged in.');
-    g.ProcessAppIni(0);
+    result := true;
+    exit;
+  end;
 
-    d.roomerMainDataSet.ApplicationID := g.qApplicationID;
-    d.roomerMainDataSet.AppSecret := g.qAppSecret;
-    d.roomerMainDataSet.AppKey := g.qAppKey;
+  if OffLineMode then
+  begin
 
-    if ForcefulRestart then
-    begin
-      result := true;
-      exit;
-    end;
-
-    if CheckForUpdatedRelease then
-    begin
-      LoginCancelled := true;
-      try
-        d.roomerMainDataSet.Logout;
-        lblUsername.Caption := 'N/A';
-      except
-      end;
-      result := false;
-      Close;
-      exit;
-    end;
-
-    if OffLineMode then
-    begin
-      MessageDlg('Running offline reportsform', mtInformation, [mbOK], 0);
-      Close;
-      Exit;
-    end;
-
+    with TfrmOfflineReports.Create(nil) do
     try
-      if AutoLogin = '' then
-      begin
-        prepareDependencyManager;
-        UpdateHotelsList;
-      end;
-
-      didPostProcess := true;
-      PostLoginProcess(AutoLogin = '');
-
-    except
-      on E: Exception do
-        MessageDlg(E.message, mtError, [mbOk], 0);
+      Result := false;
+      RoomerOffline := True;
+      ShowModal;
+    finally
+      Free;
     end;
 
-    initializeTaxes;
+    Exit;
+  end;
+
+  if CheckForUpdatedRelease then
+  begin
+    LoginCancelled := true;
+    try
+      d.roomerMainDataSet.Logout;
+      lblUsername.Caption := 'N/A';
+    except
+    end;
+    result := false;
+    exit;
+  end;
+
+
+  result := true;
+
+  AddRoomerActivityLog(d.roomerMainDataSet.username,
+                       uActivityLogs.LOGIN,
+                       'Success',
+                       'User ' + d.roomerMainDataSet.username + ' successfully logged in.');
+  g.ProcessAppIni(0);
+
+  d.roomerMainDataSet.ApplicationID := g.qApplicationID;
+  d.roomerMainDataSet.AppSecret := g.qAppSecret;
+  d.roomerMainDataSet.AppKey := g.qAppKey;
+
+  for i := 0 to pageMainGrids.PageCount - 1 do
+  begin
+    pageMainGrids.TabHeight := 0;
+    pageMainGrids.Pages[i].TabVisible := false;
+  end;
+
+  pageMainGrids.ActivePage := tabOneDayView;
+  ViewMode := vmOneDay;
+
+  try
+    if AutoLogin = '' then
+    begin
+      prepareDependencyManager;
+      UpdateHotelsList;
+    end;
+
+    didPostProcess := true;
+    PostLoginProcess(AutoLogin = '');
+
+  except
+    on E: Exception do
+      MessageDlg(E.message, mtError, [mbOk], 0);
+  end;
 
     result := true;
     lblHotelName.Caption := g.qHotelName;
@@ -3288,49 +3297,46 @@ begin
     try
       CloseAppSettings;
       OpenAppSettings;
-      g.oRooms.Free;
-      g.oRooms := TRooms.Create(g.qHotelCode);
     except
       on E: Exception do
         MessageDlg(E.message, mtError, [mbOk], 0);
     end;
 
-    d.PrepareFixedTables;
 
-    if g.qUserLanguage <> tmpUserLang then
-    begin
-      g.ChangeLang(g.qUserLanguage, false);
-    end;
+  d.PrepareFixedTables;
 
-    d.Get_All_StatusAttributes;
-
-    g.qDebug1 := 'StartHotel(appstart : boolean);';
-
-    g.qUser := userName;
-
-    pageMainGrids.ActivePage := tabOneDayView;
-
-    d.ctrlGetGlobalValues;
-
-    cbxNameOrder.ItemIndex := g.qNameOrder;
-    cbxNameOrderPeriod.ItemIndex := g.qNameOrderPeriod;
-
-    d.chkInPosMonitor;
-    d.chkConfirmMonitor;
-
-    try
-      RestoreCurrentFont
-    except
-    end;
-    StartOneDay;
-
-    cbxNameOrder.ItemIndex := g.qNameOrder;
-    grOneDayRooms.DefaultRowHeight := g.qOneDayRowHeight;
-    g.updateCurrentGuestlist;
-
-    HideRoomerSplash;
-
+  if g.qUserLanguage <> tmpUserLang then
+  begin
+    g.ChangeLang(g.qUserLanguage, false);
   end;
+
+  d.Get_All_StatusAttributes;
+
+  g.qDebug1 := 'StartHotel(appstart : boolean);';
+
+  g.qUser := userName;
+
+  pageMainGrids.ActivePage := tabOneDayView;
+
+  d.ctrlGetGlobalValues;
+
+  cbxNameOrder.ItemIndex := g.qNameOrder;
+  cbxNameOrderPeriod.ItemIndex := g.qNameOrderPeriod;
+
+  d.chkInPosMonitor;
+  d.chkConfirmMonitor;
+
+  try
+    RestoreCurrentFont
+  except
+  end;
+  StartOneDay;
+
+  cbxNameOrder.ItemIndex := g.qNameOrder;
+  grOneDayRooms.DefaultRowHeight := g.qOneDayRowHeight;
+  g.updateCurrentGuestlist;
+
+  HideRoomerSplash;
 
   frmRoomerSplash.NilInternetEvents;
 
@@ -3883,19 +3889,6 @@ begin
     ReservationsModel.Free;
 
     try
-      if oFreeRooms <> nil then
-        freeandNil(oFreeRooms);
-
-      if hData.oRoomTypeRoomCount <> nil then
-        freeandNil(hData.oRoomTypeRoomCount);
-
-      // *s  if zRoomsOBJ <> nil then freeandNil(zRoomsOBJ);
-      if g.oRooms <> nil then
-        freeandNil(g.oRooms);
-    except
-    end;
-
-    try
       ClearStringGridFromTo(grOneDayRooms, 1, 1);
     except
     end;
@@ -4191,7 +4184,7 @@ begin
     tickCountStart := getTickCount;
     BusyOn;
     try
-      RefreshRoomList;
+      g.RefreshRoomList;
       statNumRooms := g.oRooms.RoomCount;
       statNumExternRooms := 0;
       statCancelledExt := 0;
@@ -4357,13 +4350,6 @@ begin
     grOneDayRooms.endUpdate;
     RefreshStats;
   end;
-end;
-
-procedure TfrmMain.RefreshRoomList;
-begin
-  if g.oRooms <> nil then
-    freeandNil(g.oRooms);
-  g.oRooms := TRooms.Create(g.qHotelCode);
 end;
 
 function TfrmMain.ReservationNotInGroupList(resId: integer): boolean;
@@ -8464,19 +8450,19 @@ end;
 
 procedure TfrmMain.timOfflineReportsTimer(Sender: TObject);
 begin
-//  TTimer(Sender).Enabled := false;
-//  try
-//    d.GenerateOfflineReports;
-//
-//{$ifdef Debug}
-//    TTimer(sender).Interval := 3 * 60 * 1000; // 3 min for debugging
-//{$else}
-//    TTimer(sender).Interval := 30 * 60 * 1000; // 30 min normal
-//{$endif}
-//
-//  finally
-//    TTimer(Sender).Enabled := True;
-//  end;
+  TTimer(Sender).Enabled := false;
+  try
+    d.GenerateOfflineReports;
+
+{$ifdef Debug}
+    TTimer(sender).Interval := 3 * 60 * 1000; // 3 min for debugging
+{$else}
+    TTimer(sender).Interval := 30 * 60 * 1000; // 30 min normal
+{$endif}
+
+  finally
+    TTimer(Sender).Enabled := True;
+  end;
 end;
 
 procedure TfrmMain.timRetryRefreshTimer(Sender: TObject);
