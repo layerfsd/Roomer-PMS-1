@@ -256,6 +256,8 @@ type
 
     procedure InitializeApplicationGlobals;
     function GetAppSecret: string;
+    procedure Lock;
+    procedure Unlock;
   public
     qConnected : boolean;
     mHelpFile : string;
@@ -407,6 +409,7 @@ type
     qDynamicRatesActive : Boolean;
 
     procedure Help(id : integer);
+    procedure RefreshRoomList;
     constructor Create;
     destructor Destroy; override;
     procedure ProcessAppIni(aMethod : integer; initialRead : Boolean = false);
@@ -548,7 +551,9 @@ var
   _HHwinHwnd : HWND = 0;
 
 
+// Create and initialize the singelton TGlobalApplication object "g"
 procedure OpenApplication;
+// Clear and destroy the singleton TGlobalApplicaiton object "g"
 procedure CloseApplication;
 
 //function StatusToString(Status : string) : string;
@@ -966,6 +971,18 @@ procedure TGlobalApplication.Help(id : integer);
 begin
 end;
 
+procedure TGlobalApplication.RefreshRoomList;
+begin
+  Lock;
+  try
+    if oRooms <> nil then
+      freeandNil(oRooms);
+    oRooms := TRooms.Create(qHotelCode);
+  finally
+    Unlock;
+  end;
+end;
+
 
 procedure TGlobalApplication.initRecDownPayment(var rec: recDownPayment);
 begin
@@ -1023,9 +1040,14 @@ end;
 
 
 procedure TGlobalApplication.InitializeApplicationGlobals;
+var
+  theComputerName : array [0 .. 255 + 1] of char;
+  itsLength : DWORD;
 begin
-  EnterCriticalSection(FLock);
+  Lock;
   try
+    // This method should not be called directly from the TGlobalApplication.Create because some of the methods used
+    // expect the gloal var "G" to be created
 
     qProgramPath := GetTempPath + 'Roomer\'; // LocalAppDataPath; // _AddSlash(ExtractFileDir(Application.ExeName));
     qProgramExePath := LocalAppDataPath + 'Roomer\Storage\';
@@ -1034,10 +1056,58 @@ begin
     ForceDirectories(qProgramExePath + 'Data');
     qAppIniFile := GetRoomerIniFilename;
 
+    mHelpFile := ExtractFilePath(Paramstr(0)) + '\Help\help01.chm';
+    mHelpFile := ExpandFileName(mHelpFile);
 
-  //  qComputerName    := _getComputerNetName;
+    qShowUnpaidInGrid := true;
+    qShowHint := true;
+    qComputerName := 'NA';
+    qUser := '';
+    qUserName := '';
+    qUserPID := '';
+    qUserType := '';
+    qUserLanguage := 0;
+    qNativeCurrency := '';
+    qCountry := '';
+    qBreakFastItem := '';
+
+    qHotelIndex := 0;
+
+    qArrivalDateRulesPrice := false;
+    qBreakfastInclDefault := false;
+
+    qPhoneUseItem := '';
+    qPaymentItem := '';
+    qRoomRentItem := '';
+    qStayTaxItem := '';
+    qStayTaxPerPerson := False;
+
+    qDiscountItem := '';
+
+    qLocalRoomRent := '';
+    qGreenColor := '';
+    qPurpleColor := '';
+    qFuchsiaColor := '';
+
+    qUseSetUnclean := true;
+
+    qNameOrder := 0;
+    qNameOrderPeriod := 0;
+
+    qInvPriceGroup := '';
+
+    itsLength := MAX_COMPUTERNAME_LENGTH + 1;
+
+    if (GetComputerName(theComputerName, itsLength)) then
+    begin
+      qComputerName := trim(string(theComputerName));
+    end;
+
+    ProcessAppIni(0, true); // 0=Open 1=CloseGlbApp.SetFasta;
+
+    qGridsIniFileName := qProgramExePath + 'grids.ini';
+
     qWindowsUser     := _getWindowsUser;
-
 
     qColorIsTakenBack := $0099CCFF;
     qColorIsTakenFont := clRed;
@@ -1063,8 +1133,14 @@ begin
     qColorRoomOther1Font     := clWhite;
     qColorRoomOther2Font     := clWhite;
     qColorRoomOther3Font     := clWhite;
+
+    qlstLang.Clear;
+    qlstLang.Add('English|ntv');
+    qlstLang.Add('Íslenska|ISL');
+    qlstLang.Add('Dutch|NL');
+
   finally
-    LeaveCriticalSection(FLock);
+    Unlock;
   end;
 
 end;
@@ -1074,30 +1150,21 @@ begin
   inherited;
   InitializeCriticalSection(FLock);
 
-  EnterCriticalSection(FLock);
-  try
-    FqHotelList := TstringList.Create;
-    FqHotelIndex := 0;
-    FBackupMachine := False;
-    qlstLang := TStringList.create;
-    qlstLang.Add('English|ntv');
-    qlstLang.Add('Íslenska|ISL');
-    qlstLang.Add('Dutch|NL');
-  finally
-    LeaveCriticalSection(FLock);
-  end;
+  FqHotelList := TstringList.Create;
+  FBackupMachine := False;
+  qlstLang := TStringList.create;
 
-  InitializeApplicationGlobals;
 end;
 
 destructor TGlobalApplication.destroy;
 begin
   FqHotelList.free;
-  freeandNil(qlstLang);
+  qlstLang.Free;
+  oRooms.Free;
   DeleteCriticalSection(Flock);
-  /// ---
   inherited;
 end;
+
 
 
 function TGlobalApplication.TestConnection(var Connstr, strResult : string) : boolean;
@@ -1142,6 +1209,11 @@ begin
       dbc.Close;
     dbc.free;
   end;
+end;
+
+procedure TGlobalApplication.Unlock;
+begin
+  LeaveCriticalSection(Flock);
 end;
 
 function decodeSecret(secret : String) : String;
@@ -1607,71 +1679,12 @@ end;
 
 /// start - Open and Close Application;
 procedure OpenApplication;
-var
-  theComputerName : array [0 .. 255 + 1] of char;
-  itsLength : DWORD;
 begin
   // --
   G := TGlobalApplication.Create;
-
-  G.mHelpFile := ExtractFilePath(Paramstr(0)) + '\Help\help01.chm';
-  G.mHelpFile := ExpandFileName(G.mHelpFile);
-
-  // if not FileExists(g.mHelpFile) then
-  // ShowMessage('Help file not found'#13+g.mHelpFile);
-  // g.openSelectHotel;
-
-  G.qShowUnpaidInGrid := true;
-  G.qShowHint := true;
-  G.qComputerName := 'NA';
-  G.qUser := '';
-  G.qUserName := '';
-  G.qUserPID := '';
-  G.qUserType := '';
-  G.qUserLanguage := 0;
-  G.qNativeCurrency := '';
-  G.qCountry := '';
-  G.qBreakFastItem := '';
-
-
-  G.qArrivalDateRulesPrice := false;
-  G.qBreakfastInclDefault := false;
-
-  G.qPhoneUseItem := '';
-  G.qPaymentItem := '';
-  G.qRoomRentItem := '';
-  g.qStayTaxItem := '';
-  g.qStayTaxPerPerson := False;
-
-  G.qDiscountItem := '';
-
-  G.qLocalRoomRent := '';
-  G.qGreenColor := '';
-  G.qPurpleColor := '';
-  G.qFuchsiaColor := '';
-
-  G.qUseSetUnclean := true;
-
-  G.qNameOrder := 0;
-  G.qNameOrderPeriod := 0;
-
-  G.qInvPriceGroup := '';
-
-  itsLength := MAX_COMPUTERNAME_LENGTH + 1;
-
-  if (GetComputerName(theComputerName, itsLength)) then
-  begin
-    G.qComputerName := trim(string(theComputerName));
-  end;
-
-  G.ProcessAppIni(0, true); // 0=Open 1=CloseGlbApp.SetFasta;
-
-  // g.qLastID := '0';
-  // g.qCustID := -1;
-
-  G.qGridsIniFileName := G.qProgramExePath + 'grids.ini';
-
+  G.InitializeApplicationGlobals;
 end;
+
 
 procedure CloseApplication;
 begin
@@ -2275,6 +2288,11 @@ begin
   end;
 end;
 
+
+procedure TGlobalApplication.Lock;
+begin
+  EnterCriticalSection(FLock);
+end;
 
 function TGlobalApplication.openGoToRoomAndDate(var aRoom : string; var aDate : TDate) : boolean;
 begin

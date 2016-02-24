@@ -1355,7 +1355,6 @@ type
     procedure FillRoomTypesGrid;
     function RoomTypeIndexInGrid(Grid: TAdvStringGrid; RoomType: String): integer;
     function GetAvailableCellText(Value: integer): String;
-    procedure RefreshRoomList;
     procedure Period_UnMergeGrid;
     procedure grNoRooms_UnMergeGrid;
     procedure EnableDisableFunctions(Enable: boolean);
@@ -1480,6 +1479,7 @@ type
     zHintComp: TWinControl;
     zHintObj: TCustomHint;
 
+    constructor Create(aOwner: TComponent); override;
     procedure WndProc(var message: TMessage); override;
     procedure DownloadProgress(Sender: TObject; Read, Total: integer);
     procedure IdHTTP1Work(ASender: TObject; AWorkMode: TWorkMode; AWorkCount: Int64);
@@ -1706,10 +1706,7 @@ begin
   LoggedIn := true;
   CloseAppSettings;
   OpenAppSettings;
-  if g.oRooms <> nil then
-    freeandNil(g.oRooms);
-  g.oRooms := TRooms.Create(g.qHotelCode);
-
+  g.RefreshRoomList;
   // ******
   glb.PerformAuthenticationAssertion(self);
 
@@ -2841,6 +2838,20 @@ end;
 
 // ** START OF FORM FUNCTIONS ---------------------------------------------------
 
+constructor TfrmMain.Create(aOwner: TComponent);
+begin
+  inherited;
+
+  zHintObj := TCustomHint.Create(self);
+  availListContainer := TRoomClassChannelAvailabilityContainerDictionary.Create(True);
+
+  GroupList := TGroupEntityList.Create(True);
+  MoveFunctionAvailRooms := TRoomAvailabilityEntityList.Create(True);
+
+  ug.OpenApplication;
+
+end;
+
 procedure TfrmMain.FormCreate(Sender: TObject);
 var
   recVer: TEXEVersionData;
@@ -2852,7 +2863,6 @@ begin
   _InvoiceIndex := 0;
 
   HintWindowShowing := false;
-  zHintObj := TCustomHint.Create(self);
   try
     temp := ReadStringValueFromAnyRegistry('Software\Roomer\FormStatus\StoreMainV2\sSkinManager1', 'SkinName', 'RoomerUI');
     if pos('(internal)', temp) > 0 then
@@ -2872,10 +2882,6 @@ begin
       DeleteFile(Application.ExeName + '.log');
     except
     end;
-  availListContainer := TRoomClassChannelAvailabilityContainerDictionary.Create(True);
-
-  GroupList := TGroupEntityList.Create(True);
-  MoveFunctionAvailRooms := TRoomAvailabilityEntityList.Create(True);
 
   LoginCancelled := false;
   zJustClicked := false;
@@ -2907,7 +2913,6 @@ begin
   Application.OnException := ExceptionHandler;
 {$ENDIF}
   pageMainGrids.ActivePageIndex := 0;
-  ug.OpenApplication;
   zShowCaptions := true;
   barinn.HideAll;
   // FIX   StateSaver1.theOwner := TForm(Self);
@@ -3065,7 +3070,7 @@ begin
     // First time wait a few minutes for initialization to complete
     with timOfflineReports do
     begin
-      Interval := 2 * 50 * 1000; // 2 minutes
+      Interval := 1 * 60 * 1000; // 2 minutes
       Enabled := True;
     end;
   end
@@ -3288,8 +3293,6 @@ begin
     try
       CloseAppSettings;
       OpenAppSettings;
-      g.oRooms.Free;
-      g.oRooms := TRooms.Create(g.qHotelCode);
     except
       on E: Exception do
         MessageDlg(E.message, mtError, [mbOk], 0);
@@ -3883,19 +3886,6 @@ begin
     ReservationsModel.Free;
 
     try
-      if oFreeRooms <> nil then
-        freeandNil(oFreeRooms);
-
-      if hData.oRoomTypeRoomCount <> nil then
-        freeandNil(hData.oRoomTypeRoomCount);
-
-      // *s  if zRoomsOBJ <> nil then freeandNil(zRoomsOBJ);
-      if g.oRooms <> nil then
-        freeandNil(g.oRooms);
-    except
-    end;
-
-    try
       ClearStringGridFromTo(grOneDayRooms, 1, 1);
     except
     end;
@@ -4191,7 +4181,7 @@ begin
     tickCountStart := getTickCount;
     BusyOn;
     try
-      RefreshRoomList;
+      g.RefreshRoomList;
       statNumRooms := g.oRooms.RoomCount;
       statNumExternRooms := 0;
       statCancelledExt := 0;
@@ -4357,13 +4347,6 @@ begin
     grOneDayRooms.endUpdate;
     RefreshStats;
   end;
-end;
-
-procedure TfrmMain.RefreshRoomList;
-begin
-  if g.oRooms <> nil then
-    freeandNil(g.oRooms);
-  g.oRooms := TRooms.Create(g.qHotelCode);
 end;
 
 function TfrmMain.ReservationNotInGroupList(resId: integer): boolean;
