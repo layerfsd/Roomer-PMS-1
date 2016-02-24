@@ -52,7 +52,6 @@ object frmMain: TfrmMain
     SunkenBorder = True
     UseOwnColor = True
     UseOwnSunkenBorder = True
-    ExplicitTop = 122
   end
   object panMain: TsPanel
     Left = 3
@@ -103,10 +102,6 @@ object frmMain: TfrmMain
       object tabOneDayView: TsTabSheet
         Caption = 'tabOneDayView'
         ImageIndex = 8
-        ExplicitLeft = 0
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
         object grOneDayRooms: TAdvStringGrid
           Left = 0
           Top = 0
@@ -145,8 +140,6 @@ object frmMain: TfrmMain
           OnMouseUp = grOneDayRoomsMouseUp
           OnStartDrag = grOneDayRoomsStartDrag
           ActiveRowColor = clWhite
-          GridLineColor = 15527152
-          GridFixedLineColor = 13947601
           HoverRowCells = [hcNormal, hcSelected]
           OnGridHint = grOneDayRoomsGridHint
           OnClickCell = grOneDayRoomsClickCell
@@ -415,7 +408,7 @@ object frmMain: TfrmMain
             object lblNoRoom: TsLabel
               Left = 3
               Top = 59
-              Width = 50
+              Width = 76
               Height = 13
               Align = alBottom
               Alignment = taCenter
@@ -426,6 +419,7 @@ object frmMain: TfrmMain
               Font.Height = -11
               Font.Name = 'Tahoma'
               Font.Style = [fsBold]
+              ExplicitWidth = 50
             end
           end
         end
@@ -433,7 +427,6 @@ object frmMain: TfrmMain
       object tabGuestList: TsTabSheet
         Caption = 'tabGuestList'
         ImageIndex = 9
-        ExplicitWidth = 773
         object Panel3: TsPanel
           Left = 0
           Top = 0
@@ -443,7 +436,6 @@ object frmMain: TfrmMain
           BevelOuter = bvNone
           TabOrder = 0
           SkinData.SkinSection = 'TRANSPARENT'
-          ExplicitWidth = 773
           object rgrGroupreportStayType: TsRadioGroup
             Left = 2
             Top = 4
@@ -1622,25 +1614,13 @@ object frmMain: TfrmMain
       end
       object tabFreeRooms: TsTabSheet
         Caption = 'tabFreeRooms'
-        ExplicitLeft = 0
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
       end
       object tabDashboard: TsTabSheet
         Caption = 'tabDashboard'
         SkinData.SkinSection = 'TRANSPARENT'
-        ExplicitLeft = 0
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
       end
       object tabRateQuery: TsTabSheet
         Caption = 'tabRateQuery'
-        ExplicitLeft = 0
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
       end
     end
     object panMainTop: TsPanel
@@ -2429,8 +2409,12 @@ object frmMain: TfrmMain
         Color = 15395562
         HTMLText.Strings = (
           
-            'Download the <A href="http://roomerstore.com/nationalityReport_I' +
-            'S.pdf">Nationality Report</A> and save it on your desktop.')
+            '<font size="12"  color="#FF0000"><B><U>WARNING</U></B></font><br' +
+            '><font size="12"  color="#000000">You have until <font size="12"' +
+            '  color="#FF0000"><U>12:00</font></U> <font size="12"  color="#0' +
+            '00000">on the <font size="12"  color="#FF0000"><U>24-02-2016</U>' +
+            '</font><font size="12"  color="#000000"> to update your ROOMER P' +
+            'MS to the newest release.<br>----')
         ParentColor = False
         Transparent = True
         OnAnchorClick = mmoMessageAnchorClick
