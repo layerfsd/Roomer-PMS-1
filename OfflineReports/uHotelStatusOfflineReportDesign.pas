@@ -11,7 +11,6 @@ type
   // Offlinereports design for the HotelStatus report
   THotelStatusOfflineReportDesign = class(TBaseOfflineReportDesign)
     frxHotelStatusReport: TfrxReport;
-    procedure frxHotelStatusReportBeforePrint(Sender: TfrxReportComponent);
   public
     procedure PrintToPDF(const aFileName: string); override;
   end;
@@ -29,12 +28,6 @@ uses
 
 
 { THotelStatusOfflineReportDesign }
-
-procedure THotelStatusOfflineReportDesign.frxHotelStatusReportBeforePrint(Sender: TfrxReportComponent);
-begin
-  inherited;
-  //
-end;
 
 procedure THotelStatusOfflineReportDesign.PrintToPDF(const aFileName: string);
 begin

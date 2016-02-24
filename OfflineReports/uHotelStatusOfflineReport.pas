@@ -67,8 +67,9 @@ const
          'JOIN roomreservations rr ON rr.Reservation=r.Reservation '+
          'JOIN currencies c ON c.Currency=rr.Currency '+
          'JOIN persons p ON p.RoomReservation=rr.RoomReservation AND MainName=1, '+
-         'control co '
-         + 'WHERE EXISTS((SELECT ADate FROM roomsdate WHERE RoomReservation=rr.RoomReservation AND ResFlag IN (''P'',''G'') AND ADate=''%s''))'
+         'control co ' +
+         'WHERE EXISTS((SELECT ADate FROM roomsdate WHERE RoomReservation=rr.RoomReservation AND ResFlag IN (''P'',''G'') AND ADate=''%s'')) ' +
+         'ORDER BY rr.Arrival '
          ;
 
 
