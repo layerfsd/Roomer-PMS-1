@@ -185,8 +185,6 @@ object frmOfflineReports: TfrmOfflineReports
       SortSettings.DefaultFormat = ssAutomatic
       Version = '7.9.1.0'
       WordWrap = False
-      ExplicitLeft = 7
-      ExplicitTop = 2
       ColWidths = (
         52
         64)

@@ -52,6 +52,7 @@ object frmMain: TfrmMain
     SunkenBorder = True
     UseOwnColor = True
     UseOwnSunkenBorder = True
+    ExplicitTop = 122
   end
   object panMain: TsPanel
     Left = 3
@@ -146,6 +147,8 @@ object frmMain: TfrmMain
           OnMouseUp = grOneDayRoomsMouseUp
           OnStartDrag = grOneDayRoomsStartDrag
           ActiveRowColor = clWhite
+          GridLineColor = 15527152
+          GridFixedLineColor = 13947601
           HoverRowCells = [hcNormal, hcSelected]
           OnGridHint = grOneDayRoomsGridHint
           OnClickCell = grOneDayRoomsClickCell
@@ -414,7 +417,7 @@ object frmMain: TfrmMain
             object lblNoRoom: TsLabel
               Left = 3
               Top = 59
-              Width = 76
+              Width = 50
               Height = 13
               Align = alBottom
               Alignment = taCenter
@@ -425,7 +428,6 @@ object frmMain: TfrmMain
               Font.Height = -11
               Font.Name = 'Tahoma'
               Font.Style = [fsBold]
-              ExplicitWidth = 50
             end
           end
         end
@@ -435,7 +437,7 @@ object frmMain: TfrmMain
         ImageIndex = 9
         SkinData.CustomColor = False
         SkinData.CustomFont = False
-        ExplicitWidth = 932
+        ExplicitWidth = 773
         object Panel3: TsPanel
           Left = 0
           Top = 0
@@ -445,7 +447,7 @@ object frmMain: TfrmMain
           BevelOuter = bvNone
           TabOrder = 0
           SkinData.SkinSection = 'TRANSPARENT'
-          ExplicitWidth = 932
+          ExplicitWidth = 773
           object rgrGroupreportStayType: TsRadioGroup
             Left = 2
             Top = 4
@@ -1308,8 +1310,6 @@ object frmMain: TfrmMain
           OnMoved = splitPeriodMoved
           Color = 6842472
           ParentColor = False
-          ExplicitTop = 159
-          ExplicitWidth = 773
         end
         object pnlPeriodNoRooms: TsPanel
           Left = 0
@@ -1640,6 +1640,10 @@ object frmMain: TfrmMain
         SkinData.CustomColor = False
         SkinData.CustomFont = False
         SkinData.SkinSection = 'TRANSPARENT'
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
       end
       object tabRateQuery: TsTabSheet
         Caption = 'tabRateQuery'
@@ -24340,7 +24344,7 @@ object frmMain: TfrmMain
     Left = 928
     Top = 456
     Bitmap = {
-      494C0101020008003C1010001000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
+      494C010102000500040010001000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
       0000000000000000000000000000000000000000000000000000000000000000
       00000000000000000000000000000000000000000000484C4371617545C6729D
