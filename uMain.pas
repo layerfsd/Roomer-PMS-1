@@ -1572,6 +1572,7 @@ uses
   uInvoiceCompare,
   GoogleOTP256,
   uInvoiceController,
+  uRoomerDefinitions,
   Math
   , uOfflineReportGrid;
 
@@ -3068,7 +3069,7 @@ begin
     // First time wait a few minutes for initialization to complete
     with timOfflineReports do
     begin
-      Interval := 1 * 60 * 1000; // 2 minutes
+      Interval := TIM_MINUTE; // 1 minute
       Enabled := True;
     end;
   end
@@ -8456,9 +8457,9 @@ begin
     d.GenerateOfflineReports;
 
 {$ifdef Debug}
-    TTimer(sender).Interval := 3 * 60 * 1000; // 3 min for debugging
+    TTimer(sender).Interval := 3 * TIM_MINUTE; // 3 min for debugging
 {$else}
-    TTimer(sender).Interval := 30 * 60 * 1000; // 30 min normal
+    TTimer(sender).Interval := TIM_HALF_HOUR; // 30 min normal
 {$endif}
 
   finally

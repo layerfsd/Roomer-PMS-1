@@ -520,7 +520,7 @@ begin
 
   lbx1 := TStringList.Create;
   try
-    if fileExists(FxmlFilename) then
+    if fileexists('FxmlFilename') then
     begin
       aDoc := TNativeXml.Create(nil);
       try

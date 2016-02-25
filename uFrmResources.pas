@@ -771,10 +771,10 @@ end;
 
 procedure parseXml(xmlStr : String; var path, filename, error : String; var success : boolean);
 var
-  xml: IXMLDOMDocument;
-  node, node1: IXMLDomNode;
+  xml: OLEVariant; // IXMLDOMDocument;
+  node, node1: OLEVariant; // IXMLDomNode;
   nodeName : String;
-  nodes_row, nodes_se: IXMLDomNodeList;
+  nodes_row, nodes_se: OLEVariant; // IXMLDomNodeList;
   i, l : Integer;
 begin
   path := ''; filename := ''; success := False;
@@ -782,13 +782,14 @@ begin
   xml := CreateOleObject('Microsoft.XMLDOM') as IXMLDOMDocument;
   xml.async := False;
   xml.loadXML(xmlStr);
-  nodes_row := xml.selectNodes('/ns10:AddStaticResourceResponse/ns10:staticResource');
+  xml.SetProperty('SelectionNamespaces', 'xmlns:a="http://www.promoir.nl/roomer/static/resources/2014/04"');
+  nodes_row := xml.selectNodes('/a:AddStaticResourceResponse/a:staticResource');
   for i := 0 to nodes_row.length - 1 do
   begin
-    node := nodes_row.item[i];
+    node := nodes_row.item(i);
     for l := 0 to node.childNodes.length - 1 do
     begin
-      node1 := node.childNodes[l];
+      node1 := node.childNodes(l);
       nodeName := node1.nodeName;
       // ns3:key
       // 1234567                                       // 12345678

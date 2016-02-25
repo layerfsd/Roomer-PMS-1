@@ -19,6 +19,13 @@ const
   testConnStr2     = '';
   testDiskSerial   = 'HHHH-JJJJ';
 
+  TIM_MILLI_SECOND = 1;
+  TIM_SECOND       = TIM_MILLI_SECOND * 1000;
+  TIM_MINUTE       = TIM_SECOND * 60;
+  TIM_15_MINUTES   = TIM_MINUTE * 15;
+  TIM_HALF_HOUR    = TIM_MINUTE * 30;
+  TIM_HOUR         = TIM_MINUTE * 60;
+  TIM_DAY          = TIM_HOUR * 24;
 
 const
   peExportNot     = 0;

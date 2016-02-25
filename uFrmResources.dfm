@@ -205,7 +205,6 @@ object FrmResources: TFrmResources
       Font.Name = 'Tahoma'
       Font.Style = []
       FlatScrollBars = True
-      Items.ItemData = {}
       MultiSelect = True
       RowSelect = True
       ParentFont = False
