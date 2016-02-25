@@ -10556,7 +10556,10 @@ begin
       s := s + ', ' + _db(irrAlias);
 
       s := s + ')' + #10;
-    end;
+
+      cmd_bySQL(s);
+
+    end; {for each line}
 
     SaveProformaHeader(FTotal, fTotalVAT, fTotalWOVat);
     SaveProformapayments;

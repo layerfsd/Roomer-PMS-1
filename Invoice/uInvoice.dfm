@@ -650,8 +650,8 @@ object frmInvoice: TfrmInvoice
       object chkShowPackage: TsCheckBox
         Left = 906
         Top = 135
-        Width = 119
-        Height = 17
+        Width = 111
+        Height = 20
         Caption = 'Package on invoice'
         Anchors = [akTop, akRight]
         Checked = True
@@ -1361,7 +1361,7 @@ object frmInvoice: TfrmInvoice
               SearchFooter.HintHighlight = 'Highlight occurrences'
               SearchFooter.MatchCaseCaption = 'Match case'
               SortSettings.DefaultFormat = ssAutomatic
-              Version = '7.8.9.0'
+              Version = '7.9.1.0'
               ColWidths = (
                 103
                 324
@@ -1440,7 +1440,7 @@ object frmInvoice: TfrmInvoice
                 Left = 9
                 Top = 20
                 Width = 203
-                Height = 17
+                Height = 19
                 Caption = 'Recalc price on guestcount  changes'
                 Checked = True
                 State = cbChecked
@@ -1453,7 +1453,7 @@ object frmInvoice: TfrmInvoice
                 Left = 9
                 Top = 46
                 Width = 134
-                Height = 17
+                Height = 19
                 Caption = 'Auto update Null Price'
                 Checked = True
                 State = cbChecked
