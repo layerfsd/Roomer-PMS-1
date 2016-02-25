@@ -22,6 +22,7 @@ uses
   , cmpRoomerDataSet
   , cmpRoomerConnection
   , uUtils
+  , Generics.Collections
   ;
 
 type
@@ -172,6 +173,9 @@ type
   ///
   /// -----------------------------------------------------------------------------
 
+
+  TVatInfoList = TObjectlist<TInvoiceVATInfo>;
+
 {$M+}
   TInvoiceInfo = class(TObject)
   private
@@ -224,7 +228,7 @@ type
     FCustomerInfo : TCustInfo;
     FLinesList : TList;
     FPaymentList : TList;
-    FVATList : TList;
+    FVATList : TVatInfoList;
     FTotalPayments : double;
     FInvoiceNumber : integer;
 
@@ -677,7 +681,7 @@ begin
   FCustomerInfo := TCustInfo.Create(InvoiceNumber,invoiceData);
   FLinesList := TList.Create;
   FPaymentList := TList.Create;
-  FVATList := TList.Create;
+  FVATList := TObjectList<TInvoiceVATInfo>.Create(True);
 
   FKreditType := ktUnknown;
   FKreditReference := krUnknown;
@@ -1047,16 +1051,16 @@ end;
 
 function TInvoiceInfo.GetVAT(idx : integer) : TInvoiceVATInfo;
 begin
-  result := TInvoiceVATInfo(FVATList[idx]);
+  result := FVATList[idx];
 end;
 
 function TInvoiceInfo.AddToVATPrice(idx : integer; Price_woVAT : double; Price_wVAT : double; VATAmount : double) : boolean;
 
 begin
   result := true;
-  TInvoiceVATInfo(FVATList[idx]).FPrice_woVAT := TInvoiceVATInfo(FVATList[idx]).FPrice_woVAT + Price_woVAT;
-  TInvoiceVATInfo(FVATList[idx]).FPrice_wVAT := TInvoiceVATInfo(FVATList[idx]).FPrice_wVAT + Price_wVAT;
-  TInvoiceVATInfo(FVATList[idx]).FVATAmount := TInvoiceVATInfo(FVATList[idx]).FVATAmount + VATAmount;
+  FVATList[idx].FPrice_woVAT := FVATList[idx].FPrice_woVAT + Price_woVAT;
+  FVATList[idx].FPrice_wVAT := FVATList[idx].FPrice_wVAT + Price_wVAT;
+  FVATList[idx].FVATAmount := FVATList[idx].FVATAmount + VATAmount;
   // result := TInvoiceVATInfo(FVATList[idx]);
 
 end;
@@ -1116,45 +1120,41 @@ begin
   inc(iLast);
 
   VATinfo := TInvoiceVATInfo.Create(iLast);
-  try
-    FoundAT := - 1;
+  FoundAT := - 1;
 
-    if iCount > 0 then
+  if iCount > 0 then
+  begin
+    for i := 0 to iCount - 1 do
     begin
-      for i := 0 to iCount - 1 do
-      begin
-        TMPinfo := GetVAT(i);
-        try
-          tmpCode := _trimlower(TMPinfo.VatCode);
-          if _trimlower(VatCode) = tmpCode then
-          begin
-            FoundAT := i;
-          end;
-        finally
+      TMPinfo := GetVAT(i);
+      try
+        tmpCode := _trimlower(TMPinfo.VatCode);
+        if _trimlower(VatCode) = tmpCode then
+        begin
+          FoundAT := i;
         end;
+      finally
       end;
     end;
+  end;
 
-    if (FoundAT = - 1) then
-    begin // Not Found
-      VATinfo.VatCode := VatCode;
-       //**NOT TESTED**//
-      theData.VATCode := VatCode;
-      GET_VatCodeHolder(theData);
-      //ATHFIN
-      VATinfo.VATDescription := theData.Description;
-      VATinfo.Price_woVAT := Price_woVAT;
-      VATinfo.Price_wVAT := Price_wVAT;
-      VATinfo.VATPercentage := VATPercentage;
-      VATinfo.VATAmount := VATAmount;
-      result := FVATList.Add(VATinfo);
-    end
-    else
-    begin // Found
-      AddToVATPrice(FoundAT, Price_woVAT, Price_wVAT, VATAmount)
-    end;
-  finally
-    VATInfo.Free;
+  if (FoundAT = - 1) then
+  begin // Not Found
+    VATinfo.VatCode := VatCode;
+     //**NOT TESTED**//
+    theData.VATCode := VatCode;
+    GET_VatCodeHolder(theData);
+    //ATHFIN
+    VATinfo.VATDescription := theData.Description;
+    VATinfo.Price_woVAT := Price_woVAT;
+    VATinfo.Price_wVAT := Price_wVAT;
+    VATinfo.VATPercentage := VATPercentage;
+    VATinfo.VATAmount := VATAmount;
+    result := FVATList.Add(VATinfo);
+  end
+  else
+  begin // Found
+    AddToVATPrice(FoundAT, Price_woVAT, Price_wVAT, VATAmount)
   end;
 end;
 
