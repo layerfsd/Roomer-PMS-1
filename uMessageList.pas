@@ -214,6 +214,7 @@ begin
     exit;
   rSet := createNewDataSet;
   try
+    MessageList.Clear;
     rset.GetMessages;
     rset.First;
     while not rset.Eof do
