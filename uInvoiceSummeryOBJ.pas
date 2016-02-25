@@ -175,6 +175,8 @@ type
 
 
   TVatInfoList = TObjectlist<TInvoiceVATInfo>;
+  TInvoiceLinesList = TObjectlist<TInvoiceLineInfo>;
+  TInvoicePaymentList = TObjectlist<TInvoicePayment>;
 
 {$M+}
   TInvoiceInfo = class(TObject)
@@ -226,8 +228,8 @@ type
     FKreditReference : TKreditReference; // krUnknown , krManual , krReference
 
     FCustomerInfo : TCustInfo;
-    FLinesList : TList;
-    FPaymentList : TList;
+    FLinesList : TInvoiceLinesList;
+    FPaymentList : TInvoicePaymentList;
     FVATList : TVatInfoList;
     FTotalPayments : double;
     FInvoiceNumber : integer;
@@ -679,9 +681,9 @@ begin
 
   FInvoiceNumber := InvoiceNumber;
   FCustomerInfo := TCustInfo.Create(InvoiceNumber,invoiceData);
-  FLinesList := TList.Create;
-  FPaymentList := TList.Create;
-  FVATList := TObjectList<TInvoiceVATInfo>.Create(True);
+  FLinesList := TInvoiceLinesList.Create(True);
+  FPaymentList := TInvoicePaymentList.Create(True);
+  FVATList := TVatInfoList.Create(True);
 
   FKreditType := ktUnknown;
   FKreditReference := krUnknown;
@@ -821,7 +823,7 @@ end;
 // --- InvoiceLine
 function TInvoiceInfo.GetLine(idx : integer) : TInvoiceLineInfo;
 begin
-  result := TInvoiceLineInfo(FLinesList[idx]);
+  result := FLinesList[idx];
 end;
 
 // --- InvoiceLine
@@ -934,7 +936,7 @@ end;
 // --- Payments
 function TInvoiceInfo.GetPayment(idx : integer) : TInvoicePayment;
 begin
-  result := TInvoicePayment(FPaymentList[idx]);
+  result := FPaymentList[idx];
 end;
 
 // --- Payments
@@ -1119,7 +1121,6 @@ begin
 
   inc(iLast);
 
-  VATinfo := TInvoiceVATInfo.Create(iLast);
   FoundAT := - 1;
 
   if iCount > 0 then
@@ -1140,6 +1141,7 @@ begin
 
   if (FoundAT = - 1) then
   begin // Not Found
+    VATinfo := TInvoiceVATInfo.Create(iLast);
     VATinfo.VatCode := VatCode;
      //**NOT TESTED**//
     theData.VATCode := VatCode;

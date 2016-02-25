@@ -1248,6 +1248,8 @@ var
   rentVat: Double;
   ItemKind: TItemKind;
 
+  lInvRoom: TInvoiceRoomEntity;
+
 begin
   Screen.Cursor := crHourglass;
   // Application.processmessages;
@@ -1297,15 +1299,18 @@ begin
               except
                 itemAmount := 0;
               end;
+
               ItemTypeInfo := d.Item_Get_ItemTypeInfo(itemId,
                 agrLines.Cells[col_Source, i]);
               // if editCol <> -1 then
               // begin
-              dVat := GetVATForItem(itemId, itemAmount,
-                _StrToFloat(agrLines.Cells[col_ItemCount, i]),
-                TInvoiceRoomEntity.create(itemId, 1,
-                _StrToFloat(agrLines.Cells[col_ItemCount, i]), taxAmount, 0),
-                tempInvoiceItemList, ItemTypeInfo, edtCustomer.Text);
+              lInvRoom := TInvoiceRoomEntity.create(itemId, 1, _StrToFloat(agrLines.Cells[col_ItemCount, i]), taxAmount, 0);
+              try
+                dVat := GetVATForItem(itemId, itemAmount, _StrToFloat(agrLines.Cells[col_ItemCount, i]),
+                                      lInvRoom, tempInvoiceItemList, ItemTypeInfo, edtCustomer.Text);
+              finally
+                lInvRoom.Free;
+              end;
               agrLines.Cells[col_Vat, i] :=
                 trim(_floattostr(dVat, vWidth, 3));
               // end;
@@ -1326,11 +1331,13 @@ begin
               end;
               ttTaxAmount := ttTaxAmount + taxAmount;
               nativeTaxAmount := (ttTaxAmount * zCurrencyRate);
-              dVat := zCurrencyRate * GetVATForItem(itemId, taxAmount,
-                _StrToFloat(agrLines.Cells[col_ItemCount, i]),
-                TInvoiceRoomEntity.create(itemId, 1,
-                _StrToFloat(agrLines.Cells[col_ItemCount, i]), taxAmount, 0),
-                tempInvoiceItemList, ItemTypeInfo, edtCustomer.Text);
+              lInvRoom := TInvoiceRoomEntity.create(itemId, 1, _StrToFloat(agrLines.Cells[col_ItemCount, i]), taxAmount, 0);
+              try
+                dVat := zCurrencyRate * GetVATForItem(itemId, taxAmount,_StrToFloat(agrLines.Cells[col_ItemCount, i]),
+                                                      lInvRoom, tempInvoiceItemList, ItemTypeInfo, edtCustomer.Text);
+              finally
+                lInvRoom.Free;
+              end;
               agrLines.Cells[col_Vat, i] :=
                 trim(_floattostr(dVat, vWidth, 3));
             end
@@ -1356,11 +1363,12 @@ begin
     if ABS(nativeRent) > 0.00 then
     begin
       ItemTypeInfo := d.Item_Get_ItemTypeInfo(trim(g.qRoomRentItem));
+      lInvRoom := TInvoiceRoomEntity.create(g.qRoomRentItem, 1, 1, nativeRent, 0);
       try
         dVat := GetVATForItem(g.qRoomRentItem, nativeRent, ttRentNumber, // 1,
-          TInvoiceRoomEntity.create(g.qRoomRentItem, 1, 1, nativeRent, 0),
-          tempInvoiceItemList, ItemTypeInfo, edtCustomer.Text);
+                              lInvRoom, tempInvoiceItemList, ItemTypeInfo, edtCustomer.Text);
       finally
+        lInvRoom.Free;
       end;
       rentVat := dVat;
     end;
@@ -3139,6 +3147,8 @@ var
   isPackage: boolean;
   bSystemLine: boolean;
 
+  lInvRoom : TInvoiceRoomEntity;
+
 begin
   for i := 1 to agrLines.RowCount - 1 do
   begin
@@ -3209,9 +3219,13 @@ begin
     ItemPrice := iMultiplier * zCurrencyRate * ItemPrice;
     TotalPrice := ItemCount * ItemPrice * iMultiplier;
 
-    fVat := GetVATForItem(lineItem, TotalPrice, ItemCount,
-      TInvoiceRoomEntity.create(lineItem, 1, ItemCount, TotalPrice, 0),
-      tempInvoiceItemList, ItemTypeInfo, edtCustomer.Text);
+    lInvRoom := TInvoiceRoomEntity.create(lineItem, 1, ItemCount, TotalPrice, 0);
+    try
+      fVat := GetVATForItem(lineItem, TotalPrice, ItemCount, lInvRoom ,
+                            tempInvoiceItemList, ItemTypeInfo, edtCustomer.Text);
+    finally
+      lInvRoom.Free;
+    end;
 
     irrAlias := -1;
     try
@@ -4467,6 +4481,7 @@ var
   //
   //
   dNumItems: Double;
+  lInvRoom: TInvoiceRoomEntity;
 begin
 
   tempInvoiceItemList.Clear;
@@ -4519,9 +4534,12 @@ begin
       begin
         // Formula
         // if Item = _trimlower(g.qRoomRentItem) then
-        itemVAT := GetVATForItem(Item, ItemPrice, 1,
-          TInvoiceRoomEntity.create(Item, taxGuests, taxNights, ItemPrice, 0),
-          nil, ItemTypeInfo, edtCustomer.Text)
+        lInvRoom := TInvoiceRoomEntity.create(Item, taxGuests, taxNights, ItemPrice, 0);
+        try
+          itemVAT := GetVATForItem(Item, ItemPrice, 1, lInvRoom, nil, ItemTypeInfo, edtCustomer.Text);
+        finally
+          lInvRoom.Free;
+        end;
         // else
         // itemVAT := _calcVAT(itemPrice, ItemTypeInfo.VATPercentage);
       end;
@@ -4585,6 +4603,7 @@ var
   iAddAt: integer;
 
   dNumItems: Double;
+  lInvRoom: TInvoiceRoomEntity;
 
 begin
 
@@ -4654,9 +4673,12 @@ begin
         begin
           // Formula
           // if Item = _trimlower(g.qRoomRentItem) then
-          itemVAT := GetVATForItem(Item, ItemPrice, 1,
-            TInvoiceRoomEntity.create(Item, taxGuests, taxNights, ItemPrice, 0),
-            tempInvoiceItemList, ItemTypeInfo, edtCustomer.Text);
+          lInvRoom := TInvoiceRoomEntity.create(Item, taxGuests, taxNights, ItemPrice, 0);
+          try
+            itemVAT := GetVATForItem(Item, ItemPrice, 1, lInvRoom, tempInvoiceItemList, ItemTypeInfo, edtCustomer.Text);
+          finally
+            lInvRoom.Free;
+          end;
           if NOT(Item_GetKind(Item) IN [ikRoomRent, ikRoomRentDiscount]) then
             agrLines.Cells[col_Vat, i] := trim(_floattostr(itemVAT, vWidth, 3));
           // else
@@ -5702,6 +5724,7 @@ var
 
   found: boolean;
 
+  lInvRoom: TInvoiceRoomEntity;
 begin
 
   iMultiplier := 1;
@@ -5792,11 +5815,14 @@ begin
     end;
 
     // --
-    fVat := GetVATForItem(agrLines.Cells[col_Item, i], fItemTotal,
-      _StrToFloat(agrLines.Cells[col_ItemCount, i]),
-      TInvoiceRoomEntity.create(agrLines.Cells[col_Item, i], 1,
-      _StrToFloat(agrLines.Cells[col_ItemCount, i]), fItemTotal, 0),
-      tempInvoiceItemList, ItemTypeInfo, edtCustomer.Text);
+    lInvRoom := TInvoiceRoomEntity.create(agrLines.Cells[col_Item, i], 1, _StrToFloat(agrLines.Cells[col_ItemCount, i]), fItemTotal, 0);
+    try
+      fVat := GetVATForItem(agrLines.Cells[col_Item, i], fItemTotal,
+                            _StrToFloat(agrLines.Cells[col_ItemCount, i]), lInvRoom,
+                            tempInvoiceItemList, ItemTypeInfo, edtCustomer.Text);
+    finally
+      lInvRoom.Free;
+    end;
 
     if NOT(Item_GetKind(agrLines.Cells[col_Item, i]) IN [ikRoomRent,
       ikRoomRentDiscount]) then
@@ -5987,6 +6013,7 @@ var
   AutoGen: string;
 
   ItemPrice: Double;
+  lInvRoom: TInvoiceRoomEntity;
 
 begin
 
@@ -6118,11 +6145,15 @@ begin
           end;
 
           // --
-          fVat := GetVATForItem(agrLines.Cells[col_Item, i], fItemTotal,
-            _StrToFloat(agrLines.Cells[col_ItemCount, i]),
-            TInvoiceRoomEntity.create(agrLines.Cells[col_Item, i], 1,
-            _StrToFloat(agrLines.Cells[col_ItemCount, i]), fItemTotal, 0),
-            tempInvoiceItemList, ItemTypeInfo, edtCustomer.Text);
+          lInvRoom := TInvoiceRoomEntity.create(agrLines.Cells[col_Item, i], 1,
+                                                _StrToFloat(agrLines.Cells[col_ItemCount, i]), fItemTotal, 0);
+          try
+            fVat := GetVATForItem(agrLines.Cells[col_Item, i], fItemTotal,
+                                  _StrToFloat(agrLines.Cells[col_ItemCount, i]), lInvRoom,
+                                  tempInvoiceItemList, ItemTypeInfo, edtCustomer.Text);
+          finally
+            lInvRoom.Free;
+          end;
 
           if NOT(Item_GetKind(agrLines.Cells[col_Item, i]) IN [ikRoomRent,
             ikRoomRentDiscount]) then
@@ -6948,6 +6979,8 @@ var
   paymentCode: string;
   paymentStr: string;
 
+  lInvRoom: TInvoiceRoomEntity;
+
 Label TryAgain;
 begin
   // ILTMP
@@ -7130,10 +7163,15 @@ begin
             (LowerCase(trim(g.qDiscountItem))
             = LowerCase(agrLines.Cells[col_Item, i])) then
             dNumItems := 1.00;
-          dLineVAT := GetVATForItem(agrLines.Cells[col_Item, i], dLineTotal,
-            dNumItems, TInvoiceRoomEntity.create(agrLines.Cells[col_Item, i], 1,
-            _StrToFloat(agrLines.Cells[col_ItemCount, i]), dLineTotal, 0), nil,
-            ItemTypeInfo, edtCustomer.Text);
+
+          lInvRoom := TInvoiceRoomEntity.create(agrLines.Cells[col_Item, i], 1,
+                                                _StrToFloat(agrLines.Cells[col_ItemCount, i]), dLineTotal, 0);
+          try
+            dLineVAT := GetVATForItem(agrLines.Cells[col_Item, i], dLineTotal, dNumItems, lInvRoom , nil, ItemTypeInfo, edtCustomer.Text);
+          finally
+            lInvRoom.Free;
+          end;
+
           if NOT(Item_GetKind(agrLines.Cells[col_Item, i]) IN [ikRoomRent,
             ikRoomRentDiscount]) then
             agrLines.Cells[col_Vat, i] :=
@@ -9578,6 +9616,8 @@ var
 
   isPackage: boolean;
 
+  lInvRoom: TInvoiceRoomEntity;
+
 begin
   isPackage := false;
 
@@ -9631,11 +9671,15 @@ begin
   ItemTypeInfo := d.Item_Get_ItemTypeInfo(itemId);
   VATType := ItemTypeInfo.VATCode;
 
+  lInvRoom := TInvoiceRoomEntity.create(agrLines.Cells[col_Item, CurrentRow], 1,
+                                        _StrToFloat(agrLines.Cells[col_ItemCount, CurrentRow]), Total, 0);
+  try
     Vat := GetVATForItem(agrLines.Cells[col_Item, CurrentRow], Total,
-      _StrToFloat(agrLines.Cells[col_ItemCount, CurrentRow]),
-      TInvoiceRoomEntity.create(agrLines.Cells[col_Item, CurrentRow], 1,
-      _StrToFloat(agrLines.Cells[col_ItemCount, CurrentRow]), Total, 0),
-      tempInvoiceItemList, ItemTypeInfo, edtCustomer.Text);
+                        _StrToFloat(agrLines.Cells[col_ItemCount, CurrentRow]), lInvRoom,
+                        tempInvoiceItemList, ItemTypeInfo, edtCustomer.Text);
+  finally
+    lInvRoom.Free;
+  end;
   // Formula
   // Vat := Total / (1 + (ItemTypeInfo.VATPercentage / 100));
   // Vat := Total - Vat;
@@ -9745,6 +9789,8 @@ var
 
   err: string;
 
+  lInvRoom: TInvoiceRoomEntity;
+
 begin
   err := '';
   UpdateOk := false;
@@ -9799,11 +9845,15 @@ begin
   ItemTypeInfo := d.Item_Get_ItemTypeInfo(itemId, agrLines.Cells[col_Source,
     CurrentRow]);
 
-  TotalVAT := GetVATForItem(agrLines.Cells[col_Item, CurrentRow], Total,
-    _StrToFloat(agrLines.Cells[col_ItemCount, CurrentRow]),
-    TInvoiceRoomEntity.create(agrLines.Cells[col_Item, CurrentRow], 1,
-    _StrToFloat(agrLines.Cells[col_ItemCount, CurrentRow]), CurrentRow, 0), nil,
-    ItemTypeInfo, edtCustomer.Text);
+  lInvRoom := TInvoiceRoomEntity.create(agrLines.Cells[col_Item, CurrentRow], 1,
+                                        _StrToFloat(agrLines.Cells[col_ItemCount, CurrentRow]), CurrentRow, 0);
+  try
+    TotalVAT := GetVATForItem(agrLines.Cells[col_Item, CurrentRow], Total,
+                              _StrToFloat(agrLines.Cells[col_ItemCount, CurrentRow]), lInvRoom , nil,
+                              ItemTypeInfo, edtCustomer.Text);
+  finally
+    lInvRoom.Free;
+  end;
   // Formula
   TotalVAT := Total - TotalWOVat;
   TotalWOVat := Total - TotalVAT;
@@ -9921,6 +9971,8 @@ var
 
   err: string;
 
+  lInvRoom: TInvoiceRoomEntity;
+
 begin
   err := '';
   UpdateOk := false;
@@ -9970,11 +10022,15 @@ begin
   ItemTypeInfo := d.Item_Get_ItemTypeInfo(itemId, agrLines.Cells[col_Source,
     CurrentRow]);
 
-  TotalVAT := GetVATForItem(agrLines.Cells[col_Item, CurrentRow], Total,
-    _StrToFloat(agrLines.Cells[col_ItemCount, CurrentRow]),
-    TInvoiceRoomEntity.create(agrLines.Cells[col_Item, CurrentRow], 1,
-    _StrToFloat(agrLines.Cells[col_ItemCount, CurrentRow]), CurrentRow, 0), nil,
-    ItemTypeInfo, edtCustomer.Text);
+  lInvRoom := TInvoiceRoomEntity.create(agrLines.Cells[col_Item, CurrentRow], 1,
+                                         _StrToFloat(agrLines.Cells[col_ItemCount, CurrentRow]), CurrentRow, 0);
+  try
+    TotalVAT := GetVATForItem(agrLines.Cells[col_Item, CurrentRow], Total,
+                              _StrToFloat(agrLines.Cells[col_ItemCount, CurrentRow]), lInvRoom, nil,
+                              ItemTypeInfo, edtCustomer.Text);
+  finally
+    lInvRoom.Free;
+  end;
   // Formula
   TotalVAT := Total - TotalWOVat;
   TotalWOVat := Total - TotalVAT;
@@ -10085,6 +10141,8 @@ var
 
   err: string;
 
+  lInvRoom: TInvoiceRoomEntity;
+
 begin
   err := '';
   UpdateOk := false;
@@ -10139,11 +10197,15 @@ begin
   ItemTypeInfo := d.Item_Get_ItemTypeInfo(itemId, agrLines.Cells[col_Source,
     CurrentRow]);
 
-  TotalVAT := GetVATForItem(agrLines.Cells[col_Item, CurrentRow], Total,
-    _StrToFloat(agrLines.Cells[col_ItemCount, CurrentRow]),
-    TInvoiceRoomEntity.create(agrLines.Cells[col_Item, CurrentRow], 1,
-    _StrToFloat(agrLines.Cells[col_ItemCount, CurrentRow]), CurrentRow, 0), nil,
-    ItemTypeInfo, edtCustomer.Text);
+  lInvRoom := TInvoiceRoomEntity.create(agrLines.Cells[col_Item, CurrentRow], 1,
+                                        _StrToFloat(agrLines.Cells[col_ItemCount, CurrentRow]), CurrentRow, 0);
+  try
+    TotalVAT := GetVATForItem(agrLines.Cells[col_Item, CurrentRow], Total,
+                              _StrToFloat(agrLines.Cells[col_ItemCount, CurrentRow]), lInvRoom, nil,
+                              ItemTypeInfo, edtCustomer.Text);
+  finally
+    lInvRoom.Free;
+  end;
   // Formula
   TotalVAT := Total - TotalWOVat;
   TotalWOVat := Total - TotalVAT;
@@ -10320,6 +10382,8 @@ var
 
   isOK: boolean;
 
+  lInvRoom: TInvoiceRoomEntity;
+
 begin
   isOK := True;
   try
@@ -10420,10 +10484,14 @@ begin
         = LowerCase(agrLines.Cells[col_Item, i])) then
         dNumItems := 1.00;
 
-      fVat := GetVATForItem(agrLines.Cells[col_Item, i], fItemTotal,
-        dNumItems, TInvoiceRoomEntity.create(agrLines.Cells[col_Item, i], 1,
-        _StrToFloat(agrLines.Cells[col_ItemCount, i]), fItemTotal, 0),
-        tempInvoiceItemList, ItemTypeInfo, edtCustomer.Text);
+      lInvRoom := TInvoiceRoomEntity.create(agrLines.Cells[col_Item, i], 1,
+                                            _StrToFloat(agrLines.Cells[col_ItemCount, i]), fItemTotal, 0);
+      try
+        fVat := GetVATForItem(agrLines.Cells[col_Item, i], fItemTotal,
+                              dNumItems, lInvRoom, tempInvoiceItemList, ItemTypeInfo, edtCustomer.Text);
+      finally
+        lInvRoom.Free;
+      end;
       if NOT(Item_GetKind(agrLines.Cells[col_Item, i]) IN [ikRoomRent,
         ikRoomRentDiscount]) then
         agrLines.Cells[col_Vat, i] := _floattostr(fVat, vWidth, 3);
