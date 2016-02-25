@@ -1362,6 +1362,7 @@ object frmInvoice: TfrmInvoice
               SearchFooter.MatchCaseCaption = 'Match case'
               SortSettings.DefaultFormat = ssAutomatic
               Version = '7.9.1.0'
+              ExplicitTop = 4
               ColWidths = (
                 103
                 324

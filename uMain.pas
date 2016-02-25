@@ -3282,6 +3282,7 @@ begin
       UpdateHotelsList;
     end;
 
+    InitializeTaxes;
     didPostProcess := true;
     PostLoginProcess(AutoLogin = '');
 

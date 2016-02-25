@@ -1425,6 +1425,8 @@ var
   confirmAmount: Double;
   unitPrice: Double;
 
+  idx: integer;
+
 begin
   if zFromKredit then Exit;
 
@@ -1446,13 +1448,14 @@ begin
       unitPrice := totalTax / TaxUnits;
     end;
 
-    AddLine(Item, aText, TaxUnits, unitPrice, totalTax, 0, True, '', '',
+    idx := AddLine(Item, aText, TaxUnits, unitPrice, totalTax, 0, True, '', '',
       false, 0, confirmDate, confirmAmount, -1, ''); // 77ATH
 
     // --
     // agrLines.Objects[0, agrLines.RowCount - 1] := pointer(100);
     agrLines.InsertRows(iAddAt, 1);
     // agrLines.RowCount := agrLines.RowCount + 1;
+    DisplayLine(iAddAt, idx);
   finally
     FreeAndNil(rSet);
   end;
@@ -1932,7 +1935,7 @@ begin
       fWork := (DiscountAmount) * -1;
     end;
 
-    AddLine(DiscountItem, DiscountText, dayCount, fWork,
+    idx := AddLine(DiscountItem, DiscountText, dayCount, fWork,
       fWork * dayCount, 0, True, '', '', false, NumGuests, confirmDate,
       confirmAmount, rrAlias, '');
 
@@ -1945,6 +1948,7 @@ begin
 
     inc(iCol);
     agrLines.RowCount := iCol;
+    DisplayLine(iCol - 1, idx);
   end;
 
   UpdateItemInvoiceLinesForTaxCalculations;
