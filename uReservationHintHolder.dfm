@@ -69,7 +69,7 @@ object FrmReservationHintHolder: TFrmReservationHintHolder
     object __lbStatus: TsLabel
       Left = 170
       Top = 8
-      Width = 97
+      Width = 67
       Height = 15
       Caption = 'Due to arrive'
       ParentFont = False
@@ -232,7 +232,7 @@ object FrmReservationHintHolder: TFrmReservationHintHolder
     object __lbRatePlan: TsLabel
       Left = 148
       Top = 158
-      Width = 79
+      Width = 49
       Height = 15
       Caption = 'Early bird'
       ParentFont = False
@@ -400,13 +400,13 @@ object FrmReservationHintHolder: TFrmReservationHintHolder
       HTMLText.Strings = (
         
           '<P align="right">'#8364' 123.000,00<br><U>(10%) '#8364' -12.300,00</U><br><B' +
-          '>'#8364' 11.000,00</B></P>')
+          '>'#8364' 11.000,00</B><br></P>')
       ParentFont = False
       PopupMenu = PopupMenu1
       Transparent = True
       OnMouseDown = pnlHintMouseDown
       OnMouseUp = pnlHintMouseUp
-      Version = '1.8.4.0'
+      Version = '1.9.2.3'
     end
     object __hlblDaily: THTMLabel
       Left = 282
@@ -425,7 +425,7 @@ object FrmReservationHintHolder: TFrmReservationHintHolder
       ParentFont = False
       PopupMenu = PopupMenu1
       Transparent = True
-      Version = '1.8.4.0'
+      Version = '1.9.2.3'
     end
     object Shape1: TShape
       Left = 151
@@ -469,7 +469,7 @@ object FrmReservationHintHolder: TFrmReservationHintHolder
       Transparent = True
       OnMouseDown = pnlHintMouseDown
       OnMouseUp = pnlHintMouseUp
-      Version = '1.8.4.0'
+      Version = '1.9.2.3'
     end
     object Shape2: TShape
       Left = 18
@@ -547,13 +547,13 @@ object FrmReservationHintHolder: TFrmReservationHintHolder
       HTMLText.Strings = (
         
           '<P align="right">Sales Items :<br>Stay taxes :<br>Room rent :<br' +
-          '><U>Payments :</U><br><B>Total :</B></P>')
+          '><U>Payments :</U><br><B>Total :</B><br></P>')
       ParentFont = False
       PopupMenu = PopupMenu1
       Transparent = True
       OnMouseDown = pnlHintMouseDown
       OnMouseUp = pnlHintMouseUp
-      Version = '1.8.4.0'
+      Version = '1.9.2.3'
     end
     object sLabel5: TsLabel
       Left = 297
@@ -587,7 +587,7 @@ object FrmReservationHintHolder: TFrmReservationHintHolder
       ParentFont = False
       PopupMenu = PopupMenu1
       Transparent = True
-      Version = '1.8.4.0'
+      Version = '1.9.2.3'
     end
     object clbRoomRentInvoice: TsLabel
       Left = 22
@@ -623,7 +623,7 @@ object FrmReservationHintHolder: TFrmReservationHintHolder
       Transparent = True
       OnMouseDown = pnlHintMouseDown
       OnMouseUp = pnlHintMouseUp
-      Version = '1.8.4.0'
+      Version = '1.9.2.3'
     end
     object sLabel3: TsLabel
       Left = 16
@@ -656,7 +656,7 @@ object FrmReservationHintHolder: TFrmReservationHintHolder
       BorderStyle = bsNone
       Color = clWhite
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = 2302755
+      Font.Color = clBlack
       Font.Height = -11
       Font.Name = 'Segoe UI'
       Font.Style = []
@@ -671,15 +671,6 @@ object FrmReservationHintHolder: TFrmReservationHintHolder
       OnMouseDown = pnlHintMouseDown
       OnMouseUp = pnlHintMouseUp
       Text = 'Will arrive later. Needs a extra bed for the child.'
-      BoundLabel.Indent = 0
-      BoundLabel.Font.Charset = DEFAULT_CHARSET
-      BoundLabel.Font.Color = clWindowText
-      BoundLabel.Font.Height = -11
-      BoundLabel.Font.Name = 'Tahoma'
-      BoundLabel.Font.Style = []
-      BoundLabel.Layout = sclLeft
-      BoundLabel.MaxWidth = 0
-      BoundLabel.UseSkinColor = True
       SkinData.SkinSection = 'EDIT'
     end
     object btnCheckInOut: TsButton
@@ -713,7 +704,7 @@ object FrmReservationHintHolder: TFrmReservationHintHolder
       BorderStyle = bsNone
       Color = clWhite
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = 2302755
+      Font.Color = clBlack
       Font.Height = -11
       Font.Name = 'Segoe UI'
       Font.Style = []
@@ -728,15 +719,6 @@ object FrmReservationHintHolder: TFrmReservationHintHolder
       OnMouseDown = pnlHintMouseDown
       OnMouseUp = pnlHintMouseUp
       Text = 'Will arrive later. Needs a extra bed for the child.'
-      BoundLabel.Indent = 0
-      BoundLabel.Font.Charset = DEFAULT_CHARSET
-      BoundLabel.Font.Color = clWindowText
-      BoundLabel.Font.Height = -11
-      BoundLabel.Font.Name = 'Tahoma'
-      BoundLabel.Font.Style = []
-      BoundLabel.Layout = sclLeft
-      BoundLabel.MaxWidth = 0
-      BoundLabel.UseSkinColor = True
       SkinData.SkinSection = 'EDIT'
     end
   end

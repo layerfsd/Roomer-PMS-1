@@ -2130,7 +2130,7 @@ begin
   else
     s := 'Roomer Booking Engine - ';
 
-  s := s + { 0070 } ' - ' + GetTranslatedText('sh0070') + ':' + recVer.ProductVersion;
+  s := s + { 0070 } ' - ' + GetTranslatedText('sh0070') + ':' + recVer.FileVersion; // ProductVersion;
   Caption := s;
 end;
 
@@ -3214,16 +3214,13 @@ begin
 
   until okLogin OR lLoginFormCancelled OR (tries >= 15);
 
-  if not okLogin or lLoginFormCancelled then
+  if lLoginFormCancelled then
+    ExitProcess(0);
+
+  if not okLogin then
   begin
     LoginCancelled := true;
     result := false;
-    exit;
-  end;
-
-  if ForcefulRestart then
-  begin
-    result := true;
     exit;
   end;
 
@@ -3232,15 +3229,22 @@ begin
 
     with TfrmOfflineReports.Create(nil) do
     try
-      Result := false;
+      Result := true;
       RoomerOffline := True;
       ShowModal;
     finally
       Free;
+      ExitProcess(0); // end application
     end;
 
-    Exit;
   end;
+
+  if ForcefulRestart then
+  begin
+    result := true;
+    exit;
+  end;
+
 
   if CheckForUpdatedRelease then
   begin
@@ -13696,7 +13700,7 @@ begin
   performClearHotel(NOT AlreadyInactive);
   result := false;
   try
-    result := StartHotel(false, AlreadyInactive, AutoLogin);
+    result := StartHotel(false, AlreadyInactive, AutoLogin) or LoginCancelled;
   finally
     panelHide.Hide;
   end;

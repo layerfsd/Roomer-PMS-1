@@ -80,8 +80,8 @@ var
   l1, l2: TOfflineReportFile;
 begin
   l1 := TOfflineReportFile(List.Objects[Index1]);
-  l2 := TOfflineReportFile(List.Objects[Index1]);
-  Result := trunc(l1.GeneratedAt - l2.GeneratedAt);
+  l2 := TOfflineReportFile(List.Objects[Index2]);
+  Result := - CompareStr(DateTimeToComparableString(l1.GeneratedAt), DateTimeToComparableString(l2.GeneratedAt));
 end;
 
 procedure TfrmOfflineReports.UpdateGrid;

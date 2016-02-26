@@ -103,10 +103,6 @@ object frmMain: TfrmMain
       object tabOneDayView: TsTabSheet
         Caption = 'tabOneDayView'
         ImageIndex = 8
-        ExplicitLeft = 0
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
         object grOneDayRooms: TAdvStringGrid
           Left = 0
           Top = 0
@@ -415,7 +411,7 @@ object frmMain: TfrmMain
             object lblNoRoom: TsLabel
               Left = 3
               Top = 59
-              Width = 50
+              Width = 76
               Height = 13
               Align = alBottom
               Alignment = taCenter
@@ -426,6 +422,7 @@ object frmMain: TfrmMain
               Font.Height = -11
               Font.Name = 'Tahoma'
               Font.Style = [fsBold]
+              ExplicitWidth = 50
             end
           end
         end
@@ -433,7 +430,6 @@ object frmMain: TfrmMain
       object tabGuestList: TsTabSheet
         Caption = 'tabGuestList'
         ImageIndex = 9
-        ExplicitWidth = 773
         object Panel3: TsPanel
           Left = 0
           Top = 0
@@ -443,7 +439,6 @@ object frmMain: TfrmMain
           BevelOuter = bvNone
           TabOrder = 0
           SkinData.SkinSection = 'TRANSPARENT'
-          ExplicitWidth = 773
           object rgrGroupreportStayType: TsRadioGroup
             Left = 2
             Top = 4
@@ -515,7 +510,7 @@ object frmMain: TfrmMain
               Left = 3
               Top = 15
               Width = 151
-              Height = 19
+              Height = 17
               Caption = 'Reservation on new page'
               Font.Charset = DEFAULT_CHARSET
               Font.Color = clWindowText
@@ -532,7 +527,7 @@ object frmMain: TfrmMain
               Left = 3
               Top = 36
               Width = 81
-              Height = 19
+              Height = 17
               Caption = 'Print memo'
               Font.Charset = DEFAULT_CHARSET
               Font.Color = clWindowText
@@ -1622,25 +1617,13 @@ object frmMain: TfrmMain
       end
       object tabFreeRooms: TsTabSheet
         Caption = 'tabFreeRooms'
-        ExplicitLeft = 0
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
       end
       object tabDashboard: TsTabSheet
         Caption = 'tabDashboard'
         SkinData.SkinSection = 'TRANSPARENT'
-        ExplicitLeft = 0
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
       end
       object tabRateQuery: TsTabSheet
         Caption = 'tabRateQuery'
-        ExplicitLeft = 0
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
       end
     end
     object panMainTop: TsPanel
@@ -3121,6 +3104,7 @@ object frmMain: TfrmMain
       Index = 2
     end
     object dxRibbon1Tab1: TdxRibbonTab
+      Active = True
       Caption = 'Reports'
       Groups = <
         item
@@ -3171,7 +3155,6 @@ object frmMain: TfrmMain
       Index = 4
     end
     object System: TdxRibbonTab
-      Active = True
       Caption = 'System'
       Groups = <
         item

@@ -90,8 +90,8 @@ uses uMain
      , VersionInfo
      ;
 
-const MAX_NUMBER_OF_IGNORES = 6;
-      WARNING_IGNORES = 3;
+const MAX_NUMBER_OF_IGNORES = 10;
+      WARNING_IGNORES = 5;
 
 procedure ShowRoomerAboutBox;
 begin

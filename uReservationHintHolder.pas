@@ -227,7 +227,7 @@ begin
   begin
       if rri.Percentage then
       begin
-        __hlblTotal.HTMLText.Text := format('<P align="right">%s %s<br><U>(%s) %s -%s</U><br><B>%s %s</B></P>',
+        __hlblTotal.HTMLText.Text := format('<P align="right">%s %s<br><U>(%s) %s -%s</U><br><B>%s %s</B><br></P>',
               [
                 CurrencyLetter,
                 trim(_floatToStr(TotalPrice, 12, 2)),
@@ -239,7 +239,7 @@ begin
                 CurrencyLetter,
                 trim(_floatToStr(TotalPriceNetto, 12, 2))
               ]);
-        __hlblDaily.HTMLText.Text := format('<P align="right">%s %s<br><U>(%s) %s -%s</U><br><B>%s %s</B></P>',
+        __hlblDaily.HTMLText.Text := format('<P align="right">%s %s<br><U>(%s) %s -%s</U><br><B>%s %s</B><br></P>',
               [
                 CurrencyLetter,
                 trim(_floatToStr(PriceNight, 12, 2)),
@@ -253,7 +253,7 @@ begin
               ]);
       end else
       begin
-        __hlblTotal.HTMLText.Text := format('<P align="right">%s %s<br><U>%s -%s</U><br><B>%s %s</B></P>',
+        __hlblTotal.HTMLText.Text := format('<P align="right">%s %s<br><U>%s -%s</U><br><B>%s %s</B><br></P>',
               [
                 CurrencyLetter,
                 trim(_floatToStr(TotalPrice, 12, 2)),
@@ -264,7 +264,7 @@ begin
                 CurrencyLetter,
                 trim(_floatToStr(TotalPriceNetto, 12, 2))
               ]);
-        __hlblDaily.HTMLText.Text := format('<P align="right">%s %s<br><U>%s -%s</U><br><B>%s %s</B></P>',
+        __hlblDaily.HTMLText.Text := format('<P align="right">%s %s<br><U>%s -%s</U><br><B>%s %s</B><br></P>',
               [
                 CurrencyLetter,
                 trim(_floatToStr(PriceNight, 12, 2)),
@@ -278,12 +278,12 @@ begin
       end;
   end else
   begin
-        __hlblTotal.HTMLText.Text := format('<P align="right"><B>%s %s</B></P>',
+        __hlblTotal.HTMLText.Text := format('<P align="right"><B>%s %s</B><br></P>',
               [
                 CurrencyLetter,
                 trim(_floatToStr(TotalPriceNetto, 12, 2))
               ]);
-        __hlblDaily.HTMLText.Text := format('<P align="right"><B>%s %s</B></P>',
+        __hlblDaily.HTMLText.Text := format('<P align="right"><B>%s %s</B><br></P>',
               [
                 CurrencyLetter,
                 trim(_floatToStr(PriceNightNetto, 12, 2))
@@ -308,7 +308,7 @@ begin
     sColor1 := '';
     sColor2 := '';
   end;
-  __hlblTotalInvoice.HTMLText.Text := format('<P align="right">%s %s<br>%s %s<br>%s %s<br><U>%s %s</U><br><B>%s%s %s%s</B></P>',
+  __hlblTotalInvoice.HTMLText.Text := format('<P align="right">%s %s<br>%s %s<br>%s %s<br><U>%s %s</U><br><B>%s%s %s%s</B><br></P>',
               [
                 g.qNativeCurrency,
                 trim(_floatToStr(rri.OngoingSale, 12, 2)),
