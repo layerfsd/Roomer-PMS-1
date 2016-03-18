@@ -74,6 +74,7 @@ uses
   , uRunWithElevatedOption
   , Forms
   , Dialogs
+  , uResourceManagement
   ;
 
 procedure ReadFilesFromStaticResources;
@@ -376,7 +377,7 @@ begin
     FrmResources.access := ACCESS_RESTRICTED;
 
     FrmResources.RemoveFileForUpload(filename);
-    FrmResources.UploadFile(ANY_FILE, ACCESS_RESTRICTED, filename);
+    UploadFileToResources(ANY_FILE, ACCESS_RESTRICTED, ExtractFilename(filename), filename);
 
     ReadFilesFromStaticResources;
     Resource := findFile(ExtractFilename(filename));

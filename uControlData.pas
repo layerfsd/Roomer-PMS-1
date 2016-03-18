@@ -623,7 +623,7 @@ type
     cbxQuery: TsComboBox;
     btnResources: TsButton;
     sLabel18: TsLabel;
-    editTZ: TsEdit;
+    editTZ: TsComboBox;
     lblNumShifts: TsLabel;
     edtNumShifts: TsEdit;
     edCurrencySymbol: TsEdit;
@@ -667,6 +667,11 @@ type
     edtWarnWhenOverbooking: TsCheckBox;
     edtWarnMoveRoomToNewRoomtype: TsCheckBox;
     sLabel33: TsLabel;
+    sGroupBox18: TsGroupBox;
+    sLabel34: TsLabel;
+    __CurrencySyncSource: TsComboBox;
+    lblRequireExactClosingPayment: TsLabel;
+    cbxRequireExactClosingPayment: TsCheckBox;
     procedure FormCreate(Sender : TObject);
     procedure FormClose(Sender : TObject; var Action : TCloseAction);
     procedure FormShow(Sender : TObject);
@@ -777,6 +782,7 @@ uses
   , upayGroups
   , uCustomers2
   , uFrmResources
+  , uResourceManagement
 
   ;
 {$R *.DFM}
@@ -1365,10 +1371,16 @@ begin
 
 
   try
-    editTZ.Text := rSethotelconfigurations.FieldByName('UTCTimeZoneOffset').AsString;
+    editTZ.ItemIndex := editTZ.Items.IndexOf(rSethotelconfigurations.FieldByName('UTCTimeZoneOffset').AsString);
   except
-    editTZ.Text := '+00:00';
+    editTZ.ItemIndex := -1;
   end;
+  if editTZ.ItemIndex = -1 then
+  begin
+    iTmp := editTZ.Items.IndexOf('+00:00');
+    editTZ.ItemIndex := iif((itmp >= 0), iTmp, 12);
+  end;
+
 
   try
     edtNumShifts.Text := inttostr(rSethotelconfigurations.FieldByName('NumberOfShifts').AsInteger);
@@ -1472,10 +1484,19 @@ begin
   except
   end;
 
+  try
+    cbxRequireExactClosingPayment.Checked := rSethotelconfigurations.fieldbyname('RequireExactClosingPayment').AsBoolean;
+  except
+  end;
+
   edtRIIndexRoomRent.Value := rSethotelconfigurations.FieldByName('RoomInvoiceRoomRentIndex').AsInteger + 1;
   edtRIIndexPosItems.Value := rSethotelconfigurations.FieldByName('RoomInvoicePosItemIndex').AsInteger + 1;
   edtGIIndexRoomRent.Value := rSethotelconfigurations.FieldByName('GroupInvoiceRoomRentIndex').AsInteger + 1;
   edtGIIndexPosItems.Value := rSethotelconfigurations.FieldByName('GroupInvoicePosItemIndex').AsInteger + 1;
+
+  __CurrencySyncSource.ItemIndex := __CurrencySyncSource.Items.IndexOf(rSethotelconfigurations['CurrencyFeedSource']);
+  if __CurrencySyncSource.ItemIndex < 0 then
+    __CurrencySyncSource.ItemIndex := 0;
 
 
 
@@ -1942,6 +1963,11 @@ begin
   end;
 
   try
+    rSethotelconfigurations.fieldbyname('RequireExactClosingPayment').AsBoolean := cbxRequireExactClosingPayment.Checked;
+  except
+  end;
+
+  try
     rSethotelconfigurations.FieldByName('forceExternalCustomerIdCorrectness').AsBoolean := chkforceExternalCustomerIdCorrectness.Checked;
   except
   end;
@@ -2040,6 +2066,12 @@ begin
   rSethotelconfigurations.FieldByName('GroupInvoiceRoomRentIndex').AsInteger := g.qGroupInvoiceRoomRentIndex;
   rSethotelconfigurations.FieldByName('GroupInvoicePosItemIndex').AsInteger := g.qGroupInvoicePosItemIndex;
 
+  rSethotelconfigurations.DoCommand('DELETE FROM home100.hotelservices WHERE hotelId=SUBSTR(DATABASE(), 9, 10) AND service=''RSS_CURR'' AND active=1');
+  if __CurrencySyncSource.ItemIndex > 0 then
+    rSethotelconfigurations.DoCommand('INSERT INTO home100.hotelservices (active, hotelId, service, extraInfo, externalId, serviceType, priority) VALUES(1, SUBSTR(DATABASE(), 9, 10), ''RSS_CURR'', '''', 0, ''' +
+                                      __CurrencySyncSource.Items[__CurrencySyncSource.ItemIndex] + ''', 999)');
+
+
 
   iTmp := edexpensiveChannelsLevelFrom.value;
   rSethotelconfigurations.FieldByName('expensiveChannelsLevelFrom').asFloat := iTmp;
@@ -2105,11 +2137,17 @@ end;
 
 procedure TfrmControlData.btnInvoiceTemplateResourcesClick(Sender: TObject);
 var idx : Integer;
+    RoomerResourceManagement : TRoomerResourceManagement;
 begin
   frmMain.dxBarLargeButton4Click(nil);
   idx := cbxInvoiceExport.ItemIndex;
   cbxInvoiceExport.Items.Clear;
-  cbxInvoiceExport.Items.AddStrings(StaticResourceList(ANY_FILE));
+  RoomerResourceManagement := TRoomerResourceManagement.Create(ANY_FILE, ACCESS_RESTRICTED);
+  try
+    cbxInvoiceExport.Items.AddStrings(RoomerResourceManagement.StaticResourceListAsStrings);
+  finally
+    RoomerResourceManagement.Free;
+  end;
   cbxInvoiceExport.ItemIndex := idx;
 end;
 
@@ -2120,11 +2158,17 @@ end;
 
 procedure TfrmControlData.btnResourcesClick(Sender: TObject);
 var idx : Integer;
+    RoomerResourceManagement : TRoomerResourceManagement;
 begin
   frmMain.ShowBookingConfirmationTemplates;
   idx := cbxQuery.ItemIndex;
   cbxQuery.Items.Clear;
-  cbxQuery.Items.AddStrings(StaticResourceList(GUEST_EMAIL_TEMPLATE));
+  RoomerResourceManagement := TRoomerResourceManagement.Create(GUEST_EMAIL_TEMPLATE, ACCESS_RESTRICTED);
+  try
+    cbxQuery.Items.AddStrings(RoomerResourceManagement.StaticResourceListAsStrings);
+  finally
+    RoomerResourceManagement.Free;
+  end;
   cbxQuery.ItemIndex := idx;
 end;
 
@@ -2248,7 +2292,7 @@ begin
   ExecutionPlan.AddQuery(s);
 //  hData.rSet_bySQL(r_,s);
 
-  s := 'SELECT * FROM hotelconfigurations';
+  s := 'SELECT *,(SELECT serviceType FROM home100.hotelservices WHERE hotelId=SUBSTR(DATABASE(), 9, 10) AND service=''RSS_CURR'' AND active=1) AS CurrencyFeedSource FROM hotelconfigurations';
   ExecutionPlan.AddQuery(s);
 
 
@@ -2286,6 +2330,7 @@ var
   TN : TTreeNode;
   i : Integer;
   idx : Integer;
+  RoomerResourceManagement : TRoomerResourceManagement;
 begin
   for i := 0 to mainPage.PageCount - 1 do
   begin
@@ -2293,8 +2338,18 @@ begin
   end;
 
   cbxQuery.Items.Clear;
-  cbxQuery.Items.AddStrings(StaticResourceList(GUEST_EMAIL_TEMPLATE));
-  cbxInvoiceExport.Items.AddStrings(StaticResourceList(ANY_FILE));
+  RoomerResourceManagement := TRoomerResourceManagement.Create(GUEST_EMAIL_TEMPLATE, ACCESS_RESTRICTED);
+  try
+    cbxQuery.Items.AddStrings(RoomerResourceManagement.StaticResourceListAsStrings);
+  finally
+    RoomerResourceManagement.Free;
+  end;
+  RoomerResourceManagement := TRoomerResourceManagement.Create(ANY_FILE, ACCESS_RESTRICTED);
+  try
+    cbxInvoiceExport.Items.AddStrings(RoomerResourceManagement.StaticResourceListAsStrings);
+  finally
+    RoomerResourceManagement.Free;
+  end;
 
   fcCurrentFontName.Font.Name := gridFont.name;
   fcCurrentFontName.ItemIndex := fcCurrentFontName.Items.IndexOf(fcCurrentFontName.Font.Name);

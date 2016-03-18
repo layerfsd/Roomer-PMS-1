@@ -95,7 +95,7 @@ object frmMain: TfrmMain
       Top = 173
       Width = 778
       Height = 304
-      ActivePage = tabPeriod
+      ActivePage = tabOneDayView
       Align = alClient
       TabOrder = 3
       OnChange = pageMainGridsChange
@@ -141,8 +141,6 @@ object frmMain: TfrmMain
           OnMouseUp = grOneDayRoomsMouseUp
           OnStartDrag = grOneDayRoomsStartDrag
           ActiveRowColor = clWhite
-          GridLineColor = 15527152
-          GridFixedLineColor = 13947601
           HoverRowCells = [hcNormal, hcSelected]
           OnGridHint = grOneDayRoomsGridHint
           OnClickCell = grOneDayRoomsClickCell
@@ -276,6 +274,8 @@ object frmMain: TfrmMain
           SortSettings.HeaderMirrorColor = 16380385
           SortSettings.HeaderMirrorColorTo = 16182488
           Version = '7.9.1.1'
+          ExplicitLeft = 1
+          ExplicitTop = -2
           ColWidths = (
             47
             49
@@ -1698,6 +1698,8 @@ object frmMain: TfrmMain
           OnMouseEnter = tabsViewMouseEnter
           SkinData.SkinSection = 'PAGECONTROL'
           SkinData.OuterEffects.Visibility = ovAlways
+          ExplicitLeft = -2
+          ExplicitTop = -3
         end
       end
       object __PanGridsHeader: TsPanel
@@ -3104,7 +3106,6 @@ object frmMain: TfrmMain
       Index = 2
     end
     object dxRibbon1Tab1: TdxRibbonTab
-      Active = True
       Caption = 'Reports'
       Groups = <
         item
@@ -3155,6 +3156,7 @@ object frmMain: TfrmMain
       Index = 4
     end
     object System: TdxRibbonTab
+      Active = True
       Caption = 'System'
       Groups = <
         item
@@ -3598,7 +3600,7 @@ object frmMain: TfrmMain
       ParentCtl3D = False
       ParentFont = False
       TabOrder = 0
-      OnChange = __cbxHotelsChange
+      OnCloseUp = __cbxHotelsCloseUp
     end
   end
   object pnlDayStatus: TsPanel
@@ -4460,7 +4462,7 @@ object frmMain: TfrmMain
     object barinnNameOrder: TdxBar
       Caption = 'Name order in lists'
       CaptionButtons = <>
-      DockedLeft = 728
+      DockedLeft = 680
       DockedTop = 0
       FloatLeft = 1341
       FloatTop = 8
@@ -4513,7 +4515,7 @@ object frmMain: TfrmMain
     object barinnFindGuests: TdxBar
       Caption = 'Find guest/room'
       CaptionButtons = <>
-      DockedLeft = 926
+      DockedLeft = 878
       DockedTop = 0
       FloatLeft = 1341
       FloatTop = 8
@@ -4657,7 +4659,7 @@ object frmMain: TfrmMain
     object barinnRooms: TdxBar
       Caption = 'Rooms'
       CaptionButtons = <>
-      DockedLeft = 418
+      DockedLeft = 330
       DockedTop = 0
       FloatLeft = 1324
       FloatTop = 8
@@ -4689,7 +4691,7 @@ object frmMain: TfrmMain
     object barinnBar7: TdxBar
       Caption = 'Room price'
       CaptionButtons = <>
-      DockedLeft = 667
+      DockedLeft = 515
       DockedTop = 0
       FloatLeft = 1324
       FloatTop = 8
@@ -4721,7 +4723,7 @@ object frmMain: TfrmMain
     object barinnBar8: TdxBar
       Caption = 'Sale / payments'
       CaptionButtons = <>
-      DockedLeft = 831
+      DockedLeft = 679
       DockedTop = 0
       FloatLeft = 1324
       FloatTop = 8
@@ -5160,6 +5162,10 @@ object frmMain: TfrmMain
         item
           Visible = True
           ItemName = 'btnRoomTypeGroups'
+        end
+        item
+          Visible = True
+          ItemName = 'btnDynamicRateRules'
         end>
       OneOnRow = True
       Row = 0
@@ -6032,6 +6038,14 @@ object frmMain: TfrmMain
       Visible = ivAlways
       LargeImageIndex = 82
       OnClick = btnConfirmAllottedBookingClick
+    end
+    object btnDynamicRateRules: TdxBarLargeButton
+      Caption = 'Dynamic Rate Rules'
+      Category = 0
+      Hint = 'Dynamic Rate Rules'
+      Visible = ivAlways
+      LargeImageIndex = 29
+      OnClick = btnDynamicRateRulesClick
     end
     object mmnuFile: TdxBarSubItem
       Caption = '&File'
@@ -9225,7 +9239,8 @@ object frmMain: TfrmMain
           'Left'
           'Position'
           'Top'
-          'Width')
+          'Width'
+          'WindowState')
       end
       item
         Component = pnlPeriodNoRooms

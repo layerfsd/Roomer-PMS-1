@@ -699,6 +699,7 @@ type
     btnConfirmAllottedBooking: TdxBarLargeButton;
     HTMLHint1: THTMLHint;
     timOfflineReports: TTimer;
+    btnDynamicRateRules: TdxBarLargeButton;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
@@ -900,7 +901,6 @@ type
     procedure mnuItemPasteReservationFromClipboardClick(Sender: TObject);
     procedure mmnuOneDayGridPopup(Sender: TObject);
     procedure pmnuProvideAllotmentClick(Sender: TObject);
-    procedure __cbxHotelsChange(Sender: TObject);
     procedure mnuItmColorCodeRoomClick(Sender: TObject);
     procedure grdRoomStatussesDrawCell(Sender: TObject; ACol, ARow: integer; Rect: TRect; State: TGridDrawState);
     procedure btnChannelToggleRulesClick(Sender: TObject);
@@ -994,6 +994,8 @@ type
     procedure sSkinManager1SkinLoading(Sender: TObject);
     procedure sPanel3DblClick(Sender: TObject);
     procedure timOfflineReportsTimer(Sender: TObject);
+    procedure btnDynamicRateRulesClick(Sender: TObject);
+    procedure __cbxHotelsCloseUp(Sender: TObject);
 
   private
     FrmMessagesTemplates: TFrmMessagesTemplates;
@@ -1574,7 +1576,10 @@ uses
   uInvoiceController,
   uRoomerDefinitions,
   Math
-  , uOfflineReportGrid;
+  , uOfflineReportGrid
+  , uResourceManagement
+  , uDynamicPricing
+  ;
 
 {$R *.DFM}
 {$R Cursors.res}
@@ -2960,14 +2965,15 @@ end;
 
 procedure TfrmMain.FormDestroy(Sender: TObject);
 begin
-    RemoveHandlersAndObjects;
-    GroupList.Free;
-    MoveFunctionAvailRooms.Free;
-    StaffComm.Free;
-    availListContainer.Free;
-    FrmMessagesTemplates.Free;
+  try SaveOneDayViewGridStatus; Except end;
+  try RemoveHandlersAndObjects; Except end;
+  try GroupList.Free; Except end;
+  try MoveFunctionAvailRooms.Free; Except end;
+  try StaffComm.Free; Except end;
+  try availListContainer.Free; Except end;
+  try FrmMessagesTemplates.Free; Except end;
   // Strange place, but destroying in finalization of uActivityLogs gives a InvalidPointer when freeing FSQL TStringlist of TRoomerDataset
-  FreeAndNil(ActivityLogGetThreadedData);
+  try FreeAndNil(ActivityLogGetThreadedData); Except end;
 end;
 
 procedure TfrmMain.SetDateWithoutEvents(aDate: TdateTime);
@@ -3281,11 +3287,11 @@ begin
   ViewMode := vmOneDay;
 
   try
-    if AutoLogin = '' then
-    begin
-      prepareDependencyManager;
-      UpdateHotelsList;
-    end;
+//    if AutoLogin = '' then
+//    begin
+    prepareDependencyManager;
+    UpdateHotelsList;
+//    end;
 
     InitializeTaxes;
     didPostProcess := true;
@@ -3926,8 +3932,6 @@ end;
 procedure TfrmMain.FormCloseQuery(Sender: TObject; var CanClose: boolean);
 begin
 
-  SaveOneDayViewGridStatus;
-
   if LoginCancelled OR FRBEMode OR not bAlreadyIn then
   begin
     CanClose := true;
@@ -4126,7 +4130,7 @@ begin
   // lblSearch.Left := edtSearch.Left - lblSearch.Width - 8;
 
   if Assigned(StaffComm) then
-    StaffComm.PlaceCorrectly;
+    try StaffComm.PlaceCorrectly; Except end;
 end;
 
 // ** END OF FORM FUNCTIONS ---------------------------------------------------
@@ -13373,11 +13377,7 @@ end;
 
 procedure TfrmMain.btnAboutClick(Sender: TObject);
 begin
-  {$IFDEF DEBUG}
-     openInvoiceCompare;
-  {$Else}
-     _About
-  {$ENDIF}
+  _About;
 end;
 
 procedure TfrmMain.btnHelpContentClick(Sender: TObject);
@@ -13442,6 +13442,11 @@ procedure TfrmMain.dxBarLargeButton4Click(Sender: TObject);
 begin
   UserClickedDxLargeButton(Sender);
   StaticResources('Files', ANY_FILE, ACCESS_RESTRICTED);
+end;
+
+procedure TfrmMain.btnDynamicRateRulesClick(Sender: TObject);
+begin
+ openDynamicRates(actNone, '', '', '')
 end;
 
 procedure TfrmMain.btnWebAccessibleFilesClick(Sender: TObject);
@@ -14021,12 +14026,17 @@ begin
 end;
 
 // ############################  View  #######################################
-procedure TfrmMain.__cbxHotelsChange(Sender: TObject);
+procedure TfrmMain.__cbxHotelsCloseUp(Sender: TObject);
+var hotelId : String;
 begin
-  if (__cbxHotels.Items.Count > 0) then
+  if (__cbxHotels.Items.Count > 1) then
   begin
-    _Logout(false, TRoomerHotelsEntity(__cbxHotels.Items.Objects[__cbxHotels.ItemIndex]).hotelCode);
-    checkFilterStatuses;
+    hotelId := TRoomerHotelsEntity(__cbxHotels.Items.Objects[__cbxHotels.ItemIndex]).hotelCode;
+    if ANSILowercase(hotelId) <> ANSILowercase(d.roomerMainDataSet.hotelId) then
+    begin
+      _Logout(false, hotelId);
+      checkFilterStatuses;
+    end;
   end;
 end;
 

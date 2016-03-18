@@ -91,7 +91,7 @@ uses
   dxSkinOffice2007Pink, dxSkinOffice2007Silver, dxSkinOffice2010Black, dxSkinOffice2010Blue, dxSkinOffice2010Silver, dxSkinPumpkin,
   dxSkinSeven, dxSkinSevenClassic, dxSkinSharp, dxSkinSharpPlus, dxSkinSilver, dxSkinSpringTime, dxSkinStardust, dxSkinSummer2008,
   dxSkinValentine, dxSkinVS2010, dxSkinWhiteprint, dxSkinXmas2008Blue,
-  uDynamicRates
+  uDynamicRates, DragDrop, DropTarget, DropComboTarget
   ;
 
 type
@@ -522,6 +522,9 @@ type
     tvRoomsratePlanCode: TcxGridDBColumn;
     sTabSheet2: TsTabSheet;
     pnlAlertHolder: TsPanel;
+    timBlink: TTimer;
+    DropComboTarget1: TDropComboTarget;
+    btnPasteFile: TsButton;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -622,6 +625,9 @@ type
     procedure btnGroupsClick(Sender: TObject);
     procedure sButton6Click(Sender: TObject);
     procedure tvRoomsratePlanCodePropertiesCloseUp(Sender: TObject);
+    procedure DropComboTarget1Drop(Sender: TObject; ShiftState: TShiftState; APoint: TPoint; var Effect: Integer);
+    procedure timBlinkTimer(Sender: TObject);
+    procedure btnPasteFileClick(Sender: TObject);
   private
     { Private declarations }
     vStartName: string;
@@ -723,7 +729,8 @@ uses
   uRoomerDefinitions,
   uGroupGuests,
   uTestTax,
-  uAvailabilityPerDay
+  uAvailabilityPerDay,
+  uResourceManagement
   ;
 
 {$R *.DFM}
@@ -1817,19 +1824,7 @@ begin
   // Add roomreservation as noroom
 
   if g.qWarnWhenOverbooking then
-  begin
-    AvailabilityPerDay := TAvailabilityPerDay.Create(mRooms['Arrival'], mRooms['Departure'], nil);
-    if AvailabilityPerDay.RoomTypeOverbooking(mRooms['RoomType'], 1) then
-    begin
-      s := getTranslatedText('shTx_Various_WouldCreateOverbooking') +
-           mRooms['RoomType'] + #10#10 +
-           getTranslatedText('shTx_Various_AreYoySureYouWantToContinue');
-      if MessageDlg(s, mtWarning, [mbYes, mbCancel], 0) <> mrYes then
-      begin
-        exit;
-      end;
-    end;
-  end;
+    if NOT IsAvailabilityThere(mRooms['RoomType'], mRooms['Arrival'], mRooms['Departure']) then exit;
 
   isOk := True;
 
@@ -2078,6 +2073,12 @@ begin
     exit;
 
   Display_rGrid(zRoomReservation);
+end;
+
+procedure TfrmReservationProfile.btnPasteFileClick(Sender: TObject);
+begin
+  if DropComboTarget1.CanPasteFromClipboard then
+    DropComboTarget1.PasteFromClipboard;
 end;
 
 procedure TfrmReservationProfile.btnProvideRoomClick(Sender: TObject);
@@ -2945,6 +2946,15 @@ begin
   d.roomerMainDataSet.SystemMakeAvailabilityDirtyFromRoomReservation(roomReservation, temp);
 end;
 
+procedure TfrmReservationProfile.DropComboTarget1Drop(Sender: TObject; ShiftState: TShiftState; APoint: TPoint; var Effect: Integer);
+begin
+  DropComboTargetDrop(format(BOOKING_STATIC_RESOURCES, [inttostr(zReservation)]), ACCESS_RESTRICTED, Sender AS TDropComboTarget, ShiftState, APoint, Effect);
+  timBlink.Tag := 0;
+  timBlink.Enabled := False;
+  timBlink.Interval := 100;
+  timBlink.Enabled := True;
+end;
+
 procedure TfrmReservationProfile.tvRoomsArrivalPropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
 begin
   doRRDateChange(1); //Arrival
@@ -3521,6 +3531,30 @@ begin
   d.RR_GetMemoBothTextForRoom(zRoomReservation, HiddenInfo, ChannelRequest);
   memRoomNotes.Lines.Text := HiddenInfo;
   memRequestFromChannel.Lines.Text := ChannelRequest;
+end;
+
+procedure TfrmReservationProfile.timBlinkTimer(Sender: TObject);
+begin
+  timBlink.Enabled := False;
+  timBlink.Tag := timBlink.Tag + 1;
+  if timBlink.Tag < 7 then
+  begin
+    sButton1.SkinData.CustomColor := NOT (timBlink.Tag div 2 = timBlink.Tag / 2);
+    if sButton1.SkinData.CustomColor then
+    begin
+      sButton1.SkinData.ColorTone := clRed;
+      timBlink.Interval := 500;
+    end else
+    begin
+      sButton1.SkinData.ColorTone := clNone;
+      timBlink.Interval := 250;
+    end;
+    timBlink.Enabled := True;
+  end else
+  begin
+    sButton1.SkinData.ColorTone := clNone;
+    sButton1.SkinData.CustomColor := False;
+  end;
 end;
 
 procedure TfrmReservationProfile.timStartTimer(Sender: TObject);

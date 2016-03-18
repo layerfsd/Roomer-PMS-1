@@ -419,7 +419,7 @@ object FrmEmailingDialog: TFrmEmailingDialog
       end
       object sButton2: TsButton
         Left = 123
-        Top = 6
+        Top = 8
         Width = 117
         Height = 25
         Cancel = True

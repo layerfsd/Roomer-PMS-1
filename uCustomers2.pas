@@ -320,6 +320,7 @@ uses
   , uFrmResources
   , uGuestPortfolioEdit
   , uCustomerDepartments
+  , uResourceManagement
   ;
 
 

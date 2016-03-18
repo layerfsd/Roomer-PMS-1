@@ -53,8 +53,6 @@ object FrmRBEContainer: TFrmRBEContainer
         SkinData.SkinSection = 'PAGECONTROL'
         object sTabSheet1: TsTabSheet
           Caption = 'Rates & Availability'
-          SkinData.CustomColor = False
-          SkinData.CustomFont = False
           ExplicitLeft = 0
           ExplicitTop = 0
           ExplicitWidth = 0
@@ -108,8 +106,6 @@ object FrmRBEContainer: TFrmRBEContainer
         end
         object sTabSheet2: TsTabSheet
           Caption = 'Rates'
-          SkinData.CustomColor = False
-          SkinData.CustomFont = False
           ExplicitLeft = 0
           ExplicitTop = 0
           ExplicitWidth = 0
@@ -161,8 +157,6 @@ object FrmRBEContainer: TFrmRBEContainer
         end
         object sTabSheet3: TsTabSheet
           Caption = 'Tables'
-          SkinData.CustomColor = False
-          SkinData.CustomFont = False
           ExplicitLeft = 0
           ExplicitTop = 0
           ExplicitWidth = 0
@@ -292,8 +286,6 @@ object FrmRBEContainer: TFrmRBEContainer
         end
         object sTabSheet4: TsTabSheet
           Caption = 'Templates'
-          SkinData.CustomColor = False
-          SkinData.CustomFont = False
           ExplicitLeft = 0
           ExplicitTop = 0
           ExplicitWidth = 0
@@ -345,8 +337,6 @@ object FrmRBEContainer: TFrmRBEContainer
         end
         object sTabSheet5: TsTabSheet
           Caption = 'Settings'
-          SkinData.CustomColor = False
-          SkinData.CustomFont = False
           ExplicitLeft = 0
           ExplicitTop = 0
           ExplicitWidth = 0
@@ -398,8 +388,6 @@ object FrmRBEContainer: TFrmRBEContainer
         end
         object sTabSheet6: TsTabSheet
           Caption = 'Reports'
-          SkinData.CustomColor = False
-          SkinData.CustomFont = False
           ExplicitLeft = 0
           ExplicitTop = 0
           ExplicitWidth = 0

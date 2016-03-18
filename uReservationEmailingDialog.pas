@@ -82,7 +82,8 @@ uses PrjConst,
      uG,
      HData,
      uUtils,
-     uStringUtils
+     uStringUtils,
+     uResourceManagement
      ;
 
 function SendNewReservationConfirmation(ReservationId : Integer) : Boolean;
@@ -156,6 +157,7 @@ end;
 
 procedure TFrmReservationEmailingDialog.btnResourcesClick(Sender: TObject);
 var idx : Integer;
+    RoomerResourceManagement : TRoomerResourceManagement;
 begin
   if KeyString = GUEST_EMAIL_TEMPLATE then
     frmMain.ShowBookingConfirmationTemplates
@@ -163,7 +165,13 @@ begin
     frmMain.ShowCancelConfirmationTemplates;
   idx := edTemplate.ItemIndex;
   edTemplate.Items.Clear;
-  edTemplate.Items.AddStrings(StaticResourceList(KeyString));
+
+  RoomerResourceManagement := TRoomerResourceManagement.Create(KeyString, ACCESS_RESTRICTED);
+  try
+  edTemplate.Items.AddStrings(RoomerResourceManagement.StaticResourceListAsStrings);
+  finally
+    RoomerResourceManagement.Free;
+  end;
   edTemplate.ItemIndex := idx;
 end;
 
@@ -187,9 +195,16 @@ end;
 procedure TFrmReservationEmailingDialog.edTemplateCloseUp(Sender: TObject);
 var Strings : TStrings;
     Subject : String;
+    RoomerResourceManagement : TRoomerResourceManagement;
 begin
   try
-    filename := DownloadResourceByName(KeyString, edTemplate.Items[edTemplate.ItemIndex], SubjectTemplate);
+    RoomerResourceManagement := TRoomerResourceManagement.Create(KeyString, ACCESS_RESTRICTED);
+    try
+      edTemplate.Items.AddStrings(RoomerResourceManagement.StaticResourceListAsStrings);
+      filename := RoomerResourceManagement.DownloadResourceByName(edTemplate.Items[edTemplate.ItemIndex], SubjectTemplate);
+    finally
+      RoomerResourceManagement.Free;
+    end;
     Strings := TStringlist.Create;
     try
       Strings.LoadFromFile(filename, TEncoding.UTF8);
@@ -255,9 +270,15 @@ end;
 
 procedure TFrmReservationEmailingDialog.FormShow(Sender: TObject);
 var rSet : TRoomerDataset;
+    RoomerResourceManagement : TRoomerResourceManagement;
 begin
   edTemplate.Items.Clear;
-  edTemplate.Items.AddStrings(StaticResourceList(KeyString));
+  RoomerResourceManagement := TRoomerResourceManagement.Create(KeyString, ACCESS_RESTRICTED);
+  try
+    edTemplate.Items.AddStrings(RoomerResourceManagement.StaticResourceListAsStrings);
+  finally
+    RoomerResourceManagement.Free;
+  end;
   EnableDisableOKButton;
   GetEmailAddresses;
 //  if g.qDefaultSendCCEmailToHotel then

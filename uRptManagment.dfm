@@ -56,7 +56,7 @@ object frmRptManagment: TfrmRptManagment
         VerticalAlignment = taAlignTop
         Color = clWhite
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 2302755
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -95,7 +95,7 @@ object frmRptManagment: TfrmRptManagment
         VerticalAlignment = taAlignTop
         Color = clWhite
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 2302755
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -154,14 +154,14 @@ object frmRptManagment: TfrmRptManagment
         Color = clWhite
         EditMask = '!99/99/9999;1; '
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 2302755
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
         MaxLength = 10
         ParentFont = False
         TabOrder = 0
-        Text = '  .  .    '
+        Text = '  -  -    '
         OnChange = dtDateFromChange
         CheckOnExit = True
         SkinData.SkinSection = 'EDIT'
@@ -177,14 +177,14 @@ object frmRptManagment: TfrmRptManagment
         Color = clWhite
         EditMask = '!99/99/9999;1; '
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 2302755
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
         MaxLength = 10
         ParentFont = False
         TabOrder = 1
-        Text = '  .  .    '
+        Text = '  -  -    '
         OnChange = dtDateFromChange
         CheckOnExit = True
         SkinData.SkinSection = 'EDIT'
@@ -195,8 +195,8 @@ object frmRptManagment: TfrmRptManagment
     object chkCompareLasYear: TsCheckBox
       Left = 306
       Top = 56
-      Width = 108
-      Height = 20
+      Width = 116
+      Height = 17
       Caption = 'Compare last year'
       TabOrder = 3
       Visible = False
@@ -224,8 +224,6 @@ object frmRptManagment: TfrmRptManagment
     SkinData.SkinSection = 'PAGECONTROL'
     object tabStatGrid: TsTabSheet
       Caption = 'Data'
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
       object sPanel1: TsPanel
         Left = 0
         Top = 0
@@ -587,12 +585,6 @@ object frmRptManagment: TfrmRptManagment
     end
     object tabGraph: TsTabSheet
       Caption = 'Charts'
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object pageCharts: TsPageControl
         Left = 0
         Top = 0
@@ -604,12 +596,6 @@ object frmRptManagment: TfrmRptManagment
         SkinData.SkinSection = 'PAGECONTROL'
         object tabOcc: TsTabSheet
           Caption = 'OCC'
-          SkinData.CustomColor = False
-          SkinData.CustomFont = False
-          ExplicitLeft = 0
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
           object sPanel2: TsPanel
             Left = 0
             Top = 0
@@ -772,7 +758,7 @@ object frmRptManagment: TfrmRptManagment
     LoadedCompletely = False
     SavedCompletely = False
     FilterOptions = []
-    Version = '7.62.00 Standard Edition'
+    Version = '7.22.00 Standard Edition'
     LanguageID = 0
     SortID = 0
     SubLanguageID = 1

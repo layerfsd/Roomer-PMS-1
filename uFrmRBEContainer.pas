@@ -109,7 +109,7 @@ implementation
 uses uRoomTypes2, uRoomTypesGroups2, uAboutRoomer, uChannelAvailabilityManager,
   uFrmResources, uCountries, uCurrencies, uTaxes, uTaxCalc, uMain, uG, uD, uUtils,
   uFrmRbePreferences, uRptReservations,
-  uRoomerLanguage
+  uRoomerLanguage, uResourceManagement
   ;
 
 procedure TFrmRBEContainer.CheckforOpenWindow(nextTo : Integer);
@@ -383,7 +383,7 @@ begin
   finally
     __cbxHotels.Items.endUpdate;
   end;
-  __cbxHotels.OnChange := frmMain.__cbxHotelsChange;
+  __cbxHotels.OnCloseUp := frmMain.__cbxHotelsCloseUp;
 end;
 
 

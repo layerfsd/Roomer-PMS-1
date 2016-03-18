@@ -4,7 +4,7 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, sLabel, sCheckBox, sMemo, sButton, Vcl.ExtCtrls, sPanel;
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, sLabel, sCheckBox, sMemo, sButton, Vcl.ExtCtrls, sPanel, cxClasses, cxPropertiesStore;
 
 type
   TFrmReservationCancellationDialog = class(TForm)
@@ -26,6 +26,7 @@ type
     sLabel2: TsLabel;
     mmoReason: TsMemo;
     sCheckBox1: TsCheckBox;
+    FormStore: TcxPropertiesStore;
     procedure FormShow(Sender: TObject);
     procedure FormCreate(Sender: TObject);
   private
@@ -67,7 +68,8 @@ begin
     begin
       d.roomerMainDataSet.SystemCancelReservation(Reservation, Format('User %s changed state to cancelled on %s',
         [d.roomerMainDataSet.userName, DateTimeToStr(now)]) + #13 + ReplaceString(_FrmReservationCancellationDialog.mmoReason.Text, '''','\'''));
-      SendCancellationConfirmation(Reservation);
+      if _FrmReservationCancellationDialog.sCheckBox1.Checked then
+        SendCancellationConfirmation(Reservation);
       result := True;
     end;
   finally

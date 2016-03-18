@@ -88,7 +88,7 @@ uses ShellApi,
      uG
      , uAppGlobal
      , PrjConst
-     , uFrmResources
+     , uResourceManagement
      ;
 
 const
@@ -158,10 +158,7 @@ var i: Integer;
     FileList : TFileList;
 
     localFilename : String;
-    FrmResources: TFrmResources;
 begin
-  FrmResources := TFrmResources.Create(nil);
-  try
     FileList := RoomerDataSet1.SystemListFiles(cbxFileTypes.ItemIndex);
     for i := 0 to Pred(FileList.Count) do
     begin
@@ -169,13 +166,10 @@ begin
       if FileExists(localFilename) then
         DeleteFile(localFilename);
 
-      DownloadFile(FileList.Files[i].name, localFilename);
+      DownloadResource(FileList.Files[i].name, localFilename);
       CollectionOfOpenedFiles.Add(localFilename);
-      FrmResources.UploadFile(ANY_FILE, ACCESS_RESTRICTED, localFilename)
+      UploadFileToResources(ANY_FILE, ACCESS_RESTRICTED, ExtractFilename(localFilename), localFilename)
     end;
-  finally
-    FreeAndNil(FrmResources);
-  end;
 end;
 
 function TfrmManageFilesOnServer.GetFilePathForListView(filename : String; stamp : TDateTime) : String;

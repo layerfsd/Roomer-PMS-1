@@ -402,7 +402,6 @@ type
     procedure BackgroundAvailabilityFetchHandler(Sender: TObject);
     procedure btnForwardClick(Sender: TObject);
     procedure btnBackClick(Sender: TObject);
-    procedure __cbxVisibleDaysChange(Sender: TObject);
     procedure btnBeginClick(Sender: TObject);
     procedure btnEndClick(Sender: TObject);
     procedure F1Click(Sender: TObject);
@@ -414,6 +413,7 @@ type
     procedure btnPrepareExcelClick(Sender: TObject);
     procedure timBlinkTimer(Sender: TObject);
     procedure timBringToFrontTimer(Sender: TObject);
+    procedure __cbxVisibleDaysCloseUp(Sender: TObject);
   private
     { Private declarations }
     RoomerDataSet: TRoomerDataSet;
@@ -446,7 +446,7 @@ type
     procedure RemoveData;
     procedure EmptyGrid(grid: TAdvStringGrid);
     procedure SetAvailabilityValue(iRow: integer; value: string; _grid: TAdvStringGrid; iCol: integer);
-    procedure SetRateValue(iCol, iRow: integer; value: string; _grid: TAdvStringGrid; InPlaceEditing: Boolean = false);
+    procedure SetRateValue(iCol, iRow: integer; value: string; _grid: TAdvStringGrid; InPlaceEditing: Boolean = false; IsSinglePrice: Boolean = false);
     procedure InitializeBulkOperation;
     procedure getPriceOfSpecificCell;
     procedure DeleteContentOfCurrentCell;
@@ -1828,7 +1828,7 @@ begin
                   end;
                 end;
 
-                if PriceData.FMinStay > PriceData.FMaxStay then
+                if (PriceData.FMinStay > PriceData.FMaxStay) AND (PriceData.FMaxStay <> 0) then
                    PriceData.FMaxStay := PriceData.FMinStay;
 
                 sql := format('SELECT %d AS _Id, %s', [PriceData.Id, sql]);
@@ -3537,7 +3537,7 @@ begin
     rateGrid.SetCheckBoxState(iCol, iRow, value);
 end;
 
-procedure TfrmChannelAvailabilityManager.SetRateValue(iCol, iRow: integer; value: string; _grid: TAdvStringGrid; InPlaceEditing: Boolean = false);
+procedure TfrmChannelAvailabilityManager.SetRateValue(iCol, iRow: integer; value: string; _grid: TAdvStringGrid; InPlaceEditing: Boolean = false; IsSinglePrice: Boolean = false);
 var
   PriceData: TPriceData;
   iIntValue, iTypeIndex: integer;
@@ -3560,7 +3560,10 @@ begin
       begin
         if InPlaceEditing OR __cbxRate.Checked then
         begin
-          SetRateCellValue(iCol, iRow, PriceData, getRateValueForCell(value, iCol, iRow, false));
+          if NOT IsSinglePrice then
+             SetRateCellValue(iCol, iRow, PriceData, getRateValueForCell(value, iCol, iRow, false))
+          else
+             SetSingleUsePriceCellValue(iCol, iRow, PriceData, getRateValueForCell(value, iCol, iRow, true));
           CorrectMasterRateLinkedCells(PriceData, iCol, iRow);
         end;
 
@@ -4172,7 +4175,7 @@ begin
   lblBasedOnArrival.enabled := __cbxMinimumStayActive.Checked;
 end;
 
-procedure TfrmChannelAvailabilityManager.__cbxVisibleDaysChange(Sender: TObject);
+procedure TfrmChannelAvailabilityManager.__cbxVisibleDaysCloseUp(Sender: TObject);
 begin
   if StrToInt(__cbxVisibleDays.Items[__cbxVisibleDays.ItemIndex])=400 then
   begin
@@ -4341,6 +4344,7 @@ var
   i: Integer;
   DestPriceData : TPriceData;
   cbValue : Boolean;
+  tmpValue : Double;
 begin
   if PriceData.channelId = -1 then
   begin
@@ -4354,18 +4358,22 @@ begin
           if (DestPriceData.connectRateToMasterRate AND isPriceRow(ARow)) then
           begin
              if DestPriceData.RateDeviationType = 'FIXED_AMOUNT' then
-               DestPriceData.price := PriceData.price + DestPriceData.masterRateRateDeviation
+               tmpValue := PriceData.price + DestPriceData.masterRateRateDeviation
              else
-               DestPriceData.price := PriceData.price * (1 + DestPriceData.masterRateRateDeviation / 100);
+               tmpValue := PriceData.price * (1 + DestPriceData.masterRateRateDeviation / 100);
+             if tmpValue > 0.00 then
+               DestPriceData.price := tmpValue;
              SetRateCellValue(ACol, i, DestPriceData, DestPriceData.price);
           end else
 
           if (DestPriceData.connectSingleUseRateToMasterRate AND isSingleUsePriceRow(ARow)) then
           begin
              if DestPriceData.SingleUseRateDeviationType = 'FIXED_AMOUNT' then
-               DestPriceData.price := PriceData.price + DestPriceData.masterRateSingleUseRateDeviation
+               tmpValue := PriceData.SingleUsePrice + DestPriceData.masterRateSingleUseRateDeviation
              else
-               DestPriceData.price := PriceData.SingleUsePrice * (1 + DestPriceData.masterRateSingleUseRateDeviation / 100);
+               tmpValue := PriceData.SingleUsePrice * (1 + DestPriceData.masterRateSingleUseRateDeviation / 100);
+             if tmpValue > 0.00 then
+               DestPriceData.SingleUsePrice := tmpValue;
              SetSingleUsePriceCellValue(ACol, i, DestPriceData, DestPriceData.SingleUsePrice);
           end else
 
@@ -4713,7 +4721,7 @@ begin
   else if isMaxStayRow(ARow) then
     PriceData.MaxStay := StrToIntDef(rateGrid.Cells[ACol, ARow], 0)
   else if NOT isAnyCheckBoxRow(ARow) then
-    SetRateValue(ACol, ARow, rateGrid.Cells[ACol, ARow], rateGrid, isSingleUsePriceRow(ARow));
+    SetRateValue(ACol, ARow, rateGrid.Cells[ACol, ARow], rateGrid, true, isSingleUsePriceRow(ARow));
 end;
 
 procedure TfrmChannelAvailabilityManager.rateGridGetAlignment(Sender: TObject; ARow, ACol: integer; var HAlign: TAlignment; var VAlign: AdvObj.TVAlignment);

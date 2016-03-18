@@ -300,6 +300,9 @@ type
     procedure BackupsSubmitPaymentChanges;
     procedure removeChangedFiles;
     procedure BackupTaxes(sourceRSet : TRoomerDataSet; sPath : String);
+    procedure SelectCloudConfig;
+    procedure SetDefaultCloudConfig;
+    procedure SetCloudConfigByFile(filename: String);
   public
     { Public declarations }
     qConnected : boolean;
@@ -619,7 +622,7 @@ type
     function Del_MaidsJobsByDate(adate : Tdate; All : boolean) : boolean;
 
     function getRoomTypeFromRR(RR : integer) : string;
-    function getCangeAvailabilityInfo(RR : integer; var RoomType,status : string; var Arrival,departure : Tdate) : boolean;
+    function getChangeAvailabilityInfo(RR : integer; var RoomType,status : string; var Arrival,departure : Tdate) : boolean;
     function getCountryGroupNameFromCountry(Country : string) : string;
     function getCountryGroupFromCountry(Country : string) : string;
     function getLocationFromRoom(Room : string) : string;
@@ -900,19 +903,22 @@ function GenerateProformaInvoiceNumber : Integer;
 var PROFORMA_INVOICE_NUMBER : integer;
 
 {$IFDEF rmLOCALRESOURCE}
-  const RoomerOpenAPIBase : String = 'http://localhost:8080';
+  const RoomerOpenAPIBase : String = 'http://localhos';
   const RoomerBase : String = 'http://localhost';
   const RoomerStoreBase : String = 'http://localhost';
   const RoomerBasePort : String = '8080';
+  const RoomerOpenApiBasePort : String = '8080';
   const RoomerStoreBasePort : String = '8080';
 {$ELSE}
   {$IFDEF rmROOMERSSL}
     const RoomerBase : String = 'https://secure.roomercloud.net';
     const RoomerBasePort : String = '443';
+    const RoomerOpenApiBasePort : String = '443';
     const RoomerOpenAPIBase : String = 'https://secure.roomercloud.net';
   {$ELSE}
     const RoomerBase : String = 'http://secure.roomercloud.net';
     const RoomerBasePort : String = '80';
+    const RoomerOpenApiBasePort : String = '80';
     const RoomerOpenAPIBase : String = 'http://secure.roomercloud.net';
   {$ENDIF}
   const RoomerStoreBase : String = 'http://store.roomercloud.net';
@@ -921,6 +927,8 @@ var PROFORMA_INVOICE_NUMBER : integer;
 
 var _RoomerBase,
     _RoomerBasePort,
+    _RoomerOpenApiBasePort,
+    _RoomerOpenApiBase,
     _RoomerStoreBase,
     _RoomerStoreBasePort : String;
 
@@ -948,7 +956,10 @@ uses
   , uRoomerDefinitions
   , uTaxCalc
   , uActivityLogs
-  , uOfflineReportGenerator;
+  , uOfflineReportGenerator
+  , uFrmSelectCloudConfiguration
+  , Inifiles
+  ;
 
 
 {$R *.dfm}
@@ -1028,16 +1039,8 @@ end;
 // *****************************
 
 
-
-
-
-
-procedure Td.DataModuleCreate(Sender : TObject);
-var OpenAPIUri : String;
+procedure Td.SetDefaultCloudConfig;
 begin
-   qRes     := -1;
-   qRRes    := -1;
-
   _RoomerBase := ParameterByName('RoomerBase');
   if _RoomerBase = '' then
     _RoomerBase := RoomerBase;
@@ -1051,18 +1054,100 @@ begin
   _RoomerStoreBasePort := ParameterByName('RoomerStoreBasePort');
   if _RoomerStoreBasePort = '' then
     _RoomerStoreBasePort := RoomerStoreBasePort;
+  _RoomerOpenApiBasePort := ParameterByName('RoomerOpenApiBasePort');
+  if _RoomerOpenApiBasePort = '' then
+    _RoomerOpenApiBasePort := RoomerOpenApiBasePort;
 
 
-  OpenAPIUri := ParameterByName('OpenApiBase');  if OpenAPIUri = '' then
-    OpenAPIUri := RoomerOpenAPIBase;
+  _RoomerOpenApiBase := ParameterByName('OpenApiBase');
+  if _RoomerOpenApiBase = '' then
+    _RoomerOpenApiBase := RoomerOpenAPIBase;
 
-  RoomerOpenApiUri := OpenAPIUri + ':' + _RoomerBasePort + '/roomer/openAPI/REST/';
+  RoomerOpenApiUri := _RoomerOpenApiBase + ':' + _RoomerOpenApiBasePort + '/roomer/openAPI/REST/';
   RoomerStoreUri := _RoomerStoreBase + ':' + _RoomerStoreBasePort + '/services/';
   RoomerApiUri := _RoomerBase + ':' + _RoomerBasePort + '/services/';
-  RoomerApiEntitiesUri := _RoomerBase + ':' + _RoomerBasePort + '/services/entities/';
-  RoomerApiDatasetsUri := _RoomerBase + ':' + _RoomerBasePort + '/services/datasets/';
-  roomerMainDataSet.OnSessionExpired := roomerMainDataSetSessionExpired;
+  RoomerApiEntitiesUri := RoomerApiUri + 'entities/';
+  RoomerApiDatasetsUri := RoomerApiUri + 'datasets/';
+end;
 
+procedure Td.SetCloudConfigByFile(filename : String);
+begin
+  with TInifile.Create(TPath.Combine(ExtractFilePath(Application.ExeName), filename)) do
+  try
+    _RoomerBase := ReadString('Cloud', 'RoomerBase', RoomerBase);
+    _RoomerBasePort := ReadString('Cloud', 'RoomerBasePort', RoomerBasePort);
+    _RoomerStoreBase := ReadString('Cloud', 'RoomerStoreBase', RoomerStoreBase);
+    _RoomerStoreBasePort := ReadString('Cloud', 'RoomerStoreBasePort', RoomerBase);
+    _RoomerOpenApiBase := ReadString('Cloud', 'RoomerOpenAPIBase', RoomerOpenAPIBase);
+    _RoomerOpenApiBasePort := ReadString('Cloud', 'RoomerOpenApiPort', RoomerOpenApiBasePort);
+
+    RoomerOpenApiUri := _RoomerOpenApiBase + ':' + _RoomerOpenApiBasePort + '/roomer/openAPI/REST/';
+    RoomerStoreUri := _RoomerStoreBase + ':' + _RoomerStoreBasePort + '/services/';
+
+    RoomerApiUri := _RoomerBase + ':' + _RoomerBasePort + '/services/';
+    RoomerApiEntitiesUri := RoomerApiUri + 'entities/';
+    RoomerApiDatasetsUri := RoomerApiUri + 'datasets/';
+  finally
+    Free;
+  end;
+end;
+
+procedure Td.SelectCloudConfig;
+var files : TStrings;
+    path : String;
+begin
+  files := TStringList.Create;
+  try
+    for Path in GetFilesInSpecifiedDirectory(ExtractFilePath(Application.ExeName), 'roomer_environment*.cfg') do
+      files.Add(Path);
+    if files.Count = 0 then
+    begin
+      SetDefaultCloudConfig;
+    end else
+    begin
+      if files.Count = 1 then
+        SetCloudConfigByFile(files[0])
+      else
+        SetCloudConfigByFile(SelectConfigurationEnvironment(files));
+    end;
+  finally
+    files.Free;
+  end;
+end;
+
+procedure Td.DataModuleCreate(Sender : TObject);
+var OpenAPIUri : String;
+begin
+   qRes     := -1;
+   qRRes    := -1;
+
+  SelectCloudConfig;
+
+//  _RoomerBase := ParameterByName('RoomerBase');
+//  if _RoomerBase = '' then
+//    _RoomerBase := RoomerBase;
+//  _RoomerBasePort := ParameterByName('Port');
+//  if _RoomerBasePort = '' then
+//    _RoomerBasePort := RoomerBasePort;
+//
+//  _RoomerStoreBase := ParameterByName('RoomerStoreBase');
+//  if _RoomerStoreBase = '' then
+//    _RoomerStoreBase := RoomerStoreBase;
+//  _RoomerStoreBasePort := ParameterByName('RoomerStoreBasePort');
+//  if _RoomerStoreBasePort = '' then
+//    _RoomerStoreBasePort := RoomerStoreBasePort;
+//
+//
+//  OpenAPIUri := ParameterByName('OpenApiBase');  if OpenAPIUri = '' then
+//    OpenAPIUri := RoomerOpenAPIBase;
+//
+//  RoomerOpenApiUri := OpenAPIUri + ':' + _RoomerBasePort + '/roomer/openAPI/REST/';
+//  RoomerStoreUri := _RoomerStoreBase + ':' + _RoomerStoreBasePort + '/services/';
+//  RoomerApiUri := _RoomerBase + ':' + _RoomerBasePort + '/services/';
+//  RoomerApiEntitiesUri := _RoomerBase + ':' + _RoomerBasePort + '/services/entities/';
+//  RoomerApiDatasetsUri := _RoomerBase + ':' + _RoomerBasePort + '/services/datasets/';
+
+  roomerMainDataSet.OnSessionExpired := roomerMainDataSetSessionExpired;
   lstMaintenanceCodes := TKeyPairList.Create(True);
   SetMainRoomerDataSet(roomerMainDataSet);
 
@@ -5651,7 +5736,7 @@ end;
     end;
   end;
 
-  function Td.getCangeAvailabilityInfo(RR : integer; var RoomType,Status : string; var Arrival,departure : Tdate) : boolean;
+  function Td.getChangeAvailabilityInfo(RR : integer; var RoomType,Status : string; var Arrival,departure : Tdate) : boolean;
   var
     Rset : TRoomerDataSet;
     s : string;

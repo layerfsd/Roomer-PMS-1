@@ -573,18 +573,18 @@ function LeftAlign(s : string; iLen : integer) : string;
 function RightAligned(s : string; iNum : integer) : string;
 
 function ResObjToBorder(Status : string; ascIndex, descIndex : integer; var BorderColor : TColor; var Left, Top, Right,Bottom : integer) : boolean;
-function RoomIndex(aGrid : TStringGrid; sRoom : string; var lastRow : integer; sRoomType : String = ''; AddIfNeeded : boolean = false) : integer;
+function RoomIndex(aGrid : TAdvStringGrid; sRoom : string; var lastRow : integer; sRoomType : String = ''; AddIfNeeded : boolean = false) : integer;
 procedure FillTheGrid(Grid : TADVStringGrid; sWith : string; iStartCol, iStartRow : integer);
 procedure EmptyStringGrid(Grid : TADVStringGrid);
 function GridFloatValueFromString(aValue : String) : double;
-function GridCellIntValue(aGrid : TStringGrid; ACol, ARow : integer) : integer;
-function GridCellFloatValue(aGrid : TStringGrid; ACol, ARow : integer) : double;
-procedure RowDelete(aGrid : TStringGrid);
-procedure EmptyRow(aGrid : TStringGrid; iRow : integer);
-procedure DeleteRow(aGrid : TStringGrid; iRow : integer);
-procedure InsertRows(aGrid : TStringGrid; RowIndex, RCount : integer);
-procedure ClearRows(aGrid : TStringGrid; RowIndex, RCount : integer);
-procedure AutoSizeColumnsInt(aGrid : TStringGrid);
+function GridCellIntValue(aGrid : TAdvStringGrid; ACol, ARow : integer) : integer;
+function GridCellFloatValue(aGrid : TAdvStringGrid; ACol, ARow : integer) : double;
+procedure RowDelete(aGrid : TAdvStringGrid);
+procedure EmptyRow(aGrid : TAdvStringGrid; iRow : integer);
+procedure DeleteRow(aGrid : TAdvStringGrid; iRow : integer);
+procedure InsertRows(aGrid : TAdvStringGrid; RowIndex, RCount : integer);
+procedure ClearRows(aGrid : TAdvStringGrid; RowIndex, RCount : integer);
+procedure AutoSizeColumnsInt(aGrid : TAdvStringGrid);
 procedure ClearStringGridRows(Grid : TAdvStringGrid; FromRow, RowCount : Integer);
 procedure ClearStringGridFromTo(Grid : TAdvStringGrid; FromRow, FromCol : Integer);
 
@@ -2550,7 +2550,7 @@ begin
   Grid.FixedRows := 1;
 end;
 
-function RoomIndex(aGrid : TStringGrid; sRoom : string; var lastRow : integer; sRoomType : String = ''; AddIfNeeded : boolean = false) : integer;
+function RoomIndex(aGrid : TAdvStringGrid; sRoom : string; var lastRow : integer; sRoomType : String = ''; AddIfNeeded : boolean = false) : integer;
 var
   i : integer;
 begin
@@ -2626,7 +2626,7 @@ begin
   result := s;
 end;
 
-function GridCellIntValue(aGrid : TStringGrid; ACol, ARow : integer) : integer;
+function GridCellIntValue(aGrid : TAdvStringGrid; ACol, ARow : integer) : integer;
 var
   s : string;
 begin
@@ -2658,13 +2658,13 @@ begin
   end;
 end;
 
-function GridCellFloatValue(aGrid : TStringGrid; ACol, ARow : integer) : double;
+function GridCellFloatValue(aGrid : TAdvStringGrid; ACol, ARow : integer) : double;
 begin
   // --
   result := GridFloatValueFromString(aGrid.Cells[ACol, ARow]);
 end;
 
-procedure CutRange(aGrid : TStringGrid);
+procedure CutRange(aGrid : TAdvStringGrid);
 var
   r1, c1, r2, c2, r, c : integer;
 
@@ -2698,7 +2698,7 @@ begin
   list.free;
 end;
 
-procedure PasteRange(aGrid : TStringGrid);
+procedure PasteRange(aGrid : TAdvStringGrid);
 var
   r1, c1, r2, c2, r, c, i, j : integer;
 
@@ -2745,18 +2745,20 @@ begin
   AutoSizeColumnsInt(aGrid);
 end;
 
-procedure EmptyRow(aGrid : TStringGrid; iRow : integer);
+procedure EmptyRow(aGrid : TAdvStringGrid; iRow : integer);
 var
   i : integer;
 begin
+  if aGrid.HasCheckBox(0, iRow) then
+    aGrid.RemoveCheckBox(0, iRow);
   aGrid.Objects[0, iRow] := nil;
   for i := 0 to aGrid.ColCount - 1 do
     aGrid.Cells[i, iRow] := '';
 end;
 
-procedure DeleteRow(aGrid : TStringGrid; iRow : integer);
+procedure DeleteRow(aGrid : TAdvStringGrid; iRow : integer);
 var
-  i : integer;
+  i, l : integer;
 begin
   EmptyRow(aGrid, iRow);
   if (iRow = 1) and (aGrid.RowCount = 2) then
@@ -2766,14 +2768,17 @@ begin
   begin
     for i := iRow + 1 to aGrid.RowCount - 1 do
     begin
-      aGrid.Rows[i - 1] := aGrid.Rows[i];
-      aGrid.Objects[0, i-1] := aGrid.Objects[0, i];
+      for l := 0 to aGrid.ColCount - 1 do
+      begin
+        aGrid.Cells[l, i - 1] := aGrid.Cells[l, i];
+        aGrid.Objects[l, i - 1] := aGrid.Objects[l, i];
+      end;
     end;
     aGrid.RowCount := aGrid.RowCount - 1;
   end;
 end;
 
-procedure RowDelete(aGrid : TStringGrid);
+procedure RowDelete(aGrid : TAdvStringGrid);
 var
   ARow : integer;
 begin
@@ -2789,7 +2794,7 @@ begin
   end;
 end;
 
-procedure ClearRect(aGrid : TStringGrid; aCol1, aRow1, aCol2, aRow2 : integer);
+procedure ClearRect(aGrid : TAdvStringGrid; aCol1, aRow1, aCol2, aRow2 : integer);
 var
   i, j : integer;
 begin
@@ -2803,13 +2808,13 @@ begin
   end;
 end;
 
-procedure ClearRows(aGrid : TStringGrid; RowIndex, RCount : integer);
+procedure ClearRows(aGrid : TAdvStringGrid; RowIndex, RCount : integer);
 begin
   if (aGrid.RowCount > 0) and (aGrid.ColCount > 0) and (RCount > 0) then
     ClearRect(aGrid, 0, RowIndex, aGrid.ColCount - 1, RowIndex + RCount - 1);
 end;
 
-procedure InsertRows(aGrid : TStringGrid; RowIndex, RCount : integer);
+procedure InsertRows(aGrid : TAdvStringGrid; RowIndex, RCount : integer);
 var
   i : integer;
 begin
@@ -2821,7 +2826,7 @@ begin
   ClearRows(aGrid, RowIndex, RCount);
 end;
 
-procedure AutoSizeColumnsInt(aGrid : TStringGrid);
+procedure AutoSizeColumnsInt(aGrid : TAdvStringGrid);
 var
   i, j, w0, w : integer;
 begin

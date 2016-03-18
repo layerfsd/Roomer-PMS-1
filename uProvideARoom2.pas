@@ -35,7 +35,7 @@ uses
   , sGroupBox
   , sBitBtn
   , sPanel
-  , sLabel, sButton
+  , sLabel, sButton, AdvUtil
   ;
 
 type
@@ -94,6 +94,7 @@ uses
   , uAppGlobal
   , PrjConst
   , uRoomerDefinitions
+  , uAvailabilityPerDay
   ;
 {$R *.DFM}
 
@@ -461,6 +462,8 @@ var
 
   CurrentRoomType,
   NewRoomType : String;
+
+  AvailabilityPerDay : TAvailabilityPerDay;
 begin
   if NOT d.roomerMainDataSet.OfflineMode then
   begin
@@ -483,7 +486,9 @@ begin
 
     NewRoomType := '';
     // Warn when moving guest to a different room type?
-    if g.qWarnMoveRoomToNewRoomtype AND (((newRoom <> '') AND (Copy(NewRoom, 1, 1) <> '<')) AND glb.LocateSpecificRecordAndGetValue('rooms', 'Room', NewRoom, 'RoomType', newRoomType)) then
+    if g.qWarnMoveRoomToNewRoomtype AND
+       (((newRoom <> '') AND (Copy(NewRoom, 1, 1) <> '<')) AND
+       glb.LocateSpecificRecordAndGetValue('rooms', 'Room', NewRoom, 'RoomType', newRoomType)) then
     begin
       if AnsiLowerCase(CurrentRoomType) <> AnsiLowerCase(NewRoomType)  then
       begin
@@ -491,6 +496,14 @@ begin
         if MessageDlg(s, mtWarning, [mbYes, mbCancel], 0) <> mrYes then exit;
       end;
     end;
+
+    if g.qWarnWhenOverbooking AND
+     (((newRoom <> '') AND (Copy(NewRoom, 1, 1) <> '<')) AND
+     glb.LocateSpecificRecordAndGetValue('rooms', 'Room', NewRoom, 'RoomType', newRoomType)) then
+    begin
+      if NOT IsAvailabilityThere(newRoomType, FromDate, ToDate) then exit;
+    end;
+
 
 
     lstProblems := tstringList.Create;

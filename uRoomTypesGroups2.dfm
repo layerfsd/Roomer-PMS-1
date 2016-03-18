@@ -64,8 +64,8 @@ object frmRoomTypesGroups2: TfrmRoomTypesGroups2
         Caption = 'Clear'
         OnClick = btnClearClick
         SkinData.SkinSection = 'SPEEDBUTTON'
-        ImageIndex = 10
         Images = DImages.PngImageList1
+        ImageIndex = 10
       end
       object btnDelete: TsButton
         Left = 205
@@ -114,7 +114,7 @@ object frmRoomTypesGroups2: TfrmRoomTypesGroups2
         Height = 21
         Color = clWhite
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 2302755
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -122,15 +122,6 @@ object frmRoomTypesGroups2: TfrmRoomTypesGroups2
         TabOrder = 3
         OnChange = edFilterChange
         SkinData.SkinSection = 'EDIT'
-        BoundLabel.Indent = 0
-        BoundLabel.Font.Charset = DEFAULT_CHARSET
-        BoundLabel.Font.Color = clWindowText
-        BoundLabel.Font.Height = -11
-        BoundLabel.Font.Name = 'Tahoma'
-        BoundLabel.Font.Style = []
-        BoundLabel.Layout = sclLeft
-        BoundLabel.MaxWidth = 0
-        BoundLabel.UseSkinColor = True
       end
       object btnInsert: TsButton
         Left = 13
@@ -165,8 +156,8 @@ object frmRoomTypesGroups2: TfrmRoomTypesGroups2
       object chkActive: TsCheckBox
         Left = 55
         Top = 63
-        Width = 234
-        Height = 20
+        Width = 242
+        Height = 17
         Caption = 'Active (if checked then just active are visible'
         Checked = True
         State = cbChecked
@@ -235,6 +226,7 @@ object frmRoomTypesGroups2: TfrmRoomTypesGroups2
       Align = alClient
       TabOrder = 3
       LookAndFeel.NativeStyle = False
+      ExplicitTop = 87
       object tvData: TcxGridDBTableView
         OnDblClick = tvDataDblClick
         Navigator.Buttons.CustomButtons = <>
@@ -300,6 +292,18 @@ object frmRoomTypesGroups2: TfrmRoomTypesGroups2
         end
         object tvDataActive: TcxGridDBColumn
           DataBinding.FieldName = 'Active'
+        end
+        object tvDataColumn2: TcxGridDBColumn
+          Caption = 'Rules'
+          PropertiesClassName = 'TcxButtonEditProperties'
+          Properties.Buttons = <
+            item
+              Default = True
+              Kind = bkEllipsis
+            end>
+          Properties.ViewStyle = vsHideCursor
+          Properties.OnButtonClick = tvDataColumn2PropertiesButtonClick
+          Width = 33
         end
         object tvDataCode: TcxGridDBColumn
           DataBinding.FieldName = 'Code'
@@ -511,6 +515,21 @@ object frmRoomTypesGroups2: TfrmRoomTypesGroups2
           PropertiesClassName = 'TcxSpinEditProperties'
           Width = 110
         end
+        object tvDatadefMaxStay: TcxGridDBColumn
+          Caption = 'Default Max Stay'
+          DataBinding.FieldName = 'defMaxStay'
+          Width = 104
+        end
+        object tvDatadefClosedToArrival: TcxGridDBColumn
+          Caption = 'Default Closed To Arrival'
+          DataBinding.FieldName = 'defClosedToArrival'
+          Width = 130
+        end
+        object tvDatadefClosedToDeparture: TcxGridDBColumn
+          Caption = 'Default Closed To Departure'
+          DataBinding.FieldName = 'defClosedToDeparture'
+          Width = 147
+        end
         object tvDatadefMaxAvailability: TcxGridDBColumn
           Caption = 'Default Max Availability'
           DataBinding.FieldName = 'defMaxAvailability'
@@ -650,7 +669,6 @@ object frmRoomTypesGroups2: TfrmRoomTypesGroups2
     Left = 96
     Top = 192
     object prLink_grData: TdxGridReportLink
-      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.GrayShading = True
@@ -664,7 +682,6 @@ object frmRoomTypesGroups2: TfrmRoomTypesGroups2
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
       ReportDocument.CreationDate = 41334.495374884260000000
-      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       BuiltInReportLink = True
     end
   end
@@ -748,6 +765,15 @@ object frmRoomTypesGroups2: TfrmRoomTypesGroups2
     end
     object m_defMinStay: TIntegerField
       FieldName = 'defMinStay'
+    end
+    object m_defMaxStay: TIntegerField
+      FieldName = 'defMaxStay'
+    end
+    object m_defClosedToArrival: TBooleanField
+      FieldName = 'defClosedToArrival'
+    end
+    object m_defClosedToDeparture: TBooleanField
+      FieldName = 'defClosedToDeparture'
     end
     object m_defMaxAvailability: TIntegerField
       FieldName = 'defMaxAvailability'

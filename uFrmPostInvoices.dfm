@@ -49,7 +49,7 @@ object FrmPostInvoices: TFrmPostInvoices
     Alignment = taRightJustify
     Color = clWhite
     Font.Charset = DEFAULT_CHARSET
-    Font.Color = 2302755
+    Font.Color = clBlack
     Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = []
@@ -58,15 +58,6 @@ object FrmPostInvoices: TFrmPostInvoices
     TabOrder = 0
     Text = '1000'
     SkinData.SkinSection = 'EDIT'
-    BoundLabel.Indent = 0
-    BoundLabel.Font.Charset = DEFAULT_CHARSET
-    BoundLabel.Font.Color = clWindowText
-    BoundLabel.Font.Height = -11
-    BoundLabel.Font.Name = 'Tahoma'
-    BoundLabel.Font.Style = []
-    BoundLabel.Layout = sclLeft
-    BoundLabel.MaxWidth = 0
-    BoundLabel.UseSkinColor = True
   end
   object edtTo: TsEdit
     Left = 216
@@ -76,7 +67,7 @@ object FrmPostInvoices: TFrmPostInvoices
     Alignment = taRightJustify
     Color = clWhite
     Font.Charset = DEFAULT_CHARSET
-    Font.Color = 2302755
+    Font.Color = clBlack
     Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = []
@@ -85,15 +76,6 @@ object FrmPostInvoices: TFrmPostInvoices
     TabOrder = 1
     Text = '1000'
     SkinData.SkinSection = 'EDIT'
-    BoundLabel.Indent = 0
-    BoundLabel.Font.Charset = DEFAULT_CHARSET
-    BoundLabel.Font.Color = clWindowText
-    BoundLabel.Font.Height = -11
-    BoundLabel.Font.Name = 'Tahoma'
-    BoundLabel.Font.Style = []
-    BoundLabel.Layout = sclLeft
-    BoundLabel.MaxWidth = 0
-    BoundLabel.UseSkinColor = True
   end
   object btnProcess: TsButton
     Left = 216
@@ -115,7 +97,6 @@ object FrmPostInvoices: TFrmPostInvoices
     TabOrder = 3
     Visible = False
     SkinData.SkinSection = 'PANEL'
-    ExplicitTop = 128
     object sLabel3: TsLabel
       Left = 16
       Top = 6
@@ -138,7 +119,7 @@ object FrmPostInvoices: TFrmPostInvoices
     Height = 21
     Color = clWhite
     Font.Charset = DEFAULT_CHARSET
-    Font.Color = 2302755
+    Font.Color = clBlack
     Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = []
@@ -146,15 +127,6 @@ object FrmPostInvoices: TFrmPostInvoices
     ParentFont = False
     TabOrder = 4
     SkinData.SkinSection = 'EDIT'
-    BoundLabel.Indent = 0
-    BoundLabel.Font.Charset = DEFAULT_CHARSET
-    BoundLabel.Font.Color = clWindowText
-    BoundLabel.Font.Height = -11
-    BoundLabel.Font.Name = 'Tahoma'
-    BoundLabel.Font.Style = []
-    BoundLabel.Layout = sclLeft
-    BoundLabel.MaxWidth = 0
-    BoundLabel.UseSkinColor = True
   end
   object dlgSave: TSaveDialog
     DefaultExt = '.CSV'

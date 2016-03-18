@@ -226,6 +226,13 @@ type
     tvDataOrderIndex: TcxGridDBColumn;
     m_RATE_PLAN_TYPE: TWideStringField;
     tvDataRATE_PLAN_TYPE: TcxGridDBColumn;
+    m_defMaxStay: TIntegerField;
+    m_defClosedToArrival: TBooleanField;
+    m_defClosedToDeparture: TBooleanField;
+    tvDatadefMaxStay: TcxGridDBColumn;
+    tvDatadefClosedToArrival: TcxGridDBColumn;
+    tvDatadefClosedToDeparture: TcxGridDBColumn;
+    tvDataColumn2: TcxGridDBColumn;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormKeyPress(Sender: TObject; var Key: Char);
@@ -264,6 +271,7 @@ type
     procedure tvDataPackagePropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
     procedure tvDataRATE_PLAN_TYPEPropertiesCloseUp(Sender: TObject);
     procedure m_AfterScroll(DataSet: TDataSet);
+    procedure tvDataColumn2PropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
   private
     { Private declarations }
     zFirstTime       : boolean;
@@ -323,6 +331,8 @@ uses
   , uMain
   , uPackages
   , uRoomClassEdit
+  , uResourceManagement
+  , uDynamicPricing
 
   ;
 
@@ -415,6 +425,9 @@ begin
         m_.FieldByName('defRate').asfloat           := rSet.GetFloatValue(rSet.FieldByName('defRate'))           ;
         m_.FieldByName('defMaxAvailability').AsInteger := rSet.FieldByName('defMaxAvailability').AsInteger  ;
         m_.FieldByName('defMinStay').AsInteger         := rSet.FieldByName('defMinStay').AsInteger  ;
+        m_.FieldByName('defMaxStay').AsInteger         := rSet.FieldByName('defMaxStay').AsInteger  ;
+        m_.FieldByName('defClosedToArrival').asBoolean     := rSet.FieldByName('defClosedToArrival').AsBoolean      ;
+        m_.FieldByName('defClosedToDeparture').asBoolean     := rSet.FieldByName('defClosedToDeparture').AsBoolean      ;
         m_.FieldByName('NonRefundable').asBoolean     := rSet.FieldByName('NonRefundable').AsBoolean      ;
         m_.FieldByName('AutoChargeCreditcards').asBoolean     := rSet.FieldByName('AutoChargeCreditcards').AsBoolean      ;
         m_.FieldByName('RateExtraBed').asfloat           := rSet.GetFloatValue(rSet.FieldByName('RateExtraBed'))          ;
@@ -502,6 +515,9 @@ begin
   zData.defRate := m_.FieldByName('defRate').asFloat;
   zData.defMaxAvailability := m_['defMaxAvailability'];
   zData.defMinStay := m_['defMinStay'];
+  zData.defMaxStay := m_['defMaxStay'];
+  zData.defClosedToArrival := m_['defClosedToArrival'];
+  zData.defClosedToDeparture := m_['defClosedToDeparture'];
   zData.NonRefundable := m_['NonRefundable'];
   zData.AutoChargeCreditcards := m_['AutoChargeCreditcards'];
   zData.RateExtraBed := m_['RateExtraBed'];
@@ -553,6 +569,9 @@ begin
     tvDatadefStopSale.Options.Editing         := zAllowGridEdit;
     tvDatadefRate.Options.Editing         := zAllowGridEdit;
     tvDatadefMinStay.Options.Editing         := zAllowGridEdit;
+    tvDatadefMaxStay.Options.Editing         := zAllowGridEdit;
+    tvDatadefClosedToArrival.Options.Editing         := zAllowGridEdit;
+    tvDatadefClosedToDeparture.Options.Editing         := zAllowGridEdit;
     tvDatadefMaxAvailability.Options.Editing         := zAllowGridEdit;
     tvDataNonRefundable.Options.Editing         := zAllowGridEdit;
     tvDataAutoChargeCreditcards.Options.Editing         := zAllowGridEdit;
@@ -776,6 +795,9 @@ begin
     zData.defRate           := dataset.FieldByName('defRate').asfloat;
     zData.defMaxAvailability := m_['defMaxAvailability'];
     zData.defMinStay         := m_['defMinStay'];
+    zData.defMaxStay         := m_['defMaxStay'];
+    zData.defClosedToArrival         := m_['defClosedToArrival'];
+    zData.defClosedToDeparture         := m_['defClosedToDeparture'];
     zData.NonRefundable         := m_['NonRefundable'];
     zData.AutoChargeCreditcards         := m_['AutoChargeCreditcards'];
     zData.RateExtraBed         := m_['RateExtraBed'];
@@ -966,6 +988,9 @@ begin
   dataset['defStopSale']     := false;
   dataset['defMaxAvailability'] := 0;
   dataset['defMinStay']         := 0;
+  dataset['defMaxStay']         := 0;
+  dataset['defClosedToArrival']         := False;
+  dataset['defClosedToDeparture']         := False;
   dataset['NonRefundable'] := False;
   dataset['AutoChargeCreditcards'] := False;
   dataset['RateExtraBed'] := 0.00;
@@ -1169,6 +1194,11 @@ begin
         ACCESS_OPEN, ResourceParameters);
 end;
 
+procedure TfrmRoomTypesGroups2.tvDataColumn2PropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
+begin
+  openDynamicRates(actNone, '', '', m_['Code'])
+end;
+
 procedure TfrmRoomTypesGroups2.tvDataDataControllerFilterChanged(Sender: TObject);
 begin
   chkFilter;
@@ -1258,6 +1288,9 @@ begin
   m_['defStopSale']     := zData.defStopSale;
   m_['defMaxAvailability'] := zData.defMaxAvailability;
   m_['defMinStay']         := zData.defMinStay;
+  m_['defMaxStay']         := zData.defMaxStay;
+  m_['defClosedToArrival']         := zData.defClosedToArrival;
+  m_['defClosedToDeparture']         := zData.defClosedToDeparture;
   m_['NonRefundable'] := zData.NonRefundable;
   m_['AutoChargeCreditcards'] := zData.AutoChargeCreditcards;
   m_['RateExtraBed'] := zData.RateExtraBed;

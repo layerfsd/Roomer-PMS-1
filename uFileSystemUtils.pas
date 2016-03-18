@@ -1,7 +1,7 @@
 unit uFileSystemUtils;
 interface
 
-uses System.SysUtils, Registry, Winapi.Windows, System.IOUtils, Controls, ShellAPI;
+uses Types, System.SysUtils, Registry, Winapi.Windows, System.IOUtils, Controls, ShellAPI;
 
 type
   TEXEVersionData = record
@@ -18,6 +18,7 @@ function GetTempDir: string;
 function GetTempPath: string;
 function GetWindowsPath: string;
 function GetSystemPath: string;
+function GetFilesInSpecifiedDirectory(const Path, Masks: string): TStringDynArray;
 procedure TouchFile(FileName: string; Date: TDateTime; createIfNotExists : Boolean = False);
 procedure TouchNewFile(FileName: string; Date: TDateTime);
 function FormatByteSize(const bytes: Longword): string;
@@ -35,7 +36,7 @@ function _GetEXEVersionData(const FileName : string) : TEXEVersionData;
 
 implementation
 
-uses ShlObj;
+uses ShlObj, Masks, StrUtils;
 
 const
   _K  = 1024; //byte
@@ -241,6 +242,25 @@ begin
   if Result[Length(Result)] <> '\' then
     Result := Result + '\';
   StrDispose(WinDir);
+end;
+
+function GetFilesInSpecifiedDirectory(const Path, Masks: string): TStringDynArray;
+var
+  MaskArray: TStringDynArray;
+  Predicate: TDirectory.TFilterPredicate;
+begin
+  MaskArray := SplitString(Masks, ';');
+  Predicate :=
+    function(const Path: string; const SearchRec: TSearchRec): Boolean
+    var
+      Mask: string;
+    begin
+      for Mask in MaskArray do
+        if MatchesMask(SearchRec.Name, Mask) then
+          exit(True);
+      exit(False);
+    end;
+  Result := TDirectory.GetFiles(Path, Predicate);
 end;
 
 { Getting the System Directory }

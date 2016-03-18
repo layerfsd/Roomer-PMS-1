@@ -194,30 +194,19 @@ object FrmReservationCancellationDialog: TFrmReservationCancellationDialog
     Align = alBottom
     Color = clWhite
     Font.Charset = DEFAULT_CHARSET
-    Font.Color = 2302755
+    Font.Color = clBlack
     Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = []
     ParentFont = False
     TabOrder = 1
-    BoundLabel.Indent = 0
-    BoundLabel.Font.Charset = DEFAULT_CHARSET
-    BoundLabel.Font.Color = clWindowText
-    BoundLabel.Font.Height = -11
-    BoundLabel.Font.Name = 'Tahoma'
-    BoundLabel.Font.Style = []
-    BoundLabel.Layout = sclLeft
-    BoundLabel.MaxWidth = 0
-    BoundLabel.UseSkinColor = True
     SkinData.SkinSection = 'EDIT'
-    ExplicitLeft = 15
-    ExplicitTop = 204
   end
   object sCheckBox1: TsCheckBox
     Left = 200
     Top = 154
-    Width = 200
-    Height = 19
+    Width = 203
+    Height = 17
     Caption = 'Send Cancellation confirmation'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -229,5 +218,26 @@ object FrmReservationCancellationDialog: TFrmReservationCancellationDialog
     SkinData.SkinSection = 'CHECKBOX'
     ImgChecked = 0
     ImgUnchecked = 0
+  end
+  object FormStore: TcxPropertiesStore
+    Components = <
+      item
+        Component = Owner
+        Properties.Strings = (
+          'Height'
+          'Left'
+          'Position'
+          'Top'
+          'Width')
+      end
+      item
+        Component = sCheckBox1
+        Properties.Strings = (
+          'Checked')
+      end>
+    StorageName = 'Software\Roomer\FormStatus\frmReservationCancellationDialog'
+    StorageType = stRegistry
+    Left = 450
+    Top = 126
   end
 end

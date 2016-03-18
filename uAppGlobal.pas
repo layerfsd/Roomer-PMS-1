@@ -201,6 +201,7 @@ Type
     function GetPackageItems: TRoomerDataSet;
     function GetPersonProfiles: TRoomerDataSet;
     function GetBookKeepingCodes: TRoomerDataSet;
+    function GetChannelManagersSet: TRoomerDataSet;
    public
       constructor Create;
       destructor Destroy; override;
@@ -306,6 +307,7 @@ Type
       property RoomTypeRulesSet: TRoomerDataSet read GetRoomTypeRulesSet;
       property RoomTypesSet    : TRoomerDataSet read GetRoomTypesSet;
       property ChannelsSet     : TRoomerDataSet read GetChannelsSet;
+      property ChannelManagersSet : TRoomerDataSet read GetChannelManagersSet;
       property CurrenciesSet   : TRoomerDataSet read GetCurrenciesSet;
       property ControlSet      : TRoomerDataSet read GetControlSet;
       property CustomersSet    : TRoomerDataSet read GetCustomersSet;
@@ -1673,6 +1675,11 @@ end;
 function TGlobalSettings.GetRoomTypeGroups: TRoomerDataSet;
 begin
   result := GetDataSetFromDictionary('roomtypegroups');
+end;
+
+function TGlobalSettings.GetChannelManagersSet: TRoomerDataSet;
+begin
+  result := GetDataSetFromDictionary('channelmanagers');
 end;
 
 function TGlobalSettings.GetChannelPlanCodes: TRoomerDataSet;

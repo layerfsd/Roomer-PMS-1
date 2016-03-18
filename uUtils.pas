@@ -54,6 +54,12 @@ function Split(Text : String; Delimiter : String) : TStringList;
 function SplitStringToTStrings(const aSeparator, aString: String; aMax: Integer = 0): TStrings;
 procedure parseFirstAndLastNameFromFullname(Fullname : String; var firstName : String; var lastName : String);
 
+function iifS(condition : Boolean; TrueResult : String; FalseResult : String) : String;
+function iif(condition : Boolean; TrueResult : Integer; FalseResult : Integer) : Integer;
+//function iif(condition : Boolean; TrueResult : Double; FalseResult : Double) : Double; overload;
+//function iif(condition : Boolean; TrueResult : Char; FalseResult : Char) : Char; overload;
+//function iif(condition : Boolean; TrueResult : Boolean; FalseResult : Boolean) : Boolean; overload;
+
 procedure DuplicateCurrentRow(Dataset:Tdataset);
 
 function GetPixelColourAsColor(const PixelCoords: TPoint): TColor;
@@ -166,6 +172,47 @@ begin
   list.StrictDelimiter := True; // needed otherwise whitespace is used to delimit
   list.DelimitedText := text;
 end;
+
+function iifS(condition : Boolean; TrueResult : String; FalseResult : String) : String;
+begin
+  if condition then
+    result := TrueResult
+  else
+    result := FalseResult;
+end;
+
+function iif(condition : Boolean; TrueResult : Integer; FalseResult : Integer) : Integer;
+begin
+  if condition then
+    result := TrueResult
+  else
+    result := FalseResult;
+end;
+
+//function iif(condition : Boolean; TrueResult : Double; FalseResult : Double) : Double;
+//begin
+//  if condition then
+//    result := TrueResult
+//  else
+//    result := FalseResult;
+//end;
+//
+//function iif(condition : Boolean; TrueResult : Char; FalseResult : Char) : Char;
+//begin
+//  if condition then
+//    result := TrueResult
+//  else
+//    result := FalseResult;
+//end;
+//
+//function iif(condition : Boolean; TrueResult : Boolean; FalseResult : Boolean) : Boolean;
+//begin
+//  if condition then
+//    result := TrueResult
+//  else
+//    result := FalseResult;
+//end;
+
 
 procedure LoadRichEditFromString(RichEdit : TsRichEdit; text : AnsiString);
 var stream : TMemoryStream;

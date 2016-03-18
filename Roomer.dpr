@@ -11,7 +11,6 @@ program Roomer;
 uses
   {$ifdef UseFastMM}
   FastMM4 in 'FastMM\FastMM4.pas',
-  FastMM4Messages in 'FastMM\FastMM4Messages.pas',
   {$endif}
   Forms,
   uMain in 'uMain.pas' {frmMain},
@@ -216,7 +215,10 @@ uses
   uHotelStatusOfflineReport in 'OfflineReports\uHotelStatusOfflineReport.pas',
   uOfflineReportDesign in 'OfflineReports\uOfflineReportDesign.pas' {BaseOfflineReportDesign: TDataModule},
   uHotelStatusOfflineReportDesign in 'OfflineReports\uHotelStatusOfflineReportDesign.pas',
-  uOfflineReportGrid in 'OfflineReports\uOfflineReportGrid.pas' {frmOfflineReports};
+  uOfflineReportGrid in 'OfflineReports\uOfflineReportGrid.pas' {frmOfflineReports},
+  uResourceManagement in 'Resources\uResourceManagement.pas',
+  uFrmSelectCloudConfiguration in 'Configs\uFrmSelectCloudConfiguration.pas' {FrmSelectCloudConfiguration},
+  uDynamicPricing in 'Rates\uDynamicPricing.pas' {frmDynamicPricing};
 
 {$R *.RES}
 

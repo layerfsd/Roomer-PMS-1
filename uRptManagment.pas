@@ -289,7 +289,7 @@ begin
     s := s+' FROM predefineddates pdd '#10;
     s := s+' WHERE '#10; // pdd.date>='2014-08-01' AND pdd.date<='2014-08-30'
     s := s+'     ((pdd.date>='+_DateToDbDate(zDateFrom,true)+' AND pdd.date<='+_DateToDbDate(zDateTo,true)+')) '#10;
-    s := s+' AND ISNULL((SELECT id FROM roomsdate WHERE ADate=pdd.date AND ResFlag<>'+_db(STATUS_DELETED)+' LIMIT 1)) '#10;
+    s := s+' AND ISNULL((SELECT id FROM roomsdate WHERE ADate=pdd.date AND NOT(ResFlag IN ('+_db(STATUS_DELETED)+','+_db(STATUS_CANCELLED)+')) LIMIT 1)) '#10;
     s := s+' GROUP BY pdd.date '#10;
     s := s+' ORDER BY pdd.date '#10;
     s := s+' ) baseData '#10;

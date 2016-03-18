@@ -315,6 +315,7 @@ begin
   constants.Add('shDeletePerson', 'Delete Person');
   constants.Add('shDeleteVATCode', 'Delete VAT Code');
   constants.Add('shDeleteBookKeepingCode', 'Delete book-keeping code');
+  constants.Add('shDeleteDynamicPriceRule', 'Delete the selected dynamic price rule?');
   //
   constants.Add('shFilterOnRecordsOf', 'Filter on - %d records of %d are visible');
   constants.Add('shEnterTextToFilterGrid', 'Enter text to filter grid');
@@ -739,6 +740,7 @@ begin
   constants.Add('shTx_Invoice_CurrencyDifferent', 'Customer''s currency is different from currency of this invoice.');
   constants.Add('shTx_Invoice_PrintAndPay', 'Print and pay not allowed when in price changes');
   constants.Add('shTx_Invoice_DeleteItem', 'Delete item ');
+  constants.Add('shTx_Invoice_DeleteSelectedItems', 'Delete selected items ');
   constants.Add('shTx_Invoice_SetTemp', 'Set room to temp ');
   constants.Add('shTx_Invoice_SaleNotSelected', 'Sale item not selected !');
   constants.Add('shTx_Invoice_TakeItemFromInvoice', 'Take [%s] from invoice?');
@@ -755,6 +757,7 @@ begin
   constants.Add('shTx_Invoice_ErrorInTotal', 'Error in total %s');
   constants.Add('shTx_Invoice_MoveItemToGroupInvoice', 'Move item %s: %s' + #10 +
                                              'to group invoice? ');
+  constants.Add('shTx_Invoice_MoveSelectedItemsToGroupInvoice', 'Move selected items to group invoice? ');
   constants.Add('shTx_Invoice_MoveItemToRoomInvoice', 'Move item %s: %s' + #10 +
                                              'to room %s? ');
   constants.Add('shTx_Invoice_FailedGroupInvoice', 'Moving to group invoice failed - Cancel ' + #10 +

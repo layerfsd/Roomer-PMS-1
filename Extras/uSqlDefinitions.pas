@@ -1,7 +1,7 @@
 unit uSqlDefinitions;
 
 interface
-   uses hData, System.SysUtils, _Glob, PrjConst, uRoomerDefinitions, ud, uDateUtils;
+   uses hData, System.SysUtils, _Glob, PrjConst, uRoomerDefinitions, ud, uDateUtils, uUtils;
 
 
 const HOTEL_PERFORMANCE_QUERY_BETWEEN_DATES = 'SELECT ADate, RoomsSold/RoomCount*100 AS OCC, ' +
@@ -713,7 +713,7 @@ var
   ' FROM '+
   '   roomreservations '+
   ' WHERE '+
-  '   (Reservation = %d) AND (GroupAccount <> 0) ' ;
+  '   (Reservation = %d) AND (InvoiceIndex = %d) AND (GroupAccount <> 0) ' ;
 
   //TESTED NOT
   select_Invoice_LoadLines1 : string =
@@ -795,6 +795,15 @@ var
   '  , ID '+
   ' FROM '+
   '   invoiceheads '+
+  '  WHERE '+
+  '    (Reservation =%d ) AND (RoomReservation = %d) AND (InvoiceNumber = - 1) ' ;
+
+  update_Invoice_actItemToRoomInvoiceExecute : string =
+  ' UPDATE invoiceheads Set '+
+  '    Total = %s '+
+  '  , TotalWOVAT = %s '+
+  '  , TotalVAT = %s '+
+  '  , ID '+
   '  WHERE '+
   '    (Reservation =%d ) AND (RoomReservation = %d) AND (InvoiceNumber = - 1) ' ;
 
@@ -5442,6 +5451,9 @@ select_roomTypesGroups : string =
 ' ,defAvailability '#10+
 ' ,defMaxAvailability '#10+
 ' ,defMinStay '#10+
+' ,defMaxStay '#10+
+' ,defClosedToArrival '#10+
+' ,defClosedToDeparture '#10+
 ' ,defStopSale '#10+
 ' ,NonRefundable '#10+
 ' ,AutoChargeCreditcards '#10+
@@ -5974,7 +5986,7 @@ function GetListOfRoomReservationsFromToDate : string;
 
 function select_GuestsSearch_RunQuery2(getAll : boolean; DateSelMedhod : integer) : string;
 function Select_Invoice_LoadInvoice3(iRoomReservation : integer) : string;
-function Select_Invoice_LoadInvoice3_WithInvoiceIndex(iRoomReservation, InvoiceIndex : integer) : string;
+function Select_Invoice_LoadInvoice3_WithInvoiceIndex(iRoomReservation, iReservation, InvoiceIndex : integer; Customer : String) : string;
 function select_InvoiceList_BitBtn2Click(Medhod : integer) : string;
 function select_Main_refreshGuestList : string;
 function select_NationalReport3_getRoomInfo(location : string) : string;
@@ -5997,9 +6009,25 @@ function select_Convert(Direction : integer) : string;
 function select_FinishedInvoices2_Display(itType : TInvoiceTypes) : string;
 function GetRoomTypeAvailabilitySql(FromDate, ToDate : TDate) : String;
 
+function SELECT_DYNAMIC_RATES(chManCode, channelCode, RoomClass : String) : String;
 
 
 implementation
+
+function SELECT_DYNAMIC_RATES(chManCode, channelCode, RoomClass : String) : String;
+begin
+  result := 'SELECT dpr.*, rtg.Description AS Rate_Name, cm.Description AS ChannelManagerName, ch.Name AS ChannelName ' +
+      'FROM home100.DYNAMIC_PRICING_RULES dpr ' +
+      'JOIN roomtypegroups rtg ON rtg.code=dpr.ROOMTYPEGROUP_CODE ' +
+      'JOIN channels ch ON ch.channelManagerId=dpr.CHANNEL_ID ' +
+      'JOIN channelmanagers cm ON cm.code=dpr.CHANNEL_MANAGER_ID ' +
+      format('WHERE HOTEL_ID = ''%s'' ', [d.roomerMainDataSet.hotelId]) +
+      format('AND END_DATE_RANGE > %s ', [_db(dateToSqlString(now))]) +
+      iifS(TRIM(chManCode) = '', '', format('AND CHANNEL_MANAGER_ID = ''%s'' ', [chManCode])) +
+      iifS(TRIM(channelCode) = '', '', format('AND CHANNEL_ID = ''%s'' ', [channelCode]))+
+      iifS(TRIM(RoomClass) = '', '', format('AND ROOMTYPEGROUP_CODE = ''%s'' ', [RoomClass])) +
+      'ORDER BY START_DATE_RANGE';
+end;
 
 function GetListOfRoomReservationsPerDepartureDate : string;
 begin
@@ -6168,7 +6196,7 @@ begin
   result := s;
 end;
 
-function Select_Invoice_LoadInvoice3_WithInvoiceIndex(iRoomReservation, InvoiceIndex : integer) : string;
+function Select_Invoice_LoadInvoice3_WithInvoiceIndex(iRoomReservation, iReservation, InvoiceIndex : integer; Customer : String) : string;
 var
   s : string;
 begin
@@ -6176,19 +6204,31 @@ begin
   s := s+' SELECT '+#10;
   s := s+' rr.*, '+#10;
 
-  s := s+' (SELECT ContactEmail FROM reservations r WHERE r.Reservation=rr.Reservation) AS ContactEmail, '+#10;
+  s := s+'(SELECT GROUP_CONCAT(DISTINCT Email SEPARATOR '';'') ' +
+         ' FROM (SELECT Email FROM persons WHERE EMail <>'''' AND %s=%d ' +
+         ' UNION ALL ' +
+         ' SELECT EmailAddress FROM customers WHERE EmailAddress<>'''' AND Customer=%s ' +
+         ' UNION ALL ' +
+         ' SELECT ContactEmail FROM reservations WHERE ContactEmail <>'''' AND Reservation=%d ' +
+         ' UNION ALL ' +
+         ' SELECT CustomerEmail FROM reservations WHERE CustomerEmail <>'''' AND Reservation=%d ' +
+         ' ) xxx) AS ContactEmail,';
+//  s := s+' (SELECT ContactEmail FROM reservations r WHERE r.Reservation=rr.Reservation) AS ContactEmail, '+#10;
   s := s+' (SELECT Email FROM persons p WHERE p.RoomReservation=rr.RoomReservation AND p.MainName=1 LIMIT 1) AS GuestEmail, '+#10;
 
   s := s+' r.Description AS RoomDescription, '+#10;
   s := s+' rt.Description AS RoomTypeDescription, '+#10;
 
 
+
 //  s := s+' (SELECT COUNT(id) FROM persons WHERE %s=roomreservations.%s) AS numTaxGuests '+#10;
   if iRoomReservation = 0 then   //FRoomReservation = 0  // GroupInvoice
   begin
+    s := format(s, ['Reservation', iReservation, _db(Customer), iReservation, iReservation]);
     s := s+' (SELECT COUNT(id) FROM persons WHERE %s=rr.%s) AS numTaxGuests '+#10;
   end else
   begin
+    s := format(s, ['RoomReservation', iRoomReservation, _db(Customer), iReservation, iReservation]);
     s := s+' (SELECT COUNT(id) FROM persons WHERE %s=rr.%s) AS numTaxGuests '+#10;
   end;
 

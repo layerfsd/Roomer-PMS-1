@@ -70,7 +70,7 @@ object frmInvoice: TfrmInvoice
         1074
         157)
       object clabCurrency: TsLabel
-        Left = 632
+        Left = 661
         Top = 31
         Width = 57
         Height = 13
@@ -84,7 +84,7 @@ object frmInvoice: TfrmInvoice
         Font.Style = [fsBold]
       end
       object clabRate: TsLabel
-        Left = 656
+        Left = 685
         Top = 52
         Width = 33
         Height = 13
@@ -98,7 +98,7 @@ object frmInvoice: TfrmInvoice
         Font.Style = [fsBold]
       end
       object clabRefrence: TsLabel
-        Left = 632
+        Left = 661
         Top = 101
         Width = 57
         Height = 13
@@ -114,7 +114,7 @@ object frmInvoice: TfrmInvoice
         Font.Style = [fsBold]
       end
       object clabInvoice: TsLabel
-        Left = 628
+        Left = 657
         Top = 7
         Width = 56
         Height = 18
@@ -128,7 +128,7 @@ object frmInvoice: TfrmInvoice
         Font.Style = [fsBold]
       end
       object clabRoomGuest: TsLabel
-        Left = 615
+        Left = 644
         Top = 78
         Width = 74
         Height = 13
@@ -177,7 +177,7 @@ object frmInvoice: TfrmInvoice
       end
       object clabCountry: TsLabel
         Left = 2
-        Top = 134
+        Top = 137
         Width = 103
         Height = 13
         Alignment = taRightJustify
@@ -227,7 +227,7 @@ object frmInvoice: TfrmInvoice
         Font.Style = [fsBold]
       end
       object labTmpStatus: TsLabel
-        Left = 695
+        Left = 719
         Top = 11
         Width = 4
         Height = 13
@@ -240,7 +240,7 @@ object frmInvoice: TfrmInvoice
         Font.Style = []
       end
       object clabForeignCurrency: TsLabel
-        Left = 587
+        Left = 616
         Top = 124
         Width = 102
         Height = 13
@@ -255,7 +255,7 @@ object frmInvoice: TfrmInvoice
         Font.Style = [fsBold]
       end
       object edtCurrency: TsEdit
-        Left = 695
+        Left = 724
         Top = 28
         Width = 70
         Height = 20
@@ -280,7 +280,7 @@ object frmInvoice: TfrmInvoice
         BoundLabel.Font.Style = []
       end
       object rgrInvoiceType: TsRadioGroup
-        Left = 348
+        Left = 368
         Top = 0
         Width = 189
         Height = 151
@@ -301,7 +301,7 @@ object frmInvoice: TfrmInvoice
           'Cash')
       end
       object edtRate: TsEdit
-        Left = 695
+        Left = 724
         Top = 49
         Width = 70
         Height = 20
@@ -325,7 +325,7 @@ object frmInvoice: TfrmInvoice
         BoundLabel.Font.Style = []
       end
       object edtInvRefrence: TsEdit
-        Left = 695
+        Left = 724
         Top = 101
         Width = 160
         Height = 17
@@ -349,7 +349,7 @@ object frmInvoice: TfrmInvoice
         BoundLabel.Font.Style = []
       end
       object btnGetCurrency: TsButton
-        Left = 766
+        Left = 795
         Top = 28
         Width = 90
         Height = 20
@@ -359,7 +359,7 @@ object frmInvoice: TfrmInvoice
         SkinData.SkinSection = 'BUTTON'
       end
       object btnGetRate: TsButton
-        Left = 766
+        Left = 795
         Top = 49
         Width = 90
         Height = 20
@@ -369,7 +369,7 @@ object frmInvoice: TfrmInvoice
         SkinData.SkinSection = 'BUTTON'
       end
       object edtRoomGuest: TsEdit
-        Left = 695
+        Left = 724
         Top = 78
         Width = 160
         Height = 17
@@ -421,7 +421,7 @@ object frmInvoice: TfrmInvoice
       object edtPersonalId: TsEdit
         Left = 111
         Top = 42
-        Width = 231
+        Width = 253
         Height = 17
         AutoSize = False
         BorderStyle = bsNone
@@ -446,7 +446,7 @@ object frmInvoice: TfrmInvoice
       object edtName: TsEdit
         Left = 111
         Top = 61
-        Width = 231
+        Width = 253
         Height = 17
         AutoSize = False
         BorderStyle = bsNone
@@ -469,7 +469,7 @@ object frmInvoice: TfrmInvoice
       object edtAddress1: TsEdit
         Left = 111
         Top = 80
-        Width = 231
+        Width = 253
         Height = 17
         AutoSize = False
         BorderStyle = bsNone
@@ -492,7 +492,7 @@ object frmInvoice: TfrmInvoice
       object edtAddress2: TsEdit
         Left = 111
         Top = 99
-        Width = 231
+        Width = 253
         Height = 17
         AutoSize = False
         BorderStyle = bsNone
@@ -515,7 +515,7 @@ object frmInvoice: TfrmInvoice
       object edtAddress3: TsEdit
         Left = 111
         Top = 118
-        Width = 231
+        Width = 253
         Height = 17
         AutoSize = False
         BorderStyle = bsNone
@@ -537,8 +537,8 @@ object frmInvoice: TfrmInvoice
       end
       object edtAddress4: TsEdit
         Left = 111
-        Top = 134
-        Width = 231
+        Top = 137
+        Width = 253
         Height = 17
         AutoSize = False
         BorderStyle = bsNone
@@ -559,9 +559,9 @@ object frmInvoice: TfrmInvoice
         BoundLabel.Font.Style = []
       end
       object btnClearAddresses: TsButton
-        Left = 242
+        Left = 237
         Top = 19
-        Width = 99
+        Width = 126
         Height = 17
         Caption = 'Clear addresses'
         TabOrder = 14
@@ -621,7 +621,7 @@ object frmInvoice: TfrmInvoice
         WordWrap = True
       end
       object edtForeignCurrency: TsEdit
-        Left = 695
+        Left = 724
         Top = 124
         Width = 105
         Height = 17
@@ -650,8 +650,8 @@ object frmInvoice: TfrmInvoice
       object chkShowPackage: TsCheckBox
         Left = 906
         Top = 135
-        Width = 111
-        Height = 20
+        Width = 119
+        Height = 17
         Caption = 'Package on invoice'
         Anchors = [akTop, akRight]
         Checked = True
@@ -664,7 +664,7 @@ object frmInvoice: TfrmInvoice
       object btnGetCustomer: TsButton
         Left = 204
         Top = 19
-        Width = 35
+        Width = 27
         Height = 17
         Caption = '...'
         TabOrder = 20
@@ -1081,17 +1081,17 @@ object frmInvoice: TfrmInvoice
             Left = 0
             Top = 0
             Width = 1010
-            Height = 87
+            Height = 91
             Align = alTop
             BevelOuter = bvNone
             TabOrder = 1
             SkinData.SkinSection = 'PANEL'
             DesignSize = (
               1010
-              87)
+              91)
             object btnRoomToTemp: TsButton
               Left = 10
-              Top = 0
+              Top = 4
               Width = 130
               Height = 40
               Action = actRRtoTemp
@@ -1100,7 +1100,7 @@ object frmInvoice: TfrmInvoice
             end
             object btnAddItem: TsButton
               Left = 10
-              Top = 43
+              Top = 47
               Width = 130
               Height = 40
               Action = actAddLine
@@ -1109,7 +1109,7 @@ object frmInvoice: TfrmInvoice
             end
             object btnItemToTmp: TsButton
               Left = 141
-              Top = 0
+              Top = 4
               Width = 130
               Height = 40
               Action = actItemToTemp
@@ -1118,7 +1118,7 @@ object frmInvoice: TfrmInvoice
             end
             object btnRemoveItem: TsButton
               Left = 141
-              Top = 43
+              Top = 47
               Width = 130
               Height = 40
               Action = actDelLine
@@ -1127,7 +1127,7 @@ object frmInvoice: TfrmInvoice
             end
             object btnMoveItem: TsButton
               Left = 272
-              Top = 0
+              Top = 4
               Width = 130
               Height = 40
               Action = actItemToGroupInvoice
@@ -1139,7 +1139,7 @@ object frmInvoice: TfrmInvoice
             end
             object btnMoveRoom: TsButton
               Left = 403
-              Top = 0
+              Top = 4
               Width = 130
               Height = 40
               Caption = 'Move room item'
@@ -1151,7 +1151,7 @@ object frmInvoice: TfrmInvoice
             end
             object btnRemoveLodgingTax2: TsButton
               Left = 403
-              Top = 43
+              Top = 47
               Width = 130
               Height = 40
               Caption = 'Toggle lodging tax'
@@ -1161,7 +1161,7 @@ object frmInvoice: TfrmInvoice
             end
             object btnReservationNotes: TsButton
               Left = 272
-              Top = 43
+              Top = 47
               Width = 130
               Height = 40
               Caption = 'Reservation notes'
@@ -1171,7 +1171,7 @@ object frmInvoice: TfrmInvoice
             end
             object btnAddDownPayment: TsButton
               Left = 606
-              Top = 43
+              Top = 47
               Width = 131
               Height = 40
               Action = actDownPayment
@@ -1181,7 +1181,7 @@ object frmInvoice: TfrmInvoice
             end
             object btnEditDownPayment: TsButton
               Left = 738
-              Top = 43
+              Top = 47
               Width = 131
               Height = 40
               Anchors = [akTop, akRight]
@@ -1192,7 +1192,7 @@ object frmInvoice: TfrmInvoice
             end
             object btnDeleteDownpayment: TsButton
               Left = 870
-              Top = 43
+              Top = 47
               Width = 134
               Height = 40
               Anchors = [akTop, akRight]
@@ -1203,7 +1203,7 @@ object frmInvoice: TfrmInvoice
             end
             object btnSaveChanges: TsButton
               Left = 870
-              Top = 0
+              Top = 4
               Width = 134
               Height = 40
               Anchors = [akTop, akRight]
@@ -1225,9 +1225,9 @@ object frmInvoice: TfrmInvoice
           end
           object sPanel1: TsPanel
             Left = 0
-            Top = 87
+            Top = 91
             Width = 1010
-            Height = 253
+            Height = 249
             Align = alClient
             BevelOuter = bvNone
             Caption = 'sPanel1'
@@ -1237,17 +1237,19 @@ object frmInvoice: TfrmInvoice
             Padding.Bottom = 5
             TabOrder = 2
             SkinData.SkinSection = 'PANEL'
+            ExplicitTop = 87
+            ExplicitHeight = 253
             object agrLines: TAdvStringGrid
               Left = 10
               Top = 5
               Width = 990
-              Height = 243
+              Height = 239
               Cursor = crDefault
               Align = alClient
               BevelInner = bvNone
               BevelOuter = bvNone
               BorderStyle = bsNone
-              ColCount = 6
+              ColCount = 7
               DefaultRowHeight = 19
               DrawingStyle = gdsClassic
               FixedCols = 0
@@ -1257,7 +1259,7 @@ object frmInvoice: TfrmInvoice
               Font.Height = -12
               Font.Name = 'Courier New'
               Font.Style = []
-              Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goEditing]
+              Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goEditing, goThumbTracking]
               ParentFont = False
               ScrollBars = ssBoth
               TabOrder = 0
@@ -1271,6 +1273,7 @@ object frmInvoice: TfrmInvoice
               OnDblClickCell = agrLinesDblClickCell
               OnCanEditCell = agrLinesCanEditCell
               OnCellValidate = agrLinesCellValidate
+              OnCheckBoxClick = agrLinesCheckBoxClick
               OnColumnSize = agrLinesColumnSize
               ActiveCellFont.Charset = DEFAULT_CHARSET
               ActiveCellFont.Color = clWindowText
@@ -1312,7 +1315,7 @@ object frmInvoice: TfrmInvoice
                 'Larger than'
                 'Smaller than'
                 'Clear')
-              FixedColWidth = 103
+              FixedColWidth = 24
               FixedRowHeight = 19
               FixedFont.Charset = DEFAULT_CHARSET
               FixedFont.Color = clWindowText
@@ -1361,15 +1364,16 @@ object frmInvoice: TfrmInvoice
               SearchFooter.HintHighlight = 'Highlight occurrences'
               SearchFooter.MatchCaseCaption = 'Match case'
               SortSettings.DefaultFormat = ssAutomatic
-              Version = '7.9.1.0'
-              ExplicitTop = 4
+              Version = '7.9.1.1'
+              ExplicitHeight = 243
               ColWidths = (
-                103
-                324
-                87
-                81
-                103
-                23)
+                24
+                91
+                348
+                88
+                83
+                91
+                31)
             end
           end
         end
@@ -1440,8 +1444,8 @@ object frmInvoice: TfrmInvoice
               object chkReCalcPrices: TsCheckBox
                 Left = 9
                 Top = 20
-                Width = 203
-                Height = 19
+                Width = 195
+                Height = 20
                 Caption = 'Recalc price on guestcount  changes'
                 Checked = True
                 State = cbChecked
@@ -1453,8 +1457,8 @@ object frmInvoice: TfrmInvoice
               object chkAutoUpdateNullPrice: TsCheckBox
                 Left = 9
                 Top = 46
-                Width = 134
-                Height = 19
+                Width = 126
+                Height = 20
                 Caption = 'Auto update Null Price'
                 Checked = True
                 State = cbChecked
@@ -2643,12 +2647,6 @@ object frmInvoice: TfrmInvoice
     Left = 256
     Top = 376
   end
-  object MemData3: TdxMemData
-    Indexes = <>
-    SortOptions = []
-    Left = 368
-    Top = 368
-  end
   object mRoomRates: TdxMemData
     Indexes = <>
     SortOptions = []
@@ -2807,6 +2805,12 @@ object frmInvoice: TfrmInvoice
     end
     object mRoomResPackage: TWideStringField
       FieldName = 'Package'
+    end
+    object mRoomResInvoiceIndex: TIntegerField
+      FieldName = 'InvoiceIndex'
+    end
+    object mRoomResGroupAccount: TBooleanField
+      FieldName = 'GroupAccount'
     end
   end
   object mPayments: TdxMemData

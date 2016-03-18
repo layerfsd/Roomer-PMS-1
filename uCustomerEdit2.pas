@@ -39,7 +39,8 @@ uses
   , sCustomComboEdit
   , sCurrEdit
   , sSkinProvider, sMemo, Vcl.ComCtrls, sPageControl, cxGraphics, cxControls, cxLookAndFeels, cxLookAndFeelPainters, dxSkinsCore, dxSkinCaramel, dxSkinCoffee,
-  dxSkinDarkSide, dxSkinTheAsphaltWorld, dxSkinsDefaultPainters, cxContainer, cxEdit, cxTreeView, Vcl.Menus, sListView, sSplitter
+  dxSkinDarkSide, dxSkinTheAsphaltWorld, dxSkinsDefaultPainters, cxContainer, cxEdit, cxTreeView, Vcl.Menus, sListView, sSplitter, DragDrop, DropTarget,
+  DropComboTarget
 
   ;
 
@@ -127,6 +128,11 @@ type
     btnAddContact: TsButton;
     btnEditContact: TsButton;
     btnDeleteContact: TsButton;
+    pnlDocs: TsPanel;
+    btnDocuments: TsButton;
+    DropComboTarget1: TDropComboTarget;
+    timBlink: TTimer;
+    btnPasteFile: TsButton;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -156,6 +162,11 @@ type
     procedure lvDepartmentsDblClick(Sender: TObject);
     procedure btnDeleteContactClick(Sender: TObject);
     procedure btnDeleteDepartmentClick(Sender: TObject);
+    procedure btnDocumentsClick(Sender: TObject);
+    procedure edCustomerChange(Sender: TObject);
+    procedure DropComboTarget1Drop(Sender: TObject; ShiftState: TShiftState; APoint: TPoint; var Effect: Integer);
+    procedure timBlinkTimer(Sender: TObject);
+    procedure btnPasteFileClick(Sender: TObject);
   private
     { Private declarations }
 
@@ -197,8 +208,8 @@ uses
   , uPersons
   , uFrmCustomerDepartmentEdit
   , uGuestPortfolioEdit
-
-
+  , uFrmResources
+  , uResourceManagement
   , uDImages;
 
 
@@ -337,10 +348,30 @@ begin
   ActivateButtons;
 end;
 
+procedure TfrmCustomerEdit2.DropComboTarget1Drop(Sender: TObject; ShiftState: TShiftState; APoint: TPoint; var Effect: Integer);
+begin
+  if btnDocuments.Enabled then
+  begin
+    DropComboTargetDrop(format(CUSTOMER_DOCUMENTS_STATIC_RESOURCE_PATTERN, [edCustomer.Text]),
+                        ACCESS_RESTRICTED, Sender AS TDropComboTarget, ShiftState, APoint, Effect);
+    timBlink.Tag := 0;
+    timBlink.Enabled := False;
+    timBlink.Interval := 100;
+    timBlink.Enabled := True;
+  end;
+end;
+
 procedure TfrmCustomerEdit2.pgMainChange(Sender: TObject);
 begin
   if pgMain.ActivePageIndex = 2 then
     DisplayCustomerDepartments;
+end;
+
+procedure TfrmCustomerEdit2.btnDocumentsClick(Sender: TObject);
+begin
+  StaticResources('Customer Resources',
+        format(CUSTOMER_DOCUMENTS_STATIC_RESOURCE_PATTERN, [edCustomer.Text]),
+        ACCESS_RESTRICTED);
 end;
 
 function TfrmCustomerEdit2.SelectedCustomerDepartmentId : Integer;
@@ -395,6 +426,30 @@ begin
   end;
 end;
 
+procedure TfrmCustomerEdit2.timBlinkTimer(Sender: TObject);
+begin
+  timBlink.Enabled := False;
+  timBlink.Tag := timBlink.Tag + 1;
+  if timBlink.Tag < 7 then
+  begin
+    btnDocuments.SkinData.CustomColor := NOT (timBlink.Tag div 2 = timBlink.Tag / 2);
+    if btnDocuments.SkinData.CustomColor then
+    begin
+      btnDocuments.SkinData.ColorTone := clRed;
+      timBlink.Interval := 500;
+    end else
+    begin
+      btnDocuments.SkinData.ColorTone := clNone;
+      timBlink.Interval := 250;
+    end;
+    timBlink.Enabled := True;
+  end else
+  begin
+    btnDocuments.SkinData.ColorTone := clNone;
+    btnDocuments.SkinData.CustomColor := False;
+  end;
+end;
+
 procedure TfrmCustomerEdit2.tvDepartmentsChange(Sender: TObject; Node: TTreeNode);
 begin
 end;
@@ -411,6 +466,9 @@ begin
   RoomerLanguage.TranslateThisForm(self);
      glb.PerformAuthenticationAssertion(self);
   pgMain.ActivePageIndex := 0;
+
+  btnDocuments.Enabled := False;
+  btnPasteFile.Enabled := False;
   //**
 end;
 
@@ -465,6 +523,12 @@ begin
   pgMain.ActivePageIndex := 0;
 
   tabDepartments.TabVisible := NOT zInsert;
+end;
+
+procedure TfrmCustomerEdit2.edCustomerChange(Sender: TObject);
+begin
+  btnDocuments.Enabled := TRIM(edCustomer.Text) <> '';
+  btnPasteFile.Enabled := btnDocuments.Enabled;
 end;
 
 procedure TfrmCustomerEdit2.edCustomerExit(Sender: TObject);
@@ -747,6 +811,12 @@ begin
 end;
 
 
+
+procedure TfrmCustomerEdit2.btnPasteFileClick(Sender: TObject);
+begin
+  if DropComboTarget1.CanPasteFromClipboard then
+    DropComboTarget1.PasteFromClipboard;
+end;
 
 procedure TfrmCustomerEdit2.btnRatePlanClick(Sender: TObject);
 var

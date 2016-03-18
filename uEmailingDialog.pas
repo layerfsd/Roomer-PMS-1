@@ -74,11 +74,12 @@ uses uRoomerLanguage,
     uD,
     hData,
     uUtils,
-    uFileSystemUtils
+    uFileSystemUtils,
+    uResourceManagement
     ;
 
 function sendFileAsAttachment(recipient, _caption : String; attachments : TStringList) : Boolean;
-var list : TStrings;
+var list : TStringList;
 begin
   list := TStringList.Create;
   try
@@ -98,11 +99,13 @@ begin
   try
     _frmEmailingDialog.Caption := _Caption;
     _frmEmailingDialog.files := attachments;
+
     _frmEmailingDialog.edRecipient.Items.Clear;
     _frmEmailingDialog.edCC.Items.Clear;
     _frmEmailingDialog.edBCC.Items.Clear;
     for i := 0 to recipients.Count - 1 do
-      _frmEmailingDialog.edRecipient.Items.Add(recipients[i]);
+      if _frmEmailingDialog.edRecipient.Items.IndexOf(recipients[i]) < 0 then
+        _frmEmailingDialog.edRecipient.Items.Add(recipients[i]);
     _frmEmailingDialog.edCC.Items.Assign(_frmEmailingDialog.edRecipient.Items);
     _frmEmailingDialog.edBCC.Items.Assign(_frmEmailingDialog.edRecipient.Items);
     _frmEmailingDialog.edRecipient.ItemIndex := ABS(ORD(_frmEmailingDialog.edRecipient.Items.Count > 0)) - 1;

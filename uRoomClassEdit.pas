@@ -111,6 +111,10 @@ type
     sButton1: TsButton;
     cbxRatePlanType: TsComboBox;
     sLabel29: TsLabel;
+    sLabel30: TsLabel;
+    edtdefMaxStay: TsEdit;
+    cbxDefClosedToArrival: TsCheckBox;
+    cbxDefClosedToDeparture: TsCheckBox;
     procedure cbxconnectRateToMasterRateValueChanged(Sender: TObject);
     procedure cbxconnectSingleUseRateToMasterRateValueChanged(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -157,7 +161,8 @@ uses uMultiSelection,
      udImages,
      uUtils,
      uRoomerLanguage,
-     uFrmResources
+     uFrmResources,
+     uResourceManagement
      ;
 
 function openRoomTypeGroupEdit(var theData : recRoomTypeGroupHolder; isInsert : boolean; Rate_Plan_Types : TStrings) : boolean;
@@ -217,6 +222,9 @@ begin
   edtdefAvailability.Text := inttostr(zData.defAvailability);
   cbxdefStopSale.Checked := zData.defStopSale;
   edtdefMinStay.Text := inttostr(zData.defMinStay);
+  edtdefMaxStay.Text := inttostr(zData.defMaxStay);
+  cbxDefClosedToArrival.Checked := zData.defClosedToArrival;
+  cbxDefClosedToDeparture.Checked := zData.defClosedToDeparture;
   edtdefMaxAvailability.Text := inttostr(zData.defMaxAvailability);
   cbxNonRefundable.Checked := zData.NonRefundable;
   cbxAutoChargeCreditcards.Checked := zData.AutoChargeCreditcards;
@@ -346,6 +354,9 @@ begin
   zData.defAvailability := strToInt(edtdefAvailability.Text);
   zData.defStopSale := cbxdefStopSale.Checked;
   zData.defMinStay := strToInt(edtdefMinStay.Text);
+  zData.defMaxStay := strToInt(edtdefMaxStay.Text);
+  zData.defClosedToArrival := cbxDefClosedToArrival.Checked;
+  zData.defClosedToDeparture := cbxDefClosedToDeparture.Checked;
   zData.defMaxAvailability := strToInt(edtdefMaxAvailability.Text);
   zData.NonRefundable := cbxNonRefundable.Checked;
   zData.AutoChargeCreditcards := cbxAutoChargeCreditcards.Checked;

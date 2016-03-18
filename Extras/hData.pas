@@ -1153,6 +1153,9 @@ type
     defAvailability: integer;
     defStopSale: boolean;
     defMinStay: integer;
+    defMaxStay : Integer;
+    defClosedToArrival,
+    defClosedToDeparture : Boolean;
     defMaxAvailability: integer;
     NonRefundable: boolean;
     AutoChargeCreditcards: boolean;
@@ -2077,7 +2080,9 @@ uses
   uDayNotes, uPriceOBJ, uSqlDefinitions, uStringUtils, uAppGlobal, uRoomTypes2,
   uDateUtils,
   uActivityLogs,
-  uRoomerDefinitions
+  uRoomerDefinitions,
+  uAvailabilityPerDay,
+  PrjConst
   ;
 
 function LocalFloatValue(Value: String): double;
@@ -10567,6 +10572,9 @@ begin
     defRate := 0.00;
     defAvailability := 1;
     defMinStay := 0;
+    defMaxStay := 0;
+    defClosedToArrival := False;
+    defClosedToDeparture := False;
     defMaxAvailability := 0;
     defStopSale := false;
     NonRefundable := false;
@@ -10637,6 +10645,9 @@ begin
   s := s + '   ,defRate =' + _db(theData.defRate) + ' ' + #10;
   s := s + '   ,defAvailability   =' + _db(theData.defAvailability) + ' ' + #10;
   s := s + '   ,defMinStay =' + _db(theData.defMinStay) + ' ' + #10;
+  s := s + '   ,defMaxStay =' + _db(theData.defMaxStay) + ' ' + #10;
+  s := s + '   ,defClosedToArrival =' + _db(theData.defClosedToArrival) + ' ' + #10;
+  s := s + '   ,defClosedToDeparture =' + _db(theData.defClosedToDeparture) + ' ' + #10;
   s := s + '   ,defMaxAvailability   =' + _db(theData.defMaxAvailability) + ' ' + #10;
   s := s + '   ,defStopSale =' + _db(theData.defStopSale) + ' ' + #10;
   s := s + '   ,NonRefundable =' + _db(theData.NonRefundable) + ' ' + #10;
@@ -10695,6 +10706,9 @@ begin
   s := s + ' ,defRate ' + #10;
   s := s + ' ,defAvailability ' + #10;
   s := s + ' ,defMinStay ' + #10;
+  s := s + ' ,defMaxStay ' + #10;
+  s := s + ' ,defClosedToArrival ' + #10;
+  s := s + ' ,defClosedToDeparture ' + #10;
   s := s + ' ,defMaxAvailability ' + #10;
   s := s + ' ,defStopSale ' + #10;
   s := s + ' ,NonRefundable ' + #10;
@@ -10744,6 +10758,9 @@ begin
   s := s + '  ,' + _db(theData.defRate) + ' ' + #10;
   s := s + '  ,' + _db(theData.defAvailability) + ' ' + #10;
   s := s + '  ,' + _db(theData.defMinStay) + ' ' + #10;
+  s := s + '  ,' + _db(theData.defMaxStay) + ' ' + #10;
+  s := s + '  ,' + _db(theData.defClosedToArrival) + ' ' + #10;
+  s := s + '  ,' + _db(theData.defClosedToDeparture) + ' ' + #10;
   s := s + '  ,' + _db(theData.defMaxAvailability) + ' ' + #10;
   s := s + '  ,' + _db(theData.defStopSale) + ' ' + #10;
   s := s + '  ,' + _db(theData.NonRefundable) + ' ' + #10;
@@ -14828,7 +14845,9 @@ var
   Arrival: Tdate;
   Departure: Tdate;
 
-  temp : String;
+  s, temp : String;
+
+  AvailabilityPerDay : TAvailabilityPerDay;
 
 begin
   result := false;
@@ -14848,8 +14867,11 @@ begin
 
   realType := glb.LocateRoomType(oldType);
 
-  if d.getCangeAvailabilityInfo(RoomReservation, oldType, Status, Arrival, Departure) then
+  if d.getChangeAvailabilityInfo(RoomReservation, oldType, Status, Arrival, Departure) then
   begin
+    if g.qWarnWhenOverbooking then
+      if NOT IsAvailabilityThere(newRoomType, Arrival, Departure) then exit;
+
     ss := '';
     ss := ss + ' UPDATE roomreservations ';
     ss := ss + ' SET ';

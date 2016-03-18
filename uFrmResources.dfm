@@ -216,7 +216,7 @@ object FrmResources: TFrmResources
       OnDragDrop = lvResourcesDragDrop
       OnDragOver = lvResourcesDragOver
       OnSelectItem = lvResourcesSelectItem
-      ExplicitLeft = 3
+      ExplicitLeft = 0
     end
     object sPanel2: TsPanel
       Left = 0
@@ -278,8 +278,22 @@ object FrmResources: TFrmResources
     Top = 176
   end
   object PopupMenu1: TPopupMenu
+    OnPopup = PopupMenu1Popup
     Left = 224
     Top = 264
+    object C2: TMenuItem
+      Caption = 'Copy'
+      ShortCut = 16451
+      OnClick = C2Click
+    end
+    object P1: TMenuItem
+      Caption = 'Paste'
+      ShortCut = 16470
+      OnClick = P1Click
+    end
+    object N2: TMenuItem
+      Caption = '-'
+    end
     object V1: TMenuItem
       Caption = 'View'
       Default = True
@@ -324,5 +338,17 @@ object FrmResources: TFrmResources
     FilterIndex = 0
     Left = 160
     Top = 112
+  end
+  object DropComboTarget1: TDropComboTarget
+    DragTypes = [dtCopy, dtLink]
+    OnDrop = DropComboTarget1Drop
+    Target = Owner
+    Left = 372
+    Top = 304
+  end
+  object DropFileSource1: TDropFileSource
+    DragTypes = [dtCopy]
+    Left = 368
+    Top = 384
   end
 end

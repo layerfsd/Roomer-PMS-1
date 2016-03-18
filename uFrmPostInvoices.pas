@@ -51,6 +51,7 @@ uses ud
     , uFrmResources
     , uUtils
     , uFileSystemUtils
+    , uResourceManagement
     ;
 
 procedure PostInvoicesToBookKeepingSystem(invoiceList : String);
@@ -294,6 +295,7 @@ var lines, fld : TStringList;
 
 var firstRound : Boolean;
     s : String;
+    RoomerResourceManagement : TRoomerResourceManagement;
 begin
   if dlgSave.Execute then
   begin
@@ -322,7 +324,12 @@ begin
     begin
       lines := TStringList.Create;
       try
-        exportFileTemplate := DownloadResourceByName(ANY_FILE, exportFileTemplate, SubjectTemplate);
+        RoomerResourceManagement := TRoomerResourceManagement.Create(ANY_FILE, ACCESS_RESTRICTED);
+        try
+          exportFileTemplate := RoomerResourceManagement.DownloadResourceByName(exportFileTemplate, SubjectTemplate);
+        finally
+          RoomerResourceManagement.Free;
+        end;
         lines.LoadFromFile(exportFileTemplate);
         line := lines[0];
       finally
