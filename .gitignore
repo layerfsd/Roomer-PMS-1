@@ -47,3 +47,5 @@ Thumbs.db
 *.identcache
 *.orig
 *.tvsconfig
+*.local
+*.dsk
