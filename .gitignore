@@ -46,3 +46,6 @@ Thumbs.db
 *.gex
 *.identcache
 *.orig
+*.tvsconfig
+*.local
+*.dsk
