@@ -398,8 +398,7 @@ var
     PaymentData.confirmDate     := 2;
     PaymentData.PayDate         := _dateToDbdate(dtInvoicedate.date,false);
 
-
-    kbmInvoiceLines.DisableControls;
+    kbmPayments.DisableControls;
     try
       with PaymentData do
       begin
@@ -411,7 +410,7 @@ var
           AutoGen            := _GetCurrentTick;
           TypeIndex          := kbmPayments['TypeIndex'];
           InvoiceNumber      := zKeditInvoiceNumber;
-//          PayDate            := kbmInvoiceLines['PayDate'];
+          PayDate            := _dateToDbdate(dtInvoicedate.date,false);
           Customer           := kbmPayments['Customer'];
           PayType            := kbmPayments['PayType'];
           Amount             := kbmPayments['Amount']*-1;
@@ -429,16 +428,16 @@ var
 //          confirmDate        := kbmInvoiceLines['confirmDate'];
           Notes              := kbmPayments['notes'];
 
-
-          s := SQL_INS_Payment(paymentData);
-//          copyToClipboard(s);
-//          debugmessage(s);
-          ExecutionPlan.AddExec(S);
+//          if ((typeindex = 1) and (chkShowdownPayments.checked)) or (typeindex = 0) then
+//          begin
+              s := SQL_INS_Payment(paymentData);
+              ExecutionPlan.AddExec(S);
+//          end;
           kbmPayments.next;
         end;
       end;
     finally
-      kbmInvoiceLines.EnableControls
+      kbmPayments.EnableControls
     end;
   end;
 

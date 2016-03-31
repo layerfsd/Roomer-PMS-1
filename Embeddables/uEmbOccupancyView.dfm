@@ -40,6 +40,7 @@ object embOccupancyView: TembOccupancyView
       ParentFont = False
       ScrollBars = ssBoth
       TabOrder = 0
+      OnDrawCell = grdOccupancyDrawCell
       HoverRowCells = [hcNormal, hcSelected]
       OnGetAlignment = grdOccupancyGetAlignment
       ActiveCellFont.Charset = DEFAULT_CHARSET
@@ -133,7 +134,7 @@ object embOccupancyView: TembOccupancyView
       SelectionColor = clHighlight
       SelectionTextColor = clHighlightText
       SortSettings.DefaultFormat = ssAutomatic
-      Version = '7.9.1.0'
+      Version = '7.9.1.1'
       WordWrap = False
       ExplicitLeft = 2
       ExplicitTop = 2

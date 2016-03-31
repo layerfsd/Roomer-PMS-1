@@ -52,7 +52,6 @@ object frmMain: TfrmMain
     SunkenBorder = True
     UseOwnColor = True
     UseOwnSunkenBorder = True
-    ExplicitTop = 122
   end
   object panMain: TsPanel
     Left = 3
@@ -274,8 +273,6 @@ object frmMain: TfrmMain
           SortSettings.HeaderMirrorColor = 16380385
           SortSettings.HeaderMirrorColorTo = 16182488
           Version = '7.9.1.1'
-          ExplicitLeft = 1
-          ExplicitTop = -2
           ColWidths = (
             47
             49
@@ -1698,8 +1695,6 @@ object frmMain: TfrmMain
           OnMouseEnter = tabsViewMouseEnter
           SkinData.SkinSection = 'PAGECONTROL'
           SkinData.OuterEffects.Visibility = ovAlways
-          ExplicitLeft = -2
-          ExplicitTop = -3
         end
       end
       object __PanGridsHeader: TsPanel
@@ -2477,12 +2472,13 @@ object frmMain: TfrmMain
         Margins.Right = 0
         Margins.Bottom = 0
         HorzScrollBar.Visible = False
+        VertScrollBar.Position = 217
         Align = alClient
         TabOrder = 0
         SkinData.SkinSection = 'PANEL'
         object sSplitter1: TsSplitter
           Left = 0
-          Top = 492
+          Top = 275
           Width = 273
           Height = 8
           Cursor = crVSplit
@@ -2498,7 +2494,7 @@ object frmMain: TfrmMain
         end
         object lblBusyDownloading: TsLabel
           Left = 0
-          Top = 13
+          Top = -204
           Width = 273
           Height = 13
           Margins.Left = 10
@@ -2521,7 +2517,7 @@ object frmMain: TfrmMain
         end
         object lblCacheNotification: TsLabel
           Left = 0
-          Top = 0
+          Top = -217
           Width = 273
           Height = 13
           Margins.Left = 10
@@ -2544,7 +2540,7 @@ object frmMain: TfrmMain
         end
         object Panel5: TsPanel
           Left = 0
-          Top = 194
+          Top = -23
           Width = 273
           Height = 26
           Align = alTop
@@ -2574,15 +2570,19 @@ object frmMain: TfrmMain
         end
         object Chart1: TChart
           Left = 0
-          Top = 330
+          Top = 113
           Width = 273
           Height = 162
           Margins.Left = 10
           Margins.Top = 0
           Margins.Right = 0
           Margins.Bottom = 0
+          Foot.Font.Name = 'Segoe UI'
+          Legend.Font.Height = -8
+          Legend.Font.Name = 'Segoe UI'
           Legend.Visible = False
           SubTitle.Font.Color = clBlack
+          Title.Font.Height = -8
           Title.Text.Strings = (
             'Rooms')
           BottomAxis.LabelsFont.Height = -12
@@ -2623,7 +2623,7 @@ object frmMain: TfrmMain
         end
         object grdRoomStatusses: TAdvStringGrid
           Left = 0
-          Top = 500
+          Top = 283
           Width = 273
           Height = 50
           Cursor = crDefault
@@ -2775,7 +2775,7 @@ object frmMain: TfrmMain
         end
         object grdRoomClasses: TAdvStringGrid
           Left = 0
-          Top = 220
+          Top = 3
           Width = 273
           Height = 110
           Cursor = crDefault
@@ -2925,7 +2925,7 @@ object frmMain: TfrmMain
         end
         object pnlDateStatistics: TsPanel
           Left = 0
-          Top = 26
+          Top = -191
           Width = 273
           Height = 23
           Margins.Left = 10
@@ -2947,7 +2947,7 @@ object frmMain: TfrmMain
         end
         object pnlNotifications: TsPanel
           Left = 0
-          Top = 49
+          Top = -168
           Width = 273
           Height = 145
           Margins.Left = 10
@@ -3076,6 +3076,7 @@ object frmMain: TfrmMain
       Index = 0
     end
     object rbTabReservation: TdxRibbonTab
+      Active = True
       Caption = 'Reservation'
       Groups = <
         item
@@ -3156,7 +3157,6 @@ object frmMain: TfrmMain
       Index = 4
     end
     object System: TdxRibbonTab
-      Active = True
       Caption = 'System'
       Groups = <
         item
@@ -4529,10 +4529,6 @@ object frmMain: TfrmMain
         item
           Visible = True
           ItemName = 'btnJumpToRoomAndDate'
-        end
-        item
-          Visible = True
-          ItemName = 'btnGuestProfiles'
         end>
       OneOnRow = False
       Row = 0
@@ -4620,6 +4616,10 @@ object frmMain: TfrmMain
         end
         item
           Visible = True
+          ItemName = 'btnGuestProfiles'
+        end
+        item
+          Visible = True
           ItemName = 'btnPersonvipTypes'
         end>
       OneOnRow = False
@@ -4631,7 +4631,7 @@ object frmMain: TfrmMain
     object barinnBar6: TdxBar
       Caption = 'Countries'
       CaptionButtons = <>
-      DockedLeft = 213
+      DockedLeft = 201
       DockedTop = 0
       FloatLeft = 1324
       FloatTop = 8
@@ -4659,7 +4659,7 @@ object frmMain: TfrmMain
     object barinnRooms: TdxBar
       Caption = 'Rooms'
       CaptionButtons = <>
-      DockedLeft = 330
+      DockedLeft = 318
       DockedTop = 0
       FloatLeft = 1324
       FloatTop = 8
@@ -4691,7 +4691,7 @@ object frmMain: TfrmMain
     object barinnBar7: TdxBar
       Caption = 'Room price'
       CaptionButtons = <>
-      DockedLeft = 515
+      DockedLeft = 503
       DockedTop = 0
       FloatLeft = 1324
       FloatTop = 8
@@ -4723,7 +4723,7 @@ object frmMain: TfrmMain
     object barinnBar8: TdxBar
       Caption = 'Sale / payments'
       CaptionButtons = <>
-      DockedLeft = 679
+      DockedLeft = 667
       DockedTop = 0
       FloatLeft = 1324
       FloatTop = 8
@@ -4846,10 +4846,6 @@ object frmMain: TfrmMain
       ItemLinks = <
         item
           Visible = True
-          ItemName = 'btnLostAndFound'
-        end
-        item
-          Visible = True
           ItemName = 'btnEmployeeList'
         end
         item
@@ -4904,6 +4900,10 @@ object frmMain: TfrmMain
       FloatClientWidth = 0
       FloatClientHeight = 0
       ItemLinks = <
+        item
+          Visible = True
+          ItemName = 'btnLostAndFound'
+        end
         item
           Visible = True
           ItemName = 'btnResStat'
@@ -5193,7 +5193,7 @@ object frmMain: TfrmMain
     object barinnBar5: TdxBar
       Caption = 'System Actions'
       CaptionButtons = <>
-      DockedLeft = 661
+      DockedLeft = 692
       DockedTop = 0
       FloatLeft = 1337
       FloatTop = 8
@@ -5225,7 +5225,7 @@ object frmMain: TfrmMain
     object barinnBar9: TdxBar
       Caption = 'Templates'
       CaptionButtons = <>
-      DockedLeft = 873
+      DockedLeft = 904
       DockedTop = 0
       FloatLeft = 1278
       FloatTop = 8
@@ -24590,8 +24590,8 @@ object frmMain: TfrmMain
     Enabled = False
     Interval = 180000
     OnTimer = timMessagesTimer
-    Left = 776
-    Top = 632
+    Left = 768
+    Top = 608
   end
   object timHalt: TTimer
     Enabled = False
@@ -24670,8 +24670,21 @@ object frmMain: TfrmMain
     OnPopup = pupGroupsPopup
     Left = 424
     Top = 544
+    object R2: TMenuItem
+      Caption = 'Reservation Profile'
+      Default = True
+      OnClick = R2Click
+    end
+    object R3: TMenuItem
+      Caption = 'Room Profile'
+      OnClick = R3Click
+    end
+    object N9: TMenuItem
+      Caption = '-'
+    end
     object P2: TMenuItem
       Caption = 'Print registration form'
+      OnClick = P2Click
     end
     object P3: TMenuItem
       Caption = '-'

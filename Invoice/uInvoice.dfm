@@ -650,8 +650,8 @@ object frmInvoice: TfrmInvoice
       object chkShowPackage: TsCheckBox
         Left = 906
         Top = 135
-        Width = 119
-        Height = 17
+        Width = 111
+        Height = 20
         Caption = 'Package on invoice'
         Anchors = [akTop, akRight]
         Checked = True
@@ -1237,8 +1237,6 @@ object frmInvoice: TfrmInvoice
             Padding.Bottom = 5
             TabOrder = 2
             SkinData.SkinSection = 'PANEL'
-            ExplicitTop = 87
-            ExplicitHeight = 253
             object agrLines: TAdvStringGrid
               Left = 10
               Top = 5
@@ -1365,7 +1363,6 @@ object frmInvoice: TfrmInvoice
               SearchFooter.MatchCaseCaption = 'Match case'
               SortSettings.DefaultFormat = ssAutomatic
               Version = '7.9.1.1'
-              ExplicitHeight = 243
               ColWidths = (
                 24
                 91

@@ -25,6 +25,7 @@ uses
   , Hdata
   , ug
   , uManageFilesOnServer
+  , uActivityLogs
 
   , kbmMemTable
 
@@ -186,7 +187,6 @@ type
     tvDatacompensationPercentage: TcxGridDBColumn;
     tvDatahotelsBookingEngine: TcxGridDBColumn;
     m_RateRoundingText: TStringField;
-    m_roomClasses: TWideMemoField;
     Button1: TsButton;
     Button2: TsButton;
     Button3: TsButton;
@@ -201,6 +201,8 @@ type
     tvDataactivePlanCode: TcxGridDBColumn;
     m_ratesExcludingTaxes: TBooleanField;
     tvDataratesExcludingTaxes: TcxGridDBColumn;
+    tvDatarateRoundingType1: TcxGridDBColumn;
+    m_roomClasses: TWideStringField;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -358,6 +360,7 @@ begin
   rSet := CreateNewDataSet;
   try
     s := format(select_Channels, [zSortStr]);
+    CopyToClipboard(s);
     if rSet_bySQL(rSet, s) then
     begin
       if m_.active then
@@ -648,7 +651,8 @@ begin
     if not Del_Channel(zData) then
     begin
       abort;
-    end
+    end else
+      glb.LogChanges(DataSet, 'channels', DELETE_RECORD, 'Channel ID = ' + zData.channelManagerId + ', name = ' + zData.Name);
   end
   else
   begin
@@ -662,6 +666,7 @@ begin
     exit;
   tvData.GetColumnByFieldName('channelManagerId').Focused := true;
 end;
+
 
 procedure TfrmChannels.m_BeforePost(DataSet: TDataSet);
 var
@@ -700,6 +705,7 @@ begin
 
   if tvData.DataController.DataSource.State = dsEdit then
   begin
+    glb.LogChanges(DataSet, 'channels', CHANGE_FIELD, '');
     if UPD_Channel(zData) then
     begin
       glb.ForceTableRefresh;
@@ -721,6 +727,7 @@ begin
     end;
     if ins_Channel(zData, nID) then
     begin
+      glb.LogChanges(DataSet, 'channels', ADD_RECORD, 'Channel ID = ' + zData.channelManagerId + ', name = ' + zData.Name);
       glb.ForceTableRefresh;
     end
     else

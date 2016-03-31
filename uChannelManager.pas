@@ -172,7 +172,6 @@ type
     StoreMain: TcxPropertiesStore;
     m_code: TWideStringField;
     tvDatacode: TcxGridDBColumn;
-    m_channels: TWideMemoField;
     tvDatachannels: TcxGridDBColumn;
     m_webserviceURI: TWideStringField;
     tvDatawebserviceURI: TcxGridDBColumn;
@@ -198,6 +197,7 @@ type
     cLabFilter: TsLabel;
     edFilter: TsEdit;
     btnClear: TsSpeedButton;
+    m_schannels: TWideStringField;
     m_directConnection: TBooleanField;
     tvDatadirectConnection: TcxGridDBColumn;
     procedure FormCreate(Sender: TObject);
@@ -275,6 +275,7 @@ uses
     uD
   , uMultiSelection
   , uSqlDefinitions
+  , uActivityLogs
   , uDImages
   , u2dMatrix
   ;
@@ -396,6 +397,7 @@ begin
   finally
     freeandnil(rSet);
   end;
+  tvDatachannels.Width := 100;
   zFirstTime := true;
 end;
 
@@ -422,7 +424,7 @@ begin
 
   zData.portalAdminUsername := m_.fieldbyname('adminUsername').asstring;
   zData.portalAdminPassword := m_.fieldbyname('adminPassword').asstring;
-  zData.channels := m_.fieldbyname('channels').asstring;
+  zData.channels := m_.fieldbyname('schannels').asstring;
 end;
 
 procedure TfrmChannelManager.changeAllowgridEdit;
@@ -607,7 +609,7 @@ begin
 
       zData.portalAdminUsername := dataset.fieldbyname('adminUsername').asstring;
       zData.portalAdminPassword := dataset.fieldbyname('adminPassword').asstring;
-      zData.channels := dataset.fieldbyname('channels').asstring;
+      zData.channels := dataset.fieldbyname('schannels').asstring;
 
       if zPostState = 1 then
       begin
@@ -653,6 +655,7 @@ begin
   begin
     zPostData := true;
     zPostState   := 1;
+    glb.LogChanges(DataSet, 'channelmanagers', CHANGE_FIELD, '');
 
   end;
   if tvData.DataController.DataSource.State = dsInsert then
@@ -686,6 +689,7 @@ begin
 
     zPostData := true;
     zPostState   := 2;
+    glb.LogChanges(DataSet, 'channelmanagers', ADD_RECORD, 'Channel Managers ID = ' + dataset.FieldByName('Code').AsString + ', name = ' + dataset.FieldByName('Description').AsString);
   end;
 end;
 
@@ -722,12 +726,12 @@ begin
                     glb.ChannelsSet,
                     'id',
                     'name',
-                    m_['channels'],
+                    m_['schannels'],
                     True,
                     True,
                     'active',
                     m_,
-                    'channels');
+                    'schannels');
 end;
 
 procedure TfrmChannelManager.tvDataCellDblClick(Sender: TcxCustomGridTableView; ACellViewInfo: TcxGridTableDataCellViewInfo;
@@ -834,6 +838,7 @@ begin
       if hdata.Del_ChannelManagerByID(m_.fieldbyname('Id').asinteger) then
       begin
         try
+          glb.LogChanges(m_, 'channelmanagerss', DELETE_RECORD, 'Channel Manager ID = ' + m_.FieldByName('Code').AsString + ', name = ' + m_.FieldByName('Description').AsString);
           fillGridFromDataset(prevCode);
         except
         end;

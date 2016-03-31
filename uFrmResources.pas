@@ -935,7 +935,7 @@ end;
 
 procedure TFrmResources.RemoveFileForUpload(filename: String);
 begin
-
+  ResourceManagement.RemoveFileForUpload(filename);
 end;
 
 //procedure TFrmResources.WMDROPFILES(var msg: TWMDropFiles);

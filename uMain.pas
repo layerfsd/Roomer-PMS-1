@@ -700,6 +700,9 @@ type
     HTMLHint1: THTMLHint;
     timOfflineReports: TTimer;
     btnDynamicRateRules: TdxBarLargeButton;
+    R2: TMenuItem;
+    R3: TMenuItem;
+    N9: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
@@ -996,6 +999,9 @@ type
     procedure timOfflineReportsTimer(Sender: TObject);
     procedure btnDynamicRateRulesClick(Sender: TObject);
     procedure __cbxHotelsCloseUp(Sender: TObject);
+    procedure P2Click(Sender: TObject);
+    procedure R2Click(Sender: TObject);
+    procedure R3Click(Sender: TObject);
 
   private
     FrmMessagesTemplates: TFrmMessagesTemplates;
@@ -1816,6 +1822,38 @@ begin
     if SendNewReservationConfirmation(_iReservation) then
       MessageDlg(GetTranslatedText('shTxConfirmationEmailHasBeenSent'), mtConfirmation, [mbOk], 0);
   end;
+end;
+
+procedure TfrmMain.R2Click(Sender: TObject);
+var
+  iReservation: integer;
+  iRoomReservation: integer;
+begin
+  if mAllReservations.eof OR mAllReservations.BOF then
+    exit;
+  iRoomReservation := mAllReservations['RoomReservation'];
+  iReservation := mAllReservations['Reservation'];
+  if EditReservation(iReservation, iRoomReservation) then
+  begin
+  end;
+end;
+
+procedure TfrmMain.R3Click(Sender: TObject);
+var
+  iReservation: integer;
+  iRoomReservation: integer;
+  theData: recPersonHolder;
+begin
+  if mAllReservations.eof OR mAllReservations.BOF then
+    exit;
+
+  initPersonHolder(theData);
+  theData.RoomReservation := mAllReservations['RoomReservation'];
+  theData.Reservation := mAllReservations['Reservation'];
+  theData.name := mAllReservations['ReservationName'];
+
+  if openGuestProfile(actNone, theData) then
+    RefreshGrid;
 end;
 
 procedure TfrmMain.RedisplayGuestWindows;
@@ -5016,6 +5054,20 @@ begin
   end;
 end;
 
+procedure TfrmMain.P2Click(Sender: TObject);
+var
+  RoomResArray: IntegerArray;
+  iRoomReservation: integer;
+begin
+  if mAllReservations.eof OR mAllReservations.BOF then
+    exit;
+  iRoomReservation := mAllReservations['RoomReservation'];
+  SetLength(RoomResArray, 1);
+  RoomResArray[LOW(RoomResArray)] := iRoomReservation;
+
+  PrintRegistrationForm(RoomResArray);
+end;
+
 procedure TfrmMain.P5Click(Sender: TObject);
 begin
   if GetSelectedRoomInformation AND
@@ -6779,7 +6831,6 @@ begin
             end;
 
           end;
-
       end
       else
 

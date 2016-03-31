@@ -13,6 +13,8 @@ type
 
   TInvoiceAction = (ADD_LINE, DELETE_LINE, CHANGE_ITEM, ADD_PAYMENT, DELETE_PAYMENT, CHANGE_PAYMENT, PRINT_PROFORMA, PAY_AND_PRINT);
 
+  TTableAction = (ADD_RECORD, DELETE_RECORD, CHANGE_FIELD);
+
   TReservationAction = (NEW_RESERVATION,
                         CHANGE_RESERVATION,
                         DELETE_RESERVATION,
@@ -31,6 +33,15 @@ type
   TRateAction = (RATE_EDIT, STOP_EDIT, MIN_EDIT, MAX_EDIT);
 
   TOfflineReportAction = (REPORTEXCEPTION);
+
+procedure AddTableChangeActivityLog(const user : String;
+                                    action : TTableAction;
+                                    const TableName : String;
+                                    const RecId : Integer;
+                                    const OldValue : String;
+                                    const NewValue : String;
+                                    const moreInfo : String);
+
 
 procedure AddOfflineReportActivityLog(const user : String;
                                action : TOfflineReportAction;
@@ -260,6 +271,36 @@ begin
                             0,
                             '');
   AddToTextFile(GetDataFileLocationWithName(RESERVATION), sLine);
+end;
+
+procedure AddTableChangeActivityLog(const user : String;
+                                    action : TTableAction;
+                                    const TableName : String;
+                                    const RecId : Integer;
+                                    const OldValue : String;
+                                    const NewValue : String;
+                                    const moreInfo : String);
+var categoryName, actionName, sLine : String;
+begin
+  categoryName := GetEnumName(TypeInfo(TActivityType), Ord(TABLE_CHANGE));
+  actionName := GetEnumName(TypeInfo(TTableAction), Ord(action));
+
+  sLine := CreateXmlElement(user,
+                            uDateUtils.dateTimeToXmlString(now),
+                            categoryName,
+                            actionName,
+                            moreinfo,
+                            moreinfo,
+                            OldValue,
+                            NewValue,
+                            TableName,
+                            0,
+                            0,
+                            RecId,
+                            0,
+                            0,
+                            '');
+  AddToTextFile(GetDataFileLocationWithName(TABLE_CHANGE), sLine);
 end;
 
 

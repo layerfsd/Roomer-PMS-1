@@ -1567,6 +1567,16 @@ begin
     freeandnil(rSet);
   end;
 
+
+  if FKreditType = ktKredit then
+  begin
+    FinvTxtHeadPrePaid    := '';
+    FinvTxtHeadBalance    := '';
+    FivhTotal_prePaid := 0;
+    FivhTotal_Balance := 0;
+    exit;
+  end;
+
   rSet := CreateNewDataSet;
   try
     sql := format(select_get_prepaid, [InvoiceNumber]);
@@ -1598,6 +1608,9 @@ begin
   finally
     freeandnil(rSet);
   end;
+
+
+
 end;
 
 end.

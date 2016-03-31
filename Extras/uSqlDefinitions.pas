@@ -390,7 +390,7 @@ var
   ' sendMinStay, ' +
   ' maintenanceDays, ' +
   ' directConnection, ' +
-  ' channels ' +
+  ' CONVERT(channels, CHAR(255)) AS schannels ' +
   ' FROM channelmanagers ' +
   ' ORDER BY '+
   '  %s ';
@@ -5729,7 +5729,8 @@ select_channels : string = 'SELECT id, name, active, channelmanagerid, ' +
        'marketsegment, currencyid, managedbychannelmanager, CHANNEL_ARRANGES_PAYMENT, ' +
        'defaultchannel, push, customerid, color, ' +
        'rateroundingtype, compensationpercentage, hotelsbookingengine, directConnection, currency, ' +
-       'CAST(Wroomclasses AS CHAR(10000)) AS roomClasses, activePlanCode, ratesExcludingTaxes ' +
+//       'CAST(Wroomclasses AS CHAR(10000)) AS roomClasses, activePlanCode, ratesExcludingTaxes ' +
+       'Wroomclasses AS roomClasses, activePlanCode, ratesExcludingTaxes ' +
 'FROM ' +
 '( ' +
 'SELECT ch.id , ch.name, ch.active, ch.channelmanagerid, ' +

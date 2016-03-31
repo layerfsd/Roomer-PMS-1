@@ -3,7 +3,7 @@ object frmMakeKreditInvoice: TfrmMakeKreditInvoice
   Top = 0
   BorderStyle = bsDialog
   Caption = 'Create kredit Invoice'
-  ClientHeight = 544
+  ClientHeight = 606
   ClientWidth = 703
   Color = clBtnFace
   Constraints.MinHeight = 450
@@ -23,18 +23,18 @@ object frmMakeKreditInvoice: TfrmMakeKreditInvoice
     Left = 0
     Top = 0
     Width = 703
-    Height = 359
+    Height = 386
     Align = alTop
     TabOrder = 0
     SkinData.SkinSection = 'PANEL'
     DesignSize = (
       703
-      359)
+      386)
     object sGroupBox2: TsGroupBox
       Left = 9
       Top = 10
       Width = 216
-      Height = 79
+      Height = 95
       Caption = 'Create credit invoice by reference'
       TabOrder = 0
       SkinData.SkinSection = 'GROUPBOX'
@@ -46,7 +46,7 @@ object frmMakeKreditInvoice: TfrmMakeKreditInvoice
         Height = 21
         Color = clWhite
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 2302755
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -60,8 +60,8 @@ object frmMakeKreditInvoice: TfrmMakeKreditInvoice
       object chkCreateNew: TsCheckBox
         Left = 8
         Top = 47
-        Width = 136
-        Height = 20
+        Width = 144
+        Height = 17
         Caption = 'Create new from orginal'
         TabOrder = 1
         OnClick = chkCreateNewClick
@@ -72,7 +72,7 @@ object frmMakeKreditInvoice: TfrmMakeKreditInvoice
     end
     object sPanel2: TsPanel
       Left = 1
-      Top = 305
+      Top = 332
       Width = 701
       Height = 53
       Align = alBottom
@@ -129,7 +129,7 @@ object frmMakeKreditInvoice: TfrmMakeKreditInvoice
       Left = 426
       Top = 10
       Width = 264
-      Height = 103
+      Height = 95
       Caption = 'Dates'
       TabOrder = 2
       SkinData.SkinSection = 'GROUPBOX'
@@ -182,14 +182,14 @@ object frmMakeKreditInvoice: TfrmMakeKreditInvoice
         Color = clWhite
         EditMask = '!99/99/9999;1; '
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 2302755
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
         MaxLength = 10
         ParentFont = False
         TabOrder = 0
-        Text = '  .  .    '
+        Text = '  -  -    '
         CheckOnExit = True
         SkinData.SkinSection = 'EDIT'
         GlyphMode.Blend = 0
@@ -204,14 +204,14 @@ object frmMakeKreditInvoice: TfrmMakeKreditInvoice
         Color = clWhite
         EditMask = '!99/99/9999;1; '
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 2302755
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
         MaxLength = 10
         ParentFont = False
         TabOrder = 1
-        Text = '  .  .    '
+        Text = '  -  -    '
         CheckOnExit = True
         SkinData.SkinSection = 'EDIT'
         GlyphMode.Blend = 0
@@ -220,7 +220,7 @@ object frmMakeKreditInvoice: TfrmMakeKreditInvoice
     end
     object sGroupBox3: TsGroupBox
       Left = 10
-      Top = 134
+      Top = 161
       Width = 680
       Height = 165
       Anchors = [akLeft, akRight, akBottom]
@@ -378,7 +378,7 @@ object frmMakeKreditInvoice: TfrmMakeKreditInvoice
     end
     object btnCancelChanges: TsButton
       Left = 231
-      Top = 95
+      Top = 108
       Width = 189
       Height = 37
       Caption = 'Cancel chances'
@@ -390,9 +390,9 @@ object frmMakeKreditInvoice: TfrmMakeKreditInvoice
     end
     object sButton1: TsButton
       Left = 10
-      Top = 95
+      Top = 108
       Width = 215
-      Height = 36
+      Height = 37
       Caption = 'Refresh'
       Default = True
       ImageIndex = 28
@@ -416,7 +416,7 @@ object frmMakeKreditInvoice: TfrmMakeKreditInvoice
   end
   object panBtn: TsPanel
     Left = 0
-    Top = 501
+    Top = 563
     Width = 703
     Height = 43
     Align = alBottom
@@ -459,13 +459,13 @@ object frmMakeKreditInvoice: TfrmMakeKreditInvoice
   end
   object memExtratext: TsMemo
     Left = 0
-    Top = 359
+    Top = 386
     Width = 703
-    Height = 142
+    Height = 177
     Align = alClient
     Color = clWhite
     Font.Charset = DEFAULT_CHARSET
-    Font.Color = 2302755
+    Font.Color = clBlack
     Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = []
@@ -675,7 +675,7 @@ object frmMakeKreditInvoice: TfrmMakeKreditInvoice
     LoadedCompletely = False
     SavedCompletely = False
     FilterOptions = []
-    Version = '7.62.00 Standard Edition'
+    Version = '7.22.00 Standard Edition'
     LanguageID = 0
     SortID = 0
     SubLanguageID = 1
@@ -872,7 +872,7 @@ object frmMakeKreditInvoice: TfrmMakeKreditInvoice
     LoadedCompletely = False
     SavedCompletely = False
     FilterOptions = []
-    Version = '7.62.00 Standard Edition'
+    Version = '7.22.00 Standard Edition'
     LanguageID = 0
     SortID = 0
     SubLanguageID = 1
@@ -999,7 +999,7 @@ object frmMakeKreditInvoice: TfrmMakeKreditInvoice
     LoadedCompletely = False
     SavedCompletely = False
     FilterOptions = []
-    Version = '7.62.00 Standard Edition'
+    Version = '7.22.00 Standard Edition'
     LanguageID = 0
     SortID = 0
     SubLanguageID = 1

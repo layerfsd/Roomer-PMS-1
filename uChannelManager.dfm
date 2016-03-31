@@ -322,7 +322,8 @@ object frmChannelManager: TfrmChannelManager
         Width = 220
       end
       object tvDatachannels: TcxGridDBColumn
-        DataBinding.FieldName = 'channels'
+        Caption = 'Channels'
+        DataBinding.FieldName = 'schannels'
         PropertiesClassName = 'TcxButtonEditProperties'
         Properties.Buttons = <
           item
@@ -331,14 +332,12 @@ object frmChannelManager: TfrmChannelManager
           end>
         Properties.OnButtonClick = tvDatachannelsPropertiesButtonClick
       end
-      object tvDataactive: TcxGridDBColumn
-        DataBinding.FieldName = 'active'
-      end
       object tvDatadirectConnection: TcxGridDBColumn
-        Caption = 'direct'
         DataBinding.FieldName = 'directConnection'
         Visible = False
-        VisibleForCustomization = False
+      end
+      object tvDataactive: TcxGridDBColumn
+        DataBinding.FieldName = 'active'
       end
       object tvDatamaintenanceDays: TcxGridDBColumn
         DataBinding.FieldName = 'maintenanceDays'
@@ -461,6 +460,7 @@ object frmChannelManager: TfrmChannelManager
     Top = 168
     object prLink_grData: TdxGridReportLink
       Component = grData
+      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.GrayShading = True
@@ -473,6 +473,7 @@ object frmChannelManager: TfrmChannelManager
       PrinterPage.PageSize.Y = 297000
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
+      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       BuiltInReportLink = True
     end
   end
@@ -492,8 +493,9 @@ object frmChannelManager: TfrmChannelManager
       FieldName = 'Description'
       Size = 45
     end
-    object m_directConnection: TBooleanField
-      FieldName = 'directConnection'
+    object m_schannels: TWideStringField
+      FieldName = 'schannels'
+      Size = 255
     end
     object m_maintenanceDays: TIntegerField
       FieldName = 'maintenanceDays'
@@ -525,10 +527,6 @@ object frmChannelManager: TfrmChannelManager
     object m_Id: TIntegerField
       FieldName = 'Id'
     end
-    object m_channels: TWideMemoField
-      FieldName = 'channels'
-      BlobType = ftWideMemo
-    end
     object m_webserviceURI: TWideStringField
       FieldName = 'webserviceURI'
       Size = 255
@@ -547,6 +545,9 @@ object frmChannelManager: TfrmChannelManager
     end
     object m_sendMinStay: TBooleanField
       FieldName = 'sendMinStay'
+    end
+    object m_directConnection: TBooleanField
+      FieldName = 'directConnection'
     end
   end
   object StoreMain: TcxPropertiesStore

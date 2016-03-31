@@ -89,7 +89,6 @@ type
   private
     procedure GetResources;
     function GetTableInfo: TRoomerDataSet;
-    procedure RemoveFileForUpload(filename: String);
     function GetTableInfoOpen: TRoomerDataSet;
     function GetCount: Integer;
     function GetResource(index: Integer): TResource;
@@ -99,6 +98,7 @@ type
 
     procedure Refresh;
 
+    procedure RemoveFileForUpload(filename: String);
     function UploadFile(onlyFilename, filename: String): String;
     function DownloadResourceByName(name: String; var Subject: String): String;
     function StaticResourceListAsStrings: TStrings;

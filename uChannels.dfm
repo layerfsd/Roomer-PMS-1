@@ -490,6 +490,9 @@ object frmChannels: TfrmChannels
         DataBinding.FieldName = 'hotelsBookingEngine'
         Width = 54
       end
+      object tvDatarateRoundingType1: TcxGridDBColumn
+        DataBinding.FieldName = 'rateRoundingType'
+      end
     end
     object lvData: TcxGridLevel
       GridView = tvData
@@ -595,6 +598,11 @@ object frmChannels: TfrmChannels
     object m_currencyId: TIntegerField
       FieldName = 'currencyId'
     end
+    object m_roomClasses: TWideStringField
+      DisplayWidth = 2096
+      FieldName = 'roomClasses'
+      Size = 2096
+    end
     object m_Currency: TWideStringField
       FieldName = 'Currency'
       Size = 5
@@ -631,10 +639,6 @@ object frmChannels: TfrmChannels
     object m_RateRoundingText: TStringField
       FieldName = 'RateRoundingText'
       Size = 30
-    end
-    object m_roomClasses: TWideMemoField
-      FieldName = 'roomClasses'
-      BlobType = ftWideMemo
     end
     object m_CHANNEL_ARRANGES_PAYMENT: TBooleanField
       FieldName = 'CHANNEL_ARRANGES_PAYMENT'

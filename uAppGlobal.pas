@@ -20,6 +20,7 @@ uses
   , objDayFreeRooms
   , uMessageList
   , uRoomerLanguage
+  , uActivityLogs
 
   , stdCtrls
   , comCtrls
@@ -206,6 +207,7 @@ Type
       constructor Create;
       destructor Destroy; override;
 
+      procedure LogChanges(DataSet: TDataSet; tableName : String; action: TTableAction; descriptor: String);
       procedure locateId(rSet: TDataset; id: Integer);
       procedure FillRoomAndTypeGrid(agrRooms : TStringGrid;
                                     Location : TSet_Of_Integer;
@@ -459,6 +461,63 @@ begin
   tablesList.Clear;
   FreeAndNil(tablesList);
 end;
+
+procedure TGlobalSettings.LogChanges(DataSet: TDataSet; tableName : String; action : TTableAction; descriptor : String);
+var i : Integer;
+    Field : TField;
+    Value, OldValue : String;
+begin
+  if action = CHANGE_FIELD then
+  begin
+    for i := 0 to DataSet.FieldCount - 1 do
+    begin
+      Field := DataSet.Fields[i];
+      if Field.DataType IN [ftUnknown, ftString, ftSmallint, ftInteger, ftWord,
+                                        ftBoolean, ftFloat, ftCurrency, ftDate, ftTime, ftDateTime,
+                                        ftAutoInc, ftMemo, ftFmtMemo, ftFixedChar, ftWideString,
+                                        ftLargeint, ftTimeStamp, ftWideMemo, ftLongWord, ftShortint,
+                                        ftByte, ftExtended, ftSingle] then
+      begin
+        Value := VarToStr(Field.Value);
+        OldValue := VarToStr(Field.OldValue);
+        if Value <> OldValue then
+          AddTableChangeActivityLog(d.roomerMainDataSet.username,
+                                    action,
+                                    tableName + '.' + field.FieldName,
+                                    DataSet['id'],
+                                    OldValue,
+                                    Value,
+                                    '');
+      end;
+    end;
+  end else
+  if action = DELETE_RECORD then
+  begin
+    AddTableChangeActivityLog(d.roomerMainDataSet.username,
+                              action,
+                              tableName,
+                              DataSet['id'],
+                              descriptor,
+                              '',
+                              format('User %s deleted record with id %d, description: %s',
+                                     [d.roomerMainDataSet.username,
+                                      DataSet['id'],
+                                      descriptor]));
+  end else
+  if action = ADD_RECORD then
+  begin
+    AddTableChangeActivityLog(d.roomerMainDataSet.username,
+                              action,
+                              tableName,
+                              -1,
+                              descriptor,
+                              '',
+                              format('User %s added record with description: %s',
+                                     [d.roomerMainDataSet.username,
+                                      descriptor]));
+  end;
+end;
+
 
 procedure TGlobalSettings.ReloadPreviousGuests;
 const PREV_GUESTS_SQL = 'SELECT DISTINCT * FROM ' +

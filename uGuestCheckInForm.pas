@@ -610,7 +610,7 @@ begin
           try
             RoomTaxEntities := TInvoiceRoomEntityList.Create(True);
             RoomTaxEntities.Add(TInvoiceRoomEntity.Create(tempRSet['RoomRentItem'], tempRSet['Guests'], tempRSet['Nights'],
-              tempRSet['Price'] / tempRSet['Nights'], tempRSet['VAT'] / tempRSet['Nights']));
+              tempRSet['Price'] / tempRSet['Nights'], tempRSet['VAT'] / tempRSet['Nights'], 0));
             ItemTaxEntities := TInvoiceItemEntityList.Create(True);
 
             ItemTypeInfo := d.Item_Get_ItemTypeInfo(trim(g.qRoomRentItem));

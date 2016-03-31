@@ -15,14 +15,19 @@ type
     pnlEmbeddable: TsPanel;
     grdOccupancy: TAdvStringGrid;
     procedure grdOccupancyGetAlignment(Sender: TObject; ARow, ACol: Integer; var HAlign: TAlignment; var VAlign: TVAlignment);
+    procedure grdOccupancyDrawCell(Sender: TObject; ACol, ARow: Integer; Rect: TRect; State: TGridDrawState);
   private
     fromDate, toDate: TDateTime;
     FOccupancyViewType: TOccupancyViewType;
+    FCell0FontSize: Integer;
     procedure TranslateAll;
     procedure RefreshStats;
     procedure SetOccupancyViewType(const Value: TOccupancyViewType);
     function GetOriginalParentHeight: Integer;
     procedure SetOriginalParentHeight(const Value: Integer);
+    procedure CheckResizeFont;
+    function ResizeFont(Canvas : TCanvas; width : Integer; text : String) : Integer;
+    procedure SetCell0FontSize(const Value: Integer);
     { Private declarations }
   protected
     FOriginalParentHeight : Integer;
@@ -38,6 +43,8 @@ type
     procedure Reset;
     property OccupancyViewType : TOccupancyViewType read FOccupancyViewType write SetOccupancyViewType;
     property OriginalParentHeight : Integer read GetOriginalParentHeight write SetOriginalParentHeight;
+
+    property Cell0FontSize : Integer read FCell0FontSize write SetCell0FontSize;
   end;
 
 var
@@ -48,6 +55,12 @@ implementation
 {$R *.dfm}
 
 { TembOccupancyView }
+
+procedure TembOccupancyView.SetCell0FontSize(const Value: Integer);
+begin
+  FCell0FontSize := Value;
+  grdOccupancy.Resize;
+end;
 
 procedure TembOccupancyView.SetCellWidth(ACol, AWidth: Integer);
 begin
@@ -171,13 +184,53 @@ begin
     grdOccupancy.Cells[0,5] := GetTranslatedText('shUI_OOO');
     grdOccupancy.Cells[0,6] := GetTranslatedText('shUI_AverageDailyRate');
   end;
-
+  CheckResizeFont;
 end;
 
 
 function TembOccupancyView.GetOriginalParentHeight: Integer;
 begin
   result := FOriginalParentHeight;
+end;
+
+function TembOccupancyView.ResizeFont(Canvas : TCanvas; width : Integer; text : String) : Integer;
+begin
+  while (Canvas.TextWidth(text) > width) AND (Canvas.Font.Size >= 7) do
+    Canvas.Font.Size := Canvas.Font.Size - 1;
+
+  Result := Canvas.Font.Size;
+end;
+
+procedure TembOccupancyView.CheckResizeFont;
+var
+  i, iLen: Integer;
+  sLongest, s : String;
+begin
+  iLen := 0;
+  sLongest := '';
+  with grdOccupancy do
+  begin
+    for i := 0 to grdOccupancy.RowCount - 1 do
+    begin
+      s := grdOccupancy.Cells[0, i];
+      if Canvas.TextWidth(s) > iLen then
+      begin
+        iLen := Canvas.TextWidth(s);
+        sLongest := s;
+      end;
+    end;
+  end;
+  Cell0FontSize := ResizeFont(grdOccupancy.Canvas, grdOccupancy.ColWidths[0], sLongest);
+end;
+
+procedure TembOccupancyView.grdOccupancyDrawCell(Sender: TObject; ACol, ARow: Integer; Rect: TRect; State: TGridDrawState);
+begin
+  if (ACol = 0) AND (ARow >= 0) then
+  begin
+    grdOccupancy.Canvas.Font.Size := FCell0FontSize;
+    grdOccupancy.Canvas.FillRect(Rect);
+    grdOccupancy.Canvas.TextOut(Rect.Left + 2, Rect.Top + 2, grdOccupancy.Cells[ACol, ARow]);
+  end;
 end;
 
 procedure TembOccupancyView.grdOccupancyGetAlignment(Sender: TObject; ARow, ACol: Integer; var HAlign: TAlignment; var VAlign: TVAlignment);
@@ -194,6 +247,7 @@ begin
   grdOccupancy.RowHeights[1] := grdOccupancy.RowHeights[0];
   grdOccupancy.RowHeights[2] := grdOccupancy.RowHeights[0];
 
+  FCell0FontSize := grdOccupancy.Font.Size;
   FOriginalParentHeight := prnt.Height;
   FOccupancyViewType := ovtDefault;
 end;

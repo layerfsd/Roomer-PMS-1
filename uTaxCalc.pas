@@ -53,12 +53,14 @@ type
       Nights : double;
       Price : Double;
       Vat : Double;
+      Discount : Double;
     public
       constructor Create(_RoomItem : String;
                          _Guests : Integer;
                          _Nights : double;
                          _Price : Double;
-                         _Vat : Double);
+                         _Vat : Double;
+                         _Discount : Double);
     end;
 
     TInvoiceItemEntity = class
@@ -839,12 +841,13 @@ end;
 
 { TRoomTaxEntity }
 
-constructor TInvoiceRoomEntity.Create(_RoomItem: String; _Guests : integer; _Nights: double; _Price, _Vat: Double);
+constructor TInvoiceRoomEntity.Create(_RoomItem: String; _Guests : integer; _Nights: double; _Price, _Vat, _Discount: Double);
 begin
   RoomItem := _RoomItem;
   Guests := _Guests;
   Nights := _Nights;
   Price := _Price;
+  Discount := _Discount;
   Vat := _Vat;
 end;
 

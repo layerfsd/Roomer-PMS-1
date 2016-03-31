@@ -526,6 +526,7 @@ type
     procedure ShowHideExtraOptions;
     procedure BlinkCombo;
     function buildSetStatementMinMax(var oldResultValue: String; minDirty, maxDirty: Boolean; minValue, maxValue: Integer): String;
+    procedure CleanUpRedundantRoomClassesInAvailbilities;
   protected
     procedure CreateParams(var Params: TCreateParams); override;
   public
@@ -1045,9 +1046,9 @@ begin
       if assigned(PriceData) then
       begin
         if isPriceCell(iColCounter, iRowCounter) then
-          rateGrid.Cells[iColCounter, iRowCounter] := Trim(FloatToStrF(PriceData.price, ffNumber, 12, NumDecimals(PriceData.rateRoundingType)))
+          rateGrid.Cells[iColCounter, iRowCounter] := Trim(FloatToStrF(PriceData.price, ffFixed, 12, NumDecimals(PriceData.rateRoundingType)))
         else if isSingleUsePriceRow(iRowCounter) then
-          rateGrid.Cells[iColCounter, iRowCounter] := Trim(FloatToStrF(PriceData.SingleUsePrice, ffNumber, 12, NumDecimals(PriceData.rateRoundingType)));
+          rateGrid.Cells[iColCounter, iRowCounter] := Trim(FloatToStrF(PriceData.SingleUsePrice, ffFixed, 12, NumDecimals(PriceData.rateRoundingType)));
       end;
     end;
 end;
@@ -1828,8 +1829,8 @@ begin
                   end;
                 end;
 
-                if (PriceData.FMinStay > PriceData.FMaxStay) AND (PriceData.FMaxStay <> 0) then
-                   PriceData.FMaxStay := PriceData.FMinStay;
+//                if (PriceData.FMinStay > PriceData.FMaxStay) AND (PriceData.FMaxStay <> 0) then
+//                   PriceData.FMaxStay := PriceData.FMinStay;
 
                 sql := format('SELECT %d AS _Id, %s', [PriceData.Id, sql]);
 
@@ -2115,6 +2116,16 @@ begin
   Application.ProcessMessages;
 end;
 
+procedure TfrmChannelAvailabilityManager.CleanUpRedundantRoomClassesInAvailbilities;
+var sql : String;
+begin
+  sql := 'DELETE FROM channelratesavailabilities ' +
+         'WHERE date >= CURRENT_DATE ' +
+         'AND ((roomClassId IN (SELECT id FROM roomtypegroups rtg WHERE rtg.id=channelratesavailabilities.roomclassId AND rtg.Code != rtg.TopClass)) ' +
+         'OR ISNULL((SELECT id FROM roomtypegroups rtg WHERE rtg.id=channelratesavailabilities.roomclassId)))';
+  RoomerDataSet.SystemFreeExecute(sql);
+end;
+
 procedure TfrmChannelAvailabilityManager.btnSaveClick(Sender: TObject);
 var
   iRow, iCol: integer;
@@ -2204,6 +2215,7 @@ begin
     SetAvailability.free;
     sql.free;
     grid.Invalidate;
+    CleanUpRedundantRoomClassesInAvailbilities;
     EndProject;
   end;
 end;
@@ -3253,7 +3265,7 @@ begin
               iRateCol := trunc(RateSet['date']) - trunc(startDate) + 1;
               price := RateSet['price'];
 
-              rateGrid.Cells[iRateCol, iRateRow] := Trim(FloatToStrF(price, ffNumber, 12, NumDecimals(AvailSet['rateRoundingType'])));
+              rateGrid.Cells[iRateCol, iRateRow] := Trim(FloatToStrF(price, ffFixed {ffNumber}, 12, NumDecimals(AvailSet['rateRoundingType'])));
               PriceData := TPriceData.Create(
                 RateSet['id'],
                 RateSet['rtgCode'],
@@ -3294,7 +3306,7 @@ begin
 
               if isCurrentDirectConnection then
               begin
-                rateGrid.Cells[iRateCol, iRateRow + iCountLine] := Trim(FloatToStrF(RateSet['singleUsePrice'], ffNumber, 12, NumDecimals(AvailSet['rateRoundingType'])));
+                rateGrid.Cells[iRateCol, iRateRow + iCountLine] := Trim(FloatToStrF(RateSet['singleUsePrice'], ffFixed, 12, NumDecimals(AvailSet['rateRoundingType'])));
                 inc(iCountLine);
               end;
 
@@ -3471,7 +3483,7 @@ begin
   PriceData.price := value;
   rateGrid.OnCellValidate := nil;
   try
-    rateGrid.Cells[iCol, iRow] := Trim(FloatToStrF(PriceData.price, ffNumber, 12, NumDecimals(PriceData.rateRoundingType)));
+    rateGrid.Cells[iCol, iRow] := Trim(FloatToStrF(PriceData.price, ffFixed, 12, NumDecimals(PriceData.rateRoundingType)));
   finally
     rateGrid.OnCellValidate := rateGridCellValidate;
   end;
@@ -3482,7 +3494,7 @@ begin
   PriceData.SingleUsePrice := value;
   rateGrid.OnCellValidate := nil;
   try
-    rateGrid.Cells[iCol, iRow] := Trim(FloatToStrF(PriceData.SingleUsePrice, ffNumber, 12, NumDecimals(PriceData.rateRoundingType)));
+    rateGrid.Cells[iCol, iRow] := Trim(FloatToStrF(PriceData.SingleUsePrice, ffFixed, 12, NumDecimals(PriceData.rateRoundingType)));
   finally
     rateGrid.OnCellValidate := rateGridCellValidate;
   end;
@@ -3733,7 +3745,7 @@ begin
     end;
   end
   else
-    result := StrToFloatDef(value, 0);
+    result := _StrToFloat(value);
 end;
 
 function TfrmChannelAvailabilityManager.RoundValue(RoundType: integer; value: Double): Double;
@@ -4057,10 +4069,10 @@ begin
   end;
 end;
 
-
 procedure TfrmChannelAvailabilityManager.ForceFullAvailability;
 begin
   ForceAvailabilityForCurrentPeriod;
+  CleanUpRedundantRoomClassesInAvailbilities;
   d.roomerMainDataSet.DoCommand('UPDATE channelrates cr SET cr.availabilityDirty=1 WHERE cr.date>=CURRENT_DATE');
   d.roomerMainDataSet.DoCommand('UPDATE channelratesavailabilities cra SET cra.dirty=1 WHERE cra.date>=CURRENT_DATE');
 end;
@@ -4913,7 +4925,7 @@ begin
 
         if PriceData.minStay > 1 then
           hintstr := hintstr + getExtraLine + format(ACTIVE_SETTING_RESTRICTION, ['Minimum days', PriceData.minStay]);
-        if PriceData.MaxStay > 1 then
+        if PriceData.MaxStay >= 1 then
           hintstr := hintstr + getExtraLine + format(ACTIVE_SETTING_RESTRICTION, ['Maximum days', PriceData.MaxStay]);
 
         if PriceData.stopSell then
@@ -5081,7 +5093,7 @@ begin
                 RSet.First;
                 if NOT RSet.EOF then
                   rateGrid.Cells[iCol, iRow] :=
-                    Trim(FloatToStrF(RSet['Price'], ffNumber, 12, NumDecimals(TPriceData(rateGrid.Objects[iCol, iRow]).rateRoundingType)));
+                    Trim(FloatToStrF(RSet['Price'], ffFixed, 12, NumDecimals(TPriceData(rateGrid.Objects[iCol, iRow]).rateRoundingType)));
               end;
             end;
       end;
