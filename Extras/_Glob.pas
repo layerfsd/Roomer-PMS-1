@@ -91,6 +91,7 @@ function _db(const aBool : boolean)    : string; Overload;
 function _db(const aFloat : Extended)  : string; Overload;
 function _db(const aFloat : double)    : string; Overload;
 function _db(const aDate  : TdateTime) : string; Overload;
+function _dbDT(const aDate : TDateTime)  : string;
 function _db(const aDate : TDate)  : string; Overload;
 function _dbDateAndTime(const aDate : TDateTime; qouted : boolean=true)  : string;
 
@@ -2106,6 +2107,14 @@ var
   S : string;
 begin
   datetimetostring(S, 'yyyy-mm-dd', aDate);
+  Result := quotedstr(S);
+end;
+
+function _dbDT(const aDate : TDateTime)  : string;
+var
+  S : string;
+begin
+  datetimetostring(S, 'yyyy-mm-dd hh:MM:ss', aDate);
   Result := quotedstr(S);
 end;
 

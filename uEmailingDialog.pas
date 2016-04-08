@@ -217,9 +217,18 @@ begin
 end;
 
 procedure TFrmEmailingDialog.sButton1Click(Sender: TObject);
+var bcc : String;
 begin
+  bcc := trim(edBcc.Text);
+  if g.qDefaultSendCCEmailToHotel then
+  begin
+    if bcc = '' then
+      bcc := ctrlGetString('CompanyEmail')
+    else
+      bcc := bcc + ',' + ctrlGetString('CompanyEmail');
+  end;
   d.RoomerMainDataset.sendEmailOpenAPI(edSubject.Text, hData.ctrlGetString('CompanyEmail'),
-        edRecipient.Text, edCc.Text, edBcc.Text, edEmailText.Text, simpleTextTosimpleHtml(edEmailText.Text), files);
+        edRecipient.Text, edCc.Text, bcc, edEmailText.Text, simpleTextTosimpleHtml(edEmailText.Text), files);
   Close;
 end;
 

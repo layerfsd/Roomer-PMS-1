@@ -2753,7 +2753,10 @@ begin
     aGrid.RemoveCheckBox(0, iRow);
   aGrid.Objects[0, iRow] := nil;
   for i := 0 to aGrid.ColCount - 1 do
+  begin
     aGrid.Cells[i, iRow] := '';
+    aGrid.Objects[i, iRow] := nil;
+  end;
 end;
 
 procedure DeleteRow(aGrid : TAdvStringGrid; iRow : integer);

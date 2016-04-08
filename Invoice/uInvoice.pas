@@ -579,7 +579,7 @@ type
     zLstRooms: TList;
     SelectableRooms: TRoomInfoList;
     zInvoiceNumber: integer;
-    zInvoiceDate: TDate;
+    zInvoiceDate: TDateTime;
     zConfirmDate: TDate;
     zPayDate: TDate;
 
@@ -860,9 +860,11 @@ const
             'DELETE FROM payments WHERE invoiceNumber=%d'
             );
 
-  REMOVE_REDUNDANT_CREDIT_INVOICES : Array[0..1] OF String = (
-            'DELETE FROM invoicelines WHERE SplitNumber = 1 AND InvoiceNumber = -1',
-            'DELETE FROM invoiceheads WHERE SplitNumber = 1 AND InvoiceNumber = -1'
+  REMOVE_REDUNDANT_INVOICES : Array[0..2] OF String = (
+                                          // Credit invoices                          // Proforma invoices
+            'DELETE FROM invoicelines WHERE (SplitNumber = 1 AND InvoiceNumber = -1) OR (InvoiceNumber > 1000000000)',
+            'DELETE FROM invoiceheads WHERE (SplitNumber = 1 AND InvoiceNumber = -1) OR (InvoiceNumber > 1000000000)',
+            'DELETE FROM payments WHERE InvoiceNumber > 1000000000'
             );
 
 procedure EditInvoice(reservation, RoomReservation, SplitNumber, InvoiceIndex: integer;
@@ -941,23 +943,25 @@ var
   i, l: integer;
   check : Boolean;
 begin
-  EmptyRow(aGrid, iRow);
+//  EmptyRow(aGrid, iRow);
   RemoveAllCheckboxes;
-  if (iRow = 1) and (aGrid.RowCount = 2) then
-  begin
-  end
-  else
-  begin
-    for i := iRow + 1 to aGrid.RowCount - 1 do
-    begin
-      for l := 0 to aGrid.ColCount - 1 do
-      begin
-        aGrid.Cells[l, i - 1] := aGrid.Cells[l, i];
-        aGrid.Objects[l, i - 1] := aGrid.Objects[l, i];
-      end;
-    end;
-    aGrid.RowCount := aGrid.RowCount - 1;
-  end;
+  agrLines.RemoveRows(iRow, 1);
+//  if (iRow = 1) and (aGrid.RowCount = 2) then
+//  begin
+//  end
+//  else
+//  begin
+//    for i := iRow + 1 to aGrid.RowCount - 1 do
+//    begin
+//      for l := 0 to aGrid.ColCount - 1 do
+//      begin
+//        aGrid.Cells[l, i - 1] := aGrid.Cells[l, i];
+//        aGrid.Objects[l, i - 1] := aGrid.Objects[l, i];
+//      end;
+//    end;
+//    aGrid.RowCount := aGrid.RowCount - 1;
+//    EmptyRow(aGrid, aGrid.RowCount - 1);   // BHG
+//  end;
   ForceRowChange;
 end;
 
@@ -1245,7 +1249,9 @@ var
   invoiceLine: TInvoiceLine;
 begin
   // --
-  invoiceLine := Lines[idx];
+  InvoiceLine := CellInvoiceLine(iRow);
+  if NOT Assigned(InvoiceLine) then
+    invoiceLine := Lines[idx];
 
   agrLines.Cells[col_Item, iRow] := invoiceLine.FItem;
   agrLines.Cells[col_Description, iRow] := invoiceLine.FText;
@@ -1543,6 +1549,7 @@ begin
     // --
     // agrLines.Objects[col_Item, agrLines.RowCount - 1] := pointer(100);
     agrLines.InsertRows(iAddAt, 1);
+    EmptyRow(agrLines, iAddAt);
     // agrLines.RowCount := agrLines.RowCount + 1;
     DisplayLine(iAddAt, idx);
   finally
@@ -1637,7 +1644,7 @@ begin
   zS := zS + ', ' + _db(rgrInvoiceType.itemIndex);
   zS := zS + ', ' + _db(g.qUser);
   zS := zS + ', ' + _db(Date);
-  zS := zS + ', ' + _db(zInvoiceDate);
+  zS := zS + ', ' + _dbDT(zInvoiceDate);
   zS := zS + ', ' + _db(zConfirmDate);
   zS := zS + ', ' + _db(zPayDate);
   zS := zS + ', ' + _db(edtCurrency.Text);
@@ -1787,6 +1794,7 @@ begin
           zS := zS + ', isPackage ' + #10;
           zS := zS + ', confirmdate ' + #10;
           zS := zS + ', confirmAmount ' + #10;
+          zS := zS + ', staffCreated ' + #10;
 
           zS := zS + ')' + #10;
           zS := zS + 'Values' + #10;
@@ -1822,6 +1830,7 @@ begin
           zS := zS + ', ' + _db(isPackage);
           zS := zS + ', ' + _db(confirmDate);
           zS := zS + ', ' + _db(confirmAmount);
+          zS := zS + ', ' + _db(d.roomerMainDataSet.username);
 
           zS := zS + ')' + #10;
 
@@ -1844,7 +1853,7 @@ end;
 
 Procedure TfrmInvoice.InitInvoiceGrid;
 var
-  i: Integer;
+  iWidth, i: Integer;
 begin
   EmptyStringGrid(agrLines);
   agrLines.ColCount := col_autogen + 1;
@@ -1864,6 +1873,25 @@ begin
   agrLines.Cells[col_Vat, 0] := GetTranslatedText('shTxInvoice_Form_Header_Vat');
   agrLines.Cells[col_rrAlias, 0] := GetTranslatedText('shTxInvoice_Form_Header_Alias');
   agrLines.Cells[col_autogen, 0] := 'ID';
+
+  agrLines.AutoFitColumns(false);
+  agrLines.ColWidths[col_Item] := 100;
+  agrLines.ColWidths[col_ItemCount] := 100;
+  agrLines.ColWidths[col_ItemPrice] := 100;
+  agrLines.ColWidths[col_TotalPrice] := 100;
+  agrLines.ColWidths[col_Source] := 60;
+  agrLines.ColWidths[col_Select] := 30;
+  iWidth := agrLines.ClientWidth -
+            agrLines.ColWidths[col_Item] -
+            agrLines.ColWidths[col_ItemCount] -
+            agrLines.ColWidths[col_ItemPrice] -
+            agrLines.ColWidths[col_TotalPrice] -
+            agrLines.ColWidths[col_Source] -
+            agrLines.ColWidths[col_Select] -
+            5;
+
+  if iWidth > 0 then
+    agrLines.ColWidths[col_Description] := iWidth;
 
   agrLines.HideColumn(col_System);
   agrLines.HideColumn(col_Refrence);
@@ -3662,6 +3690,13 @@ var list : TStringList;
 
 label Again;
 begin
+  DeletedLines.Clear;
+
+  // --
+  ClearObjects;
+  ClearLines;
+  NullifyGrid;
+
   SetInvoiceIndexPanelsToZero;
   FTotalRoomDiscount := 0.00;
 
@@ -3853,7 +3888,7 @@ begin
     begin
       // Create New invoice
       zInvoiceNumber := -1;
-      zInvoiceDate := trunc(now);
+      zInvoiceDate := now;
       zConfirmDate := 2;
       zPayDate := trunc(now);
 
@@ -5152,10 +5187,17 @@ begin
 end;
 
 procedure TfrmInvoice.AddEmptyLine(CheckChanged : Boolean = True);
+var
+  i: Integer;
 begin
   if (agrLines.Cells[col_Item, agrLines.RowCount - 1] <> '') then
     agrLines.RowCount := agrLines.RowCount + 1;
 
+  for i := col_Select to col_AutoGen do
+  begin
+    agrLines.Objects[i, agrLines.RowCount - 1] := nil;
+    agrLines.Cells[i, agrLines.RowCount - 1] := '';
+  end;
   agrLines.row := agrLines.RowCount - 1;
   agrLines.Objects[col_Description, agrLines.row] := TObject(trunc(now)); // -- PurchaseDate !
   agrLines.Cells[col_date, agrLines.row] := datetostr(trunc(now));
@@ -5172,9 +5214,17 @@ begin
 end;
 
 procedure TfrmInvoice.AddEmptyLine1;
+var
+  i: Integer;
 begin
   if (agrLines.Cells[col_Item, agrLines.RowCount - 1] <> '') then
     agrLines.RowCount := agrLines.RowCount + 1;
+
+  for i := col_Select to col_AutoGen do
+  begin
+    agrLines.Objects[i, agrLines.RowCount - 1] := nil;
+    agrLines.Cells[i, agrLines.RowCount - 1] := '';
+  end;
 
   agrLines.Objects[col_Description, agrLines.RowCount - 1] := TObject(trunc(now));
   // -- PurchaseDate !
@@ -5297,9 +5347,11 @@ begin
     zDataChanged := chkChanged;
   end;
 
+  try
   agrLines.ColWidths[col_ItemCount] := 100;
   agrLines.ColWidths[col_ItemPrice] := 100;
   agrLines.ColWidths[col_TotalPrice] := 100;
+  except end;
 
   result := NOT zExit;
 
@@ -5573,8 +5625,8 @@ end;
 procedure TfrmInvoice.RemoveInvalidKreditInvoice;
 var i : Integer;
 begin
-  for i := LOW(REMOVE_REDUNDANT_CREDIT_INVOICES) to HIGH(REMOVE_REDUNDANT_CREDIT_INVOICES) do
-    d.roomerMainDataSet.DoCommand(REMOVE_REDUNDANT_CREDIT_INVOICES[i]);
+  for i := LOW(REMOVE_REDUNDANT_INVOICES) to HIGH(REMOVE_REDUNDANT_INVOICES) do
+    d.roomerMainDataSet.DoCommand(REMOVE_REDUNDANT_INVOICES[i]);
 end;
 
 procedure TfrmInvoice.SaveHeader(FTotal, fVat, fWOVat: Double;
@@ -6387,6 +6439,7 @@ begin
             s := s + ', ' + 'confirmAmount ' + #10;
             s := s + ', ' + 'RoomReservationAlias ' + #10;
             s := s + ', ' + 'InvoiceIndex ' + #10;
+            s := s + ', ' + 'staffCreated ' + #10;
             s := s + ')' + #10;
             s := s + 'Values' + #10;
             s := s + '(' + #10;
@@ -6442,6 +6495,7 @@ begin
             s := s + ', ' + _db(confirmAmount);
             s := s + ', ' + _db(irrAlias);
             s := s + ', ' + _db(FInvoiceIndex);
+            s := s + ', ' + _db(d.roomerMainDataSet.username);
 
             s := s + ')' + #10;
           end else
@@ -6463,6 +6517,7 @@ begin
                  ' , Nights= ' + inttostr(iNights) +
                  ' , ilAccountKey= ' + _db(sAccountKey) +
                  ' , InvoiceIndex= ' + _db(FInvoiceIndex) +
+                 ' , staffLastEdit= ' + _db(d.roomerMainDataSet.username) +
                  ' WHERE id=' + _db(InvoiceLine.FId);
           end;
 
@@ -6944,7 +6999,6 @@ begin
 
   if zCol in [col_Item, col_ItemCount, col_ItemPrice] then
   begin
-    RemoveStayTax;
     calcStayTax(publicReservation); // 003
   end;
 end;
@@ -7469,6 +7523,7 @@ begin
             s := s + ', ' + 'IsPackage ' + #10;
             s := s + ', ' + 'RoomReservationAlias ' + #10;
             s := s + ', ' + 'InvoiceIndex ' + #10;
+            s := s + ', ' + 'staffCreated ' + #10;
             s := s + ')' + #10;
             s := s + 'Values' + #10;
             s := s + '(' + #10;
@@ -7508,6 +7563,7 @@ begin
             s := s + ', ' + _db(isPackage);
             s := s + ', ' + _db(irrAlias);
             s := s + ', ' + _db(FInvoiceIndex);
+            s := s + ', ' + _db(d.roomerMainDataSet.username);
 
             s := s + ')' + #10;
           end else
@@ -7526,6 +7582,7 @@ begin
                  ' , Nights= ' + inttostr(iNights) +
                  ' , ilAccountKey= ' + _db(sAccountKey) +
                  ' , InvoiceIndex= ' + _db(FInvoiceIndex) +
+                 ' , staffLastEdit= ' + _db(d.roomerMainDataSet.username) +
                  ' WHERE id=' + _db(InvoiceLine.FId);
           end;
 
@@ -10179,11 +10236,9 @@ begin
     exit;
   end;
 
-  ItemTypeInfo := d.Item_Get_ItemTypeInfo(itemId, agrLines.Cells[col_Source,
-    CurrentRow]);
+  ItemTypeInfo := d.Item_Get_ItemTypeInfo(itemId, agrLines.Cells[col_Source, CurrentRow]);
 
-  lInvRoom := TInvoiceRoomEntity.create(agrLines.Cells[col_Item, CurrentRow], 1,
-                                        _StrToFloat(agrLines.Cells[col_ItemCount, CurrentRow]), CurrentRow, 0, 0);
+  lInvRoom := TInvoiceRoomEntity.create(agrLines.Cells[col_Item, CurrentRow], 1, _StrToFloat(agrLines.Cells[col_ItemCount, CurrentRow]), CurrentRow, 0, 0);
   try
     TotalVAT := GetVATForItem(agrLines.Cells[col_Item, CurrentRow], Total,
                               _StrToFloat(agrLines.Cells[col_ItemCount, CurrentRow]), lInvRoom , nil,
@@ -10219,6 +10274,7 @@ begin
   s := s + ' , itemNumber = ' + _db(NextInvoiceLine) + ' ' + #10;
   s := s + ' , Description = ' + _db(Description) + ' ' + #10;
   s := s + ' , InvoiceIndex = ' + _db(InvoiceIndex) + ' ' + #10;
+  s := s + ' , staffLastEdit= ' + _db(d.roomerMainDataSet.username) + ' ' + #10;
   s := s + 'where Reservation = ' + _db(reservation);
   if RoomReservation > 0 then
     s := s + '  and RoomReservation = ' + _db(RoomReservation) + #10
@@ -10386,6 +10442,7 @@ begin
   s := s + ' , itemNumber = ' + _db(NextInvoiceLine) + ' ' + #10;
   s := s + ' , Description = ' + _db(Description) + ' ' + #10;
   s := s + ' , InvoiceIndex = ' + _db(toInvoiceIndex) + ' ' + #10;
+  s := s + ' , staffLastEdit = ' + _db(d.roomerMainDataSet.username) + ' ' + #10;
   s := s + 'where Reservation = ' + _db(reservation);
   if RoomReservation > 0 then
     s := s + '  and RoomReservation = ' + _db(RoomReservation) + #10
@@ -10580,6 +10637,7 @@ begin
         s := s + '   Roomreservation = 0 ' + #10;
         s := s + ' , itemNumber = ' + _db(NextInvoiceLine) + ' ' + #10;
         s := s + ' , Description = ' + _db(Description) + ' ' + #10;
+        s := s + ' , staffLastEdit = ' + _db(d.roomerMainDataSet.username) + ' ' + #10;
         s := s + 'where Reservation = ' + _db(reservation);
         s := s + '  and RoomReservation = ' + _db(RoomReservation);
         s := s + '   and Splitnumber = 0 ' + #10;

@@ -41,7 +41,7 @@ uses
   , sSkinProvider
   , AdvObj
   , BaseGrid
-  , AdvGrid, sComboBox
+  , AdvGrid, sComboBox, AdvUtil
   ;
 
 type
@@ -112,7 +112,7 @@ function SelectPaymentTypes( Amount : Double;
                             Customer : string;
                             PaymentType : hdata.TPaymentTypes;
                             var lst : TstringList;
-                            var zInvoiceDate, zPayDate : TDate; var zLocation : string) : boolean;
+                            var zInvoiceDate : TDateTime; zPayDate : TDate; var zLocation : string) : boolean;
 
 implementation
 
@@ -129,7 +129,7 @@ function SelectPaymentTypes( Amount : Double;
                              Customer : string;
                              PaymentType : hdata.TPaymentTypes;
                              var lst : TstringList;
-                             var zInvoiceDate, zPayDate : TDate; var zLocation : string) : boolean;
+                             var zInvoiceDate : TDateTime; zPayDate : TDate; var zLocation : string) : boolean;
 var
   i : integer;
   selected : string;

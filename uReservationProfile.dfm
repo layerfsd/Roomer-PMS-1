@@ -280,7 +280,7 @@ object frmReservationProfile: TfrmReservationProfile
         Left = 176
         Top = 58
         Width = 20
-        Height = 16
+        Height = 20
         TabOrder = 4
         SkinData.SkinSection = 'CHECKBOX'
         ImgChecked = 0
@@ -291,7 +291,7 @@ object frmReservationProfile: TfrmReservationProfile
       AlignWithMargins = True
       Left = 794
       Top = 4
-      Width = 236
+      Width = 277
       Height = 91
       Margins.Left = 5
       Align = alLeft
@@ -299,12 +299,11 @@ object frmReservationProfile: TfrmReservationProfile
       SkinData.SkinSection = 'GROUPBOX'
       Checked = False
       object clabReserveDate: TsLabel
-        Left = 7
+        Left = 78
         Top = 10
-        Width = 81
+        Width = 42
         Height = 11
         Alignment = taRightJustify
-        AutoSize = False
         Caption = 'Reserved:'
         ParentFont = False
         Font.Charset = DEFAULT_CHARSET
@@ -314,7 +313,7 @@ object frmReservationProfile: TfrmReservationProfile
         Font.Style = []
       end
       object labReserveDate: TsLabel
-        Left = 96
+        Left = 128
         Top = 10
         Width = 46
         Height = 11
@@ -329,12 +328,11 @@ object frmReservationProfile: TfrmReservationProfile
         Font.Style = []
       end
       object Label5: TsLabel
-        Left = 28
+        Left = 94
         Top = 23
-        Width = 60
-        Height = 16
+        Width = 26
+        Height = 11
         Alignment = taRightJustify
-        AutoSize = False
         Caption = 'Staff :'
         ParentFont = False
         Font.Charset = DEFAULT_CHARSET
@@ -344,7 +342,7 @@ object frmReservationProfile: TfrmReservationProfile
         Font.Style = []
       end
       object labStaff: TsLabel
-        Left = 96
+        Left = 128
         Top = 23
         Width = 13
         Height = 11
@@ -359,7 +357,7 @@ object frmReservationProfile: TfrmReservationProfile
         Font.Style = []
       end
       object labResNumbers: TsLabel
-        Left = 100
+        Left = 132
         Top = 36
         Width = 3
         Height = 11
@@ -374,12 +372,11 @@ object frmReservationProfile: TfrmReservationProfile
         Font.Style = []
       end
       object sLabel4: TsLabel
-        Left = 3
+        Left = 52
         Top = 36
-        Width = 85
-        Height = 16
+        Width = 68
+        Height = 11
         Alignment = taRightJustify
-        AutoSize = False
         Caption = 'Reservation no :'
         ParentFont = False
         Font.Charset = DEFAULT_CHARSET
@@ -391,7 +388,7 @@ object frmReservationProfile: TfrmReservationProfile
       object sButton1: TsButton
         Left = 6
         Top = 53
-        Width = 224
+        Width = 265
         Height = 32
         Caption = 'Reservation Documents'
         ImageIndex = 0
@@ -538,7 +535,7 @@ object frmReservationProfile: TfrmReservationProfile
       end
     end
     object sButton6: TsButton
-      Left = 1034
+      Left = 1081
       Top = 12
       Width = 16
       Height = 17
@@ -2308,8 +2305,8 @@ object frmReservationProfile: TfrmReservationProfile
         object chkShowAllGuests: TsCheckBox
           Left = 333
           Top = 11
-          Width = 93
-          Height = 16
+          Width = 85
+          Height = 20
           Caption = 'Show all guests'
           Anchors = [akLeft, akTop, akRight]
           TabOrder = 4

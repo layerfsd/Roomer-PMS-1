@@ -2579,8 +2579,8 @@ object d: Td
     Active = True
     Indexes = <>
     SortOptions = []
-    Left = 504
-    Top = 104
+    Left = 496
+    Top = 112
     object mGuestsRoomReservation: TIntegerField
       FieldName = 'RoomReservation'
     end

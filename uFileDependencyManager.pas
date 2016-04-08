@@ -375,6 +375,8 @@ begin
   try
     FrmResources.keyString := ANY_FILE;
     FrmResources.access := ACCESS_RESTRICTED;
+    FrmResources.ResourceParameters := nil;
+    FrmResources.PrepareUserInterface;
 
     FrmResources.RemoveFileForUpload(filename);
     UploadFileToResources(ANY_FILE, ACCESS_RESTRICTED, ExtractFilename(filename), filename);

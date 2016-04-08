@@ -43,6 +43,7 @@ object frmAssignPayment: TfrmAssignPayment
       Padding.Bottom = 3
       TabOrder = 0
       SkinData.SkinSection = 'GROUPBOX'
+      Checked = False
       DesignSize = (
         442
         216)
@@ -176,15 +177,6 @@ object frmAssignPayment: TfrmAssignPayment
         Font.Style = []
         ParentFont = False
         TabOrder = 0
-        BoundLabel.Indent = 0
-        BoundLabel.Font.Charset = DEFAULT_CHARSET
-        BoundLabel.Font.Color = clWindowText
-        BoundLabel.Font.Height = -11
-        BoundLabel.Font.Name = 'Tahoma'
-        BoundLabel.Font.Style = []
-        BoundLabel.Layout = sclLeft
-        BoundLabel.MaxWidth = 0
-        BoundLabel.UseSkinColor = True
         SkinData.SkinSection = 'EDIT'
       end
       object edDescription: TsEdit
@@ -202,15 +194,6 @@ object frmAssignPayment: TfrmAssignPayment
         ParentFont = False
         TabOrder = 1
         SkinData.SkinSection = 'EDIT'
-        BoundLabel.Indent = 0
-        BoundLabel.Font.Charset = DEFAULT_CHARSET
-        BoundLabel.Font.Color = clWindowText
-        BoundLabel.Font.Height = -11
-        BoundLabel.Font.Name = 'Tahoma'
-        BoundLabel.Font.Style = []
-        BoundLabel.Layout = sclLeft
-        BoundLabel.MaxWidth = 0
-        BoundLabel.UseSkinColor = True
       end
       object cbxPaymentType: TsComboBox
         Left = 137
@@ -218,15 +201,6 @@ object frmAssignPayment: TfrmAssignPayment
         Width = 300
         Height = 21
         Alignment = taLeftJustify
-        BoundLabel.Indent = 0
-        BoundLabel.Font.Charset = DEFAULT_CHARSET
-        BoundLabel.Font.Color = clWindowText
-        BoundLabel.Font.Height = -11
-        BoundLabel.Font.Name = 'Tahoma'
-        BoundLabel.Font.Style = []
-        BoundLabel.Layout = sclLeft
-        BoundLabel.MaxWidth = 0
-        BoundLabel.UseSkinColor = True
         SkinData.SkinSection = 'COMBOBOX'
         VerticalAlignment = taAlignTop
         Color = clWhite
@@ -257,15 +231,6 @@ object frmAssignPayment: TfrmAssignPayment
         Font.Style = []
         ParentFont = False
         TabOrder = 3
-        BoundLabel.Indent = 0
-        BoundLabel.Font.Charset = DEFAULT_CHARSET
-        BoundLabel.Font.Color = clWindowText
-        BoundLabel.Font.Height = -11
-        BoundLabel.Font.Name = 'Tahoma'
-        BoundLabel.Font.Style = []
-        BoundLabel.Layout = sclLeft
-        BoundLabel.MaxWidth = 0
-        BoundLabel.UseSkinColor = True
         SkinData.SkinSection = 'EDIT'
         GlyphMode.Blend = 0
         GlyphMode.Grayed = False
@@ -283,12 +248,6 @@ object frmAssignPayment: TfrmAssignPayment
     SkinData.SkinSection = 'PAGECONTROL'
     object sTabSheet1: TsTabSheet
       Caption = 'Work within reservation group'
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object btnSetToGroupAccount: TsButton
         Left = 16
         Top = 26
@@ -308,21 +267,13 @@ object frmAssignPayment: TfrmAssignPayment
         Caption = 'Assign to room'
         TabOrder = 1
         SkinData.SkinSection = 'GROUPBOX'
+        Checked = False
         object cbxRoomSelect: TsComboBox
           Left = 8
           Top = 24
           Width = 345
           Height = 21
           Alignment = taLeftJustify
-          BoundLabel.Indent = 0
-          BoundLabel.Font.Charset = DEFAULT_CHARSET
-          BoundLabel.Font.Color = clWindowText
-          BoundLabel.Font.Height = -11
-          BoundLabel.Font.Name = 'Tahoma'
-          BoundLabel.Font.Style = []
-          BoundLabel.Layout = sclLeft
-          BoundLabel.MaxWidth = 0
-          BoundLabel.UseSkinColor = True
           SkinData.SkinSection = 'COMBOBOX'
           VerticalAlignment = taAlignTop
           Color = clWhite
@@ -355,12 +306,6 @@ object frmAssignPayment: TfrmAssignPayment
     end
     object sTabSheet2: TsTabSheet
       Caption = 'Move to other reservation '
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       DesignSize = (
         442
         216)
@@ -373,6 +318,7 @@ object frmAssignPayment: TfrmAssignPayment
         Caption = 'Set to group invoice'
         TabOrder = 0
         SkinData.SkinSection = 'GROUPBOX'
+        Checked = False
         DesignSize = (
           436
           113)
@@ -419,15 +365,6 @@ object frmAssignPayment: TfrmAssignPayment
           ParentFont = False
           TabOrder = 0
           SkinData.SkinSection = 'EDIT'
-          BoundLabel.Indent = 0
-          BoundLabel.Font.Charset = DEFAULT_CHARSET
-          BoundLabel.Font.Color = clWindowText
-          BoundLabel.Font.Height = -11
-          BoundLabel.Font.Name = 'Tahoma'
-          BoundLabel.Font.Style = []
-          BoundLabel.Layout = sclLeft
-          BoundLabel.MaxWidth = 0
-          BoundLabel.UseSkinColor = True
         end
         object btnExecureReservation: TsButton
           Left = 354
@@ -451,6 +388,7 @@ object frmAssignPayment: TfrmAssignPayment
         Caption = 'Set to room'
         TabOrder = 1
         SkinData.SkinSection = 'GROUPBOX'
+        Checked = False
         DesignSize = (
           436
           115)
@@ -497,15 +435,6 @@ object frmAssignPayment: TfrmAssignPayment
           ParentFont = False
           TabOrder = 0
           SkinData.SkinSection = 'EDIT'
-          BoundLabel.Indent = 0
-          BoundLabel.Font.Charset = DEFAULT_CHARSET
-          BoundLabel.Font.Color = clWindowText
-          BoundLabel.Font.Height = -11
-          BoundLabel.Font.Name = 'Tahoma'
-          BoundLabel.Font.Style = []
-          BoundLabel.Layout = sclLeft
-          BoundLabel.MaxWidth = 0
-          BoundLabel.UseSkinColor = True
         end
         object btnExecuteRoomReservation: TsButton
           Left = 352
@@ -539,7 +468,7 @@ object frmAssignPayment: TfrmAssignPayment
       450
       33)
     object sButton1: TsButton
-      Left = 276
+      Left = 273
       Top = 4
       Width = 83
       Height = 25
