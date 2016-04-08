@@ -15,10 +15,9 @@ type
   TRoomerFilterComboBox = class(TsComboBox)
   private
     FActive : Boolean;
-    FStoredItems: TList<TRoomerFilterItem>;
+    FStoredItems: TObjectList<TRoomerFilterItem>;
     procedure FilterItems;
 //    procedure StoredItemsChange(Sender: TObject);
-    procedure SetStoredItems(const value : TList<TRoomerFilterItem>);
   protected
   public
     FKeys: TStrings;
@@ -29,7 +28,7 @@ type
     procedure Stop;
     property active : Boolean read FActive write FActive;
   published
-    property StoredItems: TList<TRoomerFilterItem> read FStoredItems write SetStoredItems;
+    property StoredItems: TObjectList<TRoomerFilterItem> read FStoredItems; //write SetStoredItems;
   end;
 
 procedure Register;
@@ -46,7 +45,7 @@ begin
   inherited;
   FActive := False;
   AutoComplete := False;
-  FStoredItems := TList<TRoomerFilterItem>.Create;
+  FStoredItems := TObjectList<TRoomerFilterItem>.Create(True);
   FKeys := TStringList.Create;
 //  FStoredItems.OnChange := StoredItemsChange;
 end;
@@ -148,16 +147,5 @@ end;
 //    FilterItems;
 //end;
 
-procedure TRoomerFilterComboBox.SetStoredItems(const Value: TList<TRoomerFilterItem>);
-var i : Integer;
-begin
-  FStoredItems.Clear;
-  for i := 0 to Value.Count - 1 do
-    FStoredItems.Add(Value[i]);
-
-  DroppedDown := False;
-  Text:= '';
-  ItemIndex := -1;
-end;
 
 end.

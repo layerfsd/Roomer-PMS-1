@@ -61,7 +61,7 @@
         <DCC_Define>roomerstore;$(DCC_Define)</DCC_Define>
         <Icon_MainIcon>Roomer_Icon1.ico</Icon_MainIcon>
         <Manifest_File>None</Manifest_File>
-        <DCC_UnitSearchPath>..\kbmMemTable\Source;RoomerVCLs\Source;RoomerVCLs\http;Extras\NativeXml407\nativexml;Extras\NativeXml407\general;RoomerVCLs\Source ;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+        <DCC_UnitSearchPath>..\kbmMemTable\Source;RoomerVCLs\Source;RoomerVCLs\http;Extras\NativeXml407\nativexml;Extras\NativeXml407\general;RoomerVCLs\Source ;Extras\DragDrop\Source;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
         <DCC_ImageBase>00400000</DCC_ImageBase>
         <VerInfo_Keys>CompanyName=Beryllium ehf;FileDescription=Hotel Management System Main Module;FileVersion=12.5.11.10670;InternalName=HMS;LegalCopyright=Beryllium ehf 2000-2012;LegalTrademarks=Beryllium 2000-2012;OriginalFilename=home.exe;ProductName=Hotel Organizing and Management System;ProductVersion=12.5.11;Comments=SQL 2005 - Datalayout V12.05;Author=Bjorn Heidarr / Hordur Johannsson;DBversion=SQL 2005 - 1205;SupportEmail=support@berylsoftware.com;SupportHomePage=http://berylsoftware.com;SupportTel=+354 772-2002;Support=Hörður Jóhannsson</VerInfo_Keys>
         <VerInfo_Locale>1039</VerInfo_Locale>
@@ -759,6 +759,7 @@
                     <VersionInfoKeys Name="Support">Hörður Jóhannsson</VersionInfoKeys>
                 </VersionInfoKeys>
                 <Excluded_Packages>
+                    <Excluded_Packages Name="D:\Development\Bpl\Win32\dclfsIBX16.bpl">FastScript 1.9 IBX Components</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\dcloffice2k170.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\dclofficexp170.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
                 </Excluded_Packages>
