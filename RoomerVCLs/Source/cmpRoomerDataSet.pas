@@ -551,12 +551,23 @@ begin
 end;
 
 function TRoomerDataSet.RoomerPlatformAvailable: Boolean;
+var
+  lRoomerClient: {$IFDEF USE_INDY}TIdHTTP{$ELSE}TALWininetHttpClient{$ENDIF};
 begin
   result := True;
   try
-    if GetAsString(activeRoomerDataSet.roomerClient, RoomerUri + 'sessions/livecheck', '', true) = '' then;
+    lRoomerClient := CreateRoomerClient;
+    try
+      if GetAsString(lRoomerClient, RoomerUri + 'sessions/livecheck', '', true) = '' then;
+    finally
+      lRoomerClient.Free;
+    end;
   except
+   on E: Exception do
+   begin
+    OutputDebugString(PChar('>>>>>Exception during RoomerPLatformAvailable: ' + E.Message));
     result := False;
+   end;
   end;
 end;
 
