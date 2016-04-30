@@ -139,6 +139,7 @@ function ConvertFromEncion(s: string): string;
 
 procedure CloseWindowToRight(handle : THandle);
 procedure OpenWindowFromRight(handle : THandle);
+procedure PlaceFormOnVisibleMonitor(Form : TForm);
 procedure LoadKbmMemtableFromDataSetQuiet(kbmTable : TkbmCustomMemTable; Source:TDataSet; CopyOptions:TkbmMemTableCopyTableOptions);
 
 procedure SetFormTopmostOn(Form : TForm);
@@ -1478,7 +1479,7 @@ begin
 end;
 
 const
-Encions: array [0..95] of TEncions =
+Encions: array [0..97] of TEncions =
   (
 //(A: '"'; B: '&quot;'),
 //(A: '''; B: '&apos;'),
@@ -1486,6 +1487,8 @@ Encions: array [0..95] of TEncions =
 //(A: '<'; B: '&lt;'),
 //(A: '>'; B: '&gt;'),
 (A: '  '; B: '&nbsp;&nbsp;'),
+(A: '€'; B: '&euro;'),
+(A: '`'; B: '&#96;'),
 (A: '¡'; B: '&iexcl;'),
 (A: '¢'; B: '&cent;'),
 (A: '£'; B: '&pound;'),
@@ -1598,6 +1601,27 @@ begin
   Result := s;
   for i := Low(Encions) to High(Encions) do
     Result := StringReplace(Result, Encions[i].B, Encions[i].A, [rfReplaceAll, rfIgnoreCase]);
+end;
+
+procedure PlaceFormOnVisibleMonitor(Form : TForm);
+var
+  Monitor: TMonitor;
+const
+  MoveWinThreshold: Byte = 80;
+begin
+  // ...
+  // 1. Some code to restore the last GUI position and dimension
+  // ...
+
+  // 2. Detect the relevant monitor object
+  Monitor := Screen.MonitorFromWindow(Form.Handle);
+  // 3. Now ensure the just positioned window is visible to the user
+  // 3.a. Set minimal visible width
+  if Form.Left > Monitor.Left + Monitor.Width - MoveWinThreshold then
+    Form.Left := Monitor.Left + Monitor.Width - MoveWinThreshold;
+  // 3.b. Set minimal visible height
+  if Form.Top > Monitor.Top + Monitor.Height - MoveWinThreshold then
+    Form.Top := Monitor.Top + Monitor.Height - MoveWinThreshold;
 end;
 
 { TIntValue }

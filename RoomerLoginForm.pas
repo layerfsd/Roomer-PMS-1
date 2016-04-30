@@ -143,7 +143,7 @@ const
   cOfflineMessage = 'Roomer will not be able to work normally';
 begin
   lOffLine := NoInternet or ServerUnreachable;
-  btLogin.Enabled := not lOffLine;
+  btLogin.Enabled := true; // not lOffLine;
 
 {$ifdef rmEnableOffLineLogin}
   btOffline.Visible := True;

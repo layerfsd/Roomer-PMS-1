@@ -599,7 +599,7 @@ type
     pnlPeriodNoRooms: TsPanel;
     pnlRoomerLogo: TsPanel;
     lblLogout: TsLabel;
-    lblUsername: TsLabel;
+    __lblUsername: TsLabel;
     __cbxHotels: TsComboBox;
     pnlOffline: TsPanel;
     btnGoOnline: TsButton;
@@ -963,7 +963,7 @@ type
     procedure F1Click(Sender: TObject);
     procedure grOneDayRoomsDblClickCell(Sender: TObject; ARow, ACol: integer);
     procedure btnClearWindowCacheClick(Sender: TObject);
-    procedure lblUsernameDblClick(Sender: TObject);
+    procedure __lblUsernameDblClick(Sender: TObject);
     procedure btnGuestProfilesClick(Sender: TObject);
     procedure btnBookKeepingCodesClick(Sender: TObject);
     procedure btnHotelSpecificSqlQueriesClick(Sender: TObject);
@@ -976,7 +976,6 @@ type
     procedure C6Click(Sender: TObject);
     procedure btnEmailTemplatesClick(Sender: TObject);
     procedure btnCashierReportClick(Sender: TObject);
-    procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
     procedure tvAllReservationsAverageRateGetProperties(Sender: TcxCustomGridTableItem; ARecord: TcxCustomGridRecord; var AProperties: TcxCustomEditProperties);
     procedure tvAllReservationsTotalStayRateGetProperties(Sender: TcxCustomGridTableItem; ARecord: TcxCustomGridRecord;
@@ -1002,6 +1001,7 @@ type
     procedure P2Click(Sender: TObject);
     procedure R2Click(Sender: TObject);
     procedure R3Click(Sender: TObject);
+    procedure FormActivate(Sender: TObject);
 
   private
     FrmMessagesTemplates: TFrmMessagesTemplates;
@@ -1734,7 +1734,7 @@ begin
       TranslateOpenForms;
     end;
   end;
-  lblUsername.Caption := g.qUserName;
+  __lblUsername.Caption := g.qUserName;
 
   FormatSettings.CurrencyString := ''; // '£';
   try
@@ -2316,7 +2316,7 @@ begin
 {$ENDIF}
 end;
 
-procedure TfrmMain.lblUsernameDblClick(Sender: TObject);
+procedure TfrmMain.__lblUsernameDblClick(Sender: TObject);
 var Invoice : TInvoice;
 begin
   { IFDEF DEBUG }
@@ -3295,7 +3295,7 @@ begin
     LoginCancelled := true;
     try
       d.roomerMainDataSet.Logout;
-      lblUsername.Caption := 'N/A';
+      __lblUsername.Caption := 'N/A';
     except
     end;
     result := false;
@@ -3913,11 +3913,9 @@ begin
   grid.OnGetCellColor := nil;
 end;
 
-procedure TfrmMain.FormClose(Sender: TObject; var Action: TCloseAction);
+procedure TfrmMain.FormActivate(Sender: TObject);
 begin
-{$IFNDEF DEBUG}
-  timHalt.Enabled := true;
-{$ENDIF}
+  FormResize(Sender);
 end;
 
 procedure TfrmMain.RemoveHandlersAndObjects;
@@ -3984,10 +3982,13 @@ begin
         embOccupancyView.Reset;
 //        Application.ProcessMessages;
         d.roomerMainDataSet.Logout;
-        lblUsername.Caption := 'N/A';
+        __lblUsername.Caption := 'N/A';
       except
       end;
   end;
+  {$IFNDEF DEBUG}
+    timHalt.Enabled := CanClose;
+  {$ENDIF}
 end;
 
 procedure TfrmMain.ShowHintWindow;
@@ -4222,6 +4223,7 @@ var
   temp: String;
 
   aDate: TdateTime;
+
 begin
   // ClearRoomCells;
   lastDate := 0;
@@ -4486,7 +4488,7 @@ begin
         dateToSqlString(now + cbxStatDay.ItemIndex),
         dateToSqlString(now + cbxStatDay.ItemIndex)
         ]);
-    CopyToClipboard(s);
+//    CopyToClipboard(s);
     rSet := CreateNewDataSet;
     try
       hData.rSet_bySQL(rSet, s);
@@ -6820,17 +6822,16 @@ begin
           begin
           end;
 
-        if ACol = 8 then
-          if (Copy(grOneDayRooms.cells[7, ARow], 1, 1) = '<') then
+        if (Copy(grOneDayRooms.cells[ACol - 1, ARow], 1, 1) = '<') then
+        begin
+          OneDay_GetResAndRoom_IDX(iReservation, iRoom);
+          if changeNoRoomRoomtype(ReservationsModel.Reservations[iReservation].Reservation, ReservationsModel.Reservations[iReservation].Rooms[iRoom].RoomRes,
+            trim(grOneDayRooms.cells[ACol, ARow])) then
           begin
-            OneDay_GetResAndRoom_IDX(iReservation, iRoom);
-            if changeNoRoomRoomtype(ReservationsModel.Reservations[iReservation].Reservation, ReservationsModel.Reservations[iReservation].Rooms[iRoom].RoomRes,
-              trim(grOneDayRooms.cells[8, ARow])) then
-            begin
-              RefreshGrid;
-            end;
-
+            RefreshGrid;
           end;
+
+        end;
       end
       else
 
@@ -12766,7 +12767,7 @@ begin
   downloadCurrentVersion(handle, d.roomerMainDataSet);
   try
     d.roomerMainDataSet.Logout;
-    lblUsername.Caption := 'N/A';
+    __lblUsername.Caption := 'N/A';
   except
   end;
   Close;
@@ -13760,7 +13761,7 @@ begin
   finally
     panelHide.Hide;
   end;
-  lblUsername.Caption := 'N/A';
+  __lblUsername.Caption := 'N/A';
 end;
 
 procedure TfrmMain._Close;

@@ -198,7 +198,7 @@ begin
   rSetRoomsDate := CreateNewDataSet;
   try
     s := format(
-         'SELECT Reservation, RoomReservation, Arrival, Departure, NumberOfNights, TotalPrice, AveragePrice, Currency, Room, ' +
+         'SELECT Reservation, RoomReservation, Arrival, Departure, NumberOfNights, AveragePrice*NumberOfNights AS TotalPrice, AveragePrice, Currency, Room, ' +
          'IF(ISNULL(RoomClass) OR RoomClass='''', RoomType, RoomClass) AS RoomClass, ' +
          'IF(ISNULL(RoomClass) OR RoomClass='''', ' +
          '(SELECT Description FROM roomtypes WHERE RoomType=xxx.RoomType), ' +
@@ -234,16 +234,21 @@ begin
          'dtCreated AS CreatedAt ' +
          'FROM ' +
          '( ' +
-         'SELECT Reservation, RoomReservation, ' +
+         'SELECT rd.Reservation, rd.RoomReservation, ' +
          'DATE((SELECT ADate FROM roomsdate rd1 WHERE rd1.RoomReservation=rd.RoomReservation AND (NOT rd1.ResFlag IN (''X'',''%s'',''N'',''W'',''Z'',''O'')) ORDER BY ADate LIMIT 1)) AS Arrival, ' +
          'DATE(DATE_ADD((SELECT ADate FROM roomsdate rd1 WHERE rd1.RoomReservation=rd.RoomReservation AND (NOT rd1.ResFlag IN (''X'',''%s'',''N'',''W'',''Z'',''O'')) ORDER BY ADate DESC LIMIT 1), INTERVAL 1 DAY)) AS Departure, ' +
-         'COUNT(ID) AS NumberOfNights, ' +
-         'SUM(RoomRate) AS TotalPrice, ' +
-         'AVG(RoomRate) AS AveragePrice, ' +
-         'Currency, ' +
-         'Room, ' +
-         '(SELECT RoomClass FROM roomreservations WHERE RoomReservation=rd.RoomReservation) AS RoomClass, ' +
-         'RoomType, ' +
+         'COUNT(rd.ID) AS NumberOfNights, ' +
+//         'SUM(RoomRate) AS TotalPrice, ' +
+         '(SUM(RoomRate) + IF(r.Package != '''', ' +
+         '                           (SELECT SUM(Number * Price) ' +
+         '                            FROM invoicelines ' +
+         '                            WHERE RoomReservation = rd.RoomReservation ' +
+         '                            AND (ImportSource = r.Package AND r.Package != '''')), 0)) ' +
+         '       / COUNT(rd.id) AS AveragePrice, ' +
+         'rd.Currency, ' +
+         'rd.Room, ' +
+         'r.RoomClass, ' +
+         'rd.RoomType, ' +
          '(SELECT COUNT(id) FROM persons WHERE Reservation=rd.Reservation AND (NOT ResFlag IN (''X'',''C''))) AS GuestCount, ' +
          '(SELECT COUNT(id) FROM roomreservations WHERE Reservation=rd.Reservation AND (NOT Status IN (''X'',''C''))) AS RoomCount, ' +
          '(SELECT name FROM persons WHERE RoomReservation=rd.RoomReservation AND MainName=1 LIMIT 1) AS GuestName, ' +
@@ -269,11 +274,13 @@ begin
          '(SELECT Channel FROM reservations WHERE Reservation=rd.Reservation) AS ChannelId, ' +
          '(SELECT dtCreated FROM reservations WHERE Reservation=rd.Reservation) AS dtCreated ' +
          'FROM roomsdate rd ' +
-         'WHERE Reservation=%d ' +
-         'AND (NOT ResFlag IN (''X'',''%s'')) ' +
-         'GROUP BY RoomReservation ' +
+         '     JOIN roomreservations r ON r.RoomReservation=rd.RoomReservation ' +
+         'WHERE rd.Reservation=%d ' +
+         'AND (NOT rd.ResFlag IN (''X'',''%s'')) ' +
+         'GROUP BY rd.RoomReservation ' +
          ') xxx', [cancelStr, cancelStr, booking, cancelStr]);
     CopyToClipboard(s);
+
     hData.rSet_bySQL(rSetRoomsDate, s);
     rSetRoomsDate.First;
     GetGlobals;

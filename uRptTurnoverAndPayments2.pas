@@ -630,7 +630,6 @@ begin
   screen.Cursor := crDefault;
   try
     initTurnoverAndPaymentsGlobals_II(globals);
-
     d.TurnoverAndPaymentsGetAll_II(false, globals);
 
     tvTurnover.ApplyBestFit;
@@ -1216,6 +1215,10 @@ begin
   Except
   end;
 
+  initTurnoverAndPaymentsGlobals_II(globals);
+  d.TurnoverAndPaymentsGetAll_II(false, globals);
+
+
   sqls := '';
 
   ExecutionPlan := d.roomerMainDataSet.CreateExecutionPlan;
@@ -1456,29 +1459,9 @@ begin
 
    sqls := sqls + s+chr(10);
 
-
 //    copyToClipboard(s);
 //    DebugMessage('Invoiceheads'#10#10+s);
     ExecutionPlan.AddQuery(s);
-
-//    s := '';
-//    s := s + ' SELECT '#10;
-//    s := s + '  pm.PayType '#10;
-//    s := s + ' ,pm.Amount '#10;
-//    s := s + ' ,date(pm.payDate) AS dtPayDate '#10;
-//    s := s + ' ,pm.description '#10;
-//    s := s + ' ,pty.description AS paytypeDescription '#10;
-//    s := s + ' ,pgr.description AS paygroupDescripion '#10;
-//    s := s + ' ,IF(pm.typeindex=0,' + _db('Invoice') + ',' + _db('Downpayment')
-//      + ') AS Medhod '#10;
-//    s := s + ' FROM payments pm INNER JOIN '#10;
-//    s := s + '      paytypes pty ON pm.paytype = pty.paytype INNER JOIN '#10;
-//    s := s + '      paygroups pgr ON pty.paygroup = pgr.paygroup '#10;
-//    s := s + '  WHERE '#10;
-//// confirmDate in('+ sconfirmedDates+')
-//    s := s + '( confirmDate = ' + _dbDateAndTime(confirmDate) + ') ';
-//    s := s + '  ORDER BY '#10;
-//    s := s + '    pm.payDate '#10;
 
     s := '';
     s := s + '  SELECT '#10;
@@ -1509,13 +1492,75 @@ begin
     s := s + ';';
 
    sqls := sqls + s+chr(10);
+//    copyToClipboard(s);
+//    DebugMessage('Invoiceheads'#10#10+s);
 
 
-    copyToClipboard(sqls);
-//    DebugMessage(sqls);
+   ExecutionPlan.AddQuery(s);
+
+
+    s := '';
+    s := s + ' SELECT '#10;
+    s := s + '     il.ItemID '#10;
+    s := s + '   , il.Invoicenumber '#10;
+    s := s + '   , (SELECT Room FROM roomreservations WHERE RoomReservation=il.Roomreservation LIMIT 1) AS Room '#10;
+    s := s + '   , ih.Staff '#10;
+    s := s + '   , il.splitNumber '#10;
+    s := s + '   , it.Description '#10;
+    s := s + '   , it.Itemtype '#10;
+    s := s + '   , ity.Description AS TypeDescription '#10;
+    s := s + '   , ity.VATCode '#10;
+    s := s + '   , vat.VATPercentage '#10;
+    s := s + '   , il.Total AS Amount '#10;
+    s := s + '   , il.Vat AS VAT '#10;
+    s := s + '   , il.Number AS Itemcount '#10;
+    s := s + '   , il.confirmAmount '#10;
+    s := s + '   , ih.Customer '#10;
+    s := s + '   , (SELECT stayTaxIncluted FROM customers WHERE customer = ih.customer) AS isTaxIncluted '#10;
+    s := s + '   , IF(il.ItemId=co.StayTaxItem, il.Total, 0) AS TotalStayTax '#10;
+    s := s + ' FROM '#10;
+    s := s + '   invoicelines il INNER JOIN '#10;
+    s := s + '   items it ON il.ItemID = it.Item INNER JOIN '#10;
+    s := s + '   invoiceheads ih ON il.invoicenumber = ih.invoicenumber INNER JOIN '#10;
+    s := s + '   itemtypes ity ON it.Itemtype = ity.Itemtype INNER JOIN '#10;
+    s := s + '   vatcodes vat ON ity.VATCode = vat.VATCode, '#10;
+    s := s + '   control co '#10;
+    s := s + ' WHERE '#10;
+    s := s + '( confirmDate in('+ sconfirmedDates+') ';
+    s := s + '  AND  ((il.ItemID = ' + _db(globals.RoomRentItem) + ' )  '#10;
+    s := s + '  OR   (il.ItemID = ' + _db(globals.DiscountItem) + ' )  '#10;
+    s := s + '  OR   (il.ItemID = ' + _db(globals.TaxesItem) + ' ))) '#10;
+    s := s + ';';
+
+    ExecutionPlan.AddQuery(s);
+
+    s := '';
+    s := s + ' SELECT '#10;
+    s := s + '     ItemId '#10;
+    s := s + '     ,Description '#10;
+    s := s + '     ,TypeDescription '#10;
+    s := s + '     ,ItemType '#10;
+    s := s + '     ,VATCode '#10;
+    s := s + '     ,VATPercentage '#10;
+    s := s + '     ,Amount '#10;
+    s := s + '     ,VAT '#10;
+    s := s + '     ,Itemcount '#10;
+    s := s + '     ,InvoicelineID as id '#10;
+    s := s + '     ,PurchaseDate '#10;
+    s := s + '     ,reservation '#10;
+    s := s + '     ,roomReservation '#10;
+    s := s + '     ,confirmAmount '#10;
+    s := s + '     ,Room '#10;
+    s := s + '     ,InvoiceNumber '#10;
+    s := s + ' FROM unconfirmed_invoicelines '#10;
+    s := s + ' WHERE '#10;
+    s := s + 'confirmedDate in('+ sconfirmedDates+'); ';
+
     ExecutionPlan.AddQuery(s);
 
 
+    //    copyToClipboard(s);
+//  copyToClipboard(sqls);
     // //////////////////// Execute!
 
     d.kbmTurnover_.DisableControls;
@@ -1582,8 +1627,23 @@ begin
         d.kbmpaymentList_.Close;
       d.kbmpaymentList_.open;
       d.kbmpaymentList_.LoadFromDataSet(rset7,[]);
-//      LoadKbmMemtableFromDataSetQuiet(d.kbmpaymentList_,rset7, []);
       d.kbmpaymentList_.First;
+
+
+      rset8 := ExecutionPlan.Results[7];
+      if d.kbmRoomRentOnInvoice_.active then
+        d.kbmRoomRentOnInvoice_.Close;
+      d.kbmRoomRentOnInvoice_.open;
+      d.kbmRoomRentOnInvoice_.LoadFromDataSet(rset8,[]);
+      d.kbmRoomRentOnInvoice_.First;
+
+      rset9 := ExecutionPlan.Results[8];
+      if d.kbmUnconfirmedInvoicelines_.active then
+        d.kbmUnconfirmedInvoicelines_.Close;
+      d.kbmUnconfirmedInvoicelines_.open;
+      d.kbmUnconfirmedInvoicelines_.LoadFromDataSet(rset9,[]);
+      d.kbmUnconfirmedInvoicelines_.First;
+
 
       globals.totalTurnover := 0;
       d.kbmTurnover_.First;

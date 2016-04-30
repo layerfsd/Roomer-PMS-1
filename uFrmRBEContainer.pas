@@ -50,7 +50,7 @@ type
     btnAvailabilityAndRates: TsButton;
     sLabelFX11: TsLabelFX;
     sPanel2: TsPanel;
-    lblUsername: TsLabel;
+    __lblUsername: TsLabel;
     lblLogout: TsLabel;
     __cbxHotels: TsComboBox;
     Image1: TImage;
@@ -354,7 +354,7 @@ procedure TFrmRBEContainer.CreateUserLabelAndHotelList;
 var
   i, iActiveHotel: Integer;
 begin
-  lblUsername.Caption := frmMain.lblUsername.Caption;
+  __lblUsername.Caption := frmMain.__lblUsername.Caption;
 
   try
     iActiveHotel := 0;

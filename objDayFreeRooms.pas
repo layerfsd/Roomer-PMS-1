@@ -78,7 +78,8 @@ TYPE
     FOccRooms        : string ;
 
     function getRoomCount : integer;
-    procedure FillList(sDate : TDateTime;occRooms : string; var RoomCount: integer);
+    procedure FillList(sDate : TDateTime;occRooms : string; var RoomCount: integer); overload;
+    procedure FillList(var rSet : TRoomerDataSet); overload;
     procedure ClearRoomList;
 
   public
@@ -253,6 +254,43 @@ begin
       rSet.Next;
     end;
     RoomCount := FRoomList.Count;
+  finally
+    freeandNil(rSet);
+  end;
+end;
+
+procedure TFreeRooms.FillList(var rSet : TRoomerDataSet);
+var
+  RoomItem : TFreeRoomItem;
+
+  Room                : string  ;
+  Status              : string  ;
+  NextOcc             : string  ;
+
+begin
+  ClearRoomList;
+  if frmMain.OfflineMode then
+    exit;
+  try
+    Rset.First;
+    While not rSet.Eof do
+    begin
+      Room                 := Rset.fieldbyname('Room').asString;
+      Status               := Rset.fieldbyname('Status').asString;
+      NextOcc              := Rset.fieldbyname('NextOcc').asString;
+
+      RoomItem := TFreeRoomItem.Create;
+      try
+        RoomItem.SetRoom(Room);
+        RoomItem.SetStatus(Status);
+        RoomItem.SetNextOcc(NextOcc);
+        FRoomList.Add(RoomItem);
+      except
+         // logga
+      end;
+      rSet.Next;
+    end;
+    FRoomCount := FRoomList.Count;
   finally
     freeandNil(rSet);
   end;

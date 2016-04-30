@@ -16,7 +16,7 @@ object frmMain: TfrmMain
   Position = poDefault
   Scaled = False
   ShowHint = True
-  OnClose = FormClose
+  OnActivate = FormActivate
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnDestroy = FormDestroy
@@ -3532,7 +3532,7 @@ object frmMain: TfrmMain
     end
   end
   object pnlRoomerLogo: TsPanel
-    Left = 923
+    Left = 760
     Top = 5
     Width = 321
     Height = 49
@@ -3561,7 +3561,7 @@ object frmMain: TfrmMain
       Font.Name = 'Segoe UI'
       Font.Style = [fsBold]
     end
-    object lblUsername: TsLabel
+    object __lblUsername: TsLabel
       Left = 219
       Top = 4
       Width = 23
@@ -3569,7 +3569,7 @@ object frmMain: TfrmMain
       Alignment = taRightJustify
       Caption = 'N/A'
       ParentFont = False
-      OnDblClick = lblUsernameDblClick
+      OnDblClick = __lblUsernameDblClick
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -13
@@ -4996,7 +4996,7 @@ object frmMain: TfrmMain
     object barinnReportsInvoices: TdxBar
       Caption = 'Invoices'
       CaptionButtons = <>
-      DockedLeft = 742
+      DockedLeft = 713
       DockedTop = 0
       FloatLeft = 1324
       FloatTop = 8
@@ -5252,7 +5252,7 @@ object frmMain: TfrmMain
     object barinnBar10: TdxBar
       Caption = 'Ledger'
       CaptionButtons = <>
-      DockedLeft = 951
+      DockedLeft = 922
       DockedTop = 0
       FloatLeft = -183
       FloatTop = 8

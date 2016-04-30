@@ -139,8 +139,8 @@ object frmRptTurnoverAndPayments2: TfrmRptTurnoverAndPayments2
       object chkGetUnconfirmed: TsCheckBox
         Left = 15
         Top = 18
-        Width = 107
-        Height = 19
+        Width = 99
+        Height = 20
         Caption = 'Get unconfirmed'
         TabOrder = 0
         OnClick = chkGetUnconfirmedClick
@@ -236,11 +236,12 @@ object frmRptTurnoverAndPayments2: TfrmRptTurnoverAndPayments2
     Top = 145
     Width = 977
     Height = 474
-    ActivePage = sTabSheet7
+    ActivePage = sTabSheet6
     Align = alClient
     TabOrder = 2
     OnChange = sPageControl1Change
     SkinData.SkinSection = 'PAGECONTROL'
+    ExplicitTop = 148
     object sTabSheet1: TsTabSheet
       Caption = 'Sum Turnover'
       SkinData.CustomColor = False
@@ -268,8 +269,8 @@ object frmRptTurnoverAndPayments2: TfrmRptTurnoverAndPayments2
         object __chkShowAsItem: TsCheckBox
           Left = 108
           Top = 13
-          Width = 145
-          Height = 19
+          Width = 137
+          Height = 20
           Caption = 'Report per product type'
           Checked = True
           State = cbChecked

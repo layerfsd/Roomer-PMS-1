@@ -83,6 +83,9 @@ type
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure BtnOkClick(Sender: TObject);
     procedure agrPayTypesGetAlignment(Sender: TObject; ARow, ACol: Integer; var HAlign: TAlignment; var VAlign: TVAlignment);
+    procedure agrPayTypesMouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+    procedure agrPayTypesClickCell(Sender: TObject; ARow, ACol: Integer);
 
   private
     { Private declarations }
@@ -112,7 +115,9 @@ function SelectPaymentTypes( Amount : Double;
                             Customer : string;
                             PaymentType : hdata.TPaymentTypes;
                             var lst : TstringList;
-                            var zInvoiceDate : TDateTime; zPayDate : TDate; var zLocation : string) : boolean;
+                            var zInvoiceDate : TDateTime; var zPayDate : TDate; var zLocation : string) : boolean;
+
+
 
 implementation
 
@@ -129,7 +134,7 @@ function SelectPaymentTypes( Amount : Double;
                              Customer : string;
                              PaymentType : hdata.TPaymentTypes;
                              var lst : TstringList;
-                             var zInvoiceDate : TDateTime; zPayDate : TDate; var zLocation : string) : boolean;
+                             var zInvoiceDate : TDateTime; var zPayDate : TDate; var zLocation : string) : boolean;
 var
   i : integer;
   selected : string;
@@ -397,7 +402,7 @@ begin
   lblLeft.caption     := _FloatToStr( fLeft,     12, 2 );
   if fLeft = 0 then beep;
 
-  dtpayDate.Date := MaxDays + dtPayDate.Date
+  dtpayDate.Date := MaxDays + dtInvDate.Date
 end;
 
 procedure TfrmInvoicePayment.FormShow(Sender: TObject);
@@ -458,6 +463,18 @@ procedure TfrmInvoicePayment.agrPayTypesKeyDown(Sender: TObject; var Key: Word; 
 begin
   if Key = vk_Return then
       Recalc;
+end;
+
+procedure TfrmInvoicePayment.agrPayTypesMouseDown(Sender: TObject;
+  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+begin
+//  recalc;
+end;
+
+procedure TfrmInvoicePayment.agrPayTypesClickCell(Sender: TObject; ARow,
+  ACol: Integer);
+begin
+  postMessage( handle, WM_ActivateAmount, 0, 0 );
 end;
 
 procedure TfrmInvoicePayment.agrPayTypesEnter(Sender: TObject);

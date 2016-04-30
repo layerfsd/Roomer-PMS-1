@@ -48,6 +48,7 @@ uses
   , sLabel
   , sGroupBox
 
+  , cxGridExportLink
   , cxGraphics
   , cxControls
   , cxLookAndFeels
@@ -75,8 +76,17 @@ uses
   , cxMaskEdit
   , cxButtonEdit
 
-  , dxSkinsCore, dxSkinDarkSide, dxSkinDevExpressDarkStyle, dxSkinMcSkin, dxSkinOffice2013White, dxSkinsDefaultPainters, dxSkinscxPCPainter,
-  sMemo, AdvEdit, AdvEdBtn, dxSkinCaramel, dxSkinCoffee, dxSkinTheAsphaltWorld
+  , sMemo
+  , AdvEdit
+  , AdvEdBtn
+
+  , dxSkinsCore
+  , dxSkinCaramel
+  , dxSkinCoffee
+  , dxSkinDarkSide
+  , dxSkinTheAsphaltWorld
+  , dxSkinsDefaultPainters
+  , dxSkinscxPCPainter
 
   ;
 
@@ -380,6 +390,76 @@ type
     mAllocationsDS: TDataSource;
     mPrices: TkbmMemTable;
     mPricesDS: TDataSource;
+    TabSheet12: TTabSheet;
+    mRooms: TkbmMemTable;
+    tvDrRooms: TcxGridDBTableView;
+    lvDrRooms: TcxGridLevel;
+    grDrRooms: TcxGrid;
+    mRoomsDS: TDataSource;
+    tvDrRoomsRoom: TcxGridDBColumn;
+    tvDrRoomsDescription: TcxGridDBColumn;
+    tvDrRoomsRoomType: TcxGridDBColumn;
+    tvDrRoomsimpRoom: TcxGridDBColumn;
+    tvDrRoomsimpRoomType: TcxGridDBColumn;
+    btnGetRoomerRooms: TButton;
+    btnSaveToCSV: TButton;
+    btnLoadFromCSV: TButton;
+    btnGetImportRooms: TButton;
+    edOwnerNumber: TEdit;
+    CheckBox1: TCheckBox;
+    kbmCSVStreamFormat2: TkbmCSVStreamFormat;
+    btnToExcel: TButton;
+    Customers: TTabSheet;
+    Label22: TLabel;
+    CustomerCSV: TsFilenameEdit;
+    grCustomers: TcxGrid;
+    tvCustomers: TcxGridDBTableView;
+    lvCustomers: TcxGridLevel;
+    mCustomers: TkbmMemTable;
+    Button1: TButton;
+    mCustomersDS: TDataSource;
+    tvCustomersNumer: TcxGridDBColumn;
+    tvCustomersHeiti: TcxGridDBColumn;
+    tvCustomersHeimili: TcxGridDBColumn;
+    tvCustomersPostnumer: TcxGridDBColumn;
+    tvCustomersstadur: TcxGridDBColumn;
+    tvCustomersLand: TcxGridDBColumn;
+    tvCustomersKennitala: TcxGridDBColumn;
+    tvCustomersFlokkur: TcxGridDBColumn;
+    tvCustomerssimi: TcxGridDBColumn;
+    tvCustomersGreidslumati: TcxGridDBColumn;
+    tvCustomersnetfang: TcxGridDBColumn;
+    Button2: TButton;
+    Button3: TButton;
+    Button4: TButton;
+    edDefPcCode: TEdit;
+    Label23: TLabel;
+    Label24: TLabel;
+    edDefCustomerType: TEdit;
+    edDEfCurrency: TEdit;
+    Label25: TLabel;
+    tvCustomersId: TcxGridDBColumn;
+    TabSheet13: TTabSheet;
+    Label26: TLabel;
+    itemsCSV: TsFilenameEdit;
+    btnItemsSaveToFile: TButton;
+    btnItemsLoadFromFile: TButton;
+    btnItemsClear: TButton;
+    itemsLoadToRoomer: TButton;
+    mVorur: TkbmMemTable;
+    tvItems: TcxGridDBTableView;
+    lvItems: TcxGridLevel;
+    grItems: TcxGrid;
+    mVorurDS: TDataSource;
+    tvItemsvorunumer: TcxGridDBColumn;
+    tvItemsvorulysing: TcxGridDBColumn;
+    tvItemsverdmvsk: TcxGridDBColumn;
+    tvItemsvorufl: TcxGridDBColumn;
+    tvItemsid: TcxGridDBColumn;
+    Button5: TButton;
+    tvBookingserr: TcxGridDBColumn;
+    chkOccupied: TCheckBox;
+    Button6: TButton;
     procedure sButton1Click(Sender: TObject);
     procedure edResFileNameAfterDialog(Sender: TObject; var Name: string; var Action: Boolean);
     procedure kbmReservationsAfterScroll(DataSet: TDataSet);
@@ -394,13 +474,36 @@ type
     procedure edXMLFileAfterDialog(Sender: TObject; var Name: string;
       var Action: Boolean);
     procedure DBEdit1Change(Sender: TObject);
+    procedure btnGetRoomerRoomsClick(Sender: TObject);
+    procedure btnSaveToCSVClick(Sender: TObject);
+    procedure btnLoadFromCSVClick(Sender: TObject);
+    procedure btnGetImportRoomsClick(Sender: TObject);
+    procedure CheckBox1Click(Sender: TObject);
+    procedure btnToExcelClick(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
+    procedure CustomerCSVAfterDialog(Sender: TObject; var Name: string;
+      var Action: Boolean);
+    procedure Button2Click(Sender: TObject);
+    procedure Button3Click(Sender: TObject);
+    procedure Button4Click(Sender: TObject);
+    procedure itemsCSVAfterDialog(Sender: TObject; var Name: string;
+      var Action: Boolean);
+    procedure itemsLoadToRoomerClick(Sender: TObject);
+    procedure Button5Click(Sender: TObject);
+    procedure Button6Click(Sender: TObject);
   private
     zFirstTime : boolean;
     zDKIsReading : boolean;
     zDKXmlFilename : string;
 
+    zDkDataPath : string;
+
     procedure fixRefr;
-    { Private declarations }    procedure ApplyFilter;
+    procedure ApplyFilter;
+    procedure ClearFilter;
+    procedure DkInsertToRoomer;
+    procedure DkInsertToRoomerSmari;
+
   public
     { Public declarations }
   end;
@@ -420,6 +523,13 @@ uses
    , uCurrencies
 
    , uDImages;
+
+
+
+ type
+    TArrayOfString = array of String;
+
+
 
 procedure TfrmTestData.edCustomerDblClick(Sender: TObject);
 var
@@ -503,13 +613,98 @@ procedure TfrmTestData.FormCreate(Sender: TObject);
 begin
   zfirstTime := true;
 
+  zDkDataPath := ExtractFilePath(ParamStr(0));
+
   zDKXMLFileName := '';
-  edXMLFile.InitialDir :=  ExtractFilePath(ParamStr(0));
+  edXMLFile.InitialDir :=  zDkDataPath;
+
+
+
 end;
 
 procedure TfrmTestData.FormShow(Sender: TObject);
 begin
   zFirstTime := true;
+end;
+
+procedure TfrmTestData.itemsCSVAfterDialog(Sender: TObject; var Name: string;
+  var Action: Boolean);
+var
+   lstVorur : TStringList;
+   lstLine : Tstrings;
+   sFileName : string;
+   i : integer;
+   s : string;
+begin
+  //**
+  if mVorur.Active then mVorur.Close;
+  mVorur.open;
+
+  mVorur.DisableControls;
+  try
+    lstVorur := Tstringlist.Create;
+    try
+      sFilename := name;
+      if fileexists(sFilename) then
+      begin
+        lstVorur.LoadFromFile(sFileName);
+        for i := 0 to lstVorur.count-1 do
+        begin
+          s := lstVorur[i];
+          lstLine := SplitStringToTStrings(';', S);
+          if lstLine.Count = 6 then
+          begin
+            mVorur.Append;
+            mVorur['vorunumer']    := UTF8String(lstLine[0]);
+            mVorur['vorulysing']   := UTF8String(lstLine[1]);
+            mVorur['verdmvsk']     := UTF8String(lstLine[2]);
+            mVorur['vorufl']       := UTF8String(lstLine[3]);
+            mVorur.Post;
+          end;
+        end;
+      end;
+      mVorur.First;
+    finally
+      freeandnil(lstVorur);
+    end;
+  finally
+    mVorur.EnableControls;
+  end;
+end;
+
+
+procedure TfrmTestData.itemsLoadToRoomerClick(Sender: TObject);
+var
+ zData   : recItemHolder;
+ newID   : integer;
+begin
+
+   newID := 0;
+
+  ProgressBar1.Position := 0;
+  ProgressBar1.Max := mCustomers.RecordCount;
+
+  mCustomers.First;
+  while not mVorur.Eof do
+  begin
+    ProgressBar1.stepIt;
+    if not ItemExist(mVorur['vorunumer']) then
+    begin
+      initItemHolder(zData);
+      zData.Active                   :=  true;
+      zData.Item                     :=  mVorur['Vorunumer'] ;
+      zData.Description              :=  mVorur['vorulysing'] ;
+      zData.ItemType                 :=  mVorur['Vorufl'] ;
+      zData.Price                    :=  strToFloat(mVorur['verdmvsk']) ;
+      if INS_Item(zData,NewID) then
+      begin
+        mVorur.Edit;
+        mVorur.FieldByName('id').AsInteger := NewID;
+        mVorur.Post;
+      end;
+    end;
+    mVorur.Next;
+  end;
 end;
 
 procedure TfrmTestData.kbmReservationsAfterScroll(DataSet: TDataSet);
@@ -917,6 +1112,7 @@ begin
 end;
 
 
+
 procedure TfrmTestData.fixRefr;
 var
   sTmp : string;
@@ -984,9 +1180,7 @@ begin
   recPerson := GET_Pesson(Person);
 end;
 
-procedure TfrmTestData.ApplyFilter;
-begin
-end;
+
 
 procedure TfrmTestData.btnGetRoomTypesClick(Sender: TObject);
 var
@@ -1239,6 +1433,12 @@ begin
               sBooking_countryCode          :=    String(nBooking.ReadString(UTF8String('countryCode')));
               sBooking_exchange             :=    String(nBooking.ReadString(UTF8String('exchange')));
 
+              if edOwnerNumber.text <> '' then
+              if sBooking_ownerNumber <> edOwnerNumber.text then
+              begin
+                continue;
+              end;
+
                 mBookings.insert;
                 mBookings.FieldByName('bookingNumber').AsString :=  sBooking_bookingNumber                    ;
                 mBookings.FieldByName('ownerNumber').AsString :=  sBooking_ownerNumber                        ;
@@ -1461,6 +1661,7 @@ begin
                 end;
               end;
             end;
+
           end;
         end;
       finally
@@ -1475,9 +1676,13 @@ begin
       mBookingSaleLines.EnableControls;
       mMemos.EnableControls;
       zDKIsReading := false;
+      CheckBox1.Checked := true;
+
     end;
   end;
 end;
+
+
 
 
 procedure TfrmTestData.DBEdit1Change(Sender: TObject);
@@ -1516,8 +1721,1639 @@ procedure TfrmTestData.edXMLFileAfterDialog(Sender: TObject; var Name: string;
 begin
   zDKXMLFileName := Name;
   Caption := zDKXMLFileName;
+  zDkDataPath := extractFilePath(zDKXMLFileName);
   memXMLFile.Lines.LoadFromFile(zDKXMLFileName);
 end;
 
 
+
+procedure TfrmTestData.btnGetImportRoomsClick(Sender: TObject);
+var
+  room : string;
+  roomType : string;
+begin
+  screen.Cursor := crHourGlass;
+  mAllocations.DisableControls;
+  mRooms.DisableControls;
+  try
+    mAllocations.First;
+    while not mAllocations.eof do
+    begin
+      room := mAllocations.fieldbyname('resourceCode').asstring;
+      roomtype := mAllocations.fieldbyname('resourceGroup').asstring;
+
+
+      if mRooms.Locate('Room',Room,[])  then
+      begin
+        if mRooms.FieldByName('Room').AsString <> '' then
+        begin
+          mRooms.Edit;
+          mRooms.FieldByName('impRoom').AsString := Room;
+          mRooms.FieldByName('impRoomType').AsString := Roomtype;
+          mRooms.Post;
+        end else
+        begin
+        end;
+      end else
+      begin
+        if not mRooms.Locate('impRoom',Room,[])  then
+        begin
+          mRooms.Append;
+          mRooms.FieldByName('impRoom').AsString := Room;
+          mRooms.FieldByName('impRoomType').AsString := Roomtype;
+          mRooms.Post;
+        end;
+      end;
+      mAllocations.next;
+    end;
+  finally
+    mAllocations.enableControls;
+    mRooms.enableControls;
+    screen.Cursor := crDefault;
+  end;
+end;
+
+procedure TfrmTestData.btnGetRoomerRoomsClick(Sender: TObject);
+var
+  s : string;
+  rSet : TRoomerDataset;
+
+begin
+  //
+  s := '';
+  s := 'Select Room, Description, roomType from rooms order by room';
+
+  rSet := CreateNewDataSet;
+  try
+    if rSet_bySQL(rSet,s) then
+    begin
+      if mRooms.active then mRooms.Close;
+      mRooms.LoadFromDataSet(rSet,[]);
+    end;
+  finally
+    freeandnil(rSet);
+  end;
+end;
+
+procedure TfrmTestData.btnSaveToCSVClick(Sender: TObject);
+var
+  filename : string;
+begin
+  filename := zdkDataPath+'rooms.dat';
+  mRooms.SaveToFile(filename);  //
+end;
+
+
+
+procedure TfrmTestData.btnLoadFromCSVClick(Sender: TObject);
+var
+  Filename : string;
+begin
+  filename := zdkDataPath+'rooms.dat';
+  if fileexists(filename) then
+  begin
+    mRooms.LoadFromFile(filename);
+  end;
+end;
+
+
+procedure TfrmTestData.ApplyFilter;
+var
+  s : string;
+begin
+  if CheckBox1.Checked then
+  begin
+    s := quotedstr(DBEdit1.Text);
+    mResourceBookings.Filter := '(bookingNumber='+s+')';
+    mResourceBookings.Filtered := true;
+
+    mPrices.Filter := '(bookingNumber='+s+')';
+    mPrices.Filtered := true;
+
+    mAllocations.Filter := '(bookingNumber='+s+')';
+    mAllocations.Filtered := true;
+
+    mParticipants.Filter := '(bookingNumber='+s+')';
+    mParticipants.Filtered := true;
+
+    mBookingSaleLines.Filter := '(bookingNumber='+s+')';
+    mBookingSaleLines.Filtered := true;
+
+    mBookingSaleLines.Filter := '(bookingNumber='+s+')';
+    mBookingSaleLines.Filtered := true;
+
+    mMemos.Filter := '(bookingNumber='+s+')';
+    mMemos.Filtered := true;
+  end;
+end;
+
+
+procedure TfrmTestData.CheckBox1Click(Sender: TObject);
+begin
+  if CheckBox1.Checked then
+  begin
+    applyFilter;
+  end else
+  begin
+    clearfilter;
+  end;
+end;
+
+procedure TfrmTestData.ClearFilter;
+var
+  s : string;
+begin
+    mResourceBookings.Filter := '';
+    mResourceBookings.Filtered := false;
+
+    mPrices.Filter := '';
+    mPrices.Filtered := false;
+
+    mAllocations.Filter := '';
+    mAllocations.Filtered := false;
+
+    mParticipants.Filter := '';
+    mParticipants.Filtered := false;
+
+    mBookingSaleLines.Filter := '';
+    mBookingSaleLines.Filtered := false;
+
+    mBookingSaleLines.Filter := '';
+    mBookingSaleLines.Filtered := false;
+
+    mMemos.Filter := '';
+    mMemos.Filtered := true;
+end;
+
+procedure TfrmTestData.CustomerCSVAfterDialog(Sender: TObject; var Name: string;
+  var Action: Boolean);
+var
+   lstCustomers : TStringList;
+   lstLine : Tstrings;
+   sFileName : string;
+   i : integer;
+   s : string;
+begin
+  //**
+  if mCustomers.Active then mCustomers.Close;
+  mCustomers.open;
+
+  mCustomers.DisableControls;
+  try
+    lstCustomers := Tstringlist.Create;
+    try
+      //Númer;Heiti;Heimili;Póstnúmer;Staður;Land;Kennitala;Flokkur;Sími 1;Greiðslumáti;Netfang
+      sFilename := name;
+      if fileexists(sFilename) then
+      begin
+        lstCustomers.LoadFromFile(sFileName);
+        for i := 0 to lstCustomers.count-1 do
+        begin
+          s := lstCustomers[i];
+          lstLine := SplitStringToTStrings(';', S);
+          if lstLine.Count = 11 then
+          begin
+            mCustomers.Append;
+            mCustomers['numer']       := UTF8String(lstLine[0]);
+            mCustomers['heiti']       := UTF8String(lstLine[1]);
+            mCustomers['heimili']     := UTF8String(lstLine[2]);
+            mCustomers['postnumer']   := UTF8String(lstLine[3]);
+            mCustomers['stadur']      := UTF8String(lstLine[4]);
+            mCustomers['land']        := UTF8String(lstLine[5]);
+            mCustomers['kennitala']   := UTF8String(lstLine[6]);
+            mCustomers['flokkur']     := UTF8String(lstLine[7]);
+            mCustomers['simi']        := UTF8String(lstLine[8]);
+            mCustomers['greidslumati']:= UTF8String(lstLine[9]);
+            mCustomers['netfang']     := UTF8String(lstLine[10]);
+            mCustomers.Post;
+          end;
+        end;
+      end;
+      mCustomers.First;
+    finally
+      freeandnil(lstCustomers);
+    end;
+  finally
+    mCustomers.EnableControls;
+  end;
+end;
+
+procedure TfrmTestData.btnToExcelClick(Sender: TObject);
+var
+  sFilename : string;
+  s         : string;
+  memoFile : TextFile;
+  atext : string;
+
+
+begin
+  screen.cursor := crHourglass;
+  try
+    dateTimeToString(s, 'yyyymmddhhnn', now);
+
+    sFilename := zdkdataPath + s + '_dkBookings';
+    ExportGridToExcel(sFilename, grBookings, true, true, true);
+
+    sFilename := zdkdataPath + s + '_dkResourceBookings';
+    ExportGridToExcel(sFilename, grResourceBookings, true, true, true);
+
+    sFilename := zdkdataPath + s + '_dkParticipant';
+    ExportGridToExcel(sFilename, grParticipant, true, true, true);
+
+    sFilename := zdkdataPath + s + '_dkBookingSaleLines';
+    ExportGridToExcel(sFilename, grBookingSaleLines, true, true, true);
+
+    sFilename := zdkdataPath + s + '_dkPrices';
+    ExportGridToExcel(sFilename, grPrices, true, true, true);
+
+    sFilename := zdkdataPath + s + '_dkAllocations';
+    ExportGridToExcel(sFilename, grAllocations, true, true, true);
+
+    sFilename := zdkdataPath + s + '_dkAllocations';
+    ExportGridToExcel(sFilename, grAllocations, true, true, true);
+
+    sFilename := zdkdataPath + s + '_dkMemos.txt';
+
+    System.AssignFile(memoFile, sFilename);
+    System.Rewrite(memoFile);
+
+    mMemos.first;
+    while not mMemos.eof do
+    begin
+      aText := '------------------------------------------------';
+      WriteLn(memofile,atext);
+      aText := 'BookingNumber : '+mMemos.fieldbyname('bookingNumber').asstring;
+      WriteLn(memofile,atext);
+      aText := mMemos.fieldbyname('memoText').asstring;
+      WriteLn(memofile,atext);
+      mMemos.Next;
+    end;
+    System.CloseFile(memoFile);
+  finally
+    screen.cursor := crDefault;
+  end;
+end;
+
+
+procedure TfrmTestData.Button1Click(Sender: TObject);
+var
+  filename : string;
+begin
+  filename := zdkDataPath+'customers.dat';
+  mCustomers.SaveToFile(filename);  //
+end;
+
+procedure TfrmTestData.Button2Click(Sender: TObject);
+var
+  filename : string;
+begin
+  filename := zdkDataPath+'customers.dat';
+  if fileexists(filename) then
+  begin
+    if mCustomers.active then mCustomers.Close;
+    mCustomers.open;
+    mCustomers.loadFromFile(filename);  //
+  end else
+  begin
+    Showmessage('File not Found : '+fileName);
+  end;
+end;
+
+procedure TfrmTestData.Button3Click(Sender: TObject);
+begin
+   if mCustomers.active then mCustomers.Close;
+   mCustomers.open;
+end;
+
+procedure TfrmTestData.Button4Click(Sender: TObject);
+var
+ zData   : recCustomerHolder;
+ newID   : integer;
+
+ defPcCode : string;
+ defCustomerType : string;
+ DefCurrency   : string;
+
+begin
+
+  defPcCode       := edDefPcCode.text      ;
+  defCustomerType := edDefCustomerType.text;
+  DefCurrency     := edDefCurrency.text    ;
+
+  newID := 0;
+
+  ProgressBar1.Position := 0;
+  ProgressBar1.Max := mCustomers.RecordCount;
+
+  mCustomers.First;
+  while not mCustomers.Eof do
+  begin
+    ProgressBar1.stepIt;
+    if not CustomerExist(mCustomers['numer']) then
+    begin
+      initCustomerHolder(zData);
+      zData.Active                   :=  true;
+      zData.Customer                 :=  mCustomers['numer'] ;
+      zData.Surname                  :=  mCustomers['heiti'] ;
+      zData.PID                      :=  mCustomers['numer'] ;
+      zData.Address1                 :=  mCustomers['heimili'] ;
+      zData.Address2                 :=  '' ;
+      zData.Address3                 :=  trim(mCustomers['postnumer']+' '+mCustomers['Stadur'])  ;
+      zData.Address4                 :=  mCustomers['land'] ;
+      zData.Country                  :=  '00';
+      zData.Tel1                     :=  mCustomers['simi'] ;
+      zData.Tel2                     :=  '' ;
+      zData.Fax                      :=  '' ;
+      zData.DiscountPercent          :=  0 ;
+      zData.EmailAddress             :=  mCustomers['netfang'] ;
+      zData.ContactPerson            :=  '' ;
+      zData.TravelAgency             :=  false;
+      zData.Homepage                 :=  '' ;
+      zData.notes                    :=  '' ;
+      zData.stayTaxIncluted          :=  true;
+      zData.pcID                     :=  PriceCode_ID(defPcCode);
+      zData.CustomerType             :=  defCustomerType;
+      zData.Currency                 :=  DefCurrency ;
+
+
+      if INS_Customer(zData,NewID) then
+      begin
+        mCustomers.Edit;
+        mCustomers.FieldByName('id').AsInteger := NewID;
+        mCustomers.Post;
+      end;
+    end;
+    mCustomers.Next;
+  end;
+
+end;
+
+procedure TfrmTestData.Button5Click(Sender: TObject);
+begin
+  DkInsertToRoomerSmari;
+end;
+
+procedure TfrmTestData.Button6Click(Sender: TObject);
+
+var
+  countRB : integer;
+  countAL : integer;
+  customer : string;
+
+begin
+  //
+  mBookings.DisableControls;
+  mResourcebookings.DisableControls;
+  mAllocations.DisableControls;
+  mBookingSaleLines.DisableControls;
+  mParticipants.DisableControls;
+  mPrices.DisableControls;
+
+  ProgressBar1.Max := mBookings.recordcount;
+  ProgressBar1.Position := 0;
+
+  try
+    mBookings.First;
+    while Not mbookings.Eof do
+    begin
+      ProgressBar1.StepIt;
+      countRB := mResourcebookings.RecordCount;
+      countAL := mAllocations.RecordCount;
+
+      customer := mbookings.fieldbyname('customer').AsString;
+
+      if not glb.LocateSpecificRecord('customers', 'Customer', Customer) then
+      begin
+        mBookings.Edit;
+        mBookings.fieldbyname('err').AsString := customer;
+        mBookings.Post;
+      end;
+
+      if CountRB = 0 then
+      begin
+        mBookings.Edit;
+        mBookings.fieldbyname('err').AsString :=  mBookings.fieldbyname('err').AsString+';NoRB';
+        mBookings.Post;
+      end else
+      begin
+        if countAL = 0 then
+        begin
+          mBookings.Edit;
+          mBookings.fieldbyname('err').AsString := mBookings.fieldbyname('err').AsString+';NoAL';
+          mBookings.Post;
+        end;
+      end;
+      mBookings.Next;
+    end;
+  finally
+    mBookings.enableControls;
+    mResourcebookings.enableControls;
+    mAllocations.enableControls;
+    mBookingSaleLines.enableControls;
+    mParticipants.enableControls;
+    mPrices.enableControls;
+  end;
+
+end;
+
+procedure TfrmTestData.DkInsertToRoomer;
+var
+  i : integer;
+
+  oNewReservation : TNewReservation;
+  oSelectedRoomItem : TnewRoomReservationItem;
+
+  idprenota : integer;
+  id_client : integer;    //Gestur
+  id_apartment : string;  //Room
+
+
+  Arrival : Tdate;
+  Departure : Tdate;
+
+  //***
+  sTmp : string;
+  discount : double;
+  dayDiscount : double;
+
+
+  RackCustomer : string;
+  Customer : string;
+
+  aRoom        : string;
+  aGuestCount  : integer;
+  aAvragePrice : double;
+
+  sRoomprices : string;
+  lstRoomPrices : TstringList;
+  lstR : TstringList;
+
+  Price      : double;
+  TotalPrice : double;
+
+
+  avrPrice     : double;
+  avrDiscount  : double;
+  rateCount    : integer;
+
+  aMainGuestName   : string;
+  aInfantCount     : integer;
+  aChildrenCount   : integer;
+  aPriceCode       : string;
+
+  dateCount : integer;
+
+
+  rateItem         : TRateItem;
+
+  rateRoomNumber   : string;
+  rateDate         : Tdate;
+  rate             : double;
+  ratePriceCode    : string;
+  rateDiscount     : double;
+  rateIsPercentage : boolean;
+  rateShowDiscount : boolean;
+  rateIsPaid       : boolean;
+
+  roomreservation : integer;
+
+  countryName  : string;
+  countryCode : string;
+
+  totalRate : double;
+  paid : double;
+
+  Res   : integer;
+  rooms : integer;
+
+  room     : string;
+  roomType : string;
+
+  GuestCount       : integer;
+  AvragePrice      : double;
+  AvrageDiscount   : double;
+  ChildrenCount    : integer;
+  infantCount      : integer;
+  PriceCode        : string;
+  isPercentage     : boolean;
+  mainGuestName    : string;
+  ii : integer;
+
+  oo : integer;
+  p : integer;
+
+  Address1 : string;
+  Address2 : string;
+  Address3 : string;
+  Address4 : string;
+
+  refr : string;
+  mainGuest : string;
+
+  address : string;
+  currency : string;
+
+  contactName  : string;
+  contactTel   : string;
+  contactEmail : string;
+
+  fs : TFormatSettings;
+
+  paymentinfo : string;
+  generalInfo : string;
+  roomInfo    : string;
+  remarks     : string;
+  paymentRemarks : string;
+
+
+  dkCustomer : string;
+  dkCustFound : boolean;
+  bookingnumber : string;
+
+  CustomerName : string;
+
+  numberOfRooms    : integer;
+  TotalNumberOfRooms : integer;
+
+  TotalAllocated : integer;
+  TotalGuestCount : integer;
+  GuestsPerRoom : integer;
+  GuestMod : integer;
+  sNow : string;
+  iii : integer;
+begin
+  //**
+  zFirstTime := true;
+  try
+    ProgressBar1.Max := mBookings.recordcount;
+    ProgressBar1.Position := 0;
+
+    mBookings.First;
+    oo := 0;
+    while not mBookings.Eof {and (oo < 20)} do
+    begin
+      dateTimeTostring(snow,'yyyy-mm-dd hh:nn:ss',now);
+      inc(oo);
+      ProgressBar1.StepIt;
+      try
+        paymentInfo := '';
+        generalInfo := '';
+        aInfantCount     := 0;
+        aChildrenCount   := 0;
+
+        dkCustFound := false;
+
+        bookingnumber := trim(mBookings.FieldByName('bookingnumber').AsString);
+        dkCustomer := trim(mBookings.FieldByName('Customer').AsString);
+
+        try
+          oNewReservation := TNewReservation.Create(g.qHotelCode,g.qUser);
+        Except
+        end;
+
+
+        if glb.LocateSpecificRecord('customers', 'Customer', DkCustomer) then
+        begin
+          dkCustFound := true;
+        end;
+
+        if mResourcebookings.RecordCount = 0 then
+        begin
+          mBookings.edit;
+          mBookings.FieldByName('err').AsString := mBookings.FieldByName('err').AsString+';No Resourcebookings ';
+          mBookings.post;
+          mBookings.next;
+          continue;
+        end;
+
+        if not dkCustFound then
+        begin
+          mBookings.edit;
+          mBookings.FieldByName('err').AsString := mBookings.FieldByName('err').AsString+';notFound : '+dkCustomer;
+          mBookings.post;
+          mBookings.next;
+          continue;
+        end;
+
+
+        refr := '';
+        contactName := trim(mBookings.FieldByName('name').AsString);
+        refr := trim(mBookings.FieldByName('description').AsString);
+        if trim(mBookings.FieldByName('travelAgentBookingId').AsString) <> '' then
+        begin
+          if refr <> '' then refr := refr +' : ';
+          refr := refr + trim(mBookings.FieldByName('travelAgentBookingId').AsString)
+        end;
+
+        mainGuest := '';
+        mParticipants.last;
+        if not mParticipants.bof then
+        begin
+          mainGuest := mParticipants.FieldByName('Name').AsString;
+        end;
+
+        CountryCode  := trim(mBookings.fieldbyname('countryCode').AsString);
+        Currency     := trim(mBookings.fieldbyname('CurrencyCode').AsString);
+        contactTel   := trim(mBookings.fieldbyname('phone').AsString);
+        contactEmail := trim(mBookings.fieldbyname('email').AsString);
+
+
+        oNewReservation.resMedhod := rmNormal;
+        oNewReservation.IsQuick   := true;
+        oNewReservation.HomeCustomer.Customer_update(customer);
+        oNewReservation.HomeCustomer.IsGroupInvoice    := False;
+
+        oNewReservation.HomeCustomer.ShowDiscountOnInvoice  := false;
+        oNewReservation.HomeCustomer.isRoomResDiscountPrec  := True;
+        oNewReservation.HomeCustomer.RoomResDiscount        := 0;
+
+        oNewReservation.HomeCustomer.Customer               := dkCustomer;
+        oNewReservation.HomeCustomer.CustomerName           := glb.CustomersSet['surname'];
+        oNewReservation.HomeCustomer.GuestName              := mainGuest;
+        oNewReservation.HomeCustomer.invRefrence            := refr;
+        oNewReservation.HomeCustomer.Country                := countryCode;
+        oNewReservation.HomeCustomer.ReservationName        := glb.CustomersSet['surname'];
+        oNewReservation.HomeCustomer.RoomStatus             := 'P';
+        oNewReservation.HomeCustomer.IsGroupInvoice         := False;
+        oNewReservation.HomeCustomer.Currency               := currency;
+        oNewReservation.HomeCustomer.ContactPerson          := contactName;
+        oNewReservation.HomeCustomer.ContactPhone           := contactTel;
+        oNewReservation.HomeCustomer.ContactEmail           := contactEmail;
+        oNewReservation.HomeCustomer.ContactAddress1        := '';
+        oNewReservation.HomeCustomer.ContactAddress2        := '';
+        oNewReservation.HomeCustomer.ContactAddress3        := bookingnumber;
+        oNewReservation.HomeCustomer.ContactAddress4        := '';
+
+
+
+        mMemos.First;
+        if not mMemos.eof then
+        begin
+          paymentremarks := mMemos.FieldByName('memoText').AsString;
+        end;
+
+        remarks := snow;
+        if trim(remarks) <>'' then
+            generalinfo := generalinfo+'<imported> '+remarks;
+
+        if trim(paymentremarks) <>'' then
+            Paymentinfo := Paymentinfo+#10+'---------'+#10+paymentremarks;
+
+        TotalGuestCount := mParticipants.RecordCount;
+
+        i := 0;
+        mResourceBookings.first;
+        TotalNumberOfRooms := 0;
+        TotalAllocated := mAllocations.RecordCount;
+        while not mResourceBookings.eof do
+        begin
+          try
+            numberOfRooms := strtoint(mResourceBookings.FieldByName('reserved').asstring);
+          Except
+            numberOfRooms := 0;
+          end;
+          totalNumberOfRooms := totalNumberOfRooms+numberOfRooms;
+          mResourceBookings.next
+        end;
+
+
+       GuestsPerRoom := 0;
+       GuestMod      := 0;
+
+        if totalNumberOfRooms <> 0 then
+        begin
+          GuestsPerRoom := TotalGuestCount div totalNumberOfRooms;
+          GuestMod := TotalGuestCount MOD totalNumberOfRooms;
+        end;
+
+        generalinfo := generalinfo+#10+'<TotalGuestCount> '+inttostr(TotalGuestCount) ;
+        if mBookingSaleLines.RecordCount > 0 then
+        begin
+          generalinfo := generalinfo+#10+'-----------------';
+          mBookingSaleLines.first;
+          while not mBookingSaleLines.eof do
+          begin
+            generalinfo := generalinfo+#10+'<SaleLine-number> '+mBookingSaleLines.fieldbyname('soHeadRecId').asstring; ;
+            generalinfo := generalinfo+#10+'<SaleLine-Code> '+mBookingSaleLines.fieldbyname('ItemCode').asstring; ;
+            generalinfo := generalinfo+#10+'<SaleLine-Amount> '+mBookingSaleLines.fieldbyname('itemPriceForeignWithTax').asstring; ;
+            mBookingSaleLines.next
+          end;
+          generalinfo := generalinfo+#10+'-----------------';
+        end;
+
+
+
+        if TotalAllocated <> totalNumberOfRooms then
+        begin
+          mBookings.edit;
+          mBookings.FieldByName('err').AsString := mBookings.FieldByName('err').AsString+';No Room ';
+          mBookings.post;
+          mResourcebookings.First;
+          iii := 0;
+          while not mResourcebookings.eof do
+          begin
+            inc(iii);
+            //Create NoRooms
+            aroom := '';
+            roomType := mResourcebookings.FieldByName('resourceGroup').asstring;
+            roomInfo := '';
+            roomInfo := roomInfo+'<Bookingnumber> '+bookingNumber;
+
+            inc(i);
+
+            fs.DateSeparator := '.';
+            fs.ShortDateFormat := 'dd.mm.yyyy';
+            sTmp :=  mResourcebookings.fieldbyname('dateFrom').asstring;
+            Arrival := strToDateTime(sTmp,fs);
+
+            fs.ShortDateFormat := 'dd-mm-yyyy';
+            sTmp := mResourcebookings.FieldByName('dateto').asString;
+            Departure       := strToDateTime(sTmp,fs);
+
+  //        sTmp := KbmRoomRes.FieldByName('NumberOfPersons').AsString;
+
+
+            try
+              if totalNumberOfRooms = 1 then
+              begin
+                GuestCount := TotalGuestCount
+              end else
+              begin
+                GuestCount := GuestsPerRoom;
+                if (GuestMod <> 0) and (totalNumberOfRooms=iii) then
+                begin
+                  GuestCount := GuestCount+1
+                end;
+              end;
+            except
+            end;
+            roomreservation := RR_SetNewID();
+            try
+              AvragePrice := 1;
+            Except
+              AvragePrice := 1;
+            end;
+
+            AvrageDiscount  := 0;
+            RateCount       := 1;
+            ChildrenCount   := 0;
+            infantCount     := 0;
+            PriceCode       := 'RACK';
+            isPercentage    := False;
+            mainGuestName   := mainGuest;
+            if trim(mainGuestName) = '' then mainGuestName := contactName;
+            if trim(mainGuestName) = '-' then mainGuestName :=contactName;
+
+            mainGuestName := copy(mainGuestName,1,100);
+
+
+            oSelectedRoomItem := TnewRoomReservationItem.Create(roomreservation,
+                                                                 aRoom,
+                                                                 RoomType,
+                                                                 '',
+                                                                 Arrival,
+                                                                 departure,
+                                                                 GuestCount,
+                                                                 AvragePrice,
+                                                                 AvrageDiscount,
+                                                                 false,
+                                                                 rateCount,
+                                                                 ChildrenCount,
+                                                                 InfantCount,
+                                                                 PriceCode,
+                                                                 MainGuestName,
+                                                                 roomInfo);
+
+              oNewReservation.newRoomReservations.RoomItemsList.Add(oSelectedRoomItem);
+              dateCount := trunc(departure)-trunc(arrival);
+              for ii := 1 to dateCount do
+              begin
+                rateRoomNumber   := '<'+inttostr(roomreservation)+'>';
+                rateDate         := Arrival+ii-1;
+                rate             := AvragePrice;
+                ratePriceCode    := 'RACK';
+                rateDiscount     := 0;
+                rateIsPercentage := true;
+                rateShowDiscount := false;
+                rateIsPaid       := false;
+                rateItem := TRateItem.Create(rate,rateDate,rateDiscount,rateShowDiscount,rateIsPercentage,rateisPaid,ratePriceCode,rateRoomNumber,-1,roomreservation);
+                oNewReservation.newRoomReservations.RoomItemsList[i-1].oRates.RateItemsList.Add(rateItem);
+              end;
+              mResourcebookings.Next;
+
+             oNewReservation.HomeCustomer.ReservationPaymentInfo := paymentinfo;
+             oNewReservation.HomeCustomer.ReservationGeneralInfo := generalInfo;
+          end;
+          screen.Cursor := crHourGlass;
+          try
+            oNewReservation.CreateReservation;
+          finally
+            screen.Cursor := crDefault;
+          end;
+        end else
+        begin
+          iii := 0;
+          while not mAllocations.eof do
+          begin
+            inc(iii);
+            aroom     := mAllocations.FieldByName('resourceCode').asstring;
+            roomType  := mAllocations.FieldByName('resourceGroup').asstring;
+
+            roomInfo := '';
+            roomInfo := roomInfo+'<Bookingnumber> '+bookingNumber;
+            roomInfo := roomInfo+#10+'<PriceID> '+mAllocations.FieldByName('PriceID').asstring;;
+            inc(i);
+
+            fs.DateSeparator := '.';
+            fs.ShortDateFormat := 'dd.mm.yyyy';
+            sTmp :=  mAllocations.fieldbyname('dateFrom').asstring;
+            Arrival := strToDateTime(sTmp,fs);
+
+            fs.ShortDateFormat := 'dd-mm-yyyy';
+            sTmp := mAllocations.FieldByName('dateto').asString;
+            Departure       := strToDateTime(sTmp,fs);
+
+  //          sTmp := KbmRoomRes.FieldByName('NumberOfPersons').AsString;
+            try
+              if totalNumberOfRooms = 1 then
+              begin
+                GuestCount := TotalGuestCount
+              end else
+              begin
+                GuestCount := GuestsPerRoom;
+                if (GuestMod <> 0) and (TotalAllocated=iii) then
+                begin
+                  GuestCount := GuestCount+1
+                end;
+              end;
+            except
+            end;
+            roomreservation := RR_SetNewID();
+            try
+              AvragePrice := 1;
+            Except
+              AvragePrice := 1;
+            end;
+
+            AvrageDiscount  := 0;
+            RateCount       := 1;
+            ChildrenCount   := 0;
+            infantCount     := 0;
+            PriceCode       := 'RACK';
+            isPercentage    := False;
+            mainGuestName   := mainGuest;
+            if trim(mainGuestName) = '' then mainGuestName := contactName;
+            if trim(mainGuestName) = '-' then mainGuestName :=contactName;
+
+            mainGuestName := copy(mainGuestName,1,100);
+
+            oSelectedRoomItem := TnewRoomReservationItem.Create(roomreservation,
+                                                                 aRoom,
+                                                                 RoomType,
+                                                                 '',
+                                                                 Arrival,
+                                                                 departure,
+                                                                 GuestCount,
+                                                                 AvragePrice,
+                                                                 AvrageDiscount,
+                                                                 false,
+                                                                 rateCount,
+                                                                 ChildrenCount,
+                                                                 InfantCount,
+                                                                 PriceCode,
+                                                                 MainGuestName,
+                                                                 roomInfo);
+
+            oNewReservation.newRoomReservations.RoomItemsList.Add(oSelectedRoomItem);
+            dateCount := trunc(departure)-trunc(arrival);
+            for ii := 1 to dateCount do
+            begin
+              rateRoomNumber   := aroom;
+              rateDate         := Arrival+ii-1;
+              rate             := AvragePrice;
+              ratePriceCode    := 'RACK';
+              rateDiscount     := 0;
+              rateIsPercentage := true;
+              rateShowDiscount := false;
+              rateIsPaid       := false;
+              rateItem := TRateItem.Create(rate,rateDate,rateDiscount,rateShowDiscount,rateIsPercentage,rateisPaid,ratePriceCode,rateRoomNumber,-1,roomreservation);
+              oNewReservation.newRoomReservations.RoomItemsList[i-1].oRates.RateItemsList.Add(rateItem);
+            end;
+            mAllocations.Next;
+
+            oNewReservation.HomeCustomer.ReservationPaymentInfo := paymentinfo;
+            oNewReservation.HomeCustomer.ReservationGeneralInfo := generalInfo;
+          end;
+
+          screen.Cursor := crHourGlass;
+          try
+            oNewReservation.CreateReservation;
+          finally
+            screen.Cursor := crDefault;
+          end;
+        end;
+      finally
+        freeandnil(oNewReservation);
+      end;
+      mBookings.next;
+    end;
+  finally
+//    kbmRoomRes.EnableControls;
+//    kbmReservations.EnableControls;
+//    kbmRoomMap.EnableControls;
+    zFirstTime := false;
+  end;
+end;
+
+
+procedure TfrmTestData.DkInsertToRoomerSmari;
+var
+  i : integer;
+
+  oNewReservation : TNewReservation;
+  oSelectedRoomItem : TnewRoomReservationItem;
+
+  idprenota : integer;
+  id_client : integer;    //Gestur
+  id_apartment : string;  //Room
+
+
+  Arrival : Tdate;
+  Departure : Tdate;
+
+  //***
+  sTmp : string;
+  discount : double;
+  dayDiscount : double;
+
+
+  RackCustomer : string;
+  Customer : string;
+
+  aRoom        : string;
+  aGuestCount  : integer;
+  aAvragePrice : double;
+
+  sRoomprices : string;
+  lstRoomPrices : TstringList;
+  lstR : TstringList;
+
+  Price      : double;
+  TotalPrice : double;
+
+
+  avrPrice     : double;
+  avrDiscount  : double;
+  rateCount    : integer;
+
+  aMainGuestName   : string;
+  aInfantCount     : integer;
+  aChildrenCount   : integer;
+  aPriceCode       : string;
+
+  dateCount : integer;
+
+
+  rateItem         : TRateItem;
+
+  rateRoomNumber   : string;
+  rateDate         : Tdate;
+  rate             : double;
+  ratePriceCode    : string;
+  rateDiscount     : double;
+  rateIsPercentage : boolean;
+  rateShowDiscount : boolean;
+  rateIsPaid       : boolean;
+
+  roomreservation : integer;
+
+  countryName  : string;
+  countryCode : string;
+
+  totalRate : double;
+  paid : double;
+
+  Res   : integer;
+  rooms : integer;
+
+  room     : string;
+  roomType : string;
+
+  GuestCount       : integer;
+  AvragePrice      : double;
+  AvrageDiscount   : double;
+  ChildrenCount    : integer;
+  infantCount      : integer;
+  PriceCode        : string;
+  isPercentage     : boolean;
+  mainGuestName    : string;
+  ii : integer;
+
+  oo : integer;
+  p : integer;
+
+  Address1 : string;
+  Address2 : string;
+  Address3 : string;
+  Address4 : string;
+
+  refr : string;
+  mainGuest : string;
+
+  address : string;
+  currency : string;
+
+  contactName  : string;
+  contactTel   : string;
+  contactEmail : string;
+
+  fs : TFormatSettings;
+
+  paymentinfo : string;
+  generalInfo : string;
+  roomInfo    : string;
+  remarks     : string;
+  paymentRemarks : string;
+
+
+  dkCustomer : string;
+  dkCustFound : boolean;
+  bookingnumber : string;
+
+  CustomerName : string;
+
+  numberOfRooms    : integer;
+  TotalNumberOfRooms : integer;
+
+  TotalAllocated : integer;
+  TotalGuestCount : integer;
+  GuestsPerRoom : integer;
+  GuestMod : integer;
+  sNow : string;
+  iii : integer;
+begin
+  //**
+
+  mBookings.DisableControls;
+  mResourcebookings.DisableControls;
+  mAllocations.DisableControls;
+  mBookingSaleLines.DisableControls;
+  mParticipants.DisableControls;
+  mPrices.DisableControls;
+
+  zFirstTime := true;
+  try
+    ProgressBar1.Max := mBookings.recordcount;
+    ProgressBar1.Position := 0;
+
+    mBookings.First;
+    oo := 0;
+    while not mBookings.Eof {and (oo < 5)} do
+    begin
+      dateTimeTostring(snow,'yyyy-mm-dd hh:nn:ss',now);
+      inc(oo);
+      ProgressBar1.StepIt;
+      try
+        paymentInfo := '';
+        generalInfo := '';
+        aInfantCount     := 0;
+        aChildrenCount   := 0;
+
+        dkCustFound := false;
+
+        bookingnumber := trim(mBookings.FieldByName('bookingnumber').AsString);
+//        showmessage(bookingNumber);
+
+//    quotedstr(
+
+    mResourceBookings.Filter := '(bookingNumber='+quotedstr(bookingnumber)+')';
+    mResourceBookings.Filtered := true;
+
+    mPrices.Filter := '(bookingNumber='+quotedstr(bookingnumber)+')';
+    mPrices.Filtered := true;
+
+    mAllocations.Filter := '(bookingNumber='+quotedstr(bookingnumber)+')';
+    mAllocations.Filtered := true;
+
+    mParticipants.Filter := '(bookingNumber='+quotedstr(bookingnumber)+')';
+    mParticipants.Filtered := true;
+
+    mBookingSaleLines.Filter := '(bookingNumber='+quotedstr(bookingnumber)+')';
+    mBookingSaleLines.Filtered := true;
+
+    mBookingSaleLines.Filter := '(bookingNumber='+quotedstr(bookingnumber)+')';
+    mBookingSaleLines.Filtered := true;
+
+    mMemos.Filter := '(bookingNumber='+quotedstr(bookingnumber)+')';
+    mMemos.Filtered := true;
+
+        dkCustomer := trim(mBookings.FieldByName('Customer').AsString);
+        try
+          oNewReservation := TNewReservation.Create(g.qHotelCode,g.qUser);
+        Except
+        end;
+
+
+        if glb.LocateSpecificRecord('customers', 'Customer', DkCustomer) then
+        begin
+          dkCustFound := true;
+        end;
+
+        if mResourcebookings.RecordCount = 0 then
+        begin
+          mBookings.edit;
+          mBookings.FieldByName('err').AsString := mBookings.FieldByName('err').AsString+';No Resourcebookings ';
+          mBookings.post;
+          mBookings.next;
+          continue;
+        end;
+
+        if not dkCustFound then
+        begin
+          mBookings.edit;
+          mBookings.FieldByName('err').AsString := mBookings.FieldByName('err').AsString+';notFound : '+dkCustomer;
+          mBookings.post;
+          mBookings.next;
+          continue;
+        end;
+
+
+        refr := '';
+        contactName := trim(mBookings.FieldByName('name').AsString);
+        refr := trim(mBookings.FieldByName('description').AsString);
+        if trim(mBookings.FieldByName('travelAgentBookingId').AsString) <> '' then
+        begin
+          if refr <> '' then refr := refr +' : ';
+          refr := refr + trim(mBookings.FieldByName('travelAgentBookingId').AsString)
+        end;
+
+        CountryCode  := trim(mBookings.fieldbyname('countryCode').AsString);
+        Currency     := trim(mBookings.fieldbyname('CurrencyCode').AsString);
+        contactTel   := trim(mBookings.fieldbyname('phone').AsString);
+        contactEmail := trim(mBookings.fieldbyname('email').AsString);
+
+
+        oNewReservation.resMedhod := rmNormal;
+        oNewReservation.IsQuick   := true;
+        oNewReservation.HomeCustomer.Customer_update(customer);
+        oNewReservation.HomeCustomer.IsGroupInvoice    := False;
+
+        oNewReservation.HomeCustomer.ShowDiscountOnInvoice  := false;
+        oNewReservation.HomeCustomer.isRoomResDiscountPrec  := True;
+        oNewReservation.HomeCustomer.RoomResDiscount        := 0;
+
+        oNewReservation.HomeCustomer.Customer               := dkCustomer;
+        oNewReservation.HomeCustomer.CustomerName           := glb.CustomersSet['surname'];
+        oNewReservation.HomeCustomer.GuestName              := mainGuest;
+        oNewReservation.HomeCustomer.invRefrence            := refr;
+        oNewReservation.HomeCustomer.Country                := countryCode;
+        oNewReservation.HomeCustomer.ReservationName        := glb.CustomersSet['surname'];
+        oNewReservation.HomeCustomer.RoomStatus             := 'P';
+        oNewReservation.HomeCustomer.IsGroupInvoice         := False;
+        oNewReservation.HomeCustomer.Currency               := currency;
+        oNewReservation.HomeCustomer.ContactPerson          := contactName;
+        oNewReservation.HomeCustomer.ContactPhone           := contactTel;
+        oNewReservation.HomeCustomer.ContactEmail           := contactEmail;
+        oNewReservation.HomeCustomer.ContactAddress1        := '';
+        oNewReservation.HomeCustomer.ContactAddress2        := '';
+        oNewReservation.HomeCustomer.ContactAddress3        := bookingnumber;
+        oNewReservation.HomeCustomer.ContactAddress4        := '';
+
+
+
+        mMemos.First;
+        if not mMemos.eof then
+        begin
+          paymentremarks := mMemos.FieldByName('memoText').AsString;
+        end;
+
+        remarks := snow;
+        if trim(remarks) <>'' then
+            generalinfo := generalinfo+'<imported> '+remarks;
+
+        if trim(paymentremarks) <>'' then
+            Paymentinfo := Paymentinfo+#10+'---------'+#10+paymentremarks;
+
+        TotalGuestCount := mParticipants.RecordCount;
+
+        i := 0;
+        mResourceBookings.first;
+        TotalNumberOfRooms := 0;
+        TotalAllocated := mAllocations.RecordCount;
+        while not mResourceBookings.eof do
+        begin
+          try
+            numberOfRooms := strtoint(mResourceBookings.FieldByName('reserved').asstring);
+          Except
+            numberOfRooms := 0;
+          end;
+          totalNumberOfRooms := totalNumberOfRooms+numberOfRooms;
+          mResourceBookings.next
+        end;
+
+
+       GuestsPerRoom := 0;
+       GuestMod      := 0;
+
+        if totalNumberOfRooms <> 0 then
+        begin
+          GuestsPerRoom := TotalGuestCount div totalNumberOfRooms;
+          GuestMod := TotalGuestCount MOD totalNumberOfRooms;
+        end;
+
+        generalinfo := generalinfo+#10+'<TotalGuestCount> '+inttostr(TotalGuestCount) ;
+        if mBookingSaleLines.RecordCount > 0 then
+        begin
+          generalinfo := generalinfo+#10+'-----------------';
+          mBookingSaleLines.first;
+          while not mBookingSaleLines.eof do
+          begin
+            generalinfo := generalinfo+#10+'<SaleLine-number> '+mBookingSaleLines.fieldbyname('soHeadRecId').asstring; ;
+            generalinfo := generalinfo+#10+'<SaleLine-Code> '+mBookingSaleLines.fieldbyname('ItemCode').asstring; ;
+            generalinfo := generalinfo+#10+'<SaleLine-Amount> '+mBookingSaleLines.fieldbyname('itemPriceForeignWithTax').asstring; ;
+            mBookingSaleLines.next
+          end;
+          generalinfo := generalinfo+#10+'-----------------';
+        end;
+
+
+
+        if TotalAllocated <> totalNumberOfRooms then
+        begin
+          mBookings.edit;
+          mBookings.FieldByName('err').AsString := mBookings.FieldByName('err').AsString+';No Room ';
+          mBookings.post;
+        end else
+        begin
+          mAllocations.first;
+          iii := 0;
+          while not mAllocations.eof do
+          begin
+            inc(iii);
+            aroom     := mAllocations.FieldByName('resourceCode').asstring;
+
+            if glb.LocateSpecificRecord('rooms', 'room', aRoom) then
+            begin
+              roomtype := glb.RoomsSet['roomType']
+            end else
+            begin
+              RoomType := 'NA';
+              aroom := '';
+            end;
+
+
+//            roomType  := mAllocations.FieldByName('resourceGroup').asstring;
+
+            roomInfo := '';
+            roomInfo := roomInfo+'<Bookingnumber> '+bookingNumber;
+            roomInfo := roomInfo+#10+'<PriceID> '+mAllocations.FieldByName('PriceID').asstring;;
+            inc(i);
+
+            fs.DateSeparator := '.';
+            fs.ShortDateFormat := 'dd.mm.yyyy';
+            sTmp :=  mAllocations.fieldbyname('dateFrom').asstring;
+            Arrival := strToDateTime(sTmp,fs);
+
+            fs.ShortDateFormat := 'dd-mm-yyyy';
+            sTmp := mAllocations.FieldByName('dateto').asString;
+            Departure       := strToDateTime(sTmp,fs);
+
+            try
+              if totalNumberOfRooms = 1 then
+              begin
+                GuestCount := TotalGuestCount
+              end else
+              begin
+                GuestCount := 0;
+                mParticipants.First;
+                while not mParticipants.eof do
+                begin
+                  if mParticipants.FieldByName('resourceCode').asstring = aroom then
+                  begin
+                    inc(GuestCount);
+                  end;
+                  mParticipants.next
+                end;
+                if guestCount = 0 then GuestCount := 1;
+              end;
+            except
+            end;
+            roomreservation := RR_SetNewID();
+            try
+              AvragePrice := 1;
+            Except
+              AvragePrice := 1;
+            end;
+
+            AvrageDiscount  := 0;
+            RateCount       := 1;
+            ChildrenCount   := 0;
+            infantCount     := 0;
+            PriceCode       := 'RACK';
+            isPercentage    := False;
+            mainGuestName   := contactName;
+            if trim(mainGuestName) = '' then mainGuestName := contactName;
+            if trim(mainGuestName) = '-' then mainGuestName :=contactName;
+
+            mainGuestName := copy(mainGuestName,1,100);
+
+            oSelectedRoomItem := TnewRoomReservationItem.Create(roomreservation,
+                                                                 aRoom,
+                                                                 RoomType,
+                                                                 '',
+                                                                 Arrival,
+                                                                 departure,
+                                                                 GuestCount,
+                                                                 AvragePrice,
+                                                                 AvrageDiscount,
+                                                                 false,
+                                                                 rateCount,
+                                                                 ChildrenCount,
+                                                                 InfantCount,
+                                                                 PriceCode,
+                                                                 MainGuestName,
+                                                                 roomInfo);
+
+            oNewReservation.newRoomReservations.RoomItemsList.Add(oSelectedRoomItem);
+            dateCount := trunc(departure)-trunc(arrival);
+            for ii := 1 to dateCount do
+            begin
+              rateRoomNumber   := aroom;
+              rateDate         := Arrival+ii-1;
+              rate             := AvragePrice;
+              ratePriceCode    := 'RACK';
+              rateDiscount     := 0;
+              rateIsPercentage := true;
+              rateShowDiscount := false;
+              rateIsPaid       := false;
+              rateItem := TRateItem.Create(rate,rateDate,rateDiscount,rateShowDiscount,rateIsPercentage,rateisPaid,ratePriceCode,rateRoomNumber,-1,roomreservation);
+              oNewReservation.newRoomReservations.RoomItemsList[i-1].oRates.RateItemsList.Add(rateItem);
+            end;
+            mAllocations.Next;
+
+            oNewReservation.HomeCustomer.ReservationPaymentInfo := paymentinfo;
+            oNewReservation.HomeCustomer.ReservationGeneralInfo := generalInfo;
+          end;
+
+          screen.Cursor := crHourGlass;
+          try
+            oNewReservation.CreateReservation;
+          finally
+            screen.Cursor := crDefault;
+          end;
+        end;
+
+      finally
+        freeandnil(oNewReservation);
+      end;
+      mBookings.next;
+    end;
+  finally
+  mBookings.EnableControls;
+  mResourcebookings.EnableControls;
+  mAllocations.EnableControls;
+  mBookingSaleLines.EnableControls;
+  mParticipants.EnableControls;
+  mPrices.EnableControls;
+
+//    kbmRoomRes.EnableControls;
+//    kbmReservations.EnableControls;
+//    kbmRoomMap.EnableControls;
+    zFirstTime := false;
+  end;
+end;
+
+
+
 end.
+
+CREATE TABLE `invoiceheads` (
+  `Reservation` int(11) DEFAULT '0',
+  `RoomReservation` int(11) DEFAULT '0',
+  `SplitNumber` int(11) DEFAULT '0',
+  `InvoiceNumber` int(11) DEFAULT '0',
+  `InvoiceDate` varchar(10) DEFAULT '',
+  `Customer` varchar(15) DEFAULT '',
+  `Name` varchar(100) DEFAULT '',
+  `Address1` varchar(100) DEFAULT '',
+  `Address2` varchar(100) DEFAULT '',
+  `Address3` varchar(100) DEFAULT '',
+  `Address4` varchar(100) DEFAULT '',
+  `Country` varchar(2) DEFAULT '',
+  `Total` double DEFAULT '0',
+  `TotalWOVAT` double DEFAULT '0',
+  `TotalVAT` double DEFAULT '0',
+  `TotalBreakFast` double DEFAULT '0',
+  `ExtraText` longtext,
+  `Finished` tinyint(1) NOT NULL DEFAULT '0',
+  `ReportDate` varchar(10) DEFAULT '',
+  `ReportTime` varchar(5) DEFAULT '',
+  `CreditInvoice` int(11) DEFAULT '0',
+  `OriginalInvoice` int(11) DEFAULT '0',
+  `InvoiceType` int(11) DEFAULT '0',
+  `ihTmp` char(3) DEFAULT '',
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
+  `custPID` varchar(15) DEFAULT '',
+  `RoomGuest` varchar(100) DEFAULT '',
+  `ihDate` datetime DEFAULT NULL,
+  `ihStaff` varchar(11) DEFAULT NULL,
+  `ihPayDate` datetime DEFAULT NULL,
+  `ihConfirmDate` datetime DEFAULT NULL,
+  `ihInvoiceDate` datetime DEFAULT NULL,
+  `ihCurrency` varchar(5) DEFAULT '',
+  `ihCurrencyRate` double DEFAULT '0',
+  `invRefrence` varchar(100) DEFAULT '',
+  `TotalStayTax` double DEFAULT '0',
+  `TotalStayTaxNights` int(11) DEFAULT '0',
+  `showPackage` tinyint(1) DEFAULT '0',
+  `staff` varchar(5) DEFAULT NULL,
+  `location` varchar(10) DEFAULT NULL,
+  `externalInvoiceId` int(11) DEFAULT NULL,
+  `InvoiceFinalized` datetime DEFAULT NULL,
+  PRIMARY KEY (`ID`),
+  UNIQUE KEY `InvoiceHeads_IX_InvoiceHeadsID` (`ID`),
+  KEY `InvoiceHeads_IX_IhInvoiceDate` (`ihInvoiceDate`),
+  KEY `InvoiceHeads_IX_InvoiceDate` (`InvoiceDate`),
+  KEY `IX_InvoiceHeads_confirmdate` (`ihConfirmDate`),
+  KEY `IX_InvoiceHeads_Num_Res` (`InvoiceNumber`,`RoomReservation`),
+  KEY `IX_InvoiceHeads_number_date` (`InvoiceNumber`,`InvoiceDate`),
+  KEY `InvoiceHeads_IX_InvoiceNumber` (`InvoiceNumber`),
+  KEY `InvoiceHeads_IX_Res_Roomres` (`Reservation`,`RoomReservation`),
+  KEY `InvoiceHeads_ID_RoomRes_Inv` (`RoomReservation`,`InvoiceNumber`),
+  KEY `InvoiceHeads_IX_ExternalInvoiceId` (`externalInvoiceId`),
+  KEY `InvoiceHeads_IX_InvoiceFinalized` (`InvoiceFinalized`,`InvoiceNumber`)
+) ENGINE=InnoDB AUTO_INCREMENT=30940 DEFAULT CHARSET=utf8;
+
+
+
+
+
+CREATE TABLE `invoiceheads` (                                                      CREATE TABLE `invoiceheads` (
+  `Reservation` int(11) DEFAULT '0',                                                 `Reservation` int(11) DEFAULT '0',
+  `RoomReservation` int(11) DEFAULT '0',                                             `RoomReservation` int(11) DEFAULT '0',
+  `SplitNumber` int(11) DEFAULT '0',                                                 `SplitNumber` int(11) DEFAULT '0',
+  `InvoiceNumber` int(11) DEFAULT '0',                                               `InvoiceNumber` int(11) DEFAULT '0',
+  `InvoiceDate` varchar(10) DEFAULT '',                                              `InvoiceDate` varchar(10) DEFAULT '',
+  `Customer` varchar(15) DEFAULT '',                                                 `Customer` varchar(15) DEFAULT '',
+  `Name` varchar(100) DEFAULT '',                                                    `Name` varchar(100) DEFAULT '',
+  `Address1` varchar(100) DEFAULT '',                                                `Address1` varchar(100) DEFAULT '',
+  `Address2` varchar(100) DEFAULT '',                                                `Address2` varchar(100) DEFAULT '',
+  `Address3` varchar(100) DEFAULT '',                                                `Address3` varchar(100) DEFAULT '',
+  `Address4` varchar(100) DEFAULT '',                                                `Address4` varchar(100) DEFAULT '',
+  `Country` varchar(2) DEFAULT '',                                                   `Country` varchar(2) DEFAULT '',
+  `Total` double DEFAULT '0',                                                        `Total` double DEFAULT '0',
+  `TotalWOVAT` double DEFAULT '0',                                                   `TotalWOVAT` double DEFAULT '0',
+  `TotalVAT` double DEFAULT '0',                                                     `TotalVAT` double DEFAULT '0',
+  `TotalBreakFast` double DEFAULT '0',                                               `TotalBreakFast` double DEFAULT '0',
+  `ExtraText` longtext,                                                              `ExtraText` longtext,
+  `Finished` tinyint(1) NOT NULL DEFAULT '0',                                        `Finished` tinyint(1) NOT NULL DEFAULT '0',
+  `ReportDate` varchar(10) DEFAULT '',                                               `ReportDate` varchar(10) DEFAULT '',
+  `ReportTime` varchar(5) DEFAULT '',                                                `ReportTime` varchar(5) DEFAULT '',
+  `CreditInvoice` int(11) DEFAULT '0',                                               `CreditInvoice` int(11) DEFAULT '0',
+  `OriginalInvoice` int(11) DEFAULT '0',                                             `OriginalInvoice` int(11) DEFAULT '0',
+  `InvoiceType` int(11) DEFAULT '0',                                                 `InvoiceType` int(11) DEFAULT '0',
+  `ihTmp` char(3) DEFAULT '',                                                        `ihTmp` char(3) DEFAULT '',
+  `ID` int(11) NOT NULL AUTO_INCREMENT,                                              `ID` int(11) NOT NULL AUTO_INCREMENT,
+  `custPID` varchar(15) DEFAULT '',                                                  `custPID` varchar(15) DEFAULT '',
+  `RoomGuest` varchar(100) DEFAULT '',                                               `RoomGuest` varchar(100) DEFAULT '',
+  `ihDate` datetime DEFAULT NULL,                                                    `ihDate` datetime DEFAULT NULL,
+  `ihStaff` varchar(11) DEFAULT NULL,                                                `ihStaff` varchar(11) DEFAULT NULL,
+  `ihPayDate` datetime DEFAULT NULL,                                                 `ihPayDate` datetime DEFAULT NULL,
+  `ihConfirmDate` datetime DEFAULT NULL,                                             `ihConfirmDate` datetime DEFAULT NULL,
+  `ihInvoiceDate` datetime DEFAULT NULL,                                             `ihInvoiceDate` datetime DEFAULT NULL,
+  `ihCurrency` varchar(5) DEFAULT '',                                                `ihCurrency` varchar(5) DEFAULT '',
+  `ihCurrencyRate` double DEFAULT '0',                                               `ihCurrencyRate` double DEFAULT '0',
+  `invRefrence` varchar(100) DEFAULT '',                                             `invRefrence` varchar(100) DEFAULT '',
+  `TotalStayTax` double DEFAULT '0',                                                 `TotalStayTax` double DEFAULT '0',
+  `TotalStayTaxNights` int(11) DEFAULT '0',                                          `TotalStayTaxNights` int(11) DEFAULT '0',
+  `showPackage` tinyint(1) DEFAULT '0',                                              `showPackage` tinyint(1) DEFAULT '0',
+  `staff` varchar(5) DEFAULT NULL,                                                   `staff` varchar(5) DEFAULT NULL,
+  `location` varchar(10) DEFAULT NULL,                                               `location` varchar(10) DEFAULT NULL,
+  `externalInvoiceId` int(11) DEFAULT NULL,                                          `externalInvoiceId` int(11) DEFAULT NULL,
+  `InvoiceFinalized` datetime DEFAULT NULL,                                          `InvoiceFinalized` datetime DEFAULT NULL,
+  PRIMARY KEY (`ID`),                                                                PRIMARY KEY (`ID`),
+  UNIQUE KEY `InvoiceHeads_IX_InvoiceHeadsID` (`ID`),                                UNIQUE KEY `InvoiceHeads_IX_InvoiceHeadsID` (`ID`),
+  KEY `InvoiceHeads_IX_IhInvoiceDate` (`ihInvoiceDate`),                             KEY `InvoiceHeads_IX_IhInvoiceDate` (`ihInvoiceDate`),
+  KEY `InvoiceHeads_IX_InvoiceDate` (`InvoiceDate`),                                 KEY `InvoiceHeads_IX_InvoiceDate` (`InvoiceDate`),
+  KEY `IX_InvoiceHeads_confirmdate` (`ihConfirmDate`),                               KEY `IX_InvoiceHeads_confirmdate` (`ihConfirmDate`),
+  KEY `IX_InvoiceHeads_Num_Res` (`InvoiceNumber`,`RoomReservation`),                 KEY `IX_InvoiceHeads_Num_Res` (`InvoiceNumber`,`RoomReservation`),
+  KEY `IX_InvoiceHeads_number_date` (`InvoiceNumber`,`InvoiceDate`),                 KEY `IX_InvoiceHeads_number_date` (`InvoiceNumber`,`InvoiceDate`),
+  KEY `InvoiceHeads_IX_InvoiceNumber` (`InvoiceNumber`),                             KEY `InvoiceHeads_IX_InvoiceNumber` (`InvoiceNumber`),
+  KEY `InvoiceHeads_IX_Res_Roomres` (`Reservation`,`RoomReservation`),               KEY `InvoiceHeads_IX_Res_Roomres` (`Reservation`,`RoomReservation`),
+  KEY `InvoiceHeads_ID_RoomRes_Inv` (`RoomReservation`,`InvoiceNumber`),             KEY `InvoiceHeads_ID_RoomRes_Inv` (`RoomReservation`,`InvoiceNumber`),
+  KEY `InvoiceHeads_IX_ExternalInvoiceId` (`externalInvoiceId`),                     KEY `InvoiceHeads_IX_ExternalInvoiceId` (`externalInvoiceId`),
+  KEY `InvoiceHeads_IX_InvoiceFinalized` (`InvoiceFinalized`,`InvoiceNumber`)        KEY `InvoiceHeads_IX_InvoiceFinalized` (`InvoiceFinalized`,`InvoiceNumber`)
+) ENGINE=InnoDB AUTO_INCREMENT=15938 DEFAULT CHARSET=utf8;                         ) ENGINE=InnoDB AUTO_INCREMENT=30940 DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE `invoicelines` (
+  `AutoGen` varchar(50) DEFAULT '',
+  `Reservation` int(11) DEFAULT '0',
+  `RoomReservation` int(11) DEFAULT '0',
+  `SplitNumber` int(11) DEFAULT '0',
+  `ItemNumber` int(11) DEFAULT '0',
+  `PurchaseDate` varchar(10) DEFAULT '',
+  `InvoiceNumber` int(11) DEFAULT '0',
+  `ItemID` varchar(20) DEFAULT '',
+  `Number` double DEFAULT '0',
+  `Description` varchar(100) DEFAULT '',
+  `Price` double DEFAULT '0',
+  `VATType` varchar(10) DEFAULT '',
+  `Total` double DEFAULT '0',
+  `TotalWOVat` double DEFAULT '0',
+  `Vat` double DEFAULT '0',
+  `AutoGenerated` tinyint(1) NOT NULL DEFAULT '0',
+  `CurrencyRate` double DEFAULT '0',
+  `Currency` varchar(5) DEFAULT '',
+  `ReportDate` varchar(10) DEFAULT '',
+  `ReportTime` varchar(5) DEFAULT '',
+  `Persons` int(11) DEFAULT '0',
+  `Nights` int(11) DEFAULT '0',
+  `BreakfastPrice` double DEFAULT '0',
+  `Ayear` int(11) DEFAULT '0',
+  `Amon` int(11) DEFAULT '0',
+  `Aday` int(11) DEFAULT '0',
+  `ilTmp` char(3) DEFAULT '',
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
+  `ilAccountKey` varchar(30) DEFAULT '',
+  `ItemCurrency` varchar(5) DEFAULT '',
+  `ItemCurrencyRate` double DEFAULT '0',
+  `Discount` double DEFAULT '0',
+  `Discount_isprecent` tinyint(1) DEFAULT '0',
+  `ImportRefrence` varchar(100) DEFAULT NULL,
+  `ImportSource` varchar(100) DEFAULT NULL,
+  `isPackage` tinyint(1) DEFAULT '0',
+  `itemAdded` datetime DEFAULT CURRENT_TIMESTAMP,
+  `confirmDate` datetime DEFAULT '1900-01-01 00:00:00',
+  `confirmAmount` double DEFAULT '0',
+  `RoomReservationAlias` int(11) DEFAULT NULL,
+  `ItemSource` varchar(15) DEFAULT 'ROOMER' COMMENT 'ROOMER,\n EXTERNAL',
+  `InvoiceIndex` int(11) DEFAULT '0',
+  `staffCreated` varchar(15) DEFAULT NULL,
+  `staffLastEdit` varchar(15) DEFAULT NULL,
+  PRIMARY KEY (`ID`),
+  UNIQUE KEY `InvoiceLines_IX_InvoiceLinesID` (`ID`),
+  KEY `InvoiceLines_IX_InvoiceLinesTmp` (`ilTmp`),
+  KEY `InvoiceLines_IX_RoomReservation` (`RoomReservation`),
+  KEY `InvoiceLines_IX_RoomReservationAndInvoiceNumber` (`RoomReservation`,`InvoiceNumber`),
+  KEY `InvoiceLines_IX_RoomResInvNumdPack` (`RoomReservation`,`SplitNumber`,`ItemNumber`,`ImportSource`,`isPackage`),
+  KEY `InvoiceLines_IX_RoomResAndPack` (`RoomReservation`,`ImportSource`),
+  KEY `InvoiceLines_IX_itemInvoicenumber` (`ItemID`,`InvoiceNumber`)
+) ENGINE=InnoDB AUTO_INCREMENT=62232 DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE `invoicelines` (
+  `AutoGen` varchar(50) DEFAULT '',
+  `Reservation` int(11) DEFAULT '0',
+  `RoomReservation` int(11) DEFAULT '0',
+  `SplitNumber` int(11) DEFAULT '0',
+  `ItemNumber` int(11) DEFAULT '0',
+  `PurchaseDate` varchar(10) DEFAULT '',
+  `InvoiceNumber` int(11) DEFAULT '0',
+  `ItemID` varchar(20) DEFAULT '',
+  `Number` double DEFAULT '0',
+  `Description` varchar(100) DEFAULT '',
+  `Price` double DEFAULT '0',
+  `VATType` varchar(10) DEFAULT '',
+  `Total` double DEFAULT '0',
+  `TotalWOVat` double DEFAULT '0',
+  `Vat` double DEFAULT '0',
+  `AutoGenerated` tinyint(1) NOT NULL DEFAULT '0',
+  `CurrencyRate` double DEFAULT '0',
+  `Currency` varchar(5) DEFAULT '',
+  `ReportDate` varchar(10) DEFAULT '',
+  `ReportTime` varchar(5) DEFAULT '',
+  `Persons` int(11) DEFAULT '0',
+  `Nights` int(11) DEFAULT '0',
+  `BreakfastPrice` double DEFAULT '0',
+  `Ayear` int(11) DEFAULT '0',
+  `Amon` int(11) DEFAULT '0',
+  `Aday` int(11) DEFAULT '0',
+  `ilTmp` char(3) DEFAULT '',
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
+  `ilAccountKey` varchar(30) DEFAULT '',
+  `ItemCurrency` varchar(5) DEFAULT '',
+  `ItemCurrencyRate` double DEFAULT '0',
+  `Discount` double DEFAULT '0',
+  `Discount_isprecent` tinyint(1) DEFAULT '0',
+  `ImportRefrence` varchar(100) DEFAULT NULL,
+  `ImportSource` varchar(100) DEFAULT NULL,
+  `isPackage` tinyint(1) DEFAULT '0',
+  `itemAdded` datetime DEFAULT CURRENT_TIMESTAMP,
+  `confirmDate` datetime DEFAULT '1900-01-01 00:00:00',
+  `confirmAmount` double DEFAULT '0',
+  `RoomReservationAlias` int(11) DEFAULT NULL,
+  `ItemSource` varchar(15) DEFAULT 'ROOMER' COMMENT 'ROOMER,\n EXTERNAL',
+  `InvoiceIndex` int(11) DEFAULT '0',
+  `staffCreated` varchar(15) DEFAULT NULL,
+  `staffLastEdit` varchar(15) DEFAULT NULL,
+  PRIMARY KEY (`ID`),
+  UNIQUE KEY `InvoiceLines_IX_InvoiceLinesID` (`ID`),
+  KEY `InvoiceLines_IX_InvoiceLinesTmp` (`ilTmp`),
+  KEY `InvoiceLines_IX_RoomReservation` (`RoomReservation`),
+  KEY `InvoiceLines_IX_RoomReservationAndInvoiceNumber` (`RoomReservation`,`InvoiceNumber`),
+  KEY `InvoiceLines_IX_RoomResInvNumdPack` (`RoomReservation`,`SplitNumber`,`ItemNumber`,`ImportSource`,`isPackage`),
+  KEY `InvoiceLines_IX_RoomResAndPack` (`RoomReservation`,`ImportSource`),
+  KEY `InvoiceLines_IX_itemInvoicenumber` (`ItemID`,`InvoiceNumber`)
+) ENGINE=InnoDB AUTO_INCREMENT=62232 DEFAULT CHARSET=utf8;
+

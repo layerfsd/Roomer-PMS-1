@@ -216,7 +216,6 @@ object FrmResources: TFrmResources
       OnDragDrop = lvResourcesDragDrop
       OnDragOver = lvResourcesDragOver
       OnSelectItem = lvResourcesSelectItem
-      ExplicitLeft = 0
     end
     object sPanel2: TsPanel
       Left = 0

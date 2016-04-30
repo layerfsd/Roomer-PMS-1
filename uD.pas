@@ -507,6 +507,8 @@ type
     function GetRoomList_Occupied(dtDateFrom, dtDateTo : Tdate; iRoomReservation : integer; var lst : tstringList) : boolean;
     function isDay_Occupied(dtDate : Tdate; Room : string; var RoomReservation : integer) : boolean;
 
+    function Occupied_fromTo(dtDateFrom, dtDateTo : Tdate; Room:string) : boolean;
+
     function RemoveRoomsDate(iRoomReservation : integer) : boolean;
 
     function ChangeRrDates(RoomReservation : integer; newArrival, newDeparture : Tdate; updateRoomstatus : boolean) : boolean;
@@ -4385,6 +4387,37 @@ begin
     freeandnil(Rset);
   end;
   result := lst.Count > 0;
+end;
+
+
+function Td.Occupied_fromTo(dtDateFrom, dtDateTo : Tdate; Room:string) : boolean;
+var
+  s : string;
+  Rset : TRoomerDataSet;
+begin
+  result := false;
+  s := '';
+  s := s+'  SELECT '#10;
+  s := s+'    Room '#10;
+  s := s+'  FROM '#10;
+  s := s+'     roomsdate '#10;
+  s := s+'  WHERE '#10;
+  s := s+'        (ADate >= '+_db(dtDateFrom)+' ) '#10;
+  s := s+'    AND (ADate <  '+_db(dtDateTo)+' ) '#10;
+  s := s + '    AND (ResFlag <> '+_db(STATUS_DELETED)+' )'#10;
+  s := s + '    AND (Room = '+_db(room)+' )'#10;
+
+  copytoclipboard(s);
+
+  Rset := CreateNewDataSet;
+  try
+    if hData.rSet_bySQL(rSet,s) then
+    begin
+      result := true;
+    end;
+  finally
+    freeandnil(Rset);
+  end;
 end;
 
 
@@ -15391,7 +15424,7 @@ begin
     s := s + '   , il.Roomreservation '#10;
     s := s + '   , (SELECT Room FROM roomreservations WHERE RoomReservation=il.Roomreservation LIMIT 1) AS Room '#10;
     s := s + '   , (SELECT Staff FROM invoiceheads WHERE InvoiceNumber=il.InvoiceNumber LIMIT 1) AS Staff '#10;
-    s := s + '   , CAST((SELECT IF(InvoiceNumber>0, InvoiceNumber, '''') FROM invoiceheads WHERE InvoiceNumber=il.InvoiceNumber LIMIT 1) AS CHAR(10)) AS InvoiceNumber '#10;
+    s := s + '   , CAST((SELECT IF(InvoiceNumber>0, InvoiceNumber, '+quotedStr('-1')+') FROM invoiceheads WHERE InvoiceNumber=il.InvoiceNumber LIMIT 1) AS CHAR(10)) AS InvoiceNumber '#10;
     s := s + '   , date(il.PurchaseDate) As PurchaseDate '#10;
     s := s + '   , il.ItemID '#10;
     s := s + '   , it.Description '#10;
@@ -15615,8 +15648,6 @@ begin
     s := s + '   INNER JOIN itemtypes it ON it.ItemType=i.ItemType '#10;
     s := s + '   INNER JOIN vatcodes vc ON vc.VATCode=it.VatCode '#10;
     s := s + '   JOIN home100.TAXES tax ON HOTEL_ID=(Select companyID from control LIMIT 1) AND CURRENT_DATE>=VALID_FROM AND CURRENT_DATE<=VALID_TO '#10;
-
-
     s := s + ' WHERE '#10;
     s := s + ' ( confirmDate > ' + _db(sUnconfirmedDate) + ' )  '#10;
     s := s + ' AND ( ResFlag in ('+_db('X')+','+_db('C')+')) ';
@@ -15728,30 +15759,36 @@ begin
       rset8 := ExecutionPlan.Results[7];
       if d.kbmUnconfirmedInvoicelines_.active then
         d.kbmUnconfirmedInvoicelines_.Close;
+
       d.kbmUnconfirmedInvoicelines_.open;
-//      kbmUnconfirmedInvoicelines_.LoadFromDataSet(rset8,[]);
       LoadKbmMemtableFromDataSetQuiet(kbmUnconfirmedInvoicelines_,rset8,[]);
       d.kbmUnconfirmedInvoicelines_.First;
+
+//      while not d.kbmUnconfirmedInvoicelines_.eof do
+//      begin
+//
+//      end;
+
+
+
+
 
       rset9 := ExecutionPlan.Results[8];
       if d.kbmInvoiceLinePriceChange_.active then
         d.kbmInvoiceLinePriceChange_.Close;
       d.kbmInvoiceLinePriceChange_.open;
-//      kbmInvoiceLinePriceChange_.LoadFromDataSet(rset9,[]);
       LoadKbmMemtableFromDataSetQuiet(kbmInvoiceLinePriceChange_,rset9,[]);
       d.kbmInvoiceLinePriceChange_.First;
-//      while not d.kbmInvoiceLinePriceChange_.eof do
-//      begin
-//        dTmp := d.kbmInvoiceLinePriceChange_['confirmAmount'];
-//        d.kbmInvoiceLinePriceChange_.Next;
-//      end;
-//      d.kbmInvoiceLinePriceChange_.First;
+
+
 
       rset10 := ExecutionPlan.Results[9];
       if d.kbmRoomsDateChange_.active then
         d.kbmRoomsDateChange_.Close;
       d.kbmRoomsDateChange_.open;
-//      kbmRoomsDateChange_.LoadFromDataSet(rset10,[]);
+
+
+
       LoadKbmMemtableFromDataSetQuiet(kbmRoomsDateChange_,rset10,[]);
       d.kbmRoomsDateChange_.First;
 
@@ -16353,501 +16390,9 @@ begin
       end;
     end;
 
-//    if incl_cityTaxAmount <> 0 then
-//    begin
-//      item := '-';
-//      if d.kbmTurnover_.Locate('ItemId', item, []) then
-//      begin
-//        d.kbmTurnover_.Edit;
-//        d.kbmTurnover_.FieldByName('Amount').AsFloat := d.kbmTurnover_.FieldByName('Amount').AsFloat + incl_cityTaxAmount;
-//        d.kbmTurnover_.FieldByName('VAT').AsFloat := d.kbmTurnover_.FieldByName('Vat').AsFloat + cityTaxVat;
-//        d.kbmTurnover_.FieldByName('Itemcount').AsFloat := d.kbmTurnover_.FieldByName('itemcount').AsFloat + cityTaxItemCount; //-96
-//        d.kbmTurnover_.post;
-//      end
-//      else
-//      begin
-//        d.kbmTurnover_.insert;
-//        d.kbmTurnover_.FieldByName('ItemId').AsString := item;
-//        d.kbmTurnover_.FieldByName('Description').AsString := 'Incluted ' + zGlob.TaxesItemDescription;
-//
-//        d.kbmTurnover_.FieldByName('Amount').AsFloat := d.kbmTurnover_.FieldByName('Amount').AsFloat + incl_cityTaxAmount;
-//        d.kbmTurnover_.FieldByName('VAT').AsFloat := d.kbmTurnover_.FieldByName('Vat').AsFloat + incl_cityTaxVat;
-//
-//        d.kbmTurnover_.FieldByName('Itemtype').AsString := zGlob.cTaxType;
-//        d.kbmTurnover_.FieldByName('Typedescription').AsString := zGlob.cTaxTypeDescription;
-//        d.kbmTurnover_.FieldByName('VATCode').AsString := zGlob.cTaxVATCode;
-//        d.kbmTurnover_.FieldByName('ItemCount').asFloat := cityTaxItemCount; //-96
-//        d.kbmTurnover_.FieldByName('VATPercentage').AsFloat := zGlob.cTaxVATPercentage;
-//        d.kbmTurnover_.post;
-//      end;
-//    end;
   end;
 end;
 
-//procedure Td.TurnoverAndPaymentsUpdateTurnover_II(var zGlob : recTurnoverAndPaymentsGlobals_II);
-//var
-//  s: string;
-//
-//  rentAmount: double;
-//  rentVat: double;
-//  rentItemCount: Double;  //-96
-//
-//  discountAmount: double;
-//  discountVat: double;
-//  discountItemCount: double; //-96
-//
-//  cityTaxAmount: double;
-//  cityTaxVat: double;
-//  cityTaxItemCount: double; //-96
-//
-//  item: string;
-//
-//  isKredit: boolean;
-//
-//  dTmp : double;
-//begin
-//
-//  rentAmount := 0;
-//  rentVat := 0;
-//  rentItemCount := 0.00; //-96
-//
-//  discountAmount := 0;
-//  discountVat := 0;
-//  discountItemCount := 0.00; //-96
-//
-//  cityTaxAmount := 0;
-//  cityTaxVat := 0;
-//  cityTaxItemCount := 0.00;  //-96
-//
-//  d.kbmTurnover_.DisableControls;
-//  d.kbmPayments_.DisableControls;
-//  d.kbmRoomsDate_.DisableControls;
-//  try
-//
-//    d.kbmRoomsDate_.First;
-//    while not d.kbmRoomsDate_.eof do
-//    begin
-//      if not d.kbmRoomsDate_.FieldByName('paid').AsBoolean then
-//      begin
-//        rentAmount := rentAmount + d.kbmRoomsDate_.FieldByName('RentAmount').AsFloat;
-//        if rentAmount <> 0 then rentItemCount := rentItemCount + 1;
-//
-//        discountAmount := discountAmount + d.kbmRoomsDate_.FieldByName('DiscountAmount').AsFloat;
-//        if discountAmount <> 0 then discountItemCount := discountItemCount + 1;
-//
-//        cityTaxAmount := cityTaxAmount + d.kbmRoomsDate_.FieldByName('TotalStayTax').AsFloat;
-//        if cityTaxAmount <> 0 then cityTaxItemCount := cityTaxItemCount + 1;
-//      end;
-//
-//      d.kbmRoomsDate_.Next;
-//    end;
-//
-//
-//    rentVat := _calcVat(rentAmount, zGlob.RoomRentVATPercentage);
-//    discountVat := _calcVat(discountAmount, zGlob.RoomRentVATPercentage);
-//    cityTaxVat := _calcVat(cityTaxAmount, zGlob.cTaxVATPercentage);
-//
-//    if d.kbmRoomsDate_.recordcount > 0 then
-//    begin
-//      if rentAmount <> 0 then
-//      begin
-//        if d.kbmTurnover_.Locate('ItemId', zGlob.RoomRentItem, []) then
-//        begin
-//          d.kbmTurnover_.Edit;
-//          d.kbmTurnover_.FieldByName('Amount').AsFloat :=
-//          d.kbmTurnover_.FieldByName('Amount').AsFloat + rentAmount;
-//          d.kbmTurnover_.FieldByName('VAT').AsFloat :=
-//          d.kbmTurnover_.FieldByName('Vat').AsFloat + rentVat;
-//          d.kbmTurnover_.FieldByName('Itemcount').AsFloat := d.kbmTurnover_.FieldByName('itemcount').AsFloat + rentItemCount; //-96
-//          d.kbmTurnover_.post;
-//        end
-//        else
-//        begin
-//          d.kbmTurnover_.insert;
-//          d.kbmTurnover_.FieldByName('ItemId').AsString := zGlob.RoomRentItem;
-//          d.kbmTurnover_.FieldByName('Description').AsString := zGlob.RoomRentItemDescription;
-//          d.kbmTurnover_.FieldByName('Amount').AsFloat := rentAmount;
-//          d.kbmTurnover_.FieldByName('VAT').AsFloat := rentVat;
-//
-//          d.kbmTurnover_.FieldByName('Itemtype').AsString := zGlob.RoomRentType;
-//          d.kbmTurnover_.FieldByName('Typedescription').AsString := zGlob.RoomRentTypeDescription;
-//          d.kbmTurnover_.FieldByName('VATCode').AsString := zGlob.RoomRentVATCode;
-//          d.kbmTurnover_.FieldByName('ItemCount').asFloat := rentItemCount; //-96
-//          d.kbmTurnover_.FieldByName('VATPercentage').AsFloat := zGlob.RoomRentVATPercentage;
-//          d.kbmTurnover_.post;
-//        end;
-//      end;
-//
-//      if discountAmount <> 0 then
-//      begin
-//        if d.kbmTurnover_.Locate('ItemId', zGlob.DiscountItem, []) then
-//        begin
-//          d.kbmTurnover_.Edit;
-//          d.kbmTurnover_.FieldByName('Amount').AsFloat := d.kbmTurnover_.FieldByName('Amount').AsFloat + discountAmount * -1;
-//          d.kbmTurnover_.FieldByName('VAT').AsFloat := d.kbmTurnover_.FieldByName('Vat').AsFloat + discountVat;
-//          d.kbmTurnover_.FieldByName('Itemcount').AsFloat := d.kbmTurnover_.FieldByName('itemcount').AsFloat + discountItemCount; //-96
-//          d.kbmTurnover_.post;
-//        end
-//        else
-//        begin
-//          d.kbmTurnover_.insert;
-//          d.kbmTurnover_.FieldByName('ItemId').AsString := zGlob.DiscountItem;
-//          d.kbmTurnover_.FieldByName('Description').AsString := zGlob.DiscountItemDescription;
-//
-//          d.kbmTurnover_.FieldByName('Amount').AsFloat := d.kbmTurnover_.FieldByName('Amount').AsFloat + discountAmount;
-//          d.kbmTurnover_.FieldByName('VAT').AsFloat := d.kbmTurnover_.FieldByName('Vat').AsFloat + discountVat;
-//
-//          d.kbmTurnover_.FieldByName('Itemtype').AsString := zGlob.DiscountType;
-//          d.kbmTurnover_.FieldByName('Typedescription').AsString := zGlob.DiscountTypeDescription;
-//          d.kbmTurnover_.FieldByName('VATCode').AsString := zGlob.RoomRentVATCode;
-//          d.kbmTurnover_.FieldByName('ItemCount').asFloat := discountItemCount; //-96
-//          d.kbmTurnover_.FieldByName('VATPercentage').AsFloat := zGlob.RoomRentVATPercentage;
-//          d.kbmTurnover_.post;
-//        end;
-//      end;
-//
-//      if cityTaxAmount <> 0 then
-//      begin
-//        if d.kbmTurnover_.Locate('ItemId', zGlob.TaxesItem, []) then
-//        begin
-//          d.kbmTurnover_.Edit;
-//          d.kbmTurnover_.FieldByName('Amount').AsFloat := d.kbmTurnover_.FieldByName('Amount').AsFloat + cityTaxAmount;
-//          d.kbmTurnover_.FieldByName('VAT').AsFloat := d.kbmTurnover_.FieldByName('Vat').AsFloat + cityTaxVat;
-//          d.kbmTurnover_.FieldByName('Itemcount').AsFloat := d.kbmTurnover_.FieldByName('itemcount').AsFloat + cityTaxItemCount; //-96
-//          d.kbmTurnover_.post;
-//        end
-//        else
-//        begin
-//          d.kbmTurnover_.insert;
-//          d.kbmTurnover_.FieldByName('ItemId').AsString := zGlob.TaxesItem;
-//          d.kbmTurnover_.FieldByName('Description').AsString := zGlob.TaxesItemDescription;
-//
-//          d.kbmTurnover_.FieldByName('Amount').AsFloat := d.kbmTurnover_.FieldByName('Amount').AsFloat + cityTaxAmount;
-//          d.kbmTurnover_.FieldByName('VAT').AsFloat := d.kbmTurnover_.FieldByName('Vat').AsFloat + cityTaxVat;
-//
-//          d.kbmTurnover_.FieldByName('Itemtype').AsString := zGlob.cTaxType;
-//          d.kbmTurnover_.FieldByName('Typedescription').AsString := zGlob.cTaxTypeDescription;
-//          d.kbmTurnover_.FieldByName('VATCode').AsString := zGlob.cTaxVATCode;
-//          d.kbmTurnover_.FieldByName('ItemCount').asFloat := cityTaxItemCount; //-96
-//          d.kbmTurnover_.FieldByName('VATPercentage').AsFloat := zGlob.cTaxVATPercentage;
-//          d.kbmTurnover_.post;
-//        end;
-//      end;
-//    end;
-//  finally
-//    d.kbmPayments_.enableControls;
-//    d.kbmTurnover_.enableControls;
-//    d.kbmRoomsDate_.enableControls;
-//  end;
-//
-//  /// ///////////////////////////////////////////////////////////////////////
-//  ///
-//  ///
-//  ///
-//  ///
-//
-//  if d.kbmRoomsDateChange_.recordcount > 0 then
-//  begin
-//    rentAmount := 0;
-//    rentVat := 0;
-//    rentItemCount := 0;
-//
-//    discountAmount := 0;
-//    discountVat := 0;
-//    discountItemCount := 0;
-//
-//    cityTaxAmount := 0;
-//    cityTaxVat := 0;
-//    cityTaxItemCount := 0;
-//
-//    d.kbmTurnover_.DisableControls;
-//    d.kbmRoomsDateChange_.DisableControls;
-//    try
-//      d.kbmRoomsDateChange_.First;
-//      while not d.kbmRoomsDateChange_.eof do
-//      begin
-//        if d.kbmRoomsDateChange_.FieldByName('RentChange').AsFloat <> 0 then
-//        begin
-//          dTmp := rentAmount + d.kbmRoomsDateChange_.FieldByName('RentChange').AsFloat;
-//          if dTmp <> 0 then
-//          begin
-//            rentAmount := rentAmount + d.kbmRoomsDateChange_.FieldByName('RentChange').AsFloat;
-//            if rentAmount <> 0 then rentItemCount := rentItemCount + 1;
-//          end;
-//        end;
-//
-//        if d.kbmRoomsDateChange_.FieldByName('DiscountChange').AsFloat <> 0 then
-//        begin
-//          dTmp := discountAmount + d.kbmRoomsDateChange_.FieldByName('DiscountChange').AsFloat;
-//          if dTmp <> 0 then
-//          begin
-//            discountAmount := discountAmount + d.kbmRoomsDateChange_.FieldByName('DiscountChange').AsFloat;
-//            if discountAmount <> 0 then discountItemCount := discountItemCount + 1;
-//          end;
-//        end;
-//
-//        if d.kbmRoomsDateChange_.FieldByName('TaxChange').AsFloat <> 0 then
-//        begin
-//          dTmp := cityTaxAmount + d.kbmRoomsDateChange_.FieldByName('TaxChange').AsFloat;
-//          if dTmp <> 0 then
-//          begin
-//             cityTaxAmount := cityTaxAmount + d.kbmRoomsDateChange_.FieldByName('TaxChange').AsFloat;
-//             if cityTaxAmount <> 0 then cityTaxItemCount := cityTaxItemCount + 1;
-//          end;
-//        end;
-//        d.kbmRoomsDateChange_.Next;
-//      end;
-//
-//      rentVat         := _calcVat(rentAmount, zGlob.RoomRentVATPercentage);
-//      discountVat     := _calcVat(discountAmount, zGlob.RoomRentVATPercentage);
-//      cityTaxVat      := _calcVat(cityTaxAmount, zGlob.cTaxVATPercentage);
-//
-//      if d.kbmRoomsDateChange_.recordcount > 0 then
-//      begin
-//        if rentAmount <> 0 then
-//        begin
-//          if d.kbmTurnover_.Locate('ItemId', zGlob.RoomRentItem, []) then
-//          begin
-//            d.kbmTurnover_.Edit;
-//            d.kbmTurnover_.FieldByName('Amount').AsFloat := d.kbmTurnover_.FieldByName('Amount').AsFloat + rentAmount;
-//            d.kbmTurnover_.FieldByName('VAT').AsFloat := d.kbmTurnover_.FieldByName('Vat').AsFloat + rentVat;
-//            d.kbmTurnover_.FieldByName('Itemcount').AsFloat := d.kbmTurnover_.FieldByName('itemcount').AsFloat + rentItemCount; //-96
-//            d.kbmTurnover_.post;
-//          end else
-//          begin
-//            d.kbmTurnover_.insert;
-//            d.kbmTurnover_.FieldByName('ItemId').AsString := zGlob.RoomRentItem;
-//            d.kbmTurnover_.FieldByName('Description').AsString := zGlob.RoomRentItemDescription;
-//            d.kbmTurnover_.FieldByName('Amount').AsFloat := rentAmount;
-//            d.kbmTurnover_.FieldByName('VAT').AsFloat := rentVat;
-//
-//            d.kbmTurnover_.FieldByName('Itemtype').AsString := zGlob.RoomRentType;
-//            d.kbmTurnover_.FieldByName('Typedescription').AsString := zGlob.RoomRentTypeDescription;
-//            d.kbmTurnover_.FieldByName('VATCode').AsString := zGlob.RoomRentVATCode;
-//            d.kbmTurnover_.FieldByName('ItemCount').asFloat := rentItemCount;   //-96
-//            d.kbmTurnover_.FieldByName('VATPercentage').AsFloat := zGlob.RoomRentVATPercentage;
-//            d.kbmTurnover_.post;
-//          end;
-//        end;
-//
-//        if discountAmount <> 0 then
-//        begin
-//          if d.kbmTurnover_.Locate('ItemId', zGlob.DiscountItem, []) then
-//          begin
-//            d.kbmTurnover_.Edit;
-//            d.kbmTurnover_.FieldByName('Amount').AsFloat := d.kbmTurnover_.FieldByName('Amount').AsFloat + discountAmount * -1;
-//            d.kbmTurnover_.FieldByName('VAT').AsFloat := d.kbmTurnover_.FieldByName('Vat').AsFloat + discountVat;
-//            d.kbmTurnover_.FieldByName('Itemcount').AsFloat := d.kbmTurnover_.FieldByName('itemcount').AsFloat + discountItemCount; //-96
-//            d.kbmTurnover_.post;
-//          end
-//          else
-//          begin
-//            d.kbmTurnover_.insert;
-//            d.kbmTurnover_.FieldByName('ItemId').AsString := zGlob.DiscountItem;
-//            d.kbmTurnover_.FieldByName('Description').AsString := zGlob.DiscountItemDescription;
-//
-//            d.kbmTurnover_.FieldByName('Amount').AsFloat := d.kbmTurnover_.FieldByName('Amount').AsFloat + discountAmount;
-//            d.kbmTurnover_.FieldByName('VAT').AsFloat := d.kbmTurnover_.FieldByName('Vat').AsFloat + discountVat;
-//
-//            d.kbmTurnover_.FieldByName('Itemtype').AsString := zGlob.DiscountType;
-//            d.kbmTurnover_.FieldByName('Typedescription').AsString := zGlob.DiscountTypeDescription;
-//            d.kbmTurnover_.FieldByName('VATCode').AsString := zGlob.RoomRentVATCode;
-//            d.kbmTurnover_.FieldByName('ItemCount').asFloat := discountItemCount; //-96
-//            d.kbmTurnover_.FieldByName('VATPercentage').AsFloat := zGlob.RoomRentVATPercentage;
-//            d.kbmTurnover_.post;
-//          end;
-//        end;
-//
-//        if cityTaxAmount <> 0 then
-//        begin
-//          if d.kbmTurnover_.Locate('ItemId', zGlob.TaxesItem, []) then
-//          begin
-//            d.kbmTurnover_.Edit;
-//            d.kbmTurnover_.FieldByName('Amount').AsFloat := d.kbmTurnover_.FieldByName('Amount').AsFloat + cityTaxAmount;
-//            d.kbmTurnover_.FieldByName('VAT').AsFloat := d.kbmTurnover_.FieldByName('Vat').AsFloat + cityTaxVat;
-//            d.kbmTurnover_.FieldByName('Itemcount').AsFloat := d.kbmTurnover_.FieldByName('itemcount').AsFloat + cityTaxItemCount; //-96
-//            d.kbmTurnover_.post;
-//          end else
-//          begin
-//            d.kbmTurnover_.insert;
-//            d.kbmTurnover_.FieldByName('ItemId').AsString := zGlob.TaxesItem;
-//            d.kbmTurnover_.FieldByName('Description').AsString := zGlob.TaxesItemDescription;
-//
-//            d.kbmTurnover_.FieldByName('Amount').AsFloat := d.kbmTurnover_.FieldByName('Amount').AsFloat + cityTaxAmount;
-//            d.kbmTurnover_.FieldByName('VAT').AsFloat := d.kbmTurnover_.FieldByName('Vat').AsFloat + cityTaxVat;
-//
-//            d.kbmTurnover_.FieldByName('Itemtype').AsString := zGlob.cTaxType;
-//            d.kbmTurnover_.FieldByName('Typedescription').AsString := zGlob.cTaxTypeDescription;
-//            d.kbmTurnover_.FieldByName('VATCode').AsString := zGlob.cTaxVATCode;
-//            d.kbmTurnover_.FieldByName('ItemCount').asFloat := cityTaxItemCount; //-96
-//            d.kbmTurnover_.FieldByName('VATPercentage').AsFloat := zGlob.cTaxVATPercentage;
-//            d.kbmTurnover_.post;
-//          end;
-//        end;
-//      end;
-//    finally
-//      d.kbmTurnover_.enableControls;
-//      d.kbmRoomsDateChange_.enableControls;
-//    end;
-//  end;
-//
-//  rentAmount := 0;
-//  rentVat := 0;
-//  rentItemCount := 0;
-//
-//  discountAmount := 0;
-//  discountVat := 0;
-//  discountItemCount := 0;
-//
-//  cityTaxAmount := 0;
-//  cityTaxVat := 0;
-//  cityTaxItemCount := 0;
-//
-//  if d.kbmRoomRentOnInvoice_.recordcount > 0 then
-//  begin
-//    d.kbmRoomRentOnInvoice_.First;
-//    while not d.kbmRoomRentOnInvoice_.eof do
-//    begin
-//      item := d.kbmRoomRentOnInvoice_.FieldByName('itemID').AsString;
-//      isKredit := d.kbmRoomRentOnInvoice_.FieldByName('splitNumber').asinteger = 1;
-//
-//      if isKredit then
-//      begin
-//        if _trimLower(item) = _trimLower(zGlob.RoomRentItem) then
-//        begin
-//          rentAmount := rentAmount + d.kbmRoomRentOnInvoice_.FieldByName('Amount').AsFloat;
-//          rentVat := rentVat + d.kbmRoomRentOnInvoice_.FieldByName('VAT').AsFloat;;
-//          rentItemCount := rentItemCount + d.kbmRoomRentOnInvoice_.FieldByName('ItemCount').asFloat;
-//        end;
-//
-//        if _trimLower(item) = _trimLower(zGlob.DiscountItem) then
-//        begin
-//          discountAmount := discountAmount + d.kbmRoomRentOnInvoice_.FieldByName('Amount').AsFloat;
-//          discountVat := discountVat + d.kbmRoomRentOnInvoice_.FieldByName('VAT').AsFloat;;
-//          discountItemCount := discountItemCount + d.kbmRoomRentOnInvoice_.FieldByName('ItemCount').asFloat;
-//        end;
-//
-//        if _trimLower(item) = _trimLower(zGlob.TaxesItem) then
-//        begin
-//          cityTaxAmount := cityTaxAmount + d.kbmRoomRentOnInvoice_.FieldByName('Amount').AsFloat;
-//          cityTaxVat := cityTaxVat + d.kbmRoomRentOnInvoice_.FieldByName('VAT').AsFloat;
-//          cityTaxItemCount := cityTaxItemCount + d.kbmRoomRentOnInvoice_.FieldByName('ItemCount').asFloat;
-//        end;
-//      end else
-//      begin
-//        if _trimLower(item) = _trimLower(zGlob.RoomRentItem) then
-//        begin
-//          rentAmount := rentAmount + d.kbmRoomRentOnInvoice_.FieldByName('Amount').AsFloat;
-//          rentVat := rentVat + d.kbmRoomRentOnInvoice_.FieldByName('VAT').AsFloat;;
-//          rentItemCount := rentItemCount + d.kbmRoomRentOnInvoice_.FieldByName('ItemCount').asFloat;
-//        end;
-//
-//        if _trimLower(item) = _trimLower(zGlob.DiscountItem) then
-//        begin
-//          discountAmount := discountAmount + d.kbmRoomRentOnInvoice_.FieldByName('Amount').AsFloat;
-//          discountVat := discountVat + d.kbmRoomRentOnInvoice_.FieldByName('VAT').AsFloat;;
-//          discountItemCount := discountItemCount + d.kbmRoomRentOnInvoice_.FieldByName('ItemCount').asFloat;
-//        end;
-//
-//        if _trimLower(item) = _trimLower(zGlob.TaxesItem) then
-//        begin
-//          cityTaxAmount := cityTaxAmount + d.kbmRoomRentOnInvoice_.FieldByName('Amount').AsFloat;
-//          cityTaxVat := cityTaxVat + d.kbmRoomRentOnInvoice_.FieldByName('VAT').AsFloat;
-//          cityTaxItemCount := cityTaxItemCount + d.kbmRoomRentOnInvoice_.FieldByName('ItemCount').asFloat;
-//        end;
-//      end;
-//      d.kbmRoomRentOnInvoice_.Next;
-//    end;
-//  end;
-//
-//
-//  if d.kbmRoomRentOnInvoice_.recordcount > 0 then
-//  begin
-//    if rentAmount <> 0 then
-//    begin
-//      if d.kbmTurnover_.Locate('ItemId', zGlob.RoomRentItem, []) then
-//      begin
-//        d.kbmTurnover_.Edit;
-//        d.kbmTurnover_.FieldByName('Amount').AsFloat := d.kbmTurnover_.FieldByName('Amount').AsFloat + rentAmount;
-//        d.kbmTurnover_.FieldByName('VAT').AsFloat := d.kbmTurnover_.FieldByName('Vat').AsFloat + rentVat;
-//        d.kbmTurnover_.FieldByName('Itemcount').AsFloat := d.kbmTurnover_.FieldByName('itemcount').AsFloat + rentItemCount; //-96
-//        d.kbmTurnover_.post;
-//      end
-//      else
-//      begin
-//        d.kbmTurnover_.insert;
-//        d.kbmTurnover_.FieldByName('ItemId').AsString := zGlob.RoomRentItem;
-//        d.kbmTurnover_.FieldByName('Description').AsString := zGlob.RoomRentItemDescription;
-//        d.kbmTurnover_.FieldByName('Amount').AsFloat := rentAmount;
-//        d.kbmTurnover_.FieldByName('VAT').AsFloat := rentVat;
-//
-//        d.kbmTurnover_.FieldByName('Itemtype').AsString := zGlob.RoomRentType;
-//        d.kbmTurnover_.FieldByName('Typedescription').AsString := zGlob.RoomRentTypeDescription;
-//        d.kbmTurnover_.FieldByName('VATCode').AsString := zGlob.RoomRentVATCode;
-//        d.kbmTurnover_.FieldByName('ItemCount').asFloat := rentItemCount; //-96
-//        d.kbmTurnover_.FieldByName('VATPercentage').AsFloat := zGlob.RoomRentVATPercentage;
-//
-//        d.kbmTurnover_.post;
-//      end;
-//    end;
-//
-//    if discountAmount <> 0 then
-//    begin
-//      if d.kbmTurnover_.Locate('ItemId', zGlob.DiscountItem, []) then
-//      begin
-//        d.kbmTurnover_.Edit;
-//        d.kbmTurnover_.FieldByName('Amount').AsFloat := d.kbmTurnover_.FieldByName('Amount').AsFloat + discountAmount * -1;
-//        d.kbmTurnover_.FieldByName('VAT').AsFloat := d.kbmTurnover_.FieldByName('Vat').AsFloat + discountVat;
-//        d.kbmTurnover_.FieldByName('Itemcount').AsFloat := d.kbmTurnover_.FieldByName('itemcount').AsFloat + discountItemCount; //-96
-//        d.kbmTurnover_.post;
-//      end
-//      else
-//      begin
-//        d.kbmTurnover_.insert;
-//        d.kbmTurnover_.FieldByName('ItemId').AsString := zGlob.DiscountItem;
-//        d.kbmTurnover_.FieldByName('Description').AsString := zGlob.DiscountItemDescription;
-//
-//        d.kbmTurnover_.FieldByName('Amount').AsFloat := d.kbmTurnover_.FieldByName('Amount').AsFloat + discountAmount;
-//        d.kbmTurnover_.FieldByName('VAT').AsFloat := d.kbmTurnover_.FieldByName('Vat').AsFloat + discountVat;
-//
-//        d.kbmTurnover_.FieldByName('Itemtype').AsString := zGlob.DiscountType;
-//        d.kbmTurnover_.FieldByName('Typedescription').AsString := zGlob.DiscountTypeDescription;
-//        d.kbmTurnover_.FieldByName('VATCode').AsString := zGlob.RoomRentVATCode;
-//        d.kbmTurnover_.FieldByName('ItemCount').asFloat := discountItemCount; //-96
-//        d.kbmTurnover_.FieldByName('VATPercentage').AsFloat := zGlob.RoomRentVATPercentage;
-//        d.kbmTurnover_.post;
-//      end;
-//    end;
-//
-//    if cityTaxAmount <> 0 then
-//    begin
-//      if d.kbmTurnover_.Locate('ItemId', zGlob.TaxesItem, []) then
-//      begin
-//        d.kbmTurnover_.Edit;
-//        d.kbmTurnover_.FieldByName('Amount').AsFloat := d.kbmTurnover_.FieldByName('Amount').AsFloat + cityTaxAmount;
-//        d.kbmTurnover_.FieldByName('VAT').AsFloat := d.kbmTurnover_.FieldByName('Vat').AsFloat + cityTaxVat;
-//        d.kbmTurnover_.FieldByName('Itemcount').AsFloat := d.kbmTurnover_.FieldByName('itemcount').AsFloat + cityTaxItemCount; //-96
-//        d.kbmTurnover_.post;
-//      end
-//      else
-//      begin
-//        d.kbmTurnover_.insert;
-//        d.kbmTurnover_.FieldByName('ItemId').AsString := zGlob.TaxesItem;
-//        d.kbmTurnover_.FieldByName('Description').AsString := zGlob.TaxesItemDescription;
-//
-//        d.kbmTurnover_.FieldByName('Amount').AsFloat := d.kbmTurnover_.FieldByName('Amount').AsFloat + cityTaxAmount;
-//        d.kbmTurnover_.FieldByName('VAT').AsFloat := d.kbmTurnover_.FieldByName('Vat').AsFloat + cityTaxVat;
-//
-//        d.kbmTurnover_.FieldByName('Itemtype').AsString := zGlob.cTaxType;
-//        d.kbmTurnover_.FieldByName('Typedescription').AsString := zGlob.cTaxTypeDescription;
-//        d.kbmTurnover_.FieldByName('VATCode').AsString := zGlob.cTaxVATCode;
-//        d.kbmTurnover_.FieldByName('ItemCount').asFloat := cityTaxItemCount; //-96
-//        d.kbmTurnover_.FieldByName('VATPercentage').AsFloat := zGlob.cTaxVATPercentage;
-//        d.kbmTurnover_.post;
-//      end;
-//    end;
-//  end;
-//end;
 
 
 procedure Td.TurnoverAndPaymentsUpdateTurnoverItemPriceChange_II(var rec : recTurnoverAndPaymentsGlobals_II);
@@ -16948,8 +16493,10 @@ var
   PurchaseDate: TdateTime;
   confirmAmount: double;
   PriceChange: double;
-
+  InvoiceLineID : integer;
+  room : string;
   zConfirmedDate : TDateTime;
+
 begin
 
   screen.Cursor := crHourglass;
@@ -17251,14 +16798,13 @@ begin
     d.kbmInvoiceLinePriceChange_.First;
     while not d.kbmInvoiceLinePriceChange_.eof do
     begin
-
-      ItemID := d.kbmInvoiceLinePriceChange_.FieldByName('ItemID').AsString;
-      Description := d.kbmInvoiceLinePriceChange_.FieldByName('Description').AsString;
-      ItemType := d.kbmInvoiceLinePriceChange_.FieldByName('Itemtype').AsString;
+      ItemID          := d.kbmInvoiceLinePriceChange_.FieldByName('ItemID').AsString;
+      Description     := d.kbmInvoiceLinePriceChange_.FieldByName('Description').AsString;
+      ItemType        := d.kbmInvoiceLinePriceChange_.FieldByName('Itemtype').AsString;
       TypeDescription := d.kbmInvoiceLinePriceChange_.FieldByName('TypeDescription').AsString;
-      VatCode := d.kbmInvoiceLinePriceChange_.FieldByName('VATCode').AsString;
-      VATPercentage := d.kbmInvoiceLinePriceChange_.FieldByName('VATPercentage').AsFloat;
-      Amount := d.kbmInvoiceLinePriceChange_.FieldByName('Amount').AsFloat;
+      VatCode         := d.kbmInvoiceLinePriceChange_.FieldByName('VATCode').AsString;
+      VATPercentage   := d.kbmInvoiceLinePriceChange_.FieldByName('VATPercentage').AsFloat;
+      Amount          := d.kbmInvoiceLinePriceChange_.FieldByName('Amount').AsFloat;
       VAT := d.kbmInvoiceLinePriceChange_.FieldByName('VAT').AsFloat;
       ItemCount := d.kbmInvoiceLinePriceChange_.FieldByName('Itemcount').asFloat; //-96
       ivlID := d.kbmInvoiceLinePriceChange_.FieldByName('ivlID').asinteger;
@@ -17391,6 +16937,77 @@ begin
         ok := false;
       end;
       d.kbmRoomsDateChange_.Next;
+    end;
+
+
+    d.KbmUnconfirmedInvoicelines_.First;
+    while not d.KbmUnconfirmedInvoicelines_.eof do
+    begin
+      ItemID          := d.KbmUnconfirmedInvoicelines_.FieldByName('ItemId').asString;
+      Description     := d.KbmUnconfirmedInvoicelines_.FieldByName('Description').asString;
+      ItemType        := d.KbmUnconfirmedInvoicelines_.FieldByName('ItemType').asString;
+      VATCode         := d.KbmUnconfirmedInvoicelines_.FieldByName('VATCode').AsString;
+      VATPercentage   := d.KbmUnconfirmedInvoicelines_.FieldByName('VATPercentage').AsFloat;
+      Amount          := d.KbmUnconfirmedInvoicelines_.FieldByName('Amount').AsFloat;
+      VAT             := d.KbmUnconfirmedInvoicelines_.FieldByName('VAT').asFloat;
+      Itemcount       := d.KbmUnconfirmedInvoicelines_.FieldByName('Itemcount').AsFloat;
+      InvoicelineID   := d.KbmUnconfirmedInvoicelines_.FieldByName('ID').asinteger;
+      PurchaseDate    := d.KbmUnconfirmedInvoicelines_.FieldByName('PurchaseDate').asDateTime;
+      reservation     := d.KbmUnconfirmedInvoicelines_.FieldByName('reservation').AsInteger;
+      roomReservation := d.KbmUnconfirmedInvoicelines_.FieldByName('roomReservation').AsInteger;
+      confirmAmount   := d.KbmUnconfirmedInvoicelines_.FieldByName('confirmAmount').AsFloat;
+      Room            := d.KbmUnconfirmedInvoicelines_.FieldByName('Room').AsString;
+      Invoicenumber   := d.KbmUnconfirmedInvoicelines_.FieldByName('InvoiceNumber').AsInteger;
+
+
+
+      s := '';
+      s := s + ' INSERT INTO unconfirmed_invoicelines '#10;
+      s := s + ' ('#10;
+      s := s + '  ItemId '#10;
+      s := s + ' ,Description '#10;
+      s := s + ' ,TypeDescription '#10;
+      s := s + ' ,ItemType '#10;
+      s := s + ' ,VATCode '#10;
+      s := s + ' ,VATPercentage '#10;
+      s := s + ' ,Amount '#10;
+      s := s + ' ,VAT '#10;
+      s := s + ' ,Itemcount '#10;
+      s := s + ' ,InvoicelineID '#10;
+      s := s + ' ,PurchaseDate '#10;
+      s := s + ' ,reservation '#10;
+      s := s + ' ,roomReservation '#10;
+      s := s + ' ,confirmAmount '#10;
+      s := s + ' ,Room '#10;
+      s := s + ' ,InvoiceNumber '#10;
+      s := s + ' ,ConfirmedDate '#10;
+      s := s + ' ) '#10;
+      s := s + '  VALUES '#10;
+      s := s + ' ( '#10;
+      s := s + '  ' + _db(ItemId) + ' '#10;
+      s := s + ' ,' + _db(Description) + ' '#10;
+      s := s + ' ,' + _db(TypeDescription) + ' '#10;
+      s := s + ' ,' + _db(ItemType) + ' '#10;
+      s := s + ' ,' + _db(VATCode) + ' '#10;
+      s := s + ' ,' + _db(VATPercentage) + ' '#10;
+      s := s + ' ,' + _db(Amount) + ' '#10;
+      s := s + ' ,' + _db(VAT) + ' '#10;
+      s := s + ' ,' + _db(Itemcount) + ' '#10;
+      s := s + ' ,' + _db(InvoicelineID) + ' '#10;
+      s := s + ' ,' + _db(PurchaseDate) + ' '#10;
+      s := s + ' ,' + _db(reservation) + ' '#10;
+      s := s + ' ,' + _db(roomReservation) + ' '#10;
+      s := s + ' ,' + _db(confirmAmount) + ' '#10;
+      s := s + ' ,' + _db(Room) + ' '#10;
+      s := s + ' ,' + _db(InvoiceNumber) + ' '#10;
+      s := s + ' ,' + _dbDateAndTime(zConfirmedDate) + ' '#10;
+      s := s + ' ) '#10;
+copytoclipboard(s);
+      if not cmd_bySQL(s) then
+      begin
+        ok := false;
+      end;
+      d.KbmUnconfirmedInvoicelines_.Next;
     end;
 
     if ok then

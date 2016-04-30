@@ -500,6 +500,7 @@ object frmRptResStats: TfrmRptResStats
                 OptionsView.FilterFields = False
                 OptionsView.RowFields = False
                 TabOrder = 0
+                ExplicitTop = 35
                 object pg001incomeTotal: TcxDBPivotGridField
                   Area = faData
                   AreaIndex = 2
@@ -2822,7 +2823,6 @@ object frmRptResStats: TfrmRptResStats
     end
     object prLinkGrDrill: TdxGridReportLink
       Component = grDrill
-      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.GrayShading = True
@@ -2835,7 +2835,6 @@ object frmRptResStats: TfrmRptResStats
       PrinterPage.PageSize.Y = 297000
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
-      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       BuiltInReportLink = True
     end
   end
@@ -3400,6 +3399,7 @@ object frmRptResStats: TfrmRptResStats
     Top = 446
   end
   object storeOld: TcxPropertiesStore
+    Active = False
     Components = <
       item
         Component = pg001aDate

@@ -280,7 +280,7 @@ object frmReservationProfile: TfrmReservationProfile
         Left = 176
         Top = 58
         Width = 20
-        Height = 20
+        Height = 16
         TabOrder = 4
         SkinData.SkinSection = 'CHECKBOX'
         ImgChecked = 0
@@ -481,8 +481,7 @@ object frmReservationProfile: TfrmReservationProfile
           'No-show'
           'Blocked'
           'Canceled'
-          '[Unused]'
-          'Awaiting Payment')
+          '[Unused]')
       end
       object cbxBreakfast: TsComboBox
         Left = 144
@@ -1498,6 +1497,7 @@ object frmReservationProfile: TfrmReservationProfile
         ParentFont = False
         TabOrder = 0
         LookAndFeel.NativeStyle = False
+        ExplicitTop = 84
         object tvRooms: TcxGridDBTableView
           Navigator.Buttons.CustomButtons = <>
           Navigator.Buttons.First.Visible = True
@@ -2305,8 +2305,8 @@ object frmReservationProfile: TfrmReservationProfile
         object chkShowAllGuests: TsCheckBox
           Left = 333
           Top = 11
-          Width = 85
-          Height = 20
+          Width = 93
+          Height = 16
           Caption = 'Show all guests'
           Anchors = [akLeft, akTop, akRight]
           TabOrder = 4

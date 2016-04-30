@@ -828,6 +828,7 @@ procedure TfrmReservationProfile.FormCreate(Sender: TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
   glb.PerformAuthenticationAssertion(self);
+  PlaceFormOnVisibleMonitor(self);
   //
   FOutOfOrderBlocking := False;
   mainPage.ActivePage := RoomsTab;
@@ -2760,8 +2761,19 @@ begin
 end;
 
 procedure TfrmReservationProfile.tvRoomsRoomTypePropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
+var s : String;
 begin
-  showmessage('Change RoomType for '+mRooms.FieldByName('room').asstring);
+//  showmessage('Change RoomType for '+mRooms.FieldByName('room').asstring);
+  if copy(mRooms.FieldByName('room').asstring, 1, 1) = '<' then
+  begin
+    s := changeNoRoomRoomtypeReturnSelection(zReservation, zRoomReservation, trim(mRooms.FieldByName('roomtype').asstring));
+    if s <> '' then
+    begin
+      mRooms.Edit;
+      mRooms['RoomType'] := s;
+      mRooms.Post;
+    end;
+  end;
 end;
 
 procedure TfrmReservationProfile.tvRoomsStatusTextPropertiesChange

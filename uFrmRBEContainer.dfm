@@ -512,7 +512,7 @@ object FrmRBEContainer: TFrmRBEContainer
       DesignSize = (
         1182
         87)
-      object lblUsername: TsLabel
+      object __lblUsername: TsLabel
         Left = 897
         Top = 9
         Width = 213

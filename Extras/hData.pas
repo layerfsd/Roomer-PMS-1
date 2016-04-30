@@ -2056,6 +2056,7 @@ function RD_ispaid(RoomReservation: integer): boolean;
 
 procedure FixRoomTypes;
 Function changeNoRoomRoomtype(Reservation, RoomReservation: integer; oldType: string): boolean;
+Function changeNoRoomRoomtypeReturnSelection(Reservation, RoomReservation: integer; oldType: string): String;
 
 function updateRdResFlag(id: integer; Status: string): boolean;
 function updateRdResFlagByRRandDate(RoomReservation: integer; sDate: string; Status: string; SetPaid : Boolean = False; isPaid : Boolean = False): boolean;
@@ -13465,40 +13466,30 @@ begin
   else
     Exit;
 
-  if glb.LocateSpecificRecord('packageitems', 'packageId', packageId) then
-  begin
-    while NOT glb.PackageItems.Eof do // This is to check if Room is also included in the package.
-    begin
-      if (glb.PackageItems['packageId'] = packageId) AND (glb.PackageItems['itemId'] = roomRentID) then
-      begin
-        result := glb.Packages['invoiceText'];
-        result := StringReplace(result, '{room}', Room, [rfReplaceAll, rfIgnoreCase]);
-        result := StringReplace(result, '{arrival}', FormatDateTime('dd.mm', Arrival), [rfReplaceAll, rfIgnoreCase]);
-        result := StringReplace(result, '{departure}', FormatDateTime('dd.mm', Departure), [rfReplaceAll, rfIgnoreCase]);
-        result := StringReplace(result, '{guestname}', guestname, [rfReplaceAll, rfIgnoreCase]);
-        // add guestname and roomtype
-        Break;
-      end;
-      glb.PackageItems.Next;
-    end;
-  end;
+  result := glb.Packages['invoiceText'];
+  result := StringReplace(result, '{room}', Room, [rfReplaceAll, rfIgnoreCase]);
+  result := StringReplace(result, '{arrival}', FormatDateTime('dd.mm', Arrival), [rfReplaceAll, rfIgnoreCase]);
+  result := StringReplace(result, '{departure}', FormatDateTime('dd.mm', Departure), [rfReplaceAll, rfIgnoreCase]);
+  result := StringReplace(result, '{guestname}', guestname, [rfReplaceAll, rfIgnoreCase]);
 
-  // s := '';
-  // s := s + 'SELECT description '#10;
-  // s := s + 'FROM '#10;
-  // s := s + '  packageitems '#10;
-  // s := s + 'WHERE '#10;
-  // s := s + '  (packageID = ' + _db(packageId) + ') AND (itemID = '+_db(roomrentId)+') '#10;
-  //
-  // rSet := CreateNewDataSet;
-  // try
-  // if rSet_bySQL(rSet, s) then
-  // begin
-  // result := rSet.FieldByName('description').asstring;
-  // end;
-  // finally
-  // freeandnil(rSet);
-  // end;
+//  if glb.LocateSpecificRecord('packageitems', 'packageId', packageId) then
+//  begin
+//    while NOT glb.PackageItems.Eof do // This is to check if Room is also included in the package.
+//    begin
+//      if (glb.PackageItems['packageId'] = packageId) AND (glb.PackageItems['itemId'] = roomRentID) then
+//      begin
+//        result := glb.Packages['invoiceText'];
+//        result := StringReplace(result, '{room}', Room, [rfReplaceAll, rfIgnoreCase]);
+//        result := StringReplace(result, '{arrival}', FormatDateTime('dd.mm', Arrival), [rfReplaceAll, rfIgnoreCase]);
+//        result := StringReplace(result, '{departure}', FormatDateTime('dd.mm', Departure), [rfReplaceAll, rfIgnoreCase]);
+//        result := StringReplace(result, '{guestname}', guestname, [rfReplaceAll, rfIgnoreCase]);
+//        // add guestname and roomtype
+//        Break;
+//      end;
+//      glb.PackageItems.Next;
+//    end;
+//  end;
+
 end;
 
 /// ///////////////////////////////////////////////////////////////////////////////////
@@ -14901,6 +14892,75 @@ begin
     end;
 
     result := true;
+  end;
+end;
+
+Function changeNoRoomRoomtypeReturnSelection(Reservation, RoomReservation: integer; oldType: string): String;
+var
+  ss: string;
+  newRoomType: string;
+  theData: recRoomTypeHolder;
+  realType: boolean;
+  Status: string;
+  Arrival: Tdate;
+  Departure: Tdate;
+
+  s, temp : String;
+
+  AvailabilityPerDay : TAvailabilityPerDay;
+
+begin
+  result := '';
+
+  initRoomTypeHolder(theData);
+
+  theData.RoomType := oldType;
+  openRoomTypes(actlookup, theData);
+  if theData.RoomType <> '' then
+  begin
+    newRoomType := theData.RoomType;
+  end
+  else
+  begin
+    exit;
+  end;
+
+  realType := glb.LocateRoomType(oldType);
+
+  if d.getChangeAvailabilityInfo(RoomReservation, oldType, Status, Arrival, Departure) then
+  begin
+    if g.qWarnWhenOverbooking then
+      if NOT IsAvailabilityThere(newRoomType, Arrival, Departure) then exit;
+
+    ss := '';
+    ss := ss + ' UPDATE roomreservations ';
+    ss := ss + ' SET ';
+    ss := ss + '   [RoomType] = ' + _db(newRoomType) + ' ';
+    ss := ss + '  WHERE (Roomreservation = ' + _db(RoomReservation) + ') ';
+    cmd_bySQL(ss);
+
+    ss := '';
+    ss := ss + ' UPDATE [roomsdate] ';
+    ss := ss + ' SET ';
+    ss := ss + '    [RoomType] = ' + _db(newRoomType) + ' ';
+    ss := ss + '  WHERE (Roomreservation = ' + _db(RoomReservation) + ') ';
+    cmd_bySQL(ss);
+
+    if (Status <> 'O') and (Status <> 'N') then
+    begin
+      if realType then
+      begin
+        temp := format('(changeNoRoomRoomtype) Change roomtype of a NO-ROOM booking for Reservation=%d, RoomReservation=%d, FROM RoomType=%s, FOR ArrDate=%s, DepDate=%s',
+                       [Reservation, RoomReservation, oldType, DateToSqlString(Arrival), DateToSqlString(Departure)]);
+        d.roomerMainDataSet.SystemChangeAvailability(oldType, Arrival, Departure - 1, false, temp); // auka framboð
+      end;
+
+      temp := format('(changeNoRoomRoomtype) Change roomtype of a NO-ROOM booking for Reservation=%d, RoomReservation=%d, TO RoomType=%s, FOR ArrDate=%s, DepDate=%s',
+                     [Reservation, RoomReservation, newRoomType, DateToSqlString(Arrival), DateToSqlString(Departure)]);
+      d.roomerMainDataSet.SystemChangeAvailability(newRoomType, Arrival, Departure - 1, true, temp); // minnka framboð
+    end;
+
+    result := newRoomType;
   end;
 end;
 

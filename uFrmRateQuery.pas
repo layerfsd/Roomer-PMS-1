@@ -215,7 +215,7 @@ begin
     s := 'SELECT crId, crDate, Rate, stop, minStay, ' +
           '       IF(availability=-1, ' +
           '          ((SELECT COUNT(id) FROM rooms WHERE active AND RoomType=rtRoomType AND NOT Hidden) - ' +
-          '          (SELECT COUNT(id) FROM roomsdate WHERE RoomType=rtRoomType AND Adate=crDate AND (NOT ResFlag IN (''X'',''C'',''B'',''Q'',''Z'',''N'')))), ' +
+          '          (SELECT COUNT(id) FROM roomsdate WHERE RoomType=rtRoomType AND Adate=crDate AND (NOT ResFlag IN (''X'',''C'',''Q'',''Z'',''N'')))), ' +
           '          availability) AS availability, ' +
           ' ' +
           '       rtId, rtRoomType, rtDescription, ' +
@@ -269,7 +269,7 @@ begin
           '								rt.NumberGuests * r.RateExtraPerson)))))))))))) AS Rate, ' +
           '          0 AS stop, 1 AS minStay, ' +
           '       ((SELECT COUNT(id) FROM rooms WHERE active AND RoomType=rt.RoomType AND NOT Hidden) - ' +
-          '	    (SELECT COUNT(id) FROM roomsdate WHERE RoomType=rt.RoomType AND Adate=pdd.Date AND (NOT ResFlag IN (''X'',''C'',''B'',''Q'',''Z'',''N'')))) AS availability, ' +
+          '	    (SELECT COUNT(id) FROM roomsdate WHERE RoomType=rt.RoomType AND Adate=pdd.Date AND (NOT ResFlag IN (''X'',''C'',''Q'',''Z'',''N'')))) AS availability, ' +
           '	   rt.Id AS rtId, rt.RoomType AS rtRoomType, rt.Description AS rtDescription, ' +
           '	   0 AS rtgId, pcCode AS rtgCode, pcCode AS rtgTopClass, pc.pcDescription AS rtgDescription, ' +
           '       0 AS chId,  (SELECT companyID FROM control LIMIT 1) AS chCode, (SELECT companyName FROM control LIMIT 1) AS chName, ' +

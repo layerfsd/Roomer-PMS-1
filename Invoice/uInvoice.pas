@@ -3844,7 +3844,13 @@ begin
     zS := ReplaceString(format(sql, [publicReservation, FRoomReservation, FnewSplitNumber]),
           '{InvoiceIndex}',
           inttostr(InvoiceIndex));
-    hData.rSet_bySQL(zrSet, zS);
+
+// copytoclipboard(zs);
+
+     hData.rSet_bySQL(zrSet, zS);
+
+
+
     zrSet.first;
 
     if not zrSet.eof then
@@ -10366,6 +10372,8 @@ var
 
   lInvRoom: TInvoiceRoomEntity;
 
+  InvoiceLine : TInvoiceLine;
+
 begin
   err := '';
   UpdateOk := false;
@@ -10430,6 +10438,8 @@ begin
 //  IsInvoiceChanged(False);
   SaveAnd(false);
 
+  InvoiceLine := CellInvoiceLine(rowIndex);
+
   // Description := Description + '(Room:' + RoomNumber + ')';
   if pos('(Room:', Description) > 0 then
     Description := copy(Description, 1, pos('(Room:', Description) - 1);
@@ -10443,14 +10453,21 @@ begin
   s := s + ' , Description = ' + _db(Description) + ' ' + #10;
   s := s + ' , InvoiceIndex = ' + _db(toInvoiceIndex) + ' ' + #10;
   s := s + ' , staffLastEdit = ' + _db(d.roomerMainDataSet.username) + ' ' + #10;
-  s := s + 'where Reservation = ' + _db(reservation);
-  if RoomReservation > 0 then
-    s := s + '  and RoomReservation = ' + _db(RoomReservation) + #10
-  else
-    s := s + '  and RoomReservation = 0 ' + #10;
-  s := s + '   and Splitnumber = 0 ' + #10;
-  s := s + '   and itemNumber = ' + _db(itemNumber);
-  s := s + '   and InvoiceIndex = ' + _db(FInvoiceIndex);
+  if (NOT Assigned(InvoiceLine)) OR (InvoiceLine.FId < 1) then
+  begin
+    s := s + 'where Reservation = ' + _db(reservation);
+    if RoomReservation > 0 then
+      s := s + '  and RoomReservation = ' + _db(RoomReservation) + #10
+    else
+      s := s + '  and RoomReservation = 0 ' + #10;
+    s := s + '   and Splitnumber = 0 ' + #10;
+    s := s + '   and itemNumber = ' + _db(itemNumber);
+    s := s + '   and InvoiceIndex = ' + _db(FInvoiceIndex);
+  end else
+    s := s + 'where ID = ' + _db(InvoiceLine.FId);
+  begin
+
+  end;
   try
     if not cmd_bySQL(s) then
     begin

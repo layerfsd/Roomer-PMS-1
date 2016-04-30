@@ -456,6 +456,7 @@ begin
 
     //-- Query all rooms reserved this period:
     try
+    rSet := nil;
     if NOT d.roomerMainDataSet.OfflineMode then
       rSet := d.roomerMainDataSet.ActivateNewDataset(d.roomerMainDataSet.SystemGetDayGrid(_FromDate, _ToDate,
               GetEnumName(TypeInfo(TReservationStatus), integer(_ReservationStatus))))

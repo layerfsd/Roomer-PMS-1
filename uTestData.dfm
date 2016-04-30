@@ -2,8 +2,8 @@ object frmTestData: TfrmTestData
   Left = 0
   Top = 0
   Caption = 'Booking.com to Roomer'
-  ClientHeight = 600
-  ClientWidth = 1105
+  ClientHeight = 690
+  ClientWidth = 1132
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -19,17 +19,16 @@ object frmTestData: TfrmTestData
   object panMainTop: TsPanel
     Left = 0
     Top = 0
-    Width = 1105
-    Height = 36
+    Width = 1132
+    Height = 1
     Align = alTop
     TabOrder = 0
     SkinData.SkinSection = 'PANEL'
-    ExplicitWidth = 742
     DesignSize = (
-      1105
-      36)
+      1132
+      1)
     object btnExit: TsButton
-      Left = 1017
+      Left = 1044
       Top = 5
       Width = 80
       Height = 25
@@ -40,45 +39,35 @@ object frmTestData: TfrmTestData
       ModalResult = 8
       TabOrder = 0
       SkinData.SkinSection = 'BUTTON'
-      ExplicitLeft = 654
     end
   end
   object sStatusBar1: TsStatusBar
     Left = 0
-    Top = 581
-    Width = 1105
+    Top = 671
+    Width = 1132
     Height = 19
     Panels = <>
     SkinData.SkinSection = 'STATUSBAR'
-    ExplicitWidth = 742
   end
   object sPageControl1: TsPageControl
     Left = 0
-    Top = 36
-    Width = 1105
-    Height = 545
+    Top = 1
+    Width = 1132
+    Height = 670
     ActivePage = DK
     Align = alClient
     TabOrder = 2
-    ExplicitLeft = 8
-    ExplicitTop = 290
-    ExplicitWidth = 734
-    ExplicitHeight = 231
     object sTabSheet1: TsTabSheet
       Caption = 'Booking.com'
       SkinData.CustomColor = False
       SkinData.CustomFont = False
-      ExplicitWidth = 281
-      ExplicitHeight = 165
       object sPanel2: TsPanel
         Left = 0
         Top = 0
-        Width = 1097
+        Width = 1124
         Height = 41
         Align = alTop
         TabOrder = 0
-        ExplicitTop = 8
-        ExplicitWidth = 281
         object edResFileName: TsFilenameEdit
           Left = 120
           Top = 7
@@ -120,36 +109,27 @@ object frmTestData: TfrmTestData
       object pgMain: TsPageControl
         Left = 0
         Top = 41
-        Width = 1097
-        Height = 476
+        Width = 1124
+        Height = 601
         ActivePage = sTabSheet5
         Align = alClient
         TabOrder = 1
         SkinData.SkinSection = 'PAGECONTROL'
-        ExplicitLeft = -16
-        ExplicitTop = -342
-        ExplicitWidth = 742
-        ExplicitHeight = 545
         object sheetUpdateNames: TsTabSheet
           Caption = 'Update Names'
           TabVisible = False
           SkinData.CustomColor = False
           SkinData.CustomFont = False
-          ExplicitLeft = 0
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
           object sPanel1: TsPanel
             Left = 0
             Top = 0
-            Width = 1089
+            Width = 1116
             Height = 129
             Align = alTop
             TabOrder = 0
             SkinData.SkinSection = 'PANEL'
-            ExplicitWidth = 734
             DesignSize = (
-              1089
+              1116
               129)
             object Label4: TsLabel
               Left = 1
@@ -207,7 +187,7 @@ object frmTestData: TfrmTestData
             object edImportfile: TsFilenameEdit
               Left = 87
               Top = 7
-              Width = 1002
+              Width = 1029
               Height = 21
               Anchors = [akLeft, akTop, akRight]
               AutoSize = False
@@ -229,7 +209,6 @@ object frmTestData: TfrmTestData
               DefaultExt = 'CSV'
               FilterIndex = 2
               Filter = 'All files (*.*)|*.*|Comma seperated value (*.csv)|*.csv'
-              ExplicitWidth = 647
             end
             object edCountry: TcxButtonEdit
               Left = 91
@@ -287,14 +266,13 @@ object frmTestData: TfrmTestData
             object sGroupBox1: TsGroupBox
               Left = 371
               Top = 30
-              Width = 710
+              Width = 737
               Height = 93
               Anchors = [akLeft, akTop, akRight, akBottom]
               Caption = 'Update'
               TabOrder = 5
               SkinData.SkinSection = 'GROUPBOX'
               Checked = False
-              ExplicitWidth = 355
               object sLabel1: TsLabel
                 Left = 16
                 Top = 27
@@ -333,12 +311,10 @@ object frmTestData: TfrmTestData
           object grFakeNames: TcxGrid
             Left = 0
             Top = 129
-            Width = 1089
-            Height = 319
+            Width = 1116
+            Height = 444
             Align = alClient
             TabOrder = 1
-            ExplicitWidth = 734
-            ExplicitHeight = 388
             object tvFakeNames: TcxGridDBTableView
               Navigator.Buttons.CustomButtons = <>
               Navigator.Buttons.Insert.Visible = False
@@ -475,28 +451,21 @@ object frmTestData: TfrmTestData
           TabVisible = False
           SkinData.CustomColor = False
           SkinData.CustomFont = False
-          ExplicitWidth = 734
-          ExplicitHeight = 517
         end
         object sTabSheet5: TsTabSheet
           Caption = 'Getbooking.com'
           SkinData.CustomColor = False
           SkinData.CustomFont = False
-          ExplicitLeft = 0
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
           object sPanel6: TsPanel
             Left = 0
             Top = 0
-            Width = 1089
+            Width = 1116
             Height = 209
             Align = alTop
             TabOrder = 0
             SkinData.SkinSection = 'PANEL'
-            ExplicitWidth = 734
             DesignSize = (
-              1089
+              1116
               209)
             object Label1: TLabel
               Left = 16
@@ -582,19 +551,17 @@ object frmTestData: TfrmTestData
             object PageControl2: TPageControl
               Left = 400
               Top = 7
-              Width = 685
+              Width = 712
               Height = 186
               ActivePage = TabSheet2
               Anchors = [akLeft, akTop, akRight, akBottom]
               TabOrder = 0
-              ExplicitWidth = 330
               object TabSheet2: TTabSheet
                 Caption = 'Reservation remarks'
-                ExplicitWidth = 322
                 object DBMemo2: TDBMemo
                   Left = 0
                   Top = 0
-                  Width = 677
+                  Width = 704
                   Height = 158
                   Align = alClient
                   Anchors = [akLeft, akTop, akBottom]
@@ -602,41 +569,36 @@ object frmTestData: TfrmTestData
                   DataSource = kbmReservationsDS
                   ReadOnly = True
                   TabOrder = 0
-                  ExplicitWidth = 322
                 end
               end
               object TabSheet6: TTabSheet
                 Caption = 'Room remarks'
                 ImageIndex = 1
-                ExplicitWidth = 322
                 object DBMemo1: TDBMemo
                   Left = 0
                   Top = 0
-                  Width = 677
+                  Width = 704
                   Height = 158
                   Align = alClient
                   Anchors = [akLeft, akTop, akBottom]
                   DataField = 'GuestsRemarks'
                   DataSource = kbmRoomResDS
                   TabOrder = 0
-                  ExplicitWidth = 322
                 end
               end
               object TabSheet7: TTabSheet
                 Caption = 'Canncelation Policy'
                 ImageIndex = 2
-                ExplicitWidth = 322
                 object DBMemo3: TDBMemo
                   Left = 0
                   Top = 0
-                  Width = 677
+                  Width = 704
                   Height = 158
                   Align = alClient
                   Anchors = [akLeft, akTop, akBottom]
                   DataField = 'Cancellation_Policy'
                   DataSource = kbmRoomResDS
                   TabOrder = 0
-                  ExplicitWidth = 322
                 end
               end
             end
@@ -707,26 +669,21 @@ object frmTestData: TfrmTestData
           object PageControl1: TPageControl
             Left = 0
             Top = 209
-            Width = 1089
-            Height = 239
+            Width = 1116
+            Height = 364
             ActivePage = TabSheet1
             Align = alClient
             TabOrder = 1
-            ExplicitWidth = 734
-            ExplicitHeight = 308
             object TabSheet1: TTabSheet
               Caption = 'Source'
-              ExplicitWidth = 726
-              ExplicitHeight = 280
               object sPanel7: TsPanel
                 Left = 0
                 Top = 0
-                Width = 1081
+                Width = 1108
                 Height = 55
                 Align = alTop
                 TabOrder = 0
                 SkinData.SkinSection = 'PANEL'
-                ExplicitWidth = 726
                 object labCustomer: TsLabel
                   Left = 119
                   Top = 14
@@ -828,24 +785,21 @@ object frmTestData: TfrmTestData
                 object sProgressBar2: TsProgressBar
                   Left = 1
                   Top = 37
-                  Width = 1079
+                  Width = 1106
                   Height = 17
                   Align = alBottom
                   TabOrder = 3
                   SkinData.SkinSection = 'GAUGE'
-                  ExplicitWidth = 724
                 end
               end
               object grRoomMap: TcxGrid
                 Left = 0
                 Top = 55
-                Width = 1081
-                Height = 156
+                Width = 1108
+                Height = 281
                 Align = alClient
                 TabOrder = 1
                 LookAndFeel.NativeStyle = False
-                ExplicitWidth = 726
-                ExplicitHeight = 225
                 object tvRoomMap: TcxGridDBTableView
                   Navigator.Buttons.CustomButtons = <>
                   DataController.DataSource = kbmRoomMapDS
@@ -870,18 +824,14 @@ object frmTestData: TfrmTestData
             object TabSheet3: TTabSheet
               Caption = 'Reservations'
               ImageIndex = 2
-              ExplicitWidth = 726
-              ExplicitHeight = 280
               object grReservations: TcxGrid
                 Left = 0
                 Top = 0
-                Width = 1081
-                Height = 211
+                Width = 1108
+                Height = 336
                 Align = alClient
                 TabOrder = 0
                 LookAndFeel.NativeStyle = False
-                ExplicitWidth = 726
-                ExplicitHeight = 280
                 object tvReservations: TcxGridDBTableView
                   Navigator.Buttons.CustomButtons = <>
                   DataController.DataSource = kbmReservationsDS
@@ -936,19 +886,15 @@ object frmTestData: TfrmTestData
             object TabSheet5: TTabSheet
               Caption = 'Rooms'
               ImageIndex = 4
-              ExplicitWidth = 726
-              ExplicitHeight = 280
               object grRooms: TcxGrid
                 Left = 0
                 Top = 0
-                Width = 1081
-                Height = 211
+                Width = 1108
+                Height = 336
                 Align = alClient
                 Images = DImages.PngImageList1
                 TabOrder = 0
                 LookAndFeel.NativeStyle = False
-                ExplicitWidth = 726
-                ExplicitHeight = 280
                 object tvRooms: TcxGridDBTableView
                   Navigator.Buttons.CustomButtons = <>
                   DataController.DataSource = kbmRoomResDS
@@ -1042,21 +988,15 @@ object frmTestData: TfrmTestData
               Caption = 'TabSheet4'
               ImageIndex = 4
               TabVisible = False
-              ExplicitLeft = 0
-              ExplicitTop = 0
-              ExplicitWidth = 0
-              ExplicitHeight = 0
               object Memo2: TMemo
                 Left = 0
                 Top = 0
-                Width = 1081
-                Height = 211
+                Width = 1108
+                Height = 336
                 Align = alClient
                 Lines.Strings = (
                   'Memo1')
                 TabOrder = 0
-                ExplicitWidth = 726
-                ExplicitHeight = 280
               end
             end
           end
@@ -1067,45 +1007,32 @@ object frmTestData: TfrmTestData
       Caption = 'DK'
       SkinData.CustomColor = False
       SkinData.CustomFont = False
-      ExplicitWidth = 281
-      ExplicitHeight = 165
       object ProgressBar1: TProgressBar
         Left = 0
         Top = 0
-        Width = 1097
+        Width = 1124
         Height = 17
         Align = alTop
         Step = 1
         TabOrder = 0
-        ExplicitTop = 8
-        ExplicitWidth = 734
       end
       object PageControl3: TPageControl
         Left = 0
         Top = 17
-        Width = 1097
-        Height = 500
+        Width = 1124
+        Height = 625
         ActivePage = TabSheet9
         Align = alClient
         TabOrder = 1
-        ExplicitTop = 42
-        ExplicitWidth = 1114
-        ExplicitHeight = 629
         object TabSheet8: TTabSheet
           Caption = 'XML file'
-          ExplicitLeft = 0
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
           object Panel2: TPanel
             Left = 0
             Top = 0
             Width = 225
-            Height = 472
+            Height = 597
             Align = alLeft
             TabOrder = 0
-            ExplicitLeft = 279
-            ExplicitTop = 64
             object TPanel
               Left = 1
               Top = 1
@@ -1122,22 +1049,27 @@ object frmTestData: TfrmTestData
                 TabOrder = 0
                 OnClick = btnRunDlXmlClick
               end
+              object edOwnerNumber: TEdit
+                Left = 89
+                Top = 10
+                Width = 121
+                Height = 21
+                TabOrder = 1
+              end
             end
           end
           object Panel3: TPanel
             Left = 225
             Top = 0
-            Width = 864
-            Height = 472
+            Width = 891
+            Height = 597
             Align = alClient
             TabOrder = 1
-            ExplicitWidth = 881
-            ExplicitHeight = 601
             object memXmlFile: TMemo
               Left = 1
               Top = 42
-              Width = 862
-              Height = 429
+              Width = 889
+              Height = 554
               Align = alClient
               Font.Charset = ANSI_CHARSET
               Font.Color = clWindowText
@@ -1150,20 +1082,16 @@ object frmTestData: TfrmTestData
               ScrollBars = ssBoth
               TabOrder = 0
               WordWrap = False
-              ExplicitLeft = 73
-              ExplicitTop = 90
-              ExplicitWidth = 499
             end
             object TPanel
               Left = 1
               Top = 1
-              Width = 862
+              Width = 889
               Height = 41
               Align = alTop
               TabOrder = 1
-              ExplicitWidth = 499
               DesignSize = (
-                862
+                889
                 41)
               object clabXmlFile: TLabel
                 Left = 5
@@ -1174,8 +1102,8 @@ object frmTestData: TfrmTestData
               end
               object edXMLFile: TsFilenameEdit
                 Left = 64
-                Top = 8
-                Width = 788
+                Top = 10
+                Width = 815
                 Height = 21
                 Anchors = [akLeft, akTop, akRight]
                 AutoSize = False
@@ -1195,7 +1123,6 @@ object frmTestData: TfrmTestData
                 OnAfterDialog = edXMLFileAfterDialog
                 DefaultExt = '.xml'
                 Filter = 'All files (*.*)|*.*|XML|*.xml'
-                ExplicitWidth = 425
               end
             end
           end
@@ -1203,14 +1130,10 @@ object frmTestData: TfrmTestData
         object TabSheet9: TTabSheet
           Caption = 'Data'
           ImageIndex = 1
-          ExplicitLeft = 0
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
           object Splitter1: TSplitter
             Left = 569
             Top = 32
-            Height = 440
+            Height = 565
             ExplicitLeft = 360
             ExplicitTop = 184
             ExplicitHeight = 100
@@ -1218,11 +1141,10 @@ object frmTestData: TfrmTestData
           object TPanel
             Left = 0
             Top = 0
-            Width = 1089
+            Width = 1116
             Height = 32
             Align = alTop
             TabOrder = 0
-            ExplicitWidth = 726
             object DBEdit1: TDBEdit
               Left = 736
               Top = 6
@@ -1234,12 +1156,56 @@ object frmTestData: TfrmTestData
               Visible = False
               OnChange = DBEdit1Change
             end
+            object CheckBox1: TCheckBox
+              Left = 8
+              Top = 8
+              Width = 97
+              Height = 17
+              Caption = 'filtered'
+              TabOrder = 1
+              OnClick = CheckBox1Click
+            end
+            object btnToExcel: TButton
+              Left = 76
+              Top = 2
+              Width = 96
+              Height = 25
+              Caption = 'All To Excel'
+              TabOrder = 2
+              OnClick = btnToExcelClick
+            end
+            object Button5: TButton
+              Left = 178
+              Top = 2
+              Width = 96
+              Height = 25
+              Caption = 'All To Roomer'
+              TabOrder = 3
+              OnClick = Button5Click
+            end
+            object chkOccupied: TCheckBox
+              Left = 297
+              Top = 9
+              Width = 97
+              Height = 17
+              Caption = 'Check Occupied'
+              TabOrder = 4
+            end
+            object Button6: TButton
+              Left = 410
+              Top = 1
+              Width = 96
+              Height = 25
+              Caption = 'Test integrety'
+              TabOrder = 5
+              OnClick = Button6Click
+            end
           end
           object Panel4: TPanel
             Left = 0
             Top = 32
             Width = 569
-            Height = 440
+            Height = 565
             Align = alLeft
             TabOrder = 1
             object Splitter4: TSplitter
@@ -1254,7 +1220,7 @@ object frmTestData: TfrmTestData
             object Splitter5: TSplitter
               Left = 297
               Top = 292
-              Height = 147
+              Height = 272
               ExplicitLeft = 328
               ExplicitTop = 384
               ExplicitHeight = 100
@@ -1281,7 +1247,7 @@ object frmTestData: TfrmTestData
                 Font.Style = [fsBold]
                 ParentColor = False
                 ParentFont = False
-                Transparent = False
+                Transparent = True
                 ExplicitWidth = 135
               end
               object grBookings: TcxGrid
@@ -1293,6 +1259,19 @@ object frmTestData: TfrmTestData
                 TabOrder = 0
                 object tvBookings: TcxGridDBTableView
                   Navigator.Buttons.CustomButtons = <>
+                  Navigator.Buttons.PriorPage.Visible = False
+                  Navigator.Buttons.NextPage.Visible = False
+                  Navigator.Buttons.Insert.Visible = False
+                  Navigator.Buttons.Append.Visible = False
+                  Navigator.Buttons.Delete.Visible = False
+                  Navigator.Buttons.Edit.Visible = False
+                  Navigator.Buttons.Post.Visible = False
+                  Navigator.Buttons.Cancel.Visible = False
+                  Navigator.Buttons.Refresh.Visible = False
+                  Navigator.Buttons.SaveBookmark.Visible = False
+                  Navigator.Buttons.GotoBookmark.Visible = False
+                  Navigator.InfoPanel.Visible = True
+                  Navigator.Visible = True
                   DataController.DataSource = mBookingsDS
                   DataController.Summary.DefaultGroupSummaryItems = <>
                   DataController.Summary.FooterSummaryItems = <>
@@ -1386,6 +1365,10 @@ object frmTestData: TfrmTestData
                     DataBinding.FieldName = 'exchange'
                     Width = 100
                   end
+                  object tvBookingserr: TcxGridDBColumn
+                    DataBinding.FieldName = 'err'
+                    Width = 150
+                  end
                 end
                 object lvBookings: TcxGridLevel
                   GridView = tvBookings
@@ -1396,7 +1379,7 @@ object frmTestData: TfrmTestData
               Left = 1
               Top = 292
               Width = 296
-              Height = 147
+              Height = 272
               Align = alLeft
               TabOrder = 1
               object Label12: TLabel
@@ -1414,18 +1397,30 @@ object frmTestData: TfrmTestData
                 Font.Style = []
                 ParentColor = False
                 ParentFont = False
-                Transparent = False
+                Transparent = True
                 ExplicitWidth = 94
               end
               object grParticipant: TcxGrid
                 Left = 1
                 Top = 14
                 Width = 294
-                Height = 132
+                Height = 257
                 Align = alClient
                 TabOrder = 0
                 object tvParticipant: TcxGridDBTableView
                   Navigator.Buttons.CustomButtons = <>
+                  Navigator.Buttons.PriorPage.Visible = False
+                  Navigator.Buttons.NextPage.Visible = False
+                  Navigator.Buttons.Insert.Visible = False
+                  Navigator.Buttons.Delete.Visible = False
+                  Navigator.Buttons.Edit.Visible = False
+                  Navigator.Buttons.Post.Visible = False
+                  Navigator.Buttons.Cancel.Visible = False
+                  Navigator.Buttons.Refresh.Visible = False
+                  Navigator.Buttons.SaveBookmark.Visible = False
+                  Navigator.Buttons.GotoBookmark.Visible = False
+                  Navigator.InfoPanel.Visible = True
+                  Navigator.Visible = True
                   DataController.DataSource = mParticipantsDS
                   DataController.Summary.DefaultGroupSummaryItems = <>
                   DataController.Summary.FooterSummaryItems = <>
@@ -1461,14 +1456,14 @@ object frmTestData: TfrmTestData
               Left = 300
               Top = 292
               Width = 268
-              Height = 147
+              Height = 272
               Align = alClient
               TabOrder = 2
               object Panel13: TPanel
                 Left = 1
                 Top = 1
                 Width = 266
-                Height = 145
+                Height = 270
                 Align = alClient
                 TabOrder = 0
                 object Label13: TLabel
@@ -1486,18 +1481,30 @@ object frmTestData: TfrmTestData
                   Font.Style = [fsBold]
                   ParentColor = False
                   ParentFont = False
-                  Transparent = False
+                  Transparent = True
                   ExplicitWidth = 98
                 end
                 object grBookingSaleLines: TcxGrid
                   Left = 1
                   Top = 14
                   Width = 264
-                  Height = 130
+                  Height = 255
                   Align = alClient
                   TabOrder = 0
                   object tvBookingSaleLines: TcxGridDBTableView
                     Navigator.Buttons.CustomButtons = <>
+                    Navigator.Buttons.PriorPage.Visible = False
+                    Navigator.Buttons.NextPage.Visible = False
+                    Navigator.Buttons.Insert.Visible = False
+                    Navigator.Buttons.Delete.Visible = False
+                    Navigator.Buttons.Edit.Visible = False
+                    Navigator.Buttons.Post.Visible = False
+                    Navigator.Buttons.Cancel.Visible = False
+                    Navigator.Buttons.Refresh.Visible = False
+                    Navigator.Buttons.SaveBookmark.Visible = False
+                    Navigator.Buttons.GotoBookmark.Visible = False
+                    Navigator.InfoPanel.Visible = True
+                    Navigator.Visible = True
                     DataController.DataSource = mBookingSaleLinesDS
                     DataController.Summary.DefaultGroupSummaryItems = <>
                     DataController.Summary.FooterSummaryItems = <>
@@ -1618,16 +1625,14 @@ object frmTestData: TfrmTestData
           object Panel5: TPanel
             Left = 572
             Top = 32
-            Width = 517
-            Height = 440
+            Width = 544
+            Height = 565
             Align = alClient
             TabOrder = 2
-            ExplicitWidth = 534
-            ExplicitHeight = 569
             object Splitter2: TSplitter
               Left = 1
               Top = 313
-              Width = 515
+              Width = 542
               Height = 3
               Cursor = crVSplit
               Align = alTop
@@ -1636,28 +1641,25 @@ object frmTestData: TfrmTestData
             object Panel6: TPanel
               Left = 1
               Top = 1
-              Width = 515
+              Width = 542
               Height = 312
               Align = alTop
               Caption = 'Panel6'
               TabOrder = 0
-              ExplicitWidth = 532
               object PageControl4: TPageControl
                 Left = 1
                 Top = 1
-                Width = 513
+                Width = 540
                 Height = 310
                 ActivePage = TabSheet10
                 Align = alClient
                 TabOrder = 0
-                ExplicitWidth = 530
                 object TabSheet10: TTabSheet
                   Caption = '-'
-                  ExplicitWidth = 142
                   object Label14: TLabel
                     Left = 0
                     Top = 0
-                    Width = 505
+                    Width = 532
                     Height = 13
                     Align = alTop
                     Caption = 'Resourcebookings / '
@@ -1669,19 +1671,30 @@ object frmTestData: TfrmTestData
                     Font.Style = [fsBold]
                     ParentColor = False
                     ParentFont = False
-                    Transparent = False
+                    Transparent = True
                     ExplicitWidth = 116
                   end
                   object grResourceBookings: TcxGrid
                     Left = 0
                     Top = 13
-                    Width = 505
+                    Width = 532
                     Height = 269
                     Align = alClient
                     TabOrder = 0
-                    ExplicitWidth = 142
                     object tvResourceBookings: TcxGridDBTableView
                       Navigator.Buttons.CustomButtons = <>
+                      Navigator.Buttons.PriorPage.Visible = False
+                      Navigator.Buttons.NextPage.Visible = False
+                      Navigator.Buttons.Insert.Visible = False
+                      Navigator.Buttons.Delete.Visible = False
+                      Navigator.Buttons.Edit.Visible = False
+                      Navigator.Buttons.Post.Visible = False
+                      Navigator.Buttons.Cancel.Visible = False
+                      Navigator.Buttons.Refresh.Visible = False
+                      Navigator.Buttons.SaveBookmark.Visible = False
+                      Navigator.Buttons.GotoBookmark.Visible = False
+                      Navigator.InfoPanel.Visible = True
+                      Navigator.Visible = True
                       DataController.DataSource = mResourceBookingsDS
                       DataController.Summary.DefaultGroupSummaryItems = <>
                       DataController.Summary.FooterSummaryItems = <>
@@ -1724,11 +1737,10 @@ object frmTestData: TfrmTestData
                 object TabSheet11: TTabSheet
                   Caption = 'Memo'
                   ImageIndex = 1
-                  ExplicitWidth = 142
                   object Label15: TLabel
                     Left = 0
                     Top = 0
-                    Width = 505
+                    Width = 532
                     Height = 13
                     Align = alTop
                     Caption = 'Memos /'
@@ -1740,13 +1752,13 @@ object frmTestData: TfrmTestData
                     Font.Style = [fsBold]
                     ParentColor = False
                     ParentFont = False
-                    Transparent = False
+                    Transparent = True
                     ExplicitWidth = 50
                   end
                   object Label16: TLabel
                     Left = 0
                     Top = 105
-                    Width = 505
+                    Width = 532
                     Height = 13
                     Align = alTop
                     Caption = 'memoText'
@@ -1755,11 +1767,10 @@ object frmTestData: TfrmTestData
                   object Panel14: TPanel
                     Left = 0
                     Top = 13
-                    Width = 505
+                    Width = 532
                     Height = 92
                     Align = alTop
                     TabOrder = 0
-                    ExplicitWidth = 142
                     object Label17: TLabel
                       Left = 32
                       Top = 12
@@ -1812,13 +1823,12 @@ object frmTestData: TfrmTestData
                   object DBMemo4: TDBMemo
                     Left = 0
                     Top = 118
-                    Width = 505
+                    Width = 532
                     Height = 164
                     Align = alClient
                     DataField = 'memoText'
                     DataSource = mMemosDS
                     TabOrder = 1
-                    ExplicitWidth = 142
                   end
                 end
               end
@@ -1826,15 +1836,14 @@ object frmTestData: TfrmTestData
             object Panel7: TPanel
               Left = 1
               Top = 316
-              Width = 515
-              Height = 123
+              Width = 542
+              Height = 248
               Align = alClient
               TabOrder = 1
-              ExplicitWidth = 152
               object Splitter3: TSplitter
                 Left = 249
                 Top = 1
-                Height = 121
+                Height = 246
                 ExplicitLeft = 272
                 ExplicitTop = 40
                 ExplicitHeight = 100
@@ -1843,7 +1852,7 @@ object frmTestData: TfrmTestData
                 Left = 1
                 Top = 1
                 Width = 248
-                Height = 121
+                Height = 246
                 Align = alLeft
                 Caption = 'Panel8'
                 TabOrder = 0
@@ -1862,18 +1871,30 @@ object frmTestData: TfrmTestData
                   Font.Style = [fsBold]
                   ParentColor = False
                   ParentFont = False
-                  Transparent = False
+                  Transparent = True
                   ExplicitWidth = 46
                 end
                 object grPrices: TcxGrid
                   Left = 1
                   Top = 14
                   Width = 246
-                  Height = 106
+                  Height = 231
                   Align = alClient
                   TabOrder = 0
                   object tvPrices: TcxGridDBTableView
                     Navigator.Buttons.CustomButtons = <>
+                    Navigator.Buttons.PriorPage.Visible = False
+                    Navigator.Buttons.NextPage.Visible = False
+                    Navigator.Buttons.Insert.Visible = False
+                    Navigator.Buttons.Delete.Visible = False
+                    Navigator.Buttons.Edit.Visible = False
+                    Navigator.Buttons.Post.Visible = False
+                    Navigator.Buttons.Cancel.Visible = False
+                    Navigator.Buttons.Refresh.Visible = False
+                    Navigator.Buttons.SaveBookmark.Visible = False
+                    Navigator.Buttons.GotoBookmark.Visible = False
+                    Navigator.InfoPanel.Visible = True
+                    Navigator.Visible = True
                     DataController.DataSource = mPricesDS
                     DataController.Summary.DefaultGroupSummaryItems = <>
                     DataController.Summary.FooterSummaryItems = <>
@@ -1912,16 +1933,15 @@ object frmTestData: TfrmTestData
               object Panel9: TPanel
                 Left = 252
                 Top = 1
-                Width = 262
-                Height = 121
+                Width = 289
+                Height = 246
                 Align = alClient
                 Caption = 'Panel9'
                 TabOrder = 1
-                ExplicitWidth = 279
                 object Label21: TLabel
                   Left = 1
                   Top = 1
-                  Width = 260
+                  Width = 287
                   Height = 13
                   Align = alTop
                   Caption = 'Alloactions / roomreservations'
@@ -1933,19 +1953,30 @@ object frmTestData: TfrmTestData
                   Font.Style = [fsBold]
                   ParentColor = False
                   ParentFont = False
-                  Transparent = False
+                  Transparent = True
                   ExplicitWidth = 176
                 end
                 object grAllocations: TcxGrid
                   Left = 1
                   Top = 14
-                  Width = 260
-                  Height = 106
+                  Width = 287
+                  Height = 231
                   Align = alClient
                   TabOrder = 0
-                  ExplicitWidth = 277
                   object tvAllocations: TcxGridDBTableView
                     Navigator.Buttons.CustomButtons = <>
+                    Navigator.Buttons.Images = DImages.cxLargeImagesFlat
+                    Navigator.Buttons.PriorPage.Visible = False
+                    Navigator.Buttons.NextPage.Visible = False
+                    Navigator.Buttons.Insert.Visible = False
+                    Navigator.Buttons.Delete.Visible = False
+                    Navigator.Buttons.Edit.Visible = False
+                    Navigator.Buttons.Post.Visible = False
+                    Navigator.Buttons.Refresh.Visible = False
+                    Navigator.Buttons.SaveBookmark.Visible = False
+                    Navigator.Buttons.GotoBookmark.Visible = False
+                    Navigator.InfoPanel.Visible = True
+                    Navigator.Visible = True
                     DataController.DataSource = mAllocationsDS
                     DataController.Summary.DefaultGroupSummaryItems = <>
                     DataController.Summary.FooterSummaryItems = <>
@@ -1985,6 +2016,395 @@ object frmTestData: TfrmTestData
                   end
                 end
               end
+            end
+          end
+        end
+        object TabSheet12: TTabSheet
+          Caption = 'Rooms'
+          ImageIndex = 2
+          object TPanel
+            Left = 0
+            Top = 0
+            Width = 1116
+            Height = 32
+            Align = alTop
+            TabOrder = 0
+            object btnGetRoomerRooms: TButton
+              Left = 1
+              Top = 2
+              Width = 153
+              Height = 25
+              Caption = 'Get roomer Rooms'
+              TabOrder = 0
+              OnClick = btnGetRoomerRoomsClick
+            end
+            object btnSaveToCSV: TButton
+              Left = 329
+              Top = 1
+              Width = 153
+              Height = 25
+              Caption = 'Save to CSV'
+              TabOrder = 1
+              OnClick = btnSaveToCSVClick
+            end
+            object btnLoadFromCSV: TButton
+              Left = 488
+              Top = 1
+              Width = 153
+              Height = 25
+              Caption = 'Load from CSV'
+              TabOrder = 2
+              OnClick = btnLoadFromCSVClick
+            end
+            object btnGetImportRooms: TButton
+              Left = 160
+              Top = 2
+              Width = 153
+              Height = 25
+              Caption = 'Get Import Rooms'
+              TabOrder = 3
+              OnClick = btnGetImportRoomsClick
+            end
+          end
+          object grDrRooms: TcxGrid
+            Left = 0
+            Top = 32
+            Width = 1116
+            Height = 565
+            Align = alClient
+            TabOrder = 1
+            object tvDrRooms: TcxGridDBTableView
+              Navigator.Buttons.CustomButtons = <>
+              Navigator.InfoPanel.Visible = True
+              Navigator.Visible = True
+              DataController.DataSource = mRoomsDS
+              DataController.Summary.DefaultGroupSummaryItems = <>
+              DataController.Summary.FooterSummaryItems = <>
+              DataController.Summary.SummaryGroups = <>
+              object tvDrRoomsRoom: TcxGridDBColumn
+                DataBinding.FieldName = 'Room'
+              end
+              object tvDrRoomsDescription: TcxGridDBColumn
+                DataBinding.FieldName = 'Description'
+              end
+              object tvDrRoomsRoomType: TcxGridDBColumn
+                DataBinding.FieldName = 'RoomType'
+              end
+              object tvDrRoomsimpRoom: TcxGridDBColumn
+                DataBinding.FieldName = 'impRoom'
+              end
+              object tvDrRoomsimpRoomType: TcxGridDBColumn
+                DataBinding.FieldName = 'impRoomType'
+              end
+            end
+            object lvDrRooms: TcxGridLevel
+              GridView = tvDrRooms
+            end
+          end
+        end
+        object Customers: TTabSheet
+          Caption = 'Customers'
+          ImageIndex = 3
+          object TPanel
+            Left = 0
+            Top = 0
+            Width = 1116
+            Height = 73
+            Align = alTop
+            TabOrder = 0
+            object Label22: TLabel
+              Left = 341
+              Top = 13
+              Width = 45
+              Height = 13
+              Caption = 'CSV File :'
+            end
+            object Label23: TLabel
+              Left = 8
+              Top = 49
+              Width = 86
+              Height = 13
+              Caption = 'Default PriceCode'
+            end
+            object Label24: TLabel
+              Left = 187
+              Top = 49
+              Width = 99
+              Height = 13
+              Caption = 'Default Market Code'
+            end
+            object Label25: TLabel
+              Left = 374
+              Top = 49
+              Width = 82
+              Height = 13
+              Caption = 'Default Currency'
+            end
+            object CustomerCSV: TsFilenameEdit
+              Left = 394
+              Top = 10
+              Width = 375
+              Height = 21
+              AutoSize = False
+              Color = clWhite
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = 4473924
+              Font.Height = -11
+              Font.Name = 'Tahoma'
+              Font.Style = []
+              MaxLength = 255
+              ParentFont = False
+              TabOrder = 0
+              Text = ''
+              TextHint = 'Get customer file in csv format'
+              CheckOnExit = True
+              GlyphMode.Blend = 0
+              GlyphMode.Grayed = False
+              OnAfterDialog = CustomerCSVAfterDialog
+              DefaultExt = 'csv'
+              Filter = 'CSV|*.csv|All files (*.*)|*.*'
+            end
+            object Button1: TButton
+              Left = 0
+              Top = 9
+              Width = 105
+              Height = 25
+              Caption = 'Save to file'
+              TabOrder = 1
+              OnClick = Button1Click
+            end
+            object Button2: TButton
+              Left = 110
+              Top = 9
+              Width = 105
+              Height = 25
+              Caption = 'Load from file'
+              TabOrder = 2
+              OnClick = Button2Click
+            end
+            object Button3: TButton
+              Left = 221
+              Top = 8
+              Width = 105
+              Height = 25
+              Caption = 'Clear'
+              TabOrder = 3
+              OnClick = Button3Click
+            end
+            object Button4: TButton
+              Left = 778
+              Top = 8
+              Width = 105
+              Height = 25
+              Caption = 'Load To Roomer'
+              TabOrder = 4
+              OnClick = Button4Click
+            end
+            object edDefPcCode: TEdit
+              Left = 100
+              Top = 46
+              Width = 65
+              Height = 21
+              TabOrder = 5
+            end
+            object edDefCustomerType: TEdit
+              Left = 295
+              Top = 46
+              Width = 65
+              Height = 21
+              TabOrder = 6
+            end
+            object edDEfCurrency: TEdit
+              Left = 467
+              Top = 46
+              Width = 65
+              Height = 21
+              TabOrder = 7
+            end
+          end
+          object grCustomers: TcxGrid
+            Left = 0
+            Top = 73
+            Width = 1116
+            Height = 524
+            Align = alClient
+            TabOrder = 1
+            object tvCustomers: TcxGridDBTableView
+              Navigator.Buttons.CustomButtons = <>
+              Navigator.InfoPanel.Visible = True
+              Navigator.Visible = True
+              DataController.DataSource = mCustomersDS
+              DataController.Summary.DefaultGroupSummaryItems = <>
+              DataController.Summary.FooterSummaryItems = <>
+              DataController.Summary.SummaryGroups = <>
+              object tvCustomersId: TcxGridDBColumn
+                DataBinding.FieldName = 'Id'
+              end
+              object tvCustomersNumer: TcxGridDBColumn
+                DataBinding.FieldName = 'Numer'
+                Width = 150
+              end
+              object tvCustomersHeiti: TcxGridDBColumn
+                DataBinding.FieldName = 'Heiti'
+                Width = 150
+              end
+              object tvCustomersHeimili: TcxGridDBColumn
+                DataBinding.FieldName = 'Heimili'
+                Width = 150
+              end
+              object tvCustomersPostnumer: TcxGridDBColumn
+                DataBinding.FieldName = 'Postnumer'
+                Width = 150
+              end
+              object tvCustomersstadur: TcxGridDBColumn
+                DataBinding.FieldName = 'stadur'
+                Width = 150
+              end
+              object tvCustomersLand: TcxGridDBColumn
+                DataBinding.FieldName = 'Land'
+                Width = 150
+              end
+              object tvCustomersKennitala: TcxGridDBColumn
+                DataBinding.FieldName = 'Kennitala'
+                Width = 150
+              end
+              object tvCustomersFlokkur: TcxGridDBColumn
+                DataBinding.FieldName = 'Flokkur'
+                Width = 150
+              end
+              object tvCustomerssimi: TcxGridDBColumn
+                DataBinding.FieldName = 'simi'
+                Width = 150
+              end
+              object tvCustomersGreidslumati: TcxGridDBColumn
+                DataBinding.FieldName = 'Greidslumati'
+                Width = 150
+              end
+              object tvCustomersnetfang: TcxGridDBColumn
+                DataBinding.FieldName = 'netfang'
+                Width = 150
+              end
+            end
+            object lvCustomers: TcxGridLevel
+              GridView = tvCustomers
+            end
+          end
+        end
+        object TabSheet13: TTabSheet
+          Caption = 'Items'
+          ImageIndex = 4
+          object TPanel
+            Left = 0
+            Top = 0
+            Width = 1116
+            Height = 41
+            Align = alTop
+            TabOrder = 0
+            object Label26: TLabel
+              Left = 341
+              Top = 13
+              Width = 45
+              Height = 13
+              Caption = 'CSV File :'
+            end
+            object itemsCSV: TsFilenameEdit
+              Left = 394
+              Top = 10
+              Width = 375
+              Height = 21
+              AutoSize = False
+              Color = clWhite
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = 4473924
+              Font.Height = -11
+              Font.Name = 'Tahoma'
+              Font.Style = []
+              MaxLength = 255
+              ParentFont = False
+              TabOrder = 0
+              Text = ''
+              TextHint = 'Get items file in csv format'
+              CheckOnExit = True
+              GlyphMode.Blend = 0
+              GlyphMode.Grayed = False
+              OnAfterDialog = itemsCSVAfterDialog
+              DefaultExt = 'csv'
+              Filter = 'CSV|*.csv|All files (*.*)|*.*'
+            end
+            object btnItemsSaveToFile: TButton
+              Left = 0
+              Top = 9
+              Width = 105
+              Height = 25
+              Caption = 'Save to file'
+              TabOrder = 1
+              OnClick = Button1Click
+            end
+            object btnItemsLoadFromFile: TButton
+              Left = 110
+              Top = 9
+              Width = 105
+              Height = 25
+              Caption = 'Load from file'
+              TabOrder = 2
+              OnClick = Button2Click
+            end
+            object btnItemsClear: TButton
+              Left = 221
+              Top = 8
+              Width = 105
+              Height = 25
+              Caption = 'Clear'
+              TabOrder = 3
+              OnClick = Button3Click
+            end
+            object itemsLoadToRoomer: TButton
+              Left = 775
+              Top = 10
+              Width = 105
+              Height = 25
+              Caption = 'Load To Roomer'
+              TabOrder = 4
+              OnClick = itemsLoadToRoomerClick
+            end
+          end
+          object grItems: TcxGrid
+            Left = 0
+            Top = 41
+            Width = 1116
+            Height = 556
+            Align = alClient
+            TabOrder = 1
+            object tvItems: TcxGridDBTableView
+              Navigator.Buttons.CustomButtons = <>
+              Navigator.InfoPanel.Visible = True
+              Navigator.Visible = True
+              DataController.DataSource = mVorurDS
+              DataController.Summary.DefaultGroupSummaryItems = <>
+              DataController.Summary.FooterSummaryItems = <>
+              DataController.Summary.SummaryGroups = <>
+              object tvItemsvorunumer: TcxGridDBColumn
+                DataBinding.FieldName = 'vorunumer'
+                Width = 120
+              end
+              object tvItemsvorulysing: TcxGridDBColumn
+                DataBinding.FieldName = 'vorulysing'
+                Width = 120
+              end
+              object tvItemsverdmvsk: TcxGridDBColumn
+                DataBinding.FieldName = 'verdmvsk'
+                Width = 120
+              end
+              object tvItemsvorufl: TcxGridDBColumn
+                DataBinding.FieldName = 'vorufl'
+                Width = 120
+              end
+              object tvItemsid: TcxGridDBColumn
+                DataBinding.FieldName = 'id'
+              end
+            end
+            object lvItems: TcxGridLevel
+              GridView = tvItems
             end
           end
         end
@@ -2093,12 +2513,12 @@ object frmTestData: TfrmTestData
     SortID = 0
     SubLanguageID = 1
     LocaleID = 1024
-    Left = 936
-    Top = 488
+    Left = 304
+    Top = 648
   end
   object RwavGuestsDS: TDataSource
-    Left = 800
-    Top = 480
+    Left = 664
+    Top = 64
   end
   object RwavReservationsDS: TDataSource
     DataSet = kbmRwavReservations
@@ -2221,8 +2641,8 @@ object frmTestData: TfrmTestData
     SortID = 0
     SubLanguageID = 1
     LocaleID = 1024
-    Left = 920
-    Top = 408
+    Left = 480
+    Top = 632
   end
   object kbmBookingComRes: TkbmMemTable
     Active = True
@@ -2300,12 +2720,12 @@ object frmTestData: TfrmTestData
     SortID = 0
     SubLanguageID = 1
     LocaleID = 1024
-    Left = 888
-    Top = 424
+    Left = 584
+    Top = 632
   end
   object DataSource2: TDataSource
     DataSet = kbmBookingComRes
-    Left = 808
+    Left = 800
     Top = 400
   end
   object kbmMemTable1: TkbmMemTable
@@ -2424,13 +2844,13 @@ object frmTestData: TfrmTestData
     SortID = 0
     SubLanguageID = 1
     LocaleID = 1024
-    Left = 872
-    Top = 464
+    Left = 400
+    Top = 632
   end
   object DataSource1: TDataSource
     DataSet = kbmMemTable1
-    Left = 808
-    Top = 432
+    Left = 544
+    Top = 496
   end
   object kbmCSVStreamFormat1: TkbmCSVStreamFormat
     CommentChar = #0
@@ -2573,8 +2993,8 @@ object frmTestData: TfrmTestData
     PersistentFormat = kbmCSVStreamFormat1
     FormFormat = kbmCSVStreamFormat1
     AfterScroll = kbmRoomResAfterScroll
-    Left = 16
-    Top = 344
+    Left = 128
+    Top = 648
   end
   object kbmReservations: TkbmMemTable
     DesignActivation = True
@@ -2642,13 +3062,13 @@ object frmTestData: TfrmTestData
     AllDataFormat = kbmCSVStreamFormat1
     FormFormat = kbmCSVStreamFormat1
     AfterScroll = kbmReservationsAfterScroll
-    Left = 32
-    Top = 192
+    Left = 56
+    Top = 640
   end
   object kbmReservationsDS: TDataSource
     DataSet = kbmReservations
-    Left = 104
-    Top = 200
+    Left = 8
+    Top = 648
   end
   object PopupMenu1: TPopupMenu
     Left = 120
@@ -2660,8 +3080,8 @@ object frmTestData: TfrmTestData
   end
   object kbmRoomResDS: TDataSource
     DataSet = kbmRoomRes
-    Left = 107
-    Top = 344
+    Left = 211
+    Top = 648
   end
   object kbmRoomMap: TkbmMemTable
     Active = True
@@ -2691,13 +3111,13 @@ object frmTestData: TfrmTestData
     SortID = 0
     SubLanguageID = 1
     LocaleID = 1024
-    Left = 16
-    Top = 272
+    Left = 176
+    Top = 648
   end
   object kbmRoomMapDS: TDataSource
     DataSet = kbmRoomMap
-    Left = 104
-    Top = 272
+    Left = 256
+    Top = 648
   end
   object mMemos: TkbmMemTable
     Active = True
@@ -2741,13 +3161,18 @@ object frmTestData: TfrmTestData
     SortID = 0
     SubLanguageID = 1
     LocaleID = 1024
-    Left = 384
-    Top = 440
+    DefaultFormat = kbmCSVStreamFormat2
+    CommaTextFormat = kbmCSVStreamFormat2
+    PersistentFormat = kbmCSVStreamFormat2
+    AllDataFormat = kbmCSVStreamFormat2
+    FormFormat = kbmCSVStreamFormat2
+    Left = 104
+    Top = 200
   end
   object mMemosDS: TDataSource
     DataSet = mMemos
-    Left = 440
-    Top = 448
+    Left = 608
+    Top = 64
   end
   object mParticipants: TkbmMemTable
     Active = True
@@ -2792,13 +3217,13 @@ object frmTestData: TfrmTestData
     SortID = 0
     SubLanguageID = 1
     LocaleID = 1024
-    Left = 528
-    Top = 296
+    Left = 128
+    Top = 152
   end
   object mParticipantsDS: TDataSource
     DataSet = mParticipants
-    Left = 600
-    Top = 296
+    Left = 672
+    Top = 8
   end
   object mBookingSaleLines: TkbmMemTable
     Active = True
@@ -2948,18 +3373,18 @@ object frmTestData: TfrmTestData
     SortID = 0
     SubLanguageID = 1
     LocaleID = 1024
-    Left = 520
-    Top = 392
+    Left = 40
+    Top = 296
   end
   object mBookingSaleLinesDS: TDataSource
     DataSet = mBookingSaleLines
-    Left = 616
-    Top = 392
+    Left = 600
+    Top = 65528
   end
   object mBookingsDS: TDataSource
     DataSet = mBookings
-    Left = 360
-    Top = 152
+    Left = 728
+    Top = 65528
   end
   object mBookings: TkbmMemTable
     Active = True
@@ -3076,6 +3501,11 @@ object frmTestData: TfrmTestData
         Name = 'exchange'
         DataType = ftWideString
         Size = 100
+      end
+      item
+        Name = 'err'
+        DataType = ftString
+        Size = 200
       end>
     IndexDefs = <>
     SortOptions = []
@@ -3089,8 +3519,8 @@ object frmTestData: TfrmTestData
     SortID = 0
     SubLanguageID = 1
     LocaleID = 1024
-    Left = 440
-    Top = 152
+    Left = 40
+    Top = 144
   end
   object mResourceBookings: TkbmMemTable
     Active = True
@@ -3145,13 +3575,13 @@ object frmTestData: TfrmTestData
     SortID = 0
     SubLanguageID = 1
     LocaleID = 1024
-    Left = 360
-    Top = 224
+    Left = 40
+    Top = 248
   end
   object mResourceBookingsDS: TDataSource
     DataSet = mResourceBookings
-    Left = 464
-    Top = 224
+    Left = 952
+    Top = 16
   end
   object mAllocations: TkbmMemTable
     Active = True
@@ -3206,13 +3636,13 @@ object frmTestData: TfrmTestData
     SortID = 0
     SubLanguageID = 1
     LocaleID = 1024
-    Left = 336
-    Top = 304
+    Left = 40
+    Top = 200
   end
   object mAllocationsDS: TDataSource
     DataSet = mAllocations
-    Left = 416
-    Top = 304
+    Left = 864
+    Top = 8
   end
   object mPrices: TkbmMemTable
     Active = True
@@ -3262,12 +3692,241 @@ object frmTestData: TfrmTestData
     SortID = 0
     SubLanguageID = 1
     LocaleID = 1024
-    Left = 328
-    Top = 368
+    Left = 280
+    Top = 152
   end
   object mPricesDS: TDataSource
     DataSet = mPrices
-    Left = 408
-    Top = 368
+    Left = 360
+    Top = 336
+  end
+  object mRooms: TkbmMemTable
+    Active = True
+    DesignActivation = True
+    AttachedAutoRefresh = True
+    AttachMaxCount = 1
+    FieldDefs = <
+      item
+        Name = 'Room'
+        DataType = ftString
+        Size = 8
+      end
+      item
+        Name = 'Description'
+        DataType = ftWideString
+        Size = 30
+      end
+      item
+        Name = 'RoomType'
+        DataType = ftString
+        Size = 10
+      end
+      item
+        Name = 'impRoom'
+        DataType = ftString
+        Size = 40
+      end
+      item
+        Name = 'impRoomType'
+        DataType = ftString
+        Size = 40
+      end>
+    IndexDefs = <>
+    SortOptions = []
+    PersistentBackup = False
+    ProgressFlags = [mtpcLoad, mtpcSave, mtpcCopy]
+    LoadedCompletely = False
+    SavedCompletely = False
+    FilterOptions = []
+    Version = '7.62.00 Standard Edition'
+    LanguageID = 0
+    SortID = 0
+    SubLanguageID = 1
+    LocaleID = 1024
+    DefaultFormat = kbmCSVStreamFormat2
+    CommaTextFormat = kbmCSVStreamFormat2
+    PersistentFormat = kbmCSVStreamFormat2
+    AllDataFormat = kbmCSVStreamFormat2
+    FormFormat = kbmCSVStreamFormat2
+    Left = 216
+    Top = 152
+  end
+  object mRoomsDS: TDataSource
+    DataSet = mRooms
+    Left = 992
+    Top = 8
+  end
+  object kbmCSVStreamFormat2: TkbmCSVStreamFormat
+    CommentChar = #0
+    EscapeChar = '%'
+    DefaultStringFieldSize = 255
+    CSVQuote = '"'
+    CSVFieldDelimiter = ';'
+    CSVRecordDelimiter = ';'
+    CSVTrueString = 'True'
+    CSVFalseString = 'False'
+    sfLocalFormat = []
+    sfQuoteOnlyStrings = []
+    sfNoHeader = []
+    Version = '3.10'
+    sfData = [sfSaveData, sfLoadData]
+    sfCalculated = []
+    sfLookup = []
+    sfNonVisible = [sfSaveNonVisible, sfLoadNonVisible]
+    sfBlobs = [sfSaveBlobs, sfLoadBlobs]
+    sfDef = [sfSaveDef, sfLoadDef]
+    sfIndexDef = [sfSaveIndexDef, sfLoadIndexDef]
+    sfPlaceHolders = []
+    sfFiltered = [sfSaveFiltered]
+    sfIgnoreRange = [sfSaveIgnoreRange]
+    sfIgnoreMasterDetail = [sfSaveIgnoreMasterDetail]
+    sfDeltas = []
+    sfDontFilterDeltas = []
+    sfAppend = []
+    sfFieldKind = [sfSaveFieldKind]
+    sfFromStart = [sfLoadFromStart]
+    sfDisplayWidth = []
+    sfAutoInc = []
+    Left = 800
+  end
+  object mCustomers: TkbmMemTable
+    Active = True
+    DesignActivation = True
+    AttachedAutoRefresh = True
+    AttachMaxCount = 1
+    FieldDefs = <
+      item
+        Name = 'Numer'
+        DataType = ftWideString
+        Size = 100
+      end
+      item
+        Name = 'Heiti'
+        DataType = ftWideString
+        Size = 100
+      end
+      item
+        Name = 'Heimili'
+        DataType = ftWideString
+        Size = 100
+      end
+      item
+        Name = 'Postnumer'
+        DataType = ftWideString
+        Size = 100
+      end
+      item
+        Name = 'stadur'
+        DataType = ftWideString
+        Size = 100
+      end
+      item
+        Name = 'Land'
+        DataType = ftWideString
+        Size = 100
+      end
+      item
+        Name = 'Kennitala'
+        DataType = ftWideString
+        Size = 100
+      end
+      item
+        Name = 'Flokkur'
+        DataType = ftWideString
+        Size = 100
+      end
+      item
+        Name = 'simi'
+        DataType = ftWideString
+        Size = 100
+      end
+      item
+        Name = 'Greidslumati'
+        DataType = ftWideString
+        Size = 100
+      end
+      item
+        Name = 'netfang'
+        DataType = ftWideString
+        Size = 100
+      end
+      item
+        Name = 'Id'
+        DataType = ftInteger
+      end>
+    IndexDefs = <>
+    SortOptions = []
+    PersistentBackup = False
+    ProgressFlags = [mtpcLoad, mtpcSave, mtpcCopy]
+    LoadedCompletely = False
+    SavedCompletely = False
+    FilterOptions = []
+    Version = '7.62.00 Standard Edition'
+    LanguageID = 0
+    SortID = 0
+    SubLanguageID = 1
+    LocaleID = 1024
+    DefaultFormat = kbmCSVStreamFormat2
+    CommaTextFormat = kbmCSVStreamFormat2
+    PersistentFormat = kbmCSVStreamFormat2
+    AllDataFormat = kbmCSVStreamFormat2
+    FormFormat = kbmCSVStreamFormat2
+    Left = 176
+    Top = 208
+  end
+  object mCustomersDS: TDataSource
+    DataSet = mCustomers
+    Left = 112
+    Top = 424
+  end
+  object mVorur: TkbmMemTable
+    Active = True
+    DesignActivation = True
+    AttachedAutoRefresh = True
+    AttachMaxCount = 1
+    FieldDefs = <
+      item
+        Name = 'vorunumer'
+        DataType = ftWideString
+        Size = 100
+      end
+      item
+        Name = 'vorulysing'
+        DataType = ftWideString
+        Size = 100
+      end
+      item
+        Name = 'verdmvsk'
+        DataType = ftWideString
+        Size = 100
+      end
+      item
+        Name = 'vorufl'
+        DataType = ftWideString
+        Size = 100
+      end
+      item
+        Name = 'id'
+        DataType = ftInteger
+      end>
+    IndexDefs = <>
+    SortOptions = []
+    PersistentBackup = False
+    ProgressFlags = [mtpcLoad, mtpcSave, mtpcCopy]
+    LoadedCompletely = False
+    SavedCompletely = False
+    FilterOptions = []
+    Version = '7.62.00 Standard Edition'
+    LanguageID = 0
+    SortID = 0
+    SubLanguageID = 1
+    LocaleID = 1024
+    Left = 240
+    Top = 544
+  end
+  object mVorurDS: TDataSource
+    DataSet = mVorur
+    Left = 288
+    Top = 544
   end
 end
