@@ -334,6 +334,7 @@ uses
   , uSqlDefinitions
   , PrjConst
   , uDImages
+  , uUtils
   , uMain;
 {$R *.dfm}
 
@@ -949,6 +950,7 @@ procedure TfrmNationalReport3.FormCreate(Sender : TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
   glb.PerformAuthenticationAssertion(self);
+  PlaceFormOnVisibleMonitor(self);
 
   glb.fillListWithMonthsLong(cbxMonth.Items, 1);
   glb.fillListWithYears(cbxYear.Items, 1, False);

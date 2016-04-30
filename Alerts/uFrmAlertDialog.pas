@@ -34,7 +34,7 @@ implementation
 
 {$R *.dfm}
 
-uses uRoomerLanguage, uAppGlobal;
+uses uRoomerLanguage, uAppGlobal, uUtils;
 
 procedure ShowAlert(Alert : TAlert);
 var _FrmAlertDialog: TFrmAlertDialog;
@@ -52,6 +52,7 @@ procedure TFrmAlertDialog.FormCreate(Sender: TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
   glb.PerformAuthenticationAssertion(self);
+  PlaceFormOnVisibleMonitor(self);
 end;
 
 procedure TFrmAlertDialog.SetAlert(const Value: TAlert);

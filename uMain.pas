@@ -1720,7 +1720,7 @@ begin
   OpenAppSettings;
   g.RefreshRoomList;
   // ******
-  glb.PerformAuthenticationAssertion(self);
+  glb.PerformAuthenticationAssertion(self); PlaceFormOnVisibleMonitor(self);
 
   if (NOT OffLineMode) then
     d.BackupsSubmitChanges;

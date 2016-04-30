@@ -172,6 +172,7 @@ uses
   , objNewReservation
   , uDateUtils
   , uRoomerDefinitions
+  , uUtils
 
   ;
 
@@ -701,7 +702,8 @@ procedure TfrmChangeRRdates.FormCreate(Sender: TObject);
 begin
   zFirstTime := true;
   RoomerLanguage.TranslateThisForm(self);
-     glb.PerformAuthenticationAssertion(self);
+  glb.PerformAuthenticationAssertion(self);
+  PlaceFormOnVisibleMonitor(self);
   //**
   zCalcPrice := false;
 end;

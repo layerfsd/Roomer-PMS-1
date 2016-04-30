@@ -119,15 +119,11 @@ object frmKeyPairSelector: TfrmKeyPairSelector
       TabOrder = 0
       OnChange = edtFilterChange
       SkinData.SkinSection = 'EDIT'
-      BoundLabel.Indent = 0
       BoundLabel.Font.Charset = DEFAULT_CHARSET
       BoundLabel.Font.Color = clWindowText
       BoundLabel.Font.Height = -13
       BoundLabel.Font.Name = 'Tahoma'
       BoundLabel.Font.Style = []
-      BoundLabel.Layout = sclLeft
-      BoundLabel.MaxWidth = 0
-      BoundLabel.UseSkinColor = True
     end
     object __btnClear: TsButton
       Left = 336
@@ -153,15 +149,11 @@ object frmKeyPairSelector: TfrmKeyPairSelector
     Margins.Top = 2
     Margins.Right = 2
     Margins.Bottom = 2
-    BoundLabel.Indent = 0
     BoundLabel.Font.Charset = DEFAULT_CHARSET
     BoundLabel.Font.Color = clWindowText
     BoundLabel.Font.Height = -13
     BoundLabel.Font.Name = 'Tahoma'
     BoundLabel.Font.Style = []
-    BoundLabel.Layout = sclLeft
-    BoundLabel.MaxWidth = 0
-    BoundLabel.UseSkinColor = True
     SkinData.SkinSection = 'EDIT'
     Align = alClient
     BorderStyle = bsNone

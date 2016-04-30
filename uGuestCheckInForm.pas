@@ -544,7 +544,7 @@ end;
 procedure TFrmGuestCheckInForm.FormCreate(Sender: TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
-  glb.PerformAuthenticationAssertion(self);
+  glb.PerformAuthenticationAssertion(self); PlaceFormOnVisibleMonitor(self);
 
   RoomReservationList := '';
   Prepare;

@@ -83,6 +83,7 @@ uses
   uG,
   _Glob,
   CompProd
+  , uUtils
   ;
 
 {$R *.dfm}
@@ -229,7 +230,8 @@ end;
 procedure TfrmRoomCleanMaintenanceStatus.FormCreate(Sender: TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
-     glb.PerformAuthenticationAssertion(self);
+  glb.PerformAuthenticationAssertion(self);
+  PlaceFormOnVisibleMonitor(self);
   pnlCleaningNotes.Height := 29;
   pnlMaintenanceNotes.Height := 29;
   pnlLostAndFound.Height := 29;

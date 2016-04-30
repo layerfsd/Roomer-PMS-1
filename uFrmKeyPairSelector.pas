@@ -44,6 +44,8 @@ implementation
 
 {$R *.dfm}
 
+uses uUtils;
+
 function selectFromKeyValuePairs(sCaption, sDefault : String; list : TKeyPairList) : TKeyAndValue;
 var cursorWas : SmallInt;
 begin
@@ -110,6 +112,7 @@ procedure TfrmKeyPairSelector.FormCreate(Sender: TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
      glb.PerformAuthenticationAssertion(self);
+  PlaceFormOnVisibleMonitor(self);
 end;
 
 procedure TfrmKeyPairSelector.lvListColumnClick(Sender: TObject; Column: TListColumn);

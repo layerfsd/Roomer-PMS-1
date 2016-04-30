@@ -87,7 +87,7 @@ uses
   , cmpRoomerDataSet
   , cmpRoomerConnection, dxSkinsCore, dxSkinDarkSide, dxSkinDevExpressDarkStyle, dxSkinMcSkin, dxSkinOffice2013White,
   dxSkinsDefaultPainters, dxSkinscxPCPainter, cxSpinEdit, dxSkinsdxBarPainter, dxSkinsdxRibbonPainter, cxPropertiesStore, dxmdaset,
-  dxPScxPivotGridLnk
+  dxPScxPivotGridLnk, dxSkinCaramel, dxSkinCoffee, dxSkinTheAsphaltWorld
 
 
   ;
@@ -207,6 +207,7 @@ uses
   , prjConst
   , uSqlDefinitions
   , uDImages
+  , uUtils
   ;
 
 
@@ -365,7 +366,8 @@ end;
 procedure TfrmStaffTypes2.FormCreate(Sender: TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
-     glb.PerformAuthenticationAssertion(self);
+  glb.PerformAuthenticationAssertion(self);
+  PlaceFormOnVisibleMonitor(self);
   //**
   zFirstTime  := true;
   zAct        := actNone;

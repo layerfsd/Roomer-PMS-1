@@ -104,6 +104,7 @@ implementation
 
 uses
   uD,
+  uUtils,
   uRoomerLanguage,
   PrjConst,
   uDimages
@@ -121,7 +122,8 @@ end;
 procedure TfrmCancelReservation2.FormCreate(Sender : TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
-     glb.PerformAuthenticationAssertion(self);
+  glb.PerformAuthenticationAssertion(self);
+  PlaceFormOnVisibleMonitor(self);
   zRoomReservation := 0;
   zReason          := '';
   zInformation     := '';

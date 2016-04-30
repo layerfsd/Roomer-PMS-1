@@ -47,7 +47,7 @@ implementation
 
 {$R *.dfm}
 
-uses uRoomerLanguage, uAppGlobal;
+uses uRoomerLanguage, uAppGlobal, uUtils;
 
 procedure ViewEmailMessage(filename : String);
 var
@@ -68,6 +68,7 @@ procedure TFrmMessageViewer.FormCreate(Sender: TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
   glb.PerformAuthenticationAssertion(self);
+  PlaceFormOnVisibleMonitor(self);
 end;
 
 function TFrmMessageViewer.GetListAsString(List: TIdEmailAddressList): String;

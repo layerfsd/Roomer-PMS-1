@@ -688,7 +688,7 @@ end;
 procedure TfrmRptCashier.FormCreate(Sender: TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
-  glb.PerformAuthenticationAssertion(self);
+  glb.PerformAuthenticationAssertion(self); PlaceFormOnVisibleMonitor(self);
   bookingDataSet := CreateNewDataset;
 
   grReport.RowCount := 1;

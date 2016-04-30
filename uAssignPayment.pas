@@ -130,6 +130,7 @@ uses
   uD,
   uActivityLogs,
   uRoomerLanguage
+  , uUtils
   ;
 
 
@@ -166,7 +167,8 @@ end;
 procedure TfrmAssignPayment.FormCreate(Sender: TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
-     glb.PerformAuthenticationAssertion(self);
+  glb.PerformAuthenticationAssertion(self);
+  PlaceFormOnVisibleMonitor(self);
 end;
 
 procedure TfrmAssignPayment.FormDestroy(Sender: TObject);

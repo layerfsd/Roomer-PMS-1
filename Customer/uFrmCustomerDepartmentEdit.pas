@@ -55,7 +55,7 @@ implementation
 
 {$R *.dfm}
 
-uses uRoomerLanguage, uAppGlobal;
+uses uRoomerLanguage, uAppGlobal, uUtils;
 
 function EditCustomerDepartment(CustomerDepartment : TCustomerDepartment) : Boolean;
 var _FrmCustomerDepartmentEdit: TFrmCustomerDepartmentEdit;
@@ -81,6 +81,7 @@ procedure TFrmCustomerDepartmentEdit.FormCreate(Sender: TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
   glb.PerformAuthenticationAssertion(self);
+  PlaceFormOnVisibleMonitor(self);
 end;
 
 procedure TFrmCustomerDepartmentEdit.GetCustomerDepartment;

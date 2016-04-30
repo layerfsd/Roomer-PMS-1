@@ -324,6 +324,7 @@ uses
   , uRoomerDefinitions
   , uCountries
   , uAlerts
+  , uUtils
   ;
 
 {$R *.dfm}
@@ -564,6 +565,7 @@ begin
 
   RoomerLanguage.TranslateThisForm(self);
   glb.PerformAuthenticationAssertion(self);
+  PlaceFormOnVisibleMonitor(self);
   zFirstTime  := true;
   zAct        := actNone;
 //  D.LoadTcxGridColumnOrder(self, grData);

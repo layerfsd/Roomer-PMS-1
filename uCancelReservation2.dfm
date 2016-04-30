@@ -48,8 +48,8 @@ object frmCancelReservation2: TfrmCancelReservation2
       Width = 549
       object memReason: TcxMemo
         AlignWithMargins = True
-        Left = 9
-        Top = 22
+        Left = 8
+        Top = 24
         Margins.Left = 6
         Margins.Top = 6
         Margins.Right = 6
@@ -63,8 +63,12 @@ object frmCancelReservation2: TfrmCancelReservation2
         StyleFocused.LookAndFeel.NativeStyle = False
         StyleHot.LookAndFeel.NativeStyle = False
         TabOrder = 0
-        Height = 142
-        Width = 531
+        ExplicitLeft = 9
+        ExplicitTop = 22
+        ExplicitWidth = 531
+        ExplicitHeight = 142
+        Height = 144
+        Width = 533
       end
     end
     object cxGroupBox2: TcxGroupBox
@@ -85,7 +89,7 @@ object frmCancelReservation2: TfrmCancelReservation2
       TabOrder = 1
       DesignSize = (
         549
-        42)
+        45)
       Height = 45
       Width = 549
       object cbxReason: TcxComboBox

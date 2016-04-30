@@ -196,7 +196,7 @@ end;
 procedure TFrmResources.FormCreate(Sender: TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
-  glb.PerformAuthenticationAssertion(self);
+  glb.PerformAuthenticationAssertion(self); PlaceFormOnVisibleMonitor(self);
   embedded := False;
   CollectionOfOpenedFiles := TStringList.Create;
 end;

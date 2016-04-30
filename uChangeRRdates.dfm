@@ -73,6 +73,7 @@ object frmChangeRRdates: TfrmChangeRRdates
       Caption = 'Next Reservation'
       TabOrder = 0
       SkinData.SkinSection = 'GROUPBOX'
+      Checked = False
       object labNextName: TsLabel
         Left = 8
         Top = 20
@@ -202,6 +203,7 @@ object frmChangeRRdates: TfrmChangeRRdates
       Caption = 'Previous reservation'
       TabOrder = 1
       SkinData.SkinSection = 'GROUPBOX'
+      Checked = False
       object labLastName: TsLabel
         Left = 8
         Top = 20
@@ -334,6 +336,7 @@ object frmChangeRRdates: TfrmChangeRRdates
       Caption = 'Change dates'
       TabOrder = 0
       SkinData.SkinSection = 'GROUPBOX'
+      Checked = False
       DesignSize = (
         299
         147)
@@ -444,17 +447,9 @@ object frmChangeRRdates: TfrmChangeRRdates
         MaxLength = 10
         ParentFont = False
         TabOrder = 1
-        Text = '  .  .    '
+        Text = '  -  -    '
         OnChange = dtArrivalChange
-        BoundLabel.Indent = 0
-        BoundLabel.Font.Charset = DEFAULT_CHARSET
-        BoundLabel.Font.Color = clWindowText
-        BoundLabel.Font.Height = -11
-        BoundLabel.Font.Name = 'Tahoma'
-        BoundLabel.Font.Style = []
-        BoundLabel.Layout = sclLeft
-        BoundLabel.MaxWidth = 0
-        BoundLabel.UseSkinColor = True
+        CheckOnExit = True
         SkinData.SkinSection = 'EDIT'
         GlyphMode.Blend = 0
         GlyphMode.Grayed = False
@@ -475,18 +470,10 @@ object frmChangeRRdates: TfrmChangeRRdates
         MaxLength = 10
         ParentFont = False
         TabOrder = 2
-        Text = '  .  .    '
+        Text = '  -  -    '
         OnChange = dtDepartureChange
         OnDblClick = dtDepartureDblClick
-        BoundLabel.Indent = 0
-        BoundLabel.Font.Charset = DEFAULT_CHARSET
-        BoundLabel.Font.Color = clWindowText
-        BoundLabel.Font.Height = -11
-        BoundLabel.Font.Name = 'Tahoma'
-        BoundLabel.Font.Style = []
-        BoundLabel.Layout = sclLeft
-        BoundLabel.MaxWidth = 0
-        BoundLabel.UseSkinColor = True
+        CheckOnExit = True
         SkinData.SkinSection = 'EDIT'
         GlyphMode.Blend = 0
         GlyphMode.Grayed = False
@@ -498,7 +485,7 @@ object frmChangeRRdates: TfrmChangeRRdates
         Height = 21
         Color = clWhite
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 2302755
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -507,15 +494,6 @@ object frmChangeRRdates: TfrmChangeRRdates
         Text = '1'
         OnChange = edNightCountChange
         SkinData.SkinSection = 'EDIT'
-        BoundLabel.Indent = 0
-        BoundLabel.Font.Charset = DEFAULT_CHARSET
-        BoundLabel.Font.Color = clWindowText
-        BoundLabel.Font.Height = -11
-        BoundLabel.Font.Name = 'Tahoma'
-        BoundLabel.Font.Style = []
-        BoundLabel.Layout = sclLeft
-        BoundLabel.MaxWidth = 0
-        BoundLabel.UseSkinColor = True
         MaxValue = 1000
         MinValue = 1
         Value = 1
@@ -529,6 +507,7 @@ object frmChangeRRdates: TfrmChangeRRdates
       Caption = '.. or split reservation in two'
       TabOrder = 1
       SkinData.SkinSection = 'GROUPBOX'
+      Checked = False
       DesignSize = (
         299
         147)
@@ -604,17 +583,9 @@ object frmChangeRRdates: TfrmChangeRRdates
         MaxLength = 10
         ParentFont = False
         TabOrder = 1
-        Text = '  .  .    '
+        Text = '  -  -    '
         OnChange = dtSplitAtChange
-        BoundLabel.Indent = 0
-        BoundLabel.Font.Charset = DEFAULT_CHARSET
-        BoundLabel.Font.Color = clWindowText
-        BoundLabel.Font.Height = -11
-        BoundLabel.Font.Name = 'Tahoma'
-        BoundLabel.Font.Style = []
-        BoundLabel.Layout = sclLeft
-        BoundLabel.MaxWidth = 0
-        BoundLabel.UseSkinColor = True
+        CheckOnExit = True
         SkinData.SkinSection = 'EDIT'
         GlyphMode.Blend = 0
         GlyphMode.Grayed = False

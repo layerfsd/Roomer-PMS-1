@@ -272,7 +272,7 @@ end;
 procedure TfrmResMemos.FormCreate(Sender : TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
-     glb.PerformAuthenticationAssertion(self);
+     glb.PerformAuthenticationAssertion(self); PlaceFormOnVisibleMonitor(self);
   // **
   memInformation.DataField := 'Information';
   memPMInfo.DataField := 'PMInfo';

@@ -1012,7 +1012,7 @@ end;
 procedure TfrmAllotmentToRes.FormCreate(Sender: TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
-     glb.PerformAuthenticationAssertion(self);
+     glb.PerformAuthenticationAssertion(self); PlaceFormOnVisibleMonitor(self);
   //**
   zReservation := 0;
   zFirstDate := 2;

@@ -95,7 +95,7 @@ object frmMain: TfrmMain
       Top = 173
       Width = 778
       Height = 304
-      ActivePage = tabOneDayView
+      ActivePage = tabRateQuery
       Align = alClient
       TabOrder = 3
       OnChange = pageMainGridsChange

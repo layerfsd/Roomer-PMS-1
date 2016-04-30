@@ -252,6 +252,7 @@ uses
   , uMain
   , uSqlDefinitions
   , uD
+  , uUtils
   , uFileDependencyManager
   , uAppGlobal
   , uDImages
@@ -719,6 +720,7 @@ procedure TfrmFinishedInvoices2.FormCreate(Sender: TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
   glb.PerformAuthenticationAssertion(self);
+  PlaceFormOnVisibleMonitor(self);
 
   zForeign := false;
   zStartPrinting    := false;

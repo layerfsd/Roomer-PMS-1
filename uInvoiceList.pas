@@ -372,7 +372,7 @@ end;
 procedure TfrmInvoiceList.FormCreate(Sender: TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
-   glb.PerformAuthenticationAssertion(self);
+   glb.PerformAuthenticationAssertion(self); PlaceFormOnVisibleMonitor(self);
   // --
   dtFrom.date := trunc( now )-3;
   dtTo.date := trunc( now );

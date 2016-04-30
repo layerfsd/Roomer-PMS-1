@@ -152,6 +152,7 @@ uses
   , uStaffTypes2
   , PrjConst
   , uRoomerLanguage
+  , uUtils
   , uDImages;
 
 
@@ -213,6 +214,7 @@ procedure TfrmStaffEdit2.FormCreate(Sender: TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
   glb.PerformAuthenticationAssertion(self);
+  PlaceFormOnVisibleMonitor(self);
 end;
 
 procedure TfrmStaffEdit2.FormShow(Sender: TObject);

@@ -50,7 +50,7 @@ implementation
 
 {$R *.dfm}
 
-uses uD, uRoomerLanguage, uAppGlobal;
+uses uD, uRoomerLanguage, uAppGlobal, uUtils;
 
 procedure MergeGuestPortfolios(Data : TRoomerDataset; id1, id2 : Integer);
 var _frmMergePortfolios: TfrmMergePortfolios;
@@ -126,6 +126,7 @@ procedure TfrmMergePortfolios.FormCreate(Sender: TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
   glb.PerformAuthenticationAssertion(self);
+  PlaceFormOnVisibleMonitor(self);
 end;
 
 procedure TfrmMergePortfolios.pgPages2Change(Sender: TObject);

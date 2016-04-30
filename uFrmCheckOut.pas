@@ -85,7 +85,7 @@ implementation
 
 {$R *.dfm}
 
-uses _Glob, uD, PrjConst, uInvoice, uRoomerLanguage, uAppGlobal;
+uses _Glob, uD, PrjConst, uInvoice, uRoomerLanguage, uAppGlobal, uUtils;
 
 procedure CheckoutGuest(Reservation, RoomReservation: Integer; RoomNumber: String);
 var
@@ -150,6 +150,7 @@ procedure TFrmCheckOut.FormCreate(Sender: TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
   glb.PerformAuthenticationAssertion(self);
+  PlaceFormOnVisibleMonitor(self);
 end;
 
 procedure TFrmCheckOut.prepareInvoice;

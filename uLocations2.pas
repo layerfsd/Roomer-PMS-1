@@ -210,6 +210,7 @@ uses
   , prjConst
   , uSqlDefinitions
   , uChannelManager
+  , uUtils
   ;
 
 
@@ -365,7 +366,8 @@ end;
 procedure TfrmLocations.FormCreate(Sender: TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
-     glb.PerformAuthenticationAssertion(self);
+  glb.PerformAuthenticationAssertion(self);
+  PlaceFormOnVisibleMonitor(self);
   //**
   zFirstTime  := true;
   zAct        := actNone;

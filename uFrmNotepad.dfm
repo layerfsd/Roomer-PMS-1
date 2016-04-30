@@ -80,18 +80,12 @@ object FrmNotepad: TFrmNotepad
     ParentFont = False
     ScrollBars = ssVertical
     TabOrder = 1
-    BoundLabel.Indent = 0
     BoundLabel.Font.Charset = DEFAULT_CHARSET
     BoundLabel.Font.Color = clWindowText
     BoundLabel.Font.Height = -13
     BoundLabel.Font.Name = 'Tahoma'
     BoundLabel.Font.Style = []
-    BoundLabel.Layout = sclLeft
-    BoundLabel.MaxWidth = 0
-    BoundLabel.UseSkinColor = True
     SkinData.SkinSection = 'EDIT'
-    ExplicitWidth = 440
-    ExplicitHeight = 350
   end
   object FormStore: TcxPropertiesStore
     Components = <

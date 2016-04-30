@@ -55,7 +55,7 @@ implementation
 
 {$R *.dfm}
 
-uses uItems2, hData, uG, uD, uRoomerLanguage, uAppGlobal;
+uses uItems2, hData, uG, uD, uRoomerLanguage, uAppGlobal, uUtils;
 
 function EditInvoiceItem(_InvoiceLine : TInvoiceLine) : Boolean;
 var _FrmInvoiceLineEdit: TFrmInvoiceLineEdit;
@@ -116,6 +116,7 @@ procedure TFrmInvoiceLineEdit.FormCreate(Sender: TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
   glb.PerformAuthenticationAssertion(self);
+  PlaceFormOnVisibleMonitor(self);
   InvoiceLine := TInvoiceLine.Create;
 end;
 

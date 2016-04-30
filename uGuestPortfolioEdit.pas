@@ -319,7 +319,8 @@ implementation
 {$R *.dfm}
 
 uses uRoomerLanguage,
-     PrjConst,
+     PrjConst
+     , uUtils,
      hData,
      uAppGlobal,
      uD,
@@ -1009,6 +1010,7 @@ procedure TfrmGuestPortfolio.FormCreate(Sender: TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
   glb.PerformAuthenticationAssertion(self);
+  PlaceFormOnVisibleMonitor(self);
   pgPages.ActivePageIndex := 0;
   ShowBackForthButtons := True;
 

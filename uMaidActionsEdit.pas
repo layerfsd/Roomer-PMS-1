@@ -66,6 +66,7 @@ implementation
 uses uD
   , uAppGlobal
   , PrjConst
+  , uUtils
   ;
 
 {$R *.dfm}
@@ -80,7 +81,8 @@ end;
 procedure TfrmMaidActionsEdit.FormCreate(Sender: TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
-   glb.PerformAuthenticationAssertion(self);
+  glb.PerformAuthenticationAssertion(self);
+  PlaceFormOnVisibleMonitor(self);
   //**
   zAct  := ActNone;
   zCode := '';

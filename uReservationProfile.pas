@@ -829,6 +829,7 @@ begin
   RoomerLanguage.TranslateThisForm(self);
   glb.PerformAuthenticationAssertion(self);
   PlaceFormOnVisibleMonitor(self);
+
   //
   FOutOfOrderBlocking := False;
   mainPage.ActivePage := RoomsTab;

@@ -67,8 +67,8 @@ object frmPayGroups: TfrmPayGroups
       Caption = 'Clear'
       OnClick = btnClearClick
       SkinData.SkinSection = 'SPEEDBUTTON'
-      ImageIndex = 10
       Images = DImages.PngImageList1
+      ImageIndex = 10
     end
     object btnDelete: TsButton
       Left = 181
@@ -147,15 +147,6 @@ object frmPayGroups: TfrmPayGroups
       TabOrder = 4
       OnChange = edFilterChange
       SkinData.SkinSection = 'EDIT'
-      BoundLabel.Indent = 0
-      BoundLabel.Font.Charset = DEFAULT_CHARSET
-      BoundLabel.Font.Color = clWindowText
-      BoundLabel.Font.Height = -11
-      BoundLabel.Font.Name = 'Tahoma'
-      BoundLabel.Font.Style = []
-      BoundLabel.Layout = sclLeft
-      BoundLabel.MaxWidth = 0
-      BoundLabel.UseSkinColor = True
     end
     object chkActive: TsCheckBox
       Left = 57
@@ -383,7 +374,6 @@ object frmPayGroups: TfrmPayGroups
     object prLink_grData: TdxGridReportLink
       Active = True
       Component = grData
-      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.GrayShading = True
@@ -396,8 +386,7 @@ object frmPayGroups: TfrmPayGroups
       PrinterPage.PageSize.Y = 297000
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
-      ReportDocument.CreationDate = 42067.266066956020000000
-      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
+      ReportDocument.CreationDate = 42490.530013368060000000
       BuiltInReportLink = True
     end
   end

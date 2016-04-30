@@ -2261,7 +2261,7 @@ var
   ExecutionPlan : TRoomerExecutionPlan;
 begin
   RoomerLanguage.TranslateThisForm(self);
-  glb.PerformAuthenticationAssertion(self);
+  glb.PerformAuthenticationAssertion(self); PlaceFormOnVisibleMonitor(self);
 
   glb.fillListWithMonthsLong(__cbxSpringStartsMonth.Items, 0);
   glb.fillListWithMonthsLong(__cbxsummerStartsMonth.Items, 0);

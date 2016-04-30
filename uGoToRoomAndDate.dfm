@@ -79,6 +79,7 @@ object frmGoToRoomandDate: TfrmGoToRoomandDate
     ParentFont = False
     TabOrder = 1
     SkinData.SkinSection = 'GROUPBOX'
+    Checked = False
     object labErr: TsLabel
       Left = 9
       Top = 46
@@ -106,15 +107,6 @@ object frmGoToRoomandDate: TfrmGoToRoomandDate
       ParentFont = False
       TabOrder = 0
       SkinData.SkinSection = 'EDIT'
-      BoundLabel.Indent = 0
-      BoundLabel.Font.Charset = DEFAULT_CHARSET
-      BoundLabel.Font.Color = clWindowText
-      BoundLabel.Font.Height = -11
-      BoundLabel.Font.Name = 'Tahoma'
-      BoundLabel.Font.Style = []
-      BoundLabel.Layout = sclLeft
-      BoundLabel.MaxWidth = 0
-      BoundLabel.UseSkinColor = True
     end
     object cbxRefrenceType: TsComboBox
       Left = 8
@@ -122,16 +114,8 @@ object frmGoToRoomandDate: TfrmGoToRoomandDate
       Width = 178
       Height = 21
       Alignment = taLeftJustify
-      BoundLabel.Indent = 0
-      BoundLabel.Font.Charset = DEFAULT_CHARSET
-      BoundLabel.Font.Color = clWindowText
-      BoundLabel.Font.Height = -11
-      BoundLabel.Font.Name = 'Tahoma'
-      BoundLabel.Font.Style = []
-      BoundLabel.Layout = sclLeft
-      BoundLabel.MaxWidth = 0
-      BoundLabel.UseSkinColor = True
       SkinData.SkinSection = 'COMBOBOX'
+      VerticalAlignment = taAlignTop
       Color = 3355443
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 15724527
@@ -163,6 +147,7 @@ object frmGoToRoomandDate: TfrmGoToRoomandDate
     ParentFont = False
     TabOrder = 2
     SkinData.SkinSection = 'GROUPBOX'
+    Checked = False
     object cxLabel1: TsLabel
       Left = 150
       Top = 18
@@ -205,15 +190,6 @@ object frmGoToRoomandDate: TfrmGoToRoomandDate
       ParentFont = False
       TabOrder = 0
       SkinData.SkinSection = 'EDIT'
-      BoundLabel.Indent = 0
-      BoundLabel.Font.Charset = DEFAULT_CHARSET
-      BoundLabel.Font.Color = clWindowText
-      BoundLabel.Font.Height = -11
-      BoundLabel.Font.Name = 'Tahoma'
-      BoundLabel.Font.Style = []
-      BoundLabel.Layout = sclLeft
-      BoundLabel.MaxWidth = 0
-      BoundLabel.UseSkinColor = True
     end
     object dtDate: TsDateEdit
       Left = 196
@@ -232,15 +208,7 @@ object frmGoToRoomandDate: TfrmGoToRoomandDate
       ParentFont = False
       TabOrder = 1
       Text = '  -  -    '
-      BoundLabel.Indent = 0
-      BoundLabel.Font.Charset = DEFAULT_CHARSET
-      BoundLabel.Font.Color = clWindowText
-      BoundLabel.Font.Height = -11
-      BoundLabel.Font.Name = 'Tahoma'
-      BoundLabel.Font.Style = []
-      BoundLabel.Layout = sclLeft
-      BoundLabel.MaxWidth = 0
-      BoundLabel.UseSkinColor = True
+      CheckOnExit = True
       SkinData.SkinSection = 'EDIT'
       GlyphMode.Blend = 0
       GlyphMode.Grayed = False

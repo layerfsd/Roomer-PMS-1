@@ -4701,7 +4701,7 @@ begin
   FInvoiceIndex := 0;
 
   RoomerLanguage.TranslateThisForm(self);
-  glb.PerformAuthenticationAssertion(self);
+  glb.PerformAuthenticationAssertion(self); PlaceFormOnVisibleMonitor(self);
   // _RestoreWinPos(g.qAppInifile, TForm(Self).name, TForm(Self));
 
   SelectableRooms := TList<TRoomInfo>.create;

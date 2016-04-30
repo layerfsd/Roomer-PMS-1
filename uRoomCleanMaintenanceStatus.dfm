@@ -113,15 +113,11 @@ object frmRoomCleanMaintenanceStatus: TfrmRoomCleanMaintenanceStatus
     SkinData.CustomColor = True
     SkinData.CustomFont = True
     SkinData.SkinSection = 'EDIT'
-    BoundLabel.Indent = 0
     BoundLabel.Font.Charset = DEFAULT_CHARSET
     BoundLabel.Font.Color = clWindowText
     BoundLabel.Font.Height = -13
     BoundLabel.Font.Name = 'Tahoma'
     BoundLabel.Font.Style = []
-    BoundLabel.Layout = sclLeft
-    BoundLabel.MaxWidth = 0
-    BoundLabel.UseSkinColor = True
   end
   object edtU: TsEdit
     Left = 11
@@ -142,15 +138,11 @@ object frmRoomCleanMaintenanceStatus: TfrmRoomCleanMaintenanceStatus
     SkinData.CustomColor = True
     SkinData.CustomFont = True
     SkinData.SkinSection = 'EDIT'
-    BoundLabel.Indent = 0
     BoundLabel.Font.Charset = DEFAULT_CHARSET
     BoundLabel.Font.Color = clWindowText
     BoundLabel.Font.Height = -13
     BoundLabel.Font.Name = 'Tahoma'
     BoundLabel.Font.Style = []
-    BoundLabel.Layout = sclLeft
-    BoundLabel.MaxWidth = 0
-    BoundLabel.UseSkinColor = True
   end
   object edtO: TsEdit
     Left = 11
@@ -171,15 +163,11 @@ object frmRoomCleanMaintenanceStatus: TfrmRoomCleanMaintenanceStatus
     SkinData.CustomColor = True
     SkinData.CustomFont = True
     SkinData.SkinSection = 'EDIT'
-    BoundLabel.Indent = 0
     BoundLabel.Font.Charset = DEFAULT_CHARSET
     BoundLabel.Font.Color = clWindowText
     BoundLabel.Font.Height = -13
     BoundLabel.Font.Name = 'Tahoma'
     BoundLabel.Font.Style = []
-    BoundLabel.Layout = sclLeft
-    BoundLabel.MaxWidth = 0
-    BoundLabel.UseSkinColor = True
   end
   object cbxS: TsRadioButton
     Left = 35
@@ -230,15 +218,11 @@ object frmRoomCleanMaintenanceStatus: TfrmRoomCleanMaintenanceStatus
     SkinData.CustomColor = True
     SkinData.CustomFont = True
     SkinData.SkinSection = 'EDIT'
-    BoundLabel.Indent = 0
     BoundLabel.Font.Charset = DEFAULT_CHARSET
     BoundLabel.Font.Color = clWindowText
     BoundLabel.Font.Height = -13
     BoundLabel.Font.Name = 'Tahoma'
     BoundLabel.Font.Style = []
-    BoundLabel.Layout = sclLeft
-    BoundLabel.MaxWidth = 0
-    BoundLabel.UseSkinColor = True
   end
   object edtF: TsEdit
     Left = 11
@@ -259,15 +243,11 @@ object frmRoomCleanMaintenanceStatus: TfrmRoomCleanMaintenanceStatus
     SkinData.CustomColor = True
     SkinData.CustomFont = True
     SkinData.SkinSection = 'EDIT'
-    BoundLabel.Indent = 0
     BoundLabel.Font.Charset = DEFAULT_CHARSET
     BoundLabel.Font.Color = clWindowText
     BoundLabel.Font.Height = -13
     BoundLabel.Font.Name = 'Tahoma'
     BoundLabel.Font.Style = []
-    BoundLabel.Layout = sclLeft
-    BoundLabel.MaxWidth = 0
-    BoundLabel.UseSkinColor = True
   end
   object edtW: TsEdit
     Left = 11
@@ -288,15 +268,11 @@ object frmRoomCleanMaintenanceStatus: TfrmRoomCleanMaintenanceStatus
     SkinData.CustomColor = True
     SkinData.CustomFont = True
     SkinData.SkinSection = 'EDIT'
-    BoundLabel.Indent = 0
     BoundLabel.Font.Charset = DEFAULT_CHARSET
     BoundLabel.Font.Color = clWindowText
     BoundLabel.Font.Height = -13
     BoundLabel.Font.Name = 'Tahoma'
     BoundLabel.Font.Style = []
-    BoundLabel.Layout = sclLeft
-    BoundLabel.MaxWidth = 0
-    BoundLabel.UseSkinColor = True
   end
   object cbxR: TsRadioButton
     Left = 35
@@ -337,15 +313,11 @@ object frmRoomCleanMaintenanceStatus: TfrmRoomCleanMaintenanceStatus
     SkinData.CustomColor = True
     SkinData.CustomFont = True
     SkinData.SkinSection = 'EDIT'
-    BoundLabel.Indent = 0
     BoundLabel.Font.Charset = DEFAULT_CHARSET
     BoundLabel.Font.Color = clWindowText
     BoundLabel.Font.Height = -13
     BoundLabel.Font.Name = 'Tahoma'
     BoundLabel.Font.Style = []
-    BoundLabel.Layout = sclLeft
-    BoundLabel.MaxWidth = 0
-    BoundLabel.UseSkinColor = True
   end
   object edtL: TsEdit
     Left = 11
@@ -366,15 +338,11 @@ object frmRoomCleanMaintenanceStatus: TfrmRoomCleanMaintenanceStatus
     SkinData.CustomColor = True
     SkinData.CustomFont = True
     SkinData.SkinSection = 'EDIT'
-    BoundLabel.Indent = 0
     BoundLabel.Font.Charset = DEFAULT_CHARSET
     BoundLabel.Font.Color = clWindowText
     BoundLabel.Font.Height = -13
     BoundLabel.Font.Name = 'Tahoma'
     BoundLabel.Font.Style = []
-    BoundLabel.Layout = sclLeft
-    BoundLabel.MaxWidth = 0
-    BoundLabel.UseSkinColor = True
   end
   object cbxD: TsRadioButton
     Left = 35
@@ -415,15 +383,11 @@ object frmRoomCleanMaintenanceStatus: TfrmRoomCleanMaintenanceStatus
     SkinData.CustomColor = True
     SkinData.CustomFont = True
     SkinData.SkinSection = 'EDIT'
-    BoundLabel.Indent = 0
     BoundLabel.Font.Charset = DEFAULT_CHARSET
     BoundLabel.Font.Color = clWindowText
     BoundLabel.Font.Height = -13
     BoundLabel.Font.Name = 'Tahoma'
     BoundLabel.Font.Style = []
-    BoundLabel.Layout = sclLeft
-    BoundLabel.MaxWidth = 0
-    BoundLabel.UseSkinColor = True
   end
   object edtM: TsEdit
     Left = 11
@@ -444,15 +408,11 @@ object frmRoomCleanMaintenanceStatus: TfrmRoomCleanMaintenanceStatus
     SkinData.CustomColor = True
     SkinData.CustomFont = True
     SkinData.SkinSection = 'EDIT'
-    BoundLabel.Indent = 0
     BoundLabel.Font.Charset = DEFAULT_CHARSET
     BoundLabel.Font.Color = clWindowText
     BoundLabel.Font.Height = -13
     BoundLabel.Font.Name = 'Tahoma'
     BoundLabel.Font.Style = []
-    BoundLabel.Layout = sclLeft
-    BoundLabel.MaxWidth = 0
-    BoundLabel.UseSkinColor = True
   end
   object sButton1: TsButton
     Left = 209
@@ -486,7 +446,7 @@ object frmRoomCleanMaintenanceStatus: TfrmRoomCleanMaintenanceStatus
       Left = 3
       Top = 3
       Width = 271
-      Height = 17
+      Height = 15
       Cursor = crHandPoint
       Margins.Left = 2
       Margins.Top = 2
@@ -505,8 +465,10 @@ object frmRoomCleanMaintenanceStatus: TfrmRoomCleanMaintenanceStatus
       Angle = 0
       Shadow.Color = clSilver
       Shadow.Distance = 2
-      Shadow.OffsetKeeper.LeftTop = -2
-      Shadow.OffsetKeeper.RightBottom = 4
+      Shadow.OffsetKeeper.LeftTop = -1
+      Shadow.OffsetKeeper.RightBottom = 3
+      ExplicitLeft = 4
+      ExplicitTop = 4
       ExplicitWidth = 269
     end
     object shpCleaningNotes: TShape
@@ -525,7 +487,7 @@ object frmRoomCleanMaintenanceStatus: TfrmRoomCleanMaintenanceStatus
     object mmoCleaningNotes: TsMemo
       AlignWithMargins = True
       Left = 3
-      Top = 24
+      Top = 22
       Width = 271
       Height = 32
       Margins.Left = 2
@@ -543,15 +505,11 @@ object frmRoomCleanMaintenanceStatus: TfrmRoomCleanMaintenanceStatus
       Font.Style = []
       ParentFont = False
       TabOrder = 0
-      BoundLabel.Indent = 0
       BoundLabel.Font.Charset = DEFAULT_CHARSET
       BoundLabel.Font.Color = clWindowText
       BoundLabel.Font.Height = -13
       BoundLabel.Font.Name = 'Tahoma'
       BoundLabel.Font.Style = []
-      BoundLabel.Layout = sclLeft
-      BoundLabel.MaxWidth = 0
-      BoundLabel.UseSkinColor = True
       SkinData.SkinSection = 'EDIT'
     end
     object pnlCleaningNotes_Button: TsPanel
@@ -602,7 +560,7 @@ object frmRoomCleanMaintenanceStatus: TfrmRoomCleanMaintenanceStatus
       Left = 3
       Top = 3
       Width = 271
-      Height = 17
+      Height = 15
       Cursor = crHandPoint
       Margins.Left = 2
       Margins.Top = 2
@@ -621,8 +579,10 @@ object frmRoomCleanMaintenanceStatus: TfrmRoomCleanMaintenanceStatus
       Angle = 0
       Shadow.Color = clSilver
       Shadow.Distance = 2
-      Shadow.OffsetKeeper.LeftTop = -2
-      Shadow.OffsetKeeper.RightBottom = 4
+      Shadow.OffsetKeeper.LeftTop = -1
+      Shadow.OffsetKeeper.RightBottom = 3
+      ExplicitLeft = 4
+      ExplicitTop = 4
       ExplicitWidth = 269
     end
     object shpLostAndFound: TShape
@@ -641,7 +601,7 @@ object frmRoomCleanMaintenanceStatus: TfrmRoomCleanMaintenanceStatus
     object mmoLostAndFound: TsMemo
       AlignWithMargins = True
       Left = 3
-      Top = 24
+      Top = 22
       Width = 271
       Height = 32
       Margins.Left = 2
@@ -659,15 +619,11 @@ object frmRoomCleanMaintenanceStatus: TfrmRoomCleanMaintenanceStatus
       Font.Style = []
       ParentFont = False
       TabOrder = 0
-      BoundLabel.Indent = 0
       BoundLabel.Font.Charset = DEFAULT_CHARSET
       BoundLabel.Font.Color = clWindowText
       BoundLabel.Font.Height = -13
       BoundLabel.Font.Name = 'Tahoma'
       BoundLabel.Font.Style = []
-      BoundLabel.Layout = sclLeft
-      BoundLabel.MaxWidth = 0
-      BoundLabel.UseSkinColor = True
       SkinData.SkinSection = 'EDIT'
     end
     object pnlLostAndFound_Button: TsPanel
@@ -718,7 +674,7 @@ object frmRoomCleanMaintenanceStatus: TfrmRoomCleanMaintenanceStatus
       Left = 3
       Top = 3
       Width = 271
-      Height = 17
+      Height = 15
       Cursor = crHandPoint
       Margins.Left = 2
       Margins.Top = 2
@@ -737,8 +693,10 @@ object frmRoomCleanMaintenanceStatus: TfrmRoomCleanMaintenanceStatus
       Angle = 0
       Shadow.Color = clSilver
       Shadow.Distance = 2
-      Shadow.OffsetKeeper.LeftTop = -2
-      Shadow.OffsetKeeper.RightBottom = 4
+      Shadow.OffsetKeeper.LeftTop = -1
+      Shadow.OffsetKeeper.RightBottom = 3
+      ExplicitLeft = 4
+      ExplicitTop = 4
       ExplicitWidth = 269
     end
     object shpMaintenanceNotes: TShape
@@ -757,7 +715,7 @@ object frmRoomCleanMaintenanceStatus: TfrmRoomCleanMaintenanceStatus
     object mmoMaintenanceNotes: TsMemo
       AlignWithMargins = True
       Left = 3
-      Top = 24
+      Top = 22
       Width = 271
       Height = 32
       Margins.Left = 2
@@ -775,15 +733,11 @@ object frmRoomCleanMaintenanceStatus: TfrmRoomCleanMaintenanceStatus
       Font.Style = []
       ParentFont = False
       TabOrder = 0
-      BoundLabel.Indent = 0
       BoundLabel.Font.Charset = DEFAULT_CHARSET
       BoundLabel.Font.Color = clWindowText
       BoundLabel.Font.Height = -13
       BoundLabel.Font.Name = 'Tahoma'
       BoundLabel.Font.Style = []
-      BoundLabel.Layout = sclLeft
-      BoundLabel.MaxWidth = 0
-      BoundLabel.UseSkinColor = True
       SkinData.SkinSection = 'EDIT'
     end
     object pnlMaintenanceNotes_Button: TsPanel

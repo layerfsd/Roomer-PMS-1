@@ -50,7 +50,7 @@ var
 implementation
 
 uses
-  uMain, uAppGlobal, uDImages;
+  uMain, uAppGlobal, uDImages, uUtils;
 
 {$R *.dfm}
 
@@ -72,7 +72,8 @@ end;
 procedure TfrmHomedate.FormCreate(Sender : TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
-     glb.PerformAuthenticationAssertion(self);
+  glb.PerformAuthenticationAssertion(self);
+  PlaceFormOnVisibleMonitor(self);
   dtHome.Date := now;
 end;
 

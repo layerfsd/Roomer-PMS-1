@@ -83,6 +83,7 @@ implementation
 uses
     PrjConst
    ,uDImages
+   , uUtils
    ;
 
 procedure TfrmChangeRate.btnGetFromWebClick(Sender: TObject);
@@ -93,7 +94,8 @@ end;
 procedure TfrmChangeRate.FormCreate(Sender: TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
-     glb.PerformAuthenticationAssertion(self);
+  glb.PerformAuthenticationAssertion(self);
+  PlaceFormOnVisibleMonitor(self);
   //**
   zRate := 0.000 ;
   zCurrency := '';

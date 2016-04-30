@@ -216,7 +216,7 @@ var
 implementation
 
 uses
-   uD, uDImages;
+   uD, uDImages, uUtils;
 
 {$R *.dfm}
 
@@ -421,7 +421,8 @@ end;
 procedure TfrmChannelPlanCodes.FormCreate(Sender: TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
-     glb.PerformAuthenticationAssertion(self);
+  glb.PerformAuthenticationAssertion(self);
+  PlaceFormOnVisibleMonitor(self);
   zFirstTime  := true;
   zAct        := actNone;
   zisAddrow   := false;

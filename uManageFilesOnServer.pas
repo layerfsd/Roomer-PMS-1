@@ -89,6 +89,7 @@ uses ShellApi,
      , uAppGlobal
      , PrjConst
      , uResourceManagement
+     , uUtils
      ;
 
 const
@@ -264,6 +265,7 @@ procedure TfrmManageFilesOnServer.FormCreate(Sender: TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
      glb.PerformAuthenticationAssertion(self);
+  PlaceFormOnVisibleMonitor(self);
   lvfileList.Clear;
 
 //  DragAcceptFiles( lvfileList.WindowHandle, True ) ;

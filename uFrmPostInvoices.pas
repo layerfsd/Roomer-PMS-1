@@ -148,7 +148,7 @@ const FINANCE_QUERY = 'SELECT 1 AS OrderCol, itemNumber, cu.Customer AS Customer
 procedure TFrmPostInvoices.FormCreate(Sender: TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
-  glb.PerformAuthenticationAssertion(self);
+  glb.PerformAuthenticationAssertion(self); PlaceFormOnVisibleMonitor(self);
   exportFileTemplate := GetExportTemplate;
 end;
 

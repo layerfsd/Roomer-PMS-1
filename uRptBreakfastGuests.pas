@@ -135,7 +135,7 @@ begin
   zDate := date;
 
   RoomerLanguage.TranslateThisForm(self);
-     glb.PerformAuthenticationAssertion(self);
+     glb.PerformAuthenticationAssertion(self); PlaceFormOnVisibleMonitor(self);
 end;
 
 procedure TfrmRptBreakfastGuests.FormShow(Sender: TObject);

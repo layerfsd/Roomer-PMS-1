@@ -40,6 +40,7 @@ object frmEditRoomPrice: TfrmEditRoomPrice
       ParentFont = False
       TabOrder = 0
       SkinData.SkinSection = 'GROUPBOX'
+      Checked = False
       DesignSize = (
         410
         126)
@@ -125,15 +126,11 @@ object frmEditRoomPrice: TfrmEditRoomPrice
         Width = 171
         Height = 21
         Alignment = taLeftJustify
-        BoundLabel.Indent = 0
         BoundLabel.Font.Charset = DEFAULT_CHARSET
         BoundLabel.Font.Color = clWindowText
         BoundLabel.Font.Height = -13
         BoundLabel.Font.Name = 'Tahoma'
         BoundLabel.Font.Style = []
-        BoundLabel.Layout = sclLeft
-        BoundLabel.MaxWidth = 0
-        BoundLabel.UseSkinColor = True
         SkinData.SkinSection = 'COMBOBOX'
         VerticalAlignment = taAlignTop
         Color = 3355443
@@ -168,15 +165,6 @@ object frmEditRoomPrice: TfrmEditRoomPrice
         TextHint = 'dbl click to select from list'
         OnDblClick = edPcCodeDblClick
         SkinData.SkinSection = 'EDIT'
-        BoundLabel.Indent = 0
-        BoundLabel.Font.Charset = DEFAULT_CHARSET
-        BoundLabel.Font.Color = clWindowText
-        BoundLabel.Font.Height = -11
-        BoundLabel.Font.Name = 'Tahoma'
-        BoundLabel.Font.Style = []
-        BoundLabel.Layout = sclLeft
-        BoundLabel.MaxWidth = 0
-        BoundLabel.UseSkinColor = True
       end
       object edRoomResDiscount: TsSpinEdit
         Left = 109
@@ -185,22 +173,18 @@ object frmEditRoomPrice: TfrmEditRoomPrice
         Height = 21
         Color = clWhite
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 2302755
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
         ParentFont = False
         TabOrder = 2
         SkinData.SkinSection = 'EDIT'
-        BoundLabel.Indent = 0
         BoundLabel.Font.Charset = DEFAULT_CHARSET
         BoundLabel.Font.Color = clWindowText
         BoundLabel.Font.Height = -13
         BoundLabel.Font.Name = 'Tahoma'
         BoundLabel.Font.Style = []
-        BoundLabel.Layout = sclLeft
-        BoundLabel.MaxWidth = 0
-        BoundLabel.UseSkinColor = True
         MaxValue = 999999
         MinValue = 0
         Value = 0
@@ -211,15 +195,11 @@ object frmEditRoomPrice: TfrmEditRoomPrice
         Width = 56
         Height = 21
         Alignment = taLeftJustify
-        BoundLabel.Indent = 0
         BoundLabel.Font.Charset = DEFAULT_CHARSET
         BoundLabel.Font.Color = clWindowText
         BoundLabel.Font.Height = -13
         BoundLabel.Font.Name = 'Tahoma'
         BoundLabel.Font.Style = []
-        BoundLabel.Layout = sclLeft
-        BoundLabel.MaxWidth = 0
-        BoundLabel.UseSkinColor = True
         SkinData.SkinSection = 'COMBOBOX'
         VerticalAlignment = taAlignTop
         Color = 3355443
@@ -260,15 +240,6 @@ object frmEditRoomPrice: TfrmEditRoomPrice
         Font.Style = []
         ParentFont = False
         TabOrder = 5
-        BoundLabel.Indent = 0
-        BoundLabel.Font.Charset = DEFAULT_CHARSET
-        BoundLabel.Font.Color = clWindowText
-        BoundLabel.Font.Height = -11
-        BoundLabel.Font.Name = 'Tahoma'
-        BoundLabel.Font.Style = []
-        BoundLabel.Layout = sclLeft
-        BoundLabel.MaxWidth = 0
-        BoundLabel.UseSkinColor = True
         SkinData.SkinSection = 'EDIT'
         GlyphMode.Blend = 0
         GlyphMode.Grayed = False
@@ -315,6 +286,7 @@ object frmEditRoomPrice: TfrmEditRoomPrice
       Caption = 'Room info'
       TabOrder = 1
       SkinData.SkinSection = 'GROUPBOX'
+      Checked = False
       object clabRoom: TsLabel
         Left = 12
         Top = 16

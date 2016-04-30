@@ -51,8 +51,9 @@ implementation
 
 {$R *.dfm}
 
-uses uD,
-     cmpRoomerDataSet,
+uses uD
+     , uUtils
+     , cmpRoomerDataSet,
      uStringUtils,
      uAppGlobal,
      PrjConst,
@@ -93,7 +94,8 @@ end;
 procedure TfrmCommunicationTest.FormCreate(Sender: TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
-     glb.PerformAuthenticationAssertion(self);
+  glb.PerformAuthenticationAssertion(self);
+  PlaceFormOnVisibleMonitor(self);
   StrTinyTable := 'Tiny table '; // GetTranslatedText('shTx_CommunicationTest_DayGuests');
   StrBiggerTable := 'Bigger table '; // GetTranslatedText('shTx_CommunicationTest_CustomerList');
   TopListTinyTable := TStringList.Create;

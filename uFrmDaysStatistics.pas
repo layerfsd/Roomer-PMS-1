@@ -249,7 +249,7 @@ begin
   // hotel=berg host=http://localhost port=8080 user=hj pass=hordur.berg date=2014-01-01
   // hotel=kef host=https://secure.roomercloud.net port=8443 user=hj pass=hordur date=2014-01-01
   RoomerLanguage.TranslateThisForm(self);
-  glb.PerformAuthenticationAssertion(self);
+  glb.PerformAuthenticationAssertion(self); PlaceFormOnVisibleMonitor(self);
   channels := TIdChannelValuesDictionary.Create([doOWnsValues]);
   FBeingViewed := False;
 end;

@@ -386,7 +386,7 @@ end;
 procedure TfrmConvertGroups.FormCreate(Sender: TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
-   glb.PerformAuthenticationAssertion(self);
+   glb.PerformAuthenticationAssertion(self); PlaceFormOnVisibleMonitor(self);
   zFirstTime  := true;
   zAct        := actNone;
   zisAddRow   := false;

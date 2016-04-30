@@ -39,7 +39,7 @@ implementation
 
 {$R *.dfm}
 
-uses uRoomerLanguage, uAppGlobal;
+uses uRoomerLanguage, uAppGlobal, uUtils;
 
 function EditDayNote(ForDate : TDate; Author : String; When : TDateTime; var Action : String; var Memo : String) : Boolean;
 var _FrmStaffNote: TFrmStaffNote;
@@ -71,6 +71,7 @@ procedure TFrmStaffNote.FormCreate(Sender: TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
   glb.PerformAuthenticationAssertion(self);
+  PlaceFormOnVisibleMonitor(self);
 end;
 
 end.

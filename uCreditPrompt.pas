@@ -59,12 +59,14 @@ implementation
 
 uses
     uAppGlobal
-  , uDImages;
+  , uDImages
+  , uUtils;
 
 procedure TfrmCreditPrompt.FormCreate(Sender: TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
    glb.PerformAuthenticationAssertion(self);
+  PlaceFormOnVisibleMonitor(self);
 
 end;
 

@@ -410,7 +410,7 @@ procedure TFrmRoomClassEdit.FormCreate(Sender: TObject);
 begin
   SystemDecimalChar := SystemDecimalSeparator;
   RoomerLanguage.TranslateThisForm(self);
-  glb.PerformAuthenticationAssertion(self);
+  glb.PerformAuthenticationAssertion(self); PlaceFormOnVisibleMonitor(self);
 end;
 
 procedure TFrmRoomClassEdit.FormShow(Sender: TObject);

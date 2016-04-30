@@ -108,7 +108,7 @@ uses
   , sButton
   , sPanel
   , sStatusBar, dxSkinsCore, dxSkinDarkSide, dxSkinDevExpressDarkStyle, dxSkinMcSkin, dxSkinOffice2013White, dxSkinsDefaultPainters,
-  dxSkinscxPCPainter, dxSkinsdxBarPainter, dxSkinsdxRibbonPainter, cxPropertiesStore, dxPScxPivotGridLnk
+  dxSkinscxPCPainter, dxSkinsdxBarPainter, dxSkinsdxRibbonPainter, cxPropertiesStore, dxPScxPivotGridLnk, dxSkinCaramel, dxSkinCoffee, dxSkinTheAsphaltWorld
 
   ;
 
@@ -217,6 +217,7 @@ implementation
 uses
    uD
   , uSqlDefinitions
+  , uUtils
 ;
 
 {$R *.dfm}
@@ -395,7 +396,8 @@ end;
 procedure TfrmPersonContactType.FormCreate(Sender: TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
-     glb.PerformAuthenticationAssertion(self);
+  glb.PerformAuthenticationAssertion(self);
+  PlaceFormOnVisibleMonitor(self);
   zFirstTime  := true;
   zAct        := actNone;
 end;

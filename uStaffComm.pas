@@ -221,6 +221,7 @@ uses
   , uStaffCommunication
   , uMain
   , uFrmStaffNote
+  , uUtils
   ;
 
 
@@ -392,6 +393,7 @@ procedure TfrmStaffComm.FormCreate(Sender: TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
   glb.PerformAuthenticationAssertion(self);
+  PlaceFormOnVisibleMonitor(self);
   Lookup := False;
   //**
   zFirstTime  := true;

@@ -159,7 +159,7 @@ end;
 procedure TfrmDownPayment.FormCreate(Sender: TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
-     glb.PerformAuthenticationAssertion(self);
+     glb.PerformAuthenticationAssertion(self); PlaceFormOnVisibleMonitor(self);
   g.initRecDownPayment(rec);
   zCanClose := true;
 end;

@@ -860,7 +860,7 @@ end;
 procedure TfrmRptTurnoverAndPayments.FormCreate(Sender: TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
-  glb.PerformAuthenticationAssertion(self);
+  glb.PerformAuthenticationAssertion(self); PlaceFormOnVisibleMonitor(self);
   zIsConfirmed := false;
   zConfirmedDate := 2;
 end;
@@ -1054,7 +1054,7 @@ var
 begin
   dateTimeToString(s, 'yyyymmddhhnn', now);
   sFilename := g.qProgramPath + s + '_PaymentList';
-  ExportGridToXLSX(sFilename, grInvoicelist, false, true, true);
+  ExportGridToXLSX(sFilename, grPaymentlist, false, true, true);
   ShellExecute(Handle, 'OPEN', PChar(sFilename + '.xlsx'), nil, nil,
     sw_shownormal);
 end;
@@ -1133,7 +1133,7 @@ var
   sFilename: string;
   s: string;
 begin
-  if d.mInvoiceHeads.RecordCount = 0 then exit;
+  if d.kbmUnconfirmedInvoicelines_.Eof then exit; // .RecordCount = 0 then exit;
 
   dateTimeToString(s, 'yyyymmddhhnn', now);
   sFilename := g.qProgramPath + s + '_unconfirmedItems';

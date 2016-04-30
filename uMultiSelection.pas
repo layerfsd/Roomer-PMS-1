@@ -128,7 +128,7 @@ end;
 procedure TfrmMultiSelection.FormCreate(Sender: TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
-     glb.PerformAuthenticationAssertion(self);
+     glb.PerformAuthenticationAssertion(self); PlaceFormOnVisibleMonitor(self);
 end;
 
 function TfrmMultiSelection.GetResult: String;

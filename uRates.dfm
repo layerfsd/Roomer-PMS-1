@@ -54,8 +54,8 @@ object frmRates: TfrmRates
       Caption = 'Clear'
       OnClick = btnClearClick
       SkinData.SkinSection = 'SPEEDBUTTON'
-      ImageIndex = 10
       Images = DImages.PngImageList1
+      ImageIndex = 10
     end
     object btnDelete: TsButton
       Left = 199
@@ -98,15 +98,6 @@ object frmRates: TfrmRates
       TabOrder = 2
       OnChange = edFilterChange
       SkinData.SkinSection = 'EDIT'
-      BoundLabel.Indent = 0
-      BoundLabel.Font.Charset = DEFAULT_CHARSET
-      BoundLabel.Font.Color = clWindowText
-      BoundLabel.Font.Height = -11
-      BoundLabel.Font.Name = 'Tahoma'
-      BoundLabel.Font.Style = []
-      BoundLabel.Layout = sclLeft
-      BoundLabel.MaxWidth = 0
-      BoundLabel.UseSkinColor = True
     end
     object gbxFilter: TsGroupBox
       Left = 469
@@ -116,6 +107,7 @@ object frmRates: TfrmRates
       Caption = 'Filter'
       TabOrder = 3
       SkinData.SkinSection = 'GROUPBOX'
+      Checked = False
       object sLabel1: TsLabel
         Left = 11
         Top = 19
@@ -137,7 +129,7 @@ object frmRates: TfrmRates
         Width = 153
         Height = 22
         Color = clWindow
-        Version = '1.4.1.3'
+        Version = '1.5.0.0'
         Visible = True
         Ctl3D = True
         Columns = <
@@ -166,6 +158,8 @@ object frmRates: TfrmRates
         ComboItems = <>
         EditColumn = -1
         EditHeight = 16
+        EmptyText = ''
+        EmptyTextStyle = []
         DropWidth = 145
         DropHeight = 200
         Enabled = True
@@ -529,7 +523,6 @@ object frmRates: TfrmRates
     Left = 216
     Top = 240
     object prLink_grData: TdxGridReportLink
-      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.GrayShading = True
@@ -543,7 +536,6 @@ object frmRates: TfrmRates
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
       ReportDocument.CreationDate = 41334.495374884260000000
-      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       BuiltInReportLink = True
     end
   end

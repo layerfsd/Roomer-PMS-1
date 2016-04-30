@@ -327,7 +327,7 @@ end;
 procedure TfrmCancelReservation3.FormCreate(Sender : TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
-     glb.PerformAuthenticationAssertion(self);
+     glb.PerformAuthenticationAssertion(self); PlaceFormOnVisibleMonitor(self);
   zRoomReservation  := 0;
   zReason           := '';
   zInformation      := '';

@@ -386,7 +386,7 @@ end;
 procedure TfrmRoomDateProblem.FormCreate(Sender: TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
-   glb.PerformAuthenticationAssertion(self);
+   glb.PerformAuthenticationAssertion(self); PlaceFormOnVisibleMonitor(self);
   lst := TstringList.Create;
   rgroption.ItemIndex := 0;
 end;

@@ -731,7 +731,7 @@ end;
 procedure TfrmRptResStats.FormCreate(Sender: TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
-  glb.PerformAuthenticationAssertion(self);
+  glb.PerformAuthenticationAssertion(self); PlaceFormOnVisibleMonitor(self);
   glb.fillListWithMonthsLong(cbxMonth.Items, 1);
   glb.fillListWithYears(cbxYear.Items, 1, False);
 

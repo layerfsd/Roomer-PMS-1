@@ -77,8 +77,8 @@ object frmCurrencies: TfrmCurrencies
         Caption = 'Clear'
         OnClick = btnClearClick
         SkinData.SkinSection = 'SPEEDBUTTON'
-        ImageIndex = 10
         Images = DImages.PngImageList1
+        ImageIndex = 10
       end
       object btnInsert: TsButton
         Left = 10
@@ -188,15 +188,6 @@ object frmCurrencies: TfrmCurrencies
         TabOrder = 5
         OnChange = edFilterChange
         SkinData.SkinSection = 'EDIT'
-        BoundLabel.Indent = 0
-        BoundLabel.Font.Charset = DEFAULT_CHARSET
-        BoundLabel.Font.Color = clWindowText
-        BoundLabel.Font.Height = -11
-        BoundLabel.Font.Name = 'Tahoma'
-        BoundLabel.Font.Style = []
-        BoundLabel.Layout = sclLeft
-        BoundLabel.MaxWidth = 0
-        BoundLabel.UseSkinColor = True
       end
     end
     object panBtn: TsPanel
@@ -404,6 +395,7 @@ object frmCurrencies: TfrmCurrencies
     object prLink_grData: TdxGridReportLink
       Active = True
       Component = grData
+      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.GrayShading = True
@@ -416,7 +408,8 @@ object frmCurrencies: TfrmCurrencies
       PrinterPage.PageSize.Y = 297000
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
-      ReportDocument.CreationDate = 42129.673119629630000000
+      ReportDocument.CreationDate = 42490.527501215280000000
+      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       BuiltInReportLink = True
     end
   end

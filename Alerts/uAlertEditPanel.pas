@@ -36,7 +36,7 @@ implementation
 
 {$R *.dfm}
 
-uses uRoomerLanguage, uAppGlobal;
+uses uRoomerLanguage, uAppGlobal, uUtils;
 
 procedure TFrmAlertPanel.btnDeleteClick(Sender: TObject);
 var Alert : TAlert;
@@ -112,6 +112,7 @@ procedure TFrmAlertPanel.FormCreate(Sender: TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
   glb.PerformAuthenticationAssertion(self);
+  PlaceFormOnVisibleMonitor(self);
 end;
 
 end.

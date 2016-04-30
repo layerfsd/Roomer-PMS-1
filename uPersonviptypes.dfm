@@ -61,8 +61,8 @@ object frmPersonviptypes: TfrmPersonviptypes
       Caption = 'Clear'
       OnClick = btnClearClick
       SkinData.SkinSection = 'SPEEDBUTTON'
-      ImageIndex = 10
       Images = DImages.PngImageList1
+      ImageIndex = 10
     end
     object btnInsert: TsButton
       Left = 7
@@ -155,15 +155,6 @@ object frmPersonviptypes: TfrmPersonviptypes
       TabOrder = 4
       OnChange = edFilterChange
       SkinData.SkinSection = 'EDIT'
-      BoundLabel.Indent = 0
-      BoundLabel.Font.Charset = DEFAULT_CHARSET
-      BoundLabel.Font.Color = clWindowText
-      BoundLabel.Font.Height = -11
-      BoundLabel.Font.Name = 'Tahoma'
-      BoundLabel.Font.Style = []
-      BoundLabel.Layout = sclLeft
-      BoundLabel.MaxWidth = 0
-      BoundLabel.UseSkinColor = True
     end
   end
   object panBtn: TsPanel
@@ -371,7 +362,6 @@ object frmPersonviptypes: TfrmPersonviptypes
     object prLink_grData: TdxGridReportLink
       Active = True
       Component = grData
-      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.GrayShading = True
@@ -384,8 +374,7 @@ object frmPersonviptypes: TfrmPersonviptypes
       PrinterPage.PageSize.Y = 297000
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
-      ReportDocument.CreationDate = 41908.468278993050000000
-      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
+      ReportDocument.CreationDate = 42490.533069560190000000
       BuiltInReportLink = True
     end
   end

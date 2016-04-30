@@ -139,8 +139,8 @@ object frmRptTurnoverAndPayments2: TfrmRptTurnoverAndPayments2
       object chkGetUnconfirmed: TsCheckBox
         Left = 15
         Top = 18
-        Width = 99
-        Height = 20
+        Width = 107
+        Height = 17
         Caption = 'Get unconfirmed'
         TabOrder = 0
         OnClick = chkGetUnconfirmedClick
@@ -241,11 +241,8 @@ object frmRptTurnoverAndPayments2: TfrmRptTurnoverAndPayments2
     TabOrder = 2
     OnChange = sPageControl1Change
     SkinData.SkinSection = 'PAGECONTROL'
-    ExplicitTop = 148
     object sTabSheet1: TsTabSheet
       Caption = 'Sum Turnover'
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
       object sPanel1: TsPanel
         Left = 0
         Top = 0
@@ -269,8 +266,8 @@ object frmRptTurnoverAndPayments2: TfrmRptTurnoverAndPayments2
         object __chkShowAsItem: TsCheckBox
           Left = 108
           Top = 13
-          Width = 137
-          Height = 20
+          Width = 145
+          Height = 17
           Caption = 'Report per product type'
           Checked = True
           State = cbChecked
@@ -391,8 +388,6 @@ object frmRptTurnoverAndPayments2: TfrmRptTurnoverAndPayments2
     end
     object Payments: TsTabSheet
       Caption = 'Sum Payments'
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
       object grPayments: TcxGrid
         Left = 0
         Top = 44
@@ -505,8 +500,6 @@ object frmRptTurnoverAndPayments2: TfrmRptTurnoverAndPayments2
     end
     object sTabSheet2: TsTabSheet
       Caption = 'List Unpaid roomrent'
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
       object sPanel4: TsPanel
         Left = 0
         Top = 0
@@ -656,8 +649,6 @@ object frmRptTurnoverAndPayments2: TfrmRptTurnoverAndPayments2
     end
     object sTabSheet3: TsTabSheet
       Caption = 'List Invoiced Roomrent'
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
       object sPanel3: TsPanel
         Left = 0
         Top = 0
@@ -823,8 +814,6 @@ object frmRptTurnoverAndPayments2: TfrmRptTurnoverAndPayments2
     object sTabSheet4: TsTabSheet
       Caption = 'List Invoices'
       TabVisible = False
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
       object sPanel5: TsPanel
         Left = 0
         Top = 0
@@ -1305,8 +1294,6 @@ object frmRptTurnoverAndPayments2: TfrmRptTurnoverAndPayments2
     end
     object sTabSheet6: TsTabSheet
       Caption = 'Unconfirmed items'
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
       object sPanel7: TsPanel
         Left = 0
         Top = 0
@@ -1495,8 +1482,6 @@ object frmRptTurnoverAndPayments2: TfrmRptTurnoverAndPayments2
     end
     object sTabSheet7: TsTabSheet
       Caption = 'Confirmed Item Changed Price'
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
       object sPanel8: TsPanel
         Left = 0
         Top = 0
@@ -1672,8 +1657,6 @@ object frmRptTurnoverAndPayments2: TfrmRptTurnoverAndPayments2
     end
     object sTabSheet8: TsTabSheet
       Caption = 'Confirmed Roomrent Pricechange'
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
       object sPanel9: TsPanel
         Left = 0
         Top = 0
@@ -1844,8 +1827,6 @@ object frmRptTurnoverAndPayments2: TfrmRptTurnoverAndPayments2
     end
     object sTabSheet5: TsTabSheet
       Caption = 'PaymentList'
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
       object sPanel6: TsPanel
         Left = 0
         Top = 0

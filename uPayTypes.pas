@@ -243,6 +243,7 @@ uses
   , uDImages
   , uFrmKeyPairSelector
   , uBookKeepingCodes
+  , uUtils
   ;
 
 {$R *.dfm}
@@ -487,7 +488,8 @@ end;
 procedure TfrmPayTypes.FormCreate(Sender: TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
-     glb.PerformAuthenticationAssertion(self);
+  glb.PerformAuthenticationAssertion(self);
+  PlaceFormOnVisibleMonitor(self);
   Lookup := False;
   zFirstTime  := true;
   zAct        := actNone;

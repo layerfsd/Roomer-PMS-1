@@ -394,7 +394,7 @@ end;
 procedure TfrmProvideARoom2.FormCreate(Sender : TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
-   glb.PerformAuthenticationAssertion(self);
+   glb.PerformAuthenticationAssertion(self); PlaceFormOnVisibleMonitor(self);
   zOpList := tstringList.Create;
 end;
 

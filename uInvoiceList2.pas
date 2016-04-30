@@ -299,7 +299,7 @@ var
   i : integer;
 begin
   RoomerLanguage.TranslateThisForm(self);
-   glb.PerformAuthenticationAssertion(self);
+   glb.PerformAuthenticationAssertion(self); PlaceFormOnVisibleMonitor(self);
   for i := 1 to 20 do
   begin
     dirArr[i] := false;

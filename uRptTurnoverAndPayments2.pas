@@ -606,7 +606,7 @@ end;
 procedure TfrmRptTurnoverAndPayments2.FormCreate(Sender: TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
-  glb.PerformAuthenticationAssertion(self);
+  glb.PerformAuthenticationAssertion(self); PlaceFormOnVisibleMonitor(self);
   __chkShowAsItem.Caption := GetTranslatedText('shTx_RptTurnoverPayments_ReportPerType');
   zIsConfirmed := false;
   zConfirmedDate := 2;
@@ -963,8 +963,7 @@ begin
   dateTimeToString(s, 'yyyymmddhhnn', now);
   sFilename := g.qProgramPath + s + '_PaymentList';
   ExportGridToXLSX(sFilename, grPaymentList, false, true, true);
-  ShellExecute(Handle, 'OPEN', PChar(sFilename + '.xlsx'), nil, nil,
-    sw_shownormal);
+  ShellExecute(Handle, 'OPEN', PChar(sFilename + '.xlsx'), nil, nil, sw_shownormal);
 end;
 
 procedure TfrmRptTurnoverAndPayments2.sButton4Click(Sender: TObject);
@@ -989,8 +988,7 @@ begin
     Arrival := Date;
     Departure := Date;
     iReservation := d.kbmpaymentList_.FieldByName('Reservation').asinteger;
-    iRoomReservation := d.kbmpaymentList_.FieldByName('RoomReservation')
-      .asinteger;
+    iRoomReservation := d.kbmpaymentList_.FieldByName('RoomReservation').asinteger;
     EditInvoice(iReservation, iRoomReservation, 0, 0, 0, 0, false, true, false);
   end;
 end;
@@ -1041,7 +1039,8 @@ var
   sFilename: string;
   s: string;
 begin
-  if d.mInvoiceHeads.RecordCount = 0 then exit;
+  if d.kbmUnconfirmedInvoicelines_.Eof then exit; // .RecordCount = 0 then exit;
+//  if d.mInvoiceHeads.RecordCount = 0 then exit;
 
   dateTimeToString(s, 'yyyymmddhhnn', now);
   sFilename := g.qProgramPath + s + '_unconfirmedItems';

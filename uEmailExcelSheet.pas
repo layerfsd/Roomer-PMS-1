@@ -83,7 +83,7 @@ end;
 procedure TFrmEmailExcelSheet.FormCreate(Sender: TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
-  glb.PerformAuthenticationAssertion(self);
+  glb.PerformAuthenticationAssertion(self); PlaceFormOnVisibleMonitor(self);
 end;
 
 procedure TFrmEmailExcelSheet.FormShow(Sender: TObject);

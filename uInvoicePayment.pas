@@ -126,6 +126,7 @@ uses
    , uSqlDefinitions
    , uAppGlobal
    , PrjConst
+   , uUtils
   ;
 
 {$R *.DFM}
@@ -501,7 +502,8 @@ end;
 procedure TfrmInvoicePayment.FormCreate(Sender: TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
-   glb.PerformAuthenticationAssertion(self);
+  glb.PerformAuthenticationAssertion(self);
+  PlaceFormOnVisibleMonitor(self);
   closeOk := true;
   //RestoreWinPos( AppInifile, TForm( Self ).Name,  TForm( Self ) );
 end;

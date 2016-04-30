@@ -1012,7 +1012,7 @@ begin
 
   pgcPages.Visible := False;
   RoomerLanguage.TranslateThisForm(self);
-  glb.PerformAuthenticationAssertion(self);
+  glb.PerformAuthenticationAssertion(self); PlaceFormOnVisibleMonitor(self);
 
   imgHelp.Hint := format('<body bgcolor="#0000FF">Color definitions in grid:<br><hr><br>' + '<font %s color="#FFFFFF"> &nbsp;&nbsp;&nbsp;&nbsp;</font>' +
     '<font bgcolor="#0000FF" color="#FFFFFF"> Rate, availability or restriction has changed.</font><br>', [GetHTMLColor(clRed, true)]) +

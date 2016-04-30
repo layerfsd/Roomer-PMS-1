@@ -36,7 +36,7 @@ implementation
 
 {$R *.dfm}
 
-uses uRoomerLanguage, uAppGlobal;
+uses uRoomerLanguage, uAppGlobal, uUtils;
 
 function AddAlert(_Alert : TAlert) : Boolean;
 var _FrmAlertEdit: TFrmAlertEdit;
@@ -72,6 +72,7 @@ procedure TFrmAlertEdit.FormCreate(Sender: TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
   glb.PerformAuthenticationAssertion(self);
+  PlaceFormOnVisibleMonitor(self);
   __cbxAlertOn.ItemIndex := 0;
   mmoText.Lines.Clear;
 end;

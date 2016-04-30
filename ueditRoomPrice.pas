@@ -181,7 +181,8 @@ uses
   , uPriceOBJ
   , uPriceCodes
   , uAppGlobal
-  , uMain, uDImages;
+  , uMain, uDImages
+  , uUtils;
 
 
 {$R *.dfm}
@@ -543,6 +544,7 @@ procedure TfrmEditRoomPrice.FormCreate(Sender: TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
      glb.PerformAuthenticationAssertion(self);
+  PlaceFormOnVisibleMonitor(self);
   //**
   applyType := 0;
 end;

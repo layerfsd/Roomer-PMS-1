@@ -47,12 +47,13 @@ implementation
 
 {$R *.DFM}
 
-uses uAppGlobal, uRoomerLanguage;
+uses uAppGlobal, uRoomerLanguage, uUtils;
 
 procedure TfrmSelLang.FormCreate(Sender: TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
-   glb.PerformAuthenticationAssertion(self);
+  glb.PerformAuthenticationAssertion(self);
+  PlaceFormOnVisibleMonitor(self);
 end;
 
 procedure TfrmSelLang.FormShow(Sender: TObject);

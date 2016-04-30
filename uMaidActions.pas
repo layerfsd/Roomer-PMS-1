@@ -91,6 +91,7 @@ uses
   uD
   , uAppGlobal
   , PrjConst
+  , uUtils
   , uDImages;
 {$R *.dfm}
 
@@ -150,7 +151,8 @@ end;
 procedure TfrmMaidActions.FormCreate(Sender : TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
-   glb.PerformAuthenticationAssertion(self);
+  glb.PerformAuthenticationAssertion(self);
+  PlaceFormOnVisibleMonitor(self);
   isFirstTime := true;
   zCode := '';
   zAct := actNone;

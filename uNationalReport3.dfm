@@ -40,8 +40,10 @@ object frmNationalReport3: TfrmNationalReport3
     object sheetNationalStatistics1: TsTabSheet
       Caption = 'Room Nights'
       ImageIndex = 1
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Panel2: TsPanel
         Left = 0
         Top = 0
@@ -209,8 +211,10 @@ object frmNationalReport3: TfrmNationalReport3
     object cxTabSheet1: TsTabSheet
       Caption = 'Guests'
       ImageIndex = 2
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Panel5: TsPanel
         Left = 0
         Top = 0
@@ -485,6 +489,7 @@ object frmNationalReport3: TfrmNationalReport3
       ParentFont = False
       TabOrder = 0
       SkinData.SkinSection = 'GROUPBOX'
+      Checked = False
       object dtDateFrom: TsDateEdit
         Left = 16
         Top = 17
@@ -504,17 +509,9 @@ object frmNationalReport3: TfrmNationalReport3
         MaxLength = 10
         ParentFont = False
         TabOrder = 0
-        Text = '  .  .    '
+        Text = '  -  -    '
         OnChange = dtDateFromChange
-        BoundLabel.Indent = 0
-        BoundLabel.Font.Charset = DEFAULT_CHARSET
-        BoundLabel.Font.Color = clWindowText
-        BoundLabel.Font.Height = -11
-        BoundLabel.Font.Name = 'Tahoma'
-        BoundLabel.Font.Style = []
-        BoundLabel.Layout = sclLeft
-        BoundLabel.MaxWidth = 0
-        BoundLabel.UseSkinColor = True
+        CheckOnExit = True
         SkinData.SkinSection = 'EDIT'
         GlyphMode.Blend = 0
         GlyphMode.Grayed = False
@@ -538,17 +535,9 @@ object frmNationalReport3: TfrmNationalReport3
         MaxLength = 10
         ParentFont = False
         TabOrder = 1
-        Text = '  .  .    '
+        Text = '  -  -    '
         OnChange = dtDateFromChange
-        BoundLabel.Indent = 0
-        BoundLabel.Font.Charset = DEFAULT_CHARSET
-        BoundLabel.Font.Color = clWindowText
-        BoundLabel.Font.Height = -11
-        BoundLabel.Font.Name = 'Tahoma'
-        BoundLabel.Font.Style = []
-        BoundLabel.Layout = sclLeft
-        BoundLabel.MaxWidth = 0
-        BoundLabel.UseSkinColor = True
+        CheckOnExit = True
         SkinData.SkinSection = 'EDIT'
         GlyphMode.Blend = 0
         GlyphMode.Grayed = False
@@ -568,21 +557,18 @@ object frmNationalReport3: TfrmNationalReport3
       ParentFont = False
       TabOrder = 1
       SkinData.SkinSection = 'GROUPBOX'
+      Checked = False
       object cbxMonth: TsComboBox
         Left = 15
         Top = 16
         Width = 121
         Height = 21
         Alignment = taLeftJustify
-        BoundLabel.Indent = 0
         BoundLabel.Font.Charset = DEFAULT_CHARSET
         BoundLabel.Font.Color = clWindowText
         BoundLabel.Font.Height = -13
         BoundLabel.Font.Name = 'Tahoma'
         BoundLabel.Font.Style = []
-        BoundLabel.Layout = sclLeft
-        BoundLabel.MaxWidth = 0
-        BoundLabel.UseSkinColor = True
         SkinData.SkinSection = 'COMBOBOX'
         VerticalAlignment = taAlignTop
         Color = clWhite
@@ -617,15 +603,11 @@ object frmNationalReport3: TfrmNationalReport3
         Width = 121
         Height = 21
         Alignment = taLeftJustify
-        BoundLabel.Indent = 0
         BoundLabel.Font.Charset = DEFAULT_CHARSET
         BoundLabel.Font.Color = clWindowText
         BoundLabel.Font.Height = -13
         BoundLabel.Font.Name = 'Tahoma'
         BoundLabel.Font.Style = []
-        BoundLabel.Layout = sclLeft
-        BoundLabel.MaxWidth = 0
-        BoundLabel.UseSkinColor = True
         SkinData.SkinSection = 'COMBOBOX'
         VerticalAlignment = taAlignTop
         Color = clWhite
@@ -1054,7 +1036,7 @@ object frmNationalReport3: TfrmNationalReport3
           Height = 21
           Color = clWhite
           Font.Charset = DEFAULT_CHARSET
-          Font.Color = 2302755
+          Font.Color = clBlack
           Font.Height = -11
           Font.Name = 'Tahoma'
           Font.Style = []
@@ -1062,15 +1044,6 @@ object frmNationalReport3: TfrmNationalReport3
           TabOrder = 0
           OnChange = edPrivateChange
           SkinData.SkinSection = 'EDIT'
-          BoundLabel.Indent = 0
-          BoundLabel.Font.Charset = DEFAULT_CHARSET
-          BoundLabel.Font.Color = clWindowText
-          BoundLabel.Font.Height = -11
-          BoundLabel.Font.Name = 'Tahoma'
-          BoundLabel.Font.Style = []
-          BoundLabel.Layout = sclLeft
-          BoundLabel.MaxWidth = 0
-          BoundLabel.UseSkinColor = True
           MaxValue = 0
           MinValue = 0
           Value = 0
@@ -1082,7 +1055,7 @@ object frmNationalReport3: TfrmNationalReport3
           Height = 21
           Color = clWhite
           Font.Charset = DEFAULT_CHARSET
-          Font.Color = 2302755
+          Font.Color = clBlack
           Font.Height = -11
           Font.Name = 'Tahoma'
           Font.Style = []
@@ -1090,15 +1063,6 @@ object frmNationalReport3: TfrmNationalReport3
           TabOrder = 1
           OnChange = edPrivateChange
           SkinData.SkinSection = 'EDIT'
-          BoundLabel.Indent = 0
-          BoundLabel.Font.Charset = DEFAULT_CHARSET
-          BoundLabel.Font.Color = clWindowText
-          BoundLabel.Font.Height = -11
-          BoundLabel.Font.Name = 'Tahoma'
-          BoundLabel.Font.Style = []
-          BoundLabel.Layout = sclLeft
-          BoundLabel.MaxWidth = 0
-          BoundLabel.UseSkinColor = True
           MaxValue = 0
           MinValue = 0
           Value = 0
@@ -1110,7 +1074,7 @@ object frmNationalReport3: TfrmNationalReport3
           Height = 21
           Color = clWhite
           Font.Charset = DEFAULT_CHARSET
-          Font.Color = 2302755
+          Font.Color = clBlack
           Font.Height = -11
           Font.Name = 'Tahoma'
           Font.Style = []
@@ -1118,15 +1082,6 @@ object frmNationalReport3: TfrmNationalReport3
           TabOrder = 2
           OnChange = edPrivateChange
           SkinData.SkinSection = 'EDIT'
-          BoundLabel.Indent = 0
-          BoundLabel.Font.Charset = DEFAULT_CHARSET
-          BoundLabel.Font.Color = clWindowText
-          BoundLabel.Font.Height = -11
-          BoundLabel.Font.Name = 'Tahoma'
-          BoundLabel.Font.Style = []
-          BoundLabel.Layout = sclLeft
-          BoundLabel.MaxWidth = 0
-          BoundLabel.UseSkinColor = True
           MaxValue = 0
           MinValue = 0
           Value = 0

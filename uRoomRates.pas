@@ -294,6 +294,7 @@ uses
   , uRoomTypes2
   , uSeasons2
   , uRates
+  , uUtils
   ;
 
 
@@ -783,7 +784,8 @@ end;
 procedure TfrmRoomRates.FormCreate(Sender: TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
-     glb.PerformAuthenticationAssertion(self);
+  glb.PerformAuthenticationAssertion(self);
+  PlaceFormOnVisibleMonitor(self);
   //**
   zFirstTime  := true;
   zAct        := actNone;

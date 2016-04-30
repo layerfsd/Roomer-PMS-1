@@ -58,7 +58,7 @@ var
 
 implementation
 
-uses uD, uAppGlobal, PrjConst, uDImages;
+uses uD, uAppGlobal, PrjConst, uDImages, uUtils;
 
 {$R *.dfm}
 
@@ -177,7 +177,8 @@ end;
 procedure TfrmGoToRoomandDate.FormCreate(Sender : TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
-     glb.PerformAuthenticationAssertion(self);
+  glb.PerformAuthenticationAssertion(self);
+  PlaceFormOnVisibleMonitor(self);
   okClose := true;
   zDate := Date;
   zRoom := '';

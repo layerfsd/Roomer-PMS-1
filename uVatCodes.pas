@@ -209,7 +209,8 @@ implementation
 uses
    uD,
    uDImages,
-   uBookKeepingCodes;
+   uBookKeepingCodes
+   , uUtils;
 
 {$R *.dfm}
 
@@ -397,7 +398,8 @@ end;
 procedure TfrmVatCodes.FormCreate(Sender: TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
-     glb.PerformAuthenticationAssertion(self);
+  glb.PerformAuthenticationAssertion(self);
+  PlaceFormOnVisibleMonitor(self);
   zFirstTime  := true;
   zAct        := actNone;
   zisAddrow   := false;

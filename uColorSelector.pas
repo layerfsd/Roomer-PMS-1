@@ -55,7 +55,7 @@ implementation
 
 {$R *.dfm}
 
-uses ud, uRoomerLanguage, uDImages;
+uses ud, uRoomerLanguage, uDImages, uUtils;
 
 function OpenColorSelectionDialog(var colorId, colorValue : Integer) : Integer;
 begin
@@ -90,7 +90,8 @@ end;
 procedure TfrmColorSelector.FormCreate(Sender: TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
-     glb.PerformAuthenticationAssertion(self);
+  glb.PerformAuthenticationAssertion(self);
+  PlaceFormOnVisibleMonitor(self);
 end;
 
 procedure TfrmColorSelector.FormShow(Sender: TObject);

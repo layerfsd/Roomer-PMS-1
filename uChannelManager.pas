@@ -500,7 +500,7 @@ end;
 procedure TfrmChannelManager.FormCreate(Sender: TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
-     glb.PerformAuthenticationAssertion(self);
+     glb.PerformAuthenticationAssertion(self); PlaceFormOnVisibleMonitor(self);
   zFirstTime    := true;
   zAct          := actNone;
   zPostData     := false;

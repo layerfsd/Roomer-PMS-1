@@ -1047,6 +1047,7 @@ begin
       edContactAddress3.Text := glb.PreviousGuestsSet['Address3'];
       edContactAddress4.Text := glb.PreviousGuestsSet['Address4'];
 //0810-hj       edContactCountry.Text := glb.PreviousGuestsSet['Country'];
+      edCountry.Text := glb.PersonProfiles['Country'];
       s := glb.PreviousGuestsSet['Tel1'];
       if s = '' then
         s := glb.PreviousGuestsSet['Tel2'];
@@ -1061,6 +1062,7 @@ begin
       edContactAddress3.Text := glb.PersonProfiles['Zip'];
       edContactAddress4.Text := glb.PersonProfiles['City'];
 //0810-hj       edContactCountry.Text := glb.PersonProfiles['Country'];
+      edCountry.Text := glb.PersonProfiles['Country'];
       s := glb.PersonProfiles['TelMobile'];
       if s = '' then
         s := glb.PersonProfiles['TelLandLine'];
@@ -1078,7 +1080,7 @@ end;
 procedure TfrmMakeReservationQuick.FormCreate(Sender: TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
-  glb.PerformAuthenticationAssertion(self);
+  glb.PerformAuthenticationAssertion(self); PlaceFormOnVisibleMonitor(self);
   screen.Cursor := crHourGlass;
   try
     DynamicRates := TDynamicRates.Create;

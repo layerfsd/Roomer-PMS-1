@@ -79,8 +79,6 @@ object frmStaffEdit2: TfrmStaffEdit2
     SkinData.SkinSection = 'PAGECONTROL'
     object sTabSheet1: TsTabSheet
       Caption = 'Main'
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
       ExplicitLeft = 0
       ExplicitTop = 0
       ExplicitWidth = 0
@@ -619,12 +617,6 @@ object frmStaffEdit2: TfrmStaffEdit2
     end
     object sTabSheet2: TsTabSheet
       Caption = 'Authorization'
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object sGroupBox2: TsGroupBox
         AlignWithMargins = True
         Left = 0

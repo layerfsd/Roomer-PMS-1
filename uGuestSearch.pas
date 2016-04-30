@@ -253,7 +253,7 @@ end;
 procedure TfrmGuestSearch.FormCreate(Sender: TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
-     glb.PerformAuthenticationAssertion(self);
+     glb.PerformAuthenticationAssertion(self); PlaceFormOnVisibleMonitor(self);
   dtDateFrom.Date := date;
   dtDateTo.Date := date+1;
 

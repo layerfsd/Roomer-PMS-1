@@ -43,8 +43,10 @@ object frmGuestPortfolio: TfrmGuestPortfolio
       SkinData.SkinSection = 'PAGECONTROL'
       object sTabSheet1: TsTabSheet
         Caption = 'Person'
-        SkinData.CustomColor = False
-        SkinData.CustomFont = False
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object sGroupBox1: TsGroupBox
           AlignWithMargins = True
           Left = 10
@@ -59,6 +61,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
           Caption = 'Persona'
           TabOrder = 0
           SkinData.SkinSection = 'GROUPBOX'
+          Checked = False
           object clabInitials: TsLabel
             Left = 124
             Top = 38
@@ -237,15 +240,6 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Width = 118
             Height = 21
             Alignment = taLeftJustify
-            BoundLabel.Indent = 0
-            BoundLabel.Font.Charset = DEFAULT_CHARSET
-            BoundLabel.Font.Color = clWindowText
-            BoundLabel.Font.Height = -11
-            BoundLabel.Font.Name = 'Tahoma'
-            BoundLabel.Font.Style = []
-            BoundLabel.Layout = sclLeft
-            BoundLabel.MaxWidth = 0
-            BoundLabel.UseSkinColor = True
             SkinData.SkinSection = 'COMBOBOX'
             VerticalAlignment = taAlignTop
             Color = clWhite
@@ -278,15 +272,6 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             TabOrder = 1
             OnChange = cmbGenderChange
             SkinData.SkinSection = 'EDIT'
-            BoundLabel.Indent = 0
-            BoundLabel.Font.Charset = DEFAULT_CHARSET
-            BoundLabel.Font.Color = clWindowText
-            BoundLabel.Font.Height = -11
-            BoundLabel.Font.Name = 'Tahoma'
-            BoundLabel.Font.Style = []
-            BoundLabel.Layout = sclLeft
-            BoundLabel.MaxWidth = 0
-            BoundLabel.UseSkinColor = True
           end
           object edtFirstname: TsEdit
             Left = 196
@@ -303,15 +288,6 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             TabOrder = 2
             OnChange = cmbGenderChange
             SkinData.SkinSection = 'EDIT'
-            BoundLabel.Indent = 0
-            BoundLabel.Font.Charset = DEFAULT_CHARSET
-            BoundLabel.Font.Color = clWindowText
-            BoundLabel.Font.Height = -11
-            BoundLabel.Font.Name = 'Tahoma'
-            BoundLabel.Font.Style = []
-            BoundLabel.Layout = sclLeft
-            BoundLabel.MaxWidth = 0
-            BoundLabel.UseSkinColor = True
           end
           object edtLastname: TsEdit
             Left = 196
@@ -328,15 +304,6 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             TabOrder = 3
             OnChange = cmbGenderChange
             SkinData.SkinSection = 'EDIT'
-            BoundLabel.Indent = 0
-            BoundLabel.Font.Charset = DEFAULT_CHARSET
-            BoundLabel.Font.Color = clWindowText
-            BoundLabel.Font.Height = -11
-            BoundLabel.Font.Name = 'Tahoma'
-            BoundLabel.Font.Style = []
-            BoundLabel.Layout = sclLeft
-            BoundLabel.MaxWidth = 0
-            BoundLabel.UseSkinColor = True
           end
           object edtProfession: TsEdit
             Left = 196
@@ -353,15 +320,6 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             TabOrder = 5
             OnChange = cmbGenderChange
             SkinData.SkinSection = 'EDIT'
-            BoundLabel.Indent = 0
-            BoundLabel.Font.Charset = DEFAULT_CHARSET
-            BoundLabel.Font.Color = clWindowText
-            BoundLabel.Font.Height = -11
-            BoundLabel.Font.Name = 'Tahoma'
-            BoundLabel.Font.Style = []
-            BoundLabel.Layout = sclLeft
-            BoundLabel.MaxWidth = 0
-            BoundLabel.UseSkinColor = True
           end
           object edtNationality: TsEdit
             Left = 197
@@ -380,15 +338,6 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             OnChange = cmbGenderChange
             OnDblClick = sSpeedButton2Click
             SkinData.SkinSection = 'EDIT'
-            BoundLabel.Indent = 0
-            BoundLabel.Font.Charset = DEFAULT_CHARSET
-            BoundLabel.Font.Color = clWindowText
-            BoundLabel.Font.Height = -11
-            BoundLabel.Font.Name = 'Tahoma'
-            BoundLabel.Font.Style = []
-            BoundLabel.Layout = sclLeft
-            BoundLabel.MaxWidth = 0
-            BoundLabel.UseSkinColor = True
           end
           object edtBirthday: TsDateEdit
             Left = 197
@@ -408,15 +357,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             TabOrder = 7
             Text = '  -  -    '
             OnChange = edtBirthdayChange
-            BoundLabel.Indent = 0
-            BoundLabel.Font.Charset = DEFAULT_CHARSET
-            BoundLabel.Font.Color = clWindowText
-            BoundLabel.Font.Height = -11
-            BoundLabel.Font.Name = 'Tahoma'
-            BoundLabel.Font.Style = []
-            BoundLabel.Layout = sclLeft
-            BoundLabel.MaxWidth = 0
-            BoundLabel.UseSkinColor = True
+            CheckOnExit = True
             SkinData.SkinSection = 'EDIT'
             GlyphMode.Blend = 0
             GlyphMode.Grayed = False
@@ -436,15 +377,6 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             TabOrder = 8
             OnChange = cmbGenderChange
             SkinData.SkinSection = 'EDIT'
-            BoundLabel.Indent = 0
-            BoundLabel.Font.Charset = DEFAULT_CHARSET
-            BoundLabel.Font.Color = clWindowText
-            BoundLabel.Font.Height = -11
-            BoundLabel.Font.Name = 'Tahoma'
-            BoundLabel.Font.Style = []
-            BoundLabel.Layout = sclLeft
-            BoundLabel.MaxWidth = 0
-            BoundLabel.UseSkinColor = True
           end
           object edtPassportExpiry: TsDateEdit
             Left = 197
@@ -464,15 +396,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             TabOrder = 9
             Text = '  -  -    '
             OnChange = edtBirthdayChange
-            BoundLabel.Indent = 0
-            BoundLabel.Font.Charset = DEFAULT_CHARSET
-            BoundLabel.Font.Color = clWindowText
-            BoundLabel.Font.Height = -11
-            BoundLabel.Font.Name = 'Tahoma'
-            BoundLabel.Font.Style = []
-            BoundLabel.Layout = sclLeft
-            BoundLabel.MaxWidth = 0
-            BoundLabel.UseSkinColor = True
+            CheckOnExit = True
             SkinData.SkinSection = 'EDIT'
             GlyphMode.Blend = 0
             GlyphMode.Grayed = False
@@ -492,15 +416,6 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             TabOrder = 4
             OnChange = cmbGenderChange
             SkinData.SkinSection = 'EDIT'
-            BoundLabel.Indent = 0
-            BoundLabel.Font.Charset = DEFAULT_CHARSET
-            BoundLabel.Font.Color = clWindowText
-            BoundLabel.Font.Height = -11
-            BoundLabel.Font.Name = 'Tahoma'
-            BoundLabel.Font.Style = []
-            BoundLabel.Layout = sclLeft
-            BoundLabel.MaxWidth = 0
-            BoundLabel.UseSkinColor = True
           end
         end
         object sGroupBox2: TsGroupBox
@@ -516,6 +431,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
           Caption = 'Spouse'
           TabOrder = 1
           SkinData.SkinSection = 'GROUPBOX'
+          Checked = False
           object sLabel8: TsLabel
             Left = 82
             Top = 32
@@ -559,15 +475,6 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             TabOrder = 0
             OnChange = cmbGenderChange
             SkinData.SkinSection = 'EDIT'
-            BoundLabel.Indent = 0
-            BoundLabel.Font.Charset = DEFAULT_CHARSET
-            BoundLabel.Font.Color = clWindowText
-            BoundLabel.Font.Height = -11
-            BoundLabel.Font.Name = 'Tahoma'
-            BoundLabel.Font.Style = []
-            BoundLabel.Layout = sclLeft
-            BoundLabel.MaxWidth = 0
-            BoundLabel.UseSkinColor = True
           end
           object edtSpouseBirthdate: TsDateEdit
             Left = 197
@@ -587,15 +494,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             TabOrder = 1
             Text = '  -  -    '
             OnChange = edtBirthdayChange
-            BoundLabel.Indent = 0
-            BoundLabel.Font.Charset = DEFAULT_CHARSET
-            BoundLabel.Font.Color = clWindowText
-            BoundLabel.Font.Height = -11
-            BoundLabel.Font.Name = 'Tahoma'
-            BoundLabel.Font.Style = []
-            BoundLabel.Layout = sclLeft
-            BoundLabel.MaxWidth = 0
-            BoundLabel.UseSkinColor = True
+            CheckOnExit = True
             SkinData.SkinSection = 'EDIT'
             GlyphMode.Blend = 0
             GlyphMode.Grayed = False
@@ -614,6 +513,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
           Caption = 'Extra'
           TabOrder = 2
           SkinData.SkinSection = 'GROUPBOX'
+          Checked = False
           object sLabel12: TsLabel
             Left = 80
             Top = 59
@@ -657,15 +557,6 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             TabOrder = 0
             OnChange = cmbGenderChange
             SkinData.SkinSection = 'EDIT'
-            BoundLabel.Indent = 0
-            BoundLabel.Font.Charset = DEFAULT_CHARSET
-            BoundLabel.Font.Color = clWindowText
-            BoundLabel.Font.Height = -11
-            BoundLabel.Font.Name = 'Tahoma'
-            BoundLabel.Font.Style = []
-            BoundLabel.Layout = sclLeft
-            BoundLabel.MaxWidth = 0
-            BoundLabel.UseSkinColor = True
           end
           object edtLicensePlate: TsEdit
             Left = 197
@@ -682,15 +573,6 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             TabOrder = 1
             OnChange = cmbGenderChange
             SkinData.SkinSection = 'EDIT'
-            BoundLabel.Indent = 0
-            BoundLabel.Font.Charset = DEFAULT_CHARSET
-            BoundLabel.Font.Color = clWindowText
-            BoundLabel.Font.Height = -11
-            BoundLabel.Font.Name = 'Tahoma'
-            BoundLabel.Font.Style = []
-            BoundLabel.Layout = sclLeft
-            BoundLabel.MaxWidth = 0
-            BoundLabel.UseSkinColor = True
           end
         end
         object pnlChecksPerson: TsPanel
@@ -859,8 +741,6 @@ object frmGuestPortfolio: TfrmGuestPortfolio
       end
       object sTabSheet7: TsTabSheet
         Caption = 'Contact'
-        SkinData.CustomColor = False
-        SkinData.CustomFont = False
         ExplicitLeft = 0
         ExplicitTop = 0
         ExplicitWidth = 0
@@ -878,6 +758,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
           Caption = 'Internet'
           TabOrder = 0
           SkinData.SkinSection = 'GROUPBOX'
+          Checked = False
           object sLabel19: TsLabel
             Left = 139
             Top = 38
@@ -992,15 +873,6 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             TabOrder = 0
             OnChange = cmbGenderChange
             SkinData.SkinSection = 'EDIT'
-            BoundLabel.Indent = 0
-            BoundLabel.Font.Charset = DEFAULT_CHARSET
-            BoundLabel.Font.Color = clWindowText
-            BoundLabel.Font.Height = -11
-            BoundLabel.Font.Name = 'Tahoma'
-            BoundLabel.Font.Style = []
-            BoundLabel.Layout = sclLeft
-            BoundLabel.MaxWidth = 0
-            BoundLabel.UseSkinColor = True
           end
           object edtWebsite: TsEdit
             Tag = 12
@@ -1018,15 +890,6 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             TabOrder = 1
             OnChange = cmbGenderChange
             SkinData.SkinSection = 'EDIT'
-            BoundLabel.Indent = 0
-            BoundLabel.Font.Charset = DEFAULT_CHARSET
-            BoundLabel.Font.Color = clWindowText
-            BoundLabel.Font.Height = -11
-            BoundLabel.Font.Name = 'Tahoma'
-            BoundLabel.Font.Style = []
-            BoundLabel.Layout = sclLeft
-            BoundLabel.MaxWidth = 0
-            BoundLabel.UseSkinColor = True
           end
           object edtSkype: TsEdit
             Tag = 13
@@ -1044,15 +907,6 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             TabOrder = 2
             OnChange = cmbGenderChange
             SkinData.SkinSection = 'EDIT'
-            BoundLabel.Indent = 0
-            BoundLabel.Font.Charset = DEFAULT_CHARSET
-            BoundLabel.Font.Color = clWindowText
-            BoundLabel.Font.Height = -11
-            BoundLabel.Font.Name = 'Tahoma'
-            BoundLabel.Font.Style = []
-            BoundLabel.Layout = sclLeft
-            BoundLabel.MaxWidth = 0
-            BoundLabel.UseSkinColor = True
           end
           object edtTwitter: TsEdit
             Tag = 14
@@ -1070,15 +924,6 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             TabOrder = 3
             OnChange = cmbGenderChange
             SkinData.SkinSection = 'EDIT'
-            BoundLabel.Indent = 0
-            BoundLabel.Font.Charset = DEFAULT_CHARSET
-            BoundLabel.Font.Color = clWindowText
-            BoundLabel.Font.Height = -11
-            BoundLabel.Font.Name = 'Tahoma'
-            BoundLabel.Font.Style = []
-            BoundLabel.Layout = sclLeft
-            BoundLabel.MaxWidth = 0
-            BoundLabel.UseSkinColor = True
           end
           object edtLinkedIn: TsEdit
             Tag = 15
@@ -1096,15 +941,6 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             TabOrder = 4
             OnChange = cmbGenderChange
             SkinData.SkinSection = 'EDIT'
-            BoundLabel.Indent = 0
-            BoundLabel.Font.Charset = DEFAULT_CHARSET
-            BoundLabel.Font.Color = clWindowText
-            BoundLabel.Font.Height = -11
-            BoundLabel.Font.Name = 'Tahoma'
-            BoundLabel.Font.Style = []
-            BoundLabel.Layout = sclLeft
-            BoundLabel.MaxWidth = 0
-            BoundLabel.UseSkinColor = True
           end
           object btnEmail: TsButton
             Tag = 11
@@ -1187,15 +1023,6 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             TabOrder = 5
             OnChange = cmbGenderChange
             SkinData.SkinSection = 'EDIT'
-            BoundLabel.Indent = 0
-            BoundLabel.Font.Charset = DEFAULT_CHARSET
-            BoundLabel.Font.Color = clWindowText
-            BoundLabel.Font.Height = -11
-            BoundLabel.Font.Name = 'Tahoma'
-            BoundLabel.Font.Style = []
-            BoundLabel.Layout = sclLeft
-            BoundLabel.MaxWidth = 0
-            BoundLabel.UseSkinColor = True
           end
           object edtTripadvisor: TsEdit
             Tag = 15
@@ -1213,15 +1040,6 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             TabOrder = 6
             OnChange = cmbGenderChange
             SkinData.SkinSection = 'EDIT'
-            BoundLabel.Indent = 0
-            BoundLabel.Font.Charset = DEFAULT_CHARSET
-            BoundLabel.Font.Color = clWindowText
-            BoundLabel.Font.Height = -11
-            BoundLabel.Font.Name = 'Tahoma'
-            BoundLabel.Font.Style = []
-            BoundLabel.Layout = sclLeft
-            BoundLabel.MaxWidth = 0
-            BoundLabel.UseSkinColor = True
           end
         end
         object sGroupBox5: TsGroupBox
@@ -1238,6 +1056,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
           Caption = 'Home address:'
           TabOrder = 1
           SkinData.SkinSection = 'GROUPBOX'
+          Checked = False
           object sLabel18: TsLabel
             Left = 124
             Top = 38
@@ -1355,15 +1174,6 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             TabOrder = 0
             OnChange = cmbGenderChange
             SkinData.SkinSection = 'EDIT'
-            BoundLabel.Indent = 0
-            BoundLabel.Font.Charset = DEFAULT_CHARSET
-            BoundLabel.Font.Color = clWindowText
-            BoundLabel.Font.Height = -11
-            BoundLabel.Font.Name = 'Tahoma'
-            BoundLabel.Font.Style = []
-            BoundLabel.Layout = sclLeft
-            BoundLabel.MaxWidth = 0
-            BoundLabel.UseSkinColor = True
           end
           object edtAddress2: TsEdit
             Left = 201
@@ -1380,15 +1190,6 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             TabOrder = 1
             OnChange = cmbGenderChange
             SkinData.SkinSection = 'EDIT'
-            BoundLabel.Indent = 0
-            BoundLabel.Font.Charset = DEFAULT_CHARSET
-            BoundLabel.Font.Color = clWindowText
-            BoundLabel.Font.Height = -11
-            BoundLabel.Font.Name = 'Tahoma'
-            BoundLabel.Font.Style = []
-            BoundLabel.Layout = sclLeft
-            BoundLabel.MaxWidth = 0
-            BoundLabel.UseSkinColor = True
           end
           object edtZip: TsEdit
             Left = 201
@@ -1405,15 +1206,6 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             TabOrder = 2
             OnChange = cmbGenderChange
             SkinData.SkinSection = 'EDIT'
-            BoundLabel.Indent = 0
-            BoundLabel.Font.Charset = DEFAULT_CHARSET
-            BoundLabel.Font.Color = clWindowText
-            BoundLabel.Font.Height = -11
-            BoundLabel.Font.Name = 'Tahoma'
-            BoundLabel.Font.Style = []
-            BoundLabel.Layout = sclLeft
-            BoundLabel.MaxWidth = 0
-            BoundLabel.UseSkinColor = True
           end
           object edtCity: TsEdit
             Left = 201
@@ -1430,15 +1222,6 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             TabOrder = 3
             OnChange = cmbGenderChange
             SkinData.SkinSection = 'EDIT'
-            BoundLabel.Indent = 0
-            BoundLabel.Font.Charset = DEFAULT_CHARSET
-            BoundLabel.Font.Color = clWindowText
-            BoundLabel.Font.Height = -11
-            BoundLabel.Font.Name = 'Tahoma'
-            BoundLabel.Font.Style = []
-            BoundLabel.Layout = sclLeft
-            BoundLabel.MaxWidth = 0
-            BoundLabel.UseSkinColor = True
           end
           object edtState: TsEdit
             Left = 201
@@ -1455,15 +1238,6 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             TabOrder = 4
             OnChange = cmbGenderChange
             SkinData.SkinSection = 'EDIT'
-            BoundLabel.Indent = 0
-            BoundLabel.Font.Charset = DEFAULT_CHARSET
-            BoundLabel.Font.Color = clWindowText
-            BoundLabel.Font.Height = -11
-            BoundLabel.Font.Name = 'Tahoma'
-            BoundLabel.Font.Style = []
-            BoundLabel.Layout = sclLeft
-            BoundLabel.MaxWidth = 0
-            BoundLabel.UseSkinColor = True
           end
           object edtCountry: TsEdit
             Left = 201
@@ -1481,15 +1255,6 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             TextHint = 'Dbl click for list'
             OnChange = cmbGenderChange
             SkinData.SkinSection = 'EDIT'
-            BoundLabel.Indent = 0
-            BoundLabel.Font.Charset = DEFAULT_CHARSET
-            BoundLabel.Font.Color = clWindowText
-            BoundLabel.Font.Height = -11
-            BoundLabel.Font.Name = 'Tahoma'
-            BoundLabel.Font.Style = []
-            BoundLabel.Layout = sclLeft
-            BoundLabel.MaxWidth = 0
-            BoundLabel.UseSkinColor = True
           end
         end
         object sGroupBox6: TsGroupBox
@@ -1505,6 +1270,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
           Caption = 'Telephone'
           TabOrder = 2
           SkinData.SkinSection = 'GROUPBOX'
+          Checked = False
           object sLabel23: TsLabel
             Left = 124
             Top = 38
@@ -1562,15 +1328,6 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             TabOrder = 0
             OnChange = cmbGenderChange
             SkinData.SkinSection = 'EDIT'
-            BoundLabel.Indent = 0
-            BoundLabel.Font.Charset = DEFAULT_CHARSET
-            BoundLabel.Font.Color = clWindowText
-            BoundLabel.Font.Height = -11
-            BoundLabel.Font.Name = 'Tahoma'
-            BoundLabel.Font.Style = []
-            BoundLabel.Layout = sclLeft
-            BoundLabel.MaxWidth = 0
-            BoundLabel.UseSkinColor = True
           end
           object edtMobile: TsEdit
             Left = 201
@@ -1587,15 +1344,6 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             TabOrder = 1
             OnChange = cmbGenderChange
             SkinData.SkinSection = 'EDIT'
-            BoundLabel.Indent = 0
-            BoundLabel.Font.Charset = DEFAULT_CHARSET
-            BoundLabel.Font.Color = clWindowText
-            BoundLabel.Font.Height = -11
-            BoundLabel.Font.Name = 'Tahoma'
-            BoundLabel.Font.Style = []
-            BoundLabel.Layout = sclLeft
-            BoundLabel.MaxWidth = 0
-            BoundLabel.UseSkinColor = True
           end
           object edtFax: TsEdit
             Left = 201
@@ -1612,15 +1360,6 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             TabOrder = 2
             OnChange = cmbGenderChange
             SkinData.SkinSection = 'EDIT'
-            BoundLabel.Indent = 0
-            BoundLabel.Font.Charset = DEFAULT_CHARSET
-            BoundLabel.Font.Color = clWindowText
-            BoundLabel.Font.Height = -11
-            BoundLabel.Font.Name = 'Tahoma'
-            BoundLabel.Font.Style = []
-            BoundLabel.Layout = sclLeft
-            BoundLabel.MaxWidth = 0
-            BoundLabel.UseSkinColor = True
           end
         end
         object pnlChecksContact: TsPanel
@@ -1811,8 +1550,6 @@ object frmGuestPortfolio: TfrmGuestPortfolio
       end
       object sTabSheet2: TsTabSheet
         Caption = 'Company'
-        SkinData.CustomColor = False
-        SkinData.CustomFont = False
         ExplicitLeft = 0
         ExplicitTop = 0
         ExplicitWidth = 0
@@ -1831,6 +1568,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
           Caption = 'Company info'
           TabOrder = 0
           SkinData.SkinSection = 'GROUPBOX'
+          Checked = False
           object sLabel14: TsLabel
             Left = 91
             Top = 41
@@ -2023,15 +1761,6 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             TabOrder = 0
             OnChange = cmbGenderChange
             SkinData.SkinSection = 'EDIT'
-            BoundLabel.Indent = 0
-            BoundLabel.Font.Charset = DEFAULT_CHARSET
-            BoundLabel.Font.Color = clWindowText
-            BoundLabel.Font.Height = -11
-            BoundLabel.Font.Name = 'Tahoma'
-            BoundLabel.Font.Style = []
-            BoundLabel.Layout = sclLeft
-            BoundLabel.MaxWidth = 0
-            BoundLabel.UseSkinColor = True
           end
           object edtCompName: TsEdit
             Left = 201
@@ -2048,15 +1777,6 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             TabOrder = 2
             OnChange = cmbGenderChange
             SkinData.SkinSection = 'EDIT'
-            BoundLabel.Indent = 0
-            BoundLabel.Font.Charset = DEFAULT_CHARSET
-            BoundLabel.Font.Color = clWindowText
-            BoundLabel.Font.Height = -11
-            BoundLabel.Font.Name = 'Tahoma'
-            BoundLabel.Font.Style = []
-            BoundLabel.Layout = sclLeft
-            BoundLabel.MaxWidth = 0
-            BoundLabel.UseSkinColor = True
           end
           object edtCompAddress1: TsEdit
             Left = 201
@@ -2073,15 +1793,6 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             TabOrder = 3
             OnChange = cmbGenderChange
             SkinData.SkinSection = 'EDIT'
-            BoundLabel.Indent = 0
-            BoundLabel.Font.Charset = DEFAULT_CHARSET
-            BoundLabel.Font.Color = clWindowText
-            BoundLabel.Font.Height = -11
-            BoundLabel.Font.Name = 'Tahoma'
-            BoundLabel.Font.Style = []
-            BoundLabel.Layout = sclLeft
-            BoundLabel.MaxWidth = 0
-            BoundLabel.UseSkinColor = True
           end
           object edtCompAddress2: TsEdit
             Left = 201
@@ -2098,15 +1809,6 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             TabOrder = 4
             OnChange = cmbGenderChange
             SkinData.SkinSection = 'EDIT'
-            BoundLabel.Indent = 0
-            BoundLabel.Font.Charset = DEFAULT_CHARSET
-            BoundLabel.Font.Color = clWindowText
-            BoundLabel.Font.Height = -11
-            BoundLabel.Font.Name = 'Tahoma'
-            BoundLabel.Font.Style = []
-            BoundLabel.Layout = sclLeft
-            BoundLabel.MaxWidth = 0
-            BoundLabel.UseSkinColor = True
           end
           object edtCompZip: TsEdit
             Left = 201
@@ -2123,15 +1825,6 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             TabOrder = 5
             OnChange = cmbGenderChange
             SkinData.SkinSection = 'EDIT'
-            BoundLabel.Indent = 0
-            BoundLabel.Font.Charset = DEFAULT_CHARSET
-            BoundLabel.Font.Color = clWindowText
-            BoundLabel.Font.Height = -11
-            BoundLabel.Font.Name = 'Tahoma'
-            BoundLabel.Font.Style = []
-            BoundLabel.Layout = sclLeft
-            BoundLabel.MaxWidth = 0
-            BoundLabel.UseSkinColor = True
           end
           object edtCompCity: TsEdit
             Left = 201
@@ -2148,15 +1841,6 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             TabOrder = 6
             OnChange = cmbGenderChange
             SkinData.SkinSection = 'EDIT'
-            BoundLabel.Indent = 0
-            BoundLabel.Font.Charset = DEFAULT_CHARSET
-            BoundLabel.Font.Color = clWindowText
-            BoundLabel.Font.Height = -11
-            BoundLabel.Font.Name = 'Tahoma'
-            BoundLabel.Font.Style = []
-            BoundLabel.Layout = sclLeft
-            BoundLabel.MaxWidth = 0
-            BoundLabel.UseSkinColor = True
           end
           object edtCompState: TsEdit
             Left = 201
@@ -2173,15 +1857,6 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             TabOrder = 7
             OnChange = cmbGenderChange
             SkinData.SkinSection = 'EDIT'
-            BoundLabel.Indent = 0
-            BoundLabel.Font.Charset = DEFAULT_CHARSET
-            BoundLabel.Font.Color = clWindowText
-            BoundLabel.Font.Height = -11
-            BoundLabel.Font.Name = 'Tahoma'
-            BoundLabel.Font.Style = []
-            BoundLabel.Layout = sclLeft
-            BoundLabel.MaxWidth = 0
-            BoundLabel.UseSkinColor = True
           end
           object edtCompCountry: TsEdit
             Left = 201
@@ -2198,15 +1873,6 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             TabOrder = 8
             OnChange = cmbGenderChange
             SkinData.SkinSection = 'EDIT'
-            BoundLabel.Indent = 0
-            BoundLabel.Font.Charset = DEFAULT_CHARSET
-            BoundLabel.Font.Color = clWindowText
-            BoundLabel.Font.Height = -11
-            BoundLabel.Font.Name = 'Tahoma'
-            BoundLabel.Font.Style = []
-            BoundLabel.Layout = sclLeft
-            BoundLabel.MaxWidth = 0
-            BoundLabel.UseSkinColor = True
           end
           object edtVAT: TsEdit
             Left = 201
@@ -2223,15 +1889,6 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             TabOrder = 1
             OnChange = cmbGenderChange
             SkinData.SkinSection = 'EDIT'
-            BoundLabel.Indent = 0
-            BoundLabel.Font.Charset = DEFAULT_CHARSET
-            BoundLabel.Font.Color = clWindowText
-            BoundLabel.Font.Height = -11
-            BoundLabel.Font.Name = 'Tahoma'
-            BoundLabel.Font.Style = []
-            BoundLabel.Layout = sclLeft
-            BoundLabel.MaxWidth = 0
-            BoundLabel.UseSkinColor = True
           end
         end
         object sGroupBox8: TsGroupBox
@@ -2247,6 +1904,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
           Caption = 'Contact'
           TabOrder = 1
           SkinData.SkinSection = 'GROUPBOX'
+          Checked = False
           object sLabel33: TsLabel
             Left = 113
             Top = 38
@@ -2304,15 +1962,6 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             TabOrder = 0
             OnChange = cmbGenderChange
             SkinData.SkinSection = 'EDIT'
-            BoundLabel.Indent = 0
-            BoundLabel.Font.Charset = DEFAULT_CHARSET
-            BoundLabel.Font.Color = clWindowText
-            BoundLabel.Font.Height = -11
-            BoundLabel.Font.Name = 'Tahoma'
-            BoundLabel.Font.Style = []
-            BoundLabel.Layout = sclLeft
-            BoundLabel.MaxWidth = 0
-            BoundLabel.UseSkinColor = True
           end
           object edtCompEmail: TsEdit
             Left = 200
@@ -2329,15 +1978,6 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             TabOrder = 2
             OnChange = cmbGenderChange
             SkinData.SkinSection = 'EDIT'
-            BoundLabel.Indent = 0
-            BoundLabel.Font.Charset = DEFAULT_CHARSET
-            BoundLabel.Font.Color = clWindowText
-            BoundLabel.Font.Height = -11
-            BoundLabel.Font.Name = 'Tahoma'
-            BoundLabel.Font.Style = []
-            BoundLabel.Layout = sclLeft
-            BoundLabel.MaxWidth = 0
-            BoundLabel.UseSkinColor = True
           end
           object btnEmailComp: TsButton
             Left = 495
@@ -2365,15 +2005,6 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             TabOrder = 1
             OnChange = cmbGenderChange
             SkinData.SkinSection = 'EDIT'
-            BoundLabel.Indent = 0
-            BoundLabel.Font.Charset = DEFAULT_CHARSET
-            BoundLabel.Font.Color = clWindowText
-            BoundLabel.Font.Height = -11
-            BoundLabel.Font.Name = 'Tahoma'
-            BoundLabel.Font.Style = []
-            BoundLabel.Layout = sclLeft
-            BoundLabel.MaxWidth = 0
-            BoundLabel.UseSkinColor = True
           end
         end
         object pnlChecksCompany: TsPanel
@@ -2520,8 +2151,6 @@ object frmGuestPortfolio: TfrmGuestPortfolio
       end
       object sTabSheet4: TsTabSheet
         Caption = 'Preferences'
-        SkinData.CustomColor = False
-        SkinData.CustomFont = False
         ExplicitLeft = 0
         ExplicitTop = 0
         ExplicitWidth = 0
@@ -2540,6 +2169,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
           Caption = 'Guest preferences'
           TabOrder = 0
           SkinData.SkinSection = 'GROUPBOX'
+          Checked = False
           object sLabel35: TsLabel
             Left = 100
             Top = 41
@@ -2689,15 +2319,6 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             TabOrder = 0
             OnChange = cmbGenderChange
             SkinData.SkinSection = 'EDIT'
-            BoundLabel.Indent = 0
-            BoundLabel.Font.Charset = DEFAULT_CHARSET
-            BoundLabel.Font.Color = clWindowText
-            BoundLabel.Font.Height = -11
-            BoundLabel.Font.Name = 'Tahoma'
-            BoundLabel.Font.Style = []
-            BoundLabel.Layout = sclLeft
-            BoundLabel.MaxWidth = 0
-            BoundLabel.UseSkinColor = True
           end
           object edtRoomType: TsEdit
             Left = 201
@@ -2714,15 +2335,6 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             TabOrder = 1
             OnChange = cmbGenderChange
             SkinData.SkinSection = 'EDIT'
-            BoundLabel.Indent = 0
-            BoundLabel.Font.Charset = DEFAULT_CHARSET
-            BoundLabel.Font.Color = clWindowText
-            BoundLabel.Font.Height = -11
-            BoundLabel.Font.Name = 'Tahoma'
-            BoundLabel.Font.Style = []
-            BoundLabel.Layout = sclLeft
-            BoundLabel.MaxWidth = 0
-            BoundLabel.UseSkinColor = True
           end
           object edtInvoiceAddress: TsComboBox
             Left = 201
@@ -2730,15 +2342,6 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Width = 118
             Height = 21
             Alignment = taLeftJustify
-            BoundLabel.Indent = 0
-            BoundLabel.Font.Charset = DEFAULT_CHARSET
-            BoundLabel.Font.Color = clWindowText
-            BoundLabel.Font.Height = -11
-            BoundLabel.Font.Name = 'Tahoma'
-            BoundLabel.Font.Style = []
-            BoundLabel.Layout = sclLeft
-            BoundLabel.MaxWidth = 0
-            BoundLabel.UseSkinColor = True
             SkinData.SkinSection = 'COMBOBOX'
             VerticalAlignment = taAlignTop
             Color = clWhite
@@ -2794,15 +2397,6 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             ParentFont = False
             TabOrder = 5
             OnChange = cmbGenderChange
-            BoundLabel.Indent = 0
-            BoundLabel.Font.Charset = DEFAULT_CHARSET
-            BoundLabel.Font.Color = clWindowText
-            BoundLabel.Font.Height = -11
-            BoundLabel.Font.Name = 'Tahoma'
-            BoundLabel.Font.Style = []
-            BoundLabel.Layout = sclLeft
-            BoundLabel.MaxWidth = 0
-            BoundLabel.UseSkinColor = True
             SkinData.SkinSection = 'EDIT'
           end
           object edtGuestNotes: TsMemo
@@ -2819,15 +2413,6 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             ParentFont = False
             TabOrder = 6
             OnChange = cmbGenderChange
-            BoundLabel.Indent = 0
-            BoundLabel.Font.Charset = DEFAULT_CHARSET
-            BoundLabel.Font.Color = clWindowText
-            BoundLabel.Font.Height = -11
-            BoundLabel.Font.Name = 'Tahoma'
-            BoundLabel.Font.Style = []
-            BoundLabel.Layout = sclLeft
-            BoundLabel.MaxWidth = 0
-            BoundLabel.UseSkinColor = True
             SkinData.SkinSection = 'EDIT'
           end
         end
@@ -2920,8 +2505,6 @@ object frmGuestPortfolio: TfrmGuestPortfolio
       end
       object tabHistory: TsTabSheet
         Caption = 'History'
-        SkinData.CustomColor = False
-        SkinData.CustomFont = False
         ExplicitLeft = 0
         ExplicitTop = 0
         ExplicitWidth = 0
@@ -3108,8 +2691,6 @@ object frmGuestPortfolio: TfrmGuestPortfolio
       end
       object tabInvoices: TsTabSheet
         Caption = 'Invoices'
-        SkinData.CustomColor = False
-        SkinData.CustomFont = False
         ExplicitLeft = 0
         ExplicitTop = 0
         ExplicitWidth = 0
@@ -3391,7 +2972,6 @@ object frmGuestPortfolio: TfrmGuestPortfolio
     Top = 192
     object prLink_grData: TdxGridReportLink
       Component = grData
-      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 5080
       PrinterPage.GrayShading = True
@@ -3405,7 +2985,6 @@ object frmGuestPortfolio: TfrmGuestPortfolio
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
       ReportDocument.CreationDate = 41334.495374884260000000
-      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       BuiltInReportLink = True
     end
   end

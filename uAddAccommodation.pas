@@ -71,6 +71,7 @@ implementation
 
 uses
     uRoomerLanguage
+  , uUtils
   , uDImages
   , uMain;
 
@@ -86,6 +87,7 @@ procedure TfrmAddAccommodation.FormCreate(Sender : TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
   glb.PerformAuthenticationAssertion(self);
+  PlaceFormOnVisibleMonitor(self);
 
   // **
   zPersons := 1;

@@ -744,7 +744,7 @@ end;
 procedure TfrmChannelTogglingRules.FormCreate(Sender: TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
-     glb.PerformAuthenticationAssertion(self);
+     glb.PerformAuthenticationAssertion(self); PlaceFormOnVisibleMonitor(self);
   PrepareWidgets;
 end;
 

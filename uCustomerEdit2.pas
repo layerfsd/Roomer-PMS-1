@@ -210,7 +210,8 @@ uses
   , uGuestPortfolioEdit
   , uFrmResources
   , uResourceManagement
-  , uDImages;
+  , uDImages
+  , uUtils;
 
 
 function openCustomerEdit(var theData : recCustomerHolder; isInsert : boolean; _financeCustomerList : TKeyPairList = nil) : boolean;
@@ -464,7 +465,8 @@ procedure TfrmCustomerEdit2.FormCreate(Sender: TObject);
 begin
   financeCustomerList := nil;
   RoomerLanguage.TranslateThisForm(self);
-     glb.PerformAuthenticationAssertion(self);
+  glb.PerformAuthenticationAssertion(self);
+  PlaceFormOnVisibleMonitor(self);
   pgMain.ActivePageIndex := 0;
 
   btnDocuments.Enabled := False;

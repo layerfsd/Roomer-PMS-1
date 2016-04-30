@@ -315,6 +315,7 @@ implementation
 uses
   prjConst
   , uSqlDefinitions
+  , uUtils
   , uCustomerEdit2
   , uFrmKeyPairSelector
   , uFrmResources
@@ -592,7 +593,8 @@ end;
 procedure TfrmCustomers2.FormCreate(Sender: TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
-     glb.PerformAuthenticationAssertion(self);
+  glb.PerformAuthenticationAssertion(self);
+  PlaceFormOnVisibleMonitor(self);
   //**
   Lookup := False;
   d.roomerMainDataSet.AssignPropertiesToDataSet(Memo_);

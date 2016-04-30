@@ -213,6 +213,7 @@ uses
 ,  uActivityLogs
 , uRoomerLanguage
 , uAppGlobal
+, uUtils
 ;
 
 
@@ -247,6 +248,7 @@ procedure TfrmInvoiceCompare.FormCreate(Sender: TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
   glb.PerformAuthenticationAssertion(self);
+  PlaceFormOnVisibleMonitor(self);
   //**
   zlistActivity := Tstringlist.Create;
 end;

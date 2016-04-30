@@ -152,7 +152,7 @@ object frmRptTurnoverAndPayments: TfrmRptTurnoverAndPayments
         Left = 15
         Top = 18
         Width = 107
-        Height = 19
+        Height = 17
         Caption = 'Get unconfirmed'
         TabOrder = 0
         OnClick = chkGetUnconfirmedClick
@@ -220,15 +220,13 @@ object frmRptTurnoverAndPayments: TfrmRptTurnoverAndPayments
     Top = 145
     Width = 1061
     Height = 481
-    ActivePage = sTabSheet1
+    ActivePage = sTabSheet6
     Align = alClient
     TabOrder = 2
     OnChange = sPageControl1Change
     SkinData.SkinSection = 'PAGECONTROL'
     object sTabSheet1: TsTabSheet
       Caption = 'Sum Turnover'
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
       object sPanel1: TsPanel
         Left = 0
         Top = 0
@@ -358,8 +356,6 @@ object frmRptTurnoverAndPayments: TfrmRptTurnoverAndPayments
     end
     object Payments: TsTabSheet
       Caption = 'Sum Payments'
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
       object grPayments: TcxGrid
         Left = 0
         Top = 44
@@ -472,8 +468,6 @@ object frmRptTurnoverAndPayments: TfrmRptTurnoverAndPayments
     end
     object sTabSheet2: TsTabSheet
       Caption = 'List Unpaid roomrent'
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
       object sPanel4: TsPanel
         Left = 0
         Top = 0
@@ -623,8 +617,6 @@ object frmRptTurnoverAndPayments: TfrmRptTurnoverAndPayments
     end
     object sTabSheet3: TsTabSheet
       Caption = 'List Invoiced Roomrent'
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
       object sPanel3: TsPanel
         Left = 0
         Top = 0
@@ -666,6 +658,8 @@ object frmRptTurnoverAndPayments: TfrmRptTurnoverAndPayments
         Align = alClient
         TabOrder = 1
         LookAndFeel.NativeStyle = False
+        ExplicitLeft = 2
+        ExplicitTop = 45
         object tvRoomrentOnInvoice: TcxGridDBTableView
           Navigator.Buttons.CustomButtons = <>
           DataController.DataSource = d.RoomRentOnInvoiceDS
@@ -785,8 +779,6 @@ object frmRptTurnoverAndPayments: TfrmRptTurnoverAndPayments
     end
     object sTabSheet4: TsTabSheet
       Caption = 'List Invoices'
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
       object sPanel5: TsPanel
         Left = 0
         Top = 0
@@ -863,6 +855,7 @@ object frmRptTurnoverAndPayments: TfrmRptTurnoverAndPayments
         Align = alClient
         TabOrder = 1
         LookAndFeel.NativeStyle = False
+        ExplicitTop = 45
         object tvInvoiceHeads: TcxGridDBTableView
           Navigator.Buttons.CustomButtons = <>
           Navigator.Buttons.First.Visible = True
@@ -1266,8 +1259,6 @@ object frmRptTurnoverAndPayments: TfrmRptTurnoverAndPayments
     end
     object sTabSheet6: TsTabSheet
       Caption = 'Unconfirmed items'
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
       object sPanel7: TsPanel
         Left = 0
         Top = 0
@@ -1453,8 +1444,6 @@ object frmRptTurnoverAndPayments: TfrmRptTurnoverAndPayments
     end
     object sTabSheet7: TsTabSheet
       Caption = 'Confirmed Item Changed Price'
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
       object sPanel8: TsPanel
         Left = 0
         Top = 0
@@ -1630,8 +1619,6 @@ object frmRptTurnoverAndPayments: TfrmRptTurnoverAndPayments
     end
     object sTabSheet8: TsTabSheet
       Caption = 'Confirmed Roomrent Pricechange'
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
       object sPanel9: TsPanel
         Left = 0
         Top = 0
@@ -1802,8 +1789,6 @@ object frmRptTurnoverAndPayments: TfrmRptTurnoverAndPayments
     end
     object sTabSheet5: TsTabSheet
       Caption = 'PaymentList'
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
       object sPanel6: TsPanel
         Left = 0
         Top = 0
@@ -1857,6 +1842,7 @@ object frmRptTurnoverAndPayments: TfrmRptTurnoverAndPayments
         Align = alClient
         TabOrder = 1
         LookAndFeel.NativeStyle = False
+        ExplicitTop = 45
         object tvPaymentList: TcxGridDBTableView
           Navigator.Buttons.CustomButtons = <>
           Navigator.Buttons.Insert.Enabled = False

@@ -324,7 +324,7 @@ end;
 procedure TfrmGroupGuests.FormCreate(Sender: TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
-  glb.PerformAuthenticationAssertion(self);
+  glb.PerformAuthenticationAssertion(self); PlaceFormOnVisibleMonitor(self);
 end;
 
 procedure TfrmGroupGuests.FormShow(Sender: TObject);

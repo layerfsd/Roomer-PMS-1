@@ -98,7 +98,7 @@ end;
 procedure TFrmHandleBookKeepingException.FormCreate(Sender: TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
-     glb.PerformAuthenticationAssertion(self);
+     glb.PerformAuthenticationAssertion(self); PlaceFormOnVisibleMonitor(self);
 end;
 
 procedure TFrmHandleBookKeepingException.sButton1Click(Sender: TObject);

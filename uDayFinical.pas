@@ -767,7 +767,7 @@ end;
 procedure TfrmDayFinical.FormCreate(Sender : TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
-   glb.PerformAuthenticationAssertion(self);
+   glb.PerformAuthenticationAssertion(self); PlaceFormOnVisibleMonitor(self);
   // **
   dtDate.date := date - 1;
   dtDateTo.date := date - 1;

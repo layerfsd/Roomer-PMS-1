@@ -654,7 +654,7 @@ begin
   embedded := False;
   EmbedWindowCloseEvent := nil;
   RoomerLanguage.TranslateThisForm(self);
-     glb.PerformAuthenticationAssertion(self);
+     glb.PerformAuthenticationAssertion(self); PlaceFormOnVisibleMonitor(self);
   //**
   zFirstTime  := true;
   zAct        := actNone;

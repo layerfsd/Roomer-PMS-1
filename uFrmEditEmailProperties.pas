@@ -31,12 +31,14 @@ implementation
 
 uses uRoomerLanguage,
      uAppGlobal
+     , uUtils
      ;
 
 procedure TFrmEditEmailProperties.FormCreate(Sender: TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
   glb.PerformAuthenticationAssertion(self);
+  PlaceFormOnVisibleMonitor(self);
 end;
 
 end.

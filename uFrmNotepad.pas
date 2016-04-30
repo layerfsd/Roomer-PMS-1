@@ -29,7 +29,7 @@ implementation
 
 {$R *.dfm}
 
-uses uRoomerLanguage;
+uses uRoomerLanguage, uUtils;
 
 function EditText(Caption, text : String) : String;
 var FrmNotepad: TFrmNotepad;
@@ -50,6 +50,7 @@ procedure TFrmNotepad.FormCreate(Sender: TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
      glb.PerformAuthenticationAssertion(self);
+  PlaceFormOnVisibleMonitor(self);
 end;
 
 end.
