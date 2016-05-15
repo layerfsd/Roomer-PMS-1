@@ -17,6 +17,7 @@ object frmCountries: TfrmCountries
   ShowHint = True
   OnClose = FormClose
   OnCreate = FormCreate
+  OnKeyDown = FormKeyDown
   OnKeyPress = FormKeyPress
   PixelsPerInch = 96
   TextHeight = 13
@@ -167,8 +168,8 @@ object frmCountries: TfrmCountries
       object chkActive: TsCheckBox
         Left = 55
         Top = 63
-        Width = 234
-        Height = 20
+        Width = 242
+        Height = 17
         Caption = 'Active (if checked then just active are visible'
         Checked = True
         State = cbChecked
@@ -183,9 +184,9 @@ object frmCountries: TfrmCountries
         Top = 39
         Width = 216
         Height = 24
-        Color = 3355443
+        Color = clWhite
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 15724527
+        Font.Color = clBlack
         Font.Height = -13
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -525,6 +526,7 @@ object frmCountries: TfrmCountries
     Top = 184
     object prLink_grData: TdxGridReportLink
       Component = grData
+      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.GrayShading = True
@@ -537,6 +539,7 @@ object frmCountries: TfrmCountries
       PrinterPage.PageSize.Y = 297000
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
+      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       BuiltInReportLink = True
     end
   end

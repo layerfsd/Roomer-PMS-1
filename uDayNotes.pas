@@ -443,6 +443,9 @@ end;
 
 procedure TfrmDayNotes.FormKeyDown(Sender : TObject; var Key : Word; Shift : TShiftState);
 begin
+  if Key = VK_ESCAPE then
+    Close
+  else
   if Key = vk_F11 then
   begin
     if frmDayNotes.v then
@@ -1001,7 +1004,7 @@ begin
   s := s+'       roomtypes.NumberGuests, '#10;
   s := s+'       (SELECT COUNT(*) '#10;
   s := s+'        FROM rooms '#10;
-  s := s+'        WHERE rooms.RoomType=roomtypes.RoomType) - '#10;
+  s := s+'        WHERE rooms.Active=1 AND rooms.RoomType=roomtypes.RoomType) - '#10;
   s := s+'       (SELECT COUNT(*) '#10;
   s := s+'        FROM roomsdate '#10;
   s := s+'           LEFT JOIN roomreservations ON roomreservations.roomreservation=roomsdate.roomreservation '#10;
@@ -1018,7 +1021,7 @@ begin
   s := s+'        AND (roomsdate.ResFlag<>'+quotedStr('X')+') '#10;
   s := s+'        ) AS available '#10;
   s := s+'FROM predefineddates, roomtypes, control '#10;
-  s := s+'WHERE predefineddates.date>=%s AND predefineddates.date<=DATE_ADD(%s,INTERVAL %d DAY) '#10;
+  s := s+'WHERE roomtypes.Active=1 AND predefineddates.date>=%s AND predefineddates.date<=DATE_ADD(%s,INTERVAL %d DAY) '#10;
   s := s+'GROUP BY predefineddates.date, roomtypes.RoomType ';
 
 	s := format(s, [ _dateToDBDate(zCurrentDate,true),_dateToDBDate(zCurrentDate,true), zDaysToShow]);

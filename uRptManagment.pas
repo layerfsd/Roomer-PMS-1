@@ -118,6 +118,7 @@ type
     procedure tvStatsrevenueGetProperties(Sender: TcxCustomGridTableItem; ARecord: TcxCustomGridRecord;
       var AProperties: TcxCustomEditProperties);
     procedure sButton2Click(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     { Private declarations }
 
@@ -477,6 +478,12 @@ begin
   glb.PerformAuthenticationAssertion(self); PlaceFormOnVisibleMonitor(self);
   glb.fillListWithMonthsLong(cbxMonth.Items, 1);
   glb.fillListWithYears(cbxYear.Items, 1, False);
+end;
+
+procedure TfrmRptManagment.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then
+    Close;
 end;
 
 procedure TfrmRptManagment.FormShow(Sender: TObject);

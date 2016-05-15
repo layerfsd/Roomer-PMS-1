@@ -93,7 +93,7 @@ uses
   dxSkiniMaginary, dxSkinLilian, dxSkinLiquidSky, dxSkinLondonLiquidSky, dxSkinMoneyTwins, dxSkinOffice2007Black, dxSkinOffice2007Blue,
   dxSkinOffice2007Green, dxSkinOffice2007Pink, dxSkinOffice2007Silver, dxSkinOffice2010Black, dxSkinOffice2010Blue, dxSkinOffice2010Silver,
   dxSkinPumpkin, dxSkinSeven, dxSkinSevenClassic, dxSkinSharp, dxSkinSharpPlus, dxSkinSilver, dxSkinSpringTime, dxSkinStardust,
-  dxSkinSummer2008, dxSkinValentine, dxSkinVS2010, dxSkinWhiteprint, dxSkinXmas2008Blue
+  dxSkinSummer2008, dxSkinValentine, dxSkinVS2010, dxSkinWhiteprint, dxSkinXmas2008Blue, cxCurrencyEdit
 
   ;
 
@@ -233,6 +233,8 @@ type
     tvDatadefClosedToArrival: TcxGridDBColumn;
     tvDatadefClosedToDeparture: TcxGridDBColumn;
     tvDataColumn2: TcxGridDBColumn;
+    m_prepaidPercentage: TFloatField;
+    tvDataprepaidPercentage: TcxGridDBColumn;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormKeyPress(Sender: TObject; var Key: Char);
@@ -272,6 +274,7 @@ type
     procedure tvDataRATE_PLAN_TYPEPropertiesCloseUp(Sender: TObject);
     procedure m_AfterScroll(DataSet: TDataSet);
     procedure tvDataColumn2PropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     { Private declarations }
     zFirstTime       : boolean;
@@ -455,6 +458,7 @@ begin
         m_['connectCODToMasterRate'] := rSet['connectCODToMasterRate'];
         m_['connectLOSToMasterRate'] := rSet['connectLOSToMasterRate'];
         m_['RATE_PLAN_TYPE'] := rSet['RATE_PLAN_TYPE'];
+        m_['prepaidPercentage'] := rSet['prepaidPercentage'];
 
         m_.Post;
         rSet.Next;
@@ -544,6 +548,8 @@ begin
   zData.connectCODToMasterRate := m_['connectCODToMasterRate'];
   zData.connectLOSToMasterRate := m_['connectLOSToMasterRate'];
   zData.RATE_PLAN_TYPE := m_['RATE_PLAN_TYPE'];
+  zData.prepaidPercentage := m_['prepaidPercentage'];
+
 end;
 
 
@@ -552,6 +558,8 @@ procedure TfrmRoomTypesGroups2.changeAllowgridEdit;
 begin
     tvDataID.Options.Editing             := false;
     tvDataRATE_PLAN_TYPE.Options.Editing         := zAllowGridEdit;
+    tvDataprepaidPercentage.Options.Editing         := zAllowGridEdit;
+
     tvDataRecId.Options.Editing         := zAllowGridEdit;
     tvDataActive.Options.Editing         := zAllowGridEdit;
     tvDataCode.Options.Editing         := zAllowGridEdit;
@@ -736,6 +744,13 @@ begin
     EmbedWindowCloseEvent(self);
 end;
 
+procedure TfrmRoomTypesGroups2.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then
+    btnCancel.Click;
+
+end;
+
 procedure TfrmRoomTypesGroups2.FormKeyPress(Sender: TObject; var Key: Char);
 begin
   if ZAct = actLookup then
@@ -825,6 +840,7 @@ begin
     zData.connectCODToMasterRate := m_['connectCODToMasterRate'];
     zData.connectLOSToMasterRate := m_['connectLOSToMasterRate'];
     zData.RATE_PLAN_TYPE := m_['RATE_PLAN_TYPE'];
+    zData.prepaidPercentage := m_['prepaidPercentage'];
   end;
 end;
 
@@ -1017,6 +1033,7 @@ begin
   dataset['connectCODToMasterRate'] := false;
   dataset['connectLOSToMasterRate'] := false;
   dataset['RATE_PLAN_TYPE'] := 'STANDARD';
+  dataset['prepaidPercentage'] := 100;
 end;
 
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -1317,6 +1334,7 @@ begin
   m_['connectCODToMasterRate'] := zData.connectCODToMasterRate;
   m_['connectLOSToMasterRate'] := zData.connectLOSToMasterRate;
   m_['RATE_PLAN_TYPE'] := zData.RATE_PLAN_TYPE;
+  m_['prepaidPercentage'] := zData.prepaidPercentage;
 end;
 
 procedure TfrmRoomTypesGroups2.btnEditClick(Sender: TObject);

@@ -164,6 +164,7 @@ type
     procedure m_AfterScroll(DataSet: TDataSet);
     procedure m_BeforePost(DataSet: TDataSet);
     procedure mnuiAllowGridEditClick(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     { Private declarations }
     zFirstTime       : boolean;
@@ -350,6 +351,13 @@ begin
   update;
   freeandnil(GlobalRecordSet);
   glb.RefreshTableByName('bookkeepingcodes');
+end;
+
+procedure TfrmBookKeepingCodes.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then
+    btnCancel.Click;
+
 end;
 
 procedure TfrmBookKeepingCodes.FormKeyPress(Sender: TObject; var Key: Char);

@@ -52,22 +52,22 @@ uses
 
 const
   col_Select = 0;
-  col_Item = col_Select + 1;
-  col_Description = col_Item + 1;
-  col_ItemCount = col_Description + 1;
-  col_ItemPrice = col_ItemCount + 1;
-  col_TotalPrice = col_ItemPrice + 1;
-  col_System = col_TotalPrice + 1; // old 5
-  col_date = col_System + 1;
-  col_Refrence = col_date + 1; // old 7
-  col_Source = col_Refrence + 1;
-  col_isPackage = col_Source + 1; // old 9
-  col_NoGuests = col_isPackage + 1;
-  col_confirmdate = col_NoGuests + 1;
-  col_confirmAmount = col_confirmdate + 1;
-  col_Vat = col_confirmAmount + 1;
-  col_rrAlias = col_Vat + 1;
-  col_autogen = col_rrAlias + 1; // old 15
+  col_Item = col_Select + 1; // 1
+  col_Description = col_Item + 1; // 2
+  col_ItemCount = col_Description + 1; //3
+  col_ItemPrice = col_ItemCount + 1; // 4
+  col_TotalPrice = col_ItemPrice + 1; // 5
+  col_System = col_TotalPrice + 1; // 6 old 5
+  col_date = col_System + 1; // 7
+  col_Refrence = col_date + 1; // // 8 old 7
+  col_Source = col_Refrence + 1; // 9
+  col_isPackage = col_Source + 1; // //10 old 9
+  col_NoGuests = col_isPackage + 1; // 11
+  col_confirmdate = col_NoGuests + 1; // 12
+  col_confirmAmount = col_confirmdate + 1; // 13
+  col_Vat = col_confirmAmount + 1; // 14
+  col_rrAlias = col_Vat + 1; // 15
+  col_autogen = col_rrAlias + 1; // 16 old 15
 
 type
   TCreditType = (ctManual, ctReference, ctErr);
@@ -186,7 +186,6 @@ type
     rgrInvoiceType: TsRadioGroup;
     act: TActionList;
     actSaveAndExit: TAction;
-    actCloce: TAction;
     actPrintInvoice: TAction;
     actPrintProforma: TAction;
     actInvoiceProperties: TAction;
@@ -463,6 +462,7 @@ type
     btnSaveChanges: TsButton;
     mRoomResInvoiceIndex: TIntegerField;
     mRoomResGroupAccount: TBooleanField;
+    S1: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure agrLinesMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: integer);
@@ -550,6 +550,10 @@ type
     procedure btnSaveChangesClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure agrLinesCheckBoxClick(Sender: TObject; ACol, ARow: Integer; State: Boolean);
+    procedure agrLinesKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure S1Click(Sender: TObject);
+    procedure Exit1Click(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     { Private declarations }
 
@@ -5144,6 +5148,12 @@ begin
   frmMain.btnRefresh.Click;
 end;
 
+procedure TfrmInvoice.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then
+    btnExit.Click;
+end;
+
 procedure TfrmInvoice.FormResize(Sender: TObject);
 begin
   agrLines.AutoFitColumns(false);
@@ -5152,6 +5162,7 @@ end;
 procedure TfrmInvoice.FormShow(Sender: TObject);
 begin
   sPanel4.Visible := NOT (IsCashInvoice OR FCredit);
+  Exit1.Enabled := True;
 end;
 
 procedure TfrmInvoice.N91Click(Sender: TObject);
@@ -5619,6 +5630,11 @@ begin
   finally
     TEdit(Sender).OnChange := edtTotalChange;
   end;
+end;
+
+procedure TfrmInvoice.Exit1Click(Sender: TObject);
+begin
+  btnExit.Click;
 end;
 
 procedure TfrmInvoice.Refrence1Click(Sender: TObject);
@@ -6699,6 +6715,18 @@ begin
   zCellValue := agrLines.Cells[ACol, ARow];
 end;
 
+procedure TfrmInvoice.agrLinesKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key=VK_RETURN then
+  begin
+    if agrLines.Row < agrLines.RowCount - 1 then
+      agrLines.Row := agrLines.Row + 1;
+  end
+//  else
+//  if Key IN [VK_NUMPAD0..VK_NUMPAD9, 0..9] then
+//    agrLines.EditMode := True;
+end;
+
 procedure TfrmInvoice.itemLookup;
 var
   s: string;
@@ -6717,15 +6745,16 @@ var
   rec: TrecItemHolder;
 
   VATCode, ItemType, Item: string;
-  i: integer;
+  i, iStartRow : integer;
   bAdded: boolean;
 
   dNumber : Double;
 
 begin
-  if agrLines.Col <> 0 then
-    exit;
+//  if agrLines.Col <> 0 then
+//    exit;
 
+  iStartRow := -1;
   Currency := '';
   bAdded := false;
   Item := agrLines.Cells[col_Item, agrLines.row];
@@ -6758,6 +6787,8 @@ begin
           begin
             if glb.LocateSpecificRecord('vatcodes', 'VATCode', VATCode) then
             begin
+              if iStartRow = -1 then
+                iStartRow := agrLines.Row;
               agrLines.Cells[col_Item, agrLines.row] :=
                 theData[i].recHolder.Item;
               agrLines.Cells[col_Description, agrLines.row] :=
@@ -6810,13 +6841,21 @@ begin
           end;
         end;
       end;
+
+      agrLines.Col := col_ItemCount;
     end;
   finally
     theData.free;
   end;
+  if iStartRow <> -1 then
+  begin
+    agrLines.Row := iStartRow;
+  end else
   if bAdded then
     agrLines.row := agrLines.RowCount - 1;
   setControls;
+  Application.ProcessMessages;
+  agrLines.SetFocus;
 end;
 
 procedure TfrmInvoice.agrLinesCanEditCell(Sender: TObject; ARow, ACol: integer;
@@ -6898,6 +6937,8 @@ var
   sTmp: string;
   iTmp: integer;
 begin
+  zCol := ACol;
+  zRow := ARow;
   Valid := True;
   case zCol of
     - 1:
@@ -9496,6 +9537,11 @@ begin
 
 end;
 
+procedure TfrmInvoice.S1Click(Sender: TObject);
+begin
+  btnSaveChanges.Click;
+end;
+
 procedure TfrmInvoice.SaveAnd(doExit: boolean);
 begin
   try
@@ -9868,7 +9914,7 @@ end;
 procedure TfrmInvoice.actAddLineExecute(Sender: TObject);
 begin
   agrLines.row := agrLines.RowCount - 1;
-  agrLines.Col := 0;
+//  agrLines.Col := 0;
   itemLookup;
 end;
 

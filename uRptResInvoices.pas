@@ -262,6 +262,7 @@ type
     procedure sButton7Click(Sender: TObject);
     procedure tvOpenInvoicesCellDblClick(Sender: TcxCustomGridTableView; ACellViewInfo: TcxGridTableDataCellViewInfo; AButton: TMouseButton;
       AShift: TShiftState; var AHandled: Boolean);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     { Private declarations }
 
@@ -1015,6 +1016,12 @@ begin
   glb.PerformAuthenticationAssertion(self); PlaceFormOnVisibleMonitor(self);
   glb.fillListWithMonthsLong(cbxMonth.Items, 1);
   glb.fillListWithYears(cbxYear.Items, 1, False);
+end;
+
+procedure TfrmRptResInvoices.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then
+    Close;
 end;
 
 procedure TfrmRptResInvoices.FormShow(Sender: TObject);

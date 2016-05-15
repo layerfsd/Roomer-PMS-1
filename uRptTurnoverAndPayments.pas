@@ -435,6 +435,7 @@ type
     procedure sButton8Click(Sender: TObject);
     procedure sButton23Click(Sender: TObject);
     procedure sButton6Click(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     { Private declarations }
     // zRoomRentItem: string;
@@ -493,7 +494,7 @@ implementation
 {$R *.dfm}
 
 uses
-  uAppGlobal, uD, uRoomerLanguage, uReservationProfile, uFinishedInvoices2,
+  uAppGlobal, uD, uDReportData, uRoomerLanguage, uReservationProfile, uFinishedInvoices2,
   uInvoice, uRptConfirms, uDImages;
 
 function OpenRptTurnoverAndPayments: boolean;
@@ -820,7 +821,7 @@ begin
   d.kbmRoomRentOnInvoice_.Close;
   d.mInvoiceHeads.Close;
   d.mInvoiceLines.Close;
-  d.kbmUnconfirmedInvoicelines_.Close;
+  DReportData.kbmUnconfirmedInvoicelines_.Close;
   d.kbmInvoiceLinePriceChange_.Close;
 
   d.kbmTurnover_.open;
@@ -829,7 +830,7 @@ begin
   d.kbmRoomRentOnInvoice_.open;
   d.mInvoiceHeads.open;
   d.mInvoiceLines.open;
-  d.kbmUnconfirmedInvoicelines_.open;
+  DReportData.kbmUnconfirmedInvoicelines_.open;
   d.kbmInvoiceLinePriceChange_.open;
 end;
 
@@ -863,6 +864,12 @@ begin
   glb.PerformAuthenticationAssertion(self); PlaceFormOnVisibleMonitor(self);
   zIsConfirmed := false;
   zConfirmedDate := 2;
+end;
+
+procedure TfrmRptTurnoverAndPayments.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then
+    Close;
 end;
 
 procedure TfrmRptTurnoverAndPayments.FormShow(Sender: TObject);
@@ -1133,7 +1140,7 @@ var
   sFilename: string;
   s: string;
 begin
-  if d.kbmUnconfirmedInvoicelines_.Eof then exit; // .RecordCount = 0 then exit;
+  if DReportData.kbmUnconfirmedInvoicelines_.Eof then exit; // .RecordCount = 0 then exit;
 
   dateTimeToString(s, 'yyyymmddhhnn', now);
   sFilename := g.qProgramPath + s + '_unconfirmedItems';
@@ -1150,7 +1157,7 @@ var
   Arrival: Tdate;
   Departure: Tdate;
 begin
-  invoicenumber := d.kbmUnconfirmedInvoicelines_.FieldByName('InvoiceNumber').asinteger;
+  invoicenumber := DReportData.kbmUnconfirmedInvoicelines_.FieldByName('InvoiceNumber').asinteger;
   if invoicenumber > 0 then
   begin
     ViewInvoice2(invoicenumber, false, false, false,false, '');
@@ -1161,8 +1168,8 @@ begin
     iReservation := 0;
     Arrival := Date;
     Departure := Date;
-    iReservation := d.kbmUnconfirmedInvoicelines_.FieldByName('Reservation').asinteger;
-    iRoomReservation := d.kbmUnconfirmedInvoicelines_.FieldByName('RoomReservation').asinteger;
+    iReservation := DReportData.kbmUnconfirmedInvoicelines_.FieldByName('Reservation').asinteger;
+    iRoomReservation := DReportData.kbmUnconfirmedInvoicelines_.FieldByName('RoomReservation').asinteger;
     EditInvoice(iReservation, iRoomReservation, 0, 0, 0, 0, false, true, false);
   end;
 end;
@@ -1172,8 +1179,8 @@ var
   iReservation: integer;
   iRoomReservation: integer;
 begin
-  iReservation := d.kbmUnconfirmedInvoicelines_.FieldByName('Reservation').asinteger;
-  iRoomReservation := d.kbmUnconfirmedInvoicelines_.FieldByName('roomReservation').asinteger;
+  iReservation := DReportData.kbmUnconfirmedInvoicelines_.FieldByName('Reservation').asinteger;
+  iRoomReservation := DReportData.kbmUnconfirmedInvoicelines_.FieldByName('roomReservation').asinteger;
 
   if EditReservation(iReservation, iRoomReservation) then
   begin
@@ -1301,7 +1308,7 @@ begin
   // showmessage(zInvoicelist);
 
   if clearData then
-    d.TurnoverAndPayemnetsClearAllData(false);
+    d.TurnoverAndPayemnetsClearAllData(true);
 
   ExecutionPlan := d.roomerMainDataSet.CreateExecutionPlan;
   try

@@ -140,6 +140,7 @@ type
     procedure sButton1Click(Sender: TObject);
     procedure edFilterChange(Sender: TObject);
     procedure btnClearClick(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     { Private declarations }
      zLocationInString : string;
@@ -301,6 +302,12 @@ procedure TfrmRptNotes.FormCreate(Sender: TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
      glb.PerformAuthenticationAssertion(self); PlaceFormOnVisibleMonitor(self);
+end;
+
+procedure TfrmRptNotes.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then
+    Close;
 end;
 
 procedure TfrmRptNotes.FormShow(Sender: TObject);

@@ -241,6 +241,7 @@ type
     procedure btnGrDrillExcelClick(Sender: TObject);
     procedure pg001OccPrCalculateCustomSummary(Sender: TcxPivotGridField; ASummary: TcxPivotGridCrossCellSummary);
     procedure sButton4Click(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 
   private
     { Private declarations }
@@ -382,6 +383,12 @@ begin
     Except
     end;
   end;
+end;
+
+procedure TfrmRptResStatsRooms.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then
+    Close;
 end;
 
 procedure TfrmRptResStatsRooms.FormShow(Sender: TObject);

@@ -267,6 +267,7 @@ type
     procedure ppHeaderBand1BeforePrint(Sender: TObject);
     procedure sButton3Click(Sender: TObject);
     procedure ppReport2InitializeParameters(Sender: TObject; var aCancel: Boolean);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     { Private declarations }
     zDateFrom : Tdate;
@@ -526,6 +527,12 @@ end;
 procedure TfrmRptDownPayments.FormDestroy(Sender: TObject);
 begin
   //**
+end;
+
+procedure TfrmRptDownPayments.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then
+    Close;
 end;
 
 procedure TfrmRptDownPayments.FormShow(Sender: TObject);

@@ -10,10 +10,12 @@ object frmResGuestList: TfrmResGuestList
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
+  KeyPreview = True
   OldCreateOrder = False
   Position = poOwnerFormCenter
   OnClose = FormClose
   OnCreate = FormCreate
+  OnKeyDown = FormKeyDown
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
@@ -38,7 +40,7 @@ object frmResGuestList: TfrmResGuestList
       Left = 6
       Top = 6
       Width = 106
-      Height = 16
+      Height = 24
       Align = alLeft
       Alignment = taRightJustify
       Caption = 'Booking Number : '
@@ -48,6 +50,7 @@ object frmResGuestList: TfrmResGuestList
       Font.Height = -13
       Font.Name = 'Tahoma'
       Font.Style = []
+      ExplicitHeight = 16
     end
     object Label16: TsLabel
       Left = 217
@@ -72,7 +75,7 @@ object frmResGuestList: TfrmResGuestList
       Left = 353
       Top = 6
       Width = 50
-      Height = 16
+      Height = 24
       Align = alLeft
       Alignment = taRightJustify
       Caption = 'depart : '
@@ -82,12 +85,13 @@ object frmResGuestList: TfrmResGuestList
       Font.Height = -13
       Font.Name = 'Tahoma'
       Font.Style = []
+      ExplicitHeight = 16
     end
     object Label19: TsLabel
       Left = 496
       Top = 6
       Width = 101
-      Height = 16
+      Height = 24
       Align = alLeft
       Alignment = taRightJustify
       Caption = 'date of booking : '
@@ -97,12 +101,13 @@ object frmResGuestList: TfrmResGuestList
       Font.Height = -13
       Font.Name = 'Tahoma'
       Font.Style = []
+      ExplicitHeight = 16
     end
     object Label20: TsLabel
       Left = 690
       Top = 6
       Width = 92
-      Height = 16
+      Height = 24
       Align = alLeft
       Alignment = taRightJustify
       Caption = 'Staff member : '
@@ -112,6 +117,7 @@ object frmResGuestList: TfrmResGuestList
       Font.Height = -13
       Font.Name = 'Tahoma'
       Font.Style = []
+      ExplicitHeight = 16
     end
     object edArrival: TsLabel
       Left = 260
@@ -226,12 +232,6 @@ object frmResGuestList: TfrmResGuestList
     object TabSheet1: TsTabSheet
       Caption = 'Room Reservations'
       TabVisible = False
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object LMDSimplePanel2: TsPanel
         Left = 0
         Top = 0
@@ -294,8 +294,8 @@ object frmResGuestList: TfrmResGuestList
         object chkShowAllGuests: TsCheckBox
           Left = 419
           Top = 4
-          Width = 100
-          Height = 19
+          Width = 102
+          Height = 17
           Caption = 'Show all guests'
           Anchors = [akLeft, akTop, akRight]
           TabOrder = 0
@@ -314,9 +314,10 @@ object frmResGuestList: TfrmResGuestList
         TabOrder = 1
         Properties.CustomButtons.Buttons = <>
         LookAndFeel.NativeStyle = False
-        ClientRectBottom = 382
-        ClientRectRight = 1066
-        ClientRectTop = 0
+        ClientRectBottom = 380
+        ClientRectLeft = 2
+        ClientRectRight = 1064
+        ClientRectTop = 2
       end
       object cxGrid1: TcxGrid
         Left = 0
@@ -476,6 +477,7 @@ object frmResGuestList: TfrmResGuestList
       Caption = 'Group Booking'
       TabOrder = 0
       SkinData.SkinSection = 'GROUPBOX'
+      Checked = False
       object Label2: TsLabel
         Left = 5
         Top = 12
@@ -809,6 +811,7 @@ object frmResGuestList: TfrmResGuestList
       Caption = 'contacts'
       TabOrder = 1
       SkinData.SkinSection = 'GROUPBOX'
+      Checked = False
       object Label12: TsLabel
         Left = 5
         Top = 13
@@ -951,6 +954,7 @@ object frmResGuestList: TfrmResGuestList
       Caption = 'Booking comments'
       TabOrder = 2
       SkinData.SkinSection = 'GROUPBOX'
+      Checked = False
       object memResInfo: TsMemo
         AlignWithMargins = True
         Left = 10
@@ -961,9 +965,9 @@ object frmResGuestList: TfrmResGuestList
         Margins.Right = 8
         Align = alClient
         BorderStyle = bsNone
-        Color = 3355443
+        Color = clWhite
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 15724527
+        Font.Color = clBlack
         Font.Height = -13
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -973,15 +977,11 @@ object frmResGuestList: TfrmResGuestList
         ScrollBars = ssVertical
         TabOrder = 0
         Text = 'memResInfo'#13#10
-        BoundLabel.Indent = 0
         BoundLabel.Font.Charset = DEFAULT_CHARSET
         BoundLabel.Font.Color = clWindowText
         BoundLabel.Font.Height = -13
         BoundLabel.Font.Name = 'Tahoma'
         BoundLabel.Font.Style = []
-        BoundLabel.Layout = sclLeft
-        BoundLabel.MaxWidth = 0
-        BoundLabel.UseSkinColor = True
         SkinData.SkinSection = 'EDIT'
       end
     end
@@ -994,6 +994,7 @@ object frmResGuestList: TfrmResGuestList
       Caption = 'Payment details'
       TabOrder = 3
       SkinData.SkinSection = 'GROUPBOX'
+      Checked = False
       object memPaymentInfo: TsMemo
         AlignWithMargins = True
         Left = 10
@@ -1004,9 +1005,9 @@ object frmResGuestList: TfrmResGuestList
         Margins.Right = 8
         Align = alClient
         BorderStyle = bsNone
-        Color = 3355443
+        Color = clWhite
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 15724527
+        Font.Color = clBlack
         Font.Height = -13
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -1016,21 +1017,16 @@ object frmResGuestList: TfrmResGuestList
         ScrollBars = ssVertical
         TabOrder = 0
         Text = 'Memo1'#13#10
-        BoundLabel.Indent = 0
         BoundLabel.Font.Charset = DEFAULT_CHARSET
         BoundLabel.Font.Color = clWindowText
         BoundLabel.Font.Height = -13
         BoundLabel.Font.Name = 'Tahoma'
         BoundLabel.Font.Style = []
-        BoundLabel.Layout = sclLeft
-        BoundLabel.MaxWidth = 0
-        BoundLabel.UseSkinColor = True
         SkinData.SkinSection = 'EDIT'
       end
     end
   end
   object R_: TRoomerDataSet
-    Connection = d.qConnection
     CommandText = ''
     CommandType = cmdUnknown
     Parameters = <>
@@ -1198,7 +1194,7 @@ object frmResGuestList: TfrmResGuestList
     Left = 672
     Top = 68
     Bitmap = {
-      494C010106000A00000110001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010106000900040010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000002000000001002000000000000020
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000

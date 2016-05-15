@@ -22,7 +22,7 @@ object FrmEmailingDialog: TFrmEmailingDialog
     Left = 0
     Top = 0
     Width = 823
-    Height = 190
+    Height = 211
     Align = alTop
     BevelOuter = bvNone
     TabOrder = 0
@@ -61,7 +61,7 @@ object FrmEmailingDialog: TFrmEmailingDialog
     end
     object sImage1: TsImage
       Left = 8
-      Top = 123
+      Top = 144
       Width = 34
       Height = 30
       Picture.Data = {
@@ -201,14 +201,14 @@ object FrmEmailingDialog: TFrmEmailingDialog
     end
     object __attahments: TsLabel
       Left = 37
-      Top = 136
+      Top = 157
       Width = 75
       Height = 13
       Caption = 'attachment.pdf'
     end
     object __imgHelp: TsImage
       Left = 574
-      Top = 122
+      Top = 143
       Width = 40
       Height = 42
       Hint = 'Variables:'#13#10#13#10'%name%'#13#10'%arrival%'#13#10'%departure%'#13#10'%room%'#13#10#13#10
@@ -295,6 +295,13 @@ object FrmEmailingDialog: TFrmEmailingDialog
       Visible = False
       SkinData.SkinSection = 'CHECKBOX'
     end
+    object __SubjectSample: TsLabel
+      Left = 146
+      Top = 127
+      Width = 20
+      Height = 13
+      Caption = '(...)'
+    end
     object edRecipient: TsComboBox
       Left = 146
       Top = 8
@@ -362,11 +369,12 @@ object FrmEmailingDialog: TFrmEmailingDialog
       Font.Style = []
       ParentFont = False
       TabOrder = 3
+      OnChange = edSubjectChange
       SkinData.SkinSection = 'EDIT'
     end
     object cbxTemplates: TsComboBox
       Left = 8
-      Top = 163
+      Top = 184
       Width = 598
       Height = 21
       Alignment = taLeftJustify
@@ -432,9 +440,9 @@ object FrmEmailingDialog: TFrmEmailingDialog
   end
   object edEmailText: TsMemo
     Left = 0
-    Top = 190
+    Top = 211
     Width = 823
-    Height = 272
+    Height = 251
     Align = alClient
     Color = clWhite
     Font.Charset = DEFAULT_CHARSET
@@ -445,6 +453,8 @@ object FrmEmailingDialog: TFrmEmailingDialog
     ParentFont = False
     TabOrder = 1
     SkinData.SkinSection = 'EDIT'
+    ExplicitTop = 190
+    ExplicitHeight = 272
   end
   object StoreMain: TcxPropertiesStore
     Components = <

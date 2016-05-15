@@ -27,7 +27,7 @@ object frmDayNotes: TfrmDayNotes
     Top = 328
     Width = 50
     Height = 13
-    Caption = '28-1-2016'
+    Caption = '15-5-2016'
     DateTimeFormat = 'd/m/yyyy'
     Version = '1.1.0.0'
     RefreshInterval = 0
@@ -57,8 +57,6 @@ object frmDayNotes: TfrmDayNotes
     SkinData.SkinSection = 'PAGECONTROL'
     object tabDayNotes: TsTabSheet
       Caption = 'Front'
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
       object sGroupBox1: TsGroupBox
         Left = 0
         Top = 0
@@ -114,12 +112,6 @@ object frmDayNotes: TfrmDayNotes
     object tabStatus: TsTabSheet
       Caption = 'Availibility status'
       ImageIndex = 3
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Panel3: TsPanel
         Left = 0
         Top = 33
@@ -350,12 +342,6 @@ object frmDayNotes: TfrmDayNotes
     object tabLog: TsTabSheet
       Caption = 'Log'
       ImageIndex = 1
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Panel1: TsPanel
         Left = 0
         Top = 0
@@ -391,9 +377,8 @@ object frmDayNotes: TfrmDayNotes
             Width = 935
             Height = 501
             Align = alClient
-            Color = clWhite
             Font.Charset = DEFAULT_CHARSET
-            Font.Color = 2302755
+            Font.Color = clWindowText
             Font.Height = -13
             Font.Name = 'Tahoma'
             Font.Style = []
@@ -481,10 +466,6 @@ object frmDayNotes: TfrmDayNotes
         object tabImportLog: TcxTabSheet
           Caption = 'Import'
           ImageIndex = 1
-          ExplicitLeft = 0
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
           object Panel6: TsPanel
             Left = 0
             Top = 0
@@ -846,7 +827,6 @@ object frmDayNotes: TfrmDayNotes
             HotZoneClassName = 'TcxMediaPlayer9Style'
             AlignSplitter = salTop
             Control = Panel7
-            ExplicitWidth = 8
           end
           object Panel8: TsPanel
             Left = 0
@@ -891,9 +871,8 @@ object frmDayNotes: TfrmDayNotes
                 Width = 507
                 Height = 106
                 Align = alClient
-                Color = clWhite
                 Font.Charset = ANSI_CHARSET
-                Font.Color = 2302755
+                Font.Color = clWindowText
                 Font.Height = -13
                 Font.Name = 'Courier New'
                 Font.Style = []
@@ -966,12 +945,6 @@ object frmDayNotes: TfrmDayNotes
     object tabCurrentGuests: TsTabSheet
       Caption = 'In house'
       ImageIndex = 3
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Panel2: TsPanel
         Left = 0
         Top = 0

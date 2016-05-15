@@ -60,6 +60,7 @@ type
     procedure agrRoomsGridHint(Sender : TObject; ARow, ACol : Integer; var hintstr : string);
     procedure rgrOptionsClick(Sender: TObject);
     procedure agrRoomsDblClickCell(Sender: TObject; ARow, ACol: Integer);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     { Private declarations }
   public
@@ -396,6 +397,12 @@ begin
   RoomerLanguage.TranslateThisForm(self);
    glb.PerformAuthenticationAssertion(self); PlaceFormOnVisibleMonitor(self);
   zOpList := tstringList.Create;
+end;
+
+procedure TfrmProvideARoom2.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then
+    Close;
 end;
 
 procedure TfrmProvideARoom2.FormClose(Sender : TObject; var Action : TCloseAction);

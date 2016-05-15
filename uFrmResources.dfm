@@ -10,11 +10,13 @@ object FrmResources: TFrmResources
   Font.Height = -10
   Font.Name = 'Tahoma'
   Font.Style = []
+  KeyPreview = True
   OldCreateOrder = False
   Position = poMainFormCenter
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  OnKeyDown = FormKeyDown
   PixelsPerInch = 96
   TextHeight = 12
   object pnlHolder: TsPanel
@@ -34,7 +36,7 @@ object FrmResources: TFrmResources
       Left = 0
       Top = 0
       Width = 871
-      Height = 49
+      Height = 75
       Margins.Left = 2
       Margins.Top = 2
       Margins.Right = 2
@@ -47,13 +49,13 @@ object FrmResources: TFrmResources
       SkinData.SkinSection = 'PANEL'
       DesignSize = (
         871
-        49)
+        75)
       object btnInsert: TsButton
         AlignWithMargins = True
         Left = 3
         Top = 3
         Width = 114
-        Height = 43
+        Height = 42
         Hint = 'Add new record'
         Align = alLeft
         Caption = 'New'
@@ -70,7 +72,7 @@ object FrmResources: TFrmResources
         Left = 243
         Top = 3
         Width = 114
-        Height = 43
+        Height = 42
         Hint = 'Delete current record'
         Align = alLeft
         Caption = 'Delete'
@@ -103,7 +105,7 @@ object FrmResources: TFrmResources
         Left = 123
         Top = 3
         Width = 114
-        Height = 43
+        Height = 42
         Hint = 'Delete current record'
         Align = alLeft
         Caption = 'View'
@@ -121,7 +123,7 @@ object FrmResources: TFrmResources
         Left = 483
         Top = 3
         Width = 114
-        Height = 43
+        Height = 42
         Hint = 'Delete current record'
         Align = alLeft
         Caption = 'Edit'
@@ -140,7 +142,7 @@ object FrmResources: TFrmResources
         Left = 363
         Top = 3
         Width = 114
-        Height = 43
+        Height = 42
         Hint = 'Delete current record'
         Align = alLeft
         Caption = 'Name and subject'
@@ -158,7 +160,7 @@ object FrmResources: TFrmResources
         Left = 603
         Top = 3
         Width = 114
-        Height = 43
+        Height = 42
         Hint = 'Delete current record'
         Align = alLeft
         Caption = 'Source'
@@ -172,13 +174,42 @@ object FrmResources: TFrmResources
         OnClick = btnSourceClick
         SkinData.SkinSection = 'BUTTON'
       end
+      object sPanel3: TsPanel
+        Left = 0
+        Top = 48
+        Width = 871
+        Height = 27
+        Align = alBottom
+        BevelOuter = bvNone
+        TabOrder = 7
+        object sLabel1: TsLabel
+          Left = 91
+          Top = 6
+          Width = 26
+          Height = 12
+          Alignment = taRightJustify
+          Caption = 'Filter:'
+        end
+        object edtFilter: TButtonedEdit
+          Left = 123
+          Top = 3
+          Width = 234
+          Height = 20
+          Images = DImages.cxSmallImagesFlat
+          RightButton.ImageIndex = 10
+          RightButton.Visible = True
+          TabOrder = 0
+          OnChange = edtFilterChange
+          OnRightButtonClick = edtFilterRightButtonClick
+        end
+      end
     end
     object lvResources: TListView
       AlignWithMargins = True
       Left = 2
-      Top = 51
+      Top = 77
       Width = 867
-      Height = 423
+      Height = 397
       Margins.Left = 2
       Margins.Top = 2
       Margins.Right = 2
@@ -190,6 +221,13 @@ object FrmResources: TFrmResources
         item
           Caption = 'Filename'
           Width = 250
+        end
+        item
+          Caption = 'User'
+        end
+        item
+          Caption = 'Date/Time'
+          Width = 130
         end
         item
           Caption = 'Subject'
@@ -209,8 +247,11 @@ object FrmResources: TFrmResources
       RowSelect = True
       ParentFont = False
       PopupMenu = PopupMenu1
+      SortType = stText
       TabOrder = 1
       ViewStyle = vsReport
+      OnColumnClick = lvResourcesColumnClick
+      OnCompare = lvResourcesCompare
       OnDblClick = lvResourcesDblClick
       OnEdited = lvResourcesEdited
       OnDragDrop = lvResourcesDragDrop
@@ -271,7 +312,7 @@ object FrmResources: TFrmResources
           'Top'
           'Width')
       end>
-    StorageName = 'Software\Roomer\FormStatus\StaticResources'
+    StorageName = 'Software\Roomer\FormStatus\StaticResources2'
     StorageType = stRegistry
     Left = 311
     Top = 176
@@ -349,5 +390,12 @@ object FrmResources: TFrmResources
     DragTypes = [dtCopy]
     Left = 368
     Top = 384
+  end
+  object timFilter: TTimer
+    Enabled = False
+    Interval = 500
+    OnTimer = timFilterTimer
+    Left = 296
+    Top = 240
   end
 end

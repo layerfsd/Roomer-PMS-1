@@ -14,7 +14,6 @@ object frmRoomerLoginForm: TfrmRoomerLoginForm
   Font.Style = []
   OldCreateOrder = False
   Position = poScreenCenter
-  OnClose = FormClose
   OnCreate = FormCreate
   OnShow = FormShow
   PixelsPerInch = 96
@@ -505,5 +504,12 @@ object frmRoomerLoginForm: TfrmRoomerLoginForm
     StorageType = stRegistry
     Left = 495
     Top = 95
+  end
+  object timTopmostOff: TTimer
+    Enabled = False
+    Interval = 200
+    OnTimer = timTopmostOffTimer
+    Left = 40
+    Top = 136
   end
 end

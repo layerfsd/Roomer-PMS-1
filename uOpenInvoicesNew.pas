@@ -135,6 +135,7 @@ type
       var AProperties: TcxCustomEditProperties);
     procedure tvRoomsDateTotalGetProperties(Sender: TcxCustomGridTableItem; ARecord: TcxCustomGridRecord;
       var AProperties: TcxCustomEditProperties);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     { Private declarations }
     zsDateFrom : string;
@@ -213,6 +214,12 @@ end;
 procedure TfrmOpenInvoicesNew.FormDestroy(Sender : TObject);
 begin
   // **
+end;
+
+procedure TfrmOpenInvoicesNew.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then
+    Close;
 end;
 
 procedure TfrmOpenInvoicesNew.FormClose(Sender : TObject; var Action : TCloseAction);

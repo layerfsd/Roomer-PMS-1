@@ -10,12 +10,14 @@ object frmCustomers2: TfrmCustomers2
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
+  KeyPreview = True
   OldCreateOrder = False
   Position = poOwnerFormCenter
   OnClose = FormClose
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  OnKeyDown = FormKeyDown
   OnKeyPress = FormKeyPress
   OnShow = FormShow
   PixelsPerInch = 96
@@ -87,7 +89,7 @@ object frmCustomers2: TfrmCustomers2
       Height = 21
       Color = clWhite
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = 2302755
+      Font.Color = clBlack
       Font.Height = -11
       Font.Name = 'Tahoma'
       Font.Style = []
@@ -155,8 +157,8 @@ object frmCustomers2: TfrmCustomers2
     object chkActive: TsCheckBox
       Left = 52
       Top = 64
-      Width = 239
-      Height = 19
+      Width = 242
+      Height = 17
       Caption = 'Active (if checked then just active are visible'
       Checked = True
       State = cbChecked
@@ -621,6 +623,7 @@ object frmCustomers2: TfrmCustomers2
     Left = 248
     Top = 280
     object prLink_grData: TdxGridReportLink
+      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 5080
       PrinterPage.GrayShading = True
@@ -634,6 +637,7 @@ object frmCustomers2: TfrmCustomers2
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
       ReportDocument.CreationDate = 41334.495374884260000000
+      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       BuiltInReportLink = True
     end
   end

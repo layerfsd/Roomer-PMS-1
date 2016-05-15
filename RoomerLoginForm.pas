@@ -26,12 +26,13 @@ type
     lblMessage: TsLabel;
     lblServerProblem: TsLabel;
     btOffline: TcxButton;
+    timTopmostOff: TTimer;
     procedure btLoginClick(Sender: TObject);
     procedure btCancelClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormCreate(Sender: TObject);
-    procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure btOfflineClick(Sender: TObject);
+    procedure timTopmostOffTimer(Sender: TObject);
   private
     { Private declarations }
     FNoInternet: boolean;
@@ -134,6 +135,12 @@ begin
   UpdateControls;
 end;
 
+procedure TfrmRoomerLoginForm.timTopmostOffTimer(Sender: TObject);
+begin
+  timTopmostOff.Enabled := false;
+  SetFormTopmostOff(self);
+end;
+
 procedure TfrmRoomerLoginForm.UpdateControls;
 var
   lOffLine: boolean;
@@ -182,11 +189,6 @@ begin
   Close;
 end;
 
-procedure TfrmRoomerLoginForm.FormClose(Sender: TObject; var Action: TCloseAction);
-begin
-  SetFormTopmostOff(self);
-end;
-
 procedure TfrmRoomerLoginForm.FormCreate(Sender: TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
@@ -197,6 +199,7 @@ begin
   if edtHotelCode.Text <> '' then
      ActiveControl := edtUsername;
   SetFormTopmostOn(self);
+  timTopmostOff.Enabled := True;
   NoInternet := NOT d.roomerMainDataSet.IsConnectedToInternet;
   ServerUnreachable := NOT d.roomerMainDataSet.RoomerPlatformAvailable;
   btOffline.Visible := NoInternet OR ServerUnreachable;

@@ -652,6 +652,7 @@ type
       var AProperties: TcxCustomEditProperties);
     procedure cxButton1Click(Sender: TObject);
     procedure cxButton2Click(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     { Private declarations }
     zIsOneDay : Boolean;
@@ -779,6 +780,12 @@ begin
   zConfirmState := 0;
   zConfirmedDate := 0;
   zDoChkEvent := true;
+end;
+
+procedure TfrmDayFinical.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then
+    Close;
 end;
 
 procedure TfrmDayFinical.FormShow(Sender : TObject);
@@ -2104,8 +2111,8 @@ begin
 
         TotalTax            :=  0;
 
-        mHead.FieldByName('DateFrom').AsDateTime       := dateTo;
-        mHead.FieldByName('DateTo').AsDateTime         := DateFrom;
+        mHead.FieldByName('DateFrom').AsDateTime       := dateFrom;
+        mHead.FieldByName('DateTo').AsDateTime         := DateTo;
         mHead.FieldByName('DateCount').AsInteger       := dateCount;
 
         mHead.FieldByName('SaleAmount').AsFloat        := saleAmount;

@@ -123,7 +123,7 @@ object FrmReservationEmailingDialog: TFrmReservationEmailingDialog
       Style = csDropDownList
       Color = clWhite
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = 2302755
+      Font.Color = clBlack
       Font.Height = -11
       Font.Name = 'Tahoma'
       Font.Style = []
@@ -189,7 +189,7 @@ object FrmReservationEmailingDialog: TFrmReservationEmailingDialog
       Height = 21
       Color = clWhite
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = 2302755
+      Font.Color = clBlack
       Font.Height = -11
       Font.Name = 'Tahoma'
       Font.Style = []

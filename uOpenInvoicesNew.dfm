@@ -10,11 +10,13 @@ object frmOpenInvoicesNew: TfrmOpenInvoicesNew
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
+  KeyPreview = True
   OldCreateOrder = False
   Position = poMainFormCenter
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  OnKeyDown = FormKeyDown
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
@@ -42,8 +44,8 @@ object frmOpenInvoicesNew: TfrmOpenInvoicesNew
     object chkShowNull: TsCheckBox
       Left = 152
       Top = 37
-      Width = 150
-      Height = 20
+      Width = 158
+      Height = 17
       Caption = 'Show invoices with 0 prices'
       TabOrder = 1
       SkinData.SkinSection = 'CHECKBOX'
@@ -71,10 +73,10 @@ object frmOpenInvoicesNew: TfrmOpenInvoicesNew
         Width = 105
         Height = 21
         AutoSize = False
-        Color = 3355443
+        Color = clWhite
         EditMask = '!99/99/9999;1; '
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 15724527
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -93,10 +95,10 @@ object frmOpenInvoicesNew: TfrmOpenInvoicesNew
         Width = 105
         Height = 21
         AutoSize = False
-        Color = 3355443
+        Color = clWhite
         EditMask = '!99/99/9999;1; '
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 15724527
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -123,12 +125,6 @@ object frmOpenInvoicesNew: TfrmOpenInvoicesNew
     object sTabSheet2: TsTabSheet
       Caption = 'Rent'
       TabVisible = False
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object sPanel2: TsPanel
         Left = 0
         Top = 0
@@ -219,7 +215,6 @@ object frmOpenInvoicesNew: TfrmOpenInvoicesNew
         Images = DImages.PngImageList1
         TabOrder = 1
         LookAndFeel.NativeStyle = False
-        ExplicitTop = 47
         object tvRoomsDate: TcxGridDBTableView
           Navigator.Buttons.CustomButtons = <>
           DataController.DataSource = RoomsDateDS

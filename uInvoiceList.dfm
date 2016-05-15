@@ -10,10 +10,12 @@ object frmInvoiceList: TfrmInvoiceList
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
+  KeyPreview = True
   OldCreateOrder = False
   Position = poMainFormCenter
   Scaled = False
   OnCreate = FormCreate
+  OnKeyDown = FormKeyDown
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
@@ -64,8 +66,8 @@ object frmInvoiceList: TfrmInvoiceList
       Caption = 'Clear'
       OnClick = btnClearClick
       SkinData.SkinSection = 'SPEEDBUTTON'
-      ImageIndex = 10
       Images = DImages.PngImageList1
+      ImageIndex = 10
     end
     object RadioButton1: TsRadioButton
       Left = 18
@@ -101,23 +103,15 @@ object frmInvoiceList: TfrmInvoiceList
       Color = clWhite
       EditMask = '!99/99/9999;1; '
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = 2302755
+      Font.Color = clBlack
       Font.Height = -11
       Font.Name = 'Tahoma'
       Font.Style = []
       MaxLength = 10
       ParentFont = False
       TabOrder = 1
-      Text = '  .  .    '
-      BoundLabel.Indent = 0
-      BoundLabel.Font.Charset = DEFAULT_CHARSET
-      BoundLabel.Font.Color = clWindowText
-      BoundLabel.Font.Height = -11
-      BoundLabel.Font.Name = 'Tahoma'
-      BoundLabel.Font.Style = []
-      BoundLabel.Layout = sclLeft
-      BoundLabel.MaxWidth = 0
-      BoundLabel.UseSkinColor = True
+      Text = '  -  -    '
+      CheckOnExit = True
       SkinData.SkinSection = 'EDIT'
       GlyphMode.Blend = 0
       GlyphMode.Grayed = False
@@ -132,23 +126,15 @@ object frmInvoiceList: TfrmInvoiceList
       Color = clWhite
       EditMask = '!99/99/9999;1; '
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = 2302755
+      Font.Color = clBlack
       Font.Height = -11
       Font.Name = 'Tahoma'
       Font.Style = []
       MaxLength = 10
       ParentFont = False
       TabOrder = 2
-      Text = '  .  .    '
-      BoundLabel.Indent = 0
-      BoundLabel.Font.Charset = DEFAULT_CHARSET
-      BoundLabel.Font.Color = clWindowText
-      BoundLabel.Font.Height = -11
-      BoundLabel.Font.Name = 'Tahoma'
-      BoundLabel.Font.Style = []
-      BoundLabel.Layout = sclLeft
-      BoundLabel.MaxWidth = 0
-      BoundLabel.UseSkinColor = True
+      Text = '  -  -    '
+      CheckOnExit = True
       SkinData.SkinSection = 'EDIT'
       GlyphMode.Blend = 0
       GlyphMode.Grayed = False
@@ -161,7 +147,7 @@ object frmInvoiceList: TfrmInvoiceList
       Color = clWhite
       Enabled = False
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = 2302755
+      Font.Color = clBlack
       Font.Height = -11
       Font.Name = 'Tahoma'
       Font.Style = []
@@ -170,15 +156,6 @@ object frmInvoiceList: TfrmInvoiceList
       TabOrder = 4
       Text = '0'
       SkinData.SkinSection = 'EDIT'
-      BoundLabel.Indent = 0
-      BoundLabel.Font.Charset = DEFAULT_CHARSET
-      BoundLabel.Font.Color = clWindowText
-      BoundLabel.Font.Height = -11
-      BoundLabel.Font.Name = 'Tahoma'
-      BoundLabel.Font.Style = []
-      BoundLabel.Layout = sclLeft
-      BoundLabel.MaxWidth = 0
-      BoundLabel.UseSkinColor = True
     end
     object edtInvoiceTo: TsEdit
       Left = 291
@@ -188,7 +165,7 @@ object frmInvoiceList: TfrmInvoiceList
       Color = clWhite
       Enabled = False
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = 2302755
+      Font.Color = clBlack
       Font.Height = -11
       Font.Name = 'Tahoma'
       Font.Style = []
@@ -197,15 +174,6 @@ object frmInvoiceList: TfrmInvoiceList
       TabOrder = 5
       Text = '0'
       SkinData.SkinSection = 'EDIT'
-      BoundLabel.Indent = 0
-      BoundLabel.Font.Charset = DEFAULT_CHARSET
-      BoundLabel.Font.Color = clWindowText
-      BoundLabel.Font.Height = -11
-      BoundLabel.Font.Name = 'Tahoma'
-      BoundLabel.Font.Style = []
-      BoundLabel.Layout = sclLeft
-      BoundLabel.MaxWidth = 0
-      BoundLabel.UseSkinColor = True
     end
     object RadioButton3: TsRadioButton
       Left = 18
@@ -226,7 +194,7 @@ object frmInvoiceList: TfrmInvoiceList
       Color = clWhite
       Enabled = False
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = 2302755
+      Font.Color = clBlack
       Font.Height = -11
       Font.Name = 'Tahoma'
       Font.Style = []
@@ -235,15 +203,6 @@ object frmInvoiceList: TfrmInvoiceList
       TabOrder = 7
       Text = '0'
       SkinData.SkinSection = 'EDIT'
-      BoundLabel.Indent = 0
-      BoundLabel.Font.Charset = DEFAULT_CHARSET
-      BoundLabel.Font.Color = clWindowText
-      BoundLabel.Font.Height = -11
-      BoundLabel.Font.Name = 'Tahoma'
-      BoundLabel.Font.Style = []
-      BoundLabel.Layout = sclLeft
-      BoundLabel.MaxWidth = 0
-      BoundLabel.UseSkinColor = True
     end
     object sButton1: TsButton
       Left = 395
@@ -264,7 +223,7 @@ object frmInvoiceList: TfrmInvoiceList
       Height = 21
       Color = clWhite
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = 2302755
+      Font.Color = clBlack
       Font.Height = -11
       Font.Name = 'Tahoma'
       Font.Style = []
@@ -272,15 +231,6 @@ object frmInvoiceList: TfrmInvoiceList
       TabOrder = 9
       OnChange = edFilterChange
       SkinData.SkinSection = 'EDIT'
-      BoundLabel.Indent = 0
-      BoundLabel.Font.Charset = DEFAULT_CHARSET
-      BoundLabel.Font.Color = clWindowText
-      BoundLabel.Font.Height = -11
-      BoundLabel.Font.Name = 'Tahoma'
-      BoundLabel.Font.Style = []
-      BoundLabel.Layout = sclLeft
-      BoundLabel.MaxWidth = 0
-      BoundLabel.UseSkinColor = True
     end
   end
   object Panel3: TsPanel

@@ -194,6 +194,7 @@ type
     procedure FormShow(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure tvDatalocationPropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     { Private declarations }
     zFirstTime       : boolean;
@@ -528,6 +529,12 @@ begin
     Action := caFree;
   if Assigned(EmbedWindowCloseEvent) then
     EmbedWindowCloseEvent(self);
+end;
+
+procedure TfrmRoomTypes2.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then
+    btnCancel.Click;
 end;
 
 procedure TfrmRoomTypes2.FormKeyPress(Sender: TObject; var Key: Char);

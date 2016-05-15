@@ -10,10 +10,12 @@ object frmRoomRates: TfrmRoomRates
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
+  KeyPreview = True
   OldCreateOrder = False
   Position = poOwnerFormCenter
   OnClose = FormClose
   OnCreate = FormCreate
+  OnKeyDown = FormKeyDown
   OnKeyPress = FormKeyPress
   OnShow = FormShow
   PixelsPerInch = 96
@@ -27,7 +29,6 @@ object frmRoomRates: TfrmRoomRates
     Constraints.MinWidth = 830
     TabOrder = 0
     SkinData.SkinSection = 'PANEL'
-    ExplicitWidth = 830
     DesignSize = (
       922
       112)
@@ -87,9 +88,9 @@ object frmRoomRates: TfrmRoomRates
       Top = 39
       Width = 214
       Height = 21
-      Color = 3355443
+      Color = clWhite
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = 15724527
+      Font.Color = clBlack
       Font.Height = -11
       Font.Name = 'Tahoma'
       Font.Style = []
@@ -178,7 +179,7 @@ object frmRoomRates: TfrmRoomRates
         Left = 127
         Top = 16
         Width = 218
-        Height = 22
+        Height = 21
         Color = clWindow
         Version = '1.5.0.0'
         Visible = True
@@ -208,7 +209,7 @@ object frmRoomRates: TfrmRoomRates
           end>
         ComboItems = <>
         EditColumn = -1
-        EditHeight = 16
+        EditHeight = 15
         EmptyText = ''
         EmptyTextStyle = []
         DropWidth = 145
@@ -233,7 +234,7 @@ object frmRoomRates: TfrmRoomRates
         Left = 127
         Top = 41
         Width = 218
-        Height = 22
+        Height = 21
         Color = clWindow
         Version = '1.5.0.0'
         Visible = True
@@ -263,7 +264,7 @@ object frmRoomRates: TfrmRoomRates
           end>
         ComboItems = <>
         EditColumn = -1
-        EditHeight = 16
+        EditHeight = 15
         EmptyText = ''
         EmptyTextStyle = []
         DropWidth = 145
@@ -290,10 +291,10 @@ object frmRoomRates: TfrmRoomRates
         Width = 86
         Height = 21
         AutoSize = False
-        Color = 3355443
+        Color = clWhite
         EditMask = '!99/99/9999;1; '
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 15724527
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -315,10 +316,10 @@ object frmRoomRates: TfrmRoomRates
         Width = 86
         Height = 21
         AutoSize = False
-        Color = 3355443
+        Color = clWhite
         EditMask = '!99/99/9999;1; '
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 15724527
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -368,8 +369,8 @@ object frmRoomRates: TfrmRoomRates
     object chkActive: TsCheckBox
       Left = 56
       Top = 67
-      Width = 244
-      Height = 19
+      Width = 246
+      Height = 17
       Caption = 'Active (if checked then just active are visible)'
       Checked = True
       State = cbChecked
@@ -404,7 +405,6 @@ object frmRoomRates: TfrmRoomRates
     Height = 19
     Panels = <>
     SkinData.SkinSection = 'STATUSBAR'
-    ExplicitWidth = 830
   end
   object panBtn: TsPanel
     Left = 0
@@ -414,7 +414,6 @@ object frmRoomRates: TfrmRoomRates
     Align = alBottom
     TabOrder = 2
     SkinData.SkinSection = 'PANEL'
-    ExplicitWidth = 830
     DesignSize = (
       922
       33)
@@ -433,7 +432,6 @@ object frmRoomRates: TfrmRoomRates
       TabOrder = 0
       OnClick = btnCancelClick
       SkinData.SkinSection = 'BUTTON'
-      ExplicitLeft = 741
     end
     object BtnOk: TsButton
       Left = 745
@@ -449,7 +447,6 @@ object frmRoomRates: TfrmRoomRates
       TabOrder = 1
       OnClick = BtnOkClick
       SkinData.SkinSection = 'BUTTON'
-      ExplicitLeft = 653
     end
   end
   object grData: TcxGrid
@@ -460,7 +457,6 @@ object frmRoomRates: TfrmRoomRates
     Align = alClient
     TabOrder = 3
     LookAndFeel.NativeStyle = False
-    ExplicitWidth = 830
     object tvData: TcxGridDBTableView
       OnDblClick = tvDataDblClick
       Navigator.Buttons.CustomButtons = <>
@@ -784,7 +780,6 @@ object frmRoomRates: TfrmRoomRates
     Left = 48
     Top = 176
     object prLink_grData: TdxGridReportLink
-      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.GrayShading = True
@@ -798,7 +793,6 @@ object frmRoomRates: TfrmRoomRates
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
       ReportDocument.CreationDate = 41334.495374884260000000
-      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       BuiltInReportLink = True
     end
   end

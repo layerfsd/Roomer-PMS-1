@@ -11,11 +11,13 @@ object frmLocations: TfrmLocations
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
+  KeyPreview = True
   OldCreateOrder = False
   Position = poMainFormCenter
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  OnKeyDown = FormKeyDown
   OnKeyPress = FormKeyPress
   OnShow = FormShow
   PixelsPerInch = 96
@@ -86,7 +88,7 @@ object frmLocations: TfrmLocations
       Height = 21
       Color = clWhite
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = 2302755
+      Font.Color = clBlack
       Font.Height = -11
       Font.Name = 'Tahoma'
       Font.Style = []
@@ -185,7 +187,6 @@ object frmLocations: TfrmLocations
     Align = alClient
     TabOrder = 3
     LookAndFeel.NativeStyle = False
-    ExplicitTop = 69
     object tvData: TcxGridDBTableView
       OnDblClick = tvDataDblClick
       Navigator.Buttons.CustomButtons = <>
@@ -337,7 +338,6 @@ object frmLocations: TfrmLocations
     Left = 48
     Top = 120
     object prLink_grData: TdxGridReportLink
-      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.GrayShading = True
@@ -351,7 +351,6 @@ object frmLocations: TfrmLocations
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
       ReportDocument.CreationDate = 41334.495374884260000000
-      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       BuiltInReportLink = True
     end
   end

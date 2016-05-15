@@ -18,6 +18,7 @@ object frmPayTypes: TfrmPayTypes
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  OnKeyDown = FormKeyDown
   OnKeyPress = FormKeyPress
   OnShow = FormShow
   PixelsPerInch = 96
@@ -137,7 +138,7 @@ object frmPayTypes: TfrmPayTypes
       Height = 22
       Color = clWhite
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = 2302755
+      Font.Color = clBlack
       Font.Height = -12
       Font.Name = 'Tahoma'
       Font.Style = []
@@ -149,8 +150,8 @@ object frmPayTypes: TfrmPayTypes
     object chkActive: TsCheckBox
       Left = 57
       Top = 64
-      Width = 273
-      Height = 20
+      Width = 281
+      Height = 17
       Caption = 'Active (if checked then just active are visible else all)'
       Checked = True
       State = cbChecked
@@ -471,7 +472,6 @@ object frmPayTypes: TfrmPayTypes
     object prLink_grData: TdxGridReportLink
       Active = True
       Component = grData
-      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.GrayShading = True
@@ -484,8 +484,7 @@ object frmPayTypes: TfrmPayTypes
       PrinterPage.PageSize.Y = 297000
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
-      ReportDocument.CreationDate = 42490.530123263890000000
-      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
+      ReportDocument.CreationDate = 42500.508372465280000000
       BuiltInReportLink = True
     end
   end

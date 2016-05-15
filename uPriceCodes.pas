@@ -103,7 +103,7 @@ uses
   , cmpRoomerDataSet
   , cmpRoomerConnection, dxSkinsCore, dxSkinDarkSide, dxSkinDevExpressDarkStyle, dxSkinMcSkin, dxSkinOffice2013White,
   dxSkinsDefaultPainters, dxSkinscxPCPainter, dxSkinsdxBarPainter, dxSkinsdxRibbonPainter, cxPropertiesStore, sEdit, sButton, sSpeedButton,
-  sLabel, sPanel, sStatusBar, dxPScxPivotGridLnk
+  sLabel, sPanel, sStatusBar, dxPScxPivotGridLnk, dxSkinCaramel, dxSkinCoffee, dxSkinTheAsphaltWorld
   ;
 
 type
@@ -197,6 +197,7 @@ type
     procedure tvDatapcRackPropertiesValidate(Sender: TObject; var DisplayValue: Variant; var ErrorText: TCaption; var Error: Boolean);
     procedure btnClearClick(Sender: TObject);
     procedure btnEditClick(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 
   private
     { Private declarations }
@@ -575,6 +576,13 @@ end;
 procedure TfrmPriceCodes.FormDestroy(Sender: TObject);
 begin
   //
+end;
+
+procedure TfrmPriceCodes.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then
+    btnCancel.Click;
+
 end;
 
 procedure TfrmPriceCodes.FormKeyPress(Sender: TObject; var Key: Char);

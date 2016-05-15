@@ -189,6 +189,7 @@ type
     procedure edFilterChange(Sender: TObject);
     procedure btnCancelClick(Sender: TObject);
     procedure chkActiveClick(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     { Private declarations }
     zFirstTime       : boolean;
@@ -432,6 +433,12 @@ begin
   begin
     tvdata.DataController.Post;
   end;
+end;
+
+procedure TfrmLostAndFound.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then
+    btnCancel.Click;
 end;
 
 procedure TfrmLostAndFound.FormKeyPress(Sender: TObject; var Key: Char);

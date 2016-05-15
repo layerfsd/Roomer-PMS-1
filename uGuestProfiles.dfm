@@ -11,10 +11,12 @@ object frmGuestProfiles: TfrmGuestProfiles
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
+  KeyPreview = True
   OldCreateOrder = False
   Position = poOwnerFormCenter
   OnClose = FormClose
   OnCreate = FormCreate
+  OnKeyDown = FormKeyDown
   OnKeyPress = FormKeyPress
   OnShow = FormShow
   PixelsPerInch = 96
@@ -62,8 +64,8 @@ object frmGuestProfiles: TfrmGuestProfiles
         Caption = 'Clear'
         OnClick = btnClearClick
         SkinData.SkinSection = 'SPEEDBUTTON'
-        ImageIndex = 10
         Images = DImages.PngImageList1
+        ImageIndex = 10
       end
       object edFilter: TsEdit
         Left = 56
@@ -72,7 +74,7 @@ object frmGuestProfiles: TfrmGuestProfiles
         Height = 21
         Color = clWhite
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 2302755
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -80,21 +82,12 @@ object frmGuestProfiles: TfrmGuestProfiles
         TabOrder = 0
         OnChange = edFilterChange
         SkinData.SkinSection = 'EDIT'
-        BoundLabel.Indent = 0
-        BoundLabel.Font.Charset = DEFAULT_CHARSET
-        BoundLabel.Font.Color = clWindowText
-        BoundLabel.Font.Height = -11
-        BoundLabel.Font.Name = 'Tahoma'
-        BoundLabel.Font.Style = []
-        BoundLabel.Layout = sclLeft
-        BoundLabel.MaxWidth = 0
-        BoundLabel.UseSkinColor = True
       end
       object chkActive: TsCheckBox
         Left = 55
         Top = 63
-        Width = 238
-        Height = 20
+        Width = 246
+        Height = 17
         Caption = 'Active (if checked then just active are visible)'
         Checked = True
         State = cbChecked
@@ -213,8 +206,8 @@ object frmGuestProfiles: TfrmGuestProfiles
         853
         33)
       object btnCancel: TsButton
-        Left = 764
-        Top = 4
+        Left = 768
+        Top = 2
         Width = 86
         Height = 25
         Hint = 'Cancel and close'
@@ -489,7 +482,6 @@ object frmGuestProfiles: TfrmGuestProfiles
     Left = 96
     Top = 192
     object prLink_grData: TdxGridReportLink
-      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 5080
       PrinterPage.GrayShading = True
@@ -503,7 +495,6 @@ object frmGuestProfiles: TfrmGuestProfiles
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
       ReportDocument.CreationDate = 41334.495374884260000000
-      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       BuiltInReportLink = True
     end
   end

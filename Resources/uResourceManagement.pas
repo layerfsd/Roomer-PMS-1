@@ -66,18 +66,24 @@ type
       FID : Integer;
       FEXTRA_INFO : String;
       FURI : String;
+      FUSER_ID : Integer;
+      FLAST_MODIFIED : TDateTime;
   public
       Constructor Create(_KEY_STRING : String;
                          _ORIGINAL_NAME : String;
                          _ID : Integer;
                          _EXTRA_INFO : String;
-                         _URI : String);
+                         _URI : String;
+                         _USER_ID : Integer;
+                         _LAST_MODIFIED : TDateTime);
 
       property KEY_STRING : String read FKEY_STRING write FKEY_STRING;
       property ORIGINAL_NAME : String read FORIGINAL_NAME write FORIGINAL_NAME;
       property ID : Integer read FID write FID;
       property EXTRA_INFO : String read FEXTRA_INFO write FEXTRA_INFO;
       property URI : String read FURI write FURI;
+      property USER_ID : Integer read FUSER_ID write FUSER_ID;
+      property LAST_MODIFIED : TDateTime read FLAST_MODIFIED write FLAST_MODIFIED;
   end;
 
   TRoomerResourceManagement = class
@@ -173,29 +179,44 @@ var
   filename, Name: string;
 begin
   // Extract and display dropped data.
-  for i := 0 to Sender.Data.Count-1 do
+  if (Sender.Files.Count > 0) AND (Sender.Data.Count = 0) then
   begin
-    Name := Sender.Data.Names[i];
-    if (Name = '') then
-      Name := intToStr(i)+'.dat';
-    filename := Name;
-    if NOT fileExists(Name) then
+    for i := 0 to Sender.Files.Count-1 do
     begin
-      filename := TPath.Combine(TPath.GetTempPath, Name);
-      if fileExists(filename) then
-        DeleteFile(filename);
+      filename := Sender.Files[i];
+      if UploadFileToResources(KeyString, Access, ExtractFilename(filename), filename) = '' then
+      begin
+        ShowMessage(format(GetTranslatedText('shTx_ManageFiles_UnableToUpload'), [filename]));
+        break;
+      end;
     end;
-    Stream := TFileStream.Create(filename, fmCreate);
-    try
-      // Copy dropped data to stream (in this case a file stream).
-      Stream.CopyFrom(Sender.Data[i], Sender.Data[i].Size);
-    finally
-      Stream.Free;
-    end;
-    if UploadFileToResources(KeyString, Access, ExtractFilename(filename), filename) = '' then
+  end else
+  begin
+    for i := 0 to Sender.Data.Count-1 do
     begin
-      ShowMessage(format(GetTranslatedText('shTx_ManageFiles_UnableToUpload'), [filename]));
-      break;
+      Name := Sender.Data.Names[i];
+      if (Name = '') then
+        Name := intToStr(i)+'.dat';
+      filename := Name;
+      if NOT fileExists(Name) then
+      begin
+        filename := TPath.Combine(TPath.GetTempPath, Name);
+        if fileExists(filename) then
+          DeleteFile(filename);
+      end;
+      Stream := TFileStream.Create(filename, fmCreate);
+      try
+        // Copy dropped data to stream (in this case a file stream).
+        Stream.CopyFrom(Sender.Data[i], Sender.Data[i].Size);
+      finally
+        Stream.Free;
+      end;
+      Stream := TFileStream.Create(filename, fmCreate);
+      if UploadFileToResources(KeyString, Access, ExtractFilename(filename), filename) = '' then
+      begin
+        ShowMessage(format(GetTranslatedText('shTx_ManageFiles_UnableToUpload'), [filename]));
+        break;
+      end;
     end;
   end;
 end;
@@ -207,7 +228,7 @@ var resultURI : String;
 begin
   result := '';
   try
-    onlyFilename := ExtractFilename(filename);
+//    onlyFilename := ExtractFilename(filename);
     filename := getNewFilenameIfNeeded(filename, ResourceParameters);
     resultURI := d.roomerMainDataSet.PostFileOpenApi('staticresources',
           filename,
@@ -325,7 +346,9 @@ begin
                                      ResourceSet['ORIGINAL_NAME'],
                                      ResourceSet['ID'],
                                      ResourceSet['EXTRA_INFO'],
-                                     ResourceSet['URI']));
+                                     ResourceSet['URI'],
+                                     ResourceSet['USER_ID'],
+                                     ResourceSet['LAST_MODIFIED']));
       ResourceSet.Next;
     end;
   finally
@@ -425,13 +448,17 @@ end;
 
 { TResource }
 
-constructor TResource.Create(_KEY_STRING, _ORIGINAL_NAME: String; _ID: Integer; _EXTRA_INFO, _URI: String);
+constructor TResource.Create(_KEY_STRING, _ORIGINAL_NAME: String; _ID: Integer; _EXTRA_INFO, _URI: String;
+                         _USER_ID : Integer;
+                         _LAST_MODIFIED : TDateTime);
 begin
   KEY_STRING := _KEY_STRING;
   ORIGINAL_NAME := _ORIGINAL_NAME;
   ID := _ID;
   EXTRA_INFO := _EXTRA_INFO;
   URI := _URI;
+  USER_ID := _USER_ID;
+  LAST_MODIFIED := _LAST_MODIFIED;
 end;
 
 end.

@@ -12,10 +12,12 @@ object frmSelLang: TfrmSelLang
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
+  KeyPreview = True
   OldCreateOrder = False
   Position = poMainFormCenter
   ShowHint = True
   OnCreate = FormCreate
+  OnKeyDown = FormKeyDown
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
@@ -35,8 +37,6 @@ object frmSelLang: TfrmSelLang
     BevelOuter = bvNone
     TabOrder = 0
     SkinData.SkinSection = 'PANEL'
-    ExplicitTop = 69
-    ExplicitWidth = 282
     DesignSize = (
       284
       33)
@@ -54,7 +54,6 @@ object frmSelLang: TfrmSelLang
       TabOrder = 0
       OnClick = btnOkClick
       SkinData.SkinSection = 'BUTTON'
-      ExplicitLeft = 513
     end
     object btnCancel: TsButton
       Left = 192
@@ -63,13 +62,13 @@ object frmSelLang: TfrmSelLang
       Height = 25
       Hint = 'Cancel and close'
       Anchors = [akTop, akRight]
+      Cancel = True
       Caption = 'Cancel'
       ImageIndex = 4
       Images = DImages.PngImageList1
       ModalResult = 2
       TabOrder = 1
       SkinData.SkinSection = 'BUTTON'
-      ExplicitLeft = 607
     end
   end
   object cbxSelLang: TsComboBox
@@ -82,8 +81,9 @@ object frmSelLang: TfrmSelLang
     SkinData.SkinSection = 'COMBOBOX'
     VerticalAlignment = taAlignTop
     Style = csDropDownList
+    Color = clWhite
     Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
+    Font.Color = clBlack
     Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = []

@@ -22414,7 +22414,7 @@ object DImages: TDImages
     Height = 25
     Width = 25
     FormatVersion = 1
-    DesignInfo = 2621592
+    DesignInfo = 2097296
     ImageInfo = <
       item
         Image.Data = {

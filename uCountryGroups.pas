@@ -178,6 +178,7 @@ type
     procedure m_NewRecord(DataSet: TDataSet);
     procedure m_BeforeEdit(DataSet: TDataSet);
     procedure btnClearClick(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 
   private
     { Private declarations }
@@ -478,6 +479,12 @@ begin
    fillholder;
 end;
 
+
+procedure TfrmCountryGroups.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then
+    btnCancel.Click;
+end;
 
 procedure TfrmCountryGroups.FormKeyPress(Sender: TObject; var Key: Char);
 begin

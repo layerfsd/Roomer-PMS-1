@@ -11,8 +11,10 @@ object frmRptNotes: TfrmRptNotes
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
+  KeyPreview = True
   OldCreateOrder = False
   OnCreate = FormCreate
+  OnKeyDown = FormKeyDown
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
@@ -141,7 +143,7 @@ object frmRptNotes: TfrmRptNotes
         Color = clWhite
         EditMask = '!99/99/9999;1; '
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 2302755
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -164,7 +166,7 @@ object frmRptNotes: TfrmRptNotes
         Color = clWhite
         EditMask = '!99/99/9999;1; '
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 2302755
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -186,7 +188,7 @@ object frmRptNotes: TfrmRptNotes
       Height = 21
       Color = clWhite
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = 2302755
+      Font.Color = clBlack
       Font.Height = -11
       Font.Name = 'Tahoma'
       Font.Style = []
@@ -198,8 +200,8 @@ object frmRptNotes: TfrmRptNotes
     object chkOneday: TsCheckBox
       Left = 23
       Top = 59
-      Width = 66
-      Height = 19
+      Width = 69
+      Height = 17
       Caption = 'One day'
       Checked = True
       State = cbChecked
@@ -222,8 +224,8 @@ object frmRptNotes: TfrmRptNotes
       object chkExcluteWaitingList: TsCheckBox
         Left = 14
         Top = 17
-        Width = 74
-        Height = 19
+        Width = 77
+        Height = 17
         Caption = 'Waitinglist'
         Checked = True
         State = cbChecked
@@ -235,8 +237,8 @@ object frmRptNotes: TfrmRptNotes
       object chkExcluteAlotment: TsCheckBox
         Left = 14
         Top = 34
-        Width = 70
-        Height = 19
+        Width = 73
+        Height = 17
         Caption = 'Allotment'
         Checked = True
         State = cbChecked
@@ -248,8 +250,8 @@ object frmRptNotes: TfrmRptNotes
       object chkExcluteOrder: TsCheckBox
         Left = 134
         Top = 52
-        Width = 80
-        Height = 19
+        Width = 83
+        Height = 17
         Caption = 'Not Arrived'
         Checked = True
         State = cbChecked
@@ -261,8 +263,8 @@ object frmRptNotes: TfrmRptNotes
       object chkExcluteNoShow: TsCheckBox
         Left = 14
         Top = 52
-        Width = 66
-        Height = 19
+        Width = 69
+        Height = 17
         Caption = 'No show'
         Checked = True
         State = cbChecked
@@ -274,8 +276,8 @@ object frmRptNotes: TfrmRptNotes
       object chkExcluteDeparted: TsCheckBox
         Left = 134
         Top = 17
-        Width = 70
-        Height = 19
+        Width = 73
+        Height = 17
         Caption = 'Departed'
         Checked = True
         State = cbChecked
@@ -287,8 +289,8 @@ object frmRptNotes: TfrmRptNotes
       object chkExcluteBlocked: TsCheckBox
         Left = 228
         Top = 34
-        Width = 61
-        Height = 19
+        Width = 64
+        Height = 17
         Caption = 'Blocked'
         TabOrder = 5
         SkinData.SkinSection = 'CHECKBOX'
@@ -298,8 +300,8 @@ object frmRptNotes: TfrmRptNotes
       object chkExcluteGuest: TsCheckBox
         Left = 134
         Top = 34
-        Width = 53
-        Height = 19
+        Width = 56
+        Height = 17
         Caption = 'Guest'
         Checked = True
         State = cbChecked
@@ -311,8 +313,8 @@ object frmRptNotes: TfrmRptNotes
       object chkExcluteCANCELED: TsCheckBox
         Left = 228
         Top = 17
-        Width = 63
-        Height = 19
+        Width = 66
+        Height = 17
         Caption = 'Cancled'
         TabOrder = 7
         SkinData.SkinSection = 'CHECKBOX'

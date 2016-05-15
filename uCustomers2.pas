@@ -277,6 +277,7 @@ type
     procedure C2Click(Sender: TObject);
     procedure chkActiveClick(Sender: TObject);
     procedure tvDataCustomerPropertiesValidate(Sender: TObject; var DisplayValue: Variant; var ErrorText: TCaption; var Error: Boolean);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     { Private declarations }
     financeLookupList : TKeyPairList;
@@ -652,6 +653,12 @@ end;
 procedure TfrmCustomers2.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 begin
   CanClose := AssertCorrectness;
+end;
+
+procedure TfrmCustomers2.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then
+    btnCancel.Click;
 end;
 
 procedure TfrmCustomers2.FormKeyPress(Sender: TObject; var Key: Char);

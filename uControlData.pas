@@ -116,7 +116,7 @@ type
     LMDBackPanel1: TsPanel;
     labHeader: TsLabel;
     LMDBackPanel2: TsPanel;
-    TreeView1: TsTreeView;
+    tvSelection: TsTreeView;
     __LMDBackPanel3: TsPanel;
     mainPage: TsPageControl;
     tsNull: TsTabSheet;
@@ -677,7 +677,7 @@ type
     procedure FormShow(Sender : TObject);
     procedure okBtnClick(Sender : TObject);
     procedure panBtnResize(Sender : TObject);
-    procedure TreeView1Change(Sender : TObject; Node : TTreeNode);
+    procedure tvSelectionChange(Sender : TObject; Node : TTreeNode);
     procedure FormDestroy(Sender : TObject);
     procedure editBreakFastItemCustomButtons0Click(Sender : TObject; index : Integer);
     procedure editRoomRentItemCustomButtons0Click(Sender : TObject; index : Integer);
@@ -2361,16 +2361,16 @@ begin
   fc5DayFontName.Font.size := grid5DayFont.size;
   ed5DayFontSize.value := grid5DayFont.size;
 
-  TreeView1.RowSelect := TRUE;
-  TN := TreeView1.Items.GetFirstNode;
-  for i := 0 to TreeView1.Items.Count - 1 do
+  tvSelection.RowSelect := TRUE;
+  TN := tvSelection.Items.GetFirstNode;
+  for i := 0 to tvSelection.Items.Count - 1 do
   begin
-    TN := TreeView1.Items.item[i];
+    TN := tvSelection.Items.item[i];
     if TN <> nil then
       TN.Expand(TRUE); // that node and all its children expand}
   end;
 
-  TN := TreeView1.Items.GetFirstNode;
+  TN := tvSelection.Items.GetFirstNode;
   idx := TN.SelectedIndex;
   TN.Selected := TRUE;
 
@@ -2446,11 +2446,11 @@ begin
   setColorControls;
 end;
 
-procedure TfrmControlData.TreeView1Change(Sender : TObject; Node : TTreeNode);
+procedure TfrmControlData.tvSelectionChange(Sender : TObject; Node : TTreeNode);
 var
   idx : Integer;
 begin
-  idx := TreeView1.Selected.SelectedIndex;
+  idx := tvSelection.Selected.SelectedIndex;
   try
   mainPage.ActivePageIndex := idx;
   except end;

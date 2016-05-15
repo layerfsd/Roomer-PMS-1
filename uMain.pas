@@ -2247,6 +2247,8 @@ end;
 
 procedure TfrmMain.btnRefreshOneDayClick(Sender: TObject);
 begin
+//  glb.RefreshTablesWhenNeeded;
+  g.RefreshRoomList;
   ViewMode := vmNone;
   SetViews(tabsView.TabIndex + 1);
 end;
@@ -3535,10 +3537,13 @@ begin
   glb.RoomTypesSet.first;
   while not glb.RoomTypesSet.eof do
   begin
-    grdRoomStatusses.cells[0, grdRoomStatusses.RowCount - 1] := glb.RoomTypesSet['RoomType'];
-    grdRoomStatusses.cells[1, grdRoomStatusses.RowCount - 1] := inttostr(CountRoomsOfSpecificType(glb.RoomTypesSet['RoomType']));
+    if glb.RoomTypesSet['Active'] then
+    begin
+      grdRoomStatusses.cells[0, grdRoomStatusses.RowCount - 1] := glb.RoomTypesSet['RoomType'];
+      grdRoomStatusses.cells[1, grdRoomStatusses.RowCount - 1] := inttostr(CountRoomsOfSpecificType(glb.RoomTypesSet['RoomType']));
+      grdRoomStatusses.RowCount := grdRoomStatusses.RowCount + 1;
+    end;
     glb.RoomTypesSet.next;
-    grdRoomStatusses.RowCount := grdRoomStatusses.RowCount + 1;
   end;
   grdRoomStatusses.RowCount := grdRoomStatusses.RowCount - 1;
   grdRoomStatusses.Height := grdRoomStatusses.DefaultRowHeight * grdRoomStatusses.RowCount;

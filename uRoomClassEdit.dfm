@@ -502,9 +502,8 @@ object FrmRoomClassEdit: TFrmRoomClassEdit
           Top = 47
           Width = 436
           Height = 52
-          Color = clWhite
           Font.Charset = DEFAULT_CHARSET
-          Font.Color = clBlack
+          Font.Color = clWindowText
           Font.Height = -11
           Font.Name = 'Tahoma'
           Font.Style = []
@@ -518,9 +517,8 @@ object FrmRoomClassEdit: TFrmRoomClassEdit
           Top = 104
           Width = 436
           Height = 52
-          Color = clWhite
           Font.Charset = DEFAULT_CHARSET
-          Font.Color = clBlack
+          Font.Color = clWindowText
           Font.Height = -11
           Font.Name = 'Tahoma'
           Font.Style = []
@@ -779,7 +777,7 @@ object FrmRoomClassEdit: TFrmRoomClassEdit
         Checked = False
         object sLabel1: TsLabel
           Left = 8
-          Top = 77
+          Top = 103
           Width = 221
           Height = 13
           Alignment = taRightJustify
@@ -794,7 +792,7 @@ object FrmRoomClassEdit: TFrmRoomClassEdit
         end
         object sLabel3: TsLabel
           Left = 9
-          Top = 104
+          Top = 130
           Width = 220
           Height = 13
           Alignment = taRightJustify
@@ -809,7 +807,7 @@ object FrmRoomClassEdit: TFrmRoomClassEdit
         end
         object sSpeedButton1: TsSpeedButton
           Left = 354
-          Top = 101
+          Top = 127
           Width = 22
           Height = 21
           Caption = '...'
@@ -825,7 +823,7 @@ object FrmRoomClassEdit: TFrmRoomClassEdit
         end
         object sSpeedButton4: TsSpeedButton
           Left = 382
-          Top = 101
+          Top = 127
           Width = 22
           Height = 21
           Caption = 'X'
@@ -838,6 +836,21 @@ object FrmRoomClassEdit: TFrmRoomClassEdit
           ParentFont = False
           OnClick = sSpeedButton4Click
           SkinData.SkinSection = 'SPEEDBUTTON'
+        end
+        object sLabel31: TsLabel
+          Left = 150
+          Top = 70
+          Width = 221
+          Height = 13
+          Alignment = taRightJustify
+          AutoSize = False
+          Caption = 'Prepaid percentage:'
+          ParentFont = False
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = []
         end
         object cbxNonRefundable: TsCheckBox
           Left = 235
@@ -858,7 +871,7 @@ object FrmRoomClassEdit: TFrmRoomClassEdit
         end
         object edtRateExtraBed: TsEdit
           Left = 235
-          Top = 74
+          Top = 100
           Width = 113
           Height = 21
           Alignment = taRightJustify
@@ -886,13 +899,14 @@ object FrmRoomClassEdit: TFrmRoomClassEdit
           Font.Style = []
           ParentFont = False
           TabOrder = 2
+          OnClick = cbxAutoChargeCreditcardsClick
           SkinData.SkinSection = 'CHECKBOX'
           ImgChecked = 0
           ImgUnchecked = 0
         end
         object edtPackage: TsEdit
           Left = 235
-          Top = 101
+          Top = 127
           Width = 113
           Height = 21
           Color = clWhite
@@ -903,6 +917,23 @@ object FrmRoomClassEdit: TFrmRoomClassEdit
           Font.Style = []
           ParentFont = False
           TabOrder = 3
+          SkinData.SkinSection = 'EDIT'
+        end
+        object edtPrepaidPercentage: TsEdit
+          Left = 377
+          Top = 67
+          Width = 113
+          Height = 21
+          Alignment = taRightJustify
+          Color = clWhite
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          ParentFont = False
+          TabOrder = 4
+          OnKeyPress = edtdefRateKeyPress
           SkinData.SkinSection = 'EDIT'
         end
       end
@@ -927,7 +958,6 @@ object FrmRoomClassEdit: TFrmRoomClassEdit
         TabOrder = 1
         SkinData.SkinSection = 'GROUPBOX'
         Checked = False
-        ExplicitTop = 422
         object cbxsendAvailability: TsCheckBox
           Left = 227
           Top = 16
@@ -1697,7 +1727,7 @@ object FrmRoomClassEdit: TFrmRoomClassEdit
       end>
     StorageName = 'Software\Roomer\FormStatus\RoomClassEdit'
     StorageType = stRegistry
-    Left = 486
-    Top = 328
+    Left = 438
+    Top = 480
   end
 end

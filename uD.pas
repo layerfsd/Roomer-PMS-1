@@ -8,6 +8,7 @@ uses
   , TypInfo
   , IOUtils
   , Classes
+  , uDReportData
   , System.Generics.Collections
   , System.variants
 
@@ -195,13 +196,11 @@ type
     mrptPaymentsDS: TDataSource;
     RoomsDateChangeDS: TDataSource;
     PaymentsDS: TDataSource;
-    UnconfirmedInvoicelinesDS: TDataSource;
     kbmInvoiceLinePriceChangeDS: TDataSource;
     kbmTurnover_: TkbmMemTable;
     mrptPayments: TkbmMemTable;
     kbmRoomsDateChange_: TkbmMemTable;
     kbmPayments_: TkbmMemTable;
-    kbmUnconfirmedInvoicelines_: TkbmMemTable;
     kbmInvoiceLinePriceChange_: TkbmMemTable;
     confirmMonitor: TTimer;
     currencyISK2d: TcxEditRepositoryCurrencyItem;
@@ -543,6 +542,9 @@ type
     function GetCustomerFromRes(aRes : integer) : string;
 
     function GetInvoiceCurrency(InvoiceNumber : integer) : string;
+    function GetInvoiceCurrencyAndReservationNumber(InvoiceNumber : integer;
+               var Reservation, RoomReservation : Integer;
+               var Room : String) : string;
     Procedure GetInvoiceCurrencyAndRate(InvoiceNumber : integer; var currency : string; var Rate : double);
 
     procedure AddPerson(iRoomReservation, iReservation : integer; ciCustomerInfo : recCustomerHolderEX; sType : string;
@@ -4735,6 +4737,39 @@ begin
     if hData.rSet_bySQL(rSet,s) then
     begin
       result := Rset.fieldbyname('Currency').asString;
+    end;
+  finally
+    freeandnil(Rset);
+  end;
+end;
+
+function Td.GetInvoiceCurrencyAndReservationNumber(InvoiceNumber : integer;
+               var Reservation, RoomReservation : Integer;
+               var Room : String) : string;
+var
+  Rset : TRoomerDataSet;
+  s : string;
+begin
+  result := ctrlGetString('NativeCurrency');
+
+  Rset := CreateNewDataSet;
+  try
+//      s := '';
+//      s := s + ' SELECT '+chr(10);
+//      s := s + '    InvoiceNumber '+chr(10);
+//      s := s + '   , ItemNumber '+chr(10);
+//      s := s + '   , Currency '+chr(10);
+//      s := s + ' FROM '+chr(10);
+//      s := s + '   InvoiceLines '+chr(10);
+//      s := s + ' WHERE '+chr(10);
+//      s := s + '   (invoiceNumber = ' +_db(invoiceNumber) + ') '+chr(10);
+    s := format(select_GetInvoiceCurrencyAndReservationIds , [invoiceNumber]);
+    if hData.rSet_bySQL(rSet,s) then
+    begin
+      result := Rset.fieldbyname('Currency').asString;
+      Room := rSet['Room'];
+      RoomReservation := rSet['RoomReservation'];
+      Reservation := rSet['Reservation'];
     end;
   finally
     freeandnil(Rset);
@@ -13477,7 +13512,7 @@ begin
 //    copyToClipboard(s);
 //    DebugMessage('-- 6 Getting items in invoicelines that is not roomrent'#10#10+s);
 
-    debug_s := debug_s+#10#10'-- 7 d.kbmUnconfirmedInvoicelines_. Getting items in invoicelines that is not roomrent'#10+s;
+    debug_s := debug_s+#10#10'-- 7 DReportData.kbmUnconfirmedInvoicelines_. Getting items in invoicelines that is not roomrent'#10+s;
     ExecutionPlan.AddQuery(s);
 
     s := '';
@@ -13663,7 +13698,7 @@ begin
     d.kbmRoomRentOnInvoice_.DisableControls;
     d.mInvoiceHeads.DisableControls;
     d.mInvoiceLines.DisableControls;
-    d.kbmUnconfirmedInvoicelines_.DisableControls;
+    DReportData.kbmUnconfirmedInvoicelines_.DisableControls;
     d.kbmInvoiceLinePriceChange_.DisableControls;
     d.kbmPaymentList_.disableControls;
     try
@@ -13721,12 +13756,12 @@ begin
 
 
       rset8 := ExecutionPlan.Results[7];
-      if d.kbmUnconfirmedInvoicelines_.active then
-        d.kbmUnconfirmedInvoicelines_.Close;
-      d.kbmUnconfirmedInvoicelines_.open;
-      kbmUnconfirmedInvoicelines_.LoadFromDataSet(rset8,[]);
+      if DReportData.kbmUnconfirmedInvoicelines_.active then
+        DReportData.kbmUnconfirmedInvoicelines_.Close;
+      DReportData.kbmUnconfirmedInvoicelines_.open;
+      DReportData.kbmUnconfirmedInvoicelines_.LoadFromDataSet(rset8,[]);
 //      LoadKbmMemtableFromDataSetQuiet(kbmUnconfirmedInvoicelines_,rset8,[]);
-      d.kbmUnconfirmedInvoicelines_.First;
+      DReportData.kbmUnconfirmedInvoicelines_.First;
 
       rset9 := ExecutionPlan.Results[8];
       if d.kbmInvoiceLinePriceChange_.active then
@@ -13789,7 +13824,7 @@ begin
       d.kbmRoomRentOnInvoice_.enableControls;
       d.mInvoiceHeads.enableControls;
       d.mInvoiceLines.enableControls;
-      d.kbmUnconfirmedInvoicelines_.enableControls;
+      DReportData.kbmUnconfirmedInvoicelines_.enableControls;
       d.kbmInvoiceLinePriceChange_.enableControls;
       d.kbmPaymentList_.EnableControls;
     end;
@@ -14598,14 +14633,14 @@ begin
       d.kbmRoomsDateChange_.enableControls;
     end;
 
-    d.kbmUnconfirmedInvoicelines_.DisableControls;
+    DReportData.kbmUnconfirmedInvoicelines_.DisableControls;
     try
-      d.kbmUnconfirmedInvoicelines_.First;
-      while not d.kbmUnconfirmedInvoicelines_.eof do
+      DReportData.kbmUnconfirmedInvoicelines_.First;
+      while not DReportData.kbmUnconfirmedInvoicelines_.eof do
       begin
-        id := d.kbmUnconfirmedInvoicelines_.FieldByName('id').asinteger;
+        id := DReportData.kbmUnconfirmedInvoicelines_.FieldByName('id').asinteger;
 //--villa
-        Amount := d.kbmUnconfirmedInvoicelines_.FieldByName('Amount').asFloat;
+        Amount := DReportData.kbmUnconfirmedInvoicelines_.FieldByName('Amount').asFloat;
 
         s := '';
         s := s + ' UPDATE invoicelines ';
@@ -14618,10 +14653,10 @@ begin
         begin
           ok := false;
         end;
-        d.kbmUnconfirmedInvoicelines_.Next;
+        DReportData.kbmUnconfirmedInvoicelines_.Next;
       end;
     finally
-      d.kbmUnconfirmedInvoicelines_.enableControls;
+      DReportData.kbmUnconfirmedInvoicelines_.enableControls;
     end;
 
     d.kbmInvoiceLinePriceChange_.DisableControls;
@@ -14972,6 +15007,8 @@ var
   globals_II : recTurnoverAndPaymentsGlobals_II;
   s : string;
 begin
+  if NOT d.roomerMainDataSet.LoggedIn then exit;
+
   doIt := false;
   if g.qConfirmAuto then
   begin
@@ -15051,7 +15088,7 @@ begin
   d.kbmRoomRentOnInvoice_.Close;
   d.mInvoiceHeads.Close;
   d.mInvoiceLines.Close;
-  d.kbmUnconfirmedInvoicelines_.Close;
+  DReportData.kbmUnconfirmedInvoicelines_.Close;
   d.kbmInvoiceLinePriceChange_.Close;
   d.kbmPaymentList_.Close;
   d.mrptPayments.Close;
@@ -15065,7 +15102,7 @@ begin
     d.kbmRoomRentOnInvoice_.open;
     d.mInvoiceHeads.open;
     d.mInvoiceLines.open;
-    d.kbmUnconfirmedInvoicelines_.open;
+    DReportData.kbmUnconfirmedInvoicelines_.open;
     d.kbmInvoiceLinePriceChange_.open;
     d.kbmPaymentList_.open;
     d.mrptPayments.open;
@@ -15447,8 +15484,8 @@ begin
     s := s + '  AND  (il.ItemID <> ' + _db(zglob.DiscountItem) + ' )  '#10;
     s := s + '  AND  (il.ItemID <> ' + _db(zglob.TaxesItem) + ' ))  ;'#10;
 
-    debug_s := debug_s+#10#10'-- 7 d.kbmUnconfirmedInvoicelines_. Getting items in invoicelines that is not roomrent'#10+s;
-    // rset8,Results[7],d.kbmUnconfirmedInvoicelines_
+    debug_s := debug_s+#10#10'-- 7 DReportData.kbmUnconfirmedInvoicelines_. Getting items in invoicelines that is not roomrent'#10+s;
+    // rset8,Results[7],DReportData.kbmUnconfirmedInvoicelines_
 //    copyToClipboard(s);
 //    DebugMessage('-- 6 Getting items in invoicelines that is not roomrent'#10#10+s);
     ExecutionPlan.AddQuery(s);
@@ -15699,7 +15736,7 @@ begin
     d.kbmRoomRentOnInvoice_.DisableControls;
     d.mInvoiceHeads.DisableControls;
     d.mInvoiceLines.DisableControls;
-    d.kbmUnconfirmedInvoicelines_.DisableControls;
+    DReportData.kbmUnconfirmedInvoicelines_.DisableControls;
     d.kbmInvoiceLinePriceChange_.DisableControls;
     d.kbmPaymentList_.disableControls;
     try
@@ -15757,14 +15794,14 @@ begin
 
 
       rset8 := ExecutionPlan.Results[7];
-      if d.kbmUnconfirmedInvoicelines_.active then
-        d.kbmUnconfirmedInvoicelines_.Close;
+      if DReportData.kbmUnconfirmedInvoicelines_.active then
+        DReportData.kbmUnconfirmedInvoicelines_.Close;
 
-      d.kbmUnconfirmedInvoicelines_.open;
-      LoadKbmMemtableFromDataSetQuiet(kbmUnconfirmedInvoicelines_,rset8,[]);
-      d.kbmUnconfirmedInvoicelines_.First;
+      DReportData.kbmUnconfirmedInvoicelines_.open;
+      LoadKbmMemtableFromDataSetQuiet(DReportData.kbmUnconfirmedInvoicelines_,rset8,[]);
+      DReportData.kbmUnconfirmedInvoicelines_.First;
 
-//      while not d.kbmUnconfirmedInvoicelines_.eof do
+//      while not DReportData.kbmUnconfirmedInvoicelines_.eof do
 //      begin
 //
 //      end;
@@ -15832,7 +15869,7 @@ begin
       d.kbmRoomRentOnInvoice_.enableControls;
       d.mInvoiceHeads.enableControls;
       d.mInvoiceLines.enableControls;
-      d.kbmUnconfirmedInvoicelines_.enableControls;
+      DReportData.kbmUnconfirmedInvoicelines_.enableControls;
       d.kbmInvoiceLinePriceChange_.enableControls;
       d.kbmPaymentList_.EnableControls;
     end;
@@ -16599,13 +16636,13 @@ begin
       d.kbmRoomsDateChange_.enableControls;
     end;
 
-    d.kbmUnconfirmedInvoicelines_.DisableControls;
+    DReportData.kbmUnconfirmedInvoicelines_.DisableControls;
     try
-      d.kbmUnconfirmedInvoicelines_.First;
-      while not d.kbmUnconfirmedInvoicelines_.eof do
+      DReportData.kbmUnconfirmedInvoicelines_.First;
+      while not DReportData.kbmUnconfirmedInvoicelines_.eof do
       begin
-        id := d.kbmUnconfirmedInvoicelines_.FieldByName('id').asinteger;
-        Amount := d.kbmUnconfirmedInvoicelines_.FieldByName('Amount').asFloat;
+        id := DReportData.kbmUnconfirmedInvoicelines_.FieldByName('id').asinteger;
+        Amount := DReportData.kbmUnconfirmedInvoicelines_.FieldByName('Amount').asFloat;
 // nfirmAmount := d.kbmInvoiceLinePriceChange_.FieldByName('confirmAmount').AsFloat;
         s := '';
         s := s + ' UPDATE invoicelines ';
@@ -16618,10 +16655,10 @@ begin
         begin
           ok := false;
         end;
-        d.kbmUnconfirmedInvoicelines_.Next;
+        DReportData.kbmUnconfirmedInvoicelines_.Next;
       end;
     finally
-      d.kbmUnconfirmedInvoicelines_.enableControls;
+      DReportData.kbmUnconfirmedInvoicelines_.enableControls;
     end;
 
     d.kbmInvoiceLinePriceChange_.DisableControls;
@@ -16940,24 +16977,24 @@ begin
     end;
 
 
-    d.KbmUnconfirmedInvoicelines_.First;
-    while not d.KbmUnconfirmedInvoicelines_.eof do
+    DReportData.kbmUnconfirmedInvoicelines_.First;
+    while not DReportData.kbmUnconfirmedInvoicelines_.eof do
     begin
-      ItemID          := d.KbmUnconfirmedInvoicelines_.FieldByName('ItemId').asString;
-      Description     := d.KbmUnconfirmedInvoicelines_.FieldByName('Description').asString;
-      ItemType        := d.KbmUnconfirmedInvoicelines_.FieldByName('ItemType').asString;
-      VATCode         := d.KbmUnconfirmedInvoicelines_.FieldByName('VATCode').AsString;
-      VATPercentage   := d.KbmUnconfirmedInvoicelines_.FieldByName('VATPercentage').AsFloat;
-      Amount          := d.KbmUnconfirmedInvoicelines_.FieldByName('Amount').AsFloat;
-      VAT             := d.KbmUnconfirmedInvoicelines_.FieldByName('VAT').asFloat;
-      Itemcount       := d.KbmUnconfirmedInvoicelines_.FieldByName('Itemcount').AsFloat;
-      InvoicelineID   := d.KbmUnconfirmedInvoicelines_.FieldByName('ID').asinteger;
-      PurchaseDate    := d.KbmUnconfirmedInvoicelines_.FieldByName('PurchaseDate').asDateTime;
-      reservation     := d.KbmUnconfirmedInvoicelines_.FieldByName('reservation').AsInteger;
-      roomReservation := d.KbmUnconfirmedInvoicelines_.FieldByName('roomReservation').AsInteger;
-      confirmAmount   := d.KbmUnconfirmedInvoicelines_.FieldByName('confirmAmount').AsFloat;
-      Room            := d.KbmUnconfirmedInvoicelines_.FieldByName('Room').AsString;
-      Invoicenumber   := d.KbmUnconfirmedInvoicelines_.FieldByName('InvoiceNumber').AsInteger;
+      ItemID          := DReportData.kbmUnconfirmedInvoicelines_.FieldByName('ItemId').asString;
+      Description     := DReportData.kbmUnconfirmedInvoicelines_.FieldByName('Description').asString;
+      ItemType        := DReportData.kbmUnconfirmedInvoicelines_.FieldByName('ItemType').asString;
+      VATCode         := DReportData.kbmUnconfirmedInvoicelines_.FieldByName('VATCode').AsString;
+      VATPercentage   := DReportData.kbmUnconfirmedInvoicelines_.FieldByName('VATPercentage').AsFloat;
+      Amount          := DReportData.kbmUnconfirmedInvoicelines_.FieldByName('Amount').AsFloat;
+      VAT             := DReportData.kbmUnconfirmedInvoicelines_.FieldByName('VAT').asFloat;
+      Itemcount       := DReportData.kbmUnconfirmedInvoicelines_.FieldByName('Itemcount').AsFloat;
+      InvoicelineID   := DReportData.kbmUnconfirmedInvoicelines_.FieldByName('ID').asinteger;
+      PurchaseDate    := DReportData.kbmUnconfirmedInvoicelines_.FieldByName('PurchaseDate').asDateTime;
+      reservation     := DReportData.kbmUnconfirmedInvoicelines_.FieldByName('reservation').AsInteger;
+      roomReservation := DReportData.kbmUnconfirmedInvoicelines_.FieldByName('roomReservation').AsInteger;
+      confirmAmount   := DReportData.kbmUnconfirmedInvoicelines_.FieldByName('confirmAmount').AsFloat;
+      Room            := DReportData.kbmUnconfirmedInvoicelines_.FieldByName('Room').AsString;
+      Invoicenumber   := DReportData.kbmUnconfirmedInvoicelines_.FieldByName('InvoiceNumber').AsInteger;
 
 
 
@@ -17007,7 +17044,7 @@ copytoclipboard(s);
       begin
         ok := false;
       end;
-      d.KbmUnconfirmedInvoicelines_.Next;
+      DReportData.kbmUnconfirmedInvoicelines_.Next;
     end;
 
     if ok then

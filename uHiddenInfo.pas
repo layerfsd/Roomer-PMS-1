@@ -62,6 +62,7 @@ type
     procedure btnRevertClick(Sender : TObject);
     procedure btnCloseClick(Sender : TObject);
     procedure timCloseTimer(Sender : TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     { Private declarations }
 
@@ -280,7 +281,13 @@ procedure TfrmHiddenInfo.FormClose(Sender : TObject; var Action : TCloseAction);
     // **
   end;
 
-  // ***************************************************************************
+procedure TfrmHiddenInfo.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then
+    Close;
+end;
+
+// ***************************************************************************
   //
   //
   //

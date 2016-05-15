@@ -13,7 +13,7 @@ object frmDownPayment: TfrmDownPayment
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
-  Position = poOwnerFormCenter
+  Position = poMainFormCenter
   OnClose = FormClose
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
@@ -29,7 +29,6 @@ object frmDownPayment: TfrmDownPayment
     Align = alBottom
     TabOrder = 3
     SkinData.SkinSection = 'PANEL'
-    ExplicitWidth = 388
     DesignSize = (
       489
       33)
@@ -46,7 +45,6 @@ object frmDownPayment: TfrmDownPayment
       TabOrder = 0
       OnClick = btnOkClick
       SkinData.SkinSection = 'BUTTON'
-      ExplicitLeft = 184
     end
     object btnCancel: TsButton
       Left = 386
@@ -61,7 +59,6 @@ object frmDownPayment: TfrmDownPayment
       TabOrder = 1
       OnClick = btnCancelClick
       SkinData.SkinSection = 'BUTTON'
-      ExplicitLeft = 285
     end
   end
   object cxGroupBox1: TsGroupBox
@@ -80,7 +77,6 @@ object frmDownPayment: TfrmDownPayment
     TabOrder = 0
     SkinData.SkinSection = 'GROUPBOX'
     Checked = False
-    ExplicitWidth = 388
     object labReservation: TsLabel
       Left = 96
       Top = 89
@@ -156,7 +152,7 @@ object frmDownPayment: TfrmDownPayment
       Height = 21
       Color = clWhite
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = 2302755
+      Font.Color = clBlack
       Font.Height = -11
       Font.Name = 'Tahoma'
       Font.Style = []
@@ -173,7 +169,7 @@ object frmDownPayment: TfrmDownPayment
       AutoSize = False
       Color = clWhite
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = 2302755
+      Font.Color = clBlack
       Font.Height = -11
       Font.Name = 'Tahoma'
       Font.Style = []
@@ -200,7 +196,6 @@ object frmDownPayment: TfrmDownPayment
     TabOrder = 1
     SkinData.SkinSection = 'GROUPBOX'
     Checked = False
-    ExplicitWidth = 388
     object memNotes: TsMemo
       AlignWithMargins = True
       Left = 8
@@ -214,7 +209,7 @@ object frmDownPayment: TfrmDownPayment
       Align = alClient
       Color = clWhite
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = 2302755
+      Font.Color = clBlack
       Font.Height = -11
       Font.Name = 'Tahoma'
       Font.Style = []
@@ -226,10 +221,6 @@ object frmDownPayment: TfrmDownPayment
       BoundLabel.Font.Name = 'Tahoma'
       BoundLabel.Font.Style = []
       SkinData.SkinSection = 'EDIT'
-      ExplicitLeft = 2
-      ExplicitTop = 15
-      ExplicitWidth = 384
-      ExplicitHeight = 64
     end
   end
   object sScrollBox1: TsScrollBox
@@ -240,7 +231,6 @@ object frmDownPayment: TfrmDownPayment
     Align = alClient
     TabOrder = 2
     SkinData.SkinSection = 'PANEL_LOW'
-    ExplicitWidth = 388
     object grPayType: TcxGrid
       AlignWithMargins = True
       Left = 6
@@ -254,11 +244,8 @@ object frmDownPayment: TfrmDownPayment
       Align = alClient
       TabOrder = 0
       LookAndFeel.NativeStyle = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 384
-      ExplicitHeight = 207
       object tvPayType: TcxGridDBTableView
+        OnDblClick = tvPayTypeDblClick
         Navigator.Buttons.CustomButtons = <>
         DataController.DataSource = PayTypeDS
         DataController.Summary.DefaultGroupSummaryItems = <>

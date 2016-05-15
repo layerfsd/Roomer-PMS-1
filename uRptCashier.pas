@@ -274,6 +274,7 @@ type
     procedure ppLabel11Print(Sender: TObject);
     procedure LabTxItemPrint(Sender: TObject);
     procedure LabTxReservationPrint(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     { Private declarations }
 
@@ -716,6 +717,12 @@ end;
 procedure TfrmRptCashier.FormDestroy(Sender: TObject);
 begin
   freeandnil(bookingDataSet);
+end;
+
+procedure TfrmRptCashier.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then
+    Close;
 end;
 
 procedure TfrmRptCashier.btnBackClick(Sender: TObject);

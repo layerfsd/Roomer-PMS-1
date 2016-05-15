@@ -384,6 +384,7 @@ type
     procedure pg001AvrRateCalculateCustomSummary(Sender: TcxPivotGridField;
       ASummary: TcxPivotGridCrossCellSummary);
     procedure sSpeedButton1Click(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 
   private
     { Private declarations }
@@ -756,6 +757,12 @@ begin
     Except
     end;
   end;
+end;
+
+procedure TfrmRptResStats.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then
+    Close;
 end;
 
 procedure TfrmRptResStats.FormShow(Sender: TObject);

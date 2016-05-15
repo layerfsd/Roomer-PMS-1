@@ -265,6 +265,7 @@ type
       var AProperties: TcxCustomEditProperties);
     procedure tvInvoiceHeadsTotalTaxGetProperties(Sender: TcxCustomGridTableItem; ARecord: TcxCustomGridRecord;
       var AProperties: TcxCustomEditProperties);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     { Private declarations }
     zDateFrom : Tdate;
@@ -732,6 +733,12 @@ begin
   glb.PerformAuthenticationAssertion(self); PlaceFormOnVisibleMonitor(self);
   glb.fillListWithMonthsLong(cbxMonth.Items, 1);
   glb.fillListWithYears(cbxYear.Items, 1, False);
+end;
+
+procedure TfrmLodgingTaxReport2.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then
+    Close;
 end;
 
 procedure TfrmLodgingTaxReport2.FormShow(Sender : TObject);

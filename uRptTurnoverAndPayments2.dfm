@@ -10,9 +10,11 @@ object frmRptTurnoverAndPayments2: TfrmRptTurnoverAndPayments2
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
+  KeyPreview = True
   OldCreateOrder = False
   OnClose = FormClose
   OnCreate = FormCreate
+  OnKeyDown = FormKeyDown
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
@@ -1347,6 +1349,8 @@ object frmRptTurnoverAndPayments2: TfrmRptTurnoverAndPayments2
         Align = alClient
         TabOrder = 1
         LookAndFeel.NativeStyle = False
+        ExplicitLeft = -1
+        ExplicitTop = 42
         object tvUnconfirmedInvoicelines: TcxGridDBTableView
           Navigator.Buttons.ConfirmDelete = True
           Navigator.Buttons.CustomButtons = <>
@@ -1359,28 +1363,24 @@ object frmRptTurnoverAndPayments2: TfrmRptTurnoverAndPayments2
           Navigator.InfoPanel.Visible = True
           Navigator.InfoPanel.Width = 60
           Navigator.Visible = True
-          DataController.DataSource = d.UnconfirmedInvoicelinesDS
+          DataController.DataSource = DReportData.UnconfirmedInvoicelinesDS
           DataController.Summary.DefaultGroupSummaryItems = <>
           DataController.Summary.FooterSummaryItems = <
             item
               Kind = skSum
               FieldName = 'Amount'
-              Column = tvUnconfirmedInvoicelinesAmount
             end
             item
               Kind = skSum
               FieldName = 'VAT'
-              Column = tvUnconfirmedInvoicelinesVAT
             end
             item
               Kind = skSum
               FieldName = 'Itemcount'
-              Column = tvUnconfirmedInvoicelinesItemcount
             end
             item
               Kind = skSum
               FieldName = 'confirmAmount'
-              Column = tvUnconfirmedInvoicelinesconfirmAmount
             end>
           DataController.Summary.SummaryGroups = <>
           OptionsBehavior.IncSearch = True
@@ -1395,79 +1395,67 @@ object frmRptTurnoverAndPayments2: TfrmRptTurnoverAndPayments2
           object tvUnconfirmedInvoicelinesPurchaseDate: TcxGridDBColumn
             Caption = 'Purchase Date'
             DataBinding.FieldName = 'PurchaseDate'
-            Width = 93
+            Width = 76
           end
           object tvUnconfirmedInvoicelinesRoom: TcxGridDBColumn
             DataBinding.FieldName = 'Room'
           end
           object tvUnconfirmedInvoicelinesStaff: TcxGridDBColumn
-            Caption = 'User'
             DataBinding.FieldName = 'Staff'
-            Width = 50
           end
           object tvUnconfirmedInvoicelinesInvoiceNumber: TcxGridDBColumn
-            Caption = 'Invoice no'
+            Caption = 'Invoice Number'
             DataBinding.FieldName = 'InvoiceNumber'
-            HeaderAlignmentHorz = taRightJustify
+            Width = 92
           end
           object tvUnconfirmedInvoicelinesItemID: TcxGridDBColumn
             Caption = 'Item'
             DataBinding.FieldName = 'ItemID'
-            Width = 83
           end
           object tvUnconfirmedInvoicelinesDescription: TcxGridDBColumn
             DataBinding.FieldName = 'Description'
-            Width = 182
           end
           object tvUnconfirmedInvoicelinesItemcount: TcxGridDBColumn
-            Caption = 'Items'
+            Caption = 'Count'
             DataBinding.FieldName = 'Itemcount'
-            PropertiesClassName = 'TcxCurrencyEditProperties'
-            Properties.DisplayFormat = ',0.00;-,0.00'
-          end
-          object tvUnconfirmedInvoicelinesItemtype: TcxGridDBColumn
-            Caption = 'Item Type'
-            DataBinding.FieldName = 'Itemtype'
-            Width = 125
           end
           object tvUnconfirmedInvoicelinesAmount: TcxGridDBColumn
             DataBinding.FieldName = 'Amount'
-            PropertiesClassName = 'TcxCurrencyEditProperties'
-            OnGetProperties = tvUnconfirmedInvoicelinesAmountGetProperties
-            Width = 84
+            OnGetPropertiesForEdit = tvUnconfirmedInvoicelinesAmountGetProperties
+          end
+          object tvUnconfirmedInvoicelinesItemtype: TcxGridDBColumn
+            Caption = 'Type'
+            DataBinding.FieldName = 'Itemtype'
           end
           object tvUnconfirmedInvoicelinesTypeDescription: TcxGridDBColumn
             Caption = 'Type Description'
             DataBinding.FieldName = 'TypeDescription'
-            Width = 128
+            Width = 136
           end
           object tvUnconfirmedInvoicelinesVATCode: TcxGridDBColumn
-            Caption = 'VAT Code'
             DataBinding.FieldName = 'VATCode'
-            Width = 84
           end
           object tvUnconfirmedInvoicelinesVATPercentage: TcxGridDBColumn
-            Caption = 'VAT %'
+            Caption = 'VAT Percentage'
             DataBinding.FieldName = 'VATPercentage'
+            Width = 87
           end
           object tvUnconfirmedInvoicelinesVAT: TcxGridDBColumn
             DataBinding.FieldName = 'VAT'
-            PropertiesClassName = 'TcxCurrencyEditProperties'
-            OnGetProperties = tvUnconfirmedInvoicelinesVATGetProperties
+            OnGetPropertiesForEdit = tvUnconfirmedInvoicelinesVATGetProperties
           end
           object tvUnconfirmedInvoicelinesconfirmAmount: TcxGridDBColumn
-            Caption = 'Confirmed Amount'
+            Caption = 'Confirm Amount'
             DataBinding.FieldName = 'confirmAmount'
-            PropertiesClassName = 'TcxCurrencyEditProperties'
-            OnGetProperties = tvUnconfirmedInvoicelinesconfirmAmountGetProperties
-            Width = 81
+            OnGetPropertiesForEdit = tvUnconfirmedInvoicelinesconfirmAmountGetProperties
+            Width = 88
           end
           object tvUnconfirmedInvoicelinesreservation: TcxGridDBColumn
             Caption = 'Reservation'
             DataBinding.FieldName = 'reservation'
           end
           object tvUnconfirmedInvoicelinesroomReservation: TcxGridDBColumn
-            Caption = 'Room Reservation'
+            Caption = 'Room Res'
             DataBinding.FieldName = 'roomReservation'
           end
           object tvUnconfirmedInvoicelinesid: TcxGridDBColumn
@@ -2050,6 +2038,7 @@ object frmRptTurnoverAndPayments2: TfrmRptTurnoverAndPayments2
       end
       object labConfirmdate: TppLabel
         UserName = 'labConfirmdate'
+        AutoSize = False
         Caption = '-'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clBlack
@@ -2057,10 +2046,10 @@ object frmRptTurnoverAndPayments2: TfrmRptTurnoverAndPayments2
         Font.Size = 12
         Font.Style = [fsBold]
         Transparent = True
-        mmHeight = 4995
+        mmHeight = 5027
         mmLeft = 3440
         mmTop = 9790
-        mmWidth = 1397
+        mmWidth = 159279
         BandType = 1
         LayerName = Foreground1
       end
@@ -2519,7 +2508,7 @@ object frmRptTurnoverAndPayments2: TfrmRptTurnoverAndPayments2
       BeforePrint = ppSummaryBand1BeforePrint
       Background.Brush.Style = bsClear
       mmBottomOffset = 0
-      mmHeight = 35719
+      mmHeight = 35983
       mmPrintPosition = 0
       object ppLabel6: TppLabel
         UserName = 'Label6'
@@ -2565,7 +2554,7 @@ object frmRptTurnoverAndPayments2: TfrmRptTurnoverAndPayments2
         TextAlignment = taRightJustified
         Transparent = True
         mmHeight = 4995
-        mmLeft = 5556
+        mmLeft = 6879
         mmTop = 22754
         mmWidth = 29633
         BandType = 7
@@ -2635,6 +2624,40 @@ object frmRptTurnoverAndPayments2: TfrmRptTurnoverAndPayments2
         BandType = 7
         LayerName = Foreground1
       end
+      object labConfirmDates: TppLabel
+        UserName = 'labConfirmDates'
+        AutoSize = False
+        Caption = '-'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clBlack
+        Font.Name = 'Arial'
+        Font.Size = 10
+        Font.Style = []
+        Transparent = True
+        WordWrap = True
+        mmHeight = 28575
+        mmLeft = 111919
+        mmTop = 5821
+        mmWidth = 83873
+        BandType = 7
+        LayerName = Foreground1
+      end
+      object ppLabel10: TppLabel
+        UserName = 'Label10'
+        Caption = 'Confirmations:'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clBlack
+        Font.Name = 'Arial'
+        Font.Size = 12
+        Font.Style = [fsBold]
+        Transparent = True
+        mmHeight = 5027
+        mmLeft = 78317
+        mmTop = 5821
+        mmWidth = 30163
+        BandType = 7
+        LayerName = Foreground1
+      end
     end
     object ppDesignLayers2: TppDesignLayers
       object ppDesignLayer2: TppDesignLayer
@@ -2652,45 +2675,6 @@ object frmRptTurnoverAndPayments2: TfrmRptTurnoverAndPayments2
     UserName = 'DBPPayments'
     Left = 128
     Top = 480
-    object ppDBPPaymentsppField1: TppField
-      FieldAlias = 'PayType'
-      FieldName = 'PayType'
-      FieldLength = 20
-      DisplayWidth = 20
-      Position = 0
-    end
-    object ppDBPPaymentsppField2: TppField
-      Alignment = taRightJustify
-      FieldAlias = 'Amount'
-      FieldName = 'Amount'
-      FieldLength = 0
-      DataType = dtDouble
-      DisplayWidth = 10
-      Position = 1
-    end
-    object ppDBPPaymentsppField3: TppField
-      Alignment = taRightJustify
-      FieldAlias = 'PaymentCount'
-      FieldName = 'PaymentCount'
-      FieldLength = 0
-      DataType = dtDouble
-      DisplayWidth = 10
-      Position = 2
-    end
-    object ppDBPPaymentsppField4: TppField
-      FieldAlias = 'paytypeDescription'
-      FieldName = 'paytypeDescription'
-      FieldLength = 60
-      DisplayWidth = 60
-      Position = 3
-    end
-    object ppDBPPaymentsppField5: TppField
-      FieldAlias = 'paygroupDescripion'
-      FieldName = 'paygroupDescripion'
-      FieldLength = 60
-      DisplayWidth = 60
-      Position = 4
-    end
   end
   object ppDBPTurnover: TppDBPipeline
     DataSource = d.TurnoverDS

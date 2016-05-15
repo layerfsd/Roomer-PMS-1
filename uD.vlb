@@ -79,9 +79,6 @@ Coordinates=835,231,62,51
 [mtCompany_]
 Coordinates=835,1273,79,51
 
-[kbmUnconfirmedInvoicelines_]
-Coordinates=634,553,163,357
-
 [ImportLogs_]
 Coordinates=835,161,76,51
 
@@ -123,4 +120,7 @@ Coordinates=835,1,97,141
 
 [kbmTurnover_]
 Coordinates=634,1805,85,231
+
+[]
+Coordinates=634,553,163,357
 

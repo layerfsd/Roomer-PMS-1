@@ -10,10 +10,12 @@ object frmLostAndFound: TfrmLostAndFound
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
+  KeyPreview = True
   OldCreateOrder = False
   Position = poMainFormCenter
   OnClose = FormClose
   OnCreate = FormCreate
+  OnKeyDown = FormKeyDown
   OnKeyPress = FormKeyPress
   OnShow = FormShow
   PixelsPerInch = 96
@@ -48,8 +50,8 @@ object frmLostAndFound: TfrmLostAndFound
       Caption = 'Clear'
       OnClick = btnClearClick
       SkinData.SkinSection = 'SPEEDBUTTON'
-      ImageIndex = 10
       Images = DImages.PngImageList1
+      ImageIndex = 10
     end
     object btnOther: TsButton
       Left = 383
@@ -121,15 +123,6 @@ object frmLostAndFound: TfrmLostAndFound
       TabOrder = 4
       OnChange = edFilterChange
       SkinData.SkinSection = 'EDIT'
-      BoundLabel.Indent = 0
-      BoundLabel.Font.Charset = DEFAULT_CHARSET
-      BoundLabel.Font.Color = clWindowText
-      BoundLabel.Font.Height = -11
-      BoundLabel.Font.Name = 'Tahoma'
-      BoundLabel.Font.Style = []
-      BoundLabel.Layout = sclLeft
-      BoundLabel.MaxWidth = 0
-      BoundLabel.UseSkinColor = True
     end
     object btnPivgrRequestsExcel: TsButton
       Left = 292
@@ -146,8 +139,8 @@ object frmLostAndFound: TfrmLostAndFound
     object chkActive: TsCheckBox
       Left = 56
       Top = 66
-      Width = 365
-      Height = 20
+      Width = 373
+      Height = 17
       Caption = 
         'Not returned (if checked then just not returned items are visibl' +
         'e else all)'
@@ -362,7 +355,6 @@ object frmLostAndFound: TfrmLostAndFound
     Left = 152
     Top = 184
     object prLink_grData: TdxGridReportLink
-      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.GrayShading = True
@@ -376,7 +368,6 @@ object frmLostAndFound: TfrmLostAndFound
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
       ReportDocument.CreationDate = 41334.495374884260000000
-      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       BuiltInReportLink = True
     end
   end

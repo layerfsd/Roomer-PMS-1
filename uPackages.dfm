@@ -10,11 +10,13 @@ object frmPackages: TfrmPackages
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
+  KeyPreview = True
   OldCreateOrder = False
   Position = poOwnerFormCenter
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  OnKeyDown = FormKeyDown
   OnKeyPress = FormKeyPress
   OnShow = FormShow
   PixelsPerInch = 96
@@ -30,7 +32,7 @@ object frmPackages: TfrmPackages
     object labFilterWarning: TsLabel
       Left = 1
       Top = 67
-      Width = 4
+      Width = 742
       Height = 13
       Align = alBottom
       Alignment = taCenter
@@ -41,6 +43,7 @@ object frmPackages: TfrmPackages
       Font.Height = -11
       Font.Name = 'Tahoma'
       Font.Style = []
+      ExplicitWidth = 4
     end
     object cLabFilter: TsLabel
       Left = 19
@@ -64,8 +67,8 @@ object frmPackages: TfrmPackages
       Caption = 'Clear'
       OnClick = btnClearClick
       SkinData.SkinSection = 'SPEEDBUTTON'
-      ImageIndex = 10
       Images = DImages.PngImageList1
+      ImageIndex = 10
     end
     object Label1: TsLabel
       Left = 350
@@ -111,9 +114,9 @@ object frmPackages: TfrmPackages
       Top = 39
       Width = 213
       Height = 21
-      Color = 3355443
+      Color = clWhite
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = 15724527
+      Font.Color = clBlack
       Font.Height = -11
       Font.Name = 'Tahoma'
       Font.Style = []
@@ -121,15 +124,6 @@ object frmPackages: TfrmPackages
       TabOrder = 2
       OnChange = edFilterChange
       SkinData.SkinSection = 'EDIT'
-      BoundLabel.Indent = 0
-      BoundLabel.Font.Charset = DEFAULT_CHARSET
-      BoundLabel.Font.Color = clWindowText
-      BoundLabel.Font.Height = -11
-      BoundLabel.Font.Name = 'Tahoma'
-      BoundLabel.Font.Style = []
-      BoundLabel.Layout = sclLeft
-      BoundLabel.MaxWidth = 0
-      BoundLabel.UseSkinColor = True
     end
     object btnInsert: TsButton
       Left = 8
@@ -181,8 +175,8 @@ object frmPackages: TfrmPackages
       744
       30)
     object btnCancel: TsButton
-      Left = 655
-      Top = 4
+      Left = 658
+      Top = 6
       Width = 85
       Height = 25
       Hint = 'Cancel and close'
@@ -476,7 +470,6 @@ object frmPackages: TfrmPackages
     Left = 80
     Top = 160
     object prLink_grData: TdxGridReportLink
-      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.GrayShading = True
@@ -490,7 +483,6 @@ object frmPackages: TfrmPackages
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
       ReportDocument.CreationDate = 41334.495374884260000000
-      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       BuiltInReportLink = True
     end
   end

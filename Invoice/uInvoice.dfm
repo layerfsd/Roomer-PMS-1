@@ -14,6 +14,7 @@ object frmInvoice: TfrmInvoice
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
+  KeyPreview = True
   Menu = MainMenu1
   OldCreateOrder = False
   Position = poDesigned
@@ -21,6 +22,7 @@ object frmInvoice: TfrmInvoice
   ShowHint = True
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  OnKeyDown = FormKeyDown
   OnResize = FormResize
   OnShow = FormShow
   PixelsPerInch = 96
@@ -143,7 +145,7 @@ object frmInvoice: TfrmInvoice
       end
       object clabCustomer: TsLabel
         Left = 2
-        Top = 21
+        Top = 22
         Width = 103
         Height = 13
         Alignment = taRightJustify
@@ -160,7 +162,7 @@ object frmInvoice: TfrmInvoice
       end
       object clabPId: TsLabel
         Left = 2
-        Top = 42
+        Top = 45
         Width = 103
         Height = 13
         Alignment = taRightJustify
@@ -177,7 +179,7 @@ object frmInvoice: TfrmInvoice
       end
       object clabCountry: TsLabel
         Left = 2
-        Top = 137
+        Top = 140
         Width = 103
         Height = 13
         Alignment = taRightJustify
@@ -194,7 +196,7 @@ object frmInvoice: TfrmInvoice
       end
       object clabAddress: TsLabel
         Left = 2
-        Top = 80
+        Top = 81
         Width = 103
         Height = 13
         Alignment = taRightJustify
@@ -268,7 +270,7 @@ object frmInvoice: TfrmInvoice
         Font.Style = []
         ParentFont = False
         ReadOnly = True
-        TabOrder = 0
+        TabOrder = 10
         OnChange = edtCurrencyChange
         OnDblClick = edtCurrencyDblClick
         OnExit = edtCustomerExit
@@ -286,7 +288,7 @@ object frmInvoice: TfrmInvoice
         Height = 151
         Caption = 'Invoice header method'
         ParentBackground = False
-        TabOrder = 1
+        TabOrder = 9
         OnClick = rgrInvoiceTypeClick
         OnExit = edtCustomerExit
         SkinData.SkinSection = 'GROUPBOX'
@@ -314,7 +316,7 @@ object frmInvoice: TfrmInvoice
         Font.Style = []
         ParentFont = False
         ReadOnly = True
-        TabOrder = 2
+        TabOrder = 12
         OnDblClick = edtRateDblClick
         OnExit = edtCustomerExit
         SkinData.SkinSection = 'EDIT'
@@ -339,7 +341,7 @@ object frmInvoice: TfrmInvoice
         Font.Style = []
         MaxLength = 30
         ParentFont = False
-        TabOrder = 3
+        TabOrder = 15
         OnExit = edtCustomerExit
         SkinData.SkinSection = 'EDIT'
         BoundLabel.Font.Charset = DEFAULT_CHARSET
@@ -354,7 +356,7 @@ object frmInvoice: TfrmInvoice
         Width = 90
         Height = 20
         Caption = 'Get..'
-        TabOrder = 4
+        TabOrder = 11
         OnClick = edtCurrencyDblClick
         SkinData.SkinSection = 'BUTTON'
       end
@@ -364,7 +366,7 @@ object frmInvoice: TfrmInvoice
         Width = 90
         Height = 20
         Caption = 'Get..'
-        TabOrder = 5
+        TabOrder = 13
         OnClick = edtRateDblClick
         SkinData.SkinSection = 'BUTTON'
       end
@@ -383,7 +385,7 @@ object frmInvoice: TfrmInvoice
         Font.Style = []
         ParentFont = False
         ReadOnly = True
-        TabOrder = 6
+        TabOrder = 14
         OnExit = edtCustomerExit
         SkinData.SkinSection = 'EDIT'
         BoundLabel.Font.Charset = DEFAULT_CHARSET
@@ -394,7 +396,7 @@ object frmInvoice: TfrmInvoice
       end
       object edtCustomer: TsEdit
         Left = 111
-        Top = 22
+        Top = 19
         Width = 93
         Height = 17
         AutoSize = False
@@ -407,7 +409,7 @@ object frmInvoice: TfrmInvoice
         Font.Style = []
         MaxLength = 15
         ParentFont = False
-        TabOrder = 7
+        TabOrder = 0
         OnChange = edtCustomerChange
         OnDblClick = edtCustomerDblClick
         OnExit = edtCustomerExit
@@ -433,7 +435,7 @@ object frmInvoice: TfrmInvoice
         Font.Style = []
         MaxLength = 15
         ParentFont = False
-        TabOrder = 8
+        TabOrder = 3
         OnDblClick = edtCustomerDblClick
         OnExit = edtCustomerExit
         SkinData.SkinSection = 'EDIT'
@@ -457,7 +459,7 @@ object frmInvoice: TfrmInvoice
         Font.Name = 'Tahoma'
         Font.Style = []
         ParentFont = False
-        TabOrder = 9
+        TabOrder = 4
         OnExit = edtCustomerExit
         SkinData.SkinSection = 'EDIT'
         BoundLabel.Font.Charset = DEFAULT_CHARSET
@@ -480,7 +482,7 @@ object frmInvoice: TfrmInvoice
         Font.Name = 'Tahoma'
         Font.Style = []
         ParentFont = False
-        TabOrder = 10
+        TabOrder = 5
         OnExit = edtCustomerExit
         SkinData.SkinSection = 'EDIT'
         BoundLabel.Font.Charset = DEFAULT_CHARSET
@@ -503,7 +505,7 @@ object frmInvoice: TfrmInvoice
         Font.Name = 'Tahoma'
         Font.Style = []
         ParentFont = False
-        TabOrder = 11
+        TabOrder = 6
         OnExit = edtCustomerExit
         SkinData.SkinSection = 'EDIT'
         BoundLabel.Font.Charset = DEFAULT_CHARSET
@@ -526,7 +528,7 @@ object frmInvoice: TfrmInvoice
         Font.Name = 'Tahoma'
         Font.Style = []
         ParentFont = False
-        TabOrder = 12
+        TabOrder = 7
         OnExit = edtCustomerExit
         SkinData.SkinSection = 'EDIT'
         BoundLabel.Font.Charset = DEFAULT_CHARSET
@@ -549,7 +551,7 @@ object frmInvoice: TfrmInvoice
         Font.Name = 'Tahoma'
         Font.Style = []
         ParentFont = False
-        TabOrder = 13
+        TabOrder = 8
         OnExit = edtCustomerExit
         SkinData.SkinSection = 'EDIT'
         BoundLabel.Font.Charset = DEFAULT_CHARSET
@@ -560,11 +562,11 @@ object frmInvoice: TfrmInvoice
       end
       object btnClearAddresses: TsButton
         Left = 237
-        Top = 19
+        Top = 21
         Width = 126
         Height = 17
         Caption = 'Clear addresses'
-        TabOrder = 14
+        TabOrder = 2
         OnClick = btnClearAddressesClick
         SkinData.SkinSection = 'BUTTON'
       end
@@ -583,7 +585,7 @@ object frmInvoice: TfrmInvoice
         ParentShowHint = False
         ShowHint = True
         SpeedButtonOptions.Flat = True
-        TabOrder = 15
+        TabOrder = 17
         WordWrap = True
         OnClick = btnExitClick
       end
@@ -601,7 +603,7 @@ object frmInvoice: TfrmInvoice
         ParentShowHint = False
         ShowHint = True
         SpeedButtonOptions.Flat = True
-        TabOrder = 16
+        TabOrder = 19
         WordWrap = True
       end
       object btnProforma: TcxButton
@@ -617,7 +619,7 @@ object frmInvoice: TfrmInvoice
         ParentShowHint = False
         ShowHint = True
         SpeedButtonOptions.Flat = True
-        TabOrder = 17
+        TabOrder = 18
         WordWrap = True
       end
       object edtForeignCurrency: TsEdit
@@ -635,7 +637,7 @@ object frmInvoice: TfrmInvoice
         Font.Style = []
         ParentFont = False
         ReadOnly = True
-        TabOrder = 18
+        TabOrder = 16
         Text = '0'
         Visible = False
         OnChange = edtTotalChange
@@ -656,18 +658,18 @@ object frmInvoice: TfrmInvoice
         Anchors = [akTop, akRight]
         Checked = True
         State = cbChecked
-        TabOrder = 19
+        TabOrder = 20
         SkinData.SkinSection = 'CHECKBOX'
         ImgChecked = 0
         ImgUnchecked = 0
       end
       object btnGetCustomer: TsButton
         Left = 204
-        Top = 19
+        Top = 21
         Width = 27
         Height = 17
         Caption = '...'
-        TabOrder = 20
+        TabOrder = 1
         OnClick = edtCustomerDblClick
         SkinData.SkinSection = 'BUTTON'
       end
@@ -1146,7 +1148,7 @@ object frmInvoice: TfrmInvoice
               DropDownMenu = mnuMoveRoom
               Enabled = False
               Style = bsSplitButton
-              TabOrder = 5
+              TabOrder = 6
               SkinData.SkinSection = 'BUTTON'
             end
             object btnRemoveLodgingTax2: TsButton
@@ -1155,7 +1157,7 @@ object frmInvoice: TfrmInvoice
               Width = 130
               Height = 40
               Caption = 'Toggle lodging tax'
-              TabOrder = 6
+              TabOrder = 7
               OnClick = btnRemoveLodgingTax2Click
               SkinData.SkinSection = 'BUTTON'
             end
@@ -1165,7 +1167,7 @@ object frmInvoice: TfrmInvoice
               Width = 130
               Height = 40
               Caption = 'Reservation notes'
-              TabOrder = 7
+              TabOrder = 5
               OnClick = btnReservationNotesClick
               SkinData.SkinSection = 'BUTTON'
             end
@@ -1263,6 +1265,7 @@ object frmInvoice: TfrmInvoice
               TabOrder = 0
               OnDrawCell = agrLinesDrawCell
               OnGetEditText = agrLinesGetEditText
+              OnKeyDown = agrLinesKeyDown
               OnMouseDown = agrLinesMouseDown
               HoverRowCells = [hcNormal, hcSelected]
               OnGetCellColor = agrLinesGetCellColor
@@ -2272,6 +2275,17 @@ object frmInvoice: TfrmInvoice
       Caption = '&File'
       object ExitandSave1: TMenuItem
         Action = actSaveAndExit
+        ShortCut = 16465
+      end
+      object S1: TMenuItem
+        Caption = 'Sa&ve'
+        ShortCut = 16467
+        OnClick = S1Click
+      end
+      object Exit1: TMenuItem
+        Caption = 'Close'
+        ShortCut = 27
+        OnClick = Exit1Click
       end
       object N1: TMenuItem
         Caption = '-'
@@ -2285,10 +2299,6 @@ object frmInvoice: TfrmInvoice
         Caption = 'Copy Refrence to clipboard'
         ShortCut = 16466
         OnClick = Refrence1Click
-      end
-      object Exit1: TMenuItem
-        Action = actCloce
-        Caption = 'Close'
       end
     end
     object Invoice2: TMenuItem
@@ -2482,10 +2492,6 @@ object frmInvoice: TfrmInvoice
       Category = 'File'
       Caption = 'Save and close'
       OnExecute = actSaveAndExitExecute
-    end
-    object actCloce: TAction
-      Category = 'File'
-      Caption = 'Cloce'
     end
     object actPrintInvoice: TAction
       Category = 'Invoice'

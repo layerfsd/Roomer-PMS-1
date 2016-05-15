@@ -12,7 +12,7 @@ uses
   , ActiveX
   , clipbrd
   , uResourceManagement
-  , Soap.EncdDecd, DragDrop, DropTarget, DropComboTarget, DropSource, DragDropFile
+  , Soap.EncdDecd, DragDrop, DropTarget, DropComboTarget, DropSource, DragDropFile, sLabel
 ;
 
 type
@@ -46,6 +46,10 @@ type
     C2: TMenuItem;
     N2: TMenuItem;
     DropFileSource1: TDropFileSource;
+    sPanel3: TsPanel;
+    sLabel1: TsLabel;
+    edtFilter: TButtonedEdit;
+    timFilter: TTimer;
     procedure FormCreate(Sender: TObject);
     procedure btnInsertClick(Sender: TObject);
     procedure lvResourcesSelectItem(Sender: TObject; Item: TListItem; Selected: Boolean);
@@ -66,8 +70,16 @@ type
     procedure P1Click(Sender: TObject);
     procedure C2Click(Sender: TObject);
     procedure PopupMenu1Popup(Sender: TObject);
+    procedure lvResourcesColumnClick(Sender: TObject; Column: TListColumn);
+    procedure lvResourcesCompare(Sender: TObject; Item1, Item2: TListItem; Data: Integer; var Compare: Integer);
+    procedure edtFilterChange(Sender: TObject);
+    procedure timFilterTimer(Sender: TObject);
+    procedure edtFilterRightButtonClick(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     { Private declarations }
+    Descending: Boolean;
+    SortedColumn: Integer;
     CollectionOfOpenedFiles : TStringList;
     olmdd : TOlMailDragDrop;
     ResourceManagement : TRoomerResourceManagement;
@@ -207,6 +219,13 @@ begin
   ResourceManagement.Free;
 end;
 
+procedure TFrmResources.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then
+    sButton1.Click;
+
+end;
+
 //procedure TFrmResources.CreateWnd;
 //begin
 //  inherited;
@@ -299,7 +318,7 @@ begin
   begin
     if (ResourceParameters IS THtmlResourceParameters) then
     begin
-      Subject := lvResources.Selected.SubItems[0];
+      Subject := lvResources.Selected.SubItems[2];
       OrigName := lvResources.Selected.Caption;
       if EditHtmlFile(filename) then
       begin
@@ -580,7 +599,7 @@ begin
       if ResourceParameters IS THtmlResourceParameters then
       begin
         _FrmEditEmailProperties.edtName.Text := lvResources.Selected.Caption;
-        _FrmEditEmailProperties.edtSubject.Text := lvResources.Selected.SubItems[0];
+        _FrmEditEmailProperties.edtSubject.Text := lvResources.Selected.SubItems[2];
         if _FrmEditEmailProperties.ShowModal = mrOk then
         begin
           if _FrmEditEmailProperties.edtName.Text = '' then
@@ -599,7 +618,7 @@ begin
                      ]);
           d.roomerMainDataSet.DoCommand(cmd);
           lvResources.Selected.Caption := _FrmEditEmailProperties.edtName.Text;
-          lvResources.Selected.SubItems[0] := _FrmEditEmailProperties.edtSubject.Text;
+          lvResources.Selected.SubItems[2] := _FrmEditEmailProperties.edtSubject.Text;
         end;
       end else
         lvResources.Selected.EditCaption;
@@ -622,7 +641,7 @@ begin
   begin
     if (ResourceParameters IS THtmlResourceParameters) then
     begin
-      Subject := lvResources.Selected.SubItems[0];
+      Subject := lvResources.Selected.SubItems[2];
       OrigName := lvResources.Selected.Caption;
       if EditHtmlSource(filename) then
       begin
@@ -645,6 +664,18 @@ begin
       end;
     end;
   end;
+end;
+
+procedure TFrmResources.edtFilterChange(Sender: TObject);
+begin
+  timFilter.Enabled := False;
+  timFilter.Interval := 500;
+  timFilter.Enabled := True;
+end;
+
+procedure TFrmResources.edtFilterRightButtonClick(Sender: TObject);
+begin
+  edtFilter.Text := '';
 end;
 
 function TFrmResources.getPrivateUriAdditionIfApplicable(slashBefore : Boolean) : String;
@@ -686,9 +717,12 @@ procedure TFrmResources.DisplayResources;
 var i : Integer;
     item : TListItem;
     srch : String;
+    date, user : String;
+    filter : String;
 begin
   lvResources.Items.Clear;
   lvResources.Items.BeginUpdate;
+  filter := UpperCase(edtFilter.Text);
   try
     for i := 0 to ResourceManagement.Count - 1 do
 
@@ -699,17 +733,61 @@ begin
         srch := '/private/';
       if (LowerCase(ResourceManagement.Resources[i].KEY_STRING) = LowerCase(KeyString)) AND (POS(srch, ResourceManagement.Resources[i].URI) > 0) then
       begin
-        item := lvResources.Items.Add;
-        item.Caption := ResourceManagement.Resources[i].ORIGINAL_NAME;
-        item.Data := Pointer(ResourceManagement.Resources[i].ID);
-        if (ResourceParameters IS THtmlResourceParameters) then
-          item.SubItems.Add(TRIM(ResourceManagement.Resources[i].EXTRA_INFO));
-        item.SubItems.Add(TRIM(ResourceManagement.Resources[i].URI));
+        user := '';
+        glb.LocateSpecificRecordAndGetValue('staffmembers', 'id', ResourceManagement.Resources[i].USER_ID, 'Initials', user);
+        date := uDateUtils.RoomerDateTimeToString(ResourceManagement.Resources[i].LAST_MODIFIED);
+        if (filter = '') OR
+           (
+            (POS(filter, UpperCase(ResourceManagement.Resources[i].ORIGINAL_NAME)) > 0) OR
+            (POS(filter, UpperCase(ResourceManagement.Resources[i].FEXTRA_INFO)) > 0) OR
+            (POS(filter, UpperCase(ResourceManagement.Resources[i].FURI)) > 0) OR
+            (POS(filter, UpperCase(user)) > 0) OR
+            (POS(filter, UpperCase(date)) > 0)
+           ) then
+        begin
+          item := lvResources.Items.Add;
+          item.Caption := ResourceManagement.Resources[i].ORIGINAL_NAME;
+          item.Data := Pointer(ResourceManagement.Resources[i].ID);
+          item.SubItems.Add(user);
+          item.SubItems.Add(date);
+          if (ResourceParameters IS THtmlResourceParameters) then
+            item.SubItems.Add(TRIM(ResourceManagement.Resources[i].EXTRA_INFO));
+          item.SubItems.Add(TRIM(ResourceManagement.Resources[i].URI));
+        end;
       end;
     end;
   finally
     lvResources.Items.EndUpdate;
   end;
+end;
+
+procedure TFrmResources.lvResourcesColumnClick(Sender: TObject; Column: TListColumn);
+begin
+  TListView(Sender).SortType := stNone;
+  if Column.Index<>SortedColumn then
+  begin
+    SortedColumn := Column.Index;
+    Descending := False;
+  end
+  else
+    Descending := not Descending;
+  TListView(Sender).SortType := stText;
+end;
+
+procedure TFrmResources.lvResourcesCompare(Sender: TObject; Item1, Item2: TListItem; Data: Integer; var Compare: Integer);
+begin
+  if SortedColumn = 0 then
+     Compare := CompareText(Item1.Caption, Item2.Caption)
+  else
+  if SortedColumn <> 0 then
+  begin
+    if SortedColumn = 2 then
+      Compare := CompareText(uDateUtils.DateTimeToDBString(uDateUtils.RoomerStringToDateTime(Item1.SubItems[SortedColumn-1])),
+                             uDateUtils.DateTimeToDBString(uDateUtils.RoomerStringToDateTime(Item2.SubItems[SortedColumn-1])))
+    else
+      Compare := CompareText(Item1.SubItems[SortedColumn-1], Item2.SubItems[SortedColumn-1]);
+  end;
+  if Descending then Compare := -Compare;
 end;
 
 procedure TFrmResources.lvResourcesDblClick(Sender: TObject);
@@ -729,6 +807,8 @@ begin
         with lvResources.Items.Add do
         begin
            Caption:=maildrop.Items[i].From;
+           SubItems.Add(d.roomerMainDataSet.username);
+           SubItems.Add(uDateUtils.RoomerDateTimeToString(now));
            SubItems.Add(maildrop.Items[i].Subject);
 //           SubItems.Add(maildrop.Items[i].Received);
 //           SubItems.Add(maildrop.Items[i].Size);
@@ -919,15 +999,26 @@ begin
     col := lvResources.Columns.Add;
     col.Width := 250;
     col.Caption := '';
+
+    col := lvResources.Columns.Add;
+    col.Width := 50;
+    col.Caption := '';
+
+    col := lvResources.Columns.Add;
+    col.Width := 130;
+    col.Caption := '';
+
     col := lvResources.Columns.Add;
     col.Width := 450;
     col.Caption := 'URI';
 
     btnRename.Caption := GetTranslatedText('shUI_RenameFile');
   end else
-    lvResources.Columns[1].Caption := GetTranslatedText('shUI_Subject');
+    lvResources.Columns[3].Caption := GetTranslatedText('shUI_Subject');
 
   lvResources.Columns[0].Caption := GetTranslatedText('shUI_Filename');
+  lvResources.Columns[1].Caption := GetTranslatedText('shUI_User');
+  lvResources.Columns[2].Caption := GetTranslatedText('shUI_DateTime');
 
   GetResources;
   DisplayResources;
@@ -936,6 +1027,12 @@ end;
 procedure TFrmResources.RemoveFileForUpload(filename: String);
 begin
   ResourceManagement.RemoveFileForUpload(filename);
+end;
+
+procedure TFrmResources.timFilterTimer(Sender: TObject);
+begin
+  timFilter.Enabled := false;
+  DisplayResources;
 end;
 
 //procedure TFrmResources.WMDROPFILES(var msg: TWMDropFiles);

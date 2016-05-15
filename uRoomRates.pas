@@ -240,6 +240,7 @@ type
     procedure cbxCurrenciesCloseUp(Sender: TObject);
     procedure dtToCloseUp(Sender: TObject);
     procedure dtFromCloseUp(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     { Private declarations }
     zFirstTime       : boolean;
@@ -845,6 +846,13 @@ begin
   begin
     tvdata.DataController.Post;
   end;
+end;
+
+procedure TfrmRoomRates.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then
+    btnCancel.Click;
+
 end;
 
 procedure TfrmRoomRates.FormKeyPress(Sender: TObject; var Key: Char);

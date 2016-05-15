@@ -88,7 +88,7 @@ uses
   , cmpRoomerDataSet
   , cmpRoomerConnection, dxSkinsCore, dxSkinDarkSide, dxSkinDevExpressDarkStyle, dxSkinMcSkin, dxSkinOffice2013White,
   dxSkinsDefaultPainters, dxSkinscxPCPainter, cxButtonEdit, cxSpinEdit, dxSkinsdxBarPainter, dxSkinsdxRibbonPainter, cxPropertiesStore,
-  dxmdaset, dxSkinCaramel, dxSkinCoffee, dxSkinTheAsphaltWorld
+  dxmdaset, dxSkinCaramel, dxSkinCoffee, dxSkinTheAsphaltWorld, dxPScxPivotGridLnk
 
   ;
 
@@ -198,6 +198,7 @@ type
     procedure m_CalcFields(DataSet: TDataSet);
     procedure tvDataColumn1PropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
     procedure FormDestroy(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     { Private declarations }
     zFirstTime       : boolean;
@@ -462,6 +463,12 @@ begin
   begin
     tvdata.DataController.Post;
   end;
+end;
+
+procedure TfrmPackages.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then
+    btnCancel.Click;
 end;
 
 procedure TfrmPackages.FormKeyPress(Sender: TObject; var Key: Char);

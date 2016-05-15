@@ -26,6 +26,7 @@ uses
   uFinishedInvoices2 in 'uFinishedInvoices2.pas' {frmFinishedInvoices2},
   uCreditPrompt in 'uCreditPrompt.pas' {frmCreditPrompt},
   uInvoiceList in 'uInvoiceList.pas' {frmInvoiceList},
+  uDReportData in 'uDReportData.pas' {DReportData: TDataModule},
   uD in 'uD.pas' {forceoffline: TDataModule},
   uG in 'uG.pas',
   uConverts in 'uConverts.pas' {frmConverts},
@@ -218,7 +219,8 @@ uses
   uOfflineReportGrid in 'OfflineReports\uOfflineReportGrid.pas' {frmOfflineReports},
   uResourceManagement in 'Resources\uResourceManagement.pas',
   uFrmSelectCloudConfiguration in 'Configs\uFrmSelectCloudConfiguration.pas' {FrmSelectCloudConfiguration},
-  uDynamicPricing in 'Rates\uDynamicPricing.pas' {frmDynamicPricing};
+  uDynamicPricing in 'Rates\uDynamicPricing.pas' {frmDynamicPricing},
+  uViewDailyRates in 'uViewDailyRates.pas' {FrmViewDailyRates};
 
 {$R *.RES}
 
@@ -233,6 +235,7 @@ begin
   ShowRoomerSplash;
 
   Application.CreateForm(TD, D);
+  Application.CreateForm(TDReportData, DReportData);
   frmRoomerSplash.PrepareBusyNotificator;
 
   Application.CreateForm(TDImages, DImages);

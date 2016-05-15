@@ -195,6 +195,7 @@ type
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormShow(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 
   private
     { Private declarations }
@@ -461,6 +462,12 @@ end;
 procedure TfrmCurrencies.FormDestroy(Sender: TObject);
 begin
   glb.EnableOrDisableTableRefresh('currencies', True);
+end;
+
+procedure TfrmCurrencies.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then
+    btnCancel.Click;
 end;
 
 procedure TfrmCurrencies.FormKeyPress(Sender: TObject; var Key: Char);

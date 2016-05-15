@@ -2583,8 +2583,21 @@ select_telLog_refresh : string =
   ' FROM '+
   '   invoicelines '+
   ' WHERE '+
-  '   (invoiceNumber = %d ) ';
+  '   (invoiceNumber = %d ) LIMIT 1';
   ///s := s + '   (invoiceNumber = ' +_db(invoiceNumber) + ') '+#10;
+
+  select_GetInvoiceCurrencyAndReservationIds : string =
+  ' SELECT '+
+  '    InvoiceNumber '+
+  '   , Reservation '+
+  '   , RoomReservation '+
+  '   , (SELECT Room FROM roomsdate WHERE RoomReservation=invoicelines.RoomReservation AND NOT ResFlag IN (''X'',''C'') LIMIT 1) AS Room '+
+  '   , ItemNumber '+
+  '   , Currency '+
+  ' FROM '+
+  '   invoicelines '+
+  ' WHERE '+
+  '   (invoiceNumber = %d ) LIMIT 1';
 
   select_GetInvoiceCurrencyAndRate : string =
   ' SELECT '+
@@ -5481,6 +5494,7 @@ select_roomTypesGroups : string =
 ' ,connectCODToMasterRate '#10+
 ' ,connectLOSToMasterRate '#10+
 ' ,RATE_PLAN_TYPE '#10+
+' ,prepaidPercentage '#10+
 ' FROM '#10+
 '   roomtypegroups '#10+
 ' ORDER BY '#10+

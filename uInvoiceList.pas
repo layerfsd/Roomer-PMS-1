@@ -121,6 +121,7 @@ type
     procedure btnClearClick(Sender: TObject);
     procedure sButton3Click(Sender: TObject);
     procedure btnInvoiceListReservationClick(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     { Private declarations }
     procedure refresh;
@@ -378,6 +379,12 @@ begin
   dtTo.date := trunc( now );
 end;
 
+
+procedure TfrmInvoiceList.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then
+    Close;
+end;
 
 procedure TfrmInvoiceList.ApplyFilter;
 begin

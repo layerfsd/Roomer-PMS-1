@@ -18,6 +18,7 @@ object frmGuestProfile2: TfrmGuestProfile2
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  OnKeyDown = FormKeyDown
   OnKeyPress = FormKeyPress
   OnShow = FormShow
   PixelsPerInch = 96
@@ -219,7 +220,7 @@ object frmGuestProfile2: TfrmGuestProfile2
           Height = 21
           Color = clWhite
           Font.Charset = DEFAULT_CHARSET
-          Font.Color = 2302755
+          Font.Color = clBlack
           Font.Height = -11
           Font.Name = 'Tahoma'
           Font.Style = []
@@ -232,8 +233,8 @@ object frmGuestProfile2: TfrmGuestProfile2
       object chkUseInNationalReport: TsCheckBox
         Left = 250
         Top = 109
-        Width = 17
-        Height = 15
+        Width = 20
+        Height = 16
         TabOrder = 1
         SkinData.SkinSection = 'CHECKBOX'
         ImgChecked = 0
@@ -278,7 +279,7 @@ object frmGuestProfile2: TfrmGuestProfile2
           Height = 21
           Color = clWhite
           Font.Charset = DEFAULT_CHARSET
-          Font.Color = 2302755
+          Font.Color = clBlack
           Font.Height = -11
           Font.Name = 'Tahoma'
           Font.Style = []
@@ -369,7 +370,7 @@ object frmGuestProfile2: TfrmGuestProfile2
           Height = 24
           Color = clWhite
           Font.Charset = DEFAULT_CHARSET
-          Font.Color = 2302755
+          Font.Color = clBlack
           Font.Height = -13
           Font.Name = 'Tahoma'
           Font.Style = []
@@ -386,8 +387,8 @@ object frmGuestProfile2: TfrmGuestProfile2
       object chkBlockMove: TsCheckBox
         Left = 250
         Top = 131
-        Width = 17
-        Height = 15
+        Width = 20
+        Height = 16
         TabOrder = 5
         SkinData.SkinSection = 'CHECKBOX'
         ImgChecked = 0
@@ -886,7 +887,6 @@ object frmGuestProfile2: TfrmGuestProfile2
     object prLink_grData: TdxGridReportLink
       Active = True
       Component = grData
-      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.GrayShading = True
@@ -899,8 +899,7 @@ object frmGuestProfile2: TfrmGuestProfile2
       PrinterPage.PageSize.Y = 297000
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
-      ReportDocument.CreationDate = 42490.529038553240000000
-      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
+      ReportDocument.CreationDate = 42500.472411736110000000
       BuiltInReportLink = True
     end
   end

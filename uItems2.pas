@@ -202,6 +202,7 @@ type
     procedure tvDataBookKeepCodePropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
     procedure m_FilterRecord(DataSet: TDataSet; var Accept: Boolean);
     procedure timFilterTimer(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     { Private declarations }
     financeLookupList : TKeyPairList;
@@ -621,6 +622,12 @@ end;
 procedure TfrmItems2.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 begin
   CanClose := AssertCorrectness;
+end;
+
+procedure TfrmItems2.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then
+    btnCancel.Click;
 end;
 
 procedure TfrmItems2.FormKeyPress(Sender: TObject; var Key: Char);

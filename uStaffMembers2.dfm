@@ -11,11 +11,13 @@ object frmStaffMembers2: TfrmStaffMembers2
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
+  KeyPreview = True
   OldCreateOrder = False
   Position = poMainFormCenter
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  OnKeyDown = FormKeyDown
   OnKeyPress = FormKeyPress
   OnShow = FormShow
   PixelsPerInch = 96
@@ -53,8 +55,8 @@ object frmStaffMembers2: TfrmStaffMembers2
       Caption = 'Clear'
       OnClick = btnClearClick
       SkinData.SkinSection = 'SPEEDBUTTON'
-      ImageIndex = 10
       Images = DImages.PngImageList1
+      ImageIndex = 10
     end
     object btnOther: TsButton
       Left = 220
@@ -91,7 +93,7 @@ object frmStaffMembers2: TfrmStaffMembers2
       Height = 21
       Color = clWhite
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = 2302755
+      Font.Color = clBlack
       Font.Height = -11
       Font.Name = 'Tahoma'
       Font.Style = []
@@ -99,15 +101,6 @@ object frmStaffMembers2: TfrmStaffMembers2
       TabOrder = 2
       OnChange = edFilterChange
       SkinData.SkinSection = 'EDIT'
-      BoundLabel.Indent = 0
-      BoundLabel.Font.Charset = DEFAULT_CHARSET
-      BoundLabel.Font.Color = clWindowText
-      BoundLabel.Font.Height = -11
-      BoundLabel.Font.Name = 'Tahoma'
-      BoundLabel.Font.Style = []
-      BoundLabel.Layout = sclLeft
-      BoundLabel.MaxWidth = 0
-      BoundLabel.UseSkinColor = True
     end
     object btnInsert: TsButton
       Left = 4
@@ -184,6 +177,7 @@ object frmStaffMembers2: TfrmStaffMembers2
       Height = 25
       Hint = 'Cancel and close'
       Anchors = [akTop, akRight]
+      Cancel = True
       Caption = 'Cancel'
       ImageIndex = 4
       Images = DImages.PngImageList1
@@ -543,7 +537,6 @@ object frmStaffMembers2: TfrmStaffMembers2
     Left = 368
     Top = 224
     object prLink_grData: TdxGridReportLink
-      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.GrayShading = True
@@ -557,7 +550,6 @@ object frmStaffMembers2: TfrmStaffMembers2
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
       ReportDocument.CreationDate = 41334.495374884260000000
-      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       BuiltInReportLink = True
     end
   end

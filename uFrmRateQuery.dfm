@@ -33,7 +33,7 @@ object FrmRateQuery: TFrmRateQuery
       TabOrder = 0
       object lblArrival: TLabel
         Left = 77
-        Top = 27
+        Top = 29
         Width = 35
         Height = 13
         Alignment = taRightJustify
@@ -41,7 +41,7 @@ object FrmRateQuery: TFrmRateQuery
       end
       object sLabel1: TLabel
         Left = 59
-        Top = 81
+        Top = 80
         Width = 53
         Height = 13
         Alignment = taRightJustify
@@ -49,15 +49,15 @@ object FrmRateQuery: TFrmRateQuery
       end
       object sLabel2: TLabel
         Left = 78
-        Top = 54
+        Top = 56
         Width = 34
         Height = 13
         Alignment = taRightJustify
         Caption = 'Nights:'
       end
       object sLabel3: TLabel
-        Left = 66
-        Top = 108
+        Left = 674
+        Top = 51
         Width = 46
         Height = 13
         Alignment = taRightJustify
@@ -116,6 +116,14 @@ object FrmRateQuery: TFrmRateQuery
         Alignment = taRightJustify
         Caption = 'Channel:'
       end
+      object Label1: TLabel
+        Left = 63
+        Top = 105
+        Width = 49
+        Height = 13
+        Alignment = taRightJustify
+        Caption = 'Company:'
+      end
       object edNights: TSpinEdit
         Left = 132
         Top = 51
@@ -131,12 +139,12 @@ object FrmRateQuery: TFrmRateQuery
         MinValue = 1
         ParentFont = False
         TabOrder = 1
-        Value = 0
+        Value = 1
         OnChange = edNightsChange
       end
       object sComboBox1: TComboBox
-        Left = 132
-        Top = 105
+        Left = 740
+        Top = 48
         Width = 109
         Height = 21
         Color = clWhite
@@ -304,7 +312,7 @@ object FrmRateQuery: TFrmRateQuery
       end
       object dtDeparture: TcxDateEdit
         Left = 132
-        Top = 78
+        Top = 79
         ParentFont = False
         Properties.ShowTime = False
         Properties.WeekNumbers = True
@@ -334,6 +342,17 @@ object FrmRateQuery: TFrmRateQuery
         TabOrder = 11
         Width = 109
       end
+      object edCustomer: TcxButtonEdit
+        Left = 132
+        Top = 102
+        Properties.Buttons = <
+          item
+            Default = True
+            Kind = bkEllipsis
+          end>
+        TabOrder = 12
+        Width = 121
+      end
     end
     object grdRates: TAdvStringGrid
       Left = 0
@@ -345,7 +364,7 @@ object FrmRateQuery: TFrmRateQuery
       DefaultColWidth = 120
       DrawingStyle = gdsClassic
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
+      Font.Color = clBlack
       Font.Height = -12
       Font.Name = 'Tahoma'
       Font.Style = []
@@ -355,6 +374,7 @@ object FrmRateQuery: TFrmRateQuery
       OnDrawCell = grdRatesDrawCell
       HoverRowCells = [hcNormal, hcSelected]
       OnGetCellColor = grdRatesGetCellColor
+      OnClickCell = grdRatesClickCell
       ActiveCellFont.Charset = DEFAULT_CHARSET
       ActiveCellFont.Color = clWindowText
       ActiveCellFont.Height = -12
@@ -443,7 +463,7 @@ object FrmRateQuery: TFrmRateQuery
       SearchFooter.HintHighlight = 'Highlight occurrences'
       SearchFooter.MatchCaseCaption = 'Match case'
       SortSettings.DefaultFormat = ssAutomatic
-      Version = '7.8.9.0'
+      Version = '7.9.1.1'
     end
   end
   object timRefresh: TTimer

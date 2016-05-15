@@ -177,6 +177,7 @@ type
     procedure btnClearClick(Sender: TObject);
     procedure btnEditClick(Sender: TObject);
     procedure tvDataBookKeepCodePropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 
   private
     { Private declarations }
@@ -435,6 +436,13 @@ procedure TfrmVatCodes.FormDestroy(Sender: TObject);
 begin
   glb.EnableOrDisableTableRefresh('vatcodes', True);
   //
+end;
+
+procedure TfrmVatCodes.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then
+    btnCancel.Click;
+
 end;
 
 procedure TfrmVatCodes.FormKeyPress(Sender: TObject; var Key: Char);

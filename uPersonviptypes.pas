@@ -184,6 +184,7 @@ type
     procedure m_BeforeInsert(DataSet: TDataSet);
     procedure tvDataCodePropertiesValidate(Sender: TObject; var DisplayValue: Variant; var ErrorText: TCaption; var Error: Boolean);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 
   private
     { Private declarations }
@@ -441,6 +442,12 @@ end;
 procedure TfrmPersonviptypes.FormDestroy(Sender: TObject);
 begin
   //
+end;
+
+procedure TfrmPersonviptypes.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then
+    btnCancel.Click;
 end;
 
 procedure TfrmPersonviptypes.FormKeyPress(Sender: TObject; var Key: Char);

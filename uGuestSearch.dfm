@@ -16,6 +16,7 @@ object frmGuestSearch: TfrmGuestSearch
   OldCreateOrder = False
   Position = poMainFormCenter
   OnCreate = FormCreate
+  OnKeyDown = FormKeyDown
   OnKeyPress = FormKeyPress
   OnShow = FormShow
   PixelsPerInch = 96
@@ -39,6 +40,7 @@ object frmGuestSearch: TfrmGuestSearch
       Caption = 'Query'
       TabOrder = 0
       SkinData.SkinSection = 'GROUPBOX'
+      Checked = False
       object sLabel1: TsLabel
         Left = 109
         Top = 51
@@ -60,22 +62,13 @@ object frmGuestSearch: TfrmGuestSearch
         Height = 21
         Color = clWhite
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 2302755
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
         ParentFont = False
         TabOrder = 0
         SkinData.SkinSection = 'EDIT'
-        BoundLabel.Indent = 0
-        BoundLabel.Font.Charset = DEFAULT_CHARSET
-        BoundLabel.Font.Color = clWindowText
-        BoundLabel.Font.Height = -11
-        BoundLabel.Font.Name = 'Tahoma'
-        BoundLabel.Font.Style = []
-        BoundLabel.Layout = sclLeft
-        BoundLabel.MaxWidth = 0
-        BoundLabel.UseSkinColor = True
       end
       object cbxMedhod: TsComboBox
         Left = 191
@@ -83,20 +76,11 @@ object frmGuestSearch: TfrmGuestSearch
         Width = 255
         Height = 21
         Alignment = taLeftJustify
-        BoundLabel.Indent = 0
-        BoundLabel.Font.Charset = DEFAULT_CHARSET
-        BoundLabel.Font.Color = clWindowText
-        BoundLabel.Font.Height = -11
-        BoundLabel.Font.Name = 'Tahoma'
-        BoundLabel.Font.Style = []
-        BoundLabel.Layout = sclLeft
-        BoundLabel.MaxWidth = 0
-        BoundLabel.UseSkinColor = True
         SkinData.SkinSection = 'COMBOBOX'
         VerticalAlignment = taAlignTop
         Color = clWhite
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 2302755
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -126,6 +110,7 @@ object frmGuestSearch: TfrmGuestSearch
       TabOrder = 1
       Visible = False
       SkinData.SkinSection = 'GROUPBOX'
+      Checked = False
       object sLabel3: TsLabel
         Left = 19
         Top = 23
@@ -164,24 +149,16 @@ object frmGuestSearch: TfrmGuestSearch
         Color = clWhite
         EditMask = '!99/99/9999;1; '
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 2302755
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
         MaxLength = 10
         ParentFont = False
         TabOrder = 0
-        Text = '  .  .    '
+        Text = '  -  -    '
         OnChange = dtDateFromChange
-        BoundLabel.Indent = 0
-        BoundLabel.Font.Charset = DEFAULT_CHARSET
-        BoundLabel.Font.Color = clWindowText
-        BoundLabel.Font.Height = -11
-        BoundLabel.Font.Name = 'Tahoma'
-        BoundLabel.Font.Style = []
-        BoundLabel.Layout = sclLeft
-        BoundLabel.MaxWidth = 0
-        BoundLabel.UseSkinColor = True
+        CheckOnExit = True
         SkinData.SkinSection = 'EDIT'
         GlyphMode.Blend = 0
         GlyphMode.Grayed = False
@@ -198,24 +175,16 @@ object frmGuestSearch: TfrmGuestSearch
         Color = clWhite
         EditMask = '!99/99/9999;1; '
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 2302755
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
         MaxLength = 10
         ParentFont = False
         TabOrder = 1
-        Text = '  .  .    '
+        Text = '  -  -    '
         OnChange = dtDateFromChange
-        BoundLabel.Indent = 0
-        BoundLabel.Font.Charset = DEFAULT_CHARSET
-        BoundLabel.Font.Color = clWindowText
-        BoundLabel.Font.Height = -11
-        BoundLabel.Font.Name = 'Tahoma'
-        BoundLabel.Font.Style = []
-        BoundLabel.Layout = sclLeft
-        BoundLabel.MaxWidth = 0
-        BoundLabel.UseSkinColor = True
+        CheckOnExit = True
         SkinData.SkinSection = 'EDIT'
         GlyphMode.Blend = 0
         GlyphMode.Grayed = False
@@ -224,8 +193,8 @@ object frmGuestSearch: TfrmGuestSearch
     object chkUseDates: TsCheckBox
       Left = 690
       Top = 2
-      Width = 73
-      Height = 19
+      Width = 76
+      Height = 17
       Caption = 'Use dates'
       TabOrder = 2
       OnClick = chkUseDatesClick
@@ -304,6 +273,7 @@ object frmGuestSearch: TfrmGuestSearch
       Caption = 'Just search in'
       TabOrder = 8
       SkinData.SkinSection = 'GROUPBOX'
+      Checked = False
       object chkbxFields: TsCheckListBox
         Left = 5
         Top = 17
@@ -312,7 +282,7 @@ object frmGuestSearch: TfrmGuestSearch
         BorderStyle = bsSingle
         Color = clWhite
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 2302755
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -322,15 +292,6 @@ object frmGuestSearch: TfrmGuestSearch
           'Customer Name')
         ParentFont = False
         TabOrder = 0
-        BoundLabel.Indent = 0
-        BoundLabel.Font.Charset = DEFAULT_CHARSET
-        BoundLabel.Font.Color = clWindowText
-        BoundLabel.Font.Height = -11
-        BoundLabel.Font.Name = 'Tahoma'
-        BoundLabel.Font.Style = []
-        BoundLabel.Layout = sclLeft
-        BoundLabel.MaxWidth = 0
-        BoundLabel.UseSkinColor = True
         SkinData.SkinSection = 'EDIT'
         OnClickCheck = chkbxFieldsClickCheck
       end
@@ -452,8 +413,8 @@ object frmGuestSearch: TfrmGuestSearch
       Caption = 'Clear'
       OnClick = btnClearClick
       SkinData.SkinSection = 'SPEEDBUTTON'
-      ImageIndex = 10
       Images = DImages.PngImageList1
+      ImageIndex = 10
     end
     object sLabel2: TsLabel
       Left = 365
@@ -488,7 +449,7 @@ object frmGuestSearch: TfrmGuestSearch
       Height = 21
       Color = clWhite
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = 2302755
+      Font.Color = clBlack
       Font.Height = -11
       Font.Name = 'Tahoma'
       Font.Style = []
@@ -496,15 +457,6 @@ object frmGuestSearch: TfrmGuestSearch
       TabOrder = 0
       OnChange = edFilterChange
       SkinData.SkinSection = 'EDIT'
-      BoundLabel.Indent = 0
-      BoundLabel.Font.Charset = DEFAULT_CHARSET
-      BoundLabel.Font.Color = clWindowText
-      BoundLabel.Font.Height = -11
-      BoundLabel.Font.Name = 'Tahoma'
-      BoundLabel.Font.Style = []
-      BoundLabel.Layout = sclLeft
-      BoundLabel.MaxWidth = 0
-      BoundLabel.UseSkinColor = True
     end
     object edLimitTo: TsSpinEdit
       Left = 483
@@ -513,7 +465,7 @@ object frmGuestSearch: TfrmGuestSearch
       Height = 21
       Color = clWhite
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = 2302755
+      Font.Color = clBlack
       Font.Height = -11
       Font.Name = 'Tahoma'
       Font.Style = []
@@ -522,15 +474,6 @@ object frmGuestSearch: TfrmGuestSearch
       Text = '2000'
       OnChange = edLimitToChange
       SkinData.SkinSection = 'EDIT'
-      BoundLabel.Indent = 0
-      BoundLabel.Font.Charset = DEFAULT_CHARSET
-      BoundLabel.Font.Color = clWindowText
-      BoundLabel.Font.Height = -11
-      BoundLabel.Font.Name = 'Tahoma'
-      BoundLabel.Font.Style = []
-      BoundLabel.Layout = sclLeft
-      BoundLabel.MaxWidth = 0
-      BoundLabel.UseSkinColor = True
       MaxValue = 2000
       MinValue = 0
       Value = 2000

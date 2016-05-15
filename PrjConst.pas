@@ -1293,6 +1293,8 @@ begin
 
   constants.Add('shUI_Filename', 'Filename');
   constants.Add('shUI_Subject', 'Subject');
+  constants.Add('shUI_User', 'User');
+  constants.Add('shUI_DateTime', 'Date/Time');
   constants.Add('shUI_RenameFile', 'Rename');
 
   constants.Add('shUI_BookKeepReortCustomerID', 'Customer Id');

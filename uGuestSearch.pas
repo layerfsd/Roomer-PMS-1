@@ -126,6 +126,7 @@ type
     procedure LMDButton1Click(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure btnClearClick(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     { Private declarations }
 
@@ -267,6 +268,12 @@ begin
 
   cbxMedhod.ItemIndex := 0;
   cbxMedhodChange(cbxMedhod);
+end;
+
+procedure TfrmGuestSearch.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then
+    Close;
 end;
 
 procedure TfrmGuestSearch.FormKeyPress(Sender: TObject; var Key: Char);

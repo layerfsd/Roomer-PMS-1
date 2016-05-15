@@ -169,6 +169,7 @@ type
     procedure btnInsertClick(Sender: TObject);
     procedure btnEditClick(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     { Private declarations }
     zFirstTime       : boolean;
@@ -414,6 +415,13 @@ begin
   except
   end;
   glb.EnableOrDisableTableRefresh('itemtypes', True);
+end;
+
+procedure TfrmItemTypes2.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then
+    btnCancel.Click;
+
 end;
 
 procedure TfrmItemTypes2.FormKeyPress(Sender: TObject; var Key: Char);

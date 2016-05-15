@@ -12,6 +12,7 @@ object frmAssignPayment: TfrmAssignPayment
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  Position = poMainFormCenter
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
@@ -248,10 +249,6 @@ object frmAssignPayment: TfrmAssignPayment
     SkinData.SkinSection = 'PAGECONTROL'
     object sTabSheet1: TsTabSheet
       Caption = 'Work within reservation group'
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object btnSetToGroupAccount: TsButton
         Left = 16
         Top = 26
@@ -310,10 +307,6 @@ object frmAssignPayment: TfrmAssignPayment
     end
     object sTabSheet2: TsTabSheet
       Caption = 'Move to other reservation '
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       DesignSize = (
         442
         216)
@@ -544,7 +537,7 @@ object frmAssignPayment: TfrmAssignPayment
         Properties.Strings = (
           'Width')
       end>
-    StorageName = 'Software\Roomer\FormStatus\Taxes'
+    StorageName = 'Software\Roomer\FormStatus\EditPayment'
     StorageType = stRegistry
     Left = 174
     Top = 304

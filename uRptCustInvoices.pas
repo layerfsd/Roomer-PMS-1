@@ -207,6 +207,7 @@ type
     procedure sButton4Click(Sender: TObject);
     procedure btnGetDataClick(Sender: TObject);
     procedure btnClearClick(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     { Private declarations }
 
@@ -621,6 +622,12 @@ begin
   glb.PerformAuthenticationAssertion(self); PlaceFormOnVisibleMonitor(self);
   glb.fillListWithMonthsLong(cbxMonth.Items, 1);
   glb.fillListWithYears(cbxYear.Items, 1, False);
+end;
+
+procedure TfrmRptCustInvoices.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then
+    Close;
 end;
 
 procedure TfrmRptCustInvoices.FormShow(Sender: TObject);

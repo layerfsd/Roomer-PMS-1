@@ -95,7 +95,7 @@ object frmMain: TfrmMain
       Top = 173
       Width = 778
       Height = 304
-      ActivePage = tabRateQuery
+      ActivePage = tabOneDayView
       Align = alClient
       TabOrder = 3
       OnChange = pageMainGridsChange
@@ -2516,6 +2516,7 @@ object frmMain: TfrmMain
           Font.Name = 'Tahoma'
           Font.Style = []
           UseSkinColor = False
+          ExplicitTop = -237
           ExplicitWidth = 73
         end
         object lblCacheNotification: TsLabel
@@ -2539,6 +2540,7 @@ object frmMain: TfrmMain
           Font.Name = 'Tahoma'
           Font.Style = []
           UseSkinColor = False
+          ExplicitTop = -250
           ExplicitWidth = 86
         end
         object Panel5: TsPanel
@@ -3057,6 +3059,7 @@ object frmMain: TfrmMain
     TabOrder = 3
     TabStop = False
     object rbTabHome: TdxRibbonTab
+      Active = True
       Caption = 'Roomer'
       Groups = <
         item
@@ -3159,7 +3162,6 @@ object frmMain: TfrmMain
       Index = 4
     end
     object System: TdxRibbonTab
-      Active = True
       Caption = 'System'
       Groups = <
         item
@@ -3235,8 +3237,8 @@ object frmMain: TfrmMain
     ExplicitHeight = 510
   end
   object pnlRoomerLogoOld: TsPanel
-    Left = 668
-    Top = 22
+    Left = 667
+    Top = 11
     Width = 301
     Height = 55
     BevelOuter = bvNone

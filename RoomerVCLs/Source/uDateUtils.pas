@@ -10,16 +10,21 @@ function dateTimeToXmlString(date : TDateTime) : String;
 function dateToSqlString(date : TDateTime) : String;
 function JsonStringToDate(dateStr : String) : TDateTime;
 function XmlStringToDate(dateStr : String) : TDateTime;
+function SqlStringToDateTime(dateStr : String) : TDateTime;
 function SqlStringToDate(dateStr : String) : TDateTime;
 function WeekNumber(date: TDateTime): integer;
 function DateTimeToDBString(date : TDateTime) : String;
-function DateTimeToComparableString(date : TDateTime) : String;
+function DateTimeToComparableString(date : TDateTime; withSeconds : Boolean = False) : String;
 function Month(ADate : TDateTime) : Integer;
 function Year(ADate : TDateTime) : Integer;
 function DayOfMonth(ADate : TDateTime) : Integer;
 function CreateDate(aYear, aMonth, aDay : Integer) : TDate;
 
 function DateTimeFromYYMMDD(const aYYMMDD: string): TDateTime;
+
+function RoomerDateTimeToString(date : TDateTime) : String;
+function RoomerDateToString(date : TDateTime) : String;
+function RoomerStringToDateTime(dateStr : String) : TDateTime;
 
 
 implementation
@@ -92,10 +97,15 @@ begin
             FormatDateTime('hh:nn:ss', date);
 end;
 
-function DateTimeToComparableString(date : TDateTime) : String;
+function DateTimeToComparableString(date : TDateTime; withSeconds : Boolean = False) : String;
+var timeFormat : String;
 begin
+  timeFormat := 'hh:nn';
+  if withSeconds then
+    timeFormat := 'hh:nn:ss';
+
   result := FormatDateTime('yyyy-mm-dd', date) +
-            FormatDateTime('hh:nn', date);
+            FormatDateTime(timeFormat, date);
 end;
 
 function DateTimeToDBString(date : TDateTime) : String;
@@ -114,6 +124,27 @@ begin
   Result := StrToDateTime(dateStr, FormatSettings);
 end;
 
+function RoomerDateTimeToString(date : TDateTime) : String;
+begin
+  result := FormatDateTime('dd-mm-yyyy', date) + ' ' +
+            FormatDateTime('hh:nn:ss', date);
+end;
+
+function RoomerDateToString(date : TDateTime) : String;
+begin
+  result := FormatDateTime('dd-mm-yyyy', date);
+end;
+
+function RoomerStringToDateTime(dateStr : String) : TDateTime;
+var
+  FormatSettings: TFormatSettings;
+begin
+  FormatSettings := TFormatSettings.Create(GetThreadLocale);// (LOCALE_USER_DEFAULT, FormatSettings);
+  FormatSettings.DateSeparator := '-';
+  FormatSettings.ShortDateFormat := 'dd-mm-yyyy hh:nn:ss';
+  Result := StrToDateTime(dateStr, FormatSettings);
+end;
+
 function XmlStringToDate(dateStr : String) : TDateTime;
 var
   FormatSettings: TFormatSettings;
@@ -121,6 +152,16 @@ begin
   FormatSettings := TFormatSettings.Create(GetThreadLocale);// (LOCALE_USER_DEFAULT, FormatSettings);
   FormatSettings.DateSeparator := '-';
   FormatSettings.ShortDateFormat := 'yyyy-mm-ddThh:nn:ss';
+  Result := StrToDateTime(dateStr, FormatSettings);
+end;
+
+function SqlStringToDateTime(dateStr : String) : TDateTime;
+var
+  FormatSettings: TFormatSettings;
+begin
+  FormatSettings := TFormatSettings.Create(GetThreadLocale);// (LOCALE_USER_DEFAULT, FormatSettings);
+  FormatSettings.DateSeparator := '-';
+  FormatSettings.ShortDateFormat := 'yyyy-mm-dd hh:nn:ss';
   Result := StrToDateTime(dateStr, FormatSettings);
 end;
 

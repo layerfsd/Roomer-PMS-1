@@ -11,10 +11,12 @@ object frmSeasons2: TfrmSeasons2
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
+  KeyPreview = True
   OldCreateOrder = False
   Position = poOwnerFormCenter
   OnClose = FormClose
   OnCreate = FormCreate
+  OnKeyDown = FormKeyDown
   OnKeyPress = FormKeyPress
   OnShow = FormShow
   PixelsPerInch = 96
@@ -27,7 +29,6 @@ object frmSeasons2: TfrmSeasons2
     Align = alTop
     TabOrder = 0
     SkinData.SkinSection = 'PANEL'
-    ExplicitWidth = 437
     object cLabFilter: TsLabel
       Left = 19
       Top = 41
@@ -84,9 +85,9 @@ object frmSeasons2: TfrmSeasons2
       Top = 39
       Width = 212
       Height = 21
-      Color = 3355443
+      Color = clWhite
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = 15724527
+      Font.Color = clBlack
       Font.Height = -11
       Font.Name = 'Tahoma'
       Font.Style = []
@@ -133,7 +134,6 @@ object frmSeasons2: TfrmSeasons2
     Height = 19
     Panels = <>
     SkinData.SkinSection = 'STATUSBAR'
-    ExplicitWidth = 437
   end
   object panBtn: TsPanel
     Left = 0
@@ -143,7 +143,6 @@ object frmSeasons2: TfrmSeasons2
     Align = alBottom
     TabOrder = 2
     SkinData.SkinSection = 'PANEL'
-    ExplicitWidth = 437
     DesignSize = (
       556
       33)
@@ -162,7 +161,6 @@ object frmSeasons2: TfrmSeasons2
       TabOrder = 0
       OnClick = btnCancelClick
       SkinData.SkinSection = 'BUTTON'
-      ExplicitLeft = 348
     end
     object BtnOk: TsButton
       Left = 379
@@ -178,7 +176,6 @@ object frmSeasons2: TfrmSeasons2
       TabOrder = 1
       OnClick = BtnOkClick
       SkinData.SkinSection = 'BUTTON'
-      ExplicitLeft = 260
     end
   end
   object grData: TcxGrid
@@ -189,7 +186,6 @@ object frmSeasons2: TfrmSeasons2
     Align = alClient
     TabOrder = 3
     LookAndFeel.NativeStyle = False
-    ExplicitWidth = 437
     object tvData: TcxGridDBTableView
       OnDblClick = tvDataDblClick
       Navigator.Buttons.CustomButtons = <>
@@ -335,6 +331,7 @@ object frmSeasons2: TfrmSeasons2
     Left = 368
     Top = 224
     object prLink_grData: TdxGridReportLink
+      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.GrayShading = True
@@ -348,6 +345,7 @@ object frmSeasons2: TfrmSeasons2
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
       ReportDocument.CreationDate = 41334.495374884260000000
+      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       BuiltInReportLink = True
     end
   end

@@ -9,10 +9,10 @@ uses
   System.Generics.Collections, cmpRoomerDataset, Vcl.Grids, AdvObj, BaseGrid,
   AdvGrid, Vcl.StdCtrls, sButton, sRadioButton, Vcl.Controls, sComboBox, sEdit,
   sSpinEdit, Vcl.Mask, sMaskEdit, sCustomComboEdit, sTooledit, sLabel,
-  uRoomerLanguage, uAppGlobal,
+  uRoomerLanguage, uAppGlobal, uViewDailyRates,
   Vcl.ExtCtrls, sPanel, sComboEdit, cxGraphics, cxControls, cxLookAndFeels, cxLookAndFeelPainters, cxContainer, cxEdit, Vcl.ComCtrls, dxCore, cxDateUtils,
   dxSkinsCore, dxSkinDarkSide, dxSkinDevExpressDarkStyle, dxSkinMcSkin, dxSkinOffice2013White, dxSkinsDefaultPainters, cxTextEdit, cxMaskEdit, cxDropDownEdit,
-  cxCalendar, dxSkinCaramel, dxSkinCoffee, dxSkinTheAsphaltWorld, AdvUtil, Vcl.Samples.Spin;
+  cxCalendar, dxSkinCaramel, dxSkinCoffee, dxSkinTheAsphaltWorld, AdvUtil, Vcl.Samples.Spin, cxButtonEdit;
 
 const WM_SET_DATE_FROM_MAIN = WM_User + 31;
 
@@ -77,6 +77,8 @@ type
     cbxChannels: TComboBox;
     dtArrival: TcxDateEdit;
     dtDeparture: TcxDateEdit;
+    edCustomer: TcxButtonEdit;
+    Label1: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure timRefreshTimer(Sender: TObject);
     procedure grdRatesGetCellColor(Sender: TObject; ARow, ACol: Integer;
@@ -91,8 +93,11 @@ type
     procedure dtArrivalPropertiesCloseUp(Sender: TObject);
     procedure dtDeparturePropertiesCloseUp(Sender: TObject);
     procedure edNightsChange(Sender: TObject);
+    procedure grdRatesClickCell(Sender: TObject; ARow, ACol: Integer);
   private
     { Private declarations }
+    _FrmViewDailyRates : TFrmViewDailyRates;
+    FRates : TDictionary<String,TDateRate>;
     RatesSet: TRoomerDataSet;
     RoomTypes: TRoomTypeEntityList;
     FBeingViewed: Boolean;
@@ -129,7 +134,7 @@ implementation
 
 {$R *.dfm}
 
-uses uDImages, uD, uDateUtils, hData, uMain;
+uses uDImages, uD, uDateUtils, hData, uMain, uG, uUtils;
 
 const WM_REFRESH_ARRIVAL_DATE = WM_User + 32;
       WM_REFRESH_DEPARTURE_DATE = WM_User + 33;
@@ -192,6 +197,8 @@ end;
 
 procedure TFrmRateQuery.FormCreate(Sender: TObject);
 begin
+  _FrmViewDailyRates := TFrmViewDailyRates.Create(nil);
+  FRates := TDictionary<String,TDateRate>.Create;
   RatesSet := CreateNewDataSet;
   FBeingViewed := False;
   RoomTypes := TRoomTypeEntityList.Create(True);
@@ -201,13 +208,18 @@ end;
 procedure TFrmRateQuery.FormDestroy(Sender: TObject);
 begin
   ClearRates;
-  FreeAndNil(RoomTypes)
+  FreeAndNil(RoomTypes);
+  FreeAndNil(_FrmViewDailyRates);
+  FRates.Clear;
+  FRates.Free;
 end;
 
 procedure TFrmRateQuery.GetData(ADateFrom, ADateTo: TDateTime);
 var
   s, sDateFrom, sDateTo: String;
 begin
+  _FrmViewDailyRates.Clear;
+  FRates.Clear;
   Screen.Cursor := crHourglass;
   try
     sDateFrom := dateToSqlString(ADateFrom);
@@ -218,7 +230,7 @@ begin
           '          (SELECT COUNT(id) FROM roomsdate WHERE RoomType=rtRoomType AND Adate=crDate AND (NOT ResFlag IN (''X'',''C'',''Q'',''Z'',''N'')))), ' +
           '          availability) AS availability, ' +
           ' ' +
-          '       rtId, rtRoomType, rtDescription, ' +
+          '       rtId, rtRoomType, rtDescription, rtgNumGuests, ' +
           '	   rtgId, rtgCode, rtgTopClass, rtgDescription, ' +
           '       chId, chCode, chName, ' +
           '       cmId, cmCode, cmDescription ' +
@@ -228,7 +240,7 @@ begin
           '       (SELECT availability FROM channelratesavailabilities ' +
           '        WHERE roomClassId=(SELECT id FROM roomtypegroups WHERE Code=rtg.TopClass LIMIT 1) ' +
           '       AND date=cr.date AND planCodeId=cr.planCodeId AND channelManagerId=cm.Id) AS availability, ' +
-          '       rt.Id AS rtId, rt.RoomType AS rtRoomType, rt.Description AS rtDescription, ' +
+          '       rt.Id AS rtId, rt.RoomType AS rtRoomType, rt.Description AS rtDescription, rtg.numGuests AS rtgNumGuests, ' +
           '	   rtg.Id AS rtgId, rtg.Code AS rtgCode, rtg.TopClass AS rtgTopClass, rtg.Description AS rtgDescription, ' +
           '       ch.id AS chId, ch.channelManagerId AS chCode, ch.name AS chName, ' +
           '       cm.Id AS cmId, cm.Code AS cmCode, cm.Description AS cmDescription ' +
@@ -270,7 +282,7 @@ begin
           '          0 AS stop, 1 AS minStay, ' +
           '       ((SELECT COUNT(id) FROM rooms WHERE active AND RoomType=rt.RoomType AND NOT Hidden) - ' +
           '	    (SELECT COUNT(id) FROM roomsdate WHERE RoomType=rt.RoomType AND Adate=pdd.Date AND (NOT ResFlag IN (''X'',''C'',''Q'',''Z'',''N'')))) AS availability, ' +
-          '	   rt.Id AS rtId, rt.RoomType AS rtRoomType, rt.Description AS rtDescription, ' +
+          '	   rt.Id AS rtId, rt.RoomType AS rtRoomType, rt.Description AS rtDescription, rt.NumberGuests AS rtgNumGuests, ' +
           '	   0 AS rtgId, pcCode AS rtgCode, pcCode AS rtgTopClass, pc.pcDescription AS rtgDescription, ' +
           '       0 AS chId,  (SELECT companyID FROM control LIMIT 1) AS chCode, (SELECT companyName FROM control LIMIT 1) AS chName, ' +
           '       0 AS cmId, (SELECT companyID FROM control LIMIT 1) AS cmCode, (SELECT companyName FROM control LIMIT 1) AS cmDescription ' +
@@ -304,7 +316,9 @@ begin
     begin
       CollectChannels;
       if cbxChannels.ItemIndex >= 0 then
+      begin
         CollectRatesForSelectedChannel(cbxChannels.Items[cbxChannels.ItemIndex]);
+      end;
     end;
   finally
     Screen.Cursor := crDefault;
@@ -345,6 +359,37 @@ begin
     end;
   finally
     cbxChannels.OnChange := cbxChannelsChange;
+  end;
+end;
+
+procedure TFrmRateQuery.grdRatesClickCell(Sender: TObject; ARow, ACol: Integer);
+var key, rt, rtg : String;
+    i : Integer;
+    DateRate : TDateRate;
+begin
+ //
+  if (ACol > 0) AND (ARow > 0) then
+  begin
+    _FrmViewDailyRates.Clear;
+    rt := grdRates.Cells[ACol, 0];
+    rtg := grdRates.Cells[0, ARow];
+    _FrmViewDailyRates.DescriptionLeft := linuxLFCRToWindows('Arrival:\nDeparture:\nChannel:\nRate Class:\nRoom type:');
+    _FrmViewDailyRates.DescriptionRight := linuxLFCRToWindows(format('%s\n%s\n%s\n%s\n%s',
+      [
+        uDateUtils.RoomerDateToString(FShowDateFrom),
+        uDateUtils.RoomerDateToString(FShowDateTo),
+        cbxChannels.Text,
+        rtg,
+        rt
+      ]));
+    for i := Trunc(FShowDateFrom) to Trunc(FShowDateTo) do
+    begin
+      key := format('%s_%s_%s', [rt, rtg, uDateUtils.dateToSqlString(i)]);
+      if FRates.TryGetValue(key, DateRate) then
+        _FrmViewDailyRates.Add(DateRate.Clone);
+    end;
+
+    _FrmViewDailyRates.ShowModal;
   end;
 end;
 
@@ -448,6 +493,12 @@ procedure TFrmRateQuery.CollectRatesForSelectedChannel(ChannelCode: String);
 var
   CurrentRoomType: String;
   index, RateIndex: Integer;
+  CurrencyId : Integer;
+  Currency : String;
+  key : String;
+  crDate : TDate;
+  Rate : Double;
+  NumGuests : Integer;
 begin
   ClearRates;
   RatesSet.First;
@@ -465,6 +516,14 @@ begin
     RatesSet.Next;
   end;
 
+  _FrmViewDailyRates.Currency := g.qNativeCurrency;
+  if glb.LocateSpecificRecordAndGetValue('channels', 'channelManagerId', ChannelCode, 'CurrencyId', CurrencyId) AND
+     glb.LocateSpecificRecordAndGetValue('currencies', 'ID', CurrencyId, 'Currency', Currency) then
+       _FrmViewDailyRates.Currency := Currency;
+
+
+  FRates.Clear;
+
   RatesSet.First;
   while NOT RatesSet.EOF do
   begin
@@ -480,6 +539,18 @@ begin
             RatesSet['rtgDescription'], RatesSet['Rate'], RatesSet['availability']))
         else
           RoomTypes[index].Rates[RateIndex].AddRateAndAvailability(RatesSet['Rate'], RatesSet['availability']);
+
+        crDate := RatesSet['crDate'];
+        Rate := RatesSet['Rate'];
+        NumGuests := RatesSet['rtgNumGuests'];
+        key := format('%s_%s_%s', [RatesSet['rtRoomType'], RatesSet['rtgCode'], uDateUtils.dateToSqlString(RatesSet['crDate'])]);
+        FRates.Add(key,
+                      CreateDateRate(crDate,
+                      Rate,
+                      edCustomer.Text,
+                      trunc(FShowDateTo - FShowDateFrom) + 1,
+                      NumGuests,
+                      _FrmViewDailyRates.Currency));
       end;
     end;
     RatesSet.Next;
@@ -619,6 +690,7 @@ end;
 
 procedure TFrmRateQuery.ShowRatesForDate(ADate: TDateTime);
 begin
+  edCustomer.Text := ctrlGetString('RackCustomer');
   setShowDates(ADate, ADate);
 end;
 

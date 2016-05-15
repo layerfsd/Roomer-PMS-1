@@ -10,10 +10,12 @@ object frmRptDownPayments: TfrmRptDownPayments
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
+  KeyPreview = True
   OldCreateOrder = False
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  OnKeyDown = FormKeyDown
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
@@ -91,7 +93,7 @@ object frmRptDownPayments: TfrmRptDownPayments
         VerticalAlignment = taAlignTop
         Color = clWhite
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 2302755
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -130,7 +132,7 @@ object frmRptDownPayments: TfrmRptDownPayments
         VerticalAlignment = taAlignTop
         Color = clWhite
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 2302755
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -189,7 +191,7 @@ object frmRptDownPayments: TfrmRptDownPayments
         Color = clWhite
         EditMask = '!99/99/9999;1; '
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 2302755
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -212,7 +214,7 @@ object frmRptDownPayments: TfrmRptDownPayments
         Color = clWhite
         EditMask = '!99/99/9999;1; '
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 2302755
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -234,7 +236,7 @@ object frmRptDownPayments: TfrmRptDownPayments
       Height = 21
       Color = clWhite
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = 2302755
+      Font.Color = clBlack
       Font.Height = -11
       Font.Name = 'Tahoma'
       Font.Style = []
@@ -300,12 +302,6 @@ object frmRptDownPayments: TfrmRptDownPayments
     object sTabSheet1: TsTabSheet
       Caption = 'sTabSheet1'
       TabVisible = False
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object grPayments: TcxGrid
         Left = 0
         Top = 43
@@ -522,8 +518,8 @@ object frmRptDownPayments: TfrmRptDownPayments
         object sCheckBox1: TsCheckBox
           Left = 700
           Top = 4
-          Width = 112
-          Height = 19
+          Width = 115
+          Height = 17
           Caption = 'Group on paytype'
           TabOrder = 6
           SkinData.SkinSection = 'CHECKBOX'

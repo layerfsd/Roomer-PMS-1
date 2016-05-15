@@ -83,6 +83,7 @@ type
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure btnCancelClick(Sender: TObject);
     procedure sSpeedButton1Click(Sender: TObject);
+    procedure tvPayTypeDblClick(Sender: TObject);
   private
     { Private declarations }
     zCanClose : boolean;
@@ -210,6 +211,12 @@ end;
 procedure TfrmDownPayment.sSpeedButton1Click(Sender: TObject);
 begin
   edAmount.value := rec.InvoiceBalance;
+end;
+
+procedure TfrmDownPayment.tvPayTypeDblClick(Sender: TObject);
+begin
+  if (edAmount.Text <> '0') AND (NOT kbmPayType.Eof) then
+    btnOk.Click;
 end;
 
 end.

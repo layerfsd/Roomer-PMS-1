@@ -121,6 +121,7 @@ type
     procedure cbxMonthCloseUp(Sender: TObject);
     procedure btnRefreshClick(Sender: TObject);
     procedure btnExcelClick(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     { Private declarations }
 
@@ -395,6 +396,12 @@ begin
   glb.fillListWithYears(cbxYear.Items, 1, False);
 end;
 
+
+procedure TfrmRptTotallist.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then
+    Close;
+end;
 
 //function TfrmRptTotallist.LocationInString : string;
 //var

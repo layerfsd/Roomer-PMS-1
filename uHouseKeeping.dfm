@@ -10,9 +10,11 @@ object frmHouseKeeping: TfrmHouseKeeping
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
+  KeyPreview = True
   OldCreateOrder = False
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  OnKeyDown = FormKeyDown
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
@@ -80,7 +82,7 @@ object frmHouseKeeping: TfrmHouseKeeping
         Color = clWhite
         EditMask = '!99/99/9999;1; '
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 2302755
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -121,12 +123,6 @@ object frmHouseKeeping: TfrmHouseKeeping
     SkinData.SkinSection = 'PAGECONTROL'
     object sTabSheet1: TsTabSheet
       Caption = 'List'
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object grCross: TAdvStringGrid
         Left = 0
         Top = 33
@@ -234,7 +230,7 @@ object frmHouseKeeping: TfrmHouseKeeping
         SearchFooter.HintHighlight = 'Highlight occurences'
         SearchFooter.MatchCaseCaption = 'Match case'
         SortSettings.DefaultFormat = ssAutomatic
-        Version = '7.9.1.0'
+        Version = '7.9.1.1'
         RowHeights = (
           22
           22
@@ -295,8 +291,6 @@ object frmHouseKeeping: TfrmHouseKeeping
     end
     object tabActions: TsTabSheet
       Caption = 'Detailed'
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
       ExplicitLeft = 0
       ExplicitTop = 0
       ExplicitWidth = 0

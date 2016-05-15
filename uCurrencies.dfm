@@ -18,6 +18,7 @@ object frmCurrencies: TfrmCurrencies
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  OnKeyDown = FormKeyDown
   OnKeyPress = FormKeyPress
   OnShow = FormShow
   PixelsPerInch = 96
@@ -162,8 +163,8 @@ object frmCurrencies: TfrmCurrencies
       object chkActive: TsCheckBox
         Left = 56
         Top = 65
-        Width = 273
-        Height = 20
+        Width = 281
+        Height = 17
         Caption = 'Active (if checked then just active are visible else all)'
         Checked = True
         State = cbChecked
@@ -178,9 +179,9 @@ object frmCurrencies: TfrmCurrencies
         Top = 39
         Width = 206
         Height = 21
-        Color = 3355443
+        Color = clWhite
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 15724527
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -395,7 +396,6 @@ object frmCurrencies: TfrmCurrencies
     object prLink_grData: TdxGridReportLink
       Active = True
       Component = grData
-      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.GrayShading = True
@@ -408,8 +408,7 @@ object frmCurrencies: TfrmCurrencies
       PrinterPage.PageSize.Y = 297000
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
-      ReportDocument.CreationDate = 42490.527501215280000000
-      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
+      ReportDocument.CreationDate = 42500.504607152770000000
       BuiltInReportLink = True
     end
   end

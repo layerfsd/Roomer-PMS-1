@@ -18,6 +18,7 @@ object frmPersonviptypes: TfrmPersonviptypes
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  OnKeyDown = FormKeyDown
   OnKeyPress = FormKeyPress
   OnShow = FormShow
   PixelsPerInch = 96
@@ -129,8 +130,8 @@ object frmPersonviptypes: TfrmPersonviptypes
     object chkActive: TsCheckBox
       Left = 56
       Top = 65
-      Width = 279
-      Height = 19
+      Width = 281
+      Height = 17
       Caption = 'Active (if checked then just active are visible else all)'
       Checked = True
       State = cbChecked
@@ -145,9 +146,9 @@ object frmPersonviptypes: TfrmPersonviptypes
       Top = 39
       Width = 206
       Height = 21
-      Color = 3355443
+      Color = clWhite
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = 15724527
+      Font.Color = clBlack
       Font.Height = -11
       Font.Name = 'Tahoma'
       Font.Style = []
@@ -169,8 +170,8 @@ object frmPersonviptypes: TfrmPersonviptypes
       444
       33)
     object btnCancel: TsButton
-      Left = 356
-      Top = 4
+      Left = 357
+      Top = 2
       Width = 85
       Height = 25
       Hint = 'Cancel and close'
@@ -362,6 +363,7 @@ object frmPersonviptypes: TfrmPersonviptypes
     object prLink_grData: TdxGridReportLink
       Active = True
       Component = grData
+      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.GrayShading = True
@@ -374,7 +376,8 @@ object frmPersonviptypes: TfrmPersonviptypes
       PrinterPage.PageSize.Y = 297000
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
-      ReportDocument.CreationDate = 42490.533069560190000000
+      ReportDocument.CreationDate = 42500.504092534720000000
+      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       BuiltInReportLink = True
     end
   end

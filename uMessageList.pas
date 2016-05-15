@@ -267,12 +267,12 @@ begin
         if TableStatusses.ContainsKey(key) then
         begin
           TableStatusses.TryGetValue(key, datePair);
-          datePair.newDate := TableRefreshSet[key];
+          datePair.newDate := TableRefreshSet.fieldByName(key).AsDateTime;
         end
         else begin
           datePair := TDatePair.Create;
-          datePair.oldDate := TableRefreshSet[key];
-          datePair.newDate := TableRefreshSet[key];
+          datePair.oldDate := TableRefreshSet.fieldByName(key).AsDateTime;
+          datePair.newDate := TableRefreshSet.fieldByName(key).AsDateTime;
           TableStatusses.Add(key, datePair);
         end;
       end;
@@ -293,7 +293,7 @@ begin
   begin
     if TableStatusses.TryGetValue(key, datePair) then
     begin
-      result := uDateUtils.DateTimeToComparableString(datePair.oldDate) <> uDateUtils.DateTimeToComparableString(datePair.newDate);
+      result := uDateUtils.DateTimeToComparableString(datePair.oldDate, true) <> uDateUtils.DateTimeToComparableString(datePair.newDate, true);
     end;
   end;
 end;

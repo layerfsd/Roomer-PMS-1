@@ -202,6 +202,7 @@ type
     procedure tvDataBooking_Item_IdPropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
     procedure tvDataBooking_ItemPropertiesValidate(Sender: TObject; var DisplayValue: Variant; var ErrorText: TCaption; var Error: Boolean);
     procedure C1Click(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     { Private declarations }
     zFirstTime       : boolean;
@@ -470,6 +471,13 @@ begin
     Action := caFree;
   if Assigned(EmbedWindowCloseEvent) then
     EmbedWindowCloseEvent(self);
+end;
+
+procedure TfrmTaxes.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then
+    btnCancel.Click;
+
 end;
 
 procedure TfrmTaxes.FormKeyPress(Sender: TObject; var Key: Char);

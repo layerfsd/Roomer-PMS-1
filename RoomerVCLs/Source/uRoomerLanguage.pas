@@ -25,6 +25,7 @@ uses
 
   , sButton
   , sCheckBox
+  , sTreeView
   , sPageControl
   , sTabControl
   , sGroupBox
@@ -137,6 +138,7 @@ type
 
     procedure TranslateThis(comp: TComponent; key : String); overload;
     procedure TranslateThis(comp: TsButton; key: String); overload;
+    procedure TranslateThis(comp: TsTreeView; key: String); overload;
     procedure TranslateThis(comp: TcxButton; key: String); overload;
     procedure TranslateThis(comp: TForm; key: String); overload;
     procedure TranslateThis(comp: TdxBarLargeButton; key: String); overload;
@@ -922,6 +924,9 @@ begin
   if comp is TsButton then
     TranslateThis(comp AS TsButton, key)
   else
+  if comp is TsTreeView then
+    TranslateThis(comp AS TsTreeView, key)
+  else
   if comp is TsSpeedButton then
     TranslateThis(comp AS TsSpeedButton, key)
   else
@@ -1200,6 +1205,15 @@ end;
 procedure TRoomerLanguage.TranslateThis(comp : TsButton; key : String);
 begin
   comp.Caption := GetTranslationOfSpecifiedKey(key + 'Caption', comp.Caption);
+  CheckHintComponentName(comp, GetTranslationOfSpecifiedKey(key + 'Hint', comp.Hint));
+end;
+
+procedure TRoomerLanguage.TranslateThis(comp : TsTreeView; key : String);
+var i : integer;
+    Node : TTreeNode;
+begin
+  for Node in comp.Items do
+    Node.Text := GetTranslationOfSpecifiedKey(key + 'ItemsSelectIndex' + inttostr(Node.SelectedIndex), Node.Text);
   CheckHintComponentName(comp, GetTranslationOfSpecifiedKey(key + 'Hint', comp.Hint));
 end;
 

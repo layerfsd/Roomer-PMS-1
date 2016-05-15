@@ -10,10 +10,12 @@ object frmDayFinical: TfrmDayFinical
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
+  KeyPreview = True
   OldCreateOrder = False
   Position = poOwnerFormCenter
   OnClose = FormClose
   OnCreate = FormCreate
+  OnKeyDown = FormKeyDown
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
@@ -148,8 +150,8 @@ object frmDayFinical: TfrmDayFinical
       object chkGetUnconfirmed: TsCheckBox
         Left = 21
         Top = 18
-        Width = 104
-        Height = 19
+        Width = 107
+        Height = 17
         Caption = 'Get unconfirmed'
         TabOrder = 0
         OnClick = chkGetUnconfirmedClick
@@ -249,7 +251,7 @@ object frmDayFinical: TfrmDayFinical
         Color = clWhite
         EditMask = '!99/99/9999;1; '
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 2302755
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -272,7 +274,7 @@ object frmDayFinical: TfrmDayFinical
         Color = clWhite
         EditMask = '!99/99/9999;1; '
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 2302755
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -289,8 +291,8 @@ object frmDayFinical: TfrmDayFinical
       object chkOneday: TsCheckBox
         Left = 3
         Top = 60
-        Width = 66
-        Height = 19
+        Width = 69
+        Height = 17
         Caption = 'One day'
         Checked = True
         State = cbChecked
@@ -318,12 +320,6 @@ object frmDayFinical: TfrmDayFinical
     object sheetSums: TsTabSheet
       Caption = 'Sums'
       ImageIndex = 4
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Panel9: TsPanel
         Left = 265
         Top = 0
@@ -354,12 +350,6 @@ object frmDayFinical: TfrmDayFinical
           SkinData.SkinSection = 'PAGECONTROL'
           object sheetSums2: TsTabSheet
             Caption = 'Sale type / paymentgroup'
-            SkinData.CustomColor = False
-            SkinData.CustomFont = False
-            ExplicitLeft = 0
-            ExplicitTop = 0
-            ExplicitWidth = 0
-            ExplicitHeight = 0
             object grSums2: TcxGrid
               Left = 0
               Top = 0
@@ -496,12 +486,6 @@ object frmDayFinical: TfrmDayFinical
           object sheetSums3: TsTabSheet
             Caption = 'Sale item / payment type'
             ImageIndex = 1
-            SkinData.CustomColor = False
-            SkinData.CustomFont = False
-            ExplicitLeft = 0
-            ExplicitTop = 0
-            ExplicitWidth = 0
-            ExplicitHeight = 0
             object grSums: TcxGrid
               Left = 0
               Top = 0
@@ -822,12 +806,6 @@ object frmDayFinical: TfrmDayFinical
     object SheetInvoicelist: TsTabSheet
       Caption = 'Sale - Invoice'
       ImageIndex = 3
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Panel4: TsPanel
         Left = 0
         Top = 0
@@ -1262,12 +1240,6 @@ object frmDayFinical: TfrmDayFinical
     object sheetItemSale: TsTabSheet
       Caption = 'Sale - Item'
       ImageIndex = 2
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Panel3: TsPanel
         Left = 0
         Top = 0
@@ -1403,12 +1375,6 @@ object frmDayFinical: TfrmDayFinical
     object sheetItemTypeSale: TsTabSheet
       Caption = 'Sale - Itemtype'
       ImageIndex = 5
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Panel7: TsPanel
         Left = 0
         Top = 0
@@ -1536,12 +1502,6 @@ object frmDayFinical: TfrmDayFinical
     object sheetItemVATsale: TsTabSheet
       Caption = 'Sale - VAT'
       ImageIndex = 7
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Panel13: TsPanel
         Left = 0
         Top = 0
@@ -1675,12 +1635,6 @@ object frmDayFinical: TfrmDayFinical
     object sheetPayments: TsTabSheet
       Caption = 'Payments - Invoice'
       ImageIndex = 4
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Panel5: TsPanel
         Left = 0
         Top = 0
@@ -1871,12 +1825,6 @@ object frmDayFinical: TfrmDayFinical
     object sheetPaymentType: TsTabSheet
       Caption = 'Payments - Paytype'
       ImageIndex = 3
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Panel1: TsPanel
         Left = 0
         Top = 0
@@ -1982,12 +1930,6 @@ object frmDayFinical: TfrmDayFinical
     object sheetPaymentGroups: TsTabSheet
       Caption = 'Payments - Paygroup'
       ImageIndex = 6
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Panel8: TsPanel
         Left = 0
         Top = 0
@@ -2379,7 +2321,7 @@ object frmDayFinical: TfrmDayFinical
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
       ReportDocument.Caption = 'Sums2'
-      ReportDocument.CreationDate = 42397.467840763890000000
+      ReportDocument.CreationDate = 42500.583833807870000000
       ReportTitle.TextAlignX = taLeft
       BuiltInReportLink = True
     end
@@ -2398,7 +2340,7 @@ object frmDayFinical: TfrmDayFinical
       PrinterPage.PageSize.Y = 297000
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
-      ReportDocument.CreationDate = 42397.467840960650000000
+      ReportDocument.CreationDate = 42500.583834074070000000
       BuiltInReportLink = True
     end
     object grPrinterInvoicelist: TdxGridReportLink
@@ -2434,7 +2376,7 @@ object frmDayFinical: TfrmDayFinical
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
       ReportDocument.Caption = 'Sums2'
-      ReportDocument.CreationDate = 42397.467841319440000000
+      ReportDocument.CreationDate = 42500.583834456020000000
       BuiltInReportLink = True
     end
     object grPrinterItemTypeSale: TdxGridReportLink
@@ -2453,7 +2395,7 @@ object frmDayFinical: TfrmDayFinical
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
       ReportDocument.Caption = 'Sums2'
-      ReportDocument.CreationDate = 42397.467841701390000000
+      ReportDocument.CreationDate = 42500.583834826390000000
       BuiltInReportLink = True
     end
     object grPrinterItemVATsale: TdxGridReportLink
@@ -2472,7 +2414,7 @@ object frmDayFinical: TfrmDayFinical
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
       ReportDocument.Caption = 'Sums2'
-      ReportDocument.CreationDate = 42397.467842083330000000
+      ReportDocument.CreationDate = 42500.583835254620000000
       BuiltInReportLink = True
     end
     object grPrinterPaymentGroups: TdxGridReportLink
@@ -2491,7 +2433,7 @@ object frmDayFinical: TfrmDayFinical
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
       ReportDocument.Caption = 'Sums2'
-      ReportDocument.CreationDate = 42397.467842453710000000
+      ReportDocument.CreationDate = 42500.583835601850000000
       BuiltInReportLink = True
     end
     object grPrinterPayments: TdxGridReportLink
@@ -2527,7 +2469,7 @@ object frmDayFinical: TfrmDayFinical
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
       ReportDocument.Caption = 'Sums2'
-      ReportDocument.CreationDate = 42397.467842870370000000
+      ReportDocument.CreationDate = 42500.583836006940000000
       BuiltInReportLink = True
     end
     object grPrinterLink1: TdxCompositionReportLink

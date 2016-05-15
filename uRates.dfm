@@ -11,10 +11,12 @@ object frmRates: TfrmRates
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
+  KeyPreview = True
   OldCreateOrder = False
   Position = poOwnerFormCenter
   OnClose = FormClose
   OnCreate = FormCreate
+  OnKeyDown = FormKeyDown
   OnKeyPress = FormKeyPress
   OnShow = FormShow
   PixelsPerInch = 96
@@ -28,7 +30,6 @@ object frmRates: TfrmRates
     BevelOuter = bvNone
     TabOrder = 0
     SkinData.SkinSection = 'PANEL'
-    ExplicitWidth = 734
     DesignSize = (
       829
       83)
@@ -88,9 +89,9 @@ object frmRates: TfrmRates
       Top = 39
       Width = 213
       Height = 21
-      Color = 3355443
+      Color = clWhite
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = 15724527
+      Font.Color = clBlack
       Font.Height = -11
       Font.Name = 'Tahoma'
       Font.Style = []
@@ -127,7 +128,7 @@ object frmRates: TfrmRates
         Left = 106
         Top = 16
         Width = 153
-        Height = 22
+        Height = 21
         Color = clWindow
         Version = '1.5.0.0'
         Visible = True
@@ -157,7 +158,7 @@ object frmRates: TfrmRates
           end>
         ComboItems = <>
         EditColumn = -1
-        EditHeight = 16
+        EditHeight = 15
         EmptyText = ''
         EmptyTextStyle = []
         DropWidth = 145
@@ -182,8 +183,8 @@ object frmRates: TfrmRates
     object chkActive: TsCheckBox
       Left = 56
       Top = 62
-      Width = 244
-      Height = 19
+      Width = 246
+      Height = 17
       Caption = 'Active (if checked then just active are visible)'
       Checked = True
       State = cbChecked
@@ -248,7 +249,6 @@ object frmRates: TfrmRates
     Height = 19
     Panels = <>
     SkinData.SkinSection = 'STATUSBAR'
-    ExplicitWidth = 734
   end
   object panBtn: TsPanel
     Left = 0
@@ -259,7 +259,6 @@ object frmRates: TfrmRates
     BevelOuter = bvNone
     TabOrder = 2
     SkinData.SkinSection = 'PANEL'
-    ExplicitWidth = 734
     DesignSize = (
       829
       33)
@@ -278,7 +277,6 @@ object frmRates: TfrmRates
       TabOrder = 0
       OnClick = btnCancelClick
       SkinData.SkinSection = 'BUTTON'
-      ExplicitLeft = 645
     end
     object BtnOk: TsButton
       Left = 652
@@ -294,7 +292,6 @@ object frmRates: TfrmRates
       TabOrder = 1
       OnClick = BtnOkClick
       SkinData.SkinSection = 'BUTTON'
-      ExplicitLeft = 557
     end
   end
   object grData: TcxGrid
@@ -307,7 +304,6 @@ object frmRates: TfrmRates
     BorderStyle = cxcbsNone
     TabOrder = 3
     LookAndFeel.NativeStyle = False
-    ExplicitWidth = 734
     object tvData: TcxGridDBTableView
       OnDblClick = tvDataDblClick
       Navigator.Buttons.CustomButtons = <>
@@ -523,6 +519,7 @@ object frmRates: TfrmRates
     Left = 216
     Top = 240
     object prLink_grData: TdxGridReportLink
+      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.GrayShading = True
@@ -536,6 +533,7 @@ object frmRates: TfrmRates
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
       ReportDocument.CreationDate = 41334.495374884260000000
+      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       BuiltInReportLink = True
     end
   end

@@ -273,6 +273,7 @@ type
     procedure tvBtnNewProfileGetProperties(Sender: TcxCustomGridTableItem; ARecord: TcxCustomGridRecord;
       var AProperties: TcxCustomEditProperties);
     procedure tvDataCountryPropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 
   private
     { Private declarations }
@@ -636,6 +637,12 @@ procedure TfrmGuestProfile2.FormDestroy(Sender: TObject);
 begin
 //  D.SaveTcxGridColumnOrder(self, grData);
   //
+end;
+
+procedure TfrmGuestProfile2.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then
+    Close;
 end;
 
 procedure TfrmGuestProfile2.FormKeyPress(Sender: TObject; var Key: Char);

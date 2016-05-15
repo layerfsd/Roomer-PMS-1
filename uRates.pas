@@ -193,6 +193,7 @@ type
     procedure btnRefreshClick(Sender: TObject);
     procedure chkActiveClick(Sender: TObject);
     procedure A1Click(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     { Private declarations }
     zFirstTime       : boolean;
@@ -572,6 +573,13 @@ begin
   begin
     tvdata.DataController.Post;
   end;
+end;
+
+procedure TfrmRates.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then
+    btnCancel.Click;
+
 end;
 
 procedure TfrmRates.FormKeyPress(Sender: TObject; var Key: Char);

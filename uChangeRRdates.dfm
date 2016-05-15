@@ -12,11 +12,13 @@ object frmChangeRRdates: TfrmChangeRRdates
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
+  KeyPreview = True
   OldCreateOrder = False
   Position = poOwnerFormCenter
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  OnKeyDown = FormKeyDown
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
@@ -38,6 +40,7 @@ object frmChangeRRdates: TfrmChangeRRdates
       Width = 107
       Height = 25
       Anchors = [akTop, akRight]
+      Cancel = True
       Caption = 'Cancel'
       ImageIndex = 4
       Images = DImages.PngImageList1
@@ -440,7 +443,7 @@ object frmChangeRRdates: TfrmChangeRRdates
         Color = clWhite
         EditMask = '!99/99/9999;1; '
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 2302755
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -463,7 +466,7 @@ object frmChangeRRdates: TfrmChangeRRdates
         Color = clWhite
         EditMask = '!99/99/9999;1; '
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 2302755
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -576,7 +579,7 @@ object frmChangeRRdates: TfrmChangeRRdates
         Color = clWhite
         EditMask = '!99/99/9999;1; '
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 2302755
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []

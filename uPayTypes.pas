@@ -206,6 +206,7 @@ type
     procedure tvDataBookKeyPropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure tvDataBookKeepCodePropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 
   private
     { Private declarations }
@@ -524,6 +525,13 @@ end;
 procedure TfrmPayTypes.FormDestroy(Sender: TObject);
 begin
   //
+end;
+
+procedure TfrmPayTypes.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then
+    btnCancel.Click;
+
 end;
 
 procedure TfrmPayTypes.FormKeyPress(Sender: TObject; var Key: Char);

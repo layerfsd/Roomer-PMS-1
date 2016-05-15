@@ -208,7 +208,7 @@ Type
       destructor Destroy; override;
 
       procedure LogChanges(DataSet: TDataSet; tableName : String; action: TTableAction; descriptor: String);
-      procedure locateId(rSet: TDataset; id: Integer);
+      function locateId(rSet : TDataset; id : Integer) : Boolean;
       procedure FillRoomAndTypeGrid(agrRooms : TStringGrid;
                                     Location : TSet_Of_Integer;
                                     Floor : TSet_Of_Integer;
@@ -302,6 +302,8 @@ Type
       function GetRateExclusive(Item : String; Rate : Double) : Double;
 
       function isCustomerCityTaxIncluded(Customer : String) : Boolean;
+      function GetIntegerValueOfFieldFromId(tableName : String; fieldName : String; id: Integer): Integer;
+      function GetBooleanValueOfFieldFromId(tableName : String; fieldName : String; id: Integer): boolean;
 
    published
       property PreviousGuestsSet : TRoomerDataSet read FPreviousGuestsSet;
@@ -551,13 +553,17 @@ begin
   FPreviousGuestsSet.First;
 end;
 
-procedure TGlobalSettings.locateId(rSet : TDataset; id : Integer);
+function TGlobalSettings.locateId(rSet : TDataset; id : Integer) : Boolean;
 begin
+  result := False;
   rSet.First;
   while NOT rSet.Eof do
   begin
     if rSet['ID'] = id then
+    begin
+      result := True;
       Break;
+    end;
     rSet.Next;
   end;
 end;
@@ -581,6 +587,28 @@ begin
     if LocateSpecificRecord('itemtypes', 'ItemType', GetItems.FieldByName('ItemType').AsString) then
       if LocateSpecificRecord('vatcodes', 'VATCode', GetItemTypes.FieldByName('VATCode').AsString) then
         result := Rate / (1 + (GetVAT.GetFloatValue(getVat.FieldByName('VATPercentage'))/100));
+end;
+
+function TGlobalSettings.GetIntegerValueOfFieldFromId(tableName : String; fieldName : String; id : Integer) : Integer;
+var dataSet : TRoomerDataSet;
+begin
+  dataset := GetDataSetFromDictionary(tableName);
+  if locateId(dataset, id) then
+  begin
+    result := dataset[fieldName];
+  end else
+    result := -1;
+end;
+
+function TGlobalSettings.GetBooleanValueOfFieldFromId(tableName : String; fieldName : String; id : Integer) : boolean;
+var dataSet : TRoomerDataSet;
+begin
+  dataset := GetDataSetFromDictionary(tableName);
+  if locateId(dataset, id) then
+  begin
+    result := dataset[fieldName];
+  end else
+    result := false;
 end;
 
 function TGlobalSettings.LocationSQLInString(locationlist : TSet_Of_Integer) : string;

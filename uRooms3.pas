@@ -264,6 +264,7 @@ type
     procedure S1Click(Sender: TObject);
     procedure S2Click(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     { Private declarations }
     zFirstTime       : boolean;
@@ -588,6 +589,12 @@ begin
   begin
     tvdata.DataController.Post;
   end;
+end;
+
+procedure TfrmRooms3.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then
+    btnCancel.Click;
 end;
 
 procedure TfrmRooms3.FormKeyPress(Sender: TObject; var Key: Char);

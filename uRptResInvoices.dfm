@@ -11,10 +11,12 @@ object frmRptResInvoices: TfrmRptResInvoices
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
+  KeyPreview = True
   OldCreateOrder = False
   Position = poOwnerFormCenter
   OnClose = FormClose
   OnCreate = FormCreate
+  OnKeyDown = FormKeyDown
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
@@ -440,8 +442,6 @@ object frmRptResInvoices: TfrmRptResInvoices
     OnPageChanging = tabsMainPageChanging
     object tabOpenInvoices: TsTabSheet
       Caption = 'Item summery'
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
       ExplicitLeft = 0
       ExplicitTop = 0
       ExplicitWidth = 0
@@ -521,8 +521,6 @@ object frmRptResInvoices: TfrmRptResInvoices
     end
     object tabFinishedInvoices: TsTabSheet
       Caption = 'Closed Invoice list'
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
       ExplicitLeft = 0
       ExplicitTop = 0
       ExplicitWidth = 0
@@ -928,8 +926,6 @@ object frmRptResInvoices: TfrmRptResInvoices
     end
     object sTabSheet1: TsTabSheet
       Caption = 'Open Invoice list'
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
       object sPanel4: TsPanel
         Left = 0
         Top = 0

@@ -2,8 +2,8 @@ object frmRptReservations: TfrmRptReservations
   Left = 788
   Top = 319
   Caption = 'Reservations list'
-  ClientHeight = 667
-  ClientWidth = 1054
+  ClientHeight = 644
+  ClientWidth = 1094
   Color = clBtnFace
   Constraints.MinWidth = 920
   Font.Charset = DEFAULT_CHARSET
@@ -11,6 +11,7 @@ object frmRptReservations: TfrmRptReservations
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
+  KeyPreview = True
   OldCreateOrder = False
   Position = poOwnerFormCenter
   OnClose = FormClose
@@ -21,8 +22,8 @@ object frmRptReservations: TfrmRptReservations
   object pnlHolder: TsPanel
     Left = 0
     Top = 0
-    Width = 1054
-    Height = 667
+    Width = 1094
+    Height = 644
     Margins.Left = 2
     Margins.Top = 2
     Margins.Right = 2
@@ -34,9 +35,9 @@ object frmRptReservations: TfrmRptReservations
     object pageMain: TsPageControl
       Left = 0
       Top = 117
-      Width = 1054
-      Height = 530
-      ActivePage = tabReservation
+      Width = 1094
+      Height = 507
+      ActivePage = tabRoom
       Align = alClient
       TabOrder = 0
       SkinData.SkinSection = 'PAGECONTROL'
@@ -44,12 +45,10 @@ object frmRptReservations: TfrmRptReservations
       object tabReservation: TsTabSheet
         Caption = 'Reservations'
         ImageIndex = 2
-        SkinData.CustomColor = False
-        SkinData.CustomFont = False
         object Panel5: TsPanel
           Left = 0
           Top = 0
-          Width = 1046
+          Width = 1086
           Height = 44
           Align = alTop
           TabOrder = 0
@@ -125,13 +124,12 @@ object frmRptReservations: TfrmRptReservations
         object grReservations: TcxGrid
           Left = 0
           Top = 44
-          Width = 1046
-          Height = 458
+          Width = 1086
+          Height = 435
           Align = alClient
           PopupMenu = PopupMenu1
           TabOrder = 1
           LookAndFeel.NativeStyle = False
-          ExplicitTop = 42
           object tvReservations: TcxGridDBTableView
             Navigator.Buttons.CustomButtons = <>
             Navigator.Buttons.Insert.Visible = False
@@ -159,6 +157,22 @@ object frmRptReservations: TfrmRptReservations
                 Kind = skSum
                 FieldName = 'roomCount'
                 Column = tvReservationsroomCount
+              end
+              item
+                Kind = skSum
+                FieldName = 'totalNights'
+                Column = tvReservationstotalNights
+              end
+              item
+                Kind = skSum
+                FieldName = 'TotalRoomRent'
+                Column = tvReservationsTotalRoomRent
+              end
+              item
+                Format = ',0.;-,0.'
+                Kind = skSum
+                FieldName = 'Discount'
+                Column = tvReservationsDiscount
               end>
             DataController.Summary.SummaryGroups = <>
             OptionsData.CancelOnExit = False
@@ -308,6 +322,44 @@ object frmRptReservations: TfrmRptReservations
             end
             object tvReservationsuseStayTax: TcxGridDBColumn
               DataBinding.FieldName = 'useStayTax'
+            end
+            object tvReservationschannel: TcxGridDBColumn
+              DataBinding.FieldName = 'channel'
+            end
+            object tvReservationstotalNights: TcxGridDBColumn
+              DataBinding.FieldName = 'totalNights'
+            end
+            object tvReservationsCurrency: TcxGridDBColumn
+              DataBinding.FieldName = 'Currency'
+              OnGetProperties = tvReservationsTotalRoomRentGetProperties
+            end
+            object tvReservationsCurrencyrate: TcxGridDBColumn
+              Caption = 'Rate'
+              DataBinding.FieldName = 'Currencyrate'
+              PropertiesClassName = 'TcxCurrencyEditProperties'
+            end
+            object tvReservationsRoomRent: TcxGridDBColumn
+              Caption = 'Room Rent'
+              DataBinding.FieldName = 'RoomRent'
+              PropertiesClassName = 'TcxCurrencyEditProperties'
+              OnGetProperties = tvReservationsDiscountGetProperties
+            end
+            object tvReservationsDiscount: TcxGridDBColumn
+              DataBinding.FieldName = 'Discount'
+              PropertiesClassName = 'TcxCurrencyEditProperties'
+              OnGetProperties = tvReservationsDiscountGetProperties
+            end
+            object tvReservationsTotalRoomRent: TcxGridDBColumn
+              Caption = 'Tota lRoom Rent'
+              DataBinding.FieldName = 'TotalRoomRent'
+              PropertiesClassName = 'TcxCurrencyEditProperties'
+              OnGetProperties = tvReservationsTotalRoomRentGetProperties
+            end
+            object tvReservationsAvrageRoomRent: TcxGridDBColumn
+              Caption = 'Per Night'
+              DataBinding.FieldName = 'AvrageRoomRent'
+              PropertiesClassName = 'TcxCurrencyEditProperties'
+              OnGetProperties = tvReservationsTotalRoomRentGetProperties
             end
           end
           object tvRoomReservations: TcxGridDBTableView
@@ -483,13 +535,11 @@ object frmRptReservations: TfrmRptReservations
       end
       object tabRoom: TsTabSheet
         Caption = 'Rooms'
-        SkinData.CustomColor = False
-        SkinData.CustomFont = False
         object grRooms: TcxGrid
           Left = 0
           Top = 44
-          Width = 1046
-          Height = 458
+          Width = 1086
+          Height = 435
           Align = alClient
           PopupMenu = PopupMenu1
           TabOrder = 0
@@ -852,6 +902,9 @@ object frmRptReservations: TfrmRptReservations
               DataBinding.FieldName = 'marketSegment'
               Width = 40
             end
+            object tvRoomsAvrageRate: TcxGridDBColumn
+              DataBinding.FieldName = 'AvrageRate'
+            end
           end
           object lvRooms: TcxGridLevel
             GridView = tvRooms
@@ -860,7 +913,7 @@ object frmRptReservations: TfrmRptReservations
         object sPanel1: TsPanel
           Left = 0
           Top = 0
-          Width = 1046
+          Width = 1086
           Height = 44
           Align = alTop
           TabOrder = 1
@@ -930,8 +983,8 @@ object frmRptReservations: TfrmRptReservations
     end
     object dxStatusBar1: TdxStatusBar
       Left = 0
-      Top = 647
-      Width = 1054
+      Top = 624
+      Width = 1094
       Height = 20
       Panels = <>
       Font.Charset = DEFAULT_CHARSET
@@ -943,14 +996,14 @@ object frmRptReservations: TfrmRptReservations
     object Panel3: TsPanel
       Left = 0
       Top = 0
-      Width = 1054
+      Width = 1094
       Height = 117
       Align = alTop
       Anchors = [akTop, akRight]
       TabOrder = 2
       SkinData.SkinSection = 'PANEL'
       DesignSize = (
-        1054
+        1094
         117)
       object cLabFilter: TsLabel
         Left = 67
@@ -974,8 +1027,8 @@ object frmRptReservations: TfrmRptReservations
         Caption = 'Clear'
         OnClick = btnClearClick
         SkinData.SkinSection = 'SPEEDBUTTON'
-        ImageIndex = 10
         Images = DImages.PngImageList1
+        ImageIndex = 10
       end
       object cxGroupBox2: TsGroupBox
         Left = 163
@@ -991,26 +1044,23 @@ object frmRptReservations: TfrmRptReservations
         ParentFont = False
         TabOrder = 0
         SkinData.SkinSection = 'GROUPBOX'
+        Checked = False
         object cbxMonth: TsComboBox
           Left = 15
           Top = 20
           Width = 121
           Height = 21
           Alignment = taLeftJustify
-          BoundLabel.Indent = 0
           BoundLabel.Font.Charset = DEFAULT_CHARSET
           BoundLabel.Font.Color = clWindowText
           BoundLabel.Font.Height = -13
           BoundLabel.Font.Name = 'Tahoma'
           BoundLabel.Font.Style = []
-          BoundLabel.Layout = sclLeft
-          BoundLabel.MaxWidth = 0
-          BoundLabel.UseSkinColor = True
           SkinData.SkinSection = 'COMBOBOX'
           VerticalAlignment = taAlignTop
           Color = clWhite
           Font.Charset = DEFAULT_CHARSET
-          Font.Color = 2302755
+          Font.Color = clBlack
           Font.Height = -11
           Font.Name = 'Tahoma'
           Font.Style = []
@@ -1040,20 +1090,16 @@ object frmRptReservations: TfrmRptReservations
           Width = 121
           Height = 21
           Alignment = taLeftJustify
-          BoundLabel.Indent = 0
           BoundLabel.Font.Charset = DEFAULT_CHARSET
           BoundLabel.Font.Color = clWindowText
           BoundLabel.Font.Height = -13
           BoundLabel.Font.Name = 'Tahoma'
           BoundLabel.Font.Style = []
-          BoundLabel.Layout = sclLeft
-          BoundLabel.MaxWidth = 0
-          BoundLabel.UseSkinColor = True
           SkinData.SkinSection = 'COMBOBOX'
           VerticalAlignment = taAlignTop
           Color = clWhite
           Font.Charset = DEFAULT_CHARSET
-          Font.Color = 2302755
+          Font.Color = clBlack
           Font.Height = -11
           Font.Name = 'Tahoma'
           Font.Style = []
@@ -1102,6 +1148,7 @@ object frmRptReservations: TfrmRptReservations
         ParentFont = False
         TabOrder = 2
         SkinData.SkinSection = 'GROUPBOX'
+        Checked = False
         object dtDateFrom: TsDateEdit
           Left = 16
           Top = 20
@@ -1111,7 +1158,7 @@ object frmRptReservations: TfrmRptReservations
           Color = clWhite
           EditMask = '!99/99/9999;1; '
           Font.Charset = DEFAULT_CHARSET
-          Font.Color = 2302755
+          Font.Color = clBlack
           Font.Height = -11
           Font.Name = 'Tahoma'
           Font.Style = []
@@ -1120,15 +1167,7 @@ object frmRptReservations: TfrmRptReservations
           TabOrder = 0
           Text = '  -  -    '
           OnChange = dtDateFromChange
-          BoundLabel.Indent = 0
-          BoundLabel.Font.Charset = DEFAULT_CHARSET
-          BoundLabel.Font.Color = clWindowText
-          BoundLabel.Font.Height = -11
-          BoundLabel.Font.Name = 'Tahoma'
-          BoundLabel.Font.Style = []
-          BoundLabel.Layout = sclLeft
-          BoundLabel.MaxWidth = 0
-          BoundLabel.UseSkinColor = True
+          CheckOnExit = True
           SkinData.SkinSection = 'EDIT'
           GlyphMode.Blend = 0
           GlyphMode.Grayed = False
@@ -1142,7 +1181,7 @@ object frmRptReservations: TfrmRptReservations
           Color = clWhite
           EditMask = '!99/99/9999;1; '
           Font.Charset = DEFAULT_CHARSET
-          Font.Color = 2302755
+          Font.Color = clBlack
           Font.Height = -11
           Font.Name = 'Tahoma'
           Font.Style = []
@@ -1151,15 +1190,7 @@ object frmRptReservations: TfrmRptReservations
           TabOrder = 1
           Text = '  -  -    '
           OnChange = dtDateFromChange
-          BoundLabel.Indent = 0
-          BoundLabel.Font.Charset = DEFAULT_CHARSET
-          BoundLabel.Font.Color = clWindowText
-          BoundLabel.Font.Height = -11
-          BoundLabel.Font.Name = 'Tahoma'
-          BoundLabel.Font.Style = []
-          BoundLabel.Layout = sclLeft
-          BoundLabel.MaxWidth = 0
-          BoundLabel.UseSkinColor = True
+          CheckOnExit = True
           SkinData.SkinSection = 'EDIT'
           GlyphMode.Blend = 0
           GlyphMode.Grayed = False
@@ -1172,7 +1203,7 @@ object frmRptReservations: TfrmRptReservations
         Height = 21
         Color = clWhite
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 2302755
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -1180,15 +1211,6 @@ object frmRptReservations: TfrmRptReservations
         TabOrder = 3
         OnChange = edFilterChange
         SkinData.SkinSection = 'EDIT'
-        BoundLabel.Indent = 0
-        BoundLabel.Font.Charset = DEFAULT_CHARSET
-        BoundLabel.Font.Color = clWindowText
-        BoundLabel.Font.Height = -11
-        BoundLabel.Font.Name = 'Tahoma'
-        BoundLabel.Font.Style = []
-        BoundLabel.Layout = sclLeft
-        BoundLabel.MaxWidth = 0
-        BoundLabel.UseSkinColor = True
       end
       object rgrDateRangeFor: TsRadioGroup
         Left = 322
@@ -1198,6 +1220,7 @@ object frmRptReservations: TfrmRptReservations
         Caption = 'Date range for..'
         TabOrder = 4
         SkinData.SkinSection = 'GROUPBOX'
+        Checked = False
         ItemIndex = 0
         Items.Strings = (
           'Reservation made'
@@ -1205,7 +1228,7 @@ object frmRptReservations: TfrmRptReservations
           'Reservation stay')
       end
       object btnJumpToRoom: TsButton
-        Left = 812
+        Left = 852
         Top = 8
         Width = 117
         Height = 38
@@ -1219,7 +1242,7 @@ object frmRptReservations: TfrmRptReservations
         SkinData.SkinSection = 'BUTTON'
       end
       object btnClose: TsButton
-        Left = 933
+        Left = 975
         Top = 8
         Width = 117
         Height = 38
@@ -1231,6 +1254,7 @@ object frmRptReservations: TfrmRptReservations
         ModalResult = 8
         TabOrder = 6
         OnClick = btnCloseClick
+        OnKeyDown = btnCloseKeyDown
         SkinData.SkinSection = 'BUTTON'
       end
     end
@@ -1466,6 +1490,35 @@ object frmRptReservations: TfrmRptReservations
       item
         Name = 'roomCount'
         DataType = ftInteger
+      end
+      item
+        Name = 'totalNights'
+        DataType = ftFloat
+      end
+      item
+        Name = 'Currency'
+        DataType = ftString
+        Size = 4
+      end
+      item
+        Name = 'Currencyrate'
+        DataType = ftFloat
+      end
+      item
+        Name = 'RoomRent'
+        DataType = ftFloat
+      end
+      item
+        Name = 'Discount'
+        DataType = ftFloat
+      end
+      item
+        Name = 'TotalRoomRent'
+        DataType = ftFloat
+      end
+      item
+        Name = 'AvrageRoomRent'
+        DataType = ftFloat
       end>
     IndexDefs = <>
     SortOptions = []
@@ -1914,6 +1967,10 @@ object frmRptReservations: TfrmRptReservations
         Name = 'CustomerEmail'
         DataType = ftWideString
         Size = 150
+      end
+      item
+        Name = 'AvrageRate'
+        DataType = ftFloat
       end>
     IndexDefs = <>
     SortOptions = []

@@ -11,10 +11,12 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
+  KeyPreview = True
   OldCreateOrder = False
   Position = poMainFormCenter
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  OnKeyDown = FormKeyDown
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
@@ -40,6 +42,7 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
       ParentFont = False
       TabOrder = 0
       SkinData.SkinSection = 'GROUPBOX'
+      Checked = False
       object dtDateFrom: TsDateEdit
         Left = 16
         Top = 18
@@ -49,24 +52,16 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
         Color = clWhite
         EditMask = '!99/99/9999;1; '
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 2302755
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
         MaxLength = 10
         ParentFont = False
         TabOrder = 0
-        Text = '  .  .    '
+        Text = '  -  -    '
         OnChange = dtDateFromChange
-        BoundLabel.Indent = 0
-        BoundLabel.Font.Charset = DEFAULT_CHARSET
-        BoundLabel.Font.Color = clWindowText
-        BoundLabel.Font.Height = -11
-        BoundLabel.Font.Name = 'Tahoma'
-        BoundLabel.Font.Style = []
-        BoundLabel.Layout = sclLeft
-        BoundLabel.MaxWidth = 0
-        BoundLabel.UseSkinColor = True
+        CheckOnExit = True
         SkinData.SkinSection = 'EDIT'
         GlyphMode.Blend = 0
         GlyphMode.Grayed = False
@@ -80,24 +75,16 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
         Color = clWhite
         EditMask = '!99/99/9999;1; '
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 2302755
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
         MaxLength = 10
         ParentFont = False
         TabOrder = 1
-        Text = '  .  .    '
+        Text = '  -  -    '
         OnChange = dtDateToChange
-        BoundLabel.Indent = 0
-        BoundLabel.Font.Charset = DEFAULT_CHARSET
-        BoundLabel.Font.Color = clWindowText
-        BoundLabel.Font.Height = -11
-        BoundLabel.Font.Name = 'Tahoma'
-        BoundLabel.Font.Style = []
-        BoundLabel.Layout = sclLeft
-        BoundLabel.MaxWidth = 0
-        BoundLabel.UseSkinColor = True
+        CheckOnExit = True
         SkinData.SkinSection = 'EDIT'
         GlyphMode.Blend = 0
         GlyphMode.Grayed = False
@@ -117,26 +104,23 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
       ParentFont = False
       TabOrder = 1
       SkinData.SkinSection = 'GROUPBOX'
+      Checked = False
       object cbxMonth: TsComboBox
         Left = 10
         Top = 18
         Width = 121
         Height = 21
         Alignment = taLeftJustify
-        BoundLabel.Indent = 0
         BoundLabel.Font.Charset = DEFAULT_CHARSET
         BoundLabel.Font.Color = clWindowText
         BoundLabel.Font.Height = -13
         BoundLabel.Font.Name = 'Tahoma'
         BoundLabel.Font.Style = []
-        BoundLabel.Layout = sclLeft
-        BoundLabel.MaxWidth = 0
-        BoundLabel.UseSkinColor = True
         SkinData.SkinSection = 'COMBOBOX'
         VerticalAlignment = taAlignTop
         Color = clWhite
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 2302755
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -166,20 +150,16 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
         Width = 121
         Height = 21
         Alignment = taLeftJustify
-        BoundLabel.Indent = 0
         BoundLabel.Font.Charset = DEFAULT_CHARSET
         BoundLabel.Font.Color = clWindowText
         BoundLabel.Font.Height = -13
         BoundLabel.Font.Name = 'Tahoma'
         BoundLabel.Font.Style = []
-        BoundLabel.Layout = sclLeft
-        BoundLabel.MaxWidth = 0
-        BoundLabel.UseSkinColor = True
         SkinData.SkinSection = 'COMBOBOX'
         VerticalAlignment = taAlignTop
         Color = clWhite
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 2302755
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -221,6 +201,7 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
       Align = alRight
       TabOrder = 3
       SkinData.SkinSection = 'GROUPBOX'
+      Checked = False
       DesignSize = (
         810
         125)
@@ -256,11 +237,12 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
         Caption = 'Use Room with status of : '
         TabOrder = 2
         SkinData.SkinSection = 'GROUPBOX'
+        Checked = False
         object chkExcluteWaitingList: TsCheckBox
           Left = 14
           Top = 17
-          Width = 69
-          Height = 20
+          Width = 77
+          Height = 17
           Caption = 'Waitinglist'
           Checked = True
           State = cbChecked
@@ -273,8 +255,8 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
         object chkExcluteAlotment: TsCheckBox
           Left = 14
           Top = 34
-          Width = 65
-          Height = 20
+          Width = 73
+          Height = 17
           Caption = 'Allotment'
           Checked = True
           State = cbChecked
@@ -287,8 +269,8 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
         object chkExcluteOrder: TsCheckBox
           Left = 14
           Top = 51
-          Width = 75
-          Height = 20
+          Width = 83
+          Height = 17
           Caption = 'Not Arrived'
           Checked = True
           State = cbChecked
@@ -301,8 +283,8 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
         object chkExcluteNoShow: TsCheckBox
           Left = 244
           Top = 34
-          Width = 61
-          Height = 20
+          Width = 69
+          Height = 17
           Caption = 'No show'
           Checked = True
           State = cbChecked
@@ -315,8 +297,8 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
         object chkExcluteDeparted: TsCheckBox
           Left = 134
           Top = 17
-          Width = 65
-          Height = 20
+          Width = 73
+          Height = 17
           Caption = 'Departed'
           Checked = True
           State = cbChecked
@@ -329,8 +311,8 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
         object chkExcluteBlocked: TsCheckBox
           Left = 244
           Top = 17
-          Width = 56
-          Height = 20
+          Width = 64
+          Height = 17
           Caption = 'Blocked'
           TabOrder = 5
           OnClick = chkExcluteWaitingListClick
@@ -341,8 +323,8 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
         object chkExcluteGuest: TsCheckBox
           Left = 134
           Top = 34
-          Width = 48
-          Height = 20
+          Width = 56
+          Height = 17
           Caption = 'Guest'
           Checked = True
           State = cbChecked
@@ -362,11 +344,12 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
         Caption = 'Use NO Rooms with status of : '
         TabOrder = 3
         SkinData.SkinSection = 'GROUPBOX'
+        Checked = False
         object chkExcluteWaitingListNoRooms: TsCheckBox
           Left = 14
           Top = 17
-          Width = 69
-          Height = 20
+          Width = 77
+          Height = 17
           Caption = 'Waitinglist'
           Checked = True
           State = cbChecked
@@ -379,8 +362,8 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
         object chkExcluteAlotmentNoRooms: TsCheckBox
           Left = 14
           Top = 34
-          Width = 65
-          Height = 20
+          Width = 73
+          Height = 17
           Caption = 'Allotment'
           Checked = True
           State = cbChecked
@@ -393,8 +376,8 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
         object chkExcluteOrderNorooms: TsCheckBox
           Left = 14
           Top = 49
-          Width = 75
-          Height = 20
+          Width = 83
+          Height = 17
           Caption = 'Not Arrived'
           Checked = True
           State = cbChecked
@@ -407,8 +390,8 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
         object chkExcluteNoShowNoRooms: TsCheckBox
           Left = 246
           Top = 34
-          Width = 61
-          Height = 20
+          Width = 69
+          Height = 17
           Caption = 'No show'
           Checked = True
           State = cbChecked
@@ -421,8 +404,8 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
         object chkExcluteDepartedNoRooms: TsCheckBox
           Left = 134
           Top = 17
-          Width = 65
-          Height = 20
+          Width = 73
+          Height = 17
           Caption = 'Departed'
           Checked = True
           State = cbChecked
@@ -435,8 +418,8 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
         object chkExcluteBlockedNoRooms: TsCheckBox
           Left = 246
           Top = 17
-          Width = 56
-          Height = 20
+          Width = 64
+          Height = 17
           Caption = 'Blocked'
           TabOrder = 5
           OnClick = chkExcluteWaitingListClick
@@ -447,8 +430,8 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
         object chkExcluteGuestNoRooms: TsCheckBox
           Left = 134
           Top = 34
-          Width = 48
-          Height = 20
+          Width = 56
+          Height = 17
           Caption = 'Guest'
           Checked = True
           State = cbChecked
@@ -462,8 +445,8 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
       object chkStatistics: TsCheckBox
         Left = 17
         Top = 90
-        Width = 243
-        Height = 20
+        Width = 251
+        Height = 17
         Caption = 'Only use rooms marked to be used in Statistics'
         Checked = True
         State = cbChecked
@@ -487,12 +470,6 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
     object SheetMainResult: TsTabSheet
       Caption = 'Pivot Result'
       OnShow = SheetMainResultShow
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Panel1: TPanel
         Left = 240
         Top = 0
@@ -518,12 +495,6 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
             SkinData.SkinSection = 'PAGECONTROL'
             object sTabSheet2: TsTabSheet
               Caption = 'Result'
-              SkinData.CustomColor = False
-              SkinData.CustomFont = False
-              ExplicitLeft = 0
-              ExplicitTop = 0
-              ExplicitWidth = 0
-              ExplicitHeight = 0
               object pg001: TcxDBPivotGrid
                 Left = 0
                 Top = 45
@@ -745,8 +716,6 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
             end
             object sTabSheet3: TsTabSheet
               Caption = 'Graph'
-              SkinData.CustomColor = False
-              SkinData.CustomFont = False
               ExplicitLeft = 0
               ExplicitTop = 0
               ExplicitWidth = 0
@@ -785,7 +754,6 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
           HotZoneClassName = 'TcxMediaPlayer8Style'
           AlignSplitter = salTop
           Control = Panel5
-          ExplicitWidth = 8
         end
         object Panel6: TPanel
           Left = 1
@@ -923,20 +891,11 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
             Height = 21
             Anchors = [akLeft, akTop, akRight]
             Alignment = taLeftJustify
-            BoundLabel.Indent = 0
-            BoundLabel.Font.Charset = DEFAULT_CHARSET
-            BoundLabel.Font.Color = clWindowText
-            BoundLabel.Font.Height = -11
-            BoundLabel.Font.Name = 'Tahoma'
-            BoundLabel.Font.Style = []
-            BoundLabel.Layout = sclLeft
-            BoundLabel.MaxWidth = 0
-            BoundLabel.UseSkinColor = True
             SkinData.SkinSection = 'COMBOBOX'
             VerticalAlignment = taAlignTop
             Color = clWhite
             Font.Charset = DEFAULT_CHARSET
-            Font.Color = 2302755
+            Font.Color = clBlack
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
@@ -974,6 +933,7 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
           ParentFont = False
           TabOrder = 1
           SkinData.SkinSection = 'GROUPBOX'
+          Checked = False
         end
         object panLayoutShowMore: TsPanel
           Left = 1
@@ -1030,7 +990,7 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
             Anchors = [akLeft, akTop, akRight]
             Color = clWhite
             Font.Charset = DEFAULT_CHARSET
-            Font.Color = 2302755
+            Font.Color = clBlack
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
@@ -1038,15 +998,6 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
             TabOrder = 1
             TextHint = 'Set name for this data layout'
             SkinData.SkinSection = 'EDIT'
-            BoundLabel.Indent = 0
-            BoundLabel.Font.Charset = DEFAULT_CHARSET
-            BoundLabel.Font.Color = clWindowText
-            BoundLabel.Font.Height = -11
-            BoundLabel.Font.Name = 'Tahoma'
-            BoundLabel.Font.Style = []
-            BoundLabel.Layout = sclLeft
-            BoundLabel.MaxWidth = 0
-            BoundLabel.UseSkinColor = True
           end
           object cxButton2: TsButton
             Left = 78
@@ -1074,21 +1025,12 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
             Anchors = [akLeft, akTop, akRight]
             Color = clWhite
             Font.Charset = DEFAULT_CHARSET
-            Font.Color = 2302755
+            Font.Color = clBlack
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
             ParentFont = False
             TabOrder = 4
-            BoundLabel.Indent = 0
-            BoundLabel.Font.Charset = DEFAULT_CHARSET
-            BoundLabel.Font.Color = clWindowText
-            BoundLabel.Font.Height = -11
-            BoundLabel.Font.Name = 'Tahoma'
-            BoundLabel.Font.Style = []
-            BoundLabel.Layout = sclLeft
-            BoundLabel.MaxWidth = 0
-            BoundLabel.UseSkinColor = True
             SkinData.SkinSection = 'EDIT'
           end
         end
@@ -1096,8 +1038,6 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
     end
     object sTabSheet4: TsTabSheet
       Caption = 'Data'
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
       ExplicitLeft = 0
       ExplicitTop = 0
       ExplicitWidth = 0
@@ -1288,7 +1228,6 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
     end
     object prLinkGrDrill: TdxGridReportLink
       Component = grDrill
-      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.GrayShading = True
@@ -1301,7 +1240,6 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
       PrinterPage.PageSize.Y = 297000
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
-      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       BuiltInReportLink = True
     end
   end

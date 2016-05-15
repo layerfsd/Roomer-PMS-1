@@ -15,6 +15,7 @@ object frmReservationProfile: TfrmReservationProfile
   ShowHint = True
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  OnKeyDown = FormKeyDown
   OnResize = FormResize
   OnShow = FormShow
   PixelsPerInch = 96
@@ -556,10 +557,6 @@ object frmReservationProfile: TfrmReservationProfile
     object TabSheet3: TsTabSheet
       Caption = 'Main'
       TabVisible = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Panel3: TsPanel
         Left = 0
         Top = 0
@@ -587,10 +584,6 @@ object frmReservationProfile: TfrmReservationProfile
             SkinData.SkinSection = 'PAGECONTROL'
             object TabSheet4: TsTabSheet
               Caption = 'Customer'
-              ExplicitLeft = 0
-              ExplicitTop = 0
-              ExplicitWidth = 0
-              ExplicitHeight = 0
               object Label9: TsLabel
                 Left = 2
                 Top = 3
@@ -835,10 +828,6 @@ object frmReservationProfile: TfrmReservationProfile
             object TabSheet5: TsTabSheet
               Caption = 'Customer Tel / Email'
               ImageIndex = 1
-              ExplicitLeft = 0
-              ExplicitTop = 0
-              ExplicitWidth = 0
-              ExplicitHeight = 0
               object Label10: TsLabel
                 Left = 33
                 Top = 13
@@ -1415,10 +1404,11 @@ object frmReservationProfile: TfrmReservationProfile
             object sLabel5: TsLabel
               Left = 2
               Top = 65
-              Width = 124
+              Width = 205
               Height = 11
               Align = alTop
               Caption = 'Request from booking channel'
+              ExplicitWidth = 124
             end
             object memRoomNotes: TsMemo
               Left = 2
@@ -1494,10 +1484,6 @@ object frmReservationProfile: TfrmReservationProfile
     SkinData.SkinSection = 'PAGECONTROL'
     object RoomsTab: TsTabSheet
       Caption = 'Rooms'
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object grRooms: TcxGrid
         Left = 0
         Top = 82
@@ -1509,10 +1495,10 @@ object frmReservationProfile: TfrmReservationProfile
         Font.Height = -9
         Font.Name = 'Tahoma'
         Font.Style = []
+        Images = DImages.cxSmallImagesFlat
         ParentFont = False
         TabOrder = 0
         LookAndFeel.NativeStyle = False
-        ExplicitTop = 84
         object tvRooms: TcxGridDBTableView
           Navigator.Buttons.CustomButtons = <>
           Navigator.Buttons.First.Visible = True
@@ -1957,9 +1943,58 @@ object frmReservationProfile: TfrmReservationProfile
             Caption = 'Price'
             DataBinding.FieldName = 'unpaidRentPrice'
             PropertiesClassName = 'TcxCurrencyEditProperties'
-            Properties.DisplayFormat = '###0.00;###0.00'
+            Properties.DisplayFormat = '0.00;0.00'
             HeaderHint = 'Avrage price (Unpaid rent-discount)'
             Options.Editing = False
+            Options.ShowEditButtons = isebAlways
+            Width = 74
+          end
+          object __PriceViewer: TcxGridDBColumn
+            PropertiesClassName = 'TcxButtonEditProperties'
+            Properties.Buttons = <
+              item
+                Default = True
+                ImageIndex = 17
+                Kind = bkGlyph
+              end>
+            Properties.Images = DImages.cxSmallImagesFlat
+            Properties.OnButtonClick = tvRoomsunpaidRentPricePropertiesButtonClick
+            HeaderGlyph.Data = {
+              36040000424D3604000000000000360000002800000010000000100000000100
+              2000000000000004000000000000000000000000000000000000000000000000
+              0000000000000000000000000000000000000000000000000000000000000000
+              0000000000000000000000000000000000000000000000000000000000000000
+              0000000000000000000000000000000000000000000000000000000000000000
+              0000000000000000000000000000000000000000000000000000000000000000
+              0000000000000000000000000000000000000000000000000000000000000000
+              0000000000000000000000000000000000000000000000000000000000000000
+              0000000000000000000000000000B6793C2AB4793A6DB578399CB4783A9DB579
+              396FB379392C0000000000000000000000000000000000000000000000000000
+              000000000000B6793C15B578399CB4783AF1B5793AFFB5793AFFB5793AFFB579
+              3AFFB47839F3B57839A3B676361C000000000000000000000000000000000000
+              0000B5783981B5793AFFB47839EAB5793AFFB578398EB87F3812AF7F3F10B579
+              3A88B5793AFFB57839DEB47839F7B5793A91000000000000000000000000B478
+              3AC0B47939F4B1793717B4793AD2B479397800000000B5793AA6B5793AA20000
+              0000B3783870B47839D8AA7F2A06B5783AD3B4783AD17F7F0002B57939F2B579
+              3AFF00000000B37C3725B47839F7AF7F3F10B5793A7AB5783AD3B5793AFFB478
+              39E600000000B4793AF0B5793B4500000000B5783ACDB5793AFFB5793973B579
+              3AFFB4793A82B5793973B47939ACBB77330FB5793AFFB57939FCB5793AFFB579
+              3AFFB67F360EB47939A8B3783870B4793B63B5793AFFB578397D00000000B479
+              3A7EB5793AFFB5793AFFB57839DEB1793717B57839ADB5793AFFB5793AFFB579
+              39B0B6793C15B47939D9B5793AFFB5793AFFB5793A8800000000000000000000
+              0000B4783966B5793AFFB5793AFFB5793AFFB5783AE0B4793AFEB4793AFEB479
+              3ADFB5793AFFB5793AFFB5793AFFB4793A6D0000000000000000000000000000
+              000000000000B2773B1EB4783AA5B5793AFFB5793AFFB5793AFFB5793AFFB579
+              3AFFB5793AFFB57839A9B4783C22000000000000000000000000000000000000
+              0000000000000000000000000000B6773931B4793A71B478399AB478399AB579
+              3973B4783C330000000000000000000000000000000000000000000000000000
+              0000000000000000000000000000000000000000000000000000000000000000
+              0000000000000000000000000000000000000000000000000000000000000000
+              0000000000000000000000000000000000000000000000000000000000000000
+              0000000000000000000000000000000000000000000000000000000000000000
+              0000000000000000000000000000000000000000000000000000000000000000
+              0000000000000000000000000000000000000000000000000000}
+            Width = 26
           end
           object tvRoomsCurrency: TcxGridDBColumn
             DataBinding.FieldName = 'Currency'
@@ -2260,10 +2295,6 @@ object frmReservationProfile: TfrmReservationProfile
     object GuestsTab: TsTabSheet
       Caption = 'Guests'
       ImageIndex = 1
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Panel10: TsPanel
         Left = 0
         Top = 0
@@ -2729,10 +2760,6 @@ object frmReservationProfile: TfrmReservationProfile
     object InvoicesTab: TsTabSheet
       Caption = 'Finished Invoices'
       ImageIndex = 2
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Panel11: TsPanel
         Left = 0
         Top = 0
@@ -3094,17 +3121,9 @@ object frmReservationProfile: TfrmReservationProfile
     end
     object sTabSheet1: TsTabSheet
       Caption = 'Sent emails'
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
     end
     object sTabSheet2: TsTabSheet
       Caption = 'ALERTS'
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object pnlAlertHolder: TsPanel
         Left = 0
         Top = 0
@@ -3118,8 +3137,8 @@ object frmReservationProfile: TfrmReservationProfile
     end
   end
   object pnlDataWait: TsPanel
-    Left = 767
-    Top = 292
+    Left = 434
+    Top = 135
     Width = 263
     Height = 90
     TabOrder = 3
@@ -3170,6 +3189,7 @@ object frmReservationProfile: TfrmReservationProfile
       Height = 25
       Hint = 'Confirm close'
       Anchors = [akTop, akRight]
+      Cancel = True
       Caption = 'Cancel'
       ImageIndex = 10
       Images = DImages.PngImageList1
@@ -3755,6 +3775,7 @@ object frmReservationProfile: TfrmReservationProfile
   object DropComboTarget1: TDropComboTarget
     DragTypes = [dtCopy, dtLink]
     OnDrop = DropComboTarget1Drop
+    OnGetDropEffect = DropComboTarget1GetDropEffect
     Target = Owner
     Left = 868
     Top = 448

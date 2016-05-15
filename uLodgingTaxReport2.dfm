@@ -10,10 +10,12 @@ object frmLodgingTaxReport2: TfrmLodgingTaxReport2
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
+  KeyPreview = True
   OldCreateOrder = False
   Position = poOwnerFormCenter
   OnClose = FormClose
   OnCreate = FormCreate
+  OnKeyDown = FormKeyDown
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
@@ -29,12 +31,6 @@ object frmLodgingTaxReport2: TfrmLodgingTaxReport2
     object sheetMain: TsTabSheet
       Caption = 'Main'
       TabVisible = False
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Panel1: TsPanel
         Left = 0
         Top = 0
@@ -71,8 +67,8 @@ object frmLodgingTaxReport2: TfrmLodgingTaxReport2
         object chkPageBreak: TsCheckBox
           Left = 531
           Top = 4
-          Width = 203
-          Height = 20
+          Width = 211
+          Height = 17
           Caption = 'Page break before summary on report'
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
@@ -133,7 +129,6 @@ object frmLodgingTaxReport2: TfrmLodgingTaxReport2
         BorderStyle = cxcbsNone
         TabOrder = 1
         LookAndFeel.NativeStyle = False
-        ExplicitTop = 43
         object tvInvoiceHeads: TcxGridDBTableView
           OnDblClick = tvInvoiceHeadsDblClick
           Navigator.Buttons.CustomButtons = <>
@@ -372,7 +367,7 @@ object frmLodgingTaxReport2: TfrmLodgingTaxReport2
         Color = clWhite
         EditMask = '!99/99/9999;1; '
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 2302755
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -398,7 +393,7 @@ object frmLodgingTaxReport2: TfrmLodgingTaxReport2
         Color = clWhite
         EditMask = '!99/99/9999;1; '
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 2302755
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -438,7 +433,7 @@ object frmLodgingTaxReport2: TfrmLodgingTaxReport2
         VerticalAlignment = taAlignTop
         Color = clWhite
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 2302755
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -472,7 +467,7 @@ object frmLodgingTaxReport2: TfrmLodgingTaxReport2
         VerticalAlignment = taAlignTop
         Color = clWhite
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 2302755
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []

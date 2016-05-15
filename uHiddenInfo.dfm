@@ -11,6 +11,7 @@ object frmHiddenInfo: TfrmHiddenInfo
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
+  KeyPreview = True
   Padding.Left = 5
   Padding.Top = 5
   Padding.Right = 5
@@ -20,6 +21,7 @@ object frmHiddenInfo: TfrmHiddenInfo
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  OnKeyDown = FormKeyDown
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
@@ -50,9 +52,9 @@ object frmHiddenInfo: TfrmHiddenInfo
       Font.Style = []
     end
     object btnClose: TsButton
-      Left = 402
+      Left = 376
       Top = 5
-      Width = 98
+      Width = 124
       Height = 25
       Anchors = [akTop, akRight]
       Caption = 'Close'
@@ -72,7 +74,7 @@ object frmHiddenInfo: TfrmHiddenInfo
       Color = clWhite
       EditMask = '!99/99/9999;1; '
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = 4473924
+      Font.Color = clBlack
       Font.Height = -11
       Font.Name = 'Tahoma'
       Font.Style = []
@@ -103,12 +105,8 @@ object frmHiddenInfo: TfrmHiddenInfo
     Align = alClient
     TabOrder = 2
     SkinData.SkinSection = 'PAGECONTROL'
-    ExplicitTop = 37
-    ExplicitHeight = 311
     object tabInformation: TsTabSheet
       Caption = 'Information'
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
       object panInformation: TsPanel
         Left = 0
         Top = 0
@@ -144,7 +142,7 @@ object frmHiddenInfo: TfrmHiddenInfo
         Align = alClient
         Color = clWhite
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 4473924
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -161,8 +159,6 @@ object frmHiddenInfo: TfrmHiddenInfo
     object tabViewLog: TsTabSheet
       Caption = 'Viewlog'
       ImageIndex = 1
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
       object panViewLog: TsPanel
         Left = 0
         Top = 0
@@ -180,9 +176,8 @@ object frmHiddenInfo: TfrmHiddenInfo
         Width = 493
         Height = 264
         Align = alClient
-        Color = clWhite
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 4473924
+        Font.Color = clWindowText
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []

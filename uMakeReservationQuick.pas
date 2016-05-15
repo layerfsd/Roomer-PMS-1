@@ -568,6 +568,7 @@ type
     cbxBreakfastGrp: TsCheckBox;
     cbxExtraBedGrp: TsCheckBox;
     Alerts: TsTabSheet;
+    __tvRoomResColumn2: TcxGridDBColumn;
     procedure FormShow(Sender : TObject);
     procedure edCustomerDblClick(Sender: TObject);
     procedure edCustomerPropertiesEditValueChanged(Sender: TObject);
@@ -671,6 +672,7 @@ type
     procedure tvSelectTypeNoRoomsPropertiesChange(Sender: TObject);
     procedure tvSelectTypeNoRoomsStylesGetContentStyle(Sender: TcxCustomGridTableView; ARecord: TcxCustomGridRecord;
       AItem: TcxCustomGridTableItem; var AStyle: TcxStyle);
+    procedure __tvRoomResColumn2PropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
   private
     { Private declarations }
     zCustomerChanged : Boolean;
@@ -772,6 +774,7 @@ uses
   , uRoomerDefinitions
   , uDateUtils
   , uAvailabilityPerDay
+  , uViewDailyRates
 
   ;
 
@@ -1070,6 +1073,61 @@ begin
       edContactFax.Text := glb.PersonProfiles['TelFax'];
       edContactEmail.Text := glb.PersonProfiles['Email'];
     end;
+  end;
+end;
+
+procedure TfrmMakeReservationQuick.__tvRoomResColumn2PropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
+var _FrmViewDailyRates: TFrmViewDailyRates;
+    ADate,
+    arrival,
+    departure : TDate;
+    i, ii,
+    Guests, channelId,
+    dayCount, RoomReservation : Integer;
+    Rate : Double;
+    RateId : String;
+begin
+  if AButtonIndex = 0 then
+  begin
+
+    _FrmViewDailyRates := TFrmViewDailyRates.Create(nil);
+    try
+    RoomReservation := mRoomRes['RoomReservation'];
+    if mRoomRes.locate('roomreservation',RoomReservation,[]) then
+    begin
+
+      i := oNewReservation.newRoomReservations.FindRoomFromRoomReservation(RoomReservation,0);
+
+      arrival             := mRoomRes.FieldByName('arrival').AsDateTime           ;
+      departure           := mRoomRes.FieldByName('departure').AsDateTime         ;
+      dayCount := trunc(departure)-trunc(arrival);
+      Guests := mRoomRes['Guests'];
+
+      channelId := 0;
+      if edtRatePlans.ItemIndex > 0 then
+        channelId := Integer(edtRatePlans.Items.Objects[edtRatePlans.ItemIndex]);
+      rateId := mRoomRes.FieldByName('RatePlanCode').AsString;
+
+      _FrmViewDailyRates.Currency := edCurrency.Text;
+      _FrmViewDailyRates.Clear;
+      for ii := 0  to dayCount-1 do
+      begin
+          ADate := arrival+ii;
+          if mRoomRates.locate('RateDate',ADate,[]) then
+          begin
+            if NOT (DynamicRates.Active AND
+              DynamicRates.findRateByRateCode(trunc(arrival)+ii, Guests, Rate, rateId)) then
+                Rate := mRoomRes.FieldByName('AvragePrice').AsFloat;
+            _FrmViewDailyRates.Add(CreateDateRate(trunc(arrival) + ii, Rate, edCustomer.Text, dayCount, Guests, edCurrency.Text));
+          end;
+      end;
+
+      _FrmViewDailyRates.ShowModal;
+    end;
+    finally
+      FreeAndNil(_FrmViewDailyRates);
+    end;
+//    ShowRatesForRoomReservation(zRoomReservation);
   end;
 end;
 

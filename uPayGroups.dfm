@@ -18,6 +18,7 @@ object frmPayGroups: TfrmPayGroups
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  OnKeyDown = FormKeyDown
   OnKeyPress = FormKeyPress
   OnShow = FormShow
   PixelsPerInch = 96
@@ -30,7 +31,6 @@ object frmPayGroups: TfrmPayGroups
     Panels = <>
     SimplePanel = True
     SkinData.SkinSection = 'STATUSBAR'
-    ExplicitWidth = 444
   end
   object PanTop: TsPanel
     Left = 0
@@ -41,7 +41,6 @@ object frmPayGroups: TfrmPayGroups
     BevelOuter = bvNone
     TabOrder = 1
     SkinData.SkinSection = 'PANEL'
-    ExplicitWidth = 444
     object sLabel1: TsLabel
       Left = 17
       Top = 43
@@ -139,7 +138,7 @@ object frmPayGroups: TfrmPayGroups
       Height = 22
       Color = clWhite
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = 2302755
+      Font.Color = clBlack
       Font.Height = -12
       Font.Name = 'Tahoma'
       Font.Style = []
@@ -151,8 +150,8 @@ object frmPayGroups: TfrmPayGroups
     object chkActive: TsCheckBox
       Left = 57
       Top = 64
-      Width = 278
-      Height = 19
+      Width = 281
+      Height = 17
       Caption = 'Active (if checked then just active are visible else all)'
       Checked = True
       State = cbChecked
@@ -172,7 +171,6 @@ object frmPayGroups: TfrmPayGroups
     BevelOuter = bvNone
     TabOrder = 2
     SkinData.SkinSection = 'PANEL'
-    ExplicitWidth = 444
     DesignSize = (
       481
       33)
@@ -191,7 +189,6 @@ object frmPayGroups: TfrmPayGroups
       TabOrder = 0
       OnClick = btnCancelClick
       SkinData.SkinSection = 'BUTTON'
-      ExplicitLeft = 356
     end
     object BtnOk: TsButton
       Left = 305
@@ -207,7 +204,6 @@ object frmPayGroups: TfrmPayGroups
       TabOrder = 1
       OnClick = BtnOkClick
       SkinData.SkinSection = 'BUTTON'
-      ExplicitLeft = 268
     end
   end
   object grData: TcxGrid
@@ -220,7 +216,6 @@ object frmPayGroups: TfrmPayGroups
     BorderStyle = cxcbsNone
     TabOrder = 3
     LookAndFeel.NativeStyle = False
-    ExplicitWidth = 444
     object tvData: TcxGridDBTableView
       OnDblClick = tvDataDblClick
       Navigator.Buttons.CustomButtons = <>
@@ -374,6 +369,7 @@ object frmPayGroups: TfrmPayGroups
     object prLink_grData: TdxGridReportLink
       Active = True
       Component = grData
+      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.GrayShading = True
@@ -386,7 +382,8 @@ object frmPayGroups: TfrmPayGroups
       PrinterPage.PageSize.Y = 297000
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
-      ReportDocument.CreationDate = 42490.530013368060000000
+      ReportDocument.CreationDate = 42500.508978738430000000
+      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       BuiltInReportLink = True
     end
   end

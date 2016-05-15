@@ -11,6 +11,7 @@ uses
   , SysUtils
   , Classes
   , Graphics
+  , System.Generics.Collections
   , Controls
   , Forms
   , Dialogs
@@ -221,6 +222,12 @@ TYPE
     zShowPackage        : boolean;
     zEmailAddress       : String;
 
+    // Added for the saving of invoices
+    zSavedRoomReservation,
+    zSavedReservation : Integer;
+    zSavedRoom : String;
+
+
 //    procedure ExportStolpi(invoicenumber : integer);
 
     procedure WndProc(var Message: TMessage); override;
@@ -257,7 +264,9 @@ uses
   , uAppGlobal
   , uDImages
   , uStringUtils
-  , uEmailingDialog;
+  , uEmailingDialog
+  , uResourceManagement
+  ;
 
 {$R *.DFM}
 
@@ -824,8 +833,10 @@ begin
 //  end;
 
   NativeCurrency  := _trimlower(ctrlGetString('NativeCurrency'));
-  currency := d.GetInvoiceCurrency(zInvoiceNumber);
-
+  currency := d.GetInvoiceCurrencyAndReservationNumber(zInvoiceNumber,
+          zSavedReservation,
+          zSavedRoomReservation,
+          zSavedRoom);
 
   if _trimlower(NativeCurrency) <> _trimLower(Currency) then
   begin
@@ -1060,6 +1071,9 @@ function TfrmFinishedInvoices2.frxMailExport1SendMail(const Server: string; cons
   ConfurmReading: Boolean): string;
 var filename : String;
     List : TStringList;
+    KeyString : String;
+    Description : String;
+    variables : TList<String>;
 begin
   //
 //   ShowMEssage(filenames.Text);
@@ -1075,15 +1089,40 @@ begin
      frxPDFExport1.ShowDialog := True;
      frxPDFExport1.ShowProgress := True;
    end;
+   variables := TList<String>.Create;
    try
-     if sendFileAsAttachment(zEmailAddress {ToField}, GetTranslatedText('shTxEmailInvoice'), list) then;
+     variables.Add('User=' + d.roomerMainDataSet.username);
+     variables.Add('Invoice=' + inttostr(zInvoiceNumber));
+     variables.Add('Room=' + zSavedRoom);
+     variables.Add('roomReservation=' + inttostr(zSavedRoomReservation));
+     variables.Add('Reservation=' + inttostr(zSavedRoomReservation));
+     try
+       if sendFileAsAttachment(zEmailAddress {ToField}, GetTranslatedText('shTxEmailInvoice'), list, variables) then;
+     finally
+       if fileExists(filename) then
+         try
+           KeyString := format(BOOKING_STATIC_RESOURCES, [inttostr(zSavedReservation)]);
+           if zInvoiceNumber > 1000000000 then
+             Description := 'Proforma Invoice.pdf'
+           else
+             Description := 'Invoice.pdf';
+
+//           if zSavedRoomReservation > 0 then
+//             Description := format('Invoice %d, date %s, Room %s, user %s.pdf', [
+//                            zInvoiceNumber,
+//                            formatdatetime('dd-mm-yyyy hh.nn.ss', now),
+//                            zSavedRoom,
+//                            d.roomerMainDataSet.username])
+//           else
+//             Description := format('Invoice %d, date %s, user %s.pdf', [zInvoiceNumber, formatdatetime('dd-mm-yyyy hh.nn.s', now), d.roomerMainDataSet.username]);
+           UploadFileToResources(KeyString, ACCESS_RESTRICTED, Description, filename);
+           DeleteFile(filename);
+         except
+           // Is okay if it fails
+         end;
+     end;
    finally
-     if fileExists(filename) then
-       try
-         DeleteFile(filename);
-       except
-         // Is okey if it fails
-       end;
+     variables.Free;
    end;
 end;
 

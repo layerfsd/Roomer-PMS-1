@@ -525,6 +525,7 @@ type
     timBlink: TTimer;
     DropComboTarget1: TDropComboTarget;
     btnPasteFile: TsButton;
+    __PriceViewer: TcxGridDBColumn;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -628,6 +629,9 @@ type
     procedure DropComboTarget1Drop(Sender: TObject; ShiftState: TShiftState; APoint: TPoint; var Effect: Integer);
     procedure timBlinkTimer(Sender: TObject);
     procedure btnPasteFileClick(Sender: TObject);
+    procedure tvRoomsunpaidRentPricePropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure DropComboTarget1GetDropEffect(Sender: TObject; ShiftState: TShiftState; APoint: TPoint; var Effect: Integer);
   private
     { Private declarations }
     vStartName: string;
@@ -730,7 +734,8 @@ uses
   uGroupGuests,
   uTestTax,
   uAvailabilityPerDay,
-  uResourceManagement
+  uResourceManagement,
+  uViewDailyRates
   ;
 
 {$R *.DFM}
@@ -851,6 +856,12 @@ begin
   //
 end;
 
+procedure TfrmReservationProfile.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then
+    Close;
+end;
+
 procedure TfrmReservationProfile.FormResize(Sender: TObject);
 begin
   PlacePnlDataWait;
@@ -890,6 +901,7 @@ begin
       First;
       if not Eof then
       begin
+        edtInvRefrence.ReadOnly := glb.GetBooleanValueOfFieldFromId('channels', 'managedByChannelManager', fieldbyname('channel').asInteger);
         edtCustomer.text := trim(fieldbyname('Customer').asstring);
         //OPT?
         ciCustomerInfo := hData.Customer_GetHolder(edtCustomer.text);
@@ -1627,29 +1639,30 @@ procedure TfrmReservationProfile.cbxStatusEnter(Sender: TObject);
 begin
   case cbxStatus.ItemIndex of
     0:
-      vStatus := '';
+      vStatus := ''; //0  Mixed
     1:
-      vStatus := 'P';
+      vStatus := 'P'; //1 Not arrived
     2:
-      vStatus := 'G';
+      vStatus := 'G'; //2 Checked in
     3:
-      vStatus := 'D';
+      vStatus := 'D'; //3 Departed
     4:
-      vStatus := 'O';
+      vStatus := 'O'; //4 Waitinglist
     5:
-      vStatus := 'A';
+      vStatus := 'A'; //5 Alotment
     6:
-      vStatus := 'N';
+      vStatus := 'N'; //6 No-show
     7:
-      vStatus := 'B';
+      vStatus := 'B'; //7 Blocked
     8:
-      vStatus := 'C';
+      vStatus := 'C'; //8 Canceled
     9:
-      vStatus := 'W';
-    10:
-      vStatus := 'Z';
+      vStatus := 'W'; //9 [Unused]
+//    10:
+//      vStatus := 'Z'; // Awaiting payment
 
   end;
+
 end;
 
 procedure TfrmReservationProfile.chkShowAllGuestsClick(Sender: TObject);
@@ -2968,6 +2981,11 @@ begin
   timBlink.Enabled := True;
 end;
 
+procedure TfrmReservationProfile.DropComboTarget1GetDropEffect(Sender: TObject; ShiftState: TShiftState; APoint: TPoint; var Effect: Integer);
+begin
+  Effect:= DROPEFFECT_COPY;
+end;
+
 procedure TfrmReservationProfile.tvRoomsArrivalPropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
 begin
   doRRDateChange(1); //Arrival
@@ -3014,6 +3032,14 @@ begin
   end;
 
   AText := FormatFloat('#,##0.# per/night', r);
+end;
+
+procedure TfrmReservationProfile.tvRoomsunpaidRentPricePropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
+begin
+  if AButtonIndex = 0 then
+  begin
+    ShowRatesForRoomReservation(zRoomReservation);
+  end;
 end;
 
 procedure TfrmReservationProfile.tvRoomsUpdateEdit

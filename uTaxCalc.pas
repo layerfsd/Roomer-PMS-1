@@ -140,8 +140,19 @@ function GetTaxesForInvoice(RoomTaxEntities : TInvoiceRoomEntityList;
                             ItemTypeInfo: TItemTypeInfo;
                             customerIncludeDefault : Boolean) : TInvoiceTaxEntityList;
 function isStayTaxPerCustomer : Boolean;
+function stayTaxAmount : Double;
+function isStayTaxNettoBased : Boolean;
 function isStayTaxExcluded : Boolean;
+function isStayTaxIncluded : Boolean;
 function isStayTaxPercentage : Boolean;
+
+function stayTaxPerGuest : Boolean;
+function stayTaxPerGuestNight : Boolean;
+function stayTaxPerNight : Boolean;
+function stayTaxPerBooking : Boolean;
+function stayTaxPerRoom : Boolean;
+
+
 function currentlyValidTax : TTax;
 function CalculateCityTax(rentAmount : double;
                           Currency : string;
@@ -211,12 +222,11 @@ begin
             ((Tax.INCL_EXCL = TIE_PER_CUSTOMER) AND customerIncluded));
 end;
 
-
-function isStayTaxExcluded : Boolean;
+function CurrentTax : TTax;
 var l : Integer;
     tax : TTax;
 begin
-  result := ctrlGetBoolean('StayTaxIncluted');
+  result := nil;
   if taxList.Count > 0 then
   begin
     for l := 0 to taxList.Count - 1 do
@@ -224,11 +234,92 @@ begin
       Tax := taxList[l];
       if TaxsIsCurrentlyValid(Tax) then
       begin
-         result := tax.INCL_EXCL = TIE_EXCLUDED;
+         result := tax;
          break;
       end;
     end;
   end;
+end;
+
+function stayTaxPerGuest : Boolean;
+var l : Integer;
+    tax : TTax;
+begin
+  result := False;
+  tax := CurrentTax;
+  if Assigned(tax) then
+     result := tax.TAX_BASE = TB_GUEST;
+end;
+
+function stayTaxPerGuestNight : Boolean;
+var l : Integer;
+    tax : TTax;
+begin
+  result := False;
+  tax := CurrentTax;
+  if Assigned(tax) then
+     result := tax.TAX_BASE = TB_GUEST_NIGHT;
+end;
+
+function stayTaxPerNight : Boolean;
+var l : Integer;
+    tax : TTax;
+begin
+  result := False;
+  tax := CurrentTax;
+  if Assigned(tax) then
+     result := tax.TAX_BASE = TB_ROOM_NIGHT;
+end;
+
+function stayTaxPerBooking : Boolean;
+var l : Integer;
+    tax : TTax;
+begin
+  result := False;
+  tax := CurrentTax;
+  if Assigned(tax) then
+     result := tax.TAX_BASE = TB_BOOKING;
+end;
+
+function stayTaxPerRoom : Boolean;
+var l : Integer;
+    tax : TTax;
+begin
+  result := False;
+  tax := CurrentTax;
+  if Assigned(tax) then
+     result := tax.TAX_BASE = TB_ROOM;
+end;
+
+function stayTaxAmount : Double;
+var l : Integer;
+    tax : TTax;
+begin
+  result := 0.0;
+  tax := CurrentTax;
+  if Assigned(tax) then
+     result := tax.AMOUNT;
+end;
+
+function isStayTaxNettoBased : Boolean;
+var l : Integer;
+    tax : TTax;
+begin
+  result := False;
+  tax := CurrentTax;
+  if Assigned(tax) then
+    result := tax.NETTO_AMOUNT_BASED;
+end;
+
+
+function isStayTaxExcluded : Boolean;
+var l : Integer;
+    tax : TTax;
+begin
+  result := ctrlGetBoolean('StayTaxIncluted');
+  tax := CurrentTax;
+  if Assigned(tax) then
+    result := tax.INCL_EXCL = TIE_EXCLUDED;
 end;
 
 function isStayTaxIncluded : Boolean;
@@ -236,18 +327,9 @@ var l : Integer;
     tax : TTax;
 begin
   result := ctrlGetBoolean('StayTaxIncluted');
-  if taxList.Count > 0 then
-  begin
-    for l := 0 to taxList.Count - 1 do
-    begin
-      Tax := taxList[l];
-      if TaxsIsCurrentlyValid(Tax) then
-      begin
-         result := tax.INCL_EXCL = TIE_INCLUDED;
-         break;
-      end;
-    end;
-  end;
+  tax := CurrentTax;
+  if Assigned(tax) then
+    result := tax.INCL_EXCL = TIE_INCLUDED;
 end;
 
 function isStayTaxPerCustomer : Boolean;
@@ -255,18 +337,9 @@ var l : Integer;
     tax : TTax;
 begin
   result := ctrlGetBoolean('StayTaxIncluted');
-  if taxList.Count > 0 then
-  begin
-    for l := 0 to taxList.Count - 1 do
-    begin
-      Tax := taxList[l];
-      if TaxsIsCurrentlyValid(Tax) then
-      begin
-         result := tax.INCL_EXCL = TIE_PER_CUSTOMER;
-         break;
-      end;
-    end;
-  end;
+  tax := CurrentTax;
+  if Assigned(tax) then
+    result := tax.INCL_EXCL = TIE_PER_CUSTOMER;
 end;
 
 function isStayTaxPercentage : Boolean;
@@ -274,15 +347,9 @@ var l : Integer;
     tax : TTax;
 begin
   result := false;
-  if taxList.Count > 0 then
-  begin
-    for l := 0 to taxList.Count - 1 do
-    begin
-      Tax := taxList[l];
-      if TaxsIsCurrentlyValid(Tax) then
-         result := tax.TAX_TYPE = TT_PERCENTAGE;
-    end;
-  end;
+  tax := CurrentTax;
+  if Assigned(tax) then
+    result := tax.TAX_TYPE = TT_PERCENTAGE;
 end;
 
 function currentlyValidTax : TTax;

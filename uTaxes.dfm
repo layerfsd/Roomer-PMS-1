@@ -11,10 +11,12 @@ object frmTaxes: TfrmTaxes
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
+  KeyPreview = True
   OldCreateOrder = False
   Position = poOwnerFormCenter
   OnClose = FormClose
   OnCreate = FormCreate
+  OnKeyDown = FormKeyDown
   OnKeyPress = FormKeyPress
   PixelsPerInch = 96
   TextHeight = 13
@@ -65,8 +67,8 @@ object frmTaxes: TfrmTaxes
         Caption = 'Clear'
         OnClick = btnClearClick
         SkinData.SkinSection = 'SPEEDBUTTON'
-        ImageIndex = 10
         Images = DImages.PngImageList1
+        ImageIndex = 10
       end
       object btnDelete: TsButton
         Left = 199
@@ -115,7 +117,7 @@ object frmTaxes: TfrmTaxes
         Height = 21
         Color = clWhite
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 2302755
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -123,21 +125,12 @@ object frmTaxes: TfrmTaxes
         TabOrder = 3
         OnChange = edFilterChange
         SkinData.SkinSection = 'EDIT'
-        BoundLabel.Indent = 0
-        BoundLabel.Font.Charset = DEFAULT_CHARSET
-        BoundLabel.Font.Color = clWindowText
-        BoundLabel.Font.Height = -11
-        BoundLabel.Font.Name = 'Tahoma'
-        BoundLabel.Font.Style = []
-        BoundLabel.Layout = sclLeft
-        BoundLabel.MaxWidth = 0
-        BoundLabel.UseSkinColor = True
       end
       object chkActive: TsCheckBox
         Left = 56
         Top = 62
-        Width = 243
-        Height = 19
+        Width = 246
+        Height = 17
         Caption = 'Active (if checked then just active are visible)'
         Checked = True
         State = cbChecked
@@ -259,7 +252,6 @@ object frmTaxes: TfrmTaxes
       PopupMenu = PopupMenu1
       TabOrder = 3
       LookAndFeel.NativeStyle = False
-      ExplicitTop = 79
       object tvData: TcxGridDBTableView
         OnDblClick = tvDataDblClick
         Navigator.Buttons.CustomButtons = <>
@@ -488,7 +480,6 @@ object frmTaxes: TfrmTaxes
     Left = 368
     Top = 224
     object prLink_grData: TdxGridReportLink
-      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.GrayShading = True
@@ -502,7 +493,6 @@ object frmTaxes: TfrmTaxes
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
       ReportDocument.CreationDate = 41334.495374884260000000
-      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       BuiltInReportLink = True
     end
   end

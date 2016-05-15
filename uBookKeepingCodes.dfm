@@ -11,10 +11,12 @@ object frmBookKeepingCodes: TfrmBookKeepingCodes
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
+  KeyPreview = True
   OldCreateOrder = False
   Position = poOwnerFormCenter
   OnClose = FormClose
   OnCreate = FormCreate
+  OnKeyDown = FormKeyDown
   OnKeyPress = FormKeyPress
   OnShow = FormShow
   PixelsPerInch = 96
@@ -32,7 +34,6 @@ object frmBookKeepingCodes: TfrmBookKeepingCodes
     BevelOuter = bvNone
     TabOrder = 0
     SkinData.SkinSection = 'PANEL'
-    ExplicitWidth = 579
     object sPanel1: TsPanel
       Left = 0
       Top = 0
@@ -41,7 +42,6 @@ object frmBookKeepingCodes: TfrmBookKeepingCodes
       Align = alTop
       TabOrder = 0
       SkinData.SkinSection = 'PANEL'
-      ExplicitWidth = 579
       object cLabFilter: TsLabel
         Left = 19
         Top = 41
@@ -64,8 +64,8 @@ object frmBookKeepingCodes: TfrmBookKeepingCodes
         Caption = 'Clear'
         OnClick = btnClearClick
         SkinData.SkinSection = 'SPEEDBUTTON'
-        ImageIndex = 10
         Images = DImages.PngImageList1
+        ImageIndex = 10
       end
       object btnDelete: TsButton
         Left = 205
@@ -100,7 +100,7 @@ object frmBookKeepingCodes: TfrmBookKeepingCodes
         Height = 21
         Color = clWhite
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 2302755
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -108,15 +108,6 @@ object frmBookKeepingCodes: TfrmBookKeepingCodes
         TabOrder = 2
         OnChange = edFilterChange
         SkinData.SkinSection = 'EDIT'
-        BoundLabel.Indent = 0
-        BoundLabel.Font.Charset = DEFAULT_CHARSET
-        BoundLabel.Font.Color = clWindowText
-        BoundLabel.Font.Height = -11
-        BoundLabel.Font.Name = 'Tahoma'
-        BoundLabel.Font.Style = []
-        BoundLabel.Layout = sclLeft
-        BoundLabel.MaxWidth = 0
-        BoundLabel.UseSkinColor = True
       end
       object btnInsert: TsButton
         Left = 13
@@ -151,8 +142,8 @@ object frmBookKeepingCodes: TfrmBookKeepingCodes
       object chkActive: TsCheckBox
         Left = 55
         Top = 63
-        Width = 239
-        Height = 19
+        Width = 242
+        Height = 17
         Caption = 'Active (if checked then just active are visible'
         Checked = True
         State = cbChecked
@@ -169,7 +160,6 @@ object frmBookKeepingCodes: TfrmBookKeepingCodes
       Height = 19
       Panels = <>
       SkinData.SkinSection = 'STATUSBAR'
-      ExplicitWidth = 522
     end
     object panBtn: TsPanel
       Left = 0
@@ -179,7 +169,6 @@ object frmBookKeepingCodes: TfrmBookKeepingCodes
       Align = alBottom
       TabOrder = 2
       SkinData.SkinSection = 'PANEL'
-      ExplicitWidth = 579
       DesignSize = (
         701
         33)
@@ -197,7 +186,6 @@ object frmBookKeepingCodes: TfrmBookKeepingCodes
         ModalResult = 2
         TabOrder = 0
         SkinData.SkinSection = 'BUTTON'
-        ExplicitLeft = 490
       end
       object BtnOk: TsButton
         Left = 524
@@ -212,7 +200,6 @@ object frmBookKeepingCodes: TfrmBookKeepingCodes
         ModalResult = 1
         TabOrder = 1
         SkinData.SkinSection = 'BUTTON'
-        ExplicitLeft = 402
       end
     end
     object grData: TcxGrid
@@ -224,8 +211,6 @@ object frmBookKeepingCodes: TfrmBookKeepingCodes
       PopupMenu = mnuOther
       TabOrder = 3
       LookAndFeel.NativeStyle = False
-      ExplicitTop = 88
-      ExplicitWidth = 522
       object tvData: TcxGridDBTableView
         OnDblClick = tvDataDblClick
         Navigator.Buttons.CustomButtons = <>
@@ -330,7 +315,6 @@ object frmBookKeepingCodes: TfrmBookKeepingCodes
     Left = 96
     Top = 192
     object prLink_grData: TdxGridReportLink
-      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.GrayShading = True
@@ -344,7 +328,6 @@ object frmBookKeepingCodes: TfrmBookKeepingCodes
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
       ReportDocument.CreationDate = 41334.495374884260000000
-      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       BuiltInReportLink = True
     end
   end

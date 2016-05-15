@@ -166,6 +166,7 @@ type
     procedure edFilterChange(Sender: TObject);
     procedure btnInsertClick(Sender: TObject);
     procedure tvDataCustomerTypePropertiesValidate(Sender: TObject; var DisplayValue: Variant; var ErrorText: TCaption; var Error: Boolean);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     { Private declarations }
     zFirstTime       : boolean;
@@ -388,6 +389,12 @@ begin
   begin
     tvdata.DataController.Post;
   end;
+end;
+
+procedure TfrmCustomerTypes2.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then
+    btnCancel.Click;
 end;
 
 procedure TfrmCustomerTypes2.FormKeyPress(Sender: TObject; var Key: Char);

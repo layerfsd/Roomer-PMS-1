@@ -11,10 +11,12 @@ object frmRptManagment: TfrmRptManagment
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
+  KeyPreview = True
   OldCreateOrder = False
   Position = poOwnerFormCenter
   OnClose = FormClose
   OnCreate = FormCreate
+  OnKeyDown = FormKeyDown
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
@@ -585,6 +587,10 @@ object frmRptManagment: TfrmRptManagment
     end
     object tabGraph: TsTabSheet
       Caption = 'Charts'
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object pageCharts: TsPageControl
         Left = 0
         Top = 0
@@ -596,6 +602,10 @@ object frmRptManagment: TfrmRptManagment
         SkinData.SkinSection = 'PAGECONTROL'
         object tabOcc: TsTabSheet
           Caption = 'OCC'
+          ExplicitLeft = 0
+          ExplicitTop = 0
+          ExplicitWidth = 0
+          ExplicitHeight = 0
           object sPanel2: TsPanel
             Left = 0
             Top = 0

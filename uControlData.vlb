@@ -382,9 +382,6 @@ Coordinates=224,1291,91,33
 [LMDSimpleLabel73]
 Coordinates=1322,1022,108,51
 
-[TreeView1]
-Coordinates=149,1291,65,33
-
 [edswCust_CreditTerms]
 Coordinates=10,1291,129,33
 
@@ -1185,4 +1182,7 @@ Coordinates=648,107,92,51
 
 [mainPage]
 Coordinates=1179,1291,62,33
+
+[tvSelection]
+Coordinates=149,1291,65,33
 

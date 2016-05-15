@@ -181,6 +181,7 @@ type
     procedure m_BeforeDelete(DataSet: TDataSet);
     procedure m_BeforeInsert(DataSet: TDataSet);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 
   private
     { Private declarations }
@@ -422,6 +423,13 @@ end;
 procedure TfrmPayGroups.FormDestroy(Sender: TObject);
 begin
   //
+end;
+
+procedure TfrmPayGroups.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then
+    btnCancel.Click;
+
 end;
 
 procedure TfrmPayGroups.FormKeyPress(Sender: TObject; var Key: Char);

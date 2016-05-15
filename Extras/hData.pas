@@ -1189,6 +1189,8 @@ type
     connectLOSToMasterRate: boolean;
 
     RATE_PLAN_TYPE: String;
+
+    prepaidPercentage : Double;
   end;
 
   recSeasonHolder = record
@@ -10605,6 +10607,7 @@ begin
     connectCODToMasterRate := false;
     connectLOSToMasterRate := false;
     RATE_PLAN_TYPE := 'STANDARD';
+    prepaidPercentage := 100;
 
   end;
 end;
@@ -10677,6 +10680,7 @@ begin
   s := s + '   ,connectCODToMasterRate = ' + _db(theData.connectCODToMasterRate) + ' ' + #10;
   s := s + '   ,connectLOSToMasterRate = ' + _db(theData.connectLOSToMasterRate) + ' ' + #10;
   s := s + '   ,RATE_PLAN_TYPE = ' + _db(theData.RATE_PLAN_TYPE) + ' ' + #10;
+  s := s + '   ,prepaidPercentage = ' + _db(theData.prepaidPercentage) + ' ' + #10;
   s := s + ' WHERE ' + #10;
   s := s + '   (ID = ' + _db(theData.id) + ') ';
   result := cmd_bySQL(s);
@@ -10738,6 +10742,7 @@ begin
   s := s + ' ,connectCODToMasterRate ' + #10;
   s := s + ' ,connectLOSToMasterRate ' + #10;
   s := s + ' ,RATE_PLAN_TYPE ' + #10;
+  s := s + ' ,prepaidPercentage ' + #10;
   s := s + '  ) ' + #10;
   s := s + '   VALUES ' + #10;
   s := s + '  ( ' + #10;
@@ -10790,6 +10795,7 @@ begin
   s := s + '  ,' + _db(theData.connectCODToMasterRate) + ' ' + #10;
   s := s + '  ,' + _db(theData.connectLOSToMasterRate) + ' ' + #10;
   s := s + '  ,' + _db(theData.RATE_PLAN_TYPE) + ' ' + #10;
+  s := s + '  ,' + _db(theData.prepaidPercentage) + ' ' + #10;
   s := s + '   )';
   result := cmd_bySQL(s);
   if result then

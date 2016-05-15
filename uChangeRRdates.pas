@@ -100,6 +100,7 @@ type
     procedure sButton1Click(Sender: TObject);
     procedure dtSplitAtChange(Sender: TObject);
     procedure edNightCountChange(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     { Private declarations }
 
@@ -825,6 +826,12 @@ end;
 procedure TfrmChangeRRdates.FormDestroy(Sender: TObject);
 begin
   //**
+end;
+
+procedure TfrmChangeRRdates.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then
+    btnCancel.Click;
 end;
 
 procedure TfrmChangeRRdates.btnOKClick(Sender: TObject);

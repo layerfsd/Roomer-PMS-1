@@ -39,29 +39,35 @@ type
     __attahments: TsLabel;
     __imgHelp: TsImage;
     cbxTemplates: TsComboBox;
+    __SubjectSample: TsLabel;
     procedure FormCreate(Sender: TObject);
     procedure sButton1Click(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
     procedure cbxTemplatesCloseUp(Sender: TObject);
+    procedure edSubjectChange(Sender: TObject);
   private
     FFiles: TStringList;
     FTemplates : TEmailTemplateInfoList;
     procedure SetFiles(const Value: TStringList);
     procedure LoadEmailTemplates;
     function Download(template : TEmailTemplateInfo): String;
+    function getSubject: String;
+    function getsolvedText(text: String): String;
+    function getText: String;
     { Private declarations }
   public
     { Public declarations }
+    variablelist : TList<String>;
     property files : TStringList read FFiles write SetFiles;
   end;
 
 var
   FrmEmailingDialog: TFrmEmailingDialog;
 
-function sendFileAsAttachment(recipient, _caption : String; attachments : TStringList) : Boolean; overload;
-function sendFileAsAttachment(recipients : TStrings; _caption : String; attachments : TStringList) : Boolean; overload;
+function sendFileAsAttachment(recipient, _caption : String; attachments : TStringList; variables : TList<String> = nil) : Boolean; overload;
+function sendFileAsAttachment(recipients : TStrings; _caption : String; attachments : TStringList; variables : TList<String> = nil) : Boolean; overload;
 
 implementation
 
@@ -78,19 +84,19 @@ uses uRoomerLanguage,
     uResourceManagement
     ;
 
-function sendFileAsAttachment(recipient, _caption : String; attachments : TStringList) : Boolean;
+function sendFileAsAttachment(recipient, _caption : String; attachments : TStringList; variables : TList<String> = nil) : Boolean;
 var list : TStringList;
 begin
   list := TStringList.Create;
   try
     SplitString(recipient, list, ';');
-    result := sendFileAsAttachment(list, _caption, attachments);
+    result := sendFileAsAttachment(list, _caption, attachments, variables);
   finally
     FreeAndNil(list);
   end;
 end;
 
-function sendFileAsAttachment(recipients : TStrings; _caption : String; attachments : TStringList) : Boolean;
+function sendFileAsAttachment(recipients : TStrings; _caption : String; attachments : TStringList; variables : TList<String> = nil) : Boolean;
 var _frmEmailingDialog: TFrmEmailingDialog;
   i: Integer;
 begin
@@ -99,6 +105,7 @@ begin
   try
     _frmEmailingDialog.Caption := _Caption;
     _frmEmailingDialog.files := attachments;
+    _frmEmailingDialog.variableList := variables;
 
     _frmEmailingDialog.edRecipient.Items.Clear;
     _frmEmailingDialog.edCC.Items.Clear;
@@ -130,6 +137,42 @@ begin
     Screen.Cursor := crDefault;
   end;
 end;
+
+procedure TFrmEmailingDialog.edSubjectChange(Sender: TObject);
+begin
+  __SubjectSample.Caption := getSubject;
+  __SubjectSample.Visible := edSubject.Text <> __SubjectSample.Caption;
+end;
+
+function TFrmEmailingDialog.getSubject : String;
+begin
+  result := getSolvedText(edSubject.Text);
+end;
+
+function TFrmEmailingDialog.getText : String;
+begin
+  result := getSolvedText(edEmailText.Text);
+end;
+
+function TFrmEmailingDialog.getsolvedText(text : String) : String;
+var
+  i, idx : Integer;
+  s : String;
+  sValue : String;
+begin
+  result := text;
+  if NOT Assigned(variableList) then exit;
+
+  for i := 0 to variableList.Count - 1 do
+  begin
+    s := variableList[i];
+    idx := pos('=', s);
+    sValue := copy(s, idx + 1, maxInt);
+    s := copy(s, 1, idx - 1);
+    result := ReplaceString(result, '%' + s + '%', sValue)
+  end;
+end;
+
 
 procedure TFrmEmailingDialog.cbxTemplatesCloseUp(Sender: TObject);
 begin
@@ -227,8 +270,8 @@ begin
     else
       bcc := bcc + ',' + ctrlGetString('CompanyEmail');
   end;
-  d.RoomerMainDataset.sendEmailOpenAPI(edSubject.Text, hData.ctrlGetString('CompanyEmail'),
-        edRecipient.Text, edCc.Text, bcc, edEmailText.Text, simpleTextTosimpleHtml(edEmailText.Text), files);
+  d.RoomerMainDataset.sendEmailOpenAPI(getSubject, hData.ctrlGetString('CompanyEmail'),
+        edRecipient.Text, edCc.Text, bcc, edEmailText.Text, simpleTextTosimpleHtml(getText), files);
   Close;
 end;
 

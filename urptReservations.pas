@@ -59,7 +59,7 @@ uses
   dxSkinLondonLiquidSky, dxSkinMoneyTwins, dxSkinOffice2007Black, dxSkinOffice2007Blue, dxSkinOffice2007Green, dxSkinOffice2007Pink,
   dxSkinOffice2007Silver, dxSkinOffice2010Black, dxSkinOffice2010Blue, dxSkinOffice2010Silver, dxSkinPumpkin, dxSkinSeven,
   dxSkinSevenClassic, dxSkinSharp, dxSkinSharpPlus, dxSkinSilver, dxSkinSpringTime, dxSkinStardust, dxSkinSummer2008, dxSkinValentine,
-  dxSkinVS2010, dxSkinWhiteprint, dxSkinXmas2008Blue
+  dxSkinVS2010, dxSkinWhiteprint, dxSkinXmas2008Blue, cxCurrencyEdit
 
   ;
 
@@ -276,6 +276,15 @@ type
     btnJumpToRoom: TsButton;
     pnlHolder: TsPanel;
     btnClose: TsButton;
+    tvReservationschannel: TcxGridDBColumn;
+    tvReservationstotalNights: TcxGridDBColumn;
+    tvReservationsCurrency: TcxGridDBColumn;
+    tvReservationsCurrencyrate: TcxGridDBColumn;
+    tvReservationsRoomRent: TcxGridDBColumn;
+    tvReservationsDiscount: TcxGridDBColumn;
+    tvReservationsTotalRoomRent: TcxGridDBColumn;
+    tvReservationsAvrageRoomRent: TcxGridDBColumn;
+    tvRoomsAvrageRate: TcxGridDBColumn;
     procedure cbxMonthPropertiesCloseUp(Sender : TObject);
     procedure btnRefreshClick(Sender : TObject);
     procedure dtDateFromChange(Sender : TObject);
@@ -296,6 +305,13 @@ type
     procedure btnRoomsTabRoomClick(Sender: TObject);
     procedure btnCloseClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure tvReservationsDiscountGetProperties(
+      Sender: TcxCustomGridTableItem; ARecord: TcxCustomGridRecord;
+      var AProperties: TcxCustomEditProperties);
+    procedure tvReservationsTotalRoomRentGetProperties(
+      Sender: TcxCustomGridTableItem; ARecord: TcxCustomGridRecord;
+      var AProperties: TcxCustomEditProperties);
+    procedure btnCloseKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     { Private declarations }
     zDateFrom : Tdate;
@@ -397,6 +413,12 @@ procedure TfrmRptReservations.btnCloseClick(Sender: TObject);
 begin
   if embedded then
     Close;
+end;
+
+procedure TfrmRptReservations.btnCloseKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then
+    btnClose.Click;
 end;
 
 procedure TfrmRptReservations.btnCollapseAllClick(Sender: TObject);
@@ -657,6 +679,20 @@ begin
 end;
 
 
+procedure TfrmRptReservations.tvReservationsDiscountGetProperties(
+  Sender: TcxCustomGridTableItem; ARecord: TcxCustomGridRecord;
+  var AProperties: TcxCustomEditProperties);
+begin
+  AProperties := d.getCurrencyProperties(g.qNativeCurrency);
+end;
+
+procedure TfrmRptReservations.tvReservationsTotalRoomRentGetProperties(
+  Sender: TcxCustomGridTableItem; ARecord: TcxCustomGridRecord;
+  var AProperties: TcxCustomEditProperties);
+begin
+  AProperties := d.getCurrencyProperties(g.qNativeCurrency);
+end;
+
 function TfrmRptReservations.GetRVinList : string;
 var
   s      : string;
@@ -854,7 +890,7 @@ begin
     s := s+' ,rr.numGuests '#10;
     s := s+' ,rr.numChildren '#10;
     s := s+' ,rr.numInfants '#10;
-//  s := s+' ,rr.AvrageRate '#10;
+    s := s+' ,rr.AvrageRate '#10;
     s := s+' ,rr.RateCount '#10;
     s := s+' ,rr.dtCreated '#10;
     s := s+' , rv.Customer '#10;
@@ -1002,6 +1038,27 @@ begin
     s := s+'   , chnl.Name AS ChannelName'#10;
     s := s+'   , (SELECT count(ID) FROM persons WHERE persons.reservation=rv.reservation) AS GuestCount '#10;
     s := s+'   , (SELECT count(ID) FROM roomreservations WHERE roomreservations.reservation=rv.reservation) AS RoomCount '#10;
+
+    s := s+'   , (SELECT count(ID) FROM roomsdate WHERE roomsdate.reservation=rv.reservation  AND (roomsdate.ResFlag not in('+quotedstr('X')+','+quotedstr('C')+'))) AS TotalNights '#10;
+
+    s := s+'   , (SELECT currency FROM roomsdate WHERE roomsdate.reservation=rv.reservation LIMIT 1) AS Currency  '#10;
+    s := s+'   , (SELECT Avalue FROM currencies WHERE currency= (SELECT currency FROM roomsdate WHERE roomsdate.reservation=rv.reservation LIMIT 1)) AS Currencyrate  '#10;
+
+    s := s+'   , (SELECT SUM(RoomRate) FROM roomsdate WHERE (roomsdate.reservation=rv.reservation) AND (roomsdate.ResFlag not in('+quotedstr('X')+','+quotedstr('C')+'))) '#10;
+    s := s+'       * (SELECT Avalue FROM currencies WHERE currency= (SELECT currency FROM roomsdate WHERE roomsdate.reservation=rv.reservation LIMIT 1))  AS RoomRent '#10;
+
+    s := s+'   , (SELECT SUM(IF(isPercentage, RoomRate*Discount/100, Discount)) FROM roomsdate WHERE (roomsdate.reservation=rv.reservation) AND (roomsdate.ResFlag not in('+quotedstr('X')+','+quotedstr('C')+'))) '#10;
+    s := s+'       * (SELECT Avalue FROM currencies WHERE currency= (SELECT currency FROM roomsdate WHERE roomsdate.reservation=rv.reservation LIMIT 1)) AS Discount '#10;
+
+    s := s+'   , (((SELECT SUM(RoomRate) FROM roomsdate WHERE (roomsdate.reservation=rv.reservation) AND  (roomsdate.ResFlag not in('+quotedstr('X')+','+quotedstr('C')+'))) '#10;
+    s := s+'        - (SELECT SUM(IF(isPercentage, RoomRate*Discount/100, Discount)) FROM roomsdate WHERE (roomsdate.reservation=rv.reservation) AND (roomsdate.ResFlag not in('+quotedstr('X')+','+quotedstr('C')+'))))) '#10;
+    s := s+'            * (SELECT Avalue FROM currencies WHERE currency= (SELECT currency FROM roomsdate WHERE roomsdate.reservation=rv.reservation LIMIT 1)) AS TotalRoomRent '#10;
+
+    s := s+'    , (((((SELECT SUM(RoomRate) FROM roomsdate WHERE (roomsdate.reservation=rv.reservation) AND  (roomsdate.ResFlag not in('+quotedstr('X')+','+quotedstr('C')+')))  '#10;
+    s := s+'         - (SELECT SUM(IF(isPercentage, RoomRate*Discount/100, Discount)) FROM roomsdate WHERE (roomsdate.reservation=rv.reservation) AND (roomsdate.ResFlag not in('+quotedstr('X')+','+quotedstr('C')+')))))  '#10;
+    s := s+'             * (SELECT Avalue FROM currencies WHERE currency= (SELECT currency FROM roomsdate WHERE roomsdate.reservation=rv.reservation LIMIT 1))))  '#10;
+    s := s+'                / (SELECT count(ID) FROM roomsdate WHERE roomsdate.reservation=rv.reservation) AS AvrageRoomRent  '#10;
+
     s := s+' FROM '#10;
     s := s+'   reservations rv '#10;
     s := s+' LEFT OUTER JOIN '#10;
@@ -1016,7 +1073,7 @@ begin
     s := s+'   rv.dtCreated DESC'#10;
 
 
-//    copyToClipboard(s);
+    copyToClipboard(s);
 //    DebugMessage('');
 
     ExecutionPlan.AddQuery(s);
@@ -1086,13 +1143,11 @@ begin
     s := s+' ORDER BY '#10;
     s := s+'   rd.reservation '#10;
 
-//    copyToClipboard(s);
-//    DebugMessage('');
+//  copyToClipboard(s);
+//  DebugMessage('');
 
 
     ExecutionPlan.AddQuery(s);
-
-
 
     screen.Cursor := crHourGlass;
     kbmReservations_.DisableControls;

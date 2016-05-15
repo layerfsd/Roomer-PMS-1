@@ -189,6 +189,7 @@ type
       var AProperties: TcxCustomEditProperties);
     procedure tvInvoiceHeadWithOutVATGetProperties(Sender: TcxCustomGridTableItem; ARecord: TcxCustomGridRecord;
       var AProperties: TcxCustomEditProperties);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     { Private declarations }
 
@@ -348,6 +349,12 @@ begin
   cbxTxtType.ItemIndex := zTextType;
 
   tvInvoiceHeadRowSelected.Visible := GetExportTemplate <> '';
+end;
+
+procedure TfrmInvoiceList2.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then
+    Close;
 end;
 
 function TfrmInvoiceList2.GetExportTemplate : String;

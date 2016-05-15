@@ -79,7 +79,7 @@ uses
   , cmpRoomerDataSet
   , cmpRoomerConnection, dxSkinsCore, dxSkinDarkSide, dxSkinDevExpressDarkStyle, dxSkinMcSkin, dxSkinOffice2013White,
   dxSkinsDefaultPainters, dxSkinscxPCPainter, cxPropertiesStore, sMemo, sGroupBox, sCheckBox, sButton, sSpeedButton, sPageControl, sLabel,
-  sPanel
+  sPanel, dxSkinCaramel, dxSkinCoffee, dxSkinTheAsphaltWorld
 
 
   ;
@@ -201,6 +201,7 @@ type
     procedure LMDSpeedButton10Click(Sender : TObject);
     procedure chkShowAllGuestsClick(Sender : TObject);
     procedure cxGrid1DBTableView1DblClick(Sender : TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     { Private declarations }
     procedure ClearAll;
@@ -309,6 +310,12 @@ begin
   zReservation := - 1;
   zCustomer := '';
   zShowAllGuests := false;
+end;
+
+procedure TfrmResGuestList.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then
+    Close;
 end;
 
 procedure TfrmResGuestList.FormShow(Sender : TObject);

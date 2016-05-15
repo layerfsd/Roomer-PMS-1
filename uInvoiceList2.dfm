@@ -14,6 +14,7 @@ object frmInvoiceList2: TfrmInvoiceList2
   OldCreateOrder = False
   Position = poOwnerFormCenter
   OnCreate = FormCreate
+  OnKeyDown = FormKeyDown
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
@@ -168,7 +169,7 @@ object frmInvoiceList2: TfrmInvoiceList2
         Enabled = False
         EditMask = '!99/99/9999;1; '
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 2302755
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -192,7 +193,7 @@ object frmInvoiceList2: TfrmInvoiceList2
         Enabled = False
         EditMask = '!99/99/9999;1; '
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 2302755
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -209,7 +210,7 @@ object frmInvoiceList2: TfrmInvoiceList2
       object rbtDates: TsRadioButton
         Left = 4
         Top = 19
-        Width = 79
+        Width = 82
         Height = 19
         Caption = 'Date range'
         TabOrder = 2
@@ -219,7 +220,7 @@ object frmInvoiceList2: TfrmInvoiceList2
       object rbtInvoices: TsRadioButton
         Left = 4
         Top = 42
-        Width = 93
+        Width = 96
         Height = 19
         Caption = 'Number range'
         TabOrder = 3
@@ -243,7 +244,7 @@ object frmInvoiceList2: TfrmInvoiceList2
         Color = clWhite
         Enabled = False
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 2302755
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -274,7 +275,7 @@ object frmInvoiceList2: TfrmInvoiceList2
         Color = clWhite
         Enabled = False
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 2302755
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -291,7 +292,7 @@ object frmInvoiceList2: TfrmInvoiceList2
       object rbtFreeText: TsRadioButton
         Left = 4
         Top = 68
-        Width = 72
+        Width = 75
         Height = 19
         Caption = 'Text filter'
         TabOrder = 6
@@ -301,7 +302,7 @@ object frmInvoiceList2: TfrmInvoiceList2
       object rbtLast: TsRadioButton
         Left = 4
         Top = 92
-        Width = 45
+        Width = 48
         Height = 19
         Caption = 'Last'
         Checked = True
@@ -327,7 +328,7 @@ object frmInvoiceList2: TfrmInvoiceList2
         Color = clWhite
         Enabled = False
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 2302755
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -350,7 +351,7 @@ object frmInvoiceList2: TfrmInvoiceList2
         Height = 21
         Color = clWhite
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 2302755
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -369,7 +370,7 @@ object frmInvoiceList2: TfrmInvoiceList2
         Height = 21
         Color = clWhite
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 2302755
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -388,7 +389,7 @@ object frmInvoiceList2: TfrmInvoiceList2
         Height = 21
         Color = clWhite
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 2302755
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -475,7 +476,7 @@ object frmInvoiceList2: TfrmInvoiceList2
       Height = 21
       Color = clWhite
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = 2302755
+      Font.Color = clBlack
       Font.Height = -11
       Font.Name = 'Tahoma'
       Font.Style = []

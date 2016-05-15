@@ -232,6 +232,7 @@ type
     procedure mnuOnlyDuplicateTelNumsClick(Sender: TObject);
     procedure mnuOnlyDuplicateEmailsClick(Sender: TObject);
     procedure timFilterTimer(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     { Private declarations }
     zFirstTime       : boolean;
@@ -459,6 +460,12 @@ begin
   update;
   freeandnil(GlobalRecordSet);
   glb.RefreshTableByName('personprofiles');
+end;
+
+procedure TfrmGuestProfiles.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then
+    btnCancel.Click;
 end;
 
 procedure TfrmGuestProfiles.FormKeyPress(Sender: TObject; var Key: Char);

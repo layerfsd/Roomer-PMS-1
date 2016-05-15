@@ -168,6 +168,7 @@ type
     procedure tvDataseDescriptionPropertiesValidate(Sender: TObject; var DisplayValue: Variant; var ErrorText: TCaption;
       var Error: Boolean);
     procedure btnInsertClick(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     { Private declarations }
     zFirstTime       : boolean;
@@ -390,6 +391,13 @@ begin
   begin
     tvdata.DataController.Post;
   end;
+end;
+
+procedure TfrmSeasons2.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then
+    btnCancel.Click;
+
 end;
 
 procedure TfrmSeasons2.FormKeyPress(Sender: TObject; var Key: Char);

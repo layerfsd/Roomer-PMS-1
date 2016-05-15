@@ -506,7 +506,7 @@ object d: Td
     Indexes = <>
     SortOptions = []
     Left = 432
-    Top = 40
+    Top = 32
     object IntegerField1: TIntegerField
       FieldName = 'ID'
     end
@@ -1490,11 +1490,6 @@ object d: Td
     Left = 712
     Top = 432
   end
-  object UnconfirmedInvoicelinesDS: TDataSource
-    DataSet = kbmUnconfirmedInvoicelines_
-    Left = 832
-    Top = 432
-  end
   object kbmInvoiceLinePriceChangeDS: TDataSource
     DataSet = kbmInvoiceLinePriceChange_
     Left = 984
@@ -1738,103 +1733,6 @@ object d: Td
     LocaleID = 1024
     Left = 928
     Top = 192
-  end
-  object kbmUnconfirmedInvoicelines_: TkbmMemTable
-    Active = True
-    DesignActivation = True
-    AttachedAutoRefresh = True
-    AttachMaxCount = 1
-    FieldDefs = <
-      item
-        Name = 'ItemID'
-        DataType = ftWideString
-        Size = 40
-      end
-      item
-        Name = 'Description'
-        DataType = ftWideString
-        Size = 60
-      end
-      item
-        Name = 'Itemtype'
-        DataType = ftWideString
-        Size = 40
-      end
-      item
-        Name = 'TypeDescription'
-        DataType = ftWideString
-        Size = 60
-      end
-      item
-        Name = 'VATCode'
-        DataType = ftWideString
-        Size = 20
-      end
-      item
-        Name = 'VATPercentage'
-        DataType = ftFloat
-      end
-      item
-        Name = 'Amount'
-        DataType = ftFloat
-      end
-      item
-        Name = 'VAT'
-        DataType = ftFloat
-      end
-      item
-        Name = 'Itemcount'
-        DataType = ftFloat
-      end
-      item
-        Name = 'id'
-        DataType = ftInteger
-      end
-      item
-        Name = 'PurchaseDate'
-        DataType = ftDateTime
-      end
-      item
-        Name = 'reservation'
-        DataType = ftInteger
-      end
-      item
-        Name = 'roomReservation'
-        DataType = ftInteger
-      end
-      item
-        Name = 'confirmAmount'
-        DataType = ftFloat
-      end
-      item
-        Name = 'Room'
-        DataType = ftString
-        Size = 10
-      end
-      item
-        Name = 'Staff'
-        DataType = ftString
-        Size = 5
-      end
-      item
-        Name = 'InvoiceNumber'
-        DataType = ftString
-        Size = 10
-      end>
-    IndexDefs = <>
-    SortOptions = []
-    PersistentBackup = False
-    ProgressFlags = [mtpcLoad, mtpcSave, mtpcCopy]
-    LoadedCompletely = False
-    SavedCompletely = False
-    FilterOptions = []
-    Version = '7.22.00 Standard Edition'
-    LanguageID = 0
-    SortID = 0
-    SubLanguageID = 1
-    LocaleID = 1024
-    Left = 776
-    Top = 504
   end
   object kbmInvoiceLinePriceChange_: TkbmMemTable
     Active = True

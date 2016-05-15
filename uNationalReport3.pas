@@ -278,6 +278,7 @@ type
     procedure ppSummaryBand1BeforePrint(Sender: TObject);
     procedure cxButton1Click(Sender: TObject);
     procedure edPrivateChange(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     { Private declarations }
     zDateFrom : Tdate;
@@ -976,6 +977,12 @@ begin
   isfIrstTime := true;
 end;
 
+
+procedure TfrmNationalReport3.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then
+    Close;
+end;
 
 procedure TfrmNationalReport3.updateSums;
 begin

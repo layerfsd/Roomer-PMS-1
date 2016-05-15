@@ -175,7 +175,7 @@ begin
       frmInvoicePayment.cbxLocation.ItemIndex := i;
     end else
     begin
-      frmInvoicePayment.cbxLocation.ItemIndex := 0;
+      frmInvoicePayment.cbxLocation.ItemIndex := frmInvoicePayment.cbxLocation.Items.Count-1;
     end;
 
 

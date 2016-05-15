@@ -11,10 +11,12 @@ object frmRptCashier: TfrmRptCashier
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
+  KeyPreview = True
   OldCreateOrder = False
   Position = poMainFormCenter
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  OnKeyDown = FormKeyDown
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
@@ -89,7 +91,7 @@ object frmRptCashier: TfrmRptCashier
         Color = clWhite
         EditMask = '!99/99/9999;1; '
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 2302755
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -227,7 +229,7 @@ object frmRptCashier: TfrmRptCashier
         Style = csDropDownList
         Color = clWhite
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 2302755
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -244,8 +246,8 @@ object frmRptCashier: TfrmRptCashier
       object cbxByUsers: TsCheckBox
         Left = 366
         Top = 25
-        Width = 112
-        Height = 20
+        Width = 120
+        Height = 17
         Caption = 'By selected user(s)'
         TabOrder = 7
         OnClick = cbxByUsersClick
@@ -343,8 +345,6 @@ object frmRptCashier: TfrmRptCashier
     object tabStatGrid: TsTabSheet
       Caption = 'Data'
       TabVisible = False
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
       ExplicitLeft = 0
       ExplicitTop = 0
       ExplicitWidth = 0
@@ -495,14 +495,12 @@ object frmRptCashier: TfrmRptCashier
         SearchFooter.HintHighlight = 'Highlight occurrences'
         SearchFooter.MatchCaseCaption = 'Match case'
         SortSettings.DefaultFormat = ssAutomatic
-        Version = '7.9.1.0'
+        Version = '7.9.1.1'
         WordWrap = False
       end
     end
     object sTabSheet1: TsTabSheet
       Caption = 'Cashier functions'
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
       ExplicitLeft = 0
       ExplicitTop = 0
       ExplicitWidth = 0
@@ -723,12 +721,6 @@ object frmRptCashier: TfrmRptCashier
     end
     object sTabSheet2: TsTabSheet
       Caption = 'Received Payments'
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object sPanel2: TsPanel
         Left = 0
         Top = 0

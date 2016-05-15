@@ -19,6 +19,7 @@ object frmCountryGroups: TfrmCountryGroups
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  OnKeyDown = FormKeyDown
   OnKeyPress = FormKeyPress
   OnShow = FormShow
   PixelsPerInch = 96
@@ -31,7 +32,6 @@ object frmCountryGroups: TfrmCountryGroups
     Panels = <>
     SimplePanel = True
     SkinData.SkinSection = 'STATUSBAR'
-    ExplicitWidth = 486
   end
   object PanTop: TsPanel
     Left = 0
@@ -41,11 +41,10 @@ object frmCountryGroups: TfrmCountryGroups
     Align = alTop
     TabOrder = 1
     SkinData.SkinSection = 'PANEL'
-    ExplicitWidth = 486
     object labFilterWarning: TsLabel
       Left = 1
       Top = 66
-      Width = 4
+      Width = 558
       Height = 14
       Align = alBottom
       Alignment = taCenter
@@ -58,6 +57,7 @@ object frmCountryGroups: TfrmCountryGroups
       Font.Height = -12
       Font.Name = 'Tahoma'
       Font.Style = []
+      ExplicitWidth = 4
     end
     object btnClear: TsSpeedButton
       Left = 274
@@ -149,9 +149,9 @@ object frmCountryGroups: TfrmCountryGroups
       Top = 39
       Width = 216
       Height = 24
-      Color = 3355443
+      Color = clWhite
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = 15724527
+      Font.Color = clBlack
       Font.Height = -13
       Font.Name = 'Tahoma'
       Font.Style = []
@@ -169,7 +169,6 @@ object frmCountryGroups: TfrmCountryGroups
     Align = alBottom
     TabOrder = 2
     SkinData.SkinSection = 'PANEL'
-    ExplicitWidth = 486
     DesignSize = (
       560
       35)
@@ -186,7 +185,6 @@ object frmCountryGroups: TfrmCountryGroups
       TabOrder = 0
       OnClick = BtnOkClick
       SkinData.SkinSection = 'BUTTON'
-      ExplicitLeft = 301
     end
     object btnCancel: TsButton
       Left = 464
@@ -202,7 +200,6 @@ object frmCountryGroups: TfrmCountryGroups
       TabOrder = 1
       OnClick = btnCancelClick
       SkinData.SkinSection = 'BUTTON'
-      ExplicitLeft = 390
     end
   end
   object grData: TcxGrid
@@ -214,7 +211,6 @@ object frmCountryGroups: TfrmCountryGroups
     TabOrder = 3
     LevelTabs.Slants.Kind = skCutCorner
     LookAndFeel.NativeStyle = False
-    ExplicitWidth = 486
     object tvData: TcxGridDBTableView
       Navigator.Buttons.CustomButtons = <>
       Navigator.Buttons.First.Visible = True
@@ -337,6 +333,7 @@ object frmCountryGroups: TfrmCountryGroups
     Top = 112
     object prLink_grData: TdxGridReportLink
       Component = grData
+      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.GrayShading = True
@@ -349,6 +346,7 @@ object frmCountryGroups: TfrmCountryGroups
       PrinterPage.PageSize.Y = 297000
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
+      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       BuiltInReportLink = True
     end
   end

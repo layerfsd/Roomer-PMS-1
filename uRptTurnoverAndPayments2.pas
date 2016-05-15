@@ -305,20 +305,6 @@ type
     grUnconfirmedInvoicelines: TcxGrid;
     tvUnconfirmedInvoicelines: TcxGridDBTableView;
     lvUnconfirmedInvoicelines: TcxGridLevel;
-    tvUnconfirmedInvoicelinesItemID: TcxGridDBColumn;
-    tvUnconfirmedInvoicelinesDescription: TcxGridDBColumn;
-    tvUnconfirmedInvoicelinesItemtype: TcxGridDBColumn;
-    tvUnconfirmedInvoicelinesTypeDescription: TcxGridDBColumn;
-    tvUnconfirmedInvoicelinesVATCode: TcxGridDBColumn;
-    tvUnconfirmedInvoicelinesVATPercentage: TcxGridDBColumn;
-    tvUnconfirmedInvoicelinesAmount: TcxGridDBColumn;
-    tvUnconfirmedInvoicelinesVAT: TcxGridDBColumn;
-    tvUnconfirmedInvoicelinesItemcount: TcxGridDBColumn;
-    tvUnconfirmedInvoicelinesid: TcxGridDBColumn;
-    tvUnconfirmedInvoicelinesPurchaseDate: TcxGridDBColumn;
-    tvUnconfirmedInvoicelinesreservation: TcxGridDBColumn;
-    tvUnconfirmedInvoicelinesroomReservation: TcxGridDBColumn;
-    tvUnconfirmedInvoicelinesconfirmAmount: TcxGridDBColumn;
     sTabSheet7: TsTabSheet;
     sPanel8: TsPanel;
     sButton11: TsButton;
@@ -413,9 +399,6 @@ type
     rlabTotalTurnover: TppLabel;
     rlabTotalPayments: TppLabel;
     sButton6: TsButton;
-    tvUnconfirmedInvoicelinesRoom: TcxGridDBColumn;
-    tvUnconfirmedInvoicelinesStaff: TcxGridDBColumn;
-    tvUnconfirmedInvoicelinesInvoiceNumber: TcxGridDBColumn;
     tvRoomrentOnInvoiceRoom: TcxGridDBColumn;
     tvRoomrentOnInvoiceStaff: TcxGridDBColumn;
     sLabel4: TsLabel;
@@ -424,6 +407,25 @@ type
     btnReportsReport: TsButton;
     btnRefresh: TsButton;
     __chkShowAsItem: TsCheckBox;
+    labConfirmDates: TppLabel;
+    ppLabel10: TppLabel;
+    tvUnconfirmedInvoicelinesItemID: TcxGridDBColumn;
+    tvUnconfirmedInvoicelinesDescription: TcxGridDBColumn;
+    tvUnconfirmedInvoicelinesItemtype: TcxGridDBColumn;
+    tvUnconfirmedInvoicelinesTypeDescription: TcxGridDBColumn;
+    tvUnconfirmedInvoicelinesVATCode: TcxGridDBColumn;
+    tvUnconfirmedInvoicelinesVATPercentage: TcxGridDBColumn;
+    tvUnconfirmedInvoicelinesAmount: TcxGridDBColumn;
+    tvUnconfirmedInvoicelinesVAT: TcxGridDBColumn;
+    tvUnconfirmedInvoicelinesItemcount: TcxGridDBColumn;
+    tvUnconfirmedInvoicelinesid: TcxGridDBColumn;
+    tvUnconfirmedInvoicelinesPurchaseDate: TcxGridDBColumn;
+    tvUnconfirmedInvoicelinesreservation: TcxGridDBColumn;
+    tvUnconfirmedInvoicelinesroomReservation: TcxGridDBColumn;
+    tvUnconfirmedInvoicelinesconfirmAmount: TcxGridDBColumn;
+    tvUnconfirmedInvoicelinesRoom: TcxGridDBColumn;
+    tvUnconfirmedInvoicelinesStaff: TcxGridDBColumn;
+    tvUnconfirmedInvoicelinesInvoiceNumber: TcxGridDBColumn;
     procedure FormCreate(Sender: TObject);
     procedure btnRefreshClick(Sender: TObject);
     procedure btnExcelTurnoverClick(Sender: TObject);
@@ -531,6 +533,7 @@ type
     procedure sButton6Click(Sender: TObject);
     procedure __chkShowAsItemClick(Sender: TObject);
     procedure rptTurnowerPaymentsBeforePrint(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     { Private declarations }
     zIsConfirmed: boolean;
@@ -561,16 +564,17 @@ implementation
 {$R *.dfm}
 
 uses
-  uAppGlobal, uD, uRoomerLanguage, uReservationProfile, uFinishedInvoices2,
+  uAppGlobal, uD, uDReportData, uRoomerLanguage, uReservationProfile, uFinishedInvoices2,
   uInvoice, uRptConfirms, uDImages;
 
 function OpenRptTurnoverAndPayments2: boolean;
+var _frmRptTurnoverAndPayments2 : TfrmRptTurnoverAndPayments2;
 begin
   result := false;
-  frmRptTurnoverAndPayments2 := TfrmRptTurnoverAndPayments2.Create(frmRptTurnoverAndPayments2);
+  _frmRptTurnoverAndPayments2 := TfrmRptTurnoverAndPayments2.Create(nil);
   try
-    frmRptTurnoverAndPayments2.ShowModal;
-    if frmRptTurnoverAndPayments2.modalresult = mrOk then
+    _frmRptTurnoverAndPayments2.ShowModal;
+    if _frmRptTurnoverAndPayments2.modalresult = mrOk then
     begin
       result := true;
     end
@@ -578,7 +582,7 @@ begin
     begin
     end;
   finally
-    freeandnil(frmRptTurnoverAndPayments2);
+    freeandnil(_frmRptTurnoverAndPayments2);
   end;
 end;
 
@@ -611,6 +615,12 @@ begin
   zIsConfirmed := false;
   zConfirmedDate := 2;
   zsConfirmedDates := '';
+end;
+
+procedure TfrmRptTurnoverAndPayments2.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then
+    Close;
 end;
 
 procedure TfrmRptTurnoverAndPayments2.FormShow(Sender: TObject);
@@ -711,6 +721,7 @@ begin
   if d.mrptPayments.active then d.mrptPayments.Close;
   d.mrptPayments.LoadFromDataSet(tvPayments.DataController.DataSource.DataSet,[mtcpoStructure]);
 
+  labConfirmDates.Caption := replaceString(replaceString(zsConfirmedDates, ''',''', #13#10), '''',''); // , ' ','-');
   d.kbmTurnover_.DisableControls;
   d.kbmPayments_.DisableControls;
   try
@@ -744,7 +755,7 @@ begin
   d.kbmRoomRentOnInvoice_.Close;
   d.mInvoiceHeads.Close;
   d.mInvoiceLines.Close;
-  d.kbmUnconfirmedInvoicelines_.Close;
+  DReportData.kbmUnconfirmedInvoicelines_.Close;
   d.kbmInvoiceLinePriceChange_.Close;
 
   d.kbmTurnover_.open;
@@ -753,7 +764,7 @@ begin
   d.kbmRoomRentOnInvoice_.open;
   d.mInvoiceHeads.open;
   d.mInvoiceLines.open;
-  d.kbmUnconfirmedInvoicelines_.open;
+  DReportData.kbmUnconfirmedInvoicelines_.open;
   d.kbmInvoiceLinePriceChange_.open;
 end;
 
@@ -1039,7 +1050,7 @@ var
   sFilename: string;
   s: string;
 begin
-  if d.kbmUnconfirmedInvoicelines_.Eof then exit; // .RecordCount = 0 then exit;
+  if DReportData.kbmUnconfirmedInvoicelines_.Eof then exit; // .RecordCount = 0 then exit;
 //  if d.mInvoiceHeads.RecordCount = 0 then exit;
 
   dateTimeToString(s, 'yyyymmddhhnn', now);
@@ -1057,7 +1068,7 @@ var
   Arrival: Tdate;
   Departure: Tdate;
 begin
-  invoicenumber := d.kbmUnconfirmedInvoicelines_.FieldByName('InvoiceNumber').asinteger;
+  invoicenumber := DReportData.kbmUnconfirmedInvoicelines_.FieldByName('InvoiceNumber').asinteger;
   if invoicenumber > 0 then
   begin
     ViewInvoice2(invoicenumber, false, false, false,false, '');
@@ -1068,8 +1079,8 @@ begin
     iReservation := 0;
     Arrival := Date;
     Departure := Date;
-    iReservation := d.kbmUnconfirmedInvoicelines_.FieldByName('Reservation').asinteger;
-    iRoomReservation := d.kbmUnconfirmedInvoicelines_.FieldByName('RoomReservation').asinteger;
+    iReservation := DReportData.kbmUnconfirmedInvoicelines_.FieldByName('Reservation').asinteger;
+    iRoomReservation := DReportData.kbmUnconfirmedInvoicelines_.FieldByName('RoomReservation').asinteger;
     EditInvoice(iReservation, iRoomReservation, 0, 0, 0, 0, false, true, false);
   end;
 end;
@@ -1079,8 +1090,8 @@ var
   iReservation: integer;
   iRoomReservation: integer;
 begin
-  iReservation := d.kbmUnconfirmedInvoicelines_.FieldByName('Reservation').asinteger;
-  iRoomReservation := d.kbmUnconfirmedInvoicelines_.FieldByName('roomReservation').asinteger;
+  iReservation := DReportData.kbmUnconfirmedInvoicelines_.FieldByName('Reservation').asinteger;
+  iRoomReservation := DReportData.kbmUnconfirmedInvoicelines_.FieldByName('roomReservation').asinteger;
 
   if EditReservation(iReservation, iRoomReservation) then
   begin
@@ -1210,7 +1221,7 @@ begin
 
   try
     if clearData then
-      d.TurnoverAndPayemnetsClearAllData(false);
+      d.TurnoverAndPayemnetsClearAllData(true);
   Except
   end;
 
@@ -1568,6 +1579,9 @@ begin
     d.kbmpaymentList_.DisableControls;
     d.mInvoiceHeads.DisableControls;
     d.mInvoiceLines.DisableControls;
+
+    d.kbmRoomRentOnInvoice_.DisableControls;
+    DReportData.kbmUnconfirmedInvoicelines_.DisableControls;
     try
       ExecutionPlan.Execute(ptQuery);
 
@@ -1637,11 +1651,15 @@ begin
       d.kbmRoomRentOnInvoice_.First;
 
       rset9 := ExecutionPlan.Results[8];
-      if d.kbmUnconfirmedInvoicelines_.active then
-        d.kbmUnconfirmedInvoicelines_.Close;
-      d.kbmUnconfirmedInvoicelines_.open;
-      d.kbmUnconfirmedInvoicelines_.LoadFromDataSet(rset9,[]);
-      d.kbmUnconfirmedInvoicelines_.First;
+      try
+      if DReportData.kbmUnconfirmedInvoicelines_.active then
+        DReportData.kbmUnconfirmedInvoicelines_.Close;
+      except
+
+      end;
+      DReportData.kbmUnconfirmedInvoicelines_.open;
+      DReportData.kbmUnconfirmedInvoicelines_.LoadFromDataSet(rset9,[]);
+      DReportData.kbmUnconfirmedInvoicelines_.First;
 
 
       globals.totalTurnover := 0;
@@ -1674,6 +1692,9 @@ begin
       d.kbmpaymentList_.enableControls;
       d.mInvoiceHeads.enableControls;
       d.mInvoiceLines.enableControls;
+
+      d.kbmRoomRentOnInvoice_.enableControls;
+      DReportData.kbmUnconfirmedInvoicelines_.enableControls;
     end;
 
     stopTick := GetTickCount;

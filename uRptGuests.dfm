@@ -11,9 +11,11 @@ object frmRptGuests: TfrmRptGuests
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
+  KeyPreview = True
   OldCreateOrder = False
   Position = poDesigned
   OnCreate = FormCreate
+  OnKeyDown = FormKeyDown
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
@@ -67,8 +69,8 @@ object frmRptGuests: TfrmRptGuests
       Caption = 'Clear'
       OnClick = btnClearClick
       SkinData.SkinSection = 'SPEEDBUTTON'
-      ImageIndex = 10
       Images = DImages.PngImageList1
+      ImageIndex = 10
     end
     object labRecordCount: TsLabel
       Left = 474
@@ -104,6 +106,7 @@ object frmRptGuests: TfrmRptGuests
       Caption = 'Select Dates'
       TabOrder = 1
       SkinData.SkinSection = 'GROUPBOX'
+      Checked = False
       object LMDSimpleLabel1: TsLabel
         Left = 37
         Top = 15
@@ -141,23 +144,15 @@ object frmRptGuests: TfrmRptGuests
         Color = clWhite
         EditMask = '!99/99/9999;1; '
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 2302755
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
         MaxLength = 10
         ParentFont = False
         TabOrder = 0
-        Text = '25.12.2012'
-        BoundLabel.Indent = 0
-        BoundLabel.Font.Charset = DEFAULT_CHARSET
-        BoundLabel.Font.Color = clWindowText
-        BoundLabel.Font.Height = -11
-        BoundLabel.Font.Name = 'Tahoma'
-        BoundLabel.Font.Style = []
-        BoundLabel.Layout = sclLeft
-        BoundLabel.MaxWidth = 0
-        BoundLabel.UseSkinColor = True
+        Text = '25-12-2012'
+        CheckOnExit = True
         SkinData.SkinSection = 'EDIT'
         GlyphMode.Blend = 0
         GlyphMode.Grayed = False
@@ -172,23 +167,15 @@ object frmRptGuests: TfrmRptGuests
         Color = clWhite
         EditMask = '!99/99/9999;1; '
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 2302755
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
         MaxLength = 10
         ParentFont = False
         TabOrder = 1
-        Text = '25.12.2012'
-        BoundLabel.Indent = 0
-        BoundLabel.Font.Charset = DEFAULT_CHARSET
-        BoundLabel.Font.Color = clWindowText
-        BoundLabel.Font.Height = -11
-        BoundLabel.Font.Name = 'Tahoma'
-        BoundLabel.Font.Style = []
-        BoundLabel.Layout = sclLeft
-        BoundLabel.MaxWidth = 0
-        BoundLabel.UseSkinColor = True
+        Text = '25-12-2012'
+        CheckOnExit = True
         SkinData.SkinSection = 'EDIT'
         GlyphMode.Blend = 0
         GlyphMode.Grayed = False
@@ -202,7 +189,7 @@ object frmRptGuests: TfrmRptGuests
       Height = 21
       Color = clWhite
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = 2302755
+      Font.Color = clBlack
       Font.Height = -11
       Font.Name = 'Tahoma'
       Font.Style = []
@@ -210,21 +197,12 @@ object frmRptGuests: TfrmRptGuests
       TabOrder = 2
       OnChange = edFilterChange
       SkinData.SkinSection = 'EDIT'
-      BoundLabel.Indent = 0
-      BoundLabel.Font.Charset = DEFAULT_CHARSET
-      BoundLabel.Font.Color = clWindowText
-      BoundLabel.Font.Height = -11
-      BoundLabel.Font.Name = 'Tahoma'
-      BoundLabel.Font.Style = []
-      BoundLabel.Layout = sclLeft
-      BoundLabel.MaxWidth = 0
-      BoundLabel.UseSkinColor = True
     end
     object chkOneday: TsCheckBox
       Left = 23
       Top = 59
-      Width = 61
-      Height = 20
+      Width = 69
+      Height = 17
       Caption = 'One day'
       Checked = True
       State = cbChecked
@@ -243,11 +221,12 @@ object frmRptGuests: TfrmRptGuests
       Caption = 'Use Room with status of : '
       TabOrder = 4
       SkinData.SkinSection = 'GROUPBOX'
+      Checked = False
       object chkExcluteWaitingList: TsCheckBox
         Left = 14
         Top = 17
-        Width = 69
-        Height = 20
+        Width = 77
+        Height = 17
         Caption = 'Waitinglist'
         Checked = True
         State = cbChecked
@@ -259,8 +238,8 @@ object frmRptGuests: TfrmRptGuests
       object chkExcluteAlotment: TsCheckBox
         Left = 14
         Top = 34
-        Width = 65
-        Height = 20
+        Width = 73
+        Height = 17
         Caption = 'Allotment'
         Checked = True
         State = cbChecked
@@ -272,8 +251,8 @@ object frmRptGuests: TfrmRptGuests
       object chkExcluteOrder: TsCheckBox
         Left = 134
         Top = 52
-        Width = 75
-        Height = 20
+        Width = 83
+        Height = 17
         Caption = 'Not Arrived'
         Checked = True
         State = cbChecked
@@ -285,8 +264,8 @@ object frmRptGuests: TfrmRptGuests
       object chkExcluteNoShow: TsCheckBox
         Left = 14
         Top = 52
-        Width = 61
-        Height = 20
+        Width = 69
+        Height = 17
         Caption = 'No show'
         Checked = True
         State = cbChecked
@@ -298,8 +277,8 @@ object frmRptGuests: TfrmRptGuests
       object chkExcluteDeparted: TsCheckBox
         Left = 134
         Top = 17
-        Width = 65
-        Height = 20
+        Width = 73
+        Height = 17
         Caption = 'Departed'
         Checked = True
         State = cbChecked
@@ -311,8 +290,8 @@ object frmRptGuests: TfrmRptGuests
       object chkExcluteBlocked: TsCheckBox
         Left = 228
         Top = 34
-        Width = 56
-        Height = 20
+        Width = 64
+        Height = 17
         Caption = 'Blocked'
         TabOrder = 5
         SkinData.SkinSection = 'CHECKBOX'
@@ -322,8 +301,8 @@ object frmRptGuests: TfrmRptGuests
       object chkExcluteGuest: TsCheckBox
         Left = 134
         Top = 34
-        Width = 48
-        Height = 20
+        Width = 56
+        Height = 17
         Caption = 'Guest'
         Checked = True
         State = cbChecked
@@ -335,8 +314,8 @@ object frmRptGuests: TfrmRptGuests
       object chkExcluteCANCELED: TsCheckBox
         Left = 228
         Top = 17
-        Width = 64
-        Height = 20
+        Width = 72
+        Height = 17
         Caption = 'Canceled'
         TabOrder = 7
         SkinData.SkinSection = 'CHECKBOX'
@@ -354,6 +333,7 @@ object frmRptGuests: TfrmRptGuests
       TabOrder = 5
       OnClick = rgrShowClick
       SkinData.SkinSection = 'GROUPBOX'
+      Checked = False
       ItemIndex = 2
       Items.Strings = (
         'All Guests'
@@ -363,8 +343,8 @@ object frmRptGuests: TfrmRptGuests
     object chkGroup: TsCheckBox
       Left = 282
       Top = 66
-      Width = 122
-      Height = 20
+      Width = 130
+      Height = 17
       Caption = 'Group by reservation'
       TabOrder = 6
       OnClick = chkGroupClick

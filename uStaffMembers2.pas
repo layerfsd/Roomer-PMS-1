@@ -202,6 +202,7 @@ type
     procedure m_BeforePost(DataSet: TDataSet);
     procedure m_NewRecord(DataSet: TDataSet);
     procedure FormDestroy(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     { Private declarations }
     zFirstTime       : boolean;
@@ -481,6 +482,12 @@ begin
   begin
     tvdata.DataController.Post;
   end;
+end;
+
+procedure TfrmStaffMembers2.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then
+    btnCancel.Click;
 end;
 
 procedure TfrmStaffMembers2.FormKeyPress(Sender: TObject; var Key: Char);

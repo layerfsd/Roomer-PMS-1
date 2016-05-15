@@ -174,6 +174,7 @@ type
     procedure btnInsertClick(Sender: TObject);
     procedure tvDataChannelManagerNamePropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
     procedure FormDestroy(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     { Private declarations }
     zFirstTime       : boolean;
@@ -418,6 +419,13 @@ begin
   begin
     tvdata.DataController.Post;
   end;
+end;
+
+procedure TfrmLocations.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then
+    btnCancel.Click;
+
 end;
 
 procedure TfrmLocations.FormKeyPress(Sender: TObject; var Key: Char);

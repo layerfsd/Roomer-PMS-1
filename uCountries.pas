@@ -216,6 +216,7 @@ type
     procedure m_BeforeInsert(DataSet: TDataSet);
     procedure btnInsertClick(Sender: TObject);
     procedure btnEditClick(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 
   private
     { Private declarations }
@@ -623,6 +624,12 @@ end;
 
 
 
+
+procedure TfrmCountries.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then
+    btnCancel.Click;
+end;
 
 procedure TfrmCountries.FormKeyPress(Sender: TObject; var Key: Char);
 begin

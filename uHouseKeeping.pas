@@ -220,6 +220,7 @@ type
     procedure LMDSpeedButton12Click(Sender: TObject);
     procedure ppHeaderBand1BeforePrint(Sender: TObject);
     procedure ppDetailBand1BeforePrint(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     { Private declarations }
     MaidActions_: TRoomerDataSet;
@@ -256,6 +257,12 @@ uses
 procedure TfrmHouseKeeping.FormDestroy(Sender: TObject);
 begin
   freeandNil(MaidActions_);
+end;
+
+procedure TfrmHouseKeeping.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then
+    Close;
 end;
 
 procedure TfrmHouseKeeping.FormShow(Sender: TObject);
