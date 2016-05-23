@@ -222,7 +222,8 @@ uses
   uDynamicPricing in 'Rates\uDynamicPricing.pas' {frmDynamicPricing},
   uViewDailyRates in 'uViewDailyRates.pas' {FrmViewDailyRates},
   uHotelArrivalsOfflineReport in 'OfflineReports\uHotelArrivalsOfflineReport.pas',
-  uHotelArrivalsOfflineReportDesign in 'OfflineReports\uHotelArrivalsOfflineReportDesign.pas';
+  uHotelArrivalsOfflineReportDesign in 'OfflineReports\uHotelArrivalsOfflineReportDesign.pas',
+  uRptArrivals in 'uRptArrivals.pas' {frmArrivalsReport};
 
 {$R *.RES}
 

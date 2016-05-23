@@ -54,7 +54,7 @@ const
           '    ORDER BY rd1.ADate LIMIT 1) AS Arrival, '+
           '  DATE_ADD((SELECT rd1.ADate '+
           '              FROM roomsdate rd1 '+
-          '              WHERE rd1.RoomReservation=rd.RoomReservation AND (NOT rd1.ResFlag IN (''X'',''C'')) '+
+          '              WHERE rd1.RoomReservation=rd.RoomReservation AND (rd1.ResFlag = ''P'') '+
           '              ORDER BY rd1.ADate DESC LIMIT 1), '+
           '            INTERVAL 1 DAY) AS Departure, '+
           '  ( SELECT COUNT(id) '+
@@ -69,9 +69,9 @@ const
           'control co '+
           'WHERE ( SELECT rd1.ADate '+
           '        FROM roomsdate rd1 '+
-          '        WHERE rd1.RoomReservation=rd.RoomReservation AND (NOT rd1.ResFlag IN (''X'',''C'')) '+
+          '        WHERE rd1.RoomReservation=rd.RoomReservation AND (rd1.ResFlag = ''P'') '+
           '        ORDER BY rd1.ADate LIMIT 1)=rd.ADate '+
-          '      AND (NOT rd.ResFlag IN (''X'',''C'')) '+
+          '      AND (rd.ResFlag = ''P'') '+
           '      AND rd.ADate >= ''%s'' AND rd.ADate <= ''%s'' '+
           'GROUP BY rd.RoomReservation '+
           'ORDER BY rd.aDate, rd.Room ';

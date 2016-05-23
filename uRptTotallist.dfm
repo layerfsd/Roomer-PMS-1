@@ -28,6 +28,7 @@ object frmRptTotallist: TfrmRptTotallist
     Align = alTop
     TabOrder = 0
     SkinData.SkinSection = 'PANEL'
+    ExplicitTop = -4
     object labLocationsList: TsLabel
       Left = 170
       Top = 80
@@ -219,6 +220,7 @@ object frmRptTotallist: TfrmRptTotallist
     Align = alTop
     TabOrder = 1
     SkinData.SkinSection = 'PANEL'
+    ExplicitTop = 99
     object btnExcel: TsButton
       Left = 10
       Top = 2
@@ -233,7 +235,7 @@ object frmRptTotallist: TfrmRptTotallist
     end
     object btnReport: TsButton
       Left = 116
-      Top = 2
+      Top = 1
       Width = 100
       Height = 25
       Caption = 'Report'
@@ -264,6 +266,7 @@ object frmRptTotallist: TfrmRptTotallist
     Align = alClient
     TabOrder = 3
     LookAndFeel.NativeStyle = False
+    ExplicitTop = 130
     object lvTotallist: TcxGridDBBandedTableView
       Navigator.Buttons.CustomButtons = <>
       Navigator.Buttons.Insert.Visible = False

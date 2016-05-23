@@ -180,7 +180,7 @@ uses uAppGlobal,
   , uOfflineReportGrid
   , uHotelStatusOfflineReport
   , uHotelArrivalsOfflineReport
-  ;
+  , uRptArrivals;
 
 
 Type
@@ -1745,6 +1745,7 @@ begin
 
   TfrmOfflineReports.Create(nil).Free;
 
+  TfrmArrivalsReport.Create(nil).Free;
 end;
 
 ///////////////////////////////////////////////////////////////////////////////////////
