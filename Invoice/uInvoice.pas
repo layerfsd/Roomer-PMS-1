@@ -4278,11 +4278,10 @@ begin
                   end
                   else
                   begin
-                    _s := 'Room';
-                    _s := _s + ' ' + Room + ' ';
-                    _s := _s + FormatDateTime('dd.mm', Arrival);
-                    _s := _s + '-';
-                    _s := _s + FormatDateTime('dd.mm', Departure);
+                    if UnpaidDays = Trunc(Departure) - Trunc(Arrival) then
+                      _s := format('Room %s %s-%s', [Room, FormatDateTime('dd.mm', Arrival), FormatDateTime('dd.mm', Departure)])
+                    else
+                      _s := format('Room %s for %d nights', [Room, UnpaidDays]);
                   end;
 
                   sText := _s;
@@ -4325,13 +4324,7 @@ begin
                       _s := _s + ' Room :' + Room;
                   end
                   else
-                  begin
-                    _s := 'Room';
-                    _s := _s + ' ' + Room + ' ';
-                    _s := _s + FormatDateTime('dd.mm', Arrival);
-                    _s := _s + '-';
-                    _s := _s + FormatDateTime('dd.mm', Departure);
-                  end;
+                    _s := format('Room %s %s-%s', [Room, FormatDateTime('dd.mm', Arrival), FormatDateTime('dd.mm', Departure)]);
 
                   sText := _s;
 
