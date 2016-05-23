@@ -220,7 +220,9 @@ uses
   uResourceManagement in 'Resources\uResourceManagement.pas',
   uFrmSelectCloudConfiguration in 'Configs\uFrmSelectCloudConfiguration.pas' {FrmSelectCloudConfiguration},
   uDynamicPricing in 'Rates\uDynamicPricing.pas' {frmDynamicPricing},
-  uViewDailyRates in 'uViewDailyRates.pas' {FrmViewDailyRates};
+  uViewDailyRates in 'uViewDailyRates.pas' {FrmViewDailyRates},
+  uHotelArrivalsOfflineReport in 'OfflineReports\uHotelArrivalsOfflineReport.pas',
+  uHotelArrivalsOfflineReportDesign in 'OfflineReports\uHotelArrivalsOfflineReportDesign.pas';
 
 {$R *.RES}
 

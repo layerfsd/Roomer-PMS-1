@@ -177,7 +177,10 @@ uses uAppGlobal,
   uAlertEditPanel,
   uFrmCustomerDepartmentEdit
 
-  , uOfflineReportGrid, uHotelStatusOfflineReport;
+  , uOfflineReportGrid
+  , uHotelStatusOfflineReport
+  , uHotelArrivalsOfflineReport
+  ;
 
 
 Type
@@ -1521,6 +1524,7 @@ begin
   constants.Add(cshTx_OfflineReports_OfflineMessage,   'No connection with Roomer, working offline');
 
   constants.Add(cshTx_HotelStatusOfflineReport_Name, 'Hotel Status Report');
+  constants.Add(cshTx_HotelArrivalsOfflineReport_Name, 'Hotel Arrivals Report');
 end;
 
 procedure prepareConstants;

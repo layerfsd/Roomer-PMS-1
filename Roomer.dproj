@@ -695,6 +695,8 @@
             <Form>FrmViewDailyRates</Form>
             <FormType>dfm</FormType>
         </DCCReference>
+        <DCCReference Include="OfflineReports\uHotelArrivalsOfflineReport.pas"/>
+        <DCCReference Include="OfflineReports\uHotelArrivalsOfflineReportDesign.pas"/>
         <None Include="Roomer.todo"/>
         <None Include="notes.txt"/>
         <None Include="Roomer.inc"/>
