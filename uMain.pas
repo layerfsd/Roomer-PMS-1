@@ -267,14 +267,14 @@ type
     barinnSettings: TdxBar;
     barinnVaribles: TdxBar;
     barinnUsers: TdxBar;
-    dxRibbon1Tab1: TdxRibbonTab;
+    rbTabReports: TdxRibbonTab;
     barinnReports: TdxBar;
     barinnReports2: TdxBar;
     barinnBar15: TdxBar;
     barinnBar16: TdxBar;
     barinnReportsInvoices: TdxBar;
     barinnBar2: TdxBar;
-    dxRibbon1Tab2: TdxRibbonTab;
+    rbTabChannels: TdxRibbonTab;
     cxImageList1: TcxImageList;
     btnRoomTypeGroups: TdxBarLargeButton;
     btnResStat: TdxBarLargeButton;
@@ -477,7 +477,7 @@ type
     dxBarSubItem2: TdxBarSubItem;
     __dxBarCombo1: TdxBarCombo;
     btnGroupReportShow: TcxButton;
-    dxRibbon1Tab3: TdxRibbonTab;
+    rbTabExternal: TdxRibbonTab;
     barinnBar12: TdxBar;
     barinnBar3: TdxBar;
     barinnBar4: TdxBar;
@@ -703,6 +703,7 @@ type
     R2: TMenuItem;
     R3: TMenuItem;
     N9: TMenuItem;
+    btnRepArrivals: TdxBarLargeButton;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
@@ -1002,6 +1003,7 @@ type
     procedure R2Click(Sender: TObject);
     procedure R3Click(Sender: TObject);
     procedure FormActivate(Sender: TObject);
+    procedure btnRepArrivalsClick(Sender: TObject);
 
   private
     FrmMessagesTemplates: TFrmMessagesTemplates;
@@ -1585,7 +1587,7 @@ uses
   , uOfflineReportGrid
   , uResourceManagement
   , uDynamicPricing
-  ;
+  , uRptArrivals;
 
 {$R *.DFM}
 {$R Cursors.res}
@@ -12764,6 +12766,12 @@ procedure TfrmMain.btnRemoveThisRoomClick(Sender: TObject);
 begin
   UserClickedDxLargeButton(Sender);
   _RemoveThisRoom
+end;
+
+procedure TfrmMain.btnRepArrivalsClick(Sender: TObject);
+begin
+  UserClickedDxLargeButton(Sender);
+  ShowArrivalsReport;
 end;
 
 procedure TfrmMain.btnReDownloadRoomerClick(Sender: TObject);

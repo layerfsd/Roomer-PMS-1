@@ -102,10 +102,8 @@ object frmMain: TfrmMain
       object tabOneDayView: TsTabSheet
         Caption = 'tabOneDayView'
         ImageIndex = 8
-        ExplicitLeft = 0
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
+        SkinData.CustomColor = False
+        SkinData.CustomFont = False
         object grOneDayRooms: TAdvStringGrid
           Left = 0
           Top = 0
@@ -414,7 +412,7 @@ object frmMain: TfrmMain
             object lblNoRoom: TsLabel
               Left = 3
               Top = 59
-              Width = 50
+              Width = 76
               Height = 13
               Align = alBottom
               Alignment = taCenter
@@ -432,6 +430,8 @@ object frmMain: TfrmMain
       object tabGuestList: TsTabSheet
         Caption = 'tabGuestList'
         ImageIndex = 9
+        SkinData.CustomColor = False
+        SkinData.CustomFont = False
         ExplicitWidth = 773
         object Panel3: TsPanel
           Left = 0
@@ -840,6 +840,12 @@ object frmMain: TfrmMain
       object tabPeriod: TsTabSheet
         Caption = 'tabPeriod'
         ImageIndex = 2
+        SkinData.CustomColor = False
+        SkinData.CustomFont = False
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object sLabel2: TsLabel
           Left = 224
           Top = 400
@@ -1623,6 +1629,8 @@ object frmMain: TfrmMain
       end
       object tabFreeRooms: TsTabSheet
         Caption = 'tabFreeRooms'
+        SkinData.CustomColor = False
+        SkinData.CustomFont = False
         ExplicitLeft = 0
         ExplicitTop = 0
         ExplicitWidth = 0
@@ -1630,6 +1638,8 @@ object frmMain: TfrmMain
       end
       object tabDashboard: TsTabSheet
         Caption = 'tabDashboard'
+        SkinData.CustomColor = False
+        SkinData.CustomFont = False
         SkinData.SkinSection = 'TRANSPARENT'
         ExplicitLeft = 0
         ExplicitTop = 0
@@ -1638,6 +1648,8 @@ object frmMain: TfrmMain
       end
       object tabRateQuery: TsTabSheet
         Caption = 'tabRateQuery'
+        SkinData.CustomColor = False
+        SkinData.CustomFont = False
         ExplicitLeft = 0
         ExplicitTop = 0
         ExplicitWidth = 0
@@ -1913,7 +1925,7 @@ object frmMain: TfrmMain
             Left = 159
             Top = 4
             Width = 94
-            Height = 23
+            Height = 24
             Margins.Left = 10
             Margins.Top = 4
             Align = alLeft
@@ -1926,6 +1938,7 @@ object frmMain: TfrmMain
             Font.Height = -17
             Font.Name = 'Segoe UI'
             Font.Style = [fsBold]
+            ExplicitHeight = 23
           end
           object dtDate: TsDateEdit
             AlignWithMargins = True
@@ -2221,6 +2234,7 @@ object frmMain: TfrmMain
             EventMarkerColor = clYellow
             EventMarkerShape = evsCircle
             BackgroundPosition = bpTiled
+            BevelOuter = bvNone
             BorderWidth = 1
             CaptionColor = clNone
             CaptionTextColor = clBlack
@@ -3072,7 +3086,6 @@ object frmMain: TfrmMain
     TabOrder = 3
     TabStop = False
     object rbTabHome: TdxRibbonTab
-      Active = True
       Caption = 'Roomer'
       Groups = <
         item
@@ -3124,7 +3137,8 @@ object frmMain: TfrmMain
         end>
       Index = 2
     end
-    object dxRibbon1Tab1: TdxRibbonTab
+    object rbTabReports: TdxRibbonTab
+      Active = True
       Caption = 'Reports'
       Groups = <
         item
@@ -3203,7 +3217,7 @@ object frmMain: TfrmMain
         end>
       Index = 5
     end
-    object dxRibbon1Tab2: TdxRibbonTab
+    object rbTabChannels: TdxRibbonTab
       Caption = 'Channels'
       Groups = <
         item
@@ -3216,7 +3230,7 @@ object frmMain: TfrmMain
         end>
       Index = 6
     end
-    object dxRibbon1Tab3: TdxRibbonTab
+    object rbTabExternal: TdxRibbonTab
       Caption = 'External'
       Groups = <
         item
@@ -4952,6 +4966,10 @@ object frmMain: TfrmMain
         item
           Visible = True
           ItemName = 'btnLodgingTaxReport'
+        end
+        item
+          Visible = True
+          ItemName = 'btnRepArrivals'
         end>
       OneOnRow = False
       Row = 0
@@ -5010,7 +5028,7 @@ object frmMain: TfrmMain
     object barinnReportsInvoices: TdxBar
       Caption = 'Invoices'
       CaptionButtons = <>
-      DockedLeft = 713
+      DockedLeft = 695
       DockedTop = 0
       FloatLeft = 1324
       FloatTop = 8
@@ -5266,7 +5284,7 @@ object frmMain: TfrmMain
     object barinnBar10: TdxBar
       Caption = 'Ledger'
       CaptionButtons = <>
-      DockedLeft = 922
+      DockedLeft = 904
       DockedTop = 0
       FloatLeft = -183
       FloatTop = 8
@@ -6063,6 +6081,14 @@ object frmMain: TfrmMain
       Visible = ivAlways
       LargeImageIndex = 29
       OnClick = btnDynamicRateRulesClick
+    end
+    object btnRepArrivals: TdxBarLargeButton
+      Caption = 'Arrivals'
+      Category = 0
+      Hint = 'Arrivals'
+      Visible = ivAlways
+      LargeImageIndex = 49
+      OnClick = btnRepArrivalsClick
     end
     object mmnuFile: TdxBarSubItem
       Caption = '&File'
@@ -9283,6 +9309,7 @@ object frmMain: TfrmMain
     AddedTitle.Font.Name = 'Tahoma'
     AddedTitle.Font.Style = []
     AddedTitle.Text = 'Next Generation Hotel Management'
+    FormHeader.AdditionalHeight = 0
     SkinData.CustomColor = True
     SkinData.CustomFont = True
     SkinData.SkinManager = sSkinManager1

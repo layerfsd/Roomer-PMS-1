@@ -108,7 +108,7 @@ inherited HotelArrivalsOfflineReportDesign: THotelArrivalsOfflineReportDesign
         end
       end
       object MasterData1: TfrxMasterData
-        Height = 18.897650000000000000
+        Height = 26.456710000000000000
         Top = 257.008040000000000000
         Width = 1046.929810000000000000
         DataSet = frxDBDataset
@@ -116,7 +116,7 @@ inherited HotelArrivalsOfflineReportDesign: THotelArrivalsOfflineReportDesign
         RowCount = 0
         Stretched = True
         object Memo9: TfrxMemoView
-          Left = 80.055350000000000000
+          Left = 447.669760000000000000
           Width = 75.590600000000000000
           Height = 18.897650000000000000
           ShowHint = False
@@ -133,7 +133,7 @@ inherited HotelArrivalsOfflineReportDesign: THotelArrivalsOfflineReportDesign
           SuppressRepeated = True
         end
         object Memo19: TfrxMemoView
-          Left = 158.559370000000000000
+          Left = 0.819110000000000000
           Width = 34.015770000000000000
           Height = 18.897650000000000000
           ShowHint = False
@@ -147,7 +147,7 @@ inherited HotelArrivalsOfflineReportDesign: THotelArrivalsOfflineReportDesign
           ParentFont = False
         end
         object Memo20: TfrxMemoView
-          Left = 196.764070000000000000
+          Left = 529.362710000000000000
           Width = 34.015770000000000000
           Height = 18.897650000000000000
           ShowHint = False
@@ -161,7 +161,7 @@ inherited HotelArrivalsOfflineReportDesign: THotelArrivalsOfflineReportDesign
           ParentFont = False
         end
         object Memo21: TfrxMemoView
-          Left = 292.323130000000000000
+          Left = 866.811690000000000000
           Width = 75.590575590000000000
           Height = 18.897650000000000000
           ShowHint = False
@@ -176,8 +176,8 @@ inherited HotelArrivalsOfflineReportDesign: THotelArrivalsOfflineReportDesign
           ParentFont = False
         end
         object Memo25: TfrxMemoView
-          Left = 372.693260000000000000
-          Width = 71.811045590000000000
+          Left = 947.181820000000000000
+          Width = 98.267755590000000000
           Height = 18.897650000000000000
           ShowHint = False
           Font.Charset = DEFAULT_CHARSET
@@ -191,7 +191,7 @@ inherited HotelArrivalsOfflineReportDesign: THotelArrivalsOfflineReportDesign
           ParentFont = False
         end
         object Memo26: TfrxMemoView
-          Left = 456.181510000000000000
+          Left = 176.496290000000000000
           Width = 64.251985590000000000
           Height = 18.897650000000000000
           ShowHint = False
@@ -208,7 +208,7 @@ inherited HotelArrivalsOfflineReportDesign: THotelArrivalsOfflineReportDesign
           ParentFont = False
         end
         object Memo30: TfrxMemoView
-          Left = 522.874460000000000000
+          Left = 39.094620000000000000
           Width = 132.283550000000000000
           Height = 18.897650000000000000
           ShowHint = False
@@ -223,7 +223,7 @@ inherited HotelArrivalsOfflineReportDesign: THotelArrivalsOfflineReportDesign
           ParentFont = False
         end
         object Memo27: TfrxMemoView
-          Left = 235.000310000000000000
+          Left = 805.709340000000000000
           Width = 52.913395590000000000
           Height = 18.897650000000000000
           ShowHint = False
@@ -237,7 +237,7 @@ inherited HotelArrivalsOfflineReportDesign: THotelArrivalsOfflineReportDesign
           ParentFont = False
         end
         object Memo34: TfrxMemoView
-          Left = 780.937540000000000000
+          Left = 618.417750000000000000
           Width = 83.149660000000000000
           Height = 18.897650000000000000
           ShowHint = False
@@ -254,7 +254,7 @@ inherited HotelArrivalsOfflineReportDesign: THotelArrivalsOfflineReportDesign
           ParentFont = False
         end
         object Memo35: TfrxMemoView
-          Left = 867.528140000000000000
+          Left = 568.386210000000000000
           Width = 41.574830000000000000
           Height = 18.897650000000000000
           ShowHint = False
@@ -271,7 +271,7 @@ inherited HotelArrivalsOfflineReportDesign: THotelArrivalsOfflineReportDesign
           ParentFont = False
         end
         object Memo36: TfrxMemoView
-          Left = 921.394250000000000000
+          Left = 705.961040000000000000
           Width = 94.488250000000000000
           Height = 18.897650000000000000
           ShowHint = False
@@ -286,6 +286,7 @@ inherited HotelArrivalsOfflineReportDesign: THotelArrivalsOfflineReportDesign
           ParentFont = False
         end
         object Memo8: TfrxMemoView
+          Left = 370.740570000000000000
           Width = 79.370130000000000000
           Height = 18.897650000000000000
           ShowHint = False
@@ -302,7 +303,7 @@ inherited HotelArrivalsOfflineReportDesign: THotelArrivalsOfflineReportDesign
           SuppressRepeated = True
         end
         object Memo4: TfrxMemoView
-          Left = 659.268090000000000000
+          Left = 245.740260000000000000
           Width = 117.165430000000000000
           Height = 18.897650000000000000
           ShowHint = False
@@ -318,7 +319,7 @@ inherited HotelArrivalsOfflineReportDesign: THotelArrivalsOfflineReportDesign
       end
       object PageFooter1: TfrxPageFooter
         Height = 22.677180000000000000
-        Top = 336.378170000000000000
+        Top = 343.937230000000000000
         Width = 1046.929810000000000000
         object Memo1: TfrxMemoView
           Align = baRight
@@ -345,7 +346,7 @@ inherited HotelArrivalsOfflineReportDesign: THotelArrivalsOfflineReportDesign
         Width = 1046.929810000000000000
         object Memo13: TfrxMemoView
           Align = baBottom
-          Left = 0.346630000000000000
+          Left = 370.740570000000000000
           Top = 18.897650000000000000
           Width = 75.590600000000000000
           Height = 18.897650000000000000
@@ -362,7 +363,7 @@ inherited HotelArrivalsOfflineReportDesign: THotelArrivalsOfflineReportDesign
         end
         object Memo14: TfrxMemoView
           Align = baBottom
-          Left = 81.055350000000000000
+          Left = 447.669760000000000000
           Top = 18.897650000000000000
           Width = 75.590600000000000000
           Height = 18.897650000000000000
@@ -379,7 +380,7 @@ inherited HotelArrivalsOfflineReportDesign: THotelArrivalsOfflineReportDesign
         end
         object Memo16: TfrxMemoView
           Align = baBottom
-          Left = 159.559370000000000000
+          Left = 0.819110000000000000
           Top = 18.897650000000000000
           Width = 34.015770000000000000
           Height = 18.897650000000000000
@@ -396,7 +397,7 @@ inherited HotelArrivalsOfflineReportDesign: THotelArrivalsOfflineReportDesign
         end
         object Memo17: TfrxMemoView
           Align = baBottom
-          Left = 196.764070000000000000
+          Left = 529.362710000000000000
           Top = 18.897650000000000000
           Width = 34.015770000000000000
           Height = 18.897650000000000000
@@ -413,7 +414,7 @@ inherited HotelArrivalsOfflineReportDesign: THotelArrivalsOfflineReportDesign
         end
         object Memo18: TfrxMemoView
           Align = baBottom
-          Left = 235.000310000000000000
+          Left = 805.709340000000000000
           Top = 18.897650000000000000
           Width = 52.913395590000000000
           Height = 18.897650000000000000
@@ -430,7 +431,7 @@ inherited HotelArrivalsOfflineReportDesign: THotelArrivalsOfflineReportDesign
         end
         object Memo22: TfrxMemoView
           Align = baBottom
-          Left = 292.323130000000000000
+          Left = 866.811690000000000000
           Top = 18.897650000000000000
           Width = 75.590575590000000000
           Height = 18.897650000000000000
@@ -448,9 +449,9 @@ inherited HotelArrivalsOfflineReportDesign: THotelArrivalsOfflineReportDesign
         end
         object Memo23: TfrxMemoView
           Align = baBottom
-          Left = 372.693260000000000000
+          Left = 947.181820000000000000
           Top = 18.897650000000000000
-          Width = 71.811045590000000000
+          Width = 98.267755590000000000
           Height = 18.897650000000000000
           ShowHint = False
           Font.Charset = DEFAULT_CHARSET
@@ -465,7 +466,7 @@ inherited HotelArrivalsOfflineReportDesign: THotelArrivalsOfflineReportDesign
         end
         object Memo24: TfrxMemoView
           Align = baBottom
-          Left = 456.181510000000000000
+          Left = 176.496290000000000000
           Top = 18.897650000000000000
           Width = 64.251985590000000000
           Height = 18.897650000000000000
@@ -483,7 +484,7 @@ inherited HotelArrivalsOfflineReportDesign: THotelArrivalsOfflineReportDesign
         end
         object Memo29: TfrxMemoView
           Align = baBottom
-          Left = 522.874460000000000000
+          Left = 39.094620000000000000
           Top = 18.897650000000000000
           Width = 132.283550000000000000
           Height = 18.897650000000000000
@@ -500,7 +501,7 @@ inherited HotelArrivalsOfflineReportDesign: THotelArrivalsOfflineReportDesign
         end
         object Memo31: TfrxMemoView
           Align = baBottom
-          Left = 780.937540000000000000
+          Left = 618.417750000000000000
           Top = 18.897650000000000000
           Width = 83.149660000000000000
           Height = 18.897650000000000000
@@ -518,7 +519,7 @@ inherited HotelArrivalsOfflineReportDesign: THotelArrivalsOfflineReportDesign
         end
         object Memo32: TfrxMemoView
           Align = baBottom
-          Left = 866.969080000000000000
+          Left = 568.386210000000000000
           Top = 18.897650000000000000
           Width = 41.574830000000000000
           Height = 18.897650000000000000
@@ -538,7 +539,7 @@ inherited HotelArrivalsOfflineReportDesign: THotelArrivalsOfflineReportDesign
         end
         object Memo7: TfrxMemoView
           Align = baBottom
-          Left = 921.394250000000000000
+          Left = 705.961040000000000000
           Top = 18.897650000000000000
           Width = 94.488250000000000000
           Height = 18.897650000000000000
@@ -563,7 +564,7 @@ inherited HotelArrivalsOfflineReportDesign: THotelArrivalsOfflineReportDesign
         end
         object Memo12: TfrxMemoView
           Align = baBottom
-          Left = 659.268090000000000000
+          Left = 245.740260000000000000
           Top = 18.897650000000000000
           Width = 117.165430000000000000
           Height = 18.897650000000000000

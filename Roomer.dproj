@@ -697,6 +697,10 @@
         </DCCReference>
         <DCCReference Include="OfflineReports\uHotelArrivalsOfflineReport.pas"/>
         <DCCReference Include="OfflineReports\uHotelArrivalsOfflineReportDesign.pas"/>
+        <DCCReference Include="uRptArrivals.pas">
+            <Form>frmArrivalsReport</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
         <None Include="Roomer.todo"/>
         <None Include="notes.txt"/>
         <None Include="Roomer.inc"/>
