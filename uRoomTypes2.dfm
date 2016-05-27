@@ -78,7 +78,7 @@ object frmRoomTypes2: TfrmRoomTypes2
           Top = 39
           Width = 64
           Height = 20
-          Caption = 'Clear'
+          Caption = '5'
           OnClick = btnClearClick
           SkinData.SkinSection = 'SPEEDBUTTON'
           Images = DImages.PngImageList1
@@ -92,7 +92,7 @@ object frmRoomTypes2: TfrmRoomTypes2
           Caption = 'Delete'
           ImageIndex = 24
           Images = DImages.PngImageList1
-          TabOrder = 0
+          TabOrder = 2
           OnClick = btnDeleteClick
           SkinData.SkinSection = 'BUTTON'
         end
@@ -106,7 +106,7 @@ object frmRoomTypes2: TfrmRoomTypes2
           ImageIndex = 82
           Images = DImages.PngImageList1
           Style = bsSplitButton
-          TabOrder = 1
+          TabOrder = 3
           OnClick = btnOtherClick
           SkinData.SkinSection = 'BUTTON'
         end
@@ -120,7 +120,7 @@ object frmRoomTypes2: TfrmRoomTypes2
           ImageIndex = 27
           Images = DImages.PngImageList1
           ModalResult = 8
-          TabOrder = 2
+          TabOrder = 5
           OnClick = btnCloseClick
           SkinData.SkinSection = 'BUTTON'
         end
@@ -136,7 +136,7 @@ object frmRoomTypes2: TfrmRoomTypes2
           Font.Name = 'Tahoma'
           Font.Style = []
           ParentFont = False
-          TabOrder = 3
+          TabOrder = 4
           OnChange = edFilterChange
           SkinData.SkinSection = 'EDIT'
         end
@@ -151,7 +151,7 @@ object frmRoomTypes2: TfrmRoomTypes2
           Images = DImages.PngImageList1
           ParentShowHint = False
           ShowHint = True
-          TabOrder = 4
+          TabOrder = 0
           OnClick = btnInsertClick
           SkinData.SkinSection = 'BUTTON'
         end
@@ -166,7 +166,7 @@ object frmRoomTypes2: TfrmRoomTypes2
           Images = DImages.PngImageList1
           ParentShowHint = False
           ShowHint = True
-          TabOrder = 5
+          TabOrder = 1
           OnClick = btnEditClick
           SkinData.SkinSection = 'BUTTON'
         end
@@ -181,19 +181,19 @@ object frmRoomTypes2: TfrmRoomTypes2
       end
       object panBtn: TsPanel
         Left = 0
-        Top = 444
+        Top = 442
         Width = 942
-        Height = 32
+        Height = 34
         Align = alBottom
         TabOrder = 2
         SkinData.SkinSection = 'PANEL'
         DesignSize = (
           942
-          32)
+          34)
         object btnCancel: TsButton
-          Left = 852
+          Left = 814
           Top = 4
-          Width = 84
+          Width = 118
           Height = 25
           Hint = 'Cancel and close'
           Anchors = [akTop, akRight]
@@ -207,13 +207,14 @@ object frmRoomTypes2: TfrmRoomTypes2
           SkinData.SkinSection = 'BUTTON'
         end
         object BtnOk: TsButton
-          Left = 765
+          Left = 714
           Top = 4
-          Width = 86
+          Width = 94
           Height = 25
           Hint = 'Apply and close'
           Anchors = [akTop, akRight]
           Caption = 'OK'
+          Default = True
           ImageIndex = 82
           Images = DImages.PngImageList1
           ModalResult = 1
@@ -226,10 +227,11 @@ object frmRoomTypes2: TfrmRoomTypes2
         Left = 0
         Top = 75
         Width = 942
-        Height = 369
+        Height = 367
         Align = alClient
         TabOrder = 3
         LookAndFeel.NativeStyle = False
+        ExplicitHeight = 369
         object tvData: TcxGridDBTableView
           OnDblClick = tvDataDblClick
           Navigator.Buttons.CustomButtons = <>
@@ -425,7 +427,6 @@ object frmRoomTypes2: TfrmRoomTypes2
     Left = 28
     Top = 208
     object prLink_grData: TdxGridReportLink
-      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.GrayShading = True
@@ -439,7 +440,6 @@ object frmRoomTypes2: TfrmRoomTypes2
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
       ReportDocument.CreationDate = 41334.495374884260000000
-      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       BuiltInReportLink = True
     end
   end

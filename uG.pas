@@ -1931,14 +1931,14 @@ begin
   s := format('UPDATE reservations r ' +
        '       JOIN roomreservations rr ON rr.Reservation=r.Reservation ' +
        '       JOIN roomsdate rd ON rd.RoomReservation=rr.RoomReservation, ' +
-       '       (SELECT ''P'' AS status, ''A'' AS oldStatus) AS _status ' +
+       '       (SELECT ''P'' AS status, ''A'' AS Alotments, ''O'' AS Waitinglists, ''B'' AS Blockings) AS _status ' +
        'SET r.Status=_status.status, ' +
        '    rr.Status=_status.status, ' +
        '    rd.ResFlag=_status.status ' +
        'WHERE r.Reservation=%d ' +
-       'AND r.Status=_status.oldStatus ' +
-       'AND rr.Status=_status.oldStatus ' +
-       'AND rd.ResFlag=_status.oldStatus', [Reservation]);
+//       'AND r.Status IN (_status.Alotments, _status.WaitingLists, _status.Blockings) ' +
+//       'AND rr.Status IN (_status.Alotments, _status.WaitingLists, _status.Blockings) ' +
+       'AND rd.ResFlag IN (_status.Alotments, _status.WaitingLists, _status.Blockings)', [Reservation]);
 
   Result := (d.roomerMainDataSet.DoCommand(s) > 0);
 end;

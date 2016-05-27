@@ -28,10 +28,6 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
     SkinData.SkinSection = 'PAGECONTROL'
     object sTabSheet1: TsTabSheet
       Caption = 'Room 101'
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object sPanel1: TsPanel
         Left = 0
         Top = 0
@@ -71,10 +67,6 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
           object sTabSheet2: TsTabSheet
             Caption = 'Guest Info'
             SkinData.SkinSection = 'TRANSPARENT'
-            ExplicitLeft = 0
-            ExplicitTop = 0
-            ExplicitWidth = 0
-            ExplicitHeight = 0
             object sLabel6: TsLabel
               Left = 97
               Top = 126
@@ -1168,10 +1160,6 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
           SkinData.SkinSection = 'PAGECONTROL'
           object sTabSheet3: TsTabSheet
             Caption = 'Credit card'
-            ExplicitLeft = 0
-            ExplicitTop = 0
-            ExplicitWidth = 0
-            ExplicitHeight = 0
             object sLabel12: TsLabel
               Left = 66
               Top = 69

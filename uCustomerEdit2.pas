@@ -167,6 +167,7 @@ type
     procedure DropComboTarget1Drop(Sender: TObject; ShiftState: TShiftState; APoint: TPoint; var Effect: Integer);
     procedure timBlinkTimer(Sender: TObject);
     procedure btnPasteFileClick(Sender: TObject);
+    procedure DropComboTarget1DragOver(Sender: TObject; ShiftState: TShiftState; APoint: TPoint; var Effect: Integer);
   private
     { Private declarations }
 
@@ -349,10 +350,16 @@ begin
   ActivateButtons;
 end;
 
+procedure TfrmCustomerEdit2.DropComboTarget1DragOver(Sender: TObject; ShiftState: TShiftState; APoint: TPoint; var Effect: Integer);
+begin
+  Effect := DROPEFFECT_COPY;
+end;
+
 procedure TfrmCustomerEdit2.DropComboTarget1Drop(Sender: TObject; ShiftState: TShiftState; APoint: TPoint; var Effect: Integer);
 begin
   if btnDocuments.Enabled then
   begin
+    Effect := DROPEFFECT_COPY;
     DropComboTargetDrop(format(CUSTOMER_DOCUMENTS_STATIC_RESOURCE_PATTERN, [edCustomer.Text]),
                         ACCESS_RESTRICTED, Sender AS TDropComboTarget, ShiftState, APoint, Effect);
     timBlink.Tag := 0;

@@ -508,7 +508,7 @@ begin
      (((newRoom <> '') AND (Copy(NewRoom, 1, 1) <> '<')) AND
      glb.LocateSpecificRecordAndGetValue('rooms', 'Room', NewRoom, 'RoomType', newRoomType)) then
     begin
-      if NOT IsAvailabilityThere(newRoomType, FromDate, ToDate) then exit;
+      if NOT IsAvailabilityThere(CurrentRoomType, newRoomType, FromDate, ToDate) then exit;
     end;
 
 

@@ -204,6 +204,7 @@ begin
         if fileExists(filename) then
           DeleteFile(filename);
       end;
+      Sender.Data[i].Position := 0;
       Stream := TFileStream.Create(filename, fmCreate);
       try
         // Copy dropped data to stream (in this case a file stream).
@@ -211,7 +212,6 @@ begin
       finally
         Stream.Free;
       end;
-      Stream := TFileStream.Create(filename, fmCreate);
       if UploadFileToResources(KeyString, Access, ExtractFilename(filename), filename) = '' then
       begin
         ShowMessage(format(GetTranslatedText('shTx_ManageFiles_UnableToUpload'), [filename]));

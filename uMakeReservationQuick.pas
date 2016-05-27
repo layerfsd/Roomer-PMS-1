@@ -737,7 +737,7 @@ type
     procedure FillQuickFind;
     procedure ShowhideExtraInputs;
     procedure ShowRatePlans;
-    procedure PopulateRatePlanCombo;
+    procedure PopulateRatePlanCombo(clearAll : Boolean = True);
     function SetOnePrice(RoomReservation: Integer; rateId: String; channelId: Integer): boolean;
     property OutOfOrderBlocking : Boolean read FOutOfOrderBlocking write SetOutOfOrderBlocking;
 
@@ -3399,16 +3399,18 @@ begin
        freeandnil(ExecutionPlan);
     end;
 
-
   finally
     freeandNil(lstIDs);
   end;
 end;
 
-procedure TfrmMakeReservationQuick.PopulateRatePlanCombo;
+procedure TfrmMakeReservationQuick.PopulateRatePlanCombo(clearAll : Boolean = True);
 begin
-  (tvRoomResRatePlanCode.Properties AS TcxComboBoxProperties).Items.Clear;
-  (tvRoomResRatePlanCode.Properties AS TcxComboBoxProperties).Items.Add('');
+  if clearAll then
+  begin
+    (tvRoomResRatePlanCode.Properties AS TcxComboBoxProperties).Items.Clear;
+    (tvRoomResRatePlanCode.Properties AS TcxComboBoxProperties).Items.Add('');
+  end;
   DynamicRates.GetAllRateCodes((tvRoomResRatePlanCode.Properties AS TcxComboBoxProperties).Items);
 end;
 
@@ -4437,16 +4439,27 @@ var channelCode,
     departure : TDateTime;
     sql : String;
     channelId : Integer;
+    FirstRound : Boolean;
+    RSet : TRoomerDataSet;
 begin
   if edtRatePlans.ItemIndex > 0 then
   begin
     channelId := Integer(edtRatePlans.Items.Objects[edtRatePlans.ItemIndex]);
     chManCode := channelManager_GetDefaultCode;
-    if glb.LocateSpecificRecordAndGetValue('channels', 'id', channelId, 'channelManagerId', channelCode) then
-    begin
-      DynamicRates.Prepare(dtArrival.Date, dtDeparture.Date, channelCode, chManCode);
-      PopulateRatePlanCombo;
-    end;
+    FirstRound := True;
+//    RSet := glb.GetDataSetFromDictionary('channelmanagers');
+//    RSet.First;
+//    while NOT RSet.Eof do
+//    begin
+//      chManCode := RSet.fieldbyname('code').asString;
+      if glb.LocateSpecificRecordAndGetValue('channels', 'id', channelId, 'channelManagerId', channelCode) then
+      begin
+        DynamicRates.Prepare(dtArrival.Date, dtDeparture.Date, channelCode, chManCode);
+        PopulateRatePlanCombo(FirstRound);
+        FirstRound := False;
+      end;
+//      RSet.Next;
+//    end;
   end;
   if Assigned(Sender) then
     GetPrices;

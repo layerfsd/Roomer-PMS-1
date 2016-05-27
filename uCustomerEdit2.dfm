@@ -28,7 +28,6 @@ object frmCustomerEdit2: TfrmCustomerEdit2
     Align = alBottom
     TabOrder = 0
     SkinData.SkinSection = 'PANEL'
-    ExplicitTop = 626
     DesignSize = (
       472
       33)
@@ -75,13 +74,8 @@ object frmCustomerEdit2: TfrmCustomerEdit2
     TabOrder = 1
     OnChange = pgMainChange
     SkinData.SkinSection = 'PAGECONTROL'
-    ExplicitHeight = 626
     object SheetMain: TsTabSheet
       Caption = 'Customer'
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 598
       object gbxAddress: TsGroupBox
         Left = 0
         Top = 291
@@ -92,7 +86,6 @@ object frmCustomerEdit2: TfrmCustomerEdit2
         TabOrder = 0
         SkinData.SkinSection = 'GROUPBOX'
         Checked = False
-        ExplicitTop = 254
         DesignSize = (
           464
           132)
@@ -203,7 +196,6 @@ object frmCustomerEdit2: TfrmCustomerEdit2
         TabOrder = 1
         SkinData.SkinSection = 'GROUPBOX'
         Checked = False
-        ExplicitTop = 17
         DesignSize = (
           464
           101)
@@ -352,7 +344,6 @@ object frmCustomerEdit2: TfrmCustomerEdit2
         TabOrder = 2
         SkinData.SkinSection = 'GROUPBOX'
         Checked = False
-        ExplicitTop = 101
         DesignSize = (
           464
           153)
@@ -549,8 +540,6 @@ object frmCustomerEdit2: TfrmCustomerEdit2
         TabOrder = 3
         SkinData.SkinSection = 'GROUPBOX'
         Checked = False
-        ExplicitTop = 386
-        ExplicitHeight = 212
         object clabMarkedSegment: TsLabel
           Left = 73
           Top = 22
@@ -898,10 +887,6 @@ object frmCustomerEdit2: TfrmCustomerEdit2
     end
     object SheetExtra: TsTabSheet
       Caption = 'More'
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 598
       object sGroupBox1: TsGroupBox
         Left = 0
         Top = 0
@@ -918,9 +903,8 @@ object frmCustomerEdit2: TfrmCustomerEdit2
           Width = 460
           Height = 232
           Align = alClient
-          Color = clWhite
           Font.Charset = DEFAULT_CHARSET
-          Font.Color = clBlack
+          Font.Color = clWindowText
           Font.Height = -11
           Font.Name = 'Tahoma'
           Font.Style = []
@@ -936,10 +920,6 @@ object frmCustomerEdit2: TfrmCustomerEdit2
     end
     object tabDepartments: TsTabSheet
       Caption = 'Departments'
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 598
       object sSplitter1: TsSplitter
         Left = 185
         Top = 0
@@ -958,7 +938,6 @@ object frmCustomerEdit2: TfrmCustomerEdit2
         BevelOuter = bvNone
         TabOrder = 0
         SkinData.SkinSection = 'PANEL'
-        ExplicitHeight = 598
         object lvDepartments: TsListView
           AlignWithMargins = True
           Left = 3
@@ -986,7 +965,6 @@ object frmCustomerEdit2: TfrmCustomerEdit2
           ViewStyle = vsReport
           OnDblClick = lvDepartmentsDblClick
           OnSelectItem = lvDepartmentsSelectItem
-          ExplicitHeight = 544
         end
         object sPanel3: TsPanel
           Left = 0
@@ -1000,7 +978,7 @@ object frmCustomerEdit2: TfrmCustomerEdit2
           object sLabel6: TsLabel
             Left = 0
             Top = 35
-            Width = 75
+            Width = 185
             Height = 13
             Align = alBottom
             Caption = 'Departments'
@@ -1010,6 +988,7 @@ object frmCustomerEdit2: TfrmCustomerEdit2
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = [fsBold]
+            ExplicitWidth = 75
           end
           object btnAddDepartment: TsButton
             AlignWithMargins = True
@@ -1070,7 +1049,6 @@ object frmCustomerEdit2: TfrmCustomerEdit2
         BevelOuter = bvNone
         TabOrder = 1
         SkinData.SkinSection = 'PANEL'
-        ExplicitHeight = 598
         object lvContacts: TsListView
           AlignWithMargins = True
           Left = 3
@@ -1105,7 +1083,6 @@ object frmCustomerEdit2: TfrmCustomerEdit2
           ViewStyle = vsReport
           OnDblClick = lvContactsDblClick
           OnSelectItem = lvContactsSelectItem
-          ExplicitHeight = 544
         end
         object sPanel4: TsPanel
           Left = 0
@@ -1119,7 +1096,7 @@ object frmCustomerEdit2: TfrmCustomerEdit2
           object sLabel7: TsLabel
             Left = 0
             Top = 35
-            Width = 50
+            Width = 273
             Height = 13
             Align = alBottom
             Caption = 'Contacts'
@@ -1129,6 +1106,7 @@ object frmCustomerEdit2: TfrmCustomerEdit2
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = [fsBold]
+            ExplicitWidth = 50
           end
           object btnAddContact: TsButton
             AlignWithMargins = True
@@ -1197,6 +1175,7 @@ object frmCustomerEdit2: TfrmCustomerEdit2
   end
   object DropComboTarget1: TDropComboTarget
     DragTypes = [dtCopy, dtLink]
+    OnDragOver = DropComboTarget1DragOver
     OnDrop = DropComboTarget1Drop
     Target = Owner
     Left = 388

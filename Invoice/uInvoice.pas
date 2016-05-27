@@ -6153,8 +6153,8 @@ begin
 
   end;
 
-  d.BackupInvoiceLines(MemData1);
-  d.BackupInvoiceHeader(MemData2);
+//  d.BackupInvoiceLines(MemData1);
+//  d.BackupInvoiceHeader(MemData2);
 end;
 
 function TfrmInvoice.IsLineChanged(line, iMultiplier : Integer) : Boolean;

@@ -1,9 +1,9 @@
 object frmArrivalsReport: TfrmArrivalsReport
   Left = 0
   Top = 0
-  Caption = 'Arrivals Report'
+  Caption = 'Arrivals'
   ClientHeight = 560
-  ClientWidth = 881
+  ClientWidth = 972
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -21,16 +21,17 @@ object frmArrivalsReport: TfrmArrivalsReport
   object pnlFilter: TsPanel
     Left = 0
     Top = 0
-    Width = 881
-    Height = 137
+    Width = 972
+    Height = 144
     Align = alTop
     TabOrder = 0
     SkinData.SkinSection = 'PANEL'
+    ExplicitTop = -6
     object btnRefresh: TsButton
-      Left = 405
+      Left = 398
       Top = 9
       Width = 118
-      Height = 25
+      Height = 26
       Caption = 'Refresh'
       Default = True
       ImageIndex = 28
@@ -57,8 +58,8 @@ object frmArrivalsReport: TfrmArrivalsReport
       object rbToday: TsRadioButton
         Left = 4
         Top = 21
-        Width = 50
-        Height = 20
+        Width = 58
+        Height = 19
         Caption = 'Today'
         Checked = True
         TabOrder = 0
@@ -68,8 +69,8 @@ object frmArrivalsReport: TfrmArrivalsReport
       object rbTomorrow: TsRadioButton
         Left = 4
         Top = 46
-        Width = 68
-        Height = 20
+        Width = 76
+        Height = 19
         Caption = 'Tomorrow'
         TabOrder = 1
         OnClick = rbRadioButtonClick
@@ -77,8 +78,8 @@ object frmArrivalsReport: TfrmArrivalsReport
       object rbManualRange: TsRadioButton
         Left = 119
         Top = 21
-        Width = 114
-        Height = 20
+        Width = 122
+        Height = 19
         Caption = 'Manual date range:'
         TabOrder = 2
         OnClick = rbRadioButtonClick
@@ -104,6 +105,7 @@ object frmArrivalsReport: TfrmArrivalsReport
         SkinData.SkinSection = 'EDIT'
         GlyphMode.Blend = 0
         GlyphMode.Grayed = False
+        OnCloseUp = dtDateFromCloseUp
         DialogTitle = 'Date from select'
       end
       object dtDateTo: TsDateEdit
@@ -127,72 +129,103 @@ object frmArrivalsReport: TfrmArrivalsReport
         SkinData.SkinSection = 'EDIT'
         GlyphMode.Blend = 0
         GlyphMode.Grayed = False
+        OnCloseUp = dtDateToCloseUp
         DialogTitle = 'Date to select'
-      end
-    end
-    object pnlLocations: TsPanel
-      Left = 1
-      Top = 84
-      Width = 879
-      Height = 18
-      Align = alBottom
-      BevelOuter = bvNone
-      TabOrder = 2
-      object labLocations: TsLabel
-        AlignWithMargins = True
-        Left = 20
-        Top = 3
-        Width = 52
-        Height = 12
-        Margins.Left = 20
-        Align = alLeft
-        Alignment = taRightJustify
-        Caption = 'Locations :'
-        ExplicitHeight = 13
-      end
-      object labLocationsList: TsLabel
-        AlignWithMargins = True
-        Left = 78
-        Top = 3
-        Width = 11
-        Height = 12
-        Align = alLeft
-        Caption = 'All'
-        ExplicitHeight = 13
       end
     end
     object pnlExportButtons: TsPanel
       Left = 1
-      Top = 102
-      Width = 879
-      Height = 34
+      Top = 104
+      Width = 970
+      Height = 39
       Align = alBottom
       BevelOuter = bvNone
-      TabOrder = 3
+      TabOrder = 2
       SkinData.SkinSection = 'PANEL'
+      ExplicitTop = 97
       object btnExcel: TsButton
         AlignWithMargins = True
         Left = 15
         Top = 5
-        Width = 100
-        Height = 24
+        Width = 128
+        Height = 29
         Margins.Left = 15
         Margins.Top = 5
         Margins.Bottom = 5
         Align = alLeft
         Caption = 'Excel'
-        ImageIndex = 132
+        ImageIndex = 115
         Images = DImages.PngImageList1
         TabOrder = 0
         OnClick = btnExcelClick
         SkinData.SkinSection = 'BUTTON'
+        ExplicitHeight = 24
+      end
+      object btnCheckIn: TsButton
+        AlignWithMargins = True
+        Left = 161
+        Top = 5
+        Width = 128
+        Height = 29
+        Margins.Left = 15
+        Margins.Top = 5
+        Margins.Bottom = 5
+        Align = alLeft
+        Caption = 'Check in'
+        ImageIndex = 44
+        Images = DImages.PngImageList1
+        TabOrder = 1
+        OnClick = btnCheckInClick
+        SkinData.SkinSection = 'BUTTON'
+        ExplicitLeft = 160
+        ExplicitHeight = 24
+      end
+      object btnProfile: TsButton
+        AlignWithMargins = True
+        Left = 307
+        Top = 5
+        Width = 100
+        Height = 29
+        Margins.Left = 15
+        Margins.Top = 5
+        Margins.Bottom = 5
+        Align = alLeft
+        Caption = 'Profile'
+        ImageIndex = 37
+        Images = DImages.PngImageList1
+        TabOrder = 2
+        OnClick = btnProfileClick
+        SkinData.SkinSection = 'BUTTON'
+        ExplicitLeft = 251
+        ExplicitTop = 8
+        ExplicitHeight = 24
+      end
+      object btnInvoice: TsButton
+        AlignWithMargins = True
+        Left = 425
+        Top = 5
+        Width = 128
+        Height = 29
+        Margins.Left = 15
+        Margins.Top = 5
+        Margins.Bottom = 5
+        Align = alLeft
+        Caption = 'Invoice'
+        DropDownMenu = PopupMenu1
+        ImageIndex = 62
+        Images = DImages.PngImageList1
+        Style = bsSplitButton
+        TabOrder = 3
+        SkinData.SkinSection = 'BUTTON'
+        ExplicitLeft = 424
+        ExplicitHeight = 24
       end
     end
   end
   object dxStatusBar: TdxStatusBar
     Left = 0
     Top = 540
-    Width = 881
+    Width = 972
     Height = 20
     Panels = <>
     Font.Charset = DEFAULT_CHARSET
@@ -203,14 +236,19 @@ object frmArrivalsReport: TfrmArrivalsReport
   end
   object grArrivalsList: TcxGrid
     Left = 0
-    Top = 137
-    Width = 881
-    Height = 403
+    Top = 144
+    Width = 972
+    Height = 396
     Align = alClient
+    PopupMenu = PopupMenu2
     TabOrder = 2
     LookAndFeel.NativeStyle = False
+    ExplicitLeft = -1
+    ExplicitTop = 139
+    ExplicitHeight = 403
     object grArrivalsListDBTableView1: TcxGridDBTableView
       Navigator.Buttons.CustomButtons = <>
+      OnCellDblClick = grArrivalsListDBTableView1CellDblClick
       DataController.DataSource = ArrivalsListDS
       DataController.Options = [dcoAssignGroupingValues, dcoAssignMasterDetailKeys, dcoSaveExpanding, dcoGroupsAlwaysExpanded]
       DataController.Summary.DefaultGroupSummaryItems = <>
@@ -220,46 +258,60 @@ object frmArrivalsReport: TfrmArrivalsReport
       Styles.GroupSummary = cxStyle1
       object grArrivalsListDBTableView1Room: TcxGridDBColumn
         DataBinding.FieldName = 'Room'
-        SortIndex = 0
-        SortOrder = soAscending
+        Options.Editing = False
       end
-      object grArrivalsListDBTableView1GuestName: TcxGridDBColumn
-        DataBinding.FieldName = 'GuestName'
-        Width = 181
+      object grArrivalsListDBTableView1Arrival: TcxGridDBColumn
+        DataBinding.FieldName = 'Arrival'
+        Options.Editing = False
+      end
+      object grArrivalsListDBTableView1Departure: TcxGridDBColumn
+        DataBinding.FieldName = 'Departure'
+        Options.Editing = False
+      end
+      object grArrivalsListDBTableView1NumGuests: TcxGridDBColumn
+        Caption = 'Num guests'
+        DataBinding.FieldName = 'NumGuests'
+        Options.Editing = False
+      end
+      object grArrivalsListDBTableView1Roomtype: TcxGridDBColumn
+        Caption = 'Room type'
+        DataBinding.FieldName = 'Roomtype'
+        Options.Editing = False
+        Width = 66
       end
       object grArrivalsListDBTableView1RoomerReservationID: TcxGridDBColumn
         Caption = 'Reservation ID'
         DataBinding.FieldName = 'RoomerReservationID'
-        Width = 99
+        Options.Editing = False
+        Width = 83
+      end
+      object grArrivalsListDBTableView1GuestName: TcxGridDBColumn
+        Caption = 'Guest name'
+        DataBinding.FieldName = 'GuestName'
+        Options.Editing = False
+        Width = 263
       end
       object grArrivalsListDBTableView1CompanyCode: TcxGridDBColumn
+        Caption = 'Company code'
         DataBinding.FieldName = 'CompanyCode'
-      end
-      object grArrivalsListDBTableView1Arrival: TcxGridDBColumn
-        DataBinding.FieldName = 'Arrival'
-        Visible = False
-        GroupIndex = 0
-      end
-      object grArrivalsListDBTableView1Departure: TcxGridDBColumn
-        DataBinding.FieldName = 'Departure'
-        Width = 80
-      end
-      object grArrivalsListDBTableView1Roomtype: TcxGridDBColumn
-        DataBinding.FieldName = 'Roomtype'
-      end
-      object grArrivalsListDBTableView1NumGuests: TcxGridDBColumn
-        Caption = 'Guests'
-        DataBinding.FieldName = 'NumGuests'
+        Options.Editing = False
       end
       object grArrivalsListDBTableView1AverageRoomRate: TcxGridDBColumn
-        Caption = 'Avg Rate'
+        Caption = 'Average Rate'
         DataBinding.FieldName = 'AverageRoomRate'
-        Width = 72
+        Options.Editing = False
+        Width = 82
       end
       object grArrivalsListDBTableView1ExpectedTimeOfArrival: TcxGridDBColumn
         Caption = 'Expected TOA'
         DataBinding.FieldName = 'ExpectedTimeOfArrival'
-        Width = 78
+        Options.Editing = False
+        Width = 88
+      end
+      object grArrivalsListDBTableView1RoomerRoomReservationID: TcxGridDBColumn
+        Caption = 'Room Res ID'
+        DataBinding.FieldName = 'RoomerRoomReservationID'
+        Options.Editing = False
       end
     end
     object lvArrivalsListLevel1: TcxGridLevel
@@ -283,6 +335,7 @@ object frmArrivalsReport: TfrmArrivalsReport
     Top = 358
   end
   object kbmArrivalsList: TkbmMemTable
+    Active = True
     DesignActivation = True
     AttachedAutoRefresh = True
     AttachMaxCount = 1
@@ -326,6 +379,15 @@ object frmArrivalsReport: TfrmArrivalsReport
       item
         Name = 'AverageRoomRate'
         DataType = ftFloat
+      end
+      item
+        Name = 'ExpectedTimeOfArrival'
+        DataType = ftString
+        Size = 5
+      end
+      item
+        Name = 'RoomerRoomReservationID'
+        DataType = ftInteger
       end>
     IndexDefs = <>
     SortOptions = []
@@ -339,6 +401,7 @@ object frmArrivalsReport: TfrmArrivalsReport
     SortID = 0
     SubLanguageID = 1
     LocaleID = 1024
+    AfterScroll = kbmArrivalsListAfterScroll
     Left = 416
     Top = 359
     object kbmArrivalsListfldRoom: TStringField
@@ -376,6 +439,9 @@ object frmArrivalsReport: TfrmArrivalsReport
       FieldName = 'ExpectedTimeOfArrival'
       Size = 5
     end
+    object kbmArrivalsListRoomerRoomReservationID: TIntegerField
+      FieldName = 'RoomerRoomReservationID'
+    end
   end
   object ArrivalsListDS: TDataSource
     DataSet = kbmArrivalsList
@@ -383,6 +449,8 @@ object frmArrivalsReport: TfrmArrivalsReport
     Top = 359
   end
   object cxStyleRepository1: TcxStyleRepository
+    Left = 176
+    Top = 240
     PixelsPerInch = 96
     object cxStyle1: TcxStyle
       AssignedValues = [svFont]
@@ -391,6 +459,45 @@ object frmArrivalsReport: TfrmArrivalsReport
       Font.Height = -11
       Font.Name = 'Tahoma'
       Font.Style = [fsBold]
+    end
+  end
+  object PopupMenu1: TPopupMenu
+    Images = DImages.cxSmallImagesFlat
+    Left = 480
+    Top = 224
+    object R1: TMenuItem
+      Caption = 'Room Invoice'
+      Default = True
+      ImageIndex = 62
+      OnClick = R1Click
+    end
+    object G1: TMenuItem
+      Caption = 'Group Invoice'
+      ImageIndex = 60
+      OnClick = G1Click
+    end
+  end
+  object PopupMenu2: TPopupMenu
+    Left = 184
+    Top = 368
+    object C1: TMenuItem
+      Caption = 'Check in'
+      OnClick = btnCheckInClick
+    end
+    object P1: TMenuItem
+      Caption = 'Profile'
+      OnClick = btnProfileClick
+    end
+    object I1: TMenuItem
+      Caption = 'Invoice'
+      object R2: TMenuItem
+        Caption = 'Room invoice'
+        OnClick = R1Click
+      end
+      object G2: TMenuItem
+        Caption = 'Group invoice'
+        OnClick = G1Click
+      end
     end
   end
 end

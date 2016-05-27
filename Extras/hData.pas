@@ -14867,7 +14867,7 @@ begin
   if d.getChangeAvailabilityInfo(RoomReservation, oldType, Status, Arrival, Departure) then
   begin
     if g.qWarnWhenOverbooking then
-      if NOT IsAvailabilityThere(newRoomType, Arrival, Departure) then exit;
+      if NOT IsAvailabilityThere(oldType, newRoomType, Arrival, Departure) then exit;
 
     ss := '';
     ss := ss + ' UPDATE roomreservations ';
@@ -14936,7 +14936,7 @@ begin
   if d.getChangeAvailabilityInfo(RoomReservation, oldType, Status, Arrival, Departure) then
   begin
     if g.qWarnWhenOverbooking then
-      if NOT IsAvailabilityThere(newRoomType, Arrival, Departure) then exit;
+      if NOT IsAvailabilityThere(oldType, newRoomType, Arrival, Departure) then exit;
 
     ss := '';
     ss := ss + ' UPDATE roomreservations ';

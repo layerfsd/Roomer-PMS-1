@@ -225,7 +225,13 @@ const
     +
 
     'Name AS FullName, ' + 'LEFT(Name, CHAR_LENGTH(Name) - CHAR_LENGTH(SUBSTRING_INDEX(Name,'' '',-1))-1) AS FirstName, ' +
-    'SUBSTRING_INDEX(Name,'' '',-1) AS LastName, ' + 'Address1, Address2, Address3 AS ZIPCode, Address4 AS City, ' + 'Country, ' +
+    'SUBSTRING_INDEX(Name,'' '',-1) AS LastName, ' +
+    'IF(Address1 != '''', Address1, (SELECT ContactAddress1 FROM reservations WHERE Reservation=persons.Reservation)) AS Address1, ' +
+    'IF(Address2 != '''', Address2, (SELECT ContactAddress2 FROM reservations WHERE Reservation=persons.Reservation)) AS Address2, ' +
+    'IF(Address3 != '''', Address3, (SELECT ContactAddress3 FROM reservations WHERE Reservation=persons.Reservation)) AS ZIPCode, ' +
+    'IF(Address4 != '''', Address4, (SELECT ContactAddress4 FROM reservations WHERE Reservation=persons.Reservation)) AS City, ' +
+
+    'Country, ' +
 
     'Tel1 AS Telephone, Tel2 AS MobileNumber, Email AS GuestEmail, ' +
 
@@ -578,7 +584,9 @@ begin
     param := inttostr(RoomReservation)
   else
     param := RoomReservationList;
-  if rSet_bySQL(ResSetGuest, format(GET_GUEST_CHECKIN_CHECKOUT, [param])) then
+  s := format(GET_GUEST_CHECKIN_CHECKOUT, [param]);
+  CopyToClipboard(s);
+  if rSet_bySQL(ResSetGuest, s) then
   begin
     Reservation := ResSetGuest['Reservation'];
     PersonId := ResSetGuest['ID'];

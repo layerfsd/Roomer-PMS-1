@@ -218,13 +218,17 @@ end;
 
 procedure TDynamicRates.GetAllRateCodes(List : TStrings);
 var s : String;
+    idx : Integer;
 begin
   chRates.First;
   while NOT chRates.Eof do
   begin
     s := chRates['rateCode'];
     if List.IndexOf(s) < 0 then
-      List.Add(s);
+    begin
+      idx := List.Add(s);
+      List.Objects[idx] := TObject(chRates.FieldByName('channelId').AsInteger);
+    end;
     chRates.Next;
   end;
 end;

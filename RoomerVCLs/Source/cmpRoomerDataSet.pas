@@ -355,9 +355,6 @@ type
     property LoggedIn : Boolean read FLoggedIn write FLoggedIn;
     property RoomerDataSet: TRoomerDataSet read FRoomerDataSet write FRoomerDataSet;
 
-    // Cloud functions
-    procedure SystemGetDayGrid1950(fromDate: TDateTime; resType : String; var GuestList, NextDates : TRoomerDataSet);
-
   published
     { Published declarations }
     property SavedLastResult: String read FSavedLastResult;
@@ -2190,18 +2187,6 @@ begin
 end;
 
 {$I RoomerDBMethodsImplementations.inc}
-
-procedure TRoomerDataSet.SystemGetDayGrid1950(fromDate: TDateTime; resType : String; var GuestList, NextDates : TRoomerDataSet);
-var res : String;
-  list : TStrings;
-begin
-  res := downloadUrlAsString(  RoomerUri + 'pms/business/daygrid1950?from=' + uDateUtils.dateToSqlString(fromDate) + '&resType=' + resType);
-  list := SplitStringToTStrings(ROOMER_SPLIT, res);
-  if NOT Assigned(GuestList) then GuestList := CreateNewDataset;
-  if NOT Assigned(NextDates) then NextDates := CreateNewDataset;
-  GuestList.OpenDataset(list[0]);
-  NextDates.OpenDataset(list[1]);
-end;
 
 function TRoomerDataSet.ActivateNewDataset(SqlResult: String): TRoomerDataSet;
 begin

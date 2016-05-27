@@ -474,10 +474,10 @@ type
     labCountry: TsLabel;
     sGroupBox4: TsGroupBox;
     clabReserveDate: TsLabel;
-    labReserveDate: TsLabel;
+    __labReserveDate: TsLabel;
     Label5: TsLabel;
-    labStaff: TsLabel;
-    labResNumbers: TsLabel;
+    __labStaff: TsLabel;
+    __labResNumbers: TsLabel;
     sLabel4: TsLabel;
     sGroupBox5: TsGroupBox;
     Label25: TsLabel;
@@ -526,6 +526,9 @@ type
     DropComboTarget1: TDropComboTarget;
     btnPasteFile: TsButton;
     __PriceViewer: TcxGridDBColumn;
+    edtContactAddress4: TsEdit;
+    sLabel6: TsLabel;
+    sLabel7: TsLabel;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -632,6 +635,7 @@ type
     procedure tvRoomsunpaidRentPricePropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure DropComboTarget1GetDropEffect(Sender: TObject; ShiftState: TShiftState; APoint: TPoint; var Effect: Integer);
+    procedure DropComboTarget1DragOver(Sender: TObject; ShiftState: TShiftState; APoint: TPoint; var Effect: Integer);
   private
     { Private declarations }
     vStartName: string;
@@ -735,7 +739,8 @@ uses
   uTestTax,
   uAvailabilityPerDay,
   uResourceManagement,
-  uViewDailyRates
+  uViewDailyRates,
+  uRoomTypes2
   ;
 
 {$R *.DFM}
@@ -914,6 +919,7 @@ begin
         edtContactAddress1.Text := trim(fieldbyname('ContactAddress1').asstring);
         edtContactAddress2.Text := trim(fieldbyname('ContactAddress2').asstring);
         edtContactAddress3.Text := trim(fieldbyname('ContactAddress3').asstring);
+        edtContactAddress4.Text := trim(fieldbyname('ContactAddress4').asstring);
         edtContactCountry.Text  := trim(fieldbyname('ContactCountry').asstring);
 
         edtName.text := trim(fieldbyname('Name').asstring);
@@ -945,8 +951,8 @@ begin
         chkUseStayTax.checked := rset['useStayTax'];
 
 //        labReserveDate.caption := DateToStr(_DBDateToDate(rSet.fieldbyname('ReservationDate').asString));
-        labReserveDate.caption := DateTimeToStr(rSet.fieldbyname('dtCreated').AsDateTime) + ' UTC';
-        labStaff.caption := rSet.fieldbyname('staff').asString;
+        __labReserveDate.caption := DateTimeToStr(rSet.fieldbyname('dtCreated').AsDateTime) + ' UTC';
+        __labStaff.caption := rSet.fieldbyname('staff').asString;
 
         OutOfOrderBlocking := fieldbyname('outOfOrderBlocking').AsBoolean;
       end;
@@ -1059,7 +1065,7 @@ var
   s : string;
 begin
   s := inttostr(zReservation)+' / '+inttostr(zRoomreservation);
-  labResNumbers.caption := s;
+  __labResNumbers.caption := s;
 end;
 
 procedure TfrmReservationProfile.SetOutOfOrderBlocking(const Value: Boolean);
@@ -1169,6 +1175,7 @@ begin
       rSet.fieldbyname('ContactAddress1').asstring := edtContactAddress1.text;
       rSet.fieldbyname('ContactAddress2').asstring := edtContactAddress2.text;
       rSet.fieldbyname('ContactAddress3').asstring := edtContactAddress3.text;
+      rSet.fieldbyname('ContactAddress4').asstring := edtContactAddress4.text;
       rSet.fieldbyname('ContactCountry').asstring := edtContactCountry.text;
       rSet.fieldbyname('invRefrence').asstring := edtInvRefrence.text;
       rSet['useStayTax'] := chkUseStayTax.checked;
@@ -1835,11 +1842,22 @@ var
 
   AvailabilityPerDay : TAvailabilityPerDay;
   s : String;
+
+  theData: recRoomTypeHolder;
+  newRoomType : String;
 begin
   // Add roomreservation as noroom
 
+  initRoomTypeHolder(theData);
+
+  theData.RoomType := mRooms['RoomType'];
+  if openRoomTypes(actlookup, theData) then
+    newRoomType := theData.RoomType
+  else
+    exit;
+
   if g.qWarnWhenOverbooking then
-    if NOT IsAvailabilityThere(mRooms['RoomType'], mRooms['Arrival'], mRooms['Departure']) then exit;
+    if NOT IsAvailabilityThere('', newRoomType, mRooms['Arrival'], mRooms['Departure']) then exit;
 
   isOk := True;
 
@@ -1872,7 +1890,7 @@ begin
       Departure        := mRooms.fieldbyname('Departure').asDateTime;
       dayCount         := trunc(departure)-trunc(arrival);
 
-      RoomType         := mRooms.fieldbyname('RoomType').asstring;
+      RoomType         := newRoomType; // mRooms.fieldbyname('RoomType').asstring;
 
 
       numGuests        := mRooms.fieldbyname('GuestCount').asInteger;
@@ -1987,6 +2005,7 @@ begin
         roomsDateData :=  GET_RoomsDate(tmpDate, oldRoomreservation);
         roomsDateData.RoomReservation := iRoomReservation;
         roomsDateData.Room := roomNumber;
+        roomsDateData.RoomType := RoomType;
         roomsDateData.isNoRoom := true;
         roomsDateData.Paid := false;
 
@@ -2972,8 +2991,14 @@ begin
   d.roomerMainDataSet.SystemMakeAvailabilityDirtyFromRoomReservation(roomReservation, temp);
 end;
 
+procedure TfrmReservationProfile.DropComboTarget1DragOver(Sender: TObject; ShiftState: TShiftState; APoint: TPoint; var Effect: Integer);
+begin
+  Effect := DROPEFFECT_COPY;
+end;
+
 procedure TfrmReservationProfile.DropComboTarget1Drop(Sender: TObject; ShiftState: TShiftState; APoint: TPoint; var Effect: Integer);
 begin
+  Effect := DROPEFFECT_COPY;
   DropComboTargetDrop(format(BOOKING_STATIC_RESOURCES, [inttostr(zReservation)]), ACCESS_RESTRICTED, Sender AS TDropComboTarget, ShiftState, APoint, Effect);
   timBlink.Tag := 0;
   timBlink.Enabled := False;

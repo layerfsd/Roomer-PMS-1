@@ -41,6 +41,7 @@ type
     procedure SetServerUnreachable(const Value: boolean);
     procedure UpdateControls;
   protected
+    procedure CreateParams(var Params: TCreateParams); override;
     function GetLoginParameters(var aUsername, aPassword, aHotelId: String): Boolean;
     property NoInternet: boolean read FNoInternet write SetNoInternet;
     property ServerUnreachable: boolean read FServerUnreachable write SetServerUnreachable;
@@ -181,6 +182,13 @@ end;
 procedure TfrmRoomerLoginForm.btOfflineClick(Sender: TObject);
 begin
   Tag := ord(lrOffLine);
+end;
+
+procedure TfrmRoomerLoginForm.CreateParams(var Params: TCreateParams);
+begin
+  inherited CreateParams(Params);
+  Params.ExStyle := Params.ExStyle or WS_EX_APPWINDOW;
+  Params.WndParent := Application.Handle;
 end;
 
 procedure TfrmRoomerLoginForm.btCancelClick(Sender: TObject);

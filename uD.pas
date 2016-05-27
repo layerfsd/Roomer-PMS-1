@@ -289,16 +289,16 @@ type
     procedure LoadMaintenanceCodes;
     function LocateWRoom(Room: String): Boolean;
     procedure ClearMaintenanceCodes;
-    procedure ProcessInvoiceBackupsForDate(sourceRSet : TRoomerDataSet; sPath : String; rSet: TRoomerDataset);
-    procedure ProcessReservationBackupsForDate(sourceRSet : TRoomerDataSet; sPath: String; rSet: TRoomerDataset);
-    procedure SaveRoomerDataAsKbmMemTable(filename: String; res : String);
-    procedure SaveRoomerDataSetAsKbmMemTable(filename : String; sourceSet : TRoomerDataSet);
-    procedure LoadKbmMemTable(destSet: TdxMemData; filename: String);
-    procedure BackupsSubmitInvoiceLinesChanges;
-    procedure BackupsSubmitInvoiceHeadsChanges;
-    procedure BackupsSubmitPaymentChanges;
-    procedure removeChangedFiles;
-    procedure BackupTaxes(sourceRSet : TRoomerDataSet; sPath : String);
+//    procedure ProcessInvoiceBackupsForDate(sourceRSet : TRoomerDataSet; sPath : String; rSet: TRoomerDataset);
+//    procedure ProcessReservationBackupsForDate(sourceRSet : TRoomerDataSet; sPath: String; rSet: TRoomerDataset);
+//    procedure SaveRoomerDataAsKbmMemTable(filename: String; res : String);
+//    procedure SaveRoomerDataSetAsKbmMemTable(filename : String; sourceSet : TRoomerDataSet);
+//    procedure LoadKbmMemTable(destSet: TdxMemData; filename: String);
+//    procedure BackupsSubmitInvoiceLinesChanges;
+//    procedure BackupsSubmitInvoiceHeadsChanges;
+//    procedure BackupsSubmitPaymentChanges;
+//    procedure removeChangedFiles;
+//    procedure BackupTaxes(sourceRSet : TRoomerDataSet; sPath : String);
     procedure SelectCloudConfig;
     procedure SetDefaultCloudConfig;
     procedure SetCloudConfigByFile(filename: String);
@@ -839,30 +839,30 @@ type
 
     procedure InsertReciptData(PaymentData : recPaymentHolder; invoiceData : recInvoiceHeadHolder);
 
-    function GetBackupPath: String;
+//    function GetBackupPath: String;
     function LocateRecord(rSet : TRoomerDataSet; FieldName : String; value : Integer) : boolean; overload;
     function LocateRecord(rSet : TRoomerDataSet; FieldName : String; value : String) : boolean; overload;
     procedure ApplyFieldsToKbmMemTable(sourceSet: TRoomerDataSet; destSet: TdxMemData; loadDataSet : Boolean = True);
     procedure SaveKbmMemTable(destSet: TdxMemData; filename : String; performTouch : Boolean = False);
-    procedure BackUpDataForOutage;
-    procedure BackupControlTable(rSet : TRoomerDataSet);
-    procedure BackupInvoiceLines(rSet : TdxMemData);
-    procedure BackupInvoiceHeader(rSet : TdxMemData);
-    procedure BackupPayments(rSet: TdxMemData);
-    procedure BackupTodaysGuestsList(rSet : TRoomerDataSet);
-    function GetBackupTodaysGuests: String;
-    function GetBackupControlTable : String;
-    procedure GetBackupInvoiceLinesReservationRoomReservationsSplitNumber(Reservation, RoomReservation, Split : Integer; kbm : TdxMemData);
-    procedure GetBackupInvoiceHeadsReservationRoomReservationsSplitNumber(Reservation, RoomReservation, Split : Integer; kbm : TdxMemData);
-    procedure GetBackupPaymentsReservationRoomReservations(Reservation, RoomReservation : Integer; kbm : TdxMemData);
-    function GetBackupReservationRoomReservations(Reservation : Integer) : String;
-    function GetBackupReservationRoomsDate(Reservation : Integer) : String;
-    function GetBackupRoomReservationRoomsDate(RoomReservation : Integer) : String;
-    function GetBackupRoomIvoice(RoomReservation: Integer): String;
-    function GetBackupPersons(RoomReservation : Integer; kbm : TdxMemData) : String;
-    function GetBackupRoomReservation(RoomReservation : Integer) : String;
-    function GetBackupReservations(Reservation : Integer) : String;
-    procedure BackupsSubmitChanges;
+//    procedure BackUpDataForOutage;
+//    procedure BackupControlTable(rSet : TRoomerDataSet);
+//    procedure BackupInvoiceLines(rSet : TdxMemData);
+//    procedure BackupInvoiceHeader(rSet : TdxMemData);
+//    procedure BackupPayments(rSet: TdxMemData);
+//    procedure BackupTodaysGuestsList(rSet : TRoomerDataSet);
+//    function GetBackupTodaysGuests: String;
+//    function GetBackupControlTable : String;
+//    procedure GetBackupInvoiceLinesReservationRoomReservationsSplitNumber(Reservation, RoomReservation, Split : Integer; kbm : TdxMemData);
+//    procedure GetBackupInvoiceHeadsReservationRoomReservationsSplitNumber(Reservation, RoomReservation, Split : Integer; kbm : TdxMemData);
+//    procedure GetBackupPaymentsReservationRoomReservations(Reservation, RoomReservation : Integer; kbm : TdxMemData);
+//    function GetBackupReservationRoomReservations(Reservation : Integer) : String;
+//    function GetBackupReservationRoomsDate(Reservation : Integer) : String;
+//    function GetBackupRoomReservationRoomsDate(RoomReservation : Integer) : String;
+//    function GetBackupRoomIvoice(RoomReservation: Integer): String;
+//    function GetBackupPersons(RoomReservation : Integer; kbm : TdxMemData) : String;
+//    function GetBackupRoomReservation(RoomReservation : Integer) : String;
+//    function GetBackupReservations(Reservation : Integer) : String;
+//    procedure BackupsSubmitChanges;
 
     procedure TurnoverAndPaymentsGetAll(clearData: boolean;var  zGlob : recTurnoverAndPaymentsGlobals);
     procedure TurnoverAndPaymentsGetAll_II(clearData: boolean;var zGlob : recTurnoverAndPaymentsGlobals_II);
@@ -907,24 +907,24 @@ function GenerateProformaInvoiceNumber : Integer;
 var PROFORMA_INVOICE_NUMBER : integer;
 
 {$IFDEF rmLOCALRESOURCE}
-  const RoomerOpenAPIBase : String = 'http://localhos';
+  const RoomerOpenAPIBase : String = 'http://localhost';
   const RoomerBase : String = 'http://localhost';
   const RoomerStoreBase : String = 'http://localhost';
   const RoomerBasePort : String = '8080';
   const RoomerOpenApiBasePort : String = '8080';
   const RoomerStoreBasePort : String = '8080';
 {$ELSE}
-  {$IFDEF rmROOMERSSL}
+//  {$IFDEF rmROOMERSSL}
     const RoomerBase : String = 'https://secure.roomercloud.net';
     const RoomerBasePort : String = '443';
-    const RoomerOpenApiBasePort : String = '443';
     const RoomerOpenAPIBase : String = 'https://secure.roomercloud.net';
-  {$ELSE}
-    const RoomerBase : String = 'http://secure.roomercloud.net';
-    const RoomerBasePort : String = '80';
-    const RoomerOpenApiBasePort : String = '80';
-    const RoomerOpenAPIBase : String = 'http://secure.roomercloud.net';
-  {$ENDIF}
+    const RoomerOpenApiBasePort : String = '443';
+//  {$ELSE}
+//    const RoomerBase : String = 'http://secure.roomercloud.net';
+//    const RoomerBasePort : String = '80';
+//    const RoomerOpenApiBasePort : String = '80';
+//    const RoomerOpenAPIBase : String = 'http://secure.roomercloud.net';
+//  {$ENDIF}
   const RoomerStoreBase : String = 'http://store.roomercloud.net';
   const RoomerStoreBasePort : String = '8080';
 {$ENDIF}
@@ -11116,45 +11116,45 @@ begin
     TouchNewFile(filename + '.changed', now);
 end;
 
-procedure Td.LoadKbmMemTable(destSet : TdxMemData; filename : String);
-begin
-  if destSet.active then
-    destSet.Close;
-  destSet.CreateFieldsFromBinaryFile(filename);
-  destSet.LoadFromBinaryFile(filename);
-end;
-
-procedure Td.SaveRoomerDataAsKbmMemTable(filename : String; res : String);
-var sourceSet : TRoomerDataSet;
-begin
-  if FileExists(filename) then
-    DeleteAllFiles(filename);
-  sourceSet := roomerMainDataSet.ActivateNewDataSet(res);
-  try
-    SaveRoomerDataSetAsKbmMemTable(filename, sourceSet);
-    Application.processMessages;
-  finally
-    FreeAndNil(sourceSet);
-  end;
-end;
-
-procedure Td.SaveRoomerDataSetAsKbmMemTable(filename : String; sourceSet : TRoomerDataSet);
-var kbm : TdxMemData;
-    saveData : Boolean;
-begin
-  kbm := dxMemData; //  TKbmMemTable.Create(nil);
-  try
-//    sourceSet.First;
-    saveData := true; // NOT sourceSet.Eof;
-
-    ApplyFieldsToKbmMemTable(sourceSet, kbm, saveData);
-    if saveData then
-      SaveKbmMemTable(kbm, filename);
-  finally
-//    FreeAndNil(kbm);
-  end;
-end;
-
+//procedure Td.LoadKbmMemTable(destSet : TdxMemData; filename : String);
+//begin
+//  if destSet.active then
+//    destSet.Close;
+//  destSet.CreateFieldsFromBinaryFile(filename);
+//  destSet.LoadFromBinaryFile(filename);
+//end;
+//
+//procedure Td.SaveRoomerDataAsKbmMemTable(filename : String; res : String);
+//var sourceSet : TRoomerDataSet;
+//begin
+//  if FileExists(filename) then
+//    DeleteAllFiles(filename);
+//  sourceSet := roomerMainDataSet.ActivateNewDataSet(res);
+//  try
+//    SaveRoomerDataSetAsKbmMemTable(filename, sourceSet);
+//    Application.processMessages;
+//  finally
+//    FreeAndNil(sourceSet);
+//  end;
+//end;
+//
+//procedure Td.SaveRoomerDataSetAsKbmMemTable(filename : String; sourceSet : TRoomerDataSet);
+//var kbm : TdxMemData;
+//    saveData : Boolean;
+//begin
+//  kbm := dxMemData; //  TKbmMemTable.Create(nil);
+//  try
+////    sourceSet.First;
+//    saveData := true; // NOT sourceSet.Eof;
+//
+//    ApplyFieldsToKbmMemTable(sourceSet, kbm, saveData);
+//    if saveData then
+//      SaveKbmMemTable(kbm, filename);
+//  finally
+////    FreeAndNil(kbm);
+//  end;
+//end;
+//
 
 const GET_ALL_INVOICE_ITEMS_FOR_A_SPECIFIED_ROOM_RESERVATION =
 'SELECT il.Id AS ilId, il.PurchaseDate, il.ItemId, il.Number, il.Description, il.Price, il.VATType, il.Total, il.TotalWOVat, il.Vat, ' + #10 +
@@ -11422,426 +11422,426 @@ const GET_ALL_INVOICE_ITEMS_FOR_A_SPECIFIED_ROOM_RESERVATION =
 'ORDER BY ItemNumber ' + #10;
 
 
-procedure Td.ProcessInvoiceBackupsForDate(sourceRSet : TRoomerDataSet; sPath : String; rSet : TRoomerDataset);
-var RoomReservation : Integer;
-    res : String;
-    sql : String;
-begin
-  rSet.First;
-  while NOT rSet.Eof do
-  begin
-    RoomReservation := rSet['RoomReservation'];
-    sql := StringReplace(GET_ALL_INVOICE_ITEMS_FOR_A_SPECIFIED_ROOM_RESERVATION, '${RoomReservation}', inttoStr(RoomReservation), [rfReplaceAll, rfIgnoreCase]);
-    res := sourceRSet.queryRoomer(sql);
-//    CopyToClipboard(sql);
-    SaveToUtf8TextFile(TPath.Combine(sPath, format('Backup_Room_Invoice_%d.src', [RoomReservation])), res);
-    rSet.Next;
-  end;
-end;
-
-procedure Td.ProcessReservationBackupsForDate(sourceRSet : TRoomerDataSet; sPath : String; rSet : TRoomerDataset);
-var i, Reservation, RoomReservation , iSplit: Integer;
-    res,
-    sql,
-    filename : String;
-    rSetTemp : TRoomerDataSet;
-begin
-  rSet.First;
-  while NOT rSet.Eof do
-  begin
-    Reservation := rSet['Reservation'];
-    RoomReservation := rSet['RoomReservation'];
-
-    filename := TPath.Combine(sPath, format('Backup_RoomReservation_%d.src', [RoomReservation]));
-    if NOT FileExists(filename) then
-    begin
-      sql := StringReplace('SELECT * FROM roomreservations WHERE RoomReservation=${RoomReservation}', '${RoomReservation}', inttoStr(RoomReservation), [rfReplaceAll, rfIgnoreCase]);
-      res := sourceRSet.queryRoomer(sql);
-      SaveToUtf8TextFile(filename, res);
-      Application.processMessages;
-    end;
-
-    filename := TPath.Combine(sPath, format('Backup_Reservation_%d.src', [Reservation]));
-    if NOT FileExists(filename) then
-    begin
-      sql := StringReplace('SELECT * FROM reservations WHERE Reservation=${Reservation}', '${Reservation}', inttoStr(Reservation), [rfReplaceAll, rfIgnoreCase]);
-      res := sourceRSet.queryRoomer(sql);
-      SaveToUtf8TextFile(filename, res);
-      Application.processMessages;
-    end;
-
-    filename := TPath.Combine(sPath, format('Backup_Persons_%d.src', [RoomReservation]));
-    if NOT FileExists(filename) then
-    begin
-      sql := StringReplace('SELECT * FROM persons WHERE RoomReservation=${RoomReservation}', '${RoomReservation}', inttoStr(RoomReservation), [rfReplaceAll, rfIgnoreCase]);
-      res := sourceRSet.queryRoomer(sql);
-      SaveRoomerDataAsKbmMemTable(filename, res);
-      Application.processMessages;
-    end;
-
-    sql := StringReplace('SELECT Min(SplitNumber) AS MinSplitNumber, Max(SplitNumber) AS MaxSplitNumber FROM invoicelines WHERE Reservation=${Reservation}', '${Reservation}', inttoStr(RoomReservation), [rfReplaceAll, rfIgnoreCase]);
-    rSetTemp := sourceRSet.ActivateNewDataSet(sourceRSet.queryRoomer(sql));
-    rSetTemp.First;
-
-    if NOT rSetTemp.Eof then
-    for i := rSetTemp['MinSplitNumber'] to rSetTemp['MaxSplitNumber'] do
-    begin
-      iSplit := i;
-      filename := TPath.Combine(sPath, format('Backup_Invoice_Lines_Res_RoomRes_Split_%d_%d_%d.src', [Reservation, RoomReservation, iSplit]));
-      if NOT FileExists(filename) then
-      begin
-        sql := StringReplace('SELECT * FROM invoicelines where Reservation = ${Reservation} and RoomReservation = ${RoomReservation} and SplitNumber = ${SplitNumber} and InvoiceNumber = -1',
-                             '${RoomReservation}', inttoStr(RoomReservation), [rfReplaceAll, rfIgnoreCase]);
-        sql := StringReplace(sql, '${Reservation}', inttoStr(Reservation), [rfReplaceAll, rfIgnoreCase]);
-        sql := StringReplace(sql, '${SplitNumber}', inttoStr(iSplit), [rfReplaceAll, rfIgnoreCase]);
-        res := sourceRSet.queryRoomer(sql);
-        SaveRoomerDataAsKbmMemTable(filename, res);
-      end;
-
-      filename := TPath.Combine(sPath, format('Backup_Invoice_Heads_Res_RoomRes_Split_%d_%d_%d.src', [Reservation, RoomReservation, iSplit]));
-      if NOT FileExists(filename) then
-      begin
-        sql := StringReplace('SELECT * FROM invoiceheads where Reservation = ${Reservation} and RoomReservation = ${RoomReservation} and SplitNumber = ${SplitNumber} and InvoiceNumber = -1',
-                             '${RoomReservation}', inttoStr(RoomReservation), [rfReplaceAll, rfIgnoreCase]);
-        sql := StringReplace(sql, '${Reservation}', inttoStr(Reservation), [rfReplaceAll, rfIgnoreCase]);
-        sql := StringReplace(sql, '${SplitNumber}', inttoStr(iSplit), [rfReplaceAll, rfIgnoreCase]);
-        res := sourceRSet.queryRoomer(sql);
-        SaveRoomerDataAsKbmMemTable(filename, res);
-      end;
-    end;
-
-    filename := TPath.Combine(sPath, format('Backup_Payments_Res_RoomRes_%d_%d.src', [Reservation, RoomReservation]));
-    if NOT FileExists(filename) then
-    begin
-      sql := StringReplace('SELECT * FROM payments where Reservation = ${Reservation} and RoomReservation = ${RoomReservation} and InvoiceNumber = -1', '${RoomReservation}', inttoStr(RoomReservation), [rfReplaceAll, rfIgnoreCase]);
-      sql := StringReplace(sql, '${Reservation}', inttoStr(Reservation), [rfReplaceAll, rfIgnoreCase]);
-      res := sourceRSet.queryRoomer(sql);
-      SaveRoomerDataAsKbmMemTable(filename, res);
-    end;
-
-
-    filename := TPath.Combine(sPath, format('Backup_Reservation_Roomsdate_%d.src', [Reservation]));
-    if NOT FileExists(filename) then
-    begin
-      sql := StringReplace('SELECT * FROM roomsdate WHERE Reservation=${Reservation} AND (NOT ResFlag IN (''X'',''C'',''O'',''N'',''Q'')) ', '${Reservation}', inttoStr(Reservation), [rfReplaceAll, rfIgnoreCase]);
-      res := sourceRSet.queryRoomer(sql);
-      SaveToUtf8TextFile(filename, res);
-      Application.processMessages;
-    end;
-
-    filename := TPath.Combine(sPath, format('Backup_RoomReservation_Roomsdate_%d.src', [RoomReservation]));
-    if NOT FileExists(filename) then
-    begin
-      sql := StringReplace('SELECT rd.* ' +
-        ',IF(ISNULL((SELECT name FROM persons WHERE persons.MainName AND persons.roomreservation = rd.roomreservation LIMIT 1)), ' +
-        '   (SELECT name FROM persons WHERE persons.roomreservation = rd.roomreservation LIMIT 1), ' +
-        '   (SELECT name FROM persons WHERE persons.MainName AND persons.roomreservation = rd.roomreservation LIMIT 1)) AS guestName ' +
-        ', (SELECT count(id) FROM persons WHERE persons.roomreservation = rd.roomreservation) AS numGuests ' +
-        'FROM roomsdate rd WHERE rd.RoomReservation=${RoomReservation} AND (NOT rd.ResFlag IN (''X'',''C'',''O'',''N'',''Q'')) ', '${RoomReservation}', inttoStr(RoomReservation), [rfReplaceAll, rfIgnoreCase]);
-      res := sourceRSet.queryRoomer(sql);
-      SaveToUtf8TextFile(filename, res);
-      Application.processMessages;
-    end;
-
-    filename := TPath.Combine(sPath, format('Backup_Reservation_RoomReservations_%d.src', [Reservation]));
-    if NOT FileExists(filename) then
-    begin
-      sql := StringReplace('SELECT rr.*, ' +
-        '(SELECT Description FROM rooms WHERE rooms.Room=rr.Room) AS RoomDescription, ' +
-        '(SELECT Description FROM roomtypes WHERE roomtypes.RoomType=(SELECT RoomType FROM rooms WHERE rooms.Room=rr.Room)) AS RoomTypeDescription, ' +
-        '(SELECT COUNT(id) FROM persons WHERE persons.RoomReservation=rr.RoomReservation) AS numTaxGuests ' +
-        'FROM roomreservations rr ' +
-        'WHERE rr.Reservation=${Reservation} AND (NOT rr.Status IN (''X'',''C'',''O'',''N'',''Q'')) ', '${Reservation}', inttoStr(Reservation), [rfReplaceAll, rfIgnoreCase]);
-      res := sourceRSet.queryRoomer(sql);
-      SaveToUtf8TextFile(filename, res);
-      Application.processMessages;
-    end;
-
-    rSet.Next;
-  end;
-end;
-
-procedure Td.BackupTaxes(sourceRSet : TRoomerDataSet; sPath : String);
-var s, filename : String;
-begin
-  filename :=  TPath.Combine(sPath, 'Backup_TAXES.src');
-  s := format(select_Taxes_fillGridFromDataset , ['RETAXABLE']);
-  s := sourceRSet.queryRoomer(s);
-  SaveToUtf8TextFile(filename, s);
-end;
-
-procedure Td.BackupControlTable(rSet : TRoomerDataSet);
-begin
-  rSet.SaveToFile(TPath.Combine(GetBackupPath, 'Backup_Control_Table.src'), pfXML);
-end;
-
-procedure Td.BackupInvoiceLines(rSet : TdxMemData);
-var Reservation, RoomReservation, Split : Integer;
-begin
-  rset.First;
-  Reservation := rSet['Reservation'];
-  RoomReservation := rSet['RoomReservation'];
-  Split := rSet['SplitNumber'];
-  SaveKbmMemTable(rSet, TPath.Combine(GetBackupPath, format('Backup_Invoice_Lines_Res_RoomRes_Split_%d_%d_%d.src', [Reservation, RoomReservation, Split])), True);
-end;
-
-procedure Td.BackupInvoiceHeader(rSet : TdxMemData);
-var Reservation, RoomReservation, Split : Integer;
-begin
-  rset.First;
-  Reservation := rSet['Reservation'];
-  RoomReservation := rSet['RoomReservation'];
-  Split := rSet['SplitNumber'];
-  SaveKbmMemTable(rSet, TPath.Combine(GetBackupPath, format('Backup_Invoice_Heads_Res_RoomRes_Split_%d_%d_%d.src', [Reservation, RoomReservation, Split])), True);
-end;
-
-procedure Td.BackupPayments(rSet : TdxMemData);
-var Reservation, RoomReservation: Integer;
-begin
-  rset.First;
-  Reservation := rSet['Reservation'];
-  RoomReservation := rSet['RoomReservation'];
-  SaveKbmMemTable(rSet, TPath.Combine(GetBackupPath, format('Backup_Payments_Res_RoomRes_%d_%d.src', [Reservation, RoomReservation])), True);
-end;
-
-procedure Td.BackupTodaysGuestsList(rSet : TRoomerDataSet);
-var filename : String;
-begin
-  rset.First;
-  filename := TPath.Combine(GetBackupPath, format('Backup_Guests_%s.src', [dateToSqlString(now)]));
-  rSet.SaveToFile(filename, pfXML);
-  TouchNewFile(filename + '.changed', now);
-end;
-
-function Td.GetBackupPath : String;
-begin
-  result := TPath.Combine(uStringUtils.LocalAppDataPath, 'Roomer');
-  result := TPath.Combine(result, format('%s\backup',[d.roomerMainDataSet.hotelId]));
-  forceDirectories(result);
-end;
-
-function Td.GetBackupTodaysGuests : String;
-begin
-  result := ReadFromTextFile(TPath.Combine(GetBackupPath, format('Backup_Guests_%s.src', [dateToSqlString(now)])));
-end;
+//procedure Td.ProcessInvoiceBackupsForDate(sourceRSet : TRoomerDataSet; sPath : String; rSet : TRoomerDataset);
+//var RoomReservation : Integer;
+//    res : String;
+//    sql : String;
+//begin
+//  rSet.First;
+//  while NOT rSet.Eof do
+//  begin
+//    RoomReservation := rSet['RoomReservation'];
+//    sql := StringReplace(GET_ALL_INVOICE_ITEMS_FOR_A_SPECIFIED_ROOM_RESERVATION, '${RoomReservation}', inttoStr(RoomReservation), [rfReplaceAll, rfIgnoreCase]);
+//    res := sourceRSet.queryRoomer(sql);
+////    CopyToClipboard(sql);
+//    SaveToUtf8TextFile(TPath.Combine(sPath, format('Backup_Room_Invoice_%d.src', [RoomReservation])), res);
+//    rSet.Next;
+//  end;
+//end;
+//
+//procedure Td.ProcessReservationBackupsForDate(sourceRSet : TRoomerDataSet; sPath : String; rSet : TRoomerDataset);
+//var i, Reservation, RoomReservation , iSplit: Integer;
+//    res,
+//    sql,
+//    filename : String;
+//    rSetTemp : TRoomerDataSet;
+//begin
+//  rSet.First;
+//  while NOT rSet.Eof do
+//  begin
+//    Reservation := rSet['Reservation'];
+//    RoomReservation := rSet['RoomReservation'];
+//
+//    filename := TPath.Combine(sPath, format('Backup_RoomReservation_%d.src', [RoomReservation]));
+//    if NOT FileExists(filename) then
+//    begin
+//      sql := StringReplace('SELECT * FROM roomreservations WHERE RoomReservation=${RoomReservation}', '${RoomReservation}', inttoStr(RoomReservation), [rfReplaceAll, rfIgnoreCase]);
+//      res := sourceRSet.queryRoomer(sql);
+//      SaveToUtf8TextFile(filename, res);
+//      Application.processMessages;
+//    end;
+//
+//    filename := TPath.Combine(sPath, format('Backup_Reservation_%d.src', [Reservation]));
+//    if NOT FileExists(filename) then
+//    begin
+//      sql := StringReplace('SELECT * FROM reservations WHERE Reservation=${Reservation}', '${Reservation}', inttoStr(Reservation), [rfReplaceAll, rfIgnoreCase]);
+//      res := sourceRSet.queryRoomer(sql);
+//      SaveToUtf8TextFile(filename, res);
+//      Application.processMessages;
+//    end;
+//
+//    filename := TPath.Combine(sPath, format('Backup_Persons_%d.src', [RoomReservation]));
+//    if NOT FileExists(filename) then
+//    begin
+//      sql := StringReplace('SELECT * FROM persons WHERE RoomReservation=${RoomReservation}', '${RoomReservation}', inttoStr(RoomReservation), [rfReplaceAll, rfIgnoreCase]);
+//      res := sourceRSet.queryRoomer(sql);
+//      SaveRoomerDataAsKbmMemTable(filename, res);
+//      Application.processMessages;
+//    end;
+//
+//    sql := StringReplace('SELECT Min(SplitNumber) AS MinSplitNumber, Max(SplitNumber) AS MaxSplitNumber FROM invoicelines WHERE Reservation=${Reservation}', '${Reservation}', inttoStr(RoomReservation), [rfReplaceAll, rfIgnoreCase]);
+//    rSetTemp := sourceRSet.ActivateNewDataSet(sourceRSet.queryRoomer(sql));
+//    rSetTemp.First;
+//
+//    if NOT rSetTemp.Eof then
+//    for i := rSetTemp['MinSplitNumber'] to rSetTemp['MaxSplitNumber'] do
+//    begin
+//      iSplit := i;
+//      filename := TPath.Combine(sPath, format('Backup_Invoice_Lines_Res_RoomRes_Split_%d_%d_%d.src', [Reservation, RoomReservation, iSplit]));
+//      if NOT FileExists(filename) then
+//      begin
+//        sql := StringReplace('SELECT * FROM invoicelines where Reservation = ${Reservation} and RoomReservation = ${RoomReservation} and SplitNumber = ${SplitNumber} and InvoiceNumber = -1',
+//                             '${RoomReservation}', inttoStr(RoomReservation), [rfReplaceAll, rfIgnoreCase]);
+//        sql := StringReplace(sql, '${Reservation}', inttoStr(Reservation), [rfReplaceAll, rfIgnoreCase]);
+//        sql := StringReplace(sql, '${SplitNumber}', inttoStr(iSplit), [rfReplaceAll, rfIgnoreCase]);
+//        res := sourceRSet.queryRoomer(sql);
+//        SaveRoomerDataAsKbmMemTable(filename, res);
+//      end;
+//
+//      filename := TPath.Combine(sPath, format('Backup_Invoice_Heads_Res_RoomRes_Split_%d_%d_%d.src', [Reservation, RoomReservation, iSplit]));
+//      if NOT FileExists(filename) then
+//      begin
+//        sql := StringReplace('SELECT * FROM invoiceheads where Reservation = ${Reservation} and RoomReservation = ${RoomReservation} and SplitNumber = ${SplitNumber} and InvoiceNumber = -1',
+//                             '${RoomReservation}', inttoStr(RoomReservation), [rfReplaceAll, rfIgnoreCase]);
+//        sql := StringReplace(sql, '${Reservation}', inttoStr(Reservation), [rfReplaceAll, rfIgnoreCase]);
+//        sql := StringReplace(sql, '${SplitNumber}', inttoStr(iSplit), [rfReplaceAll, rfIgnoreCase]);
+//        res := sourceRSet.queryRoomer(sql);
+//        SaveRoomerDataAsKbmMemTable(filename, res);
+//      end;
+//    end;
+//
+//    filename := TPath.Combine(sPath, format('Backup_Payments_Res_RoomRes_%d_%d.src', [Reservation, RoomReservation]));
+//    if NOT FileExists(filename) then
+//    begin
+//      sql := StringReplace('SELECT * FROM payments where Reservation = ${Reservation} and RoomReservation = ${RoomReservation} and InvoiceNumber = -1', '${RoomReservation}', inttoStr(RoomReservation), [rfReplaceAll, rfIgnoreCase]);
+//      sql := StringReplace(sql, '${Reservation}', inttoStr(Reservation), [rfReplaceAll, rfIgnoreCase]);
+//      res := sourceRSet.queryRoomer(sql);
+//      SaveRoomerDataAsKbmMemTable(filename, res);
+//    end;
+//
+//
+//    filename := TPath.Combine(sPath, format('Backup_Reservation_Roomsdate_%d.src', [Reservation]));
+//    if NOT FileExists(filename) then
+//    begin
+//      sql := StringReplace('SELECT * FROM roomsdate WHERE Reservation=${Reservation} AND (NOT ResFlag IN (''X'',''C'',''O'',''N'',''Q'')) ', '${Reservation}', inttoStr(Reservation), [rfReplaceAll, rfIgnoreCase]);
+//      res := sourceRSet.queryRoomer(sql);
+//      SaveToUtf8TextFile(filename, res);
+//      Application.processMessages;
+//    end;
+//
+//    filename := TPath.Combine(sPath, format('Backup_RoomReservation_Roomsdate_%d.src', [RoomReservation]));
+//    if NOT FileExists(filename) then
+//    begin
+//      sql := StringReplace('SELECT rd.* ' +
+//        ',IF(ISNULL((SELECT name FROM persons WHERE persons.MainName AND persons.roomreservation = rd.roomreservation LIMIT 1)), ' +
+//        '   (SELECT name FROM persons WHERE persons.roomreservation = rd.roomreservation LIMIT 1), ' +
+//        '   (SELECT name FROM persons WHERE persons.MainName AND persons.roomreservation = rd.roomreservation LIMIT 1)) AS guestName ' +
+//        ', (SELECT count(id) FROM persons WHERE persons.roomreservation = rd.roomreservation) AS numGuests ' +
+//        'FROM roomsdate rd WHERE rd.RoomReservation=${RoomReservation} AND (NOT rd.ResFlag IN (''X'',''C'',''O'',''N'',''Q'')) ', '${RoomReservation}', inttoStr(RoomReservation), [rfReplaceAll, rfIgnoreCase]);
+//      res := sourceRSet.queryRoomer(sql);
+//      SaveToUtf8TextFile(filename, res);
+//      Application.processMessages;
+//    end;
+//
+//    filename := TPath.Combine(sPath, format('Backup_Reservation_RoomReservations_%d.src', [Reservation]));
+//    if NOT FileExists(filename) then
+//    begin
+//      sql := StringReplace('SELECT rr.*, ' +
+//        '(SELECT Description FROM rooms WHERE rooms.Room=rr.Room) AS RoomDescription, ' +
+//        '(SELECT Description FROM roomtypes WHERE roomtypes.RoomType=(SELECT RoomType FROM rooms WHERE rooms.Room=rr.Room)) AS RoomTypeDescription, ' +
+//        '(SELECT COUNT(id) FROM persons WHERE persons.RoomReservation=rr.RoomReservation) AS numTaxGuests ' +
+//        'FROM roomreservations rr ' +
+//        'WHERE rr.Reservation=${Reservation} AND (NOT rr.Status IN (''X'',''C'',''O'',''N'',''Q'')) ', '${Reservation}', inttoStr(Reservation), [rfReplaceAll, rfIgnoreCase]);
+//      res := sourceRSet.queryRoomer(sql);
+//      SaveToUtf8TextFile(filename, res);
+//      Application.processMessages;
+//    end;
+//
+//    rSet.Next;
+//  end;
+//end;
+//
+//procedure Td.BackupTaxes(sourceRSet : TRoomerDataSet; sPath : String);
+//var s, filename : String;
+//begin
+//  filename :=  TPath.Combine(sPath, 'Backup_TAXES.src');
+//  s := format(select_Taxes_fillGridFromDataset , ['RETAXABLE']);
+//  s := sourceRSet.queryRoomer(s);
+//  SaveToUtf8TextFile(filename, s);
+//end;
+//
+//procedure Td.BackupControlTable(rSet : TRoomerDataSet);
+//begin
+//  rSet.SaveToFile(TPath.Combine(GetBackupPath, 'Backup_Control_Table.src'), pfXML);
+//end;
+//
+//procedure Td.BackupInvoiceLines(rSet : TdxMemData);
+//var Reservation, RoomReservation, Split : Integer;
+//begin
+//  rset.First;
+//  Reservation := rSet['Reservation'];
+//  RoomReservation := rSet['RoomReservation'];
+//  Split := rSet['SplitNumber'];
+//  SaveKbmMemTable(rSet, TPath.Combine(GetBackupPath, format('Backup_Invoice_Lines_Res_RoomRes_Split_%d_%d_%d.src', [Reservation, RoomReservation, Split])), True);
+//end;
+//
+//procedure Td.BackupInvoiceHeader(rSet : TdxMemData);
+//var Reservation, RoomReservation, Split : Integer;
+//begin
+//  rset.First;
+//  Reservation := rSet['Reservation'];
+//  RoomReservation := rSet['RoomReservation'];
+//  Split := rSet['SplitNumber'];
+//  SaveKbmMemTable(rSet, TPath.Combine(GetBackupPath, format('Backup_Invoice_Heads_Res_RoomRes_Split_%d_%d_%d.src', [Reservation, RoomReservation, Split])), True);
+//end;
+//
+//procedure Td.BackupPayments(rSet : TdxMemData);
+//var Reservation, RoomReservation: Integer;
+//begin
+//  rset.First;
+//  Reservation := rSet['Reservation'];
+//  RoomReservation := rSet['RoomReservation'];
+//  SaveKbmMemTable(rSet, TPath.Combine(GetBackupPath, format('Backup_Payments_Res_RoomRes_%d_%d.src', [Reservation, RoomReservation])), True);
+//end;
+//
+//procedure Td.BackupTodaysGuestsList(rSet : TRoomerDataSet);
+//var filename : String;
+//begin
+//  rset.First;
+//  filename := TPath.Combine(GetBackupPath, format('Backup_Guests_%s.src', [dateToSqlString(now)]));
+//  rSet.SaveToFile(filename, pfXML);
+//  TouchNewFile(filename + '.changed', now);
+//end;
+//
+//function Td.GetBackupPath : String;
+//begin
+//  result := TPath.Combine(uStringUtils.LocalAppDataPath, 'Roomer');
+//  result := TPath.Combine(result, format('%s\backup',[d.roomerMainDataSet.hotelId]));
+//  forceDirectories(result);
+//end;
+//
+//function Td.GetBackupTodaysGuests : String;
+//begin
+//  result := ReadFromTextFile(TPath.Combine(GetBackupPath, format('Backup_Guests_%s.src', [dateToSqlString(now)])));
+//end;
 
 procedure Td.GenerateOfflineReports;
 begin
   TOfflineReportGenerator.ExecuteRegisteredReports;
 end;
 
-function Td.GetBackupControlTable : String;
-begin
-  result := ReadFromTextFile(TPath.Combine(GetBackupPath, 'Backup_Control_Table.src'));
-end;
+//function Td.GetBackupControlTable : String;
+//begin
+//  result := ReadFromTextFile(TPath.Combine(GetBackupPath, 'Backup_Control_Table.src'));
+//end;
+//
+//procedure Td.GetBackupInvoiceLinesReservationRoomReservationsSplitNumber(Reservation, RoomReservation, Split : Integer; kbm : TdxMemData);
+//begin
+//  LoadKbmMemTable(kbm, TPath.Combine(GetBackupPath, format('Backup_Invoice_Lines_Res_RoomRes_Split_%d_%d_%d.src', [Reservation, RoomReservation, Split])));
+//end;
+//
+//procedure Td.GetBackupInvoiceHeadsReservationRoomReservationsSplitNumber(Reservation, RoomReservation, Split : Integer; kbm : TdxMemData);
+//begin
+//  LoadKbmMemTable(kbm, TPath.Combine(GetBackupPath, format('Backup_Invoice_Heads_Res_RoomRes_Split_%d_%d_%d.src', [Reservation, RoomReservation, Split])));
+//end;
+//
+//procedure Td.GetBackupPaymentsReservationRoomReservations(Reservation, RoomReservation : Integer; kbm : TdxMemData);
+//begin
+//  LoadKbmMemTable(kbm, TPath.Combine(GetBackupPath, format('Backup_Payments_Res_RoomRes_%d_%d.src', [Reservation, RoomReservation])));
+//end;
+//
+//function Td.GetBackupReservationRoomReservations(Reservation : Integer) : String;
+//begin
+//  result := ReadFromTextFile(TPath.Combine(GetBackupPath, format('Backup_Reservation_RoomReservations_%d.src', [Reservation])));
+//end;
+//
+//function Td.GetBackupReservationRoomsDate(Reservation : Integer) : String;
+//begin
+//  result := ReadFromTextFile(TPath.Combine(GetBackupPath, format('Backup_Reservation_Roomsdate_%d.src', [Reservation])));
+//end;
+//
+//function Td.GetBackupRoomReservationRoomsDate(RoomReservation : Integer) : String;
+//begin
+//  result := ReadFromTextFile(TPath.Combine(GetBackupPath, format('Backup_RoomReservation_Roomsdate_%d.src', [RoomReservation])));
+//end;
+//
+//function Td.GetBackupRoomIvoice(RoomReservation : Integer) : String;
+//begin
+//  result := ReadFromTextFile(TPath.Combine(GetBackupPath, format('Backup_Room_Invoice_%d.src', [RoomReservation])));
+//end;
+//
+//function Td.GetBackupRoomReservation(RoomReservation : Integer) : String;
+//begin
+//  result := ReadFromTextFile(TPath.Combine(GetBackupPath, format('Backup_RoomReservation_%d.src', [RoomReservation])));
+//end;
+//
+//function Td.GetBackupPersons(RoomReservation : Integer; kbm : TdxMemData) : String;
+//begin
+//  LoadKbmMemTable(kbm, TPath.Combine(GetBackupPath, format('Backup_Persons_%d.src', [RoomReservation])));
+//end;
+//
+//function Td.GetBackupReservations(Reservation : Integer) : String;
+//begin
+//  result := ReadFromTextFile(TPath.Combine(GetBackupPath, format('Backup_Reservation_%d.src', [Reservation])));
+//end;
+//
+//procedure Td.BackUpDataForOutage;
+//var res : String;
+//    sPath : String;
+//    sourceRSet, rSet : TRoomerDataSet;
+//begin
+//  if NOT g.BackupMachine then exit;
+//
+//  sourceRSet := TRoomerDataSet.Create(nil);
+//  try
+//    SetMainRoomerDataSet(sourceRSet, False);
+//
+//    sourceRSet.Login(roomerMainDataSet.hotelId, roomerMainDataSet.userName, roomerMainDataSet.password, 'ROOMERPMS',
+//              GetVersion(Application.ExeName));
+//    try
+//      sPath := GetBackupPath;
+////      RemoveBackups(sPath);
+//
+//      BackupTaxes(sourceRSet, sPath);
+//
+//      // Guest list today
+//      res := sourceRSet.SystemGetDayGrid(now, now + 1, GetEnumName(TypeInfo(TReservationStatus),integer(rsAll)));
+//      SaveToUtf8TextFile(TPath.Combine(sPath, format('Backup_Guests_%s.src', [dateToSqlString(now)])), res);
+//      Application.processMessages;
+//      rSet := sourceRSet.ActivateNewDataset(res);
+//      ProcessInvoiceBackupsForDate(sourceRSet, sPath, rSet);
+//      ProcessReservationBackupsForDate(sourceRSet, sPath, rSet);
+//
+//      // Guest list tomorrow
+//      res := sourceRSet.SystemGetDayGrid(now + 1, now + 2, GetEnumName(TypeInfo(TReservationStatus),integer(rsAll)));
+//      SaveToUtf8TextFile(TPath.Combine(sPath, format('Backup_Guests_%s.src', [dateToSqlString(now + 1)])), res);
+//      Application.processMessages;
+//      ProcessInvoiceBackupsForDate(sourceRSet, sPath, rSet);
+//      ProcessReservationBackupsForDate(sourceRSet, sPath, rSet);
+//    finally
+////      try sourceRSet.Logout; except end;
+//    end;
+//  finally
+//    FreeAndNil(sourceRSet);
+//  end;
+//
+////  DownloadControlTable(sPath);
+//end;
 
-procedure Td.GetBackupInvoiceLinesReservationRoomReservationsSplitNumber(Reservation, RoomReservation, Split : Integer; kbm : TdxMemData);
-begin
-  LoadKbmMemTable(kbm, TPath.Combine(GetBackupPath, format('Backup_Invoice_Lines_Res_RoomRes_Split_%d_%d_%d.src', [Reservation, RoomReservation, Split])));
-end;
+//procedure Td.BackupsSubmitInvoiceLinesChanges;
+//var files : TStrings;
+//    i: Integer;
+//    sPath : String;
+//
+//    rec : recInvoiceLineHolder;
+//begin
+//  files := TStringlist.create;
+//  sPath := GetBackupPath;
+//  GetFileList(files, sPath, 'Backup_Invoice_Lines_Res_RoomRes_Split_*.changed');
+//  for i := 0 to files.Count - 1 do
+//  begin
+//    LoadKbmMemTable(dxMemData, TPath.Combine(sPath, ChangeFileExt(files[i], '')));
+//    dxMemData.First;
+//    if NOT dxMemData.Eof then
+//    begin
+//      DxMemDataToInvoiceLineHolderRec(dxMemData, rec);
+//      roomerMainDataSet.doCommand(format('DELETE FROM invoicelines WHERE Reservation=%d AND RoomReservation=%d AND SplitNumber=%d',
+//          [rec.Reservation, rec.RoomReservation, rec.SplitNumber]));
+//      while NOT dxMemData.Eof do
+//      begin
+//        DxMemDataToInvoiceLineHolderRec(dxMemData, rec);
+//        SP_INS_InvoiceLine(rec);
+//        dxMemData.Next;
+//      end;
+//    end;
+//  end;
+//end;
+//
+//procedure Td.BackupsSubmitInvoiceHeadsChanges;
+//var files : TStrings;
+//    i: Integer;
+//    sPath : String;
+//
+//    rec : recInvoiceHeadHolder;
+//begin
+//  files := TStringlist.create;
+//  sPath := GetBackupPath;
+//  GetFileList(files, sPath, 'Backup_Invoice_Heads_Res_RoomRes_Split_*.changed');
+//  for i := 0 to files.Count - 1 do
+//  begin
+//    LoadKbmMemTable(dxMemData, TPath.Combine(sPath, ChangeFileExt(files[i], '')));
+//    dxMemData.First;
+//    if NOT dxMemData.Eof then
+//    begin
+//      DxMemDataToInvoiceHeadHolderRec(dxMemData, rec);
+//      roomerMainDataSet.doCommand(format('DELETE FROM invoiceheads WHERE Reservation=%d AND RoomReservation=%d AND SplitNumber=%d',
+//          [rec.Reservation, rec.RoomReservation, rec.SplitNumber]));
+//      while NOT dxMemData.Eof do
+//      begin
+//        DxMemDataToInvoiceHeadHolderRec(dxMemData, rec);
+//        SP_INS_InvoiceHead(rec);
+//        dxMemData.Next;
+//      end;
+//    end;
+//  end;
+//end;
+//
+//procedure Td.BackupsSubmitPaymentChanges;
+//var files : TStrings;
+//    i, iNewId: Integer;
+//    sPath : String;
+//
+//    rec : recPaymentHolder;
+//begin
+//  files := TStringlist.create;
+//  sPath := GetBackupPath;
+//  GetFileList(files, sPath, 'Backup_Payments_Res_RoomRes_*.changed');
+//  for i := 0 to files.Count - 1 do
+//  begin
+//    LoadKbmMemTable(dxMemData, TPath.Combine(sPath, ChangeFileExt(files[i], '')));
+//    dxMemData.First;
+//    if NOT dxMemData.Eof then
+//    begin
+//      DxMemDataToPaymentHolderRec(dxMemData, rec);
+//      roomerMainDataSet.doCommand(format('DELETE FROM payments WHERE Reservation=%d AND RoomReservation=%d AND InvoiceNumber=-1',
+//          [rec.Reservation, rec.RoomReservation]));
+//
+//      while NOT dxMemData.Eof do
+//      begin
+//        DxMemDataToPaymentHolderRec(dxMemData, rec);
+//        INS_Payment(rec, iNewId);
+//        dxMemData.Next;
+//      end;
+//    end;
+//  end;
+//end;
 
-procedure Td.GetBackupInvoiceHeadsReservationRoomReservationsSplitNumber(Reservation, RoomReservation, Split : Integer; kbm : TdxMemData);
-begin
-  LoadKbmMemTable(kbm, TPath.Combine(GetBackupPath, format('Backup_Invoice_Heads_Res_RoomRes_Split_%d_%d_%d.src', [Reservation, RoomReservation, Split])));
-end;
+//procedure Td.removeChangedFiles;
+//begin
+//  DeleteFileWithWildcard(GetBackupPath, '*.changed');
+//end;
 
-procedure Td.GetBackupPaymentsReservationRoomReservations(Reservation, RoomReservation : Integer; kbm : TdxMemData);
-begin
-  LoadKbmMemTable(kbm, TPath.Combine(GetBackupPath, format('Backup_Payments_Res_RoomRes_%d_%d.src', [Reservation, RoomReservation])));
-end;
-
-function Td.GetBackupReservationRoomReservations(Reservation : Integer) : String;
-begin
-  result := ReadFromTextFile(TPath.Combine(GetBackupPath, format('Backup_Reservation_RoomReservations_%d.src', [Reservation])));
-end;
-
-function Td.GetBackupReservationRoomsDate(Reservation : Integer) : String;
-begin
-  result := ReadFromTextFile(TPath.Combine(GetBackupPath, format('Backup_Reservation_Roomsdate_%d.src', [Reservation])));
-end;
-
-function Td.GetBackupRoomReservationRoomsDate(RoomReservation : Integer) : String;
-begin
-  result := ReadFromTextFile(TPath.Combine(GetBackupPath, format('Backup_RoomReservation_Roomsdate_%d.src', [RoomReservation])));
-end;
-
-function Td.GetBackupRoomIvoice(RoomReservation : Integer) : String;
-begin
-  result := ReadFromTextFile(TPath.Combine(GetBackupPath, format('Backup_Room_Invoice_%d.src', [RoomReservation])));
-end;
-
-function Td.GetBackupRoomReservation(RoomReservation : Integer) : String;
-begin
-  result := ReadFromTextFile(TPath.Combine(GetBackupPath, format('Backup_RoomReservation_%d.src', [RoomReservation])));
-end;
-
-function Td.GetBackupPersons(RoomReservation : Integer; kbm : TdxMemData) : String;
-begin
-  LoadKbmMemTable(kbm, TPath.Combine(GetBackupPath, format('Backup_Persons_%d.src', [RoomReservation])));
-end;
-
-function Td.GetBackupReservations(Reservation : Integer) : String;
-begin
-  result := ReadFromTextFile(TPath.Combine(GetBackupPath, format('Backup_Reservation_%d.src', [Reservation])));
-end;
-
-procedure Td.BackUpDataForOutage;
-var res : String;
-    sPath : String;
-    sourceRSet, rSet : TRoomerDataSet;
-begin
-  if NOT g.BackupMachine then exit;
-
-  sourceRSet := TRoomerDataSet.Create(nil);
-  try
-    SetMainRoomerDataSet(sourceRSet, False);
-
-    sourceRSet.Login(roomerMainDataSet.hotelId, roomerMainDataSet.userName, roomerMainDataSet.password, 'ROOMERPMS',
-              GetVersion(Application.ExeName));
-    try
-      sPath := GetBackupPath;
-//      RemoveBackups(sPath);
-
-      BackupTaxes(sourceRSet, sPath);
-
-      // Guest list today
-      res := sourceRSet.SystemGetDayGrid(now, now + 1, GetEnumName(TypeInfo(TReservationStatus),integer(rsAll)));
-      SaveToUtf8TextFile(TPath.Combine(sPath, format('Backup_Guests_%s.src', [dateToSqlString(now)])), res);
-      Application.processMessages;
-      rSet := sourceRSet.ActivateNewDataset(res);
-      ProcessInvoiceBackupsForDate(sourceRSet, sPath, rSet);
-      ProcessReservationBackupsForDate(sourceRSet, sPath, rSet);
-
-      // Guest list tomorrow
-      res := sourceRSet.SystemGetDayGrid(now + 1, now + 2, GetEnumName(TypeInfo(TReservationStatus),integer(rsAll)));
-      SaveToUtf8TextFile(TPath.Combine(sPath, format('Backup_Guests_%s.src', [dateToSqlString(now + 1)])), res);
-      Application.processMessages;
-      ProcessInvoiceBackupsForDate(sourceRSet, sPath, rSet);
-      ProcessReservationBackupsForDate(sourceRSet, sPath, rSet);
-    finally
-//      try sourceRSet.Logout; except end;
-    end;
-  finally
-    FreeAndNil(sourceRSet);
-  end;
-
-//  DownloadControlTable(sPath);
-end;
-
-procedure Td.BackupsSubmitInvoiceLinesChanges;
-var files : TStrings;
-    i: Integer;
-    sPath : String;
-
-    rec : recInvoiceLineHolder;
-begin
-  files := TStringlist.create;
-  sPath := GetBackupPath;
-  GetFileList(files, sPath, 'Backup_Invoice_Lines_Res_RoomRes_Split_*.changed');
-  for i := 0 to files.Count - 1 do
-  begin
-    LoadKbmMemTable(dxMemData, TPath.Combine(sPath, ChangeFileExt(files[i], '')));
-    dxMemData.First;
-    if NOT dxMemData.Eof then
-    begin
-      DxMemDataToInvoiceLineHolderRec(dxMemData, rec);
-      roomerMainDataSet.doCommand(format('DELETE FROM invoicelines WHERE Reservation=%d AND RoomReservation=%d AND SplitNumber=%d',
-          [rec.Reservation, rec.RoomReservation, rec.SplitNumber]));
-      while NOT dxMemData.Eof do
-      begin
-        DxMemDataToInvoiceLineHolderRec(dxMemData, rec);
-        SP_INS_InvoiceLine(rec);
-        dxMemData.Next;
-      end;
-    end;
-  end;
-end;
-
-procedure Td.BackupsSubmitInvoiceHeadsChanges;
-var files : TStrings;
-    i: Integer;
-    sPath : String;
-
-    rec : recInvoiceHeadHolder;
-begin
-  files := TStringlist.create;
-  sPath := GetBackupPath;
-  GetFileList(files, sPath, 'Backup_Invoice_Heads_Res_RoomRes_Split_*.changed');
-  for i := 0 to files.Count - 1 do
-  begin
-    LoadKbmMemTable(dxMemData, TPath.Combine(sPath, ChangeFileExt(files[i], '')));
-    dxMemData.First;
-    if NOT dxMemData.Eof then
-    begin
-      DxMemDataToInvoiceHeadHolderRec(dxMemData, rec);
-      roomerMainDataSet.doCommand(format('DELETE FROM invoiceheads WHERE Reservation=%d AND RoomReservation=%d AND SplitNumber=%d',
-          [rec.Reservation, rec.RoomReservation, rec.SplitNumber]));
-      while NOT dxMemData.Eof do
-      begin
-        DxMemDataToInvoiceHeadHolderRec(dxMemData, rec);
-        SP_INS_InvoiceHead(rec);
-        dxMemData.Next;
-      end;
-    end;
-  end;
-end;
-
-procedure Td.BackupsSubmitPaymentChanges;
-var files : TStrings;
-    i, iNewId: Integer;
-    sPath : String;
-
-    rec : recPaymentHolder;
-begin
-  files := TStringlist.create;
-  sPath := GetBackupPath;
-  GetFileList(files, sPath, 'Backup_Payments_Res_RoomRes_*.changed');
-  for i := 0 to files.Count - 1 do
-  begin
-    LoadKbmMemTable(dxMemData, TPath.Combine(sPath, ChangeFileExt(files[i], '')));
-    dxMemData.First;
-    if NOT dxMemData.Eof then
-    begin
-      DxMemDataToPaymentHolderRec(dxMemData, rec);
-      roomerMainDataSet.doCommand(format('DELETE FROM payments WHERE Reservation=%d AND RoomReservation=%d AND InvoiceNumber=-1',
-          [rec.Reservation, rec.RoomReservation]));
-
-      while NOT dxMemData.Eof do
-      begin
-        DxMemDataToPaymentHolderRec(dxMemData, rec);
-        INS_Payment(rec, iNewId);
-        dxMemData.Next;
-      end;
-    end;
-  end;
-end;
-
-procedure Td.removeChangedFiles;
-begin
-  DeleteFileWithWildcard(GetBackupPath, '*.changed');
-end;
-
-procedure Td.BackupsSubmitChanges;
-begin
-  if NOT g.BackupMachine then exit;
-
-  roomerMainDataSet.SystemStartTransaction;
-  try
-    BackupsSubmitInvoiceLinesChanges;
-    BackupsSubmitInvoiceHeadsChanges;
-    BackupsSubmitPaymentChanges;
-
-    removeChangedFiles;
-
-    roomerMainDataSet.SystemCommitTransaction;
-  except
-    On e: Exception do
-    begin
-      showmessage(e.Message + #10 + e.StackTrace);
-      roomerMainDataSet.SystemRollbackTransaction;
-    end;
-  end;
-end;
+//procedure Td.BackupsSubmitChanges;
+//begin
+//  if NOT g.BackupMachine then exit;
+//
+//  roomerMainDataSet.SystemStartTransaction;
+//  try
+//    BackupsSubmitInvoiceLinesChanges;
+//    BackupsSubmitInvoiceHeadsChanges;
+//    BackupsSubmitPaymentChanges;
+//
+//    removeChangedFiles;
+//
+//    roomerMainDataSet.SystemCommitTransaction;
+//  except
+//    On e: Exception do
+//    begin
+//      showmessage(e.Message + #10 + e.StackTrace);
+//      roomerMainDataSet.SystemRollbackTransaction;
+//    end;
+//  end;
+//end;
 
 Function Td.BreakFastInclutedCount(reservation : integer) : integer;
 var
@@ -12329,8 +12329,8 @@ var
 begin
   result := true;
   try
-    if NOT roomerMainDataSet.OfflineMode then
-    begin
+//    if NOT roomerMainDataSet.OfflineMode then
+//    begin
       roomerMainDataSet.SystemMoveRoom(RoomReservation, newRoom);
       try
       AddReservationActivityLog(g.quser
@@ -12345,23 +12345,23 @@ begin
 
 
 
-    end
-    else
-    begin
-      rSet := roomerMainDataSet.ActivateNewDataset(GetBackupTodaysGuests);
-      isNoRoom := (newRoom = '');
-      if isNoRoom then
-        sRoom := '<' + newRoom + '>'
-      else
-        sRoom := newRoom;
-      if LocateRecord(rSet, 'RoomReservation', RoomReservation) then
-      begin
-        rSet.Edit;
-        rSet['Room'] := sRoom;
-        rSet.Post;
-        BackupTodaysGuestsList(rSet);
-      end;
-    end;
+//    end
+//    else
+//    begin
+//      rSet := roomerMainDataSet.ActivateNewDataset(GetBackupTodaysGuests);
+//      isNoRoom := (newRoom = '');
+//      if isNoRoom then
+//        sRoom := '<' + newRoom + '>'
+//      else
+//        sRoom := newRoom;
+//      if LocateRecord(rSet, 'RoomReservation', RoomReservation) then
+//      begin
+//        rSet.Edit;
+//        rSet['Room'] := sRoom;
+//        rSet.Post;
+//        BackupTodaysGuestsList(rSet);
+//      end;
+//    end;
   except
     result := False;
   end;

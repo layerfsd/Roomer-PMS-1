@@ -502,6 +502,7 @@ object frmRptResStats: TfrmRptResStats
                 OptionsView.FilterFields = False
                 OptionsView.RowFields = False
                 TabOrder = 0
+                ExplicitTop = 32
                 object pg001incomeTotal: TcxDBPivotGridField
                   Area = faData
                   AreaIndex = 2
@@ -1148,10 +1149,6 @@ object frmRptResStats: TfrmRptResStats
             end
             object sTabSheet3: TsTabSheet
               Caption = 'Graph'
-              ExplicitLeft = 0
-              ExplicitTop = 0
-              ExplicitWidth = 0
-              ExplicitHeight = 0
               object cxGrid: TcxGrid
                 Left = 0
                 Top = 0
@@ -1439,10 +1436,6 @@ object frmRptResStats: TfrmRptResStats
     end
     object sheetMainData: TsTabSheet
       Caption = 'Data'
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object pageData: TsPageControl
         Left = 0
         Top = 0
@@ -1454,10 +1447,6 @@ object frmRptResStats: TfrmRptResStats
         SkinData.SkinSection = 'PAGECONTROL'
         object sTabSheet7: TsTabSheet
           Caption = 'Reservations'
-          ExplicitLeft = 0
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
           object Panel2: TsPanel
             Left = 0
             Top = 0
@@ -1981,10 +1970,6 @@ object frmRptResStats: TfrmRptResStats
         end
         object sTabSheet8: TsTabSheet
           Caption = 'Roominvoice'
-          ExplicitLeft = 0
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
           object sPanel1: TsPanel
             Left = 0
             Top = 0
@@ -2159,10 +2144,6 @@ object frmRptResStats: TfrmRptResStats
         end
         object sTabSheet9: TsTabSheet
           Caption = 'Groupinvoice'
-          ExplicitLeft = 0
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
           object sPanel3: TsPanel
             Left = 0
             Top = 0
@@ -2844,7 +2825,6 @@ object frmRptResStats: TfrmRptResStats
     end
     object prLinkGrDrill: TdxGridReportLink
       Component = grDrill
-      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.GrayShading = True
@@ -2857,7 +2837,6 @@ object frmRptResStats: TfrmRptResStats
       PrinterPage.PageSize.Y = 297000
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
-      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       BuiltInReportLink = True
     end
   end

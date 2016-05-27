@@ -14,7 +14,8 @@ type
     StoreMain: TcxPropertiesStore;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure cbxEnvironmentChange(Sender: TObject);
-  private
+  protected
+    procedure CreateParams(var Params: TCreateParams); override;
     { Private declarations }
   public
     { Public declarations }
@@ -46,6 +47,13 @@ begin
 end;
 
 { TFrmSelectCloudConfiguration }
+
+procedure TFrmSelectCloudConfiguration.CreateParams(var Params: TCreateParams);
+begin
+  inherited CreateParams(Params);
+  Params.ExStyle := Params.ExStyle or WS_EX_APPWINDOW;
+  Params.WndParent := Application.Handle;
+end;
 
 procedure TFrmSelectCloudConfiguration.cbxEnvironmentChange(Sender: TObject);
 begin

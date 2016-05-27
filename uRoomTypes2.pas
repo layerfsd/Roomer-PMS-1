@@ -268,6 +268,8 @@ begin
     else
     begin
       _frmRoomTypes2.PrepareUserInterface;
+      if act = actLookup then
+        _frmRoomTypes2.ActiveControl := _frmRoomTypes2.BtnOk;
       _frmRoomTypes2.ShowModal;
       if _frmRoomTypes2.modalresult = mrOk then
       begin

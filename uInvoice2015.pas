@@ -396,17 +396,17 @@ begin
   if SplitNumber = 2 then
     exit;
 
-  if NOT d.roomerMainDataSet.OfflineMode then
-    rSet := CreateNewDataSet
-  else
-    rSet := d.roomerMainDataSet.ActivateNewDataset(d.GetBackupReservations(Reservation));
+//  if NOT d.roomerMainDataSet.OfflineMode then
+    rSet := CreateNewDataSet;
+//  else
+//    rSet := d.roomerMainDataSet.ActivateNewDataset(d.GetBackupReservations(Reservation));
 
   try
-    if NOT d.roomerMainDataSet.OfflineMode then
-    begin
+//    if NOT d.roomerMainDataSet.OfflineMode then
+//    begin
       s := format(select_Invoice_GetReservationHeader, [Reservation]);
       hData.rSet_bySQL(rSet, s);
-    end;
+//    end;
     rSet.first;
 
     if not rSet.eof then

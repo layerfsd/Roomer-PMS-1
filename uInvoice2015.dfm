@@ -484,8 +484,6 @@ object FrmInvoice2015: TFrmInvoice2015
           SkinData.SkinSection = 'PAGECONTROL'
           object sTabSheet2: TsTabSheet
             Caption = 'Invoices'
-            SkinData.CustomColor = False
-            SkinData.CustomFont = False
             ExplicitLeft = 0
             ExplicitTop = 0
             ExplicitWidth = 0
@@ -504,8 +502,6 @@ object FrmInvoice2015: TFrmInvoice2015
         SkinData.SkinSection = 'PAGECONTROL'
         object sTabSheet3: TsTabSheet
           Caption = 'Invoice'
-          SkinData.CustomColor = False
-          SkinData.CustomFont = False
           ExplicitLeft = 0
           ExplicitTop = 0
           ExplicitWidth = 0
@@ -558,6 +554,7 @@ object FrmInvoice2015: TFrmInvoice2015
             ViewStyle = vsReport
             OnDblClick = lvLinesDblClick
             OnSelectItem = lvLinesSelectItem
+            ExplicitWidth = 0
           end
           object sPanel3: TsPanel
             Left = 0
@@ -625,8 +622,6 @@ object FrmInvoice2015: TFrmInvoice2015
         end
         object sTabSheet4: TsTabSheet
           Caption = 'Down payments'
-          SkinData.CustomColor = False
-          SkinData.CustomFont = False
           ExplicitLeft = 0
           ExplicitTop = 0
           ExplicitWidth = 0

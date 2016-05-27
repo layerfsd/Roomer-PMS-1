@@ -1,4 +1,4 @@
-unit uAvailabilityPerDay;
+﻿unit uAvailabilityPerDay;
 
 interface
 
@@ -35,24 +35,26 @@ type
     function Overbookings: TStrings;
   End;
 
-function IsAvailabilityThere(RoomType : String; arrival, departure : TDate) : Boolean;
+function IsAvailabilityThere(oldRoomType, newRoomType : String; arrival, departure : TDate) : Boolean;
 
 implementation
 
 uses uG, PrjConst, Dialogs;
 
-function IsAvailabilityThere(RoomType : String; arrival, departure : TDate) : Boolean;
+function IsAvailabilityThere(oldRoomType, newRoomType : String; arrival, departure : TDate) : Boolean;
 var s : String;
     AvailabilityPerDay : TAvailabilityPerDay;
 begin
   result := True;
+  if LowerCase(oldRoomType) = LowerCase(newRoomType) then exit;
+
   s := '';
   AvailabilityPerDay := TAvailabilityPerDay.Create(arrival, departure, nil);
   try
-    if AvailabilityPerDay.RoomTypeOverbooking(RoomType, 1) then
+    if AvailabilityPerDay.RoomTypeOverbooking(newRoomType, 1) then
     begin
       s := getTranslatedText('shTx_Various_WouldCreateOverbooking') +
-           RoomType + #10#10 +
+           newRoomType + #10#10 +
            getTranslatedText('shTx_Various_AreYoySureYouWantToContinue');
       if MessageDlg(s, mtWarning, [mbYes, mbCancel], 0) <> mrYes then
         result := False;

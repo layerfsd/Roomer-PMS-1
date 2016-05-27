@@ -23,7 +23,7 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
     Top = 0
     Width = 1108
     Height = 513
-    ActivePage = taReservation
+    ActivePage = tabRoomRates
     Align = alClient
     TabOrder = 0
     OnChange = pgcMainChange

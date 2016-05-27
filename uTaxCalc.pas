@@ -177,8 +177,8 @@ begin
     s := d.roomerMainDataSet.queryRoomer(s);
   end else
   begin
-    filename :=  TPath.Combine(d.GetBackupPath, 'Backup_TAXES.src');
-    s := ReadFromTextFile(filename);
+//    filename :=  TPath.Combine(d.GetBackupPath, 'Backup_TAXES.src');
+//    s := ReadFromTextFile(filename);
   end;
 
   rSet := d.roomerMainDataSet.ActivateNewDataset(s);

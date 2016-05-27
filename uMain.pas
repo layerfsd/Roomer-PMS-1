@@ -704,6 +704,7 @@ type
     R3: TMenuItem;
     N9: TMenuItem;
     btnRepArrivals: TdxBarLargeButton;
+    __TimingResult: TsLabel;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
@@ -936,7 +937,6 @@ type
     procedure btnManagmentStatClick(Sender: TObject);
     procedure pmnuReservationRoomListClick(Sender: TObject);
     procedure mnuRoomListForReservationClick(Sender: TObject);
-    procedure pnlRoomerLogoDblClick(Sender: TObject);
     procedure pnlRoomerLogoMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
     procedure btnPackagesClick(Sender: TObject);
     procedure btnGoOnlineClick(Sender: TObject);
@@ -1006,6 +1006,7 @@ type
     procedure btnRepArrivalsClick(Sender: TObject);
 
   private
+    FormShowing : Boolean;
     FrmMessagesTemplates: TFrmMessagesTemplates;
     { Private declarations }
     ShowComponentNameOnHint: boolean;
@@ -1470,6 +1471,8 @@ type
     procedure NillifyEventHandlers(grid: TAdvStringGrid);
     procedure RemoveHandlersAndObjects;
     procedure UpdateHotelsList;
+    procedure EndTimeMeasure;
+    procedure StartTimeMeasure;
 {$IFDEF USE_JCL}
     procedure LogException(ExceptObj: TObject; ExceptAddr: Pointer; IsOS: boolean);
 {$ENDIF}
@@ -1724,8 +1727,8 @@ begin
   // ******
   glb.PerformAuthenticationAssertion(self); PlaceFormOnVisibleMonitor(self);
 
-  if (NOT OffLineMode) then
-    d.BackupsSubmitChanges;
+//  if (NOT OffLineMode) then
+//    d.BackupsSubmitChanges;
 
   if prepareLanguages then
   begin
@@ -2900,15 +2903,44 @@ begin
 
 end;
 
+{$IFDEF DEBUG}
+var startTimeForMeasure,
+    endTimeForMeasure : longint;
+{$ENDIF}
+
+procedure TfrmMain.StartTimeMeasure;
+begin
+{$IFDEF DEBUG}
+  startTimeForMeasure := getTickCount;
+{$ENDIF}
+end;
+
+procedure TfrmMain.EndTimeMeasure;
+begin
+{$IFDEF DEBUG}
+  endTimeForMeasure := getTickCount;
+  __TimingResult.Caption := inttostr(endTimeForMeasure - startTimeForMeasure);
+{$ENDIF}
+end;
+
 procedure TfrmMain.FormCreate(Sender: TObject);
 var
   recVer: TEXEVersionData;
   temp: String;
 begin
+  FormShowing := False;
+  FOffLineMode := False;
   OneDayGridFont := nil;
   FMessagesBeingDownloaded := false;
   StaffComm := nil;
   _InvoiceIndex := 0;
+
+{$IFNDEF DEBUG}
+  __TimingResult.Visible := False;
+{$ELSE}
+  __TimingResult.Visible := True;
+  __TimingResult.Font.Color := clWhite;
+{$ENDIF}
 
   HintWindowShowing := false;
   try
@@ -3064,6 +3096,9 @@ end;
 
 procedure TfrmMain.FormShow(Sender: TObject);
 begin
+  if FormShowing then exit;
+  FormShowing := True;
+
   SetDateWithoutEvents(trunc(now));
 
   StaffComm := TStaffCommunication.Create(pnlStaffComm);
@@ -3879,8 +3914,10 @@ begin
           d.roomerMainDataSet.SwapHotel(lHotelId, userName, password)
         end
         else if (lLoginFormResult = lrLogin) and (NOT OffLineMode) AND d.roomerMainDataSet.IsConnectedToInternet AND d.roomerMainDataSet.RoomerPlatformAvailable then
-          d.roomerMainDataSet.Login(lHotelId, userName, password, 'ROOMERPMS', GetVersion(Application.ExeName))
-        else
+        begin
+          d.roomerMainDataSet.Login(lHotelId, userName, password, 'ROOMERPMS', GetVersion(Application.ExeName));
+          FOffLineMode := False;
+        end else
         begin
           OffLineMode := true;
           d.roomerMainDataSet.hotelId := lHotelId;
@@ -4241,7 +4278,7 @@ begin
     tickCountStart := getTickCount;
     BusyOn;
     try
-      g.RefreshRoomList;
+//      g.RefreshRoomList;
       statNumRooms := g.oRooms.RoomCount;
       statNumExternRooms := 0;
       statCancelledExt := 0;
@@ -4546,7 +4583,9 @@ begin
       // Sækja herbergi
       g.qDebug1 := 'RefreshGrid - ' + zDebug1;
       StartOneDay;
+  StartTimeMeasure;
       RefreshStats;
+  endTimeMeasure;
     end;
     if ViewMode = vmPeriod then
     begin
@@ -8424,6 +8463,8 @@ begin
       lblCacheNotification.Visible := true;
       lblCacheNotification.Update;
 
+      g.RefreshRoomList;
+
       anySystemMessage := false;
 
       //      Beep;
@@ -8434,8 +8475,8 @@ begin
           CancelList := TStringList.Create;
           try
             iMinute := StrToInt(FormatDateTime('n', now));
-            if iMinute IN [0, 15, 30, 45] then
-              d.BackUpDataForOutage;
+//            if iMinute IN [0, 15, 30, 45] then
+//              d.BackUpDataForOutage;
 
             if iMinute IN [0] then
               glb.ReloadPreviousGuests;
@@ -8599,21 +8640,8 @@ begin
 
 end;
 
-procedure TfrmMain.pnlRoomerLogoDblClick(Sender: TObject);
-begin
-{$IFDEF DEBUG}
-  if NOT OffLineMode then
-    d.BackUpDataForOutage;
-  OffLineMode := NOT OffLineMode;
-{$ENDIF}
-end;
-
 procedure TfrmMain.pnlRoomerLogoMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
 begin
-{$IFDEF DEBUG}
-  if Button = mbRight then
-    OffLineMode := NOT OffLineMode;
-{$ENDIF}
 end;
 
 
@@ -11410,9 +11438,9 @@ end;
 
 procedure TfrmMain.ApplicationEvents1Activate(Sender: TObject);
 begin
-  if NOT timMessages.Enabled then
-    exit;
-  timMessages.Enabled := false;
+//  if NOT timMessages.Enabled then
+//    exit;
+//  timMessages.Enabled := false;
 end;
 
 procedure TfrmMain.ApplicationEvents1Deactivate(Sender: TObject);
@@ -11427,23 +11455,22 @@ end;
 
 procedure TfrmMain.ApplicationEvents1Message(var Msg: tagMSG; var Handled: boolean);
 begin
-  Handled := false;
-  if NOT timMessages.Enabled then
-    exit;
-
-  case Msg.message of
-    WM_KEYDOWN:
-      timMessages.Enabled := false;
-    WM_MBUTTONDOWN, WM_MBUTTONUP, WM_MBUTTONDBLCLK:
-      timMessages.Enabled := false;
-    WM_MOUSEWHEEL:
-      timMessages.Enabled := false;
-    WM_LBUTTONDOWN:
-      timMessages.Enabled := false;
-    WM_RBUTTONDOWN:
-      timMessages.Enabled := false;
-    // WM_MBUTTONDOWN : Timer1.Enabled := False;
-  end;
+//  Handled := false;
+//  if NOT timMessages.Enabled then
+//    exit;
+//
+//  case Msg.message of
+//    WM_KEYDOWN:
+//      timMessages.Enabled := false;
+//    WM_MBUTTONDOWN, WM_MBUTTONUP, WM_MBUTTONDBLCLK:
+//      timMessages.Enabled := false;
+//    WM_MOUSEWHEEL:
+//      timMessages.Enabled := false;
+//    WM_LBUTTONDOWN:
+//      timMessages.Enabled := false;
+//    WM_RBUTTONDOWN:
+//      timMessages.Enabled := false;
+//  end;
 end;
 
 procedure TfrmMain.ApplicationEvents1Minimize(Sender: TObject);
@@ -11453,9 +11480,9 @@ end;
 
 procedure TfrmMain.ApplicationEvents1Restore(Sender: TObject);
 begin
-  if NOT timMessages.Enabled then
-    exit;
-  timMessages.Enabled := false;
+//  if NOT timMessages.Enabled then
+//    exit;
+//  timMessages.Enabled := false;
 end;
 
 procedure TfrmMain.ApplicationCancelGuestHint;
