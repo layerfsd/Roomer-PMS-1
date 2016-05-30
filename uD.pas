@@ -251,25 +251,10 @@ type
     mGuestsTotalStayRateNative: TFloatField;
     procedure DataModuleCreate(Sender : TObject);
     procedure DataModuleDestroy(Sender : TObject);
-    procedure CustomerTypes_NewRecord(DataSet : TDataSet);
-    procedure StaffTypes_NewRecord(DataSet : TDataSet);
-    procedure CustomerTypes_AfterPost(DataSet : TDataSet);
     procedure RoomTypes_NewRecord(DataSet : TDataSet);
-    procedure StaffMembers_NewRecord(DataSet : TDataSet);
-    procedure Items_NewRecord(DataSet : TDataSet);
-    procedure Paytypes_NewRecord(DataSet : TDataSet);
-    procedure VATCodes_NewRecord(DataSet : TDataSet);
-    procedure viewRoomPrices_NewRecord(DataSet : TDataSet);
-    procedure Customers_BeforePost(DataSet : TDataSet);
     procedure DayNotes_BeforePost(DataSet : TDataSet);
-    procedure viewRoomPrices1_NewRecord(DataSet : TDataSet);
-    procedure RoomTypeGroups_NewRecord(DataSet : TDataSet);
-//Moved to hdata    function CreateQuickReservation(CustomerInfo : recCustomerHolder; RoomList : string; resMedhod : TResMedhod) : boolean;
-    procedure inPosMonitorTimer(Sender: TObject);
 
     function getRoomTypeColors(sRoomType : string) : recStatusAttr;
-    procedure telPriceGroups_NewRecord(DataSet: TDataSet);
-    procedure telPriceRules_NewRecord(DataSet: TDataSet);
     procedure roomerMainDataSetSessionExpired(Sender: TObject);
     procedure kbmRoomRentOnInvoice_BeforePost(DataSet: TDataSet);
     procedure mInvoiceHeadsBeforePost(DataSet: TDataSet);
@@ -302,6 +287,20 @@ type
     procedure SelectCloudConfig;
     procedure SetDefaultCloudConfig;
     procedure SetCloudConfigByFile(filename: String);
+    procedure Customers_BeforePost(DataSet: TDataSet);
+    procedure CustomerTypes_AfterPost(DataSet: TDataSet);
+    procedure CustomerTypes_NewRecord(DataSet: TDataSet);
+    procedure inPosMonitorTimer(Sender: TObject);
+    procedure Items_NewRecord(DataSet: TDataSet);
+    procedure Paytypes_NewRecord(DataSet: TDataSet);
+    procedure RoomTypeGroups_NewRecord(DataSet: TDataSet);
+    procedure StaffMembers_NewRecord(DataSet: TDataSet);
+    procedure StaffTypes_NewRecord(DataSet: TDataSet);
+    procedure telPriceGroups_NewRecord(DataSet: TDataSet);
+    procedure telPriceRules_NewRecord(DataSet: TDataSet);
+    procedure VATCodes_NewRecord(DataSet: TDataSet);
+    procedure viewRoomPrices_NewRecord(DataSet: TDataSet);
+    procedure viewRoomPrices1_NewRecord(DataSet: TDataSet);
   public
     { Public declarations }
     qConnected : boolean;
@@ -353,8 +352,6 @@ type
 
     function colorCodeOfStatus(status: String): TColor;
     procedure CopyInvoiceToInvoiceLinesTmp(Invoice : integer; FromKredit : boolean);
-
-
 
     function GetCustomerCurrency(sCustomer : string) : string;
     function GetCustomerName(customer : string) : string;
@@ -895,6 +892,7 @@ type
         _count : Double
         );
     procedure GenerateOfflineReports;
+    function CheckOutRoom(Reservation, RoomReservation: integer; Room: String) : Boolean;
   end;
 
 
@@ -963,6 +961,8 @@ uses
   , uOfflineReportGenerator
   , uFrmSelectCloudConfiguration
   , Inifiles
+  , uAlerts
+  , uFrmCheckOut
   ;
 
 
@@ -1324,6 +1324,21 @@ begin
       end;
   finally
     FreeAndNil(ExecutionPlan);
+  end;
+end;
+
+function Td.CheckOutRoom(Reservation, RoomReservation : integer; Room : String) : Boolean;
+begin
+  result := False;
+  if ctrlGetBoolean('CheckOutWithPaymentsDialog') OR
+     (MessageDlg(Format(GetTranslatedText('shCheckOutSelectedRoom'), [Room]), mtConfirmation, [mbYes, mbNo], 0) = mrYes) then
+  begin
+    ShowAlertsForReservation(Reservation, RoomReservation, atCHECK_OUT);
+    if ctrlGetBoolean('CheckOutWithPaymentsDialog') then
+      CheckoutGuestNoDialog(Reservation, RoomReservation, Room)
+    else
+      d.CheckOutGuest(RoomReservation, Room);
+    Result := True;
   end;
 end;
 
@@ -5202,7 +5217,6 @@ begin
   glb.LocateSpecificRecordAndGetValue('items', 'Item', Item, 'ItemType', result);
 end;
 
-
 function Td.Item_Get_ItemTypeInfo(Item : string; package : String = '') : TItemTypeInfo;
 var
   Itemtype : string;
@@ -5424,7 +5438,7 @@ end;
 
 
 
-  function Td.imPortLog_getLastID: integer;
+function Td.imPortLog_getLastID: integer;
   var
     rSet : TRoomerDataSet;
     s : string;
@@ -5530,7 +5544,7 @@ end;
     end;
   end;
 
-  function Td.RoomsTypeCount(CountAll : boolean) : integer;
+function Td.RoomsTypeCount(CountAll : boolean) : integer;
   var
     Rset : TRoomerDataSet;
     s : string;
@@ -5564,7 +5578,7 @@ end;
   end;
 
 
-  // ******************************************************************************
+// ******************************************************************************
   //
   //
   // ******************************************************************************
@@ -5598,7 +5612,7 @@ end;
   end;
 
 
-  function Td.GetRoomReservation(reservation : integer; Room : string) : integer;
+function Td.GetRoomReservation(reservation : integer; Room : string) : integer;
   var
     s : string;
     Rset : TRoomerDataSet;
@@ -5625,11 +5639,7 @@ end;
     end;
   end;
 
-
-
-
-
-  function Td.RemoveRoomReservationByReservation(iReservation : integer) : boolean;
+function Td.RemoveRoomReservationByReservation(iReservation : integer) : boolean;
   var
     s : string;
   begin
@@ -5658,7 +5668,7 @@ end;
 
   end;
 
-  function Td.RemoveInvoiceCashInvoice : boolean;
+function Td.RemoveInvoiceCashInvoice : boolean;
   var
     s : string;
   begin
@@ -5713,7 +5723,7 @@ end;
     end;
   end;
 
-  function dateTime2SQLdate(const dDate : TdateTime) : string;
+function dateTime2SQLdate(const dDate : TdateTime) : string;
   begin
     result := _db(FormatDateTime('mm"/"dd"/"yyyy hh:nn:ss', dDate));
   end;
@@ -5753,7 +5763,7 @@ end;
     end;
   end;
 
-  function Td.Del_MaidsJobsByDate(adate : Tdate; All : boolean) : boolean;
+function Td.Del_MaidsJobsByDate(adate : Tdate; All : boolean) : boolean;
   var
     s : string;
   begin
@@ -5804,7 +5814,7 @@ end;
     end;
   end;
 
-  function Td.getChangeAvailabilityInfo(RR : integer; var RoomType,Status : string; var Arrival,departure : Tdate) : boolean;
+function Td.getChangeAvailabilityInfo(RR : integer; var RoomType,Status : string; var Arrival,departure : Tdate) : boolean;
   var
     Rset : TRoomerDataSet;
     s : string;
@@ -5934,7 +5944,7 @@ end;
     end;
   end;
 
-  function Td.getFloorFromRoom(Room : string) : integer;
+function Td.getFloorFromRoom(Room : string) : integer;
   var
     Rset : TRoomerDataSet;
     s : string;
@@ -5958,7 +5968,7 @@ end;
     end;
   end;
 
-  function Td.getinStatisticsFromRoom(Room : string) : boolean;
+function Td.getinStatisticsFromRoom(Room : string) : boolean;
   var
     Rset : TRoomerDataSet;
     s : string;
@@ -6092,7 +6102,7 @@ end;
   end;
 
 
-  function Td.isKredit(InvoiceNumber : integer) : boolean;
+function Td.isKredit(InvoiceNumber : integer) : boolean;
   var
     Rset : TRoomerDataSet;
     s : string;
@@ -6115,7 +6125,7 @@ end;
   end;
 
 
-  { **
+{ **
     Vinnslur vegna tengingar við stólpa
     ** }
 
@@ -8169,7 +8179,7 @@ end;
     result := trunc(occDate)-trunc(FromDate);
   end;
 
-  function Td.Next_OccupiedDate(fromDate : Tdate; Room : string) : Tdate;
+function Td.Next_OccupiedDate(fromDate : Tdate; Room : string) : Tdate;
   var
     rSet : TRoomerDataSet;
     s : string;
@@ -8762,8 +8772,7 @@ begin
   end;
 end;
 
-
-  function Td.getRoomTypeColors(sRoomType : string) : recStatusAttr;
+function Td.getRoomTypeColors(sRoomType : string) : recStatusAttr;
   var
     iColor : integer;
   begin
@@ -9186,7 +9195,6 @@ begin
   end;
 
 end;
-
 
 //procedure TD.Get_StatusAttr_Blocked;
 //var
@@ -12619,7 +12627,7 @@ end;
     end;
   end;
 
-  function Td.RetrieveFinancesKeypair(keyPairType : TKeyPairType) : TKeyPairList;
+function Td.RetrieveFinancesKeypair(keyPairType : TKeyPairType) : TKeyPairList;
   var i, l : Integer;
       s : String;
       sa : TArrayOfString;
@@ -12778,7 +12786,7 @@ end;
   end;
 
 
-  function Td.RemoveRoomsDatebyReservation(iReservation : integer) : boolean;
+function Td.RemoveRoomsDatebyReservation(iReservation : integer) : boolean;
   var
     s : string;
   begin
@@ -12825,7 +12833,7 @@ end;
   end;
 
 
-  procedure Td.CreateMtFields;
+procedure Td.CreateMtFields;
   begin
     // Create HeadFields
     if d.mtHead_.active then

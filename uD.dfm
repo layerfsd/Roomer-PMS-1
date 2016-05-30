@@ -6,7 +6,6 @@ object d: Td
   Width = 1315
   object Items_: TRoomerDataSet
     CursorType = ctStatic
-    OnNewRecord = Items_NewRecord
     CommandText = 'SELECT * FROM Items'#13#10
     CommandType = cmdUnknown
     Parameters = <>
@@ -43,7 +42,6 @@ object d: Td
   end
   object viewRoomPrices1_: TRoomerDataSet
     CursorType = ctStatic
-    OnNewRecord = viewRoomPrices1_NewRecord
     CommandText = 'SELECT * FROM viewRoomPrices1'#13#10
     CommandType = cmdUnknown
     Parameters = <>
@@ -534,13 +532,11 @@ object d: Td
   object inPosMonitor: TTimer
     Enabled = False
     Interval = 5000
-    OnTimer = inPosMonitorTimer
     Left = 824
     Top = 24
   end
   object telPriceGroups_: TRoomerDataSet
     CursorType = ctStatic
-    OnNewRecord = telPriceGroups_NewRecord
     CommandText = 'SELECT * FROM TelPriceGroups'#13#10
     CommandType = cmdUnknown
     Parameters = <>
@@ -624,7 +620,6 @@ object d: Td
   end
   object telPriceRules_: TRoomerDataSet
     CursorType = ctStatic
-    OnNewRecord = telPriceRules_NewRecord
     CommandText = 'SELECT * FROM TelPriceRules'#13#10
     CommandType = cmdUnknown
     Parameters = <>

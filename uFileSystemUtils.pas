@@ -18,6 +18,7 @@ function GetTempDir: string;
 function GetTempPath: string;
 function GetWindowsPath: string;
 function GetSystemPath: string;
+function GetWindowsSystemDir: String;
 function GetFilesInSpecifiedDirectory(const Path, Masks: string): TStringDynArray;
 procedure TouchFile(FileName: string; Date: TDateTime; createIfNotExists : Boolean = False);
 procedure TouchNewFile(FileName: string; Date: TDateTime);
@@ -275,6 +276,14 @@ begin
   if Result[Length(Result)] <> '\' then
     Result := Result + '\';
   StrDispose(SysDir);
+end;
+
+function GetWindowsSystemDir: String;
+var
+  vlBuff: Array[0..MAX_PATH-1] of Char;
+begin
+  getSystemDirectory(vlBuff, MAX_PATH);
+  Result := vlBuff;
 end;
 
 function FormatByteSize(const bytes: Longword): string;

@@ -79,7 +79,7 @@ type
 var
   FrmCheckOut: TFrmCheckOut;
 
-procedure CheckoutGuest(Reservation, RoomReservation: Integer; RoomNumber: String);
+procedure CheckoutGuestNoDialog(Reservation, RoomReservation: Integer; RoomNumber: String);
 
 implementation
 
@@ -87,7 +87,7 @@ implementation
 
 uses _Glob, uD, PrjConst, uInvoice, uRoomerLanguage, uAppGlobal, uUtils;
 
-procedure CheckoutGuest(Reservation, RoomReservation: Integer; RoomNumber: String);
+procedure CheckoutGuestNoDialog(Reservation, RoomReservation: Integer; RoomNumber: String);
 var
   _FrmCheckOut: TFrmCheckOut;
 begin

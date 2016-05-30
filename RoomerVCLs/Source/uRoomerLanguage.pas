@@ -277,7 +277,7 @@ end;
 destructor TLanguageDictionary.Destroy;
 begin
   FDictionary.Clear;
-  FreeAndNil(FDictionary);
+  try FreeAndNil(FDictionary); Except end;
   inherited;
 end;
 
@@ -493,10 +493,12 @@ begin
       begin
         languageId := FLangIds[0].id;
         LangItem := FindLanguage(languageId);
-      end;
+        LanguageCode := LangItem.CultureId;
+      end else
+        LanguageCode := 'en-US';
     end;
-  end;
-  LanguageCode := LangItem.CultureId;
+  end else
+    try LanguageCode := LangItem.CultureId; except end;
 end;
 
 procedure TRoomerLanguage.PrepareDictionaries(languageId : integer; forceRefresh : Boolean = False);

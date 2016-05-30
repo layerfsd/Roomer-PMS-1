@@ -1505,7 +1505,7 @@ type
     function _Logout(AlreadyInactive: boolean = false; AutoLogin: String = ''): boolean;
     function IsInRoomTypes(RoomType, RTAvailable: string): boolean;
     procedure SetExtraSkinColors;
-    procedure RemoveLanguagesFilesAndRefresh;
+    procedure RemoveLanguagesFilesAndRefresh(Refresh : Boolean = True);
     procedure ShowBookingConfirmationTemplates;
     procedure ShowCancelConfirmationTemplates;
 
@@ -1750,6 +1750,8 @@ begin
   glb.FillLocationsMenu(mnuFilterLocation, LocationMenuSelect);
   GetMnuFilterLocationsFromStore;
   FillRoomTypesGrid;
+
+  try AssertIndySSLDLLs; Except end;
 end;
 
 procedure TfrmMain.GetMnuFilterLocationsFromStore;
@@ -3307,6 +3309,18 @@ begin
     exit;
   end;
 
+  if CheckForUpdatedRelease then
+  begin
+    LoginCancelled := true;
+    try
+      d.roomerMainDataSet.Logout;
+      __lblUsername.Caption := 'N/A';
+    except
+    end;
+    result := false;
+    exit;
+  end;
+
   if OffLineMode then
   begin
 
@@ -3327,20 +3341,6 @@ begin
     result := true;
     exit;
   end;
-
-
-  if CheckForUpdatedRelease then
-  begin
-    LoginCancelled := true;
-    try
-      d.roomerMainDataSet.Logout;
-      __lblUsername.Caption := 'N/A';
-    except
-    end;
-    result := false;
-    exit;
-  end;
-
 
   result := true;
 
@@ -4572,6 +4572,7 @@ begin
     timRetryRefresh.Enabled := true;
     exit;
   end;
+  StartTimeMeasure;
   BusyRefreshingTodaysGrid := true;
   try
     if (ABS(Days) > 7) then
@@ -4583,9 +4584,7 @@ begin
       // Sækja herbergi
       g.qDebug1 := 'RefreshGrid - ' + zDebug1;
       StartOneDay;
-  StartTimeMeasure;
       RefreshStats;
-  endTimeMeasure;
     end;
     if ViewMode = vmPeriod then
     begin
@@ -4652,6 +4651,7 @@ begin
     end;
   finally
     BusyRefreshingTodaysGrid := false;
+    endTimeMeasure;
   end;
 end;
 
@@ -5609,7 +5609,7 @@ begin
   begin
     ShowAlertsForReservation(iReservation, iRoomReservation, atCHECK_OUT);
     if ctrlGetBoolean('CheckOutWithPaymentsDialog') then
-      CheckoutGuest(iReservation, iRoomReservation, Room)
+      CheckoutGuestNoDialog(iReservation, iRoomReservation, Room)
     else
       d.CheckOutGuest(iRoomReservation, Room);
     if (ViewMode = vmOneDay) OR (ViewMode = vmPeriod) then
@@ -5742,17 +5742,20 @@ begin
 
     if Execute then
     begin
-      if ctrlGetBoolean('CheckOutWithPaymentsDialog') OR
-         (MessageDlg(Format(GetTranslatedText('shCheckOutSelectedRoom'), [_Room]), mtConfirmation, [mbYes, mbNo], 0) = mrYes) then
-      begin
-        ShowAlertsForReservation(_iReservation, _iRoomReservation, atCHECK_OUT);
-        if ctrlGetBoolean('CheckOutWithPaymentsDialog') then
-          CheckoutGuest(_iReservation, _iRoomReservation, _Room)
-        else
-          d.CheckOutGuest(_iRoomReservation, _Room);
+      if d.CheckOutRoom(_iReservation, _iRoomReservation, _Room) then
         if (ViewMode = vmOneDay) OR (ViewMode = vmPeriod) then
           RefreshGrid;
-      end
+//      if ctrlGetBoolean('CheckOutWithPaymentsDialog') OR
+//         (MessageDlg(Format(GetTranslatedText('shCheckOutSelectedRoom'), [_Room]), mtConfirmation, [mbYes, mbNo], 0) = mrYes) then
+//      begin
+//        ShowAlertsForReservation(_iReservation, _iRoomReservation, atCHECK_OUT);
+//        if ctrlGetBoolean('CheckOutWithPaymentsDialog') then
+//          CheckoutGuestNoDialog(_iReservation, _iRoomReservation, _Room)
+//        else
+//          d.CheckOutGuest(_iRoomReservation, _Room);
+//        if (ViewMode = vmOneDay) OR (ViewMode = vmPeriod) then
+//          RefreshGrid;
+//      end
     end
     else
       showmessage(Format(GetTranslatedText('shCannotCheckoutRoom'), [sErr, _Room]));
@@ -12711,15 +12714,17 @@ begin
   end;
 end;
 
-procedure TfrmMain.RemoveLanguagesFilesAndRefresh;
+procedure TfrmMain.RemoveLanguagesFilesAndRefresh(Refresh : Boolean = True);
 var
   path: String;
 begin
   path := glb.GetLanguageLocation;
   DeleteAllFiles(TPath.Combine(path, 'RoomerLanguage*.src'));
-  RoomerLanguage.LoadLanguage(true);
-
-  TranslateOpenForms;
+  if Refresh then
+  begin
+    RoomerLanguage.LoadLanguage(true);
+    TranslateOpenForms;
+  end;
 end;
 
 procedure TfrmMain.IdHTTP1Work(ASender: TObject; AWorkMode: TWorkMode; AWorkCount: Int64);

@@ -63,6 +63,8 @@ function getRoomerUpgradeAgentFilePath(ToFile : String) : String;
 function getRoomerVersionXmlFilePath(ToFile : String) : String;
 function getAnyFileFromRoomerStore(FromFile, ToFile : String) : String;
 
+procedure AssertIndySSLDLLs;
+
 procedure ResetDependencyFileList;
 
 implementation
@@ -351,6 +353,46 @@ end;
 
 
 // *********************************************************************
+
+function getRunningExePathOfFile(ToFile : String) : String;
+begin
+  result := TPath.Combine(ExtractFilePath(Application.ExeName), ToFile);
+end;
+
+const LIBEAY = 'libeay32.dll';
+      LIBSSL = 'libssl32.dll';
+      SSLEAY = 'ssleay32.dll';
+
+function getRoomerLibEayDLLPath : String;
+begin
+  result := getRunningExePathOfFile(LIBEAY);
+end;
+
+function getRoomerLibSslDLLPath : String;
+begin
+  result := getRunningExePathOfFile(LIBSSL);
+end;
+
+function getRoomerSslEayDLLPath : String;
+begin
+  result := getRunningExePathOfFile(SSLEAY);
+end;
+
+procedure AssertIndySSLDLLs;
+var filename : String;
+begin
+  filename := getRoomerLibEayDLLPath;
+  if NOT TFile.Exists(filename) then
+    d.roomerMainDataSet.SystemDownloadFileFromURI('http://roomerstore.com/' +LIBEAY, filename);
+
+  filename := getRoomerLibSslDLLPath;
+  if NOT TFile.Exists(filename) then
+    d.roomerMainDataSet.SystemDownloadFileFromURI('http://roomerstore.com/' +LIBSSL, filename);
+
+  filename := getRoomerSslEayDLLPath;
+  if NOT TFile.Exists(filename) then
+    d.roomerMainDataSet.SystemDownloadFileFromURI('http://roomerstore.com/' +SSLEAY, filename);
+end;
 
 function getRoomerUpgradeAgentFilePath(ToFile : String) : String;
 begin

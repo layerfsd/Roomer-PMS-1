@@ -203,7 +203,7 @@ var
     UpgradeManagerPath : String;
 begin
   try
-    frmMain.RemoveLanguagesFilesAndRefresh;
+    frmMain.RemoveLanguagesFilesAndRefresh(False);
     sPath := TPath.Combine(LocalAppDataPath, 'Roomer');
     forceDirectories(sPath);
     UpgradeManagerPath := TPath.Combine(sPath, 'RoomerUpgradeAgent.exe');
@@ -262,7 +262,7 @@ var sTempName : String;
     NumDialogShown : Integer;
     s : String;
     Buttons: TMsgDlgButtons;
-{$endif}
+{$ENDIF}
 begin
   result := false;
   {$IFNDEF DEBUG}
