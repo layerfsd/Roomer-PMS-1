@@ -351,6 +351,7 @@ object FrmRateQuery: TFrmRateQuery
             Kind = bkEllipsis
           end>
         TabOrder = 12
+        OnClick = edCustomerClick
         Width = 121
       end
     end
@@ -463,7 +464,7 @@ object FrmRateQuery: TFrmRateQuery
       SearchFooter.HintHighlight = 'Highlight occurrences'
       SearchFooter.MatchCaseCaption = 'Match case'
       SortSettings.DefaultFormat = ssAutomatic
-      Version = '7.9.1.1'
+      Version = '7.9.1.0'
     end
   end
   object timRefresh: TTimer

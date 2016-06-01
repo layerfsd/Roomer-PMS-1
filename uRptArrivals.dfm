@@ -26,7 +26,6 @@ object frmArrivalsReport: TfrmArrivalsReport
     Align = alTop
     TabOrder = 0
     SkinData.SkinSection = 'PANEL'
-    ExplicitTop = -6
     object btnRefresh: TsButton
       Left = 398
       Top = 9
@@ -58,8 +57,8 @@ object frmArrivalsReport: TfrmArrivalsReport
       object rbToday: TsRadioButton
         Left = 4
         Top = 21
-        Width = 58
-        Height = 19
+        Width = 50
+        Height = 20
         Caption = 'Today'
         Checked = True
         TabOrder = 0
@@ -69,8 +68,8 @@ object frmArrivalsReport: TfrmArrivalsReport
       object rbTomorrow: TsRadioButton
         Left = 4
         Top = 46
-        Width = 76
-        Height = 19
+        Width = 68
+        Height = 20
         Caption = 'Tomorrow'
         TabOrder = 1
         OnClick = rbRadioButtonClick
@@ -78,8 +77,8 @@ object frmArrivalsReport: TfrmArrivalsReport
       object rbManualRange: TsRadioButton
         Left = 119
         Top = 21
-        Width = 122
-        Height = 19
+        Width = 114
+        Height = 20
         Caption = 'Manual date range:'
         TabOrder = 2
         OnClick = rbRadioButtonClick
@@ -142,7 +141,6 @@ object frmArrivalsReport: TfrmArrivalsReport
       BevelOuter = bvNone
       TabOrder = 2
       SkinData.SkinSection = 'PANEL'
-      ExplicitTop = 97
       object btnExcel: TsButton
         AlignWithMargins = True
         Left = 15
@@ -159,7 +157,6 @@ object frmArrivalsReport: TfrmArrivalsReport
         TabOrder = 0
         OnClick = btnExcelClick
         SkinData.SkinSection = 'BUTTON'
-        ExplicitHeight = 24
       end
       object btnCheckIn: TsButton
         AlignWithMargins = True
@@ -177,8 +174,6 @@ object frmArrivalsReport: TfrmArrivalsReport
         TabOrder = 1
         OnClick = btnCheckInClick
         SkinData.SkinSection = 'BUTTON'
-        ExplicitLeft = 160
-        ExplicitHeight = 24
       end
       object btnProfile: TsButton
         AlignWithMargins = True
@@ -196,9 +191,6 @@ object frmArrivalsReport: TfrmArrivalsReport
         TabOrder = 2
         OnClick = btnProfileClick
         SkinData.SkinSection = 'BUTTON'
-        ExplicitLeft = 251
-        ExplicitTop = 8
-        ExplicitHeight = 24
       end
       object btnInvoice: TsButton
         AlignWithMargins = True
@@ -211,14 +203,12 @@ object frmArrivalsReport: TfrmArrivalsReport
         Margins.Bottom = 5
         Align = alLeft
         Caption = 'Invoice'
-        DropDownMenu = PopupMenu1
+        DropDownMenu = pmnuInvoiceMenu
         ImageIndex = 62
         Images = DImages.PngImageList1
         Style = bsSplitButton
         TabOrder = 3
         SkinData.SkinSection = 'BUTTON'
-        ExplicitLeft = 424
-        ExplicitHeight = 24
       end
     end
   end
@@ -240,12 +230,9 @@ object frmArrivalsReport: TfrmArrivalsReport
     Width = 972
     Height = 396
     Align = alClient
-    PopupMenu = PopupMenu2
+    PopupMenu = pnmuGridMenu
     TabOrder = 2
     LookAndFeel.NativeStyle = False
-    ExplicitLeft = -1
-    ExplicitTop = 139
-    ExplicitHeight = 403
     object grArrivalsListDBTableView1: TcxGridDBTableView
       Navigator.Buttons.CustomButtons = <>
       OnCellDblClick = grArrivalsListDBTableView1CellDblClick
@@ -260,6 +247,23 @@ object frmArrivalsReport: TfrmArrivalsReport
         DataBinding.FieldName = 'Room'
         Options.Editing = False
       end
+      object grArrivalsListDBTableView1GuestName: TcxGridDBColumn
+        Caption = 'Guest name'
+        DataBinding.FieldName = 'GuestName'
+        Options.Editing = False
+        Width = 263
+      end
+      object grArrivalsListDBTableView1RoomerReservationID: TcxGridDBColumn
+        Caption = 'Reservation ID'
+        DataBinding.FieldName = 'RoomerReservationID'
+        Options.Editing = False
+        Width = 83
+      end
+      object grArrivalsListDBTableView1CompanyCode: TcxGridDBColumn
+        Caption = 'Company code'
+        DataBinding.FieldName = 'CompanyCode'
+        Options.Editing = False
+      end
       object grArrivalsListDBTableView1Arrival: TcxGridDBColumn
         DataBinding.FieldName = 'Arrival'
         Options.Editing = False
@@ -268,32 +272,15 @@ object frmArrivalsReport: TfrmArrivalsReport
         DataBinding.FieldName = 'Departure'
         Options.Editing = False
       end
-      object grArrivalsListDBTableView1NumGuests: TcxGridDBColumn
-        Caption = 'Num guests'
-        DataBinding.FieldName = 'NumGuests'
-        Options.Editing = False
-      end
       object grArrivalsListDBTableView1Roomtype: TcxGridDBColumn
         Caption = 'Room type'
         DataBinding.FieldName = 'Roomtype'
         Options.Editing = False
         Width = 66
       end
-      object grArrivalsListDBTableView1RoomerReservationID: TcxGridDBColumn
-        Caption = 'Reservation ID'
-        DataBinding.FieldName = 'RoomerReservationID'
-        Options.Editing = False
-        Width = 83
-      end
-      object grArrivalsListDBTableView1GuestName: TcxGridDBColumn
-        Caption = 'Guest name'
-        DataBinding.FieldName = 'GuestName'
-        Options.Editing = False
-        Width = 263
-      end
-      object grArrivalsListDBTableView1CompanyCode: TcxGridDBColumn
-        Caption = 'Company code'
-        DataBinding.FieldName = 'CompanyCode'
+      object grArrivalsListDBTableView1NumGuests: TcxGridDBColumn
+        Caption = 'Num guests'
+        DataBinding.FieldName = 'NumGuests'
         Options.Editing = False
       end
       object grArrivalsListDBTableView1AverageRoomRate: TcxGridDBColumn
@@ -311,7 +298,10 @@ object frmArrivalsReport: TfrmArrivalsReport
       object grArrivalsListDBTableView1RoomerRoomReservationID: TcxGridDBColumn
         Caption = 'Room Res ID'
         DataBinding.FieldName = 'RoomerRoomReservationID'
+        Visible = False
         Options.Editing = False
+        SortIndex = 0
+        SortOrder = soAscending
       end
     end
     object lvArrivalsListLevel1: TcxGridLevel
@@ -461,7 +451,7 @@ object frmArrivalsReport: TfrmArrivalsReport
       Font.Style = [fsBold]
     end
   end
-  object PopupMenu1: TPopupMenu
+  object pmnuInvoiceMenu: TPopupMenu
     Images = DImages.cxSmallImagesFlat
     Left = 480
     Top = 224
@@ -469,34 +459,34 @@ object frmArrivalsReport: TfrmArrivalsReport
       Caption = 'Room Invoice'
       Default = True
       ImageIndex = 62
-      OnClick = R1Click
+      OnClick = mnuRoomInvoiceClick
     end
     object G1: TMenuItem
       Caption = 'Group Invoice'
       ImageIndex = 60
-      OnClick = G1Click
+      OnClick = mnuGroupInvoiceClick
     end
   end
-  object PopupMenu2: TPopupMenu
+  object pnmuGridMenu: TPopupMenu
     Left = 184
     Top = 368
-    object C1: TMenuItem
+    object mnuCheckin: TMenuItem
       Caption = 'Check in'
       OnClick = btnCheckInClick
     end
-    object P1: TMenuItem
+    object mnuProfile: TMenuItem
       Caption = 'Profile'
       OnClick = btnProfileClick
     end
-    object I1: TMenuItem
+    object mnuInvoice: TMenuItem
       Caption = 'Invoice'
-      object R2: TMenuItem
+      object mnuRoomInvoice: TMenuItem
         Caption = 'Room invoice'
-        OnClick = R1Click
+        OnClick = mnuRoomInvoiceClick
       end
-      object G2: TMenuItem
+      object mnuGroupInvoice: TMenuItem
         Caption = 'Group invoice'
-        OnClick = G1Click
+        OnClick = mnuGroupInvoiceClick
       end
     end
   end

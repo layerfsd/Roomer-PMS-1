@@ -46,7 +46,7 @@ type
     btnCheckIn: TsButton;
     btnProfile: TsButton;
     btnInvoice: TsButton;
-    PopupMenu1: TPopupMenu;
+    pmnuInvoiceMenu: TPopupMenu;
     R1: TMenuItem;
     G1: TMenuItem;
     grArrivalsListDBTableView1Room: TcxGridDBColumn;
@@ -61,12 +61,12 @@ type
     grArrivalsListDBTableView1ExpectedTimeOfArrival: TcxGridDBColumn;
     kbmArrivalsListRoomerRoomReservationID: TIntegerField;
     grArrivalsListDBTableView1RoomerRoomReservationID: TcxGridDBColumn;
-    PopupMenu2: TPopupMenu;
-    C1: TMenuItem;
-    P1: TMenuItem;
-    I1: TMenuItem;
-    R2: TMenuItem;
-    G2: TMenuItem;
+    pnmuGridMenu: TPopupMenu;
+    mnuCheckin: TMenuItem;
+    mnuProfile: TMenuItem;
+    mnuInvoice: TMenuItem;
+    mnuRoomInvoice: TMenuItem;
+    mnuGroupInvoice: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure rbRadioButtonClick(Sender: TObject);
@@ -75,19 +75,21 @@ type
     procedure btnRefreshClick(Sender: TObject);
     procedure kbmArrivalsListAfterScroll(DataSet: TDataSet);
     procedure btnCheckInClick(Sender: TObject);
-    procedure R1Click(Sender: TObject);
+    procedure mnuRoomInvoiceClick(Sender: TObject);
     procedure btnProfileClick(Sender: TObject);
-    procedure G1Click(Sender: TObject);
+    procedure mnuGroupInvoiceClick(Sender: TObject);
     procedure grArrivalsListDBTableView1CellDblClick(Sender: TcxCustomGridTableView; ACellViewInfo: TcxGridTableDataCellViewInfo; AButton: TMouseButton;
       AShift: TShiftState; var AHandled: Boolean);
     procedure dtDateFromCloseUp(Sender: TObject);
     procedure dtDateToCloseUp(Sender: TObject);
   private
+    FRefreshingdata: boolean;
     { Private declarations }
     procedure UpdateControls;
     procedure SetManualDates(aFrom, aTo: TDate);
     procedure RefreshData;
     function ConstructSQL: string;
+  protected
     procedure WndProc(var message: TMessage); override;
   public
     { Public declarations }
@@ -131,7 +133,7 @@ const
           '  pe.Name AS GuestName, '+
           '  r.Customer AS CompanyCode, '+
           '  r.Name AS CompanyName, '+
-          '  rr.AvrageRate AS AverageRoomRate, '+
+          '  CAST(rr.AvrageRate as DECIMAL(10,3)) AS AverageRoomRate, '+
           '  ( SELECT cast(rd1.ADate as date)'+
           '         FROM roomsdate rd1 '+
           '         WHERE rd1.RoomReservation=rd.RoomReservation '+
@@ -248,7 +250,9 @@ begin
     s := Format(cSqlForDateRange, [FormatDateTime('yyyy-mm-dd', dtDateFrom.Date),
                                    FormatDateTime('yyyy-mm-dd', dtDateTo.Date)]);
   Result := Format(cSQL, [s]);
-  CopyToClipboard(Result);
+  {$ifdef DEBUG}
+    CopyToClipboard(Result);
+  {$endif}
 end;
 
 procedure TfrmArrivalsReport.dtDateFromCloseUp(Sender: TObject);
@@ -282,7 +286,7 @@ begin
   postMessage(handle, WM_REFRESH_DATA, 0, 0);
 end;
 
-procedure TfrmArrivalsReport.G1Click(Sender: TObject);
+procedure TfrmArrivalsReport.mnuGroupInvoiceClick(Sender: TObject);
 begin
   EditInvoice(kbmArrivalsList['RoomerReservationID'], 0, 0, 0, 0, 0, false, true,false);
 end;
@@ -295,12 +299,10 @@ end;
 
 procedure TfrmArrivalsReport.kbmArrivalsListAfterScroll(DataSet: TDataSet);
 begin
-  btnCheckIn.Enabled := NOT kbmArrivalsList.Eof; // (kbmArrivalsList.RecordCount = 1) OR NOT (kbmArrivalsList.Eof OR kbmArrivalsList.Bof);
-  btnProfile.Enabled := NOT kbmArrivalsList.Eof; // (kbmArrivalsList.RecordCount = 1) OR NOT (kbmArrivalsList.Eof OR kbmArrivalsList.Bof);
-  btnInvoice.Enabled := NOT kbmArrivalsList.Eof; // (kbmArrivalsList.RecordCount = 1) OR NOT (kbmArrivalsList.Eof OR kbmArrivalsList.Bof);
+  UpdateControls;
 end;
 
-procedure TfrmArrivalsReport.R1Click(Sender: TObject);
+procedure TfrmArrivalsReport.mnuRoomInvoiceClick(Sender: TObject);
 begin
   EditInvoice(kbmArrivalsList['RoomerReservationID'], kbmArrivalsList['RoomerRoomReservationID'], 0, 0, 0, 0, false, true,false);
 end;
@@ -323,27 +325,30 @@ begin
 
     kbmArrivalsList.DisableControls;
     try
+      FRefreshingdata := True; // UpdateControls still called when updating dataset, despite DisableControls
       rSet1 := CreateNewDataSet;
       try
         s := ConstructSQL;
 
         hData.rSet_bySQL(rSet1, s);
         rSet1.First;
-        if kbmArrivalsList.Active then kbmArrivalsList.Close;
-        kbmArrivalsList.open;
+        if not kbmArrivalsList.Active then
+          kbmArrivalsList.Open;
         LoadKbmMemtableFromDataSetQuiet(kbmArrivalsList,rSet1,[]);
       finally
         FreeAndNil(rSet1);
       end;
+
+      kbmArrivalsList.First;
+
     finally
+      FRefreshingdata := False;
       kbmArrivalsList.EnableControls;
     end;
-    kbmArrivalsList.First;
   finally
     btnRefresh.Enabled := True;
     Screen.Cursor := crDefault;
   end;
-  kbmArrivalsListAfterScroll(nil);
 end;
 
 procedure TfrmArrivalsReport.SetManualDates(aFrom, aTo: TDate);
@@ -353,7 +358,12 @@ begin
 end;
 
 procedure TfrmArrivalsReport.UpdateControls;
+var
+  lDataAvailable: boolean;
 begin
+  if FRefreshingData then
+    Exit;
+
   dtDateFrom.Enabled := rbManualRange.Checked;
   dtDateTo.Enabled := rbManualRange.Checked;
 
@@ -361,6 +371,11 @@ begin
     SetManualDates(Now, now)
   else if rbTomorrow.Checked then
     SetManualDates(Now+1, Now+1);
+
+  lDataAvailable := kbmArrivalsList.Active and NOT kbmArrivalsList.Eof;
+  btnCheckIn.Enabled := lDataAvailable;
+  btnProfile.Enabled := lDataAvailable;
+  btnInvoice.Enabled := lDataAvailable;
 end;
 
 procedure TfrmArrivalsReport.WndProc(var message: TMessage);

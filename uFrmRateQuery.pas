@@ -3,18 +3,46 @@ unit uFrmRateQuery;
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
-  System.Classes, Vcl.Graphics,
+  System.Classes,
+  System.Generics.Collections,
+  System.Types,
+  Winapi.Messages,
   Forms,
-  System.Generics.Collections, cmpRoomerDataset, Vcl.Grids, AdvObj, BaseGrid,
-  AdvGrid, Vcl.StdCtrls, sButton, sRadioButton, Vcl.Controls, sComboBox, sEdit,
-  sSpinEdit, Vcl.Mask, sMaskEdit, sCustomComboEdit, sTooledit, sLabel,
-  uRoomerLanguage, uAppGlobal, uViewDailyRates,
-  Vcl.ExtCtrls, sPanel, sComboEdit, cxGraphics, cxControls, cxLookAndFeels, cxLookAndFeelPainters, cxContainer, cxEdit, Vcl.ComCtrls, dxCore, cxDateUtils,
-  dxSkinsCore, dxSkinDarkSide, dxSkinDevExpressDarkStyle, dxSkinMcSkin, dxSkinOffice2013White, dxSkinsDefaultPainters, cxTextEdit, cxMaskEdit, cxDropDownEdit,
-  cxCalendar, dxSkinCaramel, dxSkinCoffee, dxSkinTheAsphaltWorld, AdvUtil, Vcl.Samples.Spin, cxButtonEdit;
+  Vcl.Graphics,
+  Vcl.ComCtrls,
+  Vcl.StdCtrls,
+  Vcl.Controls,
+  Vcl.Samples.Spin,
+  Vcl.ExtCtrls,
+  Vcl.Grids,
+  cxButtonEdit,
+  cxGraphics,
+  cxControls,
+  cxLookAndFeels,
+  cxLookAndFeelPainters,
+  cxContainer,
+  cxEdit,
+  cxDropDownEdit,
+  cxCalendar,
+  cxDateUtils,
+  cxTextEdit,
+  cxMaskEdit,
+  dxCore,
+  dxSkinsCore,
+  dxSkinCaramel,
+  dxSkinCoffee,
+  dxSkinDarkSide,
+  dxSkinTheAsphaltWorld,
+  dxSkinsDefaultPainters,
+  AdvUtil,
+  AdvObj,
+  BaseGrid,
+  AdvGrid,
+  cmpRoomerDataset,
+  uViewDailyRates;
 
-const WM_SET_DATE_FROM_MAIN = WM_User + 31;
+const
+  WM_SET_DATE_FROM_MAIN = WM_User + 31;
 
 type
 
@@ -22,15 +50,15 @@ type
     RateCode: String;
     Description: String;
     Rate: Double;
-    FAvailability : Integer;
+    FAvailability: Integer;
   private
     procedure SetAvailability(const Value: Integer);
   public
-    constructor Create(_RateCode, _Description: String; _Rate: Double; _Availability : Integer);
+    constructor Create(_RateCode, _Description: String; _Rate: Double; _Availability: Integer);
     destructor Destroy; override;
 
-    procedure AddRateAndAvailability(_Rate : Double; _Availability : Integer);
-    property Availability : Integer read FAvailability write SetAvailability;
+    procedure AddRateAndAvailability(_Rate: Double; _Availability: Integer);
+    property Availability: Integer read FAvailability write SetAvailability;
   end;
 
   TRateEntityList = TObjectList<TRateEntity>;
@@ -81,8 +109,8 @@ type
     Label1: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure timRefreshTimer(Sender: TObject);
-    procedure grdRatesGetCellColor(Sender: TObject; ARow, ACol: Integer;
-      AState: TGridDrawState; ABrush: TBrush; AFont: TFont);
+    procedure grdRatesGetCellColor(Sender: TObject; ARow, ACol: Integer; aState: TGridDrawState; ABrush: TBrush;
+      AFont: TFont);
     procedure cbxChannelsChange(Sender: TObject);
     procedure btnRefreshClick(Sender: TObject);
     procedure edNightsDownClick(Sender: TObject);
@@ -94,10 +122,11 @@ type
     procedure dtDeparturePropertiesCloseUp(Sender: TObject);
     procedure edNightsChange(Sender: TObject);
     procedure grdRatesClickCell(Sender: TObject; ARow, ACol: Integer);
+    procedure edCustomerClick(Sender: TObject);
   private
     { Private declarations }
-    _FrmViewDailyRates : TFrmViewDailyRates;
-    FRates : TDictionary<String,TDateRate>;
+    _FrmViewDailyRates: TFrmViewDailyRates;
+    FRates: TDictionary<String, TDateRate>;
     RatesSet: TRoomerDataSet;
     RoomTypes: TRoomTypeEntityList;
     FBeingViewed: Boolean;
@@ -110,7 +139,7 @@ type
     function RateIndexInGrid(Rate: String): Integer;
     procedure SetShowDates(const aFrom, aTo: TDateTime);
     procedure CollectChannels;
-    function RateIndexByRoomType(RoomTypeIndex: Integer; Rate : String): Integer;
+    function RateIndexByRoomType(RoomTypeIndex: Integer; Rate: String): Integer;
     procedure ClearGrid;
     procedure ClearRates;
     procedure ArrivalDateChange;
@@ -121,7 +150,7 @@ type
     property BeingViewed: Boolean read FBeingViewed write FBeingViewed;
     procedure ShowRatesForDate(ADate: TDateTime);
 
-    procedure WndProc(var message : TMessage); override;
+    procedure WndProc(var message: TMessage); override;
 
     property ShowDateFrom: TDateTime read FShowDateFrom write FShowDateFrom;
     property ShowDateTo: TDateTime read FShowDateTo write FShowDateTo;
@@ -134,13 +163,24 @@ implementation
 
 {$R *.dfm}
 
-uses uDImages, uD, uDateUtils, hData, uMain, uG, uUtils;
+uses
+  SysUtils
+  , Windows
+  , uD
+  ,uDateUtils
+  , hData
+  , uMain
+  , uG
+  , uUtils
+  , uAppGlobal
+  , uCustomers2
+  ;
 
-const WM_REFRESH_ARRIVAL_DATE = WM_User + 32;
-      WM_REFRESH_DEPARTURE_DATE = WM_User + 33;
+const
+  WM_REFRESH_ARRIVAL_DATE = WM_User + 32;
+  WM_REFRESH_DEPARTURE_DATE = WM_User + 33;
 
-
-{ TRoomTypeEntity }
+  { TRoomTypeEntity }
 
 constructor TRoomTypeEntity.Create(_RoomType, _Description: String);
 begin
@@ -176,12 +216,12 @@ begin
   Availability := _Availability;
 end;
 
-constructor TRateEntity.Create(_RateCode, _Description: String; _Rate: Double; _Availability : Integer);
+constructor TRateEntity.Create(_RateCode, _Description: String; _Rate: Double; _Availability: Integer);
 begin
   RateCode := _RateCode;
   Description := _Description;
   Rate := _Rate;
-  FAvailability := _availability;
+  FAvailability := _Availability;
 end;
 
 destructor TRateEntity.Destroy;
@@ -198,7 +238,7 @@ end;
 procedure TFrmRateQuery.FormCreate(Sender: TObject);
 begin
   _FrmViewDailyRates := TFrmViewDailyRates.Create(nil);
-  FRates := TDictionary<String,TDateRate>.Create;
+  FRates := TDictionary<String, TDateRate>.Create;
   RatesSet := CreateNewDataSet;
   FBeingViewed := False;
   RoomTypes := TRoomTypeEntityList.Create(True);
@@ -224,89 +264,56 @@ begin
   try
     sDateFrom := dateToSqlString(ADateFrom);
     sDateTo := dateToSqlString(ADateTo);
-    s := 'SELECT crId, crDate, Rate, stop, minStay, ' +
-          '       IF(availability=-1, ' +
-          '          ((SELECT COUNT(id) FROM rooms WHERE active AND RoomType=rtRoomType AND NOT Hidden) - ' +
-          '          (SELECT COUNT(id) FROM roomsdate WHERE RoomType=rtRoomType AND Adate=crDate AND (NOT ResFlag IN (''X'',''C'',''Q'',''Z'',''N'')))), ' +
-          '          availability) AS availability, ' +
-          ' ' +
-          '       rtId, rtRoomType, rtDescription, rtgNumGuests, ' +
-          '	   rtgId, rtgCode, rtgTopClass, rtgDescription, ' +
-          '       chId, chCode, chName, ' +
-          '       cmId, cmCode, cmDescription ' +
-          'FROM ' +
-          '( ' +
-          'SELECT cr.Id AS crId, cr.Date as crDate, cr.Price AS Rate, cr.stop, cr.minStay, ' +
-          '       (SELECT availability FROM channelratesavailabilities ' +
-          '        WHERE roomClassId=(SELECT id FROM roomtypegroups WHERE Code=rtg.TopClass LIMIT 1) ' +
-          '       AND date=cr.date AND planCodeId=cr.planCodeId AND channelManagerId=cm.Id) AS availability, ' +
-          '       rt.Id AS rtId, rt.RoomType AS rtRoomType, rt.Description AS rtDescription, rtg.numGuests AS rtgNumGuests, ' +
-          '	   rtg.Id AS rtgId, rtg.Code AS rtgCode, rtg.TopClass AS rtgTopClass, rtg.Description AS rtgDescription, ' +
-          '       ch.id AS chId, ch.channelManagerId AS chCode, ch.name AS chName, ' +
-          '       cm.Id AS cmId, cm.Code AS cmCode, cm.Description AS cmDescription ' +
-          'FROM channelrates cr, ' +
-          '     roomtypegroups rtg, ' +
-          '     roomtypes rt, ' +
-          '	 channels ch, ' +
-          '     channelmanagers cm ' +
-          ' ' +
-          'WHERE cr.roomClassId = rtg.Id ' +
-          'AND ch.Id=cr.channelId ' +
-          'AND rt.Active ' +
-          'AND rtg.Active ' +
-          'AND ch.Active ' +
-          'AND cm.Active ' +
-          'AND cm.Id=cr.ChannelManager ' +
-          'AND rt.RoomTypeGroup=rtg.TopClass ' +
-  //        '-- AND FIND_IN_SET(rt.RoomType, rtg.PriorityRule) ' +
-          'AND (cr.date >= ''' + sDateFrom + ''' AND cr.date <= ''' + sDateTo + ''') ' +
-          ') q1 ' +
-          ' ' +
-          'UNION ' +
-          ' ' +
-          'SELECT * FROM ( ' +
-          'SELECT 0 AS crId, pdd.Date as crDate, ' +
-          '       IF(rt.NumberGuests=1, r.Rate1Person, ' +
-          '         IF(rt.NumberGuests=2, r.Rate2Persons, ' +
-          '           IF(rt.NumberGuests=3, r.Rate3Persons, ' +
-          '             IF(rt.NumberGuests=4, r.Rate4Persons, ' +
-          '               IF(rt.NumberGuests=5, r.Rate5Persons, ' +
-          '                 IF(rt.NumberGuests=6, r.Rate6Persons, ' +
-          '                      IF(r.Rate6Persons>0, r.Rate6Persons + ((rt.NumberGuests-6) * r.RateExtraPerson), ' +
-          '                      IF(r.Rate5Persons>0, r.Rate5Persons + ((rt.NumberGuests-5) * r.RateExtraPerson), ' +
-          '                      IF(r.Rate4Persons>0, r.Rate4Persons + ((rt.NumberGuests-4) * r.RateExtraPerson), ' +
-          '                      IF(r.Rate3Persons>0, r.Rate3Persons + ((rt.NumberGuests-3) * r.RateExtraPerson), ' +
-          '                      IF(r.Rate2Persons>0, r.Rate2Persons + ((rt.NumberGuests-2) * r.RateExtraPerson), ' +
-          '                      IF(r.Rate1Person>0, r.Rate1Person + ((rt.NumberGuests-1) * r.RateExtraPerson), ' +
-          '								rt.NumberGuests * r.RateExtraPerson)))))))))))) AS Rate, ' +
-          '          0 AS stop, 1 AS minStay, ' +
-          '       ((SELECT COUNT(id) FROM rooms WHERE active AND RoomType=rt.RoomType AND NOT Hidden) - ' +
-          '	    (SELECT COUNT(id) FROM roomsdate WHERE RoomType=rt.RoomType AND Adate=pdd.Date AND (NOT ResFlag IN (''X'',''C'',''Q'',''Z'',''N'')))) AS availability, ' +
-          '	   rt.Id AS rtId, rt.RoomType AS rtRoomType, rt.Description AS rtDescription, rt.NumberGuests AS rtgNumGuests, ' +
-          '	   0 AS rtgId, pcCode AS rtgCode, pcCode AS rtgTopClass, pc.pcDescription AS rtgDescription, ' +
-          '       0 AS chId,  (SELECT companyID FROM control LIMIT 1) AS chCode, (SELECT companyName FROM control LIMIT 1) AS chName, ' +
-          '       0 AS cmId, (SELECT companyID FROM control LIMIT 1) AS cmCode, (SELECT companyName FROM control LIMIT 1) AS cmDescription ' +
-          ' ' +
-          'FROM roomrates rr, ' +
-          '     rates r, ' +
-          '     roomtypes rt, ' +
-          '     tblpricecodes pc, ' +
-          '     predefineddates pdd ' +
-          'WHERE (pdd.Date>=''' + sDateFrom + ''' AND pdd.Date<=''' + sDateTo + ''') ' +
-          'AND pc.Active ' +
-          'AND r.Active ' +
-          'AND rr.Active ' +
-          'AND rt.Active ' +
-          'AND pc.Id=rr.PriceCodeId ' +
-          'AND rt.Id=rr.RoomTypeId ' +
-          'AND r.Id=rr.RateID ' +
-          'AND (rr.DateFrom<=pdd.Date AND pdd.Date<=rr.DateTo) ' +
-          ' ' +
-          'GROUP BY crDate, chCode, rtId ' +
-          ') q ' +
-          ' ' +
-          'ORDER BY crDate, chCode, rtgId, rtRoomType ';
-
+    s := 'SELECT crId, crDate, Rate, stop, minStay, '+
+      '       IF(availability=-1, ' +
+      '          ((SELECT COUNT(id) FROM rooms WHERE active AND RoomType=rtRoomType AND NOT Hidden) - ' +
+      '          (SELECT COUNT(id) FROM roomsdate WHERE RoomType=rtRoomType AND Adate=crDate AND (NOT ResFlag IN (''X'',''C'',''Q'',''Z'',''N'')))), ' +
+      '          availability) AS availability, ' + ' ' +
+      '       rtId, rtRoomType, rtDescription, rtgNumGuests, ' +
+      '	   rtgId, rtgCode, rtgTopClass, rtgDescription, ' + '       chId, chCode, chName, ' +
+      '       cmId, cmCode, cmDescription ' + 'FROM ' + '( ' +
+      'SELECT cr.Id AS crId, cr.Date as crDate, cr.Price AS Rate, cr.stop, cr.minStay, ' +
+      '       (SELECT availability FROM channelratesavailabilities ' +
+      '        WHERE roomClassId=(SELECT id FROM roomtypegroups WHERE Code=rtg.TopClass LIMIT 1) ' +
+      '       AND date=cr.date AND planCodeId=cr.planCodeId AND channelManagerId=cm.Id) AS availability, ' +
+      '       rt.Id AS rtId, rt.RoomType AS rtRoomType, rt.Description AS rtDescription, rtg.numGuests AS rtgNumGuests, '
+      + '	   rtg.Id AS rtgId, rtg.Code AS rtgCode, rtg.TopClass AS rtgTopClass, rtg.Description AS rtgDescription, ' +
+      '       ch.id AS chId, ch.channelManagerId AS chCode, ch.name AS chName, ' +
+      '       cm.Id AS cmId, cm.Code AS cmCode, cm.Description AS cmDescription ' + 'FROM channelrates cr, ' +
+      '     roomtypegroups rtg, ' + '     roomtypes rt, ' + '	 channels ch, ' + '     channelmanagers cm ' + ' ' +
+      'WHERE cr.roomClassId = rtg.Id ' + 'AND ch.Id=cr.channelId ' + 'AND rt.Active ' + 'AND rtg.Active ' +
+      'AND ch.Active ' + 'AND cm.Active ' + 'AND cm.Id=cr.ChannelManager ' + 'AND rt.RoomTypeGroup=rtg.TopClass ' +
+    // '-- AND FIND_IN_SET(rt.RoomType, rtg.PriorityRule) ' +
+      'AND (cr.date >= ''' + sDateFrom + ''' AND cr.date <= ''' + sDateTo + ''') ' + ') q1 ' + ' ' + 'UNION ' + ' ' +
+      'SELECT * FROM ( ' + 'SELECT 0 AS crId, pdd.Date as crDate, ' + '       IF(rt.NumberGuests=1, r.Rate1Person, ' +
+      '         IF(rt.NumberGuests=2, r.Rate2Persons, ' + '           IF(rt.NumberGuests=3, r.Rate3Persons, ' +
+      '             IF(rt.NumberGuests=4, r.Rate4Persons, ' + '               IF(rt.NumberGuests=5, r.Rate5Persons, ' +
+      '                 IF(rt.NumberGuests=6, r.Rate6Persons, ' +
+      '                      IF(r.Rate6Persons>0, r.Rate6Persons + ((rt.NumberGuests-6) * r.RateExtraPerson), ' +
+      '                      IF(r.Rate5Persons>0, r.Rate5Persons + ((rt.NumberGuests-5) * r.RateExtraPerson), ' +
+      '                      IF(r.Rate4Persons>0, r.Rate4Persons + ((rt.NumberGuests-4) * r.RateExtraPerson), ' +
+      '                      IF(r.Rate3Persons>0, r.Rate3Persons + ((rt.NumberGuests-3) * r.RateExtraPerson), ' +
+      '                      IF(r.Rate2Persons>0, r.Rate2Persons + ((rt.NumberGuests-2) * r.RateExtraPerson), ' +
+      '                      IF(r.Rate1Person>0, r.Rate1Person + ((rt.NumberGuests-1) * r.RateExtraPerson), ' +
+      '								rt.NumberGuests * r.RateExtraPerson)))))))))))) AS Rate, ' + '          0 AS stop, 1 AS minStay, ' +
+      '       ((SELECT COUNT(id) FROM rooms WHERE active AND RoomType=rt.RoomType AND NOT Hidden) - ' +
+      '	    (SELECT COUNT(id) FROM roomsdate WHERE RoomType=rt.RoomType AND Adate=pdd.Date AND (NOT ResFlag IN (''X'',''C'',''Q'',''Z'',''N'')))) AS availability, ' +
+      '	   rt.Id AS rtId, rt.RoomType AS rtRoomType, rt.Description AS rtDescription, rt.NumberGuests AS rtgNumGuests, ' +
+      '	   0 AS rtgId, pcCode AS rtgCode, pcCode AS rtgTopClass, pc.pcDescription AS rtgDescription, ' +
+      '       0 AS chId,  (SELECT companyID FROM control LIMIT 1) AS chCode, (SELECT companyName FROM control LIMIT 1) AS chName, ' +
+      '       0 AS cmId, (SELECT companyID FROM control LIMIT 1) AS cmCode, (SELECT companyName FROM control LIMIT 1) AS cmDescription ' +
+      ' ' + 'FROM roomrates rr, ' + '     rates r, ' + '     roomtypes rt, ' + '     tblpricecodes pc, ' +
+      '     predefineddates pdd ' + 'WHERE (pdd.Date>=''' + sDateFrom + ''' AND pdd.Date<=''' + sDateTo + ''') ' +
+      'AND pc.Active ' +
+      'AND r.Active ' +
+      'AND rr.Active ' +
+      'AND rt.Active ' +
+      'AND pc.Id=rr.PriceCodeId ' +
+      'AND rt.Id=rr.RoomTypeId ' +
+      'AND r.Id=rr.RateID ' +
+      'AND (rr.DateFrom<=pdd.Date AND pdd.Date<=rr.DateTo) ' + ' ' +
+      'GROUP BY crDate, chCode, rtId) q ' +
+      ' ORDER BY crDate, chCode, rtgId, rtRoomType ';
 
     if Assigned(RatesSet) then
       FreeAndNil(RatesSet);
@@ -363,25 +370,21 @@ begin
 end;
 
 procedure TFrmRateQuery.grdRatesClickCell(Sender: TObject; ARow, ACol: Integer);
-var key, rt, rtg : String;
-    i : Integer;
-    DateRate : TDateRate;
+var
+  key, rt, rtg: String;
+  i: Integer;
+  DateRate: TDateRate;
 begin
- //
+  //
   if (ACol > 0) AND (ARow > 0) then
   begin
     _FrmViewDailyRates.Clear;
     rt := grdRates.Cells[ACol, 0];
     rtg := grdRates.Cells[0, ARow];
     _FrmViewDailyRates.DescriptionLeft := linuxLFCRToWindows('Arrival:\nDeparture:\nChannel:\nRate Class:\nRoom type:');
-    _FrmViewDailyRates.DescriptionRight := linuxLFCRToWindows(format('%s\n%s\n%s\n%s\n%s',
-      [
-        uDateUtils.RoomerDateToString(FShowDateFrom),
-        uDateUtils.RoomerDateToString(FShowDateTo),
-        cbxChannels.Text,
-        rtg,
-        rt
-      ]));
+    _FrmViewDailyRates.DescriptionRight :=
+      linuxLFCRToWindows(format('%s\n%s\n%s\n%s\n%s', [uDateUtils.RoomerDateToString(FShowDateFrom),
+      uDateUtils.RoomerDateToString(FShowDateTo), cbxChannels.Text, rtg, rt]));
     for i := Trunc(FShowDateFrom) to Trunc(FShowDateTo) do
     begin
       key := format('%s_%s_%s', [rt, rtg, uDateUtils.dateToSqlString(i)]);
@@ -394,14 +397,14 @@ begin
 end;
 
 procedure TFrmRateQuery.grdRatesDrawCell(Sender: TObject; ACol, ARow: Integer; Rect: TRect; State: TGridDrawState);
-var theRate : TRateEntity;
-    sValue, sAvail : String;
-    SavedAlign: word;
+var
+  theRate: TRateEntity;
+  sValue, sAvail: String;
+  SavedAlign: word;
 begin
-  if (ACol > 0) AND (ARow>0) AND
-     (Assigned(grdRates.Objects[ACol, ARow])) AND
-     (grdRates.Objects[ACol, ARow] IS TRateEntity) AND
-     (Round((grdRates.Objects[ACol, ARow] AS TRateEntity).Rate) > 0) then
+  if (ACol > 0) AND (ARow > 0) AND (Assigned(grdRates.Objects[ACol, ARow])) AND
+    (grdRates.Objects[ACol, ARow] IS TRateEntity) AND (Round((grdRates.Objects[ACol, ARow] AS TRateEntity).Rate) > 0)
+  then
   begin
     theRate := grdRates.Objects[ACol, ARow] AS TRateEntity;
     if rbTotal.Checked then
@@ -432,28 +435,24 @@ begin
       TextRect(Rect, Rect.Right - 4, Rect.Top + 2, sAvail + ' X');
 
       SetTextAlign(Handle, SavedAlign);
-//      Rect.Top := Rect.Bottom - 4;
-//      Brush.Color := clBlack;
-//      FillRect(Rect);
       exit;
     end;
 
-  end else
+  end
+  else
     inherited;
 
 end;
 
-procedure TFrmRateQuery.grdRatesGetCellColor(Sender: TObject;
-  ARow, ACol: Integer; AState: TGridDrawState; ABrush: TBrush; AFont: TFont);
+procedure TFrmRateQuery.grdRatesGetCellColor(Sender: TObject; ARow, ACol: Integer; aState: TGridDrawState;
+  ABrush: TBrush; AFont: TFont);
 begin
   if (ARow > 0) AND (ACol > 0) then
     if NOT Assigned(grdRates.Objects[ACol, ARow]) OR
-    ((Assigned(grdRates.Objects[ACol, ARow])) AND
-     (grdRates.Objects[ACol, ARow] IS TRateEntity) AND
-     (Round((grdRates.Objects[ACol, ARow] AS TRateEntity).Rate) = 0)) then
+      ((Assigned(grdRates.Objects[ACol, ARow])) AND (grdRates.Objects[ACol, ARow] IS TRateEntity) AND
+      (Round((grdRates.Objects[ACol, ARow] AS TRateEntity).Rate) = 0)) then
     begin
       ABrush.Color := frmMain.sSkinManager1.GetGlobalColor;
-//      ABrush.Pen.Color := frmMain.sSkinManager1.GetGlobalFontColor;
       ABrush.Style := bsFDiagonal;
     end;
 end;
@@ -471,7 +470,7 @@ begin
     end;
 end;
 
-function TFrmRateQuery.RateIndexByRoomType(RoomTypeIndex: Integer; Rate : String): Integer;
+function TFrmRateQuery.RateIndexByRoomType(RoomTypeIndex: Integer; Rate: String): Integer;
 var
   i: Integer;
 begin
@@ -486,19 +485,19 @@ end;
 
 procedure TFrmRateQuery.btnRefreshClick(Sender: TObject);
 begin
-  setShowDates(dtArrival.Date, dtDeparture.Date - 1);
+  SetShowDates(dtArrival.Date, dtDeparture.Date - 1);
 end;
 
 procedure TFrmRateQuery.CollectRatesForSelectedChannel(ChannelCode: String);
 var
   CurrentRoomType: String;
   index, RateIndex: Integer;
-  CurrencyId : Integer;
-  Currency : String;
-  key : String;
-  crDate : TDate;
-  Rate : Double;
-  NumGuests : Integer;
+  CurrencyId: Integer;
+  Currency: String;
+  key: String;
+  crDate: TDate;
+  Rate: Double;
+  NumGuests: Integer;
 begin
   ClearRates;
   RatesSet.First;
@@ -509,8 +508,7 @@ begin
       CurrentRoomType := RatesSet['rtRoomType'];
       if RoomTypeIndex(CurrentRoomType) = -1 then
       begin
-        RoomTypes.Add(TRoomTypeEntity.Create(CurrentRoomType,
-          RatesSet['rtDescription']));
+        RoomTypes.Add(TRoomTypeEntity.Create(CurrentRoomType, RatesSet['rtDescription']));
       end;
     end;
     RatesSet.Next;
@@ -518,9 +516,8 @@ begin
 
   _FrmViewDailyRates.Currency := g.qNativeCurrency;
   if glb.LocateSpecificRecordAndGetValue('channels', 'channelManagerId', ChannelCode, 'CurrencyId', CurrencyId) AND
-     glb.LocateSpecificRecordAndGetValue('currencies', 'ID', CurrencyId, 'Currency', Currency) then
-       _FrmViewDailyRates.Currency := Currency;
-
+    glb.LocateSpecificRecordAndGetValue('currencies', 'ID', CurrencyId, 'Currency', Currency) then
+    _FrmViewDailyRates.Currency := Currency;
 
   FRates.Clear;
 
@@ -535,22 +532,18 @@ begin
       begin
         RateIndex := RateIndexByRoomType(index, RatesSet['rtgCode']);
         if RateIndex = -1 then
-          RoomTypes[index].Rates.Add(TRateEntity.Create(RatesSet['rtgCode'],
-            RatesSet['rtgDescription'], RatesSet['Rate'], RatesSet['availability']))
+          RoomTypes[index].Rates.Add(TRateEntity.Create(RatesSet['rtgCode'], RatesSet['rtgDescription'],
+            RatesSet['Rate'], RatesSet['availability']))
         else
           RoomTypes[index].Rates[RateIndex].AddRateAndAvailability(RatesSet['Rate'], RatesSet['availability']);
 
         crDate := RatesSet['crDate'];
         Rate := RatesSet['Rate'];
         NumGuests := RatesSet['rtgNumGuests'];
-        key := format('%s_%s_%s', [RatesSet['rtRoomType'], RatesSet['rtgCode'], uDateUtils.dateToSqlString(RatesSet['crDate'])]);
-        FRates.Add(key,
-                      CreateDateRate(crDate,
-                      Rate,
-                      edCustomer.Text,
-                      trunc(FShowDateTo - FShowDateFrom) + 1,
-                      NumGuests,
-                      _FrmViewDailyRates.Currency));
+        key := format('%s_%s_%s', [RatesSet['rtRoomType'], RatesSet['rtgCode'],
+          uDateUtils.dateToSqlString(RatesSet['crDate'])]);
+        FRates.Add(key, CreateDateRate(crDate, Rate, edCustomer.Text, Trunc(FShowDateTo - FShowDateFrom) + 1, NumGuests,
+          _FrmViewDailyRates.Currency));
       end;
     end;
     RatesSet.Next;
@@ -575,7 +568,6 @@ end;
 procedure TFrmRateQuery.DisplayData;
 var
   i, l, index: Integer;
-  sValue : String;
 begin
   grdRates.BeginUpdate;
   try
@@ -625,8 +617,25 @@ begin
   edNights.Value := Trunc(dtDeparture.Date) - Trunc(dtArrival.Date);
 end;
 
+procedure TFrmRateQuery.edCustomerClick(Sender: TObject);
+var
+  s: string;
+  theData: recCustomerHolder;
+begin
+  theData.Customer := Trim(edCustomer.Text);
+  if OpenCustomers(actLookup, True, theData) then
+  begin
+    s := theData.Customer;
+    if (s <> '') and (s <> Trim(edCustomer.Text)) then
+    begin
+      edCustomer.Text := s;
+    end;
+  end;
+end;
+
 procedure TFrmRateQuery.edNightsChange(Sender: TObject);
-var dtA, dtD : TDateTime;
+var
+  dtA, dtD: TDateTime;
 begin
   dtA := dtArrival.Date;
   dtD := dtDeparture.Date;
@@ -636,7 +645,8 @@ begin
 end;
 
 procedure TFrmRateQuery.edNightsDownClick(Sender: TObject);
-var dtA, dtD : TDateTime;
+var
+  dtA, dtD: TDateTime;
 begin
   dtA := dtArrival.Date;
   dtD := dtDeparture.Date;
@@ -655,17 +665,18 @@ begin
   dtDeparture.Date := dtArrival.Date + edNights.Value;
 end;
 
-procedure TFrmRateQuery.SetDateEditColors(dt : TcxDateEdit);
+procedure TFrmRateQuery.SetDateEditColors(dt: TcxDateEdit);
 begin
-  with dt do begin
+  with dt do
+  begin
     Style.Color := frmMain.sSkinManager1.GetActiveEditColor;
     Style.TextColor := frmMain.sSkinManager1.GetActiveEditFontColor;
 
     StyleDisabled.Color := frmMain.sSkinManager1.GetActiveEditColor;
-    StyleDisabled.TextColor := frmMain.sSkinManager1.GetHighLightFontColor(true);
+    StyleDisabled.TextColor := frmMain.sSkinManager1.GetHighLightFontColor(True);
 
-    StyleFocused.Color := frmMain.sSkinManager1.GetHighLightColor(false);
-    StyleFocused.TextColor := frmMain.sSkinManager1.GetHighLightFontColor(false);
+    StyleFocused.Color := frmMain.sSkinManager1.GetHighLightColor(False);
+    StyleFocused.TextColor := frmMain.sSkinManager1.GetHighLightFontColor(False);
 
     StyleHot.Color := frmMain.sSkinManager1.GetActiveEditColor;
     StyleHot.TextColor := frmMain.sSkinManager1.GetActiveEditFontColor;
@@ -677,11 +688,11 @@ begin
   SetDateEditColors(dtArrival);
   SetDateEditColors(dtDeparture);
 
-  FShowDateFrom := AFrom;
-  FShowDateTo := ATo;
+  FShowDateFrom := aFrom;
+  FShowDateTo := aTo;
 
-  dtArrival.Date := AFrom;
-  dtDeparture.Date := ATo + 1;
+  dtArrival.Date := aFrom;
+  dtDeparture.Date := aTo + 1;
 
   edNights.Value := Trunc(dtDeparture.Date) - Trunc(dtArrival.Date);
 
@@ -691,7 +702,7 @@ end;
 procedure TFrmRateQuery.ShowRatesForDate(ADate: TDateTime);
 begin
   edCustomer.Text := ctrlGetString('RackCustomer');
-  setShowDates(ADate, ADate);
+  SetShowDates(ADate, ADate);
 end;
 
 procedure TFrmRateQuery.rbTotalClick(Sender: TObject);
@@ -725,11 +736,9 @@ procedure TFrmRateQuery.WndProc(var message: TMessage);
 begin
   if message.Msg = WM_REFRESH_ARRIVAL_DATE then
     ArrivalDateChange
-  else
-  if message.Msg = WM_REFRESH_DEPARTURE_DATE then
+  else if message.Msg = WM_REFRESH_DEPARTURE_DATE then
     DepartureDateChange
-  else
-  if message.Msg = WM_SET_DATE_FROM_MAIN then
+  else if message.Msg = WM_SET_DATE_FROM_MAIN then
     ShowRatesForDate(message.LParam);
 
   inherited WndProc(message);
