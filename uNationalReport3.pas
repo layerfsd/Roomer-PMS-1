@@ -457,6 +457,7 @@ begin
       end;
       s := s+' ) '#10;
 
+
       hData.rSet_bySQL(rSet,s);
       if not rSet.Eof then
       begin
@@ -555,7 +556,7 @@ begin
   '    INNER JOIN persons ON countries.country = persons.country '#10+
   '    INNER JOIN reservations ON persons.Reservation = reservations.Reservation '#10+
   '    INNER JOIN roomsdate ON persons.RoomReservation = roomsdate.RoomReservation '#10+
-//  '    INNER JOIN rooms on rooms.room=roomsdate.room and rooms.wildcard=0 '#10+
+  '    INNER JOIN rooms on (rooms.room=roomsdate.room and rooms.wildcard=0) '#10+
   ' WHERE '#10+
   '   (persons.RoomReservation IN %s )'#10+
   '      AND (((Resflag in (''G'',''P'',''D'',''O'',''A'')) AND roomsdate.isNoRoom=0) OR ((Resflag in (''G'',''D'')) AND roomsdate.isNoRoom<>0)) '#10+
@@ -573,9 +574,6 @@ begin
     screen.Cursor := crHourGlass;
     try
       s := format(s, [zRoomReservationsList]);
-
-//      copytoclipboard(s);
-//      debugMessage(s);
 
       hData.rSet_bySQL(rSet,s);
       if mNationalStatistics.Active then mNationalStatistics.Close;
@@ -714,6 +712,7 @@ begin
     '       countrygroups ON countries.CountryGroup = countrygroups.CountryGroup '#10+
     '     RIGHT OUTER JOIN '#10+
     '       roomreservations ON persons.RoomReservation = roomreservations.RoomReservation '#10+
+    '     INNER JOIN rooms ro ON roomreservations.room=ro.room and ro.wildcard=0  '#10 +
     '     RIGHT OUTER JOIN '#10+
     '       reservations ON roomreservations.Reservation = reservations.Reservation '#10+
     ' WHERE '#10+
@@ -724,10 +723,12 @@ begin
 
 
     try
+
       s := format(s , [zRoomReservationsList]);
+
       hData.rSet_bySQL(rSet,s);
 
-      if mAllGuests.Active then mAllGuests.Close;
+      if not mAllGuests.Active then mAllGuests.Close;
       mAllGuests.open;
       mAllGuests.LoadFromDataSet(rSet);
       mAllGuests.First;
@@ -773,7 +774,7 @@ begin
       ' FROM '#10+
       '   roomreservations '#10+
       ' WHERE '#10+
-      '        ( roomreservations.RoomReservation in  %s ) '+  //zRoomReservationsLis#10+
+      '     ( roomreservations.RoomReservation in  %s ) '+  //zRoomReservationsLis#10+
       '      AND (((roomreservations.Status in (''G'',''P'',''D'',''O'',''A'')) AND Left(roomreservations.Room,1) <> ''<'') OR ((roomreservations.Status in (''G'',''D'')) AND Left(roomreservations.Room,1) = ''<'')) ';
 
       s := format(s , [zRoomReservationsList]);

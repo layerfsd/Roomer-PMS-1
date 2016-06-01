@@ -251,22 +251,22 @@ begin
                     _db(STATUS_BLOCKED);
 
     sArrival     := _db(STATUS_NOT_ARRIVED)+','
-//                   +_db(STATUS_ARRIVED)+','
-//                   +_db(STATUS_CHECKED_OUT)+','
-//                   +_db(STATUS_TMP1)+','
+                   +_db(STATUS_ARRIVED)+','
+                   +_db(STATUS_CHECKED_OUT)+','
+                   +_db(STATUS_TMP1)+','
                    +_db(STATUS_AWAITING_PAYMENT);
 
     sDeparture   :=
-//                   _db(STATUS_NOT_ARRIVED)+',' +
+                   _db(STATUS_NOT_ARRIVED)+',' +
                    _db(STATUS_ARRIVED)+','
-//                   +_db(STATUS_CHECKED_OUT)+','
+                   +_db(STATUS_CHECKED_OUT)+','
                    +_db(STATUS_TMP1)+','
                    +_db(STATUS_AWAITING_PAYMENT);
                     ;
 
-    sInhouse     := //_db(STATUS_NOT_ARRIVED) + ',' +
+    sInhouse     := _db(STATUS_NOT_ARRIVED) + ',' +
                     _db(STATUS_ARRIVED) + ','
-                    //+_db(STATUS_CHECKED_OUT) + ','
+                    +_db(STATUS_CHECKED_OUT) + ','
                     + _db(STATUS_TMP1) + ','
                     + _db(STATUS_AWAITING_PAYMENT)
                     ;
@@ -342,11 +342,6 @@ begin
 //    begin
 //      s := s+' AND location in ('+zLocationInString+') ';
 //    end;
-
-    {$ifdef DEBUG}
-      copytoclipboard(s);
-      debugMessage(s);
-    {$endif}
 
     ExecutionPlan.AddQuery(s);
     //////////////////// Execute!
