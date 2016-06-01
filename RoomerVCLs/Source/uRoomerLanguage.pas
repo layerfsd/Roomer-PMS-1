@@ -89,7 +89,7 @@ type
 
     procedure AddKeyAndValue(key, Value: String; temporaryValue : Boolean = false);
     function GetKeyValue(key : String; defaultValue : String = '') : String;
-
+    procedure Clear;
     property LangId : Integer read FLangId;
     property LangCode : String read FLangCode;
     property Dictionary : TDictionaryItemDictionary read FDictionary;
@@ -266,6 +266,11 @@ CONST KEY_MASK = '%s.%s.%s';
       NOT_FOUND_TEXT = '-*/:\*-';
 
 { TLanguageDictionary }
+
+procedure TLanguageDictionary.Clear;
+begin
+  FDictionary.Clear;
+end;
 
 constructor TLanguageDictionary.Create;
 begin
@@ -502,33 +507,30 @@ begin
 end;
 
 procedure TRoomerLanguage.PrepareDictionaries(languageId : integer; forceRefresh : Boolean = False);
-var Dictionary : TLanguageDictionary;
+var lDictionary : TLanguageDictionary;
     RSetDictionary: TRoomerDataSet;
 begin
   PrepareLanguageItem(LanguageId);
 
   if forceRefresh then
   begin
-    if FLanguages.TryGetValue(LanguageCode, Dictionary) then
-    begin
-      RSetDictionary := FRSet.ActivateNewDataset(FRSet.SystemGetDictionary(LanguageId));
-      try
-        Dictionary.Free;
-        Dictionary := TLanguageDictionary.Create;
-        Dictionary.FillLanguageFromDataset(RSetDictionary, LanguageCode);
-        FLanguages.AddOrSetValue(LanguageCode, Dictionary)
-      finally
-        FreeAndNil(RSetDictionary);
-      end;
+    lDictionary := TLanguageDictionary.Create;
+
+    RSetDictionary := FRSet.ActivateNewDataset(FRSet.SystemGetDictionary(LanguageId));
+    try
+      lDictionary.FillLanguageFromDataset(RSetDictionary, LanguageCode);
+      FLanguages.AddOrSetValue(LanguageCode, lDictionary); // replaces previous TLanguageDictionary object which will be freed automatically
+    finally
+      FreeAndNil(RSetDictionary);
     end;
   end else
-  if (NOT FLanguages.TryGetValue(LanguageCode, Dictionary)) then
+  if (NOT FLanguages.TryGetValue(LanguageCode, lDictionary)) then
   begin
     RSetDictionary := FRSet.ActivateNewDataset(FRSet.SystemGetDictionary(LanguageId));
     try
-      Dictionary := TLanguageDictionary.Create;
-      Dictionary.FillLanguageFromDataset(RSetDictionary, LanguageCode);
-      FLanguages.Add(LanguageCode, Dictionary)
+      lDictionary := TLanguageDictionary.Create;
+      lDictionary.FillLanguageFromDataset(RSetDictionary, LanguageCode);
+      FLanguages.Add(LanguageCode, lDictionary)
     finally
       FreeAndNil(RSetDictionary);
     end;
@@ -631,23 +633,24 @@ var
   Dictionary : TLanguageDictionary;
   TempItem : TDictionaryItem;
 begin
-  FLanguages.TryGetValue(FLanguageCode, Dictionary);
-
-  writer := TStreamWriter.Create(stream, TEncoding.UTF8);
-  try
-    Keys := Dictionary.Dictionary.Keys.ToArray;
-    for i := LOW(Keys) to HIGH(Keys) do
-    begin
-      Key := Keys[i];
-      TempItem := Dictionary.GetKeyDictionaryItem(key);
-      if NOT TempItem.TemporaryValue then
+  if FLanguages.TryGetValue(FLanguageCode, Dictionary) then
+  begin
+    writer := TStreamWriter.Create(stream, TEncoding.UTF8);
+    try
+      Keys := Dictionary.Dictionary.Keys.ToArray;
+      for i := LOW(Keys) to HIGH(Keys) do
       begin
-        Value := TempItem.Value;
-        writer.Write(TempItem.Key + '=' + StringReplace(StringReplace(Value, #10, '_chr10_', [rfReplaceAll]), #13, '_chr13_', [rfReplaceAll])); writer.WriteLine;
+        Key := Keys[i];
+        TempItem := Dictionary.GetKeyDictionaryItem(key);
+        if NOT TempItem.TemporaryValue then
+        begin
+          Value := TempItem.Value;
+          writer.Write(TempItem.Key + '=' + StringReplace(StringReplace(Value, #10, '_chr10_', [rfReplaceAll]), #13, '_chr13_', [rfReplaceAll])); writer.WriteLine;
+        end;
       end;
+    finally
+      writer.Free;
     end;
-  finally
-    writer.Free;
   end;
 end;
 
