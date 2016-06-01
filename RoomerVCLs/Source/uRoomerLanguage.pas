@@ -1214,8 +1214,8 @@ begin
 end;
 
 procedure TRoomerLanguage.TranslateThis(comp : TsTreeView; key : String);
-var i : integer;
-    Node : TTreeNode;
+var
+  Node : TTreeNode;
 begin
   for Node in comp.Items do
     Node.Text := GetTranslationOfSpecifiedKey(key + 'ItemsSelectIndex' + inttostr(Node.SelectedIndex), Node.Text);
