@@ -91,7 +91,7 @@ uses
   dxSkinOffice2007Pink, dxSkinOffice2007Silver, dxSkinOffice2010Black, dxSkinOffice2010Blue, dxSkinOffice2010Silver, dxSkinPumpkin,
   dxSkinSeven, dxSkinSevenClassic, dxSkinSharp, dxSkinSharpPlus, dxSkinSilver, dxSkinSpringTime, dxSkinStardust, dxSkinSummer2008,
   dxSkinValentine, dxSkinVS2010, dxSkinWhiteprint, dxSkinXmas2008Blue,
-  uDynamicRates, DragDrop, DropTarget, DropComboTarget
+  uDynamicRates, DragDrop, DropTarget, DropComboTarget, cxTimeEdit
   ;
 
 type
@@ -527,8 +527,14 @@ type
     btnPasteFile: TsButton;
     __PriceViewer: TcxGridDBColumn;
     edtContactAddress4: TsEdit;
-    sLabel6: TsLabel;
     sLabel7: TsLabel;
+    mRoomsExpectedTimeOfArrival: TTimeField;
+    mRoomsExpectedCheckoutTime: TTimeField;
+    tvRoomsPersonsProfilesId: TcxGridDBColumn;
+    tvRoomsoutOfOrderBlocking: TcxGridDBColumn;
+    tvRoomsManualChannelId: TcxGridDBColumn;
+    tvRoomsExpectedTimeOfArrival: TcxGridDBColumn;
+    tvRoomsExpectedCheckoutTime: TcxGridDBColumn;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -2400,6 +2406,8 @@ begin
     s := s+'    , package '#10;
     s := s+'    , rrArrival as Arrival'#10;
     s := s+'    , rrDeparture as Departure'#10;
+    s := s+'    , ExpectedTimeOfArrival'#10;
+    s := s+'    , ExpectedCheckoutTime'#10;
     s := s+'    , Status '#10;
     s := s+'    , Currency '#10;
     s := s+'    , invBreakfast as Breakfast '#10;

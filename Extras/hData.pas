@@ -505,6 +505,9 @@ type
 
     ManualChannelId : Integer;
     ratePlanCode : String;
+
+    ExpectedTimeOfArrival: TTime;
+    ExpectedCheckoutTime: TTime;
   end;
 
   recReservationHolder = record
@@ -2952,6 +2955,9 @@ begin
 
     ManualChannelId := 0;
     ratePlanCode := '';
+
+    ExpectedTimeOfArrival := EncodeTime(13, 00, 00, 00);
+    ExpectedCheckoutTime := 0.0
   end;
 end;
 
@@ -3905,6 +3911,8 @@ begin
   s := s + '   ,`Package` ' + #10;
   s := s + '   ,`ManualChannelId` ' + #10;
   s := s + '   ,`ratePlanCode` ' + #10;
+  s := s + '   ,`ExpectedTimeOfArrival` ' + #10;
+  s := s + '   ,`ExpectedCheckoutTime` ' + #10;
   s := s + '   ) ' + #10;
   s := s + '   VALUES ' + #10;
   s := s + '   ( ' + #10;
@@ -3954,6 +3962,8 @@ begin
   s := s + '  , ' + _db(theData.package) + #10;
   s := s + '  , ' + _db(theData.ManualChannelId) + #10;
   s := s + '  , ' + _db(theData.ratePlanCode) + #10;
+//  s := s + '  , ' + _db(theData.ExpectedTimeOfArrival) + #10;
+//  s := s + '  , ' + _db(theData.ExpectedCheckoutTime) + #10;
   s := s + '  ) ' + #10;
   result := s;
 end;
@@ -4017,6 +4027,8 @@ begin
   s := s + '  ,CancelInformation ' + #10;
   s := s + '  ,CancelType ' + #10;
   s := s + '  ,useInNationalReport ' + #10;
+  s := s + '  ,ExpectedTimeOfArrival' + #10;
+  s := s + '  ,ExpectedCheckoutTime ' + #10;
   s := s + ' ) ' + #10;
   s := s + ' VALUES ' + #10;
   s := s + ' ( ' + #10;
@@ -4063,6 +4075,8 @@ begin
   s := s + '  , ' + _db(theData.CancelInformation) + #10;
   s := s + '  , ' + _db(theData.CancelType) + #10;
   s := s + '  , ' + _db(theData.UseInNationalReport) + #10;
+//  s := s + '  , ' + _db(theData.ExpectedTimeOfArrival) + #10;
+//  s := s + '  , ' + _db(theData.ExpectedCheckoutTime) + #10;
   s := s + ') ';
 
   result := cmd_bySQL(s);
@@ -4318,6 +4332,8 @@ begin
       result.avrageRate := LocalFloatValue(rSet.fieldbyname('AvrageRate').asString);
       result.rateCount := rSet.fieldbyname('rateCount').asInteger;
       result.package := rSet.fieldbyname('package').asString;
+      result.ExpectedTimeOfArrival := rSet.fieldbyname('ExpectedTimeOfArrival').AsDateTime;
+      result.ExpectedCheckoutTime := rSet.fieldbyname('ExpectedCheckoutTime').AsDateTime;
     end;
   finally
     freeandnil(rSet);

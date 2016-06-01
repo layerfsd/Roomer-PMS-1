@@ -1215,6 +1215,9 @@ begin
           roomReservationData.Price3To        := _DateToDBDate(Arrival, false);
           roomReservationData.Hallres         := 0;
 
+//          roomReservationData.ExpectedTimeOfArrival :=
+//          roomReservationData.ExpectedCheckoutTime :=
+
           ExecutionPlan.AddExec(SQL_INS_RoomReservation(roomReservationData));
 
     //***Log roomreservation
