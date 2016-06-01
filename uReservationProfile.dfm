@@ -557,7 +557,6 @@ object frmReservationProfile: TfrmReservationProfile
     object TabSheet3: TsTabSheet
       Caption = 'Main'
       TabVisible = False
-      ExplicitHeight = 177
       object Panel3: TsPanel
         Left = 0
         Top = 0
@@ -566,7 +565,6 @@ object frmReservationProfile: TfrmReservationProfile
         Align = alClient
         TabOrder = 0
         SkinData.SkinSection = 'PANEL'
-        ExplicitHeight = 177
         object Panel4: TsPanel
           Left = 1
           Top = 1
@@ -575,7 +573,6 @@ object frmReservationProfile: TfrmReservationProfile
           Align = alLeft
           TabOrder = 0
           SkinData.SkinSection = 'PANEL'
-          ExplicitHeight = 175
           object PageControl3: TsPageControl
             Left = 1
             Top = 1
@@ -585,10 +582,8 @@ object frmReservationProfile: TfrmReservationProfile
             Align = alClient
             TabOrder = 0
             SkinData.SkinSection = 'PAGECONTROL'
-            ExplicitHeight = 173
             object TabSheet4: TsTabSheet
               Caption = 'Customer'
-              ExplicitHeight = 147
               object Label9: TsLabel
                 Left = 2
                 Top = 3
@@ -833,7 +828,6 @@ object frmReservationProfile: TfrmReservationProfile
             object TabSheet5: TsTabSheet
               Caption = 'Customer Tel / Email'
               ImageIndex = 1
-              ExplicitHeight = 147
               object Label10: TsLabel
                 Left = 33
                 Top = 13
@@ -1008,7 +1002,6 @@ object frmReservationProfile: TfrmReservationProfile
           TabOrder = 1
           SkinData.SkinSection = 'GROUPBOX'
           Checked = False
-          ExplicitHeight = 175
           object Label20: TsLabel
             Left = 21
             Top = 16
@@ -1316,7 +1309,6 @@ object frmReservationProfile: TfrmReservationProfile
           ParentBackground = False
           TabOrder = 2
           SkinData.SkinSection = 'PANEL'
-          ExplicitHeight = 175
           object cxSplitter2: TsSplitter
             Left = 241
             Top = 6
@@ -1347,7 +1339,6 @@ object frmReservationProfile: TfrmReservationProfile
             TabOrder = 0
             SkinData.SkinSection = 'GROUPBOX'
             Checked = False
-            ExplicitHeight = 127
             object memInformation: TsMemo
               Left = 2
               Top = 13
@@ -1367,7 +1358,6 @@ object frmReservationProfile: TfrmReservationProfile
               ScrollBars = ssVertical
               TabOrder = 0
               SkinData.SkinSection = 'EDIT'
-              ExplicitHeight = 112
             end
           end
           object GroupBox2: TsGroupBox
@@ -1380,7 +1370,6 @@ object frmReservationProfile: TfrmReservationProfile
             TabOrder = 1
             SkinData.SkinSection = 'GROUPBOX'
             Checked = False
-            ExplicitHeight = 127
             object memPMInfo: TsMemo
               Left = 2
               Top = 13
@@ -1400,7 +1389,6 @@ object frmReservationProfile: TfrmReservationProfile
               ScrollBars = ssVertical
               TabOrder = 0
               SkinData.SkinSection = 'EDIT'
-              ExplicitHeight = 112
             end
           end
           object Panel8: TsPanel
@@ -1417,7 +1405,6 @@ object frmReservationProfile: TfrmReservationProfile
             ParentBackground = False
             TabOrder = 2
             SkinData.SkinSection = 'PANEL'
-            ExplicitTop = 133
             object btnShowHiddenMemo: TsButton
               AlignWithMargins = True
               Left = 3
@@ -1465,7 +1452,6 @@ object frmReservationProfile: TfrmReservationProfile
             TabOrder = 3
             SkinData.SkinSection = 'GROUPBOX'
             Checked = False
-            ExplicitHeight = 127
             object sLabel5: TsLabel
               Left = 2
               Top = 65
@@ -1516,7 +1502,6 @@ object frmReservationProfile: TfrmReservationProfile
               ScrollBars = ssVertical
               TabOrder = 1
               SkinData.SkinSection = 'EDIT'
-              ExplicitHeight = 49
             end
           end
         end
@@ -1530,7 +1515,6 @@ object frmReservationProfile: TfrmReservationProfile
           Control = sGroupBox1
           Color = clNone
           ParentColor = False
-          ExplicitHeight = 175
         end
       end
     end
@@ -1549,11 +1533,8 @@ object frmReservationProfile: TfrmReservationProfile
     OnChange = mainPageChange
     ShowFocus = False
     SkinData.SkinSection = 'PAGECONTROL'
-    ExplicitTop = 286
-    ExplicitHeight = 280
     object RoomsTab: TsTabSheet
       Caption = 'Rooms'
-      ExplicitHeight = 245
       object grRooms: TcxGrid
         Left = 0
         Top = 82
@@ -1569,7 +1550,6 @@ object frmReservationProfile: TfrmReservationProfile
         ParentFont = False
         TabOrder = 0
         LookAndFeel.NativeStyle = False
-        ExplicitHeight = 163
         object tvRooms: TcxGridDBTableView
           Navigator.Buttons.CustomButtons = <>
           Navigator.Buttons.First.Visible = True
@@ -2366,7 +2346,6 @@ object frmReservationProfile: TfrmReservationProfile
     object GuestsTab: TsTabSheet
       Caption = 'Guests'
       ImageIndex = 1
-      ExplicitHeight = 245
       object Panel10: TsPanel
         Left = 0
         Top = 0
@@ -2459,7 +2438,6 @@ object frmReservationProfile: TfrmReservationProfile
         TabOrder = 1
         LevelTabs.Style = 8
         LookAndFeel.NativeStyle = False
-        ExplicitHeight = 207
         object tvGuestRooms: TcxGridDBTableView
           Navigator.Buttons.CustomButtons = <>
           Navigator.Buttons.First.Visible = True
@@ -2830,10 +2808,22 @@ object frmReservationProfile: TfrmReservationProfile
         end
       end
     end
+    object sTabSheet2: TsTabSheet
+      Caption = 'ALERTS'
+      object pnlAlertHolder: TsPanel
+        Left = 0
+        Top = 0
+        Width = 1112
+        Height = 230
+        Align = alClient
+        BevelOuter = bvNone
+        TabOrder = 0
+        SkinData.SkinSection = 'TRANSPARENT'
+      end
+    end
     object InvoicesTab: TsTabSheet
       Caption = 'Finished Invoices'
       ImageIndex = 2
-      ExplicitHeight = 245
       object Panel11: TsPanel
         Left = 0
         Top = 0
@@ -2879,7 +2869,6 @@ object frmReservationProfile: TfrmReservationProfile
         Align = alClient
         TabOrder = 1
         LookAndFeel.NativeStyle = False
-        ExplicitHeight = 207
         object tvInvoiceHeads: TcxGridDBTableView
           Navigator.Buttons.CustomButtons = <>
           Navigator.Buttons.First.Visible = True
@@ -3196,22 +3185,6 @@ object frmReservationProfile: TfrmReservationProfile
     end
     object sTabSheet1: TsTabSheet
       Caption = 'Sent emails'
-      ExplicitHeight = 245
-    end
-    object sTabSheet2: TsTabSheet
-      Caption = 'ALERTS'
-      ExplicitHeight = 245
-      object pnlAlertHolder: TsPanel
-        Left = 0
-        Top = 0
-        Width = 1112
-        Height = 230
-        Align = alClient
-        BevelOuter = bvNone
-        TabOrder = 0
-        SkinData.SkinSection = 'TRANSPARENT'
-        ExplicitHeight = 245
-      end
     end
   end
   object pnlDataWait: TsPanel

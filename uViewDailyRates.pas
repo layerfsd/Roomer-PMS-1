@@ -238,7 +238,7 @@ begin
          'to_bool(IF(tx.TAX_BASE=''GUEST'', 1, 0)) AS taxGuest, ' +
          'to_bool(IF(tx.TAX_BASE=''BOOKING'', 1, 0)) AS taxBooking, ' +
          'to_bool(IF(tx.NETTO_AMOUNT_BASED=''FALSE'', 0, 1)) AS taxNettoAmountBased, ' +
-         'to_bool(IF(tx.NETTO_AMOUNT_BASED=''FALSE'', RoomRate, RoomRate / (1 + vc.VATPercentage/100))) AS taxBaseAmount, ' +
+         'IF(tx.NETTO_AMOUNT_BASED=''FALSE'', RoomRate, RoomRate / (1 + vc.VATPercentage/100)) AS taxBaseAmount, ' +
          '(SELECT COUNT(rd1.ID) FROM roomsdate rd1 WHERE rd1.RoomReservation = rr.RoomReservation AND NOT rd1.ResFlag IN (''X'',''C'') GROUP BY rd1.RoomReservation) AS NumNights, ' +
          '(SELECT COUNT(pe.ID) FROM persons pe WHERE pe.RoomReservation = rr.RoomReservation GROUP BY pe.RoomReservation) AS NumGuests, ' +
          'cur.Currency AS Currency, ' +

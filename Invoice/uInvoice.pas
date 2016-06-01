@@ -10597,6 +10597,7 @@ var
   list : TList<String>;
   i, l : Integer;
   reloadNeeded : Boolean;
+  InvoicelineId : Integer;
 
 begin
   err := '';
@@ -10685,6 +10686,10 @@ begin
         end;
 
         Description := Description + '(Room:' + RoomNumber + ')';
+        if agrLines.Objects[col_Select, agrLines.row] IS TInvoiceLine then
+          InvoicelineId := TInvoiceline(agrLines.Objects[col_Select, agrLines.row]).Id
+        else
+          InvoicelineId := -1;
         NextInvoiceLine := NumberOfInvoiceLines(reservation, 0, 0) + 1 +
           RR_GetNumberGroupInvoices(reservation);
         s := '';
@@ -10694,10 +10699,15 @@ begin
         s := s + ' , itemNumber = ' + _db(NextInvoiceLine) + ' ' + #10;
         s := s + ' , Description = ' + _db(Description) + ' ' + #10;
         s := s + ' , staffLastEdit = ' + _db(d.roomerMainDataSet.username) + ' ' + #10;
-        s := s + 'where Reservation = ' + _db(reservation);
-        s := s + '  and RoomReservation = ' + _db(RoomReservation);
-        s := s + '   and Splitnumber = 0 ' + #10;
-        s := s + '   and itemNumber = ' + _db(itemNumber);
+        if InvoicelineId = -1 then
+        begin
+          s := s + 'where Reservation = ' + _db(reservation);
+          s := s + '  and RoomReservation = ' + _db(RoomReservation);
+          s := s + '   and Splitnumber = 0 ' + #10;
+          s := s + '   and itemNumber = ' + _db(itemNumber);
+        end else
+          s := s + 'where id = ' + _db(InvoiceLineId);
+
         try
           if not cmd_bySQL(s) then
           begin

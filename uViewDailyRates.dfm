@@ -161,7 +161,7 @@ object FrmViewDailyRates: TFrmViewDailyRates
         Left = 4
         Top = 4
         Width = 74
-        Height = 33
+        Height = 19
         Align = alLeft
         Caption = 'Daily rates'
         ParentFont = False
@@ -170,14 +170,13 @@ object FrmViewDailyRates: TFrmViewDailyRates
         Font.Height = -16
         Font.Name = 'Tahoma'
         Font.Style = []
-        ExplicitHeight = 19
       end
       object lblCurrency: TsLabel
         AlignWithMargins = True
         Left = 525
         Top = 4
         Width = 74
-        Height = 33
+        Height = 19
         Align = alRight
         Alignment = taRightJustify
         Caption = 'Daily rates'
@@ -187,7 +186,6 @@ object FrmViewDailyRates: TFrmViewDailyRates
         Font.Height = -16
         Font.Name = 'Tahoma'
         Font.Style = []
-        ExplicitHeight = 19
       end
     end
     object sPanel2: TsPanel
@@ -199,10 +197,10 @@ object FrmViewDailyRates: TFrmViewDailyRates
       TabOrder = 2
       object lblDescriptionLeft: TsLabel
         AlignWithMargins = True
-        Left = 11
+        Left = 143
         Top = 4
-        Width = 150
-        Height = 108
+        Width = 18
+        Height = 19
         Margins.Left = 10
         Margins.Right = 10
         Align = alLeft
@@ -219,8 +217,8 @@ object FrmViewDailyRates: TFrmViewDailyRates
         AlignWithMargins = True
         Left = 181
         Top = 4
-        Width = 411
-        Height = 108
+        Width = 18
+        Height = 19
         Margins.Left = 10
         Margins.Right = 10
         Align = alClient
@@ -231,9 +229,6 @@ object FrmViewDailyRates: TFrmViewDailyRates
         Font.Height = -16
         Font.Name = 'Tahoma'
         Font.Style = []
-        ExplicitLeft = 11
-        ExplicitWidth = 18
-        ExplicitHeight = 19
       end
     end
   end
