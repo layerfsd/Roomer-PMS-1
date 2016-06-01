@@ -250,22 +250,7 @@ type
     zYear     : integer;
     zMonth    : integer;
     zSetDates : boolean;
-    zRRInList   : string;
-    zRVInList   : string;
-
     isFirstTime : boolean;
-    zRoomReservationCount : Integer;
-    zReservationCount : Integer;
-
-    zRoomRentItem : string;
-    zDiscountItem : String;
-    zTaxesItem    : string;
-
-    zStayTaxPerNight : double;
-    zUseStayTax      : boolean;
-    zStayTaxIncluted : boolean;
-
-    zRoomRentVATPercentage : double;
 
     zFirstTime : boolean;
 
@@ -274,7 +259,6 @@ type
     procedure GetData;
     procedure ExcluteFilter;
     function StatusSQL : string;
-    procedure ClearAllData;
     procedure addMissing;
     procedure updateDrilldown;
   public
@@ -327,7 +311,6 @@ end;
 procedure TfrmRptResStatsRooms.InitControles;
 var
   y, m, d : word;
-  idx     : integer;
   lastDay : integer;
 
 begin
@@ -431,15 +414,6 @@ begin
 end;
 
 
-procedure TfrmRptResStatsRooms.ClearAllData;
-begin
-  //**
-  if mHead.Active then
-  begin
-    mHead.Close;
-    mHead.Open;
-  end;
-end;
 
 
 procedure TfrmRptResStatsRooms.Dril001DataChanged(Sender: TObject);
@@ -449,13 +423,6 @@ end;
 
 procedure TfrmRptResStatsRooms.getHeader;
 var
-  id : integer;
-  Code : string;
-  Description : string;
-  Sale    : double;
-  payment : double;
-
-
   dateFrom  : TDate;
   dateTo    : Tdate;
   dateCount : integer;
@@ -474,7 +441,6 @@ var
   PaymentCount     : Integer;
   LodgingNights    : Integer;
   LodgingTax       : Double;
-  TotalTax         : Double;
 
   RoomInvoiceCount    : integer;
   GroupInvoiceCount   : integer;
@@ -485,7 +451,6 @@ begin
   mHead.Close;
   mHead.Open;
 
-  id := 0;
   mHead.DisableControls;
   try
     mHead.append;
@@ -526,8 +491,6 @@ begin
         KeditInvoiceCount   :=  0;//abs(getTotal_KeditInvoiceCount)  ;
         CashInvoiceCount    :=  0;//abs(getTotal_CashInvoiceCount)   ;
 
-
-        TotalTax            :=  0;
 
         mHead.FieldByName('DateFrom').AsDateTime       := dateTo;
         mHead.FieldByName('DateTo').AsDateTime         := DateFrom;
@@ -589,8 +552,6 @@ end;
 
 
 procedure TfrmRptResStatsRooms.SheetMainResultShow(Sender: TObject);
-var
-   c : integer;
 begin
   pg001.Customization.Visible :=  TRUE;
 
@@ -610,10 +571,8 @@ end;
 
 function TfrmRptResStatsRooms.StatusSQL : string;
 var
-  sFilter : string;
   sNoRooms : string;
   sRooms   : string;
-  i : integer;
 begin
   result := '';
 
@@ -669,18 +628,10 @@ end;
 procedure TfrmRptResStatsRooms.GetData;
 var
   s    : string;
-  rset1,
-  rset2,
-  rset3 : TRoomerDataset;
+  rset1: TRoomerDataset;
   ExecutionPlan : TRoomerExecutionPlan;
 
-  startTick : integer;
-  stopTick  : integer;
-  SQLms     : integer;
-
   statusIn : string;
-
-  dtTmp : TdateTime;
 
   rDate : TdateTime;
   rRoom : String;
@@ -689,7 +640,6 @@ begin
   ExecutionPlan := d.roomerMainDataSet.CreateExecutionPlan;
   try
     zFirstTime := false;
-    startTick := GetTickCount;
 
     s := '';
     s := s+ '  SELECT '#10;
@@ -722,8 +672,9 @@ begin
     //  s := s+ '    ,(SELECT Statistics FROM rooms WHERE room=rd.room) AS Statistics '#10;
     s := s+ '  FROM roomsdate rd '#10;
     s := s+ '       INNER JOIN roomreservations rr ON rr.RoomReservation = rd.RoomReservation '#10;
+    s := s+ '       INNER JOIN rooms rrro ON (rr.room=rrro.room and rrro.wildcard=0) '#10;
     s := s+ '       INNER JOIN roomtypes rt ON rt.RoomType = rd.RoomType '#10;
-    s := s+ '       LEFT OUTER JOIN rooms ro ON ro.Room = rd.Room '#10;
+    s := s+ '       LEFT OUTER JOIN rooms ro ON (ro.Room = rd.Room and ro.wildcard=0) '#10;
     s := s+ ' WHERE rd.ADate>='+_DateToDbDate(zDateFrom,true)+' AND rd.ADate<='+_DateToDbDate(zDateTo,true)+' '#10;
 
     statusIn := StatusSQL;
@@ -849,9 +800,6 @@ begin
       kbmRoomsData_.EnableControls;
     end;
 
-    stopTick         := GetTickCount;
-    SQLms            := stopTick - startTick;
-
     zFirstTime := false;
 
   finally
@@ -862,23 +810,13 @@ end;
 procedure TfrmRptResStatsRooms.addMissing;
 var
   s    : string;
-  rset1,
-  rset2,
-  rset3 : TRoomerDataset;
-  ExecutionPlan : TRoomerExecutionPlan;
+  rset1: TRoomerDataSet;
+  ExecutionPlan: TRoomerExecutionPlan;
 
-  startTick : integer;
-  stopTick  : integer;
-  SQLms     : integer;
-
-  statusIn : string;
-
-  dtTmp : TdateTime;
 begin
   ExecutionPlan := d.roomerMainDataSet.CreateExecutionPlan;
   try
     zFirstTime := true;
-    startTick := GetTickCount;
 
    s := '';
    s := s+' SELECT '#10;
@@ -887,7 +825,7 @@ begin
    s := s+'    ,ro.RoomType '#10;
    s := s+'    ,(SELECT NumberGuests FROM roomtypes WHERE RoomType=ro.RoomType) AS totalNumberOfBeds '#10;
    s := s+'  FROM predefineddates pd, rooms ro '#10;
-   s := s+'  WHERE '#10;
+   s := s+'  WHERE ro.wildcard=0 AND '#10;
    s := s+'     ((pd.date>='+_DateToDbDate(zDateFrom,true)+' AND pd.date<='+_DateToDbDate(zDateTo,true)+')) '#10;
    if chkStatistics.checked then
    begin
@@ -918,8 +856,6 @@ begin
       kbmRoomsData_.EnableControls;
     end;
 
-    stopTick         := GetTickCount;
-    SQLms            := stopTick - startTick;
     zFirstTime := false;
 
   finally
