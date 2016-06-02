@@ -506,8 +506,8 @@ type
     ManualChannelId : Integer;
     ratePlanCode : String;
 
-    ExpectedTimeOfArrival: TTime;
-    ExpectedCheckoutTime: TTime;
+    ExpectedTimeOfArrival: string;
+    ExpectedCheckoutTime: string;
   end;
 
   recReservationHolder = record
@@ -2956,8 +2956,6 @@ begin
     ManualChannelId := 0;
     ratePlanCode := '';
 
-    ExpectedTimeOfArrival := EncodeTime(13, 00, 00, 00);
-    ExpectedCheckoutTime := 0.0
   end;
 end;
 
@@ -4332,8 +4330,8 @@ begin
       result.avrageRate := LocalFloatValue(rSet.fieldbyname('AvrageRate').asString);
       result.rateCount := rSet.fieldbyname('rateCount').asInteger;
       result.package := rSet.fieldbyname('package').asString;
-      result.ExpectedTimeOfArrival := rSet.fieldbyname('ExpectedTimeOfArrival').AsDateTime;
-      result.ExpectedCheckoutTime := rSet.fieldbyname('ExpectedCheckoutTime').AsDateTime;
+      result.ExpectedTimeOfArrival := rSet.fieldbyname('ExpectedTimeOfArrival').AsString;
+      result.ExpectedCheckoutTime := rSet.fieldbyname('ExpectedCheckoutTime').AsString;
     end;
   finally
     freeandnil(rSet);
@@ -13470,22 +13468,15 @@ end;
 
 function Package_getRoomDescription(Code: string; Room: String; Arrival, Departure: TdateTime; guestname : string=''): string;
 var
-  packageId: integer;
   RoomRentItem: string;
-  roomRentID: integer;
-
 begin
   result := '';
 
-  if glb.Packages.Locate('package', Code, []) then
-    packageId := glb.Packages.fieldbyname('ID').asInteger
-  else
+  if not glb.Packages.Locate('package', Code, []) then
     Exit;
 
   RoomRentItem := trim(uppercase(ctrlGetString('RoomRentItem')));
-  if glb.Items.Locate('Item', RoomRentItem, []) then
-    roomRentID := glb.Items.fieldbyname('ID').asInteger
-  else
+  if not glb.Items.Locate('Item', RoomRentItem, []) then
     Exit;
 
   result := glb.Packages['invoiceText'];
@@ -13493,24 +13484,6 @@ begin
   result := StringReplace(result, '{arrival}', FormatDateTime('dd.mm', Arrival), [rfReplaceAll, rfIgnoreCase]);
   result := StringReplace(result, '{departure}', FormatDateTime('dd.mm', Departure), [rfReplaceAll, rfIgnoreCase]);
   result := StringReplace(result, '{guestname}', guestname, [rfReplaceAll, rfIgnoreCase]);
-
-//  if glb.LocateSpecificRecord('packageitems', 'packageId', packageId) then
-//  begin
-//    while NOT glb.PackageItems.Eof do // This is to check if Room is also included in the package.
-//    begin
-//      if (glb.PackageItems['packageId'] = packageId) AND (glb.PackageItems['itemId'] = roomRentID) then
-//      begin
-//        result := glb.Packages['invoiceText'];
-//        result := StringReplace(result, '{room}', Room, [rfReplaceAll, rfIgnoreCase]);
-//        result := StringReplace(result, '{arrival}', FormatDateTime('dd.mm', Arrival), [rfReplaceAll, rfIgnoreCase]);
-//        result := StringReplace(result, '{departure}', FormatDateTime('dd.mm', Departure), [rfReplaceAll, rfIgnoreCase]);
-//        result := StringReplace(result, '{guestname}', guestname, [rfReplaceAll, rfIgnoreCase]);
-//        // add guestname and roomtype
-//        Break;
-//      end;
-//      glb.PackageItems.Next;
-//    end;
-//  end;
 
 end;
 
@@ -14858,10 +14831,7 @@ var
   Arrival: Tdate;
   Departure: Tdate;
 
-  s, temp : String;
-
-  AvailabilityPerDay : TAvailabilityPerDay;
-
+  temp : String;
 begin
   result := false;
 
@@ -14927,10 +14897,7 @@ var
   Arrival: Tdate;
   Departure: Tdate;
 
-  s, temp : String;
-
-  AvailabilityPerDay : TAvailabilityPerDay;
-
+  temp : String;
 begin
   result := '';
 

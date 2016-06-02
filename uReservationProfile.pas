@@ -1696,8 +1696,8 @@ var
   ExecutionPlan: TRoomerExecutionPlan;
   theData: recRoomTypeHolder;
   newRoomType: String;
-  lExpectedTOA: TTime;
-  lExpectedCOT: TTime;
+  lExpectedTOA: string;
+  lExpectedCOT: string;
 begin
   // Add roomreservation as noroom
 
@@ -1737,8 +1737,8 @@ begin
 
       arrival := mRoomsArrival.AsDateTime;
       departure := mRoomsDeparture.AsDateTime;
-      lExpectedTOA := mRoomsExpectedTimeOfArrival.AsDateTime;
-      lExpectedCOT := mRoomsExpectedCheckoutTime.AsDateTime;
+      lExpectedTOA := mRoomsExpectedTimeOfArrival.AsString;
+      lExpectedCOT := mRoomsExpectedCheckoutTime.AsString;
       dayCount := trunc(departure) - trunc(arrival);
 
       RoomType := newRoomType;
