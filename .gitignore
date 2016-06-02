@@ -18,6 +18,8 @@ testPrograms/
 Win32/
 *.~*
 *.dcu
+*.bpl
+*.dcp
 * conflicted copy *
 *Exemplaar met conflict van *
 *.bak
