@@ -441,25 +441,6 @@ var
   maintStaff : TRoomerDataSet;
 
 begin
-//   s := s+' SELECT '+#10;
-//   s := s+'   TOP (100) PERCENT '+#10;
-//   s := s+'   Room '+#10;
-//   s := s+'  ,Description '+#10;
-//   s := s+'  ,RoomType '+#10;
-//   s := s+'  ,Equipments '+#10;
-//   s := s+'  ,Bookable '+#10;
-//   s := s+'  ,[Statistics] '+#10;
-//   s := s+'  ,Status '+#10;
-//   s := s+'  ,OrderIndex '+#10;
-//   s := s+'  ,hidden '+#10;
-//   s := s+'  ,Location '+#10;
-//   s := s+'  ,Floor '+#10;
-//   s := s+'  ,useInNationalReport '+#10;
-//   s := s+' FROM '+#10;
-//   s := s+'   Rooms '+#10;
-//   s := s+' ORDER BY '+#10;
-//   s := s+'   OrderIndex '+#10;
-//   s := s+'   ,Room '+#10;
   Clear;
 
   glb.ForceTableRefresh;

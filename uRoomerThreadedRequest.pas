@@ -121,6 +121,8 @@ end;
 procedure TGetThreadedData.ThreadTerminate(Sender: TObject);
 begin
   FRoomerDataSet.RecordSet := TDBThread(Sender).RecordSet;
+//  if Assigned(FRoomerDataSet) then
+//    try FRoomerDataSet.LogoutUnaffected; except end;
   if assigned(FEventHandler) then
     FEventHandler(self);
 end;

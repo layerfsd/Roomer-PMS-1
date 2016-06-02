@@ -10230,6 +10230,8 @@ var
 
   lInvRoom: TInvoiceRoomEntity;
 
+  InvoicelineId : Integer;
+
 begin
   err := '';
   UpdateOk := false;
@@ -10312,6 +10314,11 @@ begin
     Description := copy(Description, 1, pos('(Room:', Description) - 1);
   NextInvoiceLine := NumberOfInvoiceLines(reservation,
     toRoomReservation, 0) + 1;
+
+  if agrLines.Objects[col_Select, agrLines.row] IS TInvoiceLine then
+    InvoicelineId := TInvoiceline(agrLines.Objects[col_Select, agrLines.row]).Id
+  else
+    InvoicelineId := -1;
   s := '';
   s := s + ' UPDATE invoicelines ' + #10;
   s := s + ' Set ' + #10;
@@ -10320,13 +10327,17 @@ begin
   s := s + ' , Description = ' + _db(Description) + ' ' + #10;
   s := s + ' , InvoiceIndex = ' + _db(InvoiceIndex) + ' ' + #10;
   s := s + ' , staffLastEdit= ' + _db(d.roomerMainDataSet.username) + ' ' + #10;
-  s := s + 'where Reservation = ' + _db(reservation);
-  if RoomReservation > 0 then
-    s := s + '  and RoomReservation = ' + _db(RoomReservation) + #10
-  else
-    s := s + '  and RoomReservation = 0 ' + #10;
-  s := s + '   and Splitnumber = 0 ' + #10;
-  s := s + '   and itemNumber = ' + _db(itemNumber);
+  if InvoicelineId = -1 then
+  begin
+    s := s + 'where Reservation = ' + _db(reservation);
+    if RoomReservation > 0 then
+      s := s + '  and RoomReservation = ' + _db(RoomReservation) + #10
+    else
+      s := s + '  and RoomReservation = 0 ' + #10;
+    s := s + '   and Splitnumber = 0 ' + #10;
+    s := s + '   and itemNumber = ' + _db(itemNumber);
+  end else
+    s := s + 'where id = ' + _db(InvoiceLineId);
   try
     if not cmd_bySQL(s) then
     begin
