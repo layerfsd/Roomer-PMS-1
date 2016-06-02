@@ -429,7 +429,7 @@ type
     m: TkbmMemTable;
     StoreMain: TcxPropertiesStore;
     sSkinProvider1: TsSkinProvider;
-    N2: TMenuItem;
+    __N2: TMenuItem;
     S1: TMenuItem;
     dxBarSubItem1: TdxBarSubItem;
     dxBarLargeButton3: TdxBarLargeButton;
@@ -531,7 +531,7 @@ type
     mnuItemPasteReservationFromClipboard: TMenuItem;
     pmnuProvideAllotment: TMenuItem;
     imgBlinker: TImage;
-    N4: TMenuItem;
+    __N4: TMenuItem;
     mnuItmColorCodeRoom: TMenuItem;
     btnChannelToggleRules: TdxBarLargeButton;
     btnDeleteCache: TdxBarLargeButton;
@@ -554,7 +554,7 @@ type
     B1: TMenuItem;
     C2: TMenuItem;
     P1: TMenuItem;
-    N7: TMenuItem;
+    __N7: TMenuItem;
     dlgAdvGridPrintSettings: TAdvGridPrintSettingsDialog;
     btnTaxes: TdxBarLargeButton;
     btnDownPayments: TdxBarLargeButton;
@@ -708,6 +708,8 @@ type
     N9: TMenuItem;
     btnRepArrivals: TdxBarLargeButton;
     __TimingResult: TsLabel;
+    mnuCancelRoomFromRoomReservation: TMenuItem;
+    __N10: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
@@ -1007,6 +1009,7 @@ type
     procedure R3Click(Sender: TObject);
     procedure FormActivate(Sender: TObject);
     procedure btnRepArrivalsClick(Sender: TObject);
+    procedure mnuCancelRoomFromRoomReservationClick(Sender: TObject);
 
   private
     FormShowing : Boolean;
@@ -1478,6 +1481,7 @@ type
     procedure EndTimeMeasure;
     procedure StartTimeMeasure;
     procedure RefreshMessagesOnUI;
+    procedure CancelARoomReservation;
 {$IFDEF USE_JCL}
     procedure LogException(ExceptObj: TObject; ExceptAddr: Pointer; IsOS: boolean);
 {$ENDIF}
@@ -1583,7 +1587,7 @@ uses
   ufDownPayments
     , uFrmResources, uFileDependencyManager, uMaidActions, uTaxCalc, uRptCustInvoices, uRptResInvoices, uFrmRBEContainer, uRptManagment,
   uChart, uRoomerExceptions, uRoomerMessageDialog, uRptBreakfastGuests, uLostAndFound, uRunWithElevatedOption, urptNotes, uRptGuests, umakeKreditInvoice,
-  uBookKeepingCodes, uRptBookkeeping, uReservationEmailingDialog, uFrmReservationCancellationDialog,
+  uBookKeepingCodes, uRptBookkeeping, uReservationEmailingDialog, uFrmReservationCancellationDialog, uFrmRoomReservationCancellationDialog,
   uRptCashier, uPhoneRates, uGroupGuests,
   uActivityLogs,
   uFrmCheckOut,
@@ -5395,6 +5399,12 @@ begin
   RefreshGrid;
 end;
 
+procedure TfrmMain.mnuCancelRoomFromRoomReservationClick(Sender: TObject);
+begin
+  UserClickedDxLargeButton(Sender);
+  CancelARoomReservation;
+end;
+
 procedure TfrmMain.C4Click(Sender: TObject);
 var
   iRoomReservation: integer;
@@ -5515,6 +5525,19 @@ begin
     // [d.roomerMainDataSet.userName, DateTimeToStr(now)]));
 
     if CancelBookingDialog(_iReservation) then
+      if (ViewMode = vmOneDay) OR (ViewMode = vmPeriod) then
+        RefreshGrid;
+  end;
+end;
+
+procedure TfrmMain.CancelARoomReservation;
+begin
+  if GetSelectedRoomInformation then
+  begin
+    // d.roomerMainDataSet.SystemCancelReservation(_iReservation, Format('User %s changed state to cancelled on %s',
+    // [d.roomerMainDataSet.userName, DateTimeToStr(now)]));
+
+    if CancelRoomBookingDialog(_iRoomReservation) then
       if (ViewMode = vmOneDay) OR (ViewMode = vmPeriod) then
         RefreshGrid;
   end;

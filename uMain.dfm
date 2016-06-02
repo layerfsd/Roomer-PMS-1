@@ -52,6 +52,7 @@ object frmMain: TfrmMain
     SunkenBorder = True
     UseOwnColor = True
     UseOwnSunkenBorder = True
+    ExplicitTop = 122
   end
   object panMain: TsPanel
     Left = 3
@@ -140,6 +141,8 @@ object frmMain: TfrmMain
           OnMouseUp = grOneDayRoomsMouseUp
           OnStartDrag = grOneDayRoomsStartDrag
           ActiveRowColor = clWhite
+          GridLineColor = 15527152
+          GridFixedLineColor = 13947601
           HoverRowCells = [hcNormal, hcSelected]
           OnGridHint = grOneDayRoomsGridHint
           OnClickCell = grOneDayRoomsClickCell
@@ -4033,27 +4036,34 @@ object frmMain: TfrmMain
       Caption = 'Cancel Reservation'
       OnClick = btnCancelThisReservationClick
     end
+    object mnuCancelRoomFromRoomReservation: TMenuItem
+      Caption = 'Cancel Room from Reservation'
+      OnClick = mnuCancelRoomFromRoomReservationClick
+    end
+    object __N10: TMenuItem
+      Caption = '-'
+    end
     object mnuDeleteRoomFromReservation: TMenuItem
       Caption = 'Delete Room from Reservation'
       Hint = 'Delete Room from Reservation'
       ImageIndex = 43
       OnClick = btnRemoveThisRoomClick
     end
-    object N4: TMenuItem
+    object __N4: TMenuItem
       Caption = '-'
     end
     object mnuItmColorCodeRoom: TMenuItem
       Caption = 'Color code Room'
       OnClick = mnuItmColorCodeRoomClick
     end
-    object N2: TMenuItem
+    object __N2: TMenuItem
       Caption = '-'
     end
     object P1: TMenuItem
       Caption = 'Print'
       OnClick = P1Click
     end
-    object N7: TMenuItem
+    object __N7: TMenuItem
       Caption = '-'
     end
     object S1: TMenuItem
