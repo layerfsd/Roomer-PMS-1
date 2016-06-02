@@ -534,16 +534,6 @@ object frmReservationProfile: TfrmReservationProfile
           'Group Account')
       end
     end
-    object sButton6: TsButton
-      Left = 1081
-      Top = 12
-      Width = 16
-      Height = 17
-      Caption = '-'
-      TabOrder = 4
-      OnClick = sButton6Click
-      SkinData.SkinSection = 'BUTTON'
-    end
   end
   object PageControl2: TsPageControl
     Left = 0
@@ -834,6 +824,10 @@ object frmReservationProfile: TfrmReservationProfile
               ImageIndex = 1
               SkinData.CustomColor = False
               SkinData.CustomFont = False
+              ExplicitLeft = 0
+              ExplicitTop = 0
+              ExplicitWidth = 0
+              ExplicitHeight = 0
               object Label10: TsLabel
                 Left = 33
                 Top = 13
@@ -2345,7 +2339,6 @@ object frmReservationProfile: TfrmReservationProfile
           TabOrder = 2
           OnClick = sButton5Click
           SkinData.SkinSection = 'BUTTON'
-          ExplicitTop = 2
         end
         object btnGroups: TsButton
           AlignWithMargins = True
@@ -2383,6 +2376,10 @@ object frmReservationProfile: TfrmReservationProfile
       ImageIndex = 1
       SkinData.CustomColor = False
       SkinData.CustomFont = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Panel10: TsPanel
         Left = 0
         Top = 0
@@ -2443,8 +2440,8 @@ object frmReservationProfile: TfrmReservationProfile
         object chkShowAllGuests: TsCheckBox
           Left = 333
           Top = 11
-          Width = 85
-          Height = 20
+          Width = 93
+          Height = 18
           Caption = 'Show all guests'
           Anchors = [akLeft, akTop, akRight]
           TabOrder = 4
@@ -2849,6 +2846,10 @@ object frmReservationProfile: TfrmReservationProfile
       Caption = 'ALERTS'
       SkinData.CustomColor = False
       SkinData.CustomFont = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object pnlAlertHolder: TsPanel
         Left = 0
         Top = 0
@@ -2865,6 +2866,10 @@ object frmReservationProfile: TfrmReservationProfile
       ImageIndex = 2
       SkinData.CustomColor = False
       SkinData.CustomFont = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Panel11: TsPanel
         Left = 0
         Top = 0
@@ -3228,6 +3233,10 @@ object frmReservationProfile: TfrmReservationProfile
       Caption = 'Sent emails'
       SkinData.CustomColor = False
       SkinData.CustomFont = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
     end
   end
   object pnlDataWait: TsPanel
