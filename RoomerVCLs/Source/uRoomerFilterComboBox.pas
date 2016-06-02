@@ -54,6 +54,7 @@ destructor TRoomerFilterComboBox.Destroy;
 begin
   FStoredItems.Clear;
   FStoredItems.Free;
+  FKeys.Free;
   inherited;
 end;
 

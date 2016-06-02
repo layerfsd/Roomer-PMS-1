@@ -324,7 +324,8 @@ var
 implementation
 
 uses
-    uD
+    UITypes
+  , uD
   , uReservationProfile
   , uFinishedInvoices2
   , uInvoice
@@ -438,22 +439,24 @@ begin
     screen.Cursor := crHourGlass;
     try
       s := '';
-      s := s+' SELECT '#10;
-      s := s+'     COUNT(rooms.Room) AS RoomCount '#10;
-      s := s+'   , SUM(roomtypes.NumberGuests) AS BedCount '#10;
-      s := s+' FROM '#10;
-      s := s+'    rooms '#10;
-      s := s+'     INNER JOIN '#10;
-      s := s+'       roomtypes ON  rooms.RoomType = roomtypes.RoomType '#10;
-      s := s+' WHERE '#10;
-      s := s+'  ( '#10;
-      s := s+'      (rooms.Bookable = 1) '#10;
-      s := s+'  AND (rooms.useInNationalReport = 1) '#10;
+      s := s + ' SELECT '#10;
+      s := s + '     COUNT(rooms.Room) AS RoomCount '#10;
+      s := s + '   , SUM(roomtypes.NumberGuests) AS BedCount '#10;
+      s := s + ' FROM '#10;
+      s := s + '    rooms '#10;
+      s := s + '     INNER JOIN '#10;
+      s := s + '       roomtypes ON  rooms.RoomType = roomtypes.RoomType '#10;
+      s := s + ' WHERE '#10;
+      s := s + '  ( '#10;
+      s := s + '      (rooms.Bookable = 1) '#10;
+      s := s + '  AND (rooms.useInNationalReport = 1) '#10;
+      s := s + '  AND (rooms.wildcard = 0 AND rooms.Statistics = 1 AND rooms.Active = 1) '#10;
       if zLocationList <> '' then
       begin
         s := s + '  AND (rooms.Location in ('+zLocationList+') ) '#10;
       end;
       s := s+' ) '#10;
+
 
       hData.rSet_bySQL(rSet,s);
       if not rSet.Eof then
@@ -553,6 +556,7 @@ begin
   '    INNER JOIN persons ON countries.country = persons.country '#10+
   '    INNER JOIN reservations ON persons.Reservation = reservations.Reservation '#10+
   '    INNER JOIN roomsdate ON persons.RoomReservation = roomsdate.RoomReservation '#10+
+  '    INNER JOIN rooms on (rooms.room=roomsdate.room and rooms.wildcard=0) '#10+
   ' WHERE '#10+
   '   (persons.RoomReservation IN %s )'#10+
   '      AND (((Resflag in (''G'',''P'',''D'',''O'',''A'')) AND roomsdate.isNoRoom=0) OR ((Resflag in (''G'',''D'')) AND roomsdate.isNoRoom<>0)) '#10+
@@ -570,9 +574,6 @@ begin
     screen.Cursor := crHourGlass;
     try
       s := format(s, [zRoomReservationsList]);
-
-//      copytoclipboard(s);
-//      debugMessage(s);
 
       hData.rSet_bySQL(rSet,s);
       if mNationalStatistics.Active then mNationalStatistics.Close;
@@ -610,7 +611,6 @@ begin
           mHagstofa1.fieldbyname('ReservationCount').AsInteger     :=  ReservationCount;
           mHagstofa1.fieldbyname('CountryGroup').AsString          :=  CountryGroup;
           mHagstofa1.fieldbyname('GroupName').AsString             :=  GroupName;
-          mHagstofa1.fieldbyname('Precent').AsFloat                :=  Precent;
           mHagstofa1.fieldbyname('Guests').AsInteger               :=  GuestCount;
           mHagstofa1.fieldbyname('Nights').AsInteger               :=  GuestNights;
           mHagstofa1.FieldByName('OrderIndex').AsInteger           :=  OrderIndex;
@@ -712,6 +712,7 @@ begin
     '       countrygroups ON countries.CountryGroup = countrygroups.CountryGroup '#10+
     '     RIGHT OUTER JOIN '#10+
     '       roomreservations ON persons.RoomReservation = roomreservations.RoomReservation '#10+
+    '     INNER JOIN rooms ro ON roomreservations.room=ro.room and ro.wildcard=0  '#10 +
     '     RIGHT OUTER JOIN '#10+
     '       reservations ON roomreservations.Reservation = reservations.Reservation '#10+
     ' WHERE '#10+
@@ -722,10 +723,12 @@ begin
 
 
     try
+
       s := format(s , [zRoomReservationsList]);
+
       hData.rSet_bySQL(rSet,s);
 
-      if mAllGuests.Active then mAllGuests.Close;
+      if not mAllGuests.Active then mAllGuests.Close;
       mAllGuests.open;
       mAllGuests.LoadFromDataSet(rSet);
       mAllGuests.First;
@@ -771,7 +774,7 @@ begin
       ' FROM '#10+
       '   roomreservations '#10+
       ' WHERE '#10+
-      '        ( roomreservations.RoomReservation in  %s ) '+  //zRoomReservationsLis#10+
+      '     ( roomreservations.RoomReservation in  %s ) '+  //zRoomReservationsLis#10+
       '      AND (((roomreservations.Status in (''G'',''P'',''D'',''O'',''A'')) AND Left(roomreservations.Room,1) <> ''<'') OR ((roomreservations.Status in (''G'',''D'')) AND Left(roomreservations.Room,1) = ''<'')) ';
 
       s := format(s , [zRoomReservationsList]);
@@ -857,7 +860,6 @@ begin
     while not mHagstofa1.eof do
     begin
       GroupName  := '';
-      OrderIndex := 0;
 
       countryGroup := mHagstofa1.FieldByName('CountryGroup').AsString;
       guests       := mHagstofa1.FieldByName('Guests').AsInteger;
@@ -1007,7 +1009,6 @@ end;
 procedure TfrmNationalReport3.ShowData;
 var
   y, m, d : word;
-  idx : integer;
   lastDay : integer;
 begin
   zSetDates := false;
@@ -1048,22 +1049,18 @@ end;
 procedure TfrmNationalReport3.cxButton1Click(Sender: TObject);
 var
   iReservation : integer;
-  iRoomReservation : integer;
 
   oldCountry : string;
   oldCountryName : string;
 
   newCountry     : string;
-  newCountryName : string;
 
   S : string;
-  description : string;
   countryHolder : recCountryHolder;
 
 begin
   //TESTED// lev3 ok
   iReservation := mAllGuests.FieldByName('Reservation').AsInteger;
-  iRoomReservation := mAllGuests.FieldByName('RoomReservation').AsInteger;
 
   oldCountry :=   d.getCountryFromReservation(ireservation);
 
@@ -1074,10 +1071,6 @@ begin
   S := oldCountry;
   if Countries(actLookup, countryHolder) then
   begin
-   (* S := S + 'Change nationality of all guests ' + chr(10);
-    S := S + ' from ' + oldCountryName + ' to ' + countryHolder.CountryName + chr(10);
-    S := S + '' + chr(10);
-    S := S + 'Confirm ?'; *)
 	  S := format(GetTranslatedText('shTx_NationalReport_ChangeNationalityFromTo'),
               [oldCountryName, countryHolder.CountryName]);
 

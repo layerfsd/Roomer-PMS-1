@@ -42,6 +42,8 @@ object frmNationalReport3: TfrmNationalReport3
     object sheetNationalStatistics1: TsTabSheet
       Caption = 'Room Nights'
       ImageIndex = 1
+      SkinData.CustomColor = False
+      SkinData.CustomFont = False
       object Panel2: TsPanel
         Left = 0
         Top = 0
@@ -209,10 +211,8 @@ object frmNationalReport3: TfrmNationalReport3
     object cxTabSheet1: TsTabSheet
       Caption = 'Guests'
       ImageIndex = 2
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
+      SkinData.CustomColor = False
+      SkinData.CustomFont = False
       object Panel5: TsPanel
         Left = 0
         Top = 0
@@ -497,10 +497,9 @@ object frmNationalReport3: TfrmNationalReport3
         BevelInner = bvNone
         BevelOuter = bvNone
         BevelKind = bkFlat
-        Color = clWhite
         EditMask = '!99/99/9999;1; '
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = clBlack
+        Font.Color = clWindowText
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -523,10 +522,9 @@ object frmNationalReport3: TfrmNationalReport3
         BevelInner = bvNone
         BevelOuter = bvNone
         BevelKind = bkFlat
-        Color = clWhite
         EditMask = '!99/99/9999;1; '
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = clBlack
+        Font.Color = clWindowText
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -569,9 +567,8 @@ object frmNationalReport3: TfrmNationalReport3
         BoundLabel.Font.Style = []
         SkinData.SkinSection = 'COMBOBOX'
         VerticalAlignment = taAlignTop
-        Color = clWhite
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = clBlack
+        Font.Color = clWindowText
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -608,9 +605,8 @@ object frmNationalReport3: TfrmNationalReport3
         BoundLabel.Font.Style = []
         SkinData.SkinSection = 'COMBOBOX'
         VerticalAlignment = taAlignTop
-        Color = clWhite
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = clBlack
+        Font.Color = clWindowText
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -1032,9 +1028,8 @@ object frmNationalReport3: TfrmNationalReport3
           Top = 21
           Width = 63
           Height = 21
-          Color = clWhite
           Font.Charset = DEFAULT_CHARSET
-          Font.Color = clBlack
+          Font.Color = clWindowText
           Font.Height = -11
           Font.Name = 'Tahoma'
           Font.Style = []
@@ -1051,9 +1046,8 @@ object frmNationalReport3: TfrmNationalReport3
           Top = 43
           Width = 63
           Height = 21
-          Color = clWhite
           Font.Charset = DEFAULT_CHARSET
-          Font.Color = clBlack
+          Font.Color = clWindowText
           Font.Height = -11
           Font.Name = 'Tahoma'
           Font.Style = []
@@ -1070,9 +1064,8 @@ object frmNationalReport3: TfrmNationalReport3
           Top = 65
           Width = 63
           Height = 21
-          Color = clWhite
           Font.Charset = DEFAULT_CHARSET
-          Font.Color = clBlack
+          Font.Color = clWindowText
           Font.Height = -11
           Font.Name = 'Tahoma'
           Font.Style = []
