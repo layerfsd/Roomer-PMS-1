@@ -223,7 +223,8 @@ uses
   uViewDailyRates in 'uViewDailyRates.pas' {FrmViewDailyRates},
   uHotelArrivalsOfflineReport in 'OfflineReports\uHotelArrivalsOfflineReport.pas',
   uHotelArrivalsOfflineReportDesign in 'OfflineReports\uHotelArrivalsOfflineReportDesign.pas',
-  uRptArrivals in 'uRptArrivals.pas' {frmArrivalsReport};
+  uRptArrivals in 'uRptArrivals.pas' {frmArrivalsReport},
+  uFrmRoomReservationCancellationDialog in 'uFrmRoomReservationCancellationDialog.pas' {FrmRoomReservationCancellationDialog};
 
 {$R *.RES}
 
