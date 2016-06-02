@@ -240,8 +240,8 @@ begin
          'FROM ' +
          '( ' +
          'SELECT rd.Reservation, rd.RoomReservation, ' +
-         'DATE((SELECT ADate FROM roomsdate rd1 WHERE rd1.RoomReservation=rd.RoomReservation AND (NOT rd1.ResFlag IN (''X'',''%s'',''N'',''W'',''Z'',''O'')) ORDER BY ADate LIMIT 1)) AS Arrival, ' +
-         'DATE(DATE_ADD((SELECT ADate FROM roomsdate rd1 WHERE rd1.RoomReservation=rd.RoomReservation AND (NOT rd1.ResFlag IN (''X'',''%s'',''N'',''W'',''Z'',''O'')) ORDER BY ADate DESC LIMIT 1), INTERVAL 1 DAY)) AS Departure, ' +
+         'DATE((SELECT ADate FROM roomsdate rd1 WHERE rd1.RoomReservation=rd.RoomReservation AND (NOT rd1.ResFlag IN (''X'',''%s'',''N'')) ORDER BY ADate LIMIT 1)) AS Arrival, ' +
+         'DATE(DATE_ADD((SELECT ADate FROM roomsdate rd1 WHERE rd1.RoomReservation=rd.RoomReservation AND (NOT rd1.ResFlag IN (''X'',''%s'',''N'')) ORDER BY ADate DESC LIMIT 1), INTERVAL 1 DAY)) AS Departure, ' +
          'COUNT(rd.ID) AS NumberOfNights, ' +
 //         'SUM(RoomRate) AS TotalPrice, ' +
          '(SUM(RoomRate) + IF(r.Package != '''', ' +

@@ -146,7 +146,8 @@ begin
         edTo.Text, edCc.Text, bcc, '', ConvertToEncion(Strings.Text), files);
     Close;
     finally
-      try TFile.Delete(attName); except end;
+      if attName <> '' then
+         try TFile.Delete(attName); except end;
     end;
   finally
     att.Free;

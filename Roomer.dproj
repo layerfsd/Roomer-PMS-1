@@ -114,13 +114,14 @@
         <DCC_Define>_ROOMERSSL;TRANSLATION_ACTIVE;TRANSLATION_EXCEPTIONS_ACTIVE;$(DCC_Define)</DCC_Define>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win32)'!=''">
+        <VerInfo_Build>1</VerInfo_Build>
         <VerInfo_Release>5</VerInfo_Release>
         <VerInfo_MinorVer>9</VerInfo_MinorVer>
         <DCC_ExeOutput>$(ROOMER_RELEASE_DIR)</DCC_ExeOutput>
         <Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
         <DCC_BplOutput>dck\</DCC_BplOutput>
         <DCC_Define>RELEASE;$(DCC_Define)</DCC_Define>
-        <VerInfo_Keys>CompanyName=Promoir BV;FileDescription=Roomer PMS;FileVersion=1.9.5.0;InternalName=;LegalCopyright=(C) 2013, 2014, 2015, 2016 Promoir BV;LegalTrademarks=Roomer is a Registered Trademark of Promoir BV;OriginalFilename=Roomer.exe;ProductName=Roomer Open Hospitality Platform;ProductVersion=1.9.5.0;Comments=;ExtraBuild=160528</VerInfo_Keys>
+        <VerInfo_Keys>CompanyName=Promoir BV;FileDescription=Roomer PMS;FileVersion=1.9.5.1;InternalName=;LegalCopyright=(C) 2013, 2014, 2015, 2016 Promoir BV;LegalTrademarks=Roomer is a Registered Trademark of Promoir BV;OriginalFilename=Roomer.exe;ProductName=Roomer Open Hospitality Platform;ProductVersion=1.9.5.1;Comments=;ExtraBuild=160602</VerInfo_Keys>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2)'!=''">
         <DCC_ExeOutput>$(ROOMER_DEBUG_DIR)</DCC_ExeOutput>
@@ -143,13 +144,13 @@
         <DCC_DcuOutput>C:\Temp\dcu\</DCC_DcuOutput>
         <DCC_DcpOutput>C:\Temp\dcu\</DCC_DcpOutput>
         <VerInfo_Debug>true</VerInfo_Debug>
-        <VerInfo_Keys>CompanyName=Promoir Roomer / Beryllium ehf;FileDescription=Roomer PMS;FileVersion=1.2.0.1083;InternalName=Roomer;LegalCopyright=Hordur Johannsson/Bjorn Heidarr;LegalTrademarks=;OriginalFilename=Roomer;ProductName=Roomer PMS;ProductVersion=1.0.0.0;Comments=;ExtraBuild=20151203</VerInfo_Keys>
+        <VerInfo_Keys>CompanyName=Promoir Roomer / Beryllium ehf;FileDescription=Roomer PMS;FileVersion=1.2.0.1088;InternalName=Roomer;LegalCopyright=Hordur Johannsson/Bjorn Heidarr;LegalTrademarks=;OriginalFilename=Roomer;ProductName=Roomer PMS;ProductVersion=1.0.0.0;Comments=;ExtraBuild=20151203</VerInfo_Keys>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <VerInfo_AutoGenVersion>false</VerInfo_AutoGenVersion>
         <VerInfo_AutoIncVersion>true</VerInfo_AutoIncVersion>
         <VerInfo_Release>0</VerInfo_Release>
         <VerInfo_MinorVer>2</VerInfo_MinorVer>
-        <VerInfo_Build>1083</VerInfo_Build>
+        <VerInfo_Build>1088</VerInfo_Build>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_3)'!=''">
         <DCC_Optimize>false</DCC_Optimize>
@@ -745,7 +746,7 @@
                     <VersionInfo Name="MajorVer">12</VersionInfo>
                     <VersionInfo Name="MinorVer">5</VersionInfo>
                     <VersionInfo Name="Release">11</VersionInfo>
-                    <VersionInfo Name="Build">12138</VersionInfo>
+                    <VersionInfo Name="Build">12146</VersionInfo>
                     <VersionInfo Name="Debug">False</VersionInfo>
                     <VersionInfo Name="PreRelease">False</VersionInfo>
                     <VersionInfo Name="Special">False</VersionInfo>
@@ -757,7 +758,7 @@
                 <VersionInfoKeys>
                     <VersionInfoKeys Name="CompanyName">Beryllium ehf</VersionInfoKeys>
                     <VersionInfoKeys Name="FileDescription">Hotel Management System Main Module</VersionInfoKeys>
-                    <VersionInfoKeys Name="FileVersion">12.5.11.12138</VersionInfoKeys>
+                    <VersionInfoKeys Name="FileVersion">12.5.11.12146</VersionInfoKeys>
                     <VersionInfoKeys Name="InternalName">HMS</VersionInfoKeys>
                     <VersionInfoKeys Name="LegalCopyright">Beryllium ehf 2000-2012</VersionInfoKeys>
                     <VersionInfoKeys Name="LegalTrademarks">Beryllium 2000-2012</VersionInfoKeys>

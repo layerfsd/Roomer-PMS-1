@@ -105,6 +105,9 @@ var
   zOneDayResPointers: TOneDayResPointersArray;
   zOneDay_bSelectedNonRooms: array [1 .. 500, 1 .. 2] of integer;
 
+const WM_REFRESH_MESSAGES = WM_User + 392;
+
+
 type
 
   TfrmMain = class(TForm)
@@ -1084,6 +1087,7 @@ type
 
     // *s    zRoomsOBJ : TRoom;
 
+    procedure OnRefreshMessagesRequest(var Msg: TMessage); message WM_REFRESH_MESSAGES;
     procedure Open_RR_EdForm(_grid: TAdvStringGrid);
     procedure Open_RES_edForm(_grid: TAdvStringGrid);
 
@@ -1473,6 +1477,7 @@ type
     procedure UpdateHotelsList;
     procedure EndTimeMeasure;
     procedure StartTimeMeasure;
+    procedure RefreshMessagesOnUI;
 {$IFDEF USE_JCL}
     procedure LogException(ExceptObj: TObject; ExceptAddr: Pointer; IsOS: boolean);
 {$ENDIF}
@@ -3187,6 +3192,11 @@ begin
   RefreshGrid;
 end;
 
+procedure TfrmMain.OnRefreshMessagesRequest(var Msg: TMessage);
+begin
+  RefreshMessagesOnUI;
+end;
+
 procedure TfrmMain.OnViewReservationHandlerClick(rri: RecRRInfo);
 begin
   if EditReservation(rri.Reservation, rri.RoomReservation) then;
@@ -3383,13 +3393,13 @@ begin
     lblHotelName.Caption := g.qHotelName;
     timMessagesTimer(timMessages);
     timMessages.Enabled := true;
-    try
-      CloseAppSettings;
-      OpenAppSettings;
-    except
-      on E: Exception do
-        MessageDlg(E.message, mtError, [mbOk], 0);
-    end;
+//    try
+//      CloseAppSettings;
+//      OpenAppSettings;
+//    except
+//      on E: Exception do
+//        MessageDlg(E.message, mtError, [mbOk], 0);
+//    end;
 
 
   d.PrepareFixedTables;
@@ -8452,17 +8462,17 @@ var
 begin
   // exit;
   FMessagesBeingDownloaded := true;
+  timMessages.Enabled := false;
   try
     if NOT d.roomerMainDataSet.LoggedIn then
       exit;
 
+    try
     PushActivityLogs;
 
     if d.roomerMainDataSet.SecondsLeft <= 60 then
       exit;
 
-    try
-      timMessages.Enabled := false;
       lblCacheNotification.Visible := true;
       lblCacheNotification.Update;
 
@@ -8470,94 +8480,100 @@ begin
 
       anySystemMessage := false;
 
-      //      Beep;
-      try
-        if NOT OffLineMode then
-        begin
-          ResList := TStringList.Create;
-          CancelList := TStringList.Create;
-          try
-            iMinute := StrToInt(FormatDateTime('n', now));
-//            if iMinute IN [0, 15, 30, 45] then
-//              d.BackUpDataForOutage;
-
-            if iMinute IN [0] then
-              glb.ReloadPreviousGuests;
-            RoomerMessages.Refresh;
-            for i := RoomerMessages.Count - 1 downto 0 do
-            begin
-              RoomerMessage := RoomerMessages.ActiveRoomerMessage[i];
-              systemMessage := RoomerMessage.RoomerMessageType = 'SYSTEM_MESSAGE';
-              if systemMessage AND NOT anySystemMessage then
-              begin
-                mmoMessage.HtmlText.Text := RoomerMessage.TheMessage;
-                mmoMessage.Tag := RoomerMessage.id;
-              end
-              else if NOT systemMessage then
-              begin
-                if RoomerMessage.RoomerMessageType = 'RESERVATION_MESSAGE' then
-                begin
-                  ResList.Add(inttostr(RoomerMessage.id));
-                  RoomerMessageType := rmtNewBooking;
-                end
-                else if RoomerMessage.RoomerMessageType = 'CANCELLATION_MESSAGE' then
-                begin
-                  CancelList.Add(inttostr(RoomerMessage.id));
-                  RoomerMessageType := rmtCancellation;
-                end
-                else
-                  RoomerMessageType := rmtUnknown;
-                if RoomerMessageType <> rmtUnknown then
-                begin
-                  FrmMessagesTemplates.AddMessage(RoomerMessageType, RoomerMessage.TheMessage, '', inttostr(RoomerMessage.id));
-                  RoomerMessages.Delete(i);
-                end;
-              end;
-              anySystemMessage := anySystemMessage OR systemMessage;
-            end;
-            if ResList.Count > 0 then
-              FrmMessagesTemplates.RemoveThoseNotInList(rmtNewBooking, ResList);
-            if CancelList.Count > 0 then
-              FrmMessagesTemplates.RemoveThoseNotInList(rmtNewBooking, CancelList);
-            if OffLineMode then
-              OffLineMode := false;
-          except
-{$IFDEF DEBUG}
-            // if NOT OffLineMode then
-            // raise Exception.Create('Message Retrieval failed');
-{$ENDIF}
-          end;
-          ResList.Free;
-          CancelList.Free;
-          glb.RefreshTablesWhenNeeded;
-
-          pnlMessages.Visible := anySystemMessage AND (RoomerMessages.ActiveCount > 0);
-
-          pnlNotifications.Visible := FrmMessagesTemplates.MessageList.Count > 0;
-
-          if pnlNotifications.Visible then
-          begin
-            i := FrmMessagesTemplates.HeightNeeded;
-            if i > 145 then
-              i := 145;
-            pnlNotifications.Height := i;
-          end;
-          Panel5.Top := grdRoomClasses.Top;
-          pnlNotifications.Top := Panel5.Top; // pnlDateStatistics.Top + pnlDateStatistics.Height + 1;
-
-        end
-        else
-          btnGoOnline.Visible := d.roomerMainDataSet.IsConnectedToInternet AND d.roomerMainDataSet.RoomerPlatformAvailable;
-
-      finally
-        lblCacheNotification.Visible := false;
-        timMessages.Enabled := true;
+      if NOT OffLineMode then
+      begin
+        iMinute := StrToInt(FormatDateTime('n', now));
+        if iMinute IN [0] then
+          glb.ReloadPreviousGuests;
+        RoomerMessages.Refresh;
+        postMessage(handle, WM_REFRESH_MESSAGES, 0, 0);
       end;
     except
 
     end;
   finally
+    lblCacheNotification.Visible := false;
     FMessagesBeingDownloaded := false;
+    timMessages.Enabled := true;
+  end;
+end;
+
+procedure TfrmMain.RefreshMessagesOnUI;
+var
+  RoomerMessage: TRoomerMessage;
+  systemMessage, anySystemMessage: boolean;
+  RoomerMessageType: TRoomerMessageType;
+  i: integer;
+  ResList: TStrings;
+  CancelList: TStrings;
+begin
+  // exit;
+  lblCacheNotification.Visible := true;
+  try
+    try
+      ResList := TStringList.Create;
+      CancelList := TStringList.Create;
+      try
+        for i := RoomerMessages.Count - 1 downto 0 do
+        begin
+          RoomerMessage := RoomerMessages.ActiveRoomerMessage[i];
+          systemMessage := RoomerMessage.RoomerMessageType = 'SYSTEM_MESSAGE';
+          if systemMessage AND NOT anySystemMessage then
+          begin
+            mmoMessage.HtmlText.Text := RoomerMessage.TheMessage;
+            mmoMessage.Tag := RoomerMessage.id;
+          end
+          else if NOT systemMessage then
+          begin
+            if RoomerMessage.RoomerMessageType = 'RESERVATION_MESSAGE' then
+            begin
+              ResList.Add(inttostr(RoomerMessage.id));
+              RoomerMessageType := rmtNewBooking;
+            end
+            else if RoomerMessage.RoomerMessageType = 'CANCELLATION_MESSAGE' then
+            begin
+              CancelList.Add(inttostr(RoomerMessage.id));
+              RoomerMessageType := rmtCancellation;
+            end
+            else
+              RoomerMessageType := rmtUnknown;
+            if RoomerMessageType <> rmtUnknown then
+            begin
+              FrmMessagesTemplates.AddMessage(RoomerMessageType, RoomerMessage.TheMessage, '', inttostr(RoomerMessage.id));
+              RoomerMessages.Delete(i);
+            end;
+          end;
+          anySystemMessage := anySystemMessage OR systemMessage;
+        end;
+        if ResList.Count > 0 then
+          FrmMessagesTemplates.RemoveThoseNotInList(rmtNewBooking, ResList);
+        if CancelList.Count > 0 then
+          FrmMessagesTemplates.RemoveThoseNotInList(rmtNewBooking, CancelList);
+        if OffLineMode then
+          OffLineMode := false;
+      except
+{$IFDEF DEBUG}
+        // if NOT OffLineMode then
+        // raise Exception.Create('Message Retrieval failed');
+{$ENDIF}
+      end;
+    finally
+      ResList.Free;
+      CancelList.Free;
+      pnlMessages.Visible := anySystemMessage AND (RoomerMessages.ActiveCount > 0);
+      pnlNotifications.Visible := FrmMessagesTemplates.MessageList.Count > 0;
+      if pnlNotifications.Visible then
+      begin
+        i := FrmMessagesTemplates.HeightNeeded;
+        if i > 145 then
+          i := 145;
+        pnlNotifications.Height := i;
+      end;
+      Panel5.Top := grdRoomClasses.Top;
+      pnlNotifications.Top := Panel5.Top; // pnlDateStatistics.Top + pnlDateStatistics.Height + 1;
+    end;
+  finally
+    lblCacheNotification.Visible := false;
   end;
 end;
 

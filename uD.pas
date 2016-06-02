@@ -915,13 +915,13 @@ var PROFORMA_INVOICE_NUMBER : integer;
 //  {$IFDEF rmROOMERSSL}
     const RoomerBase : String = 'https://secure.roomercloud.net';
     const RoomerBasePort : String = '443';
-    const RoomerOpenAPIBase : String = 'https://secure.roomercloud.net';
-    const RoomerOpenApiBasePort : String = '443';
+//    const RoomerOpenAPIBase : String = 'https://secure.roomercloud.net';
+//    const RoomerOpenApiBasePort : String = '443';
 //  {$ELSE}
 //    const RoomerBase : String = 'http://secure.roomercloud.net';
 //    const RoomerBasePort : String = '80';
-//    const RoomerOpenApiBasePort : String = '80';
-//    const RoomerOpenAPIBase : String = 'http://secure.roomercloud.net';
+    const RoomerOpenApiBasePort : String = '80';
+    const RoomerOpenAPIBase : String = 'http://secure.roomercloud.net';
 //  {$ENDIF}
   const RoomerStoreBase : String = 'http://store.roomercloud.net';
   const RoomerStoreBasePort : String = '8080';

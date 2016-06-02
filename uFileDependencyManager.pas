@@ -381,17 +381,19 @@ end;
 procedure AssertIndySSLDLLs;
 var filename : String;
 begin
-  filename := getRoomerLibEayDLLPath;
-  if NOT TFile.Exists(filename) then
-    d.roomerMainDataSet.SystemDownloadFileFromURI('http://roomerstore.com/' +LIBEAY, filename);
+//  For now we will leave the dlls not needed...
 
-  filename := getRoomerLibSslDLLPath;
-  if NOT TFile.Exists(filename) then
-    d.roomerMainDataSet.SystemDownloadFileFromURI('http://roomerstore.com/' +LIBSSL, filename);
-
-  filename := getRoomerSslEayDLLPath;
-  if NOT TFile.Exists(filename) then
-    d.roomerMainDataSet.SystemDownloadFileFromURI('http://roomerstore.com/' +SSLEAY, filename);
+//  filename := getRoomerLibEayDLLPath;
+//  if NOT TFile.Exists(filename) then
+//    d.roomerMainDataSet.SystemDownloadFileFromURI('http://roomerstore.com/' +LIBEAY, filename);
+//
+//  filename := getRoomerLibSslDLLPath;
+//  if NOT TFile.Exists(filename) then
+//    d.roomerMainDataSet.SystemDownloadFileFromURI('http://roomerstore.com/' +LIBSSL, filename);
+//
+//  filename := getRoomerSslEayDLLPath;
+//  if NOT TFile.Exists(filename) then
+//    d.roomerMainDataSet.SystemDownloadFileFromURI('http://roomerstore.com/' +SSLEAY, filename);
 end;
 
 function getRoomerUpgradeAgentFilePath(ToFile : String) : String;

@@ -215,6 +215,7 @@ begin
   rSet := createNewDataSet;
   try
     MessageList.Clear;
+    rSet.RoomerDataSet := nil;
     rset.GetMessages;
     rset.First;
     while not rset.Eof do
@@ -256,7 +257,7 @@ begin
     exit;
   TableRefreshSet := CreateNewDataSet;
   try
-
+    TableRefreshSet.RoomerDataSet := nil;
     TableRefreshSet.GetTableUpdateTimeStamps;
     TableRefreshSet.First;
     if not TableRefreshSet.Eof then

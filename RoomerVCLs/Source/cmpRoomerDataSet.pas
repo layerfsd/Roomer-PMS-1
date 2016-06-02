@@ -275,6 +275,7 @@ type
     function RoomerAdminLogin(username: String; password: String;
       appName: String; appVersion: String): Boolean;
     procedure Logout;
+    procedure LogoutUnaffected;
     function MyIpAddress : String;
     function SyncFinanceTables: String;
     function SwapHotel(hotelId: String; var username, password: String)
@@ -1786,7 +1787,7 @@ begin
     Close;
     CommandType := cmdFile;
     LockType := ltBatchOptimistic;
-    CommandText := '';
+//    CommandText := '';
     RecordSet := ADOInt._Recordset(FSavedResult);
 
     for i := 0 to FieldCount - 1 do
@@ -1801,8 +1802,8 @@ begin
     on E: Exception do
     begin
 {$IFDEF DEBUG}
+      CopyToClipboard(FLastSql + #13#10#13#10 + '-- ' + SqlResult + #13 + CommandText);
       DebugMessage(e.Message);
-      CopyToClipboard(FLastSql + #13#10#13#10 + '-- ' + SqlResult);
 {$ENDIF}
       raise;
     end;
@@ -2116,6 +2117,13 @@ procedure TRoomerDataSet.Logout;
 begin
   FLoggedIn := False;
   try downloadUrlAsString(RoomerUri + 'logout', 2, false); except end;
+  AppKey := '';
+end;
+
+procedure TRoomerDataSet.LogoutUnaffected;
+begin
+  FLoggedIn := False;
+  try roomerClient.Get(RoomerUri + 'logout'); except end;
   AppKey := '';
 end;
 

@@ -203,6 +203,7 @@ Type
     function GetPersonProfiles: TRoomerDataSet;
     function GetBookKeepingCodes: TRoomerDataSet;
     function GetChannelManagersSet: TRoomerDataSet;
+    procedure PreviousGuestsReloadFetchHandler(Sender: TObject);
    public
       constructor Create;
       destructor Destroy; override;
@@ -376,6 +377,7 @@ uses   dbTables
      , ug
      , uUtils
      , PrjConst
+     , uRoomerThreadedRequest
 ;
 
 procedure FilterRoom( RoomNumber : string );
@@ -520,6 +522,8 @@ begin
   end;
 end;
 
+var PreviousGuestsReload : TGetThreadedData = nil;
+
 
 procedure TGlobalSettings.ReloadPreviousGuests;
 const PREV_GUESTS_SQL = 'SELECT DISTINCT * FROM ' +
@@ -548,9 +552,25 @@ const PREV_GUESTS_SQL = 'SELECT DISTINCT * FROM ' +
                         ') xxx';
 begin
   FreeAndNil(FPreviousGuestsSet);
-  FPreviousGuestsSet := CreateNewDataset;
-  hData.rSet_bySQL(FPreviousGuestsSet, PREV_GUESTS_SQL);
-  FPreviousGuestsSet.First;
+//  FPreviousGuestsSet := CreateNewDataset;
+
+  PreviousGuestsReload := TGetThreadedData.Create;
+  PreviousGuestsReload.execute(PREV_GUESTS_SQL, PreviousGuestsReloadFetchHandler);
+//  hData.rSet_bySQL(FPreviousGuestsSet, PREV_GUESTS_SQL);
+//  FPreviousGuestsSet.First;
+end;
+
+procedure TGlobalSettings.PreviousGuestsReloadFetchHandler(Sender : TObject);
+var
+  AvailabilitySet: TRoomerDataSet;
+begin
+  try
+    FPreviousGuestsSet := PreviousGuestsReload.RoomerDataSet;
+    FPreviousGuestsSet.First;
+//    FreeAndNil(AvailabilitySet);
+  except
+//    AvailabilitySet := nil;
+  end;
 end;
 
 function TGlobalSettings.locateId(rSet : TDataset; id : Integer) : Boolean;
