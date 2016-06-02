@@ -43,10 +43,6 @@ object frmGuestPortfolio: TfrmGuestPortfolio
       SkinData.SkinSection = 'PAGECONTROL'
       object sTabSheet1: TsTabSheet
         Caption = 'Person'
-        ExplicitLeft = 0
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
         object sGroupBox1: TsGroupBox
           AlignWithMargins = True
           Left = 10
@@ -244,7 +240,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             VerticalAlignment = taAlignTop
             Color = clWhite
             Font.Charset = DEFAULT_CHARSET
-            Font.Color = 2302755
+            Font.Color = clBlack
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
@@ -264,7 +260,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Height = 21
             Color = clWhite
             Font.Charset = DEFAULT_CHARSET
-            Font.Color = 2302755
+            Font.Color = clBlack
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
@@ -280,7 +276,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Height = 21
             Color = clWhite
             Font.Charset = DEFAULT_CHARSET
-            Font.Color = 2302755
+            Font.Color = clBlack
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
@@ -296,7 +292,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Height = 21
             Color = clWhite
             Font.Charset = DEFAULT_CHARSET
-            Font.Color = 2302755
+            Font.Color = clBlack
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
@@ -312,7 +308,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Height = 21
             Color = clWhite
             Font.Charset = DEFAULT_CHARSET
-            Font.Color = 2302755
+            Font.Color = clBlack
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
@@ -328,7 +324,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Height = 21
             Color = clWhite
             Font.Charset = DEFAULT_CHARSET
-            Font.Color = 2302755
+            Font.Color = clBlack
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
@@ -348,7 +344,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Color = clWhite
             EditMask = '!99/99/9999;1; '
             Font.Charset = DEFAULT_CHARSET
-            Font.Color = 2302755
+            Font.Color = clBlack
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
@@ -369,7 +365,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Height = 21
             Color = clWhite
             Font.Charset = DEFAULT_CHARSET
-            Font.Color = 2302755
+            Font.Color = clBlack
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
@@ -387,7 +383,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Color = clWhite
             EditMask = '!99/99/9999;1; '
             Font.Charset = DEFAULT_CHARSET
-            Font.Color = 2302755
+            Font.Color = clBlack
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
@@ -408,7 +404,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Height = 21
             Color = clWhite
             Font.Charset = DEFAULT_CHARSET
-            Font.Color = 2302755
+            Font.Color = clBlack
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
@@ -467,7 +463,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Height = 21
             Color = clWhite
             Font.Charset = DEFAULT_CHARSET
-            Font.Color = 2302755
+            Font.Color = clBlack
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
@@ -485,7 +481,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Color = clWhite
             EditMask = '!99/99/9999;1; '
             Font.Charset = DEFAULT_CHARSET
-            Font.Color = 2302755
+            Font.Color = clBlack
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
@@ -549,7 +545,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Height = 21
             Color = clWhite
             Font.Charset = DEFAULT_CHARSET
-            Font.Color = 2302755
+            Font.Color = clBlack
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
@@ -565,7 +561,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Height = 21
             Color = clWhite
             Font.Charset = DEFAULT_CHARSET
-            Font.Color = 2302755
+            Font.Color = clBlack
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
@@ -587,7 +583,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Left = 4
             Top = 27
             Width = 20
-            Height = 20
+            Height = 16
             TabOrder = 0
             OnClick = xcmbGenderClick
             SkinData.SkinSection = 'CHECKBOX'
@@ -598,7 +594,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Left = 4
             Top = 54
             Width = 20
-            Height = 20
+            Height = 16
             TabOrder = 1
             OnClick = xcmbGenderClick
             SkinData.SkinSection = 'CHECKBOX'
@@ -609,7 +605,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Left = 4
             Top = 108
             Width = 20
-            Height = 20
+            Height = 16
             TabOrder = 2
             OnClick = xcmbGenderClick
             SkinData.SkinSection = 'CHECKBOX'
@@ -620,7 +616,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Left = 4
             Top = 81
             Width = 20
-            Height = 20
+            Height = 16
             TabOrder = 3
             OnClick = xcmbGenderClick
             SkinData.SkinSection = 'CHECKBOX'
@@ -631,7 +627,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Left = 4
             Top = 216
             Width = 20
-            Height = 20
+            Height = 16
             TabOrder = 4
             OnClick = xcmbGenderClick
             SkinData.SkinSection = 'CHECKBOX'
@@ -642,7 +638,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Left = 4
             Top = 189
             Width = 20
-            Height = 20
+            Height = 16
             TabOrder = 5
             OnClick = xcmbGenderClick
             SkinData.SkinSection = 'CHECKBOX'
@@ -653,7 +649,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Left = 4
             Top = 162
             Width = 20
-            Height = 20
+            Height = 16
             TabOrder = 6
             OnClick = xcmbGenderClick
             SkinData.SkinSection = 'CHECKBOX'
@@ -664,7 +660,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Left = 4
             Top = 135
             Width = 20
-            Height = 20
+            Height = 16
             TabOrder = 7
             OnClick = xcmbGenderClick
             SkinData.SkinSection = 'CHECKBOX'
@@ -675,7 +671,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Left = 4
             Top = 270
             Width = 20
-            Height = 20
+            Height = 16
             TabOrder = 8
             OnClick = xcmbGenderClick
             SkinData.SkinSection = 'CHECKBOX'
@@ -686,7 +682,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Left = 4
             Top = 243
             Width = 20
-            Height = 20
+            Height = 16
             TabOrder = 9
             OnClick = xcmbGenderClick
             SkinData.SkinSection = 'CHECKBOX'
@@ -697,7 +693,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Left = 4
             Top = 353
             Width = 20
-            Height = 20
+            Height = 16
             TabOrder = 10
             OnClick = xcmbGenderClick
             SkinData.SkinSection = 'CHECKBOX'
@@ -708,7 +704,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Left = 4
             Top = 380
             Width = 20
-            Height = 20
+            Height = 16
             TabOrder = 11
             OnClick = xcmbGenderClick
             SkinData.SkinSection = 'CHECKBOX'
@@ -719,7 +715,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Left = 4
             Top = 467
             Width = 20
-            Height = 20
+            Height = 16
             TabOrder = 12
             OnClick = xcmbGenderClick
             SkinData.SkinSection = 'CHECKBOX'
@@ -730,7 +726,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Left = 4
             Top = 494
             Width = 20
-            Height = 20
+            Height = 16
             TabOrder = 13
             OnClick = xcmbGenderClick
             SkinData.SkinSection = 'CHECKBOX'
@@ -741,10 +737,6 @@ object frmGuestPortfolio: TfrmGuestPortfolio
       end
       object sTabSheet7: TsTabSheet
         Caption = 'Contact'
-        ExplicitLeft = 0
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
         object sGroupBox4: TsGroupBox
           AlignWithMargins = True
           Left = 10
@@ -865,7 +857,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Height = 21
             Color = clWhite
             Font.Charset = DEFAULT_CHARSET
-            Font.Color = 2302755
+            Font.Color = clBlack
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
@@ -882,7 +874,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Height = 21
             Color = clWhite
             Font.Charset = DEFAULT_CHARSET
-            Font.Color = 2302755
+            Font.Color = clBlack
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
@@ -899,7 +891,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Height = 21
             Color = clWhite
             Font.Charset = DEFAULT_CHARSET
-            Font.Color = 2302755
+            Font.Color = clBlack
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
@@ -916,7 +908,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Height = 21
             Color = clWhite
             Font.Charset = DEFAULT_CHARSET
-            Font.Color = 2302755
+            Font.Color = clBlack
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
@@ -933,7 +925,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Height = 21
             Color = clWhite
             Font.Charset = DEFAULT_CHARSET
-            Font.Color = 2302755
+            Font.Color = clBlack
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
@@ -1015,7 +1007,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Height = 21
             Color = clWhite
             Font.Charset = DEFAULT_CHARSET
-            Font.Color = 2302755
+            Font.Color = clBlack
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
@@ -1032,7 +1024,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Height = 21
             Color = clWhite
             Font.Charset = DEFAULT_CHARSET
-            Font.Color = 2302755
+            Font.Color = clBlack
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
@@ -1166,7 +1158,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Height = 21
             Color = clWhite
             Font.Charset = DEFAULT_CHARSET
-            Font.Color = 2302755
+            Font.Color = clBlack
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
@@ -1182,7 +1174,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Height = 21
             Color = clWhite
             Font.Charset = DEFAULT_CHARSET
-            Font.Color = 2302755
+            Font.Color = clBlack
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
@@ -1198,7 +1190,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Height = 21
             Color = clWhite
             Font.Charset = DEFAULT_CHARSET
-            Font.Color = 2302755
+            Font.Color = clBlack
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
@@ -1214,7 +1206,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Height = 21
             Color = clWhite
             Font.Charset = DEFAULT_CHARSET
-            Font.Color = 2302755
+            Font.Color = clBlack
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
@@ -1230,7 +1222,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Height = 21
             Color = clWhite
             Font.Charset = DEFAULT_CHARSET
-            Font.Color = 2302755
+            Font.Color = clBlack
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
@@ -1246,7 +1238,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Height = 21
             Color = clWhite
             Font.Charset = DEFAULT_CHARSET
-            Font.Color = 2302755
+            Font.Color = clBlack
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
@@ -1320,7 +1312,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Height = 21
             Color = clWhite
             Font.Charset = DEFAULT_CHARSET
-            Font.Color = 2302755
+            Font.Color = clBlack
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
@@ -1336,7 +1328,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Height = 21
             Color = clWhite
             Font.Charset = DEFAULT_CHARSET
-            Font.Color = 2302755
+            Font.Color = clBlack
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
@@ -1352,7 +1344,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Height = 21
             Color = clWhite
             Font.Charset = DEFAULT_CHARSET
-            Font.Color = 2302755
+            Font.Color = clBlack
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
@@ -1374,7 +1366,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Left = 4
             Top = 27
             Width = 20
-            Height = 20
+            Height = 16
             TabOrder = 0
             OnClick = xcmbGenderClick
             SkinData.SkinSection = 'CHECKBOX'
@@ -1385,7 +1377,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Left = 4
             Top = 54
             Width = 20
-            Height = 20
+            Height = 16
             TabOrder = 1
             OnClick = xcmbGenderClick
             SkinData.SkinSection = 'CHECKBOX'
@@ -1396,7 +1388,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Left = 4
             Top = 108
             Width = 20
-            Height = 20
+            Height = 16
             TabOrder = 2
             OnClick = xcmbGenderClick
             SkinData.SkinSection = 'CHECKBOX'
@@ -1407,7 +1399,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Left = 4
             Top = 81
             Width = 20
-            Height = 20
+            Height = 16
             TabOrder = 3
             OnClick = xcmbGenderClick
             SkinData.SkinSection = 'CHECKBOX'
@@ -1418,7 +1410,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Left = 4
             Top = 272
             Width = 20
-            Height = 20
+            Height = 16
             TabOrder = 4
             OnClick = xcmbGenderClick
             SkinData.SkinSection = 'CHECKBOX'
@@ -1429,7 +1421,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Left = 4
             Top = 245
             Width = 20
-            Height = 20
+            Height = 16
             TabOrder = 5
             OnClick = xcmbGenderClick
             SkinData.SkinSection = 'CHECKBOX'
@@ -1440,7 +1432,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Left = 4
             Top = 162
             Width = 20
-            Height = 20
+            Height = 16
             TabOrder = 6
             OnClick = xcmbGenderClick
             SkinData.SkinSection = 'CHECKBOX'
@@ -1451,7 +1443,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Left = 4
             Top = 135
             Width = 20
-            Height = 20
+            Height = 16
             TabOrder = 7
             OnClick = xcmbGenderClick
             SkinData.SkinSection = 'CHECKBOX'
@@ -1462,7 +1454,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Left = 4
             Top = 383
             Width = 20
-            Height = 20
+            Height = 16
             TabOrder = 8
             OnClick = xcmbGenderClick
             SkinData.SkinSection = 'CHECKBOX'
@@ -1473,7 +1465,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Left = 4
             Top = 299
             Width = 20
-            Height = 20
+            Height = 16
             TabOrder = 9
             OnClick = xcmbGenderClick
             SkinData.SkinSection = 'CHECKBOX'
@@ -1484,7 +1476,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Left = 4
             Top = 410
             Width = 20
-            Height = 20
+            Height = 16
             TabOrder = 10
             OnClick = xcmbGenderClick
             SkinData.SkinSection = 'CHECKBOX'
@@ -1495,7 +1487,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Left = 4
             Top = 437
             Width = 20
-            Height = 20
+            Height = 16
             TabOrder = 11
             OnClick = xcmbGenderClick
             SkinData.SkinSection = 'CHECKBOX'
@@ -1506,7 +1498,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Left = 4
             Top = 518
             Width = 20
-            Height = 20
+            Height = 16
             TabOrder = 12
             OnClick = xcmbGenderClick
             SkinData.SkinSection = 'CHECKBOX'
@@ -1517,7 +1509,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Left = 4
             Top = 545
             Width = 20
-            Height = 20
+            Height = 16
             TabOrder = 13
             OnClick = xcmbGenderClick
             SkinData.SkinSection = 'CHECKBOX'
@@ -1528,7 +1520,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Left = 4
             Top = 491
             Width = 20
-            Height = 20
+            Height = 16
             TabOrder = 14
             OnClick = xcmbGenderClick
             SkinData.SkinSection = 'CHECKBOX'
@@ -1539,7 +1531,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Left = 4
             Top = 464
             Width = 20
-            Height = 20
+            Height = 16
             TabOrder = 15
             OnClick = xcmbGenderClick
             SkinData.SkinSection = 'CHECKBOX'
@@ -1550,10 +1542,6 @@ object frmGuestPortfolio: TfrmGuestPortfolio
       end
       object sTabSheet2: TsTabSheet
         Caption = 'Company'
-        ExplicitLeft = 0
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
         object sGroupBox7: TsGroupBox
           AlignWithMargins = True
           Left = 10
@@ -1752,7 +1740,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Height = 21
             Color = clWhite
             Font.Charset = DEFAULT_CHARSET
-            Font.Color = 2302755
+            Font.Color = clBlack
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
@@ -1769,7 +1757,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Height = 21
             Color = clWhite
             Font.Charset = DEFAULT_CHARSET
-            Font.Color = 2302755
+            Font.Color = clBlack
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
@@ -1785,7 +1773,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Height = 21
             Color = clWhite
             Font.Charset = DEFAULT_CHARSET
-            Font.Color = 2302755
+            Font.Color = clBlack
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
@@ -1801,7 +1789,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Height = 21
             Color = clWhite
             Font.Charset = DEFAULT_CHARSET
-            Font.Color = 2302755
+            Font.Color = clBlack
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
@@ -1817,7 +1805,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Height = 21
             Color = clWhite
             Font.Charset = DEFAULT_CHARSET
-            Font.Color = 2302755
+            Font.Color = clBlack
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
@@ -1833,7 +1821,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Height = 21
             Color = clWhite
             Font.Charset = DEFAULT_CHARSET
-            Font.Color = 2302755
+            Font.Color = clBlack
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
@@ -1849,7 +1837,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Height = 21
             Color = clWhite
             Font.Charset = DEFAULT_CHARSET
-            Font.Color = 2302755
+            Font.Color = clBlack
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
@@ -1865,7 +1853,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Height = 21
             Color = clWhite
             Font.Charset = DEFAULT_CHARSET
-            Font.Color = 2302755
+            Font.Color = clBlack
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
@@ -1881,7 +1869,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Height = 21
             Color = clWhite
             Font.Charset = DEFAULT_CHARSET
-            Font.Color = 2302755
+            Font.Color = clBlack
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
@@ -1954,7 +1942,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Height = 21
             Color = clWhite
             Font.Charset = DEFAULT_CHARSET
-            Font.Color = 2302755
+            Font.Color = clBlack
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
@@ -1970,7 +1958,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Height = 21
             Color = clWhite
             Font.Charset = DEFAULT_CHARSET
-            Font.Color = 2302755
+            Font.Color = clBlack
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
@@ -1997,7 +1985,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Height = 21
             Color = clWhite
             Font.Charset = DEFAULT_CHARSET
-            Font.Color = 2302755
+            Font.Color = clBlack
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
@@ -2019,7 +2007,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Left = 4
             Top = 30
             Width = 20
-            Height = 20
+            Height = 16
             TabOrder = 0
             OnClick = xcmbGenderClick
             SkinData.SkinSection = 'CHECKBOX'
@@ -2030,7 +2018,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Left = 4
             Top = 57
             Width = 20
-            Height = 20
+            Height = 16
             TabOrder = 1
             OnClick = xcmbGenderClick
             SkinData.SkinSection = 'CHECKBOX'
@@ -2041,7 +2029,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Left = 4
             Top = 111
             Width = 20
-            Height = 20
+            Height = 16
             TabOrder = 2
             OnClick = xcmbGenderClick
             SkinData.SkinSection = 'CHECKBOX'
@@ -2052,7 +2040,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Left = 4
             Top = 84
             Width = 20
-            Height = 20
+            Height = 16
             TabOrder = 3
             OnClick = xcmbGenderClick
             SkinData.SkinSection = 'CHECKBOX'
@@ -2063,7 +2051,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Left = 4
             Top = 219
             Width = 20
-            Height = 20
+            Height = 16
             TabOrder = 4
             OnClick = xcmbGenderClick
             SkinData.SkinSection = 'CHECKBOX'
@@ -2074,7 +2062,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Left = 4
             Top = 192
             Width = 20
-            Height = 20
+            Height = 16
             TabOrder = 5
             OnClick = xcmbGenderClick
             SkinData.SkinSection = 'CHECKBOX'
@@ -2085,7 +2073,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Left = 4
             Top = 165
             Width = 20
-            Height = 20
+            Height = 16
             TabOrder = 6
             OnClick = xcmbGenderClick
             SkinData.SkinSection = 'CHECKBOX'
@@ -2096,7 +2084,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Left = 4
             Top = 138
             Width = 20
-            Height = 20
+            Height = 16
             TabOrder = 7
             OnClick = xcmbGenderClick
             SkinData.SkinSection = 'CHECKBOX'
@@ -2107,7 +2095,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Left = 4
             Top = 246
             Width = 20
-            Height = 20
+            Height = 16
             TabOrder = 8
             OnClick = xcmbGenderClick
             SkinData.SkinSection = 'CHECKBOX'
@@ -2118,7 +2106,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Left = 4
             Top = 321
             Width = 20
-            Height = 20
+            Height = 16
             TabOrder = 9
             OnClick = xcmbGenderClick
             SkinData.SkinSection = 'CHECKBOX'
@@ -2129,7 +2117,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Left = 4
             Top = 348
             Width = 20
-            Height = 20
+            Height = 16
             TabOrder = 10
             OnClick = xcmbGenderClick
             SkinData.SkinSection = 'CHECKBOX'
@@ -2140,7 +2128,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Left = 4
             Top = 375
             Width = 20
-            Height = 20
+            Height = 16
             TabOrder = 11
             OnClick = xcmbGenderClick
             SkinData.SkinSection = 'CHECKBOX'
@@ -2151,10 +2139,6 @@ object frmGuestPortfolio: TfrmGuestPortfolio
       end
       object sTabSheet4: TsTabSheet
         Caption = 'Preferences'
-        ExplicitLeft = 0
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
         object sGroupBox11: TsGroupBox
           AlignWithMargins = True
           Left = 10
@@ -2311,7 +2295,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Height = 21
             Color = clWhite
             Font.Charset = DEFAULT_CHARSET
-            Font.Color = 2302755
+            Font.Color = clBlack
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
@@ -2327,7 +2311,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Height = 21
             Color = clWhite
             Font.Charset = DEFAULT_CHARSET
-            Font.Color = 2302755
+            Font.Color = clBlack
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
@@ -2346,7 +2330,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             VerticalAlignment = taAlignTop
             Color = clWhite
             Font.Charset = DEFAULT_CHARSET
-            Font.Color = 2302755
+            Font.Color = clBlack
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
@@ -2360,10 +2344,10 @@ object frmGuestPortfolio: TfrmGuestPortfolio
               'WORK ADDRESS')
           end
           object cbxEmailSpecials: TsCheckBox
-            Left = 199
-            Top = 119
-            Width = 111
-            Height = 20
+            Left = 201
+            Top = 121
+            Width = 119
+            Height = 17
             Caption = 'Email special offers'
             TabOrder = 3
             OnClick = cbxEmailSpecialsClick
@@ -2372,10 +2356,10 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             ImgUnchecked = 0
           end
           object cbxEmailNews: TsCheckBox
-            Left = 199
-            Top = 144
-            Width = 99
-            Height = 20
+            Left = 201
+            Top = 146
+            Width = 107
+            Height = 17
             Caption = 'Email hotel news'
             TabOrder = 4
             OnClick = cbxEmailSpecialsClick
@@ -2390,7 +2374,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Height = 209
             Color = clWhite
             Font.Charset = DEFAULT_CHARSET
-            Font.Color = 2302755
+            Font.Color = clBlack
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
@@ -2406,7 +2390,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Height = 209
             Color = clWhite
             Font.Charset = DEFAULT_CHARSET
-            Font.Color = 2302755
+            Font.Color = clBlack
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
@@ -2428,7 +2412,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Left = 4
             Top = 30
             Width = 20
-            Height = 20
+            Height = 16
             TabOrder = 0
             OnClick = xcmbGenderClick
             SkinData.SkinSection = 'CHECKBOX'
@@ -2439,7 +2423,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Left = 4
             Top = 57
             Width = 20
-            Height = 20
+            Height = 16
             TabOrder = 1
             OnClick = xcmbGenderClick
             SkinData.SkinSection = 'CHECKBOX'
@@ -2450,7 +2434,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Left = 4
             Top = 110
             Width = 20
-            Height = 20
+            Height = 16
             TabOrder = 2
             OnClick = xcmbGenderClick
             SkinData.SkinSection = 'CHECKBOX'
@@ -2461,7 +2445,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Left = 4
             Top = 84
             Width = 20
-            Height = 20
+            Height = 16
             TabOrder = 3
             OnClick = xcmbGenderClick
             SkinData.SkinSection = 'CHECKBOX'
@@ -2472,7 +2456,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Left = 4
             Top = 159
             Width = 20
-            Height = 20
+            Height = 16
             TabOrder = 4
             OnClick = xcmbGenderClick
             SkinData.SkinSection = 'CHECKBOX'
@@ -2483,7 +2467,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Left = 4
             Top = 135
             Width = 20
-            Height = 20
+            Height = 16
             TabOrder = 5
             OnClick = xcmbGenderClick
             SkinData.SkinSection = 'CHECKBOX'
@@ -2494,7 +2478,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Left = 4
             Top = 374
             Width = 20
-            Height = 20
+            Height = 16
             TabOrder = 6
             OnClick = xcmbGenderClick
             SkinData.SkinSection = 'CHECKBOX'
@@ -2505,10 +2489,6 @@ object frmGuestPortfolio: TfrmGuestPortfolio
       end
       object tabHistory: TsTabSheet
         Caption = 'History'
-        ExplicitLeft = 0
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
         object grData: TcxGrid
           Left = 0
           Top = 41
@@ -2691,10 +2671,6 @@ object frmGuestPortfolio: TfrmGuestPortfolio
       end
       object tabInvoices: TsTabSheet
         Caption = 'Invoices'
-        ExplicitLeft = 0
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
         object grInvoices: TcxGrid
           Left = 0
           Top = 41
@@ -2972,6 +2948,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
     Top = 192
     object prLink_grData: TdxGridReportLink
       Component = grData
+      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 5080
       PrinterPage.GrayShading = True
@@ -2985,6 +2962,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
       ReportDocument.CreationDate = 41334.495374884260000000
+      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       BuiltInReportLink = True
     end
   end
