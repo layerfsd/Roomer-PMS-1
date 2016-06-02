@@ -10,6 +10,7 @@ object frmReservationProfile: TfrmReservationProfile
   Font.Height = -9
   Font.Name = 'Tahoma'
   Font.Style = []
+  KeyPreview = True
   OldCreateOrder = False
   Position = poMainFormCenter
   ShowHint = True
@@ -281,7 +282,7 @@ object frmReservationProfile: TfrmReservationProfile
         Left = 176
         Top = 58
         Width = 20
-        Height = 20
+        Height = 18
         TabOrder = 4
         SkinData.SkinSection = 'CHECKBOX'
         ImgChecked = 0
@@ -1753,10 +1754,15 @@ object frmReservationProfile: TfrmReservationProfile
             Caption = 'Exp TOA'
             DataBinding.FieldName = 'ExpectedTimeOfArrival'
             PropertiesClassName = 'TcxTimeEditProperties'
+            Properties.Alignment.Horz = taCenter
+            Properties.ClearKey = 46
             Properties.SpinButtons.Visible = False
             Properties.TimeFormat = tfHourMin
-            Properties.ValidationOptions = [evoShowErrorIcon]
+            Properties.UseNullString = True
+            Properties.OnValidate = tvRoomsExpectedTimeOfArrivalPropertiesValidate
+            HeaderAlignmentHorz = taCenter
             HeaderHint = 'Expected Time of Arrival'
+            Width = 62
           end
           object tvRoomsDeparture: TcxGridDBColumn
             DataBinding.FieldName = 'Departure'
@@ -1811,9 +1817,15 @@ object frmReservationProfile: TfrmReservationProfile
             Caption = 'Exp COT'
             DataBinding.FieldName = 'ExpectedCheckoutTime'
             PropertiesClassName = 'TcxTimeEditProperties'
+            Properties.Alignment.Horz = taCenter
+            Properties.ClearKey = 46
             Properties.SpinButtons.Visible = False
             Properties.TimeFormat = tfHourMin
+            Properties.OnChange = tvRoomsExpectedCheckoutTimePropertiesChange
+            Properties.OnValidate = tvRoomsExpectedCheckoutTimePropertiesValidate
+            HeaderAlignmentHorz = taCenter
             HeaderHint = 'Expected CheckoutTime'
+            Width = 68
           end
           object tvRoomsdayCount: TcxGridDBColumn
             Caption = 'Nights'
@@ -2192,6 +2204,7 @@ object frmReservationProfile: TfrmReservationProfile
         Align = alTop
         TabOrder = 0
         SkinData.SkinSection = 'PANEL'
+        ExplicitTop = 32
         object btnShowPrices: TsButton
           AlignWithMargins = True
           Left = 746
@@ -2430,8 +2443,8 @@ object frmReservationProfile: TfrmReservationProfile
         object chkShowAllGuests: TsCheckBox
           Left = 333
           Top = 11
-          Width = 85
-          Height = 20
+          Width = 93
+          Height = 18
           Caption = 'Show all guests'
           Anchors = [akLeft, akTop, akRight]
           TabOrder = 4
@@ -3405,11 +3418,13 @@ object frmReservationProfile: TfrmReservationProfile
       FieldName = 'ratePlanCode'
       Size = 15
     end
-    object mRoomsExpectedTimeOfArrival: TTimeField
+    object mRoomsExpectedTimeOfArrival: TWideStringField
       FieldName = 'ExpectedTimeOfArrival'
+      Size = 5
     end
-    object mRoomsExpectedCheckoutTime: TTimeField
+    object mRoomsExpectedCheckoutTime: TWideStringField
       FieldName = 'ExpectedCheckoutTime'
+      Size = 5
     end
   end
   object mGuestRoomsDS: TDataSource
@@ -3567,6 +3582,7 @@ object frmReservationProfile: TfrmReservationProfile
   end
   object mRoomsDS: TDataSource
     DataSet = mRooms
+    OnDataChange = mRoomsDSDataChange
     Left = 352
     Top = 512
   end

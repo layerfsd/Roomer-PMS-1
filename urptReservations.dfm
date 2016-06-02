@@ -37,7 +37,7 @@ object frmRptReservations: TfrmRptReservations
       Top = 117
       Width = 1094
       Height = 507
-      ActivePage = tabRoom
+      ActivePage = tabReservation
       Align = alClient
       TabOrder = 0
       SkinData.SkinSection = 'PAGECONTROL'
@@ -45,6 +45,8 @@ object frmRptReservations: TfrmRptReservations
       object tabReservation: TsTabSheet
         Caption = 'Reservations'
         ImageIndex = 2
+        SkinData.CustomColor = False
+        SkinData.CustomFont = False
         object Panel5: TsPanel
           Left = 0
           Top = 0
@@ -195,10 +197,6 @@ object frmRptReservations: TfrmRptReservations
             object tvReservationsdtDeparture: TcxGridDBColumn
               Caption = 'Departure'
               DataBinding.FieldName = 'dtDeparture'
-            end
-            object tvReservationsarrivaltime: TcxGridDBColumn
-              Caption = 'Time'
-              DataBinding.FieldName = 'arrivaltime'
             end
             object tvReservationsGuestName: TcxGridDBColumn
               DataBinding.FieldName = 'GuestName'
@@ -391,9 +389,19 @@ object frmRptReservations: TfrmRptReservations
               Caption = 'Arrival'
               DataBinding.FieldName = 'rrArrival'
             end
+            object tvRoomReservationsExpectedTimeOfArrival: TcxGridDBColumn
+              Caption = 'Exp. TOA'
+              DataBinding.FieldName = 'ExpectedTimeOfArrival'
+              PropertiesClassName = 'TcxTimeEditProperties'
+            end
             object tvRoomReservationsrrDeparture: TcxGridDBColumn
               Caption = 'Departure'
               DataBinding.FieldName = 'rrDeparture'
+            end
+            object tvRoomReservationsExpectedCheckoutTime: TcxGridDBColumn
+              Caption = 'Exp. COT'
+              DataBinding.FieldName = 'ExpectedCheckoutTime'
+              PropertiesClassName = 'TcxTimeEditProperties'
             end
             object tvRoomReservationsGuestName: TcxGridDBColumn
               DataBinding.FieldName = 'GuestName'
@@ -535,6 +543,8 @@ object frmRptReservations: TfrmRptReservations
       end
       object tabRoom: TsTabSheet
         Caption = 'Rooms'
+        SkinData.CustomColor = False
+        SkinData.CustomFont = False
         object grRooms: TcxGrid
           Left = 0
           Top = 44

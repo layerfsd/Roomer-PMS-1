@@ -504,8 +504,8 @@ type
     __PriceViewer: TcxGridDBColumn;
     edtContactAddress4: TsEdit;
     sLabel7: TsLabel;
-    mRoomsExpectedTimeOfArrival: TTimeField;
-    mRoomsExpectedCheckoutTime: TTimeField;
+    mRoomsExpectedTimeOfArrival: TWideStringField;
+    mRoomsExpectedCheckoutTime: TWideStringField;
     tvRoomsPersonsProfilesId: TcxGridDBColumn;
     tvRoomsoutOfOrderBlocking: TcxGridDBColumn;
     tvRoomsManualChannelId: TcxGridDBColumn;
@@ -611,6 +611,12 @@ type
     procedure DropComboTarget1GetDropEffect(Sender: TObject; ShiftState: TShiftState; APoint: TPoint;
       var Effect: Integer);
     procedure DropComboTarget1DragOver(Sender: TObject; ShiftState: TShiftState; APoint: TPoint; var Effect: Integer);
+    procedure tvRoomsExpectedCheckoutTimePropertiesValidate(Sender: TObject; var DisplayValue: Variant;
+      var ErrorText: TCaption; var Error: Boolean);
+    procedure tvRoomsExpectedTimeOfArrivalPropertiesValidate(Sender: TObject; var DisplayValue: Variant;
+      var ErrorText: TCaption; var Error: Boolean);
+    procedure tvRoomsExpectedCheckoutTimePropertiesChange(Sender: TObject);
+    procedure mRoomsDSDataChange(Sender: TObject; Field: TField);
   private
     { Private declarations }
     vStartName: string;
@@ -620,6 +626,7 @@ type
 
     FrmAlertPanel: TFrmAlertPanel;
     AlertList: TAlertList;
+    FValidating: Boolean;
 
     procedure Display;
     procedure Display_rGrid(gotoRoomReservation: longInt);
@@ -1270,15 +1277,15 @@ var
   s: string;
   isBr: Boolean;
 begin
-  if cbxBreakfast.ItemIndex = 0 then
+  if cbxBreakfast.ItemIndex = 0 then // Mixed
   begin
+    Exit;
+    Display_rGrid(zRoomReservation);
   end;
 
-  isBr := false;
-  if cbxBreakfast.ItemIndex = 1 then
-    isBr := true;
-  s := '';
-  s := s + GetTranslatedText('shTx_ReservationProfile_ChangeAllRooms');
+  isBr := cbxBreakfast.ItemIndex = 1;
+
+  s := GetTranslatedText('shTx_ReservationProfile_ChangeAllRooms');
   if isBr then
     s := s + GetTranslatedText('shTx_ReservationProfile_BreakfastInc')
   else
@@ -2058,6 +2065,15 @@ begin
 end;
 
 
+procedure TfrmReservationProfile.mRoomsDSDataChange(Sender: TObject; Field: TField);
+begin
+  // When fields are emptied the validation events are not fired!
+  if (Field = mRoomsExpectedTimeOfArrival) and mRoomsExpectedTimeOfArrival.AsString.IsEmpty then
+    d.UpdateExpectedTimeOfArrival(zReservation, zRoomReservation, '')
+  else if (Field = mRoomsExpectedCheckoutTime) and mRoomsExpectedCheckoutTime.AsString.IsEmpty then
+    d.UpdateExpectedCheckoutTime(zReservation, zRoomReservation, '');
+end;
+
 // ****************************************************************************
 //
 //
@@ -2239,6 +2255,10 @@ begin
 
     mRooms.Close;
     mRooms.Open;
+
+    {$ifdef DEBUG}
+      CopyToClipboard(s);
+    {$endif}
 
     mRooms.LoadFromDataSet(rSet);
     InitDynamicRates;
@@ -2643,19 +2663,17 @@ begin
   cmd_bySQL(sTmp);
 end;
 
-procedure TfrmReservationProfile.tvRoomsbreakfastTextPropertiesChange
-  (Sender: TObject);
+procedure TfrmReservationProfile.tvRoomsbreakfastTextPropertiesChange(Sender: TObject);
 var
-  aBool: Boolean;
-  Value: string;
+  lIncl: Boolean;
 begin
   if mRoomsDS.State = dsEdit then
   begin
     mRooms.Post;
   end;
-  Value := mRoomsBreakfastText.asstring;
-  aBool := pos('Not', Value) = 0;
-  d.UpdateBreakfastIncluted(zReservation, zRoomReservation, aBool);
+
+  lIncl := pos('Not', mRoomsBreakfastText.asString) = 0;
+  d.UpdateBreakfastIncluted(zReservation, zRoomReservation, lIncl);
 
   SetBreakfastItemindex('');
 end;
@@ -2797,6 +2815,50 @@ procedure TfrmReservationProfile.tvRoomsDeparturePropertiesButtonClick(Sender: T
 begin
   doRRDateChange(2); // Departure
   Display_rGrid(zRoomReservation);
+end;
+
+procedure TfrmReservationProfile.tvRoomsExpectedCheckoutTimePropertiesChange(Sender: TObject);
+begin
+//
+end;
+
+procedure TfrmReservationProfile.tvRoomsExpectedCheckoutTimePropertiesValidate(Sender: TObject;
+  var DisplayValue: Variant; var ErrorText: TCaption; var Error: Boolean);
+begin
+  if not FValidating then // prevent second call to validatie when posting record
+  try
+    FValidating := True;
+    if mRoomsDS.State = dsEdit then
+       mRooms.Post;
+    mRoomsDS.DataSet.DisableControls;
+    try
+      Error := not d.UpdateExpectedCheckoutTime(zReservation, zRoomReservation, mRoomsExpectedCheckoutTime.AsString.Trim);
+    finally
+      mRoomsDS.Dataset.EnableControls;
+    end;
+  finally
+    FValidating := False;
+  end;
+end;
+
+procedure TfrmReservationProfile.tvRoomsExpectedTimeOfArrivalPropertiesValidate(Sender: TObject;
+  var DisplayValue: Variant; var ErrorText: TCaption; var Error: Boolean);
+begin
+  if not FValidating then // prevent second call to validatie when posting record
+  try
+    FValidating := True;
+    if mRoomsDS.State = dsEdit then
+       mRooms.Post;
+
+    mRoomsDS.DataSet.DisableControls;
+    try
+      Error := not d.UpdateExpectedTimeOfArrival(zReservation, zRoomReservation, mRoomsExpectedTimeOfArrival.AsString.Trim);
+    finally
+      mRoomsDS.Dataset.EnableControls;
+    end;
+  finally
+    FValidating := False;
+  end;
 end;
 
 procedure TfrmReservationProfile.tvRoomsdayCountPropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);

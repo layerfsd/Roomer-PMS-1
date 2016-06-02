@@ -485,7 +485,9 @@ type
     procedure UpdateBreakfastIncluted(reservation, RoomReservation : integer; BreakfastIncluted : boolean);
     procedure UpdateGroupAccountAll(reservation, RoomReservation,RoomReservationAlias : integer; GroupAccount : boolean);
     procedure UpdateGroupAccountOne(reservation, RoomReservation, RoomReservationAlias : integer; GroupAccount : boolean; InvoiceIndex : Integer = -1);
-    // Setja Alla Gistingu á Hópreikning
+
+    function UpdateExpectedCheckoutTime(aReservation, aRoomReservation: integer; const aCheckoutTime: string): boolean;
+    function UpdateExpectedTimeOfArrival(aReservation, aRoomReservation: integer; const aTimeOfArrival: string): boolean;
 
     function isAllRRSameCurrency(reservation : integer) : boolean;
     // Er Allar herbergisbókanir innan bókunnar í sama gjaldmiðli
@@ -3893,6 +3895,41 @@ end;
 //end;
 
 
+function Td.UpdateExpectedCheckoutTime(aReservation, aRoomReservation: integer; const aCheckoutTime: string): boolean;
+var
+  s : string;
+  lTime: TDateTime;
+begin
+  Result := aCheckoutTime.IsEmpty or TryStrToTime(aCheckoutTime, lTime);
+  if Result then
+  begin
+    s := '';
+    s := s + 'UPDATE roomreservations '+chr(10);
+    s := s + 'Set'+chr(10);
+    s := s + '  ExpectedCheckoutTime = ' + _db(aCheckoutTime)+chr(10);
+    s := s + 'WHERE Reservation = ' + _db(aReservation)+chr(10);
+    s := s + '  AND RoomReservation = ' + inttostr(aRoomReservation)+chr(10);
+    Result := cmd_bySQL(s);
+  end;
+end;
+
+function Td.UpdateExpectedTimeOfArrival(aReservation, aRoomReservation: integer; const aTimeOfArrival: string): boolean;
+var
+  s : string;
+  lTime: TDateTime;
+begin
+  Result := aTimeOfArrival.IsEmpty or TryStrToTime(aTimeOfArrival, lTime);
+  if Result then
+  begin
+    s := '';
+    s := s + 'UPDATE roomreservations '+chr(10);
+    s := s + 'Set'+chr(10);
+    s := s + '  ExpectedTimeOfArrival = ' + _db(aTimeOfArrival)+chr(10);
+    s := s + 'WHERE Reservation = ' + _db(aReservation)+chr(10);
+    s := s + '  AND RoomReservation = ' + inttostr(aRoomReservation)+chr(10);
+    Result := cmd_bySQL(s);
+  end;
+end;
 
 procedure Td.UpdateBreakfastIncluted(reservation, RoomReservation : integer; BreakfastIncluted : boolean);
 var

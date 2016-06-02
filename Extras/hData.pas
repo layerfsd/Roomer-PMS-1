@@ -3962,8 +3962,8 @@ begin
   s := s + '  , ' + _db(theData.package) + #10;
   s := s + '  , ' + _db(theData.ManualChannelId) + #10;
   s := s + '  , ' + _db(theData.ratePlanCode) + #10;
-//  s := s + '  , ' + _db(theData.ExpectedTimeOfArrival) + #10;
-//  s := s + '  , ' + _db(theData.ExpectedCheckoutTime) + #10;
+  s := s + '  , ' + _db(theData.ExpectedTimeOfArrival) + #10;
+  s := s + '  , ' + _db(theData.ExpectedCheckoutTime) + #10;
   s := s + '  ) ' + #10;
   result := s;
 end;
@@ -4075,8 +4075,8 @@ begin
   s := s + '  , ' + _db(theData.CancelInformation) + #10;
   s := s + '  , ' + _db(theData.CancelType) + #10;
   s := s + '  , ' + _db(theData.UseInNationalReport) + #10;
-//  s := s + '  , ' + _db(theData.ExpectedTimeOfArrival) + #10;
-//  s := s + '  , ' + _db(theData.ExpectedCheckoutTime) + #10;
+  s := s + '  , ' + _db(theData.ExpectedTimeOfArrival) + #10;
+  s := s + '  , ' + _db(theData.ExpectedCheckoutTime) + #10;
   s := s + ') ';
 
   result := cmd_bySQL(s);
