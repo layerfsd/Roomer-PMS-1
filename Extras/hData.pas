@@ -12,6 +12,7 @@ uses
   , inifiles
 
   , _Glob
+  , uRoomerDefinitions
   , objRoomTypeRoomCount
   , uUtils
   , cmpRoomerDataSet
@@ -561,6 +562,7 @@ type
     Channel: integer;
 
     OutOfOrderBlocking : Boolean;
+    Market: TReservationMarketType;
   end;
 
   recRoomsDateHolder = record
@@ -2086,7 +2088,6 @@ uses
   uDayNotes, uPriceOBJ, uSqlDefinitions, uStringUtils, uAppGlobal, uRoomTypes2,
   uDateUtils,
   uActivityLogs,
-  uRoomerDefinitions,
   uAvailabilityPerDay,
   PrjConst
   ;
@@ -3705,6 +3706,7 @@ begin
   s := s + ' 	,UseStayTax '#10;
   s := s + ' 	,Channel '#10;
   s := s + ' 	,OutOfOrderBlocking '#10;
+  s := s + ' 	,Market '#10;
   s := s + ' '#10;
   s := s + ' ) '#10;
   s := s + '   VALUES ( '#10;
@@ -3754,6 +3756,7 @@ begin
   s := s + ' 	, ' + _db(theData.UseStayTax) + #10;
   s := s + ' 	, ' + _db(theData.Channel) + #10;
   s := s + ' 	, ' + _db(theData.OutOfOrderBlocking) + #10;
+  s := s + ' 	, ' + _db(theData.Market.ToDBString) + #10;
   s := s + '   ) ';
   result := s;
 end;

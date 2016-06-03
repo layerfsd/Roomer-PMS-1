@@ -603,6 +603,8 @@ type
     tvRoomResexpectedCheckouttime: TcxGridDBColumn;
     mRoomResExpectedTimeOfArrival: TStringField;
     mRoomResExpectedCheckOutTime: TStringField;
+    cbxMarket: TsComboBox;
+    lblMarket: TsLabel;
     procedure FormShow(Sender: TObject);
     procedure edCustomerDblClick(Sender: TObject);
     procedure edCustomerPropertiesEditValueChanged(Sender: TObject);
@@ -610,7 +612,6 @@ type
     procedure btnFinishClick(Sender: TObject);
     procedure edCountryDblClick(Sender: TObject);
     procedure edMarketSegmentCodeDblClick(Sender: TObject);
-    procedure edMarketSegmentCodePropertiesChange(Sender: TObject);
     procedure edCurrencyDblClick(Sender: TObject);
     procedure edPcCodePropertiesButtonClick(Sender: TObject; AButtonIndex: integer);
     procedure edPcCodeDblClick(Sender: TObject);
@@ -660,7 +661,6 @@ type
     procedure btnGetLastCustomerClick(Sender: TObject);
     procedure edCurrencyChange(Sender: TObject);
     procedure cbxIsRoomResDiscountPrecChange(Sender: TObject);
-    procedure F1Click(Sender: TObject);
     procedure mnuFinishAndShowClick(Sender: TObject);
     procedure edCustomerKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure edMarketSegmentCodeKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -4038,7 +4038,7 @@ begin
   oNewReservation.HomeCustomer.contactIsMainGuest := chkContactIsGuest.Checked;
 
   oNewReservation.OutOfOrderBlocking := OutOfOrderBlocking;
-
+  oNewReservation.Market := TReservationMarketType(cbxMarket.itemindex);
   mRoomRates.SortedField := 'ratedate';
 
   memReservationGeneralInfo.Clear;
@@ -4194,10 +4194,7 @@ end;
 
 procedure TfrmMakeReservationQuick.edPackageExit(Sender: TObject);
 begin
-  if PackageValidate(edPackage, clabPcCode, labPackageDescription) then
-  begin
-  end;
-
+  PackageValidate(edPackage, clabPcCode, labPackageDescription);
 end;
 
 /// ///////////////////////
@@ -4310,10 +4307,6 @@ begin
     GetPrices;
 end;
 
-procedure TfrmMakeReservationQuick.F1Click(Sender: TObject);
-begin
-
-end;
 
 /// ///////////////////////////////////////////////////////////
 ///
@@ -4339,9 +4332,6 @@ begin
   end;
 end;
 
-procedure TfrmMakeReservationQuick.edMarketSegmentCodePropertiesChange(Sender: TObject);
-begin
-end;
 
 
 

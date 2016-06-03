@@ -434,13 +434,13 @@ type
     gbxRoomInformation: TsGroupBox;
     memRoomNotes: TsMemo;
     btnRoomsRefresh: TsButton;
-    sGroupBox2: TsGroupBox;
+    gbxDates: TsGroupBox;
     cxButton3: TsButton;
     dtDeparture: TsDateEdit;
     dtArrival: TsDateEdit;
     Label2: TsLabel;
     Label3: TsLabel;
-    sGroupBox3: TsGroupBox;
+    gbxResProperties: TsGroupBox;
     Label8: TsLabel;
     edtType: TsEdit;
     btnGetCustomerType: TsButton;
@@ -449,14 +449,14 @@ type
     edCountry: TsEdit;
     btnGetCountry: TsButton;
     labCountry: TsLabel;
-    sGroupBox4: TsGroupBox;
+    gbxNumbers: TsGroupBox;
     clabReserveDate: TsLabel;
     __labReserveDate: TsLabel;
     Label5: TsLabel;
     __labStaff: TsLabel;
     __labResNumbers: TsLabel;
     sLabel4: TsLabel;
-    sGroupBox5: TsGroupBox;
+    gbxStatus: TsGroupBox;
     Label25: TsLabel;
     Label24: TsLabel;
     Label26: TsLabel;
@@ -511,6 +511,8 @@ type
     tvRoomsManualChannelId: TcxGridDBColumn;
     tvRoomsExpectedTimeOfArrival: TcxGridDBColumn;
     tvRoomsExpectedCheckoutTime: TcxGridDBColumn;
+    cbxMarket: TsComboBox;
+    lblMarket: TsLabel;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -620,6 +622,7 @@ type
       var AText: string);
     procedure GetLocaltimeEditProperties(Sender: TcxCustomGridTableItem; ARecord: TcxCustomGridRecord;
       var AProperties: TcxCustomEditProperties);
+    procedure cbxMarketCloseUp(Sender: TObject);
   private
     { Private declarations }
     vStartName: string;
@@ -657,6 +660,8 @@ type
     procedure SetBreakfastItemindex(sStatus: string);
     procedure SetPaymentDetailItemindex(sStatus: string);
     procedure SetOutOfOrderBlocking(const Value: Boolean);
+    procedure UpdateMarket;
+    procedure SetMarketItemIndex(const aMarket: string);
 
     property OutOfOrderBlocking: Boolean read FOutOfOrderBlocking write SetOutOfOrderBlocking;
   public
@@ -918,6 +923,8 @@ begin
         __labStaff.caption := rSet.fieldbyname('staff').asstring;
 
         OutOfOrderBlocking := fieldbyname('outOfOrderBlocking').AsBoolean;
+
+        SetMarketItemIndex(fieldbyname('market').asString);
       end;
     end;
 
@@ -934,6 +941,11 @@ begin
     screen.Cursor := crDefault;
     pnlDataWait.Hide;
   end;
+end;
+
+procedure TfrmReservationProfile.SetMarketItemIndex(const aMarket: string);
+begin
+  cbxMarket.ItemIndex := TReservationMarketType.FromString(aMarket).ItemIndex;
 end;
 
 procedure TfrmReservationProfile.rgrinvoicePropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
@@ -1034,8 +1046,8 @@ begin
   sGroupBox1.Visible := NOT FOutOfOrderBlocking;
   GroupBox2.Visible := NOT FOutOfOrderBlocking;
   gbxRoomInformation.Visible := NOT FOutOfOrderBlocking;
-  sGroupBox3.Visible := NOT FOutOfOrderBlocking;
-  sGroupBox5.Visible := NOT FOutOfOrderBlocking;
+  gbxResProperties.Visible := NOT FOutOfOrderBlocking;
+  gbxStatus.Visible := NOT FOutOfOrderBlocking;
   Panel8.Visible := NOT FOutOfOrderBlocking;
   if FOutOfOrderBlocking then
   begin
@@ -1302,6 +1314,12 @@ begin
   end;
 end;
 
+procedure TfrmReservationProfile.UpdateMarket;
+begin
+  if cbxMarket.ItemIndex >= 0 then
+    d.UpdateReservationMarket(zReservation, TReservationmarketType(cbxMarket.itemIndex));
+end;
+
 procedure TfrmReservationProfile.UpdatePaymentDetails;
 var
   s: string;
@@ -1516,6 +1534,12 @@ end;
 procedure TfrmReservationProfile.cbxBreakfastCloseUp(Sender: TObject);
 begin
   UpdateBreakfast;
+end;
+
+procedure TfrmReservationProfile.cbxMarketCloseUp(Sender: TObject);
+begin
+
+  UpdateMarket;
 end;
 
 procedure TfrmReservationProfile.cbxPaymentdetailsCloseUp(Sender: TObject);

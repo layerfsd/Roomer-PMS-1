@@ -4745,6 +4745,9 @@ select_RoomReservation : string =
 '    ,numGuests '#10+
 '    ,numChildren '#10+
 '    ,numInfants, AvrageRate, rateCount,package '#10+
+'    ,ExpectedTimeOfArrival '#10+
+'    ,ExpectedCheckoutTime'#10+
+'    ,numChildren '#10+
 '  FROM '#10+
 '    [RoomReservations] '#10+
 '  WHERE '#10+

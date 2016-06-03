@@ -14,7 +14,7 @@ uses
   , PrjConst
   , ustringUtils
   , ug
-  , uAlerts
+  , uAlerts, uRoomerDefinitions
   ;
 
 TYPE
@@ -223,6 +223,7 @@ TYPE
     FOutOfOrderBlocking: Boolean;
     FSendConfirmationEmail: Boolean;
     FAlertList: TAlertList;
+    FMarket: TReservationMarketType;
     procedure DeleteReservation(Reservation: integer);
 
   public
@@ -257,6 +258,8 @@ TYPE
     property SendConfirmationEmail: Boolean read FSendConfirmationEmail write FSendConfirmationEmail;
 
     property AlertList : TAlertList read FAlertList write FAlertList;
+
+    property Market: TReservationMarketType read FMarket write FMarket;
 
   end;
 
@@ -940,6 +943,8 @@ var
     reservationData.channel          := channel;
     reservationData.invRefrence      := invRefrence;
     reservationData.OutOfOrderBlocking  := OutOfOrderBlocking;
+
+    reservationData.Market              := Market;
 
     ExecutionPlan.AddExec(SQL_INS_Reservation(reservationData));
 

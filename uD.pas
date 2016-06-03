@@ -54,6 +54,7 @@ uses
   , frxExportPDF
   , frxDesgn
 
+  , uRoomerDefinitions
   , cmpRoomerDataSet
   , cmpRoomerConnection
   , cxEditRepositoryItems, ALHttpClient, ALWininetHttpClient
@@ -485,6 +486,7 @@ type
     procedure UpdateBreakfastIncluted(reservation, RoomReservation : integer; BreakfastIncluted : boolean);
     procedure UpdateGroupAccountAll(reservation, RoomReservation,RoomReservationAlias : integer; GroupAccount : boolean);
     procedure UpdateGroupAccountOne(reservation, RoomReservation, RoomReservationAlias : integer; GroupAccount : boolean; InvoiceIndex : Integer = -1);
+    function UpdateReservationMarket(aReservation: integer; aMarket: TReservationMarketType): boolean;
 
     function UpdateExpectedCheckoutTime(aReservation, aRoomReservation: integer; const aCheckoutTime: string): boolean;
     function UpdateExpectedTimeOfArrival(aReservation, aRoomReservation: integer; const aTimeOfArrival: string): boolean;
@@ -957,7 +959,6 @@ uses
   , uStringUtils
   , uFileSystemUtils
   , uDateUtils
-  , uRoomerDefinitions
   , uTaxCalc
   , uActivityLogs
   , uOfflineReportGenerator
@@ -3928,6 +3929,22 @@ begin
     s := s + 'WHERE Reservation = ' + _db(aReservation)+chr(10);
     s := s + '  AND RoomReservation = ' + inttostr(aRoomReservation)+chr(10);
     Result := cmd_bySQL(s);
+  end;
+end;
+
+function Td.UpdateReservationMarket(aReservation: integer; aMarket: TReservationMarketType): boolean;
+var
+  b : TStringBuilder;
+begin
+  b := TStringBuilder.Create;
+  try
+    b.Append('UPDATE reservations '+chr(10));
+    b.Append('Set'+chr(10));
+    b.Append('  market = ' + _db(aMarket.ToDBString)+chr(10));
+    b.Append('WHERE Reservation = ' + _db(aReservation)+chr(10));
+    Result := cmd_bySQL(b.ToString);
+  finally
+    b.Free;
   end;
 end;
 
