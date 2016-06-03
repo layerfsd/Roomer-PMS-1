@@ -243,8 +243,6 @@ object FrmRoomReservationCancellationDialog: TFrmRoomReservationCancellationDial
     ParentFont = False
     TabOrder = 1
     SkinData.SkinSection = 'EDIT'
-    ExplicitLeft = 5
-    ExplicitTop = 204
   end
   object FormStore: TcxPropertiesStore
     Components = <
