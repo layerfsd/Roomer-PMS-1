@@ -615,8 +615,11 @@ type
       var ErrorText: TCaption; var Error: Boolean);
     procedure tvRoomsExpectedTimeOfArrivalPropertiesValidate(Sender: TObject; var DisplayValue: Variant;
       var ErrorText: TCaption; var Error: Boolean);
-    procedure tvRoomsExpectedCheckoutTimePropertiesChange(Sender: TObject);
     procedure mRoomsDSDataChange(Sender: TObject; Field: TField);
+    procedure FormatTextToShortFormat(Sender: TcxCustomGridTableItem; ARecord: TcxCustomGridRecord;
+      var AText: string);
+    procedure GetLocaltimeEditProperties(Sender: TcxCustomGridTableItem; ARecord: TcxCustomGridRecord;
+      var AProperties: TcxCustomEditProperties);
   private
     { Private declarations }
     vStartName: string;
@@ -810,6 +813,7 @@ begin
   vStatus := '';
 
   DynamicRates := TDynamicRates.Create;
+
 end;
 
 procedure TfrmReservationProfile.FormDestroy(Sender: TObject);
@@ -2160,6 +2164,7 @@ var
   packageItemPrice: double;
   PersonsProfilesId,
     iGuests: Integer;
+  lSavedAfterScroll: TDataSetNotifyEvent;
 
   procedure PopulateRatePlanCombo;
   begin
@@ -2199,14 +2204,15 @@ var
   end;
 
 begin
-  screen.Cursor := crHourGlass;
   status := '';
-  mRooms.AfterScroll := nil;
+  rSet := nil;
+  lSavedAfterScroll := mRooms.AfterScroll;
   mRooms.DisableControls;
-  rSet := CreateNewDataSet;
   try
+    screen.Cursor := crHourGlass;
+    mRooms.AfterScroll := nil;
 
-    s := s + ' SELECT '#10;
+    s :=     ' SELECT '#10;
     s := s + '      Reservation '#10;
     s := s + '    , RoomReservation '#10;
     s := s + '    , Room '#10;
@@ -2251,6 +2257,7 @@ begin
 
     s := format(s, [zReservation]);
 
+    rSet := CreateNewDataSet;
     hData.rSet_bySQL(rSet, s);
 
     mRooms.Close;
@@ -2322,17 +2329,17 @@ begin
     SetBreakfastItemindex(sBreakfast);
     SetPaymentDetailItemindex(sPaymentdetails);
 
-  finally
     mRooms.Locate('RoomReservation', gotoRoomReservation, []);
-    mRooms.AfterScroll := mRoomsAfterScroll;
+
+  finally
+    mRooms.AfterScroll := lSavedAfterScroll;
     mRooms.EnableControls;
-    FreeAndNil(rSet);
+    rSet.Free;
     screen.Cursor := crDefault;
   end;
 end;
 
-procedure TfrmReservationProfile.tvRoomsaccountTypeTextPropertiesChange
-  (Sender: TObject);
+procedure TfrmReservationProfile.tvRoomsaccountTypeTextPropertiesChange(Sender: TObject);
 var
   aBool: Boolean;
   Value: string;
@@ -2817,11 +2824,6 @@ begin
   Display_rGrid(zRoomReservation);
 end;
 
-procedure TfrmReservationProfile.tvRoomsExpectedCheckoutTimePropertiesChange(Sender: TObject);
-begin
-//
-end;
-
 procedure TfrmReservationProfile.tvRoomsExpectedCheckoutTimePropertiesValidate(Sender: TObject;
   var DisplayValue: Variant; var ErrorText: TCaption; var Error: Boolean);
 begin
@@ -2839,6 +2841,20 @@ begin
   finally
     FValidating := False;
   end;
+end;
+
+procedure TfrmReservationProfile.FormatTextToShortFormat(Sender: TcxCustomGridTableItem;
+  ARecord: TcxCustomGridRecord; var AText: string);
+begin
+  //convert from string(5) HH:mm format into local shorttimeformat
+  if not aText.IsEmpty then
+    DateTimeToString(aText, FormatSettings.ShortTimeFormat, StrTodateTime(aText));
+end;
+
+procedure TfrmReservationProfile.GetLocaltimeEditProperties(Sender: TcxCustomGridTableItem;
+  ARecord: TcxCustomGridRecord; var AProperties: TcxCustomEditProperties);
+begin
+  TcxTimeEditProperties(aProperties).Use24HourFormat := not FormatSettings.ShortTimeFormat.Contains(Formatsettings.TimeAMString);
 end;
 
 procedure TfrmReservationProfile.tvRoomsExpectedTimeOfArrivalPropertiesValidate(Sender: TObject;

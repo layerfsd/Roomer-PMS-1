@@ -98,7 +98,7 @@ object frmReservationProfile: TfrmReservationProfile
         ParentFont = False
         ReadOnly = True
         TabOrder = 1
-        Text = '  -  -    '
+        Text = '  /  /    '
         CheckOnExit = True
         SkinData.SkinSection = 'EDIT'
         GlyphMode.Blend = 0
@@ -121,7 +121,7 @@ object frmReservationProfile: TfrmReservationProfile
         ParentFont = False
         ReadOnly = True
         TabOrder = 2
-        Text = '  -  -    '
+        Text = '  /  /    '
         CheckOnExit = True
         SkinData.SkinSection = 'EDIT'
         GlyphMode.Blend = 0
@@ -282,7 +282,7 @@ object frmReservationProfile: TfrmReservationProfile
         Left = 176
         Top = 58
         Width = 20
-        Height = 18
+        Height = 20
         TabOrder = 4
         SkinData.SkinSection = 'CHECKBOX'
         ImgChecked = 0
@@ -825,10 +825,6 @@ object frmReservationProfile: TfrmReservationProfile
               ImageIndex = 1
               SkinData.CustomColor = False
               SkinData.CustomFont = False
-              ExplicitLeft = 0
-              ExplicitTop = 0
-              ExplicitWidth = 0
-              ExplicitHeight = 0
               object Label10: TsLabel
                 Left = 33
                 Top = 13
@@ -1763,7 +1759,10 @@ object frmReservationProfile: TfrmReservationProfile
             Properties.SpinButtons.Visible = False
             Properties.TimeFormat = tfHourMin
             Properties.UseNullString = True
+            Properties.UseTimeFormatWhenUnfocused = False
             Properties.OnValidate = tvRoomsExpectedTimeOfArrivalPropertiesValidate
+            OnGetDisplayText = FormatTextToShortFormat
+            OnGetProperties = GetLocaltimeEditProperties
             HeaderAlignmentHorz = taCenter
             HeaderHint = 'Expected Time of Arrival'
             Width = 62
@@ -1825,8 +1824,10 @@ object frmReservationProfile: TfrmReservationProfile
             Properties.ClearKey = 46
             Properties.SpinButtons.Visible = False
             Properties.TimeFormat = tfHourMin
-            Properties.OnChange = tvRoomsExpectedCheckoutTimePropertiesChange
+            Properties.UseTimeFormatWhenUnfocused = False
             Properties.OnValidate = tvRoomsExpectedCheckoutTimePropertiesValidate
+            OnGetDisplayText = FormatTextToShortFormat
+            OnGetProperties = GetLocaltimeEditProperties
             HeaderAlignmentHorz = taCenter
             HeaderHint = 'Expected CheckoutTime'
             Width = 68
@@ -2386,10 +2387,6 @@ object frmReservationProfile: TfrmReservationProfile
       ImageIndex = 1
       SkinData.CustomColor = False
       SkinData.CustomFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Panel10: TsPanel
         Left = 0
         Top = 0
@@ -2450,8 +2447,8 @@ object frmReservationProfile: TfrmReservationProfile
         object chkShowAllGuests: TsCheckBox
           Left = 333
           Top = 11
-          Width = 93
-          Height = 18
+          Width = 85
+          Height = 20
           Caption = 'Show all guests'
           Anchors = [akLeft, akTop, akRight]
           TabOrder = 4
@@ -2856,10 +2853,6 @@ object frmReservationProfile: TfrmReservationProfile
       Caption = 'ALERTS'
       SkinData.CustomColor = False
       SkinData.CustomFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object pnlAlertHolder: TsPanel
         Left = 0
         Top = 0
@@ -2876,10 +2869,6 @@ object frmReservationProfile: TfrmReservationProfile
       ImageIndex = 2
       SkinData.CustomColor = False
       SkinData.CustomFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Panel11: TsPanel
         Left = 0
         Top = 0
@@ -3243,10 +3232,6 @@ object frmReservationProfile: TfrmReservationProfile
       Caption = 'Sent emails'
       SkinData.CustomColor = False
       SkinData.CustomFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
     end
   end
   object pnlDataWait: TsPanel
@@ -3439,11 +3424,9 @@ object frmReservationProfile: TfrmReservationProfile
     end
     object mRoomsExpectedTimeOfArrival: TWideStringField
       FieldName = 'ExpectedTimeOfArrival'
-      Size = 5
     end
     object mRoomsExpectedCheckoutTime: TWideStringField
       FieldName = 'ExpectedCheckoutTime'
-      Size = 5
     end
   end
   object mGuestRoomsDS: TDataSource

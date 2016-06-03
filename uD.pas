@@ -3906,7 +3906,7 @@ begin
     s := '';
     s := s + 'UPDATE roomreservations '+chr(10);
     s := s + 'Set'+chr(10);
-    s := s + '  ExpectedCheckoutTime = ' + _db(aCheckoutTime)+chr(10);
+    s := s + '  ExpectedCheckoutTime = ' +  _db(TTime(lTime))+chr(10);
     s := s + 'WHERE Reservation = ' + _db(aReservation)+chr(10);
     s := s + '  AND RoomReservation = ' + inttostr(aRoomReservation)+chr(10);
     Result := cmd_bySQL(s);
@@ -3924,7 +3924,7 @@ begin
     s := '';
     s := s + 'UPDATE roomreservations '+chr(10);
     s := s + 'Set'+chr(10);
-    s := s + '  ExpectedTimeOfArrival = ' + _db(aTimeOfArrival)+chr(10);
+    s := s + '  ExpectedTimeOfArrival = ' + _db(TTime(lTime))+chr(10);
     s := s + 'WHERE Reservation = ' + _db(aReservation)+chr(10);
     s := s + '  AND RoomReservation = ' + inttostr(aRoomReservation)+chr(10);
     Result := cmd_bySQL(s);

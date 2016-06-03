@@ -3,168 +3,84 @@ unit uMakeReservationQuick;
 interface
 
 uses
-  Windows
-    ,
-  Messages
-    ,
-  system.SysUtils
-    ,
-  system.Variants
-    ,
-  system.Classes
-    ,
-  Vcl.Graphics
-    ,
-  Vcl.Controls
-    ,
-  Vcl.Forms
-    ,
-  Vcl.Dialogs
-    ,
-  Vcl.Menus
-    ,
-  Vcl.StdCtrls
-    ,
-  Vcl.Buttons
-    ,
-  Vcl.ExtCtrls
-    ,
-  Vcl.Mask
-    ,
-  Vcl.ComCtrls
-    ,
-  hData
-    ,
-  Data.DB
-    ,
-  Data.Win.ADODB
-    ,
-  objNewReservation
-    ,
-  objHomeCustomer
-
-    ,
-  cxPCdxBarPopupMenu
-    ,
-  cxGraphics
-    ,
-  cxControls
-    ,
-  cxLookAndFeels
-    ,
-  cxLookAndFeelPainters
-    ,
-  cxContainer
-    ,
-  cxEdit
-    ,
-  dxCore
-    ,
-  cxDateUtils
-    ,
-  cxStyles
-    ,
-  cxCustomData
-    ,
-  cxFilter
-    ,
-  cxData
-    ,
-  cxDataStorage
-    ,
-  cxNavigator
-    ,
-  cxDBData
-    ,
-  cxTextEdit
-    ,
-  cxButtonEdit
-    ,
-  cxSpinEdit
-    ,
-  cxCalc
-    ,
-  dxmdaset
-    ,
-  cxButtons
-    ,
-  cxGridLevel
-    ,
-  cxGridCustomTableView
-    ,
-  cxGridTableView
-    ,
-  cxGridDBTableView
-    ,
-  cxClasses
-    ,
-  cxGridCustomView
-    ,
-  cxGrid
-    ,
-  cxDropDownEdit
-    ,
-  cxCalendar
-    ,
-  cxCheckBox
-    ,
-  cxMaskEdit
-    ,
-  cxLabel
-    ,
-  cxGroupBox
-    ,
-  cxPC
-    ,
-  cxGridBandedTableView
-    ,
-  cxGridDBBandedTableView
-    ,
-  cxPropertiesStore
-    ,
-  cxLookupEdit
-    ,
-  cxDBLookupEdit
-    ,
-  cxDBLookupComboBox
-
-    ,
-  cmpRoomerDataSet
-    ,
-  cmpRoomerConnection
-
-    ,
-  objRoomRates
-    ,
-  kbmMemTable
-    ,
-  uUtils
-    ,
-  uAlerts
-    ,
-  uAlertEditPanel
-
-    ,
-  sPanel
-
-    ,
-  sSkinProvider
-    ,
-  sGroupBox
-    ,
-  sLabel
-    ,
-  sCheckBox
-    ,
-  sButton
-    ,
-  sPageControl
-    ,
-  sEdit
-    ,
-  sSpinEdit
-
-    ,
+  Windows,
+  Messages,
+  system.SysUtils,
+  system.Variants,
+  system.Classes,
+  Vcl.Graphics,
+  Vcl.Controls,
+  Vcl.Forms,
+  Vcl.Dialogs,
+  Vcl.Menus,
+  Vcl.StdCtrls,
+  Vcl.Buttons,
+  Vcl.ExtCtrls,
+  Vcl.Mask,
+  Vcl.ComCtrls,
+  hData,
+  Data.DB,
+  Data.Win.ADODB,
+  objNewReservation,
+  objHomeCustomer,
+  cxPCdxBarPopupMenu,
+  cxGraphics,
+  cxControls,
+  cxLookAndFeels,
+  cxLookAndFeelPainters,
+  cxContainer,
+  cxEdit,
+  dxCore,
+  cxDateUtils,
+  cxStyles,
+  cxCustomData,
+  cxFilter,
+  cxData,
+  cxDataStorage,
+  cxNavigator,
+  cxDBData,
+  cxTextEdit,
+  cxButtonEdit,
+  cxSpinEdit,
+  cxCalc,
+  dxmdaset,
+  cxButtons,
+  cxGridLevel,
+  cxGridCustomTableView,
+  cxGridTableView,
+  cxGridDBTableView,
+  cxClasses,
+  cxGridCustomView,
+  cxGrid,
+  cxDropDownEdit,
+  cxCalendar,
+  cxCheckBox,
+  cxMaskEdit,
+  cxLabel,
+  cxGroupBox,
+  cxPC,
+  cxGridBandedTableView,
+  cxGridDBBandedTableView,
+  cxPropertiesStore,
+  cxLookupEdit,
+  cxDBLookupEdit,
+  cxDBLookupComboBox,
+  cmpRoomerDataSet,
+  cmpRoomerConnection,
+  objRoomRates,
+  kbmMemTable,
+  uUtils,
+  uAlerts,
+  uAlertEditPanel,
+  sPanel,
+  sSkinProvider,
+  sGroupBox,
+  sLabel,
+  sCheckBox,
+  sButton,
+  sPageControl,
+  sEdit,
+  sSpinEdit,
   sBevel,
   dxSkinsCore,
   dxSkinDarkSide,
@@ -172,19 +88,13 @@ uses
   dxSkinMcSkin,
   dxSkinOffice2013White,
   dxSkinsDefaultPainters,
-  dxSkinscxPCPainter
-
-    ,
-  sMemo
-    ,
-  sMaskEdit
-    ,
-  sCustomComboEdit
-    ,
+  dxSkinscxPCPainter,
+  sMemo,
+  sMaskEdit,
+  sCustomComboEdit,
   sTooledit,
   sComboBox,
-  sSpeedButton
-    ,
+  sSpeedButton,
   uDImages,
   Vcl.DBCtrls,
   cxCurrencyEdit,
@@ -230,10 +140,6 @@ uses
   uDynamicRates,
   sListView,
   cxTimeEdit
-
-
-  // DX skins
-
     ;
 
 TYPE
@@ -783,6 +689,10 @@ type
     procedure tvSelectTypeNoRoomsStylesGetContentStyle(Sender: TcxCustomGridTableView; ARecord: TcxCustomGridRecord;
       AItem: TcxCustomGridTableItem; var AStyle: TcxStyle);
     procedure __tvRoomResColumn2PropertiesButtonClick(Sender: TObject; AButtonIndex: integer);
+    procedure GetLocaTimeEditProperties(Sender: TcxCustomGridTableItem; ARecord: TcxCustomGridRecord;
+      var AProperties: TcxCustomEditProperties);
+    procedure FormatTextToShortFormat(Sender: TcxCustomGridTableItem; ARecord: TcxCustomGridRecord;
+      var AText: string);
   private
     { Private declarations }
     zCustomerChanged: boolean;
@@ -857,49 +767,27 @@ var
 implementation
 
 uses
-  UITypes
-    ,
-  ug
-    ,
-  ud
-    ,
-  uSqlDefinitions
-    ,
-  _Glob
-    ,
-  PrjConst
-
-    ,
-  uMain
-    ,
-  uCurrencies
-    ,
-  uPriceCodes
-    ,
-  uCountries
-    ,
-  ueditRoomPrice
-    ,
-  uCustomers2
-    ,
-  uCustomerTypes2
-    ,
-  objDayFreeRooms
-    ,
-  uAppGlobal
-    ,
-  uDayNotes
-    ,
-  uPackages
-    ,
-  uGuestProfiles
-    ,
-  uRoomerDefinitions
-    ,
-  uDateUtils
-    ,
-  uAvailabilityPerDay
-    ,
+  UITypes,
+  ug,
+  ud,
+  uSqlDefinitions,
+  _Glob,
+  PrjConst,
+  uMain,
+  uCurrencies,
+  uPriceCodes,
+  uCountries,
+  ueditRoomPrice,
+  uCustomers2,
+  uCustomerTypes2,
+  objDayFreeRooms,
+  uAppGlobal,
+  uDayNotes,
+  uPackages,
+  uGuestProfiles,
+  uRoomerDefinitions,
+  uDateUtils,
+  uAvailabilityPerDay,
   uViewDailyRates
     ;
 
@@ -1475,6 +1363,19 @@ var
 begin
   RoomReservation := mRoomRes.FieldByName('roomreservation').AsInteger;
   EditRoomRateOneRoom(RoomReservation);
+end;
+
+procedure TfrmMakeReservationQuick.FormatTextToShortFormat(Sender: TcxCustomGridTableItem;
+  ARecord: TcxCustomGridRecord; var AText: string);
+begin
+  if not aText.IsEmpty then
+    DateTimeToString(aText, FormatSettings.ShortTimeFormat, StrTodateTime(aText));
+end;
+
+procedure TfrmMakeReservationQuick.GetLocaTimeEditProperties(Sender: TcxCustomGridTableItem;
+  ARecord: TcxCustomGridRecord; var AProperties: TcxCustomEditProperties);
+begin
+  TcxTimeEditProperties(aProperties).Use24HourFormat := not FormatSettings.ShortTimeFormat.Contains(Formatsettings.TimeAMString);
 end;
 
 procedure TfrmMakeReservationQuick.tvRoomResGuestsPropertiesEditValueChanged(Sender: TObject);
@@ -3174,7 +3075,7 @@ begin
       if oNewReservation.newRoomReservations.RoomItemsList[i].RoomReservation < 1 then
       begin
         RoomReservation := strToInt(lstIDs[i]); // RR_SetNewID();
-        oNewReservation.newRoomReservations.RoomItemsList[i].Roomreservation := RoomReservation;
+        oNewReservation.newRoomReservations.RoomItemsList[i].RoomReservation := RoomReservation;
       end;
 
       room := oNewReservation.newRoomReservations.RoomItemsList[i].RoomNumber;
@@ -3346,7 +3247,7 @@ begin
         if oNewReservation.newRoomReservations.RoomItemsList[i].RoomReservation < 1 then
         begin
           RoomReservation := strToInt(lstIDs[i]); // RR_SetNewID();
-          oNewReservation.newRoomReservations.RoomItemsList[i].Roomreservation := RoomReservation;
+          oNewReservation.newRoomReservations.RoomItemsList[i].RoomReservation := RoomReservation;
         end;
 
         room := oNewReservation.newRoomReservations.RoomItemsList[i].RoomNumber;
@@ -3358,8 +3259,8 @@ begin
 
         Arrival := oNewReservation.newRoomReservations.RoomItemsList[i].Arrival;
         Departure := oNewReservation.newRoomReservations.RoomItemsList[i].Departure;
-        childrenCount := oNewReservation.newRoomReservations.RoomItemsList[i].ChildrenCount;
-        infantCount := oNewReservation.newRoomReservations.RoomItemsList[i].InfantCount;
+        childrenCount := oNewReservation.newRoomReservations.RoomItemsList[i].childrenCount;
+        infantCount := oNewReservation.newRoomReservations.RoomItemsList[i].infantCount;
 
         if (copy(room, 1, 1)) <> '<' then
         begin
