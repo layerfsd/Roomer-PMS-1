@@ -3,13 +3,14 @@ object frmReservationProfile: TfrmReservationProfile
   Top = 201
   Caption = 'Reservation profile'
   ClientHeight = 599
-  ClientWidth = 1120
+  ClientWidth = 1170
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -9
   Font.Name = 'Tahoma'
   Font.Style = []
+  KeyPreview = True
   OldCreateOrder = False
   Position = poMainFormCenter
   ShowHint = True
@@ -23,18 +24,18 @@ object frmReservationProfile: TfrmReservationProfile
   object Panel2: TsPanel
     Left = 0
     Top = 0
-    Width = 1120
-    Height = 99
+    Width = 1170
+    Height = 110
     Align = alTop
     BevelOuter = bvSpace
     TabOrder = 0
     SkinData.SkinSection = 'PANEL'
-    object sGroupBox2: TsGroupBox
+    object gbxDates: TsGroupBox
       AlignWithMargins = True
       Left = 6
       Top = 4
       Width = 186
-      Height = 91
+      Height = 102
       Margins.Left = 5
       Align = alLeft
       TabOrder = 0
@@ -55,8 +56,8 @@ object frmReservationProfile: TfrmReservationProfile
         Font.Style = []
       end
       object Label3: TsLabel
-        Left = 52
-        Top = 34
+        Left = 53
+        Top = 36
         Width = 44
         Height = 11
         Alignment = taRightJustify
@@ -70,19 +71,19 @@ object frmReservationProfile: TfrmReservationProfile
       end
       object cxButton3: TsButton
         Left = 4
-        Top = 53
+        Top = 54
         Width = 175
         Height = 32
         Caption = 'Change reservation dates'
         ImageIndex = 51
         Images = DImages.PngImageList1
-        TabOrder = 0
+        TabOrder = 2
         OnClick = cxButton3Click
         SkinData.SkinSection = 'BUTTON'
       end
       object dtDeparture: TsDateEdit
         Left = 103
-        Top = 31
+        Top = 33
         Width = 76
         Height = 19
         AutoSize = False
@@ -96,7 +97,7 @@ object frmReservationProfile: TfrmReservationProfile
         MaxLength = 10
         ParentFont = False
         ReadOnly = True
-        TabOrder = 1
+        TabOrder = 0
         Text = '  -  -    '
         CheckOnExit = True
         SkinData.SkinSection = 'EDIT'
@@ -119,7 +120,7 @@ object frmReservationProfile: TfrmReservationProfile
         MaxLength = 10
         ParentFont = False
         ReadOnly = True
-        TabOrder = 2
+        TabOrder = 1
         Text = '  -  -    '
         CheckOnExit = True
         SkinData.SkinSection = 'EDIT'
@@ -127,12 +128,12 @@ object frmReservationProfile: TfrmReservationProfile
         GlyphMode.Grayed = False
       end
     end
-    object sGroupBox3: TsGroupBox
+    object gbxResProperties: TsGroupBox
       AlignWithMargins = True
       Left = 200
       Top = 4
-      Width = 273
-      Height = 91
+      Width = 305
+      Height = 102
       Margins.Left = 5
       Align = alLeft
       Padding.Left = 5
@@ -141,7 +142,7 @@ object frmReservationProfile: TfrmReservationProfile
       Checked = False
       object Label8: TsLabel
         Left = 41
-        Top = 13
+        Top = 36
         Width = 72
         Height = 11
         Alignment = taRightJustify
@@ -155,7 +156,7 @@ object frmReservationProfile: TfrmReservationProfile
       end
       object lblCustomerType: TsLabel
         Left = 201
-        Top = 13
+        Top = 36
         Width = 3
         Height = 11
         Caption = '-'
@@ -168,7 +169,7 @@ object frmReservationProfile: TfrmReservationProfile
       end
       object sLabel1: TsLabel
         Left = 52
-        Top = 36
+        Top = 59
         Width = 61
         Height = 11
         Alignment = taRightJustify
@@ -182,7 +183,7 @@ object frmReservationProfile: TfrmReservationProfile
       end
       object labCountry: TsLabel
         Left = 201
-        Top = 36
+        Top = 59
         Width = 3
         Height = 11
         Caption = '-'
@@ -195,7 +196,7 @@ object frmReservationProfile: TfrmReservationProfile
       end
       object Label61: TsLabel
         Left = 36
-        Top = 59
+        Top = 82
         Width = 131
         Height = 11
         Alignment = taRightJustify
@@ -207,9 +208,23 @@ object frmReservationProfile: TfrmReservationProfile
         Font.Name = 'Tahoma'
         Font.Style = []
       end
+      object lblMarket: TsLabel
+        Left = 78
+        Top = 14
+        Width = 35
+        Height = 11
+        Alignment = taRightJustify
+        Caption = 'Market :'
+        ParentFont = False
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -9
+        Font.Name = 'Tahoma'
+        Font.Style = []
+      end
       object edtType: TsEdit
         Left = 119
-        Top = 10
+        Top = 33
         Width = 56
         Height = 20
         TabStop = False
@@ -222,7 +237,7 @@ object frmReservationProfile: TfrmReservationProfile
         MaxLength = 30
         ParentFont = False
         ReadOnly = True
-        TabOrder = 0
+        TabOrder = 1
         OnDblClick = edtTypeDblClick
         SkinData.SkinSection = 'EDIT'
         BoundLabel.Font.Charset = DEFAULT_CHARSET
@@ -233,17 +248,17 @@ object frmReservationProfile: TfrmReservationProfile
       end
       object btnGetCustomerType: TsButton
         Left = 176
-        Top = 10
+        Top = 33
         Width = 19
         Height = 19
         Caption = '...'
-        TabOrder = 1
+        TabOrder = 2
         OnClick = edtTypeDblClick
         SkinData.SkinSection = 'BUTTON'
       end
       object edCountry: TsEdit
         Left = 119
-        Top = 33
+        Top = 56
         Width = 56
         Height = 20
         TabStop = False
@@ -256,7 +271,7 @@ object frmReservationProfile: TfrmReservationProfile
         Font.Style = []
         MaxLength = 30
         ParentFont = False
-        TabOrder = 2
+        TabOrder = 3
         OnChange = edCountryChange
         OnDblClick = edCountryDblClick
         OnExit = edCountryExit
@@ -269,34 +284,58 @@ object frmReservationProfile: TfrmReservationProfile
       end
       object btnGetCountry: TsButton
         Left = 176
-        Top = 34
+        Top = 57
         Width = 19
         Height = 18
         Caption = '...'
-        TabOrder = 3
+        TabOrder = 4
         OnClick = edCountryDblClick
         SkinData.SkinSection = 'BUTTON'
       end
       object chkUseStayTax: TsCheckBox
         Left = 176
-        Top = 58
+        Top = 79
         Width = 20
-        Height = 16
-        TabOrder = 4
+        Height = 18
+        TabOrder = 5
         SkinData.SkinSection = 'CHECKBOX'
         ImgChecked = 0
         ImgUnchecked = 0
       end
+      object cbxMarket: TsComboBox
+        Left = 119
+        Top = 11
+        Width = 76
+        Height = 19
+        Alignment = taLeftJustify
+        BoundLabel.Caption = 'Market:'
+        SkinData.SkinSection = 'COMBOBOX'
+        VerticalAlignment = taAlignTop
+        Style = csDropDownList
+        Color = clWhite
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clBlack
+        Font.Height = -9
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ItemIndex = -1
+        ParentFont = False
+        TabOrder = 0
+        OnCloseUp = cbxMarketCloseUp
+        Items.Strings = (
+          'Leisure'
+          'Business')
+      end
     end
-    object sGroupBox4: TsGroupBox
+    object gbxNumbers: TsGroupBox
       AlignWithMargins = True
-      Left = 794
+      Left = 826
       Top = 4
       Width = 277
-      Height = 91
+      Height = 102
       Margins.Left = 5
       Align = alLeft
-      TabOrder = 2
+      TabOrder = 3
       SkinData.SkinSection = 'GROUPBOX'
       Checked = False
       object clabReserveDate: TsLabel
@@ -399,15 +438,15 @@ object frmReservationProfile: TfrmReservationProfile
         SkinData.SkinSection = 'BUTTON'
       end
     end
-    object sGroupBox5: TsGroupBox
+    object gbxStatus: TsGroupBox
       AlignWithMargins = True
-      Left = 481
+      Left = 513
       Top = 4
       Width = 305
-      Height = 91
+      Height = 102
       Margins.Left = 5
       Align = alLeft
-      TabOrder = 3
+      TabOrder = 2
       SkinData.SkinSection = 'GROUPBOX'
       Checked = False
       object Label25: TsLabel
@@ -439,8 +478,8 @@ object frmReservationProfile: TfrmReservationProfile
         Font.Style = []
       end
       object Label26: TsLabel
-        Left = 111
-        Top = 59
+        Left = 109
+        Top = 58
         Width = 29
         Height = 11
         Alignment = taRightJustify
@@ -469,7 +508,7 @@ object frmReservationProfile: TfrmReservationProfile
         Font.Style = []
         ItemIndex = -1
         ParentFont = False
-        TabOrder = 0
+        TabOrder = 2
         OnCloseUp = cbxStatusCloseUp
         OnEnter = cbxStatusEnter
         Items.Strings = (
@@ -526,7 +565,7 @@ object frmReservationProfile: TfrmReservationProfile
         Font.Style = []
         ItemIndex = -1
         ParentFont = False
-        TabOrder = 2
+        TabOrder = 0
         OnCloseUp = cbxPaymentdetailsCloseUp
         Items.Strings = (
           'Mixed'
@@ -534,21 +573,11 @@ object frmReservationProfile: TfrmReservationProfile
           'Group Account')
       end
     end
-    object sButton6: TsButton
-      Left = 1081
-      Top = 12
-      Width = 16
-      Height = 17
-      Caption = '-'
-      TabOrder = 4
-      OnClick = sButton6Click
-      SkinData.SkinSection = 'BUTTON'
-    end
   end
   object PageControl2: TsPageControl
     Left = 0
-    Top = 99
-    Width = 1120
+    Top = 110
+    Width = 1170
     Height = 202
     ActivePage = TabSheet3
     Align = alTop
@@ -557,10 +586,12 @@ object frmReservationProfile: TfrmReservationProfile
     object TabSheet3: TsTabSheet
       Caption = 'Main'
       TabVisible = False
+      SkinData.CustomColor = False
+      SkinData.CustomFont = False
       object Panel3: TsPanel
         Left = 0
         Top = 0
-        Width = 1112
+        Width = 1162
         Height = 192
         Align = alClient
         TabOrder = 0
@@ -584,6 +615,8 @@ object frmReservationProfile: TfrmReservationProfile
             SkinData.SkinSection = 'PAGECONTROL'
             object TabSheet4: TsTabSheet
               Caption = 'Customer'
+              SkinData.CustomColor = False
+              SkinData.CustomFont = False
               object Label9: TsLabel
                 Left = 2
                 Top = 3
@@ -711,7 +744,7 @@ object frmReservationProfile: TfrmReservationProfile
               end
               object edtName: TsEdit
                 Left = 58
-                Top = 42
+                Top = 41
                 Width = 140
                 Height = 20
                 Color = clWhite
@@ -828,6 +861,12 @@ object frmReservationProfile: TfrmReservationProfile
             object TabSheet5: TsTabSheet
               Caption = 'Customer Tel / Email'
               ImageIndex = 1
+              SkinData.CustomColor = False
+              SkinData.CustomFont = False
+              ExplicitLeft = 0
+              ExplicitTop = 0
+              ExplicitWidth = 0
+              ExplicitHeight = 0
               object Label10: TsLabel
                 Left = 33
                 Top = 13
@@ -1298,7 +1337,7 @@ object frmReservationProfile: TfrmReservationProfile
         object memPanel: TsPanel
           Left = 424
           Top = 1
-          Width = 687
+          Width = 737
           Height = 190
           Margins.Left = 0
           Margins.Top = 0
@@ -1394,7 +1433,7 @@ object frmReservationProfile: TfrmReservationProfile
           object Panel8: TsPanel
             Left = 6
             Top = 148
-            Width = 675
+            Width = 725
             Height = 36
             Margins.Left = 0
             Margins.Top = 0
@@ -1445,7 +1484,7 @@ object frmReservationProfile: TfrmReservationProfile
           object gbxRoomInformation: TsGroupBox
             Left = 472
             Top = 6
-            Width = 209
+            Width = 259
             Height = 142
             Align = alClient
             Caption = 'Notes for room : '
@@ -1455,7 +1494,7 @@ object frmReservationProfile: TfrmReservationProfile
             object sLabel5: TsLabel
               Left = 2
               Top = 65
-              Width = 205
+              Width = 255
               Height = 11
               Align = alTop
               Caption = 'Request from booking channel'
@@ -1464,7 +1503,7 @@ object frmReservationProfile: TfrmReservationProfile
             object memRoomNotes: TsMemo
               Left = 2
               Top = 13
-              Width = 205
+              Width = 255
               Height = 52
               Align = alTop
               BevelInner = bvNone
@@ -1485,7 +1524,7 @@ object frmReservationProfile: TfrmReservationProfile
             object memRequestFromChannel: TsMemo
               Left = 2
               Top = 76
-              Width = 205
+              Width = 255
               Height = 64
               Align = alClient
               BevelInner = bvNone
@@ -1521,9 +1560,9 @@ object frmReservationProfile: TfrmReservationProfile
   end
   object mainPage: TsPageControl
     Left = 0
-    Top = 301
-    Width = 1120
-    Height = 265
+    Top = 312
+    Width = 1170
+    Height = 254
     ActivePage = RoomsTab
     Align = alClient
     Style = tsButtons
@@ -1535,11 +1574,13 @@ object frmReservationProfile: TfrmReservationProfile
     SkinData.SkinSection = 'PAGECONTROL'
     object RoomsTab: TsTabSheet
       Caption = 'Rooms'
+      SkinData.CustomColor = False
+      SkinData.CustomFont = False
       object grRooms: TcxGrid
         Left = 0
         Top = 82
-        Width = 1112
-        Height = 148
+        Width = 1162
+        Height = 137
         Align = alClient
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
@@ -1548,7 +1589,7 @@ object frmReservationProfile: TfrmReservationProfile
         Font.Style = []
         Images = DImages.cxSmallImagesFlat
         ParentFont = False
-        TabOrder = 0
+        TabOrder = 1
         LookAndFeel.NativeStyle = False
         object tvRooms: TcxGridDBTableView
           Navigator.Buttons.CustomButtons = <>
@@ -1575,7 +1616,6 @@ object frmReservationProfile: TfrmReservationProfile
           Navigator.Buttons.GotoBookmark.Visible = True
           Navigator.Buttons.Filter.Visible = True
           OnCellDblClick = tvRoomsCellDblClick
-          OnFocusedRecordChanged = tvRoomsFocusedRecordChanged
           OnInitEdit = tvRoomsInitEdit
           OnUpdateEdit = tvRoomsUpdateEdit
           DataController.DataSource = mRoomsDS
@@ -1752,6 +1792,23 @@ object frmReservationProfile: TfrmReservationProfile
             Options.ShowEditButtons = isebAlways
             Width = 73
           end
+          object tvRoomsExpectedTimeOfArrival: TcxGridDBColumn
+            Caption = 'Exp TOA'
+            DataBinding.FieldName = 'ExpectedTimeOfArrival'
+            PropertiesClassName = 'TcxTimeEditProperties'
+            Properties.Alignment.Horz = taCenter
+            Properties.ClearKey = 46
+            Properties.SpinButtons.Visible = False
+            Properties.TimeFormat = tfHourMin
+            Properties.UseNullString = True
+            Properties.UseTimeFormatWhenUnfocused = False
+            Properties.OnValidate = tvRoomsExpectedTimeOfArrivalPropertiesValidate
+            OnGetDisplayText = FormatTextToShortFormat
+            OnGetProperties = GetLocaltimeEditProperties
+            HeaderAlignmentHorz = taCenter
+            HeaderHint = 'Expected Time of Arrival'
+            Width = 62
+          end
           object tvRoomsDeparture: TcxGridDBColumn
             DataBinding.FieldName = 'Departure'
             PropertiesClassName = 'TcxButtonEditProperties'
@@ -1800,6 +1857,22 @@ object frmReservationProfile: TfrmReservationProfile
             Options.IncSearch = False
             Options.ShowEditButtons = isebAlways
             Width = 78
+          end
+          object tvRoomsExpectedCheckoutTime: TcxGridDBColumn
+            Caption = 'Exp COT'
+            DataBinding.FieldName = 'ExpectedCheckoutTime'
+            PropertiesClassName = 'TcxTimeEditProperties'
+            Properties.Alignment.Horz = taCenter
+            Properties.ClearKey = 46
+            Properties.SpinButtons.Visible = False
+            Properties.TimeFormat = tfHourMin
+            Properties.UseTimeFormatWhenUnfocused = False
+            Properties.OnValidate = tvRoomsExpectedCheckoutTimePropertiesValidate
+            OnGetDisplayText = FormatTextToShortFormat
+            OnGetProperties = GetLocaltimeEditProperties
+            HeaderAlignmentHorz = taCenter
+            HeaderHint = 'Expected CheckoutTime'
+            Width = 68
           end
           object tvRoomsdayCount: TcxGridDBColumn
             Caption = 'Nights'
@@ -2155,6 +2228,15 @@ object frmReservationProfile: TfrmReservationProfile
             DataBinding.FieldName = 'unPaidItems'
             Options.Editing = False
           end
+          object tvRoomsPersonsProfilesId: TcxGridDBColumn
+            DataBinding.FieldName = 'PersonsProfilesId'
+          end
+          object tvRoomsoutOfOrderBlocking: TcxGridDBColumn
+            DataBinding.FieldName = 'outOfOrderBlocking'
+          end
+          object tvRoomsManualChannelId: TcxGridDBColumn
+            DataBinding.FieldName = 'ManualChannelId'
+          end
         end
         object lvRooms: TcxGridLevel
           Caption = 'Rooms'
@@ -2164,10 +2246,10 @@ object frmReservationProfile: TfrmReservationProfile
       object Panel9: TsPanel
         Left = 0
         Top = 38
-        Width = 1112
+        Width = 1162
         Height = 44
         Align = alTop
-        TabOrder = 1
+        TabOrder = 0
         SkinData.SkinSection = 'PANEL'
         object btnShowPrices: TsButton
           AlignWithMargins = True
@@ -2179,7 +2261,7 @@ object frmReservationProfile: TfrmReservationProfile
           Caption = 'Prices'
           ImageIndex = 88
           Images = DImages.PngImageList1
-          TabOrder = 0
+          TabOrder = 7
           OnClick = btnShowPricesClick
           SkinData.SkinSection = 'BUTTON'
         end
@@ -2195,9 +2277,8 @@ object frmReservationProfile: TfrmReservationProfile
           ImageIndex = 63
           Images = DImages.PngImageList1
           Style = bsSplitButton
-          TabOrder = 1
+          TabOrder = 6
           OnClick = OpenthisRoom1Click
-          OnExit = btnShowInvoiceExit
           SkinData.SkinSection = 'BUTTON'
         end
         object btnAddRoom: TsButton
@@ -2210,7 +2291,7 @@ object frmReservationProfile: TfrmReservationProfile
           Caption = 'Add Room'
           ImageIndex = 23
           Images = DImages.PngImageList1
-          TabOrder = 2
+          TabOrder = 0
           OnClick = btnAddRoomClick
           SkinData.SkinSection = 'BUTTON'
         end
@@ -2224,7 +2305,7 @@ object frmReservationProfile: TfrmReservationProfile
           Caption = 'Remove Room'
           ImageIndex = 24
           Images = DImages.PngImageList1
-          TabOrder = 3
+          TabOrder = 1
           OnClick = btnRemoveRoomClick
           SkinData.SkinSection = 'BUTTON'
         end
@@ -2238,7 +2319,7 @@ object frmReservationProfile: TfrmReservationProfile
           Caption = 'Provide room'
           ImageIndex = 47
           Images = DImages.PngImageList1
-          TabOrder = 4
+          TabOrder = 3
           OnClick = btnProvideRoomClick
           SkinData.SkinSection = 'BUTTON'
         end
@@ -2252,7 +2333,7 @@ object frmReservationProfile: TfrmReservationProfile
           Caption = 'Excel'
           ImageIndex = 132
           Images = DImages.PngImageList1
-          TabOrder = 5
+          TabOrder = 8
           OnClick = btnRoomToExcelClick
           SkinData.SkinSection = 'BUTTON'
         end
@@ -2266,7 +2347,7 @@ object frmReservationProfile: TfrmReservationProfile
           Caption = 'Room'#13#10' Documents'
           ImageIndex = 0
           Images = DImages.PngImageList1
-          TabOrder = 6
+          TabOrder = 5
           OnClick = cxButton5Click
           SkinData.SkinSection = 'BUTTON'
         end
@@ -2280,7 +2361,7 @@ object frmReservationProfile: TfrmReservationProfile
           Caption = 'Jump'
           ImageIndex = 57
           Images = DImages.PngImageList1
-          TabOrder = 7
+          TabOrder = 4
           OnClick = cxButton6Click
           SkinData.SkinSection = 'BUTTON'
         end
@@ -2294,7 +2375,7 @@ object frmReservationProfile: TfrmReservationProfile
           Caption = 'Refresh'
           ImageIndex = 28
           Images = DImages.PngImageList1
-          TabOrder = 8
+          TabOrder = 10
           OnClick = btnRoomsRefreshClick
           SkinData.SkinSection = 'BUTTON'
         end
@@ -2308,7 +2389,7 @@ object frmReservationProfile: TfrmReservationProfile
           Caption = 'Guest details'
           ImageIndex = 44
           Images = DImages.PngImageList1
-          TabOrder = 9
+          TabOrder = 2
           OnClick = sButton5Click
           SkinData.SkinSection = 'BUTTON'
         end
@@ -2320,7 +2401,7 @@ object frmReservationProfile: TfrmReservationProfile
           Height = 36
           Align = alLeft
           Caption = 'Names in Group'
-          TabOrder = 10
+          TabOrder = 9
           OnClick = btnGroupsClick
           SkinData.SkinSection = 'BUTTON'
         end
@@ -2328,7 +2409,7 @@ object frmReservationProfile: TfrmReservationProfile
       object sPanel1: TsPanel
         Left = 0
         Top = 0
-        Width = 1112
+        Width = 1162
         Height = 38
         Align = alTop
         Caption = 'OUT-OF-ORDER'
@@ -2346,16 +2427,22 @@ object frmReservationProfile: TfrmReservationProfile
     object GuestsTab: TsTabSheet
       Caption = 'Guests'
       ImageIndex = 1
+      SkinData.CustomColor = False
+      SkinData.CustomFont = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 230
       object Panel10: TsPanel
         Left = 0
         Top = 0
-        Width = 1112
+        Width = 1162
         Height = 38
         Align = alTop
         TabOrder = 0
         SkinData.SkinSection = 'PANEL'
         DesignSize = (
-          1112
+          1162
           38)
         object btnGuestsRefresh: TsButton
           Left = 212
@@ -2370,7 +2457,7 @@ object frmReservationProfile: TfrmReservationProfile
           SkinData.SkinSection = 'BUTTON'
         end
         object btnExpand: TsButton
-          Left = 905
+          Left = 955
           Top = 2
           Width = 100
           Height = 30
@@ -2381,7 +2468,7 @@ object frmReservationProfile: TfrmReservationProfile
           SkinData.SkinSection = 'BUTTON'
         end
         object btnCollapse: TsButton
-          Left = 1007
+          Left = 1057
           Top = 2
           Width = 100
           Height = 30
@@ -2406,8 +2493,8 @@ object frmReservationProfile: TfrmReservationProfile
         object chkShowAllGuests: TsCheckBox
           Left = 333
           Top = 11
-          Width = 93
-          Height = 16
+          Width = 85
+          Height = 20
           Caption = 'Show all guests'
           Anchors = [akLeft, akTop, akRight]
           TabOrder = 4
@@ -2432,12 +2519,13 @@ object frmReservationProfile: TfrmReservationProfile
       object grGuests: TcxGrid
         Left = 0
         Top = 38
-        Width = 1112
-        Height = 192
+        Width = 1162
+        Height = 181
         Align = alClient
         TabOrder = 1
         LevelTabs.Style = 8
         LookAndFeel.NativeStyle = False
+        ExplicitHeight = 192
         object tvGuestRooms: TcxGridDBTableView
           Navigator.Buttons.CustomButtons = <>
           Navigator.Buttons.First.Visible = True
@@ -2810,33 +2898,46 @@ object frmReservationProfile: TfrmReservationProfile
     end
     object sTabSheet2: TsTabSheet
       Caption = 'ALERTS'
+      SkinData.CustomColor = False
+      SkinData.CustomFont = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 230
       object pnlAlertHolder: TsPanel
         Left = 0
         Top = 0
-        Width = 1112
-        Height = 230
+        Width = 1162
+        Height = 219
         Align = alClient
         BevelOuter = bvNone
         TabOrder = 0
         SkinData.SkinSection = 'TRANSPARENT'
+        ExplicitHeight = 230
       end
     end
     object InvoicesTab: TsTabSheet
       Caption = 'Finished Invoices'
       ImageIndex = 2
+      SkinData.CustomColor = False
+      SkinData.CustomFont = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 230
       object Panel11: TsPanel
         Left = 0
         Top = 0
-        Width = 1112
+        Width = 1162
         Height = 38
         Align = alTop
         TabOrder = 0
         SkinData.SkinSection = 'PANEL'
         DesignSize = (
-          1112
+          1162
           38)
         object cxButton1: TsButton
-          Left = 1003
+          Left = 1053
           Top = 3
           Width = 100
           Height = 29
@@ -2864,11 +2965,12 @@ object frmReservationProfile: TfrmReservationProfile
       object Grid: TcxGrid
         Left = 0
         Top = 38
-        Width = 1112
-        Height = 192
+        Width = 1162
+        Height = 181
         Align = alClient
         TabOrder = 1
         LookAndFeel.NativeStyle = False
+        ExplicitHeight = 192
         object tvInvoiceHeads: TcxGridDBTableView
           Navigator.Buttons.CustomButtons = <>
           Navigator.Buttons.First.Visible = True
@@ -3185,6 +3287,12 @@ object frmReservationProfile: TfrmReservationProfile
     end
     object sTabSheet1: TsTabSheet
       Caption = 'Sent emails'
+      SkinData.CustomColor = False
+      SkinData.CustomFont = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 230
     end
   end
   object pnlDataWait: TsPanel
@@ -3211,17 +3319,17 @@ object frmReservationProfile: TfrmReservationProfile
   object Panel1: TsPanel
     Left = 0
     Top = 566
-    Width = 1120
+    Width = 1170
     Height = 33
     Align = alBottom
     TabOrder = 4
     SkinData.SkinSection = 'PANEL'
     DesignSize = (
-      1120
+      1170
       33)
     object sButton2: TsButton
-      Left = 947
-      Top = 4
+      Left = 993
+      Top = 2
       Width = 83
       Height = 25
       Hint = 'Confirm close'
@@ -3234,7 +3342,7 @@ object frmReservationProfile: TfrmReservationProfile
       SkinData.SkinSection = 'BUTTON'
     end
     object sButton3: TsButton
-      Left = 1032
+      Left = 1082
       Top = 4
       Width = 83
       Height = 25
@@ -3374,6 +3482,12 @@ object frmReservationProfile: TfrmReservationProfile
     object mRoomsratePlanCode: TWideStringField
       FieldName = 'ratePlanCode'
       Size = 15
+    end
+    object mRoomsExpectedTimeOfArrival: TWideStringField
+      FieldName = 'ExpectedTimeOfArrival'
+    end
+    object mRoomsExpectedCheckoutTime: TWideStringField
+      FieldName = 'ExpectedCheckoutTime'
     end
   end
   object mGuestRoomsDS: TDataSource
@@ -3531,6 +3645,7 @@ object frmReservationProfile: TfrmReservationProfile
   end
   object mRoomsDS: TDataSource
     DataSet = mRooms
+    OnDataChange = mRoomsDSDataChange
     Left = 352
     Top = 512
   end
@@ -3790,8 +3905,8 @@ object frmReservationProfile: TfrmReservationProfile
   end
   object mInvoiceLinesDS: TDataSource
     DataSet = mInvoiceLines
-    Left = 672
-    Top = 464
+    Left = 680
+    Top = 488
   end
   object StoreMain: TcxPropertiesStore
     Components = <

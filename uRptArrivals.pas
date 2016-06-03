@@ -10,7 +10,7 @@ uses
   dxSkinDarkSide, dxSkinTheAsphaltWorld, dxSkinsDefaultPainters, dxSkinsdxStatusBarPainter, cxStyles,
   dxSkinscxPCPainter, cxCustomData, cxFilter, cxData, cxDataStorage, cxEdit, cxNavigator, cxDBData, cxGridLevel,
   cxGridCustomTableView, cxGridTableView, cxGridBandedTableView, cxGridDBBandedTableView, cxGridCustomView, cxGrid,
-  dxStatusBar, cxGridDBTableView, Vcl.Grids, Vcl.DBGrids, Vcl.Menus;
+  dxStatusBar, cxGridDBTableView, Vcl.Grids, Vcl.DBGrids, Vcl.Menus, cxTimeEdit;
 
 type
   TfrmArrivalsReport = class(TForm)
@@ -82,6 +82,8 @@ type
       AShift: TShiftState; var AHandled: Boolean);
     procedure dtDateFromCloseUp(Sender: TObject);
     procedure dtDateToCloseUp(Sender: TObject);
+    procedure grArrivalsListDBTableView1ExpectedTimeOfArrivalGetDisplayText(Sender: TcxCustomGridTableItem;
+      ARecord: TcxCustomGridRecord; var AText: string);
   private
     FRefreshingdata: boolean;
     { Private declarations }
@@ -295,6 +297,14 @@ procedure TfrmArrivalsReport.grArrivalsListDBTableView1CellDblClick(Sender: TcxC
   AButton: TMouseButton; AShift: TShiftState; var AHandled: Boolean);
 begin
   btnProfile.Click;
+end;
+
+procedure TfrmArrivalsReport.grArrivalsListDBTableView1ExpectedTimeOfArrivalGetDisplayText(
+  Sender: TcxCustomGridTableItem; ARecord: TcxCustomGridRecord; var AText: string);
+begin
+  if not aText.IsEmpty then
+    DateTimeToString(aText, FormatSettings.ShortTimeFormat, StrTodateTime(aText));
+
 end;
 
 procedure TfrmArrivalsReport.kbmArrivalsListAfterScroll(DataSet: TDataSet);

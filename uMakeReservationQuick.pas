@@ -3,131 +3,161 @@ unit uMakeReservationQuick;
 interface
 
 uses
-    Windows
-  , Messages
-  , system.SysUtils
-  , system.Variants
-  , system.Classes
-  , Vcl.Graphics
-  , Vcl.Controls
-  , Vcl.Forms
-  , Vcl.Dialogs
-  , Vcl.Menus
-  , Vcl.StdCtrls
-  , Vcl.Buttons
-  , Vcl.ExtCtrls
-  , Vcl.Mask
-  , Vcl.ComCtrls
-  , hData
-  , Data.DB
-  , Data.Win.ADODB
-  , objNewReservation
-  , objHomeCustomer
-
-  , cxPCdxBarPopupMenu
-  , cxGraphics
-  , cxControls
-  , cxLookAndFeels
-  , cxLookAndFeelPainters
-  , cxContainer
-  , cxEdit
-  , dxCore
-  , cxDateUtils
-  , cxStyles
-  , cxCustomData
-  , cxFilter
-  , cxData
-  , cxDataStorage
-  , cxNavigator
-  , cxDBData
-  , cxTextEdit
-  , cxButtonEdit
-  , cxSpinEdit
-  , cxCalc
-  , dxmdaset
-  , cxButtons
-  , cxGridLevel
-  , cxGridCustomTableView
-  , cxGridTableView
-  , cxGridDBTableView
-  , cxClasses
-  , cxGridCustomView
-  , cxGrid
-  , cxDropDownEdit
-  , cxCalendar
-  , cxCheckBox
-  , cxMaskEdit
-  , cxLabel
-  , cxGroupBox
-  , cxPC
-  , cxGridBandedTableView
-  , cxGridDBBandedTableView
-  , cxPropertiesStore
-  , cxLookupEdit
-  , cxDBLookupEdit
-  , cxDBLookupComboBox
-
-
-  , cmpRoomerDataSet
-  , cmpRoomerConnection
-
-  , objRoomRates
-  , kbmMemTable
-  , uUtils
-  , uAlerts
-  , uAlertEditPanel
-
-  , sPanel
-
-  , sSkinProvider
-  , sGroupBox
-  , sLabel
-  , sCheckBox
-  , sButton
-  , sPageControl
-  , sEdit
-  , sSpinEdit
-
-  , sBevel, dxSkinsCore, dxSkinDarkSide, dxSkinDevExpressDarkStyle, dxSkinMcSkin, dxSkinOffice2013White, dxSkinsDefaultPainters,
-  dxSkinscxPCPainter
-
-
-  , sMemo
-  , sMaskEdit
-  , sCustomComboEdit
-  , sTooledit, sComboBox, sSpeedButton
-  , uDImages, Vcl.DBCtrls, cxCurrencyEdit, dxSkinCaramel, dxSkinCoffee, dxSkinTheAsphaltWorld, dxSkinBlack, dxSkinBlue, dxSkinBlueprint,
-  dxSkinDarkRoom, dxSkinDevExpressStyle, dxSkinFoggy, dxSkinGlassOceans, dxSkinHighContrast, dxSkiniMaginary, dxSkinLilian, dxSkinLiquidSky,
-  dxSkinLondonLiquidSky, dxSkinMoneyTwins, dxSkinOffice2007Black, dxSkinOffice2007Blue, dxSkinOffice2007Green, dxSkinOffice2007Pink,
-  dxSkinOffice2007Silver, dxSkinOffice2010Black, dxSkinOffice2010Blue, dxSkinOffice2010Silver, dxSkinPumpkin, dxSkinSeven,
-  dxSkinSevenClassic, dxSkinSharp, dxSkinSharpPlus, dxSkinSilver, dxSkinSpringTime, dxSkinStardust, dxSkinSummer2008, dxSkinValentine,
-  dxSkinVS2010, dxSkinWhiteprint, dxSkinXmas2008Blue, uRoomerFilterComboBox, System.Generics.Collections,
-  uDynamicRates, sListView
-
-
-  //DX skins
-
-
-  ;
+  Windows,
+  Messages,
+  system.SysUtils,
+  system.Variants,
+  system.Classes,
+  Vcl.Graphics,
+  Vcl.Controls,
+  Vcl.Forms,
+  Vcl.Dialogs,
+  Vcl.Menus,
+  Vcl.StdCtrls,
+  Vcl.Buttons,
+  Vcl.ExtCtrls,
+  Vcl.Mask,
+  Vcl.ComCtrls,
+  hData,
+  Data.DB,
+  Data.Win.ADODB,
+  objNewReservation,
+  objHomeCustomer,
+  cxPCdxBarPopupMenu,
+  cxGraphics,
+  cxControls,
+  cxLookAndFeels,
+  cxLookAndFeelPainters,
+  cxContainer,
+  cxEdit,
+  dxCore,
+  cxDateUtils,
+  cxStyles,
+  cxCustomData,
+  cxFilter,
+  cxData,
+  cxDataStorage,
+  cxNavigator,
+  cxDBData,
+  cxTextEdit,
+  cxButtonEdit,
+  cxSpinEdit,
+  cxCalc,
+  dxmdaset,
+  cxButtons,
+  cxGridLevel,
+  cxGridCustomTableView,
+  cxGridTableView,
+  cxGridDBTableView,
+  cxClasses,
+  cxGridCustomView,
+  cxGrid,
+  cxDropDownEdit,
+  cxCalendar,
+  cxCheckBox,
+  cxMaskEdit,
+  cxLabel,
+  cxGroupBox,
+  cxPC,
+  cxGridBandedTableView,
+  cxGridDBBandedTableView,
+  cxPropertiesStore,
+  cxLookupEdit,
+  cxDBLookupEdit,
+  cxDBLookupComboBox,
+  cmpRoomerDataSet,
+  cmpRoomerConnection,
+  objRoomRates,
+  kbmMemTable,
+  uUtils,
+  uAlerts,
+  uAlertEditPanel,
+  sPanel,
+  sSkinProvider,
+  sGroupBox,
+  sLabel,
+  sCheckBox,
+  sButton,
+  sPageControl,
+  sEdit,
+  sSpinEdit,
+  sBevel,
+  dxSkinsCore,
+  dxSkinDarkSide,
+  dxSkinDevExpressDarkStyle,
+  dxSkinMcSkin,
+  dxSkinOffice2013White,
+  dxSkinsDefaultPainters,
+  dxSkinscxPCPainter,
+  sMemo,
+  sMaskEdit,
+  sCustomComboEdit,
+  sTooledit,
+  sComboBox,
+  sSpeedButton,
+  uDImages,
+  Vcl.DBCtrls,
+  cxCurrencyEdit,
+  dxSkinCaramel,
+  dxSkinCoffee,
+  dxSkinTheAsphaltWorld,
+  dxSkinBlack,
+  dxSkinBlue,
+  dxSkinBlueprint,
+  dxSkinDarkRoom,
+  dxSkinDevExpressStyle,
+  dxSkinFoggy,
+  dxSkinGlassOceans,
+  dxSkinHighContrast,
+  dxSkiniMaginary,
+  dxSkinLilian,
+  dxSkinLiquidSky,
+  dxSkinLondonLiquidSky,
+  dxSkinMoneyTwins,
+  dxSkinOffice2007Black,
+  dxSkinOffice2007Blue,
+  dxSkinOffice2007Green,
+  dxSkinOffice2007Pink,
+  dxSkinOffice2007Silver,
+  dxSkinOffice2010Black,
+  dxSkinOffice2010Blue,
+  dxSkinOffice2010Silver,
+  dxSkinPumpkin,
+  dxSkinSeven,
+  dxSkinSevenClassic,
+  dxSkinSharp,
+  dxSkinSharpPlus,
+  dxSkinSilver,
+  dxSkinSpringTime,
+  dxSkinStardust,
+  dxSkinSummer2008,
+  dxSkinValentine,
+  dxSkinVS2010,
+  dxSkinWhiteprint,
+  dxSkinXmas2008Blue,
+  uRoomerFilterComboBox,
+  system.Generics.Collections,
+  uDynamicRates,
+  sListView,
+  cxTimeEdit
+    ;
 
 TYPE
   recRoomRate = record
-    Reservation     : integer;
-    RoomReservation : integer;
-    RoomNumber      : string;
-    RateDate        : integer;
-    PriceCode       : string;
-    Rate            : double;
-    Discount        : double;
-    isPrecentage    : boolean;
-    ShowDiscount    : boolean;
-    isPaid          : boolean;
-    DiscountAmount  : double;
-    RentAmount      : double;
-    NativeAmount    : double;
+    Reservation: integer;
+    RoomReservation: integer;
+    RoomNumber: string;
+    RateDate: integer;
+    PriceCode: string;
+    Rate: double;
+    Discount: double;
+    isPrecentage: boolean;
+    ShowDiscount: boolean;
+    isPaid: boolean;
+    DiscountAmount: double;
+    RentAmount: double;
+    NativeAmount: double;
   end;
-
-
 
 type
   TfrmMakeReservationQuick = class(TForm)
@@ -569,39 +599,35 @@ type
     cbxExtraBedGrp: TsCheckBox;
     Alerts: TsTabSheet;
     __tvRoomResColumn2: TcxGridDBColumn;
-    procedure FormShow(Sender : TObject);
+    tvRoomResExpectedTimeOfArrival: TcxGridDBColumn;
+    tvRoomResexpectedCheckouttime: TcxGridDBColumn;
+    mRoomResExpectedTimeOfArrival: TStringField;
+    mRoomResExpectedCheckOutTime: TStringField;
+    cbxMarket: TsComboBox;
+    lblMarket: TsLabel;
+    procedure FormShow(Sender: TObject);
     procedure edCustomerDblClick(Sender: TObject);
     procedure edCustomerPropertiesEditValueChanged(Sender: TObject);
     procedure edCustomerExit(Sender: TObject);
-    procedure edCustomerKeyPress(Sender: TObject; var Key: Char);
     procedure btnFinishClick(Sender: TObject);
     procedure edCountryDblClick(Sender: TObject);
-    procedure edCountryKeyPress(Sender: TObject; var Key: Char);
-    procedure edMarketSegmentCodeExit(Sender: TObject);
     procedure edMarketSegmentCodeDblClick(Sender: TObject);
-    procedure edMarketSegmentCodeKeyPress(Sender: TObject; var Key: Char);
-    procedure edMarketSegmentCodePropertiesChange(Sender: TObject);
     procedure edCurrencyDblClick(Sender: TObject);
-    procedure edPcCodePropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
+    procedure edPcCodePropertiesButtonClick(Sender: TObject; AButtonIndex: integer);
     procedure edPcCodeDblClick(Sender: TObject);
     procedure edPcCodeExit(Sender: TObject);
-    procedure edPcCodeKeyPress(Sender: TObject; var Key: Char);
     procedure btnNextClick(Sender: TObject);
     procedure btnPreviusClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure Button1Click(Sender: TObject);
-    procedure cxButton1Click(Sender: TObject);
     procedure pgcMainChange(Sender: TObject);
     procedure btdEditRoomRateClick(Sender: TObject);
-    procedure tvRoomResColumn1PropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
+    procedure tvRoomResColumn1PropertiesButtonClick(Sender: TObject; AButtonIndex: integer);
     procedure btnEditRateAllRoomsClick(Sender: TObject);
     procedure btnRefreshClick(Sender: TObject);
-    procedure mSelectTypesBeforePost(DataSet: TDataSet);
     procedure mSelectRoomsNewRecord(DataSet: TDataSet);
-    procedure tvSelectRoomsRoomPropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
+    procedure tvSelectRoomsRoomPropertiesButtonClick(Sender: TObject; AButtonIndex: integer);
     procedure tvSelectTypeSelectedPropertiesEditValueChanged(Sender: TObject);
-    procedure tvSelectTypeNoRoomsPropertiesEditValueChanged(Sender: TObject);
     procedure mSelectTypesCalcFields(DataSet: TDataSet);
     procedure tvSelectRoomsSelectPropertiesEditValueChanged(Sender: TObject);
     procedure btnAutoSelectRoomsClick(Sender: TObject);
@@ -612,13 +638,12 @@ type
     procedure dtDepartureExit(Sender: TObject);
     procedure dtArrivalExit(Sender: TObject);
     procedure edNightsChange(Sender: TObject);
-    procedure edCurrencyExit(Sender: TObject);
     procedure btnSetAllAsNoRoomClick(Sender: TObject);
     procedure sButton1Click(Sender: TObject);
     procedure tvSelectTypeSelectedPropertiesValidate(Sender: TObject; var DisplayValue: Variant; var ErrorText: TCaption;
-      var Error: Boolean);
+      var Error: boolean);
     procedure tvSelectTypeNoRoomsPropertiesValidate(Sender: TObject; var DisplayValue: Variant; var ErrorText: TCaption;
-      var Error: Boolean);
+      var Error: boolean);
     procedure sButton4Click(Sender: TObject);
     procedure sButton3Click(Sender: TObject);
     procedure btnClearLogClick(Sender: TObject);
@@ -635,31 +660,23 @@ type
     procedure edCustomerChange(Sender: TObject);
     procedure btnGetLastCustomerClick(Sender: TObject);
     procedure edCurrencyChange(Sender: TObject);
-    procedure edPcCodeChange(Sender: TObject);
-    procedure edMarketSegmentCodeChange(Sender: TObject);
     procedure cbxIsRoomResDiscountPrecChange(Sender: TObject);
-    procedure F1Click(Sender: TObject);
     procedure mnuFinishAndShowClick(Sender: TObject);
     procedure edCustomerKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure edMarketSegmentCodeKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure edCountryKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure edCurrencyKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure edPcCodeKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
-    procedure edCurrencyKeyPress(Sender: TObject; var Key: Char);
     procedure edPackageDblClick(Sender: TObject);
     procedure edPackageExit(Sender: TObject);
-    procedure tvRoomResPackagePropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
-    procedure chkisGroupInvoiceClick(Sender: TObject);
+    procedure tvRoomResPackagePropertiesButtonClick(Sender: TObject; AButtonIndex: integer);
     procedure cbxRoomStatusCloseUp(Sender: TObject);
     procedure edContactEmailChange(Sender: TObject);
-    procedure edContactCountryDblClick(Sender: TObject);
-    procedure edContactCountryChange(Sender: TObject);
-    procedure edContactCountryKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure btnPortfolioClick(Sender: TObject);
     procedure btnPortfolioLookupClick(Sender: TObject);
     procedure edContactPersonCloseUp(Sender: TObject);
     procedure edContactPersonKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-    procedure tvRoomResMainGuestPropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
+    procedure tvRoomResMainGuestPropertiesButtonClick(Sender: TObject; AButtonIndex: integer);
     procedure timNewTimer(Sender: TObject);
     procedure edContactPersonEnter(Sender: TObject);
     procedure edContactPersonExit(Sender: TObject);
@@ -668,362 +685,345 @@ type
     procedure edtRatePlansCloseUp(Sender: TObject);
     procedure tvRoomResRatePlanCodePropertiesCloseUp(Sender: TObject);
     procedure tvRoomResRatePlanCodePropertiesEditValueChanged(Sender: TObject);
-    procedure tvSelectTypeTotalFreePropertiesChange(Sender: TObject);
     procedure tvSelectTypeNoRoomsPropertiesChange(Sender: TObject);
     procedure tvSelectTypeNoRoomsStylesGetContentStyle(Sender: TcxCustomGridTableView; ARecord: TcxCustomGridRecord;
       AItem: TcxCustomGridTableItem; var AStyle: TcxStyle);
-    procedure __tvRoomResColumn2PropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
+    procedure __tvRoomResColumn2PropertiesButtonClick(Sender: TObject; AButtonIndex: integer);
+    procedure GetLocaTimeEditProperties(Sender: TcxCustomGridTableItem; ARecord: TcxCustomGridRecord;
+      var AProperties: TcxCustomEditProperties);
+    procedure FormatTextToShortFormat(Sender: TcxCustomGridTableItem; ARecord: TcxCustomGridRecord;
+      var AText: string);
   private
     { Private declarations }
-    zCustomerChanged : Boolean;
-    zIsFirstTime : boolean;
+    zCustomerChanged: boolean;
+    zIsFirstTime: boolean;
 
     FrmAlertPanel: TFrmAlertPanel;
 
+    zRtInRoom: integer;
+    zRtNoRoom: integer;
+    zRtTotal: integer;
 
+    zTotalSelected: integer; // 0
+    zTotalRoomsSelected: integer; // 4
+    zTotalAvailable: integer; // 3
+    zTotalFree: integer; // 2
+    zTotalNoRooms: integer; // 1
 
-    zRtInRoom : integer;
-    zRtNoRoom : integer;
-    zRtTotal  : integer;
+    zTotal: integer;
 
-    zTotalSelected : integer;       //0
-    zTotalRoomsSelected : integer;  //4
-    zTotalAvailable : integer;      //3
-    zTotalFree      : integer;      //2
-    zTotalNoRooms   : integer;      //1
+    zNights: integer;
+    FOutOfOrderBlocking: boolean;
 
-    zTotal : integer;
-
-
-    zNights : integer;
-    FOutOfOrderBlocking: Boolean;
-
-    DynamicRates : TDynamicRates;
-
+    DynamicRates: TDynamicRates;
+    FValidating: boolean;
 
     procedure initCustomer;
-    function RoomStatusFromInfo(statusText : string) : integer;
-    function RoomStatusToInfo(Index : integer) : string;
-    function Apply : boolean;
+    function RoomStatusFromInfo(statusText: string): integer;
+    function RoomStatusToInfo(Index: integer): string;
+    function Apply: boolean;
     procedure addAvailableRoomTypes;
-    procedure SetAllAsNoRoom(doNextPage : boolean=true);
+    procedure SetAllAsNoRoom(doNextPage: boolean = true);
 
-    function customerValidate : boolean;
-    function CountryValidate : boolean;
-    function MarketSegmentValidate : boolean;
-    function CurrencyValidate(ed : TsEdit; lab,labName : TsLabel) : boolean;
-    function PriceCodeValidate(ed : TsEdit; lab, labName : TsLabel) : boolean;
-    function PackageValidate(ed : TsEdit; lab, labName : TsLabel) : boolean;
+    function customerValidate: boolean;
+    function CountryValidate: boolean;
+    function MarketSegmentValidate: boolean;
+    function CurrencyValidate(ed: TsEdit; lab, labName: TsLabel): boolean;
+    function PriceCodeValidate(ed: TsEdit; lab, labName: TsLabel): boolean;
+    function PackageValidate(ed: TsEdit; lab, labName: TsLabel): boolean;
 
-    procedure ApplyRateToOther(RoomReservation : integer; RoomType : string);
-    procedure ApplyNettoRateToNullPrice(NewRate : double;RoomReservation: integer; RoomType : string);
+    procedure ApplyRateToOther(RoomReservation: integer; RoomType: string);
+    procedure ApplyNettoRateToNullPrice(NewRate: double; RoomReservation: integer; RoomType: string);
 
     procedure getSelectRooms;
     procedure InitSelectRooms;
 
-    function CreateRoomRes_Quick : Boolean;
+    function CreateRoomRes_Quick: boolean;
     procedure CreateRoomRes_Normal;
 
-    procedure EditRoomRateOneRoom(RoomRes : integer) ;
+    procedure EditRoomRateOneRoom(RoomRes: integer);
     procedure GetPrices;
 
-    procedure UpdateStat;
+    function doAutoSelect(RoomType: string; NumRooms: integer; PriorityRule: string): integer;
+    function CalcOnePrice(RoomReservation: integer; NewRate: double = 0): boolean;
 
-   function doAutoSelect(RoomType : string; NumRooms : integer; PriorityRule : string) : integer;
-   function CalcOnePrice(roomreservation : integer; Newrate : double = 0) : boolean;
-   Procedure fillCurrencyFromDataset(sGoto : string);
-
-   procedure SetOutOfOrderBlocking(const Value: Boolean);
+    procedure SetOutOfOrderBlocking(const Value: boolean);
     procedure FillQuickFind;
     procedure ShowhideExtraInputs;
     procedure ShowRatePlans;
-    procedure PopulateRatePlanCombo(clearAll : Boolean = True);
-    function SetOnePrice(RoomReservation: Integer; rateId: String; channelId: Integer): boolean;
-    property OutOfOrderBlocking : Boolean read FOutOfOrderBlocking write SetOutOfOrderBlocking;
+    procedure PopulateRatePlanCombo(clearAll: boolean = true);
+    function SetOnePrice(RoomReservation: integer; rateId: String; channelId: integer): boolean;
+    property OutOfOrderBlocking: boolean read FOutOfOrderBlocking write SetOutOfOrderBlocking;
 
   public
     { Public declarations }
-    oNewReservation : TNewReservation;
+    oNewReservation: TNewReservation;
     procedure WndProc(var message: TMessage); override;
   end;
 
 var
-  frmMakeReservationQuick : TfrmMakeReservationQuick;
+  frmMakeReservationQuick: TfrmMakeReservationQuick;
 
 implementation
 
 uses
-    ug
-  , ud
-  , uSqlDefinitions
-  , _Glob
-  , PrjConst
-
-  , uMain
-  , uCurrencies
-  , uPriceCodes
-  , uCountries
-  , ueditRoomPrice
-  , uCustomers2
-  , uCustomerTypes2
-  , objDayFreeRooms
-  , uAppGlobal
-  , uDayNotes
-  , uPackages
-  , uGuestProfiles
-  , uRoomerDefinitions
-  , uDateUtils
-  , uAvailabilityPerDay
-  , uViewDailyRates
-
-  ;
+  UITypes,
+  ug,
+  ud,
+  uSqlDefinitions,
+  _Glob,
+  PrjConst,
+  uMain,
+  uCurrencies,
+  uPriceCodes,
+  uCountries,
+  ueditRoomPrice,
+  uCustomers2,
+  uCustomerTypes2,
+  objDayFreeRooms,
+  uAppGlobal,
+  uDayNotes,
+  uPackages,
+  uGuestProfiles,
+  uRoomerDefinitions,
+  uDateUtils,
+  uAvailabilityPerDay,
+  uViewDailyRates
+    ;
 
 {$R *.dfm}
 
-const WM_SET_COMBO_TEXT = WM_User + 101;
-      WM_SET_EMPTY_TEXT = WM_User + 102;
 
-function TfrmMakeReservationQuick.RoomstatusFromInfo(statusText : string) : integer;
+const
+  WM_SET_COMBO_TEXT = WM_User + 101;
+  WM_SET_EMPTY_TEXT = WM_User + 102;
+
+function TfrmMakeReservationQuick.RoomStatusFromInfo(statusText: string): integer;
 begin
   Result := 0;
-  if StatusText = 'P' then Result := 0;
-  if StatusText = 'G' then Result := 1;
-  if StatusText = 'A' then Result := 2;
-  if StatusText = 'O' then Result := 3;
-  if StatusText = 'N' then Result := 4;
-  if StatusText = 'D' then Result := 5;
-  if StatusText = 'B' then Result := 6;
+  if statusText = 'P' then
+    Result := 0;
+  if statusText = 'G' then
+    Result := 1;
+  if statusText = 'A' then
+    Result := 2;
+  if statusText = 'O' then
+    Result := 3;
+  if statusText = 'N' then
+    Result := 4;
+  if statusText = 'D' then
+    Result := 5;
+  if statusText = 'B' then
+    Result := 6;
 end;
 
-function TfrmMakeReservationQuick.RoomstatusToInfo(index : integer) : string;
+function TfrmMakeReservationQuick.RoomStatusToInfo(Index: integer): string;
 begin
   Result := '';
-  if Index = 0 then Result :='P'  ;
-  if Index = 1 then Result :='G'  ;
-  if Index = 2 then Result :='A'  ;
-  if Index = 3 then Result :='O'  ;
-  if Index = 4 then Result :='N'  ;
-  if Index = 5 then Result :='D'  ;
-  if Index = 6 then Result :='B'  ;
-  if Index = 7 then Result :='B'  ;
+  if Index = 0 then
+    Result := 'P';
+  if Index = 1 then
+    Result := 'G';
+  if Index = 2 then
+    Result := 'A';
+  if Index = 3 then
+    Result := 'O';
+  if Index = 4 then
+    Result := 'N';
+  if Index = 5 then
+    Result := 'D';
+  if Index = 6 then
+    Result := 'B';
+  if Index = 7 then
+    Result := 'B';
 end;
 
 procedure TfrmMakeReservationQuick.sButton3Click(Sender: TObject);
 var
-  roomReservation : integer;
+  RoomReservation: integer;
 begin
   RoomReservation := mRoomRes.FieldByName('RoomReservation').AsInteger;
-  ApplyRateToOther(roomreservation,'');
+  ApplyRateToOther(RoomReservation, '');
 end;
 
 procedure TfrmMakeReservationQuick.sButton4Click(Sender: TObject);
 var
-  roomType        : string;
-  roomReservation : integer;
+  RoomType: string;
+  RoomReservation: integer;
 begin
-  roomType        := mRoomRes.FieldByName('RoomType').AsString;
+  RoomType := mRoomRes.FieldByName('RoomType').AsString;
   RoomReservation := mRoomRes.FieldByName('RoomReservation').AsInteger;
-  ApplyRateToOther(roomreservation,RoomType)
+  ApplyRateToOther(RoomReservation, RoomType)
 end;
 
-procedure TfrmMakeReservationQuick.ApplyRateToOther(RoomReservation: integer; RoomType : string);
+procedure TfrmMakeReservationQuick.ApplyRateToOther(RoomReservation: integer; RoomType: string);
 var
-  Reservation     : integer;
-  RoomNumber      : string;
-  RateDate        : TDateTime;
-  PriceCode       : string;
-  Rate            : double;
-  Discount        : double;
-  isPercentage    : boolean;
-  ShowDiscount    : boolean;
-  isPaid          : boolean;
-  DiscountAmount  : double;
-  RentAmount      : double;
-  NativeAmount    : double;
+  RateDate: TDateTime;
+  PriceCode: string;
+  Rate: double;
+  Discount: double;
+  isPercentage: boolean;
+  ShowDiscount: boolean;
+  isPaid: boolean;
+  DiscountAmount: double;
+  RentAmount: double;
+  NativeAmount: double;
 
-  Arrival   : TdateTime;
-  Departure : TdateTime;
-  Guests    : integer;
-  ChildrenCount : integer;
-  infantCount   : integer;
+  Arrival: TDateTime;
+  Departure: TDateTime;
+  AvragePrice: double;
+  RateCount: integer;
+  AvrageDiscount: double;
+  room: string;
 
-  AvragePrice    : double;
-  RateCount      : integer;
-  AvrageDiscount : double;
-  room           : string;
-
-  i : integer;
-
-  found : boolean;
-  currentRoomReservation : integer;
-  currentRoomType        : string;
-  ManualChannelId : Integer;
-  ratePlanCode : String;
-
+  found: boolean;
+  currentRoomReservation: integer;
+  ManualChannelId: integer;
+  ratePlanCode: String;
 
 begin
-//  RoomReservation := mRoomRes.FieldByName('RoomReservation').AsInteger;
-//  roomType        := mRoomRes.FieldByName('RoomType').AsString;
-
-  Arrival         := mRoomRes.FieldByName('Arrival').AsDateTime;
-  Departure       := mRoomRes.FieldByName('Departure').AsDateTime;
-  Guests          := mRoomRes.FieldByName('Guests').AsInteger;
-  ChildrenCount   := mRoomRes.FieldByName('ChildrenCount').AsInteger;
-  infantCount     := mRoomRes.FieldByName('infantCount').AsInteger;
-  AvragePrice     :=  mRoomRes.FieldByName('AvragePrice').AsFloat    ;
-  RateCount       :=  mRoomRes.FieldByName('RateCount').AsInteger    ;
-  PriceCode       :=  mRoomRes.FieldByName('PriceCode').AsString     ;
-  AvrageDiscount  :=  mRoomRes.FieldByName('AvrageDiscount').AsFloat ;
-  isPercentage    :=  mRoomRes.FieldByName('isPercentage').AsBoolean ;
+  Arrival := mRoomRes.FieldByName('Arrival').AsDateTime;
+  Departure := mRoomRes.FieldByName('Departure').AsDateTime;
+  AvragePrice := mRoomRes.FieldByName('AvragePrice').AsFloat;
+  RateCount := mRoomRes.FieldByName('RateCount').AsInteger;
+  PriceCode := mRoomRes.FieldByName('PriceCode').AsString;
+  AvrageDiscount := mRoomRes.FieldByName('AvrageDiscount').AsFloat;
+  isPercentage := mRoomRes.FieldByName('isPercentage').AsBoolean;
   ManualChannelId := mRoomRes.FieldByName('ManualChannelId').AsInteger;
-  ratePlanCode    := mRoomRes.FieldByName('ratePlanCode').AsString;
+  ratePlanCode := mRoomRes.FieldByName('ratePlanCode').AsString;
 
-  if mRoomRatesTmp.active then mRoomRatesTmp.Close;
+  if mRoomRatesTmp.active then
+    mRoomRatesTmp.Close;
   mRoomRatesTmp.Open;
   mRoomRatesTmp.LoadFromDataSet(mRoomRates);
 
-  mRoomRatesTmp.Filter   := '(Roomreservation='+inttostr(roomreservation)+')';
+  mRoomRatesTmp.Filter := '(Roomreservation=' + inttostr(RoomReservation) + ')';
   mRoomRatesTmp.Filtered := true;
 
-  //apply to same roomtype
+  // apply to same roomtype
   mRoomRates.DisableControls;
   mRoomRes.DisableControls;
   try
-      mRoomRes.First;
-      while not mRoomRes.eof do
+    mRoomRes.First;
+    while not mRoomRes.eof do
+    begin
+      if RoomType <> '' then
       begin
-        if roomtype <> '' then
+        if (mRoomRes.FieldByName('RoomType').AsString <> RoomType) then
         begin
-          if (mRoomRes.FieldByName('RoomType').AsString <> roomType) then
-          begin
-            mRoomRes.next;
-            continue;
-          end;
+          mRoomRes.next;
+          continue;
         end;
-        if
-          (mRoomRes.FieldByName('RoomReservation').AsInteger <> RoomReservation)
-           AND (mRoomRes.FieldByName('Arrival').AsDateTime = Arrival)
-           AND (mRoomRes.FieldByName('Departure').AsDateTime = Departure)
-        then
-        begin
-          currentRoomReservation := mRoomRes.FieldByName('RoomReservation').AsInteger;
-          repeat
-            found :=  mRoomRates.Locate('roomreservation',currentRoomreservation,[]);
-            if found then
-            begin
-              mRoomRates.Delete;
-            end;
-          until not found;
-          mRoomRatesTmp.First;
-          while not mRoomRatesTmp.eof do
-          begin
-            RateDate        :=  mRoomRatesTmp.FieldByName('RateDate'       ).AsDateTime;
-            Room            :=  mRoomRatesTmp.FieldByName('RoomNumber'     ).AsString;
-            PriceCode       :=  mRoomRatesTmp.FieldByName('PriceCode'      ).Asstring;
-            Rate            :=  mRoomRatesTmp.FieldByName('Rate'           ).Asfloat;
-            Discount        :=  mRoomRatesTmp.FieldByName('Discount'       ).Asfloat;
-            isPercentage    :=  mRoomRatesTmp.FieldByName('isPercentage'   ).Asboolean;
-            ShowDiscount    :=  mRoomRatesTmp.FieldByName('ShowDiscount'   ).Asboolean;
-            isPaid          :=  mRoomRatesTmp.FieldByName('isPaid'         ).Asboolean;
-            DiscountAmount  :=  mRoomRatesTmp.FieldByName('DiscountAmount' ).Asfloat;
-            RentAmount      :=  mRoomRatesTmp.FieldByName('RentAmount'     ).Asfloat;
-            NativeAmount    :=  mRoomRatesTmp.FieldByName('NativeAmount'   ).Asfloat;
-
-
-            mRoomRates.append;
-            mRoomRates.FieldByName('Reservation').AsInteger := -1;
-            mRoomRates.FieldByName('RoomReservation').AsInteger := CurrentRoomreservation;
-            mRoomRates.FieldByName('RoomNumber').AsString := Room;
-            mRoomRates.FieldByName('RateDate').AsDateTime := rateDate;
-            mRoomRates.FieldByName('PriceCode').AsString := PriceCode;
-            mRoomRates.FieldByName('Rate').AsFloat := Rate;
-            mRoomRates.FieldByName('Discount').AsFloat := Discount;
-            mRoomRates.FieldByName('isPercentage').AsBoolean := isPercentage;
-            mRoomRates.FieldByName('ShowDiscount').AsBoolean := ShowDiscount;
-            mRoomRates.FieldByName('isPaid').AsBoolean := isPaid;
-            mRoomRates.FieldByName('DiscountAmount').AsFloat := DiscountAmount;
-            mRoomRates.FieldByName('RentAmount').AsFloat := RentAmount;
-            mRoomRates.FieldByName('NativeAmount').AsFloat := NativeAmount;
-            mRoomRates.FieldByName('Currency').AsString := mRoomRatesTmp.FieldByName('Currency').AsString;
-            mRoomRates.FieldByName('CurrencyRate').AsFloat := mRoomRatesTmp.FieldByName('CurrencyRate').Asfloat;
-            mRoomRates.post;
-            mRoomRatesTmp.Next;
-          end;
-
-
-
-         mRoomRes.edit;
-         mRoomRes.FieldByName('AvragePrice').AsFloat    :=  AvragePrice     ;
-         mRoomRes.FieldByName('RateCount').AsInteger    :=  RateCount       ;
-         mRoomRes.FieldByName('PriceCode').AsString     :=  PriceCode       ;
-         mRoomRes.FieldByName('AvrageDiscount').AsFloat :=  AvrageDiscount  ;
-         mRoomRes.FieldByName('isPercentage').AsBoolean :=  isPercentage    ;
-         mRoomRes.FieldByName('ManualChannelId').AsInteger := ManualChannelId;
-         mRoomRes.FieldByName('ratePlanCode').AsString  := ratePlanCode ;
-         mRoomRes.post;
-        end;
-        mRoomRes.next;
       end;
-    mRoomRes.Locate('roomReservation',roomreservation,[]);
+      if
+        (mRoomRes.FieldByName('RoomReservation').AsInteger <> RoomReservation)
+        AND (mRoomRes.FieldByName('Arrival').AsDateTime = Arrival)
+        AND (mRoomRes.FieldByName('Departure').AsDateTime = Departure)
+      then
+      begin
+        currentRoomReservation := mRoomRes.FieldByName('RoomReservation').AsInteger;
+        repeat
+          found := mRoomRates.Locate('roomreservation', currentRoomReservation, []);
+          if found then
+          begin
+            mRoomRates.Delete;
+          end;
+        until not found;
+        mRoomRatesTmp.First;
+        while not mRoomRatesTmp.eof do
+        begin
+          RateDate := mRoomRatesTmp.FieldByName('RateDate').AsDateTime;
+          room := mRoomRatesTmp.FieldByName('RoomNumber').AsString;
+          PriceCode := mRoomRatesTmp.FieldByName('PriceCode').AsString;
+          Rate := mRoomRatesTmp.FieldByName('Rate').AsFloat;
+          Discount := mRoomRatesTmp.FieldByName('Discount').AsFloat;
+          isPercentage := mRoomRatesTmp.FieldByName('isPercentage').AsBoolean;
+          ShowDiscount := mRoomRatesTmp.FieldByName('ShowDiscount').AsBoolean;
+          isPaid := mRoomRatesTmp.FieldByName('isPaid').AsBoolean;
+          DiscountAmount := mRoomRatesTmp.FieldByName('DiscountAmount').AsFloat;
+          RentAmount := mRoomRatesTmp.FieldByName('RentAmount').AsFloat;
+          NativeAmount := mRoomRatesTmp.FieldByName('NativeAmount').AsFloat;
+
+          mRoomRates.append;
+          mRoomRates.FieldByName('Reservation').AsInteger := -1;
+          mRoomRates.FieldByName('RoomReservation').AsInteger := currentRoomReservation;
+          mRoomRates.FieldByName('RoomNumber').AsString := room;
+          mRoomRates.FieldByName('RateDate').AsDateTime := RateDate;
+          mRoomRates.FieldByName('PriceCode').AsString := PriceCode;
+          mRoomRates.FieldByName('Rate').AsFloat := Rate;
+          mRoomRates.FieldByName('Discount').AsFloat := Discount;
+          mRoomRates.FieldByName('isPercentage').AsBoolean := isPercentage;
+          mRoomRates.FieldByName('ShowDiscount').AsBoolean := ShowDiscount;
+          mRoomRates.FieldByName('isPaid').AsBoolean := isPaid;
+          mRoomRates.FieldByName('DiscountAmount').AsFloat := DiscountAmount;
+          mRoomRates.FieldByName('RentAmount').AsFloat := RentAmount;
+          mRoomRates.FieldByName('NativeAmount').AsFloat := NativeAmount;
+          mRoomRates.FieldByName('Currency').AsString := mRoomRatesTmp.FieldByName('Currency').AsString;
+          mRoomRates.FieldByName('CurrencyRate').AsFloat := mRoomRatesTmp.FieldByName('CurrencyRate').AsFloat;
+          mRoomRates.post;
+          mRoomRatesTmp.next;
+        end;
+
+        mRoomRes.edit;
+        mRoomRes.FieldByName('AvragePrice').AsFloat := AvragePrice;
+        mRoomRes.FieldByName('RateCount').AsInteger := RateCount;
+        mRoomRes.FieldByName('PriceCode').AsString := PriceCode;
+        mRoomRes.FieldByName('AvrageDiscount').AsFloat := AvrageDiscount;
+        mRoomRes.FieldByName('isPercentage').AsBoolean := isPercentage;
+        mRoomRes.FieldByName('ManualChannelId').AsInteger := ManualChannelId;
+        mRoomRes.FieldByName('ratePlanCode').AsString := ratePlanCode;
+        mRoomRes.post;
+      end;
+      mRoomRes.next;
+    end;
+    mRoomRes.Locate('roomReservation', RoomReservation, []);
   finally
     mRoomRates.EnableControls;
     mRoomRes.EnableControls;
   end;
 end;
 
-
-procedure TfrmMakeReservationQuick.ApplyNettoRateToNullPrice(NewRate : double;RoomReservation: integer; RoomType : string);
+procedure TfrmMakeReservationQuick.ApplyNettoRateToNullPrice(NewRate: double; RoomReservation: integer;
+  RoomType: string);
 var
-  CurrentRoomreservation : integer;
+  currentRoomReservation: integer;
 begin
   mRoomRates.DisableControls;
   mRoomRes.DisableControls;
   try
-      mRoomRes.First;
-      while not mRoomRes.eof do
+    mRoomRes.First;
+    while not mRoomRes.eof do
+    begin
+      if RoomType <> '' then
       begin
-        if roomtype <> '' then
+        if (mRoomRes.FieldByName('RoomType').AsString <> RoomType) then
         begin
-          if (mRoomRes.FieldByName('RoomType').AsString <> roomType) then
-          begin
-            mRoomRes.next;
-            continue;
-          end;
+          mRoomRes.next;
+          continue;
         end;
-        if
-          (mRoomRes.FieldByName('RoomReservation').AsInteger <> RoomReservation)
-        then
-        begin
-          currentRoomReservation := mRoomRes.FieldByName('RoomReservation').AsInteger;
-          if mRoomRes.FieldByName('AvragePrice').asFloat = 0 then
-          begin
-            CalcOnePrice(currentroomreservation,newRate);
-          end;
-        end;
-        mRoomRes.next;
       end;
-    mRoomRes.Locate('roomReservation',roomreservation,[]);
+      if
+        (mRoomRes.FieldByName('RoomReservation').AsInteger <> RoomReservation)
+      then
+      begin
+        currentRoomReservation := mRoomRes.FieldByName('RoomReservation').AsInteger;
+        if mRoomRes.FieldByName('AvragePrice').AsFloat = 0 then
+        begin
+          CalcOnePrice(currentRoomReservation, NewRate);
+        end;
+      end;
+      mRoomRes.next;
+    end;
+    mRoomRes.Locate('roomReservation', RoomReservation, []);
   finally
     mRoomRates.EnableControls;
     mRoomRes.EnableControls;
   end;
-end;
-
-
-
-procedure TfrmMakeReservationQuick.UpdateStat;
-begin
-//  if not mSelectTypes.active then exit;
-//  zRtInRoom := mSelectTypes.FieldByName('Selected').AsInteger;
-//  zRtNoRoom := mSelectTypes.FieldByName('NoRooms').AsInteger;
-//  zRtTotal  := zRtInRoom+zRtNoRoom;
-//  labRtInRoom.caption    :=  inttostr(zRtInRoom);
-//  labRtNoRoom.caption    :=  inttostr(zRtNoRoom);
-//  labRtTotal.caption     :=  inttostr(zRtTotal);
 end;
 
 procedure TfrmMakeReservationQuick.WndProc(var message: TMessage);
-var s : String;
+var
+  s: String;
 begin
   inherited;
   if message.Msg = WM_SET_EMPTY_TEXT then
@@ -1032,15 +1032,16 @@ begin
     edContactAddress2.Text := '';
     edContactAddress3.Text := '';
     edContactAddress4.Text := '';
-//0810-hj    edContactCountry.Text := ctrlGetString('Country');
+    // 0810-hj    edContactCountry.Text := ctrlGetString('Country');
     edContactPhone.Text := '';
     edContactFax.Text := '';
     edContactEmail.Text := '';
 
-    cbxAddToGuestProfiles.Visible := True;
+    cbxAddToGuestProfiles.Visible := true;
     edtPortfolio.Tag := 0;
-  end else
-  if message.Msg = WM_SET_COMBO_TEXT then
+  end
+  else
+    if message.Msg = WM_SET_COMBO_TEXT then
   begin
     if message.WParam = 1 then
     begin
@@ -1049,7 +1050,6 @@ begin
       edContactAddress2.Text := glb.PreviousGuestsSet['Address2'];
       edContactAddress3.Text := glb.PreviousGuestsSet['Address3'];
       edContactAddress4.Text := glb.PreviousGuestsSet['Address4'];
-//0810-hj       edContactCountry.Text := glb.PreviousGuestsSet['Country'];
       edCountry.Text := glb.PersonProfiles['Country'];
       s := glb.PreviousGuestsSet['Tel1'];
       if s = '' then
@@ -1057,14 +1057,14 @@ begin
       edContactPhone.Text := s;
       edContactFax.Text := ''; // glb.PreviousGuestsSet['TelFax'];
       edContactEmail.Text := glb.PreviousGuestsSet['Email'];
-    end else
+    end
+    else
     begin
       edContactPerson.Text := Trim(glb.PersonProfiles['Firstname'] + ' ' + glb.PersonProfiles['Lastname']);
       edContactAddress1.Text := glb.PersonProfiles['Address1'];
       edContactAddress2.Text := glb.PersonProfiles['Address2'];
       edContactAddress3.Text := glb.PersonProfiles['Zip'];
       edContactAddress4.Text := glb.PersonProfiles['City'];
-//0810-hj       edContactCountry.Text := glb.PersonProfiles['Country'];
       edCountry.Text := glb.PersonProfiles['Country'];
       s := glb.PersonProfiles['TelMobile'];
       if s = '' then
@@ -1076,82 +1076,79 @@ begin
   end;
 end;
 
-procedure TfrmMakeReservationQuick.__tvRoomResColumn2PropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
-var _FrmViewDailyRates: TFrmViewDailyRates;
-    ADate,
-    arrival,
-    departure : TDate;
-    i, ii,
-    Guests, channelId,
-    dayCount, RoomReservation : Integer;
-    Rate : Double;
-    RateId : String;
+procedure TfrmMakeReservationQuick.__tvRoomResColumn2PropertiesButtonClick(Sender: TObject; AButtonIndex: integer);
+var
+  _FrmViewDailyRates: TFrmViewDailyRates;
+  ADate,
+    Arrival,
+    Departure: TDate;
+  ii,
+    Guests,
+    dayCount, RoomReservation: integer;
+  Rate: double;
+  rateId: String;
 begin
   if AButtonIndex = 0 then
   begin
 
     _FrmViewDailyRates := TFrmViewDailyRates.Create(nil);
     try
-    RoomReservation := mRoomRes['RoomReservation'];
-    if mRoomRes.locate('roomreservation',RoomReservation,[]) then
-    begin
-
-      i := oNewReservation.newRoomReservations.FindRoomFromRoomReservation(RoomReservation,0);
-
-      arrival             := mRoomRes.FieldByName('arrival').AsDateTime           ;
-      departure           := mRoomRes.FieldByName('departure').AsDateTime         ;
-      dayCount := trunc(departure)-trunc(arrival);
-      Guests := mRoomRes['Guests'];
-
-      channelId := 0;
-      if edtRatePlans.ItemIndex > 0 then
-        channelId := Integer(edtRatePlans.Items.Objects[edtRatePlans.ItemIndex]);
-      rateId := mRoomRes.FieldByName('RatePlanCode').AsString;
-
-      _FrmViewDailyRates.Currency := edCurrency.Text;
-      _FrmViewDailyRates.Clear;
-      for ii := 0  to dayCount-1 do
+      RoomReservation := mRoomRes['RoomReservation'];
+      if mRoomRes.Locate('roomreservation', RoomReservation, []) then
       begin
-          ADate := arrival+ii;
-          if mRoomRates.locate('RateDate',ADate,[]) then
-          begin
-            if NOT (DynamicRates.Active AND
-              DynamicRates.findRateByRateCode(trunc(arrival)+ii, Guests, Rate, rateId)) then
-                Rate := mRoomRes.FieldByName('AvragePrice').AsFloat;
-            _FrmViewDailyRates.Add(CreateDateRate(trunc(arrival) + ii, Rate, edCustomer.Text, dayCount, Guests, edCurrency.Text));
-          end;
-      end;
 
-      _FrmViewDailyRates.ShowModal;
-    end;
+        Arrival := mRoomRes.FieldByName('arrival').AsDateTime;
+        Departure := mRoomRes.FieldByName('departure').AsDateTime;
+        dayCount := trunc(Departure) - trunc(Arrival);
+        Guests := mRoomRes['Guests'];
+
+        rateId := mRoomRes.FieldByName('RatePlanCode').AsString;
+
+        _FrmViewDailyRates.Currency := edCurrency.Text;
+        _FrmViewDailyRates.Clear;
+        for ii := 0 to dayCount - 1 do
+        begin
+          ADate := Arrival + ii;
+          if mRoomRates.Locate('RateDate', ADate, []) then
+          begin
+            if NOT(DynamicRates.active AND
+              DynamicRates.findRateByRateCode(trunc(Arrival) + ii, Guests, Rate, rateId)) then
+              Rate := mRoomRes.FieldByName('AvragePrice').AsFloat;
+            _FrmViewDailyRates.Add(CreateDateRate(trunc(Arrival) + ii, Rate, edCustomer.Text, dayCount, Guests,
+              edCurrency.Text));
+          end;
+        end;
+
+        _FrmViewDailyRates.ShowModal;
+      end;
     finally
       FreeAndNil(_FrmViewDailyRates);
     end;
-//    ShowRatesForRoomReservation(zRoomReservation);
   end;
 end;
 
-/////////////////////////////////////////////////////////////////////////////////////////////////
-//  FORM
-/////////////////////////////////////////////////////////////////////////////////////////////////
+/// //////////////////////////////////////////////////////////////////////////////////////////////
+// FORM
+/// //////////////////////////////////////////////////////////////////////////////////////////////
 
 procedure TfrmMakeReservationQuick.FormCreate(Sender: TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
-  glb.PerformAuthenticationAssertion(self); PlaceFormOnVisibleMonitor(self);
+  glb.PerformAuthenticationAssertion(self);
+  PlaceFormOnVisibleMonitor(self);
   screen.Cursor := crHourGlass;
   try
     DynamicRates := TDynamicRates.Create;
-    zisFirstTime              := true ;
+    zIsFirstTime := true;
     zRtInRoom := 0;
     zRtNoRoom := 0;
-    zRtTotal  := 0;
+    zRtTotal := 0;
 
-    taReservation.TabVisible  := false;
-    tabSelectType.TabVisible  := false;
+    taReservation.TabVisible := false;
+    tabSelectType.TabVisible := false;
     tabSelectRooms.TabVisible := false;
-    tabRoomRates.TabVisible   := false;
-    pgcMain.ActivePageIndex   := 0    ;
+    tabRoomRates.TabVisible := false;
+    pgcMain.ActivePageIndex := 0;
   finally
     screen.Cursor := crDefault;
   end;
@@ -1160,51 +1157,52 @@ begin
 end;
 
 procedure TfrmMakeReservationQuick.FillQuickFind;
-var rSet : TRoomerDataSet;
+var
+  rSet: TRoomerDataSet;
 
-  function getFullname : String;
+  function getFullname: String;
   begin
-    result := Trim(rSet['FirstName'] + ' ' + rSet['Lastname']);
+    Result := Trim(rSet['FirstName'] + ' ' + rSet['Lastname']);
   end;
 
-  function getField(fName : String) : String;
-  var s : String;
+  function getField(fName: String): String;
+  var
+    s: String;
   begin
-    s := rSet[FName];
+    s := rSet[fName];
     if s = '' then
-      result := ''
+      Result := ''
     else
-      result := ', ' + s;
+      Result := ', ' + s;
   end;
 
-var item : TRoomerFilterItem;
+var
+  item: TRoomerFilterItem;
 
 begin
   rSet := glb.PersonProfiles;
   edContactPerson.StoredItems.Clear;
   rSet.First;
-  while NOT rSet.Eof do
+  while NOT rSet.eof do
   begin
     item := TRoomerFilterItem.Create;
     item.Key := inttostr(rSet['ID']);
     item.Line := format('%s%s%s%s', [getFullname, getField('City'), getField('Country'), getField('Address1')]);
     edContactPerson.StoredItems.Add(item);
-    rSet.Next;
+    rSet.next;
   end;
 
   rSet := glb.PreviousGuestsSet;
   rSet.First;
-  while NOT rSet.Eof do
+  while NOT rSet.eof do
   begin
     item := TRoomerFilterItem.Create;
     item.Key := rSet['ID'];
     item.Line := format('%s%s%s%s', [rSet['Name'], getField('Address4'), getField('Country'), getField('Address1')]);
     edContactPerson.StoredItems.Add(item);
-    rSet.Next;
+    rSet.next;
   end;
 
-//  cbActiveLiveSearch.Checked := False;
-//  cbActiveLiveSearchClick(cbActiveLiveSearch);
   if edContactPerson.StoredItems.Count > 0 then
     edContactPerson.Start;
 end;
@@ -1231,30 +1229,29 @@ begin
 end;
 
 procedure TfrmMakeReservationQuick.ShowRatePlans;
-var res : TRoomerDataSet;
+var
+  res: TRoomerDataSet;
 begin
   edtRatePlans.Items.Clear;
   edtRatePlans.Items.AddObject('<none>', nil);
   res := glb.GetDataSetFromDictionary('channels');
   res.First;
-  while NOT res.Eof do
+  while NOT res.eof do
   begin
     edtRatePlans.Items.AddObject(res['name'], TObject(res.FieldByName('id').AsInteger));
-    res.Next;
+    res.next;
   end;
   edtRatePlans.ItemIndex := 0;
 end;
 
-procedure TfrmMakeReservationQuick.FormShow(Sender : TObject);
+procedure TfrmMakeReservationQuick.FormShow(Sender: TObject);
 begin
-//  pgcMain.Properties.HideTabs := false;
 
   FillQuickFind;
-  screen.Cursor := crHourglass;
+  screen.Cursor := crHourGlass;
   try
-    //cbxResMedhod.ItemIndex := 0;
     cbxIsRoomResDiscountPrec.ItemIndex := 0;
-    edCustomer.text := oNewReservation.HomeCustomer.Customer;
+    edCustomer.Text := oNewReservation.HomeCustomer.Customer;
     initCustomer;
 
     cbxBreakfast.Checked := ctrlGetBoolean('BreakfastInclDefault');
@@ -1262,35 +1259,36 @@ begin
     lblExtraCurrency.Caption := g.qNativeCurrency;
     lblExtraBedCurrency.Caption := edCurrency.Text;
 
-    cbxExtraBed.Visible := False;
-    cbxExtraBed.Checked := False;
+    cbxExtraBed.Visible := false;
+    cbxExtraBed.Checked := false;
     ShowhideExtraInputs;
 
-    chkExcluteWaitingList.checked := g.qExcluteWaitingList ;
-    chkExcluteAllotment.checked :=   g.qExcluteAllotment   ;
-    chkExcluteOrder.checked :=       g.qExcluteOrder       ;
-    chkExcluteDeparted.checked :=    g.qExcluteDeparted    ;
-    chkExcluteGuest.checked :=       g.qExcluteGuest       ;
-    chkExcluteBlocked.checked :=     g.qExcluteBlocked     ;
-    chkExcluteNoshow.checked :=      g.qExcluteNoshow      ;
+    chkExcluteWaitingList.Checked := g.qExcluteWaitingList;
+    chkExcluteAllotment.Checked := g.qExcluteAllotment;
+    chkExcluteOrder.Checked := g.qExcluteOrder;
+    chkExcluteDeparted.Checked := g.qExcluteDeparted;
+    chkExcluteGuest.Checked := g.qExcluteGuest;
+    chkExcluteBlocked.Checked := g.qExcluteBlocked;
+    chkExcluteNoShow.Checked := g.qExcluteNoshow;
 
     if oNewReservation.IsQuick then
     begin
-  	  caption := GetTranslatedText('shTx_QuickReservation_NewReservationQuick');
-      dtArrival.date   := oNewReservation.newRoomReservations.ReservationArrival;
-      dtDeparture.Date := oNewReservation.newRoomReservations.ReservationDeparture;
+      Caption := GetTranslatedText('shTx_QuickReservation_NewReservationQuick');
+      dtArrival.date := oNewReservation.newRoomReservations.ReservationArrival;
+      dtDeparture.date := oNewReservation.newRoomReservations.ReservationDeparture;
       gbxDates.Enabled := false;
       btnFinish.Enabled := false;
       edCustomer.SetFocus;
-    end else
+    end
+    else
     begin
-   	  caption := GetTranslatedText('shTx_QuickReservation_NewReservation');
-      dtArrival.date   := trunc(frmMain.resDateFrom); // trunc(now);
+      Caption := GetTranslatedText('shTx_QuickReservation_NewReservation');
+      dtArrival.date := trunc(frmMain.resDateFrom); // trunc(now);
       dtDeparture.date := trunc(frmMain.resDateTo); // trunc(now+1);
       btnFinish.Enabled := false;
       edNights.SetFocus;
     end;
-    edNights.Value := trunc(dtdeparture.date)-Trunc(dtArrival.date);
+    edNights.Value := trunc(dtDeparture.date) - trunc(dtArrival.date);
 
     memRoomNotes.Enabled := false;
     clabRoomNotes.Visible := false;
@@ -1300,140 +1298,152 @@ begin
     screen.Cursor := crDefault;
   end;
 
-  chkSendConfirmation.Enabled := False;
+  chkSendConfirmation.Enabled := false;
 
-  cbxAddToGuestProfiles.Visible := False;
+  cbxAddToGuestProfiles.Visible := false;
 
   FrmAlertPanel := TFrmAlertPanel.Create(nil);
   FrmAlertPanel.PlaceEditPanel(Alerts, oNewReservation.AlertList);
 end;
 
-///////////////////////////////////////////////////////////////////////////////////////////
-//  RoomRes grid and table
-///////////////////////////////////////////////////////////////////////////////////////////
+/// ////////////////////////////////////////////////////////////////////////////////////////
+// RoomRes grid and table
+/// ////////////////////////////////////////////////////////////////////////////////////////
 
 procedure TfrmMakeReservationQuick.timNewTimer(Sender: TObject);
 begin
   postMessage(handle, WM_SET_EMPTY_TEXT, 1, 0);
-  timNew.Enabled := False;
+  timNew.Enabled := false;
 end;
 
 procedure TfrmMakeReservationQuick.tvRoomResAvragePricePropertiesEditValueChanged(Sender: TObject);
 var
-  roomreservation : integer;
-  roomType : string;
-  oldRate : double;
-  newrate : double;
+  RoomReservation: integer;
+  RoomType: string;
+  oldRate: double;
+  NewRate: double;
 begin
-  roomreservation := mRoomRes.fieldbyname('RoomReservation').AsInteger;
+  RoomReservation := mRoomRes.FieldByName('RoomReservation').AsInteger;
   oldRate := mRoomRes.FieldByName('avragePrice').AsFloat;
-  roomType := mRoomRes.FieldByName('RoomType').AsString;
+  RoomType := mRoomRes.FieldByName('RoomType').AsString;
 
   mRoomRes.post;
-  NewRate     := mRoomRes.FieldByName('avragePrice').AsFloat;
+  NewRate := mRoomRes.FieldByName('avragePrice').AsFloat;
 
-  if oldrate <> newrate then
+  if oldRate <> NewRate then
   begin
-    CalcOnePrice(roomreservation,newRate);
+    CalcOnePrice(RoomReservation, NewRate);
   end;
 
-  if chkAutoUpdateNullPrice.checked then
+  if chkAutoUpdateNullPrice.Checked then
   begin
-    ApplyNettoRateToNullPrice(NewRate,RoomReservation,roomType);
+    ApplyNettoRateToNullPrice(NewRate, RoomReservation, RoomType);
   end;
 end;
 
 procedure TfrmMakeReservationQuick.tvRoomResChildrenCountPropertiesEditValueChanged(Sender: TObject);
 var
-  roomreservation : integer;
-  oldValue   : integer;
-  newValue   : integer;
+  RoomReservation: integer;
+  oldValue: integer;
+  newValue: integer;
 begin
-  oldValue   := mRoomRes.fieldbyname('ChildrenCount').AsInteger;
-  roomreservation := mRoomRes.fieldbyname('RoomReservation').AsInteger;
-  mRoomRes.Post;
-  NewValue   := mRoomRes.fieldbyname('ChildrenCount').AsInteger;
-  if newValue <> oldVAlue then
+  oldValue := mRoomRes.FieldByName('ChildrenCount').AsInteger;
+  RoomReservation := mRoomRes.FieldByName('RoomReservation').AsInteger;
+  mRoomRes.post;
+  newValue := mRoomRes.FieldByName('ChildrenCount').AsInteger;
+  if newValue <> oldValue then
   begin
-    CalcOnePrice(roomreservation);
+    CalcOnePrice(RoomReservation);
   end;
 end;
 
-procedure TfrmMakeReservationQuick.tvRoomResColumn1PropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
+procedure TfrmMakeReservationQuick.tvRoomResColumn1PropertiesButtonClick(Sender: TObject; AButtonIndex: integer);
 var
-  RoomReservation  : integer  ;
+  RoomReservation: integer;
 begin
-  roomReservation := mRoomRes.FieldByName('roomreservation').AsInteger;
+  RoomReservation := mRoomRes.FieldByName('roomreservation').AsInteger;
   EditRoomRateOneRoom(RoomReservation);
+end;
+
+procedure TfrmMakeReservationQuick.FormatTextToShortFormat(Sender: TcxCustomGridTableItem;
+  ARecord: TcxCustomGridRecord; var AText: string);
+begin
+  if not aText.IsEmpty then
+    DateTimeToString(aText, FormatSettings.ShortTimeFormat, StrTodateTime(aText));
+end;
+
+procedure TfrmMakeReservationQuick.GetLocaTimeEditProperties(Sender: TcxCustomGridTableItem;
+  ARecord: TcxCustomGridRecord; var AProperties: TcxCustomEditProperties);
+begin
+  TcxTimeEditProperties(aProperties).Use24HourFormat := not FormatSettings.ShortTimeFormat.Contains(Formatsettings.TimeAMString);
 end;
 
 procedure TfrmMakeReservationQuick.tvRoomResGuestsPropertiesEditValueChanged(Sender: TObject);
 var
-  roomreservation : integer;
-  oldValue   : integer;
-  newValue   : integer;
+  RoomReservation: integer;
+  oldValue: integer;
+  newValue: integer;
 begin
-  oldValue   := mRoomRes.fieldbyname('guests').AsInteger;
-  roomreservation := mRoomRes.fieldbyname('RoomReservation').AsInteger;
-  mRoomRes.Post;
-  NewValue   := mRoomRes.fieldbyname('guests').AsInteger;
-  if newValue <> oldVAlue then
+  oldValue := mRoomRes.FieldByName('guests').AsInteger;
+  RoomReservation := mRoomRes.FieldByName('RoomReservation').AsInteger;
+  mRoomRes.post;
+  newValue := mRoomRes.FieldByName('guests').AsInteger;
+  if newValue <> oldValue then
   begin
-    CalcOnePrice(roomreservation);
+    CalcOnePrice(RoomReservation);
   end;
 end;
 
 procedure TfrmMakeReservationQuick.tvRoomResinfantCountPropertiesEditValueChanged(Sender: TObject);
 var
-  roomreservation : integer;
-  oldValue   : integer;
-  newValue   : integer;
+  RoomReservation: integer;
+  oldValue: integer;
+  newValue: integer;
 begin
-  oldValue   := mRoomRes.fieldbyname('infantCount').AsInteger;
-  roomreservation := mRoomRes.fieldbyname('RoomReservation').AsInteger;
-  mRoomRes.Post;
-  NewValue   := mRoomRes.fieldbyname('InfantCount').AsInteger;
-  if newValue <> oldVAlue then
+  oldValue := mRoomRes.FieldByName('infantCount').AsInteger;
+  RoomReservation := mRoomRes.FieldByName('RoomReservation').AsInteger;
+  mRoomRes.post;
+  newValue := mRoomRes.FieldByName('InfantCount').AsInteger;
+  if newValue <> oldValue then
   begin
-    CalcOnePrice(roomreservation);
+    CalcOnePrice(RoomReservation);
   end;
 end;
 
-procedure TfrmMakeReservationQuick.tvRoomResMainGuestPropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
-var sName : String;
-    iId : Integer;
+procedure TfrmMakeReservationQuick.tvRoomResMainGuestPropertiesButtonClick(Sender: TObject; AButtonIndex: integer);
+var
+  iId: integer;
 begin
   iId := GuestProfiles(actLookup, 0);
   if iId > 0 then
   begin
     if glb.LocateSpecificRecord('personprofiles', 'ID', inttostr(iId)) then
     begin
-      mRoomRes.Edit;
+      mRoomRes.edit;
       mRoomRes['MainGuest'] := Trim(glb.PersonProfiles['FirstName'] + ' ' + glb.PersonProfiles['LastName']);
       mRoomRes.FieldByName('PersonsProfilesId').AsInteger := iId;
-      mRoomRes.Post;
+      mRoomRes.post;
     end;
   end;
 end;
 
-procedure TfrmMakeReservationQuick.tvRoomResPackagePropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
+procedure TfrmMakeReservationQuick.tvRoomResPackagePropertiesButtonClick(Sender: TObject; AButtonIndex: integer);
 var
-  theData  : recPackageHolder;
-  roomPrice : double;
-  itemPrice : double;
-  newRoomPrice : double;
-  packagePrice : double;
-  package : string;
-  rr : integer;
-  guestCount : integer;
-  nightCount : integer;
+  theData: recPackageHolder;
+  roomPrice: double;
+  itemPrice: double;
+  newRoomPrice: double;
+  package: string;
+  rr: integer;
+  guestCount: integer;
+  nightCount: integer;
 begin
   roomPrice := 0;
   itemPrice := 0;
-  rr := mRoomRes.FieldByName('roomreservation').Asinteger;
-  initPackageHolder(thedata);
+  rr := mRoomRes.FieldByName('roomreservation').AsInteger;
+  initPackageHolder(theData);
   theData.package := mRoomRes.FieldByName('Package').AsString;
-  if openPackages(actLookup,theData) then
+  if openPackages(actLookup, theData) then
   begin
     package := theData.package;
   end;
@@ -1441,193 +1451,171 @@ begin
   guestCount := mRoomRes.FieldByName('Guests').AsInteger;
   nightCount := trunc(mRoomRes.FieldByName('Departure').AsDateTime) - trunc(mRoomRes.FieldByName('Arrival').AsDateTime);
 
-  if trim(package) <> '' then
+  if Trim(package) <> '' then
   begin
-    Package_getRoomPrice(package,nightCount,guestCount,roomPrice,ItemPrice);
-    if roomprice = 0  then
+    Package_getRoomPrice(package, nightCount, guestCount, roomPrice, itemPrice);
+    if roomPrice = 0 then
     begin
       newRoomPrice := mRoomRes.FieldByName('AvragePrice').AsFloat;
-    end else
+    end
+    else
     begin
       newRoomPrice := roomPrice;
     end;
 
-    if newRoomprice > 0 then
+    if newRoomPrice > 0 then
     begin
-      mRoomRes.Edit;
-      mRoomRes.FieldByName('AvragePrice').AsFloat := newRoomprice;
+      mRoomRes.edit;
+      mRoomRes.FieldByName('AvragePrice').AsFloat := newRoomPrice;
       mRoomRes.FieldByName('AvrageDiscount').AsFloat := 0;
       mRoomRes.FieldByName('RateCount').AsInteger := 1;
-      mRoomRes.FieldByName('PackagePrice').AsFloat := newRoomPrice+itemPrice;
+      mRoomRes.FieldByName('PackagePrice').AsFloat := newRoomPrice + itemPrice;
       mRoomRes.FieldByName('Package').AsString := package;
       mRoomRes.post;
 
-      mRoomRates.Filter      := '(Roomreservation='+inttostr(rr)+')';
+      mRoomRates.Filter := '(Roomreservation=' + inttostr(rr) + ')';
       mRoomRates.Filtered := true;
 
-      mRoomRates.first;
+      mRoomRates.First;
       while not mRoomRates.eof do
       begin
-        mRoomRates.Edit;
+        mRoomRates.edit;
         mRoomRates.FieldByName('rate').AsFloat := newRoomPrice;
         mRoomRates.FieldByName('discount').AsFloat := 0;
         mRoomRates.FieldByName('isPercentage').AsBoolean := true;
-        mRoomRates.FieldByName('discountAmount').asfloat := 0;
-        mRoomRates.FieldByName('Rentamount').asfloat := newRoomPrice;
-        mRoomRates.FieldByName('NativeAmount').asfloat := newRoomPrice;
-        mRoomRates.Post;
-        mRoomRates.Next;
+        mRoomRates.FieldByName('discountAmount').AsFloat := 0;
+        mRoomRates.FieldByName('Rentamount').AsFloat := newRoomPrice;
+        mRoomRates.FieldByName('NativeAmount').AsFloat := newRoomPrice;
+        mRoomRates.post;
+        mRoomRates.next;
       end;
       mRoomRates.Filtered := false;
     end;
-
-//    mRoomRes.edit;
-//    mRoomRes.FieldByName('Package').AsString := theData.package;
-//    mRoomRes.FieldByName('PackagePrice').AsFloat := packagePrice;
-//    mRoomRes.post;
-
   end;
 
-
-//  theData.Item := zData.Item;
-//
-//  openItems(actlookup,true, theData);
-//
-//  if theData.item <> '' then
-//  begin
-//    if tvData.DataController.DataSource.State <> dsInsert then m_.Edit;
-//    m_['ItemId']   := theData.ID;
-//    m_['Item']   := theData.item;
-//    m_['Description'] := theData.Description;
-//    m_['unitPrice'] := theData.Price;
-//    if tvData.DataController.DataSource.State = dsInsert then
-//       m_['numItems'] := 1;
-//    m_.Post;
-//  end;
-
 end;
 
-
-function TfrmMakeReservationQuick.SetOnePrice(RoomReservation : Integer; rateId : String; channelId : Integer) : boolean;
+function TfrmMakeReservationQuick.SetOnePrice(RoomReservation: integer; rateId: String; channelId: integer): boolean;
 var
 
-  i,ii : integer;
+  ii: integer;
 
-  Guests              : integer  ;
-  AvragePrice         : double   ;
-  Arrival             : TdateTime;
-  Departure           : TDateTime;
-  ADate               : TDate;
-  rate          : Double;
-  DayCount : Integer;
-  rateTotal, rateAvrage : Double;
+  Arrival: TDateTime;
+  Departure: TDateTime;
+  ADate: TDate;
+  Rate: double;
+  dayCount: integer;
+  rateTotal, rateAvrage: double;
 
 begin
-    if mRoomRes.locate('roomreservation',roomreservation,[]) then
+  Result := false;
+  if mRoomRes.Locate('roomreservation', RoomReservation, []) then
+  begin
+
+    Arrival := mRoomRes.FieldByName('arrival').AsDateTime;
+    Departure := mRoomRes.FieldByName('departure').AsDateTime;
+    dayCount := trunc(Departure) - trunc(Arrival);
+    rateTotal := 0;
+    for ii := 0 to dayCount - 1 do
     begin
-
-      i := oNewReservation.newRoomReservations.FindRoomFromRoomReservation(RoomReservation,0);
-
-      arrival             := mRoomRes.FieldByName('arrival').AsDateTime           ;
-      departure           := mRoomRes.FieldByName('departure').AsDateTime         ;
-      dayCount := trunc(departure)-trunc(arrival);
-
-      for ii := 0  to dayCount-1 do
+      ADate := Arrival + ii;
+      if mRoomRates.Locate('RateDate', ADate, []) then
       begin
-          ADate := arrival+ii;
-          if mRoomRates.locate('RateDate',ADate,[]) then
-          begin
-            if DynamicRates.Active AND
-              DynamicRates.findRateByRateCode(trunc(arrival)+ii, mRoomRes['Guests'], Rate, rateId) then
-            begin
-              // Rate acuired
+        if DynamicRates.active AND
+          DynamicRates.findRateByRateCode(trunc(Arrival) + ii, mRoomRes['Guests'], Rate, rateId) then
+        begin
+          // Rate acuired
 
-              mRoomRates.Edit;
-              mRoomRates.FieldByName('Rate').AsFloat := Rate;
-              mRoomRates.post;
-            end;
-          end;
-          rateTotal := rateTotal + rate;
+          mRoomRates.edit;
+          mRoomRates.FieldByName('Rate').AsFloat := Rate;
+          mRoomRates.post;
+        end;
       end;
-
-      rateAvrage := rateTotal / dayCount;
-
-      mRoomRes.edit;
-        mRoomRes.FieldByName('AvragePrice').AsFloat := rateAvrage;
-        mRoomRes.FieldByName('RateCount').AsFloat := 1;
-        mRoomRes.FieldByName('ManualChannelId').AsInteger := channelId;
-        mRoomRes.FieldByName('ratePlanCode').AsString := rateId;
-      mRoomRes.Post;
+      rateTotal := rateTotal + Rate;
     end;
+
+    rateAvrage := rateTotal / dayCount;
+
+    mRoomRes.edit;
+    mRoomRes.FieldByName('AvragePrice').AsFloat := rateAvrage;
+    mRoomRes.FieldByName('RateCount').AsFloat := 1;
+    mRoomRes.FieldByName('ManualChannelId').AsInteger := channelId;
+    mRoomRes.FieldByName('ratePlanCode').AsString := rateId;
+    mRoomRes.post;
+    Result := true;
+  end;
 end;
 
-
 procedure TfrmMakeReservationQuick.tvRoomResRatePlanCodePropertiesCloseUp(Sender: TObject);
-var channelId : Integer;
+var
+  channelId: integer;
 begin
-  if NOT mRoomRes.Eof then
+  if NOT mRoomRes.eof then
   begin
     channelId := 0;
     if edtRatePlans.ItemIndex > 0 then
-      channelId := Integer(edtRatePlans.Items.Objects[edtRatePlans.ItemIndex]);
+      channelId := integer(edtRatePlans.Items.Objects[edtRatePlans.ItemIndex]);
     SetOnePrice(mRoomRes['RoomReservation'],
-                (tvRoomResRatePlanCode.Properties AS TcxComboBoxProperties).Items[TcxComboBox(Sender).ItemIndex],
-                channelId);
+      (tvRoomResRatePlanCode.Properties AS TcxComboBoxProperties).Items[TcxComboBox(Sender).ItemIndex],
+      channelId);
   end;
 end;
 
 procedure TfrmMakeReservationQuick.tvRoomResRatePlanCodePropertiesEditValueChanged(Sender: TObject);
 begin
-  if NOT mRoomRes.Eof then
+  if NOT mRoomRes.eof then
   begin
-    mRoomRes.Edit;
-    TcxComboBox(Sender).ItemIndex := (tvRoomResRatePlanCode.Properties AS TcxComboBoxProperties).Items.IndexOf(TcxComboBox(Sender).Text);
+    mRoomRes.edit;
+    TcxComboBox(Sender).ItemIndex := (tvRoomResRatePlanCode.Properties AS TcxComboBoxProperties)
+      .Items.IndexOf(TcxComboBox(Sender).Text);
     if TcxComboBox(Sender).ItemIndex >= 0 then
-      mRoomRes['ratePlanCode'] := (tvRoomResRatePlanCode.Properties AS TcxComboBoxProperties).Items[TcxComboBox(Sender).ItemIndex];
-    mRoomRes.Post;
+      mRoomRes['ratePlanCode'] := (tvRoomResRatePlanCode.Properties AS TcxComboBoxProperties)
+        .Items[TcxComboBox(Sender).ItemIndex];
+    mRoomRes.post;
   end;
 end;
 
-///////////////////////////////////////////////////////////////////////////////////////////
-//  SelectRooms grid and table
-///////////////////////////////////////////////////////////////////////////////////////////
+/// ////////////////////////////////////////////////////////////////////////////////////////
+// SelectRooms grid and table
+/// ////////////////////////////////////////////////////////////////////////////////////////
 
-
-procedure TfrmMakeReservationQuick.tvSelectRoomsRoomPropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
+procedure TfrmMakeReservationQuick.tvSelectRoomsRoomPropertiesButtonClick(Sender: TObject; AButtonIndex: integer);
 begin
-  if not mSelectRooms.fieldbyname('Select').asboolean then exit;
+  if not mSelectRooms.FieldByName('Select').AsBoolean then
+    exit;
 
-  mSelectRooms.Edit;
+  mSelectRooms.edit;
 
   if mSelectRooms.FieldByName('Room').AsString = '' then
-    mSelectRooms.FieldByName('Room').AsString := mSelectRooms.FieldByName('tmp').AsString else
-      mSelectRooms.FieldByName('Room').AsString := '';
+    mSelectRooms.FieldByName('Room').AsString := mSelectRooms.FieldByName('tmp').AsString
+  else
+    mSelectRooms.FieldByName('Room').AsString := '';
 end;
 
 procedure TfrmMakeReservationQuick.tvSelectRoomsSelectPropertiesEditValueChanged(Sender: TObject);
 var
-  roomType : string;
-  isSelected : boolean;
-  aValue : integer;
+  RoomType: string;
+  isSelected: boolean;
+  aValue: integer;
 begin
-  mSelectRooms.Post;
-  roomtype   := mSelectRooms.fieldbyname('RoomType').asString;
-  isSelected := mSelectRooms.fieldbyname('Select').asBoolean;
-
+  mSelectRooms.post;
+  RoomType := mSelectRooms.FieldByName('RoomType').AsString;
+  isSelected := mSelectRooms.FieldByName('Select').AsBoolean;
 
   if isSelected then
   begin
-    avalue := 1;
-  end else
+    aValue := 1;
+  end
+  else
   begin
     aValue := -1
   end;
 
-  if mSelectTypes.Locate('Roomtype',roomtype,[]) then
+  if mSelectTypes.Locate('Roomtype', RoomType, []) then
   begin
-    mSelectTypes.Edit;
-    mSelectTypes.fieldbyname('RoomsSelected').asinteger := mSelectTypes.fieldbyname('RoomsSelected').asinteger+avalue;
-    mSelectTypes.Post;
+    mSelectTypes.edit;
+    mSelectTypes.FieldByName('RoomsSelected').AsInteger := mSelectTypes.FieldByName('RoomsSelected').AsInteger + aValue;
+    mSelectTypes.post;
   end;
 
   zTotalRoomsSelected := tvSelectType.DataController.Summary.FooterSummaryValues[4];
@@ -1636,145 +1624,129 @@ end;
 
 procedure TfrmMakeReservationQuick.tvSelectTypeNoRoomsPropertiesChange(Sender: TObject);
 var
-  total    : integer;
-  norooms  : integer;
-  TotalFree : integer;
+  total: integer;
+  norooms: integer;
+  TotalFree: integer;
 begin
-  noRooms   := mSelectTypes.FieldByName('Norooms').AsInteger;
-  totalfree := mSelectTypes.FieldByName('totalFree').AsInteger;
-  total     := totalfree-norooms;
-  slabel1.Caption := inttostr(total);
-end;
-
-procedure TfrmMakeReservationQuick.tvSelectTypeNoRoomsPropertiesEditValueChanged(Sender: TObject);
-begin
-  if tvSelectType.DataController.DataSource.State = dsEdit then  mSelectTypes.post;
-  UpdateStat;
+  norooms := mSelectTypes.FieldByName('Norooms').AsInteger;
+  TotalFree := mSelectTypes.FieldByName('totalFree').AsInteger;
+  total := TotalFree - norooms;
+  sLabel1.Caption := inttostr(total);
 end;
 
 procedure TfrmMakeReservationQuick.tvSelectTypeNoRoomsPropertiesValidate(Sender: TObject; var DisplayValue: Variant;
-  var ErrorText: TCaption; var Error: Boolean);
+  var ErrorText: TCaption; var Error: boolean);
 begin
-  if displayValue < 0 then displayValue := 0;
-
-
-
+  if DisplayValue < 0 then
+    DisplayValue := 0;
 end;
 
-procedure TfrmMakeReservationQuick.tvSelectTypeNoRoomsStylesGetContentStyle(Sender: TcxCustomGridTableView; ARecord: TcxCustomGridRecord;
+procedure TfrmMakeReservationQuick.tvSelectTypeNoRoomsStylesGetContentStyle(Sender: TcxCustomGridTableView;
+  ARecord: TcxCustomGridRecord;
   AItem: TcxCustomGridTableItem; var AStyle: TcxStyle);
 var
-  total    : integer;
-  norooms  : integer;
-  TotalFree : integer;
+  total: integer;
+  norooms: integer;
+  TotalFree: integer;
 begin
-  noRooms   := mSelectTypes.FieldByName('Norooms').AsInteger;
-  totalfree := mSelectTypes.FieldByName('totalFree').AsInteger;
-  total     := totalfree-norooms;
+  norooms := mSelectTypes.FieldByName('Norooms').AsInteger;
+  TotalFree := mSelectTypes.FieldByName('totalFree').AsInteger;
+  total := TotalFree - norooms;
 
-  if total < 0  then
+  if total < 0 then
   begin
     AStyle := cxStyle1
-  end else
+  end
+  else
   begin
     AStyle := cxStyle2
   end;
-
 
 end;
 
 procedure TfrmMakeReservationQuick.tvSelectTypeSelectedPropertiesEditValueChanged(Sender: TObject);
 begin
   if tvSelectType.DataController.DataSource.State = dsEdit then
-     mSelectTypes.post;
-  UpdateStat;
+    mSelectTypes.post;
 end;
 
 procedure TfrmMakeReservationQuick.tvSelectTypeSelectedPropertiesValidate(Sender: TObject; var DisplayValue: Variant;
-  var ErrorText: TCaption; var Error: Boolean);
+  var ErrorText: TCaption; var Error: boolean);
 begin
-  if displayValue < 0 then displayValue := 0;
+  if DisplayValue < 0 then
+    DisplayValue := 0;
 
-  if displayValue > mSelectTypes.FieldByName('Available').asinteger then
+  if DisplayValue > mSelectTypes.FieldByName('Available').AsInteger then
   begin
-    if mSelectTypes.FieldByName('Available').asinteger < 1 then
+    if mSelectTypes.FieldByName('Available').AsInteger < 1 then
     begin
-      displayValue := 0;
-    end else
+      DisplayValue := 0;
+    end
+    else
     begin
-      displayValue := mSelectTypes.FieldByName('Available').asinteger;
+      DisplayValue := mSelectTypes.FieldByName('Available').AsInteger;
     end;
   end;
 
-
-end;
-
-procedure TfrmMakeReservationQuick.tvSelectTypeTotalFreePropertiesChange(Sender: TObject);
-begin
-  //
 end;
 
 procedure TfrmMakeReservationQuick.initCustomer;
 var
-  customer : string;
-  oldCustomer : string;
-  ChannelCode : String;
-  i: Integer;
+  Customer: string;
+  oldCustomer: string;
+  ChannelCode: String;
+  i: integer;
 begin
-  customer := edCustomer.text;
+  Customer := edCustomer.Text;
   oldCustomer := oNewReservation.HomeCustomer.Customer;
-  oNewReservation.HomeCustomer.Customer_update(customer);
-  labCustomerName.caption := oNewReservation.HomeCustomer.CustomerName;
+  oNewReservation.HomeCustomer.Customer_update(Customer);
+  labCustomerName.Caption := oNewReservation.HomeCustomer.CustomerName;
 
-//  edGuestName.text            := MainGuestConstant_Version_1;
-  edCountry.text              := oNewReservation.HomeCustomer.Country;
-  labCountryName.caption      := oNewReservation.HomeCustomer.CountryName;
-  edReservationName.text      := oNewReservation.HomeCustomer.CustomerName;
+  edCountry.Text := oNewReservation.HomeCustomer.Country;
+  labCountryName.Caption := oNewReservation.HomeCustomer.CountryName;
+  edReservationName.Text := oNewReservation.HomeCustomer.CustomerName;
 
-  cbxRoomStatus.ItemIndex     := RoomStatusFromInfo(oNewReservation.HomeCustomer.RoomStatus);
-  edMarketSegmentCode.text    := oNewReservation.HomeCustomer.MarketSegmentCode;
+  cbxRoomStatus.ItemIndex := RoomStatusFromInfo(oNewReservation.HomeCustomer.RoomStatus);
+  edMarketSegmentCode.Text := oNewReservation.HomeCustomer.MarketSegmentCode;
 
   if oNewReservation.HomeCustomer.IsGroupInvoice = true then
-       chkIsGroupInvoice.checked := true else
-         chkIsGroupInvoice.checked := false;
+    chkisGroupInvoice.Checked := true
+  else
+    chkisGroupInvoice.Checked := false;
 
-//  if oNewReservation.HomeCustomer.ShowDiscountOnInvoice = true then
-//       chkShowDiscountOnInvoice.checked := true else
-//         chkShowDiscountOnInvoice.checked := false;
-
-
-  edCurrency.text             := oNewReservation.HomeCustomer.Currency;
-  edPcCode.text               := oNewReservation.HomeCustomer.PcCode;
-  edRoomResDiscount.Value     := trunc(oNewReservation.HomeCustomer.DiscountPerc);
-  edPID.text                  := oNewReservation.HomeCustomer.PID;
-  edCustomerName.text         := oNewReservation.HomeCustomer.CustomerName;
-  edAddress1.text             := oNewReservation.HomeCustomer.Address1;
-  edAddress2.text             := oNewReservation.HomeCustomer.Address2;
-  edAddress3.text             := oNewReservation.HomeCustomer.Address3;
-  edTel1.text                 := oNewReservation.HomeCustomer.Tel1;
-  edTel2.text                 := oNewReservation.HomeCustomer.Tel2;
-  edFax.text                  := oNewReservation.HomeCustomer.Fax;
-  edEmailAddress.text         := oNewReservation.HomeCustomer.EmailAddress;
-  edHomePage.text             := oNewReservation.HomeCustomer.HomePage;
-  edContactPhone.text         := oNewReservation.HomeCustomer.ContactPhone;
-//0810-hj   edContactCountry.text       := oNewReservation.HomeCustomer.Country;
-  edContactPerson.text        := '';//oNewReservation.HomeCustomer.ContactPerson;
-  edContactFax.text           := '';//oNewReservation.HomeCustomer.ContactFax;
-  edContactEmail.text         := '';//oNewReservation.HomeCustomer.ContactEmail;
+  edCurrency.Text := oNewReservation.HomeCustomer.Currency;
+  edPcCode.Text := oNewReservation.HomeCustomer.PcCode;
+  edRoomResDiscount.Value := trunc(oNewReservation.HomeCustomer.DiscountPerc);
+  edPID.Text := oNewReservation.HomeCustomer.PID;
+  edCustomerName.Text := oNewReservation.HomeCustomer.CustomerName;
+  edAddress1.Text := oNewReservation.HomeCustomer.Address1;
+  edAddress2.Text := oNewReservation.HomeCustomer.Address2;
+  edAddress3.Text := oNewReservation.HomeCustomer.Address3;
+  edTel1.Text := oNewReservation.HomeCustomer.Tel1;
+  edTel2.Text := oNewReservation.HomeCustomer.Tel2;
+  edFax.Text := oNewReservation.HomeCustomer.Fax;
+  edEmailAddress.Text := oNewReservation.HomeCustomer.EmailAddress;
+  edHomePage.Text := oNewReservation.HomeCustomer.HomePage;
+  edContactPhone.Text := oNewReservation.HomeCustomer.ContactPhone;
+  // 0810-hj   edContactCountry.text       := oNewReservation.HomeCustomer.Country;
+  edContactPerson.Text := ''; // oNewReservation.HomeCustomer.ContactPerson;
+  edContactFax.Text := ''; // oNewReservation.HomeCustomer.ContactFax;
+  edContactEmail.Text := ''; // oNewReservation.HomeCustomer.ContactEmail;
   zCustomerChanged := false;
 
-  memCustomerAlert.lines.clear;
-  memCustomerAlert.text := d.GetCustomerPreferences(customer);
+  memCustomerAlert.lines.Clear;
+  memCustomerAlert.Text := d.GetCustomerPreferences(Customer);
 
   customerValidate;
   CountryValidate;
   MarketSegmentValidate;
-  CurrencyValidate(edCurrency,clabCurrency,labCurrencyName);
+  CurrencyValidate(edCurrency, clabCurrency, labCurrencyName);
   PriceCodeValidate(edPcCode, clabPcCode, labPcCodeName);
 
-  if glb.LocateSpecificRecordAndGetValue('channels', 'id', oNewReservation.HomeCustomer.CustomerRatePlanId, 'channelManagerId', ChannelCode) then
+  if glb.LocateSpecificRecordAndGetValue('channels', 'id', oNewReservation.HomeCustomer.CustomerRatePlanId,
+    'channelManagerId', ChannelCode) then
     for i := 1 to edtRatePlans.Items.Count - 1 do
-      if Integer(edtRatePlans.Items.Objects[i]) = oNewReservation.HomeCustomer.CustomerRatePlanId then
+      if integer(edtRatePlans.Items.Objects[i]) = oNewReservation.HomeCustomer.CustomerRatePlanId then
       begin
         edtRatePlans.ItemIndex := i; // edtRatePlans.Items.IndexOf(ChannelCode);
         edtRatePlansCloseUp(nil);
@@ -1782,156 +1754,150 @@ begin
       end;
 end;
 
-
-
 procedure TfrmMakeReservationQuick.btdEditRoomRateClick(Sender: TObject);
 var
-  RoomReservation  : integer  ;
+  RoomReservation: integer;
 begin
-  roomReservation := mRoomRes.FieldByName('roomreservation').AsInteger;
+  RoomReservation := mRoomRes.FieldByName('roomreservation').AsInteger;
   EditRoomRateOneRoom(RoomReservation);
 end;
 
-
-procedure TfrmMakeReservationQuick.EditRoomRateOneRoom(RoomRes : integer) ;
+procedure TfrmMakeReservationQuick.EditRoomRateOneRoom(RoomRes: integer);
 var
-  theData : recEditRoomPriceHolder;
+  theData: recEditRoomPriceHolder;
 
-  recCount : integer;
-  Reservation      : integer  ;
-  RoomReservation  : integer  ;
-  RoomNumber       : string   ;
-  PriceCode        : string   ;
-  RateDate         : TDateTime;
-  Rate             : Double   ;
-  Discount         : double   ;
-  isPercentage     : boolean  ;
-  ShowDiscount     : boolean  ;
-  isPaid           : boolean  ;
-  DiscountAmount   : double   ;
-  RentAmount       : double   ;
-  NativeAmount     : double   ;
-  AvrageAmount     : double   ;
-  ttAmount         : double   ;
-  AmountCount      : integer  ;
-  resPrice         : double   ;
-  lstPrices        : TstringList;
-  rateCount        : integer;
+  Reservation: integer;
+  RoomReservation: integer;
+  RoomNumber: string;
+  PriceCode: string;
+  RateDate: TDateTime;
+  Rate: double;
+  Discount: double;
+  isPercentage: boolean;
+  ShowDiscount: boolean;
+  isPaid: boolean;
+  DiscountAmount: double;
+  RentAmount: double;
+  NativeAmount: double;
+  AvrageAmount: double;
+  ttAmount: double;
+  AmountCount: integer;
+  lstPrices: TstringList;
+  RateCount: integer;
 
-  ttDiscount     : double;
-  avrageDiscount : double;
-  applyType : integer;
+  ttDiscount: double;
+  AvrageDiscount: double;
+  applyType: integer;
 
 begin
-  isPercentage := True;
+  isPercentage := true;
   applyType := 0;
 
-  if mRR_.Active then mRR_.Close;
+  if mRR_.active then
+    mRR_.Close;
   lstPrices := TstringList.Create;
   try
     lstPrices.Sorted := true;
     lstPrices.Duplicates := dupIgnore;
 
     initEditRoomPriceHolder(theData);
-    theData.isCreateRes   := true;
-    theData.currency      := edCurrency.Text;
-    theData.CurrencyRate  := hData.GetRate(theData.currency);
+    theData.isCreateRes := true;
+    theData.Currency := edCurrency.Text;
+    theData.CurrencyRate := hData.GetRate(theData.Currency);
 
-    roomReservation       := mRoomRes.FieldByName('roomreservation').AsInteger;
-    theData.RoomType      := mRoomRes.FieldByName('RoomType').AsString;
-    theData.guests        := mRoomRes.FieldByName('Guests').AsInteger;
+    RoomReservation := mRoomRes.FieldByName('roomreservation').AsInteger;
+    theData.RoomType := mRoomRes.FieldByName('RoomType').AsString;
+    theData.Guests := mRoomRes.FieldByName('Guests').AsInteger;
     theData.childrenCount := mRoomRes.FieldByName('childrenCount').AsInteger;
-    theData.infantCount   := mRoomRes.FieldByName('infantCount').AsInteger;
-    resPrice              := mRoomRes.FieldByName('AvragePrice').AsFloat;
+    theData.infantCount := mRoomRes.FieldByName('infantCount').AsInteger;
     mRR_.Open;
 
-    mRoomRates.first;
-    while not mRoomRates.Eof do
+    mRoomRates.First;
+    while not mRoomRates.eof do
     begin
-      if mRoomRates.fieldbyname('roomreservation').AsInteger = roomreservation then
+      if mRoomRates.FieldByName('roomreservation').AsInteger = RoomReservation then
       begin
         mRR_.append;
-        mRR_.Fieldbyname('Reservation').asInteger        :=  mRoomRates.Fieldbyname('Reservation').asInteger       ;
-        mRR_.Fieldbyname('RoomReservation').asInteger    :=  mRoomRates.Fieldbyname('RoomReservation').asInteger   ;
-        mRR_.Fieldbyname('RoomNumber').asString          :=  mRoomRates.Fieldbyname('RoomNumber').asString         ;
-        mRR_.Fieldbyname('PriceCode').asString           :=  mRoomRates.Fieldbyname('PriceCode').asString          ;
-        mRR_.Fieldbyname('RateDate').asDatetime          :=  mRoomRates.Fieldbyname('RateDate').asDatetime         ;
-        mRR_.Fieldbyname('Rate').asFloat                 :=  mRoomRates.Fieldbyname('Rate').asFloat                ;
-        mRR_.Fieldbyname('Discount').asFloat             :=  mRoomRates.Fieldbyname('Discount').asFloat            ;
-        mRR_.Fieldbyname('isPercentage').asBoolean       :=  mRoomRates.Fieldbyname('isPercentage').asBoolean      ;
-        mRR_.Fieldbyname('ShowDiscount').asBoolean       :=  mRoomRates.Fieldbyname('ShowDiscount').asBoolean      ;
-        mRR_.Fieldbyname('isPaid').asBoolean             :=  mRoomRates.Fieldbyname('isPaid').asBoolean            ;
-        mRR_.Fieldbyname('DiscountAmount').asFloat       :=  mRoomRates.Fieldbyname('DiscountAmount').asFloat      ;
-        mRR_.Fieldbyname('RentAmount').asFloat           :=  mRoomRates.Fieldbyname('RentAmount').asFloat          ;
-        mRR_.Fieldbyname('NativeAmount').asFloat         :=  mRoomRates.Fieldbyname('NativeAmount').asFloat        ;
-        mRR_.Fieldbyname('Currency').asString            :=  mRoomRates.Fieldbyname('Currency').asString           ;
-        mRR_.Fieldbyname('CurrencyRate').asFloat         :=  mRoomRates.Fieldbyname('CurrencyRate').asFloat        ;
-        mRR_.Post;
+        mRR_.FieldByName('Reservation').AsInteger := mRoomRates.FieldByName('Reservation').AsInteger;
+        mRR_.FieldByName('RoomReservation').AsInteger := mRoomRates.FieldByName('RoomReservation').AsInteger;
+        mRR_.FieldByName('RoomNumber').AsString := mRoomRates.FieldByName('RoomNumber').AsString;
+        mRR_.FieldByName('PriceCode').AsString := mRoomRates.FieldByName('PriceCode').AsString;
+        mRR_.FieldByName('RateDate').AsDateTime := mRoomRates.FieldByName('RateDate').AsDateTime;
+        mRR_.FieldByName('Rate').AsFloat := mRoomRates.FieldByName('Rate').AsFloat;
+        mRR_.FieldByName('Discount').AsFloat := mRoomRates.FieldByName('Discount').AsFloat;
+        mRR_.FieldByName('isPercentage').AsBoolean := mRoomRates.FieldByName('isPercentage').AsBoolean;
+        mRR_.FieldByName('ShowDiscount').AsBoolean := mRoomRates.FieldByName('ShowDiscount').AsBoolean;
+        mRR_.FieldByName('isPaid').AsBoolean := mRoomRates.FieldByName('isPaid').AsBoolean;
+        mRR_.FieldByName('DiscountAmount').AsFloat := mRoomRates.FieldByName('DiscountAmount').AsFloat;
+        mRR_.FieldByName('RentAmount').AsFloat := mRoomRates.FieldByName('RentAmount').AsFloat;
+        mRR_.FieldByName('NativeAmount').AsFloat := mRoomRates.FieldByName('NativeAmount').AsFloat;
+        mRR_.FieldByName('Currency').AsString := mRoomRates.FieldByName('Currency').AsString;
+        mRR_.FieldByName('CurrencyRate').AsFloat := mRoomRates.FieldByName('CurrencyRate').AsFloat;
+        mRR_.post;
       end;
       mRoomRates.next;
     end;
 
-    mRR_.first;
+    mRR_.First;
 
-
-    theData.Room := mRR_.FieldByName('roomNumber').AsString;
+    theData.room := mRR_.FieldByName('roomNumber').AsString;
     ttAmount := 0;
     ttDiscount := 0;
     AmountCount := 0;
-    if editRoomPrice(actNone,theData,mRR_,applyType) then
+    if editRoomPrice(actNone, theData, mRR_, applyType) then
     begin
-      mRR_.first;
+      mRR_.First;
       while not mRR_.eof do
       begin
-        Reservation      := mRR_.FieldByName('Reservation').Asinteger     ;
-        RoomReservation  := mRR_.FieldByName('RoomReservation').Asinteger ;
-        RoomNumber       := mRR_.FieldByName('RoomNumber').Asstring       ;
-        PriceCode        := mRR_.FieldByName('PriceCode').Asstring        ;
-        RateDate         := mRR_.FieldByName('RateDate').AsDateTime       ;
-        Rate             := mRR_.FieldByName('Rate').AsFloat              ;
-        Discount         := mRR_.FieldByName('Discount').AsFloat          ;
-        isPercentage     := mRR_.FieldByName('isPercentage').AsBoolean    ;
-        ShowDiscount     := mRR_.FieldByName('ShowDiscount').AsBoolean    ;
-        isPaid           := mRR_.FieldByName('isPaid').AsBoolean          ;
-        DiscountAmount   := mRR_.FieldByName('DiscountAmount').AsFloat    ;
-        RentAmount       := mRR_.FieldByName('RentAmount').AsFloat        ;
-        NativeAmount     := mRR_.FieldByName('NativeAmount').AsFloat      ;
+        Reservation := mRR_.FieldByName('Reservation').AsInteger;
+        RoomReservation := mRR_.FieldByName('RoomReservation').AsInteger;
+        RoomNumber := mRR_.FieldByName('RoomNumber').AsString;
+        PriceCode := mRR_.FieldByName('PriceCode').AsString;
+        RateDate := mRR_.FieldByName('RateDate').AsDateTime;
+        Rate := mRR_.FieldByName('Rate').AsFloat;
+        Discount := mRR_.FieldByName('Discount').AsFloat;
+        isPercentage := mRR_.FieldByName('isPercentage').AsBoolean;
+        ShowDiscount := mRR_.FieldByName('ShowDiscount').AsBoolean;
+        isPaid := mRR_.FieldByName('isPaid').AsBoolean;
+        DiscountAmount := mRR_.FieldByName('DiscountAmount').AsFloat;
+        RentAmount := mRR_.FieldByName('RentAmount').AsFloat;
+        NativeAmount := mRR_.FieldByName('NativeAmount').AsFloat;
 
         lstPrices.Add(floatTostr(RentAmount));
         inc(AmountCount);
-        ttAmount := ttAmount+RentAmount;
-        ttDiscount := ttDiscount+Discount;
+        ttAmount := ttAmount + RentAmount;
+        ttDiscount := ttDiscount + Discount;
 
-        if mRoomRates.Locate('RoomReservation;rateDate', VarArrayOf([RoomReservation, rateDate]), []) then
+        if mRoomRates.Locate('RoomReservation;rateDate', VarArrayOf([RoomReservation, RateDate]), []) then
         begin
-          mRoomRates.Edit;
-          mRoomRates.FieldbyName('Reservation').AsInteger       := Reservation        ;
-          mRoomRates.FieldbyName('RoomReservation').asInteger   := RoomReservation    ;
-          mRoomRates.FieldbyName('RoomNumber').asString         := RoomNumber         ;
-          mRoomRates.FieldbyName('PriceCode').asString          := PriceCode          ;
-          mRoomRates.FieldbyName('RateDate').asDateTime         := RateDate           ;
-          mRoomRates.FieldbyName('Rate').asFloat                := Rate               ;
-          mRoomRates.FieldbyName('Discount').asFloat            := Discount           ;
-          mRoomRates.FieldbyName('isPercentage').asBoolean      := isPercentage       ;
-          mRoomRates.FieldbyName('ShowDiscount').asBoolean      := ShowDiscount       ;
-          mRoomRates.FieldbyName('isPaid').asboolean            := isPaid             ;
-          mRoomRates.FieldbyName('DiscountAmount').asFloat      := DiscountAmount     ;
-          mRoomRates.FieldbyName('RentAmount').asFloat          := RentAmount         ;
-          mRoomRates.FieldbyName('NativeAmount').asFloat        := NativeAmount       ;
-          mRoomRates.Post;
+          mRoomRates.edit;
+          mRoomRates.FieldByName('Reservation').AsInteger := Reservation;
+          mRoomRates.FieldByName('RoomReservation').AsInteger := RoomReservation;
+          mRoomRates.FieldByName('RoomNumber').AsString := RoomNumber;
+          mRoomRates.FieldByName('PriceCode').AsString := PriceCode;
+          mRoomRates.FieldByName('RateDate').AsDateTime := RateDate;
+          mRoomRates.FieldByName('Rate').AsFloat := Rate;
+          mRoomRates.FieldByName('Discount').AsFloat := Discount;
+          mRoomRates.FieldByName('isPercentage').AsBoolean := isPercentage;
+          mRoomRates.FieldByName('ShowDiscount').AsBoolean := ShowDiscount;
+          mRoomRates.FieldByName('isPaid').AsBoolean := isPaid;
+          mRoomRates.FieldByName('DiscountAmount').AsFloat := DiscountAmount;
+          mRoomRates.FieldByName('RentAmount').AsFloat := RentAmount;
+          mRoomRates.FieldByName('NativeAmount').AsFloat := NativeAmount;
+          mRoomRates.post;
         end;
-//        memReservationGeneralInfo.Lines.Add(floattostr(rate));
+        // memReservationGeneralInfo.Lines.Add(floattostr(rate));
         mRR_.next;
       end;
 
-      if mRoomRes.Locate('RoomReservation', RoomReservation,[]) then
+      if mRoomRes.Locate('RoomReservation', RoomReservation, []) then
       begin
         if AmountCount <> 0 then
         begin
           AvrageAmount := ttAmount / AmountCount;
           AvrageDiscount := ttDiscount / AmountCount;
-          rateCount := lstPrices.Count;
-          mRoomRes.Edit;
+          RateCount := lstPrices.Count;
+          mRoomRes.edit;
           mRoomRes.FieldByName('AvragePrice').AsFloat := AvrageAmount;
           mRoomRes.FieldByName('RateCount').AsInteger := RateCount;
           mRoomRes.FieldByName('PriceCode').AsString := PriceCode;
@@ -1942,20 +1908,21 @@ begin
       end;
     end;
   finally
-    if mRR_.Active then mRR_.Close;
-    freeandnil(lstPrices);
+    if mRR_.active then
+      mRR_.Close;
+    FreeAndNil(lstPrices);
   end;
 
   if applyType = 2 then
   begin
-    ApplyRateToOther(roomreservation,theData.RoomType)
-  end else
-  if applyType = 3 then
+    ApplyRateToOther(RoomReservation, theData.RoomType)
+  end
+  else
+    if applyType = 3 then
   begin
-    ApplyRateToOther(roomreservation,'');
+    ApplyRateToOther(RoomReservation, '');
   end;
 end;
-
 
 procedure TfrmMakeReservationQuick.InitSelectRooms;
 begin
@@ -1965,10 +1932,10 @@ begin
   mSelectTypes.First;
   while not mSelectTypes.eof do
   begin
-    mSelectTypes.Edit;
-    mSelectTypes.fieldbyname('RoomsSelected').asinteger := 0;
-    mSelectTypes.Post;
-    mSelectTypes.Next;
+    mSelectTypes.edit;
+    mSelectTypes.FieldByName('RoomsSelected').AsInteger := 0;
+    mSelectTypes.post;
+    mSelectTypes.next;
   end;
 
   mSelectTypes.First;
@@ -1976,270 +1943,269 @@ end;
 
 procedure TfrmMakeReservationQuick.lblExtraBedCurrencyClick(Sender: TObject);
 begin
-   showmessage(edCurrency.Text);
+  showmessage(edCurrency.Text);
 end;
 
 procedure TfrmMakeReservationQuick.getSelectRooms;
 var
-  rSet    : TRoomerDataSet;
-  rSetOcc : TRoomerDataSet;
-  s : string;
-  dateFrom : Tdate;
-  dateTo   : Tdate;
-  room : string;
-
-  ioccRooms : integer;
+  rSet: TRoomerDataSet;
+  rSetOcc: TRoomerDataSet;
+  s: string;
+  dateFrom: TDate;
+  dateTo: TDate;
+  room: string;
 
 begin
   mSelectRooms.DisableControls;
   try
-    DateFrom  := dtArrival.Date;
-    DateTo    := dtDeparture.Date;
+    dateFrom := dtArrival.date;
+    dateTo := dtDeparture.date;
 
-    if mSelectRooms.Active then mSelectRooms.close;
+    if mSelectRooms.active then
+      mSelectRooms.Close;
     mSelectRooms.Open;
 
     s := '';
-    s := s+'SELECT DISTINCT '#10;
-    s := s+'    Room '#10;
-    s := s+'  , isNoRoom '#10;
-    s := s+'FROM '#10;
-    s := s+'  roomsdate '#10;
-    s := s+'WHERE '#10;
-    s := s+'  (ADate >= '+_db(DateFrom)+') AND (ADate < '+_db(DateTo)+') AND (isNoRoom = 0) '#10;
-    s := s+'   AND (ResFlag <> '+_db(STATUS_DELETED)+' ) '; //**zxhj
-    s := s+'   AND (ResFlag <> '+_db(STATUS_CANCELED)+' ) '; //**zxhj
-    s := s+'ORDER BY '#10;
-    s := s+'  ROOM '#10;
+    s := s + 'SELECT DISTINCT '#10;
+    s := s + '    Room '#10;
+    s := s + '  , isNoRoom '#10;
+    s := s + 'FROM '#10;
+    s := s + '  roomsdate '#10;
+    s := s + 'WHERE '#10;
+    s := s + '  (ADate >= ' + _db(dateFrom) + ') AND (ADate < ' + _db(dateTo) + ') AND (isNoRoom = 0) '#10;
+    s := s + '   AND (ResFlag <> ' + _db(STATUS_DELETED) + ' ) '; // **zxhj
+    s := s + '   AND (ResFlag <> ' + _db(STATUS_CANCELED) + ' ) '; // **zxhj
+    s := s + 'ORDER BY '#10;
+    s := s + '  ROOM '#10;
 
     rSetOcc := createNewDataSet;
     try
-      iOccRooms := 0;
-      if rSet_bySQL(rSetOcc,s) then
+      if rSet_bySQL(rSetOcc, s) then
       begin
-  //    iOccRooms := rSet.RecordCount;
+        // iOccRooms := rSet.RecordCount;
       end;
 
       s := 'SELECT * FROM wroominfo ORDER BY room ';
       rSet := createNewDataSet;
       try
-        rSet_bySQL(rSet,s);
+        rSet_bySQL(rSet, s);
 
-        copytoclipboard(s);
-        debugmessage(s);
-
-
-        While not rSet.Eof do
+        While not rSet.eof do
         begin
           room := rSet.FieldByName('room').AsString;
-          if not rSetOcc.Locate('room',room,[]) then
+          if not rSetOcc.Locate('room', room, []) then
           begin
-            mSelectRooms.Append;
-            mSelectRooms.fieldbyname('Room').AsString  := rSet.fieldbyname('Room').asString ;
-            mSelectRooms.fieldbyname('tmp').AsString  := rSet.fieldbyname('Room').asString ;
-            mSelectRooms.fieldbyname('Description').AsString  := rSet.fieldbyname('Description')        .asString ;
-            mSelectRooms.fieldbyname('DetailedDescription').AsString  := rSet.fieldbyname('DetailedDescription').asString ;
-            mSelectRooms.fieldbyname('RoomType').AsString  := rSet.fieldbyname('RoomType')           .asString ;
-            mSelectRooms.fieldbyname('Bath').AsBoolean := rSet.fieldbyname('Bath')               .asBoolean;
-            mSelectRooms.fieldbyname('Shower').AsBoolean := rSet.fieldbyname('Shower')             .asBoolean;
-            mSelectRooms.fieldbyname('Safe').AsBoolean := rSet.fieldbyname('Safe')               .asBoolean;
-            mSelectRooms.fieldbyname('TV').AsBoolean := rSet.fieldbyname('TV')                 .asBoolean;
-            mSelectRooms.fieldbyname('Video').AsBoolean := rSet.fieldbyname('Video')              .asBoolean;
-            mSelectRooms.fieldbyname('Radio').AsBoolean := rSet.fieldbyname('Radio')              .asBoolean;
-            mSelectRooms.fieldbyname('CDPlayer').AsBoolean := rSet.fieldbyname('CDPlayer')           .asBoolean;
-            mSelectRooms.fieldbyname('Telephone').AsBoolean := rSet.fieldbyname('Telephone')          .asBoolean;
-            mSelectRooms.fieldbyname('Press').AsBoolean := rSet.fieldbyname('Press')              .asBoolean;
-            mSelectRooms.fieldbyname('Coffee').AsBoolean := rSet.fieldbyname('Coffee')             .asBoolean;
-            mSelectRooms.fieldbyname('Kitchen').AsBoolean := rSet.fieldbyname('Kitchen')            .asBoolean;
-            mSelectRooms.fieldbyname('Minibar').AsBoolean := rSet.fieldbyname('Minibar')            .asBoolean;
-            mSelectRooms.fieldbyname('Fridge').AsBoolean := rSet.fieldbyname('Fridge')             .asBoolean;
-            mSelectRooms.fieldbyname('Hairdryer').AsBoolean := rSet.fieldbyname('Hairdryer')          .asBoolean;
-            mSelectRooms.fieldbyname('InternetPlug').AsBoolean := rSet.fieldbyname('InternetPlug')       .asBoolean;
-            mSelectRooms.fieldbyname('Fax').AsBoolean := rSet.fieldbyname('Fax')                .asBoolean;
-            mSelectRooms.fieldbyname('SqrMeters').AsFloat := rSet.GetFloatValue(rSet.fieldbyname('SqrMeters'));
-            mSelectRooms.fieldbyname('BedSize').AsBoolean := rSet.fieldbyname('BedSize')            .asBoolean;
-            mSelectRooms.fieldbyname('Equipments').AsString  := rSet.fieldbyname('Equipments')         .asString ;
-            mSelectRooms.fieldbyname('Bookable').AsBoolean := rSet.fieldbyname('Bookable')           .asBoolean;
-            mSelectRooms.fieldbyname('Statistics').AsBoolean := rSet.fieldbyname('Statistics')         .asBoolean;
-            mSelectRooms.fieldbyname('Status').AsString  := rSet.fieldbyname('Status')             .asString ;
-            mSelectRooms.fieldbyname('OrderIndex').AsInteger := rSet.fieldbyname('OrderIndex')         .asInteger;
-            mSelectRooms.fieldbyname('hidden').AsBoolean := rSet.fieldbyname('hidden')             .asBoolean;
-            mSelectRooms.fieldbyname('Location').AsString  := rSet.fieldbyname('Location')           .asString ;
-            mSelectRooms.fieldbyname('Floor').AsInteger := rSet.fieldbyname('Floor')              .asInteger;
-            mSelectRooms.fieldbyname('ID').AsInteger := rSet.fieldbyname('ID')                 .asInteger;
-            mSelectRooms.fieldbyname('Dorm').AsString  := rSet.fieldbyname('Dorm')               .asString ;
-            mSelectRooms.fieldbyname('useInNationalReport').AsBoolean := rSet.fieldbyname('useInNationalReport').asBoolean;
-            mSelectRooms.fieldbyname('Active').AsBoolean := rSet.fieldbyname('Active')             .asBoolean;
-            mSelectRooms.fieldbyname('LocationDescription').AsString  := rSet.fieldbyname('LocationDescription').asString ;
-            mSelectRooms.fieldbyname('RoomTypeDescription').AsString  := rSet.fieldbyname('RoomTypeDescription').asString ;
-            mSelectRooms.fieldbyname('NumberGuests').AsInteger := rSet.fieldbyname('NumberGuests')       .asInteger;
-            mSelectRooms.fieldbyname('RoomTypeGroup').AsString  := rSet.fieldbyname('RoomTypeGroup')      .asString ;
-            mSelectRooms.fieldbyname('RoomTypeGroupDescription').AsString  := rSet.fieldbyname('RoomTypeGroupDescription').asString;
-            mSelectRooms.Post;
+            mSelectRooms.append;
+            mSelectRooms.FieldByName('Room').AsString := rSet.FieldByName('Room').AsString;
+            mSelectRooms.FieldByName('tmp').AsString := rSet.FieldByName('Room').AsString;
+            mSelectRooms.FieldByName('Description').AsString := rSet.FieldByName('Description').AsString;
+            mSelectRooms.FieldByName('DetailedDescription').AsString := rSet.FieldByName('DetailedDescription')
+              .AsString;
+            mSelectRooms.FieldByName('RoomType').AsString := rSet.FieldByName('RoomType').AsString;
+            mSelectRooms.FieldByName('Bath').AsBoolean := rSet.FieldByName('Bath').AsBoolean;
+            mSelectRooms.FieldByName('Shower').AsBoolean := rSet.FieldByName('Shower').AsBoolean;
+            mSelectRooms.FieldByName('Safe').AsBoolean := rSet.FieldByName('Safe').AsBoolean;
+            mSelectRooms.FieldByName('TV').AsBoolean := rSet.FieldByName('TV').AsBoolean;
+            mSelectRooms.FieldByName('Video').AsBoolean := rSet.FieldByName('Video').AsBoolean;
+            mSelectRooms.FieldByName('Radio').AsBoolean := rSet.FieldByName('Radio').AsBoolean;
+            mSelectRooms.FieldByName('CDPlayer').AsBoolean := rSet.FieldByName('CDPlayer').AsBoolean;
+            mSelectRooms.FieldByName('Telephone').AsBoolean := rSet.FieldByName('Telephone').AsBoolean;
+            mSelectRooms.FieldByName('Press').AsBoolean := rSet.FieldByName('Press').AsBoolean;
+            mSelectRooms.FieldByName('Coffee').AsBoolean := rSet.FieldByName('Coffee').AsBoolean;
+            mSelectRooms.FieldByName('Kitchen').AsBoolean := rSet.FieldByName('Kitchen').AsBoolean;
+            mSelectRooms.FieldByName('Minibar').AsBoolean := rSet.FieldByName('Minibar').AsBoolean;
+            mSelectRooms.FieldByName('Fridge').AsBoolean := rSet.FieldByName('Fridge').AsBoolean;
+            mSelectRooms.FieldByName('Hairdryer').AsBoolean := rSet.FieldByName('Hairdryer').AsBoolean;
+            mSelectRooms.FieldByName('InternetPlug').AsBoolean := rSet.FieldByName('InternetPlug').AsBoolean;
+            mSelectRooms.FieldByName('Fax').AsBoolean := rSet.FieldByName('Fax').AsBoolean;
+            mSelectRooms.FieldByName('SqrMeters').AsFloat := rSet.GetFloatValue(rSet.FieldByName('SqrMeters'));
+            mSelectRooms.FieldByName('BedSize').AsBoolean := rSet.FieldByName('BedSize').AsBoolean;
+            mSelectRooms.FieldByName('Equipments').AsString := rSet.FieldByName('Equipments').AsString;
+            mSelectRooms.FieldByName('Bookable').AsBoolean := rSet.FieldByName('Bookable').AsBoolean;
+            mSelectRooms.FieldByName('Statistics').AsBoolean := rSet.FieldByName('Statistics').AsBoolean;
+            mSelectRooms.FieldByName('Status').AsString := rSet.FieldByName('Status').AsString;
+            mSelectRooms.FieldByName('OrderIndex').AsInteger := rSet.FieldByName('OrderIndex').AsInteger;
+            mSelectRooms.FieldByName('hidden').AsBoolean := rSet.FieldByName('hidden').AsBoolean;
+            mSelectRooms.FieldByName('Location').AsString := rSet.FieldByName('Location').AsString;
+            mSelectRooms.FieldByName('Floor').AsInteger := rSet.FieldByName('Floor').AsInteger;
+            mSelectRooms.FieldByName('ID').AsInteger := rSet.FieldByName('ID').AsInteger;
+            mSelectRooms.FieldByName('Dorm').AsString := rSet.FieldByName('Dorm').AsString;
+            mSelectRooms.FieldByName('useInNationalReport').AsBoolean := rSet.FieldByName('useInNationalReport')
+              .AsBoolean;
+            mSelectRooms.FieldByName('Active').AsBoolean := rSet.FieldByName('Active').AsBoolean;
+            mSelectRooms.FieldByName('LocationDescription').AsString := rSet.FieldByName('LocationDescription')
+              .AsString;
+            mSelectRooms.FieldByName('RoomTypeDescription').AsString := rSet.FieldByName('RoomTypeDescription')
+              .AsString;
+            mSelectRooms.FieldByName('NumberGuests').AsInteger := rSet.FieldByName('NumberGuests').AsInteger;
+            mSelectRooms.FieldByName('RoomTypeGroup').AsString := rSet.FieldByName('RoomTypeGroup').AsString;
+            mSelectRooms.FieldByName('RoomTypeGroupDescription').AsString :=
+              rSet.FieldByName('RoomTypeGroupDescription').AsString;
+            mSelectRooms.post;
           end;
-           rSet.Next;
+          rSet.next;
         end;
       finally
-        freeandnil(rSet);
+        FreeAndNil(rSet);
       end;
     finally
-      freeandnil(rSetOcc);
+      FreeAndNil(rSetOcc);
     end;
     mSelectRooms.First;
   finally
     mSelectRooms.EnableControls;
   end;
 
-//  debugmessage(inttostr(mSelectRooms.recordcount));
-
 end;
 
-function TfrmMakeReservationQuick.doAutoSelect(RoomType : string; NumRooms : integer; PriorityRule : string) : integer;
+function TfrmMakeReservationQuick.doAutoSelect(RoomType: string; NumRooms: integer; PriorityRule: string): integer;
 var
-  lstPriority : TstringList;
-  tmp : integer;
+  lstPriority: TstringList;
+  tmp: integer;
 
-  aRoomtype  : string;
-  foundCount : integer;
+  aRoomtype: string;
+  foundCount: integer;
 
 begin
-  result := 0;
-  if numRooms = 0 then exit;
+  Result := 0;
+  if NumRooms = 0 then
+    exit;
 
   foundCount := 0;
   lstPriority := TstringList.Create;
   try
-    tmp := mSelectRooms.FieldByName('ID').asInteger;
+    tmp := mSelectRooms.FieldByName('ID').AsInteger;
     mSelectRooms.DisableControls;
     try
       mSelectRooms.First;
       while NOT mSelectRooms.eof do
       begin
-        aRoomtype := mSelectRooms.Fieldbyname('RoomType').AsString;
-        if Uppercase(aRoomType) = UpperCase(RoomType) then
+        aRoomtype := mSelectRooms.FieldByName('RoomType').AsString;
+        if Uppercase(aRoomtype) = Uppercase(RoomType) then
         begin
           if foundCount < NumRooms then
           begin
             mSelectRooms.edit;
             mSelectRooms.FieldByName('Select').AsBoolean := true;
-            mSelectRooms.Post;
+            mSelectRooms.post;
 
-            mSelectTypes.Edit;
-            mSelectTypes.fieldbyname('RoomsSelected').asinteger := mSelectTypes.fieldbyname('RoomsSelected').asinteger+1;
-            mSelectTypes.Post;
+            mSelectTypes.edit;
+            mSelectTypes.FieldByName('RoomsSelected').AsInteger := mSelectTypes.FieldByName('RoomsSelected')
+              .AsInteger + 1;
+            mSelectTypes.post;
 
-            inc(FoundCount);
+            inc(foundCount);
           end;
         end;
-        mSelectRooms.Next;
+        mSelectRooms.next;
       end;
-      mSelectRooms.Locate('ID',tmp,[]);
+      mSelectRooms.Locate('ID', tmp, []);
     finally
       mSelectRooms.EnableControls;
     end;
   finally
-    freeandnil(lstPriority);
+    FreeAndNil(lstPriority);
   end;
   zTotalRoomsSelected := tvSelectType.DataController.Summary.FooterSummaryValues[4];
   labTotalRoomsSelected.Caption := inttostr(zTotalRoomsSelected);
 end;
 
-
-
-
-
-
 procedure TfrmMakeReservationQuick.dtDepartureCloseUp(Sender: TObject);
 begin
-  if dtDeparture.Date <= dtArrival.Date  then dtDeparture.Date := dtArrival.Date +1;
-  if dtArrival.Date >= dtDeparture.Date  then dtArrival.Date := dtDeparture.Date -1;
-  zNights :=  trunc(dtDeparture.Date)-trunc(dtArrival.Date);
+  if dtDeparture.date <= dtArrival.date then
+    dtDeparture.date := dtArrival.date + 1;
+  if dtArrival.date >= dtDeparture.date then
+    dtArrival.date := dtDeparture.date - 1;
+  zNights := trunc(dtDeparture.date) - trunc(dtArrival.date);
   edNights.Value := zNights;
 end;
 
 procedure TfrmMakeReservationQuick.dtDepartureExit(Sender: TObject);
 begin
-  if dtDeparture.Date <= dtArrival.Date  then dtDeparture.Date := dtArrival.Date +1;
-  if dtArrival.Date >= dtDeparture.Date  then dtArrival.Date := dtDeparture.Date -1;
-  zNights :=  trunc(dtDeparture.Date)-trunc(dtArrival.Date);
+  if dtDeparture.date <= dtArrival.date then
+    dtDeparture.date := dtArrival.date + 1;
+  if dtArrival.date >= dtDeparture.date then
+    dtArrival.date := dtDeparture.date - 1;
+  zNights := trunc(dtDeparture.date) - trunc(dtArrival.date);
   edNights.Value := zNights;
 end;
 
-
 procedure TfrmMakeReservationQuick.btnAutoSelectRoomsClick(Sender: TObject);
 var
-  RoomType : string;
-  NumRooms : integer;
-  PriorityRule : string;
+  RoomType: string;
+  NumRooms: integer;
+  PriorityRule: string;
 begin
   InitSelectRooms;
   mSelectTypes.First;
   while not mSelectTypes.eof do
   begin
-    RoomType     := mSelectTypes.FieldByName('RoomType').AsString;
-    NumRooms     := mSelectTypes.FieldByName('Selected').AsInteger;
+    RoomType := mSelectTypes.FieldByName('RoomType').AsString;
+    NumRooms := mSelectTypes.FieldByName('Selected').AsInteger;
     PriorityRule := mSelectTypes.FieldByName('PriorityRule').AsString;
-    doAutoSelect(RoomType,NumRooms,PriorityRule);
-    mSelectTypes.Next;
+    doAutoSelect(RoomType, NumRooms, PriorityRule);
+    mSelectTypes.next;
   end;
 end;
 
-
 procedure TfrmMakeReservationQuick.btnEditRateAllRoomsClick(Sender: TObject);
 begin
-  apply;
+  Apply;
 end;
 
 procedure TfrmMakeReservationQuick.btnFinishClick(Sender: TObject);
 begin
-  apply;
+  Apply;
 end;
-
-
 
 procedure TfrmMakeReservationQuick.btnGetLastCustomerClick(Sender: TObject);
 var
-  s : string;
-  theData : recCustomerHolder;
-  rSet : TroomerDataset;
+  s: string;
+  rSet: TRoomerDataSet;
 begin
-    rSet := CreateNewDataSet;
-    try
-      s := '';
-      s := s+' Select * FROM reservations Order by reservation desc Limit 1';
-      if rSet_bySQL(rSet,s) then
+  rSet := createNewDataSet;
+  try
+    s := '';
+    s := s + ' Select * FROM reservations Order by reservation desc Limit 1';
+    if rSet_bySQL(rSet, s) then
+    begin
+      edCustomer.Text := rSet.FieldByName('customer').AsString;
+      if customerValidate then
       begin
-        edCustomer.Text := rSet.FieldByName('customer').AsString;
-        if customerValidate then
-        begin
-          zCustomerChanged := true;
-          initCustomer;
-        end;
-        edCountry.Text := rSet.FieldByName('country').AsString;
-        labCountryName.Caption := '';
+        zCustomerChanged := true;
+        initCustomer;
       end;
-    finally
-      freeandnil(rSet);
+      edCountry.Text := rSet.FieldByName('country').AsString;
+      labCountryName.Caption := '';
     end;
+  finally
+    FreeAndNil(rSet);
+  end;
 end;
 
 procedure TfrmMakeReservationQuick.btnNextClick(Sender: TObject);
 begin
-  if not customerValidate then exit;
-  if not CountryValidate then exit;
-  if not MarketSegmentValidate then exit;
-  if not CurrencyValidate(edCurrency,clabCurrency,labCurrencyName)  then exit;
-  if not PriceCodeValidate(edPcCode, clabPcCode, labPcCodeName)  then exit;
+  if not customerValidate then
+    exit;
+  if not CountryValidate then
+    exit;
+  if not MarketSegmentValidate then
+    exit;
+  if not CurrencyValidate(edCurrency, clabCurrency, labCurrencyName) then
+    exit;
+  if not PriceCodeValidate(edPcCode, clabPcCode, labPcCodeName) then
+    exit;
 
-
-  if pgcMain.ActivePageIndex = 3 then exit;
+  if pgcMain.ActivePageIndex = 3 then
+    exit;
 
   if pgcMain.ActivePageIndex = 0 then
   begin
     if oNewReservation.IsQuick then
     begin
       pgcMain.ActivePageIndex := 3;
-    end else
+    end
+    else
     begin
       if OutOfOrderBlocking then
         pgcMain.ActivePageIndex := 2
@@ -2250,25 +2216,26 @@ begin
     exit;
   end;
 
-
   if pgcMain.ActivePageIndex = 1 then
   begin
     if oNewReservation.IsQuick then
     begin
       pgcMain.ActivePageIndex := 3;
-    end else
+    end
+    else
     begin
-      zTotalSelected      := tvSelectType.DataController.Summary.FooterSummaryValues[0];
-      zTotalRoomsSelected := tvSelectType.DataController.Summary.FooterSummaryValues[4];     //4
-      zTotalAvailable     := tvSelectType.DataController.Summary.FooterSummaryValues[3];     //3
-      zTotalFree          := tvSelectType.DataController.Summary.FooterSummaryValues[2];     //2
-      zTotalNoRooms       := tvSelectType.DataController.Summary.FooterSummaryValues[1];     //1
+      zTotalSelected := tvSelectType.DataController.Summary.FooterSummaryValues[0];
+      zTotalRoomsSelected := tvSelectType.DataController.Summary.FooterSummaryValues[4]; // 4
+      zTotalAvailable := tvSelectType.DataController.Summary.FooterSummaryValues[3]; // 3
+      zTotalFree := tvSelectType.DataController.Summary.FooterSummaryValues[2]; // 2
+      zTotalNoRooms := tvSelectType.DataController.Summary.FooterSummaryValues[1]; // 1
 
-      zTotal := zTotalSelected+zTotalRoomsSelected+zTotalAvailable+zTotalFree+zTotalNoRooms;
+      zTotal := zTotalSelected + zTotalRoomsSelected + zTotalAvailable + zTotalFree + zTotalNoRooms;
       if ((zTotalSelected = 0) and (zTotalNoRooms > 0)) and (zTotal <> 0) then
       begin
-        pgcMain.ActivePage := tabRoomrates;
-      end else
+        pgcMain.ActivePage := tabRoomRates;
+      end
+      else
       begin
         pgcMain.ActivePageIndex := 2;
       end;
@@ -2277,13 +2244,13 @@ begin
     exit;
   end;
 
-
   if pgcMain.ActivePageIndex = 2 then
   begin
     if oNewReservation.IsQuick then
     begin
       pgcMain.ActivePageIndex := 3;
-    end else
+    end
+    else
     begin
       pgcMain.ActivePageIndex := 3;
     end;
@@ -2301,13 +2268,12 @@ begin
     edContactAddress2.Text := '';
     edContactAddress3.Text := '';
     edContactAddress4.Text := '';
-//0810-hj     edContactCountry.Text := '';
 
     edContactPhone.Text := '';
     edContactFax.Text := '';
     edContactEmail.Text := '';
 
-    lbContactCountryName.caption := '';
+    lbContactCountryName.Caption := '';
   end;
   edtPortfolio.Tag := 0;
   edtPortfolio.Text := '';
@@ -2315,15 +2281,16 @@ end;
 
 procedure TfrmMakeReservationQuick.btnPreviusClick(Sender: TObject);
 begin
-  if pgcMain.ActivePageIndex = 0 then exit;
-
+  if pgcMain.ActivePageIndex = 0 then
+    exit;
 
   if pgcMain.ActivePageIndex = 1 then
   begin
     if oNewReservation.IsQuick then
     begin
       pgcMain.ActivePageIndex := 0;
-    end else
+    end
+    else
     begin
       pgcMain.ActivePageIndex := 0;
     end;
@@ -2331,13 +2298,13 @@ begin
     exit;
   end;
 
-
   if pgcMain.ActivePageIndex = 2 then
   begin
     if oNewReservation.IsQuick then
     begin
       pgcMain.ActivePageIndex := 0;
-    end else
+    end
+    else
     begin
       pgcMain.ActivePageIndex := 1;
     end;
@@ -2350,7 +2317,8 @@ begin
     if oNewReservation.IsQuick then
     begin
       pgcMain.ActivePageIndex := 0;
-    end else
+    end
+    else
     begin
       pgcMain.ActivePageIndex := 2;
     end;
@@ -2370,22 +2338,21 @@ begin
   SetAllAsNoRoom(true);
 end;
 
-procedure TfrmMakeReservationQuick.SetAllAsNoRoom(doNextPage : boolean=true);
+procedure TfrmMakeReservationQuick.SetAllAsNoRoom(doNextPage: boolean = true);
 var
-  selected : integer;
-  noRooms  : integer;
+  norooms: integer;
 begin
   mSelectTypes.DisableControls;
-  mSelectTypes.first;
+  mSelectTypes.First;
   try
-    while not mSelectTypes.Eof do
+    while not mSelectTypes.eof do
     begin
-      noRooms := mSelectTypes.FieldByName('selected').AsInteger + mSelectTypes.FieldByName('noRooms').AsInteger;
-      mSelectTypes.Edit;
-      mSelectTypes.FieldByName('noRooms').AsInteger := noRooms;
+      norooms := mSelectTypes.FieldByName('selected').AsInteger + mSelectTypes.FieldByName('noRooms').AsInteger;
+      mSelectTypes.edit;
+      mSelectTypes.FieldByName('noRooms').AsInteger := norooms;
       mSelectTypes.FieldByName('Selected').AsInteger := 0;
-      mSelectTypes.Post;
-      mSelectTypes.Next;
+      mSelectTypes.post;
+      mSelectTypes.next;
     end;
   finally
     mSelectTypes.EnableControls;
@@ -2393,18 +2360,19 @@ begin
   end;
 
   // if jist norooms
-  zTotal := zTotalSelected+zTotalRoomsSelected+zTotalAvailable+zTotalFree+zTotalNoRooms;
-  if ((zTotalSelected = 0) and (zTotalNoRooms > 0)) and (zTotal <> 0) then exit;
+  zTotal := zTotalSelected + zTotalRoomsSelected + zTotalAvailable + zTotalFree + zTotalNoRooms;
+  if ((zTotalSelected = 0) and (zTotalNoRooms > 0)) and (zTotal <> 0) then
+    exit;
 
   mSelectRooms.DisableControls;
-  mSelectRooms.first;
+  mSelectRooms.First;
   try
-    while not mSelectRooms.Eof do
+    while not mSelectRooms.eof do
     begin
-      mSelectRooms.Edit;
+      mSelectRooms.edit;
       mSelectRooms.FieldByName('select').AsBoolean := false;
-      mSelectRooms.Post;
-      mSelectRooms.Next;
+      mSelectRooms.post;
+      mSelectRooms.next;
     end;
   finally
     mSelectRooms.EnableControls;
@@ -2417,9 +2385,9 @@ begin
   end;
 end;
 
-
-procedure TfrmMakeReservationQuick.SetOutOfOrderBlocking(const Value: Boolean);
-var i : Integer;
+procedure TfrmMakeReservationQuick.SetOutOfOrderBlocking(const Value: boolean);
+var
+  i: integer;
 begin
   FOutOfOrderBlocking := Value;
   gbxContact.Visible := NOT FOutOfOrderBlocking;
@@ -2451,42 +2419,41 @@ begin
   begin
     clabReservationName.Caption := GetTranslatedText('shTx_FrmMakeReservationQuick_OutOfOrderDescription');
     clabArrival.Caption := GetTranslatedText('shTx_FrmMakeReservationQuick_OutOfOrderStartDate');
-    clabDeparture.Caption := GetTranslatedText('shTx_FrmMakeReservationQuick_OutOfOrderEndDate');
-  end else
+    clabdeparture.Caption := GetTranslatedText('shTx_FrmMakeReservationQuick_OutOfOrderEndDate');
+  end
+  else
   begin
     RoomerLanguage.TranslateThisControl(self, clabReservationName);
     RoomerLanguage.TranslateThisControl(self, clabArrival);
-    RoomerLanguage.TranslateThisControl(self, clabDeparture);
-//    clabReservationName.Caption := GetTranslatedText('TfrmMakeReservationQuick.clabReservationName.Caption');
-//    clabArrival.Caption := GetTranslatedText('TfrmMakeReservationQuick.clabArrival.Caption');
-//    clabDeparture.Caption := GetTranslatedText('TfrmMakeReservationQuick.clabDeparture.Caption');
+    RoomerLanguage.TranslateThisControl(self, clabdeparture);
   end;
 
   for i := 0 to ComponentCount - 1 do
   begin
     if (
-       (Components[i] IS TsLabel) OR
-       (Components[i] IS TsEdit) OR
-       (Components[i] IS TsComboBox) OR
-       (Components[i] IS TsCheckBox) OR
-       (Components[i] IS TsSpeedButton)
-       ) AND
-       (
-       (TControl(Components[i]).Parent = gbxGetReservation) AND
-       (Components[i].Name <> 'clabReservationName') AND
-       (Components[i].Name <> 'edReservationName') AND
-       (Components[i].Name <> 'clabReservationType') AND
-       (Components[i].Name <> 'cbxRoomStatus')
-       )
-       then
-        TControl(Components[i]).Visible := NOT FOutOfOrderBlocking;
+      (Components[i] IS TsLabel) OR
+      (Components[i] IS TsEdit) OR
+      (Components[i] IS TsComboBox) OR
+      (Components[i] IS TsCheckBox) OR
+      (Components[i] IS TsSpeedButton)
+      ) AND
+      (
+      (TControl(Components[i]).Parent = gbxGetReservation) AND
+      (Components[i].Name <> 'clabReservationName') AND
+      (Components[i].Name <> 'edReservationName') AND
+      (Components[i].Name <> 'clabReservationType') AND
+      (Components[i].Name <> 'cbxRoomStatus')
+      )
+    then
+      TControl(Components[i]).Visible := NOT FOutOfOrderBlocking;
   end;
 
 end;
 
 procedure TfrmMakeReservationQuick.btnPortfolioLookupClick(Sender: TObject);
-var sName : String;
-    iId : Integer;
+var
+  sName: String;
+  iId: integer;
 begin
   iId := GuestProfiles(actLookup, edtPortfolio.Tag);
   if iId > 0 then
@@ -2501,15 +2468,13 @@ begin
       edContactAddress2.Text := glb.PersonProfiles['Address2'];
       edContactAddress3.Text := glb.PersonProfiles['Zip'];
       edContactAddress4.Text := glb.PersonProfiles['City'];
-//0810-hj       edContactCountry.Text := glb.PersonProfiles['Country'];
 
       edContactPhone.Text := glb.PersonProfiles['TelMobile'];
       edContactFax.Text := glb.PersonProfiles['TelFax'];
       edContactEmail.Text := glb.PersonProfiles['Email'];
 
-//0810-hj ATH
       if glb.LocateSpecificRecordAndGetValue('countries', 'Country', edContactCountry.Text, 'CountryName', sName) then
-        lbContactCountryName.caption := sName;
+        lbContactCountryName.Caption := sName;
 
     end;
   end;
@@ -2518,14 +2483,14 @@ end;
 procedure TfrmMakeReservationQuick.sButton1Click(Sender: TObject);
 begin
   mRoomRes.DisableControls;
-  mRoomRes.first;
+  mRoomRes.First;
   try
-    while not mRoomRes.Eof do
+    while not mRoomRes.eof do
     begin
-      mRoomRes.Edit;
-      mRoomRes.FieldByName('Room').AsString := '<'+mRoomRes.FieldByName('roomReservation').AsString+'>';
-      mRoomRes.Post;
-      mRoomRes.Next;
+      mRoomRes.edit;
+      mRoomRes.FieldByName('Room').AsString := '<' + mRoomRes.FieldByName('roomReservation').AsString + '>';
+      mRoomRes.post;
+      mRoomRes.next;
     end;
   finally
     mRoomRes.EnableControls;
@@ -2533,77 +2498,49 @@ begin
   end;
 end;
 
-
 procedure TfrmMakeReservationQuick.edCustomerPropertiesEditValueChanged(Sender: TObject);
 begin
 end;
 
 
-//**********************************************************************************
+// **********************************************************************************
 // Country
 //
 
-function TfrmMakeReservationQuick.CountryValidate : boolean;
+function TfrmMakeReservationQuick.CountryValidate: boolean;
 var
-  sValue : string;
+  sValue: string;
 begin
-  result := true;
+  Result := true;
 
-  sValue := trim(edCountry.Text);
-  //**NOT TESTED**//
-  if not hdata.CountryExists(svalue) then
+  sValue := Trim(edCountry.Text);
+  // **NOT TESTED**//
+  if not hData.CountryExists(sValue) then
   begin
     edCountry.SetFocus;
     labCountryName.Font.Color := clRed;
     labCountryName.Caption := GetTranslatedText('shNotF_star');
-    result := false;
+    Result := false;
     exit;
-  end else
+  end
+  else
   begin
     labCountryName.Font.Color := clBlack;
     if glb.LocateCountry(sValue) then
-      labCountryName.caption  := glb.Countries['CountryName']; // GET_CountryName(sValue);
+      labCountryName.Caption := glb.Countries['CountryName']; // GET_CountryName(sValue);
   end;
-
-//0810-hj
-//  sValue := trim(edContactCountry.Text);
-//  //**NOT TESTED**//
-//  if not hdata.CountryExists(svalue) then
-//  begin
-//    edContactCountry.SetFocus;
-//    lbContactCountryName.Font.Color := clRed;
-//    lbContactCountryName.Caption := GetTranslatedText('shNotF_star');
-//    result := false;
-//    exit;
-//  end else
-//  begin
-//    lbContactCountryName.Font.Color := clBlack;
-//    if glb.LocateCountry(sValue) then
-//      lbContactCountryName.caption  := glb.Countries['CountryName']; // GET_CountryName(sValue);
-//  end;
 
 end;
 
 procedure TfrmMakeReservationQuick.mSelectRoomsNewRecord(DataSet: TDataSet);
 begin
-  dataset.FieldByName('Select').AsBoolean := false;
-end;
-
-procedure TfrmMakeReservationQuick.mSelectTypesBeforePost(DataSet: TDataSet);
-begin
-//  if mSelectTypes.FieldByName('Selected').AsInteger > mSelectTypes.FieldByName('FreeRooms').AsInteger  then
-//  begin
-//    mSelectTypes.FieldByName('NoRooms').AsInteger  := mSelectTypes.FieldByName('Selected').AsInteger - mSelectTypes.FieldByName('FreeRooms').AsInteger
-//  end else
-//  if mSelectTypes.FieldByName('Selected').AsInteger = mSelectTypes.FieldByName('FreeRooms').AsInteger  then
-//  begin
-//    mSelectTypes.FieldByName('NoRooms').AsInteger  := 0;
-//  end;
+  DataSet.FieldByName('Select').AsBoolean := false;
 end;
 
 procedure TfrmMakeReservationQuick.mSelectTypesCalcFields(DataSet: TDataSet);
 begin
-  dataset.fieldbyname('totalFree').AsInteger := dataset.FieldByName('Available').AsInteger-dataset.FieldByName('Selected').AsInteger
+  DataSet.FieldByName('totalFree').AsInteger := DataSet.FieldByName('Available').AsInteger -
+    DataSet.FieldByName('Selected').AsInteger
 end;
 
 procedure TfrmMakeReservationQuick.pgcMainChange(Sender: TObject);
@@ -2611,72 +2548,76 @@ begin
   if pgcMain.ActivePageIndex = 0 then
   begin
 
-    btnCancel.enabled    := true;
-    btnPrevius.Enabled   := false;
+    btnCancel.Enabled := true;
+    btnPrevius.Enabled := false;
     btnNext.Enabled := true;
     if oNewReservation.IsQuick then
     begin
       btnFinish.Enabled := true;
       memRoomNotes.Enabled := true;
       clabRoomNotes.Visible := true;
-    end else
+    end
+    else
     begin
       btnFinish.Enabled := false;
       memRoomNotes.Enabled := false;
       clabRoomNotes.Visible := false;
 
     end;
-  end else
-  if pgcMain.ActivePageIndex = 1 then
+  end
+  else
+    if pgcMain.ActivePageIndex = 1 then
   begin
     if not oNewReservation.IsQuick then
     begin
-      zTotalSelected      := 0;          //0
-      zTotalRoomsSelected := 0;     //4
-      zTotalAvailable     := 0;         //3
-      zTotalFree          := 0;         //2
-      zTotalNoRooms       := 0   ;      //1
+      zTotalSelected := 0; // 0
+      zTotalRoomsSelected := 0; // 4
+      zTotalAvailable := 0; // 3
+      zTotalFree := 0; // 2
+      zTotalNoRooms := 0; // 1
 
-      zTotal := zTotalSelected+zTotalRoomsSelected+zTotalAvailable+zTotalFree+zTotalNoRooms;
+      zTotal := zTotalSelected + zTotalRoomsSelected + zTotalAvailable + zTotalFree + zTotalNoRooms;
       labTotalSelected.Caption := inttostr(zTotalSelected);
       labTotalRoomsSelected.Caption := inttostr(zTotalRoomsSelected);
     end;
 
     memRoomNotes.Enabled := false;
     clabRoomNotes.Visible := false;
-    btnCancel.enabled    := true;
-    btnPrevius.Enabled   := true;
+    btnCancel.Enabled := true;
+    btnPrevius.Enabled := true;
     btnNext.Enabled := true;
     if oNewReservation.IsQuick then
     begin
       btnFinish.Enabled := true;
       memRoomNotes.Enabled := true;
       clabRoomNotes.Visible := true;
-    end else
+    end
+    else
     begin
       btnFinish.Enabled := false;
       memRoomNotes.Enabled := false;
       clabRoomNotes.Visible := false;
     end;
     addAvailableRoomTypes;
-  end else
-  if pgcMain.ActivePageIndex = 2 then
+  end
+  else
+    if pgcMain.ActivePageIndex = 2 then
   begin
     if not oNewReservation.IsQuick then
     begin
-      zTotalSelected := 0;          //0
-      zTotalRoomsSelected := 0;     //4
-      zTotalAvailable := 0;         //3
-      zTotalFree      := 0;         //2
-      zTotalNoRooms   := 0   ;      //1
+      zTotalSelected := 0; // 0
+      zTotalRoomsSelected := 0; // 4
+      zTotalAvailable := 0; // 3
+      zTotalFree := 0; // 2
+      zTotalNoRooms := 0; // 1
 
-      zTotal := zTotalSelected+zTotalRoomsSelected+zTotalAvailable+zTotalFree+zTotalNoRooms;
+      zTotal := zTotalSelected + zTotalRoomsSelected + zTotalAvailable + zTotalFree + zTotalNoRooms;
       labTotalSelected.Caption := inttostr(zTotalSelected);
       labTotalRoomsSelected.Caption := inttostr(zTotalRoomsSelected);
     end;
 
-    btnCancel.enabled    := true;
-    btnPrevius.Enabled   := true;
+    btnCancel.Enabled := true;
+    btnPrevius.Enabled := true;
     btnNext.Enabled := true;
 
     if oNewReservation.IsQuick then
@@ -2685,7 +2626,8 @@ begin
       memRoomNotes.Enabled := true;
       clabRoomNotes.Visible := true;
 
-    end else
+    end
+    else
     begin
       btnFinish.Enabled := false;
       memRoomNotes.Enabled := false;
@@ -2693,23 +2635,19 @@ begin
       getSelectRooms;
     end;
 
+    zTotalSelected := tvSelectType.DataController.Summary.FooterSummaryValues[0];
+    zTotalRoomsSelected := tvSelectType.DataController.Summary.FooterSummaryValues[4]; // 4
+    zTotalAvailable := tvSelectType.DataController.Summary.FooterSummaryValues[3]; // 3
+    zTotalFree := tvSelectType.DataController.Summary.FooterSummaryValues[2]; // 2
+    zTotalNoRooms := tvSelectType.DataController.Summary.FooterSummaryValues[1]; // 1
 
-    zTotalSelected      := tvSelectType.DataController.Summary.FooterSummaryValues[0];
-    zTotalRoomsSelected := tvSelectType.DataController.Summary.FooterSummaryValues[4];     //4
-    zTotalAvailable     := tvSelectType.DataController.Summary.FooterSummaryValues[3];     //3
-    zTotalFree          := tvSelectType.DataController.Summary.FooterSummaryValues[2];      //2
-    zTotalNoRooms       := tvSelectType.DataController.Summary.FooterSummaryValues[1];      //1
+    zTotal := zTotalSelected + zTotalRoomsSelected + zTotalAvailable + zTotalFree + zTotalNoRooms;
+    labTotalSelected.Caption := inttostr(zTotalSelected);
 
-     zTotal := zTotalSelected+zTotalRoomsSelected+zTotalAvailable+zTotalFree+zTotalNoRooms;
-     labTotalSelected.Caption := inttostr(zTotalSelected);
-
-  end else
-  if pgcMain.ActivePageIndex = 3 then
+  end
+  else
+    if pgcMain.ActivePageIndex = 3 then
   begin
-    //**
-
-//    tvRoomResMainGuest.Visible := (NOT chkContactIsGuest.Checked) OR (Trim(edContactPerson.Text)='');
-
     if not oNewReservation.IsQuick then
     begin
       if ((zTotalSelected > 0) and (zTotalRoomsSelected = 0))
@@ -2720,15 +2658,16 @@ begin
       end;
     end;
 
-    btnCancel.enabled    := true;
-    btnPrevius.Enabled   := true;
-    btnNext.Enabled      := false;
+    btnCancel.Enabled := true;
+    btnPrevius.Enabled := true;
+    btnNext.Enabled := false;
     if oNewReservation.IsQuick then
     begin
       btnFinish.Enabled := true;
       memRoomNotes.Enabled := true;
       clabRoomNotes.Visible := true;
-    end else
+    end
+    else
     begin
       btnFinish.Enabled := false;
       memRoomNotes.Enabled := false;
@@ -2736,230 +2675,245 @@ begin
     end;
     if oNewReservation.IsQuick then
     begin
-      if zIsFirsttime then
-        if NOT createRoomRes_quick then
+      if zIsFirstTime then
+        if NOT CreateRoomRes_Quick then
         begin
           Close;
-          Exit;
+          exit;
         end;
-    end else
+    end
+    else
     begin
-      createRoomRes_normal;
+      CreateRoomRes_Normal;
     end;
     GetPrices;
   end;
 end;
 
-//##############################################################################################################
-//##############################################################################################################
-
-
-procedure TfrmMakeReservationQuick.Button1Click(Sender: TObject);
-begin
-  //
-end;
+// ##############################################################################################################
+// ##############################################################################################################
 
 procedure TfrmMakeReservationQuick.mnuFinishAndShowClick(Sender: TObject);
 begin
-  apply;
+  Apply;
   oNewReservation.ShowProfile := true;
 
-  close;
+  Close;
   modalresult := mrok;
 end;
 
 procedure TfrmMakeReservationQuick.addAvailableRoomTypes;
 var
-  rSet : TRoomerDataset;
-  i : integer;
-  s : string;
+  rSet: TRoomerDataSet;
+  i: integer;
+  s: string;
 
-  RoomType            : string;
-  NumberGuests        : integer;
-  RoomTypeDescription : string;
-  Description : string;
+  RoomType: string;
 
-  dateFrom : TDate;
-  dateTo : Tdate;
-  aDate      : TDate;
-  Status     : string ;
-  isNoRoom   : boolean;
-  RoomCount  : integer;
-  DateCount  : integer;
+  dateFrom: TDate;
+  dateTo: TDate;
+  ADate: TDate;
+  Status: string;
+  isNoRoom: boolean;
+  RoomCount: integer;
+  DateCount: integer;
 
-  TotalNotFree : integer;
+  TotalNotFree: integer;
 
+  bExcluteWaitingList: boolean;
+  bExcluteAllotment: boolean;
+  bExcluteOrder: boolean;
+  bExcluteDeparted: boolean;
+  bExcluteGuest: boolean;
+  bExcluteBlocked: boolean;
+  bExcluteNoshow: boolean;
 
-  bExcluteWaitingList : boolean;
-  bExcluteAllotment   : boolean;
-  bExcluteOrder       : boolean;
-  bExcluteDeparted    : boolean;
-  bExcluteGuest       : boolean;
-  bExcluteBlocked     : boolean;
-  bExcluteNoshow      : boolean;
+  MaxFree: integer;
+  MinAvailable: integer;
+  OccTotal: integer;
+  nrTotal: integer;
 
-  MaxFree  : integer;
-  MinAvailable  : integer;
-  OccTotal : integer;
-  nrTotal  : integer;
-
-  tmpRoomType : string;
-  tmpDescription : string;
+  tmpRoomType: string;
+  tmpDescription: string;
 
 begin
-  mOCC_.DisableControls;
+  mOcc_.DisableControls;
   try
     screen.Cursor := crHourGlass;
     try
-      DateFrom  := dtArrival.Date;
-      DateTo    := dtDeparture.Date;
-      DateCount := trunc(DateTo)-trunc(DateFrom);
+      dateFrom := dtArrival.date;
+      dateTo := dtDeparture.date;
+      DateCount := trunc(dateTo) - trunc(dateFrom);
 
-      if m_.Active then m_.Close;
+      if m_.active then
+        m_.Close;
       m_.Open;
 
       s := '';
-      s := s+'SELECT rt.RoomType,rt.Description,  ' ;
-      s := s+'(SELECT COUNT(Room) FROM rooms WHERE rooms.RoomType=rt.RoomType) AS NumRooms ' ;
-      s := s+'FROM roomtypes rt ';
-      s := s+'ORDER BY rt.RoomType ';
+      s := s + 'SELECT rt.RoomType,rt.Description,  ';
+      s := s + '(SELECT COUNT(Room) FROM rooms WHERE rooms.RoomType=rt.RoomType) AS NumRooms ';
+      s := s + 'FROM roomtypes rt ';
+      s := s + 'ORDER BY rt.RoomType ';
 
       rSet := createNewDataSet;
       try
-        rSet_bySQL(rSet,s);
+        rSet_bySQL(rSet, s);
 
-        aDate := DateFrom;
+        ADate := dateFrom;
         for i := 1 to DateCount do
         begin
           rSet.First;
-          while not rSet.Eof do
+          while not rSet.eof do
           begin
-            m_.Append;
+            m_.append;
             m_.FieldByName('RoomType').AsString := rSet.FieldByName('RoomType').AsString;
             m_.FieldByName('Description').AsString := rSet.FieldByName('Description').AsString;
             m_.FieldByName('MaxFree').AsInteger := rSet.FieldByName('NumRooms').AsInteger;
-            m_.FieldByName('aDate').AsDateTime := aDate;
-            m_.Post;
-            rSet.Next;
+            m_.FieldByName('aDate').AsDateTime := ADate;
+            m_.post;
+            rSet.next;
           end;
-          aDate := aDate+1;
+          ADate := ADate + 1;
         end;
       finally
-        freeandnil(rSet);
+        FreeAndNil(rSet);
       end;
 
-
       s := '';
-      s := s+ 'SELECT ';
-      s := s+ '    ADate ';
-      s := s+ '  , RoomType ';
-      s := s+ '  , isNoRoom ';
-      s := s+ '  , ResFlag ';
-      s := s+ '  , COUNT(Room) AS RoomCount ';
-      s := s+ 'FROM ';
-      s := s+ '  roomsdate ';
-      s := s+ 'WHERE ';
-      s := s+ '  ((ADate >= '+_db(DateFrom)+') AND (ADate <= '+_db(DateTo)+')) ';
-      s := s+ '   AND (ResFlag <> '+_db(STATUS_DELETED)+' ) '; //**zxhj line added
-      s := s+ '   AND (ResFlag <> '+_db(STATUS_CANCELED)+' ) '; //**zxhj line added
+      s := s + 'SELECT ';
+      s := s + '    ADate ';
+      s := s + '  , RoomType ';
+      s := s + '  , isNoRoom ';
+      s := s + '  , ResFlag ';
+      s := s + '  , COUNT(Room) AS RoomCount ';
+      s := s + 'FROM ';
+      s := s + '  roomsdate ';
+      s := s + 'WHERE ';
+      s := s + '  ((ADate >= ' + _db(dateFrom) + ') AND (ADate <= ' + _db(dateTo) + ')) ';
+      s := s + '   AND (ResFlag <> ' + _db(STATUS_DELETED) + ' ) '; // **zxhj line added
+      s := s + '   AND (ResFlag <> ' + _db(STATUS_CANCELED) + ' ) '; // **zxhj line added
 
-      s := s+ 'GROUP BY ';
-      s := s+ '    ADate ';
-      s := s+ '  , RoomType ';
-      s := s+ '  , ResFlag ';
-      s := s+ '  , isNoRoom ';
-      s := s+ 'ORDER BY ';
-      s := s+ '  RoomType,ADate DESC';
+      s := s + 'GROUP BY ';
+      s := s + '    ADate ';
+      s := s + '  , RoomType ';
+      s := s + '  , ResFlag ';
+      s := s + '  , isNoRoom ';
+      s := s + 'ORDER BY ';
+      s := s + '  RoomType,ADate DESC';
 
-      if mOCC_.Active then mOCC_.Close;
-      mOCC_.Open;
+      if mOcc_.active then
+        mOcc_.Close;
+      mOcc_.Open;
 
       rSet := createNewDataSet;
       try
-        rSet_bySQL(rSet,s);
+        rSet_bySQL(rSet, s);
         rSet.First;
-        while not rSet.Eof do
+        while not rSet.eof do
         begin
-          aDate         := _DBDateToDate(rSet.FieldByName('aDate').AsString);
-          RoomType      := rSet.FieldByName('RoomType').AsString;
-          Status        := rSet.FieldByName('ResFlag').AsString;
-          isNoRoom      := rSet.FieldByName('isNoRoom').AsBoolean;
-          RoomCount     := rSet.FieldByName('RoomCount').AsInteger;
+          ADate := _DBDateToDate(rSet.FieldByName('aDate').AsString);
+          RoomType := rSet.FieldByName('RoomType').AsString;
+          Status := rSet.FieldByName('ResFlag').AsString;
+          isNoRoom := rSet.FieldByName('isNoRoom').AsBoolean;
+          RoomCount := rSet.FieldByName('RoomCount').AsInteger;
 
-          mOCC_.Append;
-          mOCC_.FieldByName('RoomType').AsString   := RoomType  ;
-          mOCC_.FieldByName('Status').AsString     := Status    ;
-          mOCC_.FieldByName('aDate').AsDateTime    := aDate;    ;
-          mOCC_.FieldByName('isNoRoom').AsBoolean  := isNoRoom  ;
-          mOCC_.FieldByName('RoomCount').AsInteger := RoomCount ;
-          mOCC_.Post;
+          mOcc_.append;
+          mOcc_.FieldByName('RoomType').AsString := RoomType;
+          mOcc_.FieldByName('Status').AsString := Status;
+          mOcc_.FieldByName('aDate').AsDateTime := ADate;;
+          mOcc_.FieldByName('isNoRoom').AsBoolean := isNoRoom;
+          mOcc_.FieldByName('RoomCount').AsInteger := RoomCount;
+          mOcc_.post;
 
-          if m_.Locate('aDate;RoomType', VarArrayOf([aDate, roomType]), []) then
+          if m_.Locate('aDate;RoomType', VarArrayOf([ADate, RoomType]), []) then
           begin
-            m_.Edit;
+            m_.edit;
             if isNoRoom then
             begin
-              m_.FieldByName('nrTotal').AsInteger := m_.FieldByName('nrTotal').AsInteger+RoomCount;
-              if Status = 'P' then m_.FieldByName('nrOrder').AsInteger      := m_.FieldByName('nrOrder').AsInteger     +RoomCount;
-              if Status = 'G' then m_.FieldByName('nrGuest').AsInteger       := m_.FieldByName('nrGuest').AsInteger      +RoomCount;
-              if Status = 'D' then m_.FieldByName('nrDeparted').AsInteger    := m_.FieldByName('nrDeparted').AsInteger   +RoomCount;
-              if Status = 'O' then m_.FieldByName('nrWaitingList').AsInteger := m_.FieldByName('nrWaitingList').AsInteger+RoomCount;
-              if Status = 'A' then m_.FieldByName('nrAllotment').AsInteger   := m_.FieldByName('nrAllotment').AsInteger  +RoomCount;
-              if Status = 'B' then m_.FieldByName('nrBlocked').AsInteger     := m_.FieldByName('nrBlocked').AsInteger    +RoomCount;
-              if Status = 'N' then m_.FieldByName('nrNoShow').AsInteger      := m_.FieldByName('nrNoShow').AsInteger     +RoomCount;
-            end else
+              m_.FieldByName('nrTotal').AsInteger := m_.FieldByName('nrTotal').AsInteger + RoomCount;
+              if Status = 'P' then
+                m_.FieldByName('nrOrder').AsInteger := m_.FieldByName('nrOrder').AsInteger + RoomCount;
+              if Status = 'G' then
+                m_.FieldByName('nrGuest').AsInteger := m_.FieldByName('nrGuest').AsInteger + RoomCount;
+              if Status = 'D' then
+                m_.FieldByName('nrDeparted').AsInteger := m_.FieldByName('nrDeparted').AsInteger + RoomCount;
+              if Status = 'O' then
+                m_.FieldByName('nrWaitingList').AsInteger := m_.FieldByName('nrWaitingList').AsInteger + RoomCount;
+              if Status = 'A' then
+                m_.FieldByName('nrAllotment').AsInteger := m_.FieldByName('nrAllotment').AsInteger + RoomCount;
+              if Status = 'B' then
+                m_.FieldByName('nrBlocked').AsInteger := m_.FieldByName('nrBlocked').AsInteger + RoomCount;
+              if Status = 'N' then
+                m_.FieldByName('nrNoShow').AsInteger := m_.FieldByName('nrNoShow').AsInteger + RoomCount;
+            end
+            else
             begin
-              m_.FieldByName('occTotal').AsInteger := m_.FieldByName('occTotal').AsInteger+RoomCount;
-              if Status = 'P' then m_.FieldByName('occOrder').AsInteger       := m_.FieldByName('occOrder').AsInteger     +RoomCount;
-              if Status = 'G' then m_.FieldByName('occGuest').AsInteger       := m_.FieldByName('occGuest').AsInteger      +RoomCount;
-              if Status = 'D' then m_.FieldByName('occDeparted').AsInteger    := m_.FieldByName('occDeparted').AsInteger   +RoomCount;
-              if Status = 'O' then m_.FieldByName('occWaitingList').AsInteger := m_.FieldByName('occWaitingList').AsInteger+RoomCount;
-              if Status = 'A' then m_.FieldByName('occAllotment').AsInteger   := m_.FieldByName('occAllotment').AsInteger  +RoomCount;
-              if Status = 'B' then m_.FieldByName('occBlocked').AsInteger     := m_.FieldByName('occBlocked').AsInteger    +RoomCount;
-              if Status = 'N' then m_.FieldByName('occNoShow').AsInteger      := m_.FieldByName('occNoShow').AsInteger     +RoomCount;
+              m_.FieldByName('occTotal').AsInteger := m_.FieldByName('occTotal').AsInteger + RoomCount;
+              if Status = 'P' then
+                m_.FieldByName('occOrder').AsInteger := m_.FieldByName('occOrder').AsInteger + RoomCount;
+              if Status = 'G' then
+                m_.FieldByName('occGuest').AsInteger := m_.FieldByName('occGuest').AsInteger + RoomCount;
+              if Status = 'D' then
+                m_.FieldByName('occDeparted').AsInteger := m_.FieldByName('occDeparted').AsInteger + RoomCount;
+              if Status = 'O' then
+                m_.FieldByName('occWaitingList').AsInteger := m_.FieldByName('occWaitingList').AsInteger + RoomCount;
+              if Status = 'A' then
+                m_.FieldByName('occAllotment').AsInteger := m_.FieldByName('occAllotment').AsInteger + RoomCount;
+              if Status = 'B' then
+                m_.FieldByName('occBlocked').AsInteger := m_.FieldByName('occBlocked').AsInteger + RoomCount;
+              if Status = 'N' then
+                m_.FieldByName('occNoShow').AsInteger := m_.FieldByName('occNoShow').AsInteger + RoomCount;
             end;
-            m_.Post;
+            m_.post;
           end;
-          rSet.Next;
+          rSet.next;
         end;
       finally
-        freeandnil(rSet);
+        FreeAndNil(rSet);
       end;
-      mOCC_.First;
+      mOcc_.First;
 
-      bExcluteWaitingList := chkExcluteWaitingList.checked;
-      bExcluteAllotment   := chkExcluteAllotment  .checked;
-      bExcluteOrder       := chkExcluteOrder      .checked;
-      bExcluteDeparted    := chkExcluteDeparted   .checked;
-      bExcluteGuest       := chkExcluteGuest      .checked;
-      bExcluteBlocked     := chkExcluteBlocked    .checked;
-      bExcluteNoshow      := chkExcluteNoshow     .checked;
+      bExcluteWaitingList := chkExcluteWaitingList.Checked;
+      bExcluteAllotment := chkExcluteAllotment.Checked;
+      bExcluteOrder := chkExcluteOrder.Checked;
+      bExcluteDeparted := chkExcluteDeparted.Checked;
+      bExcluteGuest := chkExcluteGuest.Checked;
+      bExcluteBlocked := chkExcluteBlocked.Checked;
+      bExcluteNoshow := chkExcluteNoShow.Checked;
 
       m_.SortedField := 'RoomType';
       m_.First;
       while not m_.eof do
       begin
-        MaxFree  := m_.fieldbyname('MaxFree').asInteger;
-        OccTotal := m_.fieldbyname('occTotal').asInteger;
-        nrTotal  := m_.fieldbyname('nrTotal').asInteger;
-        totalNotFree := MaxFree-OccTotal-nrTotal;
-        if bExcluteWaitingList then TotalNotFree := TotalNotFree+m_.FieldByName('nrWaitingList').asinteger;
-        if bExcluteAllotment   then TotalNotFree := TotalNotFree+m_.FieldByName('nrAllotment').asinteger;
-        if bExcluteOrder       then TotalNotFree := TotalNotFree+m_.FieldByName('nrOrder').asinteger;
-        if bExcluteDeparted    then TotalNotFree := TotalNotFree+m_.FieldByName('nrDeparted').asinteger;
-        if bExcluteGuest       then TotalNotFree := TotalNotFree+m_.FieldByName('nrGuest').asinteger;
-        if bExcluteBlocked     then TotalNotFree := TotalNotFree+m_.FieldByName('nrBlocked').asinteger;
-        if bExcluteNoShow      then TotalNotFree := TotalNotFree+m_.FieldByName('nrNoShow').asinteger;
+        MaxFree := m_.FieldByName('MaxFree').AsInteger;
+        OccTotal := m_.FieldByName('occTotal').AsInteger;
+        nrTotal := m_.FieldByName('nrTotal').AsInteger;
+        TotalNotFree := MaxFree - OccTotal - nrTotal;
+        if bExcluteWaitingList then
+          TotalNotFree := TotalNotFree + m_.FieldByName('nrWaitingList').AsInteger;
+        if bExcluteAllotment then
+          TotalNotFree := TotalNotFree + m_.FieldByName('nrAllotment').AsInteger;
+        if bExcluteOrder then
+          TotalNotFree := TotalNotFree + m_.FieldByName('nrOrder').AsInteger;
+        if bExcluteDeparted then
+          TotalNotFree := TotalNotFree + m_.FieldByName('nrDeparted').AsInteger;
+        if bExcluteGuest then
+          TotalNotFree := TotalNotFree + m_.FieldByName('nrGuest').AsInteger;
+        if bExcluteBlocked then
+          TotalNotFree := TotalNotFree + m_.FieldByName('nrBlocked').AsInteger;
+        if bExcluteNoshow then
+          TotalNotFree := TotalNotFree + m_.FieldByName('nrNoShow').AsInteger;
 
         m_.edit;
-          m_.FieldByName('FreeRooms').AsInteger := TotalNotFree;
-        m_.Post;
-        m_.Next;
+        m_.FieldByName('FreeRooms').AsInteger := TotalNotFree;
+        m_.post;
+        m_.next;
       end;
       m_.SortedField := 'RoomType';
       m_.First;
 
-      if mSelectTypes.Active then mSelectTypes.Close;
+      if mSelectTypes.active then
+        mSelectTypes.Close;
       mSelectTypes.Open;
 
       m_.SortedField := 'RoomType';
@@ -2967,235 +2921,224 @@ begin
 
       tmpRoomType := m_.FieldByName('RoomType').AsString;
       tmpDescription := m_.FieldByName('RoomType').AsString;
-      minAvailable := 1000;
+      MinAvailable := 1000;
       while not m_.eof do
       begin
         if tmpRoomType <> m_.FieldByName('RoomType').AsString then
         begin
-          mSelectTypes.Append;
+          mSelectTypes.append;
           mSelectTypes.FieldByName('RoomType').AsString := tmpRoomType;
           mSelectTypes.FieldByName('RoomTypeDescription').AsString := tmpDescription;
-          mSelectTypes.FieldByName('Available').AsInteger := minAvailable;
+          mSelectTypes.FieldByName('Available').AsInteger := MinAvailable;
           mSelectTypes.FieldByName('Selected').AsInteger := 0;
           mSelectTypes.FieldByName('NoRooms').AsInteger := 0;
-          mSelectTypes.Post;
+          mSelectTypes.post;
           tmpRoomType := m_.FieldByName('RoomType').AsString;
           tmpDescription := m_.FieldByName('Description').AsString;
-          minAvailable := 1000;
+          MinAvailable := 1000;
         end;
-        if m_.FieldByName('FreeRooms').AsInteger <= minAvailable then minAvailable := m_.FieldByName('FreeRooms').AsInteger;
-        m_.Next;
+        if m_.FieldByName('FreeRooms').AsInteger <= MinAvailable then
+          MinAvailable := m_.FieldByName('FreeRooms').AsInteger;
+        m_.next;
         if m_.eof then
         begin
-          mSelectTypes.Append;
+          mSelectTypes.append;
           mSelectTypes.FieldByName('RoomType').AsString := m_.FieldByName('RoomType').AsString;
           mSelectTypes.FieldByName('RoomTypeDescription').AsString := m_.FieldByName('Description').AsString;
-          mSelectTypes.FieldByName('Available').AsInteger := minAvailable;
+          mSelectTypes.FieldByName('Available').AsInteger := MinAvailable;
           mSelectTypes.FieldByName('Selected').AsInteger := 0;
           mSelectTypes.FieldByName('NoRooms').AsInteger := 0;
-          mSelectTypes.Post;
+          mSelectTypes.post;
         end;
       end;
 
-      //Add PriorityRule
+      // Add PriorityRule
 
       s := '';
-      s := s+ 'SELECT ';
-      s := s+ '  RoomType ';
-      s := s+ ' ,PriorityRule ';
-      s := s+ 'FROM roomtypes ';
+      s := s + 'SELECT ';
+      s := s + '  RoomType ';
+      s := s + ' ,PriorityRule ';
+      s := s + 'FROM roomtypes ';
 
       rSet := createNewDataSet;
       try
-        rSet_bySQL(rSet,s);
+        rSet_bySQL(rSet, s);
         rSet.First;
-        while not rSet.Eof do
+        while not rSet.eof do
         begin
           RoomType := rSet.FieldByName('RoomType').AsString;
-          if mSelectTypes.Locate('RoomType',roomType,[]) then
+          if mSelectTypes.Locate('RoomType', RoomType, []) then
           begin
             mSelectTypes.edit;
             mSelectTypes.FieldByName('PriorityRule').AsString := rSet.FieldByName('PriorityRule').AsString;
             mSelectTypes.post;
           end;
-          rSet.Next;
+          rSet.next;
         end;
       finally
-        freeandnil(rSet);
+        FreeAndNil(rSet);
       end;
     finally
-      screen.cursor := crDefault;
+      screen.Cursor := crDefault;
     end;
 
   finally
-    mOCC_.EnableControls;
+    mOcc_.EnableControls;
   end;
 
 end;
 
-procedure TfrmMakeReservationQuick.cxButton1Click(Sender: TObject);
-var
- iValue : integer;
-begin
-
-
-  //addAvailableRoomTypes;
-end;
-
-
 procedure TfrmMakeReservationQuick.CreateRoomRes_Normal;
 var
-  oSelectedRoomItem : TnewRoomReservationItem;
-  selected     : boolean;
-  Room         : string ;
-  RoomType     : string ;
-  NumberGuests : integer;
-  Arrival      : Tdate  ;
-  Departure    : TDate  ;
+  oSelectedRoomItem: TnewRoomReservationItem;
+  selected: boolean;
+  room: string;
+  RoomType: string;
+  NumberGuests: integer;
+  Arrival: TDate;
+  Departure: TDate;
 
-  NumberNoRoom : integer ;
+  NumberNoRoom: integer;
 
+  i: integer;
 
-  i : integer;
+  RoomCount: integer;
+  childrenCount: integer;
+  infantCount: integer;
 
-  roomCount      : integer;
-  isPaid         : boolean;
-  ChildrenCount  : integer;
-  infantCount    : integer;
+  RoomReservation: integer;
 
-  RoomReservation : integer;
+  RoomDescription: string;
+  RoomTypeDescription: string;
+  PriceCode: string;
 
-  RoomDescription      : string;
-  RoomTypeDescription  : string;
-  PriceCode            : string;
-
-  sID : string;
-  lstIDs : TstringList;
+  sID: string;
+  lstIDs: TstringList;
 begin
   RoomReservation := 0;
   oNewReservation.newRoomReservations.RoomItemsList.Clear;
 
-  Arrival       := dtArrival.Date;
-  Departure     := dtDeparture.Date;
-  PriceCode     := trim(edPcCode.text);
+  Arrival := dtArrival.date;
+  Departure := dtDeparture.date;
+  PriceCode := Trim(edPcCode.Text);
 
-  lstIds := TstringList.Create;
+  lstIDs := TstringList.Create;
   try
     if not((zTotalSelected = 0) and (zTotalNoRooms > 0)) and (zTotal <> 0) then
     begin
       mSelectRooms.First;
-      while not mSelectRooms.Eof do
+      while not mSelectRooms.eof do
       begin
-        Room         := mSelectRooms.FieldByName('room').AsString;
-        Selected     := mSelectRooms.FieldByName('Select').AsBoolean;
-        RoomType     := mSelectRooms.FieldByName('RoomType').AsString;
+        room := mSelectRooms.FieldByName('room').AsString;
+        selected := mSelectRooms.FieldByName('Select').AsBoolean;
+        RoomType := mSelectRooms.FieldByName('RoomType').AsString;
         NumberGuests := mSelectRooms.FieldByName('NumberGuests').AsInteger;
-        if Selected then
+        if selected then
         begin
-          oSelectedRoomItem := TnewRoomReservationItem.Create(0,Room,RoomType,'',Arrival,departure,NumberGuests,0,0,true,0,0,0,'','','');
+          oSelectedRoomItem := TnewRoomReservationItem.Create(0, room, RoomType, '', Arrival, Departure, NumberGuests,
+            0, 0, true, 0, 0, 0, '', '', '');
           oNewReservation.newRoomReservations.RoomItemsList.Add(oSelectedRoomItem);
         end;
-        mSelectRooms.Next;
+        mSelectRooms.next;
       end;
       mSelectRooms.First;
     end;
 
     mSelectTypes.First;
-    while not mSelectTypes.Eof do
+    while not mSelectTypes.eof do
     begin
-      RoomType     := mSelectTypes.FieldByName('RoomType').AsString;
+      RoomType := mSelectTypes.FieldByName('RoomType').AsString;
       NumberNoRoom := mSelectTypes.FieldByName('NoRooms').AsInteger;
-      Room := '';
+      room := '';
       NumberGuests := glb.GET_RoomTypeNumberGuests_byRoomType(RoomType);
-      for i  := 1 to NumberNoRoom do
+      for i := 1 to NumberNoRoom do
       begin
-        oSelectedRoomItem := TnewRoomReservationItem.Create(0,Room,RoomType,'',Arrival,departure,NumberGuests,0,0,true,0,0,0,'','','');
+        oSelectedRoomItem := TnewRoomReservationItem.Create(0, room, RoomType, '', Arrival, Departure, NumberGuests, 0,
+          0, true, 0, 0, 0, '', '', '');
         oNewReservation.newRoomReservations.RoomItemsList.Add(oSelectedRoomItem);
       end;
-      mSelectTypes.Next;
+      mSelectTypes.next;
     end;
     mSelectTypes.First;
 
-    if mRoomRes.Active then mRoomRes.Close;
+    if mRoomRes.active then
+      mRoomRes.Close;
     mRoomRes.Open;
 
-    roomCount     := oNewReservation.newRoomReservations.RoomCount;
-    isPaid        := false;
+    RoomCount := oNewReservation.newRoomReservations.RoomCount;
 
+    sID := RR_GetIDs(RoomCount);
+    _Glob._strTokenToStrings(sID, '|', lstIDs);
 
-    sId := RR_GetIDs(RoomCount);
-    _glob._strTokenToStrings(sID,'|',lstIDs);
-
-
-    for i := 0 to RoomCount-1 do
+    for i := 0 to RoomCount - 1 do
     begin
-      if oNewReservation.newRoomReservations.RoomItemsList[i].FRoomReservation < 1 then
+      if oNewReservation.newRoomReservations.RoomItemsList[i].RoomReservation < 1 then
       begin
-        RoomReservation := strToInt(lstIDs[i]);//RR_SetNewID();
-        oNewReservation.newRoomReservations.RoomItemsList[i].SetRoomreservation(RoomReservation);
+        RoomReservation := strToInt(lstIDs[i]); // RR_SetNewID();
+        oNewReservation.newRoomReservations.RoomItemsList[i].RoomReservation := RoomReservation;
       end;
 
-      room  := oNewReservation.newRoomReservations.RoomItemsList[i].getRoomNumber;
+      room := oNewReservation.newRoomReservations.RoomItemsList[i].RoomNumber;
       if room = '' then
       begin
-        room := '<'+inttostr(RoomReservation)+'>';
-  //      roomType := oNewReservation.newRoomReservations.RoomItemsList[i].FRoomType;
+        room := '<' + inttostr(RoomReservation) + '>';
+        // roomType := oNewReservation.newRoomReservations.RoomItemsList[i].FRoomType;
       end;
 
-      arrival       := oNewReservation.newRoomReservations.RoomItemsList[i].getArrival;
-      departure     := oNewReservation.newRoomReservations.RoomItemsList[i].getDeparture;
-      numberGuests  := oNewReservation.newRoomReservations.RoomItemsList[i].getGuestCount;
-      childrenCount := oNewReservation.newRoomReservations.RoomItemsList[i].getChildrenCount;
-      infantCount   := oNewReservation.newRoomReservations.RoomItemsList[i].getInfantCount;
-      roomType      := oNewReservation.newRoomReservations.RoomItemsList[i].getRoomType;
+      Arrival := oNewReservation.newRoomReservations.RoomItemsList[i].Arrival;
+      Departure := oNewReservation.newRoomReservations.RoomItemsList[i].Departure;
+      NumberGuests := oNewReservation.newRoomReservations.RoomItemsList[i].guestCount;
+      childrenCount := oNewReservation.newRoomReservations.RoomItemsList[i].childrenCount;
+      infantCount := oNewReservation.newRoomReservations.RoomItemsList[i].infantCount;
+      RoomType := oNewReservation.newRoomReservations.RoomItemsList[i].RoomType;
 
-      RoomDescription     := '';
+      RoomDescription := '';
       RoomTypeDescription := '';
 
-      if not (zTotalSelected = 0) and (zTotalNoRooms > 0) then
+      if not(zTotalSelected = 0) and (zTotalNoRooms > 0) then
       begin
-        if mSelectRooms.Locate('RoomType',RoomType,[]) then
+        if mSelectRooms.Locate('RoomType', RoomType, []) then
         begin
-          RoomDescription     := mSelectRooms.FieldByName('Description').asString;
-          RoomTypeDescription := mSelectRooms.FieldByName('RoomTypeDescription').asString;
+          RoomDescription := mSelectRooms.FieldByName('Description').AsString;
+          RoomTypeDescription := mSelectRooms.FieldByName('RoomTypeDescription').AsString;
         end;
       end;
 
-      if (copy(room,1,1)) = '<' then
+      if (copy(room, 1, 1)) = '<' then
       begin
         // It is noroom
         // There is no roomdescription
         // .. Get the roomType Description
         RoomTypeDescription := glb.GetRoomTypeDescription(RoomType);
-        if numberGuests = 0 then
-           NumberGuests        := glb.GET_RoomTypeNumberGuests_byRoomType(RoomType);
+        if NumberGuests = 0 then
+          NumberGuests := glb.GET_RoomTypeNumberGuests_byRoomType(RoomType);
       end;
 
       mRoomRes.append;
-      mRoomRes.FieldByName('RoomReservation').AsInteger      := Roomreservation;
-      mRoomRes.FieldByName('room').AsString                  := room;
-      mRoomRes.FieldByName('RoomType').AsString              := RoomType;
-      mRoomRes.FieldByName('Guests').AsInteger               := NumberGuests;
-      mRoomRes.FieldByName('AvragePrice').AsFloat            := 0;
-      mRoomRes.FieldByName('RateCount').AsFloat              := 0;
-      mRoomRes.FieldByName('AvrageDiscount').AsFloat         := 0;
-      mRoomRes.FieldByName('isPercentage').Asboolean         := true;
+      mRoomRes.FieldByName('RoomReservation').AsInteger := RoomReservation;
+      mRoomRes.FieldByName('room').AsString := room;
+      mRoomRes.FieldByName('RoomType').AsString := RoomType;
+      mRoomRes.FieldByName('Guests').AsInteger := NumberGuests;
+      mRoomRes.FieldByName('AvragePrice').AsFloat := 0;
+      mRoomRes.FieldByName('RateCount').AsFloat := 0;
+      mRoomRes.FieldByName('AvrageDiscount').AsFloat := 0;
+      mRoomRes.FieldByName('isPercentage').AsBoolean := true;
 
-      mRoomRes.FieldByName('ManualChannelId').AsInteger      := 0;
-      mRoomRes.FieldByName('ratePlanCode').AsString          := '';
+      mRoomRes.FieldByName('ManualChannelId').AsInteger := 0;
+      mRoomRes.FieldByName('ratePlanCode').AsString := '';
 
-      mRoomRes.FieldByName('RoomDescription').AsString       := RoomDescription;
-      mRoomRes.FieldByName('RoomTypeDescription').AsString   := RoomTypeDescription;
-      mRoomRes.FieldByName('arrival').AsDateTime             := arrival;
-      mRoomRes.FieldByName('departure').AsDateTime           := departure;
-      mRoomRes.FieldByName('ChildrenCount').AsInteger        := ChildrenCount;
-      mRoomRes.FieldByName('InfantCount').AsInteger          := InfantCount;
-      mRoomRes.FieldByName('PriceCode').AsString             := PriceCode;
-      mRoomRes.FieldByName('PersonsProfilesId').AsInteger    := edtPortfolio.Tag;
-      if chkContactIsGuest.Checked AND (TRIM(edContactPerson.Text) <> '') then
+      mRoomRes.FieldByName('RoomDescription').AsString := RoomDescription;
+      mRoomRes.FieldByName('RoomTypeDescription').AsString := RoomTypeDescription;
+      mRoomRes.FieldByName('arrival').AsDateTime := Arrival;
+      mRoomRes.FieldByName('departure').AsDateTime := Departure;
+      mRoomRes.FieldByName('ChildrenCount').AsInteger := childrenCount;
+      mRoomRes.FieldByName('InfantCount').AsInteger := infantCount;
+      mRoomRes.FieldByName('PriceCode').AsString := PriceCode;
+      mRoomRes.FieldByName('PersonsProfilesId').AsInteger := edtPortfolio.Tag;
+      if chkContactIsGuest.Checked AND (Trim(edContactPerson.Text) <> '') then
         mRoomRes['MainGuest'] := edContactPerson.Text
       else
-      if (TRIM(edtPortfolio.Text) <> '') then
+        if (Trim(edtPortfolio.Text) <> '') then
         mRoomRes['MainGuest'] := edtPortfolio.Text
       else
         mRoomRes['MainGuest'] := edReservationName.Text;
@@ -3211,90 +3154,87 @@ begin
       mRoomRes.First;
     end;
   finally
-    freeandnil(lstIDs);
+    FreeAndNil(lstIDs);
   end;
 end;
 
-function TfrmMakeReservationQuick.CreateRoomRes_Quick : Boolean;
+function TfrmMakeReservationQuick.CreateRoomRes_Quick: boolean;
 var
-  rSetRooms : TRoomerDataset;
-//  rSetAvail : TRoomerDataset;
-  i : integer;
+  rSetRooms: TRoomerDataSet;
+  i: integer;
 
-  s : string;
+  s: string;
 
-  Arrival             : TdateTime;
-  Departure           : TDateTime;
+  Arrival: TDateTime;
+  Departure: TDateTime;
 
-  roomReservation     : integer  ;
-  room                : string   ;
-  RoomType            : string;
-  Guests              : integer  ;
+  RoomReservation: integer;
+  room: string;
+  RoomType: string;
+  Guests: integer;
 
-  RoomDescription     : string;
-  RoomTypeDescription : string;
-  ChildrenCount       : integer;
-  infantCount         : integer;
-  roomCount            : integer;
+  RoomDescription: string;
+  RoomTypeDescription: string;
+  childrenCount: integer;
+  infantCount: integer;
+  RoomCount: integer;
 
-  priceCode     : string ;
+  PriceCode: string;
 
-  defaultGuests : integer;
+  defaultGuests: integer;
 
-  sID          : string;
-  lstIDs       : TstringLIst;
-  sRoomsInList : string;
-  sRoomTypes : TStrings;
-  sMessage : String;
+  sID: string;
+  lstIDs: TstringList;
+  sRoomsInList: string;
+  sRoomTypes: TStrings;
+  sMessage: String;
 
-  ExecutionPlan : TRoomerExecutionPlan;
+  ExecutionPlan: TRoomerExecutionPlan;
 
-  AvailabilityPerDay : TAvailabilityPerDay;
+  AvailabilityPerDay: TAvailabilityPerDay;
 
 begin
-  result := True;
-  DefaultGuests := 2;
+  Result := true;
   RoomReservation := 0;
-  PriceCode     := trim(edPcCode.text);
+  PriceCode := Trim(edPcCode.Text);
 
-  if mRoomRes.Active then mRoomRes.Close;
+  if mRoomRes.active then
+    mRoomRes.Close;
   mRoomRes.Open;
-  roomCount     := oNewReservation.newRoomReservations.RoomCount;
-  ChildrenCount := 0;
-  infantCount   := 0;
-
+  RoomCount := oNewReservation.newRoomReservations.RoomCount;
 
   lstIDs := TstringList.Create;
   try
 
-    sId := RR_GetIDs(RoomCount);
-    _glob._strTokenToStrings(sID,'|',lstIDs);
+    sID := RR_GetIDs(RoomCount);
+    _Glob._strTokenToStrings(sID, '|', lstIDs);
 
     sRoomsInList := '';
 
-    for i := 0 to RoomCount-1 do
+    for i := 0 to RoomCount - 1 do
     begin
-      room  := oNewReservation.newRoomReservations.RoomItemsList[i].getRoomNumber;
+      room := oNewReservation.newRoomReservations.RoomItemsList[i].RoomNumber;
       if room <> '' then
       begin
-        sRoomsInList := sRoomsInList+_db(room)+',';
+        sRoomsInList := sRoomsInList + _db(room) + ',';
       end;
     end;
 
-    if sRoomsInList <> '' then delete(sRoomsInList,length(sRoomsInList),1);
+    if sRoomsInList <> '' then
+      Delete(sRoomsInList, length(sRoomsInList), 1);
 
     s := '';
-    s:=s+ ' SELECT '+#10;
-    s:=s+ '     rooms.Room '+#10;
-    s:=s+ '   , rooms.Description AS RoomDescription '+#10;
-    s:=s+ '   , rooms.RoomType '+#10;
-    s:=s+ '   , roomtypes.NumberGuests '+#10;
-    s:=s+ '   , roomtypes.Description AS RoomTypeDescription '+#10;
-    s:=s+ ' FROM '+#10;
-    s:=s+ '   rooms '+#10;
-    s:=s+ '   LEFT OUTER JOIN roomtypes ON rooms.RoomType = roomtypes.RoomType '+#10;
-    s:=s+ ' WHERE '+#10;
-    s:=s+ '   (rooms.Room in ('+sRoomsInList+'))'+#10;
+    s := s + ' SELECT ' + #10;
+    s := s + '     rooms.Room ' + #10;
+    s := s + '   , rooms.Description AS RoomDescription ' + #10;
+    s := s + '   , rooms.RoomType ' + #10;
+    s := s + '   , roomtypes.NumberGuests ' + #10;
+    s := s + '   , roomtypes.Description AS RoomTypeDescription ' + #10;
+    s := s + ' FROM ' + #10;
+    s := s + '   rooms ' + #10;
+    s := s + '   LEFT OUTER JOIN roomtypes ON rooms.RoomType = roomtypes.RoomType ' + #10;
+    s := s + ' WHERE ' + #10;
+    s := s + '   (rooms.Room in (' + sRoomsInList + '))' + #10;
 
     ExecutionPlan := d.roomerMainDataSet.CreateExecutionPlan;
     try
@@ -3302,69 +3242,69 @@ begin
       ExecutionPlan.Execute(ptQuery);
       rSetRooms := ExecutionPlan.Results[0];
 
-      for i := 0 to RoomCount-1 do
+      for i := 0 to RoomCount - 1 do
       begin
-        if oNewReservation.newRoomReservations.RoomItemsList[i].FRoomReservation < 1 then
+        if oNewReservation.newRoomReservations.RoomItemsList[i].RoomReservation < 1 then
         begin
-          RoomReservation := strToInt(lstIDs[i]);//RR_SetNewID();
-          oNewReservation.newRoomReservations.RoomItemsList[i].SetRoomreservation(RoomReservation);
+          RoomReservation := strToInt(lstIDs[i]); // RR_SetNewID();
+          oNewReservation.newRoomReservations.RoomItemsList[i].RoomReservation := RoomReservation;
         end;
 
-        room  := oNewReservation.newRoomReservations.RoomItemsList[i].getRoomNumber;
+        room := oNewReservation.newRoomReservations.RoomItemsList[i].RoomNumber;
         if room = '' then
         begin
-          room := '<'+inttostr(RoomReservation)+'>';
-          roomType := oNewReservation.newRoomReservations.RoomItemsList[i].FRoomType;
+          room := '<' + inttostr(RoomReservation) + '>';
+          RoomType := oNewReservation.newRoomReservations.RoomItemsList[i].RoomType;
         end;
 
-        arrival       := oNewReservation.newRoomReservations.RoomItemsList[i].getArrival;
-        departure     := oNewReservation.newRoomReservations.RoomItemsList[i].getDeparture;
-        guests        := oNewReservation.newRoomReservations.RoomItemsList[i].getGuestCount;
-        childrenCount := oNewReservation.newRoomReservations.RoomItemsList[i].getChildrenCount;
-        infantCount   := oNewReservation.newRoomReservations.RoomItemsList[i].getInfantCount;
+        Arrival := oNewReservation.newRoomReservations.RoomItemsList[i].Arrival;
+        Departure := oNewReservation.newRoomReservations.RoomItemsList[i].Departure;
+        childrenCount := oNewReservation.newRoomReservations.RoomItemsList[i].childrenCount;
+        infantCount := oNewReservation.newRoomReservations.RoomItemsList[i].infantCount;
 
-        if (copy(room,1,1)) <>  '<' then
+        if (copy(room, 1, 1)) <> '<' then
         begin
-          rSetRooms.Locate('room',room,[]);
-          RoomDescription     := rSetRooms.FieldByName('RoomDescription').asString;
-          RoomType            := rSetRooms.FieldByName('RoomType').asString;
-          oNewReservation.newRoomReservations.RoomItemsList[i].FRoomType := RoomType;
-          DefaultGuests       := rSetRooms.FieldByName('NumberGuests').asInteger;
-          RoomTypeDescription := rSetRooms.FieldByName('RoomTypeDescription').asString;
-        end else
+          rSetRooms.Locate('room', room, []);
+          RoomDescription := rSetRooms.FieldByName('RoomDescription').AsString;
+          RoomType := rSetRooms.FieldByName('RoomType').AsString;
+          oNewReservation.newRoomReservations.RoomItemsList[i].RoomType := RoomType;
+          defaultGuests := rSetRooms.FieldByName('NumberGuests').AsInteger;
+          RoomTypeDescription := rSetRooms.FieldByName('RoomTypeDescription').AsString;
+        end
+        else
         begin // It is noroom
           // There is no roomdescription
           // .. Get the roomType Description
           RoomTypeDescription := glb.GetRoomTypeDescription(RoomType);
-          DefaultGuests := glb.GET_RoomTypeNumberGuests_byRoomType(RoomType);
+          defaultGuests := glb.GET_RoomTypeNumberGuests_byRoomType(RoomType);
         end;
 
-        Guests := DefaultGuests;
+        Guests := defaultGuests;
 
         mRoomRes.append;
-        mRoomRes.FieldByName('RoomReservation').AsInteger      := Roomreservation;
-        mRoomRes.FieldByName('room').AsString                  := room;
-        mRoomRes.FieldByName('RoomType').AsString              := RoomType;
-        mRoomRes.FieldByName('Guests').AsInteger               := Guests;
-        mRoomRes.FieldByName('AvragePrice').AsFloat            := 0;
-        mRoomRes.FieldByName('RateCount').AsFloat              := 0;
-        mRoomRes.FieldByName('AvrageDiscount').AsFloat         := 0;
+        mRoomRes.FieldByName('RoomReservation').AsInteger := RoomReservation;
+        mRoomRes.FieldByName('room').AsString := room;
+        mRoomRes.FieldByName('RoomType').AsString := RoomType;
+        mRoomRes.FieldByName('Guests').AsInteger := Guests;
+        mRoomRes.FieldByName('AvragePrice').AsFloat := 0;
+        mRoomRes.FieldByName('RateCount').AsFloat := 0;
+        mRoomRes.FieldByName('AvrageDiscount').AsFloat := 0;
 
-        mRoomRes.FieldByName('ManualChannelId').AsInteger      := 0;
-        mRoomRes.FieldByName('ratePlanCode').AsString          := '';
+        mRoomRes.FieldByName('ManualChannelId').AsInteger := 0;
+        mRoomRes.FieldByName('ratePlanCode').AsString := '';
 
-        mRoomRes.FieldByName('RoomDescription').AsString       := RoomDescription;
-        mRoomRes.FieldByName('RoomTypeDescription').AsString   := RoomTypeDescription;
-        mRoomRes.FieldByName('arrival').AsDateTime             := arrival;
-        mRoomRes.FieldByName('departure').AsDateTime           := departure;
-        mRoomRes.FieldByName('ChildrenCount').AsInteger        := ChildrenCount;
-        mRoomRes.FieldByName('InfantCount').AsInteger          := InfantCount;
-        mRoomRes.FieldByName('PriceCode').AsString             := PriceCode;
-        mRoomRes.FieldByName('PersonsProfilesId').AsInteger    := edtPortfolio.Tag;
-        if chkContactIsGuest.Checked AND (TRIM(edContactPerson.Text) <> '') then
+        mRoomRes.FieldByName('RoomDescription').AsString := RoomDescription;
+        mRoomRes.FieldByName('RoomTypeDescription').AsString := RoomTypeDescription;
+        mRoomRes.FieldByName('arrival').AsDateTime := Arrival;
+        mRoomRes.FieldByName('departure').AsDateTime := Departure;
+        mRoomRes.FieldByName('ChildrenCount').AsInteger := childrenCount;
+        mRoomRes.FieldByName('InfantCount').AsInteger := infantCount;
+        mRoomRes.FieldByName('PriceCode').AsString := PriceCode;
+        mRoomRes.FieldByName('PersonsProfilesId').AsInteger := edtPortfolio.Tag;
+        if chkContactIsGuest.Checked AND (Trim(edContactPerson.Text) <> '') then
           mRoomRes['MainGuest'] := edContactPerson.Text
         else
-        if (TRIM(edtPortfolio.Text) <> '') then
+          if (Trim(edtPortfolio.Text) <> '') then
           mRoomRes['MainGuest'] := edtPortfolio.Text
         else
           mRoomRes['MainGuest'] := edReservationName.Text;
@@ -3375,7 +3315,7 @@ begin
       if g.qWarnWhenOverbooking then
       begin
         sMessage := '';
-        AvailabilityPerDay := TAvailabilityPerDay.Create(dtArrival.Date, dtDeparture.Date, oNewReservation);
+        AvailabilityPerDay := TAvailabilityPerDay.Create(dtArrival.date, dtDeparture.date, oNewReservation);
         sRoomTypes := AvailabilityPerDay.Overbookings;
         try
           sMessage := sRoomTypes.Text;
@@ -3384,27 +3324,27 @@ begin
         end;
         if sMessage <> '' then
         begin
-          s := getTranslatedText('shTx_Various_WouldCreateOverbooking') +
-               sMessage + #10#10 +
-               getTranslatedText('shTx_Various_AreYoySureYouWantToContinue');
+          s := GetTranslatedText('shTx_Various_WouldCreateOverbooking') +
+            sMessage + #10#10 +
+            GetTranslatedText('shTx_Various_AreYoySureYouWantToContinue');
           if MessageDlg(s, mtWarning, [mbYes, mbCancel], 0) <> mrYes then
           begin
-            result := False;
+            Result := false;
             exit;
           end;
         end;
       end;
 
     finally
-       freeandnil(ExecutionPlan);
+      FreeAndNil(ExecutionPlan);
     end;
 
   finally
-    freeandNil(lstIDs);
+    FreeAndNil(lstIDs);
   end;
 end;
 
-procedure TfrmMakeReservationQuick.PopulateRatePlanCombo(clearAll : Boolean = True);
+procedure TfrmMakeReservationQuick.PopulateRatePlanCombo(clearAll: boolean = true);
 begin
   if clearAll then
   begin
@@ -3416,117 +3356,126 @@ end;
 
 procedure TfrmMakeReservationQuick.GetPrices;
 var
-  lstPrices       : Tstringlist;
-  RoomReservation : integer;
+  lstPrices: TstringList;
+  RoomReservation: integer;
 
-  i,ii : integer;
+  i, ii: integer;
 
-  room                : string   ;
-  RoomType            : string;
-  Guests              : integer  ;
-  AvragePrice         : double   ;
-  RateCount           : integer;
-  RoomDescription     : string;
-  RoomTypeDescription : string;
-  Arrival             : TdateTime;
-  Departure           : TDateTime;
-  ChildrenCount       : integer;
-  infantCount         : integer;
-  DiscountAmount      : double;
-  RentAmount          : double;
-  NativeAmount        : double;
+  room: string;
+  RoomType: string;
+  Guests: integer;
+  AvragePrice: double;
+  RateCount: integer;
+  RoomDescription: string;
+  RoomTypeDescription: string;
+  Arrival: TDateTime;
+  Departure: TDateTime;
+  childrenCount: integer;
+  infantCount: integer;
+  DiscountAmount: double;
+  RentAmount: double;
+  NativeAmount: double;
 
-  priceID       : integer;
-  priceCode     : string ;
+  priceID: integer;
+  PriceCode: string;
 
-  rateTotal     : double;
-  rateAvrage    : double;
+  rateTotal: double;
+  rateAvrage: double;
 
-  dayCount      : integer;
-  aDate         : TDateTime;
-  DateFrom : Tdate;
-  DateTo   : TDate;
+  dayCount: integer;
+  ADate: TDateTime;
+  dateFrom: TDate;
+  dateTo: TDate;
 
+  RateDate: TDateTime;
+  Rate: double;
 
-  RateDate      : TdateTime    ;
-  rate          : Double;
+  isPercentage: boolean;
+  isPaid: boolean;
 
-  IsPercentage  : Boolean ;
-  IsPaid        : Boolean ;
+  Currency: string;
+  CurrencyRate: double;
+  Discount: double;
+  ShowDiscount: boolean;
 
-  Currency      : string  ;
-  CurrencyRate  : Double  ;
-  Discount      : Double  ;
-  showDiscount  : boolean ;
+  discountTotal: double;
+  discountAvrage: double;
 
-  discountTotal     : double;
-  discountAvrage    : double;
+  rateSet: TRoomerDataSet;
 
-  rateSet : TRoomerDataset;
+  s: string;
+  lstRoomTypes: TstringList;
+  inStrRoomTypes: string;
+  andRoomTypes: String;
 
+  FirstArrival: TDate;
+  LastDeparture: TDate;
 
-  s : string;
-  lstRoomTypes : TstringList;
-  inStrRoomTypes : string;
-  andRoomTypes : String;
+  roomPrice: double;
 
+  price1p: double;
+  price2p: double;
+  price3p: double;
+  price4p: double;
+  price5p: double;
+  price6p: double;
+  priceEp: double;
+  PriceEc: double;
+  PriceEi: double;
 
-  FirstArrival : Tdate;
-  LastDeparture : Tdate;
-
-  roomPrice : double;
-
-
-  price1p : double;
-  price2p : double;
-  price3p : double;
-  price4p : double;
-  price5p : double;
-  price6p : double;
-  priceEp : double;
-  PriceEc : double;
-  PriceEi : double;
-
-
-
-  function finalPrice(p1,p2,p3,p4,p5,p6,Ep,Ec,Ei : double; GuestCount,ChildCount,infantCount : integer) : double;
+  function finalPrice(p1, p2, p3, p4, p5, p6, Ep, Ec, Ei: double; guestCount, ChildCount, infantCount: integer): double;
   var
-    extraPersons : double;
+    extraPersons: double;
   begin
-    extraPersons := GuestCount - 5;
+    extraPersons := guestCount - 5;
 
-    if p1 = 0 then p1 := Ep;
-    if p2 = 0 then p2 := p1 + ep;
-    if p3 = 0 then p3 := p2 + ep;
-    if p4 = 0 then p4 := p3 + ep;
-    if p5 = 0 then p5 := p4 + ep;
-    if p6 = 0 then p6 := p5 + ep;
+    if p1 = 0 then
+      p1 := Ep;
+    if p2 = 0 then
+      p2 := p1 + Ep;
+    if p3 = 0 then
+      p3 := p2 + Ep;
+    if p4 = 0 then
+      p4 := p3 + Ep;
+    if p5 = 0 then
+      p5 := p4 + Ep;
+    if p6 = 0 then
+      p6 := p5 + Ep;
 
-    if GuestCount = 1 then result := p1;
-    if GuestCount = 2 then result := p2;
-    if GuestCount = 3 then result := p3;
-    if GuestCount = 4 then result := p4;
-    if GuestCount = 5 then result := p5;
-    if GuestCount = 6 then result := p6;
+    Result := 0;
+    if guestCount = 1 then
+      Result := p1;
+    if guestCount = 2 then
+      Result := p2;
+    if guestCount = 3 then
+      Result := p3;
+    if guestCount = 4 then
+      Result := p4;
+    if guestCount = 5 then
+      Result := p5;
+    if guestCount = 6 then
+      Result := p6;
 
-    if GuestCount > 6 then result := p6 + (extraPersons * Ep);
+    if guestCount > 6 then
+      Result := p6 + (extraPersons * Ep);
 
-    result := result+(Ec * ChildCount);
-    result := result+(Ei * infantCount);
+    Result := Result + (Ec * ChildCount);
+    Result := Result + (Ei * infantCount);
   end;
 
-  var rateId : String;
-      channelId : Integer;
+var
+  rateId: String;
+  channelId: integer;
 begin
   channelId := 0;
   if edtRatePlans.ItemIndex > 0 then
-    channelId := Integer(edtRatePlans.Items.Objects[edtRatePlans.ItemIndex]);
-  IsPaid := False;
+    channelId := integer(edtRatePlans.Items.Objects[edtRatePlans.ItemIndex]);
+  isPaid := false;
   mRoomRes.DisableControls;
-  lstPrices    := TstringList.Create;
+  lstPrices := TstringList.Create;
   lstRoomTypes := TstringList.Create;
 
-  rateSet := CreateNewDataSet;
+  rateSet := createNewDataSet;
   try
 
     lstRoomTypes.Sorted := true;
@@ -3535,183 +3484,182 @@ begin
     mRoomRes.First;
     if not mRoomRes.eof then
     begin
-      FirstArrival  := mRoomRes.FieldByName('Arrival').AsDateTime;
+      FirstArrival := mRoomRes.FieldByName('Arrival').AsDateTime;
       LastDeparture := mRoomRes.FieldByName('departure').AsDateTime;
-    end;
-    while not mRoomRes.eof do
-    begin
-      if mRoomRes.FieldByName('Arrival').AsDateTime < firstArrival then firstArrival := mRoomRes.FieldByName('Arrival').AsDateTime;
-      if mRoomRes.FieldByName('Departure').AsDateTime > LastDeparture then LastDeparture := mRoomRes.FieldByName('Departure').AsDateTime;
-      RoomType := mRoomRes.FieldByName('RoomType').AsString;
-      lstRoomTypes.Add(_db(RoomType));
-      mRoomRes.next;
+      while not mRoomRes.eof do
+      begin
+        if mRoomRes.FieldByName('Arrival').AsDateTime < FirstArrival then
+          FirstArrival := mRoomRes.FieldByName('Arrival').AsDateTime;
+        if mRoomRes.FieldByName('Departure').AsDateTime > LastDeparture then
+          LastDeparture := mRoomRes.FieldByName('Departure').AsDateTime;
+        RoomType := mRoomRes.FieldByName('RoomType').AsString;
+        lstRoomTypes.Add(_db(RoomType));
+        mRoomRes.next;
+      end;
     end;
 
     inStrRoomTypes := '';
-    for i := 0 to lstRoomTypes.count-1 do
+    for i := 0 to lstRoomTypes.Count - 1 do
     begin
-      inStrRoomTypes := inStrRoomTypes+lstRoomTypes[i];
-      if i <> lstRoomTypes.count-1 then inStrRoomTypes := inStrRoomTypes+',';
+      inStrRoomTypes := inStrRoomTypes + lstRoomTypes[i];
+      if i <> lstRoomTypes.Count - 1 then
+        inStrRoomTypes := inStrRoomTypes + ',';
     end;
 
     s := '';
-    s := s+'SELECT '#10;
-    s := s+'    `roomrates`.`ID` AS `ID`, '#10;
-    s := s+'    `roomrates`.`PriceCodeID` AS `PriceCodeID`, '#10;
-    s := s+'    `tblpricecodes`.`pcCode` AS `pcCode`, '#10;
-    s := s+'    `tblpricecodes`.`pcRack` AS `pcRack`, '#10;
-    s := s+'    `roomrates`.`CurrencyID` AS `CurrencyID`, '#10;
-    s := s+'    `currencies`.`Currency` AS `Currency`, '#10;
-    s := s+'    `roomrates`.`SeasonID` AS `SeasonID`, '#10;
-    s := s+'    `tblseasons`.`seStartDate` AS `seStartDate`, '#10;
-    s := s+'    `tblseasons`.`seEndDate` AS `seEndDate`, '#10;
-    s := s+'    `tblseasons`.`seDescription` AS `seDescription`, '#10;
-    s := s+'    `roomrates`.`RoomTypeID` AS `RoomTypeID`, '#10;
-    s := s+'    `roomtypes`.`RoomType` AS `RoomType`, '#10;
-    s := s+'    `roomtypes`.`NumberGuests` AS `NumberGuests`, '#10;
-    s := s+'    `roomrates`.`RateID` AS `RateID`, '#10;
-    s := s+'    `rates`.`Currency` AS `RateCurrency`, '#10;
-    s := s+'    `rates`.`Rate1Person` AS `Rate1Person`, '#10;
-    s := s+'    `rates`.`Rate2Persons` AS `Rate2Persons`, '#10;
-    s := s+'    `rates`.`Rate3Persons` AS `Rate3Persons`, '#10;
-    s := s+'    `rates`.`Rate4Persons` AS `Rate4Persons`, '#10;
-    s := s+'    `rates`.`Rate5Persons` AS `Rate5Persons`, '#10;
-    s := s+'    `rates`.`Rate6Persons` AS `Rate6Persons`, '#10;
-    s := s+'    `rates`.`RateExtraPerson` AS `RateExtraPerson`, '#10;
-    s := s+'    `rates`.`RateExtraChildren` AS `RateExtraChildren`, '#10;
-    s := s+'    `rates`.`RateExtraInfant` AS `RateExtraInfant`, '#10;
-    s := s+'    `rates`.`Description` AS `rateDescription`, '#10;
-    s := s+'    `roomrates`.`Active` AS `Active`, '#10;
-    s := s+'    `roomrates`.`DateFrom` AS `DateFrom`, '#10;
-    s := s+'    `roomrates`.`DateTo` AS `DateTo`, '#10;
-    s := s+'    `roomrates`.`Description` AS `Description`, '#10;
-    s := s+'    `roomrates`.`DateCreated` AS `DateCreated`, '#10;
-    s := s+'    `roomrates`.`LastModified` AS `LastModified`, '#10;
-    s := s+'   DATEDIFF(DateTo,DateFrom) AS DateCount '#10;
+    s := s + 'SELECT '#10;
+    s := s + '    `roomrates`.`ID` AS `ID`, '#10;
+    s := s + '    `roomrates`.`PriceCodeID` AS `PriceCodeID`, '#10;
+    s := s + '    `tblpricecodes`.`pcCode` AS `pcCode`, '#10;
+    s := s + '    `tblpricecodes`.`pcRack` AS `pcRack`, '#10;
+    s := s + '    `roomrates`.`CurrencyID` AS `CurrencyID`, '#10;
+    s := s + '    `currencies`.`Currency` AS `Currency`, '#10;
+    s := s + '    `roomrates`.`SeasonID` AS `SeasonID`, '#10;
+    s := s + '    `tblseasons`.`seStartDate` AS `seStartDate`, '#10;
+    s := s + '    `tblseasons`.`seEndDate` AS `seEndDate`, '#10;
+    s := s + '    `tblseasons`.`seDescription` AS `seDescription`, '#10;
+    s := s + '    `roomrates`.`RoomTypeID` AS `RoomTypeID`, '#10;
+    s := s + '    `roomtypes`.`RoomType` AS `RoomType`, '#10;
+    s := s + '    `roomtypes`.`NumberGuests` AS `NumberGuests`, '#10;
+    s := s + '    `roomrates`.`RateID` AS `RateID`, '#10;
+    s := s + '    `rates`.`Currency` AS `RateCurrency`, '#10;
+    s := s + '    `rates`.`Rate1Person` AS `Rate1Person`, '#10;
+    s := s + '    `rates`.`Rate2Persons` AS `Rate2Persons`, '#10;
+    s := s + '    `rates`.`Rate3Persons` AS `Rate3Persons`, '#10;
+    s := s + '    `rates`.`Rate4Persons` AS `Rate4Persons`, '#10;
+    s := s + '    `rates`.`Rate5Persons` AS `Rate5Persons`, '#10;
+    s := s + '    `rates`.`Rate6Persons` AS `Rate6Persons`, '#10;
+    s := s + '    `rates`.`RateExtraPerson` AS `RateExtraPerson`, '#10;
+    s := s + '    `rates`.`RateExtraChildren` AS `RateExtraChildren`, '#10;
+    s := s + '    `rates`.`RateExtraInfant` AS `RateExtraInfant`, '#10;
+    s := s + '    `rates`.`Description` AS `rateDescription`, '#10;
+    s := s + '    `roomrates`.`Active` AS `Active`, '#10;
+    s := s + '    `roomrates`.`DateFrom` AS `DateFrom`, '#10;
+    s := s + '    `roomrates`.`DateTo` AS `DateTo`, '#10;
+    s := s + '    `roomrates`.`Description` AS `Description`, '#10;
+    s := s + '    `roomrates`.`DateCreated` AS `DateCreated`, '#10;
+    s := s + '    `roomrates`.`LastModified` AS `LastModified`, '#10;
+    s := s + '   DATEDIFF(DateTo,DateFrom) AS DateCount '#10;
 
-    s := s+'FROM predefineddates, '#10;
-    s := s+'    (((((`roomrates` '#10;
-    s := s+'    left join `tblpricecodes` ON ((`roomrates`.`PriceCodeID` = `tblpricecodes`.`ID`))) '#10;
-    s := s+'    left join `rates` ON ((`roomrates`.`RateID` = `rates`.`ID`))) '#10;
-    s := s+'    left join `tblseasons` ON ((`roomrates`.`SeasonID` = `tblseasons`.`ID`))) '#10;
-    s := s+'    left join `roomtypes` ON ((`roomrates`.`RoomTypeID` = `roomtypes`.`ID`))) '#10;
-    s := s+'    left join `currencies` ON ((`roomrates`.`CurrencyID` = `currencies`.`ID`))) '#10;
-    s := s+'WHERE '#10;
-    s := s+'       predefineddates.date >= %s AND predefineddates.date <= %s '#10;
-    s := s+'  AND  `PriceCodeID` = %d '#10;
-    s := s+'  AND  currencies.Currency = %s '#10;
-    s := s+'  %s '#10;
-    s := s+'  AND  (`DateFrom` <= predefineddates.date AND `DateTo` >= predefineddates.date)'#10;
-    s := s+'ORDER by '#10;
-    s := s+'  `roomtypes`.`RoomType` '#10;
-    s := s+' , DateCount '#10;
+    s := s + 'FROM predefineddates, '#10;
+    s := s + '    (((((`roomrates` '#10;
+    s := s + '    left join `tblpricecodes` ON ((`roomrates`.`PriceCodeID` = `tblpricecodes`.`ID`))) '#10;
+    s := s + '    left join `rates` ON ((`roomrates`.`RateID` = `rates`.`ID`))) '#10;
+    s := s + '    left join `tblseasons` ON ((`roomrates`.`SeasonID` = `tblseasons`.`ID`))) '#10;
+    s := s + '    left join `roomtypes` ON ((`roomrates`.`RoomTypeID` = `roomtypes`.`ID`))) '#10;
+    s := s + '    left join `currencies` ON ((`roomrates`.`CurrencyID` = `currencies`.`ID`))) '#10;
+    s := s + 'WHERE '#10;
+    s := s + '       predefineddates.date >= %s AND predefineddates.date <= %s '#10;
+    s := s + '  AND  `PriceCodeID` = %d '#10;
+    s := s + '  AND  currencies.Currency = %s '#10;
+    s := s + '  %s '#10;
+    s := s + '  AND  (`DateFrom` <= predefineddates.date AND `DateTo` >= predefineddates.date)'#10;
+    s := s + 'ORDER by '#10;
+    s := s + '  `roomtypes`.`RoomType` '#10;
+    s := s + ' , DateCount '#10;
 
     lstPrices.Sorted := true;
     lstPrices.Duplicates := dupIgnore;
 
-    currency      := edCurrency.Text;
+    Currency := edCurrency.Text;
 
-    CurrencyRate  := hData.GetRate(currency);
-    discount      := edRoomResDiscount.Value;
-    showDiscount  := true;
-    isPercentage  := cbxIsRoomResDiscountPrec.ItemIndex=0;
+    CurrencyRate := hData.GetRate(Currency);
+    Discount := edRoomResDiscount.Value;
+    ShowDiscount := true;
+    isPercentage := cbxIsRoomResDiscountPrec.ItemIndex = 0;
 
-    PriceCode     := trim(edPcCode.text);
-    PriceID       := hdata.PriceCode_ID(priceCode);
+    PriceCode := Trim(edPcCode.Text);
+    priceID := hData.PriceCode_ID(PriceCode);
 
     andRoomTypes := '';
     if Trim(inStrRoomTypes) <> '' then
       andRoomTypes := format('AND  `RoomType` IN (%s)', [inStrRoomTypes]);
 
-    s := format(s,[ _dateToDbDate(firstArrival,true)
-              ,_dateToDbDate(lastDeparture,true)
-              ,PriceID
-              ,_db(currency)
-              ,andRoomTypes
-              ]);
+    s := format(s, [_dateToDbDate(FirstArrival, true)
+      , _dateToDbDate(LastDeparture, true)
+      , priceID
+      , _db(Currency)
+      , andRoomTypes
+      ]);
 
-
-    if rSet_bySQL(rateSet,s) then
+    if rSet_bySQL(rateSet, s) then
     begin
 
     end;
 
-// debugmessage(_dateToDbDate(firstArrival,true)+' / '+_dateToDbDate(lastDeparture,true));
-//   copytoclipboard(s);
-//   debugmessage(s);
-
-    if mRoomRates.Active then mRoomRates.Close;
-    mRoomRates.open;
+    if mRoomRates.active then
+      mRoomRates.Close;
+    mRoomRates.Open;
 
     mRoomRes.First;
     while not mRoomRes.eof do
     begin
       RoomReservation := mRoomRes.FieldByName('roomReservation').AsInteger;
 
-      i := oNewReservation.newRoomReservations.FindRoomFromRoomReservation(RoomReservation,0);
+      i := oNewReservation.newRoomReservations.FindRoomFromRoomReservation(RoomReservation, 0);
       oNewReservation.newRoomReservations.RoomItemsList[i].oRates.RateItemsList.Clear;
 
-      room                := mRoomRes.FieldByName('room').AsString                ;
-      arrival             := mRoomRes.FieldByName('arrival').AsDateTime           ;
-      departure           := mRoomRes.FieldByName('departure').AsDateTime         ;
-      RoomType            := mRoomRes.FieldByName('RoomType').AsString            ;
-      RoomTypeDescription := mRoomRes.FieldByName('RoomTypeDescription').AsString ;
-      RoomDescription     := mRoomRes.FieldByName('RoomDescription').AsString     ;
-      Guests              := mRoomRes.FieldByName('Guests').AsInteger             ;
-      ChildrenCount       := mRoomRes.FieldByName('ChildrenCount').AsInteger      ;
-      InfantCount         := mRoomRes.FieldByName('infantCount').AsInteger        ;
+      room := mRoomRes.FieldByName('room').AsString;
+      Arrival := mRoomRes.FieldByName('arrival').AsDateTime;
+      Departure := mRoomRes.FieldByName('departure').AsDateTime;
+      RoomType := mRoomRes.FieldByName('RoomType').AsString;
+      RoomTypeDescription := mRoomRes.FieldByName('RoomTypeDescription').AsString;
+      RoomDescription := mRoomRes.FieldByName('RoomDescription').AsString;
+      Guests := mRoomRes.FieldByName('Guests').AsInteger;
+      childrenCount := mRoomRes.FieldByName('ChildrenCount').AsInteger;
+      infantCount := mRoomRes.FieldByName('infantCount').AsInteger;
 
-      dayCount := trunc(departure)-trunc(arrival);
+      dayCount := trunc(Departure) - trunc(Arrival);
 
-      aDate     := trunc(Arrival);
-      rate := 0;
+      ADate := trunc(Arrival);
       rateId := '';
       rateTotal := 0;
       discountTotal := 0;
       lstPrices.Clear;
-      for ii := 0  to dayCount-1 do
+      for ii := 0 to dayCount - 1 do
       begin
-        if DynamicRates.Active AND
-          DynamicRates.findRateForRoomType(trunc(arrival)+ii, RoomType, mRoomRes['Guests'], roomPrice, rateId) then
+        if DynamicRates.active AND
+          DynamicRates.findRateForRoomType(trunc(Arrival) + ii, RoomType, mRoomRes['Guests'], roomPrice, rateId) then
         begin
           // Rate acuired
-        end else
+        end
+        else
         begin
-          rateSet.first;
+          rateSet.First;
           roomPrice := 0;
           while not rateSet.eof do
           begin
-            DateFrom := rateSet.fieldbyname('DateFrom').asdateTime;
-            DateTo := rateSet.fieldbyname('DateTo').asdateTime;
-            if (uppercase(roomtype)=uppercase(rateSet.fieldbyname('roomtype').asstring))  then
+            dateFrom := rateSet.FieldByName('DateFrom').AsDateTime;
+            dateTo := rateSet.FieldByName('DateTo').AsDateTime;
+            if (Uppercase(RoomType) = Uppercase(rateSet.FieldByName('roomtype').AsString)) then
             begin
-              if priceId = rateSet.fieldbyname('PriceCodeID').asInteger then
+              if priceID = rateSet.FieldByName('PriceCodeID').AsInteger then
               begin
-                if uppercase(currency) = uppercase(rateSet.fieldbyname('Currency').asstring) then
+                if Uppercase(Currency) = Uppercase(rateSet.FieldByName('Currency').AsString) then
                 begin
-                  if (adate >=DateFrom) and (aDate<=DateTo) then
+                  if (ADate >= dateFrom) and (ADate <= dateTo) then
                   begin
-                    price1p := rateSet.GetFloatValue(rateSet.fieldbyname('Rate1Person'));
-                    price2p := rateSet.GetFloatValue(rateSet.fieldbyname('Rate2Persons'));
-                    price3p := rateSet.GetFloatValue(rateSet.fieldbyname('Rate3Persons'));
-                    price4p := rateSet.GetFloatValue(rateSet.fieldbyname('Rate4Persons'));
-                    price5p := rateSet.GetFloatValue(rateSet.fieldbyname('Rate5Persons'));
-                    price6p := rateSet.GetFloatValue(rateSet.fieldbyname('Rate6Persons'));
-                    priceEp := rateSet.GetFloatValue(rateSet.fieldbyname('RateExtraPerson'));
-                    PriceEc := rateSet.GetFloatValue(rateSet.fieldbyname('RateExtraChildren'));
-                    PriceEi := rateSet.GetFloatValue(rateSet.fieldbyname('RateExtraInfant'));
-                    roomPrice := finalPrice( price1p
-                                            ,price2p
-                                            ,price3p
-                                            ,price4p
-                                            ,price5p
-                                            ,price6p
-                                            ,priceEp
-                                            ,PriceEc
-                                            ,PriceEi
-                                            ,Guests
-                                            ,ChildrenCount
-                                            ,infantCount);
+                    price1p := rateSet.GetFloatValue(rateSet.FieldByName('Rate1Person'));
+                    price2p := rateSet.GetFloatValue(rateSet.FieldByName('Rate2Persons'));
+                    price3p := rateSet.GetFloatValue(rateSet.FieldByName('Rate3Persons'));
+                    price4p := rateSet.GetFloatValue(rateSet.FieldByName('Rate4Persons'));
+                    price5p := rateSet.GetFloatValue(rateSet.FieldByName('Rate5Persons'));
+                    price6p := rateSet.GetFloatValue(rateSet.FieldByName('Rate6Persons'));
+                    priceEp := rateSet.GetFloatValue(rateSet.FieldByName('RateExtraPerson'));
+                    PriceEc := rateSet.GetFloatValue(rateSet.FieldByName('RateExtraChildren'));
+                    PriceEi := rateSet.GetFloatValue(rateSet.FieldByName('RateExtraInfant'));
+                    roomPrice := finalPrice(price1p
+                      , price2p
+                      , price3p
+                      , price4p
+                      , price5p
+                      , price6p
+                      , priceEp
+                      , PriceEc
+                      , PriceEi
+                      , Guests
+                      , childrenCount
+                      , infantCount);
                     Break;
 
                   end;
@@ -3722,265 +3670,240 @@ begin
           end;
         end;
 
-
         Rate := roomPrice;
 
-//        Rate :=  oNewReservation.newRoomReservations.RoomItemsList[i].oRates.GetDayRate
-//                 (RoomType
-//                 ,Room
-//                 ,aDate
-//                 ,guests
-//                 ,ChildrenCount
-//                 ,infantCount
-//                 ,currency
-//                 ,PriceID
-//                 ,discount
-//                 ,showDiscount
-//                 ,isPercentage
-//                 ,isPaid
-//                 ,false
-//
-//                  );
+        DiscountAmount := 0;
 
-
-
-          DiscountAmount := 0;
-          RentAmount := 0;
-          NativeAmount := 0;
-
-          if rate <> 0 then
+        if Rate <> 0 then
+        begin
+          if Discount <> 0 then
           begin
-            if discount <> 0 then
+            if isPercentage then
             begin
-              if isPercentage then
-              begin
-                DiscountAmount :=  Rate*discount/100;
-              end else
-              begin
-                DiscountAmount := discount;
-              end;
+              DiscountAmount := Rate * Discount / 100;
+            end
+            else
+            begin
+              DiscountAmount := Discount;
             end;
           end;
-          RentAmount  := Rate-DiscountAmount;
-          if currencyRate = 0 then currencyRate := 1;
-          NativeAmount := RentAmount*CurrencyRate;
+        end;
+        RentAmount := Rate - DiscountAmount;
+        if CurrencyRate = 0 then
+          CurrencyRate := 1;
+        NativeAmount := RentAmount * CurrencyRate;
 
-          mRoomRates.append;
-          mRoomRates.FieldByName('Reservation').AsInteger := -1;
-          mRoomRates.FieldByName('RoomReservation').AsInteger := Roomreservation;
-          mRoomRates.FieldByName('RoomNumber').AsString := Room;
-          mRoomRates.FieldByName('RateDate').AsDateTime := aDate;
-          mRoomRates.FieldByName('PriceCode').AsString := PriceCode;
-          mRoomRates.FieldByName('Rate').AsFloat := Rate;
-          mRoomRates.FieldByName('Discount').AsFloat := Discount;
-          mRoomRates.FieldByName('isPercentage').AsBoolean := isPercentage;
-          mRoomRates.FieldByName('ShowDiscount').AsBoolean := ShowDiscount;
-          mRoomRates.FieldByName('isPaid').AsBoolean := isPaid;
-          mRoomRates.FieldByName('DiscountAmount').AsFloat := DiscountAmount;
-          mRoomRates.FieldByName('RentAmount').AsFloat := RentAmount;
-          mRoomRates.FieldByName('NativeAmount').AsFloat := NativeAmount;
-          mRoomRates.FieldByName('Currency').AsString := edCurrency.Text;
-          mRoomRates.FieldByName('CurrencyRate').AsFloat := CurrencyRate;
-          mRoomRates.post;
+        mRoomRates.append;
+        mRoomRates.FieldByName('Reservation').AsInteger := -1;
+        mRoomRates.FieldByName('RoomReservation').AsInteger := RoomReservation;
+        mRoomRates.FieldByName('RoomNumber').AsString := room;
+        mRoomRates.FieldByName('RateDate').AsDateTime := ADate;
+        mRoomRates.FieldByName('PriceCode').AsString := PriceCode;
+        mRoomRates.FieldByName('Rate').AsFloat := Rate;
+        mRoomRates.FieldByName('Discount').AsFloat := Discount;
+        mRoomRates.FieldByName('isPercentage').AsBoolean := isPercentage;
+        mRoomRates.FieldByName('ShowDiscount').AsBoolean := ShowDiscount;
+        mRoomRates.FieldByName('isPaid').AsBoolean := isPaid;
+        mRoomRates.FieldByName('DiscountAmount').AsFloat := DiscountAmount;
+        mRoomRates.FieldByName('RentAmount').AsFloat := RentAmount;
+        mRoomRates.FieldByName('NativeAmount').AsFloat := NativeAmount;
+        mRoomRates.FieldByName('Currency').AsString := edCurrency.Text;
+        mRoomRates.FieldByName('CurrencyRate').AsFloat := CurrencyRate;
+        mRoomRates.post;
 
-
-        lstPrices.Add(floattostr(RentAmount));
-        rateTotal := RateTotal+RentAmount;
-        discountTotal := discountTotal+discount;
-        aDate := aDate+1
+        lstPrices.Add(floatTostr(RentAmount));
+        rateTotal := rateTotal + RentAmount;
+        discountTotal := discountTotal + Discount;
+        ADate := ADate + 1
       end;
 
       rateAvrage := 0;
       discountAvrage := 0;
       if dayCount <> 0 then
       begin
-        rateAvrage := rateTotal/dayCount;
-        discountAvrage := discountTotal/dayCount
+        rateAvrage := rateTotal / dayCount;
+        discountAvrage := discountTotal / dayCount
       end;
-      rateCount := lstPrices.Count;
+      RateCount := lstPrices.Count;
       mRoomRes.edit;
-        mRoomRes.FieldByName('AvragePrice').AsFloat := rateAvrage;
-        mRoomRes.FieldByName('RateCount').AsFloat := rateCount;
-        mRoomRes.FieldByName('AvrageDiscount').AsFloat := discountAvrage;
-        mRoomRes.FieldByName('isPercentage').AsBoolean := isPercentage;
+      mRoomRes.FieldByName('AvragePrice').AsFloat := rateAvrage;
+      mRoomRes.FieldByName('RateCount').AsFloat := RateCount;
+      mRoomRes.FieldByName('AvrageDiscount').AsFloat := discountAvrage;
+      mRoomRes.FieldByName('isPercentage').AsBoolean := isPercentage;
 
-        mRoomRes.FieldByName('ManualChannelId').AsInteger := channelId;
-        mRoomRes.FieldByName('ratePlanCode').AsString := rateId;
-      mRoomRes.Post;
-      mRoomRes.Next;
+      mRoomRes.FieldByName('ManualChannelId').AsInteger := channelId;
+      mRoomRes.FieldByName('ratePlanCode').AsString := rateId;
+      mRoomRes.post;
+      mRoomRes.next;
     end;
   finally
-    freeandNil(rateSet);
-    freeandNil(lstPrices);
-    freeandnil(lstRoomTypes);
+    FreeAndNil(rateSet);
+    FreeAndNil(lstPrices);
+    FreeAndNil(lstRoomTypes);
     mRoomRes.First;
     mRoomRes.EnableControls;
   end;
 end;
 
-
-function TfrmMakeReservationQuick.CalcOnePrice(roomreservation : integer; NewRate : double=0) : boolean;
+function TfrmMakeReservationQuick.CalcOnePrice(RoomReservation: integer; NewRate: double = 0): boolean;
 var
-  lstPrices       : Tstringlist;
-//  RoomReservation : integer;
+  lstPrices: TstringList;
 
-  i,ii : integer;
+  i, ii: integer;
 
-  room                : string   ;
-  RoomType            : string;
-  Guests              : integer  ;
-  AvragePrice         : double   ;
-  RateCount           : integer;
-  RoomDescription     : string;
-  RoomTypeDescription : string;
-  Arrival             : TdateTime;
-  Departure           : TDateTime;
-  ChildrenCount       : integer;
-  infantCount         : integer;
-  DiscountAmount      : double;
-  RentAmount          : double;
-  NativeAmount        : double;
+  room: string;
+  RoomType: string;
+  Guests: integer;
+  AvragePrice: double;
+  RateCount: integer;
+  RoomDescription: string;
+  RoomTypeDescription: string;
+  Arrival: TDateTime;
+  Departure: TDateTime;
+  childrenCount: integer;
+  infantCount: integer;
+  DiscountAmount: double;
+  RentAmount: double;
+  NativeAmount: double;
 
-  priceID       : integer;
-  priceCode     : string ;
+  priceID: integer;
+  PriceCode: string;
 
-  rateTotal     : double;
-  rateAvrage    : double;
+  rateTotal: double;
+  rateAvrage: double;
 
-  discountTotal     : double;
-  discountAvrage    : double;
+  discountTotal: double;
+  discountAvrage: double;
 
-  dayCount      : integer;
-  aDate         : TDateTime;
+  dayCount: integer;
+  ADate: TDateTime;
 
-  RateDate      : TdateTime    ;
-  rate          : Double;
+  RateDate: TDateTime;
+  Rate: double;
 
-  IsPercentage  : Boolean ;
-  IsPaid        : Boolean ;
+  isPercentage: boolean;
+  isPaid: boolean;
 
-  Currency      : string  ;
-  CurrencyRate  : Double  ;
-  Discount      : Double  ;
-  showDiscount  : boolean ;
-  found : boolean;
+  Currency: string;
+  CurrencyRate: double;
+  Discount: double;
+  ShowDiscount: boolean;
+  found: boolean;
 
-  rateId : String;
-      channelId : Integer;
+  rateId: String;
+  channelId: integer;
 begin
   channelId := 0;
   if edtRatePlans.ItemIndex > 0 then
-    channelId := Integer(edtRatePlans.Items.Objects[edtRatePlans.ItemIndex]);
-  IsPaid := False;
+    channelId := integer(edtRatePlans.Items.Objects[edtRatePlans.ItemIndex]);
+  isPaid := false;
   lstPrices := TstringList.Create;
   try
     lstPrices.Sorted := true;
     lstPrices.Duplicates := dupIgnore;
 
-    currency      := edCurrency.Text;
-    CurrencyRate  := hData.GetRate(currency);
-    discount      := edRoomResDiscount.Value;
-    showDiscount  := true;
-    isPercentage  := cbxIsRoomResDiscountPrec.ItemIndex=0;
+    Currency := edCurrency.Text;
+    CurrencyRate := hData.GetRate(Currency);
+    ShowDiscount := true;
+    isPercentage := cbxIsRoomResDiscountPrec.ItemIndex = 0;
 
-    if mRoomRes.locate('roomreservation',roomreservation,[]) then
+    if mRoomRes.Locate('roomreservation', RoomReservation, []) then
     begin
 
       repeat
-        found :=  mRoomRates.Locate('roomreservation',roomreservation,[]);
+        found := mRoomRates.Locate('roomreservation', RoomReservation, []);
         if found then
         begin
           mRoomRates.Delete;
         end;
       until not found;
 
-      i := oNewReservation.newRoomReservations.FindRoomFromRoomReservation(RoomReservation,0);
+      i := oNewReservation.newRoomReservations.FindRoomFromRoomReservation(RoomReservation, 0);
       oNewReservation.newRoomReservations.RoomItemsList[i].oRates.RateItemsList.Clear;
 
-      room                := mRoomRes.FieldByName('room').AsString                ;
-      arrival             := mRoomRes.FieldByName('arrival').AsDateTime           ;
-      departure           := mRoomRes.FieldByName('departure').AsDateTime         ;
-      RoomType            := mRoomRes.FieldByName('RoomType').AsString            ;
-      RoomTypeDescription := mRoomRes.FieldByName('RoomTypeDescription').AsString ;
-      RoomDescription     := mRoomRes.FieldByName('RoomDescription').AsString     ;
-      Guests              := mRoomRes.FieldByName('Guests').AsInteger             ;
-      ChildrenCount       := mRoomRes.FieldByName('ChildrenCount').AsInteger      ;
-      InfantCount         := mRoomRes.FieldByName('infantCount').AsInteger        ;
-      discount            := mRoomRes.FieldByName('avrageDiscount').AsFloat             ;
+      room := mRoomRes.FieldByName('room').AsString;
+      Arrival := mRoomRes.FieldByName('arrival').AsDateTime;
+      Departure := mRoomRes.FieldByName('departure').AsDateTime;
+      RoomType := mRoomRes.FieldByName('RoomType').AsString;
+      RoomTypeDescription := mRoomRes.FieldByName('RoomTypeDescription').AsString;
+      RoomDescription := mRoomRes.FieldByName('RoomDescription').AsString;
+      Guests := mRoomRes.FieldByName('Guests').AsInteger;
+      childrenCount := mRoomRes.FieldByName('ChildrenCount').AsInteger;
+      infantCount := mRoomRes.FieldByName('infantCount').AsInteger;
+      Discount := mRoomRes.FieldByName('avrageDiscount').AsFloat;
 
-      PriceCode           := trim(edPcCode.text);
-      PriceID             := hdata.PriceCode_ID(priceCode);
+      PriceCode := Trim(edPcCode.Text);
+      priceID := hData.PriceCode_ID(PriceCode);
 
-      dayCount := trunc(departure)-trunc(arrival);
-      aDate     := trunc(Arrival);
+      dayCount := trunc(Departure) - trunc(Arrival);
+      ADate := trunc(Arrival);
       rateId := '';
       rateTotal := 0;
       discountTotal := 0;
       lstPrices.Clear;
-      for ii := 0  to dayCount-1 do
+      for ii := 0 to dayCount - 1 do
       begin
-        if (newRate <> 0) then
+        if (NewRate <> 0) then
         begin
-          rate     := NewRate;
-          discount := 0;
-        end else
+          Rate := NewRate;
+          Discount := 0;
+        end
+        else
         begin
-          if DynamicRates.Active AND
-            DynamicRates.findRateForRoomType(trunc(arrival)+ii, RoomType, mRoomRes['Guests'], Rate, rateId) then
+          if DynamicRates.active AND
+            DynamicRates.findRateForRoomType(trunc(Arrival) + ii, RoomType, mRoomRes['Guests'], Rate, rateId) then
           begin
             // Rate acuired
-          end else
+          end
+          else
           begin
-            Rate :=  oNewReservation.newRoomReservations.RoomItemsList[i].oRates.GetDayRate
-                       (RoomType
-                       ,Room
-                       ,aDate
-                       ,guests
-                       ,ChildrenCount
-                       ,infantCount
-                       ,currency
-                       ,PriceID
-                       ,discount
-                       ,showDiscount
-                       ,isPercentage
-                       ,isPaid
-                       ,false
+            Rate := oNewReservation.newRoomReservations.RoomItemsList[i].oRates.GetDayRate
+              (RoomType
+              , room
+              , ADate
+              , Guests
+              , childrenCount
+              , infantCount
+              , Currency
+              , priceID
+              , Discount
+              , ShowDiscount
+              , isPercentage
+              , isPaid
+              , false
 
-                        );
+              );
           end;
         end;
 
-
-
         DiscountAmount := 0;
-        RentAmount := 0;
-        NativeAmount := 0;
 
-        if rate <> 0 then
+        if Rate <> 0 then
         begin
-          if discount <> 0 then
+          if Discount <> 0 then
           begin
             if isPercentage then
             begin
-              DiscountAmount :=  Rate*discount/100;
-            end else
+              DiscountAmount := Rate * Discount / 100;
+            end
+            else
             begin
-              DiscountAmount := discount;
+              DiscountAmount := Discount;
             end;
           end;
         end;
-        RentAmount  := Rate-DiscountAmount;
-        if currencyRate = 0 then currencyRate := 1;
-        NativeAmount := RentAmount*CurrencyRate;
+        RentAmount := Rate - DiscountAmount;
+        if CurrencyRate = 0 then
+          CurrencyRate := 1;
+        NativeAmount := RentAmount * CurrencyRate;
 
         mRoomRates.append;
         mRoomRates.FieldByName('Reservation').AsInteger := -1;
-        mRoomRates.FieldByName('RoomReservation').AsInteger := Roomreservation;
-        mRoomRates.FieldByName('RoomNumber').AsString := Room;
-        mRoomRates.FieldByName('RateDate').AsDateTime := aDate;
+        mRoomRates.FieldByName('RoomReservation').AsInteger := RoomReservation;
+        mRoomRates.FieldByName('RoomNumber').AsString := room;
+        mRoomRates.FieldByName('RateDate').AsDateTime := ADate;
         mRoomRates.FieldByName('PriceCode').AsString := PriceCode;
         mRoomRates.FieldByName('Rate').AsFloat := Rate;
-
 
         mRoomRates.FieldByName('Discount').AsFloat := Discount;
         mRoomRates.FieldByName('isPercentage').AsBoolean := isPercentage;
@@ -3993,10 +3916,10 @@ begin
         mRoomRates.FieldByName('CurrencyRate').AsFloat := CurrencyRate;
         mRoomRates.post;
 
-        lstPrices.Add(floattostr(RentAmount));
-        rateTotal := RateTotal+RentAmount;
-        discountTotal := discountTotal+discount;
-        aDate := aDate+1
+        lstPrices.Add(floatTostr(RentAmount));
+        rateTotal := rateTotal + RentAmount;
+        discountTotal := discountTotal + Discount;
+        ADate := ADate + 1
       end;
 
       rateAvrage := 0;
@@ -4004,238 +3927,218 @@ begin
 
       if dayCount <> 0 then
       begin
-        rateAvrage := rateTotal/dayCount;
-        discountAvrage := discountTotal/dayCount
+        rateAvrage := rateTotal / dayCount;
+        discountAvrage := discountTotal / dayCount
       end;
-      rateCount := lstPrices.Count;
+      RateCount := lstPrices.Count;
       mRoomRes.edit;
-        mRoomRes.FieldByName('AvragePrice').AsFloat := rateAvrage;
-        mRoomRes.FieldByName('RateCount').AsFloat := rateCount;
-        mRoomRes.FieldByName('AvrageDiscount').AsFloat := discountAvrage;
-        mRoomRes.FieldByName('isPercentage').AsBoolean := isPercentage;
+      mRoomRes.FieldByName('AvragePrice').AsFloat := rateAvrage;
+      mRoomRes.FieldByName('RateCount').AsFloat := RateCount;
+      mRoomRes.FieldByName('AvrageDiscount').AsFloat := discountAvrage;
+      mRoomRes.FieldByName('isPercentage').AsBoolean := isPercentage;
 
-        mRoomRes.FieldByName('ManualChannelId').AsInteger := channelId;
-        mRoomRes.FieldByName('ratePlanCode').AsString := rateId;
-      mRoomRes.Post;
+      mRoomRes.FieldByName('ManualChannelId').AsInteger := channelId;
+      mRoomRes.FieldByName('ratePlanCode').AsString := rateId;
+      mRoomRes.post;
     end;
   finally
-    freeandNil(lstPrices);
+    FreeAndNil(lstPrices);
   end;
 end;
 
 function TfrmMakeReservationQuick.Apply: boolean;
 var
-  customer          : string;
-  oSelectedRoomItem : TnewRoomReservationItem;
-  Room              : string;
-  RoomType          : string;
-  package           : string;
-  Arrival           : TdateTime;
-  Departure         : TdateTime;
-  GuestCount        : Integer;
-  roomReservation   : integer;
-  AvragePrice       : double;
-  AvrageDiscount    : double;
-  isPercentage      : boolean;
-  RateCount         : integer;
-  ChildrenCount     : integer;
-  infantCount       : integer;
-  PriceCode         : string;
+  Customer: string;
+  oSelectedRoomItem: TnewRoomReservationItem;
+  room: string;
+  RoomType: string;
+  package: string;
+  Arrival: TDateTime;
+  Departure: TDateTime;
+  guestCount: integer;
+  RoomReservation: integer;
+  AvragePrice: double;
+  AvrageDiscount: double;
+  isPercentage: boolean;
+  RateCount: integer;
+  childrenCount: integer;
+  infantCount: integer;
+  PriceCode: string;
 
-  rateRoomNumber   : string;
-  rateDate         : Tdate;
-  rate             : double;
-  ratePriceCode    : string;
-  rateDiscount     : double;
-  rateIsPercentage : boolean;
-  rateShowDiscount : boolean;
-  rateIsPaid       : boolean;
-  rateItem         : TRateItem;
-  roomIndex        : integer;
-  TotalRoomRate    : double;
-  TotalAvrage      : double;
-  rateDays         : integer;
-  mainGuestName    : string;
-  RoomNotes        : string;
+  rateRoomNumber: string;
+  RateDate: TDate;
+  Rate: double;
+  ratePriceCode: string;
+  rateDiscount: double;
+  rateIsPercentage: boolean;
+  rateShowDiscount: boolean;
+  rateIsPaid: boolean;
+  rateItem: TRateItem;
+  roomIndex: integer;
+  mainGuestName: string;
+  RoomNotes: string;
 begin
-  result := true;
+  Result := true;
   Customer := edCustomer.Text;
   oNewReservation.SendConfirmationEmail := chkSendConfirmation.Enabled AND chkSendConfirmation.Checked;
   oNewReservation.HomeCustomer.Customer := Customer;
 
-  if chkContactIsGuest.checked then
+  if chkContactIsGuest.Checked then
   begin
-    if trim(edContactPerson.Text) = '' then
+    if Trim(edContactPerson.Text) = '' then
     begin
       oNewReservation.HomeCustomer.GuestName := GetTranslatedText('MainGuestConstant_Version_1');
-    end else
+    end
+    else
     begin
-      oNewReservation.HomeCustomer.GuestName := edContactPerson.text;
+      oNewReservation.HomeCustomer.GuestName := edContactPerson.Text;
     end;
-  end else
+  end
+  else
   begin
     oNewReservation.HomeCustomer.GuestName := GetTranslatedText('MainGuestConstant_Version_1');
   end;
 
-  oNewReservation.HomeCustomer.invRefrence            := edinvRefrence.Text;
-  oNewReservation.HomeCustomer.Country                := edCountry.text;
-  oNewReservation.HomeCustomer.ReservationName        := edReservationName.text;
-  oNewReservation.HomeCustomer.RoomStatus             := RoomstatusToInfo(cbxRoomStatus.ItemIndex);
-  oNewReservation.HomeCustomer.MarketSegmentCode      := edMarketSegmentCode.text;
-  oNewReservation.HomeCustomer.IsGroupInvoice         := chkIsGroupInvoice.checked;
-  oNewReservation.HomeCustomer.Currency               := edCurrency.text;
-  oNewReservation.HomeCustomer.PcCode                 := edPcCode.text;
-  oNewReservation.HomeCustomer.PID                    := edPID.text ;
-  oNewReservation.HomeCustomer.CustomerName           := edCustomerName.text ;
-  oNewReservation.HomeCustomer.Address1               := edAddress1.text ;
-  oNewReservation.HomeCustomer.Address2               := edAddress2.text ;
-  oNewReservation.HomeCustomer.Address3               := edAddress3.text ;
-  oNewReservation.HomeCustomer.Tel1                   := edTel1.text     ;
-  oNewReservation.HomeCustomer.Tel2                   := edTel2.text     ;
-  oNewReservation.HomeCustomer.Fax                    := edFax.text      ;
-  oNewReservation.HomeCustomer.EmailAddress           := edEmailAddress.text ;
-  oNewReservation.HomeCustomer.HomePage               := edHomePage.text     ;
-  oNewReservation.HomeCustomer.ContactPhone           := edContactPhone.text ;
-  oNewReservation.HomeCustomer.ContactPerson          := edContactPerson.text;
-  oNewReservation.HomeCustomer.ContactAddress1        := edContactAddress1.text;
-  oNewReservation.HomeCustomer.ContactAddress2        := edContactAddress2.text;
-  oNewReservation.HomeCustomer.ContactAddress3        := edContactAddress3.text;
-  oNewReservation.HomeCustomer.ContactAddress4        := edContactAddress4.text;
-//0810-hj   oNewReservation.HomeCustomer.ContactCountry         := edContactCountry.text   ;
-  oNewReservation.HomeCustomer.ContactCountry         := edCountry.text   ;
-  oNewReservation.HomeCustomer.PersonProfileId        := edtPortfolio.Tag   ;
-  oNewReservation.HomeCustomer.CreatePersonProfileId  := cbxAddToGuestProfiles.Checked;
+  oNewReservation.HomeCustomer.invRefrence := edInvRefrence.Text;
+  oNewReservation.HomeCustomer.Country := edCountry.Text;
+  oNewReservation.HomeCustomer.ReservationName := edReservationName.Text;
+  oNewReservation.HomeCustomer.RoomStatus := RoomStatusToInfo(cbxRoomStatus.ItemIndex);
+  oNewReservation.HomeCustomer.MarketSegmentCode := edMarketSegmentCode.Text;
+  oNewReservation.HomeCustomer.IsGroupInvoice := chkisGroupInvoice.Checked;
+  oNewReservation.HomeCustomer.Currency := edCurrency.Text;
+  oNewReservation.HomeCustomer.PcCode := edPcCode.Text;
+  oNewReservation.HomeCustomer.PID := edPID.Text;
+  oNewReservation.HomeCustomer.CustomerName := edCustomerName.Text;
+  oNewReservation.HomeCustomer.Address1 := edAddress1.Text;
+  oNewReservation.HomeCustomer.Address2 := edAddress2.Text;
+  oNewReservation.HomeCustomer.Address3 := edAddress3.Text;
+  oNewReservation.HomeCustomer.Tel1 := edTel1.Text;
+  oNewReservation.HomeCustomer.Tel2 := edTel2.Text;
+  oNewReservation.HomeCustomer.Fax := edFax.Text;
+  oNewReservation.HomeCustomer.EmailAddress := edEmailAddress.Text;
+  oNewReservation.HomeCustomer.HomePage := edHomePage.Text;
+  oNewReservation.HomeCustomer.ContactPhone := edContactPhone.Text;
+  oNewReservation.HomeCustomer.ContactPerson := edContactPerson.Text;
+  oNewReservation.HomeCustomer.ContactAddress1 := edContactAddress1.Text;
+  oNewReservation.HomeCustomer.ContactAddress2 := edContactAddress2.Text;
+  oNewReservation.HomeCustomer.ContactAddress3 := edContactAddress3.Text;
+  oNewReservation.HomeCustomer.ContactAddress4 := edContactAddress4.Text;
+  // 0810-hj   oNewReservation.HomeCustomer.ContactCountry         := edContactCountry.text   ;
+  oNewReservation.HomeCustomer.ContactCountry := edCountry.Text;
+  oNewReservation.HomeCustomer.PersonProfileId := edtPortfolio.Tag;
+  oNewReservation.HomeCustomer.CreatePersonProfileId := cbxAddToGuestProfiles.Checked;
 
-  oNewReservation.HomeCustomer.ContactFax             := edContactFax.text   ;
-  oNewReservation.HomeCustomer.ContactEmail           := edContactEmail.text ;
-  oNewReservation.HomeCustomer.ReservationPaymentInfo := memReservationPaymentInfo.text;
-  oNewReservation.HomeCustomer.ReservationGeneralInfo := memReservationGeneralInfo.text;
-  oNewReservation.HomeCustomer.ShowDiscountOnInvoice  := true;
-  oNewReservation.HomeCustomer.isRoomResDiscountPrec  := cbxIsRoomResDiscountPrec.ItemIndex=0;
-  oNewReservation.HomeCustomer.RoomResDiscount        := edRoomResDiscount.Value;
-  oNewReservation.HomeCustomer.contactIsMainGuest     := chkContactIsGuest.checked;
+  oNewReservation.HomeCustomer.ContactFax := edContactFax.Text;
+  oNewReservation.HomeCustomer.ContactEmail := edContactEmail.Text;
+  oNewReservation.HomeCustomer.ReservationPaymentInfo := memReservationPaymentInfo.Text;
+  oNewReservation.HomeCustomer.ReservationGeneralInfo := memReservationGeneralInfo.Text;
+  oNewReservation.HomeCustomer.ShowDiscountOnInvoice := true;
+  oNewReservation.HomeCustomer.isRoomResDiscountPrec := cbxIsRoomResDiscountPrec.ItemIndex = 0;
+  oNewReservation.HomeCustomer.RoomResDiscount := edRoomResDiscount.Value;
+  oNewReservation.HomeCustomer.contactIsMainGuest := chkContactIsGuest.Checked;
 
   oNewReservation.OutOfOrderBlocking := OutOfOrderBlocking;
-
-
-//  case cbxResMedhod.ItemIndex of
-//    0 : oNewReservation.ResMedhod := rmNormal   ;
-//    1 : oNewReservation.ResMedhod := rmDateRoom ;
-//    2 : oNewReservation.ResMedhod := rmRoom     ;
-//  end;
-  oNewReservation.ResMedhod := rmNormal   ;
-
-//  _kbmRoomRates.LoadFromDataSet(mRoomrates,[]);
-//  _kbmRoomRates.SortFields := 'RoomReservation;RateDate';
-//  _kbmRoomRates.sort([]);
-//
-//  _kbmRoomRates.First;
-//  while not _kbmRoomRates.eof do
-//  begin
-//     showmessage(_kbmRoomRates.fieldbyname('roomreservation').AsString+' '+dateTostr(_kbmRoomRates.fieldbyname('ratedate').AsDateTime));
-//    _kbmRoomRates.next;
-//  end;
-//  mRoomRates.First;
-//  while not mRoomRates.eof do
-//  begin
-//     showmessage(mRoomRates.fieldbyname('roomreservation').AsString+' - '+dateTostr(mRoomRates.fieldbyname('ratedate').AsDateTime));
-//    mRoomRates.next;
-//  end;
-// mRoomrates.LoadFromDataSet(_kbmRoomRates);
-//**ATH  mRoomRates  .sort([]);
-
-  mRoomrates.SortedField := 'ratedate';
+  oNewReservation.Market := TReservationMarketType(cbxMarket.itemindex);
+  mRoomRates.SortedField := 'ratedate';
 
   memReservationGeneralInfo.Clear;
 
   oNewReservation.newRoomReservations.RoomItemsList.Clear;
   roomIndex := 0;
-  mRoomRes.first;
+  mRoomRes.First;
 
   while not mRoomRes.eof do
   begin
-    Room            := mRoomRes.FieldByName('Room').asString;
-    RoomType        := mRoomRes.FieldByName('RoomType').asString;
-    Package         := mRoomRes.FieldByName('Package').asString;
-    Arrival         := mRoomRes.FieldByName('Arrival').AsDateTime;
-    Departure       := mRoomRes.FieldByName('Departure').AsDateTime;
-    GuestCount      := mRoomRes.FieldByName('Guests').AsInteger;
+    room := mRoomRes.FieldByName('Room').AsString;
+    RoomType := mRoomRes.FieldByName('RoomType').AsString;
+    Package := mRoomRes.FieldByName('Package').AsString;
+    Arrival := mRoomRes.FieldByName('Arrival').AsDateTime;
+    Departure := mRoomRes.FieldByName('Departure').AsDateTime;
+    guestCount := mRoomRes.FieldByName('Guests').AsInteger;
     RoomReservation := mRoomRes.FieldByName('RoomReservation').AsInteger;
     if NOT OutOfOrderBlocking then
     begin
-      AvragePrice     := glb.GetRateInclusive(-1, ctrlGetString('RoomRentItem'), mRoomRes.FieldByName('AvragePrice').AsFloat)  ;
+      AvragePrice := glb.GetRateInclusive(-1, ctrlGetString('RoomRentItem'),
+        mRoomRes.FieldByName('AvragePrice').AsFloat);
       if mRoomRes.FieldByName('isPercentage').AsBoolean then
-        AvrageDiscount  := mRoomRes.FieldByName('AvrageDiscount').AsFloat
+        AvrageDiscount := mRoomRes.FieldByName('AvrageDiscount').AsFloat
       else
-        AvrageDiscount  := glb.GetRateInclusive(-1, ctrlGetString('RoomRentItem'), mRoomRes.FieldByName('AvrageDiscount').AsFloat)  ;
-    end else
+        AvrageDiscount := glb.GetRateInclusive(-1, ctrlGetString('RoomRentItem'), mRoomRes.FieldByName('AvrageDiscount')
+          .AsFloat);
+    end
+    else
     begin
-      AvragePrice     := 0.00;
-      AvrageDiscount  := 0.00;
+      AvragePrice := 0.00;
+      AvrageDiscount := 0.00;
     end;
-    RateCount       := mRoomRes.FieldByName('RateCount').AsInteger;
-    ChildrenCount   := mRoomRes.FieldByName('ChildrenCount').AsInteger;
-    infantCount     := mRoomRes.FieldByName('infantCount').AsInteger;
-    PriceCode       := mRoomRes.FieldByName('PriceCode').AsString;
-    isPercentage    := mRoomRes.FieldByName('isPercentage').AsBoolean;
-    mainGuestName   := mRoomRes.FieldByName('MainGuest').AsString;
-    roomNotes       := mRoomRes.FieldByName('roomNotes').asString;
+    RateCount := mRoomRes.FieldByName('RateCount').AsInteger;
+    childrenCount := mRoomRes.FieldByName('ChildrenCount').AsInteger;
+    infantCount := mRoomRes.FieldByName('infantCount').AsInteger;
+    PriceCode := mRoomRes.FieldByName('PriceCode').AsString;
+    isPercentage := mRoomRes.FieldByName('isPercentage').AsBoolean;
+    mainGuestName := mRoomRes.FieldByName('MainGuest').AsString;
+    RoomNotes := mRoomRes.FieldByName('roomNotes').AsString;
 
-
-    if trim(mainGuestName) = '' then
+    if Trim(mainGuestName) = '' then
     begin
-      if chkContactIsGuest.checked then
+      if chkContactIsGuest.Checked then
       begin
-        mainGuestName := edContactPerson.text;
-        if trim(mainGuestName) = '' then mainGuestName := GetTranslatedText('MainGuestConstant_Version_1'); // MainGuestConstant_Version_1;;
-      end else
+        mainGuestName := edContactPerson.Text;
+        if Trim(mainGuestName) = '' then
+          mainGuestName := GetTranslatedText('MainGuestConstant_Version_1'); // MainGuestConstant_Version_1;;
+      end
+      else
       begin
         mainGuestName := GetTranslatedText('MainGuestConstant_Version_1'); // MainGuestConstant_Version_1;
       end;
     end;
 
-    oSelectedRoomItem := TnewRoomReservationItem.Create(RoomReservation,Room,RoomType,package,Arrival,departure,guestCount,AvragePrice,AvrageDiscount,isPercentage,RateCount,ChildrenCount,infantCount,priceCode,mainGuestName,roomNotes);
+    oSelectedRoomItem := TnewRoomReservationItem.Create(RoomReservation, room, RoomType, package, Arrival, Departure,
+      guestCount, AvragePrice, AvrageDiscount, isPercentage, RateCount, childrenCount, infantCount, PriceCode,
+      mainGuestName, RoomNotes);
     oSelectedRoomItem.ManualChannelId := mRoomRes.FieldByName('ManualChannelId').AsInteger;
-    oSelectedRoomItem.ratePlanCode    := mRoomRes.FieldByName('ratePlanCode').AsString;
+    oSelectedRoomItem.ratePlanCode := mRoomRes.FieldByName('ratePlanCode').AsString;
+    oSelectedRoomItem.ExpTOA := mRoomResExpectedTimeOfArrival.AsString;
+    oSelectedRoomItem.ExpCOT := mRoomResExpectedCheckOutTime.AsString;
 
     oNewReservation.newRoomReservations.RoomItemsList.Add(oSelectedRoomItem);
-    oNewReservation.newRoomReservations.RoomItemsList[roomIndex].oRates.SetCurrency(edCurrency.text);
-
-//    Þetta virkar ekki á expressmemdata
-//    mRoomRates.Filter := '(Roomreservation='+inttostr(roomreservation)+')';
-//    mRoomRates.Filtered := true;
+    oNewReservation.newRoomReservations.RoomItemsList[roomIndex].oRates.SetCurrency(edCurrency.Text);
 
     mRoomRates.First;
     while not mRoomRates.eof do
     begin
-      //    Þetta er skítamixið
-      if mRoomrates.fieldbyname('roomreservation').AsInteger = roomreservation then
+      // Þetta er skítamixið
+      if mRoomRates.FieldByName('roomreservation').AsInteger = RoomReservation then
       begin
-        rateRoomNumber   := mRoomRates.FieldByName('RoomNumber').AsString;
-        rateDate         := mRoomRates.FieldByName('RateDate').AsdateTime;
+        rateRoomNumber := mRoomRates.FieldByName('RoomNumber').AsString;
+        RateDate := mRoomRates.FieldByName('RateDate').AsDateTime;
         if NOT OutOfOrderBlocking then
         begin
-          rate             := glb.GetRateInclusive(-1, ctrlGetString('RoomRentItem'), mRoomRates.FieldByName('rate').AsFloat);
+          Rate := glb.GetRateInclusive(-1, ctrlGetString('RoomRentItem'), mRoomRates.FieldByName('rate').AsFloat);
           if mRoomRates.FieldByName('isPercentage').AsBoolean then
-            rateDiscount     := mRoomRates.FieldByName('Discount').AsFloat
+            rateDiscount := mRoomRates.FieldByName('Discount').AsFloat
           else
-            rateDiscount     := glb.GetRateInclusive(-1, ctrlGetString('RoomRentItem'), mRoomRates.FieldByName('Discount').AsFloat) ;
-        end else
+            rateDiscount := glb.GetRateInclusive(-1, ctrlGetString('RoomRentItem'),
+              mRoomRates.FieldByName('Discount').AsFloat);
+        end
+        else
         begin
-          rate             := 0.00;
-          rateDiscount     := 0.00;
+          Rate := 0.00;
+          rateDiscount := 0.00;
         end;
-        ratePriceCode    := mRoomRates.FieldByName('PriceCode').AsString;
+        ratePriceCode := mRoomRates.FieldByName('PriceCode').AsString;
         rateIsPercentage := mRoomRates.FieldByName('isPercentage').AsBoolean;
         rateShowDiscount := mRoomRates.FieldByName('ShowDiscount').AsBoolean;
-        rateIsPaid       := mRoomRates.FieldByName('isPaid').AsBoolean;
-        rateItem := TRateItem.Create(rate,rateDate,rateDiscount,rateShowDiscount,rateIsPercentage,rateisPaid,ratePriceCode,rateRoomNumber,-1,roomreservation);
+        rateIsPaid := mRoomRates.FieldByName('isPaid').AsBoolean;
+        rateItem := TRateItem.Create(Rate, RateDate, rateDiscount, rateShowDiscount, rateIsPercentage, rateIsPaid,
+          ratePriceCode, rateRoomNumber, -1, RoomReservation);
         oNewReservation.newRoomReservations.RoomItemsList[roomIndex].oRates.RateItemsList.Add(rateItem);
 
         oNewReservation.newRoomReservations.RoomItemsList[roomIndex].Breakfast := cbxBreakfast.Checked;
         oNewReservation.newRoomReservations.RoomItemsList[roomIndex].BreakfastIncluded := cbxBreakfastIncl.Checked;
         oNewReservation.newRoomReservations.RoomItemsList[roomIndex].BreakfastCost := StrToFloat(edtBreakfast.Text);
-        oNewReservation.newRoomReservations.RoomItemsList[roomIndex].BreakfastCostGroupAccount := cbxBreakfastGrp.Checked;
+        oNewReservation.newRoomReservations.RoomItemsList[roomIndex].BreakfastCostGroupAccount :=
+          cbxBreakfastGrp.Checked;
 
         oNewReservation.newRoomReservations.RoomItemsList[roomIndex].ExtraBed := cbxExtraBed.Checked;
         oNewReservation.newRoomReservations.RoomItemsList[roomIndex].ExtraBedIncluded := cbxExtraBedIncl.Checked;
@@ -4243,56 +4146,20 @@ begin
         oNewReservation.newRoomReservations.RoomItemsList[roomIndex].ExtraBedCostGroupAccount := cbxExtraBedGrp.Checked;
       end;
 
-      mRoomRates.Next;
+      mRoomRates.next;
     end;
     inc(roomIndex);
     mRoomRes.next;
   end;
 end;
 
-
-Procedure TfrmMakeReservationQuick.fillCurrencyFromDataset(sGoto : string);
-var
-  s        : string;
-  rSet     : TRoomerDataSet;
-  active   : boolean;
-  zSortStr : string;
-begin
-  active := true;
-  if zSortStr = '' then zSortStr := 'Currency ';
-  rSet := CreateNewDataSet;
-  try
-		s := format(select_Currencies_fillGridFromDataset_byActive, [ord(active),zSortStr]);
-    if rSet_bySQL(rSet,s) then
-    begin
-      if mCurrency.active then mCurrency.Close;
-      mCurrency.LoadFromDataSet(rSet);
-      if sGoto = '' then
-      begin
-        mCurrency.First;
-      end else
-      begin
-        try
-          mCurrency.Locate('currency',sGoto,[]);
-        except
-        end;
-      end;
-    end;
-  finally
-    freeandnil(rSet);
-  end;
-end;
-
-
-
 procedure TfrmMakeReservationQuick.btnClearLogClick(Sender: TObject);
 begin
-  CopyToClipboard(frmdayNotes.memLog.text);
+  copytoclipboard(frmdayNotes.memLog.Text);
   frmdayNotes.memLog.Clear;
-  frmdayNotes.memLog.Lines.Add('---'+Caption+'-----');
-  frmdayNotes.memLog.Lines.Add('');
+  frmdayNotes.memLog.lines.Add('---' + Caption + '-----');
+  frmdayNotes.memLog.lines.Add('');
 end;
-
 
 procedure TfrmMakeReservationQuick.sButton2Click(Sender: TObject);
 begin
@@ -4304,268 +4171,240 @@ begin
   frmdayNotes.memLog.SelStart := 0;
 end;
 
-
-
 procedure TfrmMakeReservationQuick.sButton6Click(Sender: TObject);
 begin
-  frmdayNotes.memLog.Perform(EM_LINESCROLL,0,10)
+  frmdayNotes.memLog.Perform(EM_LINESCROLL, 0, 10)
 end;
 
 procedure TfrmMakeReservationQuick.sButton7Click(Sender: TObject);
 begin
-  frmdayNotes.memLog.Perform(EM_LINESCROLL,0,-10)
+  frmdayNotes.memLog.Perform(EM_LINESCROLL, 0, -10)
 end;
 
 procedure TfrmMakeReservationQuick.edPackageDblClick(Sender: TObject);
 var
-  theData : recPackageHolder;
+  theData: recPackageHolder;
 begin
-  theData.package := edPackage.text;
-  if openPackages(actLookup,theData) then
+  theData.package := edPackage.Text;
+  if openPackages(actLookup, theData) then
   begin
-    edPackage.text := theData.package;
+    edPackage.Text := theData.package;
   end;
 end;
 
 procedure TfrmMakeReservationQuick.edPackageExit(Sender: TObject);
 begin
-  if PackageValidate(edPackage, clabPcCode, labPackageDescription) then
-  begin
-  end;
-
+  PackageValidate(edPackage, clabPcCode, labPackageDescription);
 end;
 
-//////////////////////////
+/// ///////////////////////
 
-//-------------------------------------------------------------------------------------------------
+// -------------------------------------------------------------------------------------------------
 
-//--------------------------------------------------------------------------------------------
-//  Currency Edit
+// --------------------------------------------------------------------------------------------
+// Currency Edit
 
-function TfrmMakeReservationQuick.CurrencyValidate(ed : TsEdit; lab, labName : TsLabel) : boolean;
+function TfrmMakeReservationQuick.CurrencyValidate(ed: TsEdit; lab, labName: TsLabel): boolean;
 var
-  theData : recCurrencyHolder;
+  theData: recCurrencyHolder;
 begin
-  theData.Currency := trim(ed.Text);
-  result := (hdata.GET_currencyHolderByCurrency(theData)) and (theData.Currency <> '');
+  theData.Currency := Trim(ed.Text);
+  Result := (hData.GET_currencyHolderByCurrency(theData)) and (theData.Currency <> '');
 
-  if not result then
+  if not Result then
   begin
     ed.SetFocus;
     labName.Font.Color := clRed;
     labName.Caption := GetTranslatedText('shNotF_star');
-  end else
+  end
+  else
   begin
     labName.Font.Color := clBlack;
-    labName.caption := theData.Description+' - Rate '+ floatTostr(theData.Value);
+    labName.Caption := theData.Description + ' - Rate ' + floatTostr(theData.Value);
   end;
 end;
 
 
-
-
-
-
-
-
-//=============================================================================================
+// =============================================================================================
 // Price Code Edit
-//=============================================================================================
+// =============================================================================================
 
-function TfrmMakeReservationQuick.PriceCodeValidate(ed : TsEdit; lab, labName : TsLabel) : boolean;
+function TfrmMakeReservationQuick.PriceCodeValidate(ed: TsEdit; lab, labName: TsLabel): boolean;
 var
-  sValue : string;
-  priceID : integer;
-  Currency : string;
+  sValue: string;
+  priceID: integer;
+  Currency: string;
 begin
-  svalue := trim(ed.Text);
-  result := PriceCodeExist(sValue);
+  sValue := Trim(ed.Text);
+  Result := PriceCodeExist(sValue);
 
   priceID := PriceCode_ID(sValue);
-  currency := trim(edCurrency.Text);
+  Currency := Trim(edCurrency.Text);
 
-  if not result then
+  if not Result then
   begin
     ed.SetFocus;
     labName.Font.Color := clRed;
     labName.Caption := GetTranslatedText('shNotF_star');
-  end else
+  end
+  else
   begin
     labName.Font.Color := clBlack;
-    labName.caption := PriceCode_Description(PriceID);
+    labName.Caption := PriceCode_Description(priceID);
   end;
 end;
 
-
-function TfrmMakeReservationQuick.PackageValidate(ed : TsEdit; lab, labName : TsLabel) : boolean;
+function TfrmMakeReservationQuick.PackageValidate(ed: TsEdit; lab, labName: TsLabel): boolean;
 var
-  sValue : string;
-  Package : string;
-  Currency : string;
+  sValue: string;
 begin
-  svalue := trim(ed.Text);
-  result := PackageExist(sValue);
+  sValue := Trim(ed.Text);
+  Result := PackageExist(sValue);
 
-  if not result then
+  if not Result then
   begin
     ed.SetFocus;
     labName.Font.Color := clRed;
     labName.Caption := GetTranslatedText('shNotF_star');
-  end else
+  end
+  else
   begin
     labName.Font.Color := clBlack;
-    labName.caption := Package_Description(svalue);
+    labName.Caption := Package_Description(sValue);
   end;
 end;
 
-
-
-procedure TfrmMakeReservationQuick.edPcCodePropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
+procedure TfrmMakeReservationQuick.edPcCodePropertiesButtonClick(Sender: TObject; AButtonIndex: integer);
 var
-  theData : recPriceCodeHolder;
+  theData: recPriceCodeHolder;
 begin
-  theData.pcCode := edPcCode.text;
-  if priceCodes(actLookup,theData) then
+  theData.PcCode := edPcCode.Text;
+  if priceCodes(actLookup, theData) then
   begin
-    edPcCode.text := theData.pcCode;
+    edPcCode.Text := theData.PcCode;
   end;
 end;
-
 
 procedure TfrmMakeReservationQuick.edtRatePlansCloseUp(Sender: TObject);
-var channelCode,
-    chManCode : String;
-    arrival,
-    departure : TDateTime;
-    sql : String;
-    channelId : Integer;
-    FirstRound : Boolean;
-    RSet : TRoomerDataSet;
+var
+  ChannelCode,
+    chManCode: String;
+  channelId: integer;
+  FirstRound: boolean;
 begin
   if edtRatePlans.ItemIndex > 0 then
   begin
-    channelId := Integer(edtRatePlans.Items.Objects[edtRatePlans.ItemIndex]);
+    channelId := integer(edtRatePlans.Items.Objects[edtRatePlans.ItemIndex]);
     chManCode := channelManager_GetDefaultCode;
-    FirstRound := True;
-//    RSet := glb.GetDataSetFromDictionary('channelmanagers');
-//    RSet.First;
-//    while NOT RSet.Eof do
-//    begin
-//      chManCode := RSet.fieldbyname('code').asString;
-      if glb.LocateSpecificRecordAndGetValue('channels', 'id', channelId, 'channelManagerId', channelCode) then
-      begin
-        DynamicRates.Prepare(dtArrival.Date, dtDeparture.Date, channelCode, chManCode);
-        PopulateRatePlanCombo(FirstRound);
-        FirstRound := False;
-      end;
-//      RSet.Next;
-//    end;
+    FirstRound := true;
+    if glb.LocateSpecificRecordAndGetValue('channels', 'id', channelId, 'channelManagerId', ChannelCode) then
+    begin
+      DynamicRates.Prepare(dtArrival.date, dtDeparture.date, ChannelCode, chManCode);
+      PopulateRatePlanCombo(FirstRound);
+    end;
   end;
   if Assigned(Sender) then
     GetPrices;
 end;
 
-procedure TfrmMakeReservationQuick.F1Click(Sender: TObject);
-begin
 
-end;
-
-//////////////////////////////////////////////////////////////
+/// ///////////////////////////////////////////////////////////
 ///
 ///
 
 function TfrmMakeReservationQuick.MarketSegmentValidate: boolean;
 var
-  sValue : string;
+  sValue: string;
 begin
-  sValue := trim(edMarketSegmentCode.Text);
-  result := CustomerTypeExist(sValue);
+  sValue := Trim(edMarketSegmentCode.Text);
+  Result := CustomerTypeExist(sValue);
 
-  if not result then
+  if not Result then
   begin
     edMarketSegmentCode.SetFocus;
     labMarketSegmentName.Font.Color := clRed;
     labMarketSegmentName.Caption := GetTranslatedText('shNotF_star');
-  end else
+  end
+  else
   begin
     labMarketSegmentName.Font.Color := clBlack;
-    labMarketSegmentName.caption  := d.GET_CustomerTypesDescription_byCustomerType(trim(edMarketsegmentCode.Text));
+    labMarketSegmentName.Caption := d.GET_CustomerTypesDescription_byCustomerType(Trim(edMarketSegmentCode.Text));
   end;
 end;
 
-procedure TfrmMakeReservationQuick.edMarketSegmentCodePropertiesChange(Sender: TObject);
-begin
-end;
 
 
 
 
-//******************************************************************************
-//   Page Reservation Edits
-//******************************************************************************
+// ******************************************************************************
+// Page Reservation Edits
+// ******************************************************************************
 
 procedure TfrmMakeReservationQuick.dtArrivalChange(Sender: TObject);
 var
-   s : string;
+  s: string;
 begin
-  datetimetostring(s,'dddd',dtArrival.Date);
+  datetimetostring(s, 'dddd', dtArrival.date);
   __lblArrivalWeekday.Caption := s;
 end;
 
 procedure TfrmMakeReservationQuick.dtArrivalCloseUp(Sender: TObject);
 begin
-  if dtDeparture.Date <= dtArrival.Date  then dtDeparture.Date := dtArrival.Date +1;
-  if dtArrival.Date >= dtDeparture.Date  then dtArrival.Date := dtDeparture.Date -1;
-  zNights :=  trunc(dtDeparture.Date)-trunc(dtArrival.Date);
+  if dtDeparture.date <= dtArrival.date then
+    dtDeparture.date := dtArrival.date + 1;
+  if dtArrival.date >= dtDeparture.date then
+    dtArrival.date := dtDeparture.date - 1;
+  zNights := trunc(dtDeparture.date) - trunc(dtArrival.date);
   edNights.Value := zNights;
 end;
 
 procedure TfrmMakeReservationQuick.dtArrivalExit(Sender: TObject);
 begin
-  if dtDeparture.Date <= dtArrival.Date  then dtDeparture.Date := dtArrival.Date +1;
-  if dtArrival.Date >= dtDeparture.Date  then dtArrival.Date := dtDeparture.Date -1;
-  zNights :=  trunc(dtDeparture.Date)-trunc(dtArrival.Date);
+  if dtDeparture.date <= dtArrival.date then
+    dtDeparture.date := dtArrival.date + 1;
+  if dtArrival.date >= dtDeparture.date then
+    dtArrival.date := dtDeparture.date - 1;
+  zNights := trunc(dtDeparture.date) - trunc(dtArrival.date);
   edNights.Value := zNights;
 end;
 
-//////////////
+/// ///////////
 
 procedure TfrmMakeReservationQuick.dtDepartureChange(Sender: TObject);
 var
-   s : string;
+  s: string;
 begin
-  datetimetostring(s,'dddd',dtDeparture.Date);
+  datetimetostring(s, 'dddd', dtDeparture.date);
   __lblDepartureWeekday.Caption := s;
 end;
 
 procedure TfrmMakeReservationQuick.edNightsChange(Sender: TObject);
 begin
-  ZNights := edNights.Value;
-  dtDeparture.Date := dtArrival.Date + zNights;
+  zNights := edNights.Value;
+  dtDeparture.date := dtArrival.date + zNights;
 end;
 
-
-//////////////////////////////////////
+/// ///////////////////////////////////
 // edCustomerKey
 
-function TfrmMakeReservationQuick.customerValidate : boolean;
+function TfrmMakeReservationQuick.customerValidate: boolean;
 var
-  sCustomer : string;
+  sCustomer: string;
 begin
-  sCustomer := trim(edCustomer.Text);
-  result :=  glb.CustomersSet.Locate('customer',scustomer,[]);
+  sCustomer := Trim(edCustomer.Text);
+  Result := glb.CustomersSet.Locate('customer', sCustomer, []);
 
-  if not result then
+  if not Result then
   begin
     edCustomer.SetFocus;
     labCustomerName.Font.Color := clRed;
     labCustomerName.Caption := GetTranslatedText('shNotF_star');
-  end else
+  end
+  else
   begin
     labCustomerName.Font.Color := clBlack;
   end;
 end;
-
 
 procedure TfrmMakeReservationQuick.edCustomerChange(Sender: TObject);
 begin
@@ -4578,151 +4417,87 @@ end;
 
 procedure TfrmMakeReservationQuick.edCustomerDblClick(Sender: TObject);
 var
-  s : string;
-  theData : recCustomerHolder;
+  s: string;
+  theData: recCustomerHolder;
 begin
- theData.Customer := trim(edCustomer.text);
- if OpenCustomers(actLookup, true, theData) then
- begin
-   s := theData.Customer;
-   if (s <> '') and (s <> trim(edCustomer.text)) then
-   begin
-     edCustomer.text := s;
-   end;
- end;
+  theData.Customer := Trim(edCustomer.Text);
+  if OpenCustomers(actLookup, true, theData) then
+  begin
+    s := theData.Customer;
+    if (s <> '') and (s <> Trim(edCustomer.Text)) then
+    begin
+      edCustomer.Text := s;
+    end;
+  end;
 end;
 
 procedure TfrmMakeReservationQuick.edCustomerExit(Sender: TObject);
 begin
-   if customerValidate then
-   begin
-   end;
-end;
-
-procedure TfrmMakeReservationQuick.edCustomerKeyPress(Sender: TObject; var Key: Char);
-begin
-//  if key = chr(13) then
-//  begin
-//     if customerValidate then
-//     begin
-//     end;
-//  end;
+  if customerValidate then
+  begin
+  end;
 end;
 
 procedure TfrmMakeReservationQuick.edCustomerKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
-  if key =vk_f2 then
+  if Key = vk_f2 then
   begin
     edCustomerDblClick(self);
   end;
 end;
 
-//////////////////////////////
+/// ///////////////////////////
 // edMarketSegmentCode
-
-procedure TfrmMakeReservationQuick.edMarketSegmentCodeChange(Sender: TObject);
-begin
-  if MarketSegmentValidate then
-  begin
-  end;
-end;
 
 procedure TfrmMakeReservationQuick.edMarketSegmentCodeDblClick(Sender: TObject);
 var
-  theData : recCustomerTypeHolder;
+  theData: recCustomerTypeHolder;
 begin
-  theData.customerType := edMarketSegmentCode.text;
+  theData.customerType := edMarketSegmentCode.Text;
   if openCustomerTypes(actLookup, theData) then
   begin
-    edMarketSegmentCode.text := theData.customerType;
+    edMarketSegmentCode.Text := theData.customerType;
     if MarketSegmentValidate then
     begin
     end;
   end;
 end;
 
-procedure TfrmMakeReservationQuick.edMarketSegmentCodeExit(Sender: TObject);
-begin
-  if MarketSegmentValidate then
-  begin
-  end;
-end;
-
-procedure TfrmMakeReservationQuick.edMarketSegmentCodeKeyPress(Sender: TObject; var Key: Char);
-begin
-//  if key = chr(13) then
-//  begin
-//    if MarketSegmentValidate then
-//    begin
-//    end;
-//  end;
-end;
-
 procedure TfrmMakeReservationQuick.edMarketSegmentCodeKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
-  if key =vk_f2 then
+  if Key = vk_f2 then
   begin
     edMarketSegmentCodeDblClick(self);
   end;
 end;
 
-
-//////////////////////////////
+/// ///////////////////////////
 // edCountry
-
-procedure TfrmMakeReservationQuick.edContactCountryChange(Sender: TObject);
-begin
-//0810-hj
-//  if glb.LocateCountry(edContactCountry.text) then
-//    lbContactCountryName.caption  := glb.Countries['CountryName'] // GET_CountryName(sValue);
-//  else lbContactCountryName.caption  := GetTranslatedText('shNotF_star');
-end;
-
-procedure TfrmMakeReservationQuick.edContactCountryDblClick(Sender: TObject);
-var
-  theData : recCountryHolder;
-begin
-//0810-hj
-//  theData.Country := edContactCountry.Text;
-//  if Countries(actLookup,theData) then
-//  begin
-//    edContactCountry.text := theData.Country;
-//    lbContactCountryName.caption := theData.CountryName;
-//  end;
-end;
-
-procedure TfrmMakeReservationQuick.edContactCountryKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
-begin
-//0810-hj
-//  if key =vk_f2 then
-//  begin
-//    edContactCountryDblClick(self);
-//  end;
-end;
 
 procedure TfrmMakeReservationQuick.edContactEmailChange(Sender: TObject);
 begin
-  chkSendConfirmation.Enabled := Length(Trim(edContactEmail.Text)) > 4;
+  chkSendConfirmation.Enabled := length(Trim(edContactEmail.Text)) > 4;
 end;
 
-
-
 procedure TfrmMakeReservationQuick.edContactPersonCloseUp(Sender: TObject);
-var Key : String;
+var
+  Key: String;
 begin
   if edContactPerson.Items.IndexOf(edContactPerson.Text) >= 0 then
   begin
-    Key := TRoomerFilterItem(edContactPerson.Items.Objects[edContactPerson.ItemIndex]).Key; // edContactPerson.FKeys[idx];
+    Key := TRoomerFilterItem(edContactPerson.Items.Objects[edContactPerson.ItemIndex]).Key;
+    // edContactPerson.FKeys[idx];
     if glb.LocateSpecificRecord(glb.PreviousGuestsSet, 'ID', Key) then
     begin
       postMessage(handle, WM_SET_COMBO_TEXT, 1, 0);
-    end else
-    if glb.LocateSpecificRecord(glb.PersonProfiles, 'ID', Key) then
+    end
+    else
+      if glb.LocateSpecificRecord(glb.PersonProfiles, 'ID', Key) then
     begin
       if chkContactIsGuest.Checked then
       begin
         edtPortfolio.Text := Trim(glb.PersonProfiles['FirstName'] + ' ' + glb.PersonProfiles['LastName']);
-        edtPortfolio.Tag := StrToInt(Key);
+        edtPortfolio.Tag := strToInt(Key);
       end;
       postMessage(handle, WM_SET_COMBO_TEXT, 2, 0);
     end;
@@ -4731,61 +4506,49 @@ end;
 
 procedure TfrmMakeReservationQuick.edContactPersonEnter(Sender: TObject);
 begin
-  lblNew.Visible := edContactPerson.Active;
+  lblNew.Visible := edContactPerson.active;
 end;
 
 procedure TfrmMakeReservationQuick.edContactPersonExit(Sender: TObject);
 begin
-  lblNew.Visible := False;
+  lblNew.Visible := false;
 end;
 
 procedure TfrmMakeReservationQuick.edContactPersonKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-var sTemp : String;
+var
+  sTemp: String;
 begin
-  if (Key IN [VK_F2]) then
+  if (Key IN [vk_f2]) then
   begin
     edContactPerson.OnCloseUp := NIL;
     sTemp := edContactPerson.Text;
     edContactPerson.Stop;
-    cbxAddToGuestProfiles.Visible := True;
-    edContactPerson.DroppedDown := False;
+    cbxAddToGuestProfiles.Visible := true;
+    edContactPerson.DroppedDown := false;
     edContactPerson.Text := sTemp;
     edContactPerson.SelLength := 0;
     edContactPerson.SelStart := length(sTemp);
-    lblNew.Visible := edContactPerson.Active;
+    lblNew.Visible := edContactPerson.active;
   end;
-//  if (Key IN [VK_RETURN, VK_TAB]) then
-//  begin
-//    if (edContactPerson.Items.IndexOf(edContactPerson.Text) >= 0) then
-//    begin
-////      edContactPersonCloseUp(edContactPerson);
-//    end else
-//    begin
-//      timNew.Enabled := True;
-//      ActiveControl := edContactAddress1;
-//    end;
-//    Key := #0;
-//  end;
-
 end;
 
 procedure TfrmMakeReservationQuick.edCountryChange(Sender: TObject);
 begin
-  if glb.LocateCountry(edCountry.text) then
-    labCountryName.caption  := glb.Countries['CountryName'] // GET_CountryName(sValue);
-      else labCountryName.caption  := GetTranslatedText('shNotF_star');
+  if glb.LocateCountry(edCountry.Text) then
+    labCountryName.Caption := glb.Countries['CountryName'] // GET_CountryName(sValue);
+  else
+    labCountryName.Caption := GetTranslatedText('shNotF_star');
 end;
-
 
 procedure TfrmMakeReservationQuick.edCountryDblClick(Sender: TObject);
 var
-  theData : recCountryHolder;
+  theData: recCountryHolder;
 begin
   theData.Country := edCountry.Text;
-  if Countries(actLookup,theData) then
+  if Countries(actLookup, theData) then
   begin
-    edCountry.text := theData.Country;
-    labCountryName.caption := theData.CountryName;
+    edCountry.Text := theData.Country;
+    labCountryName.Caption := theData.CountryName;
   end;
 end;
 
@@ -4796,97 +4559,71 @@ begin
   end;
 end;
 
-procedure TfrmMakeReservationQuick.edCountryKeyPress(Sender: TObject; var Key: Char);
-begin
-//  if CountryValidate then
-//  begin
-//  end;
-end;
-
 procedure TfrmMakeReservationQuick.edCountryKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
-  if key =vk_f2 then
+  if Key = vk_f2 then
   begin
     edCountryDblClick(self);
   end;
 end;
 
-//////////////////////////////////
+/// ///////////////////////////////
 // edCurrency
 
 procedure TfrmMakeReservationQuick.edCurrencyChange(Sender: TObject);
 var
-  index : integer;
+  Index: integer;
 begin
-  if CurrencyValidate(edCurrency,clabCurrency,labCurrencyName) then
+  if CurrencyValidate(edCurrency, clabCurrency, labCurrencyName) then
   begin
     index := cbxIsRoomResDiscountPrec.ItemIndex;
     cbxIsRoomResDiscountPrec.Items.Clear;
     cbxIsRoomResDiscountPrec.Items.Add('%');
-    cbxIsRoomResDiscountPrec.Items.Add(edCurrency.text);
-    cbxIsRoomResDiscountPrec.itemIndex := index;
+    cbxIsRoomResDiscountPrec.Items.Add(edCurrency.Text);
+    cbxIsRoomResDiscountPrec.ItemIndex := index;
 
-    if index = 0 then edRoomResDiscount.MaxValue := 100
-      else edRoomResDiscount.MaxValue := 99999999;
+    if index = 0 then
+      edRoomResDiscount.MaxValue := 100
+    else
+      edRoomResDiscount.MaxValue := 99999999;
 
-    labCurrencyRate.Caption := floattostr(GetRate(edCurrency.text));
+    labCurrencyRate.Caption := floatTostr(GetRate(edCurrency.Text));
   end;
 end;
 
 procedure TfrmMakeReservationQuick.edCurrencyDblClick(Sender: TObject);
 var
-  theData : recCurrencyHolder;
+  theData: recCurrencyHolder;
 begin
-  theData.Currency := trim(edCurrency.text);
-  if Currencies(actLookup,theData) then
+  theData.Currency := Trim(edCurrency.Text);
+  if Currencies(actLookup, theData) then
   begin
-    edCurrency.text := theData.Currency;
-    labCurrencyRate.Caption := floattostr(GetRate(edCurrency.text));
+    edCurrency.Text := theData.Currency;
+    labCurrencyRate.Caption := floatTostr(GetRate(edCurrency.Text));
     lblExtraBedCurrency.Caption := edCurrency.Text;
 
   end;
 end;
 
-procedure TfrmMakeReservationQuick.edCurrencyExit(Sender: TObject);
-begin
-  if CurrencyValidate(edCurrency,clabCurrency,labCurrencyName) then
-  begin
-  end;
-end;
-
-procedure TfrmMakeReservationQuick.edCurrencyKeyPress(Sender: TObject; var Key: Char);
-begin
-//  if CurrencyValidate(edCurrency,clabCurrency,labCurrencyName) then
-//  begin
-//  end;
-end;
-
 procedure TfrmMakeReservationQuick.edCurrencyKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
-  if key =vk_f2 then
+  if Key = vk_f2 then
   begin
     edCurrencyDblClick(self);
   end;
 end;
 
-///////////////////////////
+/// ////////////////////////
 // edPcCode
-
-procedure TfrmMakeReservationQuick.edPcCodeChange(Sender: TObject);
-begin
-  if PriceCodeValidate(edPcCode, clabPcCode, labPcCodeName) then
-  begin
-  end;
-end;
 
 procedure TfrmMakeReservationQuick.edPcCodeDblClick(Sender: TObject);
 var
-  theData : recPriceCodeHolder;
+  theData: recPriceCodeHolder;
 begin
-  theData.pcCode := edPcCode.text;
-  if priceCodes(actLookup,theData) then
+  theData.PcCode := edPcCode.Text;
+  if priceCodes(actLookup, theData) then
   begin
-    edPcCode.text := theData.pcCode;
+    edPcCode.Text := theData.PcCode;
   end;
 end;
 
@@ -4897,25 +4634,15 @@ begin
   end;
 end;
 
-procedure TfrmMakeReservationQuick.edPcCodeKeyPress(Sender: TObject; var Key: Char);
-begin
-//  if key = chr(13) then
-//  begin
-//    if PriceCodeValidate(edPcCode, clabPcCode, labPcCodeName) then
-//    begin
-//    end;
-//  end;
-end;
-
 procedure TfrmMakeReservationQuick.edPcCodeKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
-  if key =vk_f2 then
+  if Key = vk_f2 then
   begin
     edPcCodeDblClick(self);
   end;
 end;
 
-///////////////////////////////
+/// ////////////////////////////
 //
 
 procedure TfrmMakeReservationQuick.cbxBreakfastClick(Sender: TObject);
@@ -4927,27 +4654,17 @@ procedure TfrmMakeReservationQuick.cbxIsRoomResDiscountPrecChange(Sender: TObjec
 begin
   if cbxIsRoomResDiscountPrec.ItemIndex = 0 then
   begin
-     edRoomResDiscount.MaxValue := 100
-  end else
+    edRoomResDiscount.MaxValue := 100
+  end
+  else
   begin
-   edRoomResDiscount.MaxValue := 99999999;
+    edRoomResDiscount.MaxValue := 99999999;
   end;
 end;
-
-
 
 procedure TfrmMakeReservationQuick.cbxRoomStatusCloseUp(Sender: TObject);
 begin
   OutOfOrderBlocking := cbxRoomStatus.ItemIndex = 7;
 end;
 
-procedure TfrmMakeReservationQuick.chkisGroupInvoiceClick(Sender: TObject);
-begin
-  // tvRoomResPackage.Options.Editing := not chkisGroupInvoice.Checked;
-end;
-
 end.
-
-
-
-

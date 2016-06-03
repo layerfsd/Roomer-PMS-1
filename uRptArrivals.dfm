@@ -292,6 +292,11 @@ object frmArrivalsReport: TfrmArrivalsReport
       object grArrivalsListDBTableView1ExpectedTimeOfArrival: TcxGridDBColumn
         Caption = 'Expected TOA'
         DataBinding.FieldName = 'ExpectedTimeOfArrival'
+        PropertiesClassName = 'TcxTimeEditProperties'
+        Properties.Alignment.Horz = taCenter
+        Properties.UseTimeFormatWhenUnfocused = False
+        OnGetDisplayText = grArrivalsListDBTableView1ExpectedTimeOfArrivalGetDisplayText
+        HeaderAlignmentHorz = taCenter
         Options.Editing = False
         Width = 88
       end

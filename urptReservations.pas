@@ -59,7 +59,7 @@ uses
   dxSkinLondonLiquidSky, dxSkinMoneyTwins, dxSkinOffice2007Black, dxSkinOffice2007Blue, dxSkinOffice2007Green, dxSkinOffice2007Pink,
   dxSkinOffice2007Silver, dxSkinOffice2010Black, dxSkinOffice2010Blue, dxSkinOffice2010Silver, dxSkinPumpkin, dxSkinSeven,
   dxSkinSevenClassic, dxSkinSharp, dxSkinSharpPlus, dxSkinSilver, dxSkinSpringTime, dxSkinStardust, dxSkinSummer2008, dxSkinValentine,
-  dxSkinVS2010, dxSkinWhiteprint, dxSkinXmas2008Blue, cxCurrencyEdit
+  dxSkinVS2010, dxSkinWhiteprint, dxSkinXmas2008Blue, cxCurrencyEdit, cxTimeEdit
 
   ;
 
@@ -103,7 +103,6 @@ type
     tvReservationsContactFax: TcxGridDBColumn;
     tvReservationsContactEmail: TcxGridDBColumn;
     tvReservationsinputsource: TcxGridDBColumn;
-    tvReservationsarrivaltime: TcxGridDBColumn;
     tvReservationssrcrequest: TcxGridDBColumn;
     tvReservationsID: TcxGridDBColumn;
     tvReservationsCustPID: TcxGridDBColumn;
@@ -285,6 +284,8 @@ type
     tvReservationsTotalRoomRent: TcxGridDBColumn;
     tvReservationsAvrageRoomRent: TcxGridDBColumn;
     tvRoomsAvrageRate: TcxGridDBColumn;
+    tvRoomReservationsExpectedTimeOfArrival: TcxGridDBColumn;
+    tvRoomReservationsExpectedCheckoutTime: TcxGridDBColumn;
     procedure cbxMonthPropertiesCloseUp(Sender : TObject);
     procedure btnRefreshClick(Sender : TObject);
     procedure dtDateFromChange(Sender : TObject);
@@ -380,8 +381,6 @@ uses
 
 procedure OpenReportReservations(embedPanel : TsPanel = nil; WindowCloseEvent : TNotifyEvent = nil);
 var
-  sRoom: string;
-  aDate: Tdate;
   _frmRptReservations : TfrmRptReservations;
 begin
   // **
@@ -543,7 +542,6 @@ begin
     tvReservations.DataController.Filter.Root.AddItem(tvReservationsGuestName,foLike,'%'+Uppercase(edFilter.Text)+'%','%'+Uppercase(edFilter.Text)+'%');
     tvReservations.DataController.Filter.Root.AddItem(tvReservationsChannelName,foLike,'%'+Uppercase(edFilter.Text)+'%','%'+Uppercase(edFilter.Text)+'%');
     tvReservations.DataController.Filter.Root.AddItem(tvReservationsinvRefrence,foLike,'%'+Uppercase(edFilter.Text)+'%','%'+Uppercase(edFilter.Text)+'%');
-    tvReservations.DataController.Filter.Root.AddItem(tvReservationsarrivaltime,foLike,'%'+Uppercase(edFilter.Text)+'%','%'+Uppercase(edFilter.Text)+'%');
     tvReservations.DataController.Filter.Root.AddItem(tvReservationsCustomerName,foLike,'%'+Uppercase(edFilter.Text)+'%','%'+Uppercase(edFilter.Text)+'%');
     tvReservations.DataController.Filter.Root.AddItem(tvReservationsContactName,foLike,'%'+Uppercase(edFilter.Text)+'%','%'+Uppercase(edFilter.Text)+'%');
     tvReservations.DataController.Filter.Root.AddItem(tvReservationsContactEmail,foLike,'%'+Uppercase(edFilter.Text)+'%','%'+Uppercase(edFilter.Text)+'%');
@@ -647,7 +645,6 @@ end;
 procedure TfrmRptReservations.ShowData;
 var
   y, m, d : word;
-  idx : integer;
   lastDay : integer;
 begin
   zSetDates := false;
@@ -767,17 +764,14 @@ end;
 
 procedure TfrmRptReservations.btnJumpToRoomClick(Sender: TObject);
 var
-  iRoomReservation : integer;
   iReservation : integer;
 begin
   if pageMain.activepage = tabreservation then
   begin
     iReservation  := kbmreservations_.fieldbyname('Reservation').AsInteger;
-    iRoomReservation := 0;
     if not kbmRoomreservations_.Locate('Reservation',ireservation,[]) then
     begin
       showmessage('No room found');
-  //    showmessage(GetTranslatedText('shTx_InvoiceList2_NotRoomInvoice'));
       btnJumpToRoom.ModalResult := mrNone;
       exit;
     end;
@@ -786,8 +780,6 @@ begin
 
   end else
   begin
-    iReservation     := kbmRooms.fieldbyname('Reservation').AsInteger;
-    iRoomReservation := kbmRooms.fieldbyname('RoomReservation').AsInteger;
     zRoom := kbmRooms.fieldbyname('room').Asstring;
     zArrival := kbmRooms.fieldbyname('rrArrival').AsDateTime;
 
@@ -843,12 +835,8 @@ end;
 procedure TfrmRptReservations.rrGetData;
 var
   s    : string;
-  rset1,
-  rset2,
-  rset3 : TRoomerDataset;
+  rset1: TRoomerDataset;
   ExecutionPlan : TRoomerExecutionPlan;
-
-  dtTmp : TdateTime;
 
   rvList : string;
 
@@ -967,26 +955,13 @@ var
   rset3 : TRoomerDataset;
   ExecutionPlan : TRoomerExecutionPlan;
 
-  startTick : integer;
-  stopTick  : integer;
-  SQLms     : integer;
-
-  dtTmp : TdateTime;
-
   rvList : string;
 
 begin
   ExecutionPlan := d.roomerMainDataSet.CreateExecutionPlan;
   try
-    startTick := GetTickCount;
-    stopTick  := GetTickCount;
-    SQLms     := stopTick - startTick;
-//    sLabTime.Caption := inttostr(SQLms);
-
     rvList := GetRVinList;
 
-
-    startTick := GetTickCount;
     s := '';
     s := s+' SELECT '#10;
     s := s+'     rv.Reservation '#10;
@@ -1019,7 +994,6 @@ begin
     s := s+'   , rv.ContactEmail '#10;
     s := s+'   , rv.inputsource '#10;
     s := s+'   , rv.webconfirmed '#10;
-    s := s+'   , rv.arrivaltime '#10;
     s := s+'   , rv.srcrequest '#10;
     s := s+'   , rv.rvTmp '#10;
     s := s+'   , rv.ID '#10;
@@ -1195,10 +1169,6 @@ begin
       kbmRoomsDate_.EnableControls;
     end;
 
-    stopTick         := GetTickCount;
-    SQLms            := stopTick - startTick;
-//    sLabTime.Caption := inttostr(SQLms);
-
   finally
     ExecutionPlan.Free;
   end;
@@ -1215,13 +1185,5 @@ end;
 
 
 end.
-
-
-USE home100_thal
-
-ALTER TABLE `reservations` ADD COLUMN `dtCreated` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP  AFTER `externalIds` ;
-
-UPDATE reservations
-SET `dtCreated`='SELECT reservationdate FROM reservation '+'00:00:00' WHERE ID>0;
 
 

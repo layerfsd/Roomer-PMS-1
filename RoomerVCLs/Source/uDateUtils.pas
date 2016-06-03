@@ -26,6 +26,8 @@ function RoomerDateTimeToString(date : TDateTime) : String;
 function RoomerDateToString(date : TDateTime) : String;
 function RoomerStringToDateTime(dateStr : String) : TDateTime;
 
+function DateTimeToHHMM(date: TDateTime): string;
+
 
 implementation
 
@@ -208,6 +210,11 @@ begin
 
 
   Result := EncodeDate(y, m, d) + EncodeTime(h, n, 0, 0);
+end;
+
+function DateTimeToHHMM(date: TDateTime): string;
+begin
+  Result := FormatDateTime('hh:mm', date);
 end;
 
 

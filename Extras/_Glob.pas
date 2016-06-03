@@ -93,6 +93,7 @@ function _db(const aFloat : double)    : string; Overload;
 function _db(const aDate  : TdateTime) : string; Overload;
 function _dbDT(const aDate : TDateTime)  : string;
 function _db(const aDate : TDate)  : string; Overload;
+function _db(const aTime: TTime): string; overload;
 function _dbDateAndTime(const aDate : TDateTime; qouted : boolean=true)  : string;
 
 function _FloatToStr(fValue : double; w, d : byte) : string;
@@ -2107,6 +2108,14 @@ var
   S : string;
 begin
   datetimetostring(S, 'yyyy-mm-dd', aDate);
+  Result := quotedstr(S);
+end;
+
+function _db(const aTime: TTime): string; overload;
+var
+  S : string;
+begin
+  datetimetostring(S, 'hh:MM', aTime);
   Result := quotedstr(S);
 end;
 
