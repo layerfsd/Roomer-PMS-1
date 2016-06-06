@@ -1,11 +1,10 @@
-object frmItems2: TfrmItems2
+object frmStockItems: TfrmStockItems
   Left = 0
   Top = 0
-  Caption = 'Sales Items'
-  ClientHeight = 663
-  ClientWidth = 1092
+  Caption = 'Stock Items'
+  ClientHeight = 508
+  ClientWidth = 779
   Color = clBtnFace
-  Constraints.MinWidth = 450
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
@@ -15,7 +14,6 @@ object frmItems2: TfrmItems2
   OldCreateOrder = False
   Position = poOwnerFormCenter
   OnClose = FormClose
-  OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnKeyDown = FormKeyDown
@@ -26,8 +24,8 @@ object frmItems2: TfrmItems2
   object sPanel1: TsPanel
     Left = 0
     Top = 0
-    Width = 1092
-    Height = 89
+    Width = 779
+    Height = 68
     Align = alTop
     TabOrder = 0
     SkinData.SkinSection = 'PANEL'
@@ -46,21 +44,21 @@ object frmItems2: TfrmItems2
       Font.Style = []
     end
     object btnClear: TsSpeedButton
-      Left = 273
+      Left = 264
       Top = 39
-      Width = 63
+      Width = 70
       Height = 20
       Caption = 'Clear'
       OnClick = btnClearClick
       SkinData.SkinSection = 'SPEEDBUTTON'
       Images = DImages.PngImageList1
-      ImageIndex = 4
+      ImageIndex = 10
     end
     object btnDelete: TsButton
       Left = 199
-      Top = 8
-      Width = 90
-      Height = 25
+      Top = 6
+      Width = 100
+      Height = 26
       Caption = 'Delete'
       ImageIndex = 24
       Images = DImages.PngImageList1
@@ -69,22 +67,23 @@ object frmItems2: TfrmItems2
       SkinData.SkinSection = 'BUTTON'
     end
     object btnOther: TsButton
-      Left = 295
-      Top = 8
-      Width = 135
-      Height = 25
+      Left = 305
+      Top = 6
+      Width = 145
+      Height = 26
       Caption = 'Other actions'
       DropDownMenu = mnuOther
       ImageIndex = 76
       Images = DImages.PngImageList1
       Style = bsSplitButton
       TabOrder = 1
+      OnClick = btnOtherClick
       SkinData.SkinSection = 'BUTTON'
     end
     object edFilter: TsEdit
       Left = 56
       Top = 39
-      Width = 215
+      Width = 206
       Height = 21
       Color = clWhite
       Font.Charset = DEFAULT_CHARSET
@@ -97,90 +96,60 @@ object frmItems2: TfrmItems2
       OnChange = edFilterChange
       SkinData.SkinSection = 'EDIT'
     end
-    object btnInsert: TsButton
-      Left = 6
-      Top = 8
-      Width = 90
-      Height = 25
-      Hint = 'Add new record'
-      Caption = 'New'
-      ImageIndex = 23
-      Images = DImages.PngImageList1
-      ParentShowHint = False
-      ShowHint = True
-      TabOrder = 3
-      OnClick = btnInsertClick
-      SkinData.SkinSection = 'BUTTON'
-    end
     object btnEdit: TsButton
-      Left = 102
-      Top = 8
-      Width = 91
-      Height = 25
+      Left = 112
+      Top = 6
+      Width = 81
+      Height = 26
       Hint = 'Edit current record'
       Caption = 'Edit'
       ImageIndex = 25
       Images = DImages.PngImageList1
       ParentShowHint = False
       ShowHint = True
-      TabOrder = 4
+      TabOrder = 3
       OnClick = btnEditClick
       SkinData.SkinSection = 'BUTTON'
     end
-    object btnTaxLinks: TsButton
-      Left = 436
-      Top = 8
-      Width = 115
-      Height = 25
-      Hint = 'Open window to link taxes to items'
-      Caption = 'Tax Links'
-      ImageIndex = 108
+    object btnInsert: TsButton
+      Left = 6
+      Top = 6
+      Width = 100
+      Height = 26
+      Hint = 'Add new record'
+      Caption = 'New'
+      ImageIndex = 23
       Images = DImages.PngImageList1
       ParentShowHint = False
       ShowHint = True
-      TabOrder = 5
-      Visible = False
-      OnClick = btnTaxLinksClick
+      TabOrder = 4
+      OnClick = btnInsertClick
       SkinData.SkinSection = 'BUTTON'
-    end
-    object chkActive: TsCheckBox
-      Left = 55
-      Top = 63
-      Width = 242
-      Height = 19
-      Caption = 'Active (if checked then just active are visible'
-      Checked = True
-      State = cbChecked
-      TabOrder = 6
-      OnClick = chkActiveClick
-      SkinData.SkinSection = 'CHECKBOX'
-      ImgChecked = 0
-      ImgUnchecked = 0
     end
   end
   object sbMain: TsStatusBar
     Left = 0
-    Top = 644
-    Width = 1092
+    Top = 489
+    Width = 779
     Height = 19
     Panels = <>
     SkinData.SkinSection = 'STATUSBAR'
   end
   object panBtn: TsPanel
     Left = 0
-    Top = 612
-    Width = 1092
-    Height = 32
+    Top = 456
+    Width = 779
+    Height = 33
     Align = alBottom
     TabOrder = 2
     SkinData.SkinSection = 'PANEL'
     DesignSize = (
-      1092
-      32)
+      779
+      33)
     object btnCancel: TsButton
-      Left = 1013
+      Left = 690
       Top = 4
-      Width = 75
+      Width = 85
       Height = 25
       Hint = 'Cancel and close'
       Anchors = [akTop, akRight]
@@ -194,9 +163,9 @@ object frmItems2: TfrmItems2
       SkinData.SkinSection = 'BUTTON'
     end
     object BtnOk: TsButton
-      Left = 935
+      Left = 602
       Top = 4
-      Width = 75
+      Width = 85
       Height = 25
       Hint = 'Apply and close'
       Anchors = [akTop, akRight]
@@ -211,11 +180,11 @@ object frmItems2: TfrmItems2
   end
   object grData: TcxGrid
     Left = 0
-    Top = 89
-    Width = 1092
-    Height = 523
+    Top = 68
+    Width = 779
+    Height = 388
     Align = alClient
-    Constraints.MinWidth = 440
+    Constraints.MinWidth = 450
     TabOrder = 3
     LookAndFeel.NativeStyle = False
     object tvData: TcxGridDBTableView
@@ -259,8 +228,8 @@ object frmItems2: TfrmItems2
       Navigator.Buttons.Filter.Visible = True
       Navigator.InfoPanel.Visible = True
       Navigator.Visible = True
+      OnFocusedRecordChanged = tvDataFocusedRecordChanged
       DataController.DataSource = DS
-      DataController.Filter.AutoDataSetFilter = True
       DataController.Summary.DefaultGroupSummaryItems = <>
       DataController.Summary.FooterSummaryItems = <>
       DataController.Summary.SummaryGroups = <>
@@ -280,114 +249,36 @@ object frmItems2: TfrmItems2
         DataBinding.FieldName = 'ID'
         Visible = False
       end
-      object tvDataActive: TcxGridDBColumn
-        DataBinding.FieldName = 'Active'
-        Width = 59
-      end
-      object tvDataItem: TcxGridDBColumn
-        DataBinding.FieldName = 'Item'
+      object tvDataItemtype: TcxGridDBColumn
+        DataBinding.FieldName = 'Itemtype'
         PropertiesClassName = 'TcxTextEditProperties'
         Properties.CharCase = ecUpperCase
-        Properties.OnValidate = tvDataItemPropertiesValidate
-        Width = 84
+        Properties.OnValidate = tvDataItemtypePropertiesValidate
       end
       object tvDataDescription: TcxGridDBColumn
         DataBinding.FieldName = 'Description'
-        Width = 181
       end
-      object tvDataPrice: TcxGridDBColumn
-        DataBinding.FieldName = 'Price'
-        PropertiesClassName = 'TcxCalcEditProperties'
-        Width = 83
-      end
-      object tvDataNumberBase: TcxGridDBColumn
-        DataBinding.FieldName = 'NumberBase'
-        PropertiesClassName = 'TcxComboBoxProperties'
-        Properties.DropDownListStyle = lsFixedList
-        Properties.Items.Strings = (
-          'USER_EDIT'
-          'ROOM_NIGHT'
-          'GUEST_NIGHT'
-          'GUEST'
-          'ROOM'
-          'BOOKING')
-      end
-      object tvDataItemtype: TcxGridDBColumn
-        Caption = 'Type'
-        DataBinding.FieldName = 'Itemtype'
+      object tvDataVATCode: TcxGridDBColumn
+        DataBinding.FieldName = 'VATCode'
         PropertiesClassName = 'TcxButtonEditProperties'
         Properties.Buttons = <
           item
             Default = True
             Kind = bkEllipsis
           end>
+        Properties.ReadOnly = False
+        Properties.ValidateOnEnter = False
         Properties.ViewStyle = vsHideCursor
-        Properties.OnButtonClick = tvDataItemtypePropertiesButtonClick
-        Width = 105
+        Properties.OnButtonClick = tvDataVATCodePropertiesButtonClick
+        Properties.OnValidate = tvDataVATCodePropertiesValidate
+        Width = 77
       end
-      object tvDataCurrency: TcxGridDBColumn
-        DataBinding.FieldName = 'Currency'
-        PropertiesClassName = 'TcxButtonEditProperties'
-        Properties.Buttons = <
-          item
-            Default = True
-            Kind = bkEllipsis
-          end>
-        Visible = False
-        Width = 48
+      object tvDataAccItemLink: TcxGridDBColumn
+        DataBinding.FieldName = 'AccItemLink'
       end
-      object tvDataAccountKey: TcxGridDBColumn
-        DataBinding.FieldName = 'AccountKey'
-        PropertiesClassName = 'TcxButtonEditProperties'
-        Properties.Buttons = <
-          item
-            Caption = '...'
-            Default = True
-            Kind = bkEllipsis
-          end>
-        Properties.OnButtonClick = tvDataAccountKeyPropertiesButtonClick
-        Options.ShowEditButtons = isebAlways
-        Width = 129
-      end
-      object tvDataBookKeepCode: TcxGridDBColumn
-        Caption = 'Book-keeping code'
-        DataBinding.FieldName = 'BookKeepCode'
-        PropertiesClassName = 'TcxButtonEditProperties'
-        Properties.Buttons = <
-          item
-            Default = True
-            Kind = bkEllipsis
-          end>
-        Properties.OnButtonClick = tvDataBookKeepCodePropertiesButtonClick
-        Options.ShowEditButtons = isebAlways
-      end
-      object tvDataMinibarItem: TcxGridDBColumn
-        Caption = 'Minibar'
-        DataBinding.FieldName = 'MinibarItem'
-        Width = 50
-      end
-      object tvDataSystemItem: TcxGridDBColumn
-        DataBinding.FieldName = 'SystemItem'
-        Visible = False
-        Width = 60
-      end
-      object tvDataRoomRentitem: TcxGridDBColumn
-        DataBinding.FieldName = 'RoomRentitem'
-        Visible = False
-      end
-      object tvDataReservationItem: TcxGridDBColumn
-        DataBinding.FieldName = 'ReservationItem'
-        Visible = False
-      end
-      object tvDataHide: TcxGridDBColumn
-        DataBinding.FieldName = 'Hide'
-        Visible = False
-      end
-      object tvDataStockItem: TcxGridDBColumn
-        DataBinding.FieldName = 'StockItem'
-        PropertiesClassName = 'TcxCheckBoxProperties'
-        Properties.Alignment = taCenter
-        Width = 55
+      object tvDataActive: TcxGridDBColumn
+        DataBinding.FieldName = 'Active'
+        Width = 54
       end
     end
     object lvData: TcxGridLevel
@@ -396,8 +287,8 @@ object frmItems2: TfrmItems2
   end
   object mnuOther: TPopupMenu
     Images = DImages.PngImageList1
-    Left = 22
-    Top = 160
+    Left = 198
+    Top = 200
     object mnuiPrint: TMenuItem
       Caption = 'Print'
       ImageIndex = 3
@@ -437,98 +328,52 @@ object frmItems2: TfrmItems2
     end
   end
   object DS: TDataSource
-    DataSet = m_
-    Left = 168
-    Top = 144
+    DataSet = mdStockItems
+    Left = 368
+    Top = 288
   end
   object grPrinter: TdxComponentPrinter
     CurrentLink = prLink_grData
     Version = 0
-    Left = 80
-    Top = 136
+    Left = 368
+    Top = 224
     object prLink_grData: TdxGridReportLink
+      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
-      PrinterPage.Footer = 5080
+      PrinterPage.Footer = 6350
       PrinterPage.GrayShading = True
-      PrinterPage.Header = 2540
+      PrinterPage.Header = 6350
       PrinterPage.Margins.Bottom = 12700
       PrinterPage.Margins.Left = 12700
       PrinterPage.Margins.Right = 12700
       PrinterPage.Margins.Top = 12700
-      PrinterPage.PageSize.X = 210820
-      PrinterPage.PageSize.Y = 297180
+      PrinterPage.PageSize.X = 210000
+      PrinterPage.PageSize.Y = 297000
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
       ReportDocument.CreationDate = 41334.495374884260000000
+      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       BuiltInReportLink = True
     end
   end
-  object m_: TdxMemData
+  object mdStockItems: TdxMemData
     Indexes = <>
-    SortOptions = [soCaseInsensitive]
-    BeforeInsert = m_BeforeInsert
-    BeforePost = m_BeforePost
-    BeforeDelete = m_BeforeDelete
-    OnNewRecord = m_NewRecord
-    OnFilterRecord = m_FilterRecord
-    Left = 256
-    Top = 200
-    object m_ID: TIntegerField
+    SortOptions = []
+    BeforeInsert = mdStockItemsBeforeInsert
+    BeforePost = mdStockItemsBeforePost
+    BeforeDelete = mdStockItemsBeforeDelete
+    OnNewRecord = mdStockItemsNewRecord
+    Left = 368
+    Top = 344
+    object mdStockItemsID: TIntegerField
       FieldName = 'ID'
     end
-    object m_Active: TBooleanField
+    object mdStockItemsActive: TBooleanField
       FieldName = 'Active'
     end
-    object m_Item: TWideStringField
-      FieldName = 'Item'
-    end
-    object m_Description: TWideStringField
+    object mdStockItemsDescription: TWideStringField
       FieldName = 'Description'
       Size = 30
-    end
-    object m_Price: TFloatField
-      FieldName = 'Price'
-    end
-    object m_Itemtype: TWideStringField
-      FieldName = 'Itemtype'
-    end
-    object m_AccountKey: TWideStringField
-      FieldName = 'AccountKey'
-      Size = 50
-    end
-    object m_MinibarItem: TBooleanField
-      FieldName = 'MinibarItem'
-    end
-    object m_SystemItem: TBooleanField
-      FieldName = 'SystemItem'
-    end
-    object m_RoomRentitem: TBooleanField
-      FieldName = 'RoomRentitem'
-    end
-    object m_ReservationItem: TBooleanField
-      FieldName = 'ReservationItem'
-    end
-    object m_Currency: TWideStringField
-      FieldName = 'Currency'
-      Size = 3
-    end
-    object m_Hide: TBooleanField
-      FieldName = 'Hide'
-    end
-    object m_BreakfastItem: TBooleanField
-      FieldName = 'BreakfastItem'
-    end
-    object m_BookKeepCode: TWideStringField
-      FieldName = 'BookKeepCode'
-      Size = 25
-    end
-    object m_NumberBase: TWideStringField
-      FieldName = 'NumberBase'
-      Size = 15
-    end
-    object m_StockItem: TBooleanField
-      DefaultExpression = 'false'
-      FieldName = 'StockItem'
     end
   end
   object FormStore: TcxPropertiesStore
@@ -540,18 +385,12 @@ object frmItems2: TfrmItems2
           'Left'
           'Position'
           'Top'
-          'Width')
+          'Width'
+          'WindowState')
       end>
-    StorageName = 'Software\Roomer\FormStatus\Items'
+    StorageName = 'Software\Roomer\FormStatus\ItemTypes'
     StorageType = stRegistry
-    Left = 371
-    Top = 264
-  end
-  object timFilter: TTimer
-    Enabled = False
-    Interval = 2000
-    OnTimer = timFilterTimer
-    Left = 200
-    Top = 304
+    Left = 244
+    Top = 344
   end
 end

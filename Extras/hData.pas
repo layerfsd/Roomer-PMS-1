@@ -1231,10 +1231,9 @@ type
     ReservationItem: boolean;
     Hide: boolean;
     Currency: string;
-
     BookKeepCode : String;
-
     NumberBase : String;
+    Stockitem: boolean;
 
     // Missing fields to create
     // ItemTypeID
@@ -11250,6 +11249,7 @@ begin
   s := s + '   ,Currency = ' + _db(theData.Currency) + ' ' + #10;
   s := s + '   ,BookKeepCode = ' + _db(theData.BookKeepCode) + ' ' + #10;
   s := s + '   ,NumberBase = ' + _db(theData.NumberBase) + ' ' + #10;
+  s := s + '   ,Stockitem= ' + _db(theData.StockItem) + ' ' + #10;
   s := s + ' WHERE ' + #10;
   s := s + '   (ID = ' + _db(theData.id) + ') ';
   result := cmd_bySQL(s);
@@ -11277,6 +11277,7 @@ begin
   s := s + '    ,Currency ' + #10;
   s := s + '    ,BookKeepCode ' + #10;
   s := s + '    ,NumberBase ' + #10;
+  s := s + '    ,StockItem' + #10;
   s := s + '   ) ' + #10;
   s := s + '   VALUES ' + #10;
   s := s + '   ( ' + #10;
@@ -11295,6 +11296,7 @@ begin
   s := s + '  , ' + _db(theData.Currency) + #10;
   s := s + '  , ' + _db(theData.BookKeepCode) + #10;
   s := s + '  , ' + _db(theData.NumberBase) + #10;
+  s := s + '  , ' + _db(theData.StockItem) + #10;
   s := s + '   ) ';
   result := cmd_bySQL(s);
   if result then
@@ -11330,6 +11332,7 @@ begin
       theData.Currency := rSet.fieldbyname('Currency').asString;
       theData.BookKeepCode := rSet.fieldbyname('BookKeepCode').asString;
       theData.NumberBase := rSet.fieldbyname('NumberBase').asString;
+      theData.StockItem:= rSet.fieldbyname('StockItem').asBoolean;
       result := true;
     end;
   finally

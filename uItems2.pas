@@ -95,7 +95,7 @@ uses
   dxSkinLondonLiquidSky, dxSkinMoneyTwins, dxSkinOffice2007Black, dxSkinOffice2007Blue, dxSkinOffice2007Green, dxSkinOffice2007Pink,
   dxSkinOffice2007Silver, dxSkinOffice2010Black, dxSkinOffice2010Blue, dxSkinOffice2010Silver, dxSkinPumpkin, dxSkinSeven,
   dxSkinSevenClassic, dxSkinSharp, dxSkinSharpPlus, dxSkinSilver, dxSkinSpringTime, dxSkinStardust, dxSkinSummer2008, dxSkinValentine,
-  dxSkinVS2010, dxSkinWhiteprint, dxSkinXmas2008Blue, cxDropDownEdit
+  dxSkinVS2010, dxSkinWhiteprint, dxSkinXmas2008Blue, cxDropDownEdit, cxCheckBox
 
   ;
 
@@ -132,7 +132,7 @@ type
     tvDataRecId: TcxGridDBColumn;
     tvDataID: TcxGridDBColumn;
     tvDataActive: TcxGridDBColumn;
-    m_Iyem: TWideStringField;
+    m_Item: TWideStringField;
     m_MinibarItem: TBooleanField;
     m_Description: TWideStringField;
     m_Price: TFloatField;
@@ -165,6 +165,8 @@ type
     timFilter: TTimer;
     m_NumberBase: TWideStringField;
     tvDataNumberBase: TcxGridDBColumn;
+    m_StockItem: TBooleanField;
+    tvDataStockItem: TcxGridDBColumn;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -180,7 +182,6 @@ type
     procedure btnCancelClick(Sender: TObject);
     procedure tvDataDataControllerFilterChanged(Sender: TObject);
     procedure tvDataDataControllerSortingChanged(Sender: TObject);
-    procedure btnOtherClick(Sender: TObject);
     procedure btnDeleteClick(Sender: TObject);
     procedure mnuiPrintClick(Sender: TObject);
     procedure mnuiAllowGridEditClick(Sender: TObject);
@@ -212,6 +213,8 @@ type
 
     Lookup : Boolean;
     zSortStr         : string;
+    zData: recItemHolder;
+    zAct: TActTableAction;
 
     Procedure fillGridFromDataset(sGoto : string);
     procedure fillHolder;
@@ -222,11 +225,7 @@ type
     procedure GetSelectedItems(theData: TrecItemHolderList);
     function NumItemsSelected: Integer;
     procedure StopFilter;
-
-  public
-    { Public declarations }
-    zAct   : TActTableAction;
-    zData  : recItemHolder;
+    function CopyDatasetToRecItem:recItemHolder;
   end;
 
 function openItems(act : TActTableAction; Lookup : Boolean; var theData : recItemHolder) : boolean;
@@ -249,6 +248,7 @@ uses
   , uFrmTaxItemLink
   , uBookKeepingCodes
   , uUtils
+  , UITypes
   ;
 
 
@@ -317,10 +317,30 @@ begin
   result := tvData.Controller.SelectedRecordCount-1;
 end;
 
+function TfrmItems2.CopyDatasetToRecItem:recItemHolder;
+begin
+  Result.ID                    := m_ID.AsInteger;
+  Result.Active                := m_Active.AsBoolean;
+  Result.Description           := m_Description.AsString;
+  Result.Item                  := m_Item.asString;
+  Result.Price                 := m_Price.AsFloat;
+  Result.Itemtype              := m_Itemtype.AsString;
+  Result.AccountKey            := m_AccountKey.AsString;
+  Result.MinibarItem           := m_MinibarItem.AsBoolean;
+  Result.SystemItem            := m_SystemItem.AsBoolean;
+  Result.RoomRentitem          := m_RoomRentitem.AsBoolean;
+  Result.ReservationItem       := m_ReservationItem.AsBoolean;
+  Result.Hide                  := m_Hide.AsBoolean;
+  Result.Currency              := m_Currency.AsString;
+  Result.BookKeepCode          := m_BookKeepCode.AsString;
+  Result.NumberBase            := m_NumberBase.AsString;
+  Result.Stockitem             := m_Stockitem.AsBoolean;
+end;
+
+
 procedure TfrmItems2.GetSelectedItems(theData : TrecItemHolderList);
 var item : TrecItemHolder;
     i : Integer;
-    RecID : Integer;
 begin
   theData.Clear;
   if NumItemsSelected > 0 then
@@ -333,22 +353,7 @@ begin
           item := TrecItemHolder.Create;
           with item do
           begin
-            recHolder.ID                    := m_.FieldByName('ID').AsInteger;
-            recHolder.Active                := m_['Active'];
-            recHolder.Description           := m_['Description'];
-            recHolder.Item                  := m_['Item'];
-            recHolder.Price                 := m_['Price'];
-            recHolder.Itemtype              := m_['Itemtype'];
-            recHolder.AccountKey            := m_['AccountKey'];
-            recHolder.MinibarItem           := m_['MinibarItem'];
-            recHolder.SystemItem            := m_['SystemItem'];
-            recHolder.RoomRentitem          := m_['RoomRentitem'];
-            recHolder.ReservationItem       := m_['ReservationItem'];
-            recHolder.Hide                  := m_['Hide'];
-            recHolder.Currency              := m_['Currency'];
-            recHolder.BookKeepCode          := m_['BookKeepCode'];
-            recHolder.NumberBase            := m_['NumberBase'];
-
+            recHolder := CopyDatasetToRecItem;
             theData.Add(item);
           end;
       end;
@@ -366,7 +371,6 @@ end;
 
 Procedure TfrmItems2.fillGridFromDataset(sGoto : string);
 var
-  s    : string;
   rSet : TRoomerDataSet;
   active : boolean;
 begin
@@ -410,37 +414,8 @@ end;
 procedure TfrmItems2.fillHolder;
 begin
   initItemHolder(zData);
-  zData.ID                    := m_.FieldByName('ID').AsInteger;
-  zData.Active                := m_['Active'];
-  zData.Description           := m_['Description'];
-  zData.Item                  := m_['Item'];
-  zData.Price                 := m_['Price'];
-  zData.Itemtype              := m_['Itemtype'];
-  zData.AccountKey            := m_['AccountKey'];
-  zData.MinibarItem           := m_['MinibarItem'];
-  zData.SystemItem            := m_['SystemItem'];
-  zData.RoomRentitem          := m_['RoomRentitem'];
-  zData.ReservationItem       := m_['ReservationItem'];
-  zData.Hide                  := m_['Hide'];
-  zData.Currency              := m_['Currency'];
-  zData.BookKeepCode          := m_['BookKeepCode'];
-  zData.NumberBase            := m_['NumberBase'];
+  zData := CopyDatasetToRecItem;
 end;
-
-
-//    ID              : integer ;
-//    Active          : boolean ;
-//    Description     : string  ;
-//    Item            : string  ;
-//    Price           : double  ;
-//    Itemtype        : string  ;
-//    AccountKey      : string  ;
-//    MinibarItem     : boolean ;
-//    SystemItem      : boolean ;
-//    RoomRentitem    : boolean ;
-//    ReservationItem : boolean ;
-//    Hide            :boolean  ;
-//    Currency        :string   ;
 
 
 procedure TfrmItems2.changeAllowgridEdit;
@@ -459,7 +434,8 @@ begin
   tvDataHide.Options.Editing            := zAllowGridEdit;
   tvDataCurrency.Options.Editing        := zAllowGridEdit;
   tvDataBookKeepCode.Options.Editing    := zAllowGridEdit;
-  tvDataNumberBase.Options.Editing    := zAllowGridEdit;
+  tvDataNumberBase.Options.Editing      := zAllowGridEdit;
+  tvDataStockItem.Options.Editing       := zAllowGridEdit;
 end;
 
 
@@ -519,7 +495,6 @@ end;
 
 procedure TfrmItems2.applyFilter;
 var i : Integer;
-    filter : String;
 
     procedure RestartTimer;
     begin
@@ -543,13 +518,6 @@ begin
         tvData.DataController.Filter.Root.AddItem(tvData.Columns[i], foLike, '%'+edFilter.Text+'%', '%'+edFilter.Text+'%');
     tvData.DataController.Filter.Active := True;
   end;
-//begin
-//  tvData.DataController.Filter.Options := [fcoCaseInsensitive];
-//  tvData.DataController.Filter.Root.BoolOperatorKind := fboOr;
-//  tvData.DataController.Filter.Root.Clear;
-//  tvData.DataController.Filter.Root.AddItem(tvDataItem,foLike,'%'+edFilter.Text+'%','%'+edFilter.Text+'%');
-//  tvData.DataController.Filter.Root.AddItem(tvDataDescription,foLike,'%'+edFilter.Text+'%','%'+edFilter.Text+'%');
-//  tvData.DataController.Filter.Active := True;
 end;
 
 
@@ -567,7 +535,6 @@ begin
   //**
   zFirstTime  := true;
   zAct        := actNone;
-  //sButton1.Visible := True;
 end;
 
 procedure TfrmItems2.FormDestroy(Sender: TObject);
@@ -704,23 +671,7 @@ begin
   if zFirstTime then exit;
   initItemHolder(zData);
 
-//  dataset['Item'] := trim(dataset['Item']);
-
-  zData.ID       := dataset.FieldByName('ID').AsInteger;
-  zData.Active              := dataset['Active'];
-  zData.Description         := dataset['Description'];
-  zData.Item                := dataset['Item'];
-  zData.Price               := dataset['Price'];
-  zData.Itemtype            := dataset['Itemtype'];
-  zData.AccountKey          := dataset['AccountKey'];
-  zData.MinibarItem         := dataset['MinibarItem'];
-  zData.SystemItem          := dataset['SystemItem'];
-  zData.RoomRentitem        := dataset['RoomRentitem'];
-  zData.ReservationItem     := dataset['ReservationItem'];
-  zData.Hide                := dataset['Hide'];
-  zData.Currency            := dataset['Currency'];
-  zData.BookKeepCode        := dataset['BookKeepCode'];
-  zData.NumberBase          := dataset['NumberBase'];
+  zData := CopyDatasetToRecItem;
 
   if tvData.DataController.DataSource.State = dsEdit then
   begin
@@ -745,7 +696,7 @@ begin
   end;
   if tvData.DataController.DataSource.State = dsInsert then
   begin
-    if dataset.FieldByName('itemType').AsString = ''  then
+    if m_Itemtype.AsString = ''  then
     begin
     //  showmessage('Item type is requierd - set value or use [ESC] to cancel ');
 	    showmessage(GetTranslatedText('shTx_Items2_ItemTypeRequired'));
@@ -753,7 +704,7 @@ begin
       abort;
       exit;
     end;
-    if dataset.FieldByName('Item').AsString = ''  then
+    if m_Item.AsString = ''  then
     begin
     //  showmessage('Item is requierd - set value or use [ESC] to cancel ');
 	    showmessage(GetTranslatedText('shTx_Items2_ItemRequired'));
@@ -763,7 +714,7 @@ begin
     end;
     if ins_Item(zData,nID) then
     begin
-      m_.FieldByName('ID').AsInteger := nID;
+      m_ID.AsInteger := nID;
       glb.ForceTableRefresh;
     end else
     begin
@@ -800,6 +751,7 @@ begin
   dataset['Currency']        := ctrlGetString('NativeCurrency'); // nvarchar(5); //
   dataset['BookKeepCode']    := ''; // nvarchar(5); //
   dataset['NumberBase']      := 'USER_EDIT'; // nvarchar(5); //
+  dataset['StocKitem']       := false;
 end;
 
 procedure TfrmItems2.btnTaxLinksClick(Sender: TObject);
@@ -818,21 +770,19 @@ procedure TfrmItems2.tvDataDescriptionPropertiesValidate(Sender: TObject;
 var
   CurrValue : string;
 begin
-  currValue := m_.fieldbyname('Description').asstring;
+  currValue := m_Description.asstring;
 
   error := false;
   if trim(displayValue) = '' then
   begin
     error := true;
-   // errortext := 'Description '+' - '+'is required - Use ESC to cancel';
-	errortext := GetTranslatedText('shTx_Items2_DescriptionIsRequired');
+  	errortext := GetTranslatedText('shTx_Items2_DescriptionIsRequired');
     exit;
   end;
 
   if hdata.RoomrateDescriptionExist(displayValue) then
   begin
     error := true;
-    //errortext := displayvalue+'Nýtt gildi er til í annari færslu. Notið ESC-hnappin til að hætta við';
     errortext := displayvalue+'  '+GetTranslatedText('shNewValueExistInAnotherRecor');
     exit
   end;
@@ -859,7 +809,6 @@ begin
   if trim(displayValue) = '' then
   begin
     error := true;
-   // errortext := 'Item code '+' - '+'is required - Use ESC to cancel';
 	  errortext := GetTranslatedText('shTx_Items2_ItemCodeIsRequired');
     exit;
   end;
@@ -870,16 +819,6 @@ begin
     errortext := displayvalue+'  '+GetTranslatedText('shNewValueExistInAnotherRecor');
     exit
   end;
-
-//  if tvData.DataController.DataSource.State = dsEdit then
-//  begin
-//    if hdata.itemExistsInOther(currValue) then
-//    begin
-//      error := true;
-//      errortext := displayvalue+' - '+GetTranslatedText('shOldValueUsedInRelatedDataC');
-//      exit;
-//    end;
-//  end;
 end;
 
 procedure TfrmItems2.tvDataItemtypePropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
@@ -893,7 +832,7 @@ begin
   if theData.Itemtype <> '' then
   begin
     if tvData.DataController.DataSource.State <> dsInsert then m_.Edit;
-    m_['ItemType'] := theData.itemType;
+    m_ItemType.AsString := theData.itemType;
   end;
 end;
 
@@ -925,16 +864,18 @@ begin
   if NOT assigned(financeLookupList) then
     financeLookupList := d.RetrieveFinancesKeypair(FKP_PRODUCTS);
 
-  AccountKeyValue := m_.FieldByName('AccountKey').asString;
+  AccountKeyValue := m_AccountKey.asString;
   keyValue := selectFromKeyValuePairs('Products', AccountKeyValue, financeLookupList);
   if Assigned(keyValue) then
   begin
     m_.Edit;
-    m_.fieldbyname('AccountKey').AsString := keyValue.Key;
-    m_.Post;
-  end else
-  begin
-    //NotOK
+    try
+      m_AccountKey.AsString := keyValue.Key;
+      m_.Post;
+    except
+      m_.Cancel;
+      raise;
+    end;
   end;
 end;
 
@@ -943,13 +884,18 @@ var s : String;
 begin
   s := '';
   if NOT m_.Eof then
-    s := m_['BookKeepCode'];
+    s := m_BookKeepCode.AsString;
   s := BookKeepingCodes(actLookUp, s);
   if s <> '' then
   begin
     m_.Edit;
-    m_['BookKeepCode'] := s;
-    m_.Post;
+    try
+      m_BookKeepCode.AsString := s;
+      m_.Post;
+    except
+      m_.Cancel;
+      raise;
+    end;
   end;
 end;
 
@@ -988,11 +934,6 @@ begin
   fillHolder;
 end;
 
-procedure TfrmItems2.btnOtherClick(Sender: TObject);
-begin
-  //**
-end;
-
 procedure TfrmItems2.btnCancelClick(Sender: TObject);
 begin
   initItemHolder(zData);
@@ -1015,18 +956,18 @@ begin
     config := d.roomerMainDataSet.Hotelconfigurations_Entities_FindAll;
     if config[0].forceExternalProductIdCorrectness = 1 then
     begin
-      screen.Cursor := crHourglass;
       m_.DisableControls;
       try
+        screen.Cursor := crHourglass;
         m_.First;
         if NOT m_.Eof then
           if NOT assigned(financeLookupList) then
             financeLookupList := d.RetrieveFinancesKeypair(FKP_PRODUCTS);
         while NOT m_.Eof do
         begin
-          if ((m_['AccountKey'] = '') OR NOT d.KeyExists(financeLookupList, m_['AccountKey'])) and (m_['active'] = true) then
+          if ((m_AccountKey.AsString = '') OR NOT d.KeyExists(financeLookupList, m_AccountKey.AsString)) and (m_Active.AsBoolean) then
           begin
-            answer := MessageDlg(format('Product %s (%s) needs to have an account key for bookkeeping.', [m_['Item'], m_['Description']]), mtWarning, [mbOk, mbIgnore, mbCancel], 0, mbOk);
+            answer := MessageDlg(format('Product %s (%s) needs to have an account key for bookkeeping.', [m_Item.AsString, m_Description.AsString]), mtWarning, [mbOk, mbIgnore, mbCancel], 0, mbOk);
             if answer = mrCancel then
             begin
               result := True;

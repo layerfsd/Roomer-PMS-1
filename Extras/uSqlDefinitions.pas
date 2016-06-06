@@ -5014,6 +5014,7 @@ select_Item_ByItem : string =
 '    ,Currency '#10+
 '    ,BookKeepCode '#10+
 '    ,NumberBase '#10+
+'    ,Stockitem'#10+
 '  FROM '#10+
 '    items '#10+
 '  WHERE '#10+
