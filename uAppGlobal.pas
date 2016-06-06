@@ -448,7 +448,7 @@ begin
   tablesList.Add('channelplancodes', TTableEntity.Create('channelplancodes', true));
 
   FPreviousGuestsReload := TGetThreadedData.Create;
-  FPreviousGuestsSet := CreateNewDataset;
+  FPreviousGuestsSet := nil;
   ReloadPreviousGuests;
 
   LoadStaticTables(true);
@@ -461,7 +461,6 @@ begin
   FNumAvailType.free;
   ClearRoomFloors;
   FRoomFloors.free;
-  try FreeAndNil(FPreviousGuestsSet); except end;
   FPreviousGuestsReload.Free;
   ClearTables;
   tablesList.Clear;
@@ -1951,9 +1950,7 @@ end;
 
 procedure CloseAppSettings;
 begin
-  if Assigned(glb) then
-    glb.Free;
-  glb := nil;
+  FreeAndNil(glb);
 end;
 
 { TSet_Of_Integer }
