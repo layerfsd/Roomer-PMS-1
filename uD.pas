@@ -3,6 +3,8 @@ unit uD;
 
 interface
 
+{$I Roomer.inc}
+
 uses
     SysUtils
   , TypInfo
