@@ -2012,7 +2012,7 @@ begin
 {$IFDEF DEBUG}
       CopyToClipboard(aSql + #13#10#13#10 + '-- ' + sResult);
 {$ENDIF}
-      raise Exception.Create('command execution failed');
+      raise Exception.Create('command execution failed:' + sResult);
     end;
   end;
   FNumberOfAffectedRows := result;

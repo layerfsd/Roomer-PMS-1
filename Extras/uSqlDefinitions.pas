@@ -5015,11 +5015,12 @@ select_Item_ByItem : string =
 '    ,BookKeepCode '#10+
 '    ,NumberBase '#10+
 '    ,Stockitem'#10+
+'    ,s.TotalStock'#10+
 '  FROM '#10+
 '    items '#10+
+'    LEFT OUTER JOIN stockitems s on s.itemid=items.ID '#10+
 '  WHERE '#10+
 '    item = %d ';
-//  @Item varchar(20)
 
 
 select_location_ByLocation : string =

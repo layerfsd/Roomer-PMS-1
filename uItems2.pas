@@ -95,7 +95,7 @@ uses
   dxSkinLondonLiquidSky, dxSkinMoneyTwins, dxSkinOffice2007Black, dxSkinOffice2007Blue, dxSkinOffice2007Green, dxSkinOffice2007Pink,
   dxSkinOffice2007Silver, dxSkinOffice2010Black, dxSkinOffice2010Blue, dxSkinOffice2010Silver, dxSkinPumpkin, dxSkinSeven,
   dxSkinSevenClassic, dxSkinSharp, dxSkinSharpPlus, dxSkinSilver, dxSkinSpringTime, dxSkinStardust, dxSkinSummer2008, dxSkinValentine,
-  dxSkinVS2010, dxSkinWhiteprint, dxSkinXmas2008Blue, cxDropDownEdit, cxCheckBox
+  dxSkinVS2010, dxSkinWhiteprint, dxSkinXmas2008Blue, cxDropDownEdit, cxCheckBox, cxCalendar, cxCurrencyEdit
 
   ;
 
@@ -120,29 +120,29 @@ type
     panBtn: TsPanel;
     btnCancel: TsButton;
     BtnOk: TsButton;
-    DS: TDataSource;
+    dsItems: TDataSource;
     grPrinter: TdxComponentPrinter;
     prLink_grData: TdxGridReportLink;
-    m_: TdxMemData;
+    m_Items: TdxMemData;
     grData: TcxGrid;
     tvData: TcxGridDBTableView;
     lvData: TcxGridLevel;
-    m_ID: TIntegerField;
-    m_Active: TBooleanField;
+    m_ItemsID: TIntegerField;
+    m_ItemsActive: TBooleanField;
     tvDataRecId: TcxGridDBColumn;
     tvDataID: TcxGridDBColumn;
     tvDataActive: TcxGridDBColumn;
-    m_Item: TWideStringField;
-    m_MinibarItem: TBooleanField;
-    m_Description: TWideStringField;
-    m_Price: TFloatField;
-    m_Itemtype: TWideStringField;
-    m_AccountKey: TWideStringField;
-    m_Hide: TBooleanField;
-    m_SystemItem: TBooleanField;
-    m_RoomRentitem: TBooleanField;
-    m_ReservationItem: TBooleanField;
-    m_Currency: TWideStringField;
+    m_ItemsItem: TWideStringField;
+    m_ItemsMinibarItem: TBooleanField;
+    m_ItemsDescription: TWideStringField;
+    m_ItemsPrice: TFloatField;
+    m_ItemsItemtype: TWideStringField;
+    m_ItemsAccountKey: TWideStringField;
+    m_ItemsHide: TBooleanField;
+    m_ItemsSystemItem: TBooleanField;
+    m_ItemsRoomRentitem: TBooleanField;
+    m_ItemsReservationItem: TBooleanField;
+    m_ItemsCurrency: TWideStringField;
     tvDataItem: TcxGridDBColumn;
     tvDataDescription: TcxGridDBColumn;
     tvDataPrice: TcxGridDBColumn;
@@ -159,22 +159,35 @@ type
     FormStore: TcxPropertiesStore;
     btnTaxLinks: TsButton;
     chkActive: TsCheckBox;
-    m_BreakfastItem: TBooleanField;
-    m_BookKeepCode: TWideStringField;
+    m_ItemsBreakfastItem: TBooleanField;
+    m_ItemsBookKeepCode: TWideStringField;
     tvDataBookKeepCode: TcxGridDBColumn;
     timFilter: TTimer;
-    m_NumberBase: TWideStringField;
+    m_ItemsNumberBase: TWideStringField;
     tvDataNumberBase: TcxGridDBColumn;
-    m_StockItem: TBooleanField;
+    m_ItemsStockItem: TBooleanField;
     tvDataStockItem: TcxGridDBColumn;
+    m_StockitemPrices: TdxMemData;
+    dsprices: TDataSource;
+    m_StockitemPricesitemID: TIntegerField;
+    m_StockitemPricesprice: TFloatField;
+    lvPrices: TcxGridLevel;
+    tvPrices: TcxGridDBTableView;
+    tvPricesitemID: TcxGridDBColumn;
+    tvPricesfromdate: TcxGridDBColumn;
+    tvPricesprice: TcxGridDBColumn;
+    m_StockitemPricesfromdate: TDateTimeField;
+    m_StockitemPricesID: TIntegerField;
+    m_ItemsTotalStock: TIntegerField;
+    tvDataTotalStock: TcxGridDBColumn;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormKeyPress(Sender: TObject; var Key: Char);
-    procedure m_BeforeDelete(DataSet: TDataSet);
-    procedure m_BeforeInsert(DataSet: TDataSet);
-    procedure m_BeforePost(DataSet: TDataSet);
-    procedure m_NewRecord(DataSet: TDataSet);
+    procedure m_ItemsBeforeDelete(DataSet: TDataSet);
+    procedure m_ItemsBeforeInsert(DataSet: TDataSet);
+    procedure m_ItemsBeforePost(DataSet: TDataSet);
+    procedure m_ItemsNewRecord(DataSet: TDataSet);
     procedure tvDataDescriptionPropertiesValidate(Sender: TObject;
       var DisplayValue: Variant; var ErrorText: TCaption; var Error: Boolean);
     procedure tvDataDblClick(Sender: TObject);
@@ -198,17 +211,26 @@ type
     procedure tvDataAccountKeyPropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure btnTaxLinksClick(Sender: TObject);
-    procedure FormDestroy(Sender: TObject);
     procedure chkActiveClick(Sender: TObject);
     procedure tvDataBookKeepCodePropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
-    procedure m_FilterRecord(DataSet: TDataSet; var Accept: Boolean);
+    procedure m_ItemsFilterRecord(DataSet: TDataSet; var Accept: Boolean);
     procedure timFilterTimer(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure tvDataDataControllerDetailExpanding(ADataController: TcxCustomDataController; ARecordIndex: Integer;
+      var AAllow: Boolean);
+    procedure m_StockitemPricesNewRecord(DataSet: TDataSet);
+    procedure m_ItemsPriceGetText(Sender: TField; var Text: string; DisplayText: Boolean);
+    procedure tvDataPriceCustomDrawCell(Sender: TcxCustomGridTableView; ACanvas: TcxCanvas;
+      AViewInfo: TcxGridTableDataCellViewInfo; var ADone: Boolean);
+    procedure m_StockitemPricesBeforePost(DataSet: TDataSet);
+    procedure m_StockitemPricesBeforeDelete(DataSet: TDataSet);
+    procedure tvDataEditing(Sender: TcxCustomGridTableView; AItem: TcxCustomGridTableItem; var AAllow: Boolean);
+    procedure m_ItemsTotalStockGetText(Sender: TField; var Text: string; DisplayText: Boolean);
   private
     { Private declarations }
     financeLookupList : TKeyPairList;
     zFirstTime       : boolean;
-    zAllowGridEdit   : boolean;
+    FAllowGridEdit   : boolean;
     zFilterOn        : boolean;
 
     Lookup : Boolean;
@@ -218,7 +240,6 @@ type
 
     Procedure fillGridFromDataset(sGoto : string);
     procedure fillHolder;
-    procedure changeAllowgridEdit;
     Procedure chkFilter;
     procedure applyFilter;
     function AssertCorrectness : Boolean;
@@ -226,6 +247,10 @@ type
     function NumItemsSelected: Integer;
     procedure StopFilter;
     function CopyDatasetToRecItem:recItemHolder;
+    procedure SetAllowGridEdit(const Value: boolean);
+    function CopyStockItemPricesToRec: recStockItemPricesHolder;
+
+    property AllowGridEdit: boolean read FAllowGridEdit write SetAllowGridEdit;
   end;
 
 function openItems(act : TActTableAction; Lookup : Boolean; var theData : recItemHolder) : boolean;
@@ -319,22 +344,32 @@ end;
 
 function TfrmItems2.CopyDatasetToRecItem:recItemHolder;
 begin
-  Result.ID                    := m_ID.AsInteger;
-  Result.Active                := m_Active.AsBoolean;
-  Result.Description           := m_Description.AsString;
-  Result.Item                  := m_Item.asString;
-  Result.Price                 := m_Price.AsFloat;
-  Result.Itemtype              := m_Itemtype.AsString;
-  Result.AccountKey            := m_AccountKey.AsString;
-  Result.MinibarItem           := m_MinibarItem.AsBoolean;
-  Result.SystemItem            := m_SystemItem.AsBoolean;
-  Result.RoomRentitem          := m_RoomRentitem.AsBoolean;
-  Result.ReservationItem       := m_ReservationItem.AsBoolean;
-  Result.Hide                  := m_Hide.AsBoolean;
-  Result.Currency              := m_Currency.AsString;
-  Result.BookKeepCode          := m_BookKeepCode.AsString;
-  Result.NumberBase            := m_NumberBase.AsString;
-  Result.Stockitem             := m_Stockitem.AsBoolean;
+  Result.ID                    := m_ItemsID.AsInteger;
+  Result.Active                := m_ItemsActive.AsBoolean;
+  Result.Description           := m_ItemsDescription.AsString;
+  Result.Item                  := m_ItemsItem.asString;
+  Result.Price                 := m_ItemsPrice.AsFloat;
+  Result.Itemtype              := m_ItemsItemtype.AsString;
+  Result.AccountKey            := m_ItemsAccountKey.AsString;
+  Result.MinibarItem           := m_ItemsMinibarItem.AsBoolean;
+  Result.SystemItem            := m_ItemsSystemItem.AsBoolean;
+  Result.RoomRentitem          := m_ItemsRoomRentitem.AsBoolean;
+  Result.ReservationItem       := m_ItemsReservationItem.AsBoolean;
+  Result.Hide                  := m_ItemsHide.AsBoolean;
+  Result.Currency              := m_ItemsCurrency.AsString;
+  Result.BookKeepCode          := m_ItemsBookKeepCode.AsString;
+  Result.NumberBase            := m_ItemsNumberBase.AsString;
+  Result.Stockitem             := m_ItemsStockitem.AsBoolean;
+  Result.TotalStock            := m_ItemsTotalStock.AsInteger;
+end;
+
+
+function TfrmItems2.CopyStockItemPricesToRec: recStockitemPricesHolder;
+begin
+  Result.ID         := m_StockitemPricesID.Asinteger;
+  Result.ItemID     := m_StockitemPricesitemID.AsInteger;
+  Result.FromDate   := m_StockitemPricesfromdate.AsDateTime;
+  result.price      := m_StockitemPricesprice.AsFloat;
 end;
 
 
@@ -345,11 +380,11 @@ begin
   theData.Clear;
   if NumItemsSelected > 0 then
   begin
-    m_.DisableControls;
+    m_Items.DisableControls;
     try
       for i:= 0 To tvData.Controller.SelectedRecordCount-1 Do
       begin
-        m_.RecNo := tvData.Controller.SelectedRecords[I].Index +  1;
+        m_Items.RecNo := tvData.Controller.SelectedRecords[I].Index +  1;
           item := TrecItemHolder.Create;
           with item do
           begin
@@ -358,9 +393,9 @@ begin
           end;
       end;
     finally
-       m_.EnableControls;
+       m_Items.EnableControls;
     end;
-    m_.First;
+    m_Items.First;
   end else
   begin
     item := TrecItemHolder.Create;
@@ -392,15 +427,15 @@ begin
     rSet.First;
     if NOT rSet.Eof then
     begin
-      if m_.active then m_.Close;
-      m_.LoadFromDataSet(rSet);
+      if m_Items.active then m_Items.Close;
+      m_Items.LoadFromDataSet(rSet);
       if sGoto = '' then
       begin
-        m_.First;
+        m_Items.First;
       end else
       begin
         try
-          m_.Locate('item',sGoto,[]);
+          m_Items.Locate('item',sGoto,[]);
         except
         end;
       end;
@@ -409,6 +444,7 @@ begin
     rSet.Filter := '';
     rSet.Filtered := False;
   end;
+
 end;
 
 procedure TfrmItems2.fillHolder;
@@ -416,28 +452,6 @@ begin
   initItemHolder(zData);
   zData := CopyDatasetToRecItem;
 end;
-
-
-procedure TfrmItems2.changeAllowgridEdit;
-begin
-  tvDataID.Options.Editing              := false;
-  tvDataActive.Options.Editing          := zAllowGridEdit;
-  tvDataDescription.Options.Editing     := zAllowGridEdit;
-  tvDataItem.Options.Editing            := zAllowGridEdit;
-  tvDataPrice.Options.Editing           := zAllowGridEdit;
-  tvDataItemtype.Options.Editing        := zAllowGridEdit;
-  tvDataAccountKey.Options.Editing      := zAllowGridEdit;
-  tvDataMinibarItem.Options.Editing     := zAllowGridEdit;
-  tvDataSystemItem.Options.Editing      := zAllowGridEdit;
-  tvDataRoomRentitem.Options.Editing    := zAllowGridEdit;
-  tvDataReservationItem.Options.Editing := zAllowGridEdit;
-  tvDataHide.Options.Editing            := zAllowGridEdit;
-  tvDataCurrency.Options.Editing        := zAllowGridEdit;
-  tvDataBookKeepCode.Options.Editing    := zAllowGridEdit;
-  tvDataNumberBase.Options.Editing      := zAllowGridEdit;
-  tvDataStockItem.Options.Editing       := zAllowGridEdit;
-end;
-
 
 procedure TfrmItems2.chkActiveClick(Sender: TObject);
 begin
@@ -466,12 +480,22 @@ begin
   end;
 end;
 
+procedure TfrmItems2.SetAllowGridEdit(const Value: boolean);
+begin
+  FAllowGridEdit := Value;
+  tvData.OptionsData.Editing := FAllowGridEdit;
+  tvDataID.Options.Editing := false;
+  tvPrices.OptionsData.Editing := FAllowGridEdit;
+
+  mnuiAllowGridEdit.Checked := FAllowGridEdit;
+end;
+
 procedure TfrmItems2.StopFilter;
 begin
   if tvData.DataController.Filter.AutoDataSetFilter then
   begin
     timFilter.Enabled := False;
-    m_.filtered := False;
+    m_Items.filtered := False;
     tvData.DataController.Filter.Active := False;
     tvData.DataController.Filter.Changed;
   end else
@@ -506,7 +530,7 @@ var i : Integer;
 begin
   if tvData.DataController.Filter.AutoDataSetFilter then
   begin
-    m_.filtered := False;
+    m_Items.filtered := False;
     RestartTimer;
   end else
   begin
@@ -537,45 +561,42 @@ begin
   zAct        := actNone;
 end;
 
-procedure TfrmItems2.FormDestroy(Sender: TObject);
-begin
-  glb.EnableOrDisableTableRefresh('items', True);
-end;
-
 procedure TfrmItems2.FormShow(Sender: TObject);
+var
+  rSet: TRoomerDataset;
 begin
+  zFirstTime := true;
   glb.EnableOrDisableTableRefresh('items', False);
+  glb.EnableOrDisableTableRefresh('stockitemprices', False);
 //**
   panBtn.Visible := False;
   sbMain.Visible := false;
 
   fillGridFromDataset(zData.item);
-  zFirstTime := true;
+
+  rSet := glb.StockitemPrices;
+//  rSet.Sort := 'fromdate';
+  m_StockitemPrices.LoadFromDataSet(rSet);
+
   sbMain.SimpleText := zSortStr;
 
-  if ZAct = actLookup then
-  begin
-    mnuiAllowGridEdit.Checked := False;
-    panBtn.Visible := true;
-  end else
-  begin
-    mnuiAllowGridEdit.Checked := true;
-    sbMain.Visible := true;
-  end;
-  //-C
-  zAllowGridEdit := mnuiAllowGridEdit.Checked;
-  changeAllowGridEdit;
+  AllowGridEdit := (ZAct <> actLookup);
+  panBtn.Visible := (Zact = actLookup);
+  sbMain.Visible := (Zact = actLookup);
+
   chkFilter;
   zFirstTime := false;
 
   tvData.DataController.DataModeController.GridMode := (ZAct = actLookup);
   tvData.DataController.Filter.AutoDataSetFilter := tvData.DataController.DataModeController.GridMode;
   tvData.DataController.MultiSelect := true;
+
+  tvPrices.DataController.ClearSorting(False);
+  tvPricesfromdate.SortOrder := soDescending;
 end;
 
 procedure TfrmItems2.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
-  glb.EnableOrDisableTableRefresh('items', True);
   if tvdata.DataController.DataSet.State = dsInsert then
   begin
     tvdata.DataController.Post;
@@ -584,6 +605,8 @@ begin
   begin
     tvdata.DataController.Post;
   end;
+  glb.EnableOrDisableTableRefresh('items', True);
+  glb.EnableOrDisableTableRefresh('stockitemprices', True);
 end;
 
 procedure TfrmItems2.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -594,32 +617,24 @@ end;
 procedure TfrmItems2.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
   if Key = VK_ESCAPE then
-    btnCancel.Click;
+  begin
+    if m_Items.State in [dsInsert, dsEdit] then
+      m_Items.Cancel
+    else if m_StockitemPrices.State in [dsInsert, dsEdit] then
+      m_StockitemPrices.Cancel
+    else
+      btnCancel.Click;
+  end;
 end;
 
 procedure TfrmItems2.FormKeyPress(Sender: TObject; var Key: Char);
 begin
-  if ZAct = actLookup then
+  if (ZAct = actLookup) and (ActiveControl <> edFilter) then
   begin
     if key = chr(13) then
-    begin
-      if activecontrol = edFilter then
-      begin
-      end else
-      begin
-        btnOk.click;
-      end;
-    end;
-
-    if key = chr(27) then
-    begin
-      if activecontrol = edFilter then
-      begin
-      end else
-      begin
-        btnCancel.click;
-      end;
-    end;
+      btnOk.click
+    else if key = chr(27) then
+      btnCancel.click;
   end;
 end;
 
@@ -628,7 +643,7 @@ end;
 // memory table
 ////////////////////////////////////////////////////////////////////////////////////////
 
-procedure TfrmItems2.m_BeforeDelete(DataSet: TDataSet);
+procedure TfrmItems2.m_ItemsBeforeDelete(DataSet: TDataSet);
 var
   s : string;
 begin
@@ -656,14 +671,54 @@ begin
   end;
 end;
 
-procedure TfrmItems2.m_BeforeInsert(DataSet: TDataSet);
+procedure TfrmItems2.m_ItemsBeforeInsert(DataSet: TDataSet);
 begin
   if zFirstTime then exit;
   tvData.GetColumnByFieldName('Item').Focused := True;
 end;
 
+procedure TfrmItems2.m_StockitemPricesBeforeDelete(DataSet: TDataSet);
+var
+  s: string;
+  lStockItemData: recStockItemPricesHolder;
+begin
+  s := '';
+  s := s+GetTranslatedText('shDeleteStockItemPrice')+chr(10);
+  s := s+GetTranslatedText('shContinue');
 
-procedure TfrmItems2.m_BeforePost(DataSet: TDataSet);
+  if MessageDlg(s,mtConfirmation, [mbYes, mbNo], 0) = mrYes then
+  begin
+    lStockItemData := CopyStockItemPricesToRec;
+    if not Del_StockItemPrice(lStockItemData) then
+      abort;
+  end
+  else
+    abort;
+end;
+
+procedure TfrmItems2.m_StockitemPricesBeforePost(DataSet: TDataSet);
+var
+  lStockItemData: recStockItemPricesHolder;
+  lNewID: integer;
+begin
+  if zFirstTime then exit;
+
+  lStockItemData := CopyStockItemPricesToRec;
+
+  case Dataset.State of
+    dsEdit:   Upd_StockItemprice(lStockItemData);
+    dsInsert: if Ins_StockitemPrice(lStockItemData, lnewID) then
+              begin
+                m_StockitemPricesID.AsInteger := lNewID;
+                glb.ForceTableRefresh;
+              end
+              else
+                Abort;
+  end;
+end;
+
+
+procedure TfrmItems2.m_ItemsBeforePost(DataSet: TDataSet);
 var
  nID : integer;
  oldCode : String;
@@ -679,16 +734,16 @@ begin
     if oldCode <> zData.Item then
       SetForeignKeyCheckValue(0);
     try
-    if UPD_Item(zData) then
-    begin
-      if oldCode <> zData.Item then
-        UpdateItemCode(oldCode, zData.Item);
-       glb.ForceTableRefresh;
-    end else
-    begin
-      abort;
-      exit;
-    end;
+      if UPD_Item(zData) then
+      begin
+        if oldCode <> zData.Item then
+          UpdateItemCode(oldCode, zData.Item);
+         glb.ForceTableRefresh;
+      end else
+      begin
+        abort;
+        exit;
+      end;
     finally
       if oldCode <> zData.Item then
         SetForeignKeyCheckValue(1);
@@ -696,7 +751,7 @@ begin
   end;
   if tvData.DataController.DataSource.State = dsInsert then
   begin
-    if m_Itemtype.AsString = ''  then
+    if m_ItemsItemtype.AsString = ''  then
     begin
     //  showmessage('Item type is requierd - set value or use [ESC] to cancel ');
 	    showmessage(GetTranslatedText('shTx_Items2_ItemTypeRequired'));
@@ -704,7 +759,7 @@ begin
       abort;
       exit;
     end;
-    if m_Item.AsString = ''  then
+    if m_ItemsItem.AsString = ''  then
     begin
     //  showmessage('Item is requierd - set value or use [ESC] to cancel ');
 	    showmessage(GetTranslatedText('shTx_Items2_ItemRequired'));
@@ -714,7 +769,7 @@ begin
     end;
     if ins_Item(zData,nID) then
     begin
-      m_ID.AsInteger := nID;
+      m_ItemsID.AsInteger := nID;
       glb.ForceTableRefresh;
     end else
     begin
@@ -728,13 +783,13 @@ end;
 
 
 
-procedure TfrmItems2.m_FilterRecord(DataSet: TDataSet; var Accept: Boolean);
+procedure TfrmItems2.m_ItemsFilterRecord(DataSet: TDataSet; var Accept: Boolean);
 begin
   if tvData.DataController.Filter.AutoDataSetFilter AND (edFilter.Text <> '') then
     Accept := pos(Lowercase(edFilter.Text), LowerCase(dataset['Description'])) > 0;
 end;
 
-procedure TfrmItems2.m_NewRecord(DataSet: TDataSet);
+procedure TfrmItems2.m_ItemsNewRecord(DataSet: TDataSet);
 begin
   if zFirstTime then exit;
   dataset['Active']          := true;
@@ -752,13 +807,36 @@ begin
   dataset['BookKeepCode']    := ''; // nvarchar(5); //
   dataset['NumberBase']      := 'USER_EDIT'; // nvarchar(5); //
   dataset['StocKitem']       := false;
+  dataset['TotalStock']      := 0;
+end;
+
+procedure TfrmItems2.m_ItemsPriceGetText(Sender: TField; var Text: string; DisplayText: Boolean);
+begin
+  if m_ItemsStockItem.AsBoolean then
+    Text := ''
+  else
+    Text := m_ItemsPrice.AsString;
+end;
+
+procedure TfrmItems2.m_ItemsTotalStockGetText(Sender: TField; var Text: string; DisplayText: Boolean);
+begin
+  if not m_ItemsStockItem.AsBoolean then
+    Text := ''
+  else
+    Text := m_ItemsTotalStock.asString;
+end;
+
+procedure TfrmItems2.m_StockitemPricesNewRecord(DataSet: TDataSet);
+begin
+  if zFirstTime then exit;
+  Dataset['fromdate'] := trunc(now);
 end;
 
 procedure TfrmItems2.btnTaxLinksClick(Sender: TObject);
 begin
   LinkTables('items', 'item,Description', 'ID',
                      'home100.TAXES', 'Description,Tax_Type,Amount,Tax_Base', 'ID',
-                     'home100.ITEM_TAXES', 'ITEM_ID', 'TAX_ID');
+                     'home100.ITEm_ItemsTAXES', 'ITEm_ItemsID', 'TAX_ID');
 end;
 
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -770,7 +848,7 @@ procedure TfrmItems2.tvDataDescriptionPropertiesValidate(Sender: TObject;
 var
   CurrValue : string;
 begin
-  currValue := m_Description.asstring;
+  currValue := m_ItemsDescription.asstring;
 
   error := false;
   if trim(displayValue) = '' then
@@ -798,12 +876,27 @@ begin
   end;
 end;
 
+procedure TfrmItems2.tvDataEditing(Sender: TcxCustomGridTableView; AItem: TcxCustomGridTableItem; var AAllow: Boolean);
+begin
+  with Sender.DataController do
+  begin
+    if (aItem.Index = tvDataPrice.index) then
+      // Don't allow dirct price editing of stockitems
+      aAllow := (Values[FocusedRecordIndex, tvDataStockItem.Index] = False)
+    else if (aItem.Index = tvDataTotalStock.index) then
+      // Only allow totalstock editing when stockitem
+      aAllow := (Values[FocusedRecordIndex, tvDataStockItem.Index] = True)
+    else
+      aAllow := True;
+  end;
+end;
+
 procedure TfrmItems2.tvDataItemPropertiesValidate(Sender: TObject; var DisplayValue: Variant; var ErrorText: TCaption; var Error: Boolean);
 var
   CurrValue : string;
 begin
   DisplayValue := TRIM(DisplayValue);
-  currValue := m_.fieldbyname('Item').asstring;
+  currValue := m_Items.fieldbyname('Item').asstring;
 
   error := false;
   if trim(displayValue) = '' then
@@ -831,9 +924,18 @@ begin
 
   if theData.Itemtype <> '' then
   begin
-    if tvData.DataController.DataSource.State <> dsInsert then m_.Edit;
-    m_ItemType.AsString := theData.itemType;
+    if tvData.DataController.DataSource.State <> dsInsert then m_Items.Edit;
+    m_ItemsItemType.AsString := theData.itemType;
   end;
+end;
+
+procedure TfrmItems2.tvDataPriceCustomDrawCell(Sender: TcxCustomGridTableView; ACanvas: TcxCanvas;
+  AViewInfo: TcxGridTableDataCellViewInfo; var ADone: Boolean);
+begin
+  if m_ItemsStockItem.AsBoolean then
+    aCanvas.Font.Color := clScrollBar
+  else
+    aCanvas.Font.Color := clBlack;
 end;
 
 procedure TfrmItems2.tvDataDblClick(Sender: TObject);
@@ -852,7 +954,7 @@ end;
 procedure TfrmItems2.timFilterTimer(Sender: TObject);
 begin
   timFilter.Enabled := False;
-  m_.filtered := True;
+  m_Items.filtered := True;
   tvData.DataController.Filter.Refresh;
 end;
 
@@ -864,16 +966,16 @@ begin
   if NOT assigned(financeLookupList) then
     financeLookupList := d.RetrieveFinancesKeypair(FKP_PRODUCTS);
 
-  AccountKeyValue := m_AccountKey.asString;
+  AccountKeyValue := m_ItemsAccountKey.asString;
   keyValue := selectFromKeyValuePairs('Products', AccountKeyValue, financeLookupList);
   if Assigned(keyValue) then
   begin
-    m_.Edit;
+    m_Items.Edit;
     try
-      m_AccountKey.AsString := keyValue.Key;
-      m_.Post;
+      m_ItemsAccountKey.AsString := keyValue.Key;
+      m_Items.Post;
     except
-      m_.Cancel;
+      m_Items.Cancel;
       raise;
     end;
   end;
@@ -883,20 +985,28 @@ procedure TfrmItems2.tvDataBookKeepCodePropertiesButtonClick(Sender: TObject; AB
 var s : String;
 begin
   s := '';
-  if NOT m_.Eof then
-    s := m_BookKeepCode.AsString;
+  if NOT m_Items.Eof then
+    s := m_ItemsBookKeepCode.AsString;
   s := BookKeepingCodes(actLookUp, s);
   if s <> '' then
   begin
-    m_.Edit;
+    m_Items.Edit;
     try
-      m_BookKeepCode.AsString := s;
-      m_.Post;
+      m_ItemsBookKeepCode.AsString := s;
+      m_Items.Post;
     except
-      m_.Cancel;
+      m_Items.Cancel;
       raise;
     end;
   end;
+end;
+
+procedure TfrmItems2.tvDataDataControllerDetailExpanding(ADataController: TcxCustomDataController;
+  ARecordIndex: Integer; var AAllow: Boolean);
+begin
+  // Only allow when a stockitem
+  if aDataController.Values[aRecordindex, 16] = false then
+  aAllow := false;
 end;
 
 procedure TfrmItems2.tvDataDataControllerFilterChanged(Sender: TObject);
@@ -956,18 +1066,18 @@ begin
     config := d.roomerMainDataSet.Hotelconfigurations_Entities_FindAll;
     if config[0].forceExternalProductIdCorrectness = 1 then
     begin
-      m_.DisableControls;
+      m_Items.DisableControls;
       try
         screen.Cursor := crHourglass;
-        m_.First;
-        if NOT m_.Eof then
+        m_Items.First;
+        if NOT m_Items.Eof then
           if NOT assigned(financeLookupList) then
             financeLookupList := d.RetrieveFinancesKeypair(FKP_PRODUCTS);
-        while NOT m_.Eof do
+        while NOT m_Items.Eof do
         begin
-          if ((m_AccountKey.AsString = '') OR NOT d.KeyExists(financeLookupList, m_AccountKey.AsString)) and (m_Active.AsBoolean) then
+          if ((m_ItemsAccountKey.AsString = '') OR NOT d.KeyExists(financeLookupList, m_ItemsAccountKey.AsString)) and (m_ItemsActive.AsBoolean) then
           begin
-            answer := MessageDlg(format('Product %s (%s) needs to have an account key for bookkeeping.', [m_Item.AsString, m_Description.AsString]), mtWarning, [mbOk, mbIgnore, mbCancel], 0, mbOk);
+            answer := MessageDlg(format('Product %s (%s) needs to have an account key for bookkeeping.', [m_ItemsItem.AsString, m_ItemsDescription.AsString]), mtWarning, [mbOk, mbIgnore, mbCancel], 0, mbOk);
             if answer = mrCancel then
             begin
               result := True;
@@ -979,11 +1089,11 @@ begin
               exit;
             end;
           end;
-          m_.Next;
+          m_Items.Next;
         end;
       finally
         screen.Cursor := crDefault;
-        m_.EnableControls;
+        m_Items.EnableControls;
       end;
     end;
   except
@@ -993,14 +1103,12 @@ end;
 
 procedure TfrmItems2.btnDeleteClick(Sender: TObject);
 begin
-  m_.Delete;
+  m_Items.Delete;
 end;
 
 procedure TfrmItems2.btnEditClick(Sender: TObject);
 begin
-  mnuiAllowGridEdit.Checked := true;
-  zAllowGridEdit := mnuiAllowGridEdit.Checked;
-  changeAllowGridEdit;
+  AllowGridEdit := True;
   grData.SetFocus;
   tvData.GetColumnByFieldName('Description').Focused := True;
  // showmessage('Edit in grid');
@@ -1009,12 +1117,11 @@ end;
 
 procedure TfrmItems2.btnInsertClick(Sender: TObject);
 begin
-  mnuiAllowGridEdit.Checked := true;
-  zAllowGridEdit := mnuiAllowGridEdit.Checked;
-  changeAllowGridEdit;
-  if m_.Active = false then m_.Open;
+  AllowGridEdit := True;
+
+  if m_Items.Active = false then m_Items.Open;
   grData.SetFocus;
-  m_.Insert;
+  m_Items.Insert;
   tvData.GetColumnByFieldName('Item').Focused := True;
 end;
 
@@ -1025,9 +1132,7 @@ end;
 procedure TfrmItems2.mnuiAllowGridEditClick(Sender: TObject);
 begin
   if zFirstTime then exit;
-  mnuiAllowGridEdit.Checked := not mnuiAllowGridEdit.Checked;
-  zAllowGridEdit := mnuiAllowGridEdit.Checked;
-  changeAllowGridEdit;
+  AllowGridEdit := not mnuiAllowGridEdit.Checked;
 end;
 
 

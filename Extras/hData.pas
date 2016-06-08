@@ -1234,10 +1234,23 @@ type
     BookKeepCode : String;
     NumberBase : String;
     Stockitem: boolean;
+    TotalStock: integer;
 
     // Missing fields to create
     // ItemTypeID
     // CurrencyID
+  end;
+
+  recStockItemCountHolder = record
+    ItemID: integer;
+    StockCount: integer;
+  end;
+
+  recStockItemPricesHolder = record
+    ID: integer;
+    ItemID: integer;
+    FromDate: TDate;
+    price: double;
   end;
 
   recDayNotesHolder = record
@@ -1925,6 +1938,10 @@ function itemExistsInOther(sCode: string): boolean;
 function itemExist(sItem: string): boolean;
 function GET_ItemID(Item: string): integer;
 function GET_ItemCode(id: integer): string;
+
+function INS_StockItemPrice(theData: recStockItemPricesHolder; var aNewID: integer): boolean;
+function UPD_StockItemPrice(theData: recStockItemPricesHolder): boolean;
+function Del_StockItemPrice(theData: recStockItemPricesHolder): boolean;
 
 function GET_Location_ByLocation(var theData: recLocationHolder): boolean;
 function INS_location(theData: recLocationHolder; var NewID: integer): boolean;
@@ -11252,13 +11269,32 @@ begin
   s := s + '   ,Stockitem= ' + _db(theData.StockItem) + ' ' + #10;
   s := s + ' WHERE ' + #10;
   s := s + '   (ID = ' + _db(theData.id) + ') ';
-  result := cmd_bySQL(s);
+
+  d.roomerMainDataSet.SystemStartTransaction;
+  try
+    result := cmd_bySQL(s);
+    if Result and theData.Stockitem and (theData.TotalStock > 0) then
+    begin
+      s := 'INSERT INTO stockitems (itemid, totalstock) VALUES ( ' + _db(theData.ID)  + ' , ' + _db(theData.TotalStock) + ') '+
+           ' ON DUPLICATE KEY UPDATE itemid=' + _db(theData.ID)  + ', totalstock=' + _db(theData.TotalStock);
+      Result := cmd_bySQL(s);
+    end;
+    if result then
+      d.roomerMainDataSet.SystemCommitTransaction
+    else
+      d.roomerMainDataSet.SystemRollbackTransaction;
+
+  except
+    d.roomerMainDataSet.SystemRollbackTransaction;
+    raise;
+  end;
 end;
 
 function INS_Item(theData: recItemHolder; var NewID: integer): boolean;
 var
   s: string;
 begin
+
   s := '';
   s := s + 'INSERT INTO items ' + #10;
   s := s + '   ( ' + #10;
@@ -11298,12 +11334,32 @@ begin
   s := s + '  , ' + _db(theData.NumberBase) + #10;
   s := s + '  , ' + _db(theData.StockItem) + #10;
   s := s + '   ) ';
-  result := cmd_bySQL(s);
-  if result then
-  begin
-    NewID := GetLastID('items');
-  end;
 
+  d.roomerMainDataSet.SystemStartTransaction;
+  try
+    Result := cmd_bySQL(s);
+    if Result then
+    begin
+      NewID := GetLastID('items');
+      if theData.Stockitem and (theData.TotalStock > 0) then
+      begin
+        s := 'INSERT INTO stockitems (itemid, totalstock) VALUES '#10 +
+             ' ( ' +
+                _db(theData.ID) + ' ' +
+                ', ' + _db(theData.TotalStock) + ' ' +
+                ')  ';
+      result := cmd_bySQL(s);
+      end;
+    end;
+
+    if result then
+      d.roomerMainDataSet.SystemCommitTransaction
+    else
+      d.roomerMainDataSet.SystemRollbackTransaction;
+  except
+    d.roomerMainDataSet.SystemRollbackTransaction;
+    raise;
+  end;
 end;
 
 function GET_Item_ByItem(var theData: recItemHolder): boolean;
@@ -11333,6 +11389,7 @@ begin
       theData.BookKeepCode := rSet.fieldbyname('BookKeepCode').asString;
       theData.NumberBase := rSet.fieldbyname('NumberBase').asString;
       theData.StockItem:= rSet.fieldbyname('StockItem').asBoolean;
+      theData.TotalStock := rSet.fieldbyname('TotalStock').AsInteger;
       result := true;
     end;
   finally
@@ -11416,6 +11473,56 @@ begin
 end;
 
 
+function Del_StockitemPrice(theData: recStockItemPricesHolder): boolean;
+var
+  s: string;
+begin
+  s := '';
+  s := s + ' DELETE ' + chr(10);
+  s := s + '   FROM stockitemsprices ' + chr(10);
+  s := s + ' WHERE  ' + chr(10);
+  s := s + '   (ID =' + _db(theData.ID) + ') ';
+  result := cmd_bySQL(s);
+end;
+
+function UPD_StockitemPrice(theData: recStockItemPricesHolder): boolean;
+var
+  s: string;
+begin
+  s := '';
+  s := s + ' UPDATE stockitemprices ' + #10;
+  s := s + ' SET ' + #10;
+  s := s + '   fromdate = ' + _db(theData.FromDate);
+  s := s + ',  price = ' + _db(theData.price);
+  s := s + ' WHERE ' + #10;
+  s := s + '   (ID = ' + _db(theData.id) + ') ';
+  result := cmd_bySQL(s);
+end;
+
+function INS_StockitemPrice(theData: recStockItemPricesHolder; var aNewID: integer): boolean;
+var
+  s: string;
+begin
+  s := '';
+  s := s + 'INSERT INTO stockitemprices ' + #10;
+  s := s + '   ( ' + #10;
+  s := s + '     itemID' + #10;
+  s := s + '    ,fromdate' + #10;
+  s := s + '    ,Price ' + #10;
+  s := s + '   ) ' + #10;
+  s := s + '   VALUES ' + #10;
+  s := s + '   ( ' + #10;
+  s := s + '    ' + _db(theData.ItemID) + #10;
+  s := s + '  , ' + _db(theData.FromDate) + #10;
+  s := s + '  , ' + _db(theData.price) + #10;
+  s := s + '   ) ';
+  result := cmd_bySQL(s);
+  if result then
+  begin
+    aNewID := GetLastID('stockitemprices');
+  end;
+
+end;
 
 // recLocationHolder = record
 // ID              : integer ;

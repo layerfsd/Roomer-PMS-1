@@ -206,6 +206,7 @@ Type
     function GetBookKeepingCodes: TRoomerDataSet;
     function GetChannelManagersSet: TRoomerDataSet;
     procedure PreviousGuestsReloadFetchHandler(Sender: TObject);
+    function GetStockitemPrices: TRoomerDataset;
    public
       constructor Create;
       destructor Destroy; override;
@@ -323,6 +324,7 @@ Type
       property NumAvailType    : TStringList read FNumAvailType      write FNumAvailType;
       property Items           : TRoomerDataSet read GetItems;
       property ItemTypes       : TRoomerDataSet read GetItemTypes;
+      property StockitemPrices : TRoomerDataset read GetStockitemPrices;
       property CountryGroups   : TRoomerDataSet read GetCountryGroups;
       property Locations       : TRoomerDataSet read GetLocations;
       property Countries       : TRoomerDataSet read GetCountries;
@@ -425,6 +427,7 @@ begin
   tablesList.Add('vatcodes', TTableEntity.Create('vatcodes'));
   tablesList.Add('items', TTableEntity.Create('items'));
   tablesList.Add('itemtypes', TTableEntity.Create('itemtypes'));
+  tablesList.Add('stockitemprices', TTableEntity.Create('stockitemprices'));
   tablesList.Add('roomtypegroups', TTableEntity.Create('roomtypegroups', true));
   tablesList.Add('roomtypes', TTableEntity.Create('roomtypes', true));
   tablesList.Add('channels', TTableEntity.Create('channels'));
@@ -1833,6 +1836,11 @@ end;
 function TGlobalSettings.GetRoomTypesSet: TRoomerDataSet;
 begin
   result := GetDataSetFromDictionary('roomtypes');
+end;
+
+function TGlobalSettings.GetStockitemPrices: TRoomerDataset;
+begin
+  result := GetDataSetFromDictionary('stockitemprices');
 end;
 
 function TGlobalSettings.GetTblconvertgroups: TRoomerDataSet;
