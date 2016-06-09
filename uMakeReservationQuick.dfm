@@ -23,7 +23,7 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
     Top = 0
     Width = 1108
     Height = 513
-    ActivePage = taReservation
+    ActivePage = tabRoomRates
     Align = alClient
     TabOrder = 0
     OnChange = pgcMainChange
@@ -221,7 +221,6 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
             TabOrder = 2
             SkinData.SkinSection = 'GROUPBOX'
             Checked = False
-            ExplicitLeft = 4
             object clabReservationName: TsLabel
               Left = 124
               Top = 46
@@ -705,8 +704,6 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
             TabOrder = 3
             SkinData.SkinSection = 'GROUPBOX'
             Checked = False
-            ExplicitTop = 329
-            ExplicitHeight = 148
             object clabCurrency: TsLabel
               Left = 107
               Top = 15
@@ -2669,6 +2666,7 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
         Align = alClient
         TabOrder = 1
         LookAndFeel.NativeStyle = False
+        ExplicitTop = 139
         object tvRoomRes: TcxGridDBTableView
           Navigator.Buttons.CustomButtons = <>
           DataController.DataSource = mRoomResDS
@@ -2947,7 +2945,7 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
         object tvRoomRates: TcxGridDBTableView
           Navigator.Buttons.CustomButtons = <>
           DataController.DataModeController.SyncMode = False
-          DataController.DataSource = kbmRoomRatesDS
+          DataController.DataSource = mRoomRatesDS
           DataController.DetailKeyFieldNames = 'RoomReservation'
           DataController.KeyFieldNames = 'RoomReservation'
           DataController.MasterKeyFieldNames = 'RoomReservation'
@@ -3336,15 +3334,15 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
   end
   object mRoomResDS: TDataSource
     DataSet = mRoomRes
-    Left = 80
-    Top = 528
+    Left = 36
+    Top = 336
   end
   object mSelectTypes: TdxMemData
     Indexes = <>
     SortOptions = []
     OnCalcFields = mSelectTypesCalcFields
-    Left = 640
-    Top = 352
+    Left = 392
+    Top = 280
     object StringField2: TStringField
       FieldName = 'roomType'
       Size = 10
@@ -3376,14 +3374,14 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
   end
   object mSelectTypesDS: TDataSource
     DataSet = mSelectTypes
-    Left = 652
-    Top = 416
+    Left = 388
+    Top = 336
   end
   object mSelectRooms: TdxMemData
     Indexes = <>
     SortOptions = []
     OnNewRecord = mSelectRoomsNewRecord
-    Left = 448
+    Left = 264
     Top = 280
     object mSelectRoomsID: TStringField
       FieldName = 'ID'
@@ -3523,10 +3521,10 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
   end
   object mSelectRoomsDS: TDataSource
     DataSet = mSelectRooms
-    Left = 588
-    Top = 405
+    Left = 260
+    Top = 333
   end
-  object _kbmRoomRes: TkbmMemTable
+  object DELETE_kbmRoomRes: TkbmMemTable
     Active = True
     DesignActivation = True
     AttachedAutoRefresh = True
@@ -3634,10 +3632,10 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
     SortID = 0
     SubLanguageID = 1
     LocaleID = 1024
-    Left = 624
-    Top = 560
+    Left = 288
+    Top = 456
   end
-  object _kbmRoomRates: TkbmMemTable
+  object DELETE_kbmRoomRates: TkbmMemTable
     Active = True
     DesignActivation = True
     AttachedAutoRefresh = True
@@ -3718,29 +3716,29 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
     SortID = 0
     SubLanguageID = 1
     LocaleID = 1024
-    Left = 464
-    Top = 528
+    Left = 376
+    Top = 448
   end
-  object kbmRoomRatesDS: TDataSource
+  object mRoomRatesDS: TDataSource
     DataSet = mRoomRates
-    Left = 192
-    Top = 544
+    Left = 160
+    Top = 344
   end
   object timAlert: TTimer
     Enabled = False
-    Left = 824
-    Top = 416
+    Left = 968
+    Top = 208
   end
   object mDS: TDataSource
     DataSet = m_
-    Left = 1012
-    Top = 205
+    Left = 100
+    Top = 333
   end
   object mOcc_: TdxMemData
     Indexes = <>
     SortOptions = []
-    Left = 704
-    Top = 344
+    Left = 496
+    Top = 280
     object DateTimeField1: TDateTimeField
       FieldName = 'aDate'
     end
@@ -3761,14 +3759,14 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
   end
   object mOccDS: TDataSource
     DataSet = mOcc_
-    Left = 732
-    Top = 413
+    Left = 492
+    Top = 341
   end
   object m_: TdxMemData
     Indexes = <>
     SortOptions = []
-    Left = 1008
-    Top = 240
+    Left = 96
+    Top = 288
     object m_RoomType: TStringField
       FieldName = 'RoomType'
       Size = 10
@@ -3851,14 +3849,14 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
       end>
     StorageName = 'Software\Roomer\FormStatus\QuickReservation'
     StorageType = stRegistry
-    Left = 584
-    Top = 504
+    Left = 32
+    Top = 112
   end
   object mCurrency: TdxMemData
     Indexes = <>
     SortOptions = []
-    Left = 1056
-    Top = 240
+    Left = 560
+    Top = 288
     object m_Currency: TWideStringField
       FieldName = 'Currency'
       Size = 5
@@ -3877,12 +3875,12 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
       FieldName = 'active'
     end
   end
-  object DS: TDataSource
+  object mCurrencyDS: TDataSource
     DataSet = mCurrency
-    Left = 1056
-    Top = 200
+    Left = 568
+    Top = 336
   end
-  object _kbmRoomRatesTmp: TkbmMemTable
+  object DELETE_kbmRoomRatesTmp: TkbmMemTable
     Active = True
     DesignActivation = True
     AttachedAutoRefresh = True
@@ -3963,8 +3961,8 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
     SortID = 0
     SubLanguageID = 1
     LocaleID = 1024
-    Left = 536
-    Top = 552
+    Left = 456
+    Top = 448
   end
   object mnuFinish: TPopupMenu
     Images = DImages.PngImageList1
@@ -3980,8 +3978,8 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
     Enabled = False
     Interval = 100
     OnTimer = timNewTimer
-    Left = 864
-    Top = 416
+    Left = 968
+    Top = 256
   end
   object mRoomRes: TdxMemData
     Indexes = <
@@ -3990,8 +3988,8 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
         SortOptions = []
       end>
     SortOptions = []
-    Left = 16
-    Top = 512
+    Left = 40
+    Top = 288
     object mRoomResReservation: TIntegerField
       FieldName = 'Reservation'
     end
@@ -4079,8 +4077,8 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
   object mRoomRates: TdxMemData
     Indexes = <>
     SortOptions = []
-    Left = 144
-    Top = 519
+    Left = 160
+    Top = 287
     object mRoomRatesReservation: TIntegerField
       FieldName = 'Reservation'
     end
@@ -4133,8 +4131,8 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
   object mRoomRatesTmp: TdxMemData
     Indexes = <>
     SortOptions = []
-    Left = 304
-    Top = 528
+    Left = 776
+    Top = 296
     object IntegerField1: TIntegerField
       FieldName = 'Reservation'
     end
@@ -4187,8 +4185,8 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
   object mRR_: TdxMemData
     Indexes = <>
     SortOptions = []
-    Left = 384
-    Top = 543
+    Left = 856
+    Top = 295
     object IntegerField3: TIntegerField
       FieldName = 'Reservation'
     end

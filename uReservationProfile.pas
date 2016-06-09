@@ -3407,7 +3407,7 @@ begin
   enabled := true;
 
   ShowAlertsForReservation(zReservation, 0, atOPEN_RESERVATION);
-  FrmAlertPanel := TFrmAlertPanel.Create(nil);
+  FrmAlertPanel := TFrmAlertPanel.Create(self);
   AlertList := CreateAlertsForRoomReservation(zReservation, 0, atUNKNOWN);
   FrmAlertPanel.PlaceEditPanel(pnlAlertHolder, AlertList);
 end;

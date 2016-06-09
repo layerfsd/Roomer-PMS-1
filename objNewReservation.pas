@@ -636,7 +636,7 @@ end;
 
 constructor TNewReservation.Create(aHotelCode, Staff: string);
 begin
-  FHotelcode := Hotelcode;
+  FHotelcode := aHotelcode;
   FnewRoomReservations := TnewRoomReservation.Create(aHotelCode);
   FHomeCustomer := THomeCustomer.Create(aHotelCode, hData.ctrlGetString('RackCustomer')); //  '');
   FReservation := -1; //hData.RV_SetNewID();

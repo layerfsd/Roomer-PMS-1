@@ -339,7 +339,7 @@ type
     // ******************************************************
 
 {$I RoomerDBMethodsDefinitions.inc}
-    function ActivateNewDataset(SqlResult: String): TRoomerDataSet;
+    function ActivateNewDataset(const SqlResult: String): TRoomerDataSet;
     function CreateNewDataset: TRoomerDataSet;
     procedure AssignPropertiesToDataSet(DataSet: TRoomerDataSet);
 
@@ -2196,7 +2196,7 @@ end;
 
 {$I RoomerDBMethodsImplementations.inc}
 
-function TRoomerDataSet.ActivateNewDataset(SqlResult: String): TRoomerDataSet;
+function TRoomerDataSet.ActivateNewDataset(const SqlResult: String): TRoomerDataSet;
 begin
   result := TRoomerDataSet.Create(Owner);
   result.OfflineMode := OfflineMode;

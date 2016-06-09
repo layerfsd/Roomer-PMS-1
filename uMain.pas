@@ -14920,17 +14920,9 @@ var
     result := false;
     frmMakeReservationQuick := TfrmMakeReservationQuick.Create(frmMakeReservationQuick);
     try
-      frmMakeReservationQuick.oNewReservation := oNewReservation;
+      frmMakeReservationQuick.NewReservation := oNewReservation;
       frmMakeReservationQuick.ShowModal;
-
-      if frmMakeReservationQuick.ModalResult = mrOK then
-      begin
-        oNewReservation := frmMakeReservationQuick.oNewReservation;
-        result := true;
-      end
-      else
-      begin
-      end;
+      Result := frmMakeReservationQuick.ModalResult = mrOK;
     finally
       frmMakeReservationQuick.Free;
       frmMakeReservationQuick := nil;
@@ -15071,7 +15063,7 @@ begin
       end
     end;
 
-    // Get selected rooms from left col
+    // Get selected rooms from right col
     isSelected := false;
     for iCol := 7 to 12 do
     begin

@@ -1530,7 +1530,6 @@ const
 
 
 var
-  zLstParams: TstringList;
   oRoomTypeRoomCount: TRoomTypeRoomCount;
 
   // function test : boolean;
@@ -15397,76 +15396,75 @@ end;
 initialization
 
 { initialization code goes here }
-zLstParams := TstringList.Create;
 
-listOfTables := TstringList.Create;
-listOfTables.Add('cancellationdetails');
-listOfTables.Add('channelrates');
-listOfTables.Add('channelratesavailabilities');
-listOfTables.Add('channelratesplans');
-listOfTables.Add('channels');
-listOfTables.Add('colors');
-listOfTables.Add('control');
-listOfTables.Add('countries');
-listOfTables.Add('countrygroups');
-listOfTables.Add('currencies');
-listOfTables.Add('Staffpreferences');
-listOfTables.Add('Customers');
-listOfTables.Add('Customestypes');
-listOfTables.Add('facilityactiontypes');
-listOfTables.Add('invoiceheads');
-listOfTables.Add('invoicelines');
-listOfTables.Add('invoicelinestmp');
-listOfTables.Add('items');
-listOfTables.Add('itemtypes');
-listOfTables.Add('locations');
-listOfTables.Add('maintenancecodes');
-listOfTables.Add('maintenanceroomnotes');
-listOfTables.Add('paygroups');
-listOfTables.Add('payments');
-listOfTables.Add('paytypes');
-listOfTables.Add('persons');
-listOfTables.Add('plancodes');
-listOfTables.Add('predefineddates');
-listOfTables.Add('pricetypes');
-listOfTables.Add('reservations');
-listOfTables.Add('roomreservations');
-listOfTables.Add('rooms');
-listOfTables.Add('roomsdate');
-listOfTables.Add('roomsdatetemp');
-listOfTables.Add('roomtypegroups');
-listOfTables.Add('roomtyperules');
-listOfTables.Add('roomtypes');
-listOfTables.Add('StaffMembers');
-listOfTables.Add('stafftypes');
-listOfTables.Add('tblconvertgroups');
-listOfTables.Add('tblconverts');
-listOfTables.Add('tbldelpersons');
-listOfTables.Add('tbldelreservations');
-listOfTables.Add('tbldelroomreservations');
-listOfTables.Add('tblhiddeninfo');
-listOfTables.Add('tblimportlogs');
-listOfTables.Add('tblinc');
-listOfTables.Add('tblinvoiceactions');
-listOfTables.Add('tblmaidactions');
-listOfTables.Add('tblmaidjobs');
-listOfTables.Add('tblmaidlists');
-listOfTables.Add('tblpoxexport');
-listOfTables.Add('tblpricecodes');
-listOfTables.Add('tblroomstatus');
-listOfTables.Add('tblseasons');
-listOfTables.Add('teldevices');
-listOfTables.Add('tellog');
-listOfTables.Add('telpricegroups');
-listOfTables.Add('telpricerules');
-listOfTables.Add('ttmp');
-listOfTables.Add('vatcodes');
+  listOfTables := TstringList.Create;
+  listOfTables.Add('cancellationdetails');
+  listOfTables.Add('channelrates');
+  listOfTables.Add('channelratesavailabilities');
+  listOfTables.Add('channelratesplans');
+  listOfTables.Add('channels');
+  listOfTables.Add('colors');
+  listOfTables.Add('control');
+  listOfTables.Add('countries');
+  listOfTables.Add('countrygroups');
+  listOfTables.Add('currencies');
+  listOfTables.Add('Staffpreferences');
+  listOfTables.Add('Customers');
+  listOfTables.Add('Customestypes');
+  listOfTables.Add('facilityactiontypes');
+  listOfTables.Add('invoiceheads');
+  listOfTables.Add('invoicelines');
+  listOfTables.Add('invoicelinestmp');
+  listOfTables.Add('items');
+  listOfTables.Add('itemtypes');
+  listOfTables.Add('locations');
+  listOfTables.Add('maintenancecodes');
+  listOfTables.Add('maintenanceroomnotes');
+  listOfTables.Add('paygroups');
+  listOfTables.Add('payments');
+  listOfTables.Add('paytypes');
+  listOfTables.Add('persons');
+  listOfTables.Add('plancodes');
+  listOfTables.Add('predefineddates');
+  listOfTables.Add('pricetypes');
+  listOfTables.Add('reservations');
+  listOfTables.Add('roomreservations');
+  listOfTables.Add('rooms');
+  listOfTables.Add('roomsdate');
+  listOfTables.Add('roomsdatetemp');
+  listOfTables.Add('roomtypegroups');
+  listOfTables.Add('roomtyperules');
+  listOfTables.Add('roomtypes');
+  listOfTables.Add('StaffMembers');
+  listOfTables.Add('stafftypes');
+  listOfTables.Add('tblconvertgroups');
+  listOfTables.Add('tblconverts');
+  listOfTables.Add('tbldelpersons');
+  listOfTables.Add('tbldelreservations');
+  listOfTables.Add('tbldelroomreservations');
+  listOfTables.Add('tblhiddeninfo');
+  listOfTables.Add('tblimportlogs');
+  listOfTables.Add('tblinc');
+  listOfTables.Add('tblinvoiceactions');
+  listOfTables.Add('tblmaidactions');
+  listOfTables.Add('tblmaidjobs');
+  listOfTables.Add('tblmaidlists');
+  listOfTables.Add('tblpoxexport');
+  listOfTables.Add('tblpricecodes');
+  listOfTables.Add('tblroomstatus');
+  listOfTables.Add('tblseasons');
+  listOfTables.Add('teldevices');
+  listOfTables.Add('tellog');
+  listOfTables.Add('telpricegroups');
+  listOfTables.Add('telpricerules');
+  listOfTables.Add('ttmp');
+  listOfTables.Add('vatcodes');
+
+
 
 finalization
-
-{ finalization code goes here }
-freeandnil(zLstParams);
-if hData.oRoomTypeRoomCount <> nil then
-  freeandnil(hData.oRoomTypeRoomCount);
+  { finalization code goes here }
+  if hData.oRoomTypeRoomCount <> nil then
+    freeandnil(hData.oRoomTypeRoomCount);
 
 end.
