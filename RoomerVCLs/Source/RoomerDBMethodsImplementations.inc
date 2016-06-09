@@ -3699,10 +3699,14 @@ var entities : Array_Of_THotelconfigurationsEntity;
 begin
   res := downloadUrlAsString(  FRoomerEntitiesUri + 'hotelconfigurations/findAll');
   list := processJson(res, 'THotelconfigurationsEntity');
-  SetLength(entities, list.Count);
-  for i := 0 to list.Count - 1 do
-    entities[i] := THotelconfigurationsEntity(list[i]);
-  result := entities;
+  try
+    SetLength(entities, list.Count);
+    for i := 0 to list.Count - 1 do
+      entities[i] := THotelconfigurationsEntity(list[i]);
+    result := entities;
+  finally
+    List.Free;
+  end;
 end;
 
 function TRoomerDataSet.Hotelconfigurations_Entities_GetById(id: Integer): THotelconfigurationsEntity;
@@ -3711,8 +3715,11 @@ var List : TList<TPersistent>;
 begin
   res := downloadUrlAsString(  FRoomerEntitiesUri + 'hotelconfigurations/' + inttostr(id));
   list := processJson(res, 'THotelconfigurationsEntity');
-  result := THotelconfigurationsEntity(list[0]);
-  
+  try
+    result := THotelconfigurationsEntity(list[0]);
+  finally
+    List.Free;
+  end;
 end;
 
 function TRoomerDataSet.Hotelconfigurations_Entities_GetBySql(sql: String): Array_Of_THotelconfigurationsEntity;
@@ -3723,10 +3730,14 @@ var entities : Array_Of_THotelconfigurationsEntity;
 begin
   res := downloadUrlAsString(  FRoomerEntitiesUri + 'hotelconfigurations/getSql?sql=' + sql);
   list := processJson(res, 'THotelconfigurationsEntity');
-  SetLength(entities, list.Count);
-  for i := 0 to list.Count - 1 do
-    entities[i] := THotelconfigurationsEntity(list[i]);
-  result := entities;
+  try
+    SetLength(entities, list.Count);
+    for i := 0 to list.Count - 1 do
+      entities[i] := THotelconfigurationsEntity(list[i]);
+    result := entities;
+  finally
+    List.Free;
+  end;
 end;
 
 function TRoomerDataSet.Hotelconfigurations_Entities_GetListByWhere(where: String): Array_Of_THotelconfigurationsEntity;
