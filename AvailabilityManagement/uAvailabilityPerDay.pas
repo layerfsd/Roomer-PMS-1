@@ -69,8 +69,8 @@ var i : Integer;
 begin
   FRoomTypes := TStringList.Create;
   for i := 0 to oNewReservation.newRoomReservations.RoomCount - 1 do
-    if FRoomTypes.IndexOf(AnsiLowerCase(oNewReservation.newRoomReservations.RoomItemsList[i].FRoomType)) <= 0 then
-      FRoomTypes.Add(AnsiLowerCase(oNewReservation.newRoomReservations.RoomItemsList[i].FRoomType));
+    if FRoomTypes.IndexOf(AnsiLowerCase(oNewReservation.newRoomReservations.RoomItemsList[i].RoomType)) <= 0 then
+      FRoomTypes.Add(AnsiLowerCase(oNewReservation.newRoomReservations.RoomItemsList[i].RoomType));
 end;
 
 constructor TAvailabilityPerDay.Create(_ArrivalDate, _CheckOutDate: TDate; _NewReservation : TNewReservation);
@@ -100,7 +100,7 @@ begin
   result := 0;
   LowerType := AnsiLowerCase(sType);
   for i := 0 to oNewReservation.newRoomReservations.RoomCount - 1 do
-    if AnsiLowerCase(oNewReservation.newRoomReservations.RoomItemsList[i].FRoomType) = LowerType then
+    if AnsiLowerCase(oNewReservation.newRoomReservations.RoomItemsList[i].RoomType) = LowerType then
       inc(result);
 end;
 

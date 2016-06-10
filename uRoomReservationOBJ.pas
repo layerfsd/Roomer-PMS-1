@@ -367,12 +367,14 @@ begin
              '    TotalNoRent, ' +
              '    (IF(CityTaxIncl, 0, ' +
              ' 	  IF(taxPercentage, taxBaseAmount * taxAmount / 100, taxAmount) * ' +
-             ' 		 IF(taxRoomNight, 1, ' +
-             ' 			IF(taxGuestNight, NumGuests, ' +
-             ' 			   IF(taxGuestNight, NumGuests /  NumNights, ' +
-             ' 				  IF(taxBooking, 1 / NumNights, ' +
-             ' 				  1 )))) ' +
-             ' 	  ) / CurrencyRate) * numNights AS totalTaxes, ' +
+             ' 		  IF(taxRoomNight, 1, ' +
+             ' 			  IF(taxGuest, NumGuests, ' +
+             ' 			    IF(taxGuestNight, NumGuests /  NumNights, ' +
+             ' 				    IF(taxBooking, 1 / NumNights, 1 ) '+
+             '              ) ' +
+             '            ) ' +
+             '          ) ' +
+             ' 	      ) / CurrencyRate) * numNights AS totalTaxes, ' +
              '    CityTaxInCl, ' +
              '    taxAmount, ' +
              '    taxPercentage, ' +
@@ -489,7 +491,9 @@ begin
         s := s + '  ORDER BY RoomReservation';
         s := s + ') xxx';
 
+        {$ifdef DEBUG}
         CopyToClipboard(s);
+        {$endif}
         exePlan.AddQuery(s);
       end;
 
@@ -507,8 +511,6 @@ begin
 
      rSet := exePlan.Results[0];
      rSet.First;
-
-//      hData.rSet_bySQL(rSet,s );
 
      if not rSet.Eof then
      begin

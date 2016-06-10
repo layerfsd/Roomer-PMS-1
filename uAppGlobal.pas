@@ -52,6 +52,7 @@ uses
   , AdvEdBtn
   , Variants
   , Vcl.Buttons
+  , uRoomerThreadedRequest
   ;
 
 Type
@@ -166,6 +167,7 @@ Type
 
     tablesList : TTableDictionary;
     FPreviousGuestsSet: TRoomerDataSet;
+    FPreviousGuestsReload : TGetThreadedData;
 
       procedure AddRoomType( sType : string; iNumber, NumGuests : integer );
       procedure Clear;
@@ -377,8 +379,7 @@ uses   dbTables
      , ug
      , uUtils
      , PrjConst
-     , uRoomerThreadedRequest
-;
+      ;
 
 procedure FilterRoom( RoomNumber : string );
 begin
@@ -446,7 +447,8 @@ begin
 
   tablesList.Add('channelplancodes', TTableEntity.Create('channelplancodes', true));
 
-  FPreviousGuestsSet := CreateNewDataset;
+  FPreviousGuestsReload := TGetThreadedData.Create;
+  FPreviousGuestsSet := nil;
   ReloadPreviousGuests;
 
   LoadStaticTables(true);
@@ -459,8 +461,7 @@ begin
   FNumAvailType.free;
   ClearRoomFloors;
   FRoomFloors.free;
-  try FreeAndNil(FPreviousGuestsSet); except end;
-
+  FPreviousGuestsReload.Free;
   ClearTables;
   tablesList.Clear;
   FreeAndNil(tablesList);
@@ -553,26 +554,13 @@ const PREV_GUESTS_SQL = 'SELECT DISTINCT * FROM ' +
                         'ANd active=1 ' +
                         ') xxx ';
 begin
-  FreeAndNil(FPreviousGuestsSet);
-//  FPreviousGuestsSet := CreateNewDataset;
-
-  PreviousGuestsReload := TGetThreadedData.Create;
-  PreviousGuestsReload.execute(PREV_GUESTS_SQL, PreviousGuestsReloadFetchHandler);
-//  hData.rSet_bySQL(FPreviousGuestsSet, PREV_GUESTS_SQL);
-//  FPreviousGuestsSet.First;
+  FPreviousGuestsReload.execute(PREV_GUESTS_SQL, PreviousGuestsReloadFetchHandler);
 end;
 
 procedure TGlobalSettings.PreviousGuestsReloadFetchHandler(Sender : TObject);
-var
-  AvailabilitySet: TRoomerDataSet;
 begin
-  try
-    FPreviousGuestsSet := PreviousGuestsReload.RoomerDataSet;
-    FPreviousGuestsSet.First;
-//    FreeAndNil(AvailabilitySet);
-  except
-//    AvailabilitySet := nil;
-  end;
+  FPreviousGuestsSet := FPreviousGuestsReload.RoomerDataSet;
+  FPreviousGuestsSet.First;
 end;
 
 function TGlobalSettings.locateId(rSet : TDataset; id : Integer) : Boolean;
@@ -1967,9 +1955,7 @@ end;
 
 procedure CloseAppSettings;
 begin
-  if Assigned(glb) then
-    glb.Free;
-  glb := nil;
+  FreeAndNil(glb);
 end;
 
 { TSet_Of_Integer }

@@ -10,7 +10,7 @@
 {$ifdef DEBUG}
   {.$define rmEnableOffLineLogin} // Forced visiblity of Offline login
   {.$define rmForceOffline}       // Force detecting no internet connection
-  {.$define rmUseLOCALRESOURCE}
+  {.$define rmUseLOCALRESOURCE}   // Use localhost as API server
   {.$define rmROOMERSSL}
   {$define rmMONITOR_LEAKAGE} // Report memory leaks on shutdown
 

@@ -665,6 +665,8 @@ var
    '   , Status As ResStatus'#10+
    '   , rrArrival AS Arrival '#10+
    '   , rrDeparture AS Departure '#10+
+   '   , ExpectedTimeOfArrival  '#10+
+   '   , ExpectedCheckoutTime '#10+
    '   , RoomRentPaymentInvoice '#10+
    '   , GroupAccount AS isGroupAccount '#10+
    '   , Currency '#10+
@@ -1458,6 +1460,8 @@ select_RoomProfile_Display : string =
 ', rr.PriceType              as RR_PriceType '+
 ', rr.Arrival                as RR_Arrival '+
 ', rr.Departure              as RR_Departure '+
+', rr.ExpectedTimeOfArrival  as RR_ExpectedTimeOfArrival'+
+', rr.ExpectedCheckoutTimes as RR_ExpectedCheckoutTime '+
 ', rr.RoomType               as RR_RoomType '+
 ', rr.PMInfo                 as RR_PMInfo '+
 ', rr.HiddenInfo             as RR_HiddenInfo '+
@@ -4746,6 +4750,9 @@ select_RoomReservation : string =
 '    ,numGuests '#10+
 '    ,numChildren '#10+
 '    ,numInfants, AvrageRate, rateCount,package '#10+
+'    ,ExpectedTimeOfArrival '#10+
+'    ,ExpectedCheckoutTime'#10+
+'    ,numChildren '#10+
 '  FROM '#10+
 '    [RoomReservations] '#10+
 '  WHERE '#10+

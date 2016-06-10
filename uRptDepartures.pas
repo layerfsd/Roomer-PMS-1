@@ -1,4 +1,4 @@
-unit uRptArrivals;
+unit uRptDepartures;
 
 interface
 
@@ -10,10 +10,10 @@ uses
   dxSkinDarkSide, dxSkinTheAsphaltWorld, dxSkinsDefaultPainters, dxSkinsdxStatusBarPainter, cxStyles,
   dxSkinscxPCPainter, cxCustomData, cxFilter, cxData, cxDataStorage, cxEdit, cxNavigator, cxDBData, cxGridLevel,
   cxGridCustomTableView, cxGridTableView, cxGridBandedTableView, cxGridDBBandedTableView, cxGridCustomView, cxGrid,
-  dxStatusBar, cxGridDBTableView, Vcl.Grids, Vcl.DBGrids, Vcl.Menus, cxTimeEdit;
+  dxStatusBar, cxGridDBTableView, Vcl.Grids, Vcl.DBGrids, Vcl.Menus;
 
 type
-  TfrmArrivalsReport = class(TForm)
+  TfrmDeparturesReport = class(TForm)
     FormStore: TcxPropertiesStore;
     kbmArrivalsList: TkbmMemTable;
     ArrivalsListDS: TDataSource;
@@ -67,6 +67,18 @@ type
     mnuInvoice: TMenuItem;
     mnuRoomInvoice: TMenuItem;
     mnuGroupInvoice: TMenuItem;
+    kbmDeparturesList: TkbmMemTable;
+    StringField1: TStringField;
+    StringField2: TStringField;
+    IntegerField1: TIntegerField;
+    StringField3: TStringField;
+    StringField4: TStringField;
+    DateField1: TDateField;
+    DateField2: TDateField;
+    IntegerField2: TIntegerField;
+    FloatField1: TFloatField;
+    StringField5: TStringField;
+    IntegerField3: TIntegerField;
     procedure FormCreate(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure rbRadioButtonClick(Sender: TObject);
@@ -82,8 +94,6 @@ type
       AShift: TShiftState; var AHandled: Boolean);
     procedure dtDateFromCloseUp(Sender: TObject);
     procedure dtDateToCloseUp(Sender: TObject);
-    procedure grArrivalsListDBTableView1ExpectedTimeOfArrivalGetDisplayText(Sender: TcxCustomGridTableItem;
-      ARecord: TcxCustomGridRecord; var AText: string);
   private
     FRefreshingdata: boolean;
     { Private declarations }
@@ -101,7 +111,7 @@ type
 /// <summary>
 ///   Global access point for showing the arrival report form, If Modalresult is OK then True is returned
 /// </summary>
-function ShowArrivalsReport: boolean;
+function ShowDeparturesReport: boolean;
 
 implementation
 
@@ -171,11 +181,132 @@ const
   WM_REFRESH_DATA = WM_User + 51;
 
 
-function ShowArrivalsReport: boolean;
+sSQL =
+'SELECT '+
+'    CheckOutDate '+
+'  , Reservation AS RoomerReservationId '+
+'  , RoomReservation AS RoomerRoomReservationId '+
+'  , Room '+
+'  , RoomType '+
+'  , GuestName '+
+'  , NumGuests '+
+'  , Arrival '+
+'  , Departure '+
+'  , ExpectedCheckOutTime '+
+'  , Customer '+
+'  , CompanyName '+
+'  , NumNights '+
+'  , TotalRent / NumNights AS AverageRatePerNight '+
+'  , TotalRent '+
+'  , TotalSale '+
+'  , TotalPayments '+
+'  , TotalRent+TotalSale-TotalPayments AS Balance '+
+'FROM (SELECT '+
+'         ADate AS CheckOutDate '+
+'       ,yyy.Reservation '+
+'       ,yyy.RoomReservation '+
+'       ,yyy.Room '+
+'       ,yyy.RoomType '+
+'       ,pe.Name AS GuestName '+
+'       ,cu.Customer '+
+'       ,cu.Surname AS CompanyName '+
+'       ,DATE((SELECT ADate FROM roomsdate WHERE RoomReservation=yyy.RoomReservation AND ResFlag=yyy.ResFlag ORDER BY ADate LIMIT 1)) AS Arrival '+
+'       ,DATE(DATE_ADD((SELECT ADate FROM roomsdate WHERE RoomReservation=yyy.RoomReservation AND ResFlag=yyy.ResFlag ORDER BY ADate DESC LIMIT 1), INTERVAL 1 DAY)) AS Departure '+
+'       ,ROUND(SUM(RateWithDiscount + IFNULL(IF(CityTaxIncl, 0, CityTaxPerDay), 0.00)) , 2) AS TotalRent '+
+'       ,IFNULL((SELECT SUM(Number*Price) FROM invoicelines il WHERE InvoiceNumber=-1 AND RoomReservation=yyy.RoomReservation), 0.00) AS TotalSale '+
+'       ,IFNULL((SELECT SUM(Amount) FROM payments WHERE InvoiceNumber=-1 AND RoomReservation=yyy.RoomReservation), 0.00) AS TotalPayments '+
+'       ,(SELECT COUNT(id) FROM persons pe1 WHERE pe1.RoomReservation=yyy.RoomReservation) AS NumGuests '+
+'       ,(SELECT COUNT(id) FROM roomsdate rd1 WHERE rd1.RoomReservation=yyy.RoomReservation AND rd1.ResFlag=yyy.ResFlag) AS NumNights '+
+'       ,IFNULL(rr.ExpectedCheckOutTime, ho.DefaultCheckOutTime) AS ExpectedCheckOutTime '+
+'     FROM(SELECT '+
+'             ADate '+
+'           , ResFlag '+
+'           , RateExcl '+
+'           , RateIncl - RateExcl AS VAT '+
+'           , RateIncl '+
+'           , IF(Discount > 0, IF(isPercentage, RateIncl - (RateIncl * Discount / 100), RateIncl - Discount), RateIncl) AS RateWithDiscount '+
+'           , CityTaxInCl '+
+'           , NumNights '+
+'           , NumGuests '+
+'           , IF(CityTaxIncl, 0, IF(taxPercentage, taxBaseAmount * taxAmount / 100, taxAmount) *  IF(taxRoomNight, 1, '+
+'                                 IF(taxGuestNight, NumGuests,IF(taxGuestNight, NumGuests / NumNights,IF(taxBooking, 1 / NumNights,1 ))))) / CurrencyRate AS CityTaxPerDay '+
+'           , taxPercentage '+
+'           , taxRetaxable '+
+'           , taxRoomNight '+
+'           , taxGuestNight '+
+'           , taxGuest '+
+'           , taxBooking '+
+'           , taxNettoAmountBased '+
+'           , xxx.RoomReservation '+
+'           , xxx.Reservation '+
+'           , xxx.Room '+
+'           , xxx.RoomType '+
+' FROM (SELECT '+
+'           DATE_ADD((SELECT rd1.ADate FROM roomsdate rd1 WHERE rd1.RoomReservation = rd.RoomReservation ORDER BY rd1.ADate DESC LIMIT 1), INTERVAL 1 DAY) AS ADate '+
+'        ,rd.ResFlag '+
+'        ,RoomRate AS RateIncl '+
+'        ,RoomRate / (1 + vc.VATPercentage/100) AS RateExcl '+
+'        ,to_bool(IF(tx.INCL_EXCL=''INCLUDED'' OR (tx.INCL_EXCL=''PER_CUSTOMER'' AND cu.StayTaxIncluted), 1, 0)) AS CityTaxInCl '+
+'        ,tx.AMOUNT AS taxAmount '+
+'        ,to_bool(IF(tx.TAX_TYPE=''FIXED_AMOUNT'', 0, 1)) AS taxPercentage,to_bool(IF(tx.RETAXABLE=''FALSE'', 0, 1)) AS taxRetaxable, to_bool(IF(tx.TAX_BASE=''ROOM_NIGHT'', 1, 0)) AS taxRoomNight '+
+'        ,to_bool(IF(tx.TAX_BASE=''GUEST_NIGHT'', 1, 0)) AS taxGuestNight, to_bool(IF(tx.TAX_BASE=''GUEST'', 1, 0)) AS taxGuest, to_bool(IF(tx.TAX_BASE=''BOOKING'', 1, 0)) AS taxBooking '+
+'        ,to_bool(IF(tx.NETTO_AMOUNT_BASED=''FALSE'', 0, 1)) AS taxNettoAmountBased , IF(tx.NETTO_AMOUNT_BASED=''FALSE'', RoomRate, RoomRate / (1 + vc.VATPercentage/100)) AS taxBaseAmount '+
+'        ,(SELECT COUNT(rd1.ID) FROM roomsdate rd1 WHERE rd1.RoomReservation = rr.RoomReservation AND NOT rd1.ResFlag IN (''X'',''C'') GROUP BY rd1.RoomReservation) AS NumNights '+
+'        ,(SELECT COUNT(pe.ID) FROM persons pe WHERE pe.RoomReservation = rr.RoomReservation GROUP BY pe.RoomReservation) AS NumGuests '+
+'        ,cur.Currency AS Currency '+
+'        ,cur.AValue AS CurrencyRate '+
+'        ,rd.Discount, rd.isPercentage '+
+'        ,rd.RoomReservation '+
+'        ,rd.Reservation '+
+'        ,rd.Room '+
+'        ,rd.RoomType '+
+'       FROM roomsdate rd '+
+'         JOIN currencies cur ON cur.Currency=rd.Currency '+
+'         JOIN roomreservations rr ON rr.RoomReservation=rd.RoomReservation '+
+'         JOIN reservations r ON r.Reservation=rd.Reservation '+
+'         JOIN customers cu ON cu.Customer=r.Customer '+
+'         JOIN control co '+
+'         JOIN home100.TAXES tx ON HOTEL_ID=co.CompanyId AND VALID_FROM<=rd.ADate AND VALID_TO>=rd.ADate '+
+'         JOIN items i ON i.Item=co.RoomRentItem '+
+'         JOIN itemtypes it ON it.ItemType=i.ItemType '+
+'         JOIN vatcodes vc ON vc.VATCode=it.VATCode, '+
+'(SELECT '+
+'   ''%s'' AS StartDate '+
+'   ,''%s'' AS EndDate) AS params '+
+' WHERE rd.RoomReservation IN '+
+'   (SELECT '+
+'      RoomReservation '+
+'    FROM '+
+'      roomsdate rd '+
+'    WHERE '+
+'        rd.ADate BETWEEN DATE_ADD(params.StartDate, INTERVAL -1 DAY) AND DATE_ADD(params.EndDate, INTERVAL -1 DAY) '+
+'      AND rd.ResFlag=''G'' '+
+'      AND (SELECT rd1.ADate FROM roomsdate rd1 WHERE rd1.RoomReservation = rd.RoomReservation ORDER BY rd1.ADate DESC LIMIT 1) = rd.ADate) '+
+'      AND NOT ResFlag IN (''X'',''C'') '+
+'      AND rd.Paid=0 '+
+'    ) xxx '+
+'   ) yyy '+
+' JOIN roomreservations rr ON rr.RoomReservation=yyy.RoomReservation '+
+' JOIN reservations r ON r.Reservation=yyy.Reservation '+
+' JOIN customers cu ON cu.Customer=r.Customer AND cu.Active '+
+' JOIN persons pe ON pe.RoomReservation=yyy.RoomReservation AND pe.MainName=1 '+
+' JOIN channels ch ON ch.Id=r.Channel '+
+' JOIN hotelconfigurations ho '+
+' GROUP BY yyy.RoomReservation, CheckOutDate '+
+') zzz '+
+'ORDER BY '+
+'  CheckOutDate, Room ';
+
+
+
+
+
+
+function ShowDeparturesReport: boolean;
 var
-  frm: TfrmArrivalsReport;
+  frm: TfrmDeparturesReport;
 begin
-  frm := TfrmArrivalsReport.Create(nil);
+  frm := TfrmDeparturesReport.Create(nil);
   try
     frm.ShowModal;
     Result := (frm.modalresult = mrOk);
@@ -184,7 +315,7 @@ begin
   end;
 end;
 
-procedure TfrmArrivalsReport.btnCheckInClick(Sender: TObject);
+procedure TfrmDeparturesReport.btnCheckInClick(Sender: TObject);
 var s : String;
     Room : String;
     Reservation, RoomReservation : Integer;
@@ -221,7 +352,7 @@ begin
   end
 end;
 
-procedure TfrmArrivalsReport.btnExcelClick(Sender: TObject);
+procedure TfrmDeparturesReport.btnExcelClick(Sender: TObject);
 var
   sFilename : string;
   s         : string;
@@ -232,18 +363,18 @@ begin
   ShellExecute(Handle, 'OPEN', PChar(sFilename + '.xls'), nil, nil, sw_shownormal);
 end;
 
-procedure TfrmArrivalsReport.btnProfileClick(Sender: TObject);
+procedure TfrmDeparturesReport.btnProfileClick(Sender: TObject);
 begin
   if EditReservation(kbmArrivalsList['RoomerReservationID'], kbmArrivalsList['RoomerRoomReservationID']) then
     postMessage(handle, WM_REFRESH_DATA, 0, 0);
 end;
 
-procedure TfrmArrivalsReport.btnRefreshClick(Sender: TObject);
+procedure TfrmDeparturesReport.btnRefreshClick(Sender: TObject);
 begin
   postMessage(handle, WM_REFRESH_DATA, 0, 0);
 end;
 
-function TfrmArrivalsReport.ConstructSQL: string;
+function TfrmDeparturesReport.ConstructSQL: string;
 var s : String;
 begin
   if rbToday.Checked OR rbTomorrow.Checked then
@@ -257,72 +388,64 @@ begin
   {$endif}
 end;
 
-procedure TfrmArrivalsReport.dtDateFromCloseUp(Sender: TObject);
+procedure TfrmDeparturesReport.dtDateFromCloseUp(Sender: TObject);
 begin
  if dtDateFrom.Date > dtDateTo.Date then
    dtDateTo.Date := dtDateFrom.Date;
 end;
 
-procedure TfrmArrivalsReport.dtDateToCloseUp(Sender: TObject);
+procedure TfrmDeparturesReport.dtDateToCloseUp(Sender: TObject);
 begin
  if dtDateFrom.Date > dtDateTo.Date then
    dtDateFrom.Date := dtDateTo.Date;
 end;
 
-procedure TfrmArrivalsReport.FormCreate(Sender: TObject);
+procedure TfrmDeparturesReport.FormCreate(Sender: TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
   glb.PerformAuthenticationAssertion(self);
   PlaceFormOnVisibleMonitor(self);
 end;
 
-procedure TfrmArrivalsReport.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+procedure TfrmDeparturesReport.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
   if Key = VK_ESCAPE then
     Close;
 end;
 
-procedure TfrmArrivalsReport.FormShow(Sender: TObject);
+procedure TfrmDeparturesReport.FormShow(Sender: TObject);
 begin
   UpdateControls;
   postMessage(handle, WM_REFRESH_DATA, 0, 0);
 end;
 
-procedure TfrmArrivalsReport.mnuGroupInvoiceClick(Sender: TObject);
+procedure TfrmDeparturesReport.mnuGroupInvoiceClick(Sender: TObject);
 begin
   EditInvoice(kbmArrivalsList['RoomerReservationID'], 0, 0, 0, 0, 0, false, true,false);
 end;
 
-procedure TfrmArrivalsReport.grArrivalsListDBTableView1CellDblClick(Sender: TcxCustomGridTableView; ACellViewInfo: TcxGridTableDataCellViewInfo;
+procedure TfrmDeparturesReport.grArrivalsListDBTableView1CellDblClick(Sender: TcxCustomGridTableView; ACellViewInfo: TcxGridTableDataCellViewInfo;
   AButton: TMouseButton; AShift: TShiftState; var AHandled: Boolean);
 begin
   btnProfile.Click;
 end;
 
-procedure TfrmArrivalsReport.grArrivalsListDBTableView1ExpectedTimeOfArrivalGetDisplayText(
-  Sender: TcxCustomGridTableItem; ARecord: TcxCustomGridRecord; var AText: string);
-begin
-  if not aText.IsEmpty then
-    DateTimeToString(aText, FormatSettings.ShortTimeFormat, StrTodateTime(aText));
-
-end;
-
-procedure TfrmArrivalsReport.kbmArrivalsListAfterScroll(DataSet: TDataSet);
+procedure TfrmDeparturesReport.kbmArrivalsListAfterScroll(DataSet: TDataSet);
 begin
   UpdateControls;
 end;
 
-procedure TfrmArrivalsReport.mnuRoomInvoiceClick(Sender: TObject);
+procedure TfrmDeparturesReport.mnuRoomInvoiceClick(Sender: TObject);
 begin
   EditInvoice(kbmArrivalsList['RoomerReservationID'], kbmArrivalsList['RoomerRoomReservationID'], 0, 0, 0, 0, false, true,false);
 end;
 
-procedure TfrmArrivalsReport.rbRadioButtonClick(Sender: TObject);
+procedure TfrmDeparturesReport.rbRadioButtonClick(Sender: TObject);
 begin
   UpdateControls;
 end;
 
-procedure TfrmArrivalsReport.RefreshData;
+procedure TfrmDeparturesReport.RefreshData;
 var
   s    : string;
   rset1: TRoomerDataset;
@@ -361,13 +484,13 @@ begin
   end;
 end;
 
-procedure TfrmArrivalsReport.SetManualDates(aFrom, aTo: TDate);
+procedure TfrmDeparturesReport.SetManualDates(aFrom, aTo: TDate);
 begin
   dtDateFrom.Date := aFrom;
   dtDateTo.Date := aTo;
 end;
 
-procedure TfrmArrivalsReport.UpdateControls;
+procedure TfrmDeparturesReport.UpdateControls;
 var
   lDataAvailable: boolean;
 begin
@@ -388,7 +511,7 @@ begin
   btnInvoice.Enabled := lDataAvailable;
 end;
 
-procedure TfrmArrivalsReport.WndProc(var message: TMessage);
+procedure TfrmDeparturesReport.WndProc(var message: TMessage);
 begin
   if message.Msg = WM_REFRESH_DATA then
     RefreshData;

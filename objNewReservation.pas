@@ -14,7 +14,7 @@ uses
   , PrjConst
   , ustringUtils
   , ug
-  , uAlerts
+  , uAlerts, uRoomerDefinitions
   ;
 
 TYPE
@@ -23,6 +23,7 @@ TYPE
 TYPE
 
   TnewRoomReservationItem = class
+  private
     FRoomReservation: integer;
     FRoomNumber: string;
     FRoomType: string;
@@ -39,8 +40,19 @@ TYPE
     FPriceCode : string;
     FMainGuestName : string;
     FNotes         : string;
-
     FRates: TRates;
+    FBreakfast: Boolean;
+    FBreakfastCost: Double;
+    FBreakfastIncluded: Boolean;
+    FExtraBedCost: Double;
+    FExtraBedIncluded: Boolean;
+    FExtraBed: Boolean;
+    FExtraBedCostGroupAccount: Boolean;
+    FBreakfastCostGroupAccount: Boolean;
+    FManualChannelId: Integer;
+    FratePlanCode: String;
+    FExpCOT: string;
+    FExpTOA: string;
 
     function getRoomReservation: integer;
     function getRoomNumber: string;
@@ -77,17 +89,8 @@ TYPE
     procedure SetMainGuestName(Value: string);
     procedure SetNotes(Value: string);
 
-  private
-    FBreakfast: Boolean;
-    FBreakfastCost: Double;
-    FBreakfastIncluded: Boolean;
-    FExtraBedCost: Double;
-    FExtraBedIncluded: Boolean;
-    FExtraBed: Boolean;
-    FExtraBedCostGroupAccount: Boolean;
-    FBreakfastCostGroupAccount: Boolean;
-    FManualChannelId: Integer;
-    FratePlanCode: String;
+    procedure SetExpCOT(const Value: string);
+    procedure SetExpTOA(const Value: string);
     // **
   public
     constructor Create(aRoomReservation: integer;
@@ -141,6 +144,8 @@ TYPE
 
     property ManualChannelId  : Integer read FManualChannelId   write FManualChannelId      ;
     property ratePlanCode  : String     read FratePlanCode      write FratePlanCode         ;
+    property ExpTOA: string             read FExpTOA            write SetExpTOA             ;
+    property ExpCOT: string             read FExpCOT            write SetExpCOT             ;
 
   end;
 
@@ -164,8 +169,6 @@ TYPE
     FRoomList: TnewRoomReservationItemsList;  {each room in reservation}
 
     FHotelcode: string;
-    FReservationArrival: TDateTime;
-    FReservationDeparture: TDateTime;
 
     function getRoomCount: integer;
 
@@ -220,6 +223,7 @@ TYPE
     FOutOfOrderBlocking: Boolean;
     FSendConfirmationEmail: Boolean;
     FAlertList: TAlertList;
+    FMarket: TReservationMarketType;
     procedure DeleteReservation(Reservation: integer);
 
   public
@@ -254,6 +258,8 @@ TYPE
     property SendConfirmationEmail: Boolean read FSendConfirmationEmail write FSendConfirmationEmail;
 
     property AlertList : TAlertList read FAlertList write FAlertList;
+
+    property Market: TReservationMarketType read FMarket write FMarket;
 
   end;
 
@@ -485,6 +491,16 @@ end;
 procedure TnewRoomReservationItem.SetDeparture(Value: TDateTime);
 begin
   FDeparture := Value
+end;
+
+procedure TnewRoomReservationItem.SetExpCOT(const Value: string);
+begin
+  FExpCOT := Value;
+end;
+
+procedure TnewRoomReservationItem.SetExpTOA(const Value: string);
+begin
+  FExpTOA := Value;
 end;
 
 /// ///////////////////////////////////////////////////////////////////
@@ -819,6 +835,8 @@ var
   contactIsMainGuest : boolean;
   lstReservationActivity : TStringlist;
   lstInvoiceActivity : TStringlist;
+  ExpTOA: string;
+  ExpCOT: string;
 
   procedure init;
   begin
@@ -925,6 +943,8 @@ var
     reservationData.channel          := channel;
     reservationData.invRefrence      := invRefrence;
     reservationData.OutOfOrderBlocking  := OutOfOrderBlocking;
+
+    reservationData.Market              := Market;
 
     ExecutionPlan.AddExec(SQL_INS_Reservation(reservationData));
 
@@ -1112,6 +1132,9 @@ begin
 
           roomNotes := FnewRoomReservations.FRoomList[i].FNotes;
 
+          ExpTOA := FnewRoomReservations.FRoomList[i].ExpTOA;
+          ExpCOT := FnewRoomReservations.FRoomList[i].ExpCOT;
+
 
           if iRoomReservation < 1 then
           begin
@@ -1214,6 +1237,9 @@ begin
           roomReservationData.Price3From      := _DateToDBDate(Arrival, false);
           roomReservationData.Price3To        := _DateToDBDate(Arrival, false);
           roomReservationData.Hallres         := 0;
+
+          roomReservationData.ExpectedTimeOfArrival := ExpTOA;
+          roomReservationData.ExpectedCheckoutTime := ExpCOT;
 
           ExecutionPlan.AddExec(SQL_INS_RoomReservation(roomReservationData));
 

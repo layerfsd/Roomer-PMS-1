@@ -1006,13 +1006,15 @@ end;
 function TfrmItems2.AssertCorrectness : Boolean;
 var config : Array_Of_THotelconfigurationsEntity;
     answer : Integer;
+    i: integer;
 begin
 
   result := true;
   if Lookup then
     exit;
+
+  config := d.roomerMainDataSet.Hotelconfigurations_Entities_FindAll;
   try
-    config := d.roomerMainDataSet.Hotelconfigurations_Entities_FindAll;
     if config[0].forceExternalProductIdCorrectness = 1 then
     begin
       screen.Cursor := crHourglass;
@@ -1045,7 +1047,9 @@ begin
         m_.EnableControls;
       end;
     end;
-  except
+  finally
+    for i := 0 to length(config)-1 do
+      config[i].Free;
   end;
 end;
 

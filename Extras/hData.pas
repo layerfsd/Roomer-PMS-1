@@ -12,6 +12,7 @@ uses
   , inifiles
 
   , _Glob
+  , uRoomerDefinitions
   , objRoomTypeRoomCount
   , uUtils
   , cmpRoomerDataSet
@@ -505,6 +506,9 @@ type
 
     ManualChannelId : Integer;
     ratePlanCode : String;
+
+    ExpectedTimeOfArrival: string;
+    ExpectedCheckoutTime: string;
   end;
 
   recReservationHolder = record
@@ -558,6 +562,7 @@ type
     Channel: integer;
 
     OutOfOrderBlocking : Boolean;
+    Market: TReservationMarketType;
   end;
 
   recRoomsDateHolder = record
@@ -2083,7 +2088,6 @@ uses
   uDayNotes, uPriceOBJ, uSqlDefinitions, uStringUtils, uAppGlobal, uRoomTypes2,
   uDateUtils,
   uActivityLogs,
-  uRoomerDefinitions,
   uAvailabilityPerDay,
   PrjConst
   ;
@@ -2952,6 +2956,7 @@ begin
 
     ManualChannelId := 0;
     ratePlanCode := '';
+
   end;
 end;
 
@@ -3701,6 +3706,7 @@ begin
   s := s + ' 	,UseStayTax '#10;
   s := s + ' 	,Channel '#10;
   s := s + ' 	,OutOfOrderBlocking '#10;
+  s := s + ' 	,Market '#10;
   s := s + ' '#10;
   s := s + ' ) '#10;
   s := s + '   VALUES ( '#10;
@@ -3750,6 +3756,7 @@ begin
   s := s + ' 	, ' + _db(theData.UseStayTax) + #10;
   s := s + ' 	, ' + _db(theData.Channel) + #10;
   s := s + ' 	, ' + _db(theData.OutOfOrderBlocking) + #10;
+  s := s + ' 	, ' + _db(theData.Market.ToDBString) + #10;
   s := s + '   ) ';
   result := s;
 end;
@@ -3853,109 +3860,129 @@ end;
 
 function SQL_INS_RoomReservation(theData: recRoomReservationHolder): string;
 var
-  s: string;
+  b: TStringBuilder;
+
+  function AddFormattedTime(const aTimeStr: string): string;
+  var
+    lDateTime: TDateTime;
+  begin
+    if aTimeSTr.IsEmpty or not TryStrToTime(aTimeStr, lDateTime) then
+      Result := _db('') + #10
+    else
+      Result := _db(TTime(lDateTime)) + #10;
+  end;
+
+
 begin
-  s := '';
-  s := s + 'INSERT INTO ' + #10;
-  s := s + 'roomreservations ' + #10;
-  s := s + ' ( ' + #10;
-  s := s + '    `RoomReservation` ' + #10;
-  s := s + '   ,`Room` ' + #10;
-  s := s + '   ,`Reservation` ' + #10;
-  s := s + '   ,`Status` ' + #10;
-  s := s + '   ,`GroupAccount` ' + #10;
-  s := s + '   ,`invBreakfast` ' + #10;
-  s := s + '   ,`RoomPrice1` ' + #10;
-  s := s + '   ,`Price1From` ' + #10;
-  s := s + '   ,`Price1To` ' + #10;
-  s := s + '   ,`RoomPrice2` ' + #10;
-  s := s + '   ,`Price2From` ' + #10;
-  s := s + '   ,`Price2To` ' + #10;
-  s := s + '   ,`RoomPrice3` ' + #10;
-  s := s + '   ,`Price3From` ' + #10;
-  s := s + '   ,`Price3To` ' + #10;
-  s := s + '   ,`Currency` ' + #10;
-  s := s + '   ,`Discount` ' + #10;
-  s := s + '   ,`Percentage` ' + #10;
-  s := s + '   ,`PriceType` ' + #10;
-  s := s + '   ,`Arrival` ' + #10;
-  s := s + '   ,`Departure` ' + #10;
-  s := s + '   ,`RoomType` ' + #10;
-  s := s + '   ,`PMInfo` ' + #10;
-  s := s + '   ,`HiddenInfo` ' + #10;
-  s := s + '   ,`RoomRentPaid1` ' + #10;
-  s := s + '   ,`RoomRentPaid2` ' + #10;
-  s := s + '   ,`RoomRentPaid3` ' + #10;
-  s := s + '   ,`RoomRentPaymentInvoice` ' + #10;
-  s := s + '   ,`Hallres` ' + #10;
-  s := s + '   ,`rrTmp` ' + #10;
-  s := s + '   ,`rrDescription` ' + #10;
-  s := s + '   ,`rrArrival` ' + #10;
-  s := s + '   ,`rrDeparture` ' + #10;
-  s := s + '   ,`rrIsNoRoom` ' + #10;
-  s := s + '   ,`rrRoomAlias` ' + #10;
-  s := s + '   ,`rrRoomTypeAlias` ' + #10;
-  s := s + '   ,`useStayTax` ' + #10;
-  s := s + '   ,`useInNationalReport` ' + #10;
-  s := s + '   ,`numGuests` ' + #10;
-  s := s + '   ,`numChildren` ' + #10;
-  s := s + '   ,`numInfants` ' + #10;
-  s := s + '   ,`avrageRate` ' + #10;
-  s := s + '   ,`rateCount` ' + #10;
-  s := s + '   ,`Package` ' + #10;
-  s := s + '   ,`ManualChannelId` ' + #10;
-  s := s + '   ,`ratePlanCode` ' + #10;
-  s := s + '   ) ' + #10;
-  s := s + '   VALUES ' + #10;
-  s := s + '   ( ' + #10;
-  s := s + ' ' + _db(theData.RoomReservation) + #10;
-  s := s + '  , ' + _db(theData.Room) + #10;
-  s := s + '  , ' + _db(theData.Reservation) + #10;
-  s := s + '  , ' + _db(theData.Status) + #10;
-  s := s + '  , ' + _db(theData.GroupAccount) + #10;
-  s := s + '  , ' + _db(theData.invBreakfast) + #10;
-  s := s + '  , ' + _db(theData.RoomPrice1) + #10;
-  s := s + '  , ' + _db(theData.Price1From) + #10;
-  s := s + '  , ' + _db(theData.Price1To) + #10;
-  s := s + '  , ' + _db(theData.RoomPrice2) + #10;
-  s := s + '  , ' + _db(theData.Price2From) + #10;
-  s := s + '  , ' + _db(theData.Price2To) + #10;
-  s := s + '  , ' + _db(theData.RoomPrice3) + #10;
-  s := s + '  , ' + _db(theData.Price3From) + #10;
-  s := s + '  , ' + _db(theData.Price3To) + #10;
-  s := s + '  , ' + _db(theData.Currency) + #10;
-  s := s + '  , ' + _db(theData.Discount) + #10;
-  s := s + '  , ' + _db(theData.Percentage) + #10;
-  s := s + '  , ' + _db(theData.PriceType) + #10;
-  s := s + '  , ' + _db(theData.Arrival) + #10;
-  s := s + '  , ' + _db(theData.Departure) + #10;
-  s := s + '  , ' + _db(theData.RoomType) + #10;
-  s := s + '  , ' + _db(theData.PMInfo) + #10;
-  s := s + '  , ' + _db(theData.HiddenInfo) + #10;
-  s := s + '  , ' + _db(theData.RoomRentPaid1) + #10;
-  s := s + '  , ' + _db(theData.RoomRentPaid2) + #10;
-  s := s + '  , ' + _db(theData.RoomRentPaid3) + #10;
-  s := s + '  , ' + _db(theData.RoomRentPaymentInvoice) + #10;
-  s := s + '  , ' + _db(theData.Hallres) + #10;
-  s := s + '  , ' + _db(theData.rrTmp) + #10;
-  s := s + '  , ' + _db(theData.rrDescription) + #10;
-  s := s + '  , ' + _db(theData.rrArrival) + #10;
-  s := s + '  , ' + _db(theData.rrDeparture) + #10;
-  s := s + '  , ' + _db(theData.rrIsNoRoom) + #10;
-  s := s + '  , ' + _db(theData.rrRoomAlias) + #10;
-  s := s + '  , ' + _db(theData.rrRoomTypeAlias) + #10;
-  s := s + '  , ' + _db(theData.UseStayTax) + #10;
-  s := s + '  , ' + _db(theData.UseInNationalReport) + #10;
-  s := s + '  , ' + _db(theData.numGuests) + #10;
-  s := s + '  , ' + _db(theData.numChildren) + #10;
-  s := s + '  , ' + _db(theData.numInfants) + #10;
-  s := s + '  , ' + _db(theData.avrageRate) + #10;
-  s := s + '  , ' + _db(theData.rateCount) + #10;
-  s := s + '  , ' + _db(theData.package) + #10;
-  s := s + '  , ' + _db(theData.ManualChannelId) + #10;
-  s := s + '  , ' + _db(theData.ratePlanCode) + #10;
-  s := s + '  ) ' + #10;
-  result := s;
+  b := TStringBuilder.Create;
+  try
+    b.Append('INSERT INTO ' + #10);
+    b.Append('roomreservations ' + #10);
+    b.Append(' ( ' + #10);
+    b.Append('    `RoomReservation` ' + #10);
+    b.Append('   ,`Room` ' + #10);
+    b.Append('   ,`Reservation` ' + #10);
+    b.Append('   ,`Status` ' + #10);
+    b.Append('   ,`GroupAccount` ' + #10);
+    b.Append('   ,`invBreakfast` ' + #10);
+    b.Append('   ,`RoomPrice1` ' + #10);
+    b.Append('   ,`Price1From` ' + #10);
+    b.Append('   ,`Price1To` ' + #10);
+    b.Append('   ,`RoomPrice2` ' + #10);
+    b.Append('   ,`Price2From` ' + #10);
+    b.Append('   ,`Price2To` ' + #10);
+    b.Append('   ,`RoomPrice3` ' + #10);
+    b.Append('   ,`Price3From` ' + #10);
+    b.Append('   ,`Price3To` ' + #10);
+    b.Append('   ,`Currency` ' + #10);
+    b.Append('   ,`Discount` ' + #10);
+    b.Append('   ,`Percentage` ' + #10);
+    b.Append('   ,`PriceType` ' + #10);
+    b.Append('   ,`Arrival` ' + #10);
+    b.Append('   ,`Departure` ' + #10);
+    b.Append('   ,`RoomType` ' + #10);
+    b.Append('   ,`PMInfo` ' + #10);
+    b.Append('   ,`HiddenInfo` ' + #10);
+    b.Append('   ,`RoomRentPaid1` ' + #10);
+    b.Append('   ,`RoomRentPaid2` ' + #10);
+    b.Append('   ,`RoomRentPaid3` ' + #10);
+    b.Append('   ,`RoomRentPaymentInvoice` ' + #10);
+    b.Append('   ,`Hallres` ' + #10);
+    b.Append('   ,`rrTmp` ' + #10);
+    b.Append('   ,`rrDescription` ' + #10);
+    b.Append('   ,`rrArrival` ' + #10);
+    b.Append('   ,`rrDeparture` ' + #10);
+    b.Append('   ,`rrIsNoRoom` ' + #10);
+    b.Append('   ,`rrRoomAlias` ' + #10);
+    b.Append('   ,`rrRoomTypeAlias` ' + #10);
+    b.Append('   ,`useStayTax` ' + #10);
+    b.Append('   ,`useInNationalReport` ' + #10);
+    b.Append('   ,`numGuests` ' + #10);
+    b.Append('   ,`numChildren` ' + #10);
+    b.Append('   ,`numInfants` ' + #10);
+    b.Append('   ,`avrageRate` ' + #10);
+    b.Append('   ,`rateCount` ' + #10);
+    b.Append('   ,`Package` ' + #10);
+    b.Append('   ,`ManualChannelId` ' + #10);
+    b.Append('   ,`ratePlanCode` ' + #10);
+    b.Append('   ,`ExpectedTimeOfArrival` ' + #10);
+    b.Append('   ,`ExpectedCheckoutTime` ' + #10);
+    b.Append('   ) ' + #10);
+    b.Append('   VALUES ' + #10);
+    b.Append('   ( ' + #10);
+    b.Append(' ' + _db(theData.RoomReservation) + #10);
+    b.Append('  , ' + _db(theData.Room) + #10);
+    b.Append('  , ' + _db(theData.Reservation) + #10);
+    b.Append('  , ' + _db(theData.Status) + #10);
+    b.Append('  , ' + _db(theData.GroupAccount) + #10);
+    b.Append('  , ' + _db(theData.invBreakfast) + #10);
+    b.Append('  , ' + _db(theData.RoomPrice1) + #10);
+    b.Append('  , ' + _db(theData.Price1From) + #10);
+    b.Append('  , ' + _db(theData.Price1To) + #10);
+    b.Append('  , ' + _db(theData.RoomPrice2) + #10);
+    b.Append('  , ' + _db(theData.Price2From) + #10);
+    b.Append('  , ' + _db(theData.Price2To) + #10);
+    b.Append('  , ' + _db(theData.RoomPrice3) + #10);
+    b.Append('  , ' + _db(theData.Price3From) + #10);
+    b.Append('  , ' + _db(theData.Price3To) + #10);
+    b.Append('  , ' + _db(theData.Currency) + #10);
+    b.Append('  , ' + _db(theData.Discount) + #10);
+    b.Append('  , ' + _db(theData.Percentage) + #10);
+    b.Append('  , ' + _db(theData.PriceType) + #10);
+    b.Append('  , ' + _db(theData.Arrival) + #10);
+    b.Append('  , ' + _db(theData.Departure) + #10);
+    b.Append('  , ' + _db(theData.RoomType) + #10);
+    b.Append('  , ' + _db(theData.PMInfo) + #10);
+    b.Append('  , ' + _db(theData.HiddenInfo) + #10);
+    b.Append('  , ' + _db(theData.RoomRentPaid1) + #10);
+    b.Append('  , ' + _db(theData.RoomRentPaid2) + #10);
+    b.Append('  , ' + _db(theData.RoomRentPaid3) + #10);
+    b.Append('  , ' + _db(theData.RoomRentPaymentInvoice) + #10);
+    b.Append('  , ' + _db(theData.Hallres) + #10);
+    b.Append('  , ' + _db(theData.rrTmp) + #10);
+    b.Append('  , ' + _db(theData.rrDescription) + #10);
+    b.Append('  , ' + _db(theData.rrArrival) + #10);
+    b.Append('  , ' + _db(theData.rrDeparture) + #10);
+    b.Append('  , ' + _db(theData.rrIsNoRoom) + #10);
+    b.Append('  , ' + _db(theData.rrRoomAlias) + #10);
+    b.Append('  , ' + _db(theData.rrRoomTypeAlias) + #10);
+    b.Append('  , ' + _db(theData.UseStayTax) + #10);
+    b.Append('  , ' + _db(theData.UseInNationalReport) + #10);
+    b.Append('  , ' + _db(theData.numGuests) + #10);
+    b.Append('  , ' + _db(theData.numChildren) + #10);
+    b.Append('  , ' + _db(theData.numInfants) + #10);
+    b.Append('  , ' + _db(theData.avrageRate) + #10);
+    b.Append('  , ' + _db(theData.rateCount) + #10);
+    b.Append('  , ' + _db(theData.package) + #10);
+    b.Append('  , ' + _db(theData.ManualChannelId) + #10);
+    b.Append('  , ' + _db(theData.ratePlanCode) + #10);
+    b.Append('  , ' + AddFormattedTime(theData.ExpectedTimeOfArrival) + #10);
+    b.Append('  , ' + AddFormattedTime(theData.ExpectedCheckoutTime) + #10);
+    b.Append('  ) ' + #10);
+    result := b.ToString;
+  finally
+    b.Free;
+  end;
 end;
 
 function SP_INS_RoomReservation(theData: recRoomReservationHolder): boolean;
@@ -4017,6 +4044,8 @@ begin
   s := s + '  ,CancelInformation ' + #10;
   s := s + '  ,CancelType ' + #10;
   s := s + '  ,useInNationalReport ' + #10;
+  s := s + '  ,ExpectedTimeOfArrival' + #10;
+  s := s + '  ,ExpectedCheckoutTime ' + #10;
   s := s + ' ) ' + #10;
   s := s + ' VALUES ' + #10;
   s := s + ' ( ' + #10;
@@ -4063,6 +4092,8 @@ begin
   s := s + '  , ' + _db(theData.CancelInformation) + #10;
   s := s + '  , ' + _db(theData.CancelType) + #10;
   s := s + '  , ' + _db(theData.UseInNationalReport) + #10;
+  s := s + '  , ' + _db(theData.ExpectedTimeOfArrival) + #10;
+  s := s + '  , ' + _db(theData.ExpectedCheckoutTime) + #10;
   s := s + ') ';
 
   result := cmd_bySQL(s);
@@ -4318,6 +4349,8 @@ begin
       result.avrageRate := LocalFloatValue(rSet.fieldbyname('AvrageRate').asString);
       result.rateCount := rSet.fieldbyname('rateCount').asInteger;
       result.package := rSet.fieldbyname('package').asString;
+      result.ExpectedTimeOfArrival := rSet.fieldbyname('ExpectedTimeOfArrival').AsString;
+      result.ExpectedCheckoutTime := rSet.fieldbyname('ExpectedCheckoutTime').AsString;
     end;
   finally
     freeandnil(rSet);
@@ -13454,22 +13487,15 @@ end;
 
 function Package_getRoomDescription(Code: string; Room: String; Arrival, Departure: TdateTime; guestname : string=''): string;
 var
-  packageId: integer;
   RoomRentItem: string;
-  roomRentID: integer;
-
 begin
   result := '';
 
-  if glb.Packages.Locate('package', Code, []) then
-    packageId := glb.Packages.fieldbyname('ID').asInteger
-  else
+  if not glb.Packages.Locate('package', Code, []) then
     Exit;
 
   RoomRentItem := trim(uppercase(ctrlGetString('RoomRentItem')));
-  if glb.Items.Locate('Item', RoomRentItem, []) then
-    roomRentID := glb.Items.fieldbyname('ID').asInteger
-  else
+  if not glb.Items.Locate('Item', RoomRentItem, []) then
     Exit;
 
   result := glb.Packages['invoiceText'];
@@ -13477,24 +13503,6 @@ begin
   result := StringReplace(result, '{arrival}', FormatDateTime('dd.mm', Arrival), [rfReplaceAll, rfIgnoreCase]);
   result := StringReplace(result, '{departure}', FormatDateTime('dd.mm', Departure), [rfReplaceAll, rfIgnoreCase]);
   result := StringReplace(result, '{guestname}', guestname, [rfReplaceAll, rfIgnoreCase]);
-
-//  if glb.LocateSpecificRecord('packageitems', 'packageId', packageId) then
-//  begin
-//    while NOT glb.PackageItems.Eof do // This is to check if Room is also included in the package.
-//    begin
-//      if (glb.PackageItems['packageId'] = packageId) AND (glb.PackageItems['itemId'] = roomRentID) then
-//      begin
-//        result := glb.Packages['invoiceText'];
-//        result := StringReplace(result, '{room}', Room, [rfReplaceAll, rfIgnoreCase]);
-//        result := StringReplace(result, '{arrival}', FormatDateTime('dd.mm', Arrival), [rfReplaceAll, rfIgnoreCase]);
-//        result := StringReplace(result, '{departure}', FormatDateTime('dd.mm', Departure), [rfReplaceAll, rfIgnoreCase]);
-//        result := StringReplace(result, '{guestname}', guestname, [rfReplaceAll, rfIgnoreCase]);
-//        // add guestname and roomtype
-//        Break;
-//      end;
-//      glb.PackageItems.Next;
-//    end;
-//  end;
 
 end;
 
@@ -14842,10 +14850,7 @@ var
   Arrival: Tdate;
   Departure: Tdate;
 
-  s, temp : String;
-
-  AvailabilityPerDay : TAvailabilityPerDay;
-
+  temp : String;
 begin
   result := false;
 
@@ -14911,10 +14916,7 @@ var
   Arrival: Tdate;
   Departure: Tdate;
 
-  s, temp : String;
-
-  AvailabilityPerDay : TAvailabilityPerDay;
-
+  temp : String;
 begin
   result := '';
 

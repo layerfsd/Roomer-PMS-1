@@ -1,7 +1,7 @@
-object frmArrivalsReport: TfrmArrivalsReport
+object frmDeparturesReport: TfrmDeparturesReport
   Left = 0
   Top = 0
-  Caption = 'Arrivals'
+  Caption = 'Departures'
   ClientHeight = 560
   ClientWidth = 972
   Color = clBtnFace
@@ -89,17 +89,16 @@ object frmArrivalsReport: TfrmArrivalsReport
         Width = 105
         Height = 21
         AutoSize = False
-        Color = clWhite
         EditMask = '!99/99/9999;1; '
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = clBlack
+        Font.Color = clWindowText
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
         MaxLength = 10
         ParentFont = False
         TabOrder = 3
-        Text = '  -  -    '
+        Text = '  .  .    '
         CheckOnExit = True
         SkinData.SkinSection = 'EDIT'
         GlyphMode.Blend = 0
@@ -113,17 +112,16 @@ object frmArrivalsReport: TfrmArrivalsReport
         Width = 105
         Height = 21
         AutoSize = False
-        Color = clWhite
         EditMask = '!99/99/9999;1; '
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = clBlack
+        Font.Color = clWindowText
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
         MaxLength = 10
         ParentFont = False
         TabOrder = 4
-        Text = '  -  -    '
+        Text = '  .  .    '
         CheckOnExit = True
         SkinData.SkinSection = 'EDIT'
         GlyphMode.Blend = 0
@@ -292,11 +290,6 @@ object frmArrivalsReport: TfrmArrivalsReport
       object grArrivalsListDBTableView1ExpectedTimeOfArrival: TcxGridDBColumn
         Caption = 'Expected TOA'
         DataBinding.FieldName = 'ExpectedTimeOfArrival'
-        PropertiesClassName = 'TcxTimeEditProperties'
-        Properties.Alignment.Horz = taCenter
-        Properties.UseTimeFormatWhenUnfocused = False
-        OnGetDisplayText = grArrivalsListDBTableView1ExpectedTimeOfArrivalGetDisplayText
-        HeaderAlignmentHorz = taCenter
         Options.Editing = False
         Width = 88
       end
@@ -391,7 +384,7 @@ object frmArrivalsReport: TfrmArrivalsReport
     LoadedCompletely = False
     SavedCompletely = False
     FilterOptions = []
-    Version = '7.22.00 Standard Edition'
+    Version = '7.62.00 Standard Edition'
     LanguageID = 0
     SortID = 0
     SubLanguageID = 1
@@ -493,6 +486,115 @@ object frmArrivalsReport: TfrmArrivalsReport
         Caption = 'Group invoice'
         OnClick = mnuGroupInvoiceClick
       end
+    end
+  end
+  object kbmDeparturesList: TkbmMemTable
+    Active = True
+    DesignActivation = True
+    AttachedAutoRefresh = True
+    AttachMaxCount = 1
+    FieldDefs = <
+      item
+        Name = 'Room'
+        DataType = ftString
+        Size = 10
+      end
+      item
+        Name = 'Roomtype'
+        DataType = ftString
+        Size = 20
+      end
+      item
+        Name = 'RoomerReservationID'
+        DataType = ftInteger
+      end
+      item
+        Name = 'GuestName'
+        DataType = ftString
+        Size = 100
+      end
+      item
+        Name = 'CompanyCode'
+        DataType = ftString
+        Size = 15
+      end
+      item
+        Name = 'Arrival'
+        DataType = ftDate
+      end
+      item
+        Name = 'Departure'
+        DataType = ftDate
+      end
+      item
+        Name = 'NumGuests'
+        DataType = ftInteger
+      end
+      item
+        Name = 'AverageRoomRate'
+        DataType = ftFloat
+      end
+      item
+        Name = 'ExpectedTimeOfArrival'
+        DataType = ftString
+        Size = 5
+      end
+      item
+        Name = 'RoomerRoomReservationID'
+        DataType = ftInteger
+      end>
+    IndexDefs = <>
+    SortOptions = []
+    PersistentBackup = False
+    ProgressFlags = [mtpcLoad, mtpcSave, mtpcCopy]
+    LoadedCompletely = False
+    SavedCompletely = False
+    FilterOptions = []
+    Version = '7.62.00 Standard Edition'
+    LanguageID = 0
+    SortID = 0
+    SubLanguageID = 1
+    LocaleID = 1024
+    AfterScroll = kbmArrivalsListAfterScroll
+    Left = 408
+    Top = 431
+    object StringField1: TStringField
+      FieldName = 'Room'
+      Size = 10
+    end
+    object StringField2: TStringField
+      FieldName = 'Roomtype'
+    end
+    object IntegerField1: TIntegerField
+      FieldName = 'RoomerReservationID'
+    end
+    object StringField3: TStringField
+      FieldName = 'GuestName'
+      Size = 100
+    end
+    object StringField4: TStringField
+      FieldName = 'CompanyCode'
+      Size = 15
+    end
+    object DateField1: TDateField
+      FieldName = 'Arrival'
+    end
+    object DateField2: TDateField
+      FieldName = 'Departure'
+    end
+    object IntegerField2: TIntegerField
+      FieldName = 'NumGuests'
+    end
+    object FloatField1: TFloatField
+      FieldName = 'AverageRoomRate'
+      currency = True
+    end
+    object StringField5: TStringField
+      FieldName = 'ExpectedTimeOfArrival'
+      Size = 5
+    end
+    object IntegerField3: TIntegerField
+      FieldName = 'RoomerRoomReservationID'
     end
   end
 end
