@@ -339,7 +339,7 @@ object frmEditRoomPrice: TfrmEditRoomPrice
         Height = 13
         Alignment = taRightJustify
         AutoSize = False
-        Caption = 'Audults : '
+        Caption = 'Adults : '
         ParentFont = False
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clBlack

@@ -2410,7 +2410,7 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
             SkinData.SkinSection = 'BUTTON'
           end
           object sButton1: TsButton
-            Left = 2
+            Left = 3
             Top = 45
             Width = 198
             Height = 25
@@ -2666,9 +2666,9 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
         Align = alClient
         TabOrder = 1
         LookAndFeel.NativeStyle = False
-        ExplicitTop = 139
         object tvRoomRes: TcxGridDBTableView
           Navigator.Buttons.CustomButtons = <>
+          Navigator.InfoPanel.Visible = True
           DataController.DataSource = mRoomResDS
           DataController.DetailKeyFieldNames = 'RoomReservation'
           DataController.KeyFieldNames = 'RoomReservation'
@@ -2926,8 +2926,27 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
             DataBinding.FieldName = 'RoomReservation'
             Visible = False
           end
+          object tvRoomResStockItemsCount: TcxGridDBColumn
+            Caption = 'Extras'
+            DataBinding.FieldName = 'StockItemsCount'
+            PropertiesClassName = 'TcxButtonEditProperties'
+            Properties.Buttons = <
+              item
+                Default = True
+                Kind = bkEllipsis
+              end>
+            Properties.OnButtonClick = tvRoomResStockItemsCountPropertiesButtonClick
+            Options.ShowEditButtons = isebAlways
+          end
+          object tvRoomResStockitemsPrice: TcxGridDBColumn
+            Caption = 'Extras Price'
+            DataBinding.FieldName = 'StockitemsPrice'
+            PropertiesClassName = 'TcxCurrencyEditProperties'
+            Properties.DisplayFormat = ',0.00;-,0.00'
+            Properties.ReadOnly = True
+          end
           object tvRoomResAvrageDiscount: TcxGridDBColumn
-            Caption = 'Avrage Discount'
+            Caption = 'Average Discount'
             DataBinding.FieldName = 'AvrageDiscount'
             Options.Editing = False
           end
@@ -4073,6 +4092,12 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
     object mRoomResExpectedCheckOutTime: TStringField
       FieldName = 'ExpectedCheckOutTime'
     end
+    object mRoomResStockItemsCount: TIntegerField
+      FieldName = 'StockItemsCount'
+    end
+    object mRoomResStockitemsPrice: TFloatField
+      FieldName = 'StockitemsPrice'
+    end
   end
   object mRoomRates: TdxMemData
     Indexes = <>
@@ -4131,8 +4156,8 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
   object mRoomRatesTmp: TdxMemData
     Indexes = <>
     SortOptions = []
-    Left = 776
-    Top = 296
+    Left = 664
+    Top = 288
     object IntegerField1: TIntegerField
       FieldName = 'Reservation'
     end
@@ -4185,8 +4210,8 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
   object mRR_: TdxMemData
     Indexes = <>
     SortOptions = []
-    Left = 856
-    Top = 295
+    Left = 752
+    Top = 287
     object IntegerField3: TIntegerField
       FieldName = 'Reservation'
     end
@@ -4256,6 +4281,42 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
       TextColor = clCaptionText
     end
     object cxStyle3: TcxStyle
+    end
+  end
+  object mExtras: TdxMemData
+    Indexes = <>
+    SortOptions = []
+    OnCalcFields = mExtrasCalcFields
+    Left = 920
+    Top = 288
+    object mExtrasRoomreservation: TIntegerField
+      FieldName = 'Roomreservation'
+    end
+    object mExtrasItemid: TIntegerField
+      FieldName = 'Itemid'
+    end
+    object mExtrasCount: TIntegerField
+      FieldName = 'Count'
+    end
+    object mExtrasPricePerItemPerDay: TFloatField
+      FieldName = 'PricePerItemPerDay'
+    end
+    object mExtrasFromdate: TDateTimeField
+      FieldName = 'Fromdate'
+    end
+    object mExtrasToDate: TDateTimeField
+      FieldName = 'ToDate'
+    end
+    object mExtrasItem: TStringField
+      FieldName = 'Item'
+    end
+    object mExtrasDescription: TStringField
+      FieldName = 'Description'
+    end
+    object mExtrasTotalPrice: TFloatField
+      FieldKind = fkCalculated
+      FieldName = 'TotalPrice'
+      Calculated = True
     end
   end
 end

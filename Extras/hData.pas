@@ -1235,7 +1235,7 @@ type
     NumberBase : String;
     Stockitem: boolean;
     TotalStock: integer;
-
+    StockItemPriceDate: TDateTime;
     // Missing fields to create
     // ItemTypeID
     // CurrencyID

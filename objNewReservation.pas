@@ -21,6 +21,46 @@ TYPE
   TResMedhod = (rmNormal, rmDateRoom, rmDate, rmRoom, rmBlocked,rmAllotment,rmImport);
 
 TYPE
+  TnewRoomReservationItem = class; // forward
+  TReservationExtra = class(TObject)
+  private
+    FRoomReservationItem: TnewRoomReservationItem;
+    FItemID: integer;
+    FCount: integer;
+    FPrice: double;
+    FFromDate: TDateTime;
+    FToDate: TDateTime;
+    function GetPricePerDay: double;
+    function GetTotalPrice: double;
+    function GetFromDate: TDateTime;
+    function GetToDate: TDateTime;
+  protected
+    procedure SetNewDepartureDate(aNewDepartureDate: TDateTime);
+    procedure SetNewArrivalDate(aNewArrivalDate: TDateTime);
+  public
+    constructor Create(aRoomReservation: TNewRoomReservationItem; aitemID: integer; aCount: integer; aPrice: double; aFromdate: TDatetime = 0; aToDate: TDateTime = 0);
+    /// <summary> Calculate the total price of this item.</summary>
+    property TotalPrice: double read GetTotalPrice;
+    /// <summary> Calculate the total price of this item per day</summary>
+    property PricePerDay: double read GetPricePerDay;
+  published
+    property ItemID: integer read FItemID write FItemID;
+    property Count: integer read FCount write FCount;
+    property PricePerItemPerDay: double read FPrice write FPrice;
+    /// <summary> Startdate of use of this item, if not set (<=0) arrivaldate of roomreservation is assumed </summary>
+    property FromDate: TDateTime read GetFromDate write FFromDate;
+    /// <summary> Enddate of use of this item, if not set (<=0) Departuredate of roomreservation is assumed </summary>
+    property ToDate: TDateTime read GetToDate write FToDate;
+  end;
+
+  TReservationExtrasList = class(TObjectList<TReservationExtra>)
+  public
+    function TotalPrice: double;
+    /// <summary>Check if ToDate of all extras is not later then new departure date. If so correct this </summary>
+    procedure CorrectForNewDepartureDate(aNewDepartureDate: TDateTime);
+    /// <summary>Check if ToDate of all extras is not later then new departure date. If so correct this </summary>
+    procedure CorrectForNewArrivalDate(aNewArrivalDate: TDateTime);
+  end;
 
   TnewRoomReservationItem = class
   private
@@ -53,6 +93,7 @@ TYPE
     FratePlanCode: String;
     FExpCOT: string;
     FExpTOA: string;
+    FExtras: TReservationExtraslist;
 
     function getRoomReservation: integer;
     function getRoomNumber: string;
@@ -113,6 +154,7 @@ TYPE
 
     destructor Destroy; override;
 
+  published
     property RoomReservation: integer   read getRoomReservation write SetRoomreservation    ;
     property RoomNumber     : string    read getRoomNumber      write SetRoomNumber         ;
     property RoomType       : string    read getRoomType        write SetRoomType           ;
@@ -131,8 +173,8 @@ TYPE
     property MainGuestName  : string    read getMainGuestName   write SetMainGuestName      ;
     property Notes          : string    read getNotes           write SetNotes              ;
 
-    property Breakfast  : Boolean    read FBreakfast   write FBreakfast      ;
-    property BreakfastIncluded  : Boolean    read FBreakfastIncluded   write FBreakfastIncluded      ;
+    property Breakfast  : Boolean    read FBreakfast   write FBreakfast;
+    property BreakfastIncluded  : Boolean    read FBreakfastIncluded   write FBreakfastIncluded;
     property BreakfastCost  : Double    read FBreakfastCost   write FBreakfastCost      ;
     property BreakfastCostGroupAccount : Boolean    read FBreakfastCostGroupAccount   write FBreakfastCostGroupAccount      ;
     property ExtraBed  : Boolean    read FExtraBed   write FExtraBed      ;
@@ -146,6 +188,8 @@ TYPE
     property ratePlanCode  : String     read FratePlanCode      write FratePlanCode         ;
     property ExpTOA: string             read FExpTOA            write SetExpTOA             ;
     property ExpCOT: string             read FExpCOT            write SetExpCOT             ;
+
+    property Extras: TReservationExtraslist read FExtras;
 
   end;
 
@@ -179,16 +223,16 @@ TYPE
     function getReservationArrival: TDateTime;
     function getReservationDeparture: TDateTime;
 
+    function TotalGuests: Integer;
+
     property XmlFileName: string read FXmlFileName write FXmlFileName;
     property Hotelcode: string read FHotelcode write FHotelcode;
 
-    function FindRoomFromRoomNumber(RoomNumber: string; StartAt: integer;
-      caseSensitive: Boolean = false): integer;
+    function FindRoomFromRoomNumber(RoomNumber: string; StartAt: integer;  caseSensitive: Boolean = false): integer;
     function FindRoomFromRoomReservation(RoomReservation: integer; StartAt: integer): integer;
 
 
-    property RoomItemsList: TnewRoomReservationItemsList read FRoomList
-      write FRoomList;
+    property RoomItemsList: TnewRoomReservationItemsList read FRoomList;
     property RoomCount: integer read getRoomCount;
 
     property ReservationArrival: TDateTime read getReservationArrival;
@@ -272,6 +316,8 @@ uses
   uAppGlobal,
   uGuestPortfolioEdit,
   uActivityLogs
+  , DateUtils
+  , Math
   ;
 
 /// ///////////////////////////////////////////////////////////////////////////
@@ -296,6 +342,9 @@ constructor TnewRoomReservationItem.Create(aRoomReservation: integer;
                                      notes : string
                                      );
 begin
+  inherited Create;
+  FExtras := TReservationExtrasList.Create(True);
+
   setRoomreservation(aRoomReservation);
   setRoomNumber(aRoomNumber);
   setRoomType(aRoomType);
@@ -320,11 +369,13 @@ begin
   FExtraBed := False;
   FExtraBedIncluded := False;
   FExtraBedCost := 0.00;
+
 end;
 
 destructor TnewRoomReservationItem.Destroy;
 begin
   FRates.Free;
+  FExtras.Free;
   inherited;
 end;
 
@@ -463,7 +514,8 @@ end;
 
 procedure TnewRoomReservationItem.SetArrival(Value: TDateTime);
 begin
-  FArrival := Value
+  FArrival := Value;
+  FExtras.CorrectForNewArrivalDate(FArrival);
 end;
 
 procedure TnewRoomReservationItem.SetAvragePrice(Value: Double);
@@ -475,8 +527,6 @@ procedure TnewRoomReservationItem.SetAvrageDiscount(Value: Double);
 begin
   FAvrageDiscount := Value;
 end;
-
-
 
 procedure TnewRoomReservationItem.SetisPercentage(Value: boolean);
 begin
@@ -490,7 +540,8 @@ end;
 
 procedure TnewRoomReservationItem.SetDeparture(Value: TDateTime);
 begin
-  FDeparture := Value
+  FDeparture := Value;
+  FExtras.CorrectForNewDepartureDate(FArrival);
 end;
 
 procedure TnewRoomReservationItem.SetExpCOT(const Value: string);
@@ -510,12 +561,7 @@ end;
 constructor TnewRoomReservation.Create(aHotelCode: string);
 begin
   inherited Create;
-  try
-    FRoomList := TnewRoomReservationItemsList.Create(True);
-  Except
-    // TODO Loga
-  end;
-
+  FRoomList := TnewRoomReservationItemsList.Create(True);
   FHotelcode := aHotelCode;
   FRoomCount := 0;
 end;
@@ -625,6 +671,15 @@ function TnewRoomReservation.getRoomCount: integer;
 begin
   // Testa
   result := FRoomList.Count;
+end;
+
+function TnewRoomReservation.TotalGuests: Integer;
+var
+  lRoomRes: TnewRoomReservationItem;
+begin
+  Result := 0;
+  for lRoomres in RoomItemsList do
+    Result := Result + lRoomRes.GuestCount + lRoomRes.ChildrenCount + lRoomRes.InfantCount;
 end;
 
 /// /////////////////////////////////////////////////////////////////////////////
@@ -1082,17 +1137,9 @@ begin
           ExecutionPlan.BeginTransaction;
 
         if (DeleteResNr > 0) then
-        begin
           d.roomerMainDataSet.SystemRemoveReservation(DeleteResNr, False, False);
-        end;
 
-        TotalGuests := 0;
-        for i := 0 to FnewRoomReservations.RoomCount - 1 do
-        begin
-          TotalGuests := TotalGuests + FnewRoomReservations.FRoomList[i].getGuestCount;
-          TotalGuests := TotalGuests + FnewRoomReservations.FRoomList[i].getChildrenCount;
-          TotalGuests := TotalGuests + FnewRoomReservations.FRoomList[i].getInfantCount;
-        end;
+        TotalGuests := FnewRoomReservations.TotalGuests;
 
         sId := persons_GetIDs(TotalGuests);
         _glob._strTokenToStrings(sID,'|',lstIDs);
@@ -1652,16 +1699,102 @@ procedure TNewReservation.DeleteReservation(Reservation : integer);
 var cmdList : TList<String>;
 begin
   cmdList := TList<String>.Create;
-  cmdList.Add('DELETE from reservations WHERE reservation=' + inttostr(Reservation));
-  cmdList.Add('DELETE from roomreservations WHERE reservation=' + inttostr(Reservation));
-  cmdList.Add('DELETE from invoiceheads WHERE reservation=' + inttostr(Reservation));
+  try
+    cmdList.Add('DELETE from reservations WHERE reservation=' + inttostr(Reservation));
+    cmdList.Add('DELETE from roomreservations WHERE reservation=' + inttostr(Reservation));
+    cmdList.Add('DELETE from invoiceheads WHERE reservation=' + inttostr(Reservation));
 
-  //**zxhj ATH EKKI breyta resstatus hér
-  cmdList.Add('DELETE from roomsdate WHERE reservation=' + inttostr(Reservation));
+    //**zxhj ATH EKKI breyta resstatus hér
+    cmdList.Add('DELETE from roomsdate WHERE reservation=' + inttostr(Reservation));
 
-  cmdList.Add('DELETE from persons WHERE reservation=' + inttostr(Reservation));
-  cmdList.Add('DELETE from invoicelines WHERE reservation=' + inttostr(Reservation));
-  d.roomerMainDataSet.SystemFreeExecuteMultiple(cmdList)
+    cmdList.Add('DELETE from persons WHERE reservation=' + inttostr(Reservation));
+    cmdList.Add('DELETE from invoicelines WHERE reservation=' + inttostr(Reservation));
+    d.roomerMainDataSet.SystemFreeExecuteMultiple(cmdList)
+  finally
+    cmdList.Free;
+  end;
+end;
+
+{ TReservationExtra }
+
+constructor TReservationExtra.Create(aRoomReservation: TNewRoomReservationItem; aitemID, aCount: integer; aPrice: double; aFromdate, aToDate: TDateTime);
+begin
+  inherited Create;
+  FRoomReservationItem := aRoomReservation;
+  FItemID := aitemID;
+  FCount := aCount;
+  FPrice := aPrice;
+  FFromDate := aFromdate;
+  FToDate := aToDate;
+end;
+
+function TReservationExtra.GetFromDate: TDateTime;
+begin
+  if FFromDate > 0 then
+    Result := FFromDate
+  else
+    Result := FRoomReservationItem.Arrival;
+end;
+
+function TReservationExtra.GetPricePerDay: double;
+begin
+  Result := FCount * PricePerItemPerDay;
+end;
+
+function TReservationExtra.GetToDate: TDateTime;
+begin
+  if FToDate >= 0 then
+    Result := FToDate
+  else
+    Result := FRoomReservationItem.Departure
+end;
+
+function TReservationExtra.GetTotalPrice: double;
+begin
+  Result := GetpricePerDay * DaySpan(ToDate, FromDate);
+end;
+
+procedure TReservationExtra.SetNewArrivalDate(aNewArrivalDate: TDateTime);
+begin
+  if (aNewArrivalDate = FRoomReservationItem.Arrival) then
+    FFromDate := 0
+  else
+    FFromDate := Max(FFromDate, aNewArrivalDate);
+end;
+
+procedure TReservationExtra.SetNewDepartureDate(aNewDepartureDate: TDateTime);
+begin
+  if (aNewDepartureDate = FRoomReservationItem.Departure) then
+    FToDate := 0
+  else
+    FToDate := Min(FTodate, aNewDepartureDate);
+end;
+
+{ TReservationExtrasList }
+
+procedure TReservationExtrasList.CorrectForNewArrivalDate(aNewArrivalDate: TDateTime);
+var
+  lExtra: TReservationExtra;
+begin
+  for lExtra in Self do
+    lExtra.SetNewArrivalDate(aNewArrivalDate);
+end;
+
+procedure TReservationExtrasList.CorrectForNewDepartureDate(aNewDepartureDate: TDateTime);
+var
+  lExtra: TReservationExtra;
+begin
+  for lExtra in Self do
+    lExtra.SetNewDepartureDate(aNewDepartureDate);
+end;
+
+function TReservationExtrasList.TotalPrice: double;
+var
+  lExtra: TReservationExtra;
+begin
+  Result := 0;
+  for lExtra in Self do
+    Result := Result + lExtra.TotalPrice;
 end;
 
 end.

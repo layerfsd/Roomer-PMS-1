@@ -100,6 +100,10 @@ uses
   ;
 
 type
+  {$SCOPEDENUMS ON}
+  TShowItemOfType = (All, BreakfastItems, StockItems, MinibarItems);
+  TShowItemOfTypeSet = set of TShowItemOfType;
+
   TfrmItems2 = class(TForm)
     sPanel1: TsPanel;
     btnDelete: TsButton;
@@ -167,19 +171,20 @@ type
     tvDataNumberBase: TcxGridDBColumn;
     m_ItemsStockItem: TBooleanField;
     tvDataStockItem: TcxGridDBColumn;
-    m_StockitemPrices: TdxMemData;
     dsprices: TDataSource;
-    m_StockitemPricesitemID: TIntegerField;
-    m_StockitemPricesprice: TFloatField;
     lvPrices: TcxGridLevel;
     tvPrices: TcxGridDBTableView;
     tvPricesitemID: TcxGridDBColumn;
     tvPricesfromdate: TcxGridDBColumn;
     tvPricesprice: TcxGridDBColumn;
-    m_StockitemPricesfromdate: TDateTimeField;
-    m_StockitemPricesID: TIntegerField;
     m_ItemsTotalStock: TIntegerField;
     tvDataTotalStock: TcxGridDBColumn;
+    kbmStockItemprices: TkbmMemTable;
+    kbmStockitemPricesID: TIntegerField;
+    kbmStockitemPricesitemID: TIntegerField;
+    kbmStockitemPricesfromdate: TDateTimeField;
+    kbmStockitemPricesprice: TFloatField;
+
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -233,10 +238,8 @@ type
     FAllowGridEdit   : boolean;
     zFilterOn        : boolean;
 
-    Lookup : Boolean;
     zSortStr         : string;
-    zData: recItemHolder;
-    zAct: TActTableAction;
+    FShowItemsOfType: TShowItemOfTypeSet;
 
     Procedure fillGridFromDataset(sGoto : string);
     procedure fillHolder;
@@ -249,12 +252,18 @@ type
     function CopyDatasetToRecItem:recItemHolder;
     procedure SetAllowGridEdit(const Value: boolean);
     function CopyStockItemPricesToRec: recStockItemPricesHolder;
+    function CalcStockitemPriceOndate(aItemID: integer; aDate: TDateTime): double;
 
+  protected
+    Lookup : Boolean;
+    zData: recItemHolder;
+    zAct: TActTableAction;
+    property ShowItemsOfType: TShowItemOfTypeSet read FShowItemsOfType write FShowItemsOfType;
     property AllowGridEdit: boolean read FAllowGridEdit write SetAllowGridEdit;
   end;
 
-function openItems(act : TActTableAction; Lookup : Boolean; var theData : recItemHolder) : boolean;
-function openMultipleItems(act : TActTableAction; Lookup : Boolean; theData : TrecItemHolderList) : boolean;
+function openItems(act : TActTableAction; Lookup : Boolean; var theData : recItemHolder; aShowTypes: TShowItemOfTypeSet=[TShowItemOfType.All]) : boolean;
+function openMultipleItems(act : TActTableAction; Lookup : Boolean; theData : TrecItemHolderList; aShowTypes: TShowItemOfTypeSet=[TShowItemOfType.All]) : boolean;
 
 var
   frmItems2: TfrmItems2;
@@ -281,7 +290,7 @@ uses
 //  unit global functions
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-function openItems(act : TActTableAction; Lookup : Boolean; var theData : recItemHolder) : boolean;
+function openItems(act : TActTableAction; Lookup : Boolean; var theData : recItemHolder; aShowTypes: TShowItemOfTypeSet=[TShowItemOfType.All]) : boolean;
 var _frmItems2 : TfrmItems2;
 begin
   result := false;
@@ -290,6 +299,7 @@ begin
     _frmItems2.zData := theData;
     _frmItems2.Lookup := Lookup;
     _frmItems2.zAct := act;
+    _frmItems2.ShowItemsOfType := aShowTypes;
     _frmItems2.ShowModal;
     if _frmItems2.modalresult = mrOk then
     begin
@@ -306,7 +316,7 @@ begin
   end;
 end;
 
-function openMultipleItems(act : TActTableAction; Lookup : Boolean; theData : TrecItemHolderList) : boolean;
+function openMultipleItems(act : TActTableAction; Lookup : Boolean; theData : TrecItemHolderList; aShowTypes: TShowItemOfTypeSet=[TShowItemOfType.All]) : boolean;
 var _frmItems2 : TfrmItems2;
 begin
   result := false;
@@ -316,6 +326,7 @@ begin
       _frmItems2.zData := theData[0].recHolder;
     _frmItems2.Lookup := Lookup;
     _frmItems2.zAct := act;
+    _frmItems2.ShowItemsOfType := aShowTypes;
     _frmItems2.ShowModal;
     if _frmItems2.modalresult = mrOk then
     begin
@@ -361,15 +372,19 @@ begin
   Result.NumberBase            := m_ItemsNumberBase.AsString;
   Result.Stockitem             := m_ItemsStockitem.AsBoolean;
   Result.TotalStock            := m_ItemsTotalStock.AsInteger;
+
+  Result.StockItemPriceDate    := zData.StockItemPriceDate;
+  if Result.StockItem then
+    Result.Price := CalcStockitemPriceOndate(result.id, Result.StockItemPriceDate);
 end;
 
 
 function TfrmItems2.CopyStockItemPricesToRec: recStockitemPricesHolder;
 begin
-  Result.ID         := m_StockitemPricesID.Asinteger;
-  Result.ItemID     := m_StockitemPricesitemID.AsInteger;
-  Result.FromDate   := m_StockitemPricesfromdate.AsDateTime;
-  result.price      := m_StockitemPricesprice.AsFloat;
+  Result.ID         := kbmStockitemPricesID.Asinteger;
+  Result.ItemID     := kbmStockitemPricesitemID.AsInteger;
+  Result.FromDate   := kbmStockitemPricesfromdate.AsDateTime;
+  result.price      := kbmStockitemPricesprice.AsFloat;
 end;
 
 
@@ -408,37 +423,62 @@ Procedure TfrmItems2.fillGridFromDataset(sGoto : string);
 var
   rSet : TRoomerDataSet;
   active : boolean;
+  lFilterExpr: TStringbuilder;
 begin
   zFirstTime := true;
   active := chkActive.Checked;
+
   if zSortStr = '' then zSortStr := 'Item';
+
   rSet := glb.Items;
-  rSet.Sort := 'Item';
-  if active then
-  begin
-    rSet.Filter := 'active=1';
-    rSet.Filtered := True;
-  end else
-  begin
-    rSet.Filter := 'active=0';
-    rSet.Filtered := True;
-  end;
   try
+    rSet.Sort := 'Item';
+
+    lFilterExpr := TStringbuilder.Create;
+    try
+      if active then
+        lFilterExpr.Append('(active=1) ')
+      else
+        lFilterExpr.Append('(active=0) ');
+
+      if not (TShowItemOfType.All in FShowItemsOfType) then
+      begin
+        lFilterExpr.Append(' and (');
+
+        if TShowItemOfType.StockItems in FShowItemsOfType then
+        begin
+          lFilterExpr.Append(' (stockitem=1)');
+          lFilterExpr.Append(' or');
+        end;
+
+        if TShowItemOfType.BreakfastItems in FShowItemsOfType then
+        begin
+          lFilterExpr.Append(' (breakfastitem=1)');
+          lFilterExpr.Append(' or');
+        end;
+
+        if TShowItemOfType.MinibarItems in FShowItemsOfType then
+        begin
+          lFilterExpr.Append(' (minibaritem=1)');
+          lFilterExpr.Append(' or');
+        end;
+          // remove last 'Or'
+        lFilterExpr.Remove(lFilterExpr.Length-2, 2);
+        lFilterExpr.Append(')');
+      end;
+      rSet.Filter := lFilterExpr.ToString;
+      rSet.Filtered := rSet.Filter <> '';
+    finally
+      lFilterExpr.Free;
+    end;
+
     rSet.First;
     if NOT rSet.Eof then
     begin
-      if m_Items.active then m_Items.Close;
+      m_Items.Close;
       m_Items.LoadFromDataSet(rSet);
-      if sGoto = '' then
-      begin
+      if (sGoto = '') or not m_Items.Locate('item',sGoto,[]) then
         m_Items.First;
-      end else
-      begin
-        try
-          m_Items.Locate('item',sGoto,[]);
-        except
-        end;
-      end;
     end;
   finally
     rSet.Filter := '';
@@ -451,6 +491,28 @@ procedure TfrmItems2.fillHolder;
 begin
   initItemHolder(zData);
   zData := CopyDatasetToRecItem;
+  if zData.Stockitem then
+    zData.Price := CalcStockitemPriceOndate(zData.id, now);
+end;
+
+function TfrmItems2.CalcStockitemPriceOndate(aItemID: integer; aDate: TDateTime): double;
+var
+  lProbeDate: TDateTime;
+begin
+  result := 0;
+  if (aDate > 0) then
+    lProbeDate := aDate
+  else
+    lProbeDate := now;
+
+  kbmStockitemPrices.First;
+  if kbmStockitemPrices.Locate('itemid', aItemId, []) then
+  begin
+    while not kbmStockItemPrices.EOF and (kbmStockitemPricesitemID.AsInteger = aItemID) and (kbmStockitemPricesfromdate.AsDateTime > lProbeDate) do
+      kbmStockitemPrices.Next;
+    if not kbmStockitemPrices.EOF then
+      Result := kbmStockitemPricesprice.AsFloat;
+  end;
 end;
 
 procedure TfrmItems2.chkActiveClick(Sender: TObject);
@@ -572,11 +634,13 @@ begin
   panBtn.Visible := False;
   sbMain.Visible := false;
 
+  chkActive.Checked := True;
+
   fillGridFromDataset(zData.item);
 
   rSet := glb.StockitemPrices;
 //  rSet.Sort := 'fromdate';
-  m_StockitemPrices.LoadFromDataSet(rSet);
+  kbmStockitemPrices.LoadFromDataSet(rSet, []);
 
   sbMain.SimpleText := zSortStr;
 
@@ -593,6 +657,8 @@ begin
 
   tvPrices.DataController.ClearSorting(False);
   tvPricesfromdate.SortOrder := soDescending;
+
+  grData.SetFocus;
 end;
 
 procedure TfrmItems2.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -620,8 +686,8 @@ begin
   begin
     if m_Items.State in [dsInsert, dsEdit] then
       m_Items.Cancel
-    else if m_StockitemPrices.State in [dsInsert, dsEdit] then
-      m_StockitemPrices.Cancel
+    else if kbmStockitemPrices.State in [dsInsert, dsEdit] then
+      kbmStockitemPrices.Cancel
     else
       btnCancel.Click;
   end;
@@ -709,7 +775,7 @@ begin
     dsEdit:   Upd_StockItemprice(lStockItemData);
     dsInsert: if Ins_StockitemPrice(lStockItemData, lnewID) then
               begin
-                m_StockitemPricesID.AsInteger := lNewID;
+                kbmStockitemPricesID.AsInteger := lNewID;
                 glb.ForceTableRefresh;
               end
               else

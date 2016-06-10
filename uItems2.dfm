@@ -30,6 +30,7 @@ object frmItems2: TfrmItems2
     Align = alTop
     TabOrder = 0
     SkinData.SkinSection = 'PANEL'
+    ExplicitTop = -6
     object cLabFilter: TsLabel
       Left = 19
       Top = 41
@@ -416,6 +417,7 @@ object frmItems2: TfrmItems2
       DataController.Summary.FooterSummaryItems = <>
       DataController.Summary.SummaryGroups = <>
       DateTimeHandling.UseLongDateFormat = False
+      NewItemRow.Visible = True
       OptionsCustomize.ColumnFiltering = False
       OptionsCustomize.ColumnGrouping = False
       OptionsCustomize.ColumnSorting = False
@@ -502,7 +504,6 @@ object frmItems2: TfrmItems2
     Left = 80
     Top = 136
     object prLink_grData: TdxGridReportLink
-      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 5080
       PrinterPage.GrayShading = True
@@ -516,12 +517,14 @@ object frmItems2: TfrmItems2
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
       ReportDocument.CreationDate = 41334.495374884260000000
-      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       BuiltInReportLink = True
     end
   end
   object m_Items: TdxMemData
-    Indexes = <>
+    Indexes = <
+      item
+        SortOptions = []
+      end>
     SortOptions = [soCaseInsensitive]
     BeforeInsert = m_ItemsBeforeInsert
     BeforePost = m_ItemsBeforePost
@@ -616,30 +619,50 @@ object frmItems2: TfrmItems2
     Left = 200
     Top = 304
   end
-  object m_StockitemPrices: TdxMemData
-    Indexes = <>
-    SortOptions = [soCaseInsensitive]
+  object dsprices: TDataSource
+    DataSet = kbmStockItemprices
+    Left = 232
+    Top = 144
+  end
+  object kbmStockItemprices: TkbmMemTable
+    DesignActivation = True
+    AttachedAutoRefresh = True
+    AttachMaxCount = 1
+    FieldDefs = <>
+    IndexDefs = <
+      item
+        Name = 'kbmStockItempricesIndex1'
+        DescFields = 'fromdate'
+        Fields = 'itemid;fromdate;'
+        Options = [ixDescending]
+      end>
+    SortOptions = []
+    PersistentBackup = False
+    ProgressFlags = [mtpcLoad, mtpcSave, mtpcCopy]
+    LoadedCompletely = False
+    SavedCompletely = False
+    FilterOptions = []
+    Version = '7.22.00 Standard Edition'
+    LanguageID = 0
+    SortID = 0
+    SubLanguageID = 1
+    LocaleID = 1024
     BeforePost = m_StockitemPricesBeforePost
     BeforeDelete = m_StockitemPricesBeforeDelete
     OnNewRecord = m_StockitemPricesNewRecord
-    Left = 232
-    Top = 194
-    object m_StockitemPricesID: TIntegerField
+    Left = 240
+    Top = 200
+    object kbmStockitemPricesID: TIntegerField
       FieldName = 'ID'
     end
-    object m_StockitemPricesitemID: TIntegerField
+    object kbmStockitemPricesitemID: TIntegerField
       FieldName = 'itemID'
     end
-    object m_StockitemPricesprice: TFloatField
+    object kbmStockitemPricesprice: TFloatField
       FieldName = 'price'
     end
-    object m_StockitemPricesfromdate: TDateTimeField
+    object kbmStockitemPricesfromdate: TDateTimeField
       FieldName = 'fromdate'
     end
-  end
-  object dsprices: TDataSource
-    DataSet = m_StockitemPrices
-    Left = 232
-    Top = 144
   end
 end

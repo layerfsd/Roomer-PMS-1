@@ -607,6 +607,20 @@ type
     mRoomResExpectedCheckOutTime: TStringField;
     cbxMarket: TsComboBox;
     lblMarket: TsLabel;
+    mRoomResStockItemsCount: TIntegerField;
+    tvRoomResStockItemsCount: TcxGridDBColumn;
+    mRoomResStockitemsPrice: TFloatField;
+    tvRoomResStockitemsPrice: TcxGridDBColumn;
+    mExtras: TdxMemData;
+    mExtrasRoomreservation: TIntegerField;
+    mExtrasItemid: TIntegerField;
+    mExtrasCount: TIntegerField;
+    mExtrasPricePerItemPerDay: TFloatField;
+    mExtrasFromdate: TDateTimeField;
+    mExtrasToDate: TDateTimeField;
+    mExtrasItem: TStringField;
+    mExtrasDescription: TStringField;
+    mExtrasTotalPrice: TFloatField;
     procedure FormShow(Sender: TObject);
     procedure edCustomerDblClick(Sender: TObject);
     procedure edCustomerPropertiesEditValueChanged(Sender: TObject);
@@ -695,6 +709,8 @@ type
       var AProperties: TcxCustomEditProperties);
     procedure FormatTextToShortFormat(Sender: TcxCustomGridTableItem; ARecord: TcxCustomGridRecord;
       var AText: string);
+    procedure tvRoomResStockItemsCountPropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
+    procedure mExtrasCalcFields(DataSet: TDataSet);
   private
     { Private declarations }
     zCustomerChanged: boolean;
@@ -718,13 +734,13 @@ type
     FOutOfOrderBlocking: boolean;
 
     FDynamicRates: TDynamicRates;
-    FValidating: boolean;
 
     FNewReservation: TNewReservation;
 
     procedure initCustomer;
     function RoomStatusFromInfo(statusText: string): integer;
     function RoomStatusToInfo(Index: integer): string;
+    ///<summary> Create the roomlist in NewReservation object and set all properties from UI and local memtables </summary>
     function Apply: boolean;
     procedure addAvailableRoomTypes;
     procedure SetAllAsNoRoom(doNextPage: boolean = true);
@@ -793,7 +809,9 @@ uses
   uDateUtils,
   uAvailabilityPerDay,
   uViewDailyRates
-    ;
+ , ufrmReservationExtras
+ , DateUtils
+ ;
 
 {$R *.dfm}
 
@@ -1425,7 +1443,6 @@ var
   theData: recPackageHolder;
   roomPrice: double;
   itemPrice: double;
-  newRoomPrice: double;
   package: string;
   rr: integer;
   guestCount: integer;
@@ -1439,50 +1456,55 @@ begin
   if openPackages(actLookup, theData) then
   begin
     package := theData.package;
-  end;
 
-  guestCount := mRoomRes.FieldByName('Guests').AsInteger;
-  nightCount := trunc(mRoomRes.FieldByName('Departure').AsDateTime) - trunc(mRoomRes.FieldByName('Arrival').AsDateTime);
+    guestCount := mRoomRes.FieldByName('Guests').AsInteger;
+    nightCount := trunc(mRoomRes.FieldByName('Departure').AsDateTime) - trunc(mRoomRes.FieldByName('Arrival').AsDateTime);
 
-  if Trim(package) <> '' then
-  begin
-    Package_getRoomPrice(package, nightCount, guestCount, roomPrice, itemPrice);
-    if roomPrice = 0 then
+    if Trim(package) <> '' then
     begin
-      newRoomPrice := mRoomRes.FieldByName('AvragePrice').AsFloat;
-    end
-    else
-    begin
-      newRoomPrice := roomPrice;
-    end;
+      Package_getRoomPrice(package, nightCount, guestCount, roomPrice, itemPrice);
 
-    if newRoomPrice > 0 then
-    begin
-      mRoomRes.edit;
-      mRoomRes.FieldByName('AvragePrice').AsFloat := newRoomPrice;
-      mRoomRes.FieldByName('AvrageDiscount').AsFloat := 0;
-      mRoomRes.FieldByName('RateCount').AsInteger := 1;
-      mRoomRes.FieldByName('PackagePrice').AsFloat := newRoomPrice + itemPrice;
-      mRoomRes.FieldByName('Package').AsString := package;
-      mRoomRes.post;
+      if roomPrice = 0 then
+        RoomPrice := mRoomRes.FieldByName('AvragePrice').AsFloat;
 
-      mRoomRates.Filter := '(Roomreservation=' + inttostr(rr) + ')';
-      mRoomRates.Filtered := true;
-
-      mRoomRates.First;
-      while not mRoomRates.eof do
+      if RoomPrice > 0 then
       begin
-        mRoomRates.edit;
-        mRoomRates.FieldByName('rate').AsFloat := newRoomPrice;
-        mRoomRates.FieldByName('discount').AsFloat := 0;
-        mRoomRates.FieldByName('isPercentage').AsBoolean := true;
-        mRoomRates.FieldByName('discountAmount').AsFloat := 0;
-        mRoomRates.FieldByName('Rentamount').AsFloat := newRoomPrice;
-        mRoomRates.FieldByName('NativeAmount').AsFloat := newRoomPrice;
-        mRoomRates.post;
-        mRoomRates.next;
+        mRoomRes.edit;
+        try
+          mRoomRes.FieldByName('AvragePrice').AsFloat := RoomPrice;
+          mRoomRes.FieldByName('AvrageDiscount').AsFloat := 0;
+          mRoomRes.FieldByName('RateCount').AsInteger := 1;
+          mRoomRes.FieldByName('PackagePrice').AsFloat := RoomPrice + itemPrice;
+          mRoomRes.FieldByName('Package').AsString := package;
+          mRoomRes.post;
+        except
+          mRoomRes.Cancel;
+          raise;
+        end;
+
+        mRoomRates.Filter := '(Roomreservation=' + inttostr(rr) + ')';
+        mRoomRates.Filtered := true;
+
+        mRoomRates.First;
+        while not mRoomRates.eof do
+        begin
+          mRoomRates.edit;
+          try
+            mRoomRates.FieldByName('rate').AsFloat := RoomPrice;
+            mRoomRates.FieldByName('discount').AsFloat := 0;
+            mRoomRates.FieldByName('isPercentage').AsBoolean := true;
+            mRoomRates.FieldByName('discountAmount').AsFloat := 0;
+            mRoomRates.FieldByName('Rentamount').AsFloat := RoomPrice;
+            mRoomRates.FieldByName('NativeAmount').AsFloat := RoomPrice;
+            mRoomRates.post;
+          except
+            mRoomRates.Cancel;
+            raise;
+          end;
+          mRoomRates.next;
+        end;
+        mRoomRates.Filtered := false;
       end;
-      mRoomRates.Filtered := false;
     end;
   end;
 
@@ -1565,6 +1587,48 @@ begin
       mRoomRes['ratePlanCode'] := (tvRoomResRatePlanCode.Properties AS TcxComboBoxProperties)
         .Items[TcxComboBox(Sender).ItemIndex];
     mRoomRes.post;
+  end;
+end;
+
+procedure TfrmMakeReservationQuick.tvRoomResStockItemsCountPropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
+var
+  lCurrentRoomRes: recEditReservationExtrasHolder;
+begin
+  with lCurrentRoomRes do
+  begin
+    Room := mRoomResRoom.asString;
+    RoomType := mRoomResRoomType.AsString;
+    Currency := edCurrency.Text;
+    CurrencyRate := hData.GetRate(Currency);
+    guests := mRoomResGuests.AsInteger;
+    childrenCount := mRoomResChildrenCount.asInteger;
+    infantCount := mRoomResinfantCount.AsInteger;
+    ArrivalDate := mRoomResArrival.AsDateTime;
+    DepartureDate := mRoomResDeparture.asDateTime;
+  end;
+
+  if editReservationExtras(mRoomResroomreservation.AsInteger, lCurrentRoomRes, mExtras) then
+  begin
+    mExtras.Filter := format('roomreservation=%d', [mRoomResroomreservation.AsInteger]);
+    mExtras.Filtered := true;
+    try
+      mRoomRes.Edit;
+      try
+        mExtras.First;
+        while not mExtras.Eof do
+        begin
+          mRoomResStockItemsCount.AsInteger := mRoomResStockItemsCount.AsInteger + mExtrasCount.AsInteger;
+          mRoomResStockitemsPrice.AsFloat := mRoomResStockitemsPrice.AsFloat + mExtrasTotalprice.AsFloat;
+          mExtras.Next;
+        end;
+        mRoomRes.Post;
+      except
+        mRoomRes.Cancel;
+        raise;
+      end;
+    finally
+      mExtras.Filtered := False;
+    end;
   end;
 end;
 
@@ -2403,6 +2467,8 @@ begin
   tvRoomResAvragePrice.Visible := NOT FOutOfOrderBlocking;
   tvRoomResPackage.Visible := NOT FOutOfOrderBlocking;
   tvRoomResPackagePrice.Visible := NOT FOutOfOrderBlocking;
+  tvRoomResStockItemsCount.Visible := NOT FOutOfOrderBlocking;
+  tvRoomResStockitemsPrice.Visible := NOT FOutOfOrderBlocking;
   tvRoomResAvrageDiscount.Visible := NOT FOutOfOrderBlocking;
   tvRoomResisPercentage.Visible := NOT FOutOfOrderBlocking;
   tvRoomResPriceCode.Visible := NOT FOutOfOrderBlocking;
@@ -2685,6 +2751,11 @@ end;
 
 // ##############################################################################################################
 // ##############################################################################################################
+
+procedure TfrmMakeReservationQuick.mExtrasCalcFields(DataSet: TDataSet);
+begin
+  mExtrasTotalprice.AsFloat := mExtrasPricePerItemPerDay.AsFloat * mExtrasCount.AsInteger * DaysBetween(mExtrasFromDate.AsDateTime, mExtrasToDate.AsDateTime);
+end;
 
 procedure TfrmMakeReservationQuick.mnuFinishAndShowClick(Sender: TObject);
 begin
@@ -3323,6 +3394,7 @@ begin
           sMessage := sRoomTypes.Text;
         finally
           sRoomTypes.Free;
+          AvailabilityPerDay.Free;
         end;
         if sMessage <> '' then
         begin
