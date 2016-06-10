@@ -524,17 +524,17 @@ end;
 
 var PreviousGuestsReload : TGetThreadedData = nil;
 
-
 procedure TGlobalSettings.ReloadPreviousGuests;
 const PREV_GUESTS_SQL = 'SELECT DISTINCT * FROM ' +
                         '( ' +
-                        'SELECT CONCAT(''PE'',ID) AS ID, title, PersonalIdentificationId AS PassPortNumber, Name, Surname AS CustomerName, Address1, Address2, Address3, Address4, Country, Tel1, Tel2, Email, SocialSecurityNumber, CompVATNumber, CompFax ' +
-                        'FROM persons ' +
-                        'WHERE MainName=1 ' +
-                        'AND Surname <> '''' ' +
-                        'AND Address1 <> '''' ' +
-                        'AND Country <> '''' ' +
-                        'AND (Tel1 <> '''' OR Tel2 <> '''' OR Email <> '''') ' +
+                        'SELECT CONCAT(''PE'',pe.ID) AS ID, pe.title, pe.PersonalIdentificationId AS PassPortNumber, ' +
+                        '       pe.Name, pe.Surname AS CustomerName, pe.Address1, pe.Address2, pe.Address3, pe.Address4, pe.Country, pe.Tel1, pe.Tel2, pe.Email, pe.SocialSecurityNumber, pe.CompVATNumber, pe.CompFax ' +
+                        'FROM persons pe JOIN reservations r ON r.Reservation=pe.Reservation AND r.Departure > DATE_ADD(CURRENT_DATE, INTERVAL 365*-3 DAY) ' +
+                        'WHERE pe.MainName=1 ' +
+                        'AND pe.Surname <> '''' ' +
+                        'AND pe.Address1 <> '''' ' +
+                        'AND pe.Country <> '''' ' +
+                        'AND (pe.Tel1 <> '''' OR pe.Tel2 <> '''' OR pe.Email <> '''') ' +
                         'UNION ALL ' +
                         'SELECT CONCAT(''RV'',ID) AS ID, '''' AS title, '''' AS PassPortNumber, Contactname AS Name, Name AS CustomerName, ContactAddress1, ContactAddress2, ContactAddress3, ContactAddress4, ContactCountry, ContactPhone, ContactPhone2, ContactEmail, '''', '''', ContactFax ' +
                         'FROM reservations ' +
@@ -542,6 +542,7 @@ const PREV_GUESTS_SQL = 'SELECT DISTINCT * FROM ' +
                         'AND ContactAddress1 <> '''' ' +
                         'AND ContactCountry <> '''' ' +
                         'AND (ContactPhone <> '''' OR ContactPhone2 <> '''' OR ContactEmail <> '''') ' +
+                        'AND Departure > DATE_ADD(CURRENT_DATE, INTERVAL 365*-3 DAY) ' +
                         'UNION ALL ' +
                         'SELECT CONCAT(''CU'',ID) AS ID, title, '''' AS PassPortNumber, Surname AS Name, Surname AS CustomerName, Address1, Address2, Address3, Address4, Country, Tel1, Tel2, EmailAddress, '''', '''', Fax ' +
                         'FROM customers ' +
@@ -549,7 +550,8 @@ const PREV_GUESTS_SQL = 'SELECT DISTINCT * FROM ' +
                         'AND Address1 <> '''' ' +
                         'AND Country <> '''' ' +
                         'AND (CONCAT(Tel1,Tel2,EmailAddress) <> '''') ' +
-                        ') xxx';
+                        'ANd active=1 ' +
+                        ') xxx ';
 begin
   FreeAndNil(FPreviousGuestsSet);
 //  FPreviousGuestsSet := CreateNewDataset;
@@ -1022,7 +1024,7 @@ end;
 
 procedure TGlobalSettings.RefreshTableIfNeeded(table : String);
 begin
-  if d.roomerMainDataSet.OfflineMode then
+  if d.roomerMainDataSet.OfflineMode OR (NOT d.roomerMainDataSet.LoggedIn) then
     exit;
   if (NOT FileExists(TableEntityByTableName(table).GetFilename)) OR (RoomerMessages.TableNeedsRefresh(table)) then
     TableEntityByTableName(table).Refresh;
@@ -2039,10 +2041,14 @@ begin
     exit;
   if FRSet.Active then FRSet.Close;
   FRSet.CommandText := FSql;
-  FRSet.Open(true, false);
-  SaveToFile(FRSet.SavedLastResult);
-  FRSet.First;
-  RoomerMessages.MarkTableAsRefreshed(FTableName);
+  try
+    FRSet.Open(true, false, True); // Open(doLowerCase: Boolean = true; setLastAccess: Boolean = true; Threaded: Boolean = False);
+    SaveToFile(FRSet.SavedLastResult);
+    FRSet.First;
+    RoomerMessages.MarkTableAsRefreshed(FTableName);
+  except
+    // Ignore...
+  end;
 end;
 
 procedure TTableEntity.RefreshLocally(ForceRefresh : Boolean = true);

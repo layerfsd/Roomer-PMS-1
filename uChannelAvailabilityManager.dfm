@@ -2250,7 +2250,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           Font.Height = -11
           Font.Name = 'Tahoma'
           Font.Style = []
-          ItemIndex = 0
+          ItemIndex = -1
           ParentFont = False
           TabOrder = 5
           Text = '15'
@@ -2263,6 +2263,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
             '120'
             '150'
             '180'
+            '200'
             '400')
         end
         object btnBegin: TcxButton

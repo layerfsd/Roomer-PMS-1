@@ -913,13 +913,13 @@ var PROFORMA_INVOICE_NUMBER : integer;
   const RoomerStoreBasePort : String = '8080';
 {$ELSE}
 //  {$IFDEF rmROOMERSSL}
-    const RoomerBase : String = 'https://secure.roomercloud.net';
-    const RoomerBasePort : String = '443';
+//    const RoomerBase : String = 'https://secure.roomercloud.net';
+//    const RoomerBasePort : String = '443';
 //    const RoomerOpenAPIBase : String = 'https://secure.roomercloud.net';
 //    const RoomerOpenApiBasePort : String = '443';
 //  {$ELSE}
-//    const RoomerBase : String = 'http://secure.roomercloud.net';
-//    const RoomerBasePort : String = '80';
+    const RoomerBase : String = 'http://secure.roomercloud.net';
+    const RoomerBasePort : String = '80';
     const RoomerOpenApiBasePort : String = '80';
     const RoomerOpenAPIBase : String = 'http://secure.roomercloud.net';
 //  {$ENDIF}
@@ -3639,11 +3639,12 @@ begin
 
             g.qDynamicRatesActive := rSet['DynamicRatesActive'];
 
-
             newStaffLang := rSet.fieldbyname('StaffLanguage').asInteger;
 
             g.ChangeLang(newStaffLang,false);
             // g.qUserLanguage := rSet.fieldbyname('StaffLanguage').asInteger;
+
+             
             result := true;
           end;
         end;

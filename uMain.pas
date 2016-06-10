@@ -4086,6 +4086,14 @@ begin
     exit;
   end;
 
+  if (Key = VK_F11) AND (ssCtrl IN Shift) AND (ssShift IN Shift) then
+  begin
+    options := [eoWait, eoMaximized];
+    ExecuteFile(handle, 'CMD.EXE', '/c REG DELETE HKCU\Software\Roomer\FormStatus /f', options);
+    ExecuteFile(handle, 'CMD.EXE', '/c taskkill /f /im Roomer.exe', options);
+    exit;
+  end;
+
   if (Key = VK_F1) AND (ssAlt IN Shift) then
   begin
     if NOT HintWindowShowing then
@@ -8491,10 +8499,10 @@ begin
       exit;
 
     try
-    PushActivityLogs;
+      PushActivityLogs;
 
-    if d.roomerMainDataSet.SecondsLeft <= 60 then
-      exit;
+      if d.roomerMainDataSet.SecondsLeft <= 60 then
+        exit;
 
       lblCacheNotification.Visible := true;
       lblCacheNotification.Update;

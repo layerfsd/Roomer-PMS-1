@@ -224,48 +224,13 @@ type
     mGuestRoomsFloor: TIntegerField;
     mGuestRoomsLocation: TWideStringField;
     mGuestRoomsLocationDescription: TWideStringField;
-    tvGuestRooms: TcxGridDBTableView;
-    lvGuestRooms: TcxGridLevel;
-    grGuests: TcxGrid;
-    tvGuestRoomsRecId: TcxGridDBColumn;
-    tvGuestRoomsReservation: TcxGridDBColumn;
-    tvGuestRoomsRoomReservation: TcxGridDBColumn;
-    tvGuestRoomsisGroup: TcxGridDBColumn;
-    tvGuestRoomsBreakfast: TcxGridDBColumn;
-    tvGuestRoomsrrArrival: TcxGridDBColumn;
-    tvGuestRoomsrrDeparture: TcxGridDBColumn;
-    tvGuestRoomsRoom: TcxGridDBColumn;
-    tvGuestRoomsRoomDescription: TcxGridDBColumn;
-    tvGuestRoomsEquipments: TcxGridDBColumn;
-    tvGuestRoomsNoRoom: TcxGridDBColumn;
-    tvGuestRoomsRoomType: TcxGridDBColumn;
-    tvGuestRoomsRoomTypeDescription: TcxGridDBColumn;
-    tvGuestRoomsDefNumberGuests: TcxGridDBColumn;
-    tvGuestRoomsFloor: TcxGridDBColumn;
-    tvGuestRoomsLocation: TcxGridDBColumn;
-    tvGuestRoomsLocationDescription: TcxGridDBColumn;
-    lvGuests: TcxGridLevel;
-    tvGuests: TcxGridDBTableView;
-    tvGuestsRecId: TcxGridDBColumn;
-    tvGuestsPerson: TcxGridDBColumn;
-    tvGuestsRoomReservation: TcxGridDBColumn;
-    tvGuestsReservation: TcxGridDBColumn;
-    tvGuestsGuestName: TcxGridDBColumn;
-    tvGuestsAddress1: TcxGridDBColumn;
-    tvGuestsAddress2: TcxGridDBColumn;
-    tvGuestsAddress3: TcxGridDBColumn;
-    tvGuestsAddress4: TcxGridDBColumn;
-    tvGuestsCountry: TcxGridDBColumn;
     mRoomsDS: TDataSource;
     mGuestsPID: TWideStringField;
-    tvGuestsPID: TcxGridDBColumn;
     mGuestRoomsMainGuest: TWideStringField;
     mGuestRoomsGuestCount: TIntegerField;
     btnExpand: TsButton;
     btnCollapse: TsButton;
     cxButton2: TsButton;
-    lvAllGuests: TcxGridLevel;
-    tvAllGuests: TcxGridDBTableView;
     mAllGuests: TdxMemData;
     mAllGuestsIntegerField1: TIntegerField;
     mAllGuestsIntegerField2: TIntegerField;
@@ -292,41 +257,10 @@ type
     mAllGuestsCountry: TWideStringField;
     mAllGuestsPID: TWideStringField;
     mAllGuestsDS: TDataSource;
-    tvAllGuestsRecId: TcxGridDBColumn;
-    tvAllGuestsReservation: TcxGridDBColumn;
-    tvAllGuestsRoomReservation: TcxGridDBColumn;
-    tvAllGuestsisGroup: TcxGridDBColumn;
-    tvAllGuestsBreakfast: TcxGridDBColumn;
-    tvAllGuestsrrArrival: TcxGridDBColumn;
-    tvAllGuestsrrDeparture: TcxGridDBColumn;
-    tvAllGuestsRoom: TcxGridDBColumn;
-    tvAllGuestsRoomDescription: TcxGridDBColumn;
-    tvAllGuestsEquipments: TcxGridDBColumn;
-    tvAllGuestsNoRoom: TcxGridDBColumn;
-    tvAllGuestsRoomType: TcxGridDBColumn;
-    tvAllGuestsRoomTypeDescription: TcxGridDBColumn;
-    tvAllGuestsDefNumberGuests: TcxGridDBColumn;
-    tvAllGuestsFloor: TcxGridDBColumn;
-    tvAllGuestsLocation: TcxGridDBColumn;
-    tvAllGuestsLocationDescription: TcxGridDBColumn;
-    tvAllGuestsPerson: TcxGridDBColumn;
-    tvAllGuestsGuestName: TcxGridDBColumn;
-    tvAllGuestsAddress1: TcxGridDBColumn;
-    tvAllGuestsAddress2: TcxGridDBColumn;
-    tvAllGuestsAddress3: TcxGridDBColumn;
-    tvAllGuestsAddress4: TcxGridDBColumn;
-    tvAllGuestsCountry: TcxGridDBColumn;
-    tvAllGuestsPID: TcxGridDBColumn;
-    tvGuestRoomsMainGuest: TcxGridDBColumn;
-    tvGuestRoomsGuestCount: TcxGridDBColumn;
     mAllGuestsStatus: TWideStringField;
     mAllGuestsStatusText: TWideStringField;
     mGuestRoomsStatus: TWideStringField;
     mGuestRoomsStatusText: TWideStringField;
-    tvAllGuestsStatus: TcxGridDBColumn;
-    tvAllGuestsStatusText: TcxGridDBColumn;
-    tvGuestRoomsStatus: TcxGridDBColumn;
-    tvGuestRoomsStatusText: TcxGridDBColumn;
     chkShowAllGuests: TsCheckBox;
     mInvoiceLines: TdxMemData;
     mInvoiceLinesInvoiceNumber: TIntegerField;
@@ -516,7 +450,6 @@ type
     sButton5: TsButton;
     btnGroups: TsButton;
     sButton6: TsButton;
-    sTabSheet1: TsTabSheet;
     mRoomsManualChannelId: TIntegerField;
     mRoomsratePlanCode: TWideStringField;
     tvRoomsratePlanCode: TcxGridDBColumn;
@@ -529,6 +462,86 @@ type
     edtContactAddress4: TsEdit;
     sLabel6: TsLabel;
     sLabel7: TsLabel;
+    pnlGuests: TsPanel;
+    grGuests: TcxGrid;
+    tvGuestRooms: TcxGridDBTableView;
+    tvGuestRoomsRoomReservation: TcxGridDBColumn;
+    tvGuestRoomsReservation: TcxGridDBColumn;
+    tvGuestRoomsRoom: TcxGridDBColumn;
+    tvGuestRoomsMainGuest: TcxGridDBColumn;
+    tvGuestRoomsGuestCount: TcxGridDBColumn;
+    tvGuestRoomsStatusText: TcxGridDBColumn;
+    tvGuestRoomsRoomType: TcxGridDBColumn;
+    tvGuestRoomsRoomTypeDescription: TcxGridDBColumn;
+    tvGuestRoomsRoomDescription: TcxGridDBColumn;
+    tvGuestRoomsEquipments: TcxGridDBColumn;
+    tvGuestRoomsFloor: TcxGridDBColumn;
+    tvGuestRoomsLocationDescription: TcxGridDBColumn;
+    tvGuestRoomsNoRoom: TcxGridDBColumn;
+    tvGuestRoomsRecId: TcxGridDBColumn;
+    tvGuestRoomsisGroup: TcxGridDBColumn;
+    tvGuestRoomsBreakfast: TcxGridDBColumn;
+    tvGuestRoomsrrArrival: TcxGridDBColumn;
+    tvGuestRoomsrrDeparture: TcxGridDBColumn;
+    tvGuestRoomsDefNumberGuests: TcxGridDBColumn;
+    tvGuestRoomsLocation: TcxGridDBColumn;
+    tvGuestRoomsStatus: TcxGridDBColumn;
+    tvGuests: TcxGridDBTableView;
+    tvGuestsRecId: TcxGridDBColumn;
+    tvGuestsPerson: TcxGridDBColumn;
+    tvGuestsRoomReservation: TcxGridDBColumn;
+    tvGuestsReservation: TcxGridDBColumn;
+    tvGuestsGuestName: TcxGridDBColumn;
+    tvGuestsCountry: TcxGridDBColumn;
+    tvGuestsAddress1: TcxGridDBColumn;
+    tvGuestsAddress2: TcxGridDBColumn;
+    tvGuestsAddress3: TcxGridDBColumn;
+    tvGuestsAddress4: TcxGridDBColumn;
+    tvGuestsPID: TcxGridDBColumn;
+    tvAllGuests: TcxGridDBTableView;
+    tvAllGuestsRecId: TcxGridDBColumn;
+    tvAllGuestsReservation: TcxGridDBColumn;
+    tvAllGuestsRoomReservation: TcxGridDBColumn;
+    tvAllGuestsRoom: TcxGridDBColumn;
+    tvAllGuestsGuestName: TcxGridDBColumn;
+    tvAllGuestsStatusText: TcxGridDBColumn;
+    tvAllGuestsRoomType: TcxGridDBColumn;
+    tvAllGuestsRoomTypeDescription: TcxGridDBColumn;
+    tvAllGuestsRoomDescription: TcxGridDBColumn;
+    tvAllGuestsEquipments: TcxGridDBColumn;
+    tvAllGuestsFloor: TcxGridDBColumn;
+    tvAllGuestsLocationDescription: TcxGridDBColumn;
+    tvAllGuestsisGroup: TcxGridDBColumn;
+    tvAllGuestsBreakfast: TcxGridDBColumn;
+    tvAllGuestsrrArrival: TcxGridDBColumn;
+    tvAllGuestsrrDeparture: TcxGridDBColumn;
+    tvAllGuestsNoRoom: TcxGridDBColumn;
+    tvAllGuestsDefNumberGuests: TcxGridDBColumn;
+    tvAllGuestsLocation: TcxGridDBColumn;
+    tvAllGuestsPerson: TcxGridDBColumn;
+    tvAllGuestsPID: TcxGridDBColumn;
+    tvAllGuestsAddress1: TcxGridDBColumn;
+    tvAllGuestsAddress2: TcxGridDBColumn;
+    tvAllGuestsAddress3: TcxGridDBColumn;
+    tvAllGuestsAddress4: TcxGridDBColumn;
+    tvAllGuestsCountry: TcxGridDBColumn;
+    tvAllGuestsStatus: TcxGridDBColumn;
+    lvGuestRooms: TcxGridLevel;
+    lvGuests: TcxGridLevel;
+    lvAllGuests: TcxGridLevel;
+    gbxProfileAlert: TsGroupBox;
+    lblSpecialRequests: TsLabel;
+    lblNotes: TsLabel;
+    edtSpecialRequests: TMemo;
+    edtNotes: TMemo;
+    mAllGuestsPersonsProfilesId: TIntegerField;
+    gbxRoomAlert: TsGroupBox;
+    edtRoom: TsEdit;
+    edtRoomType: TsEdit;
+    lblRoomType: TsLabel;
+    lblRoom: TsLabel;
+    mGuestsPersonsProfilesId: TIntegerField;
+    mGuestRoomsPersonsProfilesId: TIntegerField;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -636,6 +649,8 @@ type
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure DropComboTarget1GetDropEffect(Sender: TObject; ShiftState: TShiftState; APoint: TPoint; var Effect: Integer);
     procedure DropComboTarget1DragOver(Sender: TObject; ShiftState: TShiftState; APoint: TPoint; var Effect: Integer);
+    procedure mGuestsAfterScroll(DataSet: TDataSet);
+    procedure mGuestRoomsAfterScroll(DataSet: TDataSet);
   private
     { Private declarations }
     vStartName: string;
@@ -680,6 +695,7 @@ type
     procedure SetBreakfastItemindex(sStatus : string);
     procedure SetPaymentDetailItemindex(sStatus : string);
     procedure SetOutOfOrderBlocking(const Value: Boolean);
+    procedure SetProfileAlertVisibility;
 
     property OutOfOrderBlocking : Boolean read FOutOfOrderBlocking write SetOutOfOrderBlocking;
   public
@@ -2275,6 +2291,43 @@ begin
       memRequestFromChannel.Lines.Text := ChannelRequest;
       SetLabNumbers;
     end;
+
+//    edtSpecialRequests.Text := '';
+//    edtNotes.Text := '';
+//    edtRoom.Text := '';
+//    edtRoomType.Text := '';
+//    if glb.LocateSpecificRecord('personprofiles', 'ID', DataSet.fieldbyname('PersonsProfilesId').asinteger) then
+//    begin
+//      edtSpecialRequests.Text := glb.PersonProfiles['Preparation'];
+//      edtNotes.Text := glb.PersonProfiles['Information'];
+//      edtRoom.Text := glb.PersonProfiles['Room'];
+//      edtRoomType.Text := glb.PersonProfiles['RoomType'];
+//    end;
+//    SetProfileAlertVisibility;
+  end;
+end;
+
+procedure TfrmReservationProfile.SetProfileAlertVisibility;
+begin
+  gbxProfileAlert.Visible := TRIM(edtSpecialRequests.Text + edtNotes.Text +
+                             edtRoom.Text + edtRoomType.Text) <> '';
+  gbxRoomAlert.Visible := TRIM(edtRoom.Text + edtRoomType.Text) <> '';
+  if gbxProfileAlert.Visible then
+  begin
+    edtSpecialRequests.Font.Color := clRed;
+    edtNotes.Font.Color := clRed;
+
+    lblSpecialRequests.Visible := (edtSpecialRequests.Text) <> '';
+    edtSpecialRequests.Visible := (edtSpecialRequests.Text) <> '';
+
+    lblNotes.Visible := (edtNotes.Text) <> '';
+    edtNotes.Visible := (edtNotes.Text) <> '';
+
+    lblRoom.Visible := (edtRoom.Text) <> '';
+    edtRoom.Visible := (edtRoom.Text) <> '';
+
+    lblRoomType.Visible := (edtRoomType.Text) <> '';
+    edtRoomType.Visible := (edtRoomType.Text) <> '';
   end;
 end;
 
@@ -2284,6 +2337,29 @@ begin
 end;
 
 
+
+procedure TfrmReservationProfile.mGuestRoomsAfterScroll(DataSet: TDataSet);
+begin
+  if mainPage.ActivePage = GuestsTab then
+  begin
+    edtSpecialRequests.Text := '';
+    edtNotes.Text := '';
+    edtRoom.Text := '';
+    edtRoomType.Text := '';
+    if glb.LocateSpecificRecord('personprofiles', 'ID', DataSet.fieldbyname('PersonsProfilesId').asinteger) then
+    begin
+      edtSpecialRequests.Text := glb.PersonProfiles['Preparation'];
+      edtNotes.Text := glb.PersonProfiles['Information'];
+      edtRoom.Text := glb.PersonProfiles['Room'];
+      edtRoomType.Text := glb.PersonProfiles['RoomType'];
+    end;
+    SetProfileAlertVisibility;
+  end;
+end;
+
+procedure TfrmReservationProfile.mGuestsAfterScroll(DataSet: TDataSet);
+begin
+end;
 
 // ********************************************************************************
 //

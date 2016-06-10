@@ -36,7 +36,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
       Top = 4
       Width = 559
       Height = 635
-      ActivePage = sTabSheet1
+      ActivePage = sTabSheet4
       Align = alClient
       TabOrder = 0
       OnChange = pgPagesChange
@@ -2944,11 +2944,10 @@ object frmGuestPortfolio: TfrmGuestPortfolio
   object grPrinter: TdxComponentPrinter
     CurrentLink = prLink_grData
     Version = 0
-    Left = 96
-    Top = 192
+    Left = 72
+    Top = 168
     object prLink_grData: TdxGridReportLink
       Component = grData
-      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 5080
       PrinterPage.GrayShading = True
@@ -2962,7 +2961,6 @@ object frmGuestPortfolio: TfrmGuestPortfolio
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
       ReportDocument.CreationDate = 41334.495374884260000000
-      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       BuiltInReportLink = True
     end
   end

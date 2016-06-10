@@ -2,7 +2,7 @@ object frmReservationProfile: TfrmReservationProfile
   Left = 739
   Top = 201
   Caption = 'Reservation profile'
-  ClientHeight = 599
+  ClientHeight = 662
   ClientWidth = 1120
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -1447,7 +1447,7 @@ object frmReservationProfile: TfrmReservationProfile
             Top = 6
             Width = 209
             Height = 142
-            Align = alClient
+            Align = alLeft
             Caption = 'Notes for room : '
             TabOrder = 3
             SkinData.SkinSection = 'GROUPBOX'
@@ -1523,8 +1523,8 @@ object frmReservationProfile: TfrmReservationProfile
     Left = 0
     Top = 301
     Width = 1120
-    Height = 265
-    ActivePage = RoomsTab
+    Height = 328
+    ActivePage = GuestsTab
     Align = alClient
     Style = tsButtons
     TabHeight = 25
@@ -1533,13 +1533,15 @@ object frmReservationProfile: TfrmReservationProfile
     OnChange = mainPageChange
     ShowFocus = False
     SkinData.SkinSection = 'PAGECONTROL'
+    ExplicitHeight = 265
     object RoomsTab: TsTabSheet
       Caption = 'Rooms'
+      ExplicitHeight = 230
       object grRooms: TcxGrid
         Left = 0
         Top = 82
         Width = 1112
-        Height = 148
+        Height = 211
         Align = alClient
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
@@ -1550,6 +1552,7 @@ object frmReservationProfile: TfrmReservationProfile
         ParentFont = False
         TabOrder = 0
         LookAndFeel.NativeStyle = False
+        ExplicitHeight = 148
         object tvRooms: TcxGridDBTableView
           Navigator.Buttons.CustomButtons = <>
           Navigator.Buttons.First.Visible = True
@@ -2346,6 +2349,7 @@ object frmReservationProfile: TfrmReservationProfile
     object GuestsTab: TsTabSheet
       Caption = 'Guests'
       ImageIndex = 1
+      ExplicitHeight = 230
       object Panel10: TsPanel
         Left = 0
         Top = 0
@@ -2429,401 +2433,559 @@ object frmReservationProfile: TfrmReservationProfile
           SkinData.SkinSection = 'BUTTON'
         end
       end
-      object grGuests: TcxGrid
+      object pnlGuests: TsPanel
         Left = 0
         Top = 38
         Width = 1112
-        Height = 192
+        Height = 255
         Align = alClient
         TabOrder = 1
-        LevelTabs.Style = 8
-        LookAndFeel.NativeStyle = False
-        object tvGuestRooms: TcxGridDBTableView
-          Navigator.Buttons.CustomButtons = <>
-          Navigator.Buttons.First.Visible = True
-          Navigator.Buttons.PriorPage.Visible = True
-          Navigator.Buttons.Prior.Visible = True
-          Navigator.Buttons.Next.Visible = True
-          Navigator.Buttons.NextPage.Visible = True
-          Navigator.Buttons.Last.Visible = True
-          Navigator.Buttons.Insert.Enabled = False
-          Navigator.Buttons.Insert.Visible = False
-          Navigator.Buttons.Append.Enabled = False
-          Navigator.Buttons.Append.Visible = False
-          Navigator.Buttons.Delete.Enabled = False
-          Navigator.Buttons.Delete.Visible = False
-          Navigator.Buttons.Edit.Enabled = False
-          Navigator.Buttons.Edit.Visible = False
-          Navigator.Buttons.Post.Enabled = False
-          Navigator.Buttons.Post.Visible = False
-          Navigator.Buttons.Cancel.Enabled = False
-          Navigator.Buttons.Cancel.Visible = True
-          Navigator.Buttons.Refresh.Visible = True
-          Navigator.Buttons.SaveBookmark.Visible = True
-          Navigator.Buttons.GotoBookmark.Visible = True
-          Navigator.Buttons.Filter.Visible = True
-          OnCanFocusRecord = tvGuestRoomsCanFocusRecord
-          DataController.DataSource = mGuestRoomsDS
-          DataController.DetailKeyFieldNames = 'RoomReservation'
-          DataController.Summary.DefaultGroupSummaryItems = <>
-          DataController.Summary.FooterSummaryItems = <>
-          DataController.Summary.SummaryGroups = <>
-          OptionsBehavior.IncSearch = True
-          OptionsData.CancelOnExit = False
-          OptionsData.Deleting = False
-          OptionsData.DeletingConfirmation = False
-          OptionsData.Editing = False
-          OptionsData.Inserting = False
-          OptionsView.Indicator = True
-          Preview.Visible = True
-          object tvGuestRoomsRoomReservation: TcxGridDBColumn
-            DataBinding.FieldName = 'RoomReservation'
+        ExplicitLeft = 927
+        ExplicitWidth = 192
+        ExplicitHeight = 185
+        object grGuests: TcxGrid
+          Left = 1
+          Top = 1
+          Width = 846
+          Height = 253
+          Align = alClient
+          TabOrder = 0
+          LevelTabs.Style = 8
+          LookAndFeel.NativeStyle = False
+          ExplicitLeft = 2
+          ExplicitTop = 2
+          ExplicitWidth = 1110
+          ExplicitHeight = 190
+          object tvGuestRooms: TcxGridDBTableView
+            Navigator.Buttons.CustomButtons = <>
+            Navigator.Buttons.First.Visible = True
+            Navigator.Buttons.PriorPage.Visible = True
+            Navigator.Buttons.Prior.Visible = True
+            Navigator.Buttons.Next.Visible = True
+            Navigator.Buttons.NextPage.Visible = True
+            Navigator.Buttons.Last.Visible = True
+            Navigator.Buttons.Insert.Enabled = False
+            Navigator.Buttons.Insert.Visible = False
+            Navigator.Buttons.Append.Enabled = False
+            Navigator.Buttons.Append.Visible = False
+            Navigator.Buttons.Delete.Enabled = False
+            Navigator.Buttons.Delete.Visible = False
+            Navigator.Buttons.Edit.Enabled = False
+            Navigator.Buttons.Edit.Visible = False
+            Navigator.Buttons.Post.Enabled = False
+            Navigator.Buttons.Post.Visible = False
+            Navigator.Buttons.Cancel.Enabled = False
+            Navigator.Buttons.Cancel.Visible = True
+            Navigator.Buttons.Refresh.Visible = True
+            Navigator.Buttons.SaveBookmark.Visible = True
+            Navigator.Buttons.GotoBookmark.Visible = True
+            Navigator.Buttons.Filter.Visible = True
+            OnCanFocusRecord = tvGuestRoomsCanFocusRecord
+            DataController.DataSource = mGuestRoomsDS
+            DataController.DetailKeyFieldNames = 'RoomReservation'
+            DataController.Summary.DefaultGroupSummaryItems = <>
+            DataController.Summary.FooterSummaryItems = <>
+            DataController.Summary.SummaryGroups = <>
+            OptionsBehavior.IncSearch = True
+            OptionsData.CancelOnExit = False
+            OptionsData.Deleting = False
+            OptionsData.DeletingConfirmation = False
+            OptionsData.Editing = False
+            OptionsData.Inserting = False
+            OptionsView.Indicator = True
+            Preview.Visible = True
+            object tvGuestRoomsRoomReservation: TcxGridDBColumn
+              DataBinding.FieldName = 'RoomReservation'
+            end
+            object tvGuestRoomsReservation: TcxGridDBColumn
+              DataBinding.FieldName = 'Reservation'
+              Visible = False
+            end
+            object tvGuestRoomsRoom: TcxGridDBColumn
+              DataBinding.FieldName = 'Room'
+            end
+            object tvGuestRoomsMainGuest: TcxGridDBColumn
+              Caption = 'Guest Name'
+              DataBinding.FieldName = 'MainGuest'
+              Width = 120
+            end
+            object tvGuestRoomsGuestCount: TcxGridDBColumn
+              Caption = 'Guests'
+              DataBinding.FieldName = 'GuestCount'
+              Width = 36
+            end
+            object tvGuestRoomsStatusText: TcxGridDBColumn
+              Caption = 'Status'
+              DataBinding.FieldName = 'StatusText'
+              Width = 120
+            end
+            object tvGuestRoomsRoomType: TcxGridDBColumn
+              Caption = 'Type'
+              DataBinding.FieldName = 'RoomType'
+            end
+            object tvGuestRoomsRoomTypeDescription: TcxGridDBColumn
+              Caption = 'Type Description'
+              DataBinding.FieldName = 'RoomTypeDescription'
+              Width = 120
+            end
+            object tvGuestRoomsRoomDescription: TcxGridDBColumn
+              DataBinding.FieldName = 'RoomDescription'
+              Width = 120
+            end
+            object tvGuestRoomsEquipments: TcxGridDBColumn
+              DataBinding.FieldName = 'Equipments'
+              Width = 100
+            end
+            object tvGuestRoomsFloor: TcxGridDBColumn
+              DataBinding.FieldName = 'Floor'
+              Width = 36
+            end
+            object tvGuestRoomsLocationDescription: TcxGridDBColumn
+              Caption = 'Location'
+              DataBinding.FieldName = 'LocationDescription'
+              Width = 112
+            end
+            object tvGuestRoomsNoRoom: TcxGridDBColumn
+              DataBinding.FieldName = 'NoRoom'
+              Visible = False
+            end
+            object tvGuestRoomsRecId: TcxGridDBColumn
+              DataBinding.FieldName = 'RecId'
+              Visible = False
+            end
+            object tvGuestRoomsisGroup: TcxGridDBColumn
+              DataBinding.FieldName = 'isGroup'
+            end
+            object tvGuestRoomsBreakfast: TcxGridDBColumn
+              DataBinding.FieldName = 'Breakfast'
+            end
+            object tvGuestRoomsrrArrival: TcxGridDBColumn
+              DataBinding.FieldName = 'rrArrival'
+              Width = 80
+            end
+            object tvGuestRoomsrrDeparture: TcxGridDBColumn
+              DataBinding.FieldName = 'rrDeparture'
+              Width = 80
+            end
+            object tvGuestRoomsDefNumberGuests: TcxGridDBColumn
+              Caption = 'Def'
+              DataBinding.FieldName = 'DefNumberGuests'
+              Width = 24
+            end
+            object tvGuestRoomsLocation: TcxGridDBColumn
+              DataBinding.FieldName = 'Location'
+              Visible = False
+            end
+            object tvGuestRoomsStatus: TcxGridDBColumn
+              DataBinding.FieldName = 'Status'
+              Visible = False
+            end
           end
-          object tvGuestRoomsReservation: TcxGridDBColumn
-            DataBinding.FieldName = 'Reservation'
-            Visible = False
+          object tvGuests: TcxGridDBTableView
+            Navigator.Buttons.CustomButtons = <>
+            Navigator.Buttons.First.Visible = True
+            Navigator.Buttons.PriorPage.Visible = True
+            Navigator.Buttons.Prior.Visible = True
+            Navigator.Buttons.Next.Visible = True
+            Navigator.Buttons.NextPage.Visible = True
+            Navigator.Buttons.Last.Visible = True
+            Navigator.Buttons.Insert.Enabled = False
+            Navigator.Buttons.Insert.Visible = False
+            Navigator.Buttons.Append.Enabled = False
+            Navigator.Buttons.Append.Visible = False
+            Navigator.Buttons.Delete.Enabled = False
+            Navigator.Buttons.Delete.Visible = False
+            Navigator.Buttons.Edit.Enabled = False
+            Navigator.Buttons.Edit.Visible = False
+            Navigator.Buttons.Post.Enabled = False
+            Navigator.Buttons.Post.Visible = False
+            Navigator.Buttons.Cancel.Enabled = False
+            Navigator.Buttons.Cancel.Visible = True
+            Navigator.Buttons.Refresh.Visible = True
+            Navigator.Buttons.SaveBookmark.Visible = True
+            Navigator.Buttons.GotoBookmark.Visible = True
+            Navigator.Buttons.Filter.Visible = True
+            OnCanFocusRecord = tvGuestsCanFocusRecord
+            DataController.DataModeController.SyncMode = False
+            DataController.DataSource = mGuestsDS
+            DataController.DetailKeyFieldNames = 'RoomReservation'
+            DataController.KeyFieldNames = 'RoomReservation'
+            DataController.MasterKeyFieldNames = 'RoomReservation'
+            DataController.Options = [dcoAssignGroupingValues, dcoAssignMasterDetailKeys, dcoSaveExpanding, dcoGroupsAlwaysExpanded]
+            DataController.Summary.DefaultGroupSummaryItems = <>
+            DataController.Summary.FooterSummaryItems = <>
+            DataController.Summary.SummaryGroups = <>
+            OptionsBehavior.IncSearch = True
+            OptionsData.CancelOnExit = False
+            OptionsData.Deleting = False
+            OptionsData.DeletingConfirmation = False
+            OptionsData.Editing = False
+            OptionsData.Inserting = False
+            OptionsView.GroupByBox = False
+            OptionsView.Header = False
+            object tvGuestsRecId: TcxGridDBColumn
+              DataBinding.FieldName = 'RecId'
+              Visible = False
+            end
+            object tvGuestsPerson: TcxGridDBColumn
+              DataBinding.FieldName = 'Person'
+              Visible = False
+            end
+            object tvGuestsRoomReservation: TcxGridDBColumn
+              DataBinding.FieldName = 'RoomReservation'
+            end
+            object tvGuestsReservation: TcxGridDBColumn
+              DataBinding.FieldName = 'Reservation'
+              Visible = False
+            end
+            object tvGuestsGuestName: TcxGridDBColumn
+              DataBinding.FieldName = 'GuestName'
+              PropertiesClassName = 'TcxTextEditProperties'
+              Width = 150
+            end
+            object tvGuestsCountry: TcxGridDBColumn
+              DataBinding.FieldName = 'Country'
+            end
+            object tvGuestsAddress1: TcxGridDBColumn
+              DataBinding.FieldName = 'Address1'
+              Width = 150
+            end
+            object tvGuestsAddress2: TcxGridDBColumn
+              DataBinding.FieldName = 'Address2'
+              Width = 100
+            end
+            object tvGuestsAddress3: TcxGridDBColumn
+              DataBinding.FieldName = 'Address3'
+              Width = 100
+            end
+            object tvGuestsAddress4: TcxGridDBColumn
+              DataBinding.FieldName = 'Address4'
+              Visible = False
+              Width = 100
+            end
+            object tvGuestsPID: TcxGridDBColumn
+              DataBinding.FieldName = 'PID'
+            end
           end
-          object tvGuestRoomsRoom: TcxGridDBColumn
-            DataBinding.FieldName = 'Room'
+          object tvAllGuests: TcxGridDBTableView
+            Navigator.Buttons.CustomButtons = <>
+            Navigator.Buttons.First.Visible = True
+            Navigator.Buttons.PriorPage.Visible = True
+            Navigator.Buttons.Prior.Visible = True
+            Navigator.Buttons.Next.Visible = True
+            Navigator.Buttons.NextPage.Visible = True
+            Navigator.Buttons.Last.Visible = True
+            Navigator.Buttons.Insert.Enabled = False
+            Navigator.Buttons.Insert.Visible = False
+            Navigator.Buttons.Append.Enabled = False
+            Navigator.Buttons.Append.Visible = False
+            Navigator.Buttons.Delete.Enabled = False
+            Navigator.Buttons.Delete.Visible = False
+            Navigator.Buttons.Edit.Enabled = False
+            Navigator.Buttons.Edit.Visible = False
+            Navigator.Buttons.Post.Enabled = False
+            Navigator.Buttons.Post.Visible = False
+            Navigator.Buttons.Cancel.Enabled = False
+            Navigator.Buttons.Cancel.Visible = True
+            Navigator.Buttons.Refresh.Visible = True
+            Navigator.Buttons.SaveBookmark.Visible = True
+            Navigator.Buttons.GotoBookmark.Visible = True
+            Navigator.Buttons.Filter.Visible = True
+            OnCanFocusRecord = tvAllGuestsCanFocusRecord
+            DataController.DataSource = mAllGuestsDS
+            DataController.Summary.DefaultGroupSummaryItems = <>
+            DataController.Summary.FooterSummaryItems = <>
+            DataController.Summary.SummaryGroups = <>
+            OptionsBehavior.IncSearch = True
+            OptionsData.CancelOnExit = False
+            OptionsData.Deleting = False
+            OptionsData.DeletingConfirmation = False
+            OptionsData.Editing = False
+            OptionsData.Inserting = False
+            OptionsView.Indicator = True
+            object tvAllGuestsRecId: TcxGridDBColumn
+              DataBinding.FieldName = 'RecId'
+              Visible = False
+            end
+            object tvAllGuestsReservation: TcxGridDBColumn
+              DataBinding.FieldName = 'Reservation'
+              Visible = False
+            end
+            object tvAllGuestsRoomReservation: TcxGridDBColumn
+              DataBinding.FieldName = 'RoomReservation'
+              Visible = False
+            end
+            object tvAllGuestsRoom: TcxGridDBColumn
+              DataBinding.FieldName = 'Room'
+            end
+            object tvAllGuestsGuestName: TcxGridDBColumn
+              DataBinding.FieldName = 'GuestName'
+              Width = 120
+            end
+            object tvAllGuestsStatusText: TcxGridDBColumn
+              Caption = 'Status'
+              DataBinding.FieldName = 'StatusText'
+              Width = 120
+            end
+            object tvAllGuestsRoomType: TcxGridDBColumn
+              Caption = 'Type'
+              DataBinding.FieldName = 'RoomType'
+            end
+            object tvAllGuestsRoomTypeDescription: TcxGridDBColumn
+              Caption = 'Type Description'
+              DataBinding.FieldName = 'RoomTypeDescription'
+              Width = 120
+            end
+            object tvAllGuestsRoomDescription: TcxGridDBColumn
+              Caption = 'Room Description'
+              DataBinding.FieldName = 'RoomDescription'
+              Width = 120
+            end
+            object tvAllGuestsEquipments: TcxGridDBColumn
+              DataBinding.FieldName = 'Equipments'
+              Width = 120
+            end
+            object tvAllGuestsFloor: TcxGridDBColumn
+              DataBinding.FieldName = 'Floor'
+              Width = 34
+            end
+            object tvAllGuestsLocationDescription: TcxGridDBColumn
+              Caption = 'Location'
+              DataBinding.FieldName = 'LocationDescription'
+              Width = 120
+            end
+            object tvAllGuestsisGroup: TcxGridDBColumn
+              DataBinding.FieldName = 'isGroup'
+            end
+            object tvAllGuestsBreakfast: TcxGridDBColumn
+              DataBinding.FieldName = 'Breakfast'
+            end
+            object tvAllGuestsrrArrival: TcxGridDBColumn
+              DataBinding.FieldName = 'rrArrival'
+              Width = 70
+            end
+            object tvAllGuestsrrDeparture: TcxGridDBColumn
+              DataBinding.FieldName = 'rrDeparture'
+              Width = 70
+            end
+            object tvAllGuestsNoRoom: TcxGridDBColumn
+              DataBinding.FieldName = 'NoRoom'
+              Visible = False
+            end
+            object tvAllGuestsDefNumberGuests: TcxGridDBColumn
+              DataBinding.FieldName = 'DefNumberGuests'
+              Visible = False
+            end
+            object tvAllGuestsLocation: TcxGridDBColumn
+              DataBinding.FieldName = 'Location'
+              Visible = False
+            end
+            object tvAllGuestsPerson: TcxGridDBColumn
+              DataBinding.FieldName = 'Person'
+              Visible = False
+            end
+            object tvAllGuestsPID: TcxGridDBColumn
+              Caption = 'Personal ID'
+              DataBinding.FieldName = 'PID'
+            end
+            object tvAllGuestsAddress1: TcxGridDBColumn
+              DataBinding.FieldName = 'Address1'
+              Width = 120
+            end
+            object tvAllGuestsAddress2: TcxGridDBColumn
+              DataBinding.FieldName = 'Address2'
+              Width = 120
+            end
+            object tvAllGuestsAddress3: TcxGridDBColumn
+              DataBinding.FieldName = 'Address3'
+              Width = 120
+            end
+            object tvAllGuestsAddress4: TcxGridDBColumn
+              DataBinding.FieldName = 'Address4'
+              Visible = False
+              Width = 120
+            end
+            object tvAllGuestsCountry: TcxGridDBColumn
+              DataBinding.FieldName = 'Country'
+            end
+            object tvAllGuestsStatus: TcxGridDBColumn
+              DataBinding.FieldName = 'Status'
+              Visible = False
+            end
           end
-          object tvGuestRoomsMainGuest: TcxGridDBColumn
-            Caption = 'Guest Name'
-            DataBinding.FieldName = 'MainGuest'
-            Width = 120
+          object lvGuestRooms: TcxGridLevel
+            Caption = 'Main Guest'
+            GridView = tvGuestRooms
+            object lvGuests: TcxGridLevel
+              GridView = tvGuests
+            end
           end
-          object tvGuestRoomsGuestCount: TcxGridDBColumn
-            Caption = 'Guests'
-            DataBinding.FieldName = 'GuestCount'
-            Width = 36
-          end
-          object tvGuestRoomsStatusText: TcxGridDBColumn
-            Caption = 'Status'
-            DataBinding.FieldName = 'StatusText'
-            Width = 120
-          end
-          object tvGuestRoomsRoomType: TcxGridDBColumn
-            Caption = 'Type'
-            DataBinding.FieldName = 'RoomType'
-          end
-          object tvGuestRoomsRoomTypeDescription: TcxGridDBColumn
-            Caption = 'Type Description'
-            DataBinding.FieldName = 'RoomTypeDescription'
-            Width = 120
-          end
-          object tvGuestRoomsRoomDescription: TcxGridDBColumn
-            DataBinding.FieldName = 'RoomDescription'
-            Width = 120
-          end
-          object tvGuestRoomsEquipments: TcxGridDBColumn
-            DataBinding.FieldName = 'Equipments'
-            Width = 100
-          end
-          object tvGuestRoomsFloor: TcxGridDBColumn
-            DataBinding.FieldName = 'Floor'
-            Width = 36
-          end
-          object tvGuestRoomsLocationDescription: TcxGridDBColumn
-            Caption = 'Location'
-            DataBinding.FieldName = 'LocationDescription'
-            Width = 112
-          end
-          object tvGuestRoomsNoRoom: TcxGridDBColumn
-            DataBinding.FieldName = 'NoRoom'
-            Visible = False
-          end
-          object tvGuestRoomsRecId: TcxGridDBColumn
-            DataBinding.FieldName = 'RecId'
-            Visible = False
-          end
-          object tvGuestRoomsisGroup: TcxGridDBColumn
-            DataBinding.FieldName = 'isGroup'
-          end
-          object tvGuestRoomsBreakfast: TcxGridDBColumn
-            DataBinding.FieldName = 'Breakfast'
-          end
-          object tvGuestRoomsrrArrival: TcxGridDBColumn
-            DataBinding.FieldName = 'rrArrival'
-            Width = 80
-          end
-          object tvGuestRoomsrrDeparture: TcxGridDBColumn
-            DataBinding.FieldName = 'rrDeparture'
-            Width = 80
-          end
-          object tvGuestRoomsDefNumberGuests: TcxGridDBColumn
-            Caption = 'Def'
-            DataBinding.FieldName = 'DefNumberGuests'
-            Width = 24
-          end
-          object tvGuestRoomsLocation: TcxGridDBColumn
-            DataBinding.FieldName = 'Location'
-            Visible = False
-          end
-          object tvGuestRoomsStatus: TcxGridDBColumn
-            DataBinding.FieldName = 'Status'
-            Visible = False
+          object lvAllGuests: TcxGridLevel
+            Caption = 'All guests'
+            GridView = tvAllGuests
           end
         end
-        object tvGuests: TcxGridDBTableView
-          Navigator.Buttons.CustomButtons = <>
-          Navigator.Buttons.First.Visible = True
-          Navigator.Buttons.PriorPage.Visible = True
-          Navigator.Buttons.Prior.Visible = True
-          Navigator.Buttons.Next.Visible = True
-          Navigator.Buttons.NextPage.Visible = True
-          Navigator.Buttons.Last.Visible = True
-          Navigator.Buttons.Insert.Enabled = False
-          Navigator.Buttons.Insert.Visible = False
-          Navigator.Buttons.Append.Enabled = False
-          Navigator.Buttons.Append.Visible = False
-          Navigator.Buttons.Delete.Enabled = False
-          Navigator.Buttons.Delete.Visible = False
-          Navigator.Buttons.Edit.Enabled = False
-          Navigator.Buttons.Edit.Visible = False
-          Navigator.Buttons.Post.Enabled = False
-          Navigator.Buttons.Post.Visible = False
-          Navigator.Buttons.Cancel.Enabled = False
-          Navigator.Buttons.Cancel.Visible = True
-          Navigator.Buttons.Refresh.Visible = True
-          Navigator.Buttons.SaveBookmark.Visible = True
-          Navigator.Buttons.GotoBookmark.Visible = True
-          Navigator.Buttons.Filter.Visible = True
-          OnCanFocusRecord = tvGuestsCanFocusRecord
-          DataController.DataModeController.SyncMode = False
-          DataController.DataSource = mGuestsDS
-          DataController.DetailKeyFieldNames = 'RoomReservation'
-          DataController.KeyFieldNames = 'RoomReservation'
-          DataController.MasterKeyFieldNames = 'RoomReservation'
-          DataController.Options = [dcoAssignGroupingValues, dcoAssignMasterDetailKeys, dcoSaveExpanding, dcoGroupsAlwaysExpanded]
-          DataController.Summary.DefaultGroupSummaryItems = <>
-          DataController.Summary.FooterSummaryItems = <>
-          DataController.Summary.SummaryGroups = <>
-          OptionsBehavior.IncSearch = True
-          OptionsData.CancelOnExit = False
-          OptionsData.Deleting = False
-          OptionsData.DeletingConfirmation = False
-          OptionsData.Editing = False
-          OptionsData.Inserting = False
-          OptionsView.GroupByBox = False
-          OptionsView.Header = False
-          object tvGuestsRecId: TcxGridDBColumn
-            DataBinding.FieldName = 'RecId'
-            Visible = False
+        object gbxProfileAlert: TsGroupBox
+          AlignWithMargins = True
+          Left = 852
+          Top = 3
+          Width = 254
+          Height = 249
+          Margins.Left = 5
+          Margins.Top = 2
+          Margins.Right = 5
+          Margins.Bottom = 2
+          Align = alRight
+          Caption = 'Guest profile notes and preferences'
+          TabOrder = 1
+          SkinData.SkinSection = 'GROUPBOX'
+          Checked = False
+          object lblSpecialRequests: TsLabel
+            Left = 2
+            Top = 13
+            Width = 250
+            Height = 11
+            Align = alTop
+            Caption = 'Special Requests'
+            ExplicitWidth = 69
           end
-          object tvGuestsPerson: TcxGridDBColumn
-            DataBinding.FieldName = 'Person'
-            Visible = False
+          object lblNotes: TsLabel
+            Left = 2
+            Top = 97
+            Width = 250
+            Height = 11
+            Align = alTop
+            Caption = 'Notes'
+            ExplicitWidth = 24
           end
-          object tvGuestsRoomReservation: TcxGridDBColumn
-            DataBinding.FieldName = 'RoomReservation'
+          object edtSpecialRequests: TMemo
+            AlignWithMargins = True
+            Left = 7
+            Top = 29
+            Width = 240
+            Height = 63
+            Margins.Left = 5
+            Margins.Top = 5
+            Margins.Right = 5
+            Margins.Bottom = 5
+            Align = alTop
+            Color = clWhite
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clRed
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+            ReadOnly = True
+            ScrollBars = ssVertical
+            TabOrder = 0
+            ExplicitTop = 31
+            ExplicitWidth = 1086
           end
-          object tvGuestsReservation: TcxGridDBColumn
-            DataBinding.FieldName = 'Reservation'
-            Visible = False
+          object edtNotes: TMemo
+            AlignWithMargins = True
+            Left = 7
+            Top = 113
+            Width = 240
+            Height = 66
+            Margins.Left = 5
+            Margins.Top = 5
+            Margins.Right = 5
+            Margins.Bottom = 5
+            Align = alTop
+            Color = clWhite
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clRed
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+            ReadOnly = True
+            ScrollBars = ssVertical
+            TabOrder = 1
+            ExplicitTop = 117
+            ExplicitWidth = 1086
           end
-          object tvGuestsGuestName: TcxGridDBColumn
-            DataBinding.FieldName = 'GuestName'
-            PropertiesClassName = 'TcxTextEditProperties'
-            Width = 150
+          object gbxRoomAlert: TsGroupBox
+            Left = 2
+            Top = 184
+            Width = 250
+            Height = 105
+            Align = alTop
+            TabOrder = 2
+            Checked = False
+            ExplicitLeft = 16
+            ExplicitTop = 187
+            ExplicitWidth = 185
+            object lblRoomType: TsLabel
+              Left = 7
+              Top = 43
+              Width = 46
+              Height = 11
+              Caption = 'Room type'
+            end
+            object lblRoom: TsLabel
+              Left = 7
+              Top = 18
+              Width = 24
+              Height = 11
+              Caption = 'Room'
+            end
+            object edtRoom: TsEdit
+              Left = 151
+              Top = 13
+              Width = 94
+              Height = 21
+              Color = clWhite
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clRed
+              Font.Height = -11
+              Font.Name = 'Tahoma'
+              Font.Style = []
+              ParentFont = False
+              ReadOnly = True
+              TabOrder = 0
+              SkinData.CustomFont = True
+            end
+            object edtRoomType: TsEdit
+              Left = 152
+              Top = 38
+              Width = 94
+              Height = 21
+              Color = clWhite
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clRed
+              Font.Height = -11
+              Font.Name = 'Tahoma'
+              Font.Style = []
+              ParentFont = False
+              ReadOnly = True
+              TabOrder = 1
+              SkinData.CustomFont = True
+            end
           end
-          object tvGuestsCountry: TcxGridDBColumn
-            DataBinding.FieldName = 'Country'
-          end
-          object tvGuestsAddress1: TcxGridDBColumn
-            DataBinding.FieldName = 'Address1'
-            Width = 150
-          end
-          object tvGuestsAddress2: TcxGridDBColumn
-            DataBinding.FieldName = 'Address2'
-            Width = 100
-          end
-          object tvGuestsAddress3: TcxGridDBColumn
-            DataBinding.FieldName = 'Address3'
-            Width = 100
-          end
-          object tvGuestsAddress4: TcxGridDBColumn
-            DataBinding.FieldName = 'Address4'
-            Visible = False
-            Width = 100
-          end
-          object tvGuestsPID: TcxGridDBColumn
-            DataBinding.FieldName = 'PID'
-          end
-        end
-        object tvAllGuests: TcxGridDBTableView
-          Navigator.Buttons.CustomButtons = <>
-          Navigator.Buttons.First.Visible = True
-          Navigator.Buttons.PriorPage.Visible = True
-          Navigator.Buttons.Prior.Visible = True
-          Navigator.Buttons.Next.Visible = True
-          Navigator.Buttons.NextPage.Visible = True
-          Navigator.Buttons.Last.Visible = True
-          Navigator.Buttons.Insert.Enabled = False
-          Navigator.Buttons.Insert.Visible = False
-          Navigator.Buttons.Append.Enabled = False
-          Navigator.Buttons.Append.Visible = False
-          Navigator.Buttons.Delete.Enabled = False
-          Navigator.Buttons.Delete.Visible = False
-          Navigator.Buttons.Edit.Enabled = False
-          Navigator.Buttons.Edit.Visible = False
-          Navigator.Buttons.Post.Enabled = False
-          Navigator.Buttons.Post.Visible = False
-          Navigator.Buttons.Cancel.Enabled = False
-          Navigator.Buttons.Cancel.Visible = True
-          Navigator.Buttons.Refresh.Visible = True
-          Navigator.Buttons.SaveBookmark.Visible = True
-          Navigator.Buttons.GotoBookmark.Visible = True
-          Navigator.Buttons.Filter.Visible = True
-          OnCanFocusRecord = tvAllGuestsCanFocusRecord
-          DataController.DataSource = mAllGuestsDS
-          DataController.Summary.DefaultGroupSummaryItems = <>
-          DataController.Summary.FooterSummaryItems = <>
-          DataController.Summary.SummaryGroups = <>
-          OptionsBehavior.IncSearch = True
-          OptionsData.CancelOnExit = False
-          OptionsData.Deleting = False
-          OptionsData.DeletingConfirmation = False
-          OptionsData.Editing = False
-          OptionsData.Inserting = False
-          OptionsView.Indicator = True
-          object tvAllGuestsRecId: TcxGridDBColumn
-            DataBinding.FieldName = 'RecId'
-            Visible = False
-          end
-          object tvAllGuestsReservation: TcxGridDBColumn
-            DataBinding.FieldName = 'Reservation'
-            Visible = False
-          end
-          object tvAllGuestsRoomReservation: TcxGridDBColumn
-            DataBinding.FieldName = 'RoomReservation'
-            Visible = False
-          end
-          object tvAllGuestsRoom: TcxGridDBColumn
-            DataBinding.FieldName = 'Room'
-          end
-          object tvAllGuestsGuestName: TcxGridDBColumn
-            DataBinding.FieldName = 'GuestName'
-            Width = 120
-          end
-          object tvAllGuestsStatusText: TcxGridDBColumn
-            Caption = 'Status'
-            DataBinding.FieldName = 'StatusText'
-            Width = 120
-          end
-          object tvAllGuestsRoomType: TcxGridDBColumn
-            Caption = 'Type'
-            DataBinding.FieldName = 'RoomType'
-          end
-          object tvAllGuestsRoomTypeDescription: TcxGridDBColumn
-            Caption = 'Type Description'
-            DataBinding.FieldName = 'RoomTypeDescription'
-            Width = 120
-          end
-          object tvAllGuestsRoomDescription: TcxGridDBColumn
-            Caption = 'Room Description'
-            DataBinding.FieldName = 'RoomDescription'
-            Width = 120
-          end
-          object tvAllGuestsEquipments: TcxGridDBColumn
-            DataBinding.FieldName = 'Equipments'
-            Width = 120
-          end
-          object tvAllGuestsFloor: TcxGridDBColumn
-            DataBinding.FieldName = 'Floor'
-            Width = 34
-          end
-          object tvAllGuestsLocationDescription: TcxGridDBColumn
-            Caption = 'Location'
-            DataBinding.FieldName = 'LocationDescription'
-            Width = 120
-          end
-          object tvAllGuestsisGroup: TcxGridDBColumn
-            DataBinding.FieldName = 'isGroup'
-          end
-          object tvAllGuestsBreakfast: TcxGridDBColumn
-            DataBinding.FieldName = 'Breakfast'
-          end
-          object tvAllGuestsrrArrival: TcxGridDBColumn
-            DataBinding.FieldName = 'rrArrival'
-            Width = 70
-          end
-          object tvAllGuestsrrDeparture: TcxGridDBColumn
-            DataBinding.FieldName = 'rrDeparture'
-            Width = 70
-          end
-          object tvAllGuestsNoRoom: TcxGridDBColumn
-            DataBinding.FieldName = 'NoRoom'
-            Visible = False
-          end
-          object tvAllGuestsDefNumberGuests: TcxGridDBColumn
-            DataBinding.FieldName = 'DefNumberGuests'
-            Visible = False
-          end
-          object tvAllGuestsLocation: TcxGridDBColumn
-            DataBinding.FieldName = 'Location'
-            Visible = False
-          end
-          object tvAllGuestsPerson: TcxGridDBColumn
-            DataBinding.FieldName = 'Person'
-            Visible = False
-          end
-          object tvAllGuestsPID: TcxGridDBColumn
-            Caption = 'Personal ID'
-            DataBinding.FieldName = 'PID'
-          end
-          object tvAllGuestsAddress1: TcxGridDBColumn
-            DataBinding.FieldName = 'Address1'
-            Width = 120
-          end
-          object tvAllGuestsAddress2: TcxGridDBColumn
-            DataBinding.FieldName = 'Address2'
-            Width = 120
-          end
-          object tvAllGuestsAddress3: TcxGridDBColumn
-            DataBinding.FieldName = 'Address3'
-            Width = 120
-          end
-          object tvAllGuestsAddress4: TcxGridDBColumn
-            DataBinding.FieldName = 'Address4'
-            Visible = False
-            Width = 120
-          end
-          object tvAllGuestsCountry: TcxGridDBColumn
-            DataBinding.FieldName = 'Country'
-          end
-          object tvAllGuestsStatus: TcxGridDBColumn
-            DataBinding.FieldName = 'Status'
-            Visible = False
-          end
-        end
-        object lvGuestRooms: TcxGridLevel
-          Caption = 'Main Guest'
-          GridView = tvGuestRooms
-          object lvGuests: TcxGridLevel
-            GridView = tvGuests
-          end
-        end
-        object lvAllGuests: TcxGridLevel
-          Caption = 'All guests'
-          GridView = tvAllGuests
         end
       end
     end
     object sTabSheet2: TsTabSheet
       Caption = 'ALERTS'
+      ExplicitHeight = 230
       object pnlAlertHolder: TsPanel
         Left = 0
         Top = 0
         Width = 1112
-        Height = 230
+        Height = 293
         Align = alClient
         BevelOuter = bvNone
         TabOrder = 0
         SkinData.SkinSection = 'TRANSPARENT'
+        ExplicitHeight = 230
       end
     end
     object InvoicesTab: TsTabSheet
       Caption = 'Finished Invoices'
       ImageIndex = 2
+      ExplicitHeight = 230
       object Panel11: TsPanel
         Left = 0
         Top = 0
@@ -2865,10 +3027,11 @@ object frmReservationProfile: TfrmReservationProfile
         Left = 0
         Top = 38
         Width = 1112
-        Height = 192
+        Height = 255
         Align = alClient
         TabOrder = 1
         LookAndFeel.NativeStyle = False
+        ExplicitHeight = 192
         object tvInvoiceHeads: TcxGridDBTableView
           Navigator.Buttons.CustomButtons = <>
           Navigator.Buttons.First.Visible = True
@@ -3183,9 +3346,6 @@ object frmReservationProfile: TfrmReservationProfile
         end
       end
     end
-    object sTabSheet1: TsTabSheet
-      Caption = 'Sent emails'
-    end
   end
   object pnlDataWait: TsPanel
     Left = 434
@@ -3210,12 +3370,13 @@ object frmReservationProfile: TfrmReservationProfile
   end
   object Panel1: TsPanel
     Left = 0
-    Top = 566
+    Top = 629
     Width = 1120
     Height = 33
     Align = alBottom
     TabOrder = 4
     SkinData.SkinSection = 'PANEL'
+    ExplicitTop = 566
     DesignSize = (
       1120
       33)
@@ -3405,6 +3566,7 @@ object frmReservationProfile: TfrmReservationProfile
   object mGuests: TdxMemData
     Indexes = <>
     SortOptions = []
+    AfterScroll = mGuestsAfterScroll
     Left = 160
     Top = 448
     object mGuestsPerson: TIntegerField
@@ -3444,6 +3606,9 @@ object frmReservationProfile: TfrmReservationProfile
       FieldName = 'PID'
       Size = 15
     end
+    object mGuestsPersonsProfilesId: TIntegerField
+      FieldName = 'PersonsProfilesId'
+    end
   end
   object mGuestsDS: TDataSource
     DataSet = mGuests
@@ -3453,6 +3618,7 @@ object frmReservationProfile: TfrmReservationProfile
   object mGuestRooms: TdxMemData
     Indexes = <>
     SortOptions = []
+    AfterScroll = mGuestRoomsAfterScroll
     Left = 56
     Top = 440
     object mGuestRoomsReservation: TIntegerField
@@ -3527,6 +3693,9 @@ object frmReservationProfile: TfrmReservationProfile
     object mGuestRoomsStatusText: TWideStringField
       FieldName = 'StatusText'
       Size = 25
+    end
+    object mGuestRoomsPersonsProfilesId: TIntegerField
+      FieldName = 'PersonsProfilesId'
     end
   end
   object mRoomsDS: TDataSource
@@ -3636,6 +3805,9 @@ object frmReservationProfile: TfrmReservationProfile
     object mAllGuestsStatusText: TWideStringField
       FieldName = 'StatusText'
       Size = 25
+    end
+    object mAllGuestsPersonsProfilesId: TIntegerField
+      FieldName = 'PersonsProfilesId'
     end
   end
   object mAllGuestsDS: TDataSource

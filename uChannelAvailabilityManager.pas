@@ -1974,52 +1974,57 @@ var i : integer;
 begin
   if list.Count > 0 then
   begin
-    sql := format('UPDATE %s cr JOIN (', [tableName]);
-    for i := 0 to list.Count - 1 do
-      if i=0 then
-      sql := sql + list[i] + #10
-    else
-      sql := sql + format('%s %s', ['UNION ALL', list[i]]) + #10;
-
-    sql := sql + ') vals ON cr.Id = vals._Id ' + #10 +
-                 'SET dirty=IF(vals._dirty=1, vals._dirty, dirty), ' + #10 +
-                 '    price=IF(vals._dirty=1, vals._price, price), ' + #10 +
-
-//                 '    availabilityDirty=IF(vals._availabilityDirty=1, vals._availabilityDirty, availabilityDirty), ' + #10 +
-//                 '    availability=IF(vals._availabilityDirty=1, vals._availability, availability), ' + #10 +
-
-                 '    minStayDirty=IF(vals._minStayDirty=1, vals._minStayDirty, minStayDirty), ' + #10 +
-                 '    minStay=IF(vals._minStayDirty=1, vals._minStay, minStay), ' + #10 +
-
-                 '    maxStayDirty=IF(vals._maxStayDirty=1, vals._maxStayDirty, maxStayDirty), ' + #10 +
-                 '    maxStay=IF(vals._maxStayDirty=1, vals._maxStay, maxStay), ' + #10 +
-
-                 '    closedOnArrivalDirty=IF(vals._closedOnArrivalDirty=1, vals._closedOnArrivalDirty, closedOnArrivalDirty), ' + #10 +
-                 '    closedOnArrival=IF(vals._closedOnArrivalDirty=1, vals._closedOnArrival, closedOnArrival), ' + #10 +
-
-                 '    closedOnDepartureDirty=IF(vals._closedOnDepartureDirty=1, vals._closedOnDepartureDirty, closedOnDepartureDirty), ' + #10 +
-                 '    closedOnDeparture=IF(vals._closedOnDepartureDirty=1, vals._closedOnDeparture, closedOnDeparture), ' + #10 +
-
-                 '    stopDirty=IF(vals._stopDirty=1, vals._stopDirty, stopDirty), ' + #10 +
-                 '    stop=IF(vals._stopDirty=1, vals._stop, stop), ' + #10 +
-
-                 '    lengthOfStayArrivalDateBasedDirty=IF(vals._lengthOfStayArrivalDateBasedDirty=1, vals._lengthOfStayArrivalDateBasedDirty, lengthOfStayArrivalDateBasedDirty), ' + #10 +
-                 '    lengthOfStayArrivalDateBased=IF(vals._lengthOfStayArrivalDateBasedDirty=1, vals._lengthOfStayArrivalDateBased, lengthOfStayArrivalDateBased), ' + #10 +
-
-                 '    singleUsePriceDirty=IF(vals._singleUsePriceDirty=1, vals._singleUsePriceDirty, singleUsePriceDirty), ' + #10 +
-                 '    singleUsePrice=IF(vals._singleUsePriceDirty=1, vals._singleUsePrice, singleUsePrice); ';
-
-    CopyToClipboard(sql);
-    RoomerDataSet.DoCommand(sql);
-    commands := TList<String>.Create;
+    RoomerDataSet.SystemStartTransaction;
     try
-      commands.Add('update channelrates set maxStayDirty = 0 where maxStayDirty != 0 AND maxStay < minstay;');
-      commands.Add('update channelrates set singleUsePriceDirty = 0 where singleUsePriceDirty != 0 AND singleUsePrice = 0;');
-      RoomerDataSet.SystemFreeExecuteMultiple(commands);
-    finally
-      commands.Free;
+      commands := TList<String>.Create;
+      try
+        sql := format('UPDATE %s cr JOIN (', [tableName]);
+        for i := 0 to list.Count - 1 do
+          if i=0 then
+          sql := sql + list[i] + #10
+        else
+          sql := sql + format('%s %s', ['UNION ALL', list[i]]) + #10;
+
+        sql := sql + ') vals ON cr.Id = vals._Id ' + #10 +
+                     'SET dirty=IF(vals._dirty=1, vals._dirty, dirty), ' + #10 +
+                     '    price=IF(vals._dirty=1, vals._price, price), ' + #10 +
+
+                     '    minStayDirty=IF(vals._minStayDirty=1, vals._minStayDirty, minStayDirty), ' + #10 +
+                     '    minStay=IF(vals._minStayDirty=1, vals._minStay, minStay), ' + #10 +
+
+                     '    maxStayDirty=IF(vals._maxStayDirty=1, vals._maxStayDirty, maxStayDirty), ' + #10 +
+                     '    maxStay=IF(vals._maxStayDirty=1, vals._maxStay, maxStay), ' + #10 +
+
+                     '    closedOnArrivalDirty=IF(vals._closedOnArrivalDirty=1, vals._closedOnArrivalDirty, closedOnArrivalDirty), ' + #10 +
+                     '    closedOnArrival=IF(vals._closedOnArrivalDirty=1, vals._closedOnArrival, closedOnArrival), ' + #10 +
+
+                     '    closedOnDepartureDirty=IF(vals._closedOnDepartureDirty=1, vals._closedOnDepartureDirty, closedOnDepartureDirty), ' + #10 +
+                     '    closedOnDeparture=IF(vals._closedOnDepartureDirty=1, vals._closedOnDeparture, closedOnDeparture), ' + #10 +
+
+                     '    stopDirty=IF(vals._stopDirty=1, vals._stopDirty, stopDirty), ' + #10 +
+                     '    stop=IF(vals._stopDirty=1, vals._stop, stop), ' + #10 +
+
+                     '    lengthOfStayArrivalDateBasedDirty=IF(vals._lengthOfStayArrivalDateBasedDirty=1, vals._lengthOfStayArrivalDateBasedDirty, lengthOfStayArrivalDateBasedDirty), ' + #10 +
+                     '    lengthOfStayArrivalDateBased=IF(vals._lengthOfStayArrivalDateBasedDirty=1, vals._lengthOfStayArrivalDateBased, lengthOfStayArrivalDateBased), ' + #10 +
+
+                     '    singleUsePriceDirty=IF(vals._singleUsePriceDirty=1, vals._singleUsePriceDirty, singleUsePriceDirty), ' + #10 +
+                     '    singleUsePrice=IF(vals._singleUsePriceDirty=1, vals._singleUsePrice, singleUsePrice); ';
+
+        CopyToClipboard(sql);
+        commands.Add(sql);
+        commands.Add('update channelrates set maxStayDirty = 0 where maxStayDirty != 0 AND maxStay < minstay;');
+        commands.Add('update channelrates set singleUsePriceDirty = 0 where singleUsePriceDirty != 0 AND singleUsePrice = 0;');
+        RoomerDataSet.SystemFreeExecuteMultiple(commands);
+      finally
+        commands.Free;
+      end;
+      list.Clear;
+
+      RoomerDataSet.SystemCommitTransaction;
+
+    except
+      RoomerDataSet.SystemRollbackTransaction;
     end;
-    list.Clear;
   end;
 end;
 
@@ -2802,11 +2807,11 @@ begin
       grid.ColCount := FCurrentNumDays + 2;
       iRow := 0;
 {$IFDEF DEBUG}
-      StartTimer(ReadTime);
+//      StartTimer(ReadTime);
 {$ENDIF}
       ASet := RoomerDataSet.ActivateNewDataset(RoomerDataSet.SystemGetAvailabilities(startDate, NUMBER_OF_DAYS_DISPLAYED, cmId, pcId));
 {$IFDEF DEBUG}
-      EndTimer(ReadTime, lblReadTime);
+//      EndTimer(ReadTime, lblReadTime);
 {$ENDIF}
 {$IFDEF DEBUG}
       StartTimer(DrawTime);

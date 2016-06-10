@@ -1230,6 +1230,7 @@ select_ReservationProfile_guestRoomsSQL : string =
 '   , rooms.Floor '+
 '   , rooms.Location '+
 '   , locations.Description AS LocationDescription '+
+'   , persons.PersonsProfilesId '+
 ' FROM '+
 '   locations '+
 '   RIGHT OUTER JOIN '+
@@ -1238,7 +1239,9 @@ select_ReservationProfile_guestRoomsSQL : string =
 '     roomtypes ON rooms.RoomType = roomtypes.RoomType '+
 '   RIGHT OUTER JOIN '+
 '     roomreservations ON rooms.Room = roomreservations.Room '+
-'   WHERE Reservation =%d '+
+'   JOIN '+
+'     persons ON persons.RoomReservation = roomreservations.RoomReservation AND MainName=1 '+
+'   WHERE roomreservations.Reservation =%d '+
 '   ORDER BY roomreservations.Room ';
 
 
@@ -1247,6 +1250,7 @@ select_ReservationProfile_guestRoomsSQL : string =
 select_ReservationProfile_guestsSQL : string =
 ' SELECT '+
 '      Person '+
+'    , PersonsProfilesId '+
 '    , RoomReservation '+
 '    , Reservation '+
 '    , Name As GuestName'+
@@ -1281,6 +1285,7 @@ select_ReservationProfile_allGuestsSQL : string =
 '   , rooms.Location '+
 '   , locations.Description AS LocationDescription '+
 '   , persons.Person '+
+'   , persons.PersonsProfilesId '+
 '   , persons.RoomReservation '+
 '   , persons.Reservation '+
 '   , persons.Name AS GuestName '+
@@ -6196,6 +6201,7 @@ begin
 
   s := s+'  FROM '+#10;
   s := s+'     roomreservations rr '+#10;
+  s := s+'  JOIN (SELECT DISTINCT RoomReservation FROM roomsdate WHERE RoomReservation=%d OR PaidBy=%d) RoomReses ON rr.RoomReservation = RoomReses.RoomReservation ';
   s := s+'  LEFT OUTER JOIN ' +#10;
   s := s+'    roomtypes rt ON rt.RoomType = rr.RoomType ' +#10;
   s := s+'  LEFT OUTER JOIN ' +#10;
@@ -6259,7 +6265,12 @@ begin
     S := Format(S, ['Reservation','Reservation']) + ' Reservation=%d AND InvoiceIndex=' + inttostr(InvoiceIndex) + ' ' +#10;    // inttostr(publicReservation) + ' '+chr(10);
   end else
   begin
-    S := Format(S, ['RoomReservation', 'RoomReservation']) + ' RoomReservation=%d AND InvoiceIndex= ' + inttostr(InvoiceIndex) + ' ' +#10  //inttostr(FRoomReservation)+chr(10);
+//    S := Format(S, ['RoomReservation', 'RoomReservation']) + ' RoomReservation=%d AND InvoiceIndex= ' + inttostr(InvoiceIndex) + ' ' +#10  //inttostr(FRoomReservation)+chr(10);
+    S := Format(S, ['RoomReservation', 'RoomReservation']) +
+         ' RoomReservation IN (SELECT rd.RoomReservation ' +
+         ' FROM roomsdate rd JOIN roomreservations rr ON rr.RoomReservation=rd.RoomReservation ' +
+         ' WHERE (PaidBy=%d OR rd.RoomReservation=%d) ' +
+         ' AND rr.InvoiceIndex = ' + inttostr(InvoiceIndex) + ') ' + #13;
   end;
   result := s;
 end;

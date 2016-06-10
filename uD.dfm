@@ -504,7 +504,7 @@ object d: Td
     Indexes = <>
     SortOptions = []
     Left = 432
-    Top = 32
+    Top = 40
     object IntegerField1: TIntegerField
       FieldName = 'ID'
     end

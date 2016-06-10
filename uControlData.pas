@@ -1489,6 +1489,9 @@ begin
   except
   end;
 
+  // RequireExactClosingPayment
+
+
   edtRIIndexRoomRent.Value := rSethotelconfigurations.FieldByName('RoomInvoiceRoomRentIndex').AsInteger + 1;
   edtRIIndexPosItems.Value := rSethotelconfigurations.FieldByName('RoomInvoicePosItemIndex').AsInteger + 1;
   edtGIIndexRoomRent.Value := rSethotelconfigurations.FieldByName('GroupInvoiceRoomRentIndex').AsInteger + 1;
@@ -1966,6 +1969,8 @@ begin
     rSethotelconfigurations.fieldbyname('RequireExactClosingPayment').AsBoolean := cbxRequireExactClosingPayment.Checked;
   except
   end;
+
+  // RequireExactClosingPayment
 
   try
     rSethotelconfigurations.FieldByName('forceExternalCustomerIdCorrectness').AsBoolean := chkforceExternalCustomerIdCorrectness.Checked;
