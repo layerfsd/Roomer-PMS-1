@@ -258,23 +258,25 @@ begin
   TableRefreshSet := CreateNewDataSet;
   try
     TableRefreshSet.RoomerDataSet := nil;
-    TableRefreshSet.GetTableUpdateTimeStamps;
-    TableRefreshSet.First;
-    if not TableRefreshSet.Eof then
+    if TableRefreshSet.GetTableUpdateTimeStamps then
     begin
-      for i := 0 to TableRefreshSet.Fields.Count - 1 do
+      TableRefreshSet.First;
+      if not TableRefreshSet.Eof then
       begin
-        key := TableRefreshSet.Fields[i].FieldName;
-        if TableStatusses.ContainsKey(key) then
+        for i := 0 to TableRefreshSet.Fields.Count - 1 do
         begin
-          TableStatusses.TryGetValue(key, datePair);
-          datePair.newDate := TableRefreshSet.fieldByName(key).AsDateTime;
-        end
-        else begin
-          datePair := TDatePair.Create;
-          datePair.oldDate := TableRefreshSet.fieldByName(key).AsDateTime;
-          datePair.newDate := TableRefreshSet.fieldByName(key).AsDateTime;
-          TableStatusses.Add(key, datePair);
+          key := TableRefreshSet.Fields[i].FieldName;
+          if TableStatusses.ContainsKey(key) then
+          begin
+            TableStatusses.TryGetValue(key, datePair);
+            datePair.newDate := TableRefreshSet.fieldByName(key).AsDateTime;
+          end
+          else begin
+            datePair := TDatePair.Create;
+            datePair.oldDate := TableRefreshSet.fieldByName(key).AsDateTime;
+            datePair.newDate := TableRefreshSet.fieldByName(key).AsDateTime;
+            TableStatusses.Add(key, datePair);
+          end;
         end;
       end;
     end;

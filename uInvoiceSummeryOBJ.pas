@@ -977,7 +977,6 @@ begin
   Payment.FpmTypeIndex   := pmTypeIndex;
 
   result := FPaymentList.Add(Payment);
-
 end;
 
 // --- Payments
@@ -1567,13 +1566,13 @@ begin
     freeandnil(rSet);
   end;
 
-
   if FKreditType = ktKredit then
   begin
     FinvTxtHeadPrePaid    := '';
     FinvTxtHeadBalance    := '';
     FivhTotal_prePaid := 0;
     FivhTotal_Balance := 0;
+
     exit;
   end;
 
@@ -1608,8 +1607,6 @@ begin
   finally
     freeandnil(rSet);
   end;
-
-
 
 end;
 
