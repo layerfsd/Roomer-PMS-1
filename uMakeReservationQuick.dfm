@@ -2,7 +2,7 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
   Left = 549
   Top = 309
   Caption = 'New reservation'
-  ClientHeight = 618
+  ClientHeight = 677
   ClientWidth = 1108
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -22,7 +22,7 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
     Left = 0
     Top = 0
     Width = 1108
-    Height = 513
+    Height = 572
     ActivePage = tabRoomRates
     Align = alClient
     TabOrder = 0
@@ -30,13 +30,11 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
     SkinData.SkinSection = 'PAGECONTROL'
     object taReservation: TsTabSheet
       Caption = 'Reservation'
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
       object panTop: TsPanel
         Left = 0
         Top = 0
         Width = 1100
-        Height = 485
+        Height = 544
         Align = alClient
         TabOrder = 0
         SkinData.SkinSection = 'PANEL'
@@ -44,16 +42,16 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
           Left = 1
           Top = 1
           Width = 503
-          Height = 483
+          Height = 542
           Align = alLeft
           TabOrder = 0
           SkinData.SkinSection = 'PANEL'
           object gbxGetCustomer: TsGroupBox
             AlignWithMargins = True
             Left = 6
-            Top = 101
+            Top = 115
             Width = 491
-            Height = 68
+            Height = 82
             Margins.Left = 5
             Margins.Top = 2
             Margins.Right = 5
@@ -196,9 +194,9 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
           object gbxGetReservation: TsGroupBox
             AlignWithMargins = True
             Left = 6
-            Top = 173
+            Top = 201
             Width = 491
-            Height = 180
+            Height = 164
             Margins.Left = 5
             Margins.Top = 2
             Margins.Right = 5
@@ -517,7 +515,7 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
             Left = 6
             Top = 3
             Width = 491
-            Height = 94
+            Height = 108
             Margins.Left = 5
             Margins.Top = 2
             Margins.Right = 5
@@ -679,9 +677,9 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
           object gbxRate: TsGroupBox
             AlignWithMargins = True
             Left = 6
-            Top = 360
+            Top = 372
             Width = 491
-            Height = 117
+            Height = 164
             Margins.Left = 5
             Margins.Top = 5
             Margins.Right = 5
@@ -962,7 +960,7 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
           Left = 504
           Top = 1
           Width = 595
-          Height = 483
+          Height = 542
           ActivePage = tabContactDetails
           Align = alClient
           TabOrder = 1
@@ -971,22 +969,35 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
             Caption = 'Contact Details'
             ImageIndex = 2
             TabVisible = False
-            SkinData.CustomColor = False
-            SkinData.CustomFont = False
             object sPanel3: TsPanel
               Left = 0
               Top = 0
               Width = 587
-              Height = 473
+              Height = 532
               Align = alClient
               TabOrder = 0
               SkinData.SkinSection = 'PANEL'
+              object AdvSplitter1: TAdvSplitter
+                Left = 257
+                Top = 275
+                Height = 256
+                Appearance.BorderColor = clNone
+                Appearance.BorderColorHot = clNone
+                Appearance.Color = clWhite
+                Appearance.ColorTo = clSilver
+                Appearance.ColorHot = clWhite
+                Appearance.ColorHotTo = clGray
+                GripStyle = sgDots
+                ExplicitLeft = 304
+                ExplicitTop = 320
+                ExplicitHeight = 100
+              end
               object gbxContact: TsGroupBox
                 AlignWithMargins = True
                 Left = 6
                 Top = 3
                 Width = 575
-                Height = 299
+                Height = 270
                 Margins.Left = 5
                 Margins.Top = 2
                 Margins.Right = 5
@@ -1099,7 +1110,7 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
                 end
                 object lbContactCountry: TsLabel
                   Left = 328
-                  Top = 273
+                  Top = 245
                   Width = 46
                   Height = 13
                   Alignment = taRightJustify
@@ -1114,7 +1125,7 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
                 end
                 object sSpeedButton4: TsSpeedButton
                   Left = 531
-                  Top = 270
+                  Top = 242
                   Width = 23
                   Height = 21
                   Caption = '...'
@@ -1124,7 +1135,7 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
                 end
                 object lbContactCountryName: TsLabel
                   Left = 567
-                  Top = 273
+                  Top = 245
                   Width = 4
                   Height = 13
                   Caption = '-'
@@ -1292,7 +1303,7 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
                 end
                 object edContactCountry: TsEdit
                   Left = 380
-                  Top = 270
+                  Top = 242
                   Width = 150
                   Height = 21
                   CharCase = ecUpperCase
@@ -1346,34 +1357,167 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
                   ImgUnchecked = 0
                 end
               end
-              object gbxCustomerAlert: TsGroupBox
+              object gbxProfileAlert: TsGroupBox
                 AlignWithMargins = True
-                Left = 6
-                Top = 306
-                Width = 575
-                Height = 164
+                Left = 265
+                Top = 277
+                Width = 316
+                Height = 252
                 Margins.Left = 5
                 Margins.Top = 2
                 Margins.Right = 5
                 Margins.Bottom = 2
                 Align = alClient
-                Caption = 'Customer Alert'
+                Caption = 'Guest profile notes and preferences'
                 TabOrder = 1
+                OnClick = gbxProfileAlertClick
+                SkinData.SkinSection = 'GROUPBOX'
+                Checked = False
+                object lblSpecialRequests: TsLabel
+                  Left = 2
+                  Top = 15
+                  Width = 312
+                  Height = 13
+                  Align = alTop
+                  Caption = 'Special Requests'
+                  ExplicitWidth = 81
+                end
+                object lblNotes: TsLabel
+                  Left = 2
+                  Top = 101
+                  Width = 312
+                  Height = 13
+                  Align = alTop
+                  Caption = 'Notes'
+                  ExplicitWidth = 28
+                end
+                object edtSpecialRequests: TMemo
+                  AlignWithMargins = True
+                  Left = 7
+                  Top = 33
+                  Width = 302
+                  Height = 63
+                  Margins.Left = 5
+                  Margins.Top = 5
+                  Margins.Right = 5
+                  Margins.Bottom = 5
+                  Align = alTop
+                  Color = clWhite
+                  Font.Charset = DEFAULT_CHARSET
+                  Font.Color = clRed
+                  Font.Height = -11
+                  Font.Name = 'Tahoma'
+                  Font.Style = []
+                  ParentFont = False
+                  ReadOnly = True
+                  ScrollBars = ssVertical
+                  TabOrder = 0
+                end
+                object edtNotes: TMemo
+                  AlignWithMargins = True
+                  Left = 7
+                  Top = 119
+                  Width = 302
+                  Height = 66
+                  Margins.Left = 5
+                  Margins.Top = 5
+                  Margins.Right = 5
+                  Margins.Bottom = 5
+                  Align = alTop
+                  Color = clWhite
+                  Font.Charset = DEFAULT_CHARSET
+                  Font.Color = clRed
+                  Font.Height = -11
+                  Font.Name = 'Tahoma'
+                  Font.Style = []
+                  ParentFont = False
+                  ReadOnly = True
+                  ScrollBars = ssVertical
+                  TabOrder = 1
+                end
+                object gbxRoomAlert: TsGroupBox
+                  Left = 2
+                  Top = 190
+                  Width = 312
+                  Height = 105
+                  Align = alTop
+                  TabOrder = 2
+                  Checked = False
+                  object lblRoomType: TsLabel
+                    Left = 7
+                    Top = 43
+                    Width = 52
+                    Height = 13
+                    Caption = 'Room type'
+                  end
+                  object lblRoom: TsLabel
+                    Left = 7
+                    Top = 18
+                    Width = 27
+                    Height = 13
+                    Caption = 'Room'
+                  end
+                  object edtRoom: TsEdit
+                    Left = 191
+                    Top = 13
+                    Width = 116
+                    Height = 21
+                    Color = clWhite
+                    Font.Charset = DEFAULT_CHARSET
+                    Font.Color = clRed
+                    Font.Height = -11
+                    Font.Name = 'Tahoma'
+                    Font.Style = []
+                    ParentFont = False
+                    ReadOnly = True
+                    TabOrder = 0
+                    SkinData.CustomFont = True
+                  end
+                  object edtRoomType: TsEdit
+                    Left = 192
+                    Top = 38
+                    Width = 116
+                    Height = 21
+                    Color = clWhite
+                    Font.Charset = DEFAULT_CHARSET
+                    Font.Color = clRed
+                    Font.Height = -11
+                    Font.Name = 'Tahoma'
+                    Font.Style = []
+                    ParentFont = False
+                    ReadOnly = True
+                    TabOrder = 1
+                    SkinData.CustomFont = True
+                  end
+                end
+              end
+              object gbxCustomerAlert: TsGroupBox
+                AlignWithMargins = True
+                Left = 6
+                Top = 277
+                Width = 246
+                Height = 252
+                Margins.Left = 5
+                Margins.Top = 2
+                Margins.Right = 5
+                Margins.Bottom = 2
+                Align = alLeft
+                Caption = 'Customer Alert'
+                TabOrder = 2
                 SkinData.SkinSection = 'GROUPBOX'
                 Checked = False
                 object memCustomerAlert: TMemo
                   AlignWithMargins = True
                   Left = 7
                   Top = 20
-                  Width = 561
-                  Height = 137
+                  Width = 232
+                  Height = 225
                   Margins.Left = 5
                   Margins.Top = 5
                   Margins.Right = 5
                   Margins.Bottom = 5
                   Align = alClient
-                  BorderStyle = bsNone
-                  Enabled = False
+                  Color = clWhite
                   ReadOnly = True
                   ScrollBars = ssVertical
                   TabOrder = 0
@@ -1385,8 +1529,6 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
             Caption = 'Customer Details'
             ImageIndex = 1
             TabVisible = False
-            SkinData.CustomColor = False
-            SkinData.CustomFont = False
             object clabTel2: TsLabel
               Left = 204
               Top = 125
@@ -1405,7 +1547,7 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
               Left = 0
               Top = 0
               Width = 587
-              Height = 473
+              Height = 532
               Align = alClient
               TabOrder = 0
               SkinData.SkinSection = 'PANEL'
@@ -1675,8 +1817,6 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
     object tabSelectType: TsTabSheet
       Caption = 'Select Types'
       ImageIndex = 1
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
       object panSelectTypesTop: TsPanel
         Left = 0
         Top = 0
@@ -1814,7 +1954,7 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
         Left = 0
         Top = 72
         Width = 609
-        Height = 413
+        Height = 472
         Align = alLeft
         TabOrder = 1
         LookAndFeel.NativeStyle = True
@@ -1929,7 +2069,7 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
         Left = 609
         Top = 72
         Width = 491
-        Height = 413
+        Height = 472
         Align = alClient
         TabOrder = 2
         SkinData.SkinSection = 'PANEL'
@@ -1938,8 +2078,6 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
     object tabSelectRooms: TsTabSheet
       Caption = 'Select Rooms'
       ImageIndex = 2
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
       object panSelectRoomsTop: TsPanel
         Left = 0
         Top = 0
@@ -2061,7 +2199,7 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
         Left = 0
         Top = 65
         Width = 1100
-        Height = 420
+        Height = 479
         Align = alClient
         TabOrder = 1
         LookAndFeel.NativeStyle = True
@@ -2330,8 +2468,6 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
     object tabRoomRates: TsTabSheet
       Caption = 'Room Rates'
       ImageIndex = 3
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
       object panTopRoomRates: TsPanel
         Left = 0
         Top = 0
@@ -2481,8 +2617,6 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
           SkinData.SkinSection = 'PAGECONTROL'
           object sTabSheet1: TsTabSheet
             Caption = 'Extra'
-            SkinData.CustomColor = False
-            SkinData.CustomFont = False
             object sPanel2: TsPanel
               Left = -2
               Top = 0
@@ -2653,8 +2787,6 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
           end
           object Alerts: TsTabSheet
             Caption = 'Alerts'
-            SkinData.CustomColor = False
-            SkinData.CustomFont = False
           end
         end
       end
@@ -2662,10 +2794,11 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
         Left = 0
         Top = 140
         Width = 1100
-        Height = 345
+        Height = 404
         Align = alClient
         TabOrder = 1
         LookAndFeel.NativeStyle = False
+        ExplicitLeft = -1
         object tvRoomRes: TcxGridDBTableView
           Navigator.Buttons.CustomButtons = <>
           Navigator.InfoPanel.Visible = True
@@ -3052,7 +3185,7 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
   end
   object panBottom: TsPanel
     Left = 0
-    Top = 585
+    Top = 644
     Width = 1108
     Height = 33
     Align = alBottom
@@ -3120,7 +3253,7 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
   end
   object Panel5: TsPanel
     Left = 0
-    Top = 513
+    Top = 572
     Width = 1108
     Height = 72
     Align = alBottom

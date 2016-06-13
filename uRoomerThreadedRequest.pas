@@ -210,7 +210,7 @@ begin
   FreeAndNil(FRecordSet);
   FRoomerDataSet.CommandType := cmdText;
   FRoomerDataSet.CommandText := aCommand;
-  FRoomerDataSet.Open(false);
+  FRoomerDataSet.Open(false, true, true);
   FRecordSet := FRoomerDataSet.RecordSet; // keep recordset
 end;
 

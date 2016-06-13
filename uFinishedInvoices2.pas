@@ -1064,7 +1064,7 @@ end;
 
 procedure TfrmFinishedInvoices2.LMDSpeedButton2Click(Sender: TObject);
 begin
-  d.InsertMTdata(zInvoiceNumber,true,false,false);
+  // d.InsertMTdata(zInvoiceNumber,true,false,false);
 end;
 
 function TfrmFinishedInvoices2.frxMailExport1SendMail(const Server: string; const Port: Integer; const UserField, PasswordField: string; FromField, ToField, SubjectField, CompanyField, TextField: WideString; FileNames: TStringList; Timeout: Integer;

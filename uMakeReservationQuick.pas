@@ -139,7 +139,7 @@ uses
   system.Generics.Collections,
   uDynamicRates,
   sListView,
-  cxTimeEdit
+  cxTimeEdit, AdvSplitter
     ;
 
 TYPE
@@ -280,7 +280,7 @@ type
     sPanel3: TsPanel;
     gbxContact: TsGroupBox;
     clabContactPerson: TsLabel;
-    gbxCustomerAlert: TsGroupBox;
+    gbxProfileAlert: TsGroupBox;
     timAlert: TTimer;
     tvRoomResColumn1: TcxGridDBColumn;
     tvRoomResPriceCode: TcxGridDBColumn;
@@ -453,7 +453,7 @@ type
     edContactFax: TsEdit;
     clabContactEmail: TsLabel;
     edContactEmail: TsEdit;
-    memCustomerAlert: TMemo;
+    edtSpecialRequests: TMemo;
     clabGuestCountry: TsLabel;
     edCountry: TsEdit;
     sSpeedButton1: TsSpeedButton;
@@ -601,6 +601,17 @@ type
     cbxExtraBedGrp: TsCheckBox;
     Alerts: TsTabSheet;
     __tvRoomResColumn2: TcxGridDBColumn;
+    AdvSplitter1: TAdvSplitter;
+    gbxCustomerAlert: TsGroupBox;
+    memCustomerAlert: TMemo;
+    lblSpecialRequests: TsLabel;
+    lblNotes: TsLabel;
+    edtNotes: TMemo;
+    gbxRoomAlert: TsGroupBox;
+    lblRoomType: TsLabel;
+    lblRoom: TsLabel;
+    edtRoom: TsEdit;
+    edtRoomType: TsEdit;
     tvRoomResExpectedTimeOfArrival: TcxGridDBColumn;
     tvRoomResexpectedCheckouttime: TcxGridDBColumn;
     mRoomResExpectedTimeOfArrival: TStringField;
@@ -704,7 +715,8 @@ type
     procedure tvSelectTypeNoRoomsPropertiesChange(Sender: TObject);
     procedure tvSelectTypeNoRoomsStylesGetContentStyle(Sender: TcxCustomGridTableView; ARecord: TcxCustomGridRecord;
       AItem: TcxCustomGridTableItem; var AStyle: TcxStyle);
-    procedure __tvRoomResColumn2PropertiesButtonClick(Sender: TObject; AButtonIndex: integer);
+    procedure __tvRoomResColumn2PropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
+    procedure gbxProfileAlertClick(Sender: TObject);
     procedure GetLocaTimeEditProperties(Sender: TcxCustomGridTableItem; ARecord: TcxCustomGridRecord;
       var AProperties: TcxCustomEditProperties);
     procedure FormatTextToShortFormat(Sender: TcxCustomGridTableItem; ARecord: TcxCustomGridRecord;
@@ -771,9 +783,10 @@ type
     procedure FillQuickFind;
     procedure ShowhideExtraInputs;
     procedure ShowRatePlans;
-    procedure PopulateRatePlanCombo(clearAll: boolean = true);
-    function SetOnePrice(RoomReservation: integer; rateId: String; channelId: integer): boolean;
-    property OutOfOrderBlocking: boolean read FOutOfOrderBlocking write SetOutOfOrderBlocking;
+    procedure PopulateRatePlanCombo(clearAll : Boolean = True);
+    function SetOnePrice(RoomReservation: Integer; rateId: String; channelId: Integer): boolean;
+    procedure SetProfileAlertVisibility;
+    property OutOfOrderBlocking : Boolean read FOutOfOrderBlocking write SetOutOfOrderBlocking;
 
   public
     { Public declarations }
@@ -1086,6 +1099,13 @@ begin
       edContactPhone.Text := s;
       edContactFax.Text := glb.PersonProfiles['TelFax'];
       edContactEmail.Text := glb.PersonProfiles['Email'];
+
+      edtSpecialRequests.Text := glb.PersonProfiles['Preparation'];
+      edtNotes.Text := glb.PersonProfiles['Information'];
+      edtRoom.Text := glb.PersonProfiles['Room'];
+      edtRoomType.Text := glb.PersonProfiles['RoomType'];
+
+      SetProfileAlertVisibility;
     end;
   end;
 end;
@@ -1320,9 +1340,14 @@ begin
   FrmAlertPanel.PlaceEditPanel(Alerts, FNewReservation.AlertList);
 end;
 
-/// ////////////////////////////////////////////////////////////////////////////////////////
-// RoomRes grid and table
-/// ////////////////////////////////////////////////////////////////////////////////////////
+procedure TfrmMakeReservationQuick.gbxProfileAlertClick(Sender: TObject);
+begin
+
+end;
+
+///////////////////////////////////////////////////////////////////////////////////////////
+//  RoomRes grid and table
+///////////////////////////////////////////////////////////////////////////////////////////
 
 procedure TfrmMakeReservationQuick.timNewTimer(Sender: TObject);
 begin
@@ -2535,7 +2560,37 @@ begin
       if glb.LocateSpecificRecordAndGetValue('countries', 'Country', edContactCountry.Text, 'CountryName', sName) then
         lbContactCountryName.Caption := sName;
 
+      edtSpecialRequests.Text := glb.PersonProfiles['Preparation'];
+      edtNotes.Text := glb.PersonProfiles['Information'];
+      edtRoom.Text := glb.PersonProfiles['Room'];
+      edtRoomType.Text := glb.PersonProfiles['RoomType'];
+
+      SetProfileAlertVisibility;
     end;
+  end;
+end;
+
+procedure TfrmMakeReservationQuick.SetProfileAlertVisibility;
+begin
+  gbxProfileAlert.Visible := TRIM(edtSpecialRequests.Text + edtNotes.Text +
+                                  edtRoom.Text + edtRoomType.Text) <> '';
+  gbxRoomAlert.Visible := TRIM(edtRoom.Text + edtRoomType.Text) <> '';
+  if gbxProfileAlert.Visible then
+  begin
+    edtSpecialRequests.Font.Color := clRed;
+    edtNotes.Font.Color := clRed;
+
+    lblSpecialRequests.Visible := (edtSpecialRequests.Text) <> '';
+    edtSpecialRequests.Visible := (edtSpecialRequests.Text) <> '';
+
+    lblNotes.Visible := (edtNotes.Text) <> '';
+    edtNotes.Visible := (edtNotes.Text) <> '';
+
+    lblRoom.Visible := (edtRoom.Text) <> '';
+    edtRoom.Visible := (edtRoom.Text) <> '';
+
+    lblRoomType.Visible := (edtRoomType.Text) <> '';
+    edtRoomType.Visible := (edtRoomType.Text) <> '';
   end;
 end;
 

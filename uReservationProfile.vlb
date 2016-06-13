@@ -28,9 +28,6 @@ Coordinates=187,1948,77,51
 [btnAddRoom]
 Coordinates=711,1681,79,51
 
-[grGuests]
-Coordinates=222,2108,59,33
-
 [TabSheet5]
 Coordinates=84,2108,66,33
 
@@ -155,5 +152,5 @@ Coordinates=420,71,108,429
 Coordinates=69,1948,47,51
 
 []
-Coordinates=505,2179,81,33
+Coordinates=222,2108,59,33
 

@@ -231,6 +231,8 @@ type
     function GetParameterTypeName(param: TRoomerOfflineAssertonParameter): String;
     procedure DoSessionExpired;
     procedure SetSpecificOpenApiAuthHeaders(hdrs: TAlHttpRequestHeader; AppKey, ApplicationId, AppSecret: String; tim : Extended);
+    function downloadUrlAsStringUsingPostThreaded(url: String; Data: String; SetLastAccess: Boolean = true; loggingInOut: Integer = 0 { 0/1/2 = neither/login/logout }; contentType: String = ''): String;
+    function FreeQueryThreaded(query : String; SetLastAccess : boolean = true): String;
   protected
     { Protected declarations }
     FUsername: String;
@@ -250,9 +252,9 @@ type
     procedure OpenDataset(SqlResult: String);
     procedure DoQuery(aSql: String);
     function DoCommand(aSql: String; async : Boolean = false): Integer;
-    procedure Open(doLowerCase: Boolean = true; setLastAccess: Boolean = true);
+    procedure Open(doLowerCase: Boolean = true; setLastAccess: Boolean = true; Threaded: Boolean = False);
     procedure GetMessages;
-    procedure GetTableUpdateTimeStamps;
+    function GetTableUpdateTimeStamps : boolean;
 
     function PutData(url, Data : String) : String;
     function PostData(url, Data : String) : String;
@@ -312,9 +314,9 @@ type
     function DownloadFileResourceOpenAPI(URI, destFilename: String): Boolean;
     function HeadOfURI(URI: String): TALHTTPResponseHeader;
 
-    function queryRoomer(aSql: String; SetLastAccess: Boolean = true): String;
+    function queryRoomer(aSql: String; SetLastAccess: Boolean = true; Threaded : Boolean = False): String;
     function downloadUrlAsString(url: String; loggingInOut: Integer = 0;
-      SetLastAccess: Boolean = true; contentType: String = ''): String;
+      SetLastAccess: Boolean = true; contentType: String = ''; RaiseException : Boolean = False): String;
     function downloadUrlAsStringUsingPost(url: String; Data: String;
       SetLastAccess: Boolean = true;
       loggingInOut: Integer = 0 { 0/1/2 = neither/login/logout }
@@ -604,7 +606,7 @@ begin
   end;
 end;
 
-procedure TRoomerDataSet.Open(doLowerCase: Boolean = true; setLastAccess: Boolean = true);
+procedure TRoomerDataSet.Open(doLowerCase: Boolean = true; setLastAccess: Boolean = true; Threaded: Boolean = False);
 var
   sqlCommand, SqlResult: String;
 begin
@@ -612,7 +614,7 @@ begin
     sqlCommand := LowerCase(Sql.Text)
   else
     sqlCommand := Sql.Text;
-  SqlResult := queryRoomer(sqlCommand, setLastAccess);
+  SqlResult := queryRoomer(sqlCommand, setLastAccess, Threaded);
   OpenDataset(SqlResult);
 end;
 
@@ -620,7 +622,7 @@ procedure TRoomerDataSet.GetMessages;
 begin
   try
     if NOT OfflineMode then
-      OpenDataset(downloadUrlAsString(RoomerUri + 'messaging/broadcastlist', 0, false));
+      OpenDataset(downloadUrlAsString(RoomerUri + 'messaging/broadcastlist', 0, false, '', True));
   except
     // Ignore ...
   end;
@@ -640,13 +642,15 @@ begin
   result := FOpenApiUri;
 end;
 
-procedure TRoomerDataSet.GetTableUpdateTimeStamps;
+function TRoomerDataSet.GetTableUpdateTimeStamps : boolean;
 begin
+  result := True;
   try
     if NOT OfflineMode then
-      OpenDataset(downloadUrlAsString(RoomerUri + 'messaging/lastchanges', 0, false));
+      OpenDataset(downloadUrlAsString(RoomerUri + 'messaging/lastchanges', 0, false, '', true));
   except
     // Ignore ...
+     result := False;
   end;
 end;
 
@@ -674,10 +678,25 @@ begin
   result := downloadUrlAsString(RoomerUri + 'sessions/pulse', 0, true);
 end;
 
-function TRoomerDataSet.queryRoomer(aSql: String; SetLastAccess: Boolean = true): String;
+function TRoomerDataSet.FreeQueryThreaded(query : String; SetLastAccess : boolean = true): String;
+var res, setAccess : String;
+begin
+  if setLastAccess then
+    setAccess := 'true'
+  else
+    setAccess := 'false';
+  res := downloadUrlAsStringUsingPostThreaded(RoomerUri + 'pms/business/query', format('query=%s&%s', [UrlEncode(query), setAccess]), SetLastAccess);
+  Result := res;
+end;
+
+
+function TRoomerDataSet.queryRoomer(aSql: String; SetLastAccess: Boolean = true; Threaded : Boolean = False): String;
 begin
   FLastSql := aSql;
-  result := activeRoomerDataSet.SystemFreeQuery(aSql, SetLastAccess);
+  if NOT Threaded then
+    result := activeRoomerDataSet.SystemFreeQuery(aSql, SetLastAccess)
+  else
+    result := FreeQueryThreaded(aSql, SetLastAccess);
 end;
 
 function TRoomerDataSet.ReLogin: Boolean;
@@ -935,16 +954,11 @@ begin
         contentType := 'application/x-www-form-urlencoded'; // '*/*;charset=utf-8';
       _roomerClient.{$IFDEF USE_INDY}Request{$ELSE}RequestHeader{$ENDIF}.
         contentType := contentType;
-//      for retries := 1 to 3 do
-//      begin
         try
           result := _roomerClient.Post(url, stream);
-//          Break;
         except
-//          if retries = 3 then
-            raise;
+          raise;
         end;
-//      end;
     finally
       stream.Free;
     end;
@@ -1037,20 +1051,12 @@ begin
       AddAuthenticationHeaders(_roomerClient);
       if contentType = '' then
         contentType := 'application/x-www-form-urlencoded'; // '*/*;charset=utf-8';
-//      if contentType = '' then
-//        contentType := '*/*;charset=utf-8';
-      _roomerClient.{$IFDEF USE_INDY}Request{$ELSE}RequestHeader{$ENDIF}.
-        contentType := contentType;
-//      for retries := 1 to 3 do
-//      begin
-        try
-          result := _roomerClient.Put(url, stream);
-//          Break;
-        except
-//          if (NOT retryOnError) OR (retries = 3) then
-            raise;
-        end;
-//      end;
+      _roomerClient.{$IFDEF USE_INDY}Request{$ELSE}RequestHeader{$ENDIF}.contentType := contentType;
+      try
+        result := _roomerClient.Put(url, stream);
+      except
+        raise;
+      end;
     finally
       stream.Free;
     end;
@@ -1175,7 +1181,7 @@ end;
 
 function TRoomerDataSet.downloadUrlAsString(url: String;
   loggingInOut: Integer = 0; { 0/1/2 = neither/login/logout }
-  SetLastAccess: Boolean = true; contentType: String = ''): String;
+  SetLastAccess: Boolean = true; contentType: String = ''; RaiseException : Boolean = False): String;
 var
   doRetry: Boolean;
 begin
@@ -1198,6 +1204,8 @@ begin
       begin
 {$IFDEF USE_INDY}
 {$ELSE}
+        if RaiseException then
+          Raise;
         if (E.StatusCode = 0) OR (E.StatusCode = 401) then
         begin
           if (loggingInOut = 0) then
@@ -1325,6 +1333,43 @@ begin
               [E.StatusCode, E.Message]));
         end;
 {$ENDIF}
+      end;
+      on E: Exception do
+      begin
+        raise Exception.Create
+          (format('Error during communication with server (POST): %s',
+          [E.Message]));
+      end;
+    end;
+end;
+
+function TRoomerDataSet.downloadUrlAsStringUsingPostThreaded(url: String; Data: String;
+  SetLastAccess: Boolean = true;
+  loggingInOut: Integer = 0 { 0/1/2 = neither/login/logout }
+  ; contentType: String = ''): String;
+var
+  doRetry: Boolean;
+begin
+  doRetry := true;
+  while doRetry do
+    try
+      doRetry := false;
+      result := PostAsString(activeRoomerDataSet.roomerClient, url, Data, contentType);
+      if SetLastAccess then
+        FLastAccess := now;
+      exit;
+    except
+      on E:
+{$IFDEF USE_INDY}
+        Exception
+{$ELSE}
+        EALHTTPClientException
+{$ENDIF}
+      do
+      begin
+        raise Exception.Create
+          (format('Error during communication with server (GET): [%d] %s',
+          [E.StatusCode, E.Message]));
       end;
       on E: Exception do
       begin

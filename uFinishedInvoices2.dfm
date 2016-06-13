@@ -117,8 +117,8 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
     object chkShowPackage: TsCheckBox
       Left = 5
       Top = 47
-      Width = 148
-      Height = 17
+      Width = 140
+      Height = 20
       Caption = 'Show Package on invoice'
       TabOrder = 5
       SkinData.SkinSection = 'CHECKBOX'
@@ -1319,7 +1319,7 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
             SearchFooter.HintHighlight = 'Highlight occurences'
             SearchFooter.MatchCaseCaption = 'Match case'
             SortSettings.DefaultFormat = ssAutomatic
-            Version = '7.9.1.1'
+            Version = '7.8.8.2'
             RowHeights = (
               18
               21
@@ -1477,7 +1477,7 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
             SearchFooter.HintHighlight = 'Highlight occurences'
             SearchFooter.MatchCaseCaption = 'Match case'
             SortSettings.DefaultFormat = ssAutomatic
-            Version = '7.9.1.1'
+            Version = '7.8.8.2'
             RowHeights = (
               19
               21
@@ -1596,7 +1596,7 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
         SearchFooter.HintHighlight = 'Highlight occurences'
         SearchFooter.MatchCaseCaption = 'Match case'
         SortSettings.DefaultFormat = ssAutomatic
-        Version = '7.9.1.1'
+        Version = '7.8.8.2'
         RowHeights = (
           19
           21
@@ -1639,7 +1639,7 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
     DataSet = d.mtLines_
     BCDToCurrency = False
     Left = 336
-    Top = 328
+    Top = 376
   end
   object rptDs1: TfrxDBDataset
     UserName = 'rptDSHead'
@@ -1828,6 +1828,11 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
       '  YAfterLines := Engine.CurY;                   '
       'end;'
       ''
+      'procedure PagePaymentsOnBeforePrint(Sender: TfrxComponent);'
+      'begin'
+      ''
+      'end;'
+      ''
       'begin'
       ''
       'end.')
@@ -2006,7 +2011,7 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
         end
         object Memo27: TfrxMemoView
           Left = 600.094930000000000000
-          Top = 96.138837499999990000
+          Top = 96.138837500000000000
           Width = 52.913420000000000000
           Height = 15.118120000000000000
           ShowHint = False
@@ -2812,6 +2817,7 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
       PaperWidth = 50.270833330000000000
       PaperHeight = 279.400000000000000000
       PaperSize = 256
+      OnBeforePrint = 'PagePaymentsOnBeforePrint'
       object MasterData2: TfrxMasterData
         Height = 37.795300000000000000
         Top = 18.897650000000000000

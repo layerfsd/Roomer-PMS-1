@@ -463,6 +463,8 @@ type
     mRoomResInvoiceIndex: TIntegerField;
     mRoomResGroupAccount: TBooleanField;
     S1: TMenuItem;
+    N6: TMenuItem;
+    T5: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure agrLinesMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: integer);
@@ -582,6 +584,7 @@ type
 
     zLstRooms: TList;
     SelectableRooms: TRoomInfoList;
+    SelectableExternalRooms: TRoomInfoList;
     zInvoiceNumber: integer;
     zInvoiceDate: TDateTime;
     zConfirmDate: TDate;
@@ -753,12 +756,12 @@ type
     procedure FormatCurrentLine(ARow: integer);
     function CreateProformaID: integer;
     procedure MoveRoomToGroupInvoice;
-    procedure MoveItemToRoomInvoice(toRoomReservation: integer;
+    procedure MoveItemToRoomInvoice(toRoomReservation, toReservation: integer;
       InvoiceIndex: integer);
     procedure MoveRoomToRoomInvoice;
     procedure FillRoomsInMenu(mnuItem: TMenuItem);
     function RoomByRoomReservation(RoomReservation: integer): String;
-    procedure LoadRoomList(reservation: integer);
+    procedure LoadRoomListForCurrentReservation(reservation: integer);
     procedure DeleteRow(aGrid: TAdvStringGrid; iRow: integer);
     procedure ForceRowChange;
     procedure SetInvoiceIndex(const Value: integer);
@@ -786,6 +789,9 @@ type
     function CellInvoiceLine(line: Integer): TInvoiceLine;
     function CellInvoiceLineId(line: Integer): Integer;
     function IsLineChanged(line, iMultiplier: Integer): Boolean;
+    procedure LoadRoomListForOtherReservations(reservation: integer);
+    procedure ExternalRoomsClick(Sender: TObject);
+    procedure FillExternalRoomsInMenu(mnuItem: TMenuItem);
 
     property InvoiceIndex: integer read FInvoiceIndex write SetInvoiceIndex;
   public
@@ -3849,9 +3855,9 @@ begin
           '{InvoiceIndex}',
           inttostr(InvoiceIndex));
 
-// copytoclipboard(zs);
+    copytoclipboard(zs);
 
-     hData.rSet_bySQL(zrSet, zS);
+    hData.rSet_bySQL(zrSet, zS);
 
 
 
@@ -3982,11 +3988,12 @@ begin
     end
     else
     begin
-      zS := format(zS, [FRoomReservation]);
+      zS := format(zS, [FRoomReservation, FRoomReservation]);
     end;
     if zRoomRSet.active then
       zRoomRSet.close;
 
+    CopyToClipboard(zS);
     hData.rSet_bySQL(zRoomRSet, zS);
 
     iLastRoomRes := -1;
@@ -4042,42 +4049,44 @@ begin
 
       // **
 
-        while not zRoomRSet.eof do
-        begin
-          RoomReservation := zRoomRSet.FieldByName('Roomreservation').asinteger;
-          // package := zRoomRSet.FieldByName('Package').asString;
+      while not zRoomRSet.eof do
+      begin
+        RoomReservation := zRoomRSet.FieldByName('Roomreservation').asinteger;
+        // package := zRoomRSet.FieldByName('Package').asString;
 
-          Arrival := zRoomRSet.FieldByName('rrArrival').asdateTime;
-          Departure := zRoomRSet.FieldByName('rrDeparture').asdateTime;
+        Arrival := zRoomRSet.FieldByName('rrArrival').asdateTime;
+        Departure := zRoomRSet.FieldByName('rrDeparture').asdateTime;
 
-          s := 'SELECT '#10;
-          s := s + 'rd.ADate, '#10;
-          s := s + 'rd.Room, '#10;
-          s := s + 'rd.RoomReservation, '#10;
-          s := s + 'rd.Reservation, '#10;
-          s := s + 'rd.PriceCode, '#10;
-          s := s + 'rd.RoomRate, '#10;
-          s := s + 'rd.Discount, '#10;
-          s := s + 'rd.isPercentage, '#10;
-          s := s + 'rd.showDiscount, '#10;
-          s := s + 'rd.Paid '#10;
-          s := s + ',IF(ISNULL((SELECT name FROM persons pe WHERE pe.MainName AND pe.roomreservation = rd.roomreservation LIMIT 1)), '#10;
-          s := s + '   (SELECT name FROM persons pe WHERE pe.roomreservation = rd.roomreservation LIMIT 1), '#10;
-          s := s + '   (SELECT name FROM persons pe WHERE pe.MainName AND pe.roomreservation = rd.roomreservation LIMIT 1)) AS guestName '#10;
-          s := s + ', (SELECT count(id) FROM persons pe WHERE pe.roomreservation = rd.roomreservation) AS numGuests '#10;
-          s := s + 'FROM roomsdate rd '#10;
-          s := s + 'WHERE '#10;
-          s := s + '(rd.roomreservation = %d ) AND (rd.ADate >= %s ) AND (rd.ADate < %s ) AND (rd.paid=0) '#10;
-          s := s + 'ORDER BY '#10;
-          s := s + '  ADate '#10;
-          s := format(s, [RoomReservation, _DateToDbDate(Arrival, True),
-            _DateToDbDate(Departure, True)]);
+        s := 'SELECT '#10;
+        s := s + 'rd.ADate, '#10;
+        s := s + 'rd.Room, '#10;
+        s := s + 'rd.RoomReservation, '#10;
+        s := s + 'rd.Reservation, '#10;
+        s := s + 'rd.PriceCode, '#10;
+        s := s + 'rd.RoomRate, '#10;
+        s := s + 'rd.Discount, '#10;
+        s := s + 'rd.isPercentage, '#10;
+        s := s + 'rd.showDiscount, '#10;
+        s := s + 'rd.Paid '#10;
+        s := s + ',IF(ISNULL((SELECT name FROM persons pe WHERE pe.MainName AND pe.roomreservation = rd.roomreservation LIMIT 1)), '#10;
+        s := s + '   (SELECT name FROM persons pe WHERE pe.roomreservation = rd.roomreservation LIMIT 1), '#10;
+        s := s + '   (SELECT name FROM persons pe WHERE pe.MainName AND pe.roomreservation = rd.roomreservation LIMIT 1)) AS guestName '#10;
+        s := s + ', (SELECT count(id) FROM persons pe WHERE pe.roomreservation = rd.roomreservation) AS numGuests '#10;
+        s := s + 'FROM roomsdate rd '#10;
+        s := s + 'WHERE '#10;
+//          s := s + '((rd.roomreservation = %d AND rd.PaidBy=0) OR rd.PaidBy=%d) AND (rd.ADate >= %s ) AND (rd.ADate < %s ) AND (rd.paid=0) '#10;
+//        s := s + '(rd.roomreservation = %d) AND (rd.ADate >= %s ) AND (rd.ADate < %s ) AND (rd.paid=0) '#10;
+        s := s + '(rd.roomreservation = %d) AND (rd.paid=0) '#10;
+        s := s + 'ORDER BY '#10;
+        s := s + '  ADate '#10;
+//          s := format(s, [RoomReservation, RoomReservation, _DateToDbDate(Arrival, True), _DateToDbDate(Departure, True)]);
+        s := format(s, [RoomReservation, _DateToDbDate(Arrival, True), _DateToDbDate(Departure, True)]);
 
-          // copyToclipboard(s);
-          // debugmessage(s);
-          lExecutionPlan.AddQuery(s);
-          zRoomRSet.Next;
-        end;
+        copyToclipboard(s);
+        // debugmessage(s);
+        lExecutionPlan.AddQuery(s);
+        zRoomRSet.Next;
+      end;
 
       if lExecutionPlan.Execute(ptQuery) then
       begin
@@ -4148,83 +4157,91 @@ begin
           rSet := lExecutionPlan.Results[index];
 
           rSet.first;
-          GuestName := rSet.FieldByName('guestName').asString;
-          NumGuests := rSet.FieldByName('numGuests').asinteger;
-          mRoomRes.FieldByName('Guests').asinteger := NumGuests;
-          mRoomRes.post;
-          for i := 1 to dayCount do
+          if NOT rSet.Eof then
           begin
-            DiscountText := '';
-            iTotalResDays := 0;
-
-            if LocateDate(rSet, 'ADate', RateDate) then
+            GuestName := rSet.FieldByName('guestName').asString;
+            NumGuests := rSet.FieldByName('numGuests').asinteger;
+            if mRoomRes.State IN [dsEdit, dsInsert] then
             begin
-              reservation := rSet.FieldByName('Reservation').asinteger;
-              Room := rSet.FieldByName('Room').asString;
-              PriceCode := rSet.FieldByName('PriceCode').asString;
-              RateDate := _DBDateToDate(rSet.FieldByName('ADate').asString);
-              Rate := rSet.GetFloatValue(rSet.FieldByName('RoomRate'));
-              Discount := rSet.GetFloatValue(rSet.FieldByName('Discount'));
-              isPercentage := rSet.FieldByName('isPercentage').asBoolean;
-              ShowDiscount := rSet.FieldByName('ShowDiscount').asBoolean;
-              isPaid := rSet.FieldByName('Paid').asBoolean;
+              mRoomRes.FieldByName('Guests').asinteger := NumGuests;
+              mRoomRes.post;
+            end;
+            for i := 1 to dayCount do
+            begin
+              DiscountText := '';
+              iTotalResDays := 0;
 
-              if not isPaid then
+              if LocateDate(rSet, 'ADate', RateDate) then
               begin
-                UnpaidDays := UnpaidDays + 1;
-              end;
+                reservation := rSet.FieldByName('Reservation').asinteger;
+                Room := rSet.FieldByName('Room').asString;
+                PriceCode := rSet.FieldByName('PriceCode').asString;
+                RateDate := _DBDateToDate(rSet.FieldByName('ADate').asString);
+                Rate := rSet.GetFloatValue(rSet.FieldByName('RoomRate'));
+                Discount := rSet.GetFloatValue(rSet.FieldByName('Discount'));
+                isPercentage := rSet.FieldByName('isPercentage').asBoolean;
+                ShowDiscount := rSet.FieldByName('ShowDiscount').asBoolean;
+                isPaid := rSet.FieldByName('Paid').asBoolean;
 
-              DiscountAmount := 0;
-              rentAmount := 0;
-              NativeAmount := 0;
-
-              if Rate <> 0 then
-              begin
-                if Discount <> 0 then
+                if not isPaid then
                 begin
-                  if isPercentage then
+                  UnpaidDays := UnpaidDays + 1;
+                end;
+
+                DiscountAmount := 0;
+                rentAmount := 0;
+                NativeAmount := 0;
+
+                if Rate <> 0 then
+                begin
+                  if Discount <> 0 then
                   begin
-                    DiscountAmount := Rate * Discount / 100;
-                  end
-                  else
-                  begin
-                    DiscountAmount := Discount;
+                    if isPercentage then
+                    begin
+                      DiscountAmount := Rate * Discount / 100;
+                    end
+                    else
+                    begin
+                      DiscountAmount := Discount;
+                    end;
                   end;
                 end;
+                rentAmount := Rate - DiscountAmount;
+                try
+                  CurrencyRate := _StrToFloat(edtRate.Text);
+                except
+                  CurrencyRate := 1
+                end;
+                if CurrencyRate = 0 then
+                  CurrencyRate := 1;
+                NativeAmount := rentAmount * CurrencyRate;
+
+                TotalDiscount := TotalDiscount + DiscountAmount;
+
+                ttRate := ttRate + Rate;
+                ttDiscount := ttDiscount + Discount;
+
+                mRoomRates.append;
+                mRoomRates.FieldByName('Reservation').asinteger := reservation;
+                mRoomRates.FieldByName('RoomReservation').asinteger := RoomReservation;
+                mRoomRates.FieldByName('RoomNumber').asString := Room;
+                mRoomRates.FieldByName('PriceCode').asString := PriceCode;
+                mRoomRates.FieldByName('RateDate').asdateTime := RateDate;
+                mRoomRates.FieldByName('Rate').asfloat := Rate;
+                mRoomRates.FieldByName('Discount').asfloat := Discount;
+                mRoomRates.FieldByName('isPercentage').asBoolean := isPercentage;
+                mRoomRates.FieldByName('ShowDiscount').asBoolean := ShowDiscount;
+                mRoomRates.FieldByName('isPaid').asBoolean := isPaid;
+                mRoomRates.FieldByName('DiscountAmount').asfloat := DiscountAmount;
+                mRoomRates.FieldByName('RentAmount').asfloat := rentAmount;
+                mRoomRates.FieldByName('NativeAmount').asfloat := NativeAmount;
+                mRoomRates.post;
               end;
-              rentAmount := Rate - DiscountAmount;
-              try
-                CurrencyRate := _StrToFloat(edtRate.Text);
-              except
-                CurrencyRate := 1
-              end;
-              if CurrencyRate = 0 then
-                CurrencyRate := 1;
-              NativeAmount := rentAmount * CurrencyRate;
 
-              TotalDiscount := TotalDiscount + DiscountAmount;
-
-              ttRate := ttRate + Rate;
-              ttDiscount := ttDiscount + Discount;
-
-              mRoomRates.append;
-              mRoomRates.FieldByName('Reservation').asinteger := reservation;
-              mRoomRates.FieldByName('RoomReservation').asinteger := RoomReservation;
-              mRoomRates.FieldByName('RoomNumber').asString := Room;
-              mRoomRates.FieldByName('PriceCode').asString := PriceCode;
-              mRoomRates.FieldByName('RateDate').asdateTime := RateDate;
-              mRoomRates.FieldByName('Rate').asfloat := Rate;
-              mRoomRates.FieldByName('Discount').asfloat := Discount;
-              mRoomRates.FieldByName('isPercentage').asBoolean := isPercentage;
-              mRoomRates.FieldByName('ShowDiscount').asBoolean := ShowDiscount;
-              mRoomRates.FieldByName('isPaid').asBoolean := isPaid;
-              mRoomRates.FieldByName('DiscountAmount').asfloat := DiscountAmount;
-              mRoomRates.FieldByName('RentAmount').asfloat := rentAmount;
-              mRoomRates.FieldByName('NativeAmount').asfloat := NativeAmount;
-              mRoomRates.post;
+              RateDate := RateDate + 1;
             end;
 
-            RateDate := RateDate + 1;
+//            rSet.Next;
           end;
 
           iTotalResDays := trunc(Departure) - trunc(Arrival);
@@ -5058,6 +5075,7 @@ begin
   // _RestoreWinPos(g.qAppInifile, TForm(Self).name, TForm(Self));
 
   SelectableRooms := TRoomInfoList.create(True);
+  SelectableExternalRooms := TRoomInfoList.create(True);
   TaxTypes := TStringList.create;
 
   useStayTaxAlreadyFetched := false;
@@ -5108,6 +5126,7 @@ begin
   try
     OnResize := nil;
     SelectableRooms.free;
+    SelectableExternalRooms.Free;
     RemoveInvalidKreditInvoice;
     // DeleteProforma;
 
@@ -5175,7 +5194,32 @@ begin
       if i >= 0 then
       begin
         agrLines.Row := i;
-        MoveItemToRoomInvoice(SelectableRooms[omnu.Tag].FRoomReservation, TMenuItem(Sender).Tag);
+        MoveItemToRoomInvoice(SelectableRooms[omnu.Tag].FRoomReservation, SelectableRooms[omnu.Tag].FReservation, TMenuItem(Sender).Tag);
+      end;
+    end;
+  finally
+    list.free;
+  end;
+end;
+
+procedure TfrmInvoice.ExternalRoomsClick(Sender: TObject);
+var
+  omnu: TMenuItem;
+  list : TList<String>;
+  i, l : Integer;
+begin
+  //
+  omnu := TMenuItem(Sender).Parent;
+
+  list := GetSelectedRows;
+  try
+    for l := list.Count - 1 downto 0 do
+    begin
+      i := IndexOfAutoGen(list[l]);
+      if i >= 0 then
+      begin
+        agrLines.Row := i;
+        MoveItemToRoomInvoice(SelectableExternalRooms[omnu.Tag].FRoomReservation, SelectableExternalRooms[omnu.Tag].FReservation, TMenuItem(Sender).Tag);
       end;
     end;
   finally
@@ -10184,7 +10228,7 @@ function TfrmInvoice.RoomByRoomReservation(RoomReservation: integer): String;
 var
   i: integer;
 begin
-  result := inttostr(RoomReservation);
+  result := ''; // inttostr(RoomReservation);
   for i := 0 to SelectableRooms.Count - 1 do
   begin
     if SelectableRooms[i].FRoomReservation = RoomReservation then
@@ -10193,9 +10237,22 @@ begin
       break;
     end;
   end;
+  if result = '' then
+  begin
+    for i := 0 to SelectableExternalRooms.Count - 1 do
+    begin
+      if SelectableExternalRooms[i].FRoomReservation = RoomReservation then
+      begin
+        result := SelectableExternalRooms[i].FRoom;
+        break;
+      end;
+    end;
+  end;
+  if result = '' then
+    result := inttostr(RoomReservation);
 end;
 
-procedure TfrmInvoice.MoveItemToRoomInvoice(toRoomReservation: integer;
+procedure TfrmInvoice.MoveItemToRoomInvoice(toRoomReservation, toReservation: integer;
   InvoiceIndex: integer);
 var
   reservation: integer;
@@ -10266,7 +10323,7 @@ begin
     exit;
   end;
 
-  reservation := publicReservation;
+  reservation := toReservation;
   RoomReservation := FRoomReservation;
   SplitNumber := 0;
   invoiceNumber := zInvoiceNumber;
@@ -10323,10 +10380,11 @@ begin
   s := s + ' UPDATE invoicelines ' + #10;
   s := s + ' Set ' + #10;
   s := s + '   Roomreservation = ' + _db(toRoomReservation) + ' ' + #10;
-  s := s + ' , itemNumber = ' + _db(NextInvoiceLine) + ' ' + #10;
-  s := s + ' , Description = ' + _db(Description) + ' ' + #10;
-  s := s + ' , InvoiceIndex = ' + _db(InvoiceIndex) + ' ' + #10;
-  s := s + ' , staffLastEdit= ' + _db(d.roomerMainDataSet.username) + ' ' + #10;
+  s := s + ', Reservation = ' + _db(toReservation) + ' ' + #10;
+  s := s + ', itemNumber = ' + _db(NextInvoiceLine) + ' ' + #10;
+  s := s + ', Description = ' + _db(Description) + ' ' + #10;
+  s := s + ', InvoiceIndex = ' + _db(InvoiceIndex) + ' ' + #10;
+  s := s + ', staffLastEdit= ' + _db(d.roomerMainDataSet.username) + ' ' + #10;
   if InvoicelineId = -1 then
   begin
     s := s + 'where Reservation = ' + _db(reservation);
@@ -11457,7 +11515,7 @@ begin
   zDataChanged := chkChanged;
 end;
 
-procedure TfrmInvoice.LoadRoomList(reservation: integer);
+procedure TfrmInvoice.LoadRoomListForCurrentReservation(reservation: integer);
 var
   sql: String;
   rSet: TRoomerDataset;
@@ -11465,7 +11523,7 @@ var
 begin
   SelectableRooms.Clear;
   sql := format
-    ('SELECT DISTINCT Room, RoomReservation FROM roomsdate WHERE Reservation=%d',
+    ('SELECT DISTINCT Room, RoomReservation, Reservation FROM roomsdate WHERE Reservation=%d AND ResFlag NOT IN (''X'')',
     [reservation]);
   rSet := CreateNewDataSet;
   try
@@ -11477,8 +11535,37 @@ begin
         Room := TRoomInfo.create;
         Room.FRoom := rSet['Room'];
         Room.FRoomReservation := rSet['RoomReservation'];
-        Room.FReservation := reservation;
+        Room.FReservation := rSet['Reservation'];
         SelectableRooms.add(Room);
+        rSet.Next;
+      end;
+    end;
+  finally
+    FreeAndNil(rSet);
+  end;
+end;
+
+procedure TfrmInvoice.LoadRoomListForOtherReservations(reservation: integer);
+var
+  sql: String;
+  rSet: TRoomerDataset;
+  Room: TRoomInfo;
+begin
+  SelectableExternalRooms.Clear;
+  sql := format
+    ('SELECT DISTINCT Room, Reservation, RoomReservation FROM roomsdate WHERE ADate=CURRENT_DATE AND Reservation != %d AND ResFlag IN (''P'',''G'')', [reservation]);
+  rSet := CreateNewDataSet;
+  try
+    if hData.rSet_bySQL(rSet, sql, false) then
+    begin
+      rSet.first;
+      while NOT rSet.eof do
+      begin
+        Room := TRoomInfo.create;
+        Room.FRoom := rSet['Room'];
+        Room.FRoomReservation := rSet['RoomReservation'];
+        Room.FReservation := rSet['Reservation'];
+        SelectableExternalRooms.add(Room);
         rSet.Next;
       end;
     end;
@@ -11493,39 +11580,80 @@ var
   Item, subItem: TMenuItem;
   l: integer;
 begin
-  LoadRoomList(publicReservation);
-  mnuItem.Clear;
-  for i := 0 to SelectableRooms.Count - 1 do
+  if (mnuItem = t2) OR (mnuItem = t4) then
   begin
-    // if TRoomInfo(SelectableRooms[i]).FRoomReservation <> FRoomReservation then
-    // begin
-    Item := TMenuItem.create(nil);
-    Item.caption := TRoomInfo(SelectableRooms[i]).FRoom;
-    Item.Tag := i;
-    mnuItem.add(Item);
-    if mnuItem = t2 then
+    LoadRoomListForCurrentReservation(publicReservation);
+    mnuItem.Clear;
+    for i := 0 to SelectableRooms.Count - 1 do
     begin
-      // item.OnClick := t2Click
-      Item.Clear;
-      for l := 0 to mnuInvoiceIndex.Items.Count - 1 do
+      // if TRoomInfo(SelectableRooms[i]).FRoomReservation <> FRoomReservation then
+      // begin
+      Item := TMenuItem.create(nil);
+      Item.caption := TRoomInfo(SelectableRooms[i]).FRoom;
+      Item.Tag := i;
+      mnuItem.add(Item);
+      if (mnuItem = t2) then
       begin
-        subItem := TMenuItem.create(nil);
-        subItem.caption := mnuInvoiceIndex.Items[l].caption;
-        subItem.Tag := mnuInvoiceIndex.Items[l].Tag;
-        subItem.OnClick := N91Click;
-        Item.add(subItem);
-        subItem.Enabled := subItem.Tag >= 0;
-      end;
-    end
-    else if mnuItem = T4 then
-      Item.OnClick := T4Click;
-    // end;
+        // item.OnClick := t2Click
+        Item.Clear;
+        for l := 0 to mnuInvoiceIndex.Items.Count - 1 do
+        begin
+          subItem := TMenuItem.create(nil);
+          subItem.caption := mnuInvoiceIndex.Items[l].caption;
+          subItem.Tag := mnuInvoiceIndex.Items[l].Tag;
+          subItem.OnClick := N91Click;
+          Item.add(subItem);
+          subItem.Enabled := subItem.Tag >= 0;
+        end;
+      end
+      else if mnuItem = T4 then
+        Item.OnClick := T4Click;
+      // end;
+    end;
+  end;
+end;
+
+procedure TfrmInvoice.FillExternalRoomsInMenu(mnuItem: TMenuItem);
+var
+  i: integer;
+  Item, subItem: TMenuItem;
+  l: integer;
+begin
+  if (mnuItem = t5) then
+  begin
+    LoadRoomListForOtherReservations(publicReservation);
+    mnuItem.Clear;
+    for i := 0 to SelectableExternalRooms.Count - 1 do
+    begin
+      Item := TMenuItem.create(nil);
+      Item.caption := TRoomInfo(SelectableExternalRooms[i]).FRoom;
+      Item.Tag := i;
+      mnuItem.add(Item);
+      if (mnuItem = t2) OR (mnuItem = t5) then
+      begin
+        // item.OnClick := t2Click
+        Item.Clear;
+        for l := 0 to mnuInvoiceIndex.Items.Count - 1 do
+        begin
+          subItem := TMenuItem.create(nil);
+          subItem.caption := mnuInvoiceIndex.Items[l].caption;
+          subItem.Tag := mnuInvoiceIndex.Items[l].Tag;
+          subItem.OnClick := ExternalRoomsClick;
+          Item.add(subItem);
+          subItem.Enabled := subItem.Tag >= 0;
+        end;
+      end
+      else if mnuItem = T4 then
+        Item.OnClick := T4Click;
+      // end;
+    end;
   end;
 end;
 
 procedure TfrmInvoice.mnuMoveItemPopup(Sender: TObject);
 begin
   FillRoomsInMenu(t2);
+  FillExternalRoomsInMenu(t5);
 end;
 
 procedure TfrmInvoice.mnuMoveRoomPopup(Sender: TObject);
