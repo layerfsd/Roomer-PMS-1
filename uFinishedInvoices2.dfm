@@ -32,14 +32,17 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
     Panels = <>
   end
   object LMDBackPanel1: TsPanel
-    Left = 0
-    Top = 0
-    Width = 915
+    AlignWithMargins = True
+    Left = 3
+    Top = 3
+    Width = 909
     Height = 70
     Align = alTop
     BevelOuter = bvNone
     TabOrder = 1
     SkinData.SkinSection = 'PANEL'
+    ExplicitLeft = -2
+    ExplicitTop = 0
     object labExport: TsLabel
       Left = 637
       Top = 11
@@ -53,35 +56,54 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
       Font.Style = []
     end
     object btnPrint: TsButton
-      Left = 4
+      AlignWithMargins = True
+      Left = 113
       Top = 5
       Width = 100
-      Height = 37
+      Height = 40
+      Margins.Left = 5
+      Margins.Top = 5
+      Margins.Bottom = 25
+      Align = alLeft
       Caption = 'Print'
       ImageIndex = 3
       Images = DImages.PngImageList1
       TabOrder = 0
       OnClick = btnPrintClick
       SkinData.SkinSection = 'BUTTON'
+      ExplicitLeft = 4
+      ExplicitHeight = 37
     end
     object btnDesign: TsButton
-      Left = 110
-      Top = 4
+      AlignWithMargins = True
+      Left = 329
+      Top = 5
       Width = 100
-      Height = 37
+      Height = 40
       HelpContext = 6
+      Margins.Left = 5
+      Margins.Top = 5
+      Margins.Bottom = 25
+      Align = alLeft
       Caption = 'Design'
       ImageIndex = 83
       Images = DImages.PngImageList1
       TabOrder = 1
       OnClick = btnDesignClick
       SkinData.SkinSection = 'BUTTON'
+      ExplicitLeft = 110
+      ExplicitHeight = 37
     end
     object btnEmailSend: TsButton
-      Left = 428
+      AlignWithMargins = True
+      Left = 5
       Top = 5
       Width = 100
-      Height = 37
+      Height = 40
+      Margins.Left = 5
+      Margins.Top = 5
+      Margins.Bottom = 25
+      Align = alLeft
       Caption = 'Send'
       ImageIndex = 22
       Images = DImages.PngImageList1
@@ -89,38 +111,35 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
       Visible = False
       OnClick = btnEmailSendClick
       SkinData.SkinSection = 'BUTTON'
+      ExplicitLeft = 322
+      ExplicitHeight = 37
     end
     object LMDSpeedButton3: TsButton
-      Left = 322
+      AlignWithMargins = True
+      Left = 221
       Top = 5
       Width = 100
-      Height = 37
+      Height = 40
+      Margins.Left = 5
+      Margins.Top = 5
+      Margins.Bottom = 25
+      Align = alLeft
       Caption = 'Restore'
       ImageIndex = 11
       Images = DImages.PngImageList1
       TabOrder = 3
       OnClick = LMDSpeedButton3Click
       SkinData.SkinSection = 'BUTTON'
-    end
-    object LMDSpeedButton2: TsButton
-      Left = 216
-      Top = 5
-      Width = 100
-      Height = 37
-      Caption = 'Export'
-      ImageIndex = 98
-      Images = DImages.PngImageList1
-      TabOrder = 4
-      OnClick = LMDSpeedButton2Click
-      SkinData.SkinSection = 'BUTTON'
+      ExplicitLeft = 216
+      ExplicitHeight = 37
     end
     object chkShowPackage: TsCheckBox
       Left = 5
       Top = 47
-      Width = 140
-      Height = 20
+      Width = 148
+      Height = 19
       Caption = 'Show Package on invoice'
-      TabOrder = 5
+      TabOrder = 4
       SkinData.SkinSection = 'CHECKBOX'
       ImgChecked = 0
       ImgUnchecked = 0
@@ -128,19 +147,21 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
   end
   object Panel1: TsPanel
     Left = 0
-    Top = 70
+    Top = 76
     Width = 915
-    Height = 608
+    Height = 602
     Align = alClient
     BevelOuter = bvNone
     BorderWidth = 5
     TabOrder = 2
     SkinData.SkinSection = 'PANEL'
+    ExplicitTop = 70
+    ExplicitHeight = 608
     object tcPages: TsTabControl
       Left = 5
       Top = 5
       Width = 905
-      Height = 598
+      Height = 592
       Align = alClient
       MultiLine = True
       ParentShowHint = False
@@ -156,9 +177,10 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
       TabWidth = 110
       OnChange = tcPagesChange
       SkinData.SkinSection = 'PAGECONTROL'
+      ExplicitHeight = 598
       object Splitter1: TSplitter
         Left = 4
-        Top = 464
+        Top = 458
         Width = 897
         Height = 10
         Cursor = crVSplit
@@ -949,13 +971,14 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
       end
       object LMDSimplePanel1: TsPanel
         Left = 4
-        Top = 474
+        Top = 468
         Width = 897
         Height = 120
         Align = alBottom
         BevelOuter = bvNone
         TabOrder = 1
         SkinData.SkinSection = 'PANEL'
+        ExplicitTop = 474
         object Panel2: TsPanel
           Left = 681
           Top = 0
@@ -1319,7 +1342,7 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
             SearchFooter.HintHighlight = 'Highlight occurences'
             SearchFooter.MatchCaseCaption = 'Match case'
             SortSettings.DefaultFormat = ssAutomatic
-            Version = '7.8.8.2'
+            Version = '7.9.1.0'
             RowHeights = (
               18
               21
@@ -1477,7 +1500,7 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
             SearchFooter.HintHighlight = 'Highlight occurences'
             SearchFooter.MatchCaseCaption = 'Match case'
             SortSettings.DefaultFormat = ssAutomatic
-            Version = '7.8.8.2'
+            Version = '7.9.1.0'
             RowHeights = (
               19
               21
@@ -1489,7 +1512,7 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
         Left = 4
         Top = 270
         Width = 897
-        Height = 194
+        Height = 188
         Cursor = crDefault
         Align = alClient
         BevelInner = bvNone
@@ -1596,7 +1619,8 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
         SearchFooter.HintHighlight = 'Highlight occurences'
         SearchFooter.MatchCaseCaption = 'Match case'
         SortSettings.DefaultFormat = ssAutomatic
-        Version = '7.8.8.2'
+        Version = '7.9.1.0'
+        ExplicitHeight = 194
         RowHeights = (
           19
           21

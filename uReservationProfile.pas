@@ -626,7 +626,6 @@ type
     procedure DropComboTarget1GetDropEffect(Sender: TObject; ShiftState: TShiftState; APoint: TPoint;
       var Effect: Integer);
     procedure DropComboTarget1DragOver(Sender: TObject; ShiftState: TShiftState; APoint: TPoint; var Effect: Integer);
-    procedure mGuestsAfterScroll(DataSet: TDataSet);
     procedure mGuestRoomsAfterScroll(DataSet: TDataSet);
     procedure tvRoomsExpectedCheckoutTimePropertiesValidate(Sender: TObject; var DisplayValue: Variant;
       var ErrorText: TCaption; var Error: Boolean);
@@ -2178,9 +2177,6 @@ begin
   gbxRoomAlert.Visible := TRIM(edtRoom.Text + edtRoomType.Text) <> '';
   if gbxProfileAlert.Visible then
   begin
-    edtSpecialRequests.Font.Color := clRed;
-    edtNotes.Font.Color := clRed;
-
     lblSpecialRequests.Visible := (edtSpecialRequests.Text) <> '';
     edtSpecialRequests.Visible := (edtSpecialRequests.Text) <> '';
 
@@ -2219,10 +2215,6 @@ begin
     end;
     SetProfileAlertVisibility;
   end;
-end;
-
-procedure TfrmReservationProfile.mGuestsAfterScroll(DataSet: TDataSet);
-begin
 end;
 
 // ********************************************************************************

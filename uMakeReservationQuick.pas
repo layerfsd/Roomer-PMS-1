@@ -716,7 +716,6 @@ type
     procedure tvSelectTypeNoRoomsStylesGetContentStyle(Sender: TcxCustomGridTableView; ARecord: TcxCustomGridRecord;
       AItem: TcxCustomGridTableItem; var AStyle: TcxStyle);
     procedure __tvRoomResColumn2PropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
-    procedure gbxProfileAlertClick(Sender: TObject);
     procedure GetLocaTimeEditProperties(Sender: TcxCustomGridTableItem; ARecord: TcxCustomGridRecord;
       var AProperties: TcxCustomEditProperties);
     procedure FormatTextToShortFormat(Sender: TcxCustomGridTableItem; ARecord: TcxCustomGridRecord;
@@ -1340,10 +1339,6 @@ begin
   FrmAlertPanel.PlaceEditPanel(Alerts, FNewReservation.AlertList);
 end;
 
-procedure TfrmMakeReservationQuick.gbxProfileAlertClick(Sender: TObject);
-begin
-
-end;
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 //  RoomRes grid and table

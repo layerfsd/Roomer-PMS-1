@@ -157,7 +157,6 @@ TYPE
     edtStaff: TsEdit;
     Label5: TsLabel;
     agrLines: TAdvStringGrid;
-    LMDSpeedButton2: TsButton;
     labExport: TsLabel;
     edtRefrence: TsEdit;
     Label6: TsLabel;
@@ -186,7 +185,6 @@ TYPE
     procedure timCloseTimer(Sender: TObject);
     procedure btnEmailSendClick(Sender: TObject);
     procedure LMDSpeedButton3Click(Sender: TObject);
-    procedure LMDSpeedButton2Click(Sender: TObject);
     procedure frxReport1PrintPage(Page: TfrxReportPage; CopyNo: Integer);
     procedure frxReport1GetValue(const VarName: string; var Value: Variant);
     procedure frxPDFExport1BeginExport(Sender: TObject);
@@ -1061,11 +1059,6 @@ begin
   end;
 end;
 
-
-procedure TfrmFinishedInvoices2.LMDSpeedButton2Click(Sender: TObject);
-begin
-  // d.InsertMTdata(zInvoiceNumber,true,false,false);
-end;
 
 function TfrmFinishedInvoices2.frxMailExport1SendMail(const Server: string; const Port: Integer; const UserField, PasswordField: string; FromField, ToField, SubjectField, CompanyField, TextField: WideString; FileNames: TStringList; Timeout: Integer;
   ConfurmReading: Boolean): string;
