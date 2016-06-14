@@ -11680,15 +11680,12 @@ begin
     mnuItem.Clear;
     for i := 0 to SelectableRooms.Count - 1 do
     begin
-      // if TRoomInfo(SelectableRooms[i]).FRoomReservation <> FRoomReservation then
-      // begin
       Item := TMenuItem.create(nil);
       Item.caption := TRoomInfo(SelectableRooms[i]).FRoom;
       Item.Tag := i;
       mnuItem.add(Item);
       if (mnuItem = mnuMoveItemToSpecifiedRoomAndInvoiceIndex) then
       begin
-        // item.OnClick := t2Click
         Item.Clear;
         for l := 0 to mnuInvoiceIndex.Items.Count - 1 do
         begin
@@ -11702,7 +11699,6 @@ begin
       end
       else if mnuItem = mnuMoveRoomRentFromGroupToNormalRoomInvoice then
         Item.OnClick := mnuMoveRoomRentFromGroupToNormalRoomInvoiceClick;
-      // end;
     end;
   end;
 end;
@@ -11725,7 +11721,6 @@ begin
       mnuItem.add(Item);
       if (mnuItem = mnuMoveItemToSpecifiedRoomAndInvoiceIndex) OR (mnuItem = mnuMoveItemToAnyOtherRoomAndInvoiceIndex) then
       begin
-        // item.OnClick := t2Click
         Item.Clear;
         for l := 0 to mnuInvoiceIndex.Items.Count - 1 do
         begin
@@ -11739,7 +11734,6 @@ begin
       end
       else if mnuItem = mnuMoveRoomRentFromGroupToNormalRoomInvoice then
         Item.OnClick := mnuMoveRoomRentFromGroupToNormalRoomInvoiceClick;
-      // end;
     end;
   end;
 end;
@@ -11759,7 +11753,6 @@ begin
     Item.Tag := i;
     mnuItem.add(Item);
     Item.OnClick := TransferRoomToAnyRoomsClick;
-    // item.OnClick := t2Click
   end;
 end;
 
