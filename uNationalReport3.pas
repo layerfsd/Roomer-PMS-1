@@ -556,7 +556,7 @@ begin
   '    INNER JOIN persons ON countries.country = persons.country '#10+
   '    INNER JOIN reservations ON persons.Reservation = reservations.Reservation '#10+
   '    INNER JOIN roomsdate ON persons.RoomReservation = roomsdate.RoomReservation '#10+
-  '    INNER JOIN rooms on (rooms.room=roomsdate.room and rooms.wildcard=0) '#10+
+  '    INNER JOIN rooms on (rooms.room=roomsdate.room and rooms.wildcard=0 and rooms.active=1) '#10+
   ' WHERE '#10+
   '   (persons.RoomReservation IN %s )'#10+
   '      AND (((Resflag in (''G'',''P'',''D'',''O'',''A'')) AND roomsdate.isNoRoom=0) OR ((Resflag in (''G'',''D'')) AND roomsdate.isNoRoom<>0)) '#10+
@@ -712,7 +712,7 @@ begin
     '       countrygroups ON countries.CountryGroup = countrygroups.CountryGroup '#10+
     '     RIGHT OUTER JOIN '#10+
     '       roomreservations ON persons.RoomReservation = roomreservations.RoomReservation '#10+
-    '     INNER JOIN rooms ro ON roomreservations.room=ro.room and ro.wildcard=0  '#10 +
+    '     INNER JOIN rooms ro ON roomreservations.room=ro.room and ro.wildcard=0 and ro.active=1  '#10 +
     '     RIGHT OUTER JOIN '#10+
     '       reservations ON roomreservations.Reservation = reservations.Reservation '#10+
     ' WHERE '#10+

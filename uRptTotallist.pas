@@ -280,34 +280,34 @@ begin
     s := '';
     s := s+' SELECT '#10;
     s := s+'   pd.date AS dtDate '#10;
-    s := s+'   ,(SELECT count(rr.id) FROM roomreservations rr INNER JOIN rooms on (rooms.room=rr.room and rooms.wildcard=0)' +
+    s := s+'   ,(SELECT count(rr.id) FROM roomreservations rr INNER JOIN rooms on (rooms.room=rr.room and rooms.wildcard=0 and rooms.active=1)' +
                 ' WHERE (rr.arrival = pd.Date) AND rr.status in ('+sArrival+')) AS roomsArrival '#10;
 
-    s := s+'   ,(SELECT sum(rr.numGuests) FROM roomreservations rr INNER JOIN rooms on (rooms.room=rr.room and rooms.wildcard=0)' +
+    s := s+'   ,(SELECT sum(rr.numGuests) FROM roomreservations rr INNER JOIN rooms on (rooms.room=rr.room and rooms.wildcard=0 and rooms.active=1)' +
                 ' WHERE (rr.arrival = pd.Date) AND rr.status in ('+sArrival+')) AS paxArrival '#10;
 
-    s := s+'   ,(SELECT count(rr.id) FROM roomreservations rr INNER JOIN rooms on (rooms.room=rr.room and rooms.wildcard=0)' +
+    s := s+'   ,(SELECT count(rr.id) FROM roomreservations rr INNER JOIN rooms on (rooms.room=rr.room and rooms.wildcard=0 and rooms.active=1)' +
                 ' WHERE (rr.departure = pd.Date) AND rr.status in ('+sDeparture+')) AS roomsDeparture '#10;
 
-    s := s+'   ,(SELECT sum(rr.numGuests) FROM roomreservations rr INNER JOIN rooms on (rooms.room=rr.room and rooms.wildcard=0)' +
+    s := s+'   ,(SELECT sum(rr.numGuests) FROM roomreservations rr INNER JOIN rooms on (rooms.room=rr.room and rooms.wildcard=0 and rooms.active=1)' +
                 ' WHERE (rr.departure = pd.Date) AND rr.status in ('+sDeparture+')) AS paxDeparture '#10;
 
-    s := s+'   ,(SELECT count(rd.id) FROM roomsdate rd INNER JOIN rooms on (rooms.room=rd.room and rooms.wildcard=0)' +
+    s := s+'   ,(SELECT count(rd.id) FROM roomsdate rd INNER JOIN rooms on (rooms.room=rd.room and rooms.wildcard=0 and rooms.active=1)' +
                 ' WHERE date(rd.Adate)=pd.Date and rd.resflag in ('+sInhouse+')) AS roomsInhouse '#10;
 
     s := s+'   ,(SELECT count(pe.id) FROM persons pe WHERE RoomReservation IN ' +
-                ' ((SELECT roomreservation FROM roomsdate rd INNER JOIN rooms on (rooms.room=rd.room and rooms.wildcard=0)' +
+                ' ((SELECT roomreservation FROM roomsdate rd INNER JOIN rooms on (rooms.room=rd.room and rooms.wildcard=0 and rooms.active=1)' +
                 '   WHERE date(rd.Adate)=pd.Date and rd.resflag in ('+sInhouse+'))))  AS paxInhouse '#10;
 
-    s := s+'   ,((SELECT count(rd.id) FROM roomsdate rd INNER JOIN rooms on (rooms.room=rd.room and rooms.wildcard=0)' +
+    s := s+'   ,((SELECT count(rd.id) FROM roomsdate rd INNER JOIN rooms on (rooms.room=rd.room and rooms.wildcard=0 and rooms.active=1)' +
                 ' WHERE date(rd.Adate)=pd.Date and rd.resflag in ('+sInhouse+'))) '#10 +
-                ' - ((SELECT count(rr.id) FROM roomreservations rr INNER JOIN rooms on (rooms.room=rr.room and rooms.wildcard=0)' +
+                ' - ((SELECT count(rr.id) FROM roomreservations rr INNER JOIN rooms on (rooms.room=rr.room and rooms.wildcard=0 and rooms.active=1)' +
                 '     WHERE (rr.arrival = pd.Date) AND rr.status in ('+sArrival+'))) AS roomsStay '#10;
 
     s := s+'   ,(SELECT count(pe.id) FROM persons pe WHERE RoomReservation IN ' +
-                ' ((SELECT roomreservation FROM roomsdate rd INNER JOIN rooms on (rooms.room=rd.room and rooms.wildcard=0)' +
+                ' ((SELECT roomreservation FROM roomsdate rd INNER JOIN rooms on (rooms.room=rd.room and rooms.wildcard=0 and rooms.active=1)' +
                 ' WHERE date(rd.Adate)=pd.Date and rd.resflag in ('+sInhouse+')))) '#10 +
-                ' -  ((SELECT sum(numGuests) FROM roomreservations rr INNER JOIN rooms on (rooms.room=rr.room and rooms.wildcard=0)' +
+                ' -  ((SELECT sum(numGuests) FROM roomreservations rr INNER JOIN rooms on (rooms.room=rr.room and rooms.wildcard=0 and rooms.active=1)' +
                 '      WHERE (rr.arrival = pd.Date) AND rr.status in ('+sArrival+'))) AS paxStay '#10;
 
     s := s+'   ,(SELECT count(rd.id) FROM roomsdate rd WHERE date(rd.Adate)=pd.Date and rd.resflag in ('+sWaitingList+')) AS roomsWaitinglist '#10;
@@ -317,21 +317,21 @@ begin
     s := s+'   ,(SELECT count(rd.id) FROM roomsdate rd WHERE date(rd.Adate)=pd.Date and rd.resflag in ('+sAllotment+')) AS roomsAllotmennt '#10;
 
     s := s+'   ,(SELECT count(pe.id) FROM persons pe WHERE RoomReservation IN ' +
-                ' ((SELECT roomreservation FROM roomsdate rd INNER JOIN rooms on (rooms.room=rd.room and rooms.wildcard=0)' +
+                ' ((SELECT roomreservation FROM roomsdate rd INNER JOIN rooms on (rooms.room=rd.room and rooms.wildcard=0 and rooms.active=1)' +
                 '   WHERE date(rd.Adate)=pd.Date and rd.resflag in ('+sAllotment+'))))  AS paxAllotment '#10;
 
-    s := s+'   ,(SELECT count(rd.id) FROM roomsdate rd INNER JOIN rooms on (rooms.room=rd.room and rooms.wildcard=0)' +
+    s := s+'   ,(SELECT count(rd.id) FROM roomsdate rd INNER JOIN rooms on (rooms.room=rd.room and rooms.wildcard=0 and rooms.active=1)' +
                 ' WHERE date(rd.Adate)=pd.Date and rd.resflag in ('+sTotal+')) AS roomsTotal '#10;
 
     s := s+'   ,(SELECT count(pe.id) FROM persons pe WHERE RoomReservation IN ' +
-                ' ((SELECT roomreservation FROM roomsdate rd INNER JOIN rooms on (rooms.room=rd.room and rooms.wildcard=0)' +
+                ' ((SELECT roomreservation FROM roomsdate rd INNER JOIN rooms on (rooms.room=rd.room and rooms.wildcard=0 and rooms.active=1)' +
                 '   WHERE date(rd.Adate)=pd.Date and rd.resflag in ('+sTotal+'))))  AS paxTotal '#10;
 
-    s := s+'   ,(SELECT count(rd.id) FROM roomsdate rd INNER JOIN rooms on (rooms.room=rd.room and rooms.wildcard=0)' +
+    s := s+'   ,(SELECT count(rd.id) FROM roomsdate rd INNER JOIN rooms on (rooms.room=rd.room and rooms.wildcard=0 and rooms.active=1)' +
                 ' WHERE date(rd.Adate)=pd.Date and rd.resflag in ('+sOutofOrder+')) AS roomsOutOfOrder '#10;
 
     s := s+'   ,(SELECT count(pe.id) FROM persons pe WHERE RoomReservation IN ' +
-                ' ((SELECT roomreservation FROM roomsdate rd INNER JOIN rooms on (rooms.room=rd.room and rooms.wildcard=0)' +
+                ' ((SELECT roomreservation FROM roomsdate rd INNER JOIN rooms on (rooms.room=rd.room and rooms.wildcard=0 and rooms.active=1)' +
                 '   WHERE date(rd.Adate)=pd.Date and rd.resflag in ('+sOutOfOrder+'))))  AS paxOutOfOrder '#10;
 
     s := s+'  FROM predefineddates pd '#10;

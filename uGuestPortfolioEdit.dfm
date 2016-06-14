@@ -36,15 +36,13 @@ object frmGuestPortfolio: TfrmGuestPortfolio
       Top = 4
       Width = 559
       Height = 635
-      ActivePage = sTabSheet4
+      ActivePage = sTabSheet1
       Align = alClient
       TabOrder = 0
       OnChange = pgPagesChange
       SkinData.SkinSection = 'PAGECONTROL'
       object sTabSheet1: TsTabSheet
         Caption = 'Person'
-        SkinData.CustomColor = False
-        SkinData.CustomFont = False
         object sGroupBox1: TsGroupBox
           AlignWithMargins = True
           Left = 10
@@ -585,7 +583,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Left = 4
             Top = 27
             Width = 20
-            Height = 18
+            Height = 16
             TabOrder = 0
             OnClick = xcmbGenderClick
             SkinData.SkinSection = 'CHECKBOX'
@@ -596,7 +594,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Left = 4
             Top = 54
             Width = 20
-            Height = 18
+            Height = 16
             TabOrder = 1
             OnClick = xcmbGenderClick
             SkinData.SkinSection = 'CHECKBOX'
@@ -607,7 +605,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Left = 4
             Top = 108
             Width = 20
-            Height = 18
+            Height = 16
             TabOrder = 2
             OnClick = xcmbGenderClick
             SkinData.SkinSection = 'CHECKBOX'
@@ -618,7 +616,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Left = 4
             Top = 81
             Width = 20
-            Height = 18
+            Height = 16
             TabOrder = 3
             OnClick = xcmbGenderClick
             SkinData.SkinSection = 'CHECKBOX'
@@ -629,7 +627,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Left = 4
             Top = 216
             Width = 20
-            Height = 18
+            Height = 16
             TabOrder = 4
             OnClick = xcmbGenderClick
             SkinData.SkinSection = 'CHECKBOX'
@@ -640,7 +638,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Left = 4
             Top = 189
             Width = 20
-            Height = 18
+            Height = 16
             TabOrder = 5
             OnClick = xcmbGenderClick
             SkinData.SkinSection = 'CHECKBOX'
@@ -651,7 +649,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Left = 4
             Top = 162
             Width = 20
-            Height = 18
+            Height = 16
             TabOrder = 6
             OnClick = xcmbGenderClick
             SkinData.SkinSection = 'CHECKBOX'
@@ -662,7 +660,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Left = 4
             Top = 135
             Width = 20
-            Height = 18
+            Height = 16
             TabOrder = 7
             OnClick = xcmbGenderClick
             SkinData.SkinSection = 'CHECKBOX'
@@ -673,7 +671,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Left = 4
             Top = 270
             Width = 20
-            Height = 18
+            Height = 16
             TabOrder = 8
             OnClick = xcmbGenderClick
             SkinData.SkinSection = 'CHECKBOX'
@@ -684,7 +682,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Left = 4
             Top = 243
             Width = 20
-            Height = 18
+            Height = 16
             TabOrder = 9
             OnClick = xcmbGenderClick
             SkinData.SkinSection = 'CHECKBOX'
@@ -695,7 +693,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Left = 4
             Top = 353
             Width = 20
-            Height = 18
+            Height = 16
             TabOrder = 10
             OnClick = xcmbGenderClick
             SkinData.SkinSection = 'CHECKBOX'
@@ -706,7 +704,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Left = 4
             Top = 380
             Width = 20
-            Height = 18
+            Height = 16
             TabOrder = 11
             OnClick = xcmbGenderClick
             SkinData.SkinSection = 'CHECKBOX'
@@ -717,7 +715,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Left = 4
             Top = 467
             Width = 20
-            Height = 18
+            Height = 16
             TabOrder = 12
             OnClick = xcmbGenderClick
             SkinData.SkinSection = 'CHECKBOX'
@@ -728,7 +726,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Left = 4
             Top = 494
             Width = 20
-            Height = 18
+            Height = 16
             TabOrder = 13
             OnClick = xcmbGenderClick
             SkinData.SkinSection = 'CHECKBOX'
@@ -739,8 +737,6 @@ object frmGuestPortfolio: TfrmGuestPortfolio
       end
       object sTabSheet7: TsTabSheet
         Caption = 'Contact'
-        SkinData.CustomColor = False
-        SkinData.CustomFont = False
         object sGroupBox4: TsGroupBox
           AlignWithMargins = True
           Left = 10
@@ -1370,7 +1366,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Left = 4
             Top = 27
             Width = 20
-            Height = 18
+            Height = 16
             TabOrder = 0
             OnClick = xcmbGenderClick
             SkinData.SkinSection = 'CHECKBOX'
@@ -1381,7 +1377,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Left = 4
             Top = 54
             Width = 20
-            Height = 18
+            Height = 16
             TabOrder = 1
             OnClick = xcmbGenderClick
             SkinData.SkinSection = 'CHECKBOX'
@@ -1392,7 +1388,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Left = 4
             Top = 108
             Width = 20
-            Height = 18
+            Height = 16
             TabOrder = 2
             OnClick = xcmbGenderClick
             SkinData.SkinSection = 'CHECKBOX'
@@ -1403,7 +1399,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Left = 4
             Top = 81
             Width = 20
-            Height = 18
+            Height = 16
             TabOrder = 3
             OnClick = xcmbGenderClick
             SkinData.SkinSection = 'CHECKBOX'
@@ -1414,7 +1410,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Left = 4
             Top = 272
             Width = 20
-            Height = 18
+            Height = 16
             TabOrder = 4
             OnClick = xcmbGenderClick
             SkinData.SkinSection = 'CHECKBOX'
@@ -1425,7 +1421,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Left = 4
             Top = 245
             Width = 20
-            Height = 18
+            Height = 16
             TabOrder = 5
             OnClick = xcmbGenderClick
             SkinData.SkinSection = 'CHECKBOX'
@@ -1436,7 +1432,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Left = 4
             Top = 162
             Width = 20
-            Height = 18
+            Height = 16
             TabOrder = 6
             OnClick = xcmbGenderClick
             SkinData.SkinSection = 'CHECKBOX'
@@ -1447,7 +1443,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Left = 4
             Top = 135
             Width = 20
-            Height = 18
+            Height = 16
             TabOrder = 7
             OnClick = xcmbGenderClick
             SkinData.SkinSection = 'CHECKBOX'
@@ -1458,7 +1454,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Left = 4
             Top = 383
             Width = 20
-            Height = 18
+            Height = 16
             TabOrder = 8
             OnClick = xcmbGenderClick
             SkinData.SkinSection = 'CHECKBOX'
@@ -1469,7 +1465,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Left = 4
             Top = 299
             Width = 20
-            Height = 18
+            Height = 16
             TabOrder = 9
             OnClick = xcmbGenderClick
             SkinData.SkinSection = 'CHECKBOX'
@@ -1480,7 +1476,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Left = 4
             Top = 410
             Width = 20
-            Height = 18
+            Height = 16
             TabOrder = 10
             OnClick = xcmbGenderClick
             SkinData.SkinSection = 'CHECKBOX'
@@ -1491,7 +1487,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Left = 4
             Top = 437
             Width = 20
-            Height = 18
+            Height = 16
             TabOrder = 11
             OnClick = xcmbGenderClick
             SkinData.SkinSection = 'CHECKBOX'
@@ -1502,7 +1498,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Left = 4
             Top = 518
             Width = 20
-            Height = 18
+            Height = 16
             TabOrder = 12
             OnClick = xcmbGenderClick
             SkinData.SkinSection = 'CHECKBOX'
@@ -1513,7 +1509,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Left = 4
             Top = 545
             Width = 20
-            Height = 18
+            Height = 16
             TabOrder = 13
             OnClick = xcmbGenderClick
             SkinData.SkinSection = 'CHECKBOX'
@@ -1524,7 +1520,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Left = 4
             Top = 491
             Width = 20
-            Height = 18
+            Height = 16
             TabOrder = 14
             OnClick = xcmbGenderClick
             SkinData.SkinSection = 'CHECKBOX'
@@ -1535,7 +1531,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
             Left = 4
             Top = 464
             Width = 20
-            Height = 18
+            Height = 16
             TabOrder = 15
             OnClick = xcmbGenderClick
             SkinData.SkinSection = 'CHECKBOX'
@@ -1546,12 +1542,6 @@ object frmGuestPortfolio: TfrmGuestPortfolio
       end
       object sTabSheet2: TsTabSheet
         Caption = 'Company'
-        SkinData.CustomColor = False
-        SkinData.CustomFont = False
-        ExplicitLeft = 0
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
         object sGroupBox7: TsGroupBox
           AlignWithMargins = True
           Left = 10
@@ -2149,12 +2139,6 @@ object frmGuestPortfolio: TfrmGuestPortfolio
       end
       object sTabSheet4: TsTabSheet
         Caption = 'Preferences'
-        SkinData.CustomColor = False
-        SkinData.CustomFont = False
-        ExplicitLeft = 0
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
         object sGroupBox11: TsGroupBox
           AlignWithMargins = True
           Left = 10
@@ -2505,12 +2489,6 @@ object frmGuestPortfolio: TfrmGuestPortfolio
       end
       object tabHistory: TsTabSheet
         Caption = 'History'
-        SkinData.CustomColor = False
-        SkinData.CustomFont = False
-        ExplicitLeft = 0
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
         object grData: TcxGrid
           Left = 0
           Top = 41
@@ -2693,12 +2671,6 @@ object frmGuestPortfolio: TfrmGuestPortfolio
       end
       object tabInvoices: TsTabSheet
         Caption = 'Invoices'
-        SkinData.CustomColor = False
-        SkinData.CustomFont = False
-        ExplicitLeft = 0
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
         object grInvoices: TcxGrid
           Left = 0
           Top = 41
@@ -2976,6 +2948,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
     Top = 168
     object prLink_grData: TdxGridReportLink
       Component = grData
+      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 5080
       PrinterPage.GrayShading = True
@@ -2989,6 +2962,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
       ReportDocument.CreationDate = 41334.495374884260000000
+      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       BuiltInReportLink = True
     end
   end

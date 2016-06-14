@@ -1324,6 +1324,7 @@ begin
 
   FrmAlertPanel := TFrmAlertPanel.Create(nil);
   FrmAlertPanel.PlaceEditPanel(Alerts, oNewReservation.AlertList);
+  gbxProfileAlert.Visible := False;
 end;
 
 procedure TfrmMakeReservationQuick.gbxProfileAlertClick(Sender: TObject);

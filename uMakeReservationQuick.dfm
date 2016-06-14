@@ -23,7 +23,7 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
     Top = 0
     Width = 1108
     Height = 572
-    ActivePage = tabRoomRates
+    ActivePage = taReservation
     Align = alClient
     TabOrder = 0
     OnChange = pgcMainChange
@@ -49,9 +49,9 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
           object gbxGetCustomer: TsGroupBox
             AlignWithMargins = True
             Left = 6
-            Top = 115
+            Top = 109
             Width = 491
-            Height = 82
+            Height = 76
             Margins.Left = 5
             Margins.Top = 2
             Margins.Right = 5
@@ -74,6 +74,7 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
             TabOrder = 1
             SkinData.SkinSection = 'GROUPBOX'
             Checked = False
+            ExplicitTop = 106
             object clabCustomer: TsLabel
               Left = 106
               Top = 16
@@ -194,9 +195,9 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
           object gbxGetReservation: TsGroupBox
             AlignWithMargins = True
             Left = 6
-            Top = 201
+            Top = 189
             Width = 491
-            Height = 164
+            Height = 187
             Margins.Left = 5
             Margins.Top = 2
             Margins.Right = 5
@@ -219,6 +220,7 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
             TabOrder = 2
             SkinData.SkinSection = 'GROUPBOX'
             Checked = False
+            ExplicitTop = 186
             object clabReservationName: TsLabel
               Left = 124
               Top = 46
@@ -515,7 +517,7 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
             Left = 6
             Top = 3
             Width = 491
-            Height = 108
+            Height = 102
             Margins.Left = 5
             Margins.Top = 2
             Margins.Right = 5
@@ -677,9 +679,9 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
           object gbxRate: TsGroupBox
             AlignWithMargins = True
             Left = 6
-            Top = 372
+            Top = 383
             Width = 491
-            Height = 164
+            Height = 153
             Margins.Left = 5
             Margins.Top = 5
             Margins.Right = 5
@@ -702,6 +704,8 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
             TabOrder = 3
             SkinData.SkinSection = 'GROUPBOX'
             Checked = False
+            ExplicitTop = 372
+            ExplicitHeight = 164
             object clabCurrency: TsLabel
               Left = 107
               Top = 15
@@ -1370,6 +1374,7 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
                 Align = alClient
                 Caption = 'Guest profile notes and preferences'
                 TabOrder = 1
+                Visible = False
                 OnClick = gbxProfileAlertClick
                 SkinData.SkinSection = 'GROUPBOX'
                 Checked = False
