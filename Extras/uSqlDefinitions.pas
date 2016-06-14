@@ -6278,7 +6278,7 @@ begin
     S := Format(S, ['RoomReservation', 'RoomReservation']) +
          ' RoomReservation IN (SELECT rd.RoomReservation ' +
          ' FROM roomsdate rd JOIN roomreservations rr ON rr.RoomReservation=rd.RoomReservation ' +
-         ' WHERE (PaidBy=%d OR rd.RoomReservation=%d) ' +
+         ' WHERE (PaidBy=%d OR (rd.RoomReservation=%d AND PaidBy=0)) ' +
          ' AND rr.InvoiceIndex = ' + inttostr(InvoiceIndex) + ') ' + #13;
   end;
   result := s;

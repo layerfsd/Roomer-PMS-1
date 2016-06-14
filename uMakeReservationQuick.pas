@@ -1338,6 +1338,7 @@ begin
 
   FrmAlertPanel := TFrmAlertPanel.Create(self);
   FrmAlertPanel.PlaceEditPanel(Alerts, FNewReservation.AlertList);
+  gbxProfileAlert.Visible := False;
 end;
 
 
@@ -4261,7 +4262,7 @@ begin
     mRoomRates.First;
     while not mRoomRates.eof do
     begin
-      // Þetta er skítamixið
+      // ï¿½etta er skï¿½tamixiï¿½
       if mRoomRates.FieldByName('roomreservation').AsInteger = RoomReservation then
       begin
         rateRoomNumber := mRoomRates.FieldByName('RoomNumber').AsString;

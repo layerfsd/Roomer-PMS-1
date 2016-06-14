@@ -1586,6 +1586,7 @@ object frmReservationProfile: TfrmReservationProfile
         ParentFont = False
         TabOrder = 0
         LookAndFeel.NativeStyle = False
+        ExplicitTop = 106
         object tvRooms: TcxGridDBTableView
           Navigator.Buttons.CustomButtons = <>
           Navigator.Buttons.First.Visible = True
@@ -2059,7 +2060,7 @@ object frmReservationProfile: TfrmReservationProfile
             Width = 63
           end
           object tvRoomsunpaidRentPrice: TcxGridDBColumn
-            Caption = 'Price'
+            Caption = 'Room rate'
             DataBinding.FieldName = 'unpaidRentPrice'
             PropertiesClassName = 'TcxCurrencyEditProperties'
             Properties.DisplayFormat = '0.00;0.00'
@@ -2113,10 +2114,17 @@ object frmReservationProfile: TfrmReservationProfile
               0000000000000000000000000000000000000000000000000000000000000000
               0000000000000000000000000000000000000000000000000000000000000000
               0000000000000000000000000000000000000000000000000000}
-            Width = 26
+            Width = 24
+          end
+          object tvRoomsRateOrPackagePerDay: TcxGridDBColumn
+            Caption = 'Nightly rate'
+            DataBinding.FieldName = 'RateOrPackagePerDay'
+            Options.Editing = False
+            Width = 57
           end
           object tvRoomsCurrency: TcxGridDBColumn
             DataBinding.FieldName = 'Currency'
+            Options.Editing = False
             Width = 40
           end
           object tvRoomsisGroupAccount: TcxGridDBColumn
@@ -3601,6 +3609,9 @@ object frmReservationProfile: TfrmReservationProfile
     object mRoomsExpectedCheckoutTime: TWideStringField
       FieldName = 'ExpectedCheckoutTime'
     end
+    object mRoomsRateOrPackagePerDay: TFloatField
+      FieldName = 'RateOrPackagePerDay'
+    end
   end
   object mGuestRoomsDS: TDataSource
     DataSet = mGuestRooms
@@ -3608,8 +3619,8 @@ object frmReservationProfile: TfrmReservationProfile
     Top = 504
   end
   object mnuFinishedInv: TPopupMenu
-    Left = 760
-    Top = 488
+    Left = 752
+    Top = 520
     object mnuThisRoom: TMenuItem
       Caption = 'Closed this Room'
       OnClick = mnuThisRoomClick
@@ -3883,7 +3894,7 @@ object frmReservationProfile: TfrmReservationProfile
     Indexes = <>
     SortOptions = []
     Left = 752
-    Top = 424
+    Top = 456
     object mInvoiceLinesInvoiceNumber: TIntegerField
       FieldName = 'InvoiceNumber'
     end
@@ -3936,7 +3947,7 @@ object frmReservationProfile: TfrmReservationProfile
     Indexes = <>
     SortOptions = []
     Left = 672
-    Top = 440
+    Top = 472
     object mInvoiceHeadsInvoiceNumber: TIntegerField
       FieldName = 'InvoiceNumber'
     end
@@ -4022,12 +4033,12 @@ object frmReservationProfile: TfrmReservationProfile
   object mInvoiceHeadsDS: TDataSource
     DataSet = mInvoiceHeads
     Left = 584
-    Top = 464
+    Top = 504
   end
   object mInvoiceLinesDS: TDataSource
     DataSet = mInvoiceLines
     Left = 672
-    Top = 464
+    Top = 512
   end
   object StoreMain: TcxPropertiesStore
     Components = <
@@ -4057,7 +4068,7 @@ object frmReservationProfile: TfrmReservationProfile
     Interval = 500
     OnTimer = timBlinkTimer
     Left = 832
-    Top = 432
+    Top = 456
   end
   object DropComboTarget1: TDropComboTarget
     DragTypes = [dtCopy, dtLink]
@@ -4066,6 +4077,6 @@ object frmReservationProfile: TfrmReservationProfile
     OnGetDropEffect = DropComboTarget1GetDropEffect
     Target = Owner
     Left = 884
-    Top = 464
+    Top = 512
   end
 end

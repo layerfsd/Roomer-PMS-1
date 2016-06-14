@@ -526,6 +526,8 @@ type
     tvRoomsExpectedCheckoutTime: TcxGridDBColumn;
     cbxMarket: TsComboBox;
     lblMarket: TsLabel;
+    mRoomsRateOrPackagePerDay: TFloatField;
+    tvRoomsRateOrPackagePerDay: TcxGridDBColumn;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -2319,29 +2321,41 @@ begin
     s := s + '    , invBreakfast as Breakfast '#10;
     s := s + '    , GroupAccount as isGroupAccount '#10;
     s := s + '    , rrIsNoRoom as isNoRoom '#10;
+    s := s + '    , (SELECT ' +
+             '       SUM(roomrate * cu.avalue) / COUNT(rd.id) + ' +
+             '       IF((rr.package = NULL OR rr.package = ''''), 0, ' +
+             '       IFNULL((SELECT SUM(price * number) ' +
+             '       FROM invoicelines il ' +
+             '       WHERE il.roomreservation = rr.roomreservation ' +
+             '       AND importsource = rr.package), ' +
+             '       0)) ' +
+             '       FROM roomsdate rd ' +
+             '       JOIN currencies cu ON cu.currency = rd.currency ' +
+             '       WHERE rd.roomreservation = rr.roomreservation ' +
+             '       AND resflag NOT IN (''X'' , ''C'')) AS RateOrPackagePerDay'#10;
     s := s + '    , useStayTax '#10;
     s := s + '    , ratePlanCode '#10;
-    s := s + '    , IF(ISNULL(ManualChannelId) OR ManualChannelId < 1, (SELECT channel FROM reservations WHERE reservations.Reservation=roomreservations.Reservation LIMIT 1), ManualChannelId) AS ManualChannelId '#10;
+    s := s + '    , IF(ISNULL(ManualChannelId) OR ManualChannelId < 1, (SELECT channel FROM reservations WHERE reservations.Reservation=rr.Reservation LIMIT 1), ManualChannelId) AS ManualChannelId '#10;
     s := s + '    , RoomClass '#10;
     s := s + '    , blockMove '#10;
     s := s + '    , rrRoomAlias as RoomAlias '#10;
     s := s + '    , rrRoomTypeAlias as RoomTypeAlias '#10;
-    s := s + '    , (SELECT count(ID) FROM roomsdate WHERE (roomsdate.roomreservation=roomreservations.roomreservation) AND (roomsdate.ResFlag <> '
+    s := s + '    , (SELECT count(ID) FROM roomsdate WHERE (roomsdate.roomreservation=rr.roomreservation) AND (roomsdate.ResFlag <> '
       + _db(STATUS_DELETED) + ' )) AS unPaidRentNights '#10;
-    s := s + '    , (SELECT name FROM persons WHERE persons.roomreservation=roomreservations.roomreservation ORDER BY MainName DESC LIMIT 1) AS GuestName '#10;
-    s := s + '    , (SELECT PersonsProfilesId FROM persons WHERE persons.roomreservation=roomreservations.roomreservation ORDER BY MainName DESC LIMIT 1) AS PersonsProfilesId '#10;
-    s := s + '    , (SELECT count(ID) FROM persons WHERE persons.roomreservation=roomreservations.roomreservation) AS GuestCount '#10;
-    s := s + '    , (SELECT SUM(RoomRate) FROM roomsdate WHERE (roomsdate.roomreservation=roomreservations.roomreservation) AND (roomsdate.paid=0) AND (roomsdate.ResFlag <> '
+    s := s + '    , (SELECT name FROM persons WHERE persons.roomreservation=rr.roomreservation ORDER BY MainName DESC LIMIT 1) AS GuestName '#10;
+    s := s + '    , (SELECT PersonsProfilesId FROM persons WHERE persons.roomreservation=rr.roomreservation ORDER BY MainName DESC LIMIT 1) AS PersonsProfilesId '#10;
+    s := s + '    , (SELECT count(ID) FROM persons WHERE persons.roomreservation=rr.roomreservation) AS GuestCount '#10;
+    s := s + '    , (SELECT SUM(RoomRate) FROM roomsdate WHERE (roomsdate.roomreservation=rr.roomreservation) AND (roomsdate.paid=0) AND (roomsdate.ResFlag <> '
       + _db(STATUS_DELETED) + ' )) AS unPaidRoomRent '#10;
-    s := s + '    , (SELECT SUM(IF(isPercentage, RoomRate*Discount/100, Discount)) FROM roomsdate WHERE (roomsdate.roomreservation=roomreservations.roomreservation) AND (roomsdate.paid=0) AND (roomsdate.ResFlag <> '
+    s := s + '    , (SELECT SUM(IF(isPercentage, RoomRate*Discount/100, Discount)) FROM roomsdate WHERE (roomsdate.roomreservation=rr.roomreservation) AND (roomsdate.paid=0) AND (roomsdate.ResFlag <> '
       + _db(STATUS_DELETED) + ' ))  AS DiscountUnPaidRoomRent '#10;
-    s := s + '    , ((SELECT SUM(RoomRate) FROM roomsdate WHERE (roomsdate.roomreservation=roomreservations.roomreservation) AND (roomsdate.paid=0) and (roomsdate.ResFlag <> '
+    s := s + '    , ((SELECT SUM(RoomRate) FROM roomsdate WHERE (roomsdate.roomreservation=rr.roomreservation) AND (roomsdate.paid=0) and (roomsdate.ResFlag <> '
       + _db(STATUS_DELETED) + ' )) '#10;
-    s := s + '       - (SELECT SUM(IF(isPercentage, RoomRate*Discount/100, Discount)) FROM roomsdate WHERE (roomsdate.roomreservation=roomreservations.roomreservation) AND (roomsdate.paid=0) AND (roomsdate.ResFlag <> '
+    s := s + '       - (SELECT SUM(IF(isPercentage, RoomRate*Discount/100, Discount)) FROM roomsdate WHERE (roomsdate.roomreservation=rr.roomreservation) AND (roomsdate.paid=0) AND (roomsdate.ResFlag <> '
       + _db(STATUS_DELETED) + ' ))) AS TotalUnpaidRoomRent '#10;
-    s := s + '    , (SELECT Description FROM roomtypegroups WHERE roomtypegroups.code=roomreservations.roomclass) AS RoomClassDescription '#10;
+    s := s + '    , (SELECT Description FROM roomtypegroups WHERE roomtypegroups.code=rr.roomclass) AS RoomClassDescription '#10;
     s := s + ' FROM '#10;
-    s := s + '   roomreservations '#10;
+    s := s + '   roomreservations rr'#10;
     s := s + ' WHERE '#10;
     s := s + '   (Reservation = %d) '#10;
     s := s + ' ORDER BY '#10;

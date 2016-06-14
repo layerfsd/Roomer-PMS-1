@@ -1002,7 +1002,7 @@ end;
 
 procedure TfrmGuestPortfolio.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
-  if NOT Merging then
+  if (ModalResult=mrOk) AND (NOT Merging) then
     PostCurrentIfNeeded;
 end;
 

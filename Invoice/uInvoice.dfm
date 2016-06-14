@@ -1380,10 +1380,6 @@ object frmInvoice: TfrmInvoice
         object tabRoomPrice: TTabSheet
           Caption = 'RoomPrice'
           TabVisible = False
-          ExplicitLeft = 0
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
           object panTopRoomRates: TsPanel
             Left = 0
             Top = 0
@@ -1448,8 +1444,8 @@ object frmInvoice: TfrmInvoice
               object chkReCalcPrices: TsCheckBox
                 Left = 9
                 Top = 20
-                Width = 203
-                Height = 17
+                Width = 195
+                Height = 20
                 Caption = 'Recalc price on guestcount  changes'
                 Checked = True
                 State = cbChecked
@@ -1461,8 +1457,8 @@ object frmInvoice: TfrmInvoice
               object chkAutoUpdateNullPrice: TsCheckBox
                 Left = 9
                 Top = 46
-                Width = 134
-                Height = 17
+                Width = 126
+                Height = 20
                 Caption = 'Auto update Null Price'
                 Checked = True
                 State = cbChecked
@@ -2917,13 +2913,13 @@ object frmInvoice: TfrmInvoice
       Caption = 'To group invoice'
       OnClick = T1Click
     end
-    object t2: TMenuItem
+    object mnuMoveItemToSpecifiedRoomAndInvoiceIndex: TMenuItem
       Caption = 'To room invoice'
     end
     object N6: TMenuItem
       Caption = '-'
     end
-    object T5: TMenuItem
+    object mnuMoveItemToAnyOtherRoomAndInvoiceIndex: TMenuItem
       Caption = 'Transfer'
       object TMenuItem
       end
@@ -2933,13 +2929,21 @@ object frmInvoice: TfrmInvoice
     OnPopup = mnuMoveRoomPopup
     Left = 544
     Top = 392
-    object T3: TMenuItem
+    object mnuMoveRoomRentFromRoomInvoiceToGroup: TMenuItem
       Caption = 'To group invoice'
-      OnClick = T3Click
+      OnClick = mnuMoveRoomRentFromRoomInvoiceToGroupClick
     end
-    object T4: TMenuItem
+    object mnuMoveRoomRentFromGroupToNormalRoomInvoice: TMenuItem
       Caption = 'To room invoice'
-      OnClick = T4Click
+      OnClick = mnuMoveRoomRentFromGroupToNormalRoomInvoiceClick
+    end
+    object N7: TMenuItem
+      Caption = '-'
+    end
+    object mnuTransferRoomRentToDifferentRoom: TMenuItem
+      Caption = 'Transfer'
+      object TMenuItem
+      end
     end
   end
   object mnuInvoiceIndex: TPopupMenu

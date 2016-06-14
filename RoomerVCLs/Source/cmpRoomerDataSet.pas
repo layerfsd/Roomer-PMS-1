@@ -1861,7 +1861,7 @@ procedure TRoomerDataSet.Post;
   var
     i: Integer;
     FieldData: PVariantList;
-    Data: OleVariant;
+    Data: Variant;
   begin
     try
       FieldData := PVariantList(PByte(ActiveBuffer) + SizeOf(TRecInfo));

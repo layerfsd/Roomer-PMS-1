@@ -1516,6 +1516,13 @@ begin
                 'Do you want to convert it to the new format now?' + #10#10 +
                 'Note: The report will not work correctly until you accept and convert the report to the newer format.' + #10 +
                 'After conversion though, the report will not work correctly in the older version of ROOMER PMS.');
+
+  constants.Add('shTx_Invoice_WarningWhenMovingCityTax',
+                'PLEASE NOTE:' + #13#13 +
+                'By moving the city-tax item to a different invoice you will disconnect it from the room-stay.' + #13 +
+                'This simply means that if you will later change the booking nights and/or prices then you' + #13 +
+                'will need to manually change the city-tax' + #13#13 +
+                'Do you want to continue anyway?');
 end;
 
 procedure AddConstants_OfflineReports;

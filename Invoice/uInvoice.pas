@@ -410,9 +410,9 @@ type
     mnuMoveItem: TPopupMenu;
     mnuMoveRoom: TPopupMenu;
     T1: TMenuItem;
-    t2: TMenuItem;
-    T3: TMenuItem;
-    T4: TMenuItem;
+    mnuMoveItemToSpecifiedRoomAndInvoiceIndex: TMenuItem;
+    mnuMoveRoomRentFromRoomInvoiceToGroup: TMenuItem;
+    mnuMoveRoomRentFromGroupToNormalRoomInvoice: TMenuItem;
     btnGetCustomer: TsButton;
     sPanel5: TsPanel;
     sPanel4: TsPanel;
@@ -464,7 +464,9 @@ type
     mRoomResGroupAccount: TBooleanField;
     S1: TMenuItem;
     N6: TMenuItem;
-    T5: TMenuItem;
+    mnuMoveItemToAnyOtherRoomAndInvoiceIndex: TMenuItem;
+    N7: TMenuItem;
+    mnuTransferRoomRentToDifferentRoom: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure agrLinesMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: integer);
@@ -532,8 +534,8 @@ type
       var Value: string; var Valid: boolean);
     procedure agrLinesDblClickCell(Sender: TObject; ARow, ACol: integer);
     procedure T1Click(Sender: TObject);
-    procedure T3Click(Sender: TObject);
-    procedure T4Click(Sender: TObject);
+    procedure mnuMoveRoomRentFromRoomInvoiceToGroupClick(Sender: TObject);
+    procedure mnuMoveRoomRentFromGroupToNormalRoomInvoiceClick(Sender: TObject);
     procedure mnuMoveItemPopup(Sender: TObject);
     procedure mnuMoveRoomPopup(Sender: TObject);
     procedure agrLinesRowChanging(Sender: TObject; OldRow, NewRow: integer;
@@ -792,6 +794,10 @@ type
     procedure LoadRoomListForOtherReservations(reservation: integer);
     procedure ExternalRoomsClick(Sender: TObject);
     procedure FillExternalRoomsInMenu(mnuItem: TMenuItem);
+    procedure FillAllRoomsInMenu(mnuItem: TMenuItem);
+    procedure LoadRoomListForAllReservations;
+    procedure TransferRoomToAnyRoomsClick(Sender: TObject);
+    procedure TransferRoomToAnotherRoomReservationInvoice(FromRoomReservation, RoomReservation, RealRoomReservation, Reservation: Integer);
 
     property InvoiceIndex: integer read FInvoiceIndex write SetInvoiceIndex;
   public
@@ -943,7 +949,7 @@ end;
 procedure TfrmInvoice.RemoveAllCheckboxes;
 var i : Integer;
 begin
-  for i := 0 to 200 do  // agrLines.RowCount - 1 do
+  for i := 0 to 400 do  // agrLines.RowCount - 1 do
     try if agrLines.HasCheckBox(col_Select, i) then
       agrLines.RemoveCheckBox(col_Select, i); Except end;
 end;
@@ -3741,6 +3747,7 @@ begin
     end;
 
   Again:
+    // Retrieve invoice header information
     zS := '';
     sql := 'SELECT CONVERT((SELECT GROUP_CONCAT(DISTINCT CONCAT(il1.InvoiceIndex, '';'', (SELECT SUM(il2.Total) FROM invoicelines il2 WHERE il2.RoomReservation=ih.RoomReservation '
       + 'AND il2.Reservation=ih.Reservation AND il2.InvoiceNumber=-1 AND il1.InvoiceIndex=il2.InvoiceIndex)) ORDER BY InvoiceIndex) '
@@ -3863,6 +3870,7 @@ begin
 
     zrSet.first;
 
+    // If invoice header is found...
     if not zrSet.eof then
     begin
       SetInvoiceIndexColors(zrSet.FieldByName('InvoiceIndexes').asString, zrSet.FieldByName('ihCurrency').asString);
@@ -3902,7 +3910,7 @@ begin
     end
     else
     begin
-      // Create New invoice
+      // Otherwise - create New invoice
       zInvoiceNumber := -1;
       zInvoiceDate := now;
       zConfirmDate := 2;
@@ -3979,6 +3987,7 @@ begin
       btnExit.Enabled := false;
       btnInvoice.Enabled := false;
       btnProforma.Enabled := false;
+//      sPanel4.Visible := false;
     end;
 
     zS := Select_Invoice_LoadInvoice3_WithInvoiceIndex(FRoomReservation, publicReservation, FInvoiceIndex, edtCustomer.Text);
@@ -4248,9 +4257,9 @@ begin
           // RoomRentPaidDays := LocalFloatValue(zRoomRSet.FieldByName('RoomRentPaid1').asString);
 
           if not zFakeGroup then
-            if (isGroupAccount and (FRoomReservation = 0)) or
-              ((not isGroupAccount) and (FRoomReservation = RoomReservation))
-            then
+//            if (isGroupAccount and (FRoomReservation = 0)) or
+//              ((not isGroupAccount) and (FRoomReservation = RoomReservation))
+//            then
             begin
               zRoomRentPaymentInvoice := zRoomRSet.FieldByName('RoomRentPaymentInvoice').asinteger;
               GuestsInRoomRes := NumberGuests; // ChildrenCount+infantCount
@@ -5225,6 +5234,48 @@ begin
   finally
     list.free;
   end;
+end;
+
+procedure TfrmInvoice.TransferRoomToAnyRoomsClick(Sender: TObject);
+var
+  omnu: TMenuItem;
+  list : TList<String>;
+  i, l, RealRoomReservation : Integer;
+begin
+  //
+  omnu := TMenuItem(Sender);
+
+  list := GetSelectedRows;
+  try
+    for l := list.Count - 1 downto 0 do
+    begin
+      i := IndexOfAutoGen(list[l]);
+      if i >= 0 then
+      begin
+        agrLines.Row := i;
+        RealRoomReservation := TRoomInfo(agrLines.Objects[col_ItemCount, i]).FRoomReservation;
+        TransferRoomToAnotherRoomReservationInvoice(FRoomReservation, SelectableExternalRooms[omnu.Tag].FRoomReservation, RealRoomReservation, SelectableExternalRooms[omnu.Tag].FReservation);
+      end;
+    end;
+  finally
+    list.free;
+  end;
+end;
+
+procedure TfrmInvoice.TransferRoomToAnotherRoomReservationInvoice(FromRoomReservation, RoomReservation, RealRoomReservation, Reservation : Integer);
+var sql : String;
+begin
+  if RealRoomReservation = RoomReservation then
+    sql := format('UPDATE roomsdate rd SET PaidBy=0 WHERE RoomReservation=%d AND (ResFlag NOT IN (''X'',''C''))', [RealRoomReservation])
+  else
+    sql := format('UPDATE roomsdate rd SET PaidBy=%d WHERE RoomReservation=%d AND (ResFlag NOT IN (''X'',''C''))', [RoomReservation, FromRoomReservation]);
+  CopyToClipboard(sql);
+  d.roomerMainDataSet.DoCommand(sql, False);
+  DeleteRow(agrLines, agrLines.row);
+  AddEmptyLine;
+  calcStayTax(publicReservation);
+  zInitString := CreateAllStr;
+  zDataChanged := chkChanged;
 end;
 
 procedure TfrmInvoice.NullifyGrid;
@@ -7475,10 +7526,8 @@ begin
             if agrLines.Objects[col_ItemCount, i] <> nil then
             begin
               // iPersons := TRoomInfo(agrLines.Objects[col_ItemCount, i]).FNumPersons;
-              invRoomReservation := TRoomInfo(agrLines.Objects[col_ItemCount, i])
-                .FRoomReservation;
-              iNights := trunc(TRoomInfo(agrLines.Objects[col_ItemCount, i]).FTo) -
-                trunc(TRoomInfo(agrLines.Objects[col_ItemCount, i]).FFrom);
+              invRoomReservation := TRoomInfo(agrLines.Objects[col_ItemCount, i]).FRoomReservation;
+              iNights := trunc(TRoomInfo(agrLines.Objects[col_ItemCount, i]).FTo) - trunc(TRoomInfo(agrLines.Objects[col_ItemCount, i]).FFrom);
             end;
           end;
 
@@ -8908,8 +8957,10 @@ end;
 
 procedure TfrmInvoice.pnlInvoiceIndex0DragDrop(Sender, Source: TObject; X, Y: integer);
 var list : TList<String>;
-    i, l : Integer;
+    i, l, Res : Integer;
+    invoiceLine : TInvoiceLine;
 begin
+  Res := -1;
   if (Source = agrLines) then
   begin
     list := GetSelectedRows;
@@ -8923,6 +8974,21 @@ begin
           if isSystemLine(i) AND (trim(agrLines.Cells[col_Item, i])= g.qRoomRentItem) then
           begin
             MoveRoomToNewInvoiceIndex(i, TsPanel(Sender).Tag);
+          end
+          else
+          if isSystemLine(i) AND (trim(agrLines.Cells[col_Item, i])= g.qStayTaxItem) then
+          begin
+            if Res <> mrAll then
+              Res := MessageDlg(GetTranslatedText('shTx_Invoice_WarningWhenMovingCityTax'), mtWarning, [mbYes, mbNo, mbAll, mbCancel], 0);
+            if Res IN [mrYes, mrAll] then
+            begin
+              invoiceLine := CellInvoiceLine(i);
+              agrLines.Objects[col_Item, i] := TObject(invoiceLine.FInvoiceLine);
+              RV_SetUseStayTax(publicReservation);
+              MoveItemToNewInvoiceIndex(i, TsPanel(Sender).Tag);
+            end else
+            if Res = mrCancel then
+              exit;
           end
           else
             MoveItemToNewInvoiceIndex(i, TsPanel(Sender).Tag);
@@ -8950,12 +9016,12 @@ begin
   actItemToGroupInvoiceExecute(Sender);
 end;
 
-procedure TfrmInvoice.T3Click(Sender: TObject);
+procedure TfrmInvoice.mnuMoveRoomRentFromRoomInvoiceToGroupClick(Sender: TObject);
 begin
   MoveRoomToGroupInvoice;
 end;
 
-procedure TfrmInvoice.T4Click(Sender: TObject);
+procedure TfrmInvoice.mnuMoveRoomRentFromGroupToNormalRoomInvoiceClick(Sender: TObject);
 begin
   MoveRoomToRoomInvoice;
 end;
@@ -11553,7 +11619,35 @@ var
 begin
   SelectableExternalRooms.Clear;
   sql := format
-    ('SELECT DISTINCT Room, Reservation, RoomReservation FROM roomsdate WHERE ADate=CURRENT_DATE AND Reservation != %d AND ResFlag IN (''P'',''G'')', [reservation]);
+    ('SELECT DISTINCT Room, Reservation, RoomReservation FROM roomsdate WHERE ADate=''' + dateToSqlString(frmMain.dtDate.Date) + ''' AND Reservation != %d AND ResFlag IN (''P'',''G'')', [reservation]);
+  rSet := CreateNewDataSet;
+  try
+    if hData.rSet_bySQL(rSet, sql, false) then
+    begin
+      rSet.first;
+      while NOT rSet.eof do
+      begin
+        Room := TRoomInfo.create;
+        Room.FRoom := rSet['Room'];
+        Room.FRoomReservation := rSet['RoomReservation'];
+        Room.FReservation := rSet['Reservation'];
+        SelectableExternalRooms.add(Room);
+        rSet.Next;
+      end;
+    end;
+  finally
+    FreeAndNil(rSet);
+  end;
+end;
+
+procedure TfrmInvoice.LoadRoomListForAllReservations;
+var
+  sql: String;
+  rSet: TRoomerDataset;
+  Room: TRoomInfo;
+begin
+  SelectableExternalRooms.Clear;
+  sql := 'SELECT DISTINCT Room, Reservation, RoomReservation FROM roomsdate WHERE ADate=''' + dateToSqlString(frmMain.dtDate.Date) + ''' AND ResFlag IN (''P'',''G'')';
   rSet := CreateNewDataSet;
   try
     if hData.rSet_bySQL(rSet, sql, false) then
@@ -11580,21 +11674,18 @@ var
   Item, subItem: TMenuItem;
   l: integer;
 begin
-  if (mnuItem = t2) OR (mnuItem = t4) then
+  if (mnuItem = mnuMoveItemToSpecifiedRoomAndInvoiceIndex) OR (mnuItem = mnuMoveRoomRentFromGroupToNormalRoomInvoice) then
   begin
     LoadRoomListForCurrentReservation(publicReservation);
     mnuItem.Clear;
     for i := 0 to SelectableRooms.Count - 1 do
     begin
-      // if TRoomInfo(SelectableRooms[i]).FRoomReservation <> FRoomReservation then
-      // begin
       Item := TMenuItem.create(nil);
       Item.caption := TRoomInfo(SelectableRooms[i]).FRoom;
       Item.Tag := i;
       mnuItem.add(Item);
-      if (mnuItem = t2) then
+      if (mnuItem = mnuMoveItemToSpecifiedRoomAndInvoiceIndex) then
       begin
-        // item.OnClick := t2Click
         Item.Clear;
         for l := 0 to mnuInvoiceIndex.Items.Count - 1 do
         begin
@@ -11606,9 +11697,8 @@ begin
           subItem.Enabled := subItem.Tag >= 0;
         end;
       end
-      else if mnuItem = T4 then
-        Item.OnClick := T4Click;
-      // end;
+      else if mnuItem = mnuMoveRoomRentFromGroupToNormalRoomInvoice then
+        Item.OnClick := mnuMoveRoomRentFromGroupToNormalRoomInvoiceClick;
     end;
   end;
 end;
@@ -11619,7 +11709,7 @@ var
   Item, subItem: TMenuItem;
   l: integer;
 begin
-  if (mnuItem = t5) then
+  if (mnuItem = mnuMoveItemToAnyOtherRoomAndInvoiceIndex) then
   begin
     LoadRoomListForOtherReservations(publicReservation);
     mnuItem.Clear;
@@ -11629,9 +11719,8 @@ begin
       Item.caption := TRoomInfo(SelectableExternalRooms[i]).FRoom;
       Item.Tag := i;
       mnuItem.add(Item);
-      if (mnuItem = t2) OR (mnuItem = t5) then
+      if (mnuItem = mnuMoveItemToSpecifiedRoomAndInvoiceIndex) OR (mnuItem = mnuMoveItemToAnyOtherRoomAndInvoiceIndex) then
       begin
-        // item.OnClick := t2Click
         Item.Clear;
         for l := 0 to mnuInvoiceIndex.Items.Count - 1 do
         begin
@@ -11643,22 +11732,39 @@ begin
           subItem.Enabled := subItem.Tag >= 0;
         end;
       end
-      else if mnuItem = T4 then
-        Item.OnClick := T4Click;
-      // end;
+      else if mnuItem = mnuMoveRoomRentFromGroupToNormalRoomInvoice then
+        Item.OnClick := mnuMoveRoomRentFromGroupToNormalRoomInvoiceClick;
     end;
+  end;
+end;
+
+procedure TfrmInvoice.FillAllRoomsInMenu(mnuItem: TMenuItem);
+var
+  i: integer;
+  Item : TMenuItem;
+  l: integer;
+begin
+  LoadRoomListForAllReservations;
+  mnuItem.Clear;
+  for i := 0 to SelectableExternalRooms.Count - 1 do
+  begin
+    Item := TMenuItem.create(nil);
+    Item.caption := TRoomInfo(SelectableExternalRooms[i]).FRoom;
+    Item.Tag := i;
+    mnuItem.add(Item);
+    Item.OnClick := TransferRoomToAnyRoomsClick;
   end;
 end;
 
 procedure TfrmInvoice.mnuMoveItemPopup(Sender: TObject);
 begin
-  FillRoomsInMenu(t2);
-  FillExternalRoomsInMenu(t5);
+  FillRoomsInMenu(mnuMoveItemToSpecifiedRoomAndInvoiceIndex);
+  FillExternalRoomsInMenu(mnuMoveItemToAnyOtherRoomAndInvoiceIndex);
 end;
 
 procedure TfrmInvoice.mnuMoveRoomPopup(Sender: TObject);
 begin
-  // FillRoomsInMenu(t4);
+  FillAllRoomsInMenu(mnuTransferRoomRentToDifferentRoom);
 end;
 
 procedure TfrmInvoice.edtCustomerExit(Sender: TObject);
