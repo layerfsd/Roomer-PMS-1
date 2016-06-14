@@ -653,7 +653,7 @@ object frmInvoice: TfrmInvoice
         Left = 906
         Top = 135
         Width = 119
-        Height = 17
+        Height = 19
         Caption = 'Package on invoice'
         Anchors = [akTop, akRight]
         Checked = True
@@ -693,10 +693,6 @@ object frmInvoice: TfrmInvoice
         object tabInvoice: TTabSheet
           Caption = 'Invoice'
           TabVisible = False
-          ExplicitLeft = 0
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
           object Panel2: TsPanel
             Left = 0
             Top = 340
@@ -1369,7 +1365,7 @@ object frmInvoice: TfrmInvoice
               SearchFooter.HintHighlight = 'Highlight occurrences'
               SearchFooter.MatchCaseCaption = 'Match case'
               SortSettings.DefaultFormat = ssAutomatic
-              Version = '7.9.1.1'
+              Version = '7.9.1.0'
               ColWidths = (
                 24
                 91

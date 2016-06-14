@@ -101,7 +101,7 @@ uses
 
 type
   {$SCOPEDENUMS ON}
-  TShowItemOfType = (All, BreakfastItems, StockItems, MinibarItems);
+  TShowItemOfType = (All, BreakfastItems, StockItems, MinibarItems, ShowAvailability);
   TShowItemOfTypeSet = set of TShowItemOfType;
 
   TfrmItems2 = class(TForm)
@@ -184,6 +184,21 @@ type
     kbmStockitemPricesitemID: TIntegerField;
     kbmStockitemPricesfromdate: TDateTimeField;
     kbmStockitemPricesprice: TFloatField;
+    m_Availability: TkbmMemTable;
+    m_AvailabilityStockitem: TIntegerField;
+    m_AvailabilityInUse: TIntegerField;
+    m_AvailabilityUseDate: TDateField;
+    m_ItemsAvailableStock: TIntegerField;
+    tvDataAvailableStock: TcxGridDBColumn;
+    pnlInfo: TsPanel;
+    cLabAvailFrom: TsLabel;
+    labAvailFrom: TsLabel;
+    clabAvailTo: TsLabel;
+    labAvailTo: TsLabel;
+    sLabel3: TsLabel;
+    sLabel4: TsLabel;
+    sLabel1: TsLabel;
+    labPriceProbeDate: TsLabel;
 
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -224,13 +239,11 @@ type
     procedure tvDataDataControllerDetailExpanding(ADataController: TcxCustomDataController; ARecordIndex: Integer;
       var AAllow: Boolean);
     procedure m_StockitemPricesNewRecord(DataSet: TDataSet);
-    procedure m_ItemsPriceGetText(Sender: TField; var Text: string; DisplayText: Boolean);
-    procedure tvDataPriceCustomDrawCell(Sender: TcxCustomGridTableView; ACanvas: TcxCanvas;
-      AViewInfo: TcxGridTableDataCellViewInfo; var ADone: Boolean);
     procedure m_StockitemPricesBeforePost(DataSet: TDataSet);
     procedure m_StockitemPricesBeforeDelete(DataSet: TDataSet);
     procedure tvDataEditing(Sender: TcxCustomGridTableView; AItem: TcxCustomGridTableItem; var AAllow: Boolean);
     procedure m_ItemsTotalStockGetText(Sender: TField; var Text: string; DisplayText: Boolean);
+    procedure m_ItemsCalcFields(DataSet: TDataSet);
   private
     { Private declarations }
     financeLookupList : TKeyPairList;
@@ -240,6 +253,8 @@ type
 
     zSortStr         : string;
     FShowItemsOfType: TShowItemOfTypeSet;
+    FAvailSet: TRoomerDataset;
+
 
     Procedure fillGridFromDataset(sGoto : string);
     procedure fillHolder;
@@ -253,7 +268,9 @@ type
     procedure SetAllowGridEdit(const Value: boolean);
     function CopyStockItemPricesToRec: recStockItemPricesHolder;
     function CalcStockitemPriceOndate(aItemID: integer; aDate: TDateTime): double;
-
+    procedure SetFilterForDataset(aRSet: TRoomerDataset);
+    procedure GetStockitemAvailability;
+    function ConstructSQL: string;
   protected
     Lookup : Boolean;
     zData: recItemHolder;
@@ -264,9 +281,6 @@ type
 
 function openItems(act : TActTableAction; Lookup : Boolean; var theData : recItemHolder; aShowTypes: TShowItemOfTypeSet=[TShowItemOfType.All]) : boolean;
 function openMultipleItems(act : TActTableAction; Lookup : Boolean; theData : TrecItemHolderList; aShowTypes: TShowItemOfTypeSet=[TShowItemOfType.All]) : boolean;
-
-var
-  frmItems2: TfrmItems2;
 
 implementation
 
@@ -283,7 +297,10 @@ uses
   , uBookKeepingCodes
   , uUtils
   , UITypes
+  , uDateUtils
+  , Math
   ;
+
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -419,72 +436,158 @@ begin
   end;
 end;
 
+procedure TfrmItems2.SetFilterForDataset(aRSet: TRoomerDataset);
+var
+  lFilterExpr: TStringbuilder;
+begin
+  lFilterExpr := TStringbuilder.Create;
+  try
+    if chkActive.Checked then
+      lFilterExpr.Append('(active=1) ')
+    else
+      lFilterExpr.Append('(active=0) ');
+
+    if not (TShowItemOfType.All in FShowItemsOfType) then
+    begin
+      lFilterExpr.Append(' and (');
+
+      if TShowItemOfType.StockItems in FShowItemsOfType then
+      begin
+        lFilterExpr.Append(' (stockitem=1)');
+        lFilterExpr.Append(' or');
+      end;
+
+      if TShowItemOfType.BreakfastItems in FShowItemsOfType then
+      begin
+        lFilterExpr.Append(' (breakfastitem=1)');
+        lFilterExpr.Append(' or');
+      end;
+
+      if TShowItemOfType.MinibarItems in FShowItemsOfType then
+      begin
+        lFilterExpr.Append(' (minibaritem=1)');
+        lFilterExpr.Append(' or');
+      end;
+        // remove last 'Or'
+      lFilterExpr.Remove(lFilterExpr.Length-2, 2);
+      lFilterExpr.Append(')');
+    end;
+    aRSet.Filter := lFilterExpr.ToString;
+    aRSet.Filtered := aRSet.Filter <> '';
+  finally
+    lFilterExpr.Free;
+  end;
+
+end;
+
+function TfrmItems2.ConstructSQL: string;
+const
+  cSQL = 'select ' +
+         ' i.ID, ' +
+         ' i.Item, ' +
+         ' i.Active, ' +
+         ' i.minibarItem, ' +
+         ' i.Description, ' +
+         ' i.itemType, ' +
+         ' i.AccountKey, ' +
+         ' i.Hide, ' +
+         ' i.Systemitem, ' +
+         ' i.RoomRentItem, ' +
+         ' i.ReservationItem, ' +
+         ' i.Currency, ' +
+         ' i.BookKeepCode, ' +
+         ' i.NumberBase, ' +
+         ' i.breakfastitem, ' +
+         ' i.Stockitem, ' +
+         ' s.totalstock as totalstock, 0 as availablestock, ' +
+         ' case  '+
+         '   when i.stockitem then ' +
+         '     (select price ' +
+		     '      from stockitemprices sip ' +
+         '      where fromdate <= ''%s'' and sip.itemid = i.id ' +
+         '      order by fromdate desc limit 1  ' +
+         '     ) ' +
+         '   else  '+
+         '    i.Price '+
+         ' end as price '+
+          'from items i ' +
+         'left outer join stockitems s on i.id=s.itemid';
+
+begin
+  if zData.StockItemPriceDate > 0 then
+    Result := Format(cSQL, [DateToSqlString(zData.StockItemPriceDate)])
+  else
+    Result := Format(cSQL, [DateToSqlString(Now())]);
+end;
+
 Procedure TfrmItems2.fillGridFromDataset(sGoto : string);
 var
   rSet : TRoomerDataSet;
-  active : boolean;
-  lFilterExpr: TStringbuilder;
 begin
   zFirstTime := true;
-  active := chkActive.Checked;
 
   if zSortStr = '' then zSortStr := 'Item';
 
-  rSet := glb.Items;
+  rSet := CreateNewDataSet;
+  rSet_bySQL(rSet, ConstructSQL);
   try
     rSet.Sort := 'Item';
 
-    lFilterExpr := TStringbuilder.Create;
-    try
-      if active then
-        lFilterExpr.Append('(active=1) ')
-      else
-        lFilterExpr.Append('(active=0) ');
+    SetFilterForDataset(rSet);
 
-      if not (TShowItemOfType.All in FShowItemsOfType) then
-      begin
-        lFilterExpr.Append(' and (');
-
-        if TShowItemOfType.StockItems in FShowItemsOfType then
-        begin
-          lFilterExpr.Append(' (stockitem=1)');
-          lFilterExpr.Append(' or');
-        end;
-
-        if TShowItemOfType.BreakfastItems in FShowItemsOfType then
-        begin
-          lFilterExpr.Append(' (breakfastitem=1)');
-          lFilterExpr.Append(' or');
-        end;
-
-        if TShowItemOfType.MinibarItems in FShowItemsOfType then
-        begin
-          lFilterExpr.Append(' (minibaritem=1)');
-          lFilterExpr.Append(' or');
-        end;
-          // remove last 'Or'
-        lFilterExpr.Remove(lFilterExpr.Length-2, 2);
-        lFilterExpr.Append(')');
-      end;
-      rSet.Filter := lFilterExpr.ToString;
-      rSet.Filtered := rSet.Filter <> '';
-    finally
-      lFilterExpr.Free;
-    end;
+    m_Items.Close;
+    m_Items.Open;
 
     rSet.First;
     if NOT rSet.Eof then
     begin
-      m_Items.Close;
-      m_Items.LoadFromDataSet(rSet);
-      if (sGoto = '') or not m_Items.Locate('item',sGoto,[]) then
-        m_Items.First;
+      m_Items.DisableControls;
+      try
+        if TShowItemOfType.ShowAvailability in FShowItemsOfType then
+          GetStockitemAvailability;
+
+        m_Items.LoadFromDataSet(rSet);
+
+        if (sGoto = '') or not m_Items.Locate('item',sGoto,[]) then
+          m_Items.First;
+      finally
+        m_Items.EnableControls;
+      end;
     end;
   finally
     rSet.Filter := '';
     rSet.Filtered := False;
   end;
 
+end;
+
+
+
+procedure TfrmItems2.GetStockitemAvailability;
+const
+  cSQL = 'select ' +
+         ' rrs.Stockitem, ' +
+         ' rrs.usedate,' +
+         ' sum(rrs.count) as inUse ' +
+         'from roomreservationstockitems rrs ' +
+         'where rrs.usedate >= ''%s''  and rrs.usedate <= ''%s'' ' +
+         'group by rrs.stockitem, rrs.usedate ';
+var
+  lSQL: string;
+  lrSet: TRoomerDataset;
+begin
+  lSQL := format(cSQL, [DateTOSQLString(zData.AvailabilityFrom), DateToSQLString(zData.AvailabilityTo)]);
+  lrSet := CreateNewDataset;
+  try
+    rSet_bySQL(lrSet, lSQL);
+
+    m_Availability.LoadFromDataSet(lRSet, []);
+    m_Availability.Open;
+    m_Availability.IndexFieldNames := 'stockitem;usedate';
+    m_Availability.First;
+  finally
+    lrSet.Free;
+  end;
 end;
 
 procedure TfrmItems2.fillHolder;
@@ -535,11 +638,6 @@ begin
   rc1 := tvData.DataController.RecordCount;
   rc2 := tvData.DataController.FilteredRecordCount;
   zFilterON := rc1 <> rc2;
-  if zFilterON then
-  begin
-  end else
-  begin
-  end;
 end;
 
 procedure TfrmItems2.SetAllowGridEdit(const Value: boolean);
@@ -621,6 +719,7 @@ begin
   //**
   zFirstTime  := true;
   zAct        := actNone;
+  FAvailSet := TRoomerDataSet.Create(self);
 end;
 
 procedure TfrmItems2.FormShow(Sender: TObject);
@@ -657,6 +756,20 @@ begin
 
   tvPrices.DataController.ClearSorting(False);
   tvPricesfromdate.SortOrder := soDescending;
+
+  if (TShowItemOfType.ShowAvailability in FShowItemsOfType) then
+  begin
+    tvDataAvailableStock.Visible := True;
+    pnlInfo.Visible := true;
+    labAvailFrom.Caption := DateToStr(zData.AvailabilityFrom);
+    labAvailTo.Caption := DateToStr(zData.AvailabilityTo);
+    if zData.StockItemPriceDate > 0 then
+      labPriceProbeDate.Caption := DateToStr(zData.StockitempriceDate)
+    else
+      labPriceProbeDate.Caption := DateToStr(Now)
+  end;
+  tvDataTotalStock.Visible := not tvDataAvailableStock.Visible;
+
 
   grData.SetFocus;
 end;
@@ -849,6 +962,35 @@ end;
 
 
 
+procedure TfrmItems2.m_ItemsCalcFields(DataSet: TDataSet);
+var
+  lMaxUsage: integer;
+begin
+  if (TShowItemOfType.ShowAvailability in FShowItemsOfType) then
+  begin
+    m_Availability.DisableControls;
+    try
+      if m_Availability.Locate('stockitem', m_ItemsID.Asinteger, []) then
+      begin
+        lMaxusage := -MAXINT;
+        while not m_Availability.eof and (m_AvailabilityStockitem.AsInteger = m_ItemsID.AsInteger) and (m_AvailabilityUseDate.AsDateTime <= zData.AvailabilityTo) do
+        begin
+          lMaxUsage := max(lMaxUsage, m_AvailabilityInUse.AsInteger);
+          m_Availability.Next;
+        end;
+
+        m_ItemsAvailableStock.AsInteger:= (m_ItemsTotalStock.AsInteger - lMaxusage);
+
+      end
+      else
+        m_ItemsAvailableStock.Clear;
+
+    finally
+      m_Availability.EnableControls;
+    end;
+  end;
+end;
+
 procedure TfrmItems2.m_ItemsFilterRecord(DataSet: TDataSet; var Accept: Boolean);
 begin
   if tvData.DataController.Filter.AutoDataSetFilter AND (edFilter.Text <> '') then
@@ -874,14 +1016,6 @@ begin
   dataset['NumberBase']      := 'USER_EDIT'; // nvarchar(5); //
   dataset['StocKitem']       := false;
   dataset['TotalStock']      := 0;
-end;
-
-procedure TfrmItems2.m_ItemsPriceGetText(Sender: TField; var Text: string; DisplayText: Boolean);
-begin
-  if m_ItemsStockItem.AsBoolean then
-    Text := ''
-  else
-    Text := m_ItemsPrice.AsString;
 end;
 
 procedure TfrmItems2.m_ItemsTotalStockGetText(Sender: TField; var Text: string; DisplayText: Boolean);
@@ -995,15 +1129,6 @@ begin
   end;
 end;
 
-procedure TfrmItems2.tvDataPriceCustomDrawCell(Sender: TcxCustomGridTableView; ACanvas: TcxCanvas;
-  AViewInfo: TcxGridTableDataCellViewInfo; var ADone: Boolean);
-begin
-  if m_ItemsStockItem.AsBoolean then
-    aCanvas.Font.Color := clScrollBar
-  else
-    aCanvas.Font.Color := clBlack;
-end;
-
 procedure TfrmItems2.tvDataDblClick(Sender: TObject);
 begin
   if ZAct = actLookup then
@@ -1071,8 +1196,7 @@ procedure TfrmItems2.tvDataDataControllerDetailExpanding(ADataController: TcxCus
   ARecordIndex: Integer; var AAllow: Boolean);
 begin
   // Only allow when a stockitem
-  if aDataController.Values[aRecordindex, 16] = false then
-  aAllow := false;
+  aAllow := aDataController.Values[aRecordindex, tvDataStockItem.Index];
 end;
 
 procedure TfrmItems2.tvDataDataControllerFilterChanged(Sender: TObject);
@@ -1220,9 +1344,6 @@ begin
   sFilename := g.qProgramPath + caption;
   ExportGridToExcel(sFilename, grData, true, true, true);
   ShellExecute(Handle, 'OPEN', PChar(sFilename + '.xls'), nil, nil, sw_shownormal);
-  //  To export ot xlsx form then use this
-  //  ExportGridToXLSX(sFilename, grData, true, true, true);
-  //  ShellExecute(Handle, 'OPEN', PChar(sFilename + '.xlsx'), nil, nil, sw_shownormal);
 end;
 
 procedure TfrmItems2.mnuiGridToHtmlClick(Sender: TObject);

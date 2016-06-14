@@ -60,6 +60,9 @@ TYPE
     procedure CorrectForNewDepartureDate(aNewDepartureDate: TDateTime);
     /// <summary>Check if ToDate of all extras is not later then new departure date. If so correct this </summary>
     procedure CorrectForNewArrivalDate(aNewArrivalDate: TDateTime);
+
+    /// <summary> Post all ReservationExtras to server
+    procedure Post;
   end;
 
   TnewRoomReservationItem = class
@@ -892,6 +895,7 @@ var
   lstInvoiceActivity : TStringlist;
   ExpTOA: string;
   ExpCOT: string;
+  newRoomReservationItem: TnewRoomReservationItem;
 
   procedure init;
   begin
@@ -1633,6 +1637,11 @@ begin
           end;
         end;
 
+
+        for newRoomReservationItem in FnewRoomReservations.FRoomList do
+          newRoomReservationItem.Extras.Post;
+
+
         if FHomeCustomer.CreatePersonProfileId then
         begin
           if FnewRoomReservations.RoomCount > 0 then
@@ -1786,6 +1795,11 @@ var
 begin
   for lExtra in Self do
     lExtra.SetNewDepartureDate(aNewDepartureDate);
+end;
+
+procedure TReservationExtrasList.Post;
+begin
+  //
 end;
 
 function TReservationExtrasList.TotalPrice: double;

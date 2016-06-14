@@ -1236,6 +1236,8 @@ type
     Stockitem: boolean;
     TotalStock: integer;
     StockItemPriceDate: TDateTime;
+    AvailabilityFrom: TDateTime;
+    AvailabilityTo: TDateTime;
     // Missing fields to create
     // ItemTypeID
     // CurrencyID

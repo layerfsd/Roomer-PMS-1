@@ -339,12 +339,14 @@ object frmReservationExtras: TfrmReservationExtras
       object tvExtrasCount: TcxGridDBColumn
         DataBinding.FieldName = 'Count'
         PropertiesClassName = 'TcxCalcEditProperties'
+        HeaderAlignmentHorz = taCenter
       end
       object tvExtrasPricePerItemPerDay: TcxGridDBColumn
         Caption = 'Price Per Item Per Day'
         DataBinding.FieldName = 'PricePerItemPerDay'
         PropertiesClassName = 'TcxCurrencyEditProperties'
         Properties.DisplayFormat = ',0.00;-,0.00'
+        HeaderAlignmentHorz = taCenter
       end
       object tvExtrasFromdate: TcxGridDBColumn
         Caption = 'From'
@@ -353,6 +355,7 @@ object frmReservationExtras: TfrmReservationExtras
         Properties.SaveTime = False
         Properties.ShowTime = False
         Properties.ValidationOptions = [evoShowErrorIcon]
+        HeaderAlignmentHorz = taCenter
       end
       object tvExtrasToDate: TcxGridDBColumn
         Caption = 'To'
@@ -361,12 +364,14 @@ object frmReservationExtras: TfrmReservationExtras
         Properties.SaveTime = False
         Properties.ShowTime = False
         Properties.ValidationOptions = [evoRaiseException, evoShowErrorIcon]
+        HeaderAlignmentHorz = taCenter
       end
       object tvExtrasTotalPrice: TcxGridDBColumn
         Caption = 'Total Price'
         DataBinding.FieldName = 'Totalprice'
         PropertiesClassName = 'TcxCurrencyEditProperties'
         Properties.DisplayFormat = ',0.00;-,0.00'
+        HeaderAlignmentHorz = taCenter
         Options.Editing = False
       end
     end
@@ -476,9 +481,23 @@ object frmReservationExtras: TfrmReservationExtras
       SkinData.SkinSection = 'BUTTON'
     end
   end
-  object mExtras: TdxMemData
-    Indexes = <>
+  object mExtras: TkbmMemTable
+    DesignActivation = True
+    AttachedAutoRefresh = True
+    AttachMaxCount = 1
+    FieldDefs = <>
+    IndexDefs = <>
     SortOptions = []
+    PersistentBackup = False
+    ProgressFlags = [mtpcLoad, mtpcSave, mtpcCopy]
+    LoadedCompletely = False
+    SavedCompletely = False
+    FilterOptions = []
+    Version = '7.22.00 Standard Edition'
+    LanguageID = 0
+    SortID = 0
+    SubLanguageID = 1
+    LocaleID = 1024
     BeforePost = mExtrasBeforePost
     OnCalcFields = mExtrasCalcFields
     OnNewRecord = mExtrasNewRecord

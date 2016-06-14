@@ -722,6 +722,7 @@ type
       var AText: string);
     procedure tvRoomResStockItemsCountPropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
     procedure mExtrasCalcFields(DataSet: TDataSet);
+    procedure mRoomResDSDataChange(Sender: TObject; Field: TField);
   private
     { Private declarations }
     zCustomerChanged: boolean;
@@ -1634,6 +1635,8 @@ begin
     try
       mRoomRes.Edit;
       try
+        mRoomResStockItemsCount.AsInteger := 0;
+        mRoomResStockitemsPrice.AsFloat := 0;
         mExtras.First;
         while not mExtras.Eof do
         begin
@@ -2816,6 +2819,11 @@ begin
   modalresult := mrok;
 end;
 
+procedure TfrmMakeReservationQuick.mRoomResDSDataChange(Sender: TObject; Field: TField);
+begin
+//
+end;
+
 procedure TfrmMakeReservationQuick.addAvailableRoomTypes;
 var
   rSet: TRoomerDataSet;
@@ -3136,32 +3144,32 @@ begin
   Departure := dtDeparture.date;
   PriceCode := Trim(edPcCode.Text);
 
-  lstIDs := TstringList.Create;
-  try
-    if not((zTotalSelected = 0) and (zTotalNoRooms > 0)) and (zTotal <> 0) then
+  if not((zTotalSelected = 0) and (zTotalNoRooms > 0)) and (zTotal <> 0) then
+  begin
+    mSelectRooms.First;
+    while not mSelectRooms.eof do
     begin
-      mSelectRooms.First;
-      while not mSelectRooms.eof do
+      if mSelectRoomsSelect.AsBoolean then
       begin
-        selected := mSelectRooms.FieldByName('Select').AsBoolean;
-        if selected then
-        begin
-          room := mSelectRooms.FieldByName('room').AsString;
-          RoomType := mSelectRooms.FieldByName('RoomType').AsString;
-          NumberGuests := mSelectRooms.FieldByName('NumberGuests').AsInteger;
-          oSelectedRoomItem := TnewRoomReservationItem.Create(0, room, RoomType, '', Arrival, Departure, NumberGuests, 0, 0, true, 0, 0, 0, '', '', '');
-          FNewReservation.newRoomReservations.RoomItemsList.Add(oSelectedRoomItem);
-        end;
-        mSelectRooms.next;
+        room := mSelectRooms.FieldByName('room').AsString;
+        RoomType := mSelectRooms.FieldByName('RoomType').AsString;
+        NumberGuests := mSelectRooms.FieldByName('NumberGuests').AsInteger;
+        oSelectedRoomItem := TnewRoomReservationItem.Create(0, room, RoomType, '', Arrival, Departure, NumberGuests, 0, 0, true, 0, 0, 0, '', '', '');
+        FNewReservation.newRoomReservations.RoomItemsList.Add(oSelectedRoomItem);
       end;
-      mSelectRooms.First;
+      mSelectRooms.next;
     end;
+    mSelectRooms.First;
+  end;
 
-    mSelectTypes.First;
-    while not mSelectTypes.eof do
+
+  mSelectTypes.First;
+  while not mSelectTypes.eof do
+  begin
+    RoomType := mSelectTypes.FieldByName('RoomType').AsString;
+    NumberNoRoom := mSelectTypes.FieldByName('NoRooms').AsInteger;
+    if (NumberNoRoom > 0) then
     begin
-      RoomType := mSelectTypes.FieldByName('RoomType').AsString;
-      NumberNoRoom := mSelectTypes.FieldByName('NoRooms').AsInteger;
       room := '';
       NumberGuests := glb.GET_RoomTypeNumberGuests_byRoomType(RoomType);
       for i := 1 to NumberNoRoom do
@@ -3170,15 +3178,18 @@ begin
           0, true, 0, 0, 0, '', '', '');
         FNewReservation.newRoomReservations.RoomItemsList.Add(oSelectedRoomItem);
       end;
-      mSelectTypes.next;
     end;
-    mSelectTypes.First;
+    mSelectTypes.next;
+  end;
+  mSelectTypes.First;
 
-    mRoomRes.Close;
-    mRoomRes.Open;
+  mRoomRes.Close;
+  mRoomRes.Open;
 
-    RoomCount := FNewReservation.newRoomReservations.RoomCount;
+  RoomCount := FNewReservation.newRoomReservations.RoomCount;
 
+  lstIDs := TstringList.Create;
+  try
     sID := RR_GetIDs(RoomCount);
     _Glob._strTokenToStrings(sID, '|', lstIDs);
 
@@ -3186,7 +3197,8 @@ begin
     begin
       if oSelectedRoomItem.RoomReservation < 1 then
       begin
-        RoomReservation := strToInt(lstIDs[i]); // RR_SetNewID();
+        RoomReservation := strToInt(lstIDs[0]); // RR_SetNewID();
+        lstIds.Delete(0);
         oSelectedRoomItem.RoomReservation := RoomReservation;
       end;
 
@@ -3256,18 +3268,19 @@ begin
         mRoomRes.Cancel;
         raise;
       end;
-    end;
+    end; //for
 
-    if mRoomRes.RecordCount > 0 then
-    begin
-      btnFinish.Enabled := true;
-      memRoomNotes.Enabled := true;
-      clabRoomNotes.Visible := true;
-
-      mRoomRes.First;
-    end;
   finally
     FreeAndNil(lstIDs);
+  end;
+
+  if mRoomRes.RecordCount > 0 then
+  begin
+    btnFinish.Enabled := true;
+    memRoomNotes.Enabled := true;
+    clabRoomNotes.Visible := true;
+
+    mRoomRes.First;
   end;
 end;
 
@@ -4118,6 +4131,7 @@ var
   roomIndex: integer;
   mainGuestName: string;
   RoomNotes: string;
+  lReservationExtra: TReservationExtra;
 begin
   Result := true;
   Customer := edCustomer.Text;
@@ -4284,6 +4298,23 @@ begin
         oSelectedRoomItem.ExtraBedIncluded := cbxExtraBedIncl.Checked;
         oSelectedRoomItem.ExtraBedCost := StrToFloat(edtExtraBed.Text);
         oSelectedRoomItem.ExtraBedCostGroupAccount := cbxExtraBedGrp.Checked;
+
+        // Add extras
+        mExtras.First;
+        while not mExtras.Eof do
+        begin
+          if (mExtrasRoomreservation.asInteger = RoomReservation) then
+          begin
+            lReservationExtra := TReservationExtra.Create(oSelectedRoomItem,
+                                                          mExtrasItemid.AsInteger,
+                                                          mExtrasCount.AsInteger,
+                                                          mExtrasPricePerItemPerDay.AsFloat,
+                                                          iif(mExtrasFromdate.AsDateTime = Arrival, 0, mExtrasFromdate.AsDateTime),
+                                                          iif(mExtrasTodate.AsDateTime = Departure, 0, mExtrasTodate.AsDateTime));
+            oSelectedRoomItem.Extras.Add(lReservationExtra);
+          end;
+          mExtras.Next;
+        end;
       end;
 
       mRoomRates.next;

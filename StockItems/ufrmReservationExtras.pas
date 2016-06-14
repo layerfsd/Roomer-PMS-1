@@ -10,7 +10,7 @@ uses
   Vcl.StdCtrls, sLabel, sGroupBox, dxmdaset, sButton, sPanel, Vcl.ComCtrls, sStatusBar, cxGridLevel, cxClasses,
   cxGridCustomView, cxGridCustomTableView, cxGridTableView, cxGridDBTableView, cxGrid, Vcl.ExtCtrls, cxCalc,
   cxCurrencyEdit, cxCalendar, cxButtonEdit, cxTextEdit
-  , hData
+  , hData, kbmMemTable
   ;
 
 type
@@ -38,7 +38,7 @@ type
     panBtn: TsPanel;
     btnCancel: TsButton;
     BtnOk: TsButton;
-    mExtras: TdxMemData;
+    mExtras: TkbmMemTable;
     mExtrasRoomreservation: TIntegerField;
     mExtrasItemid: TIntegerField;
     mExtrasCount: TIntegerField;
@@ -125,12 +125,13 @@ begin
   try
     frm.FRoomReservation := aRoomreservation;
     frm.theData := aResDataHolder;
-    frm.mExtras.LoadFromDataSet(m_);
+    frm.mExtras.LoadFromDataSet(m_, []);
 
     Result := frm.ShowModal = mrOk;
     if Result then
     begin
       aResDataHolder := frm.theData;
+      frm.mExtras.Filtered := false;
       m_.close;
       m_.LoadFromDataSet(frm.mExtras);
     end;
@@ -143,6 +144,8 @@ function TfrmReservationExtras.CopyDatasetToRecItem:recItemHolder;
 begin
   Result.ID                    := mExtrasItemid.AsInteger;
   Result.StockItemPriceDate    := mExtrasFromdate.AsDateTime;
+  Result.AvailabilityFrom      := mExtrasFromdate.AsDateTIme;
+  Result.AvailabilityTo        := mExtrasToDate.AsDateTIme;
 end;
 
 procedure TfrmReservationExtras.grdExtrasDBTableView1ItemPropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
@@ -154,7 +157,7 @@ begin
 
   lRecItem := CopyDatasetToRecItem;
 
-  if openItems(actLookup, true, lrecItem, [TShowItemOfType.StockItems]) then
+  if openItems(actLookup, true, lrecItem, [TShowItemOfType.StockItems, TShowItemOfType.ShowAvailability]) then
   begin
     if not (mExtras.State = dsInsert) then
       mExtras.Edit;
@@ -163,6 +166,8 @@ begin
       mExtrasItem.AsString := lrecItem.Item;
       mExtrasDescription.AsString := lRecItem.Description;
       mExtrasPricePerItemPerDay.AsFloat := lRecItem.Price;
+      if mExtrasCount.AsInteger = 0 then
+        mExtrasCount.AsInteger := 1 ;
       mExtras.Post;
     except
       mExtras.Cancel;
@@ -174,7 +179,6 @@ begin
     begin
       lCountColumn := getcolumnbyfieldname('Count').index;
       datacontroller.focuscontrol(lCountColumn, dummy);
-      mExtras.Edit;
     end;
 
   end;
@@ -273,7 +277,10 @@ begin
   UpdateTopPanel;
 
   UpdateDateConstraints;
+
   mExtras.Open;
+  mExtras.Filter := format('roomreservation=%d', [FRoomreservation]);
+  mExtras.Filtered := true;
 end;
 
 end.

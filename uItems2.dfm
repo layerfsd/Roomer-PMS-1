@@ -3,7 +3,7 @@ object frmItems2: TfrmItems2
   Top = 0
   Caption = 'Sales Items'
   ClientHeight = 663
-  ClientWidth = 1092
+  ClientWidth = 1145
   Color = clBtnFace
   Constraints.MinWidth = 450
   Font.Charset = DEFAULT_CHARSET
@@ -22,15 +22,43 @@ object frmItems2: TfrmItems2
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
+  object sLabel3: TsLabel
+    Left = 85
+    Top = 28
+    Width = 83
+    Height = 13
+    Alignment = taRightJustify
+    AutoSize = False
+    Caption = 'Adults : '
+    ParentFont = False
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clBlack
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = []
+  end
+  object sLabel4: TsLabel
+    Left = 164
+    Top = 28
+    Width = 4
+    Height = 13
+    Caption = '-'
+    ParentFont = False
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clBlack
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = []
+  end
   object sPanel1: TsPanel
     Left = 0
     Top = 0
-    Width = 1092
+    Width = 1145
     Height = 89
     Align = alTop
     TabOrder = 0
     SkinData.SkinSection = 'PANEL'
-    ExplicitTop = -6
+    ExplicitWidth = 1092
     object cLabFilter: TsLabel
       Left = 19
       Top = 41
@@ -146,8 +174,8 @@ object frmItems2: TfrmItems2
     object chkActive: TsCheckBox
       Left = 55
       Top = 63
-      Width = 238
-      Height = 20
+      Width = 246
+      Height = 19
       Caption = 'Active (if checked then just active are visible)'
       Checked = True
       State = cbChecked
@@ -157,28 +185,125 @@ object frmItems2: TfrmItems2
       ImgChecked = 0
       ImgUnchecked = 0
     end
+    object pnlInfo: TsPanel
+      Left = 816
+      Top = 1
+      Width = 328
+      Height = 87
+      Align = alRight
+      TabOrder = 7
+      Visible = False
+      ExplicitLeft = 817
+      ExplicitTop = -4
+      object cLabAvailFrom: TsLabel
+        Left = 18
+        Top = 12
+        Width = 83
+        Height = 13
+        Alignment = taRightJustify
+        AutoSize = False
+        Caption = 'Availability from :'
+        ParentFont = False
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clBlack
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
+      end
+      object labAvailFrom: TsLabel
+        Left = 108
+        Top = 12
+        Width = 4
+        Height = 13
+        Caption = '-'
+        ParentFont = False
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clBlack
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
+      end
+      object clabAvailTo: TsLabel
+        Left = 18
+        Top = 31
+        Width = 83
+        Height = 13
+        Alignment = taRightJustify
+        AutoSize = False
+        Caption = 'Availability to :'
+        ParentFont = False
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clBlack
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
+      end
+      object labAvailTo: TsLabel
+        Left = 108
+        Top = 32
+        Width = 4
+        Height = 13
+        Caption = '-'
+        ParentFont = False
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clBlack
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
+      end
+      object sLabel1: TsLabel
+        Left = 18
+        Top = 50
+        Width = 83
+        Height = 13
+        Alignment = taRightJustify
+        AutoSize = False
+        Caption = 'Price on date :'
+        ParentFont = False
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clBlack
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
+      end
+      object labPriceProbeDate: TsLabel
+        Left = 108
+        Top = 50
+        Width = 4
+        Height = 13
+        Caption = '-'
+        ParentFont = False
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clBlack
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
+      end
+    end
   end
   object sbMain: TsStatusBar
     Left = 0
     Top = 644
-    Width = 1092
+    Width = 1145
     Height = 19
     Panels = <>
     SkinData.SkinSection = 'STATUSBAR'
+    ExplicitWidth = 1092
   end
   object panBtn: TsPanel
     Left = 0
     Top = 612
-    Width = 1092
+    Width = 1145
     Height = 32
     Align = alBottom
     TabOrder = 2
     SkinData.SkinSection = 'PANEL'
+    ExplicitWidth = 1092
     DesignSize = (
-      1092
+      1145
       32)
     object btnCancel: TsButton
-      Left = 1013
+      Left = 1066
       Top = 4
       Width = 75
       Height = 25
@@ -192,9 +317,10 @@ object frmItems2: TfrmItems2
       TabOrder = 0
       OnClick = btnCancelClick
       SkinData.SkinSection = 'BUTTON'
+      ExplicitLeft = 1013
     end
     object BtnOk: TsButton
-      Left = 935
+      Left = 988
       Top = 4
       Width = 75
       Height = 25
@@ -207,17 +333,19 @@ object frmItems2: TfrmItems2
       TabOrder = 1
       OnClick = BtnOkClick
       SkinData.SkinSection = 'BUTTON'
+      ExplicitLeft = 935
     end
   end
   object grData: TcxGrid
     Left = 0
     Top = 89
-    Width = 1092
+    Width = 1145
     Height = 523
     Align = alClient
     Constraints.MinWidth = 440
     TabOrder = 3
     LookAndFeel.NativeStyle = False
+    ExplicitTop = 88
     object tvData: TcxGridDBTableView
       OnDblClick = tvDataDblClick
       Navigator.Buttons.CustomButtons = <>
@@ -301,7 +429,6 @@ object frmItems2: TfrmItems2
       object tvDataPrice: TcxGridDBColumn
         DataBinding.FieldName = 'Price'
         PropertiesClassName = 'TcxCalcEditProperties'
-        OnCustomDrawCell = tvDataPriceCustomDrawCell
         Width = 83
       end
       object tvDataNumberBase: TcxGridDBColumn
@@ -397,6 +524,11 @@ object frmItems2: TfrmItems2
         Caption = 'Total Stock'
         DataBinding.FieldName = 'TotalStock'
         PropertiesClassName = 'TcxCalcEditProperties'
+      end
+      object tvDataAvailableStock: TcxGridDBColumn
+        Caption = 'Available'
+        DataBinding.FieldName = 'AvailableStock'
+        Options.Editing = False
       end
     end
     object tvPrices: TcxGridDBTableView
@@ -504,6 +636,7 @@ object frmItems2: TfrmItems2
     Left = 80
     Top = 136
     object prLink_grData: TdxGridReportLink
+      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 5080
       PrinterPage.GrayShading = True
@@ -517,6 +650,7 @@ object frmItems2: TfrmItems2
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
       ReportDocument.CreationDate = 41334.495374884260000000
+      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       BuiltInReportLink = True
     end
   end
@@ -529,6 +663,7 @@ object frmItems2: TfrmItems2
     BeforeInsert = m_ItemsBeforeInsert
     BeforePost = m_ItemsBeforePost
     BeforeDelete = m_ItemsBeforeDelete
+    OnCalcFields = m_ItemsCalcFields
     OnNewRecord = m_ItemsNewRecord
     OnFilterRecord = m_ItemsFilterRecord
     Left = 168
@@ -548,7 +683,6 @@ object frmItems2: TfrmItems2
     end
     object m_ItemsPrice: TFloatField
       FieldName = 'Price'
-      OnGetText = m_ItemsPriceGetText
     end
     object m_ItemsItemtype: TWideStringField
       FieldName = 'Itemtype'
@@ -594,6 +728,12 @@ object frmItems2: TfrmItems2
     object m_ItemsTotalStock: TIntegerField
       FieldName = 'TotalStock'
       OnGetText = m_ItemsTotalStockGetText
+    end
+    object m_ItemsAvailableStock: TIntegerField
+      DisplayLabel = 'Available Stock'
+      FieldKind = fkCalculated
+      FieldName = 'AvailableStock'
+      Calculated = True
     end
   end
   object FormStore: TcxPropertiesStore
@@ -663,6 +803,35 @@ object frmItems2: TfrmItems2
     end
     object kbmStockitemPricesfromdate: TDateTimeField
       FieldName = 'fromdate'
+    end
+  end
+  object m_Availability: TkbmMemTable
+    DesignActivation = True
+    AttachedAutoRefresh = True
+    AttachMaxCount = 1
+    FieldDefs = <>
+    IndexDefs = <>
+    SortOptions = []
+    PersistentBackup = False
+    ProgressFlags = [mtpcLoad, mtpcSave, mtpcCopy]
+    LoadedCompletely = False
+    SavedCompletely = False
+    FilterOptions = []
+    Version = '7.22.00 Standard Edition'
+    LanguageID = 0
+    SortID = 0
+    SubLanguageID = 1
+    LocaleID = 1024
+    Left = 104
+    Top = 210
+    object m_AvailabilityStockitem: TIntegerField
+      FieldName = 'Stockitem'
+    end
+    object m_AvailabilityInUse: TIntegerField
+      FieldName = 'InUse'
+    end
+    object m_AvailabilityUseDate: TDateField
+      FieldName = 'UseDate'
     end
   end
 end
