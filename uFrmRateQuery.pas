@@ -39,7 +39,7 @@ uses
   BaseGrid,
   AdvGrid,
   cmpRoomerDataset,
-  uViewDailyRates;
+  uViewDailyRates, sLabel;
 
 const
   WM_SET_DATE_FROM_MAIN = WM_User + 31;
@@ -107,6 +107,10 @@ type
     dtDeparture: TcxDateEdit;
     edCustomer: TcxButtonEdit;
     Label1: TLabel;
+    sLabel10: TsLabel;
+    sLabel11: TsLabel;
+    lbCustomerRate: TsLabel;
+    lbCustomerName: TsLabel;
     procedure FormCreate(Sender: TObject);
     procedure timRefreshTimer(Sender: TObject);
     procedure grdRatesGetCellColor(Sender: TObject; ARow, ACol: Integer; aState: TGridDrawState; ABrush: TBrush;
@@ -149,6 +153,7 @@ type
     { Public declarations }
     property BeingViewed: Boolean read FBeingViewed write FBeingViewed;
     procedure ShowRatesForDate(ADate: TDateTime);
+    procedure Nullify;
 
     procedure WndProc(var message: TMessage); override;
 
@@ -167,13 +172,14 @@ uses
   SysUtils
   , Windows
   , uD
-  ,uDateUtils
+  , uDateUtils
   , hData
   , uMain
   , uG
   , uUtils
   , uAppGlobal
   , uCustomers2
+  , PrjConst
   ;
 
 const
@@ -335,7 +341,7 @@ end;
 procedure TFrmRateQuery.cbxChannelsChange(Sender: TObject);
 begin
   CollectRatesForSelectedChannel(cbxChannels.Items[cbxChannels.ItemIndex]);
-  DisplayData;
+//  DisplayData;
   pnlHolder.Update;
 end;
 
@@ -455,6 +461,13 @@ begin
       ABrush.Color := frmMain.sSkinManager1.GetGlobalColor;
       ABrush.Style := bsFDiagonal;
     end;
+end;
+
+procedure TFrmRateQuery.Nullify;
+begin
+  edCustomer.Text := '';
+  lbCustomerName.Caption := '';
+  lbCustomerRate.Caption := '';
 end;
 
 function TFrmRateQuery.RoomTypeIndex(RoomType: String): Integer;
@@ -621,6 +634,11 @@ procedure TFrmRateQuery.edCustomerClick(Sender: TObject);
 var
   s: string;
   theData: recCustomerHolder;
+
+  procedure ScrollToCustomerChannelInCombobox(chCode : String);
+  begin
+    cbxChannels.ItemIndex := cbxChannels.Items.IndexOf(chCode);
+  end;
 begin
   theData.Customer := Trim(edCustomer.Text);
   if OpenCustomers(actLookup, True, theData) then
@@ -629,6 +647,21 @@ begin
     if (s <> '') and (s <> Trim(edCustomer.Text)) then
     begin
       edCustomer.Text := s;
+      lbCustomerName.Caption := theData.Surname;
+      lbCustomerRate.Caption := '';
+      if theData.RatePlanId > 0 then
+      begin
+        s := '';
+        if glb.LocateSpecificRecord('channels', 'ID', theData.RatePlanId) then
+        begin
+          s := format('[%s] %s', [glb.ChannelsSet['channelManagerId'], glb.ChannelsSet['name']]);
+          ScrollToCustomerChannelInCombobox(glb.ChannelsSet['channelManagerId']);
+          cbxChannelsChange(cbxChannels);
+        end else
+          s := GetTranslatedText('shUI_NotAvailable');
+        lbCustomerRate.Caption := s;
+      end else
+        lbCustomerRate.Caption := GetTranslatedText('shUI_NotAvailable');
     end;
   end;
 end;

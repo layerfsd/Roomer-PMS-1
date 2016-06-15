@@ -9201,6 +9201,7 @@ begin
     tabsView.TabIndex := 4;
   pageMainGrids.ActivePage := tabRateQuery;
   // frmRateQuery.ShowRatesForDate(dtDate.Date);
+  FrmRateQuery.Nullify;
   FrmRateQuery.pnlHolder.Update;
   tabRateQuery.Update;
 end;

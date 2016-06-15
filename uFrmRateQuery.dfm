@@ -31,9 +31,10 @@ object FrmRateQuery: TFrmRateQuery
       Align = alTop
       BevelOuter = bvNone
       TabOrder = 0
+      ExplicitTop = -6
       object lblArrival: TLabel
         Left = 77
-        Top = 29
+        Top = 10
         Width = 35
         Height = 13
         Alignment = taRightJustify
@@ -41,7 +42,7 @@ object FrmRateQuery: TFrmRateQuery
       end
       object sLabel1: TLabel
         Left = 59
-        Top = 80
+        Top = 61
         Width = 53
         Height = 13
         Alignment = taRightJustify
@@ -49,7 +50,7 @@ object FrmRateQuery: TFrmRateQuery
       end
       object sLabel2: TLabel
         Left = 78
-        Top = 56
+        Top = 37
         Width = 34
         Height = 13
         Alignment = taRightJustify
@@ -57,7 +58,7 @@ object FrmRateQuery: TFrmRateQuery
       end
       object sLabel3: TLabel
         Left = 674
-        Top = 51
+        Top = 32
         Width = 46
         Height = 13
         Alignment = taRightJustify
@@ -66,7 +67,7 @@ object FrmRateQuery: TFrmRateQuery
       end
       object sLabel4: TLabel
         Left = 324
-        Top = 27
+        Top = 8
         Width = 36
         Height = 13
         Alignment = taRightJustify
@@ -75,7 +76,7 @@ object FrmRateQuery: TFrmRateQuery
       end
       object sLabel5: TLabel
         Left = 326
-        Top = 54
+        Top = 35
         Width = 34
         Height = 13
         Alignment = taRightJustify
@@ -84,7 +85,7 @@ object FrmRateQuery: TFrmRateQuery
       end
       object sLabel6: TLabel
         Left = 677
-        Top = 81
+        Top = 62
         Width = 43
         Height = 13
         Alignment = taRightJustify
@@ -93,7 +94,7 @@ object FrmRateQuery: TFrmRateQuery
       end
       object sLabel7: TLabel
         Left = 681
-        Top = 108
+        Top = 89
         Width = 39
         Height = 13
         Alignment = taRightJustify
@@ -102,7 +103,7 @@ object FrmRateQuery: TFrmRateQuery
       end
       object sLabel8: TLabel
         Left = 549
-        Top = 27
+        Top = 8
         Width = 66
         Height = 13
         Alignment = taRightJustify
@@ -110,7 +111,7 @@ object FrmRateQuery: TFrmRateQuery
       end
       object sLabel9: TLabel
         Left = 317
-        Top = 81
+        Top = 62
         Width = 43
         Height = 13
         Alignment = taRightJustify
@@ -118,15 +119,45 @@ object FrmRateQuery: TFrmRateQuery
       end
       object Label1: TLabel
         Left = 63
-        Top = 105
+        Top = 86
         Width = 49
         Height = 13
         Alignment = taRightJustify
         Caption = 'Company:'
       end
+      object sLabel10: TsLabel
+        Left = 102
+        Top = 110
+        Width = 31
+        Height = 13
+        Alignment = taRightJustify
+        Caption = 'Name:'
+      end
+      object sLabel11: TsLabel
+        Left = 83
+        Top = 129
+        Width = 50
+        Height = 13
+        Alignment = taRightJustify
+        Caption = 'Rate plan:'
+      end
+      object lbCustomerRate: TsLabel
+        Left = 139
+        Top = 129
+        Width = 18
+        Height = 13
+        Caption = 'N/A'
+      end
+      object lbCustomerName: TsLabel
+        Left = 139
+        Top = 110
+        Width = 18
+        Height = 13
+        Caption = 'N/A'
+      end
       object edNights: TSpinEdit
         Left = 132
-        Top = 51
+        Top = 32
         Width = 65
         Height = 22
         Color = clWhite
@@ -144,7 +175,7 @@ object FrmRateQuery: TFrmRateQuery
       end
       object sComboBox1: TComboBox
         Left = 740
-        Top = 48
+        Top = 29
         Width = 109
         Height = 21
         Color = clWhite
@@ -166,7 +197,7 @@ object FrmRateQuery: TFrmRateQuery
       end
       object sSpinEdit1: TSpinEdit
         Left = 380
-        Top = 24
+        Top = 5
         Width = 65
         Height = 22
         Font.Charset = DEFAULT_CHARSET
@@ -183,7 +214,7 @@ object FrmRateQuery: TFrmRateQuery
       end
       object sSpinEdit2: TSpinEdit
         Left = 380
-        Top = 51
+        Top = 32
         Width = 65
         Height = 22
         Font.Charset = DEFAULT_CHARSET
@@ -200,7 +231,7 @@ object FrmRateQuery: TFrmRateQuery
       end
       object sSpinEdit3: TSpinEdit
         Left = 740
-        Top = 78
+        Top = 59
         Width = 65
         Height = 22
         Font.Charset = DEFAULT_CHARSET
@@ -217,7 +248,7 @@ object FrmRateQuery: TFrmRateQuery
       end
       object sSpinEdit4: TSpinEdit
         Left = 740
-        Top = 105
+        Top = 86
         Width = 65
         Height = 22
         Font.Charset = DEFAULT_CHARSET
@@ -234,7 +265,7 @@ object FrmRateQuery: TFrmRateQuery
       end
       object rbTotal: TRadioButton
         Left = 549
-        Top = 52
+        Top = 33
         Width = 75
         Height = 19
         Caption = 'Total rate'
@@ -245,7 +276,7 @@ object FrmRateQuery: TFrmRateQuery
       end
       object rbAverage: TRadioButton
         Left = 549
-        Top = 77
+        Top = 58
         Width = 127
         Height = 19
         Caption = 'Average nightly rate'
@@ -254,7 +285,7 @@ object FrmRateQuery: TFrmRateQuery
       end
       object btnRefresh: TButton
         Left = 380
-        Top = 103
+        Top = 84
         Width = 75
         Height = 25
         Caption = 'Refresh'
@@ -264,7 +295,7 @@ object FrmRateQuery: TFrmRateQuery
       end
       object cbxChannels: TComboBox
         Left = 380
-        Top = 78
+        Top = 59
         Width = 110
         Height = 21
         Color = clWhite
@@ -280,7 +311,7 @@ object FrmRateQuery: TFrmRateQuery
       end
       object dtArrival: TcxDateEdit
         Left = 132
-        Top = 28
+        Top = 9
         ParentFont = False
         Properties.ShowTime = False
         Properties.WeekNumbers = True
@@ -312,7 +343,7 @@ object FrmRateQuery: TFrmRateQuery
       end
       object dtDeparture: TcxDateEdit
         Left = 132
-        Top = 79
+        Top = 60
         ParentFont = False
         Properties.ShowTime = False
         Properties.WeekNumbers = True
@@ -344,7 +375,7 @@ object FrmRateQuery: TFrmRateQuery
       end
       object edCustomer: TcxButtonEdit
         Left = 132
-        Top = 102
+        Top = 83
         Properties.Buttons = <
           item
             Default = True
@@ -464,7 +495,7 @@ object FrmRateQuery: TFrmRateQuery
       SearchFooter.HintHighlight = 'Highlight occurrences'
       SearchFooter.MatchCaseCaption = 'Match case'
       SortSettings.DefaultFormat = ssAutomatic
-      Version = '7.9.1.0'
+      Version = '7.9.1.1'
     end
   end
   object timRefresh: TTimer
