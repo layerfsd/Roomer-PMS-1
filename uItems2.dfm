@@ -58,7 +58,6 @@ object frmItems2: TfrmItems2
     Align = alTop
     TabOrder = 0
     SkinData.SkinSection = 'PANEL'
-    ExplicitWidth = 1092
     object cLabFilter: TsLabel
       Left = 19
       Top = 41
@@ -193,8 +192,6 @@ object frmItems2: TfrmItems2
       Align = alRight
       TabOrder = 7
       Visible = False
-      ExplicitLeft = 817
-      ExplicitTop = -4
       object cLabAvailFrom: TsLabel
         Left = 18
         Top = 12
@@ -288,7 +285,6 @@ object frmItems2: TfrmItems2
     Height = 19
     Panels = <>
     SkinData.SkinSection = 'STATUSBAR'
-    ExplicitWidth = 1092
   end
   object panBtn: TsPanel
     Left = 0
@@ -298,7 +294,6 @@ object frmItems2: TfrmItems2
     Align = alBottom
     TabOrder = 2
     SkinData.SkinSection = 'PANEL'
-    ExplicitWidth = 1092
     DesignSize = (
       1145
       32)
@@ -317,7 +312,6 @@ object frmItems2: TfrmItems2
       TabOrder = 0
       OnClick = btnCancelClick
       SkinData.SkinSection = 'BUTTON'
-      ExplicitLeft = 1013
     end
     object BtnOk: TsButton
       Left = 988
@@ -333,7 +327,6 @@ object frmItems2: TfrmItems2
       TabOrder = 1
       OnClick = BtnOkClick
       SkinData.SkinSection = 'BUTTON'
-      ExplicitLeft = 935
     end
   end
   object grData: TcxGrid
@@ -345,7 +338,6 @@ object frmItems2: TfrmItems2
     Constraints.MinWidth = 440
     TabOrder = 3
     LookAndFeel.NativeStyle = False
-    ExplicitTop = 88
     object tvData: TcxGridDBTableView
       OnDblClick = tvDataDblClick
       Navigator.Buttons.CustomButtons = <>
@@ -428,7 +420,8 @@ object frmItems2: TfrmItems2
       end
       object tvDataPrice: TcxGridDBColumn
         DataBinding.FieldName = 'Price'
-        PropertiesClassName = 'TcxCalcEditProperties'
+        PropertiesClassName = 'TcxCurrencyEditProperties'
+        Properties.DisplayFormat = ',0.00;-,0.00'
         Width = 83
       end
       object tvDataNumberBase: TcxGridDBColumn
@@ -636,7 +629,6 @@ object frmItems2: TfrmItems2
     Left = 80
     Top = 136
     object prLink_grData: TdxGridReportLink
-      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 5080
       PrinterPage.GrayShading = True
@@ -650,7 +642,6 @@ object frmItems2: TfrmItems2
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
       ReportDocument.CreationDate = 41334.495374884260000000
-      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       BuiltInReportLink = True
     end
   end

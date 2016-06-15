@@ -1,4 +1,4 @@
-unit uMakeReservationQuick;
+﻿unit uMakeReservationQuick;
 
 interface
 
@@ -3186,6 +3186,7 @@ begin
 
   mRoomRes.Close;
   mRoomRes.Open;
+  mExtras.Open;
 
   RoomCount := FNewReservation.newRoomReservations.RoomCount;
 
@@ -3330,6 +3331,7 @@ begin
   if mRoomRes.active then
     mRoomRes.Close;
   mRoomRes.Open;
+  mExtras.Open;
   RoomCount := FNewReservation.newRoomReservations.RoomCount;
 
   lstIDs := TstringList.Create;
@@ -4300,26 +4302,32 @@ begin
         oSelectedRoomItem.ExtraBedCost := StrToFloat(edtExtraBed.Text);
         oSelectedRoomItem.ExtraBedCostGroupAccount := cbxExtraBedGrp.Checked;
 
-        // Add extras
-        mExtras.First;
-        while not mExtras.Eof do
-        begin
-          if (mExtrasRoomreservation.asInteger = RoomReservation) then
-          begin
-            lReservationExtra := TReservationExtra.Create(oSelectedRoomItem,
-                                                          mExtrasItemid.AsInteger,
-                                                          mExtrasCount.AsInteger,
-                                                          mExtrasPricePerItemPerDay.AsFloat,
-                                                          iif(mExtrasFromdate.AsDateTime = Arrival, 0, mExtrasFromdate.AsDateTime),
-                                                          iif(mExtrasTodate.AsDateTime = Departure, 0, mExtrasTodate.AsDateTime));
-            oSelectedRoomItem.Extras.Add(lReservationExtra);
-          end;
-          mExtras.Next;
-        end;
       end;
 
       mRoomRates.next;
     end;
+
+
+    // Add extras
+    mExtras.First;
+    while not mExtras.Eof do
+    begin
+      if (mExtrasRoomreservation.asInteger = RoomReservation) then
+      begin
+        lReservationExtra := TReservationExtra.Create(oSelectedRoomItem,
+                                                      mExtrasItemid.AsInteger,
+                                                      mExtrasItem.AsString,
+                                                      mExtrasDescription.AsString,
+                                                      mExtrasCount.AsInteger,
+                                                      mExtrasPricePerItemPerDay.AsFloat,
+                                                      iif(mExtrasFromdate.AsDateTime = Arrival, 0, mExtrasFromdate.AsDateTime),
+                                                      iif(mExtrasTodate.AsDateTime = Departure, 0, mExtrasTodate.AsDateTime));
+        oSelectedRoomItem.Extras.Add(lReservationExtra);
+      end;
+      mExtras.Next;
+    end;
+
+
     inc(roomIndex);
     mRoomRes.next;
   end;

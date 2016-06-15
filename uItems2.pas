@@ -767,9 +767,11 @@ begin
       labPriceProbeDate.Caption := DateToStr(zData.StockitempriceDate)
     else
       labPriceProbeDate.Caption := DateToStr(Now)
-  end;
-  tvDataTotalStock.Visible := not tvDataAvailableStock.Visible;
+  end
+  else
+    tvDataAvailableStock.Visible := False;
 
+  tvDataTotalStock.Visible := not tvDataAvailableStock.Visible;
 
   grData.SetFocus;
 end;

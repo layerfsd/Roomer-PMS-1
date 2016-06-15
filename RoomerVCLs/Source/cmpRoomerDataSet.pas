@@ -56,6 +56,8 @@ const
 
 type
 
+  ERoomerExecutionPlanException = class(Exception);
+
   TRoomerDataSet = class;
   TRoomerDatasetList = TObjectList<TRoomerDataset>;
 
@@ -96,6 +98,7 @@ type
     queryResults: TRoomerDatasetList;
     sqlList: TRoomerPlanEntityList;
     FExecException: String;
+    FInTransaction: boolean;
     function getSqlsAsTList(PlanType: Integer): TList<String>;
 
     function GetCount: Integer;
@@ -2503,7 +2506,10 @@ end;
 
 procedure TRoomerExecutionPlan.BeginTransaction;
 begin
+  if FInTransaction then
+    raise ERoomerExecutionPlanException.Create('Nested transactions not allowed');
   FRoomerDataSet.SystemStartTransaction;
+  FInTransaction := True;
 end;
 
 procedure TRoomerExecutionPlan.Clear;
@@ -2515,6 +2521,7 @@ end;
 procedure TRoomerExecutionPlan.CommitTransaction;
 begin
   FRoomerDataSet.SystemCommitTransaction;
+  FInTransaction := False;
 end;
 
 constructor TRoomerExecutionPlan.Create(_RoomerDataSet: TRoomerDataSet = nil);
@@ -2527,6 +2534,13 @@ end;
 
 destructor TRoomerExecutionPlan.Destroy;
 begin
+  if FInTransaction then
+  try
+    CommitTransaction;
+  except
+    if FInTransaction then
+      RollbackTransaction;
+  end;
   FRoomerDataset := nil;
   queryResults.Free;
   sqlList.Free;
@@ -2542,7 +2556,7 @@ var
   lSQLList: TList<string>;
 begin
   if transaction then
-    FRoomerDataSet.SystemStartTransaction;
+    BeginTransaction;
   try
     if PlanType = ptQuery then
     begin
@@ -2568,14 +2582,14 @@ begin
     end;
 
     if transaction then
-      FRoomerDataSet.SystemCommitTransaction;
+      CommitTransaction;
     result := true;
   except
     on E: Exception do
     begin
       FExecException := E.Message;
       if transaction OR performRollBackOnException then
-        FRoomerDataSet.SystemRollbackTransaction;
+        RollbackTransaction;
       result := false;
     end;
   end;
@@ -2625,6 +2639,7 @@ end;
 procedure TRoomerExecutionPlan.RollbackTransaction;
 begin
   FRoomerDataSet.SystemRollbackTransaction;
+  FInTransaction := False;
 end;
 
 { TRoomerHotelsEntity }

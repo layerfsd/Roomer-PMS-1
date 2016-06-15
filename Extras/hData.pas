@@ -3776,6 +3776,7 @@ begin
   s := s + ' 	, ' + _db(theData.Market.ToDBString) + #10;
   s := s + '   ) ';
   result := s;
+  copytoclipboard(s);
 end;
 
 function SP_INS_Reservation(theData: recReservationHolder): boolean;
