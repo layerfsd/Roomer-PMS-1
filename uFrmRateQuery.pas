@@ -638,6 +638,7 @@ var
   procedure ScrollToCustomerChannelInCombobox(chCode : String);
   begin
     cbxChannels.ItemIndex := cbxChannels.Items.IndexOf(chCode);
+    cbxChannelsChange(cbxChannels);
   end;
 begin
   theData.Customer := Trim(edCustomer.Text);
@@ -656,7 +657,6 @@ begin
         begin
           s := format('[%s] %s', [glb.ChannelsSet['channelManagerId'], glb.ChannelsSet['name']]);
           ScrollToCustomerChannelInCombobox(glb.ChannelsSet['channelManagerId']);
-          cbxChannelsChange(cbxChannels);
         end else
           s := GetTranslatedText('shUI_NotAvailable');
         lbCustomerRate.Caption := s;
