@@ -15,9 +15,7 @@ object frmChangeRRdates: TfrmChangeRRdates
   KeyPreview = True
   OldCreateOrder = False
   Position = poOwnerFormCenter
-  OnClose = FormClose
   OnCreate = FormCreate
-  OnDestroy = FormDestroy
   OnKeyDown = FormKeyDown
   OnShow = FormShow
   PixelsPerInch = 96
@@ -421,7 +419,7 @@ object frmChangeRRdates: TfrmChangeRRdates
         Font.Style = [fsBold]
       end
       object btnOK: TsButton
-        Left = 221
+        Left = 220
         Top = 119
         Width = 75
         Height = 25
@@ -557,8 +555,8 @@ object frmChangeRRdates: TfrmChangeRRdates
         Caption = '-'
       end
       object sButton1: TsButton
-        Left = 217
-        Top = 114
+        Left = 221
+        Top = 119
         Width = 75
         Height = 25
         Anchors = [akTop, akRight]
@@ -601,6 +599,7 @@ object frmChangeRRdates: TfrmChangeRRdates
     AddedTitle.Font.Height = -11
     AddedTitle.Font.Name = 'Tahoma'
     AddedTitle.Font.Style = []
+    FormHeader.AdditionalHeight = 0
     SkinData.SkinSection = 'FORM'
     TitleButtons = <>
     Left = 32
