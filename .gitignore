@@ -20,6 +20,7 @@ Win32/
 *.dcu
 *.bpl
 *.dcp
+*.vlb
 * conflicted copy *
 *Exemplaar met conflict van *
 *.bak
