@@ -363,6 +363,7 @@ begin
              '    Information, ' +
              '    OutOfOrderBlocking, ' +
              '    BlockMove, ' +
+             '    BlockMoveReason, ' +
              '    TotalPayment, ' +
              '    TotalNoRent, ' +
              '    (IF(CityTaxIncl, 0, ' +
@@ -417,6 +418,7 @@ begin
         s := s + ', rv.Information ';
         s := s + ', rv.OutOfOrderBlocking ';
         s := s + ', rr.BlockMove ';
+        s := s + ', rr.BlockMoveReason ';
         s := s + ', cur.AValue AS CurrencyRate ';
         s := s + ', (SELECT SUM(pa.Amount) AS Total FROM payments pa WHERE (pa.Amount <> 0) AND (pa.InvoiceNumber = - 1) AND (pa.RoomReservation = rd.roomReservation)) AS TotalPayment ';
         s := s + ', ( ';

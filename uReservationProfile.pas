@@ -4,6 +4,7 @@ interface
 
 uses
   VCL.Forms,
+  System.Generics.Collections,
   variants,
   cxGraphics,
   cxControls,
@@ -528,6 +529,8 @@ type
     lblMarket: TsLabel;
     mRoomsRateOrPackagePerDay: TFloatField;
     tvRoomsRateOrPackagePerDay: TcxGridDBColumn;
+    mRoomsblockMoveReason: TWideStringField;
+    tvRoomsblockMoveReason: TcxGridDBColumn;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -639,6 +642,8 @@ type
     procedure GetLocaltimeEditProperties(Sender: TcxCustomGridTableItem; ARecord: TcxCustomGridRecord;
       var AProperties: TcxCustomEditProperties);
     procedure cbxMarketCloseUp(Sender: TObject);
+    procedure tvRoomsblockMoveGetCellHint(Sender: TcxCustomGridTableItem; ARecord: TcxCustomGridRecord; ACellViewInfo: TcxGridTableDataCellViewInfo;
+      const AMousePos: TPoint; var AHintText: TCaption; var AIsHintMultiLine: Boolean; var AHintTextRect: TRect);
   private
     { Private declarations }
     vStartName: string;
@@ -649,6 +654,8 @@ type
     FrmAlertPanel: TFrmAlertPanel;
     AlertList: TAlertList;
     FValidating: Boolean;
+
+    BlockReasons : TList<String>;
 
     procedure Display;
     procedure Display_rGrid(gotoRoomReservation: longInt);
@@ -743,7 +750,8 @@ uses
   uViewDailyRates,
   uRoomTypes2,
   hData,
-  uMain;
+  uMain,
+  uFrmNotepad;
 
 {$R *.DFM}
 
@@ -829,6 +837,7 @@ begin
   glb.PerformAuthenticationAssertion(self);
   PlaceFormOnVisibleMonitor(self);
 
+  BlockReasons := TList<String>.Create;
   FOutOfOrderBlocking := false;
   mainPage.ActivePage := RoomsTab;
   zInt := 0;
@@ -841,6 +850,7 @@ end;
 procedure TfrmReservationProfile.FormDestroy(Sender: TObject);
 begin
   DynamicRates.free;
+  BlockReasons.Free;
   FreeAndNil(FrmAlertPanel);
   AlertList.postChanges;
   AlertList.free;
@@ -2338,6 +2348,7 @@ begin
     s := s + '    , IF(ISNULL(ManualChannelId) OR ManualChannelId < 1, (SELECT channel FROM reservations WHERE reservations.Reservation=rr.Reservation LIMIT 1), ManualChannelId) AS ManualChannelId '#10;
     s := s + '    , RoomClass '#10;
     s := s + '    , blockMove '#10;
+    s := s + '    , blockMoveReason '#10;
     s := s + '    , rrRoomAlias as RoomAlias '#10;
     s := s + '    , rrRoomTypeAlias as RoomTypeAlias '#10;
     s := s + '    , (SELECT count(ID) FROM roomsdate WHERE (roomsdate.roomreservation=rr.roomreservation) AND (roomsdate.ResFlag <> '
@@ -2383,6 +2394,8 @@ begin
 
     while not mRooms.Eof do
     begin
+
+      BlockReasons.Add(mRoomsblockMoveReason.AsString);
       Room := mRoomsRoom.asstring;
       departure := mRoomsDeparture.AsDateTime;
       arrival := mRoomsArrival.AsDateTime;
@@ -2759,6 +2772,13 @@ begin
   end;
 end;
 
+procedure TfrmReservationProfile.tvRoomsblockMoveGetCellHint(Sender: TcxCustomGridTableItem; ARecord: TcxCustomGridRecord;
+  ACellViewInfo: TcxGridTableDataCellViewInfo; const AMousePos: TPoint; var AHintText: TCaption; var AIsHintMultiLine: Boolean; var AHintTextRect: TRect);
+begin
+  AHintText := BlockReasons[ARecord.RecordIndex];
+  AIsHintMultiLine := True;
+end;
+
 procedure TfrmReservationProfile.tvRoomsblockMovePropertiesChange(Sender: TObject);
 var
   Value: Integer;
@@ -2771,8 +2791,13 @@ begin
   iRoomRes := mRoomsRoomReservation.asInteger;
   Value := 0;
   if mRoomsBlockMove.AsBoolean then
+  begin
     Value := 1;
-  sTmp := format('UPDATE roomreservations SET blockMove=%d WHERE RoomReservation=%d', [Value, iRoomRes]);
+    mRooms.Edit;
+    mRoomsBlockMoveReason.AsString := EditText('Reason for blocking the move of ' + mRoomsRoom.AsString, mRoomsBlockMoveReason.AsString);
+    mRooms.Post;
+  end;
+  sTmp := format('UPDATE roomreservations SET blockMove=%d, blockMoveReason=%s WHERE RoomReservation=%d', [Value, _db(mRoomsBlockMoveReason.AsString), iRoomRes]);
   cmd_bySQL(sTmp);
 end;
 

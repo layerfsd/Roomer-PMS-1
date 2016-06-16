@@ -4184,9 +4184,39 @@ object frmControlData: TfrmControlData
               Font.Name = 'Tahoma'
               Font.Style = []
             end
+            object sLabel35: TsLabel
+              Left = -16
+              Top = 58
+              Width = 266
+              Height = 13
+              Alignment = taRightJustify
+              AutoSize = False
+              Caption = 'Tax per person :'
+              ParentFont = False
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clBlack
+              Font.Height = -12
+              Font.Name = 'Tahoma'
+              Font.Style = []
+            end
+            object sLabel36: TsLabel
+              Left = -16
+              Top = 79
+              Width = 266
+              Height = 13
+              Alignment = taRightJustify
+              AutoSize = False
+              Caption = 'Percentage :'
+              ParentFont = False
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clBlack
+              Font.Height = -12
+              Font.Name = 'Tahoma'
+              Font.Style = []
+            end
             object chkStayTaxIncluted: TsCheckBox
               Left = 256
-              Top = 36
+              Top = 37
               Width = 20
               Height = 16
               TabOrder = 0
@@ -4205,15 +4235,14 @@ object frmControlData: TfrmControlData
               ImgUnchecked = 0
             end
             object cbxTaxPerPerson: TsCheckBox
-              Left = 137
-              Top = 54
-              Width = 140
-              Height = 18
+              Left = 256
+              Top = 58
+              Width = 20
+              Height = 16
               Margins.Left = 2
               Margins.Top = 2
               Margins.Right = 2
               Margins.Bottom = 2
-              Caption = 'Use tax per person :'
               Alignment = taLeftJustify
               TabOrder = 2
               SkinData.SkinSection = 'CHECKBOX'
@@ -4221,15 +4250,14 @@ object frmControlData: TfrmControlData
               ImgUnchecked = 0
             end
             object cbxTaxPercentage: TsCheckBox
-              Left = 178
-              Top = 74
-              Width = 99
-              Height = 18
+              Left = 256
+              Top = 78
+              Width = 20
+              Height = 16
               Margins.Left = 2
               Margins.Top = 2
               Margins.Right = 2
               Margins.Bottom = 2
-              Caption = 'Percentage :'
               Alignment = taLeftJustify
               TabOrder = 3
               SkinData.SkinSection = 'CHECKBOX'

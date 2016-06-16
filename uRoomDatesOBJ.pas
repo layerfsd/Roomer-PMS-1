@@ -105,6 +105,7 @@ begin
   qMT_.FieldDefs.Add('RoomClass', ftWideString, 20);
   qMT_.FieldDefs.Add('OutOfOrderBlocking', ftBoolean);
   qMT_.FieldDefs.Add('BlockMove', ftBoolean);
+  qMT_.FieldDefs.Add('BlockMoveReason', ftWideString, 255);
   qMT_.FieldDefs.Add('TotalNoRent', ftFloat);
   qMT_.FieldDefs.Add('TotalTaxes', ftFloat);
   qMT_.FieldDefs.Add('TotalRent', ftFloat);
@@ -276,6 +277,8 @@ begin
           qMT_.FieldByName('TotalRent').AsFloat := rSet.GetFloatValue(rSet.fieldbyname('TotalRent'));
           if Assigned(rSet.FindField('blockMove')) then
             qMT_.FieldByName('BlockMove').AsBoolean := rSet.fieldbyname('BlockMove').AsBoolean;
+          if Assigned(rSet.FindField('blockMoveReason')) then
+            qMT_.FieldByName('blockMoveReason').AsString := rSet.fieldbyname('blockMoveReason').AsString;
           qMT_.FieldByName('Invoices').AsString := rSet['Invoices'];
           qMT_.FieldByName('Guarantee').AsString := rSet['Guarantee'];
           qMT_.FieldByName('TotalPayment').AsFloat := rSet['TotalPayment'];
