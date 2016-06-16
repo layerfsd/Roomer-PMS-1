@@ -388,7 +388,6 @@ type
 
     ItemAdded : TdateTime;
     RoomreservationAlias : Integer;
-
     InvoiceIndex : Integer;
   end;
 

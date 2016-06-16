@@ -485,7 +485,45 @@ object frmReservationExtras: TfrmReservationExtras
     DesignActivation = True
     AttachedAutoRefresh = True
     AttachMaxCount = 1
-    FieldDefs = <>
+    FieldDefs = <
+      item
+        Name = 'Roomreservation'
+        DataType = ftInteger
+      end
+      item
+        Name = 'Itemid'
+        DataType = ftInteger
+      end
+      item
+        Name = 'Item'
+        DataType = ftString
+        Size = 20
+      end
+      item
+        Name = 'Description'
+        DataType = ftString
+        Size = 20
+      end
+      item
+        Name = 'Count'
+        DataType = ftInteger
+      end
+      item
+        Name = 'PricePerItemPerDay'
+        DataType = ftFloat
+      end
+      item
+        Name = 'Fromdate'
+        DataType = ftDateTime
+      end
+      item
+        Name = 'ToDate'
+        DataType = ftDateTime
+      end
+      item
+        Name = 'Totalprice'
+        DataType = ftFloat
+      end>
     IndexDefs = <>
     SortOptions = []
     PersistentBackup = False

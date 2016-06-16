@@ -16,6 +16,8 @@ uses
 type
 
   recEditReservationExtrasHolder = record
+    Reservation   : integer;
+    RoomReservation: integer;
     isCreateRes   : boolean;
     Room          : string;
     RoomType      : string;
@@ -39,12 +41,15 @@ type
     btnCancel: TsButton;
     BtnOk: TsButton;
     mExtras: TkbmMemTable;
+    mExtrasItem: TStringField;
     mExtrasRoomreservation: TIntegerField;
     mExtrasItemid: TIntegerField;
     mExtrasCount: TIntegerField;
     mExtrasPricePerItemPerDay: TFloatField;
     mExtrasFromdate: TDateTimeField;
     mExtrasToDate: TDateTimeField;
+    mExtrasDescription: TStringField;
+    mExtrasTotalprice: TFloatField;
     mExtrasDS: TDataSource;
     sGroupBox1: TsGroupBox;
     clabRoom: TsLabel;
@@ -59,13 +64,11 @@ type
     labAdults: TsLabel;
     labChildren: TsLabel;
     labInfants: TsLabel;
-    mExtrasDescription: TStringField;
     tvExtrasDescription: TcxGridDBColumn;
     tvExtrasCount: TcxGridDBColumn;
     tvExtrasPricePerItemPerDay: TcxGridDBColumn;
     tvExtrasFromdate: TcxGridDBColumn;
     tvExtrasToDate: TcxGridDBColumn;
-    mExtrasItem: TStringField;
     tvExtrasItem: TcxGridDBColumn;
     tvExtrasTotalPrice: TcxGridDBColumn;
     clabArrival: TsLabel;
@@ -78,7 +81,6 @@ type
     btnInsert: TsButton;
     btnEdit: TsButton;
     btnDelete: TsButton;
-    mExtrasTotalprice: TFloatField;
     procedure FormShow(Sender: TObject);
     procedure grdExtrasDBTableView1ItemPropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
     procedure mExtrasNewRecord(DataSet: TDataSet);
@@ -101,9 +103,19 @@ type
   public
     { Public declarations }
     property theData : recEditReservationExtrasHolder read FReservationHolder write FReservationHolder;
+    /// <summary> populate the local mExtras dataset with data from the database </summary>
+    procedure LoadDataFromDatabase;
   end;
 
-function editReservationExtras(aRoomreservation: integer; var aResDataHolder: recEditReservationExtrasHolder; var m_ : TdxMemData) : boolean;
+///<summary>
+/// Create and show Reservations extras form for editing extras in a reservationroom. <br />
+///  aResDataholder contains roomreservation properties <br />
+///  am_Extras is an optional dataset for exchanging selected extras for this reservation. When provided the data from
+///  this dataset is used to fill the initial grid and data is copied back into this dataset on succesfull closing. <br />
+///  When no dataset is provided the grid is filled with the extras defined
+///  in the databse for this roomreservation. On closing the form the modified data is written directly to the database.
+///</summary>
+function editReservationExtras(var aResDataHolder: recEditReservationExtrasHolder; am_Extras : TdxMemData) : boolean;
 
 implementation
 
@@ -112,28 +124,56 @@ implementation
 uses
     uItems2
   , uG
+  , cmpRoomerDataset
   , uDateUtils
   , DateUtils
-  ;
+  , uD, objNewReservation;
 
-function editReservationExtras(aRoomreservation: integer; var aResDataHolder: recEditReservationExtrasHolder; var m_ : TdxMemData) : boolean;
+function editReservationExtras(var aResDataHolder: recEditReservationExtrasHolder; am_Extras : TdxMemData) : boolean;
 var
   frm: TfrmReservationExtras;
+  lRoomres: TnewRoomReservationItem;
+  lExtrasList: TReservationExtrasList;
 begin
 
   frm := TfrmReservationExtras.Create(nil);
   try
-    frm.FRoomReservation := aRoomreservation;
+    frm.FRoomReservation := aResDataHolder.RoomReservation;
     frm.theData := aResDataHolder;
-    frm.mExtras.LoadFromDataSet(m_, []);
+
+    if (am_Extras = nil) then
+      // Load data from db
+      frm.LoadDataFromDatabase
+    else
+      frm.mExtras.LoadFromDataSet(am_Extras, []);
 
     Result := frm.ShowModal = mrOk;
     if Result then
     begin
       aResDataHolder := frm.theData;
-      frm.mExtras.Filtered := false;
-      m_.close;
-      m_.LoadFromDataSet(frm.mExtras);
+
+
+      if (am_Extras = nil) then
+      begin
+        with aResDataHolder do
+          lRoomRes := TnewRoomReservationItem.Create(RoomReservation, Room, RoomType, '', ArrivalDate, DepartureDate, guests, 0, 0, false, 0, childrenCount, infantCount, '', '', '');
+        lRoomRes.Reservation := aResDataHolder.Reservation;
+        lExtrasList := TReservationExtrasList.Create(lRoomres);
+        try
+          lExtrasList.LoadFromDataset(frm.mExtras);
+          lExtrasList.DeleteAllFromDatabase;
+          lExtrasList.Post;
+        finally
+          lExtrasList.Free;
+          lRoomRes.Free;
+        end;
+      end
+      else
+      begin
+        frm.mExtras.Filtered := false;
+        am_Extras.close;
+        am_Extras.LoadFromDataSet(frm.mExtras);
+      end;
     end;
   finally
     frm.Free;
@@ -181,6 +221,36 @@ begin
       datacontroller.focuscontrol(lCountColumn, dummy);
     end;
 
+  end;
+end;
+
+procedure TfrmReservationExtras.LoadDataFromDatabase;
+const
+  cSQL =  'select  '#10 +
+          '   rrs.id,  ' +
+          '   rrs.stockitem as ItemID, '#10 +
+          '   i.Item,  '#10 +
+          '   max(rrs.Description) as description,  '#10 +
+          '   rrs.Count, '#10 +
+          '   max(rrs.price) as PricePerItemPerDay, '#10 +
+          '   min(rrs.usedate) as Fromdate, '#10 +
+          '   max(rrs.usedate) as ToDate'#10 +
+          'from roomreservationstockitems rrs '#10 +
+          'join items i on rrs.stockitem=i.id '#10 +
+          'where RoomReservation = %d '#10 +
+          'group by item, count ';
+
+
+var
+  rSet: TRoomerDataset;
+begin
+
+  rSet := CreateNewDataSet;
+  try
+    rSet_bySQL(rSet, Format(cSQL, [theData.RoomReservation]));
+    mExtras.LoadFromDataSet(rSet, []);
+  finally
+    rSet.Free;
   end;
 end;
 

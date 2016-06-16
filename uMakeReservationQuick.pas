@@ -1618,6 +1618,7 @@ var
 begin
   with lCurrentRoomRes do
   begin
+    RoomReservation := mRoomResroomreservation.AsInteger;
     Room := mRoomResRoom.asString;
     RoomType := mRoomResRoomType.AsString;
     Currency := edCurrency.Text;
@@ -1629,7 +1630,7 @@ begin
     DepartureDate := mRoomResDeparture.asDateTime;
   end;
 
-  if editReservationExtras(mRoomResroomreservation.AsInteger, lCurrentRoomRes, mExtras) then
+  if editReservationExtras(lCurrentRoomRes, mExtras) then
   begin
     mExtras.Filter := format('roomreservation=%d', [mRoomResroomreservation.AsInteger]);
     mExtras.Filtered := true;
@@ -1641,8 +1642,11 @@ begin
         mExtras.First;
         while not mExtras.Eof do
         begin
-          mRoomResStockItemsCount.AsInteger := mRoomResStockItemsCount.AsInteger + mExtrasCount.AsInteger;
-          mRoomResStockitemsPrice.AsFloat := mRoomResStockitemsPrice.AsFloat + mExtrasTotalprice.AsFloat;
+          if (mExtrasRoomreservation.AsInteger = mRoomResroomreservation.asInteger) then // filter doesnt seem to work :-(
+          begin
+            mRoomResStockItemsCount.AsInteger := mRoomResStockItemsCount.AsInteger + mExtrasCount.AsInteger;
+            mRoomResStockitemsPrice.AsFloat := mRoomResStockitemsPrice.AsFloat + mExtrasTotalprice.AsFloat;
+          end;
           mExtras.Next;
         end;
         mRoomRes.Post;
@@ -3114,7 +3118,6 @@ end;
 procedure TfrmMakeReservationQuick.CreateRoomRes_Normal;
 var
   oSelectedRoomItem: TnewRoomReservationItem;
-  selected: boolean;
   room: string;
   RoomType: string;
   NumberGuests: integer;
@@ -4202,7 +4205,6 @@ begin
   memReservationGeneralInfo.Clear;
 
   FNewReservation.newRoomReservations.RoomItemsList.Clear;
-  roomIndex := 0;
   mRoomRes.First;
 
   while not mRoomRes.eof do
@@ -4314,8 +4316,7 @@ begin
     begin
       if (mExtrasRoomreservation.asInteger = RoomReservation) then
       begin
-        lReservationExtra := TReservationExtra.Create(oSelectedRoomItem,
-                                                      mExtrasItemid.AsInteger,
+        lReservationExtra := TReservationExtra.Create(mExtrasItemid.AsInteger,
                                                       mExtrasItem.AsString,
                                                       mExtrasDescription.AsString,
                                                       mExtrasCount.AsInteger,
@@ -4328,7 +4329,6 @@ begin
     end;
 
 
-    inc(roomIndex);
     mRoomRes.next;
   end;
 end;

@@ -3,8 +3,9 @@ unit objNewReservation;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Contnrs, Dialogs, NativeXML,
-  ADODB
+  Windows, Messages, SysUtils, Variants, Classes, Contnrs, Dialogs, NativeXML
+  , ADODB
+  , Data.DB
   , cmpRoomerDataSet
   , cmpRoomerConnection
   , uPriceOBJ
@@ -32,6 +33,7 @@ TYPE
     FFromDate: TDateTime;
     FToDate: TDateTime;
     FDescription: string;
+    FID: integer;
     function GetPricePerDay: double;
     function GetTotalPrice: double;
     function GetFromDate: TDateTime;
@@ -41,7 +43,7 @@ TYPE
     procedure SetNewArrivalDate(aNewArrivalDate: TDateTime);
     procedure AddInvoiceInsert(aExecPlan: TRoomerExecutionPlan);
   public
-    constructor Create(aRoomReservation: TNewRoomReservationItem; aitemID: integer; const aItem: string; const aDesc: string;
+    constructor Create(aitemID: integer; const aItem: string; const aDesc: string;
                                         aCount: integer; aPrice: double; aFromdate, aToDate: TDateTime);
     /// <summary> Post reservationExtra to server </summary>
     procedure Post;
@@ -51,6 +53,8 @@ TYPE
     /// <summary> Calculate the total price of this item per day</summary>
     property PricePerDay: double read GetPricePerDay;
   published
+    property RoomReservationItem: TnewRoomReservationItem read FRoomReservationItem write FRoomReservationItem;
+    property ID: integer read FID write FID;
     property ItemID: integer read FItemID write FItemID;
     property Item: string read FItem write FItem;
     property Description: string read FDescription write FDescription;
@@ -63,15 +67,23 @@ TYPE
   end;
 
   TReservationExtrasList = class(TObjectList<TReservationExtra>)
+  private
+    FReservationitem: TnewRoomReservationItem;
+  protected
+    procedure Notify(const Item: TReservationExtra; Action: TCollectionNotification); override;
   public
+    constructor Create(aReservationItem: TnewRoomreservationItem); overload;
     function TotalPrice: double;
     /// <summary>Check if ToDate of all extras is not later then new departure date. If so correct this </summary>
     procedure CorrectForNewDepartureDate(aNewDepartureDate: TDateTime);
     /// <summary>Check if ToDate of all extras is not later then new departure date. If so correct this </summary>
     procedure CorrectForNewArrivalDate(aNewArrivalDate: TDateTime);
 
+    /// <summary> Add reservationextras from the provided dataset </summary>
+    procedure LoadFromDataset(aDataset: TDataset);
     /// <summary> Post all ReservationExtras to server
     procedure Post;
+    procedure DeleteAllFromDatabase;
   end;
 
   TnewRoomReservationItem = class
@@ -338,6 +350,9 @@ uses
   , Math
   ;
 
+const
+  cSTOCKITEM_IMPORTREFERENCE = 'STOCKITEM';
+
 /// ///////////////////////////////////////////////////////////////////////////
 // TSelectedRoomItem
 /// ///////////////////////////////////////////////////////////////////////////
@@ -361,7 +376,7 @@ constructor TnewRoomReservationItem.Create(aRoomReservation: integer;
                                      );
 begin
   inherited Create;
-  FExtras := TReservationExtrasList.Create(True);
+  FExtras := TReservationExtrasList.Create(self);
 
   setRoomreservation(aRoomReservation);
   setRoomNumber(aRoomNumber);
@@ -1747,11 +1762,10 @@ end;
 
 { TReservationExtra }
 
-constructor TReservationExtra.Create(aRoomReservation: TNewRoomReservationItem; aitemID: integer; const aItem: string; const aDesc: string;
+constructor TReservationExtra.Create(aitemID: integer; const aItem: string; const aDesc: string;
                                       aCount: integer; aPrice: double; aFromdate, aToDate: TDateTime);
 begin
   inherited Create;
-  FRoomReservationItem := aRoomReservation;
   FItemID := aitemID;
   FItem := aItem;
   FDescription := aDesc;
@@ -1810,6 +1824,7 @@ const
          ' %s, ' +
          ' %s' +
          ')  ';
+
 var
   lExecPlan: TRoomerExecutionPlan;
   dt: TDateTime;
@@ -1820,13 +1835,15 @@ begin
     dt := FromDate;
     while dt < ToDate do
     begin
+
+
       lExecPlan.AddExec(format(cSQL, [ _db(FRoomReservationItem.Reservation),
                                _db(FRoomReservationItem.RoomReservation),
                                _db(ItemID),
                                _db(Description),
                                _db(dt),
                                _db(Count),
-                               _db(FRoomReservationItem.FRates.getCurrency),
+                               _db(g.qNativeCurrency),
                                _db(PricePerItemPerDay),
                                _db(now())
                            ]));
@@ -1884,7 +1901,7 @@ begin
     invoiceLineData.ItemCurrencyRate := 1.00;
     invoiceLineData.Discount           := 0.00;
     invoiceLineData.Discount_isPrecent := true;
-    invoiceLineData.ImportRefrence     := '';
+    invoiceLineData.ImportRefrence     := cSTOCKITEM_IMPORTREFERENCE;
     invoiceLineData.ImportSource       := '';
     invoiceLineData.Ispackage          := false;
     invoiceLineData.InvoiceIndex          := 0;
@@ -1923,6 +1940,61 @@ var
 begin
   for lExtra in Self do
     lExtra.SetNewDepartureDate(aNewDepartureDate);
+end;
+
+constructor TReservationExtrasList.Create(aReservationItem: TnewRoomreservationItem);
+begin
+  Create;
+  FReservationitem := aReservationItem;
+end;
+
+procedure TReservationExtrasList.DeleteAllFromDatabase;
+var cmdList : TList<String>;
+begin
+  cmdList := TList<String>.Create;
+  try
+    cmdList.Add( Format('DELETE from roomreservationstockitems WHERE roomreservation=%d', [FReservationitem.RoomReservation]));
+    cmdList.Add( Format('DELETE from invoicelines WHERE roomreservation=%d and importrefrence=''%s'' ', [FReservationitem.RoomReservation, cSTOCKITEM_IMPORTREFERENCE]));
+    d.roomerMainDataSet.SystemFreeExecuteMultiple(cmdList);
+  finally
+    cmdList.Free;
+  end;
+end;
+
+procedure TReservationExtrasList.LoadFromDataset(aDataset: TDataset);
+var
+  lExtra: TReservationExtra;
+  bm: TBookmark;
+begin
+  Clear;
+  aDataset.DisableControls;
+  try
+    bm := aDataset.Bookmark;
+    aDataset.First;
+    while not aDataset.Eof do
+    begin
+      lExtra := TReservationExtra.create(aDataset.FieldByName('itemid').asInteger,
+                                         aDataset.FieldByName('item').asString,
+                                         aDataset.FieldByName('description').asString,
+                                         aDataset.FieldByName('count').AsInteger,
+                                         aDataset.FieldByName('priceperitemperday').AsFloat,
+                                         aDataset.FieldByName('FromDate').asDateTime,
+                                         aDataset.FieldByName('todate').asDateTime);
+
+      Add(lExtra);
+      aDataset.Next;
+    end;
+  finally
+    aDataset.Bookmark := bm;
+    aDataset.EnableControls;
+  end;
+end;
+
+procedure TReservationExtrasList.Notify(const Item: TReservationExtra; Action: TCollectionNotification);
+begin
+  inherited;
+  if (Action = TCollectionNotification.cnAdded) then
+    Item.RoomReservationItem := FReservationitem;
 end;
 
 procedure TReservationExtrasList.Post;

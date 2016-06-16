@@ -862,6 +862,10 @@ object frmReservationProfile: TfrmReservationProfile
               ImageIndex = 1
               SkinData.CustomColor = False
               SkinData.CustomFont = False
+              ExplicitLeft = 0
+              ExplicitTop = 0
+              ExplicitWidth = 0
+              ExplicitHeight = 0
               object Label10: TsLabel
                 Left = 33
                 Top = 13
@@ -1558,7 +1562,7 @@ object frmReservationProfile: TfrmReservationProfile
     Top = 312
     Width = 1120
     Height = 317
-    ActivePage = GuestsTab
+    ActivePage = RoomsTab
     Align = alClient
     Style = tsButtons
     TabHeight = 25
@@ -1586,7 +1590,6 @@ object frmReservationProfile: TfrmReservationProfile
         ParentFont = False
         TabOrder = 0
         LookAndFeel.NativeStyle = False
-        ExplicitTop = 106
         object tvRooms: TcxGridDBTableView
           Navigator.Buttons.CustomButtons = <>
           Navigator.Buttons.First.Visible = True
@@ -1874,6 +1877,7 @@ object frmReservationProfile: TfrmReservationProfile
             Caption = 'Nights'
             DataBinding.FieldName = 'dayCount'
             PropertiesClassName = 'TcxButtonEditProperties'
+            Properties.Alignment.Horz = taCenter
             Properties.Buttons = <
               item
                 Default = True
@@ -2002,6 +2006,7 @@ object frmReservationProfile: TfrmReservationProfile
             Caption = 'Guests'
             DataBinding.FieldName = 'GuestCount'
             PropertiesClassName = 'TcxButtonEditProperties'
+            Properties.Alignment.Horz = taCenter
             Properties.Buttons = <
               item
                 Default = True
@@ -2164,6 +2169,29 @@ object frmReservationProfile: TfrmReservationProfile
               'Not included')
             Properties.OnChange = tvRoomsbreakfastTextPropertiesChange
             Width = 81
+          end
+          object tvRoomsStockItemsCount: TcxGridDBColumn
+            Caption = 'Extras'
+            DataBinding.FieldName = 'StockItemsCount'
+            PropertiesClassName = 'TcxButtonEditProperties'
+            Properties.Alignment.Horz = taCenter
+            Properties.Buttons = <
+              item
+                Default = True
+                Kind = bkEllipsis
+              end>
+            Properties.ReadOnly = True
+            Properties.OnButtonClick = tvRoomsStockItemsCountPropertiesButtonClick
+            Options.ShowEditButtons = isebAlways
+          end
+          object tvRoomsStockitemsPrice: TcxGridDBColumn
+            Caption = 'Extras Price'
+            DataBinding.FieldName = 'StockitemsPrice'
+            PropertiesClassName = 'TcxCurrencyEditProperties'
+            Properties.DisplayFormat = ',0.00;-,0.00'
+            Properties.ReadOnly = True
+            Options.Editing = False
+            Width = 56
           end
           object tvRoomsaccountTypeText: TcxGridDBColumn
             Caption = 'Account'
@@ -2492,8 +2520,8 @@ object frmReservationProfile: TfrmReservationProfile
         object chkShowAllGuests: TsCheckBox
           Left = 333
           Top = 11
-          Width = 93
-          Height = 18
+          Width = 85
+          Height = 20
           Caption = 'Show all guests'
           Anchors = [akLeft, akTop, akRight]
           TabOrder = 4
@@ -2918,20 +2946,18 @@ object frmReservationProfile: TfrmReservationProfile
           object lblSpecialRequests: TsLabel
             Left = 2
             Top = 13
-            Width = 250
+            Width = 69
             Height = 11
             Align = alTop
             Caption = 'Special Requests'
-            ExplicitWidth = 69
           end
           object lblNotes: TsLabel
             Left = 2
             Top = 97
-            Width = 250
+            Width = 24
             Height = 11
             Align = alTop
             Caption = 'Notes'
-            ExplicitWidth = 24
           end
           object edtSpecialRequests: TMemo
             AlignWithMargins = True
@@ -3039,6 +3065,10 @@ object frmReservationProfile: TfrmReservationProfile
       Caption = 'ALERTS'
       SkinData.CustomColor = False
       SkinData.CustomFont = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object pnlAlertHolder: TsPanel
         Left = 0
         Top = 0
@@ -3612,6 +3642,12 @@ object frmReservationProfile: TfrmReservationProfile
     object mRoomsRateOrPackagePerDay: TFloatField
       FieldName = 'RateOrPackagePerDay'
     end
+    object mRoomsStockItemsCount: TIntegerField
+      FieldName = 'StockItemsCount'
+    end
+    object mRoomsStockitemsPrice: TFloatField
+      FieldName = 'StockitemsPrice'
+    end
   end
   object mGuestRoomsDS: TDataSource
     DataSet = mGuestRooms
@@ -3619,8 +3655,8 @@ object frmReservationProfile: TfrmReservationProfile
     Top = 504
   end
   object mnuFinishedInv: TPopupMenu
-    Left = 752
-    Top = 520
+    Left = 504
+    Top = 336
     object mnuThisRoom: TMenuItem
       Caption = 'Closed this Room'
       OnClick = mnuThisRoomClick
@@ -3946,8 +3982,8 @@ object frmReservationProfile: TfrmReservationProfile
   object mInvoiceHeads: TdxMemData
     Indexes = <>
     SortOptions = []
-    Left = 672
-    Top = 472
+    Left = 608
+    Top = 448
     object mInvoiceHeadsInvoiceNumber: TIntegerField
       FieldName = 'InvoiceNumber'
     end
@@ -4032,13 +4068,13 @@ object frmReservationProfile: TfrmReservationProfile
   end
   object mInvoiceHeadsDS: TDataSource
     DataSet = mInvoiceHeads
-    Left = 584
-    Top = 504
+    Left = 592
+    Top = 496
   end
   object mInvoiceLinesDS: TDataSource
     DataSet = mInvoiceLines
-    Left = 672
-    Top = 512
+    Left = 592
+    Top = 560
   end
   object StoreMain: TcxPropertiesStore
     Components = <
@@ -4078,5 +4114,40 @@ object frmReservationProfile: TfrmReservationProfile
     Target = Owner
     Left = 884
     Top = 512
+  end
+  object mExtras: TdxMemData
+    Indexes = <>
+    SortOptions = []
+    Left = 448
+    Top = 544
+    object mExtrasRoomreservation: TIntegerField
+      FieldName = 'Roomreservation'
+    end
+    object mExtrasItemid: TIntegerField
+      FieldName = 'Itemid'
+    end
+    object mExtrasCount: TIntegerField
+      FieldName = 'Count'
+    end
+    object mExtrasPricePerItemPerDay: TFloatField
+      FieldName = 'PricePerItemPerDay'
+    end
+    object mExtrasFromdate: TDateTimeField
+      FieldName = 'Fromdate'
+    end
+    object mExtrasToDate: TDateTimeField
+      FieldName = 'ToDate'
+    end
+    object mExtrasItem: TStringField
+      FieldName = 'Item'
+    end
+    object mExtrasDescription: TStringField
+      FieldName = 'Description'
+    end
+    object mExtrasTotalPrice: TFloatField
+      FieldKind = fkCalculated
+      FieldName = 'TotalPrice'
+      Calculated = True
+    end
   end
 end
