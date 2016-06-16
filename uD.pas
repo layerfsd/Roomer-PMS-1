@@ -269,7 +269,6 @@ type
     { Private declarations }
     lstVaribles : tstringList;
     lstValues : tstringList;
-    zLstParams : tstringList;
 
     lstMaintenanceCodes : TKeyPairList;
 
@@ -1223,7 +1222,6 @@ procedure Td.DataModuleDestroy(Sender : TObject);
 begin
   lstVaribles.Free;
   lstValues.Free;
-  zLstParams.Free;
   lstCollect.Free;
   ClearMaintenanceCodes;
   lstMaintenanceCodes.Free;
@@ -12343,7 +12341,6 @@ begin
 
   lstVaribles := tstringList.Create;
   lstValues := tstringList.Create;
-  zLstParams := tstringList.Create;
 
   ctrlGetGlobalValues;
   lstCollect := tstringList.Create;

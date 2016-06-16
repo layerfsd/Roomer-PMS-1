@@ -1653,7 +1653,7 @@ begin
 //  frmSystemServers := TfrmSystemServers.Create(nil); frmSystemServers.Free; frmSystemServers := nil;
 //  frmSystemActions := TfrmSystemActions.Create(nil); frmSystemActions.Free; frmSystemActions := nil;
   frmStaffTypes2 := TfrmStaffTypes2.Create(nil); frmStaffTypes2.Free; frmStaffTypes2 := nil;
-  frmItems2 := TfrmItems2.Create(nil); frmItems2.Free; frmItems2 := nil;
+  TfrmItems2.Create(nil).Free;
   frmItemTypes2 := TfrmItemTypes2.Create(nil); frmItemTypes2.Free; frmItemTypes2 := nil;
   frmLocations := TfrmLocations.Create(nil); frmLocations.Free; frmLocations := nil;
   frmCurrencies := TfrmCurrencies.Create(nil); frmCurrencies.Free; frmCurrencies := nil;

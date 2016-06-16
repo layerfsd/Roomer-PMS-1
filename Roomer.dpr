@@ -8,6 +8,8 @@ program Roomer;
 //  FastMM4Messages in 'FastMM\FastMM4Messages.pas',
 //  {$endif}
 
+
+
 uses
   {$ifdef UseFastMM}
   FastMM4 in 'FastMM\FastMM4.pas',
@@ -224,7 +226,8 @@ uses
   uHotelArrivalsOfflineReport in 'OfflineReports\uHotelArrivalsOfflineReport.pas',
   uHotelArrivalsOfflineReportDesign in 'OfflineReports\uHotelArrivalsOfflineReportDesign.pas',
   uRptArrivals in 'uRptArrivals.pas' {frmArrivalsReport},
-  uFrmRoomReservationCancellationDialog in 'uFrmRoomReservationCancellationDialog.pas' {FrmRoomReservationCancellationDialog};
+  uFrmRoomReservationCancellationDialog in 'uFrmRoomReservationCancellationDialog.pas' {FrmRoomReservationCancellationDialog},
+  ufrmReservationExtras in 'StockItems\ufrmReservationExtras.pas' {frmReservationExtras};
 
 {$R *.RES}
 
