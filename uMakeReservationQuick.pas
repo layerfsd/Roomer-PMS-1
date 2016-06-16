@@ -4134,7 +4134,6 @@ var
   rateShowDiscount: boolean;
   rateIsPaid: boolean;
   rateItem: TRateItem;
-  roomIndex: integer;
   mainGuestName: string;
   RoomNotes: string;
   lReservationExtra: TReservationExtra;

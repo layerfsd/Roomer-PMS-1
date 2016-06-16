@@ -1,4 +1,4 @@
-unit uReservationProfile;
+﻿unit uReservationProfile;
 
 interface
 
@@ -764,8 +764,9 @@ uses
   uRoomTypes2,
   hData,
   uMain,
-  uFrmNotepad;
-  uMain, ufrmReservationExtras;
+  uFrmNotepad,
+  ufrmReservationExtras
+  ;
 
 {$R *.DFM}
 
