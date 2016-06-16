@@ -42,12 +42,13 @@ type
     FTotalPayments: Double;
     FOngoingTaxes: Double;
     FInvoiceIndex: Integer;
+    FBlockMoveReason: String;
 
   public
     constructor Create(RoomReservation, Reservation, Channel, PaymentInvoice, AscIndex, DescIndex: integer; GroupAccount: boolean;
       Room, RoomType, resFlag, CustomerName: string; isNoRoom: boolean; Date: Tdate; Information, Fax, Tel2, Tel1, GuestName, PMInfo, PriceType, Currency,
       BookingId: String; Price, Discount: Double; Percentage: boolean; ItemsOnInvoice: boolean; numGuests: integer; RoomClass: string;
-      _OutOfOrderBlocking, _BlockMove: boolean; _OngoingSale, _OngoingRent, _OngoingTaxes: Double; _Invoices, _Guarantee: String; _TotalPayments: Double
+      _OutOfOrderBlocking, _BlockMove: boolean; _BlockMoveReason: String; _OngoingSale, _OngoingRent, _OngoingTaxes: Double; _Invoices, _Guarantee: String; _TotalPayments: Double
       ; _InvoiceIndex : Integer);
 
     destructor Destroy; override;
@@ -84,6 +85,7 @@ type
     property RoomClass: string read FRoomClass write FRoomClass;
     property OutOfOrderBlocking: boolean read FOutOfOrderBlocking write FOutOfOrderBlocking;
     property BlockMove: boolean read FBlockMove write FBlockMove;
+    property BlockMoveReason: String read FBlockMoveReason write FBlockMoveReason;
     property OngoingSale: Double read FOngoingSale write FOngoingSale;
     property OngoingTaxes: Double read FOngoingTaxes write FOngoingTaxes;
     property OngoingRent: Double read FOngoingRent write FOngoingRent;
@@ -107,7 +109,7 @@ implementation
 constructor TresCell.Create(RoomReservation, Reservation, Channel, PaymentInvoice, AscIndex, DescIndex: integer; GroupAccount: boolean;
   Room, RoomType, resFlag, CustomerName: string; isNoRoom: boolean; Date: Tdate; Information, Fax, Tel2, Tel1, GuestName, PMInfo, PriceType, Currency,
   BookingId: String; Price, Discount: Double; Percentage: boolean; ItemsOnInvoice: boolean; numGuests: integer; RoomClass: string;
-  _OutOfOrderBlocking, _BlockMove: boolean; _OngoingSale, _OngoingRent, _OngoingTaxes: Double; _Invoices, _Guarantee: String; _TotalPayments: Double; _InvoiceIndex : Integer);
+  _OutOfOrderBlocking, _BlockMove: boolean; _BlockMoveReason: String; _OngoingSale, _OngoingRent, _OngoingTaxes: Double; _Invoices, _Guarantee: String; _TotalPayments: Double; _InvoiceIndex : Integer);
 
 begin
   inherited Create;
@@ -144,6 +146,7 @@ begin
 
   FOutOfOrderBlocking := _OutOfOrderBlocking;
   FBlockMove := _BlockMove;
+  FBlockMoveReason := _BlockMoveReason;
 
   FOngoingSale := _OngoingSale;
   FOngoingRent := _OngoingRent;

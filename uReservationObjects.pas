@@ -118,6 +118,7 @@ type
     FTotalTaxes: double;
     FOngoingTaxes: Double;
     FInvoiceIndex: Integer;
+    FBlockMoveReason: String;
 
     function GetGuestCount : integer;
     function GetGuest(iIndex : integer) : TGuestObject;
@@ -164,6 +165,7 @@ type
     property TotalTaxes : double read FTotalTaxes write FTotalTaxes;
     property TotalPayments : double read FTotalPayments write FTotalPayments;
     property blockMove : Boolean read FBlockMove write FBlockMove;
+    property blockMoveReason : String read FBlockMoveReason write FBlockMoveReason;
 
     property OngoingSale : Double read FOngoingSale write FOngoingSale;
     property OngoingTaxes : Double read FOngoingTaxes write FOngoingTaxes;
@@ -571,6 +573,8 @@ begin
             RoomObject.FPaymentInvoice := FieldByName('RoomRentPaymentInvoice').asInteger;
             if Assigned(rSet.FindField('blockMove')) then
               RoomObject.FBlockMove := rset['blockMove']; //.asBoolean;
+            if Assigned(rSet.FindField('blockMoveReason')) then
+              RoomObject.FBlockMoveReason := rset['blockMoveReason'];;
 
             RoomObject.FOngoingSale := 0.00;
             if Assigned(rSet.FindField('TotalNoRent')) AND Assigned(rSet.FindField('TotalRent')) then

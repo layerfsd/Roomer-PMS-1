@@ -5,7 +5,7 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, sPanel, Vcl.StdCtrls, sButton, sLabel,
-  uPopupListEx, uAppGlobal, hData, uG, _Glob, uUtils, AdvShape, PrjConst, sMemo, HTMLabel, Vcl.Menus;
+  uPopupListEx, uAppGlobal, hData, uG, _Glob, uUtils, AdvShape, PrjConst, sMemo, HTMLabel, Vcl.Menus, sCheckBox;
 
 type
 
@@ -64,6 +64,8 @@ type
     hlbGuarantee: THTMLabel;
     sLabel3: TsLabel;
     Shape3: TShape;
+    __labBlockNote: TsLabel;
+    cbxBlocked: TsCheckBox;
     procedure timHideTimer(Sender: TObject);
     procedure btnCheckInOutClick(Sender: TObject);
     procedure btnReservationDetailsClick(Sender: TObject);
@@ -355,6 +357,13 @@ begin
   __lbPAymentNotes.Text := rri.PMInfo;
 
   btnCheckInOut.Enabled := UpperCase(rri.resFlag)[1] IN ['P','G'];
+
+  __labBlockNote.Caption := '';
+  cbxBlocked.Checked := rri.BlockMove;
+  cbxBlocked.Visible := rri.BlockMove;
+  __labBlockNote.Visible := rri.BlockMove;
+  if rri.BlockMove then
+    __labBlockNote.Caption := rri.BlockMoveReason;
 
   TranslateAll;
 end;

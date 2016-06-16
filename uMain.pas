@@ -9625,7 +9625,7 @@ begin
     for ii := grPeriodRooms.FixedRows to grPeriodRooms.RowCount - 2 do
     begin
       grPeriodRooms.Objects[i, ii] := TresCell.Create(-1, -1, -1, -1, -1, -1, false, '', '', '', '', false, 1, '', '', '', '', '', '', '', '', '', 0.00, 0.00,
-        false, false, 0, '', false, false, 0, 0, 0, '', '', 0, 0);
+        false, false, 0, '', false, false, '', 0, 0, 0, '', '', 0, 0);
     end;
   end;
 
@@ -9694,6 +9694,7 @@ var
   GuestName: string;
 
   OutOfOrderBlocking, BlockMove: boolean;
+  BlockMoveReason : String;
 
   procedure CleanEnds(Days: integer; Grid: TAdvStringGrid);
   var
@@ -9710,7 +9711,7 @@ var
           except
           end;
         Grid.Objects[iCol, iRow] := TresCell.Create(-1, -1, -1, -1, -1, -1, false, '', '', '', '', false, 1, '', '', '', '', '', '', '', '', '', 0.00, 0.00,
-          false, false, 0, '', false, false, 0, 0, 0, '', '', 0, 0);
+          false, false, 0, '', false, false, '', 0, 0, 0, '', '', 0, 0);
       end;
     exit;
 
@@ -9744,7 +9745,7 @@ var
         begin
           Grid.cells[Grid.FixedCols, iRow] := '';
           Grid.Objects[Grid.FixedCols, iRow] := TresCell.Create(-1, -1, -1, -1, -1, -1, false, '', '', '', '', false, 1, '', '', '', '', '', '', '', '', '',
-            0.00, 0.00, false, false, 0, '', false, false, 0, 0, 0,'', '', 0, 0);
+            0.00, 0.00, false, false, 0, '', false, false, '', 0, 0, 0,'', '', 0, 0);
         end;
       end;
     end
@@ -9775,7 +9776,7 @@ var
         begin
           Grid.cells[Grid.ColCount - 1, iRow] := '';
           Grid.Objects[Grid.ColCount - 1, iRow] := TresCell.Create(-1, -1, -1, -1, -1, -1, false, '', '', '', '', false, 1, '', '', '', '', '', '', '', '', '',
-            0.00, 0.00, false, false, 0, '', false, false, 0, 0, 0, '', '', 0, 0);
+            0.00, 0.00, false, false, 0, '', false, false, '', 0, 0, 0, '', '', 0, 0);
         end;
       end;
     end;
@@ -9891,6 +9892,7 @@ begin
           GuestName := rdOBJ.qMT_.FieldByName('Guestname').asString;
           OutOfOrderBlocking := rdOBJ.qMT_.FieldByName('OutOfOrderBlocking').AsBoolean;
           BlockMove := rdOBJ.qMT_.FieldByName('BlockMove').AsBoolean;
+          BlockMoveReason := rdOBJ.qMT_.FieldByName('BlockMoveReason').AsString;
           OngoingSale := rdOBJ.qMT_.FieldByName('TotalNoRent').AsFloat;
           OngoingTaxes := rdOBJ.qMT_.FieldByName('TotalTaxes').AsFloat;
           OngoingRent := rdOBJ.qMT_.FieldByName('TotalRent').AsFloat;
@@ -9927,7 +9929,7 @@ begin
               try
                 grPeriodRooms.Objects[cords.col, cords.row] := TresCell.Create(RoomReservation, Reservation, Channel, PaymentInvoice, AscIndex, DescIndex,
                   GroupAccount, Room, RoomType, resFlag, CustomerName, isNoRoom, dt, Information, Fax, Tel2, Tel1, GuestName1, PMInfo, PriceType, Currency,
-                  BookingId, Price, Discount, Percentage, ItemsOnInvoice, numGuests, RoomClass, OutOfOrderBlocking, BlockMove, OngoingSale, OngoingRent,
+                  BookingId, Price, Discount, Percentage, ItemsOnInvoice, numGuests, RoomClass, OutOfOrderBlocking, BlockMove, BlockMoveReason, OngoingSale, OngoingRent,
                   OngoingTaxes, rdOBJ.qMT_['Invoices'], rdOBJ.qMT_['Guarantee'], rdOBJ.qMT_['TotalPayment'], rdOBJ.qMT_['InvoiceIndex']);
               except
     {$IFDEF DEBUG}
@@ -9988,7 +9990,7 @@ begin
               try
                 grPeriodRooms_NO.Objects[cords.col, cords.row] := TresCell.Create(RoomReservation, Reservation, Channel, PaymentInvoice, AscIndex, DescIndex,
                   GroupAccount, Room, RoomType, resFlag, CustomerName, isNoRoom, dt, Information, Fax, Tel2, Tel1, GuestName1, PMInfo, PriceType, Currency, BookingId,
-                  Price, Discount, Percentage, ItemsOnInvoice, numGuests, RoomClass, OutOfOrderBlocking, BlockMove, OngoingSale, OngoingRent, OngoingTaxes,
+                  Price, Discount, Percentage, ItemsOnInvoice, numGuests, RoomClass, OutOfOrderBlocking, BlockMove, BlockMoveReason, OngoingSale, OngoingRent, OngoingTaxes,
                   rdOBJ.qMT_['Invoices'], rdOBJ.qMT_['Guarantee'], rdOBJ.qMT_['TotalPayment'], rdOBJ.qMT_['TotalPayment']);
               except
       {$IFDEF DEBUG}
@@ -10268,6 +10270,7 @@ begin
   result.RoomClass := ReservationsModel.Reservations[iReservation].Rooms[iRoomReservation].RoomClass;
   result.OutOfOrderBlocking := ReservationsModel.Reservations[iReservation].OutOfOrderBlocking;
   result.BlockMove := ReservationsModel.Reservations[iReservation].Rooms[iRoomReservation].BlockMove;
+  result.BlockMoveReason := ReservationsModel.Reservations[iReservation].Rooms[iRoomReservation].BlockMoveReason;
 
   result.OngoingSale := ReservationsModel.Reservations[iReservation].Rooms[iRoomReservation].OngoingSale;
   result.OngoingTaxes := ReservationsModel.Reservations[iReservation].Rooms[iRoomReservation].OngoingTaxes;
@@ -10341,6 +10344,7 @@ begin
   result.RoomClass := resCell.RoomClass;
   result.OutOfOrderBlocking := resCell.OutOfOrderBlocking;
   result.BlockMove := resCell.BlockMove;
+  result.BlockMoveReason := resCell.BlockMoveReason;
 
   result.OngoingSale := resCell.OngoingSale;
   result.OngoingTaxes := resCell.OngoingTaxes;
@@ -10711,7 +10715,7 @@ begin
         grPeriodRooms_NO.Objects[c, r] := nil;
       end;
       grPeriodRooms_NO.Objects[c, r] := TresCell.Create(-1, -1, -1, -1, -1, -1, false, '', '', '', '', false, 1, '', '', '', '', '', '', '', '', '', 0.00, 0.00,
-        false, false, 0, '', false, false, 0, 0, 0, '', '', 0, 0);
+        false, false, 0, '', false, false, '', 0, 0, 0, '', '', 0, 0);
     end;
   end;
 end;
@@ -10728,7 +10732,7 @@ begin
       grPeriodRooms_NO.Objects[c, r] := nil;
     end;
     grPeriodRooms_NO.Objects[c, r] := TresCell.Create(-1, -1, -1, -1, -1, -1, false, '', '', '', '', false, 1, '', '', '', '', '', '', '', '', '', 0.00, 0.00,
-      false, false, 0, '', false, false, 0, 0, 0, '', '', 0, 0);
+      false, false, 0, '', false, false, '', 0, 0, 0, '', '', 0, 0);
   end;
 end;
 

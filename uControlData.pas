@@ -672,6 +672,8 @@ type
     __CurrencySyncSource: TsComboBox;
     lblRequireExactClosingPayment: TsLabel;
     cbxRequireExactClosingPayment: TsCheckBox;
+    sLabel35: TsLabel;
+    sLabel36: TsLabel;
     procedure FormCreate(Sender : TObject);
     procedure FormClose(Sender : TObject; var Action : TCloseAction);
     procedure FormShow(Sender : TObject);

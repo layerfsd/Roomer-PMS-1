@@ -2,7 +2,7 @@ object FrmReservationHintHolder: TFrmReservationHintHolder
   Left = 0
   Top = 0
   Caption = 'FrmReservationHintHolder'
-  ClientHeight = 561
+  ClientHeight = 700
   ClientWidth = 666
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -37,7 +37,7 @@ object FrmReservationHintHolder: TFrmReservationHintHolder
     Left = 200
     Top = 8
     Width = 438
-    Height = 528
+    Height = 568
     BevelOuter = bvNone
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -648,11 +648,18 @@ object FrmReservationHintHolder: TFrmReservationHintHolder
       Height = 1
       Pen.Color = clGray
     end
+    object __labBlockNote: TsLabel
+      Left = 54
+      Top = 532
+      Width = 363
+      Height = 34
+      AutoSize = False
+    end
     object __lbNotes: TsMemo
       Left = 19
       Top = 391
       Width = 209
-      Height = 133
+      Height = 117
       BorderStyle = bsNone
       Color = clWhite
       Font.Charset = DEFAULT_CHARSET
@@ -674,8 +681,8 @@ object FrmReservationHintHolder: TFrmReservationHintHolder
       SkinData.SkinSection = 'EDIT'
     end
     object btnCheckInOut: TsButton
-      Left = 18
-      Top = 505
+      Left = 23
+      Top = 480
       Width = 143
       Height = 25
       Caption = 'Check in'
@@ -687,7 +694,7 @@ object FrmReservationHintHolder: TFrmReservationHintHolder
     end
     object btnReservationDetails: TsButton
       Left = 172
-      Top = 505
+      Top = 480
       Width = 218
       Height = 25
       Caption = 'Reservation details'
@@ -700,7 +707,7 @@ object FrmReservationHintHolder: TFrmReservationHintHolder
       Left = 230
       Top = 391
       Width = 201
-      Height = 133
+      Height = 117
       BorderStyle = bsNone
       Color = clWhite
       Font.Charset = DEFAULT_CHARSET
@@ -720,6 +727,17 @@ object FrmReservationHintHolder: TFrmReservationHintHolder
       OnMouseUp = pnlHintMouseUp
       Text = 'Will arrive later. Needs a extra bed for the child.'
       SkinData.SkinSection = 'EDIT'
+    end
+    object cbxBlocked: TsCheckBox
+      Left = 19
+      Top = 509
+      Width = 162
+      Height = 20
+      Caption = 'Room is blocked from move'
+      TabOrder = 4
+      ImgChecked = 0
+      ImgUnchecked = 0
+      ReadOnly = True
     end
   end
   object timHide: TTimer

@@ -4,6 +4,7 @@ interface
 
 uses
   VCL.Forms,
+  System.Generics.Collections,
   variants,
   cxGraphics,
   cxControls,
@@ -528,12 +529,14 @@ type
     lblMarket: TsLabel;
     mRoomsRateOrPackagePerDay: TFloatField;
     tvRoomsRateOrPackagePerDay: TcxGridDBColumn;
+    mRoomsblockMoveReason: TWideStringField;
+    tvRoomsblockMoveReason: TcxGridDBColumn;
     mExtras: TdxMemData;
     mExtrasRoomreservation: TIntegerField;
     mExtrasItemid: TIntegerField;
     mExtrasCount: TIntegerField;
-    mExtrasPricePerItemPerDay: TFloatField;
     mExtrasFromdate: TDateTimeField;
+    mExtrasPricePerItemPerDay: TFloatField;
     mExtrasToDate: TDateTimeField;
     mExtrasItem: TStringField;
     mExtrasDescription: TStringField;
@@ -651,6 +654,8 @@ type
     procedure GetLocaltimeEditProperties(Sender: TcxCustomGridTableItem; ARecord: TcxCustomGridRecord;
       var AProperties: TcxCustomEditProperties);
     procedure cbxMarketCloseUp(Sender: TObject);
+    procedure tvRoomsblockMoveGetCellHint(Sender: TcxCustomGridTableItem; ARecord: TcxCustomGridRecord; ACellViewInfo: TcxGridTableDataCellViewInfo;
+      const AMousePos: TPoint; var AHintText: TCaption; var AIsHintMultiLine: Boolean; var AHintTextRect: TRect);
     procedure tvRoomsStockItemsCountPropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
   private
     { Private declarations }
@@ -662,6 +667,8 @@ type
     FrmAlertPanel: TFrmAlertPanel;
     AlertList: TAlertList;
     FValidating: Boolean;
+
+    BlockReasons : TList<String>;
 
     procedure Display;
     procedure Display_rGrid(gotoRoomReservation: longInt);
@@ -756,6 +763,8 @@ uses
   uViewDailyRates,
   uRoomTypes2,
   hData,
+  uMain,
+  uFrmNotepad;
   uMain, ufrmReservationExtras;
 
 {$R *.DFM}
@@ -842,6 +851,7 @@ begin
   glb.PerformAuthenticationAssertion(self);
   PlaceFormOnVisibleMonitor(self);
 
+  BlockReasons := TList<String>.Create;
   FOutOfOrderBlocking := false;
   mainPage.ActivePage := RoomsTab;
   zInt := 0;
@@ -854,6 +864,7 @@ end;
 procedure TfrmReservationProfile.FormDestroy(Sender: TObject);
 begin
   DynamicRates.free;
+  BlockReasons.Free;
   FreeAndNil(FrmAlertPanel);
   AlertList.postChanges;
   AlertList.free;
@@ -1969,7 +1980,7 @@ begin
         temp := format
           ('(AddNewRoom3) Add a room to reservation Reservation=%d, RoomReservation=%d, Room=%s, RoomType=%s, TO ArrDate=%s, DepDate=%s',
           [iReservation, iRoomreservation, RoomNumber, RoomType, DateToSqlString(arrival), DateToSqlString(departure)]);
-        d.roomerMainDataSet.SystemChangeAvailability(RoomType, arrival, departure - 1, true, temp); // minnka framboð
+        d.roomerMainDataSet.SystemChangeAvailability(RoomType, arrival, departure - 1, true, temp); // minnka framboï¿½
       end;
 
       if ExecutionPlan.Execute(ptExec, false, true) then
@@ -2351,6 +2362,7 @@ begin
     s := s + '    , IF(ISNULL(ManualChannelId) OR ManualChannelId < 1, (SELECT channel FROM reservations WHERE reservations.Reservation=rr.Reservation LIMIT 1), ManualChannelId) AS ManualChannelId '#10;
     s := s + '    , RoomClass '#10;
     s := s + '    , blockMove '#10;
+    s := s + '    , blockMoveReason '#10;
     s := s + '    , rrRoomAlias as RoomAlias '#10;
     s := s + '    , rrRoomTypeAlias as RoomTypeAlias '#10;
     s := s + '    , (SELECT count(ID) FROM roomsdate WHERE (roomsdate.roomreservation=rr.roomreservation) AND (roomsdate.ResFlag <> '
@@ -2405,6 +2417,8 @@ begin
 
     while not mRooms.Eof do
     begin
+
+      BlockReasons.Add(mRoomsblockMoveReason.AsString);
       Room := mRoomsRoom.asstring;
       departure := mRoomsDeparture.AsDateTime;
       arrival := mRoomsArrival.AsDateTime;
@@ -2781,6 +2795,13 @@ begin
   end;
 end;
 
+procedure TfrmReservationProfile.tvRoomsblockMoveGetCellHint(Sender: TcxCustomGridTableItem; ARecord: TcxCustomGridRecord;
+  ACellViewInfo: TcxGridTableDataCellViewInfo; const AMousePos: TPoint; var AHintText: TCaption; var AIsHintMultiLine: Boolean; var AHintTextRect: TRect);
+begin
+  AHintText := BlockReasons[ARecord.RecordIndex];
+  AIsHintMultiLine := True;
+end;
+
 procedure TfrmReservationProfile.tvRoomsStockItemsCountPropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
 var
   lCurrentRoomRes: recEditReservationExtrasHolder;
@@ -2814,8 +2835,13 @@ begin
   iRoomRes := mRoomsRoomReservation.asInteger;
   Value := 0;
   if mRoomsBlockMove.AsBoolean then
+  begin
     Value := 1;
-  sTmp := format('UPDATE roomreservations SET blockMove=%d WHERE RoomReservation=%d', [Value, iRoomRes]);
+    mRooms.Edit;
+    mRoomsBlockMoveReason.AsString := EditText('Reason for blocking the move of ' + mRoomsRoom.AsString, mRoomsBlockMoveReason.AsString);
+    mRooms.Post;
+  end;
+  sTmp := format('UPDATE roomreservations SET blockMove=%d, blockMoveReason=%s WHERE RoomReservation=%d', [Value, _db(mRoomsBlockMoveReason.AsString), iRoomRes]);
   cmd_bySQL(sTmp);
 end;
 

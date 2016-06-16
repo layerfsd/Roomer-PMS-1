@@ -90,6 +90,7 @@ Type
 
     OutOfOrderBlocking: boolean;
     BlockMove: boolean;
+    BlockMoveReason: String;
 
     OngoingSale : Double;
     OngoingTaxes : Double;

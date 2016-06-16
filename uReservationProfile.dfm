@@ -295,7 +295,7 @@ object frmReservationProfile: TfrmReservationProfile
         Left = 176
         Top = 79
         Width = 20
-        Height = 18
+        Height = 20
         TabOrder = 4
         SkinData.SkinSection = 'CHECKBOX'
         ImgChecked = 0
@@ -585,8 +585,6 @@ object frmReservationProfile: TfrmReservationProfile
     object TabSheet3: TsTabSheet
       Caption = 'Main'
       TabVisible = False
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
       object Panel3: TsPanel
         Left = 0
         Top = 0
@@ -614,8 +612,6 @@ object frmReservationProfile: TfrmReservationProfile
             SkinData.SkinSection = 'PAGECONTROL'
             object TabSheet4: TsTabSheet
               Caption = 'Customer'
-              SkinData.CustomColor = False
-              SkinData.CustomFont = False
               object Label9: TsLabel
                 Left = 2
                 Top = 3
@@ -1573,8 +1569,6 @@ object frmReservationProfile: TfrmReservationProfile
     SkinData.SkinSection = 'PAGECONTROL'
     object RoomsTab: TsTabSheet
       Caption = 'Rooms'
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
       object grRooms: TcxGrid
         Left = 0
         Top = 82
@@ -1708,6 +1702,7 @@ object frmReservationProfile: TfrmReservationProfile
             DataBinding.FieldName = 'blockMove'
             PropertiesClassName = 'TcxCheckBoxProperties'
             Properties.OnChange = tvRoomsblockMovePropertiesChange
+            OnGetCellHint = tvRoomsblockMoveGetCellHint
           end
           object tvRoomsColumn1: TcxGridDBColumn
             Caption = 'FIL'
@@ -2268,6 +2263,11 @@ object frmReservationProfile: TfrmReservationProfile
           object tvRoomsManualChannelId: TcxGridDBColumn
             DataBinding.FieldName = 'ManualChannelId'
           end
+          object tvRoomsblockMoveReason: TcxGridDBColumn
+            Caption = 'Reason for move blocking'
+            DataBinding.FieldName = 'blockMoveReason'
+            Options.Editing = False
+          end
         end
         object lvRooms: TcxGridLevel
           Caption = 'Rooms'
@@ -2458,8 +2458,6 @@ object frmReservationProfile: TfrmReservationProfile
     object GuestsTab: TsTabSheet
       Caption = 'Guests'
       ImageIndex = 1
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
       object Panel10: TsPanel
         Left = 0
         Top = 0
@@ -3083,8 +3081,6 @@ object frmReservationProfile: TfrmReservationProfile
     object InvoicesTab: TsTabSheet
       Caption = 'Finished Invoices'
       ImageIndex = 2
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
       object Panel11: TsPanel
         Left = 0
         Top = 0
@@ -3641,6 +3637,10 @@ object frmReservationProfile: TfrmReservationProfile
     end
     object mRoomsRateOrPackagePerDay: TFloatField
       FieldName = 'RateOrPackagePerDay'
+    end
+    object mRoomsblockMoveReason: TWideStringField
+      FieldName = 'blockMoveReason'
+      Size = 255
     end
     object mRoomsStockItemsCount: TIntegerField
       FieldName = 'StockItemsCount'

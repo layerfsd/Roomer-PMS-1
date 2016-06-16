@@ -502,6 +502,7 @@ type
 
     package: string;
     BlockMove : Boolean;
+    BlockMoveReason : String;
 
     ManualChannelId : Integer;
     ratePlanCode : String;
@@ -2969,6 +2970,8 @@ begin
     Hallres := 0;
 
     BlockMove := False;
+    BlockMoveReason := '';
+
 
     ManualChannelId := 0;
     ratePlanCode := '';
@@ -4358,6 +4361,7 @@ begin
       result.UseStayTax := rSet['useStayTax'];
       result.UseInNationalReport := rSet['useInNationalReport'];
       result.BlockMove := rSet['blockMove'];
+      result.BlockMoveReason := rSet['BlockMoveReason'];
 
       result.numGuests := rSet.fieldbyname('numGuests').asInteger;
       result.numChildren := rSet.fieldbyname('numChildren').asInteger;

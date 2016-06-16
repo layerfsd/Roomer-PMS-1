@@ -1178,6 +1178,7 @@ select_ProvideARoom2_MoveToRoomEnh2 : string =
 '  , rrArrival '+
 '  , rrDeparture '+
 '  , blockMove '+
+'  , blockMoveReason '+
 ' FROM '+
 '   roomreservations '+
 ' WHERE '+
