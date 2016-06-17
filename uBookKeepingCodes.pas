@@ -148,7 +148,6 @@ type
       ANewItemRecordFocusingChanged: Boolean);
     procedure tvDataDataControllerFilterChanged(Sender: TObject);
     procedure tvDataDataControllerSortingChanged(Sender: TObject);
-    procedure btnOtherClick(Sender: TObject);
     procedure btnDeleteClick(Sender: TObject);
     procedure mnuiPrintClick(Sender: TObject);
     procedure mnuiGridToExcelClick(Sender: TObject);
@@ -159,7 +158,6 @@ type
     procedure btnClearClick(Sender: TObject);
     procedure edFilterChange(Sender: TObject);
     procedure btnInsertClick(Sender: TObject);
-    procedure tvDataDetailedDescriptionPropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
     procedure FormShow(Sender: TObject);
     procedure m_AfterScroll(DataSet: TDataSet);
     procedure m_BeforePost(DataSet: TDataSet);
@@ -172,12 +170,9 @@ type
     zSortStr         : string;
     zIsAddRow        : boolean;
 
-    Procedure fillGridFromDataset(sGoto : String);
-    function getPrevCode : string;
+    Procedure fillGridFromDataset(const sGoto : String);
     Procedure chkFilter;
     procedure applyFilter;
-    function getDefaults(PriceCodeID, RateID, SeasonId, RoomTypeID, CurrencyID : integer ) : recwRoomRateHolder;
-    procedure SetEditedValuesIn_M_Dataset;
     procedure NoGridEdit;
     procedure SetEditOnOff(setOn: Boolean);
 
@@ -190,7 +185,7 @@ type
     SelectedCode : String;
   end;
 
-function BookKeepingCodes(act : TActTableAction; sGoto : String = '') : String;
+function BookKeepingCodes(act : TActTableAction;const sGoto : String = '') : String;
 
 var
   frmBookKeepingCodes: TfrmBookKeepingCodes;
@@ -211,7 +206,7 @@ uses
   , uMain
   , uPackages
   , uGuestPortfolioEdit
-
+  , UITypes
   ;
 
 
@@ -219,7 +214,7 @@ uses
 //  unit global functions
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-function BookKeepingCodes(act : TActTableAction; sGoto : String = '') : String;
+function BookKeepingCodes(act : TActTableAction; const sGoto : String = '') : String;
 var _frmBookKeepingCodes: TfrmBookKeepingCodes;
 begin
   result := '';
@@ -244,7 +239,7 @@ end;
 ///////////////////////////////////////////////////////////////////////
 
 
-Procedure TfrmBookKeepingCodes.fillGridFromDataset(sGoto : String);
+Procedure TfrmBookKeepingCodes.fillGridFromDataset(const sGoto : String);
 var
   s    : string;
 begin
@@ -339,14 +334,8 @@ end;
 
 procedure TfrmBookKeepingCodes.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
-  if tvdata.DataController.DataSet.State = dsInsert then
-  begin
+  if tvdata.DataController.DataSet.State in [dsInsert, dsEdit] then
     tvdata.DataController.Post;
-  end;
-  if tvdata.DataController.DataSet.State = dsEdit then
-  begin
-    tvdata.DataController.Post;
-  end;
 
   update;
   freeandnil(GlobalRecordSet);
@@ -395,10 +384,6 @@ end;
 
 ////////////////////////////////////////////////////////////////////////////////////////
 // memory table
-////////////////////////////////////////////////////////////////////////////////////////
-function TfrmBookKeepingCodes.getPrevCode: string;
-begin
-end;
 
 procedure TfrmBookKeepingCodes.m_AfterScroll(DataSet: TDataSet);
 begin
@@ -484,10 +469,6 @@ begin
   end;
 end;
 
-function TfrmBookKeepingCodes.getDefaults(PriceCodeID, RateID, SeasonId, RoomTypeID, CurrencyID : integer ) : recwRoomRateHolder;
-begin
-end;
-
 procedure TfrmBookKeepingCodes.m_NewRecord(DataSet: TDataSet);
 begin
   dataset['code']         := '';
@@ -526,10 +507,6 @@ begin
 end;
 
 
-procedure TfrmBookKeepingCodes.tvDataDetailedDescriptionPropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
-begin
-end;
-
 ////////////////////////////////////////////////////////////////////////////
 //  Filter
 /////////////////////////////////////////////////////////////////////////////
@@ -566,12 +543,6 @@ end;
 //////////////////////////////////////////////////////////////////////////
 
 
-procedure TfrmBookKeepingCodes.btnOtherClick(Sender: TObject);
-begin
-  //**
-end;
-
-
 procedure TfrmBookKeepingCodes.btnClearClick(Sender: TObject);
 begin
   edFilter.Text := '';
@@ -582,20 +553,14 @@ begin
   m_.Delete;
 end;
 
-procedure TfrmBookKeepingCodes.SetEditedValuesIn_M_Dataset;
-begin
-end;
 
 procedure TfrmBookKeepingCodes.SetEditOnOff(setOn : Boolean);
-var i : Integer;
 begin
   tvDataID.Options.Editing             := setOn;
   tvDataCode.Options.Editing           := setOn;
   tvDataDescription.Options.Editing    := setOn;
   __tvDatatxStatus.Options.Editing       := setOn;
   tvDatabookOnCustomer.Options.Editing := setOn;
-//  for i := 0 to tvData.ColumnCount - 1 do
-//    tvData.Columns[i].Options.Editing := setOn;
 end;
 
 procedure TfrmBookKeepingCodes.btnEditClick(Sender: TObject);

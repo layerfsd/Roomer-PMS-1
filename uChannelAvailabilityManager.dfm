@@ -15,6 +15,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
   Scaled = False
   OnClose = FormClose
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
   PixelsPerInch = 96
   TextHeight = 12
   object pnlHolder: TsPanel
@@ -253,7 +254,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           ParentFont = False
           ParentShowHint = False
           ShowHint = True
-          TabOrder = 1
+          TabOrder = 4
           OnChange = dtBulkToChange
           SkinData.SkinSection = 'EDIT'
           BoundLabel.Font.Charset = DEFAULT_CHARSET
@@ -266,7 +267,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           Left = 114
           Top = 137
           Width = 251
-          Height = 22
+          Height = 17
           Margins.Left = 2
           Margins.Top = 2
           Margins.Right = 2
@@ -279,7 +280,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           Font.Name = 'Tahoma'
           Font.Style = []
           ParentFont = False
-          TabOrder = 2
+          TabOrder = 11
           Items.Strings = (
             'All Room Types')
           Caption = ''
@@ -304,7 +305,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           Font.Style = []
           MaxLength = 10
           ParentFont = False
-          TabOrder = 3
+          TabOrder = 14
           Text = '  -  -    '
           OnChange = dtBulkToChange
           CheckOnExit = True
@@ -318,8 +319,8 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           GlyphMode.Grayed = False
         end
         object dtBulkTo: TsDateEdit
-          Left = 300
-          Top = 162
+          Left = 303
+          Top = 163
           Width = 124
           Height = 20
           Margins.Left = 2
@@ -336,7 +337,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           Font.Style = []
           MaxLength = 10
           ParentFont = False
-          TabOrder = 4
+          TabOrder = 15
           Text = '  -  -    '
           OnChange = dtBulkToChange
           CheckOnExit = True
@@ -352,8 +353,8 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
         object cbMon: TsCheckBox
           Left = 96
           Top = 383
-          Width = 65
-          Height = 16
+          Width = 57
+          Height = 20
           Margins.Left = 2
           Margins.Top = 2
           Margins.Right = 2
@@ -361,7 +362,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           Caption = 'Monday'
           Checked = True
           State = cbChecked
-          TabOrder = 5
+          TabOrder = 17
           SkinData.SkinSection = 'CHECKBOX'
           ImgChecked = 0
           ImgUnchecked = 0
@@ -369,8 +370,8 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
         object cbTue: TsCheckBox
           Left = 96
           Top = 400
-          Width = 66
-          Height = 16
+          Width = 58
+          Height = 20
           Margins.Left = 2
           Margins.Top = 2
           Margins.Right = 2
@@ -378,7 +379,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           Caption = 'Tuesday'
           Checked = True
           State = cbChecked
-          TabOrder = 6
+          TabOrder = 18
           SkinData.SkinSection = 'CHECKBOX'
           ImgChecked = 0
           ImgUnchecked = 0
@@ -386,8 +387,8 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
         object cbWen: TsCheckBox
           Left = 96
           Top = 417
-          Width = 81
-          Height = 16
+          Width = 73
+          Height = 20
           Margins.Left = 2
           Margins.Top = 2
           Margins.Right = 2
@@ -395,7 +396,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           Caption = 'Wednesday'
           Checked = True
           State = cbChecked
-          TabOrder = 7
+          TabOrder = 19
           SkinData.SkinSection = 'CHECKBOX'
           ImgChecked = 0
           ImgUnchecked = 0
@@ -403,8 +404,8 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
         object cbThu: TsCheckBox
           Left = 96
           Top = 435
-          Width = 71
-          Height = 16
+          Width = 63
+          Height = 20
           Margins.Left = 2
           Margins.Top = 2
           Margins.Right = 2
@@ -412,7 +413,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           Caption = 'Thursday'
           Checked = True
           State = cbChecked
-          TabOrder = 8
+          TabOrder = 20
           SkinData.SkinSection = 'CHECKBOX'
           ImgChecked = 0
           ImgUnchecked = 0
@@ -420,8 +421,8 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
         object cbFri: TsCheckBox
           Left = 216
           Top = 383
-          Width = 57
-          Height = 16
+          Width = 49
+          Height = 20
           Margins.Left = 2
           Margins.Top = 2
           Margins.Right = 2
@@ -429,7 +430,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           Caption = 'Friday'
           Checked = True
           State = cbChecked
-          TabOrder = 9
+          TabOrder = 21
           SkinData.SkinSection = 'CHECKBOX'
           ImgChecked = 0
           ImgUnchecked = 0
@@ -437,8 +438,8 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
         object cbSat: TsCheckBox
           Left = 216
           Top = 400
-          Width = 69
-          Height = 16
+          Width = 61
+          Height = 20
           Margins.Left = 2
           Margins.Top = 2
           Margins.Right = 2
@@ -446,7 +447,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           Caption = 'Saturday'
           Checked = True
           State = cbChecked
-          TabOrder = 10
+          TabOrder = 22
           SkinData.SkinSection = 'CHECKBOX'
           ImgChecked = 0
           ImgUnchecked = 0
@@ -454,8 +455,8 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
         object cbSun: TsCheckBox
           Left = 216
           Top = 417
-          Width = 63
-          Height = 16
+          Width = 55
+          Height = 20
           Margins.Left = 2
           Margins.Top = 2
           Margins.Right = 2
@@ -463,7 +464,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           Caption = 'Sunday'
           Checked = True
           State = cbChecked
-          TabOrder = 11
+          TabOrder = 23
           SkinData.SkinSection = 'CHECKBOX'
           ImgChecked = 0
           ImgUnchecked = 0
@@ -479,7 +480,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           Margins.Bottom = 2
           Caption = 'Apply'
           Enabled = False
-          TabOrder = 13
+          TabOrder = 24
           OnClick = btnApplyBulkClick
           SkinData.SkinSection = 'BUTTON'
         end
@@ -493,7 +494,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           Margins.Right = 2
           Margins.Bottom = 2
           Caption = 'Cancel'
-          TabOrder = 12
+          TabOrder = 25
           OnClick = sButton2Click
           SkinData.SkinSection = 'BUTTON'
         end
@@ -547,7 +548,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           Font.Style = []
           ItemIndex = 0
           ParentFont = False
-          TabOrder = 14
+          TabOrder = 5
           Text = 'Type availability'
           OnChange = cbxAvailTypeChange
           Items.Strings = (
@@ -574,7 +575,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           ParentFont = False
           ParentShowHint = False
           ShowHint = True
-          TabOrder = 15
+          TabOrder = 9
           Visible = False
           OnChange = dtBulkToChange
           SkinData.SkinSection = 'EDIT'
@@ -611,7 +612,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           Font.Style = []
           ItemIndex = -1
           ParentFont = False
-          TabOrder = 16
+          TabOrder = 10
           Visible = False
           OnChange = cbDCAvailabilityTypeChange
           Items.Strings = (
@@ -623,12 +624,12 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           Left = 114
           Top = 62
           Width = 20
-          Height = 16
+          Height = 20
           Margins.Left = 2
           Margins.Top = 2
           Margins.Right = 2
           Margins.Bottom = 2
-          TabOrder = 17
+          TabOrder = 3
           OnClick = __cbxRateClick
           SkinData.SkinSection = 'CHECKBOX'
           ImgChecked = 0
@@ -638,12 +639,12 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           Left = 114
           Top = 112
           Width = 20
-          Height = 16
+          Height = 20
           Margins.Left = 2
           Margins.Top = 2
           Margins.Right = 2
           Margins.Bottom = 2
-          TabOrder = 18
+          TabOrder = 8
           Visible = False
           OnClick = __cbxAvailabilityClick
           SkinData.SkinSection = 'CHECKBOX'
@@ -655,7 +656,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           Top = 209
           Width = 409
           Height = 169
-          TabOrder = 19
+          TabOrder = 16
           SkinData.SkinSection = 'PANEL'
           object lblMinStay: TsLabel
             Left = 38
@@ -763,7 +764,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
             Left = 13
             Top = 28
             Width = 20
-            Height = 16
+            Height = 20
             Margins.Left = 2
             Margins.Top = 2
             Margins.Right = 2
@@ -775,7 +776,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
             ImgUnchecked = 0
           end
           object edtMinStay: TsEdit
-            Left = 38
+            Left = 37
             Top = 24
             Width = 56
             Height = 21
@@ -842,7 +843,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
             Caption = 'Off'
             ImageIndex = 11
             Images = DImages.ilGuests
-            TabOrder = 3
+            TabOrder = 5
             OnClick = btnStopSell_OffClick
             SkinData.SkinSection = 'BUTTON'
           end
@@ -854,7 +855,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
             Caption = 'On'
             ImageIndex = 11
             Images = DImages.ilGuests
-            TabOrder = 4
+            TabOrder = 7
             OnClick = btnStopSell_OnClick
             SkinData.SkinSection = 'BUTTON'
           end
@@ -863,19 +864,19 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
             Top = 61
             Width = 15
             Height = 25
-            TabOrder = 5
+            TabOrder = 6
             OnClick = btnStopSell_ClearClick
             SkinData.SkinSection = 'BUTTON'
           end
           object btnCloseOnArrival_Off: TsButton
-            Left = 223
+            Left = 222
             Top = 92
             Width = 67
             Height = 25
             Caption = 'Off'
             ImageIndex = 11
             Images = DImages.ilGuests
-            TabOrder = 6
+            TabOrder = 8
             OnClick = btnStopSell_OffClick
             SkinData.SkinSection = 'BUTTON'
           end
@@ -884,7 +885,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
             Top = 92
             Width = 15
             Height = 25
-            TabOrder = 7
+            TabOrder = 9
             OnClick = btnStopSell_ClearClick
             SkinData.SkinSection = 'BUTTON'
           end
@@ -896,7 +897,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
             Caption = 'On'
             ImageIndex = 11
             Images = DImages.ilGuests
-            TabOrder = 8
+            TabOrder = 10
             OnClick = btnStopSell_OnClick
             SkinData.SkinSection = 'BUTTON'
           end
@@ -908,7 +909,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
             Caption = 'Off'
             ImageIndex = 11
             Images = DImages.ilGuests
-            TabOrder = 9
+            TabOrder = 11
             OnClick = btnStopSell_OffClick
             SkinData.SkinSection = 'BUTTON'
           end
@@ -920,7 +921,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
             Caption = 'On'
             ImageIndex = 11
             Images = DImages.ilGuests
-            TabOrder = 10
+            TabOrder = 13
             OnClick = btnStopSell_OnClick
             SkinData.SkinSection = 'BUTTON'
           end
@@ -929,7 +930,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
             Top = 123
             Width = 15
             Height = 25
-            TabOrder = 11
+            TabOrder = 12
             OnClick = btnStopSell_ClearClick
             SkinData.SkinSection = 'BUTTON'
           end
@@ -937,9 +938,9 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
             Left = 222
             Top = 26
             Width = 20
-            Height = 16
+            Height = 20
             Enabled = False
-            TabOrder = 12
+            TabOrder = 3
             SkinData.SkinSection = 'CHECKBOX'
             ImgChecked = 0
             ImgUnchecked = 0
@@ -948,9 +949,9 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
             Left = 336
             Top = 25
             Width = 20
-            Height = 16
+            Height = 20
             Enabled = False
-            TabOrder = 13
+            TabOrder = 4
             SkinData.SkinSection = 'CHECKBOX'
             ImgChecked = 0
             ImgUnchecked = 0
@@ -976,7 +977,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           ParentFont = False
           ParentShowHint = False
           ShowHint = True
-          TabOrder = 20
+          TabOrder = 7
           OnChange = dtBulkToChange
           SkinData.SkinSection = 'EDIT'
           BoundLabel.Font.Charset = DEFAULT_CHARSET
@@ -989,13 +990,13 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           Left = 114
           Top = 87
           Width = 20
-          Height = 16
+          Height = 20
           Hint = 'Enable Single Use Price settings'
           Margins.Left = 2
           Margins.Top = 2
           Margins.Right = 2
           Margins.Bottom = 2
-          TabOrder = 21
+          TabOrder = 6
           OnClick = __cbxSingleUsePriceActiveClick
           SkinData.SkinSection = 'CHECKBOX'
           ImgChecked = 0
@@ -1008,7 +1009,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           Height = 22
           Hint = 'Unselect/uncheck all'
           Caption = '[ ]'
-          TabOrder = 22
+          TabOrder = 12
           OnClick = btnClearRoomClassesClick
           SkinData.SkinSection = 'BUTTON'
         end
@@ -1019,7 +1020,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           Height = 22
           Hint = 'Unselect/uncheck all'
           Caption = '[ ]'
-          TabOrder = 23
+          TabOrder = 1
           OnClick = btnClearChannelSelectionClick
           SkinData.SkinSection = 'BUTTON'
         end
@@ -1030,7 +1031,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           Height = 22
           Hint = 'Select/Check all'
           Caption = '[x]'
-          TabOrder = 24
+          TabOrder = 13
           OnClick = btnCheckAllBulkRoomClassesClick
           SkinData.SkinSection = 'BUTTON'
         end
@@ -1041,7 +1042,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           Height = 22
           Hint = 'Select/Check all'
           Caption = '[x]'
-          TabOrder = 25
+          TabOrder = 2
           OnClick = btnCheckAllBulkChannelClick
           SkinData.SkinSection = 'BUTTON'
         end
@@ -1141,6 +1142,8 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           Margins.Right = 2
           Margins.Bottom = 2
           Caption = 'Availabilities'
+          SkinData.CustomColor = False
+          SkinData.CustomFont = False
           object Panel2: TsPanel
             Left = 0
             Top = 467
@@ -1370,7 +1373,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
               URLColor = clBlack
               ValidChars = '0123456789'
               VAlignment = vtaCenter
-              Version = '7.9.1.1'
+              Version = '7.9.1.0'
               WordWrap = False
               ColWidths = (
                 250
@@ -1401,8 +1404,8 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
               object cbxShowLinkedCells: TsCheckBox
                 Left = 5
                 Top = 2
-                Width = 121
-                Height = 17
+                Width = 113
+                Height = 20
                 Margins.Left = 2
                 Margins.Top = 2
                 Margins.Right = 2
@@ -1423,6 +1426,8 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           Margins.Right = 2
           Margins.Bottom = 2
           Caption = 'Rates'
+          SkinData.CustomColor = False
+          SkinData.CustomFont = False
           object rateGrid: TAdvStringGrid
             Left = 0
             Top = 48
@@ -1598,7 +1603,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
             URLColor = clBlack
             ValidChars = '0123456789+-!%*/'
             VAlignment = vtaCenter
-            Version = '7.9.1.1'
+            Version = '7.9.1.0'
             WordWrap = False
             ColWidths = (
               400
@@ -1644,7 +1649,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
               Margins.Right = 2
               Align = alLeft
               Caption = 'Revert to saved'
-              TabOrder = 1
+              TabOrder = 2
               OnClick = sButton1Click
               SkinData.SkinSection = 'BUTTON'
             end
@@ -1658,7 +1663,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
               Margins.Right = 2
               Align = alLeft
               Caption = 'Re-populate from scratch'
-              TabOrder = 2
+              TabOrder = 4
               Visible = False
               OnClick = sButton3Click
               SkinData.SkinSection = 'BUTTON'
@@ -1676,7 +1681,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
               Caption = 'Force update'
               DropDownMenu = pmnuForce
               Style = bsSplitButton
-              TabOrder = 3
+              TabOrder = 1
               OnClick = sButton5Click
               SkinData.SkinSection = 'BUTTON'
             end
@@ -1691,7 +1696,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
               Margins.Right = 2
               Align = alLeft
               Caption = 'Recalculate'
-              TabOrder = 4
+              TabOrder = 3
               OnClick = btnRecalcDescendantRatesClick
               SkinData.SkinSection = 'BUTTON'
             end
@@ -1718,7 +1723,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
                 Margins.Right = 5
                 Align = alRight
                 Caption = 'Publish'
-                TabOrder = 0
+                TabOrder = 1
                 OnClick = btnPublishClick
                 SkinData.SkinSection = 'BUTTON'
               end
@@ -1732,7 +1737,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
                 Margins.Right = 5
                 Align = alRight
                 Caption = 'Excel Preview'
-                TabOrder = 1
+                TabOrder = 0
                 OnClick = btnPrepareExcelClick
                 SkinData.SkinSection = 'BUTTON'
               end
@@ -1843,8 +1848,8 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
             object cbxStopMinOptions: TsCheckBox
               Left = 5
               Top = 4
-              Width = 263
-              Height = 17
+              Width = 255
+              Height = 20
               Margins.Left = 2
               Margins.Top = 2
               Margins.Right = 2
@@ -1859,8 +1864,8 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
             object cbxExtraRestrictions: TsCheckBox
               Left = 319
               Top = 4
-              Width = 145
-              Height = 17
+              Width = 137
+              Height = 20
               Margins.Left = 2
               Margins.Top = 2
               Margins.Right = 2
@@ -1894,8 +1899,8 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
             object cbxShowSubrates: TsCheckBox
               Left = 319
               Top = 24
-              Width = 103
-              Height = 17
+              Width = 95
+              Height = 20
               Margins.Left = 2
               Margins.Top = 2
               Margins.Right = 2
@@ -1956,6 +1961,8 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
         SkinData.CustomColor = True
         SkinData.CustomFont = True
         SkinData.SkinSection = 'PANEL'
+        ExplicitLeft = 3
+        ExplicitTop = 524
         object lblVisibleDays: TsLabel
           AlignWithMargins = True
           Left = 6
@@ -2044,6 +2051,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
             EventMarkerColor = clYellow
             EventMarkerShape = evsCircle
             BackgroundPosition = bpTiled
+            BevelOuter = bvNone
             BorderWidth = 1
             CaptionColor = clNone
             CaptionTextColor = clBlack
@@ -2113,7 +2121,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
             HintPrevMonth = 'Previous Month'
             HintNextMonth = 'Next Month'
             HintNextYear = 'Next Year'
-            Version = '2.3.0.0'
+            Version = '2.2.2.1'
             TMSStyle = 0
           end
         end
@@ -2134,7 +2142,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           SpeedButtonOptions.CanBeFocused = False
           SpeedButtonOptions.Flat = True
           SpeedButtonOptions.Transparent = True
-          TabOrder = 1
+          TabOrder = 2
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clCaptionText
           Font.Height = -13
@@ -2160,7 +2168,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           SpeedButtonOptions.CanBeFocused = False
           SpeedButtonOptions.Flat = True
           SpeedButtonOptions.Transparent = True
-          TabOrder = 2
+          TabOrder = 6
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clCaptionText
           Font.Height = -13
@@ -2187,7 +2195,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           SpeedButtonOptions.CanBeFocused = False
           SpeedButtonOptions.Flat = True
           SpeedButtonOptions.Transparent = True
-          TabOrder = 3
+          TabOrder = 4
           OnClick = btnBackClick
         end
         object dateEdit: TsDateEdit
@@ -2211,7 +2219,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           Font.Style = []
           MaxLength = 10
           ParentFont = False
-          TabOrder = 4
+          TabOrder = 5
           Text = '  -  -    '
           CheckOnExit = True
           BoundLabel.Font.Charset = DEFAULT_CHARSET
@@ -2252,7 +2260,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           Font.Style = []
           ItemIndex = -1
           ParentFont = False
-          TabOrder = 5
+          TabOrder = 1
           Text = '15'
           OnCloseUp = __cbxVisibleDaysCloseUp
           Items.Strings = (
@@ -2284,7 +2292,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           SpeedButtonOptions.CanBeFocused = False
           SpeedButtonOptions.Flat = True
           SpeedButtonOptions.Transparent = True
-          TabOrder = 6
+          TabOrder = 3
           OnClick = btnBeginClick
         end
         object btnEnd: TcxButton
@@ -2414,8 +2422,8 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           OnChange = cbxChannelManagersChange
         end
         object cbxPlanCodes: TsComboBox
-          Left = 118
-          Top = 7
+          Left = 117
+          Top = 6
           Width = 109
           Height = 21
           Margins.Left = 2

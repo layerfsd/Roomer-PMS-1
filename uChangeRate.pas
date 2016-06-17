@@ -59,8 +59,6 @@ type
     btnCancel: TsButton;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure FormClose(Sender: TObject; var Action: TCloseAction);
-    procedure FormDestroy(Sender: TObject);
     procedure btnSaveClick(Sender: TObject);
     procedure btnGetFromWebClick(Sender: TObject);
     procedure cxButton1Click(Sender: TObject);
@@ -84,6 +82,7 @@ uses
     PrjConst
    ,uDImages
    , uUtils
+   , UITypes
    ;
 
 procedure TfrmChangeRate.btnGetFromWebClick(Sender: TObject);
@@ -106,17 +105,6 @@ begin
   //**
   edRate.text   := floatTostr(zRate);
   labCurrency.caption := zCurrency ;
-end;
-
-procedure TfrmChangeRate.FormClose(Sender: TObject;
-  var Action: TCloseAction);
-begin
-  //**
-end;
-
-procedure TfrmChangeRate.FormDestroy(Sender: TObject);
-begin
-  //**
 end;
 
 procedure TfrmChangeRate.btnSaveClick(Sender: TObject);
