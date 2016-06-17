@@ -81,7 +81,6 @@ type
     Descending: Boolean;
     SortedColumn: Integer;
     CollectionOfOpenedFiles : TStringList;
-    olmdd : TOlMailDragDrop;
     ResourceManagement : TRoomerResourceManagement;
 //    procedure WMDROPFILES(var msg : TWMDropFiles) ; message WM_DROPFILES;
 
@@ -89,15 +88,9 @@ type
     procedure DisplayResources;
     procedure DownloadAndOpenSelectedResource;
     function DownloadSelectedFile(destFilename: String): Boolean;
-    function getPrivateUriAdditionIfApplicable(slashBefore : Boolean): String;
-    function getDirectUriAdditionIfApplicable(slashBefore: Boolean): String;
-    function CreateFilePath(includePreface : Boolean = True): String;
-    function getNewFilenameIfNeeded(filename : String; ResourceParameters: TResourceParameters): String;
     function Download: String;
     procedure DeleteCurrent;
     function FilenameInList(filename: String): Boolean;
-    function GetUri: String;
-    function GetTableInfo(KeyString: String): TRoomerDataSet;
   protected
 //    procedure CreateWnd; override;
 //    procedure DestroyWnd; override;
@@ -574,18 +567,6 @@ begin
   ResourceManagement.Refresh;
 end;
 
-function TFrmResources.GetTableInfo(KeyString: String): TRoomerDataSet;
-begin
-
-end;
-
-function TFrmResources.GetUri : String;
-begin
-  result := '';
-  if lvResources.Selected <> nil then
-    result := lvResources.Selected.SubItems[lvResources.Selected.SubItems.Count-1];
-
-end;
 
 procedure TFrmResources.btnRenameClick(Sender: TObject);
 var
@@ -630,7 +611,6 @@ end;
 
 procedure TFrmResources.btnSourceClick(Sender: TObject);
 var filename : String;
-    Strings : TStrings;
     cmd,
     OrigName,
     Subject,
@@ -676,41 +656,6 @@ end;
 procedure TFrmResources.edtFilterRightButtonClick(Sender: TObject);
 begin
   edtFilter.Text := '';
-end;
-
-function TFrmResources.getPrivateUriAdditionIfApplicable(slashBefore : Boolean) : String;
-begin
-  if ACCESS_RESTRICTED = access then
-  begin
-     if slashBefore then
-     result := '/private'
-  else
-     result := 'private/';
-  end
-  else
-     result := '';
-end;
-
-function TFrmResources.getDirectUriAdditionIfApplicable(slashBefore : Boolean) : String;
-begin
-  if ACCESS_RESTRICTED <> access then
-  begin
-     if slashBefore then
-       result := '/direct'
-     else
-       result := 'direct/';
-  end else
-  begin
-     if slashBefore then
-       result := '/private'
-     else
-       result := 'private/';
-  end;
-end;
-
-function TFrmResources.getNewFilenameIfNeeded(filename: String; ResourceParameters: TResourceParameters): String;
-begin
-
 end;
 
 procedure TFrmResources.DisplayResources;
@@ -875,14 +820,12 @@ end;
 
 function TFrmResources.Download : String;
 var filename : String;
-    item : TListItem;
 begin
   result := '';
   Screen.Cursor := crHourglass;
   try
     if lvResources.Selected <> nil then
     begin
-      item := lvResources.Selected;
       fileName := TPath.Combine(GetTempDir, lvResources.Selected.Caption);
       if DownloadSelectedFile(filename) then
         result := filename;
@@ -911,10 +854,6 @@ begin
   DropFileSource1.CopyToClipboard;
 end;
 
-function TFrmResources.CreateFilePath(includePreface: Boolean): String;
-begin
-
-end;
 
 //function TFrmResources.CreateFilePath(includePreface : Boolean = True) : String;
 //var preface : String;

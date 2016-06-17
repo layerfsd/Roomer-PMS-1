@@ -21,6 +21,7 @@ uses
 
 Type
 
+{$M+}
   TDataCollection = class( TObject )
   private
     FRoomType : string;
@@ -29,13 +30,12 @@ Type
   public
     constructor Create( RoomType : String );
     destructor Destroy; override;
-{$M+}
   published
     property RoomType : string    read FRoomType;
     property Used     : integer   read FUsed write FUsed;
     property Number   : integer   read FNumber;
-{$M-}
   end;
+{$M-}
 
 
   TAvailability = class( TObject )

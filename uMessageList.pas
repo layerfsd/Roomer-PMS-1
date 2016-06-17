@@ -190,7 +190,7 @@ begin
 end;
 
 function TMessageList.MessageById(id: integer): TRoomerMessage;
-var i, iCount: Integer;
+var i: Integer;
 begin
   result := nil;
   for i := 0 to Count - 1 do
@@ -205,9 +205,6 @@ procedure TMessageList.Refresh;
 var rSet : TRoomerDataset;
 
     RoomerMessage : TRoomerMessage;
-    i : integer;
-    datePair : TDatePair;
-    key : String;
     msgType : String;
 begin
   if frmMain.OfflineMode then

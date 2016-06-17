@@ -183,6 +183,7 @@ uses
   , PrjConst
   , uDImages
   , uRoomerDefinitions
+  , UITypes
   ;
 {$R *.dfm}
 
@@ -400,7 +401,6 @@ end;
 procedure TfrmOpenInvoicesNew.sButton7Click(Sender: TObject);
 var
   Reservation : integer;
-  RoomReservation : integer;
 begin
   Reservation := kbmRoomsDate_.FieldByName('Reservation').AsInteger;
 
@@ -411,8 +411,6 @@ procedure TfrmOpenInvoicesNew.sButton8Click(Sender: TObject);
 var
   Reservation : integer;
   RoomReservation : integer;
-  Arrival : Tdate;
-  Departure : Tdate;
 begin
   Reservation := kbmRoomsDate_.FieldByName('Reservation').AsInteger;
   RoomReservation := kbmRoomsDate_.FieldByName('RoomReservation').AsInteger;
@@ -421,7 +419,6 @@ end;
 
 procedure TfrmOpenInvoicesNew.sButton9Click(Sender: TObject);
 var
-  Reservation : integer;
   RoomReservation : integer;
   s : string;
 begin
@@ -469,11 +466,6 @@ var
   procedure init;
   begin
   end;
-
-var
-  tickCountStart : longint;
-  tickCountEnd : longint;
-  ms : longInt;
 
 begin
   ExecutionPlan := d.roomerMainDataSet.CreateExecutionPlan;

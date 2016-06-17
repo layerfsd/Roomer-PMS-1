@@ -108,7 +108,10 @@ implementation
 
 {$R *.dfm}
 
-uses clipbrd, uMain;
+uses clipbrd
+  , uMain
+  , UITypes
+  ;
 
 { TFrmReservationHintHolder }
 
@@ -140,7 +143,6 @@ begin
   CurrencyLetter := '€';
   if rri.Discount <> 0 then
   begin
-    discountAmount := rri.Discount;
     if rri.Percentage then
     begin
       discountAmount := rri.Price / ((100-rri.Discount)/100); // ro.Price * ro.Discount / 100;
@@ -149,7 +151,6 @@ begin
     end
     else
     begin
-      discountAmount := rri.Price + rri.Discount;
       PriceNight := rri.Price + rri.Discount;
       DiscountNight := rri.Discount;
     end;
@@ -538,7 +539,7 @@ begin
   CancelHint;
   if Assigned(FOnLogInOutClick) then
   begin
-    if UpperCase(rri.resFlag)[1] IN ['P'] then
+    if CharInSet(UpperCase(rri.resFlag)[1], ['P']) then
       btn := hbcLogin
     else
       btn := hbcLogout;

@@ -205,7 +205,6 @@ type
     procedure FormKeyPress(Sender: TObject; var Key: Char);
     procedure m_BeforeDelete(DataSet: TDataSet);
     procedure m_BeforeInsert(DataSet: TDataSet);
-    procedure m_NewRecord(DataSet: TDataSet);
     procedure tvDataDblClick(Sender: TObject);
     procedure tvDataFocusedRecordChanged(Sender: TcxCustomGridTableView;
       APrevFocusedRecord, AFocusedRecord: TcxCustomGridRecord;
@@ -242,11 +241,8 @@ type
     zIsAddRow        : boolean;
 
     Procedure fillGridFromDataset(iGoto : Integer);
-    function getPrevCode : string;
     Procedure chkFilter;
     procedure applyFilter;
-    function getDefaults(PriceCodeID, RateID, SeasonId, RoomTypeID, CurrencyID : integer ) : recwRoomRateHolder;
-    procedure SetEditedValuesIn_M_Dataset;
     procedure NoGridEdit;
     function NumItemsSelected: Integer;
     procedure SelectNoItems;
@@ -285,7 +281,7 @@ uses
   , uPackages
   , uGuestPortfolioEdit
   , uFrmMergePortfolios
-
+  , UITYpes
   ;
 
 
@@ -296,7 +292,6 @@ uses
 function GuestProfiles(act : TActTableAction; iGoto : Integer = -1) : integer;
 var _frmGuestProfiles: TfrmGuestProfiles;
 begin
-  result := -1;
   _frmGuestProfiles := TfrmGuestProfiles.Create(nil);
   try
     _frmGuestProfiles.zAct := act;
@@ -504,10 +499,6 @@ end;
 
 ////////////////////////////////////////////////////////////////////////////////////////
 // memory table
-////////////////////////////////////////////////////////////////////////////////////////
-function TfrmGuestProfiles.getPrevCode: string;
-begin
-end;
 
 procedure TfrmGuestProfiles.m_AfterScroll(DataSet: TDataSet);
 begin
@@ -537,13 +528,6 @@ begin
 end;
 
 
-function TfrmGuestProfiles.getDefaults(PriceCodeID, RateID, SeasonId, RoomTypeID, CurrencyID : integer ) : recwRoomRateHolder;
-begin
-end;
-
-procedure TfrmGuestProfiles.m_NewRecord(DataSet: TDataSet);
-begin
-end;
 
 ////////////////////////////////////////////////////////////////////////////////////////
 //  table View Functions
@@ -635,17 +619,7 @@ end;
 
 procedure TfrmGuestProfiles.tvData_SELECTED_ROW_PropertiesEditValueChanged(
   Sender: TObject);
-var numSelected : Integer;
 begin
-//  numSelected := NumItemsSelected;
-//  if numSelected > 2 then
-//  begin
-//    m_.Edit;
-//    m_['_SELECTED_ROW_'] := False;
-//    m_.Post;
-//    m_.Next;
-//  end;
-//  btnMerge.Enabled := NumSelected > 1;
     btnMerge.Enabled := True;
 end;
 
@@ -722,10 +696,6 @@ end;
 procedure TfrmGuestProfiles.btnDeleteClick(Sender: TObject);
 begin
   m_.Delete;
-end;
-
-procedure TfrmGuestProfiles.SetEditedValuesIn_M_Dataset;
-begin
 end;
 
 procedure TfrmGuestProfiles.btnEditClick(Sender: TObject);

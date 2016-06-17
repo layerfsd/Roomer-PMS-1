@@ -86,8 +86,8 @@ object frmGuestProfiles: TfrmGuestProfiles
       object chkActive: TsCheckBox
         Left = 55
         Top = 63
-        Width = 246
-        Height = 17
+        Width = 238
+        Height = 20
         Caption = 'Active (if checked then just active are visible)'
         Checked = True
         State = cbChecked
@@ -183,7 +183,6 @@ object frmGuestProfiles: TfrmGuestProfiles
           TabOrder = 4
           OnClick = btnInsertClick
           SkinData.SkinSection = 'BUTTON'
-          ExplicitTop = 4
         end
       end
     end
@@ -483,7 +482,6 @@ object frmGuestProfiles: TfrmGuestProfiles
     Left = 96
     Top = 192
     object prLink_grData: TdxGridReportLink
-      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 5080
       PrinterPage.GrayShading = True
@@ -497,7 +495,6 @@ object frmGuestProfiles: TfrmGuestProfiles
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
       ReportDocument.CreationDate = 41334.495374884260000000
-      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       BuiltInReportLink = True
     end
   end
@@ -507,7 +504,6 @@ object frmGuestProfiles: TfrmGuestProfiles
     BeforeInsert = m_BeforeInsert
     BeforeDelete = m_BeforeDelete
     AfterScroll = m_AfterScroll
-    OnNewRecord = m_NewRecord
     Left = 208
     Top = 192
     object m_ID: TIntegerField

@@ -1760,7 +1760,6 @@ begin
   GetMnuFilterLocationsFromStore;
   FillRoomTypesGrid;
 
-  try AssertIndySSLDLLs; Except end;
 end;
 
 procedure TfrmMain.GetMnuFilterLocationsFromStore;

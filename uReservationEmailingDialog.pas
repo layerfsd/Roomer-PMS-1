@@ -45,7 +45,6 @@ type
     filename : String;
     SubjectTemplate : String;
     procedure SetEmailType(const Value: TEmailType);
-    procedure LoadHtmlIntoBrowser(browser: TWebBrowser; const html: String);
     procedure NavigateToFile;
     procedure EnableDisableOKButton;
     procedure GetEmailAddresses;
@@ -195,7 +194,6 @@ end;
 
 procedure TFrmReservationEmailingDialog.edTemplateCloseUp(Sender: TObject);
 var Strings : TStrings;
-    Subject : String;
     RoomerResourceManagement : TRoomerResourceManagement;
 begin
   try
@@ -270,8 +268,8 @@ begin
 end;
 
 procedure TFrmReservationEmailingDialog.FormShow(Sender: TObject);
-var rSet : TRoomerDataset;
-    RoomerResourceManagement : TRoomerResourceManagement;
+var
+ RoomerResourceManagement : TRoomerResourceManagement;
 begin
   edTemplate.Items.Clear;
   RoomerResourceManagement := TRoomerResourceManagement.Create(KeyString, ACCESS_RESTRICTED);
@@ -289,29 +287,6 @@ begin
 //  end;
 end;
 
-procedure TFrmReservationEmailingDialog.LoadHtmlIntoBrowser(browser: TWebBrowser; const html: String);
-var
-  memStream: TMemoryStream;
-begin
-  //-------------------
-  // Load a blank page.
-  //-------------------
-  browser.Navigate('about:blank');
-  while browser.ReadyState <> READYSTATE_COMPLETE do
-  begin
-    Sleep(5);
-    Application.ProcessMessages;
-  end;
-  //---------------
-  // Load the html.
-  //---------------
-  memStream := TMemoryStream.Create;
-  memStream.Write(Pointer(html)^,Length(html));
-  memStream.Seek(0,0);
-  (browser.Document as IPersistStreamInit).Load(
-    TStreamAdapter.Create(memStream));
-  memStream.Free;
-end;
 
 procedure TFrmReservationEmailingDialog.NavigateToFile;
 var Strings : TStrings;
