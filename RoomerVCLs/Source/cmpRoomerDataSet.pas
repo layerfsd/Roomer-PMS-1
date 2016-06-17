@@ -1695,27 +1695,22 @@ begin
     else
       privRes := 'false';
 
+    IdSSLIOHandlerSocketOpenSSL1 := nil;
     http := TIdHTTP.Create(nil);
     try
-      // http.Request.CustomHeaders.AddValue(PROMOIR_ROOMER_HOTEL_PATH, keyString);
       if LowerCase(Copy(OpenApiUri, 1, 8)) = 'https://' then
       begin
         IdSSLIOHandlerSocketOpenSSL1 := TIdSSLIOHandlerSocketOpenSSL.Create(nil);
         http.IOHandler := IdSSLIOHandlerSocketOpenSSL1;
       end;
 
-      http.Request.CustomHeaders.AddValue
-        (PROMOIR_ROOMER_HOTEL_IDENTIFIER, AppKey);
-      http.Request.CustomHeaders.AddValue(PROMOIR_ROOMER_HOTEL_APPLICATION_ID,
-        ApplicationID);
-      http.Request.CustomHeaders.AddValue(PROMOIR_ROOMER_HOTEL_SECRET,
-        CalculateOTP(AppSecret));
-      http.Request.CustomHeaders.AddValue
-        (PROMOIR_ROOMER_HOTEL_ADD_PRIVATE_RESOURCES, privRes);
+      http.Request.CustomHeaders.AddValue(PROMOIR_ROOMER_HOTEL_IDENTIFIER, AppKey);
+      http.Request.CustomHeaders.AddValue(PROMOIR_ROOMER_HOTEL_APPLICATION_ID, ApplicationID);
+      http.Request.CustomHeaders.AddValue(PROMOIR_ROOMER_HOTEL_SECRET, CalculateOTP(AppSecret));
+      http.Request.CustomHeaders.AddValue(PROMOIR_ROOMER_HOTEL_ADD_PRIVATE_RESOURCES, privRes);
       result := http.Post(OpenApiUri + url + '/' + keyString, multi);
     finally
-      if LowerCase(Copy(OpenApiUri, 1, 8)) = 'https://' then
-        IdSSLIOHandlerSocketOpenSSL1.Free;
+      IdSSLIOHandlerSocketOpenSSL1.Free;
       http.Free;
     end;
   finally
@@ -1731,19 +1726,18 @@ var
   stream : TStringStream;
   IdSSLIOHandlerSocketOpenSSL1 : TIdSSLIOHandlerSocketOpenSSL;
 begin
+  IdSSLIOHandlerSocketOpenSSL1 := nil;
   http := TIdHTTP.Create(nil);
-  if LowerCase(Copy(OpenApiUri, 1, 8)) = 'https://' then
-    IdSSLIOHandlerSocketOpenSSL1 := TIdSSLIOHandlerSocketOpenSSL.Create(nil);
   try
     if LowerCase(Copy(OpenApiUri, 1, 8)) = 'https://' then
+    begin
+      IdSSLIOHandlerSocketOpenSSL1 := TIdSSLIOHandlerSocketOpenSSL.Create(nil);
       http.IOHandler := IdSSLIOHandlerSocketOpenSSL1;
+    end;
 
-    http.Request.CustomHeaders.AddValue
-      (PROMOIR_ROOMER_HOTEL_IDENTIFIER, AppKey);
-    http.Request.CustomHeaders.AddValue(PROMOIR_ROOMER_HOTEL_APPLICATION_ID,
-      ApplicationID);
-    http.Request.CustomHeaders.AddValue(PROMOIR_ROOMER_HOTEL_SECRET,
-      CalculateOTP(AppSecret));
+    http.Request.CustomHeaders.AddValue(PROMOIR_ROOMER_HOTEL_IDENTIFIER, AppKey);
+    http.Request.CustomHeaders.AddValue(PROMOIR_ROOMER_HOTEL_APPLICATION_ID, ApplicationID);
+    http.Request.CustomHeaders.AddValue(PROMOIR_ROOMER_HOTEL_SECRET, CalculateOTP(AppSecret));
 
     URL := format(OpenApiUri + 'bookings/%d?confirmedToGuest=true', [Reservation]);
 
@@ -1754,8 +1748,7 @@ begin
       stream.Free;
     end;
   finally
-    if LowerCase(Copy(OpenApiUri, 1, 8)) = 'https://' then
-      IdSSLIOHandlerSocketOpenSSL1.Free;
+    IdSSLIOHandlerSocketOpenSSL1.Free;
     http.Free;
   end;
 end;
@@ -1790,24 +1783,21 @@ begin
     multi.AddFormField('plaintext', _text, 'UTF-8', 'text/plain', 'emailText.txt');
     multi.AddFormField('htmltext', _htmlText, 'UTF-8', 'text/html', 'htmlText.html');
 
-
+    IdSSLIOHandlerSocketOpenSSL1 := nil;
     http := TIdHTTP.Create(nil);
-    if LowerCase(Copy(OpenApiUri, 1, 8)) = 'https://' then
-      IdSSLIOHandlerSocketOpenSSL1 := TIdSSLIOHandlerSocketOpenSSL.Create(nil);
     try
       if LowerCase(Copy(OpenApiUri, 1, 8)) = 'https://' then
+      begin
+        IdSSLIOHandlerSocketOpenSSL1 := TIdSSLIOHandlerSocketOpenSSL.Create(nil);
         http.IOHandler := IdSSLIOHandlerSocketOpenSSL1;
-      http.Request.CustomHeaders.AddValue
-        (PROMOIR_ROOMER_HOTEL_IDENTIFIER, AppKey);
-      http.Request.CustomHeaders.AddValue(PROMOIR_ROOMER_HOTEL_APPLICATION_ID,
-        ApplicationID);
-      http.Request.CustomHeaders.AddValue(PROMOIR_ROOMER_HOTEL_SECRET,
-        CalculateOTP(AppSecret));
+      end;
+      http.Request.CustomHeaders.AddValue(PROMOIR_ROOMER_HOTEL_IDENTIFIER, AppKey);
+      http.Request.CustomHeaders.AddValue(PROMOIR_ROOMER_HOTEL_APPLICATION_ID, ApplicationID);
+      http.Request.CustomHeaders.AddValue(PROMOIR_ROOMER_HOTEL_SECRET, CalculateOTP(AppSecret));
 
       result := http.Post(OpenApiUri + 'hotelservices/email', multi);
     finally
-      if LowerCase(Copy(OpenApiUri, 1, 8)) = 'https://' then
-        IdSSLIOHandlerSocketOpenSSL1.Free;
+      IdSSLIOHandlerSocketOpenSSL1.Free;
       http.Free;
     end;
   finally

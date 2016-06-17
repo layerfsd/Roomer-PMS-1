@@ -330,7 +330,7 @@ type
     zAllotmentIsGroupInvoice : boolean;
 
 
-    function GetRrData(Reservation : integer) : integer;
+    procedure GetRrData(Reservation : integer);
 
     //Fill grid grProvide
     procedure FillgrProvideWithRooms;
@@ -1739,7 +1739,7 @@ begin
 end;
 
 
-function TfrmAllotmentToRes.GetRrData(Reservation: integer): integer;
+procedure TfrmAllotmentToRes.GetRrData(Reservation: integer);
 var
   s   : string;
   sql : string;

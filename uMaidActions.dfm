@@ -14,7 +14,6 @@ object frmMaidActions: TfrmMaidActions
   OldCreateOrder = False
   Position = poOwnerFormCenter
   ShowHint = True
-  OnClose = FormClose
   OnCreate = FormCreate
   OnKeyPress = FormKeyPress
   OnShow = FormShow
@@ -27,7 +26,6 @@ object frmMaidActions: TfrmMaidActions
     Height = 317
     Align = alClient
     Constraints.MinWidth = 320
-    DataSource = d.MaidActionsDS
     ParentShowHint = False
     ShowHint = True
     TabOrder = 0
@@ -160,7 +158,6 @@ object frmMaidActions: TfrmMaidActions
     TabOrder = 3
     OnResize = panBtnResize
     SkinData.SkinSection = 'PANEL'
-    ExplicitTop = 390
     DesignSize = (
       379
       33)

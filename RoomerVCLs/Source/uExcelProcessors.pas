@@ -50,7 +50,7 @@ type
     ValueList : TObjectList<TDateEntity>;
   public
     constructor Create(_ClassCode : String);
-    destructor Destroy;
+    destructor Destroy; override;
     procedure AddValue(_Date : TDate; _Rate, _ToHotel : Variant; _StopSell, _CTA : Boolean; _MLOS : Integer);
   end;
 
@@ -64,7 +64,7 @@ type
     function ClassEntityIndex(_ClassCode: String): Integer;
   public
     constructor Create(_ChannelCode, _ChannelName, _Header : String);
-    destructor Destroy;
+    destructor Destroy; override;
 
     function CreateClassEntity(_ClassCode : String) : TClassEntity;
   end;
@@ -111,7 +111,7 @@ type
     procedure SetCellFontAttributes(ALeftCol, ATopRow, ARightCol, ABottomRow: Integer; AStyle: TFontStyles; ASize: Integer);
   public
     constructor Create;
-    destructor destroy;
+    destructor destroy; override;
 
     procedure PrepareRateChanges(_TemplateFile : String);
     procedure PrepareAvailabilityChanges;
@@ -235,6 +235,7 @@ begin
 
   FChannels.Clear;
   FreeAndNil(FChannels);
+  inherited;
 end;
 
 procedure TExcelProcessors.PrepareAvailabilityChanges;
@@ -931,6 +932,7 @@ end;
 destructor TChannelEntity.Destroy;
 begin
   Classes.Free;
+  inherited;
 end;
 
 { TClassEntity }
@@ -949,6 +951,7 @@ end;
 destructor TClassEntity.Destroy;
 begin
   ValueList.Free;
+  inherited;
 end;
 
 end.

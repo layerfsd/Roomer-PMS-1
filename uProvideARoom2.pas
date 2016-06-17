@@ -474,6 +474,7 @@ var
 begin
   if NOT d.roomerMainDataSet.OfflineMode then
   begin
+    Result := false;
     rSet := CreateNewDataSet;
     try
       s := format(select_ProvideARoom2_MoveToRoomEnhs , [RoomReservation]);

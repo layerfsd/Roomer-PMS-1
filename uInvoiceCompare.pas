@@ -280,12 +280,10 @@ end;
 procedure TfrmInvoiceCompare.sButton1Click(Sender: TObject);
 var
   s : string;
-  rSet : TRoomerDataSet;
   iReservation , iroomreservation : integer;
   iSplitnumber : integer;
   Item : string;
   Total : double;
-  itemCount : double;
   lineNumber : integer;
   Autogen : string;
   bSystemline : boolean;

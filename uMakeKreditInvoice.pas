@@ -175,7 +175,7 @@ type
     zdoRestore    : boolean;
     zEmailAddress : string;
 
-    function refresh : boolean;
+    procedure refresh;
     function saveInvoice : boolean;
     procedure HandleExceptionListFromBookKeepingSystem(invoiceNumber: integer; ErrorList: String);
   public
@@ -235,7 +235,6 @@ end;
 function TfrmMakeKreditInvoice.saveInvoice : boolean;
 var
   ExecutionPlan : TRoomerExecutionPlan;
-  rSet          : TRoomerDataSet;
   s             : string;
   invoiceHeadData  : recInvoiceHeadHolder;
   invoiceLineData  : recInvoiceLineHolder;
@@ -248,9 +247,6 @@ var
 
 
   procedure createInvoiceHead;
-  var
-    invoicenumber : integer;
-    Invoicedate   : Tdate;
   begin
     zKeditInvoiceNumber := IVH_SetNewID();
 
@@ -314,9 +310,6 @@ var
   end;
 
   procedure createInvoiceLines;
-  var
-    invoicenumber : integer;
-    Invoicedate   : Tdate;
   begin
     initInvoiceLineHolderRec(invoiceLineData);
     invoiceLineData.InvoiceNumber   := zKeditInvoiceNumber;
@@ -389,9 +382,6 @@ var
   end;
 
   procedure createPayments;
-  var
-    invoicenumber : integer;
-    Invoicedate   : Tdate;
   begin
     initPaymentHolderRec(paymentData);
     PaymentData.InvoiceNumber   := zKeditInvoiceNumber;
@@ -489,11 +479,8 @@ var
   Showpackage : boolean;
   EmailAddress : string;
 
-  s : string;
-
   remoteResult : string;
 
-  doDK : boolean;
 begin
   zdoRestore      := chkCreateNew.Checked;
   OrginalInvoice  := kbmInvoiceheads['invoicenumber'];
@@ -598,7 +585,7 @@ begin
   refresh;
 end;
 
-function TfrmMakeKreditInvoice.refresh: boolean;
+procedure TfrmMakeKreditInvoice.refresh;
 var
   s    : string;
   rset1,

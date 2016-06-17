@@ -180,7 +180,6 @@ type
     Procedure fillGridFromDataset(iGoto : integer);
     procedure fillHolder;
     procedure changeAllowgridEdit;
-    function getPrevCode : string;
     Procedure chkFilter;
     procedure applyFilter;
 
@@ -192,7 +191,6 @@ type
   end;
 
 function openStaffTypes(act : TActTableAction; var theData : recStaffTypeHolder) : boolean;
-function StaffTypesValidate(ed : TsEdit; var lbl : TsLabel) : boolean;
 
 
 var
@@ -208,6 +206,7 @@ uses
   , uSqlDefinitions
   , uDImages
   , uUtils
+  , UITypes
   ;
 
 
@@ -235,16 +234,6 @@ begin
   finally
     freeandnil(frmStaffTypes2);
   end;
-end;
-
-
-function StaffTypesValidate(ed : TsEdit; var lbl : TsLabel) : boolean;
-var
-  code : string;
-  description : string;
-begin
-  code := ed.Text;
-  // stafftypes not in glob
 end;
 
 
@@ -438,14 +427,6 @@ begin
       end;
     end;
   end;
-end;
-
-
-////////////////////////////////////////////////////////////////////////////////////////
-// memory table
-////////////////////////////////////////////////////////////////////////////////////////
-function TfrmStaffTypes2.getPrevCode: string;
-begin
 end;
 
 procedure TfrmStaffTypes2.m_BeforeDelete(DataSet: TDataSet);

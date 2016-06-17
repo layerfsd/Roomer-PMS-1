@@ -164,7 +164,7 @@ procedure TfrmMultiSelection.PrepareItems(OriginalSelection : String;
                      ListCodeItems : TStrings;
                      ListNameItems : TStrings);
 var i, iCurr : Integer;
-    s : ANSIString;
+    s : String;
     OriginalList : TStringList;
 begin
   ListCodes := ListCodeItems;
@@ -172,29 +172,32 @@ begin
   MultiSelect := _MultiSelect;
   lstItems.MultiSelect := MultiSelect;
 
-  lstItems.Items.Clear;
   lstItems.Clear;
   OriginalList := TStringList.Create;
-  OriginalList.CommaText := OriginalSelection;
+  try
+    OriginalList.CommaText := OriginalSelection;
 
-//  CopyToClipboard(OriginalList.CommaText);
-//  DebugMessage(OriginalList.CommaText);
+  //  CopyToClipboard(OriginalList.CommaText);
+  //  DebugMessage(OriginalList.CommaText);
 
-  for i := 0 to ListCodes.Count - 1 do
-  begin
-    s := ListCodes[i];
-    if Assigned(ListNameItems) then
-      if ListNameItems.Count > i then
-      begin
-        s := s + ^i + ListNameItems[i];
-        if lstItems.TabWidth < Length(s) * (lstItems.Font.Size + 2) then
-           lstItems.TabWidth := Length(s) * (lstItems.Font.Size + 2);
-      end;
+    for i := 0 to ListCodes.Count - 1 do
+    begin
+      s := ListCodes[i];
+      if Assigned(ListNameItems) then
+        if ListNameItems.Count > i then
+        begin
+          s := s + ^i + ListNameItems[i];
+          if lstItems.TabWidth < Length(s) * (lstItems.Font.Size + 2) then
+             lstItems.TabWidth := Length(s) * (lstItems.Font.Size + 2);
+        end;
 
-    iCurr := lstItems.Items.Add(s);
-    lstItems.Checked[iCurr] := (OriginalList.IndexOf(ListCodes[i]) >= 0);
+      iCurr := lstItems.Items.Add(s);
+      lstItems.Checked[iCurr] := (OriginalList.IndexOf(ListCodes[i]) >= 0);
+    end;
+
+  finally
+    OriginalList.Free;
   end;
-
 end;
 
 end.

@@ -264,6 +264,7 @@ uses
   , uCurrencies
   , uSqlDefinitions
   , uDimages
+  , UITypes
   ;
 
 {$R *.dfm}
@@ -271,30 +272,6 @@ uses
 //////////////////////////////////////////////////////////////////////////////////////////////
 //  unit global functions
 //////////////////////////////////////////////////////////////////////////////////////////////
-
-
-//function openCountry(act : TActTableAction; var theData : recCountryHolder) : boolean;
-//begin
-//  result := false;
-//  frmCountries := frmCountries.Create(frmCountries);
-//  try
-//    frmCountries.zData := theData;
-//    frmCountries.zAct := act;
-//    frmCountries.ShowModal;
-//    if frmCountries.modalresult = mrOk then
-//    begin
-//      theData := frmCountries.zData;
-//      result := true;
-//    end
-//    else
-//    begin
-//      initCountryHolder(theData);
-//    end;
-//  finally
-//    freeandnil(frmCountries);
-//  end;
-//end;
-
 
 function Countries(act : TActTableAction; var theData : recCountryHolder; embedPanel : TsPanel = nil; WindowCloseEvent : TNotifyEvent = nil) : boolean;
 var _frmCountries: TfrmCountries;
@@ -393,10 +370,6 @@ begin
 end;
 
 function countryValidate(ed : TsEdit; lab : TsLabel) : boolean;
-//var
-//  sValue : string;
-//  pcCode : string;
-//  theData : recCountryHolder;
 begin
   //*NOT TESTED*//
   Result := countryValidateCode(ed.Text, lab);
@@ -406,30 +379,11 @@ begin
     lab.Color := clRed;
     lab.caption := GetTranslatedText('shNotF_star');
   end;
-//
-//
-//  initCountryHolder(theData);
-//  theData.country := trim(ed.Text);
-//  result := hdata.GET_countryHolderBycountry(theData);
-//
-//  if not result then
-//  begin
-//    ed.SetFocus;
-//    lab.Color := clRed;
-//    lab.caption := GetTranslatedText('shNotF_star');
-//  end else
-//  begin
-//    lab.Color := clBtnFace;
-//    lab.caption := theData.CountryName;
-//  end;
+
 end;
 //END unit global functions
 
 function countryValidate(ed : TsComboEdit; lab : TsLabel) : boolean;
-var
-  sValue : string;
-//  pcCode : string;
-//  theData : recCountryHolder;
 begin
   //*NOT TESTED*//
   Result := countryValidateCode(ed.Text, lab);
@@ -439,21 +393,6 @@ begin
     lab.Color := clRed;
     lab.caption := GetTranslatedText('shNotF_star');
   end;
-
-//  initCountryHolder(theData);
-//  theData.country := trim(ed.Text);
-//  result := hdata.GET_countryHolderBycountry(theData);
-//
-//  if not result then
-//  begin
-//    ed.SetFocus;
-//    lab.Color := clRed;
-//    lab.caption := GetTranslatedText('shNotF_star');
-//  end else
-//  begin
-//    lab.Color := clBtnFace;
-//    lab.caption := theData.CountryName;
-//  end;
 end;
 
 ///////////////////////////////////////////////////////////////////////\\
@@ -701,7 +640,6 @@ end;
 
 procedure TfrmCountries.m_BeforePost(DataSet: TDataSet);
 var
-  s   : string;
   nID : integer;
 begin
   if zFirstTime then exit;

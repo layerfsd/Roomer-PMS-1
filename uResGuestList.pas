@@ -206,7 +206,6 @@ type
     { Private declarations }
     procedure ClearAll;
     procedure Refresh;
-    function GetGridFielNamesIndex(sFieldname : string) : Integer;
     procedure updateHeadInfo;
     function getRes(reservation : Integer) : boolean;
   public
@@ -291,16 +290,6 @@ begin
   mHead_.Post;
 end;
 
-function TfrmResGuestList.GetGridFielNamesIndex(sFieldname : string) : Integer;
-begin
-end;
-
-(*
-  procedure TfrmResGuestList.m_Create;
-  begin
-  if m_.Active then m_.Close;
-  end;
-*)
 
 procedure TfrmResGuestList.FormCreate(Sender : TObject);
 var

@@ -256,16 +256,12 @@ type
     { Private declarations }
     zReservation : integer;
     zRoomreservation : integer;
-    zReservationHolder : recReservationHolder;
-    zPersonHolder  : recPersonHolder;
 
-
-    function  getReservation(reservation : integer) : boolean;
+    procedure getReservation(reservation : integer);
     function  updateSQL(id : integer) : string;
     procedure setView;
     procedure doupdate;
     function CountryValidate(country : string) : boolean;
-    function mGuestsCreateFields : boolean;
 
   public
     { Public declarations }
@@ -293,13 +289,6 @@ function TfrmGroupGuests.CountryValidate(country : string) : boolean;
 begin
   result :=  glb.LocateCountry(country);
 end;
-
-
-function TfrmGroupGuests.mGuestsCreateFields : boolean;
-begin
-end;
-
-
 
 
 function GroupGuests(reservation,roomreservation : integer) : boolean;
@@ -334,7 +323,7 @@ begin
   rgrShowClick(self);
 end;
 
-function TfrmGroupGuests.getReservation(reservation: integer): boolean;
+procedure TfrmGroupGuests.getReservation(reservation: integer);
 var
   s : string;
   rSet : TroomerDataset;
@@ -653,10 +642,8 @@ end;
 procedure TfrmGroupGuests.sButton1Click(Sender: TObject);
 var
   iReservation : integer;
-  iRoomReservation : integer;
 begin
   iReservation := mGuests.fieldbyname('Reservation').AsInteger;
-  iRoomReservation := 0;
   g.openresMemo(iReservation);
 end;
 
@@ -750,7 +737,6 @@ end;
 procedure TfrmGroupGuests.doupdate;
 var
   s : string;
-  i : integer;
   diff : boolean;
   ExecutionPlan: TRoomerExecutionPlan;
 begin
@@ -767,7 +753,6 @@ begin
         mGuests.First;
         mCompare.First;
         s := '';
-        i := -1;
         while not mGuests.eof do
         begin
           diff := false;

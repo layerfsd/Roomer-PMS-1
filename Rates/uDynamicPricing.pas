@@ -271,32 +271,6 @@ uses
 // unit global functions
 /// ///////////////////////////////////////////////////////////////////////////////////////////
 
-function roundint2text(aInt : integer) : string;
-begin
-  case aint of
-    0 : result := 'No rounding';
-    1 : result := 'Round to nearest whole number';
-    2 : result := 'Round up to whole number';
-    3 : result := 'Round down to whole number';
-    4 : result := 'Round to 1 decimal';
-    5 : result := 'Round to 2 decimals';
-    6 : result := 'Round to 3 decimals';
-  end;
-end;
-
-
-function roundText2int(aText : string) : integer;
-begin
-  if atext =  'No rounding' then result := 0 else
-    if atext =  'Round to nearest whole number' then result := 1 else
-      if atext =  'Round up to whole number' then result := 2 else
-        if atext =  'Round down to whole number' then result := 3 else
-          if atext =  'Round to 1 decimal' then result := 4 else
-            if atext =  'Round to 2 decimals' then result := 5 else
-              if atext =  'Round to 3 decimals' then result := 6 else
-                result := 0;
-end;
-
 
 function openDynamicRates(act: TActTableAction; chManCode, channelCode, RoomClass : String): Boolean;
 begin

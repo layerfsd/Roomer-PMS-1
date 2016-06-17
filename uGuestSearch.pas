@@ -136,7 +136,7 @@ type
 
 
     procedure ApplyFilter;
-    function RunQuery : boolean;
+    procedure RunQuery;
 
   public
     { Public declarations }
@@ -320,7 +320,7 @@ begin
   end;
 end;
 
-function TfrmGuestSearch.RunQuery: boolean;
+procedure TfrmGuestSearch.RunQuery;
 var
    s : string;
    rset : TRoomerDataset;
@@ -405,7 +405,6 @@ begin
     Fields := s;
 
     s := '';
-    result := false;
     s := s+' SELECT '#10;
     s := s+'    `persons`.RoomReservation '#10;
     s := s+' ,  `persons`.Reservation '#10;

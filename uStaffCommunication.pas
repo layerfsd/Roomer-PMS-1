@@ -39,7 +39,7 @@ type
   public
     records: TRoomerDataSet;
     constructor Create(pnl : TsPanel);
-    destructor Destroy;
+    destructor Destroy; override;
 
     procedure PlaceCorrectly;
 
@@ -190,6 +190,7 @@ end;
 destructor TStaffCommunication.Destroy;
 begin
   FreeAndNil(CommInfoPanel);
+  inherited;
 end;
 
 function TStaffCommunication.FormOfPanel : TForm;

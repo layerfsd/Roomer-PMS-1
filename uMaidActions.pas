@@ -29,11 +29,6 @@ uses
   _glob,
   ug, DBGrids, cxPropertiesStore, cxClasses, sButton, sPanel
 
-  //FIX Wwkeycb,
-  //FIX Wwdbigrd,
-  //FIX Wwdbgrid
-
-
   ;
 
 type
@@ -51,9 +46,7 @@ type
     btnClose: TsButton;
     procedure FormCreate(Sender : TObject);
     procedure FormShow(Sender : TObject);
-    procedure FormClose(Sender : TObject; var Action : TCloseAction);
     procedure btnCancelClick(Sender : TObject);
-    procedure btnStopFilterClick(Sender : TObject);
     procedure btnInsertClick(Sender : TObject);
     procedure btnEditClick(Sender : TObject);
     procedure btnDeleteClick(Sender : TObject);
@@ -67,13 +60,8 @@ type
     { Private declarations }
     aHeader : string;
     isFirstTime : boolean;
-
-    function doFilter(sFind : string) : integer;
     procedure SetBtnPos;
-
     function GetGridFielNames(sFieldname : string) : string;
-    procedure ChkFilter(sFilter : string);
-
   public
     { Public declarations }
     zCode : string;
@@ -125,29 +113,6 @@ begin
   BtnOk.Left := btnCancel.Left - BtnOk.Width - 5;
 end;
 
-procedure TfrmMaidActions.ChkFilter(sFilter : string);
-var
-  FilterON : boolean;
-  rC1, rc2 : integer;
-begin
-  FilterON := sFilter <> '';
-
-  if FilterON then
-  begin
-  end
-  else
-  begin
-  end;
-end;
-
-function TfrmMaidActions.doFilter(sFind : string) : integer;
-var
-  i : integer;
-  s : string;
-  FieldName : string;
-begin
-end;
-
 procedure TfrmMaidActions.FormCreate(Sender : TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
@@ -187,13 +152,7 @@ begin
     LMDStatusBar1.Visible := true;
   end;
 
-  ChkFilter(d.zMaidActionsFilter);
   isFirstTime := false;
-end;
-
-procedure TfrmMaidActions.FormClose(Sender : TObject; var Action : TCloseAction);
-begin
-  // **
 end;
 
 procedure TfrmMaidActions.btnCancelClick(Sender : TObject);
@@ -203,9 +162,6 @@ begin
   zDescription := '';
 end;
 
-procedure TfrmMaidActions.btnStopFilterClick(Sender : TObject);
-begin
-end;
 
 // ***********************************************
 // Table Actons
@@ -222,7 +178,6 @@ begin
   if g.OpenMaidActionsEdit(actInsert, Code) then
   begin
     d.OpenMaidActionsQuery(d.zMaidActionsSortField, d.zMaidActionsSortDir);
-    ChkFilter(d.zMaidActionsFilter);
     if d.MaidActions_.Locate('maAction', Code, []) then
     begin
     end
@@ -292,7 +247,6 @@ begin
           else
           begin
             d.OpenMaidActionsQuery(d.zMaidActionsSortField, d.zMaidActionsSortDir);
-            ChkFilter(d.zMaidActionsFilter);
           end;
           d.MaidActions_.Locate('maAction', sTmp, []);
         except

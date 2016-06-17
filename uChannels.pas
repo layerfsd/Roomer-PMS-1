@@ -256,7 +256,6 @@ type
     Procedure fillGridFromDataset(iGoto: Integer);
     procedure fillHolder;
     procedure changeAllowgridEdit;
-    function getPrevCode: string;
     Procedure chkFilter;
     procedure applyFilter;
     procedure RemoveRedundantRatesAndAvailabilities;
@@ -288,6 +287,7 @@ uses
   , uDImages
   , uUtils
   , u2DMatrix
+  , UITypes
 
   ;
 
@@ -298,26 +298,27 @@ uses
 function roundint2text(aInt : integer) : string;
 begin
   case aint of
-    0 : result := 'No rounding';
     1 : result := 'Round to nearest whole number';
     2 : result := 'Round up to whole number';
     3 : result := 'Round down to whole number';
     4 : result := 'Round to 1 decimal';
     5 : result := 'Round to 2 decimals';
     6 : result := 'Round to 3 decimals';
+  else
+    result := 'No rounding';
   end;
 end;
 
 
 function roundText2int(aText : string) : integer;
 begin
-  if atext =  'No rounding' then result := 0;
-  if atext =  'Round to nearest whole number' then result := 1;
-  if atext =  'Round up to whole number' then result := 2;
-  if atext =  'Round down to whole number' then result := 3;
-  if atext =  'Round to 1 decimal' then result := 4;
-  if atext =  'Round to 2 decimals' then result := 5;
-  if atext =  'Round to 3 decimals' then result := 6;
+  if atext =  'Round to nearest whole number' then result := 1
+  else if atext =  'Round up to whole number' then result := 2
+  else if atext =  'Round down to whole number' then result := 3
+  else if atext =  'Round to 1 decimal' then result := 4
+  else if atext =  'Round to 2 decimals' then result := 5
+  else if atext =  'Round to 3 decimals' then result := 6
+  else {if atext =  'No rounding' then} result := 0;
 end;
 
 
@@ -622,11 +623,6 @@ end;
 
 /// /////////////////////////////////////////////////////////////////////////////////////
 // memory table
-/// /////////////////////////////////////////////////////////////////////////////////////
-function TfrmChannels.getPrevCode: string;
-begin
-end;
-
 procedure TfrmChannels.m_BeforeDelete(DataSet: TDataSet);
 var
   s: string;
@@ -739,7 +735,6 @@ begin
 end;
 
 procedure TfrmChannels.m_NewRecord(DataSet: TDataSet);
-var tmp : Integer;
 begin
   DataSet['Active'] := false;
   DataSet['name'] := '';
@@ -763,9 +758,6 @@ begin
   DataSet['ratesExcludingTaxes'] := False;
   if glb.LocateSpecificRecord('channelplancodes', 'Code', 'PLAN') then
     DataSet['activePlanCode'] := glb.ChannelPlanCodes['ID'];
-
-  // TcxRadioGroupProperties(tvDatarateRoundingType).DefaultValue:= 1;
-  // TcxRadioGroupProperties(tvDatarateRoundingType).PrepareDisplayValue(1, aTemp, False);
 
 end;
 

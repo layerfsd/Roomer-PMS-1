@@ -95,12 +95,11 @@ type
   private
     procedure GetResources;
     function GetTableInfo: TRoomerDataSet;
-    function GetTableInfoOpen: TRoomerDataSet;
     function GetCount: Integer;
     function GetResource(index: Integer): TResource;
   public
     constructor Create(_KeyString, _Access : String; _ResourceParameters : TResourceParameters = nil);
-    destructor Destroy;
+    destructor Destroy; override;
 
     procedure Refresh;
 
@@ -131,7 +130,7 @@ var
   xml: OLEVariant; // IXMLDOMDocument;
   node, node1: OLEVariant; // IXMLDomNode;
   nodeName : String;
-  nodes_row, nodes_se: OLEVariant; // IXMLDomNodeList;
+  nodes_row: OLEVariant; // IXMLDomNodeList;
   i, l : Integer;
 begin
   path := ''; filename := ''; success := False;
@@ -272,17 +271,6 @@ begin
   Resources.Free;
 end;
 
-function TRoomerResourceManagement.GetTableInfoOpen: TRoomerDataSet;
-var sql : String;
-begin
-  result := CreateNewDataSet;
-  sql := format('SELECT * FROM home100.HOTEL_RESOURCES WHERE HOTEL_ID=''%s'' AND KEY_STRING=''%s''',
-                            [d.roomerMainDataset.hotelId, KeyString]);
-  rSet_bySQL(result, sql, false);
-
-  result.OpenDataset(result.SystemGetStaticResourcesFiltered(KeyString));
-end;
-
 function TRoomerResourceManagement.DownloadResourceByName(name : String;
   var Subject : String): String;
 var
@@ -376,6 +364,7 @@ end;
 procedure TRoomerResourceManagement.Refresh;
 begin
   GetResources;
+  inherited;
 end;
 
 function TRoomerResourceManagement.UploadFile(onlyFilename, filename : String) : String;

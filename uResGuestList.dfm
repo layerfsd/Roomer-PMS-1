@@ -40,7 +40,7 @@ object frmResGuestList: TfrmResGuestList
       Left = 6
       Top = 6
       Width = 106
-      Height = 24
+      Height = 16
       Align = alLeft
       Alignment = taRightJustify
       Caption = 'Booking Number : '
@@ -50,7 +50,6 @@ object frmResGuestList: TfrmResGuestList
       Font.Height = -13
       Font.Name = 'Tahoma'
       Font.Style = []
-      ExplicitHeight = 16
     end
     object Label16: TsLabel
       Left = 217
@@ -75,7 +74,7 @@ object frmResGuestList: TfrmResGuestList
       Left = 353
       Top = 6
       Width = 50
-      Height = 24
+      Height = 16
       Align = alLeft
       Alignment = taRightJustify
       Caption = 'depart : '
@@ -85,13 +84,12 @@ object frmResGuestList: TfrmResGuestList
       Font.Height = -13
       Font.Name = 'Tahoma'
       Font.Style = []
-      ExplicitHeight = 16
     end
     object Label19: TsLabel
       Left = 496
       Top = 6
       Width = 101
-      Height = 24
+      Height = 16
       Align = alLeft
       Alignment = taRightJustify
       Caption = 'date of booking : '
@@ -101,13 +99,12 @@ object frmResGuestList: TfrmResGuestList
       Font.Height = -13
       Font.Name = 'Tahoma'
       Font.Style = []
-      ExplicitHeight = 16
     end
     object Label20: TsLabel
       Left = 690
       Top = 6
       Width = 92
-      Height = 24
+      Height = 16
       Align = alLeft
       Alignment = taRightJustify
       Caption = 'Staff member : '
@@ -117,7 +114,6 @@ object frmResGuestList: TfrmResGuestList
       Font.Height = -13
       Font.Name = 'Tahoma'
       Font.Style = []
-      ExplicitHeight = 16
     end
     object edArrival: TsLabel
       Left = 260
@@ -232,6 +228,12 @@ object frmResGuestList: TfrmResGuestList
     object TabSheet1: TsTabSheet
       Caption = 'Room Reservations'
       TabVisible = False
+      SkinData.CustomColor = False
+      SkinData.CustomFont = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object LMDSimplePanel2: TsPanel
         Left = 0
         Top = 0
@@ -314,10 +316,9 @@ object frmResGuestList: TfrmResGuestList
         TabOrder = 1
         Properties.CustomButtons.Buttons = <>
         LookAndFeel.NativeStyle = False
-        ClientRectBottom = 380
-        ClientRectLeft = 2
-        ClientRectRight = 1064
-        ClientRectTop = 2
+        ClientRectBottom = 382
+        ClientRectRight = 1066
+        ClientRectTop = 0
       end
       object cxGrid1: TcxGrid
         Left = 0

@@ -38,7 +38,6 @@ type
     procedure FormShow(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
   private
-    currentLocation : word;
     ListViewEditor: TEdit;
     LItem: TListitem;
 
@@ -90,6 +89,7 @@ uses ShellApi,
      , PrjConst
      , uResourceManagement
      , uUtils
+     , UITypes
      ;
 
 const
@@ -120,12 +120,9 @@ end;
 
 procedure TfrmManageFilesOnServer.ShowSelectedFileGroup;
 var item : TListItem;
-    list : TStrings;
-    i, index: Integer;
+    i: Integer;
     FileList : TFileList;
     description : String;
-    size : String;
-
     localFilename : String;
     Icon : TIcon;
     FileInfo: SHFILEINFO;

@@ -50,7 +50,7 @@ type
 var
   FrmEmailExcelSheet: TFrmEmailExcelSheet;
 
-function sendFileAsAttachment(recipient, _caption : String; ExcelFile : String; AllowEditAndSendEmail : Boolean) : Boolean;
+procedure sendFileAsAttachment(recipient, _caption : String; ExcelFile : String; AllowEditAndSendEmail : Boolean) ;
 
 implementation
 
@@ -62,7 +62,7 @@ uses hData,
      uRoomerLanguage,
      uAppGlobal;
 
-function sendFileAsAttachment(recipient, _caption : String; ExcelFile : String; AllowEditAndSendEmail : Boolean) : Boolean;
+procedure sendFileAsAttachment(recipient, _caption : String; ExcelFile : String; AllowEditAndSendEmail : Boolean);
 var _FrmEmailExcelSheet: TFrmEmailExcelSheet;
 begin
   _FrmEmailExcelSheet := TFrmEmailExcelSheet.Create(nil);
@@ -147,7 +147,6 @@ end;
 
 procedure TFrmEmailExcelSheet.SetExcelFile(const Value: String);
 var
-  i: Integer;
   filename,
   filePath : String;
 begin
