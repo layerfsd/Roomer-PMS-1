@@ -543,6 +543,8 @@ type
     mExtrasTotalPrice: TFloatField;
     tvRoomsStockitemsPrice: TcxGridDBColumn;
     tvRoomsStockItemsCount: TcxGridDBColumn;
+    mRoomschildrencount: TIntegerField;
+    mRoomsinfantcount: TIntegerField;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -2369,6 +2371,8 @@ begin
     s := s + '    , (SELECT count(ID) FROM roomsdate WHERE (roomsdate.roomreservation=rr.roomreservation) AND (roomsdate.ResFlag <> '
                     + _db(STATUS_DELETED) + ' )) AS unPaidRentNights '#10;
     s := s + '    , (SELECT name FROM persons WHERE persons.roomreservation=rr.roomreservation ORDER BY MainName DESC LIMIT 1) AS GuestName '#10;
+    s := s + '    , numChildren as childrencount '#10;
+    s := s + '    , numInfants as Infantcount '#10;
     s := s + '    , (SELECT PersonsProfilesId FROM persons WHERE persons.roomreservation=rr.roomreservation ORDER BY MainName DESC LIMIT 1) AS PersonsProfilesId '#10;
     s := s + '    , (SELECT count(ID) FROM persons WHERE persons.roomreservation=rr.roomreservation) AS GuestCount '#10;
     s := s + '    , (SELECT SUM(RoomRate) FROM roomsdate WHERE (roomsdate.roomreservation=rr.roomreservation) AND (roomsdate.paid=0) AND (roomsdate.ResFlag <> '
@@ -2816,6 +2820,8 @@ begin
     Currency := mRoomsCurrency.AsString;
     CurrencyRate := hData.GetRate(Currency);
     guests := mRoomsGuestCount.AsInteger;
+    childrenCount := mRoomschildrencount.AsInteger;
+    infantCount := mRoomsinfantcount.AsInteger;
     ArrivalDate := mRoomsArrival.AsDateTime;
     DepartureDate := mRoomsDeparture.asDateTime;
   end;

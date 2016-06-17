@@ -1523,6 +1523,10 @@ begin
                 'This simply means that if you will later change the booking nights and/or prices then you' + #13 +
                 'will need to manually change the city-tax' + #13#13 +
                 'Do you want to continue anyway?');
+
+  constants.Add('shTx_frmReservationExtras_AddedMoreThenAvailableInPeriod',
+                'One or more of the added Extras do not have enough available stock for the whole reservation period.'+ #13 +
+                'Do you want to continue anyway?');
 end;
 
 procedure AddConstants_OfflineReports;

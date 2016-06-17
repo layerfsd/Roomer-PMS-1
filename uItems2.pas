@@ -199,6 +199,7 @@ type
     sLabel4: TsLabel;
     sLabel1: TsLabel;
     labPriceProbeDate: TsLabel;
+    m_Availabilityavailable: TIntegerField;
 
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -244,6 +245,8 @@ type
     procedure tvDataEditing(Sender: TcxCustomGridTableView; AItem: TcxCustomGridTableItem; var AAllow: Boolean);
     procedure m_ItemsTotalStockGetText(Sender: TField; var Text: string; DisplayText: Boolean);
     procedure m_ItemsCalcFields(DataSet: TDataSet);
+    procedure tvDataAvailableStockCustomDrawCell(Sender: TcxCustomGridTableView; ACanvas: TcxCanvas;
+      AViewInfo: TcxGridTableDataCellViewInfo; var ADone: Boolean);
   private
     { Private declarations }
     financeLookupList : TKeyPairList;
@@ -555,8 +558,7 @@ begin
       end;
     end;
   finally
-    rSet.Filter := '';
-    rSet.Filtered := False;
+    rSet.Free;
   end;
 
 end;
@@ -566,17 +568,20 @@ end;
 procedure TfrmItems2.GetStockitemAvailability;
 const
   cSQL = 'select ' +
-         ' rrs.Stockitem, ' +
-         ' rrs.usedate,' +
-         ' sum(rrs.count) as inUse ' +
-         'from roomreservationstockitems rrs ' +
-         'where rrs.usedate >= ''%s''  and rrs.usedate <= ''%s'' ' +
-         'group by rrs.stockitem, rrs.usedate ';
+         ' i.itemid as stockitem, ' +
+         ' cast(rrs.usedate as DATE) as usedate,' +
+         ' sum(rrs.count) as inUse, ' +
+         ' i.totalstock - coalesce(sum(rrs.count), 0) as available  '+
+         ' FROM stockitems i  '+
+         ' LEFT OUTER JOIN roomreservationstockitems rrs on rrs.stockitem=i.itemid ' +
+         '                AND rrs.usedate >= ''%s''  and rrs.usedate < ''%s'' ' +
+         '                and rrs.roomreservation <> %d  '+
+         'group by i.itemid, rrs.usedate ';
 var
   lSQL: string;
   lrSet: TRoomerDataset;
 begin
-  lSQL := format(cSQL, [DateTOSQLString(zData.AvailabilityFrom), DateToSQLString(zData.AvailabilityTo)]);
+  lSQL := format(cSQL, [DateTOSQLString(zData.AvailabilityFrom), DateToSQLString(zData.AvailabilityTo), zData.RoomReservation]);
   lrSet := CreateNewDataset;
   try
     rSet_bySQL(lrSet, lSQL);
@@ -648,6 +653,9 @@ begin
   tvPrices.OptionsData.Editing := FAllowGridEdit;
 
   mnuiAllowGridEdit.Checked := FAllowGridEdit;
+  btnDelete.Enabled := FAllowGridEdit;
+  btnEdit.Enabled := FAllowGridEdit;
+  btnInsert.Enabled := FAllowGridEdit;
 end;
 
 procedure TfrmItems2.StopFilter;
@@ -1172,6 +1180,13 @@ begin
       raise;
     end;
   end;
+end;
+
+procedure TfrmItems2.tvDataAvailableStockCustomDrawCell(Sender: TcxCustomGridTableView; ACanvas: TcxCanvas;
+  AViewInfo: TcxGridTableDataCellViewInfo; var ADone: Boolean);
+begin
+  if VarIsEmpty(aViewInfo.Value) or VarIsNull(aViewInfo.Value) or (VarAsType( AViewInfo.Value, varInteger) < 1) then
+    aCanvas.Brush.Color := clRed;
 end;
 
 procedure TfrmItems2.tvDataBookKeepCodePropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);

@@ -587,10 +587,6 @@ object frmReservationProfile: TfrmReservationProfile
       TabVisible = False
       SkinData.CustomColor = False
       SkinData.CustomFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Panel3: TsPanel
         Left = 0
         Top = 0
@@ -620,10 +616,6 @@ object frmReservationProfile: TfrmReservationProfile
               Caption = 'Customer'
               SkinData.CustomColor = False
               SkinData.CustomFont = False
-              ExplicitLeft = 0
-              ExplicitTop = 0
-              ExplicitWidth = 0
-              ExplicitHeight = 0
               object Label9: TsLabel
                 Left = 2
                 Top = 3
@@ -870,10 +862,6 @@ object frmReservationProfile: TfrmReservationProfile
               ImageIndex = 1
               SkinData.CustomColor = False
               SkinData.CustomFont = False
-              ExplicitLeft = 0
-              ExplicitTop = 0
-              ExplicitWidth = 0
-              ExplicitHeight = 0
               object Label10: TsLabel
                 Left = 33
                 Top = 13
@@ -1501,10 +1489,11 @@ object frmReservationProfile: TfrmReservationProfile
             object sLabel5: TsLabel
               Left = 2
               Top = 65
-              Width = 124
+              Width = 205
               Height = 11
               Align = alTop
               Caption = 'Request from booking channel'
+              ExplicitWidth = 124
             end
             object memRoomNotes: TsMemo
               Left = 2
@@ -1582,10 +1571,6 @@ object frmReservationProfile: TfrmReservationProfile
       Caption = 'Rooms'
       SkinData.CustomColor = False
       SkinData.CustomFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object grRooms: TcxGrid
         Left = 0
         Top = 82
@@ -1601,6 +1586,7 @@ object frmReservationProfile: TfrmReservationProfile
         ParentFont = False
         TabOrder = 0
         LookAndFeel.NativeStyle = False
+        ExplicitTop = 84
         object tvRooms: TcxGridDBTableView
           Navigator.Buttons.CustomButtons = <>
           Navigator.Buttons.First.Visible = True
@@ -2477,10 +2463,6 @@ object frmReservationProfile: TfrmReservationProfile
       ImageIndex = 1
       SkinData.CustomColor = False
       SkinData.CustomFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Panel10: TsPanel
         Left = 0
         Top = 0
@@ -2967,18 +2949,20 @@ object frmReservationProfile: TfrmReservationProfile
           object lblSpecialRequests: TsLabel
             Left = 2
             Top = 13
-            Width = 69
+            Width = 250
             Height = 11
             Align = alTop
             Caption = 'Special Requests'
+            ExplicitWidth = 69
           end
           object lblNotes: TsLabel
             Left = 2
             Top = 97
-            Width = 24
+            Width = 250
             Height = 11
             Align = alTop
             Caption = 'Notes'
+            ExplicitWidth = 24
           end
           object edtSpecialRequests: TMemo
             AlignWithMargins = True
@@ -3086,10 +3070,6 @@ object frmReservationProfile: TfrmReservationProfile
       Caption = 'ALERTS'
       SkinData.CustomColor = False
       SkinData.CustomFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object pnlAlertHolder: TsPanel
         Left = 0
         Top = 0
@@ -3106,10 +3086,6 @@ object frmReservationProfile: TfrmReservationProfile
       ImageIndex = 2
       SkinData.CustomColor = False
       SkinData.CustomFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Panel11: TsPanel
         Left = 0
         Top = 0
@@ -3676,6 +3652,12 @@ object frmReservationProfile: TfrmReservationProfile
     end
     object mRoomsStockitemsPrice: TFloatField
       FieldName = 'StockitemsPrice'
+    end
+    object mRoomschildrencount: TIntegerField
+      FieldName = 'childrencount'
+    end
+    object mRoomsinfantcount: TIntegerField
+      FieldName = 'infantcount'
     end
   end
   object mGuestRoomsDS: TDataSource

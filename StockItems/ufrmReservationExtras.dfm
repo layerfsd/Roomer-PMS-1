@@ -12,6 +12,7 @@ object frmReservationExtras: TfrmReservationExtras
   Font.Style = []
   OldCreateOrder = False
   Position = poOwnerFormCenter
+  OnCloseQuery = FormCloseQuery
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
@@ -176,7 +177,7 @@ object frmReservationExtras: TfrmReservationExtras
       end
       object labChildren: TsLabel
         Left = 475
-        Top = 33
+        Top = 32
         Width = 4
         Height = 13
         Caption = '-'

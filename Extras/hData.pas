@@ -1238,6 +1238,7 @@ type
     StockItemPriceDate: TDateTime;
     AvailabilityFrom: TDateTime;
     AvailabilityTo: TDateTime;
+    RoomReservation: integer; // used to ignore usage of stockitem of current roomreservation when calculating availablestock
     // Missing fields to create
     // ItemTypeID
     // CurrencyID

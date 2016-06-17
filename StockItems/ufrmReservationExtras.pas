@@ -92,6 +92,7 @@ type
     procedure mExtrasBeforePost(DataSet: TDataSet);
     procedure btnEditClick(Sender: TObject);
     procedure mExtrasCalcFields(DataSet: TDataSet);
+    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
   private
     FReservationHolder: recEditReservationExtrasHolder;
     FRoomReservation: integer;
@@ -99,6 +100,7 @@ type
     procedure UpdateButtonsState;
     procedure UpdateDateConstraints;
     function CopyDatasetToRecItem: recItemHolder;
+    function CheckAllAvailability: boolean;
     { Private declarations }
   public
     { Public declarations }
@@ -127,7 +129,11 @@ uses
   , cmpRoomerDataset
   , uDateUtils
   , DateUtils
-  , uD, objNewReservation;
+  , uD
+  , objNewReservation
+  , PrjConst
+  , UITypes
+  ;
 
 function editReservationExtras(var aResDataHolder: recEditReservationExtrasHolder; am_Extras : TdxMemData) : boolean;
 var
@@ -186,6 +192,7 @@ begin
   Result.StockItemPriceDate    := mExtrasFromdate.AsDateTime;
   Result.AvailabilityFrom      := mExtrasFromdate.AsDateTIme;
   Result.AvailabilityTo        := mExtrasToDate.AsDateTIme;
+  Result.RoomReservation       := mExtrasRoomreservation.AsInteger;
 end;
 
 procedure TfrmReservationExtras.grdExtrasDBTableView1ItemPropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
@@ -221,6 +228,38 @@ begin
       datacontroller.focuscontrol(lCountColumn, dummy);
     end;
 
+  end
+  else
+    if not (mExtras.State = dsInsert) then
+      mExtras.Cancel;
+
+end;
+
+function TfrmReservationExtras.CheckAllAvailability: boolean;
+var
+  bm: TBookMark;
+  lRoomRes: TnewRoomReservationItem;
+  lExtras: TReservationExtrasList;
+begin
+  bm := mExtras.Bookmark;
+  mExtras.DisableControls;
+  try
+    with theData do
+      lRoomRes := TnewRoomReservationItem.Create(RoomReservation, Room, RoomType, '', ArrivalDate, DepartureDate, guests, 0, 0, false, 0, childrenCount, infantCount, '', '', '');
+    try
+      lExtras := TReservationExtrasList.Create(lRoomRes);
+      try
+        lExtras.LoadFromDataset(mExtras);
+        Result := lExtras.IsAvailable;
+      finally
+        lExtras.Free;
+      end;
+    finally
+      lRoomRes.Free;
+    end;
+  finally
+    mExtras.Bookmark := bm;
+    mExtras.EnableControls;
   end;
 end;
 
@@ -320,6 +359,7 @@ procedure TfrmReservationExtras.btnOKClick(Sender: TObject);
 begin
   if mExtras.State in [dsEdit, dsInsert] then
     mExtras.Post;
+
 end;
 
 procedure TfrmReservationExtras.btnCancelClick(Sender: TObject);
@@ -341,6 +381,12 @@ begin
   TcxDateEditProperties(tvExtrasToDate.properties).MaxDate := FReservationHolder.DepartureDate;
 end;
 
+
+procedure TfrmReservationExtras.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+begin
+  CanClose := (ModalResult=mrCancel) OR CheckAllAvailability or
+              (MessageDlg(GetTranslatedText('shTx_frmReservationExtras_AddedMoreThenAvailableInPeriod'), mtConfirmation, mbOKCancel, 0) = mrOK);
+end;
 
 procedure TfrmReservationExtras.FormShow(Sender: TObject);
 begin

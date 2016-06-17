@@ -48,11 +48,13 @@ TYPE
     /// <summary> Post reservationExtra to server </summary>
     procedure Post;
 
+    function IsAvailable: boolean;
+
     /// <summary> Calculate the total price of this item.</summary>
     property TotalPrice: double read GetTotalPrice;
     /// <summary> Calculate the total price of this item per day</summary>
     property PricePerDay: double read GetPricePerDay;
-  published
+
     property RoomReservationItem: TnewRoomReservationItem read FRoomReservationItem write FRoomReservationItem;
     property ID: integer read FID write FID;
     property ItemID: integer read FItemID write FItemID;
@@ -84,6 +86,7 @@ TYPE
     /// <summary> Post all ReservationExtras to server
     procedure Post;
     procedure DeleteAllFromDatabase;
+    function IsAvailable: boolean;
   end;
 
   TnewRoomReservationItem = class
@@ -180,7 +183,6 @@ TYPE
     destructor Destroy; override;
     property Reservation: integer read FReservation write FReservation;
 
-  published
     property RoomReservation: integer   read getRoomReservation write SetRoomreservation    ;
     property RoomNumber     : string    read getRoomNumber      write SetRoomNumber         ;
     property RoomType       : string    read getRoomType        write SetRoomType           ;
@@ -347,6 +349,7 @@ uses
   uGuestPortfolioEdit,
   uActivityLogs
   , DateUtils
+  , uDateUtils
   , Math
   ;
 
@@ -1801,6 +1804,39 @@ begin
   Result := GetpricePerDay * DaySpan(ToDate, FromDate);
 end;
 
+function TReservationExtra.IsAvailable: boolean;
+const
+  // determine lowest stock in reservation period for this extra ignoring usage from own roomreservation
+  cSQL =
+         ' select '#10 +
+         '   i.itemid, '#10 +
+         '   rrs.usedate, '#10 +
+         '     i.totalstock - coalesce(sum(rrs.count), 0) as available '#10 +
+         '   from stockitems i '#10 +
+         '   left outer join roomreservationstockitems rrs on i.itemid=rrs.stockitem '#10 +
+         '                    and rrs.usedate >= ''%s''  and rrs.usedate < ''%s'' '#10 +
+         '                    and rrs.roomreservation <> %d '#10 +
+         '   where i.itemid = %d '#10 +
+         '   group by i.itemID, rrs.usedate '#10 +
+         '   order by available asc limit 1 ';
+var
+  rSet: TRoomerDataSet;
+begin
+  rSet := CreateNewDataset;
+  try
+    if rset_BySQL(rSet, Format(cSQL, [DateTOSQLString(fromDate), dateToSQLString(ToDate), FRoomReservationitem.FRoomReservation, ItemID])) then
+    begin
+      rSet.First;
+      Result := rSet['available'] >= Count;
+    end
+    else
+      Result := false;
+  finally
+    rSet.Free;
+  end;
+
+end;
+
 procedure TReservationExtra.Post;
 const
   cSQL = 'INSERT into roomreservationstockitems (' +
@@ -1958,6 +1994,19 @@ begin
     d.roomerMainDataSet.SystemFreeExecuteMultiple(cmdList);
   finally
     cmdList.Free;
+  end;
+end;
+
+function TReservationExtrasList.IsAvailable: boolean;
+var
+  lExtra: TReservationExtra;
+begin
+  Result := True;
+  for lExtra in Self do
+  begin
+    Result := lExtra.IsAvailable;
+    if not Result then
+      Break;
   end;
 end;
 

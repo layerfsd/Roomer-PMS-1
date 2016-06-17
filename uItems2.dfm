@@ -173,8 +173,8 @@ object frmItems2: TfrmItems2
     object chkActive: TsCheckBox
       Left = 55
       Top = 63
-      Width = 246
-      Height = 19
+      Width = 238
+      Height = 20
       Caption = 'Active (if checked then just active are visible)'
       Checked = True
       State = cbChecked
@@ -294,6 +294,7 @@ object frmItems2: TfrmItems2
     Align = alBottom
     TabOrder = 2
     SkinData.SkinSection = 'PANEL'
+    ExplicitTop = 606
     DesignSize = (
       1145
       32)
@@ -338,6 +339,7 @@ object frmItems2: TfrmItems2
     Constraints.MinWidth = 440
     TabOrder = 3
     LookAndFeel.NativeStyle = False
+    ExplicitTop = 87
     object tvData: TcxGridDBTableView
       OnDblClick = tvDataDblClick
       Navigator.Buttons.CustomButtons = <>
@@ -521,6 +523,9 @@ object frmItems2: TfrmItems2
       object tvDataAvailableStock: TcxGridDBColumn
         Caption = 'Available'
         DataBinding.FieldName = 'AvailableStock'
+        PropertiesClassName = 'TcxCalcEditProperties'
+        Properties.ReadOnly = True
+        OnCustomDrawCell = tvDataAvailableStockCustomDrawCell
         Options.Editing = False
       end
     end
@@ -629,6 +634,7 @@ object frmItems2: TfrmItems2
     Left = 80
     Top = 136
     object prLink_grData: TdxGridReportLink
+      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 5080
       PrinterPage.GrayShading = True
@@ -642,6 +648,7 @@ object frmItems2: TfrmItems2
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
       ReportDocument.CreationDate = 41334.495374884260000000
+      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       BuiltInReportLink = True
     end
   end
@@ -800,7 +807,19 @@ object frmItems2: TfrmItems2
     DesignActivation = True
     AttachedAutoRefresh = True
     AttachMaxCount = 1
-    FieldDefs = <>
+    FieldDefs = <
+      item
+        Name = 'Stockitem'
+        DataType = ftInteger
+      end
+      item
+        Name = 'InUse'
+        DataType = ftInteger
+      end
+      item
+        Name = 'UseDate'
+        DataType = ftDate
+      end>
     IndexDefs = <>
     SortOptions = []
     PersistentBackup = False
@@ -823,6 +842,9 @@ object frmItems2: TfrmItems2
     end
     object m_AvailabilityUseDate: TDateField
       FieldName = 'UseDate'
+    end
+    object m_Availabilityavailable: TIntegerField
+      FieldName = 'available'
     end
   end
 end
