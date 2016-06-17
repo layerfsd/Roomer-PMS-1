@@ -302,6 +302,7 @@ uses
   , uLocations2
   , uDimages
   , uUtils
+  , UITypes
   ;
 
 
@@ -711,7 +712,6 @@ var
   s : string;
 
   bChangedRoomTypes : Boolean;
-  oldCode : String;
 begin
   if zFirstTime then exit;
 

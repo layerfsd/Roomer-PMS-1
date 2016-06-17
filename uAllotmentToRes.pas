@@ -324,8 +324,6 @@ type
     zCountRoomTypes : integer;
     zShowRoomDescription  : boolean;
 
-    zPanWidth : integer;
-
     zReservationInfo : recReservationHolder;
     zAllotmentIsGroupInvoice : boolean;
 
@@ -335,19 +333,11 @@ type
     //Fill grid grProvide
     procedure FillgrProvideWithRooms;
     procedure SetDateHeads;
-    procedure SizeColumns(width : integer);
-
     procedure InitCell(c,r : integer);
     function SetCell(rrInfo : RecRRInfoAlot; col,row : integer; setText : boolean) : recColRow;
-    function SetNoRoomCell(rrInfo : RecRRInfoAlot; setText : boolean) : recColRow;
-
-    procedure ClearCell(col,row : integer; setText : boolean);
-
     function DateToCol(aDate : Tdate) : integer;
     function RoomAndDateToCell(Room,RoomType : string; aDate : Tdate) : recColRow;
     function RoomAndTypeToRow(room,roomType : string) : integer;
-    function infoAndTypeToRow(info,roomType : string) : integer;
-    function InfoAndDateToCell(info,RoomType : string; aDate : Tdate) : recColRow;
 
     function InitRRInfo : RecRRInfoAlot;
     function ColToDate(ACol : integer) : TdateTime;
@@ -386,7 +376,8 @@ uses
   uDImages,
   uMain,
   PrjConst,
-  uRoomerDefinitions;
+  uRoomerDefinitions
+  , Math;
 
 { TfrmAllotmentToRes }
 
@@ -456,7 +447,6 @@ end;
 
 function TfrmAllotmentToRes.DateToCol(aDate : Tdate) : integer;
 begin
-  result := - 1;
   result := (trunc(aDate) - trunc(zFirstDate)) + cCountFixedCols;
 end;
 
@@ -478,8 +468,6 @@ end;
 procedure TfrmAllotmentToRes.sButton2Click(Sender: TObject);
 var
   Roomreservation : integer;
-  sFilter : string;
-  id : integer;
 begin
   if KbmRoomRes.RecordCount = 0 then exit;
 
@@ -488,10 +476,6 @@ begin
   kbmRoomRates.DisableControls;
   try
     RoomReservation := KbmRoomRes.fieldbyname('Roomreservation').asinteger;
-//    sFilter :='(processed='+inttostr(roomreservation)+')';
-//
-//    mRRinfo.Filter   := sFilter;
-//    mRRinfo.Filtered := true;
     try
       mRRinfo.First;
       while not mRRinfo.eof do
@@ -667,26 +651,6 @@ begin
 end;
 
 
-function TfrmAllotmentToRes.infoAndTypeToRow(info,roomType : string) : integer;
-var
-  i : integer;
-begin
-  Result := 0;
-  for i := cCountFixedRows to grProvide.ColCount-(cCountFixedRows+1) do
-  begin
-    if (SameText(info, grProvide.Cells[cColInfo,i])) and (Sametext(roomtype, grProvide.Cells[cColRoomType,i]))  then
-    begin
-      result := i;
-      break;
-    end;
-  end;
-end;
-
-function TfrmAllotmentToRes.InfoAndDateToCell(info,RoomType : string; aDate : Tdate) : recColRow;
-begin
-  result.col := DateToCol(aDate);
-  result.row := InfoAndTypeToRow(info,roomType);
-end;
 
 function TfrmAllotmentToRes.RoomAndDateToCell(Room,RoomType : string; aDate : Tdate) : recColRow;
 begin
@@ -732,116 +696,6 @@ begin
 end;
 
 
-
-procedure TfrmAllotmentToRes.ClearCell(col,row : integer; setText : boolean);
-var
-  rcRec : recColRow;
-  s,ss : string;
-  rrInfo : RecRRInfoAlot;
-begin
-  rrInfo := initRRinfo;
-  rcRec := RoomAndDateToCell(rrInfo.Room,rrInfo.RoomType,rrInfo.dtDate);
-  if col <> -1 then rcRec.col := col;
-  if row <> -1 then rcRec.row := row;
-
-  if grProvide.Objects[rcRec.col,rcRec.row] <> nil then
-  begin
-    grProvide.Objects[rcRec.col,rcRec.row] :=  nil;
-    grProvide.Objects[rcRec.col,rcRec.row].Free;
-  end;
-  if setText then
-  begin
-    s := '';
-    grProvide.Cells[rcRec.col,rcRec.row] := s;
-  end;
-  grProvide.Objects[rcRec.col,rcRec.row] := TresCell.Create(
-                                     rrInfo.rdID
-                                    ,rrInfo.RoomReservation
-                                    ,rrInfo.Reservation
-                                    ,rrInfo.dtDate
-                                    ,rrInfo.Room
-                                    ,rrInfo.RoomType
-                                    ,rrInfo.ResFlag
-                                    ,rrInfo.isNoRoom
-                                    ,rrInfo.PriceCode
-                                    ,rrInfo.RoomRate
-                                    ,rrInfo.Discount
-                                    ,rrInfo.isPercentage
-                                    ,rrInfo.showDiscount
-                                    ,rrInfo.Paid
-                                    ,rrInfo.Currency
-                                    ,rrInfo.MainGuest
-                                    ,rrInfo.numGuests
-                                    ,rrInfo.numChildren
-                                    ,rrInfo.numInfants
-                                    ,rrInfo.roomCount
-                              );
-end;
-
-
-function TfrmAllotmentToRes.SetNoRoomCell(rrInfo : RecRRInfoAlot; setText : boolean) : recColRow;
-var
-  rcRec : recColRow;
-  info : string;
-  s,ss : string;
-begin
-  s := '';
-  s := s+rrInfo.ResFlag+'|';
-  s := s+rrInfo.PriceCode+'|';
-  s := s+floattostr(rrInfo.RoomRate)+'|';
-  s := s+floattostr(rrInfo.Discount)+'|';
-  s := s+booltostr(rrInfo.isPercentage)+'|';
-  s := s+booltostr(rrInfo.showDiscount)+'|';
-  s := s+inttostr(rrInfo.numGuests)+'|';
-
-  rcRec := InfoAndDateToCell(s,rrInfo.RoomType,rrInfo.dtDate);
-
-  if grProvide.Objects[rcRec.col,rcRec.row] <> nil then
-  begin
-    grProvide.Objects[rcRec.col,rcRec.row] :=  nil;
-    grProvide.Objects[rcRec.col,rcRec.row].Free;
-  end;
-  if setText then
-  begin
-    s := '';
-
-    if chkRoomCount.checked then s := s+ '['+inttostr(rrInfo.RoomCount)+']';
-    if chkNumGuests.checked then s := s+ '['+inttostr(rrInfo.numGuests)+']';
-    if chkGuestName.checked then s := s+ ' '+rrInfo.mainGuest;
-    if chkPrice.checked     then
-    begin
-       ss := '%';
-       if rrInfo.isPercentage = false then ss := ' '+rrInfo.Currency;
-       s := s+ ' '+FloatTostr(rrInfo.RoomRate)+rrInfo.Currency+'-'+FloatTostr(rrInfo.Discount)+ss;
-    end;
-
-
-    grProvide.Cells[rcRec.col,rcRec.row] := s;
-  end;
-  grProvide.Objects[rcRec.col,rcRec.row] := TresCell.Create(
-                                     rrInfo.rdID
-                                    ,rrInfo.RoomReservation
-                                    ,rrInfo.Reservation
-                                    ,rrInfo.dtDate
-                                    ,rrInfo.Room
-                                    ,rrInfo.RoomType
-                                    ,rrInfo.ResFlag
-                                    ,rrInfo.isNoRoom
-                                    ,rrInfo.PriceCode
-                                    ,rrInfo.RoomRate
-                                    ,rrInfo.Discount
-                                    ,rrInfo.isPercentage
-                                    ,rrInfo.showDiscount
-                                    ,rrInfo.Paid
-                                    ,rrInfo.Currency
-                                    ,rrInfo.MainGuest
-                                    ,rrInfo.numGuests
-                                    ,rrInfo.numChildren
-                                    ,rrInfo.numInfants
-                                    ,rrInfo.roomCount
-                              );
-   result := rcRec;
-end;
 
 
 
@@ -1054,15 +908,12 @@ end;
 
 procedure TfrmAllotmentToRes.FillgrProvideWithRooms;
 var
-  status: string;
-  i: Integer;
   Room: string;
   RoomType: string;
   RoomDescription: string;
 
   startRow : integer;
   RowIndex : integer;
-  cellInfo : RecRRInfoAlot;
   other : string;
 begin
   mRooms.First;
@@ -1133,14 +984,6 @@ begin
     grProvide.cells[i + dayStartCol, 0] := s;
     aDate := aDate + 1;
   end;
-end;
-
-procedure TfrmAllotmentToRes.SizeColumns(width : integer);
-begin
-  grProvide.AutoSizeCol(0,1);
-  grProvide.AutoSizeCol(1,1);
-  grProvide.AutoSizeCol(2,1);
-  grProvide.AutoSizeRows(True);
 end;
 
 procedure TfrmAllotmentToRes.sPanel7DblClick(Sender: TObject);
@@ -1230,8 +1073,6 @@ var
   i : integer;
   iRow : integer;
   iCol : integer;
-  ok : boolean;
-
   sCellContent : string;
 
   aRow     : integer;
@@ -1284,7 +1125,6 @@ begin
   while not mQuickRes.eof do
   begin
     aRow       := mQuickRes.FieldByName('Row').asInteger;
-    FirstCol     := mQuickRes.FieldByName('FirstCol').asInteger;
     LastCol   := mQuickRes.FieldByName('LastCol').asInteger;
     if not mQuickRes.eof then
     begin
@@ -1341,8 +1181,6 @@ var
   i,ii : integer;
   iRow : integer;
   iCol : integer;
-  ok : boolean;
-
   sCellContent : string;
 
   aRow     : integer;
@@ -1400,7 +1238,6 @@ begin
     while not mQuickRes.eof do
     begin
       aRow       := mQuickRes.FieldByName('Row').asInteger;
-      FirstCol     := mQuickRes.FieldByName('FirstCol').asInteger;
       LastCol   := mQuickRes.FieldByName('LastCol').asInteger;
       if not mQuickRes.eof then
       begin
@@ -1525,10 +1362,6 @@ begin
       mRRinfo.Filtered := true;
       mRRinfo.First;
 
-      AvragePrice    := 0.00 ;
-      RateCount      := 0;
-      AvrageDiscount := 0.00;
-
       RoomDescription     := mRRinfo.fieldbyname('RoomDescription').asstring;
       RoomTypeDescription := mRRinfo.fieldbyname('RoomDescription').asstring;
       MainGuest           := mRRinfo.fieldbyname('MainGuest').asstring;
@@ -1564,20 +1397,14 @@ begin
         ttPrice      := ttPrice   + RoomRate;
         ttDiscount   := ttDiscount+ discount;
 
-        if tmpArrival >= mRRinfo.FieldByName('dtDate').asDateTime then arrival :=  mRRinfo.FieldByName('dtDate').asDateTime;
-        if tmpDeparture <= mRRinfo.FieldByName('dtDate').asDateTime then departure := mRRinfo.FieldByName('dtDate').asDateTime;
-
-        tmpArrival   := Arrival;
-        tmpDeparture := Departure;
+        tmparrival := min(tmpArrival, mRRinfo.FieldByName('dtDate').asDateTime);
+        tmpdeparture := max(tmpDeparture,mRRinfo.FieldByName('dtDate').asDateTime);
 
         mRRinfo.Next;
       end;
 
-      AvragePrice := 0;
-      if ttPriceCount <> 0 then
-      begin
-        AvragePrice := ttPrice/ttPriceCount;
-      end;
+      Arrival := tmpArrival;
+      Departure := tmpDeparture;
 
       AvrageDiscount := 0;
       if ttPriceCount <> 0 then
@@ -1597,8 +1424,6 @@ begin
         isPercentage := mRRinfo.FieldByName('isPercentage').asBoolean;
 
         DiscountAmount := 0;
-        RentAmount := 0;
-        NativeAmount := 0;
 
         if roomrate <> 0 then
         begin
@@ -1745,19 +1570,11 @@ var
   sql : string;
 
   rset0,
-  rset1,
-  rset2,
-  rset3 : TRoomerDataset;
+  rset1: TRoomerDataset;
   ExecutionPlan : TRoomerExecutionPlan;
 
   lastDate : Tdate;
-  firstDate : TDate;
-  DateCount : integer;
-
   strTmp : string;
-  intTmp : integer;
-  sRoom  : string;
-
   row,col : integer;
 
   Room,RoomType : string;
@@ -1981,15 +1798,8 @@ var
   rateShowDiscount : boolean;
   rateIsPaid       : boolean;
   roomIndex        : integer;
-  TotalRoomRate    : double;
-  TotalAvrage      : double;
-  rateDays         : integer;
   mainGuestName    : string;
-
-  CustomerInfo : recCustomerHolderEX;
   ii : integer;
-
-  iii : integer;
 begin
 
   result := true;
@@ -1998,12 +1808,6 @@ begin
   until ii = 0;
 
   customer := zReservationInfo.Customer;
-
-//  initCustomerHolderRec(CustomerInfo);
-//  CustomerInfo := Customer_GetHolder(customer);
-
-  iii := zRestCount;
-
   oNewReservation.HomeCustomer.Customer               := Customer;
 
   oNewReservation.HomeCustomer.GuestName              := ''                                     ;//edGuestName.text;
@@ -2195,7 +1999,6 @@ var
   Room                : string; //*
   RoomType            : string; //*
   Guests              : integer;//
-  AvragePrice         : double ;//
   RateCount           : integer;//
   RoomDescription     : String ;
   RoomTypeDescription : string ;
@@ -2250,10 +2053,6 @@ begin
       mRRinfo.Filtered := true;
       mRRinfo.First;
 
-      AvragePrice    := 0.00 ;
-      RateCount      := 0;
-      AvrageDiscount := 0.00;
-
       RoomDescription     := mRRinfo.fieldbyname('RoomDescription').asstring;
       RoomTypeDescription := mRRinfo.fieldbyname('RoomDescription').asstring;
       MainGuest           := mRRinfo.fieldbyname('MainGuest').asstring;
@@ -2302,12 +2101,6 @@ begin
         mRRinfo.Next;
       end;
 
-      AvragePrice := 0;
-      if ttPriceCount <> 0 then
-      begin
-        AvragePrice := ttPrice/ttPriceCount;
-      end;
-
       AvrageDiscount := 0;
       if ttPriceCount <> 0 then
       begin
@@ -2326,8 +2119,6 @@ begin
         isPercentage := mRRinfo.FieldByName('isPercentage').asBoolean;
 
         DiscountAmount := 0;
-        RentAmount := 0;
-        NativeAmount := 0;
 
         if roomrate <> 0 then
         begin
@@ -2555,9 +2346,6 @@ begin
 
 
         DiscountAmount := 0;
-        RentAmount := 0;
-        NativeAmount := 0;
-
         if rate <> 0 then
         begin
           if discount <> 0 then
