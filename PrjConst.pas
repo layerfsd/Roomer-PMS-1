@@ -1525,7 +1525,7 @@ begin
                 'Do you want to continue anyway?');
 
   constants.Add('shTx_frmReservationExtras_AddedMoreThenAvailableInPeriod',
-                'One or more of the added Extras do not have enough available stock for the whole reservation period.'+ #13 +
+                'The Extra(s) [%s] do not have enough available stock for the whole reservation period: '+ #13 +
                 'Do you want to continue anyway?');
 end;
 

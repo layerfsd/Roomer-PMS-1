@@ -100,7 +100,7 @@ type
     procedure UpdateButtonsState;
     procedure UpdateDateConstraints;
     function CopyDatasetToRecItem: recItemHolder;
-    function CheckAllAvailability: boolean;
+    function CheckAllAvailability(aUnavailableList: TStringlist): boolean;
     { Private declarations }
   public
     { Public declarations }
@@ -235,7 +235,7 @@ begin
 
 end;
 
-function TfrmReservationExtras.CheckAllAvailability: boolean;
+function TfrmReservationExtras.CheckAllAvailability(aUnavailableList: TStringlist): boolean;
 var
   bm: TBookMark;
   lRoomRes: TnewRoomReservationItem;
@@ -250,7 +250,7 @@ begin
       lExtras := TReservationExtrasList.Create(lRoomRes);
       try
         lExtras.LoadFromDataset(mExtras);
-        Result := lExtras.IsAvailable;
+        Result := lExtras.IsAvailable(aUnavailableList);
       finally
         lExtras.Free;
       end;
@@ -383,9 +383,16 @@ end;
 
 
 procedure TfrmReservationExtras.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+var
+  lUnavailList: TStringlist;
 begin
-  CanClose := (ModalResult=mrCancel) OR CheckAllAvailability or
-              (MessageDlg(GetTranslatedText('shTx_frmReservationExtras_AddedMoreThenAvailableInPeriod'), mtConfirmation, mbOKCancel, 0) = mrOK);
+  lUnavailList := TStringList.Create;
+  try
+    CanClose := CheckAllAvailability(lUnavailList) or
+                (MessageDlg(Format(GetTranslatedText('shTx_frmReservationExtras_AddedMoreThenAvailableInPeriod'), [lUnavailList.CommaText]), mtConfirmation, mbOKCancel, 0) = mrOK);
+  finally
+    lUnavailList.Free;
+  end;
 end;
 
 procedure TfrmReservationExtras.FormShow(Sender: TObject);
