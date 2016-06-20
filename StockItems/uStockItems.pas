@@ -1,8 +1,6 @@
-unit uStaffTypes2;
+ï»¿unit uStockitems;
 
 interface
-
-// unit added 2013-02-28 HJ
 
 uses
     Winapi.Windows
@@ -22,12 +20,14 @@ uses
   , Generics.Collections
   , Data.DB
   , shellapi
-  , _glob
+
   , uAppGlobal
+  , _glob
   , Hdata
   , ug
   , uManageFilesOnServer
   , kbmMemTable
+  , uDImages
 
   , sSkinProvider
   , sSpeedButton
@@ -86,18 +86,16 @@ uses
 
   , cmpRoomerDataSet
   , cmpRoomerConnection, dxSkinsCore, dxSkinDarkSide, dxSkinDevExpressDarkStyle, dxSkinMcSkin, dxSkinOffice2013White,
-  dxSkinsDefaultPainters, dxSkinscxPCPainter, cxSpinEdit, dxSkinsdxBarPainter, dxSkinsdxRibbonPainter, cxPropertiesStore, dxmdaset,
+  dxSkinsDefaultPainters, dxSkinscxPCPainter, cxButtonEdit, dxSkinsdxBarPainter, dxSkinsdxRibbonPainter, cxPropertiesStore, dxmdaset,
   dxPScxPivotGridLnk, dxSkinCaramel, dxSkinCoffee, dxSkinTheAsphaltWorld
-
 
   ;
 
 type
-  TfrmStaffTypes2 = class(TForm)
+  TfrmStockItems = class(TForm)
     sPanel1: TsPanel;
     btnDelete: TsButton;
     btnOther: TsButton;
-    btnClose: TsButton;
     mnuOther: TPopupMenu;
     mnuiPrint: TMenuItem;
     mnuiAllowGridEdit: TMenuItem;
@@ -115,37 +113,33 @@ type
     btnCancel: TsButton;
     BtnOk: TsButton;
     DS: TDataSource;
-    Label1: TsLabel;
     grPrinter: TdxComponentPrinter;
     prLink_grData: TdxGridReportLink;
-    m_: TdxMemData;
+    mdStockItems: TdxMemData;
     grData: TcxGrid;
     tvData: TcxGridDBTableView;
     lvData: TcxGridLevel;
-    m_ID: TIntegerField;
-    m_Active: TBooleanField;
+    mdStockItemsID: TIntegerField;
+    mdStockItemsActive: TBooleanField;
     tvDataRecId: TcxGridDBColumn;
     tvDataID: TcxGridDBColumn;
     tvDataActive: TcxGridDBColumn;
-    m_Description: TWideStringField;
+    mdStockItemsDescription: TWideStringField;
+    tvDataItemtype: TcxGridDBColumn;
     tvDataDescription: TcxGridDBColumn;
-    m_staffType: TWideStringField;
-    m_AccessPrivilidges: TIntegerField;
-    tvDatastaffType: TcxGridDBColumn;
-    tvDataAccessPrivilidges: TcxGridDBColumn;
-    btnInsert: TButton;
-    btnEdit: TButton;
+    tvDataVATCode: TcxGridDBColumn;
+    tvDataAccItemLink: TcxGridDBColumn;
+    btnEdit: TsButton;
+    btnInsert: TsButton;
     FormStore: TcxPropertiesStore;
-    m_AuthValue: TIntegerField;
-    tvDataAuthValue: TcxGridDBColumn;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormKeyPress(Sender: TObject; var Key: Char);
-    procedure m_BeforeDelete(DataSet: TDataSet);
-    procedure m_BeforeInsert(DataSet: TDataSet);
-    procedure m_BeforePost(DataSet: TDataSet);
-    procedure m_NewRecord(DataSet: TDataSet);
+    procedure mdStockItemsBeforeDelete(DataSet: TDataSet);
+    procedure mdStockItemsBeforeInsert(DataSet: TDataSet);
+    procedure mdStockItemsBeforePost(DataSet: TDataSet);
+    procedure mdStockItemsNewRecord(DataSet: TDataSet);
     procedure tvDataDescriptionPropertiesValidate(Sender: TObject;
       var DisplayValue: Variant; var ErrorText: TCaption; var Error: Boolean);
     procedure tvDataDblClick(Sender: TObject);
@@ -156,7 +150,6 @@ type
       ANewItemRecordFocusingChanged: Boolean);
     procedure tvDataDataControllerFilterChanged(Sender: TObject);
     procedure tvDataDataControllerSortingChanged(Sender: TObject);
-    procedure btnCloseClick(Sender: TObject);
     procedure btnOtherClick(Sender: TObject);
     procedure btnDeleteClick(Sender: TObject);
     procedure mnuiPrintClick(Sender: TObject);
@@ -165,10 +158,15 @@ type
     procedure mnuiGridToHtmlClick(Sender: TObject);
     procedure mnuiGridToTextClick(Sender: TObject);
     procedure mnuiGridToXmlClick(Sender: TObject);
-    procedure btnEditClick(Sender: TObject);
     procedure btnClearClick(Sender: TObject);
     procedure edFilterChange(Sender: TObject);
-    procedure tvDatastaffTypePropertiesValidate(Sender: TObject; var DisplayValue: Variant; var ErrorText: TCaption; var Error: Boolean);
+    procedure tvDataVATCodePropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
+    procedure tvDataItemtypePropertiesValidate(Sender: TObject; var DisplayValue: Variant; var ErrorText: TCaption; var Error: Boolean);
+    procedure tvDataVATCodePropertiesValidate(Sender: TObject; var DisplayValue: Variant; var ErrorText: TCaption; var Error: Boolean);
+    procedure btnInsertClick(Sender: TObject);
+    procedure btnEditClick(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     { Private declarations }
     zFirstTime       : boolean;
@@ -177,9 +175,10 @@ type
     zSortStr         : string;
     zIsAddRow        : boolean;
 
-    Procedure fillGridFromDataset(iGoto : integer);
+    Procedure fillGridFromDataset(sGoto : string);
     procedure fillHolder;
     procedure changeAllowgridEdit;
+    function getPrevCode : string;
     Procedure chkFilter;
     procedure applyFilter;
 
@@ -187,14 +186,11 @@ type
   public
     { Public declarations }
     zAct   : TActTableAction;
-    zData  : recStaffTypeHolder;
+    zData  : recItemTypeHolder;
   end;
 
-function openStaffTypes(act : TActTableAction; var theData : recStaffTypeHolder) : boolean;
+function openStockItems(act : TActTableAction; var theData : recItemTypeHolder) : boolean;
 
-
-var
-  frmStaffTypes2: TfrmStaffTypes2;
 
 implementation
 
@@ -204,9 +200,8 @@ uses
     uD
   , prjConst
   , uSqlDefinitions
-  , uDImages
+  , uVatCodes
   , uUtils
-  , UITypes
   ;
 
 
@@ -214,28 +209,29 @@ uses
 //  unit global functions
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-function openStaffTypes(act : TActTableAction; var theData : recStaffTypeHolder) : boolean;
+function openStockItems(act : TActTableAction; var theData : recItemTypeHolder) : boolean;
+var
+  frmStockitems: TfrmStockItems;
 begin
   result := false;
-  frmStaffTypes2 := TfrmStaffTypes2.Create(frmStaffTypes2);
+  frmStockItems := TfrmStockItems.Create(nil);
   try
-    frmStaffTypes2.zData := theData;
-    frmStaffTypes2.zAct := act;
-    frmStaffTypes2.ShowModal;
-    if frmStaffTypes2.modalresult = mrOk then
+    frmStockItems.zData := theData;
+    frmStockItems.zAct := act;
+    frmStockItems.ShowModal;
+    if frmStockItems.modalresult = mrOk then
     begin
-      theData := frmStaffTypes2.zData;
+      theData := frmStockItems.zData;
       result := true;
     end
     else
     begin
-      initStaffTypeHolder(theData);
+      initItemTypeHolder(theData);
     end;
   finally
-    freeandnil(frmStaffTypes2);
+    frmStockItems.Free;
   end;
 end;
-
 
 
 ///////////////////////////////////////////////////////////////////////
@@ -243,27 +239,27 @@ end;
 ///////////////////////////////////////////////////////////////////////
 
 
-Procedure TfrmStaffTypes2.fillGridFromDataset(iGoto : integer);
+Procedure TfrmStockitems.fillGridFromDataset(sGoto : string);
 var
   s    : string;
   rSet : TRoomerDataSet;
 begin
   zFirstTime := true;
-  if zSortStr = '' then zSortStr := 'ID';
+  if zSortStr = '' then zSortStr := 'itemType';
   rSet := CreateNewDataSet;
   try
-    s := format(select_StaffTypes, [zSortStr]);
+    s := format(select_ItemTypes, [zSortStr]);
     if rSet_bySQL(rSet,s) then
     begin
-      if m_.active then m_.Close;
-      m_.LoadFromDataSet(rSet);
-      if iGoto = 0 then
+      if mdStockitems.active then mdStockitems.Close;
+      mdStockitems.LoadFromDataSet(rSet);
+      if sGoto = '' then
       begin
-        m_.First;
+        mdStockitems.First;
       end else
       begin
         try
-          m_.Locate('ID',iGoto,[]);
+          mdStockitems.Locate('itemType',sGoto,[]);
         except
         end;
       end;
@@ -273,42 +269,48 @@ begin
   end;
 end;
 
-procedure TfrmStaffTypes2.fillHolder;
+//    ID          : integer;
+//    Active      : boolean;
+//    Description : string; // MAX 30
+//    Itemtype    : string; // MAX 5
+//    VATCode     : string; // MAX 10
+//    AccItemLink : string; // MAX 20
+
+
+procedure TfrmStockitems.fillHolder;
 begin
-  initStaffTypeHolder(zData);
-  zData.ID                := m_.FieldByName('ID').AsInteger;
-  zData.Active            := m_['Active'];
-  zData.StaffType         := m_['StaffType'];
-  zData.Description       := m_['Description'];
-  zData.AccessPrivilidges := m_['AccessPrivilidges'];
-  zData.AccessPrivilidges := m_['AuthValue'];
+  initItemTypeHolder(zData);
+  zData.ID           := mdStockitems.FieldByName('ID').AsInteger;
+  zData.Active       := mdStockitems['Active'];
+  zData.Description  := mdStockitems['Description'];
+  zData.Itemtype     := mdStockitems['Itemtype'];
+  zData.VATCode      := mdStockitems['VATCode'];
+  zData.AccItemLink  := mdStockitems['AccItemLink'];
 end;
 
-
-
-procedure TfrmStaffTypes2.changeAllowgridEdit;
+procedure TfrmStockitems.changeAllowgridEdit;
 begin
   if zAllowGridEdit then
   begin
-    tvDataID.Options.Editing                := false;
-    tvDataActive.Options.Editing            := true;
-    tvDataStaffType.Options.Editing         := true;
-    tvDataDescription.Options.Editing       := true;
-    tvDataAccessPrivilidges.Options.Editing := true;
-    tvDataAuthValue.Options.Editing         := true;
+    tvDataID.Options.Editing             := false;
+    tvDataActive.Options.Editing         := true;
+    tvDataDescription.Options.Editing    := true;
+    tvDataItemtype.Options.Editing       := true;
+    tvDataVATCode.Options.Editing        := true;
+    tvDataAccItemLink.Options.Editing    := true;
   end else
   begin
-    tvDataID.Options.Editing                := false;
-    tvDataActive.Options.Editing            := false;
-    tvDataStaffType.Options.Editing         := false;
-    tvDataDescription.Options.Editing       := false;
-    tvDataAccessPrivilidges.Options.Editing := false;
-    tvDataAuthValue.Options.Editing         := false;
+    tvDataID.Options.Editing             := false;
+    tvDataActive.Options.Editing         := false;
+    tvDataDescription.Options.Editing    := false;
+    tvDataItemtype.Options.Editing       := false;
+    tvDataVATCode.Options.Editing        := false;
+    tvDataAccItemLink.Options.Editing    := false;
   end;
 end;
 
 
-procedure TfrmStaffTypes2.chkFilter;
+procedure TfrmStockitems.chkFilter;
 var
   sFilter : string;
   rC1,rc2   : integer;
@@ -325,7 +327,7 @@ begin
 end;
 
 
-procedure TfrmStaffTypes2.edFilterChange(Sender: TObject);
+procedure TfrmStockitems.edFilterChange(Sender: TObject);
 begin
   if edFilter.Text = '' then
   begin
@@ -338,7 +340,7 @@ begin
 
 end;
 
-procedure TfrmStaffTypes2.applyFilter;
+procedure TfrmStockitems.applyFilter;
 begin
   tvData.DataController.Filter.Options := [fcoCaseInsensitive];
   tvData.DataController.Filter.Root.BoolOperatorKind := fboOr;
@@ -352,7 +354,7 @@ end;
 // Form actions
 /////////////////////////////////////////////////////////////
 
-procedure TfrmStaffTypes2.FormCreate(Sender: TObject);
+procedure TfrmStockitems.FormCreate(Sender: TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
   glb.PerformAuthenticationAssertion(self);
@@ -363,14 +365,19 @@ begin
   zisAddrow   := false;
 end;
 
-procedure TfrmStaffTypes2.FormShow(Sender: TObject);
+procedure TfrmStockitems.FormDestroy(Sender: TObject);
 begin
+  glb.EnableOrDisableTableRefresh('itemtypes', True);
+end;
+
+procedure TfrmStockitems.FormShow(Sender: TObject);
+begin
+  glb.EnableOrDisableTableRefresh('itemtypes', False);
 //**
   panBtn.Visible := False;
   sbMain.Visible := false;
-  btnClose.Visible := False;
 
-  fillGridFromDataset(zData.ID);
+  fillGridFromDataset(zData.itemType);
   zFirstTime := true;
   sbMain.SimpleText := zSortStr;
 
@@ -381,7 +388,6 @@ begin
   end else
   begin
     mnuiAllowGridEdit.Checked := true;
-    btnClose.Visible := true;
     sbMain.Visible := true;
   end;
   //-C
@@ -391,19 +397,31 @@ begin
   zFirstTime := false;
 end;
 
-procedure TfrmStaffTypes2.FormClose(Sender: TObject; var Action: TCloseAction);
+procedure TfrmStockitems.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
-  if tvdata.DataController.DataSet.State = dsInsert then
-  begin
-    tvdata.DataController.Post;
+  try
+    fillHolder;
+    if tvdata.DataController.DataSet.State = dsInsert then
+    begin
+      tvdata.DataController.Post;
+    end;
+    if tvdata.DataController.DataSet.State = dsEdit then
+    begin
+      tvdata.DataController.Post;
+    end;
+  except
   end;
-  if tvdata.DataController.DataSet.State = dsEdit then
-  begin
-    tvdata.DataController.Post;
-  end;
+  glb.EnableOrDisableTableRefresh('itemtypes', True);
 end;
 
-procedure TfrmStaffTypes2.FormKeyPress(Sender: TObject; var Key: Char);
+procedure TfrmStockitems.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then
+    btnCancel.Click;
+
+end;
+
+procedure TfrmStockitems.FormKeyPress(Sender: TObject; var Key: Char);
 begin
   if ZAct = actLookup then
   begin
@@ -429,26 +447,33 @@ begin
   end;
 end;
 
-procedure TfrmStaffTypes2.m_BeforeDelete(DataSet: TDataSet);
+
+////////////////////////////////////////////////////////////////////////////////////////
+// memory table
+////////////////////////////////////////////////////////////////////////////////////////
+function TfrmStockitems.getPrevCode: string;
+begin
+end;
+
+procedure TfrmStockitems.mdStockitemsBeforeDelete(DataSet: TDataSet);
 var
   s : string;
 begin
   fillHolder;
-(*
-  if hdata.payTypeExistsInOther(zData.PayType) then
+  if hdata.itemTypeExistsInOther(zData.itemType) then
   begin
-    Showmessage('payType'+' ' + zData.Description + ' '+GetTranslatedText('shExistsInRelatedData')+' ' + chr(10) + GetTranslatedText('shCanNotDelete')+' ');
+    Showmessage(format(GetTranslatedText('shExistsInRelatedDataCannotDelete'), ['Itemtype', zData.Description]));
     Abort;
     exit;
   end;
-*)
+
   s := '';
-  s := s+GetTranslatedText('shDeleteStaffType')+' '+zData.Description+' '+chr(10);
+  s := s+GetTranslatedText('shDeleteItemType')+' '+zData.Description+' '+chr(10);
   s := s+GetTranslatedText('shContinue');
 
   if MessageDlg(s,mtConfirmation, [mbYes, mbNo], 0) = mrYes then
   begin
-    if not Del_StaffType(zData) then
+    if not Del_ItemType(zData) then
     begin
       abort;
     end
@@ -458,57 +483,59 @@ begin
   end;
 end;
 
-procedure TfrmStaffTypes2.m_BeforeInsert(DataSet: TDataSet);
+procedure TfrmStockitems.mdStockitemsBeforeInsert(DataSet: TDataSet);
 begin
   if zFirstTime then exit;
-  tvData.GetColumnByFieldName('StaffType').Focused := True;
+  tvData.GetColumnByFieldName('ItemType').Focused := True;
 end;
 
 
-procedure TfrmStaffTypes2.m_BeforePost(DataSet: TDataSet);
+procedure TfrmStockitems.mdStockitemsBeforePost(DataSet: TDataSet);
 var
   nID : integer;
 begin
   if zFirstTime then exit;
 
-  initStaffTypeHolder(zData);
-  zData.ID                  := dataset.FieldByName('ID').AsInteger;
-  zData.Active              := dataset['Active'];
-  zData.StaffType           := dataset['StaffType'];
-  zData.Description         := dataset['Description'];
-  zData.AccessPrivilidges   := dataset['AccessPrivilidges'];
-  zData.AuthValue           := dataset['AuthValue'];
+  initItemTypeHolder(zData);
+  zData.ID                := dataset.FieldByName('ID').AsInteger;
+  zData.Active       := dataset['Active'];
+  zData.ItemType     := dataset['ItemType'];
+  zData.Description  := dataset['Description'];
+  zData.VATCode      := dataset['VATCode'];
+  zData.AccItemLink  := dataset['AccItemLink'];
 
   if tvData.DataController.DataSource.State = dsEdit then
   begin
-    if UPD_StaffType(zData) then
+    if UPD_ItemType(zData) then
     begin
       glb.ForceTableRefresh;
     end else
     begin
-      //label1.Caption := 'UPDATE NOT OK';
-	    label1.Caption := GetTranslatedText('shTx_StaffTypes2_UpdateNotOK');
       abort;
       exit;
     end;
   end;
   if tvData.DataController.DataSource.State = dsInsert then
   begin
-    if dataset.FieldByName('StaffType').AsString = ''  then
+    if dataset.FieldByName('ItemType').AsString = ''  then
     begin
-     // showmessage('StaffType is requierd - set value or use [ESC] to cancel ');
-	  showmessage(GetTranslatedText('shTx_StaffTypes2_StaffTypeRequired'));
-      tvData.GetColumnByFieldName('StaffType').Focused := True;
+      showmessage('ItemType is requierd - set value or use [ESC] to cancel ');
+      tvData.GetColumnByFieldName('ItemType').Focused := True;
       abort;
       exit;
     end;
-    if ins_StaffType(zData,nID) then
+    if dataset.FieldByName('VATCode').AsString = ''  then
+    begin
+      showmessage('VAT code is requierd - set value or use [ESC] to cancel ');
+      tvData.GetColumnByFieldName('VATCode').Focused := True;
+      abort;
+      exit;
+    end;
+    if ins_ItemType(zData,nID) then
     begin
       glb.ForceTableRefresh;
     end else
     begin
-    //  label1.Caption := 'INSERT NOT OK';
-	  label1.Caption := GetTranslatedText('shTx_StaffTypes2_InsertNotOK');
       abort;
       exit;
     end;
@@ -517,45 +544,43 @@ end;
 
 
 
-procedure TfrmStaffTypes2.m_NewRecord(DataSet: TDataSet);
+procedure TfrmStockitems.mdStockitemsNewRecord(DataSet: TDataSet);
 begin
   if zFirstTime then exit;
-  dataset['Active']             := true;
-  dataset['StaffType']          := '';
-  dataset['Description']        := '';
-  dataset['AccessPrivilidges']  := 0;
-  dataset['AuthValue']          := 0;
-
+  dataset['Active']        := true;
+  dataset['ItemType']      := '';
+  dataset['Description']   := '';
+  dataset['VATCode']  := '' ;
+  dataset['AccItemLink']  := '' ;
 end;
 
 ////////////////////////////////////////////////////////////////////////////////////////
 //  table View Functions
 ////////////////////////////////////////////////////////////////////////////////////////
 
-procedure TfrmStaffTypes2.tvDataDescriptionPropertiesValidate(Sender: TObject;
+procedure TfrmStockitems.tvDataDescriptionPropertiesValidate(Sender: TObject;
   var DisplayValue: Variant; var ErrorText: TCaption; var Error: Boolean);
 var
   CurrValue : string;
 begin
-  currValue := m_.fieldbyname('Description').asstring;
+  currValue := mdStockitems.fieldbyname('Description').asstring;
 
   error := false;
   if trim(displayValue) = '' then
   begin
     error := true;
-  // errortext := 'Description '+' - '+'is required - Use ESC to cancel';
-	 errortext := GetTranslatedText('shTx_StaffTypes2_DescriptionIsRequired');
+    errortext := 'Description '+' - '+'is required - Use ESC to cancel';
     exit;
   end;
 
-  if hdata.RoomrateDescriptionExist(displayValue) then
+  if hdata.itemtypesItemtypeExist(displayValue) then
   begin
     error := true;
-    //errortext := displayvalue+'Nýtt gildi er til í annari færslu. Notið ESC-hnappin til að hætta við';
+    //errortext := displayvalue+'Nï¿½tt gildi er til ï¿½ annari fï¿½rslu. Notiï¿½ ESC-hnappin til aï¿½ hï¿½tta viï¿½';
     errortext := displayvalue+'  '+GetTranslatedText('shNewValueExistInAnotherRecor');
     exit
   end;
-//
+
   if tvData.DataController.DataSource.State = dsEdit then
   begin
     if hdata.payTypeExistsInOther(currValue) then
@@ -567,7 +592,7 @@ begin
   end;
 end;
 
-procedure TfrmStaffTypes2.tvDataFocusedRecordChanged(
+procedure TfrmStockitems.tvDataFocusedRecordChanged(
   Sender: TcxCustomGridTableView; APrevFocusedRecord,
   AFocusedRecord: TcxCustomGridRecord; ANewItemRecordFocusingChanged: Boolean);
 begin
@@ -580,42 +605,70 @@ begin
   end;
 end;
 
-
-procedure TfrmStaffTypes2.tvDatastaffTypePropertiesValidate(Sender: TObject; var DisplayValue: Variant; var ErrorText: TCaption;
+procedure TfrmStockitems.tvDataItemtypePropertiesValidate(Sender: TObject; var DisplayValue: Variant; var ErrorText: TCaption;
   var Error: Boolean);
 var
   CurrValue : string;
 begin
-  currValue := m_['staffType'];
+  currValue := mdStockitems.fieldbyname('ItemType').asstring;
 
   error := false;
   if trim(displayValue) = '' then
   begin
     error := true;
-  //  errortext := 'Type '+' - '+'is required - Use ESC to cancel';
-	  errortext := GetTranslatedText('shTx_StaffTypes2_TypeIsRequired');
+    errortext := 'Item code '+' - '+'is required - Use ESC to cancel';
     exit;
   end;
 
-  if hdata.staffTypeExist(displayValue) then
+  if hdata.itemTypesItemTypeExist(displayValue) then
   begin
     error := true;
     errortext := displayvalue+'  '+GetTranslatedText('shNewValueExistInAnotherRecor');
     exit
   end;
 
-//  if tvData.DataController.DataSource.State = dsEdit then
-//  begin
-//    if hdata.vatCodeExistsInOther(currValue) then
-//    begin
-//      error := true;
-//      errortext := displayvalue+' - '+GetTranslatedText('shOldValueUsedInRelatedDataC');
-//      exit;
-//    end;
-//  end;
+  if tvData.DataController.DataSource.State = dsEdit then
+  begin
+    if hdata.itemTypeExistsInOther(currValue) then
+    begin
+      error := true;
+      errortext := displayvalue+' - '+GetTranslatedText('shOldValueUsedInRelatedDataC');
+      exit;
+    end;
+  end;
 end;
 
-procedure TfrmStaffTypes2.tvDataDblClick(Sender: TObject);
+procedure TfrmStockitems.tvDataVATCodePropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
+var
+  theData : recVatCodeHolder;
+begin
+  fillholder;
+  theData.VATCode := zData.VATCode;
+  vatCodes(actlookup,theData);
+
+  if theData.VATCode <> '' then
+  begin
+    if tvData.DataController.DataSource.State <> dsInsert then mdStockitems.Edit;
+    mdStockitems['VatCode'] := theData.vatCode;
+  end;
+end;
+
+
+procedure TfrmStockitems.tvDataVATCodePropertiesValidate(Sender: TObject; var DisplayValue: Variant; var ErrorText: TCaption;
+  var Error: Boolean);
+var
+  CurrValue : string;
+begin
+  error := false;
+  if trim(displayValue) = '' then
+  begin
+    error := true;
+    errortext := 'VAT code '+' - '+'is required - Use ESC to cancel';
+    exit;
+  end;
+end;
+
+procedure TfrmStockitems.tvDataDblClick(Sender: TObject);
 begin
   if ZAct = actLookup then
   begin
@@ -629,7 +682,7 @@ end;
 /////////////////////////////////////////////////////////////////////////////
 
 
-//procedure TfrmStaffTypes2.tvDataCurrencyPropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
+//procedure TfrmStockitems.tvDataCurrencyPropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
 //var
 //  theData : recCurrencyHolder;
 //begin
@@ -642,21 +695,21 @@ end;
 ////
 ////  if theData.Currency <> '' then
 ////  begin
-////    m_.Edit;
-////    m_['currency']   := theData.Currency;
-////    m_['currencyID'] := theData.ID;
-////    m_.Post;
+////    mdStockitems.Edit;
+////    mdStockitems['currency']   := theData.Currency;
+////    mdStockitems['currencyID'] := theData.ID;
+////    mdStockitems.Post;
 ////  end;
 //
 //end;
 
-procedure TfrmStaffTypes2.tvDataDataControllerFilterChanged(Sender: TObject);
+procedure TfrmStockitems.tvDataDataControllerFilterChanged(Sender: TObject);
 begin
   chkFilter;
 end;
 
 
-procedure TfrmStaffTypes2.tvDataDataControllerSortingChanged(Sender: TObject);
+procedure TfrmStockitems.tvDataDataControllerSortingChanged(Sender: TObject);
 var
   i : integer;
   s : string;
@@ -681,45 +734,57 @@ end;
 //////////////////////////////////////////////////////////////////////////
 
 
-procedure TfrmStaffTypes2.BtnOkClick(Sender: TObject);
+procedure TfrmStockitems.BtnOkClick(Sender: TObject);
 begin
   fillHolder;
 end;
 
-procedure TfrmStaffTypes2.btnOtherClick(Sender: TObject);
+procedure TfrmStockitems.btnOtherClick(Sender: TObject);
 begin
   //**
 end;
 
-procedure TfrmStaffTypes2.btnCancelClick(Sender: TObject);
+procedure TfrmStockitems.btnCancelClick(Sender: TObject);
 begin
-  initStaffTypeHolder(zData);
+  initItemTypeHolder(zData);
 end;
 
-procedure TfrmStaffTypes2.btnClearClick(Sender: TObject);
+procedure TfrmStockitems.btnClearClick(Sender: TObject);
 begin
   edFilter.Text := '';
 end;
 
-procedure TfrmStaffTypes2.btnCloseClick(Sender: TObject);
+procedure TfrmStockitems.btnDeleteClick(Sender: TObject);
 begin
-  fillHolder;
+  mdStockitems.Delete;
 end;
 
-procedure TfrmStaffTypes2.btnDeleteClick(Sender: TObject);
+procedure TfrmStockitems.btnEditClick(Sender: TObject);
 begin
-  m_.Delete;
+  mnuiAllowGridEdit.Checked := true;
+  zAllowGridEdit := mnuiAllowGridEdit.Checked;
+  changeAllowGridEdit;
+  grData.SetFocus;
+  tvData.GetColumnByFieldName('Description').Focused := True;
+  showmessage('Edit in grid');
 end;
 
-procedure TfrmStaffTypes2.btnEditClick(Sender: TObject);
+procedure TfrmStockitems.btnInsertClick(Sender: TObject);
 begin
+  mnuiAllowGridEdit.Checked := true;
+  zAllowGridEdit := mnuiAllowGridEdit.Checked;
+  changeAllowGridEdit;
+  if mdStockitems.Active = false then mdStockitems.Open;
+  grData.SetFocus;
+  mdStockitems.Insert;
+  tvData.GetColumnByFieldName('ItemType').Focused := True;
 end;
 
 //---------------------------------------------------------------------------
 // Menu in other actions
 //-----------------------------------------------------------------------------
 
-procedure TfrmStaffTypes2.mnuiAllowGridEditClick(Sender: TObject);
+procedure TfrmStockitems.mnuiAllowGridEditClick(Sender: TObject);
 begin
   if zFirstTime then exit;
   mnuiAllowGridEdit.Checked := not mnuiAllowGridEdit.Checked;
@@ -728,14 +793,14 @@ begin
 end;
 
 
-procedure TfrmStaffTypes2.mnuiPrintClick(Sender: TObject);
+procedure TfrmStockitems.mnuiPrintClick(Sender: TObject);
 begin
   grPrinter.PrintTitle := caption;
   prLink_grData.ReportTitle.Text := caption;
   grPrinter.Preview(true, prLink_grData);
 end;
 
-procedure TfrmStaffTypes2.mnuiGridToExcelClick(Sender: TObject);
+procedure TfrmStockitems.mnuiGridToExcelClick(Sender: TObject);
 var
   sFilename : string;
 begin
@@ -747,7 +812,7 @@ begin
   //  ShellExecute(Handle, 'OPEN', PChar(sFilename + '.xlsx'), nil, nil, sw_shownormal);
 end;
 
-procedure TfrmStaffTypes2.mnuiGridToHtmlClick(Sender: TObject);
+procedure TfrmStockitems.mnuiGridToHtmlClick(Sender: TObject);
 var
   sFilename : string;
 begin
@@ -756,7 +821,7 @@ begin
   ShellExecute(Handle, 'OPEN', PChar(sFilename + '.html'), nil, nil, sw_shownormal);
 end;
 
-procedure TfrmStaffTypes2.mnuiGridToTextClick(Sender: TObject);
+procedure TfrmStockitems.mnuiGridToTextClick(Sender: TObject);
 var
   sFilename : string;
 begin
@@ -765,7 +830,7 @@ begin
   ShellExecute(Handle, 'OPEN', PChar(sFilename + '.txt'), nil, nil, sw_shownormal);
 end;
 
-procedure TfrmStaffTypes2.mnuiGridToXmlClick(Sender: TObject);
+procedure TfrmStockitems.mnuiGridToXmlClick(Sender: TObject);
 var
   sFilename : string;
 begin

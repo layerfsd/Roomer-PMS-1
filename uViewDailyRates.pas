@@ -109,7 +109,6 @@ var isIncluded : Boolean;
 
     RateExcl,
     RateIncl,
-    RateTotal,
     CityTax,
     CityTaxBase,
     VAT,
@@ -151,14 +150,16 @@ begin
       Multiply := 1 / NumDays;
 
     result := TDateRate.Create(ADate, RateExcl, RateIncl, VAT, CityTax * Multiply / CurrencyRate);
-  end;
+  end
+  else
+    raise Exception.Create('CreateDateRate(): Invalid parameters');
 end;
 
 
 
 function TFrmViewDailyRates.Add(DateRate: TDateRate): Integer;
 begin
-  FViewList.Add(DateRate);
+  Result := FViewList.Add(DateRate);
 end;
 
 procedure TFrmViewDailyRates.Clear;

@@ -63,8 +63,6 @@ function getRoomerUpgradeAgentFilePath(ToFile : String) : String;
 function getRoomerVersionXmlFilePath(ToFile : String) : String;
 function getAnyFileFromRoomerStore(FromFile, ToFile : String) : String;
 
-procedure AssertIndySSLDLLs;
-
 procedure ResetDependencyFileList;
 
 implementation
@@ -376,24 +374,6 @@ end;
 function getRoomerSslEayDLLPath : String;
 begin
   result := getRunningExePathOfFile(SSLEAY);
-end;
-
-procedure AssertIndySSLDLLs;
-var filename : String;
-begin
-//  For now we will leave the dlls not needed...
-
-//  filename := getRoomerLibEayDLLPath;
-//  if NOT TFile.Exists(filename) then
-//    d.roomerMainDataSet.SystemDownloadFileFromURI('http://roomerstore.com/' +LIBEAY, filename);
-//
-//  filename := getRoomerLibSslDLLPath;
-//  if NOT TFile.Exists(filename) then
-//    d.roomerMainDataSet.SystemDownloadFileFromURI('http://roomerstore.com/' +LIBSSL, filename);
-//
-//  filename := getRoomerSslEayDLLPath;
-//  if NOT TFile.Exists(filename) then
-//    d.roomerMainDataSet.SystemDownloadFileFromURI('http://roomerstore.com/' +SSLEAY, filename);
 end;
 
 function getRoomerUpgradeAgentFilePath(ToFile : String) : String;

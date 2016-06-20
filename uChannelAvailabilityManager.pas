@@ -28,7 +28,7 @@ type
     FAdminPassword: String;
     FNumDays: integer;
   public
-    constructor Create(Id: integer; description, username, password: String; _numDays: integer);
+    constructor Create(Id: integer; const description, username, password: String; _numDays: integer);
   end;
 
   TPlanCodeValue = class
@@ -36,7 +36,7 @@ type
     FCode: String;
     FDescription: String;
   public
-    constructor Create(Id: integer; Code, description: String);
+    constructor Create(Id: integer; const Code, description: String);
   end;
 
   TCellData = class
@@ -57,8 +57,8 @@ type
     function GetChanged: Boolean;
     function GetEdited: Boolean;
   public
-    constructor Create(Id: integer; date: TDateTime; IsEditable: Boolean; LinkElement: String; PlanCodeId, RoomClassId, ChannelManagerId: integer;
-      RoomClassCode: String; originalValue: Variant; maxAvailability: Variant);
+    constructor Create(Id: integer; date: TDateTime; IsEditable: Boolean; const LinkElement: String; PlanCodeId, RoomClassId, ChannelManagerId: integer;
+      const RoomClassCode: String; originalValue: Variant; maxAvailability: Variant);
     destructor Destroy; override;
 
     property date: TDateTime read FDate;
@@ -129,17 +129,17 @@ type
     function isEdited: Boolean;
     procedure setStopSell(const value: Boolean);
   public
-    constructor Create(_Id: integer; roomtypeGroupCode, _roomTypeTopClass: String; date: TDateTime;
+    constructor Create(_Id: integer; const roomtypeGroupCode, _roomTypeTopClass: String; date: TDateTime;
       rateRoundingType, channelId, roomTypeGroupId, channelManager: integer; price: Double; stopSell: Boolean; minStay: integer; _Availability: integer;
       _MaxStay: integer; _COA: Boolean; _COD: Boolean; _LOSArrivalDateBased: Boolean; _SingleUsePrice: Double
       ;
       _connectRateToMasterRate : Boolean;
       _masterRateRateDeviation : Double;
-      _RateDeviationType : String;
+      const _RateDeviationType : String;
 
       _connectSingleUseRateToMasterRate : Boolean;
       _masterRateSingleUseRateDeviation : Double;
-      _singleUseRateDeviationType : String;
+      const _singleUseRateDeviationType : String;
 
       _connectStopSellToMasterRate : Boolean;
       _connectAvailabilityToMasterRate : Boolean;
@@ -196,7 +196,7 @@ type
     FDate: String;
     fvalue: integer;
   public
-    constructor Create(Code, ADate: String; value: integer);
+    constructor Create(const Code, ADate: String; value: integer);
   end;
 
   TColumns = Array Of TCellData;
@@ -414,6 +414,7 @@ type
     procedure timBlinkTimer(Sender: TObject);
     procedure timBringToFrontTimer(Sender: TObject);
     procedure __cbxVisibleDaysCloseUp(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
   private
     { Private declarations }
     RoomerDataSet: TRoomerDataSet;
@@ -441,11 +442,11 @@ type
     procedure EmptyBulkOperation;
     function IsWeekend(ACol: integer): Boolean;
     procedure ShowRatesForSelectedChannelManager;
-    procedure FreeGridObject;
+    procedure FreeGridObject(aGrid: TadvStringGrid);
     function LoadChannelManagers: Boolean;
     procedure RemoveData;
     procedure EmptyGrid(grid: TAdvStringGrid);
-    procedure SetAvailabilityValue(iRow: integer; value: string; _grid: TAdvStringGrid; iCol: integer);
+    procedure SetAvailabilityValue(iRow: integer; var value: string; _grid: TAdvStringGrid; iCol: integer);
     procedure SetRateValue(iCol, iRow: integer; value: string; _grid: TAdvStringGrid; InPlaceEditing: Boolean = false; IsSinglePrice: Boolean = false);
     procedure InitializeBulkOperation;
     procedure getPriceOfSpecificCell;
@@ -454,13 +455,13 @@ type
     function getRateValueForCell(value: String; ACol, ARow: integer; ForSingleUsePrice : Boolean): Double;
     function getPriceForOnCell(ACol, ARow: integer): Double;
     procedure GetStatusOfRoomClasses;
-    function locateAvailabilityFromRoomTypeCodeAndDate(Code: String; date: TDateTime): integer;
+    function locateAvailabilityFromRoomTypeCodeAndDate(const Code: String; date: TDateTime): integer;
     function RoundValue(RoundType: integer; value: Double): Double;
     function NumDecimals(RoundType: integer): integer;
     function LoadPlanCodes: Boolean;
-    function SeekRecordValue(ASet: TRoomerDataSet; fieldNameToSeek: String; fieldValue: integer): Boolean;
+    function SeekRecordValue(ASet: TRoomerDataSet; const fieldNameToSeek: String; fieldValue: integer): Boolean;
     procedure GridPostPasteAction(_grid: TAdvStringGrid);
-    function FindRoomClassRow(Code: String): integer;
+    function FindRoomClassRow(const Code: String): integer;
     function AvailabilityCell(iCol, iRow: integer): TCellData;
     procedure PostList(list: TList<String>);
     procedure BeginProject(numItems: integer);
@@ -490,7 +491,7 @@ type
     function findPriceRowFrom(iRow: integer): integer;
     function getPriceDataOfRow(iCol, iRow: integer): TPriceData;
     function isCurrentlySelectedValueEdited(iCol, iRow: integer): Boolean;
-    function buildSetStatement(dirty: Boolean; var oldResultValue: String; dirtyName, valueName, value: String): String;
+    function buildSetStatement(dirty: Boolean; var oldResultValue: String; const dirtyName, valueName, value: String): String;
     function isPriceCell(iCol, iRow: integer): Boolean;
     function findRowTypeIndex(startAt, pointerType: integer): integer;
     function GetChannelManagerId: integer;
@@ -517,11 +518,11 @@ type
     procedure ForceFullAvailability;
     procedure ForceRateUpdateForCurrentPeriod;
     procedure ForceFullRates;
-    function ButtonOff(pre: String): TsButton;
-    function ButtonOn(pre: String): TsButton;
+    function ButtonOff(const pre: String): TsButton;
+    function ButtonOn(const pre: String): TsButton;
     function PreOfButton(btn: TsButton): String;
     procedure SetButtonOnOff(btn: TSButton; SetOn: Boolean);
-    procedure PostRatesList(tableName : String; list: TList<String>);
+    procedure PostRatesList(const tableName : String; list: TList<String>);
     procedure PublishSheet(OnlyCreateExcel: Boolean; AllowEditAndSendEmail : Boolean);
     procedure ShowHideExtraOptions;
     procedure BlinkCombo;
@@ -572,8 +573,6 @@ const
   NUMBER_OF_DAYS_DISPLAYED : Integer = 14;
 
 procedure ShowChannelAvailabilityManager(embedPanel: TsPanel = nil; WindowCloseEvent: TNotifyEvent = nil);
-//var
-//  _frmChannelAvailabilityManager: TfrmChannelAvailabilityManager;
 begin
 
   if CHANNELMANAGER_IS_OPEN then
@@ -584,8 +583,6 @@ begin
   end else
   begin
     Application.CreateForm(TfrmChannelAvailabilityManager, frmChannelAvailabilityManager);
-//    frmChannelAvailabilityManager := TfrmChannelAvailabilityManager.Create(nil);
-    frmChannelAvailabilityManager.RoomerDataSet := CreateNewDataSet;
     frmChannelAvailabilityManager.embedded := (embedPanel <> nil);
     frmChannelAvailabilityManager.EmbedWindowCloseEvent := WindowCloseEvent;
     if frmChannelAvailabilityManager.embedded then
@@ -601,28 +598,6 @@ begin
       frmChannelAvailabilityManager.Show;
     end;
   end;
-//  _frmChannelAvailabilityManager := TfrmChannelAvailabilityManager.Create(nil);
-//  try
-//    _frmChannelAvailabilityManager.RoomerDataSet := CreateNewDataSet;
-//    _frmChannelAvailabilityManager.embedded := (embedPanel <> nil);
-//    _frmChannelAvailabilityManager.EmbedWindowCloseEvent := WindowCloseEvent;
-//    if _frmChannelAvailabilityManager.embedded then
-//    begin
-//      _frmChannelAvailabilityManager.pnlHolder.parent := embedPanel;
-//      embedPanel.Update;
-//      frmChannelAvailabilityManagerX := _frmChannelAvailabilityManager;
-//    end
-//    else
-//    begin
-//      _frmChannelAvailabilityManager.PrepareUserInterface;
-//      CHANNELMANAGER_IS_OPEN := True;
-//      _frmChannelAvailabilityManager.Show;
-//    end;
-//  finally
-//    if (embedPanel = nil) then
-//      FreeAndNil(_frmChannelAvailabilityManager);
-//  end;
-
 end;
 
 procedure TfrmChannelAvailabilityManager.CreateParams(var Params: TCreateParams);
@@ -778,7 +753,8 @@ end;
 
 procedure TfrmChannelAvailabilityManager.RemoveData;
 begin
-  FreeGridObject;
+  FreeGridObject(rateGrid);
+  FreeGridObject(grid);
 end;
 
 function TfrmChannelAvailabilityManager.isHiddenUnusedRow(iRow: integer): Boolean;
@@ -940,36 +916,33 @@ begin
     end;
 end;
 
-procedure TfrmChannelAvailabilityManager.FreeGridObject;
+procedure TfrmChannelAvailabilityManager.FreeGridObject(aGrid: TadvStringGrid);
 var
   iRow, iCol: integer;
-  PriceData: TPriceData;
   obj : TObject;
 begin
   try
-    for iRow := 1 to rateGrid.RowCount - 1 do
-      for iCol := 1 to rateGrid.ColCount - 1 do
+    for iRow := 1 to aGrid.RowCount - 1 do
+      for iCol := 1 to aGrid.ColCount - 1 do
       begin
-        obj := rateGrid.Objects[iCol, iRow];
-        if (obj <> nil) AND (obj IS TPriceData) then
+        obj := aGrid.Objects[iCol, iRow];
+        if (obj <> nil) AND (obj IS TObject) then
         begin
-          PriceData := TPriceData(obj);
           try
-            FreeAndNil(PriceData);
-          Except
+            obj.Free;
+          except
           end;
-          PriceData := nil;
-          rateGrid.Objects[iCol, iRow] := nil;
+          aGrid.Objects[iCol, iRow] := nil;
         end
-        else if rateGrid.HasCheckBox(iCol, iRow) then
+        else if aGrid.HasCheckBox(iCol, iRow) then
         begin
-          rateGrid.RemoveCheckBox(iCol, iRow);
+          aGrid.RemoveCheckBox(iCol, iRow);
         end;
       end;
   except
   end;
 
-  rateGrid.ClearAll;
+  aGrid.ClearAll;
 end;
 
 procedure TfrmChannelAvailabilityManager.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -1010,6 +983,7 @@ begin
 //  Parent := nil;
 //  ParentWindow := GetDesktopWindow;
 
+  RoomerDataSet := CreateNewDataSet;
   pgcPages.Visible := False;
   RoomerLanguage.TranslateThisForm(self);
   glb.PerformAuthenticationAssertion(self); PlaceFormOnVisibleMonitor(self);
@@ -1031,6 +1005,28 @@ begin
   startDate := TRUNC(now); //AvailSet['today'];
   ThreadedDataGetter := TGetThreadedData.Create;
   timStart.enabled := true;
+end;
+
+procedure TfrmChannelAvailabilityManager.FormDestroy(Sender: TObject);
+var
+  i: integer;
+  obj: TObject;
+begin
+  RoomerDataset.Free;
+  AvailDict.Free;
+  for i := 0 to cbxChannelManagers.Items.Count-1 do
+  begin
+    obj := cbxChannelManagers.Items.Objects[i];
+    if assigned(obj) and (obj is TChannelManagerValue) then
+      cbxChannelManagers.Items.Objects[i].Free;
+  end;
+
+  for i := 0 to cbxPlanCodes.Items.Count-1 do
+  begin
+    obj := cbxPlanCodes.Items.Objects[i];
+    if assigned(obj) and (obj is TPlanCodeValue) then
+      cbxPlanCodes.Items.Objects[i].Free;
+  end;
 end;
 
 procedure TfrmChannelAvailabilityManager.timRecalcTimer(Sender: TObject);
@@ -1518,7 +1514,7 @@ end;
 //  end;
 //end;
 
-function TfrmChannelAvailabilityManager.buildSetStatement(dirty: Boolean; var oldResultValue: String; dirtyName, valueName, value: String): String;
+function TfrmChannelAvailabilityManager.buildSetStatement(dirty: Boolean; var oldResultValue: String; const dirtyName, valueName, value: String): String;
 var
   S: String;
   dirtyValue : Integer;
@@ -1590,10 +1586,10 @@ var
   s : String;
 
 
-      var ExcelP : TExcelProcessors;
-          ChEntity : TChannelEntity;
-          ClEntity : TClassEntity;
-          LastChannelCode, LastChannelName: String;
+  ExcelP : TExcelProcessors;
+  ChEntity : TChannelEntity;
+  ClEntity : TClassEntity;
+  LastChannelCode, LastChannelName: String;
 
       function NumRoomsOfTopClass(TopClass : String) : Integer;
       var RoomType : String;
@@ -1902,6 +1898,7 @@ begin
     list.free;
     topClasses.Free;
     dates.Free;
+    ExcelP.Free;
   end;
   FinalizeRatesExcelSheet;
   EndProject;
@@ -1967,7 +1964,7 @@ begin
   end;
 end;
 
-procedure TfrmChannelAvailabilityManager.PostRatesList(tableName : String; list: TList<String>);
+procedure TfrmChannelAvailabilityManager.PostRatesList(const tableName : String; list: TList<String>);
 var i : integer;
     sql : String;
     commands : TList<String>;
@@ -2180,9 +2177,9 @@ begin
                                          tempInt,
                                          TCellData(grid.Objects[iCol, iRow]).date,
                                          '');
-          end;
-          ForwardProject;
         end;
+        ForwardProject;
+      end;
       if Id.Count > 0 then
       begin
         StallingProject(true);
@@ -2230,12 +2227,12 @@ begin
   result := copy(btn.Name, 1, POS('_', btn.Name) - 1);
 end;
 
-function TfrmChannelAvailabilityManager.ButtonOff(pre : String) : TsButton;
+function TfrmChannelAvailabilityManager.ButtonOff(const pre : String) : TsButton;
 begin
   result := TsButton(FindComponent(pre + '_' + 'Off'));
 end;
 
-function TfrmChannelAvailabilityManager.ButtonOn(pre : String) : TsButton;
+function TfrmChannelAvailabilityManager.ButtonOn(const pre : String) : TsButton;
 begin
   result := TsButton(FindComponent(pre + '_' + 'On'));
 end;
@@ -2848,6 +2845,10 @@ begin
               end
               else
                 grid.Cells[iCol, iRow] := ASet['availability'];
+
+              if assigned(grid.Objects[iCol, iRow]) and (grid.Objects[iCol, iRow] is TObject) then
+                grid.Objects[iCol, iRow].Free;
+
               grid.Objects[iCol, iRow] := TCellData.Create(ASet['id'], ASet['date'], Editable, ASet['LinkedTo'], ASet['planCodeId'], ASet['roomClassId'],
                 ASet['channelManagerId'], ASet['rtgCode'], ASet['availability'], ASet['setAvailability']);
               ASet.next;
@@ -2870,7 +2871,7 @@ begin
   end;
 end;
 
-function TfrmChannelAvailabilityManager.FindRoomClassRow(Code: String): integer;
+function TfrmChannelAvailabilityManager.FindRoomClassRow(const Code: String): integer;
 var
   iRow: integer;
 begin
@@ -2886,7 +2887,7 @@ begin
 
 end;
 
-function TfrmChannelAvailabilityManager.SeekRecordValue(ASet: TRoomerDataSet; fieldNameToSeek: String; fieldValue: integer): Boolean;
+function TfrmChannelAvailabilityManager.SeekRecordValue(ASet: TRoomerDataSet; const fieldNameToSeek: String; fieldValue: integer): Boolean;
 begin
   result := false;
   ASet.First;
@@ -2999,10 +3000,8 @@ end;
 procedure TfrmChannelAvailabilityManager.ShowRatesForSelectedChannelManager;
 var
   i: integer;
-  AvailSet, RateSet, ASet: TRoomerDataSet;
-  sList: TSTrings;
-  cols: TColumns;
-  iStart, iLastChId, iLastRoomClassId: integer;
+  AvailSet, RateSet: TRoomerDataSet;
+  iLastRoomClassId: integer;
   iRow, iRateCol: integer;
   iRateRow: integer;
 
@@ -3011,8 +3010,6 @@ var
   pcId: integer;
 
   price: Double;
-
-  MasterRateFinished : Boolean;
 
   PriceData: TPriceData;
   iCountLine: integer;
@@ -3050,8 +3047,6 @@ var
 
 var channels : String;
     channelId : Integer;
-//    resSet : TList<TRoomerDataSet>;
-    iChannelCounter : Integer;
     isCurrentDirectConnection : Boolean;
 
 begin
@@ -3081,8 +3076,6 @@ begin
     pcId := GetPlanCodeId;
     if pcId < 0 then
       exit;
-
-    MasterRateFinished := False;
 
     AvailSet := RoomerDataSet.ActivateNewDataset(RoomerDataSet.queryRoomer(
                    format('SELECT CURRENT_DATE AS today, ch.id AS chId, ch.Name AS channelName, ch.directConnection, ch.rateRoundingType ' +
@@ -3162,13 +3155,11 @@ begin
         for i := 1 to FCurrentNumDays + 1 do
           rateGrid.Cells[i, 0] := GetDateLabel(startDate + i - 1);
 
-        iLastChId := -1;
         iRow := 0;
         AvailSet.First;
         if NOT availSet['masterRatesActive'] then
           AvailSet.Next; // Skip the first one because it is a master rate.
 
-        iChannelCounter := 0;
   {$IFDEF DEBUG}
           StartTimer(DrawTime);
   {$ENDIF}
@@ -3187,7 +3178,6 @@ begin
             i := AddCheckEditItem(ccChannels, AvailSet['channelName'], TObject(AvailSet.FieldByName('chid').AsInteger));
             ccChannels.Checked[i] := True;
           end;
-          iStart := iRow;
           // inc(iRow); rateGrid.RowCount := iRow + 3;
 
           for i := 1 to FCurrentNumDays + 1 do
@@ -3338,15 +3328,11 @@ begin
             RateSet.next;
           end;
 
-          // rateGrid.Objects[0, iRow + 1] := TObject(-1);
-
           inc(iRow, 1); // * cbxStopMinOptions.Tag);
           rateGrid.RowCount := iRow;
 
-          MasterRateFinished := True;
           AvailSet.next;
 
-          inc(iChannelCounter);
         end;
 
         if cbxChannel.Items.count > 0 then
@@ -3355,8 +3341,6 @@ begin
               cbxChannel.Checked[i] := true;
 
       finally
-  //      if ccChannels.Items.Count > 0 then
-  //        ccChannels.Drop
         cbxStopMinOptions.Checked := False;
         cbxExtraRestrictions.Checked := False;
         cbxStopMinOptions.Tag := 0;
@@ -3411,7 +3395,7 @@ begin
   end;
 end;
 
-function TfrmChannelAvailabilityManager.locateAvailabilityFromRoomTypeCodeAndDate(Code: String; date: TDateTime): integer;
+function TfrmChannelAvailabilityManager.locateAvailabilityFromRoomTypeCodeAndDate(const Code: String; date: TDateTime): integer;
 var
   Key: String;
 begin
@@ -3437,7 +3421,7 @@ begin
   end;
 end;
 
-procedure TfrmChannelAvailabilityManager.SetAvailabilityValue(iRow: integer; value: string; _grid: TAdvStringGrid; iCol: integer);
+procedure TfrmChannelAvailabilityManager.SetAvailabilityValue(iRow: integer; var value: string; _grid: TAdvStringGrid; iCol: integer);
 begin
   if Assigned(grid.Objects[iCol, iRow]) AND (grid.Objects[iCol, iRow] IS TCellData) AND
     (trunc(TCellData(grid.Objects[iCol, iRow]).FDate) >= trunc(dtBulkFrom.date)) AND (trunc(TCellData(grid.Objects[iCol, iRow]).FDate) <= trunc(dtBulkTo.date))
@@ -3996,8 +3980,8 @@ end;
 
 { TCellData }
 
-constructor TCellData.Create(Id: integer; date: TDateTime; IsEditable: Boolean; LinkElement: String; PlanCodeId, RoomClassId, ChannelManagerId: integer;
-  RoomClassCode: String; originalValue: Variant; maxAvailability: Variant);
+constructor TCellData.Create(Id: integer; date: TDateTime; IsEditable: Boolean; const LinkElement: String; PlanCodeId, RoomClassId, ChannelManagerId: integer;
+  const RoomClassCode: String; originalValue: Variant; maxAvailability: Variant);
 begin
   inherited Create;
   FId := Id;
@@ -5149,7 +5133,8 @@ var
 begin
   _grid := CurrentActiveGrid;
   if EditableCell(_grid, _grid.Row, _grid.Col) then
-    if (_grid.Objects[_grid.Col, _grid.Row] <> nil) and (_grid.Objects[_grid.Col, _grid.Row] is TPriceData) then
+    if (_grid.Objects[_grid.Col, _grid.Row] <> nil) and (_grid.Objects
+    [_grid.Col, _grid.Row] is TPriceData) then
     begin
       getPriceOfSpecificCell;
     end;
@@ -5171,17 +5156,17 @@ begin
   FSingleUsePriceDirty := false;
 end;
 
-constructor TPriceData.Create(_Id: integer; roomtypeGroupCode, _roomTypeTopClass: String; date: TDateTime;
+constructor TPriceData.Create(_Id: integer; const roomtypeGroupCode, _roomTypeTopClass: String; date: TDateTime;
   rateRoundingType, channelId, roomTypeGroupId, channelManager: integer; price: Double; stopSell: Boolean; minStay: integer; _Availability: integer;
   _MaxStay: integer; _COA: Boolean; _COD: Boolean; _LOSArrivalDateBased: Boolean; _SingleUsePrice: Double
   ;
   _connectRateToMasterRate : Boolean;
   _masterRateRateDeviation : Double;
-  _RateDeviationType : String;
+  const _RateDeviationType : String;
 
   _connectSingleUseRateToMasterRate : Boolean;
   _masterRateSingleUseRateDeviation : Double;
-  _singleUseRateDeviationType : String;
+  const _singleUseRateDeviationType : String;
 
   _connectStopSellToMasterRate : Boolean;
   _connectAvailabilityToMasterRate : Boolean;
@@ -5331,7 +5316,7 @@ end;
 
 { TChannelManagerValue }
 
-constructor TChannelManagerValue.Create(Id: integer; description, username, password: String; _numDays: integer);
+constructor TChannelManagerValue.Create(Id: integer; const description, username, password: String; _numDays: integer);
 begin
   FId := Id;
   FDescription := description;
@@ -5342,7 +5327,7 @@ end;
 
 { TPlanCodeValue }
 
-constructor TPlanCodeValue.Create(Id: integer; Code, description: String);
+constructor TPlanCodeValue.Create(Id: integer; const Code, description: String);
 begin
   FId := Id;
   FDescription := description;
@@ -5351,7 +5336,7 @@ end;
 
 { TDictionaryItem }
 
-constructor TDictionaryItem.Create(Code, ADate: String; value: integer);
+constructor TDictionaryItem.Create(const Code, ADate: String; value: integer);
 begin
   FCode := Code;
   FDate := ADate;

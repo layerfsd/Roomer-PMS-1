@@ -159,16 +159,10 @@ object frmResMemos: TfrmResMemos
     Align = alClient
     TabOrder = 1
     SkinData.SkinSection = 'PAGECONTROL'
-    ExplicitTop = 49
-    ExplicitHeight = 454
     object tabReservation: TsTabSheet
       Caption = 'Resevation'
       SkinData.CustomColor = False
       SkinData.CustomFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 426
       object Panel4: TsPanel
         Left = 345
         Top = 0
@@ -182,7 +176,6 @@ object frmResMemos: TfrmResMemos
         Padding.Bottom = 4
         TabOrder = 0
         SkinData.SkinSection = 'PANEL'
-        ExplicitHeight = 426
         object Panel5: TsPanel
           Left = 8
           Top = 4
@@ -246,7 +239,6 @@ object frmResMemos: TfrmResMemos
           Font.Style = []
           ParentFont = False
           TabOrder = 1
-          ExplicitHeight = 369
         end
       end
       object Panel2: TsPanel
@@ -262,7 +254,6 @@ object frmResMemos: TfrmResMemos
         Padding.Bottom = 4
         TabOrder = 1
         SkinData.SkinSection = 'PANEL'
-        ExplicitHeight = 426
         object Panel3: TsPanel
           Left = 8
           Top = 4
@@ -272,6 +263,8 @@ object frmResMemos: TfrmResMemos
           BevelOuter = bvNone
           TabOrder = 0
           SkinData.SkinSection = 'PANEL'
+          ExplicitLeft = 10
+          ExplicitTop = -2
           object cxLabel3: TsLabel
             Left = 0
             Top = 0
@@ -325,7 +318,6 @@ object frmResMemos: TfrmResMemos
           Font.Style = []
           ParentFont = False
           TabOrder = 1
-          ExplicitHeight = 369
         end
       end
       object cxSplitter1: TcxSplitter
@@ -335,7 +327,6 @@ object frmResMemos: TfrmResMemos
         Height = 394
         HotZoneClassName = 'TcxMediaPlayer9Style'
         Control = Panel2
-        ExplicitHeight = 426
       end
     end
     object tabRooms: TsTabSheet
@@ -343,10 +334,6 @@ object frmResMemos: TfrmResMemos
       ImageIndex = 1
       SkinData.CustomColor = False
       SkinData.CustomFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 426
       object Panel7: TsPanel
         Left = 0
         Top = 0
@@ -355,7 +342,6 @@ object frmResMemos: TfrmResMemos
         Align = alLeft
         TabOrder = 0
         SkinData.SkinSection = 'PANEL'
-        ExplicitHeight = 426
         object cxGrid1: TcxGrid
           Left = 1
           Top = 1
@@ -364,7 +350,6 @@ object frmResMemos: TfrmResMemos
           Align = alClient
           TabOrder = 0
           LookAndFeel.NativeStyle = False
-          ExplicitHeight = 424
           object cxGrid1DBTableView1: TcxGridDBTableView
             Navigator.Buttons.CustomButtons = <>
             Navigator.Buttons.First.Visible = True
@@ -449,7 +434,6 @@ object frmResMemos: TfrmResMemos
         HotZoneClassName = 'TcxMediaPlayer8Style'
         NativeBackground = False
         Control = Panel7
-        ExplicitHeight = 426
       end
       object Panel8: TsPanel
         Left = 353
@@ -459,7 +443,6 @@ object frmResMemos: TfrmResMemos
         Align = alClient
         TabOrder = 2
         SkinData.SkinSection = 'PANEL'
-        ExplicitHeight = 426
         object Panel9: TsPanel
           Left = 1
           Top = 1
@@ -513,7 +496,6 @@ object frmResMemos: TfrmResMemos
           Font.Style = []
           ParentFont = False
           TabOrder = 1
-          ExplicitHeight = 370
         end
       end
     end
@@ -527,6 +509,7 @@ object frmResMemos: TfrmResMemos
     BevelOuter = bvNone
     TabOrder = 2
     SkinData.SkinSection = 'PANEL'
+    ExplicitTop = 501
     object cxButton1: TsButton
       Left = 515
       Top = 4
@@ -560,13 +543,10 @@ object frmResMemos: TfrmResMemos
     Top = 56
   end
   object res_: TRoomerDataSet
-    Connection = d.qConnection
     CursorType = ctStatic
     CommandText = 'Select * FROM Reservations'#13#10
     CommandType = cmdUnknown
     Parameters = <>
-    Sql.Strings = (
-      'Select * FROM Reservations')
     DataActive = False
     RoomerStoreUri = 'http://localhost:8080/services/'
     RoomerUri = 'http://localhost:8080/services/'
@@ -582,13 +562,10 @@ object frmResMemos: TfrmResMemos
     Top = 192
   end
   object RR_: TRoomerDataSet
-    Connection = d.qConnection
     CursorType = ctStatic
     CommandText = 'SELECT TOP 20 * FROM Roomreservations'#13#10
     CommandType = cmdUnknown
     Parameters = <>
-    Sql.Strings = (
-      'SELECT TOP 20 * FROM Roomreservations')
     DataActive = False
     RoomerStoreUri = 'http://localhost:8080/services/'
     RoomerUri = 'http://localhost:8080/services/'

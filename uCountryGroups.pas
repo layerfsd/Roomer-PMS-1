@@ -216,6 +216,7 @@ implementation
 uses
     uD
   , uSqlDefinitions
+  , UITypes
   ;
 
 {$R *.dfm}
@@ -272,7 +273,6 @@ end;
 
 function countryGroupValidate(ed : TAdvEdit; lab : TLabel) : boolean;
 var
-  sValue : string;
   theData : recCountryGroupHolder;
 begin
   //*NOT TESTED*//

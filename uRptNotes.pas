@@ -145,7 +145,6 @@ type
     { Private declarations }
      zLocationInString : string;
      zIsOneDay : Boolean;
-     zDate : TDate;
      zDatefrom : TDate;
      zDateTo : Tdate;
 
@@ -195,9 +194,7 @@ end;
 
 function TfrmRptNotes.StatusSQL : string;
 var
-  sFilter : string;
   sRooms   : string;
-  i : integer;
 begin
   result := '';
 
@@ -419,10 +416,8 @@ end;
 procedure TfrmRptNotes.sButton1Click(Sender: TObject);
 var
   iReservation : integer;
-  iRoomReservation : integer;
 begin
   iReservation := KbmNotes.fieldbyname('Reservation').AsInteger;
-  iRoomReservation := 0;
   g.openresMemo(iReservation);
 end;
 
@@ -430,9 +425,7 @@ procedure TfrmRptNotes.showdata;
 var
   s : string;
 
-  rset1,
-  rset2,
-  rset3 : TRoomerDataset;
+  rset1 : TRoomerDataset;
   ExecutionPlan : TRoomerExecutionPlan;
 
   rvList : string;

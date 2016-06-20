@@ -101,68 +101,12 @@ uses
   uAppGlobal,
   uUtils,
   PrjConst
-  , uDImages;
+  , uDImages
+  , UITypes
+  ;
 {$R *.dfm}
 
-(*
-function EnCryptList(lstNotCrypt : TstringList) : TstringList;
-var
-  s : string;
-  ss : string;
-  i : integer;
-  ii : integer;
-  o : integer;
-  ch : char;
-  line : string;
-begin
-  result := TstringList.Create;
 
-  for i := 0 to lstNotCrypt.Count - 1 do
-  begin
-    line := lstNotCrypt[i];
-    s := _strEncrypt(line,5849);
-    ss := '';
-
-    for ii := 0 to length(s) do
-    begin
-      ch := s[ii];
-      o := ord(ch);
-      ss := ss+_intPadZeroLeft(o,3);
-    end;
-    result.Add(ss)
-  end;
-end;
-
-function deCryptList(lstCrypt : TstringList) : TstringList;
-var
-  s    : string;
-  ss   : string;
-  sss  : string;
-  i    : integer;
-  ii   : integer;
-  cInt : integer;
-  line : string;
-begin
-  result := TstringList.Create;
-  for i := 0 to lstCrypt.Count-1 do
-  begin
-    line := lstCrypt[i];
-    if length(line) > 3 then
-    begin
-      delete(line,1,3);
-      ss := '';
-      repeat
-        s    := copy(line,1,3);
-        cInt := strToInt(s);
-        ss   := ss+char(cInt);
-        delete(line,1,3);
-      until length(line) < 3;
-      sss := _strDeCrypt(ss,5849);
-      result.add(sss);
-    end;
-  end;
-end;
-*)
 
 function TfrmHiddenInfo.openLogin(var userName, password : string) : boolean;
 var hotelId : String;

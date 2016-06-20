@@ -286,14 +286,11 @@ type
     Procedure fillGridFromDataset(iGoto : String);
     procedure fillHolder;
     procedure changeAllowgridEdit;
-    function getPrevCode : string;
     Procedure chkFilter;
     procedure applyFilter;
-    function getDefaults(PriceCodeID, RateID, SeasonId, RoomTypeID, CurrencyID : integer ) : recwRoomRateHolder;
     procedure SetEditedValuesIn_M_Dataset;
     procedure FetchRatePlanTypes;
     procedure FillDataHolderFromDataSet(dataset : TDataSet);
-    procedure CorrectRoomTypeGroups(FromCode, ToCode: String);
 
 
   public
@@ -336,6 +333,7 @@ uses
   , uRoomClassEdit
   , uResourceManagement
   , uDynamicPricing
+  , UITypes
 
   ;
 
@@ -778,13 +776,6 @@ begin
 end;
 
 
-////////////////////////////////////////////////////////////////////////////////////////
-// memory table
-////////////////////////////////////////////////////////////////////////////////////////
-function TfrmRoomTypesGroups2.getPrevCode: string;
-begin
-end;
-
 procedure TfrmRoomTypesGroups2.FillDataHolderFromDataSet(dataset : TDataSet);
 begin
   if (NOT dataset.Eof) then
@@ -887,16 +878,6 @@ begin
   if zFirstTime then exit;
   tvData.GetColumnByFieldName('code').Focused := True;
 end;
-
-procedure TfrmRoomTypesGroups2.CorrectRoomTypeGroups(FromCode, ToCode : String);
-var s : String;
-begin
-  s := format('UPDATE roomreservations SET RoomClass=''%s'' WHERE RoomClass=''''', [ToCode, FromCode]);
-  d.roomerMainDataSet.DoCommand(s);
-  s := format('UPDATE roomtypes SET RoomTypeGroup=''%s'' WHERE RoomTypeGroup=''''', [ToCode, FromCode]);
-  d.roomerMainDataSet.DoCommand(s);
-end;
-
 procedure TfrmRoomTypesGroups2.m_BeforePost(DataSet: TDataSet);
 var
   nID : integer;
@@ -974,11 +955,6 @@ begin
       exit;
     end;
   end;
-end;
-
-
-function TfrmRoomTypesGroups2.getDefaults(PriceCodeID, RateID, SeasonId, RoomTypeID, CurrencyID : integer ) : recwRoomRateHolder;
-begin
 end;
 
 procedure TfrmRoomTypesGroups2.m_NewRecord(DataSet: TDataSet);
@@ -1166,40 +1142,21 @@ end;
 
 procedure TfrmRoomTypesGroups2.tvDataCodePropertiesValidate(Sender: TObject; var DisplayValue: Variant; var ErrorText: TCaption;
   var Error: Boolean);
-var
-  CurrValue : string;
-  currID : integer;
 begin
-  currValue := m_.fieldbyname('Code').asstring;
-  currID    := m_.fieldbyname('ID').asInteger;
-
   error := false;
   if trim(displayValue) = '' then
   begin
     error := true;
-  //  errortext := 'Room class '+' - '+'is required - Use ESC to cancel';
-	errortext := GetTranslatedText('shTx_RoomTypeGroups2_RoomClassIsRequired');
+  	errortext := GetTranslatedText('shTx_RoomTypeGroups2_RoomClassIsRequired');
     exit;
   end;
 
   if hdata.RoomTypeGroupExist(displayValue) then
   begin
     error := true;
-    //errortext := displayvalue+'Nýtt gildi er til í annari færslu. Notið ESC-hnappin til að hætta við';
     errortext := displayvalue+'  '+GetTranslatedText('shNewValueExistInAnotherRecor');
     exit
   end;
-//
-
-//  if tvData.DataController.DataSource.State = dsEdit then
-//  begin
-//    if hdata.RoomTypeExistsInOther(currValue,currID) then
-//    begin
-//      error := true;
-//      errortext := displayvalue+' - '+GetTranslatedText('shOldValueUsedInRelatedDataC');
-//      exit;
-//    end;
-//  end;
 end;
 
 procedure TfrmRoomTypesGroups2.tvDataColumn1PropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);

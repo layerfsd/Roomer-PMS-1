@@ -1232,7 +1232,7 @@ var
   xml: OLEVariant; // IXMLDOMDocument;
   node, node1: OLEVariant; // IXMLDomNode;
   nodeName : String;
-  nodes_row, nodes_se: OLEVariant; // IXMLDomNodeList;
+  nodes_row: OLEVariant; // IXMLDomNodeList;
   i, l : Integer;
 begin
   key := ''; secret := '';

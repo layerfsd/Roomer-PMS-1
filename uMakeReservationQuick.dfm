@@ -23,7 +23,7 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
     Top = 0
     Width = 1108
     Height = 572
-    ActivePage = taReservation
+    ActivePage = tabRoomRates
     Align = alClient
     TabOrder = 0
     OnChange = pgcMainChange
@@ -76,7 +76,6 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
             TabOrder = 1
             SkinData.SkinSection = 'GROUPBOX'
             Checked = False
-            ExplicitTop = 106
             object clabCustomer: TsLabel
               Left = 106
               Top = 16
@@ -222,7 +221,6 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
             TabOrder = 2
             SkinData.SkinSection = 'GROUPBOX'
             Checked = False
-            ExplicitTop = 186
             object clabReservationName: TsLabel
               Left = 124
               Top = 46
@@ -423,7 +421,7 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
               Left = 459
               Top = 19
               Width = 20
-              Height = 20
+              Height = 18
               Margins.Left = 0
               Margins.Top = 0
               Margins.Right = 0
@@ -706,8 +704,6 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
             TabOrder = 3
             SkinData.SkinSection = 'GROUPBOX'
             Checked = False
-            ExplicitTop = 372
-            ExplicitHeight = 164
             object clabCurrency: TsLabel
               Left = 107
               Top = 15
@@ -1235,8 +1231,8 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
                 object chkContactIsGuest: TsCheckBox
                   Left = 18
                   Top = 19
-                  Width = 98
-                  Height = 20
+                  Width = 106
+                  Height = 19
                   Caption = 'Contact is guest'
                   Checked = True
                   State = cbChecked
@@ -1300,8 +1296,8 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
                 object chkSendConfirmation: TsCheckBox
                   Left = 149
                   Top = 245
-                  Width = 148
-                  Height = 20
+                  Width = 156
+                  Height = 19
                   Caption = 'Send confirmation by email'
                   Enabled = False
                   TabOrder = 9
@@ -1355,8 +1351,8 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
                 object cbxAddToGuestProfiles: TsCheckBox
                   Left = 149
                   Top = 61
-                  Width = 120
-                  Height = 20
+                  Width = 128
+                  Height = 19
                   Caption = 'Add to guest profiles'
                   TabOrder = 11
                   Visible = False
@@ -1383,18 +1379,20 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
                 object lblSpecialRequests: TsLabel
                   Left = 2
                   Top = 15
-                  Width = 81
+                  Width = 312
                   Height = 13
                   Align = alTop
                   Caption = 'Special Requests'
+                  ExplicitWidth = 81
                 end
                 object lblNotes: TsLabel
                   Left = 2
                   Top = 101
-                  Width = 28
+                  Width = 312
                   Height = 13
                   Align = alTop
                   Caption = 'Notes'
+                  ExplicitWidth = 28
                 end
                 object edtSpecialRequests: TMemo
                   AlignWithMargins = True
@@ -1536,10 +1534,6 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
             TabVisible = False
             SkinData.CustomColor = False
             SkinData.CustomFont = False
-            ExplicitLeft = 0
-            ExplicitTop = 0
-            ExplicitWidth = 0
-            ExplicitHeight = 0
             object clabTel2: TsLabel
               Left = 204
               Top = 125
@@ -1830,10 +1824,6 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
       ImageIndex = 1
       SkinData.CustomColor = False
       SkinData.CustomFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object panSelectTypesTop: TsPanel
         Left = 0
         Top = 0
@@ -1858,8 +1848,8 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
           object chkExcluteWaitingList: TsCheckBox
             Left = 14
             Top = 19
-            Width = 69
-            Height = 20
+            Width = 77
+            Height = 19
             Caption = 'Waitinglist'
             TabOrder = 0
             SkinData.SkinSection = 'CHECKBOX'
@@ -1869,8 +1859,8 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
           object chkExcluteAllotment: TsCheckBox
             Left = 14
             Top = 41
-            Width = 65
-            Height = 20
+            Width = 73
+            Height = 19
             Caption = 'Allotment'
             TabOrder = 1
             SkinData.SkinSection = 'CHECKBOX'
@@ -1880,8 +1870,8 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
           object chkExcluteOrder: TsCheckBox
             Left = 327
             Top = 19
-            Width = 48
-            Height = 20
+            Width = 56
+            Height = 19
             Caption = 'Order'
             TabOrder = 2
             SkinData.SkinSection = 'CHECKBOX'
@@ -1891,8 +1881,8 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
           object chkExcluteNoShow: TsCheckBox
             Left = 224
             Top = 41
-            Width = 61
-            Height = 20
+            Width = 69
+            Height = 19
             Caption = 'No show'
             TabOrder = 3
             SkinData.SkinSection = 'CHECKBOX'
@@ -1902,8 +1892,8 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
           object chkExcluteDeparted: TsCheckBox
             Left = 122
             Top = 19
-            Width = 65
-            Height = 20
+            Width = 73
+            Height = 19
             Caption = 'Departed'
             TabOrder = 4
             SkinData.SkinSection = 'CHECKBOX'
@@ -1913,8 +1903,8 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
           object chkExcluteBlocked: TsCheckBox
             Left = 224
             Top = 19
-            Width = 56
-            Height = 20
+            Width = 64
+            Height = 19
             Caption = 'Blocked'
             TabOrder = 5
             SkinData.SkinSection = 'CHECKBOX'
@@ -1924,8 +1914,8 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
           object chkExcluteGuest: TsCheckBox
             Left = 122
             Top = 41
-            Width = 48
-            Height = 20
+            Width = 56
+            Height = 19
             Caption = 'Guest'
             TabOrder = 6
             SkinData.SkinSection = 'CHECKBOX'
@@ -2097,10 +2087,6 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
       ImageIndex = 2
       SkinData.CustomColor = False
       SkinData.CustomFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object panSelectRoomsTop: TsPanel
         Left = 0
         Top = 0
@@ -2571,7 +2557,7 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
             SkinData.SkinSection = 'BUTTON'
           end
           object sButton1: TsButton
-            Left = 2
+            Left = 3
             Top = 45
             Width = 198
             Height = 25
@@ -2816,10 +2802,6 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
             Caption = 'Alerts'
             SkinData.CustomColor = False
             SkinData.CustomFont = False
-            ExplicitLeft = 0
-            ExplicitTop = 0
-            ExplicitWidth = 0
-            ExplicitHeight = 0
           end
         end
       end
@@ -2833,6 +2815,7 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
         LookAndFeel.NativeStyle = False
         object tvRoomRes: TcxGridDBTableView
           Navigator.Buttons.CustomButtons = <>
+          Navigator.InfoPanel.Visible = True
           DataController.DataSource = mRoomResDS
           DataController.DetailKeyFieldNames = 'RoomReservation'
           DataController.KeyFieldNames = 'RoomReservation'
@@ -2876,6 +2859,10 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
           OptionsView.FooterMultiSummaries = True
           OptionsView.GroupByBox = False
           OptionsView.HeaderAutoHeight = True
+          object tvRoomResRoomReservation: TcxGridDBColumn
+            DataBinding.FieldName = 'RoomReservation'
+            Visible = False
+          end
           object tvRoomResColumn1: TcxGridDBColumn
             Caption = 'Edit'
             PropertiesClassName = 'TcxButtonEditProperties'
@@ -3086,12 +3073,28 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
             Visible = False
             Options.Editing = False
           end
-          object tvRoomResRoomReservation: TcxGridDBColumn
-            DataBinding.FieldName = 'RoomReservation'
-            Visible = False
+          object tvRoomResStockItemsCount: TcxGridDBColumn
+            Caption = 'Extras'
+            DataBinding.FieldName = 'StockItemsCount'
+            PropertiesClassName = 'TcxButtonEditProperties'
+            Properties.Buttons = <
+              item
+                Default = True
+                Kind = bkEllipsis
+              end>
+            Properties.ReadOnly = True
+            Properties.OnButtonClick = tvRoomResStockItemsCountPropertiesButtonClick
+            Options.ShowEditButtons = isebAlways
+          end
+          object tvRoomResStockitemsPrice: TcxGridDBColumn
+            Caption = 'Extras Price'
+            DataBinding.FieldName = 'StockitemsPrice'
+            PropertiesClassName = 'TcxCurrencyEditProperties'
+            Properties.DisplayFormat = ',0.00;-,0.00'
+            Properties.ReadOnly = True
           end
           object tvRoomResAvrageDiscount: TcxGridDBColumn
-            Caption = 'Avrage Discount'
+            Caption = 'Average Discount'
             DataBinding.FieldName = 'AvrageDiscount'
             Options.Editing = False
           end
@@ -3109,7 +3112,7 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
         object tvRoomRates: TcxGridDBTableView
           Navigator.Buttons.CustomButtons = <>
           DataController.DataModeController.SyncMode = False
-          DataController.DataSource = kbmRoomRatesDS
+          DataController.DataSource = mRoomRatesDS
           DataController.DetailKeyFieldNames = 'RoomReservation'
           DataController.KeyFieldNames = 'RoomReservation'
           DataController.MasterKeyFieldNames = 'RoomReservation'
@@ -3238,7 +3241,7 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
       Top = 4
       Width = 111
       Height = 25
-      Caption = 'Previus'
+      Caption = 'Previous'
       Enabled = False
       ImageIndex = 106
       Images = DImages.PngImageList1
@@ -3498,15 +3501,16 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
   end
   object mRoomResDS: TDataSource
     DataSet = mRoomRes
-    Left = 80
-    Top = 528
+    OnDataChange = mRoomResDSDataChange
+    Left = 36
+    Top = 336
   end
   object mSelectTypes: TdxMemData
     Indexes = <>
     SortOptions = []
     OnCalcFields = mSelectTypesCalcFields
-    Left = 640
-    Top = 352
+    Left = 392
+    Top = 280
     object StringField2: TStringField
       FieldName = 'roomType'
       Size = 10
@@ -3538,14 +3542,14 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
   end
   object mSelectTypesDS: TDataSource
     DataSet = mSelectTypes
-    Left = 652
-    Top = 416
+    Left = 388
+    Top = 336
   end
   object mSelectRooms: TdxMemData
     Indexes = <>
     SortOptions = []
     OnNewRecord = mSelectRoomsNewRecord
-    Left = 448
+    Left = 264
     Top = 280
     object mSelectRoomsID: TStringField
       FieldName = 'ID'
@@ -3685,10 +3689,10 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
   end
   object mSelectRoomsDS: TDataSource
     DataSet = mSelectRooms
-    Left = 588
-    Top = 405
+    Left = 260
+    Top = 333
   end
-  object _kbmRoomRes: TkbmMemTable
+  object DELETE_kbmRoomRes: TkbmMemTable
     Active = True
     DesignActivation = True
     AttachedAutoRefresh = True
@@ -3796,10 +3800,10 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
     SortID = 0
     SubLanguageID = 1
     LocaleID = 1024
-    Left = 624
-    Top = 560
+    Left = 288
+    Top = 456
   end
-  object _kbmRoomRates: TkbmMemTable
+  object DELETE_kbmRoomRates: TkbmMemTable
     Active = True
     DesignActivation = True
     AttachedAutoRefresh = True
@@ -3880,29 +3884,29 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
     SortID = 0
     SubLanguageID = 1
     LocaleID = 1024
-    Left = 464
-    Top = 528
+    Left = 376
+    Top = 448
   end
-  object kbmRoomRatesDS: TDataSource
+  object mRoomRatesDS: TDataSource
     DataSet = mRoomRates
-    Left = 192
-    Top = 544
+    Left = 160
+    Top = 344
   end
   object timAlert: TTimer
     Enabled = False
-    Left = 824
-    Top = 416
+    Left = 968
+    Top = 208
   end
   object mDS: TDataSource
     DataSet = m_
-    Left = 1012
-    Top = 205
+    Left = 100
+    Top = 333
   end
   object mOcc_: TdxMemData
     Indexes = <>
     SortOptions = []
-    Left = 704
-    Top = 344
+    Left = 496
+    Top = 280
     object DateTimeField1: TDateTimeField
       FieldName = 'aDate'
     end
@@ -3923,14 +3927,14 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
   end
   object mOccDS: TDataSource
     DataSet = mOcc_
-    Left = 732
-    Top = 413
+    Left = 492
+    Top = 341
   end
   object m_: TdxMemData
     Indexes = <>
     SortOptions = []
-    Left = 1008
-    Top = 240
+    Left = 96
+    Top = 288
     object m_RoomType: TStringField
       FieldName = 'RoomType'
       Size = 10
@@ -4013,14 +4017,14 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
       end>
     StorageName = 'Software\Roomer\FormStatus\QuickReservation'
     StorageType = stRegistry
-    Left = 584
-    Top = 504
+    Left = 32
+    Top = 112
   end
   object mCurrency: TdxMemData
     Indexes = <>
     SortOptions = []
-    Left = 1056
-    Top = 240
+    Left = 560
+    Top = 288
     object m_Currency: TWideStringField
       FieldName = 'Currency'
       Size = 5
@@ -4039,12 +4043,12 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
       FieldName = 'active'
     end
   end
-  object DS: TDataSource
+  object mCurrencyDS: TDataSource
     DataSet = mCurrency
-    Left = 1056
-    Top = 200
+    Left = 568
+    Top = 336
   end
-  object _kbmRoomRatesTmp: TkbmMemTable
+  object DELETE_kbmRoomRatesTmp: TkbmMemTable
     Active = True
     DesignActivation = True
     AttachedAutoRefresh = True
@@ -4125,8 +4129,8 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
     SortID = 0
     SubLanguageID = 1
     LocaleID = 1024
-    Left = 536
-    Top = 552
+    Left = 456
+    Top = 448
   end
   object mnuFinish: TPopupMenu
     Images = DImages.PngImageList1
@@ -4142,8 +4146,8 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
     Enabled = False
     Interval = 100
     OnTimer = timNewTimer
-    Left = 864
-    Top = 416
+    Left = 968
+    Top = 256
   end
   object mRoomRes: TdxMemData
     Indexes = <
@@ -4152,8 +4156,8 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
         SortOptions = []
       end>
     SortOptions = []
-    Left = 16
-    Top = 512
+    Left = 40
+    Top = 288
     object mRoomResReservation: TIntegerField
       FieldName = 'Reservation'
     end
@@ -4237,12 +4241,18 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
     object mRoomResExpectedCheckOutTime: TStringField
       FieldName = 'ExpectedCheckOutTime'
     end
+    object mRoomResStockItemsCount: TIntegerField
+      FieldName = 'StockItemsCount'
+    end
+    object mRoomResStockitemsPrice: TFloatField
+      FieldName = 'StockitemsPrice'
+    end
   end
   object mRoomRates: TdxMemData
     Indexes = <>
     SortOptions = []
-    Left = 144
-    Top = 519
+    Left = 160
+    Top = 287
     object mRoomRatesReservation: TIntegerField
       FieldName = 'Reservation'
     end
@@ -4295,8 +4305,8 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
   object mRoomRatesTmp: TdxMemData
     Indexes = <>
     SortOptions = []
-    Left = 304
-    Top = 528
+    Left = 664
+    Top = 288
     object IntegerField1: TIntegerField
       FieldName = 'Reservation'
     end
@@ -4349,8 +4359,8 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
   object mRR_: TdxMemData
     Indexes = <>
     SortOptions = []
-    Left = 384
-    Top = 543
+    Left = 752
+    Top = 287
     object IntegerField3: TIntegerField
       FieldName = 'Reservation'
     end
@@ -4420,6 +4430,42 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
       TextColor = clCaptionText
     end
     object cxStyle3: TcxStyle
+    end
+  end
+  object mExtras: TdxMemData
+    Indexes = <>
+    SortOptions = []
+    OnCalcFields = mExtrasCalcFields
+    Left = 920
+    Top = 288
+    object mExtrasRoomreservation: TIntegerField
+      FieldName = 'Roomreservation'
+    end
+    object mExtrasItemid: TIntegerField
+      FieldName = 'Itemid'
+    end
+    object mExtrasCount: TIntegerField
+      FieldName = 'Count'
+    end
+    object mExtrasPricePerItemPerDay: TFloatField
+      FieldName = 'PricePerItemPerDay'
+    end
+    object mExtrasFromdate: TDateTimeField
+      FieldName = 'Fromdate'
+    end
+    object mExtrasToDate: TDateTimeField
+      FieldName = 'ToDate'
+    end
+    object mExtrasItem: TStringField
+      FieldName = 'Item'
+    end
+    object mExtrasDescription: TStringField
+      FieldName = 'Description'
+    end
+    object mExtrasTotalPrice: TFloatField
+      FieldKind = fkCalculated
+      FieldName = 'TotalPrice'
+      Calculated = True
     end
   end
 end

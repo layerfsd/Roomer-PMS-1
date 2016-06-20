@@ -1,20 +1,22 @@
-object frmStaffTypes2: TfrmStaffTypes2
+object frmStockItems: TfrmStockItems
   Left = 0
   Top = 0
-  Caption = 'Staff Types'
-  ClientHeight = 476
-  ClientWidth = 590
+  Caption = 'Stock Items'
+  ClientHeight = 508
+  ClientWidth = 779
   Color = clBtnFace
-  Constraints.MinWidth = 470
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
+  KeyPreview = True
   OldCreateOrder = False
   Position = poOwnerFormCenter
   OnClose = FormClose
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  OnKeyDown = FormKeyDown
   OnKeyPress = FormKeyPress
   OnShow = FormShow
   PixelsPerInch = 96
@@ -22,15 +24,11 @@ object frmStaffTypes2: TfrmStaffTypes2
   object sPanel1: TsPanel
     Left = 0
     Top = 0
-    Width = 590
-    Height = 70
+    Width = 779
+    Height = 68
     Align = alTop
     TabOrder = 0
     SkinData.SkinSection = 'PANEL'
-    ExplicitWidth = 457
-    DesignSize = (
-      590
-      70)
     object cLabFilter: TsLabel
       Left = 19
       Top = 41
@@ -46,7 +44,7 @@ object frmStaffTypes2: TfrmStaffTypes2
       Font.Style = []
     end
     object btnClear: TsSpeedButton
-      Left = 267
+      Left = 264
       Top = 39
       Width = 70
       Height = 20
@@ -56,23 +54,10 @@ object frmStaffTypes2: TfrmStaffTypes2
       Images = DImages.PngImageList1
       ImageIndex = 10
     end
-    object Label1: TsLabel
-      Left = 350
-      Top = 13
-      Width = 4
-      Height = 13
-      Caption = '-'
-      ParentFont = False
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clBlack
-      Font.Height = -11
-      Font.Name = 'Tahoma'
-      Font.Style = []
-    end
     object btnDelete: TsButton
-      Left = 151
-      Top = 8
-      Width = 70
+      Left = 199
+      Top = 6
+      Width = 100
       Height = 26
       Caption = 'Delete'
       ImageIndex = 24
@@ -82,9 +67,9 @@ object frmStaffTypes2: TfrmStaffTypes2
       SkinData.SkinSection = 'BUTTON'
     end
     object btnOther: TsButton
-      Left = 223
-      Top = 8
-      Width = 114
+      Left = 305
+      Top = 6
+      Width = 145
       Height = 26
       Caption = 'Other actions'
       DropDownMenu = mnuOther
@@ -95,41 +80,41 @@ object frmStaffTypes2: TfrmStaffTypes2
       OnClick = btnOtherClick
       SkinData.SkinSection = 'BUTTON'
     end
-    object btnClose: TsButton
-      Left = 499
-      Top = 8
-      Width = 81
-      Height = 26
-      Anchors = [akTop, akRight]
-      Caption = 'Close'
-      ImageIndex = 27
-      Images = DImages.PngImageList1
-      ModalResult = 8
-      TabOrder = 2
-      OnClick = btnCloseClick
-      SkinData.SkinSection = 'BUTTON'
-      ExplicitLeft = 366
-    end
     object edFilter: TsEdit
       Left = 56
       Top = 39
-      Width = 209
+      Width = 206
       Height = 21
-      Color = 3355443
+      Color = clWhite
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = 15724527
+      Font.Color = clBlack
       Font.Height = -11
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
-      TabOrder = 3
+      TabOrder = 2
       OnChange = edFilterChange
       SkinData.SkinSection = 'EDIT'
     end
-    object btnInsert: TButton
-      Left = 10
-      Top = 8
-      Width = 70
+    object btnEdit: TsButton
+      Left = 112
+      Top = 6
+      Width = 81
+      Height = 26
+      Hint = 'Edit current record'
+      Caption = 'Edit'
+      ImageIndex = 25
+      Images = DImages.PngImageList1
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 3
+      OnClick = btnEditClick
+      SkinData.SkinSection = 'BUTTON'
+    end
+    object btnInsert: TsButton
+      Left = 6
+      Top = 6
+      Width = 100
       Height = 26
       Hint = 'Add new record'
       Caption = 'New'
@@ -138,50 +123,37 @@ object frmStaffTypes2: TfrmStaffTypes2
       ParentShowHint = False
       ShowHint = True
       TabOrder = 4
-    end
-    object btnEdit: TButton
-      Left = 80
-      Top = 8
-      Width = 70
-      Height = 26
-      Hint = 'Edit current record'
-      Caption = 'Edit'
-      ImageIndex = 25
-      Images = DImages.PngImageList1
-      ParentShowHint = False
-      ShowHint = True
-      TabOrder = 5
-      OnClick = btnEditClick
+      OnClick = btnInsertClick
+      SkinData.SkinSection = 'BUTTON'
     end
   end
   object sbMain: TsStatusBar
     Left = 0
-    Top = 457
-    Width = 590
+    Top = 489
+    Width = 779
     Height = 19
     Panels = <>
     SkinData.SkinSection = 'STATUSBAR'
-    ExplicitWidth = 457
   end
   object panBtn: TsPanel
     Left = 0
-    Top = 424
-    Width = 590
+    Top = 456
+    Width = 779
     Height = 33
     Align = alBottom
     TabOrder = 2
     SkinData.SkinSection = 'PANEL'
-    ExplicitWidth = 457
     DesignSize = (
-      590
+      779
       33)
     object btnCancel: TsButton
-      Left = 501
+      Left = 690
       Top = 4
       Width = 85
       Height = 25
       Hint = 'Cancel and close'
       Anchors = [akTop, akRight]
+      Cancel = True
       Caption = 'Cancel'
       ImageIndex = 4
       Images = DImages.PngImageList1
@@ -189,10 +161,9 @@ object frmStaffTypes2: TfrmStaffTypes2
       TabOrder = 0
       OnClick = btnCancelClick
       SkinData.SkinSection = 'BUTTON'
-      ExplicitLeft = 368
     end
     object BtnOk: TsButton
-      Left = 413
+      Left = 602
       Top = 4
       Width = 85
       Height = 25
@@ -205,18 +176,17 @@ object frmStaffTypes2: TfrmStaffTypes2
       TabOrder = 1
       OnClick = BtnOkClick
       SkinData.SkinSection = 'BUTTON'
-      ExplicitLeft = 280
     end
   end
   object grData: TcxGrid
     Left = 0
-    Top = 70
-    Width = 590
-    Height = 354
+    Top = 68
+    Width = 779
+    Height = 388
     Align = alClient
+    Constraints.MinWidth = 450
     TabOrder = 3
     LookAndFeel.NativeStyle = False
-    ExplicitWidth = 457
     object tvData: TcxGridDBTableView
       OnDblClick = tvDataDblClick
       Navigator.Buttons.CustomButtons = <>
@@ -279,31 +249,36 @@ object frmStaffTypes2: TfrmStaffTypes2
         DataBinding.FieldName = 'ID'
         Visible = False
       end
-      object tvDatastaffType: TcxGridDBColumn
-        Caption = 'Type'
-        DataBinding.FieldName = 'staffType'
+      object tvDataItemtype: TcxGridDBColumn
+        DataBinding.FieldName = 'Itemtype'
         PropertiesClassName = 'TcxTextEditProperties'
         Properties.CharCase = ecUpperCase
-        Properties.OnValidate = tvDatastaffTypePropertiesValidate
-        Width = 71
+        Properties.OnValidate = tvDataItemtypePropertiesValidate
       end
       object tvDataDescription: TcxGridDBColumn
         DataBinding.FieldName = 'Description'
-        Width = 259
       end
-      object tvDataAccessPrivilidges: TcxGridDBColumn
-        Caption = 'Privilidges'
-        DataBinding.FieldName = 'AccessPrivilidges'
-        PropertiesClassName = 'TcxSpinEditProperties'
+      object tvDataVATCode: TcxGridDBColumn
+        DataBinding.FieldName = 'VATCode'
+        PropertiesClassName = 'TcxButtonEditProperties'
+        Properties.Buttons = <
+          item
+            Default = True
+            Kind = bkEllipsis
+          end>
+        Properties.ReadOnly = False
+        Properties.ValidateOnEnter = False
+        Properties.ViewStyle = vsHideCursor
+        Properties.OnButtonClick = tvDataVATCodePropertiesButtonClick
+        Properties.OnValidate = tvDataVATCodePropertiesValidate
+        Width = 77
       end
-      object tvDataAuthValue: TcxGridDBColumn
-        DataBinding.FieldName = 'AuthValue'
-        PropertiesClassName = 'TcxSpinEditProperties'
-        Width = 61
+      object tvDataAccItemLink: TcxGridDBColumn
+        DataBinding.FieldName = 'AccItemLink'
       end
       object tvDataActive: TcxGridDBColumn
         DataBinding.FieldName = 'Active'
-        Width = 45
+        Width = 54
       end
     end
     object lvData: TcxGridLevel
@@ -312,8 +287,8 @@ object frmStaffTypes2: TfrmStaffTypes2
   end
   object mnuOther: TPopupMenu
     Images = DImages.PngImageList1
-    Left = 134
-    Top = 56
+    Left = 198
+    Top = 200
     object mnuiPrint: TMenuItem
       Caption = 'Print'
       ImageIndex = 3
@@ -353,9 +328,9 @@ object frmStaffTypes2: TfrmStaffTypes2
     end
   end
   object DS: TDataSource
-    DataSet = m_
-    Left = 208
-    Top = 176
+    DataSet = mdStockItems
+    Left = 368
+    Top = 288
   end
   object grPrinter: TdxComponentPrinter
     CurrentLink = prLink_grData
@@ -381,34 +356,24 @@ object frmStaffTypes2: TfrmStaffTypes2
       BuiltInReportLink = True
     end
   end
-  object m_: TdxMemData
+  object mdStockItems: TdxMemData
     Indexes = <>
     SortOptions = []
-    BeforeInsert = m_BeforeInsert
-    BeforePost = m_BeforePost
-    BeforeDelete = m_BeforeDelete
-    OnNewRecord = m_NewRecord
-    Left = 160
-    Top = 176
-    object m_ID: TIntegerField
+    BeforeInsert = mdStockItemsBeforeInsert
+    BeforePost = mdStockItemsBeforePost
+    BeforeDelete = mdStockItemsBeforeDelete
+    OnNewRecord = mdStockItemsNewRecord
+    Left = 368
+    Top = 344
+    object mdStockItemsID: TIntegerField
       FieldName = 'ID'
     end
-    object m_Active: TBooleanField
+    object mdStockItemsActive: TBooleanField
       FieldName = 'Active'
     end
-    object m_staffType: TWideStringField
-      FieldName = 'staffType'
-      Size = 5
-    end
-    object m_Description: TWideStringField
+    object mdStockItemsDescription: TWideStringField
       FieldName = 'Description'
       Size = 30
-    end
-    object m_AccessPrivilidges: TIntegerField
-      FieldName = 'AccessPrivilidges'
-    end
-    object m_AuthValue: TIntegerField
-      FieldName = 'AuthValue'
     end
   end
   object FormStore: TcxPropertiesStore
@@ -420,11 +385,12 @@ object frmStaffTypes2: TfrmStaffTypes2
           'Left'
           'Position'
           'Top'
-          'Width')
+          'Width'
+          'WindowState')
       end>
-    StorageName = 'Software\Roomer\FormStatus\StaffTypes'
+    StorageName = 'Software\Roomer\FormStatus\ItemTypes'
     StorageType = stRegistry
-    Left = 217
-    Top = 248
+    Left = 244
+    Top = 344
   end
 end

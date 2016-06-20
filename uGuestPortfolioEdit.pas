@@ -1061,9 +1061,7 @@ end;
 procedure TfrmGuestPortfolio.pgPagesChange(Sender: TObject);
 var rSet : TRoomerDataset;
     s : String;
-    id, resId : Integer;
-    item : TListItem;
-    date : TDateTime;
+    id: Integer;
 
     pgPages : TsPageControl;
 begin

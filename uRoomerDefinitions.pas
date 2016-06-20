@@ -88,7 +88,6 @@ uses
 class function TReservationMarketTypeHelper.FromString(const aStr: string): TReservationMarketType;
 var
   i: TReservationMarketType;
-  s: string;
 begin
   Result := TReservationMarketType.Unknown;
   for i := low(TReservationMarketType) to high(TReservationMarketType) do

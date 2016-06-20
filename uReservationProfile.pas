@@ -1,4 +1,4 @@
-unit uReservationProfile;
+ï»¿unit uReservationProfile;
 
 interface
 
@@ -531,6 +531,20 @@ type
     tvRoomsRateOrPackagePerDay: TcxGridDBColumn;
     mRoomsblockMoveReason: TWideStringField;
     tvRoomsblockMoveReason: TcxGridDBColumn;
+    mExtras: TdxMemData;
+    mExtrasRoomreservation: TIntegerField;
+    mExtrasItemid: TIntegerField;
+    mExtrasCount: TIntegerField;
+    mExtrasFromdate: TDateTimeField;
+    mExtrasPricePerItemPerDay: TFloatField;
+    mExtrasToDate: TDateTimeField;
+    mExtrasItem: TStringField;
+    mExtrasDescription: TStringField;
+    mExtrasTotalPrice: TFloatField;
+    tvRoomsStockitemsPrice: TcxGridDBColumn;
+    tvRoomsStockItemsCount: TcxGridDBColumn;
+    mRoomschildrencount: TIntegerField;
+    mRoomsinfantcount: TIntegerField;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -644,6 +658,7 @@ type
     procedure cbxMarketCloseUp(Sender: TObject);
     procedure tvRoomsblockMoveGetCellHint(Sender: TcxCustomGridTableItem; ARecord: TcxCustomGridRecord; ACellViewInfo: TcxGridTableDataCellViewInfo;
       const AMousePos: TPoint; var AHintText: TCaption; var AIsHintMultiLine: Boolean; var AHintTextRect: TRect);
+    procedure tvRoomsStockItemsCountPropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
   private
     { Private declarations }
     vStartName: string;
@@ -751,7 +766,9 @@ uses
   uRoomTypes2,
   hData,
   uMain,
-  uFrmNotepad;
+  uFrmNotepad,
+  ufrmReservationExtras
+  ;
 
 {$R *.DFM}
 
@@ -1966,7 +1983,7 @@ begin
         temp := format
           ('(AddNewRoom3) Add a room to reservation Reservation=%d, RoomReservation=%d, Room=%s, RoomType=%s, TO ArrDate=%s, DepDate=%s',
           [iReservation, iRoomreservation, RoomNumber, RoomType, DateToSqlString(arrival), DateToSqlString(departure)]);
-        d.roomerMainDataSet.SystemChangeAvailability(RoomType, arrival, departure - 1, true, temp); // minnka framboð
+        d.roomerMainDataSet.SystemChangeAvailability(RoomType, arrival, departure - 1, true, temp); // minnka framboï¿½
       end;
 
       if ExecutionPlan.Execute(ptExec, false, true) then
@@ -2352,21 +2369,32 @@ begin
     s := s + '    , rrRoomAlias as RoomAlias '#10;
     s := s + '    , rrRoomTypeAlias as RoomTypeAlias '#10;
     s := s + '    , (SELECT count(ID) FROM roomsdate WHERE (roomsdate.roomreservation=rr.roomreservation) AND (roomsdate.ResFlag <> '
-      + _db(STATUS_DELETED) + ' )) AS unPaidRentNights '#10;
+                    + _db(STATUS_DELETED) + ' )) AS unPaidRentNights '#10;
     s := s + '    , (SELECT name FROM persons WHERE persons.roomreservation=rr.roomreservation ORDER BY MainName DESC LIMIT 1) AS GuestName '#10;
+    s := s + '    , numChildren as childrencount '#10;
+    s := s + '    , numInfants as Infantcount '#10;
     s := s + '    , (SELECT PersonsProfilesId FROM persons WHERE persons.roomreservation=rr.roomreservation ORDER BY MainName DESC LIMIT 1) AS PersonsProfilesId '#10;
     s := s + '    , (SELECT count(ID) FROM persons WHERE persons.roomreservation=rr.roomreservation) AS GuestCount '#10;
     s := s + '    , (SELECT SUM(RoomRate) FROM roomsdate WHERE (roomsdate.roomreservation=rr.roomreservation) AND (roomsdate.paid=0) AND (roomsdate.ResFlag <> '
-      + _db(STATUS_DELETED) + ' )) AS unPaidRoomRent '#10;
+                    + _db(STATUS_DELETED) + ' )) AS unPaidRoomRent '#10;
     s := s + '    , (SELECT SUM(IF(isPercentage, RoomRate*Discount/100, Discount)) FROM roomsdate WHERE (roomsdate.roomreservation=rr.roomreservation) AND (roomsdate.paid=0) AND (roomsdate.ResFlag <> '
-      + _db(STATUS_DELETED) + ' ))  AS DiscountUnPaidRoomRent '#10;
+                    + _db(STATUS_DELETED) + ' ))  AS DiscountUnPaidRoomRent '#10;
     s := s + '    , ((SELECT SUM(RoomRate) FROM roomsdate WHERE (roomsdate.roomreservation=rr.roomreservation) AND (roomsdate.paid=0) and (roomsdate.ResFlag <> '
-      + _db(STATUS_DELETED) + ' )) '#10;
+                    + _db(STATUS_DELETED) + ' )) '#10;
     s := s + '       - (SELECT SUM(IF(isPercentage, RoomRate*Discount/100, Discount)) FROM roomsdate WHERE (roomsdate.roomreservation=rr.roomreservation) AND (roomsdate.paid=0) AND (roomsdate.ResFlag <> '
-      + _db(STATUS_DELETED) + ' ))) AS TotalUnpaidRoomRent '#10;
+                    + _db(STATUS_DELETED) + ' ))) AS TotalUnpaidRoomRent '#10;
     s := s + '    , (SELECT Description FROM roomtypegroups WHERE roomtypegroups.code=rr.roomclass) AS RoomClassDescription '#10;
+    s := s + '    , rrs.StockitemsCount ';
+    s := s + '    , rrs.StockitemsPrice ';
     s := s + ' FROM '#10;
     s := s + '   roomreservations rr'#10;
+    s := s + '  LEFT OUTER JOIN -- Add stockitem totalcount and total price per roomreservation '#10;
+    s := s + '      (select '#10;
+    s := s + '        rtmp.roomreservation as tmp_roomres, '#10;
+    s := s + ' 			  max(rtmp.count) DIV 1 as StockitemsCount, '#10;
+    s := s + ' 			  max(rtmp.count * rtmp.price) as StockItemsPrice '#10;
+    s := s + ' 	  from roomreservationstockitems rtmp '#10;
+    s := s + '       group by rtmp.roomreservation) rrs on rrs.tmp_roomres= rr.RoomReservation '#10;
     s := s + ' WHERE '#10;
     s := s + '   (Reservation = %d) '#10;
     s := s + ' ORDER BY '#10;
@@ -2779,6 +2807,29 @@ begin
   AIsHintMultiLine := True;
 end;
 
+procedure TfrmReservationProfile.tvRoomsStockItemsCountPropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
+var
+  lCurrentRoomRes: recEditReservationExtrasHolder;
+begin
+  with lCurrentRoomRes do
+  begin
+    Reservation := mRoomsReservation.AsInteger;
+    RoomReservation := mRoomsRoomReservation.AsInteger;
+    Room := mRoomsRoom.asString;
+    RoomType := mRoomsRoomType.AsString;
+    Currency := mRoomsCurrency.AsString;
+    CurrencyRate := hData.GetRate(Currency);
+    guests := mRoomsGuestCount.AsInteger;
+    childrenCount := mRoomschildrencount.AsInteger;
+    infantCount := mRoomsinfantcount.AsInteger;
+    ArrivalDate := mRoomsArrival.AsDateTime;
+    DepartureDate := mRoomsDeparture.asDateTime;
+  end;
+
+  if editReservationExtras(lCurrentRoomRes, nil) then
+    Display_rGrid(zRoomReservation);
+end;
+
 procedure TfrmReservationProfile.tvRoomsblockMovePropertiesChange(Sender: TObject);
 var
   Value: Integer;
@@ -3178,9 +3229,7 @@ begin
         mGuestRooms.Next;
       end;
 
-      if not mGuestRooms.Locate('RoomReservation', gotoRoomReservation, []) then
-      begin
-      end;
+      mGuestRooms.Locate('RoomReservation', gotoRoomReservation, []);
 
     finally
       screen.Cursor := crDefault;
@@ -3514,7 +3563,7 @@ begin
   enabled := true;
 
   ShowAlertsForReservation(zReservation, 0, atOPEN_RESERVATION);
-  FrmAlertPanel := TFrmAlertPanel.Create(nil);
+  FrmAlertPanel := TFrmAlertPanel.Create(self);
   AlertList := CreateAlertsForRoomReservation(zReservation, 0, atUNKNOWN);
   FrmAlertPanel.PlaceEditPanel(pnlAlertHolder, AlertList);
 end;

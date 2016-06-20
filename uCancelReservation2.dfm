@@ -31,7 +31,7 @@ object frmCancelReservation2: TfrmCancelReservation2
     object cxGroupBox1: TcxGroupBox
       AlignWithMargins = True
       Left = 7
-      Top = 64
+      Top = 66
       Margins.Left = 6
       Margins.Top = 6
       Margins.Right = 6
@@ -43,8 +43,10 @@ object frmCancelReservation2: TfrmCancelReservation2
       StyleDisabled.LookAndFeel.NativeStyle = False
       StyleFocused.LookAndFeel.NativeStyle = False
       StyleHot.LookAndFeel.NativeStyle = False
-      TabOrder = 0
-      Height = 176
+      TabOrder = 1
+      ExplicitTop = 64
+      ExplicitHeight = 176
+      Height = 174
       Width = 549
       object memReason: TcxMemo
         AlignWithMargins = True
@@ -63,11 +65,8 @@ object frmCancelReservation2: TfrmCancelReservation2
         StyleFocused.LookAndFeel.NativeStyle = False
         StyleHot.LookAndFeel.NativeStyle = False
         TabOrder = 0
-        ExplicitLeft = 9
-        ExplicitTop = 22
-        ExplicitWidth = 531
-        ExplicitHeight = 142
-        Height = 144
+        ExplicitHeight = 144
+        Height = 142
         Width = 533
       end
     end
@@ -86,16 +85,17 @@ object frmCancelReservation2: TfrmCancelReservation2
       StyleDisabled.LookAndFeel.NativeStyle = False
       StyleFocused.LookAndFeel.NativeStyle = False
       StyleHot.LookAndFeel.NativeStyle = False
-      TabOrder = 1
-      DesignSize = (
-        549
-        45)
-      Height = 45
+      TabOrder = 0
+      Height = 47
       Width = 549
       object cbxReason: TcxComboBox
-        Left = 17
-        Top = 17
-        Anchors = [akLeft, akTop, akRight]
+        AlignWithMargins = True
+        Left = 7
+        Top = 18
+        Margins.Left = 5
+        Margins.Top = 0
+        Margins.Right = 5
+        Align = alClient
         ParentFont = False
         Properties.Items.Strings = (
           'Ekki skilgreint'
@@ -108,7 +108,11 @@ object frmCancelReservation2: TfrmCancelReservation2
         StyleHot.LookAndFeel.NativeStyle = False
         TabOrder = 0
         Text = 'cbxReason'
-        Width = 529
+        ExplicitLeft = 17
+        ExplicitTop = 17
+        ExplicitWidth = 529
+        ExplicitHeight = 21
+        Width = 535
       end
     end
   end
@@ -195,8 +199,8 @@ object frmCancelReservation2: TfrmCancelReservation2
       Font.Style = [fsBold]
     end
     object labCustomerInfo: TsLabel
-      Left = 112
-      Top = 19
+      Left = 118
+      Top = 13
       Width = 444
       Height = 17
       Anchors = [akLeft, akTop, akRight]
@@ -328,18 +332,5 @@ object frmCancelReservation2: TfrmCancelReservation2
     SortOptions = []
     Left = 208
     Top = 176
-  end
-  object ADODataSet1: TRoomerDataSet
-    CommandText = ''
-    CommandType = cmdUnknown
-    Parameters = <>
-    DataActive = False
-    RoomerStoreUri = 'http://localhost:8080/services/'
-    RoomerUri = 'http://localhost:8080/services/'
-    RoomerEntitiesUri = 'http://localhost:8080/services/entities/'
-    RoomerDatasetsUri = 'http://localhost:8080/services/datasets/'
-    SessionLengthSeconds = 0
-    Left = 119
-    Top = 128
   end
 end

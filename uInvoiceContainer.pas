@@ -693,8 +693,7 @@ begin
 end;
 
 procedure TInvoice.SendInvoice;
-var sTemp, url : String;
-  i: Integer;
+var url : String;
 begin
   DeleteItems;
   DeletePayments;
@@ -765,7 +764,6 @@ var
   node, node_temp: IXMLDomNode;
   nodes_tab, nodes_products, nodes_payments, nodes_customers : IXMLDomNodeList;
   i, j: Integer;
-  url: string;
 begin
   Doc := CreateOleObject('Microsoft.XMLDOM') as IXMLDOMDocument;
   Doc.async := False;
@@ -972,7 +970,9 @@ begin
     result := ltDiscount
   else
   if value = 'ROOMRENT' then
-    result := ltRoom;
+    result := ltRoom
+  else
+    result := ltSale;
 end;
 
 function TInvoiceLine.GetLineTypeAsText : String;
@@ -1006,16 +1006,11 @@ function TInvoiceLine.GetXml: String;
 var sId : String;
     PNet,
     PGross,
-    V,
-    multiplier : Double;
+    V: double;
 begin
   sId := inttostr(ID);
   if FIsNew then
     sId := '-1';
-  if InvoiceLineType = ltSale then
-    multiplier := FInvoice.CurrencyRate
-  else
-    multiplier := 1.00;
   PNet := PriceNet * FInvoice.CurrencyRate;
   PGross := PriceGross * FInvoice.CurrencyRate;
   V := Vat * FInvoice.CurrencyRate;

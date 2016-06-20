@@ -1523,6 +1523,10 @@ begin
                 'This simply means that if you will later change the booking nights and/or prices then you' + #13 +
                 'will need to manually change the city-tax' + #13#13 +
                 'Do you want to continue anyway?');
+
+  constants.Add('shTx_frmReservationExtras_AddedMoreThenAvailableInPeriod',
+                'One or more of the added Extras do not have enough available stock for the whole reservation period.'+ #13 +
+                'Do you want to continue anyway?');
 end;
 
 procedure AddConstants_OfflineReports;
@@ -1653,7 +1657,7 @@ begin
 //  frmSystemServers := TfrmSystemServers.Create(nil); frmSystemServers.Free; frmSystemServers := nil;
 //  frmSystemActions := TfrmSystemActions.Create(nil); frmSystemActions.Free; frmSystemActions := nil;
   frmStaffTypes2 := TfrmStaffTypes2.Create(nil); frmStaffTypes2.Free; frmStaffTypes2 := nil;
-  frmItems2 := TfrmItems2.Create(nil); frmItems2.Free; frmItems2 := nil;
+  TfrmItems2.Create(nil).Free;
   frmItemTypes2 := TfrmItemTypes2.Create(nil); frmItemTypes2.Free; frmItemTypes2 := nil;
   frmLocations := TfrmLocations.Create(nil); frmLocations.Free; frmLocations := nil;
   frmCurrencies := TfrmCurrencies.Create(nil); frmCurrencies.Free; frmCurrencies := nil;

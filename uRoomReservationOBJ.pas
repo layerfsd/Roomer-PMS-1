@@ -310,11 +310,9 @@ var
   RoomReservation   : integer ;
   s    : string;
   rSet : TRoomerDataSet;
-  i    : integer;
   sql : string;
   exePlan : TRoomerExecutionPlan;
 begin
-  RoomReservation := 0;
   result := 0;
   exePlan := d.roomerMainDataSet.CreateExecutionPlan;
   try

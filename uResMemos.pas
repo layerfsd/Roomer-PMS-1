@@ -51,7 +51,8 @@ uses
   , uUtils
   , cmpRoomerDataSet
   , cmpRoomerConnection, dxSkinsCore, dxSkinDarkSide, dxSkinDevExpressDarkStyle, dxSkinMcSkin, dxSkinOffice2013White,
-  dxSkinsDefaultPainters, dxSkinscxPCPainter, cxPropertiesStore, sButton, sLabel, sPanel, Vcl.DBCtrls, Vcl.ComCtrls, sPageControl
+  dxSkinsDefaultPainters, dxSkinscxPCPainter, cxPropertiesStore, sButton, sLabel, sPanel, Vcl.DBCtrls, Vcl.ComCtrls, sPageControl,
+  dxSkinCaramel, dxSkinCoffee, dxSkinTheAsphaltWorld
   ;
 
 type
@@ -148,7 +149,8 @@ uses
   , uAppGlobal
   , hdata
   , PrjConst
-  , uDImages;
+  , uDImages
+  , UITypes;
 
 {$R *.dfm}
 

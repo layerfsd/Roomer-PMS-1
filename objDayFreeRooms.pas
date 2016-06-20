@@ -185,11 +185,7 @@ constructor TFreeRooms.Create(HotelCode : String;sDate : TDateTime;occRooms : st
 begin
   inherited Create;
 
-  try
-    FRoomList := TFreeRoomItemsList.Create(True);
-  Except
-    //TODO Loga
-  end;
+  FRoomList := TFreeRoomItemsList.Create(True);
 
   FHotelCode := HotelCode;
   FsDate     := uDateUtils.dateToSqlString(sDate);
@@ -198,11 +194,7 @@ begin
 
   FRoomCount := 0;
 
-  try
-    FillList(sDate,FoccRooms,FRoomCount);
-  Except
-    // logga
-  end;
+  FillList(sDate,FoccRooms,FRoomCount);
 
 end;
 
@@ -220,45 +212,17 @@ end;
 
 procedure TFreeRooms.FillList(sDate : TDateTime;occRooms : string; var RoomCount: integer);
 var
-  RoomItem : TFreeRoomItem;
-
   rSet : TRoomerDataSet;
-
-  Room                : string  ;
-  Status              : string  ;
-  NextOcc             : string  ;
-
 begin
   ClearRoomList;
   if frmMain.OfflineMode then
     exit;
   rSet := d.roomerMainDataSet.ActivateNewDataset(
     d.roomerMainDataSet.SystemNextBookingDates(sDate, occRooms));
-  try
-    Rset.First;
-    While not rSet.Eof do
-    begin
-      Room                 := Rset.fieldbyname('Room').asString;
-      Status               := Rset.fieldbyname('Status').asString;
-      NextOcc              := Rset.fieldbyname('NextOcc').asString;
 
-      RoomItem := TFreeRoomItem.Create;
-      try
-        RoomItem.SetRoom(Room);
-        RoomItem.SetStatus(Status);
-        RoomItem.SetNextOcc(NextOcc);
-        FRoomList.Add(RoomItem);
-      except
-         // logga
-      end;
-      rSet.Next;
-    end;
-    RoomCount := FRoomList.Count;
-  finally
-    freeandNil(rSet);
-  end;
+  FillList(rSet);
 end;
-
+
 procedure TFreeRooms.FillList(var rSet : TRoomerDataSet);
 var
   RoomItem : TFreeRoomItem;

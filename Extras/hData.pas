@@ -388,7 +388,6 @@ type
 
     ItemAdded : TdateTime;
     RoomreservationAlias : Integer;
-
     InvoiceIndex : Integer;
   end;
 
@@ -1232,14 +1231,29 @@ type
     ReservationItem: boolean;
     Hide: boolean;
     Currency: string;
-
     BookKeepCode : String;
-
     NumberBase : String;
-
+    Stockitem: boolean;
+    TotalStock: integer;
+    StockItemPriceDate: TDateTime;
+    AvailabilityFrom: TDateTime;
+    AvailabilityTo: TDateTime;
+    RoomReservation: integer; // used to ignore usage of stockitem of current roomreservation when calculating availablestock
     // Missing fields to create
     // ItemTypeID
     // CurrencyID
+  end;
+
+  recStockItemCountHolder = record
+    ItemID: integer;
+    StockCount: integer;
+  end;
+
+  recStockItemPricesHolder = record
+    ID: integer;
+    ItemID: integer;
+    FromDate: TDate;
+    price: double;
   end;
 
   recDayNotesHolder = record
@@ -1519,7 +1533,6 @@ const
 
 
 var
-  zLstParams: TstringList;
   oRoomTypeRoomCount: TRoomTypeRoomCount;
 
   // function test : boolean;
@@ -1927,6 +1940,10 @@ function itemExistsInOther(sCode: string): boolean;
 function itemExist(sItem: string): boolean;
 function GET_ItemID(Item: string): integer;
 function GET_ItemCode(id: integer): string;
+
+function INS_StockItemPrice(theData: recStockItemPricesHolder; var aNewID: integer): boolean;
+function UPD_StockItemPrice(theData: recStockItemPricesHolder): boolean;
+function Del_StockItemPrice(theData: recStockItemPricesHolder): boolean;
 
 function GET_Location_ByLocation(var theData: recLocationHolder): boolean;
 function INS_location(theData: recLocationHolder; var NewID: integer): boolean;
@@ -3762,6 +3779,7 @@ begin
   s := s + ' 	, ' + _db(theData.Market.ToDBString) + #10;
   s := s + '   ) ';
   result := s;
+  copytoclipboard(s);
 end;
 
 function SP_INS_Reservation(theData: recReservationHolder): boolean;
@@ -11254,15 +11272,35 @@ begin
   s := s + '   ,Currency = ' + _db(theData.Currency) + ' ' + #10;
   s := s + '   ,BookKeepCode = ' + _db(theData.BookKeepCode) + ' ' + #10;
   s := s + '   ,NumberBase = ' + _db(theData.NumberBase) + ' ' + #10;
+  s := s + '   ,Stockitem= ' + _db(theData.StockItem) + ' ' + #10;
   s := s + ' WHERE ' + #10;
   s := s + '   (ID = ' + _db(theData.id) + ') ';
-  result := cmd_bySQL(s);
+
+  d.roomerMainDataSet.SystemStartTransaction;
+  try
+    result := cmd_bySQL(s);
+    if Result and theData.Stockitem and (theData.TotalStock > 0) then
+    begin
+      s := 'INSERT INTO stockitems (itemid, totalstock) VALUES ( ' + _db(theData.ID)  + ' , ' + _db(theData.TotalStock) + ') '+
+           ' ON DUPLICATE KEY UPDATE itemid=' + _db(theData.ID)  + ', totalstock=' + _db(theData.TotalStock);
+      Result := cmd_bySQL(s);
+    end;
+    if result then
+      d.roomerMainDataSet.SystemCommitTransaction
+    else
+      d.roomerMainDataSet.SystemRollbackTransaction;
+
+  except
+    d.roomerMainDataSet.SystemRollbackTransaction;
+    raise;
+  end;
 end;
 
 function INS_Item(theData: recItemHolder; var NewID: integer): boolean;
 var
   s: string;
 begin
+
   s := '';
   s := s + 'INSERT INTO items ' + #10;
   s := s + '   ( ' + #10;
@@ -11281,6 +11319,7 @@ begin
   s := s + '    ,Currency ' + #10;
   s := s + '    ,BookKeepCode ' + #10;
   s := s + '    ,NumberBase ' + #10;
+  s := s + '    ,StockItem' + #10;
   s := s + '   ) ' + #10;
   s := s + '   VALUES ' + #10;
   s := s + '   ( ' + #10;
@@ -11299,13 +11338,34 @@ begin
   s := s + '  , ' + _db(theData.Currency) + #10;
   s := s + '  , ' + _db(theData.BookKeepCode) + #10;
   s := s + '  , ' + _db(theData.NumberBase) + #10;
+  s := s + '  , ' + _db(theData.StockItem) + #10;
   s := s + '   ) ';
-  result := cmd_bySQL(s);
-  if result then
-  begin
-    NewID := GetLastID('items');
-  end;
 
+  d.roomerMainDataSet.SystemStartTransaction;
+  try
+    Result := cmd_bySQL(s);
+    if Result then
+    begin
+      NewID := GetLastID('items');
+      if theData.Stockitem and (theData.TotalStock > 0) then
+      begin
+        s := 'INSERT INTO stockitems (itemid, totalstock) VALUES '#10 +
+             ' ( ' +
+                _db(theData.ID) + ' ' +
+                ', ' + _db(theData.TotalStock) + ' ' +
+                ')  ';
+      result := cmd_bySQL(s);
+      end;
+    end;
+
+    if result then
+      d.roomerMainDataSet.SystemCommitTransaction
+    else
+      d.roomerMainDataSet.SystemRollbackTransaction;
+  except
+    d.roomerMainDataSet.SystemRollbackTransaction;
+    raise;
+  end;
 end;
 
 function GET_Item_ByItem(var theData: recItemHolder): boolean;
@@ -11334,6 +11394,8 @@ begin
       theData.Currency := rSet.fieldbyname('Currency').asString;
       theData.BookKeepCode := rSet.fieldbyname('BookKeepCode').asString;
       theData.NumberBase := rSet.fieldbyname('NumberBase').asString;
+      theData.StockItem:= rSet.fieldbyname('StockItem').asBoolean;
+      theData.TotalStock := rSet.fieldbyname('TotalStock').AsInteger;
       result := true;
     end;
   finally
@@ -11417,6 +11479,56 @@ begin
 end;
 
 
+function Del_StockitemPrice(theData: recStockItemPricesHolder): boolean;
+var
+  s: string;
+begin
+  s := '';
+  s := s + ' DELETE ' + chr(10);
+  s := s + '   FROM stockitemsprices ' + chr(10);
+  s := s + ' WHERE  ' + chr(10);
+  s := s + '   (ID =' + _db(theData.ID) + ') ';
+  result := cmd_bySQL(s);
+end;
+
+function UPD_StockitemPrice(theData: recStockItemPricesHolder): boolean;
+var
+  s: string;
+begin
+  s := '';
+  s := s + ' UPDATE stockitemprices ' + #10;
+  s := s + ' SET ' + #10;
+  s := s + '   fromdate = ' + _db(theData.FromDate);
+  s := s + ',  price = ' + _db(theData.price);
+  s := s + ' WHERE ' + #10;
+  s := s + '   (ID = ' + _db(theData.id) + ') ';
+  result := cmd_bySQL(s);
+end;
+
+function INS_StockitemPrice(theData: recStockItemPricesHolder; var aNewID: integer): boolean;
+var
+  s: string;
+begin
+  s := '';
+  s := s + 'INSERT INTO stockitemprices ' + #10;
+  s := s + '   ( ' + #10;
+  s := s + '     itemID' + #10;
+  s := s + '    ,fromdate' + #10;
+  s := s + '    ,Price ' + #10;
+  s := s + '   ) ' + #10;
+  s := s + '   VALUES ' + #10;
+  s := s + '   ( ' + #10;
+  s := s + '    ' + _db(theData.ItemID) + #10;
+  s := s + '  , ' + _db(theData.FromDate) + #10;
+  s := s + '  , ' + _db(theData.price) + #10;
+  s := s + '   ) ';
+  result := cmd_bySQL(s);
+  if result then
+  begin
+    aNewID := GetLastID('stockitemprices');
+  end;
+
+end;
 
 // recLocationHolder = record
 // ID              : integer ;
@@ -15291,76 +15403,75 @@ end;
 initialization
 
 { initialization code goes here }
-zLstParams := TstringList.Create;
 
-listOfTables := TstringList.Create;
-listOfTables.Add('cancellationdetails');
-listOfTables.Add('channelrates');
-listOfTables.Add('channelratesavailabilities');
-listOfTables.Add('channelratesplans');
-listOfTables.Add('channels');
-listOfTables.Add('colors');
-listOfTables.Add('control');
-listOfTables.Add('countries');
-listOfTables.Add('countrygroups');
-listOfTables.Add('currencies');
-listOfTables.Add('Staffpreferences');
-listOfTables.Add('Customers');
-listOfTables.Add('Customestypes');
-listOfTables.Add('facilityactiontypes');
-listOfTables.Add('invoiceheads');
-listOfTables.Add('invoicelines');
-listOfTables.Add('invoicelinestmp');
-listOfTables.Add('items');
-listOfTables.Add('itemtypes');
-listOfTables.Add('locations');
-listOfTables.Add('maintenancecodes');
-listOfTables.Add('maintenanceroomnotes');
-listOfTables.Add('paygroups');
-listOfTables.Add('payments');
-listOfTables.Add('paytypes');
-listOfTables.Add('persons');
-listOfTables.Add('plancodes');
-listOfTables.Add('predefineddates');
-listOfTables.Add('pricetypes');
-listOfTables.Add('reservations');
-listOfTables.Add('roomreservations');
-listOfTables.Add('rooms');
-listOfTables.Add('roomsdate');
-listOfTables.Add('roomsdatetemp');
-listOfTables.Add('roomtypegroups');
-listOfTables.Add('roomtyperules');
-listOfTables.Add('roomtypes');
-listOfTables.Add('StaffMembers');
-listOfTables.Add('stafftypes');
-listOfTables.Add('tblconvertgroups');
-listOfTables.Add('tblconverts');
-listOfTables.Add('tbldelpersons');
-listOfTables.Add('tbldelreservations');
-listOfTables.Add('tbldelroomreservations');
-listOfTables.Add('tblhiddeninfo');
-listOfTables.Add('tblimportlogs');
-listOfTables.Add('tblinc');
-listOfTables.Add('tblinvoiceactions');
-listOfTables.Add('tblmaidactions');
-listOfTables.Add('tblmaidjobs');
-listOfTables.Add('tblmaidlists');
-listOfTables.Add('tblpoxexport');
-listOfTables.Add('tblpricecodes');
-listOfTables.Add('tblroomstatus');
-listOfTables.Add('tblseasons');
-listOfTables.Add('teldevices');
-listOfTables.Add('tellog');
-listOfTables.Add('telpricegroups');
-listOfTables.Add('telpricerules');
-listOfTables.Add('ttmp');
-listOfTables.Add('vatcodes');
+  listOfTables := TstringList.Create;
+  listOfTables.Add('cancellationdetails');
+  listOfTables.Add('channelrates');
+  listOfTables.Add('channelratesavailabilities');
+  listOfTables.Add('channelratesplans');
+  listOfTables.Add('channels');
+  listOfTables.Add('colors');
+  listOfTables.Add('control');
+  listOfTables.Add('countries');
+  listOfTables.Add('countrygroups');
+  listOfTables.Add('currencies');
+  listOfTables.Add('Staffpreferences');
+  listOfTables.Add('Customers');
+  listOfTables.Add('Customestypes');
+  listOfTables.Add('facilityactiontypes');
+  listOfTables.Add('invoiceheads');
+  listOfTables.Add('invoicelines');
+  listOfTables.Add('invoicelinestmp');
+  listOfTables.Add('items');
+  listOfTables.Add('itemtypes');
+  listOfTables.Add('locations');
+  listOfTables.Add('maintenancecodes');
+  listOfTables.Add('maintenanceroomnotes');
+  listOfTables.Add('paygroups');
+  listOfTables.Add('payments');
+  listOfTables.Add('paytypes');
+  listOfTables.Add('persons');
+  listOfTables.Add('plancodes');
+  listOfTables.Add('predefineddates');
+  listOfTables.Add('pricetypes');
+  listOfTables.Add('reservations');
+  listOfTables.Add('roomreservations');
+  listOfTables.Add('rooms');
+  listOfTables.Add('roomsdate');
+  listOfTables.Add('roomsdatetemp');
+  listOfTables.Add('roomtypegroups');
+  listOfTables.Add('roomtyperules');
+  listOfTables.Add('roomtypes');
+  listOfTables.Add('StaffMembers');
+  listOfTables.Add('stafftypes');
+  listOfTables.Add('tblconvertgroups');
+  listOfTables.Add('tblconverts');
+  listOfTables.Add('tbldelpersons');
+  listOfTables.Add('tbldelreservations');
+  listOfTables.Add('tbldelroomreservations');
+  listOfTables.Add('tblhiddeninfo');
+  listOfTables.Add('tblimportlogs');
+  listOfTables.Add('tblinc');
+  listOfTables.Add('tblinvoiceactions');
+  listOfTables.Add('tblmaidactions');
+  listOfTables.Add('tblmaidjobs');
+  listOfTables.Add('tblmaidlists');
+  listOfTables.Add('tblpoxexport');
+  listOfTables.Add('tblpricecodes');
+  listOfTables.Add('tblroomstatus');
+  listOfTables.Add('tblseasons');
+  listOfTables.Add('teldevices');
+  listOfTables.Add('tellog');
+  listOfTables.Add('telpricegroups');
+  listOfTables.Add('telpricerules');
+  listOfTables.Add('ttmp');
+  listOfTables.Add('vatcodes');
+
+
 
 finalization
-
-{ finalization code goes here }
-freeandnil(zLstParams);
-if hData.oRoomTypeRoomCount <> nil then
-  freeandnil(hData.oRoomTypeRoomCount);
+  { finalization code goes here }
+  if hData.oRoomTypeRoomCount <> nil then
+    freeandnil(hData.oRoomTypeRoomCount);
 
 end.

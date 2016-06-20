@@ -178,20 +178,14 @@ type
     { Private declarations }
      zLocationInString : string;
      zIsOneDay : Boolean;
-     zDate : TDate;
      zDatefrom : TDate;
      zDateTo : Tdate;
 
-     zReservationCount : integer;
-
      procedure showdata;
-     function GetInList : string;
-     function queryRvlst(DateFrom,DateTo :  Tdate; Flags : string=''  ;customer : string = '') : tstringList;
      function StatusSQL : string;
      procedure ApplyFilter;
     function GetInListSql: string;
     function queryRvlstSql(DateFrom,DateTo :  Tdate; Flags : string=''  ;customer : string = '') : String;
-    procedure Moment;
     procedure CreateData;
 
   public
@@ -232,9 +226,7 @@ end;
 
 function TfrmRptGuests.StatusSQL : string;
 var
-  sFilter : string;
   sRooms   : string;
-  i : integer;
 begin
   result := '';
 
@@ -463,45 +455,6 @@ end;
   end;
 
 
-  function TfrmRptGuests.queryRvlst(DateFrom,DateTo :  Tdate; Flags : string=''  ;customer : string = '') : tstringList;
-  var
-    s        : string;
-    Rset     : TRoomerDataSet;
-    listItem : integer;
-    sql      : string;
-  begin
-    result := tstringList.Create;
-
-    Rset := CreateNewDataSet;
-    try
-      sql := '';
-      sql := sql +'  SELECT'#10;
-      sql := sql +'    DISTINCT'#10;
-      sql := sql +'    rd.RoomReservation'#10;
-      sql := sql +'  FROM'#10;
-      sql := sql +'    roomsdate rd '#10;
-      sql := sql +'  WHERE'#10;
-      sql := sql +'        (rd.ADate >=  %s ) AND (rd.ADate <=  %s ) AND (rd.ResFlag in '+Flags+')'#10;
-      sql := sql +'  ORDER BY rd.RoomReservation';
-
-      s := format(sql , [_DateToDbDate(DateFrom,true),_DateToDbDate(DateTo,true)]);
-//      copyToClipboard(s);
-//      DebugMessage(s);
-
-      if hData.rSet_bySQL(rSet,s) then
-    	begin
-        while not Rset.Eof do
-        begin
-          ListItem := Rset.fieldbyname('RoomReservation').asInteger;
-          result.Add(inttostr(listItem));
-          Rset.Next;
-        end;
-      end;
-    finally
-      freeandnil(Rset);
-    end;
-  end;
-
 
 
 procedure TfrmRptGuests.rgrShowClick(Sender: TObject);
@@ -511,9 +464,6 @@ end;
 
 function TfrmRptGuests.GetInListSql : string;
 var
-  s      : string;
-  rvList : TstringList;
-  i      : integer;
   dateTo : Tdate;
   inStr : string;
 begin
@@ -529,68 +479,18 @@ begin
   result := queryRvlstSql(zDateFrom, dateTo, instr );
 end;
 
-function TfrmRptGuests.GetInList : string;
-var
-  s      : string;
-  rvList : TstringList;
-  i      : integer;
-  dateTo : Tdate;
-  inStr : string;
-begin
-  result := '';
-  zDateFrom := dtdate.Date;
-  zDateTo := dtDateTo.Date;
-
-  if zIsOneDay then zDateTo := ZdateFrom;
-
-
-  instr := StatusSQL;
-  dateTo := zdateTo; // +1;
-  rvList := queryRvlst(zDateFrom, dateTo, instr );
-
-  try
-    s := '';
-    for i := 0 to rvList.Count - 1 do
-    begin
-      if rvList[i] <> '0' then
-        s := s+rvList[i]+',';
-    end;
-    if length(s) > 0 then
-    begin
-      delete(s,length(s),1);
-      s := '('+s+')';
-      result := s;
-    end;
-    zReservationCount := rvList.count;
-  finally
-    freeandNil(rvList);
-  end;
-  result := s;
-
-  if result = '' then
-    result := '(-1)';
-end;
-
 
 procedure TfrmRptGuests.sButton1Click(Sender: TObject);
 var
   iReservation : integer;
-  iRoomReservation : integer;
 begin
   iReservation := KbmGuests.fieldbyname('Reservation').AsInteger;
-  iRoomReservation := 0;
   g.openresMemo(iReservation);
 end;
 
 procedure TfrmRptGuests.btnCollapseClick(Sender: TObject);
 begin
    tvGuests.DataController.Groups.FullCollapse;
-end;
-
-procedure TfrmRptGuests.Moment;
-begin
-  Application.ProcessMessages;
-  Sleep(20);
 end;
 
 procedure TfrmRptGuests.showdata;

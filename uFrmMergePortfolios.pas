@@ -22,7 +22,6 @@ type
     procedure FormCreate(Sender: TObject);
   private
     { Private declarations }
-    Data: TRoomerDataset;
     GuestId1,
     GuestId2: Integer;
 

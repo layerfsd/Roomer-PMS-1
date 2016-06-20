@@ -69,7 +69,6 @@ type
     labCustomerInfo: TsLabel;
     labGuestInfo: TsLabel;
     labdateInfo: TsLabel;
-    ADODataSet1: TRoomerDataSet;
     cxLabel5: TsLabel;
     labResStatus: TsLabel;
     sPanel1: TsPanel;

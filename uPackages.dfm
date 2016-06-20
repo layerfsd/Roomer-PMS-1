@@ -32,7 +32,7 @@ object frmPackages: TfrmPackages
     object labFilterWarning: TsLabel
       Left = 1
       Top = 67
-      Width = 742
+      Width = 4
       Height = 13
       Align = alBottom
       Alignment = taCenter
@@ -43,7 +43,6 @@ object frmPackages: TfrmPackages
       Font.Height = -11
       Font.Name = 'Tahoma'
       Font.Style = []
-      ExplicitWidth = 4
     end
     object cLabFilter: TsLabel
       Left = 19
@@ -492,7 +491,6 @@ object frmPackages: TfrmPackages
     BeforeInsert = m_BeforeInsert
     BeforePost = m_BeforePost
     BeforeDelete = m_BeforeDelete
-    AfterScroll = m_AfterScroll
     OnCalcFields = m_CalcFields
     OnNewRecord = m_NewRecord
     Left = 224

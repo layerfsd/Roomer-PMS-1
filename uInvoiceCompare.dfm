@@ -62,6 +62,8 @@ object frmInvoiceCompare: TfrmInvoiceCompare
     SkinData.SkinSection = 'PAGECONTROL'
     object sTabSheet1: TsTabSheet
       Caption = 'Invoicehead'
+      SkinData.CustomColor = False
+      SkinData.CustomFont = False
       ExplicitLeft = 0
       ExplicitTop = 0
       ExplicitWidth = 0
@@ -477,6 +479,8 @@ object frmInvoiceCompare: TfrmInvoiceCompare
     end
     object sTabSheet2: TsTabSheet
       Caption = 'Invoicelines'
+      SkinData.CustomColor = False
+      SkinData.CustomFont = False
       ExplicitLeft = 0
       ExplicitTop = 0
       ExplicitWidth = 0
@@ -493,6 +497,8 @@ object frmInvoiceCompare: TfrmInvoiceCompare
     end
     object sTabSheet3: TsTabSheet
       Caption = 'Payments'
+      SkinData.CustomColor = False
+      SkinData.CustomFont = False
       ExplicitLeft = 0
       ExplicitTop = 0
       ExplicitWidth = 0
@@ -509,6 +515,8 @@ object frmInvoiceCompare: TfrmInvoiceCompare
     end
     object sTabSheet4: TsTabSheet
       Caption = 'Log'
+      SkinData.CustomColor = False
+      SkinData.CustomFont = False
       ExplicitLeft = 0
       ExplicitTop = 0
       ExplicitWidth = 0
@@ -577,17 +585,14 @@ object frmInvoiceCompare: TfrmInvoiceCompare
     end
   end
   object mInvoicelines_beforeDS: TDataSource
-    DataSet = d.mInvoicelines_before
     Left = 248
     Top = 344
   end
   object mInvoicelines_afterDS: TDataSource
-    DataSet = d.mInvoicelines_after
     Left = 104
     Top = 340
   end
   object mInvoicelogDS: TDataSource
-    DataSet = d.mInvoicelog
     Left = 528
     Top = 208
   end

@@ -1,43 +1,35 @@
 unit uChangeRRdates;
 
 (*
-   121207 - checked for ww
+  121207 - checked for ww
 *)
-
 
 interface
 
 uses
-    Windows
-  , Messages
-  , SysUtils
-  , Variants
-  , Classes
-  , Graphics
-  , Controls
-  , Forms
-  , Dialogs
-  , StdCtrls
-  , Buttons
-  , ExtCtrls
-
-  ,_glob
-  , ug
-  , uAppGlobal
-  , ustringUtils
-
-  , cmpRoomerDataSet
-  , cmpRoomerConnection
-
-  , ComCtrls
-  , PlannerDatePicker
-  , sSkinProvider
-  , sLabel
-  , sGroupBox
-  , sPanel
-  , sButton, AdvEdit, AdvEdBtn, Vcl.Mask, sMaskEdit, sCustomComboEdit, sTooledit, sEdit, sSpinEdit, acProgressBar
-
-  ;
+  Classes
+    , Windows
+    , Forms
+    , PlannerDatePicker
+    , sSkinProvider
+    , sLabel
+    , sGroupBox
+    , sPanel
+    , sButton
+    , AdvEdit
+    , AdvEdBtn
+    , sEdit
+    , sSpinEdit
+    , Vcl.Mask
+    , sMaskEdit
+    , sCustomComboEdit
+    , sToolEdit
+    , acProgressBar
+    , Vcl.Controls
+    , Vcl.ExtCtrls
+    , Vcl.StdCtrls
+    , Vcl.ComCtrls
+    ;
 
 type
   TfrmChangeRRdates = class(TForm)
@@ -89,8 +81,6 @@ type
     pbProgress: TsProgressBar;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure FormClose(Sender: TObject; var Action: TCloseAction);
-    procedure FormDestroy(Sender: TObject);
     procedure btnOKClick(Sender: TObject);
     procedure btnCancelClick(Sender: TObject);
     procedure dtArrivalChange(Sender: TObject);
@@ -104,58 +94,58 @@ type
   private
     { Private declarations }
 
-    nextRoomReservation : integer;
-    nextReservation     : integer;
-    nextName      : string;
-    nextGuest     : string;
+    nextRoomReservation: integer;
+    nextReservation: integer;
+    nextName: string;
+    nextGuest: string;
 
-    nextArrival   : Tdate;
-    nextDeparture : Tdate;
-    nextDays      : integer;
+    nextArrival: Tdate;
+    nextDeparture: Tdate;
+    nextDays: integer;
 
-    nextStatus    : string;
+    nextStatus: string;
 
+    LastRoomReservation: integer;
+    LastReservation: integer;
+    LastName: string;
+    LastGuest: string;
 
-    LastRoomReservation : integer;
-    LastReservation     : integer;
-    LastName      : string;
-    LastGuest     : string;
+    LastArrival: Tdate;
+    LastDeparture: Tdate;
+    LastDays: integer;
 
-    LastArrival   : Tdate;
-    LastDeparture : Tdate;
-    LastDays      : integer;
+    LastStatus: string;
 
-    LastStatus    : string;
+    oldArrival: Tdate;
+    oldDeparture: Tdate;
 
-    oldArrival   : TDate;
-    oldDeparture : TDate;
+    zFirstTime: boolean;
 
-    zFirstTime : boolean;
-
-    function FuncGetNightCount : boolean;
-    function RV_ChangeRoomDates(Reservation : integer) : boolean;
+    procedure UpdateControls;
+    function RV_ChangeRoomDates(Reservation: integer): boolean;
 
   public
     { Public declarations }
-    zArrival   : Tdate;
-    zDeparture : Tdate;
+    zArrival: Tdate;
+    zDeparture: Tdate;
 
-    zReservation     : integer;
-    zRoomReservation : integer;
+    zReservation: integer;
+    zRoomReservation: integer;
 
-    zNights    : Integer;
+    zNights: integer;
 
-    zStartIn   : integer;
-    zDate      : Tdate;
-    zRoom      : string;
+    zStartIn: integer;
+    zDate: Tdate;
+    zRoom: string;
 
-    zCalcPrice : boolean;
+    zCalcPrice: boolean;
 
-    zIsPaid : boolean;
+    zIsPaid: boolean;
 
   end;
 
-function RR_ChangeDates(RoomReservation : integer; newArrival, newDeparture : Tdate; PriceMedhod : integer; var isPaid : boolean; trx : Boolean = true) : boolean;
+function RR_ChangeDates(RoomReservation: integer; newArrival, newDeparture: Tdate; PriceMedhod: integer;
+  var isPaid: boolean; trx: boolean = true): boolean;
 
 var
   frmChangeRRdates: TfrmChangeRRdates;
@@ -163,473 +153,407 @@ var
 implementation
 
 uses
-    uD
-  , uMain
-  , hData
-  , uProvideARoom2
-  , uSqlDefinitions
-  , PrjConst
-  , uDImages
-  , objNewReservation
-  , uDateUtils
-  , uRoomerDefinitions
-  , uUtils
-
-  ;
+  hData
+    ,  Dialogs
+    , uD
+    , SysUtils
+    , Graphics
+    ,_glob
+    , ug
+    , uAppGlobal
+    , ustringUtils
+    , cmpRoomerDataSet
+    , uProvideARoom2
+    , uSqlDefinitions
+    , PrjConst
+    , uDateUtils
+    , uRoomerDefinitions
+    , uUtils
+    , UITypes
+    ;
 
 {$R *.dfm}
 
 
-  function RR_ChangeDates(RoomReservation : integer; newArrival, newDeparture : Tdate; PriceMedhod : integer;  var isPaid : boolean; trx : Boolean = true) : boolean;
-  var
-    lst : tstringlist;
+function RR_ChangeDates(RoomReservation: integer; newArrival, newDeparture: Tdate; PriceMedhod: integer;
+  var isPaid: boolean; trx: boolean = true): boolean;
+var
+  lst: tstringlist;
+  iNumErrors: integer;
 
-    function foundInList(const lookFor : string) : boolean;
-    var
-      i : integer;
-    begin
-      result := false;
-      for i := 0 to lst.Count - 1 do
-      begin
-        if _trimlower(lookFor) = lst[i] then
-          result := true;
-      end;
-    end;
+  s: string;
 
-  var
-    iNumErrors : integer;
+  Reservation: integer;
 
-    s : string;
+  Room: string;
+  RoomType: string;
+  status: string;
 
-    reservation : integer;
+  Currency: string;
 
-    Room : string;
-    RoomType : string;
-    status : string;
+  sNewArrival: string;
+  sNewDeparture: string;
 
-    Currency : string;
+  sOldArrival: string;
+  sOldDeparture: string;
 
-    sNewArrival : string;
-    sNewDeparture : string;
+  NumDays: integer;
 
-    sOldArrival : string;
-    sOldDeparture : string;
+  Rset: TRoomerDataSet;
 
-    NumDays : integer;
+  doIt: boolean;
+  ii: integer;
 
-    Rset : TRoomerDataSet;
+  conflict_RoomReservation: integer;
+  sConflict_Roomreservation: string;
+  chkDate: Tdate;
 
-    doIt : boolean;
-    ii : integer;
+  DayCount: integer;
+  Processed: integer;
+  FirstDate: Tdate;
+  LastDate: Tdate;
 
-    conflict_RoomReservation : integer;
-    sConflict_Roomreservation : string;
-    chkDate : Tdate;
+  rate: double;
+  sDate: string;
 
-    DayCount : integer;
-    Processed : integer;
-    FirstDate : Tdate;
-    LastDate : Tdate;
+  priceType: string;
 
-    rate : double;
-    sDate : string;
+  Discount: double;
+  isPercentage: boolean;
+  showDiscount: boolean;
 
-    guestCount  : integer;
-    childCount  : integer;
-    infantCount : integer;
-    PriceID     : integer;
+  rd_: TRoomerDataSet;
+  rec: recRoomsDateHolder;
+  recFirst: recRoomsDateHolder;
+  recLast: recRoomsDateHolder;
 
-    priceType : string;
-
-    Discount     : double ;
-    isPercentage : boolean;
-    showDiscount : boolean;
+  rdCount: integer;
+  roomRateTotal: double;
+  lstPrices: tstringlist;
+  roomRate: double;
+  discountTotal: double;
+  avrageRate: double;
+  avrageDiscount: double;
+  rateCount: integer;
 
 
-  rd_ : TRoomerDataSet;
-  rec      : recRoomsDateHolder;
-  recFirst : recRoomsDateHolder;
-  recLast  : recRoomsDateHolder;
+  oldDayCount: integer;
+  newDayCount: integer;
 
-  rdCount : integer;
-  roomRateTotal : double;
-  lstPrices     : TstringList;
-  roomRate      : double;
-  discountTotal : double;
-  avrageRate     : double;
-  avrageDiscount : double;
-  rateCount      : integer;
+  paidCount: integer;
+  isNoRoom: boolean;
+  temp: String;
 
+  ExePlan: TRoomerExecutionPlan;
 
-  oldArrival : Tdate;
-  oldDeparture : Tdate;
-
-  oldDayCount : integer;
-  newDayCount : integer;
-
-  paidCount : integer;
-  isNoRoom : boolean;
-  id : integer;
-  temp : String;
-
-  ExePlan : TRoomerExecutionPlan;
-
-
-  begin
+begin
+  Result := False;
+  DoIt := false;
   screen.Cursor := crHourglass;
-  lstPrices := TstringList.Create;
+
+  avrageDiscount := 0;
+  avrageRate := 0;
+  rateCount := 0;
+  paidCount := 0;
+
+  rd_ := nil;
+  Rset := nil;
+  lstPrices := TStringlist.Create;
   try
     lstPrices.Sorted := true;
     lstPrices.Duplicates := dupIgnore;
 
-    sNewArrival    := _DateToDBDate(newArrival,false);
-    sNewDeparture  := _DateToDBDate(newDeparture,false);
-    NumDays        := trunc(newDeparture) - trunc(newArrival);
-
+    sNewArrival := _DateToDBDate(newArrival, false);
+    sNewDeparture := _DateToDBDate(newDeparture, false);
+    NumDays := trunc(newDeparture) - trunc(newArrival);
 
     if NumDays < 1 then
     begin
-	    Showmessage(GetTranslatedText('shTx_ChangeRRdates_CheckDates'));
+      Showmessage(GetTranslatedText('shTx_ChangeRRdates_CheckDates'));
       exit;
     end;
 
     rd_ := CreateNewDataSet;
-    try
-      s := '';
-      s := s+'SELECT * '#10;
-      s := s+'FROM roomsdate '#10;
-      s := s+'WHERE '#10;
-      s := s+'  (roomreservation = %d) '#10;
-      s := s+'   AND (ResFlag <> '+_db(STATUS_DELETED)+' ) ';  //zxhj line added
-      s := s+'ORDER BY '#10;
-      s := s+'  ADate '#10;
-      s := format(s , [RoomReservation]);
-      if hData.rSet_bySQL(rd_,s) then
+
+    s := '';
+    s := s + 'SELECT * '#10;
+    s := s + 'FROM roomsdate '#10;
+    s := s + 'WHERE '#10;
+    s := s + '  (roomreservation = %d) '#10;
+    s := s + '   AND (ResFlag <> ' + _db(STATUS_DELETED) + ' ) '; // zxhj line added
+    s := s + 'ORDER BY '#10;
+    s := s + '  ADate '#10;
+    s := format(s, [RoomReservation]);
+    if hData.rSet_bySQL(rd_, s) then
+    begin
+      roomRateTotal := 0;
+      discountTotal := 0;
+      rdCount := 0;
+      while not rd_.eof do
       begin
-        rdCount   := 0;
-        paidCount := 0;
-        while not rd_.eof do
+        inc(rdCount);
+        if rd_.FieldByName('paid').asBoolean = true then
+          inc(paidCount);
+
+        roomRate := rd_.GetFloatValue(rd_.FieldByName('RoomRate'));
+        Discount := rd_.GetFloatValue(rd_.FieldByName('Discount'));
+        lstPrices.Add(floatTostr(roomRate) + floatTostr(Discount));
+        roomRateTotal := roomRateTotal + roomRate;
+        discountTotal := discountTotal + Discount;
+        rd_.Next;
+      end;
+      avrageRate := roomRateTotal / rdCount;
+      avrageDiscount := discountTotal / rdCount;
+      rateCount := lstPrices.Count;
+    end;
+
+    Rset := CreateNewDataSet;
+    s := '';
+    s := s + 'SELECT rr.*, '#10;
+    s := s + '(SELECT GROUP_CONCAT(RoomReservation) ' +
+      'FROM roomsdate ' +
+      'WHERE ADate BETWEEN ''%s'' AND ''%s'' ' +
+      'AND Room=rr.Room ' +
+      'AND NOT (ResFlag IN (''X'',''C'')) ' +
+      'AND RoomReservation != %d ' +
+      'GROUP BY Room) AS Conflicts,'#10;
+    s := s + '(SELECT GROUP_CONCAT(ADate) ' +
+      'FROM roomsdate ' +
+      'WHERE ADate BETWEEN ''%s'' AND ''%s'' ' +
+      'AND RoomReservation = %d) AS existingDates ';
+    s := s + 'FROM `roomreservations` rr '#10;
+    s := s + 'WHERE '#10;
+    s := s + '  (rr.roomreservation = %d) '#10;
+    s := format(s, [dateToSqlString(newArrival),
+      dateToSqlString(newArrival + NumDays - 1),
+      RoomReservation,
+      dateToSqlString(newArrival),
+      dateToSqlString(newArrival + NumDays - 1),
+      RoomReservation,
+      RoomReservation]);
+
+    if hData.rSet_bySQL(Rset, s) then
+    begin
+      Room := trim(Rset.FieldByName('Room').asString);
+      Reservation := Rset.FieldByName('Reservation').asInteger;
+      RoomType := trim(Rset.FieldByName('RoomType').asString);
+      status := Rset.FieldByName('Status').asString;
+      priceType := trim(Rset.FieldByName('PriceType').asString);
+      Currency := trim(Rset.FieldByName('Currency').asString);
+
+      temp := Rset.FieldByName('Conflicts').asString;
+      lst := tstringlist.Create;
+      try
+        if trim(temp) <> '' then
+          lst.AddStrings(SplitStringToTStrings(',', temp));
+        doIt := true;
+        isNoRoom := false;
+        if lst.Count > 0 then
         begin
-          inc(RdCount);
-          if rd_.FieldByName('paid').asBoolean = true  then inc(PaidCount);
-
-          roomRate := rd_.GetFloatValue(rd_.FieldByName('RoomRate'));
-          discount := rd_.GetFloatValue(rd_.FieldByName('Discount'));
-          lstPrices.Add(floatTostr(RoomRate)+floatTostr(discount));
-          roomRateTotal := roomRateTotal+roomRate;
-          discountTotal := discountTotal+discount;
-          rd_.Next;
-        end;
-        avrageRate     := roomRateTotal/rdCount;
-        avrageDiscount := discountTotal/rdCount;
-        rateCount      := lstPrices.Count;
-      end;
-    finally
-    end;
-
-      Discount     := 0.00;
-      isPercentage := true;
-      showDiscount := true;
-
-        Rset := CreateNewDataSet;
-        try
-          s := '';
-          s := s+'SELECT rr.*, '#10;
-//          s := s+'`roomreservations`.`Room`, '#10;
-//          s := s+'`roomreservations`.`Reservation`, '#10;
-//          s := s+'`roomreservations`.`Discount`, '#10;
-//          s := s+'`roomreservations`.`Status`, '#10;
-//          s := s+'`roomreservations`.`Arrival`, '#10;
-//          s := s+'`roomreservations`.`Departure`, '#10;
-//          s := s+'`roomreservations`.`RoomType`, '#10;
-//          s := s+'`roomreservations`.`ID`, '#10;
-//          s := s+'`roomreservations`.`numGuests`, '#10;
-//          s := s+'`roomreservations`.`priceType`, '#10;
-//          s := s+'`roomreservations`.`currency`, '#10;
-//          s := s+'`roomreservations`.`numChildren`, '#10;
-//          s := s+'`roomreservations`.`numInfants`, '#10;
-//          s := s+'`roomreservations`.`AvrageRate`, '#10;
-//          s := s+'`roomreservations`.`rrArrival`, '#10;
-//          s := s+'`roomreservations`.`rrDeparture`, '#10;
-//          s := s+'`roomreservations`.`RateCount` '#10;
-          s := s+'(SELECT GROUP_CONCAT(RoomReservation) ' +
-                 'FROM roomsdate ' +
-                 'WHERE ADate BETWEEN ''%s'' AND ''%s'' ' +
-                 'AND Room=rr.Room ' +
-                 'AND NOT (ResFlag IN (''X'',''C'')) ' +
-                 'AND RoomReservation != %d ' +
-                 'GROUP BY Room) AS Conflicts,'#10;
-          s := s+'(SELECT GROUP_CONCAT(ADate) ' +
-                 'FROM roomsdate ' +
-                 'WHERE ADate BETWEEN ''%s'' AND ''%s'' ' +
-                 'AND RoomReservation = %d) AS existingDates ';
-          s := s+'FROM `roomreservations` rr '#10;
-          s := s+'WHERE '#10;
-          s := s+'  (rr.roomreservation = %d) '#10;
-          s := format(s, [dateToSqlString(newArrival),
-                          dateToSqlString(newArrival + NumDays - 1),
-                          RoomReservation,
-                          dateToSqlString(newArrival),
-                          dateToSqlString(newArrival + NumDays - 1),
-                          RoomReservation,
-                          RoomReservation]);
-
-          if hData.rSet_bySQL(rSet,s) then
-          begin
-            id               := Rset.fieldbyname('ID').asInteger;
-            Room             := trim(Rset.fieldbyname('Room').asString);
-            reservation      := Rset.fieldbyname('Reservation').asInteger;
-            RoomType         := trim(Rset.fieldbyname('RoomType').asString);
-            GuestCount       := Rset.fieldbyname('numGuests').asInteger;
-            childCount       := Rset.fieldbyname('numChildren').asInteger;
-            infantCount      := Rset.fieldbyname('numInfants').asInteger;
-            status           := Rset.fieldbyname('Status').asString;
-            PriceType        := trim(Rset.fieldbyname('PriceType').asString);
-            PriceId          := hdata.PriceCode_ID(priceType); //
-            Currency         := trim(Rset.fieldbyname('Currency').asString);
-            oldArrival       := _dbDateToDate(Rset.fieldbyname('Arrival').asString);
-            oldDeparture     := _dbDateToDate(Rset.fieldbyname('departure').asString);
-
-            temp := Rset.fieldbyname('Conflicts').asString;
-            lst := TStringList.Create;
-            if TRIM(temp) <> '' then
-              lst.AddStrings(SplitStringToTStrings(',', temp));
-            try
-              doIt := true;
-              isNoRoom := false;
-//              for ii := trunc(newArrival) to trunc(newArrival) + NumDays - 1 do
-//              begin
-//                chkDate := ii;
-//                if d.isDay_Occupied(chkDate, Room, conflict_RoomReservation) then
-//                begin
-//                  if conflict_RoomReservation <> RoomReservation then
-//                  begin
-//                    sConflict_Roomreservation := inttostr(conflict_RoomReservation);
-//                    if not foundInList(sConflict_Roomreservation) then
-//                      lst.Add(sConflict_Roomreservation);
-//                    doIt := false;
-//                  end;
-//                end;
-//              end;
-
-              if lst.Count > 0 then
+          case g.OpenRoomDateProblem(lst) of
+            0:
               begin
-                case g.OpenRoomDateProblem(lst) of
-                  0 :
-                    begin
-                      Room := '';
-                      isNoRoom := true;
-                      doIt := true;
-                    end;
-                  1 :
-                    begin
-                      for ii := 0 to lst.Count - 1 do
-                      begin
-                        conflict_RoomReservation := strToInt(lst[ii]);
-                        MoveToRoomEnh2(conflict_RoomReservation, '');
-                      end;
-                      doIt := true;
-                    end;
-                  2 :
-                    begin
-                      doIt := false;
-                    end;
-                end;
+                Room := '';
+                isNoRoom := true;
+                doIt := true;
               end;
-            finally
-              lst.Free;
-            end;
-
-            if doIt then
-            begin
-              iNumErrors := 0;
-
-              temp := Rset.fieldbyname('existingDates').asString;
-              lst := TStringList.Create;
-              if TRIM(temp) <> '' then
-                lst.AddStrings(SplitStringToTStrings(',', temp));
-
-              exePlan := d.roomerMainDataSet.CreateExecutionPlan;
-              try
-                if trx then rSet.SystemStartTransaction;
-                if (status <> 'O') and (status <> 'N') then
+            1:
+              begin
+                for ii := 0 to lst.Count - 1 do
                 begin
-//                  temp := format('(RR_ChangeDates 1) Change dates for Reservation=%d, RoomReservation=%d, Room=%s, RoomType=%s, FROM ArrDate=%s, DepDate=%s',
-//                                 [Reservation, RoomReservation, Room, RoomType, DateToSqlString(oldArrival), DateToSqlString(oldDeparture)]);
-                  d.roomerMainDataSet.SystemChangeAvailabilityForRoom(RoomReservation, false); //
+                  conflict_RoomReservation := strToInt(lst[ii]);
+                  MoveToRoomEnh2(conflict_RoomReservation, '');
                 end;
-
-                try
-                  exePlan.AddExec('UPDATE roomsdate SET ResFlag =' + _db(STATUS_DELETED) + ' WHERE RoomReservation = ' + inttostr(RoomReservation));
-//                  d.RemoveRoomsDate(RoomReservation);
-
-                  for ii := trunc(newArrival) to trunc(newArrival) + NumDays - 1 do
-                  begin
-                    sDate := _dateToDBDate(ii,false);
-                    if rateCount = 1 then  //same rate all days 5 11 4 12 3 13 2 14 1 15 0 16 -1
-                    begin
-                      rd_.First;
-                        initRoomsDateHolderRec(rec);
-                        rec.ADate := sDate;
-                        if room = '' then
-                        begin
-                          room := '<'+inttostr(roomreservation)+'>';
-                          isNoRoom := true;
-                        end;
-                        rec.Room            := room;
-                        rec.isNoRoom        := isNoRoom;
-                        rec.RoomType        := roomType;
-                        rec.RoomReservation := roomReservation;
-                        rec.ResFlag         := status;
-                        rec.Reservation     := reservation;
-                        rec.PriceCode       := PriceType;
-                        rec.RoomRate        := rd_.GetFloatValue(rd_.FieldByName('RoomRate'));
-                        rec.Discount        := rd_.GetFloatValue(rd_.FieldByName('Discount'));
-                        rec.isPercentage    := rd_.FieldByName('isPercentage').AsBoolean;
-                        rec.showDiscount    := rd_.FieldByName('showDiscount').AsBoolean;
-                        if paidCount > 0 then
-                        begin
-                          rec.Paid := true;
-                          dec(paidCount);
-                        end else
-                        begin
-                          rec.Paid := false;
-                        end;
-                        rec.Currency := rd_.FieldByName('Currency').AsString;
-
-  //                      if rd_ExistsByRRandDate(roomReservation,sDate) then
-                        if lst.IndexOf(sDate) >= 0 then
-                        begin
-  //                        updateRdResFlagByRRandDate(roomreservation,sDate,status, {BHG Added!} true,rec.Paid);
-                          s :=     ' UPDATE roomsdate ' + #10;
-                          s := s + ' SET ' + #10;
-                          s := s + '     resFlag  = ' + _db(Status) + ' ' + #10;
-                          s := s + '     , Room  = ' + _db(Room) + ' ' + #10;
-                          if rec.Paid then
-                            s := s + '     , Paid  = 1' + #10
-                          else
-                            s := s + '     , Paid  = 0' + #10;
-                          s := s + ' WHERE ' + #10;
-                          s := s + '       (roomreservation= ' + _db(RoomReservation) + ') and (Adate=' + _db(sDate) + ') ' + #10;
-                          exePlan.AddExec(s);
-                        end else
-                        begin
-                          exePlan.AddExec(hdata.SQL_INS_RoomsDate(rec));
-  //                        if hdata.SQL_INS_RoomsDate(rec) then
-  //                        begin
-  //                        end;
-                        end;
-                    end else
-                    begin
-                       rd_.First;
-                       initRoomsDateHolderRec(rec);
-                       rec.ADate := sDate;
-                       if room = '' then
-                       begin
-                         room := '<'+inttostr(roomreservation)+'>';
-                         isNoRoom := true;
-                       end;
-                       rec.Room            := room;
-                       rec.isNoRoom        := isNoRoom;
-                       rec.RoomType        := roomType;
-                       rec.RoomReservation := roomReservation;
-                       rec.ResFlag         := status;
-                       rec.Reservation     := reservation;
-                       rec.PriceCode       := PriceType;
-                       rec.RoomRate        := avrageRate;
-                       rec.Discount        := avrageDiscount;
-                       rec.isPercentage    := rd_.FieldByName('isPercentage').AsBoolean;
-                       rec.showDiscount    := rd_.FieldByName('showDiscount').AsBoolean;
-                       if paidCount > 0 then
-                       begin
-                         rec.Paid := true;
-                         dec(paidCount);
-                       end else
-                       begin
-                         rec.Paid := false;
-                       end;
-                       rec.Currency := rd_.FieldByName('Currency').AsString;
-
-  //                    if rd_ExistsByRRandDate(roomReservation,sDate) then
-                       if lst.IndexOf(sDate) >= 0 then
-                       begin
-  //                        updateRdResFlagByRRandDate(roomreservation,sDate,status);
-                          s :=     ' UPDATE roomsdate ' + #10;
-                          s := s + ' SET ' + #10;
-                          s := s + '     resFlag  = ' + _db(Status) + ' ' + #10;
-                          s := s + '     , Room  = ' + _db(Room) + ' ' + #10;
-                          s := s + ' WHERE ' + #10;
-                          s := s + '       (roomreservation= ' + _db(RoomReservation) + ') and (Adate=' + _db(sDate) + ') ' + #10;
-                          exePlan.AddExec(s);
-                       end else
-                       begin
-                          exePlan.AddExec(hdata.SQL_INS_RoomsDate(rec));
-  //                       if hdata.INS_RoomsDate(rec) then
-  //                       begin
-  //                       end;
-                      end;
-                    end;
-                  end;
-                  exePlan.Execute(ptExec, false, false);
-                  if (status <> 'O') and (status <> 'N') then
-                  begin
-    //                temp := format('(RR_ChangeDates 1) Change dates for Reservation=%d, RoomReservation=%d, Room=%s, RoomType=%s, FROM ArrDate=%s, DepDate=%s',
-    //                               [Reservation, RoomReservation, Room, RoomType, DateToSqlString(oldArrival), DateToSqlString(oldDeparture)]);
-    //                d.roomerMainDataSet.SystemChangeAvailability(RoomType, oldArrival, oldDeparture-1, false, temp); //
-    //                temp := format('(RR_ChangeDates 2) Change dates for Reservation=%d, RoomReservation=%d, Room=%s, RoomType=%s, TO ArrDate=%s, DepDate=%s',
-    //                               [Reservation, RoomReservation, Room, RoomType, DateToSqlString(newArrival), DateToSqlString(newDeparture)]);
-    //                d.roomerMainDataSet.SystemChangeAvailability(RoomType, newArrival, newDeparture-1, true, temp); //
-                      d.roomerMainDataSet.SystemChangeAvailabilityForRoom(RoomReservation, true); //
-                  end;
-                  if trx then rSet.SystemCommitTransaction;
-                except
-                  if trx then rSet.SystemRollbackTransaction;
-                  raise;
-                end;
-              finally
-                FreeAndNil(exePlan);
+                doIt := true;
               end;
-
-              if iNumErrors > 0 then
+            2:
               begin
-                s := '';
-              //  s := s + ' Some errors ' + #10;
-              //  s := s + inttostr(iNumErrors) + ' total ' + #10 + #10;
-                s := s + GetTranslatedText('shTx_ChangeRRdates_SomeErrors') + #10;
-                s := s + inttostr(iNumErrors) + GetTranslatedText('shTx_ChangeRRdates_Total') + #10 + #10;
-                MessageDlg(s, mtWarning, [mbOK], 0);
-              end else
-              begin
-                Rset.edit;
-                Rset.fieldbyname('Room').asString := Room;
-                Rset.fieldbyname('Arrival').asString := sNewArrival;
-                Rset.fieldbyname('Departure').asString := sNewDeparture;
-                Rset.fieldbyname('rrDeparture').asDateTime := newDeparture;
-                Rset.fieldbyname('rrArrival').asDateTime := newArrival;
-                Rset.Post;
+                doIt := false;
               end;
-
-              d.roomerMainDataSet.SystemCorrectDoorCodeSettings(RoomReservation);
-            end;
           end;
+        end;
       finally
-        freeandnil(Rset);
+        lst.Free;
       end;
-    result := doIt;
-    finally
-      freeandNil(lstPrices);
-      screen.Cursor := crDefault;
+
+      if doIt then
+      begin
+        iNumErrors := 0;
+
+        Lst := nil;
+        ExePlan := d.roomerMainDataSet.CreateExecutionPlan;
+        try
+          temp := Rset.FieldByName('existingDates').asString;
+          lst := tstringlist.Create;
+          if trim(temp) <> '' then
+            lst.AddStrings(SplitStringToTStrings(',', temp));
+
+          if trx then
+            Rset.SystemStartTransaction;
+
+          if (status <> 'O') and (status <> 'N') then
+            d.roomerMainDataSet.SystemChangeAvailabilityForRoom(RoomReservation, false); //
+
+          try
+            ExePlan.AddExec('UPDATE roomsdate SET ResFlag =' + _db(STATUS_DELETED) + ' WHERE RoomReservation = ' +
+              inttostr(RoomReservation));
+
+            for ii := trunc(newArrival) to trunc(newArrival) + NumDays - 1 do
+            begin
+              sDate := _DateToDBDate(ii, false);
+              if rateCount = 1 then // same rate all days 5 11 4 12 3 13 2 14 1 15 0 16 -1
+              begin
+                rd_.First;
+                initRoomsDateHolderRec(rec);
+                rec.ADate := sDate;
+                if Room = '' then
+                begin
+                  Room := '<' + inttostr(RoomReservation) + '>';
+                  isNoRoom := true;
+                end;
+                rec.Room := Room;
+                rec.isNoRoom := isNoRoom;
+                rec.RoomType := RoomType;
+                rec.RoomReservation := RoomReservation;
+                rec.ResFlag := status;
+                rec.Reservation := Reservation;
+                rec.PriceCode := priceType;
+                rec.roomRate := rd_.GetFloatValue(rd_.FieldByName('RoomRate'));
+                rec.Discount := rd_.GetFloatValue(rd_.FieldByName('Discount'));
+                rec.isPercentage := rd_.FieldByName('isPercentage').asBoolean;
+                rec.showDiscount := rd_.FieldByName('showDiscount').asBoolean;
+                if paidCount > 0 then
+                begin
+                  rec.Paid := true;
+                  dec(paidCount);
+                end
+                else
+                begin
+                  rec.Paid := false;
+                end;
+                rec.Currency := rd_.FieldByName('Currency').asString;
+
+                if lst.IndexOf(sDate) >= 0 then
+                begin
+                  s := ' UPDATE roomsdate ' + #10;
+                  s := s + ' SET ' + #10;
+                  s := s + '     resFlag  = ' + _db(status) + ' ' + #10;
+                  s := s + '     , Room  = ' + _db(Room) + ' ' + #10;
+                  if rec.Paid then
+                    s := s + '     , Paid  = 1' + #10
+                  else
+                    s := s + '     , Paid  = 0' + #10;
+                  s := s + ' WHERE ' + #10;
+                  s := s + '       (roomreservation= ' + _db(RoomReservation) + ') and (Adate=' + _db(sDate) +
+                    ') ' + #10;
+                  ExePlan.AddExec(s);
+                end
+                else
+                begin
+                  ExePlan.AddExec(hData.SQL_INS_RoomsDate(rec));
+                end;
+              end
+              else
+              begin
+                rd_.First;
+                initRoomsDateHolderRec(rec);
+                rec.ADate := sDate;
+                if Room = '' then
+                begin
+                  Room := '<' + inttostr(RoomReservation) + '>';
+                  isNoRoom := true;
+                end;
+                rec.Room := Room;
+                rec.isNoRoom := isNoRoom;
+                rec.RoomType := RoomType;
+                rec.RoomReservation := RoomReservation;
+                rec.ResFlag := status;
+                rec.Reservation := Reservation;
+                rec.PriceCode := priceType;
+                rec.roomRate := avrageRate;
+                rec.Discount := avrageDiscount;
+                rec.isPercentage := rd_.FieldByName('isPercentage').asBoolean;
+                rec.showDiscount := rd_.FieldByName('showDiscount').asBoolean;
+                if paidCount > 0 then
+                begin
+                  rec.Paid := true;
+                  dec(paidCount);
+                end
+                else
+                begin
+                  rec.Paid := false;
+                end;
+                rec.Currency := rd_.FieldByName('Currency').asString;
+
+                if lst.IndexOf(sDate) >= 0 then
+                begin
+                  s := ' UPDATE roomsdate ' + #10;
+                  s := s + ' SET ' + #10;
+                  s := s + '     resFlag  = ' + _db(status) + ' ' + #10;
+                  s := s + '     , Room  = ' + _db(Room) + ' ' + #10;
+                  s := s + ' WHERE ' + #10;
+                  s := s + '       (roomreservation= ' + _db(RoomReservation) + ') and (Adate=' + _db(sDate) +
+                    ') ' + #10;
+                  ExePlan.AddExec(s);
+                end
+                else
+                begin
+                  ExePlan.AddExec(hData.SQL_INS_RoomsDate(rec));
+                end;
+              end;
+            end;
+            ExePlan.Execute(ptExec, false, false);
+            if (status <> 'O') and (status <> 'N') then
+            begin
+              d.roomerMainDataSet.SystemChangeAvailabilityForRoom(RoomReservation, true); //
+            end;
+            if trx then
+              Rset.SystemCommitTransaction;
+          except
+            if trx then
+              Rset.SystemRollbackTransaction;
+            raise;
+          end;
+        finally
+          lst.Free;
+          FreeAndNil(ExePlan);
+        end;
+
+        if iNumErrors > 0 then
+        begin
+          s := '';
+          s := s + GetTranslatedText('shTx_ChangeRRdates_SomeErrors') + #10;
+          s := s + inttostr(iNumErrors) + GetTranslatedText('shTx_ChangeRRdates_Total') + #10 + #10;
+          MessageDlg(s, mtWarning, [mbOK], 0);
+        end
+        else
+        begin
+          Rset.edit;
+          Rset.FieldByName('Room').asString := Room;
+          Rset.FieldByName('Arrival').asString := sNewArrival;
+          Rset.FieldByName('Departure').asString := sNewDeparture;
+          Rset.FieldByName('rrDeparture').asDateTime := newDeparture;
+          Rset.FieldByName('rrArrival').asDateTime := newArrival;
+          Rset.Post;
+        end;
+
+        d.roomerMainDataSet.SystemCorrectDoorCodeSettings(RoomReservation);
+      end;
     end;
+    result := doIt;
+  finally
+    rd_.Free;
+    Rset.Free;
+    lstPrices.Free;
+    screen.Cursor := crDefault;
   end;
+end;
 
-
-
-function TfrmChangeRRdates.FuncGetNightCount : boolean;
-
+procedure TfrmChangeRRdates.UpdateControls;
 var
-  iNights        : integer;
-  iDayOfWeekFrom : integer;
-  iDayOfWeekTo   : integer;
+  iNights: integer;
+  iDayOfWeekFrom: integer;
+  iDayOfWeekTo: integer;
 begin
 
   labErr.caption := '';
@@ -638,29 +562,22 @@ begin
 
   btnOK.Enabled := true;
 
-
-  try
-    iNights :=  trunc(dtDeparture.date ) - trunc(dtArrival.date);
-  except
-    iNights := 0;
-    raise Exception.create( 'iNights Err');
-  end;
+  iNights := trunc(dtDeparture.date) - trunc(dtArrival.date);
 
   edNightCount.Value := iNights;
 
   iDayOfWeekFrom := DayOfWeek(dtArrival.date);
-  iDayOfWeekTo   := DayOfWeek(dtDeparture.date);
+  iDayOfWeekTo := DayOfWeek(dtDeparture.date);
 
-  labWeekDayFrom.caption := _strTokenAt(GetTranslatedText('dayStr1'),';',iDayOfWeekFrom-1);
-  labWeekDayTo.caption   := _strTokenAt(GetTranslatedText('dayStr1'),';',iDayOfWeekTo-1);
+  labWeekDayFrom.caption := _strTokenAt(GetTranslatedText('dayStr1'), ';', iDayOfWeekFrom - 1);
+  labWeekDayTo.caption := _strTokenAt(GetTranslatedText('dayStr1'), ';', iDayOfWeekTo - 1);
 
   if iNights = 0 then
   begin
     labErr.Font.Color := clRed;
     labErr.Color := clYellow;
 
-  //  labErr.Caption := 'Villa : Komu- og brottfarardagur sá sami ';
-	  labErr.Caption := GetTranslatedText('shTx_ChangeRRdates_ErrorSameDate');
+    labErr.caption := GetTranslatedText('shTx_ChangeRRdates_ErrorSameDate');
     btnOK.Enabled := false;
   end;
 
@@ -669,35 +586,30 @@ begin
     labErr.Font.Color := clRed;
     labErr.Color := clYellow;
 
-   // labErr.Caption := 'Villa : Komudagur á eftir og brottfarardegi ';
-     labErr.Caption := GetTranslatedText('shTx_ChangeRRdates_CheckinAfterCheckout');
+    labErr.caption := GetTranslatedText('shTx_ChangeRRdates_CheckinAfterCheckout');
     btnOK.Enabled := false;
   end;
 
-  gbrNextRR.color := clBtnFace;
+  gbrNextRR.Color := clBtnface;
   if dtDeparture.date > nextArrival then
   begin
     labErr.Font.Color := clBlack;
     labErr.Color := clYellow;
 
-    gbrNextRR.color := clRed;
-  //  labErr.Caption := 'Aðvörun : Bókanir skarast ';
-	 labErr.Caption := GetTranslatedText('shTx_ChangeRRdates_BookingOverlap');
+    gbrNextRR.Color := clRed;
+    labErr.caption := GetTranslatedText('shTx_ChangeRRdates_BookingOverlap');
   end;
 
-
-  gbrLastRR.color := clBtnFace;
+  gbrLastRR.Color := clBtnface;
   if dtArrival.date < LastDeparture then
   begin
     labErr.Font.Color := clBlack;
     labErr.Color := clYellow;
 
-    gbrLastRR.color := clRed;
-   // labErr.Caption := 'Aðvörun : Bókanir skarast ';
-	labErr.Caption := GetTranslatedText('shTx_ChangeRRdates_BookingOverlap');
+    gbrLastRR.Color := clRed;
+    labErr.caption := GetTranslatedText('shTx_ChangeRRdates_BookingOverlap');
   end;
 end;
-
 
 procedure TfrmChangeRRdates.FormCreate(Sender: TObject);
 begin
@@ -705,26 +617,27 @@ begin
   RoomerLanguage.TranslateThisForm(self);
   glb.PerformAuthenticationAssertion(self);
   PlaceFormOnVisibleMonitor(self);
-  //**
+  // **
   zCalcPrice := false;
 end;
 
 procedure TfrmChangeRRdates.FormShow(Sender: TObject);
 var
-  resInfo : recResDateHolder;
+  resInfo: recResDateHolder;
 begin
-  oldArrival   := zArrival;
+  oldArrival := zArrival;
   oldDeparture := zDeparture;
 
-  nextArrival    := zDeparture+10; // init to save zone
-  LastDeparture  := zArrival-10;   // init to save zone
+  nextArrival := zDeparture + 10; // init to save zone
+  LastDeparture := zArrival - 10; // init to save zone
 
-  dtArrival.Date   := zArrival  ;
-  dtDeparture.Date := zDeparture;
-  dtSplitAt.date   := zArrival+1;
-  if dtSplitAt.date = dtDeparture.Date then sGroupBox1.Enabled := false;
+  dtArrival.date := zArrival;
+  dtDeparture.date := zDeparture;
+  dtSplitAt.date := zArrival + 1;
+  if dtSplitAt.date = dtDeparture.date then
+    sGroupBox1.Enabled := false;
 
-  zIspaid := false;
+  zIsPaid := false;
 
   zRoom := '';
   if zRoomReservation > 0 then
@@ -733,99 +646,93 @@ begin
 
     if rd_Ispaid(zRoomReservation) then
     begin
-	    showmessage(GetTranslatedText('shTx_ChangeRRdates_PaidInvoicesReviewAfterChange'));
+      Showmessage(GetTranslatedText('shTx_ChangeRRdates_PaidInvoicesReviewAfterChange'));
       zIsPaid := true;
     end;
   end;
 
-  NextRoomReservation  := d.NextRoomReservatiaon(zRoom, zRoomreservation, zArrival+1);
+  nextRoomReservation := d.NextRoomReservatiaon(zRoom, zRoomReservation, zArrival + 1);
 
-  if NextRoomReservation > 1 then
+  if nextRoomReservation > 1 then
   begin
-    resInfo := d.RR_getDates(NextRoomReservation);
+    resInfo := d.RR_getDates(nextRoomReservation);
 
     nextReservation := resInfo.Reservation;
-    nextArrival     := resInfo.Arrival;
-    nextDeparture   := resInfo.Departure;
-    nextStatus      := resInfo.Status;
+    nextArrival := resInfo.Arrival;
+    nextDeparture := resInfo.Departure;
+    nextStatus := resInfo.status;
 
-    nextName        := d.RR_GetReservationName(NextRoomReservation);
-    nextGuest       := d.RR_GetFirstGuestName(NextRoomReservation);
+    nextName := d.RR_GetReservationName(nextRoomReservation);
+    nextGuest := d.RR_GetFirstGuestName(nextRoomReservation);
 
-    nextDays        := 0;
-  end else
+    nextDays := 0;
+  end
+  else
   begin
     nextReservation := 0;
-    nextArrival     := zArrival+700;
-    nextDeparture   := zDeparture+700;
-    nextStatus      := 'No Reservation';
-    nextDays        := 0;
-    nextname        := '';
-    nextGuest       := '';
+    nextArrival := zArrival + 700;
+    nextDeparture := zDeparture + 700;
+    nextStatus := 'No Reservation';
+    nextDays := 0;
+    nextName := '';
+    nextGuest := '';
   end;
 
-  labNextArrival.Caption   := dateTostr(nextArrival);
-  labNextDeparture.Caption := dateTostr(nextDeparture);
-  labNextStatus.Caption    := NextStatus;
-  labNextDays.caption      := inttostr(nextDays);
-  labNextname.Caption      := NextName;
-  labNextGuest.Caption     := NextGuest;
+  labNextArrival.caption := dateTostr(nextArrival);
+  labNextDeparture.caption := dateTostr(nextDeparture);
+  labNextStatus.caption := nextStatus;
+  labNextDays.caption := inttostr(nextDays);
+  labNextName.caption := nextName;
+  labNextGuest.caption := nextGuest;
 
 
-  //****************************************************************************
+  // ****************************************************************************
 
-  LastRoomReservation  := d.LastRoomReservatiaon(zRoom, zRoomreservation, zArrival+1);
+  LastRoomReservation := d.LastRoomReservatiaon(zRoom, zRoomReservation, zArrival + 1);
 
   if LastRoomReservation > 1 then
   begin
     resInfo := d.RR_getDates(LastRoomReservation);
 
     LastReservation := resInfo.Reservation;
-    LastArrival     := resInfo.Arrival;
-    LastDeparture   := resInfo.Departure;
-    LastStatus      := resInfo.Status;
+    LastArrival := resInfo.Arrival;
+    LastDeparture := resInfo.Departure;
+    LastStatus := resInfo.status;
 
-    LastName        := d.RR_GetReservationName(LastRoomReservation);
-    lastGuest       := d.RR_GetFirstGuestName(LastRoomReservation);
+    LastName := d.RR_GetReservationName(LastRoomReservation);
+    LastGuest := d.RR_GetFirstGuestName(LastRoomReservation);
 
-    LastDays        := 0;
-  end else
+    LastDays := 0;
+  end
+  else
   begin
     LastReservation := 0;
-    LastArrival     := zArrival-700;
-    LastDeparture   := zDeparture-700;
-    LastStatus      := 'No Reservation';
-    LastDays        := 0;
-    lastname        := '';
-    LastGuest       := '';
+    LastArrival := zArrival - 700;
+    LastDeparture := zDeparture - 700;
+    LastStatus := 'No Reservation';
+    LastDays := 0;
+    LastName := '';
+    LastGuest := '';
   end;
 
-  labLastArrival.Caption   := dateTostr(LastArrival);
-  labLastDeparture.Caption := dateTostr(LastDeparture);
-  labLastStatus.Caption    := lastStatus;
-  labLastDays.caption      := inttostr(LastDays);
-  labLastname.Caption      := LastName;
-  labLastGuest.Caption     := LastGuest;
-
+  LabLastArrival.caption := dateTostr(LastArrival);
+  labLastDeparture.caption := dateTostr(LastDeparture);
+  labLastStatus.caption := LastStatus;
+  labLastDays.caption := inttostr(LastDays);
+  labLastName.caption := LastName;
+  labLastGuest.caption := LastGuest;
 
   case self.zStartIn of
-    1 : ActiveControl := dtArrival;
-    2 : ActiveControl := dtDeparture;
-    3 : ActiveControl := edNightCount;
+    1:
+      ActiveControl := dtArrival;
+    2:
+      ActiveControl := dtDeparture;
+    3:
+      ActiveControl := edNightCount;
   end;
 
   zFirstTime := false;
 
-end;
-
-procedure TfrmChangeRRdates.FormClose(Sender: TObject; var Action: TCloseAction);
-begin
-  //**
-end;
-
-procedure TfrmChangeRRdates.FormDestroy(Sender: TObject);
-begin
-  //**
 end;
 
 procedure TfrmChangeRRdates.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -836,37 +743,42 @@ end;
 
 procedure TfrmChangeRRdates.btnOKClick(Sender: TObject);
 var
-  isPaid : boolean;
-  rr,rrAlias : integer;
+  isPaid: boolean;
+  rr: integer;
 
 begin
-  //**
-  zArrival   := dtArrival.Date;
-  zDeparture := dtDeparture.Date;
+  // **
+  zArrival := dtArrival.date;
+  zDeparture := dtDeparture.date;
 
-  if MessageDLG('Change room dates ', mtConfirmation, [mbYes, mbNo], 0) = mrYes then
+  if MessageDlg('Change room dates ', mtConfirmation, [mbYes, mbNo], 0) = mrYes then
   begin
-    if (OldArrival <> zArrival) or (OldDeparture <> zDeparture) then
+    if (oldArrival <> zArrival) or (oldDeparture <> zDeparture) then
     begin
       if zRoomReservation = 0 then
       begin
         if not RV_ChangeRoomDates(zReservation) then
         begin
-          zArrival   := 1;
+          zArrival := 1;
           zDeparture := 1;
         end;
-      end else
+      end
+      else
       begin
         isPaid := false;
-        if not RR_ChangeDates(zRoomReservation, zArrival, zDeparture,0,isPaid) then
+        if not RR_ChangeDates(zRoomReservation, zArrival, zDeparture, 0, isPaid) then
         begin
-          zArrival   := 1;
+          zArrival := 1;
           zDeparture := 1;
-        end else
+        end
+        else
         begin
-          if d.isGroup(zRoomReservation) then rr := 0 else rr := zRoomReservation;
+          if d.isGroup(zRoomReservation) then
+            rr := 0
+          else
+            rr := zRoomReservation;
           d.roomerMainDataSet.SystempackagesRecalcInvoice(rr, zRoomReservation);
-          if ispaid then
+          if isPaid then
           begin
             //
           end;
@@ -878,51 +790,54 @@ end;
 
 procedure TfrmChangeRRdates.btnCancelClick(Sender: TObject);
 begin
-  //**
-  zArrival   := 1;
+  // **
+  zArrival := 1;
   zDeparture := 1;
 end;
 
 procedure TfrmChangeRRdates.dtArrivalChange(Sender: TObject);
 begin
-  FuncGetNightCount;
+  UpdateControls;
 end;
 
 procedure TfrmChangeRRdates.dtDepartureChange(Sender: TObject);
 begin
-  FuncGetNightCount;
+  UpdateControls;
 end;
 
 procedure TfrmChangeRRdates.dtDepartureDblClick(Sender: TObject);
 begin
-  dtDeparture.Date := dtArrival.Date+1;
+  dtDeparture.date := dtArrival.date + 1;
 end;
-
 
 procedure TfrmChangeRRdates.dtSplitAtChange(Sender: TObject);
 begin
-  if zFirstTime then exit;
+  if zFirstTime then
+    exit;
 
-  if dtSplitAt.date < zArrival+1  then dtSplitAt.date := zArrival+1;
-  if dtSplitAt.date > zDeparture-1  then dtSplitAt.date := zDeparture-1;
+  if dtSplitAt.date < zArrival + 1 then
+    dtSplitAt.date := zArrival + 1;
+  if dtSplitAt.date > zDeparture - 1 then
+    dtSplitAt.date := zDeparture - 1;
 end;
 
-function TfrmChangeRRdates.RV_ChangeRoomDates(Reservation : integer) : boolean;
+function TfrmChangeRRdates.RV_ChangeRoomDates(Reservation: integer): boolean;
 var
-  bAll: Boolean;
-  noOfRooms: Integer;
-  S: string;
-  Numdays: Integer;
-  rSet   : TRoomerDataSet;
-  roomReservation: integer;
-  changeCount : integer;
+  bAll: boolean;
+  noOfRooms: integer;
+  s: string;
+  NumDays: integer;
+  Rset: TRoomerDataSet;
+  RoomReservation: integer;
+  changeCount: integer;
 
-  dateHolder : recResDateHolder;
-  isPaid : boolean;
+  dateHolder: recResDateHolder;
+  isPaid: boolean;
   rr,
-  iCount : integer;
+    iCount: integer;
 
 begin
+  result := false;
   bAll := true;
 
   changeCount := 0;
@@ -934,354 +849,340 @@ begin
   begin
     if not d.isAllDatesSameInRes(Reservation) then
     begin
-    (*  S := S + 'Ekki allar dagsetningar herbergja eru í ' + #10;
-      S := S + 'samræmi við dagsetninu pöntunar ' + #10;
-      S := S + '- viltu breyta þeim öllum ? ' + #10 + #10;
-      S := S + 'Veljir þú "nei" [NO] þá breytast dagsetningar aðeins ' + #10;
-      S := S + 'hjá þeim herbergjum sem hafa dagsetningu pöntunnar ' + #10; *)
-	    S := GetTranslatedText('shTx_ChangeRRdates_RoomDatesChangeAll') + #10;
-      bAll := MessageDlg(S, mtConfirmation, [mbYes, mbNo], 0) = mrYes;
+      s := GetTranslatedText('shTx_ChangeRRdates_RoomDatesChangeAll') + #10;
+      bAll := MessageDlg(s, mtConfirmation, [mbYes, mbNo], 0) = mrYes;
     end;
   end;
 
-  rSet := CreateNewDataSet;
+  Rset := CreateNewDataSet;
   try
-    S := '';
-    S := select_ReservationProfile_RegulateRoomDates(bAll);
+    s := '';
+    s := select_ReservationProfile_RegulateRoomDates(bAll);
     if NOT bAll then
-      S := format(S, [Reservation, _DateToDBDate(dateHolder.Arrival, true),
-                      _DateToDBDate(dateHolder.Departure, true)])
+      s := format(s, [Reservation, _DateToDBDate(dateHolder.Arrival, true),
+        _DateToDBDate(dateHolder.Departure, true)])
     else
-      S := format(S, [Reservation]);
+      s := format(s, [Reservation]);
 
-    rSet.SystemStartTransaction;
+    Rset.SystemStartTransaction;
     try
-      hData.rSet_bySQL(rSet, S);
+      screen.Cursor := crHourglass;
+      try
+        hData.rSet_bySQL(Rset, s);
+      finally
+        screen.Cursor := crDefault;
+      end;
 
-      Numdays := trunc(dtDeparture.Date) - trunc(dtArrival.Date);
+      NumDays := trunc(dtDeparture.date) - trunc(dtArrival.date);
 
-      if Numdays < 1 then
+      if NumDays < 1 then
       begin
-        showmessage(GetTranslatedText('shTx_ChangeRRdates_MustBe1Day'));
+        Showmessage(GetTranslatedText('shTx_ChangeRRdates_MustBe1Day'));
 
       end
       else
       begin
-        screen.Cursor := crHourGlass;
+        screen.Cursor := crHourglass;
         try
           iCount := 0;
-          rSet.First;
-          while not rSet.Eof do
+          Rset.First;
+          while not Rset.eof do
           begin
             inc(iCount);
-            rSet.Next;
+            Rset.Next;
           end;
 
           pbProgress.Max := iCount * 2;
           pbProgress.Position := 0;
-          pbProgress.Visible := True;
+          pbProgress.Visible := true;
           iCount := 0;
           pbProgress.Update;
 
-          rSet.First;
-          while not rSet.Eof do
+          Rset.First;
+          while not Rset.eof do
           begin
-            roomReservation := rSet.fieldbyname('RoomReservation').asinteger;
+            RoomReservation := Rset.FieldByName('RoomReservation').asInteger;
 
-            if d.isGroup(roomreservation) then rr := 0 else rr := roomreservation;
-
-            changeCount := changeCount+1;
+            changeCount := changeCount + 1;
             isPaid := false;
-            RR_ChangeDates(roomReservation, dtArrival.Date,dtDeparture.Date,0,isPaid, false);
+            RR_ChangeDates(RoomReservation, dtArrival.date, dtDeparture.date, 0, isPaid, false);
 
             inc(iCount);
             pbProgress.Position := iCount;
             pbProgress.Update;
-            rSet.Next;
+            Rset.Next;
           end;
 
-          rSet.First;
-          while not rSet.Eof do
+          Rset.First;
+          while not Rset.eof do
           begin
-            roomReservation := rSet.fieldbyname('RoomReservation').asinteger;
-            if rSet['Groupaccount'] then rr := 0 else rr := roomreservation;
-//            if d.isGroup(roomreservation) then rr := 0 else rr := roomreservation;
+            RoomReservation := Rset.FieldByName('RoomReservation').asInteger;
+            if Rset['Groupaccount'] then
+              rr := 0
+            else
+              rr := RoomReservation;
 
-            d.roomerMainDataSet.SystempackagesRecalcInvoice(rr, roomReservation);
+            d.roomerMainDataSet.SystempackagesRecalcInvoice(rr, RoomReservation);
 
             inc(iCount);
             pbProgress.Position := iCount;
             pbProgress.Update;
-            rSet.Next;
+            Rset.Next;
           end;
         finally
           screen.Cursor := crDefault;
         end;
       end;
-      rSet.SystemCommitTransaction;
+      Rset.SystemCommitTransaction;
     except
-      rSet.SystemRollbackTransaction;
+      Rset.SystemRollbackTransaction;
       raise;
     end;
   finally
-    freeAndNil(rSet);
+    FreeAndNil(Rset);
   end;
 
   if changeCount > 0 then
   begin
     result := true;
-    zArrival   := dtArrival.Date;
-    zDeparture := dtDeparture.Date;
+    zArrival := dtArrival.date;
+    zDeparture := dtDeparture.date;
   end;
 
   BringToFront;
 end;
 
-
-
 procedure TfrmChangeRRdates.sButton1Click(Sender: TObject);
 var
-  rSet : TRoomerDataSet;
+  Rset: TRoomerDataSet;
 
+  Arrival1: TdateTime;
+  Departure1: TdateTime;
 
-  Arrival1   : TdateTime;
-  Departure1 : TdateTime;
+  Arrival2: TdateTime;
+  Departure2: TdateTime;
 
-  Arrival2   : TdateTime;
-  Departure2 : TdateTime;
+  roomHolder: recRoomReservationHolder;
 
-  roomHolder : recRoomReservationHolder;
+  firstHolder: recRoomReservationHolder;
 
-  firstHolder  : recRoomReservationHolder;
+  newRrId: integer;
+  s: string;
 
-  lstRoomPrices : TstringList;
-  lstR : TstringList;
-
-  newRrId : integer;
-  s : string;
-
-  ExecutionPlan : TRoomerExecutionPlan;
-  sDate     : string;
-  iDayCount : integer;
-  ii : integer;
-  personData : RecPersonHolder;
-  package : string;
-  rr : integer;
+  ExecutionPlan: TRoomerExecutionPlan;
+  sDate: string;
+  iDayCount: integer;
+  ii: integer;
+  personData: RecPersonHolder;
+  package: string;
+  rr: integer;
 
 begin
-  //**
-  if MessageDLG('Split reservation at '+datetostr(dtSplitAt.date), mtConfirmation, [mbYes, mbNo], 0) = mrYes then
+  // **
+  if MessageDlg('Split reservation at ' + dateTostr(dtSplitAt.date), mtConfirmation, [mbYes, mbNo], 0) = mrYes then
   begin
-    roomHolder   := SP_GET_RoomReservation(zRoomReservation);
-    firstHolder  := roomHolder;
+    roomHolder := SP_GET_RoomReservation(zRoomReservation);
+    firstHolder := roomHolder;
     package := roomHolder.package;
 
-
-    Arrival1   := zArrival;
-    departure1 := dtSplitAt.Date;
-    Arrival2   := dtSplitAt.Date;
-    departure2 := zDeparture;
+    Arrival1 := zArrival;
+    Departure1 := dtSplitAt.date;
+    Arrival2 := dtSplitAt.date;
+    Departure2 := zDeparture;
 
     ExecutionPlan := d.roomerMainDataSet.CreateExecutionPlan;
     try
       ExecutionPlan.BeginTransaction;
       try
 
-        newRRid := RR_SetNewID();
-        firstholder.RoomReservation := newRRid;
-        firstholder.Arrival     := _dateToDBdate(arrival1, false);
-        firstholder.Departure   := _dateToDBdate(departure1, false); ;
-        firstholder.rrArrival   := arrival1;
-        firstholder.rrDeparture := departure1;
-
-
-        Rset := CreateNewDataSet;
-        try
-          s := '';
-          s := s+' SELECT '#10;
-          s := s+'  AVG(RoomRate) AS avrageRate '#10;
-          s := s+'  ,count(distinct RoomRate) AS rateCount '#10;
-          s := s+' FROM  '#10;
-          s := s+'   roomsdate '#10;
-          s := s+' WHERE (ADate >= %s '#10;
-          s := s+'  and ADate < %s) '#10;
-          s := s+' AND (ResFlag <> '+_db(STATUS_DELETED)+' ) '#10;
-          s := s+' AND (roomreservation = '+_db(roomholder.RoomReservation)+') '#10;
-          s := format(s, [_DatetoDBDate(Arrival1,true),_DatetoDBDate(Departure1,true)]);
-
-          if hData.rSet_bySQL(rSet,s) then
-          begin
-            firstholder.avrageRate  := rSet.GetFloatValue(rSet.FieldByName('avrageRate'));
-            firstholder.rateCount   := rSet.FieldByName('rateCount').asInteger;
-          end;
-         finally
-           freeandnil(Rset);
-         end;
-
-         s := SQL_INS_RoomReservation(firstHolder);
-  //       copyToClipboard(s);
-  //       DebugMessage('invoicelines '#10#10+s);
-         ExecutionPlan.AddExec(s);
-
-
-
-        roomHolder.Arrival     := _dateToDBdate(arrival2, false);
-        roomHolder.Departure   := _dateToDBdate(departure2, false); ;
-        roomHolder.rrArrival   := arrival2;
-        roomHolder.rrDeparture := departure2;
-
+        newRrId := RR_SetNewID();
+        firstHolder.RoomReservation := newRrId;
+        firstHolder.Arrival := _DateToDBDate(Arrival1, false);
+        firstHolder.Departure := _DateToDBDate(Departure1, false);;
+        firstHolder.rrArrival := Arrival1;
+        firstHolder.rrDeparture := Departure1;
 
         Rset := CreateNewDataSet;
         try
           s := '';
-          s := s+' SELECT '#10;
-          s := s+'  AVG(RoomRate) AS avrageRate '#10;
-          s := s+'  ,count(distinct RoomRate) AS rateCount '#10;
-          s := s+' FROM  '#10;
-          s := s+'   roomsdate '#10;
-          s := s+' WHERE (ADate >= %s '#10;
-          s := s+'  and ADate < %s) '#10;
-          s := s+' AND (ResFlag <> '+_db(STATUS_DELETED)+' ) '#10;
-          s := s+' AND (roomreservation = '+_db(roomholder.RoomReservation)+') '#10;
-          s := format(s, [_DatetoDBDate(Arrival2,true),_DatetoDBDate(Departure2,true)]);
+          s := s + ' SELECT '#10;
+          s := s + '  AVG(RoomRate) AS avrageRate '#10;
+          s := s + '  ,count(distinct RoomRate) AS rateCount '#10;
+          s := s + ' FROM  '#10;
+          s := s + '   roomsdate '#10;
+          s := s + ' WHERE (ADate >= %s '#10;
+          s := s + '  and ADate < %s) '#10;
+          s := s + ' AND (ResFlag <> ' + _db(STATUS_DELETED) + ' ) '#10;
+          s := s + ' AND (roomreservation = ' + _db(roomHolder.RoomReservation) + ') '#10;
+          s := format(s, [_DateToDBDate(Arrival1, true), _DateToDBDate(Departure1, true)]);
 
-          if hData.rSet_bySQL(rSet,s) then
+          if hData.rSet_bySQL(Rset, s) then
           begin
-            roomHolder.avrageRate  := rSet.GetFloatValue(rSet.FieldByName('avrageRate'));
-            roomHolder.rateCount   := rSet.FieldByName('rateCount').asInteger;
+            firstHolder.avrageRate := Rset.GetFloatValue(Rset.FieldByName('avrageRate'));
+            firstHolder.rateCount := Rset.FieldByName('rateCount').asInteger;
           end;
-         finally
-           freeandnil(Rset);
-         end;
+        finally
+          FreeAndNil(Rset);
+        end;
 
-         s := '';
-         s := s+' UPDATE roomreservations ';
-         s := s+' SET ';
-         s := s+'  Arrival = '+_DB(arrival2)+' ';
-         s := s+' ,Departure = '+_DB(departure2)+' ';
-         s := s+' ,rrArrival = '+_db(Arrival2)+' ';
-         s := s+' ,rrDeparture = '+_db(departure2)+' ';
-         s := s+' ,avrageRate = '+_db(roomHolder.avrageRate)+' ';
-         s := s+' ,rateCount = '+_db(roomHolder.rateCount)+' ';
+        s := SQL_INS_RoomReservation(firstHolder);
+        // copyToClipboard(s);
+        // DebugMessage('invoicelines '#10#10+s);
+        ExecutionPlan.AddExec(s);
 
-         s := s+' WHERE ';
-         s := s+'   (roomreservation='+_db(roomholder.RoomReservation)+') ';
-  //       copyToClipboard(s);
-  //       DebugMessage('invoicelines '#10#10+s);
-         ExecutionPlan.AddExec(s);
-
-         iDayCount := trunc(Departure1) - trunc(Arrival1);
-         for ii := trunc(Arrival1) to trunc(Arrival1) + iDayCount - 1 do
-         begin
-           sDate := _DateToDBDate(ii, false);
-           s := '';
-           s := s+' UPDATE roomsdate ';
-           s := s+' SET ';
-           s := s+' roomreservation = '+_db(newRRid)+' ';
-           s := s+' WHERE ';
-           s := s+'   (Adate = '+_db(sDate)+') ';
-           s := s+'  AND (roomreservation='+_db(roomholder.RoomReservation)+') ';
-
-  //         copyToClipboard(s);
-  //         DebugMessage(s);
-           ExecutionPlan.AddExec(s);
-         end;
+        roomHolder.Arrival := _DateToDBDate(Arrival2, false);
+        roomHolder.Departure := _DateToDBDate(Departure2, false);;
+        roomHolder.rrArrival := Arrival2;
+        roomHolder.rrDeparture := Departure2;
 
         Rset := CreateNewDataSet;
-         try
+        try
           s := '';
-          s := s+' SELECT '#10;
-          s := s+'  * '#10;
-          s := s+' FROM  '#10;
-          s := s+'   persons '#10;
-          s := s+' WHERE '#10;
-          s := s+' (roomreservation = '+_db(roomholder.RoomReservation)+') '#10;
+          s := s + ' SELECT '#10;
+          s := s + '  AVG(RoomRate) AS avrageRate '#10;
+          s := s + '  ,count(distinct RoomRate) AS rateCount '#10;
+          s := s + ' FROM  '#10;
+          s := s + '   roomsdate '#10;
+          s := s + ' WHERE (ADate >= %s '#10;
+          s := s + '  and ADate < %s) '#10;
+          s := s + ' AND (ResFlag <> ' + _db(STATUS_DELETED) + ' ) '#10;
+          s := s + ' AND (roomreservation = ' + _db(roomHolder.RoomReservation) + ') '#10;
+          s := format(s, [_DateToDBDate(Arrival2, true), _DateToDBDate(Departure2, true)]);
 
-          if hData.rSet_bySQL(rSet,s) then
+          if hData.rSet_bySQL(Rset, s) then
           begin
-            while not rSet.eof do
+            roomHolder.avrageRate := Rset.GetFloatValue(Rset.FieldByName('avrageRate'));
+            roomHolder.rateCount := Rset.FieldByName('rateCount').asInteger;
+          end;
+        finally
+          FreeAndNil(Rset);
+        end;
+
+        s := '';
+        s := s + ' UPDATE roomreservations ';
+        s := s + ' SET ';
+        s := s + '  Arrival = ' + _db(Arrival2) + ' ';
+        s := s + ' ,Departure = ' + _db(Departure2) + ' ';
+        s := s + ' ,rrArrival = ' + _db(Arrival2) + ' ';
+        s := s + ' ,rrDeparture = ' + _db(Departure2) + ' ';
+        s := s + ' ,avrageRate = ' + _db(roomHolder.avrageRate) + ' ';
+        s := s + ' ,rateCount = ' + _db(roomHolder.rateCount) + ' ';
+
+        s := s + ' WHERE ';
+        s := s + '   (roomreservation=' + _db(roomHolder.RoomReservation) + ') ';
+        // copyToClipboard(s);
+        // DebugMessage('invoicelines '#10#10+s);
+        ExecutionPlan.AddExec(s);
+
+        iDayCount := trunc(Departure1) - trunc(Arrival1);
+        for ii := trunc(Arrival1) to trunc(Arrival1) + iDayCount - 1 do
+        begin
+          sDate := _DateToDBDate(ii, false);
+          s := '';
+          s := s + ' UPDATE roomsdate ';
+          s := s + ' SET ';
+          s := s + ' roomreservation = ' + _db(newRrId) + ' ';
+          s := s + ' WHERE ';
+          s := s + '   (Adate = ' + _db(sDate) + ') ';
+          s := s + '  AND (roomreservation=' + _db(roomHolder.RoomReservation) + ') ';
+
+          // copyToClipboard(s);
+          // DebugMessage(s);
+          ExecutionPlan.AddExec(s);
+        end;
+
+        Rset := CreateNewDataSet;
+        try
+          s := '';
+          s := s + ' SELECT '#10;
+          s := s + '  * '#10;
+          s := s + ' FROM  '#10;
+          s := s + '   persons '#10;
+          s := s + ' WHERE '#10;
+          s := s + ' (roomreservation = ' + _db(roomHolder.RoomReservation) + ') '#10;
+
+          if hData.rSet_bySQL(Rset, s) then
+          begin
+            while not Rset.eof do
             begin
               initPersonHolder(personData);
-              personData.Person          := rSet.FieldByName('person').AsInteger;
-              personData.RoomReservation := newRRid;
-              personData.Reservation     := rSet.FieldByName('Reservation').AsInteger;
-              personData.name            := rSet.FieldByName('name').AsString;
-              personData.Surname         := rSet.FieldByName('Surname').AsString;
-              personData.Address1        := rSet.FieldByName('Address1').AsString;
-              personData.Address2        := rSet.FieldByName('Address2').AsString;
-              personData.Address3        := rSet.FieldByName('Address3').AsString;
-              personData.Address4        := rSet.FieldByName('Address4').AsString;
-              personData.Country         := rSet.FieldByName('Country').AsString;
-              personData.Company         := rSet.FieldByName('Company').AsString;
-              personData.GuestType       := rSet.FieldByName('GuestType').AsString;
-              personData.Information     := rSet.FieldByName('Information').AsString;
-              personData.PID             := rSet.FieldByName('PID').AsString;
-              personData.MainName        := rSet.FieldByName('MainName').AsBoolean;
-              personData.Customer        := rSet.FieldByName('Customer').AsString;
-              personData.peTmp           := rSet.FieldByName('peTmp').AsString;
+              personData.Person := Rset.FieldByName('person').asInteger;
+              personData.RoomReservation := newRrId;
+              personData.Reservation := Rset.FieldByName('Reservation').asInteger;
+              personData.name := Rset.FieldByName('name').asString;
+              personData.Surname := Rset.FieldByName('Surname').asString;
+              personData.Address1 := Rset.FieldByName('Address1').asString;
+              personData.Address2 := Rset.FieldByName('Address2').asString;
+              personData.Address3 := Rset.FieldByName('Address3').asString;
+              personData.Address4 := Rset.FieldByName('Address4').asString;
+              personData.Country := Rset.FieldByName('Country').asString;
+              personData.Company := Rset.FieldByName('Company').asString;
+              personData.GuestType := Rset.FieldByName('GuestType').asString;
+              personData.Information := Rset.FieldByName('Information').asString;
+              personData.PID := Rset.FieldByName('PID').asString;
+              personData.MainName := Rset.FieldByName('MainName').asBoolean;
+              personData.Customer := Rset.FieldByName('Customer').asString;
+              personData.peTmp := Rset.FieldByName('peTmp').asString;
               s := SQL_INS_Person(personData);
-  //            copyToClipboard(s);
-  //            DebugMessage('invoicelines '#10#10+s);
+              // copyToClipboard(s);
+              // DebugMessage('invoicelines '#10#10+s);
               ExecutionPlan.AddExec(s);
-              rSet.Next;
+              Rset.Next;
             end;
           end;
 
         finally
-           freeandnil(Rset);
+          FreeAndNil(Rset);
         end;
 
-
-        if ExecutionPlan.Execute(ptExec, False, True) then
-            ExecutionPlan.CommitTransaction
-         else
+        if ExecutionPlan.Execute(ptExec, false, true) then
+          ExecutionPlan.CommitTransaction
+        else
           raise Exception.Create(ExecutionPlan.ExecException);
 
         if package <> '' then
         begin
-          if d.isGroup(Zroomreservation) then rr := 0 else rr := Zroomreservation;
+          if d.isGroup(zRoomReservation) then
+            rr := 0
+          else
+            rr := zRoomReservation;
 
-
-//          d.roomerMainDataSet.SystempackagesAdd(package, rr, newRRid, roomHolder.avrageRate);
           d.roomerMainDataSet.SystempackagesRecalcInvoice(rr, zRoomReservation);
         end;
 
-
       except
-        on e: exception do
+        on e: Exception do
         begin
-            ExecutionPlan.RollbackTransaction;
-            showMessage('Splitting reservation: ' + e.message);
+          ExecutionPlan.RollbackTransaction;
+          Showmessage('Splitting reservation: ' + e.message);
         end;
       end;
     finally
-      freeandNil(ExecutionPlan);
+      FreeAndNil(ExecutionPlan);
     end;
   end;
 end;
 
 procedure TfrmChangeRRdates.edNightCountChange(Sender: TObject);
 var
-  iDayOfWeekFrom : integer;
-  iDayOfWeekTo   : integer;
-  s              : string;
+  iDayOfWeekFrom: integer;
+  iDayOfWeekTo: integer;
 begin
-  zDate   :=  dtArrival.date + edNightCount.Value;
-  zNights :=  edNightCount.Value;
-  dateTimeToString(s,'dd.mm.yyyy',zdate);
+  zDate := dtArrival.date + edNightCount.Value;
+  zNights := edNightCount.Value;
 
   iDayOfWeekFrom := DayOfWeek(dtArrival.date);
-  iDayOfWeekTo   := DayOfWeek(zDate);
+  iDayOfWeekTo := DayOfWeek(zDate);
 
-  labWeekDayFrom.caption := _strTokenAt(GetTranslatedText('dayStr1'),';',iDayOfWeekFrom-1);
-  labWeekDayTo.caption := _strTokenAt(GetTranslatedText('dayStr1'),';',iDayOfWeekTo-1);
+  labWeekDayFrom.caption := _strTokenAt(GetTranslatedText('dayStr1'), ';', iDayOfWeekFrom - 1);
+  labWeekDayTo.caption := _strTokenAt(GetTranslatedText('dayStr1'), ';', iDayOfWeekTo - 1);
 
-  dtDeparture.Date := zDate;
+  dtDeparture.date := zDate;
 end;
 
 procedure TfrmChangeRRdates.Timer1Timer(Sender: TObject);
 begin
-  timer1.Enabled := false;
+  Timer1.Enabled := false;
   close;
 end;
 

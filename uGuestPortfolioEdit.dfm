@@ -43,6 +43,12 @@ object frmGuestPortfolio: TfrmGuestPortfolio
       SkinData.SkinSection = 'PAGECONTROL'
       object sTabSheet1: TsTabSheet
         Caption = 'Person'
+        SkinData.CustomColor = False
+        SkinData.CustomFont = False
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object sGroupBox1: TsGroupBox
           AlignWithMargins = True
           Left = 10
@@ -737,6 +743,12 @@ object frmGuestPortfolio: TfrmGuestPortfolio
       end
       object sTabSheet7: TsTabSheet
         Caption = 'Contact'
+        SkinData.CustomColor = False
+        SkinData.CustomFont = False
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object sGroupBox4: TsGroupBox
           AlignWithMargins = True
           Left = 10
@@ -1542,6 +1554,12 @@ object frmGuestPortfolio: TfrmGuestPortfolio
       end
       object sTabSheet2: TsTabSheet
         Caption = 'Company'
+        SkinData.CustomColor = False
+        SkinData.CustomFont = False
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object sGroupBox7: TsGroupBox
           AlignWithMargins = True
           Left = 10
@@ -2139,6 +2157,12 @@ object frmGuestPortfolio: TfrmGuestPortfolio
       end
       object sTabSheet4: TsTabSheet
         Caption = 'Preferences'
+        SkinData.CustomColor = False
+        SkinData.CustomFont = False
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object sGroupBox11: TsGroupBox
           AlignWithMargins = True
           Left = 10
@@ -2489,6 +2513,12 @@ object frmGuestPortfolio: TfrmGuestPortfolio
       end
       object tabHistory: TsTabSheet
         Caption = 'History'
+        SkinData.CustomColor = False
+        SkinData.CustomFont = False
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object grData: TcxGrid
           Left = 0
           Top = 41
@@ -2671,6 +2701,12 @@ object frmGuestPortfolio: TfrmGuestPortfolio
       end
       object tabInvoices: TsTabSheet
         Caption = 'Invoices'
+        SkinData.CustomColor = False
+        SkinData.CustomFont = False
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object grInvoices: TcxGrid
           Left = 0
           Top = 41
@@ -2948,7 +2984,6 @@ object frmGuestPortfolio: TfrmGuestPortfolio
     Top = 168
     object prLink_grData: TdxGridReportLink
       Component = grData
-      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 5080
       PrinterPage.GrayShading = True
@@ -2962,7 +2997,6 @@ object frmGuestPortfolio: TfrmGuestPortfolio
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
       ReportDocument.CreationDate = 41334.495374884260000000
-      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       BuiltInReportLink = True
     end
   end

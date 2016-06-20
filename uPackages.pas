@@ -193,7 +193,6 @@ type
     procedure tvDataPackagePropertiesValidate(Sender: TObject; var DisplayValue: Variant; var ErrorText: TCaption; var Error: Boolean);
     procedure tvDataCurrencyPropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
     procedure btnInsertClick(Sender: TObject);
-    procedure m_AfterScroll(DataSet: TDataSet);
     procedure m_TotalPriceSetText(Sender: TField; const Text: string);
     procedure m_CalcFields(DataSet: TDataSet);
     procedure tvDataColumn1PropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
@@ -210,7 +209,6 @@ type
     Procedure fillGridFromDataset(sGoto : string);
     procedure fillHolder;
     procedure changeAllowgridEdit;
-    function getPrevCode : string;
     Procedure chkFilter;
     procedure applyFilter;
     procedure GetPackageItems;
@@ -241,6 +239,7 @@ uses
   , uCurrencies
   , uPackageItems
   , uDImages
+  , UITypes
   ;
 
 
@@ -497,18 +496,6 @@ begin
   end;
 end;
 
-
-////////////////////////////////////////////////////////////////////////////////////////
-// memory table
-////////////////////////////////////////////////////////////////////////////////////////
-function TfrmPackages.getPrevCode: string;
-begin
-end;
-
-procedure TfrmPackages.m_AfterScroll(DataSet: TDataSet);
-begin
-//  fillItems(dataset.fieldbyname('Id').asinteger);
-end;
 
 procedure TfrmPackages.m_BeforeDelete(DataSet: TDataSet);
 var

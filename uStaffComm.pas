@@ -222,6 +222,7 @@ uses
   , uMain
   , uFrmStaffNote
   , uUtils
+  , UITypes
   ;
 
 
@@ -264,8 +265,6 @@ end;
 
 
 Procedure TfrmStaffComm.fillGridFromDataset(sGoto : integer);
-var
-  s    : string;
 begin
   zFirstTime := true;
   if zSortStr = '' then zSortStr := 'id';

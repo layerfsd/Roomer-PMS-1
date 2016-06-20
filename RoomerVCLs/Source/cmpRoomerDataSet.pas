@@ -56,6 +56,8 @@ const
 
 type
 
+  ERoomerExecutionPlanException = class(Exception);
+
   TRoomerDataSet = class;
   TRoomerDatasetList = TObjectList<TRoomerDataset>;
 
@@ -96,6 +98,7 @@ type
     queryResults: TRoomerDatasetList;
     sqlList: TRoomerPlanEntityList;
     FExecException: String;
+    FInTransaction: boolean;
     function getSqlsAsTList(PlanType: Integer): TList<String>;
 
     function GetCount: Integer;
@@ -341,7 +344,7 @@ type
     // ******************************************************
 
 {$I RoomerDBMethodsDefinitions.inc}
-    function ActivateNewDataset(SqlResult: String): TRoomerDataSet;
+    function ActivateNewDataset(const SqlResult: String): TRoomerDataSet;
     function CreateNewDataset: TRoomerDataSet;
     procedure AssignPropertiesToDataSet(DataSet: TRoomerDataSet);
 
@@ -1692,27 +1695,22 @@ begin
     else
       privRes := 'false';
 
+    IdSSLIOHandlerSocketOpenSSL1 := nil;
     http := TIdHTTP.Create(nil);
     try
-      // http.Request.CustomHeaders.AddValue(PROMOIR_ROOMER_HOTEL_PATH, keyString);
       if LowerCase(Copy(OpenApiUri, 1, 8)) = 'https://' then
       begin
         IdSSLIOHandlerSocketOpenSSL1 := TIdSSLIOHandlerSocketOpenSSL.Create(nil);
         http.IOHandler := IdSSLIOHandlerSocketOpenSSL1;
       end;
 
-      http.Request.CustomHeaders.AddValue
-        (PROMOIR_ROOMER_HOTEL_IDENTIFIER, AppKey);
-      http.Request.CustomHeaders.AddValue(PROMOIR_ROOMER_HOTEL_APPLICATION_ID,
-        ApplicationID);
-      http.Request.CustomHeaders.AddValue(PROMOIR_ROOMER_HOTEL_SECRET,
-        CalculateOTP(AppSecret));
-      http.Request.CustomHeaders.AddValue
-        (PROMOIR_ROOMER_HOTEL_ADD_PRIVATE_RESOURCES, privRes);
+      http.Request.CustomHeaders.AddValue(PROMOIR_ROOMER_HOTEL_IDENTIFIER, AppKey);
+      http.Request.CustomHeaders.AddValue(PROMOIR_ROOMER_HOTEL_APPLICATION_ID, ApplicationID);
+      http.Request.CustomHeaders.AddValue(PROMOIR_ROOMER_HOTEL_SECRET, CalculateOTP(AppSecret));
+      http.Request.CustomHeaders.AddValue(PROMOIR_ROOMER_HOTEL_ADD_PRIVATE_RESOURCES, privRes);
       result := http.Post(OpenApiUri + url + '/' + keyString, multi);
     finally
-      if LowerCase(Copy(OpenApiUri, 1, 8)) = 'https://' then
-        IdSSLIOHandlerSocketOpenSSL1.Free;
+      IdSSLIOHandlerSocketOpenSSL1.Free;
       http.Free;
     end;
   finally
@@ -1728,19 +1726,18 @@ var
   stream : TStringStream;
   IdSSLIOHandlerSocketOpenSSL1 : TIdSSLIOHandlerSocketOpenSSL;
 begin
+  IdSSLIOHandlerSocketOpenSSL1 := nil;
   http := TIdHTTP.Create(nil);
-  if LowerCase(Copy(OpenApiUri, 1, 8)) = 'https://' then
-    IdSSLIOHandlerSocketOpenSSL1 := TIdSSLIOHandlerSocketOpenSSL.Create(nil);
   try
     if LowerCase(Copy(OpenApiUri, 1, 8)) = 'https://' then
+    begin
+      IdSSLIOHandlerSocketOpenSSL1 := TIdSSLIOHandlerSocketOpenSSL.Create(nil);
       http.IOHandler := IdSSLIOHandlerSocketOpenSSL1;
+    end;
 
-    http.Request.CustomHeaders.AddValue
-      (PROMOIR_ROOMER_HOTEL_IDENTIFIER, AppKey);
-    http.Request.CustomHeaders.AddValue(PROMOIR_ROOMER_HOTEL_APPLICATION_ID,
-      ApplicationID);
-    http.Request.CustomHeaders.AddValue(PROMOIR_ROOMER_HOTEL_SECRET,
-      CalculateOTP(AppSecret));
+    http.Request.CustomHeaders.AddValue(PROMOIR_ROOMER_HOTEL_IDENTIFIER, AppKey);
+    http.Request.CustomHeaders.AddValue(PROMOIR_ROOMER_HOTEL_APPLICATION_ID, ApplicationID);
+    http.Request.CustomHeaders.AddValue(PROMOIR_ROOMER_HOTEL_SECRET, CalculateOTP(AppSecret));
 
     URL := format(OpenApiUri + 'bookings/%d?confirmedToGuest=true', [Reservation]);
 
@@ -1751,8 +1748,7 @@ begin
       stream.Free;
     end;
   finally
-    if LowerCase(Copy(OpenApiUri, 1, 8)) = 'https://' then
-      IdSSLIOHandlerSocketOpenSSL1.Free;
+    IdSSLIOHandlerSocketOpenSSL1.Free;
     http.Free;
   end;
 end;
@@ -1787,24 +1783,21 @@ begin
     multi.AddFormField('plaintext', _text, 'UTF-8', 'text/plain', 'emailText.txt');
     multi.AddFormField('htmltext', _htmlText, 'UTF-8', 'text/html', 'htmlText.html');
 
-
+    IdSSLIOHandlerSocketOpenSSL1 := nil;
     http := TIdHTTP.Create(nil);
-    if LowerCase(Copy(OpenApiUri, 1, 8)) = 'https://' then
-      IdSSLIOHandlerSocketOpenSSL1 := TIdSSLIOHandlerSocketOpenSSL.Create(nil);
     try
       if LowerCase(Copy(OpenApiUri, 1, 8)) = 'https://' then
+      begin
+        IdSSLIOHandlerSocketOpenSSL1 := TIdSSLIOHandlerSocketOpenSSL.Create(nil);
         http.IOHandler := IdSSLIOHandlerSocketOpenSSL1;
-      http.Request.CustomHeaders.AddValue
-        (PROMOIR_ROOMER_HOTEL_IDENTIFIER, AppKey);
-      http.Request.CustomHeaders.AddValue(PROMOIR_ROOMER_HOTEL_APPLICATION_ID,
-        ApplicationID);
-      http.Request.CustomHeaders.AddValue(PROMOIR_ROOMER_HOTEL_SECRET,
-        CalculateOTP(AppSecret));
+      end;
+      http.Request.CustomHeaders.AddValue(PROMOIR_ROOMER_HOTEL_IDENTIFIER, AppKey);
+      http.Request.CustomHeaders.AddValue(PROMOIR_ROOMER_HOTEL_APPLICATION_ID, ApplicationID);
+      http.Request.CustomHeaders.AddValue(PROMOIR_ROOMER_HOTEL_SECRET, CalculateOTP(AppSecret));
 
       result := http.Post(OpenApiUri + 'hotelservices/email', multi);
     finally
-      if LowerCase(Copy(OpenApiUri, 1, 8)) = 'https://' then
-        IdSSLIOHandlerSocketOpenSSL1.Free;
+      IdSSLIOHandlerSocketOpenSSL1.Free;
       http.Free;
     end;
   finally
@@ -2057,7 +2050,7 @@ begin
 {$IFDEF DEBUG}
       CopyToClipboard(aSql + #13#10#13#10 + '-- ' + sResult);
 {$ENDIF}
-      raise Exception.Create('command execution failed');
+      raise Exception.Create('command execution failed:' + sResult);
     end;
   end;
   FNumberOfAffectedRows := result;
@@ -2241,7 +2234,7 @@ end;
 
 {$I RoomerDBMethodsImplementations.inc}
 
-function TRoomerDataSet.ActivateNewDataset(SqlResult: String): TRoomerDataSet;
+function TRoomerDataSet.ActivateNewDataset(const SqlResult: String): TRoomerDataSet;
 begin
   result := TRoomerDataSet.Create(Owner);
   result.OfflineMode := OfflineMode;
@@ -2503,7 +2496,10 @@ end;
 
 procedure TRoomerExecutionPlan.BeginTransaction;
 begin
+  if FInTransaction then
+    raise ERoomerExecutionPlanException.Create('Nested transactions not allowed');
   FRoomerDataSet.SystemStartTransaction;
+  FInTransaction := True;
 end;
 
 procedure TRoomerExecutionPlan.Clear;
@@ -2515,6 +2511,7 @@ end;
 procedure TRoomerExecutionPlan.CommitTransaction;
 begin
   FRoomerDataSet.SystemCommitTransaction;
+  FInTransaction := False;
 end;
 
 constructor TRoomerExecutionPlan.Create(_RoomerDataSet: TRoomerDataSet = nil);
@@ -2527,6 +2524,13 @@ end;
 
 destructor TRoomerExecutionPlan.Destroy;
 begin
+  if FInTransaction then
+  try
+    CommitTransaction;
+  except
+    if FInTransaction then
+      RollbackTransaction;
+  end;
   FRoomerDataset := nil;
   queryResults.Free;
   sqlList.Free;
@@ -2542,7 +2546,7 @@ var
   lSQLList: TList<string>;
 begin
   if transaction then
-    FRoomerDataSet.SystemStartTransaction;
+    BeginTransaction;
   try
     if PlanType = ptQuery then
     begin
@@ -2568,14 +2572,14 @@ begin
     end;
 
     if transaction then
-      FRoomerDataSet.SystemCommitTransaction;
+      CommitTransaction;
     result := true;
   except
     on E: Exception do
     begin
       FExecException := E.Message;
       if transaction OR performRollBackOnException then
-        FRoomerDataSet.SystemRollbackTransaction;
+        RollbackTransaction;
       result := false;
     end;
   end;
@@ -2625,6 +2629,7 @@ end;
 procedure TRoomerExecutionPlan.RollbackTransaction;
 begin
   FRoomerDataSet.SystemRollbackTransaction;
+  FInTransaction := False;
 end;
 
 { TRoomerHotelsEntity }

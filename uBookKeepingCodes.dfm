@@ -90,7 +90,6 @@ object frmBookKeepingCodes: TfrmBookKeepingCodes
         Images = DImages.PngImageList1
         Style = bsSplitButton
         TabOrder = 1
-        OnClick = btnOtherClick
         SkinData.SkinSection = 'BUTTON'
       end
       object edFilter: TsEdit
@@ -142,8 +141,8 @@ object frmBookKeepingCodes: TfrmBookKeepingCodes
       object chkActive: TsCheckBox
         Left = 55
         Top = 63
-        Width = 242
-        Height = 17
+        Width = 234
+        Height = 20
         Caption = 'Active (if checked then just active are visible'
         Checked = True
         State = cbChecked
@@ -315,6 +314,7 @@ object frmBookKeepingCodes: TfrmBookKeepingCodes
     Left = 96
     Top = 192
     object prLink_grData: TdxGridReportLink
+      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.GrayShading = True
@@ -328,6 +328,7 @@ object frmBookKeepingCodes: TfrmBookKeepingCodes
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
       ReportDocument.CreationDate = 41334.495374884260000000
+      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       BuiltInReportLink = True
     end
   end

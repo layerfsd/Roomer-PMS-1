@@ -440,7 +440,6 @@ var
 
   sLastDate : string;
 
-  s : string;
   rSet : TRoomerDataSet;
 
 begin

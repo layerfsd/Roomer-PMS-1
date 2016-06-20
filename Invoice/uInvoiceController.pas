@@ -337,7 +337,6 @@ type
 
     function GetTotal: Double;
     function GetTotalStayTax: Double;
-    function GetTotalStayTaxNights: Double;
     function GetTotalVAT: Double;
     function GetTotalWOVAT: Double;
 
@@ -406,7 +405,6 @@ type
     property Balance : Double read GetBalance;
 
     property TotalStayTax : Double read GetTotalStayTax;
-    property TotalStayTaxNights : Double read GetTotalStayTaxNights;
 
     //
     property Reservation : Integer read FReservation write FReservation;
@@ -593,6 +591,8 @@ begin
     INB_GUEST : result := Owner.LinesNumGuests;
     INB_ROOM : result := 1.0;
     INB_BOOKING : result := 1.0;
+  else
+    result := dDefault;
   end;
 end;
 
@@ -1229,11 +1229,6 @@ begin
   result := 0.00;
   for i := 0 to InvoiceLines.Count - 1 do
     result := result + InvoiceLines[i].CityTax;
-end;
-
-function TInvoice.GetTotalStayTaxNights: Double;
-begin
-
 end;
 
 function TInvoice.GetTotalVAT: Double;

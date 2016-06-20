@@ -675,7 +675,7 @@ type
 
     Procedure AddRoomTax(totalTax: Double; TaxUnits: Double;
       taxItem: String = ''; iAddAt: integer = 0);
-    function RemoveStayTax: boolean;
+    procedure RemoveStayTax;
 
     procedure ClearLines;
     function getDownPayments: Double;
@@ -3490,6 +3490,8 @@ begin
     INB_GUEST : result := linesNumGuests;
     INB_ROOM : result := 1.0;
     INB_BOOKING : result := 1.0;
+  else
+    Result := dDefault;
   end;
 end;
 
@@ -4999,7 +5001,7 @@ begin
   end;
 end;
 
-function TfrmInvoice.RemoveStayTax: boolean;
+procedure TfrmInvoice.RemoveStayTax;
 var
   i: integer;
   anyRemoved: boolean;

@@ -218,23 +218,26 @@ end;
 
 procedure TDynamicRates.GetAllRateCodes(List : TStrings);
 var s : String;
-    idx : Integer;
 begin
   chRates.First;
-  while NOT chRates.Eof do
-  begin
-    s := chRates['rateCode'];
-    if List.IndexOf(s) < 0 then
+  try
+    while NOT chRates.Eof do
     begin
-      idx := List.Add(s);
-      List.Objects[idx] := TObject(chRates.FieldByName('channelId').AsInteger);
+      s := chRates['rateCode'];
+      if List.IndexOf(s) < 0 then
+      begin
+        List.AddObject(s, TObject(chRates.FieldByName('channelId').AsInteger));
+      end;
+      chRates.Next;
     end;
-    chRates.Next;
+  finally
+
   end;
 end;
 
 procedure TDynamicRates.Prepare(_arrival, _departure: TDate; _channelCode, _chManCode: String);
-var sql : String;
+var
+  sql : String;
 begin
   Clear;
   arrival := _arrival;
@@ -242,6 +245,7 @@ begin
   channelCode := _channelCode;
   chManCode := _chManCode;
   sql := format('bookingapi/pmsAvailability?arrival=%s&departure=%s&channelCode=%s&channelManagerCode=%s', [uDateUtils.dateToSqlString(arrival), uDateUtils.dateToSqlString(departure), channelCode, chManCode]);
+
   chRates := d.roomerMainDataSet.ActivateNewDataset(d.roomerMainDataSet.downloadUrlAsString(d.roomerMainDataSet.RoomerUri + sql));
 end;
 

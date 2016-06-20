@@ -206,10 +206,8 @@ type
     Procedure fillGridFromDataset(iGoto : string);
     procedure fillHolder;
     procedure changeAllowgridEdit;
-    function getPrevCode : string;
     Procedure chkFilter;
     procedure applyFilter;
-    procedure CorrectRoomTypes(FromCode, ToCode: String);
   public
     { Public declarations }
     zAct   : TActTableAction;
@@ -240,6 +238,7 @@ uses
   , uDImages
   , uMain
   , uLocations2
+  , UITypes
   ;
 
 
@@ -575,9 +574,6 @@ end;
 ////////////////////////////////////////////////////////////////////////////////////////
 // memory table
 ////////////////////////////////////////////////////////////////////////////////////////
-function TfrmRoomTypes2.getPrevCode: string;
-begin
-end;
 
 procedure TfrmRoomTypes2.m_AfterScroll(DataSet: TDataSet);
 begin
@@ -633,24 +629,10 @@ begin
   tvData.GetColumnByFieldName('RoomType').Focused := True;
 end;
 
-
-procedure TfrmRoomTypes2.CorrectRoomTypes(FromCode, ToCode : String);
-var s : String;
-begin
-  s := format('UPDATE rooms SET RoomType=''%s'' WHERE RoomType=''''', [ToCode, FromCode]);
-  d.roomerMainDataSet.DoCommand(s);
-  s := format('UPDATE roomreservations SET RoomType=''%s'' WHERE RoomType=''''', [ToCode, FromCode]);
-  d.roomerMainDataSet.DoCommand(s);
-  s := format('UPDATE roomsdate SET RoomType=''%s'' WHERE RoomType=''''', [ToCode, FromCode]);
-  d.roomerMainDataSet.DoCommand(s);
-end;
-
-
 procedure TfrmRoomTypes2.m_BeforePost(DataSet: TDataSet);
 var
   nID : integer;
-    s
-  , OldRoomType : String;
+  OldRoomType : String;
   OldLocation : string;
   oldCode, oldGroup : String;
 begin

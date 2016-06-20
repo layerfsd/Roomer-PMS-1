@@ -21,7 +21,6 @@ type
     procedure pnlInfoClick(Sender: TObject);
     procedure pnlInfoMouseEnter(Sender: TObject);
     procedure pnlInfoMouseLeave(Sender: TObject);
-    function ParentAsWinCntrl: TWinControl;
     function GetLeft: Integer;
     function GetTop: Integer;
     procedure SetLeft(const Value: Integer);
@@ -40,7 +39,7 @@ type
   public
     records: TRoomerDataSet;
     constructor Create(pnl : TsPanel);
-    destructor Destroy;
+    destructor Destroy; override;
 
     procedure PlaceCorrectly;
 
@@ -191,6 +190,7 @@ end;
 destructor TStaffCommunication.Destroy;
 begin
   FreeAndNil(CommInfoPanel);
+  inherited;
 end;
 
 function TStaffCommunication.FormOfPanel : TForm;
@@ -269,11 +269,6 @@ end;
 function TStaffCommunication.GetWidth: Integer;
 begin
   result := CommInfoPanel.Width;
-end;
-
-function TStaffCommunication.ParentAsWinCntrl : TWinControl;
-begin
-  result := TWinControl(CommInfoPanel.Parent);
 end;
 
 procedure TStaffCommunication.PrepareEvents;

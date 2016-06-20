@@ -44,7 +44,7 @@ object frmCountryGroups: TfrmCountryGroups
     object labFilterWarning: TsLabel
       Left = 1
       Top = 66
-      Width = 558
+      Width = 4
       Height = 14
       Align = alBottom
       Alignment = taCenter
@@ -57,7 +57,6 @@ object frmCountryGroups: TfrmCountryGroups
       Font.Height = -12
       Font.Name = 'Tahoma'
       Font.Style = []
-      ExplicitWidth = 4
     end
     object btnClear: TsSpeedButton
       Left = 274
@@ -333,7 +332,6 @@ object frmCountryGroups: TfrmCountryGroups
     Top = 112
     object prLink_grData: TdxGridReportLink
       Component = grData
-      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.GrayShading = True
@@ -346,7 +344,6 @@ object frmCountryGroups: TfrmCountryGroups
       PrinterPage.PageSize.Y = 297000
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
-      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       BuiltInReportLink = True
     end
   end

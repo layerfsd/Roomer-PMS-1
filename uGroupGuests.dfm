@@ -32,6 +32,7 @@ object frmGroupGuests: TfrmGroupGuests
       TabOrder = 0
       OnClick = rgrShowClick
       SkinData.SkinSection = 'GROUPBOX'
+      Checked = False
       ItemIndex = 1
       Items.Strings = (
         'All Guests'
@@ -107,6 +108,10 @@ object frmGroupGuests: TfrmGroupGuests
       Caption = 'Guests'
       SkinData.CustomColor = False
       SkinData.CustomFont = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object sPanel2: TsPanel
         Left = 0
         Top = 0
@@ -1119,7 +1124,6 @@ object frmGroupGuests: TfrmGroupGuests
     Top = 384
     object grPrinterLink1: TdxGridReportLink
       Component = grGuests
-      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.GrayShading = True
@@ -1132,7 +1136,6 @@ object frmGroupGuests: TfrmGroupGuests
       PrinterPage.PageSize.Y = 297000
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
-      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       BuiltInReportLink = True
     end
   end
