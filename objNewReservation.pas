@@ -86,7 +86,7 @@ TYPE
     /// <summary> Post all ReservationExtras to server
     procedure Post;
     procedure DeleteAllFromDatabase;
-    function IsAvailable: boolean;
+    function IsAvailable(aUnavailableList: TStringlist): boolean;
   end;
 
   TnewRoomReservationItem = class
@@ -1997,16 +1997,19 @@ begin
   end;
 end;
 
-function TReservationExtrasList.IsAvailable: boolean;
+function TReservationExtrasList.IsAvailable(aUnavailableList: TStringlist): boolean;
 var
   lExtra: TReservationExtra;
 begin
   Result := True;
   for lExtra in Self do
   begin
-    Result := lExtra.IsAvailable;
-    if not Result then
-      Break;
+    if not lExtra.IsAvailable then
+    begin
+      Result := false;
+      if assigned(aUnavailableList) then
+        aUnavailableList.Add(lExtra.Item);
+    end;
   end;
 end;
 
