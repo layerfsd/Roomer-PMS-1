@@ -982,7 +982,7 @@ begin
     try
       if m_Availability.Locate('stockitem', m_ItemsID.Asinteger, []) then
       begin
-        lMaxusage := -MAXINT;
+        lMaxusage := 0;
         while not m_Availability.eof and (m_AvailabilityStockitem.AsInteger = m_ItemsID.AsInteger) and (m_AvailabilityUseDate.AsDateTime <= zData.AvailabilityTo) do
         begin
           lMaxUsage := max(lMaxUsage, m_AvailabilityInUse.AsInteger);
