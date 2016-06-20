@@ -273,7 +273,7 @@ const
           '   rrs.Count, '#10 +
           '   max(rrs.price) as PricePerItemPerDay, '#10 +
           '   min(rrs.usedate) as Fromdate, '#10 +
-          '   max(rrs.usedate) as ToDate'#10 +
+          '   max(adddate(rrs.usedate, INTERVAL 1 DAY)) as ToDate'#10 +
           'from roomreservationstockitems rrs '#10 +
           'join items i on rrs.stockitem=i.id '#10 +
           'where RoomReservation = %d '#10 +
