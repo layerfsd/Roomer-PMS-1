@@ -3009,7 +3009,7 @@ begin
   StoreMain.StorageName := 'Software\Roomer\FormStatus\StoreMainV2';
   // g.qProgramPath + 'forms' + '.ini';
   StoreMain.RestoreFrom;
-
+  PlaceFormOnVisibleMonitor(Self);
   try
     recVer := _GetEXEVersionData(Paramstr(0));
     __VER.Caption := { 1081 } ANSIUpperCase(GetTranslatedText('sh0080')) + ': ' + recVer.FileVersion;
