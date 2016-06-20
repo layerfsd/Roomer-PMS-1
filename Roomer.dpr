@@ -227,7 +227,8 @@ uses
   uHotelArrivalsOfflineReportDesign in 'OfflineReports\uHotelArrivalsOfflineReportDesign.pas',
   uRptArrivals in 'uRptArrivals.pas' {frmArrivalsReport},
   uFrmRoomReservationCancellationDialog in 'uFrmRoomReservationCancellationDialog.pas' {FrmRoomReservationCancellationDialog},
-  ufrmReservationExtras in 'StockItems\ufrmReservationExtras.pas' {frmReservationExtras};
+  ufrmReservationExtras in 'StockItems\ufrmReservationExtras.pas' {frmReservationExtras},
+  uRptDepartures in 'uRptDepartures.pas' {frmDeparturesReport};
 
 {$R *.RES}
 

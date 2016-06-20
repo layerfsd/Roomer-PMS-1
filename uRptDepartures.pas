@@ -15,8 +15,8 @@ uses
 type
   TfrmDeparturesReport = class(TForm)
     FormStore: TcxPropertiesStore;
-    kbmArrivalsList: TkbmMemTable;
-    ArrivalsListDS: TDataSource;
+    kbmDeparturesList: TkbmMemTable;
+    DeparturesListDS: TDataSource;
     pnlFilter: TsPanel;
     btnRefresh: TsButton;
     gbxSelectDates: TsGroupBox;
@@ -28,69 +28,57 @@ type
     pnlExportButtons: TsPanel;
     btnExcel: TsButton;
     dxStatusBar: TdxStatusBar;
-    grArrivalsList: TcxGrid;
-    lvArrivalsListLevel1: TcxGridLevel;
-    grArrivalsListDBTableView1: TcxGridDBTableView;
-    kbmArrivalsListfldRoom: TStringField;
-    kbmArrivalsListfldRoomtype: TStringField;
-    kbmArrivalsListfldRoomerReservationID: TIntegerField;
-    kbmArrivalsListfldGuestName: TStringField;
-    kbmArrivalsListfldCompanyCode: TStringField;
-    kbmArrivalsListfldArrival: TDateField;
-    kbmArrivalsListfldDeparture: TDateField;
-    kbmArrivalsListfldNumGuests: TIntegerField;
+    grDeparturessList: TcxGrid;
+    lvDeparturesListLevel1: TcxGridLevel;
+    grDeparturessListDBTableView1: TcxGridDBTableView;
+    kbmDeparturesListfldRoom: TStringField;
+    kbmDeparturesListfldRoomtype: TStringField;
+    kbmDeparturesListfldRoomerReservationID: TIntegerField;
+    kbmDeparturesListfldGuestName: TStringField;
+    kbmDeparturesListfldCompanyCode: TStringField;
+    kbmDeparturesListfldArrival: TDateField;
+    kbmDeparturesListfldDeparture: TDateField;
+    kbmDeparturesListfldNumGuests: TIntegerField;
     cxStyleRepository1: TcxStyleRepository;
     cxStyle1: TcxStyle;
-    kbmArrivalsListAverageRoomRate: TFloatField;
-    kbmArrivalsListExpectedTimeOfArrival: TStringField;
+    kbmDeparturesListAverageRoomRate: TFloatField;
+    kbmDeparturesListExpectedTimeOfArrival: TStringField;
     btnCheckIn: TsButton;
     btnProfile: TsButton;
     btnInvoice: TsButton;
     pmnuInvoiceMenu: TPopupMenu;
     R1: TMenuItem;
     G1: TMenuItem;
-    grArrivalsListDBTableView1Room: TcxGridDBColumn;
-    grArrivalsListDBTableView1Roomtype: TcxGridDBColumn;
-    grArrivalsListDBTableView1RoomerReservationID: TcxGridDBColumn;
-    grArrivalsListDBTableView1GuestName: TcxGridDBColumn;
-    grArrivalsListDBTableView1CompanyCode: TcxGridDBColumn;
-    grArrivalsListDBTableView1Arrival: TcxGridDBColumn;
-    grArrivalsListDBTableView1Departure: TcxGridDBColumn;
-    grArrivalsListDBTableView1NumGuests: TcxGridDBColumn;
-    grArrivalsListDBTableView1AverageRoomRate: TcxGridDBColumn;
-    grArrivalsListDBTableView1ExpectedTimeOfArrival: TcxGridDBColumn;
-    kbmArrivalsListRoomerRoomReservationID: TIntegerField;
-    grArrivalsListDBTableView1RoomerRoomReservationID: TcxGridDBColumn;
+    grDeparturessListDBTableView1Room: TcxGridDBColumn;
+    grDeparturessListDBTableView1Roomtype: TcxGridDBColumn;
+    grDeparturessListDBTableView1RoomerReservationID: TcxGridDBColumn;
+    grDeparturessListDBTableView1GuestName: TcxGridDBColumn;
+    grDeparturessListDBTableView1CompanyCode: TcxGridDBColumn;
+    grDeparturessListDBTableView1Arrival: TcxGridDBColumn;
+    grDeparturessListDBTableView1Departure: TcxGridDBColumn;
+    grDeparturessListDBTableView1NumGuests: TcxGridDBColumn;
+    grDeparturessListDBTableView1AverageRoomRate: TcxGridDBColumn;
+    grDeparturessListDBTableView1ExpectedTimeOfArrival: TcxGridDBColumn;
+    kbmDeparturesListRoomerRoomReservationID: TIntegerField;
+    grDeparturessListDBTableView1RoomerRoomReservationID: TcxGridDBColumn;
     pnmuGridMenu: TPopupMenu;
     mnuCheckin: TMenuItem;
     mnuProfile: TMenuItem;
     mnuInvoice: TMenuItem;
     mnuRoomInvoice: TMenuItem;
     mnuGroupInvoice: TMenuItem;
-    kbmDeparturesList: TkbmMemTable;
-    StringField1: TStringField;
-    StringField2: TStringField;
-    IntegerField1: TIntegerField;
-    StringField3: TStringField;
-    StringField4: TStringField;
-    DateField1: TDateField;
-    DateField2: TDateField;
-    IntegerField2: TIntegerField;
-    FloatField1: TFloatField;
-    StringField5: TStringField;
-    IntegerField3: TIntegerField;
     procedure FormCreate(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure rbRadioButtonClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure btnExcelClick(Sender: TObject);
     procedure btnRefreshClick(Sender: TObject);
-    procedure kbmArrivalsListAfterScroll(DataSet: TDataSet);
+    procedure kbmDeparturesListAfterScroll(DataSet: TDataSet);
     procedure btnCheckInClick(Sender: TObject);
     procedure mnuRoomInvoiceClick(Sender: TObject);
     procedure btnProfileClick(Sender: TObject);
     procedure mnuGroupInvoiceClick(Sender: TObject);
-    procedure grArrivalsListDBTableView1CellDblClick(Sender: TcxCustomGridTableView; ACellViewInfo: TcxGridTableDataCellViewInfo; AButton: TMouseButton;
+    procedure grDeparturessListDBTableView1CellDblClick(Sender: TcxCustomGridTableView; ACellViewInfo: TcxGridTableDataCellViewInfo; AButton: TMouseButton;
       AShift: TShiftState; var AHandled: Boolean);
     procedure dtDateFromCloseUp(Sender: TObject);
     procedure dtDateToCloseUp(Sender: TObject);
@@ -321,35 +309,13 @@ var s : String;
     Reservation, RoomReservation : Integer;
     NoRoom, bContinue : Boolean;
 begin
-  Room := kbmArrivalsList['Room'];
+  Room := kbmDeparturesList['Room'];
   NoRoom := Copy(Room, 1, 1) = '<';
-  Reservation := kbmArrivalsList['RoomerReservationID'];
-  RoomReservation := kbmArrivalsList['RoomerRoomReservationID'];
-  s := g.oRooms.FindRoomStatus(Room);
-  if g.qWarnCheckInDirtyRoom AND (NOT ((s = 'R') OR (s = 'C'))) then begin
-    s := format(getTranslatedText('shTx_Various_RoomNotClean'), [Room]);
-    if MessageDlg(s, mtWarning, [mbYes, mbCancel], 0) <> mrYes then exit;
-  end;
-
-  if ctrlGetBoolean('CheckinWithDetailsDialog') OR (MessageDlg(Format(GetTranslatedText('shCheckRoom'), [kbmArrivalsList['GuestName']]), mtConfirmation, [mbYes, mbNo], 0) = mrYes) then
-  begin
-
-    ShowAlertsForReservation(Reservation, RoomReservation, atCHECK_IN);
-
-    bContinue := true;
-    if NoRoom then
-    begin
-      Room := ProvideARoom2(RoomReservation);
-      bContinue := Room <> '';
-    end;
-
-    if bContinue then
-    begin
-      if (NOT ctrlGetBoolean('CheckinWithDetailsDialog')) OR OpenGuestCheckInForm(RoomReservation) then
-        d.CheckInGuest(RoomReservation);
-      postMessage(handle, WM_REFRESH_DATA, 0, 0);
-    end;
-  end
+  Reservation := kbmDeparturesList['RoomerReservationID'];
+  RoomReservation := kbmDeparturesList['RoomerRoomReservationID'];
+  ShowAlertsForReservation(Reservation, RoomReservation, atCHECK_OUT);
+  if d.CheckOutRoom(Reservation, RoomReservation, Room) then
+    postMessage(handle, WM_REFRESH_DATA, 0, 0);
 end;
 
 procedure TfrmDeparturesReport.btnExcelClick(Sender: TObject);
@@ -358,14 +324,14 @@ var
   s         : string;
 begin
   dateTimeToString(s, 'yyyymmddhhnn', now);
-  sFilename := g.qProgramPath + s + '_ArrivalsList';
-  ExportGridToExcel(sFilename, grArrivalsList, true, true, true);
+  sFilename := g.qProgramPath + s + '_DeparturesList';
+  ExportGridToExcel(sFilename, grDeparturessList, true, true, true);
   ShellExecute(Handle, 'OPEN', PChar(sFilename + '.xls'), nil, nil, sw_shownormal);
 end;
 
 procedure TfrmDeparturesReport.btnProfileClick(Sender: TObject);
 begin
-  if EditReservation(kbmArrivalsList['RoomerReservationID'], kbmArrivalsList['RoomerRoomReservationID']) then
+  if EditReservation(kbmDeparturesList['RoomerReservationID'], kbmDeparturesList['RoomerRoomReservationID']) then
     postMessage(handle, WM_REFRESH_DATA, 0, 0);
 end;
 
@@ -421,23 +387,23 @@ end;
 
 procedure TfrmDeparturesReport.mnuGroupInvoiceClick(Sender: TObject);
 begin
-  EditInvoice(kbmArrivalsList['RoomerReservationID'], 0, 0, 0, 0, 0, false, true,false);
+  EditInvoice(kbmDeparturesList['RoomerReservationID'], 0, 0, 0, 0, 0, false, true,false);
 end;
 
-procedure TfrmDeparturesReport.grArrivalsListDBTableView1CellDblClick(Sender: TcxCustomGridTableView; ACellViewInfo: TcxGridTableDataCellViewInfo;
+procedure TfrmDeparturesReport.grDeparturessListDBTableView1CellDblClick(Sender: TcxCustomGridTableView; ACellViewInfo: TcxGridTableDataCellViewInfo;
   AButton: TMouseButton; AShift: TShiftState; var AHandled: Boolean);
 begin
   btnProfile.Click;
 end;
 
-procedure TfrmDeparturesReport.kbmArrivalsListAfterScroll(DataSet: TDataSet);
+procedure TfrmDeparturesReport.kbmDeparturesListAfterScroll(DataSet: TDataSet);
 begin
   UpdateControls;
 end;
 
 procedure TfrmDeparturesReport.mnuRoomInvoiceClick(Sender: TObject);
 begin
-  EditInvoice(kbmArrivalsList['RoomerReservationID'], kbmArrivalsList['RoomerRoomReservationID'], 0, 0, 0, 0, false, true,false);
+  EditInvoice(kbmDeparturesList['RoomerReservationID'], kbmDeparturesList['RoomerRoomReservationID'], 0, 0, 0, 0, false, true,false);
 end;
 
 procedure TfrmDeparturesReport.rbRadioButtonClick(Sender: TObject);
@@ -452,11 +418,14 @@ var
 begin
   if NOT btnRefresh.Enabled then exit;
 
+
+  copyToClipboard(sSql);
+
   btnRefresh.Enabled := False;
   Screen.Cursor := crHourglass;
   try
 
-    kbmArrivalsList.DisableControls;
+    kbmDeparturesList.DisableControls;
     try
       FRefreshingdata := True; // UpdateControls still called when updating dataset, despite DisableControls
       rSet1 := CreateNewDataSet;
@@ -465,18 +434,18 @@ begin
 
         hData.rSet_bySQL(rSet1, s);
         rSet1.First;
-        if not kbmArrivalsList.Active then
-          kbmArrivalsList.Open;
-        LoadKbmMemtableFromDataSetQuiet(kbmArrivalsList,rSet1,[]);
+        if not kbmDeparturesList.Active then
+          kbmDeparturesList.Open;
+        LoadKbmMemtableFromDataSetQuiet(kbmDeparturesList,rSet1,[]);
       finally
         FreeAndNil(rSet1);
       end;
 
-      kbmArrivalsList.First;
+      kbmDeparturesList.First;
 
     finally
       FRefreshingdata := False;
-      kbmArrivalsList.EnableControls;
+      kbmDeparturesList.EnableControls;
     end;
   finally
     btnRefresh.Enabled := True;
@@ -505,7 +474,7 @@ begin
   else if rbTomorrow.Checked then
     SetManualDates(Now+1, Now+1);
 
-  lDataAvailable := kbmArrivalsList.Active and NOT kbmArrivalsList.Eof;
+  lDataAvailable := kbmDeparturesList.Active and NOT kbmDeparturesList.Eof;
   btnCheckIn.Enabled := lDataAvailable;
   btnProfile.Enabled := lDataAvailable;
   btnInvoice.Enabled := lDataAvailable;

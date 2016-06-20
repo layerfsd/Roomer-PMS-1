@@ -710,6 +710,7 @@ type
     __TimingResult: TsLabel;
     mnuCancelRoomFromRoomReservation: TMenuItem;
     __N10: TMenuItem;
+    btnRepDepartures: TdxBarLargeButton;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
@@ -1010,6 +1011,7 @@ type
     procedure FormActivate(Sender: TObject);
     procedure btnRepArrivalsClick(Sender: TObject);
     procedure mnuCancelRoomFromRoomReservationClick(Sender: TObject);
+    procedure btnRepDeparturesClick(Sender: TObject);
 
   private
     FormShowing : Boolean;
@@ -1599,7 +1601,9 @@ uses
   , uOfflineReportGrid
   , uResourceManagement
   , uDynamicPricing
-  , uRptArrivals;
+  , uRptArrivals
+  , uRptDepartures
+  ;
 
 {$R *.DFM}
 {$R Cursors.res}
@@ -3108,6 +3112,8 @@ procedure TfrmMain.FormShow(Sender: TObject);
 begin
   if FormShowing then exit;
   FormShowing := True;
+
+  btnRepDepartures.Visible := ivNever;
 
   SetDateWithoutEvents(trunc(now));
 
@@ -12855,6 +12861,12 @@ procedure TfrmMain.btnRepArrivalsClick(Sender: TObject);
 begin
   UserClickedDxLargeButton(Sender);
   ShowArrivalsReport;
+end;
+
+procedure TfrmMain.btnRepDeparturesClick(Sender: TObject);
+begin
+  UserClickedDxLargeButton(Sender);
+  ShowDeparturesReport;
 end;
 
 procedure TfrmMain.btnReDownloadRoomerClick(Sender: TObject);
