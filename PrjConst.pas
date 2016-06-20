@@ -181,6 +181,7 @@ uses uAppGlobal,
   , uHotelStatusOfflineReport
   , uHotelArrivalsOfflineReport
   , uRptArrivals
+  , uRptDepartures
   , uFrmRoomReservationCancellationDialog;
 
 
@@ -1758,6 +1759,8 @@ begin
   TfrmOfflineReports.Create(nil).Free;
 
   TfrmArrivalsReport.Create(nil).Free;
+
+  TfrmDeparturesReport.Create(nil).Free;
 
   TFrmRoomReservationCancellationDialog.Create(nil).Free;
 end;

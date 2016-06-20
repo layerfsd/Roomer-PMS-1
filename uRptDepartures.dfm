@@ -57,8 +57,8 @@ object frmDeparturesReport: TfrmDeparturesReport
       object rbToday: TsRadioButton
         Left = 4
         Top = 21
-        Width = 50
-        Height = 20
+        Width = 58
+        Height = 19
         Caption = 'Today'
         Checked = True
         TabOrder = 0
@@ -68,8 +68,8 @@ object frmDeparturesReport: TfrmDeparturesReport
       object rbTomorrow: TsRadioButton
         Left = 4
         Top = 46
-        Width = 68
-        Height = 20
+        Width = 76
+        Height = 19
         Caption = 'Tomorrow'
         TabOrder = 1
         OnClick = rbRadioButtonClick
@@ -77,8 +77,8 @@ object frmDeparturesReport: TfrmDeparturesReport
       object rbManualRange: TsRadioButton
         Left = 119
         Top = 21
-        Width = 114
-        Height = 20
+        Width = 122
+        Height = 19
         Caption = 'Manual date range:'
         TabOrder = 2
         OnClick = rbRadioButtonClick
@@ -89,16 +89,17 @@ object frmDeparturesReport: TfrmDeparturesReport
         Width = 105
         Height = 21
         AutoSize = False
+        Color = clWhite
         EditMask = '!99/99/9999;1; '
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
         MaxLength = 10
         ParentFont = False
         TabOrder = 3
-        Text = '  .  .    '
+        Text = '  -  -    '
         CheckOnExit = True
         SkinData.SkinSection = 'EDIT'
         GlyphMode.Blend = 0
@@ -112,16 +113,17 @@ object frmDeparturesReport: TfrmDeparturesReport
         Width = 105
         Height = 21
         AutoSize = False
+        Color = clWhite
         EditMask = '!99/99/9999;1; '
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
         MaxLength = 10
         ParentFont = False
         TabOrder = 4
-        Text = '  .  .    '
+        Text = '  -  -    '
         CheckOnExit = True
         SkinData.SkinSection = 'EDIT'
         GlyphMode.Blend = 0
@@ -166,7 +168,7 @@ object frmDeparturesReport: TfrmDeparturesReport
         Margins.Top = 5
         Margins.Bottom = 5
         Align = alLeft
-        Caption = 'Check in'
+        Caption = 'Check out'
         ImageIndex = 44
         Images = DImages.PngImageList1
         TabOrder = 1
@@ -222,7 +224,7 @@ object frmDeparturesReport: TfrmDeparturesReport
     Font.Name = 'Tahoma'
     Font.Style = []
   end
-  object grArrivalsList: TcxGrid
+  object grDeparturessList: TcxGrid
     Left = 0
     Top = 144
     Width = 972
@@ -231,69 +233,69 @@ object frmDeparturesReport: TfrmDeparturesReport
     PopupMenu = pnmuGridMenu
     TabOrder = 2
     LookAndFeel.NativeStyle = False
-    object grArrivalsListDBTableView1: TcxGridDBTableView
+    object grDeparturessListDBTableView1: TcxGridDBTableView
       Navigator.Buttons.CustomButtons = <>
-      OnCellDblClick = grArrivalsListDBTableView1CellDblClick
-      DataController.DataSource = ArrivalsListDS
+      OnCellDblClick = grDeparturessListDBTableView1CellDblClick
+      DataController.DataSource = DeparturesListDS
       DataController.Options = [dcoAssignGroupingValues, dcoAssignMasterDetailKeys, dcoSaveExpanding, dcoGroupsAlwaysExpanded]
       DataController.Summary.DefaultGroupSummaryItems = <>
       DataController.Summary.FooterSummaryItems = <>
       DataController.Summary.SummaryGroups = <>
       Styles.Group = cxStyle1
       Styles.GroupSummary = cxStyle1
-      object grArrivalsListDBTableView1Room: TcxGridDBColumn
+      object grDeparturessListDBTableView1Room: TcxGridDBColumn
         DataBinding.FieldName = 'Room'
         Options.Editing = False
       end
-      object grArrivalsListDBTableView1GuestName: TcxGridDBColumn
+      object grDeparturessListDBTableView1GuestName: TcxGridDBColumn
         Caption = 'Guest name'
         DataBinding.FieldName = 'GuestName'
         Options.Editing = False
         Width = 263
       end
-      object grArrivalsListDBTableView1RoomerReservationID: TcxGridDBColumn
+      object grDeparturessListDBTableView1RoomerReservationID: TcxGridDBColumn
         Caption = 'Reservation ID'
         DataBinding.FieldName = 'RoomerReservationID'
         Options.Editing = False
         Width = 83
       end
-      object grArrivalsListDBTableView1CompanyCode: TcxGridDBColumn
+      object grDeparturessListDBTableView1CompanyCode: TcxGridDBColumn
         Caption = 'Company code'
         DataBinding.FieldName = 'CompanyCode'
         Options.Editing = False
       end
-      object grArrivalsListDBTableView1Arrival: TcxGridDBColumn
+      object grDeparturessListDBTableView1Arrival: TcxGridDBColumn
         DataBinding.FieldName = 'Arrival'
         Options.Editing = False
       end
-      object grArrivalsListDBTableView1Departure: TcxGridDBColumn
+      object grDeparturessListDBTableView1Departure: TcxGridDBColumn
         DataBinding.FieldName = 'Departure'
         Options.Editing = False
       end
-      object grArrivalsListDBTableView1Roomtype: TcxGridDBColumn
+      object grDeparturessListDBTableView1Roomtype: TcxGridDBColumn
         Caption = 'Room type'
         DataBinding.FieldName = 'Roomtype'
         Options.Editing = False
         Width = 66
       end
-      object grArrivalsListDBTableView1NumGuests: TcxGridDBColumn
+      object grDeparturessListDBTableView1NumGuests: TcxGridDBColumn
         Caption = 'Num guests'
         DataBinding.FieldName = 'NumGuests'
         Options.Editing = False
       end
-      object grArrivalsListDBTableView1AverageRoomRate: TcxGridDBColumn
+      object grDeparturessListDBTableView1AverageRoomRate: TcxGridDBColumn
         Caption = 'Average Rate'
         DataBinding.FieldName = 'AverageRoomRate'
         Options.Editing = False
         Width = 82
       end
-      object grArrivalsListDBTableView1ExpectedTimeOfArrival: TcxGridDBColumn
+      object grDeparturessListDBTableView1ExpectedTimeOfArrival: TcxGridDBColumn
         Caption = 'Expected TOA'
         DataBinding.FieldName = 'ExpectedTimeOfArrival'
         Options.Editing = False
         Width = 88
       end
-      object grArrivalsListDBTableView1RoomerRoomReservationID: TcxGridDBColumn
+      object grDeparturessListDBTableView1RoomerRoomReservationID: TcxGridDBColumn
         Caption = 'Room Res ID'
         DataBinding.FieldName = 'RoomerRoomReservationID'
         Visible = False
@@ -302,8 +304,8 @@ object frmDeparturesReport: TfrmDeparturesReport
         SortOrder = soAscending
       end
     end
-    object lvArrivalsListLevel1: TcxGridLevel
-      GridView = grArrivalsListDBTableView1
+    object lvDeparturesListLevel1: TcxGridLevel
+      GridView = grDeparturessListDBTableView1
     end
   end
   object FormStore: TcxPropertiesStore
@@ -321,172 +323,6 @@ object frmDeparturesReport: TfrmDeparturesReport
     StorageType = stRegistry
     Left = 330
     Top = 358
-  end
-  object kbmArrivalsList: TkbmMemTable
-    Active = True
-    DesignActivation = True
-    AttachedAutoRefresh = True
-    AttachMaxCount = 1
-    FieldDefs = <
-      item
-        Name = 'Room'
-        DataType = ftString
-        Size = 10
-      end
-      item
-        Name = 'Roomtype'
-        DataType = ftString
-        Size = 20
-      end
-      item
-        Name = 'RoomerReservationID'
-        DataType = ftInteger
-      end
-      item
-        Name = 'GuestName'
-        DataType = ftString
-        Size = 100
-      end
-      item
-        Name = 'CompanyCode'
-        DataType = ftString
-        Size = 15
-      end
-      item
-        Name = 'Arrival'
-        DataType = ftDate
-      end
-      item
-        Name = 'Departure'
-        DataType = ftDate
-      end
-      item
-        Name = 'NumGuests'
-        DataType = ftInteger
-      end
-      item
-        Name = 'AverageRoomRate'
-        DataType = ftFloat
-      end
-      item
-        Name = 'ExpectedTimeOfArrival'
-        DataType = ftString
-        Size = 5
-      end
-      item
-        Name = 'RoomerRoomReservationID'
-        DataType = ftInteger
-      end>
-    IndexDefs = <>
-    SortOptions = []
-    PersistentBackup = False
-    ProgressFlags = [mtpcLoad, mtpcSave, mtpcCopy]
-    LoadedCompletely = False
-    SavedCompletely = False
-    FilterOptions = []
-    Version = '7.62.00 Standard Edition'
-    LanguageID = 0
-    SortID = 0
-    SubLanguageID = 1
-    LocaleID = 1024
-    AfterScroll = kbmArrivalsListAfterScroll
-    Left = 416
-    Top = 359
-    object kbmArrivalsListfldRoom: TStringField
-      FieldName = 'Room'
-      Size = 10
-    end
-    object kbmArrivalsListfldRoomtype: TStringField
-      FieldName = 'Roomtype'
-    end
-    object kbmArrivalsListfldRoomerReservationID: TIntegerField
-      FieldName = 'RoomerReservationID'
-    end
-    object kbmArrivalsListfldGuestName: TStringField
-      FieldName = 'GuestName'
-      Size = 100
-    end
-    object kbmArrivalsListfldCompanyCode: TStringField
-      FieldName = 'CompanyCode'
-      Size = 15
-    end
-    object kbmArrivalsListfldArrival: TDateField
-      FieldName = 'Arrival'
-    end
-    object kbmArrivalsListfldDeparture: TDateField
-      FieldName = 'Departure'
-    end
-    object kbmArrivalsListfldNumGuests: TIntegerField
-      FieldName = 'NumGuests'
-    end
-    object kbmArrivalsListAverageRoomRate: TFloatField
-      FieldName = 'AverageRoomRate'
-      currency = True
-    end
-    object kbmArrivalsListExpectedTimeOfArrival: TStringField
-      FieldName = 'ExpectedTimeOfArrival'
-      Size = 5
-    end
-    object kbmArrivalsListRoomerRoomReservationID: TIntegerField
-      FieldName = 'RoomerRoomReservationID'
-    end
-  end
-  object ArrivalsListDS: TDataSource
-    DataSet = kbmArrivalsList
-    Left = 488
-    Top = 359
-  end
-  object cxStyleRepository1: TcxStyleRepository
-    Left = 176
-    Top = 240
-    PixelsPerInch = 96
-    object cxStyle1: TcxStyle
-      AssignedValues = [svFont]
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -11
-      Font.Name = 'Tahoma'
-      Font.Style = [fsBold]
-    end
-  end
-  object pmnuInvoiceMenu: TPopupMenu
-    Images = DImages.cxSmallImagesFlat
-    Left = 480
-    Top = 224
-    object R1: TMenuItem
-      Caption = 'Room Invoice'
-      Default = True
-      ImageIndex = 62
-      OnClick = mnuRoomInvoiceClick
-    end
-    object G1: TMenuItem
-      Caption = 'Group Invoice'
-      ImageIndex = 60
-      OnClick = mnuGroupInvoiceClick
-    end
-  end
-  object pnmuGridMenu: TPopupMenu
-    Left = 184
-    Top = 368
-    object mnuCheckin: TMenuItem
-      Caption = 'Check in'
-      OnClick = btnCheckInClick
-    end
-    object mnuProfile: TMenuItem
-      Caption = 'Profile'
-      OnClick = btnProfileClick
-    end
-    object mnuInvoice: TMenuItem
-      Caption = 'Invoice'
-      object mnuRoomInvoice: TMenuItem
-        Caption = 'Room invoice'
-        OnClick = mnuRoomInvoiceClick
-      end
-      object mnuGroupInvoice: TMenuItem
-        Caption = 'Group invoice'
-        OnClick = mnuGroupInvoiceClick
-      end
-    end
   end
   object kbmDeparturesList: TkbmMemTable
     Active = True
@@ -550,51 +386,108 @@ object frmDeparturesReport: TfrmDeparturesReport
     LoadedCompletely = False
     SavedCompletely = False
     FilterOptions = []
-    Version = '7.62.00 Standard Edition'
+    Version = '7.22.00 Standard Edition'
     LanguageID = 0
     SortID = 0
     SubLanguageID = 1
     LocaleID = 1024
-    AfterScroll = kbmArrivalsListAfterScroll
-    Left = 408
-    Top = 431
-    object StringField1: TStringField
+    AfterScroll = kbmDeparturesListAfterScroll
+    Left = 416
+    Top = 359
+    object kbmDeparturesListfldRoom: TStringField
       FieldName = 'Room'
       Size = 10
     end
-    object StringField2: TStringField
+    object kbmDeparturesListfldRoomtype: TStringField
       FieldName = 'Roomtype'
     end
-    object IntegerField1: TIntegerField
+    object kbmDeparturesListfldRoomerReservationID: TIntegerField
       FieldName = 'RoomerReservationID'
     end
-    object StringField3: TStringField
+    object kbmDeparturesListfldGuestName: TStringField
       FieldName = 'GuestName'
       Size = 100
     end
-    object StringField4: TStringField
+    object kbmDeparturesListfldCompanyCode: TStringField
       FieldName = 'CompanyCode'
       Size = 15
     end
-    object DateField1: TDateField
+    object kbmDeparturesListfldArrival: TDateField
       FieldName = 'Arrival'
     end
-    object DateField2: TDateField
+    object kbmDeparturesListfldDeparture: TDateField
       FieldName = 'Departure'
     end
-    object IntegerField2: TIntegerField
+    object kbmDeparturesListfldNumGuests: TIntegerField
       FieldName = 'NumGuests'
     end
-    object FloatField1: TFloatField
+    object kbmDeparturesListAverageRoomRate: TFloatField
       FieldName = 'AverageRoomRate'
       currency = True
     end
-    object StringField5: TStringField
+    object kbmDeparturesListExpectedTimeOfArrival: TStringField
       FieldName = 'ExpectedTimeOfArrival'
       Size = 5
     end
-    object IntegerField3: TIntegerField
+    object kbmDeparturesListRoomerRoomReservationID: TIntegerField
       FieldName = 'RoomerRoomReservationID'
+    end
+  end
+  object DeparturesListDS: TDataSource
+    DataSet = kbmDeparturesList
+    Left = 488
+    Top = 359
+  end
+  object cxStyleRepository1: TcxStyleRepository
+    Left = 176
+    Top = 240
+    PixelsPerInch = 96
+    object cxStyle1: TcxStyle
+      AssignedValues = [svFont]
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = [fsBold]
+    end
+  end
+  object pmnuInvoiceMenu: TPopupMenu
+    Images = DImages.cxSmallImagesFlat
+    Left = 480
+    Top = 224
+    object R1: TMenuItem
+      Caption = 'Room Invoice'
+      Default = True
+      ImageIndex = 62
+      OnClick = mnuRoomInvoiceClick
+    end
+    object G1: TMenuItem
+      Caption = 'Group Invoice'
+      ImageIndex = 60
+      OnClick = mnuGroupInvoiceClick
+    end
+  end
+  object pnmuGridMenu: TPopupMenu
+    Left = 184
+    Top = 368
+    object mnuCheckin: TMenuItem
+      Caption = 'Check in'
+      OnClick = btnCheckInClick
+    end
+    object mnuProfile: TMenuItem
+      Caption = 'Profile'
+      OnClick = btnProfileClick
+    end
+    object mnuInvoice: TMenuItem
+      Caption = 'Invoice'
+      object mnuRoomInvoice: TMenuItem
+        Caption = 'Room invoice'
+        OnClick = mnuRoomInvoiceClick
+      end
+      object mnuGroupInvoice: TMenuItem
+        Caption = 'Group invoice'
+        OnClick = mnuGroupInvoiceClick
+      end
     end
   end
 end

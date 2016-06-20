@@ -4748,6 +4748,7 @@ select_RoomReservation : string =
 '    ,useStayTax '#10+
 '    ,useInNationalReport '#10+
 '    ,blockMove '#10+
+'    ,blockMoveReason '#10+
 '    ,numGuests '#10+
 '    ,numChildren '#10+
 '    ,numInfants, AvrageRate, rateCount,package '#10+
