@@ -2810,7 +2810,7 @@ begin
     mRooms.Post;
   end;
 
-  lIncl := pos('Not', mRoomsBreakfastText.asString) = 0;
+  lIncl := (TcxComboBox(Sender).ItemIndex = 0); // pos('Not', mRoomsBreakfastText.asString) = 0;
   d.UpdateBreakfastIncluted(zReservation, zRoomReservation, lIncl);
 
   SetBreakfastItemindex('');

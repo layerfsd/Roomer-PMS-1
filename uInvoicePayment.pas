@@ -390,12 +390,12 @@ begin
     end;
 
 
-    if GridCellFloatValue( agrPayTypes, 1, i ) < 0 then
-    begin
-      agrPayTypes.Cells[1,i] := '';
-      closeok := false;
-      err := 1;
-    end;
+//    if GridCellFloatValue( agrPayTypes, 1, i ) < 0 then
+//    begin
+//      agrPayTypes.Cells[1,i] := '';
+//      closeok := false;
+//      err := 1;
+//    end;
   end;
 
   fLeft               := FAmount - fSelected;

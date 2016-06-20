@@ -726,7 +726,8 @@ uses
   , uRptbViewer
   , uAppGlobal
   , PrjConst
-  , uDImages, uMain;
+  , uDImages
+  , uMain;
 
 
 {$R *.dfm}
