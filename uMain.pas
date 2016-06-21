@@ -1011,7 +1011,6 @@ type
     procedure FormActivate(Sender: TObject);
     procedure btnRepArrivalsClick(Sender: TObject);
     procedure mnuCancelRoomFromRoomReservationClick(Sender: TObject);
-    procedure btnRepDeparturesClick(Sender: TObject);
 
   private
     FormShowing : Boolean;
@@ -1602,7 +1601,6 @@ uses
   , uResourceManagement
   , uDynamicPricing
   , uRptArrivals
-  , uRptDepartures
   ;
 
 {$R *.DFM}
@@ -3112,8 +3110,6 @@ procedure TfrmMain.FormShow(Sender: TObject);
 begin
   if FormShowing then exit;
   FormShowing := True;
-
-  btnRepDepartures.Visible := ivNever;
 
   SetDateWithoutEvents(trunc(now));
 
@@ -12861,12 +12857,6 @@ procedure TfrmMain.btnRepArrivalsClick(Sender: TObject);
 begin
   UserClickedDxLargeButton(Sender);
   ShowArrivalsReport;
-end;
-
-procedure TfrmMain.btnRepDeparturesClick(Sender: TObject);
-begin
-  UserClickedDxLargeButton(Sender);
-  ShowDeparturesReport;
 end;
 
 procedure TfrmMain.btnReDownloadRoomerClick(Sender: TObject);

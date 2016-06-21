@@ -88,6 +88,7 @@ uses uMain
      , uUtils
      , _Glob
      , VersionInfo
+     , Math
      ;
 
 const MAX_NUMBER_OF_IGNORES = 10;
@@ -250,8 +251,45 @@ begin
   end;
 end;
 
+/// return which version string (aa.bb.cc.ddddd) is higher
+function CompareVersionStrings(const aVersion1, aVersion2: string): integer;
+var
+  lvlist1, lvList2: TStringlist;
+  i: integer;
+begin
+  result := 0;
+
+  if aVersion1.Equals(aVersion2) then
+    exit;
+
+  lvList1 := TStringlist.create;
+  lvList2 := TStringlist.create;
+  try
+    lvList1.Delimiter := '.';
+    lvList2.Delimiter := '.';
+
+    lvlist1.DelimitedText := aVersion1;
+    lvlist2.DelimitedText := aVersion2;
+
+    for i := 0 to max(lvlist1.count, lvlist2.count)-1 do
+    begin
+      if StrToInt(lvlist1[i]) <> StrToInt(lvList2[i]) then
+      begin
+        Result := StrToInt(lvlist1[i]) - StrToInt(lvList2[i]);
+        Break;
+      end;
+    end;
+  finally
+    lvList1.Free;
+    lvList2.Free;
+  end;
+
+
+end;
+
+
 function checkNewVersion(Handle : THandle; RoomerDataSet : TRoomerDataSet) : boolean;
-{$IFNDEF DEBUG}
+//{$IFNDEF DEBUG}
 var sTempName : String;
     xml: IXMLDOMDocument2;
     node : IXMLDomNode;
@@ -262,10 +300,10 @@ var sTempName : String;
     NumDialogShown : Integer;
     s : String;
     Buttons: TMsgDlgButtons;
-{$ENDIF}
+//{$ENDIF}
 begin
   result := false;
-  {$IFNDEF DEBUG}
+//  {$IFNDEF DEBUG}
   sTempName := GetEnvironmentVariable('TEMP') + '\roomerversion.xml';
 
   try
@@ -280,7 +318,7 @@ begin
   try
 
     version := findVersionOfRoomerOnServer(xml, RoomerDataSet);
-    if version <> currentVersion then
+    if CompareVersionStrings(version, currentVersion) > 0 then
     begin
     (*  if MessageDlg('There is a new version of ROOMER (' + version + ').' + #13#10 +
                     'ROOMER needs to be updated.' + #13#10#13#10 +
@@ -325,7 +363,7 @@ begin
   except
 
   end;
-  {$ENDIF}
+//  {$ENDIF}
 end;
 
 function findVersionOfRoomerOnServer(xml: IXMLDOMDocument2; RoomerDataSet : TRoomerDataSet) : String;
