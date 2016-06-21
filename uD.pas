@@ -805,57 +805,33 @@ var
 
 {$IFDEF rmLOCALRESOURCE}
 
-const
-  RoomerOpenAPIBase: String = 'http://localhost';
+  const RoomerOpenAPIBase: String = 'http://localhost';
+        RoomerBase: String = 'http://localhost';
+        RoomerStoreBase: String = 'http://localhost';
+        RoomerBasePort: String = '8080';
+        RoomerOpenApiBasePort: String = '8080';
+        RoomerStoreBasePort: String = '8080';
 
-const
-  RoomerBase: String = 'http://localhost';
-
-const
-  RoomerStoreBase: String = 'http://localhost';
-
-const
-  RoomerBasePort: String = '8080';
-
-const
-  RoomerOpenApiBasePort: String = '8080';
-
-const
-  RoomerStoreBasePort: String = '8080';
 {$ELSE}
 {$IFDEF rmROOMERSSL}
 
-const
-  RoomerBase: String = 'https://secure.roomercloud.net';
+  const RoomerBase: String = 'https://secure.roomercloud.net';
+        RoomerBasePort: String = '443';
+        RoomerOpenAPIBase: String = 'https://secure.roomercloud.net';
+        RoomerOpenApiBasePort: String = '443';
 
-const
-  RoomerBasePort: String = '443';
-
-const
-  RoomerOpenAPIBase: String = 'https://secure.roomercloud.net';
-
-const
-  RoomerOpenApiBasePort: String = '443';
 {$ELSE}
 
-const
-  RoomerBase: String = 'http://secure.roomercloud.net';
+  const RoomerBase: String = 'http://secure.roomercloud.net';
+        RoomerBasePort: String = '80';
+        RoomerOpenApiBasePort: String = '80';
+        RoomerOpenAPIBase: String = 'http://secure.roomercloud.net';
 
-const
-  RoomerBasePort: String = '80';
-
-const
-  RoomerOpenApiBasePort: String = '80';
-
-const
-  RoomerOpenAPIBase: String = 'http://secure.roomercloud.net';
 {$ENDIF}
 
-const
-  RoomerStoreBase: String = 'http://store.roomercloud.net';
+  const RoomerStoreBase: String = 'http://store.roomercloud.net';
+        RoomerStoreBasePort: String = '8080';
 
-const
-  RoomerStoreBasePort: String = '8080';
 {$ENDIF}
 
 
