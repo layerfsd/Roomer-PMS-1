@@ -60,7 +60,7 @@ type
 
 var
   frmManageFilesOnServer: TfrmManageFilesOnServer;
-  _FileList : TFileList;
+  _FileList : TFileList = nil;
   _FileType : TRoomerFileType;
   _RoomerDataSet: TRoomerDataSet;
   _RoomerLocalAppPath : String;
@@ -473,5 +473,8 @@ initialization
   _RoomerTempPath := TPath.Combine(GetTempDir, 'Roomer');
   forceDirectories(_RoomerTempPath);
 
+
+finalization
+  _FileList.Free;
 
 end.
