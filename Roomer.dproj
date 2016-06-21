@@ -46,12 +46,6 @@
         <Cfg_2>true</Cfg_2>
         <Base>true</Base>
     </PropertyGroup>
-    <PropertyGroup Condition="('$(Platform)'=='Win64' and '$(Cfg_2)'=='true') or '$(Cfg_2_Win64)'!=''">
-        <Cfg_2_Win64>true</Cfg_2_Win64>
-        <CfgParent>Cfg_2</CfgParent>
-        <Cfg_2>true</Cfg_2>
-        <Base>true</Base>
-    </PropertyGroup>
     <PropertyGroup Condition="'$(Config)'=='DebugBas' or '$(Cfg_3)'!=''">
         <Cfg_3>true</Cfg_3>
         <CfgParent>Base</CfgParent>
@@ -63,16 +57,26 @@
         <Cfg_3>true</Cfg_3>
         <Base>true</Base>
     </PropertyGroup>
+    <PropertyGroup Condition="'$(Config)'=='releaseBas' or '$(Cfg_4)'!=''">
+        <Cfg_4>true</Cfg_4>
+        <CfgParent>Base</CfgParent>
+        <Base>true</Base>
+    </PropertyGroup>
+    <PropertyGroup Condition="('$(Platform)'=='Win32' and '$(Cfg_4)'=='true') or '$(Cfg_4_Win32)'!=''">
+        <Cfg_4_Win32>true</Cfg_4_Win32>
+        <CfgParent>Cfg_4</CfgParent>
+        <Cfg_4>true</Cfg_4>
+        <Base>true</Base>
+    </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
         <DCC_Define>roomerstore;$(DCC_Define)</DCC_Define>
         <Icon_MainIcon>Roomer_Icon1.ico</Icon_MainIcon>
         <Manifest_File>None</Manifest_File>
         <DCC_UnitSearchPath>..\kbmMemTable\Source;RoomerVCLs\Source;RoomerVCLs\http;Extras\NativeXml407\nativexml;Extras\NativeXml407\general;RoomerVCLs\Source ;Extras\DragDrop\Source;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
         <DCC_ImageBase>00400000</DCC_ImageBase>
-        <VerInfo_Keys>CompanyName=Beryllium ehf;FileDescription=Hotel Management System Main Module;FileVersion=12.5.11.10670;InternalName=HMS;LegalCopyright=Beryllium ehf 2000-2012;LegalTrademarks=Beryllium 2000-2012;OriginalFilename=home.exe;ProductName=Hotel Organizing and Management System;ProductVersion=12.5.11;Comments=SQL 2005 - Datalayout V12.05;Author=Bjorn Heidarr / Hordur Johannsson;DBversion=SQL 2005 - 1205;SupportEmail=support@berylsoftware.com;SupportHomePage=http://berylsoftware.com;SupportTel=+354 772-2002;Support=Hörður Jóhannsson</VerInfo_Keys>
+        <VerInfo_Keys>CompanyName=Beryllium ehf;FileDescription=Hotel Management System Main Module;FileVersion=1.9.11.10670;InternalName=HMS;LegalCopyright=Beryllium ehf 2000-2012;LegalTrademarks=Beryllium 2000-2012;OriginalFilename=home.exe;ProductName=Hotel Organizing and Management System;ProductVersion=1.9.5.3;Comments=SQL 2005 - Datalayout V12.05;Author=Bjorn Heidarr / Hordur Johannsson;DBversion=SQL 2005 - 1205;SupportEmail=support@berylsoftware.com;SupportHomePage=http://berylsoftware.com;SupportTel=+354 772-2002;Support=Hörður Jóhannsson</VerInfo_Keys>
         <VerInfo_Locale>1039</VerInfo_Locale>
-        <VerInfo_MinorVer>5</VerInfo_MinorVer>
-        <VerInfo_MajorVer>12</VerInfo_MajorVer>
+        <VerInfo_MinorVer>9</VerInfo_MinorVer>
         <VerInfo_AutoGenVersion>true</VerInfo_AutoGenVersion>
         <DCC_Namespace>Vcl;Vcl.Imaging;Vcl.Touch;Vcl.Samples;Vcl.Shell;System;Xml;Data;Datasnap;Web;Soap;Winapi;VCLTee;Data.Win;System.Win;Bde;FMX;$(DCC_Namespace)</DCC_Namespace>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
@@ -99,9 +103,6 @@
         <VerInfo_Locale>1033</VerInfo_Locale>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win64)'!=''">
-        <DCC_Namespace>Datasnap.Win;Web.Win;Soap.Win;Xml.Win;$(DCC_Namespace)</DCC_Namespace>
-        <VerInfo_Locale>1033</VerInfo_Locale>
-        <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
         <DCC_UsePackage>dxCoreRS17;cxLibraryRS17;dxGDIPlusRS17;dxThemeRS17;dxSkinsCoreRS17;dxSkinTheAsphaltWorldRS17;$(DCC_UsePackage)</DCC_UsePackage>
         <Icon_MainIcon>HOME_Icon2.ico</Icon_MainIcon>
         <Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
@@ -123,14 +124,16 @@
         <DCC_Define>_ROOMERSSL;TRANSLATION_ACTIVE;TRANSLATION_EXCEPTIONS_ACTIVE;$(DCC_Define)</DCC_Define>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win32)'!=''">
-        <VerInfo_Build>3</VerInfo_Build>
-        <VerInfo_Release>5</VerInfo_Release>
+        <VerInfo_PreRelease>true</VerInfo_PreRelease>
+        <VerInfo_Private>true</VerInfo_Private>
+        <VerInfo_Build>1</VerInfo_Build>
+        <VerInfo_Release>6</VerInfo_Release>
         <VerInfo_MinorVer>9</VerInfo_MinorVer>
         <DCC_ExeOutput>$(ROOMER_RELEASE_DIR)</DCC_ExeOutput>
         <Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
         <DCC_BplOutput>dck\</DCC_BplOutput>
         <DCC_Define>RELEASE;$(DCC_Define)</DCC_Define>
-        <VerInfo_Keys>CompanyName=Promoir BV;FileDescription=Roomer PMS;FileVersion=1.9.5.3;InternalName=;LegalCopyright=(C) 2013, 2014, 2015, 2016 Promoir BV;LegalTrademarks=Roomer is a Registered Trademark of Promoir BV;OriginalFilename=Roomer.exe;ProductName=Roomer Open Hospitality Platform;ProductVersion=1.9.5.2;Comments=;ExtraBuild=1606101</VerInfo_Keys>
+        <VerInfo_Keys>CompanyName=Promoir BV;FileDescription=Roomer PMS;FileVersion=1.9.6.1;InternalName=;LegalCopyright=(C) 2013, 2014, 2015, 2016 Promoir BV;LegalTrademarks=Roomer is a Registered Trademark of Promoir BV;OriginalFilename=Roomer.exe;ProductName=Roomer Open Hospitality Platform;ProductVersion=1.9.6.1;Comments=;ExtraBuild=160602;PrivateBuild=</VerInfo_Keys>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2)'!=''">
         <DCC_ExeOutput>$(ROOMER_DEBUG_DIR)</DCC_ExeOutput>
@@ -153,20 +156,17 @@
         <DCC_DcuOutput>C:\Temp\dcu\</DCC_DcuOutput>
         <DCC_DcpOutput>C:\Temp\dcu\</DCC_DcpOutput>
         <VerInfo_Debug>true</VerInfo_Debug>
-        <VerInfo_Keys>CompanyName=Promoir Roomer / Beryllium ehf;FileDescription=Roomer PMS;FileVersion=1.2.0.1105;InternalName=Roomer;LegalCopyright=Hordur Johannsson/Bjorn Heidarr;LegalTrademarks=;OriginalFilename=Roomer;ProductName=Roomer PMS;ProductVersion=1.0.0.0;Comments=;ExtraBuild=20151203</VerInfo_Keys>
+        <VerInfo_Keys>CompanyName=Promoir Roomer / Beryllium ehf;FileDescription=Roomer PMS;FileVersion=1.2.0.1088;InternalName=Roomer;LegalCopyright=Hordur Johannsson/Bjorn Heidarr;LegalTrademarks=;OriginalFilename=Roomer;ProductName=Roomer PMS;ProductVersion=1.0.0.0;Comments=;ExtraBuild=20151203</VerInfo_Keys>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <VerInfo_AutoGenVersion>false</VerInfo_AutoGenVersion>
         <VerInfo_AutoIncVersion>true</VerInfo_AutoIncVersion>
         <VerInfo_Release>0</VerInfo_Release>
         <VerInfo_MinorVer>2</VerInfo_MinorVer>
-        <VerInfo_Build>1105</VerInfo_Build>
-    </PropertyGroup>
-    <PropertyGroup Condition="'$(Cfg_2_Win64)'!=''">
-        <VerInfo_Locale>1033</VerInfo_Locale>
-        <Icon_MainIcon>Roomer_Icon2.ico</Icon_MainIcon>
-        <Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
+        <VerInfo_Build>1088</VerInfo_Build>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_3)'!=''">
+        <DCC_MapFile>3</DCC_MapFile>
+        <DCC_RemoteDebug>true</DCC_RemoteDebug>
         <DCC_Optimize>false</DCC_Optimize>
         <DCC_Define>Debug;$(DCC_Define)</DCC_Define>
         <DCC_DcpOutput>_dcu</DCC_DcpOutput>
@@ -174,17 +174,30 @@
         <DCC_DcuOutput>_dcu</DCC_DcuOutput>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_3_Win32)'!=''">
-        <DCC_HIDING_MEMBER>error</DCC_HIDING_MEMBER>
-        <DCC_NO_RETVAL>error</DCC_NO_RETVAL>
-        <DCC_HIDDEN_VIRTUAL>error</DCC_HIDDEN_VIRTUAL>
+        <VerInfo_Debug>true</VerInfo_Debug>
+        <DCC_DebugDCUs>true</DCC_DebugDCUs>
         <DCC_SYMBOL_PLATFORM>false</DCC_SYMBOL_PLATFORM>
-        <VerInfo_MajorVer>1</VerInfo_MajorVer>
         <VerInfo_Locale>1033</VerInfo_Locale>
-        <VerInfo_Release>0</VerInfo_Release>
-        <VerInfo_MinorVer>0</VerInfo_MinorVer>
+        <VerInfo_Release>6</VerInfo_Release>
         <Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
         <VerInfo_Build>0</VerInfo_Build>
-        <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
+        <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.9.6.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.9.6.0;Comments=</VerInfo_Keys>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Cfg_4)'!=''">
+        <DCC_ExeOutput>_bin\$(Platform)</DCC_ExeOutput>
+        <DCC_DcpOutput>_dcu</DCC_DcpOutput>
+        <DCC_DcuOutput>_dcu</DCC_DcuOutput>
+        <DCC_DebugInformation>false</DCC_DebugInformation>
+        <DCC_AssertionsAtRuntime>false</DCC_AssertionsAtRuntime>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Cfg_4_Win32)'!=''">
+        <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.9.6.1;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.9.6.1;Comments=;PrivateBuild=</VerInfo_Keys>
+        <VerInfo_Private>true</VerInfo_Private>
+        <Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
+        <VerInfo_PreRelease>true</VerInfo_PreRelease>
+        <VerInfo_Build>1</VerInfo_Build>
+        <VerInfo_Locale>1033</VerInfo_Locale>
+        <VerInfo_Release>6</VerInfo_Release>
     </PropertyGroup>
     <ItemGroup>
         <DelphiCompile Include="$(MainSource)">
@@ -716,17 +729,9 @@
         <DCCReference Include="OfflineReports\uHotelArrivalsOfflineReportDesign.pas"/>
         <DCCReference Include="uRptArrivals.pas">
             <Form>frmArrivalsReport</Form>
-        </DCCReference>
-        <DCCReference Include="uFrmRoomReservationCancellationDialog.pas">
-            <Form>FrmRoomReservationCancellationDialog</Form>
-        </DCCReference>
-        <DCCReference Include="StockItems\ufrmReservationExtras.pas">
-            <Form>frmReservationExtras</Form>
             <FormType>dfm</FormType>
         </DCCReference>
-        <DCCReference Include="uRptDepartures.pas">
-            <Form>frmDeparturesReport</Form>
-        </DCCReference>
+        <DCCReference Include="StockItems\ufrmReservationExtras.pas"/>
         <None Include="Roomer.todo"/>
         <None Include="notes.txt"/>
         <None Include="Roomer.inc"/>
@@ -734,6 +739,10 @@
         <None Include="Sql\DB_CHANGES_V.1.9.5.0.SQL"/>
         <BuildConfiguration Include="Debug">
             <Key>Cfg_2</Key>
+            <CfgParent>Base</CfgParent>
+        </BuildConfiguration>
+        <BuildConfiguration Include="releaseBas">
+            <Key>Cfg_4</Key>
             <CfgParent>Base</CfgParent>
         </BuildConfiguration>
         <BuildConfiguration Include="DebugBas">
@@ -771,7 +780,7 @@
                     <VersionInfo Name="MajorVer">12</VersionInfo>
                     <VersionInfo Name="MinorVer">5</VersionInfo>
                     <VersionInfo Name="Release">11</VersionInfo>
-                    <VersionInfo Name="Build">12176</VersionInfo>
+                    <VersionInfo Name="Build">12151</VersionInfo>
                     <VersionInfo Name="Debug">False</VersionInfo>
                     <VersionInfo Name="PreRelease">False</VersionInfo>
                     <VersionInfo Name="Special">False</VersionInfo>
@@ -783,7 +792,7 @@
                 <VersionInfoKeys>
                     <VersionInfoKeys Name="CompanyName">Beryllium ehf</VersionInfoKeys>
                     <VersionInfoKeys Name="FileDescription">Hotel Management System Main Module</VersionInfoKeys>
-                    <VersionInfoKeys Name="FileVersion">12.5.11.12176</VersionInfoKeys>
+                    <VersionInfoKeys Name="FileVersion">12.5.11.12151</VersionInfoKeys>
                     <VersionInfoKeys Name="InternalName">HMS</VersionInfoKeys>
                     <VersionInfoKeys Name="LegalCopyright">Beryllium ehf 2000-2012</VersionInfoKeys>
                     <VersionInfoKeys Name="LegalTrademarks">Beryllium 2000-2012</VersionInfoKeys>
