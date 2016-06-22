@@ -31,7 +31,6 @@ object FrmRateQuery: TFrmRateQuery
       Align = alTop
       BevelOuter = bvNone
       TabOrder = 0
-      ExplicitTop = -6
       object lblArrival: TLabel
         Left = 77
         Top = 10

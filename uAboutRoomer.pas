@@ -289,7 +289,7 @@ end;
 
 
 function checkNewVersion(Handle : THandle; RoomerDataSet : TRoomerDataSet) : boolean;
-//{$IFNDEF DEBUG}
+{$IFNDEF DEBUG}
 var sTempName : String;
     xml: IXMLDOMDocument2;
     node : IXMLDomNode;
@@ -300,10 +300,10 @@ var sTempName : String;
     NumDialogShown : Integer;
     s : String;
     Buttons: TMsgDlgButtons;
-//{$ENDIF}
+{$ENDIF}
 begin
   result := false;
-//  {$IFNDEF DEBUG}
+{$IFNDEF DEBUG}
   sTempName := GetEnvironmentVariable('TEMP') + '\roomerversion.xml';
 
   try
@@ -363,7 +363,7 @@ begin
   except
 
   end;
-//  {$ENDIF}
+{$ENDIF}
 end;
 
 function findVersionOfRoomerOnServer(xml: IXMLDOMDocument2; RoomerDataSet : TRoomerDataSet) : String;

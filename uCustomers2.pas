@@ -302,9 +302,10 @@ type
     { Public declarations }
     zAct   : TActTableAction;
     zData  : recCustomerHolder;
+    AllowEdits : Boolean;
   end;
 
-function openCustomers(act : TActTableAction; Lookup : Boolean; var theData : recCustomerHolder) : boolean;
+function openCustomers(act : TActTableAction; Lookup : Boolean; var theData : recCustomerHolder; AllowEdits : Boolean = True) : boolean;
 
 var
   frmCustomers2: TfrmCustomers2;
@@ -330,7 +331,7 @@ uses
 //  unit global functions
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-function openCustomers(act : TActTableAction; Lookup : Boolean; var theData : recCustomerHolder) : boolean;
+function openCustomers(act : TActTableAction; Lookup : Boolean; var theData : recCustomerHolder; AllowEdits : Boolean = True) : boolean;
 begin
   result := false;
   frmCustomers2 := TfrmCustomers2.Create(frmCustomers2);
@@ -338,6 +339,7 @@ begin
     frmCustomers2.zData := theData;
     frmCustomers2.Lookup := Lookup;
     frmCustomers2.zAct := act;
+    frmCustomers2.AllowEdits := AllowEdits;
     frmCustomers2.ShowModal;
     if frmCustomers2.modalresult = mrOk then
     begin
@@ -613,6 +615,14 @@ procedure TfrmCustomers2.FormShow(Sender: TObject);
 begin
   glb.EnableOrDisableTableRefresh('customers', False);
 //**
+
+  btnInsert.Visible := AllowEdits;
+  btnEdit.Visible := AllowEdits;
+  sButton1.Visible := AllowEdits;
+  btnOther.Visible := AllowEdits;
+  if NOT AllowEdits then
+    grData.PopupMenu := nil;
+
   panBtn.Visible := False;
   sbMain.Visible := false;
 

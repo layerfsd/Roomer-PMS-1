@@ -642,7 +642,7 @@ var
   end;
 begin
   theData.Customer := Trim(edCustomer.Text);
-  if OpenCustomers(actLookup, True, theData) then
+  if OpenCustomers(actLookup, True, theData, False) then
   begin
     s := theData.Customer;
     if (s <> '') and (s <> Trim(edCustomer.Text)) then
