@@ -10,7 +10,8 @@ uses
   dxSkinDarkSide, dxSkinTheAsphaltWorld, dxSkinsDefaultPainters, dxSkinsdxStatusBarPainter, cxStyles,
   dxSkinscxPCPainter, cxCustomData, cxFilter, cxData, cxDataStorage, cxEdit, cxNavigator, cxDBData, cxGridLevel,
   cxGridCustomTableView, cxGridTableView, cxGridBandedTableView, cxGridDBBandedTableView, cxGridCustomView, cxGrid,
-  dxStatusBar, cxGridDBTableView, Vcl.Grids, Vcl.DBGrids, Vcl.Menus, cxTimeEdit;
+  dxStatusBar, cxGridDBTableView, Vcl.Grids, Vcl.DBGrids, Vcl.Menus, cxTimeEdit, ppParameter, ppDesignLayer, ppCtrls,
+  ppBands, ppVar, ppPrnabl, ppClass, ppCache, ppProd, ppReport, ppDB, ppComm, ppRelatv, ppDBPipe;
 
 type
   TfrmArrivalsReport = class(TForm)
@@ -67,6 +68,61 @@ type
     mnuInvoice: TMenuItem;
     mnuRoomInvoice: TMenuItem;
     mnuGroupInvoice: TMenuItem;
+    plArrivalsList: TppDBPipeline;
+    rptArrivals: TppReport;
+    ppHeaderBand1: TppHeaderBand;
+    ppLine1: TppLine;
+    ppLabel4: TppLabel;
+    ppLabel5: TppLabel;
+    rlabFrom: TppLabel;
+    rLabTo: TppLabel;
+    ppLabel6: TppLabel;
+    rLabHotelName: TppLabel;
+    rlabUser: TppLabel;
+    rLabTimeCreated: TppLabel;
+    ppLine11: TppLine;
+    ppDetailBand1: TppDetailBand;
+    ppLine2: TppLine;
+    ppFooterBand1: TppFooterBand;
+    ppSystemVariable1: TppSystemVariable;
+    ppLabel8: TppLabel;
+    ppDesignLayers1: TppDesignLayers;
+    ppDesignLayer1: TppDesignLayer;
+    ppParameterList1: TppParameterList;
+    btnReport: TsButton;
+    ppLabel1: TppLabel;
+    ppDBText1: TppDBText;
+    ppLabel2: TppLabel;
+    ppDBText2: TppDBText;
+    ppLabel3: TppLabel;
+    ppDBText3: TppDBText;
+    ppLabel7: TppLabel;
+    ppDBText4: TppDBText;
+    ppLabel9: TppLabel;
+    ppDBText5: TppDBText;
+    ppLabel10: TppLabel;
+    ppDBText6: TppDBText;
+    ppLabel11: TppLabel;
+    ppDBText7: TppDBText;
+    ppLabel12: TppLabel;
+    ppDBText8: TppDBText;
+    ppLabel13: TppLabel;
+    ppDBText9: TppDBText;
+    ppLabel14: TppLabel;
+    ppDBText10: TppDBText;
+    kbmArrivalsReport: TkbmMemTable;
+    StringField1: TStringField;
+    StringField2: TStringField;
+    IntegerField1: TIntegerField;
+    StringField3: TStringField;
+    StringField4: TStringField;
+    DateField1: TDateField;
+    DateField2: TDateField;
+    IntegerField2: TIntegerField;
+    FloatField1: TFloatField;
+    StringField5: TStringField;
+    IntegerField3: TIntegerField;
+    dsArrivalsReport: TDataSource;
     procedure FormCreate(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure rbRadioButtonClick(Sender: TObject);
@@ -84,6 +140,8 @@ type
     procedure dtDateToCloseUp(Sender: TObject);
     procedure grArrivalsListDBTableView1ExpectedTimeOfArrivalGetDisplayText(Sender: TcxCustomGridTableItem;
       ARecord: TcxCustomGridRecord; var AText: string);
+    procedure btnReportClick(Sender: TObject);
+    procedure ppHeaderBand1BeforePrint(Sender: TObject);
   private
     FRefreshingdata: boolean;
     { Private declarations }
@@ -123,7 +181,7 @@ uses
   , uGuestCheckInForm
   , uInvoice
   , uReservationProfile
-  ;
+  , uRptbViewer;
 
 const
   cSQL = 'SELECT '+
@@ -243,6 +301,32 @@ begin
   postMessage(handle, WM_REFRESH_DATA, 0, 0);
 end;
 
+procedure TfrmArrivalsReport.btnReportClick(Sender: TObject);
+begin
+
+  kbmArrivalsReport.LoadFromDataSet(kbmArrivalsList, []);
+
+  if frmRptbViewer <> nil then
+    freeandNil(frmRptbViewer);
+  frmRptbViewer := TfrmRptbViewer.Create(frmRptbViewer);
+  try
+    screen.Cursor := crHourglass;
+    try
+      frmRptbViewer.ppViewer1.Reset;
+      frmRptbViewer.ppViewer1.Report := rptArrivals;
+      frmRptbViewer.ppViewer1.GotoPage(1);
+      rptArrivals.PrintToDevices;
+    finally
+      screen.Cursor := crDefault;
+    end;
+
+    frmRptbViewer.showmodal;
+
+  finally
+    FreeAndNil(frmRptbViewer);
+  end;
+end;
+
 function TfrmArrivalsReport.ConstructSQL: string;
 var s : String;
 begin
@@ -315,6 +399,29 @@ end;
 procedure TfrmArrivalsReport.mnuRoomInvoiceClick(Sender: TObject);
 begin
   EditInvoice(kbmArrivalsList['RoomerReservationID'], kbmArrivalsList['RoomerRoomReservationID'], 0, 0, 0, 0, false, true,false);
+end;
+
+procedure TfrmArrivalsReport.ppHeaderBand1BeforePrint(Sender: TObject);
+var
+  s : string;
+begin
+
+  rlabFrom.Caption := DateToStr(dtDateFrom.Date);
+  rlabTo.Caption := DateToStr(dtDateTo.Date);
+
+  s := g.qHotelName;
+  rLabHotelName.Caption := s;
+
+  s := DateTimeToStr(now);
+  // s := 'Created : ' + s;
+  s := GetTranslatedText('shTx_NationalReport_Created') + s;
+  rLabTimeCreated.Caption := s;
+
+  // s := 'User : ' + g.qUser;
+  s := GetTranslatedText('shTx_NationalReport_User') + g.qUser;
+  if g.qusername <> '' then
+    s := s + ' - ' + g.qusername;
+  rlabUser.Caption := s;
 end;
 
 procedure TfrmArrivalsReport.rbRadioButtonClick(Sender: TObject);
