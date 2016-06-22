@@ -12221,7 +12221,8 @@ begin
     zzSourceRow := ARow;
     zzSourceGridID := 1;
 
-    grPeriodRooms_NO.BeginDrag(false, 4);
+    grPeriodRooms_NO.BeginDrag(True);
+    Perform( CM_CURSORCHANGED, 0, 0 ); // Attempt to refresh cursor icon faster, after issue from hotel EUPH
   end;
   /// end;
 end;
