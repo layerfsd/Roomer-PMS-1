@@ -148,6 +148,7 @@ begin
   finally
     lvfileList.items.EndUpdate;
     Icon.free;
+    FileList.Free;
   end;
 end;
 
@@ -158,15 +159,19 @@ var i: Integer;
     localFilename : String;
 begin
     FileList := RoomerDataSet1.SystemListFiles(cbxFileTypes.ItemIndex);
-    for i := 0 to Pred(FileList.Count) do
-    begin
-      localFilename := GetEnvironmentVariable('TEMP') + '\' + FileList.Files[i].name;
-      if FileExists(localFilename) then
-        DeleteFile(localFilename);
+    try
+      for i := 0 to Pred(FileList.Count) do
+      begin
+        localFilename := GetEnvironmentVariable('TEMP') + '\' + FileList.Files[i].name;
+        if FileExists(localFilename) then
+          DeleteFile(localFilename);
 
-      DownloadResource(FileList.Files[i].name, localFilename);
-      CollectionOfOpenedFiles.Add(localFilename);
-      UploadFileToResources(ANY_FILE, ACCESS_RESTRICTED, ExtractFilename(localFilename), localFilename)
+        DownloadResource(FileList.Files[i].name, localFilename);
+        CollectionOfOpenedFiles.Add(localFilename);
+        UploadFileToResources(ANY_FILE, ACCESS_RESTRICTED, ExtractFilename(localFilename), localFilename)
+      end;
+    finally
+      FileList.Free;
     end;
 end;
 
@@ -421,6 +426,8 @@ end;
 
 procedure ReadFileList(RoomerDataSet: TRoomerDataSet; fileType : TRoomerFileType);
 begin
+  if assigned(_FileList) then
+    _FileList.Free;
   _FileList := RoomerDataSet.SystemListFiles(ORD(fileType));
   _FileType := fileType;
   _RoomerDataSet := RoomerDataSet;
