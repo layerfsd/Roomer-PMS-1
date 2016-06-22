@@ -228,7 +228,6 @@ type
     procedure dtDateToChange(Sender: TObject);
     procedure cbxMonthCloseUp(Sender: TObject);
     procedure btnRefreshClick(Sender: TObject);
-    procedure chkExcluteWaitingListClick(Sender: TObject);
     procedure btnExcelClick(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure SheetMainResultShow(Sender: TObject);
@@ -257,7 +256,6 @@ type
     procedure InitControles;
 
     procedure GetData;
-    procedure ExcluteFilter;
     function StatusSQL : string;
     procedure addMissing;
     procedure updateDrilldown;
@@ -381,6 +379,7 @@ begin
   pg001.Customization.Site := gbxCustomization;
   gbxCustomization.Visible :=  true;
   pg001.Customization.Visible :=  TRUE;
+  pageMain.ActivePageIndex := 0;
 end;
 
 
@@ -407,14 +406,6 @@ begin
   dtDateTo.Date := zDateTo;
   zSetDates := true;
 end;
-
-procedure TfrmRptResStatsRooms.chkExcluteWaitingListClick(Sender: TObject);
-begin
-  ExcluteFilter;
-end;
-
-
-
 
 procedure TfrmRptResStatsRooms.Dril001DataChanged(Sender: TObject);
 begin
@@ -543,11 +534,6 @@ begin
     cbxYear.ItemIndex := 0;
     cbxMonth.ItemIndex := 0;
   end;
-end;
-
-
-procedure TfrmRptResStatsRooms.ExcluteFilter;
-begin
 end;
 
 
