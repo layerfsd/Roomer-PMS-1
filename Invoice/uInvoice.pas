@@ -767,7 +767,7 @@ type
     procedure DeleteRow(aGrid: TAdvStringGrid; iRow: integer);
     procedure ForceRowChange;
     procedure SetInvoiceIndex(const Value: integer);
-    function IsInvoiceChanged(Ask : Boolean = True): boolean;
+    function IfInvoiceChangedThenOptionallySave(Ask : Boolean = True): boolean;
     procedure MoveItemToNewInvoiceIndex(rowIndex, toInvoiceIndex: integer);
     procedure MoveRoomToNewInvoiceIndex(rowIndex, toInvoiceIndex: integer);
     procedure CorrectInvoiceIndexRectangles;
@@ -1022,7 +1022,7 @@ begin
   // **
 end;
 
-function TfrmInvoice.IsInvoiceChanged(Ask : Boolean = True): boolean;
+function TfrmInvoice.IfInvoiceChangedThenOptionallySave(Ask : Boolean = True): boolean;
 var
   s: string;
   Res: integer;
@@ -1059,7 +1059,6 @@ begin
               except
               end;
               result := false;
-
             end;
           end;
         mrCancel:
@@ -1075,7 +1074,7 @@ end;
 procedure TfrmInvoice.btnExitClick(Sender: TObject);
 begin
   if NOT IsCashInvoice then
-    IsInvoiceChanged;
+    IfInvoiceChangedThenOptionallySave;
   close;
 end;
 
@@ -1108,7 +1107,7 @@ end;
 
 procedure TfrmInvoice.btnSaveChangesClick(Sender: TObject);
 begin
-  IsInvoiceChanged(false);
+  IfInvoiceChangedThenOptionallySave(false);
   CorrectInvoiceIndexRectangles;
   LoadInvoice;
 end;
@@ -3907,6 +3906,10 @@ begin
           rgrInvoiceType.itemIndex := 3;
         end;
 
+        btnGetCustomer.Enabled := rgrInvoiceType.itemIndex <> 1;
+        btnClearAddresses.Enabled := rgrInvoiceType.itemIndex <> 1;
+
+
 {$ENDREGION}
       end;
     end
@@ -5757,6 +5760,91 @@ begin
   if FCredit then
     iMultiplier := -1;
 
+  s := format('INSERT INTO invoiceaddressees ' +
+       '(InvoiceIndex, ' +
+       'Reservation, ' +
+       'RoomReservation, ' +
+       'SplitNumber, ' +
+       'InvoiceNumber, ' +
+       'Customer, ' +
+       'Name, ' +
+       'Address1, ' +
+       'Address2, ' +
+       'Zip, ' +
+       'City, ' +
+       'Country, ' +
+       'ExtraText, ' +
+       'custPID, ' +
+       'InvoiceType, ' +
+       'ihCurrency) ' +
+       'VALUES ' +
+       '(%d, ' +
+       '%d, ' +
+       '%d, ' +
+       '%d, ' +
+       '%d, ' +
+       '%s, ' +
+       '%s, ' +
+       '%s, ' +
+       '%s, ' +
+       '%s, ' +
+       '%s, ' +
+       '%s, ' +
+       '%s, ' +
+       '%s, ' +
+       '%d, ' +
+       '%s) ',
+       [
+        InvoiceIndex,
+        publicReservation,
+        FRoomReservation,
+        FNewSplitNumber,
+        zInvoiceNumber,
+        _db(edtCustomer.text),
+        _db(edtName.text),
+        _db(edtAddress1.text),
+        _db(edtAddress2.text),
+        _db(edtAddress3.text),
+        _db(edtAddress4.text),
+        _db(zCountry),
+        _db(memExtraText.Lines.Text),
+        _db(edtPersonalId.Text),
+        rgrInvoiceType.itemIndex,
+        _db(edtCurrency.Text)
+        ]) +
+
+       format('ON DUPLICATE KEY UPDATE ' +
+       'InvoiceNumber=%d, ' +
+       'Customer=%s, ' +
+       'Name=%s, ' +
+       'Address1=%s, ' +
+       'Address2=%s, ' +
+       'Zip=%s, ' +
+       'City=%s, ' +
+       'Country=%s, ' +
+       'ExtraText=%s, ' +
+       'custPID=%s, ' +
+       'InvoiceType=%d, ' +
+       'ihCurrency=%s',
+       [
+        zInvoiceNumber,
+        _db(edtCustomer.text),
+        _db(edtName.text),
+        _db(edtAddress1.text),
+        _db(edtAddress2.text),
+        _db(edtAddress3.text),
+        _db(edtAddress4.text),
+        _db(zCountry),
+        _db(memExtraText.Lines.Text),
+        _db(edtPersonalId.Text),
+        rgrInvoiceType.itemIndex,
+        _db(edtCurrency.Text)
+       ]);
+
+  aExecutionPlan.AddExec(s);
+  CopyToClipboard(s);
+
+
   // --
   // SQL 115 INSERxT InvoiceHeads
   // INS-InvoiceHeads
@@ -5876,7 +5964,7 @@ begin
   s := s + ', ' + _db(zLocation);
   s := s + ')' + #10;
 
-//  copytoclipboard(s);
+  copytoclipboard(s);
 //  debugmessage(s);
 
   aExecutionPlan.AddExec(s);
@@ -5884,89 +5972,6 @@ begin
   // begin
   // end;
 
-  s := format('INSERT INTO invoiceaddressees ' +
-       '(InvoiceIndex, ' +
-       'Reservation, ' +
-       'RoomReservation, ' +
-       'SplitNumber, ' +
-       'InvoiceNumber, ' +
-       'Customer, ' +
-       'Name, ' +
-       'Address1, ' +
-       'Address2, ' +
-       'Zip, ' +
-       'City, ' +
-       'Country, ' +
-       'ExtraText, ' +
-       'custPID, ' +
-       'InvoiceType, ' +
-       'ihCurrency) ' +
-       'VALUES ' +
-       '(%d, ' +
-       '%d, ' +
-       '%d, ' +
-       '%d, ' +
-       '%d, ' +
-       '%s, ' +
-       '%s, ' +
-       '%s, ' +
-       '%s, ' +
-       '%s, ' +
-       '%s, ' +
-       '%s, ' +
-       '%s, ' +
-       '%s, ' +
-       '%d, ' +
-       '%s) ',
-       [
-        InvoiceIndex,
-        publicReservation,
-        FRoomReservation,
-        FNewSplitNumber,
-        zInvoiceNumber,
-        _db(edtCustomer.text),
-        _db(edtName.text),
-        _db(edtAddress1.text),
-        _db(edtAddress2.text),
-        _db(edtAddress3.text),
-        _db(edtAddress4.text),
-        _db(zCountry),
-        _db(memExtraText.Lines.Text),
-        _db(edtPersonalId.Text),
-        rgrInvoiceType.itemIndex,
-        _db(edtCurrency.Text)
-        ]) +
-
-       format('ON DUPLICATE KEY UPDATE ' +
-       'InvoiceNumber=%d, ' +
-       'Customer=%s, ' +
-       'Name=%s, ' +
-       'Address1=%s, ' +
-       'Address2=%s, ' +
-       'Zip=%s, ' +
-       'City=%s, ' +
-       'Country=%s, ' +
-       'ExtraText=%s, ' +
-       'custPID=%s, ' +
-       'InvoiceType=%d, ' +
-       'ihCurrency=%s',
-       [
-        zInvoiceNumber,
-        _db(edtCustomer.text),
-        _db(edtName.text),
-        _db(edtAddress1.text),
-        _db(edtAddress2.text),
-        _db(edtAddress3.text),
-        _db(edtAddress4.text),
-        _db(zCountry),
-        _db(memExtraText.Lines.Text),
-        _db(edtPersonalId.Text),
-        rgrInvoiceType.itemIndex,
-        _db(edtCurrency.Text)
-       ]);
-
-  aExecutionPlan.AddExec(s);
-//  CopyToClipboard(s);
 end;
 
 procedure TfrmInvoice.CollectInvoice(iInvoiceNumber: integer);
@@ -8911,7 +8916,7 @@ end;
 
 procedure TfrmInvoice.SetInvoiceIndex(const Value: integer);
 begin
-  IsInvoiceChanged;
+  IfInvoiceChangedThenOptionallySave;
   FInvoiceIndex := Value;
   CorrectInvoiceIndexRectangles;
   RemoveAllCheckboxes;
@@ -9598,6 +9603,9 @@ begin
   s := edtPersonalId.Text;
   sCustomer := edtCustomer.Text;
   rSetTemp := nil;
+
+  btnGetCustomer.Enabled := rgrInvoiceType.itemIndex <> 1;
+  btnClearAddresses.Enabled := rgrInvoiceType.itemIndex <> 1;
 
   memUpdateDone := false;
   zDataChanged := chkChanged;
