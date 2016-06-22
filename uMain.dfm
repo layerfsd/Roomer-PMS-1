@@ -52,6 +52,7 @@ object frmMain: TfrmMain
     SunkenBorder = True
     UseOwnColor = True
     UseOwnSunkenBorder = True
+    ExplicitTop = 122
   end
   object panMain: TsPanel
     Left = 3
@@ -843,6 +844,10 @@ object frmMain: TfrmMain
         ImageIndex = 2
         SkinData.CustomColor = False
         SkinData.CustomFont = False
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object sLabel2: TsLabel
           Left = 224
           Top = 400
@@ -3107,7 +3112,6 @@ object frmMain: TfrmMain
       Index = 0
     end
     object rbTabReservation: TdxRibbonTab
-      Active = True
       Caption = 'Reservation'
       Groups = <
         item
@@ -3138,6 +3142,7 @@ object frmMain: TfrmMain
       Index = 2
     end
     object rbTabReports: TdxRibbonTab
+      Active = True
       Caption = 'Reports'
       Groups = <
         item
@@ -4366,10 +4371,6 @@ object frmMain: TfrmMain
         item
           Visible = True
           ItemName = 'btnConfirmAllottedBooking'
-        end
-        item
-          Visible = True
-          ItemName = 'btnRepArrivals'
         end>
       OneOnRow = False
       Row = 0
@@ -4601,7 +4602,7 @@ object frmMain: TfrmMain
     object barinnCheckInOut: TdxBar
       Caption = 'Check in/out'
       CaptionButtons = <>
-      DockedLeft = 707
+      DockedLeft = 690
       DockedTop = 0
       FloatLeft = 1324
       FloatTop = 8
@@ -4629,7 +4630,7 @@ object frmMain: TfrmMain
     object barinnRoomActions2: TdxBar
       Caption = 'Room Actions'
       CaptionButtons = <>
-      DockedLeft = 827
+      DockedLeft = 810
       DockedTop = 0
       FloatLeft = 1324
       FloatTop = 8
@@ -4980,6 +4981,10 @@ object frmMain: TfrmMain
         end
         item
           Visible = True
+          ItemName = 'btnRepArrivals'
+        end
+        item
+          Visible = True
           ItemName = 'btnRptNotes'
         end
         item
@@ -5055,7 +5060,7 @@ object frmMain: TfrmMain
     object barinnReportsInvoices: TdxBar
       Caption = 'Invoices'
       CaptionButtons = <>
-      DockedLeft = 713
+      DockedLeft = 695
       DockedTop = 0
       FloatLeft = 1324
       FloatTop = 8
@@ -5311,7 +5316,7 @@ object frmMain: TfrmMain
     object barinnBar10: TdxBar
       Caption = 'Ledger'
       CaptionButtons = <>
-      DockedLeft = 922
+      DockedLeft = 904
       DockedTop = 0
       FloatLeft = -183
       FloatTop = 8
