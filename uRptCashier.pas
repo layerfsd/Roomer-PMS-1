@@ -981,10 +981,6 @@ begin
   end
   else
   begin
-    iRoomReservation := 0;
-    iReservation := 0;
-    Arrival := Date;
-    Departure := Date;
     EditInvoice(iReservation, iRoomReservation, 0, 0, 0, 0, false, true, false);
   end;
 end;
