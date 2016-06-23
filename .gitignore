@@ -16,7 +16,6 @@ temp/
 Temp.2/
 testPrograms/
 Win32/
-.vscode/
 *.~*
 *.dcu
 *.bpl
