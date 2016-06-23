@@ -132,23 +132,26 @@ begin
   Icon := TIcon.Create;
   try
     FileList := RoomerDataSet1.SystemListFiles(cbxFileTypes.ItemIndex);
-    for i := 0 to Pred(FileList.Count) do
-    begin
-      item := lvfileList.Items.Add;
-      localFilename := GetFilePathForListView(FileList.Files[i].name, FileList.Files[i].lastModified);
-      description := getSHFileType(localFilename); // Trim(GetFileTypeDescription(FileList.Files[i].name));
-      item.SubItems.Add(FileList.Files[i].name);
-      item.SubItems.Add(DateTimeToStr(FileList.Files[i].lastModified));
-      item.SubItems.Add(description);
-      item.SubItems.Add(FormatByteSize(FileList.Files[i].size));
-      SHGetFileInfo(PChar(localFilename), 0, FileInfo, SizeOf(FileInfo), SHGFI_ICON);
-      Icon.Handle := FileInfo.hIcon;
-      item.ImageIndex := ImageList1.AddIcon(Icon);
+    try
+      for i := 0 to Pred(FileList.Count) do
+      begin
+        item := lvfileList.Items.Add;
+        localFilename := GetFilePathForListView(FileList.Files[i].name, FileList.Files[i].lastModified);
+        description := getSHFileType(localFilename); // Trim(GetFileTypeDescription(FileList.Files[i].name));
+        item.SubItems.Add(FileList.Files[i].name);
+        item.SubItems.Add(DateTimeToStr(FileList.Files[i].lastModified));
+        item.SubItems.Add(description);
+        item.SubItems.Add(FormatByteSize(FileList.Files[i].size));
+        SHGetFileInfo(PChar(localFilename), 0, FileInfo, SizeOf(FileInfo), SHGFI_ICON);
+        Icon.Handle := FileInfo.hIcon;
+        item.ImageIndex := ImageList1.AddIcon(Icon);
+      end;
+    finally
+      FileList.Free;
     end;
   finally
     lvfileList.items.EndUpdate;
     Icon.free;
-    FileList.Free;
   end;
 end;
 
