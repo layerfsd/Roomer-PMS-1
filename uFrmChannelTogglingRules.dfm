@@ -2,8 +2,8 @@ object frmChannelTogglingRules: TfrmChannelTogglingRules
   Left = 0
   Top = 0
   Caption = 'Channel Toggling Rules'
-  ClientHeight = 576
-  ClientWidth = 973
+  ClientHeight = 609
+  ClientWidth = 927
   Color = clWhite
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -20,8 +20,8 @@ object frmChannelTogglingRules: TfrmChannelTogglingRules
   object pnlList: TsPanel
     Left = 0
     Top = 0
-    Width = 173
-    Height = 576
+    Width = 161
+    Height = 609
     Margins.Left = 2
     Margins.Top = 2
     Margins.Right = 2
@@ -35,10 +35,11 @@ object frmChannelTogglingRules: TfrmChannelTogglingRules
     ParentColor = True
     TabOrder = 0
     SkinData.SkinSection = 'PANEL'
+    ExplicitHeight = 608
     object sPanel2: TsPanel
       Left = 4
       Top = 4
-      Width = 165
+      Width = 153
       Height = 44
       Margins.Left = 2
       Margins.Top = 2
@@ -53,6 +54,7 @@ object frmChannelTogglingRules: TfrmChannelTogglingRules
       ParentColor = True
       TabOrder = 0
       SkinData.SkinSection = 'PANEL'
+      ExplicitWidth = 165
       object btnInsert: TsButton
         AlignWithMargins = True
         Left = 7
@@ -129,8 +131,8 @@ object frmChannelTogglingRules: TfrmChannelTogglingRules
     object lbRules: TsListBox
       Left = 4
       Top = 48
-      Width = 165
-      Height = 524
+      Width = 153
+      Height = 557
       Margins.Left = 2
       Margins.Top = 2
       Margins.Right = 2
@@ -145,23 +147,21 @@ object frmChannelTogglingRules: TfrmChannelTogglingRules
       TabOrder = 1
       OnClick = lbRulesClick
       OnDblClick = btnEditClick
-      BoundLabel.Indent = 0
       BoundLabel.Font.Charset = DEFAULT_CHARSET
       BoundLabel.Font.Color = clWindowText
       BoundLabel.Font.Height = -13
       BoundLabel.Font.Name = 'Tahoma'
       BoundLabel.Font.Style = []
-      BoundLabel.Layout = sclLeft
-      BoundLabel.MaxWidth = 0
-      BoundLabel.UseSkinColor = True
       SkinData.SkinSection = 'EDIT'
+      ExplicitWidth = 165
+      ExplicitHeight = 524
     end
   end
   object sPanel3: TsPanel
-    Left = 173
+    Left = 161
     Top = 0
-    Width = 800
-    Height = 576
+    Width = 766
+    Height = 609
     Margins.Left = 2
     Margins.Top = 2
     Margins.Right = 2
@@ -171,11 +171,14 @@ object frmChannelTogglingRules: TfrmChannelTogglingRules
     ParentColor = True
     TabOrder = 1
     SkinData.SkinSection = 'PANEL'
+    ExplicitLeft = 173
+    ExplicitWidth = 800
+    ExplicitHeight = 576
     object sPanel4: TsPanel
       Left = 0
-      Top = 528
-      Width = 800
-      Height = 48
+      Top = 541
+      Width = 766
+      Height = 68
       Margins.Left = 2
       Margins.Top = 2
       Margins.Right = 2
@@ -192,8 +195,8 @@ object frmChannelTogglingRules: TfrmChannelTogglingRules
       object lblRuleDescription: TsLabel
         Left = 4
         Top = 8
-        Width = 629
-        Height = 36
+        Width = 572
+        Height = 56
         Margins.Left = 2
         Margins.Top = 2
         Margins.Right = 2
@@ -208,10 +211,10 @@ object frmChannelTogglingRules: TfrmChannelTogglingRules
         ExplicitHeight = 12
       end
       object pnlEditButtons: TsPanel
-        Left = 633
+        Left = 576
         Top = 8
-        Width = 163
-        Height = 36
+        Width = 186
+        Height = 56
         Margins.Left = 2
         Margins.Top = 2
         Margins.Right = 2
@@ -222,13 +225,13 @@ object frmChannelTogglingRules: TfrmChannelTogglingRules
         TabOrder = 0
         SkinData.SkinSection = 'PANEL'
         DesignSize = (
-          163
-          36)
+          186
+          56)
         object BtnOk: TsButton
           Left = 5
-          Top = 7
+          Top = 22
           Width = 71
-          Height = 19
+          Height = 31
           Hint = 'Apply'
           Anchors = [akTop, akRight]
           Caption = 'OK'
@@ -241,10 +244,10 @@ object frmChannelTogglingRules: TfrmChannelTogglingRules
           SkinData.SkinSection = 'BUTTON'
         end
         object btnCancel: TsButton
-          Left = 87
-          Top = 7
-          Width = 71
-          Height = 19
+          Left = 82
+          Top = 22
+          Width = 99
+          Height = 31
           Hint = 'Cancel and close'
           Anchors = [akTop, akRight]
           Caption = 'Cancel'
@@ -259,8 +262,8 @@ object frmChannelTogglingRules: TfrmChannelTogglingRules
     object sPageControl1: TsPageControl
       Left = 0
       Top = 0
-      Width = 800
-      Height = 528
+      Width = 766
+      Height = 541
       Margins.Left = 2
       Margins.Top = 2
       Margins.Right = 2
@@ -269,18 +272,20 @@ object frmChannelTogglingRules: TfrmChannelTogglingRules
       Align = alClient
       TabOrder = 1
       SkinData.SkinSection = 'PAGECONTROL'
+      ExplicitWidth = 800
+      ExplicitHeight = 528
       object tabType: TsTabSheet
         Margins.Left = 2
         Margins.Top = 2
         Margins.Right = 2
         Margins.Bottom = 2
         Caption = 'Viewing'
-        SkinData.CustomColor = False
-        SkinData.CustomFont = False
+        ExplicitWidth = 792
+        ExplicitHeight = 501
         object sPanel13: TsPanel
           Left = 0
           Top = 0
-          Width = 792
+          Width = 758
           Height = 28
           Margins.Left = 2
           Margins.Top = 2
@@ -290,6 +295,7 @@ object frmChannelTogglingRules: TfrmChannelTogglingRules
           BevelOuter = bvNone
           TabOrder = 0
           SkinData.SkinSection = 'PANEL'
+          ExplicitWidth = 792
           object sLabel5: TsLabel
             Left = 2
             Top = 7
@@ -352,15 +358,11 @@ object frmChannelTogglingRules: TfrmChannelTogglingRules
               SkinData.CustomColor = True
               SkinData.CustomFont = True
               SkinData.SkinSection = 'UNKNOWN'
-              BoundLabel.Indent = 0
               BoundLabel.Font.Charset = DEFAULT_CHARSET
               BoundLabel.Font.Color = clWindowText
               BoundLabel.Font.Height = -13
               BoundLabel.Font.Name = 'Tahoma'
               BoundLabel.Font.Style = []
-              BoundLabel.Layout = sclLeft
-              BoundLabel.MaxWidth = 0
-              BoundLabel.UseSkinColor = True
               ExplicitHeight = 21
             end
           end
@@ -368,8 +370,8 @@ object frmChannelTogglingRules: TfrmChannelTogglingRules
         object sPanel6: TsPanel
           Left = 0
           Top = 28
-          Width = 792
-          Height = 473
+          Width = 758
+          Height = 486
           Margins.Left = 2
           Margins.Top = 2
           Margins.Right = 2
@@ -381,11 +383,13 @@ object frmChannelTogglingRules: TfrmChannelTogglingRules
           Padding.Top = 8
           TabOrder = 1
           SkinData.SkinSection = 'UNKNOWN'
+          ExplicitWidth = 814
+          ExplicitHeight = 473
           object sPanel1: TsPanel
-            Left = 263
+            Left = 280
             Top = 8
-            Width = 161
-            Height = 465
+            Width = 179
+            Height = 478
             Margins.Left = 2
             Margins.Top = 2
             Margins.Right = 2
@@ -396,10 +400,12 @@ object frmChannelTogglingRules: TfrmChannelTogglingRules
             TabOrder = 3
             SkinData.CustomColor = True
             SkinData.SkinSection = 'UNKNOWN'
+            ExplicitLeft = 263
+            ExplicitHeight = 465
             object sLabel3: TsLabel
               Left = 2
               Top = 2
-              Width = 157
+              Width = 175
               Height = 37
               Margins.Left = 2
               Margins.Top = 2
@@ -412,7 +418,6 @@ object frmChannelTogglingRules: TfrmChannelTogglingRules
               Color = clWhite
               ParentColor = False
               ParentFont = False
-              Transparent = False
               WordWrap = True
               Font.Charset = DEFAULT_CHARSET
               Font.Color = clWindowText
@@ -420,12 +425,13 @@ object frmChannelTogglingRules: TfrmChannelTogglingRules
               Font.Name = 'Tahoma'
               Font.Style = [fsBold]
               UseSkinColor = False
+              ExplicitWidth = 157
             end
             object clWhichDays: TsCheckListBox
               Left = 2
               Top = 39
-              Width = 79
-              Height = 424
+              Width = 81
+              Height = 437
               Margins.Left = 2
               Margins.Top = 2
               Margins.Right = 2
@@ -452,25 +458,22 @@ object frmChannelTogglingRules: TfrmChannelTogglingRules
               ParentCtl3D = False
               ParentFont = False
               TabOrder = 0
-              BoundLabel.Indent = 0
               BoundLabel.Font.Charset = DEFAULT_CHARSET
               BoundLabel.Font.Color = clWindowText
               BoundLabel.Font.Height = -13
               BoundLabel.Font.Name = 'Tahoma'
               BoundLabel.Font.Style = []
-              BoundLabel.Layout = sclLeft
-              BoundLabel.MaxWidth = 0
-              BoundLabel.UseSkinColor = True
               SkinData.CustomColor = True
               SkinData.CustomFont = True
               SkinData.SkinSection = 'UNKNOWN'
               OnClickCheck = clWhichDaysClickCheck
+              ExplicitHeight = 424
             end
             object clDays: TsCheckListBox
-              Left = 81
+              Left = 83
               Top = 39
-              Width = 78
-              Height = 424
+              Width = 94
+              Height = 437
               Margins.Left = 2
               Margins.Top = 2
               Margins.Right = 2
@@ -501,26 +504,25 @@ object frmChannelTogglingRules: TfrmChannelTogglingRules
               ParentCtl3D = False
               ParentFont = False
               TabOrder = 1
-              BoundLabel.Indent = 0
               BoundLabel.Font.Charset = DEFAULT_CHARSET
               BoundLabel.Font.Color = clWindowText
               BoundLabel.Font.Height = -13
               BoundLabel.Font.Name = 'Tahoma'
               BoundLabel.Font.Style = []
-              BoundLabel.Layout = sclLeft
-              BoundLabel.MaxWidth = 0
-              BoundLabel.UseSkinColor = True
               SkinData.CustomColor = True
               SkinData.CustomFont = True
               SkinData.SkinSection = 'UNKNOWN'
               OnClickCheck = clRoomTypesClickCheck
+              ExplicitLeft = 81
+              ExplicitWidth = 78
+              ExplicitHeight = 424
             end
           end
           object sPanel5: TsPanel
             Left = 91
             Top = 8
             Width = 118
-            Height = 465
+            Height = 478
             Margins.Left = 2
             Margins.Top = 2
             Margins.Right = 2
@@ -531,6 +533,7 @@ object frmChannelTogglingRules: TfrmChannelTogglingRules
             TabOrder = 1
             SkinData.CustomColor = True
             SkinData.SkinSection = 'UNKNOWN'
+            ExplicitHeight = 465
             object sLabel1: TsLabel
               Left = 2
               Top = 2
@@ -547,7 +550,6 @@ object frmChannelTogglingRules: TfrmChannelTogglingRules
               Color = clWhite
               ParentColor = False
               ParentFont = False
-              Transparent = False
               WordWrap = True
               Font.Charset = DEFAULT_CHARSET
               Font.Color = clWindowText
@@ -560,7 +562,7 @@ object frmChannelTogglingRules: TfrmChannelTogglingRules
               Left = 2
               Top = 39
               Width = 114
-              Height = 424
+              Height = 437
               Margins.Left = 2
               Margins.Top = 2
               Margins.Right = 2
@@ -584,26 +586,23 @@ object frmChannelTogglingRules: TfrmChannelTogglingRules
               ParentCtl3D = False
               ParentFont = False
               TabOrder = 0
-              BoundLabel.Indent = 0
               BoundLabel.Font.Charset = DEFAULT_CHARSET
               BoundLabel.Font.Color = clWindowText
               BoundLabel.Font.Height = -13
               BoundLabel.Font.Name = 'Tahoma'
               BoundLabel.Font.Style = []
-              BoundLabel.Layout = sclLeft
-              BoundLabel.MaxWidth = 0
-              BoundLabel.UseSkinColor = True
               SkinData.CustomColor = True
               SkinData.CustomFont = True
               SkinData.SkinSection = 'UNKNOWN'
               OnClickCheck = clRoomTypesClickCheck
+              ExplicitHeight = 424
             end
           end
           object sPanel8: TsPanel
-            Left = 424
+            Left = 459
             Top = 8
-            Width = 148
-            Height = 465
+            Width = 165
+            Height = 478
             Margins.Left = 2
             Margins.Top = 2
             Margins.Right = 2
@@ -614,10 +613,12 @@ object frmChannelTogglingRules: TfrmChannelTogglingRules
             TabOrder = 4
             SkinData.CustomColor = True
             SkinData.SkinSection = 'UNKNOWN'
+            ExplicitLeft = 424
+            ExplicitHeight = 465
             object sLabel4: TsLabel
               Left = 0
               Top = 0
-              Width = 148
+              Width = 165
               Height = 38
               Margins.Left = 2
               Margins.Top = 2
@@ -637,12 +638,15 @@ object frmChannelTogglingRules: TfrmChannelTogglingRules
               Font.Name = 'Tahoma'
               Font.Style = [fsBold]
               UseSkinColor = False
+              ExplicitLeft = 2
+              ExplicitTop = -3
+              ExplicitWidth = 148
             end
             object clMonthsTimeOfYear: TsCheckListBox
               Left = 0
               Top = 38
-              Width = 107
-              Height = 427
+              Width = 118
+              Height = 440
               Margins.Left = 2
               Margins.Top = 2
               Margins.Right = 2
@@ -686,25 +690,23 @@ object frmChannelTogglingRules: TfrmChannelTogglingRules
               ParentCtl3D = False
               ParentFont = False
               TabOrder = 0
-              BoundLabel.Indent = 0
               BoundLabel.Font.Charset = DEFAULT_CHARSET
               BoundLabel.Font.Color = clWindowText
               BoundLabel.Font.Height = -13
               BoundLabel.Font.Name = 'Tahoma'
               BoundLabel.Font.Style = []
-              BoundLabel.Layout = sclLeft
-              BoundLabel.MaxWidth = 0
-              BoundLabel.UseSkinColor = True
               SkinData.CustomColor = True
               SkinData.CustomFont = True
               SkinData.SkinSection = 'UNKNOWN'
               OnClickCheck = clRoomTypesClickCheck
+              ExplicitWidth = 107
+              ExplicitHeight = 427
             end
             object clYears: TsCheckListBox
-              Left = 107
+              Left = 118
               Top = 38
-              Width = 41
-              Height = 427
+              Width = 47
+              Height = 440
               Margins.Left = 2
               Margins.Top = 2
               Margins.Right = 2
@@ -726,26 +728,24 @@ object frmChannelTogglingRules: TfrmChannelTogglingRules
               ParentCtl3D = False
               ParentFont = False
               TabOrder = 1
-              BoundLabel.Indent = 0
               BoundLabel.Font.Charset = DEFAULT_CHARSET
               BoundLabel.Font.Color = clWindowText
               BoundLabel.Font.Height = -13
               BoundLabel.Font.Name = 'Tahoma'
               BoundLabel.Font.Style = []
-              BoundLabel.Layout = sclLeft
-              BoundLabel.MaxWidth = 0
-              BoundLabel.UseSkinColor = True
               SkinData.CustomColor = True
               SkinData.CustomFont = True
               SkinData.SkinSection = 'UNKNOWN'
               OnClickCheck = clRoomTypesClickCheck
+              ExplicitLeft = 102
+              ExplicitHeight = 427
             end
           end
           object sPanel7: TsPanel
             Left = 209
             Top = 8
-            Width = 54
-            Height = 465
+            Width = 71
+            Height = 478
             Margins.Left = 2
             Margins.Top = 2
             Margins.Right = 2
@@ -756,10 +756,11 @@ object frmChannelTogglingRules: TfrmChannelTogglingRules
             TabOrder = 2
             SkinData.CustomColor = True
             SkinData.SkinSection = 'UNKNOWN'
+            ExplicitHeight = 465
             object sLabel2: TsLabel
               Left = 0
               Top = 0
-              Width = 54
+              Width = 71
               Height = 38
               Margins.Left = 2
               Margins.Top = 2
@@ -768,7 +769,7 @@ object frmChannelTogglingRules: TfrmChannelTogglingRules
               Align = alTop
               Alignment = taCenter
               AutoSize = False
-              Caption = 'is above'
+              Caption = 'is above percentage'
               ParentFont = False
               WordWrap = True
               Font.Charset = DEFAULT_CHARSET
@@ -782,7 +783,7 @@ object frmChannelTogglingRules: TfrmChannelTogglingRules
             object pnlOccupancyHolder: TsPanel
               Left = 0
               Top = 38
-              Width = 54
+              Width = 71
               Height = 23
               Margins.Left = 2
               Margins.Top = 2
@@ -799,10 +800,11 @@ object frmChannelTogglingRules: TfrmChannelTogglingRules
               SkinData.CustomColor = True
               SkinData.CustomFont = True
               SkinData.SkinSection = 'UNKNOWN'
+              ExplicitWidth = 54
               object edtOccupancy: TsEdit
                 Left = 2
                 Top = 2
-                Width = 50
+                Width = 67
                 Height = 19
                 Margins.Left = 2
                 Margins.Top = 2
@@ -824,24 +826,21 @@ object frmChannelTogglingRules: TfrmChannelTogglingRules
                 SkinData.CustomColor = True
                 SkinData.CustomFont = True
                 SkinData.SkinSection = 'UNKNOWN'
-                BoundLabel.Indent = 0
                 BoundLabel.Font.Charset = DEFAULT_CHARSET
                 BoundLabel.Font.Color = clWindowText
                 BoundLabel.Font.Height = -13
                 BoundLabel.Font.Name = 'Tahoma'
                 BoundLabel.Font.Style = []
-                BoundLabel.Layout = sclLeft
-                BoundLabel.MaxWidth = 0
-                BoundLabel.UseSkinColor = True
+                ExplicitWidth = 50
                 ExplicitHeight = 21
               end
             end
           end
           object sPanel9: TsPanel
-            Left = 572
+            Left = 624
             Top = 8
-            Width = 117
-            Height = 465
+            Width = 129
+            Height = 478
             Margins.Left = 2
             Margins.Top = 2
             Margins.Right = 2
@@ -854,10 +853,12 @@ object frmChannelTogglingRules: TfrmChannelTogglingRules
             TabOrder = 5
             SkinData.CustomColor = True
             SkinData.SkinSection = 'UNKNOWN'
+            ExplicitLeft = 589
+            ExplicitHeight = 465
             object sLabel6: TsLabel
               Left = 2
               Top = 2
-              Width = 113
+              Width = 125
               Height = 37
               Margins.Left = 2
               Margins.Top = 2
@@ -870,7 +871,6 @@ object frmChannelTogglingRules: TfrmChannelTogglingRules
               Color = clWhite
               ParentColor = False
               ParentFont = False
-              Transparent = False
               WordWrap = True
               Font.Charset = DEFAULT_CHARSET
               Font.Color = clWindowText
@@ -883,8 +883,8 @@ object frmChannelTogglingRules: TfrmChannelTogglingRules
             object clWhichChannels: TsCheckListBox
               Left = 2
               Top = 39
-              Width = 113
-              Height = 424
+              Width = 125
+              Height = 437
               Margins.Left = 2
               Margins.Top = 2
               Margins.Right = 2
@@ -912,26 +912,24 @@ object frmChannelTogglingRules: TfrmChannelTogglingRules
               ParentCtl3D = False
               ParentFont = False
               TabOrder = 0
-              BoundLabel.Indent = 0
               BoundLabel.Font.Charset = DEFAULT_CHARSET
               BoundLabel.Font.Color = clWindowText
               BoundLabel.Font.Height = -13
               BoundLabel.Font.Name = 'Tahoma'
               BoundLabel.Font.Style = []
-              BoundLabel.Layout = sclLeft
-              BoundLabel.MaxWidth = 0
-              BoundLabel.UseSkinColor = True
               SkinData.CustomColor = True
               SkinData.CustomFont = True
               SkinData.SkinSection = 'UNKNOWN'
               OnClickCheck = clRoomTypesClickCheck
+              ExplicitWidth = 113
+              ExplicitHeight = 424
             end
           end
           object sPanel10: TsPanel
             Left = 8
             Top = 8
             Width = 83
-            Height = 465
+            Height = 478
             Margins.Left = 2
             Margins.Top = 2
             Margins.Right = 2
@@ -942,6 +940,7 @@ object frmChannelTogglingRules: TfrmChannelTogglingRules
             TabOrder = 0
             SkinData.CustomColor = True
             SkinData.SkinSection = 'UNKNOWN'
+            ExplicitHeight = 465
             object lblDaysBefore: TsLabel
               Left = 0
               Top = 0
@@ -1009,15 +1008,11 @@ object frmChannelTogglingRules: TfrmChannelTogglingRules
                 SkinData.CustomColor = True
                 SkinData.CustomFont = True
                 SkinData.SkinSection = 'UNKNOWN'
-                BoundLabel.Indent = 0
                 BoundLabel.Font.Charset = DEFAULT_CHARSET
                 BoundLabel.Font.Color = clWindowText
                 BoundLabel.Font.Height = -13
                 BoundLabel.Font.Name = 'Tahoma'
                 BoundLabel.Font.Style = []
-                BoundLabel.Layout = sclLeft
-                BoundLabel.MaxWidth = 0
-                BoundLabel.UseSkinColor = True
                 ExplicitHeight = 21
               end
             end

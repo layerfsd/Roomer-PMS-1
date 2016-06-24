@@ -227,7 +227,7 @@ function GetGridsIniFilename : String;
 
 implementation
 
-uses uDateUtils, uRegistryServices, uUtils, uG, uStringUtils, uAppGlobal, uRoomerDefinitions;
+uses uDateUtils, uRegistryServices, uUtils, uG, uStringUtils, uAppGlobal, uRoomerDefinitions, PrjConst;
 
 function GetRoomerIniFilename : String;
 begin
@@ -2643,28 +2643,40 @@ begin
   ch := status[1];
   case ch of
     STATUS_NOT_ARRIVED :
-      result := 'Not arrived';
+      result := GetTranslatedText('shTx_G_NotArrived'); // 'Not arrived';
     STATUS_ARRIVED :
-      result := 'Checked in';
+      result := GetTranslatedText('shTx_G_CheckedIn'); // 'Checked in';
     STATUS_CHECKED_OUT :
-      result := 'Departed';
+      result := GetTranslatedText('shTx_G_CheckedOut'); // 'Departed';
     STATUS_WAITING_LIST :
-      result := 'Waitinglist';
+      result := GetTranslatedText('shTx_G_WaitingList'); // 'Optional booking';
     STATUS_ALLOTMENT :
-      result := 'Alotment';
+      result := GetTranslatedText('shTx_G_Alotment'); // 'Alotment';
     STATUS_NO_SHOW :
-      result := 'No-show';
+      result := GetTranslatedText('shTx_G_NoShow'); // 'No-show';
     STATUS_BLOCKED :
-      result := 'Blocked';
+      result := GetTranslatedText('shTx_G_Blocked'); // 'Blocked';
     STATUS_Canceled :
-      result := 'Cancelled';
+      result := GetTranslatedText('shTx_G_Cancelled'); // 'Cancelled';
     STATUS_Tmp1 :
-      result := '[Unused]';
+      result := '[N/A]';
     STATUS_AWAITING_PAYMENT :
       result := 'Awaiting payment';
 
   end;
 end;
+
+//  constants.Add('shTx_G_DueToArrive', 'Due to arrive');
+//  constants.Add('shTx_G_NotArrived', 'Not Arrived');
+//  constants.Add('shTx_G_CheckedIn', 'Checked In');
+//  constants.Add('shTx_G_CheckedOut', 'Checked Out');
+//  constants.Add('shTx_G_WaitingList', 'Waiting List');
+//  constants.Add('shTx_G_Alotment', 'Allotment');
+//  constants.Add('shTx_G_NoShow', 'No show');
+//  constants.Add('shTx_G_Blocked', 'Blocked');
+//  constants.Add('shTx_G_DepartingToday', 'Due to check out');
+//  constants.Add('shTx_G_Cancelled', 'Cancelled');
+
 
 function _IndexToStatus(Index : Integer; MixedIncluded : Boolean = False) : string;
 begin
@@ -2711,28 +2723,40 @@ begin
   if trim(text) = '' then
     exit;
   text := lowerCase(text);
-  if text = 'not arrived' then
+  if text = lowercase(GetTranslatedText('shTx_G_NotArrived')) then // 'not arrived' then
     result := 'P';
-  if text = 'checked in' then
+  if text = lowercase(GetTranslatedText('shTx_G_CheckedIn')) then // 'checked in' then
     result := 'G';
-  if text = 'departed' then
+  if text = lowercase(GetTranslatedText('shTx_G_CheckedOut')) then // 'departed' then
     result := STATUS_CHECKED_OUT;
-  if text = 'waitinglist' then
+  if text = lowercase(GetTranslatedText('shTx_G_WaitingList')) then // 'optional booking' then
     result := 'O';
-  if text = 'alotment' then
+  if text = lowercase(GetTranslatedText('shTx_G_Alotment')) then // 'alotment' then
     result := 'A';
-  if text = 'no-show' then
+  if text = lowercase(GetTranslatedText('shTx_G_NoShow')) then // 'no-show' then
     result := 'N';
-  if text = 'blocked' then
+  if text = lowercase(GetTranslatedText('shTx_G_Blocked')) then // 'blocked' then
     result := 'B';
-  if text = 'canceled' then
+  if text = lowercase(GetTranslatedText('shTx_G_Cancelled')) then // 'canceled' then
     result := 'C';
-  if text = '[unused]' then
+  if text = '[n/a]' then
     result := 'W';
   if text = 'awaiting payment' then
     result := 'Z';
 
 end;
+
+//  constants.Add('shTx_G_DueToArrive', 'Due to arrive');
+//  constants.Add('shTx_G_NotArrived', 'Not Arrived');
+//  constants.Add('shTx_G_CheckedIn', 'Checked In');
+//  constants.Add('shTx_G_CheckedOut', 'Checked Out');
+//  constants.Add('shTx_G_WaitingList', 'Waiting List');
+//  constants.Add('shTx_G_Alotment', 'Allotment');
+//  constants.Add('shTx_G_NoShow', 'No show');
+//  constants.Add('shTx_G_Blocked', 'Blocked');
+//  constants.Add('shTx_G_DepartingToday', 'Due to check out');
+//  constants.Add('shTx_G_Cancelled', 'Cancelled');
+
 
 function _BreakfastToText(included : Boolean) : string;
 begin

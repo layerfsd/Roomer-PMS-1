@@ -428,7 +428,6 @@ type
     labStayTaxItemDescription: TsLabel;
     Label63: TsLabel;
     chkShowSideBar: TsCheckBox;
-    Label7: TsLabel;
     LMDGroupBox26: TsGroupBox;
     Label65: TsLabel;
     labInvPriceGroup: TsLabel;
