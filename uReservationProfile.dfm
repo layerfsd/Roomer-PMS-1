@@ -1606,6 +1606,7 @@ object frmReservationProfile: TfrmReservationProfile
           OnInitEdit = tvRoomsInitEdit
           OnUpdateEdit = tvRoomsUpdateEdit
           DataController.DataSource = mRoomsDS
+          DataController.Options = [dcoAssignGroupingValues, dcoAssignMasterDetailKeys, dcoSaveExpanding, dcoImmediatePost]
           DataController.Summary.DefaultGroupSummaryItems = <>
           DataController.Summary.FooterSummaryItems = <
             item

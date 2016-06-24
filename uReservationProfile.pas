@@ -2541,14 +2541,16 @@ procedure TfrmReservationProfile.tvRoomsGuestNamePropertiesValidate
   (Sender: TObject; var DisplayValue: Variant; var ErrorText: TCaption;
   var Error: Boolean);
 begin
-  if mRoomsDS.State = dsEdit then
-  begin
-    mRooms.Post;
-  end;
-  if zGuestName <> DisplayValue then
-  begin
+  if not FValidating then // prevent second call to validatie when posting record
+  try
+    FValidating := True;
+    if mRoomsDS.State = dsEdit then
+    begin
+      mRooms.Post;
+    end;
     d.RR_Upd_FirstGuestName(mRooms['RoomReservation'], DisplayValue);
-    zGuestName := DisplayValue;
+  finally
+    FValidating := False;
   end;
 end;
 
@@ -3016,7 +3018,7 @@ begin
        mRooms.Post;
     mRoomsDS.DataSet.DisableControls;
     try
-      Error := not d.UpdateExpectedCheckoutTime(zReservation, zRoomReservation, mRoomsExpectedCheckoutTime.AsString.Trim);
+      Error := not d.UpdateExpectedCheckoutTime(zReservation, zRoomReservation, String(DisplayValue).Trim);
     finally
       mRoomsDS.Dataset.EnableControls;
     end;
@@ -3052,7 +3054,7 @@ begin
 
     mRoomsDS.DataSet.DisableControls;
     try
-      Error := not d.UpdateExpectedTimeOfArrival(zReservation, zRoomReservation, mRoomsExpectedTimeOfArrival.AsString.Trim);
+      Error := not d.UpdateExpectedTimeOfArrival(zReservation, zRoomReservation, String(DisplayValue).Trim);
     finally
       mRoomsDS.Dataset.EnableControls;
     end;
