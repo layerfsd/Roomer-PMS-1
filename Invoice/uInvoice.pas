@@ -11629,7 +11629,11 @@ var
 begin
   SelectableExternalRooms.Clear;
   sql := format
-    ('SELECT DISTINCT Room, Reservation, RoomReservation FROM roomsdate WHERE ADate=''' + dateToSqlString(frmMain.dtDate.Date) + ''' AND Reservation != %d AND ResFlag IN (''P'',''G'')', [reservation]);
+    ('SELECT DISTINCT rd.Room, rd.Reservation, rd.RoomReservation '#10 +
+      ' FROM roomsdate rd '#10+
+      ' join rooms r on r.room=rd.room '#10 +
+      ' WHERE ADate=''' + dateToSqlString(frmMain.dtDate.Date) + ''' AND Reservation != %d AND ResFlag IN (''P'',''G'')', [reservation]) + #10 +
+      ' ORDER BY rd.room ';
   rSet := CreateNewDataSet;
   try
     if hData.rSet_bySQL(rSet, sql, false) then
