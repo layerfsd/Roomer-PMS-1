@@ -591,8 +591,6 @@ type
       ARecord: TcxCustomGridRecord; var AAllow: Boolean);
     procedure tvRoomsUpdateEdit(Sender: TcxCustomGridTableView;
       AItem: TcxCustomGridTableItem; AEdit: TcxCustomEdit);
-    procedure tvRoomsGuestNamePropertiesValidate(Sender: TObject;
-      var DisplayValue: Variant; var ErrorText: TCaption; var Error: Boolean);
     procedure tvRoomsInitEdit(Sender: TcxCustomGridTableView;
       AItem: TcxCustomGridTableItem; AEdit: TcxCustomEdit);
     procedure edtTypeDblClick(Sender: TObject);
@@ -646,10 +644,6 @@ type
       var Effect: Integer);
     procedure DropComboTarget1DragOver(Sender: TObject; ShiftState: TShiftState; APoint: TPoint; var Effect: Integer);
     procedure mGuestRoomsAfterScroll(DataSet: TDataSet);
-    procedure tvRoomsExpectedCheckoutTimePropertiesValidate(Sender: TObject; var DisplayValue: Variant;
-      var ErrorText: TCaption; var Error: Boolean);
-    procedure tvRoomsExpectedTimeOfArrivalPropertiesValidate(Sender: TObject; var DisplayValue: Variant;
-      var ErrorText: TCaption; var Error: Boolean);
     procedure mRoomsDSDataChange(Sender: TObject; Field: TField);
     procedure FormatTextToShortFormat(Sender: TcxCustomGridTableItem; ARecord: TcxCustomGridRecord;
       var AText: string);
@@ -659,6 +653,7 @@ type
     procedure tvRoomsblockMoveGetCellHint(Sender: TcxCustomGridTableItem; ARecord: TcxCustomGridRecord; ACellViewInfo: TcxGridTableDataCellViewInfo;
       const AMousePos: TPoint; var AHintText: TCaption; var AIsHintMultiLine: Boolean; var AHintTextRect: TRect);
     procedure tvRoomsStockItemsCountPropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
+    procedure mRoomsBeforePost(DataSet: TDataSet);
   private
     { Private declarations }
     vStartName: string;
@@ -2137,6 +2132,26 @@ begin
 end;
 
 
+procedure TfrmReservationProfile.mRoomsBeforePost(DataSet: TDataSet);
+begin
+  if not FValidating then // prevent second call to validatie when posting record
+  try
+    FValidating := True;
+    if mRoomsGuestName.OldValue <> mRoomsGuestName.AsString then
+      d.RR_Upd_FirstGuestName(zRoomreservation, mRoomsGuestName.AsString);
+
+    if mRoomsExpectedTimeOfArrival.OldValue <> mRoomsExpectedTimeOfArrival.AsString then
+      if not d.UpdateExpectedTimeOfArrival(zReservation, zRoomReservation, mRoomsExpectedTimeOfArrival.AsString.Trim) then
+        Abort;
+    if mRoomsExpectedCheckoutTime.OldValue <> mRoomsExpectedCheckoutTime.AsString then
+      if not d.UpdateExpectedCheckoutTime(zReservation, zRoomReservation, mRoomsExpectedCheckoutTime.AsString.Trim) then
+        Abort;
+
+  finally
+    FValidating := False;
+  end;
+end;
+
 procedure TfrmReservationProfile.mRoomsDSDataChange(Sender: TObject; Field: TField);
 begin
   // When fields are emptied the validation events are not fired!
@@ -2286,6 +2301,7 @@ var
   PersonsProfilesId,
     iGuests: Integer;
   lSavedAfterScroll: TDataSetNotifyEvent;
+  lSavedBeforePost: TDataSetNotifyEvent;
 
   procedure PopulateRatePlanCombo;
   begin
@@ -2328,10 +2344,12 @@ begin
   status := '';
   rSet := nil;
   lSavedAfterScroll := mRooms.AfterScroll;
+  lSavedBeforePost := mRooms.BeforePost;
   mRooms.DisableControls;
   try
     screen.Cursor := crHourGlass;
     mRooms.AfterScroll := nil;
+    mRooms.BeforePost := nil;
 
     s :=     ' SELECT '#10;
     s := s + '      Reservation '#10;
@@ -2480,6 +2498,7 @@ begin
 
   finally
     mRooms.AfterScroll := lSavedAfterScroll;
+    mRooms.BeforePost := lSavedBeforePost;
     mRooms.EnableControls;
     rSet.Free;
     screen.Cursor := crDefault;
@@ -2537,29 +2556,11 @@ begin
   end;
 end;
 
-procedure TfrmReservationProfile.tvRoomsGuestNamePropertiesValidate
-  (Sender: TObject; var DisplayValue: Variant; var ErrorText: TCaption;
-  var Error: Boolean);
-begin
-  if not FValidating then // prevent second call to validatie when posting record
-  try
-    FValidating := True;
-    if mRoomsDS.State = dsEdit then
-    begin
-      mRooms.Post;
-    end;
-    d.RR_Upd_FirstGuestName(mRooms['RoomReservation'], DisplayValue);
-  finally
-    FValidating := False;
-  end;
-end;
-
 procedure TfrmReservationProfile.tvRoomsInitEdit(Sender: TcxCustomGridTableView;
   AItem: TcxCustomGridTableItem; AEdit: TcxCustomEdit);
 begin
   If AEdit is TcxComboBox then
     TcxComboBox(AEdit).Properties.UseMouseWheel := false;
-
 end;
 
 procedure TfrmReservationProfile.tvRoomsPackagePropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
@@ -3008,25 +3009,6 @@ begin
   Display_rGrid(zRoomReservation);
 end;
 
-procedure TfrmReservationProfile.tvRoomsExpectedCheckoutTimePropertiesValidate(Sender: TObject;
-  var DisplayValue: Variant; var ErrorText: TCaption; var Error: Boolean);
-begin
-  if not FValidating then // prevent second call to validatie when posting record
-  try
-    FValidating := True;
-    if mRoomsDS.State = dsEdit then
-       mRooms.Post;
-    mRoomsDS.DataSet.DisableControls;
-    try
-      Error := not d.UpdateExpectedCheckoutTime(zReservation, zRoomReservation, String(DisplayValue).Trim);
-    finally
-      mRoomsDS.Dataset.EnableControls;
-    end;
-  finally
-    FValidating := False;
-  end;
-end;
-
 procedure TfrmReservationProfile.FormatTextToShortFormat(Sender: TcxCustomGridTableItem;
   ARecord: TcxCustomGridRecord; var AText: string);
 var
@@ -3041,26 +3023,6 @@ procedure TfrmReservationProfile.GetLocaltimeEditProperties(Sender: TcxCustomGri
   ARecord: TcxCustomGridRecord; var AProperties: TcxCustomEditProperties);
 begin
   TcxTimeEditProperties(aProperties).Use24HourFormat := not FormatSettings.ShortTimeFormat.Contains(Formatsettings.TimeAMString);
-end;
-
-procedure TfrmReservationProfile.tvRoomsExpectedTimeOfArrivalPropertiesValidate(Sender: TObject;
-  var DisplayValue: Variant; var ErrorText: TCaption; var Error: Boolean);
-begin
-  if not FValidating then // prevent second call to validatie when posting record
-  try
-    FValidating := True;
-    if mRoomsDS.State = dsEdit then
-       mRooms.Post;
-
-    mRoomsDS.DataSet.DisableControls;
-    try
-      Error := not d.UpdateExpectedTimeOfArrival(zReservation, zRoomReservation, String(DisplayValue).Trim);
-    finally
-      mRoomsDS.Dataset.EnableControls;
-    end;
-  finally
-    FValidating := False;
-  end;
 end;
 
 procedure TfrmReservationProfile.tvRoomsdayCountPropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
