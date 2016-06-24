@@ -385,8 +385,10 @@ end;
 
 procedure TfrmArrivalsReport.grArrivalsListDBTableView1ExpectedTimeOfArrivalGetDisplayText(
   Sender: TcxCustomGridTableItem; ARecord: TcxCustomGridRecord; var AText: string);
+var
+  lTime: TDateTime;
 begin
-  if not aText.IsEmpty then
+  if not aText.IsEmpty and TryStrToTime(aText, lTime) then
     DateTimeToString(aText, FormatSettings.ShortTimeFormat, StrTodateTime(aText));
 
 end;

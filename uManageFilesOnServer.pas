@@ -132,18 +132,22 @@ begin
   Icon := TIcon.Create;
   try
     FileList := RoomerDataSet1.SystemListFiles(cbxFileTypes.ItemIndex);
-    for i := 0 to Pred(FileList.Count) do
-    begin
-      item := lvfileList.Items.Add;
-      localFilename := GetFilePathForListView(FileList.Files[i].name, FileList.Files[i].lastModified);
-      description := getSHFileType(localFilename); // Trim(GetFileTypeDescription(FileList.Files[i].name));
-      item.SubItems.Add(FileList.Files[i].name);
-      item.SubItems.Add(DateTimeToStr(FileList.Files[i].lastModified));
-      item.SubItems.Add(description);
-      item.SubItems.Add(FormatByteSize(FileList.Files[i].size));
-      SHGetFileInfo(PChar(localFilename), 0, FileInfo, SizeOf(FileInfo), SHGFI_ICON);
-      Icon.Handle := FileInfo.hIcon;
-      item.ImageIndex := ImageList1.AddIcon(Icon);
+    try
+      for i := 0 to Pred(FileList.Count) do
+      begin
+        item := lvfileList.Items.Add;
+        localFilename := GetFilePathForListView(FileList.Files[i].name, FileList.Files[i].lastModified);
+        description := getSHFileType(localFilename); // Trim(GetFileTypeDescription(FileList.Files[i].name));
+        item.SubItems.Add(FileList.Files[i].name);
+        item.SubItems.Add(DateTimeToStr(FileList.Files[i].lastModified));
+        item.SubItems.Add(description);
+        item.SubItems.Add(FormatByteSize(FileList.Files[i].size));
+        SHGetFileInfo(PChar(localFilename), 0, FileInfo, SizeOf(FileInfo), SHGFI_ICON);
+        Icon.Handle := FileInfo.hIcon;
+        item.ImageIndex := ImageList1.AddIcon(Icon);
+      end;
+    finally
+      FileList.Free;
     end;
   finally
     lvfileList.items.EndUpdate;
@@ -158,15 +162,19 @@ var i: Integer;
     localFilename : String;
 begin
     FileList := RoomerDataSet1.SystemListFiles(cbxFileTypes.ItemIndex);
-    for i := 0 to Pred(FileList.Count) do
-    begin
-      localFilename := GetEnvironmentVariable('TEMP') + '\' + FileList.Files[i].name;
-      if FileExists(localFilename) then
-        DeleteFile(localFilename);
+    try
+      for i := 0 to Pred(FileList.Count) do
+      begin
+        localFilename := GetEnvironmentVariable('TEMP') + '\' + FileList.Files[i].name;
+        if FileExists(localFilename) then
+          DeleteFile(localFilename);
 
-      DownloadResource(FileList.Files[i].name, localFilename);
-      CollectionOfOpenedFiles.Add(localFilename);
-      UploadFileToResources(ANY_FILE, ACCESS_RESTRICTED, ExtractFilename(localFilename), localFilename)
+        DownloadResource(FileList.Files[i].name, localFilename);
+        CollectionOfOpenedFiles.Add(localFilename);
+        UploadFileToResources(ANY_FILE, ACCESS_RESTRICTED, ExtractFilename(localFilename), localFilename)
+      end;
+    finally
+      FileList.Free;
     end;
 end;
 
@@ -421,6 +429,8 @@ end;
 
 procedure ReadFileList(RoomerDataSet: TRoomerDataSet; fileType : TRoomerFileType);
 begin
+  if assigned(_FileList) then
+    _FileList.Free;
   _FileList := RoomerDataSet.SystemListFiles(ORD(fileType));
   _FileType := fileType;
   _RoomerDataSet := RoomerDataSet;

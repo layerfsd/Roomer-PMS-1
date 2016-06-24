@@ -38,7 +38,7 @@ type
 
   TFileList = class
   private
-    FList : TList<TFileEntity>;
+    FList : TObjectList<TFileEntity>;
     function GetCount: integer;
     function GetFiles(_index: integer): TFileEntity;
   public
@@ -426,12 +426,13 @@ end;
 constructor TFileList.Create(xmlList: String);
 begin
   inherited Create;
-  FList := TList<TFileEntity>.Create;
+  FList := TObjectList<TFileEntity>.Create;
   getFileListFromXml(self, xmlList);
 end;
 
 destructor TFileList.Destroy;
 begin
+  FList.Free;
   inherited;
 end;
 

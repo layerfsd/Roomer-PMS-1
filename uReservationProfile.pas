@@ -3027,9 +3027,11 @@ end;
 
 procedure TfrmReservationProfile.FormatTextToShortFormat(Sender: TcxCustomGridTableItem;
   ARecord: TcxCustomGridRecord; var AText: string);
+var
+  lTime: TDateTime;
 begin
-  //convert from string(5) HH:mm format into local shorttimeformat
-  if not aText.IsEmpty then
+  //convert from string(5) HH:mm format into local shorttimeformat if possible
+  if not aText.IsEmpty and TryStrToTime(aText, lTime) then
     DateTimeToString(aText, FormatSettings.ShortTimeFormat, StrTodateTime(aText));
 end;
 
