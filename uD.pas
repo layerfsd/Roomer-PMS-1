@@ -3383,7 +3383,7 @@ end;
 function Td.UpdateExpectedTimeOfArrival(aReservation, aRoomReservation: Integer; const aTimeOfArrival: string): boolean;
 var
   s: string;
-  lTime: TdateTime;
+  lTime: TDateTime;
 begin
   result := aTimeOfArrival.IsEmpty or TryStrToTime(aTimeOfArrival, lTime);
   if result then

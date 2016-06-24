@@ -2116,6 +2116,7 @@ var
   S : string;
 begin
   datetimetostring(S, 'hh:MM', aTime);
+  if s = '00:00' then s := '';
   Result := quotedstr(S);
 end;
 
