@@ -558,7 +558,6 @@ uses ioUtils, uMain, uDateUtils, uStringUtils, _glob, uAppGlobal, PrjConst,
   ;
 
 const
-  AVAILABILITY_FORMAT = '';
   BODY_START = '<body bgcolor="#0000FF"><font bgcolor="#0000FF" color="#FFFFFF">';
   BOLD_START = '<b>';
   BOLD_END = '</b>';
@@ -566,7 +565,6 @@ const
 
   ACTIVE_FLAG_RESTRICTION = '<b>%s</b> active.<br>';
   ACTIVE_SETTING_RESTRICTION = '<b>%s</b> = %d.<br>';
-  ACTIVE_RATE_RESTRICTION = '<b>%s</b> = %s<br>';
 
   MAX_UPDATES_PER_CALL =  600;
 
@@ -630,10 +628,6 @@ begin
     Exit;
   end;
 
-//  if RoomerMessageDialog(Msg + #13#13 +
-//                         GetTranslatedText('shUI_ChannelManager_OkOrCancel'),
-//                         mtWarning, [mbOk, mbCancel], MsgType, mrOk) = mrOk then
-//  begin
     Screen.Cursor := crHourglass;
     _grid.Tag := 1;
     try
@@ -675,7 +669,6 @@ begin
       Screen.Cursor := crDefault;
       Application.ProcessMessages;
     end;
-//  end;
 end;
 
 procedure TfrmChannelAvailabilityManager.btnBackClick(Sender: TObject);
@@ -979,10 +972,6 @@ end;
 
 procedure TfrmChannelAvailabilityManager.FormCreate(Sender: TObject);
 begin
-//  SetWindowLong(Handle, GWL_EXSTYLE, WS_EX_APPWINDOW);
-//  Parent := nil;
-//  ParentWindow := GetDesktopWindow;
-
   RoomerDataSet := CreateNewDataSet;
   pgcPages.Visible := False;
   RoomerLanguage.TranslateThisForm(self);
@@ -1108,8 +1097,6 @@ begin
     rateGrid.MouseActions.RangeSelectAndEdit := true;
     InitializeBulkOperation;
   end;
-  // ShowAvailabilityForPricePlans;
-  // ShowRatesForPricePlans;
 end;
 
 function InvertColor(Color: TColor): TColor;
@@ -1126,7 +1113,6 @@ begin
       result := clFuchsia;
     clFuchsia:
       result := clDkGray;
-    // clGray      : RESULT:=clPurple;
     clGreen:
       result := clRed;
     clLime:
@@ -1143,7 +1129,6 @@ begin
       result := clGray;
     clRed:
       result := clYellow; // clGreen;
-    // clSilver    : RESULT:=clLtGray;
     clTeal:
       result := clAqua;
     clWhite:
@@ -1185,7 +1170,6 @@ begin
   end;
 
   result := sBgBegin + '<p align="center">' + FDayOfWeekName + '</p>' + '<p align="center">' +
-  // '<font color="#0000FF" size="12">' +
     '<font size="12">' + '<b>' + String(sTemp) + '</b></font></p>' + '<p align="center">' + format('%s ''%d', [FMonthName, FYear - 2000]) + '</p>' + sBgEnd;
 end;
 
@@ -1202,8 +1186,6 @@ begin
     exit;
   if (StrToIntDef(value, -999999) = -999999) OR (strToInt(value) < -1) OR (strToInt(value) > 9999) then
   begin
-    // grid.InvalidEntryTitle := 'Incorrect availability';
-    // grid.InvalidEntryText := 'Please enter a valid availability value';
     grid.InvalidEntryTitle := GetTranslatedText('shTx_ChannelAvailabilityManager_IncorrectAvailability');
     grid.InvalidEntryText := GetTranslatedText('shTx_ChannelAvailabilityManager_EnterValidAvailability');
     grid.InvalidEntryIcon := ieError;
@@ -1289,10 +1271,6 @@ begin
       SavedAlign := SetTextAlign(Handle, TA_RIGHT);
       TextRect(Rect, Rect.Right - 4, Rect.Top + 2, S);
       SetTextAlign(Handle, SavedAlign);
-
-      // SavedAlign := SetTextAlign(Handle, TA_RIGHT);
-      // TextRect(Rect, Rect.Right - 4, Rect.Top + 2, grid.Cells[ACol, ARow]);
-      // SetTextAlign(Handle, SavedAlign);
     end;
     exit;
   end;
@@ -1437,16 +1415,8 @@ begin
   hintstr := '';
   if EditableCell(grid, ARow, ACol) then
   begin
-
     available := locateAvailabilityFromRoomTypeCodeAndDate(TCellData(grid.Objects[ACol, ARow]).FRoomClassCode, TCellData(grid.Objects[ACol, ARow]).date);
     hintstr := format(GetTranslatedText('shTx_ChannelAvailabilityManager_RoomAvailability'), [BODY_START, BOLD_START, available, BOLD_END]);
-
-    // price := FindPriceForDateAndType(ACol, ARow, roomType, date);
-    // // hintstr := format('%s' + 'Current rates on ' + '%s:  %s%s%s</font></font></body>',
-    // hintstr := format('<br>%s' + GetTranslatedText('shTx_ChannelAvailabilityManager_CurrentRates') + '%s:  %s%s%s</font></font></body>',
-    // [sBodyStart, FormatDateTime('dd mmm yyyy', date),
-    // sFontStart, Trim(FloatToStrF(price, ffNumber, 12, 2)), sFontEnd
-    // ]);
   end;
 end;
 
@@ -1463,8 +1433,6 @@ begin
   else
   begin
     if Key = VK_RIGHT then
-      // if grid.sel then
-      //
       if grid.Col < grid.ColCount then
         grid.Col := grid.Col + 1;
   end;
@@ -1497,23 +1465,6 @@ begin
         result := result + 1;
 end;
 
-//function TfrmChannelAvailabilityManager.buildSetStatement(ForcingUpdate : Boolean; dirty: Boolean; var oldResultValue: String; dirtyName, valueName, value: String): String;
-//var
-//  S: String;
-//begin
-//  if dirty then
-//  begin
-//    if ForcingUpdate then
-//      S := format('%s=1, %s=%s', [dirtyName, valueName, value])
-//    else
-//      S := format('%s=(%s OR (%s<>%s)), %s=%s', [dirtyName, dirtyName, valueName, value, valueName, value]);
-//    if oldResultValue = '' then
-//      oldResultValue := S
-//    else
-//      oldResultValue := oldResultValue + ',' + S;
-//  end;
-//end;
-
 function TfrmChannelAvailabilityManager.buildSetStatement(dirty: Boolean; var oldResultValue: String; const dirtyName, valueName, value: String): String;
 var
   S: String;
@@ -1524,8 +1475,6 @@ begin
   else
     dirtyValue := 2;
   S := format('%d AS _%s, %s AS _%s', [dirtyValue, dirtyName, value, valueName]);
-//  else
-//    S := format('2 AS _%s, %s AS _%s', [dirtyName, value, valueName]);
   if oldResultValue = '' then
     oldResultValue := S
   else
@@ -1645,9 +1594,8 @@ var
         if NOT g.qRatesManagedByRoomer then exit;
         for i1 := 0 to topClasses.Count - 1 do
         begin
-          topClass := topClasses[i1]; // copy(topClasses[i1], 1, POS('|', topClasses[i1]) - 1);
+          topClass := topClasses[i1];
           iNumRooms := NumRoomsOfTopClass(topClass);
-//          iNumRooms := StrToInt(copy(topClasses[i1], POS('|', topClasses[i1]) + 1, maxint));
           for i := trunc(lowDate) to trunc(hiDate) do
           begin
             s := DateToSqlString(i);
@@ -1658,8 +1606,6 @@ var
             end;
           end;
         end;
-//           PriceData.FRoomTypeTopClass, PriceData.date, iNumRooms - locateAvailabilityFromRoomTypeCodeAndDate(PriceData.FRoomTypeTopClass, PriceData.date
-//           ExcelP.AddTopClassStatusPerDay(Date, TopClass, NumRoomsOcc);
       end;
 
       procedure AddChannelToRatesExcelSheet(ChannelCode, ChannelName, Header : String);
@@ -1707,12 +1653,9 @@ var
           company := ctrlGetString('CompanyName');
           tempFilename := format('%s - %s - %s%s to %s%s.xls', [company, thisDate, mnth1, yr1, mnth2, yr2]);
           filename := TPath.Combine(Filename, tempFilename);
-//          filename := TPath.Combine(Filename, 'RMS_New_Rates.xls');
           ExcelP.ProcessExcelSheet(filename);
           sendFileAsAttachment(ctrlGetString('CompanyEmail'), 'Rate changes', filename + '=' + extractFilename(filename), AllowEditAndSendEmail);
         end;
-      //
-      //  ExeclP.LoadFromFile('C:\opt\RMS1_x.xls');
       end;
 
       procedure LogChanges(PriceData : TPriceData; RateAction : TRateAction);
@@ -1765,16 +1708,9 @@ begin
 
                 buildSetStatement(PriceData.ForcingUpdate OR PriceData.FPriceDirty, sql, 'dirty', 'price', _db(PriceData.FPrice));
                 if PriceData.FPriceDirty then LogChanges(PriceData, RATE_EDIT);
-      //          buildSetStatement(PriceData.ForcingUpdate, PriceData.ForcingUpdate OR PriceData.FAvailabilityDirty, sql, 'availabilityDirty', 'availability',
-      //            inttostr(PriceData.FAvailability));
 
                 if PriceData.FMaxStayDirty AND (PriceData.FMinStay > PriceData.FMaxStay) then
                    PriceData.FMaxStayDirty := False;
-
-//                buildSetStatement((PriceData.FMinStayDirty OR
-//                                  (PriceData.ForcingUpdate AND (PriceData.FMinStay >= 0)))
-//                                  AND (PriceData.FMaxStay >= PriceData.FMinStay),
-//                                 sql, 'minStayDirty', 'minStay', inttostr(PriceData.FMinStay));
 
                 buildSetStatementMinMax(sql,
                                         PriceData.FMinStayDirty OR (PriceData.ForcingUpdate AND (PriceData.FMinStay >= 0)),
@@ -1784,10 +1720,6 @@ begin
 
                 if PriceData.FMinStayDirty then LogChanges(PriceData, MIN_EDIT);
 
-//                buildSetStatement((PriceData.FMaxStayDirty OR
-//                                  (PriceData.ForcingUpdate AND (PriceData.FMaxStay >= 0)))
-//                                  AND (PriceData.FMaxStay >= PriceData.FMinStay),
-//                    sql, 'maxStayDirty', 'maxStay', inttostr(PriceData.FMaxStay));
                 if PriceData.FMaxStayDirty then LogChanges(PriceData, MAX_EDIT);
 
                 buildSetStatement(PriceData.ForcingUpdate OR PriceData.FCOADirty, sql, 'closedOnArrivalDirty', 'closedOnArrival', BoolToString_0_1(PriceData.FCOA));
@@ -1810,7 +1742,7 @@ begin
                   if PriceData.date > hiDate then hiDate := PriceData.date;
                   PrepareRatesExcelSheet;
                   iNumRooms := NumRoomsOfTopClass(PriceData.FRoomTypeTopClass);
-//                  if topClasses.IndexOf(PriceData.FRoomTypeTopClass) < 0 then
+
                   topClasses.Add(PriceData.FRoomTypeTopClass);
                   s := DateToSqlString(PriceData.date);
                   dates.Add(s);
@@ -1825,17 +1757,7 @@ begin
                   end;
                 end;
 
-//                if (PriceData.FMinStay > PriceData.FMaxStay) AND (PriceData.FMaxStay <> 0) then
-//                   PriceData.FMaxStay := PriceData.FMinStay;
-
                 sql := format('SELECT %d AS _Id, %s', [PriceData.Id, sql]);
-
-//                if PriceData.channelId > -1 then
-//                  tableName := 'channelrates'
-//                else
-//                  tableName := 'channelmasteravailabilityrates';
-
-      //          sql := 'UPDATE ' + tableName + ' SET ' + sql + format(' WHERE id=%d', [PriceData.Id]);
 
                 if NOT OnlyCreateExcel then
                 begin
@@ -2070,17 +1992,13 @@ end;
 
 procedure TfrmChannelAvailabilityManager.RefreshScreen;
 begin
-  try
-    pgcPages.Update;
-    pgcPages.Invalidate;
-    pnlBulkChanges.Update;
-    pnlBulkChanges.Invalidate;
+  pgcPages.Update;
+  pgcPages.Invalidate;
+  pnlBulkChanges.Update;
+  pnlBulkChanges.Invalidate;
 
-    Update;
-    Invalidate;
-  except
-
-  end;
+  Update;
+  Invalidate;
 end;
 
 procedure TfrmChannelAvailabilityManager.ForwardProject;
@@ -2304,59 +2222,61 @@ var
 begin
   FindFirstAndLastDateInList(firstDate, lastDate);
   BeginProject(ValueList.Count * RealNumberOfRateObjects);
-  for i := 0 to ValueList.Count - 1 do
-  begin
-    for iRow := 0 to rateGrid.RowCount - 1 do
+  try
+    for i := 0 to ValueList.Count - 1 do
     begin
-      if isAnyEditableRow(iRow) then
-        for iCol := trunc(firstDate) - trunc(startDate) + 1 to trunc(lastDate) - trunc(startDate) + 1 do
-        begin
-          PriceData := getPriceDataOfRow(iCol, iRow);
-          if Assigned(PriceData) AND (PriceData.channelId = destChannelId) then
+      for iRow := 0 to rateGrid.RowCount - 1 do
+      begin
+        if isAnyEditableRow(iRow) then
+          for iCol := trunc(firstDate) - trunc(startDate) + 1 to trunc(lastDate) - trunc(startDate) + 1 do
           begin
-            if (ValueList[i].RoomClassId = PriceData.roomTypeGroupId) AND (trunc(ValueList[i].ADate) = trunc(PriceData.FDate)) then
+            PriceData := getPriceDataOfRow(iCol, iRow);
+            if Assigned(PriceData) AND (PriceData.channelId = destChannelId) then
             begin
-              if (ValueList[i].ValueType = vtPrice) AND isPriceCell(iCol, iRow) then
-                SetRateCellValue(iCol, iRow, PriceData, ValueList[i].value)
-              else if (ValueList[i].ValueType = vtAvailability) AND isAvailabilityRow(iRow) then
-                SetAvailabilityCellValue(iCol, iRow, PriceData, ValueList[i].value)
-              else if (ValueList[i].ValueType = vtMinStay) AND isMinStayRow(iRow) then
-                SetMinStayCellValue(iCol, iRow, PriceData, ValueList[i].value)
-              else if (ValueList[i].ValueType = vtMaxStay) AND isMaxStayRow(iRow) then
-                SetMaxStayCellValue(iCol, iRow, PriceData, ValueList[i].value)
-              else if (ValueList[i].ValueType = vtClosedOnArrival) AND isCloseOnArrivalRow(iRow) then
+              if (ValueList[i].RoomClassId = PriceData.roomTypeGroupId) AND (trunc(ValueList[i].ADate) = trunc(PriceData.FDate)) then
               begin
-                PriceData.COA := ValueList[i].value;
-                SetCheckBoxCellValue(iCol, iRow, PriceData.COA);
-              end
-              else if (ValueList[i].ValueType = vtClosedOnDeparture) AND isClosedOnDepartureRow(iRow) then
-              begin
-                PriceData.COD := ValueList[i].value;
-                SetCheckBoxCellValue(iCol, iRow, PriceData.COD);
-              end
-              else if (ValueList[i].ValueType = vtStop) AND isStopSellRow(iRow) then
-              begin
-                PriceData.stopSell := ValueList[i].value;
-                SetCheckBoxCellValue(iCol, iRow, PriceData.stopSell);
-              end
-              else if (ValueList[i].ValueType = vtLengthOfStayArrivalDateBased) AND isLOSArrivalDateBasedRow(iRow) then
-              begin
-                PriceData.LOSArrivalDateBased := ValueList[i].value;
-                SetCheckBoxCellValue(iCol, iRow, PriceData.LOSArrivalDateBased);
-              end
-              else if (ValueList[i].ValueType = vtSingleUsePrice) AND isSingleUsePriceRow(iRow) then
-              begin
-                SetSingleUsePriceCellValue(iCol, iRow, PriceData, ValueList[i].value);
+                if (ValueList[i].ValueType = vtPrice) AND isPriceCell(iCol, iRow) then
+                  SetRateCellValue(iCol, iRow, PriceData, ValueList[i].value)
+                else if (ValueList[i].ValueType = vtAvailability) AND isAvailabilityRow(iRow) then
+                  SetAvailabilityCellValue(iCol, iRow, PriceData, ValueList[i].value)
+                else if (ValueList[i].ValueType = vtMinStay) AND isMinStayRow(iRow) then
+                  SetMinStayCellValue(iCol, iRow, PriceData, ValueList[i].value)
+                else if (ValueList[i].ValueType = vtMaxStay) AND isMaxStayRow(iRow) then
+                  SetMaxStayCellValue(iCol, iRow, PriceData, ValueList[i].value)
+                else if (ValueList[i].ValueType = vtClosedOnArrival) AND isCloseOnArrivalRow(iRow) then
+                begin
+                  PriceData.COA := ValueList[i].value;
+                  SetCheckBoxCellValue(iCol, iRow, PriceData.COA);
+                end
+                else if (ValueList[i].ValueType = vtClosedOnDeparture) AND isClosedOnDepartureRow(iRow) then
+                begin
+                  PriceData.COD := ValueList[i].value;
+                  SetCheckBoxCellValue(iCol, iRow, PriceData.COD);
+                end
+                else if (ValueList[i].ValueType = vtStop) AND isStopSellRow(iRow) then
+                begin
+                  PriceData.stopSell := ValueList[i].value;
+                  SetCheckBoxCellValue(iCol, iRow, PriceData.stopSell);
+                end
+                else if (ValueList[i].ValueType = vtLengthOfStayArrivalDateBased) AND isLOSArrivalDateBasedRow(iRow) then
+                begin
+                  PriceData.LOSArrivalDateBased := ValueList[i].value;
+                  SetCheckBoxCellValue(iCol, iRow, PriceData.LOSArrivalDateBased);
+                end
+                else if (ValueList[i].ValueType = vtSingleUsePrice) AND isSingleUsePriceRow(iRow) then
+                begin
+                  SetSingleUsePriceCellValue(iCol, iRow, PriceData, ValueList[i].value);
+                end;
               end;
             end;
           end;
-        end;
+      end;
+      ForwardProject;
     end;
-    ForwardProject;
+  finally
+    EndProject;
+    ValueList.Clear;
   end;
-  EndProject;
-  ValueList.Clear;
-//  rateGrid.Invalidate;
 end;
 
 procedure TfrmChannelAvailabilityManager.C3Click(Sender: TObject);
@@ -2392,12 +2312,7 @@ end;
 function TfrmChannelAvailabilityManager.AddCheckEditItem(comp : TCheckComboBox; line : String; obj : TObject) : Integer;
 var newLine : String;
 begin
-//  if comp.TextDelimiter = '|' then
-//    newLine := replaceString(line, comp.TextDelimiter, ',')
-//  else
-//    newLine := replaceString(line, comp.TextDelimiter, '|');
   newLine := replaceString(line, ',', '|');
-
   result := comp.Items.AddObject(newLine, obj);
 end;
 
@@ -2440,7 +2355,6 @@ begin
       if (channelID = nil) OR
         roomClassInList(Pointer(ARoomTypeSet.FieldByName('id').AsInteger))  then
           AddCheckEditItem(cbxRoomTypes, format('%s - %s', [ARoomTypeSet['code'], ARoomTypeSet['description']]), Pointer(ARoomTypeSet.FieldByName('id').AsInteger));
-//          cbxRoomTypes.Items.AddObject(format('%s - %s', [ARoomTypeSet['code'], ARoomTypeSet['description']]), Pointer(ARoomTypeSet.FieldByName('id').AsInteger));
       ARoomTypeSet.next;
     end;
   end;
@@ -2461,7 +2375,6 @@ end;
 
 procedure TfrmChannelAvailabilityManager.RefreshGridsData;
 begin
-//  SetFormTopmostOn(self);
   try
     if __cbxVisibleDays.ItemIndex = -1 then
        __cbxVisibleDays.ItemIndex := 0;
@@ -2495,10 +2408,6 @@ begin
       Screen.Cursor := crDefault;
     end;
   finally
-//    SetFormTopmostOn(self);
-//    sleep(100);
-//    Application.ProcessMessages;
-//    SetFormTopmostOff(self);
     timBringToFront.Enabled := True;
   end;
 end;
@@ -2506,8 +2415,6 @@ end;
 procedure TfrmChannelAvailabilityManager.cbxStopMinOptionsClick(Sender: TObject);
 begin
   TsCheckBox(Sender).Tag := ABS(ORD(TsCheckBox(Sender).Checked));
-  // FreeGridObject;
-  // ShowRatesForSelectedChannelManager;
   HideShowExtraCells;
 end;
 
@@ -2660,8 +2567,6 @@ begin
   cbxRoomTypes.BulkChanging := True;
   try
     cbxRoomTypes.Items.Clear;
-    // cbxRoomTypes.Items.Add('All Room Types');
-  //  cbxRoomTypes.Items.Add(GetTranslatedText('shTx_ChannelAvailabilityManager_AllRoomTypes'));
     sql := 'SELECT rtg.* FROM roomtypegroups rtg WHERE Active AND rtg.id IN (SELECT roomClassId FROM channelclassrelations) ORDER BY orderIndex, TopClass, Code';
 
     ARoomTypeSet := RoomerDataSet.ActivateNewDataset(RoomerDataSet.queryRoomer(sql));
@@ -2675,7 +2580,6 @@ begin
 {$IFDEF DEBUG}
       EndTimer(DrawTime, lblDrawTime);
 {$ENDIF}
-  //    i := cbxRoomTypes.Items.AddObject(format('%s ; %s', [ARoomTypeSet['code'], ARoomTypeSet['description']]), Pointer(ARoomTypeSet.FieldByName('id').AsInteger));
 {$IFDEF DEBUG}
       StartTimer(DrawTime);
 {$ENDIF}
@@ -2737,7 +2641,6 @@ begin
     while (NOT ARoomTypeSet.EOF) do
     begin
       i := AddCheckEditItem(cbxRoomTypes, format('%s - %s', [ARoomTypeSet['code'], ARoomTypeSet['description']]), Pointer(ARoomTypeSet.FieldByName('id').AsInteger));
-  //    i := cbxRoomTypes.Items.AddObject(format('%s ; %s', [ARoomTypeSet['code'], ARoomTypeSet['description']]), Pointer(ARoomTypeSet.FieldByName('id').AsInteger));
       cbxRoomTypes.Checked[i] := True; // (LowerCase(ARoomTypeSet['Code']) = LowerCase(ARoomTypeSet['TopClass']));
       ARoomTypeSet.next;
     end;
@@ -2804,11 +2707,11 @@ begin
       grid.ColCount := FCurrentNumDays + 2;
       iRow := 0;
 {$IFDEF DEBUG}
-//      StartTimer(ReadTime);
+      StartTimer(ReadTime);
 {$ENDIF}
       ASet := RoomerDataSet.ActivateNewDataset(RoomerDataSet.SystemGetAvailabilities(startDate, NUMBER_OF_DAYS_DISPLAYED, cmId, pcId));
 {$IFDEF DEBUG}
-//      EndTimer(ReadTime, lblReadTime);
+      EndTimer(ReadTime, lblReadTime);
 {$ENDIF}
 {$IFDEF DEBUG}
       StartTimer(DrawTime);
@@ -2972,7 +2875,6 @@ begin
       __cbxVisibleDays.Font.Color := clBlack;
       __cbxVisibleDays.SkinData.CustomColor := False;
       __cbxVisibleDays.SkinData.CustomFont := False;
-//      pgcPages.Visible := True;
     end;
   end;
 end;
@@ -3119,7 +3021,6 @@ begin
   {$IFDEF DEBUG}
       EndTimer(ReadTime, lblReadTime);
   {$ENDIF}
-//    BeginProject(AvailSet.RecordCount * glb.RoomTypeGroups.RecordCount);
 
 
       while NOT AvailSet.EOF do
@@ -3146,11 +3047,9 @@ begin
       rateGrid.OnGetCellBorder := nil;
       rateGrid.OnGetCellColor := nil;
 
-        //    startDate := availSet['today'];
       rateGrid.BeginUpdate;
       try
         rateGrid.RowCount := 2;
-        // (AvailSet.RecordCount + (AvailSet.RecordCount * (2 * cbxStopMinOptions.Tag))) + 1;
         rateGrid.ColCount := FCurrentNumDays + 2;
         for i := 1 to FCurrentNumDays + 1 do
           rateGrid.Cells[i, 0] := GetDateLabel(startDate + i - 1);
@@ -3178,7 +3077,6 @@ begin
             i := AddCheckEditItem(ccChannels, AvailSet['channelName'], TObject(AvailSet.FieldByName('chid').AsInteger));
             ccChannels.Checked[i] := True;
           end;
-          // inc(iRow); rateGrid.RowCount := iRow + 3;
 
           for i := 1 to FCurrentNumDays + 1 do
           begin
@@ -3187,8 +3085,7 @@ begin
           end;
 
           chId := AvailSet['chid'];
-  //        if chId = -1 then
-  //           chId := -2;
+
           iRateRow := 0;
           RateSet.First;
           while (NOT RateSet.EOF) do
@@ -3198,7 +3095,6 @@ begin
               isCurrentDirectConnection := AvailSet['directConnection'];
               if (iLastRoomClassId <> RateSet['roomClassId']) then
               begin
-//                ForwardProject;
                 inc(iRow);
                 rateGrid.RowCount := iRow + 3;
                 iRateRow := iRow;
@@ -3365,12 +3261,10 @@ begin
         rateGrid.OnGetAlignment := rateGridGetAlignment;
         rateGrid.OnGetCellBorder := rateGridGetCellBorder;
         rateGrid.OnGetCellColor := rateGridGetCellColor;
-  //      rateGrid.Update;
 
   {$IFDEF DEBUG}
         StartTimer(DrawTime);
   {$ENDIF}
-  //      LoadRoomTypeGroupsForBulk;
   {$IFDEF DEBUG}
         EndTimer(DrawTime, lblDrawTime);
   {$ENDIF}
@@ -3390,7 +3284,6 @@ begin
 
     ShowHideExtraOptions;
   finally
-//    EndProject;
     pgcPages.Visible := True;
   end;
 end;
@@ -3553,7 +3446,6 @@ begin
       value := rateGrid.Cells[iCol, iRow];
 
     if (IsIdCheckedInCheckListCombo(cbxChannel, PriceData.channelId)) then
-//    if (cbxChannel.Items.Objects[cbxChannel.ItemIndex] = NIL) OR (cbxChannel.Items.Objects[cbxChannel.ItemIndex] = Pointer(PriceData.channelId)) then
     begin
       if InPlaceEditing OR ((trunc(PriceData.date) >= trunc(dtBulkFrom.date)) and (trunc(PriceData.FDate) <= trunc(dtBulkTo.date)) AND
         (IsIdCheckedInCheckListCombo(cbxRoomTypes, PriceData.roomTypeGroupId)) AND
@@ -3769,18 +3661,7 @@ end;
 
 procedure TfrmChannelAvailabilityManager.EmptyBulkOperation;
 begin
-  // dtBulkFrom.Date := now;
-  // dtBulkTo.Date := now;
-  // cbxRoomTypes.ItemIndex := 0;
-  // cbxPricePlans.ItemIndex := 0;
   edtAvail.Text := '';
-  // cbMon.Checked := True;
-  // cbTue.Checked := True;
-  // cbWen.Checked := True;
-  // cbThu.Checked := True;
-  // cbFri.Checked := True;
-  // cbSat.Checked := True;
-  // cbSun.Checked := True;
 end;
 
 procedure TfrmChannelAvailabilityManager.InitializeBulkOperation;
@@ -3854,9 +3735,6 @@ end;
 
 procedure TfrmChannelAvailabilityManager.ShowHideExtraOptions;
 begin
-  lblMaximumStay.Visible := anyDirectConnection;
-  edtMaximumStay.Visible := anyDirectConnection;
-
   __cbxSingleUsePriceActive.Visible := anyDirectConnection;
   edtSingleUsePrice.Visible := anyDirectConnection;
   lblSingleUsePrice.Visible := anyDirectConnection;
@@ -3874,34 +3752,12 @@ begin
   if pnlBulkChanges.Width = sPanel4.Width then
   begin
 
-
-//    cbxBasedOnArrival.Visible := anyDirectConnection;
-//    cbxStayThrough.Visible := anyDirectConnection;
-//    lblStayThrough.Visible := anyDirectConnection;
-//    lblBasedOnArrival.Visible := anyDirectConnection;
-
-    lblMaximumStay.Visible := anyDirectConnection;
-    edtMaximumStay.Visible := anyDirectConnection;
-
-//    btnCloseOnArrival_Off.Visible := anyDirectConnection;
-//    btnCloseOnArrival_On.Visible := anyDirectConnection;
-//    btnCloseOnArrival_Clear.Visible := anyDirectConnection;
-//    cbxClosedOnArrival.Visible := anyDirectConnection;
-//
-//    btnCloseOnDeparture_Off.Visible := anyDirectConnection;
-//    btnCloseOnDeparture_On.Visible := anyDirectConnection;
-//    btnCloseOnDeparture_Clear.Visible := anyDirectConnection;
-//    cbxClosedOnDeparture.Visible := anyDirectConnection;
-
     __cbxSingleUsePriceActive.Visible := anyDirectConnection;
     edtSingleUsePrice.Visible := anyDirectConnection;
     lblSingleUsePrice.Visible := anyDirectConnection;
 
     cbxExtraRestrictions.Visible := true; // anyDirectConnection;  Made active on 2016-01-14
-//    if anyDirectConnection then
-      pnlRestrictions.Height := 169;
-//    else
-//      pnlRestrictions.Height := 145;
+    pnlRestrictions.Height := 169;
 
     cbxBasedOnArrival.enabled := __cbxMinimumStayActive.Checked;
     cbxStayThrough.enabled := __cbxMinimumStayActive.Checked;
@@ -3909,11 +3765,6 @@ begin
     lblBulkUpdate.Visible := true;
     edtMinStay.Visible := pgcPages.ActivePageIndex = 1;
     lblMinStay.Visible := edtMinStay.Visible;
-
-//    cbxStopSell.Visible := edtMinStay.Visible;
-//    btnStopSell_Off.Visible := anyDirectConnection;
-//    btnStopSell_On.Visible := anyDirectConnection;
-//    btnStopSell_Clear.Visible := anyDirectConnection;
 
     if pgcPages.ActivePageIndex = 1 then
     begin
@@ -4048,9 +3899,7 @@ procedure TfrmChannelAvailabilityManager.sButton3Click(Sender: TObject);
 var
   cmId: integer;
 begin
-  // if MessageDLG('NOTE: This will initiate removal of all current rates for the selected channel manager.'#13#10#13#10'Afterwards rates will be re-read for all classes.'#13#10#13#10' Continue?', mtConfirmation, [mbYes, mbNo], 0) = mrYes then
   if MessageDLG(GetTranslatedText('shTx_ChannelAvailabilityManager_ConfirmRemoveRates'), mtWarning, [mbYes, mbNo], 0) = mrYes then
-  // if MessageDLG(, mtConfirmation, [mbYes, mbNo], 0) = mrYes then
   begin
     cmId := TChannelManagerValue(cbxChannelManagers.Items.Objects[cbxChannelManagers.ItemIndex]).FId;
     RoomerDataSet.DoCommand(format('DELETE FROM channelrates WHERE channelManager=%d', [cmId]));
@@ -4282,10 +4131,6 @@ begin
         else if isSingleUsePriceRow(iRow) then
           rateGrid.RowHeights[iRow] := rateGrid.DefaultRowHeight * ABS(ORD(cbxExtraRestrictions.Checked)) * iHeight;
 
-//        if PriceData.roomTypeGroupId >= 0 then
-//        begin
-//          rateGrid.RowHeights[iRow] := rateGrid.DefaultRowHeight * iHeight;
-//        end;
     end;
   end;
   finally
@@ -4422,11 +4267,6 @@ begin
             rateGrid.SetCheckBoxState(ACol, i, cbValue);
           end;
 
-//          if isAnyCheckBoxRow(ARow) then
-//            rateGrid.SetCheckBoxState(ACol, i, cbValue);
-
-//          CorrectMasterRateLinkedSubRateCells(DestPriceData, ACol, i);
-
         end;
       end;
     end;
@@ -4448,8 +4288,6 @@ begin
   begin
     if (StrToFloatDef(value, -999999999) = -999999999) OR (_StrToFloat(value) < 0) then
     begin
-      // grid.InvalidEntryTitle := 'Incorrect availability';
-      // grid.InvalidEntryText := 'Please enter a valid availability value';
       grid.InvalidEntryTitle := GetTranslatedText('shTx_ChannelAvailabilityManager_IncorrectAvailability');
       grid.InvalidEntryText := GetTranslatedText('shTx_ChannelAvailabilityManager_EnterValidValue');
       grid.InvalidEntryIcon := ieError;
@@ -4517,7 +4355,6 @@ begin
       end;
     finally
       rateGrid.EndUpdate;
-//      rateGrid.Invalidate;
     end;
   end;
 end;
@@ -4543,10 +4380,6 @@ begin
       PriceData.LOSArrivalDateBased := cbState;
 
     CorrectMasterRateLinkedCells(PriceData, ACol, ARow);
-    // else
-    // if isSingleUsePriceRow(ARow) then
-    // TPriceData(rateGrid.Objects[ACol, iPriceRow]).SingleUsePrice := cbState;
-//    rateGrid.Invalidate;
   end;
 end;
 
@@ -4847,11 +4680,6 @@ begin
       AFont.Color := frmMain.sSkinManager1.GetGlobalColor;
     end;
   end;
-  // if isAnyCheckBoxRow(ARow) then
-  // begin
-  // ABrush.Color := clWhite;
-  // ABrush.Style := bsSolid;
-  // end;
 end;
 
 procedure TfrmChannelAvailabilityManager.rateGridGetEditorType(Sender: TObject; ACol, ARow: integer; var AEditor: TEditorType);
@@ -4925,12 +4753,6 @@ begin
           hintstr := hintstr + getExtraLine + format(ACTIVE_FLAG_RESTRICTION, ['Closed on departure']);
         if PriceData.LOSArrivalDateBased then
           hintstr := hintstr + getExtraLine + format(ACTIVE_FLAG_RESTRICTION, ['Length of stay arrival date based']);
-//        if trunc(PriceData.SingleUsePrice) > 0 then
-//        begin
-//          s := Trim(FloatToStrF(PriceData.SingleUsePrice, ffNumber, 12, NumDecimals(PriceData.rateRoundingType)));
-//          hintstr := hintstr + getExtraLine + format(ACTIVE_RATE_RESTRICTION, ['Single-use price', s]);
-//        end;
-
         hintstr := hintstr + BODY_END;
       end;
     end;
@@ -5177,25 +4999,6 @@ constructor TPriceData.Create(_Id: integer; const roomtypeGroupCode, _roomTypeTo
   _connectLOSToMasterRate : Boolean
   );
 begin
-
-  // priceData := TPriceData.Create(RateSet['id'],
-  // RateSet['rtgCode'],
-  // RateSet['date'],
-  // AvailSet['rateRoundingType'],
-  // AvailSet['chId'],
-  // RateSet['roomClassId'],
-  // 0,
-  // 0,
-  // 0,
-  // cmId,
-  // RateSet['price'],
-  // 0.00,
-  // 0.00,
-  // false,
-  // RateSet['stop'],
-  // RateSet['minstay']
-  // );
-
   ForcingUpdate := false;
   FOldValue := 0.00;
 
