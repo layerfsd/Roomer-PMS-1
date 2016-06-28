@@ -267,7 +267,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           Left = 114
           Top = 137
           Width = 251
-          Height = 17
+          Height = 22
           Margins.Left = 2
           Margins.Top = 2
           Margins.Right = 2
@@ -1961,8 +1961,6 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
         SkinData.CustomColor = True
         SkinData.CustomFont = True
         SkinData.SkinSection = 'PANEL'
-        ExplicitLeft = 3
-        ExplicitTop = 524
         object lblVisibleDays: TsLabel
           AlignWithMargins = True
           Left = 6
