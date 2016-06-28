@@ -39,7 +39,7 @@ object FrmRBEContainer: TFrmRBEContainer
         Top = 0
         Width = 183
         Height = 591
-        ActivePage = sTabSheet3
+        ActivePage = sTabSheet4
         Align = alLeft
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
@@ -53,6 +53,8 @@ object FrmRBEContainer: TFrmRBEContainer
         SkinData.SkinSection = 'PAGECONTROL'
         object sTabSheet1: TsTabSheet
           Caption = 'Rates & Availability'
+          SkinData.CustomColor = False
+          SkinData.CustomFont = False
           ExplicitLeft = 0
           ExplicitTop = 0
           ExplicitWidth = 0
@@ -106,6 +108,8 @@ object FrmRBEContainer: TFrmRBEContainer
         end
         object sTabSheet2: TsTabSheet
           Caption = 'Rates'
+          SkinData.CustomColor = False
+          SkinData.CustomFont = False
           ExplicitLeft = 0
           ExplicitTop = 0
           ExplicitWidth = 0
@@ -157,10 +161,8 @@ object FrmRBEContainer: TFrmRBEContainer
         end
         object sTabSheet3: TsTabSheet
           Caption = 'Tables'
-          ExplicitLeft = 0
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
+          SkinData.CustomColor = False
+          SkinData.CustomFont = False
           object sLabelFX3: TsLabelFX
             Left = 1
             Top = 114
@@ -177,9 +179,9 @@ object FrmRBEContainer: TFrmRBEContainer
             Shadow.OffsetKeeper.RightBottom = 3
           end
           object sLabelFX2: TsLabelFX
-            Left = -1
-            Top = -1
-            Width = 53
+            Left = 0
+            Top = 0
+            Width = 148
             Height = 25
             Align = alTop
             Alignment = taCenter
@@ -193,6 +195,9 @@ object FrmRBEContainer: TFrmRBEContainer
             Angle = 0
             Shadow.OffsetKeeper.LeftTop = -1
             Shadow.OffsetKeeper.RightBottom = 3
+            ExplicitLeft = -1
+            ExplicitTop = -1
+            ExplicitWidth = 53
           end
           object sLabelFX4: TsLabelFX
             Left = 1
@@ -286,10 +291,8 @@ object FrmRBEContainer: TFrmRBEContainer
         end
         object sTabSheet4: TsTabSheet
           Caption = 'Templates'
-          ExplicitLeft = 0
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
+          SkinData.CustomColor = False
+          SkinData.CustomFont = False
           object sLabelFX6: TsLabelFX
             Left = 3
             Top = 114
@@ -306,9 +309,9 @@ object FrmRBEContainer: TFrmRBEContainer
             Shadow.OffsetKeeper.RightBottom = 3
           end
           object sLabelFX7: TsLabelFX
-            Left = -1
-            Top = -1
-            Width = 82
+            Left = 0
+            Top = 0
+            Width = 148
             Height = 25
             Align = alTop
             Alignment = taCenter
@@ -322,6 +325,9 @@ object FrmRBEContainer: TFrmRBEContainer
             Angle = 0
             Shadow.OffsetKeeper.LeftTop = -1
             Shadow.OffsetKeeper.RightBottom = 3
+            ExplicitLeft = -1
+            ExplicitTop = -1
+            ExplicitWidth = 82
           end
           object btnEmailTemplates: TsButton
             Left = 48
@@ -337,14 +343,12 @@ object FrmRBEContainer: TFrmRBEContainer
         end
         object sTabSheet5: TsTabSheet
           Caption = 'Settings'
-          ExplicitLeft = 0
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
+          SkinData.CustomColor = False
+          SkinData.CustomFont = False
           object sLabelFX12: TsLabelFX
-            Left = -1
-            Top = -1
-            Width = 64
+            Left = 0
+            Top = 0
+            Width = 148
             Height = 25
             Align = alTop
             Alignment = taCenter
@@ -358,6 +362,9 @@ object FrmRBEContainer: TFrmRBEContainer
             Angle = 0
             Shadow.OffsetKeeper.LeftTop = -1
             Shadow.OffsetKeeper.RightBottom = 3
+            ExplicitLeft = -1
+            ExplicitTop = -1
+            ExplicitWidth = 64
           end
           object sLabelFX13: TsLabelFX
             Left = 3
@@ -388,6 +395,8 @@ object FrmRBEContainer: TFrmRBEContainer
         end
         object sTabSheet6: TsTabSheet
           Caption = 'Reports'
+          SkinData.CustomColor = False
+          SkinData.CustomFont = False
           ExplicitLeft = 0
           ExplicitTop = 0
           ExplicitWidth = 0
@@ -473,9 +482,9 @@ object FrmRBEContainer: TFrmRBEContainer
         TabOrder = 2
         SkinData.SkinSection = 'PANEL'
         object lblHeader: TsLabelFX
-          Left = -1
-          Top = 24
-          Width = 10
+          Left = 0
+          Top = 25
+          Width = 999
           Height = 28
           Align = alTop
           Alignment = taCenter
@@ -488,6 +497,9 @@ object FrmRBEContainer: TFrmRBEContainer
           Angle = 0
           Shadow.OffsetKeeper.LeftTop = -1
           Shadow.OffsetKeeper.RightBottom = 3
+          ExplicitLeft = -1
+          ExplicitTop = 24
+          ExplicitWidth = 10
         end
         object tabWindows: TsPageControl
           Left = 0
@@ -538,7 +550,6 @@ object FrmRBEContainer: TFrmRBEContainer
         Anchors = [akTop, akRight]
         Caption = 'Log out'
         ParentFont = False
-        OnClick = lblLogoutClick
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -13

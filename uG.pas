@@ -573,7 +573,7 @@ function LeftAlign(s : string; iLen : integer) : string;
 function RightAligned(s : string; iNum : integer) : string;
 
 function ResObjToBorder(Status : string; ascIndex, descIndex : integer; var BorderColor : TColor; var Left, Top, Right,Bottom : integer) : boolean;
-function RoomIndex(aGrid : TAdvStringGrid; sRoom : string; var lastRow : integer; sRoomType : String = ''; AddIfNeeded : boolean = false) : integer;
+function RoomIndex(aGrid : TAdvStringGrid; const sRoom : string; var lastRow : integer; const sRoomType : String = ''; AddIfNeeded : boolean = false) : integer;
 procedure FillTheGrid(Grid : TADVStringGrid; sWith : string; iStartCol, iStartRow : integer);
 procedure EmptyStringGrid(Grid : TADVStringGrid);
 function GridFloatValueFromString(aValue : String) : double;
@@ -2550,7 +2550,12 @@ begin
   Grid.FixedRows := 1;
 end;
 
-function RoomIndex(aGrid : TAdvStringGrid; sRoom : string; var lastRow : integer; sRoomType : String = ''; AddIfNeeded : boolean = false) : integer;
+/// <summary>
+///   Locate the row in the grid where sRoom is located, determined by the roomnumber in column 0 and return the rownumber. <br />
+///  If the room is not found and AddIfNEeded is true than the lastrow of the grid will be set to room and roomtype, <br />
+///  if a new room is added to the grid, lastrow will be increased
+/// </summary>
+function RoomIndex(aGrid : TAdvStringGrid; const sRoom : string; var lastRow : integer; const sRoomType : String = ''; AddIfNeeded : boolean = false) : integer;
 var
   i : integer;
 begin

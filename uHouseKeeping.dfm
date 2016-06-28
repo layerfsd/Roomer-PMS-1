@@ -80,7 +80,7 @@ object frmHouseKeeping: TfrmHouseKeeping
         Height = 21
         AutoSize = False
         Color = clWhite
-        EditMask = '!99/99/9999;1; '
+        EditMask = '!9999/99/99;1; '
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clBlack
         Font.Height = -11
@@ -89,7 +89,7 @@ object frmHouseKeeping: TfrmHouseKeeping
         MaxLength = 10
         ParentFont = False
         TabOrder = 0
-        Text = '  -  -    '
+        Text = '    -  -  '
         CheckOnExit = True
         SkinData.SkinSection = 'EDIT'
         GlyphMode.Blend = 0
@@ -123,6 +123,12 @@ object frmHouseKeeping: TfrmHouseKeeping
     SkinData.SkinSection = 'PAGECONTROL'
     object sTabSheet1: TsTabSheet
       Caption = 'List'
+      SkinData.CustomColor = False
+      SkinData.CustomFont = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object grCross: TAdvStringGrid
         Left = 0
         Top = 33
@@ -230,7 +236,7 @@ object frmHouseKeeping: TfrmHouseKeeping
         SearchFooter.HintHighlight = 'Highlight occurences'
         SearchFooter.MatchCaseCaption = 'Match case'
         SortSettings.DefaultFormat = ssAutomatic
-        Version = '7.9.1.1'
+        Version = '7.9.1.0'
         RowHeights = (
           22
           22
@@ -291,6 +297,8 @@ object frmHouseKeeping: TfrmHouseKeeping
     end
     object tabActions: TsTabSheet
       Caption = 'Detailed'
+      SkinData.CustomColor = False
+      SkinData.CustomFont = False
       ExplicitLeft = 0
       ExplicitTop = 0
       ExplicitWidth = 0

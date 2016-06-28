@@ -22,6 +22,7 @@ uses
   , ud
   , cmpRoomerDataSet
   , cmpRoomerConnection
+  , Generics.Collections
   ;
 
 type
@@ -75,6 +76,8 @@ type
 
   { A single Room - can constist of persons rooms }
 
+  TSingleReservations = class; // forward
+
   TRoomObject = class(TObject)
   private
     FRoomRes : integer;
@@ -101,7 +104,7 @@ type
 
     FArrival, FDeparture : TDate;
 
-    FGuests : TList;
+    FGuests : TList<TGuestObject>;
 
     FPMInfo : string;
     FHiddenInfo : string;
@@ -119,14 +122,18 @@ type
     FOngoingTaxes: Double;
     FInvoiceIndex: Integer;
     FBlockMoveReason: String;
+    FReservationObject: TSingleReservations;
 
     function GetGuestCount : integer;
-    function GetGuest(iIndex : integer) : TGuestObject;
   public
-    constructor Create;
+    constructor Create(aReservationObject: TSingleReservations);
     destructor Destroy; override;
     procedure Clear;
-    property Guests[iIndex : integer] : TGuestObject read GetGuest;
+
+    function FirstGuestName: string;
+    property Guests: TList<TGuestObject> read FGuests;
+    property ReservationObject: TSingleReservations read FReservationObject write FReservationObject;
+    function IsUnAssigned: boolean;
 
   published
     property RoomRes : integer read FRoomRes write FRoomRes;
@@ -158,7 +165,6 @@ type
     property HiddenInfo : string read FHiddenInfo write FHiddenInfo;
 
     property GuestCount : integer read GetGuestCount;
-    property GuestsList : TList read FGuests write FGuests;
 
     property Meeting : integer read FMeeting write FMeeting;
     property TotalNoRent : double read FTotalNorent write FTotalNoRent;
@@ -177,13 +183,18 @@ type
     property InvoiceIndex : Integer read FInvoiceIndex write FInvoiceIndex;
   end;
 
+  TRoomList = class(TList<TRoomObject>)
+  public
+    function FirstGuestName: string;
+  end;
+
   { A single reservation - can constist of multiple rooms }
 
   TSingleReservations = class(TObject)
   private
     FReservation : integer;
     FResStatus : TReservationStatus;
-    FRooms : TList;
+    FRooms : TRoomList;
 
     FTel1, FTel2, FFax, FStaff, FCustomer : string;
 
@@ -204,12 +215,13 @@ type
     FOutOfOrderBlocking: Boolean;
 
     function GetRoomCount : integer;
-    function GetRoom(iIndex : integer) : TRoomObject;
   public
     constructor Create;
     destructor Destroy; override;
+
+    function NamePlusGuestName: string;
     procedure Clear;
-    property Rooms[iIndex : integer] : TRoomObject read GetRoom;
+    property Rooms: TRoomList read FRooms;
 
   published
     property name : string read FName write FName;
@@ -238,6 +250,24 @@ type
     property OutOfOrderBlocking : Boolean read FOutOfOrderBlocking write FOutOfOrderBlocking;
   end;
 
+  TRoomFilterFunction = reference to function (aRoom: TRoomObject): boolean;
+
+  TAllRoomsEnumerator = class(TEnumerator<TRoomObject>)
+  private
+    FReservationsList: TList<TSingleReservations>;
+    FReservations: TEnumerator<TSingleReservations>;
+    FRooms: TEnumerator<TRoomObject>;
+    FFilterFunction: TRoomFilterFunction;
+    function MoveNextRoom: Boolean;
+  public
+    constructor Create(aReservationsList: TList<TSingleReservations>); overload;
+    constructor Create(aReservationsList: TList<TSingleReservations>; aFilterFunction: TRoomFilterFunction ); overload;
+    destructor Destroy; override;
+    function DoGetCurrent: TRoomObject; override;
+    function DoMoveNext: Boolean; override;
+    function GetEnumerator: TAllRoomsEnumerator; // allows for "for r in TAllRoomsEnumerator.create(...)" construction
+  end;
+
   { All Reservations on a specified daterange - can constist of multiple Reservations }
   TReservationsModel = class(TObject)
   private
@@ -245,16 +275,20 @@ type
     FWebRequest : Boolean;
     FFromDate : TDate;
     FToDate : TDate;
-    FReservationList : TList;
+    FReservationList : TList<TSingleReservations>;
 
-    function GetSingleReservation(iIndex : integer) : TSingleReservations;
+//    function GetSingleReservation(iIndex : integer) : TSingleReservations;
     function GetReservationCount : integer;
   public
     constructor Create;
     destructor Destroy; override;
     procedure Clear;
     procedure Execute(_FromDate, _ToDate : TDate; _ReservationStatus : TReservationStatus);
-    property Reservations[iIndex : integer] : TSingleReservations read GetSingleReservation;
+
+    /// <summary>Enumerate all rooms from all reservations </summary>
+    function AllRoomsEnumerator(aFilter: TRoomFilterFunction = nil): TAllRoomsEnumerator;
+
+    property Reservations: TList<TSingleReservations> read FReservationList;
   published
     property ReservationStatus : TReservationStatus read FReservationStatus write FReservationStatus;
 
@@ -263,7 +297,7 @@ type
     property FromDate : TDate read FFromDate write FFromDate;
     property ToDate : TDate read FToDate write FToDate;
 
-    property ReservationList : TList read FReservationList write FReservationList;
+//    property ReservationList : TList<TSingleReservations> read FReservationList write FReservationList;
     property ReservationCount : integer read GetReservationCount;
   end;
 
@@ -311,7 +345,7 @@ end;
 // -----
 
 { TRoomObject }
-constructor TRoomObject.Create;
+constructor TRoomObject.Create(aReservationObject: TSingleReservations);
 begin
   inherited Create;
   FRoomRes := 0;
@@ -319,10 +353,11 @@ begin
   HiddenInfo := '';
   FCodedColor := -1;
   FColorId := -1;
-  FGuests := TList.Create;
+  FGuests := TList<TGuestObject>.Create;
   FOngoingSale := 0.00;
   FOngoingRent := 0.00;
   FOngoingTaxes := 0.00;
+  FReservationObject := aReservationObject;
 end;
 
 destructor TRoomObject.Destroy;
@@ -332,13 +367,21 @@ begin
   inherited Destroy;
 end;
 
+function TRoomObject.FirstGuestName: string;
+begin
+  if GuestCount > 0 then
+    Result := Guests.First.GuestName
+  else
+    Result := '';
+end;
+
 procedure TRoomObject.Clear;
 var
   i : integer;
 begin
   for i := FGuests.count - 1 downto 0 do
   begin
-    TGuestObject(FGuests[i]).free;
+    FGuests[i].free;
     FGuests.delete(i);
   end;
 end;
@@ -348,12 +391,11 @@ begin
   result := FGuests.count;
 end;
 
-function TRoomObject.GetGuest(iIndex : integer) : TGuestObject;
-begin
-  result := TGuestObject(FGuests[iIndex]);
-end;
 
-// ----
+function TRoomObject.IsUnAssigned: boolean;
+begin
+  Result := RoomNumber.StartsWith('<');
+end;
 
 { TSingleReservations }
 
@@ -363,7 +405,7 @@ begin
   PMInfo := '';
   HiddenInfo := '';
   BookingReference := '';
-  FRooms := TList.Create;
+  FRooms := TRoomList.Create;
 end;
 
 destructor TSingleReservations.Destroy;
@@ -389,9 +431,15 @@ begin
   result := FRooms.count;
 end;
 
-function TSingleReservations.GetRoom(iIndex : integer) : TRoomObject;
+function TSingleReservations.NamePlusGuestName: string;
+var
+  lGuest: string;
 begin
-  result := TRoomObject(FRooms[iIndex]);
+  lGuest := Rooms.FirstGuestName;
+  if lGuest.IsEmpty then
+    Result := name
+  else
+    Result := name + ' - ' + lGuest;
 end;
 
 { TReservationsModel }
@@ -402,7 +450,7 @@ begin
   FReservationStatus := rsUnKnown;
   FFromDate := Now;
   FToDate := Now;
-  FReservationList := TList.Create;
+  FReservationList := TList<TSingleReservations>.Create;
 end;
 
 destructor TReservationsModel.Destroy;
@@ -410,6 +458,11 @@ begin
   Clear;
   FReservationList.free;
   inherited Destroy;
+end;
+
+function TReservationsModel.AllRoomsEnumerator(aFilter: TRoomFilterFunction): TAllRoomsEnumerator;
+begin
+  Result := TAllRoomsEnumerator.Create(FReservationList, aFilter);
 end;
 
 procedure TReservationsModel.Clear;
@@ -423,10 +476,10 @@ begin
   end;
 end;
 
-function TReservationsModel.GetSingleReservation(iIndex : integer) : TSingleReservations;
-begin
-  result := TSingleReservations(FReservationList[iIndex]);
-end;
+//function TReservationsModel.GetSingleReservation(iIndex : integer) : TSingleReservations;
+//begin
+//  result := FReservationList[iIndex];
+//end;
 
 procedure TReservationsModel.Execute(_FromDate, _ToDate : TDate; _ReservationStatus : TReservationStatus);
 var
@@ -543,7 +596,7 @@ begin
             iLastRoomReservation := FieldByName('RoomReservation').asInteger;
             sLastDate := '';
 
-            RoomObject := TRoomObject.Create;
+            RoomObject := TRoomObject.Create(SingleReservations);
             RoomObject.FRoomRes := FieldByName('RoomReservation').asInteger;
             RoomObject.FReservation := FieldByName('Reservation').asInteger;
             RoomObject.FArrival := _DBDateToDate(Trim(FieldByName('RoomArrival').asString));
@@ -721,6 +774,77 @@ begin
     result := FReservationList.count;
   except
   end;
+end;
+
+{ TRoomList }
+
+function TRoomList.FirstGuestName: string;
+begin
+  if Count > 0 then
+    Result := First.FirstGuestName
+  else
+    Result := '';
+end;
+
+{ TAllRoomsEnumerator }
+
+constructor TAllRoomsEnumerator.Create(aReservationsList: TList<TSingleReservations>);
+begin
+  FReservationsList := aReservationsList;
+  FReservations := aReservationsList.GetEnumerator;
+  if FReservations.MoveNext then // set to first reservation;
+    FRooms := FReservations.Current.Rooms.GetEnumerator
+  else
+    FRooms := nil;
+end;
+
+constructor TAllRoomsEnumerator.Create(aReservationsList: TList<TSingleReservations>; aFilterFunction: TRoomFilterFunction);
+begin
+  Create(aReservationsList);
+  FFilterFunction := aFilterFunction;
+end;
+
+destructor TAllRoomsEnumerator.Destroy;
+begin
+  FRooms.Free;
+  FReservations.Free;
+  inherited;
+end;
+
+function TAllRoomsEnumerator.DoGetCurrent: TRoomObject;
+begin
+  Result := FRooms.Current;
+end;
+
+function TAllRoomsEnumerator.MoveNextRoom: Boolean;
+begin
+  Result := False;
+  while assigned(FRooms) and FRooms.MoveNext do
+    if not assigned(FFilterFunction) or FFilterFunction(FRooms.Current) then
+    begin
+      Result := True;
+      Break;
+    end;
+end;
+
+function TAllRoomsEnumerator.DoMoveNext: Boolean;
+begin
+  Result := MoveNextRoom;
+
+  if not result then
+    while FReservations.MoveNext do
+    begin
+      FRooms.Free;
+      FRooms := FReservations.Current.Rooms.GetEnumerator;
+      Result := MoveNextRoom;
+      if result then
+        Break;
+    end;
+end;
+
+function TAllRoomsEnumerator.GetEnumerator: TAllRoomsEnumerator;
+begin
+  Result := self;
 end;
 
 end.
