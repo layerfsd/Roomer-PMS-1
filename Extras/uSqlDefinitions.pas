@@ -6016,7 +6016,7 @@ function GetListOfRoomReservationsFromToDate : string;
 
 function select_GuestsSearch_RunQuery2(getAll : boolean; DateSelMedhod : integer) : string;
 function Select_Invoice_LoadInvoice3(iRoomReservation : integer) : string;
-function Select_Invoice_LoadInvoice3_WithInvoiceIndex(iRoomReservation, iReservation, InvoiceIndex : integer; Customer : String) : string;
+function Select_Invoice_LoadInvoice3_WithInvoiceIndex(iRoomReservation, iReservation, InvoiceIndex : integer; Customer : String; FakeGroup : Boolean) : string;
 function select_InvoiceList_BitBtn2Click(Medhod : integer) : string;
 function select_Main_refreshGuestList : string;
 function select_NationalReport3_getRoomInfo(location : string) : string;
@@ -6227,7 +6227,7 @@ begin
   result := s;
 end;
 
-function Select_Invoice_LoadInvoice3_WithInvoiceIndex(iRoomReservation, iReservation, InvoiceIndex : integer; Customer : String) : string;
+function Select_Invoice_LoadInvoice3_WithInvoiceIndex(iRoomReservation, iReservation, InvoiceIndex : integer; Customer : String; FakeGroup : Boolean) : string;
 var
   s : string;
 begin
@@ -6244,7 +6244,6 @@ begin
          ' UNION ALL ' +
          ' SELECT CustomerEmail FROM reservations WHERE CustomerEmail <>'''' AND Reservation=%d ' +
          ' ) xxx) AS ContactEmail,';
-//  s := s+' (SELECT ContactEmail FROM reservations r WHERE r.Reservation=rr.Reservation) AS ContactEmail, '+#10;
   s := s+' (SELECT Email FROM persons p WHERE p.RoomReservation=rr.RoomReservation AND p.MainName=1 LIMIT 1) AS GuestEmail, '+#10;
 
   s := s+' r.Description AS RoomDescription, '+#10;
@@ -6252,7 +6251,6 @@ begin
 
 
 
-//  s := s+' (SELECT COUNT(id) FROM persons WHERE %s=roomreservations.%s) AS numTaxGuests '+#10;
   if iRoomReservation = 0 then   //FRoomReservation = 0  // GroupInvoice
   begin
     s := format(s, ['Reservation', iReservation, _db(Customer), iReservation, iReservation]);
@@ -6272,14 +6270,15 @@ begin
   s := s+'  WHERE ' +#10;
   if iRoomReservation = 0 then   //FRoomReservation = 0  // GroupInvoice
   begin
-    S := Format(S, ['Reservation','Reservation']) + ' Reservation=%d AND InvoiceIndex=' + inttostr(InvoiceIndex) + ' ' +#10;    // inttostr(publicReservation) + ' '+chr(10);
+    s := Format(s, ['Reservation','Reservation']) + ' Reservation=%d AND InvoiceIndex=' + inttostr(InvoiceIndex) + ' ' +#10;    // inttostr(publicReservation) + ' '+chr(10);
+    if NOT FakeGroup then
+      s := s + ' AND rr.GroupAccount=1 ';
   end else
   begin
-//    S := Format(S, ['RoomReservation', 'RoomReservation']) + ' RoomReservation=%d AND InvoiceIndex= ' + inttostr(InvoiceIndex) + ' ' +#10  //inttostr(FRoomReservation)+chr(10);
     S := Format(S, ['RoomReservation', 'RoomReservation']) +
          ' RoomReservation IN (SELECT rd.RoomReservation ' +
          ' FROM roomsdate rd JOIN roomreservations rr ON rr.RoomReservation=rd.RoomReservation ' +
-         ' WHERE (PaidBy=%d OR (rd.RoomReservation=%d AND PaidBy=0)) ' +
+         ' WHERE (rr.GroupAccount = 0 AND (PaidBy=%d OR (rd.RoomReservation=%d AND PaidBy=0))) ' +
          ' AND rr.InvoiceIndex = ' + inttostr(InvoiceIndex) + ') ' + #13;
   end;
   result := s;

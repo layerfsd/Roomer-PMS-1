@@ -3995,7 +3995,7 @@ begin
 //      sPanel4.Visible := false;
     end;
 
-    zS := Select_Invoice_LoadInvoice3_WithInvoiceIndex(FRoomReservation, publicReservation, FInvoiceIndex, edtCustomer.Text);
+    zS := Select_Invoice_LoadInvoice3_WithInvoiceIndex(FRoomReservation, publicReservation, FInvoiceIndex, edtCustomer.Text, zFakeGroup);
     if FRoomReservation = 0 then // GroupInvoice
     begin
       zS := format(zS, [publicReservation]);
