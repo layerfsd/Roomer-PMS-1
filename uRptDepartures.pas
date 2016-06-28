@@ -10,7 +10,8 @@ uses
   dxSkinDarkSide, dxSkinTheAsphaltWorld, dxSkinsDefaultPainters, dxSkinsdxStatusBarPainter, cxStyles,
   dxSkinscxPCPainter, cxCustomData, cxFilter, cxData, cxDataStorage, cxEdit, cxNavigator, cxDBData, cxGridLevel,
   cxGridCustomTableView, cxGridTableView, cxGridBandedTableView, cxGridDBBandedTableView, cxGridCustomView, cxGrid,
-  dxStatusBar, cxGridDBTableView, Vcl.Grids, Vcl.DBGrids, Vcl.Menus;
+  dxStatusBar, cxGridDBTableView, Vcl.Grids, Vcl.DBGrids, Vcl.Menus, _glob,
+  cxCurrencyEdit;
 
 type
   TfrmDeparturesReport = class(TForm)
@@ -28,45 +29,41 @@ type
     pnlExportButtons: TsPanel;
     btnExcel: TsButton;
     dxStatusBar: TdxStatusBar;
-    grDeparturessList: TcxGrid;
-    lvDeparturesListLevel1: TcxGridLevel;
-    grDeparturessListDBTableView1: TcxGridDBTableView;
-    kbmDeparturesListfldRoom: TStringField;
-    kbmDeparturesListfldRoomtype: TStringField;
-    kbmDeparturesListfldRoomerReservationID: TIntegerField;
-    kbmDeparturesListfldGuestName: TStringField;
-    kbmDeparturesListfldCompanyCode: TStringField;
-    kbmDeparturesListfldArrival: TDateField;
-    kbmDeparturesListfldDeparture: TDateField;
-    kbmDeparturesListfldNumGuests: TIntegerField;
     cxStyleRepository1: TcxStyleRepository;
     cxStyle1: TcxStyle;
-    kbmDeparturesListAverageRoomRate: TFloatField;
-    kbmDeparturesListExpectedTimeOfArrival: TStringField;
     btnCheckIn: TsButton;
     btnProfile: TsButton;
     btnInvoice: TsButton;
     pmnuInvoiceMenu: TPopupMenu;
     R1: TMenuItem;
     G1: TMenuItem;
-    grDeparturessListDBTableView1Room: TcxGridDBColumn;
-    grDeparturessListDBTableView1Roomtype: TcxGridDBColumn;
-    grDeparturessListDBTableView1RoomerReservationID: TcxGridDBColumn;
-    grDeparturessListDBTableView1GuestName: TcxGridDBColumn;
-    grDeparturessListDBTableView1CompanyCode: TcxGridDBColumn;
-    grDeparturessListDBTableView1Arrival: TcxGridDBColumn;
-    grDeparturessListDBTableView1Departure: TcxGridDBColumn;
-    grDeparturessListDBTableView1NumGuests: TcxGridDBColumn;
-    grDeparturessListDBTableView1AverageRoomRate: TcxGridDBColumn;
-    grDeparturessListDBTableView1ExpectedTimeOfArrival: TcxGridDBColumn;
-    kbmDeparturesListRoomerRoomReservationID: TIntegerField;
-    grDeparturessListDBTableView1RoomerRoomReservationID: TcxGridDBColumn;
     pnmuGridMenu: TPopupMenu;
     mnuCheckin: TMenuItem;
     mnuProfile: TMenuItem;
     mnuInvoice: TMenuItem;
     mnuRoomInvoice: TMenuItem;
     mnuGroupInvoice: TMenuItem;
+    tvDeparturesList: TcxGridDBTableView;
+    lvDeparturesList: TcxGridLevel;
+    grDeparturesList: TcxGrid;
+    tvDeparturesListCheckOutDate: TcxGridDBColumn;
+    tvDeparturesListRoomerReservationId: TcxGridDBColumn;
+    tvDeparturesListRoomerRoomReservationId: TcxGridDBColumn;
+    tvDeparturesListRoom: TcxGridDBColumn;
+    tvDeparturesListRoomType: TcxGridDBColumn;
+    tvDeparturesListGuestName: TcxGridDBColumn;
+    tvDeparturesListNumGuests: TcxGridDBColumn;
+    tvDeparturesListArrival: TcxGridDBColumn;
+    tvDeparturesListDeparture: TcxGridDBColumn;
+    tvDeparturesListExpectedCheckOutTime: TcxGridDBColumn;
+    tvDeparturesListCustomer: TcxGridDBColumn;
+    tvDeparturesListCompanyName: TcxGridDBColumn;
+    tvDeparturesListNumNights: TcxGridDBColumn;
+    tvDeparturesListAverageRatePerNight: TcxGridDBColumn;
+    tvDeparturesListTotalRent: TcxGridDBColumn;
+    tvDeparturesListTotalSale: TcxGridDBColumn;
+    tvDeparturesListTotalPayments: TcxGridDBColumn;
+    tvDeparturesListBalance: TcxGridDBColumn;
     procedure FormCreate(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure rbRadioButtonClick(Sender: TObject);
@@ -88,7 +85,8 @@ type
     procedure UpdateControls;
     procedure SetManualDates(aFrom, aTo: TDate);
     procedure RefreshData;
-    function ConstructSQL: string;
+    function ConstructSQL2: string;
+    function getsql(DateFrom,DateTo : Tdate) : string;
   protected
     procedure WndProc(var message: TMessage); override;
   public
@@ -123,171 +121,130 @@ uses
   , uReservationProfile
   ;
 
+
 const
-  cSQL = 'SELECT '+
-          '  co.CompanyID, ' +
-          '  rd.Room, '+
-          '  rd.RoomType, '+
-          '  r.Reservation AS RoomerReservationId, '+
-          '  rd.RoomReservation AS RoomerRoomReservationId, '+
-          '  pe.Name AS GuestName, '+
-          '  r.Customer AS CompanyCode, '+
-          '  r.Name AS CompanyName, '+
-          '  CAST(rr.AvrageRate as DECIMAL(10,3)) AS AverageRoomRate, '+
-          '  ( SELECT cast(rd1.ADate as date)'+
-          '         FROM roomsdate rd1 '+
-          '         WHERE rd1.RoomReservation=rd.RoomReservation '+
-          '               AND (rd1.ResFlag = ''P'') '+
-          '         ORDER BY rd1.ADate LIMIT 1) AS Arrival, '+
-          '  Cast(DATE_ADD((SELECT rd1.ADate '+
-          '              FROM roomsdate rd1 '+
-          '              WHERE rd1.RoomReservation=rd.RoomReservation AND (rd1.ResFlag = ''P'') '+
-          '              ORDER BY rd1.ADate DESC LIMIT 1), '+
-          '            INTERVAL 1 DAY) as Date) AS Departure, '+
-          '  ( SELECT COUNT(id) '+
-          '    FROM persons pe1 '+
-          '    WHERE pe1.RoomReservation=rd.RoomReservation) AS NumGuests, '+
-          '  rr.ExpectedTimeOfArrival as ExpectedTimeOfArrival '+
-          'FROM roomsdate rd '+
-          'JOIN roomreservations rr ON rr.RoomReservation=rd.RoomReservation '+
-          'JOIN reservations r ON r.Reservation=rd.Reservation '+
-          'JOIN persons pe ON pe.RoomReservation=rd.RoomReservation AND pe.MainName=1 '+
-          'JOIN channels ch ON ch.Id=r.Channel, '+
-          'control co '+
-          'WHERE ( SELECT rd1.ADate '+
-          '        FROM roomsdate rd1 '+
-          '        WHERE rd1.RoomReservation=rd.RoomReservation AND (rd1.ResFlag = ''P'') '+
-          '        ORDER BY rd1.ADate LIMIT 1)=rd.ADate '+
-          '      AND (rd.ResFlag = ''P'') '+
-          '      %s '+
-          'GROUP BY rd.aDate, rd.RoomReservation '+
-          'ORDER BY rd.aDate, rd.Room ';
 
-  cSqlForSingleDate = '      AND rd.ADate = ''%s'' ';
-  cSqlForDateRange = '      AND rd.ADate >= ''%s'' AND rd.ADate <= ''%s'' ';
+WM_REFRESH_DATA = WM_User + 51;
 
-  WM_REFRESH_DATA = WM_User + 51;
-
-
-sSQL =
-'SELECT '+
-'    CheckOutDate '+
-'  , Reservation AS RoomerReservationId '+
-'  , RoomReservation AS RoomerRoomReservationId '+
-'  , Room '+
-'  , RoomType '+
-'  , GuestName '+
-'  , NumGuests '+
-'  , Arrival '+
-'  , Departure '+
-'  , ExpectedCheckOutTime '+
-'  , Customer '+
-'  , CompanyName '+
-'  , NumNights '+
-'  , TotalRent / NumNights AS AverageRatePerNight '+
-'  , TotalRent '+
-'  , TotalSale '+
-'  , TotalPayments '+
-'  , TotalRent+TotalSale-TotalPayments AS Balance '+
-'FROM (SELECT '+
-'         ADate AS CheckOutDate '+
-'       ,yyy.Reservation '+
-'       ,yyy.RoomReservation '+
-'       ,yyy.Room '+
-'       ,yyy.RoomType '+
-'       ,pe.Name AS GuestName '+
-'       ,cu.Customer '+
-'       ,cu.Surname AS CompanyName '+
-'       ,DATE((SELECT ADate FROM roomsdate WHERE RoomReservation=yyy.RoomReservation AND ResFlag=yyy.ResFlag ORDER BY ADate LIMIT 1)) AS Arrival '+
-'       ,DATE(DATE_ADD((SELECT ADate FROM roomsdate WHERE RoomReservation=yyy.RoomReservation AND ResFlag=yyy.ResFlag ORDER BY ADate DESC LIMIT 1), INTERVAL 1 DAY)) AS Departure '+
-'       ,ROUND(SUM(RateWithDiscount + IFNULL(IF(CityTaxIncl, 0, CityTaxPerDay), 0.00)) , 2) AS TotalRent '+
-'       ,IFNULL((SELECT SUM(Number*Price) FROM invoicelines il WHERE InvoiceNumber=-1 AND RoomReservation=yyy.RoomReservation), 0.00) AS TotalSale '+
-'       ,IFNULL((SELECT SUM(Amount) FROM payments WHERE InvoiceNumber=-1 AND RoomReservation=yyy.RoomReservation), 0.00) AS TotalPayments '+
-'       ,(SELECT COUNT(id) FROM persons pe1 WHERE pe1.RoomReservation=yyy.RoomReservation) AS NumGuests '+
-'       ,(SELECT COUNT(id) FROM roomsdate rd1 WHERE rd1.RoomReservation=yyy.RoomReservation AND rd1.ResFlag=yyy.ResFlag) AS NumNights '+
-'       ,IFNULL(rr.ExpectedCheckOutTime, ho.DefaultCheckOutTime) AS ExpectedCheckOutTime '+
-'     FROM(SELECT '+
-'             ADate '+
-'           , ResFlag '+
-'           , RateExcl '+
-'           , RateIncl - RateExcl AS VAT '+
-'           , RateIncl '+
-'           , IF(Discount > 0, IF(isPercentage, RateIncl - (RateIncl * Discount / 100), RateIncl - Discount), RateIncl) AS RateWithDiscount '+
-'           , CityTaxInCl '+
-'           , NumNights '+
-'           , NumGuests '+
-'           , IF(CityTaxIncl, 0, IF(taxPercentage, taxBaseAmount * taxAmount / 100, taxAmount) *  IF(taxRoomNight, 1, '+
-'                                 IF(taxGuestNight, NumGuests,IF(taxGuestNight, NumGuests / NumNights,IF(taxBooking, 1 / NumNights,1 ))))) / CurrencyRate AS CityTaxPerDay '+
-'           , taxPercentage '+
-'           , taxRetaxable '+
-'           , taxRoomNight '+
-'           , taxGuestNight '+
-'           , taxGuest '+
-'           , taxBooking '+
-'           , taxNettoAmountBased '+
-'           , xxx.RoomReservation '+
-'           , xxx.Reservation '+
-'           , xxx.Room '+
-'           , xxx.RoomType '+
-' FROM (SELECT '+
-'           DATE_ADD((SELECT rd1.ADate FROM roomsdate rd1 WHERE rd1.RoomReservation = rd.RoomReservation ORDER BY rd1.ADate DESC LIMIT 1), INTERVAL 1 DAY) AS ADate '+
-'        ,rd.ResFlag '+
-'        ,RoomRate AS RateIncl '+
-'        ,RoomRate / (1 + vc.VATPercentage/100) AS RateExcl '+
-'        ,to_bool(IF(tx.INCL_EXCL=''INCLUDED'' OR (tx.INCL_EXCL=''PER_CUSTOMER'' AND cu.StayTaxIncluted), 1, 0)) AS CityTaxInCl '+
-'        ,tx.AMOUNT AS taxAmount '+
-'        ,to_bool(IF(tx.TAX_TYPE=''FIXED_AMOUNT'', 0, 1)) AS taxPercentage,to_bool(IF(tx.RETAXABLE=''FALSE'', 0, 1)) AS taxRetaxable, to_bool(IF(tx.TAX_BASE=''ROOM_NIGHT'', 1, 0)) AS taxRoomNight '+
-'        ,to_bool(IF(tx.TAX_BASE=''GUEST_NIGHT'', 1, 0)) AS taxGuestNight, to_bool(IF(tx.TAX_BASE=''GUEST'', 1, 0)) AS taxGuest, to_bool(IF(tx.TAX_BASE=''BOOKING'', 1, 0)) AS taxBooking '+
-'        ,to_bool(IF(tx.NETTO_AMOUNT_BASED=''FALSE'', 0, 1)) AS taxNettoAmountBased , IF(tx.NETTO_AMOUNT_BASED=''FALSE'', RoomRate, RoomRate / (1 + vc.VATPercentage/100)) AS taxBaseAmount '+
-'        ,(SELECT COUNT(rd1.ID) FROM roomsdate rd1 WHERE rd1.RoomReservation = rr.RoomReservation AND NOT rd1.ResFlag IN (''X'',''C'') GROUP BY rd1.RoomReservation) AS NumNights '+
-'        ,(SELECT COUNT(pe.ID) FROM persons pe WHERE pe.RoomReservation = rr.RoomReservation GROUP BY pe.RoomReservation) AS NumGuests '+
-'        ,cur.Currency AS Currency '+
-'        ,cur.AValue AS CurrencyRate '+
-'        ,rd.Discount, rd.isPercentage '+
-'        ,rd.RoomReservation '+
-'        ,rd.Reservation '+
-'        ,rd.Room '+
-'        ,rd.RoomType '+
-'       FROM roomsdate rd '+
-'         JOIN currencies cur ON cur.Currency=rd.Currency '+
-'         JOIN roomreservations rr ON rr.RoomReservation=rd.RoomReservation '+
-'         JOIN reservations r ON r.Reservation=rd.Reservation '+
-'         JOIN customers cu ON cu.Customer=r.Customer '+
-'         JOIN control co '+
-'         JOIN home100.TAXES tx ON HOTEL_ID=co.CompanyId AND VALID_FROM<=rd.ADate AND VALID_TO>=rd.ADate '+
-'         JOIN items i ON i.Item=co.RoomRentItem '+
-'         JOIN itemtypes it ON it.ItemType=i.ItemType '+
-'         JOIN vatcodes vc ON vc.VATCode=it.VATCode, '+
-'(SELECT '+
-'   ''%s'' AS StartDate '+
-'   ,''%s'' AS EndDate) AS params '+
-' WHERE rd.RoomReservation IN '+
-'   (SELECT '+
-'      RoomReservation '+
-'    FROM '+
-'      roomsdate rd '+
-'    WHERE '+
-'        rd.ADate BETWEEN DATE_ADD(params.StartDate, INTERVAL -1 DAY) AND DATE_ADD(params.EndDate, INTERVAL -1 DAY) '+
-'      AND rd.ResFlag=''G'' '+
-'      AND (SELECT rd1.ADate FROM roomsdate rd1 WHERE rd1.RoomReservation = rd.RoomReservation ORDER BY rd1.ADate DESC LIMIT 1) = rd.ADate) '+
-'      AND NOT ResFlag IN (''X'',''C'') '+
-'      AND rd.Paid=0 '+
-'    ) xxx '+
-'   ) yyy '+
-' JOIN roomreservations rr ON rr.RoomReservation=yyy.RoomReservation '+
-' JOIN reservations r ON r.Reservation=yyy.Reservation '+
-' JOIN customers cu ON cu.Customer=r.Customer AND cu.Active '+
-' JOIN persons pe ON pe.RoomReservation=yyy.RoomReservation AND pe.MainName=1 '+
-' JOIN channels ch ON ch.Id=r.Channel '+
-' JOIN hotelconfigurations ho '+
-' GROUP BY yyy.RoomReservation, CheckOutDate '+
-') zzz '+
-'ORDER BY '+
-'  CheckOutDate, Room ';
-
-
-
-
+function TfrmDeparturesReport.getsql(DateFrom,DateTo : Tdate) : string;
+var
+ s : string;
+begin
+  s := s+'SELECT ';
+  s := s+'    cast(CheckOutDate as date) AS CheckOutDate';
+  s := s+'  , Reservation AS RoomerReservationId ';
+  s := s+'  , RoomReservation AS RoomerRoomReservationId ';
+  s := s+'  , Room ';
+  s := s+'  , RoomType ';
+  s := s+'  , GuestName ';
+  s := s+'  , NumGuests ';
+  s := s+'  , cast(Arrival AS date) AS Arrival ';
+  s := s+'  , cast(Departure AS Date) AS Departure ';
+  s := s+'  , ExpectedCheckOutTime ';
+  s := s+'  , Customer ';
+  s := s+'  , CompanyName ';
+  s := s+'  , NumNights ';
+  s := s+'  , TotalRent / NumNights AS AverageRatePerNight ';
+  s := s+'  , TotalRent ';
+  s := s+'  , TotalSale ';
+  s := s+'  , TotalPayments ';
+  s := s+'  , TotalRent+TotalSale-TotalPayments AS Balance ';
+  s := s+'FROM (SELECT ';
+  s := s+'         ADate AS CheckOutDate ';
+  s := s+'       ,yyy.Reservation ';
+  s := s+'       ,yyy.RoomReservation ';
+  s := s+'       ,yyy.Room ';
+  s := s+'       ,yyy.RoomType ';
+  s := s+'       ,pe.Name AS GuestName ';
+  s := s+'       ,cu.Customer ';
+  s := s+'       ,cu.Surname AS CompanyName ';
+  s := s+'       ,DATE((SELECT ADate FROM roomsdate WHERE RoomReservation=yyy.RoomReservation AND ResFlag=yyy.ResFlag ORDER BY ADate LIMIT 1)) AS Arrival ';
+  s := s+'       ,DATE(DATE_ADD((SELECT ADate FROM roomsdate WHERE RoomReservation=yyy.RoomReservation AND ResFlag=yyy.ResFlag ORDER BY ADate DESC LIMIT 1), INTERVAL 1 DAY)) AS Departure ';
+  s := s+'       ,ROUND(SUM(RateWithDiscount + IFNULL(IF(CityTaxIncl, 0, CityTaxPerDay), 0.00)) , 2) AS TotalRent ';
+  s := s+'       ,IFNULL((SELECT SUM(Number*Price) FROM invoicelines il WHERE InvoiceNumber=-1 AND RoomReservation=yyy.RoomReservation), 0.00) AS TotalSale ';
+  s := s+'       ,IFNULL((SELECT SUM(Amount) FROM payments WHERE InvoiceNumber=-1 AND RoomReservation=yyy.RoomReservation), 0.00) AS TotalPayments ';
+  s := s+'       ,(SELECT COUNT(id) FROM persons pe1 WHERE pe1.RoomReservation=yyy.RoomReservation) AS NumGuests ';
+  s := s+'       ,(SELECT COUNT(id) FROM roomsdate rd1 WHERE rd1.RoomReservation=yyy.RoomReservation AND rd1.ResFlag=yyy.ResFlag) AS NumNights ';
+  s := s+'       ,IFNULL(rr.ExpectedCheckOutTime, ''12:00'') AS ExpectedCheckOutTime ';
+  s := s+'     FROM(SELECT ';
+  s := s+'             ADate ';
+  s := s+'           , ResFlag ';
+  s := s+'           , RateExcl ';
+  s := s+'           , RateIncl - RateExcl AS VAT ';
+  s := s+'           , RateIncl ';
+  s := s+'           , IF(Discount > 0, IF(isPercentage, RateIncl - (RateIncl * Discount / 100), RateIncl - Discount), RateIncl) AS RateWithDiscount ';
+  s := s+'           , CityTaxInCl ';
+  s := s+'           , NumNights ';
+  s := s+'           , NumGuests ';
+  s := s+'           , IF(CityTaxIncl, 0, IF(taxPercentage, taxBaseAmount * taxAmount / 100, taxAmount) *  IF(taxRoomNight, 1, ';
+  s := s+'                                 IF(taxGuestNight, NumGuests,IF(taxGuestNight, NumGuests / NumNights,IF(taxBooking, 1 / NumNights,1 ))))) / CurrencyRate AS CityTaxPerDay ';
+  s := s+'           , taxPercentage ';
+  s := s+'           , taxRetaxable ';
+  s := s+'           , taxRoomNight ';
+  s := s+'           , taxGuestNight ';
+  s := s+'           , taxGuest ';
+  s := s+'           , taxBooking ';
+  s := s+'           , taxNettoAmountBased ';
+  s := s+'           , xxx.RoomReservation ';
+  s := s+'           , xxx.Reservation ';
+  s := s+'           , xxx.Room ';
+  s := s+'           , xxx.RoomType ';
+  s := s+' FROM (SELECT ';
+  s := s+'           DATE_ADD((SELECT rd1.ADate FROM roomsdate rd1 WHERE rd1.RoomReservation = rd.RoomReservation ORDER BY rd1.ADate DESC LIMIT 1), INTERVAL 1 DAY) AS ADate ';
+  s := s+'        ,rd.ResFlag ';
+  s := s+'        ,RoomRate AS RateIncl ';
+  s := s+'        ,RoomRate / (1 + vc.VATPercentage/100) AS RateExcl ';
+  s := s+'        ,to_bool(IF(tx.INCL_EXCL=''INCLUDED'' OR (tx.INCL_EXCL=''PER_CUSTOMER'' AND cu.StayTaxIncluted), 1, 0)) AS CityTaxInCl ';
+  s := s+'        ,tx.AMOUNT AS taxAmount ';
+  s := s+'        ,to_bool(IF(tx.TAX_TYPE=''FIXED_AMOUNT'', 0, 1)) AS taxPercentage,to_bool(IF(tx.RETAXABLE=''FALSE'', 0, 1)) AS taxRetaxable, to_bool(IF(tx.TAX_BASE=''ROOM_NIGHT'', 1, 0)) AS taxRoomNight ';
+  s := s+'        ,to_bool(IF(tx.TAX_BASE=''GUEST_NIGHT'', 1, 0)) AS taxGuestNight, to_bool(IF(tx.TAX_BASE=''GUEST'', 1, 0)) AS taxGuest, to_bool(IF(tx.TAX_BASE=''BOOKING'', 1, 0)) AS taxBooking ';
+  s := s+'        ,to_bool(IF(tx.NETTO_AMOUNT_BASED=''FALSE'', 0, 1)) AS taxNettoAmountBased , IF(tx.NETTO_AMOUNT_BASED=''FALSE'', RoomRate, RoomRate / (1 + vc.VATPercentage/100)) AS taxBaseAmount ';
+  s := s+'        ,(SELECT COUNT(rd1.ID) FROM roomsdate rd1 WHERE rd1.RoomReservation = rr.RoomReservation AND NOT rd1.ResFlag IN (''X'',''C'') GROUP BY rd1.RoomReservation) AS NumNights ';
+  s := s+'        ,(SELECT COUNT(pe.ID) FROM persons pe WHERE pe.RoomReservation = rr.RoomReservation GROUP BY pe.RoomReservation) AS NumGuests ';
+  s := s+'        ,cur.Currency AS Currency ';
+  s := s+'        ,cur.AValue AS CurrencyRate ';
+  s := s+'        ,rd.Discount, rd.isPercentage ';
+  s := s+'        ,rd.RoomReservation ';
+  s := s+'        ,rd.Reservation ';
+  s := s+'        ,rd.Room ';
+  s := s+'        ,rd.RoomType ';
+  s := s+'       FROM roomsdate rd ';
+  s := s+'         JOIN currencies cur ON cur.Currency=rd.Currency ';
+  s := s+'         JOIN roomreservations rr ON rr.RoomReservation=rd.RoomReservation ';
+  s := s+'         JOIN reservations r ON r.Reservation=rd.Reservation ';
+  s := s+'         JOIN customers cu ON cu.Customer=r.Customer ';
+  s := s+'         JOIN control co ';
+  s := s+'         JOIN home100.TAXES tx ON HOTEL_ID=co.CompanyId AND VALID_FROM<=rd.ADate AND VALID_TO>=rd.ADate ';
+  s := s+'         JOIN items i ON i.Item=co.RoomRentItem ';
+  s := s+'         JOIN itemtypes it ON it.ItemType=i.ItemType ';
+  s := s+'         JOIN vatcodes vc ON vc.VATCode=it.VATCode, ';
+  s := s+'(SELECT ';
+  s := s+'   '+_dateToSqlDate(DateFrom)+' AS StartDate, '+_dateToSqlDate(DateFrom)+' AS EndDate) AS params ';
+  s := s+' WHERE rd.RoomReservation IN ';
+  s := s+'   (SELECT ';
+  s := s+'      RoomReservation ';
+  s := s+'    FROM ';
+  s := s+'      roomsdate rd ';
+  s := s+'    WHERE ';
+  s := s+'        rd.ADate BETWEEN DATE_ADD(params.StartDate, INTERVAL -1 DAY) AND DATE_ADD(params.EndDate, INTERVAL -1 DAY) ';
+  s := s+'      AND rd.ResFlag=''G'' ';
+  s := s+'      AND (SELECT rd1.ADate FROM roomsdate rd1 WHERE rd1.RoomReservation = rd.RoomReservation ORDER BY rd1.ADate DESC LIMIT 1) = rd.ADate) ';
+  s := s+'      AND NOT ResFlag IN (''X'',''C'') ';
+  s := s+'      AND rd.Paid=0 ';
+  s := s+'    ) xxx ';
+  s := s+'   ) yyy ';
+  s := s+' JOIN roomreservations rr ON rr.RoomReservation=yyy.RoomReservation ';
+  s := s+' JOIN reservations r ON r.Reservation=yyy.Reservation ';
+  s := s+' JOIN customers cu ON cu.Customer=r.Customer AND cu.Active ';
+  s := s+' JOIN persons pe ON pe.RoomReservation=yyy.RoomReservation AND pe.MainName=1 ';
+  s := s+' JOIN channels ch ON ch.Id=r.Channel ';
+  s := s+' JOIN hotelconfigurations ho ';
+  s := s+' GROUP BY yyy.RoomReservation, CheckOutDate ';
+  s := s+') zzz ';
+  s := s+'ORDER BY ';
+  s := s+'  CheckOutDate, Room ';
+  result := s;
+end;
 
 
 function ShowDeparturesReport: boolean;
@@ -325,7 +282,7 @@ var
 begin
   dateTimeToString(s, 'yyyymmddhhnn', now);
   sFilename := g.qProgramPath + s + '_DeparturesList';
-  ExportGridToExcel(sFilename, grDeparturessList, true, true, true);
+  ExportGridToExcel(sFilename, grDeparturesList, true, true, true);
   ShellExecute(Handle, 'OPEN', PChar(sFilename + '.xls'), nil, nil, sw_shownormal);
 end;
 
@@ -340,19 +297,27 @@ begin
   postMessage(handle, WM_REFRESH_DATA, 0, 0);
 end;
 
-function TfrmDeparturesReport.ConstructSQL: string;
+
+function TfrmDeparturesReport.ConstructSQL2: string;
 var s : String;
 begin
-  if rbToday.Checked OR rbTomorrow.Checked then
-    s := Format(cSqlForSingleDate, [FormatDateTime('yyyy-mm-dd', dtDateFrom.Date)])
-  else
-    s := Format(cSqlForDateRange, [FormatDateTime('yyyy-mm-dd', dtDateFrom.Date),
-                                   FormatDateTime('yyyy-mm-dd', dtDateTo.Date)]);
-  Result := Format(cSQL, [s]);
-  {$ifdef DEBUG}
-    CopyToClipboard(Result);
-  {$endif}
+//  if rbToday.Checked OR rbTomorrow.Checked then
+//  begin
+////    s := Format(sSql, [FormatDateTime('yyyy-mm-dd', dtDateFrom.Date)])
+//    s := Format(sSql, [dtDateFrom.Date,dtDateTo.Date]);
+//
+//  end else
+//  begin
+//    s := Format(sSql, [FormatDateTime('yyyy-mm-dd', dtDateFrom.Date),
+//                                   FormatDateTime('yyyy-mm-dd', dtDateTo.Date)]);
+//  end;
+//  Result := s;
+//  {$ifdef DEBUG}
+//    CopyToClipboard(Result);
+//  {$endif}
 end;
+
+
 
 procedure TfrmDeparturesReport.dtDateFromCloseUp(Sender: TObject);
 begin
@@ -418,9 +383,6 @@ var
 begin
   if NOT btnRefresh.Enabled then exit;
 
-
-  copyToClipboard(sSql);
-
   btnRefresh.Enabled := False;
   Screen.Cursor := crHourglass;
   try
@@ -430,13 +392,16 @@ begin
       FRefreshingdata := True; // UpdateControls still called when updating dataset, despite DisableControls
       rSet1 := CreateNewDataSet;
       try
-        s := ConstructSQL;
+        // s := ConstructSQL2;
+        s := getsql(dtDateFrom.Date,dtDateTo.Date);
+        copyToClipboard(s);
 
-        hData.rSet_bySQL(rSet1, s);
+        hData.rSet_bySQL(rSet1, s, false);
         rSet1.First;
         if not kbmDeparturesList.Active then
           kbmDeparturesList.Open;
         LoadKbmMemtableFromDataSetQuiet(kbmDeparturesList,rSet1,[]);
+
       finally
         FreeAndNil(rSet1);
       end;

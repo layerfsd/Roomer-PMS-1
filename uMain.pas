@@ -1601,6 +1601,7 @@ uses
   , uResourceManagement
   , uDynamicPricing
   , uRptArrivals
+  , uRptDepartures
   ;
 
 {$R *.DFM}
@@ -13505,6 +13506,10 @@ end;
 procedure TfrmMain.btnPhonePricesClick(Sender: TObject);
 begin
   UserClickedDxLargeButton(Sender);
+
+{$IFDEF DEBUG}
+  ShowDeparturesReport;
+{$ENDIF}
   _PhonePrices;
 end;
 

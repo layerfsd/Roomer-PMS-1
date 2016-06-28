@@ -3,7 +3,7 @@ object frmArrivalsReport: TfrmArrivalsReport
   Top = 0
   Caption = 'Arrivals'
   ClientHeight = 586
-  ClientWidth = 991
+  ClientWidth = 1123
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -21,12 +21,12 @@ object frmArrivalsReport: TfrmArrivalsReport
   object pnlFilter: TsPanel
     Left = 0
     Top = 0
-    Width = 991
+    Width = 1123
     Height = 144
     Align = alTop
     TabOrder = 0
     SkinData.SkinSection = 'PANEL'
-    ExplicitWidth = 972
+    ExplicitWidth = 991
     object btnRefresh: TsButton
       Left = 398
       Top = 9
@@ -58,8 +58,8 @@ object frmArrivalsReport: TfrmArrivalsReport
       object rbToday: TsRadioButton
         Left = 4
         Top = 21
-        Width = 58
-        Height = 19
+        Width = 50
+        Height = 20
         Caption = 'Today'
         Checked = True
         TabOrder = 0
@@ -69,8 +69,8 @@ object frmArrivalsReport: TfrmArrivalsReport
       object rbTomorrow: TsRadioButton
         Left = 4
         Top = 46
-        Width = 76
-        Height = 19
+        Width = 68
+        Height = 20
         Caption = 'Tomorrow'
         TabOrder = 1
         OnClick = rbRadioButtonClick
@@ -78,8 +78,8 @@ object frmArrivalsReport: TfrmArrivalsReport
       object rbManualRange: TsRadioButton
         Left = 119
         Top = 21
-        Width = 122
-        Height = 19
+        Width = 114
+        Height = 20
         Caption = 'Manual date range:'
         TabOrder = 2
         OnClick = rbRadioButtonClick
@@ -100,7 +100,7 @@ object frmArrivalsReport: TfrmArrivalsReport
         MaxLength = 10
         ParentFont = False
         TabOrder = 3
-        Text = '  -  -    '
+        Text = '  .  .    '
         CheckOnExit = True
         SkinData.SkinSection = 'EDIT'
         GlyphMode.Blend = 0
@@ -124,7 +124,7 @@ object frmArrivalsReport: TfrmArrivalsReport
         MaxLength = 10
         ParentFont = False
         TabOrder = 4
-        Text = '  -  -    '
+        Text = '  .  .    '
         CheckOnExit = True
         SkinData.SkinSection = 'EDIT'
         GlyphMode.Blend = 0
@@ -136,15 +136,13 @@ object frmArrivalsReport: TfrmArrivalsReport
     object pnlExportButtons: TsPanel
       Left = 1
       Top = 104
-      Width = 989
+      Width = 1121
       Height = 39
       Align = alBottom
       BevelOuter = bvNone
       TabOrder = 2
       SkinData.SkinSection = 'PANEL'
-      ExplicitLeft = 2
-      ExplicitTop = 105
-      ExplicitWidth = 953
+      ExplicitWidth = 989
       object btnExcel: TsButton
         AlignWithMargins = True
         Left = 15
@@ -216,7 +214,7 @@ object frmArrivalsReport: TfrmArrivalsReport
       end
       object btnReport: TsButton
         AlignWithMargins = True
-        Left = 846
+        Left = 978
         Top = 5
         Width = 128
         Height = 29
@@ -231,14 +229,14 @@ object frmArrivalsReport: TfrmArrivalsReport
         TabOrder = 4
         OnClick = btnReportClick
         SkinData.SkinSection = 'BUTTON'
-        ExplicitLeft = 827
+        ExplicitLeft = 846
       end
     end
   end
   object dxStatusBar: TdxStatusBar
     Left = 0
     Top = 566
-    Width = 991
+    Width = 1123
     Height = 20
     Panels = <>
     Font.Charset = DEFAULT_CHARSET
@@ -246,21 +244,18 @@ object frmArrivalsReport: TfrmArrivalsReport
     Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = []
-    ExplicitTop = 540
-    ExplicitWidth = 972
+    ExplicitWidth = 991
   end
   object grArrivalsList: TcxGrid
     Left = 0
     Top = 144
-    Width = 991
+    Width = 1123
     Height = 422
     Align = alClient
     PopupMenu = pnmuGridMenu
     TabOrder = 2
     LookAndFeel.NativeStyle = False
-    ExplicitLeft = 1
-    ExplicitTop = 146
-    ExplicitWidth = 955
+    ExplicitWidth = 991
     object grArrivalsListDBTableView1: TcxGridDBTableView
       Navigator.Buttons.CustomButtons = <>
       OnCellDblClick = grArrivalsListDBTableView1CellDblClick
@@ -421,7 +416,7 @@ object frmArrivalsReport: TfrmArrivalsReport
     LoadedCompletely = False
     SavedCompletely = False
     FilterOptions = []
-    Version = '7.22.00 Standard Edition'
+    Version = '7.62.00 Standard Edition'
     LanguageID = 0
     SortID = 0
     SubLanguageID = 1
@@ -1236,7 +1231,7 @@ object frmArrivalsReport: TfrmArrivalsReport
     LoadedCompletely = False
     SavedCompletely = False
     FilterOptions = []
-    Version = '7.22.00 Standard Edition'
+    Version = '7.62.00 Standard Edition'
     LanguageID = 0
     SortID = 0
     SubLanguageID = 1

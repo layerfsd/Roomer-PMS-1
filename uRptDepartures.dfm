@@ -2,8 +2,8 @@ object frmDeparturesReport: TfrmDeparturesReport
   Left = 0
   Top = 0
   Caption = 'Departures'
-  ClientHeight = 560
-  ClientWidth = 972
+  ClientHeight = 585
+  ClientWidth = 1055
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -21,11 +21,12 @@ object frmDeparturesReport: TfrmDeparturesReport
   object pnlFilter: TsPanel
     Left = 0
     Top = 0
-    Width = 972
+    Width = 1055
     Height = 144
     Align = alTop
     TabOrder = 0
     SkinData.SkinSection = 'PANEL'
+    ExplicitWidth = 972
     object btnRefresh: TsButton
       Left = 398
       Top = 9
@@ -57,8 +58,8 @@ object frmDeparturesReport: TfrmDeparturesReport
       object rbToday: TsRadioButton
         Left = 4
         Top = 21
-        Width = 58
-        Height = 19
+        Width = 50
+        Height = 20
         Caption = 'Today'
         Checked = True
         TabOrder = 0
@@ -68,8 +69,8 @@ object frmDeparturesReport: TfrmDeparturesReport
       object rbTomorrow: TsRadioButton
         Left = 4
         Top = 46
-        Width = 76
-        Height = 19
+        Width = 68
+        Height = 20
         Caption = 'Tomorrow'
         TabOrder = 1
         OnClick = rbRadioButtonClick
@@ -77,8 +78,8 @@ object frmDeparturesReport: TfrmDeparturesReport
       object rbManualRange: TsRadioButton
         Left = 119
         Top = 21
-        Width = 122
-        Height = 19
+        Width = 114
+        Height = 20
         Caption = 'Manual date range:'
         TabOrder = 2
         OnClick = rbRadioButtonClick
@@ -99,7 +100,7 @@ object frmDeparturesReport: TfrmDeparturesReport
         MaxLength = 10
         ParentFont = False
         TabOrder = 3
-        Text = '  -  -    '
+        Text = '  .  .    '
         CheckOnExit = True
         SkinData.SkinSection = 'EDIT'
         GlyphMode.Blend = 0
@@ -123,7 +124,7 @@ object frmDeparturesReport: TfrmDeparturesReport
         MaxLength = 10
         ParentFont = False
         TabOrder = 4
-        Text = '  -  -    '
+        Text = '  .  .    '
         CheckOnExit = True
         SkinData.SkinSection = 'EDIT'
         GlyphMode.Blend = 0
@@ -135,12 +136,13 @@ object frmDeparturesReport: TfrmDeparturesReport
     object pnlExportButtons: TsPanel
       Left = 1
       Top = 104
-      Width = 970
+      Width = 1053
       Height = 39
       Align = alBottom
       BevelOuter = bvNone
       TabOrder = 2
       SkinData.SkinSection = 'PANEL'
+      ExplicitWidth = 970
       object btnExcel: TsButton
         AlignWithMargins = True
         Left = 15
@@ -214,8 +216,8 @@ object frmDeparturesReport: TfrmDeparturesReport
   end
   object dxStatusBar: TdxStatusBar
     Left = 0
-    Top = 540
-    Width = 972
+    Top = 565
+    Width = 1055
     Height = 20
     Panels = <>
     Font.Charset = DEFAULT_CHARSET
@@ -223,89 +225,109 @@ object frmDeparturesReport: TfrmDeparturesReport
     Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = []
+    ExplicitTop = 540
+    ExplicitWidth = 972
   end
-  object grDeparturessList: TcxGrid
+  object grDeparturesList: TcxGrid
     Left = 0
     Top = 144
-    Width = 972
-    Height = 396
+    Width = 1055
+    Height = 421
     Align = alClient
-    PopupMenu = pnmuGridMenu
     TabOrder = 2
-    LookAndFeel.NativeStyle = False
-    object grDeparturessListDBTableView1: TcxGridDBTableView
+    ExplicitLeft = 1
+    ExplicitTop = 146
+    ExplicitWidth = 972
+    ExplicitHeight = 396
+    object tvDeparturesList: TcxGridDBTableView
       Navigator.Buttons.CustomButtons = <>
-      OnCellDblClick = grDeparturessListDBTableView1CellDblClick
       DataController.DataSource = DeparturesListDS
-      DataController.Options = [dcoAssignGroupingValues, dcoAssignMasterDetailKeys, dcoSaveExpanding, dcoGroupsAlwaysExpanded]
       DataController.Summary.DefaultGroupSummaryItems = <>
       DataController.Summary.FooterSummaryItems = <>
       DataController.Summary.SummaryGroups = <>
-      Styles.Group = cxStyle1
-      Styles.GroupSummary = cxStyle1
-      object grDeparturessListDBTableView1Room: TcxGridDBColumn
+      object tvDeparturesListRoom: TcxGridDBColumn
         DataBinding.FieldName = 'Room'
-        Options.Editing = False
+        Width = 70
       end
-      object grDeparturessListDBTableView1GuestName: TcxGridDBColumn
-        Caption = 'Guest name'
+      object tvDeparturesListGuestName: TcxGridDBColumn
         DataBinding.FieldName = 'GuestName'
-        Options.Editing = False
-        Width = 263
+        Width = 189
       end
-      object grDeparturessListDBTableView1RoomerReservationID: TcxGridDBColumn
+      object tvDeparturesListRoomerReservationId: TcxGridDBColumn
         Caption = 'Reservation ID'
-        DataBinding.FieldName = 'RoomerReservationID'
-        Options.Editing = False
+        DataBinding.FieldName = 'RoomerReservationId'
+        Width = 85
+      end
+      object tvDeparturesListArrival: TcxGridDBColumn
+        DataBinding.FieldName = 'Arrival'
+        Width = 74
+      end
+      object tvDeparturesListDeparture: TcxGridDBColumn
+        DataBinding.FieldName = 'Departure'
+        Width = 78
+      end
+      object tvDeparturesListRoomType: TcxGridDBColumn
+        DataBinding.FieldName = 'RoomType'
+        Width = 63
+      end
+      object tvDeparturesListNumGuests: TcxGridDBColumn
+        DataBinding.FieldName = 'NumGuests'
+        Width = 70
+      end
+      object tvDeparturesListExpectedCheckOutTime: TcxGridDBColumn
+        Caption = 'ETD'
+        DataBinding.FieldName = 'ExpectedCheckOutTime'
+        Width = 70
+      end
+      object tvDeparturesListCustomer: TcxGridDBColumn
+        Caption = 'Company Code'
+        DataBinding.FieldName = 'Customer'
+        Width = 126
+      end
+      object tvDeparturesListCompanyName: TcxGridDBColumn
+        Caption = 'Company Name'
+        DataBinding.FieldName = 'CompanyName'
+        Width = 181
+      end
+      object tvDeparturesListNumNights: TcxGridDBColumn
+        DataBinding.FieldName = 'NumNights'
+        Width = 70
+      end
+      object tvDeparturesListAverageRatePerNight: TcxGridDBColumn
+        DataBinding.FieldName = 'Rate Per Night'
+        PropertiesClassName = 'TcxCurrencyEditProperties'
+        Width = 100
+      end
+      object tvDeparturesListTotalRent: TcxGridDBColumn
+        DataBinding.FieldName = 'Total Rent'
+        Width = 100
+      end
+      object tvDeparturesListTotalSale: TcxGridDBColumn
+        DataBinding.FieldName = 'Total Sale'
+        Width = 100
+      end
+      object tvDeparturesListTotalPayments: TcxGridDBColumn
+        DataBinding.FieldName = 'Total Payments'
+        Width = 100
+      end
+      object tvDeparturesListBalance: TcxGridDBColumn
+        DataBinding.FieldName = 'Balance'
+        Visible = False
+      end
+      object tvDeparturesListCheckOutDate: TcxGridDBColumn
+        Caption = 'Checkout'
+        DataBinding.FieldName = 'CheckOutDate'
         Width = 83
       end
-      object grDeparturessListDBTableView1CompanyCode: TcxGridDBColumn
-        Caption = 'Company code'
-        DataBinding.FieldName = 'CompanyCode'
-        Options.Editing = False
-      end
-      object grDeparturessListDBTableView1Arrival: TcxGridDBColumn
-        DataBinding.FieldName = 'Arrival'
-        Options.Editing = False
-      end
-      object grDeparturessListDBTableView1Departure: TcxGridDBColumn
-        DataBinding.FieldName = 'Departure'
-        Options.Editing = False
-      end
-      object grDeparturessListDBTableView1Roomtype: TcxGridDBColumn
-        Caption = 'Room type'
-        DataBinding.FieldName = 'Roomtype'
-        Options.Editing = False
-        Width = 66
-      end
-      object grDeparturessListDBTableView1NumGuests: TcxGridDBColumn
-        Caption = 'Num guests'
-        DataBinding.FieldName = 'NumGuests'
-        Options.Editing = False
-      end
-      object grDeparturessListDBTableView1AverageRoomRate: TcxGridDBColumn
-        Caption = 'Average Rate'
-        DataBinding.FieldName = 'AverageRoomRate'
-        Options.Editing = False
-        Width = 82
-      end
-      object grDeparturessListDBTableView1ExpectedTimeOfArrival: TcxGridDBColumn
-        Caption = 'Expected TOA'
-        DataBinding.FieldName = 'ExpectedTimeOfArrival'
-        Options.Editing = False
-        Width = 88
-      end
-      object grDeparturessListDBTableView1RoomerRoomReservationID: TcxGridDBColumn
-        Caption = 'Room Res ID'
-        DataBinding.FieldName = 'RoomerRoomReservationID'
+      object tvDeparturesListRoomerRoomReservationId: TcxGridDBColumn
+        Caption = 'Room Res'
+        DataBinding.FieldName = 'RoomerRoomReservationId'
         Visible = False
-        Options.Editing = False
-        SortIndex = 0
-        SortOrder = soAscending
+        Width = 70
       end
     end
-    object lvDeparturesListLevel1: TcxGridLevel
-      GridView = grDeparturessListDBTableView1
+    object lvDeparturesList: TcxGridLevel
+      GridView = tvDeparturesList
     end
   end
   object FormStore: TcxPropertiesStore
@@ -331,28 +353,35 @@ object frmDeparturesReport: TfrmDeparturesReport
     AttachMaxCount = 1
     FieldDefs = <
       item
-        Name = 'Room'
-        DataType = ftString
-        Size = 10
+        Name = 'CheckOutDate'
+        DataType = ftDate
       end
       item
-        Name = 'Roomtype'
+        Name = 'RoomerReservationId'
+        DataType = ftInteger
+      end
+      item
+        Name = 'RoomerRoomReservationId'
+        DataType = ftInteger
+      end
+      item
+        Name = 'Room'
         DataType = ftString
         Size = 20
       end
       item
-        Name = 'RoomerReservationID'
-        DataType = ftInteger
+        Name = 'RoomType'
+        DataType = ftString
+        Size = 20
       end
       item
         Name = 'GuestName'
-        DataType = ftString
-        Size = 100
+        DataType = ftWideString
+        Size = 200
       end
       item
-        Name = 'CompanyCode'
-        DataType = ftString
-        Size = 15
+        Name = 'NumGuests'
+        DataType = ftInteger
       end
       item
         Name = 'Arrival'
@@ -363,21 +392,43 @@ object frmDeparturesReport: TfrmDeparturesReport
         DataType = ftDate
       end
       item
-        Name = 'NumGuests'
-        DataType = ftInteger
-      end
-      item
-        Name = 'AverageRoomRate'
-        DataType = ftFloat
-      end
-      item
-        Name = 'ExpectedTimeOfArrival'
+        Name = 'ExpectedCheckOutTime'
         DataType = ftString
         Size = 5
       end
       item
-        Name = 'RoomerRoomReservationID'
+        Name = 'Customer'
+        DataType = ftWideString
+        Size = 200
+      end
+      item
+        Name = 'CompanyName'
+        DataType = ftWideString
+        Size = 200
+      end
+      item
+        Name = 'NumNights'
         DataType = ftInteger
+      end
+      item
+        Name = 'AverageRatePerNight'
+        DataType = ftFloat
+      end
+      item
+        Name = 'TotalRent'
+        DataType = ftFloat
+      end
+      item
+        Name = 'TotalSale'
+        DataType = ftFloat
+      end
+      item
+        Name = 'TotalPayments'
+        DataType = ftFloat
+      end
+      item
+        Name = 'Balance'
+        DataType = ftFloat
       end>
     IndexDefs = <>
     SortOptions = []
@@ -386,57 +437,19 @@ object frmDeparturesReport: TfrmDeparturesReport
     LoadedCompletely = False
     SavedCompletely = False
     FilterOptions = []
-    Version = '7.22.00 Standard Edition'
+    Version = '7.62.00 Standard Edition'
     LanguageID = 0
     SortID = 0
     SubLanguageID = 1
     LocaleID = 1024
     AfterScroll = kbmDeparturesListAfterScroll
-    Left = 416
-    Top = 359
-    object kbmDeparturesListfldRoom: TStringField
-      FieldName = 'Room'
-      Size = 10
-    end
-    object kbmDeparturesListfldRoomtype: TStringField
-      FieldName = 'Roomtype'
-    end
-    object kbmDeparturesListfldRoomerReservationID: TIntegerField
-      FieldName = 'RoomerReservationID'
-    end
-    object kbmDeparturesListfldGuestName: TStringField
-      FieldName = 'GuestName'
-      Size = 100
-    end
-    object kbmDeparturesListfldCompanyCode: TStringField
-      FieldName = 'CompanyCode'
-      Size = 15
-    end
-    object kbmDeparturesListfldArrival: TDateField
-      FieldName = 'Arrival'
-    end
-    object kbmDeparturesListfldDeparture: TDateField
-      FieldName = 'Departure'
-    end
-    object kbmDeparturesListfldNumGuests: TIntegerField
-      FieldName = 'NumGuests'
-    end
-    object kbmDeparturesListAverageRoomRate: TFloatField
-      FieldName = 'AverageRoomRate'
-      currency = True
-    end
-    object kbmDeparturesListExpectedTimeOfArrival: TStringField
-      FieldName = 'ExpectedTimeOfArrival'
-      Size = 5
-    end
-    object kbmDeparturesListRoomerRoomReservationID: TIntegerField
-      FieldName = 'RoomerRoomReservationID'
-    end
+    Left = 448
+    Top = 231
   end
   object DeparturesListDS: TDataSource
     DataSet = kbmDeparturesList
-    Left = 488
-    Top = 359
+    Left = 448
+    Top = 279
   end
   object cxStyleRepository1: TcxStyleRepository
     Left = 176
@@ -453,8 +466,8 @@ object frmDeparturesReport: TfrmDeparturesReport
   end
   object pmnuInvoiceMenu: TPopupMenu
     Images = DImages.cxSmallImagesFlat
-    Left = 480
-    Top = 224
+    Left = 48
+    Top = 272
     object R1: TMenuItem
       Caption = 'Room Invoice'
       Default = True
@@ -468,8 +481,8 @@ object frmDeparturesReport: TfrmDeparturesReport
     end
   end
   object pnmuGridMenu: TPopupMenu
-    Left = 184
-    Top = 368
+    Left = 48
+    Top = 328
     object mnuCheckin: TMenuItem
       Caption = 'Check in'
       OnClick = btnCheckInClick

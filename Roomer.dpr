@@ -224,7 +224,8 @@ uses
   uHotelArrivalsOfflineReport in 'OfflineReports\uHotelArrivalsOfflineReport.pas',
   uHotelArrivalsOfflineReportDesign in 'OfflineReports\uHotelArrivalsOfflineReportDesign.pas',
   uRptArrivals in 'uRptArrivals.pas' {frmArrivalsReport},
-  ufrmReservationExtras in 'StockItems\ufrmReservationExtras.pas';
+  ufrmReservationExtras in 'StockItems\ufrmReservationExtras.pas',
+  uRptDepartures in 'uRptDepartures.pas' {frmDeparturesReport};
 
 {$R *.RES}
 
