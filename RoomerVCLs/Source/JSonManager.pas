@@ -24,7 +24,7 @@ procedure RTTICall(aObj: TPersistent; MethodName: string; value: variant);
 
 implementation
 
-uses RoomerJson, uDateUtils, uStringUtils;
+uses RoomerJson, uDateUtils, uStringUtils, uFloatUtils;
 
 resourcestring
   CJSON = 'json';

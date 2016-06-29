@@ -225,7 +225,9 @@ uses
   uHotelArrivalsOfflineReportDesign in 'OfflineReports\uHotelArrivalsOfflineReportDesign.pas',
   uRptArrivals in 'uRptArrivals.pas' {frmArrivalsReport},
   ufrmReservationExtras in 'StockItems\ufrmReservationExtras.pas',
-  uRptDepartures in 'uRptDepartures.pas' {frmDeparturesReport};
+  uRptDepartures in 'uRptDepartures.pas' {frmDeparturesReport},
+  uCurrencyHandler in 'uCurrencyHandler.pas',
+  uFloatUtils in 'RoomerVCLs\Source\uFloatUtils.pas';
 
 {$R *.RES}
 

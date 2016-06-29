@@ -13156,13 +13156,8 @@ var
   act: TActTableAction;
 begin
   act := actNone;
-  initCurrencyHolder(theData);
-  if Currencies(act, theData) then
-  begin
-  end
-  else
-  begin
-  end;
+  theData.init;
+  Currencies(act, theData);
 end;
 
 procedure TfrmMain._LostAndFound;
