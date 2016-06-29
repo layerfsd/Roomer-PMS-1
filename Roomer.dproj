@@ -735,6 +735,8 @@
         <DCCReference Include="uRptDepartures.pas">
             <Form>frmDeparturesReport</Form>
         </DCCReference>
+        <DCCReference Include="uCurrencyHandler.pas"/>
+        <DCCReference Include="RoomerVCLs\Source\uFloatUtils.pas"/>
         <None Include="Roomer.todo"/>
         <None Include="notes.txt"/>
         <None Include="Roomer.inc"/>

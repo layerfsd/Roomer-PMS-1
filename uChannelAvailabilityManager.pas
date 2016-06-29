@@ -555,7 +555,7 @@ uses ioUtils, uMain, uDateUtils, uStringUtils, _glob, uAppGlobal, PrjConst,
   uFrmChannelCopyFrom, uRoomerMessageDialog, uDImages, uExcelProcessors, uG, uEmailExcelSheet, hData,
   uActivityLogs,
   UITypes
-  ;
+  , uFloatUtils;
 
 const
   BODY_START = '<body bgcolor="#0000FF"><font bgcolor="#0000FF" color="#FFFFFF">';
@@ -4441,7 +4441,7 @@ end;
 
 function intValueOfCell(value: String): integer;
 begin
-  result := trunc(uStringUtils.LocalizedFloatValue(value));
+  result := trunc(uFloatUtils.LocalizedFloatValue(value));
 end;
 
 CONST BOX_WIDTH = 8;

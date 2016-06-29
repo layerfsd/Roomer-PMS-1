@@ -1144,6 +1144,10 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           Caption = 'Availabilities'
           SkinData.CustomColor = False
           SkinData.CustomFont = False
+          ExplicitLeft = 0
+          ExplicitTop = 0
+          ExplicitWidth = 0
+          ExplicitHeight = 0
           object Panel2: TsPanel
             Left = 0
             Top = 467
@@ -1428,6 +1432,10 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           Caption = 'Rates'
           SkinData.CustomColor = False
           SkinData.CustomFont = False
+          ExplicitLeft = 0
+          ExplicitTop = 0
+          ExplicitWidth = 0
+          ExplicitHeight = 0
           object rateGrid: TAdvStringGrid
             Left = 0
             Top = 48
