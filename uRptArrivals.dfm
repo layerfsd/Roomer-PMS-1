@@ -26,7 +26,6 @@ object frmArrivalsReport: TfrmArrivalsReport
     Align = alTop
     TabOrder = 0
     SkinData.SkinSection = 'PANEL'
-    ExplicitWidth = 991
     object btnRefresh: TsButton
       Left = 398
       Top = 9
@@ -90,17 +89,16 @@ object frmArrivalsReport: TfrmArrivalsReport
         Width = 105
         Height = 21
         AutoSize = False
-        Color = clWhite
         EditMask = '!99/99/9999;1; '
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = clBlack
+        Font.Color = clWindowText
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
         MaxLength = 10
         ParentFont = False
         TabOrder = 3
-        Text = '  .  .    '
+        Text = '  -  -    '
         CheckOnExit = True
         SkinData.SkinSection = 'EDIT'
         GlyphMode.Blend = 0
@@ -114,17 +112,16 @@ object frmArrivalsReport: TfrmArrivalsReport
         Width = 105
         Height = 21
         AutoSize = False
-        Color = clWhite
         EditMask = '!99/99/9999;1; '
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = clBlack
+        Font.Color = clWindowText
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
         MaxLength = 10
         ParentFont = False
         TabOrder = 4
-        Text = '  .  .    '
+        Text = '  -  -    '
         CheckOnExit = True
         SkinData.SkinSection = 'EDIT'
         GlyphMode.Blend = 0
@@ -142,7 +139,6 @@ object frmArrivalsReport: TfrmArrivalsReport
       BevelOuter = bvNone
       TabOrder = 2
       SkinData.SkinSection = 'PANEL'
-      ExplicitWidth = 989
       object btnExcel: TsButton
         AlignWithMargins = True
         Left = 15
@@ -229,7 +225,6 @@ object frmArrivalsReport: TfrmArrivalsReport
         TabOrder = 4
         OnClick = btnReportClick
         SkinData.SkinSection = 'BUTTON'
-        ExplicitLeft = 846
       end
     end
   end
@@ -244,7 +239,6 @@ object frmArrivalsReport: TfrmArrivalsReport
     Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = []
-    ExplicitWidth = 991
   end
   object grArrivalsList: TcxGrid
     Left = 0
@@ -255,7 +249,6 @@ object frmArrivalsReport: TfrmArrivalsReport
     PopupMenu = pnmuGridMenu
     TabOrder = 2
     LookAndFeel.NativeStyle = False
-    ExplicitWidth = 991
     object grArrivalsListDBTableView1: TcxGridDBTableView
       Navigator.Buttons.CustomButtons = <>
       OnCellDblClick = grArrivalsListDBTableView1CellDblClick
@@ -311,6 +304,7 @@ object frmArrivalsReport: TfrmArrivalsReport
       object grArrivalsListDBTableView1AverageRoomRate: TcxGridDBColumn
         Caption = 'Average Rate'
         DataBinding.FieldName = 'AverageRoomRate'
+        OnGetDisplayText = grArrivalsListDBTableView1AverageRoomRateGetDisplayText
         Options.Editing = False
         Width = 82
       end
@@ -416,7 +410,7 @@ object frmArrivalsReport: TfrmArrivalsReport
     LoadedCompletely = False
     SavedCompletely = False
     FilterOptions = []
-    Version = '7.62.00 Standard Edition'
+    Version = '7.22.00 Standard Edition'
     LanguageID = 0
     SortID = 0
     SubLanguageID = 1
@@ -1231,7 +1225,7 @@ object frmArrivalsReport: TfrmArrivalsReport
     LoadedCompletely = False
     SavedCompletely = False
     FilterOptions = []
-    Version = '7.62.00 Standard Edition'
+    Version = '7.22.00 Standard Edition'
     LanguageID = 0
     SortID = 0
     SubLanguageID = 1
