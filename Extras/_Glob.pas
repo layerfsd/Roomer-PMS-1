@@ -81,8 +81,6 @@ function _strPadZeroL(const S : string; Len : integer) : string;
 function _dbStr(const aString : string; use_N_Prefix : boolean=true) : string;
 function _dbInt(const aInt : integer) : string;
 
-function SystemDecimalSeparator : char;
-
 function _db(const aString : string)   : string; Overload;
 function _db(const aString : char)   : string; Overload;
 function _dbNullIfEmpty(const aString : string)   : string; Overload;
@@ -227,7 +225,7 @@ function GetGridsIniFilename : String;
 
 implementation
 
-uses uDateUtils, uRegistryServices, uUtils, uG, uStringUtils, uAppGlobal, uRoomerDefinitions, PrjConst;
+uses uDateUtils, uRegistryServices, uUtils, uG, uStringUtils, uAppGlobal, uRoomerDefinitions, PrjConst, uFloatUtils;
 
 function GetRoomerIniFilename : String;
 begin
@@ -1124,8 +1122,8 @@ begin
   //
   Mask := '###,##0';
   fs := TFormatSettings.Create;
-  fs.ThousandSeparator := SystemThousandsSeparator;
-  fs.DecimalSeparator := SystemDecimalSeparator;
+//  fs.ThousandSeparator := SystemThousandsSeparator;
+//  fs.DecimalSeparator := SystemDecimalSeparator;
   // fs.CurrencyString := ' ISK';
 
   case RoundType of
@@ -2026,15 +2024,6 @@ begin
    end;
 end;
 
-
-function SystemDecimalSeparator : char;
-var
-  Decimal : PChar;
-begin
-  Decimal := StrAlloc(10);
-  GetLocaleInfo(LOCALE_SYSTEM_DEFAULT, LOCALE_SDECIMAL, Decimal, 10);
-  result := String(Decimal)[1];
-end;
 
 function RoomerQuotedString(s : String) : String;
 begin

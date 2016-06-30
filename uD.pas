@@ -10206,7 +10206,6 @@ procedure Td.roomerMainDataSetSessionExpired(Sender: TObject);
 var
   res: boolean;
 begin
-  // frmMain.timLogout.Enabled := true;
   if AlreadyLoggingIn then
     exit;
   AlreadyLoggingIn := False;

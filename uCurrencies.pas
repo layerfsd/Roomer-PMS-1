@@ -116,7 +116,7 @@ uses
   dxSkiniMaginary, dxSkinLilian, dxSkinLiquidSky, dxSkinLondonLiquidSky, dxSkinMoneyTwins, dxSkinOffice2007Black, dxSkinOffice2007Blue,
   dxSkinOffice2007Green, dxSkinOffice2007Pink, dxSkinOffice2007Silver, dxSkinOffice2010Black, dxSkinOffice2010Blue, dxSkinOffice2010Silver,
   dxSkinPumpkin, dxSkinSeven, dxSkinSevenClassic, dxSkinSharp, dxSkinSharpPlus, dxSkinSilver, dxSkinSpringTime, dxSkinStardust,
-  dxSkinSummer2008, dxSkinValentine, dxSkinVS2010, dxSkinWhiteprint, dxSkinXmas2008Blue
+  dxSkinSummer2008, dxSkinValentine, dxSkinVS2010, dxSkinWhiteprint, dxSkinXmas2008Blue, cxMaskEdit
   ;
 
 type
@@ -164,6 +164,10 @@ type
     FormStore: TcxPropertiesStore;
     pnlHolder: TsPanel;
     tvDataID: TcxGridDBColumn;
+    m_displayformat: TStringField;
+    m_decimals: TIntegerField;
+    tvDatadisplayformat: TcxGridDBColumn;
+    tvDatadecimals: TcxGridDBColumn;
     procedure FormCreate(Sender: TObject);
     procedure btnCancelClick(Sender: TObject);
     procedure btnInsertClick(Sender: TObject);
@@ -274,7 +278,7 @@ begin
       end
       else
       begin
-        initCurrencyHolder(theData);
+        theData.init;
       end;
     end;
   finally
@@ -289,7 +293,7 @@ function getCurrency(ed : TsComboEdit; lab : TsLabel) : boolean;
 var
   theData : recCurrencyHolder;
 begin
-  initCurrencyHolder(theData);
+  theData.init;
   theData.Currency := trim(ed.text);
   result := Currencies(actLookup,theData);
 
@@ -311,7 +315,7 @@ function CurrencyValidate(ed : TsComboEdit; lab: TsLabel) : boolean;
 var
   theData : recCurrencyHolder;
 begin
-  initCurrencyHolder(theData);
+  theData.init;
   theData.Currency := trim(ed.Text);
   result := hdata.GET_currencyHolderByCurrency(theData);
 
@@ -369,7 +373,7 @@ end;
 
 procedure  TfrmCurrencies.fillHolder;
 begin
-  initCurrencyHolder(zData);
+  zData.init;
   zData.ID                       := m_.fieldbyname('ID').asInteger;
   zData.currency                 := m_.fieldbyname('currency').asstring;
   zData.Description              := m_.fieldbyname('Description').asstring;
@@ -553,11 +557,12 @@ begin
   if zFirstTime then exit;
   nId := 0;
 
-  initCurrencyHolder(zData);
-  zData.currency      := dataset['currency'];
-  zData.Description   := dataset['Description'];
-  zData.Value         := dataset['AValue'];
-  zData.active        := dataset['active'];
+  zData.init;
+  zData.ReadFromDataset(dataset);
+//  zData.currency      := dataset['currency'];
+//  zData.Description   := dataset['Description'];
+//  zData.Value         := dataset['AValue'];
+//  zData.active        := dataset['active'];
 
   if tvData.DataController.DataSource.State = dsEdit then
   begin
@@ -768,7 +773,7 @@ end;
 
 procedure TfrmCurrencies.btnCancelClick(Sender: TObject);
 begin
-  initCurrencyHolder(zData);
+  zData.init
 end;
 
 procedure TfrmCurrencies.btnClearClick(Sender: TObject);

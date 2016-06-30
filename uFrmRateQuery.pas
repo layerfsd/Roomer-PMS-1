@@ -671,7 +671,6 @@ var
   dtA, dtD: TDateTime;
 begin
   dtA := dtArrival.Date;
-  dtD := dtDeparture.Date;
   dtD := dtA + edNights.Value;
   dtDeparture.Date := dtD;
   dtArrival.Date := dtA;
@@ -682,7 +681,6 @@ var
   dtA, dtD: TDateTime;
 begin
   dtA := dtArrival.Date;
-  dtD := dtDeparture.Date;
   edNights.Value := edNights.Value - 1;
   dtD := dtA + edNights.Value;
   if dtD <= dtA then

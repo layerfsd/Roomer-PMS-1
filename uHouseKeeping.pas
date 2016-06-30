@@ -986,7 +986,6 @@ var
   procedure GetHeders;
   var
     line : string;
-    s : string;
   begin
       lstHeader.Clear;
       MaidActions_.first;

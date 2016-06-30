@@ -123,7 +123,6 @@ type
     FCash: boolean;
     FInvoiceNumber: Integer;
     FExpanded : Boolean;
-    procedure CreateParams(var Params: TCreateParams); override;
     procedure prepareInvoice;
     procedure DisplayInvoice;
     procedure DisplayLines;
@@ -143,6 +142,8 @@ type
     function CurrentlySelectedPayment: TPaymentLine;
     procedure SetExpanded(const Value: Boolean);
     { Private declarations }
+  protected
+      procedure CreateParams(var Params: TCreateParams); override;
   public
     { Public declarations }
     property Reservation: Integer read FReservation write FReservation;
@@ -585,7 +586,7 @@ begin
   edtCity.Text := FInvoice.Address4;
   edtCountry.Text := FInvoice.Country;
 
-  edtCurrency.Text := FInvoice.Currency;
+  edtCurrency.Text := FInvoice.newCurrency;
   edtCurrencyRate.Text := FloatToXml(FInvoice.CurrencyRate, 5);
 
   DisplayLines;
@@ -638,7 +639,7 @@ begin
                         Rec.Notes,
                         d.roomerMainDataSet.username,
                         Now,
-                        FInvoice.Currency,
+                        FInvoice.newCurrency,
                         FInvoice.CurrencyRate,
                         0,
                         true

@@ -4101,6 +4101,10 @@ select_GET_CurrencyHolderByCurrency : string =
 '   ,ID '#10+
 '   ,Description '#10+
 '   ,AValue '#10+
+'   ,DisplayFormat '#10+
+'   ,Decimals '#10+
+'   ,CurrencySign'#10+
+'   ,SellValue '#10+
 '   ,Active '#10+
 ' FROM '#10+
 '   currencies '#10+

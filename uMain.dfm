@@ -95,7 +95,7 @@ object frmMain: TfrmMain
       Top = 173
       Width = 806
       Height = 304
-      ActivePage = tabOneDayView
+      ActivePage = tabPeriod
       Align = alClient
       TabOrder = 3
       OnChange = pageMainGridsChange
@@ -130,7 +130,6 @@ object frmMain: TfrmMain
           PopupMenu = mmnuOneDayGrid
           ScrollBars = ssBoth
           TabOrder = 0
-          OnClick = grOneDayRoomsClick
           OnDragDrop = grOneDayRoomsDragDrop
           OnDragOver = grOneDayRoomsDragOver
           OnDrawCell = grOneDayRoomsDrawCell
@@ -430,7 +429,6 @@ object frmMain: TfrmMain
       object tabGuestList: TsTabSheet
         Caption = 'tabGuestList'
         ImageIndex = 9
-        ExplicitWidth = 801
         object Panel3: TsPanel
           Left = 0
           Top = 0
@@ -440,7 +438,6 @@ object frmMain: TfrmMain
           BevelOuter = bvNone
           TabOrder = 0
           SkinData.SkinSection = 'TRANSPARENT'
-          ExplicitWidth = 801
           object rgrGroupreportStayType: TsRadioGroup
             Left = 2
             Top = 4
@@ -838,10 +835,6 @@ object frmMain: TfrmMain
       object tabPeriod: TsTabSheet
         Caption = 'tabPeriod'
         ImageIndex = 2
-        ExplicitLeft = 0
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
         object sLabel2: TsLabel
           Left = 224
           Top = 400
@@ -947,7 +940,6 @@ object frmMain: TfrmMain
             OnResize = grPeriodRoomsResize
             DragDropSettings.OleDropTarget = True
             DragDropSettings.OleDropSource = True
-            OnEndColumnSize = grPeriodRoomsEndColumnSize
             ActiveCellShow = True
             ActiveCellFont.Charset = DEFAULT_CHARSET
             ActiveCellFont.Color = clWindowText
@@ -1305,8 +1297,6 @@ object frmMain: TfrmMain
           OnMoved = splitPeriodMoved
           Color = 6842472
           ParentColor = False
-          ExplicitTop = 159
-          ExplicitWidth = 801
         end
         object pnlPeriodNoRooms: TsPanel
           Left = 0
@@ -1625,25 +1615,13 @@ object frmMain: TfrmMain
       end
       object tabFreeRooms: TsTabSheet
         Caption = 'tabFreeRooms'
-        ExplicitLeft = 0
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
       end
       object tabDashboard: TsTabSheet
         Caption = 'tabDashboard'
         SkinData.SkinSection = 'TRANSPARENT'
-        ExplicitLeft = 0
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
       end
       object tabRateQuery: TsTabSheet
         Caption = 'tabRateQuery'
-        ExplicitLeft = 0
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
       end
     end
     object panMainTop: TsPanel
@@ -2674,7 +2652,6 @@ object frmMain: TfrmMain
           ParentFont = False
           ScrollBars = ssBoth
           TabOrder = 2
-          OnDrawCell = grdRoomStatussesDrawCell
           ActiveRowColor = 15790320
           HoverRowCells = [hcNormal, hcSelected]
           OnGetAlignment = grdRoomStatussesGetAlignment
@@ -3078,6 +3055,7 @@ object frmMain: TfrmMain
     TabOrder = 3
     TabStop = False
     object rbTabHome: TdxRibbonTab
+      Active = True
       Caption = 'Roomer'
       Groups = <
         item
@@ -3130,7 +3108,6 @@ object frmMain: TfrmMain
       Index = 2
     end
     object rbTabReports: TdxRibbonTab
-      Active = True
       Caption = 'Reports'
       Groups = <
         item
@@ -3499,7 +3476,6 @@ object frmMain: TfrmMain
         426082}
       Proportional = True
       Transparent = True
-      OnMouseDown = Image2MouseDown
       ExplicitLeft = -248
       ExplicitTop = 8
     end
@@ -3564,7 +3540,6 @@ object frmMain: TfrmMain
     ParentCtl3D = False
     TabOrder = 7
     StyleElements = [seFont, seClient]
-    OnMouseDown = pnlRoomerLogoMouseDown
     SkinData.SkinSection = 'TRANSPARENT'
     object lblLogout: TsLabel
       Left = 256
@@ -6585,7 +6560,6 @@ object frmMain: TfrmMain
       Visible = ivNever
       LargeImageIndex = 26
       ShortCut = 16505
-      OnClick = btnLogOutClick
       AutoGrayScale = False
     end
     object btnClose: TdxBarLargeButton
@@ -9347,13 +9321,6 @@ object frmMain: TfrmMain
     MenuLineSkin = 'MENULINE'
     Left = 800
     Top = 344
-  end
-  object timLogout: TTimer
-    Enabled = False
-    Interval = 100
-    OnTimer = timLogoutTimer
-    Left = 592
-    Top = 600
   end
   object sSkinManager1: TsSkinManager
     Effects.AllowAeroBluring = False
@@ -24281,8 +24248,8 @@ object frmMain: TfrmMain
   object timCheckSessionExpired: TTimer
     Enabled = False
     OnTimer = timCheckSessionExpiredTimer
-    Left = 792
-    Top = 456
+    Left = 592
+    Top = 584
   end
   object timSearch: TTimer
     Enabled = False
