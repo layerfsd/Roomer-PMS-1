@@ -701,7 +701,10 @@ var
   taxItemCode : String;
 begin
   CurrencyRate := GetRate(Currency);
+  initCityTaxResultHolder(result);
   tax := currentlyValidTax;
+  if NOT Assigned(tax) then exit;
+
   if itemTypeInfoRent.Itemtype = '' then
     itemTypeInfoRent := d.Item_Get_ItemTypeInfo(trim(g.qRoomRentItem));
   if itemTypeInfoTax.Itemtype = '' then
@@ -712,8 +715,6 @@ begin
 
   StayTaxAmount    := 0.00;
   StayTaxUnitCount := 0.00;
-
-  initCityTaxResultHolder(result);
 
   if rentAmount <> 0 then
   begin

@@ -1537,7 +1537,7 @@ var
 
   // function test : boolean;
 
-function rSet_bySQL(rSet: TRoomerDataSet; sSQL: string; doLowerCase: boolean = true): boolean;
+function rSet_bySQL(rSet: TRoomerDataSet; sSQL: string; doLowerCase: boolean = true; SetLastAccess : Boolean = True): boolean;
 function cmd_bySQL(sSQL: string; performFilterTableNames : Boolean = True; async : Boolean = False): boolean;
 
 function S_execute(var rSet: TRoomerDataSet; ProcName: string; var lstParams: TstringList): boolean;
@@ -2153,7 +2153,7 @@ begin
 end;
 
 
-function rSet_bySQL(rSet: TRoomerDataSet; sSQL: string; doLowerCase: boolean = true): boolean;
+function rSet_bySQL(rSet: TRoomerDataSet; sSQL: string; doLowerCase: boolean = true; SetLastAccess : Boolean = True): boolean;
 var
   errMsg: string;
 begin
@@ -2173,7 +2173,7 @@ begin
   else
     rSet.CommandText := FilterTablenames(sSQL);
   try
-    rSet.open(doLowerCase);
+    rSet.open(doLowerCase, SetLastAccess);
     result := not rSet.Eof;
   except
     on e: exception do
@@ -9841,8 +9841,9 @@ begin
     Booking_Item := '';
     Incl_Excl := 'EXCLUDED';
     NETTO_AMOUNT_BASED := 'TRUE';
+    Amount := 0;
     VALUE_FORMULA := '';
-    VALID_FROM := now;
+    VALID_FROM := 0;
     VALID_TO := now + (10 * 365);
   end;
 end;

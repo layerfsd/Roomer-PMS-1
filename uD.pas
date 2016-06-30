@@ -13715,7 +13715,7 @@ begin
     s := s + '    INNER JOIN items i ON item=co.RoomRentItem '#10;
     s := s + '    INNER JOIN itemtypes it ON it.ItemType=i.ItemType '#10;
     s := s + '    INNER JOIN vatcodes vc ON vc.VATCode=it.VatCode '#10;
-    s := s + '    JOIN home100.TAXES tax ON HOTEL_ID=(Select companyID from control LIMIT 1) AND CURRENT_DATE>=VALID_FROM AND CURRENT_DATE<=VALID_TO '#10;
+    s := s + '    LEFT JOIN home100.TAXES tax ON HOTEL_ID=(Select companyID from control LIMIT 1) AND CURRENT_DATE>=VALID_FROM AND CURRENT_DATE<=VALID_TO '#10;
 
     s := s + ' WHERE '#10;
     s := s + ' ( confirmDate = ' + _db(sUnconfirmedDate) + ' ) ';
@@ -13996,7 +13996,7 @@ begin
     s := s + '   INNER JOIN items i ON item=co.RoomRentItem '#10;
     s := s + '   INNER JOIN itemtypes it ON it.ItemType=i.ItemType '#10;
     s := s + '   INNER JOIN vatcodes vc ON vc.VATCode=it.VatCode '#10;
-    s := s + '   JOIN home100.TAXES tax ON HOTEL_ID=(Select companyID from control LIMIT 1) AND CURRENT_DATE>=VALID_FROM AND CURRENT_DATE<=VALID_TO '#10;
+    s := s + '   LEFT JOIN home100.TAXES tax ON HOTEL_ID=(Select companyID from control LIMIT 1) AND CURRENT_DATE>=VALID_FROM AND CURRENT_DATE<=VALID_TO '#10;
     s := s + ' WHERE '#10;
     s := s + ' ( confirmDate > ' + _db(sUnconfirmedDate) + ' ) ';
     s := s + ' AND ( '#10;
@@ -14080,7 +14080,7 @@ begin
     s := s + '   INNER JOIN items i ON item=co.RoomRentItem '#10;
     s := s + '   INNER JOIN itemtypes it ON it.ItemType=i.ItemType '#10;
     s := s + '   INNER JOIN vatcodes vc ON vc.VATCode=it.VatCode '#10;
-    s := s + '   JOIN home100.TAXES tax ON HOTEL_ID=(Select companyID from control LIMIT 1) AND CURRENT_DATE>=VALID_FROM AND CURRENT_DATE<=VALID_TO '#10;
+    s := s + '   LEFT JOIN home100.TAXES tax ON HOTEL_ID=(Select companyID from control LIMIT 1) AND CURRENT_DATE>=VALID_FROM AND CURRENT_DATE<=VALID_TO '#10;
     s := s + ' WHERE '#10;
     s := s + ' ( confirmDate > ' + _db(sUnconfirmedDate) + ' )  '#10;
     s := s + ' AND ( ResFlag in (' + _db('X') + ',' + _db('C') + ')) ';

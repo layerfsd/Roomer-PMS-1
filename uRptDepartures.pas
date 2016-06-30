@@ -43,27 +43,27 @@ type
     mnuInvoice: TMenuItem;
     mnuRoomInvoice: TMenuItem;
     mnuGroupInvoice: TMenuItem;
-    tvDeparturesList: TcxGridDBTableView;
     lvDeparturesList: TcxGridLevel;
     grDeparturesList: TcxGrid;
-    tvDeparturesListCheckOutDate: TcxGridDBColumn;
-    tvDeparturesListRoomerReservationId: TcxGridDBColumn;
-    tvDeparturesListRoomerRoomReservationId: TcxGridDBColumn;
-    tvDeparturesListRoom: TcxGridDBColumn;
-    tvDeparturesListRoomType: TcxGridDBColumn;
-    tvDeparturesListGuestName: TcxGridDBColumn;
-    tvDeparturesListNumGuests: TcxGridDBColumn;
-    tvDeparturesListArrival: TcxGridDBColumn;
-    tvDeparturesListDeparture: TcxGridDBColumn;
-    tvDeparturesListExpectedCheckOutTime: TcxGridDBColumn;
-    tvDeparturesListCustomer: TcxGridDBColumn;
-    tvDeparturesListCompanyName: TcxGridDBColumn;
-    tvDeparturesListNumNights: TcxGridDBColumn;
-    tvDeparturesListAverageRatePerNight: TcxGridDBColumn;
-    tvDeparturesListTotalRent: TcxGridDBColumn;
-    tvDeparturesListTotalSale: TcxGridDBColumn;
-    tvDeparturesListTotalPayments: TcxGridDBColumn;
-    tvDeparturesListBalance: TcxGridDBColumn;
+    tvDeparturesList: TcxGridDBBandedTableView;
+    tvDeparturesListCheckOutDate: TcxGridDBBandedColumn;
+    tvDeparturesListRoomerReservationId: TcxGridDBBandedColumn;
+    tvDeparturesListRoomerRoomReservationId: TcxGridDBBandedColumn;
+    tvDeparturesListRoom: TcxGridDBBandedColumn;
+    tvDeparturesListRoomType: TcxGridDBBandedColumn;
+    tvDeparturesListGuestName: TcxGridDBBandedColumn;
+    tvDeparturesListNumGuests: TcxGridDBBandedColumn;
+    tvDeparturesListArrival: TcxGridDBBandedColumn;
+    tvDeparturesListDeparture: TcxGridDBBandedColumn;
+    tvDeparturesListExpectedCheckOutTime: TcxGridDBBandedColumn;
+    tvDeparturesListCustomer: TcxGridDBBandedColumn;
+    tvDeparturesListCompanyName: TcxGridDBBandedColumn;
+    tvDeparturesListNumNights: TcxGridDBBandedColumn;
+    tvDeparturesListAverageRatePerNight: TcxGridDBBandedColumn;
+    tvDeparturesListTotalRent: TcxGridDBBandedColumn;
+    tvDeparturesListTotalSale: TcxGridDBBandedColumn;
+    tvDeparturesListTotalPayments: TcxGridDBBandedColumn;
+    tvDeparturesListBalance: TcxGridDBBandedColumn;
     procedure FormCreate(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure rbRadioButtonClick(Sender: TObject);
@@ -79,6 +79,9 @@ type
       AShift: TShiftState; var AHandled: Boolean);
     procedure dtDateFromCloseUp(Sender: TObject);
     procedure dtDateToCloseUp(Sender: TObject);
+    procedure tvDeparturesListAverageRatePerNightGetProperties(
+      Sender: TcxCustomGridTableItem; ARecord: TcxCustomGridRecord;
+      var AProperties: TcxCustomEditProperties);
   private
     FRefreshingdata: boolean;
     { Private declarations }
@@ -424,6 +427,13 @@ begin
   dtDateTo.Date := aTo;
 end;
 
+procedure TfrmDeparturesReport.tvDeparturesListAverageRatePerNightGetProperties(
+  Sender: TcxCustomGridTableItem; ARecord: TcxCustomGridRecord;
+  var AProperties: TcxCustomEditProperties);
+begin
+  AProperties := d.getCurrencyProperties(g.qNativeCurrency);
+end;
+
 procedure TfrmDeparturesReport.UpdateControls;
 var
   lDataAvailable: boolean;
@@ -453,3 +463,6 @@ begin
 end;
 
 end.
+
+
+

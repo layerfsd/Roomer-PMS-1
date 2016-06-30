@@ -1106,7 +1106,7 @@ begin
            '    JOIN items i ON i.Item=c.RoomRentItem ' +
            '    JOIN itemtypes it ON it.ItemType=i.ItemType ' +
            '    JOIN vatcodes v ON v.VATCode=it.VATCode ' +
-           '    JOIN home100.TAXES t ON HOTEL_ID=TRIM(SUBSTR(DATABASE(), 9, 15)) AND (rd.ADate BETWEEN t.VALID_FROM AND t.VALID_TO) ' +
+           '    LEFT JOIN home100.TAXES t ON HOTEL_ID=TRIM(SUBSTR(DATABASE(), 9, 15)) AND (rd.ADate BETWEEN t.VALID_FROM AND t.VALID_TO) ' +
            'WHERE (((%d = 0) AND rd.Reservation = %d) OR rd.RoomReservation = %d) AND rr.InvoiceIndex = %d AND NOT (rd.ResFlag IN (''C'',''X'')) ' +
            'GROUP BY rd.Reservation, rd.RoomReservation ' +
            ') xxx ' +

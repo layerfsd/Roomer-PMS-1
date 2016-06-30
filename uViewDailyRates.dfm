@@ -139,7 +139,7 @@ object FrmViewDailyRates: TFrmViewDailyRates
       SearchFooter.HintHighlight = 'Highlight occurrences'
       SearchFooter.MatchCaseCaption = 'Match case'
       SortSettings.DefaultFormat = ssAutomatic
-      Version = '7.9.1.0'
+      Version = '7.9.1.1'
       ExplicitHeight = 411
       ColWidths = (
         100

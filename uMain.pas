@@ -9307,8 +9307,7 @@ begin
     begin
       lblAuthStatus.Caption := GetTranslatedText('shTx_Main_AutoLoggedOff');
       btnLogOutClick(nil);
-    end
-    else
+    end else
     begin
       res := d.roomerMainDataSet.KeepSessionAlive;
     end;
@@ -12949,17 +12948,12 @@ end;
 
 procedure TfrmMain.btnLogOutClick(Sender: TObject);
 begin
+  if Sender <> nil then
+  begin
+    lblAuthStatus.Caption := GetTranslatedText('shTx_Main_LoggedOut');
+  end;
+  _Logout;
 end;
-
-
-// procedure TfrmMain.btnLogOutClick(Sender: TObject);
-// begin
-// if Sender <> nil then
-// begin
-// lblAuthStatus.Caption := GetTranslatedText('shTx_Main_LoggedOut');
-// end;
-// _Logout;
-// end;
 
 procedure TfrmMain.btnLostAndFoundClick(Sender: TObject);
 begin
