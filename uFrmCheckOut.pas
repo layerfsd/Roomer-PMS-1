@@ -9,12 +9,9 @@ uses
 
 type
   TFrmCheckOut = class(TForm)
-    panBtn: TsPanel;
-    btnCancel: TsButton;
-    BtnCheckOut: TsButton;
     StoreMain: TcxPropertiesStore;
+    sLabel1: TsLabel;
     pnlRoomBalance: TsPanel;
-    pnlGroupBalance: TsPanel;
     __lblRoomBalance: TsLabel;
     sLabel33: TsLabel;
     lbRoomRent: TsLabel;
@@ -28,6 +25,11 @@ type
     lbSubTotal: TsLabel;
     lbBalance: TsLabel;
     sLabel42: TsLabel;
+    Shape1: TShape;
+    Shape2: TShape;
+    lbCurrency: TsLabel;
+    btnRoomInvoice: TsButton;
+    pnlGroupBalance: TsPanel;
     __lblGroupBalance: TsLabel;
     sLabel2: TsLabel;
     lbRoomRentGr: TsLabel;
@@ -41,21 +43,21 @@ type
     lbSubTotalGr: TsLabel;
     lbBalanceGr: TsLabel;
     sLabel13: TsLabel;
-    Shape1: TShape;
-    Shape2: TShape;
     Shape3: TShape;
     Shape4: TShape;
-    btnRoomInvoice: TsButton;
+    lbCurrencyGr: TsLabel;
     btnGroupInvoice: TsButton;
     cbxForce: TsCheckBox;
-    sLabel1: TsLabel;
-    lbCurrency: TsLabel;
-    lbCurrencyGr: TsLabel;
+    panBtn: TsPanel;
+    btnCancel: TsButton;
+    BtnCheckOut: TsButton;
     procedure cbxForceClick(Sender: TObject);
     procedure btnRoomInvoiceClick(Sender: TObject);
     procedure btnGroupInvoiceClick(Sender: TObject);
     procedure BtnCheckOutClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
+    procedure FormShow(Sender: TObject);
   private
     FReservation: Integer;
     FRoomReservation: Integer;
@@ -85,7 +87,17 @@ implementation
 
 {$R *.dfm}
 
-uses _Glob, uD, PrjConst, uInvoice, uRoomerLanguage, uAppGlobal, uUtils;
+uses
+    _Glob
+  , uD
+  , PrjConst
+  , uInvoice
+  , uRoomerLanguage
+  , uAppGlobal
+  , uUtils
+  , uCurrencyHandler
+  , Math
+  ;
 
 procedure CheckoutGuestNoDialog(Reservation, RoomReservation: Integer; RoomNumber: String);
 var
@@ -96,8 +108,6 @@ begin
     _FrmCheckOut.Reservation := Reservation;
     _FrmCheckOut.RoomReservation := RoomReservation;
     _FrmCheckOut.RoomNumber := RoomNumber;
-
-    _FrmCheckOut.prepareInvoice;
 
     _FrmCheckOut.ShowModal;
     _FrmCheckOut.BringToFront;
@@ -113,37 +123,63 @@ begin
 end;
 
 procedure TFrmCheckOut.DisplayInvoice;
+var
+  lCurrencyHandler: TCurrencyHandler;
 begin
   sLabel1.Visible := False;
-  with FRoomInvoice do begin
-    lbCurrency.Caption    := Currency;
-    lbRoomRent.Caption    := Trim(_floatToStr(TotalRoomRent, 12, 2));
-    lbSales.Caption       := Trim(_floatToStr(TotalSales, 12, 2));
-    lbTaxes.Caption       := Trim(_floatToStr(TotalTaxes, 12, 2));
-    lbSubTotal.Caption    := Trim(_floatToStr(TotalRoomRent+TotalSales+TotalTaxes, 12, 2));
-    lbPayments.Caption    := Trim(_floatToStr(TotalPayments, 12, 2));
-    lbBalance.Caption     := Trim(_floatToStr(Balance, 12, 2));
-    pnlRoomBalance.Visible := Round(Balance) <> 0;
 
-    __lblGroupBalance.Caption := format(GetTranslatedText('shUI_Checkout_RoomHeader'), [RoomNumber]);
+  if FRoomInvoice.InvoiceLines.Count > 0 then with FRoomInvoice do
+  begin
+    lCurrencyHandler := TCurrencyHandler.Create(newCurrency);
+    try
+      pnlRoomBalance.Visible := not SameValue(lCurrencyHandler.RoundedValue(Balance), 0);
+      if pnlRoomBalance.Visible then
+      begin
+        lbCurrency.Caption    := newCurrency;
+        lbRoomRent.Caption    := lCurrencyHandler.FormattedValue(TotalRoomRent);
+        lbSales.Caption       := lCurrencyHandler.FormattedValue(TotalSales);
+        lbTaxes.Caption       := lCurrencyHandler.FormattedValue(TotalTaxes);
+        lbSubTotal.Caption    := lCurrencyHandler.FormattedValue(lCurrencyHandler.RoundedValue(TotalRoomRent) +
+                                                                 lCurrencyHandler.RoundedValue(TotalSales) +
+                                                                 lCurrencyHandler.RoundedValue(TotalTaxes));
+        lbPayments.Caption    := lCurrencyHandler.FormattedValue(TotalPayments);
+        lbBalance.Caption     := lCurrencyHandler.FormattedValue(Balance);
+
+        __lblGroupBalance.Caption := format(GetTranslatedText('shUI_Checkout_RoomHeader'), [RoomNumber]);
+      end;
+    finally
+      lCurrencyHandler.Free;
+    end;
   end;
 
-  with FGroupInvoice do begin
-    lbCurrencyGr.Caption  := Currency;
-    lbRoomRentGr.Caption  := Trim(_floatToStr(TotalRoomRent, 12, 2));
-    lbSalesGr.Caption     := Trim(_floatToStr(TotalSales, 12, 2));
-    lbTaxesGr.Caption     := Trim(_floatToStr(TotalTaxes, 12, 2));
-    lbSubTotalGr.Caption  := Trim(_floatToStr(TotalRoomRent+TotalSales+TotalTaxes, 12, 2));
-    lbPaymentsGr.Caption  := Trim(_floatToStr(TotalPayments, 12, 2));
-    lbBalanceGr.Caption   := Trim(_floatToStr(Balance, 12, 2));
-    pnlGroupBalance.Visible := Round(Balance) <> 0;
+  if FGroupInvoice.InvoiceLines.Count > 0 then with FGroupInvoice do
+  begin
+    lCurrencyHandler := TCurrencyHandler.Create(newCurrency);
+    try
+      pnlGroupBalance.Visible := not SameValue(lCurrencyHandler.RoundedValue(Balance), 0);
+      if pnlGroupBalance.Visible then
+      begin
+        lbCurrencyGr.Caption  := newCurrency;
+        lbRoomRentGr.Caption  := lCurrencyHandler.FormattedValue(TotalRoomRent);
+        lbSalesGr.Caption     := lCurrencyHandler.FormattedValue(TotalSales);
+        lbTaxesGr.Caption     := lCurrencyHandler.FormattedValue(TotalTaxes);
+        lbSubTotalGr.Caption  := lCurrencyHandler.FormattedValue(lCurrencyHandler.RoundedValue(TotalRoomRent) +
+                                                                 lCurrencyHandler.RoundedValue(TotalSales) +
+                                                                 lCurrencyHandler.RoundedValue(TotalTaxes));
+        lbPaymentsGr.Caption  := lCurrencyHandler.FormattedValue(TotalPayments);
+        lbBalanceGr.Caption   := lCurrencyHandler.FormattedValue(Balance);
 
-    __lblGroupBalance.Caption := format(GetTranslatedText('shUI_Checkout_GroupHeader'), [NumberOfRentLines]);
+        __lblGroupBalance.Caption := format(GetTranslatedText('shUI_Checkout_GroupHeader'), [NumberOfRentLines]);
+      end;
+    finally
+      lCurrencyHandler.Free;
+    end;
   end;
 
-  cbxForce.Visible := (Round(FRoomInvoice.Balance) = 0) AND (Round(FGroupInvoice.Balance) <> 0);
+  cbxForce.Visible := SameValue(FRoomInvoice.Balance, 0) AND not SameValue(FGroupInvoice.Balance, 0);
   BtnCheckOut.Enabled := ((NOT pnlRoomBalance.Visible) AND (NOT pnlGroupBalance.Visible));
   sLabel1.Visible := BtnCheckOut.Enabled;
+
 end;
 
 procedure TFrmCheckOut.FormCreate(Sender: TObject);
@@ -151,6 +187,17 @@ begin
   RoomerLanguage.TranslateThisForm(self);
   glb.PerformAuthenticationAssertion(self);
   PlaceFormOnVisibleMonitor(self);
+end;
+
+procedure TFrmCheckOut.FormDestroy(Sender: TObject);
+begin
+  FRoomInvoice.Free;
+  FGroupInvoice.Free;
+end;
+
+procedure TFrmCheckOut.FormShow(Sender: TObject);
+begin
+  prepareInvoice;
 end;
 
 procedure TFrmCheckOut.prepareInvoice;

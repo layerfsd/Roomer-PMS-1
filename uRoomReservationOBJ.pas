@@ -479,7 +479,7 @@ begin
              'JOIN items i ON i.Item=co.RoomRentItem ' +
              'JOIN itemtypes it ON it.ItemType=i.ItemType ' +
              'JOIN vatcodes vc ON vc.VATCode=it.VATCode ' +
-             'JOIN home100.TAXES tax ON HOTEL_ID = co.CompanyID ' +
+             'LEFT JOIN home100.TAXES tax ON HOTEL_ID = co.CompanyID ' +
              'AND VALID_FROM <= rd.ADate ' +
              'AND VALID_TO >= rd.ADate ';
 

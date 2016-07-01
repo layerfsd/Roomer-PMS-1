@@ -174,7 +174,7 @@ object frmRptResInvoices: TfrmRptResInvoices
         MaxLength = 10
         ParentFont = False
         TabOrder = 0
-        Text = '  -  -    '
+        Text = '  .  .    '
         OnChange = dtDateFromChange
         CheckOnExit = True
         SkinData.SkinSection = 'EDIT'
@@ -197,7 +197,7 @@ object frmRptResInvoices: TfrmRptResInvoices
         MaxLength = 10
         ParentFont = False
         TabOrder = 1
-        Text = '  -  -    '
+        Text = '  .  .    '
         OnChange = dtDateFromChange
         CheckOnExit = True
         SkinData.SkinSection = 'EDIT'
@@ -442,10 +442,8 @@ object frmRptResInvoices: TfrmRptResInvoices
     OnPageChanging = tabsMainPageChanging
     object tabOpenInvoices: TsTabSheet
       Caption = 'Item summery'
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
+      SkinData.CustomColor = False
+      SkinData.CustomFont = False
       object sPanel3: TsPanel
         Left = 0
         Top = 0
@@ -521,10 +519,8 @@ object frmRptResInvoices: TfrmRptResInvoices
     end
     object tabFinishedInvoices: TsTabSheet
       Caption = 'Closed Invoice list'
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
+      SkinData.CustomColor = False
+      SkinData.CustomFont = False
       object sPanel2: TsPanel
         Left = 0
         Top = 0
@@ -926,6 +922,8 @@ object frmRptResInvoices: TfrmRptResInvoices
     end
     object sTabSheet1: TsTabSheet
       Caption = 'Open Invoice list'
+      SkinData.CustomColor = False
+      SkinData.CustomFont = False
       object sPanel4: TsPanel
         Left = 0
         Top = 0
@@ -1200,7 +1198,7 @@ object frmRptResInvoices: TfrmRptResInvoices
     LoadedCompletely = False
     SavedCompletely = False
     FilterOptions = []
-    Version = '7.22.00 Standard Edition'
+    Version = '7.62.00 Standard Edition'
     LanguageID = 0
     SortID = 0
     SubLanguageID = 1
@@ -1377,7 +1375,7 @@ object frmRptResInvoices: TfrmRptResInvoices
       end
       item
         Name = 'Items'
-        DataType = ftInteger
+        DataType = ftFloat
       end
       item
         Name = 'ItemNumber'
@@ -1396,7 +1394,7 @@ object frmRptResInvoices: TfrmRptResInvoices
     LoadedCompletely = False
     SavedCompletely = False
     FilterOptions = []
-    Version = '7.22.00 Standard Edition'
+    Version = '7.62.00 Standard Edition'
     LanguageID = 0
     SortID = 0
     SubLanguageID = 1
@@ -1520,7 +1518,7 @@ object frmRptResInvoices: TfrmRptResInvoices
     LoadedCompletely = False
     SavedCompletely = False
     FilterOptions = []
-    Version = '7.22.00 Standard Edition'
+    Version = '7.62.00 Standard Edition'
     LanguageID = 0
     SortID = 0
     SubLanguageID = 1

@@ -249,7 +249,7 @@ begin
          'JOIN roomreservations rr ON rr.RoomReservation=rd.RoomReservation ' +
          'JOIN reservations r ON r.Reservation=rd.Reservation ' +
          'JOIN customers cu ON cu.Customer=r.Customer ' +
-         'JOIN home100.TAXES tx ON HOTEL_ID=%s AND VALID_FROM<=rd.ADate AND VALID_TO>=rd.ADate ' +
+         'LEFT JOIN home100.TAXES tx ON HOTEL_ID=%s AND VALID_FROM<=rd.ADate AND VALID_TO>=rd.ADate ' +
          'JOIN control co ' +
          'JOIN items i ON i.Item=co.RoomRentItem ' +
          'JOIN itemtypes it ON it.ItemType=i.ItemType ' +

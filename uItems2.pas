@@ -101,7 +101,7 @@ uses
 
 type
   {$SCOPEDENUMS ON}
-  TShowItemOfType = (All, BreakfastItems, StockItems, MinibarItems, ShowAvailability);
+  TShowItemOfType = (All, BreakfastItems, StockItems, NonStockitems, MinibarItems, ShowAvailability);
   TShowItemOfTypeSet = set of TShowItemOfType;
 
   TfrmItems2 = class(TForm)
@@ -460,6 +460,12 @@ begin
         lFilterExpr.Append(' or');
       end;
 
+      if TShowItemOfType.NonStockItems in FShowItemsOfType then
+      begin
+        lFilterExpr.Append(' (stockitem=0)');
+        lFilterExpr.Append(' or');
+      end;
+
       if TShowItemOfType.BreakfastItems in FShowItemsOfType then
       begin
         lFilterExpr.Append(' (breakfastitem=1)');
@@ -778,6 +784,13 @@ begin
   end
   else
     tvDataAvailableStock.Visible := False;
+
+  if (TShowItemOfType.NonStockitems in FShowItemsOfType) then
+  begin
+    tvDataAvailableStock.Visible := false;
+    tvDataStockItem.Visible := false;
+    tvDataTotalStock.Visible := false;
+  end;
 
   tvDataTotalStock.Visible := not tvDataAvailableStock.Visible;
 

@@ -379,8 +379,6 @@ type
       var AProperties: TcxCustomEditProperties);
     procedure tvRoomsDateincomeTotalGetProperties(Sender: TcxCustomGridTableItem; ARecord: TcxCustomGridRecord;
       var AProperties: TcxCustomEditProperties);
-    procedure tvRoomsDateTaxesUnbilledGetProperties(Sender: TcxCustomGridTableItem; ARecord: TcxCustomGridRecord;
-      var AProperties: TcxCustomEditProperties);
     procedure pg001AvrRateCalculateCustomSummary(Sender: TcxPivotGridField;
       ASummary: TcxPivotGridCrossCellSummary);
     procedure sSpeedButton1Click(Sender: TObject);
@@ -800,8 +798,6 @@ begin
   zItemTypeInfoRent := d.Item_Get_ItemTypeInfo(trim(g.qRoomRentItem));
   zItemTypeInfoTax  := d.Item_Get_ItemTypeInfo(trim(zTaxesItem));
 
-   zTaxesHolder := GetTaxesHolder;
-
   zRoomRentVATPercentage := 0;
   RoomRentType := '';
   if glb.Items.Locate('item',zRoomRentItem,[]) then
@@ -1053,12 +1049,6 @@ procedure TfrmRptResStats.tvRoomsDateincomeTotalGetProperties(Sender: TcxCustomG
   var AProperties: TcxCustomEditProperties);
 begin
    AProperties := d.getCurrencyProperties(g.qNativeCurrency);
-end;
-
-procedure TfrmRptResStats.tvRoomsDateTaxesUnbilledGetProperties(Sender: TcxCustomGridTableItem; ARecord: TcxCustomGridRecord;
-  var AProperties: TcxCustomEditProperties);
-begin
-
 end;
 
 //---------------------------------------------------------------------

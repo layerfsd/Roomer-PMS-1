@@ -1,19 +1,22 @@
-unit uMain;
+ï»¿unit uMain;
 
 interface
 
 uses
-  Windows, Messages, IOUtils, System.Generics.Collections, IdComponent, SysUtils, Classes, Graphics, Controls, Forms, Dialogs, ExtCtrls, Grids, ComCtrls, Db,
+  Windows, Messages, IOUtils, System.Generics.Collections, IdComponent, SysUtils, Classes, Graphics, Controls, Forms,
+  Dialogs, ExtCtrls, Grids, ComCtrls, Db,
   ADODB, ActiveX, StdCtrls, Menus, Mask, ComObj, ShellApi, Inifiles, ImgList, Buttons, Vcl.AppEvnts,
   uReservationHintHolder, uEmbOccupancyView, uEmbPeriodView, uGuestProfiles, uStaffCommunication
-  , uAllotmentToRes
-  , uRoomerContainerClasses
+    , uAllotmentToRes
+    , uRoomerContainerClasses
 
   // Roomer
-    , PrjConst, uReservationObjects, uRoomDatesOBJ, objRoomList2, objDayFreeRooms, objRoomTypeRoomCount, _Glob, hData, ug, uDImages, uAppGlobal, uHomedate,
-  uPackages, cmpRoomerConnection, objNewReservation, uChannelAvailabilityManager, cmpRoomerDataSet, RoomerLoginForm, uUtils, uFileSystemUtils,
+    , PrjConst, uReservationObjects, uRoomDatesOBJ, objRoomList2, objDayFreeRooms, objRoomTypeRoomCount, _Glob, hData,
+  ug, uDImages, uAppGlobal, uHomedate,
+  uPackages, cmpRoomerConnection, objNewReservation, uChannelAvailabilityManager, cmpRoomerDataSet, RoomerLoginForm,
+  uUtils, uFileSystemUtils,
   uTransparentPanel, uAlerts
-  , uFrmMessagesTemplates
+    , uFrmMessagesTemplates
   // Other
     , NativeXML, kbmMemTable
 
@@ -21,7 +24,8 @@ uses
     , AdvGrid, AdvEdit, AdvEdBtn, PlannerDatePicker, AdvObj, asgprint, BaseGrid
 
   // ReportBuilder
-    , ppDB, ppDBPipe, ppParameter, ppDesignLayer, ppCtrls, ppBands, ppStrtch, ppMemo, ppClass, ppPrnabl, ppCache, ppComm, ppRelatv, ppProd, ppReport
+    , ppDB, ppDBPipe, ppParameter, ppDesignLayer, ppCtrls, ppBands, ppStrtch, ppMemo, ppClass, ppPrnabl, ppCache,
+  ppComm, ppRelatv, ppProd, ppReport
 
     , TeEngine, Series, TeeProcs, Chart, htmlhint, HTMLabel, uRoomerLanguage
 
@@ -29,27 +33,37 @@ uses
     , acPNG, acAlphaImageList, acProgressBar, acTitleBar
 
   // Alpha cotroles
-    , sSkinProvider, sSkinManager, sPanel, sLabel, sGroupBox, sTabControl, sButton, sEdit, sSpeedButton, sPageControl, sCheckBox, sListBox, sSplitter, sDialogs,
+    , sSkinProvider, sSkinManager, sPanel, sLabel, sGroupBox, sTabControl, sButton, sEdit, sSpeedButton, sPageControl,
+  sCheckBox, sListBox, sSplitter, sDialogs,
   sMemo, sMaskEdit, sCustomComboEdit, sTooledit, sComboBox
 
     , dxSkinsLookAndFeelPainter
 
-    , dxRibbonSkins, dxBar, dxBarExtItems, dxRibbon, dxPScxGridLnk, dxBarApplicationMenu, dxGDIPlusClasses, dxPSGlbl, dxPSUtl, dxPSEngn, dxPrnPg, dxBkgnd,
+    , dxRibbonSkins, dxBar, dxBarExtItems, dxRibbon, dxPScxGridLnk, dxBarApplicationMenu, dxGDIPlusClasses, dxPSGlbl,
+  dxPSUtl, dxPSEngn, dxPrnPg, dxBkgnd,
   dxWrap, dxPrnDev, dxPSCompsProvider, dxPSFillPatterns, dxPSEdgePatterns, dxPSPDFExportCore
 
-    , dxCore, cxClasses, cxGridExportLink, cxGraphics, cxControls, cxLookAndFeels, cxLookAndFeelPainters, cxContainer, cxEdit, cxDropDownEdit,
-  cxPropertiesStore, cxBarEditItem, cxSplitter, cxGridLevel, cxGridCustomTableView, cxGridTableView, cxGridDBTableView, cxGridCustomView, cxGrid, cxButtons,
+    , dxCore, cxClasses, cxGridExportLink, cxGraphics, cxControls, cxLookAndFeels, cxLookAndFeelPainters, cxContainer,
+  cxEdit, cxDropDownEdit,
+  cxPropertiesStore, cxBarEditItem, cxSplitter, cxGridLevel, cxGridCustomTableView, cxGridTableView, cxGridDBTableView,
+  cxGridCustomView, cxGrid, cxButtons,
   cxStyles, cxCustomData, cxFilter, cxData, cxDataStorage, cxNavigator, cxDBData
 
-    , dxPSPDFExport, dxPSPrVwStd, dxPSPrVwAdv, dxPSPrVwRibbon, dxPScxPageControlProducer, dxPScxEditorProducers, dxPScxExtEditorProducers, dxPSCore
+    , dxPSPDFExport, dxPSPrVwStd, dxPSPrVwAdv, dxPSPrVwRibbon, dxPScxPageControlProducer, dxPScxEditorProducers,
+  dxPScxExtEditorProducers, dxPSCore
 
   // DevExpress skins
-    , dxSkinsCore, dxSkinDarkSide, dxSkinDevExpressDarkStyle, dxSkinMcSkin, dxSkinOffice2013White, dxSkinsDefaultPainters, dxSkinscxPCPainter,
+    , dxSkinsCore, dxSkinDarkSide, dxSkinDevExpressDarkStyle, dxSkinMcSkin, dxSkinOffice2013White,
+  dxSkinsDefaultPainters, dxSkinscxPCPainter,
   dxSkinsdxRibbonPainter, dxSkinsdxBarPainter, dxSkinsForm, dxSkinCaramel, dxSkinCoffee, dxSkinTheAsphaltWorld,
-  dxSkinBlack, dxSkinBlue, dxSkinBlueprint, dxSkinDarkRoom, dxSkinDevExpressStyle, dxSkinFoggy, dxSkinGlassOceans, dxSkinHighContrast,
-  dxSkiniMaginary, dxSkinLilian, dxSkinLiquidSky, dxSkinLondonLiquidSky, dxSkinMoneyTwins, dxSkinOffice2007Black, dxSkinOffice2007Blue,
-  dxSkinOffice2007Green, dxSkinOffice2007Pink, dxSkinOffice2007Silver, dxSkinOffice2010Black, dxSkinOffice2010Blue, dxSkinOffice2010Silver,
-  dxSkinPumpkin, dxSkinSeven, dxSkinSevenClassic, dxSkinSharp, dxSkinSharpPlus, dxSkinSilver, dxSkinSpringTime, dxSkinStardust,
+  dxSkinBlack, dxSkinBlue, dxSkinBlueprint, dxSkinDarkRoom, dxSkinDevExpressStyle, dxSkinFoggy, dxSkinGlassOceans,
+  dxSkinHighContrast,
+  dxSkiniMaginary, dxSkinLilian, dxSkinLiquidSky, dxSkinLondonLiquidSky, dxSkinMoneyTwins, dxSkinOffice2007Black,
+  dxSkinOffice2007Blue,
+  dxSkinOffice2007Green, dxSkinOffice2007Pink, dxSkinOffice2007Silver, dxSkinOffice2010Black, dxSkinOffice2010Blue,
+  dxSkinOffice2010Silver,
+  dxSkinPumpkin, dxSkinSeven, dxSkinSevenClassic, dxSkinSharp, dxSkinSharpPlus, dxSkinSilver, dxSkinSpringTime,
+  dxSkinStardust,
   dxSkinSummer2008, dxSkinValentine, dxSkinVS2010, dxSkinWhiteprint, dxSkinXmas2008Blue, sScrollBox, acImage, AdvUtil
 
     ;
@@ -63,7 +77,7 @@ type
     FRoomType: STring;
     FRoomClass: String;
   public
-    constructor Create(Room, RoomType, RoomClass: String);
+    constructor Create(const Room, RoomType, RoomClass: String);
     destructor Destroy; override;
 
     property Room: String read FRoom;
@@ -74,6 +88,7 @@ type
   TRoomAvailabilityEntityList = TObjectList<TRoomAvailabilityEntity>;
 
   TRoomClassChannelAvailabilityContainer = class
+  public
     RoomTypeGroup: String;
     NumRooms: integer;
     Reserved: integer;
@@ -82,7 +97,8 @@ type
     GridIndex: integer;
     AnyStop: boolean;
 
-    constructor Create(_RoomTypeGroup: String; _NumRooms: integer; _Reserved: integer; _ChannelAvailable: integer; _ChannelMaxAvailable: integer;
+    constructor Create(const _RoomTypeGroup: String; _NumRooms: integer; _Reserved: integer; _ChannelAvailable: integer;
+      _ChannelMaxAvailable: integer;
       _GridIndex: integer; _AnyStop: boolean);
   end;
 
@@ -101,12 +117,8 @@ type
 
   TOneDayResPointersArray = array [0 .. 2000] of TOneDayResPointers;
 
-var
-  zOneDayResPointers: TOneDayResPointersArray;
-  zOneDay_bSelectedNonRooms: array [1 .. 500, 1 .. 2] of integer;
-
-const WM_REFRESH_MESSAGES = WM_User + 392;
-
+const
+  WM_REFRESH_MESSAGES = WM_User + 392;
 
 type
 
@@ -437,7 +449,6 @@ type
     pnlNoRoomDrop: TsPanel;
     arrowImage: TImage;
     lblNoRoom: TsLabel;
-    timLogout: TTimer;
     btnRefreshOneDay: TcxButton;
     tabsView: TsTabControl;
     sSkinManager1: TsSkinManager;
@@ -711,23 +722,22 @@ type
     mnuCancelRoomFromRoomReservation: TMenuItem;
     __N10: TMenuItem;
     btnRepDepartures: TdxBarLargeButton;
+    dxBarButton6: TdxBarButton;
+    btnRptDepartures: TdxBarLargeButton;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 
     procedure pageMainGridsChange(Sender: TObject);
-    procedure dtDateModified(Sender: TObject);
     procedure dtDateKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure FormKeyPress(Sender: TObject; var Key: Char);
-    procedure mlLanguagesAfterLanguageChanged(Sender: TObject; NewLanguage: Byte);
     procedure __PanGridsHeaderDblClick(Sender: TObject);
     procedure mnuRemoveRoomNumberOfThisRoomClick(Sender: TObject);
     procedure mnuGlobalReservationChangesClick(Sender: TObject);
     procedure btnRefreshClick(Sender: TObject);
     procedure btnHideCaptonsClick(Sender: TObject);
     procedure barinnBarAdd(Sender: TdxBarManager; ABar: TdxBar);
-    procedure grOneDayRoomsClick(Sender: TObject);
     procedure grOneDayRoomsEnter(Sender: TObject);
     procedure grOneDayRoomsMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
     procedure grOneDayRoomsDragDrop(Sender, Source: TObject; X, Y: integer);
@@ -740,16 +750,18 @@ type
     procedure timKillDragTimer(Sender: TObject);
     procedure pnlNoRoomDropDragDrop(Sender, Source: TObject; X, Y: integer);
     procedure pnlNoRoomDropDragOver(Sender, Source: TObject; X, Y: integer; State: TDragState; var Accept: boolean);
-    procedure grPeriodRoomsGetCellColor(Sender: TObject; ARow, ACol: integer; AState: TGridDrawState; ABrush: TBrush; AFont: TFont);
+    procedure grPeriodRoomsGetCellColor(Sender: TObject; ARow, ACol: integer; AState: TGridDrawState; ABrush: TBrush;
+      AFont: TFont);
     procedure grPeriodRoomsClickCell(Sender: TObject; ARow, ACol: integer);
     procedure grPeriodRoomsGetCellBorder(Sender: TObject; ARow, ACol: integer; APen: TPen; var Borders: TCellBorders);
     procedure dtDateChange(Sender: TObject);
-    procedure grPeriodRoomsEndColumnSize(Sender: TObject; ACol: integer);
     procedure grOneDayRoomsClickCell(Sender: TObject; ARow, ACol: integer);
     procedure grPeriodRoomsDblClickCell(Sender: TObject; ARow, ACol: integer);
     procedure grPeriodRooms_NOClickCell(Sender: TObject; ARow, ACol: integer);
-    procedure grPeriodRooms_NOGetCellColor(Sender: TObject; ARow, ACol: integer; AState: TGridDrawState; ABrush: TBrush; AFont: TFont);
-    procedure grPeriodRooms_NOGetCellBorder(Sender: TObject; ARow, ACol: integer; APen: TPen; var Borders: TCellBorders);
+    procedure grPeriodRooms_NOGetCellColor(Sender: TObject; ARow, ACol: integer; AState: TGridDrawState; ABrush: TBrush;
+      AFont: TFont);
+    procedure grPeriodRooms_NOGetCellBorder(Sender: TObject; ARow, ACol: integer; APen: TPen;
+      var Borders: TCellBorders);
     procedure grPeriodRoomsKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure timBlinkTimer(Sender: TObject);
     procedure btnMaidsClick(Sender: TObject);
@@ -758,7 +770,6 @@ type
     procedure btnHelpContentClick(Sender: TObject);
     procedure btnDayNotesClick(Sender: TObject);
     procedure btnChangeDateClick(Sender: TObject);
-    procedure btnLogOutClick(Sender: TObject);
     procedure btnCloseClick(Sender: TObject);
     procedure btnCheckInRoomClick(Sender: TObject);
     procedure btnCheckInGroupClick(Sender: TObject);
@@ -861,7 +872,6 @@ type
     procedure btnShowHideStatClick(Sender: TObject);
     procedure FormResize(Sender: TObject);
     procedure dxBarSubItem1Click(Sender: TObject);
-    procedure timLogoutTimer(Sender: TObject);
     procedure tabsViewChanging(Sender: TObject; var AllowChange: boolean);
     procedure timCheckSessionExpiredTimer(Sender: TObject);
     procedure btnRefreshOneDayClick(Sender: TObject);
@@ -871,11 +881,11 @@ type
     procedure btnClearSearchClick(Sender: TObject);
     procedure btnFilterClick(Sender: TObject);
     procedure N12Click(Sender: TObject);
-    procedure mnuFilterLocationClick(Sender: TObject);
     procedure rgrGroupreportStayTypeChanging(Sender: TObject; NewIndex: integer; var AllowChange: boolean);
     procedure btnChannelsClick(Sender: TObject);
     procedure timGetRoomStatusesTimer(Sender: TObject);
-    procedure grdRoomStatussesGetAlignment(Sender: TObject; ARow, ACol: integer; var HAlign: TAlignment; var VAlign: TVAlignment);
+    procedure grdRoomStatussesGetAlignment(Sender: TObject; ARow, ACol: integer; var HAlign: TAlignment;
+      var VAlign: TVAlignment);
     procedure btnRatesClick(Sender: TObject);
     procedure btnBackForwardClick(Sender: TObject);
     procedure btnManagerChannelManagerListClick(Sender: TObject);
@@ -904,16 +914,15 @@ type
     procedure timHideTimeMessageTimer(Sender: TObject);
     procedure grdRoomClassesMouseMove(Sender: TObject; Shift: TShiftState; X, Y: integer);
     procedure grPeriodRoomsStartDrag(Sender: TObject; var DragObject: TDragObject);
-    procedure grOneDayRoomsDragScroll(Sender: TObject; TopRow, LeftCol: integer; var DragScrollDir: TDragScrollDirection; var CanScroll: boolean);
+    procedure grOneDayRoomsDragScroll(Sender: TObject; TopRow, LeftCol: integer;
+      var DragScrollDir: TDragScrollDirection; var CanScroll: boolean);
     procedure mmoMessageAnchorClick(Sender: TObject; Anchor: string);
-    procedure Image2MouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
     procedure grPeriodRoomsEnter(Sender: TObject);
     procedure mnuItemCopyReservationToClipboardClick(Sender: TObject);
     procedure mnuItemPasteReservationFromClipboardClick(Sender: TObject);
     procedure mmnuOneDayGridPopup(Sender: TObject);
     procedure pmnuProvideAllotmentClick(Sender: TObject);
     procedure mnuItmColorCodeRoomClick(Sender: TObject);
-    procedure grdRoomStatussesDrawCell(Sender: TObject; ACol, ARow: integer; Rect: TRect; State: TGridDrawState);
     procedure btnChannelToggleRulesClick(Sender: TObject);
     procedure btnDeleteCacheClick(Sender: TObject);
     procedure btnPersonvipTypesClick(Sender: TObject);
@@ -943,10 +952,10 @@ type
     procedure btnManagmentStatClick(Sender: TObject);
     procedure pmnuReservationRoomListClick(Sender: TObject);
     procedure mnuRoomListForReservationClick(Sender: TObject);
-    procedure pnlRoomerLogoMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
     procedure btnPackagesClick(Sender: TObject);
     procedure btnGoOnlineClick(Sender: TObject);
-    procedure grPeriodRoomsGetAlignment(Sender: TObject; ARow, ACol: integer; var HAlign: TAlignment; var VAlign: TVAlignment);
+    procedure grPeriodRoomsGetAlignment(Sender: TObject; ARow, ACol: integer; var HAlign: TAlignment;
+      var VAlign: TVAlignment);
     procedure grOneDayRoomsGridHint(Sender: TObject; ARow, ACol: integer; var HintStr: string);
     procedure timBlinkerTimer(Sender: TObject);
     procedure dxBarLargeButton2Click(Sender: TObject);
@@ -984,7 +993,8 @@ type
     procedure btnEmailTemplatesClick(Sender: TObject);
     procedure btnCashierReportClick(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure tvAllReservationsAverageRateGetProperties(Sender: TcxCustomGridTableItem; ARecord: TcxCustomGridRecord; var AProperties: TcxCustomEditProperties);
+    procedure tvAllReservationsAverageRateGetProperties(Sender: TcxCustomGridTableItem; ARecord: TcxCustomGridRecord;
+      var AProperties: TcxCustomEditProperties);
     procedure tvAllReservationsTotalStayRateGetProperties(Sender: TcxCustomGridTableItem; ARecord: TcxCustomGridRecord;
       var AProperties: TcxCustomEditProperties);
     procedure lblLogoutClick(Sender: TObject);
@@ -1011,14 +1021,44 @@ type
     procedure FormActivate(Sender: TObject);
     procedure btnRepArrivalsClick(Sender: TObject);
     procedure mnuCancelRoomFromRoomReservationClick(Sender: TObject);
+    procedure btnRptDeparturesClick(Sender: TObject);
 
   private
-    FormShowing : Boolean;
+    FReservationsModel: TReservationsModel;
+    FFreeRooms: TFreeRooms;
+    FAppClosing: boolean;
+    FAlreadyIn: boolean;
+    FOneDay_bMouseDown: boolean;
+    FPeriod_bMouseDown: boolean;
+
+
+    FormShowing: boolean;
     FrmMessagesTemplates: TFrmMessagesTemplates;
-    { Private declarations }
+    curNoDrop: HCursor;
+    curNoDropNew: HCursor;
+
     ShowComponentNameOnHint: boolean;
+    FDayViewSizesRead: boolean;
+
+
+
+    zOneDayResPointers: TOneDayResPointersArray;
+    zOneDay_bSelectedNonRooms: array [1 .. 500, 1 .. 2] of integer;
+
+    _idxReservation, _idxRoomReservation: integer;
+    _iReservation, _iRoomReservation: integer;
+    _Arrival, _Departure: Tdate;
+    _ResStatus: TReservationStatus;
+    _Guest, _Name, _Room: String;
+    _NoRoom: boolean;
+    _ColorId, _ColorValue: integer;
+    _InvoiceIndex: integer;
 
     zJustClicked: boolean;
+
+    MousePoint: TPoint;
+    PeriodMousePoint: TPoint;
+    iDragCell: TPoint;
 
     zShowCaptions: boolean;
     zDateFrom: TdateTime;
@@ -1045,6 +1085,26 @@ type
     zOneDay_iLastRow: integer;
     zOneDay_bRightClick: boolean;
     zOneDay_glbRect: TRect;
+
+
+    zzSourceGridID: integer;
+    zzSource: TObject;
+    zzSourceCol: integer;
+    zzSourceRow: integer;
+    zzRoomReservation: integer;
+    zzReservation: integer;
+    zzArrival: Tdate;
+    zzDeparture: Tdate;
+    zzRoom: string;
+    zzRoomType: string;
+    zzIsNoRoom: boolean;
+    zzAscIndex: integer;
+    zzDescIndex: integer;
+
+
+    ZPeriodRoomOnTheMoveCol, ZPeriodRoomOnTheMoveRow, ZPeriodRoomOnTheMoveRoomReservation: integer;
+    ZPeriodRoomOnTheMoveRoomType, ZPeriodRoomOnTheMoveRoomNumber, ZPeriodRoomOnTheMoveGuestname: String;
+    ZPeriodRoomOnTheMoveForceType, ZPeriodRoomOnTheMoveExternal: boolean;
 
     zGridTag: integer;
 
@@ -1085,27 +1145,21 @@ type
     OneDayGridFont: TFont;
     TempGridFont: TFont;
 
-    PeriodViewSelectedCol,
-    PeriodViewSelectedRow : Integer;
-
-
-    // *s    zRoomsOBJ : TRoom;
+    PeriodViewSelectedCol: integer;
+    PeriodViewSelectedRow: integer;
 
     procedure OnRefreshMessagesRequest(var Msg: TMessage); message WM_REFRESH_MESSAGES;
     procedure Open_RR_EdForm(_grid: TAdvStringGrid);
     procedure Open_RES_edForm(_grid: TAdvStringGrid);
 
     procedure OneDay_Refresh;
-    function OneDay_GetReservation(var iReservation, iRoom: integer; var sRoom: string): boolean;
 
     function OneDay_GetIsLeftOrRight(iCol: integer): integer;
     function OneDay_isATakenType(ACol, ARow: integer): boolean;
-    function OneDay_RoomReservedName(RoomNumber: string; iRes, iRoom: integer): string;
+    function OneDay_RoomReservedName(const RoomNumber: string; iRes, iRoom: integer): string;
     procedure OneDay_CheckOut;
     procedure OneDay_CheckIn;
-    procedure OneDay_InvoiceInfo;
     procedure OneDay_RemoveRoom(_grid: TAdvStringGrid; bAll: boolean);
-    procedure OneDay_GlobalChange;
     procedure OneDay_RoomInvoice(invType: integer);
     procedure OneDay_DeleteRoomReservation;
     procedure OneDay_InvoicesPerRoom;
@@ -1113,18 +1167,15 @@ type
     procedure OneDay_InvoicesPerCustomer;
     procedure OneDay_EditPerson;
     procedure OneDay_ShowTheNameList;
-    procedure OneDay_DoAJump(theRoom: string);
+    procedure OneDay_DoAJump(const theRoom: string);
     function OneDay_DoProvideRoom: boolean;
     procedure OneDay_DisplayGrid;
-    procedure OneDay_NewGuestCoordinates(RoomNumber: string; var iRes, iRoom: integer);
-    procedure OneDay_AddToTaken(sType: string);
-    procedure OneDay_CheckHint(X, Y: integer);
-    function Period_CheckHint(Sender: TObject; X, Y: integer; iReservation: integer = 0; iRoomReservation: integer = 0): String;
+    procedure OneDay_NewGuestCoordinates(const RoomNumber: string; var iRes, iRoom: integer);
+    procedure OneDay_AddToTaken(const sType: string);
+    function Period_CheckHint(Sender: TObject; X, Y: integer; iReservation: integer = 0;
+      iRoomReservation: integer = 0): String;
 
     procedure OneDay_GetResAndRoom_IDX(var idxReservation, idxRoom: integer);
-
-    procedure OneDay_ShowSelectedCell(Sender: TObject; ACol, ARow: integer; Rect: TRect; State: TGridDrawState);
-    procedure OneDay_ShowNonSelectedCell(Sender: TObject; ACol, ARow: integer; Rect: TRect; State: TGridDrawState);
 
     procedure SetWindowTitle;
     procedure BusyOn;
@@ -1143,16 +1194,16 @@ type
 
     procedure ExceptionHandler(Sender: TObject; E: Exception);
 
-    procedure GetRoomInfo;
     procedure CheckInGroup;
     procedure RemoveAReservation;
 
     // FILE
     // Procedure Logout;
-    function StartHotel(aFirstLogin: boolean; ForcefulRestart: boolean = false; AutoLogin: String = ''): boolean;
+    function StartHotel(aFirstLogin: boolean; ForcefulRestart: boolean = false; const AutoLogin: String = ''): boolean;
     procedure SaveGridFont(OneDayFont, PeriodFont: TFont);
 
-    function doLogin(var userName, password, WrongLoginMessage, ExpiredMessage: string; var pressedEsc: boolean; AutoLogin: String = ''): boolean;
+    function doLogin(var userName, password, WrongLoginMessage, ExpiredMessage: string; var pressedEsc: boolean;
+      const AutoLogin: String = ''): boolean;
 
     /// ////////////////////////////////////////////////////////////////////////
     /// ////////////////////////////////////////////////////////////////////////
@@ -1174,23 +1225,20 @@ type
     procedure Period_FillEmptyResCells;
     procedure Period_FillResCells(Days: integer = 0);
 
-    function Period_GetStatus(ACol, ARow: integer): string;
-    function Period_GetResStatus(_grid: TAdvStringGrid; ACol, ARow: integer; var status: string; var AscIndex, DescIndex: integer): boolean;
+    function Period_GetResStatus(_grid: TAdvStringGrid; ACol, ARow: integer; var status: string;
+      var AscIndex, DescIndex: integer): boolean;
 
-    function Period_GotoRoom(Room: string): boolean;
-    function Period_RoomToRow(Room: string): integer;
+    function Period_GotoRoom(const Room: string): boolean;
+    function Period_RoomToRow(const Room: string): integer;
     function Period_DateToCol(aDate: Tdate): integer;
     function Period_ColToDate(ACol: integer): TdateTime;
-    function Period_RoomAndDateToCell(Room: string; aDate: Tdate): recColRow;
+    function Period_RoomAndDateToCell(const Room: string; aDate: Tdate): recColRow;
 
     function Period_GetNewResDates(var dtFrom: TdateTime): boolean;
     function Period_GetResInfo(ACol: integer; ARow: integer; gridTag: integer): RecRRInfo;
 
     procedure Period_MergeGrid;
-    procedure Period_RestoreColumnSize;
     procedure Period_RestoreRowHeights;
-
-    procedure Period_setColCount(nights: integer);
 
     /// ////////////////////////////////////////////////////////////////////////
     /// ////////////////////////////////////////////////////////////////////////
@@ -1237,10 +1285,7 @@ type
     procedure _RemoveAReservation;
     procedure _RoomGuests;
 
-    procedure _ReservationRoomList;
-    procedure _DeleteReservation;
     procedure _RemoveThisRoom;
-    procedure _CancelThisReservation;
 
     // Bar Navigation
     procedure _Nextday;
@@ -1264,7 +1309,6 @@ type
     procedure _RoomList;
     procedure _RoomTypeList;
     procedure _RoomTypeGroupsList;
-    procedure _RoomSelectionRules;
     procedure _LocationsList;
 
     // *bar Room Actions
@@ -1272,7 +1316,6 @@ type
     procedure _ProvideARoom;
     procedure _SetNoRoomThis;
     procedure _SetNoRoomAll;
-    procedure _JumptoRoomAndDate;
 
     // *bar customers - Countries - Currency
     procedure _CustomersList;
@@ -1311,9 +1354,7 @@ type
 
     // * Bar Help
     procedure _About;
-    procedure _RemodeHelp;
     procedure _HelpContent;
-    procedure _HotelList;
 
     // * Bar System
     procedure _Settings;
@@ -1336,13 +1377,7 @@ type
     // * Bar Channels
     procedure _Channels;
 
-    procedure StartOneDay;
-
-    procedure _OldRpt;
-
-    function Period_GotoRoomAndDate(Room: string; aDate: Tdate): boolean;
-
-    procedure Compute_TreeMoves(X, Y: integer);
+    procedure RefreshOneDayGrid;
 
     procedure CreateQuickReservation(isQuick: boolean; showDetails: boolean = true; Blocked: boolean = false);
     function QuickResPeriodRoomObj(var oNewReservation: TNewReservation): integer;
@@ -1350,16 +1385,14 @@ type
 
     procedure CreateProvideAllotment(Reservation: integer; showDetails: boolean = true);
 
-    function getRoomReservationsList(aType: integer; includeNoshow, includeAllotment, includeBlocked: boolean): string;
     procedure refreshGuestList;
     function getSortField: string;
     procedure GuestListReport;
     function CheckForUpdatedRelease: boolean;
-    function FilteredData(Reservation: TSingleReservations; Room: TRoomObject): boolean;
+    function FilteredData(aRoom: TRoomObject): boolean;
     // Reservation: TSingleReservations): Boolean;
     procedure LocationMenuSelect(Sender: TObject);
     function FilterActive: boolean;
-    function LocationFiltered(Location: String): boolean;
     function SearchOrGroupFilterActive: boolean;
     function FreeRoomsFiltered: boolean;
     function LocationFilter(OnlyLocations: boolean = true): boolean;
@@ -1367,15 +1400,12 @@ type
     procedure PrepareSkinSelections;
     procedure SelectSkinEvent(Sender: TObject);
     procedure grAutoSizeGrids;
-    function FloorFiltered(Floor: integer): boolean;
-    function ReservationNotInGroupList(resId: integer): boolean;
+    function ReservationtInGroupList(resId: integer): boolean;
     function GroupsFilterActive: boolean;
     procedure DisplayRoomStatusses(Date: TdateTime);
     procedure FillRoomTypesGrid;
-    function RoomTypeIndexInGrid(Grid: TAdvStringGrid; RoomType: String): integer;
+    function RoomTypeIndexInGrid(Grid: TAdvStringGrid; const RoomType: String): integer;
     function GetAvailableCellText(Value: integer): String;
-    procedure Period_UnMergeGrid;
-    procedure grNoRooms_UnMergeGrid;
     procedure EnableDisableFunctions(Enable: boolean);
     procedure AutoResizeOneDayGrid;
     procedure ClearGroupList;
@@ -1386,7 +1416,8 @@ type
     function GroupFiltered(Reservation: integer): boolean;
     procedure DrawRectanglOnCanvas(_Canvas: TCanvas; iColor: integer; chRect: TRect);
     function getChannelColor(Reservation: TSingleReservations): integer;
-    function getInvoiceMadeColor(PaymentInvoice: integer; NoRent: boolean; offColor, onColor, onGroupColor: integer; GroupAccount: boolean): integer;
+    function getInvoiceMadeColor(PaymentInvoice: integer; NoRent: boolean; offColor, onColor, onGroupColor: integer;
+      GroupAccount: boolean): integer;
     function getUnpaidItemsColor(Value: boolean; defaultColor: integer): integer;
     function getChannelColorByChannel(Channel: integer): integer;
     procedure AutoSizePeriodColumns;
@@ -1399,16 +1430,14 @@ type
     procedure DisplayStatusses(IncludeChart: boolean);
     function Period_NO_ColToDate(ACol: integer): TdateTime;
     function AnyCheckedStopItems: boolean;
-    procedure ShowTimelyMessage(sMessage: string);
+    procedure ShowTimelyMessage(const sMessage: string);
     procedure HideRowsWithNotFittingRooms(currRow: integer; fromDate, toDate: Tdate);
     procedure ShowAllRoomsRows;
-    procedure FindRoomInPeriodView(Room: String);
-    function AnyHiddenRow(Sender: TAdvStringGrid): boolean;
+    procedure FindRoomInPeriodView(const Room: String);
     function OneDayGridRoomReservationOfCell(DragCell: TPoint): integer;
     procedure ListRoomsAvailable(fromDate, toDate: Tdate);
     procedure OneDayGridArrivalAndDepartureOfCell(DragCell: TPoint; var Arrival, Departure: Tdate);
-    function IsRoomAvailableInMoveFunctionAvailRooms(Room: String): boolean;
-    function OneDayGridRoomNumberOfCell(DragCell: TPoint): String;
+    function IsRoomAvailableInMoveFunctionAvailRooms(const Room: String): boolean;
     function OneDayGridRoomTypeOfCell(DragCell: TPoint): String;
     procedure GetDragGuestIndexes(DragCell: TPoint; var idxReservation, idxRoomReservation: integer);
     procedure AssignSkinColorsToComponents;
@@ -1424,10 +1453,8 @@ type
     procedure ShowAllPeriodRows;
     procedure RedisplayGuestWindows;
     function LocationOrFloorFilterActive: boolean;
-    function AnyPeriodRowsMinimized: boolean;
     procedure ReEnableFiltersInPeriodGrid;
     procedure CopyReservation(reservationId: integer);
-    procedure CopyRoomReservation(roomReservationId: integer);
     function ReservationIdInClipboard(var hotelId: String; var resId: integer): boolean;
     function isCurrentPeriodCellWithReservation: boolean;
     procedure performClearHotel(performLogout: boolean; hideWorkArea: boolean = true);
@@ -1442,22 +1469,23 @@ type
     procedure PerformFilterRefresh;
     procedure checkFilterStatuses;
     procedure SetRBEMode(const Value: boolean);
-    function CheckInARoom(name: String; iRoomReservation: integer): boolean;
-    procedure CheckOutARoom(Room: String; iRoomReservation, iReservation: integer);
+    function CheckInARoom(const name: String; iRoomReservation: integer): boolean;
+    procedure CheckOutARoom(const Room: String; iRoomReservation, iReservation: integer);
     procedure SetDateWithoutEvents(aDate: TdateTime);
     procedure ActivateHint(HintPoint: TPoint; comp: TWinControl);
     procedure EnterRateQueryView(aDate: integer);
     procedure SetOffLineMode(const Value: boolean);
-    function CountRoomsOfSpecificType(RoomType: String): integer;
+    function CountRoomsOfSpecificType(const RoomType: String): integer;
     procedure MyRoundedRect(Canvas: TCanvas; X1, Y1, X2, Y2: integer; DoRoundCorners: boolean = true);
-    procedure PlaceRoomerOnCurrnetMonitor;
+    procedure PlaceRoomerOnCurrentMonitor;
     function GetActivePeriodGrid: TAdvStringGrid;
-    procedure DebugLog(Msg: String);
+    procedure DebugLog(const Msg: String);
     procedure HandleSkinManagerChange;
     procedure RefreshStats(force: boolean = false);
     function LongestColText(Grid: TAdvStringGrid; col: integer; startAtRow: integer = 1): integer;
-    procedure GetPriceInfo(rri: RecRRInfo; var CurrencySign: String; var PricePerDay, DiscountPerDay, PriceTotal, DiscountTotal: Double);
-    function GetCaptText(Canvas: TCanvas; OriginalText: String; MaxWidth: integer): String;
+    procedure GetPriceInfo(rri: RecRRInfo; var CurrencySign: String; var PricePerDay, DiscountPerDay, PriceTotal,
+      DiscountTotal: Double);
+    function GetCaptText(Canvas: TCanvas; const OriginalText: String; MaxWidth: integer): String;
     procedure PlacePeriodViewTypePanel;
     procedure ApplicationCancelHint;
     procedure OnLogInOutHandlerClick(rri: RecRRInfo; ButtonClicked: THintButtonClicked);
@@ -1467,7 +1495,7 @@ type
     // function GetSelectedRoomInformation(var iReservation, iRoomReservation: Integer; var Arrival, Departure: TDate): Boolean;
     function GetSelectedRoomInformation: boolean;
     procedure PrintRegistrationFormsForSpecifiedRoomReservations(rSet: TRoomerDataSet);
-    procedure SetShapeColor(Shape: TShape; ResStatus: String);
+    procedure SetShapeColor(Shape: TShape; const ResStatus: String);
     procedure SetExplanationColors;
     procedure ApplicationCancelGuestHint;
     procedure DrawPeriodColumn1(Grid: TAdvStringGrid; ACol, ARow: integer; State: TGridDrawState);
@@ -1476,19 +1504,22 @@ type
     function getRoomReservationsListSubQuery(aType: integer): string;
     procedure ActivateMessagesIfApplicable;
     procedure ConfirmABooking;
-    procedure NillifyEventHandlers(grid: TAdvStringGrid);
+    procedure NillifyEventHandlers(Grid: TAdvStringGrid);
     procedure RemoveHandlersAndObjects;
     procedure UpdateHotelsList;
     procedure EndTimeMeasure;
     procedure StartTimeMeasure;
     procedure RefreshMessagesOnUI;
     procedure CancelARoomReservation;
+    procedure NullGlobals;
+    procedure RefreshPeriodView;
+    procedure FormatToReservationAttrib(aCanvas: TCanvas; const aAttrib: recStatusAttr);
 {$IFDEF USE_JCL}
     procedure LogException(ExceptObj: TObject; ExceptAddr: Pointer; IsOS: boolean);
 {$ENDIF}
   public
     { Public declarations }
-    StaffComm : TStaffCommunication;
+    StaffComm: TStaffCommunication;
     BusyReloading: boolean;
     HintWindowShowing: boolean;
 
@@ -1500,8 +1531,7 @@ type
 
     zHintPoint: TPoint;
     zHintComp: TWinControl;
-    zHintObj: TCustomHint;
-
+    
     constructor Create(aOwner: TComponent); override;
     procedure WndProc(var message: TMessage); override;
     procedure DownloadProgress(Sender: TObject; Read, Total: integer);
@@ -1509,13 +1539,12 @@ type
     procedure BlinkRoom;
     procedure TranslateOpenForms;
     procedure GoToDateAndRoom(aDate: TdateTime; RoomReservation: integer);
-    function IsRoomReserved(RoomNumber: string; iRes, iRoom: integer): boolean;
-    procedure MakeNewReservation(dtDateFrom, dtDateTo: TdateTime);
-    procedure RefreshGrid(Days: integer = 0);
-    function _Logout(AlreadyInactive: boolean = false; AutoLogin: String = ''): boolean;
-    function IsInRoomTypes(RoomType, RTAvailable: string): boolean;
+    function IsRoomReserved(const RoomNumber: string; iRes, iRoom: integer): boolean;
+    procedure RefreshGrid;
+    function _Logout(AlreadyInactive: boolean = false; const AutoLogin: String = ''): boolean;
+    function IsInRoomTypes(const RoomType, RTAvailable: string): boolean;
     procedure SetExtraSkinColors;
-    procedure RemoveLanguagesFilesAndRefresh(Refresh : Boolean = True);
+    procedure RemoveLanguagesFilesAndRefresh(Refresh: boolean = true);
     procedure ShowBookingConfirmationTemplates;
     procedure ShowCancelConfirmationTemplates;
 
@@ -1526,36 +1555,8 @@ type
     property OffLineMode: boolean read FOffLineMode write SetOffLineMode;
   end;
 
-const
-  DEFAULT_UNPARSABLE_INT_VALUE: integer = -99999;
-  bAppClosing: boolean = false;
-  bUsingMessagesSet: boolean = false;
-  GoingStr = '» ';
-  ROOMER_COPY_RESERVATION = 'ROOMER:COPY:RESERVATION:';
-  ROOMER_COPY_ROOMRESERVATION = 'ROOMER:COPY:ROOMRESERVATION:';
-  ROOMER_COPY_RESERVATION_ID = ROOMER_COPY_RESERVATION + 'HOTEL=%s;ID=%d';
-  ROOMER_COPY_ROOMRESERVATION_ID = ROOMER_COPY_ROOMRESERVATION + 'HOTEL=%s;ID=%d';
-
 var
   frmMain: TfrmMain;
-  ReservationsModel: TReservationsModel;
-  oFreeRooms: TFreeRooms;
-
-  curNoDrop: HCursor;
-  curNoDropNew: HCursor;
-  zDebug1: string;
-
-const
-  // WM_StartUpLists = WM_User + 381;
-  WM_CHECK_INVOICES = WM_User + 386;
-  WM_REFRESH_DATE = WM_User + 41;
-  WM_REFRESH_PERIOD_VIEW_BOTTOM = WM_User + 392;
-  WM_REFRESH_PERIOD_VIEW_BOTTOM_REFRESH = WM_User + 393;
-  WM_REFRESH_SKIN_MANAGER = WM_User + 391;
-  WM_REFRESH_STAFF_COMM_NOTIFIER = WM_User + 394;
-  PERIOD_GRID_RECTANGLES_WIDTH = 10;
-
-  HINT_WAIT_MS = 1500;
 
 implementation
 
@@ -1565,30 +1566,37 @@ uses
     , JclDebug, JclHookExcept, TypInfo
 {$ENDIF}
     , uD, uRubbishCollectors, uProvideARoom2,
-    uInvoice,
-    uInvoice2015,
-    uTaxes,
-    clipbrd,
-    sndkey32, uReservationProfile, uGuestProfile2, uSplashRoomer, uAboutRoomer,
+  uInvoice,
+  uInvoice2015,
+  uTaxes,
+  clipbrd,
+  sndkey32, uReservationProfile, uGuestProfile2, uSplashRoomer, uAboutRoomer,
   uManageFilesOnServer, uControlData, uInvoiceList, uGuestCheckInForm
     , uFinishedInvoices2
     , uRoomCleanMaintenanceStatus
     , uDayFinical
     , uInvoiceList2, uDayNotes, uNationalReport3, uLodgingTaxReport2, uBlinker, ufrmSelLang
     , uRptbViewer
-    , uColorSelector, uCountryGroups, uCountries, uCurrencies, uConverts, uConvertGroups, uPayGroups, uPayTypes, uVatCodes, uChannelPlanCodes, uPriceCodes
+    , uColorSelector, uCountryGroups, uCountries, uCurrencies, uConverts, uConvertGroups, uPayGroups, uPayTypes,
+  uVatCodes, uChannelPlanCodes, uPriceCodes
     , uResGuestList, uRebuildReservationStats, uMakereseRvationQuick, objHomeCustomer
-    , uSqlDefinitions, uRoomRates, uRates, uGotoRoomAndDate, uStringUtils, uRoomTypes2, uRoomTypesGroups2, uSeasons2, uItemTypes2, uItems2, uLocations2,
-  uRooms3, uCustomerTypes2, uCustomers2, uStaffTypes2, uStaffMembers2, uChannels, uRegistryServices, uChannelManager, uCommunicationTest, uMessageList,
+    , uSqlDefinitions, uRoomRates, uRates, uGotoRoomAndDate, uStringUtils, uRoomTypes2, uRoomTypesGroups2, uSeasons2,
+  uItemTypes2, uItems2, uLocations2,
+  uRooms3, uCustomerTypes2, uCustomers2, uStaffTypes2, uStaffMembers2, uChannels, uRegistryServices, uChannelManager,
+  uCommunicationTest, uMessageList,
   uHouseKeeping
     , uRptResStats, uRptResStatsRooms, uGuestSearch, uDateUtils, urptReservations, urptReservationsCust
 
-    , uTestData, urptTotallist, uFrmChannelTogglingRules, uPersonviptypes, uFrmDaysStatistics, uFrmRateQuery, uPersonContactType,
+    , uTestData, urptTotallist, uFrmChannelTogglingRules, uPersonviptypes, uFrmDaysStatistics, uFrmRateQuery,
+  uPersonContactType,
   uRptTurnoverAndPayments, uRptTurnoverAndPayments2,
   ufDownPayments
-    , uFrmResources, uFileDependencyManager, uMaidActions, uTaxCalc, uRptCustInvoices, uRptResInvoices, uFrmRBEContainer, uRptManagment,
-  uChart, uRoomerExceptions, uRoomerMessageDialog, uRptBreakfastGuests, uLostAndFound, uRunWithElevatedOption, urptNotes, uRptGuests, umakeKreditInvoice,
-  uBookKeepingCodes, uRptBookkeeping, uReservationEmailingDialog, uFrmReservationCancellationDialog, uFrmRoomReservationCancellationDialog,
+    , uFrmResources, uFileDependencyManager, uMaidActions, uTaxCalc, uRptCustInvoices, uRptResInvoices,
+  uFrmRBEContainer, uRptManagment,
+  uChart, uRoomerExceptions, uRoomerMessageDialog, uRptBreakfastGuests, uLostAndFound, uRunWithElevatedOption,
+  urptNotes, uRptGuests, umakeKreditInvoice,
+  uBookKeepingCodes, uRptBookkeeping, uReservationEmailingDialog, uFrmReservationCancellationDialog,
+  uFrmRoomReservationCancellationDialog,
   uRptCashier, uPhoneRates, uGroupGuests,
   uActivityLogs,
   uFrmCheckOut,
@@ -1597,44 +1605,36 @@ uses
   uInvoiceController,
   uRoomerDefinitions,
   Math
-  , uOfflineReportGrid
-  , uResourceManagement
-  , uDynamicPricing
-  , uRptArrivals
-  , uRptDepartures
-  ;
+    , uOfflineReportGrid
+    , uRptArrivals
+    , uRptDepartures
+    , uResourceManagement
+    , uDynamicPricing
+    , UITypes
+    , Types
+    , VCLTee.TeCanvas
+    ;
 
 {$R *.DFM}
 {$R Cursors.res}
 
-var
-  cHomeStatus: integer = 0;
-  bAutoCorrect: boolean = false;
-
-  ZPeriodRoomOnTheMoveCol, ZPeriodRoomOnTheMoveRow, ZPeriodRoomOnTheMoveRoomReservation: integer;
-  ZPeriodRoomOnTheMoveRoomType, ZPeriodRoomOnTheMoveRoomNumber, ZPeriodRoomOnTheMoveGuestname: String;
-  ZPeriodRoomOnTheMoveForceType, ZPeriodRoomOnTheMoveExternal: boolean;
-
-var // Work-variables
-  _idxReservation, _idxRoomReservation: integer;
-  _iReservation, _iRoomReservation: integer;
-  _Arrival, _Departure: Tdate;
-  _ResStatus: TReservationStatus;
-  _Guest, _Name, _Room: String;
-  _NoRoom: boolean;
-  _ColorId, _ColorValue: integer;
-  _InvoiceIndex : Integer;
-
 const
-  bAlreadyIn: boolean = false;
-  // bForceClose             : boolean = false;
-  zOneDay_bMouseDown: boolean = false;
-  zPeriod_bMouseDown: boolean = false;
+  ROOMER_COPY_RESERVATION = 'ROOMER:COPY:RESERVATION:';
+  ROOMER_COPY_RESERVATION_ID = ROOMER_COPY_RESERVATION + 'HOTEL=%s;ID=%d';
 
-  grRoom_PrevDays = 0;
-  grRoom_Room = 1;
-  grRoom_RoomType = 2;
-  grRoom_RoomDescription = 3;
+  WM_REFRESH_DATE = WM_User + 41;
+  WM_REFRESH_PERIOD_VIEW_BOTTOM = WM_User + 392;
+  WM_REFRESH_PERIOD_VIEW_BOTTOM_REFRESH = WM_User + 393;
+  WM_REFRESH_SKIN_MANAGER = WM_User + 391;
+  WM_REFRESH_STAFF_COMM_NOTIFIER = WM_User + 394;
+  PERIOD_GRID_RECTANGLES_WIDTH = 10;
+
+  DEFAULT_UNPARSABLE_INT_VALUE: integer = -99999;
+  cGoingStr = 'ï¿½ ';
+
+  cgrRoom_RoomColumn = 1;
+  cgrRoom_RoomTypeColumn = 2;
+  cgrRoom_RoomDescriptionColumn = 3;
 
   // ******************************************************************************
   // ******************************************************************************
@@ -1647,22 +1647,7 @@ const
   // ******************************************************************************
   // ******************************************************************************
 
-var
-  zzSourceGridID: integer;
-  zzSource: TObject;
-  zzSourceCol: integer;
-  zzSourceRow: integer;
-  zzRoomReservation: integer;
-  zzReservation: integer;
-  zzArrival: Tdate;
-  zzDeparture: Tdate;
-  zzRoom: string;
-  zzRoomType: string;
-  zzIsNoRoom: boolean;
-  zzAscIndex: integer;
-  zzDescIndex: integer;
-
-procedure NullGlobals;
+procedure TfrmMain.NullGlobals;
 begin
   zzSourceGridID := -1;
   zzSource := nil;
@@ -1679,32 +1664,7 @@ begin
   zzDescIndex := -1;
 end;
 
-// CreatProcess
-function CreateProcessSimple(sExecutableFilePath: string): string;
-var
-  xx: integer;
-  pi: TProcessInformation;
-  si: TStartupInfo;
-begin
-  FillMemory(@si, sizeof(si), 0);
-  si.cb := sizeof(si);
-
-  CreateProcess(nil,
-
-    // path to the executable file:
-    PChar(sExecutableFilePath),
-
-    nil, nil, false, NORMAL_PRIORITY_CLASS, nil, nil, si, pi);
-
-  // "after calling code" such as
-  // the code to wait until the
-  // process is done should go here
-
-  CloseHandle(pi.hProcess);
-  CloseHandle(pi.hThread);
-end;
-
-function TfrmMain.IsInRoomTypes(RoomType, RTAvailable: string): boolean;
+function TfrmMain.IsInRoomTypes(const RoomType, RTAvailable: string): boolean;
 var
   sRule: string;
 begin
@@ -1737,23 +1697,25 @@ begin
   OpenAppSettings;
   g.RefreshRoomList;
   // ******
-  glb.PerformAuthenticationAssertion(self); PlaceFormOnVisibleMonitor(self);
+  glb.PerformAuthenticationAssertion(self);
+  PlaceFormOnVisibleMonitor(self);
 
-//  if (NOT OffLineMode) then
-//    d.BackupsSubmitChanges;
+  // if (NOT OffLineMode) then
+  // d.BackupsSubmitChanges;
 
   if prepareLanguages then
   begin
     if NOT d.roomerMainDataSet.OffLineMode then
     begin
       RoomerLanguage.prepareLanguages(d.roomerMainDataSet);
-      RoomerLanguage.SetLanguageId(g.qUserLanguage, g.qUser + '.' + inttostr(g.qUserLanguage) + '.' + dateToSqlString(now));
+      RoomerLanguage.SetLanguageId(g.qUserLanguage, g.qUser + '.' + inttostr(g.qUserLanguage) + '.' +
+        dateToSqlString(now));
       TranslateOpenForms;
     end;
   end;
   __lblUsername.Caption := g.qUserName;
 
-  FormatSettings.CurrencyString := ''; // '£';
+  FormatSettings.CurrencyString := ''; // 'ï¿½';
   try
     FormatSettings.CurrencyString := ctrlGetString('CurrencySymbol');
   Except
@@ -1772,7 +1734,8 @@ begin
   for i := 0 to mnuFilterLocation.Items.Count - 1 do
   begin
     mnuFilterLocation.Items[i].Checked := Str2Bool(ReadStringValueFromAppRegistry(d.roomerMainDataSet.userName,
-      'LocationSelected_' + g.qHotelCode + '_' + inttostr(mnuFilterLocation.Items[i].Tag), Bool2Str(mnuFilterLocation.Items[i].Checked)));
+      'LocationSelected_' + g.qHotelCode + '_' + inttostr(mnuFilterLocation.Items[i].Tag),
+      Bool2Str(mnuFilterLocation.Items[i].Checked)));
   end;
   checkFilterStatuses;
 end;
@@ -1783,7 +1746,8 @@ var
 begin
   for i := 0 to mnuFilterLocation.Items.Count - 1 do
   begin
-    WriteStringValueToAppRegistry(d.roomerMainDataSet.userName, 'LocationSelected_' + g.qHotelCode + '_' + inttostr(mnuFilterLocation.Items[i].Tag),
+    WriteStringValueToAppRegistry(d.roomerMainDataSet.userName, 'LocationSelected_' + g.qHotelCode + '_' +
+      inttostr(mnuFilterLocation.Items[i].Tag),
       Bool2Str(false));
   end;
   checkFilterStatuses;
@@ -1794,11 +1758,12 @@ begin
   timMessages.Enabled := false;
   if NOT performLogout then
   begin
-    lblAuthStatus.Caption := GetTranslatedText('shTx_Main_ForcedLogout') + ''#13''#10'' + GetTranslatedText('shTx_Main_LogginAgain');
-    AddRoomerActivityLog(d.roomerMainDataSet.username,
-                         uActivityLogs.LOGOUT,
-                         'Success',
-                         'User ' + d.roomerMainDataSet.username + ' Successfully with FORCE logged out.');
+    lblAuthStatus.Caption := GetTranslatedText('shTx_Main_ForcedLogout') + ''#13''#10'' +
+      GetTranslatedText('shTx_Main_LogginAgain');
+    AddRoomerActivityLog(d.roomerMainDataSet.userName,
+      uActivityLogs.LOGOUT,
+      'Success',
+      'User ' + d.roomerMainDataSet.userName + ' Successfully with FORCE logged out.');
   end;
   LoggedIn := false;
   try
@@ -1807,11 +1772,11 @@ begin
   end;
   if performLogout then
   begin
-    d.roomerMainDataSet.Logout;
-    AddRoomerActivityLog(d.roomerMainDataSet.username,
-                         uActivityLogs.LOGOUT,
-                         'Success',
-                         'User ' + d.roomerMainDataSet.username + ' Successfully logged out.');
+    d.roomerMainDataSet.LOGOUT;
+    AddRoomerActivityLog(d.roomerMainDataSet.userName,
+      uActivityLogs.LOGOUT,
+      'Success',
+      'User ' + d.roomerMainDataSet.userName + ' Successfully logged out.');
   end;
   if hideWorkArea then
   begin
@@ -1832,8 +1797,6 @@ begin
 end;
 
 procedure TfrmMain.R1Click(Sender: TObject);
-var
-  rSet: TRoomerDataSet;
 begin
   if GetSelectedRoomInformation then
   begin
@@ -1858,8 +1821,6 @@ end;
 
 procedure TfrmMain.R3Click(Sender: TObject);
 var
-  iReservation: integer;
-  iRoomReservation: integer;
   theData: recPersonHolder;
 begin
   if mAllReservations.eof OR mAllReservations.BOF then
@@ -1927,10 +1888,6 @@ begin
 end;
 
 procedure TfrmMain.AssignSkinColorsToComponents;
-var
-  APainter: TcxCustomLookAndFeelPainter;
-  ASkin: TdxSkin;
-  ASkinInfo: TdxSkinLookAndFeelPainterInfo;
 begin
   DebugLog('Starting AssignSkinColorsToComponents');
   Chart1.Color := sSkinManager1.GetGlobalColor;
@@ -1944,10 +1901,12 @@ begin
   grPeriodRooms.FixedColor := sSkinManager1.GetGlobalColor;
 
   // --
-  pnlDayStatus.Color := sSkinManager1.gd[btnGoOnline.SkinData.SkinIndex].HotGlowColor; // HotColor; // GetPixelColourAsColor(Point(Width div 2 + Left, Top + 3));
+  pnlDayStatus.Color := sSkinManager1.gd[btnGoOnline.SkinData.SkinIndex].HotGlowColor;
+  // HotColor; // GetPixelColourAsColor(Point(Width div 2 + Left, Top + 3));
   cbxStatDay.Color := pnlDayStatus.Color;
   panMainTop.Color := sSkinManager1.GetGlobalColor; // pnlDayStatus.Color;
-  cbxStatDay.Font.Color := sSkinManager1.GetGlobalColor; // sSkinManager1.gd[btnGoOnline.SkinData.SkinIndex].HotFontColor[1]; // sSkinManager1.GetGlobalColor;
+  cbxStatDay.Font.Color := sSkinManager1.GetGlobalColor;
+  // sSkinManager1.gd[btnGoOnline.SkinData.SkinIndex].HotFontColor[1]; // sSkinManager1.GetGlobalColor;
 
   // Colors are to be found in cxLookAndFeelPainterscxLookAndFeelPainters
   Color := sSkinManager1.GetGlobalColor;
@@ -1969,7 +1928,7 @@ begin
   cbxStatDay.Update;
 end;
 
-procedure TfrmMain.DebugLog(Msg: String);
+procedure TfrmMain.DebugLog(const Msg: String);
 begin
 {$IFDEF DEBUG}
   try
@@ -1995,7 +1954,8 @@ begin
   // Reservation Index
   idxRoom := zOneDayResPointers[ARow].ptrRooms[OneDay_GetIsLeftOrRight(ACol), 2];
   // Rooms Index
-  OneDay_NewGuestCoordinates(ReservationsModel.Reservations[idxReservation].Rooms[idxRoom].RoomNumber, idxReservation, idxRoom);
+  OneDay_NewGuestCoordinates(FReservationsModel.Reservations[idxReservation].Rooms[idxRoom].RoomNumber,
+    idxReservation, idxRoom);
 end;
 
 procedure TfrmMain.F1Click(Sender: TObject);
@@ -2005,7 +1965,8 @@ begin
   if GetSelectedRoomInformation then
   begin
     rSet := d.roomerMainDataSet.ActivateNewDataset
-      (d.roomerMainDataSet.SystemFreeQuery(Format(GET_ALL_ROOMRESERVATIONS_ARRIVING_ON_SPECIFIED_DATE_FILTER_RESERVATION_ID,
+      (d.roomerMainDataSet.SystemFreeQuery
+      (Format(GET_ALL_ROOMRESERVATIONS_ARRIVING_ON_SPECIFIED_DATE_FILTER_RESERVATION_ID,
       [_DB(uDateUtils.dateToSqlString(now)), _iReservation])));
     try
       PrintRegistrationFormsForSpecifiedRoomReservations(rSet);
@@ -2019,7 +1980,8 @@ procedure TfrmMain.F2Click(Sender: TObject);
 var
   rSet: TRoomerDataSet;
 begin
-  rSet := d.roomerMainDataSet.ActivateNewDataset(d.roomerMainDataSet.SystemFreeQuery(Format(GET_ALL_ROOMRESERVATIONS_ARRIVING_ON_SPECIFIED_DATE,
+  rSet := d.roomerMainDataSet.ActivateNewDataset
+    (d.roomerMainDataSet.SystemFreeQuery(Format(GET_ALL_ROOMRESERVATIONS_ARRIVING_ON_SPECIFIED_DATE,
     [_DB(uDateUtils.dateToSqlString(now))])));
   try
     PrintRegistrationFormsForSpecifiedRoomReservations(rSet);
@@ -2033,13 +1995,7 @@ var
   RoomResArray: IntegerArray;
   iCounter, iNumRecs: integer;
 begin
-  iNumRecs := 0;
-  rSet.first;
-  while not rSet.eof do
-  begin
-    inc(iNumRecs);
-    rSet.next;
-  end;
+  iNumRecs := rSet.RecordCount;
 
   SetLength(RoomResArray, iNumRecs);
   iCounter := LOW(RoomResArray);
@@ -2071,12 +2027,12 @@ begin
     status := g.oRooms.RoomItemsList.Items[i].status;
     Room := g.oRooms.RoomItemsList.Items[i].Room;
     RoomType := g.oRooms.RoomItemsList.Items[i].RoomType;
-    grPeriodRooms.Objects[grRoom_Room, RowIndex] := TRoomCell.Create(status);
-    grPeriodRooms.cells[grRoom_Room, RowIndex] := Room;
-    grPeriodRooms.cells[grRoom_RoomType, RowIndex] := RoomType;
+    grPeriodRooms.Objects[cgrRoom_RoomColumn, RowIndex] := TRoomCell.Create(status);
+    grPeriodRooms.cells[cgrRoom_RoomColumn, RowIndex] := Room;
+    grPeriodRooms.cells[cgrRoom_RoomTypeColumn, RowIndex] := RoomType;
     if zShowRoomDescription then
     begin
-      grPeriodRooms.cells[grRoom_RoomDescription, RowIndex] := g.oRooms.RoomItemsList.Items[i].RoomDescription;
+      grPeriodRooms.cells[cgrRoom_RoomDescriptionColumn, RowIndex] := g.oRooms.RoomItemsList.Items[i].RoomDescription;
     end;
   end;
   // grPeriodRooms.AddRow;
@@ -2085,7 +2041,6 @@ end;
 procedure TfrmMain.AutoSizePeriodColumns;
 var
   i: integer;
-  changedHeight: boolean;
 begin
   grPeriodRooms.AutoSizeCol(0);
   grPeriodRooms.colWidths[1] := LongestColText(grPeriodRooms, 1, 2) + 20;
@@ -2093,7 +2048,8 @@ begin
   try
     if cbxViewTypes.ItemIndex > 0 then
     begin
-      grPeriodRooms.colWidths[2] := 0; // (LongestColText(grPeriodRooms, 2, 2) + 20) * ABS(ORD(cbxViewTypes.ItemIndex = 0));
+      grPeriodRooms.colWidths[2] := 0;
+      // (LongestColText(grPeriodRooms, 2, 2) + 20) * ABS(ORD(cbxViewTypes.ItemIndex = 0));
       grPeriodRooms.colWidths[1] := 170;
     end;
   except
@@ -2109,19 +2065,13 @@ begin
   pnlViewType.Height := grPeriodRooms.RowHeights[0] + grPeriodRooms.RowHeights[1] - 2;
   pnlViewType.BringToFront;
 
-  // for i := 5 to grPeriodRooms.fixedCols - 1 do
-  // begin
-  // try
-  // grPeriodRooms.AutoSizeCol(i);
-  // except
-  // end;
-  // end;
   if grPeriodRooms.ColCount > 4 then
   begin
     if assigned(embOccupancyView) then
     begin
       embOccupancyView.grdOccupancy.ColCount := grPeriodRooms.ColCount - 4;
-      embOccupancyView.grdOccupancy.colWidths[0] := grPeriodRooms.colWidths[0] + grPeriodRooms.colWidths[1] + grPeriodRooms.colWidths[2] +
+      embOccupancyView.grdOccupancy.colWidths[0] := grPeriodRooms.colWidths[0] + grPeriodRooms.colWidths[1] +
+        grPeriodRooms.colWidths[2] +
         grPeriodRooms.colWidths[3] + grPeriodRooms.colWidths[4];
       for i := 0 to grPeriodRooms.ColCount - 1 do
       begin
@@ -2163,9 +2113,9 @@ end;
 
 procedure TfrmMain.ClearFreeRooms;
 begin
-  if assigned(oFreeRooms) then
+  if assigned(FFreeRooms) then
   begin
-    freeandNil(oFreeRooms);
+    freeandNil(FFreeRooms);
   end;
 end;
 
@@ -2203,9 +2153,9 @@ begin
     'ORBIS',
     'a02da62f9c6f941024e90d5828d9246c096fb5b1286946e1a63b14981d42f55e',
     'https://api.roomercloud.net/roomer/openAPI/REST/bookings/roomassignments?roomNumber=004',
-    Now));
+    now));
   ShowMessage(CalculateOTPOnSpecifiedTime('a02da62f9c6f941024e90d5828d9246c096fb5b1286946e1a63b14981d42f55e',
-              StrToDateTime('05-01-2016 12:00:00')));
+    StrToDateTime('05-01-2016 12:00:00')));
 {$ENDIF}
 end;
 
@@ -2232,7 +2182,8 @@ begin
 
   AssignSkinColorsToComponents;
 
-  WriteStringValueToAnyRegistry('Software\Roomer\FormStatus\StoreMainV2\sSkinManager1', 'SkinName', sSkinManager1.skinName);
+  WriteStringValueToAnyRegistry('Software\Roomer\FormStatus\StoreMainV2\sSkinManager1', 'SkinName',
+    sSkinManager1.skinName);
 
   DebugLog('Ending sSkinManager1AfterChange');
   // TsSkinManager.GetGlobalColor
@@ -2265,7 +2216,6 @@ end;
 
 procedure TfrmMain.btnRefreshOneDayClick(Sender: TObject);
 begin
-//  glb.RefreshTablesWhenNeeded;
   g.RefreshRoomList;
   ViewMode := vmNone;
   SetViews(tabsView.TabIndex + 1);
@@ -2274,7 +2224,6 @@ end;
 procedure TfrmMain.BusyOff;
 begin
   Screen.Cursor := crDefault;
-  // Application.processmessages;
 end;
 
 function TfrmMain.IsValidCellSelected: boolean;
@@ -2282,7 +2231,6 @@ begin
   result := true;
   if ViewMode <> vmOneDay then
     exit;
-  // result := //zOneDay_ResIndex <> - 1;
 end;
 
 procedure TfrmMain.lblPropertyStatusDblClick(Sender: TObject);
@@ -2299,37 +2247,6 @@ begin
       frmHomedate.Hide;
     except
     end;
-
-    // try
-    // frmHomedate.Show;
-    // RoomerLanguage.TranslateThisForm(frmHomedate);
-    // frmHomedate.Hide;
-    // except
-    // end;
-    // try
-    // frmDayNotes.Show;
-    // RoomerLanguage.TranslateThisForm(frmDayNotes);
-    // frmDayNotes.Hide;
-    // except
-    // end;
-    // try
-    // frmSelHotel.Show;
-    // RoomerLanguage.TranslateThisForm(frmSelHotel);
-    // frmSelHotel.Hide;
-    // except
-    // end;
-    // try
-    // frmGoToRoomandDate.Show;
-    // RoomerLanguage.TranslateThisForm(frmGoToRoomandDate);
-    // frmGoToRoomandDate.Hide;
-    // except
-    // end;
-    // try
-    // frmDaysStatistics.Show;
-    // RoomerLanguage.TranslateThisForm(frmDaysStatistics);
-    // frmDaysStatistics.Hide;
-    // except
-    // end;
   finally
     RoomerLanguage.PerformDBUpdatesWhenUnknownEntitiesFound := false;
   end;
@@ -2337,7 +2254,8 @@ begin
 end;
 
 procedure TfrmMain.__lblUsernameDblClick(Sender: TObject);
-var Invoice : TInvoice;
+var
+  Invoice: TInvoice;
 begin
   { IFDEF DEBUG }
   // PushActivityLogs;
@@ -2346,13 +2264,13 @@ begin
     if IsControlKeyPressed then
       _iRoomReservation := 0;
 
-   Invoice := TInvoice.Create(_iReservation, _iRoomReservation, 0, -1, 0);
-   DebugMessage(FloatToStr(Invoice.Total) + #10 + FloatToStr(Invoice.TotalPayments) + #10 + FloatToStr(Invoice.Balance));
-   Invoice.Free;
+    Invoice := TInvoice.Create(_iReservation, _iRoomReservation, 0, -1, 0);
+    DebugMessage(FloatToStr(Invoice.Total) + #10 + FloatToStr(Invoice.TotalPayments) + #10 +
+      FloatToStr(Invoice.Balance));
+    Invoice.Free;
   end;
   { ENDIF }
 end;
-
 
 procedure TfrmMain.__lblSearchDblClick(Sender: TObject);
 begin
@@ -2372,13 +2290,11 @@ begin
 end;
 
 procedure TfrmMain.WndProc(var message: TMessage);
-var
-  s: string;
 begin
   if Message.Msg = WM_REFRESH_STAFF_COMM_NOTIFIER then
     StaffComm.ViewDate := dtDate.Date
   else
-  if Message.Msg = WM_REFRESH_PERIOD_VIEW_BOTTOM then
+    if Message.Msg = WM_REFRESH_PERIOD_VIEW_BOTTOM then
     CorrectBottomPeriodInterface
   else if Message.Msg = WM_REFRESH_PERIOD_VIEW_BOTTOM_REFRESH then
   begin
@@ -2387,8 +2303,7 @@ begin
   end
   else if Message.Msg = WM_REFRESH_DATE then
   begin
-    RefreshGrid(dtDate.Tag);
-    dtDate.Tag := 0;
+    RefreshGrid;
   end
   else if Message.Msg = WM_SET_DATE_FROM_MAIN then
   begin
@@ -2420,14 +2335,6 @@ end;
 
 // ******************************************************************************
 
-procedure TfrmMain.Image2MouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
-begin
-{$IFDEF DEBUG}
-  // if Button = mbRight then
-  // OpenTestBed;
-{$ENDIF}
-end;
-
 procedure TfrmMain.InitializeViews;
 begin
   zOneDay_bDetailsOn := false;
@@ -2446,16 +2353,12 @@ begin
   end;
 end;
 
-const
-  ALREADY_READ_DAY_VIEW_SIZES: boolean = false;
-
 function TfrmMain.LoadOneDayViewGridStatus: boolean;
 var
-  sIniName: string;
   l, iLen: integer;
 begin
   result := false;
-  if ALREADY_READ_DAY_VIEW_SIZES then
+  if FDayViewSizesRead then
     exit;
 
   iLen := LongestColText(grOneDayRooms, 0);
@@ -2478,13 +2381,14 @@ begin
       for l := 0 to grOneDayRooms.ColCount - 1 do
         if NOT(l IN [0, 1, 7, 8]) then
         begin
-          grOneDayRooms.colWidths[l] := ReadInteger(name, grOneDayRooms.name + '_col_' + inttostr(l), grOneDayRooms.colWidths[l]);
+          grOneDayRooms.colWidths[l] := ReadInteger(name, grOneDayRooms.name + '_col_' + inttostr(l),
+            grOneDayRooms.colWidths[l]);
         end;
     finally
       Free;
     end;
   end;
-  ALREADY_READ_DAY_VIEW_SIZES := true;
+  FDayViewSizesRead := true;
   result := true;
 end;
 
@@ -2508,57 +2412,37 @@ var
   RoomerMessage: TRoomerMessage;
 begin
   RoomerMessage := RoomerMessages.MessageById(mmoMessage.Tag);
-    if RoomerMessage <> nil then
-      RoomerMessage.MarkedAsRead := true;
-    timMessagesTimer(timMessages);
+  if RoomerMessage <> nil then
+    RoomerMessage.MarkedAsRead := true;
+  timMessagesTimer(timMessages);
 end;
 
 procedure TfrmMain.btnBackForwardClick(Sender: TObject);
 var
-  iNum: integer;
   iMPly: integer;
-  myYear, myMonth, myDay: Word;
+  lNewDate: TDateTime;
 begin
-  // --
   if OffLineMode then
     exit;
 
-  iMPly := 0;
   if (Sender = btnBack) then
     iMPly := -1
-  else if (Sender = btnForward) then
+  else
     iMPly := 1;
 
-  iNum := 1;
+  // Ctrl means a week forward or backward
   if IsControlKeyPressed then
   begin
-    iNum := 7;
+    lNewDate := dtDate.Date + 7 * iMPly;
+
+    // Ctrl-Alt means a month forward or backwork
     if IsAltKeyPressed then
-    begin
-      if Sender = btnForward then
-      begin
-        DecodeDate(dtDate.Date, myYear, myMonth, myDay);
-        iNum := (MonthDays[isLeapYear(myYear)][myMonth]);
-      end
-      else
-      begin
-        DecodeDate(dtDate.Date, myYear, myMonth, myDay);
-        if myMonth = 1 then
-        begin
-          myMonth := 12;
-          dec(myYear)
-        end
-        else
-          dec(myMonth);
-        iNum := (MonthDays[isLeapYear(myYear)][myMonth]);
-      end;
-    end;
-  end;
-  if iNum > 7 then
-    iNum := 0;
-  dtDate.Tag := iNum * iMPly;
-  dtDate.Date := trunc(dtDate.Date + (iNum * iMPly));
-  // RefreshGrid(iNum * iMPly);
+      lNewDate := IncMonth(dtDate.Date, iMPly)
+  end
+  else
+    lNewDate := dtDate.Date + 1 * iMPly;
+
+  dtDate.Date := lNewDate;
 end;
 
 procedure TfrmMain.btnBreakfastGuestsClick(Sender: TObject);
@@ -2582,48 +2466,9 @@ begin
 end;
 
 // ------------------------------------------------------------------------------
-// 19.02.2008 - er þetta nauðsynlegt - aðeins notað á einun stað --
-// commentaði það út þar þanni að þetta er ekki notað
+// 19.02.2008 - er ï¿½etta nauï¿½synlegt - aï¿½eins notaï¿½ ï¿½ einun staï¿½ --
+// commentaï¿½i ï¿½aï¿½ ï¿½t ï¿½ar ï¿½anni aï¿½ ï¿½etta er ekki notaï¿½
 // ------------------------------------------------------------------------------
-procedure TfrmMain.Compute_TreeMoves(X, Y: integer);
-var
-  NbPixels: integer;
-  RMin, RMax: integer;
-  HOffset, VOffset: integer;
-begin
-  GetScrollRange(grOneDayRooms.handle, SB_HORZ, RMin, RMax);
-  if RMin = RMax then
-    HOffset := 0
-  else
-    HOffset := 16;
-
-  GetScrollRange(grOneDayRooms.handle, SB_VERT, RMin, RMax);
-  if RMin = RMax then
-    VOffset := 0
-  else
-    VOffset := 16;
-  { -------------------------------------------------------------------- }
-  { Near an edge means at a maximum of (half) a line, i-e half the }
-  { pixles of the current font. }
-  { -------------------------------------------------------------------- }
-
-  NbPixels := grOneDayRooms.DefaultRowHeight; // Abs((Font.Height));
-
-  if (Y < NbPixels * 2) then
-    grOneDayRooms.Perform(WM_VSCROLL, SB_LINEUP, 0)
-    // ScrollBy( 0, -NbPixels ) //
-  else if (Y > grOneDayRooms.Height - VOffset - NbPixels) then
-    grOneDayRooms.Perform(WM_VSCROLL, SB_LINEDOWN, 0);
-  // agrRooms.ScrollBy( 0, NbPixels ); //
-
-  if (X < NbPixels) then
-    grOneDayRooms.Perform(WM_HSCROLL, SB_LINELEFT, 0)
-    // agrRooms.ScrollBy( -NbPixels, 0 ) //
-  else if (X > grOneDayRooms.Width - HOffset - NbPixels) then
-    grOneDayRooms.Perform(WM_HSCROLL, SB_LINERIGHT, 0);
-  // agrRooms.ScrollBy( NbPixels, 0 ); //
-end;
-
 procedure TfrmMain.tabsViewChange(Sender: TObject);
 begin
   SetViews(tabsView.TabIndex + 1);
@@ -2659,7 +2504,7 @@ end;
 
 // ------------------------------------------------------------------------------
 // 19.02.2008 - row height not longer saved to iniFile - using autosize insted
-// 11.03.2008 - Bætt við að vista font í 5dayGrind
+// 11.03.2008 - Bï¿½tt viï¿½ aï¿½ vista font ï¿½ 5dayGrind
 //
 // ------------------------------------------------------------------------------
 
@@ -2708,13 +2553,11 @@ end;
 // 19.02.2008 - row height not longer restored to iniFile
 // - using autosize insted
 //
-// 11.03.2008 - Bætt við að sækja font fyrir 5dayGrind
+// 11.03.2008 - Bï¿½tt viï¿½ aï¿½ sï¿½kja font fyrir 5dayGrind
 //
-// ?! - Kanski ætti að vista þetta fyrir hvern notanda
+// ?! - Kanski ï¿½tti aï¿½ vista ï¿½etta fyrir hvern notanda
 // ------------------------------------------------------------------------------
 procedure TfrmMain.RestoreCurrentFont;
-var
-  po: TPoint;
 
 begin
   with TRoomerRegistryIniFile.Create(AppInifile) do
@@ -2745,44 +2588,13 @@ begin
 
       grPeriodRooms_NO.Canvas.Font := grPeriodRooms.Font;
 
-        // grPeriodRooms.font.Color      := clBlack;
-        // grPeriodRooms.fixedfont.Color := clBlack;
-
     finally
       Free;
     end;
-
-  // with TRoomerRegistryIniFile.Create(AppInifile) do
-  // try
-  // po.X := 2;
-  // po.Y := 0;
-  // grPeriodRooms.XYOffset := po;
-  //
-  // po.X := 2;
-  // po.Y := 0;
-  // grOneDayRooms.XYOffset := po;
-  //
-  // po.X := 2;
-  // po.Y := 0;
-  // grPeriodRooms_NO.XYOffset := po;
-  //
-  // grPeriodRooms.font := _StrToFont(readString('Grid5DayFonts', grPeriodRooms.name, _FontToStr(grPeriodRooms.font)));
-  // grPeriodRooms.FixedFont := grPeriodRooms.font;
-  // grPeriodRooms.Canvas.font := grPeriodRooms.font;
-  //
-  // grPeriodRooms_NO.font := grPeriodRooms.font;
-  // grPeriodRooms_NO.FixedFont := grPeriodRooms.font;
-  // grPeriodRooms_NO.Canvas.font := grPeriodRooms.font;
-  //
-  // grOneDayRooms.font := _StrToFont(readString('GridFonts', grOneDayRooms.name, _FontToStr(grOneDayRooms.font)));
-  // grOneDayRooms.Canvas.font := grOneDayRooms.font;
-  // // 080311 agrRooms.AutoSizeRows(true,-1);
-  // finally
-  // free;
-  // end;
 end;
 
 {$IFDEF USE_JCL}
+
 
 procedure TfrmMain.LogException(ExceptObj: TObject; ExceptAddr: Pointer; IsOS: boolean);
 var
@@ -2817,7 +2629,8 @@ begin
         if (ExceptFrame.FrameKind = efkFinally) or (ExceptFrame.FrameKind = efkUnknown) or not ExceptionHandled then
           HandlerLocation := ExceptFrame.CodeLocation;
         ModInfo := GetLocationInfo(HandlerLocation);
-        TmpS := Format('    Frame at $%p (type: %s', [ExceptFrame.FrameLocation, GetEnumName(TypeInfo(TExceptFrameKind), Ord(ExceptFrame.FrameKind))]);
+        TmpS := Format('    Frame at $%p (type: %s', [ExceptFrame.FrameLocation, GetEnumName(TypeInfo(TExceptFrameKind),
+          Ord(ExceptFrame.FrameKind))]);
         if ExceptionHandled then
           TmpS := TmpS + ', handles exception)'
         else
@@ -2827,7 +2640,8 @@ begin
           _textAppend(ExceptionLogPath, Format('      Handler at $%p', [HandlerLocation]), true)
         else
           _textAppend(ExceptionLogPath, Format('      Code at $%p', [HandlerLocation]), true);
-        _textAppend(ExceptionLogPath, Format('      Module "%s", Procedure "%s", Unit "%s", Line %d', [ModInfo.UnitName, ModInfo.ProcedureName,
+        _textAppend(ExceptionLogPath, Format('      Module "%s", Procedure "%s", Unit "%s", Line %d',
+          [ModInfo.UnitName, ModInfo.ProcedureName,
           ModInfo.SourceName, ModInfo.LineNumber]), true);
         inc(i);
       end;
@@ -2837,14 +2651,18 @@ begin
 end;
 {$ENDIF}
 
+
 procedure TfrmMain.ExceptionHandler(Sender: TObject; E: Exception);
 begin
   // --
-  if (E is EDivByZero) or (E is ERangeError) or (E is EStringListError) or (E is ERoomerOfflineAssertionException) or (E is EInvalidPointer) or
+  if (E is EDivByZero) or (E is ERangeError) or (E is EStringListError) or (E is ERoomerOfflineAssertionException) or
+    (E is EInvalidPointer) or
   // ( E is EOverflow          ) or
   // ( E is EUnderflow         ) or
-    (E is EInvalidOp) or (E is EAbstractError) or (E is EIntOverflow) or (E is EAccessViolation) or (E is EControlC) or (E is EPrivilege) or (E is EInvalidCast)
-    or (E is EVariantError) or (E is EAssertionFailed) or (E is EIntfCastError) or (pos('out of bounds', ANSIlowercase(E.message)) > 0) then
+    (E is EInvalidOp) or (E is EAbstractError) or (E is EIntOverflow) or (E is EAccessViolation) or (E is EControlC) or
+    (E is EPrivilege) or (E is EInvalidCast)
+    or (E is EVariantError) or (E is EAssertionFailed) or (E is EIntfCastError) or
+    (pos('out of bounds', ANSIlowercase(E.message)) > 0) then
   begin
     if ExceptionsLoggingActive then
       ExceptionsLoggingActive := _textAppend(ExceptionLogPath, E.message, true);
@@ -2906,20 +2724,22 @@ constructor TfrmMain.Create(aOwner: TComponent);
 begin
   inherited;
 
-  zHintObj := TCustomHint.Create(self);
-  availListContainer := TRoomClassChannelAvailabilityContainerDictionary.Create(True);
+  availListContainer := TRoomClassChannelAvailabilityContainerDictionary.Create(true);
 
-  GroupList := TGroupEntityList.Create(True);
-  MoveFunctionAvailRooms := TRoomAvailabilityEntityList.Create(True);
+  GroupList := TGroupEntityList.Create(true);
+  MoveFunctionAvailRooms := TRoomAvailabilityEntityList.Create(true);
 
   ug.OpenApplication;
 
 end;
 
 {$IFDEF DEBUG}
-var startTimeForMeasure,
-    endTimeForMeasure : longint;
+
+var
+  startTimeForMeasure,
+    endTimeForMeasure: longint;
 {$ENDIF}
+
 
 procedure TfrmMain.StartTimeMeasure;
 begin
@@ -2941,23 +2761,25 @@ var
   recVer: TEXEVersionData;
   temp: String;
 begin
-  FormShowing := False;
-  FOffLineMode := False;
+  FormShowing := false;
+  FOffLineMode := false;
   OneDayGridFont := nil;
   FMessagesBeingDownloaded := false;
   StaffComm := nil;
   _InvoiceIndex := 0;
+  FReservationsModel := TReservationsModel.Create;
+
 
 {$IFNDEF DEBUG}
-  __TimingResult.Visible := False;
+  __TimingResult.Visible := false;
 {$ELSE}
-  __TimingResult.Visible := True;
+  __TimingResult.Visible := true;
   __TimingResult.Font.Color := clWhite;
 {$ENDIF}
-
   HintWindowShowing := false;
   try
-    temp := ReadStringValueFromAnyRegistry('Software\Roomer\FormStatus\StoreMainV2\sSkinManager1', 'SkinName', 'RoomerUI');
+    temp := ReadStringValueFromAnyRegistry('Software\Roomer\FormStatus\StoreMainV2\sSkinManager1', 'SkinName',
+      'RoomerUI');
     if pos('(internal)', temp) > 0 then
       temp := LowerCase(trim(StringReplace(temp, ' (internal)', '', [rfReplaceAll, rfIgnoreCase])))
     else
@@ -2993,7 +2815,7 @@ begin
 {$IFNDEF MONITOR_LEAKAGE}
   ExceptionsLoggingActive := true;
   ExceptionLogPath := ExtractFileDir(Application.ExeName);
-//  ExceptionLogPath := TPath.Combine(LocalAppDataPath, 'Roomer\logs');
+  // ExceptionLogPath := TPath.Combine(LocalAppDataPath, 'Roomer\logs');
   if ParameterByName('LogPath') <> '' then
     ExceptionLogPath := ParameterByName('LogPath');
   forceDirectories(ExceptionLogPath);
@@ -3001,7 +2823,6 @@ begin
 
 {$IFDEF USE_JCL}
   JclAddExceptNotifier(LogException);
-{$ELSE}
 {$ENDIF}
   Application.OnException := ExceptionHandler;
 {$ENDIF}
@@ -3012,7 +2833,7 @@ begin
   StoreMain.StorageName := 'Software\Roomer\FormStatus\StoreMainV2';
   // g.qProgramPath + 'forms' + '.ini';
   StoreMain.RestoreFrom;
-  PlaceFormOnVisibleMonitor(Self);
+  PlaceFormOnVisibleMonitor(self);
   try
     recVer := _GetEXEVersionData(Paramstr(0));
     __VER.Caption := { 1081 } ANSIUpperCase(GetTranslatedText('sh0080')) + ': ' + recVer.FileVersion;
@@ -3034,33 +2855,51 @@ begin
 
   btnShowHideStatClick(nil);
   btnShowHideHintClick(nil);
-  (*
-    edNights.Value := 7;
-    zNights        := edNights.AsInteger;
-    zDateTo        := zDateFrom+zNights;
-  *)
-  // ReservationsModel := TReservationsModel.Create;
 
   dxRibbon1.ActiveTab := rbTabHome;
 
   tabsView.Font.Color := clWhite;
 
   lblAuthStatus.Caption := GetTranslatedText('shTx_AuthNeeded');
-//  Application.ModalPopupMode := pmAuto;
+  // Application.ModalPopupMode := pmAuto;
 
 end;
 
 procedure TfrmMain.FormDestroy(Sender: TObject);
 begin
-  try SaveOneDayViewGridStatus; Except end;
-  try RemoveHandlersAndObjects; Except end;
-  try GroupList.Free; Except end;
-  try MoveFunctionAvailRooms.Free; Except end;
-  try StaffComm.Free; Except end;
-  try availListContainer.Free; Except end;
-  try FrmMessagesTemplates.Free; Except end;
+  try
+    SaveOneDayViewGridStatus;
+  Except
+  end;
+  try
+    RemoveHandlersAndObjects;
+  Except
+  end;
+  try
+    GroupList.Free;
+  Except
+  end;
+  try
+    MoveFunctionAvailRooms.Free;
+  Except
+  end;
+  try
+    StaffComm.Free;
+  Except
+  end;
+  try
+    availListContainer.Free;
+  Except
+  end;
+  try
+    FrmMessagesTemplates.Free;
+  Except
+  end;
   // Strange place, but destroying in finalization of uActivityLogs gives a InvalidPointer when freeing FSQL TStringlist of TRoomerDataset
-  try FreeAndNil(ActivityLogGetThreadedData); Except end;
+  try
+    freeandNil(ActivityLogGetThreadedData);
+  Except
+  end;
 end;
 
 procedure TfrmMain.SetDateWithoutEvents(aDate: TdateTime);
@@ -3071,7 +2910,7 @@ begin
   dtDate.OnChange := dtDateChange;
 end;
 
-procedure TfrmMain.PlaceRoomerOnCurrnetMonitor;
+procedure TfrmMain.PlaceRoomerOnCurrentMonitor;
 var
   Monitor: TMonitor;
 const
@@ -3109,13 +2948,13 @@ end;
 
 procedure TfrmMain.FormShow(Sender: TObject);
 begin
-  if FormShowing then exit;
-  FormShowing := True;
+  if FormShowing then
+    exit;
+  FormShowing := true;
 
   SetDateWithoutEvents(trunc(now));
 
   StaffComm := TStaffCommunication.Create(pnlStaffComm);
-
 
   if cbxStatDay.ItemIndex < 0 then
     cbxStatDay.ItemIndex := 0;
@@ -3135,7 +2974,7 @@ begin
 
     SetExtraSkinColors;
 
-    PlaceRoomerOnCurrnetMonitor;
+    PlaceRoomerOnCurrentMonitor;
 
     FormResize(Sender);
     barinnBar4.Visible := false;
@@ -3166,7 +3005,7 @@ begin
     with timOfflineReports do
     begin
       Interval := TIM_MINUTE; // 1 minute
-      Enabled := True;
+      Enabled := true;
     end;
   end
   else
@@ -3186,7 +3025,6 @@ begin
       sNewRoom := rri.Room;
     if sNewRoom <> '' then
     begin
-      zDebug1 := '101';
       CheckInARoom(sNewRoom, rri.RoomReservation);
       RefreshGrid;
     end;
@@ -3237,7 +3075,7 @@ var
 
   function lclFormatHotelName(const aID, aName: string): string;
   begin
-    Result := Format('%s - %s', [ANSIUpperCase(aId), aName]);
+    result := Format('%s - %s', [ANSIUpperCase(aID), aName]);
   end;
 
 begin
@@ -3248,10 +3086,10 @@ begin
     __cbxHotels.Items.Clear;
     with d.roomerMainDataSet do
       if d.roomerMainDataSet.hotels.Count = 0 then
-        __cbxHotels.Items.AddObject(lclFormatHotelName(HotelId, g.qHotelName), nil)
+        __cbxHotels.Items.AddObject(lclFormatHotelName(hotelId, g.qHotelName), nil)
       else
       begin
-        for i := 0 to Hotels.Count - 1 do
+        for i := 0 to hotels.Count - 1 do
         begin
           __cbxHotels.Items.AddObject(lclFormatHotelName(hotels[i].hotelCode, hotels[i].hotelName), hotels[i]);
           if LowerCase(hotels[i].hotelCode) = LowerCase(hotelId) then
@@ -3265,23 +3103,17 @@ begin
 
 end;
 
-function TfrmMain.StartHotel(aFirstLogin: boolean; ForcefulRestart: boolean = false; AutoLogin: String = ''): boolean;
+function TfrmMain.StartHotel(aFirstLogin: boolean; ForcefulRestart: boolean = false; const AutoLogin: String = ''): boolean;
 var
   userName, password, WrongLoginMessage, ExpiredMessage: string;
   okLogin: boolean;
   tries: integer;
-  i, ii: integer;
-  sTmp: string;
+  i: integer;
 
   tmpUserLang: integer;
   lLoginFormCancelled: boolean;
-  hotel: TRoomerHotelsEntity;
-
-  didPostProcess: boolean;
 
 begin
-  result := false;
-  didPostProcess := false;
   tmpUserLang := g.qUserLanguage;
 
   EnableDisableFunctions(false);
@@ -3304,10 +3136,10 @@ begin
     if tries > 1 then
     begin
       WrongLoginMessage := Format(GetTranslatedText('shWrongLoginAttempts'), [tries]);
-      AddRoomerActivityLog(d.roomerMainDataSet.username,
-                           uActivityLogs.LOGIN,
-                           'Failure',
-                           'User ' + d.roomerMainDataSet.username + ' tried to log in without success.');
+      AddRoomerActivityLog(d.roomerMainDataSet.userName,
+        uActivityLogs.LOGIN,
+        'Failure',
+        'User ' + d.roomerMainDataSet.userName + ' tried to log in without success.');
     end;
 
     if doLogin(userName, password, WrongLoginMessage, ExpiredMessage, lLoginFormCancelled, AutoLogin) then
@@ -3329,7 +3161,7 @@ begin
   begin
     LoginCancelled := true;
     try
-      d.roomerMainDataSet.Logout;
+      d.roomerMainDataSet.LOGOUT;
       __lblUsername.Caption := 'N/A';
     except
     end;
@@ -3341,14 +3173,13 @@ begin
   begin
 
     with TfrmOfflineReports.Create(nil) do
-    try
-      Result := true;
-      RoomerOffline := True;
-      ShowModal;
-    finally
-      Free;
-      ExitProcess(0); // end application
-    end;
+      try
+        RoomerOffline := true;
+        ShowModal;
+      finally
+        Free;
+        ExitProcess(0); // end application
+      end;
 
   end;
 
@@ -3358,12 +3189,10 @@ begin
     exit;
   end;
 
-  result := true;
-
-  AddRoomerActivityLog(d.roomerMainDataSet.username,
-                       uActivityLogs.LOGIN,
-                       'Success',
-                       'User ' + d.roomerMainDataSet.username + ' successfully logged in.');
+  AddRoomerActivityLog(d.roomerMainDataSet.userName,
+    uActivityLogs.LOGIN,
+    'Success',
+    'User ' + d.roomerMainDataSet.userName + ' successfully logged in.');
   g.ProcessAppIni(0);
 
   d.roomerMainDataSet.ApplicationID := g.qApplicationID;
@@ -3380,14 +3209,10 @@ begin
   ViewMode := vmOneDay;
 
   try
-//    if AutoLogin = '' then
-//    begin
     prepareDependencyManager;
     UpdateHotelsList;
-//    end;
 
     InitializeTaxes;
-    didPostProcess := true;
     PostLoginProcess(AutoLogin = '');
 
   except
@@ -3395,18 +3220,10 @@ begin
       MessageDlg(E.message, mtError, [mbOk], 0);
   end;
 
-    result := true;
-    lblHotelName.Caption := g.qHotelName;
-    timMessagesTimer(timMessages);
-    timMessages.Enabled := true;
-//    try
-//      CloseAppSettings;
-//      OpenAppSettings;
-//    except
-//      on E: Exception do
-//        MessageDlg(E.message, mtError, [mbOk], 0);
-//    end;
-
+  result := true;
+  lblHotelName.Caption := g.qHotelName;
+  timMessagesTimer(timMessages);
+  timMessages.Enabled := true;
 
   d.PrepareFixedTables;
 
@@ -3416,8 +3233,6 @@ begin
   end;
 
   d.Get_All_StatusAttributes;
-
-  g.qDebug1 := 'StartHotel(appstart : boolean);';
 
   g.qUser := userName;
 
@@ -3435,7 +3250,7 @@ begin
     RestoreCurrentFont
   except
   end;
-  StartOneDay;
+  RefreshOneDayGrid;
 
   cbxNameOrder.ItemIndex := g.qNameOrder;
   grOneDayRooms.DefaultRowHeight := g.qOneDayRowHeight;
@@ -3456,7 +3271,6 @@ begin
 
   grNoRooms_Init;
 
-  bUsingMessagesSet := false;
   InitializeViews;
   SetWindowTitle;
 
@@ -3465,12 +3279,13 @@ begin
   oldDock1.Visible := g.qShowSideBar;
 
   FRBEMode := false;
-  RBEMode := (g.qUserPriv1 = 50) OR (g.qUserPriv2 = 50) OR (g.qUserPriv3 = 50) OR (g.qUserPriv4 = 50) OR (g.qUserPriv5 = 50);
+  RBEMode := (g.qUserPriv1 = 50) OR (g.qUserPriv2 = 50) OR (g.qUserPriv3 = 50) OR (g.qUserPriv4 = 50) OR
+    (g.qUserPriv5 = 50);
 
   SetExplanationColors;
 end;
 
-procedure TfrmMain.SetShapeColor(Shape: TShape; ResStatus: String);
+procedure TfrmMain.SetShapeColor(Shape: TShape; const ResStatus: String);
 var
   backColor, fontColor: TColor;
 begin
@@ -3548,19 +3363,21 @@ begin
 
 end;
 
-procedure TfrmMain.tvAllReservationsAverageRateGetProperties(Sender: TcxCustomGridTableItem; ARecord: TcxCustomGridRecord;
+procedure TfrmMain.tvAllReservationsAverageRateGetProperties(Sender: TcxCustomGridTableItem;
+  ARecord: TcxCustomGridRecord;
   var AProperties: TcxCustomEditProperties);
 begin
   AProperties := d.getCurrencyProperties(ARecord.Values[tvAllReservationsCurrency.index]);
 end;
 
-procedure TfrmMain.tvAllReservationsTotalStayRateGetProperties(Sender: TcxCustomGridTableItem; ARecord: TcxCustomGridRecord;
+procedure TfrmMain.tvAllReservationsTotalStayRateGetProperties(Sender: TcxCustomGridTableItem;
+  ARecord: TcxCustomGridRecord;
   var AProperties: TcxCustomEditProperties);
 begin
   AProperties := d.getCurrencyProperties(ARecord.Values[tvAllReservationsCurrency.index]);
 end;
 
-function TfrmMain.CountRoomsOfSpecificType(RoomType: String): integer;
+function TfrmMain.CountRoomsOfSpecificType(const RoomType: String): integer;
 begin
   result := 0;
   glb.RoomsSet.first;
@@ -3593,7 +3410,8 @@ begin
     if glb.RoomTypesSet['Active'] then
     begin
       grdRoomStatusses.cells[0, grdRoomStatusses.RowCount - 1] := glb.RoomTypesSet['RoomType'];
-      grdRoomStatusses.cells[1, grdRoomStatusses.RowCount - 1] := inttostr(CountRoomsOfSpecificType(glb.RoomTypesSet['RoomType']));
+      grdRoomStatusses.cells[1, grdRoomStatusses.RowCount - 1] :=
+        inttostr(CountRoomsOfSpecificType(glb.RoomTypesSet['RoomType']));
       grdRoomStatusses.RowCount := grdRoomStatusses.RowCount + 1;
     end;
     glb.RoomTypesSet.next;
@@ -3606,8 +3424,10 @@ begin
 
   rSet := d.roomerMainDataSet.ActivateNewDataset
     (d.roomerMainDataSet.SystemFreeQuery(Format('SELECT rtg.Code, ' +
-    '(SELECT COUNT(r.Room) FROM rooms r, roomtypes rt WHERE r.Active AND r.WildCard=0 AND r.RoomType=rt.RoomType AND rt.RoomTypeGroup=rtg.Code) AS NumRooms, ' +
-    '(SELECT availability FROM channelratesavailabilities WHERE date=_params._date AND roomClassId=rtg.id LIMIT 1) AS ChannelAvailable ' +
+    '(SELECT COUNT(r.Room) FROM rooms r, roomtypes rt WHERE r.Active AND r.WildCard=0 AND r.RoomType=rt.RoomType AND rt.RoomTypeGroup=rtg.Code) AS NumRooms, '
+    +
+    '(SELECT availability FROM channelratesavailabilities WHERE date=_params._date AND roomClassId=rtg.id LIMIT 1) AS ChannelAvailable '
+    +
     'FROM roomtypegroups rtg, ' + '     (SELECT ''%s'' AS _date) AS _params ' + 'WHERE active=1 ' +
     // '-- AND (SELECT COUNT(r.Room) FROM rooms r, roomtypes rt WHERE r.RoomType=rt.RoomType AND rt.RoomTypeGroup=rtg.Code) > 0 ' +
     'ORDER BY rtg.Code', [uDateUtils.dateToSqlString(dtDate.Date)])));
@@ -3629,7 +3449,8 @@ begin
         grdRoomClasses.cells[2, idx] := '0';
         grdRoomClasses.cells[3, idx] := rSet['ChannelAvailable'];
         grdRoomClasses.Objects[3, idx] := Pointer(1);
-        availListContainer.Add(TRoomClassChannelAvailabilityContainer.Create(rSet['Code'], rSet['NumRooms'], 0, 0, 0, idx, false));
+        availListContainer.Add(TRoomClassChannelAvailabilityContainer.Create(rSet['Code'], rSet['NumRooms'], 0, 0, 0,
+          idx, false));
 
         grdRoomClasses.RowCount := grdRoomClasses.RowCount + 1;
       end;
@@ -3655,9 +3476,11 @@ end;
 procedure TfrmMain.LocationMenuSelect(Sender: TObject);
 begin
   TMenuItem(Sender).Checked := NOT TMenuItem(Sender).Checked;
-  WriteStringValueToAppRegistry(d.roomerMainDataSet.userName, 'LocationSelected_' + g.qHotelCode + '_' + inttostr(TMenuItem(Sender).Tag),
+  WriteStringValueToAppRegistry(d.roomerMainDataSet.userName, 'LocationSelected_' + g.qHotelCode + '_' +
+    inttostr(TMenuItem(Sender).Tag),
     Bool2Str(TMenuItem(Sender).Checked));
-  btnFilter.ImageIndex := ABS(Ord(LocationFilter(false) OR GroupsFilterActive OR ReservationStatusFilter)); // OR GroupsFilterActive));
+  btnFilter.ImageIndex := ABS(Ord(LocationFilter(false) OR GroupsFilterActive OR ReservationStatusFilter));
+  // OR GroupsFilterActive));
 
   checkFilterStatuses;
   RedisplayGuestWindows;
@@ -3733,7 +3556,6 @@ var
   letter: Char;
 begin
   result := false;
-  letter := '-';
   case status of
     rsDeparted:
       letter := 'D';
@@ -3751,9 +3573,9 @@ begin
       letter := 'B';
     rsCanceled:
       letter := 'C';
-  end;
-  if letter = '-' then
+  else
     exit;
+  end;
   i := pos(letter, RES_STATUS_FILTER_LOCATIONS) - 1;
   if (i >= 0) AND (i < mnuItemStatus.Items.Count) then
     result := (mnuItemStatus.Items[i].Checked);
@@ -3788,28 +3610,11 @@ begin
   end;
 end;
 
-function TfrmMain.LocationFiltered(Location: String): boolean;
-var
-  i: integer;
-  id: integer;
-begin
-  result := false;
-  id := glb.GetLocationId(Location);
-  for i := 0 to mnuFilterLocation.Items.Count - 1 do
-    if (mnuFilterLocation.Items[i].Checked) AND (mnuFilterLocation.Items[i].Tag = id + 1000) then
-    begin
-      result := true;
-      break;
-    end;
-end;
-
 function TfrmMain.FilteredFloors: TSet_Of_Integer;
 var
   i: integer;
-  checkFound: boolean;
 begin
   result := TSet_Of_Integer.Create;
-  checkFound := false;
   for i := 0 to mnuFilterLocation.Items.Count - 1 do
   begin
     if (mnuFilterLocation.Items[i].Checked) AND (mnuFilterLocation.Items[i].Tag < 1000) then
@@ -3822,10 +3627,8 @@ end;
 function TfrmMain.FilteredLocations: TSet_Of_Integer;
 var
   i: integer;
-  checkFound: boolean;
 begin
   result := TSet_Of_Integer.Create;
-  checkFound := false;
   for i := 0 to mnuFilterLocation.Items.Count - 1 do
   begin
     if (mnuFilterLocation.Items[i].Checked) AND (mnuFilterLocation.Items[i].Tag >= 1000) then
@@ -3833,26 +3636,6 @@ begin
       result.Add(mnuFilterLocation.Items[i].Tag - 1000);
     end;
   end;
-end;
-
-function TfrmMain.FloorFiltered(Floor: integer): boolean;
-var
-  i: integer;
-  checkFound: boolean;
-begin
-  result := false;
-  checkFound := false;
-  for i := 0 to mnuFilterLocation.Items.Count - 1 do
-  begin
-    if (mnuFilterLocation.Items[i].Checked) AND (mnuFilterLocation.Items[i].Tag = Floor) then
-    begin
-      result := true;
-      break;
-    end;
-    if (NOT checkFound) AND (mnuFilterLocation.Items[i].Checked) then
-      checkFound := true;
-  end;
-  result := result OR (NOT checkFound);
 end;
 
 procedure TfrmMain.DisplayStatusses(IncludeChart: boolean);
@@ -3903,51 +3686,56 @@ begin
   end;
 end;
 
-function TfrmMain.doLogin(var userName, password, WrongLoginMessage, ExpiredMessage: string; var pressedEsc: boolean; AutoLogin: String = ''): boolean;
+function TfrmMain.doLogin(var userName, password, WrongLoginMessage, ExpiredMessage: string; var pressedEsc: boolean;
+  const AutoLogin: String = ''): boolean;
 var
   lHotelID: String;
   lastMessage: String;
   iLoc: integer;
   lLoginFormResult: TLoginFormResult;
+  lTryAutoLogin: string;
 begin
   result := false;
   pressedEsc := false;
   lastMessage := '';
+  lLoginFormResult := lrCancel;
+  lTryAutoLogin := AutoLogin;
   repeat
-    if (AutoLogin = '') then
-      lLoginFormResult := AskUserForCredentials(userName, password, lHotelId, lastMessage);
+    if (ltryAutoLogin = '') then
+      lLoginFormResult := AskUserForCredentials(userName, password, lHotelID, lastMessage);
 
-
-    if (AutoLogin <> '') OR (lLoginFormResult in cLoginFormSuccesfull) then
+    if (lTryAutoLogin <> '') OR (lLoginFormResult in cLoginFormSuccesfull) then
     begin
       result := true;
       lblAuthStatus.Caption := GetTranslatedText('shTx_Authenticating');
       try
         if (AutoLogin <> '') then
         begin
-          lHotelId := AutoLogin;
-//          sleep(1000);
-          d.roomerMainDataSet.SwapHotel(lHotelId, userName, password)
+          lHotelID := AutoLogin;
+          // sleep(1000);
+          d.roomerMainDataSet.SwapHotel(lHotelID, userName, password)
         end
-        else if (lLoginFormResult = lrLogin) and (NOT OffLineMode) AND d.roomerMainDataSet.IsConnectedToInternet AND d.roomerMainDataSet.RoomerPlatformAvailable then
+        else if (lLoginFormResult = lrLogin) and (NOT OffLineMode) AND d.roomerMainDataSet.IsConnectedToInternet AND
+          d.roomerMainDataSet.RoomerPlatformAvailable then
         begin
-          d.roomerMainDataSet.Login(lHotelId, userName, password, 'ROOMERPMS', GetVersion(Application.ExeName));
-          FOffLineMode := False;
-        end else
+          d.roomerMainDataSet.LOGIN(lHotelID, userName, password, 'ROOMERPMS', GetVersion(Application.ExeName));
+          FOffLineMode := false;
+        end
+        else
         begin
           OffLineMode := true;
-          d.roomerMainDataSet.hotelId := lHotelId;
+          d.roomerMainDataSet.hotelId := lHotelID;
           d.roomerMainDataSet.userName := userName;
           d.roomerMainDataSet.password := password;
           d.roomerMainDataSet.SessionLengthSeconds := 1;
         end;
         lblAuthStatus.Caption := GetTranslatedText('shTx_AuthSuccess');
-        g.qHotelCode := lHotelId;
+        g.qHotelCode := lHotelID;
         timCheckSessionExpired.Enabled := true;
       except
         on E: Exception do
         begin
-          AutoLogin := '';
+          lTryAutoLogin := '';
           lastMessage := E.message;
           iLoc := max(pos(' - ''http://', lastMessage), pos(' - ''https://', lastMessage));
           if iLoc > 0 then
@@ -3963,14 +3751,14 @@ begin
   until result OR pressedEsc;
 end;
 
-procedure TfrmMain.NillifyEventHandlers(grid : TAdvStringGrid);
+procedure TfrmMain.NillifyEventHandlers(Grid: TAdvStringGrid);
 begin
-  grid.OnDrawCell := nil;
-  grid.OnEnter := nil;
-  grid.OnMouseMove := nil;
-  grid.OnResize := nil;
-  grid.OnGetCellBorder := nil;
-  grid.OnGetCellColor := nil;
+  Grid.OnDrawCell := nil;
+  Grid.OnEnter := nil;
+  Grid.OnMouseMove := nil;
+  Grid.OnResize := nil;
+  Grid.OnGetCellBorder := nil;
+  Grid.OnGetCellColor := nil;
 end;
 
 procedure TfrmMain.FormActivate(Sender: TObject);
@@ -3993,8 +3781,8 @@ begin
       StoreMain.StoreTo(false)
     else
       StoreMain.active := false;
-    bAppClosing := true;
-    ReservationsModel.Free;
+    FAppClosing := true;
+    FReservationsModel.Free;
 
     try
       ClearStringGridFromTo(grOneDayRooms, 1, 1);
@@ -4028,27 +3816,28 @@ end;
 procedure TfrmMain.FormCloseQuery(Sender: TObject; var CanClose: boolean);
 begin
 
-  if LoginCancelled OR FRBEMode OR not bAlreadyIn then
+  if LoginCancelled OR FRBEMode OR not FAlreadyIn then
   begin
     CanClose := true;
   end
   else
   begin
-    CanClose := RoomerMessageDialog(GetTranslatedText('sh1004'), mtConfirmation, [mbYes, mbNo], 'CloseRoomerMainForm', mrYes) = mrYes;
+    CanClose := RoomerMessageDialog(GetTranslatedText('sh1004'), mtConfirmation, [mbYes, mbNo], 'CloseRoomerMainForm',
+      mrYes) = mrYes;
     // CanClose := MessageDLG( { 1004 } GetTranslatedText('sh1004'),
     // mtConfirmation, [mbYes, mbNo], 0) = mrYes;
-    if CanClose AND bAlreadyIn then
+    if CanClose AND FAlreadyIn then
       try
         embOccupancyView.Reset;
-//        Application.ProcessMessages;
-        d.roomerMainDataSet.Logout;
+        // Application.ProcessMessages;
+        d.roomerMainDataSet.LOGOUT;
         __lblUsername.Caption := 'N/A';
       except
       end;
   end;
-  {$IFNDEF DEBUG}
-    timHalt.Enabled := CanClose;
-  {$ENDIF}
+{$IFNDEF DEBUG}
+  timHalt.Enabled := CanClose;
+{$ENDIF}
 end;
 
 procedure TfrmMain.ShowHintWindow;
@@ -4073,9 +3862,6 @@ end;
 
 procedure TfrmMain.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 var
-  myYear, myMonth, myDay: Word;
-  numDays: integer;
-
   options: TExecuteFileOptions;
 begin
   if pageMainGrids.ActivePage = tabPeriod then
@@ -4112,61 +3898,16 @@ begin
   if (Key = vk_Right) then
   begin // vk_Next then begin
     btnBackForwardClick(btnForward);
-    // if ssCtrl in Shift then
-    // begin
-    // if ssAlt in Shift then
-    // begin
-    // DecodeDate(dtDate.Date, myYear, myMonth, myDay);
-    // numDays := (MonthDays[isLeapYear(myYear)][myMonth]);
-    // // dtDate.Date := trunc(dtDate.Date + (MonthDays[isLeapYear(myYear)][myMonth]))
-    // end
-    // else
-    // begin
-    // numDays := 7;
-    // end;
-    // end
-    // else
-    // begin
-    // numDays := 1;
-    // end;
-    // g.qDebug1 :=
-    // 'FormKeyDown(Sender : TObject; var Key : Word; Shift : TShiftState)';
-    // dtDate.Tag := numDays;
-    // dtDate.Date := trunc(dtDate.Date + numDays);
     Key := 0;
   end
   else if Key = vk_Left then
   begin // vk_Prior then begin
     btnBackForwardClick(btnBack);
-    // if ssCtrl in Shift then
-    // begin
-    // if ssAlt in Shift then
-    // begin
-    // DecodeDate(dtDate.Date, myYear, myMonth, myDay);
-    // if myMonth = 1 then
-    // begin
-    // myMonth := 12;
-    // dec(myYear)
-    // end
-    // else
-    // dec(myMonth);
-    // dtDate.Date := trunc(dtDate.Date - (MonthDays[isLeapYear(myYear)][myMonth]))
-    // end
-    // else
-    // dtDate.Date := trunc(dtDate.Date - 7);
-    // end
-    // else
-    // begin
-    // dtDate.Date := trunc(dtDate.Date - 1);
-    // end;
-    // g.qDebug1 :=
-    // 'FormKeyDown(Sender : TObject; var Key : Word; Shift : TShiftState)';
     Key := 0;
   end
   else if (Key = vk_Home) and (ssCtrl in Shift) then
   begin
     dtDate.Date := trunc(now);
-    g.qDebug1 := 'FormKeyDown(Sender : TObject; var Key : Word; Shift : TShiftState)';
     Key := 0;
   end;
 end;
@@ -4175,12 +3916,14 @@ procedure TfrmMain.FormKeyPress(Sender: TObject; var Key: Char);
 var
   s: string;
 begin
-  if (ActiveControl <> grOneDayRooms) AND (ActiveControl <> grPeriodRooms) AND (NOT frmDaysStatistics.BeingViewed) AND (NOT FrmRateQuery.BeingViewed) then
+  if (ActiveControl <> grOneDayRooms) AND (ActiveControl <> grPeriodRooms) AND (NOT frmDaysStatistics.BeingViewed) AND
+    (NOT FrmRateQuery.BeingViewed) then
     exit;
 
   s := Key;
 
-  if CharInSet(Key, ['a' .. 'z', 'A' .. 'Z', 'á', 'Á', 'é', 'É', 'ý', 'Ý', 'ú', 'Ú', 'í', 'Í', 'ó', 'Ó', 'þ', 'Þ', 'æ', 'Æ', 'ð', 'Ð', 'ö', 'Ö']) then
+  if CharInSet(Key, ['a' .. 'z', 'A' .. 'Z', 'ï¿½', 'ï¿½', 'ï¿½', 'ï¿½', 'ï¿½', 'ï¿½', 'ï¿½', 'ï¿½', 'ï¿½', 'ï¿½', 'ï¿½', 'ï¿½', 'ï¿½', 'ï¿½', 'ï¿½',
+    'ï¿½', 'ï¿½', 'ï¿½', 'ï¿½', 'ï¿½']) then
   begin
     ActiveControl := edtSearch;
     SendKeys(PChar(s), true);
@@ -4228,81 +3971,44 @@ begin
 
   pnlRoomerLogo.Left := ClientWidth - pnlRoomerLogo.Width - 10;
 
-  // pnlRoomerLogo.Top := 2;
-  // pnlRoomerLogo.Left := Width - pnlRoomerLogo.Width - 2; // - 40;
-
-  // btnClearSearch.Left := lblMainHeader.Left + lblMainHeader.Width -
-  // btnClearSearch.Width - 10;
-  // edtSearch.Left := btnClearSearch.Left - edtSearch.Width;
-  // lblSearch.Left := edtSearch.Left - lblSearch.Width - 8;
-
-  if Assigned(StaffComm) then
-    try StaffComm.PlaceCorrectly; Except end;
+  if assigned(StaffComm) then
+    try
+      StaffComm.PlaceCorrectly;
+    Except
+    end;
 end;
 
 // ** END OF FORM FUNCTIONS ---------------------------------------------------
 
-// (*
-// TReservationStatus = (  rsUnKnown
-// , rsReservations
-// , rsGuests
-// , rsDeparting
-// , rsDeparted
-// , rsReserved
-// , rsOverbooked
-// , rsAll
-// , rsCurrent
-// , rsAlotment
-// , rsNoShow
-// , rsBlocked
-// );
-//
-// *)
 
-procedure TfrmMain.StartOneDay;
+procedure TfrmMain.RefreshOneDayGrid;
 var
   iTopRow, iOldCol, iOldRow: integer;
 
-  rSet: TRoomerDataSet;
-
-  i, ii: integer;
-  ReservationCount: integer;
-  RoomCount: integer;
   RoomNumber: string;
   ResStatus: TReservationStatus;
   ResStatusChar: string;
-  s: string;
   sDate: string;
   dtDeparture: Tdate;
   daysToDeparture: integer;
-  dNextOcc: Tdate;
-  sNextOcc: string;
-
-  isDeparting: string;
-
-  tickCountStart: longint;
-  tickCountEnd: longint;
 
   mnuItem: TMenuItem;
 
   statLastRoomNumber: String;
   statNumRooms, statNumExternRooms, statTaken, statCancelledExt, statCancelledRm: integer;
 
-  temp: String;
-
-  aDate: TdateTime;
+  lDate: TdateTime;
+  lReservations: TSingleReservations;
+  lRoom: TRoomObject;
 
 begin
-  // ClearRoomCells;
   lastDate := 0;
   grOneDayRooms.BeginUpdate;
   try
 
     timGetRoomStatuses.Enabled := false;
-    tickCountStart := getTickCount;
     BusyOn;
     try
-//      g.RefreshRoomList;
       statNumRooms := g.oRooms.RoomCount;
       statNumExternRooms := 0;
       statCancelledExt := 0;
@@ -4310,7 +4016,7 @@ begin
       statTaken := 0;
       statLastRoomNumber := '';
 
-      bAlreadyIn := true;
+      FAlreadyIn := true;
 
       zGuestListFirstTime := true;
       if ViewMode = vmOneDay then
@@ -4320,12 +4026,8 @@ begin
         iOldCol := grOneDayRooms.col;
         iOldRow := grOneDayRooms.row;
 
-        ReservationsModel.Free;
-        ReservationsModel := TReservationsModel.Create;
-        aDate := dtDate.Date;
-        ReservationsModel.Execute(aDate, aDate + 1, rsAll);
-
-        ReservationCount := ReservationsModel.ReservationCount;
+        lDate := dtDate.Date;
+        FReservationsModel.Execute(lDate, lDate + 1, rsAll);
 
         ziFreeRackRoomCount := 0;
 
@@ -4341,28 +4043,23 @@ begin
 
         grOneDayRooms.FixedCols := 0;
 
-        for i := 0 to ReservationCount - 1 do
+        for lReservations in FReservationsModel.Reservations do
         begin
-          RoomCount := ReservationsModel.Reservations[i].RoomCount;
-
-          if (RoomCount > 0) AND (trunc(ReservationsModel.Reservations[i].Departure) <> trunc(dtDate.Date)) AND
-            (NOT ReservationNotInGroupList(ReservationsModel.Reservations[i].Reservation)) then
+          if (lReservations.RoomCount > 0) AND (trunc(lReservations.Departure) <> trunc(dtDate.Date)) AND
+            (NOT ReservationtInGroupList(lReservations.Reservation)) then
           begin
             mnuItem := TMenuItem.Create(nil);
-            temp := ReservationsModel.Reservations[i].name;
-            if (ReservationsModel.Reservations[i].RoomCount > 0) AND (ReservationsModel.Reservations[i].Rooms[0].GuestCount > 0) then
-              temp := temp + ' - ' + ReservationsModel.Reservations[i].Rooms[0].Guests[0].GuestName;
-            mnuItem.Caption := temp;
-            mnuItem.Tag := GroupList.Add(TGroupEntity.Create(ReservationsModel.Reservations[i].Reservation, ReservationsModel.Reservations[i].name));
+            mnuItem.Caption := lReservations.NamePlusGuestName;
+            mnuItem.Tag := GroupList.Add(TGroupEntity.Create(lReservations.Reservation, lReservations.name));
             mnuItem.OnClick := LocationMenuSelect;
             G2.Items.Add(mnuItem);
           end;
 
-          for ii := 0 to RoomCount - 1 do
+          for lRoom in lReservations.Rooms do
           begin
-            RoomNumber := ReservationsModel.Reservations[i].Rooms[ii].RoomNumber;
-            ResStatus := ReservationsModel.Reservations[i].Rooms[ii].ResStatus;
-            dtDeparture := ReservationsModel.Reservations[i].Rooms[ii].Departure;
+            RoomNumber := lRoom.RoomNumber;
+            ResStatus := lRoom.ResStatus;
+            dtDeparture := lRoom.Departure;
             daysToDeparture := trunc(dtDate.Date) - trunc(dtDeparture);
 
             ResStatusChar := g.ResStatusToStatusStr(ResStatus);
@@ -4386,11 +4083,7 @@ begin
               statLastRoomNumber := RoomNumber;
             end;
 
-            if daysToDeparture = 0 then
-            begin
-              // Departing
-            end
-            else
+            if daysToDeparture <> 0 then
             begin
               if pos('<', RoomNumber) = 1 then
               begin
@@ -4401,8 +4094,8 @@ begin
                 zsOccRackRooms := zsOccRackRooms + quotedStr(RoomNumber) + ',';
               end;
             end;
-          end;
-        end;
+          end; {for rooms}
+        end; {for reservations}
 
         if length(zsOccRackRooms) > 0 then
           Delete(zsOccRackRooms, length(zsOccRackRooms), 1);
@@ -4412,16 +4105,7 @@ begin
 
         sDate := _dateToDBDate(dtDate.Date, false);
         ClearFreeRooms;
-        oFreeRooms := TFreeRooms.Create(g.qHotelCode, dtDate.Date, zsOccRackRooms);
-
-        // labTotalRooms.Caption  := inttostr(statNumRooms);
-        // labRackRoomCount.Caption  := inttostr(statTaken);
-        // labFreeRoomCount.Caption  := inttostr(statNumRooms-statTaken);
-        // labNoRoomCount.Caption  := inttostr(statNumExternRooms);
-        // labNettoFreeRooms.Caption  := inttostr(statNumRooms-statTaken-statNumExternRooms);
-        //
-        // labFreeRoomCount.UseSkinColor := (statNumRooms-statTaken >= 0);
-        // labNettoFreeRooms.UseSkinColor := (statNumRooms-statTaken-statNumExternRooms >= 0);
+        FFreeRooms := TFreeRooms.Create(g.qHotelCode, dtDate.Date, zsOccRackRooms);
 
         Chart1.Series[0].Clear;
         Chart1.Series[0].Add(statNumRooms, GetTranslatedText('shMainFormStatisticsRooms'), clBlue);
@@ -4461,7 +4145,6 @@ begin
       end;
       BusyOff;
     end;
-    tickCountEnd := getTickCount;
     timGetRoomStatuses.Tag := trunc(dtDate.Date);
     timGetRoomStatuses.Enabled := true;
   finally
@@ -4470,7 +4153,7 @@ begin
   end;
 end;
 
-function TfrmMain.ReservationNotInGroupList(resId: integer): boolean;
+function TfrmMain.ReservationtInGroupList(resId: integer): boolean;
 var
   i: integer;
 begin
@@ -4483,50 +4166,6 @@ begin
     end;
 end;
 
-(*
-
-  if message.Msg = WM_AppliedKey then
-  begin
-  edtDate.SelLength := 0;
-  edtDate.Text := FormatDateTime('DD' + DateSeparator + 'MM' + DateSeparator + 'YYYY', Now);
-  edtDate.SetFocus;
-  edtDate.SelLength := 0;
-  if message.WParam > 0 then
-  begin
-  s := Chr(message.WParam);
-  SendKeys(PChar(s), true);
-  edtDate.SelStart := 1;
-  end;
-  end
-*)
-
-// **TODO
-// gera vinnslu þar sem athugað er hvort opnir reikningar ery til staðar
-
-// --
-(*
-  if OpenInvoiceExists(message.WParam, message.LParam) then
-  begin
-  if MessageDLG('There is one or more open sales on the group.' + #13#13 + 'Would you like to view the list ?', mtConfirmation,
-  [mbYes, mbNo], 0) = mrYes then
-  begin
-  // --
-  Application.CreateForm(TfrmOpenInvoices, frmOpenInvoices);
-  try
-  iTraceRes := message.WParam;
-  iTraceRom := - 1;
-  try
-  frmOpenInvoices.ShowModal;
-  finally
-  iTraceRes := - 1;
-  iTraceRom := - 1;
-  end;
-  finally
-  frmOpenInvoices.free;
-  end;
-  end;
-  end;
-*)
 
 procedure TfrmMain.RefreshStats(force: boolean = false);
 var
@@ -4538,7 +4177,8 @@ begin
   if OffLineMode then
     exit;
 
-  if force OR (trunc(dtDate.Date) = trunc(now + cbxStatDay.ItemIndex)) OR (trunc(dtDate.Date + cbxStatDay.ItemIndex) = trunc(now + cbxStatDay.ItemIndex)) then
+  if force OR (trunc(dtDate.Date) = trunc(now + cbxStatDay.ItemIndex)) OR
+    (trunc(dtDate.Date + cbxStatDay.ItemIndex) = trunc(now + cbxStatDay.ItemIndex)) then
   begin
     OCC := 0;
     ADR := 0;
@@ -4546,17 +4186,17 @@ begin
     RoomsSold := 0;
 
     s := Format(HOTEL_PERFORMANCE_QUERY_BETWEEN_DATES,
-        [
-        dateToSqlString(now + cbxStatDay.ItemIndex),
-        dateToSqlString(now + cbxStatDay.ItemIndex),
+      [
+      dateToSqlString(now + cbxStatDay.ItemIndex),
+      dateToSqlString(now + cbxStatDay.ItemIndex),
 
-        dateToSqlString(now + cbxStatDay.ItemIndex),
-        dateToSqlString(now + cbxStatDay.ItemIndex),
+      dateToSqlString(now + cbxStatDay.ItemIndex),
+      dateToSqlString(now + cbxStatDay.ItemIndex),
 
-        dateToSqlString(now + cbxStatDay.ItemIndex),
-        dateToSqlString(now + cbxStatDay.ItemIndex)
-        ]);
-//    CopyToClipboard(s);
+      dateToSqlString(now + cbxStatDay.ItemIndex),
+      dateToSqlString(now + cbxStatDay.ItemIndex)
+      ]);
+    // CopyToClipboard(s);
     rSet := CreateNewDataSet;
     try
       hData.rSet_bySQL(rSet, s);
@@ -4585,103 +4225,74 @@ end;
 CONST
   BusyRefreshingTodaysGrid: boolean = false;
 
-procedure TfrmMain.RefreshGrid(Days: integer = 0);
-var
-  needsRefresh: boolean;
+procedure TfrmMain.RefreshGrid;
 begin
   if BusyRefreshingTodaysGrid then
   begin
     timRetryRefresh.Enabled := false;
-    timRetryRefresh.Tag := Days;
     timRetryRefresh.Enabled := true;
     exit;
   end;
   StartTimeMeasure;
   BusyRefreshingTodaysGrid := true;
   try
-    if (ABS(Days) > 7) then
-      Days := 0;
 
     UpdatePanelText;
-    if ViewMode = vmOneDay then
-    begin
-      // Sækja herbergi
-      g.qDebug1 := 'RefreshGrid - ' + zDebug1;
-      StartOneDay;
-      RefreshStats;
+
+    case ViewMode of
+      vmOneDay:     RefreshOneDayGrid;
+
+      vmGuestList:  refreshGuestList;
+
+      vmPeriod:     RefreshPeriodView;
+      vmMeetings: ;
+      vmDashboard:  begin
+                      frmDaysStatistics.ViewDate := dtDate.Date;
+                      timGetRoomStatuses.Tag := trunc(dtDate.Date);
+                      timGetRoomStatuses.Enabled := true;
+                    end;
+      vmRateQuery:  PostMessage(handle, WM_SET_DATE_FROM_MAIN, 0, trunc(dtDate.Date));
+
     end;
-    if ViewMode = vmPeriod then
-    begin
-      // if (Days < 0) then
-      Days := 0;
-      if Days = 0 then
-      begin
-        lblLoading.Show;
-        lblLoading.Update;
-      end;
-      grPeriodRooms.BeginUpdate;
-      grPeriodRooms_NO.BeginUpdate;
-      try
 
-        if Days = 0 then
-        begin
-          Period_SetDateHeads;
-          Period_FillEmptyResCells;
-
-          // must come before FillResCell
-          grNoRooms_ClearAll;
-          grNoRooms_FillEmptyResCells;
-        end
-        else
-        begin
-          Period_UnMergeGrid;
-          grNoRooms_UnMergeGrid;
-        end;
-        Period_FillResCells(Days);
-        Period_MergeGrid;
-        grNoRooms_MergeGrid;
-        grAutoSizeGrids;
-        if btnOccupancyView.Down then
-        begin
-          embOccupancyView.ShowOccupancy(zDateFrom, zDateFrom + zNights);
-          PostMessage(handle, WM_REFRESH_PERIOD_VIEW_BOTTOM, 0, 0);
-        end;
-      finally
-        lblLoading.Hide;
-        grPeriodRooms.endUpdate;
-        grPeriodRooms_NO.endUpdate;
-        grPeriodRooms.Invalidate;
-      end;
-      RefreshStats;
-
-    end
-    else if ViewMode = vmGuestList then
-    begin
-      refreshGuestList;
-    end
-    else if ViewMode = vmDashboard then
-    begin
-      frmDaysStatistics.ViewDate := dtDate.Date;
-      timGetRoomStatuses.Tag := trunc(dtDate.Date);
-      timGetRoomStatuses.Enabled := true;
-    end
-    else if ViewMode = vmRateQuery then
-    begin
-      PostMessage(handle, WM_SET_DATE_FROM_MAIN, 0, trunc(dtDate.Date));
-    end
-    else
-    begin
-      // **
-    end;
   finally
     BusyRefreshingTodaysGrid := false;
-    endTimeMeasure;
+    EndTimeMeasure;
   end;
 end;
 
-procedure TfrmMain.dtDateModified(Sender: TObject);
+procedure TfrmMain.RefreshPeriodView;
 begin
-  // 99 DisplayDate(dtDate.Date);
+  lblLoading.Show;
+  lblLoading.Update;
+
+  grPeriodRooms.BeginUpdate;
+  grPeriodRooms_NO.BeginUpdate;
+  try
+
+    Period_SetDateHeads;
+    Period_FillEmptyResCells;
+
+    // must come before FillResCell
+    grNoRooms_ClearAll;
+    grNoRooms_FillEmptyResCells;
+
+    Period_FillResCells;
+    Period_MergeGrid;
+    grNoRooms_MergeGrid;
+    grAutoSizeGrids;
+    if btnOccupancyView.Down then
+    begin
+      embOccupancyView.ShowOccupancy(zDateFrom, zDateFrom + zNights);
+      PostMessage(handle, WM_REFRESH_PERIOD_VIEW_BOTTOM, 0, 0);
+    end;
+  finally
+    lblLoading.Hide;
+    grPeriodRooms.endUpdate;
+    grPeriodRooms_NO.endUpdate;
+    grPeriodRooms.Invalidate;
+  end;
+  RefreshStats;
 end;
 
 procedure TfrmMain.dtMainHeaderPropertiesChange(Sender: TObject);
@@ -4694,7 +4305,6 @@ begin
   if Key = VK_Return then
   begin
     // postMessage(Handle, WM_StartUpLists, 0, 0);
-    g.qDebug1 := 'dtDateKeyDown(Sender : TObject; var Key : Word; Shift : TShiftState);)';
     RefreshGrid;
     Key := 0;
   end;
@@ -4703,18 +4313,18 @@ end;
 // ******************************************************************************
 // menu
 
-function TfrmMain.IsRoomReserved(RoomNumber: string; iRes, iRoom: integer): boolean;
+function TfrmMain.IsRoomReserved(const RoomNumber: string; iRes, iRoom: integer): boolean;
 var
   i, l: integer;
 begin
   result := false;
-  for i := 0 to ReservationsModel.ReservationCount - 1 do
+  for i := 0 to FReservationsModel.ReservationCount - 1 do
   begin
-    for l := 0 to ReservationsModel.Reservations[i].RoomCount - 1 do
+    for l := 0 to FReservationsModel.Reservations[i].RoomCount - 1 do
     begin
       if (i <> iRes) or (l <> iRoom) then
       begin
-        if ReservationsModel.Reservations[i].Rooms[l].RoomNumber = RoomNumber then
+        if FReservationsModel.Reservations[i].Rooms[l].RoomNumber = RoomNumber then
         begin
           result := true;
           break;
@@ -4724,11 +4334,6 @@ begin
     if result then
       break;
   end;
-end;
-
-procedure TfrmMain.mlLanguagesAfterLanguageChanged(Sender: TObject; NewLanguage: Byte);
-begin
-  // **  Exit1.caption := '-';
 end;
 
 procedure TfrmMain.mmnuOneDayGridPopup(Sender: TObject);
@@ -4775,7 +4380,6 @@ end;
 
 procedure TfrmMain.BlinkRoom;
 var
-  i: integer;
   box: TRect;
   pnt: TPoint;
 begin
@@ -4796,8 +4400,6 @@ end;
 procedure TfrmMain.__PanGridsHeaderDblClick(Sender: TObject);
 begin
   dtDate.Date := trunc(now);
-  // g.qDebug1 := 'panGridsHeaderDblClick(Sender : TObject);';
-  // RefreshGrid;
 end;
 
 procedure TfrmMain.mnuRemoveRoomNumberOfThisRoomClick(Sender: TObject);
@@ -4831,8 +4433,6 @@ end;
 
 procedure TfrmMain.mnuGlobalReservationChangesClick(Sender: TObject);
 begin
-  OneDay_GlobalChange;
-  zDebug1 := 'mnuGlobalReservationChangesClick(Sender : TObject)';
   RefreshGrid;
 end;
 
@@ -4840,12 +4440,12 @@ const
   bAlreadyReading: boolean = false;
 
 
-// ******************************************************************************
-//
-//
-//
-//
-// ******************************************************************************
+  // ******************************************************************************
+  //
+  //
+  //
+  //
+  // ******************************************************************************
 
 procedure TfrmMain.OneDay_GetResAndRoom_IDX(var idxReservation, idxRoom: integer);
 begin
@@ -4872,23 +4472,23 @@ begin
   end;
 end;
 
-procedure TfrmMain.OneDay_NewGuestCoordinates(RoomNumber: string; var iRes, iRoom: integer);
+procedure TfrmMain.OneDay_NewGuestCoordinates(const RoomNumber: string; var iRes, iRoom: integer);
 var
   i, l: integer;
 
   bFound: boolean;
 begin
   bFound := false;
-  for i := 0 to ReservationsModel.ReservationCount - 1 do
+  for i := 0 to FReservationsModel.ReservationCount - 1 do
   begin
-    for l := 0 to ReservationsModel.Reservations[i].RoomCount - 1 do
+    for l := 0 to FReservationsModel.Reservations[i].RoomCount - 1 do
     begin
       if (i <> iRes) or (l <> iRoom) then
       begin
-        if ReservationsModel.Reservations[i].Rooms[l].RoomNumber = RoomNumber then
+        if FReservationsModel.Reservations[i].Rooms[l].RoomNumber = RoomNumber then
         begin
           // if ReservationsModel.Reservations[ i ].Rooms[ l ].ResStatus = rsReservations then begin
-          if ReservationsModel.Reservations[i].Rooms[l].GuestCount > 0 then
+          if FReservationsModel.Reservations[i].Rooms[l].GuestCount > 0 then
           begin
             iRoom := l;
             iRes := i;
@@ -4928,94 +4528,23 @@ begin
   result := CurrentlyActiveGrid;
 end;
 
-function TfrmMain.OneDay_GetReservation(var iReservation, iRoom: integer; var sRoom: string): boolean;
-var
-  idxReservation: integer;
-  idxRoom: integer;
-  sGuest: string;
-  iRoomCount: integer;
-  GuestCount: integer;
-
-begin
-  result := false;
-  if NOT assigned(CurrentlyActiveGrid) then
-    exit;
-
-  iReservation := -1;
-  iRoom := -1;
-  sRoom := '';
-  // --
-
-  if zOneDay_ResIndex = -1 then
-    exit;
-  if ActiveGrid.row < 1 then
-    exit;
-
-  // --
-  if zOneDay_bNewGuest then
-  begin
-    idxReservation := zOneDayResPointers[ActiveGrid.row].ptrRooms[OneDay_GetIsLeftOrRight(ActiveGrid.col), 1];
-    // Reservation Index
-    idxRoom := zOneDayResPointers[ActiveGrid.row].ptrRooms[OneDay_GetIsLeftOrRight(ActiveGrid.col), 2];
-    // Rooms Index
-    OneDay_NewGuestCoordinates(ReservationsModel.Reservations[idxReservation].Rooms[idxRoom].RoomNumber, idxReservation, idxRoom);
-  end
-  else
-  begin
-    idxReservation := zOneDayResPointers[ActiveGrid.row].ptrRooms[OneDay_GetIsLeftOrRight(ActiveGrid.col), 1];
-    // Reservation Index
-    idxRoom := zOneDayResPointers[ActiveGrid.row].ptrRooms[OneDay_GetIsLeftOrRight(ActiveGrid.col), 2];
-    // Rooms Index
-  end;
-
-  iReservation := idxReservation;
-  iRoom := idxRoom;
-
-  sGuest := '';
-  GuestCount := 0;
-
-  if idxReservation >= 0 then
-  begin
-    try
-      GuestCount := ReservationsModel.Reservations[idxReservation].Rooms[idxRoom].GuestCount;
-    except
-      GuestCount := 0;
-    end;
-
-    if GuestCount > 0 then
-    begin
-      sGuest := ReservationsModel.Reservations[idxReservation].Rooms[idxRoom].Guests[0].GuestName;
-    end;
-
-    try
-      iRoomCount := ReservationsModel.Reservations[idxReservation].RoomCount;
-    except
-      iRoomCount := 0;
-    end;
-
-    sRoom := Format(GetTranslatedText('shOneDayGetReservationRoom'), [ReservationsModel.Reservations[idxReservation].Rooms[idxRoom].RoomNumber,
-      ReservationsModel.Reservations[idxReservation].name, iRoomCount, sGuest]);
-  end;
-
-end;
-
-function TfrmMain.OneDay_RoomReservedName(RoomNumber: string; iRes, iRoom: integer): string;
+function TfrmMain.OneDay_RoomReservedName(const RoomNumber: string; iRes, iRoom: integer): string;
 var
   i, l: integer;
 begin
   result := '';
-  for i := 0 to ReservationsModel.ReservationCount - 1 do
+  for i := 0 to FReservationsModel.ReservationCount - 1 do
   begin
-    for l := 0 to ReservationsModel.Reservations[i].RoomCount - 1 do
+    for l := 0 to FReservationsModel.Reservations[i].RoomCount - 1 do
     begin
       if (i <> iRes) or (l <> iRoom) then
       begin
-        if ReservationsModel.Reservations[i].Rooms[l].RoomNumber = RoomNumber then
+        if FReservationsModel.Reservations[i].Rooms[l].RoomNumber = RoomNumber then
         begin
           // if ReservationsModel.Reservations[ i ].Rooms[ l ].ResStatus = rsReservations then begin
-          if ReservationsModel.Reservations[i].Rooms[l].GuestCount > 0 then
+          if FReservationsModel.Reservations[i].Rooms[l].GuestCount > 0 then
           begin
-            result := ReservationsModel.Reservations[i].Rooms[l].Guests[0].GuestName;
+            result := FReservationsModel.Reservations[i].Rooms[l].Guests[0].GuestName;
             break;
           end;
           // end;
@@ -5040,24 +4569,7 @@ begin
   end
 end;
 
-procedure TfrmMain.OneDay_GlobalChange;
-begin
-end;
 
-// ==============================================================================
-// Actions regarding Reservation
-//
-// ==============================================================================
-
-// ------------------------------------------------------------------------------
-// +2008.02.20 - Added 5Day Grid support
-// +2008.02.20 - Fixed Acces Vailation when closing
-//
-// ------------------------------------------------------------------------------
-procedure TfrmMain.MakeNewReservation(dtDateFrom, dtDateTo: TdateTime);
-begin
-  // Moved
-end;
 
 // ------------------------------------------------------------------------------
 // +2008.02.20 - Added 5Day Grid support
@@ -5089,7 +4601,7 @@ begin
     g.openResDates(_iReservation, _iRoomReservation, Room, _Arrival, _Departure, 1);
     if ViewMode = vmOneDay then
     begin
-      zOneDay_bMouseDown := false;
+      FOneDay_bMouseDown := false;
       if grOneDayRooms.dragging then
         grOneDayRooms.EndDrag(false);
       RefreshGrid;
@@ -5115,7 +4627,7 @@ begin
     1:
       Grid := grPeriodRooms;
   else
-    Exit;
+    exit;
   end;
   dlgAdvGridPrintSettings.Grid := Grid;
   dlgAdvGridPrintSettings.IniFile := IniPath;
@@ -5143,26 +4655,18 @@ end;
 procedure TfrmMain.P5Click(Sender: TObject);
 begin
   if GetSelectedRoomInformation AND
-     GroupGuests(_iReservation,_iRoomReservation) then
-       btnRefreshOneDay.Click;
+    GroupGuests(_iReservation, _iRoomReservation) then
+    btnRefreshOneDay.Click;
 end;
 
 procedure TfrmMain.CreateProvideAllotment(Reservation: integer; showDetails: boolean = true);
 var
-  CustomerInfo: recCustomerHolderEX;
-  doShowProfile: boolean;
-  Daysleft: integer;
-  missingReason: integer;
-  resMedhod: TResMedhod;
-  priceFound: boolean;
   iReservation: integer;
   oNewReservation: TNewReservation;
   oRestReservation: TNewReservation;
 
-  s: string;
-  i: integer;
-
-  function OpenProvideAllotment(var oNewReservation, oRestReservation: TNewReservation; var restCount: integer): boolean;
+  function OpenProvideAllotment(var oNewReservation, oRestReservation: TNewReservation; var restCount: integer)
+    : boolean;
   begin
     result := false;
     Application.CreateForm(TfrmAllotmentToRes, frmAllotmentToRes);
@@ -5186,7 +4690,6 @@ var
 
 var
   restCount: integer;
-  trxName: String;
 
 begin
   d.roomerMainDataSet.SystemStartTransaction;
@@ -5205,7 +4708,6 @@ begin
     end;
 
     try
-      priceFound := true;
       // QuickResPeriodRoomObj(oNewReservation);
       // Period_GetNewResDates(resDateFrom);
 
@@ -5217,7 +4719,7 @@ begin
 
       if not OpenProvideAllotment(oNewReservation, oRestReservation, restCount) then
       begin
-        showmessage(GetTranslatedText('shTx_Main_ReservationCancelled'));
+        ShowMessage(GetTranslatedText('shTx_Main_ReservationCancelled'));
         exit;
       end;
 
@@ -5317,7 +4819,7 @@ begin
         Date := Period_ColToDate(grPeriodRooms.col);
       end;
   else
-    Exit;
+    exit;
   end;
 
   if ReservationIdInClipboard(hotelId, iReservation) then
@@ -5336,7 +4838,6 @@ end;
 // ------------------------------------------------------------------------------
 procedure TfrmMain.OneDay_EditPerson;
 var
-  _grid: TAdvStringGrid;
   theData: recPersonHolder;
 
 begin
@@ -5363,7 +4864,8 @@ end;
 
 function TfrmMain.isCurrentPeriodCellWithReservation: boolean;
 begin
-  result := assigned(grPeriodRooms.Objects[grPeriodRooms.col, grPeriodRooms.row]) AND (grPeriodRooms.Objects[grPeriodRooms.col, grPeriodRooms.row] IS TresCell)
+  result := assigned(grPeriodRooms.Objects[grPeriodRooms.col, grPeriodRooms.row]) AND
+    (grPeriodRooms.Objects[grPeriodRooms.col, grPeriodRooms.row] IS TresCell)
     AND (TresCell(grPeriodRooms.Objects[grPeriodRooms.col, grPeriodRooms.row]).Reservation <> -1);
 end;
 
@@ -5385,13 +4887,15 @@ begin
     iResult := OpenColorSelectionDialog(_ColorId, _ColorValue);
     if iResult <> mrCancel then
     begin
-      ReservationsModel.Reservations[_idxReservation].Rooms[_idxRoomReservation].colorId := _ColorId;
-      ReservationsModel.Reservations[_idxReservation].Rooms[_idxRoomReservation].CodedColor := _ColorValue;
+      FReservationsModel.Reservations[_idxReservation].Rooms[_idxRoomReservation].colorId := _ColorId;
+      FReservationsModel.Reservations[_idxReservation].Rooms[_idxRoomReservation].CodedColor := _ColorValue;
       ASet := CreateNewDataSet;
       if iResult = mrOK then
-        ASet.DoCommand(Format('UPDATE roomreservations SET colorId=%d WHERE RoomReservation=%d', [_ColorId, _iRoomReservation]))
+        ASet.DoCommand(Format('UPDATE roomreservations SET colorId=%d WHERE RoomReservation=%d',
+          [_ColorId, _iRoomReservation]))
       else if iResult = mrAbort then
-        ASet.DoCommand(Format('UPDATE roomreservations SET colorId=NULL WHERE RoomReservation=%d', [_iRoomReservation]));
+        ASet.DoCommand(Format('UPDATE roomreservations SET colorId=NULL WHERE RoomReservation=%d',
+          [_iRoomReservation]));
 
       if (ViewMode = vmOneDay) OR (ViewMode = vmPeriod) then
         RefreshGrid;
@@ -5418,19 +4922,20 @@ end;
 procedure TfrmMain.C4Click(Sender: TObject);
 var
   iRoomReservation: integer;
-  sText, status, room, name: String;
+  sText, status, Room, name: String;
 begin
   if mAllReservations.eof OR mAllReservations.BOF then
     exit;
   iRoomReservation := mAllReservations['RoomReservation'];
   name := mAllReservations['ReservationName'];
-  room := mAllReservations['Room'];
+  Room := mAllReservations['Room'];
   status := mAllReservations['Room'];
 
-  if g.qWarnCheckInDirtyRoom AND (NOT ((status = 'R') OR (status = 'C'))) then
+  if g.qWarnCheckInDirtyRoom AND (NOT((status = 'R') OR (status = 'C'))) then
   begin
-    sText := format(getTranslatedText('shTx_Various_RoomNotClean'), [room]);
-    if MessageDlg(sText, mtWarning, [mbYes, mbCancel], 0) <> mrYes then exit;
+    sText := Format(GetTranslatedText('shTx_Various_RoomNotClean'), [Room]);
+    if MessageDlg(sText, mtWarning, [mbYes, mbCancel], 0) <> mrYes then
+      exit;
   end;
 
   CheckInARoom(name, iRoomReservation);
@@ -5450,29 +4955,10 @@ begin
 end;
 
 procedure TfrmMain.C6Click(Sender: TObject);
-var
-  rSet: TRoomerDataSet;
 begin
   if GetSelectedRoomInformation then
-  begin
-    // rSet := d.roomerMainDataSet.ActivateNewDataset
-    // (d.roomerMainDataSet.SystemFreeQuery(Format('SELECT r.ContactEmail FROM reservations r WHERE r.Reservation=%d', [_iReservation])));
-    // try
-    // rSet.first;
-    // if NOT rSet.eof then
-    // begin
-    // if trim(rSet['ContactEmail']) <> '' then
-    // begin
     if SendCancellationConfirmation(_iReservation) then
       MessageDlg(GetTranslatedText('shTxCancellationEmailHasBeenSent'), mtConfirmation, [mbOk], 0);
-    // end
-    // else
-    // MessageDlg(GetTranslatedText('shTxReservationHasNoContactEmailAddress'), mtError, [mbOk], 0);
-    // end;
-    // finally
-    // freeandNil(rSet);
-    // end;
-  end;
 end;
 
 procedure TfrmMain.I1Click(Sender: TObject);
@@ -5563,7 +5049,7 @@ begin
     if zOneDay_ResIndex = -1 then
       exit;
     OneDay_GetResAndRoom_IDX(idxReservation, iRoom);
-    Reservation := ReservationsModel.Reservations[idxReservation].Reservation;
+    Reservation := FReservationsModel.Reservations[idxReservation].Reservation;
     // ShowNameList(Reservation, zOneDay_dtDate);
 
     frmResGuestList := TfrmResGuestList.Create(self);
@@ -5577,9 +5063,9 @@ begin
     end;
   end
   else if ViewMode = vmGuestList then
-    showmessage(GetTranslatedText('sh1007'))
+    ShowMessage(GetTranslatedText('sh1007'))
   else if ViewMode = vmPeriod then
-    showmessage(GetTranslatedText('sh1008'));
+    ShowMessage(GetTranslatedText('sh1008'));
 end;
 
 // ------------------------------------------------------------------------------
@@ -5590,22 +5076,23 @@ procedure TfrmMain.OneDay_CheckIn;
 var
   Execute: boolean;
   bContinue: boolean;
-  s : String;
+  s: String;
 begin
-  Execute := false;
   if GetSelectedRoomInformation then
   begin
     s := g.oRooms.FindRoomStatus(_Room);
-    if g.qWarnCheckInDirtyRoom AND (NOT ((s = 'R') OR (s = 'C'))) then begin
-      s := format(getTranslatedText('shTx_Various_RoomNotClean'), [_Room]);
-      if MessageDlg(s, mtWarning, [mbYes, mbCancel], 0) <> mrYes then exit;
+    if g.qWarnCheckInDirtyRoom AND (NOT((s = 'R') OR (s = 'C'))) then
+    begin
+      s := Format(GetTranslatedText('shTx_Various_RoomNotClean'), [_Room]);
+      if MessageDlg(s, mtWarning, [mbYes, mbCancel], 0) <> mrYes then
+        exit;
     end;
 
     if _ResStatus = rsBlocked then
       exit;
 
     Execute := true;
-    // Ef ekki Pöntun (P)
+    // Ef ekki Pï¿½ntun (P)
     if _ResStatus <> rsReservations then
     begin
       if _ResStatus = rsAlotment then
@@ -5622,7 +5109,8 @@ begin
 
     if Execute then
     begin
-      if ctrlGetBoolean('CheckinWithDetailsDialog') OR (MessageDlg(Format(GetTranslatedText('shCheckRoom'), [_Name]), mtConfirmation, [mbYes, mbNo], 0) = mrYes) then
+      if ctrlGetBoolean('CheckinWithDetailsDialog') OR
+        (MessageDlg(Format(GetTranslatedText('shCheckRoom'), [_Name]), mtConfirmation, [mbYes, mbNo], 0) = mrYes) then
       begin
 
         ShowAlertsForReservation(_iReservation, _iRoomReservation, atCHECK_IN);
@@ -5634,21 +5122,24 @@ begin
         if bContinue then
         begin
           if (NOT ctrlGetBoolean('CheckinWithDetailsDialog')) OR OpenGuestCheckInForm(_iRoomReservation) then
+          begin
             d.CheckInGuest(_iRoomReservation);
-          if (ViewMode = vmOneDay) OR (ViewMode = vmPeriod) then
-            RefreshGrid;
+            if (ViewMode = vmOneDay) OR (ViewMode = vmPeriod) then
+              RefreshGrid;
+          end;
         end;
       end
     end
     else
-      showmessage(GetTranslatedText('sh1010'));
+      ShowMessage(GetTranslatedText('sh1010'));
   end;
 end;
 
-procedure TfrmMain.CheckOutARoom(Room: String; iRoomReservation, iReservation: integer);
+procedure TfrmMain.CheckOutARoom(const Room: String; iRoomReservation, iReservation: integer);
 begin
   if ctrlGetBoolean('CheckOutWithPaymentsDialog') OR
-     (MessageDlg(Format(GetTranslatedText('shCheckOutSelectedRoom'), [Room]), mtConfirmation, [mbYes, mbNo], 0) = mrYes) then
+    (MessageDlg(Format(GetTranslatedText('shCheckOutSelectedRoom'), [Room]), mtConfirmation, [mbYes, mbNo], 0) = mrYes)
+  then
   begin
     ShowAlertsForReservation(iReservation, iRoomReservation, atCHECK_OUT);
     if ctrlGetBoolean('CheckOutWithPaymentsDialog') then
@@ -5658,41 +5149,20 @@ begin
     if (ViewMode = vmOneDay) OR (ViewMode = vmPeriod) then
       RefreshGrid;
   end
-
-//function TfrmMain.CheckOutARoom(Room: String; iRoomReservation, iReservation: integer): boolean;
-//begin
-//  if ctrlGetBoolean('CheckOutWithPaymentsDialog') OR
-//     (MessageDlg(Format(GetTranslatedText('shCheckOutSelectedRoom'), [Room]), mtConfirmation, [mbYes, mbNo], 0) = mrYes) then
-//  begin
-//    ShowAlertsForReservation(_iReservation, _iRoomReservation, atCHECK_OUT);
-//    if ctrlGetBoolean('CheckOutWithPaymentsDialog') then
-//      CheckoutGuest(_iReservation, _iRoomReservation, _Room)
-//    else
-//      d.CheckOutGuest(_iRoomReservation, _Room);
-//    if (ViewMode = vmOneDay) OR (ViewMode = vmPeriod) then
-//      RefreshGrid;
-//  end
-
-
-  //
-//
-//  if MessageDlg(Format(GetTranslatedText('shCheckOutSelectedRoom'), [Room]), mtConfirmation, [mbYes, mbNo], 0) = mrYes then
-//  begin
-//    ShowAlertsForReservation(_iReservation, _iRoomReservation, atCHECK_OUT);
-//    d.CheckOutGuest(iRoomReservation, Room);
-//    RefreshGrid;
-//  end;
 end;
 
-function TfrmMain.CheckInARoom(name: String; iRoomReservation: integer): boolean;
+function TfrmMain.CheckInARoom(const name: String; iRoomReservation: integer): boolean;
 begin
   result := false;
-  if ctrlGetBoolean('CheckinWithDetailsDialog') OR (MessageDlg(Format(GetTranslatedText('shCheckRoom'), [name]), mtConfirmation, [mbYes, mbNo], 0) = mrYes) then
+  if ctrlGetBoolean('CheckinWithDetailsDialog') OR
+    (MessageDlg(Format(GetTranslatedText('shCheckRoom'), [name]), mtConfirmation, [mbYes, mbNo], 0) = mrYes) then
   begin
     ShowAlertsForReservation(_iReservation, _iRoomReservation, atCHECK_IN);
     if (NOT ctrlGetBoolean('CheckinWithDetailsDialog')) OR OpenGuestCheckInForm(iRoomReservation) then
+    begin
       d.CheckInGuest(iRoomReservation);
-    RefreshGrid;
+      RefreshGrid;
+    end;
   end;
 end;
 
@@ -5720,7 +5190,8 @@ begin
       if ReservationCount < 1 then
         exit; // ==>
       ShowAlertsForReservation(_iReservation, 0, atCHECK_IN);
-      if (MessageDlg(Format(GetTranslatedText('shCheckInGroupOfRoom'), [_Room]), mtConfirmation, [mbYes, mbNo], 0) = mrYes) then
+      if (MessageDlg(Format(GetTranslatedText('shCheckInGroupOfRoom'), [_Room]), mtConfirmation, [mbYes, mbNo], 0)
+        = mrYes) then
       begin
         for i := 0 to ReservationCount - 1 do
         begin
@@ -5749,10 +5220,8 @@ procedure TfrmMain.OneDay_CheckOut;
 var
   Execute: boolean;
   sErr: string;
-  sPrompt: string;
 
 begin
-  Execute := false;
   if GetSelectedRoomInformation then
   begin
 
@@ -5780,28 +5249,17 @@ begin
 
     Execute := sErr = '';
 
-    // - í lagi rsGuests - Núverandi Gestur
-    // - í lagi rsDeparting - Farandi
+    // - ï¿½ lagi rsGuests - Nï¿½verandi Gestur
+    // - ï¿½ lagi rsDeparting - Farandi
 
     if Execute then
     begin
       if d.CheckOutRoom(_iReservation, _iRoomReservation, _Room) then
         if (ViewMode = vmOneDay) OR (ViewMode = vmPeriod) then
           RefreshGrid;
-//      if ctrlGetBoolean('CheckOutWithPaymentsDialog') OR
-//         (MessageDlg(Format(GetTranslatedText('shCheckOutSelectedRoom'), [_Room]), mtConfirmation, [mbYes, mbNo], 0) = mrYes) then
-//      begin
-//        ShowAlertsForReservation(_iReservation, _iRoomReservation, atCHECK_OUT);
-//        if ctrlGetBoolean('CheckOutWithPaymentsDialog') then
-//          CheckoutGuestNoDialog(_iReservation, _iRoomReservation, _Room)
-//        else
-//          d.CheckOutGuest(_iRoomReservation, _Room);
-//        if (ViewMode = vmOneDay) OR (ViewMode = vmPeriod) then
-//          RefreshGrid;
-//      end
     end
     else
-      showmessage(Format(GetTranslatedText('shCannotCheckoutRoom'), [sErr, _Room]));
+      ShowMessage(Format(GetTranslatedText('shCannotCheckoutRoom'), [sErr, _Room]));
   end;
 end;
 
@@ -5842,13 +5300,13 @@ begin
 
   if ViewMode = vmOneDay then
   begin
-    _Name := ReservationsModel.Reservations[_idxReservation].name;
+    _Name := FReservationsModel.Reservations[_idxReservation].name;
     if Not _NoRoom then
-      _Name := Format('[%s] %s', [_Room, ReservationsModel.Reservations[_idxReservation].name]);
-    if ReservationsModel.Reservations[_idxReservation].Rooms[_idxRoomReservation].GuestCount > 0 then
-      _Guest := ReservationsModel.Reservations[_idxReservation].Rooms[_idxRoomReservation].Guests[0].GuestName;
-    _ColorId := ReservationsModel.Reservations[_idxReservation].Rooms[_idxRoomReservation].colorId;
-    _ColorValue := ReservationsModel.Reservations[_idxReservation].Rooms[_idxRoomReservation].CodedColor;
+      _Name := Format('[%s] %s', [_Room, FReservationsModel.Reservations[_idxReservation].name]);
+    if FReservationsModel.Reservations[_idxReservation].Rooms[_idxRoomReservation].GuestCount > 0 then
+      _Guest := FReservationsModel.Reservations[_idxReservation].Rooms[_idxRoomReservation].Guests[0].GuestName;
+    _ColorId := FReservationsModel.Reservations[_idxReservation].Rooms[_idxRoomReservation].colorId;
+    _ColorValue := FReservationsModel.Reservations[_idxReservation].Rooms[_idxRoomReservation].CodedColor;
 
   end
   else
@@ -5870,15 +5328,8 @@ procedure TfrmMain.OneDay_RoomInvoice(invType: integer);
 begin
   if GetSelectedRoomInformation then
   begin
-    case invType of
-      1:
-        begin
-        end;
-      2:
-        begin
-          _iRoomReservation := 0;
-        end;
-    end;
+    if invType = 2 then
+       _iRoomReservation := 0;
 
 {$IFDEF DEBUG}
     if IsControlKeyPressed then
@@ -5893,15 +5344,11 @@ end;
 // +080224 - Added 5day Grid support
 //
 // ------------------------------------------------------------------------------
-procedure TfrmMain.OneDay_InvoiceInfo;
-begin
-end;
-
 // ------------------------------------------------------------------------------
 // +080225 - Added 5day Grid support
-// +ToDo   - i 5Grid velja celluna - eða blikka openGoToRoomAndDate(var aRoom : string; aDate : TDate) : boolean;
+// +ToDo   - i 5Grid velja celluna - eï¿½a blikka openGoToRoomAndDate(var aRoom : string; aDate : TDate) : boolean;
 // ------------------------------------------------------------------------------
-procedure TfrmMain.OneDay_DoAJump(theRoom: string);
+procedure TfrmMain.OneDay_DoAJump(const theRoom: string);
 var
   i: integer;
 begin
@@ -5947,13 +5394,12 @@ begin
 end;
 
 // ------------------------------------------------------------------------------
-// +080225 - Setti í  5day Grid support en virkar ekki að fullu
+// +080225 - Setti ï¿½  5day Grid support en virkar ekki aï¿½ fullu
 // +ToDo   - Endurskrifa ProvideRoom
 // ------------------------------------------------------------------------------
 function TfrmMain.OneDay_DoProvideRoom: boolean;
 var
   sNewRoom: string;
-  Execute: boolean;
 begin
   result := false;
   if GetSelectedRoomInformation then
@@ -6013,7 +5459,7 @@ begin
   if zOneDay_ResIndex = -1 then
     exit;
   OneDay_GetResAndRoom_IDX(iReservation, iRoom);
-  ShowFinishedInvoices2(itPerRoomRes, '', ReservationsModel.Reservations[iReservation].Rooms[iRoom].RoomRes);
+  ShowFinishedInvoices2(itPerRoomRes, '', FReservationsModel.Reservations[iReservation].Rooms[iRoom].RoomRes);
 end;
 
 procedure TfrmMain.OneDay_InvoicesPerRes;
@@ -6023,7 +5469,7 @@ begin
   if zOneDay_ResIndex = -1 then
     exit;
   OneDay_GetResAndRoom_IDX(iReservation, iRoom);
-  ShowFinishedInvoices2(itPerReservation, '', ReservationsModel.Reservations[iReservation].Reservation);
+  ShowFinishedInvoices2(itPerReservation, '', FReservationsModel.Reservations[iReservation].Reservation);
 end;
 
 procedure TfrmMain.OneDay_InvoicesPerCustomer;
@@ -6037,14 +5483,12 @@ begin
     exit;
   OneDay_GetResAndRoom_IDX(iReservation, iRoom);
 
-  sCustomer := ReservationsModel.Reservations[iReservation].customer;
+  sCustomer := FReservationsModel.Reservations[iReservation].customer;
 
-  ShowFinishedInvoices2(itPerCustomer, sCustomer, -1
-
-    );
+  ShowFinishedInvoices2(itPerCustomer, sCustomer, -1);
 end;
 
-procedure TfrmMain.OneDay_AddToTaken(sType: string);
+procedure TfrmMain.OneDay_AddToTaken(const sType: string);
 var
   i, l: integer;
   bFound: boolean;
@@ -6057,7 +5501,8 @@ begin
     begin
       l := strtointDef(trim(_strTokenAT(zOneDay_stlTakenTypes[i], '|', 1)), 0);
       inc(l);
-      zOneDay_stlTakenTypes[i] := trim(_strTokenAT(zOneDay_stlTakenTypes[i], '|', 0)) + '|' + inttostr(l) + '|' + inttostr(l);
+      zOneDay_stlTakenTypes[i] := trim(_strTokenAT(zOneDay_stlTakenTypes[i], '|', 0)) + '|' + inttostr(l) + '|' +
+        inttostr(l);
       bFound := true;
       break;
     end;
@@ -6095,61 +5540,9 @@ end;
 
 procedure TfrmMain.OneDay_DisplayGrid;
 
-(*
-  procedure FillOcc(iStartRow : integer);
-  var
-  col, row : integer;
-  Room : string;
-  isEmpty : boolean;
-
-  iNextOcc : integer;
-  sNextOcc : string;
-  begin
-  // --
-  for row := iStartRow to grOneDayRooms.RowCount - 1 do
-  begin
-  Room := grOneDayRooms.cells[0, row];
-  if Room = '' then
-  continue;
-
-  isEmpty := grOneDayRooms.cells[4, row] = '';
-
-  if isEmpty then
-  begin
-  iNextOcc := d.Next_OccupiedDayCount(zOneDay_dtDate, Room);
-  if iNextOcc > 100 then
-  sNextOcc := '100+'
-  else
-  sNextOcc := inttostr(iNextOcc);
-  grOneDayRooms.cells[3, row] := sNextOcc;
-  end;
-  end;
-  7
-  for row := iStartRow to grOneDayRooms.RowCount - 1 do
-  begin
-  Room := grOneDayRooms.cells[7, row];
-  if Room = '' then
-  continue;
-
-  isEmpty := grOneDayRooms.cells[11, row] = '';
-
-  if isEmpty then
-  begin
-  iNextOcc := d.Next_OccupiedDayCount(zOneDay_dtDate, Room);
-  if iNextOcc > 100 then
-  sNextOcc := '100+'
-  else
-  sNextOcc := inttostr(iNextOcc);
-  grOneDayRooms.cells[10, row] := sNextOcc;
-  end;
-  end;
-  end;
-
-*)
-
   procedure FillOcc(iStartRow: integer);
   var
-    col, row: integer;
+    row: integer;
     Room: string;
     isEmpty: boolean;
 
@@ -6170,7 +5563,7 @@ procedure TfrmMain.OneDay_DisplayGrid;
 
       if isEmpty then
       begin
-        sDate := oFreeRooms.FindRoomNextOcc(Room);
+        sDate := FFreeRooms.FindRoomNextOcc(Room);
         if sDate = '' then
         begin
           dtDate := zOneDay_dtDate + 1000;
@@ -6199,7 +5592,7 @@ procedure TfrmMain.OneDay_DisplayGrid;
 
       if isEmpty then
       begin
-        sDate := oFreeRooms.FindRoomNextOcc(Room);
+        sDate := FFreeRooms.FindRoomNextOcc(Room);
         if sDate = '' then
         begin
           dtDate := zOneDay_dtDate + 1000;
@@ -6222,16 +5615,13 @@ procedure TfrmMain.OneDay_DisplayGrid;
 var
   i, iRowCounter: integer;
   Z: integer;
-  ii: integer;
+  lRoomIndex: integer;
   zz: integer;
 
-  iRowCtrlRooms: integer;
   iRound, iRoomRound: integer;
   iNumRowsWas: integer;
   sType: string;
   bShouldBeTaken: boolean;
-
-  PanelColor: TColor;
 
   FreeRoomsFilterOn: boolean;
 
@@ -6239,6 +5629,9 @@ var
   Locations: TSet_Of_Integer;
 
   tempString: Utf8String;
+
+  lRoom: TRoomObject;
+  ii: Integer;
 
 begin
   if assigned(zOneDay_stlTakenTypes) then
@@ -6283,13 +5676,14 @@ begin
   try
     if (NOT SearchOrGroupFilterActive) OR (Floors.Count > 0) OR (Locations.Count > 0) then
     begin
-      glb.FillRoomAndTypeGrid(grOneDayRooms, Locations, Floors, FreeRoomsFilterOn, oFreeRooms, zOneDay_dtDate, btnFilter.Tag);
+      glb.FillRoomAndTypeGrid(grOneDayRooms, Locations, Floors, FreeRoomsFilterOn, FFreeRooms, zOneDay_dtDate,
+        btnFilter.Tag);
       iRowCounter := grOneDayRooms.RowCount - 1;
     end;
 
     iNumRowsWas := grOneDayRooms.RowCount;
 
-    // Hreinsa ef fyrri síða var með fleiri rows or columns
+    // Hreinsa ef fyrri sï¿½ï¿½a var meï¿½ fleiri rows or columns
     grOneDayRooms.RowCount := grOneDayRooms.RowCount + 160;
     grOneDayRooms.ColCount := grOneDayRooms.ColCount + 10;
 
@@ -6297,44 +5691,17 @@ begin
 
     grOneDayRooms.RowCount := grOneDayRooms.RowCount - 160;
     grOneDayRooms.ColCount := grOneDayRooms.ColCount - 10;
-    // Lokið
 
-    // sýna annan grunnlit grind ef filter er virkur
-    PanelColor := $00D5EAFF;
-    // if grOneDayRooms.color <> PanelColor then
-    // grOneDayRooms.color := PanelColor;
-
-    // -- BHG Moved
-    for i := 0 to ReservationsModel.ReservationCount - 1 do
+    for lRoom in FReservationsModel.AllRoomsEnumerator(function (aRoom: TRoomObject): boolean
+                                                       begin
+                                                          Result := aRoom.IsUnAssigned and (aRoom.Departure <> zOneDay_dtDate) and
+                                                                    not (aRoom.ResStatus in [rsDeparted, rsReservations, rsOverbooked,
+                                                                                              rsAlotment, rsNoShow, rsCanceled, rsTmp1, rsTmp2]);
+                                                       end) do
     begin
-      // Ef verið er að filtera út ákveðna bókun
-
-      for Z := 0 to ReservationsModel.Reservations[i].RoomCount - 1 do
-      begin
-        // --
-        if Copy(ReservationsModel.Reservations[i].Rooms[Z].RoomNumber, 1, 1) = '<' then
-        begin
-          // -- This prevents those that have not already checked in from being
-          // visible on the date of their departure...
-
-          // Ef gestur fer í dag en er ekki settur sem rsDeparted eða
-          if (ReservationsModel.Reservations[i].Rooms[Z].ResStatus in [rsReservations, rsOverbooked, rsAlotment, rsNoShow, rsCanceled, rsTmp1, rsTmp2]) then
-            if ReservationsModel.Reservations[i].Rooms[Z].Departure = zOneDay_dtDate then
-              continue;
-
-          if ReservationsModel.Reservations[i].Rooms[Z].ResStatus = rsDeparted then
-            if ReservationsModel.Reservations[i].Rooms[Z].Departure = zOneDay_dtDate then
-              continue; // Go next cycle !
-
-          // --
-          // Bæta í listann fyrir frátekin
-          // sýnt seinna sem svört
-          if ReservationsModel.Reservations[i].Rooms[Z].Departure <> zOneDay_dtDate then
-            OneDay_AddToTaken(ReservationsModel.Reservations[i].Rooms[Z].RoomType);
-
-        end;
-      end;
+      OneDay_AddToTaken(lRoom.RoomType);
     end;
+
 
     grOneDayRooms.RowCount := grOneDayRooms.RowCount + 160;
     grOneDayRooms.ColCount := grOneDayRooms.ColCount + 10;
@@ -6343,8 +5710,6 @@ begin
       FillTheGrid(grOneDayRooms, '', 2, 1);
       grOneDayRooms.RowCount := grOneDayRooms.RowCount - 160;
       grOneDayRooms.ColCount := grOneDayRooms.ColCount - 10;
-
-      iRowCtrlRooms := 1;
 
       zOneDay_bIsOverlapped := false;
 
@@ -6362,97 +5727,85 @@ begin
           //
           for iRound := 1 to 2 do
           begin
-            // --
-            for i := 0 to ReservationsModel.ReservationCount - 1 do
+            for lRoom in FReservationsModel.AllRoomsEnumerator( function (aRoom: TRoomobject): boolean
+                                                                begin
+                                                                  Result := FilteredData(aRoom) and
+                                                                            not ( (aRoom.ResStatus in [rsReservations, rsOverbooked, rsAlotment, rsNoShow, rsCanceled, rsTmp1, rsTmp2, rsBlocked, rsDeparted])
+                                                                                  and (aRoom.Departure = zOneDay_dtDate));
+                                                                end) do
             begin
 
-              // -- Draw up Rooms Arriving and Departing...
-              //
-              for Z := 0 to ReservationsModel.Reservations[i].RoomCount - 1 do
-              begin
-                if FilteredData(ReservationsModel.Reservations[i], ReservationsModel.Reservations[i].Rooms[Z]) then { TSingleReservations }
+                // -- This prevents those that have not already checked in from being
+                // visible on the date of their departure...
+                //
+//                if (lRoom.ResStatus in [rsReservations, rsOverbooked, rsAlotment, rsNoShow, rsCanceled, rsTmp1, rsTmp2, rsBlocked, rsDeparted])
+//                then
+//                    if FReservationsModel.Reservations[i].Rooms[Z].Departure = zOneDay_dtDate then
+//                      continue;
+
+                // ATHOLD Do not display BLOCKED *********************
+//                  if FReservationsModel.Reservations[i].Rooms[Z].ResStatus = rsBlocked then
+//                    if FReservationsModel.Reservations[i].Rooms[Z].Departure = zOneDay_dtDate then
+//                      continue; // Go next cycle !
+
+//                  if FReservationsModel.Reservations[i].Rooms[Z].ResStatus = rsDeparted then
+//                    if FReservationsModel.Reservations[i].Rooms[Z].Departure = zOneDay_dtDate then
+//                      continue; // Go next cycle !
+
+                // -- See comments about the iRound cycle above...
+                //
+                if ((iRound = 2) and (lRoom.ResStatus = rsDeparting)) or
+                  ((iRound = 1) and not(lRoom.ResStatus = rsDeparting)) then
                 begin
-
-                  // -- This prevents those that have not already checked in from being
-                  // visible on the date of their departure...
-                  //
-                  if (ReservationsModel.Reservations[i].Rooms[Z].ResStatus in [rsReservations, rsOverbooked, rsAlotment, rsNoShow, rsCanceled, rsTmp1, rsTmp2])
-                  then
-                    if ReservationsModel.Reservations[i].Rooms[Z].Departure = zOneDay_dtDate then
-                      continue;
-
-                  // ATHOLD Do not display BLOCKED *********************
-                  if ReservationsModel.Reservations[i].Rooms[Z].ResStatus = rsBlocked then
-                    if ReservationsModel.Reservations[i].Rooms[Z].Departure = zOneDay_dtDate then
-                      continue; // Go next cycle !
-
-                  if ReservationsModel.Reservations[i].Rooms[Z].ResStatus = rsDeparted then
-                    if ReservationsModel.Reservations[i].Rooms[Z].Departure = zOneDay_dtDate then
-                      continue; // Go next cycle !
-
-                  // -- See comments about the iRound cycle above...
-                  //
-                  if ((iRound = 2) and (ReservationsModel.Reservations[i].Rooms[Z].ResStatus = rsDeparting)) or
-                    ((iRound = 1) and not(ReservationsModel.Reservations[i].Rooms[Z].ResStatus = rsDeparting)) then
+                  if  ((iRoomRound = 1) AND (not lRoom.IsUnAssigned AND (Copy(lRoom.RRNumber, 1, 1) <> '<')))
+                    OR
+                      ((iRoomRound = 2) AND (lRoom.IsUnAssigned OR (Copy(lRoom.RRNumber, 1, 1) = '<'))) then
                   begin
-                    if ((iRoomRound = 1) AND ((Copy(ReservationsModel.Reservations[i].Rooms[Z].RoomNumber, 1, 1) <> '<') AND
-                      (Copy(ReservationsModel.Reservations[i].Rooms[Z].RRNumber, 1, 1) <> '<'))) OR
-                      ((iRoomRound = 2) AND ((Copy(ReservationsModel.Reservations[i].Rooms[Z].RoomNumber, 1, 1) = '<') OR
-                      (Copy(ReservationsModel.Reservations[i].Rooms[Z].RRNumber, 1, 1) = '<'))) then
+                    // -- Rooms
+                    lRoomIndex := RoomIndex(grOneDayRooms, lRoom.RoomNumber, iRowCounter, lRoom.RoomType,
+                                            (SearchOrGroupFilterActive AND (Locations.Count = 0) AND (Floors.Count = 0)) OR
+                                            (iRoomRound = 2));
+                    if lRoomIndex <> -1 then
                     begin
-                      // -- Rooms
-                      ii := RoomIndex(grOneDayRooms, ReservationsModel.Reservations[i].Rooms[Z].RoomNumber, iRowCounter,
-                        ReservationsModel.Reservations[i].Rooms[Z].RoomType, (SearchOrGroupFilterActive AND (Locations.Count = 0) AND (Floors.Count = 0)) OR
-                        (iRoomRound = 2));
-                      if ii <> -1 then
+                      // --
+                      zOneDayResPointers[lRoomIndex].ptrRooms[1, 1] := FReservationsModel.Reservations.IndexOf(lRoom.ReservationObject);
+                      // Reservation Index
+                      zOneDayResPointers[lRoomIndex].ptrRooms[1, 2] := lROom.ReservationObject.Rooms.IndexOf(lRoom);
+                      // Rooms Index
+
+                      if not lRoom.IsUnAssigned or (Copy(lRoom.RRNumber, 1, 1) = '<') then
                       begin
-                        // --
-                        zOneDayResPointers[ii].ptrRooms[1, 1] := i;
-                        // Reservation Index
-                        zOneDayResPointers[ii].ptrRooms[1, 2] := Z;
-                        // Rooms Index
-
-                        if (Copy(ReservationsModel.Reservations[i].Rooms[Z].RoomNumber, 1, 1) <> '<') or
-                          (Copy(ReservationsModel.Reservations[i].Rooms[Z].RRNumber, 1, 1) = '<') then
-                        begin
-                          tempString := ReservationsModel.Reservations[i].Rooms[Z].Guests[0].GuestName;
-                          grOneDayRooms.cells[2, ii] := tempString;
-                        end
-                        else
-                        begin
-                          grOneDayRooms.cells[2, ii] := '[' + ReservationsModel.Reservations[i].Rooms[Z].RRNumber + '] ' + ReservationsModel.Reservations[i]
-                            .Rooms[Z].Guests[0].GuestName;
-                        end;
-
-                        grOneDayRooms.cells[3, ii] := DateToStr(ReservationsModel.Reservations[i].Rooms[Z].Arrival);
-                        grOneDayRooms.cells[4, ii] := DateToStr(ReservationsModel.Reservations[i].Rooms[Z].Departure);
-                        grOneDayRooms.cells[5, ii] := inttostr(ReservationsModel.Reservations[i].Rooms[Z].GuestCount);
-
-                        if ReservationsModel.Reservations[i].Rooms[Z].ResStatus = rsDeparting then
-                        begin
-                          if frmMain.IsRoomReserved(ReservationsModel.Reservations[i].Rooms[Z].RoomNumber, i, Z) then
-                            try
-                              zOneDay_bIsOverlapped := true;
-                              grOneDayRooms.cells[2, ii] := '» ' + ReservationsModel.Reservations[i].Rooms[Z].Guests[0].GuestName;
-                            finally
-                              zOneDay_bIsOverlapped := false;
-                            end;
-                        end;
-
+//                          tempString := lRoom.FirstGuestName;
+                        grOneDayRooms.cells[2, lRoomIndex] := lRoom.FirstGuestName;
+                      end
+                      else
+                      begin
+                        grOneDayRooms.cells[2, lRoomIndex] := '[' + lRoom.RRNumber + '] ' + lRoom.FirstGuestName;
                       end;
-                    end;
-                  end;
 
-                end;
+                      grOneDayRooms.cells[3, lRoomIndex] := DateToStr(lRoom.Arrival);
+                      grOneDayRooms.cells[4, lRoomIndex] := DateToStr(lRoom.Departure);
+                      grOneDayRooms.cells[5, lRoomIndex] := inttostr(lRoom.GuestCount);
 
-              end;
-            end;
-          end;
-        end;
-      end;
+                      if lRoom.ResStatus = rsDeparting then
+                      begin
+                        if frmMain.IsRoomReserved(lRoom.RoomNumber, i, Z) then
+                          try
+                            zOneDay_bIsOverlapped := true;
+                            grOneDayRooms.cells[2, lRoomIndex] := 'ï¿½ ' + lRoom.FirstGuestName;
+                          finally
+                            zOneDay_bIsOverlapped := false;
+                          end;
+                      end;
+                    end; { roomindex <> -1}
+                  end; { if iroomrond =1  ...}
+                end; {if iround = 2 ... }
+            end; { for lRoom .. }
+          end; { for iround ... }
+        end; { for iroomround ...}
+      end; { if NOT FreeRoomsFilterOn }
 
       // -- clear empty rooms if so configured...
-
       grOneDayRooms.RowCount := grOneDayRooms.RowCount + 1;
       if zOneDay_bDetailsOn then
       begin
@@ -6503,51 +5856,6 @@ begin
       zOneDay_iLastCol := -1;
     end;
 
-    // ---- Move Here : BHG
-    // -- Add those without Room Numbers...
-    // for i := 0 to ReservationsModel.ReservationCount - 1 do
-    // begin
-    // // Ef verið er að filtera út ákveðna bókun
-    //
-    // for Z := 0 to ReservationsModel.Reservations[i].RoomCount - 1 do
-    // begin
-    // // --
-    // if copy(ReservationsModel.Reservations[i].Rooms[Z].RoomNumber, 1, 1) = '<' then
-    // begin
-    // // -- This prevents those that have not already checked in from being
-    // // visible on the date of their departure...
-    //
-    // // Ef gestur fer í dag en er ekki settur sem rsDeparted eða
-    // if (ReservationsModel.Reservations[i].Rooms[Z].ResStatus in [rsReservations, rsOverbooked, rsAlotment, rsNoShow]) then
-    // if ReservationsModel.Reservations[i].Rooms[Z].Departure = zOneDay_dtDate then
-    // continue;
-    //
-    // if ReservationsModel.Reservations[i].Rooms[Z].ResStatus = rsDeparted then
-    // if ReservationsModel.Reservations[i].Rooms[Z].Departure = zOneDay_dtDate then
-    // continue; // Go next cycle !
-    //
-    // // -- See comments about the iRound cycle above...
-    // //ATHOLD þetta skeður aldrei því ´þetta erekki í iRound Lúpu
-    // if ((iRound = 2) and not (ReservationsModel.Reservations[i].Rooms[Z].ResStatus = rsDeparting)) then
-    // continue;
-    // if ((iRound = 1) and (ReservationsModel.Reservations[i].Rooms[Z].ResStatus = rsDeparting)) then
-    // continue;
-    //
-    // // --
-    // grOneDayRooms.RowCount := grOneDayRooms.RowCount + 1;
-    // grOneDayRooms.cells[0, grOneDayRooms.RowCount - 1] := ReservationsModel.Reservations[i].Rooms[Z].RoomNumber;
-    // grOneDayRooms.cells[1, grOneDayRooms.RowCount - 1] := ReservationsModel.Reservations[i].Rooms[Z].RoomType;
-    //
-    // // Bæta í listann fyrir frátekin
-    // // sýnt seinna sem svört
-    // if ReservationsModel.Reservations[i].Rooms[Z].Departure <> zOneDay_dtDate then
-    // OneDay_AddToTaken(ReservationsModel.Reservations[i].Rooms[Z].RoomType);
-    //
-    // end;
-    // end;
-    // end;
-    // ---- |||||||||||||||
-
     for i := 0 to zOneDay_stlTakenTypes.Count - 1 do
     begin
       Z := strtointDef(trim(_strTokenAT(zOneDay_stlTakenTypes[i], '|', 1)), 0);
@@ -6567,7 +5875,8 @@ begin
                 bShouldBeTaken := false;
                 zOneDay_bSelectedNonRooms[zz, OneDay_GetIsLeftOrRight(1)] := i;
                 dec(Z);
-                zOneDay_stlTakenTypes[i] := trim(_strTokenAT(zOneDay_stlTakenTypes[i], '|', 0)) + '|' + inttostr(Z) + '|' +
+                zOneDay_stlTakenTypes[i] := trim(_strTokenAT(zOneDay_stlTakenTypes[i], '|', 0)) + '|' + inttostr(Z) +
+                  '|' +
                   trim(_strTokenAT(zOneDay_stlTakenTypes[i], '|', 2));
                 break;
               end;
@@ -6584,7 +5893,8 @@ begin
                 bShouldBeTaken := false;
                 zOneDay_bSelectedNonRooms[zz, OneDay_GetIsLeftOrRight(8)] := i;
                 dec(Z);
-                zOneDay_stlTakenTypes[i] := trim(_strTokenAT(zOneDay_stlTakenTypes[i], '|', 0)) + '|' + inttostr(Z) + '|' +
+                zOneDay_stlTakenTypes[i] := trim(_strTokenAT(zOneDay_stlTakenTypes[i], '|', 0)) + '|' + inttostr(Z) +
+                  '|' +
                   trim(_strTokenAT(zOneDay_stlTakenTypes[i], '|', 2));
                 break;
               end;
@@ -6599,15 +5909,14 @@ begin
             if grOneDayRooms.cells[4, zz] = '' then
             begin
               sType := grOneDayRooms.cells[1, zz];
-              bShouldBeTaken := true;
               if IsInRoomTypes(trim(_strTokenAT(zOneDay_stlTakenTypes[i], '|', 0)), sType) then
               begin
                 if zOneDay_bSelectedNonRooms[zz, OneDay_GetIsLeftOrRight(1)] = -1 then
                 begin
-                  bShouldBeTaken := false;
                   zOneDay_bSelectedNonRooms[zz, OneDay_GetIsLeftOrRight(1)] := i;
                   dec(Z);
-                  zOneDay_stlTakenTypes[i] := trim(_strTokenAT(zOneDay_stlTakenTypes[i], '|', 0)) + '|' + inttostr(Z) + '|' +
+                  zOneDay_stlTakenTypes[i] := trim(_strTokenAT(zOneDay_stlTakenTypes[i], '|', 0)) + '|' + inttostr(Z) +
+                    '|' +
                     trim(_strTokenAT(zOneDay_stlTakenTypes[i], '|', 2));
                   break;
                 end;
@@ -6616,15 +5925,14 @@ begin
             else if grOneDayRooms.cells[11, zz] = '' then
             begin
               sType := grOneDayRooms.cells[8, zz];
-              bShouldBeTaken := true;
               if IsInRoomTypes(trim(_strTokenAT(zOneDay_stlTakenTypes[i], '|', 0)), sType) then
               begin
                 if zOneDay_bSelectedNonRooms[zz, OneDay_GetIsLeftOrRight(8)] = -1 then
                 begin
-                  bShouldBeTaken := false;
                   zOneDay_bSelectedNonRooms[zz, OneDay_GetIsLeftOrRight(8)] := i;
                   dec(Z);
-                  zOneDay_stlTakenTypes[i] := trim(_strTokenAT(zOneDay_stlTakenTypes[i], '|', 0)) + '|' + inttostr(Z) + '|' +
+                  zOneDay_stlTakenTypes[i] := trim(_strTokenAT(zOneDay_stlTakenTypes[i], '|', 0)) + '|' + inttostr(Z) +
+                    '|' +
                     trim(_strTokenAT(zOneDay_stlTakenTypes[i], '|', 2));
                   break;
                 end;
@@ -6642,29 +5950,11 @@ begin
     Locations.Free;
     Floors.Free;
   end;
-
-  // try
-  // agrRooms.EndUpdate;
-  // agrRooms.refresh;
-  // agrRooms.show;
-  // ...do stuff
-  // finally
-  // agrRooms.perform( WM_SETREDRAW, 1, 0 );
-  // agrRooms.invalidate;
-  // end;
-  // finally
-  // LockWindowUpdate(0);
-  // end;
-  // except
-  // end;
-  // agrRooms.refresh;  // V: 1.0.2.0
-
 end;
 
-function TfrmMain.FilteredData(Reservation: TSingleReservations; Room: TRoomObject): boolean;
-// Reservation : TSingleReservations) : Boolean;
+function TfrmMain.FilteredData(aRoom: TRoomObject): boolean;
 var
-  i, I1: integer;
+  I1: integer;
   s: String;
   resultStatus, resultGroup, resultSearch: boolean;
 begin
@@ -6676,27 +5966,31 @@ begin
     resultGroup := NOT GroupsFilterActive;
     if NOT resultGroup then
     begin
-      resultGroup := GroupFiltered(Room.Reservation);
+      resultGroup := GroupFiltered(aRoom.Reservation);
     end;
 
     resultStatus := NOT ReservationStatusFilter;
     if NOT resultStatus then
     begin
-      resultStatus := ReservationStatusFiltered(Room.ResStatus);
+      resultStatus := ReservationStatusFiltered(aRoom.ResStatus);
     end;
 
     resultSearch := edtSearch.Text = '';
 
     if NOT resultSearch then
     begin
-      s := Reservation.name + ',' + inttostr(Reservation.Reservation) + ',' + Reservation.customer + ',' + Reservation.Information + ',' + Reservation.PMInfo +
-        ',' + Reservation.BookingReference + ',' + Reservation.HiddenInfo + ',';
-      s := s + Room.RoomNumber + ',' + Room.RoomType + ',' + Room.PriceType + ',' + Room.Currency + ',' + DateToStr(Room.Arrival) + ',' +
-        DateToStr(Room.Departure) + ',' + Room.PMInfo + ',';
-      for I1 := 0 to Room.GuestCount - 1 do
-        s := s + Room.Guests[I1].GuestName + ',' + Room.Guests[I1].FirstName + ',' + Room.Guests[I1].SurName + ',' + Room.Guests[I1].Address1 + ',' +
-          Room.Guests[I1].Address2 + ',' + Room.Guests[I1].Address3 + ',' + Room.Guests[I1].Address4 + ',' + Room.Guests[I1].Country + ',' +
-          Room.Guests[I1].Company + ',' + Room.Guests[I1].GuestType + ',' + Room.Guests[I1].Information + ',';
+      s := aRoom.ReservationObject.name + ',' + inttostr(aRoom.Reservation) + ',' + aRoom.ReservationObject.customer + ',' +
+        aRoom.ReservationObject.Information + ',' + aRoom.ReservationObject.PMInfo +
+        ',' + aRoom.ReservationObject.BookingReference + ',' + aRoom.ReservationObject.HiddenInfo + ',';
+      s := s + aRoom.RoomNumber + ',' + aRoom.RoomType + ',' + aRoom.PriceType + ',' + aRoom.Currency + ',' +
+        DateToStr(aRoom.Arrival) + ',' +
+        DateToStr(aRoom.Departure) + ',' + aRoom.PMInfo + ',';
+      for I1 := 0 to aRoom.GuestCount - 1 do
+        s := s + aRoom.Guests[I1].GuestName + ',' + aRoom.Guests[I1].FirstName + ',' + aRoom.Guests[I1].SurName + ',' +
+          aRoom.Guests[I1].Address1 + ',' +
+          aRoom.Guests[I1].Address2 + ',' + aRoom.Guests[I1].Address3 + ',' + aRoom.Guests[I1].Address4 + ',' +
+          aRoom.Guests[I1].Country + ',' +
+          aRoom.Guests[I1].Company + ',' + aRoom.Guests[I1].GuestType + ',' + aRoom.Guests[I1].Information + ',';
       resultSearch := pos(ANSIlowercase(edtSearch.Text), ANSIlowercase(s)) > 0;
     end;
 
@@ -6719,63 +6013,6 @@ begin
   Application.ActivateHint(zHintPoint);
 end;
 
-procedure TfrmMain.OneDay_CheckHint(X, Y: integer);
-var
-  ACol, ARow: integer;
-
-  sHintText: string;
-
-  iReservation, iRoom: integer;
-
-  APoint: TPoint;
-  sRoom: string;
-
-  sTmp: string;
-
-  wrapAT: integer;
-
-  discountAmount: Double;
-  iTempColor: integer;
-  myRect, Rect: TRect;
-
-  sHintInvoice: String;
-
-  ro: TRoomObject;
-
-begin
-
-  wrapAT := 130;
-  try
-
-    grOneDayRooms.MouseToCell(X, Y, ACol, ARow);
-    // Application.ProcessMessages;
-
-    if ARow < 1 then
-    begin
-      iLastHintRow := ARow;
-      iLastHintCol := ACol;
-      exit;
-    end;
-    if ACol < 0 then
-      exit;
-
-    if ACol IN [0, 7, 1, 8, 2, 9] then
-      exit;
-
-    ApplicationCancelHint;
-    iLastHintRow := ARow;
-    iLastHintCol := ACol;
-    exit;
-    // end;
-
-    // end;
-
-  except
-    // --
-  end;
-
-end;
-
 function TfrmMain.getChannelColor(Reservation: TSingleReservations): integer;
 begin
   result := getChannelColorByChannel(Reservation.Channel);
@@ -6788,7 +6025,8 @@ begin
     result := 15793151;
 end;
 
-function TfrmMain.getInvoiceMadeColor(PaymentInvoice: integer; NoRent: boolean; offColor, onColor, onGroupColor: integer; GroupAccount: boolean): integer;
+function TfrmMain.getInvoiceMadeColor(PaymentInvoice: integer; NoRent: boolean;
+  offColor, onColor, onGroupColor: integer; GroupAccount: boolean): integer;
 begin
   result := offColor;
   case PaymentInvoice of
@@ -6811,58 +6049,15 @@ begin
     result := defaultColor;
 end;
 
-procedure TfrmMain.OneDay_ShowSelectedCell(Sender: TObject; ACol, ARow: integer; Rect: TRect; State: TGridDrawState);
-begin
-end;
-
-procedure TfrmMain.OneDay_ShowNonSelectedCell(Sender: TObject; ACol, ARow: integer; Rect: TRect; State: TGridDrawState);
-begin
-end;
-
 // ******************************************************************************
 // ******************************************************************************
 // ******************************************************************************
 
-var
-  MousePoint: TPoint;
-  PeriodMousePoint: TPoint;
-  iDragCell: TPoint;
-
-procedure TfrmMain.GetRoomInfo;
-// var
-// iReservation: integer;
-// iRoom: integer;
-// sRoom: string;
-begin
-  // if (ReservationsModel.ReservationCount = 0) then
-  // begin
-  // exit;
-  // // toDo show informatiom about room and availability
-  // end
-  // else
-  // begin
-  // OneDay_GetReservation(iReservation, iRoom, sRoom);
-  // if sRoom > '' then
-  // begin
-  // sbStatusBar.Panels[4].Text := { +1023 } GetTranslatedText('shRoom') + ' : ' + sRoom;
-  // end
-  // else
-  // begin
-  // sbStatusBar.Panels[4].Text := { +1023 } GetTranslatedText('shRoom') + ' : ' + sRoom;
-  // end;
-  // end;
-end;
-
-/// ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// grOneDayRooms
-// Click actions
-//
-/// ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-procedure TfrmMain.grOneDayRoomsClick(Sender: TObject);
-begin
-  GetRoomInfo;
-end;
+  /// ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  // grOneDayRooms
+  // Click actions
+  //
+  /// ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 procedure TfrmMain.grOneDayRoomsDblClickCell(Sender: TObject; ARow, ACol: integer);
 var
@@ -6874,7 +6069,7 @@ var
   sName: string;
 begin
   // --
-  zOneDay_bMouseDown := false;
+  FOneDay_bMouseDown := false;
   try
 
     // double click on Room Column
@@ -6897,7 +6092,7 @@ begin
       SetRoomCleanAndMaintenanceStatus(grOneDayRooms.cells[ACol, ARow], Point.X, Point.Y);
       // SetRoomStatus(grOneDayRooms.cells[ACol, ARow], Point.X, Point.Y);
 
-      zOneDay_bMouseDown := false;
+      FOneDay_bMouseDown := false;
       if grOneDayRooms.dragging then
         grOneDayRooms.EndDrag(false);
       btnRefreshOneDay.Click;
@@ -6917,7 +6112,8 @@ begin
         if (Copy(grOneDayRooms.cells[ACol - 1, ARow], 1, 1) = '<') then
         begin
           OneDay_GetResAndRoom_IDX(iReservation, iRoom);
-          if changeNoRoomRoomtype(ReservationsModel.Reservations[iReservation].Reservation, ReservationsModel.Reservations[iReservation].Rooms[iRoom].RoomRes,
+          if changeNoRoomRoomtype(FReservationsModel.Reservations[iReservation].Reservation,
+            FReservationsModel.Reservations[iReservation].Rooms[iRoom].RoomRes,
             trim(grOneDayRooms.cells[ACol, ARow])) then
           begin
             RefreshGrid;
@@ -6955,21 +6151,21 @@ begin
           myRect.Right := myRect.Right - 16;
           if (HoverPointOneDay.X >= myRect.Left) AND (HoverPointOneDay.X <= myRect.Right) then
           begin
-            if ReservationsModel.Reservations[iReservation].Rooms[iRoom].PaymentInvoice > 0 then
+            if FReservationsModel.Reservations[iReservation].Rooms[iRoom].PaymentInvoice > 0 then
             begin
-              if ReservationsModel.Reservations[iReservation].Rooms[iRoom].GroupAccount then
+              if FReservationsModel.Reservations[iReservation].Rooms[iRoom].GroupAccount then
                 _ClosedInvoicesThisReservation
               else
                 _ClosedInvoicesThisRoom;
             end
-            else if ReservationsModel.Reservations[iReservation].Rooms[iRoom].GroupAccount then
+            else if FReservationsModel.Reservations[iReservation].Rooms[iRoom].GroupAccount then
               _GroupInvoice
             else
               _RoomInvoice;
             exit;
           end;
 
-          if (Copy(TAdvStringGrid(Sender).cells[ACol, ARow], 1, 2) = GoingStr) then
+          if (Copy(TAdvStringGrid(Sender).cells[ACol, ARow], 1, 2) = cGoingStr) then
           begin
             // Invoice with unpaid items
             Rect := grOneDayRooms.CellRect(ACol, ARow);
@@ -6991,14 +6187,14 @@ begin
             myRect.Right := myRect.Right - 16;
             if (HoverPointOneDay.X >= myRect.Left) AND (HoverPointOneDay.X <= myRect.Right) then
             begin
-              if ReservationsModel.Reservations[iReservation].Rooms[iRoom].PaymentInvoice > 0 then
+              if FReservationsModel.Reservations[iReservation].Rooms[iRoom].PaymentInvoice > 0 then
               begin
-                if ReservationsModel.Reservations[iReservation].Rooms[iRoom].GroupAccount then
+                if FReservationsModel.Reservations[iReservation].Rooms[iRoom].GroupAccount then
                   _ClosedInvoicesThisReservation
                 else
                   _ClosedInvoicesThisRoom;
               end
-              else if ReservationsModel.Reservations[iReservation].Rooms[iRoom].GroupAccount then
+              else if FReservationsModel.Reservations[iReservation].Rooms[iRoom].GroupAccount then
                 _GroupInvoice
               else
                 _RoomInvoice;
@@ -7007,15 +6203,14 @@ begin
           end;
 
           initPersonHolder(theData);
-          theData.RoomReservation := ReservationsModel.Reservations[iReservation].Rooms[iRoom].RoomRes;
-          theData.Reservation := ReservationsModel.Reservations[iReservation].Reservation;
+          theData.RoomReservation := FReservationsModel.Reservations[iReservation].Rooms[iRoom].RoomRes;
+          theData.Reservation := FReservationsModel.Reservations[iReservation].Reservation;
           theData.name := sName;
 
           if openGuestProfile(actNone, theData) then
           begin
-            zDebug1 := 'grOneDayRoomsDblClick(Sender : TObject);';
             RefreshGrid;
-            zOneDay_bMouseDown := false;
+            FOneDay_bMouseDown := false;
             if grOneDayRooms.dragging then
               grOneDayRooms.EndDrag(false);
           end;
@@ -7051,7 +6246,7 @@ begin
                   exit;
               end
   finally
-    zOneDay_bMouseDown := false;
+    FOneDay_bMouseDown := false;
 
     if grOneDayRooms.dragging then
       grOneDayRooms.EndDrag(false);
@@ -7159,7 +6354,7 @@ begin
   X := Rect.Left + 10;
   Y := Rect.Top + 10;
 
-  if (Copy(grOneDayRooms.cells[ACol, ARow], 1, 2) = '» ') then
+  if (Copy(grOneDayRooms.cells[ACol, ARow], 1, 2) = 'ï¿½ ') then
   begin
     if (X >= Rect.Left + ((Rect.Right - Rect.Left) DIV 2)) then
       Rect.Left := Rect.Left + ((Rect.Right - Rect.Left) DIV 2)
@@ -7183,11 +6378,12 @@ begin
     exit;
   end;
 
-  if (Copy(grOneDayRooms.cells[ACol, ARow], 1, 2) = '» ') and (X < Rect.Left + ((Rect.Right - Rect.Left) div 2)) then
+  if (Copy(grOneDayRooms.cells[ACol, ARow], 1, 2) = 'ï¿½ ') and (X < Rect.Left + ((Rect.Right - Rect.Left) div 2)) then
   begin
     iReservation := zOneDayResPointers[ARow].ptrRooms[OneDay_GetIsLeftOrRight(ACol), 1]; // Reservation Index
     iRoom := zOneDayResPointers[ARow].ptrRooms[OneDay_GetIsLeftOrRight(ACol), 2]; // Rooms Index
-    OneDay_NewGuestCoordinates(ReservationsModel.Reservations[iReservation].Rooms[iRoom].RoomNumber, iReservation, iRoom);
+    OneDay_NewGuestCoordinates(FReservationsModel.Reservations[iReservation].Rooms[iRoom].RoomNumber,
+      iReservation, iRoom);
   end
   else
   begin
@@ -7201,7 +6397,6 @@ end;
 procedure TfrmMain.grOneDayRoomsEnter(Sender: TObject);
 begin
   CurrentlyActiveGrid := TAdvStringGrid(Sender);
-  GetRoomInfo;
 end;
 
 procedure TfrmMain.grOneDayRoomsGridHint(Sender: TObject; ARow, ACol: integer; var HintStr: string);
@@ -7214,16 +6409,12 @@ var
   sTmp: string;
 
   discountAmount: Double;
-  iTempColor: integer;
   // myRect,
   Rect: TRect;
-
-  sHintInvoice: String;
 
   ro: TRoomObject;
 
   X, Y: integer;
-  xyPoint: TPoint;
 begin
 
   HintStr := '';
@@ -7261,7 +6452,8 @@ begin
         begin
 
           // --
-          if ((ACol = 1) and (grOneDayRooms.cells[4, ARow] = '')) OR ((ACol = 8) and (grOneDayRooms.cells[11, ARow] = '')) then
+          if ((ACol = 1) and (grOneDayRooms.cells[4, ARow] = '')) OR
+            ((ACol = 8) and (grOneDayRooms.cells[11, ARow] = '')) then
           begin
             Application.CancelHint;
             exit;
@@ -7273,11 +6465,13 @@ begin
           APoint.Y := Y;
           APoint := grOneDayRooms.ClientToScreen(APoint);
 
-          if (Copy(grOneDayRooms.cells[ACol, ARow], 1, 2) = '» ') and (X < zOneDay_glbRect.Left + ((zOneDay_glbRect.Right - zOneDay_glbRect.Left) div 2)) then
+          if (Copy(grOneDayRooms.cells[ACol, ARow], 1, 2) = 'ï¿½ ') and
+            (X < zOneDay_glbRect.Left + ((zOneDay_glbRect.Right - zOneDay_glbRect.Left) div 2)) then
           begin
             iReservation := zOneDayResPointers[ARow].ptrRooms[OneDay_GetIsLeftOrRight(ACol), 1]; // Reservation Index
             iRoom := zOneDayResPointers[ARow].ptrRooms[OneDay_GetIsLeftOrRight(ACol), 2]; // Rooms Index
-            OneDay_NewGuestCoordinates(ReservationsModel.Reservations[iReservation].Rooms[iRoom].RoomNumber, iReservation, iRoom);
+            OneDay_NewGuestCoordinates(FReservationsModel.Reservations[iReservation].Rooms[iRoom].RoomNumber,
+              iReservation, iRoom);
           end
           else
           begin
@@ -7287,7 +6481,7 @@ begin
 
           HintStr := '';
 
-          ro := ReservationsModel.Reservations[iReservation].Rooms[iRoom];
+          ro := FReservationsModel.Reservations[iReservation].Rooms[iRoom];
 
           if ro.ResStatus = rsOverbooked then
           begin
@@ -7345,16 +6539,18 @@ begin
             HintStr := HintStr + #13 + ' : ' + ro.Guests[0].Country;
 
           // --
-          if ReservationsModel.Reservations[iReservation].Tel1 > '' then
-            HintStr := HintStr + #13 + { 1040 } GetTranslatedText('shTelephone') + ': ' + ReservationsModel.Reservations[iReservation].Tel1;
+          if FReservationsModel.Reservations[iReservation].Tel1 > '' then
+            HintStr := HintStr + #13 + { 1040 } GetTranslatedText('shTelephone') + ': ' + FReservationsModel.Reservations
+              [iReservation].Tel1;
 
           // --
-          if ReservationsModel.Reservations[iReservation].Tel2 > '' then
-            HintStr := HintStr + #13 + ' : ' + ReservationsModel.Reservations[iReservation].Tel2;
+          if FReservationsModel.Reservations[iReservation].Tel2 > '' then
+            HintStr := HintStr + #13 + ' : ' + FReservationsModel.Reservations[iReservation].Tel2;
 
           // --
-          if ReservationsModel.Reservations[iReservation].Fax > '' then
-            HintStr := HintStr + #13 + { 1041 } GetTranslatedText('shFax') + ' : ' + ReservationsModel.Reservations[iReservation].Fax;
+          if FReservationsModel.Reservations[iReservation].Fax > '' then
+            HintStr := HintStr + #13 + { 1041 } GetTranslatedText('shFax') + ' : ' + FReservationsModel.Reservations
+              [iReservation].Fax;
 
           // --
           if ro.Guests[0].id <> '' then
@@ -7362,7 +6558,8 @@ begin
 
           // --
           // if ReservationsModel.Reservations[ iReservation ].Rooms[ iRoom ].Price <> 0 then
-          HintStr := HintStr + #13#13 + '<b>' + { 1043 } GetTranslatedText('shPrice') + ' :</b> ' + ro.PriceType + ' ' + trim(_floatToStr(ro.Price, 12, 2)) +
+          HintStr := HintStr + #13#13 + '<b>' + { 1043 } GetTranslatedText('shPrice') + ' :</b> ' + ro.PriceType + ' ' +
+            trim(_floatToStr(ro.Price, 12, 2)) +
             ' ' + trim(ro.Currency);
 
           // --
@@ -7372,16 +6569,20 @@ begin
             if ro.Percentage then
             begin
               discountAmount := ro.Price * ro.Discount / 100;
-              HintStr := HintStr + #13 + '<b>' + { 1044 } GetTranslatedText('shDiscount') + ' :</b> ' + trim(_floatToStr(ro.Discount, 12, 2)) + '% (' +
-                trim(_floatToStr(discountAmount, 12, 2)) + ' ' + trim(ro.Currency) + GetTranslatedText('shTx_PerNight') + ')';
+              HintStr := HintStr + #13 + '<b>' + { 1044 } GetTranslatedText('shDiscount') + ' :</b> ' +
+                trim(_floatToStr(ro.Discount, 12, 2)) + '% (' +
+                trim(_floatToStr(discountAmount, 12, 2)) + ' ' + trim(ro.Currency) +
+                GetTranslatedText('shTx_PerNight') + ')';
             end
             else
             begin
-              HintStr := HintStr + #13 + '<b>' + { +1044 } GetTranslatedText('shDiscount') + ' :</b> ' + trim(_floatToStr(ro.Discount, 12, 2)) + ' ' +
+              HintStr := HintStr + #13 + '<b>' + { +1044 } GetTranslatedText('shDiscount') + ' :</b> ' +
+                trim(_floatToStr(ro.Discount, 12, 2)) + ' ' +
                 trim(ro.Currency) + GetTranslatedText('shTx_PerNight');
             end;
 
-            HintStr := HintStr + #13 + '<b>' + { 1043 } GetTranslatedText('shPriceAfterDiscount') + ' :</b> ' + ro.PriceType + ' ' +
+            HintStr := HintStr + #13 + '<b>' + { 1043 } GetTranslatedText('shPriceAfterDiscount') + ' :</b> ' +
+              ro.PriceType + ' ' +
               trim(_floatToStr(ro.Price - discountAmount, 12, 2)) + ' ' + trim(ro.Currency) + #13;
           end;
 
@@ -7408,11 +6609,13 @@ begin
 
           // --
           if ro.PMInfo <> '' then
-            HintStr := HintStr + #13#13 + { 1049 } GetTranslatedText('shPaymentInfo') + ' : ' + #13 + trim(string(ro.PMInfo));
+            HintStr := HintStr + #13#13 + { 1049 } GetTranslatedText('shPaymentInfo') + ' : ' + #13 +
+              trim(string(ro.PMInfo));
 
           // --
           HintStr := HintStr + #13 + '===========' + #13 +
-          { 1050 } GetTranslatedText('shRefrence') + ' : ' + trim(inttostr(ReservationsModel.Reservations[iReservation].Reservation)) + ' / ' +
+          { 1050 } GetTranslatedText('shRefrence') + ' : ' +
+            trim(inttostr(FReservationsModel.Reservations[iReservation].Reservation)) + ' / ' +
             trim(inttostr(ro.RoomRes));
 
           // --
@@ -7458,8 +6661,6 @@ begin
     TAdvStringGrid(Sender).col := ACol;
   end;
 
-  cHomeStatus := 0;
-
   zOneDay_bRightClick := Button = mbRight;
   zOneDay_bNewGuest := false;
   if zOneDay_bRightClick then
@@ -7489,13 +6690,13 @@ begin
   else
   begin
     MousePoint := Point(X, Y);
-    zOneDay_bMouseDown := true;
+    FOneDay_bMouseDown := true;
     TAdvStringGrid(Sender).MouseToCell(X, Y, ACol, ARow);
     if ARow > 0 then
     begin
       TAdvStringGrid(Sender).row := ARow;
       TAdvStringGrid(Sender).col := ACol;
-      if Copy(TAdvStringGrid(Sender).cells[ACol, ARow], 1, 2) = '» ' then
+      if Copy(TAdvStringGrid(Sender).cells[ACol, ARow], 1, 2) = 'ï¿½ ' then
       begin
         Rect := TAdvStringGrid(Sender).CellRect(ACol, ARow);
         zOneDay_bNewGuest := (X < Rect.Left + ((Rect.Right - Rect.Left) div 2));
@@ -7506,7 +6707,7 @@ end;
 
 procedure TfrmMain.grOneDayRoomsMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
 begin
-  zOneDay_bMouseDown := false;
+  FOneDay_bMouseDown := false;
 end;
 
 procedure TfrmMain.grOneDayRoomsResize(Sender: TObject);
@@ -7557,15 +6758,16 @@ begin
   // else
   // ApplicationCancelGuestHint;
 
-  if zOneDay_bMouseDown then
+  if FOneDay_bMouseDown then
   begin
     if (ABS(MousePoint.X - X) > 6) or (ABS(MousePoint.Y - Y) > 6) then
     begin
-      zOneDay_bMouseDown := false;
+      FOneDay_bMouseDown := false;
 
       ActiveGrid.MouseToCell(MousePoint.X, MousePoint.Y, iDragCell.X, iDragCell.Y);
 
-      if ((iDragCell.X > 6) and (ActiveGrid.cells[11, iDragCell.Y] <> '')) or ((iDragCell.X < 6) and (ActiveGrid.cells[4, iDragCell.Y] <> '')) then
+      if ((iDragCell.X > 6) and (ActiveGrid.cells[11, iDragCell.Y] <> '')) or
+        ((iDragCell.X < 6) and (ActiveGrid.cells[4, iDragCell.Y] <> '')) then
       begin
         if ActiveGrid.Focused then
         begin
@@ -7592,12 +6794,10 @@ procedure TfrmMain.grOneDayRoomsStartDrag(Sender: TObject; var DragObject: TDrag
 var
   Arrival, Departure: Tdate;
   iReservation, iRoomReservation: integer;
-  _grid: TAdvStringGrid;
 begin
-  _grid := (Sender AS TAdvStringGrid);
   GetDragGuestIndexes(iDragCell, iReservation, iRoomReservation);
-  if ReservationsModel.Reservations[iReservation].Rooms[iRoomReservation].BlockMove AND
-    (Copy(ReservationsModel.Reservations[iReservation].Rooms[iRoomReservation].RoomNumber, 1, 1) <> '<') then
+  if FReservationsModel.Reservations[iReservation].Rooms[iRoomReservation].BlockMove AND
+    (Copy(FReservationsModel.Reservations[iReservation].Rooms[iRoomReservation].RoomNumber, 1, 1) <> '<') then
   begin
     MessageDlg(GetTranslatedText('shTx_FrmMain_UserCannotMoveTheRoomReservation'), mtError, [mbOk], 0);
     exit;
@@ -7622,7 +6822,8 @@ begin
   idxRoomReservation := zOneDayResPointers[iDragCell.Y].ptrRooms[OneDay_GetIsLeftOrRight(DragCell.X), 2];
 
   if zOneDay_bNewGuest then
-    OneDay_NewGuestCoordinates(ReservationsModel.Reservations[idxReservation].Rooms[idxRoomReservation].RoomNumber, idxReservation, idxRoomReservation);
+    OneDay_NewGuestCoordinates(FReservationsModel.Reservations[idxReservation].Rooms[idxRoomReservation].RoomNumber,
+      idxReservation, idxRoomReservation);
 
 end;
 
@@ -7631,15 +6832,7 @@ var
   idxReservation, idxRoomReservation: integer;
 begin
   GetDragGuestIndexes(DragCell, idxReservation, idxRoomReservation);
-  result := ReservationsModel.Reservations[idxReservation].Rooms[idxRoomReservation].RoomRes;
-end;
-
-function TfrmMain.OneDayGridRoomNumberOfCell(DragCell: TPoint): String;
-var
-  idxReservation, idxRoomReservation: integer;
-begin
-  GetDragGuestIndexes(DragCell, idxReservation, idxRoomReservation);
-  result := ReservationsModel.Reservations[idxReservation].Rooms[idxRoomReservation].RoomNumber;
+  result := FReservationsModel.Reservations[idxReservation].Rooms[idxRoomReservation].RoomRes;
 end;
 
 function TfrmMain.OneDayGridRoomTypeOfCell(DragCell: TPoint): String;
@@ -7647,7 +6840,7 @@ var
   idxReservation, idxRoomReservation: integer;
 begin
   GetDragGuestIndexes(DragCell, idxReservation, idxRoomReservation);
-  result := ReservationsModel.Reservations[idxReservation].Rooms[idxRoomReservation].RoomType;
+  result := FReservationsModel.Reservations[idxReservation].Rooms[idxRoomReservation].RoomType;
 end;
 
 procedure TfrmMain.OneDayGridArrivalAndDepartureOfCell(DragCell: TPoint; var Arrival, Departure: Tdate);
@@ -7655,8 +6848,8 @@ var
   idxReservation, idxRoomReservation: integer;
 begin
   GetDragGuestIndexes(DragCell, idxReservation, idxRoomReservation);
-  Arrival := ReservationsModel.Reservations[idxReservation].Rooms[idxRoomReservation].Arrival;
-  Departure := ReservationsModel.Reservations[idxReservation].Rooms[idxRoomReservation].Departure;
+  Arrival := FReservationsModel.Reservations[idxReservation].Rooms[idxRoomReservation].Arrival;
+  Departure := FReservationsModel.Reservations[idxReservation].Rooms[idxRoomReservation].Departure;
 end;
 
 procedure TfrmMain.grOneDayRoomsDragDrop(Sender, Source: TObject; X, Y: integer);
@@ -7673,11 +6866,11 @@ begin
     ACol := 0;
 
   MoveToRoomEnh2(iRoomReservation, grOneDayRooms.cells[ACol, ARow]);
-  zDebug1 := '150';
   RefreshGrid;
 end;
 
-procedure TfrmMain.grOneDayRoomsDragOver(Sender, Source: TObject; X, Y: integer; State: TDragState; var Accept: boolean);
+procedure TfrmMain.grOneDayRoomsDragOver(Sender, Source: TObject; X, Y: integer; State: TDragState;
+  var Accept: boolean);
 var
   ACol, ARow: integer;
   iReservation, iRoom: integer;
@@ -7695,10 +6888,12 @@ begin
       else
         ACol := 0;
 
-      if (Copy(TAdvStringGrid(Source).cells[ACol, ARow], 1, 1) <> '<') and (trim(TAdvStringGrid(Source).cells[ACol, ARow]) <> '') then
+      if (Copy(TAdvStringGrid(Source).cells[ACol, ARow], 1, 1) <> '<') and
+        (trim(TAdvStringGrid(Source).cells[ACol, ARow]) <> '') then
       begin
         destRoom := trim(TAdvStringGrid(Source).cells[ACol, ARow]);
-        if ((ACol = 0) and (trim(TAdvStringGrid(Source).cells[4, ARow]) = '')) or ((ACol = 7) and (trim(TAdvStringGrid(Source).cells[11, ARow]) = '')) then
+        if ((ACol = 0) and (trim(TAdvStringGrid(Source).cells[4, ARow]) = '')) or
+          ((ACol = 7) and (trim(TAdvStringGrid(Source).cells[11, ARow]) = '')) then
         begin
           Accept := true;
           if IsShiftKeyPressed then
@@ -7712,7 +6907,7 @@ begin
           iReservation := zOneDayResPointers[ARow].ptrRooms[OneDay_GetIsLeftOrRight(ACol), 1]; // Reservation Index
           iRoom := zOneDayResPointers[ARow].ptrRooms[OneDay_GetIsLeftOrRight(ACol), 2]; // Rooms Index
 
-          if ReservationsModel.Reservations[iReservation].Rooms[iRoom].Departure = zOneDay_dtDate then
+          if FReservationsModel.Reservations[iReservation].Rooms[iRoom].Departure = zOneDay_dtDate then
             Accept := true;
         end;
       end;
@@ -7721,7 +6916,8 @@ begin
   // Compute_TreeMoves( X, Y );
 end;
 
-procedure TfrmMain.grOneDayRoomsDragScroll(Sender: TObject; TopRow, LeftCol: integer; var DragScrollDir: TDragScrollDirection; var CanScroll: boolean);
+procedure TfrmMain.grOneDayRoomsDragScroll(Sender: TObject; TopRow, LeftCol: integer;
+  var DragScrollDir: TDragScrollDirection; var CanScroll: boolean);
 begin
   // DragScrollDir := [dsdUp,dsdDown,dsdLeft,dsdRight];
   CanScroll := true;
@@ -7744,13 +6940,13 @@ begin
     end;
 end;
 
-const
-  ROUNDED_CORNER_RADIUS = 10;
-
 procedure TfrmMain.MyRoundedRect(Canvas: TCanvas; X1, Y1, X2, Y2: integer; DoRoundCorners: boolean = true);
 var
   penStyle: TPenStyle;
   penColor: TColor;
+const
+  ROUNDED_CORNER_RADIUS = 10;
+
 begin
   penStyle := Canvas.Pen.Style;
   penColor := Canvas.Pen.Color;
@@ -7794,13 +6990,15 @@ const
 
   c_RoomInfo = [Left_room, Right_room, Left_roomType, Right_roomType];
 
-  c_GuestInfo = [Left_cust, Right_cust, Left_Arrival, Right_Arrival, Left_Departure, Right_Departure, Left_GuestCount, Right_GuestCount];
+  c_GuestInfo = [Left_cust, Right_cust, Left_Arrival, Right_Arrival, Left_Departure, Right_Departure, Left_GuestCount,
+    Right_GuestCount];
 
   Left_GuestInfo = [Left_cust, Left_Arrival, Left_Departure, Left_GuestCount];
 
   Right_GuestInfo = [Right_cust, Right_Arrival, Right_Departure, Right_GuestCount];
 
-  c_ALL = [Left_room, Right_room, Left_roomType, Right_roomType, Left_cust, Right_cust, Left_Arrival, Right_Arrival, Left_Departure, Right_Departure,
+  c_ALL = [Left_room, Right_room, Left_roomType, Right_roomType, Left_cust, Right_cust, Left_Arrival, Right_Arrival,
+    Left_Departure, Right_Departure,
     Left_GuestCount, Right_GuestCount, Splitter];
 
   Left = 1;
@@ -7840,12 +7038,10 @@ var
 
   penStyle: TPenStyle;
 
-
 begin
 
   if not(ACol in c_ALL) then
     exit;
-
 
   Grid := TAdvStringGrid(Sender);
   With Grid.Canvas do
@@ -7859,14 +7055,14 @@ begin
       exit;
     end;
 
-    if Assigned(OneDayGridFont) then
+    if assigned(OneDayGridFont) then
     begin
-      Font.Name := OneDayGridFont.Name;
-      Font.Size := OneDayGridFont.Size;
+      Font.name := OneDayGridFont.name;
+      Font.size := OneDayGridFont.size;
       Font.Style := OneDayGridFont.Style;
     end;
-//    Font.name := 'Segoe UI';
-//    Font.size := 12;
+    // Font.name := 'Segoe UI';
+    // Font.size := 12;
     try
       if (ARow < Grid.FixedRows) then
       begin
@@ -7875,7 +7071,8 @@ begin
           Brush.Color := sSkinManager1.GetGlobalColor;
           FillRect(Rect);
           LoadImageFromImageList(DImages.ilGuests, 5, Grid.Canvas, Point(Rect.Left + (Rect.Right - Rect.Left) div 2 - 8,
-            Rect.Top + (Rect.Bottom - Rect.Top) div 2 - 8), Brush.Color, [Point(clRed, sSkinManager1.GetGlobalFontColor)]);
+            Rect.Top + (Rect.Bottom - Rect.Top) div 2 - 8), Brush.Color,
+            [Point(clRed, sSkinManager1.GetGlobalFontColor)]);
           exit;
         end;
         exit;
@@ -7904,21 +7101,16 @@ begin
 
         iRes := -1;
         iRoom := 0;
-        iRoomRes := 0;
 
         iRes := zOneDayResPointers[ARow].ptrRooms[OneDay_GetIsLeftOrRight(ACol), 1];
         iRoom := zOneDayResPointers[ARow].ptrRooms[OneDay_GetIsLeftOrRight(ACol), 2];
-        if iRes > 0 then
-        begin
-          iRoomRes := ReservationsModel.Reservations[iRes].Rooms[iRoom].RoomRes;
-        end;
-
-        // Ef samskonar herbergistegund er utan þá er það sýnt með því að lita brottfarardagsetningu
-        // meðhöndla vinsta megin
+        // Ef samskonar herbergistegund er utan ï¿½ï¿½ er ï¿½aï¿½ sï¿½nt meï¿½ ï¿½vï¿½ aï¿½ lita brottfarardagsetningu
+        // meï¿½hï¿½ndla vinsta megin
         if ((OneDay_GetIsLeftOrRight(ACol) = Left) and (Grid.cells[Left_Departure, ARow] = '')) OR
           ((OneDay_GetIsLeftOrRight(ACol) = Right) and (Grid.cells[Right_Departure, ARow] = '')) then
         begin
-          if ((ACol = Left_Departure) and (ACol <> Left_GuestCount)) OR ((ACol = Right_Departure) and (ACol <> Right_GuestCount)) then
+          if ((ACol = Left_Departure) and (ACol <> Left_GuestCount)) OR
+            ((ACol = Right_Departure) and (ACol <> Right_GuestCount)) then
           begin
             if OneDay_isATakenType(ACol, ARow) then
             begin
@@ -7935,16 +7127,15 @@ begin
           exit;
         end;
 
-        isDeparting := false;
-
-        // Ef gestur er að fara og annar að koma er GestCellan Tvískipt
-        // annar hlutinn Grár (sá sem er að fara) en hinn Aqua (sá sem er að koma)
-        if (Copy(Grid.cells[ACol, ARow], 1, 2) = GoingStr) then
+        // Ef gestur er aï¿½ fara og annar aï¿½ koma er GestCellan Tvï¿½skipt
+        // annar hlutinn Grï¿½r (sï¿½ sem er aï¿½ fara) en hinn Aqua (sï¿½ sem er aï¿½ koma)
+        if (Copy(Grid.cells[ACol, ARow], 1, 2) = cGoingStr) then
         begin
-          // Sá sem er að fara
+          // Who is leaving
           LeavingName := Grid.cells[ACol, ARow];
-          // Sá sem er að koma
-          ArrivingName := OneDay_RoomReservedName(ReservationsModel.Reservations[iRes].Rooms[iRoom].RoomNumber, iRes, iRoom);
+          // Who is comming
+          ArrivingName := OneDay_RoomReservedName(FReservationsModel.Reservations[iRes].Rooms[iRoom].RoomNumber,
+            iRes, iRoom);
           GetArrivingGuestIndexes(iRoom, iRes, ACol, ARow);
 
           if ArrivingName <> '' then
@@ -7955,7 +7146,7 @@ begin
             Brush.Color := tmpBackColor;
             Font.Color := tmpFontColor;
 
-            // Fyrri helmingurinn fyrir þann sem er að koma
+            // Fyrri helmingurinn fyrir ï¿½ann sem er aï¿½ koma
             iWidth := (Rect.Right - Rect.Left) div 2;
             myRect := Rect;
             myRect.Right := myRect.Left + iWidth;
@@ -7967,19 +7158,22 @@ begin
             // FillRect(myRect);
             iTemp := Grid.Canvas.TextHeight(ArrivingName);
 
-            ExtTextOut(handle, myRect.Left + 2, (myRect.Bottom + myRect.Top) div 2 - iTemp div 2, ETO_CLIPPED, @myRect, PChar(ArrivingName),
+            ExtTextOut(handle, myRect.Left + 2, (myRect.Bottom + myRect.Top) div 2 - iTemp div 2, ETO_CLIPPED, @myRect,
+              PChar(ArrivingName),
               // ETO_CLIPPED or ETO_OPAQUE, @myRect, PChar(ArrivingName),
               length(ArrivingName), nil);
 
-            if NOT ReservationsModel.Reservations[iRes].OutOfOrderBlocking then
+            if NOT FReservationsModel.Reservations[iRes].OutOfOrderBlocking then
             begin
               if iRectangleSpaceForUnpaidItems > 0 then
               begin
-                chRect.Left := myRect.Right - 4 - iRectangleSpaceForChannelColor - iRectangleSpaceForInvoiceMade - 2 - iRectangleSpaceForUnpaidItems - 2;
+                chRect.Left := myRect.Right - 4 - iRectangleSpaceForChannelColor - iRectangleSpaceForInvoiceMade - 2 -
+                  iRectangleSpaceForUnpaidItems - 2;
                 chRect.Top := myRect.Top + 3;
                 chRect.Bottom := myRect.Bottom - 3;
                 chRect.Right := chRect.Left + iRectangleSpaceForUnpaidItems;
-                iTempColor := getUnpaidItemsColor(ReservationsModel.Reservations[iRes].Rooms[iRoom].TotalNoRent > 0, Brush.Color);
+                iTempColor := getUnpaidItemsColor(FReservationsModel.Reservations[iRes].Rooms[iRoom].TotalNoRent > 0,
+                  Brush.Color);
                 DrawRectanglOnCanvas(Grid.Canvas, iTempColor, chRect);
               end;
 
@@ -7989,7 +7183,7 @@ begin
                 chRect.Top := myRect.Top + 3;
                 chRect.Bottom := myRect.Bottom - 3;
                 chRect.Right := chRect.Left + iRectangleSpaceForChannelColor;
-                iTempColor := getChannelColor(ReservationsModel.Reservations[iRes]);
+                iTempColor := getChannelColor(FReservationsModel.Reservations[iRes]);
                 if iTempColor = -1 then
                   iTempColor := 15793151;
                 DrawRectanglOnCanvas(Grid.Canvas, iTempColor, chRect);
@@ -8001,21 +7195,22 @@ begin
                 chRect.Top := myRect.Top + 3;
                 chRect.Bottom := myRect.Bottom - 3;
                 chRect.Right := chRect.Left + iRectangleSpaceForInvoiceMade;
-                iTempColor := getInvoiceMadeColor(ReservationsModel.Reservations[iRes].Rooms[iRoom].PaymentInvoice,
-                  (round(ReservationsModel.Reservations[iRes].Rooms[iRoom].OngoingRent) <> 0), Brush.Color, clWhite, clAqua,
-                  ReservationsModel.Reservations[iRes].Rooms[iRoom].GroupAccount);
+                iTempColor := getInvoiceMadeColor(FReservationsModel.Reservations[iRes].Rooms[iRoom].PaymentInvoice,
+                  (round(FReservationsModel.Reservations[iRes].Rooms[iRoom].OngoingRent) <> 0), Brush.Color, clWhite,
+                  clAqua,
+                  FReservationsModel.Reservations[iRes].Rooms[iRoom].GroupAccount);
                 DrawRectanglOnCanvas(Grid.Canvas, iTempColor, chRect);
               end;
             end;
 
-            // Seinni helmingurinn fyrir þann sem er að fara
+            // Seinni helmingurinn fyrir ï¿½ann sem er aï¿½ fara
             Brush.Color := clGray;
             Font.Color := clWhite;
 
             myRect := Rect;
             myRect.Left := myRect.Left + iWidth;
 
-            if ReservationsModel.Reservations[iRes].OutOfOrderBlocking AND (ACol in c_custs) then
+            if FReservationsModel.Reservations[iRes].OutOfOrderBlocking AND (ACol in c_custs) then
             begin
               Brush.Color := clSilver;
               Font.Color := clBlack;
@@ -8025,30 +7220,35 @@ begin
             // FillRect(myRect);
             iTemp := Grid.Canvas.TextHeight(ArrivingName);
 
-            if ReservationsModel.Reservations[iRes].OutOfOrderBlocking then
+            if FReservationsModel.Reservations[iRes].OutOfOrderBlocking then
             begin
               tempString := GetTranslatedText('shTx_FrmMain_OutOfOrder') + StringOfChar(' ', 255) + #0;
-              ExtTextOut(handle, myRect.Left + 2, (myRect.Bottom + myRect.Top) div 2 - iTemp div 2, ETO_CLIPPED, @myRect, PChar(Grid.cells[ACol, ARow]),
+              ExtTextOut(handle, myRect.Left + 2, (myRect.Bottom + myRect.Top) div 2 - iTemp div 2, ETO_CLIPPED,
+                @myRect, PChar(Grid.cells[ACol, ARow]),
                 length(Grid.cells[ACol, ARow]), nil);
 
               Pen.Color := Font.Color;
-              Grid.Canvas.MoveTo(Rect.Left + 2 + Grid.Canvas.TextWidth(GetTranslatedText('shTx_FrmMain_OutOfOrder')), (myRect.Top + myRect.Bottom) div 2);
+              Grid.Canvas.MoveTo(Rect.Left + 2 + Grid.Canvas.TextWidth(GetTranslatedText('shTx_FrmMain_OutOfOrder')),
+                (myRect.Top + myRect.Bottom) div 2);
               Grid.Canvas.LineTo(Rect.Right, (myRect.Top + myRect.Bottom) div 2);
 
               exit;
             end
             else
-              ExtTextOut(handle, myRect.Left + 2, (myRect.Bottom + myRect.Top) div 2 - iTemp div 2, ETO_CLIPPED, @myRect, PChar(Grid.cells[ACol, ARow]),
+              ExtTextOut(handle, myRect.Left + 2, (myRect.Bottom + myRect.Top) div 2 - iTemp div 2, ETO_CLIPPED,
+                @myRect, PChar(Grid.cells[ACol, ARow]),
                 length(Grid.cells[ACol, ARow]), nil);
 
             GetLeavingGuestIndexes(iRoom, iRes, ACol, ARow);
             if iRectangleSpaceForUnpaidItems > 0 then
             begin
-              chRect.Left := myRect.Right - 4 - iRectangleSpaceForChannelColor - iRectangleSpaceForInvoiceMade - 2 - iRectangleSpaceForUnpaidItems - 2;
+              chRect.Left := myRect.Right - 4 - iRectangleSpaceForChannelColor - iRectangleSpaceForInvoiceMade - 2 -
+                iRectangleSpaceForUnpaidItems - 2;
               chRect.Top := myRect.Top + 3;
               chRect.Bottom := myRect.Bottom - 3;
               chRect.Right := chRect.Left + iRectangleSpaceForUnpaidItems;
-              iTempColor := getUnpaidItemsColor(ReservationsModel.Reservations[iRes].Rooms[iRoom].TotalNoRent > 0, Brush.Color);
+              iTempColor := getUnpaidItemsColor(FReservationsModel.Reservations[iRes].Rooms[iRoom].TotalNoRent > 0,
+                Brush.Color);
               DrawRectanglOnCanvas(Grid.Canvas, iTempColor, chRect);
             end;
 
@@ -8058,7 +7258,7 @@ begin
               chRect.Top := myRect.Top + 3;
               chRect.Bottom := myRect.Bottom - 3;
               chRect.Right := chRect.Left + iRectangleSpaceForChannelColor;
-              iTempColor := getChannelColor(ReservationsModel.Reservations[iRes]);
+              iTempColor := getChannelColor(FReservationsModel.Reservations[iRes]);
               if iTempColor = -1 then
                 iTempColor := 15793151;
               DrawRectanglOnCanvas(Grid.Canvas, iTempColor, chRect);
@@ -8070,202 +7270,46 @@ begin
               chRect.Top := myRect.Top + 3;
               chRect.Bottom := myRect.Bottom - 3;
               chRect.Right := chRect.Left + iRectangleSpaceForInvoiceMade;
-              iTempColor := getInvoiceMadeColor(ReservationsModel.Reservations[iRes].Rooms[iRoom].PaymentInvoice,
-                round(ReservationsModel.Reservations[iRes].Rooms[iRoom].OngoingRent) <> 0, Brush.Color, clWhite, clAqua,
-                ReservationsModel.Reservations[iRes].Rooms[iRoom].GroupAccount);
+              iTempColor := getInvoiceMadeColor(FReservationsModel.Reservations[iRes].Rooms[iRoom].PaymentInvoice,
+                round(FReservationsModel.Reservations[iRes].Rooms[iRoom].OngoingRent) <> 0, Brush.Color, clWhite, clAqua,
+                FReservationsModel.Reservations[iRes].Rooms[iRoom].GroupAccount);
               DrawRectanglOnCanvas(Grid.Canvas, iTempColor, chRect);
             end;
 
             exit;
           end;
         end
-        else if (ACol in c_departure) AND (ReservationsModel.Reservations[iRes].Rooms[iRoom].CodedColor <> -1) then
+        else if (ACol in c_departure) AND (FReservationsModel.Reservations[iRes].Rooms[iRoom].CodedColor <> -1) then
         begin
-          Brush.Color := ReservationsModel.Reservations[iRes].Rooms[iRoom].CodedColor;
-          Font.Color := InverseColor(ReservationsModel.Reservations[iRes].Rooms[iRoom].CodedColor);
-          Font.Style := [];
-          if g.qStatusAttr_GuestStaying.isBold then
-            Font.Style := Font.Style + [fsBold];
-          if g.qStatusAttr_GuestStaying.isItalic then
-            Font.Style := Font.Style + [fsItalic];
-          if g.qStatusAttr_GuestStaying.isStrikeOut then
-            Font.Style := Font.Style + [fsStrikeOut];
-        end
-        else if (ReservationsModel.Reservations[iRes].Rooms[iRoom].ResStatus = rsBlocked) then
-        begin
-          Brush.Color := g.qStatusAttr_Blocked.BackgroundColor;
-          Font.Color := g.qStatusAttr_Blocked.fontColor;
-          Font.Style := [];
-          if g.qStatusAttr_Blocked.isBold then
-            Font.Style := Font.Style + [fsBold];
-          if g.qStatusAttr_Blocked.isItalic then
-            Font.Style := Font.Style + [fsItalic];
-          if g.qStatusAttr_Blocked.isStrikeOut then
-            Font.Style := Font.Style + [fsStrikeOut];
+          FormatToReservationAttrib(Grid.Canvas, g.qStatusAttr_GuestStaying);
+          // override with reservation specific colloring
+          Brush.Color := FReservationsModel.Reservations[iRes].Rooms[iRoom].CodedColor;
+          Font.Color := InverseColor(FReservationsModel.Reservations[iRes].Rooms[iRoom].CodedColor);
         end
         else
-          // Gestur er að fara (sjá fyrri)
-          if (ReservationsModel.Reservations[iRes].Rooms[iRoom].ResStatus = rsDeparting) then
-          begin
-            Brush.Color := g.qStatusAttr_Departing.BackgroundColor;
-            Font.Color := g.qStatusAttr_Departing.fontColor;
+          case FReservationsModel.Reservations[iRes].Rooms[iRoom].ResStatus of
+            rsReservations: FormatToReservationAttrib(Grid.Canvas, g.qStatusAttr_Order);
+            rsDeparting:    FormatToReservationAttrib(Grid.Canvas, g.qStatusAttr_Departing);
+            rsDeparted:     FormatToReservationAttrib(Grid.Canvas, g.qStatusAttr_Departed);
+            rsOverbooked:   FormatToReservationAttrib(Grid.Canvas, g.qStatusAttr_Waitinglist);
+            rsAlotment:     FormatToReservationAttrib(Grid.Canvas, g.qStatusAttr_Allotment);
+            rsNoShow:       FormatToReservationAttrib(Grid.Canvas, g.qStatusAttr_NoShow);
+            rsBlocked:      FormatToReservationAttrib(Grid.Canvas, g.qStatusAttr_Blocked);
+            rsCanceled:     FormatToReservationAttrib(Grid.Canvas, g.qStatusAttr_Canceled);
+            rsTmp1:         FormatToReservationAttrib(Grid.Canvas, g.qStatusAttr_Tmp1);
+            rsTmp2:         FormatToReservationAttrib(Grid.Canvas, g.qStatusAttr_Tmp2);
+            rsGuests:       if (FReservationsModel.Reservations[iRes].Rooms[iRoom].Departure = zOneDay_dtDate + 1) then
+                              FormatToReservationAttrib(Grid.Canvas, g.qStatusAttr_GuestLeavingNextDay)
+                            else if (FReservationsModel.Reservations[iRes].Rooms[iRoom].Departure > zOneDay_dtDate + 1) then
+                              FormatToReservationAttrib(Grid.Canvas, g.qStatusAttr_GuestStaying);
 
-            Font.Style := [];
-            if g.qStatusAttr_Departing.isBold then
-              Font.Style := Font.Style + [fsBold];
-            if g.qStatusAttr_Departing.isItalic then
-              Font.Style := Font.Style + [fsItalic];
-            if g.qStatusAttr_Departing.isStrikeOut then
-              Font.Style := Font.Style + [fsStrikeOut];
-            isDeparting := true;
-          end
-          else
-            // Er Pöntun þ.e. ekki innbókaður
-            if ReservationsModel.Reservations[iRes].Rooms[iRoom].ResStatus = rsReservations then
-            begin
-              Brush.Color := g.qStatusAttr_Order.BackgroundColor;
-              Font.Color := g.qStatusAttr_Order.fontColor;
-              Font.Style := [];
-
-              if g.qStatusAttr_Order.isBold then
-                Font.Style := Font.Style + [fsBold];
-              if g.qStatusAttr_Order.isItalic then
-                Font.Style := Font.Style + [fsItalic];
-              if g.qStatusAttr_Order.isStrikeOut then
-                Font.Style := Font.Style + [fsStrikeOut];
-            end
-            else
-              // Frainn þ.e útbókaður
-              if ReservationsModel.Reservations[iRes].Rooms[iRoom].ResStatus = rsDeparted then
-              begin
-                Brush.Color := g.qStatusAttr_Departed.BackgroundColor;
-                Font.Color := g.qStatusAttr_Departed.fontColor;
-                Font.Style := [];
-                if g.qStatusAttr_Departed.isBold then
-                  Font.Style := Font.Style + [fsBold];
-                if g.qStatusAttr_Departed.isItalic then
-                  Font.Style := Font.Style + [fsItalic];
-                if g.qStatusAttr_Departed.isStrikeOut then
-                  Font.Style := Font.Style + [fsStrikeOut];
-              end
-              else
-                // Yfirbókun
-                if ReservationsModel.Reservations[iRes].Rooms[iRoom].ResStatus = rsOverbooked then
-                begin
-                  Brush.Color := g.qStatusAttr_Waitinglist.BackgroundColor;
-                  Font.Color := g.qStatusAttr_Waitinglist.fontColor;
-                  Font.Style := [];
-                  if g.qStatusAttr_Waitinglist.isBold then
-                    Font.Style := Font.Style + [fsBold];
-                  if g.qStatusAttr_Waitinglist.isItalic then
-                    Font.Style := Font.Style + [fsItalic];
-                  if g.qStatusAttr_Waitinglist.isStrikeOut then
-                    Font.Style := Font.Style + [fsStrikeOut];
-                end
-                else
-                  // No Show
-                  if ReservationsModel.Reservations[iRes].Rooms[iRoom].ResStatus = rsNoShow then
-                  begin
-                    Brush.Color := g.qStatusAttr_NoShow.BackgroundColor;
-                    Font.Color := g.qStatusAttr_NoShow.fontColor;
-                    Font.Style := [];
-                    if g.qStatusAttr_NoShow.isBold then
-                      Font.Style := Font.Style + [fsBold];
-                    if g.qStatusAttr_NoShow.isItalic then
-                      Font.Style := Font.Style + [fsItalic];
-                    if g.qStatusAttr_NoShow.isStrikeOut then
-                      Font.Style := Font.Style + [fsStrikeOut];
-                  end
-                  else
-                    // Canceled
-                    if ReservationsModel.Reservations[iRes].Rooms[iRoom].ResStatus = rsCanceled then // *HJ 140206
-                    begin
-                      Brush.Color := g.qStatusAttr_Canceled.BackgroundColor;
-                      // ATH FIX
-                      Font.Color := g.qStatusAttr_Canceled.fontColor;
-                      Font.Style := [];
-                      if g.qStatusAttr_NoShow.isBold then
-                        Font.Style := Font.Style + [fsBold];
-                      if g.qStatusAttr_NoShow.isItalic then
-                        Font.Style := Font.Style + [fsItalic];
-                      if g.qStatusAttr_NoShow.isStrikeOut then
-                        Font.Style := Font.Style + [fsStrikeOut];
-                    end
-                    else
-                      // TMP1
-                      if ReservationsModel.Reservations[iRes].Rooms[iRoom].ResStatus = rsTmp1 then // *HJ 140206
-                      begin
-                        Brush.Color := g.qStatusAttr_tmp1.BackgroundColor;
-                        // ATH FIX
-                        Font.Color := g.qStatusAttr_tmp1.fontColor;
-                        Font.Style := [];
-                        if g.qStatusAttr_NoShow.isBold then
-                          Font.Style := Font.Style + [fsBold];
-                        if g.qStatusAttr_NoShow.isItalic then
-                          Font.Style := Font.Style + [fsItalic];
-                        if g.qStatusAttr_NoShow.isStrikeOut then
-                          Font.Style := Font.Style + [fsStrikeOut];
-                      end
-                      else
-                        // TMP2
-                        if ReservationsModel.Reservations[iRes].Rooms[iRoom].ResStatus = rsTmp2 then // *HJ 140206
-                        begin
-                          Brush.Color := g.qStatusAttr_tmp2.BackgroundColor;
-                          // ATH FIX
-                          Font.Color := g.qStatusAttr_tmp2.fontColor;
-                          Font.Style := [];
-                          if g.qStatusAttr_NoShow.isBold then
-                            Font.Style := Font.Style + [fsBold];
-                          if g.qStatusAttr_NoShow.isItalic then
-                            Font.Style := Font.Style + [fsItalic];
-                          if g.qStatusAttr_NoShow.isStrikeOut then
-                            Font.Style := Font.Style + [fsStrikeOut];
-                        end
-                        else
-                          // Allotment
-                          if ReservationsModel.Reservations[iRes].Rooms[iRoom].ResStatus = rsAlotment then
-                          begin
-                            Brush.Color := g.qStatusAttr_Allotment.BackgroundColor;
-                            Font.Color := g.qStatusAttr_Allotment.fontColor;
-                            Font.Style := [];
-                            if g.qStatusAttr_Allotment.isBold then
-                              Font.Style := Font.Style + [fsBold];
-                            if g.qStatusAttr_Allotment.isItalic then
-                              Font.Style := Font.Style + [fsItalic];
-                            if g.qStatusAttr_Allotment.isStrikeOut then
-                              Font.Style := Font.Style + [fsStrikeOut];
-                          end
-                          else
-                            // Fer á morgunn
-                            if (ReservationsModel.Reservations[iRes].Rooms[iRoom].ResStatus = rsGuests) and
-                              (ReservationsModel.Reservations[iRes].Rooms[iRoom].Departure = zOneDay_dtDate + 1) then
-                            begin
-                              Brush.Color := g.qStatusAttr_GuestLeavingNextDay.BackgroundColor;
-                              Font.Color := g.qStatusAttr_GuestLeavingNextDay.fontColor;
-                              Font.Style := [];
-                              if g.qStatusAttr_GuestLeavingNextDay.isBold then
-                                Font.Style := Font.Style + [fsBold];
-                              if g.qStatusAttr_GuestLeavingNextDay.isItalic then
-                                Font.Style := Font.Style + [fsItalic];
-                              if g.qStatusAttr_GuestLeavingNextDay.isStrikeOut then
-                                Font.Style := Font.Style + [fsStrikeOut];
-                            end
-                            else
-                              // Gestur og verður áfram
-                              if (ReservationsModel.Reservations[iRes].Rooms[iRoom].ResStatus = rsGuests) and
-                                (ReservationsModel.Reservations[iRes].Rooms[iRoom].Departure > zOneDay_dtDate + 1) then
-                              begin
-                                // innbókaður verður amk tvær nætur í viðbót - þ.e fer ekki á morgunn
-                                Brush.Color := g.qStatusAttr_GuestStaying.BackgroundColor;
-                                Font.Color := g.qStatusAttr_GuestStaying.fontColor;
-                                Font.Style := [];
-                                if g.qStatusAttr_GuestStaying.isBold then
-                                  Font.Style := Font.Style + [fsBold];
-                                if g.qStatusAttr_GuestStaying.isItalic then
-                                  Font.Style := Font.Style + [fsItalic];
-                                if g.qStatusAttr_GuestStaying.isStrikeOut then
-                                  Font.Style := Font.Style + [fsStrikeOut];
-                              end;
+//            rsUnKnown,
+//            rsAll,
+//            rsCurrent,
+//            rsReserved,
+//            rsDeleted
+//          else
+          end;
 
         if (gdFocused in State) then
         begin
@@ -8274,7 +7318,7 @@ begin
           Font.Style := Font.Style + [fsBold];
         end;
 
-        if ReservationsModel.Reservations[iRes].OutOfOrderBlocking then
+        if FReservationsModel.Reservations[iRes].OutOfOrderBlocking then
         begin
           Brush.Color := clSilver;
           Font.Color := clWhite;
@@ -8285,30 +7329,32 @@ begin
         MyRoundedRect(Grid.Canvas, Rect.Left, Rect.Top, Rect.Right, Rect.Bottom);
         iTemp := Grid.Canvas.TextHeight(tempString);
 
-        // if ReservationsModel.Reservations[iRes].Rooms[iRoom].blockMove then
-        // Font.Style := Font.Style + [fsUnderline];
-
-        if ReservationsModel.Reservations[iRes].OutOfOrderBlocking AND (ACol in c_custs) then
+        if FReservationsModel.Reservations[iRes].OutOfOrderBlocking AND (ACol in c_custs) then
         begin
           tempString := GetTranslatedText('shTx_FrmMain_OutOfOrder') + StringOfChar(' ', 255) + #0;
-          ExtTextOut(handle, Rect.Left + 2, (Rect.Bottom + Rect.Top) div 2 - iTemp div 2, ETO_CLIPPED, @Rect, tempString, length(tempString), nil);
+          ExtTextOut(handle, Rect.Left + 2, (Rect.Bottom + Rect.Top) div 2 - iTemp div 2, ETO_CLIPPED, @Rect,
+            tempString, length(tempString), nil);
 
           Pen.Color := clBlack;
-          Grid.Canvas.MoveTo(Rect.Left + 2 + TextWidth(GetTranslatedText('shTx_FrmMain_OutOfOrder')), (Rect.Top + Rect.Bottom) div 2);
+          Grid.Canvas.MoveTo(Rect.Left + 2 + TextWidth(GetTranslatedText('shTx_FrmMain_OutOfOrder')),
+            (Rect.Top + Rect.Bottom) div 2);
           Grid.Canvas.LineTo(Rect.Right, (Rect.Top + Rect.Bottom) div 2);
 
           exit;
         end
         else
-          ExtTextOut(handle, Rect.Left + 2, (Rect.Bottom + Rect.Top) div 2 - iTemp div 2, ETO_CLIPPED, @Rect, tempString, length(tempString), nil);
+          ExtTextOut(handle, Rect.Left + 2, (Rect.Bottom + Rect.Top) div 2 - iTemp div 2, ETO_CLIPPED, @Rect,
+            tempString, length(tempString), nil);
 
         if iRectangleSpaceForUnpaidItems > 0 then
         begin
-          chRect.Left := Rect.Right - 4 - iRectangleSpaceForChannelColor - iRectangleSpaceForInvoiceMade - 2 - iRectangleSpaceForUnpaidItems - 2;
+          chRect.Left := Rect.Right - 4 - iRectangleSpaceForChannelColor - iRectangleSpaceForInvoiceMade - 2 -
+            iRectangleSpaceForUnpaidItems - 2;
           chRect.Top := Rect.Top + 3;
           chRect.Bottom := Rect.Bottom - 3;
           chRect.Right := chRect.Left + iRectangleSpaceForUnpaidItems;
-          iTempColor := getUnpaidItemsColor(ReservationsModel.Reservations[iRes].Rooms[iRoom].TotalNoRent > 0, Brush.Color);
+          iTempColor := getUnpaidItemsColor(FReservationsModel.Reservations[iRes].Rooms[iRoom].TotalNoRent > 0,
+            Brush.Color);
           DrawRectanglOnCanvas(Grid.Canvas, iTempColor, chRect);
         end;
 
@@ -8318,7 +7364,7 @@ begin
           chRect.Top := Rect.Top + 3;
           chRect.Bottom := Rect.Bottom - 3;
           chRect.Right := chRect.Left + iRectangleSpaceForChannelColor;
-          iTempColor := getChannelColor(ReservationsModel.Reservations[iRes]);
+          iTempColor := getChannelColor(FReservationsModel.Reservations[iRes]);
           if iTempColor = -1 then
             iTempColor := 15793151;
           DrawRectanglOnCanvas(Grid.Canvas, iTempColor, chRect);
@@ -8330,14 +7376,14 @@ begin
           chRect.Top := Rect.Top + 3;
           chRect.Bottom := Rect.Bottom - 3;
           chRect.Right := chRect.Left + iRectangleSpaceForInvoiceMade;
-          iTempColor := getInvoiceMadeColor(ReservationsModel.Reservations[iRes].Rooms[iRoom].PaymentInvoice,
-            round(ReservationsModel.Reservations[iRes].Rooms[iRoom].OngoingRent) <> 0, Brush.Color, clWhite, clAqua,
-            ReservationsModel.Reservations[iRes].Rooms[iRoom].GroupAccount);
+          iTempColor := getInvoiceMadeColor(FReservationsModel.Reservations[iRes].Rooms[iRoom].PaymentInvoice,
+            round(FReservationsModel.Reservations[iRes].Rooms[iRoom].OngoingRent) <> 0, Brush.Color, clWhite, clAqua,
+            FReservationsModel.Reservations[iRes].Rooms[iRoom].GroupAccount);
           DrawRectanglOnCanvas(Grid.Canvas, iTempColor, chRect);
         end;
 
       end
-      else // Búið að skrifa gest
+      else // Bï¿½iï¿½ aï¿½ skrifa gest
         if (ACol = Splitter) then
         begin
           Brush.Color := clBtnFace;
@@ -8369,7 +7415,8 @@ begin
 
                   iTemp := Grid.Canvas.TextHeight(Grid.cells[ACol, ARow]);
 
-                  ExtTextOut(handle, Rect.Left + 2, (Rect.Top + Rect.Bottom) div 2 - iTemp div 2, ETO_CLIPPED or ETO_OPAQUE, @Rect,
+                  ExtTextOut(handle, Rect.Left + 2, (Rect.Top + Rect.Bottom) div 2 - iTemp div 2,
+                    ETO_CLIPPED or ETO_OPAQUE, @Rect,
                     PChar(Grid.cells[ACol, ARow]), length(Grid.cells[ACol, ARow]), nil);
                   exit;
                 end;
@@ -8440,13 +7487,30 @@ begin
           FillRect(Rect);
           iTemp := Grid.Canvas.TextHeight(Grid.cells[ACol, ARow]);
 
-          ExtTextOut(handle, Rect.Left + 2, (Rect.Top + Rect.Bottom) div 2 - iTemp div 2, ETO_CLIPPED or ETO_OPAQUE, @Rect, PChar(Grid.cells[ACol, ARow]),
+          ExtTextOut(handle, Rect.Left + 2, (Rect.Top + Rect.Bottom) div 2 - iTemp div 2, ETO_CLIPPED or ETO_OPAQUE,
+            @Rect, PChar(Grid.cells[ACol, ARow]),
             length(Grid.cells[ACol, ARow]), nil);
 
         end;
       end;
     except
     end;
+  end;
+end;
+
+procedure TfrmMain.FormatToReservationAttrib(aCanvas: TCanvas; const aAttrib: recStatusAttr);
+begin
+  with aCanvas do
+  begin
+    Brush.Color := aAttrib.BackgroundColor;
+    Font.Color := aAttrib.fontColor;
+    Font.Style := [];
+    if aAttrib.isBold then
+      Font.Style := Font.Style + [fsBold];
+    if aAttrib.isItalic then
+      Font.Style := Font.Style + [fsItalic];
+    if aAttrib.isStrikeOut then
+      Font.Style := Font.Style + [fsStrikeOut];
   end;
 end;
 
@@ -8470,28 +7534,16 @@ begin
 
   timKillDrag.Enabled := false;
 
-  zOneDay_bMouseDown := false;
+  FOneDay_bMouseDown := false;
 
   if ActiveGrid.dragging then
     ActiveGrid.EndDrag(false);
 end;
 
-procedure TfrmMain.timLogoutTimer(Sender: TObject);
-begin
-  frmMain.timLogout.Enabled := false;
-  frmMain.btnLogOutClick(nil);
-end;
-
 procedure TfrmMain.timMessagesTimer(Sender: TObject);
 var
-  RoomerMessage: TRoomerMessage;
-  systemMessage, anySystemMessage: boolean;
-  RoomerMessageType: TRoomerMessageType;
-  i: integer;
   iMinute: integer;
 
-  ResList: TStrings;
-  CancelList: TStrings;
 begin
   // exit;
   FMessagesBeingDownloaded := true;
@@ -8511,15 +7563,13 @@ begin
 
       g.RefreshRoomList;
 
-      anySystemMessage := false;
-
       if NOT OffLineMode then
       begin
         iMinute := StrToInt(FormatDateTime('n', now));
         if iMinute IN [0] then
           glb.ReloadPreviousGuests;
         RoomerMessages.Refresh;
-        postMessage(handle, WM_REFRESH_MESSAGES, 0, 0);
+        PostMessage(handle, WM_REFRESH_MESSAGES, 0, 0);
       end;
     except
 
@@ -8542,10 +7592,11 @@ var
 begin
   // exit;
   lblCacheNotification.Visible := true;
+  anySystemMessage := false;
   try
+    ResList := TStringList.Create;
+    CancelList := TStringList.Create;
     try
-      ResList := TStringList.Create;
-      CancelList := TStringList.Create;
       try
         for i := RoomerMessages.Count - 1 downto 0 do
         begin
@@ -8572,7 +7623,8 @@ begin
               RoomerMessageType := rmtUnknown;
             if RoomerMessageType <> rmtUnknown then
             begin
-              FrmMessagesTemplates.AddMessage(RoomerMessageType, RoomerMessage.TheMessage, '', inttostr(RoomerMessage.id));
+              FrmMessagesTemplates.AddMessage(RoomerMessageType, RoomerMessage.TheMessage, '',
+                inttostr(RoomerMessage.id));
               RoomerMessages.Delete(i);
             end;
           end;
@@ -8616,21 +7668,20 @@ begin
   try
     d.GenerateOfflineReports;
 
-{$ifdef Debug}
-    TTimer(sender).Interval := 3 * TIM_MINUTE; // 3 min for debugging
-{$else}
-    TTimer(sender).Interval := TIM_HALF_HOUR; // 30 min normal
-{$endif}
-
+{$IFDEF Debug}
+    TTimer(Sender).Interval := 3 * TIM_MINUTE; // 3 min for debugging
+{$ELSE}
+    TTimer(Sender).Interval := TIM_HALF_HOUR; // 30 min normal
+{$ENDIF}
   finally
-    TTimer(Sender).Enabled := True;
+    TTimer(Sender).Enabled := true;
   end;
 end;
 
 procedure TfrmMain.timRetryRefreshTimer(Sender: TObject);
 begin
   timRetryRefresh.Enabled := false;
-  RefreshGrid(timRetryRefresh.Tag);
+  RefreshGrid;
 end;
 
 procedure TfrmMain.timSearchTimer(Sender: TObject);
@@ -8653,7 +7704,7 @@ begin
   // Reservation Index
   idxRoomReservation := zOneDayResPointers[iDragCell.Y].ptrRooms[OneDay_GetIsLeftOrRight(iDragCell.X), 2];
   // Rooms Index
-  iRoomReservation := ReservationsModel.Reservations[idxReservation].Rooms[idxRoomReservation].RoomRes;
+  iRoomReservation := FReservationsModel.Reservations[idxReservation].Rooms[idxRoomReservation].RoomRes;
 
   // if ACol > 6 then
   // ACol := 7
@@ -8661,11 +7712,11 @@ begin
   // ACol := 0;
 
   MoveToRoomEnh2(iRoomReservation, '');
-  zDebug1 := '160';
   RefreshGrid;
 end;
 
-procedure TfrmMain.pnlNoRoomDropDragOver(Sender, Source: TObject; X, Y: integer; State: TDragState; var Accept: boolean);
+procedure TfrmMain.pnlNoRoomDropDragOver(Sender, Source: TObject; X, Y: integer; State: TDragState;
+  var Accept: boolean);
 begin
   Accept := false;
   if Source is TAdvStringGrid then
@@ -8692,10 +7743,6 @@ begin
 
 end;
 
-procedure TfrmMain.pnlRoomerLogoMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
-begin
-end;
-
 
 /// /////////////////////////////////////////////////////////////////////////////
 /// /////////////////////////////////////////////////////////////////////////////
@@ -8704,42 +7751,9 @@ end;
 
 // ------------------------------------------------------------------------------
 
-procedure TfrmMain.Period_setColCount(nights: integer);
-var
-  s: string;
+procedure TfrmMain.grPeriodRoomsGetCellColor(Sender: TObject; ARow, ACol: integer; AState: TGridDrawState;
+  ABrush: TBrush; AFont: TFont);
 begin
-  if pageMainGrids.ActivePage = tabPeriod then
-  begin
-    zNights := nights;
-    zDateTo := zDateFrom + nights;
-    dateTimeToString(s, 'dd.mm.yyyy', zDateTo);
-    grPeriodRooms.ColCount := zNights + grPeriodRooms.FixedCols;
-    grPeriodRooms_NO.ColCount := grPeriodRooms.ColCount;
-    zDebug1 := '170';
-    RefreshGrid;
-  end;
-end;
-
-procedure TfrmMain.grPeriodRoomsGetCellColor(Sender: TObject; ARow, ACol: integer; AState: TGridDrawState; ABrush: TBrush; AFont: TFont);
-var
-  rec: recStatusAttr;
-  BColor: TColor;
-  FColor: TColor;
-
-  status: string;
-  AscIndex: integer;
-  DescIndex: integer;
-
-  weekDay: integer;
-  colDate: Tdate;
-
-  // fStyle: TFontStyles;
-
-  _grid: TAdvStringGrid;
-begin
-  _grid := TAdvStringGrid(Sender);
-  colDate := Period_ColToDate(ACol);
-  weekDay := dayOfWeek(colDate);
   if cbxViewTypes.ItemIndex > 0 then
   begin
     AFont.name := 'Segoe UI';
@@ -8783,7 +7797,8 @@ begin
     exit;
   end;
 
-  if (ACol > grPeriodRooms.FixedCols - 1) and (ARow > grPeriodRooms.FixedRows - 1) and ((ARow <> grPeriodRooms.RowCount - 1) OR grPeriodViewFilterOn) then
+  if (ACol > grPeriodRooms.FixedCols - 1) and (ARow > grPeriodRooms.FixedRows - 1) and
+    ((ARow <> grPeriodRooms.RowCount - 1) OR grPeriodViewFilterOn) then
   begin
 
     if SearchActive then
@@ -8805,21 +7820,10 @@ begin
     end
     else
     begin
-      FColor := clRed;
-      BColor := clRed;
-
-      if weekDay IN [1, 7] then
-      begin
-        if cbxViewTypes.ItemIndex = 0 then
-          ABrush.Color := HexToTColor('FFC2C2')
-        else
-          ABrush.Color := HexToTColor('F7F7F7');
-      end;
-
-      // if weekDay = 7 then
-      // begin
-      // ABrush.Color := HexToTColor('FFDCDC');
-      // end;
+      if cbxViewTypes.ItemIndex = 0 then
+        ABrush.Color := HexToTColor('FFC2C2')
+      else
+        ABrush.Color := HexToTColor('F7F7F7');
 
     end;
   end;
@@ -8830,7 +7834,7 @@ procedure TfrmMain.grPeriodRoomsGridHint(Sender: TObject; ARow, ACol: integer; v
 var
   ARect: TRect;
 begin
-  if (g.qShowhint OR (HintStr = 'FORCE')) AND (NOT zPeriod_bMouseDown) then
+  if (g.qShowhint OR (HintStr = 'FORCE')) AND (NOT FPeriod_bMouseDown) then
   begin
     ARect := TAdvStringGrid(Sender).CellRect(ACol, ARow);
     HintStr := Period_CheckHint(Sender, ARect.Left + 1, ARect.Top + 1);
@@ -8848,20 +7852,6 @@ begin
     exit;
 
   zGridTag := (Sender as TAdvStringGrid).Tag;
-
-  // if (ACol = 0) and (ARow = 1) then
-  // begin
-  // tabsView.TabIndex := 0;
-  // pageMainGrids.ActivePage := tabOneDayView;
-  // pageMainGridsChange(pageMainGrids);
-  // exit;
-  // end;
-  //
-  // if (ACol = 0) and (ARow = 0) then
-  // begin
-  // btnRefreshOneDay.Click;
-  // exit;
-  // end;
 
   aDate := Period_ColToDate(ACol);
   timGetRoomStatuses.Tag := trunc(aDate);
@@ -8891,13 +7881,15 @@ begin
 
 end;
 
-procedure TfrmMain.grPeriodRoomsGetAlignment(Sender: TObject; ARow, ACol: integer; var HAlign: TAlignment; var VAlign: TVAlignment);
+procedure TfrmMain.grPeriodRoomsGetAlignment(Sender: TObject; ARow, ACol: integer; var HAlign: TAlignment;
+  var VAlign: TVAlignment);
 begin
   if (ACol IN [1, 2]) OR (ARow IN [0, 1]) then
     VAlign := tvaCenter;
 end;
 
-procedure TfrmMain.grPeriodRoomsGetCellBorder(Sender: TObject; ARow, ACol: integer; APen: TPen; var Borders: TCellBorders);
+procedure TfrmMain.grPeriodRoomsGetCellBorder(Sender: TObject; ARow, ACol: integer; APen: TPen;
+  var Borders: TCellBorders);
 var
   status: string;
   AscIndex: integer;
@@ -8906,8 +7898,6 @@ var
   borderColor: TColor;
 
   Left, Top, Right, Bottom: integer;
-
-  rri: RecRRInfo;
 
 begin
   APen.Style := psSolid;
@@ -8920,20 +7910,11 @@ begin
   begin
     APen.Color := clSilver; // BorderColor;
     APen.Width := 3;
-    // LeftPen.Color := clRed;
-    // LeftPen.Width := 3;
-    // TopPen.Color := clRed;
-    // TopPen.Width := 3;
-    // RightPen.Color := clRed;
-    // RightPen.Width := 3;
-    // BottomPen.Color := clRed;
-    // BottomPen.Width := 3;
   end
-  else if (ACol >= grPeriodRooms.FixedCols) and (ARow >= grPeriodRooms.FixedRows) and ((ARow <> grPeriodRooms.RowCount - 1) OR grPeriodViewFilterOn) then
+  else if (ACol >= grPeriodRooms.FixedCols) and (ARow >= grPeriodRooms.FixedRows) and
+    ((ARow <> grPeriodRooms.RowCount - 1) OR grPeriodViewFilterOn) then
   begin
-    // Borders :=  [cbLeft,cbTop,cbBottom, cbTop];
     Borders := [];
-    // APen.Color := clltGray;
     APen.Width := 1;
 
     if Period_GetResStatus(TAdvStringGrid(Sender), ACol, ARow, status, AscIndex, DescIndex) then
@@ -8941,17 +7922,6 @@ begin
       if ResObjToBorder(status, AscIndex, DescIndex, borderColor, Left, Top, Right, Bottom) then
       begin
         Borders := [];
-        // if Left > 0 then
-        // Borders := Borders + [cbLeft];
-        // if Top > 0 then
-        // Borders := Borders + [cbTop];
-        // if Bottom > 0 then
-        // Borders := Borders + [cbBottom];
-        // if Right > 0 then
-        // Borders := Borders + [cbRight];
-
-        // rri := Period_GetResInfo(ACol, ARow, 1);
-        // APen.color := getChannelColorByChannel(rri.Channel);
         APen.Color := clBlack; // BorderColor;
         APen.Style := psClear;
         APen.Width := 1;
@@ -8965,36 +7935,6 @@ begin
   zDateFrom := trunc(dtDate.Date);
   zDateTo := zDateFrom + zNights;
   PostMessage(handle, WM_REFRESH_DATE, 0, 0);
-
-  // RefreshGrid; // StartOneDay;
-
-  // RefreshGrid;
-
-  // if ViewMode = vmPeriod then
-  // begin
-  // zdebug1 := '190';
-  // RefreshGrid;
-  /// /        RefreshGrid;
-  // end else
-  // if ViewMode = vmOneDay then
-  // begin
-  // if zStartOneDay then
-  // begin
-  // g.qDebug1 := 'dtDateChange(Sender : TObject)';
-  // startOneDay;
-  // end;
-  // end else
-  // if ViewMode = vmGuestList then
-  // begin
-  // refreshGuestList
-  // end;
-  //
-  // zStartOneDay := false;
-end;
-
-procedure TfrmMain.grPeriodRoomsEndColumnSize(Sender: TObject; ACol: integer);
-begin
-  Period_RestoreColumnSize;
 end;
 
 procedure TfrmMain.grPeriodRoomsEnter(Sender: TObject);
@@ -9017,7 +7957,7 @@ const
   iExtraSpace = PERIOD_GRID_RECTANGLES_WIDTH;
 begin
 
-  zPeriod_bMouseDown := false;
+  FPeriod_bMouseDown := false;
   if grPeriodViewFilterOn then
   begin
     isFiltering := grPeriodViewFilterOn;
@@ -9049,13 +7989,6 @@ begin
 
     exit;
   end;
-  // else
-  // if grPeriodViewFilterOn then
-  // begin
-  // ShowAllRoomsRows;
-  // btnRefreshOneDay.Click;
-  // exit;
-  // end;
 
   _grid := (Sender as TAdvStringGrid);
   zGridTag := _grid.Tag;
@@ -9072,14 +8005,10 @@ begin
     Point.Y := Rect.Top;
     Point := grPeriodRooms.ClientToScreen(Point);
     SetRoomCleanAndMaintenanceStatus(grPeriodRooms.cells[ACol, ARow], Point.X, Point.Y);
-    // SetRoomStatus(grOneDayRooms.cells[grOneDayRooms.col, grOneDayRooms.row], Point.X, Point.Y);
 
-    zOneDay_bMouseDown := false;
+    FOneDay_bMouseDown := false;
     if grPeriodRooms.dragging then
       grPeriodRooms.EndDrag(false);
-    // RefreshGrid();
-    // grPeriodRooms.Invalidate;
-    // tabsViewChange(tabsView);
     FillPeriodGridWithRooms;
     AutoSizePeriodColumns;
   end
@@ -9091,10 +8020,10 @@ begin
     end
     else
 
-      if (HoverPointPeriod.X >= Rect.Right - 2 - (iExtraSpace * 2)) AND (HoverPointPeriod.X <= Rect.Right - 1 - iExtraSpace) then
+      if (HoverPointPeriod.X >= Rect.Right - 2 - (iExtraSpace * 2)) AND
+      (HoverPointPeriod.X <= Rect.Right - 1 - iExtraSpace) then
     begin
       rri := Period_GetResInfo(ACol, ARow, _grid.Tag);
-      // rri := Period_GetResInfo;
       iReservation := rri.Reservation;
       iRoomReservation := rri.RoomReservation;
 
@@ -9103,12 +8032,10 @@ begin
         if rri.GroupAccount then
         begin
           ShowFinishedInvoices2(itPerReservation, '', iReservation);
-          // btnClosedInvoicesThisreservation.Click
         end
         else
         begin
           ShowFinishedInvoices2(itPerRoomRes, '', iRoomReservation);
-          // btnClosedInvoicesThisRoom.Click;
         end;
       end
       else if rri.GroupAccount then
@@ -9118,7 +8045,8 @@ begin
     end
     else
 
-      if (HoverPointPeriod.X >= Rect.Right - 3 - (iExtraSpace * 3)) AND (HoverPointPeriod.X <= Rect.Right - 2 - (iExtraSpace * 2)) then
+      if (HoverPointPeriod.X >= Rect.Right - 3 - (iExtraSpace * 3)) AND
+      (HoverPointPeriod.X <= Rect.Right - 2 - (iExtraSpace * 2)) then
     begin
       btnRoomInvoice.Click;
     end
@@ -9137,7 +8065,7 @@ begin
     1:
       begin
         DisplayStatusses(true);
-        if Assigned(frmDaysStatistics) then
+        if assigned(frmDaysStatistics) then
         begin
           frmDaysStatistics.BeingViewed := false;
           FrmRateQuery.BeingViewed := false;
@@ -9275,7 +8203,6 @@ begin
     tabsView.TabIndex := 0;
 
   pageMainGrids.ActivePage := tabOneDayView;
-  zDebug1 := '200';
   RefreshGrid;
 end;
 
@@ -9306,9 +8233,8 @@ begin
     if (LowerCase(ParameterByName('KeepAlive')) <> 'true') then
     begin
       lblAuthStatus.Caption := GetTranslatedText('shTx_Main_AutoLoggedOff');
-      btnLogOutClick(nil);
-    end
-    else
+      lblLogOutClick(nil);
+    end else
     begin
       res := d.roomerMainDataSet.KeepSessionAlive;
     end;
@@ -9359,8 +8285,6 @@ var
 
   dcField: TField;
 begin
-  // grdRoomStatusses.DefaultColWidth := (grdRoomStatusses.ClientWidth) div 3;
-  // grdRoomClasses.DefaultColWidth := grdRoomStatusses.DefaultColWidth;
   try
     if lastDate = Date then
       exit;
@@ -9390,7 +8314,6 @@ begin
           grdRoomClasses.cells[2, i] := grdRoomClasses.cells[1, i];
           grdRoomClasses.cells[3, i] := inttostr(DEFAULT_UNPARSABLE_INT_VALUE);
           StatusCont := availListContainer[i - 1];
-          // TRoomClassChannelAvailabilityContainer(grdRoomClasses.Objects[3, i]);
           StatusCont.Reserved := 0;
         end;
 
@@ -9400,27 +8323,13 @@ begin
           if idx >= 0 then
           begin
             sText := inttostr(StrToInt(grdRoomStatusses.cells[1, idx]) - rSet['Reserved']);
-            // GetAvailableCellText(strtoint(grdRoomStatusses.Cells[1, idx]) - rSet['Reserved']);
             grdRoomStatusses.cells[2, idx] := sText;
           end;
           idx := RoomTypeIndexInGrid(grdRoomClasses, rSet['RoomTypeGroup']);
           if idx >= 0 then
           begin
-            ChAvail := 0;
-            chAvailMax := 0;
             AnyStop := false;
-            // dcField := rSet.Fields.FindField('directConnection');
-            // if (NOT Assigned(dcField)) then
-            // begin
             ChAvail := rSet['ChannelAvailable'];
-            // end else
-            // if (NOT rSet['directConnection']) then
-            // begin
-            // if rSet.Fields.FindField('ChannelAvailable') <> nil then
-            // ChAvail := rSet['ChannelAvailable'];
-            // end else
-            // if rSet.Fields.FindField('DirectChannelAvailable') <> nil then
-            // ChAvail := rSet['DirectChannelAvailable'];
 
             chAvailMax := rSet['ChannelMaxAvailable'];
             if rSet.Fields.FindField('anyStop') <> nil then
@@ -9446,8 +8355,6 @@ begin
           end;
           rSet.next;
         end;
-        // for i := 1 to grdRoomClasses.RowCount - 1 do
-        // grdRoomClasses.Cells[2, i] := GetAvailableCellText(strtoint(grdRoomClasses.Cells[2, i]));
       finally
         freeandNil(rSet);
       end;
@@ -9463,7 +8370,6 @@ end;
 function TfrmMain.GetAvailableCellText(Value: integer): String;
 var
   sColor, sText: String;
-  iRes: integer;
 begin
   sText := inttostr(Value);
   if Value < 0 then
@@ -9475,7 +8381,7 @@ begin
   result := Format('<p align="right"><font color="%s" size="7"><b>%s</b></font></p>', [sColor, sText]);
 end;
 
-function TfrmMain.RoomTypeIndexInGrid(Grid: TAdvStringGrid; RoomType: String): integer;
+function TfrmMain.RoomTypeIndexInGrid(Grid: TAdvStringGrid; const RoomType: String): integer;
 var
   i: integer;
 begin
@@ -9541,38 +8447,6 @@ begin
   grPeriodRooms.RowCount := grPeriodRooms.RowCount + g.oRooms.RoomCount;
   FillPeriodGridWithRooms;
 
-  (*
-
-    //      Rooms := TRoom.Create('', '');
-    //      try
-    zRoomsOBJ.Refresh('','Room');
-    grPeriodRooms.ClearRows(grPeriodRooms.RowCount - 1, 1);
-
-    startRow := grPeriodRooms.RowCount;
-    RowIndex := startRow - 2;
-
-    zRoomsOBJ.qMT_.first;
-    while not zRoomsOBJ.qMT_.eof do
-    begin
-    inc(RowIndex);
-
-    status := zRoomsOBJ.qMT_.FieldByName('Status').asString;
-    grPeriodRooms.Objects[grRoom_Room, RowIndex] := TRoomCell.Create(status);
-
-    grPeriodRooms.cells[grRoom_Room, RowIndex] := zRoomsOBJ.qMT_.FieldByName('Room').asString;
-    grPeriodRooms.cells[grRoom_RoomType, RowIndex] := zRoomsOBJ.qMT_.FieldByName('RoomType').asString;
-    if zShowRoomDescription then
-    begin
-    grPeriodRooms.cells[grRoom_RoomDescription, RowIndex] := zRoomsOBJ.qMT_.FieldByName('RoomDescription').asString;
-    end;
-    grPeriodRooms.AddRow;
-    zRoomsOBJ.qMT_.next;
-    end;
-    //      finally
-    //      freeandnil(Rooms);
-    //      end;
-
-  *)
 end;
 
 procedure TfrmMain.Period_SetDateHeads;
@@ -9613,8 +8487,6 @@ begin
         end;
       except
       end;
-      // grPeriodRooms.Objects[i, ii].free ;
-      // grPeriodRooms.Objects[i, ii] := nil ;
     end;
   end;
 
@@ -9626,32 +8498,12 @@ begin
   begin
     for ii := grPeriodRooms.FixedRows to grPeriodRooms.RowCount - 2 do
     begin
-      grPeriodRooms.Objects[i, ii] := TresCell.Create(-1, -1, -1, -1, -1, -1, false, '', '', '', '', false, 1, '', '', '', '', '', '', '', '', '', 0.00, 0.00,
+      grPeriodRooms.Objects[i, ii] := TresCell.Create(-1, -1, -1, -1, -1, -1, false, '', '', '', '', false, 1, '', '',
+        '', '', '', '', '', '', '', 0.00, 0.00,
         false, false, 0, '', false, false, '', 0, 0, 0, '', '', 0, 0);
     end;
   end;
 
-end;
-
-function TfrmMain.AnyPeriodRowsMinimized: boolean;
-var
-  i: integer;
-begin
-  result := false;
-  for i := grPeriodRooms.FixedRows to grPeriodRooms.RowCount - 1 do
-    if grPeriodRooms.RowHeights[i] = 0 then
-    begin
-      result := true;
-      break;
-    end;
-
-  if NOT result then
-    for i := grPeriodRooms_NO.FixedRows to grPeriodRooms_NO.RowCount - 1 do
-      if grPeriodRooms_NO.RowHeights[i] = 0 then
-      begin
-        result := true;
-        break;
-      end;
 end;
 
 procedure TfrmMain.ShowAllPeriodRows;
@@ -9696,7 +8548,7 @@ var
   GuestName: string;
 
   OutOfOrderBlocking, BlockMove: boolean;
-  BlockMoveReason : String;
+  BlockMoveReason: String;
 
   procedure CleanEnds(Days: integer; Grid: TAdvStringGrid);
   var
@@ -9712,7 +8564,8 @@ var
             (Grid.Objects[iCol, iRow] AS TresCell).Free;
           except
           end;
-        Grid.Objects[iCol, iRow] := TresCell.Create(-1, -1, -1, -1, -1, -1, false, '', '', '', '', false, 1, '', '', '', '', '', '', '', '', '', 0.00, 0.00,
+        Grid.Objects[iCol, iRow] := TresCell.Create(-1, -1, -1, -1, -1, -1, false, '', '', '', '', false, 1, '', '', '',
+          '', '', '', '', '', '', 0.00, 0.00,
           false, false, 0, '', false, false, '', 0, 0, 0, '', '', 0, 0);
       end;
     exit;
@@ -9722,17 +8575,6 @@ var
 
     if Days < 0 then
     begin
-      // Remove Onjects that will be going out of screen
-      // for iCol := grid.ColCount - ABS(Days) to grid.ColCount - 1 do
-      // for iRow := 0 to grid.RowCount - 1 do
-      // begin
-      // if grid.Objects[iCol, iRow] <> nil then
-      // begin
-      // TresCell(grid.Objects[iCol, iRow]).free;
-      // grid.Objects[iCol, iRow] := nil;
-      // end;
-      // end;
-      // grid.InsertCols(grid.FixedCols, Days);
       for iDay := 1 to ABS(Days) do
       begin
         for iCol := Grid.ColCount - 2 downto Grid.FixedCols do
@@ -9746,24 +8588,14 @@ var
         for iRow := 0 to Grid.RowCount - 1 do
         begin
           Grid.cells[Grid.FixedCols, iRow] := '';
-          Grid.Objects[Grid.FixedCols, iRow] := TresCell.Create(-1, -1, -1, -1, -1, -1, false, '', '', '', '', false, 1, '', '', '', '', '', '', '', '', '',
-            0.00, 0.00, false, false, 0, '', false, false, '', 0, 0, 0,'', '', 0, 0);
+          Grid.Objects[Grid.FixedCols, iRow] := TresCell.Create(-1, -1, -1, -1, -1, -1, false, '', '', '', '', false, 1,
+            '', '', '', '', '', '', '', '', '',
+            0.00, 0.00, false, false, 0, '', false, false, '', 0, 0, 0, '', '', 0, 0);
         end;
       end;
     end
     else if Days > 0 then
     begin
-      // Remove Onjects that will be going out of screen
-      // for iCol := grid.FixedCols to grid.FixedCols + Days - 1 do
-      // for iRow := 0 to grid.RowCount - 1 do
-      // begin
-      // if grid.Objects[iCol, iRow] <> nil then
-      // begin
-      // TresCell(grid.Objects[iCol, iRow]).free;
-      // grid.Objects[iCol, iRow] := nil;
-      // end;
-      // end;
-      // grid.InsertCols(grid.FixedCols, Days);
       for iDay := 1 to ABS(Days) do
       begin
         for iCol := Grid.FixedCols to Grid.ColCount - 2 do
@@ -9777,7 +8609,8 @@ var
         for iRow := 0 to Grid.RowCount - 1 do
         begin
           Grid.cells[Grid.ColCount - 1, iRow] := '';
-          Grid.Objects[Grid.ColCount - 1, iRow] := TresCell.Create(-1, -1, -1, -1, -1, -1, false, '', '', '', '', false, 1, '', '', '', '', '', '', '', '', '',
+          Grid.Objects[Grid.ColCount - 1, iRow] := TresCell.Create(-1, -1, -1, -1, -1, -1, false, '', '', '', '', false,
+            1, '', '', '', '', '', '', '', '', '',
             0.00, 0.00, false, false, 0, '', false, false, '', 0, 0, 0, '', '', 0, 0);
         end;
       end;
@@ -9803,12 +8636,12 @@ var
 
   OngoingTaxes, OngoingSale, OngoingRent: Double;
 
-  round : Integer;
-  StatusCancelled : Boolean;
+  round: integer;
+  StatusCancelled: boolean;
 
-  numUnassigned : Integer;
+  numUnassigned: integer;
 
-  InvoiceIndex : Integer;
+  InvoiceIndex: integer;
 
 begin
 
@@ -9853,12 +8686,11 @@ begin
     begin
 
       rdOBJ.qMT_.first;
-      i := 0;
       while NOT rdOBJ.qMT_.eof do
       begin
         resFlag := rdOBJ.qMT_.FieldByName('resFlag').asString;
-        StatusCancelled := UpperCase(copy(resFlag, 1, 1)) = 'C';
-        if (round = ABS(ORD(StatusCancelled))) then
+        StatusCancelled := UpperCase(Copy(resFlag, 1, 1)) = 'C';
+        if (round = ABS(Ord(StatusCancelled))) then
         begin
           RoomReservation := rdOBJ.qMT_.FieldByName('RoomReservation').asinteger;
           Reservation := rdOBJ.qMT_.FieldByName('Reservation').asinteger;
@@ -9894,14 +8726,11 @@ begin
           GuestName := rdOBJ.qMT_.FieldByName('Guestname').asString;
           OutOfOrderBlocking := rdOBJ.qMT_.FieldByName('OutOfOrderBlocking').AsBoolean;
           BlockMove := rdOBJ.qMT_.FieldByName('BlockMove').AsBoolean;
-          BlockMoveReason := rdOBJ.qMT_.FieldByName('BlockMoveReason').AsString;
+          BlockMoveReason := rdOBJ.qMT_.FieldByName('BlockMoveReason').asString;
           OngoingSale := rdOBJ.qMT_.FieldByName('TotalNoRent').AsFloat;
           OngoingTaxes := rdOBJ.qMT_.FieldByName('TotalTaxes').AsFloat;
           OngoingRent := rdOBJ.qMT_.FieldByName('TotalRent').AsFloat;
-          InvoiceIndex := rdOBJ.qMT_.FieldByName('InvoiceIndex').AsInteger;
           dt := rdOBJ.qMT_.FieldByName('rdDate').AsDateTime;
-
-          inc(i);
 
           if (isNoRoom = false) then
           begin
@@ -9913,10 +8742,10 @@ begin
               try
                 grPeriodRooms.cells[cords.col, cords.row] := s;
               except
-    {$IFDEF DEBUG}
+{$IFDEF DEBUG}
                 on E: Exception do
                   MessageDlg('Room: ' + Room + #13#13 + E.message, mtError, [mbOk], 0);
-    {$ENDIF}
+{$ENDIF}
               end;
 
               try
@@ -9925,23 +8754,29 @@ begin
                   TresCell(grPeriodRooms.Objects[cords.col, cords.row]).Free;
                 end;
               except
-                showmessage( { 1080 } GetTranslatedText('sh1080') + #10 + Room + #10 + inttostr(cords.col) + '/1 ' + inttostr(cords.row));
+                ShowMessage( { 1080 } GetTranslatedText('sh1080') + #10 + Room + #10 + inttostr(cords.col) + '/1 ' +
+                  inttostr(cords.row));
               end;
 
               try
-                grPeriodRooms.Objects[cords.col, cords.row] := TresCell.Create(RoomReservation, Reservation, Channel, PaymentInvoice, AscIndex, DescIndex,
-                  GroupAccount, Room, RoomType, resFlag, CustomerName, isNoRoom, dt, Information, Fax, Tel2, Tel1, GuestName1, PMInfo, PriceType, Currency,
-                  BookingId, Price, Discount, Percentage, ItemsOnInvoice, numGuests, RoomClass, OutOfOrderBlocking, BlockMove, BlockMoveReason, OngoingSale, OngoingRent,
-                  OngoingTaxes, rdOBJ.qMT_['Invoices'], rdOBJ.qMT_['Guarantee'], rdOBJ.qMT_['TotalPayment'], rdOBJ.qMT_['InvoiceIndex']);
+                grPeriodRooms.Objects[cords.col, cords.row] := TresCell.Create(RoomReservation, Reservation, Channel,
+                  PaymentInvoice, AscIndex, DescIndex,
+                  GroupAccount, Room, RoomType, resFlag, CustomerName, isNoRoom, dt, Information, Fax, Tel2, Tel1,
+                  GuestName1, PMInfo, PriceType, Currency,
+                  BookingId, Price, Discount, Percentage, ItemsOnInvoice, numGuests, RoomClass, OutOfOrderBlocking,
+                  BlockMove, BlockMoveReason, OngoingSale, OngoingRent,
+                  OngoingTaxes, rdOBJ.qMT_['Invoices'], rdOBJ.qMT_['Guarantee'], rdOBJ.qMT_['TotalPayment'],
+                  rdOBJ.qMT_['InvoiceIndex']);
               except
-    {$IFDEF DEBUG}
+{$IFDEF DEBUG}
                 on E: Exception do
                   MessageDlg(E.message, mtError, [mbOk], 0);
-    {$ENDIF}
+{$ENDIF}
               end;
             end;
 
-          end else
+          end
+          else
           begin // is No Room
             cords.col := Period_DateToCol(dt);
             if (cords.col < grPeriodRooms_NO.ColCount) then
@@ -9962,10 +8797,11 @@ begin
               begin
                 cords.row := grPeriodRooms_NO.RowCount - 1;
                 grPeriodRooms_NO.AddRow;
-                grPeriodRooms_NO.RowHeights[grPeriodRooms_NO.RowCount - 1] := getRowHeightFromIndex(cbxViewTypes.ItemIndex);
+                grPeriodRooms_NO.RowHeights[grPeriodRooms_NO.RowCount - 1] :=
+                  getRowHeightFromIndex(cbxViewTypes.ItemIndex);
                 grNoRooms_FillEmptyResRow(grPeriodRooms_NO.RowCount - 1);
 
-                numUnassigned := numUnassigned + ABS(ORD((NOT StatusCancelled)));
+                numUnassigned := numUnassigned + ABS(Ord((NOT StatusCancelled)));
                 // Initilize the new row
               end;
 
@@ -9986,19 +8822,24 @@ begin
                   (grPeriodRooms_NO.Objects[cords.col, cords.row] as TresCell).Free;
                 end;
               except
-                showmessage( { 1081 } GetTranslatedText('sh1081') + ' ' + #10 + Room + #10 + inttostr(cords.col) + '/2 ' + inttostr(cords.row));
+                ShowMessage( { 1081 } GetTranslatedText('sh1081') + ' ' + #10 + Room + #10 + inttostr(cords.col) + '/2 '
+                  + inttostr(cords.row));
               end;
 
               try
-                grPeriodRooms_NO.Objects[cords.col, cords.row] := TresCell.Create(RoomReservation, Reservation, Channel, PaymentInvoice, AscIndex, DescIndex,
-                  GroupAccount, Room, RoomType, resFlag, CustomerName, isNoRoom, dt, Information, Fax, Tel2, Tel1, GuestName1, PMInfo, PriceType, Currency, BookingId,
-                  Price, Discount, Percentage, ItemsOnInvoice, numGuests, RoomClass, OutOfOrderBlocking, BlockMove, BlockMoveReason, OngoingSale, OngoingRent, OngoingTaxes,
-                  rdOBJ.qMT_['Invoices'], rdOBJ.qMT_['Guarantee'], rdOBJ.qMT_['TotalPayment'], rdOBJ.qMT_['TotalPayment']);
+                grPeriodRooms_NO.Objects[cords.col, cords.row] := TresCell.Create(RoomReservation, Reservation, Channel,
+                  PaymentInvoice, AscIndex, DescIndex,
+                  GroupAccount, Room, RoomType, resFlag, CustomerName, isNoRoom, dt, Information, Fax, Tel2, Tel1,
+                  GuestName1, PMInfo, PriceType, Currency, BookingId,
+                  Price, Discount, Percentage, ItemsOnInvoice, numGuests, RoomClass, OutOfOrderBlocking, BlockMove,
+                  BlockMoveReason, OngoingSale, OngoingRent, OngoingTaxes,
+                  rdOBJ.qMT_['Invoices'], rdOBJ.qMT_['Guarantee'], rdOBJ.qMT_['TotalPayment'],
+                  rdOBJ.qMT_['TotalPayment']);
               except
-      {$IFDEF DEBUG}
+{$IFDEF DEBUG}
                 on E: Exception do
                   MessageDlg(E.message, mtError, [mbOk], 0);
-      {$ENDIF}
+{$ENDIF}
               end;
             end;
           end;
@@ -10010,7 +8851,7 @@ begin
     rdOBJ.Free;
   end;
 
-  btnUnassignedReservations.Caption := format(GetTranslatedText('shTx_FrmMain_UnassignedItemsButton'), [numUnassigned]);
+  btnUnassignedReservations.Caption := Format(GetTranslatedText('shTx_FrmMain_UnassignedItemsButton'), [numUnassigned]);
   ApplyFiltersToPeriodView(grPeriodRooms);
   ApplyFiltersToPeriodView(grPeriodRooms_NO);
 end;
@@ -10062,7 +8903,6 @@ end;
 function TfrmMain.FilterPassededForPeriodData(Room: TresCell): boolean;
 // Reservation : TSingleReservations) : Boolean;
 var
-  i, I1: integer;
   s: String;
   resultGroup, resultSearch: boolean;
 begin
@@ -10081,7 +8921,8 @@ begin
 
     if NOT resultSearch then
     begin
-      s := Room.Room + ',' + Room.RoomType + ',' + Room.RoomClass + ',' + Room.PriceType + ',' + Room.Currency + ',' + Room.PMInfo + ',' + Room.GuestName + ','
+      s := Room.Room + ',' + Room.RoomType + ',' + Room.RoomClass + ',' + Room.PriceType + ',' + Room.Currency + ',' +
+        Room.PMInfo + ',' + Room.GuestName + ','
         + Room.CustomerName + ',' + Room.Information + ',';
       resultSearch := pos(ANSIlowercase(edtSearch.Text), ANSIlowercase(s)) > 0;
     end;
@@ -10094,21 +8935,6 @@ begin
 
   end;
 
-end;
-
-procedure TfrmMain.Period_RestoreColumnSize;
-// var
-// i : integer;
-begin
-  // for i := 0 to grPeriodRooms.fixedCols - 1 do
-  // begin
-  // grPeriodRooms.AutoSizeCol(i);
-  // end;
-  //
-  // for i := 0 to grPeriodRooms.ColCount - 1 do
-  // begin
-  // grPeriodRooms_NO.colWidths[i] := grPeriodRooms.colWidths[i];
-  // end;
 end;
 
 procedure TfrmMain.Period_RestoreRowHeights;
@@ -10133,19 +8959,8 @@ begin
   grPeriodRooms.RowHeights[2] := 0;
 end;
 
-function TfrmMain.Period_GetStatus(ACol, ARow: integer): string;
-begin
-  result := '';
-  if (grPeriodRooms.Objects[ACol, ARow] <> nil) AND (grPeriodRooms.Objects[ACol, ARow] IS TRoomCell) then
-  begin
-    try
-      result := (grPeriodRooms.Objects[ACol, ARow] as TRoomCell).Roomstatus;
-    except
-    end;
-  end;
-end;
-
-function TfrmMain.Period_GetResStatus(_grid: TAdvStringGrid; ACol, ARow: integer; var status: string; var AscIndex, DescIndex: integer): boolean;
+function TfrmMain.Period_GetResStatus(_grid: TAdvStringGrid; ACol, ARow: integer; var status: string;
+  var AscIndex, DescIndex: integer): boolean;
 begin
   result := false;
   if _grid.Objects[ACol, ARow] <> nil then
@@ -10158,32 +8973,17 @@ begin
   end;
 end;
 
-function TfrmMain.Period_GotoRoom(Room: string): boolean;
+function TfrmMain.Period_GotoRoom(const Room: string): boolean;
 var
   i: integer;
 begin
-  result := false;
   i := Period_RoomToRow(Room);
   result := i > 0;
   if result then
     grPeriodRooms.GotoCell(grPeriodRooms.FixedCols, i);
 end;
 
-function TfrmMain.Period_GotoRoomAndDate(Room: string; aDate: Tdate): boolean;
-var
-  RoomRow: integer;
-  dateCol: integer;
-  found: boolean;
-begin
-  RoomRow := Period_RoomToRow(Room);
-  dateCol := Period_DateToCol(aDate);
-  found := (RoomRow > 0) and (dateCol > 0);
-  if found then
-    grPeriodRooms.GotoCell(dateCol + 1, RoomRow);
-  result := found;
-end;
-
-function TfrmMain.Period_RoomToRow(Room: string): integer;
+function TfrmMain.Period_RoomToRow(const Room: string): integer;
 var
   i: integer;
   found: boolean;
@@ -10205,7 +9005,6 @@ end;
 
 function TfrmMain.Period_DateToCol(aDate: Tdate): integer;
 begin
-  result := -1;
   result := (trunc(aDate) - trunc(zDateFrom)) + grPeriodRooms.FixedRows + 2;
 end;
 
@@ -10219,9 +9018,7 @@ begin
   result := zDateFrom + (ACol - (grPeriodRooms_NO.FixedRows + 2));
 end;
 
-function TfrmMain.Period_RoomAndDateToCell(Room: string; aDate: Tdate): recColRow;
-var
-  found: boolean;
+function TfrmMain.Period_RoomAndDateToCell(const Room: string; aDate: Tdate): recColRow;
 begin
   result.col := Period_DateToCol(aDate);
   result.row := Period_RoomToRow(Room);
@@ -10229,60 +9026,60 @@ end;
 
 function TfrmMain.Period_GetNewResDates(var dtFrom: TdateTime): boolean;
 begin
-  result := false;
   dtFrom := Period_ColToDate(grPeriodRooms.col);
   result := dtFrom > now - 100;
 end;
 
 function TfrmMain.OneDay_GetResInfo(ACol: integer; ARow: integer; iReservation, iRoomReservation: integer): RecRRInfo;
 begin
-  result.Reservation := ReservationsModel.Reservations[iReservation].Reservation;
-  result.RoomReservation := ReservationsModel.Reservations[iReservation].Rooms[iRoomReservation].RoomRes;
-  result.Channel := ReservationsModel.Reservations[iReservation].Channel;
-  result.resFlag := RESERVATION_STATUS_CHARS[ReservationsModel.Reservations[iReservation].Rooms[iRoomReservation].ResStatus];
-  result.Date := ReservationsModel.Reservations[iReservation].ReservationDate;
-  result.Room := ReservationsModel.Reservations[iReservation].Rooms[iRoomReservation].RoomNumber;
-  result.RoomType := ReservationsModel.Reservations[iReservation].Rooms[iRoomReservation].RoomType;
-  result.isNoRoom := Copy(ReservationsModel.Reservations[iReservation].Rooms[iRoomReservation].RoomNumber, 1, 1) = '<';
+  result.Reservation := FReservationsModel.Reservations[iReservation].Reservation;
+  result.RoomReservation := FReservationsModel.Reservations[iReservation].Rooms[iRoomReservation].RoomRes;
+  result.Channel := FReservationsModel.Reservations[iReservation].Channel;
+  result.resFlag := RESERVATION_STATUS_CHARS[FReservationsModel.Reservations[iReservation].Rooms[iRoomReservation]
+    .ResStatus];
+  result.Date := FReservationsModel.Reservations[iReservation].ReservationDate;
+  result.Room := FReservationsModel.Reservations[iReservation].Rooms[iRoomReservation].RoomNumber;
+  result.RoomType := FReservationsModel.Reservations[iReservation].Rooms[iRoomReservation].RoomType;
+  result.isNoRoom := Copy(FReservationsModel.Reservations[iReservation].Rooms[iRoomReservation].RoomNumber, 1, 1) = '<';
   // result.AscIndex := resCell.AscIndex;
   // result.DescIndex := resCell.DescIndex;
-  result.CustomerName := ReservationsModel.Reservations[iReservation].name;
-  result.Arrival := ReservationsModel.Reservations[iReservation].Rooms[iRoomReservation].Arrival;
-  result.Departure := ReservationsModel.Reservations[iReservation].Rooms[iRoomReservation].Departure;
-  result.active := ReservationsModel.Reservations[iReservation].Reservation > 0;
-  result.PaymentInvoice := ReservationsModel.Reservations[iReservation].Rooms[iRoomReservation].PaymentInvoice;
-  result.GroupAccount := ReservationsModel.Reservations[iReservation].Rooms[iRoomReservation].GroupAccount;
+  result.CustomerName := FReservationsModel.Reservations[iReservation].name;
+  result.Arrival := FReservationsModel.Reservations[iReservation].Rooms[iRoomReservation].Arrival;
+  result.Departure := FReservationsModel.Reservations[iReservation].Rooms[iRoomReservation].Departure;
+  result.active := FReservationsModel.Reservations[iReservation].Reservation > 0;
+  result.PaymentInvoice := FReservationsModel.Reservations[iReservation].Rooms[iRoomReservation].PaymentInvoice;
+  result.GroupAccount := FReservationsModel.Reservations[iReservation].Rooms[iRoomReservation].GroupAccount;
 
-  result.ItemsOnInvoice := ReservationsModel.Reservations[iReservation].Rooms[iRoomReservation].TotalNoRent > 0;
-  result.GuestName := ReservationsModel.Reservations[iReservation].Rooms[iRoomReservation].Guests[0].GuestName;
-  result.Tel1 := ReservationsModel.Reservations[iReservation].Tel1;
-  result.Tel2 := ReservationsModel.Reservations[iReservation].Tel2;
-  result.Fax := ReservationsModel.Reservations[iReservation].Fax;
+  result.ItemsOnInvoice := FReservationsModel.Reservations[iReservation].Rooms[iRoomReservation].TotalNoRent > 0;
+  result.GuestName := FReservationsModel.Reservations[iReservation].Rooms[iRoomReservation].Guests[0].GuestName;
+  result.Tel1 := FReservationsModel.Reservations[iReservation].Tel1;
+  result.Tel2 := FReservationsModel.Reservations[iReservation].Tel2;
+  result.Fax := FReservationsModel.Reservations[iReservation].Fax;
 
-  result.BookingId := ReservationsModel.Reservations[iReservation].BookingReference;
+  result.BookingId := FReservationsModel.Reservations[iReservation].BookingReference;
 
-  result.Price := ReservationsModel.Reservations[iReservation].Rooms[iRoomReservation].Price;
-  result.Discount := ReservationsModel.Reservations[iReservation].Rooms[iRoomReservation].Discount;
-  result.Percentage := ReservationsModel.Reservations[iReservation].Rooms[iRoomReservation].Percentage;
-  result.Information := ReservationsModel.Reservations[iReservation].Information;
-  result.PMInfo := ReservationsModel.Reservations[iReservation].PMInfo;
-  result.PriceType := ReservationsModel.Reservations[iReservation].Rooms[iRoomReservation].PriceType;
-  result.Currency := ReservationsModel.Reservations[iReservation].Rooms[iRoomReservation].Currency;
-  result.numGuests := ReservationsModel.Reservations[iReservation].Rooms[iRoomReservation].GuestCount;
-  result.RoomClass := ReservationsModel.Reservations[iReservation].Rooms[iRoomReservation].RoomClass;
-  result.OutOfOrderBlocking := ReservationsModel.Reservations[iReservation].OutOfOrderBlocking;
-  result.BlockMove := ReservationsModel.Reservations[iReservation].Rooms[iRoomReservation].BlockMove;
-  result.BlockMoveReason := ReservationsModel.Reservations[iReservation].Rooms[iRoomReservation].BlockMoveReason;
+  result.Price := FReservationsModel.Reservations[iReservation].Rooms[iRoomReservation].Price;
+  result.Discount := FReservationsModel.Reservations[iReservation].Rooms[iRoomReservation].Discount;
+  result.Percentage := FReservationsModel.Reservations[iReservation].Rooms[iRoomReservation].Percentage;
+  result.Information := FReservationsModel.Reservations[iReservation].Information;
+  result.PMInfo := FReservationsModel.Reservations[iReservation].PMInfo;
+  result.PriceType := FReservationsModel.Reservations[iReservation].Rooms[iRoomReservation].PriceType;
+  result.Currency := FReservationsModel.Reservations[iReservation].Rooms[iRoomReservation].Currency;
+  result.numGuests := FReservationsModel.Reservations[iReservation].Rooms[iRoomReservation].GuestCount;
+  result.RoomClass := FReservationsModel.Reservations[iReservation].Rooms[iRoomReservation].RoomClass;
+  result.OutOfOrderBlocking := FReservationsModel.Reservations[iReservation].OutOfOrderBlocking;
+  result.BlockMove := FReservationsModel.Reservations[iReservation].Rooms[iRoomReservation].BlockMove;
+  result.BlockMoveReason := FReservationsModel.Reservations[iReservation].Rooms[iRoomReservation].BlockMoveReason;
 
-  result.OngoingSale := ReservationsModel.Reservations[iReservation].Rooms[iRoomReservation].OngoingSale;
-  result.OngoingTaxes := ReservationsModel.Reservations[iReservation].Rooms[iRoomReservation].OngoingTaxes;
-  result.OngoingRent := ReservationsModel.Reservations[iReservation].Rooms[iRoomReservation].OngoingRent;
+  result.OngoingSale := FReservationsModel.Reservations[iReservation].Rooms[iRoomReservation].OngoingSale;
+  result.OngoingTaxes := FReservationsModel.Reservations[iReservation].Rooms[iRoomReservation].OngoingTaxes;
+  result.OngoingRent := FReservationsModel.Reservations[iReservation].Rooms[iRoomReservation].OngoingRent;
 
-  result.Invoices := ReservationsModel.Reservations[iReservation].Rooms[iRoomReservation].Invoices;
-  result.Guarantee := ReservationsModel.Reservations[iReservation].Rooms[iRoomReservation].Guarantee;
-  result.Payments := ReservationsModel.Reservations[iReservation].Rooms[iRoomReservation].TotalPayments;
+  result.Invoices := FReservationsModel.Reservations[iReservation].Rooms[iRoomReservation].Invoices;
+  result.Guarantee := FReservationsModel.Reservations[iReservation].Rooms[iRoomReservation].Guarantee;
+  result.Payments := FReservationsModel.Reservations[iReservation].Rooms[iRoomReservation].TotalPayments;
 
-  result.InvoiceIndex := ReservationsModel.Reservations[iReservation].Rooms[iRoomReservation].InvoiceIndex;
+  result.InvoiceIndex := FReservationsModel.Reservations[iReservation].Rooms[iRoomReservation].InvoiceIndex;
 end;
 
 function TfrmMain.Period_GetResInfo(ACol: integer; ARow: integer; gridTag: integer): RecRRInfo;
@@ -10296,10 +9093,10 @@ begin
   else if gridTag = 2 then
     Grid := grPeriodRooms_NO
   else
-    Exit;
+    exit;
 
-  if (ACol <0) OR (ARow <0) then exit;
-
+  if (ACol < 0) OR (ARow < 0) then
+    exit;
 
   if NOT(Grid.Objects[ACol, ARow] IS TresCell) then
     exit;
@@ -10395,33 +9192,6 @@ begin
   end;
 end;
 
-procedure TfrmMain.Period_UnMergeGrid;
-var
-  c, r: integer;
-begin
-
-  for c := grPeriodRooms.FixedCols to grPeriodRooms.ColCount - 1 do
-  begin
-    for r := grPeriodRooms.FixedRows to grPeriodRooms.RowCount - 2 do
-    begin
-      grPeriodRooms.MergeCells(c, r, 1, 1);
-    end;
-  end;
-end;
-
-function TfrmMain.AnyHiddenRow(Sender: TAdvStringGrid): boolean;
-var
-  i: integer;
-begin
-  result := false;
-  for i := 0 to Sender.RowCount - 1 do
-    if Sender.IsHiddenRow(i) then
-    begin
-      result := true;
-      break;
-    end;
-end;
-
 procedure TfrmMain.grPeriodRoomsKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 var
   RoomTypeForceWasOn: boolean;
@@ -10489,7 +9259,8 @@ begin
   begin
     if grPeriodViewFilterOn then
       ShowAllRoomsRows
-    else if (grPeriodRooms.cells[grPeriodRooms.col, grPeriodRooms.row] <> '') AND assigned(grPeriodRooms.Objects[grPeriodRooms.col, grPeriodRooms.row]) then
+    else if (grPeriodRooms.cells[grPeriodRooms.col, grPeriodRooms.row] <> '') AND
+      assigned(grPeriodRooms.Objects[grPeriodRooms.col, grPeriodRooms.row]) then
     begin
       ReEnableFiltersInPeriodGrid;
       EnterPeriodDragFilter;
@@ -10550,13 +9321,7 @@ begin
 end;
 
 procedure TfrmMain.grPeriodRoomsKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
-var
-  i: integer;
-  ii: integer;
-  iNum: integer;
 begin
-  g.qDebug1 := 'grPeriodRoomsKeyUp(Sender : TObject; var Key : Word; Shift : TShiftState)';
-
   if HintWindowShowing then
   begin
     HintWindowShowing := false;
@@ -10626,11 +9391,11 @@ end;
 procedure TfrmMain.grPeriodRoomsStartDrag(Sender: TObject; var DragObject: TDragObject);
 var
   rri: RecRRInfo;
-  iReservation, iRoomReservation: integer;
   _grid: TAdvStringGrid;
 begin
   _grid := grPeriodRooms;
-  rri := Period_GetResInfo(PeriodViewSelectedCol, PeriodViewSelectedRow, _grid.Tag); // _grid.col, _grid.row, _grid.Tag);
+  rri := Period_GetResInfo(PeriodViewSelectedCol, PeriodViewSelectedRow, _grid.Tag);
+  // _grid.col, _grid.row, _grid.Tag);
   if rri.Reservation > -1 then
     if rri.BlockMove AND (Copy(rri.Room, 1, 1) <> '<') then
     begin
@@ -10716,13 +9481,14 @@ begin
         TresCell(grPeriodRooms_NO.Objects[c, r]).Free;
         grPeriodRooms_NO.Objects[c, r] := nil;
       end;
-      grPeriodRooms_NO.Objects[c, r] := TresCell.Create(-1, -1, -1, -1, -1, -1, false, '', '', '', '', false, 1, '', '', '', '', '', '', '', '', '', 0.00, 0.00,
+      grPeriodRooms_NO.Objects[c, r] := TresCell.Create(-1, -1, -1, -1, -1, -1, false, '', '', '', '', false, 1, '', '',
+        '', '', '', '', '', '', '', 0.00, 0.00,
         false, false, 0, '', false, false, '', 0, 0, 0, '', '', 0, 0);
     end;
   end;
 end;
 
-procedure TfrmMain.grNoRooms_FillEmptyResRow(r: integer) ;
+procedure TfrmMain.grNoRooms_FillEmptyResRow(r: integer);
 var
   c: integer;
 begin
@@ -10733,7 +9499,8 @@ begin
       TresCell(grPeriodRooms_NO.Objects[c, r]).Free;
       grPeriodRooms_NO.Objects[c, r] := nil;
     end;
-    grPeriodRooms_NO.Objects[c, r] := TresCell.Create(-1, -1, -1, -1, -1, -1, false, '', '', '', '', false, 1, '', '', '', '', '', '', '', '', '', 0.00, 0.00,
+    grPeriodRooms_NO.Objects[c, r] := TresCell.Create(-1, -1, -1, -1, -1, -1, false, '', '', '', '', false, 1, '', '',
+      '', '', '', '', '', '', '', 0.00, 0.00,
       false, false, 0, '', false, false, '', 0, 0, 0, '', '', 0, 0);
   end;
 end;
@@ -10750,7 +9517,8 @@ begin
   col3Width := grPeriodRooms.colWidths[2];
   col4Width := grPeriodRooms.colWidths[3];
   col5Width := grPeriodRooms.colWidths[4];
-  iWidth := (panPeriodRooms.ClientWidth - 30 - (col1Width + col2Width + col3Width + col4Width + col5Width)) div (grPeriodRooms.ColCount - 5);
+  iWidth := (panPeriodRooms.ClientWidth - 30 - (col1Width + col2Width + col3Width + col4Width + col5Width))
+    div (grPeriodRooms.ColCount - 5);
   for i := 5 to grPeriodRooms.ColCount - 1 do
   begin
     grPeriodRooms.colWidths[i] := iWidth;
@@ -10761,7 +9529,7 @@ end;
 
 procedure TfrmMain.HideRowsWithNotFittingRooms(currRow: integer; fromDate, toDate: Tdate);
 var
-  i, iStartRow: integer;
+  i: integer;
   sql: String;
   rSet: TRoomerDataSet;
   list: TStringList;
@@ -10778,7 +9546,8 @@ begin
       Extra := Format('AND RoomType=''%s''', [ZPeriodRoomOnTheMoveRoomType])
     else
       Extra := '';
-    sql := Format('SELECT Room FROM rooms ' + 'WHERE (NOT room IN (SELECT room FROM roomsdate WHERE ADate>=''%s'' AND ADate<''%s'')) %s ' + 'ORDER BY Room;',
+    sql := Format('SELECT Room FROM rooms ' +
+      'WHERE (NOT room IN (SELECT room FROM roomsdate WHERE ADate>=''%s'' AND ADate<''%s'')) %s ' + 'ORDER BY Room;',
       [uDateUtils.dateToSqlString(fromDate), uDateUtils.dateToSqlString(toDate), Extra]);
     rSet := d.roomerMainDataSet.ActivateNewDataset(d.roomerMainDataSet.SystemFreeQuery(sql));
     try
@@ -10815,7 +9584,7 @@ begin
     FindRoomInPeriodView(CurrentRoom);
 end;
 
-function TfrmMain.IsRoomAvailableInMoveFunctionAvailRooms(Room: String): boolean;
+function TfrmMain.IsRoomAvailableInMoveFunctionAvailRooms(const Room: String): boolean;
 var
   i: integer;
   RoomType: String;
@@ -10835,15 +9604,13 @@ end;
 
 procedure TfrmMain.ListRoomsAvailable(fromDate, toDate: Tdate);
 var
-  i, iStartRow: integer;
   sql: String;
   rSet: TRoomerDataSet;
-  list: TStringList;
-  CurrentRoom: String;
 begin
   MoveFunctionAvailRooms.Clear;
 
-  sql := Format('SELECT r.Room, rt.RoomType, rtg.Code ' + 'FROM rooms r ' + '     INNER JOIN roomtypes rt ON rt.RoomType=r.RoomType ' +
+  sql := Format('SELECT r.Room, rt.RoomType, rtg.Code ' + 'FROM rooms r ' +
+    '     INNER JOIN roomtypes rt ON rt.RoomType=r.RoomType ' +
     '     INNER JOIN roomtypegroups rtg ON rtg.Code=rt.RoomTypeGroup ' +
     'WHERE NOT r.Room IN (SELECT room FROM roomsdate WHERE ADate>=''%s'' AND ADate<''%s'') ' + 'ORDER BY r.Room',
     [uDateUtils.dateToSqlString(fromDate), uDateUtils.dateToSqlString(toDate)]);
@@ -10881,57 +9648,12 @@ begin
 end;
 
 procedure TfrmMain.SetOffLineMode(const Value: boolean);
-var
-  i: integer;
 begin
   FOffLineMode := Value;
 
   d.roomerMainDataSet.OffLineMode := OffLineMode;
 
-  Enabled := False;
-
-(*
-  btnToDay.Click;
-
-  if FOffLineMode then
-  begin
-    panMain.Color := clRed;
-    i := 10;
-  end
-  else
-  begin
-    panMain.Color := clBtnFace;
-    i := 0;
-  end;
-  panMain.SkinData.CustomColor := FOffLineMode;
-  pnlOffline.Visible := FOffLineMode;
-  panMain.Padding.Top := i;
-  panMain.Padding.Left := i;
-  panMain.Padding.Bottom := i;
-  panMain.Padding.Right := i;
-
-  for i := 0 to ComponentCount - 1 do
-    if (Components[i] IS TdxBarLargeButton) then
-      if (Components[i] <> btnGroupInvoice) AND (Components[i] <> btnRoomInvoice) AND (Components[i] <> btnClose) AND (Components[i] <> btnRefresh) then
-        (Components[i] AS TdxBarLargeButton).Enabled := NOT OffLineMode;
-
-  dtDate.Enabled := NOT OffLineMode;
-
-  btnBack.Enabled := NOT OffLineMode;
-  btnForward.Enabled := NOT OffLineMode;
-  btnForward.Enabled := NOT OffLineMode;
-  tabsView.TabIndex := 0;
-
-  for i := 0 to mmnuOneDayGrid.Items.Count - 1 do
-    mmnuOneDayGrid.Items[i].Enabled := NOT OffLineMode;
-
-  pmnuRoomInvoive.Enabled := NOT OffLineMode;
-  pmnuGroupInvoice.Enabled := NOT OffLineMode;
-  pmnuCheckInRoom.Enabled := NOT OffLineMode;
-  pmnuCheckOutRoom.Enabled := NOT OffLineMode;
-  pmnuCheckInGroup.Enabled := NOT OffLineMode;
-  mnuRoomNumber.Enabled := NOT OffLineMode;
-*)
+  Enabled := false;
 end;
 
 procedure TfrmMain.SetRBEMode(const Value: boolean);
@@ -10962,7 +9684,8 @@ begin
   else
   begin
     pnlRBE.Hide;
-    if assigned(FrmRBEContainer) AND assigned(FrmRBEContainer.pnlRBEContainer) AND (FrmRBEContainer.pnlRBEContainer.Parent = pnlRBE) then
+    if assigned(FrmRBEContainer) AND assigned(FrmRBEContainer.pnlRBEContainer) AND
+      (FrmRBEContainer.pnlRBEContainer.Parent = pnlRBE) then
     begin
       freeandNil(FrmRBEContainer);
     end;
@@ -10982,10 +9705,9 @@ begin
   ZPeriodRoomOnTheMoveForceType := false;
 end;
 
-procedure TfrmMain.FindRoomInPeriodView(Room: String);
+procedure TfrmMain.FindRoomInPeriodView(const Room: String);
 var
   i: integer;
-  MyR: TGridRect;
 begin
   for i := grPeriodRooms.FixedRows to grPeriodRooms.RowCount - 1 do
     if grPeriodRooms.cells[1, i] = Room then
@@ -11003,9 +9725,9 @@ begin
   CanEdit := (ACol = 3) AND (ARow > 0) AND (grdRoomClasses.cells[ACol, ARow] <> inttostr(DEFAULT_UNPARSABLE_INT_VALUE));
 end;
 
-procedure TfrmMain.grdRoomClassesCellValidate(Sender: TObject; ACol, ARow: integer; var Value: string; var Valid: boolean);
+procedure TfrmMain.grdRoomClassesCellValidate(Sender: TObject; ACol, ARow: integer; var Value: string;
+  var Valid: boolean);
 var
-  s: String;
   iValue: integer;
   StatusCont: TRoomClassChannelAvailabilityContainer;
   temp: String;
@@ -11020,13 +9742,16 @@ begin
       iValue := strtointDef(Copy(Value, 2, maxint), DEFAULT_UNPARSABLE_INT_VALUE);
       if iValue < -1 then
         raise Exception.Create(GetTranslatedText('shTx_FrmMain_WrongValueEntered'));
-      temp := Format('(grdRoomClassesCellValidate 1) Manual change of MAX availability for RoomClass=%s, SetMaxAvailability=%d, Date=%s',
+      temp := Format
+        ('(grdRoomClassesCellValidate 1) Manual change of MAX availability for RoomClass=%s, SetMaxAvailability=%d, Date=%s',
         [grdRoomClasses.cells[0, ARow], iValue, dateToSqlString(lastDate)]);
-      d.roomerMainDataSet.SystemSetChannelAvailability(uDateUtils.dateToSqlString(lastDate), grdRoomClasses.cells[0, ARow], 1, -2, iValue, -1, -1, temp);
+      d.roomerMainDataSet.SystemSetChannelAvailability(uDateUtils.dateToSqlString(lastDate),
+        grdRoomClasses.cells[0, ARow], 1, -2, iValue, -1, -1, temp);
       lastDate := 0;
       StatusCont.ChannelMaxAvailable := iValue;
       timGetRoomStatuses.Enabled := true;
-      ShowTimelyMessage(Format(GetTranslatedText('shTx_FrmMain_ChannelChangedMaxAvail'), [grdRoomClasses.cells[0, ARow], iValue]));
+      ShowTimelyMessage(Format(GetTranslatedText('shTx_FrmMain_ChannelChangedMaxAvail'), [grdRoomClasses.cells[0, ARow],
+        iValue]));
       exit;
     end
     else
@@ -11038,17 +9763,20 @@ begin
   if iValue < -1 then
     raise Exception.Create(GetTranslatedText('shTx_FrmMain_WrongValueEntered'));
 
-  temp := Format('(grdRoomClassesCellValidate 2) Manual change of availability for RoomClass=%s, SetAvailability=%d, Date=%s',
+  temp := Format
+    ('(grdRoomClassesCellValidate 2) Manual change of availability for RoomClass=%s, SetAvailability=%d, Date=%s',
     [grdRoomClasses.cells[0, ARow], iValue, dateToSqlString(lastDate)]);
-  d.roomerMainDataSet.SystemSetChannelAvailability(uDateUtils.dateToSqlString(lastDate), grdRoomClasses.cells[0, ARow], 1, iValue, -1, -1, -1, temp);
-  AddAvailabilityActivityLog(d.roomerMainDataSet.username,
-                             EDIT,
-                             grdRoomClasses.cells[0, ARow],
-                             iValue,
-                             lastDate,
-                             'Edited in Roomer''s main screen');
+  d.roomerMainDataSet.SystemSetChannelAvailability(uDateUtils.dateToSqlString(lastDate), grdRoomClasses.cells[0, ARow],
+    1, iValue, -1, -1, -1, temp);
+  AddAvailabilityActivityLog(d.roomerMainDataSet.userName,
+    EDIT,
+    grdRoomClasses.cells[0, ARow],
+    iValue,
+    lastDate,
+    'Edited in Roomer''s main screen');
 
-  ShowTimelyMessage(Format(GetTranslatedText('shTx_FrmMain_ChannelChangedAvail'), [grdRoomClasses.cells[0, ARow], iValue]));
+  ShowTimelyMessage(Format(GetTranslatedText('shTx_FrmMain_ChannelChangedAvail'), [grdRoomClasses.cells[0, ARow],
+    iValue]));
   StatusCont.ChannelAvailable := iValue;
   grdRoomClasses.Invalidate;
 end;
@@ -11070,7 +9798,8 @@ var
   iValue: integer;
   StatusCont: TRoomClassChannelAvailabilityContainer;
 begin
-  if bAppClosing then exit;
+  if FAppClosing then
+    exit;
   Text := grdRoomClasses.cells[ACol, ARow];
   if (ACol = 3) AND (ARow > 0) then
   begin
@@ -11151,12 +9880,14 @@ begin
   end;
 end;
 
-procedure TfrmMain.grdRoomClassesGetCellBorder(Sender: TObject; ARow, ACol: integer; APen: TPen; var Borders: TCellBorders);
+procedure TfrmMain.grdRoomClassesGetCellBorder(Sender: TObject; ARow, ACol: integer; APen: TPen;
+  var Borders: TCellBorders);
 var
   iValue: integer;
   StatusCont: TRoomClassChannelAvailabilityContainer;
 begin
-  if bAppClosing then exit;
+  if FAppClosing then
+    exit;
 
   if (ARow > 0) AND (ACol = 3) then
   begin
@@ -11183,10 +9914,9 @@ end;
 procedure TfrmMain.grdRoomClassesMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
 var
   PpUp: TPoint;
-  ACol: integer;
-  ARow: integer;
 begin
-  if bAppClosing then exit;
+  if FAppClosing then
+    exit;
   PlaceMouseClickToCell(Sender, X, Y);
   if Button = mbRight then
   begin
@@ -11198,20 +9928,16 @@ begin
   end;
 end;
 
-var
-  iLastHintRowClasses: integer = 0;
-  iLastHintColClasses: integer = 0;
-
 procedure TfrmMain.grdRoomClassesMouseMove(Sender: TObject; Shift: TShiftState; X, Y: integer);
 var
   Text: String;
-  dx: integer;
   ARow, ACol, iValue: integer;
   APoint: TPoint;
   StatusCont: TRoomClassChannelAvailabilityContainer;
   availColor, maxColor, HintStr: String;
 begin
-  if bAppClosing then exit;
+  if FAppClosing then
+    exit;
   grdRoomClasses.MouseToCell(X, Y, ACol, ARow);
   Application.ProcessMessages;
   if (iLastHintRow = ARow) and (iLastHintCol = ACol) then
@@ -11265,43 +9991,11 @@ begin
   end;
 end;
 
-procedure TfrmMain.grdRoomStatussesDrawCell(Sender: TObject; ACol, ARow: integer; Rect: TRect; State: TGridDrawState);
-// var
-// Text: String;
-// dx: integer;
-// iValue: integer;
-// StatusCont: TRoomClassChannelAvailabilityContainer;
+procedure TfrmMain.grdRoomStatussesGetAlignment(Sender: TObject; ARow, ACol: integer; var HAlign: TAlignment;
+  var VAlign: TVAlignment);
 begin
-  // Text := grdRoomClasses.cells[ACol, ARow];
-  // if (ACol = 2) AND (ARow > 0) then
-  // begin
-  // with grdRoomStatusses.Canvas do
-  // begin
-  // iValue := strtointDef(Text, DEFAULT_UNPARSABLE_INT_VALUE);
-  // if iValue = DEFAULT_UNPARSABLE_INT_VALUE then
-  // exit;
-  // Brush.Color := clWhite;
-  // if iValue > 0 then
-  // Font.Color := clBlue
-  // else if iValue = 0 then
-  // Font.Color := clBlack
-  // else
-  // begin
-  // Font.Color := clWhite;
-  // Brush.Color := clRed;
-  // end;
-  // Font.Style := [fsBold];
-  // Font.size := 7;
-  // FillRect(Rect);
-  // dx := TextWidth(Text) + 2;
-  // TextOut(Rect.Right - dx, Rect.Top, Text);
-  // end;
-  // end;
-end;
-
-procedure TfrmMain.grdRoomStatussesGetAlignment(Sender: TObject; ARow, ACol: integer; var HAlign: TAlignment; var VAlign: TVAlignment);
-begin
-  if bAppClosing then exit;
+  if FAppClosing then
+    exit;
   if (ACol IN [1, 2, 3]) then
     HAlign := taRightJustify
   else if (ACol = 0) AND (ARow > 0) then
@@ -11366,21 +10060,8 @@ begin
     grPeriodRooms_NO.colWidths[1] := RoomColSize_5D;
 end;
 
-procedure TfrmMain.grNoRooms_UnMergeGrid;
-var
-  c, r: integer;
-begin
-  for c := grPeriodRooms_NO.FixedCols to grPeriodRooms_NO.ColCount - 1 do
-  begin
-
-    for r := grPeriodRooms_NO.FixedRows to grPeriodRooms_NO.RowCount - 2 do
-    begin
-      grPeriodRooms_NO.MergeCells(c, r, 1, 1);
-    end;
-  end;
-end;
-
-function TfrmMain.grNoRooms_GetResStatus(ACol, ARow: integer; var status: string; var AscIndex, DescIndex: integer): boolean;
+function TfrmMain.grNoRooms_GetResStatus(ACol, ARow: integer; var status: string;
+  var AscIndex, DescIndex: integer): boolean;
 begin
   result := false;
   if grPeriodRooms_NO.Objects[ACol, ARow] <> nil then
@@ -11404,12 +10085,10 @@ var
 
   allow: boolean;
 
-  keystate: TShiftState;
-
   resCell: TresCell;
 
 begin
-  zPeriod_bMouseDown := true;
+  FPeriod_bMouseDown := true;
   PeriodMousePoint := Point(X, Y);
   if Button = mbRight then
     exit;
@@ -11421,7 +10100,8 @@ begin
   iRoomReservation := 0;
   AscIndex := -1;
 
-  if (ACol >= grPeriodRooms.FixedCols) and (ARow >= grPeriodRooms.FixedRows) and (ARow <> grPeriodRooms.RowCount - 1) then
+  if (ACol >= grPeriodRooms.FixedCols) and (ARow >= grPeriodRooms.FixedRows) and (ARow <> grPeriodRooms.RowCount - 1)
+  then
   begin
     resCell := (grPeriodRooms.Objects[ACol, ARow] as TresCell);
     grPeriodRooms_NO.col := grPeriodRooms.col;
@@ -11434,7 +10114,8 @@ begin
     except
     end;
 
-    allow := (* (trunc(Period_ColToDate(ACol)) = resCell.Date - resCell.AscIndex) AND *) (iRoomReservation > 0) and (AscIndex = 0);
+    allow := (* (trunc(Period_ColToDate(ACol)) = resCell.Date - resCell.AscIndex) AND *) (iRoomReservation > 0) and
+      (AscIndex = 0);
 
     // result.Departure := (result.DescIndex + result.Date) + 1;
 
@@ -11495,9 +10176,9 @@ end;
 
 procedure TfrmMain.ApplicationEvents1Activate(Sender: TObject);
 begin
-//  if NOT timMessages.Enabled then
-//    exit;
-//  timMessages.Enabled := false;
+  // if NOT timMessages.Enabled then
+  // exit;
+  // timMessages.Enabled := false;
 end;
 
 procedure TfrmMain.ApplicationEvents1Deactivate(Sender: TObject);
@@ -11512,22 +10193,22 @@ end;
 
 procedure TfrmMain.ApplicationEvents1Message(var Msg: tagMSG; var Handled: boolean);
 begin
-//  Handled := false;
-//  if NOT timMessages.Enabled then
-//    exit;
-//
-//  case Msg.message of
-//    WM_KEYDOWN:
-//      timMessages.Enabled := false;
-//    WM_MBUTTONDOWN, WM_MBUTTONUP, WM_MBUTTONDBLCLK:
-//      timMessages.Enabled := false;
-//    WM_MOUSEWHEEL:
-//      timMessages.Enabled := false;
-//    WM_LBUTTONDOWN:
-//      timMessages.Enabled := false;
-//    WM_RBUTTONDOWN:
-//      timMessages.Enabled := false;
-//  end;
+  // Handled := false;
+  // if NOT timMessages.Enabled then
+  // exit;
+  //
+  // case Msg.message of
+  // WM_KEYDOWN:
+  // timMessages.Enabled := false;
+  // WM_MBUTTONDOWN, WM_MBUTTONUP, WM_MBUTTONDBLCLK:
+  // timMessages.Enabled := false;
+  // WM_MOUSEWHEEL:
+  // timMessages.Enabled := false;
+  // WM_LBUTTONDOWN:
+  // timMessages.Enabled := false;
+  // WM_RBUTTONDOWN:
+  // timMessages.Enabled := false;
+  // end;
 end;
 
 procedure TfrmMain.ApplicationEvents1Minimize(Sender: TObject);
@@ -11537,9 +10218,9 @@ end;
 
 procedure TfrmMain.ApplicationEvents1Restore(Sender: TObject);
 begin
-//  if NOT timMessages.Enabled then
-//    exit;
-//  timMessages.Enabled := false;
+  // if NOT timMessages.Enabled then
+  // exit;
+  // timMessages.Enabled := false;
 end;
 
 procedure TfrmMain.ApplicationCancelGuestHint;
@@ -11575,11 +10256,11 @@ begin
   // else
   // ApplicationCancelGuestHint;
 
-  if zPeriod_bMouseDown then
+  if FPeriod_bMouseDown then
   begin
     if (ABS(PeriodMousePoint.X - X) > 6) or (ABS(PeriodMousePoint.Y - Y) > 6) then
     begin
-      zPeriod_bMouseDown := false;
+      FPeriod_bMouseDown := false;
 
       // ActiveGrid.MouseToCell(PeriodMousePoint.X, PeriodMousePoint.Y, iDragCell.X,
       // iDragCell.Y);
@@ -11601,14 +10282,13 @@ end;
 
 procedure TfrmMain.grPeriodRoomsMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
 begin
-  zPeriod_bMouseDown := false;
+  FPeriod_bMouseDown := false;
 end;
 
-procedure TfrmMain.grPeriodRoomsDragOver(Sender, Source: TObject; X, Y: integer; State: TDragState; var Accept: boolean);
+procedure TfrmMain.grPeriodRoomsDragOver(Sender, Source: TObject; X, Y: integer; State: TDragState;
+  var Accept: boolean);
 var
   ACol, ARow: integer;
-  sHintText: string;
-  APoint: TPoint;
 
 begin
   grPeriodRooms.MouseToCell(X, Y, ACol, ARow);
@@ -11627,21 +10307,22 @@ begin
     exit;
   end;
 
-  if ((ACol >= grPeriodRooms.FixedCols) and (ARow >= grPeriodRooms.FixedRows)) and ((ARow <> grPeriodRooms.RowCount - 1) OR grPeriodViewFilterOn) and
+  if ((ACol >= grPeriodRooms.FixedCols) and (ARow >= grPeriodRooms.FixedRows)) and
+    ((ARow <> grPeriodRooms.RowCount - 1) OR grPeriodViewFilterOn) and
     (grPeriodRooms.cells[ACol, ARow] = '') and (Sender = Sender as TAdvStringGrid) then
   begin
     Accept := true;
   end;
 end;
 
-procedure TfrmMain.GetPriceInfo(rri: RecRRInfo; var CurrencySign: String; var PricePerDay, DiscountPerDay, PriceTotal, DiscountTotal: Double);
+procedure TfrmMain.GetPriceInfo(rri: RecRRInfo; var CurrencySign: String; var PricePerDay, DiscountPerDay, PriceTotal,
+  DiscountTotal: Double);
 var
   discountAmount: Double;
 begin
-  CurrencySign := '€';
+  CurrencySign := 'ï¿½';
   if rri.Discount <> 0 then
   begin
-    discountAmount := rri.Discount;
     if rri.Percentage then
     begin
       discountAmount := rri.Price / ((100 - rri.Discount) / 100); // ro.Price * ro.Discount / 100;
@@ -11650,7 +10331,6 @@ begin
     end
     else
     begin
-      discountAmount := rri.Price + rri.Discount;
       PricePerDay := rri.Price + rri.Discount;
       DiscountPerDay := rri.Discount;
     end;
@@ -11667,7 +10347,7 @@ begin
   end;
 end;
 
-function TfrmMain.GetCaptText(Canvas: TCanvas; OriginalText: String; MaxWidth: integer): String;
+function TfrmMain.GetCaptText(Canvas: TCanvas; const OriginalText: String; MaxWidth: integer): String;
 var
   AnyCharCapt: boolean;
   extraChars: String;
@@ -11728,7 +10408,8 @@ begin
       if cbxViewTypes.ItemIndex = 0 then
       begin
         iTemp := Grid.Canvas.TextHeight(Grid.cells[ACol, ARow]);
-        ExtTextOut(handle, Rect.Left + 2, (Rect.Top + Rect.Bottom) div 2 - iTemp div 2, ETO_CLIPPED, @Rect, PChar(Grid.cells[ACol, ARow]),
+        ExtTextOut(handle, Rect.Left + 2, (Rect.Top + Rect.Bottom) div 2 - iTemp div 2, ETO_CLIPPED, @Rect,
+          PChar(Grid.cells[ACol, ARow]),
           length(Grid.cells[ACol, ARow]), nil);
       end
       else if cbxViewTypes.ItemIndex = 1 then
@@ -11897,7 +10578,8 @@ begin
       end;
     end;
 
-    if (ACol > Grid.FixedCols - 1) and (ARow >= Grid.FixedRows) and ((ARow <> Grid.RowCount - 1) OR grPeriodViewFilterOn) then
+    if (ACol > Grid.FixedCols - 1) and (ARow >= Grid.FixedRows) and ((ARow <> Grid.RowCount - 1) OR grPeriodViewFilterOn)
+    then
     begin
       DrawPeriodColumn1(TAdvStringGrid(Sender), 1, ARow, State);
       try
@@ -11953,10 +10635,12 @@ begin
             if rri.OutOfOrderBlocking then
             begin
               tempString := GetTranslatedText('shTx_FrmMain_OutOfOrder') + StringOfChar(' ', 255) + #0;
-              ExtTextOut(handle, Rect.Left + 2, (Rect.Bottom + Rect.Top) div 2 - iTemp div 2, ETO_CLIPPED, @Rect, tempString, length(tempString), nil);
+              ExtTextOut(handle, Rect.Left + 2, (Rect.Bottom + Rect.Top) div 2 - iTemp div 2, ETO_CLIPPED, @Rect,
+                tempString, length(tempString), nil);
 
               Pen.Color := clBlack;
-              MoveTo(Rect.Left + 2 + TextWidth(GetTranslatedText('shTx_FrmMain_OutOfOrder')), (Rect.Top + Rect.Bottom) div 2);
+              MoveTo(Rect.Left + 2 + TextWidth(GetTranslatedText('shTx_FrmMain_OutOfOrder')),
+                (Rect.Top + Rect.Bottom) div 2);
               LineTo(Rect.Right, (Rect.Top + Rect.Bottom) div 2);
 
               exit;
@@ -11964,21 +10648,25 @@ begin
             else
             begin
               if cbxViewTypes.ItemIndex = 0 then
-                ExtTextOut(handle, Rect.Left + 2, (Rect.Bottom + Rect.Top) div 2 - iTemp div 2, ETO_CLIPPED, @Rect, tempString, length(tempString), nil)
+                ExtTextOut(handle, Rect.Left + 2, (Rect.Bottom + Rect.Top) div 2 - iTemp div 2, ETO_CLIPPED, @Rect,
+                  tempString, length(tempString), nil)
               else if cbxViewTypes.ItemIndex = 1 then
               begin
                 Font.name := 'Segoe UI';
                 Font.Style := [fsBold];
                 TempHeight := (Rect.Bottom - Rect.Top) div 2;
-                tempString := GetCaptText(Grid.Canvas, Grid.cells[ACol, ARow], Rect.Right - Rect.Left - 4) + StringOfChar(' ', 255) + #0;
+                tempString := GetCaptText(Grid.Canvas, Grid.cells[ACol, ARow], Rect.Right - Rect.Left - 4) +
+                  StringOfChar(' ', 255) + #0;
                 iTemp := TextHeight(tempString);
                 TempTop := Rect.Top + (TempHeight div 2) - (iTemp div 2);
                 ExtTextOut(handle, Rect.Left + 2, TempTop, ETO_CLIPPED, @Rect, tempString, length(tempString), nil);
 
                 Font.Style := [];
                 GetPriceInfo(rri, CurrencySign, PricePerDay, DiscountPerDay, PriceTotal, DiscountTotal);
-                tempString := GetCaptText(Grid.Canvas, Format('%s %s (av. %s %s)', [CurrencySign, trim(_floatToStr(PriceTotal - DiscountTotal, 12, 2)),
-                  CurrencySign, trim(_floatToStr(PricePerDay - DiscountPerDay, 12, 2))]), Rect.Right - Rect.Left - 4) + StringOfChar(' ', 255) + #0;
+                tempString := GetCaptText(Grid.Canvas, Format('%s %s (av. %s %s)',
+                  [CurrencySign, trim(_floatToStr(PriceTotal - DiscountTotal, 12, 2)),
+                  CurrencySign, trim(_floatToStr(PricePerDay - DiscountPerDay, 12, 2))]), Rect.Right - Rect.Left - 4) +
+                  StringOfChar(' ', 255) + #0;
                 TempTop := TempHeight + Rect.Top + (TempHeight div 2) - (iTemp div 2);
                 ExtTextOut(handle, Rect.Left + 2, TempTop, ETO_CLIPPED, @Rect, tempString, length(tempString), nil)
               end
@@ -11987,15 +10675,18 @@ begin
                 Font.name := 'Segoe UI';
                 Font.Style := [fsBold];
                 TempHeight := (Rect.Bottom - Rect.Top) div 3;
-                tempString := GetCaptText(Grid.Canvas, Grid.cells[ACol, ARow], Rect.Right - Rect.Left - 4) + StringOfChar(' ', 255) + #0;
+                tempString := GetCaptText(Grid.Canvas, Grid.cells[ACol, ARow], Rect.Right - Rect.Left - 4) +
+                  StringOfChar(' ', 255) + #0;
                 iTemp := TextHeight(tempString);
                 TempTop := Rect.Top + (TempHeight div 2) - (iTemp div 2);
                 ExtTextOut(handle, Rect.Left + 2, TempTop, ETO_CLIPPED, @Rect, tempString, length(tempString), nil);
 
                 Font.Style := [];
                 GetPriceInfo(rri, CurrencySign, PricePerDay, DiscountPerDay, PriceTotal, DiscountTotal);
-                tempString := GetCaptText(Grid.Canvas, Format('%s %s (av. %s %s)', [CurrencySign, trim(_floatToStr(PriceTotal - DiscountTotal, 12, 2)),
-                  CurrencySign, trim(_floatToStr(PricePerDay - DiscountPerDay, 12, 2))]), Rect.Right - Rect.Left - 4) + StringOfChar(' ', 255) + #0;
+                tempString := GetCaptText(Grid.Canvas, Format('%s %s (av. %s %s)',
+                  [CurrencySign, trim(_floatToStr(PriceTotal - DiscountTotal, 12, 2)),
+                  CurrencySign, trim(_floatToStr(PricePerDay - DiscountPerDay, 12, 2))]), Rect.Right - Rect.Left - 4) +
+                  StringOfChar(' ', 255) + #0;
                 TempTop := TempHeight + Rect.Top + (TempHeight div 2) - (iTemp div 2);
                 ExtTextOut(handle, Rect.Left + 2, TempTop, ETO_CLIPPED, @Rect, tempString, length(tempString), nil);
 
@@ -12005,14 +10696,18 @@ begin
 
                 s := inttostr(trunc(rri.Departure) - trunc(rri.Arrival));
                 tempString := s + StringOfChar(' ', 255) + #0;
-                LoadImageFromImageList(DImages.ilGuests, 6, Grid.Canvas, Point(Rect.Left + 2, TempTop + 2), Brush.Color, [Point(clRed, Font.Color)]);
-                ExtTextOut(handle, Rect.Left + 2 + 18, TempTop, ETO_CLIPPED, @Rect, tempString, length(tempString), nil);
+                LoadImageFromImageList(DImages.ilGuests, 6, Grid.Canvas, Point(Rect.Left + 2, TempTop + 2), Brush.Color,
+                  [Point(clRed, Font.Color)]);
+                ExtTextOut(handle, Rect.Left + 2 + 18, TempTop, ETO_CLIPPED, @Rect, tempString,
+                  length(tempString), nil);
 
                 i := TextWidth(s) + 10;
                 s := inttostr(rri.numGuests);
                 tempString := s + StringOfChar(' ', 255) + #0;
-                LoadImageFromImageList(DImages.ilGuests, 5, Grid.Canvas, Point(Rect.Left + i + 20, TempTop + 2), Brush.Color, [Point(clRed, Font.Color)]);
-                ExtTextOut(handle, Rect.Left + 2 + (18 * 2) + i, TempTop, ETO_CLIPPED, @Rect, tempString, length(tempString), nil);
+                LoadImageFromImageList(DImages.ilGuests, 5, Grid.Canvas, Point(Rect.Left + i + 20, TempTop + 2),
+                  Brush.Color, [Point(clRed, Font.Color)]);
+                ExtTextOut(handle, Rect.Left + 2 + (18 * 2) + i, TempTop, ETO_CLIPPED, @Rect, tempString,
+                  length(tempString), nil);
               end;
             end;
 
@@ -12039,7 +10734,8 @@ begin
             chRect.Top := Rect.Top + 3;
             chRect.Bottom := Rect.Bottom - 3;
             chRect.Right := chRect.Left + iExtraSpace;
-            iTempColor := getInvoiceMadeColor(rri.PaymentInvoice, round(rri.OngoingRent) <> 0, Brush.Color, clWhite, clAqua, rri.GroupAccount);
+            iTempColor := getInvoiceMadeColor(rri.PaymentInvoice, round(rri.OngoingRent) <> 0, Brush.Color, clWhite,
+              clAqua, rri.GroupAccount);
             DrawRectanglOnCanvas(TAdvStringGrid(Sender).Canvas, iTempColor, chRect);
           end;
 
@@ -12112,12 +10808,10 @@ begin
   allow := false;
 
   if ACol <> zzSourceCol then
-  begin
-    allow := false;
     exit;
-  end;
 
-  if (ACol >= grPeriodRooms.FixedCols) and (ARow >= grPeriodRooms.FixedRows) and ((ARow <> grPeriodRooms.RowCount - 1) OR grPeriodViewFilterOn) and
+  if (ACol >= grPeriodRooms.FixedCols) and (ARow >= grPeriodRooms.FixedRows) and
+    ((ARow <> grPeriodRooms.RowCount - 1) OR grPeriodViewFilterOn) and
     (grPeriodRooms.cells[ACol, ARow] = '') then
   begin
     allow := true;
@@ -12140,7 +10834,6 @@ begin
 
       // grPeriodRooms.GotoCell(ACol, ARow);
 
-      zDebug1 := '210';
       RefreshGrid;
       NullGlobals;
       zzRoomReservation := -1;
@@ -12191,8 +10884,6 @@ begin
 
   iRoomReservation := 0;
   AscIndex := -1;
-  allow := false;
-
   // if  (ssShift in shift) or (ssCtrl in shift)  then
   // begin
   try
@@ -12222,13 +10913,14 @@ begin
     zzSourceRow := ARow;
     zzSourceGridID := 1;
 
-    grPeriodRooms_NO.BeginDrag(True);
-    Perform( CM_CURSORCHANGED, 0, 0 ); // Attempt to refresh cursor icon faster, after issue from hotel EUPH
+    grPeriodRooms_NO.BeginDrag(true);
+    Perform(CM_CURSORCHANGED, 0, 0); // Attempt to refresh cursor icon faster, after issue from hotel EUPH
   end;
   /// end;
 end;
 
-procedure TfrmMain.grPeriodRooms_NODragOver(Sender, Source: TObject; X, Y: integer; State: TDragState; var Accept: boolean);
+procedure TfrmMain.grPeriodRooms_NODragOver(Sender, Source: TObject; X, Y: integer; State: TDragState;
+  var Accept: boolean);
 begin
   Accept := zzSource <> Sender;
 end;
@@ -12246,7 +10938,6 @@ begin
   begin
     newRoom := '';
     MoveToRoomEnh2(zzRoomReservation, newRoom);
-    zDebug1 := '220';
     RefreshGrid;
     grPeriodRooms_NO.GotoCell(ACol, ARow);
     NullGlobals;
@@ -12281,15 +10972,13 @@ begin
   end;
 end;
 
-function TfrmMain.Period_CheckHint(Sender: TObject; X, Y: integer; iReservation: integer = 0; iRoomReservation: integer = 0): String;
+function TfrmMain.Period_CheckHint(Sender: TObject; X, Y: integer; iReservation: integer = 0;
+  iRoomReservation: integer = 0): String;
 var
   ACol, ARow: integer;
-  HintStr: String;
   APoint: TPoint;
   Rect: TRect;
   sRoom: string;
-  sHintText: string;
-
   //
   rri: RecRRInfo;
   Grid: TAdvStringGrid;
@@ -12333,7 +11022,8 @@ begin
       ApplicationCancelGuestHint;
       exit;
     end;
-    if (FrmReservationHintHolder.pnlHint.Visible) AND (iLastShownRoomReservation = rri.RoomReservation) AND (iLastShownHintRow = ARow) then
+    if (FrmReservationHintHolder.pnlHint.Visible) AND (iLastShownRoomReservation = rri.RoomReservation) AND
+      (iLastShownHintRow = ARow) then
       // (iLastShownHintCol = ACol) then
       exit;
 
@@ -12388,7 +11078,8 @@ begin
   // ActivateHint(APoint, TAdvStringGrid(Sender));
 end;
 
-procedure TfrmMain.grPeriodRooms_NOGetCellColor(Sender: TObject; ARow, ACol: integer; AState: TGridDrawState; ABrush: TBrush; AFont: TFont);
+procedure TfrmMain.grPeriodRooms_NOGetCellColor(Sender: TObject; ARow, ACol: integer; AState: TGridDrawState;
+  ABrush: TBrush; AFont: TFont);
 var
   BColor: TColor;
   FColor: TColor;
@@ -12424,7 +11115,6 @@ end;
 
 procedure TfrmMain.grPeriodRooms_NOKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 var
-  rri: RecRRInfo;
   RoomTypeForceWasOn: boolean;
   ColWas, RowWas: integer;
 begin
@@ -12519,7 +11209,8 @@ begin
 
 end;
 
-procedure TfrmMain.grPeriodRooms_NOGetCellBorder(Sender: TObject; ARow, ACol: integer; APen: TPen; var Borders: TCellBorders);
+procedure TfrmMain.grPeriodRooms_NOGetCellBorder(Sender: TObject; ARow, ACol: integer; APen: TPen;
+  var Borders: TCellBorders);
 var
   status: string;
   AscIndex: integer;
@@ -12572,11 +11263,6 @@ end;
 procedure TfrmMain.mnuCancelReservation2Click(Sender: TObject);
 begin
   _RemoveAReservation;
-end;
-
-procedure TfrmMain.mnuFilterLocationClick(Sender: TObject);
-begin
-
 end;
 
 /// ////////////////////////////////////////////////////////////////////////////
@@ -12725,10 +11411,14 @@ begin
       exit;
 
     rSet := d.roomerMainDataSet.ActivateNewDataset
-      (d.roomerMainDataSet.SystemFreeQuery(Format('SELECT id, Stop, ' + '       (SELECT Code FROM roomtypegroups WHERE id=roomClassId) AS roomClass, ' +
-      '       channelId, ' + '       (SELECT name FROM channels WHERE id=channelId) AS channelName ' + 'FROM channelrates ' +
-      'WHERE roomClassId=(SELECT id FROM roomtypegroups WHERE Code=''%s'' LIMIT 1) ' + 'AND to_bool((SELECT Active FROM channels WHERE id=channelId)) ' +
-      'AND date=''%s'' ' + 'ORDER BY channelName', [grdRoomClasses.cells[0, grdRoomClasses.row], uDateUtils.dateToSqlString(lastDate)])));
+      (d.roomerMainDataSet.SystemFreeQuery(Format('SELECT id, Stop, ' +
+      '       (SELECT Code FROM roomtypegroups WHERE id=roomClassId) AS roomClass, ' +
+      '       channelId, ' + '       (SELECT name FROM channels WHERE id=channelId) AS channelName ' +
+      'FROM channelrates ' +
+      'WHERE roomClassId=(SELECT id FROM roomtypegroups WHERE Code=''%s'' LIMIT 1) ' +
+      'AND to_bool((SELECT Active FROM channels WHERE id=channelId)) ' +
+      'AND date=''%s'' ' + 'ORDER BY channelName', [grdRoomClasses.cells[0, grdRoomClasses.row],
+      uDateUtils.dateToSqlString(lastDate)])));
     try
       rSet.first;
       while not rSet.eof do
@@ -12769,7 +11459,7 @@ begin
   end;
 end;
 
-procedure TfrmMain.RemoveLanguagesFilesAndRefresh(Refresh : Boolean = True);
+procedure TfrmMain.RemoveLanguagesFilesAndRefresh(Refresh: boolean = true);
 var
   path: String;
 begin
@@ -12799,7 +11489,8 @@ begin
   if dlgSave.Execute then
   begin
 
-    d.roomerMainDataSet.roomerClient.{$IFDEF USE_INDY}OnWork := IdHTTP1Work{$ELSE}OnDownloadProgress := DownloadProgress{$ENDIF};
+    d.roomerMainDataSet.roomerClient.{$IFDEF USE_INDY}OnWork := IdHTTP1Work{$ELSE}OnDownloadProgress :=
+      DownloadProgress{$ENDIF};
     // lblBusyDownloading.Caption := 'Downloading...';
     lblBusyDownloading.Caption := GetTranslatedText('shTx_Main_Downloading');
     lblBusyDownloading.Visible := true;
@@ -12843,7 +11534,7 @@ begin
   begin
     SetViews(1);
     SetDateWithoutEvents(aDate);
-    StartOneDay;
+    RefreshOneDayGrid;
     OneDay_DoAJump(sRoom);
   end;
 
@@ -12866,7 +11557,7 @@ begin
   LoginCancelled := true;
   downloadCurrentVersion(handle, d.roomerMainDataSet);
   try
-    d.roomerMainDataSet.Logout;
+    d.roomerMainDataSet.LOGOUT;
     __lblUsername.Caption := 'N/A';
   except
   end;
@@ -12946,20 +11637,6 @@ begin
   end;
   _Logout;
 end;
-
-procedure TfrmMain.btnLogOutClick(Sender: TObject);
-begin
-end;
-
-
-// procedure TfrmMain.btnLogOutClick(Sender: TObject);
-// begin
-// if Sender <> nil then
-// begin
-// lblAuthStatus.Caption := GetTranslatedText('shTx_Main_LoggedOut');
-// end;
-// _Logout;
-// end;
 
 procedure TfrmMain.btnLostAndFoundClick(Sender: TObject);
 begin
@@ -13148,7 +11825,7 @@ var
 begin
   UserClickedDxLargeButton(Sender);
   if Taxes(actNone, theData) then;
-  initializeTaxes;
+  InitializeTaxes;
 end;
 
 procedure TfrmMain.btnTestDataClick(Sender: TObject);
@@ -13261,6 +11938,14 @@ procedure TfrmMain.btnRptCustInvoicesClick(Sender: TObject);
 begin
   UserClickedDxLargeButton(Sender);
   RptResInvoices
+end;
+
+procedure TfrmMain.btnRptDeparturesClick(Sender: TObject);
+begin
+  {$IFDEF DEBUG}
+  UserClickedDxLargeButton(Sender);
+  ShowDeparturesReport;
+  {$ENDIF}
 end;
 
 procedure TfrmMain.btnRptFinanceForecastClick(Sender: TObject);
@@ -13506,10 +12191,6 @@ end;
 procedure TfrmMain.btnPhonePricesClick(Sender: TObject);
 begin
   UserClickedDxLargeButton(Sender);
-
-{$IFDEF DEBUG}
-  ShowDeparturesReport;
-{$ENDIF}
   _PhonePrices;
 end;
 
@@ -13552,7 +12233,7 @@ procedure TfrmMain.btnSettingsClick(Sender: TObject);
 begin
   UserClickedDxLargeButton(Sender);
   _Settings;
-  ALREADY_READ_DAY_VIEW_SIZES := false;
+  FDayViewSizesRead := false;
   if LoadOneDayViewGridStatus then
   begin
     grAutoSizeGrids;
@@ -13574,7 +12255,8 @@ begin
   if isStayTaxExcluded then
   begin
     OpenRptTurnoverAndPayments2;
-  end else
+  end
+  else
   begin
     OpenRptTurnoverAndPayments;
   end;
@@ -13602,7 +12284,7 @@ end;
 
 procedure TfrmMain.btnDynamicRateRulesClick(Sender: TObject);
 begin
- openDynamicRates(actNone, '', '', '')
+  openDynamicRates(actNone, '', '', '')
 end;
 
 procedure TfrmMain.btnWebAccessibleFilesClick(Sender: TObject);
@@ -13663,12 +12345,14 @@ end;
 
 procedure TfrmMain.mniBookinglEmailTemplatesClick(Sender: TObject);
 begin
-  StaticResources('Booking Confirmation Email Templates', GUEST_EMAIL_TEMPLATE, ACCESS_OPEN, THtmlResourceParameters.Create);
+  StaticResources('Booking Confirmation Email Templates', GUEST_EMAIL_TEMPLATE, ACCESS_OPEN,
+    THtmlResourceParameters.Create);
 end;
 
 procedure TfrmMain.mniCancelEmailTemplatesClick(Sender: TObject);
 begin
-  StaticResources('Cancellation Confirmation Email Templates', CANCEL_EMAIL_TEMPLATE, ACCESS_OPEN, THtmlResourceParameters.Create);
+  StaticResources('Cancellation Confirmation Email Templates', CANCEL_EMAIL_TEMPLATE, ACCESS_OPEN,
+    THtmlResourceParameters.Create);
 end;
 
 procedure TfrmMain.edtSearchChange(Sender: TObject);
@@ -13742,7 +12426,7 @@ begin
   begin
     SetViews(1);
     SetDateWithoutEvents(aDate);
-    StartOneDay;
+    RefreshOneDayGrid;
     OneDay_DoAJump(sRoom);
   end;
 
@@ -13755,13 +12439,13 @@ var
 begin
   SetViews(1);
   SetDateWithoutEvents(aDate);
-  StartOneDay;
+  RefreshOneDayGrid;
   Room := '';
-  for i := 0 to ReservationsModel.ReservationCount - 1 do
-    for l := 0 to ReservationsModel.Reservations[i].RoomCount - 1 do
-      if ReservationsModel.Reservations[i].Rooms[l].RoomRes = RoomReservation then
+  for i := 0 to FReservationsModel.ReservationCount - 1 do
+    for l := 0 to FReservationsModel.Reservations[i].RoomCount - 1 do
+      if FReservationsModel.Reservations[i].Rooms[l].RoomRes = RoomReservation then
       begin
-        Room := ReservationsModel.Reservations[i].Rooms[l].RoomNumber;
+        Room := FReservationsModel.Reservations[i].Rooms[l].RoomNumber;
         OneDay_DoAJump(Room);
       end;
 end;
@@ -13855,11 +12539,10 @@ end;
 
 // ############################# File #####################################
 
-function TfrmMain._Logout(AlreadyInactive: boolean = false; AutoLogin: String = ''): boolean;
+function TfrmMain._Logout(AlreadyInactive: boolean = false; const AutoLogin: String = ''): boolean;
 begin
   lblHotelName.Caption := '';
   performClearHotel(NOT AlreadyInactive);
-  result := false;
   try
     result := StartHotel(false, AlreadyInactive, AutoLogin) or LoginCancelled;
   finally
@@ -13889,7 +12572,6 @@ end;
 
 procedure TfrmMain._Refresh;
 begin
-  zDebug1 := '260';
   RefreshGrid;
 end;
 
@@ -14078,8 +12760,6 @@ begin
 end;
 
 procedure TfrmMain._ClosedInvoicesThisRoom;
-var
-  CreateNew: boolean;
 begin
   // ** Finished invoices - this room
   if not IsValidCellSelected then
@@ -14127,15 +12807,6 @@ begin
   OneDay_EditPerson;
 end;
 
-procedure TfrmMain._ReservationRoomList;
-begin
-end;
-
-procedure TfrmMain._DeleteReservation;
-begin
-  RemoveAReservation;
-end;
-
 procedure TfrmMain._RemoveThisRoom;
 begin
   if not IsValidCellSelected then
@@ -14143,31 +12814,23 @@ begin
   OneDay_DeleteRoomReservation;
 end;
 
-procedure TfrmMain._CancelThisReservation;
-begin
-  RemoveAReservation;
-end;
-
 
 // ############################# Navigation ################################
 
 procedure TfrmMain._Nextday;
 begin
-  g.qDebug1 := '_Nextday';
   dtDate.Date := trunc(dtDate.Date + 1);
   // RefreshGrid;
 end;
 
 procedure TfrmMain._Today;
 begin
-  g.qDebug1 := '_Today';
   dtDate.Date := trunc(now);
   // RefreshGrid;
 end;
 
 procedure TfrmMain._PreviusDay;
 begin
-  g.qDebug1 := '_PreviusDay';
   dtDate.Date := trunc(dtDate.Date - 1);
   // RefreshGrid;
 end;
@@ -14183,12 +12846,13 @@ end;
 
 // ############################  View  #######################################
 procedure TfrmMain.__cbxHotelsCloseUp(Sender: TObject);
-var hotelId : String;
+var
+  hotelId: String;
 begin
   if (__cbxHotels.Items.Count > 1) then
   begin
     hotelId := TRoomerHotelsEntity(__cbxHotels.Items.Objects[__cbxHotels.ItemIndex]).hotelCode;
-    if ANSILowercase(hotelId) <> ANSILowercase(d.roomerMainDataSet.hotelId) then
+    if ANSIlowercase(hotelId) <> ANSIlowercase(d.roomerMainDataSet.hotelId) then
     begin
       _Logout(false, hotelId);
       checkFilterStatuses;
@@ -14201,7 +12865,6 @@ begin
   if zDoRefresh then
   begin
     g.qNameOrder := cbxNameOrder.ItemIndex;
-    zDebug1 := '280';
     RefreshGrid;
   end
   else
@@ -14215,7 +12878,6 @@ begin
   if zDoRefreshPeriod then
   begin
     g.qNameOrderPeriod := cbxNameOrderPeriod.ItemIndex;
-    zDebug1 := '290';
     RefreshGrid;
   end
   else
@@ -14352,10 +13014,6 @@ begin
   openRoomTypes(actNone, theData);
 end;
 
-procedure TfrmMain._RoomSelectionRules;
-begin
-end;
-
 procedure TfrmMain._LocationsList;
 var
   theData: recLocationHolder;
@@ -14395,7 +13053,6 @@ begin
   // if frmGuestsSearch.zGoTo then
   // begin
   // dtDate.Date := trunc(frmGuestsSearch.zArrival);
-  // zdebug1 := '300';
   // RefreshGrid;
   // sRoom := frmGuestsSearch.zRoom;
   // end;
@@ -14438,41 +13095,6 @@ begin
     zRoom := sRoom;
     timBlink.Enabled := true;
   end;
-end;
-
-procedure TfrmMain._JumptoRoomAndDate;
-var
-  aRoom: string;
-  aDate: Tdate;
-
-  ACol: integer;
-  ARow: integer;
-begin
-  aDate := dtDate.Date;
-  aRoom := '';
-
-  SetViews(1);
-  // if ViewMode = vmOneDay then
-  // begin
-  ACol := grOneDayRooms.col;
-  ARow := grOneDayRooms.row;
-
-  if OneDay_GetIsLeftOrRight(ACol) = 1 then
-  begin
-    aRoom := grOneDayRooms.cells[0, ARow];
-  end
-  else
-  begin
-    aRoom := grOneDayRooms.cells[7, ARow];
-  end;
-  g.openGoToRoomAndDate(aRoom, aDate);
-
-  SetDateWithoutEvents(trunc(aDate));
-  g.qDebug1 := '_JumptoRoomAndDate';
-  StartOneDay;
-  OneDay_DoAJump(aRoom);
-  // end;
-
 end;
 
 procedure TfrmMain.actLanguageExecute(Sender: TObject);
@@ -14546,13 +13168,8 @@ var
   act: TActTableAction;
 begin
   act := actNone;
-  initCurrencyHolder(theData);
-  if Currencies(act, theData) then
-  begin
-  end
-  else
-  begin
-  end;
+  theData.init;
+  Currencies(act, theData);
 end;
 
 procedure TfrmMain._LostAndFound;
@@ -14633,7 +13250,7 @@ end;
 
 procedure TfrmMain._StaffAuthorizationList;
 begin
-  showmessage('Comming soon')
+  ShowMessage('Comming soon')
 end;
 
 
@@ -14664,7 +13281,6 @@ end;
 procedure TfrmMain._PriceCodes;
 var
   theData: recPriceCodeHolder;
-  act: TActTableAction;
 begin
   initPriceCodeHolder(theData);
   priceCodes(actNone, theData);
@@ -14694,65 +13310,10 @@ begin
   except
     on E: Exception do
     begin
-      showmessage(E.ClassName + { 1091 } ' ' + GetTranslatedText('sh1091') + ' : ' + E.message);
+      ShowMessage(E.ClassName + { 1091 } ' ' + GetTranslatedText('sh1091') + ' : ' + E.message);
     end;
   end;
 end;
-
-procedure TfrmMain._RemodeHelp;
-var
-  aProgram: string;
-begin
-  aProgram := ExtractFilePath(Paramstr(0)) + 'fjartenging.exe';
-
-  if FileExists(aProgram) then
-  begin
-    try
-      CreateProcessSimple(aProgram);
-    except
-      on E: Exception do
-      begin
-        showmessage(E.ClassName + { 1091 } ' ' + GetTranslatedText('sh1091') + ' : ' + E.message);
-      end;
-    end;
-  end
-  else
-  begin
-    showmessage( { 1092a } GetTranslatedText('sh1092a') + ' "' + aProgram +
-      { 1092b } '"' + ' - ' + GetTranslatedText('sh1092b') + ' ');
-  end;
-
-end;
-
-procedure TfrmMain._OldRpt;
-var
-  aProgram: string;
-begin
-  aProgram := ExtractFilePath(Paramstr(0)) + 'rpt.exe';
-
-  if FileExists(aProgram) then
-  begin
-    try
-      CreateProcessSimple(aProgram);
-    except
-      on E: Exception do
-      begin
-        showmessage(E.ClassName + { +1091 } ' ' + GetTranslatedText('sh1091') + ' : ' + E.message);
-      end;
-    end;
-  end
-  else
-  begin
-    showmessage( { 1092a } GetTranslatedText('sh1092a') + ' "' + aProgram +
-      { 1092b } '" - ' + GetTranslatedText('sh1092b') + ' ');
-  end;
-
-end;
-
-procedure TfrmMain._HotelList;
-begin
-end;
-
 
 // ############################ SYSTEM #######################################
 
@@ -14780,7 +13341,6 @@ begin
       d.chkConfirmMonitor;
       grPeriodRooms.DefaultColWidth := g.qPeriodColWidth;
       grPeriodRooms.DefaultRowHeight := getRowHeightFromIndex(cbxViewTypes.ItemIndex);
-      Period_RestoreColumnSize;
       Period_RestoreRowHeights;
 
       grOneDayRooms.DefaultRowHeight := g.qOneDayRowHeight;
@@ -14795,7 +13355,6 @@ begin
       zDoRefreshPeriod := false;
       cbxNameOrderPeriod.ItemIndex := g.qNameOrderPeriod;
 
-      zDebug1 := '310';
       RefreshGrid;
       oldDock1.Visible := g.qShowSideBar;
 
@@ -14829,7 +13388,8 @@ begin
     iSaved3 := __dxBarCombo1.ItemIndex;
     if g.ChangeLang(langId, true) then
     begin
-      RoomerLanguage.SetLanguageId(g.qUserLanguage, g.qUser + '.' + inttostr(g.qUserLanguage) + '.' + DateTimeToStr(now));
+      RoomerLanguage.SetLanguageId(g.qUserLanguage, g.qUser + '.' + inttostr(g.qUserLanguage) + '.' +
+        DateTimeToStr(now));
       TranslateOpenForms;
     end;
   finally
@@ -14910,7 +13470,7 @@ begin
     begin
       SetViews(1);
       SetDateWithoutEvents(aDate);
-      StartOneDay;
+      RefreshOneDayGrid;
       OneDay_DoAJump(aRoom);
     end;
   end
@@ -14921,28 +13481,18 @@ end;
 
 procedure TfrmMain.CreateQuickReservation(isQuick: boolean; showDetails: boolean = true; Blocked: boolean = false);
 var
-  CustomerInfo: recCustomerHolderEX;
-  doShowProfile: boolean;
-  Daysleft: integer;
-  missingReason: integer;
-  resMedhod: TResMedhod;
-  priceFound: boolean;
   iReservation: integer;
   oNewReservation: TNewReservation;
 
   confEmailSent: boolean;
 
-  s: string;
-  i: integer;
-
   function OpenQuickDetails(var oNewReservation: TNewReservation): boolean;
   begin
-    result := false;
     frmMakeReservationQuick := TfrmMakeReservationQuick.Create(frmMakeReservationQuick);
     try
       frmMakeReservationQuick.NewReservation := oNewReservation;
       frmMakeReservationQuick.ShowModal;
-      Result := frmMakeReservationQuick.ModalResult = mrOK;
+      result := frmMakeReservationQuick.ModalResult = mrOK;
     finally
       frmMakeReservationQuick.Free;
       frmMakeReservationQuick := nil;
@@ -14951,14 +13501,9 @@ var
 
 begin
   confEmailSent := false;
-  try
-    oNewReservation := TNewReservation.Create(g.qHotelCode, g.qUser);
-  Except
-    // ATH Log exception
-  end;
+  oNewReservation := TNewReservation.Create(g.qHotelCode, g.qUser);
 
   try
-    priceFound := true;
     if isQuick then
     begin
       if ViewMode = vmOneDay then
@@ -14994,8 +13539,8 @@ begin
     begin
       if not OpenQuickDetails(oNewReservation) then
       begin
-        RoomerMessageDialog(GetTranslatedText('shTx_Main_ReservationCancelled'), mtConfirmation, [mbOk], 'MainFormReservationCancelledMessage', mrOK);
-        // showmessage(GetTranslatedText('shTx_Main_ReservationCancelled'));
+        RoomerMessageDialog(GetTranslatedText('shTx_Main_ReservationCancelled'), mtConfirmation, [mbOk],
+          'MainFormReservationCancelledMessage', mrOK);
         exit;
       end;
     end;
@@ -15078,7 +13623,8 @@ begin
       begin
         aRoom := grOneDayRooms.cells[0, iRow];
         // oSelectedRoomItem := TSelectedRoomItem.Create(aRoom,Arrival,departure,0);
-        oSelectedRoomItem := TnewRoomReservationItem.Create(0, aRoom, '', '', Arrival, Departure, 0, 0, 0, true, 0, 0, 0, '', '', '');
+        oSelectedRoomItem := TnewRoomReservationItem.Create(0, aRoom, '', '', Arrival, Departure, 0, 0, 0, true, 0, 0,
+          0, '', '', '');
         oNewReservation.newRoomReservations.RoomItemsList.Add(oSelectedRoomItem);
       end
     end;
@@ -15098,7 +13644,8 @@ begin
       begin
         aRoom := grOneDayRooms.cells[7, iRow];
         // oSelectedRoomItem := TSelectedRoomItem.Create(aRoom,Arrival,departure,0);
-        oSelectedRoomItem := TnewRoomReservationItem.Create(0, aRoom, '', '', Arrival, Departure, 0, 0, 0, true, 0, 0, 0, '', '', '');
+        oSelectedRoomItem := TnewRoomReservationItem.Create(0, aRoom, '', '', Arrival, Departure, 0, 0, 0, true, 0, 0,
+          0, '', '', '');
         oNewReservation.newRoomReservations.RoomItemsList.Add(oSelectedRoomItem);
       end;
     end;
@@ -15109,7 +13656,6 @@ function TfrmMain.QuickResPeriodRoomObj(var oNewReservation: TNewReservation): i
 var
   iRow: integer;
   iCol: integer;
-  ok: boolean;
 
   sCellContent: string;
 
@@ -15156,7 +13702,6 @@ begin
   while not d.mQuickRes.eof do
   begin
     aRoom := d.mQuickRes.FieldByName('Room').asString;
-    Arrival := d.mQuickRes.FieldByName('DateFrom').AsDateTime;
     Departure := d.mQuickRes.FieldByName('DateTo').AsDateTime;
     if not d.mQuickRes.eof then
     begin
@@ -15168,7 +13713,7 @@ begin
       if (dtDateFromNext = Departure) and (aRoom = RoomNext) then
       begin
         d.mQuickRes.Prior;
-        d.mQuickRes.edit;
+        d.mQuickRes.EDIT;
         d.mQuickRes.FieldByName('DateTo').AsDateTime := dtDateToNext;
         d.mQuickRes.Post;
 
@@ -15188,7 +13733,8 @@ begin
     Arrival := d.mQuickRes.FieldByName('DateFrom').AsDateTime;
     Departure := d.mQuickRes.FieldByName('DateTo').AsDateTime;
     // oSelectedRoomItem := TSelectedRoomItem.Create(aRoom,Arrival,departure,0);
-    oSelectedRoomItem := TnewRoomReservationItem.Create(0, aRoom, '', '', Arrival, Departure, 0, 0, 0, true, 0, 0, 0, '', '', '');
+    oSelectedRoomItem := TnewRoomReservationItem.Create(0, aRoom, '', '', Arrival, Departure, 0, 0, 0, true, 0, 0, 0,
+      '', '', '');
     oNewReservation.newRoomReservations.RoomItemsList.Add(oSelectedRoomItem);
     d.mQuickRes.next;
   end;
@@ -15203,7 +13749,7 @@ end;
 
 procedure TfrmMain.btnCurrentGuestsReportClick(Sender: TObject);
 begin
-  showmessage( { 1096 } 'Ekki tilbúið');
+  ShowMessage( { 1096 } 'Ekki tilbï¿½iï¿½');
 end;
 
 procedure TfrmMain.__dxBarCombo1CloseUp(Sender: TObject);
@@ -15245,10 +13791,6 @@ end;
 ///
 /// ///////////////////////////////////////////////////////////////////////////
 
-var
-  zRoomReservationCount: integer;
-  zReservationCount: integer;
-  zRoomReservationList: string;
 
 function TfrmMain.getSortField: string;
 var
@@ -15288,15 +13830,18 @@ begin
   case aType of
     0:
       begin
-        result := Format(GetListOfRoomReservationsPerArrivalDate, [_dateToDBDate(dtDate.Date, true), _dateToDBDate(dtDate.Date, true)]);
+        result := Format(GetListOfRoomReservationsPerArrivalDate, [_dateToDBDate(dtDate.Date, true),
+          _dateToDBDate(dtDate.Date, true)]);
       end;
     1:
       begin
-        result := Format(GetListOfRoomReservationsPerDepartureDate, [_dateToDBDate(dtDate.Date, true), _dateToDBDate(dtDate.Date, true)]);
+        result := Format(GetListOfRoomReservationsPerDepartureDate, [_dateToDBDate(dtDate.Date, true),
+          _dateToDBDate(dtDate.Date, true)]);
       end;
     2:
       begin
-        result := Format(GetListOfRoomReservationsFromToDate, [_dateToDBDate(dtDate.Date, true), _dateToDBDate(dtDate.Date, true)]);
+        result := Format(GetListOfRoomReservationsFromToDate, [_dateToDBDate(dtDate.Date, true),
+          _dateToDBDate(dtDate.Date, true)]);
       end;
   else
     begin
@@ -15304,57 +13849,11 @@ begin
     end;
   end;
 
-end;
-
-function TfrmMain.getRoomReservationsList(aType: integer; includeNoshow, includeAllotment, includeBlocked: boolean): string;
-var
-  s: string;
-  rrList: TStringList;
-  i: integer;
-begin
-  result := '';
-  case aType of
-    0:
-      begin
-        rrList := d.GuestListRRlst_Arrival(dtDate.Date, dtDate.Date, includeNoshow, includeAllotment, includeBlocked);
-      end;
-    1:
-      begin
-        rrList := d.GuestListRRlst_Departure(dtDate.Date, dtDate.Date, includeNoshow, includeAllotment, includeBlocked);
-      end;
-    2:
-      begin
-        rrList := d.GuestListRRlst_FromTo(dtDate.Date, dtDate.Date, includeNoshow, includeAllotment, includeBlocked)
-      end;
-  else
-    begin
-      exit;
-    end;
-  end;
-
-  try
-    s := '';
-    for i := 0 to rrList.Count - 1 do
-    begin
-      s := s + rrList[i] + ',';
-    end;
-    if length(s) > 0 then
-    begin
-      Delete(s, length(s), 1);
-      s := '(' + s + ')';
-      result := s;
-    end;
-    zRoomReservationCount := rrList.Count;
-  finally
-    freeandNil(rrList);
-  end;
-  result := s;
 end;
 
 procedure TfrmMain.refreshGuestList;
 var
   rSet: TRoomerDataSet;
-  rCount: integer;
   s: string;
   aType: integer;
   // Fields
@@ -15390,7 +13889,6 @@ var
   RoomCount: integer;
   RvGuestCount: integer;
   RRGuestCount: integer;
-  resId: integer;
   mainGuests: string;
   GroupReservation: integer;
   GroupReservationName: string;
@@ -15400,12 +13898,10 @@ var
   numDays, Adults, Children, Infants: integer;
 
   ResLine: string;
-  rv: integer;
-  Information, PMInfo: string;
-
   breakfastguests: integer;
 
   SubSql: String;
+  zRoomReservationList: string;
 
 begin
 
@@ -15425,7 +13921,6 @@ begin
       if mAllReservations.active then
         mAllReservations.Close;
       mAllReservations.Open;
-      resId := 0;
 
       rSet := CreateNewDataSet;
       try
@@ -15440,8 +13935,6 @@ begin
           // DebugMessage(s);
 
           hData.rSet_bySQL(rSet, s);
-
-          rv := -1;
 
           rSet.first;
           while not rSet.eof do
@@ -15503,7 +13996,8 @@ begin
             begin
               GroupReservation := Reservation;
               GroupReservationName := ReservationName;
-              ResInfo := inttostr(GroupReservation) + ' | ' + GroupReservationName + ' (' + inttostr(RvGuestCount) + ' guests in ' + inttostr(RoomCount) +
+              ResInfo := inttostr(GroupReservation) + ' | ' + GroupReservationName + ' (' + inttostr(RvGuestCount) +
+                ' guests in ' + inttostr(RoomCount) +
                 ' rooms)';
             end;
 
@@ -15556,7 +14050,6 @@ begin
           end;
 
           mAllReservations.first;
-          rCount := rSet.RecordCount;
         finally
           Screen.Cursor := crDefault;
           mAllReservations.EnableControls;
@@ -15730,7 +14223,7 @@ begin
   CanShow := true;
 end;
 
-procedure TfrmMain.ShowTimelyMessage(sMessage: string);
+procedure TfrmMain.ShowTimelyMessage(const sMessage: string);
 begin
   pnlTimeMessage.Hide;
   timHideTimeMessage.Enabled := false;
@@ -15808,8 +14301,6 @@ begin
 end;
 
 procedure TfrmMain.DownloadProgress(Sender: TObject; Read, Total: integer);
-var
-  Value: Extended;
 begin
   if lblBusyDownloading.Color <> sSkinManager1.GetHighLightColor(true) then
   begin
@@ -15837,13 +14328,6 @@ begin
   ShowTimelyMessage(Format(GetTranslatedText('shTx_FrmMain_CopiedReservationToClipboard'), [reservationId]));
 end;
 
-procedure TfrmMain.CopyRoomReservation(roomReservationId: integer);
-begin
-  ClipboardCopy(Format(ROOMER_COPY_ROOMRESERVATION_ID, [d.roomerMainDataSet.hotelId, roomReservationId]));
-  ShowTimelyMessage(Format(GetTranslatedText('shTx_FrmMain_CopiedRoomReservationToClipboard'), [roomReservationId]));
-end;
-
-
 {$IFDEF USE_JCL}
 
 initialization
@@ -15854,7 +14338,8 @@ JclStartExceptionTracking;
 {$ENDIF}
 { TRoomClassChannelAvailabilityContainer }
 
-constructor TRoomClassChannelAvailabilityContainer.Create(_RoomTypeGroup: String; _NumRooms, _Reserved, _ChannelAvailable, _ChannelMaxAvailable,
+constructor TRoomClassChannelAvailabilityContainer.Create(const _RoomTypeGroup: String;
+  _NumRooms, _Reserved, _ChannelAvailable, _ChannelMaxAvailable,
   _GridIndex: integer; _AnyStop: boolean);
 begin
   RoomTypeGroup := _RoomTypeGroup;
@@ -15868,7 +14353,7 @@ end;
 
 { TRoomAvailabilityEntity }
 
-constructor TRoomAvailabilityEntity.Create(Room, RoomType, RoomClass: String);
+constructor TRoomAvailabilityEntity.Create(const Room, RoomType, RoomClass: String);
 begin
   FRoom := Room;
   FRoomType := RoomType;

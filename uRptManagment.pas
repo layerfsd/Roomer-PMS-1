@@ -53,7 +53,8 @@ uses
   dxSkinLondonLiquidSky, dxSkinMoneyTwins, dxSkinOffice2007Black, dxSkinOffice2007Blue, dxSkinOffice2007Green, dxSkinOffice2007Pink,
   dxSkinOffice2007Silver, dxSkinOffice2010Black, dxSkinOffice2010Blue, dxSkinOffice2010Silver, dxSkinPumpkin, dxSkinSeven,
   dxSkinSevenClassic, dxSkinSharp, dxSkinSharpPlus, dxSkinSilver, dxSkinSpringTime, dxSkinStardust, dxSkinSummer2008, dxSkinValentine,
-  dxSkinVS2010, dxSkinWhiteprint, dxSkinXmas2008Blue
+  dxSkinVS2010, dxSkinWhiteprint, dxSkinXmas2008Blue, ppDB, ppDBPipe, ppParameter, ppDesignLayer, ppVar, ppBands,
+  ppCtrls, ppPrnabl, ppClass, ppCache, ppComm, ppRelatv, ppProd, ppReport
 
   ;
 
@@ -77,7 +78,6 @@ type
     grStat: TcxGrid;
     tvStat: TcxGridDBTableView;
     btnGuestsExcel: TsButton;
-    sButton1: TsButton;
     lvStat: TcxGridLevel;
     tvStats: TcxGridDBBandedTableView;
     tvStatsADate: TcxGridDBBandedColumn;
@@ -147,7 +147,7 @@ uses
   uD,
   uRoomerLanguage,
   uDimages,
-  uRoomerDefinitions;
+  uRoomerDefinitions, uRptbViewer;
 
 function rptManagment : boolean;
 begin
@@ -175,11 +175,6 @@ begin
   cbxMonth.ItemIndex := zMonth;
 
   cbxYear.ItemIndex := cbxYear.Items.IndexOf(inttostr(zYear));
-//  idx := zYear - 2010;
-//  if (idx < cbxYear.Items.Count - 1) and (idx > 0) then
-//  begin
-//    cbxYear.ItemIndex := idx;
-//  end;
 
   zDateFrom := encodeDate(y, m, 1);
   lastDay := _DaysPerMonth(y, m);
@@ -303,80 +298,6 @@ begin
   s := s + ' WHERE '#10 ;
   s := s + '	((pd.date>='+_DateToDbDate(zDateFrom,true)+' AND pd.date<='+_DateToDbDate(zDateTo,true)+')) '#10 ;
   s := s + ' ORDER BY date ';
-
-(******PREVIOUS****************************************************************************************************
-    s := '';
-    s := s+' SELECT * '#10;
-    s := s+' FROM '#10;
-    s := s+' ( '#10;
-    s := s+' SELECT baseData.*, '#10;
-    s := s+'        CAST(0 AS SIGNED) AS ooo, '#10;
-    s := s+'        CAST(soldRooms/totalRooms*100 AS DECIMAL) AS occ, '#10;
-    s := s+'        CAST(revenue/soldRooms AS DECIMAL) AS adr, '#10;
-    s := s+'        CAST(revenue/totalRooms AS DECIMAL) AS revPar '#10;
-    s := s+' FROM ( '#10;
-    s := s+' SELECT DATE(pdd.date) AS ADate, COUNT(rd.id) AS soldRooms, '#10;
-    s := s+'        SUM((IF(Discount > 0, RoomRate - IF(isPercentage, RoomRate * Discount / 100, Discount), RoomRate)) * curr.AValue) AS revenue, '#10;
-    s := s+'        SUM((IF(Discount > 0, IF(isPercentage, RoomRate * Discount / 100, Discount), 0)) * curr.AValue) AS totalDiscount, '#10;
-    s := s+'        MAX(RoomRate * curr.AValue) AS maxRate, '#10;
-    s := s+'        MIN(RoomRate * curr.AValue) AS minRate, '#10;
-    s := s+'        AVG(RoomRate * curr.AValue) AS averageRate, '#10;
-    s := s+'        (SELECT COUNT(id) FROM roomreservations WHERE Arrival=pdd.date AND Status='+_db(STATUS_ARRIVED)+') AS checkedInToday, '#10;
-    s := s+'        (SELECT COUNT(id) FROM roomreservations WHERE Arrival=pdd.date AND Status='+_db(STATUS_NOT_ARRIVED)+') AS arrivingRooms, '#10;
-    s := s+'        (SELECT COUNT(id) FROM roomreservations WHERE Arrival=DATE_ADD(pdd.date,INTERVAL -1 DAY) AND Status='+_db(STATUS_NO_SHOW)+') AS noShow, '#10;
-    s := s+'        (SELECT COUNT(id) FROM roomreservations WHERE Departure=pdd.date AND Status='+_db(STATUS_ARRIVED)+') AS departingRooms, '#10;
-    s := s+'        (SELECT COUNT(id) FROM roomreservations WHERE Departure=pdd.date AND Status='+_db(STATUS_CHECKED_OUT)+') AS departedRooms, '#10;
-    s := s+'        (SELECT COUNT(id) FROM roomsdate WHERE ADate=pdd.date AND ResFlag='+_db(STATUS_ARRIVED)+') AS occupiedRooms, '#10;
-    s := s+'        (SELECT COUNT(id) FROM rooms WHERE hidden=0 AND Active=1 AND Statistics=1 AND wildCard=0) AS totalRooms, '#10;
-    s := s+'        (SELECT NativeCurrency FROM control LIMIT 1) AS localCurrency, '#10;
-    s := s+'        SUM((SELECT COUNT(id) FROM persons WHERE RoomReservation=rd.RoomReservation)) AS totalGuests '#10;
-    s := s+' FROM predefineddates pdd, '#10;
-    s := s+'      roomsdate rd, '#10;
-    s := s+'      currencies curr '#10;
-    s := s+' WHERE '#10;  //pdd.date>='2014-08-01' AND pdd.date<='2014-08-30' '#10;
-    s := s+'     ((pdd.date>='+_DateToDbDate(zDateFrom,true)+' AND pdd.date<='+_DateToDbDate(zDateTo,true)+')) '#10;
-    s := s+' AND pdd.date=rd.ADate '#10;
-    s := s+' AND curr.Currency=rd.Currency '#10;
-    s := s+' AND (NOT ResFlag IN ('+_db(STATUS_DELETED)+','+_db(STATUS_CANCELLED)+','+_db(STATUS_WAITING_LIST)+','+_db(STATUS_NO_SHOW)+','+_db(STATUS_BLOCKED)+')) '#10;
-    s := s+' GROUP BY pdd.date '#10;
-    s := s+' ORDER BY pdd.date '#10;
-    s := s+' ) baseData '#10;
-    s := s+' UNION '#10;
-    s := s+' SELECT baseData.*, '#10;
-    s := s+'        CAST(0 AS SIGNED) AS ooo, '#10;
-    s := s+'        CAST(0.00 AS DECIMAL) AS occ, '#10;
-    s := s+'        CAST(0.00 AS DECIMAL) AS adr, '#10;
-    s := s+'        CAST(0.00 AS DECIMAL) AS revPar '#10;
-    s := s+' FROM ( '#10;
-    s := s+' SELECT DATE(pdd.date) AS ADate, CAST(0 AS SIGNED) AS soldRooms, '#10;
-    s := s+'        CAST(0.00 AS DECIMAL) AS revenue, '#10;
-    s := s+'        CAST(0.00 AS DECIMAL) AS totalDiscount, '#10;
-    s := s+'        CAST(0.00 AS DECIMAL) AS maxRate, '#10;
-    s := s+'        CAST(0.00 AS DECIMAL) AS minRate, '#10;
-    s := s+'        CAST(0.00 AS DECIMAL) AS averageRate, '#10;
-    s := s+'        CAST(0 AS SIGNED) AS checkedInToday, '#10;
-    s := s+'        CAST(0 AS SIGNED) AS arrivingRooms, '#10;
-    s := s+'        (SELECT COUNT(id) FROM roomreservations WHERE Arrival=DATE_ADD(pdd.date,INTERVAL -1 DAY) AND Status='+_db(STATUS_NO_SHOW)+') AS noShow, '#10;
-    s := s+'        (SELECT COUNT(id) FROM roomreservations WHERE Departure=pdd.date AND Status='+_db(STATUS_ARRIVED)+') AS departingRooms, '#10;
-    s := s+'        (SELECT COUNT(id) FROM roomreservations WHERE Departure=pdd.date AND Status='+_db(STATUS_CHECKED_OUT)+') AS departedRooms, '#10;
-    s := s+'        CAST(0 AS SIGNED) AS occupiedRooms, '#10;
-    s := s+'        (SELECT COUNT(id) FROM rooms WHERE hidden=0 AND Active=1 AND Statistics=1 AND wildCard=0) AS totalRooms, '#10;
-    s := s+'        (SELECT NativeCurrency FROM control LIMIT 1) AS localCurrency, '#10;
-    s := s+'        CAST(0 AS SIGNED) AS totalGuests '#10;
-    s := s+' FROM predefineddates pdd '#10;
-    s := s+' WHERE '#10; // pdd.date>='2014-08-01' AND pdd.date<='2014-08-30'
-    s := s+'     ((pdd.date>='+_DateToDbDate(zDateFrom,true)+' AND pdd.date<='+_DateToDbDate(zDateTo,true)+')) '#10;
-    s := s+' AND ISNULL((SELECT id FROM roomsdate WHERE ADate=pdd.date AND NOT(ResFlag IN ('+_db(STATUS_DELETED)+','+_db(STATUS_CANCELLED)+')) LIMIT 1)) '#10;
-    s := s+' GROUP BY pdd.date '#10;
-    s := s+' ORDER BY pdd.date '#10;
-    s := s+' ) baseData '#10;
-    s := s+' ) AllData '#10;
-    s := s+' ORDER BY ADate '#10;
-**********************************************************************************************************)
-
-//  copytoclipboard(s);
-//  debugmessage(s);
-
 
     ExecutionPlan.AddQuery(s);
     //////////////////// Execute!

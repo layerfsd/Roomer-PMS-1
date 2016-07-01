@@ -78,7 +78,6 @@ type
     procedure btnTaxesClick(Sender: TObject);
     procedure btnEmailTemplatesClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
-    procedure lblLogoutClick(Sender: TObject);
     procedure btnUserSettingsClick(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure btnReservationsClick(Sender: TObject);
@@ -497,11 +496,6 @@ procedure TFrmRBEContainer.Image1MouseUp(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
   TImage(Sender).Stretch := False;
-end;
-
-procedure TFrmRBEContainer.lblLogoutClick(Sender: TObject);
-begin
-  frmMain.btnLogOutClick(nil);
 end;
 
 procedure TFrmRBEContainer.btnAboutClick(Sender: TObject);

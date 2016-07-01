@@ -100,7 +100,6 @@ end;
 
 procedure TfrmRbePreferences.__cbxLanguagesChange(Sender: TObject);
 var
-  line : string;
   languageItem : TRoomerLanguageItem;
 begin
   languageItem := TRoomerLanguageItem(__cbxLanguages.Items.Objects[__cbxLanguages.itemindex]);

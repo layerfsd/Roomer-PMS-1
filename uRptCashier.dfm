@@ -247,7 +247,7 @@ object frmRptCashier: TfrmRptCashier
         Left = 366
         Top = 25
         Width = 120
-        Height = 17
+        Height = 19
         Caption = 'By selected user(s)'
         TabOrder = 7
         OnClick = cbxByUsersClick
@@ -338,17 +338,15 @@ object frmRptCashier: TfrmRptCashier
     Top = 113
     Width = 1098
     Height = 552
-    ActivePage = sTabSheet2
+    ActivePage = sTabSheet1
     Align = alClient
     TabOrder = 2
     SkinData.SkinSection = 'PAGECONTROL'
     object tabStatGrid: TsTabSheet
       Caption = 'Data'
       TabVisible = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
+      SkinData.CustomColor = False
+      SkinData.CustomFont = False
       object sPanel1: TsPanel
         Left = 0
         Top = 0
@@ -495,24 +493,24 @@ object frmRptCashier: TfrmRptCashier
         SearchFooter.HintHighlight = 'Highlight occurrences'
         SearchFooter.MatchCaseCaption = 'Match case'
         SortSettings.DefaultFormat = ssAutomatic
-        Version = '7.9.1.1'
+        Version = '7.9.1.0'
         WordWrap = False
       end
     end
     object sTabSheet1: TsTabSheet
       Caption = 'Cashier functions'
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
+      SkinData.CustomColor = False
+      SkinData.CustomFont = False
       object grGet: TcxGrid
         Left = 0
-        Top = 41
+        Top = 43
         Width = 1090
-        Height = 483
+        Height = 481
         Align = alClient
         TabOrder = 0
         LookAndFeel.NativeStyle = False
+        ExplicitTop = 41
+        ExplicitHeight = 483
         object tvGet: TcxGridDBTableView
           Navigator.Buttons.CustomButtons = <>
           DataController.DataSource = kbmGetDS
@@ -641,15 +639,18 @@ object frmRptCashier: TfrmRptCashier
         Left = 0
         Top = 0
         Width = 1090
-        Height = 41
+        Height = 43
         Align = alTop
         TabOrder = 1
         SkinData.SkinSection = 'PANEL'
+        ExplicitTop = -6
         object btnExcel: TsButton
-          Left = 5
-          Top = 1
-          Width = 100
+          AlignWithMargins = True
+          Left = 4
+          Top = 4
+          Width = 128
           Height = 35
+          Align = alLeft
           Caption = 'Excel'
           ImageIndex = 69
           Images = DImages.PngImageList1
@@ -658,35 +659,43 @@ object frmRptCashier: TfrmRptCashier
           SkinData.SkinSection = 'BUTTON'
         end
         object sButton6: TsButton
-          Left = 217
-          Top = -1
-          Width = 100
-          Height = 37
+          AlignWithMargins = True
+          Left = 138
+          Top = 4
+          Width = 128
+          Height = 35
+          Align = alLeft
           Caption = 'Invoice'
           ImageIndex = 63
           Images = DImages.PngImageList1
           TabOrder = 1
           OnClick = sButton6Click
           SkinData.SkinSection = 'BUTTON'
+          ExplicitLeft = 110
         end
         object sButton23: TsButton
-          Left = 111
-          Top = -1
-          Width = 100
-          Height = 37
+          AlignWithMargins = True
+          Left = 272
+          Top = 4
+          Width = 128
+          Height = 35
+          Align = alLeft
           Caption = 'Reservation'
           ImageIndex = 56
           Images = DImages.PngImageList1
           TabOrder = 2
           OnClick = sButton23Click
           SkinData.SkinSection = 'BUTTON'
+          ExplicitLeft = 216
         end
         object chkGroup: TsCheckBox
-          Left = 339
-          Top = 8
-          Width = 112
-          Height = 20
+          AlignWithMargins = True
+          Left = 406
+          Top = 4
+          Width = 120
+          Height = 35
           Caption = 'Group by Category'
+          Align = alLeft
           Checked = True
           State = cbChecked
           TabOrder = 3
@@ -694,62 +703,77 @@ object frmRptCashier: TfrmRptCashier
           SkinData.SkinSection = 'CHECKBOX'
           ImgChecked = 0
           ImgUnchecked = 0
+          ExplicitLeft = 322
+          ExplicitTop = 2
         end
         object btnExpand: TsButton
-          Left = 463
-          Top = 1
-          Width = 110
-          Height = 33
+          AlignWithMargins = True
+          Left = 532
+          Top = 4
+          Width = 128
+          Height = 35
+          Align = alLeft
           Caption = 'Expand'
           ImageIndex = 94
           TabOrder = 4
           OnClick = btnExpandClick
           SkinData.SkinSection = 'BUTTON'
+          ExplicitLeft = 448
         end
         object btnCollapse: TsButton
-          Left = 581
-          Top = 1
-          Width = 110
-          Height = 33
+          AlignWithMargins = True
+          Left = 666
+          Top = 4
+          Width = 128
+          Height = 35
+          Align = alLeft
           Caption = 'Collapse'
           ImageIndex = 94
           TabOrder = 5
           OnClick = btnCollapseClick
           SkinData.SkinSection = 'BUTTON'
+          ExplicitLeft = 564
         end
       end
     end
     object sTabSheet2: TsTabSheet
       Caption = 'Received Payments'
+      SkinData.CustomColor = False
+      SkinData.CustomFont = False
       object sPanel2: TsPanel
         Left = 0
         Top = 0
         Width = 1090
-        Height = 41
+        Height = 43
         Align = alTop
         TabOrder = 0
         SkinData.SkinSection = 'PANEL'
         object sButton3: TsButton
+          AlignWithMargins = True
           Left = 4
-          Top = 2
+          Top = 4
           Width = 100
           Height = 35
+          Align = alLeft
           Caption = 'Excel'
           ImageIndex = 69
           Images = DImages.PngImageList1
           TabOrder = 0
           OnClick = sButton3Click
           SkinData.SkinSection = 'BUTTON'
+          ExplicitTop = 2
         end
       end
       object grPayments: TcxGrid
         Left = 0
-        Top = 41
+        Top = 43
         Width = 1090
-        Height = 483
+        Height = 481
         Align = alClient
         TabOrder = 1
         LookAndFeel.NativeStyle = False
+        ExplicitTop = 41
+        ExplicitHeight = 483
         object tvPayments: TcxGridDBTableView
           Navigator.Buttons.CustomButtons = <>
           DataController.DataSource = kbmPaymentsDS

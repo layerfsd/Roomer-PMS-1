@@ -3,7 +3,7 @@ object frmCurrencies: TfrmCurrencies
   Top = 305
   Caption = 'Currencies'
   ClientHeight = 518
-  ClientWidth = 572
+  ClientWidth = 736
   Color = clBtnFace
   Constraints.MinWidth = 460
   Font.Charset = DEFAULT_CHARSET
@@ -26,7 +26,7 @@ object frmCurrencies: TfrmCurrencies
   object pnlHolder: TsPanel
     Left = 0
     Top = 0
-    Width = 572
+    Width = 736
     Height = 518
     Margins.Left = 2
     Margins.Top = 2
@@ -39,7 +39,7 @@ object frmCurrencies: TfrmCurrencies
     object sbMain: TsStatusBar
       Left = 0
       Top = 499
-      Width = 572
+      Width = 736
       Height = 19
       Panels = <>
       SimplePanel = True
@@ -48,13 +48,13 @@ object frmCurrencies: TfrmCurrencies
     object PanTop: TsPanel
       Left = 0
       Top = 0
-      Width = 572
+      Width = 736
       Height = 89
       Align = alTop
       TabOrder = 1
       SkinData.SkinSection = 'PANEL'
       DesignSize = (
-        572
+        736
         89)
       object cLabFilter: TsLabel
         Left = 19
@@ -144,7 +144,7 @@ object frmCurrencies: TfrmCurrencies
         SkinData.SkinSection = 'BUTTON'
       end
       object btnClose: TsButton
-        Left = 479
+        Left = 643
         Top = 7
         Width = 84
         Height = 26
@@ -163,8 +163,8 @@ object frmCurrencies: TfrmCurrencies
       object chkActive: TsCheckBox
         Left = 56
         Top = 65
-        Width = 281
-        Height = 17
+        Width = 273
+        Height = 20
         Caption = 'Active (if checked then just active are visible else all)'
         Checked = True
         State = cbChecked
@@ -194,16 +194,16 @@ object frmCurrencies: TfrmCurrencies
     object panBtn: TsPanel
       Left = 0
       Top = 466
-      Width = 572
+      Width = 736
       Height = 33
       Align = alBottom
       TabOrder = 2
       SkinData.SkinSection = 'PANEL'
       DesignSize = (
-        572
+        736
         33)
       object btnCancel: TsButton
-        Left = 484
+        Left = 648
         Top = 4
         Width = 85
         Height = 25
@@ -219,7 +219,7 @@ object frmCurrencies: TfrmCurrencies
         SkinData.SkinSection = 'BUTTON'
       end
       object BtnOk: TsButton
-        Left = 398
+        Left = 562
         Top = 4
         Width = 83
         Height = 25
@@ -237,7 +237,7 @@ object frmCurrencies: TfrmCurrencies
     object grData: TcxGrid
       Left = 0
       Top = 89
-      Width = 572
+      Width = 736
       Height = 377
       Align = alClient
       TabOrder = 3
@@ -290,6 +290,7 @@ object frmCurrencies: TfrmCurrencies
           DataBinding.FieldName = 'Currency'
           PropertiesClassName = 'TcxTextEditProperties'
           Properties.CharCase = ecUpperCase
+          Properties.ReadOnly = True
           Properties.ValidateOnEnter = True
           Properties.OnValidate = tvDataCurrencyPropertiesValidate
           Width = 66
@@ -313,6 +314,18 @@ object frmCurrencies: TfrmCurrencies
         object tvDataID: TcxGridDBColumn
           DataBinding.FieldName = 'ID'
           Visible = False
+        end
+        object tvDatadisplayformat: TcxGridDBColumn
+          Caption = 'Displayformat'
+          DataBinding.FieldName = 'displayformat'
+          PropertiesClassName = 'TcxMaskEditProperties'
+        end
+        object tvDatadecimals: TcxGridDBColumn
+          Caption = 'Decimals'
+          DataBinding.FieldName = 'decimals'
+          PropertiesClassName = 'TcxSpinEditProperties'
+          Properties.AssignedValues.MinValue = True
+          Properties.MaxValue = 10.000000000000000000
         end
       end
       object lvData: TcxGridLevel
@@ -345,6 +358,12 @@ object frmCurrencies: TfrmCurrencies
     end
     object m_active: TBooleanField
       FieldName = 'active'
+    end
+    object m_displayformat: TStringField
+      FieldName = 'displayformat'
+    end
+    object m_decimals: TIntegerField
+      FieldName = 'decimals'
     end
   end
   object mnuOther: TPopupMenu
@@ -408,7 +427,7 @@ object frmCurrencies: TfrmCurrencies
       PrinterPage.PageSize.Y = 297000
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
-      ReportDocument.CreationDate = 42500.504607152770000000
+      ReportDocument.CreationDate = 42550.412503692130000000
       BuiltInReportLink = True
     end
   end

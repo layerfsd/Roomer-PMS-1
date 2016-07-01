@@ -186,9 +186,6 @@ TYPE
     procedure btnEmailSendClick(Sender: TObject);
     procedure LMDSpeedButton3Click(Sender: TObject);
     procedure frxReport1PrintPage(Page: TfrxReportPage; CopyNo: Integer);
-    procedure frxReport1GetValue(const VarName: string; var Value: Variant);
-    procedure frxPDFExport1BeginExport(Sender: TObject);
-    function frxReport1UserFunction(const MethodName: string; var Params: Variant): Variant;
     function frxMailExport1SendMail(const Server: string; const Port: Integer; const UserField, PasswordField: string; FromField, ToField, SubjectField, CompanyField, TextField: WideString; FileNames: TStringList; Timeout: Integer;
       ConfurmReading: Boolean): string;
 
@@ -801,34 +798,9 @@ begin
 
   frxMailExport1.Address := zEmailAddress;  // get from customer table
 
-//  frxMailExport1.Subject := '';  // get from controle
-//
-//  frxMailExport1.Lines := ''; //Get from controle (some kind of template)
-//  frxMailExport1.FromMail := ''; //?
-//  frxMailExport1.FromName := ''; //?
-//  frxMailExport1.FromCompany := ''; //?
-//
-//  frxMailExport1.Signature := ''; //?
-//  frxMailExport1.SmtpHost := ''; //?
-//  frxMailExport1.SmtpPort := ''; //?
-//
-//  frxMailExport1.UseMAPI
-//  frxMailExport1.ShowDialog
-//  frxMailExport1.ShowProgress
-
-
   showPackage := chkShowPackage.Checked or zShowPackage;
 
   d.InsertMTdata(zInvoiceNumber,zXML_export,false,ShowPackage);
-
-//  try
-//    Filename := getLocalInvoiceFilePath;
-//  Except
-//    on e: Exception do begin
-//      DebugMessage(e.Message);
-//      raise;
-//    end;
-//  end;
 
   NativeCurrency  := _trimlower(ctrlGetString('NativeCurrency'));
   currency := d.GetInvoiceCurrencyAndReservationNumber(zInvoiceNumber,
@@ -1100,14 +1072,6 @@ begin
            else
              Description := 'Invoice.pdf';
 
-//           if zSavedRoomReservation > 0 then
-//             Description := format('Invoice %d, date %s, Room %s, user %s.pdf', [
-//                            zInvoiceNumber,
-//                            formatdatetime('dd-mm-yyyy hh.nn.ss', now),
-//                            zSavedRoom,
-//                            d.roomerMainDataSet.username])
-//           else
-//             Description := format('Invoice %d, date %s, user %s.pdf', [zInvoiceNumber, formatdatetime('dd-mm-yyyy hh.nn.s', now), d.roomerMainDataSet.username]);
            UploadFileToResources(KeyString, ACCESS_RESTRICTED, Description, filename);
            DeleteFile(filename);
          except
@@ -1119,27 +1083,12 @@ begin
    end;
 end;
 
-procedure TfrmFinishedInvoices2.frxPDFExport1BeginExport(Sender: TObject);
-//var
-//  s : string;
-begin
-//  datetimetostring(s,'yyyy-dd-mm hh-nn',now);
-//  frxPDFExport1.FileName := 'Invoice_'+inttostr(zInvoiceNumber)+s+'.pdf';
-end;
-
-procedure TfrmFinishedInvoices2.frxReport1GetValue(const VarName: string; var Value: Variant);
-begin
-//  DebugMessage(VarName);
-end;
-
 procedure TfrmFinishedInvoices2.frxReport1PrintPage(Page: TfrxReportPage; CopyNo: Integer);
 var
   ar : TInvoiceActionRec;
   s : string;
 
 begin
-//    d.InsertMTdata(zInvoiceNumber,false,false);
-//    frxReport1.PrepareReport(true);
     s := frxReport1.PrintOptions.Printer;
     ar.reservation      := d.mtHead_.fieldbyname('Reservation').asInteger;
     ar.RoomReservation  := d.mtHead_.fieldbyname('RoomReservation').asInteger;
@@ -1152,11 +1101,6 @@ begin
     d.InsInvoiceAction(ar);
 end;
 
-
-function TfrmFinishedInvoices2.frxReport1UserFunction(const MethodName: string; var Params: Variant): Variant;
-begin
-  //
-end;
 
 end.
 

@@ -14,6 +14,8 @@ object FrmCheckOut: TFrmCheckOut
   OldCreateOrder = False
   Position = poMainFormCenter
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
   object sLabel1: TsLabel
@@ -82,8 +84,8 @@ object FrmCheckOut: TFrmCheckOut
     object cbxForce: TsCheckBox
       Left = 348
       Top = 6
-      Width = 240
-      Height = 19
+      Width = 235
+      Height = 20
       Caption = 'Allow checkout in spite of open group invoice'
       TabOrder = 2
       Visible = False

@@ -502,7 +502,6 @@ object frmRptResStats: TfrmRptResStats
                 OptionsView.FilterFields = False
                 OptionsView.RowFields = False
                 TabOrder = 0
-                ExplicitTop = 32
                 object pg001incomeTotal: TcxDBPivotGridField
                   Area = faData
                   AreaIndex = 2
@@ -1759,7 +1758,6 @@ object frmRptResStats: TfrmRptResStats
                 DataBinding.FieldName = 'TaxesUnbilled'
                 PropertiesClassName = 'TcxCurrencyEditProperties'
                 Properties.DisplayFormat = ',0.00;-,0.00'
-                OnGetProperties = tvRoomsDateTaxesUnbilledGetProperties
               end
               object tvRoomsDatecurrency: TcxGridDBColumn
                 Caption = 'Currency'
@@ -2825,6 +2823,7 @@ object frmRptResStats: TfrmRptResStats
     end
     object prLinkGrDrill: TdxGridReportLink
       Component = grDrill
+      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.GrayShading = True
@@ -2837,6 +2836,7 @@ object frmRptResStats: TfrmRptResStats
       PrinterPage.PageSize.Y = 297000
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
+      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       BuiltInReportLink = True
     end
   end

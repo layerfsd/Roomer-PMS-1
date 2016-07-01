@@ -129,32 +129,20 @@ object frmRptTurnoverAndPayments: TfrmRptTurnoverAndPayments
       Font.Name = 'Tahoma'
       Font.Style = [fsBold]
     end
-    object btnRefresh: TsButton
-      Left = 237
-      Top = 105
-      Width = 110
-      Height = 36
-      Caption = 'Refresh ALL'
-      ImageIndex = 28
-      Images = DImages.PngImageList1
-      TabOrder = 0
-      OnClick = btnRefreshClick
-      SkinData.SkinSection = 'BUTTON'
-    end
     object GroupBox1: TsGroupBox
       Left = 9
       Top = 6
       Width = 321
       Height = 92
       Caption = '.. or Unconfirmed'
-      TabOrder = 1
+      TabOrder = 0
       SkinData.SkinSection = 'GROUPBOX'
       Checked = False
       object chkGetUnconfirmed: TsCheckBox
         Left = 15
         Top = 18
-        Width = 107
-        Height = 17
+        Width = 99
+        Height = 20
         Caption = 'Get unconfirmed'
         TabOrder = 0
         OnClick = chkGetUnconfirmedClick
@@ -176,38 +164,78 @@ object frmRptTurnoverAndPayments: TfrmRptTurnoverAndPayments
         SkinData.SkinSection = 'BUTTON'
       end
     end
-    object btnReportsReport: TsButton
-      Left = 122
-      Top = 104
-      Width = 110
-      Height = 37
-      Caption = 'Report'
-      ImageIndex = 69
-      Images = DImages.PngImageList1
-      TabOrder = 2
-      OnClick = btnReportsReportClick
-      SkinData.SkinSection = 'BUTTON'
-    end
-    object btnGetOld: TsButton
-      Left = 6
-      Top = 102
-      Width = 110
-      Height = 37
-      Caption = 'Get Previus '
-      ImageIndex = 51
-      Images = DImages.PngImageList1
-      TabOrder = 3
-      OnClick = btnGetOldClick
-      SkinData.SkinSection = 'BUTTON'
-    end
-    object edUnconfirmedDate: TsEdit
-      Left = 585
-      Top = 118
-      Width = 148
-      Height = 21
-      TabOrder = 4
-      Visible = False
-      SkinData.SkinSection = 'EDIT'
+    object sPanel10: TsPanel
+      AlignWithMargins = True
+      Left = 3
+      Top = 99
+      Width = 1055
+      Height = 43
+      Align = alBottom
+      BevelOuter = bvNone
+      TabOrder = 1
+      SkinData.SkinSection = 'TRANSPARENT'
+      object btnGetOld: TsButton
+        AlignWithMargins = True
+        Left = 119
+        Top = 3
+        Width = 110
+        Height = 37
+        Align = alLeft
+        Caption = 'Get Previus '
+        ImageIndex = 51
+        Images = DImages.PngImageList1
+        TabOrder = 0
+        OnClick = btnGetOldClick
+        SkinData.SkinSection = 'BUTTON'
+      end
+      object btnRefresh: TsButton
+        AlignWithMargins = True
+        Left = 3
+        Top = 3
+        Width = 110
+        Height = 37
+        Align = alLeft
+        Caption = 'Refresh ALL'
+        ImageIndex = 28
+        Images = DImages.PngImageList1
+        TabOrder = 1
+        OnClick = btnRefreshClick
+        SkinData.SkinSection = 'BUTTON'
+      end
+      object btnReportsReport: TsButton
+        AlignWithMargins = True
+        Left = 235
+        Top = 3
+        Width = 128
+        Height = 37
+        Align = alLeft
+        Caption = 'Report'
+        ImageIndex = 69
+        Images = DImages.PngImageList1
+        TabOrder = 2
+        OnClick = btnReportsReportClick
+        SkinData.SkinSection = 'BUTTON'
+      end
+      object edUnconfirmedDate: TsEdit
+        AlignWithMargins = True
+        Left = 369
+        Top = 11
+        Width = 148
+        Height = 21
+        Margins.Top = 11
+        Margins.Bottom = 11
+        Align = alLeft
+        Color = clWhite
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clBlack
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentFont = False
+        TabOrder = 3
+        Visible = False
+        SkinData.SkinSection = 'EDIT'
+      end
     end
   end
   object LMDStatusBar1: TStatusBar
@@ -222,13 +250,15 @@ object frmRptTurnoverAndPayments: TfrmRptTurnoverAndPayments
     Top = 145
     Width = 1061
     Height = 481
-    ActivePage = sTabSheet6
+    ActivePage = sTabSheet7
     Align = alClient
     TabOrder = 2
     OnChange = sPageControl1Change
     SkinData.SkinSection = 'PAGECONTROL'
     object sTabSheet1: TsTabSheet
       Caption = 'Sum Turnover'
+      SkinData.CustomColor = False
+      SkinData.CustomFont = False
       ExplicitLeft = 0
       ExplicitTop = 0
       ExplicitWidth = 0
@@ -237,15 +267,17 @@ object frmRptTurnoverAndPayments: TfrmRptTurnoverAndPayments
         Left = 0
         Top = 0
         Width = 1053
-        Height = 44
+        Height = 43
         Align = alTop
         TabOrder = 0
         SkinData.SkinSection = 'PANEL'
         object btnExcelTurnover: TsButton
-          Left = 2
-          Top = 2
-          Width = 100
-          Height = 37
+          AlignWithMargins = True
+          Left = 4
+          Top = 4
+          Width = 128
+          Height = 35
+          Align = alLeft
           Caption = 'Excel'
           ImageIndex = 132
           Images = DImages.PngImageList1
@@ -256,9 +288,9 @@ object frmRptTurnoverAndPayments: TfrmRptTurnoverAndPayments
       end
       object grTurnover: TcxGrid
         Left = 0
-        Top = 44
+        Top = 43
         Width = 1053
-        Height = 409
+        Height = 410
         Align = alClient
         TabOrder = 1
         LookAndFeel.NativeStyle = False
@@ -362,15 +394,17 @@ object frmRptTurnoverAndPayments: TfrmRptTurnoverAndPayments
     end
     object Payments: TsTabSheet
       Caption = 'Sum Payments'
+      SkinData.CustomColor = False
+      SkinData.CustomFont = False
       ExplicitLeft = 0
       ExplicitTop = 0
       ExplicitWidth = 0
       ExplicitHeight = 0
       object grPayments: TcxGrid
         Left = 0
-        Top = 44
+        Top = 43
         Width = 1053
-        Height = 409
+        Height = 410
         Align = alClient
         TabOrder = 0
         LookAndFeel.NativeStyle = False
@@ -446,15 +480,17 @@ object frmRptTurnoverAndPayments: TfrmRptTurnoverAndPayments
         Left = 0
         Top = 0
         Width = 1053
-        Height = 44
+        Height = 43
         Align = alTop
         TabOrder = 1
         SkinData.SkinSection = 'PANEL'
         object btnExcelPayments: TsButton
-          Left = 2
-          Top = 2
-          Width = 100
-          Height = 37
+          AlignWithMargins = True
+          Left = 4
+          Top = 4
+          Width = 128
+          Height = 35
+          Align = alLeft
           Caption = 'Excel'
           ImageIndex = 132
           Images = DImages.PngImageList1
@@ -462,22 +498,12 @@ object frmRptTurnoverAndPayments: TfrmRptTurnoverAndPayments
           OnClick = btnExcelPaymentsClick
           SkinData.SkinSection = 'BUTTON'
         end
-        object sButton27: TsButton
-          Left = 108
-          Top = 2
-          Width = 100
-          Height = 37
-          Caption = 'Report'
-          ImageIndex = 69
-          Images = DImages.PngImageList1
-          TabOrder = 1
-          Visible = False
-          SkinData.SkinSection = 'BUTTON'
-        end
       end
     end
     object sTabSheet2: TsTabSheet
       Caption = 'List Unpaid roomrent'
+      SkinData.CustomColor = False
+      SkinData.CustomFont = False
       ExplicitLeft = 0
       ExplicitTop = 0
       ExplicitWidth = 0
@@ -486,15 +512,17 @@ object frmRptTurnoverAndPayments: TfrmRptTurnoverAndPayments
         Left = 0
         Top = 0
         Width = 1053
-        Height = 44
+        Height = 43
         Align = alTop
         TabOrder = 0
         SkinData.SkinSection = 'PANEL'
         object sButton2: TsButton
-          Left = 2
-          Top = 2
-          Width = 100
-          Height = 37
+          AlignWithMargins = True
+          Left = 4
+          Top = 4
+          Width = 128
+          Height = 35
+          Align = alLeft
           Caption = 'Excel'
           ImageIndex = 132
           Images = DImages.PngImageList1
@@ -503,10 +531,12 @@ object frmRptTurnoverAndPayments: TfrmRptTurnoverAndPayments
           SkinData.SkinSection = 'BUTTON'
         end
         object sButton23: TsButton
-          Left = 214
-          Top = 2
-          Width = 100
-          Height = 37
+          AlignWithMargins = True
+          Left = 138
+          Top = 4
+          Width = 128
+          Height = 35
+          Align = alLeft
           Caption = 'Reservation'
           ImageIndex = 56
           Images = DImages.PngImageList1
@@ -515,10 +545,12 @@ object frmRptTurnoverAndPayments: TfrmRptTurnoverAndPayments
           SkinData.SkinSection = 'BUTTON'
         end
         object sButton6: TsButton
-          Left = 108
-          Top = 2
-          Width = 100
-          Height = 37
+          AlignWithMargins = True
+          Left = 272
+          Top = 4
+          Width = 128
+          Height = 35
+          Align = alLeft
           Caption = 'Invoice'
           ImageIndex = 63
           Images = DImages.PngImageList1
@@ -529,9 +561,9 @@ object frmRptTurnoverAndPayments: TfrmRptTurnoverAndPayments
       end
       object grRoomsDate: TcxGrid
         Left = 0
-        Top = 44
+        Top = 43
         Width = 1053
-        Height = 409
+        Height = 410
         Align = alClient
         TabOrder = 1
         LookAndFeel.NativeStyle = False
@@ -631,6 +663,8 @@ object frmRptTurnoverAndPayments: TfrmRptTurnoverAndPayments
     end
     object sTabSheet3: TsTabSheet
       Caption = 'List Invoiced Roomrent'
+      SkinData.CustomColor = False
+      SkinData.CustomFont = False
       ExplicitLeft = 0
       ExplicitTop = 0
       ExplicitWidth = 0
@@ -639,15 +673,17 @@ object frmRptTurnoverAndPayments: TfrmRptTurnoverAndPayments
         Left = 0
         Top = 0
         Width = 1053
-        Height = 44
+        Height = 43
         Align = alTop
         TabOrder = 0
         SkinData.SkinSection = 'PANEL'
         object sButton1: TsButton
-          Left = 2
-          Top = 2
-          Width = 100
-          Height = 37
+          AlignWithMargins = True
+          Left = 4
+          Top = 4
+          Width = 128
+          Height = 35
+          Align = alLeft
           Caption = 'Excel'
           ImageIndex = 132
           Images = DImages.PngImageList1
@@ -656,10 +692,12 @@ object frmRptTurnoverAndPayments: TfrmRptTurnoverAndPayments
           SkinData.SkinSection = 'BUTTON'
         end
         object sButton19: TsButton
-          Left = 108
-          Top = 2
-          Width = 100
-          Height = 37
+          AlignWithMargins = True
+          Left = 138
+          Top = 4
+          Width = 128
+          Height = 35
+          Align = alLeft
           Caption = 'Invoice'
           ImageIndex = 63
           Images = DImages.PngImageList1
@@ -670,9 +708,9 @@ object frmRptTurnoverAndPayments: TfrmRptTurnoverAndPayments
       end
       object grRoomrentOnInvoice: TcxGrid
         Left = 0
-        Top = 44
+        Top = 43
         Width = 1053
-        Height = 409
+        Height = 410
         Align = alClient
         TabOrder = 1
         LookAndFeel.NativeStyle = False
@@ -795,6 +833,8 @@ object frmRptTurnoverAndPayments: TfrmRptTurnoverAndPayments
     end
     object sTabSheet4: TsTabSheet
       Caption = 'List Invoices'
+      SkinData.CustomColor = False
+      SkinData.CustomFont = False
       ExplicitLeft = 0
       ExplicitTop = 0
       ExplicitWidth = 0
@@ -803,18 +843,17 @@ object frmRptTurnoverAndPayments: TfrmRptTurnoverAndPayments
         Left = 0
         Top = 0
         Width = 1053
-        Height = 44
+        Height = 43
         Align = alTop
         TabOrder = 0
         SkinData.SkinSection = 'PANEL'
-        DesignSize = (
-          1053
-          44)
         object btnInvoiceListExcel: TsButton
-          Left = 2
-          Top = 2
-          Width = 100
-          Height = 37
+          AlignWithMargins = True
+          Left = 4
+          Top = 4
+          Width = 129
+          Height = 35
+          Align = alLeft
           Caption = 'Excel'
           ImageIndex = 132
           Images = DImages.PngImageList1
@@ -822,31 +861,35 @@ object frmRptTurnoverAndPayments: TfrmRptTurnoverAndPayments
           OnClick = btnInvoiceListExcelClick
           SkinData.SkinSection = 'BUTTON'
         end
-        object btnInvoiceListExpandAll: TcxButton
-          Left = 888
-          Top = 2
-          Width = 75
-          Height = 25
-          Anchors = [akTop, akRight]
+        object btnInvoiceListExpandAll: TsButton
+          AlignWithMargins = True
+          Left = 787
+          Top = 4
+          Width = 128
+          Height = 35
+          Align = alRight
           Caption = 'Expand all'
           TabOrder = 1
           OnClick = btnInvoiceListExpandAllClick
         end
-        object btnInvoiceListContractAll: TcxButton
-          Left = 967
-          Top = 2
-          Width = 76
-          Height = 25
-          Anchors = [akTop, akRight]
+        object btnInvoiceListContractAll: TsButton
+          AlignWithMargins = True
+          Left = 921
+          Top = 4
+          Width = 128
+          Height = 35
+          Align = alRight
           Caption = 'Contract all'
           TabOrder = 2
           OnClick = btnInvoiceListContractAllClick
         end
         object btnInvoiceListInvoice: TsButton
-          Left = 108
-          Top = 2
-          Width = 100
-          Height = 37
+          AlignWithMargins = True
+          Left = 139
+          Top = 4
+          Width = 129
+          Height = 35
+          Align = alLeft
           Caption = 'Invoice'
           ImageIndex = 63
           Images = DImages.PngImageList1
@@ -855,10 +898,12 @@ object frmRptTurnoverAndPayments: TfrmRptTurnoverAndPayments
           SkinData.SkinSection = 'BUTTON'
         end
         object btnInvoiceListReservation: TsButton
-          Left = 214
-          Top = 2
-          Width = 100
-          Height = 37
+          AlignWithMargins = True
+          Left = 274
+          Top = 4
+          Width = 129
+          Height = 35
+          Align = alLeft
           Caption = 'Reservation'
           ImageIndex = 56
           Images = DImages.PngImageList1
@@ -869,9 +914,9 @@ object frmRptTurnoverAndPayments: TfrmRptTurnoverAndPayments
       end
       object grInvoicelist: TcxGrid
         Left = 0
-        Top = 44
+        Top = 43
         Width = 1053
-        Height = 409
+        Height = 410
         Align = alClient
         TabOrder = 1
         LookAndFeel.NativeStyle = False
@@ -1278,19 +1323,27 @@ object frmRptTurnoverAndPayments: TfrmRptTurnoverAndPayments
     end
     object sTabSheet6: TsTabSheet
       Caption = 'Unconfirmed items'
+      SkinData.CustomColor = False
+      SkinData.CustomFont = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object sPanel7: TsPanel
         Left = 0
         Top = 0
         Width = 1053
-        Height = 44
+        Height = 43
         Align = alTop
         TabOrder = 0
         SkinData.SkinSection = 'PANEL'
         object sButton7: TsButton
-          Left = 2
-          Top = 2
-          Width = 100
-          Height = 37
+          AlignWithMargins = True
+          Left = 4
+          Top = 4
+          Width = 128
+          Height = 35
+          Align = alLeft
           Caption = 'Excel'
           ImageIndex = 132
           Images = DImages.PngImageList1
@@ -1299,10 +1352,12 @@ object frmRptTurnoverAndPayments: TfrmRptTurnoverAndPayments
           SkinData.SkinSection = 'BUTTON'
         end
         object sButton8: TsButton
-          Left = 108
-          Top = 2
-          Width = 100
-          Height = 37
+          AlignWithMargins = True
+          Left = 272
+          Top = 4
+          Width = 128
+          Height = 35
+          Align = alLeft
           Caption = 'Invoice'
           ImageIndex = 63
           Images = DImages.PngImageList1
@@ -1311,10 +1366,12 @@ object frmRptTurnoverAndPayments: TfrmRptTurnoverAndPayments
           SkinData.SkinSection = 'BUTTON'
         end
         object sButton9: TsButton
-          Left = 214
-          Top = 2
-          Width = 100
-          Height = 37
+          AlignWithMargins = True
+          Left = 138
+          Top = 4
+          Width = 128
+          Height = 35
+          Align = alLeft
           Caption = 'Reservation'
           ImageIndex = 56
           Images = DImages.PngImageList1
@@ -1325,9 +1382,9 @@ object frmRptTurnoverAndPayments: TfrmRptTurnoverAndPayments
       end
       object grUnconfirmedInvoicelines: TcxGrid
         Left = 0
-        Top = 44
+        Top = 43
         Width = 1053
-        Height = 409
+        Height = 410
         Align = alClient
         TabOrder = 1
         LookAndFeel.NativeStyle = False
@@ -1462,23 +1519,23 @@ object frmRptTurnoverAndPayments: TfrmRptTurnoverAndPayments
     end
     object sTabSheet7: TsTabSheet
       Caption = 'Confirmed Item Changed Price'
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
+      SkinData.CustomColor = False
+      SkinData.CustomFont = False
       object sPanel8: TsPanel
         Left = 0
         Top = 0
         Width = 1053
-        Height = 44
+        Height = 43
         Align = alTop
         TabOrder = 0
         SkinData.SkinSection = 'PANEL'
         object sButton11: TsButton
-          Left = 2
-          Top = 2
-          Width = 100
-          Height = 37
+          AlignWithMargins = True
+          Left = 4
+          Top = 4
+          Width = 128
+          Height = 35
+          Align = alLeft
           Caption = 'Excel'
           ImageIndex = 132
           Images = DImages.PngImageList1
@@ -1487,10 +1544,12 @@ object frmRptTurnoverAndPayments: TfrmRptTurnoverAndPayments
           SkinData.SkinSection = 'BUTTON'
         end
         object sButton13: TsButton
-          Left = 108
-          Top = 2
-          Width = 100
-          Height = 37
+          AlignWithMargins = True
+          Left = 138
+          Top = 4
+          Width = 128
+          Height = 35
+          Align = alLeft
           Caption = 'Reservation'
           ImageIndex = 56
           Images = DImages.PngImageList1
@@ -1501,9 +1560,9 @@ object frmRptTurnoverAndPayments: TfrmRptTurnoverAndPayments
       end
       object grInvoiceLinePriceChange: TcxGrid
         Left = 0
-        Top = 44
+        Top = 43
         Width = 1053
-        Height = 409
+        Height = 410
         Align = alClient
         TabOrder = 1
         LookAndFeel.NativeStyle = False
@@ -1641,6 +1700,8 @@ object frmRptTurnoverAndPayments: TfrmRptTurnoverAndPayments
     end
     object sTabSheet8: TsTabSheet
       Caption = 'Confirmed Roomrent Pricechange'
+      SkinData.CustomColor = False
+      SkinData.CustomFont = False
       ExplicitLeft = 0
       ExplicitTop = 0
       ExplicitWidth = 0
@@ -1649,15 +1710,17 @@ object frmRptTurnoverAndPayments: TfrmRptTurnoverAndPayments
         Left = 0
         Top = 0
         Width = 1053
-        Height = 44
+        Height = 43
         Align = alTop
         TabOrder = 0
         SkinData.SkinSection = 'PANEL'
         object sButton15: TsButton
-          Left = 2
-          Top = 2
-          Width = 100
-          Height = 37
+          AlignWithMargins = True
+          Left = 4
+          Top = 4
+          Width = 128
+          Height = 35
+          Align = alLeft
           Caption = 'Excel'
           HotImageIndex = 132
           ImageIndex = 132
@@ -1667,10 +1730,12 @@ object frmRptTurnoverAndPayments: TfrmRptTurnoverAndPayments
           SkinData.SkinSection = 'BUTTON'
         end
         object sButton17: TsButton
-          Left = 108
-          Top = 2
-          Width = 100
-          Height = 37
+          AlignWithMargins = True
+          Left = 138
+          Top = 4
+          Width = 128
+          Height = 35
+          Align = alLeft
           Caption = 'Reservation'
           ImageIndex = 56
           Images = DImages.PngImageList1
@@ -1681,9 +1746,9 @@ object frmRptTurnoverAndPayments: TfrmRptTurnoverAndPayments
       end
       object grRoomsDateChange: TcxGrid
         Left = 0
-        Top = 44
+        Top = 43
         Width = 1053
-        Height = 409
+        Height = 410
         Align = alClient
         TabOrder = 1
         LookAndFeel.NativeStyle = False
@@ -1815,6 +1880,8 @@ object frmRptTurnoverAndPayments: TfrmRptTurnoverAndPayments
     end
     object sTabSheet5: TsTabSheet
       Caption = 'PaymentList'
+      SkinData.CustomColor = False
+      SkinData.CustomFont = False
       ExplicitLeft = 0
       ExplicitTop = 0
       ExplicitWidth = 0
@@ -1823,15 +1890,17 @@ object frmRptTurnoverAndPayments: TfrmRptTurnoverAndPayments
         Left = 0
         Top = 0
         Width = 1053
-        Height = 44
+        Height = 43
         Align = alTop
         TabOrder = 0
         SkinData.SkinSection = 'PANEL'
         object sButton3: TsButton
-          Left = 2
-          Top = 2
-          Width = 100
-          Height = 37
+          AlignWithMargins = True
+          Left = 4
+          Top = 4
+          Width = 128
+          Height = 35
+          Align = alLeft
           Caption = 'Excel'
           ImageIndex = 132
           Images = DImages.PngImageList1
@@ -1840,10 +1909,12 @@ object frmRptTurnoverAndPayments: TfrmRptTurnoverAndPayments
           SkinData.SkinSection = 'BUTTON'
         end
         object sButton4: TsButton
-          Left = 108
-          Top = 2
-          Width = 100
-          Height = 37
+          AlignWithMargins = True
+          Left = 138
+          Top = 4
+          Width = 128
+          Height = 35
+          Align = alLeft
           Caption = 'Invoice'
           ImageIndex = 63
           Images = DImages.PngImageList1
@@ -1852,10 +1923,12 @@ object frmRptTurnoverAndPayments: TfrmRptTurnoverAndPayments
           SkinData.SkinSection = 'BUTTON'
         end
         object sButton5: TsButton
-          Left = 214
-          Top = 2
-          Width = 100
-          Height = 37
+          AlignWithMargins = True
+          Left = 272
+          Top = 4
+          Width = 128
+          Height = 35
+          Align = alLeft
           Caption = 'Reservation'
           ImageIndex = 56
           Images = DImages.PngImageList1
@@ -1866,9 +1939,9 @@ object frmRptTurnoverAndPayments: TfrmRptTurnoverAndPayments
       end
       object grPaymentList: TcxGrid
         Left = 0
-        Top = 44
+        Top = 43
         Width = 1053
-        Height = 409
+        Height = 410
         Align = alClient
         TabOrder = 1
         LookAndFeel.NativeStyle = False

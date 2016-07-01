@@ -30,7 +30,6 @@ object frmHomedate: TfrmHomedate
     BevelOuter = bvNone
     TabOrder = 0
     SkinData.SkinSection = 'PANEL'
-    ExplicitHeight = 96
     object dtHome: TsDateEdit
       Left = 0
       Top = 0
@@ -43,10 +42,10 @@ object frmHomedate: TfrmHomedate
       Align = alTop
       AutoSelect = False
       AutoSize = False
-      Color = 3355443
+      Color = clWhite
       EditMask = '!99/99/99;1; '
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = 15724527
+      Font.Color = clBlack
       Font.Height = -35
       Font.Name = 'Tahoma'
       Font.Style = []
@@ -65,9 +64,6 @@ object frmHomedate: TfrmHomedate
       GlyphMode.Blend = 0
       GlyphMode.Grayed = False
       YearDigits = dyTwo
-      ExplicitLeft = 8
-      ExplicitTop = 4
-      ExplicitWidth = 196
     end
     object sPanel1: TsPanel
       Left = 0
@@ -77,9 +73,6 @@ object frmHomedate: TfrmHomedate
       Align = alBottom
       TabOrder = 1
       SkinData.SkinSection = 'PANEL'
-      ExplicitLeft = 8
-      ExplicitTop = 205
-      ExplicitWidth = 196
       DesignSize = (
         212
         33)
@@ -96,7 +89,6 @@ object frmHomedate: TfrmHomedate
         TabOrder = 0
         OnClick = Button2Click
         SkinData.SkinSection = 'BUTTON'
-        ExplicitLeft = 36
       end
       object Button1: TsButton
         Left = 132
@@ -108,11 +100,10 @@ object frmHomedate: TfrmHomedate
         Caption = 'Cancel'
         ImageIndex = 10
         Images = DImages.PngImageList1
-        ModalResult = 8
+        ModalResult = 2
         TabOrder = 1
         OnClick = Button1Click
         SkinData.SkinSection = 'BUTTON'
-        ExplicitLeft = 116
       end
     end
   end

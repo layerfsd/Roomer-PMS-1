@@ -407,7 +407,7 @@ implementation
 
 uses
   JSonManager, md5hash, ALfcnString, uDateUtils, idMultiPartFormData,
-  GoogleOTP256, uRoomerExceptions, IOUtils, uFileSystemUtils;
+  GoogleOTP256, uRoomerExceptions, IOUtils, uFileSystemUtils, uFloatUtils;
 
 resourcestring
   PROMOIR_ROOMER_HOTEL_IDENTIFIER = 'Promoir-Roomer-Hotel-Identifier';

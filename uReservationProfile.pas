@@ -2367,13 +2367,13 @@ begin
     s := s + '    , GroupAccount as isGroupAccount '#10;
     s := s + '    , rrIsNoRoom as isNoRoom '#10;
     s := s + '    , (SELECT ' +
-             '       SUM(roomrate * cu.avalue) / COUNT(rd.id) + ' +
+             '       (SUM(roomrate * cu.avalue) + ' +
              '       IF((rr.package = NULL OR rr.package = ''''), 0, ' +
              '       IFNULL((SELECT SUM(price * number) ' +
              '       FROM invoicelines il ' +
              '       WHERE il.roomreservation = rr.roomreservation ' +
              '       AND importsource = rr.package), ' +
-             '       0)) ' +
+             '       0))) / COUNT(rd.id) ' +
              '       FROM roomsdate rd ' +
              '       JOIN currencies cu ON cu.currency = rd.currency ' +
              '       WHERE rd.roomreservation = rr.roomreservation ' +

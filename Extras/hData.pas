@@ -867,8 +867,13 @@ type
     Currency: string;
     Description: string;
     Value: double;
+    SellValue: double;
     active: boolean;
-    tmp: string; //
+    Decimals: integer;
+    Displayformat: string;
+    CurrencySign: string;
+    procedure Init;
+    procedure ReadFromDataset(aRSet: TDataset);
   end;
 
   recConvertHolder = record
@@ -1537,7 +1542,7 @@ var
 
   // function test : boolean;
 
-function rSet_bySQL(rSet: TRoomerDataSet; sSQL: string; doLowerCase: boolean = true): boolean;
+function rSet_bySQL(rSet: TRoomerDataSet; sSQL: string; doLowerCase: boolean = true; SetLastAccess : Boolean = True): boolean;
 function cmd_bySQL(sSQL: string; performFilterTableNames : Boolean = True; async : Boolean = False): boolean;
 
 function S_execute(var rSet: TRoomerDataSet; ProcName: string; var lstParams: TstringList): boolean;
@@ -1675,7 +1680,6 @@ function CountryExistsInOther(sCountry: string): boolean;
 function CountryExists(sCode: string): boolean;
 
 // Currency
-procedure initCurrencyHolder(var rec: recCurrencyHolder);
 function GET_CurrencyHolderByCurrency(var theData: recCurrencyHolder; justActive: boolean = true): boolean;
 function GET_CurrencyHolderByID(var theData: recCurrencyHolder): boolean;
 function GET_CurrencyByID(aID: integer): string;
@@ -2153,7 +2157,7 @@ begin
 end;
 
 
-function rSet_bySQL(rSet: TRoomerDataSet; sSQL: string; doLowerCase: boolean = true): boolean;
+function rSet_bySQL(rSet: TRoomerDataSet; sSQL: string; doLowerCase: boolean = true; SetLastAccess : Boolean = True): boolean;
 var
   errMsg: string;
 begin
@@ -2173,7 +2177,7 @@ begin
   else
     rSet.CommandText := FilterTablenames(sSQL);
   try
-    rSet.open(doLowerCase);
+    rSet.open(doLowerCase, SetLastAccess);
     result := not rSet.Eof;
   except
     on e: exception do
@@ -5398,23 +5402,6 @@ begin
   begin
     result := LocalFloatValue(glb.CurrenciesSet.fieldbyname('AValue').asString);
   end;
-  // RSet := CreateNewDataSet;
-  // try
-  /// /    s := s + ' SELECT  '+#10;
-  /// /    s := s + '    sellValue '+#10;
-  /// /    s := s + '  , AValue '+#10;
-  /// /    s := s + ' FROM  '+#10;
-  /// /    s := s + '  Currencies '+#10;
-  /// /    s := s + ' WHERE  '+#10;
-  /// /    s := s + '   Currency=' + quotedstr(Currency) + ' '+#10;
-  // s := format(select_GetRate, [quotedstr(Currency)]);
-  // if hData.rSet_bySQL(rSet,s, Connection,LogLevel,logPath) then
-  // begin
-  // result := LocalFloatValue(Rset.FieldByName('AValue').AsString);
-  // end;
-  // finally
-  // freeandnil(Rset);
-  // end;
 end;
 
 function RR_GetCurrency(iRoomReservation: integer): string;
@@ -7136,17 +7123,30 @@ end;
 // Currency
 /// ///////////////////////////////////////////////////////////////////
 
-procedure initCurrencyHolder(var rec: recCurrencyHolder);
+procedure recCurrencyHolder.ReadFromDataset(aRset: TDataset);
 begin
-  with rec do
-  begin
-    id := 0;
-    Currency := '';
-    Description := '';
-    Value := 1.00;
-    active := true;
-    tmp := '';
-  end;
+  id := aRSet.fieldbyname('ID').asInteger;
+  Currency := aRSet.fieldbyname('currency').asString;
+  Description := aRSet.fieldbyname('description').asString;
+  Value := LocalFloatValue(aRSet.fieldbyname('aValue').asString);
+  SellValue := LocalFloatValue(aRSet.fieldbyname('SellValue').asString);
+  Decimals := aRSet.fieldbyname('Decimals').asinteger;
+  Displayformat := aRSet.fieldbyname('Displayformat').asString;
+  CurrencySign := aRSet.fieldbyname('CurrencySign').asString;
+  active := aRSet.fieldbyname('active').Asboolean;
+end;
+
+procedure recCurrencyHolder.Init;
+begin
+  id := 0;
+  Currency := '';
+  Description := '';
+  Value := 1.00;
+  SellValue := 0;
+  Decimals := 0;
+  DisplayFormat := '';
+  CurrencySign := '';
+  active := true;
 end;
 
 function GET_CurrencyHolderByCurrency(var theData: recCurrencyHolder; justActive: boolean = true): boolean;
@@ -7157,14 +7157,6 @@ var
 begin
   result := false;
   getItem := theData.Currency;
-  // s := s+ ' SELECT '+#10;
-  // s := s+ '    [Currency] '+#10;
-  // s := s+ '   ,[Description] '+#10;
-  // s := s+ '   ,[AValue] '+#10;
-  // s := s+ ' FROM '+#10;
-  // s := s+ '   currencies '+#10;
-  // s := s+ ' WHERE '+#10;
-  // s := s+ '  (currency = N'+quotedstr(getItem)+') '+#10;
 
   s := format(select_GET_CurrencyHolderByCurrency, [quotedstr(getItem)]);
   rSet := CreateNewDataSet;
@@ -7172,11 +7164,7 @@ begin
     if rSet_bySQL(rSet, s) then
     begin
       result := true;
-      theData.id := rSet.fieldbyname('ID').asInteger;
-      theData.Currency := rSet.fieldbyname('currency').asString;
-      theData.Description := rSet.fieldbyname('description').asString;
-      theData.Value := LocalFloatValue(rSet.fieldbyname('aValue').asString);
-      theData.active := rSet.fieldbyname('active').Asboolean;
+      theData.ReadFromDataset(rSet);
     end;
   finally
     freeandnil(rSet);
@@ -7191,15 +7179,6 @@ var
 begin
   result := false;
   getItem := theData.id;
-  s := s + ' SELECT ' + #10;
-  s := s + '    Currency ' + #10;
-  s := s + '   ,Description ' + #10;
-  s := s + '   ,AValue ' + #10;
-  s := s + '   , active ' + #10;
-  s := s + ' FROM ' + #10;
-  s := s + '   currencies ' + #10;
-  s := s + ' WHERE ' + #10;
-  s := s + '  (currencyID = %d ';
 
   s := format(select_GET_CurrencyHolderByCurrency, [_db(getItem)]);
   rSet := CreateNewDataSet;
@@ -7207,11 +7186,7 @@ begin
     if rSet_bySQL(rSet, s) then
     begin
       result := true;
-      theData.id := rSet.fieldbyname('ID').asInteger;
-      theData.Currency := rSet.fieldbyname('currency').asString;
-      theData.Description := rSet.fieldbyname('description').asString;
-      theData.Value := LocalFloatValue(rSet.fieldbyname('aValue').asString);
-      theData.active := rSet.fieldbyname('active').Asboolean;
+      theData.ReadFromDataset(rSet);
     end;
   finally
     freeandnil(rSet);
@@ -7276,17 +7251,17 @@ function UPD_currency(theData: recCurrencyHolder): boolean;
 var
   s: string;
 begin
-  if theData.tmp = '' then
-    theData.tmp := theData.Currency;
   s := '';
   s := s + ' UPDATE currencies ' + #10;
   s := s + ' SET ' + #10;
-  s := s + '     currency   = ' + _db(theData.Currency) + ' ' + #10;
   s := s + '   , Description =' + _db(theData.Description) + ' ' + #10;
   s := s + '   , Avalue =' + _db(theData.Value) + ' ' + #10;
+  s := s + '   , Decimals =' + _db(theData.Decimals) + ' ' + #10;
+  s := s + '   , DisplayFormat=' + _db(theData.Displayformat) + ' ' + #10;
+  s := s + '   , CurrencySign =' + _db(theData.CurrencySign) + ' ' + #10;
   s := s + '   , Active =' + _db(theData.active) + ' ' + #10;
   s := s + ' WHERE ' + #10;
-  s := s + '   (currency = ' + _db(theData.tmp) + ') ';
+  s := s + '   (currency = ' + _db(theData.Currency) + ') ';
   result := cmd_bySQL(s);
 end;
 
@@ -7313,13 +7288,19 @@ begin
   s := s + '   currency ' + #10;
   s := s + '  ,description ' + #10;
   s := s + '  ,AValue ' + #10;
-  s := s + '  ,Active ' + #10;
+  s := s + '  ,AValue ' + #10;
+  s := s + '  ,SellValue' + #10;
+  s := s + '  ,Decimals ' + #10;
+  s := s + '  ,DisplayFormat ' + #10;
   s := s + '   ) ' + #10;
   s := s + '    VALUES ' + #10;
   s := s + '   ( ' + #10;
   s := s + '     ' + _db(theData.Currency) + ' ' + #10;
   s := s + '     ,' + _db(theData.Description) + ' ' + #10;
   s := s + '     ,' + _db(theData.Value) + ' ' + #10;
+  s := s + '     ,' + _db(theData.SellValue) + ' ' + #10;
+  s := s + '     ,' + _db(theData.Decimals) + ' ' + #10;
+  s := s + '     ,' + _db(theData.Displayformat) + ' ' + #10;
   s := s + '     ,' + _db(theData.active) + ' ' + #10;
   s := s + '   )';
   result := cmd_bySQL(s);
@@ -9841,8 +9822,9 @@ begin
     Booking_Item := '';
     Incl_Excl := 'EXCLUDED';
     NETTO_AMOUNT_BASED := 'TRUE';
+    Amount := 0;
     VALUE_FORMULA := '';
-    VALID_FROM := now;
+    VALID_FROM := 0;
     VALID_TO := now + (10 * 365);
   end;
 end;

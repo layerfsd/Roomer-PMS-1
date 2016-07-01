@@ -512,6 +512,7 @@ type
     function GetRoomStatus(Room: string): char;
     function AskApproval(PayType: string): boolean;
     function getCountryCode(aText: string): string;
+    function getCountryName(const aCountryCode: string): string;
 
     function Item_Get_AccountKey(sItem: string): string;
     function Item_Get_Type(Item: string): string;
@@ -5517,6 +5518,13 @@ begin
   end;
 end;
 
+function Td.getCountryName(const aCountryCode: string): string;
+begin
+  result := '';
+  if glb.Countries.locate('country', aCountryCode, [loCaseInsensitive]) then
+      result := glb.Countries.FieldByName('CountryName').Asstring;
+end;
+
 function Td.isKredit(InvoiceNumber: Integer): boolean;
 var
   rSet: TRoomerDataSet;
@@ -6513,6 +6521,7 @@ begin
       d.mtHead_.FieldByName('Address3').Asstring := IvI.CustomerInfo.IvAddress3;
       d.mtHead_.FieldByName('Address4').Asstring := IvI.CustomerInfo.IvAddress4;
       d.mtHead_.FieldByName('Country').Asstring := IvI.CustomerInfo.IvCountry;
+      d.mtHead_.FieldByName('CountryName').Asstring :=  d.getCountryName(IvI.CustomerInfo.IvCountry);
       d.mtHead_.FieldByName('PersonalId').Asstring := IvI.CustomerInfo.IvPid;
       d.mtHead_.FieldByName('GuestName').Asstring := IvI.CustomerInfo.IvRoomGuest;
 
@@ -6750,6 +6759,7 @@ begin
       d.mtCompany_.FieldByName('Address3').Asstring := IvI.CompanyAddress3;
       d.mtCompany_.FieldByName('Address4').Asstring := IvI.CompanyAddress4;
       d.mtCompany_.FieldByName('Country').Asstring := IvI.CompanyCountry;
+      d.mtCompany_.FieldByName('Countryname').Asstring := d.getCountryName(IvI.CompanyCountry);
       d.mtCompany_.FieldByName('TelePhone1').Asstring := IvI.CompanyTelePhone1;
       d.mtCompany_.FieldByName('TelePhone2').Asstring := IvI.CompanyTelePhone2;
       d.mtCompany_.FieldByName('Fax').Asstring := IvI.CompanyFax;
@@ -10206,7 +10216,6 @@ procedure Td.roomerMainDataSetSessionExpired(Sender: TObject);
 var
   res: boolean;
 begin
-  // frmMain.timLogout.Enabled := true;
   if AlreadyLoggingIn then
     exit;
   AlreadyLoggingIn := False;
@@ -11298,7 +11307,8 @@ begin
   d.mtHead_.FieldDefs.Add('Address2', ftWideString, 100, False);
   d.mtHead_.FieldDefs.Add('Address3', ftWideString, 100, False);
   d.mtHead_.FieldDefs.Add('Address4', ftWideString, 100, False);
-  d.mtHead_.FieldDefs.Add('Country', ftWideString, 100, False);
+  d.mtHead_.FieldDefs.Add('Country', ftWideString, 2, False);
+  d.mtHead_.FieldDefs.Add('CountryName', ftWideString, 100, False);
   d.mtHead_.FieldDefs.Add('PersonalId', ftWideString, 100, False);
   d.mtHead_.FieldDefs.Add('GuestName', ftWideString, 100, False);
   d.mtHead_.FieldDefs.Add('Breakfast', ftFloat);
@@ -11411,7 +11421,8 @@ begin
   mtCompany_.FieldDefs.Add('Address2', ftWideString, 100, False);
   mtCompany_.FieldDefs.Add('Address3', ftWideString, 100, False);
   mtCompany_.FieldDefs.Add('Address4', ftWideString, 100, False);
-  mtCompany_.FieldDefs.Add('Country', ftWideString, 100, False);
+  mtCompany_.FieldDefs.Add('Country', ftWideString, 2, False);
+  mtCompany_.FieldDefs.Add('CountryName', ftWideString, 100, False);
   mtCompany_.FieldDefs.Add('TelePhone1', ftWideString, 100, False);
   mtCompany_.FieldDefs.Add('TelePhone2', ftWideString, 100, False);
   mtCompany_.FieldDefs.Add('Fax', ftWideString, 100, False);
@@ -13715,7 +13726,7 @@ begin
     s := s + '    INNER JOIN items i ON item=co.RoomRentItem '#10;
     s := s + '    INNER JOIN itemtypes it ON it.ItemType=i.ItemType '#10;
     s := s + '    INNER JOIN vatcodes vc ON vc.VATCode=it.VatCode '#10;
-    s := s + '    JOIN home100.TAXES tax ON HOTEL_ID=(Select companyID from control LIMIT 1) AND CURRENT_DATE>=VALID_FROM AND CURRENT_DATE<=VALID_TO '#10;
+    s := s + '    LEFT JOIN home100.TAXES tax ON HOTEL_ID=(Select companyID from control LIMIT 1) AND CURRENT_DATE>=VALID_FROM AND CURRENT_DATE<=VALID_TO '#10;
 
     s := s + ' WHERE '#10;
     s := s + ' ( confirmDate = ' + _db(sUnconfirmedDate) + ' ) ';
@@ -13996,7 +14007,7 @@ begin
     s := s + '   INNER JOIN items i ON item=co.RoomRentItem '#10;
     s := s + '   INNER JOIN itemtypes it ON it.ItemType=i.ItemType '#10;
     s := s + '   INNER JOIN vatcodes vc ON vc.VATCode=it.VatCode '#10;
-    s := s + '   JOIN home100.TAXES tax ON HOTEL_ID=(Select companyID from control LIMIT 1) AND CURRENT_DATE>=VALID_FROM AND CURRENT_DATE<=VALID_TO '#10;
+    s := s + '   LEFT JOIN home100.TAXES tax ON HOTEL_ID=(Select companyID from control LIMIT 1) AND CURRENT_DATE>=VALID_FROM AND CURRENT_DATE<=VALID_TO '#10;
     s := s + ' WHERE '#10;
     s := s + ' ( confirmDate > ' + _db(sUnconfirmedDate) + ' ) ';
     s := s + ' AND ( '#10;
@@ -14080,7 +14091,7 @@ begin
     s := s + '   INNER JOIN items i ON item=co.RoomRentItem '#10;
     s := s + '   INNER JOIN itemtypes it ON it.ItemType=i.ItemType '#10;
     s := s + '   INNER JOIN vatcodes vc ON vc.VATCode=it.VatCode '#10;
-    s := s + '   JOIN home100.TAXES tax ON HOTEL_ID=(Select companyID from control LIMIT 1) AND CURRENT_DATE>=VALID_FROM AND CURRENT_DATE<=VALID_TO '#10;
+    s := s + '   LEFT JOIN home100.TAXES tax ON HOTEL_ID=(Select companyID from control LIMIT 1) AND CURRENT_DATE>=VALID_FROM AND CURRENT_DATE<=VALID_TO '#10;
     s := s + ' WHERE '#10;
     s := s + ' ( confirmDate > ' + _db(sUnconfirmedDate) + ' )  '#10;
     s := s + ' AND ( ResFlag in (' + _db('X') + ',' + _db('C') + ')) ';

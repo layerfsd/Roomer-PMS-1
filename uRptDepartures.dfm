@@ -26,7 +26,6 @@ object frmDeparturesReport: TfrmDeparturesReport
     Align = alTop
     TabOrder = 0
     SkinData.SkinSection = 'PANEL'
-    ExplicitWidth = 972
     object btnRefresh: TsButton
       Left = 398
       Top = 9
@@ -142,7 +141,6 @@ object frmDeparturesReport: TfrmDeparturesReport
       BevelOuter = bvNone
       TabOrder = 2
       SkinData.SkinSection = 'PANEL'
-      ExplicitWidth = 970
       object btnExcel: TsButton
         AlignWithMargins = True
         Left = 15
@@ -225,8 +223,6 @@ object frmDeparturesReport: TfrmDeparturesReport
     Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = []
-    ExplicitTop = 540
-    ExplicitWidth = 972
   end
   object grDeparturesList: TcxGrid
     Left = 0
@@ -235,95 +231,166 @@ object frmDeparturesReport: TfrmDeparturesReport
     Height = 421
     Align = alClient
     TabOrder = 2
-    ExplicitLeft = 1
-    ExplicitTop = 146
-    ExplicitWidth = 972
-    ExplicitHeight = 396
-    object tvDeparturesList: TcxGridDBTableView
+    object tvDeparturesList: TcxGridDBBandedTableView
       Navigator.Buttons.CustomButtons = <>
       DataController.DataSource = DeparturesListDS
       DataController.Summary.DefaultGroupSummaryItems = <>
       DataController.Summary.FooterSummaryItems = <>
       DataController.Summary.SummaryGroups = <>
-      object tvDeparturesListRoom: TcxGridDBColumn
+      Bands = <
+        item
+          Caption = 'Guest'
+          FixedKind = fkLeft
+        end
+        item
+          Caption = 'Customer'
+          Width = 271
+        end
+        item
+          Caption = 'Finance'
+        end
+        item
+          Caption = 'Other'
+        end>
+      object tvDeparturesListRoom: TcxGridDBBandedColumn
         DataBinding.FieldName = 'Room'
-        Width = 70
+        Width = 62
+        Position.BandIndex = 0
+        Position.ColIndex = 1
+        Position.RowIndex = 0
       end
-      object tvDeparturesListGuestName: TcxGridDBColumn
-        DataBinding.FieldName = 'GuestName'
-        Width = 189
-      end
-      object tvDeparturesListRoomerReservationId: TcxGridDBColumn
-        Caption = 'Reservation ID'
-        DataBinding.FieldName = 'RoomerReservationId'
-        Width = 85
-      end
-      object tvDeparturesListArrival: TcxGridDBColumn
-        DataBinding.FieldName = 'Arrival'
-        Width = 74
-      end
-      object tvDeparturesListDeparture: TcxGridDBColumn
-        DataBinding.FieldName = 'Departure'
-        Width = 78
-      end
-      object tvDeparturesListRoomType: TcxGridDBColumn
+      object tvDeparturesListRoomType: TcxGridDBBandedColumn
         DataBinding.FieldName = 'RoomType'
-        Width = 63
+        Width = 64
+        Position.BandIndex = 0
+        Position.ColIndex = 7
+        Position.RowIndex = 0
       end
-      object tvDeparturesListNumGuests: TcxGridDBColumn
+      object tvDeparturesListGuestName: TcxGridDBBandedColumn
+        Caption = 'Main Guest'
+        DataBinding.FieldName = 'GuestName'
+        Width = 173
+        Position.BandIndex = 0
+        Position.ColIndex = 2
+        Position.RowIndex = 0
+      end
+      object tvDeparturesListNumGuests: TcxGridDBBandedColumn
+        Caption = 'Guests'
         DataBinding.FieldName = 'NumGuests'
-        Width = 70
+        Width = 44
+        Position.BandIndex = 0
+        Position.ColIndex = 6
+        Position.RowIndex = 0
       end
-      object tvDeparturesListExpectedCheckOutTime: TcxGridDBColumn
-        Caption = 'ETD'
+      object tvDeparturesListArrival: TcxGridDBBandedColumn
+        DataBinding.FieldName = 'Arrival'
+        Width = 69
+        Position.BandIndex = 0
+        Position.ColIndex = 3
+        Position.RowIndex = 0
+      end
+      object tvDeparturesListDeparture: TcxGridDBBandedColumn
+        DataBinding.FieldName = 'Departure'
+        Width = 59
+        Position.BandIndex = 0
+        Position.ColIndex = 4
+        Position.RowIndex = 0
+      end
+      object tvDeparturesListExpectedCheckOutTime: TcxGridDBBandedColumn
+        Caption = 'Exp. COT'
         DataBinding.FieldName = 'ExpectedCheckOutTime'
-        Width = 70
+        Width = 54
+        Position.BandIndex = 0
+        Position.ColIndex = 5
+        Position.RowIndex = 0
       end
-      object tvDeparturesListCustomer: TcxGridDBColumn
-        Caption = 'Company Code'
+      object tvDeparturesListCustomer: TcxGridDBBandedColumn
         DataBinding.FieldName = 'Customer'
-        Width = 126
+        Width = 108
+        Position.BandIndex = 1
+        Position.ColIndex = 0
+        Position.RowIndex = 0
       end
-      object tvDeparturesListCompanyName: TcxGridDBColumn
+      object tvDeparturesListCompanyName: TcxGridDBBandedColumn
         Caption = 'Company Name'
         DataBinding.FieldName = 'CompanyName'
-        Width = 181
+        Width = 215
+        Position.BandIndex = 1
+        Position.ColIndex = 1
+        Position.RowIndex = 0
       end
-      object tvDeparturesListNumNights: TcxGridDBColumn
+      object tvDeparturesListNumNights: TcxGridDBBandedColumn
+        Caption = 'Nights'
         DataBinding.FieldName = 'NumNights'
         Width = 70
+        Position.BandIndex = 2
+        Position.ColIndex = 0
+        Position.RowIndex = 0
       end
-      object tvDeparturesListAverageRatePerNight: TcxGridDBColumn
-        DataBinding.FieldName = 'Rate Per Night'
+      object tvDeparturesListAverageRatePerNight: TcxGridDBBandedColumn
+        Caption = 'Rate Per Night'
+        DataBinding.FieldName = 'AverageRatePerNight'
         PropertiesClassName = 'TcxCurrencyEditProperties'
-        Width = 100
+        OnGetProperties = tvDeparturesListAverageRatePerNightGetProperties
+        Width = 70
+        Position.BandIndex = 2
+        Position.ColIndex = 1
+        Position.RowIndex = 0
       end
-      object tvDeparturesListTotalRent: TcxGridDBColumn
-        DataBinding.FieldName = 'Total Rent'
-        Width = 100
+      object tvDeparturesListTotalRent: TcxGridDBBandedColumn
+        Caption = 'Total Rent'
+        DataBinding.FieldName = 'TotalRent'
+        Width = 70
+        Position.BandIndex = 2
+        Position.ColIndex = 2
+        Position.RowIndex = 0
       end
-      object tvDeparturesListTotalSale: TcxGridDBColumn
-        DataBinding.FieldName = 'Total Sale'
-        Width = 100
+      object tvDeparturesListTotalSale: TcxGridDBBandedColumn
+        Caption = 'Total Sale'
+        DataBinding.FieldName = 'TotalSale'
+        Width = 70
+        Position.BandIndex = 2
+        Position.ColIndex = 3
+        Position.RowIndex = 0
       end
-      object tvDeparturesListTotalPayments: TcxGridDBColumn
-        DataBinding.FieldName = 'Total Payments'
-        Width = 100
+      object tvDeparturesListTotalPayments: TcxGridDBBandedColumn
+        Caption = 'Payments'
+        DataBinding.FieldName = 'TotalPayments'
+        Width = 70
+        Position.BandIndex = 2
+        Position.ColIndex = 4
+        Position.RowIndex = 0
       end
-      object tvDeparturesListBalance: TcxGridDBColumn
+      object tvDeparturesListBalance: TcxGridDBBandedColumn
         DataBinding.FieldName = 'Balance'
-        Visible = False
+        Width = 70
+        Position.BandIndex = 2
+        Position.ColIndex = 5
+        Position.RowIndex = 0
       end
-      object tvDeparturesListCheckOutDate: TcxGridDBColumn
-        Caption = 'Checkout'
-        DataBinding.FieldName = 'CheckOutDate'
-        Width = 83
+      object tvDeparturesListRoomerReservationId: TcxGridDBBandedColumn
+        Caption = 'Roomer Res. Id'
+        DataBinding.FieldName = 'RoomerReservationId'
+        Width = 70
+        Position.BandIndex = 3
+        Position.ColIndex = 0
+        Position.RowIndex = 0
       end
-      object tvDeparturesListRoomerRoomReservationId: TcxGridDBColumn
-        Caption = 'Room Res'
+      object tvDeparturesListRoomerRoomReservationId: TcxGridDBBandedColumn
+        Caption = 'Roomer RoomRes. Id'
         DataBinding.FieldName = 'RoomerRoomReservationId'
+        Width = 70
+        Position.BandIndex = 3
+        Position.ColIndex = 1
+        Position.RowIndex = 0
+      end
+      object tvDeparturesListCheckOutDate: TcxGridDBBandedColumn
+        DataBinding.FieldName = 'CheckOutDate'
         Visible = False
         Width = 70
+        Position.BandIndex = 0
+        Position.ColIndex = 0
+        Position.RowIndex = 0
       end
     end
     object lvDeparturesList: TcxGridLevel

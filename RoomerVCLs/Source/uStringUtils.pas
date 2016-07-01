@@ -32,9 +32,6 @@ function BoolToString(value: boolean): string;
 function BoolToString_0_1(value: boolean): string;
 function BoolToInteger(value: boolean): Integer;
 
-function SystemDecimalSeparator: string;
-function SystemThousandsSeparator: string;
-function LocalizedFloatToString(number: Double): String;
 function FloatToDBString(number: Double): String;
 function FloatStringToDBString(value: String): String;
 function AddLeadingZeroes(const aNumber, Length: Integer): string;
@@ -45,13 +42,11 @@ procedure SplitStringToTStrings(const aSeparator, aString: String; aList: TStrin
 function SplitStringToTStrings(const aSeparator, aString: String; aMax: Integer = 0): TStrings; overload;
 function DelChars(const S: string; Chr: char): string;
 function FormattedStringToFloat(value: String): Double;
-function LocalizedFloatValue(value: String; save: boolean = true): Double;
 function GetWindowClassName(Window: HWND): string;
 function _dbString(const aString: string): string; Overload;
 function LocalAppDataPath: string;
 function EncodeBase64(S: string): string;
 function DecodeBase64(S: string): string;
-function RoundDecimals(value: Double; Decimals: Integer): Double;
 procedure SaveToTextFile(FileName, data: String);
 procedure AppendToTextFile(FileName, data: String);
 procedure AddToTextFile(FileName, data: String);
@@ -63,7 +58,7 @@ uses registry
 {$IFNDEF CONSOLE}
     , clipbrd
 {$ENDIF}
-    ;
+    , uFloatUtils;
 
 function GetMIMEtype(FileName: String): String;
 var
@@ -86,17 +81,6 @@ begin
   if ans = '' then
     ans := 'application/octet-stream';
   result := ans;
-end;
-
-function RoundDecimals(value: Double; Decimals: Integer): Double;
-var
-  Mult: Double;
-  i: Integer;
-begin
-  Mult := 1.0;
-  for i := 1 to Decimals do
-    Mult := Mult * 10.0;
-  result := Round(value * Mult) / Mult;
 end;
 
 function FillPreTextWithChar(text: String; ch: char; len: Integer): String;
@@ -316,29 +300,6 @@ begin
     result := 0;
 end;
 
-function SystemDecimalSeparator: string;
-var
-  Decimal: PChar;
-begin
-  Decimal := StrAlloc(10);
-  GetLocaleInfo(LOCALE_SYSTEM_DEFAULT, LOCALE_SDECIMAL, Decimal, 10);
-  result := String(Decimal)[1];
-end;
-
-function SystemThousandsSeparator: string;
-var
-  Thousands: PChar;
-begin
-  Thousands := StrAlloc(10);
-  GetLocaleInfo(LOCALE_SYSTEM_DEFAULT, LOCALE_STHOUSAND, Thousands, 10);
-  result := String(Thousands)[1];
-end;
-
-function LocalizedFloatToString(number: Double): String;
-begin
-  result := Trim(StringReplace(StringReplace(FloatToStr(number), '.', SystemDecimalSeparator, [rfReplaceAll]), ',', SystemDecimalSeparator, [rfReplaceAll]));
-end;
-
 function FloatToDBString(number: Double): String;
 begin
   result := FloatStringToDBString(FloatToStr(number));
@@ -542,87 +503,10 @@ begin
 end;
 
 function FormattedStringToFloat(value: String): Double;
-var
-  Format: TFormatSettings;
 begin
-  Format := TFormatSettings.Create;
   value := StringReplace(value, SystemThousandsSeparator, '', [rfReplaceAll]);
   result := LocalizedFloatValue(value);
 end;
-
-function LocalizedFloatValue(value: String; save: boolean = true): Double;
-var
-  S: String;
-begin
-  try
-    result := StrToFloat(value);
-  except
-    // Try dot to any other...
-    try
-      result := StrToFloat(StringReplace(value, '.', ',', [rfReplaceAll]));
-    except
-      try
-        result := StrToFloat(StringReplace(value, '.', '·', [rfReplaceAll]));
-      except
-        try
-          result := StrToFloat(StringReplace(value, '.', '''', [rfReplaceAll]));
-        except
-          // Try comma to any other...
-          try
-            result := StrToFloat(StringReplace(value, ',', '.', [rfReplaceAll]));
-          except
-            try
-              result := StrToFloat(StringReplace(value, ',', '·', [rfReplaceAll]));
-            except
-              try
-                result := StrToFloat(StringReplace(value, ',', '''', [rfReplaceAll]));
-              except
-                // Try upper-comma to any other...
-                try
-                  result := StrToFloat(StringReplace(value, '''', '.', [rfReplaceAll]));
-                except
-                  try
-                    result := StrToFloat(StringReplace(value, '''', '·', [rfReplaceAll]));
-                  except
-                    try
-                      result := StrToFloat(StringReplace(value, '''', ',', [rfReplaceAll]));
-                    except
-                      // Try upper-dot to any other...
-                      try
-                        result := StrToFloat(StringReplace(value, '·', '.', [rfReplaceAll]));
-                      except
-                        try
-                          result := StrToFloat(StringReplace(value, '·', ',', [rfReplaceAll]));
-                        except
-                          try
-                            result := StrToFloat(StringReplace(value, '·', '''', [rfReplaceAll]));
-                          except
-                            // Try older measure...
-                            S := Trim(StringReplace(StringReplace(value, '.', SystemDecimalSeparator, [rfReplaceAll]), ',', SystemDecimalSeparator,
-                              [rfReplaceAll]));
-                            if save then
-                              result := StrToFloatDef(StringReplace(S, '.', SystemDecimalSeparator, [rfReplaceAll]), 0)
-                            else
-                              result := StrToFloat(StringReplace(S, '.', SystemDecimalSeparator, [rfReplaceAll]));
-
-                          end;
-                        end;
-                      end;
-
-                    end;
-                  end;
-                end;
-
-              end;
-            end;
-          end;
-
-        end;
-      end;
-    end;
-  end;
-end;
-
 
 // function LocalizedFloatValue(value : String; save : boolean = true): Double;
 // var s : String;

@@ -4101,6 +4101,10 @@ select_GET_CurrencyHolderByCurrency : string =
 '   ,ID '#10+
 '   ,Description '#10+
 '   ,AValue '#10+
+'   ,DisplayFormat '#10+
+'   ,Decimals '#10+
+'   ,CurrencySign'#10+
+'   ,SellValue '#10+
 '   ,Active '#10+
 ' FROM '#10+
 '   currencies '#10+
@@ -6249,8 +6253,6 @@ begin
   s := s+' r.Description AS RoomDescription, '+#10;
   s := s+' rt.Description AS RoomTypeDescription, '+#10;
 
-
-
   if iRoomReservation = 0 then   //FRoomReservation = 0  // GroupInvoice
   begin
     s := format(s, ['Reservation', iReservation, _db(Customer), iReservation, iReservation]);
@@ -6278,7 +6280,7 @@ begin
     S := Format(S, ['RoomReservation', 'RoomReservation']) +
          ' RoomReservation IN (SELECT rd.RoomReservation ' +
          ' FROM roomsdate rd JOIN roomreservations rr ON rr.RoomReservation=rd.RoomReservation ' +
-         ' WHERE (rr.GroupAccount = 0 AND (PaidBy=%d OR (rd.RoomReservation=%d AND PaidBy=0))) ' +
+         ' WHERE (ResFlag NOT IN (''X'',''C'')) AND (rr.GroupAccount = 0 AND (PaidBy=%d OR (rd.RoomReservation=%d AND PaidBy=0))) ' +
          ' AND rr.InvoiceIndex = ' + inttostr(InvoiceIndex) + ') ' + #13;
   end;
   result := s;

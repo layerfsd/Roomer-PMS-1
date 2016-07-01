@@ -140,48 +140,10 @@ type
   TInvoiceLineList = TObjectlist<TInvoiceLine>;
 
   TInvoice = class
-    InvoiceLines : TInvoiceLineList;
-    payments : TPaymentLineList;
-
-    Reservation : Integer;
-    RoomReservation : Integer;
-    SplitNumber : integer;
-    InvoiceNumber : Integer;
-    InvoiceType : TRoomerInvoiceType;
-    RoomNumber : String;
-    ID : Integer;
-
-    //
-    InvoiceDate : TDate;
-    Customer : String;
-    CustPId : String;
-    Name : String;
-    Address1 : String;
-    Address2 : String;
-    Address3 : String;
-    Address4 : String;
-    Country : String;
-    ExtraText : String;
-
-    //
-    CreditInvoiceLink : Integer;
-    OriginalInvoice : Integer;
-
-    RoomGuest : String;
-    Staff : String;
-
-    Currency : String;
-    CurrencyRate : Double;
-
-    BookingId : String;
-
-    TotalStayTax : Double;
-    TotalStayTaxNights : Integer;
-
-    Location : String;
-
-    FXml : String;
   private
+
+    FCurrency : String;
+    FXml : String;
     FChanged: Boolean;
     DeletedItems : TInvoiceLineList;
     DeletedPayments : TPaymentLineList;
@@ -212,7 +174,49 @@ type
     function GetTotalTaxes: Double;
     function GetTotalForSpecificLineType(lt: TInvoiceLineType): Double;
     function GetNumberOfRentLines: Integer;
+    function GetCurrency: string;
   public
+    InvoiceLines : TInvoiceLineList;
+    payments : TPaymentLineList;
+    Reservation : Integer;
+    RoomReservation : Integer;
+    SplitNumber : integer;
+    InvoiceNumber : Integer;
+    InvoiceType : TRoomerInvoiceType;
+    RoomNumber : String;
+    ID : Integer;
+    CurrencyRate : Double;
+
+    BookingId : String;
+
+    TotalStayTax : Double;
+    TotalStayTaxNights : Integer;
+
+    Location : String;
+
+
+
+    //
+    InvoiceDate : TDate;
+    Customer : String;
+    CustPId : String;
+    Name : String;
+    Address1 : String;
+    Address2 : String;
+    Address3 : String;
+    Address4 : String;
+    Country : String;
+    ExtraText : String;
+
+    //
+    CreditInvoiceLink : Integer;
+    OriginalInvoice : Integer;
+
+    RoomGuest : String;
+    Staff : String;
+
+
+
     constructor Create(_Type : TRoomerInvoiceType; _ID : Integer; _Reservation, _RoomReservation, _SplitNumber, _InvoiceNumber : Integer; _RoomNumber : String; _expanded : Boolean);
     destructor Destroy; override;
 
@@ -266,6 +270,10 @@ type
 
     procedure ChangeCurrency(_Currency : String; _CurrencyRate : Double);
     procedure SendInvoice;
+
+
+
+
     property Xml : String read GetXml write SetXml;
     property Dirty : Boolean read FChanged write FChanged;
     property isChanged : Boolean read GetChanged;
@@ -279,6 +287,7 @@ type
     property Balance : Double read GetBalance;
     property expanded : Boolean read FExpanded write SetExpanded;
     property NumberOfRentLines : Integer read GetNumberOfRentLines;
+    property newCurrency: string read GetCurrency;
   end;
 
 implementation
@@ -388,7 +397,7 @@ var
 begin
   for i := 0 to InvoiceLines.Count - 1 do
     InvoiceLines[i].ChangeCurrency(_Currency, CurrencyRate, _CurrencyRate);
-  Currency := _Currency;
+  FCurrency := _Currency;
   CurrencyRate := _CurrencyRate;
 end;
 
@@ -477,6 +486,15 @@ end;
 function TInvoice.GetChanged: Boolean;
 begin
   result := Dirty OR GetLinesChanged OR GetPaymentsChanged;
+end;
+
+function TInvoice.GetCurrency: string;
+begin
+  if FCurrency.IsEmpty then
+    // Fall back to native
+
+  else
+    Result := FCurrency;
 end;
 
 function TInvoice.GetTabTypeAsString: String;
@@ -599,7 +617,7 @@ begin
                    'totalNetAmount="%s" totalVatAmount="%s" totalGrossAmount="%s" ' +
                    'totalPaid="%s" balance="%s">',
                    [RoomNumber, RoomReservation, Reservation,
-                   GetTabTypeAsString, GetTabTypeAsString, Currency, FloatToXml(CurrencyRate, 5),
+                   GetTabTypeAsString, GetTabTypeAsString, FCurrency, FloatToXml(CurrencyRate, 5),
                    FloatToXml(GetTotalNetAmount, 2), FloatToXml(GetTotalVatAmount, 2), FloatToXml(GetTotalGrossAmount, 2),
                    FloatToXml(GetTotalPaidAmount, 2), FloatToXml(GetTotalGrossAmount - GetTotalPaidAmount, 2)]);
 
@@ -802,7 +820,7 @@ begin
         SetCustomerHeaderInfo(node_temp);
       end;
 
-      Currency := node.attributes.getNamedItem('currency').text;
+      FCurrency := node.attributes.getNamedItem('currency').text;
       CurrencyRate := LocalizedFloatValue(node.attributes.getNamedItem('currencyRate').text, true, 1.00);
 
 
