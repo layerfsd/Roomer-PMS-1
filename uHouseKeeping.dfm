@@ -80,7 +80,7 @@ object frmHouseKeeping: TfrmHouseKeeping
         Height = 21
         AutoSize = False
         Color = clWhite
-        EditMask = '!9999/99/99;1; '
+        EditMask = '!99/99/9999;1; '
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clBlack
         Font.Height = -11
@@ -89,7 +89,7 @@ object frmHouseKeeping: TfrmHouseKeeping
         MaxLength = 10
         ParentFont = False
         TabOrder = 0
-        Text = '    -  -  '
+        Text = '  -  -    '
         CheckOnExit = True
         SkinData.SkinSection = 'EDIT'
         GlyphMode.Blend = 0
@@ -125,15 +125,11 @@ object frmHouseKeeping: TfrmHouseKeeping
       Caption = 'List'
       SkinData.CustomColor = False
       SkinData.CustomFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object grCross: TAdvStringGrid
         Left = 0
-        Top = 33
+        Top = 43
         Width = 892
-        Height = 353
+        Height = 343
         Cursor = crDefault
         Align = alClient
         ColCount = 6
@@ -237,6 +233,8 @@ object frmHouseKeeping: TfrmHouseKeeping
         SearchFooter.MatchCaseCaption = 'Match case'
         SortSettings.DefaultFormat = ssAutomatic
         Version = '7.9.1.0'
+        ExplicitTop = 33
+        ExplicitHeight = 353
         RowHeights = (
           22
           22
@@ -253,45 +251,54 @@ object frmHouseKeeping: TfrmHouseKeeping
         Left = 0
         Top = 0
         Width = 892
-        Height = 33
+        Height = 43
         Align = alTop
         TabOrder = 1
         SkinData.SkinSection = 'PANEL'
         object LMDSpeedButton6: TsButton
+          AlignWithMargins = True
           Left = 4
-          Top = 2
-          Width = 100
-          Height = 25
+          Top = 4
+          Width = 128
+          Height = 35
+          Align = alLeft
           Caption = 'EXCEL'
-          ImageIndex = 132
+          ImageIndex = 115
           Images = DImages.PngImageList1
           TabOrder = 0
           OnClick = LMDSpeedButton6Click
           SkinData.SkinSection = 'BUTTON'
+          ExplicitHeight = 25
         end
         object LMDSpeedButton12: TsButton
-          Left = 107
-          Top = 2
-          Width = 100
-          Height = 25
+          AlignWithMargins = True
+          Left = 138
+          Top = 4
+          Width = 128
+          Height = 35
+          Align = alLeft
           Caption = 'HTML'
           ImageIndex = 99
           Images = DImages.PngImageList1
           TabOrder = 1
           OnClick = LMDSpeedButton12Click
           SkinData.SkinSection = 'BUTTON'
+          ExplicitHeight = 25
         end
         object Button1: TsButton
-          Left = 211
-          Top = 2
-          Width = 100
-          Height = 25
+          AlignWithMargins = True
+          Left = 272
+          Top = 4
+          Width = 128
+          Height = 35
+          Align = alLeft
           Caption = 'Report'
           ImageIndex = 69
           Images = DImages.PngImageList1
           TabOrder = 2
           OnClick = Button1Click
           SkinData.SkinSection = 'BUTTON'
+          ExplicitHeight = 25
         end
       end
     end
@@ -299,10 +306,6 @@ object frmHouseKeeping: TfrmHouseKeeping
       Caption = 'Detailed'
       SkinData.CustomColor = False
       SkinData.CustomFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object grVar: TcxGrid
         Left = 0
         Top = 33

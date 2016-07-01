@@ -70,7 +70,6 @@ type
     tvPaymentsPaymentCount: TcxGridDBColumn;
     tvPaymentspaytypeDescription: TcxGridDBColumn;
     tvPaymentspaygroupDescripion: TcxGridDBColumn;
-    btnRefresh: TsButton;
     btnExcelTurnover: TsButton;
     btnExcelPayments: TsButton;
     rptTurnowerPayments: TppReport;
@@ -110,7 +109,6 @@ type
     GroupBox1: TsGroupBox;
     chkGetUnconfirmed: TsCheckBox;
     btnConfirm: TsButton;
-    btnReportsReport: TsButton;
     sTabSheet2: TsTabSheet;
     sPanel4: TsPanel;
     sButton2: TsButton;
@@ -148,8 +146,8 @@ type
     sTabSheet4: TsTabSheet;
     sPanel5: TsPanel;
     btnInvoiceListExcel: TsButton;
-    btnInvoiceListExpandAll: TcxButton;
-    btnInvoiceListContractAll: TcxButton;
+    btnInvoiceListExpandAll: TsButton;
+    btnInvoiceListContractAll: TsButton;
     grInvoicelist: TcxGrid;
     tvInvoiceHeads: TcxGridDBTableView;
     tvInvoiceHeadsRecId: TcxGridDBColumn;
@@ -280,15 +278,12 @@ type
     labConfirmdate: TppLabel;
     sButton19: TsButton;
     sButton23: TsButton;
-    sButton27: TsButton;
     tvRoomrentOnInvoicesplitNumber: TcxGridDBColumn;
     rLabHotelName: TppLabel;
     rlabUser: TppLabel;
     rLabTimeCreated: TppLabel;
     ppLabel8: TppLabel;
     ppSystemVariable1: TppSystemVariable;
-    btnGetOld: TsButton;
-    edUnconfirmedDate: TsEdit;
     sTabSheet5: TsTabSheet;
     sPanel6: TsPanel;
     sButton3: TsButton;
@@ -330,6 +325,11 @@ type
     tvRoomrentOnInvoiceRoom: TcxGridDBColumn;
     tvRoomrentOnInvoiceStaff: TcxGridDBColumn;
     sLabel4: TsLabel;
+    sPanel10: TsPanel;
+    btnGetOld: TsButton;
+    btnRefresh: TsButton;
+    btnReportsReport: TsButton;
+    edUnconfirmedDate: TsEdit;
     procedure FormCreate(Sender: TObject);
     procedure btnRefreshClick(Sender: TObject);
     procedure btnExcelTurnoverClick(Sender: TObject);

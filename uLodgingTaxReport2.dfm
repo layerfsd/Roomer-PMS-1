@@ -31,32 +31,38 @@ object frmLodgingTaxReport2: TfrmLodgingTaxReport2
     object sheetMain: TsTabSheet
       Caption = 'Main'
       TabVisible = False
+      SkinData.CustomColor = False
+      SkinData.CustomFont = False
       object Panel1: TsPanel
         Left = 0
         Top = 0
         Width = 989
-        Height = 45
+        Height = 43
         Align = alTop
         BevelOuter = bvNone
         TabOrder = 0
         SkinData.SkinSection = 'PANEL'
         object btnExcelS1: TsButton
-          Left = 2
-          Top = 4
-          Width = 100
+          AlignWithMargins = True
+          Left = 3
+          Top = 3
+          Width = 128
           Height = 37
+          Align = alLeft
           Caption = 'Excel'
-          ImageIndex = 132
+          ImageIndex = 115
           Images = DImages.PngImageList1
           TabOrder = 0
           OnClick = btnExcelS1Click
           SkinData.SkinSection = 'BUTTON'
         end
         object btnReportS1: TsButton
-          Left = 108
-          Top = 4
-          Width = 100
+          AlignWithMargins = True
+          Left = 137
+          Top = 3
+          Width = 128
           Height = 37
+          Align = alLeft
           Caption = 'Report'
           ImageIndex = 69
           Images = DImages.PngImageList1
@@ -65,11 +71,13 @@ object frmLodgingTaxReport2: TfrmLodgingTaxReport2
           SkinData.SkinSection = 'BUTTON'
         end
         object chkPageBreak: TsCheckBox
-          Left = 531
-          Top = 4
+          AlignWithMargins = True
+          Left = 673
+          Top = 3
           Width = 211
-          Height = 17
+          Height = 37
           Caption = 'Page break before summary on report'
+          Align = alLeft
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -11
@@ -80,36 +88,45 @@ object frmLodgingTaxReport2: TfrmLodgingTaxReport2
           SkinData.SkinSection = 'CHECKBOX'
           ImgChecked = 0
           ImgUnchecked = 0
+          ExplicitLeft = 800
         end
         object btnShowReservation: TsButton
-          Left = 214
-          Top = 4
-          Width = 100
+          AlignWithMargins = True
+          Left = 539
+          Top = 3
+          Width = 128
           Height = 37
+          Align = alLeft
           Caption = 'Reservaton'
           ImageIndex = 56
           Images = DImages.PngImageList1
           TabOrder = 3
           OnClick = btnShowReservationClick
           SkinData.SkinSection = 'BUTTON'
+          ExplicitLeft = 700
         end
         object btnShowGuests: TsButton
-          Left = 320
-          Top = 4
-          Width = 100
+          AlignWithMargins = True
+          Left = 271
+          Top = 3
+          Width = 128
           Height = 37
+          Align = alLeft
           Caption = 'Guests'
           ImageIndex = 39
           Images = DImages.PngImageList1
           TabOrder = 4
           OnClick = btnShowGuestsClick
           SkinData.SkinSection = 'BUTTON'
+          ExplicitLeft = 488
         end
         object btnShowInvoice: TsButton
-          Left = 426
-          Top = 4
-          Width = 100
+          AlignWithMargins = True
+          Left = 405
+          Top = 3
+          Width = 128
           Height = 37
+          Align = alLeft
           Caption = 'Invoices'
           DropDownMenu = mnuFinishedInv
           ImageIndex = 63
@@ -117,18 +134,21 @@ object frmLodgingTaxReport2: TfrmLodgingTaxReport2
           Style = bsSplitButton
           TabOrder = 5
           SkinData.SkinSection = 'BUTTON'
+          ExplicitLeft = 622
         end
       end
       object gInvoiceHeads: TcxGrid
         Left = 0
-        Top = 45
+        Top = 43
         Width = 989
-        Height = 469
+        Height = 471
         Align = alClient
         BevelOuter = bvNone
         BorderStyle = cxcbsNone
         TabOrder = 1
         LookAndFeel.NativeStyle = False
+        ExplicitTop = 45
+        ExplicitHeight = 469
         object tvInvoiceHeads: TcxGridDBTableView
           OnDblClick = tvInvoiceHeadsDblClick
           Navigator.Buttons.CustomButtons = <>

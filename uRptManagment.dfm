@@ -3,7 +3,7 @@ object frmRptManagment: TfrmRptManagment
   Top = 0
   Caption = 'Statitic'
   ClientHeight = 643
-  ClientWidth = 987
+  ClientWidth = 1167
   Color = clBtnFace
   Constraints.MinWidth = 570
   Font.Charset = DEFAULT_CHARSET
@@ -23,7 +23,7 @@ object frmRptManagment: TfrmRptManagment
   object Panel3: TsPanel
     Left = 0
     Top = 0
-    Width = 987
+    Width = 1167
     Height = 89
     Align = alTop
     TabOrder = 0
@@ -210,7 +210,7 @@ object frmRptManagment: TfrmRptManagment
   object sStatusBar1: TsStatusBar
     Left = 0
     Top = 624
-    Width = 987
+    Width = 1167
     Height = 19
     Panels = <>
     SkinData.SkinSection = 'STATUSBAR'
@@ -218,7 +218,7 @@ object frmRptManagment: TfrmRptManagment
   object pageMain: TsPageControl
     Left = 0
     Top = 89
-    Width = 987
+    Width = 1167
     Height = 535
     ActivePage = tabStatGrid
     Align = alClient
@@ -228,47 +228,48 @@ object frmRptManagment: TfrmRptManagment
       Caption = 'Data'
       SkinData.CustomColor = False
       SkinData.CustomFont = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object sPanel1: TsPanel
         Left = 0
         Top = 0
-        Width = 979
-        Height = 45
+        Width = 1159
+        Height = 43
         Align = alTop
+        FullRepaint = False
         TabOrder = 0
         SkinData.SkinSection = 'PANEL'
         object btnGuestsExcel: TsButton
-          Left = 4
+          AlignWithMargins = True
+          Left = 11
           Top = 4
-          Width = 80
-          Height = 37
+          Width = 128
+          Height = 35
+          Margins.Left = 10
+          Align = alLeft
           Caption = 'Excel'
-          ImageIndex = 132
+          ImageIndex = 115
           Images = DImages.PngImageList1
           TabOrder = 0
           OnClick = btnGuestsExcelClick
           SkinData.SkinSection = 'BUTTON'
-        end
-        object sButton1: TsButton
-          Left = 90
-          Top = 4
-          Width = 80
-          Height = 37
-          Caption = 'Report'
-          ImageIndex = 69
-          Images = DImages.PngImageList1
-          TabOrder = 1
-          SkinData.SkinSection = 'BUTTON'
+          ExplicitLeft = 16
+          ExplicitTop = 6
+          ExplicitHeight = 27
         end
       end
       object grStat: TcxGrid
         Left = 0
-        Top = 45
-        Width = 979
-        Height = 462
+        Top = 43
+        Width = 1159
+        Height = 464
         Align = alClient
         TabOrder = 1
         LookAndFeel.NativeStyle = False
-        ExplicitTop = 43
+        ExplicitTop = 39
+        ExplicitHeight = 468
         object tvStat: TcxGridDBTableView
           Navigator.Buttons.CustomButtons = <>
           DataController.DataSource = StatDS
@@ -592,10 +593,14 @@ object frmRptManagment: TfrmRptManagment
       Caption = 'Charts'
       SkinData.CustomColor = False
       SkinData.CustomFont = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object pageCharts: TsPageControl
         Left = 0
         Top = 0
-        Width = 979
+        Width = 1159
         Height = 507
         ActivePage = tabOcc
         Align = alClient
@@ -605,20 +610,30 @@ object frmRptManagment: TfrmRptManagment
           Caption = 'OCC'
           SkinData.CustomColor = False
           SkinData.CustomFont = False
+          ExplicitLeft = 0
+          ExplicitTop = 0
+          ExplicitWidth = 0
+          ExplicitHeight = 0
           object sPanel2: TsPanel
             Left = 0
             Top = 0
-            Width = 971
+            Width = 1151
             Height = 33
             Align = alTop
             TabOrder = 0
             SkinData.SkinSection = 'PANEL'
             object sButton2: TsButton
-              Left = 0
-              Top = 3
-              Width = 75
-              Height = 25
-              Caption = 'Create chart'
+              AlignWithMargins = True
+              Left = 16
+              Top = 6
+              Width = 128
+              Height = 21
+              Margins.Left = 15
+              Margins.Top = 5
+              Margins.Bottom = 5
+              Align = alLeft
+              Caption = 'Create Chart'
+              ImageIndex = 0
               TabOrder = 0
               OnClick = sButton2Click
               SkinData.SkinSection = 'BUTTON'
@@ -627,7 +642,7 @@ object frmRptManagment: TfrmRptManagment
           object Chart1: TChart
             Left = 0
             Top = 33
-            Width = 971
+            Width = 1151
             Height = 446
             Legend.Visible = False
             SubTitle.Font.Color = clBlack
