@@ -26,9 +26,10 @@ object frmArrivalsReport: TfrmArrivalsReport
     Align = alTop
     TabOrder = 0
     SkinData.SkinSection = 'PANEL'
+    ExplicitTop = -6
     object btnRefresh: TsButton
-      Left = 398
-      Top = 9
+      Left = 378
+      Top = 14
       Width = 118
       Height = 26
       Caption = 'Refresh'
@@ -40,10 +41,10 @@ object frmArrivalsReport: TfrmArrivalsReport
       SkinData.SkinSection = 'BUTTON'
     end
     object gbxSelectDates: TsGroupBox
-      Left = 21
-      Top = 2
-      Width = 370
-      Height = 78
+      Left = 4
+      Top = 0
+      Width = 368
+      Height = 94
       Caption = 'Select dates'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
@@ -57,8 +58,8 @@ object frmArrivalsReport: TfrmArrivalsReport
       object rbToday: TsRadioButton
         Left = 4
         Top = 21
-        Width = 50
-        Height = 20
+        Width = 58
+        Height = 19
         Caption = 'Today'
         Checked = True
         TabOrder = 0
@@ -68,8 +69,8 @@ object frmArrivalsReport: TfrmArrivalsReport
       object rbTomorrow: TsRadioButton
         Left = 4
         Top = 46
-        Width = 68
-        Height = 20
+        Width = 76
+        Height = 19
         Caption = 'Tomorrow'
         TabOrder = 1
         OnClick = rbRadioButtonClick
@@ -77,8 +78,8 @@ object frmArrivalsReport: TfrmArrivalsReport
       object rbManualRange: TsRadioButton
         Left = 119
         Top = 21
-        Width = 114
-        Height = 20
+        Width = 122
+        Height = 19
         Caption = 'Manual date range:'
         TabOrder = 2
         OnClick = rbRadioButtonClick
@@ -89,9 +90,10 @@ object frmArrivalsReport: TfrmArrivalsReport
         Width = 105
         Height = 21
         AutoSize = False
+        Color = clWhite
         EditMask = '!99/99/9999;1; '
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -112,9 +114,10 @@ object frmArrivalsReport: TfrmArrivalsReport
         Width = 105
         Height = 21
         AutoSize = False
+        Color = clWhite
         EditMask = '!99/99/9999;1; '
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -132,22 +135,19 @@ object frmArrivalsReport: TfrmArrivalsReport
     end
     object pnlExportButtons: TsPanel
       Left = 1
-      Top = 104
+      Top = 100
       Width = 1121
-      Height = 39
+      Height = 43
       Align = alBottom
       BevelOuter = bvNone
       TabOrder = 2
       SkinData.SkinSection = 'PANEL'
       object btnExcel: TsButton
         AlignWithMargins = True
-        Left = 15
-        Top = 5
+        Left = 3
+        Top = 3
         Width = 128
-        Height = 29
-        Margins.Left = 15
-        Margins.Top = 5
-        Margins.Bottom = 5
+        Height = 37
         Align = alLeft
         Caption = 'Excel'
         ImageIndex = 115
@@ -158,13 +158,10 @@ object frmArrivalsReport: TfrmArrivalsReport
       end
       object btnCheckIn: TsButton
         AlignWithMargins = True
-        Left = 161
-        Top = 5
+        Left = 137
+        Top = 3
         Width = 128
-        Height = 29
-        Margins.Left = 15
-        Margins.Top = 5
-        Margins.Bottom = 5
+        Height = 37
         Align = alLeft
         Caption = 'Check in'
         ImageIndex = 44
@@ -175,13 +172,10 @@ object frmArrivalsReport: TfrmArrivalsReport
       end
       object btnProfile: TsButton
         AlignWithMargins = True
-        Left = 307
-        Top = 5
+        Left = 271
+        Top = 3
         Width = 100
-        Height = 29
-        Margins.Left = 15
-        Margins.Top = 5
-        Margins.Bottom = 5
+        Height = 37
         Align = alLeft
         Caption = 'Profile'
         ImageIndex = 37
@@ -189,16 +183,16 @@ object frmArrivalsReport: TfrmArrivalsReport
         TabOrder = 2
         OnClick = btnProfileClick
         SkinData.SkinSection = 'BUTTON'
+        ExplicitLeft = 307
+        ExplicitTop = 5
+        ExplicitHeight = 29
       end
       object btnInvoice: TsButton
         AlignWithMargins = True
-        Left = 425
-        Top = 5
+        Left = 377
+        Top = 3
         Width = 128
-        Height = 29
-        Margins.Left = 15
-        Margins.Top = 5
-        Margins.Bottom = 5
+        Height = 37
         Align = alLeft
         Caption = 'Invoice'
         DropDownMenu = pmnuInvoiceMenu
@@ -210,14 +204,10 @@ object frmArrivalsReport: TfrmArrivalsReport
       end
       object btnReport: TsButton
         AlignWithMargins = True
-        Left = 978
-        Top = 5
+        Left = 990
+        Top = 3
         Width = 128
-        Height = 29
-        Margins.Left = 15
-        Margins.Top = 5
-        Margins.Right = 15
-        Margins.Bottom = 5
+        Height = 37
         Align = alRight
         Caption = 'Report'
         ImageIndex = 69
@@ -225,6 +215,7 @@ object frmArrivalsReport: TfrmArrivalsReport
         TabOrder = 4
         OnClick = btnReportClick
         SkinData.SkinSection = 'BUTTON'
+        ExplicitLeft = 1018
       end
     end
   end
@@ -519,6 +510,93 @@ object frmArrivalsReport: TfrmArrivalsReport
     UserName = 'plArrivalsList'
     Left = 120
     Top = 283
+    object plArrivalsListppField1: TppField
+      FieldAlias = 'Room'
+      FieldName = 'Room'
+      FieldLength = 10
+      DisplayWidth = 10
+      Position = 0
+    end
+    object plArrivalsListppField2: TppField
+      FieldAlias = 'Roomtype'
+      FieldName = 'Roomtype'
+      FieldLength = 20
+      DisplayWidth = 20
+      Position = 1
+    end
+    object plArrivalsListppField3: TppField
+      Alignment = taRightJustify
+      FieldAlias = 'RoomerReservationID'
+      FieldName = 'RoomerReservationID'
+      FieldLength = 0
+      DataType = dtInteger
+      DisplayWidth = 10
+      Position = 2
+    end
+    object plArrivalsListppField4: TppField
+      FieldAlias = 'GuestName'
+      FieldName = 'GuestName'
+      FieldLength = 100
+      DisplayWidth = 100
+      Position = 3
+    end
+    object plArrivalsListppField5: TppField
+      FieldAlias = 'CompanyCode'
+      FieldName = 'CompanyCode'
+      FieldLength = 15
+      DisplayWidth = 15
+      Position = 4
+    end
+    object plArrivalsListppField6: TppField
+      FieldAlias = 'Arrival'
+      FieldName = 'Arrival'
+      FieldLength = 0
+      DataType = dtDate
+      DisplayWidth = 10
+      Position = 5
+    end
+    object plArrivalsListppField7: TppField
+      FieldAlias = 'Departure'
+      FieldName = 'Departure'
+      FieldLength = 0
+      DataType = dtDate
+      DisplayWidth = 10
+      Position = 6
+    end
+    object plArrivalsListppField8: TppField
+      Alignment = taRightJustify
+      FieldAlias = 'NumGuests'
+      FieldName = 'NumGuests'
+      FieldLength = 0
+      DataType = dtInteger
+      DisplayWidth = 10
+      Position = 7
+    end
+    object plArrivalsListppField9: TppField
+      Alignment = taRightJustify
+      FieldAlias = 'AverageRoomRate'
+      FieldName = 'AverageRoomRate'
+      FieldLength = 0
+      DataType = dtDouble
+      DisplayWidth = 10
+      Position = 8
+    end
+    object plArrivalsListppField10: TppField
+      FieldAlias = 'ExpectedTimeOfArrival'
+      FieldName = 'ExpectedTimeOfArrival'
+      FieldLength = 5
+      DisplayWidth = 5
+      Position = 9
+    end
+    object plArrivalsListppField11: TppField
+      Alignment = taRightJustify
+      FieldAlias = 'RoomerRoomReservationID'
+      FieldName = 'RoomerRoomReservationID'
+      FieldLength = 0
+      DataType = dtInteger
+      DisplayWidth = 10
+      Position = 10
+    end
   end
   object rptArrivals: TppReport
     AutoStop = False

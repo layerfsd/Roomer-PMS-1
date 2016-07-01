@@ -75,7 +75,7 @@ object frmRptDownPayments: TfrmRptDownPayments
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
-      TabOrder = 0
+      TabOrder = 1
       SkinData.SkinSection = 'GROUPBOX'
       Checked = False
       object cbxMonth: TsComboBox
@@ -163,7 +163,7 @@ object frmRptDownPayments: TfrmRptDownPayments
       Default = True
       ImageIndex = 82
       Images = DImages.PngImageList1
-      TabOrder = 1
+      TabOrder = 4
       OnClick = btnRefreshClick
       SkinData.SkinSection = 'BUTTON'
     end
@@ -179,7 +179,7 @@ object frmRptDownPayments: TfrmRptDownPayments
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
-      TabOrder = 2
+      TabOrder = 0
       SkinData.SkinSection = 'GROUPBOX'
       Checked = False
       object dtDateFrom: TsDateEdit
@@ -241,7 +241,7 @@ object frmRptDownPayments: TfrmRptDownPayments
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
-      TabOrder = 3
+      TabOrder = 6
       SkinData.SkinSection = 'EDIT'
     end
     object rgrInvoiced: TsRadioGroup
@@ -250,7 +250,7 @@ object frmRptDownPayments: TfrmRptDownPayments
       Width = 139
       Height = 85
       Caption = '.. Invoiced'
-      TabOrder = 4
+      TabOrder = 2
       OnClick = rgrInvoicedClick
       SkinData.SkinSection = 'GROUPBOX'
       Checked = False
@@ -266,7 +266,7 @@ object frmRptDownPayments: TfrmRptDownPayments
       Width = 139
       Height = 85
       Caption = '.. Confirmed'
-      TabOrder = 5
+      TabOrder = 3
       OnClick = rgrInvoicedClick
       SkinData.SkinSection = 'GROUPBOX'
       Checked = False
@@ -285,7 +285,7 @@ object frmRptDownPayments: TfrmRptDownPayments
       ImageIndex = 57
       Images = DImages.PngImageList1
       ModalResult = 1
-      TabOrder = 6
+      TabOrder = 5
       OnClick = sButton1Click
       SkinData.SkinSection = 'BUTTON'
     end
@@ -302,6 +302,8 @@ object frmRptDownPayments: TfrmRptDownPayments
     object sTabSheet1: TsTabSheet
       Caption = 'sTabSheet1'
       TabVisible = False
+      SkinData.CustomColor = False
+      SkinData.CustomFont = False
       object grPayments: TcxGrid
         Left = 0
         Top = 43
@@ -444,82 +446,107 @@ object frmRptDownPayments: TfrmRptDownPayments
         TabOrder = 1
         SkinData.SkinSection = 'PANEL'
         object btnGuestsExcel: TsButton
+          AlignWithMargins = True
           Left = 4
-          Top = 2
+          Top = 4
           Width = 110
-          Height = 39
+          Height = 35
+          Align = alLeft
           Caption = 'Excel'
           ImageIndex = 132
           Images = DImages.PngImageList1
           TabOrder = 0
           OnClick = btnGuestsExcelClick
           SkinData.SkinSection = 'BUTTON'
+          ExplicitLeft = 0
+          ExplicitTop = 1
+          ExplicitHeight = 41
         end
         object brnGuestsReservation: TsButton
+          AlignWithMargins = True
           Left = 120
-          Top = 2
+          Top = 4
           Width = 110
-          Height = 39
+          Height = 35
+          Align = alLeft
           Caption = 'Reservaton '
           ImageIndex = 56
           Images = DImages.PngImageList1
           TabOrder = 1
           OnClick = brnGuestsReservationClick
           SkinData.SkinSection = 'BUTTON'
+          ExplicitTop = 2
+          ExplicitHeight = 39
         end
         object btnGuestsRoom: TsButton
+          AlignWithMargins = True
           Left = 236
-          Top = 2
+          Top = 4
           Width = 110
-          Height = 39
+          Height = 35
+          Align = alLeft
           Caption = 'Room'
           ImageIndex = 39
           Images = DImages.PngImageList1
           TabOrder = 2
           OnClick = btnGuestsRoomClick
           SkinData.SkinSection = 'BUTTON'
+          ExplicitTop = 2
+          ExplicitHeight = 39
         end
         object sButton2: TsButton
+          AlignWithMargins = True
           Left = 352
-          Top = 2
+          Top = 4
           Width = 110
-          Height = 39
+          Height = 35
+          Align = alLeft
           Caption = 'Invoice'
           ImageIndex = 56
           Images = DImages.PngImageList1
           TabOrder = 3
           OnClick = sButton2Click
           SkinData.SkinSection = 'BUTTON'
+          ExplicitTop = 2
+          ExplicitHeight = 39
         end
         object btnEdit: TsButton
+          AlignWithMargins = True
           Left = 584
-          Top = 2
+          Top = 4
           Width = 110
-          Height = 39
+          Height = 35
+          Align = alLeft
           Caption = 'Edit'
           ImageIndex = 25
           Images = DImages.PngImageList1
-          TabOrder = 4
+          TabOrder = 5
           OnClick = btnEditClick
           SkinData.SkinSection = 'BUTTON'
+          ExplicitTop = 2
+          ExplicitHeight = 39
         end
         object sButton3: TsButton
+          AlignWithMargins = True
           Left = 468
-          Top = 2
+          Top = 4
           Width = 110
-          Height = 39
+          Height = 35
+          Align = alLeft
           Caption = 'Report'
           ImageIndex = 69
           Images = DImages.PngImageList1
-          TabOrder = 5
+          TabOrder = 4
           OnClick = sButton3Click
           SkinData.SkinSection = 'BUTTON'
+          ExplicitTop = 2
+          ExplicitHeight = 39
         end
         object sCheckBox1: TsCheckBox
           Left = 700
           Top = 4
           Width = 115
-          Height = 17
+          Height = 19
           Caption = 'Group on paytype'
           TabOrder = 6
           SkinData.SkinSection = 'CHECKBOX'

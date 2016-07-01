@@ -90,7 +90,6 @@ type
     grTotallist: TcxGrid;
     kbmTotallist: TkbmMemTable;
     TotallistDS: TDataSource;
-    btnReport: TsButton;
     lvTotallistLevel1: TcxGridLevel;
     lvTotallist: TcxGridDBBandedTableView;
     lvTotallistdtDate: TcxGridDBBandedColumn;

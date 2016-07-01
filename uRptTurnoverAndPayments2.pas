@@ -356,7 +356,6 @@ type
     labConfirmdate: TppLabel;
     sButton19: TsButton;
     sButton23: TsButton;
-    sButton27: TsButton;
     tvRoomrentOnInvoicesplitNumber: TcxGridDBColumn;
     rLabHotelName: TppLabel;
     rlabUser: TppLabel;
@@ -404,7 +403,6 @@ type
     sLabel4: TsLabel;
     sPanel10: TsPanel;
     btnGetOld: TsButton;
-    btnReportsReport: TsButton;
     btnRefresh: TsButton;
     __chkShowAsItem: TsCheckBox;
     labConfirmDates: TppLabel;
@@ -426,6 +424,7 @@ type
     tvUnconfirmedInvoicelinesRoom: TcxGridDBColumn;
     tvUnconfirmedInvoicelinesStaff: TcxGridDBColumn;
     tvUnconfirmedInvoicelinesInvoiceNumber: TcxGridDBColumn;
+    btnReportsReport: TsButton;
     procedure FormCreate(Sender: TObject);
     procedure btnRefreshClick(Sender: TObject);
     procedure btnExcelTurnoverClick(Sender: TObject);

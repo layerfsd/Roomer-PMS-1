@@ -430,8 +430,6 @@ type
     mnuLayoutRestoreAll: TMenuItem;
     mnuLayoutSaveCurrent: TMenuItem;
     mnuLayoutRestoreCurrent: TMenuItem;
-    btnPrint: TsButton;
-    cxButton3: TsButton;
     btnRefresh: TsButton;
     cxButton1: TsButton;
     cxButton2: TsButton;
@@ -443,9 +441,6 @@ type
     grPrinterPayments: TdxGridReportLink;
     grPrinterPaymentType: TdxGridReportLink;
     grPrinterLink1: TdxCompositionReportLink;
-    btnShowReservation: TsButton;
-    btnShowGuests: TsButton;
-    btnShowInvoice: TsButton;
     tvPaymentsPayDate: TcxGridDBColumn;
     tvPaymentsNameOnInvoice: TcxGridDBColumn;
     tvPaymentsihConfirmDate: TcxGridDBColumn;
@@ -465,7 +460,6 @@ type
     GroupBox1: TsGroupBox;
     chkGetUnconfirmed: TsCheckBox;
     btnConfirm: TsButton;
-    btnShowSelectedInvoice: TsButton;
     getConfirmGroup: TsButton;
     mInvoiceHeadsConfirmedDate: TDateTimeField;
     mInvoiceHeadsCurrency: TWideStringField;
@@ -575,7 +569,14 @@ type
     tvPaymentsaDate: TcxGridDBColumn;
     tvPaymentscurrencyAmount: TcxGridDBColumn;
     labLocations: TsLabel;
-    __labLocationsList: TsLabel;      //-96
+    __labLocationsList: TsLabel;
+    pnlButtons: TsPanel;
+    cxButton3: TsButton;
+    btnPrint: TsButton;
+    btnShowReservation: TsButton;
+    btnShowGuests: TsButton;
+    btnShowSelectedInvoice: TsButton;
+    btnShowInvoice: TsButton;      //-96
     procedure FormCreate(Sender : TObject);
     procedure FormShow(Sender : TObject);
     procedure FormClose(Sender : TObject; var Action : TCloseAction);

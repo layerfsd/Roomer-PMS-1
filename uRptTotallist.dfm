@@ -215,33 +215,24 @@ object frmRptTotallist: TfrmRptTotallist
     Left = 0
     Top = 97
     Width = 963
-    Height = 32
+    Height = 43
     Align = alTop
     TabOrder = 1
     SkinData.SkinSection = 'PANEL'
     object btnExcel: TsButton
-      Left = 10
-      Top = 2
+      AlignWithMargins = True
+      Left = 4
+      Top = 4
       Width = 100
-      Height = 25
+      Height = 35
+      Align = alLeft
       Caption = 'Excel'
-      ImageIndex = 132
+      ImageIndex = 115
       Images = DImages.PngImageList1
       TabOrder = 0
       OnClick = btnExcelClick
       SkinData.SkinSection = 'BUTTON'
-    end
-    object btnReport: TsButton
-      Left = 116
-      Top = 1
-      Width = 100
-      Height = 25
-      Caption = 'Report'
-      ImageIndex = 72
-      Images = DImages.PngImageList1
-      TabOrder = 1
-      Visible = False
-      SkinData.SkinSection = 'BUTTON'
+      ExplicitLeft = 0
     end
   end
   object dxStatusBar1: TdxStatusBar
@@ -258,12 +249,14 @@ object frmRptTotallist: TfrmRptTotallist
   end
   object grTotallist: TcxGrid
     Left = 0
-    Top = 129
+    Top = 140
     Width = 963
-    Height = 437
+    Height = 426
     Align = alClient
     TabOrder = 3
     LookAndFeel.NativeStyle = False
+    ExplicitTop = 129
+    ExplicitHeight = 437
     object lvTotallist: TcxGridDBBandedTableView
       Navigator.Buttons.CustomButtons = <>
       Navigator.Buttons.Insert.Visible = False
