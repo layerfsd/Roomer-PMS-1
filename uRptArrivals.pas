@@ -11,7 +11,9 @@ uses
   dxSkinscxPCPainter, cxCustomData, cxFilter, cxData, cxDataStorage, cxEdit, cxNavigator, cxDBData, cxGridLevel,
   cxGridCustomTableView, cxGridTableView, cxGridBandedTableView, cxGridDBBandedTableView, cxGridCustomView, cxGrid,
   dxStatusBar, cxGridDBTableView, Vcl.Grids, Vcl.DBGrids, Vcl.Menus, cxTimeEdit, ppParameter, ppDesignLayer, ppCtrls,
-  ppBands, ppVar, ppPrnabl, ppClass, ppCache, ppProd, ppReport, ppDB, ppComm, ppRelatv, ppDBPipe;
+  ppBands, ppVar, ppPrnabl, ppClass, ppCache, ppProd, ppReport, ppDB, ppComm, ppRelatv, ppDBPipe
+  , uCurrencyHandler
+  ;
 
 type
   TfrmArrivalsReport = class(TForm)
@@ -142,8 +144,11 @@ type
       ARecord: TcxCustomGridRecord; var AText: string);
     procedure btnReportClick(Sender: TObject);
     procedure ppHeaderBand1BeforePrint(Sender: TObject);
+    procedure grArrivalsListDBTableView1AverageRoomRateGetDisplayText(Sender: TcxCustomGridTableItem;
+      ARecord: TcxCustomGridRecord; var AText: string);
   private
     FRefreshingdata: boolean;
+    FCurrencyhandler: TCurrencyHandler;
     { Private declarations }
     procedure UpdateControls;
     procedure SetManualDates(aFrom, aTo: TDate);
@@ -152,6 +157,8 @@ type
   protected
     procedure WndProc(var message: TMessage); override;
   public
+    constructor Create(aOwner: TComponent); override;
+    destructor Destroy; override;
     { Public declarations }
   end;
 
@@ -181,7 +188,8 @@ uses
   , uGuestCheckInForm
   , uInvoice
   , uReservationProfile
-  , uRptbViewer;
+  , uRptbViewer
+  ;
 
 const
   cSQL = 'SELECT '+
@@ -341,6 +349,18 @@ begin
   {$endif}
 end;
 
+constructor TfrmArrivalsReport.Create(aOwner: TComponent);
+begin
+  FCurrencyhandler := TCurrencyHandler.Create(g.qNativeCurrency);
+  inherited;
+end;
+
+destructor TfrmArrivalsReport.Destroy;
+begin
+  inherited;
+  FCurrencyhandler.Free;
+end;
+
 procedure TfrmArrivalsReport.dtDateFromCloseUp(Sender: TObject);
 begin
  if dtDateFrom.Date > dtDateTo.Date then
@@ -375,6 +395,12 @@ end;
 procedure TfrmArrivalsReport.mnuGroupInvoiceClick(Sender: TObject);
 begin
   EditInvoice(kbmArrivalsList['RoomerReservationID'], 0, 0, 0, 0, 0, false, true,false);
+end;
+
+procedure TfrmArrivalsReport.grArrivalsListDBTableView1AverageRoomRateGetDisplayText(Sender: TcxCustomGridTableItem;
+  ARecord: TcxCustomGridRecord; var AText: string);
+begin
+  aText := FCurrencyhandler.FormattedValue(kbmArrivalsListAverageRoomRate.AsFloat);
 end;
 
 procedure TfrmArrivalsReport.grArrivalsListDBTableView1CellDblClick(Sender: TcxCustomGridTableView; ACellViewInfo: TcxGridTableDataCellViewInfo;

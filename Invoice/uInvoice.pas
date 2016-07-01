@@ -6860,7 +6860,7 @@ begin
     rec := TrecItemHolder.create;
     rec.recHolder.Item := Item;
     theData.add(rec);
-    if openMultipleItems(actLookup, True, theData) AND (theData.Count > 0) then
+    if openMultipleItems(actLookup, True, theData, [TShowItemOfType.NonStockitems]) AND (theData.Count > 0) then
     begin
       if theData[0].recHolder.Item <> Item then // New item
       begin
