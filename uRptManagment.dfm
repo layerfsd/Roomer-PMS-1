@@ -197,8 +197,8 @@ object frmRptManagment: TfrmRptManagment
     object chkCompareLasYear: TsCheckBox
       Left = 306
       Top = 56
-      Width = 116
-      Height = 19
+      Width = 108
+      Height = 20
       Caption = 'Compare last year'
       TabOrder = 3
       Visible = False
@@ -228,10 +228,6 @@ object frmRptManagment: TfrmRptManagment
       Caption = 'Data'
       SkinData.CustomColor = False
       SkinData.CustomFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object sPanel1: TsPanel
         Left = 0
         Top = 0
@@ -250,14 +246,11 @@ object frmRptManagment: TfrmRptManagment
           Margins.Left = 10
           Align = alLeft
           Caption = 'Excel'
-          ImageIndex = 115
+          ImageIndex = 132
           Images = DImages.PngImageList1
           TabOrder = 0
           OnClick = btnGuestsExcelClick
           SkinData.SkinSection = 'BUTTON'
-          ExplicitLeft = 16
-          ExplicitTop = 6
-          ExplicitHeight = 27
         end
       end
       object grStat: TcxGrid
@@ -268,8 +261,6 @@ object frmRptManagment: TfrmRptManagment
         Align = alClient
         TabOrder = 1
         LookAndFeel.NativeStyle = False
-        ExplicitTop = 39
-        ExplicitHeight = 468
         object tvStat: TcxGridDBTableView
           Navigator.Buttons.CustomButtons = <>
           DataController.DataSource = StatDS
@@ -593,10 +584,6 @@ object frmRptManagment: TfrmRptManagment
       Caption = 'Charts'
       SkinData.CustomColor = False
       SkinData.CustomFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object pageCharts: TsPageControl
         Left = 0
         Top = 0
@@ -610,10 +597,6 @@ object frmRptManagment: TfrmRptManagment
           Caption = 'OCC'
           SkinData.CustomColor = False
           SkinData.CustomFont = False
-          ExplicitLeft = 0
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
           object sPanel2: TsPanel
             Left = 0
             Top = 0

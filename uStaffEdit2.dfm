@@ -11,6 +11,7 @@ object frmStaffEdit2: TfrmStaffEdit2
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
+  KeyPreview = True
   Padding.Left = 5
   Padding.Top = 5
   Padding.Right = 5
@@ -18,6 +19,7 @@ object frmStaffEdit2: TfrmStaffEdit2
   Position = poOwnerFormCenter
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
+  OnKeyDown = FormKeyDown
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
@@ -79,10 +81,8 @@ object frmStaffEdit2: TfrmStaffEdit2
     SkinData.SkinSection = 'PAGECONTROL'
     object sTabSheet1: TsTabSheet
       Caption = 'Main'
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
+      SkinData.CustomColor = False
+      SkinData.CustomFont = False
       object gbxGuest: TsGroupBox
         Left = 0
         Top = 0
@@ -617,6 +617,8 @@ object frmStaffEdit2: TfrmStaffEdit2
     end
     object sTabSheet2: TsTabSheet
       Caption = 'Authorization'
+      SkinData.CustomColor = False
+      SkinData.CustomFont = False
       object sGroupBox2: TsGroupBox
         AlignWithMargins = True
         Left = 0
@@ -683,8 +685,8 @@ object frmStaffEdit2: TfrmStaffEdit2
         TabOrder = 1
         SkinData.SkinSection = 'GROUPBOX'
         Checked = False
-        object sLabel1: TsLabel
-          Left = 2
+        object cLabStaffType: TsLabel
+          Left = 0
           Top = 22
           Width = 159
           Height = 15
@@ -711,7 +713,7 @@ object frmStaffEdit2: TfrmStaffEdit2
           Font.Name = 'Tahoma'
           Font.Style = []
         end
-        object sLabel3: TsLabel
+        object cLabStaffType1: TsLabel
           Left = 2
           Top = 46
           Width = 159
@@ -739,7 +741,7 @@ object frmStaffEdit2: TfrmStaffEdit2
           Font.Name = 'Tahoma'
           Font.Style = []
         end
-        object sLabel5: TsLabel
+        object cLabStaffType2: TsLabel
           Left = 2
           Top = 68
           Width = 159
@@ -754,7 +756,7 @@ object frmStaffEdit2: TfrmStaffEdit2
           Font.Name = 'Tahoma'
           Font.Style = []
         end
-        object sLabel6: TsLabel
+        object cLabStaffType3: TsLabel
           Left = 2
           Top = 91
           Width = 159
@@ -831,8 +833,8 @@ object frmStaffEdit2: TfrmStaffEdit2
           OnClick = btnGetStaffType3Click
           SkinData.SkinSection = 'SPEEDBUTTON'
         end
-        object sLabel9: TsLabel
-          Left = 2
+        object cLabStaffType4: TsLabel
+          Left = 0
           Top = 115
           Width = 159
           Height = 15
