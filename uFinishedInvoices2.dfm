@@ -41,8 +41,6 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
     BevelOuter = bvNone
     TabOrder = 1
     SkinData.SkinSection = 'PANEL'
-    ExplicitLeft = -2
-    ExplicitTop = 0
     object labExport: TsLabel
       Left = 637
       Top = 11
@@ -71,8 +69,6 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
       TabOrder = 0
       OnClick = btnPrintClick
       SkinData.SkinSection = 'BUTTON'
-      ExplicitLeft = 4
-      ExplicitHeight = 37
     end
     object btnDesign: TsButton
       AlignWithMargins = True
@@ -91,8 +87,6 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
       TabOrder = 1
       OnClick = btnDesignClick
       SkinData.SkinSection = 'BUTTON'
-      ExplicitLeft = 110
-      ExplicitHeight = 37
     end
     object btnEmailSend: TsButton
       AlignWithMargins = True
@@ -111,8 +105,6 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
       Visible = False
       OnClick = btnEmailSendClick
       SkinData.SkinSection = 'BUTTON'
-      ExplicitLeft = 322
-      ExplicitHeight = 37
     end
     object LMDSpeedButton3: TsButton
       AlignWithMargins = True
@@ -130,14 +122,12 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
       TabOrder = 3
       OnClick = LMDSpeedButton3Click
       SkinData.SkinSection = 'BUTTON'
-      ExplicitLeft = 216
-      ExplicitHeight = 37
     end
     object chkShowPackage: TsCheckBox
       Left = 5
       Top = 47
-      Width = 148
-      Height = 19
+      Width = 140
+      Height = 20
       Caption = 'Show Package on invoice'
       TabOrder = 4
       SkinData.SkinSection = 'CHECKBOX'
@@ -155,8 +145,6 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
     BorderWidth = 5
     TabOrder = 2
     SkinData.SkinSection = 'PANEL'
-    ExplicitTop = 70
-    ExplicitHeight = 608
     object tcPages: TsTabControl
       Left = 5
       Top = 5
@@ -177,7 +165,6 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
       TabWidth = 110
       OnChange = tcPagesChange
       SkinData.SkinSection = 'PAGECONTROL'
-      ExplicitHeight = 598
       object Splitter1: TSplitter
         Left = 4
         Top = 458
@@ -978,7 +965,6 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
         BevelOuter = bvNone
         TabOrder = 1
         SkinData.SkinSection = 'PANEL'
-        ExplicitTop = 474
         object Panel2: TsPanel
           Left = 681
           Top = 0
@@ -1620,7 +1606,6 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
         SearchFooter.MatchCaseCaption = 'Match case'
         SortSettings.DefaultFormat = ssAutomatic
         Version = '7.9.1.0'
-        ExplicitHeight = 194
         RowHeights = (
           19
           21
@@ -1710,7 +1695,6 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
     ShowProgress = True
     OverwritePrompt = False
     DataOnly = False
-    OnBeginExport = frxPDFExport1BeginExport
     EmbeddedFonts = True
     PrintOptimized = True
     Outline = False
@@ -1860,9 +1844,7 @@ object frmFinishedInvoices2: TfrmFinishedInvoices2
       'begin'
       ''
       'end.')
-    OnGetValue = frxReport1GetValue
     OnPrintPage = frxReport1PrintPage
-    OnUserFunction = frxReport1UserFunction
     Left = 564
     Top = 300
     Datasets = <
