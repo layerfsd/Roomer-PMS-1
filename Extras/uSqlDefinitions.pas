@@ -5510,6 +5510,7 @@ select_roomTypesGroups : string =
 ' ,connectLOSToMasterRate '#10+
 ' ,RATE_PLAN_TYPE '#10+
 ' ,prepaidPercentage '#10+
+' , (SELECT GROUP_CONCAT(DISTINCT CHANNEL_ID) FROM home100.PAYMENT_REQUIREMENT_MATRIX WHERE HOTEL_ID=(SELECT CompanyID FROM control LIMIT 1) AND ROOM_TYPE_GROUP_CODE=roomtypegroups.Code) AS PAYMENTS_REQUIRED '#10+
 ' FROM '#10+
 '   roomtypegroups '#10+
 ' ORDER BY '#10+

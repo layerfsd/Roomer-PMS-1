@@ -235,6 +235,8 @@ type
     tvDataColumn2: TcxGridDBColumn;
     m_prepaidPercentage: TFloatField;
     tvDataprepaidPercentage: TcxGridDBColumn;
+    m_PAYMENTS_REQUIRED: TWideStringField;
+    tvDataPAYMENTS_REQUIRED: TcxGridDBColumn;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormKeyPress(Sender: TObject; var Key: Char);
@@ -275,6 +277,7 @@ type
     procedure m_AfterScroll(DataSet: TDataSet);
     procedure tvDataColumn2PropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure tvDataPAYMENTS_REQUIREDPropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
   private
     { Private declarations }
     zFirstTime       : boolean;
@@ -291,6 +294,7 @@ type
     procedure SetEditedValuesIn_M_Dataset;
     procedure FetchRatePlanTypes;
     procedure FillDataHolderFromDataSet(dataset : TDataSet);
+    procedure RefreshRequirementsForRate(Rate: String; Channels: TStrings);
 
 
   public
@@ -396,8 +400,9 @@ begin
   rSet := CreateNewDataSet;
   try
     s := format(select_RoomTypesGroups, [zSortStr]);
+    CopyToClipboard(s);
 //    debugMessage()
-    if rSet_bySQL(rSet,s) then
+    if rSet_bySQL(rSet,s, false) then
     begin
       if m_.active then m_.Close;
       m_.Open;
@@ -441,6 +446,8 @@ begin
         m_.FieldByName('DetailedDescription').asString     := rSet.FieldByName('DetailedDescription').AsString      ;
         m_.FieldByName('Package').asString     := rSet.FieldByName('Package').AsString      ;
         m_.FieldByName('OrderIndex').asInteger     := rSet.FieldByName('OrderIndex').AsInteger      ;
+        m_.FieldByName('PAYMENTS_REQUIRED').asString     := rSet.FieldByName('PAYMENTS_REQUIRED').AsString      ;
+
 
         m_['connectRateToMasterRate'] := rSet['connectRateToMasterRate'];
         m_['masterRateRateDeviation'] := rSet['masterRateRateDeviation'];
@@ -1043,6 +1050,39 @@ begin
         m_['defRate'] := GetPackagetPrice(theData.package, '(SELECT NativeCurrency FROM control LIMIT 1)');
         m_.Post;
      end;
+end;
+
+procedure TfrmRoomTypesGroups2.tvDataPAYMENTS_REQUIREDPropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
+var
+  newValue: String;
+begin
+  newValue := LookupForDataItem('Channels', glb.ChannelsSet, 'channelManagerId',
+    'Name', m_['PAYMENTS_REQUIRED'], true, false, 'Active', nil, '');
+
+  if newValue <> m_['PAYMENTS_REQUIRED'] then
+  begin
+    m_.Edit;
+    m_['PAYMENTS_REQUIRED'] := newValue;
+    m_.Post;
+    RefreshRequirementsForRate(m_['Code'], SplitStringToTStrings(',', newValue));
+  end;
+end;
+
+procedure TfrmRoomTypesGroups2.RefreshRequirementsForRate(Rate : String; Channels : TStrings);
+var sql : String;
+    channel : String;
+begin
+  sql := Format('DELETE FROM home100.PAYMENT_REQUIREMENT_MATRIX WHERE HOTEL_ID=%s AND ROOM_TYPE_GROUP_CODE=%s',
+                [_db(d.roomerMainDataSet.hotelId), _db(Rate)]);
+  d.roomerMainDataSet.DoCommand(sql);
+  for channel IN Channels do
+  begin
+    sql := Format('INSERT INTO home100.PAYMENT_REQUIREMENT_MATRIX (HOTEL_ID, CHANNEL_ID, ROOM_TYPE_GROUP_CODE, PAYMENT_REQUIRED) ' +
+                  'VALUES (%s, %s, %s, 1)',
+                [_db(d.roomerMainDataSet.hotelId), _db(channel), _db(Rate)]);
+    d.roomerMainDataSet.DoCommand(sql);
+  end;
+
 end;
 
 procedure TfrmRoomTypesGroups2.tvDataPriorityRulePropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);

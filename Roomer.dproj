@@ -68,6 +68,11 @@
         <Cfg_4>true</Cfg_4>
         <Base>true</Base>
     </PropertyGroup>
+    <PropertyGroup Condition="'$(Config)'=='DebugBjorn' or '$(Cfg_6)'!=''">
+        <Cfg_6>true</Cfg_6>
+        <CfgParent>Base</CfgParent>
+        <Base>true</Base>
+    </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
         <DCC_Define>roomerstore;$(DCC_Define)</DCC_Define>
         <Icon_MainIcon>Roomer_Icon1.ico</Icon_MainIcon>
@@ -198,6 +203,10 @@
         <VerInfo_Build>1</VerInfo_Build>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <VerInfo_Release>6</VerInfo_Release>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Cfg_6)'!=''">
+        <DCC_ExeOutput>$(ROOMER_DEBUG_DIR)</DCC_ExeOutput>
+        <DCC_Define>DEBUG;TRANSLATION_ACTIVE;TRANSLATION_EXCEPTIONS_ACTIVE;ACTIVE_PAYMENTS;$(DCC_Define)</DCC_Define>
     </PropertyGroup>
     <ItemGroup>
         <DelphiCompile Include="$(MainSource)">
@@ -746,6 +755,10 @@
         </BuildConfiguration>
         <BuildConfiguration Include="releaseBas">
             <Key>Cfg_4</Key>
+            <CfgParent>Base</CfgParent>
+        </BuildConfiguration>
+        <BuildConfiguration Include="DebugBjorn">
+            <Key>Cfg_6</Key>
             <CfgParent>Base</CfgParent>
         </BuildConfiguration>
         <BuildConfiguration Include="DebugBas">
