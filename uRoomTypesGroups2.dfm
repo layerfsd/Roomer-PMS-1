@@ -116,7 +116,7 @@ object frmRoomTypesGroups2: TfrmRoomTypesGroups2
         Height = 21
         Color = clWhite
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = clBlack
+        Font.Color = 4473924
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -158,7 +158,7 @@ object frmRoomTypesGroups2: TfrmRoomTypesGroups2
       object chkActive: TsCheckBox
         Left = 55
         Top = 63
-        Width = 242
+        Width = 239
         Height = 17
         Caption = 'Active (if checked then just active are visible'
         Checked = True
@@ -422,6 +422,18 @@ object frmRoomTypesGroups2: TfrmRoomTypesGroups2
           DataBinding.FieldName = 'NonRefundable'
           Width = 110
         end
+        object tvDataPAYMENTS_REQUIRED: TcxGridDBColumn
+          Caption = 'Auto charge rules'
+          DataBinding.FieldName = 'PAYMENTS_REQUIRED'
+          PropertiesClassName = 'TcxButtonEditProperties'
+          Properties.Buttons = <
+            item
+              Default = True
+              Kind = bkEllipsis
+            end>
+          Properties.OnButtonClick = tvDataPAYMENTS_REQUIREDPropertiesButtonClick
+          Width = 100
+        end
         object tvDataAutoChargeCreditcards: TcxGridDBColumn
           Caption = 'Auto Charge Creditcards'
           DataBinding.FieldName = 'AutoChargeCreditcards'
@@ -678,6 +690,7 @@ object frmRoomTypesGroups2: TfrmRoomTypesGroups2
     Left = 96
     Top = 192
     object prLink_grData: TdxGridReportLink
+      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.GrayShading = True
@@ -691,6 +704,7 @@ object frmRoomTypesGroups2: TfrmRoomTypesGroups2
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
       ReportDocument.CreationDate = 41334.495374884260000000
+      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       BuiltInReportLink = True
     end
   end
@@ -870,6 +884,10 @@ object frmRoomTypesGroups2: TfrmRoomTypesGroups2
     end
     object m_prepaidPercentage: TFloatField
       FieldName = 'prepaidPercentage'
+    end
+    object m_PAYMENTS_REQUIRED: TWideStringField
+      FieldName = 'PAYMENTS_REQUIRED'
+      Size = 255
     end
   end
   object FormStore: TcxPropertiesStore
