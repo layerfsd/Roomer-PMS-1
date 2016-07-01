@@ -6253,8 +6253,6 @@ begin
   s := s+' r.Description AS RoomDescription, '+#10;
   s := s+' rt.Description AS RoomTypeDescription, '+#10;
 
-
-
   if iRoomReservation = 0 then   //FRoomReservation = 0  // GroupInvoice
   begin
     s := format(s, ['Reservation', iReservation, _db(Customer), iReservation, iReservation]);

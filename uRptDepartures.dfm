@@ -231,8 +231,6 @@ object frmDeparturesReport: TfrmDeparturesReport
     Height = 421
     Align = alClient
     TabOrder = 2
-    ExplicitLeft = 1
-    ExplicitTop = 146
     object tvDeparturesList: TcxGridDBBandedTableView
       Navigator.Buttons.CustomButtons = <>
       DataController.DataSource = DeparturesListDS

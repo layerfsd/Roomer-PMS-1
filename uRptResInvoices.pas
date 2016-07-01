@@ -1443,7 +1443,8 @@ begin
 
 
         Item              :=  rSet.FieldByName('Item').asstring  ;
-        Quantity          :=  rSet.GetFloatValue(rSet.FieldByName('Quantity')) ; //-96
+//        Quantity          :=  rSet.GetFloatValue(rSet.FieldByName('Quantity')) ; //-96
+        Quantity          :=  LocalFloatValue(rSet.FieldByName('Quantity').asString)  ;
         Description       :=  rSet.FieldByName('Description').asstring  ;
         Price             :=  rSet.GetFloatValue(rSet.FieldByName('Price'))  ;
         VATType           :=  rSet.FieldByName('VATType').asString  ;
@@ -1454,6 +1455,20 @@ begin
         CurrencyRate      :=  LocalFloatValue(rSet.FieldByName('CurrencyRate').asString)  ;
         ImportRefrence    :=  rSet.FieldByName('ImportRefrence').asstring  ;
         ImportSource      :=  rSet.FieldByName('ImportSource').asstring  ;
+
+//        Item              :=  rSet.FieldByName('Item').asstring  ;
+//        Quantity          :=  rSet.GetFloatValue(rSet.FieldByName('Quantity')) ; //-96
+//        Description       :=  rSet.FieldByName('Description').asstring  ;
+//        Price             :=  rSet.GetFloatValue(rSet.FieldByName('Price'))  ;
+//        VATType           :=  rSet.FieldByName('VATType').asString  ;
+//        ilAmountWithTax   :=  LocalFloatValue(rSet.FieldByName('ilAmountWithTax').asString)  ;
+//        ilAmountNoTax     :=  LocalFloatValue(rSet.FieldByName('ilAmountNoTax').asString)  ;
+//        ilAmountTax       :=  LocalFloatValue(rSet.FieldByName('ilAmountTax').asString)  ;
+//        Currency          :=  rSet.FieldByName('Currency').asstring  ;
+//        CurrencyRate      :=  LocalFloatValue(rSet.FieldByName('CurrencyRate').asString)  ;
+//        ImportRefrence    :=  rSet.FieldByName('ImportRefrence').asstring  ;
+//        ImportSource      :=  rSet.FieldByName('ImportSource').asstring  ;
+
 
 
         mInvoiceLines.Insert;
