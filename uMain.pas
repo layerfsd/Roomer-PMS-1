@@ -722,6 +722,8 @@ type
     mnuCancelRoomFromRoomReservation: TMenuItem;
     __N10: TMenuItem;
     btnRepDepartures: TdxBarLargeButton;
+    dxBarButton6: TdxBarButton;
+    btnRptDepartures: TdxBarLargeButton;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
@@ -1019,6 +1021,7 @@ type
     procedure FormActivate(Sender: TObject);
     procedure btnRepArrivalsClick(Sender: TObject);
     procedure mnuCancelRoomFromRoomReservationClick(Sender: TObject);
+    procedure btnRptDeparturesClick(Sender: TObject);
 
   private
     FReservationsModel: TReservationsModel;
@@ -1604,6 +1607,7 @@ uses
   Math
     , uOfflineReportGrid
     , uRptArrivals
+    , uRptDepartures
     , uResourceManagement
     , uDynamicPricing
     , UITypes
@@ -11934,6 +11938,14 @@ procedure TfrmMain.btnRptCustInvoicesClick(Sender: TObject);
 begin
   UserClickedDxLargeButton(Sender);
   RptResInvoices
+end;
+
+procedure TfrmMain.btnRptDeparturesClick(Sender: TObject);
+begin
+  {$IFDEF DEBUG}
+  UserClickedDxLargeButton(Sender);
+  ShowDeparturesReport;
+  {$ENDIF}
 end;
 
 procedure TfrmMain.btnRptFinanceForecastClick(Sender: TObject);
