@@ -201,7 +201,7 @@ object frmRptNotes: TfrmRptNotes
       Left = 23
       Top = 59
       Width = 69
-      Height = 17
+      Height = 19
       Caption = 'One day'
       Checked = True
       State = cbChecked
@@ -225,7 +225,7 @@ object frmRptNotes: TfrmRptNotes
         Left = 14
         Top = 17
         Width = 77
-        Height = 17
+        Height = 19
         Caption = 'Waitinglist'
         Checked = True
         State = cbChecked
@@ -238,7 +238,7 @@ object frmRptNotes: TfrmRptNotes
         Left = 14
         Top = 34
         Width = 73
-        Height = 17
+        Height = 19
         Caption = 'Allotment'
         Checked = True
         State = cbChecked
@@ -251,7 +251,7 @@ object frmRptNotes: TfrmRptNotes
         Left = 134
         Top = 52
         Width = 83
-        Height = 17
+        Height = 19
         Caption = 'Not Arrived'
         Checked = True
         State = cbChecked
@@ -264,7 +264,7 @@ object frmRptNotes: TfrmRptNotes
         Left = 14
         Top = 52
         Width = 69
-        Height = 17
+        Height = 19
         Caption = 'No show'
         Checked = True
         State = cbChecked
@@ -277,7 +277,7 @@ object frmRptNotes: TfrmRptNotes
         Left = 134
         Top = 17
         Width = 73
-        Height = 17
+        Height = 19
         Caption = 'Departed'
         Checked = True
         State = cbChecked
@@ -290,7 +290,7 @@ object frmRptNotes: TfrmRptNotes
         Left = 228
         Top = 34
         Width = 64
-        Height = 17
+        Height = 19
         Caption = 'Blocked'
         TabOrder = 5
         SkinData.SkinSection = 'CHECKBOX'
@@ -301,7 +301,7 @@ object frmRptNotes: TfrmRptNotes
         Left = 134
         Top = 34
         Width = 56
-        Height = 17
+        Height = 19
         Caption = 'Guest'
         Checked = True
         State = cbChecked
@@ -314,7 +314,7 @@ object frmRptNotes: TfrmRptNotes
         Left = 228
         Top = 17
         Width = 66
-        Height = 17
+        Height = 19
         Caption = 'Cancled'
         TabOrder = 7
         SkinData.SkinSection = 'CHECKBOX'
@@ -327,21 +327,24 @@ object frmRptNotes: TfrmRptNotes
     Left = 0
     Top = 89
     Width = 923
-    Height = 32
+    Height = 43
     Align = alTop
     TabOrder = 1
     SkinData.SkinSection = 'PANEL'
     object btnExcel: TsButton
-      Left = 10
-      Top = 2
-      Width = 100
-      Height = 25
+      AlignWithMargins = True
+      Left = 4
+      Top = 4
+      Width = 128
+      Height = 35
+      Align = alLeft
       Caption = 'Excel'
       ImageIndex = 132
       Images = DImages.PngImageList1
       TabOrder = 0
       OnClick = btnExcelClick
       SkinData.SkinSection = 'BUTTON'
+      ExplicitLeft = 0
     end
     object btnReport: TsButton
       Left = 988
@@ -356,28 +359,34 @@ object frmRptNotes: TfrmRptNotes
       SkinData.SkinSection = 'BUTTON'
     end
     object btnReservation: TsButton
-      Left = 114
-      Top = 2
-      Width = 110
-      Height = 25
+      AlignWithMargins = True
+      Left = 138
+      Top = 4
+      Width = 128
+      Height = 35
+      Align = alLeft
       Caption = 'Reservation'
       ImageIndex = 56
       Images = DImages.PngImageList1
       TabOrder = 2
       OnClick = btnReservationClick
       SkinData.SkinSection = 'BUTTON'
+      ExplicitLeft = 120
     end
     object sButton1: TsButton
-      Left = 227
-      Top = 2
-      Width = 110
-      Height = 25
+      AlignWithMargins = True
+      Left = 272
+      Top = 4
+      Width = 128
+      Height = 35
+      Align = alLeft
       Caption = 'Notes'
       ImageIndex = 94
       Images = DImages.PngImageList1
       TabOrder = 3
       OnClick = sButton1Click
       SkinData.SkinSection = 'BUTTON'
+      ExplicitLeft = 4
     end
   end
   object dxStatusBar1: TdxStatusBar
@@ -394,11 +403,13 @@ object frmRptNotes: TfrmRptNotes
   end
   object grNotes: TcxGrid
     Left = 0
-    Top = 121
+    Top = 132
     Width = 923
-    Height = 415
+    Height = 404
     Align = alClient
     TabOrder = 3
+    ExplicitTop = 121
+    ExplicitHeight = 415
     object tvNotes: TcxGridDBBandedTableView
       Navigator.Buttons.CustomButtons = <>
       DataController.DataSource = NotesDS

@@ -487,9 +487,9 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
               SkinData.CustomFont = False
               object pg001: TcxDBPivotGrid
                 Left = 0
-                Top = 45
+                Top = 43
                 Width = 905
-                Height = 268
+                Height = 270
                 Customization.AvailableFieldsSorted = True
                 Customization.FormStyle = cfsAdvanced
                 Align = alClient
@@ -505,6 +505,8 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
                 OptionsView.FilterFields = False
                 OptionsView.RowFields = False
                 TabOrder = 0
+                ExplicitTop = 45
+                ExplicitHeight = 268
                 object pg001dtDate: TcxDBPivotGridField
                   Area = faRow
                   AreaIndex = 0
@@ -647,41 +649,50 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
                 Left = 0
                 Top = 0
                 Width = 905
-                Height = 45
+                Height = 43
                 Align = alTop
                 TabOrder = 1
                 SkinData.SkinSection = 'PANEL'
                 object labIsFiltered: TsLabel
-                  Left = 322
-                  Top = 9
-                  Width = 4
-                  Height = 13
+                  AlignWithMargins = True
+                  Left = 406
+                  Top = 4
+                  Width = 3
+                  Height = 35
+                  Align = alLeft
                   Caption = '-'
                   ParentFont = False
+                  Layout = tlCenter
                   Font.Charset = DEFAULT_CHARSET
                   Font.Color = clWindowText
                   Font.Height = -11
                   Font.Name = 'Tahoma'
                   Font.Style = []
+                  ExplicitLeft = 323
                 end
                 object btnPivgrRequestsExcel: TsButton
+                  AlignWithMargins = True
                   Left = 4
                   Top = 4
-                  Width = 100
-                  Height = 37
+                  Width = 128
+                  Height = 35
+                  Align = alLeft
                   Caption = 'Excel'
-                  ImageIndex = 132
+                  ImageIndex = 115
                   Images = DImages.PngImageList1
                   TabOrder = 0
                   OnClick = btnPivgrRequestsExcelClick
                   SkinData.SkinSection = 'BUTTON'
+                  ExplicitTop = 2
                 end
                 object btnpivgrRequestsPrint: TsButton
-                  Left = 110
+                  AlignWithMargins = True
+                  Left = 138
                   Top = 4
-                  Width = 100
-                  Height = 37
+                  Width = 128
+                  Height = 35
                   Hint = 'Print'
+                  Align = alLeft
                   Caption = 'Print Grid'
                   ImageIndex = 3
                   Images = DImages.PngImageList1
@@ -692,10 +703,12 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
                   SkinData.SkinSection = 'BUTTON'
                 end
                 object btnPivgrRequestsBestfit: TsButton
-                  Left = 216
+                  AlignWithMargins = True
+                  Left = 272
                   Top = 4
-                  Width = 100
-                  Height = 37
+                  Width = 128
+                  Height = 35
+                  Align = alLeft
                   Caption = 'Best Fit'
                   Images = DImages.PngImageList1
                   TabOrder = 2
@@ -753,12 +766,14 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
           TabOrder = 2
           object grDrill: TcxGrid
             Left = 1
-            Top = 46
+            Top = 44
             Width = 913
-            Height = 234
+            Height = 236
             Align = alClient
             TabOrder = 0
             LookAndFeel.NativeStyle = False
+            ExplicitTop = 46
+            ExplicitHeight = 234
             object tvDrill001: TcxGridDBTableView
               Navigator.Buttons.CustomButtons = <>
               DataController.DataSource = Dril001DS
@@ -780,28 +795,32 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
             Left = 1
             Top = 1
             Width = 913
-            Height = 45
+            Height = 43
             Align = alTop
             TabOrder = 1
             SkinData.SkinSection = 'PANEL'
             object btnGrDrillExcel: TsButton
+              AlignWithMargins = True
               Left = 4
-              Top = 2
-              Width = 100
-              Height = 37
+              Top = 4
+              Width = 128
+              Height = 35
+              Align = alLeft
               Caption = 'Excel'
-              ImageIndex = 132
+              ImageIndex = 115
               Images = DImages.PngImageList1
               TabOrder = 0
               OnClick = btnGrDrillExcelClick
               SkinData.SkinSection = 'BUTTON'
             end
             object btnGrdrillPrint: TsButton
-              Left = 110
-              Top = 2
-              Width = 100
-              Height = 37
+              AlignWithMargins = True
+              Left = 138
+              Top = 4
+              Width = 128
+              Height = 35
               Hint = 'Print'
+              Align = alLeft
               Caption = 'Print grid'
               ImageIndex = 3
               Images = DImages.PngImageList1
@@ -811,30 +830,36 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
               SkinData.SkinSection = 'BUTTON'
             end
             object btnGrDrillBestFit: TsButton
-              Left = 216
-              Top = 2
-              Width = 100
-              Height = 37
+              AlignWithMargins = True
+              Left = 272
+              Top = 4
+              Width = 128
+              Height = 35
+              Align = alLeft
               Caption = 'Best Fit'
               Images = DImages.PngImageList1
               TabOrder = 2
               SkinData.SkinSection = 'BUTTON'
             end
             object sButton2: TsButton
-              Left = 322
-              Top = 2
-              Width = 100
-              Height = 37
+              AlignWithMargins = True
+              Left = 406
+              Top = 4
+              Width = 128
+              Height = 35
+              Align = alLeft
               Caption = 'Format fields'
               Images = DImages.PngImageList1
               TabOrder = 3
               SkinData.SkinSection = 'BUTTON'
             end
             object sButton3: TsButton
-              Left = 428
-              Top = 2
-              Width = 100
-              Height = 37
+              AlignWithMargins = True
+              Left = 540
+              Top = 4
+              Width = 128
+              Height = 35
+              Align = alLeft
               Caption = 'Reservation'
               ImageIndex = 56
               Images = DImages.PngImageList1
@@ -864,14 +889,14 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
           Left = 1
           Top = 1
           Width = 230
-          Height = 69
+          Height = 72
           Align = alTop
           Enabled = False
           TabOrder = 0
           SkinData.SkinSection = 'PANEL'
           DesignSize = (
             230
-            69)
+            72)
           object cbxSel: TsComboBox
             Left = 5
             Top = 7
@@ -892,10 +917,12 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
             TabOrder = 0
           end
           object btnLayoutShowMore: TsButton
-            Left = 120
-            Top = 29
-            Width = 101
-            Height = 37
+            AlignWithMargins = True
+            Left = 4
+            Top = 33
+            Width = 222
+            Height = 35
+            Align = alBottom
             Caption = 'show more ..'
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
@@ -905,13 +932,14 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
             ParentFont = False
             TabOrder = 1
             SkinData.SkinSection = 'BUTTON'
+            ExplicitTop = 34
           end
         end
         object gbxCustomization: TsGroupBox
           Left = 1
-          Top = 237
+          Top = 240
           Width = 230
-          Height = 396
+          Height = 393
           Align = alClient
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
@@ -922,16 +950,19 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
           TabOrder = 1
           SkinData.SkinSection = 'GROUPBOX'
           Checked = False
+          ExplicitTop = 237
+          ExplicitHeight = 396
         end
         object panLayoutShowMore: TsPanel
           Left = 1
-          Top = 70
+          Top = 73
           Width = 230
           Height = 167
           Align = alTop
           TabOrder = 2
           Visible = False
           SkinData.SkinSection = 'PANEL'
+          ExplicitTop = 70
           DesignSize = (
             230
             167)
@@ -962,13 +993,18 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
             Font.Style = []
           end
           object btnSaveLayout: TsButton
+            AlignWithMargins = True
             Left = 4
-            Top = 126
+            Top = 128
             Width = 68
-            Height = 37
+            Height = 35
+            Margins.Top = 127
+            Align = alLeft
             Caption = 'Create'
             TabOrder = 0
             SkinData.SkinSection = 'BUTTON'
+            ExplicitTop = 126
+            ExplicitHeight = 37
           end
           object edLayoutName: TsEdit
             Left = 4
@@ -988,22 +1024,32 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
             SkinData.SkinSection = 'EDIT'
           end
           object cxButton2: TsButton
+            AlignWithMargins = True
             Left = 78
-            Top = 126
+            Top = 128
             Width = 68
-            Height = 37
+            Height = 35
+            Margins.Top = 127
+            Align = alLeft
             Caption = 'Update'
             TabOrder = 2
             SkinData.SkinSection = 'BUTTON'
+            ExplicitTop = 126
+            ExplicitHeight = 37
           end
           object cxButton1: TsButton
+            AlignWithMargins = True
             Left = 152
-            Top = 126
+            Top = 128
             Width = 69
-            Height = 37
+            Height = 35
+            Margins.Top = 127
+            Align = alLeft
             Caption = 'Delete'
             TabOrder = 3
             SkinData.SkinSection = 'BUTTON'
+            ExplicitTop = 126
+            ExplicitHeight = 37
           end
           object memLayoutNotes: TsMemo
             Left = 4
@@ -1216,6 +1262,7 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
     end
     object prLinkGrDrill: TdxGridReportLink
       Component = grDrill
+      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.GrayShading = True
@@ -1228,6 +1275,7 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
       PrinterPage.PageSize.Y = 297000
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
+      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       BuiltInReportLink = True
     end
   end

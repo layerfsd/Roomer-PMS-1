@@ -72,7 +72,7 @@ uses
   , sGroupBox
   , sButton
   , sLabel
-  , sPanel, cxPropertiesStore, cxMemo, sSpinEdit, cxEditRepositoryItems
+  , sPanel, cxPropertiesStore, cxMemo, sSpinEdit, cxEditRepositoryItems, dxSkinsDefaultPainters
   ;
 type
   TfrmRptNotes = class(TForm)

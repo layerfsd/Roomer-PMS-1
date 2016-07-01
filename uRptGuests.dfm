@@ -3,7 +3,7 @@ object frmRptGuests: TfrmRptGuests
   Top = 0
   Caption = 'Guests'
   ClientHeight = 564
-  ClientWidth = 1121
+  ClientWidth = 1126
   Color = clBtnFace
   Constraints.MinWidth = 970
   Font.Charset = DEFAULT_CHARSET
@@ -22,13 +22,14 @@ object frmRptGuests: TfrmRptGuests
   object Panel3: TsPanel
     Left = 0
     Top = 0
-    Width = 1121
+    Width = 1126
     Height = 89
     Align = alTop
     TabOrder = 0
     SkinData.SkinSection = 'PANEL'
+    ExplicitWidth = 1121
     DesignSize = (
-      1121
+      1126
       89)
     object __labLocationsList: TsLabel
       Left = 426
@@ -202,7 +203,7 @@ object frmRptGuests: TfrmRptGuests
       Left = 23
       Top = 59
       Width = 69
-      Height = 17
+      Height = 19
       Caption = 'One day'
       Checked = True
       State = cbChecked
@@ -213,7 +214,7 @@ object frmRptGuests: TfrmRptGuests
       ImgUnchecked = 0
     end
     object gbxUseStatusOfRooms: TsGroupBox
-      Left = 812
+      Left = 817
       Top = 9
       Width = 300
       Height = 74
@@ -222,11 +223,12 @@ object frmRptGuests: TfrmRptGuests
       TabOrder = 4
       SkinData.SkinSection = 'GROUPBOX'
       Checked = False
+      ExplicitLeft = 812
       object chkExcluteWaitingList: TsCheckBox
         Left = 14
         Top = 17
         Width = 77
-        Height = 17
+        Height = 19
         Caption = 'Waitinglist'
         Checked = True
         State = cbChecked
@@ -239,7 +241,7 @@ object frmRptGuests: TfrmRptGuests
         Left = 14
         Top = 34
         Width = 73
-        Height = 17
+        Height = 19
         Caption = 'Allotment'
         Checked = True
         State = cbChecked
@@ -252,7 +254,7 @@ object frmRptGuests: TfrmRptGuests
         Left = 134
         Top = 52
         Width = 83
-        Height = 17
+        Height = 19
         Caption = 'Not Arrived'
         Checked = True
         State = cbChecked
@@ -265,7 +267,7 @@ object frmRptGuests: TfrmRptGuests
         Left = 14
         Top = 52
         Width = 69
-        Height = 17
+        Height = 19
         Caption = 'No show'
         Checked = True
         State = cbChecked
@@ -278,7 +280,7 @@ object frmRptGuests: TfrmRptGuests
         Left = 134
         Top = 17
         Width = 73
-        Height = 17
+        Height = 19
         Caption = 'Departed'
         Checked = True
         State = cbChecked
@@ -291,7 +293,7 @@ object frmRptGuests: TfrmRptGuests
         Left = 228
         Top = 34
         Width = 64
-        Height = 17
+        Height = 19
         Caption = 'Blocked'
         TabOrder = 5
         SkinData.SkinSection = 'CHECKBOX'
@@ -302,7 +304,7 @@ object frmRptGuests: TfrmRptGuests
         Left = 134
         Top = 34
         Width = 56
-        Height = 17
+        Height = 19
         Caption = 'Guest'
         Checked = True
         State = cbChecked
@@ -315,7 +317,7 @@ object frmRptGuests: TfrmRptGuests
         Left = 228
         Top = 17
         Width = 72
-        Height = 17
+        Height = 19
         Caption = 'Canceled'
         TabOrder = 7
         SkinData.SkinSection = 'CHECKBOX'
@@ -324,7 +326,7 @@ object frmRptGuests: TfrmRptGuests
       end
     end
     object rgrShow: TsRadioGroup
-      Left = 659
+      Left = 664
       Top = 9
       Width = 147
       Height = 74
@@ -339,12 +341,13 @@ object frmRptGuests: TfrmRptGuests
         'All Guests'
         'Just Named Guests'
         'Just Main Guests')
+      ExplicitLeft = 659
     end
     object chkGroup: TsCheckBox
       Left = 282
       Top = 66
       Width = 130
-      Height = 17
+      Height = 19
       Caption = 'Group by reservation'
       TabOrder = 6
       OnClick = chkGroupClick
@@ -356,88 +359,117 @@ object frmRptGuests: TfrmRptGuests
   object Panel5: TsPanel
     Left = 0
     Top = 89
-    Width = 1121
-    Height = 32
+    Width = 1126
+    Height = 43
     Align = alTop
     TabOrder = 1
     SkinData.SkinSection = 'PANEL'
+    ExplicitWidth = 1121
     object btnExcel: TsButton
-      Left = 10
-      Top = 2
-      Width = 100
-      Height = 25
+      AlignWithMargins = True
+      Left = 4
+      Top = 4
+      Width = 128
+      Height = 35
+      Align = alLeft
       Caption = 'Excel'
-      ImageIndex = 132
+      ImageIndex = 115
       Images = DImages.PngImageList1
       TabOrder = 0
       OnClick = btnExcelClick
       SkinData.SkinSection = 'BUTTON'
+      ExplicitLeft = 10
+      ExplicitTop = 2
+      ExplicitHeight = 25
     end
     object btnReport: TsButton
-      Left = 988
+      AlignWithMargins = True
+      Left = 994
       Top = 4
-      Width = 100
-      Height = 25
+      Width = 128
+      Height = 35
+      Align = alRight
       Caption = 'Report'
       ImageIndex = 72
       Images = DImages.PngImageList1
       TabOrder = 1
       Visible = False
       SkinData.SkinSection = 'BUTTON'
+      ExplicitLeft = 1017
     end
     object btnReservation: TsButton
-      Left = 114
-      Top = 2
-      Width = 110
-      Height = 25
+      AlignWithMargins = True
+      Left = 138
+      Top = 4
+      Width = 128
+      Height = 35
+      Align = alLeft
       Caption = 'Reservation'
       ImageIndex = 56
       Images = DImages.PngImageList1
       TabOrder = 2
       OnClick = btnReservationClick
       SkinData.SkinSection = 'BUTTON'
+      ExplicitLeft = 114
+      ExplicitTop = 2
+      ExplicitHeight = 25
     end
     object sButton1: TsButton
-      Left = 227
-      Top = 2
-      Width = 110
-      Height = 25
+      AlignWithMargins = True
+      Left = 272
+      Top = 4
+      Width = 128
+      Height = 35
+      Align = alLeft
       Caption = 'Notes'
       ImageIndex = 94
       Images = DImages.PngImageList1
       TabOrder = 3
       OnClick = sButton1Click
       SkinData.SkinSection = 'BUTTON'
+      ExplicitLeft = 227
+      ExplicitTop = 2
+      ExplicitHeight = 25
     end
     object btnExpand: TsButton
-      Left = 368
-      Top = 3
-      Width = 110
-      Height = 25
+      AlignWithMargins = True
+      Left = 406
+      Top = 4
+      Width = 128
+      Height = 35
+      Align = alLeft
       Caption = 'Expand'
       ImageIndex = 94
       TabOrder = 4
       Visible = False
       OnClick = btnExpandClick
       SkinData.SkinSection = 'BUTTON'
+      ExplicitLeft = 368
+      ExplicitTop = 3
+      ExplicitHeight = 25
     end
     object btnCollapse: TsButton
-      Left = 486
-      Top = 3
-      Width = 110
-      Height = 25
+      AlignWithMargins = True
+      Left = 540
+      Top = 4
+      Width = 128
+      Height = 35
+      Align = alLeft
       Caption = 'Collapse'
       ImageIndex = 94
       TabOrder = 5
       Visible = False
       OnClick = btnCollapseClick
       SkinData.SkinSection = 'BUTTON'
+      ExplicitLeft = 486
+      ExplicitTop = 3
+      ExplicitHeight = 25
     end
   end
   object dxStatusBar1: TdxStatusBar
     Left = 0
     Top = 544
-    Width = 1121
+    Width = 1126
     Height = 20
     Panels = <>
     Font.Charset = DEFAULT_CHARSET
@@ -445,6 +477,7 @@ object frmRptGuests: TfrmRptGuests
     Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = []
+    ExplicitWidth = 1121
   end
   object cxGrid1: TcxGrid
     Left = 1088
@@ -464,11 +497,14 @@ object frmRptGuests: TfrmRptGuests
   end
   object grGuests: TcxGrid
     Left = 0
-    Top = 121
-    Width = 1121
-    Height = 423
+    Top = 132
+    Width = 1126
+    Height = 412
     Align = alClient
     TabOrder = 4
+    ExplicitTop = 121
+    ExplicitWidth = 1121
+    ExplicitHeight = 423
     object tvGuests: TcxGridDBBandedTableView
       Navigator.Buttons.CustomButtons = <>
       DataController.DataSource = GuestsDS

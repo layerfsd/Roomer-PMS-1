@@ -80,19 +80,19 @@ type
     edTel1: TsEdit;
     edEmailAddress: TsEdit;
     sGroupBox1: TsGroupBox;
-    sLabel1: TsLabel;
+    cLabStaffType: TsLabel;
     labStaffType: TsLabel;
-    sLabel3: TsLabel;
+    cLabStaffType1: TsLabel;
     labStaffType1: TsLabel;
-    sLabel5: TsLabel;
-    sLabel6: TsLabel;
+    cLabStaffType2: TsLabel;
+    cLabStaffType3: TsLabel;
     labStaffType2: TsLabel;
     labStaffType3: TsLabel;
     sSpeedButton1: TsSpeedButton;
     sSpeedButton2: TsSpeedButton;
     sSpeedButton3: TsSpeedButton;
     sSpeedButton4: TsSpeedButton;
-    sLabel9: TsLabel;
+    cLabStaffType4: TsLabel;
     sSpeedButton5: TsSpeedButton;
     labStaffType4: TsLabel;
     edStaffType: TsEdit;
@@ -117,6 +117,7 @@ type
     procedure btnCancelClick(Sender: TObject);
     procedure btnGetGountryClick(Sender: TObject);
     procedure btnAddCurrentClick(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     { Private declarations }
 
@@ -215,6 +216,12 @@ begin
   RoomerLanguage.TranslateThisForm(self);
   glb.PerformAuthenticationAssertion(self);
   PlaceFormOnVisibleMonitor(self);
+end;
+
+procedure TfrmStaffEdit2.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then
+    Close;
 end;
 
 procedure TfrmStaffEdit2.FormShow(Sender: TObject);

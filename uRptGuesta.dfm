@@ -3,7 +3,7 @@ object frmRptNotes: TfrmRptNotes
   Top = 0
   Caption = 'Reservation Notes'
   ClientHeight = 556
-  ClientWidth = 923
+  ClientWidth = 1141
   Color = clBtnFace
   Constraints.MinWidth = 920
   Font.Charset = DEFAULT_CHARSET
@@ -19,13 +19,14 @@ object frmRptNotes: TfrmRptNotes
   object Panel3: TsPanel
     Left = 0
     Top = 0
-    Width = 923
+    Width = 1141
     Height = 89
     Align = alTop
     TabOrder = 0
     SkinData.SkinSection = 'PANEL'
+    ExplicitWidth = 923
     DesignSize = (
-      923
+      1141
       89)
     object __labLocationsList: TsLabel
       Left = 456
@@ -66,8 +67,8 @@ object frmRptNotes: TfrmRptNotes
       Caption = 'Clear'
       OnClick = btnClearClick
       SkinData.SkinSection = 'SPEEDBUTTON'
-      ImageIndex = 10
       Images = DImages.PngImageList1
+      ImageIndex = 10
     end
     object labRecordCount: TsLabel
       Left = 474
@@ -103,6 +104,7 @@ object frmRptNotes: TfrmRptNotes
       Caption = 'Select Dates'
       TabOrder = 1
       SkinData.SkinSection = 'GROUPBOX'
+      Checked = False
       object LMDSimpleLabel1: TsLabel
         Left = 67
         Top = 15
@@ -140,23 +142,15 @@ object frmRptNotes: TfrmRptNotes
         Color = clWhite
         EditMask = '!99/99/9999;1; '
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 4737096
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
         MaxLength = 10
         ParentFont = False
         TabOrder = 0
-        Text = '25.12.2012'
-        BoundLabel.Indent = 0
-        BoundLabel.Font.Charset = DEFAULT_CHARSET
-        BoundLabel.Font.Color = clWindowText
-        BoundLabel.Font.Height = -11
-        BoundLabel.Font.Name = 'Tahoma'
-        BoundLabel.Font.Style = []
-        BoundLabel.Layout = sclLeft
-        BoundLabel.MaxWidth = 0
-        BoundLabel.UseSkinColor = True
+        Text = '25-12-2012'
+        CheckOnExit = True
         SkinData.SkinSection = 'EDIT'
         GlyphMode.Blend = 0
         GlyphMode.Grayed = False
@@ -171,23 +165,15 @@ object frmRptNotes: TfrmRptNotes
         Color = clWhite
         EditMask = '!99/99/9999;1; '
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 4737096
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
         MaxLength = 10
         ParentFont = False
         TabOrder = 1
-        Text = '25.12.2012'
-        BoundLabel.Indent = 0
-        BoundLabel.Font.Charset = DEFAULT_CHARSET
-        BoundLabel.Font.Color = clWindowText
-        BoundLabel.Font.Height = -11
-        BoundLabel.Font.Name = 'Tahoma'
-        BoundLabel.Font.Style = []
-        BoundLabel.Layout = sclLeft
-        BoundLabel.MaxWidth = 0
-        BoundLabel.UseSkinColor = True
+        Text = '25-12-2012'
+        CheckOnExit = True
         SkinData.SkinSection = 'EDIT'
         GlyphMode.Blend = 0
         GlyphMode.Grayed = False
@@ -201,7 +187,7 @@ object frmRptNotes: TfrmRptNotes
       Height = 21
       Color = clWhite
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = 4737096
+      Font.Color = clBlack
       Font.Height = -11
       Font.Name = 'Tahoma'
       Font.Style = []
@@ -209,21 +195,12 @@ object frmRptNotes: TfrmRptNotes
       TabOrder = 2
       OnChange = edFilterChange
       SkinData.SkinSection = 'EDIT'
-      BoundLabel.Indent = 0
-      BoundLabel.Font.Charset = DEFAULT_CHARSET
-      BoundLabel.Font.Color = clWindowText
-      BoundLabel.Font.Height = -11
-      BoundLabel.Font.Name = 'Tahoma'
-      BoundLabel.Font.Style = []
-      BoundLabel.Layout = sclLeft
-      BoundLabel.MaxWidth = 0
-      BoundLabel.UseSkinColor = True
     end
     object chkOneday: TsCheckBox
       Left = 23
       Top = 59
-      Width = 61
-      Height = 20
+      Width = 69
+      Height = 19
       Caption = 'One day'
       Checked = True
       State = cbChecked
@@ -234,19 +211,20 @@ object frmRptNotes: TfrmRptNotes
       ImgUnchecked = 0
     end
     object gbxUseStatusOfRooms: TsGroupBox
-      Left = 614
+      Left = 808
       Top = 9
-      Width = 286
+      Width = 323
       Height = 74
       Anchors = [akTop, akRight]
       Caption = 'Use Room with status of : '
       TabOrder = 4
       SkinData.SkinSection = 'GROUPBOX'
+      Checked = False
       object chkExcluteWaitingList: TsCheckBox
         Left = 14
         Top = 17
-        Width = 69
-        Height = 20
+        Width = 77
+        Height = 19
         Caption = 'Waitinglist'
         Checked = True
         State = cbChecked
@@ -258,8 +236,8 @@ object frmRptNotes: TfrmRptNotes
       object chkExcluteAlotment: TsCheckBox
         Left = 14
         Top = 34
-        Width = 65
-        Height = 20
+        Width = 73
+        Height = 19
         Caption = 'Allotment'
         Checked = True
         State = cbChecked
@@ -271,8 +249,8 @@ object frmRptNotes: TfrmRptNotes
       object chkExcluteOrder: TsCheckBox
         Left = 134
         Top = 52
-        Width = 75
-        Height = 20
+        Width = 83
+        Height = 19
         Caption = 'Not Arrived'
         Checked = True
         State = cbChecked
@@ -284,8 +262,8 @@ object frmRptNotes: TfrmRptNotes
       object chkExcluteNoShow: TsCheckBox
         Left = 14
         Top = 52
-        Width = 61
-        Height = 20
+        Width = 69
+        Height = 19
         Caption = 'No show'
         Checked = True
         State = cbChecked
@@ -297,8 +275,8 @@ object frmRptNotes: TfrmRptNotes
       object chkExcluteDeparted: TsCheckBox
         Left = 134
         Top = 17
-        Width = 65
-        Height = 20
+        Width = 73
+        Height = 19
         Caption = 'Departed'
         Checked = True
         State = cbChecked
@@ -310,8 +288,8 @@ object frmRptNotes: TfrmRptNotes
       object chkExcluteBlocked: TsCheckBox
         Left = 228
         Top = 34
-        Width = 56
-        Height = 20
+        Width = 64
+        Height = 19
         Caption = 'Blocked'
         TabOrder = 5
         SkinData.SkinSection = 'CHECKBOX'
@@ -321,8 +299,8 @@ object frmRptNotes: TfrmRptNotes
       object chkExcluteGuest: TsCheckBox
         Left = 134
         Top = 34
-        Width = 48
-        Height = 20
+        Width = 56
+        Height = 19
         Caption = 'Guest'
         Checked = True
         State = cbChecked
@@ -334,8 +312,8 @@ object frmRptNotes: TfrmRptNotes
       object chkExcluteCANCELED: TsCheckBox
         Left = 228
         Top = 17
-        Width = 58
-        Height = 20
+        Width = 66
+        Height = 19
         Caption = 'Cancled'
         TabOrder = 7
         SkinData.SkinSection = 'CHECKBOX'
@@ -347,52 +325,64 @@ object frmRptNotes: TfrmRptNotes
   object Panel5: TsPanel
     Left = 0
     Top = 89
-    Width = 923
-    Height = 32
+    Width = 1141
+    Height = 43
     Align = alTop
     TabOrder = 1
     SkinData.SkinSection = 'PANEL'
+    ExplicitWidth = 923
     object btnExcel: TsButton
-      Left = 10
-      Top = 2
-      Width = 100
-      Height = 25
+      AlignWithMargins = True
+      Left = 138
+      Top = 4
+      Width = 128
+      Height = 35
+      Align = alLeft
       Caption = 'Excel'
-      ImageIndex = 132
+      ImageIndex = 115
       Images = DImages.PngImageList1
       TabOrder = 0
       OnClick = btnExcelClick
       SkinData.SkinSection = 'BUTTON'
+      ExplicitTop = 2
     end
     object btnReport: TsButton
-      Left = 988
+      AlignWithMargins = True
+      Left = 1009
       Top = 4
-      Width = 100
-      Height = 25
+      Width = 128
+      Height = 35
+      Align = alRight
       Caption = 'Report'
       ImageIndex = 72
       Images = DImages.PngImageList1
       TabOrder = 1
       Visible = False
       SkinData.SkinSection = 'BUTTON'
+      ExplicitLeft = 1037
     end
     object btnReservation: TsButton
-      Left = 114
-      Top = 2
-      Width = 110
-      Height = 25
+      AlignWithMargins = True
+      Left = 272
+      Top = 4
+      Width = 128
+      Height = 35
+      Align = alLeft
       Caption = 'Reservation'
       ImageIndex = 56
       Images = DImages.PngImageList1
       TabOrder = 2
       OnClick = btnReservationClick
       SkinData.SkinSection = 'BUTTON'
+      ExplicitLeft = 244
     end
     object sButton1: TsButton
-      Left = 227
-      Top = 2
-      Width = 110
-      Height = 25
+      AlignWithMargins = True
+      Left = 4
+      Top = 4
+      Width = 128
+      Height = 35
+      Align = alLeft
       Caption = 'Notes'
       ImageIndex = 94
       Images = DImages.PngImageList1
@@ -404,7 +394,7 @@ object frmRptNotes: TfrmRptNotes
   object dxStatusBar1: TdxStatusBar
     Left = 0
     Top = 536
-    Width = 923
+    Width = 1141
     Height = 20
     Panels = <>
     Font.Charset = DEFAULT_CHARSET
@@ -412,14 +402,18 @@ object frmRptNotes: TfrmRptNotes
     Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = []
+    ExplicitWidth = 923
   end
   object grNotes: TcxGrid
     Left = 0
-    Top = 121
-    Width = 923
-    Height = 415
+    Top = 132
+    Width = 1141
+    Height = 404
     Align = alClient
     TabOrder = 3
+    ExplicitTop = 121
+    ExplicitWidth = 923
+    ExplicitHeight = 415
     object tvNotes: TcxGridDBBandedTableView
       Navigator.Buttons.CustomButtons = <>
       DataController.DataSource = NotesDS

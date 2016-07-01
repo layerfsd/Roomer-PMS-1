@@ -23,6 +23,7 @@ object frmRptBreakfastGuests: TfrmRptBreakfastGuests
     Align = alTop
     TabOrder = 0
     SkinData.SkinSection = 'PANEL'
+    ExplicitTop = -2
     object __labLocationsList: TsLabel
       Left = 178
       Top = 41
@@ -69,40 +70,48 @@ object frmRptBreakfastGuests: TfrmRptBreakfastGuests
     Left = 0
     Top = 65
     Width = 916
-    Height = 32
+    Height = 43
     Align = alTop
     TabOrder = 2
     SkinData.SkinSection = 'PANEL'
     object btnExcel: TsButton
-      Left = 10
-      Top = 2
-      Width = 100
-      Height = 25
+      AlignWithMargins = True
+      Left = 4
+      Top = 4
+      Width = 128
+      Height = 35
+      Align = alLeft
       Caption = 'Excel'
-      ImageIndex = 132
+      ImageIndex = 115
       Images = DImages.PngImageList1
       TabOrder = 0
       SkinData.SkinSection = 'BUTTON'
+      ExplicitLeft = 0
     end
     object btnReport: TsButton
-      Left = 116
-      Top = 2
-      Width = 100
-      Height = 25
+      AlignWithMargins = True
+      Left = 138
+      Top = 4
+      Width = 128
+      Height = 35
+      Align = alLeft
       Caption = 'Report'
       ImageIndex = 72
       Images = DImages.PngImageList1
       TabOrder = 1
       SkinData.SkinSection = 'BUTTON'
+      ExplicitLeft = 4
     end
   end
   object grBreakfastGuests: TcxGrid
     Left = 0
-    Top = 97
+    Top = 108
     Width = 916
-    Height = 460
+    Height = 449
     Align = alClient
     TabOrder = 3
+    ExplicitTop = 97
+    ExplicitHeight = 460
     object tvBreakfastGuests: TcxGridDBBandedTableView
       Navigator.Buttons.CustomButtons = <>
       DataController.Summary.DefaultGroupSummaryItems = <>
