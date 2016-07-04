@@ -536,8 +536,6 @@ procedure CloseApplication;
 //function StatusToString(Status : string) : string;
 function GetNameCombination(order : Integer; Customer, Guest : String) : String;
 
-function ResStatusToColor(Status : string; var backColor, fontColor : TColor) : boolean;
-
 function StatusToColor(Status : string; var backColor, fontColor : TColor; var fStyle : TFontStyles) : boolean;
 
 function Status2StatusTextForHints(Status : string) : string;
@@ -668,84 +666,6 @@ begin
   end;
 end;
 
-function ResStatusToColor(Status : string; var backColor, fontColor : TColor) : boolean;
-var
-  ch : char;
-begin
-  Status := trim(Status);
-  result := false;
-  if length(Status) < 1 then
-    exit;
-  ch := Status[1];
-
-  case ch of
-    'P' :
-      begin
-        backColor := g.qStatusAttr_Order.backgroundColor; //clRed;
-        fontColor := g.qStatusAttr_Order.fontColor; //clWhite
-        result := true;
-      end;
-    'G' :
-      begin
-        backColor := g.qStatusAttr_GuestStaying.backgroundColor; //clGreen;
-        fontColor := g.qStatusAttr_GuestStaying.fontColor; //clWhite;
-        result := true;
-      end;
-    STATUS_CHECKED_OUT :
-      begin
-        backColor := g.qStatusAttr_Departed.backgroundColor;
-        fontColor := g.qStatusAttr_Departed.fontColor;  //clWhite;
-        result := true;
-      end;
-    'O' :
-      begin
-        backColor := g.qStatusAttr_Waitinglist.backgroundColor; //clYellow;
-        fontColor := g.qStatusAttr_Waitinglist.fontColor; //clBlack;
-        result := true;
-      end;
-    'N' :
-      begin
-        backColor := g.qStatusAttr_NoShow.backgroundColor; //clRed;
-        fontColor := g.qStatusAttr_NoShow.fontColor;//clYellow;
-        result := true;
-      end;
-    'A' :
-      begin
-        backColor := g.qStatusAttr_Allotment.backgroundColor; //clWhite;
-        fontColor := g.qStatusAttr_Allotment.fontColor;   //clRed;
-        result := true;
-      end;
-    'B' :
-      begin
-        backColor := g.qStatusAttr_Blocked.backgroundColor; //_tinyIntToColor(55);
-        fontColor := g.qStatusAttr_Blocked.fontColor;  //_tinyIntToColor(0);
-        result := true;
-      end;
-    'C' :
-      begin
-        backColor := g.qStatusAttr_Canceled.backgroundColor; //;  //*HJ 140210
-        fontColor := g.qStatusAttr_Canceled.fontColor;//;
-        result := true;
-      end;
-    'W' :
-      begin
-        backColor := g.qStatusAttr_TMP1.backgroundColor; //;  //*HJ 140210
-        fontColor := g.qStatusAttr_TMP1.fontColor;//;
-        result := true;
-      end;
-    'Z' :
-      begin
-        backColor := g.qStatusAttr_TMP2.backgroundColor; //;   //*HJ 140210
-        fontColor := g.qStatusAttr_TMP2.fontColor;//;
-        result := true;
-      end;
-    else
-      begin
-        backColor := g.qStatusAttr_GuestStaying.backgroundColor; //clBlue;
-        fontColor := g.qStatusAttr_GuestStaying.fontColor; // clYellow;
-      end;
-    end;
-end;
 
 function Status2StatusTextForHints(Status : string) : string;
 var
@@ -1989,34 +1909,6 @@ begin
 
 
 
-end;
-
-function TGlobalApplication.ResStatusToStatusStr(ResStatus : TReservationStatus) : string;
-begin
-  result := '';
-  (* if ResStatus = rsReservations then result := 'Reservation';
-  if ResStatus = rsGuests then result := 'Guest';
-  if ResStatus = rsDeparted then result := 'Departed';
-  if ResStatus = rsReserved then result := 'Reserved';
-  if ResStatus = rsOverbooked then result := 'Overbooked';
-  if ResStatus = rsAlotment then result := 'Allotment';
-  if ResStatus = rsNoShow then result := 'NoShow';
-  if ResStatus = rsBlocked then result := 'Blocked';
-  if ResStatus = rsDeparting then result := 'Departing';
-  if ResStatus = rsCurrent then result := 'Current'; *)
-  if ResStatus = rsReservations then result := GetTranslatedText('shTx_G_Reservation');
-  if ResStatus = rsGuests then result := GetTranslatedText('shTx_G_Guest');
-  if ResStatus = rsDeparted then result := GetTranslatedText('shTx_G_Departed');
-  if ResStatus = rsReserved then result := GetTranslatedText('shTx_G_Reserved');
-  if ResStatus = rsOverbooked then result := GetTranslatedText('shTx_G_Overbooked');
-  if ResStatus = rsAlotment then result := GetTranslatedText('shTx_G_Alotment');
-  if ResStatus = rsNoShow then result := GetTranslatedText('shTx_G_NoShow');
-  if ResStatus = rsBlocked then result := GetTranslatedText('shTx_G_Blocked');
-  if ResStatus = rsDeparting then result := GetTranslatedText('shTx_G_Departing');
-  if ResStatus = rsCurrent then result := GetTranslatedText('shTx_G_Current');
-  if ResStatus = rsCanceled then result := GetTranslatedText('shTx_G_Canceled'); //*HJ 140206
-  if ResStatus = rsTmp1 then result := GetTranslatedText('shTx_G_Tmp1');  //*HJ 140206
-  if ResStatus = rsTmp2 then result := GetTranslatedText('shTx_G_Tmp2'); //*HJ 140206
 end;
 
 

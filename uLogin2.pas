@@ -50,8 +50,8 @@ type
   private
     { Private declarations }
 
-    // svo það sé hægt að hætta breyta aftur
-    // ef ýtt á cancel
+    // svo ï¿½aï¿½ sï¿½ hï¿½gt aï¿½ hï¿½tta breyta aftur
+    // ef ï¿½tt ï¿½ cancel
     startHotelIndex : integer;
 
     procedure calcDaysLeft;
@@ -138,11 +138,9 @@ begin
   tmpIndex := g.qHotelIndex;
   if g.openSelectHotel then
   begin
-    // Ef valið nýtt hótel
+    // Ef valiï¿½ nï¿½tt hï¿½tel
     if g.qHotelIndex <> tmpIndex then
     begin
-      g.SetHotelIndex;
-
       labName.caption      := g.qHotelCode+' '+g.qHotelName;
       labRoomCount.Caption := inttostr(g.qRoomCount);
       labexpdate.caption   := dateToStr(g.qExpDate);
@@ -161,7 +159,6 @@ begin
   begin
     g.qHotelIndex := startHotelIndex;
 
-    g.SetHotelIndex;
     g.ProcessHotelList(false);
 
     labName.caption      := g.qHotelCode+' '+g.qHotelName;
