@@ -108,6 +108,91 @@ type
     AdvChartPanesEditorDialog1: TAdvChartPanesEditorDialog;
     Series1: TLineSeries;
     FormStore: TcxPropertiesStore;
+    kbmStatReport: TkbmMemTable;
+    dsStatReport: TDataSource;
+    plStats: TppDBPipeline;
+    rptStats: TppReport;
+    ppHeaderBand1: TppHeaderBand;
+    ppLine1: TppLine;
+    ppLabel4: TppLabel;
+    ppLabel5: TppLabel;
+    rlabFrom: TppLabel;
+    rLabTo: TppLabel;
+    ppLabel6: TppLabel;
+    rLabHotelName: TppLabel;
+    rlabUser: TppLabel;
+    rLabTimeCreated: TppLabel;
+    ppLine11: TppLine;
+    ppDetailBand1: TppDetailBand;
+    ppFooterBand1: TppFooterBand;
+    ppSystemVariable1: TppSystemVariable;
+    ppLabel8: TppLabel;
+    ppLine2: TppLine;
+    ppDesignLayers1: TppDesignLayers;
+    ppDesignLayer1: TppDesignLayer;
+    ppParameterList1: TppParameterList;
+    btnReport: TsButton;
+    ppLabel1: TppLabel;
+    ppDBText1: TppDBText;
+    ppLabel2: TppLabel;
+    ppDBText2: TppDBText;
+    ppLabel3: TppLabel;
+    ppDBText3: TppDBText;
+    ppLabel7: TppLabel;
+    ppDBText4: TppDBText;
+    ppLabel9: TppLabel;
+    ppDBText5: TppDBText;
+    ppLine3: TppLine;
+    ppLine4: TppLine;
+    ppLabel10: TppLabel;
+    ppDBText6: TppDBText;
+    ppLabel11: TppLabel;
+    ppDBText7: TppDBText;
+    ppLabel12: TppLabel;
+    ppDBText8: TppDBText;
+    ppLabel13: TppLabel;
+    ppDBText9: TppDBText;
+    ppLabel14: TppLabel;
+    ppDBText10: TppDBText;
+    ppLabel15: TppLabel;
+    ppDBText11: TppDBText;
+    ppLine5: TppLine;
+    ppLine6: TppLine;
+    ppLabel16: TppLabel;
+    ppDBText12: TppDBText;
+    ppLabel17: TppLabel;
+    ppDBText13: TppDBText;
+    ppLabel18: TppLabel;
+    ppDBText14: TppDBText;
+    ppLabel19: TppLabel;
+    ppDBText15: TppDBText;
+    ppLabel20: TppLabel;
+    ppDBText16: TppDBText;
+    ppLabel21: TppLabel;
+    ppDBText17: TppDBText;
+    ppLabel22: TppLabel;
+    ppDBText18: TppDBText;
+    ppLabel23: TppLabel;
+    ppLabel24: TppLabel;
+    ppLabel25: TppLabel;
+    ppSummaryBand1: TppSummaryBand;
+    ppLine7: TppLine;
+    ppDBCalc1: TppDBCalc;
+    ppDBCalc2: TppDBCalc;
+    ppDBCalc3: TppDBCalc;
+    ppDBCalc4: TppDBCalc;
+    ppDBCalc5: TppDBCalc;
+    ppDBCalc6: TppDBCalc;
+    ppDBCalc7: TppDBCalc;
+    ppDBCalc8: TppDBCalc;
+    ppDBCalc9: TppDBCalc;
+    ppDBCalc10: TppDBCalc;
+    ppDBCalc12: TppDBCalc;
+    ppDBCalc13: TppDBCalc;
+    ppDBCalc14: TppDBCalc;
+    ppDBCalc15: TppDBCalc;
+    ppDBCalc16: TppDBCalc;
+    ppDBCalc17: TppDBCalc;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -119,6 +204,7 @@ type
       var AProperties: TcxCustomEditProperties);
     procedure sButton2Click(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure btnReportClick(Sender: TObject);
   private
     { Private declarations }
 
@@ -325,6 +411,32 @@ begin
 
 
 
+end;
+
+procedure TfrmRptManagment.btnReportClick(Sender: TObject);
+begin
+
+  kbmStatReport.LoadFromDataSet(kbmStat, []);
+
+  if frmRptbViewer <> nil then
+    freeandNil(frmRptbViewer);
+  frmRptbViewer := TfrmRptbViewer.Create(nil);
+  try
+    screen.Cursor := crHourglass;
+    try
+      frmRptbViewer.ppViewer1.Reset;
+      frmRptbViewer.ppViewer1.Report := rptStats;
+      frmRptbViewer.ppViewer1.GotoPage(1);
+      rptStats.PrintToDevices;
+    finally
+      screen.Cursor := crDefault;
+    end;
+
+    frmRptbViewer.showmodal;
+
+  finally
+    FreeAndNil(frmRptbViewer);
+  end;
 end;
 
 procedure TfrmRptManagment.cbxMonthCloseUp(Sender: TObject);
