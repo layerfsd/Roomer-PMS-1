@@ -74,6 +74,7 @@ begin
   glb.PerformAuthenticationAssertion(self);
   PlaceFormOnVisibleMonitor(self);
   dtHome.Date := now;
+  dthome.CheckOnExit := False;
 end;
 
 procedure TfrmHomedate.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
