@@ -237,7 +237,6 @@ object frmRptManagment: TfrmRptManagment
         FullRepaint = False
         TabOrder = 0
         SkinData.SkinSection = 'PANEL'
-        ExplicitTop = -6
         object btnGuestsExcel: TsButton
           AlignWithMargins = True
           Left = 11
@@ -267,7 +266,6 @@ object frmRptManagment: TfrmRptManagment
           TabOrder = 1
           OnClick = btnReportClick
           SkinData.SkinSection = 'BUTTON'
-          ExplicitLeft = 11
         end
       end
       object grStat: TcxGrid
@@ -278,7 +276,6 @@ object frmRptManagment: TfrmRptManagment
         Align = alClient
         TabOrder = 1
         LookAndFeel.NativeStyle = False
-        ExplicitTop = 41
         object tvStat: TcxGridDBTableView
           Navigator.Buttons.CustomButtons = <>
           DataController.DataSource = StatDS
@@ -1321,7 +1318,7 @@ object frmRptManagment: TfrmRptManagment
       object ppLabel1: TppLabel
         UserName = 'Label1'
         AutoSize = False
-        Caption = 'ADate'
+        Caption = 'Date'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clBlack
         Font.Name = 'Arial'
