@@ -52,6 +52,7 @@ object frmMain: TfrmMain
     SunkenBorder = True
     UseOwnColor = True
     UseOwnSunkenBorder = True
+    ExplicitTop = 122
   end
   object panMain: TsPanel
     Left = 3
@@ -94,7 +95,7 @@ object frmMain: TfrmMain
       Top = 173
       Width = 806
       Height = 304
-      ActivePage = tabPeriod
+      ActivePage = tabOneDayView
       Align = alClient
       TabOrder = 3
       OnChange = pageMainGridsChange
@@ -104,10 +105,6 @@ object frmMain: TfrmMain
         ImageIndex = 8
         SkinData.CustomColor = False
         SkinData.CustomFont = False
-        ExplicitLeft = 0
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
         object grOneDayRooms: TAdvStringGrid
           Left = 0
           Top = 0
@@ -148,6 +145,7 @@ object frmMain: TfrmMain
           GridLineColor = 15527152
           GridFixedLineColor = 13947601
           HoverRowCells = [hcNormal, hcSelected]
+          OnGetCellPrintColor = grOneDayRoomsGetCellPrintColor
           OnGridHint = grOneDayRoomsGridHint
           OnClickCell = grOneDayRoomsClickCell
           OnRightClickCell = grOneDayRoomsClickCell
@@ -228,6 +226,8 @@ object frmMain: TfrmMain
           HTMLSettings.ImageBaseName = 'img'
           Look = glWin7
           MouseActions.DisjunctCellSelect = True
+          PrintSettings.FooterSize = 50
+          PrintSettings.HeaderSize = 50
           PrintSettings.Date = ppBottomRight
           PrintSettings.DateFormat = 'dd/mm/yyyy hh:nn'
           PrintSettings.PageNr = ppBottomCenter
@@ -254,6 +254,9 @@ object frmMain: TfrmMain
           PrintSettings.FooterFont.Height = -11
           PrintSettings.FooterFont.Name = 'Tahoma'
           PrintSettings.FooterFont.Style = []
+          PrintSettings.LeftSize = 50
+          PrintSettings.RightSize = 50
+          PrintSettings.TitleSpacing = 50
           PrintSettings.Orientation = poLandscape
           PrintSettings.FitToPage = fpAlways
           PrintSettings.PageNumSep = '/'
@@ -279,7 +282,9 @@ object frmMain: TfrmMain
           SortSettings.HeaderColorTo = 16579058
           SortSettings.HeaderMirrorColor = 16380385
           SortSettings.HeaderMirrorColorTo = 16182488
-          Version = '7.8.8.2'
+          Version = '7.9.1.0'
+          ExplicitLeft = 1
+          ExplicitTop = -2
           ColWidths = (
             47
             49
@@ -415,7 +420,7 @@ object frmMain: TfrmMain
             object lblNoRoom: TsLabel
               Left = 3
               Top = 59
-              Width = 50
+              Width = 76
               Height = 13
               Align = alBottom
               Alignment = taCenter
@@ -426,6 +431,7 @@ object frmMain: TfrmMain
               Font.Height = -11
               Font.Name = 'Tahoma'
               Font.Style = [fsBold]
+              ExplicitWidth = 50
             end
           end
         end
@@ -435,7 +441,6 @@ object frmMain: TfrmMain
         ImageIndex = 9
         SkinData.CustomColor = False
         SkinData.CustomFont = False
-        ExplicitWidth = 801
         object Panel3: TsPanel
           Left = 0
           Top = 0
@@ -445,7 +450,6 @@ object frmMain: TfrmMain
           BevelOuter = bvNone
           TabOrder = 0
           SkinData.SkinSection = 'TRANSPARENT'
-          ExplicitWidth = 801
           object rgrGroupreportStayType: TsRadioGroup
             Left = 2
             Top = 4
@@ -517,7 +521,7 @@ object frmMain: TfrmMain
               Left = 3
               Top = 15
               Width = 151
-              Height = 17
+              Height = 19
               Caption = 'Reservation on new page'
               Font.Charset = DEFAULT_CHARSET
               Font.Color = clWindowText
@@ -534,7 +538,7 @@ object frmMain: TfrmMain
               Left = 3
               Top = 36
               Width = 81
-              Height = 17
+              Height = 19
               Caption = 'Print memo'
               Font.Charset = DEFAULT_CHARSET
               Font.Color = clWindowText
@@ -1087,7 +1091,7 @@ object frmMain: TfrmMain
             SortSettings.HeaderColorTo = 16579058
             SortSettings.HeaderMirrorColor = 16380385
             SortSettings.HeaderMirrorColorTo = 16182488
-            Version = '7.8.8.2'
+            Version = '7.9.1.0'
             ColWidths = (
               73
               20
@@ -1445,7 +1449,7 @@ object frmMain: TfrmMain
             SearchFooter.HintHighlight = 'Highlight occurences'
             SearchFooter.MatchCaseCaption = 'Match case'
             SortSettings.DefaultFormat = ssAutomatic
-            Version = '7.8.8.2'
+            Version = '7.9.1.0'
             ColWidths = (
               64
               64
@@ -1627,29 +1631,17 @@ object frmMain: TfrmMain
         Caption = 'tabFreeRooms'
         SkinData.CustomColor = False
         SkinData.CustomFont = False
-        ExplicitLeft = 0
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
       end
       object tabDashboard: TsTabSheet
         Caption = 'tabDashboard'
         SkinData.CustomColor = False
         SkinData.CustomFont = False
         SkinData.SkinSection = 'TRANSPARENT'
-        ExplicitLeft = 0
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
       end
       object tabRateQuery: TsTabSheet
         Caption = 'tabRateQuery'
         SkinData.CustomColor = False
         SkinData.CustomFont = False
-        ExplicitLeft = 0
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
       end
     end
     object panMainTop: TsPanel
@@ -1959,7 +1951,7 @@ object frmMain: TfrmMain
             MaxLength = 10
             ParentFont = False
             TabOrder = 0
-            Text = '  .  .    '
+            Text = '  -  -    '
             OnChange = dtDateChange
             OnMouseEnter = tabsViewMouseEnter
             CheckOnExit = True
@@ -2232,7 +2224,8 @@ object frmMain: TfrmMain
             BackgroundPosition = bpTiled
             BevelOuter = bvNone
             BorderWidth = 1
-            Look = lookFlat
+            CaptionColor = clNone
+            CaptionTextColor = clBlack
             DateDownColor = clNone
             DateHoverColor = clNone
             DayFont.Charset = DEFAULT_CHARSET
@@ -2240,56 +2233,55 @@ object frmMain: TfrmMain
             DayFont.Height = -11
             DayFont.Name = 'Tahoma'
             DayFont.Style = []
+            FocusColor = clHighlight
+            HeaderColor = clNone
+            InActiveColor = clGray
+            InversColor = clTeal
+            LineColor = clGray
+            Line3D = True
+            Look = lookFlat
+            NameOfDays.Monday = 'ma'
+            NameOfDays.Tuesday = 'di'
+            NameOfDays.Wednesday = 'wo'
+            NameOfDays.Thursday = 'do'
+            NameOfDays.Friday = 'vr'
+            NameOfDays.Saturday = 'za'
+            NameOfDays.Sunday = 'zo'
+            NameOfMonths.January = 'jan'
+            NameOfMonths.February = 'feb'
+            NameOfMonths.March = 'mrt'
+            NameOfMonths.April = 'apr'
+            NameOfMonths.May = 'mei'
+            NameOfMonths.June = 'jun'
+            NameOfMonths.July = 'jul'
+            NameOfMonths.August = 'aug'
+            NameOfMonths.September = 'sep'
+            NameOfMonths.October = 'okt'
+            NameOfMonths.November = 'nov'
+            NameOfMonths.December = 'dec'
+            NameOfMonths.UseIntlNames = True
             WeekFont.Charset = DEFAULT_CHARSET
             WeekFont.Color = clWindowText
             WeekFont.Height = -11
             WeekFont.Name = 'Tahoma'
             WeekFont.Style = []
             WeekName = 'Wk'
-            TextColor = clBlack
             SelectColor = clTeal
             SelectFontColor = clWhite
-            InActiveColor = clGray
-            HeaderColor = clNone
-            FocusColor = clHighlight
-            InversColor = clTeal
-            WeekendColor = clRed
-            NameOfDays.Monday = 'm'#225'n.'
-            NameOfDays.Tuesday = #254'ri.'
-            NameOfDays.Wednesday = 'mi'#240'.'
-            NameOfDays.Thursday = 'fim.'
-            NameOfDays.Friday = 'f'#246's.'
-            NameOfDays.Saturday = 'lau.'
-            NameOfDays.Sunday = 'sun.'
-            NameOfMonths.January = 'jan.'
-            NameOfMonths.February = 'feb.'
-            NameOfMonths.March = 'mar.'
-            NameOfMonths.April = 'apr.'
-            NameOfMonths.May = 'ma'#237
-            NameOfMonths.June = 'j'#250'n.'
-            NameOfMonths.July = 'j'#250'l.'
-            NameOfMonths.August = #225'g'#250'.'
-            NameOfMonths.September = 'sep.'
-            NameOfMonths.October = 'okt.'
-            NameOfMonths.November = 'n'#243'v.'
-            NameOfMonths.December = 'des.'
-            NameOfMonths.UseIntlNames = True
             StartDay = 7
+            TextColor = clBlack
             TodayFormat = '"Today" DDD/mm, YYYY'
+            WeekendColor = clRed
             Day = 7
             Month = 12
             Year = 2012
-            ParentFont = False
-            TabOrder = 0
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
-            CaptionColor = clNone
-            CaptionTextColor = clBlack
-            LineColor = clGray
-            Line3D = True
+            ParentFont = False
+            TabOrder = 0
             GradientStartColor = clWhite
             GradientEndColor = clBtnFace
             GradientDirection = gdVertical
@@ -2300,7 +2292,7 @@ object frmMain: TfrmMain
             HintPrevMonth = 'Previous Month'
             HintNextMonth = 'Next Month'
             HintNextYear = 'Next Year'
-            Version = '2.2.1.1'
+            Version = '2.2.2.1'
             TMSStyle = 0
           end
         end
@@ -2447,7 +2439,7 @@ object frmMain: TfrmMain
         ParentColor = False
         Transparent = True
         OnAnchorClick = mmoMessageAnchorClick
-        Version = '1.9.2.1'
+        Version = '1.9.2.2'
         ExplicitLeft = 87
         ExplicitTop = 6
         ExplicitWidth = 991
@@ -2786,7 +2778,7 @@ object frmMain: TfrmMain
           SelectionColor = 15790320
           SelectionColorTo = 15387318
           SortSettings.DefaultFormat = ssAutomatic
-          Version = '7.8.8.2'
+          Version = '7.9.1.0'
           ColWidths = (
             70
             12
@@ -2945,7 +2937,7 @@ object frmMain: TfrmMain
           SelectionColor = 15790320
           SelectionColorTo = 15387318
           SortSettings.DefaultFormat = ssAutomatic
-          Version = '7.8.8.2'
+          Version = '7.9.1.0'
           RowHeights = (
             19
             19
@@ -8109,7 +8101,7 @@ object frmMain: TfrmMain
     LoadedCompletely = False
     SavedCompletely = False
     FilterOptions = []
-    Version = '7.62.00 Standard Edition'
+    Version = '7.22.00 Standard Edition'
     LanguageID = 0
     SortID = 0
     SubLanguageID = 1
@@ -9291,7 +9283,7 @@ object frmMain: TfrmMain
     LoadedCompletely = False
     SavedCompletely = False
     FilterOptions = []
-    Version = '7.62.00 Standard Edition'
+    Version = '7.22.00 Standard Edition'
     LanguageID = 0
     SortID = 0
     SubLanguageID = 1
@@ -24417,7 +24409,7 @@ object frmMain: TfrmMain
     Left = 928
     Top = 456
     Bitmap = {
-      494C010102000500080010001000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
+      494C010102000500040010001000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
       0000000000000000000000000000000000000000000000000000000000000000
       00000000000000000000000000000000000000000000484C4371617545C6729D

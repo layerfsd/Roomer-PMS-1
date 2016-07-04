@@ -1022,6 +1022,8 @@ type
     procedure btnRepArrivalsClick(Sender: TObject);
     procedure mnuCancelRoomFromRoomReservationClick(Sender: TObject);
     procedure btnRptDeparturesClick(Sender: TObject);
+    procedure grOneDayRoomsGetCellPrintColor(Sender: TObject; ARow, ACol: Integer; AState: TGridDrawState;
+      ABrush: TBrush; AFont: TFont);
 
   private
     FReservationsModel: TReservationsModel;
@@ -1635,6 +1637,49 @@ const
   cgrRoom_RoomColumn = 1;
   cgrRoom_RoomTypeColumn = 2;
   cgrRoom_RoomDescriptionColumn = 3;
+
+
+const
+  Left_room = 0;
+  Left_roomType = 1;
+  Left_cust = 2;
+  Left_Arrival = 3;
+  Left_Departure = 4;
+  Left_GuestCount = 5;
+
+  Splitter = 6;
+
+  Right_room = 7;
+  Right_roomType = 8;
+  Right_cust = 9;
+  Right_Arrival = 10;
+  Right_Departure = 11;
+  Right_GuestCount = 12;
+
+  c_room = [Left_room, Right_room];
+  c_roomtype = [Left_roomType, Right_roomType];
+  c_custs = [Left_cust, Right_cust];
+  c_Arrival = [Left_Arrival, Right_Arrival];
+  c_departure = [Left_Departure, Right_Departure];
+  c_GuestCount = [Left_GuestCount, Right_GuestCount];
+
+  c_RoomInfo = [Left_room, Right_room, Left_roomType, Right_roomType];
+
+  c_GuestInfo = [Left_cust, Right_cust, Left_Arrival, Right_Arrival, Left_Departure, Right_Departure, Left_GuestCount,
+    Right_GuestCount];
+
+  Left_GuestInfo = [Left_cust, Left_Arrival, Left_Departure, Left_GuestCount];
+
+  Right_GuestInfo = [Right_cust, Right_Arrival, Right_Departure, Right_GuestCount];
+
+  c_ALL = [Left_room, Right_room, Left_roomType, Right_roomType, Left_cust, Right_cust, Left_Arrival, Right_Arrival,
+    Left_Departure, Right_Departure,
+    Left_GuestCount, Right_GuestCount, Splitter];
+
+  Left = 1;
+  Right = 2;
+
+
 
   // ******************************************************************************
   // ******************************************************************************
@@ -6399,6 +6444,13 @@ begin
   CurrentlyActiveGrid := TAdvStringGrid(Sender);
 end;
 
+procedure TfrmMain.grOneDayRoomsGetCellPrintColor(Sender: TObject; ARow, ACol: Integer; AState: TGridDrawState;
+  ABrush: TBrush; AFont: TFont);
+begin
+  if aCol in c_room then
+    aFont.Style := aFont.Style + [fsBold];
+end;
+
 procedure TfrmMain.grOneDayRoomsGridHint(Sender: TObject; ARow, ACol: integer; var HintStr: string);
 var
   iReservation, iRoom: integer;
@@ -6964,46 +7016,6 @@ begin
 end;
 
 procedure TfrmMain.grOneDayRoomsDrawCell(Sender: TObject; ACol, ARow: integer; Rect: TRect; State: TGridDrawState);
-const
-  Left_room = 0;
-  Left_roomType = 1;
-  Left_cust = 2;
-  Left_Arrival = 3;
-  Left_Departure = 4;
-  Left_GuestCount = 5;
-
-  Splitter = 6;
-
-  Right_room = 7;
-  Right_roomType = 8;
-  Right_cust = 9;
-  Right_Arrival = 10;
-  Right_Departure = 11;
-  Right_GuestCount = 12;
-
-  c_room = [Left_room, Right_room];
-  c_roomtype = [Left_roomType, Right_roomType];
-  c_custs = [Left_cust, Right_cust];
-  c_Arrival = [Left_Arrival, Right_Arrival];
-  c_departure = [Left_Departure, Right_Departure];
-  c_GuestCount = [Left_GuestCount, Right_GuestCount];
-
-  c_RoomInfo = [Left_room, Right_room, Left_roomType, Right_roomType];
-
-  c_GuestInfo = [Left_cust, Right_cust, Left_Arrival, Right_Arrival, Left_Departure, Right_Departure, Left_GuestCount,
-    Right_GuestCount];
-
-  Left_GuestInfo = [Left_cust, Left_Arrival, Left_Departure, Left_GuestCount];
-
-  Right_GuestInfo = [Right_cust, Right_Arrival, Right_Departure, Right_GuestCount];
-
-  c_ALL = [Left_room, Right_room, Left_roomType, Right_roomType, Left_cust, Right_cust, Left_Arrival, Right_Arrival,
-    Left_Departure, Right_Departure,
-    Left_GuestCount, Right_GuestCount, Splitter];
-
-  Left = 1;
-  Right = 2;
-
 var
   iRes, iRoom, iRoomRes: integer;
   iRoomCol, iTemp: integer;
