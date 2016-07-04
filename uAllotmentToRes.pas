@@ -59,6 +59,7 @@ uses
   dxSkinOffice2007Green, dxSkinOffice2007Pink, dxSkinOffice2007Silver, dxSkinOffice2010Black, dxSkinOffice2010Blue, dxSkinOffice2010Silver,
   dxSkinPumpkin, dxSkinSeven, dxSkinSevenClassic, dxSkinSharp, dxSkinSharpPlus, dxSkinSilver, dxSkinSpringTime, dxSkinStardust,
   dxSkinSummer2008, dxSkinValentine, dxSkinVS2010, dxSkinWhiteprint, dxSkinXmas2008Blue, AdvUtil
+  , uReservationStatusDefinitions
   ;
 
 
@@ -92,7 +93,8 @@ TYPE
     FdtDate            : Tdate    ;
     FRoom              : string   ;
     FRoomType          : string   ;
-    FResFlag           : string   ;
+    //FResFlag           : string   ;
+    FReservationStatus : TReservationStatus; 
     FisNoRoom          : boolean  ;
     FPriceCode         : string   ;
     FRoomRate          : double   ;
@@ -114,7 +116,7 @@ TYPE
                            dtDate            : Tdate    ;
                            Room
                           ,RoomType
-                          ,ResFlag           : string   ;
+                          ,ReservationStatus : TReservationStatus   ;
                            isNoRoom          : boolean  ;
                            PriceCode         : string   ;
                            RoomRate
@@ -138,7 +140,7 @@ TYPE
     property dtDate          : Tdate    read FdtDate           write FdtDate          ;
     property Room            : string   read FRoom             write FRoom            ;
     property RoomType        : string   read FRoomType         write FRoomType        ;
-    property ResFlag         : string   read FResFlag          write FResFlag         ;
+    property ReservationStatus: TReservationStatus   read FReservationStatus          write FReservationStatus;
     property isNoRoom        : boolean  read FisNoRoom         write FisNoRoom        ;
     property PriceCode       : string   read FPriceCode        write FPriceCode       ;
     property RoomRate        : double   read FRoomRate         write FRoomRate        ;
@@ -342,7 +344,7 @@ type
     function InitRRInfo : RecRRInfoAlot;
     function ColToDate(ACol : integer) : TdateTime;
 
-    function GetResStatus(ACol, ARow : integer; var status : string) : boolean;
+    function GetResStatus(ACol, ARow : integer; var status : TReservationStatus) : boolean;
     procedure FillData;
     procedure InitAll;
 
@@ -394,7 +396,7 @@ constructor TResCell.Create( rdID
                              dtDate            : Tdate    ;
                              Room
                             ,RoomType
-                            ,ResFlag           : string   ;
+                            ,ReservationStatus           : TReservationStatus   ;
                              isNoRoom          : boolean  ;
                              PriceCode         : string   ;
                              RoomRate
@@ -418,7 +420,7 @@ begin
    FdtDate            :=  dtDate            ;
    FRoom              :=  Room              ;
    FRoomType          :=  RoomType          ;
-   FResFlag           :=  ResFlag           ;
+   FReservationStatus :=  ReservationStatus ;
    FisNoRoom          :=  isNoRoom          ;
    FPriceCode         :=  PriceCode         ;
    FRoomRate          :=  RoomRate          ;
@@ -574,7 +576,7 @@ begin
     s := s+'   roomsdate rd '#10;
     s := s+' WHERE '#10;
     s := s+'  (rd.Reservation = %d ) '#10;
-    s := s+'   AND (ResFlag <> '+_db(STATUS_DELETED)+' ) '; //**zxhj bætt við
+    s := s+'   AND (ResFlag <> '+_db(STATUS_DELETED)+' ) '; //**zxhj bï¿½tt viï¿½
 
 
     sql := format(s, [Reservation]);
@@ -1001,13 +1003,12 @@ end;
 
 
 
-function TfrmAllotmentToRes.GetResStatus(ACol, ARow : integer; var status : string) : boolean;
+function TfrmAllotmentToRes.GetResStatus(ACol, ARow : integer; var status : TReservationStatus) : boolean;
 begin
   result := false;
   if grProvide.Objects[ACol, ARow] <> nil then
   begin
-    status := (grProvide.Objects[ACol, ARow] as TresCell).resFlag;
-    status := Uppercase(status);
+    status := (grProvide.Objects[ACol, ARow] as TresCell).ReservationStatus;
     result := true;
   end;
 end;
@@ -1034,7 +1035,7 @@ procedure TfrmAllotmentToRes.grProvideGetCellColor(Sender: TObject; ARow, ACol: 
 var
   colDate : TDate;
   weekDay : Integer;
-  status  : string;
+  status  : TReservationStatus;
   BColor, FColor : Tcolor;
 
 begin
@@ -1057,7 +1058,7 @@ begin
     end;
 
   GetResStatus(ACol, ARow, status);
-  if ResStatusToColor(status, BColor, FColor) then
+  if Status.ToColor(BColor, FColor) then
   begin
     ABrush.color := BColor;
     AFont.color := FColor;

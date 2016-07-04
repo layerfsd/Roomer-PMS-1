@@ -41,9 +41,7 @@ type
     Memo1: TsMemo;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
-    procedure btnOKClick(Sender: TObject);
     procedure btnCancelClick(Sender: TObject);
     procedure grGetCellColor(Sender: TObject; ARow, ACol: Integer;
       AState: TGridDrawState; ABrush: TBrush; AFont: TFont);
@@ -72,164 +70,8 @@ uses
   , PrjConst
   , uDImages
   , uRoomerDefinitions
+  , uReservationStatusDefinitions
   ;
-
-function StatusToColor(status : string;var backColor, fontColor : Tcolor ) : boolean;
-var
-  ch : char;
-begin
-  status := trim(status);
-  result := false;
-  if length(status) < 1 then exit;
-  ch := status[1];
-
-  case ch of
-    '1' : begin
-            backColor := clGreen;
-            fontColor := clWhite;
-            result := true;
-          end;
-    '2' : begin
-            backColor := clPurple;
-            fontColor := clWhite;
-            result := true;
-          end;
-    '3' : begin
-            backColor := clFuchsia;
-            fontColor := clWhite;
-            result := true;
-          end;
-    'C' : begin
-            backColor := clMaroon;
-            fontColor := clWhite;
-            result := true;
-          end;
-    'U' : begin
-            backColor := clNavy;
-            fontColor := clWhite;
-            result := true;
-          end;
-    'O' : begin
-            backColor := clRed;
-            fontColor := clWhite;
-            result := true;
-          end;
-   end;
-end;
-
-
-function ResStatusToColor(status : string; ascindex, descindex : integer; var backColor, fontColor : Tcolor ) : boolean;
-var
-  ch : char;
-begin
-  status := trim(status);
-  result := false;
-  if length(status) < 1 then exit;
-  ch := status[1];
-
-  case ch of
-    'P' : begin
-            backColor := clRed;
-            fontColor := clWhite;
-            result := true;
-          end;
-    'G' : begin
-            backColor := clGreen;
-            fontColor := clWhite;
-            result := true;
-          end;
-    STATUS_CHECKED_OUT : begin
-            backColor := clTeal;
-            fontColor := clWhite;
-            result := true;
-          end;
-    'C' : begin
-            backColor := clMaroon;
-            fontColor := clWhite;
-            result := true;
-          end;
-    'O' : begin
-            backColor := clYellow;
-            fontColor := clBlack;
-            result := true;
-          end;
-    'N' : begin
-            backColor := clRed;
-            fontColor := clYellow;
-            result := true;
-          end;
-    'A' : begin
-            backColor := clWhite;
-            fontColor := clRed;
-            result := true;
-          end;
-     else
-        begin
-          backColor := clBlue;
-          fontColor := clYellow;
-        end;
-   end;
-end;
-
-
-function ResStatusToString(status : string) :String;
-var
-  ch : char;
-begin
-  status := trim(status);
-  result := 'N/A';
-  if length(status) < 1 then exit;
-  ch := status[1];
-
-  case ch of
-   (* 'P' : begin
-            result := 'Ekki kominn';
-          end;
-    'G' : begin
-            result := 'Gestur';
-          end;
-    'D' : begin
-            result := 'Farinn';
-          end;
-    'O' : begin
-            result := 'Yfirbókunn';
-          end;
-    'N' : begin
-            result := 'No Show';
-          end;
-    'A' : begin
-            result := 'Allotment';
-          end;
-    'B' : begin
-            result := 'Blocked';
-          end; *)
-	'P' : begin
-            result := GetTranslatedText('shTx_ResProblem_NotArrived');
-          end;
-    'G' : begin
-            result := GetTranslatedText('shTx_ResProblem_Guest');
-          end;
-    STATUS_CHECKED_OUT : begin
-            result := GetTranslatedText('shTx_ResProblem_Gone');
-          end;
-    'O' : begin
-            result := GetTranslatedText('shTx_ResProblem_OverBooked');
-          end;
-    'N' : begin
-            result := GetTranslatedText('shTx_ResProblem_NoShow');
-          end;
-    'A' : begin
-            result := GetTranslatedText('shTx_ResProblem_Allotment');
-          end;
-    'B' : begin
-            result := GetTranslatedText('shTx_ResProblem_Blocked');
-          end;
-     else
-        begin
-          result := Status+'???'
-        end;
-   end;
-end;
 
 
 procedure TfrmResProblem.GridInit;
@@ -240,10 +82,10 @@ begin
 
   gr.Cells[0,0] := 'Herb.';
   gr.Cells[1,0] := 'Teg.';
-  gr.Cells[2,0] := 'Pöntunn';
-  gr.Cells[3,0] := 'Staða';
+  gr.Cells[2,0] := 'Pï¿½ntunn';
+  gr.Cells[3,0] := 'Staï¿½a';
   gr.Cells[4,0] := 'Koma';
-  gr.Cells[5,0] := 'Brottför';
+  gr.Cells[5,0] := 'Brottfï¿½r';
   gr.Cells[6,0] := 'S';
   gr.Cells[7,0] := '7';
 
@@ -370,7 +212,8 @@ end;
 procedure TfrmResProblem.FormCreate(Sender: TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
-   glb.PerformAuthenticationAssertion(self); PlaceFormOnVisibleMonitor(self);
+  glb.PerformAuthenticationAssertion(self); 
+  PlaceFormOnVisibleMonitor(self);
   lst := TstringList.Create;
   rgroption2.ItemIndex := 0;
 end;
@@ -381,11 +224,6 @@ begin
   GridFill;
 end;
 
-procedure TfrmResProblem.FormClose(Sender: TObject;
-  var Action: TCloseAction);
-begin
-  //**
-end;
 
 procedure TfrmResProblem.FormDestroy(Sender: TObject);
 begin
@@ -396,13 +234,6 @@ end;
 //******************************************************************************
 //  Btn
 //******************************************************************************
-
-
-
-procedure TfrmResProblem.btnOKClick(Sender: TObject);
-begin
-  //**
-end;
 
 procedure TfrmResProblem.btnCancelClick(Sender: TObject);
 begin
@@ -427,7 +258,7 @@ begin
   begin
     Fcolor := clNone;
     BColor := clNone;
-    if StatusToColor(roomStatus,BColor, Fcolor) then
+    if TReservationstatus.fromResStatus(status).ToColor(roomStatus,BColor, Fcolor) then
     begin
       ABrush.Color := BColor;
       AFont.Color  := FColor;
@@ -439,7 +270,7 @@ begin
    begin
      Fcolor := clred;
      BColor := clred;
-     if ResStatusToColor(status,ascIndex,descIndex,BColor, Fcolor) then
+     if TReservationstatus.fromResStatus(status).ToColor(roomStatus,BColor, Fcolor) then
      begin
        ABrush.Color := BColor;
        AFont.Color  := FColor;

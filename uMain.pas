@@ -1615,6 +1615,7 @@ uses
     , UITypes
     , Types
     , VCLTee.TeCanvas
+    , uReservationStatusDefinitions
     ;
 
 {$R *.DFM}
@@ -9047,8 +9048,7 @@ begin
   result.Reservation := FReservationsModel.Reservations[iReservation].Reservation;
   result.RoomReservation := FReservationsModel.Reservations[iReservation].Rooms[iRoomReservation].RoomRes;
   result.Channel := FReservationsModel.Reservations[iReservation].Channel;
-  result.resFlag := RESERVATION_STATUS_CHARS[FReservationsModel.Reservations[iReservation].Rooms[iRoomReservation]
-    .ResStatus];
+  result.resFlag := FReservationsModel.Reservations[iReservation].Rooms[iRoomReservation].ResStatus.StatusChar;
   result.Date := FReservationsModel.Reservations[iReservation].ReservationDate;
   result.Room := FReservationsModel.Reservations[iReservation].Rooms[iRoomReservation].RoomNumber;
   result.RoomType := FReservationsModel.Reservations[iReservation].Rooms[iRoomReservation].RoomType;

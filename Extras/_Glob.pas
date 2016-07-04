@@ -135,8 +135,6 @@ function _GetNodeByText(ATree : TTreeView; AValue : string; AVisible : Boolean) 
 
 function _GetNodeInNodeByText(ATree : TTreeView; InNode : TTreeNode; AValue : string; AVisible : Boolean) : TTreeNode;
 
-function _lineDate2Date(linedate : string) : Tdate;
-
 function _text2numText(aText : string) : string;
 function _numtext2Text(aText : string) : string;
 function _AddSlash(const S : string) : string;
@@ -446,7 +444,7 @@ end;
 
 
 function _Bool2Str(const aBool : Boolean; Kind : integer) : string;
-// Tegund 0=0/1  1=False/True  2=No/Yes  3=Já/Nei
+// Tegund 0=0/1  1=False/True  2=No/Yes  3=Jï¿½/Nei
 begin
   Result := '';
   case Kind of
@@ -474,7 +472,7 @@ begin
     3 :
       begin
         if aBool then
-          Result := 'Já'
+          Result := 'Jï¿½'
         else
           Result := 'Nei';
       end;
@@ -983,7 +981,7 @@ begin
     exit; // ====>
   end;
 
-  if RoundUpStartAt = 0 then // ekki rúnað
+  if RoundUpStartAt = 0 then // ekki rï¿½naï¿½
   begin
     Result := Floatvalue;
     exit; // ====>
@@ -1392,48 +1390,6 @@ begin
   end;
 end;
 
-function _lineDate2Date(linedate : string) : Tdate;
-var
-  sy : string;
-  sm : string;
-  sd : string;
-
-  y, m, d : integer;
-begin
-  Result := encodeDate(2050, 1, 1);
-  linedate := trim(linedate);
-
-  if (Length(linedate) <> 8) then
-    exit;
-
-  sy := copy(linedate, 1, 4);
-  try
-    y := strToInt(sy);
-  except
-    exit;
-  end;
-
-  sm := copy(linedate, 5, 2);
-  try
-    m := strToInt(sm);
-  except
-    exit;
-  end;
-
-  sd := copy(linedate, 7, 2);
-  try
-    d := strToInt(sd);
-  except
-    exit;
-  end;
-
-  try
-    Result := encodeDate(y, m, d);
-  except
-    // do nothing
-  end;
-end;
-
 function _islerl(sText : string; erl : Boolean) : string;
 var
   islTxt : string;
@@ -1799,7 +1755,7 @@ var
   iPos : integer;
 begin
   if S = '' then
-    S := cnsDefFont; // Üres a font
+    S := cnsDefFont; // ï¿½res a font
   Result := TFont.Create;
   iPos := pos(cnsSubSeparator, S);
   sTmp := copy(S, 1, iPos - 1);

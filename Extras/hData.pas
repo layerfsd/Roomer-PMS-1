@@ -20,6 +20,7 @@ uses
   , kbmMemTable
   , dxMdaSet
   , System.Generics.Collections
+  , uReservationStatusDefinitions
   ;
 
 const
@@ -66,9 +67,6 @@ type
   TPaymentTypes = (ptInvoice, ptDownPayment);
 
   TActReportAction = (ractNone, ractEdit, ractShow, ractDesign, ractClone);
-
-  TReservationStatus = (rsUnKnown, rsReservations, rsGuests, rsDeparting, rsDeparted, rsReserved, rsOverbooked, rsAll, rsCurrent, rsAlotment, rsNoShow,
-    rsBlocked, rsCanceled, rsTmp1, rsTmp2, rsDeleted); // *HJ 140206
 
   TReservationTypes = (rtUnknown, rtReservations, rtReserved);
 
@@ -5275,7 +5273,7 @@ begin
     sql := ' SELECT '#10 + '     Room '#10 + '   , RoomReservation '#10 + '   , ADate '#10 + ' FROM '#10 + '   roomsdate '#10 + ' WHERE '#10 +
       '   (Room = %s)  and (ADate = %s) ' +
     // ' + _dbStr(Room) + '  //' + _dateToDBdate(ADate, true) + '
-      '   AND (ResFlag <> ' + _db(STATUS_DELETED) + ' ) ' + // **zxhj bætti við
+      '   AND (ResFlag <> ' + _db(STATUS_DELETED) + ' ) ' + // **zxhj bï¿½tti viï¿½
       ' LIMIT 1 ';
     s := format(sql, [_dbStr(Room), _dateToDBdate(ADate, true)]);
     if hData.rSet_bySQL(rSet, s) then
@@ -5301,7 +5299,7 @@ begin
   try
 
     sql := ' SELECT '#10 + '     Room '#10 + '   , RoomReservation '#10 + '   , Resflag '#10 + '   , ADate '#10 + ' FROM '#10 + '   roomsdate '#10 +
-      ' WHERE '#10 + '   (Room = %s)  and (ADate = %s) ' + '   AND (ResFlag <> ' + _db(STATUS_DELETED) + ' ) ' + // **zxhj bætti við
+      ' WHERE '#10 + '   (Room = %s)  and (ADate = %s) ' + '   AND (ResFlag <> ' + _db(STATUS_DELETED) + ' ) ' + // **zxhj bï¿½tti viï¿½
       ' LIMIT 1 ';
 
     s := format(sql, [_dbStr(Room), _dateToDBdate(ADate, true)]);
@@ -9672,7 +9670,7 @@ begin
   try
 
     sql := ' SELECT '#10 + '    Adate '#10 + ' FROM '#10 + '    roomsDate '#10 + ' WHERE (reservation = %d) '#10 + '   AND (ResFlag <> ' + _db(STATUS_DELETED) +
-      ' ) ' + // **zxhj bætti við
+      ' ) ' + // **zxhj bï¿½tti viï¿½
       ' Order BY ADATE ';
     s := format(sql, [iReservation]);
     if rSet_bySQL(rSet, s) then
@@ -10517,7 +10515,7 @@ begin
       exit;
     end;
 
-    sql := ' SELECT RoomType FROM roomsdate ' + ' WHERE (RoomType = %s ) ' + '   AND (ResFlag <> ' + _db(STATUS_DELETED) + ' ) '; // **zxhj bætti við
+    sql := ' SELECT RoomType FROM roomsdate ' + ' WHERE (RoomType = %s ) ' + '   AND (ResFlag <> ' + _db(STATUS_DELETED) + ' ) '; // **zxhj bï¿½tti viï¿½
     s := format(sql, [_db(sRoomType)]);
     if hData.rSet_bySQL(rSet, s) then
     begin
@@ -14992,12 +14990,12 @@ begin
       begin
         temp := format('(changeNoRoomRoomtype) Change roomtype of a NO-ROOM booking for Reservation=%d, RoomReservation=%d, FROM RoomType=%s, FOR ArrDate=%s, DepDate=%s',
                        [Reservation, RoomReservation, oldType, DateToSqlString(Arrival), DateToSqlString(Departure)]);
-        d.roomerMainDataSet.SystemChangeAvailability(oldType, Arrival, Departure - 1, false, temp); // auka framboð
+        d.roomerMainDataSet.SystemChangeAvailability(oldType, Arrival, Departure - 1, false, temp); // auka framboï¿½
       end;
 
       temp := format('(changeNoRoomRoomtype) Change roomtype of a NO-ROOM booking for Reservation=%d, RoomReservation=%d, TO RoomType=%s, FOR ArrDate=%s, DepDate=%s',
                      [Reservation, RoomReservation, newRoomType, DateToSqlString(Arrival), DateToSqlString(Departure)]);
-      d.roomerMainDataSet.SystemChangeAvailability(newRoomType, Arrival, Departure - 1, true, temp); // minnka framboð
+      d.roomerMainDataSet.SystemChangeAvailability(newRoomType, Arrival, Departure - 1, true, temp); // minnka framboï¿½
     end;
 
     result := true;
@@ -15058,12 +15056,12 @@ begin
       begin
         temp := format('(changeNoRoomRoomtype) Change roomtype of a NO-ROOM booking for Reservation=%d, RoomReservation=%d, FROM RoomType=%s, FOR ArrDate=%s, DepDate=%s',
                        [Reservation, RoomReservation, oldType, DateToSqlString(Arrival), DateToSqlString(Departure)]);
-        d.roomerMainDataSet.SystemChangeAvailability(oldType, Arrival, Departure - 1, false, temp); // auka framboð
+        d.roomerMainDataSet.SystemChangeAvailability(oldType, Arrival, Departure - 1, false, temp); // auka framboï¿½
       end;
 
       temp := format('(changeNoRoomRoomtype) Change roomtype of a NO-ROOM booking for Reservation=%d, RoomReservation=%d, TO RoomType=%s, FOR ArrDate=%s, DepDate=%s',
                      [Reservation, RoomReservation, newRoomType, DateToSqlString(Arrival), DateToSqlString(Departure)]);
-      d.roomerMainDataSet.SystemChangeAvailability(newRoomType, Arrival, Departure - 1, true, temp); // minnka framboð
+      d.roomerMainDataSet.SystemChangeAvailability(newRoomType, Arrival, Departure - 1, true, temp); // minnka framboï¿½
     end;
 
     result := newRoomType;
