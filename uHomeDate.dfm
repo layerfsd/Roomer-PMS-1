@@ -15,6 +15,7 @@ object frmHomedate: TfrmHomedate
   GlassFrame.Enabled = True
   OldCreateOrder = False
   Position = poDefault
+  OnActivate = FormActivate
   OnClose = FormClose
   OnCreate = FormCreate
   OnKeyDown = FormKeyDown

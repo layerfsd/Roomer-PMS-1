@@ -36,6 +36,7 @@ type
     procedure Button2Click(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure FormActivate(Sender: TObject);
   private
     { Private declarations }
     procedure returnToHome;
@@ -55,12 +56,19 @@ uses
 
 procedure TfrmHomedate.Button1Click(Sender: TObject);
 begin
+  dtHome.SetFocus;
   Close;
 end;
 
 procedure TfrmHomedate.Button2Click(Sender: TObject);
 begin
+  dtHome.SetFocus;
   returnToHome;
+end;
+
+procedure TfrmHomedate.FormActivate(Sender: TObject);
+begin
+  dtHome.SetFocus;
 end;
 
 procedure TfrmHomedate.FormClose(Sender: TObject; var Action: TCloseAction);
