@@ -158,8 +158,8 @@ object frmRoomTypesGroups2: TfrmRoomTypesGroups2
       object chkActive: TsCheckBox
         Left = 55
         Top = 63
-        Width = 239
-        Height = 17
+        Width = 234
+        Height = 20
         Caption = 'Active (if checked then just active are visible'
         Checked = True
         State = cbChecked
@@ -228,7 +228,6 @@ object frmRoomTypesGroups2: TfrmRoomTypesGroups2
       Align = alClient
       TabOrder = 3
       LookAndFeel.NativeStyle = False
-      ExplicitTop = 87
       object tvData: TcxGridDBTableView
         OnDblClick = tvDataDblClick
         Navigator.Buttons.CustomButtons = <>
@@ -431,6 +430,7 @@ object frmRoomTypesGroups2: TfrmRoomTypesGroups2
               Default = True
               Kind = bkEllipsis
             end>
+          Properties.ReadOnly = True
           Properties.OnButtonClick = tvDataPAYMENTS_REQUIREDPropertiesButtonClick
           Width = 100
         end
@@ -690,7 +690,6 @@ object frmRoomTypesGroups2: TfrmRoomTypesGroups2
     Left = 96
     Top = 192
     object prLink_grData: TdxGridReportLink
-      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.GrayShading = True
@@ -704,7 +703,6 @@ object frmRoomTypesGroups2: TfrmRoomTypesGroups2
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
       ReportDocument.CreationDate = 41334.495374884260000000
-      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       BuiltInReportLink = True
     end
   end
