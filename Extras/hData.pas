@@ -1530,11 +1530,6 @@ type
 
 
 
-const
-  RESERVATION_STATUS_CHARS : Array[TReservationStatus] of char =
-      ('P','P','G','G','D','P','O','P','G','A','N','B','C','W','Z','X');
-
-
 var
   oRoomTypeRoomCount: TRoomTypeRoomCount;
 

@@ -140,7 +140,7 @@ begin
   PriceNight := 0.0;
   DiscountNight := 0.0;
   PriceNightNetto := 0.0;
-  CurrencyLetter := '€';
+  CurrencyLetter := 'ï¿½';
   if rri.Discount <> 0 then
   begin
     if rri.Percentage then
@@ -198,7 +198,7 @@ var TotalPrice, TotalDiscount, TotalPriceNetto, PriceNight, DiscountNight, Price
     sColor1, sColor2 : String;
     temp : String;
 begin
-  ResStatusToColor(rri.resFlag, backColor, fontColor);
+  rri.ReservationStatus.ToColor(backColor, fontColor);
   shpStatus.Brush.Color := BackColor;
   shpStatus.Pen.Color := BackColor;
   __lbStatus.Caption := Status2StatusTextForHints(rri.resFlag);
@@ -225,7 +225,7 @@ begin
               ]);
 
   GetPriceInfo(rri, TotalPrice, TotalDiscount, TotalPriceNetto, PriceNight, DiscountNight, PriceNightNetto, CurrencyLetter);
-  // <P align="right">€ 123.000,00<br><U>- (10) € 12.300,00</U><br><B>€ 11.000,00</B></P>
+  // <P align="right">ï¿½ 123.000,00<br><U>- (10) ï¿½ 12.300,00</U><br><B>ï¿½ 11.000,00</B></P>
   if rri.Discount <> 0 then
   begin
       if rri.Percentage then
