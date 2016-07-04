@@ -18,7 +18,6 @@ object frmHomedate: TfrmHomedate
   OnClose = FormClose
   OnCreate = FormCreate
   OnKeyDown = FormKeyDown
-  OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
   object Panel2: TsPanel
@@ -78,7 +77,7 @@ object frmHomedate: TfrmHomedate
         33)
       object Button2: TsButton
         Left = 52
-        Top = 4
+        Top = 5
         Width = 74
         Height = 25
         Anchors = [akTop, akRight]

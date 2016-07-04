@@ -32,7 +32,6 @@ type
     Button2: TsButton;
     Button1: TsButton;
     procedure FormCreate(Sender : TObject);
-    procedure FormShow(Sender : TObject);
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -86,17 +85,9 @@ begin
   end;
 end;
 
-procedure TfrmHomedate.FormShow(Sender : TObject);
-begin
-//  dtHome.setfocus;
-//  dtHome.Date := frmMain.dtDate.Date;
-//  frmMain.KeyPreview := false;
-end;
-
 procedure TfrmHomedate.returnToHome;
 begin
     frmMain.dtDate.Date := StrToDate(dtHome.Text); // dtHome.Date;
-//    frmMain.RefreshGrid();
     Close;
 end;
 
