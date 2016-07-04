@@ -35,10 +35,6 @@ uses
   ;
 
 
-var
-  RESERVATION_STATUS : SET OF CHAR;
-  I_RESERVATION_STATUS : SET OF BYTE;
-
 
 type
   TActTableAction = (actNone, actEdit, actInsert, actDelete, actLookup, actCancel, actAutoUpdate, actClone);
@@ -48,18 +44,12 @@ type
   StringArray = Array of String;
   VariantArray = Array of Variant;
 
-  recConvert = record
-    cChar : char;
-    iChar : byte;
-  end;
-
   TGroupEntity = class
   private
     FName: String;
     FReservation: integer;
   public
     constructor Create(_Reservation : integer; _Name : String);
-    destructor Destroy; override;
     property Reservation : integer read FReservation;
     property Name : String read FName;
   end;
@@ -71,7 +61,6 @@ type
     FRoomStatus : string;
   public
     constructor Create(status : string);
-    destructor Destroy; override;
     property Roomstatus : string read FRoomStatus write FRoomStatus;
   end;
 
@@ -267,7 +256,6 @@ type
     qLastID : string;
     qCustID : integer;
 
-    qConvertArr : array [0 .. 100] of recConvert;
     qGridsIniFileName : string;
 
     qPeriodRowHeight : integer;
@@ -312,8 +300,7 @@ type
     qBreakFastItem : string;
 
     qUserLanguage : integer;
-    qlstLang : TStringList;
-
+    
     qArrivalDateRulesPrice : boolean;
     qBreakfastInclDefault : boolean;
 
@@ -408,7 +395,6 @@ type
 
     qDynamicRatesActive : Boolean;
 
-    procedure Help(id : integer);
     procedure RefreshRoomList;
     constructor Create;
     destructor Destroy; override;
@@ -417,7 +403,6 @@ type
 //    function OpenZipCodes(var code : string) : boolean;
 
     function openSelectLanguage(var langName,langExt : string; var langId : integer) : boolean;
-    function Convert(inn : string) : string;
 
     procedure initStatusAttrRec(var rec : recStatusAttr);
     procedure initRecHiddenInfo(var rec : recHiddenInfoHolder);
@@ -428,19 +413,11 @@ type
     function strToStatusAttr(const aValue : string) : recStatusAttr;
     function StatusAttrToStr(const aValue : recStatusAttr) : string;
 
-    function FillConvertArr(ConvertName : string) : boolean;
-    procedure InitConvertArr;
-
     procedure SetHotelToReportINI(dataname : string);
-
-    procedure SetHotelIndex;
-    function GetHotelIndex : integer;
-
 
     /// /***********************
 
     function OpenDownPayment(act : TActTableAction; var rec : recDownPayment) : boolean;
-    function OpenCustomers(var act : TActTableAction; var Customer : string) : boolean;
     function OpenMaidActions(act : TActTableAction; var code, Description : string) : boolean;
     function OpenMaidActionsEdit(act : TActTableAction; var code : string) : boolean;
 
@@ -619,55 +596,6 @@ uses
   System.UITypes
   ;
 
-
-
-//*****************************************************************************
-//
-//
-//*****************************************************************************
-
-
-
-//function StatusToString(Status : string) : string;
-//var
-//  ch : char;
-//begin
-//  result := '';
-//  Status := trim(Status);
-//  if length(Status) < 1 then
-//    exit;
-//  ch := Status[1];
-//
-//  case ch of
-//    '1' :
-//      begin
-//        result := ctrlGetString('greenColor');
-//      end;
-//    '2' :
-//      begin
-//        result := ctrlGetString('PurpleColor');
-//      end;
-//    '3' :
-//      begin
-//        result := ctrlGetString('FuchsiaColor');
-//      end;
-//    'C' :
-//      begin
-//        result := 'Þrifið';
-//      end;
-//    'U' :
-//      begin
-//        result := 'Óþrifið';
-//      end;
-//    'O' :
-//      begin
-//        result := 'Bilað';
-//      end;
-//  end;
-//end;
-//
-
-
 function GetNameCombination(order : Integer; Customer, Guest : String) : String;
 begin
   case order of
@@ -749,23 +677,6 @@ begin
   if length(Status) < 1 then
     exit;
   ch := Status[1];
-
-(*
-
-    qStatusAttr_GuestStaying         : recStatusAttr;
-    qStatusAttr_GuestLeavingNextDay  : recStatusAttr;
-    qStatusAttr_Departing            : recStatusAttr;
-    qStatusAttr_Departed             : recStatusAttr;
-    qStatusAttr_Allotment            : recStatusAttr;
-    qStatusAttr_Waitinglist          : recStatusAttr;
-    qStatusAttr_NoShow               : recStatusAttr;
-    qStatusAttr_Blocked              : recStatusAttr;
-    qStatusAttr_ArrivingOtherLeaving : recStatusAttr;
-    qStatusAttr_Order                : recStatusAttr;
-
-
-*)
-
 
   case ch of
     'P' :
@@ -869,16 +780,16 @@ begin
 
   case ch of
     'P' :
-    //  result := 'Ókominn';
+    //  result := 'ï¿½kominn';
 	  result := GetTranslatedText('shTx_G_NotArrived');
     'G' :
-    //  result := 'Innskráður';
+    //  result := 'Innskrï¿½ï¿½ur';
 	   result := GetTranslatedText('shTx_G_CheckedIn');
     STATUS_CHECKED_OUT :
     //  result := 'Farinn';
      result := GetTranslatedText('shTx_G_CheckedOut');
 	'O' :
-    //  result := 'Biðlisti';
+    //  result := 'Biï¿½listi';
 	  result := GetTranslatedText('shTx_G_WaitingList');
     'A' :
     //  result := 'Alotment';
@@ -915,61 +826,6 @@ begin
   end;
 end;
 
-function BHGYMDstringTodate(aString : string) : TdateTime;
-var
-  Y, M, d : word;
-begin
-  Y := strToint(copy(aString, 1, 4));
-  M := strToint(copy(aString, 6, 2));
-  d := strToint(copy(aString, 9, 2));
-  result := enCodeDate(Y, M, d);
-end;
-
-function lineDate2Date(linedate : string) : TDate;
-var
-  sY : string;
-  sM : string;
-  sD : string;
-
-  Y, M, d : integer;
-begin
-  result := enCodeDate(2050, 1, 1);
-  linedate := trim(linedate);
-
-  if (length(linedate) <> 8) then
-    exit;
-
-  sY := copy(linedate, 1, 4);
-  try
-    Y := strToint(sY);
-  except
-    exit;
-  end;
-
-  sM := copy(linedate, 5, 2);
-  try
-    M := strToint(sM);
-  except
-    exit;
-  end;
-
-  sD := copy(linedate, 7, 2);
-  try
-    d := strToint(sD);
-  except
-    exit;
-  end;
-
-  try
-    result := enCodeDate(Y, M, d);
-  except
-    // do nothing
-  end;
-end;
-
-procedure TGlobalApplication.Help(id : integer);
-begin
-end;
 
 procedure TGlobalApplication.RefreshRoomList;
 begin
@@ -994,7 +850,7 @@ begin
 
     Quantity    := 1;
     Amount      := 0.00;
-    //Description := 'Downpayment/innágreiðsla';
+    //Description := 'Downpayment/innï¿½greiï¿½sla';
     Description := GetTranslatedText('shTx_G_Downpayment');
     Notes       := '';
     PaymentType := '';
@@ -1134,11 +990,6 @@ begin
     qColorRoomOther2Font     := clWhite;
     qColorRoomOther3Font     := clWhite;
 
-    qlstLang.Clear;
-    qlstLang.Add('English|ntv');
-    qlstLang.Add('Íslenska|ISL');
-    qlstLang.Add('Dutch|NL');
-
   finally
     Unlock;
   end;
@@ -1152,14 +1003,11 @@ begin
 
   FqHotelList := TstringList.Create;
   FBackupMachine := False;
-  qlstLang := TStringList.create;
-
 end;
 
 destructor TGlobalApplication.destroy;
 begin
   FqHotelList.free;
-  qlstLang.Free;
   oRooms.Free;
   DeleteCriticalSection(Flock);
   inherited;
@@ -1470,8 +1318,6 @@ begin
 
             writeInteger(secSystem,indConfirmMinuteOfTheDay,qConfirmMinuteOfTheDay);
             WriteBool(secSystem,indConfirmAuto,qConfirmAuto);
-
-            SetHotelIndex;
           end;
     end;
   finally
@@ -1514,34 +1360,6 @@ begin
 
   Result := FqAppSecret;
 end;
-
-function TGlobalApplication.GetHotelIndex : integer;
-//var
-//  sIniName : string;
-begin
-  result := 0;
-//  sIniName := ChangeFileExt(PAramstr(0), '.ini');
-//  with Tinifile.Create(sIniName) do
-//    try
-//      result := ReadInteger('Login', 'lastHotel', 0);
-//    finally
-//      free;
-//    end;
-end;
-
-procedure TGlobalApplication.SetHotelIndex;
-//var
-//  sIniName : string;
-begin
-//  sIniName := ChangeFileExt(PAramstr(0), '.ini');
-//  with Tinifile.Create(sIniName) do
-//    try
-//      WriteInteger('Login', 'lastHotel', G.qHotelIndex);
-//    finally
-//      free;
-//    end;
-end;
-
 
 procedure TGlobalApplication.openResDates(reservation, roomReservation
   : longInt; room: string; var Arrival, departure: Tdate; startIn: longInt);
@@ -1593,29 +1411,6 @@ begin
 
 end;
 
-
-//function TGlobalApplication.ChangeLang(newLangId : integer; doUpdate : boolean=true) : boolean;
-//var
-//  Line    : string;
-//  langExt : string;
-//begin
-//  result := false;
-//  if newLangId > qLstLang.count-1 then newLangId := 0;
-//  if NewLangId = g.qUserLanguage then exit;
-//  result := true;
-//
-//  line := qlstLang[NewLangId];
-//  LangExt  := _StrTokenAt(line,'|',1);
-//
-//  g.qUserLanguage := newlangID;
-//
-//  if doUpdate then
-//  begin
-//    d.UpdateUsersLanguage(g.qUser, g.qUserLanguage);
-//  end;
-//
-//end;
-
 function TGlobalApplication.ChangeLang(newLangId : integer; doUpdate : boolean=true) : boolean;
 begin
   result := false;
@@ -1633,12 +1428,6 @@ end;
 
 function TGlobalApplication.openSelectLanguage(var langName,langExt : string; var langId : integer) : boolean;
 begin
-(*
-  zLangId   := cbxSelLang.itemindex;
-  line := g.qlstLang[zLangId];
-  zLangName := _StrTokenAt(line,'|',0);
-  zLangExt  := _StrTokenAt(line,'|',1);
-*)
 
   result := false;
   Application.CreateForm(TfrmSelLang, frmSelLang);
@@ -1653,21 +1442,6 @@ begin
       langName := frmSelLang.zLangName;
       langExt  := frmSelLang.zLangExt;
       langId   := frmSelLang.zLangID;
-
-//      ChangeLang(LangId);
-
-      (*
-
-      if langID <> g.qUserLanguage then
-      begin
-        LocalizerOnFly.SwitchToExt(langExt);
-        g.qUserLanguage := langID;
-        d.UpdateUsersLanguage(g.qUser, g.qUserLanguage);
-        d.OpenStaffMembersQuery(d.zStaffMembersSortField, d.zStaffMembersSortDir);
-      end;
-      *)
-
-
     end;
   finally
     freeandnil(frmSelLang);
@@ -1693,131 +1467,6 @@ begin
   G.free;
 end;
 /// end - Open and Close Application;
-
-procedure TGlobalApplication.InitConvertArr;
-var
-  r : integer;
-begin
-  for r := 0 to 100 do
-  begin
-    qConvertArr[r].cChar := chr(0);
-    qConvertArr[r].iChar := 0;
-  end;
-end;
-
-function TGlobalApplication.FillConvertArr(ConvertName : string) : boolean;
-
-  function LoadConvert : boolean;
-  var
-    tmpLst1 : TstringList;
-    cvFileName : string;
-    i : integer;
-    line : string;
-
-    index : integer;
-    ok1, ok2 : boolean;
-
-    sTmp : string;
-
-    sChar : string;
-    iChar : integer;
-    cChar : char;
-  begin
-    result := false;
-    iChar := 0;
-    cChar := #0;
-
-    tmpLst1 := TstringList.Create;
-    try
-      cvFileName := qProgramExePath + ConvertName + '.ctb';
-      if FileExists(cvFileName) then
-      begin
-        tmpLst1.LoadFromFile(cvFileName);
-        index := - 1;
-
-        for i := 0 to tmpLst1.Count - 1 do
-        begin
-          ok1 := false;
-          ok2 := false;
-          line := tmpLst1[i];
-          sChar := _strTokenAt(line, '|', 0);
-          sTmp := _strTokenAt(line, '|', 1);
-
-          if length(sChar) = 1 then
-          begin
-            cChar := sChar[1];
-            ok1 := true;
-          end;
-
-          if _isInteger(sTmp) then
-          begin
-            iChar := strToint(sTmp);
-            if i < 255 then
-            begin
-              ok2 := true;
-            end;
-          end;
-
-          if ok1 and ok2 then
-          begin
-            inc(index);
-            qConvertArr[index].cChar := cChar;
-            qConvertArr[index].iChar := iChar;
-          end;
-        end;
-
-        result := qConvertArr[1].cChar <> #0;
-
-      end;
-    finally
-      tmpLst1.free;
-    end;
-  end;
-
-begin
-  result := false;
-  InitConvertArr;
-  if trim(ConvertName) <> '' then
-  begin
-    result := LoadConvert;
-  end;
-end;
-
-function TGlobalApplication.Convert(inn : string) : string;
-var
-  i : integer;
-  ch : char;
-  r : integer;
-  cChar : char;
-  iChar : integer;
-begin
-
-  if qConvertArr[1].cChar = #0 then
-  begin
-    result := inn;
-    exit;
-    // Convert arr empty do nothing;
-  end;
-
-  result := '';
-  for i := 1 to length(inn) do
-  begin
-    ch := inn[i];
-    r := - 1;
-    repeat
-      inc(r);
-      cChar := qConvertArr[r].cChar;
-      iChar := qConvertArr[r].iChar;
-    until (cChar = ch) or (cChar = chr(0)) or (r = 100);
-
-    if cChar = ch then
-    begin
-      ch := chr(iChar);
-    end;
-
-    result := result + ch;
-  end;
-end;
 
 Procedure TGlobalApplication.updateCurrentGuestlist;
 begin
@@ -1883,15 +1532,6 @@ begin
     freeandNil(frmDownPayment);
   end;
 end;
-
-
-
-function TGlobalApplication.OpenCustomers(var act : TActTableAction; var Customer : string) : boolean;
-begin
-  result := true;
-end;
-
-
 
 function TGlobalApplication.OpenRemoveRoom(Roomreservation : integer) : boolean;
 var
@@ -2900,77 +2540,6 @@ begin
   end;
 end;
 
-procedure myDecodeDate(aDate : TdateTime; var year, Month, Day : word);
-begin
-  // --
-  DecodeDate(aDate, year, Month, Day);
-
-  // -- Y2K fix !
-  if year > 2020 then
-    year := year - 100
-  else if year < 21 then
-    year := 2000 + year
-  else if year < 1900 then
-    year := 1900 + year;
-end;
-
-function myFileDateToDateTime(iTime : integer) : TdateTime;
-var
-  Y, M, d, h, mi, s, ms : word;
-begin
-  result := FileDateToDateTime(iTime);
-  myDecodeDate(result, Y, M, d);
-  DecodeTime(result, h, mi, s, ms);
-  result := EncodeDate(Y, M, d) + EncodeTime(h, mi, s, ms);
-end;
-
-function myDateToStr(dt : TdateTime) : string;
-var
-  Y, M, d, h, mi, s, ms : word;
-begin
-  myDecodeDate(dt, Y, M, d);
-  DecodeTime(dt, h, mi, s, ms);
-  dt := EncodeDate(Y, M, d);
-  result := DateToStr(dt);
-end;
-
-function myStrToDate(str : string) : TdateTime;
-var
-  Y, M, d : word;
-begin
-  result := StrToDate(str);
-  myDecodeDate(result, Y, M, d);
-
-  result := EncodeDate(Y, M, d);
-end;
-
-function myDateTimeToStr(dt : TdateTime) : string;
-var
-  Y, M, d, h, mi, s, ms : word;
-begin
-  // -- Y2K fix !
-  //
-  myDecodeDate(dt, Y, M, d);
-  DecodeTime(dt, h, mi, s, ms);
-
-  dt := EncodeDate(Y, M, d) + EncodeTime(h, mi, s, ms);
-
-  result := DateToStr(dt);
-end;
-
-function myStrToDateTime(str : string) : TdateTime;
-var
-  Y, M, d, h, mi, s, ms : word;
-begin
-  // -- Y2K fix !
-  //
-  result := StrToDate(str);
-  myDecodeDate(result, Y, M, d);
-  DecodeTime(result, h, mi, s, ms);
-
-  result := EncodeDate(Y, M, d) + EncodeTime(h, mi, s, ms);
-end;
-
 procedure BreakDownString(s : string; stl : TstringList; cDelim : char);
 var
   i : integer;
@@ -2998,10 +2567,6 @@ begin
   RoomCellCollection.Add(Self);
 end;
 
-destructor TRoomCell.Destroy;
-begin
-  inherited Destroy;
-end;
 
 
 { TGroupEntity }
@@ -3013,43 +2578,8 @@ begin
   FName := _Name;
 end;
 
-destructor TGroupEntity.Destroy;
-begin
-  inherited;
-end;
-
 
 initialization
-
-   RESERVATION_STATUS := [
-    STATUS_NOT_ARRIVED,
-    STATUS_ARRIVED,
-    STATUS_CHECKED_OUT,
-    STATUS_CANCELLED,
-    STATUS_WAITING_LIST,
-    STATUS_NO_SHOW,
-    STATUS_ALLOTMENT,
-    STATUS_BLOCKED,
-    STATUS_CANCELED,
-    STATUS_TMP1,
-    STATUS_AWAITING_PAYMENT,
-    STATUS_DELETED
-    ];
-
-   I_RESERVATION_STATUS := [
-    I_STATUS_NOT_ARRIVED,
-    I_STATUS_ARRIVED,
-    I_STATUS_CHECKED_OUT,
-    I_STATUS_CANCELLED,
-    I_STATUS_WAITING_LIST,
-    I_STATUS_NO_SHOW,
-    I_STATUS_ALLOTMENT,
-    I_STATUS_BLOCKED,
-    I_STATUS_CHANCELED,
-    I_STATUS_TMP1,
-    I_STATUS_AWAITING_PAYMENT,
-    I_STATUS_DELETED
-    ];
 
 end.
 
