@@ -1675,8 +1675,8 @@ const
     Left_Departure, Right_Departure,
     Left_GuestCount, Right_GuestCount, Splitter];
 
-  Left = 1;
-  Right = 2;
+  cLeftHalf = 1;
+  cRightHalf = 2;
 
 
 
@@ -7117,8 +7117,8 @@ begin
         iRoom := zOneDayResPointers[ARow].ptrRooms[OneDay_GetIsLeftOrRight(ACol), 2];
         // Ef samskonar herbergistegund er utan �� er �a� s�nt me� �v� a� lita brottfarardagsetningu
         // me�h�ndla vinsta megin
-        if ((OneDay_GetIsLeftOrRight(ACol) = Left) and (Grid.cells[Left_Departure, ARow] = '')) OR
-          ((OneDay_GetIsLeftOrRight(ACol) = Right) and (Grid.cells[Right_Departure, ARow] = '')) then
+        if ((OneDay_GetIsLeftOrRight(ACol) = cLefthalf) and (Grid.cells[Left_Departure, ARow] = '')) OR
+          ((OneDay_GetIsLeftOrRight(ACol) = cRightHalf) and (Grid.cells[Right_Departure, ARow] = '')) then
         begin
           if ((ACol = Left_Departure) and (ACol <> Left_GuestCount)) OR
             ((ACol = Right_Departure) and (ACol <> Right_GuestCount)) then
