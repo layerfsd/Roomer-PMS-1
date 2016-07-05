@@ -1,4 +1,4 @@
-unit uAllotmentToRes;
+ï»¿unit uAllotmentToRes;
 
 interface
 
@@ -113,8 +113,8 @@ TYPE
                           ,Reservation       : integer  ;
                            dtDate            : Tdate    ;
                            Room
-                          ,RoomType
-                          ,ResFlag           : string   ;
+                          ,RoomType          : string;
+                           ReservationStatus : TReservationStatus   ;
                            isNoRoom          : boolean  ;
                            PriceCode         : string   ;
                            RoomRate
@@ -393,8 +393,8 @@ constructor TResCell.Create( rdID
                             ,Reservation       : integer  ;
                              dtDate            : Tdate    ;
                              Room
-                            ,RoomType
-                            ,ResFlag           : string   ;
+                            ,RoomType          : string;
+                             ReservationStatus : TReservationStatus;
                              isNoRoom          : boolean  ;
                              PriceCode         : string   ;
                              RoomRate
@@ -574,7 +574,7 @@ begin
     s := s+'   roomsdate rd '#10;
     s := s+' WHERE '#10;
     s := s+'  (rd.Reservation = %d ) '#10;
-    s := s+'   AND (ResFlag <> '+_db(STATUS_DELETED)+' ) '; //**zxhj bætt við
+    s := s+'   AND (ResFlag <> '+_db(STATUS_DELETED)+' ) '; //**zxhj bï¿½tt viï¿½
 
 
     sql := format(s, [Reservation]);
@@ -678,7 +678,7 @@ begin
                                               ,rrInfo.dtDate
                                               ,rrInfo.Room
                                               ,rrInfo.RoomType
-                                              ,rrInfo.ResFlag
+                                              ,TReservationStatus.FromResStatus(rrInfo.ResFlag)
                                               ,rrInfo.isNoRoom
                                               ,rrInfo.PriceCode
                                               ,rrInfo.RoomRate
@@ -775,7 +775,7 @@ begin
                                       ,rrInfo.dtDate
                                       ,rrInfo.Room
                                       ,rrInfo.RoomType
-                                      ,rrInfo.ResFlag
+                                      ,TReservationStatus.FromResStatus(rrInfo.ResFlag)
                                       ,rrInfo.isNoRoom
                                       ,rrInfo.PriceCode
                                       ,rrInfo.RoomRate
@@ -1547,7 +1547,7 @@ begin
   result.dtDate              := resCell.dtDate          ;
   result.Room                := resCell.Room            ;
   result.RoomType            := resCell.RoomType        ;
-  result.ResFlag             := resCell.ResFlag         ;
+  result.ResFlag             := resCell.ReservationStatus.StatusChar;
   result.isNoRoom            := resCell.isNoRoom        ;
   result.PriceCode	         := resCell.PriceCode	     ;
   result.RoomRate	           := resCell.RoomRate	       ;

@@ -824,7 +824,7 @@ uses
   uViewDailyRates
  , ufrmReservationExtras
  , DateUtils
- ;
+ , uReservationStatusDefinitions;
 
 {$R *.dfm}
 

@@ -96,7 +96,9 @@ uses
   , PrjConst
   , uRoomerDefinitions
   , uAvailabilityPerDay
+  , uReservationStatusDefinitions
   ;
+
 {$R *.DFM}
 
 function ProvideARoom2(RoomReservation : Integer) : String;
@@ -174,7 +176,7 @@ begin
   end;
 
   // -- Check if the status allows for a move without interference...
-  status := g.StatusStrToResStatus(sStatus);
+  status := TReservationStatus.FromResStatus(sStatus);
 
   if (status = rsGuests) then
   begin
@@ -599,7 +601,7 @@ begin
 
   if (ACol = 1) then
   begin
-    StatusToColor(status, BColor, Fcolor, fStyle);
+    RoomNumberToStatusColor(status, BColor, Fcolor, fStyle);
     ABrush.Color := BColor;
     AFont.Color := Fcolor;
     AFont.Style := fStyle;

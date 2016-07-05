@@ -648,7 +648,6 @@
         <DCCReference Include="uGroupGuests.pas">
             <Form>frmGroupGuests</Form>
         </DCCReference>
-        <DCCReference Include="uRoomerDefinitions.pas"/>
         <DCCReference Include="uPhoneRates.pas">
             <Form>frmPhoneRates</Form>
         </DCCReference>
@@ -749,6 +748,8 @@
             <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="OpenAPI\uOpenAPICaller.pas"/>
+        <DCCReference Include="Definitions\uReservationStatusDefinitions.pas"/>
+        <DCCReference Include="Definitions\uRoomerDefinitions.pas"/>
         <None Include="Roomer.todo"/>
         <None Include="notes.txt"/>
         <None Include="Roomer.inc"/>

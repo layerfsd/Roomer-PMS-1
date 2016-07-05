@@ -763,7 +763,7 @@ uses
   uMain,
   uFrmNotepad,
   ufrmReservationExtras
-  ;
+  , uReservationStatusDefinitions;
 
 {$R *.DFM}
 

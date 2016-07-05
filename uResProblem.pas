@@ -1,4 +1,4 @@
-unit uResProblem;
+ï»¿unit uResProblem;
 
 interface
 
@@ -192,7 +192,7 @@ begin
             result := 'Farinn';
           end;
     'O' : begin
-            result := 'Yfirbókunn';
+            result := 'Yfirbï¿½kunn';
           end;
     'N' : begin
             result := 'No Show';
@@ -240,10 +240,10 @@ begin
 
   gr.Cells[0,0] := 'Herb.';
   gr.Cells[1,0] := 'Teg.';
-  gr.Cells[2,0] := 'Pöntunn';
-  gr.Cells[3,0] := 'Staða';
+  gr.Cells[2,0] := 'Pï¿½ntunn';
+  gr.Cells[3,0] := 'Staï¿½a';
   gr.Cells[4,0] := 'Koma';
-  gr.Cells[5,0] := 'Brottför';
+  gr.Cells[5,0] := 'Brottfï¿½r';
   gr.Cells[6,0] := 'S';
   gr.Cells[7,0] := '7';
 
@@ -332,7 +332,7 @@ begin
       sGuest           := d.RR_GetFirstGuestName(iRoomReservation);
       sCustomerName    := rSet.fieldbyname('CustomerName').AsString;
       sStatus          := rSet.fieldbyname('status').AsString;
-      sStatusText      := ResStatusToString(sStatus);
+      sStatusText      := TReservationStatus.FromResStatus(sStatus).AsReadableString;
       roomStatus       := d.GET_roomstatus(sRoom);
 
 
@@ -427,7 +427,7 @@ begin
   begin
     Fcolor := clNone;
     BColor := clNone;
-    if StatusToColor(roomStatus,BColor, Fcolor) then
+    if TReservationstatus.fromResStatus(Status).ToColor(BColor, Fcolor) then
     begin
       ABrush.Color := BColor;
       AFont.Color  := FColor;
@@ -439,7 +439,7 @@ begin
    begin
      Fcolor := clred;
      BColor := clred;
-     if ResStatusToColor(status,ascIndex,descIndex,BColor, Fcolor) then
+     if TReservationstatus.fromResStatus(roomStatus).ToColor(BColor, Fcolor) then
      begin
        ABrush.Color := BColor;
        AFont.Color  := FColor;

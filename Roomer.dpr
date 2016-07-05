@@ -181,7 +181,6 @@ uses
   uRptCashier in 'uRptCashier.pas' {frmRptCashier},
   uRoomerThreadedRequest in 'uRoomerThreadedRequest.pas',
   uGroupGuests in 'uGroupGuests.pas' {frmGroupGuests},
-  uRoomerDefinitions in 'uRoomerDefinitions.pas',
   uPhoneRates in 'uPhoneRates.pas' {frmPhoneRates},
   uEditGuest in 'uEditGuest.pas' {frmEditGuest},
   uExcelProcessors in 'RoomerVCLs\Source\uExcelProcessors.pas',
@@ -230,6 +229,9 @@ uses
   uFloatUtils in 'RoomerVCLs\Source\uFloatUtils.pas',
   uRptStockItems in 'uRptStockItems.pas' {frmRptStockItems},
   uOpenAPICaller in 'OpenAPI\uOpenAPICaller.pas';
+  uFloatUtils in 'RoomerVCLs\Source\uFloatUtils.pas',
+  uReservationStatusDefinitions in 'Definitions\uReservationStatusDefinitions.pas',
+  uRoomerDefinitions in 'Definitions\uRoomerDefinitions.pas';
 
 {$R *.RES}
 
