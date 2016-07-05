@@ -5509,12 +5509,33 @@ select_roomTypesGroups : string =
 ' ,connectCODToMasterRate '#10+
 ' ,connectLOSToMasterRate '#10+
 ' ,RATE_PLAN_TYPE '#10+
-' ,prepaidPercentage '#10+
 ' , (SELECT GROUP_CONCAT(DISTINCT CHANNEL_ID) FROM home100.PAYMENT_REQUIREMENT_MATRIX WHERE HOTEL_ID=(SELECT CompanyID FROM control LIMIT 1) AND ROOM_TYPE_GROUP_CODE=roomtypegroups.Code) AS PAYMENTS_REQUIRED '#10+
 ' FROM '#10+
 '   roomtypegroups '#10+
 ' ORDER BY '#10+
 '   %s ';
+
+select_PaymentRequirementForRoomTypeGroup : string =
+' SELECT '#10 +
+'  channelManagerId '#10 +
+'  ,name '#10 +
+' , PAYMENT_REQUIRED '#10 +
+' , PREPAID_PERCENTAGE '#10 +
+' FROM channels' +
+' LEFT OUTER JOIN home100.PAYMENT_REQUIREMENT_MATRIX '#10 +
+'   ON channelmanagerid=CHANNEL_ID and HOTEL_ID=(SELECT CompanyID FROM control LIMIT 1) AND ROOM_TYPE_GROUP_CODE=%s '#10 +
+' where active  '#10 +
+' ORDER BY channelManagerId'#10;
+
+delete_PaymentRequirementsForRoomTypeGroup: string =
+' DELETE '#10 +
+' FROM home100.PAYMENT_REQUIREMENT_MATRIX '#10 +
+' WHERE HOTEL_ID=(SELECT CompanyID FROM control LIMIT 1) AND ROOM_TYPE_GROUP_CODE=%s ';
+
+insert_PaymentRequirementsForRoomTypeGroup: string =
+' INSERT INTO home100.PAYMENT_REQUIREMENT_MATRIX '#10 +
+'     (HOTEL_ID, CHANNEL_ID, ROOM_TYPE_GROUP_CODE, PAYMENT_REQUIRED, PREPAID_PERCENTAGE) '#10 +
+'      VALUES (%s, %s, %s, 1, %s)';
 
 select_Seasons : string =
 'SELECT '#10+

@@ -155,19 +155,6 @@ object frmRoomTypesGroups2: TfrmRoomTypesGroups2
         OnClick = btnEditClick
         SkinData.SkinSection = 'BUTTON'
       end
-      object chkActive: TsCheckBox
-        Left = 55
-        Top = 63
-        Width = 234
-        Height = 20
-        Caption = 'Active (if checked then just active are visible'
-        Checked = True
-        State = cbChecked
-        TabOrder = 6
-        SkinData.SkinSection = 'CHECKBOX'
-        ImgChecked = 0
-        ImgUnchecked = 0
-      end
     end
     object sbMain: TsStatusBar
       Left = 0
@@ -228,6 +215,7 @@ object frmRoomTypesGroups2: TfrmRoomTypesGroups2
       Align = alClient
       TabOrder = 3
       LookAndFeel.NativeStyle = False
+      ExplicitTop = 87
       object tvData: TcxGridDBTableView
         OnDblClick = tvDataDblClick
         Navigator.Buttons.CustomButtons = <>
@@ -438,13 +426,6 @@ object frmRoomTypesGroups2: TfrmRoomTypesGroups2
           Caption = 'Auto Charge Creditcards'
           DataBinding.FieldName = 'AutoChargeCreditcards'
           Width = 169
-        end
-        object tvDataprepaidPercentage: TcxGridDBColumn
-          Caption = 'Prepaid percentage'
-          DataBinding.FieldName = 'prepaidPercentage'
-          PropertiesClassName = 'TcxCurrencyEditProperties'
-          Properties.DisplayFormat = '0.00;0.00'
-          Width = 110
         end
         object tvDataRateExtraBed: TcxGridDBColumn
           Caption = 'Rate Extra Bed'
@@ -690,6 +671,7 @@ object frmRoomTypesGroups2: TfrmRoomTypesGroups2
     Left = 96
     Top = 192
     object prLink_grData: TdxGridReportLink
+      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.GrayShading = True
@@ -703,6 +685,7 @@ object frmRoomTypesGroups2: TfrmRoomTypesGroups2
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
       ReportDocument.CreationDate = 41334.495374884260000000
+      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       BuiltInReportLink = True
     end
   end
@@ -879,9 +862,6 @@ object frmRoomTypesGroups2: TfrmRoomTypesGroups2
     end
     object m_connectLOSToMasterRate: TBooleanField
       FieldName = 'connectLOSToMasterRate'
-    end
-    object m_prepaidPercentage: TFloatField
-      FieldName = 'prepaidPercentage'
     end
     object m_PAYMENTS_REQUIRED: TWideStringField
       FieldName = 'PAYMENTS_REQUIRED'

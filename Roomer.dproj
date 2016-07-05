@@ -2,7 +2,7 @@
     <PropertyGroup>
         <ProjectGuid>{436E2CCE-115E-475F-9C3E-19C03F70A4D0}</ProjectGuid>
         <MainSource>Roomer.dpr</MainSource>
-        <Config Condition="'$(Config)'==''">releaseBas</Config>
+        <Config Condition="'$(Config)'==''">Debug</Config>
         <DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
         <ProjectVersion>14.3</ProjectVersion>
         <FrameworkType>VCL</FrameworkType>
@@ -740,6 +740,10 @@
         <DCCReference Include="StockItems\ufrmReservationExtras.pas"/>
         <DCCReference Include="uRptDepartures.pas">
             <Form>frmDeparturesReport</Form>
+        </DCCReference>
+        <DCCReference Include="ufrmPaymentReqRoomtypeGroup.pas">
+            <Form>frmPaymentReqRoomtypeGroup</Form>
+            <FormType>dfm</FormType>
         </DCCReference>
         <None Include="Roomer.todo"/>
         <None Include="notes.txt"/>
