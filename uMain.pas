@@ -1229,7 +1229,7 @@ type
     procedure Period_FillEmptyResCells;
     procedure Period_FillResCells(Days: integer = 0);
 
-    function Period_GetResStatus(_grid: TAdvStringGrid; ACol, ARow: integer; var status: string;
+    function Period_GetResStatus(_grid: TAdvStringGrid; ACol, ARow: integer; var status: TReservationStatus;
       var AscIndex, DescIndex: integer): boolean;
 
     function Period_GotoRoom(const Room: string): boolean;
@@ -1252,7 +1252,7 @@ type
     procedure grNoRooms_FillEmptyResCells;
     procedure grNoRooms_FillEmptyResRow(r: integer);
     procedure grNoRooms_MergeGrid;
-    function grNoRooms_GetResStatus(ACol, ARow: integer; var status: string; var AscIndex, DescIndex: integer): boolean;
+    function grNoRooms_GetResStatus(ACol, ARow: integer; var status: TReservationStatus; var AscIndex, DescIndex: integer): boolean;
     procedure timBlinkRoom;
     procedure SetViews(ViewIndex: integer);
 
@@ -4091,7 +4091,7 @@ begin
         iOldRow := grOneDayRooms.row;
 
         lDate := dtDate.Date;
-        FReservationsModel.Execute(lDate, lDate + 1, rsAll);
+        FReservationsModel.Execute(lDate, lDate + 1);
 
         ziFreeRackRoomCount := 0;
 
@@ -5355,8 +5355,7 @@ begin
     exit; // ===>>
 
   _Room := rri.Room;
-  status := rri.resFlag;
-  _ResStatus := TReservationStatus.FromResStatus(status);
+  _ResStatus := rri.resFlag;
 
   _NoRoom := Copy(_Room, 1, 1) = '<';
 
@@ -5704,7 +5703,7 @@ begin
   fillchar(zOneDay_bSelectedNonRooms, sizeof(zOneDay_bSelectedNonRooms), -1);
 
   // --
-  fillchar(zOneDayResPointers, sizeof(zOneDayResPointers), 0);
+  fillchar(zOneDayResPointers, sizeof(zOneDayResPointers), -1);
 
   EmptyStringGrid(grOneDayRooms);
 
@@ -7912,7 +7911,7 @@ end;
 procedure TfrmMain.grPeriodRoomsGetCellBorder(Sender: TObject; ARow, ACol: integer; APen: TPen;
   var Borders: TCellBorders);
 var
-  status: string;
+  status: TReservationStatus;
   AscIndex: integer;
   DescIndex: integer;
 
@@ -8547,7 +8546,7 @@ var
 
   Room: string;
   RoomType: string;
-  resFlag: string;
+  resFlag: TReservationStatus;
   RoomReservation: integer;
   Reservation: integer;
 
@@ -8710,8 +8709,8 @@ begin
       rdOBJ.qMT_.first;
       while NOT rdOBJ.qMT_.eof do
       begin
-        resFlag := rdOBJ.qMT_.FieldByName('resFlag').asString;
-        StatusCancelled := UpperCase(Copy(resFlag, 1, 1)) = 'C';
+        resFlag := TReservationStatus.FromResStatus(rdOBJ.qMT_.FieldByName('resFlag').asString);
+        StatusCancelled := resFlag = rsCanceled;
         if (round = ABS(Ord(StatusCancelled))) then
         begin
           RoomReservation := rdOBJ.qMT_.FieldByName('RoomReservation').asinteger;
@@ -8983,14 +8982,13 @@ begin
   grPeriodRooms.RowHeights[2] := 0;
 end;
 
-function TfrmMain.Period_GetResStatus(_grid: TAdvStringGrid; ACol, ARow: integer; var status: string;
+function TfrmMain.Period_GetResStatus(_grid: TAdvStringGrid; ACol, ARow: integer; var status: TReservationStatus;
   var AscIndex, DescIndex: integer): boolean;
 begin
   result := false;
   if _grid.Objects[ACol, ARow] <> nil then
   begin
     status := (_grid.Objects[ACol, ARow] as TresCell).resFlag;
-    status := ANSIUpperCase(status);
     DescIndex := (_grid.Objects[ACol, ARow] as TresCell).DescIndex;
     AscIndex := (_grid.Objects[ACol, ARow] as TresCell).AscIndex;
     result := true;
@@ -9059,8 +9057,7 @@ begin
   result.Reservation := FReservationsModel.Reservations[iReservation].Reservation;
   result.RoomReservation := FReservationsModel.Reservations[iReservation].Rooms[iRoomReservation].RoomRes;
   result.Channel := FReservationsModel.Reservations[iReservation].Channel;
-  result.resFlag := RESERVATION_STATUS_CHARS[FReservationsModel.Reservations[iReservation].Rooms[iRoomReservation]
-    .ResStatus];
+  result.resFlag := FReservationsModel.Reservations[iReservation].Rooms[iRoomReservation].ResStatus;
   result.Date := FReservationsModel.Reservations[iReservation].ReservationDate;
   result.Room := FReservationsModel.Reservations[iReservation].Rooms[iRoomReservation].RoomNumber;
   result.RoomType := FReservationsModel.Reservations[iReservation].Rooms[iRoomReservation].RoomType;
@@ -10086,14 +10083,13 @@ begin
     grPeriodRooms_NO.colWidths[1] := RoomColSize_5D;
 end;
 
-function TfrmMain.grNoRooms_GetResStatus(ACol, ARow: integer; var status: string;
+function TfrmMain.grNoRooms_GetResStatus(ACol, ARow: integer; var status: TReservationStatus;
   var AscIndex, DescIndex: integer): boolean;
 begin
   result := false;
   if grPeriodRooms_NO.Objects[ACol, ARow] <> nil then
   begin
     status := (grPeriodRooms_NO.Objects[ACol, ARow] as TresCell).resFlag;
-    status := ANSIUpperCase(status);
     DescIndex := (grPeriodRooms_NO.Objects[ACol, ARow] as TresCell).DescIndex;
     AscIndex := (grPeriodRooms_NO.Objects[ACol, ARow] as TresCell).AscIndex;
     result := true;
@@ -10529,7 +10525,7 @@ var
   BColor: TColor;
   FColor: TColor;
 
-  status: string;
+  status: TReservationStatus;
   AscIndex: integer;
   DescIndex: integer;
 
@@ -10638,7 +10634,7 @@ begin
                 exit;
               end;
             end
-            else if TReservationStatus.FromResStatus(status).ToColor(BColor, FColor) then
+            else if status.ToColor(BColor, FColor) then
             begin
               Brush.Color := BColor;
               Pen.Color := BColor;
@@ -11110,7 +11106,7 @@ var
   BColor: TColor;
   FColor: TColor;
 
-  status: string;
+  status: TReservationStatus;
   AscIndex: integer;
   DescIndex: integer;
 
@@ -11131,7 +11127,7 @@ begin
     BColor := clRed;
 
     grNoRooms_GetResStatus(ACol, ARow, status, AscIndex, DescIndex);
-    if TReservationStatus.FromResStatus(Status).ToColor(BColor, FColor) then
+    if Status.ToColor(BColor, FColor) then
     begin
       ABrush.Color := BColor;
       AFont.Color := FColor;
@@ -11238,7 +11234,7 @@ end;
 procedure TfrmMain.grPeriodRooms_NOGetCellBorder(Sender: TObject; ARow, ACol: integer; APen: TPen;
   var Borders: TCellBorders);
 var
-  status: string;
+  status: TReservationStatus;
   AscIndex: integer;
   DescIndex: integer;
 

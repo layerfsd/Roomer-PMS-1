@@ -201,7 +201,6 @@ function _IndexToStatus(Index : Integer; MixedIncluded : Boolean = False) : stri
 function _StatusToIndex(Status : String; MixedIncluded : Boolean = False) : Integer;
 
 function _StatusToText(status : string) : string; deprecated;
-function _TextToStatus(text : string) : string;
 function _BreakfastToText(included : Boolean) : string;
 function _AccountTypeToText(isGroupAccount : Boolean) : string;
 
@@ -2708,46 +2707,6 @@ begin
   end;
   result := ABS(ORD(MixedIncluded)) + result;
 end;
-
-function _TextToStatus(text : string) : string;
-begin
-  result := 'P';
-  if trim(text) = '' then
-    exit;
-  text := lowerCase(text);
-  if text = lowercase(GetTranslatedText('shTx_G_NotArrived')) then // 'not arrived' then
-    result := 'P';
-  if text = lowercase(GetTranslatedText('shTx_G_CheckedIn')) then // 'checked in' then
-    result := 'G';
-  if text = lowercase(GetTranslatedText('shTx_G_CheckedOut')) then // 'departed' then
-    result := STATUS_CHECKED_OUT;
-  if text = lowercase(GetTranslatedText('shTx_G_WaitingList')) then // 'optional booking' then
-    result := 'O';
-  if text = lowercase(GetTranslatedText('shTx_G_Alotment')) then // 'alotment' then
-    result := 'A';
-  if text = lowercase(GetTranslatedText('shTx_G_NoShow')) then // 'no-show' then
-    result := 'N';
-  if text = lowercase(GetTranslatedText('shTx_G_Blocked')) then // 'blocked' then
-    result := 'B';
-  if text = lowercase(GetTranslatedText('shTx_G_Cancelled')) then // 'canceled' then
-    result := 'C';
-  if text = '[n/a]' then
-    result := 'W';
-  if text = 'awaiting payment' then
-    result := 'Z';
-
-end;
-
-//  constants.Add('shTx_G_DueToArrive', 'Due to arrive');
-//  constants.Add('shTx_G_NotArrived', 'Not Arrived');
-//  constants.Add('shTx_G_CheckedIn', 'Checked In');
-//  constants.Add('shTx_G_CheckedOut', 'Checked Out');
-//  constants.Add('shTx_G_WaitingList', 'Waiting List');
-//  constants.Add('shTx_G_Alotment', 'Allotment');
-//  constants.Add('shTx_G_NoShow', 'No show');
-//  constants.Add('shTx_G_Blocked', 'Blocked');
-//  constants.Add('shTx_G_DepartingToday', 'Due to check out');
-//  constants.Add('shTx_G_Cancelled', 'Cancelled');
 
 
 function _BreakfastToText(included : Boolean) : string;

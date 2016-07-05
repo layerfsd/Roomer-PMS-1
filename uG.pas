@@ -535,16 +535,13 @@ function GetNameCombination(order : Integer; Customer, Guest : String) : String;
 
 function RoomNumberToStatusColor(aRoomNumber : string; var backColor, fontColor : TColor; var fStyle : TFontStyles) : boolean;
 
-function Status2StatusTextForHints(Status : string) : string;
-function Status2StatusText(Status : string) : string;
-
 function CombineNames(sName, sSurname : string) : string;
 function InvoiceName(InvoiceType : integer; sName, sSurname : string) : string;
 
 function LeftAlign(s : string; iLen : integer) : string;
 function RightAligned(s : string; iNum : integer) : string;
 
-function ResObjToBorder(Status : string; ascIndex, descIndex : integer; var BorderColor : TColor; var Left, Top, Right,Bottom : integer) : boolean;
+function ResObjToBorder(Status : TReservationStatus; ascIndex, descIndex : integer; var BorderColor : TColor; var Left, Top, Right,Bottom : integer) : boolean;
 function RoomIndex(aGrid : TAdvStringGrid; const sRoom : string; var lastRow : integer; const sRoomType : String = ''; AddIfNeeded : boolean = false) : integer;
 procedure FillTheGrid(Grid : TADVStringGrid; sWith : string; iStartCol, iStartRow : integer);
 procedure EmptyStringGrid(Grid : TADVStringGrid);
@@ -659,72 +656,6 @@ begin
 
        end;
      end;
-  end;
-end;
-
-
-function Status2StatusTextForHints(Status : string) : string;
-var
-  ch : char;
-begin
-  result := '';
-  Status := trim(Status);
-  if Status = '' then
-    exit;
-
-  Status := UpperCase(Status);
-  ch := Status[1];
-
-  if ch = 'P' then
-	  result := GetTranslatedText('shTx_G_DueToArrive')
-  else
-    result := Status2StatusText(Status);
-
-end;
-
-function Status2StatusText(Status : string) : string;
-var
-  ch : char;
-begin
-  result := '';
-  Status := trim(Status);
-  if Status = '' then
-    exit;
-
-  Status := UpperCase(Status);
-  ch := Status[1];
-
-  case ch of
-    'P' :
-    //  result := '�kominn';
-	  result := GetTranslatedText('shTx_G_NotArrived');
-    'G' :
-    //  result := 'Innskr��ur';
-	   result := GetTranslatedText('shTx_G_CheckedIn');
-    STATUS_CHECKED_OUT :
-    //  result := 'Farinn';
-     result := GetTranslatedText('shTx_G_CheckedOut');
-	'O' :
-    //  result := 'Bi�listi';
-	  result := GetTranslatedText('shTx_G_WaitingList');
-    'A' :
-    //  result := 'Alotment';
-	   result := GetTranslatedText('shTx_G_Alotment');
-    'N' :
-     // result := 'No show';
-	  result := GetTranslatedText('shTx_G_NoShow');
-    'B' :
-     // result := 'Blocked';
-	  result := GetTranslatedText('shTx_G_Blocked');
-    'C' :
-     // result := 'Canceled';
-	  result := GetTranslatedText('shTx_G_Canceled');
-    'W' :
-     // result := 'Other 1';
-	  result := GetTranslatedText('shTx_G_Tmp1'); //ATH 2
-    'Z' :
-     // result := 'Other 2';
-	  result := GetTranslatedText('shTx_G_Tmp2');
   end;
 end;
 
@@ -1879,18 +1810,10 @@ end;
 
 
 
-function ResObjToBorder(Status : string; ascIndex, descIndex : integer; var BorderColor : TColor; var Left, Top, Right,
+function ResObjToBorder(Status : TReservationStatus; ascIndex, descIndex : integer; var BorderColor : TColor; var Left, Top, Right,
   Bottom : integer) : boolean;
-
-var
-  ch : char;
 begin
-  Status := trim(Status);
   result := false;
-  if length(Status) < 1 then
-    exit;
-  ch := Status[1];
-
   if (ascIndex = 0) and (descIndex = 0) then
   begin
     Left := 1;
@@ -1920,72 +1843,30 @@ begin
     Bottom := 1;
   end;
 
-  case ch of
-    'P' :
+  case Status of
+    rsReservations, rsGuests, rsDeparted, rsBlocked, rsCanceled, rsTmp1, rsTmp2 :
       begin
-        // BackColor := clRed;
         BorderColor := clWhite;
         result := true;
       end;
-    'G' :
+    rsOverbooked :
       begin
-        // backColor := clGreen;
-        BorderColor := clWhite;
-        result := true;
-      end;
-    STATUS_CHECKED_OUT :
-      begin
-        // backColor := clTeal;
-        BorderColor := clWhite;
-        result := true;
-      end;
-    'O' :
-      begin
-        // backColor := clYellow;
         BorderColor := clBlack;
         result := true;
       end;
-    'N' :
+    rsNoShow :
       begin
-        // backColor := clRed;
         BorderColor := clYellow;
         result := true;
       end;
-    'A' :
+    rsAlotment :
       begin
-        // backColor := clWhite;
         BorderColor := clRed;
         result := true;
       end;
-    'B' :
-      begin
-        // backColor := clWhite;
-        BorderColor := clWhite;
-        result := true;
-      end;
-    'C' :
-      begin
-        // backColor := clWhite;
-        BorderColor := clWhite;
-        result := true;
-      end;
-    'Z' :
-      begin
-        // backColor := clWhite;
-        BorderColor := clWhite;
-        result := true;
-      end;
-    'W' :
-      begin
-        // backColor := clWhite;
-        BorderColor := clWhite;
-        result := true;
-      end;
-
     else
       begin
         BorderColor := clBlue;
-        // fontColor := clYellow;
         result := true;
       end;
     end;
