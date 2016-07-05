@@ -198,10 +198,10 @@ var TotalPrice, TotalDiscount, TotalPriceNetto, PriceNight, DiscountNight, Price
     sColor1, sColor2 : String;
     temp : String;
 begin
-  TReservationStatus.FromResStatus(rri.resFlag).ToColor(backColor, fontColor);
+  rri.resFlag.ToColor(backColor, fontColor);
   shpStatus.Brush.Color := BackColor;
   shpStatus.Pen.Color := BackColor;
-  __lbStatus.Caption := Status2StatusTextForHints(rri.resFlag);
+  __lbStatus.Caption := rri.resFlag.AsReadableHint;
   __lbName.Caption := rri.GuestName;
   if copy(rri.Room, 1, 1) <> '<' then
     __lbRoom.Caption := format('%s / %s', [rri.Room, rri.RoomType])
@@ -357,7 +357,7 @@ begin
   __lbNotes.Text := rri.Information;
   __lbPAymentNotes.Text := rri.PMInfo;
 
-  btnCheckInOut.Enabled := UpperCase(rri.resFlag)[1] IN ['P','G'];
+  btnCheckInOut.Enabled := rri.resFlag in [rsReservations, rsGuests];
 
   __labBlockNote.Caption := '';
   cbxBlocked.Checked := rri.BlockMove;
@@ -372,7 +372,7 @@ end;
 procedure TFrmReservationHintHolder.TranslateAll;
 begin
   btnCheckInOut.Caption := GetTranslatedText('shUI_Check_In');
-  if UpperCase(rri.resFlag)[1] IN ['G'] then
+  if rri.resFlag = rsGuests then
     btnCheckInOut.Caption := GetTranslatedText('shUI_Check_Out');
 //  btnReservationDetails.Caption := GetTranslatedText('shUI_Reservation_Details');
 
@@ -539,7 +539,7 @@ begin
   CancelHint;
   if Assigned(FOnLogInOutClick) then
   begin
-    if CharInSet(UpperCase(rri.resFlag)[1], ['P']) then
+    if rri.resFlag = rsReservations then
       btn := hbcLogin
     else
       btn := hbcLogout;

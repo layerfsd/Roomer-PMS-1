@@ -283,7 +283,7 @@ type
     constructor Create;
     destructor Destroy; override;
     procedure Clear;
-    procedure Execute(_FromDate, _ToDate : TDate; _ReservationStatus : TReservationStatus);
+    procedure Execute(_FromDate, _ToDate : TDate);
 
     /// <summary>Enumerate all rooms from all reservations </summary>
     function AllRoomsEnumerator(aFilter: TRoomFilterFunction = nil): TAllRoomsEnumerator;
@@ -481,7 +481,7 @@ end;
 //  result := FReservationList[iIndex];
 //end;
 
-procedure TReservationsModel.Execute(_FromDate, _ToDate : TDate; _ReservationStatus : TReservationStatus);
+procedure TReservationsModel.Execute(_FromDate, _ToDate : TDate);
 var
 
   SingleReservations : TSingleReservations;
@@ -512,8 +512,8 @@ begin
     try
     rSet := nil;
 //    if NOT d.roomerMainDataSet.OfflineMode then
-      rSet := d.roomerMainDataSet.ActivateNewDataset(d.roomerMainDataSet.SystemGetDayGrid(_FromDate, _ToDate,
-              GetEnumName(TypeInfo(TReservationStatus), integer(_ReservationStatus))));
+      rSet := d.roomerMainDataSet.ActivateNewDataset(d.roomerMainDataSet.SystemGetDayGrid(_FromDate, _ToDate, 'rsAll'));
+              {GetEnumName(TypeInfo(TReservationStatus), integer(_ReservationStatus))));}
 //    else
 //      rSet := d.roomerMainDataSet.ActivateNewDataset(d.GetBackupTodaysGuests);
 

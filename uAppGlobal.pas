@@ -52,7 +52,7 @@ uses
   , AdvEdBtn
   , Variants
   , Vcl.Buttons
-  , uRoomerThreadedRequest
+  , uRoomerThreadedRequest, uReservationStatusDefinitions
   ;
 
 Type
@@ -64,7 +64,7 @@ Type
     Date: Tdate;
     Room: string;
     RoomType: string;
-    resFlag: string;
+    resFlag: TReservationStatus;
     isNoRoom: boolean;
     AscIndex: integer;
     DescIndex: integer;

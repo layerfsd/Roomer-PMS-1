@@ -2,6 +2,11 @@ unit uRoomerContainerClasses;
 
 interface
 
+uses
+  uReservationStatusDefinitions
+  ;
+
+
 type
   TresCell = class
   private
@@ -10,7 +15,7 @@ type
     FDate: Tdate;
     FRoom: string;
     FRoomType: string;
-    FresFlag: string;
+    FresFlag: TReservationStatus;
     FisNoRoom: boolean;
     FAscIndex: integer;
     FDescIndex: integer;
@@ -46,7 +51,7 @@ type
 
   public
     constructor Create(RoomReservation, Reservation, Channel, PaymentInvoice, AscIndex, DescIndex: integer; GroupAccount: boolean;
-      Room, RoomType, resFlag, CustomerName: string; isNoRoom: boolean; Date: Tdate; Information, Fax, Tel2, Tel1, GuestName, PMInfo, PriceType, Currency,
+      Room, RoomType: string; resFlag: TReservationStatus; CustomerName: string; isNoRoom: boolean; Date: Tdate; Information, Fax, Tel2, Tel1, GuestName, PMInfo, PriceType, Currency,
       BookingId: String; Price, Discount: Double; Percentage: boolean; ItemsOnInvoice: boolean; numGuests: integer; RoomClass: string;
       _OutOfOrderBlocking, _BlockMove: boolean; _BlockMoveReason: String; _OngoingSale, _OngoingRent, _OngoingTaxes: Double; _Invoices, _Guarantee: String; _TotalPayments: Double
       ; _InvoiceIndex : Integer);
@@ -59,7 +64,7 @@ type
     property Date: Tdate read FDate write FDate;
     property Room: string read FRoom write FRoom;
     property RoomType: string read FRoomType write FRoomType;
-    property resFlag: string read FresFlag write FresFlag;
+    property resFlag: TReservationStatus read FresFlag write FresFlag;
     property isNoRoom: boolean read FisNoRoom write FisNoRoom;
     property AscIndex: integer read FAscIndex write FAscIndex;
     property DescIndex: integer read FDescIndex write FDescIndex;
@@ -107,7 +112,7 @@ implementation
 /// /////////////////////////////////////////////////////////////////////////////
 
 constructor TresCell.Create(RoomReservation, Reservation, Channel, PaymentInvoice, AscIndex, DescIndex: integer; GroupAccount: boolean;
-  Room, RoomType, resFlag, CustomerName: string; isNoRoom: boolean; Date: Tdate; Information, Fax, Tel2, Tel1, GuestName, PMInfo, PriceType, Currency,
+  Room, RoomType: string; resFlag: TReservationStatus; CustomerName: string; isNoRoom: boolean; Date: Tdate; Information, Fax, Tel2, Tel1, GuestName, PMInfo, PriceType, Currency,
   BookingId: String; Price, Discount: Double; Percentage: boolean; ItemsOnInvoice: boolean; numGuests: integer; RoomClass: string;
   _OutOfOrderBlocking, _BlockMove: boolean; _BlockMoveReason: String; _OngoingSale, _OngoingRent, _OngoingTaxes: Double; _Invoices, _Guarantee: String; _TotalPayments: Double; _InvoiceIndex : Integer);
 

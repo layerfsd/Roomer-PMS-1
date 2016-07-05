@@ -166,7 +166,7 @@ TYPE
     dtDate                : Tdate    ;
     Room                  : string   ;
     RoomType              : string   ;
-    ResFlag               : string   ;
+    ResFlag               : TReservationStatus;
     isNoRoom              : boolean  ;
     PriceCode	            : string   ;
     RoomRate	            : double   ;
@@ -680,7 +680,7 @@ begin
                                               ,rrInfo.dtDate
                                               ,rrInfo.Room
                                               ,rrInfo.RoomType
-                                              ,TReservationStatus.FromResStatus(rrInfo.ResFlag)
+                                              ,rrInfo.ResFlag
                                               ,rrInfo.isNoRoom
                                               ,rrInfo.PriceCode
                                               ,rrInfo.RoomRate
@@ -709,7 +709,7 @@ begin
   result.dtDate          := 1;
   result.Room            := '';
   result.RoomType        := '';
-  result.ResFlag         := '';
+  result.ResFlag         := rsUnknown;
   result.isNoRoom        := false;
   result.PriceCode	     := '';
   result.RoomRate	       := 0.00;
@@ -777,7 +777,7 @@ begin
                                       ,rrInfo.dtDate
                                       ,rrInfo.Room
                                       ,rrInfo.RoomType
-                                      ,TReservationStatus.FromResStatus(rrInfo.ResFlag)
+                                      ,rrInfo.ResFlag
                                       ,rrInfo.isNoRoom
                                       ,rrInfo.PriceCode
                                       ,rrInfo.RoomRate
@@ -840,7 +840,7 @@ begin
         rrInfo.dtDate          := mRRInfo.fieldbyname('dtDate').asDateTime;
         rrInfo.Room            := mRRInfo.fieldbyname('Room').asString;
         rrInfo.RoomType        := mRRInfo.fieldbyname('RoomType').asString;
-        rrInfo.ResFlag         := mRRInfo.fieldbyname('ResFlag').asString;
+        rrInfo.ResFlag         := TReservationStatus.FromResStatus(mRRInfo.fieldbyname('ResFlag').asString);
         rrInfo.isNoRoom        := mRRInfo.fieldbyname('isNoRoom').asBoolean;
         rrInfo.PriceCode	     := mRRInfo.fieldbyname('PriceCode').asString;
         rrInfo.RoomRate	       := mRRInfo.fieldbyname('RoomRate').asFloat;
@@ -1548,7 +1548,7 @@ begin
   result.dtDate              := resCell.dtDate          ;
   result.Room                := resCell.Room            ;
   result.RoomType            := resCell.RoomType        ;
-  result.ResFlag             := resCell.ReservationStatus.StatusChar;
+  result.ResFlag             := resCell.ReservationStatus;
   result.isNoRoom            := resCell.isNoRoom        ;
   result.PriceCode	         := resCell.PriceCode	     ;
   result.RoomRate	           := resCell.RoomRate	       ;
