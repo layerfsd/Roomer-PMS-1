@@ -228,6 +228,10 @@ object frmRptManagment: TfrmRptManagment
       Caption = 'Data'
       SkinData.CustomColor = False
       SkinData.CustomFont = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object sPanel1: TsPanel
         Left = 0
         Top = 0
@@ -599,6 +603,10 @@ object frmRptManagment: TfrmRptManagment
       Caption = 'Charts'
       SkinData.CustomColor = False
       SkinData.CustomFont = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object pageCharts: TsPageControl
         Left = 0
         Top = 0
@@ -612,6 +620,10 @@ object frmRptManagment: TfrmRptManagment
           Caption = 'OCC'
           SkinData.CustomColor = False
           SkinData.CustomFont = False
+          ExplicitLeft = 0
+          ExplicitTop = 0
+          ExplicitWidth = 0
+          ExplicitHeight = 0
           object sPanel2: TsPanel
             Left = 0
             Top = 0

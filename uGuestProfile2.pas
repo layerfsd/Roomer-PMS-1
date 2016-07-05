@@ -326,7 +326,7 @@ uses
   , uCountries
   , uAlerts
   , uUtils
-  ;
+  , uReservationStatusDefinitions;
 
 {$R *.dfm}
 

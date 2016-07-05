@@ -1,4 +1,4 @@
-unit uG;
+﻿unit uG;
 
 {$M+}
 
@@ -31,7 +31,7 @@ uses
   , uFileSystemUtils
   , uRegistryServices
   , uRoomerDefinitions
-  , System.Generics.Collections
+  , System.Generics.Collections, uReservationStatusDefinitions
   ;
 
 
@@ -435,9 +435,6 @@ type
     function OpenResProblem(var lst : TstringList) : integer;
     function OpenRoomDateProblem(var lst : TstringList) : integer;
 
-    function StatusStrToResStatus(statusSTR : string) : TReservationStatus;
-    function ResStatusToStatusStr(ResStatus : TReservationStatus) : string;
-
     function OpenChangeRate(var Rate : double; Currency : string) : boolean;
 
     function openGoToRoomAndDate(var aRoom : string; var aDate : TDate) : boolean;
@@ -536,7 +533,7 @@ procedure CloseApplication;
 //function StatusToString(Status : string) : string;
 function GetNameCombination(order : Integer; Customer, Guest : String) : String;
 
-function StatusToColor(Status : string; var backColor, fontColor : TColor; var fStyle : TFontStyles) : boolean;
+function RoomNumberToStatusColor(aRoomNumber : string; var backColor, fontColor : TColor; var fStyle : TFontStyles) : boolean;
 
 function Status2StatusTextForHints(Status : string) : string;
 function Status2StatusText(Status : string) : string;
@@ -591,8 +588,7 @@ uses
   uChangeRRdates,
   ufrmSelLang,
   PrjConst,
-  System.UITypes
-  ;
+  System.UITypes;
 
 function GetNameCombination(order : Integer; Customer, Guest : String) : String;
 begin
@@ -604,14 +600,14 @@ begin
   end;
 end;
 
-function StatusToColor(Status : string; var backColor, fontColor : TColor; var fStyle : TFontStyles) : boolean;
+function RoomNumberToStatusColor(aRoomNumber : string; var backColor, fontColor : TColor; var fStyle : TFontStyles) : boolean;
 var
   cRoomStatus : Char;
   Room,
   sRoomStatus : String;
 begin
   result := False;
-  Room := Status; // TAdvStringGrid(Sender).cells[ACol, ARow];
+  Room := aRoomNumber; // TAdvStringGrid(Sender).cells[ACol, ARow];
   if copy(Room, 1, 1) <> '<' then
   begin
     sRoomStatus := g.oRooms.FindRoomStatus(Room);
@@ -1880,36 +1876,6 @@ begin
   end;
 end;
 
-function TGlobalApplication.StatusStrToResStatus(statusSTR : string) : TReservationStatus;
-begin
-  result := rsUnKnown;
-  statusSTR := trim(statusSTR);
-  if statusSTR = 'P' then
-    result := rsReservations
-  else if statusSTR = 'G' then
-    result := rsGuests
-  else if statusSTR = STATUS_CHECKED_OUT then
-    result := rsDeparted
-  else if statusSTR = 'R' then
-    result := rsReserved
-  else if statusSTR = 'O' then
-    result := rsOverbooked
-  else if statusSTR = 'A' then
-    result := rsAlotment
-  else if statusSTR = 'N' then
-    result := rsNoShow
-  else if statusSTR = 'B' then
-    result := rsBlocked
-  else if statusSTR = 'C' then
-    result := rsCanceled
-  else if statusSTR = 'W' then  //*HJ 140206
-    result := rsTmp1
-  else if statusSTR = 'Z' then   //*HJ 140206
-    result := rsTmp2
-
-
-
-end;
 
 
 

@@ -153,7 +153,7 @@ uses
   , uRoomerLanguage
   , uDImages
   , uRoomerDefinitions
-  , uMain;
+  , uMain, uReservationStatusDefinitions;
 
 function rptTotalList : boolean;
 begin

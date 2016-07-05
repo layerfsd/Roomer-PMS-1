@@ -1,4 +1,4 @@
-unit uReservationHintHolder;
+﻿unit uReservationHintHolder;
 
 interface
 
@@ -111,7 +111,7 @@ implementation
 uses clipbrd
   , uMain
   , UITypes
-  ;
+  , uReservationStatusDefinitions;
 
 { TFrmReservationHintHolder }
 
@@ -198,7 +198,7 @@ var TotalPrice, TotalDiscount, TotalPriceNetto, PriceNight, DiscountNight, Price
     sColor1, sColor2 : String;
     temp : String;
 begin
-  rri.ReservationStatus.ToColor(backColor, fontColor);
+  TReservationStatus.FromResStatus(rri.resFlag).ToColor(backColor, fontColor);
   shpStatus.Brush.Color := BackColor;
   shpStatus.Pen.Color := BackColor;
   __lbStatus.Caption := Status2StatusTextForHints(rri.resFlag);

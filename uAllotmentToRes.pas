@@ -1,4 +1,4 @@
-unit uAllotmentToRes;
+﻿unit uAllotmentToRes;
 
 interface
 
@@ -115,8 +115,8 @@ TYPE
                           ,Reservation       : integer  ;
                            dtDate            : Tdate    ;
                            Room
-                          ,RoomType
-                          ,ReservationStatus : TReservationStatus   ;
+                          ,RoomType          : string;
+                           ReservationStatus : TReservationStatus   ;
                            isNoRoom          : boolean  ;
                            PriceCode         : string   ;
                            RoomRate
@@ -395,8 +395,8 @@ constructor TResCell.Create( rdID
                             ,Reservation       : integer  ;
                              dtDate            : Tdate    ;
                              Room
-                            ,RoomType
-                            ,ReservationStatus           : TReservationStatus   ;
+                            ,RoomType          : string;
+                             ReservationStatus : TReservationStatus;
                              isNoRoom          : boolean  ;
                              PriceCode         : string   ;
                              RoomRate
@@ -680,7 +680,7 @@ begin
                                               ,rrInfo.dtDate
                                               ,rrInfo.Room
                                               ,rrInfo.RoomType
-                                              ,rrInfo.ResFlag
+                                              ,TReservationStatus.FromResStatus(rrInfo.ResFlag)
                                               ,rrInfo.isNoRoom
                                               ,rrInfo.PriceCode
                                               ,rrInfo.RoomRate
@@ -777,7 +777,7 @@ begin
                                       ,rrInfo.dtDate
                                       ,rrInfo.Room
                                       ,rrInfo.RoomType
-                                      ,rrInfo.ResFlag
+                                      ,TReservationStatus.FromResStatus(rrInfo.ResFlag)
                                       ,rrInfo.isNoRoom
                                       ,rrInfo.PriceCode
                                       ,rrInfo.RoomRate
@@ -1548,7 +1548,7 @@ begin
   result.dtDate              := resCell.dtDate          ;
   result.Room                := resCell.Room            ;
   result.RoomType            := resCell.RoomType        ;
-  result.ResFlag             := resCell.ResFlag         ;
+  result.ResFlag             := resCell.ReservationStatus.StatusChar;
   result.isNoRoom            := resCell.isNoRoom        ;
   result.PriceCode	         := resCell.PriceCode	     ;
   result.RoomRate	           := resCell.RoomRate	       ;

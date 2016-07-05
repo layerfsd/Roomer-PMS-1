@@ -2,6 +2,10 @@ unit uReservationStatusDefinitions;
 
 interface
 
+uses
+  Graphics
+  ;
+
 type
   TReservationStatus = (
       rsUnKnown, 
@@ -23,8 +27,9 @@ type
 
     TReservationStatusHelper = record helper for TReservationStatus
     public
+      // constructor
+      class function FromResStatus(const statusStr : string) : TReservationStatus; static;
       function StatusChar: Char;
-      function FromResStatus(statusSTR : string) : TReservationStatus;
       function AsReadableString : string;
       function ToColor(var backColor, fontColor : TColor) : boolean;
     end;
@@ -64,6 +69,13 @@ const
 
 implementation
 
+uses
+    PrjConst
+  , SysUtils
+  , uG
+  ;
+
+
 function TReservationStatusHelper.StatusChar: Char;
 const
   cReservationStatusChars : Array[TReservationStatus] of char =
@@ -94,33 +106,23 @@ begin
   end;
 end;
 
-function TReservationStatusHelper.FromResStatus(statusSTR : string) : TReservationStatus;
+class function TReservationStatusHelper.FromResStatus(const statusSTR : string) : TReservationStatus;
 begin
   result := rsUnKnown;
-  statusSTR := trim(statusSTR);
-  if statusSTR = 'P' then
-    result := rsReservations
-  else if statusSTR = 'G' then
-    result := rsGuests
-  else if statusSTR = STATUS_CHECKED_OUT then
-    result := rsDeparted
-  else if statusSTR = 'R' then
-    result := rsReserved
-  else if statusSTR = 'O' then
-    result := rsOverbooked
-  else if statusSTR = 'A' then
-    result := rsAlotment
-  else if statusSTR = 'N' then
-    result := rsNoShow
-  else if statusSTR = 'B' then
-    result := rsBlocked
-  else if statusSTR = 'C' then
-    result := rsCanceled
-  else if statusSTR = 'W' then  //*HJ 140206
-    result := rsTmp1
-  else if statusSTR = 'Z' then   //*HJ 140206
-    result := rsTmp2
 
+  case statusStr.chars[1] of
+    'P': result := rsReservations;
+    'G': result := rsGuests;
+    'D': result := rsDeparted;
+    'R': result := rsReserved;
+    'O': result := rsOverbooked;
+    'A': result := rsAlotment;
+    'N': result := rsNoShow;
+    'B': result := rsBlocked;
+    'C': result := rsCanceled;
+    'W': result := rsTmp1;
+    'Z': result := rsTmp2;
+  end;
 end;
 
 

@@ -76,7 +76,7 @@ implementation
 uses
   hData
   , uSqlDefinitions
-  , uRoomerDefinitions;
+  , uRoomerDefinitions, uReservationStatusDefinitions;
 
 //******************************************************************************
 //*

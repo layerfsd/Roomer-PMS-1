@@ -857,7 +857,7 @@ uses
   uRoomerDefinitions,
   uActivityLogs,
   UITypes
-    , uFloatUtils;
+    , uFloatUtils, uReservationStatusDefinitions;
 
 {$R *.DFM}
 

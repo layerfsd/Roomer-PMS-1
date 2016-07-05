@@ -170,7 +170,7 @@ uses
     , uRoomerDefinitions
     , uUtils
     , UITypes
-    ;
+    , uReservationStatusDefinitions;
 
 {$R *.dfm}
 

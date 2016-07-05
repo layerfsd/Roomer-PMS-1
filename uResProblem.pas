@@ -1,4 +1,4 @@
-unit uResProblem;
+﻿unit uResProblem;
 
 interface
 
@@ -174,7 +174,7 @@ begin
       sGuest           := d.RR_GetFirstGuestName(iRoomReservation);
       sCustomerName    := rSet.fieldbyname('CustomerName').AsString;
       sStatus          := rSet.fieldbyname('status').AsString;
-      sStatusText      := ResStatusToString(sStatus);
+      sStatusText      := TReservationStatus.FromResStatus(sStatus).AsReadableString;
       roomStatus       := d.GET_roomstatus(sRoom);
 
 
@@ -258,7 +258,7 @@ begin
   begin
     Fcolor := clNone;
     BColor := clNone;
-    if TReservationstatus.fromResStatus(status).ToColor(roomStatus,BColor, Fcolor) then
+    if TReservationstatus.fromResStatus(Status).ToColor(BColor, Fcolor) then
     begin
       ABrush.Color := BColor;
       AFont.Color  := FColor;
@@ -270,7 +270,7 @@ begin
    begin
      Fcolor := clred;
      BColor := clred;
-     if TReservationstatus.fromResStatus(status).ToColor(roomStatus,BColor, Fcolor) then
+     if TReservationstatus.fromResStatus(roomStatus).ToColor(BColor, Fcolor) then
      begin
        ABrush.Color := BColor;
        AFont.Color  := FColor;

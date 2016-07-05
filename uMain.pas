@@ -65,6 +65,7 @@ uses
   dxSkinPumpkin, dxSkinSeven, dxSkinSevenClassic, dxSkinSharp, dxSkinSharpPlus, dxSkinSilver, dxSkinSpringTime,
   dxSkinStardust,
   dxSkinSummer2008, dxSkinValentine, dxSkinVS2010, dxSkinWhiteprint, dxSkinXmas2008Blue, sScrollBox, acImage, AdvUtil
+    , uReservationStatusDefinitions
 
     ;
 
@@ -1615,7 +1616,6 @@ uses
     , UITypes
     , Types
     , VCLTee.TeCanvas
-    , uReservationStatusDefinitions
     ;
 
 {$R *.DFM}
@@ -3335,7 +3335,7 @@ procedure TfrmMain.SetShapeColor(Shape: TShape; const ResStatus: String);
 var
   backColor, fontColor: TColor;
 begin
-  ResStatusToColor(ResStatus, backColor, fontColor);
+  TReservationStatus.FromResStatus(ResStatus).ToColor(backColor, fontColor);
   Shape.Brush.Color := backColor;
   Shape.Pen.Color := backColor;
 end;
@@ -4033,7 +4033,6 @@ var
 
   RoomNumber: string;
   ResStatus: TReservationStatus;
-  ResStatusChar: string;
   sDate: string;
   dtDeparture: Tdate;
   daysToDeparture: integer;
@@ -4107,8 +4106,6 @@ begin
             ResStatus := lRoom.ResStatus;
             dtDeparture := lRoom.Departure;
             daysToDeparture := trunc(dtDate.Date) - trunc(dtDeparture);
-
-            ResStatusChar := g.ResStatusToStatusStr(ResStatus);
 
             if (daysToDeparture <> 0) AND (statLastRoomNumber <> RoomNumber) then
             begin
@@ -5340,7 +5337,7 @@ begin
 
   _Room := rri.Room;
   status := rri.resFlag;
-  _ResStatus := g.StatusStrToResStatus(status);
+  _ResStatus := TReservationStatus.FromResStatus(status);
 
   _NoRoom := Copy(_Room, 1, 1) = '<';
 
@@ -10475,7 +10472,7 @@ begin
           begin
             TempTop := (TempHeight * 2) + Rect.Top + (TempHeight div 2) - (iTemp div 2);
             tempString := GetCaptText(Grid.Canvas, s, Rect.Right - Rect.Left - 4) + StringOfChar(' ', 255) + #0;
-            if StatusToColor(sRoom, BColor, FColor, fStyle) then
+            if RoomNumberToStatusColor(sRoom, BColor, FColor, fStyle) then
               Font.Color := BColor;
             ExtTextOut(handle, Rect.Left + iMargin, TempTop, ETO_CLIPPED, @Rect, tempString, length(tempString), nil);
           end;
@@ -10483,7 +10480,7 @@ begin
       end;
 
       if cbxViewTypes.ItemIndex = 0 then
-        if StatusToColor(Grid.cells[ACol, ARow]
+        if RoomNumberToStatusColor(Grid.cells[ACol, ARow]
           { Period_GetStatus(1, ARow) } , BColor, FColor, fStyle) then
         begin
           Brush.Color := BColor;
@@ -10624,7 +10621,7 @@ begin
                 exit;
               end;
             end
-            else if ResStatusToColor(status, BColor, FColor) then
+            else if TReservationStatus.FromResStatus(status).ToColor(BColor, FColor) then
             begin
               Brush.Color := BColor;
               Pen.Color := BColor;
@@ -11117,7 +11114,7 @@ begin
     BColor := clRed;
 
     grNoRooms_GetResStatus(ACol, ARow, status, AscIndex, DescIndex);
-    if ResStatusToColor(status, BColor, FColor) then
+    if TReservationStatus.FromResStatus(Status).ToColor(BColor, FColor) then
     begin
       ABrush.Color := BColor;
       AFont.Color := FColor;

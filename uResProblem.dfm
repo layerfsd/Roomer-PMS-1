@@ -13,7 +13,6 @@ object frmResProblem: TfrmResProblem
   Font.Style = []
   OldCreateOrder = False
   Position = poOwnerFormCenter
-  OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
@@ -28,7 +27,6 @@ object frmResProblem: TfrmResProblem
     BevelOuter = bvNone
     TabOrder = 0
     SkinData.SkinSection = 'PANEL'
-    ExplicitTop = 441
     object btnOK: TButton
       Left = 372
       Top = 2
@@ -39,7 +37,6 @@ object frmResProblem: TfrmResProblem
       Images = DImages.PngImageList1
       ModalResult = 1
       TabOrder = 0
-      OnClick = btnOKClick
     end
     object btnCancel: TsButton
       Left = 447
@@ -64,7 +61,6 @@ object frmResProblem: TfrmResProblem
     BevelOuter = bvNone
     TabOrder = 1
     SkinData.SkinSection = 'PANEL'
-    ExplicitWidth = 524
     object rgrOption2: TsRadioGroup
       Left = 17
       Top = 92
@@ -87,7 +83,7 @@ object frmResProblem: TfrmResProblem
       Alignment = taCenter
       Color = clWhite
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = 2302755
+      Font.Color = clBlack
       Font.Height = -13
       Font.Name = 'Tahoma'
       Font.Style = []
@@ -216,8 +212,6 @@ object frmResProblem: TfrmResProblem
     SearchFooter.MatchCaseCaption = 'Match case'
     SortSettings.DefaultFormat = ssAutomatic
     Version = '7.9.1.0'
-    ExplicitWidth = 524
-    ExplicitHeight = 248
     ColWidths = (
       64
       64

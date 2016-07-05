@@ -41,7 +41,6 @@ type
     gr: TAdvStringGrid;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
     procedure btnOKClick(Sender: TObject);
     procedure btnCancelClick(Sender: TObject);
@@ -75,7 +74,7 @@ uses
   , uSqlDefinitions
   , PrjConst
   , uDImages
-  , UITypes;
+  , UITypes, uReservationStatusDefinitions;
 
 
 procedure TfrmRoomDateProblem.GridInit;
@@ -229,12 +228,6 @@ begin
   GridFill;
 end;
 
-procedure TfrmRoomDateProblem.FormClose(Sender: TObject;
-  var Action: TCloseAction);
-begin
-  //**
-end;
-
 procedure TfrmRoomDateProblem.FormDestroy(Sender: TObject);
 begin
   //**
@@ -274,11 +267,10 @@ begin
     Fcolor := clNone;
     BColor := clNone;
     aStyle := aFont.Style;
-    if StatusToColor(roomStatus,BColor, Fcolor,aStyle) then
+    if TReservationStatus.FromResStatus(roomstatus).ToColor(BColor, Fcolor) then
     begin
       ABrush.Color := BColor;
       AFont.Color  := FColor;
-      AFont.Style := AStyle;
     end;
   end;
 
@@ -287,7 +279,7 @@ begin
    begin
      Fcolor := clred;
      BColor := clred;
-     if ResStatusToColor(status,BColor, Fcolor) then
+     if TReservationStatus.FromResStatus(status).ToColor(BColor, Fcolor) then
      begin
        ABrush.Color := BColor;
        AFont.Color  := FColor;

@@ -872,7 +872,7 @@ uses
     , uAlerts
     , uFrmCheckOut
     , UITypes
-    ;
+    , uReservationStatusDefinitions;
 
 {$R *.dfm}
 

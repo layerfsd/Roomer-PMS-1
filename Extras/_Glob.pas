@@ -1,4 +1,4 @@
-unit _Glob;
+﻿unit _Glob;
 
 interface
 
@@ -198,7 +198,7 @@ function _WeekNum(const TDT:TDateTime) : Word;
 function _IndexToStatus(Index : Integer; MixedIncluded : Boolean = False) : string;
 function _StatusToIndex(Status : String; MixedIncluded : Boolean = False) : Integer;
 
-function _StatusToText(status : string) : string;
+function _StatusToText(status : string) : string; deprecated;
 function _TextToStatus(text : string) : string;
 function _BreakfastToText(included : Boolean) : string;
 function _AccountTypeToText(isGroupAccount : Boolean) : string;
@@ -223,7 +223,8 @@ function GetGridsIniFilename : String;
 
 implementation
 
-uses uDateUtils, uRegistryServices, uUtils, uG, uStringUtils, uAppGlobal, uRoomerDefinitions, PrjConst, uFloatUtils;
+uses uDateUtils, uRegistryServices, uUtils, uG, uStringUtils, uAppGlobal, uRoomerDefinitions, PrjConst, uFloatUtils,
+  uReservationStatusDefinitions;
 
 function GetRoomerIniFilename : String;
 begin
@@ -2579,37 +2580,38 @@ function _WeekNum(const TDT:TDateTime) : Word;
  end;
 
 function _StatusToText(status : string) : string;
-var
-  ch : Char;
+//var
+//  ch : Char;
 begin
-  result := 'unknown';
-  if trim(status) = '' then
-    exit;
-  status := UpperCase(status);
-  ch := status[1];
-  case ch of
-    STATUS_NOT_ARRIVED :
-      result := GetTranslatedText('shTx_G_NotArrived'); // 'Not arrived';
-    STATUS_ARRIVED :
-      result := GetTranslatedText('shTx_G_CheckedIn'); // 'Checked in';
-    STATUS_CHECKED_OUT :
-      result := GetTranslatedText('shTx_G_CheckedOut'); // 'Departed';
-    STATUS_WAITING_LIST :
-      result := GetTranslatedText('shTx_G_WaitingList'); // 'Optional booking';
-    STATUS_ALLOTMENT :
-      result := GetTranslatedText('shTx_G_Alotment'); // 'Alotment';
-    STATUS_NO_SHOW :
-      result := GetTranslatedText('shTx_G_NoShow'); // 'No-show';
-    STATUS_BLOCKED :
-      result := GetTranslatedText('shTx_G_Blocked'); // 'Blocked';
-    STATUS_Canceled :
-      result := GetTranslatedText('shTx_G_Cancelled'); // 'Cancelled';
-    STATUS_Tmp1 :
-      result := '[N/A]';
-    STATUS_AWAITING_PAYMENT :
-      result := 'Awaiting payment';
-
-  end;
+  Result := TReservationStatus.FromResStatus(status[1]).AsReadableString;
+//  result := 'unknown';
+//  if trim(status) = '' then
+//    exit;
+//  status := UpperCase(status);
+//  ch := status[1];
+//  case ch of
+//    STATUS_NOT_ARRIVED :
+//      result := GetTranslatedText('shTx_G_NotArrived'); // 'Not arrived';
+//    STATUS_ARRIVED :
+//      result := GetTranslatedText('shTx_G_CheckedIn'); // 'Checked in';
+//    STATUS_CHECKED_OUT :
+//      result := GetTranslatedText('shTx_G_CheckedOut'); // 'Departed';
+//    STATUS_WAITING_LIST :
+//      result := GetTranslatedText('shTx_G_WaitingList'); // 'Optional booking';
+//    STATUS_ALLOTMENT :
+//      result := GetTranslatedText('shTx_G_Alotment'); // 'Alotment';
+//    STATUS_NO_SHOW :
+//      result := GetTranslatedText('shTx_G_NoShow'); // 'No-show';
+//    STATUS_BLOCKED :
+//      result := GetTranslatedText('shTx_G_Blocked'); // 'Blocked';
+//    STATUS_Canceled :
+//      result := GetTranslatedText('shTx_G_Cancelled'); // 'Cancelled';
+//    STATUS_Tmp1 :
+//      result := '[N/A]';
+//    STATUS_AWAITING_PAYMENT :
+//      result := 'Awaiting payment';
+//
+//  end;
 end;
 
 //  constants.Add('shTx_G_DueToArrive', 'Due to arrive');

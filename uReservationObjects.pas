@@ -22,7 +22,7 @@ uses
   , ud
   , cmpRoomerDataSet
   , cmpRoomerConnection
-  , Generics.Collections
+  , Generics.Collections, uReservationStatusDefinitions
   ;
 
 type
