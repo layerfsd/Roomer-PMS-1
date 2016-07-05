@@ -2236,13 +2236,7 @@ end;
 
 function TRoomerDataSet.ActivateNewDataset(const SqlResult: String): TRoomerDataSet;
 begin
-  result := TRoomerDataSet.Create(Owner);
-  result.OfflineMode := OfflineMode;
-  result.RoomerStoreUri := activeRoomerDataSet.RoomerStoreUri;
-  result.RoomerUri := activeRoomerDataSet.RoomerUri;
-  result.OpenApiUri := activeRoomerDataSet.OpenApiUri;
-  result.RoomerEntitiesUri := activeRoomerDataSet.RoomerEntitiesUri;
-  result.RoomerDatasetsUri := activeRoomerDataSet.RoomerDatasetsUri;
+  result := CreateNewDataset;
   result.OpenDataset(SqlResult);
   // AssignToDataset(SqlResult, result);
 end;
