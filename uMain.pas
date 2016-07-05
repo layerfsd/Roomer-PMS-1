@@ -1632,8 +1632,7 @@ const
   PERIOD_GRID_RECTANGLES_WIDTH = 10;
 
   DEFAULT_UNPARSABLE_INT_VALUE: integer = -99999;
-  cGoingStr = '� ';
-
+  cGoingStr = '» ';
   cgrRoom_RoomColumn = 1;
   cgrRoom_RoomTypeColumn = 2;
   cgrRoom_RoomDescriptionColumn = 3;

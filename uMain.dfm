@@ -283,8 +283,6 @@ object frmMain: TfrmMain
           SortSettings.HeaderMirrorColor = 16380385
           SortSettings.HeaderMirrorColorTo = 16182488
           Version = '7.9.1.0'
-          ExplicitLeft = 1
-          ExplicitTop = -2
           ColWidths = (
             47
             49
@@ -441,6 +439,7 @@ object frmMain: TfrmMain
         ImageIndex = 9
         SkinData.CustomColor = False
         SkinData.CustomFont = False
+        ExplicitWidth = 801
         object Panel3: TsPanel
           Left = 0
           Top = 0
@@ -450,6 +449,7 @@ object frmMain: TfrmMain
           BevelOuter = bvNone
           TabOrder = 0
           SkinData.SkinSection = 'TRANSPARENT'
+          ExplicitWidth = 801
           object rgrGroupreportStayType: TsRadioGroup
             Left = 2
             Top = 4
@@ -849,6 +849,10 @@ object frmMain: TfrmMain
         ImageIndex = 2
         SkinData.CustomColor = False
         SkinData.CustomFont = False
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object sLabel2: TsLabel
           Left = 224
           Top = 400
@@ -1311,6 +1315,8 @@ object frmMain: TfrmMain
           OnMoved = splitPeriodMoved
           Color = 6842472
           ParentColor = False
+          ExplicitTop = 159
+          ExplicitWidth = 801
         end
         object pnlPeriodNoRooms: TsPanel
           Left = 0
@@ -1631,17 +1637,29 @@ object frmMain: TfrmMain
         Caption = 'tabFreeRooms'
         SkinData.CustomColor = False
         SkinData.CustomFont = False
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
       end
       object tabDashboard: TsTabSheet
         Caption = 'tabDashboard'
         SkinData.CustomColor = False
         SkinData.CustomFont = False
         SkinData.SkinSection = 'TRANSPARENT'
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
       end
       object tabRateQuery: TsTabSheet
         Caption = 'tabRateQuery'
         SkinData.CustomColor = False
         SkinData.CustomFont = False
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
       end
     end
     object panMainTop: TsPanel
