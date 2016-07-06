@@ -227,7 +227,8 @@ uses
   ufrmReservationExtras in 'StockItems\ufrmReservationExtras.pas',
   uRptDepartures in 'uRptDepartures.pas' {frmDeparturesReport},
   uCurrencyHandler in 'uCurrencyHandler.pas',
-  uFloatUtils in 'RoomerVCLs\Source\uFloatUtils.pas';
+  uFloatUtils in 'RoomerVCLs\Source\uFloatUtils.pas',
+  uRptStockItems in 'uRptStockItems.pas' {frmRptStockItems};
 
 {$R *.RES}
 
