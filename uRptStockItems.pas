@@ -11,7 +11,7 @@ uses
   ppReport, ppComm, ppRelatv, ppDB, ppDBPipe, cxClasses, kbmMemTable, cxPropertiesStore, cxGridLevel,
   cxGridCustomTableView, cxGridTableView, cxGridDBTableView, cxGridCustomView, cxGrid, dxStatusBar, Vcl.StdCtrls,
   Vcl.Mask, sMaskEdit, sCustomComboEdit, sToolEdit, sRadioButton, sGroupBox, sButton, Vcl.ExtCtrls, sPanel,
-  cxGridBandedTableView, cxGridDBBandedTableView;
+  cxGridBandedTableView, cxGridDBBandedTableView, cxCalc, cxTextEdit, cxCalendar;
 
 type
   TfrmRptStockItems = class(TForm)
@@ -36,7 +36,7 @@ type
     cxStyleRepository1: TcxStyleRepository;
     cxStyle1: TcxStyle;
     plStockItems: TppDBPipeline;
-    rtpStockitems: TppReport;
+    rptStockitems: TppReport;
     ppHeaderBand1: TppHeaderBand;
     ppLine1: TppLine;
     ppLabel4: TppLabel;
@@ -48,27 +48,7 @@ type
     rlabUser: TppLabel;
     rLabTimeCreated: TppLabel;
     ppLine11: TppLine;
-    ppLabel1: TppLabel;
-    ppLabel2: TppLabel;
-    ppLabel3: TppLabel;
-    ppLabel7: TppLabel;
-    ppLabel9: TppLabel;
-    ppLabel10: TppLabel;
-    ppLabel11: TppLabel;
-    ppLabel12: TppLabel;
-    ppLabel13: TppLabel;
-    ppLabel14: TppLabel;
     ppDetailBand1: TppDetailBand;
-    ppDBText1: TppDBText;
-    ppDBText2: TppDBText;
-    ppDBText3: TppDBText;
-    ppDBText4: TppDBText;
-    ppDBText5: TppDBText;
-    ppDBText6: TppDBText;
-    ppDBText7: TppDBText;
-    ppDBText8: TppDBText;
-    ppDBText9: TppDBText;
-    ppDBText10: TppDBText;
     ppFooterBand1: TppFooterBand;
     ppSystemVariable1: TppSystemVariable;
     ppLabel8: TppLabel;
@@ -78,16 +58,51 @@ type
     ppParameterList1: TppParameterList;
     kbmStockitemsReport: TkbmMemTable;
     dsStockitemsReport: TDataSource;
-    grStockItemsLevel1: TcxGridLevel;
-    grStockItemsDBBandedTableView1: TcxGridDBBandedTableView;
     grStockItemsDBTableView1: TcxGridDBTableView;
-    grStockItemsDBTableView1Column1: TcxGridDBColumn;
-  private
+    kbmStockItemsRoom: TStringField;
+    kbmStockItemsGuestname: TStringField;
+    kbmStockItemsReservation: TIntegerField;
+    kbmStockItemsCompany: TStringField;
+    kbmStockItemsStockitem: TStringField;
+    kbmStockItemsCount: TIntegerField;
+    kbmStockItemsReservedFrom: TDateField;
+    kbmStockItemsReservedTo: TDateField;
+    grStockItemsDBTableView1Room: TcxGridDBColumn;
+    grStockItemsDBTableView1Guestname: TcxGridDBColumn;
+    grStockItemsDBTableView1Reservation: TcxGridDBColumn;
+    grStockItemsDBTableView1Company: TcxGridDBColumn;
+    grStockItemsDBTableView1Count: TcxGridDBColumn;
+    grStockItemsDBTableView1ReservedFrom: TcxGridDBColumn;
+    grStockItemsDBTableView1ReservedTo: TcxGridDBColumn;
+    btnInvoice: TsButton;
+    pmnuInvoiceMenu: TPopupMenu;
+    mnuRoomInvoice: TMenuItem;
+    mnuGroupInvoice: TMenuItem;
+    kbmStockItemsRoomReservation: TIntegerField;
+    kbmStockItemsDescription: TStringField;
+    grStockItemsDBTableView1Description: TcxGridDBColumn;
+    ppLabel1: TppLabel;
+    ppDBText1: TppDBText;
+    ppLabel2: TppLabel;
+    ppDBText2: TppDBText;
+    ppLabel3: TppLabel;
+    ppDBText3: TppDBText;
+    ppLabel7: TppLabel;
+    ppDBText4: TppDBText;
+    ppLabel9: TppLabel;
+    ppDBText5: TppDBText;
+    ppLabel10: TppLabel;
+    ppDBText6: TppDBText;
+    ppLabel11: TppLabel;
+    ppDBText7: TppDBText;
+    ppLabel12: TppLabel;
+    ppDBText8: TppDBText;
+    procedure mnuGroupInvoiceClick(Sender: TObject);
+    procedure mnuRoomInvoiceClick(Sender: TObject);
     procedure btnExcelClick(Sender: TObject);
     procedure btnProfileClick(Sender: TObject);
     procedure btnRefreshClick(Sender: TObject);
     procedure btnReportClick(Sender: TObject);
-    function ConstructSQL: string;
     procedure dtDateFromCloseUp(Sender: TObject);
     procedure dtDateToCloseUp(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -100,15 +115,15 @@ type
     procedure kbmStockItemsAfterScroll(DataSet: TDataSet);
     procedure ppHeaderBand1BeforePrint(Sender: TObject);
     procedure rbRadioButtonClick(Sender: TObject);
+  private
+    FRefreshingdata: boolean;
     procedure RefreshData;
     procedure SetManualDates(aFrom, aTo: TDate);
     procedure UpdateControls;
-    procedure WndProc(var message: TMessage);
+  protected
+    procedure WndProc(var message: TMessage); override;
     { Private declarations }
   public
-    constructor Create(aOwner: TComponent);
-    destructor Destroy; override;
-    { Public declarations }
   end;
 
 /// <summary>
@@ -130,55 +145,12 @@ uses
   , cmpRoomerDataset
   , uD
   , PrjConst
-  , hData
-  , uAlerts
   , uReservationProfile
   , uRptbViewer
-  ;
+  , uInvoice
+  , uOpenAPICaller;
 
 const
-  cSQL = 'SELECT '+
-          '  co.CompanyID, ' +
-          '  rd.Room, '+
-          '  rd.RoomType, '+
-          '  r.Reservation AS RoomerReservationId, '+
-          '  rd.RoomReservation AS RoomerRoomReservationId, '+
-          '  pe.Name AS GuestName, '+
-          '  r.Customer AS CompanyCode, '+
-          '  r.Name AS CompanyName, '+
-          '  CAST(rr.AvrageRate as DECIMAL(10,3)) AS AverageRoomRate, '+
-          '  ( SELECT cast(rd1.ADate as date)'+
-          '         FROM roomsdate rd1 '+
-          '         WHERE rd1.RoomReservation=rd.RoomReservation '+
-          '               AND (rd1.ResFlag = ''P'') '+
-          '         ORDER BY rd1.ADate LIMIT 1) AS Arrival, '+
-          '  Cast(DATE_ADD((SELECT rd1.ADate '+
-          '              FROM roomsdate rd1 '+
-          '              WHERE rd1.RoomReservation=rd.RoomReservation AND (rd1.ResFlag = ''P'') '+
-          '              ORDER BY rd1.ADate DESC LIMIT 1), '+
-          '            INTERVAL 1 DAY) as Date) AS Departure, '+
-          '  ( SELECT COUNT(id) '+
-          '    FROM persons pe1 '+
-          '    WHERE pe1.RoomReservation=rd.RoomReservation) AS NumGuests, '+
-          '  rr.ExpectedTimeOfArrival as ExpectedTimeOfArrival '+
-          'FROM roomsdate rd '+
-          'JOIN roomreservations rr ON rr.RoomReservation=rd.RoomReservation '+
-          'JOIN reservations r ON r.Reservation=rd.Reservation '+
-          'JOIN persons pe ON pe.RoomReservation=rd.RoomReservation AND pe.MainName=1 '+
-          'JOIN channels ch ON ch.Id=r.Channel, '+
-          'control co '+
-          'WHERE ( SELECT rd1.ADate '+
-          '        FROM roomsdate rd1 '+
-          '        WHERE rd1.RoomReservation=rd.RoomReservation AND (rd1.ResFlag = ''P'') '+
-          '        ORDER BY rd1.ADate LIMIT 1)=rd.ADate '+
-          '      AND (rd.ResFlag = ''P'') '+
-          '      %s '+
-          'GROUP BY rd.aDate, rd.RoomReservation '+
-          'ORDER BY rd.aDate, rd.Room ';
-
-  cSqlForSingleDate = '      AND rd.ADate = ''%s'' ';
-  cSqlForDateRange = '      AND rd.ADate >= ''%s'' AND rd.ADate <= ''%s'' ';
-
   WM_REFRESH_DATA = WM_User + 51;
 
 
@@ -202,13 +174,13 @@ var
 begin
   dateTimeToString(s, 'yyyymmddhhnn', now);
   sFilename := g.qProgramPath + s + '_StockitemsList';
-  ExportGridToExcel(sFilename, grArrivalsList, true, true, true);
+  ExportGridToExcel(sFilename, grStockItems, true, true, true);
   ShellExecute(Handle, 'OPEN', PChar(sFilename + '.xls'), nil, nil, sw_shownormal);
 end;
 
 procedure TfrmRptStockItems.btnProfileClick(Sender: TObject);
 begin
-  if EditReservation(kbmStockitems['RoomerReservationID'], kbmStockitems['RoomerRoomReservationID']) then
+  if EditReservation(kbmStockItemsReservation.Asinteger, kbmStockItemsRoomReservation.AsInteger) then
     postMessage(handle, WM_REFRESH_DATA, 0, 0);
 end;
 
@@ -243,32 +215,6 @@ begin
   end;
 end;
 
-function TfrmRptStockItems.ConstructSQL: string;
-var s : String;
-begin
-  if rbToday.Checked OR rbTomorrow.Checked then
-    s := Format(cSqlForSingleDate, [FormatDateTime('yyyy-mm-dd', dtDateFrom.Date)])
-  else
-    s := Format(cSqlForDateRange, [FormatDateTime('yyyy-mm-dd', dtDateFrom.Date),
-                                   FormatDateTime('yyyy-mm-dd', dtDateTo.Date)]);
-  Result := Format(cSQL, [s]);
-  {$ifdef DEBUG}
-    CopyToClipboard(Result);
-  {$endif}
-end;
-
-constructor TfrmRptStockItems.Create(aOwner: TComponent);
-begin
-  FCurrencyhandler := TCurrencyHandler.Create(g.qNativeCurrency);
-  inherited;
-end;
-
-destructor TfrmRptStockItems.Destroy;
-begin
-  inherited;
-  FCurrencyhandler.Free;
-end;
-
 procedure TfrmRptStockItems.dtDateFromCloseUp(Sender: TObject);
 begin
  if dtDateFrom.Date > dtDateTo.Date then
@@ -286,6 +232,7 @@ begin
   RoomerLanguage.TranslateThisForm(self);
   glb.PerformAuthenticationAssertion(self);
   PlaceFormOnVisibleMonitor(self);
+
 end;
 
 procedure TfrmRptStockItems.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -351,7 +298,7 @@ end;
 
 procedure TfrmRptStockItems.RefreshData;
 var
-  s    : string;
+  lCaller: TInventoriesOpenAPICaller;
   rset1: TRoomerDataset;
 begin
   if NOT btnRefresh.Enabled then exit;
@@ -365,9 +312,14 @@ begin
       FRefreshingdata := True; // UpdateControls still called when updating dataset, despite DisableControls
       rSet1 := CreateNewDataSet;
       try
-        s := ConstructSQL;
 
-        hData.rSet_bySQL(rSet1, s);
+        lCaller := TInventoriesOpenAPICaller.Create;
+        try
+          lCaller.CallStockitemsAsDataset(rSet1, false, 0, 0, True, dtDateFrom.date, dtDateTo.Date);
+        finally
+          lCaller.Free;
+        end;
+
         rSet1.First;
         if not kbmStockItems.Active then
           kbmStockItems.Open;
@@ -380,7 +332,7 @@ begin
 
     finally
       FRefreshingdata := False;
-      kbmArrivalsList.EnableControls;
+      kbmStockItems.EnableControls;
     end;
   finally
     btnRefresh.Enabled := True;
@@ -409,8 +361,11 @@ begin
   else if rbTomorrow.Checked then
     SetManualDates(Now+1, Now+1);
 
-  lDataAvailable := kbmStockitems.Active and NOT kbmStockitems.Eof;
+  lDataAvailable := kbmStockitems.Active and not kbmStockitems.IsEmpty;
   btnProfile.Enabled := lDataAvailable;
+  btnInvoice.Enabled := lDataAvailable;
+  btnReport.Enabled := lDataAvailable;
+  btnExcel.Enabled := lDataAvailable;
 end;
 
 procedure TfrmRptStockItems.WndProc(var message: TMessage);
@@ -419,4 +374,15 @@ begin
     RefreshData;
   inherited WndProc(message);
 end;
+
+procedure TfrmRptStockItems.mnuRoomInvoiceClick(Sender: TObject);
+begin
+  EditInvoice(kbmStockItemsReservation.AsInteger, kbmStockItemsRoomReservation.AsInteger, 0, 0, 0, 0, false, true,false);
+end;
+
+procedure TfrmRptStockItems.mnuGroupInvoiceClick(Sender: TObject);
+begin
+  EditInvoice(kbmStockItemsReservation.AsInteger, 0, 0, 0, 0, 0, false, true,false);
+end;
+
 end.

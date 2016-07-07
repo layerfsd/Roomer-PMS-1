@@ -10,6 +10,7 @@ object frmRptStockItems: TfrmRptStockItems
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
+  KeyPreview = True
   OldCreateOrder = False
   OnCreate = FormCreate
   OnKeyDown = FormKeyDown
@@ -87,10 +88,9 @@ object frmRptStockItems: TfrmRptStockItems
         Width = 105
         Height = 21
         AutoSize = False
-        Color = clWhite
         EditMask = '!99/99/9999;1; '
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = clBlack
+        Font.Color = clWindowText
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -111,10 +111,9 @@ object frmRptStockItems: TfrmRptStockItems
         Width = 105
         Height = 21
         AutoSize = False
-        Color = clWhite
         EditMask = '!99/99/9999;1; '
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = clBlack
+        Font.Color = clWindowText
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -177,8 +176,23 @@ object frmRptStockItems: TfrmRptStockItems
         Caption = 'Report'
         ImageIndex = 69
         Images = DImages.PngImageList1
-        TabOrder = 2
+        TabOrder = 3
         OnClick = btnReportClick
+        SkinData.SkinSection = 'BUTTON'
+      end
+      object btnInvoice: TsButton
+        AlignWithMargins = True
+        Left = 243
+        Top = 3
+        Width = 128
+        Height = 37
+        Align = alLeft
+        Caption = 'Invoice'
+        DropDownMenu = pmnuInvoiceMenu
+        ImageIndex = 62
+        Images = DImages.PngImageList1
+        Style = bsSplitButton
+        TabOrder = 2
         SkinData.SkinSection = 'BUTTON'
       end
     end
@@ -203,30 +217,69 @@ object frmRptStockItems: TfrmRptStockItems
     Align = alClient
     TabOrder = 2
     LookAndFeel.NativeStyle = False
-    ExplicitTop = 146
-    object grStockItemsDBBandedTableView1: TcxGridDBBandedTableView
-      Navigator.Buttons.CustomButtons = <>
-      DataController.Summary.DefaultGroupSummaryItems = <>
-      DataController.Summary.FooterSummaryItems = <>
-      DataController.Summary.SummaryGroups = <>
-      Bands = <
-        item
-        end>
-    end
     object grStockItemsDBTableView1: TcxGridDBTableView
       Navigator.Buttons.CustomButtons = <>
+      DataController.DataSource = dsStockitems
       DataController.Summary.DefaultGroupSummaryItems = <>
       DataController.Summary.FooterSummaryItems = <>
       DataController.Summary.SummaryGroups = <>
-      object grStockItemsDBTableView1Column1: TcxGridDBColumn
+      OptionsData.Deleting = False
+      OptionsData.Editing = False
+      OptionsData.Inserting = False
+      OptionsView.ColumnAutoWidth = True
+      OptionsView.HeaderAutoHeight = True
+      object grStockItemsDBTableView1Room: TcxGridDBColumn
+        DataBinding.FieldName = 'Room'
+        PropertiesClassName = 'TcxTextEditProperties'
+        Properties.Alignment.Horz = taCenter
+        HeaderAlignmentHorz = taCenter
+        Width = 78
+      end
+      object grStockItemsDBTableView1Reservation: TcxGridDBColumn
         DataBinding.FieldName = 'Reservation'
+        PropertiesClassName = 'TcxTextEditProperties'
+        Properties.Alignment.Horz = taCenter
+        HeaderAlignmentHorz = taCenter
+        Width = 78
+      end
+      object grStockItemsDBTableView1Guestname: TcxGridDBColumn
+        DataBinding.FieldName = 'Guestname'
+        Width = 175
+      end
+      object grStockItemsDBTableView1Company: TcxGridDBColumn
+        DataBinding.FieldName = 'Company'
+        Width = 172
+      end
+      object grStockItemsDBTableView1Description: TcxGridDBColumn
+        DataBinding.FieldName = 'Description'
+        Width = 247
+      end
+      object grStockItemsDBTableView1Count: TcxGridDBColumn
+        DataBinding.FieldName = 'Count'
+        PropertiesClassName = 'TcxCalcEditProperties'
+        Properties.Alignment.Horz = taCenter
+        HeaderAlignmentHorz = taCenter
+        Width = 72
+      end
+      object grStockItemsDBTableView1ReservedFrom: TcxGridDBColumn
+        Caption = 'Reserved From'
+        DataBinding.FieldName = 'ReservedFrom'
+        PropertiesClassName = 'TcxDateEditProperties'
+        Properties.Alignment.Horz = taCenter
+        HeaderAlignmentHorz = taCenter
+        Width = 95
+      end
+      object grStockItemsDBTableView1ReservedTo: TcxGridDBColumn
+        Caption = 'Reserved To'
+        DataBinding.FieldName = 'ReservedTo'
+        PropertiesClassName = 'TcxDateEditProperties'
+        Properties.Alignment.Horz = taCenter
+        HeaderAlignmentHorz = taCenter
+        Width = 92
       end
     end
     object lvStockitemsLevel1: TcxGridLevel
-      GridView = grStockItemsDBBandedTableView1
-      object grStockItemsLevel1: TcxGridLevel
-        GridView = grStockItemsDBTableView1
-      end
+      GridView = grStockItemsDBTableView1
     end
   end
   object FormStore: TcxPropertiesStore
@@ -246,15 +299,10 @@ object frmRptStockItems: TfrmRptStockItems
     Top = 358
   end
   object kbmStockItems: TkbmMemTable
-    Active = True
     DesignActivation = True
     AttachedAutoRefresh = True
     AttachMaxCount = 1
-    FieldDefs = <
-      item
-        Name = 'RoomerRoomReservationID'
-        DataType = ftInteger
-      end>
+    FieldDefs = <>
     IndexDefs = <>
     SortOptions = []
     PersistentBackup = False
@@ -270,6 +318,40 @@ object frmRptStockItems: TfrmRptStockItems
     AfterScroll = kbmStockItemsAfterScroll
     Left = 336
     Top = 287
+    object kbmStockItemsRoom: TStringField
+      FieldName = 'Room'
+    end
+    object kbmStockItemsGuestname: TStringField
+      FieldName = 'Guestname'
+      Size = 100
+    end
+    object kbmStockItemsReservation: TIntegerField
+      FieldName = 'Reservation'
+    end
+    object kbmStockItemsRoomReservation: TIntegerField
+      FieldName = 'RoomReservation'
+    end
+    object kbmStockItemsCompany: TStringField
+      FieldName = 'Company'
+      Size = 100
+    end
+    object kbmStockItemsStockitem: TStringField
+      FieldName = 'Stockitem'
+      Size = 30
+    end
+    object kbmStockItemsCount: TIntegerField
+      FieldName = 'Count'
+    end
+    object kbmStockItemsReservedFrom: TDateField
+      FieldName = 'ReservedFrom'
+    end
+    object kbmStockItemsReservedTo: TDateField
+      FieldName = 'ReservedTo'
+    end
+    object kbmStockItemsDescription: TStringField
+      FieldName = 'Description'
+      Size = 45
+    end
   end
   object dsStockitems: TDataSource
     DataSet = kbmStockItems
@@ -295,16 +377,85 @@ object frmRptStockItems: TfrmRptStockItems
     Left = 120
     Top = 283
     object plStockItemsppField1: TppField
+      FieldAlias = 'Room'
+      FieldName = 'Room'
+      FieldLength = 20
+      DisplayWidth = 20
+      Position = 0
+    end
+    object plStockItemsppField2: TppField
+      FieldAlias = 'Guestname'
+      FieldName = 'Guestname'
+      FieldLength = 100
+      DisplayWidth = 100
+      Position = 1
+    end
+    object plStockItemsppField3: TppField
       Alignment = taRightJustify
-      FieldAlias = 'RoomerRoomReservationID'
-      FieldName = 'RoomerRoomReservationID'
+      FieldAlias = 'Reservation'
+      FieldName = 'Reservation'
       FieldLength = 0
       DataType = dtInteger
       DisplayWidth = 10
-      Position = 0
+      Position = 2
+    end
+    object plStockItemsppField4: TppField
+      Alignment = taRightJustify
+      FieldAlias = 'RoomReservation'
+      FieldName = 'RoomReservation'
+      FieldLength = 0
+      DataType = dtInteger
+      DisplayWidth = 10
+      Position = 3
+    end
+    object plStockItemsppField5: TppField
+      FieldAlias = 'Company'
+      FieldName = 'Company'
+      FieldLength = 100
+      DisplayWidth = 100
+      Position = 4
+    end
+    object plStockItemsppField6: TppField
+      FieldAlias = 'Stockitem'
+      FieldName = 'Stockitem'
+      FieldLength = 30
+      DisplayWidth = 30
+      Position = 5
+    end
+    object plStockItemsppField7: TppField
+      Alignment = taRightJustify
+      FieldAlias = 'Count'
+      FieldName = 'Count'
+      FieldLength = 0
+      DataType = dtInteger
+      DisplayWidth = 10
+      Position = 6
+    end
+    object plStockItemsppField8: TppField
+      FieldAlias = 'ReservedFrom'
+      FieldName = 'ReservedFrom'
+      FieldLength = 0
+      DataType = dtDate
+      DisplayWidth = 10
+      Position = 7
+    end
+    object plStockItemsppField9: TppField
+      FieldAlias = 'ReservedTo'
+      FieldName = 'ReservedTo'
+      FieldLength = 0
+      DataType = dtDate
+      DisplayWidth = 10
+      Position = 8
+    end
+    object plStockItemsppField10: TppField
+      FieldAlias = 'Description'
+      FieldName = 'Description'
+      FieldLength = 45
+      DisplayWidth = 45
+      Position = 9
     end
   end
-  object rtpStockitems: TppReport
+  object rptStockitems: TppReport
     AutoStop = False
     DataPipeline = plStockItems
     PassSetting = psTwoPass
@@ -360,7 +511,7 @@ object frmRptStockItems: TfrmRptStockItems
       BeforePrint = ppHeaderBand1BeforePrint
       Background.Brush.Style = bsClear
       mmBottomOffset = 0
-      mmHeight = 29633
+      mmHeight = 29104
       mmPrintPosition = 0
       object ppLine1: TppLine
         UserName = 'Line1'
@@ -368,14 +519,14 @@ object frmRptStockItems: TfrmRptStockItems
         Weight = 0.750000000000000000
         mmHeight = 1588
         mmLeft = 0
-        mmTop = 29369
+        mmTop = 27516
         mmWidth = 197300
         BandType = 0
         LayerName = Foreground
       end
       object ppLabel4: TppLabel
         UserName = 'Label4'
-        Caption = 'Arrivals Report'
+        Caption = 'Stockitems Report'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clBlack
         Font.Name = 'Arial'
@@ -385,7 +536,7 @@ object frmRptStockItems: TfrmRptStockItems
         mmHeight = 7535
         mmLeft = 2646
         mmTop = 529
-        mmWidth = 45508
+        mmWidth = 56049
         BandType = 0
         LayerName = Foreground
       end
@@ -525,18 +676,19 @@ object frmRptStockItems: TfrmRptStockItems
         Font.Name = 'Arial'
         Font.Size = 9
         Font.Style = []
+        TextAlignment = taCentered
         Transparent = True
-        mmHeight = 3704
-        mmLeft = 2646
-        mmTop = 23813
-        mmWidth = 10054
+        mmHeight = 3598
+        mmLeft = 2910
+        mmTop = 18785
+        mmWidth = 12171
         BandType = 0
         LayerName = Foreground
       end
       object ppLabel2: TppLabel
         UserName = 'Label2'
         AutoSize = False
-        Caption = 'GuestName'
+        Caption = 'Guestname'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clBlack
         Font.Name = 'Arial'
@@ -544,27 +696,26 @@ object frmRptStockItems: TfrmRptStockItems
         Font.Style = []
         Transparent = True
         mmHeight = 3704
-        mmLeft = 15081
-        mmTop = 23813
-        mmWidth = 23019
+        mmLeft = 34925
+        mmTop = 18785
+        mmWidth = 23813
         BandType = 0
         LayerName = Foreground
       end
       object ppLabel3: TppLabel
         UserName = 'Label3'
         AutoSize = False
-        Caption = 'Res ID'
+        Caption = 'Reservation'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clBlack
         Font.Name = 'Arial'
         Font.Size = 9
         Font.Style = []
-        TextAlignment = taRightJustified
         Transparent = True
-        mmHeight = 3598
-        mmLeft = 46302
-        mmTop = 23813
-        mmWidth = 14817
+        mmHeight = 3704
+        mmLeft = 16140
+        mmTop = 18785
+        mmWidth = 17727
         BandType = 0
         LayerName = Foreground
       end
@@ -579,16 +730,16 @@ object frmRptStockItems: TfrmRptStockItems
         Font.Style = []
         Transparent = True
         mmHeight = 3704
-        mmLeft = 61913
-        mmTop = 23813
-        mmWidth = 29104
+        mmLeft = 72496
+        mmTop = 18785
+        mmWidth = 20902
         BandType = 0
         LayerName = Foreground
       end
       object ppLabel9: TppLabel
         UserName = 'Label9'
         AutoSize = False
-        Caption = 'Arrival'
+        Caption = 'Description'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clBlack
         Font.Name = 'Arial'
@@ -596,97 +747,65 @@ object frmRptStockItems: TfrmRptStockItems
         Font.Style = []
         Transparent = True
         mmHeight = 3704
-        mmLeft = 92340
-        mmTop = 23813
-        mmWidth = 15346
+        mmLeft = 110331
+        mmTop = 18785
+        mmWidth = 22225
         BandType = 0
         LayerName = Foreground
       end
       object ppLabel10: TppLabel
         UserName = 'Label10'
         AutoSize = False
-        Caption = 'Departure'
+        Caption = 'Count'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clBlack
         Font.Name = 'Arial'
         Font.Size = 9
         Font.Style = []
+        TextAlignment = taCentered
         Transparent = True
-        mmHeight = 3704
-        mmLeft = 109273
-        mmTop = 23813
-        mmWidth = 19050
+        mmHeight = 3598
+        mmLeft = 143404
+        mmTop = 18785
+        mmWidth = 10054
         BandType = 0
         LayerName = Foreground
       end
       object ppLabel11: TppLabel
         UserName = 'Label11'
         AutoSize = False
-        Caption = 'Roomtype'
+        Caption = 'Reserved From'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clBlack
         Font.Name = 'Arial'
         Font.Size = 9
         Font.Style = []
+        TextAlignment = taCentered
         Transparent = True
-        mmHeight = 3704
-        mmLeft = 129117
-        mmTop = 23813
-        mmWidth = 14552
+        WordWrap = True
+        mmHeight = 8202
+        mmLeft = 155046
+        mmTop = 18785
+        mmWidth = 18785
         BandType = 0
         LayerName = Foreground
       end
       object ppLabel12: TppLabel
         UserName = 'Label12'
         AutoSize = False
-        Caption = 'Guests'
+        Caption = 'Reserved To'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clBlack
         Font.Name = 'Arial'
         Font.Size = 9
         Font.Style = []
-        TextAlignment = taRightJustified
+        TextAlignment = taCentered
         Transparent = True
-        mmHeight = 3598
-        mmLeft = 144727
-        mmTop = 23813
-        mmWidth = 11377
-        BandType = 0
-        LayerName = Foreground
-      end
-      object ppLabel13: TppLabel
-        UserName = 'Label13'
-        AutoSize = False
-        Caption = 'Avg rate'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clBlack
-        Font.Name = 'Arial'
-        Font.Size = 9
-        Font.Style = []
-        TextAlignment = taRightJustified
-        Transparent = True
-        mmHeight = 3598
-        mmLeft = 157163
-        mmTop = 23813
-        mmWidth = 18785
-        BandType = 0
-        LayerName = Foreground
-      end
-      object ppLabel14: TppLabel
-        UserName = 'Label14'
-        AutoSize = False
-        Caption = 'Arrival time'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clBlack
-        Font.Name = 'Arial'
-        Font.Size = 9
-        Font.Style = []
-        TextAlignment = taRightJustified
-        Transparent = True
-        mmHeight = 3598
-        mmLeft = 177536
-        mmTop = 23813
-        mmWidth = 16933
+        WordWrap = True
+        mmHeight = 8202
+        mmLeft = 177800
+        mmTop = 18785
+        mmWidth = 17727
         BandType = 0
         LayerName = Foreground
       end
@@ -696,7 +815,7 @@ object frmRptStockItems: TfrmRptStockItems
       Background2.Brush.Style = bsClear
       PrintHeight = phDynamic
       mmBottomOffset = 0
-      mmHeight = 7673
+      mmHeight = 5292
       mmPrintPosition = 0
       object ppDBText1: TppDBText
         UserName = 'DBText1'
@@ -707,18 +826,19 @@ object frmRptStockItems: TfrmRptStockItems
         Font.Name = 'Arial'
         Font.Size = 9
         Font.Style = []
+        TextAlignment = taCentered
         Transparent = True
         DataPipelineName = 'plStockItems'
-        mmHeight = 3704
+        mmHeight = 3598
         mmLeft = 2910
         mmTop = 794
-        mmWidth = 9790
+        mmWidth = 12171
         BandType = 4
         LayerName = Foreground
       end
       object ppDBText2: TppDBText
         UserName = 'DBText2'
-        DataField = 'GuestName'
+        DataField = 'Guestname'
         DataPipeline = plStockItems
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clBlack
@@ -728,35 +848,34 @@ object frmRptStockItems: TfrmRptStockItems
         Transparent = True
         DataPipelineName = 'plStockItems'
         mmHeight = 3704
-        mmLeft = 15081
+        mmLeft = 34925
         mmTop = 794
-        mmWidth = 30427
+        mmWidth = 36513
         BandType = 4
         LayerName = Foreground
       end
       object ppDBText3: TppDBText
         UserName = 'DBText3'
-        DataField = 'RoomerReservationID'
+        DataField = 'Reservation'
         DataPipeline = plStockItems
-        DisplayFormat = '#,0;-#,0'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clBlack
         Font.Name = 'Arial'
         Font.Size = 9
         Font.Style = []
-        TextAlignment = taRightJustified
+        TextAlignment = taCentered
         Transparent = True
         DataPipelineName = 'plStockItems'
         mmHeight = 3598
-        mmLeft = 46302
+        mmLeft = 16140
         mmTop = 794
-        mmWidth = 14817
+        mmWidth = 17727
         BandType = 4
         LayerName = Foreground
       end
       object ppDBText4: TppDBText
         UserName = 'DBText4'
-        DataField = 'CompanyCode'
+        DataField = 'Company'
         DataPipeline = plStockItems
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clBlack
@@ -766,15 +885,15 @@ object frmRptStockItems: TfrmRptStockItems
         Transparent = True
         DataPipelineName = 'plStockItems'
         mmHeight = 3704
-        mmLeft = 61913
+        mmLeft = 72496
         mmTop = 794
-        mmWidth = 29104
+        mmWidth = 37042
         BandType = 4
         LayerName = Foreground
       end
       object ppDBText5: TppDBText
         UserName = 'DBText5'
-        DataField = 'Arrival'
+        DataField = 'Description'
         DataPipeline = plStockItems
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clBlack
@@ -784,104 +903,68 @@ object frmRptStockItems: TfrmRptStockItems
         Transparent = True
         DataPipelineName = 'plStockItems'
         mmHeight = 3704
-        mmLeft = 92340
+        mmLeft = 110331
         mmTop = 794
-        mmWidth = 15346
+        mmWidth = 31750
         BandType = 4
         LayerName = Foreground
       end
       object ppDBText6: TppDBText
         UserName = 'DBText6'
-        DataField = 'Departure'
+        DataField = 'Count'
         DataPipeline = plStockItems
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clBlack
         Font.Name = 'Arial'
         Font.Size = 9
         Font.Style = []
+        TextAlignment = taCentered
         Transparent = True
         DataPipelineName = 'plStockItems'
-        mmHeight = 3704
-        mmLeft = 109273
+        mmHeight = 3598
+        mmLeft = 143404
         mmTop = 794
-        mmWidth = 19050
+        mmWidth = 10054
         BandType = 4
         LayerName = Foreground
       end
       object ppDBText7: TppDBText
         UserName = 'DBText7'
-        DataField = 'Roomtype'
+        DataField = 'ReservedFrom'
         DataPipeline = plStockItems
+        DisplayFormat = 'mm/dd/yy'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clBlack
         Font.Name = 'Arial'
         Font.Size = 9
         Font.Style = []
-        Transparent = True
-        DataPipelineName = 'plStockItems'
-        mmHeight = 3704
-        mmLeft = 129117
-        mmTop = 794
-        mmWidth = 14552
-        BandType = 4
-        LayerName = Foreground
-      end
-      object ppDBText8: TppDBText
-        UserName = 'DBText8'
-        DataField = 'NumGuests'
-        DataPipeline = plStockItems
-        DisplayFormat = '#,0;-#,0'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clBlack
-        Font.Name = 'Arial'
-        Font.Size = 9
-        Font.Style = []
-        TextAlignment = taRightJustified
+        TextAlignment = taCentered
         Transparent = True
         DataPipelineName = 'plStockItems'
         mmHeight = 3598
-        mmLeft = 144727
-        mmTop = 794
-        mmWidth = 11377
-        BandType = 4
-        LayerName = Foreground
-      end
-      object ppDBText9: TppDBText
-        UserName = 'DBText9'
-        DataField = 'AverageRoomRate'
-        DataPipeline = plStockItems
-        DisplayFormat = '#,0.00;-#,0.00'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clBlack
-        Font.Name = 'Arial'
-        Font.Size = 9
-        Font.Style = []
-        TextAlignment = taRightJustified
-        Transparent = True
-        DataPipelineName = 'plStockItems'
-        mmHeight = 3598
-        mmLeft = 157163
+        mmLeft = 155046
         mmTop = 794
         mmWidth = 18785
         BandType = 4
         LayerName = Foreground
       end
-      object ppDBText10: TppDBText
-        UserName = 'DBText10'
-        DataField = 'ExpectedTimeOfArrival'
+      object ppDBText8: TppDBText
+        UserName = 'DBText8'
+        DataField = 'ReservedTo'
         DataPipeline = plStockItems
+        DisplayFormat = 'mm/dd/yy'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clBlack
         Font.Name = 'Arial'
         Font.Size = 9
         Font.Style = []
-        TextAlignment = taRightJustified
+        TextAlignment = taCentered
         Transparent = True
         DataPipelineName = 'plStockItems'
         mmHeight = 3598
-        mmLeft = 177536
+        mmLeft = 177271
         mmTop = 794
-        mmWidth = 16933
+        mmWidth = 18785
         BandType = 4
         LayerName = Foreground
       end
@@ -954,8 +1037,49 @@ object frmRptStockItems: TfrmRptStockItems
     AttachMaxCount = 1
     FieldDefs = <
       item
-        Name = 'RoomerRoomReservationID'
+        Name = 'Room'
+        DataType = ftString
+        Size = 20
+      end
+      item
+        Name = 'Guestname'
+        DataType = ftString
+        Size = 100
+      end
+      item
+        Name = 'Reservation'
         DataType = ftInteger
+      end
+      item
+        Name = 'RoomReservation'
+        DataType = ftInteger
+      end
+      item
+        Name = 'Company'
+        DataType = ftString
+        Size = 100
+      end
+      item
+        Name = 'Stockitem'
+        DataType = ftString
+        Size = 30
+      end
+      item
+        Name = 'Count'
+        DataType = ftInteger
+      end
+      item
+        Name = 'ReservedFrom'
+        DataType = ftDate
+      end
+      item
+        Name = 'ReservedTo'
+        DataType = ftDate
+      end
+      item
+        Name = 'Description'
+        DataType = ftString
+        Size = 45
       end>
     IndexDefs = <>
     SortOptions = []
@@ -971,10 +1095,60 @@ object frmRptStockItems: TfrmRptStockItems
     LocaleID = 1024
     Left = 72
     Top = 335
+    object kbmStockItemsReportRoom: TStringField
+      FieldName = 'Room'
+    end
+    object kbmStockItemsReportGuestname: TStringField
+      FieldName = 'Guestname'
+      Size = 100
+    end
+    object kbmStockItemsReportReservation: TIntegerField
+      FieldName = 'Reservation'
+    end
+    object kbmStockItemsReportRoomReservation: TIntegerField
+      FieldName = 'RoomReservation'
+    end
+    object kbmStockItemsReportCompany: TStringField
+      FieldName = 'Company'
+      Size = 100
+    end
+    object kbmStockItemsReportStockitem: TStringField
+      FieldName = 'Stockitem'
+      Size = 30
+    end
+    object kbmStockItemsReportCount: TIntegerField
+      FieldName = 'Count'
+    end
+    object kbmStockItemsReportReservedFrom: TDateField
+      FieldName = 'ReservedFrom'
+    end
+    object kbmStockItemsReportReservedTo: TDateField
+      FieldName = 'ReservedTo'
+    end
+    object kbmStockItemsReportDescription: TStringField
+      FieldName = 'Description'
+      Size = 45
+    end
   end
   object dsStockitemsReport: TDataSource
     DataSet = kbmStockitemsReport
     Left = 72
     Top = 383
+  end
+  object pmnuInvoiceMenu: TPopupMenu
+    Images = DImages.cxSmallImagesFlat
+    Left = 383
+    Top = 90
+    object mnuRoomInvoice: TMenuItem
+      Caption = 'Room Invoice'
+      Default = True
+      ImageIndex = 62
+      OnClick = mnuRoomInvoiceClick
+    end
+    object mnuGroupInvoice: TMenuItem
+      Caption = 'Group Invoice'
+      ImageIndex = 60
+      OnClick = mnuGroupInvoiceClick
+    end
   end
 end

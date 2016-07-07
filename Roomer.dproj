@@ -748,6 +748,7 @@
             <Form>frmRptStockItems</Form>
             <FormType>dfm</FormType>
         </DCCReference>
+        <DCCReference Include="OpenAPI\uOpenAPICaller.pas"/>
         <None Include="Roomer.todo"/>
         <None Include="notes.txt"/>
         <None Include="Roomer.inc"/>

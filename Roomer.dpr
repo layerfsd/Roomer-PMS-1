@@ -228,7 +228,8 @@ uses
   uRptDepartures in 'uRptDepartures.pas' {frmDeparturesReport},
   uCurrencyHandler in 'uCurrencyHandler.pas',
   uFloatUtils in 'RoomerVCLs\Source\uFloatUtils.pas',
-  uRptStockItems in 'uRptStockItems.pas' {frmRptStockItems};
+  uRptStockItems in 'uRptStockItems.pas' {frmRptStockItems},
+  uOpenAPICaller in 'OpenAPI\uOpenAPICaller.pas';
 
 {$R *.RES}
 
