@@ -2,10 +2,9 @@ object FrmSelectCloudConfiguration: TFrmSelectCloudConfiguration
   Left = 0
   Top = 0
   BorderIcons = []
-  BorderStyle = bsDialog
   Caption = 'Select Cloud Configuration'
-  ClientHeight = 239
-  ClientWidth = 715
+  ClientHeight = 72
+  ClientWidth = 481
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -18,8 +17,8 @@ object FrmSelectCloudConfiguration: TFrmSelectCloudConfiguration
   PixelsPerInch = 96
   TextHeight = 13
   object sLabel1: TsLabel
-    Left = 128
-    Top = 61
+    Left = 16
+    Top = 13
     Width = 186
     Height = 16
     Alignment = taRightJustify
@@ -32,16 +31,15 @@ object FrmSelectCloudConfiguration: TFrmSelectCloudConfiguration
     Font.Style = []
   end
   object cbxEnvironment: TsComboBox
-    Left = 320
-    Top = 58
+    Left = 208
+    Top = 10
     Width = 265
     Height = 24
     Alignment = taLeftJustify
     VerticalAlignment = taAlignTop
     Style = csDropDownList
-    Color = clWhite
     Font.Charset = DEFAULT_CHARSET
-    Font.Color = clBlack
+    Font.Color = clWindowText
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = []
@@ -51,8 +49,8 @@ object FrmSelectCloudConfiguration: TFrmSelectCloudConfiguration
     OnChange = cbxEnvironmentChange
   end
   object btnOk: TsButton
-    Left = 480
-    Top = 101
+    Left = 257
+    Top = 40
     Width = 105
     Height = 25
     Caption = 'OK'
@@ -65,6 +63,22 @@ object FrmSelectCloudConfiguration: TFrmSelectCloudConfiguration
     ModalResult = 1
     ParentFont = False
     TabOrder = 1
+  end
+  object sButton1: TsButton
+    Left = 368
+    Top = 40
+    Width = 105
+    Height = 25
+    Cancel = True
+    Caption = 'Cancel'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -13
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ModalResult = 2
+    ParentFont = False
+    TabOrder = 2
   end
   object StoreMain: TcxPropertiesStore
     Active = False
@@ -85,7 +99,7 @@ object FrmSelectCloudConfiguration: TFrmSelectCloudConfiguration
       end>
     StorageName = 'Software\Roomer\FormStatus\SelectEnvironment2'
     StorageType = stRegistry
-    Left = 144
-    Top = 113
+    Left = 32
+    Top = 41
   end
 end

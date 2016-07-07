@@ -803,17 +803,6 @@ function GenerateProformaInvoiceNumber: Integer;
 
 var
   PROFORMA_INVOICE_NUMBER: Integer;
-
-{$IFDEF rmLOCALRESOURCE}
-
-  const RoomerOpenAPIBase: String = 'http://localhost';
-        RoomerBase: String = 'http://localhost';
-        RoomerStoreBase: String = 'http://localhost';
-        RoomerBasePort: String = '8080';
-        RoomerOpenApiBasePort: String = '8080';
-        RoomerStoreBasePort: String = '8080';
-
-{$ELSE}
 {$IFDEF rmROOMERSSL}
 
   const RoomerBase: String = 'https://secure.roomercloud.net';
@@ -832,8 +821,6 @@ var
 
   const RoomerStoreBase: String = 'http://store.roomercloud.net';
         RoomerStoreBasePort: String = '8080';
-
-{$ENDIF}
 
 
 var
@@ -992,7 +979,7 @@ begin
       _RoomerOpenApiBase := ReadString('Cloud', 'RoomerOpenAPIBase', RoomerOpenAPIBase);
       _RoomerOpenApiBasePort := ReadString('Cloud', 'RoomerOpenApiPort', RoomerOpenApiBasePort);
 
-      RoomerOpenApiUri := _RoomerOpenApiBase + ':' + _RoomerOpenApiBasePort + '/roomer/openAPI/REST/';
+      RoomerOpenApiUri := _RoomerOpenApiBase + ':' + _RoomerOpenApiBasePort + ReadString('Cloud', 'RoomerOpenApiRestPath', '/roomer/openAPI/REST/');
       RoomerStoreUri := _RoomerStoreBase + ':' + _RoomerStoreBasePort + '/services/';
 
       RoomerApiUri := _RoomerBase + ':' + _RoomerBasePort + '/services/';
@@ -1007,6 +994,7 @@ procedure Td.SelectCloudConfig;
 var
   files: TStrings;
   path: String;
+  lfile: string;
 begin
   files := tstringList.Create;
   try
@@ -1021,7 +1009,13 @@ begin
       if files.Count = 1 then
         SetCloudConfigByFile(files[0])
       else
-        SetCloudConfigByFile(SelectConfigurationEnvironment(files));
+      begin
+        lfile := SelectConfigurationEnvironment(files);
+        if lFile.IsEmpty then
+          Application.Terminate
+        else
+          SetCloudConfigByFile(lFile);
+      end;
     end;
   finally
     files.Free;
