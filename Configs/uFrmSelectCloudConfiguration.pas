@@ -12,6 +12,7 @@ type
     cbxEnvironment: TsComboBox;
     btnOk: TsButton;
     StoreMain: TcxPropertiesStore;
+    sButton1: TsButton;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure cbxEnvironmentChange(Sender: TObject);
   protected
@@ -39,8 +40,10 @@ begin
   _FrmSelectCloudConfiguration := TFrmSelectCloudConfiguration.Create(nil);
   try
     _FrmSelectCloudConfiguration.PrepareList(files);
-    _FrmSelectCloudConfiguration.ShowModal;
-    result := files[_FrmSelectCloudConfiguration.cbxEnvironment.ItemIndex];
+    if _FrmSelectCloudConfiguration.ShowModal = mrOK then
+      result := files[_FrmSelectCloudConfiguration.cbxEnvironment.ItemIndex]
+    else
+      Result := '';
   finally
     FreeAndNil(_FrmSelectCloudConfiguration);
   end;
