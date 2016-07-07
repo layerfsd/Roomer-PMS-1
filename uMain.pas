@@ -1147,7 +1147,6 @@ type
 
     OneDayFont: string;
     OneDayGridFont: TFont;
-    TempGridFont: TFont;
 
     PeriodViewSelectedCol: integer;
     PeriodViewSelectedRow: integer;
@@ -1415,8 +1414,6 @@ type
     procedure ClearGroupList;
     procedure ClearFreeRooms;
     procedure ClearRoomTypeCount;
-    // function FilteredFloors: TSet_Of_Integer;
-    // function FilteredLocations: TSet_Of_Integer;
     function GroupFiltered(Reservation: integer): boolean;
     procedure DrawRectanglOnCanvas(_Canvas: TCanvas; iColor: integer; chRect: TRect);
     function getChannelColor(Reservation: TSingleReservations): integer;
@@ -1518,6 +1515,7 @@ type
     procedure NullGlobals;
     procedure RefreshPeriodView;
     procedure FormatToReservationAttrib(aCanvas: TCanvas; const aAttrib: recStatusAttr);
+    procedure ClearObjectsFromGrid(aGrid: TAdvStringGrid);
 {$IFDEF USE_JCL}
     procedure LogException(ExceptObj: TObject; ExceptAddr: Pointer; IsOS: boolean);
 {$ENDIF}
@@ -2604,7 +2602,8 @@ end;
 // ?! - Kanski �tti a� vista �etta fyrir hvern notanda
 // ------------------------------------------------------------------------------
 procedure TfrmMain.RestoreCurrentFont;
-
+var
+  TempGridFont: TFont;
 begin
   with TRoomerRegistryIniFile.Create(AppInifile) do
     try
@@ -2616,15 +2615,19 @@ begin
         grOneDayRooms.Font.name := OneDayGridFont.name;
         grOneDayRooms.Font.size := OneDayGridFont.size;
       finally
-        OneDayGridFont.Free;
+        FreeAndNil(OneDayGridFont);
       end;
 
       OneDayFont := readString('Grid5dayFonts', grPeriodRooms.name, '');
 
       TempGridFont := _StrToFont(OneDayFont);
+      try
+        grPeriodRooms.Font.name := TempGridFont.name;
+        grPeriodRooms.Font.size := TempGridFont.size;
 
-      grPeriodRooms.Font.name := TempGridFont.name;
-      grPeriodRooms.Font.size := TempGridFont.size;
+      finally
+        TempGridFont.Free;
+      end;
 
       grPeriodRooms.FixedFont := grPeriodRooms.Font;
       grPeriodRooms.Canvas.Font := grPeriodRooms.Font;
@@ -2815,7 +2818,7 @@ begin
   _InvoiceIndex := 0;
   FReservationsModel := TReservationsModel.Create;
 
-
+  zOneDay_stlTakenTypes := TStringList.Create;
 {$IFNDEF DEBUG}
   __TimingResult.Visible := false;
 {$ELSE}
@@ -2946,6 +2949,8 @@ begin
     freeandNil(ActivityLogGetThreadedData);
   Except
   end;
+
+  zOneDay_stlTakenTypes.Free;
 end;
 
 procedure TfrmMain.SetDateWithoutEvents(aDate: TdateTime);
@@ -3084,7 +3089,8 @@ end;
 
 procedure TfrmMain.OnRefreshMessagesRequest(var Msg: TMessage);
 begin
-  RefreshMessagesOnUI;
+  if ComponentRunning(Self) then
+    RefreshMessagesOnUI;
 end;
 
 procedure TfrmMain.OnViewReservationHandlerClick(rri: RecRRInfo);
@@ -3812,12 +3818,24 @@ begin
   FormResize(Sender);
 end;
 
+procedure TfrmMain.ClearObjectsFromGrid(aGrid: TAdvStringGrid);
+var
+  r, c: integer;
+begin
+  for r := 0 to aGrid.RowCount-1 do
+   for c := 0 to aGrid.ColCount-1 do
+    aGrid.Objects[c, r].Free;
+end;
+
 procedure TfrmMain.RemoveHandlersAndObjects;
 begin
   try
     NillifyEventHandlers(grOneDayRooms);
     NillifyEventHandlers(grPeriodRooms);
     NillifyEventHandlers(grPeriodRooms_NO);
+
+    ClearobjectsFromGrid(grPeriodRooms);
+    ClearobjectsFromGrid(grPeriodRooms_NO);
     // barinn.SaveToRegistry('Software\Roomer\PMS\Barinn\' + g.qUser);
     Try
       ug.CloseApplication;
@@ -3830,10 +3848,10 @@ begin
     FAppClosing := true;
     FReservationsModel.Free;
 
-    try
-      ClearStringGridFromTo(grOneDayRooms, 1, 1);
-    except
-    end;
+//    try
+//      ClearStringGridFromTo(grOneDayRooms, 1, 1);
+//    except
+//    end;
 
     try
       ClearFreeRooms;
@@ -5680,19 +5698,11 @@ var
   ii: Integer;
 
 begin
-  if assigned(zOneDay_stlTakenTypes) then
-  begin
-    try
-      zOneDay_stlTakenTypes.Free;
-    except
-    end;
-    zOneDay_stlTakenTypes := nil;
-  end;
 
   FreeRoomsFilterOn := FreeRoomsFiltered;
   PrepareFilterOrSearchDisplay(FreeRoomsFilterOn);
 
-  zOneDay_stlTakenTypes := TStringList.Create;
+  zOneDay_stlTakenTypes.Clear;
   fillchar(zOneDay_bSelectedNonRooms, sizeof(zOneDay_bSelectedNonRooms), -1);
 
   // --
@@ -8511,6 +8521,7 @@ begin
   begin
     for ii := grPeriodRooms.FixedRows to grPeriodRooms.RowCount - 2 do
     begin
+      grPeriodRooms.Objects[i, ii].Free;
       grPeriodRooms.Objects[i, ii] := TresCell.Create(-1, -1, -1, -1, -1, -1, false, '', '', '', '', false, 1, '', '',
         '', '', '', '', '', '', '', 0.00, 0.00,
         false, false, 0, '', false, false, '', 0, 0, 0, '', '', 0, 0);
@@ -8572,11 +8583,7 @@ var
       for iRow := Grid.FixedRows to Grid.RowCount - 1 do
       begin
         Grid.cells[iCol, iRow] := '';
-        if (Grid.Objects[iCol, iRow] IS TresCell) then
-          try
-            (Grid.Objects[iCol, iRow] AS TresCell).Free;
-          except
-          end;
+        Grid.Objects[iCol, iRow].Free;
         Grid.Objects[iCol, iRow] := TresCell.Create(-1, -1, -1, -1, -1, -1, false, '', '', '', '', false, 1, '', '', '',
           '', '', '', '', '', '', 0.00, 0.00,
           false, false, 0, '', false, false, '', 0, 0, 0, '', '', 0, 0);
@@ -8594,6 +8601,7 @@ var
           for iRow := 0 to Grid.RowCount - 1 do
           begin
             Grid.cells[iCol + 1, iRow] := Grid.cells[iCol, iRow];
+            Grid.Objects[iCol + 1, iRow].Free;
             Grid.Objects[iCol + 1, iRow] := Grid.Objects[iCol, iRow];
             Grid.cells[iCol, iRow] := '';
             Grid.Objects[iCol, iRow] := nil;
@@ -8601,6 +8609,7 @@ var
         for iRow := 0 to Grid.RowCount - 1 do
         begin
           Grid.cells[Grid.FixedCols, iRow] := '';
+          Grid.Objects[Grid.FixedCols, iRow].Free;
           Grid.Objects[Grid.FixedCols, iRow] := TresCell.Create(-1, -1, -1, -1, -1, -1, false, '', '', '', '', false, 1,
             '', '', '', '', '', '', '', '', '',
             0.00, 0.00, false, false, 0, '', false, false, '', 0, 0, 0, '', '', 0, 0);
@@ -8615,6 +8624,7 @@ var
           for iRow := 0 to Grid.RowCount - 1 do
           begin
             Grid.cells[iCol, iRow] := Grid.cells[iCol + 1, iRow];
+            Grid.Objects[iCol, iRow].Free;
             Grid.Objects[iCol, iRow] := Grid.Objects[iCol + 1, iRow];
             Grid.cells[iCol + 1, iRow] := '';
             Grid.Objects[iCol + 1, iRow] := nil;
@@ -8622,6 +8632,7 @@ var
         for iRow := 0 to Grid.RowCount - 1 do
         begin
           Grid.cells[Grid.ColCount - 1, iRow] := '';
+          Grid.Objects[Grid.ColCount - 1, iRow].Free;
           Grid.Objects[Grid.ColCount - 1, iRow] := TresCell.Create(-1, -1, -1, -1, -1, -1, false, '', '', '', '', false,
             1, '', '', '', '', '', '', '', '', '',
             0.00, 0.00, false, false, 0, '', false, false, '', 0, 0, 0, '', '', 0, 0);
@@ -8761,17 +8772,18 @@ begin
 {$ENDIF}
               end;
 
-              try
-                if grPeriodRooms.Objects[cords.col, cords.row] <> nil then
-                begin
-                  TresCell(grPeriodRooms.Objects[cords.col, cords.row]).Free;
-                end;
-              except
-                ShowMessage( { 1080 } GetTranslatedText('sh1080') + #10 + Room + #10 + inttostr(cords.col) + '/1 ' +
-                  inttostr(cords.row));
-              end;
+//              try
+//                if grPeriodRooms.Objects[cords.col, cords.row] <> nil then
+//                begin
+//                  TresCell(grPeriodRooms.Objects[cords.col, cords.row]).Free;
+//                end;
+//              except
+//                ShowMessage( { 1080 } GetTranslatedText('sh1080') + #10 + Room + #10 + inttostr(cords.col) + '/1 ' +
+//                  inttostr(cords.row));
+//              end;
 
               try
+                grPeriodRooms.Objects[cords.col, cords.row].Free;
                 grPeriodRooms.Objects[cords.col, cords.row] := TresCell.Create(RoomReservation, Reservation, Channel,
                   PaymentInvoice, AscIndex, DescIndex,
                   GroupAccount, Room, RoomType, resFlag, CustomerName, isNoRoom, dt, Information, Fax, Tel2, Tel1,
@@ -8824,22 +8836,23 @@ begin
               grPeriodRooms_NO.cells[1, cords.row] := Room;
               grPeriodRooms_NO.cells[2, cords.row] := RoomType;
 
-              try
-                if grPeriodRooms_NO.Objects[cords.col, cords.row] <> nil then
-                begin
-                  TresCell(grPeriodRooms_NO.Objects[cords.col, cords.row]).Free;
-                  grPeriodRooms_NO.Objects[cords.col, cords.row] := nil;
-                end;
-                if assigned((grPeriodRooms_NO.Objects[cords.col, cords.row] as TresCell)) then
-                begin
-                  (grPeriodRooms_NO.Objects[cords.col, cords.row] as TresCell).Free;
-                end;
-              except
-                ShowMessage( { 1081 } GetTranslatedText('sh1081') + ' ' + #10 + Room + #10 + inttostr(cords.col) + '/2 '
-                  + inttostr(cords.row));
-              end;
+//              try
+//                if grPeriodRooms_NO.Objects[cords.col, cords.row] <> nil then
+//                begin
+//                  TresCell(grPeriodRooms_NO.Objects[cords.col, cords.row]).Free;
+//                  grPeriodRooms_NO.Objects[cords.col, cords.row] := nil;
+//                end;
+//                if assigned((grPeriodRooms_NO.Objects[cords.col, cords.row] as TresCell)) then
+//                begin
+//                  (grPeriodRooms_NO.Objects[cords.col, cords.row] as TresCell).Free;
+//                end;
+//              except
+//                ShowMessage( { 1081 } GetTranslatedText('sh1081') + ' ' + #10 + Room + #10 + inttostr(cords.col) + '/2 '
+//                  + inttostr(cords.row));
+//              end;
 
               try
+                grPeriodRooms_NO.Objects[cords.col, cords.row].Free;
                 grPeriodRooms_NO.Objects[cords.col, cords.row] := TresCell.Create(RoomReservation, Reservation, Channel,
                   PaymentInvoice, AscIndex, DescIndex,
                   GroupAccount, Room, RoomType, resFlag, CustomerName, isNoRoom, dt, Information, Fax, Tel2, Tel1,
@@ -9489,11 +9502,12 @@ begin
   begin
     for r := grPeriodRooms_NO.FixedRows to grPeriodRooms_NO.RowCount - 1 do
     begin
-      if grPeriodRooms_NO.Objects[c, r] <> nil then
-      begin
-        TresCell(grPeriodRooms_NO.Objects[c, r]).Free;
-        grPeriodRooms_NO.Objects[c, r] := nil;
-      end;
+//      if grPeriodRooms_NO.Objects[c, r] <> nil then
+//      begin
+//        TresCell(grPeriodRooms_NO.Objects[c, r]).Free;
+//        grPeriodRooms_NO.Objects[c, r] := nil;
+//      end;
+      grPeriodRooms_NO.Objects[c, r].Free;
       grPeriodRooms_NO.Objects[c, r] := TresCell.Create(-1, -1, -1, -1, -1, -1, false, '', '', '', '', false, 1, '', '',
         '', '', '', '', '', '', '', 0.00, 0.00,
         false, false, 0, '', false, false, '', 0, 0, 0, '', '', 0, 0);
@@ -9507,11 +9521,12 @@ var
 begin
   for c := grPeriodRooms_NO.FixedCols to grPeriodRooms_NO.ColCount - 1 do
   begin
-    if grPeriodRooms_NO.Objects[c, r] <> nil then
-    begin
-      TresCell(grPeriodRooms_NO.Objects[c, r]).Free;
-      grPeriodRooms_NO.Objects[c, r] := nil;
-    end;
+//    if grPeriodRooms_NO.Objects[c, r] <> nil then
+//    begin
+//      TresCell(grPeriodRooms_NO.Objects[c, r]).Free;
+//      grPeriodRooms_NO.Objects[c, r] := nil;
+//    end;
+    grPeriodRooms_NO.Objects[c, r].Free;
     grPeriodRooms_NO.Objects[c, r] := TresCell.Create(-1, -1, -1, -1, -1, -1, false, '', '', '', '', false, 1, '', '',
       '', '', '', '', '', '', '', 0.00, 0.00,
       false, false, 0, '', false, false, '', 0, 0, 0, '', '', 0, 0);

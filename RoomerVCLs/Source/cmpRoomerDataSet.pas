@@ -507,10 +507,10 @@ end;
 
 destructor TRoomerDataSet.Destroy;
 begin
-  inherited;
   FSql.Free;
   hotelsList.Free;
   FreeAndNil(FroomerClient);
+  inherited;
 end;
 
 function TRoomerDataSet.CreateNewDataset: TRoomerDataSet;

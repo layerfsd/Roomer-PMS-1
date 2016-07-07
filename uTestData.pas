@@ -652,14 +652,18 @@ begin
         begin
           s := lstVorur[i];
           lstLine := SplitStringToTStrings(';', S);
-          if lstLine.Count = 6 then
-          begin
-            mVorur.Append;
-            mVorur['vorunumer']    := UTF8String(lstLine[0]);
-            mVorur['vorulysing']   := UTF8String(lstLine[1]);
-            mVorur['verdmvsk']     := UTF8String(lstLine[2]);
-            mVorur['vorufl']       := UTF8String(lstLine[3]);
-            mVorur.Post;
+          try
+            if lstLine.Count = 6 then
+            begin
+              mVorur.Append;
+              mVorur['vorunumer']    := UTF8String(lstLine[0]);
+              mVorur['vorulysing']   := UTF8String(lstLine[1]);
+              mVorur['verdmvsk']     := UTF8String(lstLine[2]);
+              mVorur['vorufl']       := UTF8String(lstLine[3]);
+              mVorur.Post;
+            end;
+          finally
+            lstLine.Free;
           end;
         end;
       end;
@@ -1911,21 +1915,25 @@ begin
         begin
           s := lstCustomers[i];
           lstLine := SplitStringToTStrings(';', S);
-          if lstLine.Count = 11 then
-          begin
-            mCustomers.Append;
-            mCustomers['numer']       := UTF8String(lstLine[0]);
-            mCustomers['heiti']       := UTF8String(lstLine[1]);
-            mCustomers['heimili']     := UTF8String(lstLine[2]);
-            mCustomers['postnumer']   := UTF8String(lstLine[3]);
-            mCustomers['stadur']      := UTF8String(lstLine[4]);
-            mCustomers['land']        := UTF8String(lstLine[5]);
-            mCustomers['kennitala']   := UTF8String(lstLine[6]);
-            mCustomers['flokkur']     := UTF8String(lstLine[7]);
-            mCustomers['simi']        := UTF8String(lstLine[8]);
-            mCustomers['greidslumati']:= UTF8String(lstLine[9]);
-            mCustomers['netfang']     := UTF8String(lstLine[10]);
-            mCustomers.Post;
+          try
+            if lstLine.Count = 11 then
+            begin
+              mCustomers.Append;
+              mCustomers['numer']       := UTF8String(lstLine[0]);
+              mCustomers['heiti']       := UTF8String(lstLine[1]);
+              mCustomers['heimili']     := UTF8String(lstLine[2]);
+              mCustomers['postnumer']   := UTF8String(lstLine[3]);
+              mCustomers['stadur']      := UTF8String(lstLine[4]);
+              mCustomers['land']        := UTF8String(lstLine[5]);
+              mCustomers['kennitala']   := UTF8String(lstLine[6]);
+              mCustomers['flokkur']     := UTF8String(lstLine[7]);
+              mCustomers['simi']        := UTF8String(lstLine[8]);
+              mCustomers['greidslumati']:= UTF8String(lstLine[9]);
+              mCustomers['netfang']     := UTF8String(lstLine[10]);
+              mCustomers.Post;
+            end;
+          finally
+            lstLine.Free;
           end;
         end;
       end;

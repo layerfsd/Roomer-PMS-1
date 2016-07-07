@@ -15455,5 +15455,6 @@ finalization
   { finalization code goes here }
   if hData.oRoomTypeRoomCount <> nil then
     freeandnil(hData.oRoomTypeRoomCount);
+  ListOfTables.Free;
 
 end.

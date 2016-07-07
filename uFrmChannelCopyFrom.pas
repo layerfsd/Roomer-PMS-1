@@ -345,15 +345,22 @@ begin
 end;
 
 function TFrmChannelCopyFrom.LocateChannelManagerByChannelId(chId : Integer) : Boolean;
+var
+  lSplit: TStrings;
 begin
   result := False;
   channelManagers.First;
   while (NOT channelManagers.Eof) do
   begin
-    if SplitStringToTStrings(',', channelManagers['channels']).IndexOf(inttostr(chId)) >= 0 then
-    begin
-      result := True;
-      Break;
+    lSPlit := SplitStringToTStrings(',', channelManagers['channels']);
+    try
+      if lSplit.IndexOf(inttostr(chId)) >= 0 then
+      begin
+        result := True;
+        Break;
+      end;
+    finally
+      lSplit.Free;
     end;
     channelManagers.Next;
   end;

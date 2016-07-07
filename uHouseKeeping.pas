@@ -266,9 +266,17 @@ begin
 end;
 
 procedure TfrmHouseKeeping.FormShow(Sender: TObject);
+var
+  lLocations: TSet_Of_Integer;
 begin
   zLocationList := '';
-  zLocationList := glb.LocationSQLInString(frmmain.FilteredLocations);
+
+  lLocations := frmmain.FilteredLocations;
+  try
+    zLocationList := glb.LocationSQLInString(lLocations);
+  finally
+    lLocations.Free;
+  end;
 
   if zLocationList = '' then
   begin

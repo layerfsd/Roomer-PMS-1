@@ -178,7 +178,7 @@ uses
 function RR_ChangeDates(RoomReservation: integer; newArrival, newDeparture: Tdate; PriceMedhod: integer;
   var isPaid: boolean; trx: boolean = true): boolean;
 var
-  lst: tstringlist;
+  lst: TStringlist;
   iNumErrors: integer;
 
   s: string;
@@ -245,6 +245,7 @@ var
   temp: String;
 
   ExePlan: TRoomerExecutionPlan;
+  lSplit: TStringList;
 
 begin
   Result := False;
@@ -342,10 +343,8 @@ begin
       Currency := trim(Rset.FieldByName('Currency').asString);
 
       temp := Rset.FieldByName('Conflicts').asString;
-      lst := tstringlist.Create;
+      lst := SplitStringToTStrings(',', temp);
       try
-        if trim(temp) <> '' then
-          lst.AddStrings(SplitStringToTStrings(',', temp));
         doIt := true;
         isNoRoom := false;
         if lst.Count > 0 then
@@ -384,9 +383,7 @@ begin
         ExePlan := d.roomerMainDataSet.CreateExecutionPlan;
         try
           temp := Rset.FieldByName('existingDates').asString;
-          lst := tstringlist.Create;
-          if trim(temp) <> '' then
-            lst.AddStrings(SplitStringToTStrings(',', temp));
+          lst := SplitStringToTStrings(',', temp);
 
           if trx then
             Rset.SystemStartTransaction;

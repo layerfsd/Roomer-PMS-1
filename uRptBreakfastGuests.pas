@@ -139,9 +139,17 @@ begin
 end;
 
 procedure TfrmRptBreakfastGuests.FormShow(Sender: TObject);
+var
+  lLocations: TSet_Of_Integer;
 begin
   _restoreForm(frmRptBreakfastGuests);
-  zLocationInString := glb.LocationSQLInString(frmmain.FilteredLocations);
+  lLocations := frmmain.FilteredLocations;
+  try
+  zLocationInString := glb.LocationSQLInString(lLocations);
+  finally
+    lLocations.Free;
+  end;
+
 
   if zLocationInString = '' then
   begin

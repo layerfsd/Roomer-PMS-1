@@ -315,19 +315,23 @@ begin
   if splitResult <> '' then
   begin
     splits := SplitStringToTStrings(',', splitResult);
-    conflictedRules := '';
-    for i := 0 to splits.Count - 1 do
-    begin
-      rule := getRule(StrToInt(splits[i]), savedEntity);
-      if Assigned(rule) AND (rule.id <> savedEntity.id) then
+    try
+      conflictedRules := '';
+      for i := 0 to splits.Count - 1 do
       begin
-        if conflictedRules = '' then
-          conflictedRules := '   - ' + getRule(StrToInt(splits[i]), savedEntity)
-            .description
-        else
-          conflictedRules := conflictedRules + #13 + '   - ' +
-            getRule(StrToInt(splits[i]), savedEntity).description;
+        rule := getRule(StrToInt(splits[i]), savedEntity);
+        if Assigned(rule) AND (rule.id <> savedEntity.id) then
+        begin
+          if conflictedRules = '' then
+            conflictedRules := '   - ' + getRule(StrToInt(splits[i]), savedEntity)
+              .description
+          else
+            conflictedRules := conflictedRules + #13 + '   - ' +
+              getRule(StrToInt(splits[i]), savedEntity).description;
+        end;
       end;
+    finally
+      splits.Free;
     end;
     if conflictedRules <> '' then
       MessageDLG('This rule conflicts with the rules below.' + #13 +
@@ -691,33 +695,53 @@ begin
 
 
   list := SplitStringToTStrings(',', rule.selectedRoomTypeIds);
-  for i := 0 to clRoomTypes.Items.Count - 1 do
-    clRoomTypes.Checked[i] :=
-      list.IndexOf(inttostr(TRoomtypegroupsEntity(clRoomTypes.Items.Objects[i])
-      .id)) > -1;
+  try
+    for i := 0 to clRoomTypes.Items.Count - 1 do
+      clRoomTypes.Checked[i] :=
+        list.IndexOf(inttostr(TRoomtypegroupsEntity(clRoomTypes.Items.Objects[i])
+        .id)) > -1;
+  finally
+    list.Free;
+  end;
 
   list := SplitStringToTStrings(',', rule.selectedChannelsIds);
-  for i := 0 to clWhichChannels.Items.Count - 1 do
-    if i < 5 then
-      clWhichChannels.Checked[i] := list.IndexOf(inttostr((i + 1) * -1)) > -1
-    else
-      clWhichChannels.Checked[i] :=
-        list.IndexOf(inttostr(TChannelsEntity(clWhichChannels.Items.Objects[i])
-        .id)) > -1;
+  try
+    for i := 0 to clWhichChannels.Items.Count - 1 do
+      if i < 5 then
+        clWhichChannels.Checked[i] := list.IndexOf(inttostr((i + 1) * -1)) > -1
+      else
+        clWhichChannels.Checked[i] :=
+          list.IndexOf(inttostr(TChannelsEntity(clWhichChannels.Items.Objects[i])
+          .id)) > -1;
 
+  finally
+    list.Free;
+  end;
   clWhichDays.Checked[rule.whichDaysIndex] := True;
 
   list := SplitStringToTStrings(',', rule.selectedDays);
-  for i := 0 to clDays.Items.Count - 1 do
-    clDays.Checked[i] := list.IndexOf(inttostr(i + 1)) > -1;
+  try
+    for i := 0 to clDays.Items.Count - 1 do
+      clDays.Checked[i] := list.IndexOf(inttostr(i + 1)) > -1;
+  finally
+    list.Free;
+  end;
 
   list := SplitStringToTStrings(',', rule.selectedMonths);
-  for i := 0 to clMonthsTimeOfYear.Items.Count - 1 do
-    clMonthsTimeOfYear.Checked[i] := list.IndexOf(inttostr(i + 1)) > -1;
+  try
+    for i := 0 to clMonthsTimeOfYear.Items.Count - 1 do
+      clMonthsTimeOfYear.Checked[i] := list.IndexOf(inttostr(i + 1)) > -1;
+  finally
+    list.Free;
+  end;
 
   list := SplitStringToTStrings(',', rule.selectedYears);
-  for i := 0 to clYears.Items.Count - 1 do
-    clYears.Checked[i] := list.IndexOf(clYears.Items[i]) > -1;
+  try
+    for i := 0 to clYears.Items.Count - 1 do
+      clYears.Checked[i] := list.IndexOf(clYears.Items[i]) > -1;
+  finally
+    list.Free;
+  end;
 
   processDescriptionLabel;
 end;

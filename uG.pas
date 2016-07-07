@@ -1,4 +1,4 @@
-unit uG;
+﻿unit uG;
 
 {$M+}
 
@@ -433,7 +433,7 @@ type
 
     function TestConnection(var Connstr, strResult : string) : boolean;
     function OpenResProblem(var lst : TstringList) : integer;
-    function OpenRoomDateProblem(var lst : TstringList) : integer;
+    function OpenRoomDateProblem(var lst : TStringlist) : integer;
 
     function StatusStrToResStatus(statusSTR : string) : TReservationStatus;
     function ResStatusToStatusStr(ResStatus : TReservationStatus) : string;
@@ -1869,7 +1869,7 @@ begin
   end;
 end;
 
-function TGlobalApplication.OpenRoomDateProblem(var lst : TstringList) : integer;
+function TGlobalApplication.OpenRoomDateProblem(var lst : Tstringlist) : integer;
 begin
   frmRoomDateProblem := TfrmRoomDateProblem.Create(frmRoomDateProblem);
   try
@@ -2564,7 +2564,6 @@ constructor TRoomCell.Create(status : string);
 begin
   inherited Create;
   FRoomStatus := status;
-  RoomCellCollection.Add(Self);
 end;
 
 

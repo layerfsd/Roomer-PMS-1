@@ -61,6 +61,10 @@ object frmTestData: TfrmTestData
       Caption = 'Booking.com'
       SkinData.CustomColor = False
       SkinData.CustomFont = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object sPanel2: TsPanel
         Left = 0
         Top = 0
@@ -120,6 +124,10 @@ object frmTestData: TfrmTestData
           TabVisible = False
           SkinData.CustomColor = False
           SkinData.CustomFont = False
+          ExplicitLeft = 0
+          ExplicitTop = 0
+          ExplicitWidth = 0
+          ExplicitHeight = 0
           object sPanel1: TsPanel
             Left = 0
             Top = 0
@@ -451,11 +459,19 @@ object frmTestData: TfrmTestData
           TabVisible = False
           SkinData.CustomColor = False
           SkinData.CustomFont = False
+          ExplicitLeft = 0
+          ExplicitTop = 0
+          ExplicitWidth = 0
+          ExplicitHeight = 0
         end
         object sTabSheet5: TsTabSheet
           Caption = 'Getbooking.com'
           SkinData.CustomColor = False
           SkinData.CustomFont = False
+          ExplicitLeft = 0
+          ExplicitTop = 0
+          ExplicitWidth = 0
+          ExplicitHeight = 0
           object sPanel6: TsPanel
             Left = 0
             Top = 0
@@ -558,6 +574,10 @@ object frmTestData: TfrmTestData
               TabOrder = 0
               object TabSheet2: TTabSheet
                 Caption = 'Reservation remarks'
+                ExplicitLeft = 0
+                ExplicitTop = 0
+                ExplicitWidth = 0
+                ExplicitHeight = 0
                 object DBMemo2: TDBMemo
                   Left = 0
                   Top = 0
@@ -574,6 +594,10 @@ object frmTestData: TfrmTestData
               object TabSheet6: TTabSheet
                 Caption = 'Room remarks'
                 ImageIndex = 1
+                ExplicitLeft = 0
+                ExplicitTop = 0
+                ExplicitWidth = 0
+                ExplicitHeight = 0
                 object DBMemo1: TDBMemo
                   Left = 0
                   Top = 0
@@ -589,6 +613,10 @@ object frmTestData: TfrmTestData
               object TabSheet7: TTabSheet
                 Caption = 'Canncelation Policy'
                 ImageIndex = 2
+                ExplicitLeft = 0
+                ExplicitTop = 0
+                ExplicitWidth = 0
+                ExplicitHeight = 0
                 object DBMemo3: TDBMemo
                   Left = 0
                   Top = 0
@@ -676,6 +704,10 @@ object frmTestData: TfrmTestData
             TabOrder = 1
             object TabSheet1: TTabSheet
               Caption = 'Source'
+              ExplicitLeft = 0
+              ExplicitTop = 0
+              ExplicitWidth = 0
+              ExplicitHeight = 0
               object sPanel7: TsPanel
                 Left = 0
                 Top = 0
@@ -824,6 +856,10 @@ object frmTestData: TfrmTestData
             object TabSheet3: TTabSheet
               Caption = 'Reservations'
               ImageIndex = 2
+              ExplicitLeft = 0
+              ExplicitTop = 0
+              ExplicitWidth = 0
+              ExplicitHeight = 0
               object grReservations: TcxGrid
                 Left = 0
                 Top = 0
@@ -886,6 +922,10 @@ object frmTestData: TfrmTestData
             object TabSheet5: TTabSheet
               Caption = 'Rooms'
               ImageIndex = 4
+              ExplicitLeft = 0
+              ExplicitTop = 0
+              ExplicitWidth = 0
+              ExplicitHeight = 0
               object grRooms: TcxGrid
                 Left = 0
                 Top = 0
@@ -988,6 +1028,10 @@ object frmTestData: TfrmTestData
               Caption = 'TabSheet4'
               ImageIndex = 4
               TabVisible = False
+              ExplicitLeft = 0
+              ExplicitTop = 0
+              ExplicitWidth = 0
+              ExplicitHeight = 0
               object Memo2: TMemo
                 Left = 0
                 Top = 0
@@ -1007,6 +1051,10 @@ object frmTestData: TfrmTestData
       Caption = 'DK'
       SkinData.CustomColor = False
       SkinData.CustomFont = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object ProgressBar1: TProgressBar
         Left = 0
         Top = 0
@@ -1026,6 +1074,10 @@ object frmTestData: TfrmTestData
         TabOrder = 1
         object TabSheet8: TTabSheet
           Caption = 'XML file'
+          ExplicitLeft = 0
+          ExplicitTop = 0
+          ExplicitWidth = 0
+          ExplicitHeight = 0
           object Panel2: TPanel
             Left = 0
             Top = 0
@@ -1130,6 +1182,10 @@ object frmTestData: TfrmTestData
         object TabSheet9: TTabSheet
           Caption = 'Data'
           ImageIndex = 1
+          ExplicitLeft = 0
+          ExplicitTop = 0
+          ExplicitWidth = 0
+          ExplicitHeight = 0
           object Splitter1: TSplitter
             Left = 569
             Top = 32
@@ -1235,7 +1291,7 @@ object frmTestData: TfrmTestData
               object Label11: TLabel
                 Left = 1
                 Top = 1
-                Width = 565
+                Width = 135
                 Height = 13
                 Align = alTop
                 Caption = 'bookings / reservations'
@@ -1248,7 +1304,6 @@ object frmTestData: TfrmTestData
                 ParentColor = False
                 ParentFont = False
                 Transparent = True
-                ExplicitWidth = 135
               end
               object grBookings: TcxGrid
                 Left = 1
@@ -1385,7 +1440,7 @@ object frmTestData: TfrmTestData
               object Label12: TLabel
                 Left = 1
                 Top = 1
-                Width = 294
+                Width = 94
                 Height = 13
                 Align = alTop
                 Caption = 'Participant / Guests'
@@ -1398,7 +1453,6 @@ object frmTestData: TfrmTestData
                 ParentColor = False
                 ParentFont = False
                 Transparent = True
-                ExplicitWidth = 94
               end
               object grParticipant: TcxGrid
                 Left = 1
@@ -1469,7 +1523,7 @@ object frmTestData: TfrmTestData
                 object Label13: TLabel
                   Left = 1
                   Top = 1
-                  Width = 264
+                  Width = 98
                   Height = 13
                   Align = alTop
                   Caption = 'BookingSaleLines'
@@ -1482,7 +1536,6 @@ object frmTestData: TfrmTestData
                   ParentColor = False
                   ParentFont = False
                   Transparent = True
-                  ExplicitWidth = 98
                 end
                 object grBookingSaleLines: TcxGrid
                   Left = 1
@@ -1656,10 +1709,14 @@ object frmTestData: TfrmTestData
                 TabOrder = 0
                 object TabSheet10: TTabSheet
                   Caption = '-'
+                  ExplicitLeft = 0
+                  ExplicitTop = 0
+                  ExplicitWidth = 0
+                  ExplicitHeight = 0
                   object Label14: TLabel
                     Left = 0
                     Top = 0
-                    Width = 532
+                    Width = 116
                     Height = 13
                     Align = alTop
                     Caption = 'Resourcebookings / '
@@ -1672,7 +1729,6 @@ object frmTestData: TfrmTestData
                     ParentColor = False
                     ParentFont = False
                     Transparent = True
-                    ExplicitWidth = 116
                   end
                   object grResourceBookings: TcxGrid
                     Left = 0
@@ -1859,7 +1915,7 @@ object frmTestData: TfrmTestData
                 object Label20: TLabel
                   Left = 1
                   Top = 1
-                  Width = 246
+                  Width = 46
                   Height = 13
                   Align = alTop
                   Caption = 'Prices / '
@@ -1872,7 +1928,6 @@ object frmTestData: TfrmTestData
                   ParentColor = False
                   ParentFont = False
                   Transparent = True
-                  ExplicitWidth = 46
                 end
                 object grPrices: TcxGrid
                   Left = 1
@@ -1941,7 +1996,7 @@ object frmTestData: TfrmTestData
                 object Label21: TLabel
                   Left = 1
                   Top = 1
-                  Width = 287
+                  Width = 176
                   Height = 13
                   Align = alTop
                   Caption = 'Alloactions / roomreservations'
@@ -1954,7 +2009,6 @@ object frmTestData: TfrmTestData
                   ParentColor = False
                   ParentFont = False
                   Transparent = True
-                  ExplicitWidth = 176
                 end
                 object grAllocations: TcxGrid
                   Left = 1
@@ -2022,6 +2076,10 @@ object frmTestData: TfrmTestData
         object TabSheet12: TTabSheet
           Caption = 'Rooms'
           ImageIndex = 2
+          ExplicitLeft = 0
+          ExplicitTop = 0
+          ExplicitWidth = 0
+          ExplicitHeight = 0
           object TPanel
             Left = 0
             Top = 0
@@ -2105,6 +2163,10 @@ object frmTestData: TfrmTestData
         object Customers: TTabSheet
           Caption = 'Customers'
           ImageIndex = 3
+          ExplicitLeft = 0
+          ExplicitTop = 0
+          ExplicitWidth = 0
+          ExplicitHeight = 0
           object TPanel
             Left = 0
             Top = 0
@@ -2293,6 +2355,10 @@ object frmTestData: TfrmTestData
         object TabSheet13: TTabSheet
           Caption = 'Items'
           ImageIndex = 4
+          ExplicitLeft = 0
+          ExplicitTop = 0
+          ExplicitWidth = 0
+          ExplicitHeight = 0
           object TPanel
             Left = 0
             Top = 0
@@ -2508,7 +2574,7 @@ object frmTestData: TfrmTestData
     LoadedCompletely = False
     SavedCompletely = False
     FilterOptions = []
-    Version = '7.62.00 Standard Edition'
+    Version = '7.22.00 Standard Edition'
     LanguageID = 0
     SortID = 0
     SubLanguageID = 1
@@ -2636,7 +2702,7 @@ object frmTestData: TfrmTestData
     LoadedCompletely = False
     SavedCompletely = False
     FilterOptions = []
-    Version = '7.62.00 Standard Edition'
+    Version = '7.22.00 Standard Edition'
     LanguageID = 0
     SortID = 0
     SubLanguageID = 1
@@ -2715,7 +2781,7 @@ object frmTestData: TfrmTestData
     LoadedCompletely = False
     SavedCompletely = False
     FilterOptions = []
-    Version = '7.62.00 Standard Edition'
+    Version = '7.22.00 Standard Edition'
     LanguageID = 0
     SortID = 0
     SubLanguageID = 1
@@ -2839,7 +2905,7 @@ object frmTestData: TfrmTestData
     LoadedCompletely = False
     SavedCompletely = False
     FilterOptions = []
-    Version = '7.62.00 Standard Edition'
+    Version = '7.22.00 Standard Edition'
     LanguageID = 0
     SortID = 0
     SubLanguageID = 1
@@ -2983,7 +3049,7 @@ object frmTestData: TfrmTestData
     LoadedCompletely = False
     SavedCompletely = False
     FilterOptions = []
-    Version = '7.62.00 Standard Edition'
+    Version = '7.22.00 Standard Edition'
     LanguageID = 0
     SortID = 0
     SubLanguageID = 1
@@ -3051,7 +3117,7 @@ object frmTestData: TfrmTestData
     LoadedCompletely = False
     SavedCompletely = False
     FilterOptions = []
-    Version = '7.62.00 Standard Edition'
+    Version = '7.22.00 Standard Edition'
     LanguageID = 0
     SortID = 0
     SubLanguageID = 1
@@ -3106,7 +3172,7 @@ object frmTestData: TfrmTestData
     LoadedCompletely = False
     SavedCompletely = False
     FilterOptions = []
-    Version = '7.62.00 Standard Edition'
+    Version = '7.22.00 Standard Edition'
     LanguageID = 0
     SortID = 0
     SubLanguageID = 1
@@ -3156,7 +3222,7 @@ object frmTestData: TfrmTestData
     LoadedCompletely = False
     SavedCompletely = False
     FilterOptions = []
-    Version = '7.62.00 Standard Edition'
+    Version = '7.22.00 Standard Edition'
     LanguageID = 0
     SortID = 0
     SubLanguageID = 1
@@ -3212,7 +3278,7 @@ object frmTestData: TfrmTestData
     LoadedCompletely = False
     SavedCompletely = False
     FilterOptions = []
-    Version = '7.62.00 Standard Edition'
+    Version = '7.22.00 Standard Edition'
     LanguageID = 0
     SortID = 0
     SubLanguageID = 1
@@ -3368,7 +3434,7 @@ object frmTestData: TfrmTestData
     LoadedCompletely = False
     SavedCompletely = False
     FilterOptions = []
-    Version = '7.62.00 Standard Edition'
+    Version = '7.22.00 Standard Edition'
     LanguageID = 0
     SortID = 0
     SubLanguageID = 1
@@ -3514,7 +3580,7 @@ object frmTestData: TfrmTestData
     LoadedCompletely = False
     SavedCompletely = False
     FilterOptions = []
-    Version = '7.62.00 Standard Edition'
+    Version = '7.22.00 Standard Edition'
     LanguageID = 0
     SortID = 0
     SubLanguageID = 1
@@ -3570,7 +3636,7 @@ object frmTestData: TfrmTestData
     LoadedCompletely = False
     SavedCompletely = False
     FilterOptions = []
-    Version = '7.62.00 Standard Edition'
+    Version = '7.22.00 Standard Edition'
     LanguageID = 0
     SortID = 0
     SubLanguageID = 1
@@ -3631,7 +3697,7 @@ object frmTestData: TfrmTestData
     LoadedCompletely = False
     SavedCompletely = False
     FilterOptions = []
-    Version = '7.62.00 Standard Edition'
+    Version = '7.22.00 Standard Edition'
     LanguageID = 0
     SortID = 0
     SubLanguageID = 1
@@ -3687,7 +3753,7 @@ object frmTestData: TfrmTestData
     LoadedCompletely = False
     SavedCompletely = False
     FilterOptions = []
-    Version = '7.62.00 Standard Edition'
+    Version = '7.22.00 Standard Edition'
     LanguageID = 0
     SortID = 0
     SubLanguageID = 1
@@ -3738,7 +3804,7 @@ object frmTestData: TfrmTestData
     LoadedCompletely = False
     SavedCompletely = False
     FilterOptions = []
-    Version = '7.62.00 Standard Edition'
+    Version = '7.22.00 Standard Edition'
     LanguageID = 0
     SortID = 0
     SubLanguageID = 1
@@ -3861,7 +3927,7 @@ object frmTestData: TfrmTestData
     LoadedCompletely = False
     SavedCompletely = False
     FilterOptions = []
-    Version = '7.62.00 Standard Edition'
+    Version = '7.22.00 Standard Edition'
     LanguageID = 0
     SortID = 0
     SubLanguageID = 1
@@ -3916,7 +3982,7 @@ object frmTestData: TfrmTestData
     LoadedCompletely = False
     SavedCompletely = False
     FilterOptions = []
-    Version = '7.62.00 Standard Edition'
+    Version = '7.22.00 Standard Edition'
     LanguageID = 0
     SortID = 0
     SubLanguageID = 1

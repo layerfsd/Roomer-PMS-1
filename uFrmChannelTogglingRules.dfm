@@ -153,8 +153,6 @@ object frmChannelTogglingRules: TfrmChannelTogglingRules
       BoundLabel.Font.Name = 'Tahoma'
       BoundLabel.Font.Style = []
       SkinData.SkinSection = 'EDIT'
-      ExplicitWidth = 165
-      ExplicitHeight = 524
     end
   end
   object sPanel3: TsPanel
@@ -195,8 +193,8 @@ object frmChannelTogglingRules: TfrmChannelTogglingRules
       object lblRuleDescription: TsLabel
         Left = 4
         Top = 8
-        Width = 572
-        Height = 56
+        Width = 542
+        Height = 24
         Margins.Left = 2
         Margins.Top = 2
         Margins.Right = 2
@@ -207,8 +205,6 @@ object frmChannelTogglingRules: TfrmChannelTogglingRules
           'or "%s" "%s" of "%s" of the year %s then turn off %s channel(s).'
         Visible = False
         WordWrap = True
-        ExplicitWidth = 592
-        ExplicitHeight = 12
       end
       object pnlEditButtons: TsPanel
         Left = 576
@@ -280,6 +276,10 @@ object frmChannelTogglingRules: TfrmChannelTogglingRules
         Margins.Right = 2
         Margins.Bottom = 2
         Caption = 'Viewing'
+        SkinData.CustomColor = False
+        SkinData.CustomFont = False
+        ExplicitLeft = 0
+        ExplicitTop = 0
         ExplicitWidth = 792
         ExplicitHeight = 501
         object sPanel13: TsPanel

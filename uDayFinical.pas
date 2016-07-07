@@ -791,6 +791,8 @@ begin
 end;
 
 procedure TfrmDayFinical.FormShow(Sender : TObject);
+var
+  lLocationsList: TSet_Of_Integer;
 begin
 //  GetAll;
   btnShowReservation.Enabled := false;
@@ -802,8 +804,12 @@ begin
   mainPage.ActivePageIndex := 0;
   pageSums.ActivePageIndex := 0;
 
-
-  zLocationInString := glb.LocationSQLInString(frmmain.FilteredLocations);
+  lLocationsList := frmmain.FilteredLocations;
+  try
+    zLocationInString := glb.LocationSQLInString(lLocationsList);
+  finally
+    lLocationsList.Free;
+  end;
 
   if zLocationInString = '' then
   begin

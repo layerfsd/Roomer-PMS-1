@@ -125,6 +125,10 @@ object frmHouseKeeping: TfrmHouseKeeping
       Caption = 'List'
       SkinData.CustomColor = False
       SkinData.CustomFont = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object grCross: TAdvStringGrid
         Left = 0
         Top = 43
@@ -306,6 +310,10 @@ object frmHouseKeeping: TfrmHouseKeeping
       Caption = 'Detailed'
       SkinData.CustomColor = False
       SkinData.CustomFont = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object grVar: TcxGrid
         Left = 0
         Top = 33

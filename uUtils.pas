@@ -51,7 +51,7 @@ function ReplaceString(original, toReplace, replaceWith : String) : String;
 function FloatToXml(Value : Double; decimals : Integer) : String;
 function IndexOfArray(Items: array of String; const Value: String; defaultResult : Integer = -1): Integer;
 function Split(Text : String; Delimiter : String) : TStringList;
-function SplitStringToTStrings(const aSeparator, aString: String; aMax: Integer = 0): TStrings;
+function SplitStringToTStrings(const aSeparator, aString: String; aMax: Integer = 0): TStringList;
 procedure parseFirstAndLastNameFromFullname(Fullname : String; var firstName : String; var lastName : String);
 
 function iifS(condition : Boolean; TrueResult : String; FalseResult : String) : String;
@@ -150,6 +150,8 @@ function GetEnumAsString(enum : PTypeInfo; value : Integer) : String;
 function JoinStrings(list : TStrings; Delimiter : Char; QuoteChar : Char = '''') : String;
 procedure SplitString(text : String; list : TStrings; Delimiter : Char; QuoteChar : Char = '''');
 function linuxLFCRToWindows(source : String) : String;
+
+function ComponentRunning(aComponent: TComponent): boolean;
 
 var SystemDecimalSeparator : char;
 
@@ -417,7 +419,7 @@ begin
   result.Text := StringReplace(Text, Delimiter, #13#10, [rfReplaceAll]);
 end;
 
-function SplitStringToTStrings(const aSeparator, aString: String; aMax: Integer = 0): TStrings;
+function SplitStringToTStrings(const aSeparator, aString: String; aMax: Integer = 0): TStringList;
 var
   strt: Integer;
   s, sTemp : String;
@@ -1630,6 +1632,12 @@ begin
     Form.Top := Monitor.Top + Monitor.Height - MoveWinThreshold;
 end;
 
+
+function ComponentRunning(aComponent: TComponent): boolean;
+begin
+  Result := (aComponent.ComponentState * [csLoading, csDestroying, csDesigning]) = [];
+end;
+
 { TIntValue }
 
 constructor TIntValue.Create(value: integer);
@@ -1639,15 +1647,11 @@ end;
 
 /////////////////////////////////////////////////////////
 procedure SetSystemDecimalSeparator;
-var Decimal : PChar;
 begin
-  Decimal := StrAlloc(10);
-  GetLocaleInfo(LOCALE_SYSTEM_DEFAULT, LOCALE_SDECIMAL, Decimal, 10);
-  SystemDecimalSeparator := String(Decimal)[1];
+  SystemDecimalSeparator := TFormatsettings.Create.DecimalSeparator;
 end;
 
 initialization
-
   SetSystemDecimalSeparator;
 
 end.

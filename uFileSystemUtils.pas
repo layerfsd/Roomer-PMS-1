@@ -443,4 +443,8 @@ initialization
                           FileInfo,
                           SizeOf(FileInfo),
                           SHGFI_SYSICONINDEX or SHGFI_LARGEICON);
+
+finalization
+  SystemSmallImageList.Free;
+  SystemLargeImageList.Free;
 end.

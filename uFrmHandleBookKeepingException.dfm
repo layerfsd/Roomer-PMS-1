@@ -159,7 +159,7 @@ object FrmHandleBookKeepingException: TFrmHandleBookKeepingException
     object sLabel8: TsLabel
       Left = 5
       Top = 15
-      Width = 488
+      Width = 117
       Height = 16
       Align = alTop
       Caption = 'Available Options:'
@@ -170,7 +170,6 @@ object FrmHandleBookKeepingException: TFrmHandleBookKeepingException
       Font.Height = -13
       Font.Name = 'Tahoma'
       Font.Style = [fsBold]
-      ExplicitWidth = 117
     end
     object rbRetry: TsRadioButton
       Left = 32

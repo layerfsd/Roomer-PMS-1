@@ -464,6 +464,7 @@ begin
   clear;
   FNumAvailType.free;
   ClearRoomFloors;
+  FRoomtypes.Free;
   FRoomFloors.free;
   FPreviousGuestsReload.Free;
   ClearTables;
@@ -1987,7 +1988,7 @@ end;
 
 destructor TSet_Of_Integer.Destroy;
 begin
-  Clear;
+  List.Free;
   inherited;
 end;
 

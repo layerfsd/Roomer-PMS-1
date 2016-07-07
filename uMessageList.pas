@@ -56,7 +56,7 @@ Type
     private
       MessageList : TRoomerMessageList;
       LastTableCheckStamp : TDateTime;
-      TableStatusses : TDictionary<String, TDatePair>;
+      TableStatusses : TObjectDictionary<String, TDatePair>;
 
       function getActiveCount: integer;
       function getCount: integer;
@@ -136,7 +136,7 @@ begin
   inherited;
   MessageList := TRoomerMessageList.Create(True);
   LastTableCheckStamp := now;
-  TableStatusses := TDictionary<String, TDatePair>.Create;
+  TableStatusses := TObjectDictionary<String, TDatePair>.Create([doOwnsValues]);
 end;
 
 procedure TMessageList.Delete(idx: Integer);

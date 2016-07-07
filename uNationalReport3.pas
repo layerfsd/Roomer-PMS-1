@@ -1010,6 +1010,7 @@ procedure TfrmNationalReport3.ShowData;
 var
   y, m, d : word;
   lastDay : integer;
+  lLocations: TSet_Of_Integer;
 begin
   zSetDates := false;
 
@@ -1033,7 +1034,12 @@ begin
   zLocationList := '';
   zRoomReservationsList := '';
 
-  zLocationList := glb.LocationSQLInString(frmmain.FilteredLocations);
+  lLocations := frmmain.FilteredLocations;
+  try
+  zLocationList := glb.LocationSQLInString(lLocations);
+  finally
+    lLocations.Free;
+  end;
 
   if zLocationList = '' then
   begin

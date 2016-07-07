@@ -422,29 +422,33 @@ begin
           GetTranslatedText('shTemplate_CCPayment'));
 
       splittedInformation := SplitStringToTStrings('|', Copy(information, POS(CC_PAYMENT, information), maxInt));
-      while splittedInformation.Count < 5 do splittedInformation.Add('');
-      if AnsiEndsStr('SUCCEEDED', trim(splittedInformation[0])) then
-      begin
-        result.Add(_BookingPaymentStatus, GetTranslatedText('shTemplate_PaymentSuccess'));
-      end else
-      if AnsiEndsStr('FAILED', trim(splittedInformation[0])) then
-      begin
-        status := GetTranslatedText('shTemplate_PaymentFail');
-        if (splittedInformation.Count > 4) AND
-           (splittedInformation[4] <> '') then
-             status := status + ' (' + Trim(splittedInformation[4]) + ')';
-        result.Add(_BookingPaymentStatus, status);
-      end else
-      if AnsiEndsStr('FAILED DUE TO TECHNICAL PROBLEM', trim(splittedInformation[0])) then
-      begin
-        result.Add(_BookingPaymentStatus, GetTranslatedText('shTemplate_TechnicalFailure'));
-      end else
-      begin
-        result.Add(_BookingPAymentStatus, '-');
-      end;
+      try
+        while splittedInformation.Count < 5 do splittedInformation.Add('');
+        if AnsiEndsStr('SUCCEEDED', trim(splittedInformation[0])) then
+        begin
+          result.Add(_BookingPaymentStatus, GetTranslatedText('shTemplate_PaymentSuccess'));
+        end else
+        if AnsiEndsStr('FAILED', trim(splittedInformation[0])) then
+        begin
+          status := GetTranslatedText('shTemplate_PaymentFail');
+          if (splittedInformation.Count > 4) AND
+             (splittedInformation[4] <> '') then
+               status := status + ' (' + Trim(splittedInformation[4]) + ')';
+          result.Add(_BookingPaymentStatus, status);
+        end else
+        if AnsiEndsStr('FAILED DUE TO TECHNICAL PROBLEM', trim(splittedInformation[0])) then
+        begin
+          result.Add(_BookingPaymentStatus, GetTranslatedText('shTemplate_TechnicalFailure'));
+        end else
+        begin
+          result.Add(_BookingPAymentStatus, '-');
+        end;
 
-      result.Add(_BookingPaymentAmount, Trim(splittedInformation[1]));
-      result.Add(_BookingPaymentCreditCard, Trim(splittedInformation[3]));
+        result.Add(_BookingPaymentAmount, Trim(splittedInformation[1]));
+        result.Add(_BookingPaymentCreditCard, Trim(splittedInformation[3]));
+      finally
+        splittedInformation.Free;
+      end;
     end else
     if (POS(CC_ASSURANCE, information) > 0) then
     begin
@@ -453,29 +457,33 @@ begin
           GetTranslatedText('shTemplate_Assurance'));
 
       splittedInformation := SplitStringToTStrings('|', Copy(information, POS(CC_PAYMENT, information), maxInt));
-      while splittedInformation.Count < 5 do splittedInformation.Add('');
-      if AnsiEndsStr('SUCCEEDED', trim(splittedInformation[0])) then
-      begin
-        result.Add(_BookingPaymentStatus, GetTranslatedText('shTemplate_PaymentSuccess'));
-      end else
-      if AnsiEndsStr('FAILED', trim(splittedInformation[0])) then
-      begin
-        status := GetTranslatedText('shTemplate_PaymentFail');
-        if (splittedInformation.Count > 4) AND
-           (splittedInformation[4] <> '') then
-             status := status + ' (' + Trim(splittedInformation[4]) + ')';
-        result.Add(_BookingPaymentStatus, status);
-      end else
-      if AnsiEndsStr('FAILED DUE TO TECHNICAL PROBLEM', trim(splittedInformation[0])) then
-      begin
-        result.Add(_BookingPaymentStatus, GetTranslatedText('shTemplate_TechnicalFailure'));
-      end else
-      begin
-        result.Add(_BookingPAymentStatus, '-');
-      end;
+      try
+        while splittedInformation.Count < 5 do splittedInformation.Add('');
+        if AnsiEndsStr('SUCCEEDED', trim(splittedInformation[0])) then
+        begin
+          result.Add(_BookingPaymentStatus, GetTranslatedText('shTemplate_PaymentSuccess'));
+        end else
+        if AnsiEndsStr('FAILED', trim(splittedInformation[0])) then
+        begin
+          status := GetTranslatedText('shTemplate_PaymentFail');
+          if (splittedInformation.Count > 4) AND
+             (splittedInformation[4] <> '') then
+               status := status + ' (' + Trim(splittedInformation[4]) + ')';
+          result.Add(_BookingPaymentStatus, status);
+        end else
+        if AnsiEndsStr('FAILED DUE TO TECHNICAL PROBLEM', trim(splittedInformation[0])) then
+        begin
+          result.Add(_BookingPaymentStatus, GetTranslatedText('shTemplate_TechnicalFailure'));
+        end else
+        begin
+          result.Add(_BookingPAymentStatus, '-');
+        end;
 
-      result.Add(_BookingPaymentAmount, Trim(splittedInformation[1]));
-      result.Add(_BookingPaymentCreditCard, Trim(splittedInformation[3]));
+        result.Add(_BookingPaymentAmount, Trim(splittedInformation[1]));
+        result.Add(_BookingPaymentCreditCard, Trim(splittedInformation[3]));
+      finally
+        splittedInformation.Free;
+      end;
     end else
     begin
       result.Add(_BookingPaymentType, '-');

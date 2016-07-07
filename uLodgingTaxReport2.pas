@@ -746,6 +746,7 @@ var
   y, m, d : word;
   idx : integer;
   lastDay : integer;
+  lLocations: TSet_Of_Integer;
 begin
   zSetDates := false;
 
@@ -763,7 +764,12 @@ begin
   dtDateTo.Date := zDateTo;
   zSetDates := true;
 
-  zLocationInString := glb.LocationSQLInString(frmmain.FilteredLocations);
+  lLocations := frmmain.FilteredLocations;
+  try
+  zLocationInString := glb.LocationSQLInString(lLocations);
+  finally
+    lLocations.Free;
+  end;
 
   if zLocationInString = '' then
   begin

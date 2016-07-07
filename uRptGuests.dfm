@@ -27,7 +27,6 @@ object frmRptGuests: TfrmRptGuests
     Align = alTop
     TabOrder = 0
     SkinData.SkinSection = 'PANEL'
-    ExplicitWidth = 1121
     DesignSize = (
       1126
       89)
@@ -341,7 +340,6 @@ object frmRptGuests: TfrmRptGuests
         'All Guests'
         'Just Named Guests'
         'Just Main Guests')
-      ExplicitLeft = 659
     end
     object chkGroup: TsCheckBox
       Left = 282

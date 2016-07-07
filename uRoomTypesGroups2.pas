@@ -1055,6 +1055,7 @@ end;
 procedure TfrmRoomTypesGroups2.tvDataPAYMENTS_REQUIREDPropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
 var
   newValue: String;
+  lSplit: TStrings;
 begin
   newValue := LookupForDataItem('Channels', glb.ChannelsSet, 'channelManagerId',
     'Name', m_['PAYMENTS_REQUIRED'], true, false, 'Active', nil, '');
@@ -1064,7 +1065,12 @@ begin
     m_.Edit;
     m_['PAYMENTS_REQUIRED'] := newValue;
     m_.Post;
-    RefreshRequirementsForRate(m_['Code'], SplitStringToTStrings(',', newValue));
+    lSplit := SplitStringToTStrings(',', newValue);
+    try
+      RefreshRequirementsForRate(m_['Code'], lSPlit);
+    finally
+      lSplit.Free;
+    end;
   end;
 end;
 

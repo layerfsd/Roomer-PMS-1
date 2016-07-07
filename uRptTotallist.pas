@@ -423,38 +423,17 @@ begin
     Close;
 end;
 
-//function TfrmRptTotallist.LocationInString : string;
-//var
-//  i : integer;
-//  locationID : integer;
-//  s : string;
-//  LocationList : TSet_Of_Integer;
-//
-//begin
-//  result := '';
-//  LocationList := frmmain.FilteredLocations;
-//  if (locationList.Count = 0) or (locationList.Count = glb.Locations.recordCount) then exit;
-//
-//  s := '';
-//  glb.Locations.first;
-//  while not glb.locations.eof do
-//  begin
-//    locationID := glb.Locations.FieldByName('ID').asinteger;
-//    if LocationList.ValueInList(locationID) then
-//    begin
-//      s := s+glb.Locations.FieldByName('location').AsString+',';
-//    end;
-//    glb.Locations.next;
-//  end;
-//
-//  if length(s) > 0 then delete(s,length(s),1);
-//  result := s;
-//end;
-
 procedure TfrmRptTotallist.FormShow(Sender: TObject);
+var
+  lLocations: TSet_Of_Integer;
 begin
   _restoreForm(frmRptTotallist);
-  zLocationInString := glb.LocationSQLInString(frmmain.FilteredLocations);
+  lLocations := frmmain.FilteredLocations;
+  try
+  zLocationInString := glb.LocationSQLInString(lLocations);
+  finally
+    lLocations.Free;
+  end;
 
   if zLocationInString = '' then
   begin

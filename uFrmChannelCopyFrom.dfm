@@ -106,9 +106,9 @@ object FrmChannelCopyFrom: TFrmChannelCopyFrom
       BoundLabel.Font.Style = []
       SkinData.SkinSection = 'COMBOBOX'
       VerticalAlignment = taAlignTop
-      Color = 3355443
+      Color = clWhite
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = 15724527
+      Font.Color = clBlack
       Font.Height = -11
       Font.Name = 'Tahoma'
       Font.Style = []

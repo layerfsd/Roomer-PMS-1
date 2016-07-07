@@ -308,9 +308,17 @@ begin
 end;
 
 procedure TfrmRptNotes.FormShow(Sender: TObject);
+var
+  lLocations: TSet_Of_Integer;
 begin
   _restoreForm(frmRptNotes);
-  zLocationInString := glb.LocationSQLInString(frmmain.FilteredLocations);
+
+  lLocations := frmmain.FilteredLocations;
+  try
+    zLocationInString := glb.LocationSQLInString(lLocations);
+  finally
+    lLocations.Free;
+  end;
 
   if zLocationInString = '' then
   begin
