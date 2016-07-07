@@ -206,8 +206,6 @@ type
     function PutAsJSON(roomerClient:
       {$IFDEF USE_INDY}TIdHTTP{$ELSE}TALWininetHttpClient{$ENDIF}
       ; url, Data: String): String;
-    function CreateRoomerClient:
-    {$IFDEF USE_INDY}TIdHTTP{$ELSE}TALWininetHttpClient{$ENDIF};
     function DeleteAsString(roomerClient:
       {$IFDEF USE_INDY}TIdHTTP{$ELSE}TALWininetHttpClient{$ENDIF}
       ; url: String): String;
@@ -250,6 +248,8 @@ type
     { Public declarations }
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
+
+    function CreateRoomerClient(aAddAuthenticationHeader: boolean = false): {$IFDEF USE_INDY}TIdHTTP{$ELSE}TALWininetHttpClient{$ENDIF};
     function GetFloatValue(Field: TField): Double;
     procedure Post; override;
     procedure OpenDataset(SqlResult: String);
@@ -471,8 +471,8 @@ begin
   FLastAccess := now;
 end;
 
-function TRoomerDataSet.CreateRoomerClient:
-{$IFDEF USE_INDY}TIdHTTP{$ELSE}TALWininetHttpClient{$ENDIF};
+function TRoomerDataSet.CreateRoomerClient(aAddAuthenticationHeader: boolean = false):
+                          {$IFDEF USE_INDY}TIdHTTP{$ELSE}TALWininetHttpClient{$ENDIF};
 begin
 {$IFDEF USE_INDY}
   result := TIdHTTP.Create(nil);
@@ -494,6 +494,9 @@ begin
     whttpIo_NO_CACHE_WRITE, whttpIo_NO_UI, whttpIo_PRAGMA_NOCACHE,
     whttpIo_RELOAD, whttpIo_RESYNCHRONIZE];
 {$ENDIF}
+
+  if aAddAuthenticationHeader then
+    AddAuthenticationHeaders(Result);
 end;
 
 function TRoomerDataSet.CreateExecutionPlan: TRoomerExecutionPlan;
@@ -525,6 +528,9 @@ begin
   result.FUsername := self.FUsername;
   result.FAppName := self.FAppName;
   result.FAppVersion := self.FAppVersion;
+  result.AppKey := self.AppKey;
+  result.ApplicationID := self.ApplicationID;
+  result.AppSecret := self.AppSecret;
 end;
 
 procedure TRoomerDataSet.AssignPropertiesToDataSet(DataSet: TRoomerDataSet);
@@ -692,7 +698,6 @@ begin
   Result := res;
 end;
 
-
 function TRoomerDataSet.queryRoomer(aSql: String; SetLastAccess: Boolean = true; Threaded : Boolean = False): String;
 begin
   FLastSql := aSql;
@@ -791,9 +796,7 @@ begin
   roomerClient.SendTimeout := 900000;
   roomerClient.ReceiveTimeout := 900000;
   roomerClient.ConnectTimeout := 10000;
-  SetAuthHeaders(
-
-    roomerClient.{$IFDEF USE_INDY}Request.CustomHeaders{$ELSE}RequestHeader{$ENDIF}, self.hotelId, self.username, self.password);
+  SetAuthHeaders( roomerClient.{$IFDEF USE_INDY}Request.CustomHeaders{$ELSE}RequestHeader{$ENDIF}, self.hotelId, self.username, self.password);
   SetOpenApiAuthHeaders(roomerClient.RequestHeader);
 end;
 

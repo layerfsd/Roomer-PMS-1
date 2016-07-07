@@ -724,6 +724,7 @@ type
     btnRepDepartures: TdxBarLargeButton;
     dxBarButton6: TdxBarButton;
     btnRptDepartures: TdxBarLargeButton;
+    dxRptStockitems: TdxBarLargeButton;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
@@ -1024,6 +1025,7 @@ type
     procedure btnRptDeparturesClick(Sender: TObject);
     procedure grOneDayRoomsGetCellPrintColor(Sender: TObject; ARow, ACol: Integer; AState: TGridDrawState;
       ABrush: TBrush; AFont: TFont);
+    procedure dxRptStockitemsClick(Sender: TObject);
 
   private
     FReservationsModel: TReservationsModel;
@@ -1615,7 +1617,7 @@ uses
     , UITypes
     , Types
     , VCLTee.TeCanvas
-    ;
+    , uRptStockItems;
 
 {$R *.DFM}
 {$R Cursors.res}
@@ -12342,6 +12344,11 @@ procedure TfrmMain.dxBarSubItem1Click(Sender: TObject);
 begin
   UserClickedDxLargeButton(Sender);
   ShowChannelAvailabilityManager();
+end;
+
+procedure TfrmMain.dxRptStockitemsClick(Sender: TObject);
+begin
+  ShowStockItemsReport;
 end;
 
 procedure TfrmMain.ShowBookingConfirmationTemplates;
