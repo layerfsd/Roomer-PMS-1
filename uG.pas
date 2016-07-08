@@ -1,4 +1,4 @@
-﻿unit uG;
+unit uG;
 
 {$M+}
 

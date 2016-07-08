@@ -1616,7 +1616,9 @@ uses
     , UITypes
     , Types
     , VCLTee.TeCanvas
-    , uRptStockItems;
+    , uReservationStatusDefinitions
+    , uRptStockItems
+    ;
 
 {$R *.DFM}
 {$R Cursors.res}
@@ -7126,7 +7128,7 @@ begin
         iRoom := zOneDayResPointers[ARow].ptrRooms[OneDay_GetIsLeftOrRight(ACol), 2];
         // Ef samskonar herbergistegund er utan �� er �a� s�nt me� �v� a� lita brottfarardagsetningu
         // me�h�ndla vinsta megin
-        if ((OneDay_GetIsLeftOrRight(ACol) = cLefthalf) and (Grid.cells[Left_Departure, ARow] = '')) OR
+        if ((OneDay_GetIsLeftOrRight(ACol) = cLeftHalf) and (Grid.cells[Left_Departure, ARow] = '')) OR
           ((OneDay_GetIsLeftOrRight(ACol) = cRightHalf) and (Grid.cells[Right_Departure, ARow] = '')) then
         begin
           if ((ACol = Left_Departure) and (ACol <> Left_GuestCount)) OR
@@ -8581,7 +8583,7 @@ var
       begin
         Grid.cells[iCol, iRow] := '';
         Grid.Objects[iCol, iRow].Free;
-        Grid.Objects[iCol, iRow] := TresCell.Create(-1, -1, -1, -1, -1, -1, false, '', '', '', '', false, 1, '', '', '',
+        Grid.Objects[iCol, iRow] := TresCell.Create(-1, -1, -1, -1, -1, -1, false, '', '', rsUnknown, '', false, 1, '', '', '',
           '', '', '', '', '', '', 0.00, 0.00,
           false, false, 0, '', false, false, '', 0, 0, 0, '', '', 0, 0);
       end;
@@ -9503,7 +9505,7 @@ begin
 //        grPeriodRooms_NO.Objects[c, r] := nil;
 //      end;
       grPeriodRooms_NO.Objects[c, r].Free;
-      grPeriodRooms_NO.Objects[c, r] := TresCell.Create(-1, -1, -1, -1, -1, -1, false, '', '', '', '', false, 1, '', '',
+      grPeriodRooms_NO.Objects[c, r] := TresCell.Create(-1, -1, -1, -1, -1, -1, false, '', '', rsUnknown, '', false, 1, '', '',
         '', '', '', '', '', '', '', 0.00, 0.00,
         false, false, 0, '', false, false, '', 0, 0, 0, '', '', 0, 0);
     end;
@@ -9522,7 +9524,7 @@ begin
 //      grPeriodRooms_NO.Objects[c, r] := nil;
 //    end;
     grPeriodRooms_NO.Objects[c, r].Free;
-    grPeriodRooms_NO.Objects[c, r] := TresCell.Create(-1, -1, -1, -1, -1, -1, false, '', '', '', '', false, 1, '', '',
+    grPeriodRooms_NO.Objects[c, r] := TresCell.Create(-1, -1, -1, -1, -1, -1, false, '', '', rsUnknown, '', false, 1, '', '',
       '', '', '', '', '', '', '', 0.00, 0.00,
       false, false, 0, '', false, false, '', 0, 0, 0, '', '', 0, 0);
   end;
