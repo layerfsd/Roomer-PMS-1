@@ -176,6 +176,7 @@ uses
     uRoomerLanguage
   , uAppGlobal
   , uG
+  , _glob
   , uUtils
   , cxGridExportLink
   , ShellApi
@@ -189,47 +190,9 @@ uses
   , uInvoice
   , uReservationProfile
   , uRptbViewer
-  ;
+  , uReservationStatusDefinitions;
 
 const
-  cSQL = 'SELECT '+
-          '  co.CompanyID, ' +
-          '  rd.Room, '+
-          '  rd.RoomType, '+
-          '  r.Reservation AS RoomerReservationId, '+
-          '  rd.RoomReservation AS RoomerRoomReservationId, '+
-          '  pe.Name AS GuestName, '+
-          '  r.Customer AS CompanyCode, '+
-          '  r.Name AS CompanyName, '+
-          '  CAST(rr.AvrageRate as DECIMAL(10,3)) AS AverageRoomRate, '+
-          '  ( SELECT cast(rd1.ADate as date)'+
-          '         FROM roomsdate rd1 '+
-          '         WHERE rd1.RoomReservation=rd.RoomReservation '+
-          '               AND (rd1.ResFlag = ''P'') '+
-          '         ORDER BY rd1.ADate LIMIT 1) AS Arrival, '+
-          '  Cast(DATE_ADD((SELECT rd1.ADate '+
-          '              FROM roomsdate rd1 '+
-          '              WHERE rd1.RoomReservation=rd.RoomReservation AND (rd1.ResFlag = ''P'') '+
-          '              ORDER BY rd1.ADate DESC LIMIT 1), '+
-          '            INTERVAL 1 DAY) as Date) AS Departure, '+
-          '  ( SELECT COUNT(id) '+
-          '    FROM persons pe1 '+
-          '    WHERE pe1.RoomReservation=rd.RoomReservation) AS NumGuests, '+
-          '  rr.ExpectedTimeOfArrival as ExpectedTimeOfArrival '+
-          'FROM roomsdate rd '+
-          'JOIN roomreservations rr ON rr.RoomReservation=rd.RoomReservation '+
-          'JOIN reservations r ON r.Reservation=rd.Reservation '+
-          'JOIN persons pe ON pe.RoomReservation=rd.RoomReservation AND pe.MainName=1 '+
-          'JOIN channels ch ON ch.Id=r.Channel, '+
-          'control co '+
-          'WHERE ( SELECT rd1.ADate '+
-          '        FROM roomsdate rd1 '+
-          '        WHERE rd1.RoomReservation=rd.RoomReservation AND (rd1.ResFlag = ''P'') '+
-          '        ORDER BY rd1.ADate LIMIT 1)=rd.ADate '+
-          '      AND (rd.ResFlag = ''P'') '+
-          '      %s '+
-          'GROUP BY rd.aDate, rd.RoomReservation '+
-          'ORDER BY rd.aDate, rd.Room ';
 
   cSqlForSingleDate = '      AND rd.ADate = ''%s'' ';
   cSqlForDateRange = '      AND rd.ADate >= ''%s'' AND rd.ADate <= ''%s'' ';
@@ -336,17 +299,56 @@ begin
 end;
 
 function TfrmArrivalsReport.ConstructSQL: string;
-var s : String;
+var s, d : String;
 begin
+
+
+  s := 'SELECT '+
+          '  co.CompanyID, ' +
+          '  rd.Room, '+
+          '  rd.RoomType, '+
+          '  r.Reservation AS RoomerReservationId, '+
+          '  rd.RoomReservation AS RoomerRoomReservationId, '+
+          '  pe.Name AS GuestName, '+
+          '  r.Customer AS CompanyCode, '+
+          '  r.Name AS CompanyName, '+
+          '  CAST(rr.AvrageRate as DECIMAL(10,3)) AS AverageRoomRate, '+
+          '  ( SELECT cast(rd1.ADate as date)'+
+          '         FROM roomsdate rd1 '+
+          '         WHERE rd1.RoomReservation=rd.RoomReservation '+
+          '               AND (rd1.ResFlag = ''P'') '+
+          '         ORDER BY rd1.ADate LIMIT 1) AS Arrival, '+
+          '  Cast(DATE_ADD((SELECT rd1.ADate '+
+          '              FROM roomsdate rd1 '+
+          '              WHERE rd1.RoomReservation=rd.RoomReservation AND (rd1.ResFlag = ' + _db(rsReservations) + ') '+
+          '              ORDER BY rd1.ADate DESC LIMIT 1), '+
+          '            INTERVAL 1 DAY) as Date) AS Departure, '+
+          '  ( SELECT COUNT(id) '+
+          '    FROM persons pe1 '+
+          '    WHERE pe1.RoomReservation=rd.RoomReservation) AS NumGuests, '+
+          '  rr.ExpectedTimeOfArrival as ExpectedTimeOfArrival '+
+          'FROM roomsdate rd '+
+          'JOIN roomreservations rr ON rr.RoomReservation=rd.RoomReservation '+
+          'JOIN reservations r ON r.Reservation=rd.Reservation '+
+          'JOIN persons pe ON pe.RoomReservation=rd.RoomReservation AND pe.MainName=1 '+
+          'JOIN channels ch ON ch.Id=r.Channel, '+
+          'control co '+
+          'WHERE ( SELECT rd1.ADate '+
+          '        FROM roomsdate rd1 '+
+          '        WHERE rd1.RoomReservation=rd.RoomReservation AND (rd1.ResFlag = ' + _db(rsReservations) + ') '+
+          '        ORDER BY rd1.ADate LIMIT 1)=rd.ADate '+
+          '      AND (rd.ResFlag = ' + _db(rsReservations) + ') '+
+          '      %s '+
+          'GROUP BY rd.aDate, rd.RoomReservation '+
+          'ORDER BY rd.aDate, rd.Room ';
+
   if rbToday.Checked OR rbTomorrow.Checked then
-    s := Format(cSqlForSingleDate, [FormatDateTime('yyyy-mm-dd', dtDateFrom.Date)])
+    d := Format(cSqlForSingleDate, [FormatDateTime('yyyy-mm-dd', dtDateFrom.Date)])
   else
-    s := Format(cSqlForDateRange, [FormatDateTime('yyyy-mm-dd', dtDateFrom.Date),
+    d := Format(cSqlForDateRange, [FormatDateTime('yyyy-mm-dd', dtDateFrom.Date),
                                    FormatDateTime('yyyy-mm-dd', dtDateTo.Date)]);
-  Result := Format(cSQL, [s]);
-  {$ifdef DEBUG}
-    CopyToClipboard(Result);
-  {$endif}
+  Result := Format(s, [d]);
+  CopyToClipboard(Result);
 end;
 
 constructor TfrmArrivalsReport.Create(aOwner: TComponent);

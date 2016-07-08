@@ -25,17 +25,20 @@ type
       rsTmp2,
       rsDeleted);
 
+    TReservationStatusSet = set of TReservationStatus;
+
     TReservationStatusHelper = record helper for TReservationStatus
     public
       // constructor
       /// <summary>
-      ///   Create a TReservationStatus from a single character status string
+      ///   Create a TReservationStatus from a single character or status string
       /// </summary>
-      class function FromResStatus(const statusStr : string) : TReservationStatus; static;
+      class function FromResStatus(const statusChar : char) : TReservationStatus; overload; static;
+      class function FromResStatus(const statusStr : string) : TReservationStatus; overload; static;
       /// <summary>
       ///   Return a single character statusstring
       /// </summary>
-      function ToStatusChar: Char;
+      function AsStatusChar: Char;
       /// <summary>
       ///   Return the translated displaystring for a reservationstatus
       /// </summary>
@@ -50,6 +53,12 @@ type
       function ToColor(var backColor, fontColor : TColor) : boolean;
     end;
 
+    TReservationStatusSetHelper = record helper for TReservationStatusSet
+      /// <summary>
+      ///   Returns a string containing a set definition as used in SQL statements, i.e. ['P, 'C']
+      /// </summary>
+      function AsSQLString: string;
+    end;
 
 const
 	STATUS_NOT_ARRIVED = 'P';
@@ -71,11 +80,12 @@ implementation
 uses
     PrjConst
   , SysUtils
+  , Classes
   , uG
   ;
 
 
-function TReservationStatusHelper.ToStatusChar: Char;
+function TReservationStatusHelper.AsStatusChar: Char;
 const
   cReservationStatusChars : Array[TReservationStatus] of char =
       ('P','P','G','G','D','P','O','P','G','A','N','B','C','W','Z','X');
@@ -83,6 +93,14 @@ begin
   Result := cReservationStatusChars[Self]; 
 end;
 
+
+class function TReservationStatusHelper.FromResStatus(const statusStr: string): TReservationStatus;
+begin
+  if statusStr.IsEmpty then
+    Result := rsUnKnown
+  else
+    Result := FromResStatus(statusStr[1]);
+end;
 
 function TReservationStatusHelper.AsReadableString : string;
 begin
@@ -129,23 +147,23 @@ end;
 
 
 
-class function TReservationStatusHelper.FromResStatus(const statusSTR : string) : TReservationStatus;
+class function TReservationStatusHelper.FromResStatus(const statusChar : char) : TReservationStatus;
 begin
-  result := rsUnKnown;
-  if statusStr.Length > 0 then
-    case statusStr.chars[1] of
-      'P': result := rsReservations;
-      'G': result := rsGuests;
-      'D': result := rsDeparted;
-      'R': result := rsReserved;
-      'O': result := rsOverbooked;
-      'A': result := rsAlotment;
-      'N': result := rsNoShow;
-      'B': result := rsBlocked;
-      'C': result := rsCanceled;
-      'W': result := rsTmp1;
-      'Z': result := rsTmp2;
-    end;
+  case statusChar of
+    'P': result := rsReservations;
+    'G': result := rsGuests;
+    'D': result := rsDeparted;
+    'R': result := rsReserved;
+    'O': result := rsOverbooked;
+    'A': result := rsAlotment;
+    'N': result := rsNoShow;
+    'B': result := rsBlocked;
+    'C': result := rsCanceled;
+    'W': result := rsTmp1;
+    'Z': result := rsTmp2;
+  else
+    result := rsUnKnown;
+  end;
 end;
 
 
@@ -221,5 +239,24 @@ begin
     end;
 end;
 
+
+{ TReservationStatusSetHelper }
+
+function TReservationStatusSetHelper.AsSQLString: string;
+var
+  lStr: TStringList;
+  stat: TReservationStatus;
+begin
+  lStr := TStringlist.Create;
+  try
+    for stat in Self do
+      lStr.Add(stat.AsStatusChar);
+
+    lStr.Delimiter := ',';
+    Result := '[' + lStr.DelimitedText +']';
+  finally
+    lStr.Free;
+  end;
+end;
 
 end.

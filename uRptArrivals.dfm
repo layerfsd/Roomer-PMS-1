@@ -26,7 +26,6 @@ object frmArrivalsReport: TfrmArrivalsReport
     Align = alTop
     TabOrder = 0
     SkinData.SkinSection = 'PANEL'
-    ExplicitTop = -6
     object btnRefresh: TsButton
       Left = 378
       Top = 14
@@ -183,9 +182,6 @@ object frmArrivalsReport: TfrmArrivalsReport
         TabOrder = 2
         OnClick = btnProfileClick
         SkinData.SkinSection = 'BUTTON'
-        ExplicitLeft = 307
-        ExplicitTop = 5
-        ExplicitHeight = 29
       end
       object btnInvoice: TsButton
         AlignWithMargins = True
@@ -215,7 +211,6 @@ object frmArrivalsReport: TfrmArrivalsReport
         TabOrder = 4
         OnClick = btnReportClick
         SkinData.SkinSection = 'BUTTON'
-        ExplicitLeft = 1018
       end
     end
   end

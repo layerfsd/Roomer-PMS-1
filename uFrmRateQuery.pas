@@ -130,7 +130,7 @@ type
   private
     { Private declarations }
     _FrmViewDailyRates: TFrmViewDailyRates;
-    FRates: TDictionary<String, TDateRate>;
+    FDateRates: TObjectDictionary<String, TDateRate>;
     RatesSet: TRoomerDataSet;
     RoomTypes: TRoomTypeEntityList;
     FBeingViewed: Boolean;
@@ -244,7 +244,7 @@ end;
 procedure TFrmRateQuery.FormCreate(Sender: TObject);
 begin
   _FrmViewDailyRates := TFrmViewDailyRates.Create(nil);
-  FRates := TDictionary<String, TDateRate>.Create;
+  FDateRates := TObjectDictionary<String, TDateRate>.Create([doOwnsValues]);
   RatesSet := CreateNewDataSet;
   FBeingViewed := False;
   RoomTypes := TRoomTypeEntityList.Create(True);
@@ -256,8 +256,8 @@ begin
   ClearRates;
   FreeAndNil(RoomTypes);
   FreeAndNil(_FrmViewDailyRates);
-  FRates.Clear;
-  FRates.Free;
+  FDateRates.Clear;
+  FDateRates.Free;
 end;
 
 procedure TFrmRateQuery.GetData(ADateFrom, ADateTo: TDateTime);
@@ -265,7 +265,7 @@ var
   s, sDateFrom, sDateTo: String;
 begin
   _FrmViewDailyRates.Clear;
-  FRates.Clear;
+  FDateRates.Clear;
   Screen.Cursor := crHourglass;
   try
     sDateFrom := dateToSqlString(ADateFrom);
@@ -394,7 +394,7 @@ begin
     for i := Trunc(FShowDateFrom) to Trunc(FShowDateTo) do
     begin
       key := format('%s_%s_%s', [rt, rtg, uDateUtils.dateToSqlString(i)]);
-      if FRates.TryGetValue(key, DateRate) then
+      if FDateRates.TryGetValue(key, DateRate) then
         _FrmViewDailyRates.Add(DateRate.Clone);
     end;
 
@@ -532,7 +532,7 @@ begin
     glb.LocateSpecificRecordAndGetValue('currencies', 'ID', CurrencyId, 'Currency', Currency) then
     _FrmViewDailyRates.Currency := Currency;
 
-  FRates.Clear;
+  FDateRates.Clear;
 
   RatesSet.First;
   while NOT RatesSet.EOF do
@@ -555,7 +555,7 @@ begin
         NumGuests := RatesSet['rtgNumGuests'];
         key := format('%s_%s_%s', [RatesSet['rtRoomType'], RatesSet['rtgCode'],
           uDateUtils.dateToSqlString(RatesSet['crDate'])]);
-        FRates.Add(key, CreateDateRate(crDate, Rate, edCustomer.Text, Trunc(FShowDateTo - FShowDateFrom) + 1, NumGuests,
+        FDateRates.Add(key, CreateDateRate(crDate, Rate, edCustomer.Text, Trunc(FShowDateTo - FShowDateFrom) + 1, NumGuests,
           _FrmViewDailyRates.Currency));
       end;
     end;

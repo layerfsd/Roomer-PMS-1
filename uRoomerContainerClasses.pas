@@ -50,11 +50,12 @@ type
     FBlockMoveReason: String;
 
   public
+    constructor Create; overload;
     constructor Create(RoomReservation, Reservation, Channel, PaymentInvoice, AscIndex, DescIndex: integer; GroupAccount: boolean;
       Room, RoomType: string; resFlag: TReservationStatus; CustomerName: string; isNoRoom: boolean; Date: Tdate; Information, Fax, Tel2, Tel1, GuestName, PMInfo, PriceType, Currency,
       BookingId: String; Price, Discount: Double; Percentage: boolean; ItemsOnInvoice: boolean; numGuests: integer; RoomClass: string;
       _OutOfOrderBlocking, _BlockMove: boolean; _BlockMoveReason: String; _OngoingSale, _OngoingRent, _OngoingTaxes: Double; _Invoices, _Guarantee: String; _TotalPayments: Double
-      ; _InvoiceIndex : Integer);
+      ; _InvoiceIndex : Integer); overload;
 
     destructor Destroy; override;
 
@@ -162,6 +163,13 @@ begin
   FTotalPayments := _TotalPayments;
 
   FInvoiceIndex := _InvoiceIndex;
+end;
+
+constructor TresCell.Create;
+begin
+  Create(-1, -1, -1, -1, -1, -1, false, '', '', rsUnknown, '', false, 1, '', '',
+          '', '', '', '', '', '', '', 0.00, 0.00,
+          false, false, 0, '', false, false, '', 0, 0, 0, '', '', 0, 0);
 end;
 
 destructor TresCell.Destroy;

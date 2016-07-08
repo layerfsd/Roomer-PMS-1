@@ -71,11 +71,15 @@ begin
   // 123456789012345678901234567890
   // aa[\ROOMER_SPLIT\]bb
   list := SplitStringToTStrings(ROOMER_SPLIT, res);
-  for I := 0 to datasets.Count - 1 do
-  begin
-    if NOT Assigned(datasets[I]) then
-      datasets[I] := CreateNewDataset;
-    datasets[I].OpenDataset(list[I]);
+  try
+    for I := 0 to datasets.Count - 1 do
+    begin
+      if NOT Assigned(datasets[I]) then
+        datasets[I] := CreateNewDataset;
+      datasets[I].OpenDataset(list[I]);
+    end;
+  finally
+    list.free;
   end;
 
   Result := res;

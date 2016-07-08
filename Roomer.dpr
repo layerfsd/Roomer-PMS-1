@@ -228,8 +228,7 @@ uses
   uCurrencyHandler in 'uCurrencyHandler.pas',
   uFloatUtils in 'RoomerVCLs\Source\uFloatUtils.pas',
   uRptStockItems in 'uRptStockItems.pas' {frmRptStockItems},
-  uOpenAPICaller in 'OpenAPI\uOpenAPICaller.pas';
-  uFloatUtils in 'RoomerVCLs\Source\uFloatUtils.pas',
+  uOpenAPICaller in 'OpenAPI\uOpenAPICaller.pas',
   uReservationStatusDefinitions in 'Definitions\uReservationStatusDefinitions.pas',
   uRoomerDefinitions in 'Definitions\uRoomerDefinitions.pas';
 

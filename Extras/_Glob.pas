@@ -32,6 +32,7 @@ uses
   printers,
   inifiles,
   dateUtils
+  , uReservationStatusDefinitions
   ;
 
 var
@@ -92,6 +93,9 @@ function _db(const aDate  : TdateTime) : string; Overload;
 function _dbDT(const aDate : TDateTime)  : string;
 function _db(const aDate : TDate)  : string; Overload;
 function _db(const aTime: TTime): string; overload;
+function _db(const aStatus: TReservationStatus): string; overload;
+function _db(const aStatusSet: TReservationStatusSet): string; overload;
+
 function _dbDateAndTime(const aDate : TDateTime; qouted : boolean=true)  : string;
 
 function _FloatToStr(fValue : double; w, d : byte) : string;
@@ -224,8 +228,8 @@ function GetGridsIniFilename : String;
 
 implementation
 
-uses uDateUtils, uRegistryServices, uUtils, uG, uStringUtils, uAppGlobal, uRoomerDefinitions, PrjConst, uFloatUtils,
-  uReservationStatusDefinitions;
+uses uDateUtils, uRegistryServices, uUtils, uG, uStringUtils, uAppGlobal, uRoomerDefinitions, PrjConst, uFloatUtils
+    ;
 
 function GetRoomerIniFilename : String;
 begin
@@ -474,8 +478,8 @@ begin
     3 :
       begin
         if aBool then
-          Result := 'Já'
-        else
+          Result := 'Ja'
+      else
           Result := 'Nei';
       end;
     4 :
@@ -2108,6 +2112,17 @@ begin
   if s = '00:00' then s := '';
   Result := quotedstr(S);
 end;
+
+function _db(const aStatus: TReservationStatus): string; overload;
+begin
+  Result := _db(aStatus.AsStatusChar);
+end;
+
+function _db(const aStatusSet: TReservationStatusSet): string; overload;
+begin
+  Result := aStatusSet.asSQLString;
+end;
+
 
 function _dbDT(const aDate : TDateTime)  : string;
 var

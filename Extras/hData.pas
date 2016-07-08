@@ -2107,6 +2107,7 @@ uses
   uActivityLogs,
   uAvailabilityPerDay,
   PrjConst
+  , uReservationStatusDefinitions
   ;
 
 function LocalFloatValue(Value: String): double;
