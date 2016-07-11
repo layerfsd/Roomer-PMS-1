@@ -127,8 +127,8 @@ type
     tvDataRecId: TcxGridDBColumn;
     tvDataID: TcxGridDBColumn;
     tvDataActive: TcxGridDBColumn;
-    m_CustomerType: TWideStringField;
-    m_Description: TWideStringField;
+    m_CustomerType: TStringField;
+    m_Description: TStringField;
     m_Priority: TIntegerField;
     tvDataCustomerType: TcxGridDBColumn;
     tvDataDescription: TcxGridDBColumn;

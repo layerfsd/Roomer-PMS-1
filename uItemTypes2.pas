@@ -124,10 +124,10 @@ type
     tvDataRecId: TcxGridDBColumn;
     tvDataID: TcxGridDBColumn;
     tvDataActive: TcxGridDBColumn;
-    m_Itemtype: TWideStringField;
-    m_Description: TWideStringField;
-    m_VATCode: TWideStringField;
-    m_AccItemLink: TWideStringField;
+    m_Itemtype: TStringField;
+    m_Description: TStringField;
+    m_VATCode: TStringField;
+    m_AccItemLink: TStringField;
     tvDataItemtype: TcxGridDBColumn;
     tvDataDescription: TcxGridDBColumn;
     tvDataVATCode: TcxGridDBColumn;

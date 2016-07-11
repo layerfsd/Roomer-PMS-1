@@ -129,8 +129,8 @@ type
     tvDataRateExtraInfant: TcxGridDBColumn;
     tvDataRateExtraChildren: TcxGridDBColumn;
     tvDataActive: TcxGridDBColumn;
-    m_Currency: TWideStringField;
-    m_Description: TWideStringField;
+    m_Currency: TStringField;
+    m_Description: TStringField;
     m_Rate1Person: TFloatField;
     m_Rate2Persons: TFloatField;
     m_Rate3Persons: TFloatField;

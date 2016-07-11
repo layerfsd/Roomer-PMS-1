@@ -577,11 +577,11 @@ object frmChannels: TfrmChannels
     object m_Active: TBooleanField
       FieldName = 'Active'
     end
-    object m_name: TWideStringField
+    object m_name: TStringField
       FieldName = 'name'
       Size = 35
     end
-    object m_channelManagerId: TWideStringField
+    object m_channelManagerId: TStringField
       FieldName = 'channelManagerId'
       Size = 10
     end
@@ -594,18 +594,18 @@ object frmChannels: TfrmChannels
     object m_defaultPricePP: TFloatField
       FieldName = 'defaultPricePP'
     end
-    object m_marketSegment: TWideStringField
+    object m_marketSegment: TStringField
       FieldName = 'marketSegment'
     end
     object m_currencyId: TIntegerField
       FieldName = 'currencyId'
     end
-    object m_roomClasses: TWideStringField
+    object m_roomClasses: TStringField
       DisplayWidth = 2096
       FieldName = 'roomClasses'
       Size = 2096
     end
-    object m_Currency: TWideStringField
+    object m_Currency: TStringField
       FieldName = 'Currency'
       Size = 5
     end
@@ -622,7 +622,7 @@ object frmChannels: TfrmChannels
     object m_customerId: TIntegerField
       FieldName = 'customerId'
     end
-    object m_color: TWideStringField
+    object m_color: TStringField
       FieldName = 'color'
       Size = 50
     end

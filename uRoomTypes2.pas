@@ -128,13 +128,13 @@ type
     lvData: TcxGridLevel;
     m_ID: TIntegerField;
     m_Active: TBooleanField;
-    m_RoomType: TWideStringField;
-    m_Description: TWideStringField;
+    m_RoomType: TStringField;
+    m_Description: TStringField;
     m_NumberGuests: TIntegerField;
-    m_PriceType: TWideStringField;
+    m_PriceType: TStringField;
     m_Webable: TBooleanField;
-    m_RoomTypeGroup: TWideStringField;
-    m_color: TWideStringField;
+    m_RoomTypeGroup: TStringField;
+    m_color: TStringField;
     tvDataRecId: TcxGridDBColumn;
     tvDataID: TcxGridDBColumn;
     tvDataActive: TcxGridDBColumn;
@@ -147,7 +147,7 @@ type
     tvDatacolor: TcxGridDBColumn;
     btnInsert: TsButton;
     btnEdit: TsButton;
-    m_PriorityRule: TWideStringField;
+    m_PriorityRule: TStringField;
     tvDataPriorityRule: TcxGridDBColumn;
     F1: TMenuItem;
     FormStore: TcxPropertiesStore;

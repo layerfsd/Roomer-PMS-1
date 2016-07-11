@@ -142,9 +142,9 @@ type
     tvDatalastChangeBy: TcxGridDBColumn;
     tvDatalastUpdate: TcxGridDBColumn;
     m_notes: TWideMemoField;
-    m_action: TWideStringField;
-    m_user: TWideStringField;
-    m_lastChangedBy: TWideStringField;
+    m_action: TStringField;
+    m_user: TStringField;
+    m_lastChangedBy: TStringField;
     sLabel1: TsLabel;
     lblDate: TsLabel;
     procedure FormCreate(Sender: TObject);

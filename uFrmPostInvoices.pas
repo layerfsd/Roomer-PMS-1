@@ -177,8 +177,8 @@ begin
       ftMemo,
       ftFmtMemo,
       ftFixedChar,
-      ftWideString,
-      ftString: begin
+      ftString,
+      ftWideString: begin
                   result := value;
                   if copy(theFormat, 1, 1)='m' then
                   begin

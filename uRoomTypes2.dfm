@@ -461,33 +461,33 @@ object frmRoomTypes2: TfrmRoomTypes2
     object m_Active: TBooleanField
       FieldName = 'Active'
     end
-    object m_RoomType: TWideStringField
+    object m_RoomType: TStringField
       FieldName = 'RoomType'
       Size = 10
     end
-    object m_Description: TWideStringField
+    object m_Description: TStringField
       FieldName = 'Description'
       Size = 30
     end
     object m_NumberGuests: TIntegerField
       FieldName = 'NumberGuests'
     end
-    object m_PriceType: TWideStringField
+    object m_PriceType: TStringField
       FieldName = 'PriceType'
       Size = 10
     end
     object m_Webable: TBooleanField
       FieldName = 'Webable'
     end
-    object m_RoomTypeGroup: TWideStringField
+    object m_RoomTypeGroup: TStringField
       FieldName = 'RoomTypeGroup'
       Size = 10
     end
-    object m_color: TWideStringField
+    object m_color: TStringField
       FieldName = 'color'
       Size = 50
     end
-    object m_PriorityRule: TWideStringField
+    object m_PriorityRule: TStringField
       FieldName = 'PriorityRule'
       Size = 50
     end

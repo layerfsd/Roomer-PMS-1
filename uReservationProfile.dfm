@@ -3529,11 +3529,11 @@ object frmReservationProfile: TfrmReservationProfile
     object mRoomsRoomReservation: TIntegerField
       FieldName = 'RoomReservation'
     end
-    object mRoomsRoom: TWideStringField
+    object mRoomsRoom: TStringField
       FieldName = 'Room'
       Size = 10
     end
-    object mRoomsRoomType: TWideStringField
+    object mRoomsRoomType: TStringField
       FieldName = 'RoomType'
       Size = 10
     end
@@ -3546,11 +3546,11 @@ object frmReservationProfile: TfrmReservationProfile
     object mRoomsStatusText: TStringField
       FieldName = 'StatusText'
     end
-    object mRoomsStatus: TWideStringField
+    object mRoomsStatus: TStringField
       FieldName = 'Status'
       Size = 5
     end
-    object mRoomsCurrency: TWideStringField
+    object mRoomsCurrency: TStringField
       FieldName = 'Currency'
       Size = 5
     end
@@ -3563,11 +3563,11 @@ object frmReservationProfile: TfrmReservationProfile
     object mRoomsuseStayTax: TBooleanField
       FieldName = 'useStayTax'
     end
-    object mRoomsRoomAlias: TWideStringField
+    object mRoomsRoomAlias: TStringField
       FieldName = 'RoomAlias'
       Size = 5
     end
-    object mRoomsRoomTypeAlias: TWideStringField
+    object mRoomsRoomTypeAlias: TStringField
       FieldName = 'RoomTypeAlias'
       Size = 5
     end
@@ -3586,7 +3586,7 @@ object frmReservationProfile: TfrmReservationProfile
     object mRoomsPersonsProfilesId: TIntegerField
       FieldName = 'PersonsProfilesId'
     end
-    object mRoomsGuestName: TWideStringField
+    object mRoomsGuestName: TStringField
       DisplayLabel = 'Guestname'
       FieldName = 'guestname'
       Size = 50
@@ -3615,19 +3615,19 @@ object frmReservationProfile: TfrmReservationProfile
     object mRoomsunPaidItems: TFloatField
       FieldName = 'unPaidItems'
     end
-    object mRoomsPriceCode: TWideStringField
+    object mRoomsPriceCode: TStringField
       FieldName = 'PriceCode'
       Size = 10
     end
-    object mRoomsRoomClass: TWideStringField
+    object mRoomsRoomClass: TStringField
       FieldName = 'RoomClass'
       Size = 10
     end
-    object mRoomsRoomClassDescription: TWideStringField
+    object mRoomsRoomClassDescription: TStringField
       FieldName = 'RoomClassDescription'
       Size = 35
     end
-    object mRoomsPackage: TWideStringField
+    object mRoomsPackage: TStringField
       FieldName = 'Package'
     end
     object mRoomsoutOfOrderBlocking: TBooleanField
@@ -3639,20 +3639,20 @@ object frmReservationProfile: TfrmReservationProfile
     object mRoomsManualChannelId: TIntegerField
       FieldName = 'ManualChannelId'
     end
-    object mRoomsratePlanCode: TWideStringField
+    object mRoomsratePlanCode: TStringField
       FieldName = 'ratePlanCode'
       Size = 15
     end
-    object mRoomsExpectedTimeOfArrival: TWideStringField
+    object mRoomsExpectedTimeOfArrival: TStringField
       FieldName = 'ExpectedTimeOfArrival'
     end
-    object mRoomsExpectedCheckoutTime: TWideStringField
+    object mRoomsExpectedCheckoutTime: TStringField
       FieldName = 'ExpectedCheckoutTime'
     end
     object mRoomsRateOrPackagePerDay: TFloatField
       FieldName = 'RateOrPackagePerDay'
     end
-    object mRoomsblockMoveReason: TWideStringField
+    object mRoomsblockMoveReason: TStringField
       FieldName = 'blockMoveReason'
       Size = 255
     end
@@ -3709,31 +3709,31 @@ object frmReservationProfile: TfrmReservationProfile
     object mGuestsReservation: TIntegerField
       FieldName = 'Reservation'
     end
-    object mGuestsGuestName: TWideStringField
+    object mGuestsGuestName: TStringField
       FieldName = 'GuestName'
       Size = 100
     end
-    object mGuestsAddress1: TWideStringField
+    object mGuestsAddress1: TStringField
       FieldName = 'Address1'
       Size = 100
     end
-    object mGuestsAddress2: TWideStringField
+    object mGuestsAddress2: TStringField
       FieldName = 'Address2'
       Size = 100
     end
-    object mGuestsAddress3: TWideStringField
+    object mGuestsAddress3: TStringField
       FieldName = 'Address3'
       Size = 100
     end
-    object mGuestsAddress4: TWideStringField
+    object mGuestsAddress4: TStringField
       FieldName = 'Address4'
       Size = 100
     end
-    object mGuestsCountry: TWideStringField
+    object mGuestsCountry: TStringField
       FieldName = 'Country'
       Size = 2
     end
-    object mGuestsPID: TWideStringField
+    object mGuestsPID: TStringField
       FieldName = 'PID'
       Size = 15
     end
@@ -3773,26 +3773,26 @@ object frmReservationProfile: TfrmReservationProfile
       DisplayLabel = 'Departure'
       FieldName = 'rrDeparture'
     end
-    object mGuestRoomsRoom: TWideStringField
+    object mGuestRoomsRoom: TStringField
       FieldName = 'Room'
       Size = 10
     end
-    object mGuestRoomsRoomDescription: TWideStringField
+    object mGuestRoomsRoomDescription: TStringField
       FieldName = 'RoomDescription'
       Size = 30
     end
-    object mGuestRoomsEquipments: TWideStringField
+    object mGuestRoomsEquipments: TStringField
       FieldName = 'Equipments'
       Size = 30
     end
     object mGuestRoomsNoRoom: TBooleanField
       FieldName = 'NoRoom'
     end
-    object mGuestRoomsRoomType: TWideStringField
+    object mGuestRoomsRoomType: TStringField
       FieldName = 'RoomType'
       Size = 5
     end
-    object mGuestRoomsRoomTypeDescription: TWideStringField
+    object mGuestRoomsRoomTypeDescription: TStringField
       FieldName = 'RoomTypeDescription'
       Size = 30
     end
@@ -3802,26 +3802,26 @@ object frmReservationProfile: TfrmReservationProfile
     object mGuestRoomsFloor: TIntegerField
       FieldName = 'Floor'
     end
-    object mGuestRoomsLocation: TWideStringField
+    object mGuestRoomsLocation: TStringField
       FieldName = 'Location'
       Size = 10
     end
-    object mGuestRoomsLocationDescription: TWideStringField
+    object mGuestRoomsLocationDescription: TStringField
       FieldName = 'LocationDescription'
       Size = 35
     end
-    object mGuestRoomsMainGuest: TWideStringField
+    object mGuestRoomsMainGuest: TStringField
       FieldName = 'MainGuest'
       Size = 100
     end
     object mGuestRoomsGuestCount: TIntegerField
       FieldName = 'GuestCount'
     end
-    object mGuestRoomsStatus: TWideStringField
+    object mGuestRoomsStatus: TStringField
       FieldName = 'Status'
       Size = 5
     end
-    object mGuestRoomsStatusText: TWideStringField
+    object mGuestRoomsStatusText: TStringField
       FieldName = 'StatusText'
       Size = 25
     end
@@ -3861,26 +3861,26 @@ object frmReservationProfile: TfrmReservationProfile
       DisplayLabel = 'Departure'
       FieldName = 'rrDeparture'
     end
-    object mAllGuestsRoom: TWideStringField
+    object mAllGuestsRoom: TStringField
       FieldName = 'Room'
       Size = 10
     end
-    object mAllGuestsRoomDescription: TWideStringField
+    object mAllGuestsRoomDescription: TStringField
       FieldName = 'RoomDescription'
       Size = 30
     end
-    object mAllGuestsEquipments: TWideStringField
+    object mAllGuestsEquipments: TStringField
       FieldName = 'Equipments'
       Size = 30
     end
     object mAllGuestsNoRoom: TBooleanField
       FieldName = 'NoRoom'
     end
-    object mAllGuestsRoomType: TWideStringField
+    object mAllGuestsRoomType: TStringField
       FieldName = 'RoomType'
       Size = 5
     end
-    object mAllGuestsRoomTypeDescription: TWideStringField
+    object mAllGuestsRoomTypeDescription: TStringField
       FieldName = 'RoomTypeDescription'
       Size = 30
     end
@@ -3890,50 +3890,50 @@ object frmReservationProfile: TfrmReservationProfile
     object mAllGuestsFloor: TIntegerField
       FieldName = 'Floor'
     end
-    object mAllGuestsLocation: TWideStringField
+    object mAllGuestsLocation: TStringField
       FieldName = 'Location'
       Size = 10
     end
-    object mAllGuestsLocationDescription: TWideStringField
+    object mAllGuestsLocationDescription: TStringField
       FieldName = 'LocationDescription'
       Size = 35
     end
     object mAllGuestsPerson: TIntegerField
       FieldName = 'Person'
     end
-    object mAllGuestsGuestName: TWideStringField
+    object mAllGuestsGuestName: TStringField
       FieldName = 'GuestName'
       Size = 100
     end
-    object mAllGuestsAddress1: TWideStringField
+    object mAllGuestsAddress1: TStringField
       FieldName = 'Address1'
       Size = 100
     end
-    object mAllGuestsAddress2: TWideStringField
+    object mAllGuestsAddress2: TStringField
       FieldName = 'Address2'
       Size = 100
     end
-    object mAllGuestsAddress3: TWideStringField
+    object mAllGuestsAddress3: TStringField
       FieldName = 'Address3'
       Size = 100
     end
-    object mAllGuestsAddress4: TWideStringField
+    object mAllGuestsAddress4: TStringField
       FieldName = 'Address4'
       Size = 100
     end
-    object mAllGuestsCountry: TWideStringField
+    object mAllGuestsCountry: TStringField
       FieldName = 'Country'
       Size = 2
     end
-    object mAllGuestsPID: TWideStringField
+    object mAllGuestsPID: TStringField
       FieldName = 'PID'
       Size = 15
     end
-    object mAllGuestsStatus: TWideStringField
+    object mAllGuestsStatus: TStringField
       FieldName = 'Status'
       Size = 5
     end
-    object mAllGuestsStatusText: TWideStringField
+    object mAllGuestsStatusText: TStringField
       FieldName = 'StatusText'
       Size = 25
     end

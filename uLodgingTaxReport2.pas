@@ -123,8 +123,8 @@ type
     OpenGroupInvoice1 : TMenuItem;
     mInvoiceHeads : TdxMemData;
     mInvoiceHeadsReservation : TIntegerField;
-    mInvoiceHeadsCustomer : TWideStringField;
-    mInvoiceHeadsName : TWideStringField;
+    mInvoiceHeadsCustomer : TStringField;
+    mInvoiceHeadsName : TStringField;
     mInvoiceHeadsTotal : TFloatField;
     mInvoiceHeadsTotalWOVAT : TFloatField;
     mInvoiceHeadsTotalVAT : TFloatField;

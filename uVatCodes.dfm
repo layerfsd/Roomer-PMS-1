@@ -306,22 +306,22 @@ object frmVatCodes: TfrmVatCodes
     OnNewRecord = m_NewRecord
     Left = 352
     Top = 128
-    object m_VATCode: TWideStringField
+    object m_VATCode: TStringField
       FieldName = 'VATCode'
       Size = 10
     end
-    object m_Description: TWideStringField
+    object m_Description: TStringField
       FieldName = 'Description'
       Size = 30
     end
     object m_VATPercentage: TFloatField
       FieldName = 'VATPercentage'
     end
-    object m_BookKeepCode: TWideStringField
+    object m_BookKeepCode: TStringField
       FieldName = 'BookKeepCode'
       Size = 25
     end
-    object m_valueFormula: TWideStringField
+    object m_valueFormula: TStringField
       FieldName = 'valueFormula'
       Size = 255
     end

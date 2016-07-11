@@ -369,15 +369,15 @@ object frmLocations: TfrmLocations
     object m_Active: TBooleanField
       FieldName = 'Active'
     end
-    object m_Description: TWideStringField
+    object m_Description: TStringField
       FieldName = 'Description'
       Size = 35
     end
-    object m_Location: TWideStringField
+    object m_Location: TStringField
       FieldName = 'Location'
       Size = 10
     end
-    object m_ChannelManagerName: TWideStringField
+    object m_ChannelManagerName: TStringField
       FieldName = 'ChannelManagerName'
       Size = 45
     end

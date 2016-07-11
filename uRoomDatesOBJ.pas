@@ -73,8 +73,8 @@ begin
   qMT_.FieldDefs.Clear;
 
   qMT_.FieldDefs.Add('rdDate', ftDate);
-  qMT_.FieldDefs.Add('Room', ftWideString, 20);
-  qMT_.FieldDefs.Add('RoomType', ftWideString, 20);
+  qMT_.FieldDefs.Add('Room', ftString, 20);
+  qMT_.FieldDefs.Add('RoomType', ftString, 20);
   qMT_.FieldDefs.Add('Reservation', ftInteger);
   qMT_.FieldDefs.Add('Channel', ftInteger);
   qMT_.FieldDefs.Add('PAymentInvoice', ftInteger);
@@ -84,33 +84,33 @@ begin
   qMT_.FieldDefs.Add('isNoRoom', ftBoolean);
   qMT_.FieldDefs.Add('AscIndex', ftInteger);
   qMT_.FieldDefs.Add('DescIndex', ftInteger);
-  qMT_.FieldDefs.Add('Customer', ftWideString, 30);
-  qMT_.FieldDefs.Add('CustomerName', ftWideString, 60);
-  qMT_.FieldDefs.Add('GuestName', ftWideString, 60);
+  qMT_.FieldDefs.Add('Customer', ftString, 30);
+  qMT_.FieldDefs.Add('CustomerName', ftString, 60);
+  qMT_.FieldDefs.Add('GuestName', ftString, 60);
 
-  qMT_.FieldDefs.Add('Information', ftWideString, 512);
+  qMT_.FieldDefs.Add('Information', ftString, 512);
   qMT_.FieldDefs.Add('Fax', ftString, 20);
   qMT_.FieldDefs.Add('BookingId', ftString, 100);
   qMT_.FieldDefs.Add('Tel2', ftString, 20);
   qMT_.FieldDefs.Add('Tel1', ftString, 20);
-  qMT_.FieldDefs.Add('Guestname1', ftWideString, 64);
+  qMT_.FieldDefs.Add('Guestname1', ftString, 64);
   qMT_.FieldDefs.Add('NumGuests', ftInteger);
-  qMT_.FieldDefs.Add('PMInfo', ftWideString, 512);
+  qMT_.FieldDefs.Add('PMInfo', ftString, 512);
   qMT_.FieldDefs.Add('Price', ftFloat);
   qMT_.FieldDefs.Add('Discount', ftFloat);
   qMT_.FieldDefs.Add('Percent', ftBoolean);
   qMT_.FieldDefs.Add('ItemsOnInvoice', ftBoolean);
-  qMT_.FieldDefs.Add('PriceType', ftWideString, 20);
-  qMT_.FieldDefs.Add('Currency', ftWideString, 10);
-  qMT_.FieldDefs.Add('RoomClass', ftWideString, 20);
+  qMT_.FieldDefs.Add('PriceType', ftString, 20);
+  qMT_.FieldDefs.Add('Currency', ftString, 10);
+  qMT_.FieldDefs.Add('RoomClass', ftString, 20);
   qMT_.FieldDefs.Add('OutOfOrderBlocking', ftBoolean);
   qMT_.FieldDefs.Add('BlockMove', ftBoolean);
-  qMT_.FieldDefs.Add('BlockMoveReason', ftWideString, 255);
+  qMT_.FieldDefs.Add('BlockMoveReason', ftString, 255);
   qMT_.FieldDefs.Add('TotalNoRent', ftFloat);
   qMT_.FieldDefs.Add('TotalTaxes', ftFloat);
   qMT_.FieldDefs.Add('TotalRent', ftFloat);
-  qMT_.FieldDefs.Add('Invoices', ftWideString, 100);
-  qMT_.FieldDefs.Add('Guarantee', ftWideString, 20);
+  qMT_.FieldDefs.Add('Invoices', ftString, 100);
+  qMT_.FieldDefs.Add('Guarantee', ftString, 20);
   qMT_.FieldDefs.Add('TotalPayment', ftFloat);
   qMT_.FieldDefs.Add('InvoiceIndex', ftInteger);
   qMT_.CreateTable;
@@ -256,7 +256,7 @@ begin
           qMT_.fieldbyname('CustomerName').AsString := customerName;
           qMT_.fieldbyname('GuestName').AsString := GuestName;
 
-          qMT_.FieldByName('Information').AsWideString := rSet.fieldbyname('Information').AsWideString;
+          qMT_.FieldByName('Information').AsString := rSet.fieldbyname('Information').AsString;
           qMT_.FieldByName('Fax').AsString := rSet.fieldbyname('Fax').asString;
           qMT_.FieldByName('BookingId').AsString := rSet.fieldbyname('BookingId').asString;
           qMT_.FieldByName('Tel2').AsString := rSet.fieldbyname('Tel2').asString;
@@ -264,7 +264,7 @@ begin
           qMT_.FieldByName('Guestname1').AsString := rSet.fieldbyname('MainName').asString;
           qMT_.FieldByName('NumGuests').AsInteger := rSet.fieldbyname('NumGuests').asInteger;
           qMT_.FieldByName('Percent').AsBoolean := rSet.fieldbyname('Percentage').asBoolean;
-          qMT_.FieldByName('PMInfo').AsWideString := rSet.fieldbyname('PMInfo').asWideString;
+          qMT_.FieldByName('PMInfo').AsString := rSet.fieldbyname('PMInfo').AsString;
           qMT_.FieldByName('Price').AsFloat := rSet.GetFloatValue(rSet.fieldbyname('Price'));
           qMT_.FieldByName('Discount').AsFloat := rSet.GetFloatValue(rSet.fieldbyname('Discount'));
           qMT_.FieldByName('ItemsOnInvoice').AsBoolean := rSet.fieldbyname('ItemsOnInvoice').asInteger <> 0;

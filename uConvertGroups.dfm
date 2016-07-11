@@ -333,11 +333,11 @@ object frmConvertGroups: TfrmConvertGroups
     OnNewRecord = m_NewRecord
     Left = 352
     Top = 128
-    object m_cgCode: TWideStringField
+    object m_cgCode: TStringField
       FieldName = 'cgCode'
       Size = 10
     end
-    object m_cgDescription: TWideStringField
+    object m_cgDescription: TStringField
       FieldName = 'cgDescription'
       Size = 50
     end

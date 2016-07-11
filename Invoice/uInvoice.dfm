@@ -2807,7 +2807,7 @@ object frmInvoice: TfrmInvoice
     object mRoomResisPercentage: TBooleanField
       FieldName = 'isPercentage'
     end
-    object mRoomResPackage: TWideStringField
+    object mRoomResPackage: TStringField
       FieldName = 'Package'
     end
     object mRoomResInvoiceIndex: TIntegerField
@@ -2825,17 +2825,17 @@ object frmInvoice: TfrmInvoice
     object mPaymentsPayDate: TDateField
       FieldName = 'PayDate'
     end
-    object mPaymentsPayType: TWideStringField
+    object mPaymentsPayType: TStringField
       FieldName = 'PayType'
     end
     object mPaymentsAmount: TFloatField
       FieldName = 'Amount'
     end
-    object mPaymentsDescription: TWideStringField
+    object mPaymentsDescription: TStringField
       FieldName = 'Description'
       Size = 60
     end
-    object mPaymentsPayGroup: TWideStringField
+    object mPaymentsPayGroup: TStringField
       FieldName = 'PayGroup'
     end
     object mPaymentsMemo: TMemoField
@@ -2852,7 +2852,7 @@ object frmInvoice: TfrmInvoice
       FieldName = 'ssss'
       BlobType = ftMemo
     end
-    object mPaymentswww: TWideStringField
+    object mPaymentswww: TStringField
       FieldName = 'www'
     end
     object mPaymentsdddd: TDateField

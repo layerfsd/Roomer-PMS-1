@@ -356,15 +356,15 @@ object frmCountryGroups: TfrmCountryGroups
     OnNewRecord = m_NewRecord
     Left = 424
     Top = 176
-    object m_CountryGroup: TWideStringField
+    object m_CountryGroup: TStringField
       FieldName = 'CountryGroup'
       Size = 5
     end
-    object m_GroupName: TWideStringField
+    object m_GroupName: TStringField
       FieldName = 'GroupName'
       Size = 50
     end
-    object m_IslGroupName: TWideStringField
+    object m_IslGroupName: TStringField
       FieldName = 'IslGroupName'
       Size = 50
     end

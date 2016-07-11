@@ -407,15 +407,15 @@ object frmStaffComm: TfrmStaffComm
       FieldName = 'notes'
       BlobType = ftWideMemo
     end
-    object m_action: TWideStringField
+    object m_action: TStringField
       FieldName = 'action'
       Size = 25
     end
-    object m_user: TWideStringField
+    object m_user: TStringField
       FieldName = 'user'
       Size = 30
     end
-    object m_lastChangedBy: TWideStringField
+    object m_lastChangedBy: TStringField
       FieldName = 'lastChangedBy'
       Size = 30
     end

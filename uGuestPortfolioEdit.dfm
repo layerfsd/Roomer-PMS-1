@@ -2944,7 +2944,7 @@ object frmGuestPortfolio: TfrmGuestPortfolio
     object history_Nights: TIntegerField
       FieldName = 'Nights'
     end
-    object history_ResStatus: TWideStringField
+    object history_ResStatus: TStringField
       FieldName = 'ResStatus'
       Size = 1
     end
@@ -2954,11 +2954,11 @@ object frmGuestPortfolio: TfrmGuestPortfolio
     object history_Departure: TDateField
       FieldName = 'Departure'
     end
-    object history_Room: TWideStringField
+    object history_Room: TStringField
       FieldName = 'Room'
       Size = 15
     end
-    object history_RoomType: TWideStringField
+    object history_RoomType: TStringField
       FieldName = 'RoomType'
       Size = 15
     end

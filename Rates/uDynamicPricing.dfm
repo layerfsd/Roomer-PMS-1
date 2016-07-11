@@ -523,27 +523,27 @@ object frmDynamicPricing: TfrmDynamicPricing
     OnNewRecord = m_NewRecord
     Left = 120
     Top = 152
-    object m_ROOMTYPEGROUP_CODE: TWideStringField
+    object m_ROOMTYPEGROUP_CODE: TStringField
       FieldName = 'ROOMTYPEGROUP_CODE'
       Size = 10
     end
-    object m_Rate_Name: TWideStringField
+    object m_Rate_Name: TStringField
       FieldName = 'Rate_Name'
       Size = 100
     end
-    object m_CHANNEL_MANAGER_ID: TWideStringField
+    object m_CHANNEL_MANAGER_ID: TStringField
       FieldName = 'CHANNEL_MANAGER_ID'
       Size = 50
     end
-    object m_ChannelManagerName: TWideStringField
+    object m_ChannelManagerName: TStringField
       FieldName = 'ChannelManagerName'
       Size = 50
     end
-    object m_CHANNEL_ID: TWideStringField
+    object m_CHANNEL_ID: TStringField
       FieldName = 'CHANNEL_ID'
       Size = 50
     end
-    object m_ChannelName: TWideStringField
+    object m_ChannelName: TStringField
       FieldName = 'ChannelName'
       Size = 50
     end
@@ -565,11 +565,11 @@ object frmDynamicPricing: TfrmDynamicPricing
     object m_VAL: TFloatField
       FieldName = 'VAL'
     end
-    object m_APPLICATION_STRATEGY: TWideStringField
+    object m_APPLICATION_STRATEGY: TStringField
       FieldName = 'APPLICATION_STRATEGY'
       Size = 25
     end
-    object m_HOTEL_ID: TWideStringField
+    object m_HOTEL_ID: TStringField
       FieldName = 'HOTEL_ID'
       Size = 10
     end

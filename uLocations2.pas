@@ -130,13 +130,13 @@ type
     tvDataRecId: TcxGridDBColumn;
     tvDataID: TcxGridDBColumn;
     tvDataActive: TcxGridDBColumn;
-    m_Description: TWideStringField;
+    m_Description: TStringField;
     tvDataDescription: TcxGridDBColumn;
-    m_Location: TWideStringField;
+    m_Location: TStringField;
     tvDataLocation: TcxGridDBColumn;
     btnEdit: TsButton;
     btnInsert: TsButton;
-    m_ChannelManagerName: TWideStringField;
+    m_ChannelManagerName: TStringField;
     tvDataChannelManagerName: TcxGridDBColumn;
     m_channelManager: TIntegerField;
     FormStore: TcxPropertiesStore;

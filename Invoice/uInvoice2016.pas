@@ -351,7 +351,7 @@ type
     mRoomRes: TdxMemData;
     mPayments: TdxMemData;
     mPaymentsssss: TMemoField;
-    mPaymentswww: TWideStringField;
+    mPaymentswww: TStringField;
     mPaymentsdddd: TDateField;
     mRR_: TdxMemData;
     IntegerField3: TIntegerField;

@@ -509,7 +509,7 @@ object frmPackageItems: TfrmPackageItems
     object m_id: TIntegerField
       FieldName = 'id'
     end
-    object m_description: TWideStringField
+    object m_description: TStringField
       FieldName = 'description'
       Size = 45
     end
@@ -522,10 +522,10 @@ object frmPackageItems: TfrmPackageItems
     object m_itemId: TIntegerField
       FieldName = 'itemId'
     end
-    object m_Item: TWideStringField
+    object m_Item: TStringField
       FieldName = 'Item'
     end
-    object m_itemDescription: TWideStringField
+    object m_itemDescription: TStringField
       FieldName = 'itemDescription'
       Size = 30
     end
@@ -549,11 +549,11 @@ object frmPackageItems: TfrmPackageItems
     object m_IncludedInRate: TBooleanField
       FieldName = 'IncludedInRate'
     end
-    object m_valueFormula: TWideStringField
+    object m_valueFormula: TStringField
       FieldName = 'valueFormula'
       Size = 255
     end
-    object m_unitPriceVatFormula: TWideStringField
+    object m_unitPriceVatFormula: TStringField
       FieldName = 'unitPriceVatFormula'
       Size = 255
     end

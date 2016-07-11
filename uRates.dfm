@@ -549,11 +549,11 @@ object frmRates: TfrmRates
     object m_ID: TIntegerField
       FieldName = 'ID'
     end
-    object m_Description: TWideStringField
+    object m_Description: TStringField
       FieldName = 'Description'
       Size = 50
     end
-    object m_Currency: TWideStringField
+    object m_Currency: TStringField
       FieldName = 'Currency'
       Size = 5
     end

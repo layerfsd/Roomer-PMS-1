@@ -121,13 +121,13 @@ type
     lvData: TcxGridLevel;
     tvDataRecId: TcxGridDBColumn;
     m_id: TIntegerField;
-    m_description: TWideStringField;
+    m_description: TStringField;
     m_unitPrice: TFloatField;
     m_packageId: TIntegerField;
     m_itemId: TIntegerField;
-    m_Item: TWideStringField;
+    m_Item: TStringField;
     m_itemPrice: TFloatField;
-    m_itemDescription: TWideStringField;
+    m_itemDescription: TStringField;
     tvDataid: TcxGridDBColumn;
     tvDatadescription: TcxGridDBColumn;
     tvDataunitPrice: TcxGridDBColumn;
@@ -155,9 +155,9 @@ type
     btnClear: TsSpeedButton;
     m_IncludedInRate: TBooleanField;
     tvDataIncludedInRate: TcxGridDBColumn;
-    m_valueFormula: TWideStringField;
+    m_valueFormula: TStringField;
     tvDatavalueFormula: TcxGridDBColumn;
-    m_unitPriceVatFormula: TWideStringField;
+    m_unitPriceVatFormula: TStringField;
     tvDataunitPriceVatFormula: TcxGridDBColumn;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);

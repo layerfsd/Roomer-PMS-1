@@ -79,12 +79,12 @@ type
     FormStore: TcxPropertiesStore;
     sLabel1: TsLabel;
     cbxQuery: TsComboBox;
-    kbmStatCustomerId: TWideStringField;
-    kbmStatCustomerName: TWideStringField;
+    kbmStatCustomerId: TStringField;
+    kbmStatCustomerName: TStringField;
     kbmStatInvoiceNumber: TIntegerField;
     kbmStatInvoiceDate: TDateField;
-    kbmStatAccountNumber: TWideStringField;
-    kbmStatTransactionDescription: TWideStringField;
+    kbmStatAccountNumber: TStringField;
+    kbmStatTransactionDescription: TStringField;
     kbmStatTotalExclusive: TFloatField;
     kbmStatVat: TFloatField;
     grReport: TAdvStringGrid;

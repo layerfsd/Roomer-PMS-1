@@ -147,11 +147,11 @@ type
     history_Reservation: TIntegerField;
     history_RoomReservation: TIntegerField;
     history_Nights: TIntegerField;
-    history_ResStatus: TWideStringField;
+    history_ResStatus: TStringField;
     history_Arrival: TDateField;
     history_Departure: TDateField;
-    history_Room: TWideStringField;
-    history_RoomType: TWideStringField;
+    history_Room: TStringField;
+    history_RoomType: TStringField;
     history_AvgRate: TFloatField;
     history_TotalStay: TFloatField;
     history_TotalInvoice: TFloatField;

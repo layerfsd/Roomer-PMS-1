@@ -96,15 +96,15 @@ begin
   qMt_.FieldDefs.Clear;
 
   qMt_.FieldDefs.Add('RoomReservation' , ftInteger);
-  qMt_.FieldDefs.Add('Room'            , ftWideString,20);
+  qMt_.FieldDefs.Add('Room'            , ftString,20);
   qMt_.FieldDefs.Add('Reservation'     , ftInteger);
   qMt_.FieldDefs.Add('Channel'         , ftInteger);
   qMt_.FieldDefs.Add('resFlag'         , ftString,1);
   qMt_.FieldDefs.Add('Arrival'         , ftDate);
   qMt_.FieldDefs.Add('Departure'       , ftDate);
-  qMt_.FieldDefs.Add('Customer'        , ftWideString,30);
-  qMt_.FieldDefs.Add('CustomerName'    , ftWideString,60);
-  qMt_.FieldDefs.Add('GuestName'       , ftWideString,60);
+  qMt_.FieldDefs.Add('Customer'        , ftString,30);
+  qMt_.FieldDefs.Add('CustomerName'    , ftString,60);
+  qMt_.FieldDefs.Add('GuestName'       , ftString,60);
   qMt_.FieldDefs.Add('PaymentInvoice'  , ftInteger);
   qMt_.FieldDefs.Add('GroupAccount'    , ftBoolean);
 

@@ -486,48 +486,48 @@ object frmChannelManager: TfrmChannelManager
     OnNewRecord = m_NewRecord
     Left = 424
     Top = 176
-    object m_code: TWideStringField
+    object m_code: TStringField
       FieldName = 'code'
     end
-    object m_Description: TWideStringField
+    object m_Description: TStringField
       FieldName = 'Description'
       Size = 45
     end
-    object m_schannels: TWideStringField
+    object m_schannels: TStringField
       FieldName = 'schannels'
       Size = 255
     end
     object m_maintenanceDays: TIntegerField
       FieldName = 'maintenanceDays'
     end
-    object m_webserviceUsername: TWideStringField
+    object m_webserviceUsername: TStringField
       FieldName = 'webserviceUsername'
       Size = 128
     end
-    object m_webservicePassword: TWideStringField
+    object m_webservicePassword: TStringField
       FieldName = 'webservicePassword'
       Size = 128
     end
-    object m_webserviceHotelCode: TWideStringField
+    object m_webserviceHotelCode: TStringField
       FieldName = 'webserviceHotelCode'
       Size = 16
     end
-    object m_weserviceRequestor: TWideStringField
+    object m_weserviceRequestor: TStringField
       FieldName = 'weserviceRequestor'
       Size = 16
     end
-    object m_adminUsername: TWideStringField
+    object m_adminUsername: TStringField
       FieldName = 'adminUsername'
       Size = 128
     end
-    object m_adminPassword: TWideStringField
+    object m_adminPassword: TStringField
       FieldName = 'adminPassword'
       Size = 128
     end
     object m_Id: TIntegerField
       FieldName = 'Id'
     end
-    object m_webserviceURI: TWideStringField
+    object m_webserviceURI: TStringField
       FieldName = 'webserviceURI'
       Size = 255
     end

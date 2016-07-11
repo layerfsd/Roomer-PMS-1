@@ -214,7 +214,7 @@ type
     mGuests: TdxMemData;
     mGuestsRoomReservation: TIntegerField;
     mGuestsReservation: TIntegerField;
-    mGuestsReservationName: TWideStringField;
+    mGuestsReservationName: TStringField;
     mGuestsArrival: TDateTimeField;
     mGuestsDeparture: TDateTimeField;
     mGuestsAdults: TIntegerField;
@@ -225,26 +225,26 @@ type
     mGuestsAverageRate: TFloatField;
     mGuestsNumDays: TIntegerField;
     mGuestsTotalStayRate: TFloatField;
-    mGuestsroom: TWideStringField;
-    mGuestsroomtype: TWideStringField;
-    mGuestscustomer: TWideStringField;
-    mGuestsPersonalID: TWideStringField;
-    mGuestsCustomerName: TWideStringField;
+    mGuestsroom: TStringField;
+    mGuestsroomtype: TStringField;
+    mGuestscustomer: TStringField;
+    mGuestsPersonalID: TStringField;
+    mGuestsCustomerName: TStringField;
     mGuestsBreakfast: TBooleanField;
-    mGuestsRoomDescription: TWideStringField;
+    mGuestsRoomDescription: TStringField;
     mGuestsfloor: TIntegerField;
-    mGuestsLocationDescription: TWideStringField;
-    mGuestsmarketSegmentDescription: TWideStringField;
-    mGuestsemail: TWideStringField;
-    mGuestsStatusText: TWideStringField;
-    mGuestsresInfo: TWideStringField;
+    mGuestsLocationDescription: TStringField;
+    mGuestsmarketSegmentDescription: TStringField;
+    mGuestsemail: TStringField;
+    mGuestsStatusText: TStringField;
+    mGuestsresInfo: TStringField;
     mGuestsRoomCount: TIntegerField;
     mGuestsRvGuestCount: TIntegerField;
     mGuestsRRGuestCount: TIntegerField;
     mGuestsGuestName: TStringField;
     mGuestsisMain: TBooleanField;
-    mGuestschannel: TWideStringField;
-    mGuestsBookingId: TWideStringField;
+    mGuestschannel: TStringField;
+    mGuestsBookingId: TStringField;
     mGuestsTotalStayRateNative: TFloatField;
     procedure DataModuleCreate(Sender: TObject);
     procedure DataModuleDestroy(Sender: TObject);
@@ -11292,20 +11292,20 @@ begin
     d.mtHead_.Close;
   d.mtHead_.FieldDefs.clear;
 
-  d.mtHead_.FieldDefs.Add('Customer', ftWideString, 100, False);
-  d.mtHead_.FieldDefs.Add('CustomerName', ftWideString, 100, False);
-  d.mtHead_.FieldDefs.Add('Address1', ftWideString, 100, False);
-  d.mtHead_.FieldDefs.Add('Address2', ftWideString, 100, False);
-  d.mtHead_.FieldDefs.Add('Address3', ftWideString, 100, False);
-  d.mtHead_.FieldDefs.Add('Address4', ftWideString, 100, False);
-  d.mtHead_.FieldDefs.Add('Country', ftWideString, 100, False);
-  d.mtHead_.FieldDefs.Add('PersonalId', ftWideString, 100, False);
-  d.mtHead_.FieldDefs.Add('GuestName', ftWideString, 100, False);
+  d.mtHead_.FieldDefs.Add('Customer', ftString, 100, False);
+  d.mtHead_.FieldDefs.Add('CustomerName', ftString, 100, False);
+  d.mtHead_.FieldDefs.Add('Address1', ftString, 100, False);
+  d.mtHead_.FieldDefs.Add('Address2', ftString, 100, False);
+  d.mtHead_.FieldDefs.Add('Address3', ftString, 100, False);
+  d.mtHead_.FieldDefs.Add('Address4', ftString, 100, False);
+  d.mtHead_.FieldDefs.Add('Country', ftString, 100, False);
+  d.mtHead_.FieldDefs.Add('PersonalId', ftString, 100, False);
+  d.mtHead_.FieldDefs.Add('GuestName', ftString, 100, False);
   d.mtHead_.FieldDefs.Add('Breakfast', ftFloat);
   d.mtHead_.FieldDefs.Add('ExtraText', ftMemo);
   d.mtHead_.FieldDefs.Add('InvoiceDate', ftDate);
   d.mtHead_.FieldDefs.Add('payDate', ftDate);
-  d.mtHead_.FieldDefs.Add('Staff', ftWideString, 40, False);
+  d.mtHead_.FieldDefs.Add('Staff', ftString, 40, False);
   d.mtHead_.FieldDefs.Add('InvoiceNumber', ftInteger);
   d.mtHead_.FieldDefs.Add('LocalCurrency', ftString, 03, False);
   d.mtHead_.FieldDefs.Add('Currency', ftString, 03, False);
@@ -11313,7 +11313,7 @@ begin
 
   d.mtHead_.FieldDefs.Add('Reservation', ftInteger);
   d.mtHead_.FieldDefs.Add('RoomReservation', ftInteger);
-  d.mtHead_.FieldDefs.Add('RoomNumber', ftWideString, 100, False);
+  d.mtHead_.FieldDefs.Add('RoomNumber', ftString, 100, False);
 
   d.mtHead_.FieldDefs.Add('Total', ftFloat);
   d.mtHead_.FieldDefs.Add('TotalwoVAT', ftFloat);
@@ -11333,9 +11333,9 @@ begin
   // caculated values
   d.mtHead_.FieldDefs.Add('PaymentLine', ftMemo);
   d.mtHead_.FieldDefs.Add('foPaymentLine', ftMemo);
-  d.mtHead_.FieldDefs.Add('invRefrence', ftWideString, 60, False);
+  d.mtHead_.FieldDefs.Add('invRefrence', ftString, 60, False);
 
-  d.mtHead_.FieldDefs.Add('invPrintText', ftWideString, 100, False);
+  d.mtHead_.FieldDefs.Add('invPrintText', ftString, 100, False);
 
   d.mtHead_.FieldDefs.Add('TotalStayTax', ftFloat);
   d.mtHead_.FieldDefs.Add('TotalStayTaxNights', ftInteger);
@@ -11345,10 +11345,10 @@ begin
   d.mtHead_.FieldDefs.Add('foPrePaid', ftFloat);
   d.mtHead_.FieldDefs.Add('foBalance', ftFloat);
 
-  d.mtHead_.FieldDefs.Add('Package', ftWideString, 40, False); // *99+
-  d.mtHead_.FieldDefs.Add('PackageName', ftWideString, 150, False); // *99+
+  d.mtHead_.FieldDefs.Add('Package', ftString, 40, False); // *99+
+  d.mtHead_.FieldDefs.Add('PackageName', ftString, 150, False); // *99+
   d.mtHead_.FieldDefs.Add('ShowPackage', ftBoolean); // *99+
-  d.mtHead_.FieldDefs.Add('Location', ftWideString, 20, False);
+  d.mtHead_.FieldDefs.Add('Location', ftString, 20, False);
 
   if d.mtLines_.Active then
     d.mtLines_.Close;
@@ -11356,21 +11356,21 @@ begin
 
   d.mtLines_.FieldDefs.Add('lineNo', ftInteger);
   d.mtLines_.FieldDefs.Add('Date', ftDate);
-  d.mtLines_.FieldDefs.Add('Code', ftWideString, 40);
-  d.mtLines_.FieldDefs.Add('Description', ftWideString, 200);
+  d.mtLines_.FieldDefs.Add('Code', ftString, 40);
+  d.mtLines_.FieldDefs.Add('Description', ftString, 200);
   d.mtLines_.FieldDefs.Add('Count', ftFloat);
   d.mtLines_.FieldDefs.Add('Price', ftFloat); // -96
   d.mtLines_.FieldDefs.Add('Amount', ftFloat);
   d.mtLines_.FieldDefs.Add('AmountWoVat', ftFloat);
   d.mtLines_.FieldDefs.Add('VatAmount', ftFloat);
-  d.mtLines_.FieldDefs.Add('VatCode', ftWideString, 20);
+  d.mtLines_.FieldDefs.Add('VatCode', ftString, 20);
   d.mtLines_.FieldDefs.Add('foPrice', ftFloat);
   d.mtLines_.FieldDefs.Add('foAmount', ftFloat);
   d.mtLines_.FieldDefs.Add('foAmountWoVat', ftFloat);
   d.mtLines_.FieldDefs.Add('foVatAmount', ftFloat);
   d.mtLines_.FieldDefs.Add('AccountKey', ftString, 20);
-  d.mtLines_.FieldDefs.Add('importRefrence', ftWideString, 40);
-  d.mtLines_.FieldDefs.Add('importSource', ftWideString, 60);
+  d.mtLines_.FieldDefs.Add('importRefrence', ftString, 40);
+  d.mtLines_.FieldDefs.Add('importSource', ftString, 60);
 
   d.mtLines_.FieldDefs.Add('isPackage', ftBoolean); // *99+
   d.mtLines_.FieldDefs.Add('isRoomRent', ftBoolean); // *99+
@@ -11381,18 +11381,18 @@ begin
   d.mtPayments_.FieldDefs.clear;
 
   d.mtPayments_.FieldDefs.Add('Date', ftDate);
-  d.mtPayments_.FieldDefs.Add('Code', ftWideString, 40);
+  d.mtPayments_.FieldDefs.Add('Code', ftString, 40);
   d.mtPayments_.FieldDefs.Add('Amount', ftFloat);
   d.mtPayments_.FieldDefs.Add('foAmount', ftFloat);
-  d.mtPayments_.FieldDefs.Add('Description', ftWideString, 100);
+  d.mtPayments_.FieldDefs.Add('Description', ftString, 100);
   d.mtPayments_.FieldDefs.Add('TypeIndex', ftInteger);
 
   if d.mtVAT_.Active then
     d.mtVAT_.Close;
   d.mtVAT_.FieldDefs.clear;
 
-  d.mtVAT_.FieldDefs.Add('Code', ftWideString, 40);
-  d.mtVAT_.FieldDefs.Add('Description', ftWideString, 100);
+  d.mtVAT_.FieldDefs.Add('Code', ftString, 40);
+  d.mtVAT_.FieldDefs.Add('Description', ftString, 100);
   d.mtVAT_.FieldDefs.Add('Price_woVAT', ftFloat);
   d.mtVAT_.FieldDefs.Add('Price_wVAT', ftFloat);
   d.mtVAT_.FieldDefs.Add('VATAmount', ftFloat);
@@ -11406,88 +11406,88 @@ begin
     mtCompany_.Close;
   mtCompany_.FieldDefs.clear;
 
-  mtCompany_.FieldDefs.Add('CompanyName', ftWideString, 100, False);
-  mtCompany_.FieldDefs.Add('Address1', ftWideString, 100, False);
-  mtCompany_.FieldDefs.Add('Address2', ftWideString, 100, False);
-  mtCompany_.FieldDefs.Add('Address3', ftWideString, 100, False);
-  mtCompany_.FieldDefs.Add('Address4', ftWideString, 100, False);
-  mtCompany_.FieldDefs.Add('Country', ftWideString, 100, False);
-  mtCompany_.FieldDefs.Add('TelePhone1', ftWideString, 100, False);
-  mtCompany_.FieldDefs.Add('TelePhone2', ftWideString, 100, False);
-  mtCompany_.FieldDefs.Add('Fax', ftWideString, 100, False);
-  mtCompany_.FieldDefs.Add('Email', ftWideString, 200, False);
-  mtCompany_.FieldDefs.Add('HomePage', ftWideString, 200, False);
-  mtCompany_.FieldDefs.Add('CompanyPID', ftWideString, 40, False);
-  mtCompany_.FieldDefs.Add('CompanyVATno', ftWideString, 100, False);
-  mtCompany_.FieldDefs.Add('CompanyBankInfo', ftWideString, 40, False);
+  mtCompany_.FieldDefs.Add('CompanyName', ftString, 100, False);
+  mtCompany_.FieldDefs.Add('Address1', ftString, 100, False);
+  mtCompany_.FieldDefs.Add('Address2', ftString, 100, False);
+  mtCompany_.FieldDefs.Add('Address3', ftString, 100, False);
+  mtCompany_.FieldDefs.Add('Address4', ftString, 100, False);
+  mtCompany_.FieldDefs.Add('Country', ftString, 100, False);
+  mtCompany_.FieldDefs.Add('TelePhone1', ftString, 100, False);
+  mtCompany_.FieldDefs.Add('TelePhone2', ftString, 100, False);
+  mtCompany_.FieldDefs.Add('Fax', ftString, 100, False);
+  mtCompany_.FieldDefs.Add('Email', ftString, 200, False);
+  mtCompany_.FieldDefs.Add('HomePage', ftString, 200, False);
+  mtCompany_.FieldDefs.Add('CompanyPID', ftString, 40, False);
+  mtCompany_.FieldDefs.Add('CompanyVATno', ftString, 100, False);
+  mtCompany_.FieldDefs.Add('CompanyBankInfo', ftString, 40, False);
 
   if mtCaptions_.Active then
     mtCaptions_.Close;
   mtCaptions_.FieldDefs.clear;
 
-  mtCaptions_.FieldDefs.Add('invTxtHead', ftWideString, 100, False);
-  mtCaptions_.FieldDefs.Add('invTxtHeadDebit', ftWideString, 100, False);
-  mtCaptions_.FieldDefs.Add('invTxtHeadKredit', ftWideString, 100, False);
-  mtCaptions_.FieldDefs.Add('invTxtHeadInfoNumber', ftWideString, 100, False);
-  mtCaptions_.FieldDefs.Add('invTxtHeadInfoDate', ftWideString, 100, False);
-  mtCaptions_.FieldDefs.Add('invTxtHeadInfoCustomerNo', ftWideString, 100, False);
-  mtCaptions_.FieldDefs.Add('invTxtHeadInfoGjalddagi', ftWideString, 100, False);
-  mtCaptions_.FieldDefs.Add('invTxtHeadInfoEindagi', ftWideString, 100, False);
-  mtCaptions_.FieldDefs.Add('invTxtHeadInfoLocalCurrency', ftWideString, 100, False);
-  mtCaptions_.FieldDefs.Add('invTxtHeadInfoCurrency', ftWideString, 100, False);
-  mtCaptions_.FieldDefs.Add('invTxtHeadInfoCurrencyRate', ftWideString, 100, False);
-  mtCaptions_.FieldDefs.Add('invTxtHeadInfoReservation', ftWideString, 100, False);
-  mtCaptions_.FieldDefs.Add('invTxtHeadInfoCreditInvoice', ftWideString, 100, False);
-  mtCaptions_.FieldDefs.Add('invTxtHeadInfoOrginalInfo', ftWideString, 100, False);
-  mtCaptions_.FieldDefs.Add('invTxtHeadInfoGuest', ftWideString, 100, False);
-  mtCaptions_.FieldDefs.Add('invTxtHeadInfoRoom', ftWideString, 100, False);
-  mtCaptions_.FieldDefs.Add('invTxtLinesItemNo', ftWideString, 100, False);
-  mtCaptions_.FieldDefs.Add('invTxtLinesItemText', ftWideString, 100, False);
-  mtCaptions_.FieldDefs.Add('invTxtLinesItemCount', ftWideString, 100, False);
-  mtCaptions_.FieldDefs.Add('invTxtLinesItemPrice', ftWideString, 100, False);
-  mtCaptions_.FieldDefs.Add('invTxtLinesItemAmount', ftWideString, 100, False);
-  mtCaptions_.FieldDefs.Add('invTxtLinesItemTotal', ftWideString, 100, False);
-  mtCaptions_.FieldDefs.Add('invTxtExtra1', ftWideString, 400, False);
-  mtCaptions_.FieldDefs.Add('invTxtExtra2', ftWideString, 400, False);
-  mtCaptions_.FieldDefs.Add('invTxtFooterLine1', ftWideString, 400, False);
-  mtCaptions_.FieldDefs.Add('invTxtFooterLine2', ftWideString, 400, False);
-  mtCaptions_.FieldDefs.Add('invTxtFooterLine3', ftWideString, 400, False);
-  mtCaptions_.FieldDefs.Add('invTxtFooterLine4', ftWideString, 400, False);
-  mtCaptions_.FieldDefs.Add('invTxtPaymentListHead', ftWideString, 100, False);
-  mtCaptions_.FieldDefs.Add('invTxtPaymentListCode', ftWideString, 100, False);
-  mtCaptions_.FieldDefs.Add('invTxtPaymentListAmount', ftWideString, 100, False);
-  mtCaptions_.FieldDefs.Add('invTxtPaymentListDate', ftWideString, 100, False);
-  mtCaptions_.FieldDefs.Add('invTxtPaymentListTotal', ftWideString, 100, False);
-  mtCaptions_.FieldDefs.Add('invTxtPaymentLineHead', ftWideString, 100, False);
-  mtCaptions_.FieldDefs.Add('invTxtPaymentLineSeperator', ftWideString, 100, False);
-  mtCaptions_.FieldDefs.Add('invTxtVATListHead', ftWideString, 100, False);
-  mtCaptions_.FieldDefs.Add('invTxtVATListDescription', ftWideString, 100, False);
-  mtCaptions_.FieldDefs.Add('invTxtVATListwoVAT', ftWideString, 100, False);
-  mtCaptions_.FieldDefs.Add('invTxtVATListwVAT', ftWideString, 100, False);
-  mtCaptions_.FieldDefs.Add('invTxtVATListVATpr', ftWideString, 100, False);
-  mtCaptions_.FieldDefs.Add('invTxtVATListVATAmount', ftWideString, 100, False);
-  mtCaptions_.FieldDefs.Add('invTxtVATListTotal', ftWideString, 100, False);
-  mtCaptions_.FieldDefs.Add('invTxtVATLineHead', ftWideString, 100, False);
-  mtCaptions_.FieldDefs.Add('invTxtVATLineSeperator', ftWideString, 100, False);
-  mtCaptions_.FieldDefs.Add('invTxtTotalwoVAT', ftWideString, 100, False);
-  mtCaptions_.FieldDefs.Add('invTxtTotalVATAmount', ftWideString, 100, False);
-  mtCaptions_.FieldDefs.Add('invTxtTotalTotal', ftWideString, 100, False);
-  mtCaptions_.FieldDefs.Add('invTxtCompanyName', ftWideString, 100, False);
-  mtCaptions_.FieldDefs.Add('invTxtCompanyAddress', ftWideString, 100, False);
-  mtCaptions_.FieldDefs.Add('invTxtCompanyTel1', ftWideString, 100, False);
-  mtCaptions_.FieldDefs.Add('invTxtCompanyTel2', ftWideString, 100, False);
-  mtCaptions_.FieldDefs.Add('invTxtCompanyFax', ftWideString, 100, False);
-  mtCaptions_.FieldDefs.Add('invTxtCompanyEmail', ftWideString, 100, False);
-  mtCaptions_.FieldDefs.Add('invTxtCompanyHomePage', ftWideString, 100, False);
-  mtCaptions_.FieldDefs.Add('invTxtCompanyPID', ftWideString, 100, False);
-  mtCaptions_.FieldDefs.Add('invTxtCompanyBankInfo', ftWideString, 100, False);
-  mtCaptions_.FieldDefs.Add('invTxtCompanyVATId', ftWideString, 100, False);
-  mtCaptions_.FieldDefs.Add('invTxtTotalStayTax', ftWideString, 200, False);
-  mtCaptions_.FieldDefs.Add('invTxtTotalStayTaxNights', ftWideString, 100, False);
+  mtCaptions_.FieldDefs.Add('invTxtHead', ftString, 100, False);
+  mtCaptions_.FieldDefs.Add('invTxtHeadDebit', ftString, 100, False);
+  mtCaptions_.FieldDefs.Add('invTxtHeadKredit', ftString, 100, False);
+  mtCaptions_.FieldDefs.Add('invTxtHeadInfoNumber', ftString, 100, False);
+  mtCaptions_.FieldDefs.Add('invTxtHeadInfoDate', ftString, 100, False);
+  mtCaptions_.FieldDefs.Add('invTxtHeadInfoCustomerNo', ftString, 100, False);
+  mtCaptions_.FieldDefs.Add('invTxtHeadInfoGjalddagi', ftString, 100, False);
+  mtCaptions_.FieldDefs.Add('invTxtHeadInfoEindagi', ftString, 100, False);
+  mtCaptions_.FieldDefs.Add('invTxtHeadInfoLocalCurrency', ftString, 100, False);
+  mtCaptions_.FieldDefs.Add('invTxtHeadInfoCurrency', ftString, 100, False);
+  mtCaptions_.FieldDefs.Add('invTxtHeadInfoCurrencyRate', ftString, 100, False);
+  mtCaptions_.FieldDefs.Add('invTxtHeadInfoReservation', ftString, 100, False);
+  mtCaptions_.FieldDefs.Add('invTxtHeadInfoCreditInvoice', ftString, 100, False);
+  mtCaptions_.FieldDefs.Add('invTxtHeadInfoOrginalInfo', ftString, 100, False);
+  mtCaptions_.FieldDefs.Add('invTxtHeadInfoGuest', ftString, 100, False);
+  mtCaptions_.FieldDefs.Add('invTxtHeadInfoRoom', ftString, 100, False);
+  mtCaptions_.FieldDefs.Add('invTxtLinesItemNo', ftString, 100, False);
+  mtCaptions_.FieldDefs.Add('invTxtLinesItemText', ftString, 100, False);
+  mtCaptions_.FieldDefs.Add('invTxtLinesItemCount', ftString, 100, False);
+  mtCaptions_.FieldDefs.Add('invTxtLinesItemPrice', ftString, 100, False);
+  mtCaptions_.FieldDefs.Add('invTxtLinesItemAmount', ftString, 100, False);
+  mtCaptions_.FieldDefs.Add('invTxtLinesItemTotal', ftString, 100, False);
+  mtCaptions_.FieldDefs.Add('invTxtExtra1', ftString, 400, False);
+  mtCaptions_.FieldDefs.Add('invTxtExtra2', ftString, 400, False);
+  mtCaptions_.FieldDefs.Add('invTxtFooterLine1', ftString, 400, False);
+  mtCaptions_.FieldDefs.Add('invTxtFooterLine2', ftString, 400, False);
+  mtCaptions_.FieldDefs.Add('invTxtFooterLine3', ftString, 400, False);
+  mtCaptions_.FieldDefs.Add('invTxtFooterLine4', ftString, 400, False);
+  mtCaptions_.FieldDefs.Add('invTxtPaymentListHead', ftString, 100, False);
+  mtCaptions_.FieldDefs.Add('invTxtPaymentListCode', ftString, 100, False);
+  mtCaptions_.FieldDefs.Add('invTxtPaymentListAmount', ftString, 100, False);
+  mtCaptions_.FieldDefs.Add('invTxtPaymentListDate', ftString, 100, False);
+  mtCaptions_.FieldDefs.Add('invTxtPaymentListTotal', ftString, 100, False);
+  mtCaptions_.FieldDefs.Add('invTxtPaymentLineHead', ftString, 100, False);
+  mtCaptions_.FieldDefs.Add('invTxtPaymentLineSeperator', ftString, 100, False);
+  mtCaptions_.FieldDefs.Add('invTxtVATListHead', ftString, 100, False);
+  mtCaptions_.FieldDefs.Add('invTxtVATListDescription', ftString, 100, False);
+  mtCaptions_.FieldDefs.Add('invTxtVATListwoVAT', ftString, 100, False);
+  mtCaptions_.FieldDefs.Add('invTxtVATListwVAT', ftString, 100, False);
+  mtCaptions_.FieldDefs.Add('invTxtVATListVATpr', ftString, 100, False);
+  mtCaptions_.FieldDefs.Add('invTxtVATListVATAmount', ftString, 100, False);
+  mtCaptions_.FieldDefs.Add('invTxtVATListTotal', ftString, 100, False);
+  mtCaptions_.FieldDefs.Add('invTxtVATLineHead', ftString, 100, False);
+  mtCaptions_.FieldDefs.Add('invTxtVATLineSeperator', ftString, 100, False);
+  mtCaptions_.FieldDefs.Add('invTxtTotalwoVAT', ftString, 100, False);
+  mtCaptions_.FieldDefs.Add('invTxtTotalVATAmount', ftString, 100, False);
+  mtCaptions_.FieldDefs.Add('invTxtTotalTotal', ftString, 100, False);
+  mtCaptions_.FieldDefs.Add('invTxtCompanyName', ftString, 100, False);
+  mtCaptions_.FieldDefs.Add('invTxtCompanyAddress', ftString, 100, False);
+  mtCaptions_.FieldDefs.Add('invTxtCompanyTel1', ftString, 100, False);
+  mtCaptions_.FieldDefs.Add('invTxtCompanyTel2', ftString, 100, False);
+  mtCaptions_.FieldDefs.Add('invTxtCompanyFax', ftString, 100, False);
+  mtCaptions_.FieldDefs.Add('invTxtCompanyEmail', ftString, 100, False);
+  mtCaptions_.FieldDefs.Add('invTxtCompanyHomePage', ftString, 100, False);
+  mtCaptions_.FieldDefs.Add('invTxtCompanyPID', ftString, 100, False);
+  mtCaptions_.FieldDefs.Add('invTxtCompanyBankInfo', ftString, 100, False);
+  mtCaptions_.FieldDefs.Add('invTxtCompanyVATId', ftString, 100, False);
+  mtCaptions_.FieldDefs.Add('invTxtTotalStayTax', ftString, 200, False);
+  mtCaptions_.FieldDefs.Add('invTxtTotalStayTaxNights', ftString, 100, False);
 
-  mtCaptions_.FieldDefs.Add('invTxtPaymentListDescription', ftWideString, 100, False);
-  mtCaptions_.FieldDefs.Add('invTxtHeadPrePaid', ftWideString, 100, False);
-  mtCaptions_.FieldDefs.Add('invTxtHeadBalance', ftWideString, 100, False);
+  mtCaptions_.FieldDefs.Add('invTxtPaymentListDescription', ftString, 100, False);
+  mtCaptions_.FieldDefs.Add('invTxtHeadPrePaid', ftString, 100, False);
+  mtCaptions_.FieldDefs.Add('invTxtHeadBalance', ftString, 100, False);
 
 end;
 { TKeyAndValue }

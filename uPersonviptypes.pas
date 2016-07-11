@@ -127,7 +127,7 @@ type
     lvData: TcxGridLevel;
     grData: TcxGrid;
     m_: TdxMemData;
-    m_Description: TWideStringField;
+    m_Description: TStringField;
     mnuOther: TPopupMenu;
     mnuiPrint: TMenuItem;
     mnuiAllowGridEdit: TMenuItem;
@@ -153,7 +153,7 @@ type
     tvDataDescription: TcxGridDBColumn;
     tvDataVipGrade: TcxGridDBColumn;
     tvDataactive: TcxGridDBColumn;
-    m_Code: TWideStringField;
+    m_Code: TStringField;
     tvDataCode: TcxGridDBColumn;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);

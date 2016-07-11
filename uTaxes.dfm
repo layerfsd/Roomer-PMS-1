@@ -508,49 +508,49 @@ object frmTaxes: TfrmTaxes
     object m_ID: TIntegerField
       FieldName = 'ID'
     end
-    object m_Description: TWideStringField
+    object m_Description: TStringField
       FieldName = 'Description'
       Size = 64
     end
     object m_Amount: TFloatField
       FieldName = 'Amount'
     end
-    object m_Tax_Type: TWideStringField
+    object m_Tax_Type: TStringField
       FieldName = 'Tax_Type'
       Size = 30
     end
-    object m_Tax_Base: TWideStringField
+    object m_Tax_Base: TStringField
       FieldName = 'Tax_Base'
       Size = 30
     end
-    object m_Time_Due: TWideStringField
+    object m_Time_Due: TStringField
       FieldName = 'Time_Due'
       Size = 30
     end
-    object m_ReTaxable: TWideStringField
+    object m_ReTaxable: TStringField
       FieldName = 'ReTaxable'
       Size = 10
     end
     object m_Booking_Item_Id: TIntegerField
       FieldName = 'Booking_Item_Id'
     end
-    object m_Hotel_Id: TWideStringField
+    object m_Hotel_Id: TStringField
       FieldName = 'Hotel_Id'
       Size = 10
     end
-    object m_Booking_Item: TWideStringField
+    object m_Booking_Item: TStringField
       FieldName = 'Booking_Item'
       Size = 30
     end
-    object m_Incl_Excl: TWideStringField
+    object m_Incl_Excl: TStringField
       FieldName = 'Incl_Excl'
       Size = 15
     end
-    object m_Netto_Amount_Based: TWideStringField
+    object m_Netto_Amount_Based: TStringField
       FieldName = 'Netto_Amount_Based'
       Size = 10
     end
-    object m_Value_Formula: TWideStringField
+    object m_Value_Formula: TStringField
       FieldName = 'Value_Formula'
       Size = 255
     end

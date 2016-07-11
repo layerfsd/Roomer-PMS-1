@@ -329,15 +329,15 @@ object frmConverts: TfrmConverts
     object m_ID: TIntegerField
       FieldName = 'ID'
     end
-    object m_cvType: TWideStringField
+    object m_cvType: TStringField
       FieldName = 'cvType'
       Size = 10
     end
-    object m_cvFrom: TWideStringField
+    object m_cvFrom: TStringField
       FieldName = 'cvFrom'
       Size = 50
     end
-    object m_cvTo: TWideStringField
+    object m_cvTo: TStringField
       FieldName = 'cvTo'
       Size = 50
     end

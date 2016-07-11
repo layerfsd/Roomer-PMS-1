@@ -294,10 +294,10 @@ object frmPhoneRates: TfrmPhoneRates
     OnNewRecord = m_NewRecord
     Left = 352
     Top = 128
-    object m_Identification: TWideStringField
+    object m_Identification: TStringField
       FieldName = 'Identification'
     end
-    object m_Description: TWideStringField
+    object m_Description: TStringField
       DisplayWidth = 70
       FieldName = 'Description'
       Size = 70

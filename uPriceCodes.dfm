@@ -363,11 +363,11 @@ object frmPriceCodes: TfrmPriceCodes
     object m_ID: TIntegerField
       FieldName = 'ID'
     end
-    object m_pcCode: TWideStringField
+    object m_pcCode: TStringField
       FieldName = 'pcCode'
       Size = 10
     end
-    object m_pcDescription: TWideStringField
+    object m_pcDescription: TStringField
       FieldName = 'pcDescription'
       Size = 50
     end
@@ -380,7 +380,7 @@ object frmPriceCodes: TfrmPriceCodes
     object m_pcShowDiscount: TBooleanField
       FieldName = 'pcShowDiscount'
     end
-    object m_pcDiscountText: TWideStringField
+    object m_pcDiscountText: TStringField
       FieldName = 'pcDiscountText'
       Size = 50
     end

@@ -119,8 +119,8 @@ type
     lvData: TcxGridLevel;
     mPriceCode_: TdxMemData;
     mPriceCode_ID: TIntegerField;
-    mPriceCode_pcCode: TWideStringField;
-    mPriceCode_pcDescription: TWideStringField;
+    mPriceCode_pcCode: TStringField;
+    mPriceCode_pcDescription: TStringField;
     mPriceCode_pcRack: TBooleanField;
     mPriceCodeDS_: TDataSource;
     mPriceCode_Active: TBooleanField;
@@ -128,7 +128,7 @@ type
     m_Active: TBooleanField;
     m_seStartDate: TDateTimeField;
     m_seEndDate: TDateTimeField;
-    m_seDescription: TWideStringField;
+    m_seDescription: TStringField;
     tvDataRecId: TcxGridDBColumn;
     tvDataID: TcxGridDBColumn;
     tvDataActive: TcxGridDBColumn;

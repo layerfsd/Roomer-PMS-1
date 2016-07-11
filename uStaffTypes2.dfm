@@ -396,11 +396,11 @@ object frmStaffTypes2: TfrmStaffTypes2
     object m_Active: TBooleanField
       FieldName = 'Active'
     end
-    object m_staffType: TWideStringField
+    object m_staffType: TStringField
       FieldName = 'staffType'
       Size = 5
     end
-    object m_Description: TWideStringField
+    object m_Description: TStringField
       FieldName = 'Description'
       Size = 30
     end

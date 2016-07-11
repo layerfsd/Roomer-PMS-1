@@ -4025,11 +4025,11 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
     SortOptions = []
     Left = 560
     Top = 288
-    object m_Currency: TWideStringField
+    object m_Currency: TStringField
       FieldName = 'Currency'
       Size = 5
     end
-    object WideStringField1: TWideStringField
+    object WideStringField1: TStringField
       FieldName = 'Description'
       Size = 30
     end
@@ -4211,10 +4211,10 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
     object mRoomResisPercentage: TBooleanField
       FieldName = 'isPercentage'
     end
-    object mRoomResPackage: TWideStringField
+    object mRoomResPackage: TStringField
       FieldName = 'Package'
     end
-    object mRoomResMainGuest: TWideStringField
+    object mRoomResMainGuest: TStringField
       FieldName = 'MainGuest'
       Size = 200
     end

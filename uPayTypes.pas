@@ -145,13 +145,13 @@ type
     DS: TDataSource;
     grPrinter: TdxComponentPrinter;
     prLink_grData: TdxGridReportLink;
-    m_payType: TWideStringField;
-    m_PayGroup: TWideStringField;
-    m_Description: TWideStringField;
+    m_payType: TStringField;
+    m_PayGroup: TStringField;
+    m_Description: TStringField;
     m_AskCode: TBooleanField;
     m_ptDays: TIntegerField;
     m_doExport: TBooleanField;
-    m_payGroupDescription: TWideStringField;
+    m_payGroupDescription: TStringField;
     tvDataRecId: TcxGridDBColumn;
     tvDatapayType: TcxGridDBColumn;
     tvDataDescription: TcxGridDBColumn;
@@ -173,7 +173,7 @@ type
     FormStore: TcxPropertiesStore;
     m_BookKey: TStringField;
     tvDataBookKey: TcxGridDBColumn;
-    m_BookKeepCode: TWideStringField;
+    m_BookKeepCode: TStringField;
     tvDataBookKeepCode: TcxGridDBColumn;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);

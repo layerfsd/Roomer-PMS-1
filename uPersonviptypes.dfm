@@ -292,7 +292,7 @@ object frmPersonviptypes: TfrmPersonviptypes
     object m_ID: TIntegerField
       FieldName = 'ID'
     end
-    object m_Description: TWideStringField
+    object m_Description: TStringField
       DisplayWidth = 35
       FieldName = 'Description'
       Size = 35
@@ -303,7 +303,7 @@ object frmPersonviptypes: TfrmPersonviptypes
     object m_active: TBooleanField
       FieldName = 'active'
     end
-    object m_Code: TWideStringField
+    object m_Code: TStringField
       FieldName = 'Code'
       Size = 5
     end

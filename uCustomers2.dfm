@@ -655,96 +655,96 @@ object frmCustomers2: TfrmCustomers2
     object m_Active: TBooleanField
       FieldName = 'Active'
     end
-    object m_Customer: TWideStringField
+    object m_Customer: TStringField
       FieldName = 'Customer'
       Size = 15
     end
-    object m_PID: TWideStringField
+    object m_PID: TStringField
       FieldName = 'PID'
       Size = 15
     end
-    object m_Surname: TWideStringField
+    object m_Surname: TStringField
       FieldName = 'Surname'
       Size = 100
     end
-    object m_Name: TWideStringField
+    object m_Name: TStringField
       FieldName = 'Name'
       Size = 100
     end
-    object m_CustomerType: TWideStringField
+    object m_CustomerType: TStringField
       FieldName = 'CustomerType'
       Size = 5
     end
-    object m_Address1: TWideStringField
+    object m_Address1: TStringField
       FieldName = 'Address1'
       Size = 100
     end
-    object m_Address2: TWideStringField
+    object m_Address2: TStringField
       FieldName = 'Address2'
       Size = 100
     end
-    object m_Address3: TWideStringField
+    object m_Address3: TStringField
       FieldName = 'Address3'
       Size = 100
     end
-    object m_Address4: TWideStringField
+    object m_Address4: TStringField
       FieldName = 'Address4'
       Size = 100
     end
-    object m_Country: TWideStringField
+    object m_Country: TStringField
       FieldName = 'Country'
       Size = 2
     end
-    object m_Tel1: TWideStringField
+    object m_Tel1: TStringField
       FieldName = 'Tel1'
       Size = 15
     end
-    object m_Tel2: TWideStringField
+    object m_Tel2: TStringField
       FieldName = 'Tel2'
       Size = 2
     end
-    object m_FAX: TWideStringField
+    object m_FAX: TStringField
       FieldName = 'FAX'
       Size = 15
     end
-    object m_EmailAddress: TWideStringField
+    object m_EmailAddress: TStringField
       FieldName = 'EmailAddress'
       Size = 100
     end
-    object m_Homepage: TWideStringField
+    object m_Homepage: TStringField
       FieldName = 'Homepage'
       Size = 100
     end
-    object m_ContactPerson: TWideStringField
+    object m_ContactPerson: TStringField
       FieldName = 'ContactPerson'
       Size = 100
     end
     object m_TravelAgency: TBooleanField
       FieldName = 'TravelAgency'
     end
-    object m_Currency: TWideStringField
+    object m_Currency: TStringField
       FieldName = 'Currency'
       Size = 5
     end
     object m_DiscountPercent: TFloatField
       FieldName = 'DiscountPercent'
     end
-    object m_dele: TWideStringField
+    object m_dele: TStringField
       FieldName = 'dele'
       Size = 1
     end
     object m_pcID: TIntegerField
       FieldName = 'pcID'
     end
-    object m_CountryName: TWideStringField
+    object m_CountryName: TStringField
       FieldName = 'CountryName'
       Size = 50
     end
-    object m_CustomerTypeDescription: TWideStringField
+    object m_CustomerTypeDescription: TStringField
       FieldName = 'CustomerTypeDescription'
       Size = 30
     end
-    object m_pcCode: TWideStringField
+    object m_pcCode: TStringField
       FieldName = 'pcCode'
       Size = 10
     end
@@ -770,11 +770,11 @@ object frmCustomers2: TfrmCustomers2
     object BooleanField1: TBooleanField
       FieldName = 'Active'
     end
-    object WideStringField1: TWideStringField
+    object WideStringField1: TStringField
       FieldName = 'Customer'
       Size = 15
     end
-    object mMemo_Description: TWideStringField
+    object mMemo_Description: TStringField
       FieldName = 'Description'
       Size = 30
     end

@@ -370,7 +370,7 @@ object frmSeasons2: TfrmSeasons2
     object m_seEndDate: TDateTimeField
       FieldName = 'seEndDate'
     end
-    object m_seDescription: TWideStringField
+    object m_seDescription: TStringField
       FieldName = 'seDescription'
       Size = 50
     end
@@ -388,11 +388,11 @@ object frmSeasons2: TfrmSeasons2
     object mPriceCode_ID: TIntegerField
       FieldName = 'ID'
     end
-    object mPriceCode_pcCode: TWideStringField
+    object mPriceCode_pcCode: TStringField
       FieldName = 'pcCode'
       Size = 10
     end
-    object mPriceCode_pcDescription: TWideStringField
+    object mPriceCode_pcDescription: TStringField
       FieldName = 'pcDescription'
       Size = 50
     end

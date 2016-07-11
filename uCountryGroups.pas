@@ -143,9 +143,9 @@ type
     prLink_grData: TdxGridReportLink;
     mnuiPrint: TMenuItem;
     m_: TdxMemData;
-    m_CountryGroup: TWideStringField;
-    m_GroupName: TWideStringField;
-    m_IslGroupName: TWideStringField;
+    m_CountryGroup: TStringField;
+    m_GroupName: TStringField;
+    m_IslGroupName: TStringField;
     m_OrderIndex: TIntegerField;
     FormStore: TcxPropertiesStore;
     edFilter: TsEdit;

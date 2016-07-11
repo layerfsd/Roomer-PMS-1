@@ -417,8 +417,8 @@ type
     sPanel6: TsPanel;
     clabRoomNotes: TsLabel;
     mCurrency: TdxMemData;
-    m_Currency: TWideStringField;
-    WideStringField1: TWideStringField;
+    m_Currency: TStringField;
+    WideStringField1: TStringField;
     m_AValue: TFloatField;
     m_ID: TIntegerField;
     m_active: TBooleanField;
@@ -522,7 +522,7 @@ type
     mRoomResPriceCode: TStringField;
     mRoomResAvrageDiscount: TFloatField;
     mRoomResisPercentage: TBooleanField;
-    mRoomResPackage: TWideStringField;
+    mRoomResPackage: TStringField;
     mROomResPersonsProfilesID: TIntegerField;
     mRoomRates: TdxMemData;
     mRoomRatesReservation: TIntegerField;
@@ -538,7 +538,7 @@ type
     mRoomRatesDiscountAmount: TFloatField;
     mRoomRatesRentAmount: TFloatField;
     mRoomRatesNativeAmount: TFloatField;
-    mRoomResMainGuest: TWideStringfield;
+    mRoomResMainGuest: TStringField;
     mRoomRatesTmp: TdxMemData;
     IntegerField1: TIntegerField;
     IntegerField2: TIntegerField;

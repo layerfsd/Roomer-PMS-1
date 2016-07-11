@@ -410,13 +410,13 @@ object frmCancelReservation3: TfrmCancelReservation3
     AfterEdit = mRoomsAfterEdit
     Left = 160
     Top = 328
-    object mRoomsRoom: TWideStringField
+    object mRoomsRoom: TStringField
       FieldName = 'Room'
     end
-    object mRoomsRoomType: TWideStringField
+    object mRoomsRoomType: TStringField
       FieldName = 'RoomType'
     end
-    object mRoomsGuests: TWideStringField
+    object mRoomsGuests: TStringField
       FieldName = 'Guests'
       Size = 200
     end
@@ -426,7 +426,7 @@ object frmCancelReservation3: TfrmCancelReservation3
     object mRoomsDeparture: TDateTimeField
       FieldName = 'Departure'
     end
-    object mRoomsStatus: TWideStringField
+    object mRoomsStatus: TStringField
       FieldName = 'Status'
     end
     object mRoomsSelect: TBooleanField

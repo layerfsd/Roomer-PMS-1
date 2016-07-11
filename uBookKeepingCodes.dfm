@@ -345,15 +345,15 @@ object frmBookKeepingCodes: TfrmBookKeepingCodes
     object m_ID: TIntegerField
       FieldName = 'ID'
     end
-    object m_code: TWideStringField
+    object m_code: TStringField
       FieldName = 'code'
       Size = 25
     end
-    object m_description: TWideStringField
+    object m_description: TStringField
       FieldName = 'description'
       Size = 45
     end
-    object m_txStatus: TWideStringField
+    object m_txStatus: TStringField
       FieldName = 'txStatus'
       Size = 8
     end

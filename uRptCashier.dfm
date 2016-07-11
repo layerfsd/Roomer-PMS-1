@@ -2659,17 +2659,17 @@ object frmRptCashier: TfrmRptCashier
     SortOptions = []
     Left = 64
     Top = 552
-    object kbmReportLineType: TWideStringField
+    object kbmReportLineType: TStringField
       FieldName = 'LineType'
       Size = 35
     end
     object kbmReportTypeIndex: TIntegerField
       FieldName = 'TypeIndex'
     end
-    object kbmReportStaff: TWideStringField
+    object kbmReportStaff: TStringField
       FieldName = 'Staff'
     end
-    object kbmReportName: TWideStringField
+    object kbmReportName: TStringField
       FieldName = 'Name'
       Size = 100
     end
@@ -2689,14 +2689,14 @@ object frmRptCashier: TfrmRptCashier
       FieldName = 'room'
       Size = 30
     end
-    object kbmReportproduct: TWideStringField
+    object kbmReportproduct: TStringField
       FieldName = 'product'
     end
-    object kbmReportproductdescription: TWideStringField
+    object kbmReportproductdescription: TStringField
       FieldName = 'productdescription'
       Size = 100
     end
-    object kbmReportDescription: TWideStringField
+    object kbmReportDescription: TStringField
       FieldName = 'Description'
       Size = 100
     end
@@ -2706,15 +2706,15 @@ object frmRptCashier: TfrmRptCashier
     object kbmReportnativeTotalPrice: TFloatField
       FieldName = 'nativeTotalPrice'
     end
-    object kbmReportNameCol: TWideStringField
+    object kbmReportNameCol: TStringField
       FieldName = 'NameCol'
       Size = 100
     end
-    object kbmReportDescriptionCol: TWideStringField
+    object kbmReportDescriptionCol: TStringField
       FieldName = 'DescriptionCol'
       Size = 100
     end
-    object kbmReportTypeCol: TWideStringField
+    object kbmReportTypeCol: TStringField
       FieldName = 'TypeCol'
       Size = 100
     end
@@ -2727,23 +2727,23 @@ object frmRptCashier: TfrmRptCashier
     object kbmReportRoomReservation: TIntegerField
       FieldName = 'RoomReservation'
     end
-    object kbmReportCategory: TWideStringField
+    object kbmReportCategory: TStringField
       FieldName = 'Category'
       Size = 100
     end
-    object kbmReportBookingId: TWideStringField
+    object kbmReportBookingId: TStringField
       FieldName = 'BookingId'
       Size = 40
     end
-    object kbmReportGuestName: TWideStringField
+    object kbmReportGuestName: TStringField
       FieldName = 'GuestName'
       Size = 50
     end
-    object kbmReportArrival: TWideStringField
+    object kbmReportArrival: TStringField
       FieldName = 'Arrival'
       Size = 10
     end
-    object kbmReportDeparture: TWideStringField
+    object kbmReportDeparture: TStringField
       FieldName = 'Departure'
       Size = 10
     end
@@ -2753,10 +2753,10 @@ object frmRptCashier: TfrmRptCashier
     SortOptions = []
     Left = 544
     Top = 408
-    object kbmPaymentsType: TWideStringField
+    object kbmPaymentsType: TStringField
       FieldName = 'Type'
     end
-    object kbmPaymentsDescription: TWideStringField
+    object kbmPaymentsDescription: TStringField
       FieldName = 'Description'
       Size = 100
     end
@@ -2769,17 +2769,17 @@ object frmRptCashier: TfrmRptCashier
     SortOptions = []
     Left = 408
     Top = 568
-    object WideStringField1: TWideStringField
+    object WideStringField1: TStringField
       FieldName = 'LineType'
       Size = 35
     end
     object IntegerField1: TIntegerField
       FieldName = 'TypeIndex'
     end
-    object WideStringField2: TWideStringField
+    object WideStringField2: TStringField
       FieldName = 'Staff'
     end
-    object WideStringField3: TWideStringField
+    object WideStringField3: TStringField
       FieldName = 'Name'
       Size = 100
     end
@@ -2799,14 +2799,14 @@ object frmRptCashier: TfrmRptCashier
       FieldName = 'room'
       Size = 30
     end
-    object WideStringField4: TWideStringField
+    object WideStringField4: TStringField
       FieldName = 'product'
     end
-    object WideStringField5: TWideStringField
+    object WideStringField5: TStringField
       FieldName = 'productdescription'
       Size = 100
     end
-    object WideStringField6: TWideStringField
+    object WideStringField6: TStringField
       FieldName = 'Description'
       Size = 100
     end
@@ -2816,15 +2816,15 @@ object frmRptCashier: TfrmRptCashier
     object FloatField1: TFloatField
       FieldName = 'nativeTotalPrice'
     end
-    object WideStringField7: TWideStringField
+    object WideStringField7: TStringField
       FieldName = 'NameCol'
       Size = 100
     end
-    object WideStringField8: TWideStringField
+    object WideStringField8: TStringField
       FieldName = 'DescriptionCol'
       Size = 100
     end
-    object WideStringField9: TWideStringField
+    object WideStringField9: TStringField
       FieldName = 'TypeCol'
       Size = 100
     end
@@ -2837,23 +2837,23 @@ object frmRptCashier: TfrmRptCashier
     object IntegerField7: TIntegerField
       FieldName = 'RoomReservation'
     end
-    object WideStringField10: TWideStringField
+    object WideStringField10: TStringField
       FieldName = 'Category'
       Size = 100
     end
-    object WideStringField11: TWideStringField
+    object WideStringField11: TStringField
       FieldName = 'BookingId'
       Size = 40
     end
-    object WideStringField12: TWideStringField
+    object WideStringField12: TStringField
       FieldName = 'GuestName'
       Size = 50
     end
-    object WideStringField13: TWideStringField
+    object WideStringField13: TStringField
       FieldName = 'Arrival'
       Size = 10
     end
-    object WideStringField14: TWideStringField
+    object WideStringField14: TStringField
       FieldName = 'Departure'
       Size = 10
     end

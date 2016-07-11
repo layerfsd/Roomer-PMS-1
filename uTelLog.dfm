@@ -525,18 +525,18 @@ object FrmTelLog: TFrmTelLog
     object mTelLogAuthValid: TBooleanField
       FieldName = 'AuthValid'
     end
-    object mTelLogAuthCode: TWideStringField
+    object mTelLogAuthCode: TStringField
       FieldName = 'AuthCode'
       Size = 50
     end
-    object mTelLogUserCharged: TWideStringField
+    object mTelLogUserCharged: TStringField
       FieldName = 'UserCharged'
       Size = 50
     end
     object mTelLogCallCharge: TFloatField
       FieldName = 'CallCharge'
     end
-    object mTelLogCurrency: TWideStringField
+    object mTelLogCurrency: TStringField
       FieldName = 'Currency'
       Size = 10
     end
@@ -555,14 +555,14 @@ object FrmTelLog: TFrmTelLog
     object mTelLogMarkUp: TIntegerField
       FieldName = 'MarkUp'
     end
-    object mTelLogExternalTargetingCause: TWideStringField
+    object mTelLogExternalTargetingCause: TStringField
       FieldName = 'ExternalTargetingCause'
     end
-    object mTelLogExternalTargeterId: TWideStringField
+    object mTelLogExternalTargeterId: TStringField
       FieldName = 'ExternalTargeterId'
       Size = 50
     end
-    object mTelLogExternalTargetedNumber: TWideStringField
+    object mTelLogExternalTargetedNumber: TStringField
       FieldName = 'ExternalTargetedNumber'
     end
     object mTelLogRoom: TStringField
@@ -601,14 +601,14 @@ object FrmTelLog: TFrmTelLog
     object mTelLogImportRefrence: TStringField
       FieldName = 'ImportRefrence'
     end
-    object mTelLogRecordSource: TWideStringField
+    object mTelLogRecordSource: TStringField
       FieldName = 'RecordSource'
       Size = 50
     end
     object mTelLogConnectedTimeSec: TIntegerField
       FieldName = 'ConnectedTimeSec'
     end
-    object mTelLogDescription: TWideStringField
+    object mTelLogDescription: TStringField
       FieldName = 'Description'
       Size = 50
     end

@@ -672,20 +672,20 @@ object frmItems2: TfrmItems2
     object m_ItemsActive: TBooleanField
       FieldName = 'Active'
     end
-    object m_ItemsItem: TWideStringField
+    object m_ItemsItem: TStringField
       FieldName = 'Item'
     end
-    object m_ItemsDescription: TWideStringField
+    object m_ItemsDescription: TStringField
       FieldName = 'Description'
       Size = 30
     end
     object m_ItemsPrice: TFloatField
       FieldName = 'Price'
     end
-    object m_ItemsItemtype: TWideStringField
+    object m_ItemsItemtype: TStringField
       FieldName = 'Itemtype'
     end
-    object m_ItemsAccountKey: TWideStringField
+    object m_ItemsAccountKey: TStringField
       FieldName = 'AccountKey'
       Size = 50
     end
@@ -701,7 +701,7 @@ object frmItems2: TfrmItems2
     object m_ItemsReservationItem: TBooleanField
       FieldName = 'ReservationItem'
     end
-    object m_ItemsCurrency: TWideStringField
+    object m_ItemsCurrency: TStringField
       FieldName = 'Currency'
       Size = 3
     end
@@ -711,11 +711,11 @@ object frmItems2: TfrmItems2
     object m_ItemsBreakfastItem: TBooleanField
       FieldName = 'BreakfastItem'
     end
-    object m_ItemsBookKeepCode: TWideStringField
+    object m_ItemsBookKeepCode: TStringField
       FieldName = 'BookKeepCode'
       Size = 25
     end
-    object m_ItemsNumberBase: TWideStringField
+    object m_ItemsNumberBase: TStringField
       FieldName = 'NumberBase'
       Size = 15
     end

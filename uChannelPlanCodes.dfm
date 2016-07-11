@@ -350,11 +350,11 @@ object frmChannelPlanCodes: TfrmChannelPlanCodes
     OnNewRecord = m_NewRecord
     Left = 352
     Top = 128
-    object m_Code: TWideStringField
+    object m_Code: TStringField
       FieldName = 'Code'
       Size = 15
     end
-    object m_Description: TWideStringField
+    object m_Description: TStringField
       FieldName = 'Description'
       Size = 35
     end

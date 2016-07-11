@@ -501,11 +501,11 @@ object frmPackages: TfrmPackages
     object m_Active: TBooleanField
       FieldName = 'Active'
     end
-    object m_Description: TWideStringField
+    object m_Description: TStringField
       FieldName = 'Description'
       Size = 45
     end
-    object m_Package: TWideStringField
+    object m_Package: TStringField
       FieldName = 'Package'
     end
     object m_showItemsOnInvoice: TBooleanField
@@ -514,7 +514,7 @@ object frmPackages: TfrmPackages
     object m_CurrencyID: TIntegerField
       FieldName = 'CurrencyID'
     end
-    object m_Currency: TWideStringField
+    object m_Currency: TStringField
       FieldName = 'Currency'
       Size = 5
     end
@@ -524,7 +524,7 @@ object frmPackages: TfrmPackages
       OnSetText = m_TotalPriceSetText
       Calculated = True
     end
-    object m_InvoiceText: TWideStringField
+    object m_InvoiceText: TStringField
       FieldName = 'InvoiceText'
       Size = 100
     end

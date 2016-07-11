@@ -137,8 +137,8 @@ type
     m_ID: TIntegerField;
     FormStore: TcxPropertiesStore;
     m_DateFound: TDateTimeField;
-    m_locationDescription: TWideStringField;
-    m_returnedNotes: TWideStringField;
+    m_locationDescription: TStringField;
+    m_returnedNotes: TStringField;
     lvData: TcxGridLevel;
     grData: TcxGrid;
     tvData: TcxGridDBBandedTableView;
@@ -159,7 +159,7 @@ type
     panBtn: TsPanel;
     btnCancel: TsButton;
     BtnOk: TsButton;
-    m_itemDescription: TWideStringField;
+    m_itemDescription: TStringField;
     tvDataitemDescription: TcxGridDBBandedColumn;
     btnPivgrRequestsExcel: TsButton;
     chkActive: TsCheckBox;

@@ -296,10 +296,10 @@ type
     RoomStatusDS: TDataSource;
     mRoomStatus: TdxMemData;
     mRoomStatusresDate: TDateTimeField;
-    mRoomStatusRoomType: TWideStringField;
-    mRoomStatusDescription: TWideStringField;
+    mRoomStatusRoomType: TStringField;
+    mRoomStatusDescription: TStringField;
     mRoomStatusNumberGuests: TIntegerField;
-    mRoomStatusRoomTypeGroup: TWideStringField;
+    mRoomStatusRoomTypeGroup: TStringField;
     mRoomStatusavailable: TIntegerField;
     pivStatusNumberGuests: TcxDBPivotGridField;
     btnFormatLog: TsButton;

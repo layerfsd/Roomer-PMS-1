@@ -128,9 +128,9 @@ type
     DS: TDataSource;
     grPrinter: TdxComponentPrinter;
     prLink_grData: TdxGridReportLink;
-    m_cvType: TWideStringField;
-    m_cvFrom: TWideStringField;
-    m_cvTo: TWideStringField;
+    m_cvType: TStringField;
+    m_cvFrom: TStringField;
+    m_cvTo: TStringField;
     tvDataRecId: TcxGridDBColumn;
     tvDatacvType: TcxGridDBColumn;
     tvDatacvFrom: TcxGridDBColumn;

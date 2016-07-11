@@ -329,11 +329,11 @@ object frmCurrencies: TfrmCurrencies
     OnNewRecord = m_NewRecord
     Left = 312
     Top = 136
-    object m_Currency: TWideStringField
+    object m_Currency: TStringField
       FieldName = 'Currency'
       Size = 5
     end
-    object m_Description: TWideStringField
+    object m_Description: TStringField
       FieldName = 'Description'
       Size = 30
     end

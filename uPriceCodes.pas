@@ -133,12 +133,12 @@ type
     grPrinter: TdxComponentPrinter;
     prLink_grData: TdxGridReportLink;
     m_ID: TIntegerField;
-    m_pcCode: TWideStringField;
-    m_pcDescription: TWideStringField;
+    m_pcCode: TStringField;
+    m_pcDescription: TStringField;
     m_pcRack: TBooleanField;
     m_pcRackCalc: TFloatField;
     m_pcShowDiscount: TBooleanField;
-    m_pcDiscountText: TWideStringField;
+    m_pcDiscountText: TStringField;
     m_pcAutomatic: TBooleanField;
     m_pcLastUpdate: TDateTimeField;
     m_pcDiscountMethod: TIntegerField;

@@ -117,9 +117,9 @@ type
     FormStore: TcxPropertiesStore;
     chkActive: TsCheckBox;
     pnlHolder: TsPanel;
-    m_code: TWideStringField;
-    m_description: TWideStringField;
-    m_txStatus: TWideStringField;
+    m_code: TStringField;
+    m_description: TStringField;
+    m_txStatus: TStringField;
     tvDataRecId: TcxGridDBColumn;
     tvDataID: TcxGridDBColumn;
     tvDatacode: TcxGridDBColumn;

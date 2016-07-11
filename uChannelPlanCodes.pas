@@ -143,12 +143,12 @@ type
     cLabFilter: TsLabel;
     btnInsert: TsButton;
     btnEdit: TsButton;
-    m_Code: TWideStringField;
+    m_Code: TStringField;
     m_Active: TBooleanField;
     tvDataRecId: TcxGridDBColumn;
     tvDataCode: TcxGridDBColumn;
     tvDataActive: TcxGridDBColumn;
-    m_Description: TWideStringField;
+    m_Description: TStringField;
     tvDataDescription: TcxGridDBColumn;
     chkActive: TsCheckBox;
     FormStore: TcxPropertiesStore;

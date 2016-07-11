@@ -418,11 +418,11 @@ object frmRptBookkeeping: TfrmRptBookkeeping
     SortOptions = []
     Left = 584
     Top = 328
-    object kbmStatCustomerId: TWideStringField
+    object kbmStatCustomerId: TStringField
       FieldName = 'CustomerId'
       Size = 15
     end
-    object kbmStatCustomerName: TWideStringField
+    object kbmStatCustomerName: TStringField
       FieldName = 'CustomerName'
       Size = 35
     end
@@ -432,11 +432,11 @@ object frmRptBookkeeping: TfrmRptBookkeeping
     object kbmStatInvoiceDate: TDateField
       FieldName = 'InvoiceDate'
     end
-    object kbmStatAccountNumber: TWideStringField
+    object kbmStatAccountNumber: TStringField
       FieldName = 'AccountNumber'
       Size = 15
     end
-    object kbmStatTransactionDescription: TWideStringField
+    object kbmStatTransactionDescription: TStringField
       FieldName = 'TransactionDescription'
       Size = 35
     end

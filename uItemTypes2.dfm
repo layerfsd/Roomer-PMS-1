@@ -371,18 +371,18 @@ object frmItemTypes2: TfrmItemTypes2
     object m_Active: TBooleanField
       FieldName = 'Active'
     end
-    object m_Itemtype: TWideStringField
+    object m_Itemtype: TStringField
       FieldName = 'Itemtype'
     end
-    object m_Description: TWideStringField
+    object m_Description: TStringField
       FieldName = 'Description'
       Size = 30
     end
-    object m_VATCode: TWideStringField
+    object m_VATCode: TStringField
       FieldName = 'VATCode'
       Size = 10
     end
-    object m_AccItemLink: TWideStringField
+    object m_AccItemLink: TStringField
       FieldName = 'AccItemLink'
     end
   end

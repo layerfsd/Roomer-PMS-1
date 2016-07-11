@@ -82,9 +82,9 @@ type
     lvRooms: TcxGridLevel;
     gRooms: TcxGrid;
     mRoomsDS: TDataSource;
-    mRoomsRoom: TWideStringField;
-    mRoomsRoomType: TWideStringField;
-    mRoomsGuests: TWideStringField;
+    mRoomsRoom: TStringField;
+    mRoomsRoomType: TStringField;
+    mRoomsGuests: TStringField;
     mRoomsArrival: TDateTimeField;
     mRoomsDeparture: TDateTimeField;
     tvRoomsRecId: TcxGridDBColumn;
@@ -93,7 +93,7 @@ type
     tvRoomsGuests: TcxGridDBColumn;
     tvRoomsArrival: TcxGridDBColumn;
     tvRoomsDeparture: TcxGridDBColumn;
-    mRoomsStatus: TWideStringField;
+    mRoomsStatus: TStringField;
     tvRoomsStatus: TcxGridDBColumn;
     labRoomInfo: TsLabel;
     mRoomsSelect: TBooleanField;
@@ -216,10 +216,10 @@ begin
       mRooms.Append;
       mRooms.FieldByName('Arrival').AsDateTime   := Arrival;
       mRooms.FieldByName('Departure').AsDateTime := Departure;
-      mRooms.FieldByName('Room').AsWideString        := Room;
-      mRooms.FieldByName('RoomType').AsWideString    := RoomType;
-      mRooms.FieldByName('Status').AsWideString      := Status;
-      mRooms.FieldByName('Guests').AsWideString      := Guests;
+      mRooms.FieldByName('Room').AsString        := Room;
+      mRooms.FieldByName('RoomType').AsString    := RoomType;
+      mRooms.FieldByName('Status').AsString      := Status;
+      mRooms.FieldByName('Guests').AsString      := Guests;
       mRooms.FieldByName('RoomReservation').AsInteger := rSet.FieldByName('roomreservation').AsInteger;;
       mRooms.FieldByName('Select').AsBoolean     := true;
 

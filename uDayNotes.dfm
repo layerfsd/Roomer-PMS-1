@@ -1513,18 +1513,18 @@ object frmDayNotes: TfrmDayNotes
     object mRoomStatusresDate: TDateTimeField
       FieldName = 'resDate'
     end
-    object mRoomStatusRoomType: TWideStringField
+    object mRoomStatusRoomType: TStringField
       FieldName = 'RoomType'
       Size = 10
     end
-    object mRoomStatusDescription: TWideStringField
+    object mRoomStatusDescription: TStringField
       FieldName = 'Description'
       Size = 30
     end
     object mRoomStatusNumberGuests: TIntegerField
       FieldName = 'NumberGuests'
     end
-    object mRoomStatusRoomTypeGroup: TWideStringField
+    object mRoomStatusRoomTypeGroup: TStringField
       FieldName = 'RoomTypeGroup'
     end
     object mRoomStatusavailable: TIntegerField

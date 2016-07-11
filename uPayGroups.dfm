@@ -296,11 +296,11 @@ object frmPayGroups: TfrmPayGroups
     OnNewRecord = m_NewRecord
     Left = 352
     Top = 128
-    object m_payGroup: TWideStringField
+    object m_payGroup: TStringField
       FieldName = 'payGroup'
       Size = 5
     end
-    object m_Description: TWideStringField
+    object m_Description: TStringField
       FieldName = 'Description'
       Size = 30
     end

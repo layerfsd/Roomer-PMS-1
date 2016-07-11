@@ -811,7 +811,7 @@ object frmRoomRates: TfrmRoomRates
     object m_PriceCodeID: TIntegerField
       FieldName = 'PriceCodeID'
     end
-    object m_pcCode: TWideStringField
+    object m_pcCode: TStringField
       FieldName = 'pcCode'
       Size = 10
     end
@@ -821,7 +821,7 @@ object frmRoomRates: TfrmRoomRates
     object m_CurrencyID: TIntegerField
       FieldName = 'CurrencyID'
     end
-    object m_Currency: TWideStringField
+    object m_Currency: TStringField
       FieldName = 'Currency'
       Size = 5
     end
@@ -834,14 +834,14 @@ object frmRoomRates: TfrmRoomRates
     object m_seEndDate: TDateTimeField
       FieldName = 'seEndDate'
     end
-    object m_seDescription: TWideStringField
+    object m_seDescription: TStringField
       FieldName = 'seDescription'
       Size = 50
     end
     object m_RoomTypeID: TIntegerField
       FieldName = 'RoomTypeID'
     end
-    object m_RoomType: TWideStringField
+    object m_RoomType: TStringField
       FieldName = 'RoomType'
       Size = 10
     end
@@ -851,7 +851,7 @@ object frmRoomRates: TfrmRoomRates
     object m_RateID: TIntegerField
       FieldName = 'RateID'
     end
-    object m_RateCurrency: TWideStringField
+    object m_RateCurrency: TStringField
       FieldName = 'RateCurrency'
       Size = 5
     end
@@ -891,7 +891,7 @@ object frmRoomRates: TfrmRoomRates
     object m_DateTo: TDateTimeField
       FieldName = 'DateTo'
     end
-    object m_Description: TWideStringField
+    object m_Description: TStringField
       FieldName = 'Description'
       Size = 50
     end

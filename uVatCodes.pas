@@ -129,8 +129,8 @@ type
     DS: TDataSource;
     grPrinter: TdxComponentPrinter;
     prLink_grData: TdxGridReportLink;
-    m_VATCode: TWideStringField;
-    m_Description: TWideStringField;
+    m_VATCode: TStringField;
+    m_Description: TStringField;
     m_VATPercentage: TFloatField;
     tvDataRecId: TcxGridDBColumn;
     tvDataVATCode: TcxGridDBColumn;
@@ -142,9 +142,9 @@ type
     btnInsert: TsButton;
     btnEdit: TsButton;
     FormStore: TcxPropertiesStore;
-    m_valueFormula: TWideStringField;
+    m_valueFormula: TStringField;
     tvDatavalueFormula: TcxGridDBColumn;
-    m_BookKeepCode: TWideStringField;
+    m_BookKeepCode: TStringField;
     tvDataBookKeepCode: TcxGridDBColumn;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);

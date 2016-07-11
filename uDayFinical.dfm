@@ -2041,26 +2041,26 @@ object frmDayFinical: TfrmDayFinical
     object mItemSaleTotalVat: TFloatField
       FieldName = 'TotalVat'
     end
-    object mItemSaleDescription: TWideStringField
+    object mItemSaleDescription: TStringField
       FieldName = 'Description'
       Size = 30
     end
-    object mItemSaleAccountKey: TWideStringField
+    object mItemSaleAccountKey: TStringField
       FieldName = 'AccountKey'
       Size = 50
     end
-    object mItemSaleItemType: TWideStringField
+    object mItemSaleItemType: TStringField
       FieldName = 'ItemType'
     end
-    object mItemSaleItemTypeDescription: TWideStringField
+    object mItemSaleItemTypeDescription: TStringField
       FieldName = 'ItemTypeDescription'
       Size = 30
     end
-    object mItemSaleVATCode: TWideStringField
+    object mItemSaleVATCode: TStringField
       FieldName = 'VATCode'
       Size = 10
     end
-    object mItemSaleItem: TWideStringField
+    object mItemSaleItem: TStringField
       FieldName = 'Item'
     end
   end
@@ -2074,24 +2074,24 @@ object frmDayFinical: TfrmDayFinical
     SortOptions = []
     Left = 752
     Top = 320
-    object mInvoiceLinesPurchaseDate: TWideStringField
+    object mInvoiceLinesPurchaseDate: TStringField
       FieldName = 'PurchaseDate'
       Size = 10
     end
-    object mInvoiceLinesItem: TWideStringField
+    object mInvoiceLinesItem: TStringField
       FieldName = 'Item'
     end
     object mInvoiceLinesQuantity: TFloatField
       FieldName = 'Quantity'
     end
-    object mInvoiceLinesDescription: TWideStringField
+    object mInvoiceLinesDescription: TStringField
       FieldName = 'Description'
       Size = 100
     end
     object mInvoiceLinesPrice: TFloatField
       FieldName = 'Price'
     end
-    object mInvoiceLinesVATType: TWideStringField
+    object mInvoiceLinesVATType: TStringField
       FieldName = 'VATType'
       Size = 10
     end
@@ -2104,18 +2104,18 @@ object frmDayFinical: TfrmDayFinical
     object mInvoiceLinesilAmountTax: TFloatField
       FieldName = 'ilAmountTax'
     end
-    object mInvoiceLinesCurrency: TWideStringField
+    object mInvoiceLinesCurrency: TStringField
       FieldName = 'Currency'
       Size = 5
     end
     object mInvoiceLinesCurrencyRate: TFloatField
       FieldName = 'CurrencyRate'
     end
-    object mInvoiceLinesImportRefrence: TWideStringField
+    object mInvoiceLinesImportRefrence: TStringField
       FieldName = 'ImportRefrence'
       Size = 30
     end
-    object mInvoiceLinesImportSource: TWideStringField
+    object mInvoiceLinesImportSource: TStringField
       FieldName = 'ImportSource'
       Size = 30
     end
@@ -2141,23 +2141,23 @@ object frmDayFinical: TfrmDayFinical
     object mInvoiceHeadsInvoiceNumber: TIntegerField
       FieldName = 'InvoiceNumber'
     end
-    object mInvoiceHeadsCustomer: TWideStringField
+    object mInvoiceHeadsCustomer: TStringField
       FieldName = 'Customer'
       Size = 15
     end
-    object mInvoiceHeadsNameOnInvoice: TWideStringField
+    object mInvoiceHeadsNameOnInvoice: TStringField
       FieldName = 'NameOnInvoice'
       Size = 100
     end
-    object mInvoiceHeadsAddress1: TWideStringField
+    object mInvoiceHeadsAddress1: TStringField
       FieldName = 'Address1'
       Size = 100
     end
-    object mInvoiceHeadsAddress2: TWideStringField
+    object mInvoiceHeadsAddress2: TStringField
       FieldName = 'Address2'
       Size = 100
     end
-    object mInvoiceHeadsAddress3: TWideStringField
+    object mInvoiceHeadsAddress3: TStringField
       FieldName = 'Address3'
       Size = 100
     end
@@ -2176,7 +2176,7 @@ object frmDayFinical: TfrmDayFinical
     object mInvoiceHeadsOriginalInvoice: TIntegerField
       FieldName = 'OriginalInvoice'
     end
-    object mInvoiceHeadsRoomGuest: TWideStringField
+    object mInvoiceHeadsRoomGuest: TStringField
       FieldName = 'RoomGuest'
       Size = 100
     end
@@ -2186,7 +2186,7 @@ object frmDayFinical: TfrmDayFinical
     object mInvoiceHeadsdueDate: TDateTimeField
       FieldName = 'dueDate'
     end
-    object mInvoiceHeadsinvRefrence: TWideStringField
+    object mInvoiceHeadsinvRefrence: TStringField
       FieldName = 'invRefrence'
       Size = 30
     end
@@ -2219,29 +2219,29 @@ object frmDayFinical: TfrmDayFinical
     object mInvoiceHeadsConfirmedDate: TDateTimeField
       FieldName = 'ConfirmedDate'
     end
-    object mInvoiceHeadsCurrency: TWideStringField
+    object mInvoiceHeadsCurrency: TStringField
       FieldName = 'Currency'
       Size = 5
     end
     object mInvoiceHeadsRate: TFloatField
       FieldName = 'Rate'
     end
-    object mInvoiceHeadsStaff: TWideStringField
+    object mInvoiceHeadsStaff: TStringField
       FieldName = 'Staff'
       Size = 5
     end
-    object mInvoiceHeadsCustomerName: TWideStringField
+    object mInvoiceHeadsCustomerName: TStringField
       FieldName = 'CustomerName'
       Size = 100
     end
     object mInvoiceHeadsisAgency: TBooleanField
       FieldName = 'isAgency'
     end
-    object mInvoiceHeadsmarkedSegment: TWideStringField
+    object mInvoiceHeadsmarkedSegment: TStringField
       FieldName = 'markedSegment'
       Size = 5
     end
-    object mInvoiceHeadsmarkedSegmentDescription: TWideStringField
+    object mInvoiceHeadsmarkedSegmentDescription: TStringField
       FieldName = 'markedSegmentDescription'
       Size = 30
     end
@@ -2275,14 +2275,14 @@ object frmDayFinical: TfrmDayFinical
     object mPaymentTypesCustomercount: TIntegerField
       FieldName = 'Customercount'
     end
-    object mPaymentTypesPayType: TWideStringField
+    object mPaymentTypesPayType: TStringField
       FieldName = 'PayType'
       Size = 10
     end
-    object mPaymentTypesPayTypeDescription: TWideStringField
+    object mPaymentTypesPayTypeDescription: TStringField
       FieldName = 'PayTypeDescription'
     end
-    object mPaymentTypesPayGroup: TWideStringField
+    object mPaymentTypesPayGroup: TStringField
       FieldName = 'PayGroup'
       Size = 5
     end
@@ -2546,10 +2546,10 @@ object frmDayFinical: TfrmDayFinical
     object mSumsid: TIntegerField
       FieldName = 'id'
     end
-    object mSumsCode: TWideStringField
+    object mSumsCode: TStringField
       FieldName = 'Code'
     end
-    object mSumsDescription: TWideStringField
+    object mSumsDescription: TStringField
       FieldName = 'Description'
       Size = 50
     end
@@ -2570,10 +2570,10 @@ object frmDayFinical: TfrmDayFinical
     SortOptions = []
     Left = 828
     Top = 313
-    object WideStringField3: TWideStringField
+    object WideStringField3: TStringField
       FieldName = 'ItemType'
     end
-    object WideStringField4: TWideStringField
+    object WideStringField4: TStringField
       FieldName = 'ItemTypeDescription'
       Size = 30
     end
@@ -2589,7 +2589,7 @@ object frmDayFinical: TfrmDayFinical
     object FloatField3: TFloatField
       FieldName = 'TotalVat'
     end
-    object WideStringField5: TWideStringField
+    object WideStringField5: TStringField
       FieldName = 'VATCode'
       Size = 10
     end
@@ -2611,11 +2611,11 @@ object frmDayFinical: TfrmDayFinical
     object FloatField4: TFloatField
       FieldName = 'Amount'
     end
-    object WideStringField6: TWideStringField
+    object WideStringField6: TStringField
       FieldName = 'PayGroup'
       Size = 5
     end
-    object mPaymentGroupsDescription: TWideStringField
+    object mPaymentGroupsDescription: TStringField
       FieldName = 'Description'
       Size = 30
     end
@@ -2633,10 +2633,10 @@ object frmDayFinical: TfrmDayFinical
     object IntegerField3: TIntegerField
       FieldName = 'id'
     end
-    object WideStringField1: TWideStringField
+    object WideStringField1: TStringField
       FieldName = 'Code'
     end
-    object WideStringField2: TWideStringField
+    object WideStringField2: TStringField
       FieldName = 'Description'
       Size = 50
     end
@@ -2739,11 +2739,11 @@ object frmDayFinical: TfrmDayFinical
     object FloatField9: TFloatField
       FieldName = 'TotalVat'
     end
-    object WideStringField9: TWideStringField
+    object WideStringField9: TStringField
       FieldName = 'VATCode'
       Size = 10
     end
-    object mItemVATsaleDescription: TWideStringField
+    object mItemVATsaleDescription: TStringField
       FieldName = 'Description'
       Size = 30
     end
@@ -3773,45 +3773,45 @@ object frmDayFinical: TfrmDayFinical
     object IntegerField7: TIntegerField
       FieldName = 'InvoiceNumber'
     end
-    object WideStringField7: TWideStringField
+    object WideStringField7: TStringField
       FieldName = 'PayDate'
       Size = 10
     end
-    object WideStringField8: TWideStringField
+    object WideStringField8: TStringField
       FieldName = 'Customer'
       Size = 15
     end
     object FloatField10: TFloatField
       FieldName = 'Amount'
     end
-    object WideStringField10: TWideStringField
+    object WideStringField10: TStringField
       FieldName = 'Currency'
       Size = 5
     end
     object FloatField11: TFloatField
       FieldName = 'CurrencyRate'
     end
-    object WideStringField11: TWideStringField
+    object WideStringField11: TStringField
       FieldName = 'PayType'
       Size = 15
     end
-    object WideStringField12: TWideStringField
+    object WideStringField12: TStringField
       FieldName = 'InvoiceDate'
       Size = 10
     end
-    object WideStringField13: TWideStringField
+    object WideStringField13: TStringField
       FieldName = 'PayTypeDescription'
       Size = 30
     end
-    object WideStringField14: TWideStringField
+    object WideStringField14: TStringField
       FieldName = 'payGroupDescription'
       Size = 30
     end
-    object WideStringField15: TWideStringField
+    object WideStringField15: TStringField
       FieldName = 'PayGroup'
       Size = 5
     end
-    object WideStringField16: TWideStringField
+    object WideStringField16: TStringField
       FieldName = 'NameOnInvoice'
       Size = 100
     end
@@ -3821,11 +3821,11 @@ object frmDayFinical: TfrmDayFinical
     object IntegerField8: TIntegerField
       FieldName = 'SplitNumber'
     end
-    object WideStringField17: TWideStringField
+    object WideStringField17: TStringField
       FieldName = 'RoomGuest'
       Size = 100
     end
-    object WideStringField18: TWideStringField
+    object WideStringField18: TStringField
       FieldName = 'CustomerName'
       Size = 100
     end

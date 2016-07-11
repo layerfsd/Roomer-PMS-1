@@ -135,7 +135,7 @@ type
     DS: TDataSource;
     grPrinter: TdxComponentPrinter;
     prLink_grData: TdxGridReportLink;
-    m_Description: TWideStringField;
+    m_Description: TStringField;
     sLabel1: TsLabel;
     btnInsert: TsButton;
     btnEdit: TsButton;
@@ -144,7 +144,7 @@ type
     chkActive: TsCheckBox;
     m_ID: TIntegerField;
     FormStore: TcxPropertiesStore;
-    m_Identification: TWideStringField;
+    m_Identification: TStringField;
     m_minimumCost: TFloatField;
     m_minuteRate: TFloatField;
     tvDataRecId: TcxGridDBColumn;

@@ -377,19 +377,19 @@ object frmPayTypes: TfrmPayTypes
     OnNewRecord = m_NewRecord
     Left = 352
     Top = 128
-    object m_payType: TWideStringField
+    object m_payType: TStringField
       FieldName = 'payType'
       Size = 10
     end
-    object m_Description: TWideStringField
+    object m_Description: TStringField
       FieldName = 'Description'
       Size = 30
     end
-    object m_PayGroup: TWideStringField
+    object m_PayGroup: TStringField
       FieldName = 'PayGroup'
       Size = 5
     end
-    object m_payGroupDescription: TWideStringField
+    object m_payGroupDescription: TStringField
       FieldName = 'payGroupDescription'
       Size = 30
     end
@@ -412,7 +412,7 @@ object frmPayTypes: TfrmPayTypes
       FieldName = 'BookKey'
       Size = 16
     end
-    object m_BookKeepCode: TWideStringField
+    object m_BookKeepCode: TStringField
       FieldName = 'BookKeepCode'
       Size = 25
     end

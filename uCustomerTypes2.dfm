@@ -360,11 +360,11 @@ object frmCustomerTypes2: TfrmCustomerTypes2
     object m_Active: TBooleanField
       FieldName = 'Active'
     end
-    object m_CustomerType: TWideStringField
+    object m_CustomerType: TStringField
       FieldName = 'CustomerType'
       Size = 5
     end
-    object m_Description: TWideStringField
+    object m_Description: TStringField
       FieldName = 'Description'
       Size = 30
     end

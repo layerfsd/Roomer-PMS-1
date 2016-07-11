@@ -537,11 +537,11 @@ object frmLodgingTaxReport2: TfrmLodgingTaxReport2
     object mInvoiceHeadsInvoiceNumber: TIntegerField
       FieldName = 'InvoiceNumber'
     end
-    object mInvoiceHeadsCustomer: TWideStringField
+    object mInvoiceHeadsCustomer: TStringField
       FieldName = 'Customer'
       Size = 15
     end
-    object mInvoiceHeadsName: TWideStringField
+    object mInvoiceHeadsName: TStringField
       FieldName = 'Name'
       Size = 100
     end

@@ -371,7 +371,7 @@ object frmStockItems: TfrmStockItems
     object mdStockItemsActive: TBooleanField
       FieldName = 'Active'
     end
-    object mdStockItemsDescription: TWideStringField
+    object mdStockItemsDescription: TStringField
       FieldName = 'Description'
       Size = 30
     end

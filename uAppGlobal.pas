@@ -483,7 +483,7 @@ begin
       Field := DataSet.Fields[i];
       if Field.DataType IN [ftUnknown, ftString, ftSmallint, ftInteger, ftWord,
                                         ftBoolean, ftFloat, ftCurrency, ftDate, ftTime, ftDateTime,
-                                        ftAutoInc, ftMemo, ftFmtMemo, ftFixedChar, ftWideString,
+                                        ftAutoInc, ftMemo, ftFmtMemo, ftFixedChar, ftString,
                                         ftLargeint, ftTimeStamp, ftWideMemo, ftLongWord, ftShortint,
                                         ftByte, ftExtended, ftSingle] then
       begin

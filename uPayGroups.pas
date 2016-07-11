@@ -135,8 +135,8 @@ type
     DS: TDataSource;
     grPrinter: TdxComponentPrinter;
     prLink_grData: TdxGridReportLink;
-    m_payGroup: TWideStringField;
-    m_Description: TWideStringField;
+    m_payGroup: TStringField;
+    m_Description: TStringField;
     tvDataRecId: TcxGridDBColumn;
     tvDatapayGroup: TcxGridDBColumn;
     tvDataDescription: TcxGridDBColumn;

@@ -481,34 +481,34 @@ object frmCountries: TfrmCountries
     OnNewRecord = m_NewRecord
     Left = 376
     Top = 184
-    object m_Country: TWideStringField
+    object m_Country: TStringField
       FieldName = 'Country'
       Size = 2
     end
-    object m_CountryName: TWideStringField
+    object m_CountryName: TStringField
       FieldName = 'CountryName'
       Size = 50
     end
-    object m_islCountryName: TWideStringField
+    object m_islCountryName: TStringField
       FieldName = 'islCountryName'
       Size = 50
     end
-    object m_Currency: TWideStringField
+    object m_Currency: TStringField
       FieldName = 'Currency'
       Size = 5
     end
-    object m_CountryGroup: TWideStringField
+    object m_CountryGroup: TStringField
       FieldName = 'CountryGroup'
       Size = 5
     end
     object m_OrderIndex: TIntegerField
       FieldName = 'OrderIndex'
     end
-    object m_CurrenciesDescription: TWideStringField
+    object m_CurrenciesDescription: TStringField
       FieldName = 'CurrenciesDescription'
       Size = 30
     end
-    object m_CountryGroupsGroupName: TWideStringField
+    object m_CountryGroupsGroupName: TStringField
       FieldName = 'CountryGroupsGroupName'
       Size = 50
     end

@@ -135,8 +135,8 @@ type
     lvData: TcxGridLevel;
     grData: TcxGrid;
     m_: TdxMemData;
-    m_Currency: TWideStringField;
-    m_Description: TWideStringField;
+    m_Currency: TStringField;
+    m_Description: TStringField;
     mnuOther: TPopupMenu;
     mnuiPrint: TMenuItem;
     mnuiAllowGridEdit: TMenuItem;

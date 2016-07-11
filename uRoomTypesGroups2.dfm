@@ -710,11 +710,11 @@ object frmRoomTypesGroups2: TfrmRoomTypesGroups2
     object m_Active: TBooleanField
       FieldName = 'Active'
     end
-    object m_Code: TWideStringField
+    object m_Code: TStringField
       FieldName = 'Code'
       Size = 10
     end
-    object m_Description: TWideStringField
+    object m_Description: TStringField
       DisplayWidth = 160
       FieldName = 'Description'
       Size = 160
@@ -731,7 +731,7 @@ object frmRoomTypesGroups2: TfrmRoomTypesGroups2
     object m_FullBoard: TBooleanField
       FieldName = 'FullBoard'
     end
-    object m_PriorityRule: TWideStringField
+    object m_PriorityRule: TStringField
       FieldName = 'PriorityRule'
       Size = 50
     end
@@ -747,19 +747,19 @@ object frmRoomTypesGroups2: TfrmRoomTypesGroups2
     object m_MaxCount: TIntegerField
       FieldName = 'MaxCount'
     end
-    object m_color: TWideStringField
+    object m_color: TStringField
       FieldName = 'color'
       Size = 50
     end
-    object m_TopClass: TWideStringField
+    object m_TopClass: TStringField
       FieldName = 'TopClass'
       Size = 10
     end
-    object m_RATE_PLAN_TYPE: TWideStringField
+    object m_RATE_PLAN_TYPE: TStringField
       FieldName = 'RATE_PLAN_TYPE'
       Size = 15
     end
-    object m_AvailabilityTypes: TWideStringField
+    object m_AvailabilityTypes: TStringField
       FieldName = 'AvailabilityTypes'
       Size = 150
     end
@@ -787,7 +787,7 @@ object frmRoomTypesGroups2: TfrmRoomTypesGroups2
     object m_defMaxAvailability: TIntegerField
       FieldName = 'defMaxAvailability'
     end
-    object m_Package: TWideStringField
+    object m_Package: TStringField
       FieldName = 'Package'
     end
     object m_NonRefundable: TBooleanField
@@ -799,7 +799,7 @@ object frmRoomTypesGroups2: TfrmRoomTypesGroups2
     object m_RateExtraBed: TFloatField
       FieldName = 'RateExtraBed'
     end
-    object m_PhotoUri: TWideStringField
+    object m_PhotoUri: TStringField
       DisplayWidth = 50
       FieldName = 'PhotoUri'
       Size = 255
@@ -816,11 +816,11 @@ object frmRoomTypesGroups2: TfrmRoomTypesGroups2
     object m_sendMinStay: TBooleanField
       FieldName = 'sendMinStay'
     end
-    object m_DetailedDescriptionHtml: TWideStringField
+    object m_DetailedDescriptionHtml: TStringField
       FieldName = 'DetailedDescriptionHtml'
       Size = 4096
     end
-    object m_DetailedDescription: TWideStringField
+    object m_DetailedDescription: TStringField
       FieldName = 'DetailedDescription'
       Size = 4096
     end
@@ -833,7 +833,7 @@ object frmRoomTypesGroups2: TfrmRoomTypesGroups2
     object m_masterRateRateDeviation: TFloatField
       FieldName = 'masterRateRateDeviation'
     end
-    object m_RateDeviationType: TWideStringField
+    object m_RateDeviationType: TStringField
       FieldName = 'RateDeviationType'
       Size = 15
     end
@@ -843,7 +843,7 @@ object frmRoomTypesGroups2: TfrmRoomTypesGroups2
     object m_masterRateSingleUseRateDeviation: TFloatField
       FieldName = 'masterRateSingleUseRateDeviation'
     end
-    object m_singleUseRateDeviationType: TWideStringField
+    object m_singleUseRateDeviationType: TStringField
       FieldName = 'singleUseRateDeviationType'
       Size = 15
     end

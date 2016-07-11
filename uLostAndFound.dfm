@@ -386,18 +386,18 @@ object frmLostAndFound: TfrmLostAndFound
     object m_DateFound: TDateTimeField
       FieldName = 'DateFound'
     end
-    object m_locationDescription: TWideStringField
+    object m_locationDescription: TStringField
       FieldName = 'locationDescription'
       Size = 200
     end
-    object m_returnedNotes: TWideStringField
+    object m_returnedNotes: TStringField
       FieldName = 'returnedNotes'
       Size = 200
     end
     object m_returnedToOwner: TBooleanField
       FieldName = 'returnedToOwner'
     end
-    object m_itemDescription: TWideStringField
+    object m_itemDescription: TStringField
       FieldName = 'itemDescription'
       Size = 200
     end

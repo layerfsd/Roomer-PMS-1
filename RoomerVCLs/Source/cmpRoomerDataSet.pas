@@ -1829,7 +1829,7 @@ begin
     RecordSet := ADOInt._Recordset(FSavedResult);
 
     for i := 0 to FieldCount - 1 do
-      if Fields[i].DataType IN [ftString, ftWideString, ftWideMemo] then
+      if Fields[i].DataType IN [ftString, ftString, ftWideMemo] then
         Fields[i].OnGetText := GetFieldText;
 
     if not(BOF and EOF) then

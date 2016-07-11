@@ -1189,80 +1189,80 @@ object frmGroupGuests: TfrmGroupGuests
     object mGuestsPersonsProfilesId: TIntegerField
       FieldName = 'PersonsProfilesId'
     end
-    object mGueststitle: TWideStringField
+    object mGueststitle: TStringField
       FieldName = 'title'
       Size = 10
     end
-    object mGuestsName: TWideStringField
+    object mGuestsName: TStringField
       FieldName = 'Name'
       Size = 100
     end
-    object mGuestsAddress1: TWideStringField
+    object mGuestsAddress1: TStringField
       FieldName = 'Address1'
       Size = 100
     end
-    object mGuestsAddress2: TWideStringField
+    object mGuestsAddress2: TStringField
       FieldName = 'Address2'
     end
-    object mGuestsAddress3: TWideStringField
+    object mGuestsAddress3: TStringField
       FieldName = 'Address3'
       Size = 100
     end
-    object mGuestsAddress4: TWideStringField
+    object mGuestsAddress4: TStringField
       FieldName = 'Address4'
       Size = 100
     end
-    object mGuestsCountry: TWideStringField
+    object mGuestsCountry: TStringField
       FieldName = 'Country'
       Size = 2
     end
-    object mGueststel1: TWideStringField
+    object mGueststel1: TStringField
       FieldName = 'tel1'
       Size = 40
     end
-    object mGueststel2: TWideStringField
+    object mGueststel2: TStringField
       FieldName = 'tel2'
       Size = 40
     end
-    object mGuestsFax: TWideStringField
+    object mGuestsFax: TStringField
       FieldName = 'Fax'
       Size = 31
     end
-    object mGuestsEmail: TWideStringField
+    object mGuestsEmail: TStringField
       FieldName = 'Email'
       Size = 100
     end
-    object mGuestsNationality: TWideStringField
+    object mGuestsNationality: TStringField
       FieldName = 'Nationality'
       Size = 2
     end
-    object mGuestsPID: TWideStringField
+    object mGuestsPID: TStringField
       FieldName = 'PID'
       Size = 30
     end
     object mGuestsMainName: TBooleanField
       FieldName = 'MainName'
     end
-    object mGuestsCustomer: TWideStringField
+    object mGuestsCustomer: TStringField
       FieldName = 'Customer'
       Size = 15
     end
-    object mGuestsState: TWideStringField
+    object mGuestsState: TStringField
       FieldName = 'State'
       Size = 10
     end
-    object mGuestsPersonalIdentificationId: TWideStringField
+    object mGuestsPersonalIdentificationId: TStringField
       FieldName = 'PersonalIdentificationId'
       Size = 50
     end
     object mGuestsDateOfBirth: TDateTimeField
       FieldName = 'DateOfBirth'
     end
-    object mGuestsSocialSecurityNumber: TWideStringField
+    object mGuestsSocialSecurityNumber: TStringField
       FieldName = 'SocialSecurityNumber'
       Size = 45
     end
-    object mGuestsRoom: TWideStringField
+    object mGuestsRoom: TStringField
       FieldName = 'Room'
       Size = 8
     end
@@ -1278,14 +1278,14 @@ object frmGroupGuests: TfrmGroupGuests
     object mGuestsnumGuests: TIntegerField
       FieldName = 'numGuests'
     end
-    object mGuestsRoomDescription: TWideStringField
+    object mGuestsRoomDescription: TStringField
       FieldName = 'RoomDescription'
     end
-    object mGuestsStatusText: TWideStringField
+    object mGuestsStatusText: TStringField
       FieldName = 'StatusText'
       Size = 45
     end
-    object mGuestsroomDetails: TWideStringField
+    object mGuestsroomDetails: TStringField
       FieldName = 'roomDetails'
       Size = 200
     end
@@ -1293,7 +1293,7 @@ object frmGroupGuests: TfrmGroupGuests
       FieldName = 'CompanyName'
       Size = 100
     end
-    object mGuestsCompVATNumber: TWideStringField
+    object mGuestsCompVATNumber: TStringField
       FieldName = 'CompVATNumber'
       Size = 45
     end
@@ -1301,35 +1301,35 @@ object frmGroupGuests: TfrmGroupGuests
       FieldName = 'CompAddress1'
       Size = 100
     end
-    object mGuestsCompAddress2: TWideStringField
+    object mGuestsCompAddress2: TStringField
       FieldName = 'CompAddress2'
       Size = 100
     end
-    object mGuestsCompZip: TWideStringField
+    object mGuestsCompZip: TStringField
       FieldName = 'CompZip'
       Size = 100
     end
-    object mGuestsCompCity: TWideStringField
+    object mGuestsCompCity: TStringField
       FieldName = 'CompCity'
       Size = 100
     end
-    object mGuestsCompCountry: TWideStringField
+    object mGuestsCompCountry: TStringField
       FieldName = 'CompCountry'
       Size = 2
     end
-    object mGuestsCompTel: TWideStringField
+    object mGuestsCompTel: TStringField
       FieldName = 'CompTel'
       Size = 40
     end
-    object mGuestsCompFax: TWideStringField
+    object mGuestsCompFax: TStringField
       FieldName = 'CompFax'
       Size = 40
     end
-    object mGuestsCompEmail: TWideStringField
+    object mGuestsCompEmail: TStringField
       FieldName = 'CompEmail'
       Size = 255
     end
-    object mGuestsRoomType: TWideStringField
+    object mGuestsRoomType: TStringField
       FieldName = 'RoomType'
       Size = 10
     end
@@ -1354,80 +1354,80 @@ object frmGroupGuests: TfrmGroupGuests
     object IntegerField5: TIntegerField
       FieldName = 'PersonsProfilesId'
     end
-    object WideStringField1: TWideStringField
+    object WideStringField1: TStringField
       FieldName = 'title'
       Size = 10
     end
-    object WideStringField2: TWideStringField
+    object WideStringField2: TStringField
       FieldName = 'Name'
       Size = 100
     end
-    object WideStringField3: TWideStringField
+    object WideStringField3: TStringField
       FieldName = 'Address1'
       Size = 100
     end
-    object WideStringField4: TWideStringField
+    object WideStringField4: TStringField
       FieldName = 'Address2'
     end
-    object WideStringField5: TWideStringField
+    object WideStringField5: TStringField
       FieldName = 'Address3'
       Size = 100
     end
-    object WideStringField6: TWideStringField
+    object WideStringField6: TStringField
       FieldName = 'Address4'
       Size = 100
     end
-    object WideStringField7: TWideStringField
+    object WideStringField7: TStringField
       FieldName = 'Country'
       Size = 2
     end
-    object WideStringField8: TWideStringField
+    object WideStringField8: TStringField
       FieldName = 'tel1'
       Size = 40
     end
-    object WideStringField9: TWideStringField
+    object WideStringField9: TStringField
       FieldName = 'tel2'
       Size = 40
     end
-    object WideStringField10: TWideStringField
+    object WideStringField10: TStringField
       FieldName = 'Fax'
       Size = 31
     end
-    object WideStringField11: TWideStringField
+    object WideStringField11: TStringField
       FieldName = 'Email'
       Size = 100
     end
-    object WideStringField12: TWideStringField
+    object WideStringField12: TStringField
       FieldName = 'Nationality'
       Size = 2
     end
-    object WideStringField13: TWideStringField
+    object WideStringField13: TStringField
       FieldName = 'PID'
       Size = 30
     end
     object BooleanField1: TBooleanField
       FieldName = 'MainName'
     end
-    object WideStringField14: TWideStringField
+    object WideStringField14: TStringField
       FieldName = 'Customer'
       Size = 15
     end
-    object WideStringField15: TWideStringField
+    object WideStringField15: TStringField
       FieldName = 'State'
       Size = 10
     end
-    object WideStringField16: TWideStringField
+    object WideStringField16: TStringField
       FieldName = 'PersonalIdentificationId'
       Size = 50
     end
     object DateTimeField1: TDateTimeField
       FieldName = 'DateOfBirth'
     end
-    object WideStringField17: TWideStringField
+    object WideStringField17: TStringField
       FieldName = 'SocialSecurityNumber'
       Size = 45
     end
-    object WideStringField18: TWideStringField
+    object WideStringField18: TStringField
       FieldName = 'Room'
       Size = 8
     end
@@ -1443,14 +1443,14 @@ object frmGroupGuests: TfrmGroupGuests
     object IntegerField6: TIntegerField
       FieldName = 'numGuests'
     end
-    object WideStringField19: TWideStringField
+    object WideStringField19: TStringField
       FieldName = 'RoomDescription'
     end
-    object WideStringField20: TWideStringField
+    object WideStringField20: TStringField
       FieldName = 'StatusText'
       Size = 45
     end
-    object WideStringField21: TWideStringField
+    object WideStringField21: TStringField
       FieldName = 'roomDetails'
       Size = 200
     end
@@ -1458,7 +1458,7 @@ object frmGroupGuests: TfrmGroupGuests
       FieldName = 'CompanyName'
       Size = 100
     end
-    object WideStringField22: TWideStringField
+    object WideStringField22: TStringField
       FieldName = 'CompVATNumber'
       Size = 45
     end
@@ -1466,35 +1466,35 @@ object frmGroupGuests: TfrmGroupGuests
       FieldName = 'CompAddress1'
       Size = 100
     end
-    object WideStringField23: TWideStringField
+    object WideStringField23: TStringField
       FieldName = 'CompAddress2'
       Size = 100
     end
-    object WideStringField24: TWideStringField
+    object WideStringField24: TStringField
       FieldName = 'CompZip'
       Size = 100
     end
-    object WideStringField25: TWideStringField
+    object WideStringField25: TStringField
       FieldName = 'CompCity'
       Size = 100
     end
-    object WideStringField26: TWideStringField
+    object WideStringField26: TStringField
       FieldName = 'CompCountry'
       Size = 2
     end
-    object WideStringField27: TWideStringField
+    object WideStringField27: TStringField
       FieldName = 'CompTel'
       Size = 40
     end
-    object WideStringField28: TWideStringField
+    object WideStringField28: TStringField
       FieldName = 'CompFax'
       Size = 40
     end
-    object WideStringField29: TWideStringField
+    object WideStringField29: TStringField
       FieldName = 'CompEmail'
       Size = 255
     end
-    object WideStringField30: TWideStringField
+    object WideStringField30: TStringField
       FieldName = 'RoomType'
       Size = 10
     end

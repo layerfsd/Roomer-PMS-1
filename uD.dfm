@@ -2466,7 +2466,7 @@ object d: Td
     object mGuestsReservation: TIntegerField
       FieldName = 'Reservation'
     end
-    object mGuestsReservationName: TWideStringField
+    object mGuestsReservationName: TStringField
       FieldName = 'ReservationName'
       Size = 200
     end
@@ -2501,53 +2501,53 @@ object d: Td
     object mGuestsTotalStayRate: TFloatField
       FieldName = 'TotalStayRate'
     end
-    object mGuestsroom: TWideStringField
+    object mGuestsroom: TStringField
       FieldName = 'room'
       Size = 30
     end
-    object mGuestsroomtype: TWideStringField
+    object mGuestsroomtype: TStringField
       DisplayWidth = 30
       FieldName = 'roomtype'
       Size = 30
     end
-    object mGuestscustomer: TWideStringField
+    object mGuestscustomer: TStringField
       FieldName = 'customer'
       Size = 30
     end
-    object mGuestsPersonalID: TWideStringField
+    object mGuestsPersonalID: TStringField
       FieldName = 'PersonalID'
     end
-    object mGuestsCustomerName: TWideStringField
+    object mGuestsCustomerName: TStringField
       FieldName = 'CustomerName'
       Size = 200
     end
     object mGuestsBreakfast: TBooleanField
       FieldName = 'Breakfast'
     end
-    object mGuestsRoomDescription: TWideStringField
+    object mGuestsRoomDescription: TStringField
       FieldName = 'RoomDescription'
       Size = 200
     end
     object mGuestsfloor: TIntegerField
       FieldName = 'floor'
     end
-    object mGuestsLocationDescription: TWideStringField
+    object mGuestsLocationDescription: TStringField
       FieldName = 'LocationDescription'
       Size = 200
     end
-    object mGuestsmarketSegmentDescription: TWideStringField
+    object mGuestsmarketSegmentDescription: TStringField
       FieldName = 'marketSegmentDescription'
       Size = 100
     end
-    object mGuestsemail: TWideStringField
+    object mGuestsemail: TStringField
       FieldName = 'email'
       Size = 200
     end
-    object mGuestsStatusText: TWideStringField
+    object mGuestsStatusText: TStringField
       FieldName = 'StatusText'
       Size = 100
     end
-    object mGuestsresInfo: TWideStringField
+    object mGuestsresInfo: TStringField
       FieldName = 'resInfo'
       Size = 200
     end
@@ -2567,11 +2567,11 @@ object d: Td
     object mGuestsisMain: TBooleanField
       FieldName = 'isMain'
     end
-    object mGuestschannel: TWideStringField
+    object mGuestschannel: TStringField
       FieldName = 'channel'
       Size = 30
     end
-    object mGuestsBookingId: TWideStringField
+    object mGuestsBookingId: TStringField
       FieldName = 'BookingId'
       Size = 30
     end

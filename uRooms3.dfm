@@ -643,15 +643,15 @@ object frmRooms3: TfrmRooms3
     object m_Active: TBooleanField
       FieldName = 'Active'
     end
-    object m_Room: TWideStringField
+    object m_Room: TStringField
       FieldName = 'Room'
       Size = 8
     end
-    object m_Description: TWideStringField
+    object m_Description: TStringField
       FieldName = 'Description'
       Size = 30
     end
-    object m_RoomType: TWideStringField
+    object m_RoomType: TStringField
       FieldName = 'RoomType'
       Size = 10
     end
@@ -706,11 +706,11 @@ object frmRooms3: TfrmRooms3
     object m_SqrMeters: TFloatField
       FieldName = 'SqrMeters'
     end
-    object m_BedSize: TWideStringField
+    object m_BedSize: TStringField
       FieldName = 'BedSize'
       Size = 1
     end
-    object m_Equipments: TWideStringField
+    object m_Equipments: TStringField
       FieldName = 'Equipments'
       Size = 100
     end
@@ -720,7 +720,7 @@ object frmRooms3: TfrmRooms3
     object m_Statistics: TBooleanField
       FieldName = 'Statistics'
     end
-    object m_Status: TWideStringField
+    object m_Status: TStringField
       FieldName = 'Status'
       Size = 1
     end
@@ -730,11 +730,11 @@ object frmRooms3: TfrmRooms3
     object m_hidden: TBooleanField
       FieldName = 'hidden'
     end
-    object m_Location: TWideStringField
+    object m_Location: TStringField
       FieldName = 'Location'
       Size = 10
     end
-    object m_Dorm: TWideStringField
+    object m_Dorm: TStringField
       FieldName = 'Dorm'
     end
     object m_Floor: TIntegerField

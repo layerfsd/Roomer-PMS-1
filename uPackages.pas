@@ -121,13 +121,13 @@ type
     m_: TdxMemData;
     m_ID: TIntegerField;
     m_Active: TBooleanField;
-    m_Description: TWideStringField;
+    m_Description: TStringField;
     btnInsert: TsButton;
     btnEdit: TsButton;
-    m_Package: TWideStringField;
+    m_Package: TStringField;
     m_showItemsOnInvoice: TBooleanField;
     m_CurrencyID: TIntegerField;
-    m_Currency: TWideStringField;
+    m_Currency: TStringField;
     grData: TcxGrid;
     tvData: TcxGridDBTableView;
     tvDataRecId: TcxGridDBColumn;
@@ -163,7 +163,7 @@ type
     tvDataTotalPrice: TcxGridDBColumn;
     tvDataColumn1: TcxGridDBColumn;
     FormStore: TcxPropertiesStore;
-    m_InvoiceText: TWideStringField;
+    m_InvoiceText: TStringField;
     tvDataInvoiceText: TcxGridDBColumn;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);

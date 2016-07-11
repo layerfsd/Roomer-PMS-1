@@ -1089,22 +1089,22 @@ object frmNationalReport3: TfrmNationalReport3
     SortOptions = []
     Left = 368
     Top = 432
-    object mHagstofa1Country: TWideStringField
+    object mHagstofa1Country: TStringField
       FieldName = 'Country'
       Size = 2
     end
-    object mHagstofa1CountryName: TWideStringField
+    object mHagstofa1CountryName: TStringField
       FieldName = 'CountryName'
       Size = 30
     end
     object mHagstofa1Nights: TIntegerField
       FieldName = 'Nights'
     end
-    object mHagstofa1CountryGroup: TWideStringField
+    object mHagstofa1CountryGroup: TStringField
       FieldName = 'CountryGroup'
       Size = 5
     end
-    object mHagstofa1GroupName: TWideStringField
+    object mHagstofa1GroupName: TStringField
       FieldName = 'GroupName'
       Size = 30
     end
@@ -1141,22 +1141,22 @@ object frmNationalReport3: TfrmNationalReport3
     SortOptions = []
     Left = 232
     Top = 304
-    object WideStringField1: TWideStringField
+    object WideStringField1: TStringField
       FieldName = 'Country'
       Size = 2
     end
-    object WideStringField2: TWideStringField
+    object WideStringField2: TStringField
       FieldName = 'CountryName'
       Size = 30
     end
     object IntegerField1: TIntegerField
       FieldName = 'Nights'
     end
-    object WideStringField3: TWideStringField
+    object WideStringField3: TStringField
       FieldName = 'CountryGroup'
       Size = 5
     end
-    object WideStringField4: TWideStringField
+    object WideStringField4: TStringField
       FieldName = 'GroupName'
       Size = 30
     end
@@ -1200,14 +1200,14 @@ object frmNationalReport3: TfrmNationalReport3
     object mAllGuestsRoomReservation: TIntegerField
       FieldName = 'RoomReservation'
     end
-    object mAllGuestsGuestName: TWideStringField
+    object mAllGuestsGuestName: TStringField
       FieldName = 'GuestName'
       Size = 100
     end
     object mAllGuestsPerson: TIntegerField
       FieldName = 'Person'
     end
-    object mAllGuestsStatus: TWideStringField
+    object mAllGuestsStatus: TStringField
       FieldName = 'Status'
       Size = 5
     end
@@ -1223,23 +1223,23 @@ object frmNationalReport3: TfrmNationalReport3
     object mAllGuestsNoRoom: TBooleanField
       FieldName = 'NoRoom'
     end
-    object mAllGuestsReservationCountry: TWideStringField
+    object mAllGuestsReservationCountry: TStringField
       FieldName = 'ReservationCountry'
       Size = 2
     end
-    object mAllGuestsGuestsCountry: TWideStringField
+    object mAllGuestsGuestsCountry: TStringField
       FieldName = 'GuestsCountry'
       Size = 2
     end
-    object mAllGuestsGuestCountryName: TWideStringField
+    object mAllGuestsGuestCountryName: TStringField
       FieldName = 'GuestCountryName'
       Size = 50
     end
-    object mAllGuestsGuestGroupName: TWideStringField
+    object mAllGuestsGuestGroupName: TStringField
       FieldName = 'GuestGroupName'
       Size = 50
     end
-    object mAllGuestsReservationsName: TWideStringField
+    object mAllGuestsReservationsName: TStringField
       FieldName = 'ReservationsName'
       Size = 100
     end
@@ -1247,11 +1247,11 @@ object frmNationalReport3: TfrmNationalReport3
       FieldName = 'ResInfo'
       Size = 120
     end
-    object mAllGuestsRoom: TWideStringField
+    object mAllGuestsRoom: TStringField
       FieldName = 'Room'
       Size = 10
     end
-    object mAllGuestsRoomType: TWideStringField
+    object mAllGuestsRoomType: TStringField
       FieldName = 'RoomType'
       Size = 10
     end

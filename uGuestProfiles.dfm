@@ -509,106 +509,106 @@ object frmGuestProfiles: TfrmGuestProfiles
     object m_ID: TIntegerField
       FieldName = 'ID'
     end
-    object m_MaleFemale: TWideStringField
+    object m_MaleFemale: TStringField
       FieldName = 'MaleFemale'
       Size = 10
     end
-    object m_Title: TWideStringField
+    object m_Title: TStringField
       FieldName = 'Title'
       Size = 10
     end
-    object m_Firstname: TWideStringField
+    object m_Firstname: TStringField
       DisplayWidth = 40
       FieldName = 'Firstname'
       Size = 100
     end
-    object m_Lastname: TWideStringField
+    object m_Lastname: TStringField
       DisplayWidth = 40
       FieldName = 'Lastname'
       Size = 100
     end
-    object m_Profession: TWideStringField
+    object m_Profession: TStringField
       DisplayWidth = 40
       FieldName = 'Profession'
       Size = 100
     end
-    object m_Nationality: TWideStringField
+    object m_Nationality: TStringField
       FieldName = 'Nationality'
       Size = 2
     end
     object m_DateOfBirth: TDateField
       FieldName = 'DateOfBirth'
     end
-    object m_PassportNumber: TWideStringField
+    object m_PassportNumber: TStringField
       FieldName = 'PassportNumber'
       Size = 10
     end
     object m_PassportExpiry: TDateField
       FieldName = 'PassportExpiry'
     end
-    object m_Address1: TWideStringField
+    object m_Address1: TStringField
       DisplayWidth = 40
       FieldName = 'Address1'
       Size = 100
     end
-    object m_Address2: TWideStringField
+    object m_Address2: TStringField
       DisplayWidth = 40
       FieldName = 'Address2'
       Size = 100
     end
-    object m_Zip: TWideStringField
+    object m_Zip: TStringField
       DisplayWidth = 40
       FieldName = 'Zip'
       Size = 100
     end
-    object m_City: TWideStringField
+    object m_City: TStringField
       DisplayWidth = 40
       FieldName = 'City'
       Size = 100
     end
-    object m_State: TWideStringField
+    object m_State: TStringField
       DisplayWidth = 40
       FieldName = 'State'
       Size = 100
     end
-    object m_Country: TWideStringField
+    object m_Country: TStringField
       FieldName = 'Country'
       Size = 100
     end
-    object m_TelLandLine: TWideStringField
+    object m_TelLandLine: TStringField
       FieldName = 'TelLandLine'
       Size = 40
     end
-    object m_TelMobile: TWideStringField
+    object m_TelMobile: TStringField
       FieldName = 'TelMobile'
       Size = 40
     end
-    object m_Email: TWideStringField
+    object m_Email: TStringField
       DisplayWidth = 40
       FieldName = 'Email'
       Size = 100
     end
-    object m_Website: TWideStringField
+    object m_Website: TStringField
       DisplayWidth = 40
       FieldName = 'Website'
       Size = 100
     end
-    object m_Twitter: TWideStringField
+    object m_Twitter: TStringField
       DisplayWidth = 40
       FieldName = 'Twitter'
       Size = 100
     end
-    object m_LinkedIn: TWideStringField
+    object m_LinkedIn: TStringField
       DisplayWidth = 40
       FieldName = 'LinkedIn'
       Size = 100
     end
-    object m_SpouseName: TWideStringField
+    object m_SpouseName: TStringField
       DisplayWidth = 40
       FieldName = 'SpouseName'
       Size = 100
     end
-    object m_ContactPerson: TWideStringField
+    object m_ContactPerson: TStringField
       DisplayWidth = 40
       FieldName = 'ContactPerson'
       Size = 100
@@ -616,35 +616,35 @@ object frmGuestProfiles: TfrmGuestProfiles
     object m_SpouseBirthdate: TDateField
       FieldName = 'SpouseBirthdate'
     end
-    object m_CustomerCode: TWideStringField
+    object m_CustomerCode: TStringField
       FieldName = 'CustomerCode'
       Size = 15
     end
-    object m_CompanyName: TWideStringField
+    object m_CompanyName: TStringField
       DisplayWidth = 40
       FieldName = 'CompanyName'
       Size = 100
     end
-    object m_CarLicensePlate: TWideStringField
+    object m_CarLicensePlate: TStringField
       FieldName = 'CarLicensePlate'
     end
-    object m_SocialSecurityNumber: TWideStringField
+    object m_SocialSecurityNumber: TStringField
       FieldName = 'SocialSecurityNumber'
       Size = 45
     end
-    object m_FacebookLink: TWideStringField
+    object m_FacebookLink: TStringField
       FieldName = 'FacebookLink'
       Size = 225
     end
-    object m_TripadvisorAccount: TWideStringField
+    object m_TripadvisorAccount: TStringField
       FieldName = 'TripadvisorAccount'
       Size = 225
     end
-    object m_CompVATNumber: TWideStringField
+    object m_CompVATNumber: TStringField
       FieldName = 'CompVATNumber'
       Size = 45
     end
-    object m_CompFax: TWideStringField
+    object m_CompFax: TStringField
       FieldName = 'CompFax'
       Size = 40
     end

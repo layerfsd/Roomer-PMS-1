@@ -12,7 +12,7 @@
   {.$define rmForceOffline}       // Force detecting no internet connection
   {.$define rmUseLOCALRESOURCE}   // Use localhost as API server
   {.$define rmROOMERSSL}
-  {$define rmMONITOR_LEAKAGE} // Report memory leaks on shutdown
+  {.$define rmMONITOR_LEAKAGE} // Report memory leaks on shutdown
 
   {.$define UseFastMM}
 {$endif DEBUG}
