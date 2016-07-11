@@ -866,7 +866,12 @@ begin
     begin
       kbmStockitemPrices.LoadFromDataSet(rSet, []);
       kbmStockItemprices.IndexName := 'kbmStockItempricesIndex1';
-    end;
+    end
+    else
+      kbmStockItemprices.EmptyTable;
+
+    kbmStockitemPrices.Open;
+
   finally
     kbmStockItemprices.EnableControls;
     rSet.Free;
@@ -884,7 +889,6 @@ begin
     tvdata.DataController.Post;
   end;
   glb.EnableOrDisableTableRefresh('items', True);
-//  glb.EnableOrDisableTableRefresh('stockitemprices', True);
 end;
 
 procedure TfrmItems2.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
