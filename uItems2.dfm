@@ -173,8 +173,8 @@ object frmItems2: TfrmItems2
     object chkActive: TsCheckBox
       Left = 55
       Top = 63
-      Width = 238
-      Height = 20
+      Width = 246
+      Height = 19
       Caption = 'Active (if checked then just active are visible)'
       Checked = True
       State = cbChecked
@@ -248,34 +248,6 @@ object frmItems2: TfrmItems2
         Font.Name = 'Tahoma'
         Font.Style = []
       end
-      object sLabel1: TsLabel
-        Left = 18
-        Top = 50
-        Width = 83
-        Height = 13
-        Alignment = taRightJustify
-        AutoSize = False
-        Caption = 'Price on date :'
-        ParentFont = False
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clBlack
-        Font.Height = -11
-        Font.Name = 'Tahoma'
-        Font.Style = []
-      end
-      object labPriceProbeDate: TsLabel
-        Left = 108
-        Top = 50
-        Width = 4
-        Height = 13
-        Caption = '-'
-        ParentFont = False
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clBlack
-        Font.Height = -11
-        Font.Name = 'Tahoma'
-        Font.Style = []
-      end
     end
   end
   object sbMain: TsStatusBar
@@ -294,7 +266,6 @@ object frmItems2: TfrmItems2
     Align = alBottom
     TabOrder = 2
     SkinData.SkinSection = 'PANEL'
-    ExplicitTop = 606
     DesignSize = (
       1145
       32)
@@ -339,7 +310,6 @@ object frmItems2: TfrmItems2
     Constraints.MinWidth = 440
     TabOrder = 3
     LookAndFeel.NativeStyle = False
-    ExplicitTop = 87
     object tvData: TcxGridDBTableView
       OnDblClick = tvDataDblClick
       Navigator.Buttons.CustomButtons = <>
@@ -552,6 +522,7 @@ object frmItems2: TfrmItems2
       OptionsCustomize.ColumnGrouping = False
       OptionsCustomize.ColumnSorting = False
       OptionsData.Appending = True
+      OptionsData.DeletingConfirmation = False
       OptionsView.NavigatorOffset = 200
       OptionsView.GroupByBox = False
       OptionsView.Indicator = True
@@ -634,7 +605,6 @@ object frmItems2: TfrmItems2
     Left = 80
     Top = 136
     object prLink_grData: TdxGridReportLink
-      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 5080
       PrinterPage.GrayShading = True
@@ -648,7 +618,6 @@ object frmItems2: TfrmItems2
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
       ReportDocument.CreationDate = 41334.495374884260000000
-      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       BuiltInReportLink = True
     end
   end

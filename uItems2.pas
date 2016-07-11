@@ -197,8 +197,6 @@ type
     labAvailTo: TsLabel;
     sLabel3: TsLabel;
     sLabel4: TsLabel;
-    sLabel1: TsLabel;
-    labPriceProbeDate: TsLabel;
     m_Availabilityavailable: TIntegerField;
 
     procedure FormCreate(Sender: TObject);
@@ -274,16 +272,27 @@ type
     procedure SetFilterForDataset(aRSet: TRoomerDataset);
     procedure GetStockitemAvailability;
     function ConstructSQL: string;
+    procedure FillStockItemPrices;
   protected
     Lookup : Boolean;
     zData: recItemHolder;
     zAct: TActTableAction;
+    /// <summary>
+    ///   Add recItemHolders to recItemHolderslist for each price-period of selected stockitem. <br />
+    ///  zData is used to determine requested peroid of use
+    /// </summary>
+    procedure GetStockItemsPerPrice(aDataList: TrecItemHolderList);
     property ShowItemsOfType: TShowItemOfTypeSet read FShowItemsOfType write FShowItemsOfType;
     property AllowGridEdit: boolean read FAllowGridEdit write SetAllowGridEdit;
   end;
 
 function openItems(act : TActTableAction; Lookup : Boolean; var theData : recItemHolder; aShowTypes: TShowItemOfTypeSet=[TShowItemOfType.All]) : boolean;
 function openMultipleItems(act : TActTableAction; Lookup : Boolean; theData : TrecItemHolderList; aShowTypes: TShowItemOfTypeSet=[TShowItemOfType.All]) : boolean;
+/// <summary>
+///   Special version of openitems that allows selection of stockitems, and returning multiple items if th seelcted period
+/// involves a pricechange
+/// </summary>
+function SelectStockItems(ainitRec: recItemHolder; aDataList : TrecItemHolderList) : boolean;
 
 implementation
 
@@ -301,6 +310,7 @@ uses
   , uUtils
   , UITypes
   , uDateUtils
+  , DateUtils
   , Math
   ;
 
@@ -335,6 +345,29 @@ begin
     glb.Items.Filtered := False;
   end;
 end;
+
+function SelectStockItems(ainitRec: recItemHolder; aDataList : TrecItemHolderList) : boolean;
+var frmItems2 : TfrmItems2;
+begin
+  result := false;
+  frmItems2 := TfrmItems2.Create(nil);
+  try
+    frmItems2.zData := aInitRec;
+    frmItems2.Lookup := True;
+    frmItems2.zAct := actLookup;
+    frmItems2.ShowItemsOfType := [TShowItemOfType.StockItems, TShowItemOfType.ShowAvailability];
+    frmItems2.ShowModal;
+    if frmItems2.modalresult = mrOk then
+    begin
+      frmItems2.GetStockItemsPerPrice(aDataList);
+      result := true;
+    end;
+  finally
+    freeandnil(frmItems2);
+    glb.Items.Filtered := False;
+  end;
+end;
+
 
 function openMultipleItems(act : TActTableAction; Lookup : Boolean; theData : TrecItemHolderList; aShowTypes: TShowItemOfTypeSet=[TShowItemOfType.All]) : boolean;
 var _frmItems2 : TfrmItems2;
@@ -393,9 +426,8 @@ begin
   Result.Stockitem             := m_ItemsStockitem.AsBoolean;
   Result.TotalStock            := m_ItemsTotalStock.AsInteger;
 
-  Result.StockItemPriceDate    := zData.StockItemPriceDate;
-  if Result.StockItem then
-    Result.Price := CalcStockitemPriceOndate(result.id, Result.StockItemPriceDate);
+  Result.AvailabilityFrom      := zData.AvailabilityFrom;
+  Result.AvailabilityTo        := zData.AvailabilityTo;
 end;
 
 
@@ -523,8 +555,8 @@ const
          'left outer join stockitems s on i.id=s.itemid';
 
 begin
-  if zData.StockItemPriceDate > 0 then
-    Result := Format(cSQL, [DateToSqlString(zData.StockItemPriceDate)])
+  if zData.AvailabilityFrom > 0 then
+    Result := Format(cSQL, [DateToSqlString(zData.AvailabilityFrom)])
   else
     Result := Format(cSQL, [DateToSqlString(Now())]);
 end;
@@ -601,9 +633,40 @@ begin
   end;
 end;
 
+procedure TfrmItems2.GetStockItemsPerPrice(aDataList: TrecItemHolderList);
+var
+  lDateInt: integer;
+  lPrevPrice: double;
+  lCurrPrice: double;
+  lCurrentRecItem: recItemHolder;
+  lCurrentDate: TDateTime;
+begin
+  lPrevPrice := -1;
+  lCurrentRecItem := zData;
+
+  for lDateInt := 0 to DaysBetween(zData.AvailabilityFrom, zData.AvailabilityTo) do
+  begin
+    lCurrentDate := zData.AvailabilityFrom + lDateInt;
+    lCurrPrice := CalcStockitemPriceOndate(zData.id, lCurrentDate);
+    if not SameValue(lCurrPrice, lPrevPrice) then
+    begin // Price changed, end the previous item and add a new recItem
+      if aDataList.Count > 0 then
+        aDataList[aDataList.Count -1].recHolder.AvailabilityTo := lCurrentDate;
+
+      lCurrentRecItem.Price := lCurrPrice;
+      lCurrentRecitem.AvailabilityFrom := lCurrentDate;
+      // AvailabilityTo is already set to enddate of requested period
+
+      aDataList.AddrecItem(lCurrentRecItem);
+    end;
+
+    lPrevPrice := lCurrPrice;
+  end;
+
+end;
+
 procedure TfrmItems2.fillHolder;
 begin
-  initItemHolder(zData);
   zData := CopyDatasetToRecItem;
   if zData.Stockitem then
     zData.Price := CalcStockitemPriceOndate(zData.id, now);
@@ -619,6 +682,7 @@ begin
   else
     lProbeDate := now;
 
+  kbmStockitemPrices.IndexName := 'kbmStockItempricesIndex1';
   kbmStockitemPrices.First;
   if kbmStockitemPrices.Locate('itemid', aItemId, []) then
   begin
@@ -657,6 +721,9 @@ begin
   tvData.OptionsData.Editing := FAllowGridEdit;
   tvDataID.Options.Editing := false;
   tvPrices.OptionsData.Editing := FAllowGridEdit;
+  tvPrices.OptionsData.Appending := FAllowGridEdit;
+  tvPrices.NewItemRow.Visible := FAllowGridEdit;
+  tvPrices.OptionsData.Deleting := FAllowGridEdit;
 
   mnuiAllowGridEdit.Checked := FAllowGridEdit;
   btnDelete.Enabled := FAllowGridEdit;
@@ -737,12 +804,9 @@ begin
 end;
 
 procedure TfrmItems2.FormShow(Sender: TObject);
-var
-  rSet: TRoomerDataset;
 begin
   zFirstTime := true;
   glb.EnableOrDisableTableRefresh('items', False);
-  glb.EnableOrDisableTableRefresh('stockitemprices', False);
 //**
   panBtn.Visible := False;
   sbMain.Visible := false;
@@ -751,9 +815,7 @@ begin
 
   fillGridFromDataset(zData.item);
 
-  rSet := glb.StockitemPrices;
-//  rSet.Sort := 'fromdate';
-  kbmStockitemPrices.LoadFromDataSet(rSet, []);
+  fillStockitemPrices;
 
   sbMain.SimpleText := zSortStr;
 
@@ -777,10 +839,6 @@ begin
     pnlInfo.Visible := true;
     labAvailFrom.Caption := DateToStr(zData.AvailabilityFrom);
     labAvailTo.Caption := DateToStr(zData.AvailabilityTo);
-    if zData.StockItemPriceDate > 0 then
-      labPriceProbeDate.Caption := DateToStr(zData.StockitempriceDate)
-    else
-      labPriceProbeDate.Caption := DateToStr(Now)
   end
   else
     tvDataAvailableStock.Visible := False;
@@ -797,6 +855,24 @@ begin
   grData.SetFocus;
 end;
 
+procedure Tfrmitems2.FillStockItemPrices;
+var
+  rSet: TRoomerDataset;
+begin
+  rSet := CreateNewDataSet;
+  kbmStockItemprices.DisableControls;
+  try
+    if hData.rSet_bySQL(rset, 'select * from stockitemprices', true, true) then
+    begin
+      kbmStockitemPrices.LoadFromDataSet(rSet, []);
+      kbmStockItemprices.IndexName := 'kbmStockItempricesIndex1';
+    end;
+  finally
+    kbmStockItemprices.EnableControls;
+    rSet.Free;
+  end;
+end;
+
 procedure TfrmItems2.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   if tvdata.DataController.DataSet.State = dsInsert then
@@ -808,7 +884,7 @@ begin
     tvdata.DataController.Post;
   end;
   glb.EnableOrDisableTableRefresh('items', True);
-  glb.EnableOrDisableTableRefresh('stockitemprices', True);
+//  glb.EnableOrDisableTableRefresh('stockitemprices', True);
 end;
 
 procedure TfrmItems2.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -912,7 +988,7 @@ begin
     dsInsert: if Ins_StockitemPrice(lStockItemData, lnewID) then
               begin
                 kbmStockitemPricesID.AsInteger := lNewID;
-                glb.ForceTableRefresh;
+                FillStockItemPrices; // glb.ForceTableRefresh;
               end
               else
                 Abort;
@@ -1052,7 +1128,8 @@ end;
 procedure TfrmItems2.m_StockitemPricesNewRecord(DataSet: TDataSet);
 begin
   if zFirstTime then exit;
-  Dataset['fromdate'] := trunc(now);
+  kbmStockitemPricesitemID.AsInteger:= m_ItemsID.AsInteger;
+  kbmStockitemPricesfromdate.AsDateTime := trunc(now);
 end;
 
 procedure TfrmItems2.btnTaxLinksClick(Sender: TObject);

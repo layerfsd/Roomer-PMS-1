@@ -189,7 +189,6 @@ end;
 function TfrmReservationExtras.CopyDatasetToRecItem:recItemHolder;
 begin
   Result.ID                    := mExtrasItemid.AsInteger;
-  Result.StockItemPriceDate    := mExtrasFromdate.AsDateTime;
   Result.AvailabilityFrom      := mExtrasFromdate.AsDateTIme;
   Result.AvailabilityTo        := mExtrasToDate.AsDateTIme;
   Result.RoomReservation       := mExtrasRoomreservation.AsInteger;
@@ -197,41 +196,64 @@ end;
 
 procedure TfrmReservationExtras.grdExtrasDBTableView1ItemPropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
 var
-  lRecItem: recItemHolder;
+  lStockitemList: TrecItemHolderList;
+  lStockItem: TrecItemHolder;
+  lrecItem: recItemHolder;
   lCountColumn: integer;
   dummy: boolean;
 begin
 
-  lRecItem := CopyDatasetToRecItem;
+  lStockItemList := TrecItemHolderList.Create;
+  try
+    lrecitem := CopyDatasetToRecItem;
 
-  if openItems(actLookup, true, lrecItem, [TShowItemOfType.StockItems, TShowItemOfType.ShowAvailability]) then
-  begin
-    if not (mExtras.State = dsInsert) then
-      mExtras.Edit;
-    try
-      mExtrasItemid.Asinteger := lRecItem.id;
-      mExtrasItem.AsString := lrecItem.Item;
-      mExtrasDescription.AsString := lRecItem.Description;
-      mExtrasPricePerItemPerDay.AsFloat := lRecItem.Price;
-      if mExtrasCount.AsInteger = 0 then
-        mExtrasCount.AsInteger := 1 ;
-      mExtras.Post;
-    except
-      mExtras.Cancel;
-      raise;
-    end;
-
-    // move focus to count column
-    with tvExtras do
+    if SelectStockItems(lrecItem, lStockitemList) then
     begin
-      lCountColumn := getcolumnbyfieldname('Count').index;
-      datacontroller.focuscontrol(lCountColumn, dummy);
-    end;
+      if (mExtras.State = dsInsert) then
+        // Just insert all stockitemsrecs into mExtras
+        for lStockItem in lStockItemList do
+        begin
+          if not (mExtras.State = dsInsert) then
+            mExtras.Append;
+          try
+            mExtrasItemid.Asinteger := lStockitem.recHolder.id;
+            mExtrasItem.AsString := lStockitem.recHolder.Item;
+            mExtrasDescription.AsString := lStockitem.recHolder.Description;
+            mExtrasPricePerItemPerDay.AsFloat := lStockitem.recHolder.Price;
+            mExtrasFromdate.AsDateTime := lStockitem.recHolder.AvailabilityFrom;
+            mExtrasToDate.AsDateTime := lStockitem.recHolder.AvailabilityTo;
+            if mExtrasCount.AsInteger = 0 then
+              mExtrasCount.AsInteger := 1 ;
 
-  end
-  else
-    if not (mExtras.State = dsInsert) then
-      mExtras.Cancel;
+            mExtras.Post;
+          except
+            mExtras.Cancel;
+            raise;
+          end;
+        end
+
+      else // Stockitems have changed, update or insert new records
+      begin
+        for lStockItem in lStockItemList do
+        begin
+          // todo
+        end;
+      end;
+
+      // move focus to count column
+      with tvExtras do
+      begin
+        lCountColumn := getcolumnbyfieldname('Count').index;
+        datacontroller.focuscontrol(lCountColumn, dummy);
+      end;
+
+    end
+    else
+      if not (mExtras.State = dsInsert) then
+        mExtras.Cancel;
+  finally
+    lStockitemList.Free;
+  end;
 
 end;
 
@@ -271,13 +293,13 @@ const
           '   i.Item,  '#10 +
           '   max(rrs.Description) as description,  '#10 +
           '   rrs.Count, '#10 +
-          '   max(rrs.price) as PricePerItemPerDay, '#10 +
+          '   rrs.price as PricePerItemPerDay, '#10 +
           '   min(rrs.usedate) as Fromdate, '#10 +
           '   max(adddate(rrs.usedate, INTERVAL 1 DAY)) as ToDate'#10 +
           'from roomreservationstockitems rrs '#10 +
           'join items i on rrs.stockitem=i.id '#10 +
           'where RoomReservation = %d '#10 +
-          'group by item, count ';
+          'group by item, count, rrs.Price ';
 
 
 var
