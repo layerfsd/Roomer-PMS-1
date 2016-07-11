@@ -1240,7 +1240,6 @@ type
     NumberBase : String;
     Stockitem: boolean;
     TotalStock: integer;
-    StockItemPriceDate: TDateTime;
     AvailabilityFrom: TDateTime;
     AvailabilityTo: TDateTime;
     RoomReservation: integer; // used to ignore usage of stockitem of current roomreservation when calculating availablestock
@@ -1274,10 +1273,14 @@ type
   TrecItemHolder = class
     recHolder : recItemHolder;
   public
-    constructor Create;
+    constructor Create; overload;
+    constructor Create(arecItem: recItemHolder); overload;
   end;
 
-  TrecItemHolderList = TObjectList<TrecitemHolder>;
+  TrecItemHolderList = class(TObjectList<TrecitemHolder>)
+  public
+    procedure AddrecItem(aRecItem: recitemHolder);
+  end;
 
   recLocationHolder = record
     id: integer;
@@ -11467,7 +11470,7 @@ var
 begin
   s := '';
   s := s + ' DELETE ' + chr(10);
-  s := s + '   FROM stockitemsprices ' + chr(10);
+  s := s + '   FROM stockitemprices ' + chr(10);
   s := s + ' WHERE  ' + chr(10);
   s := s + '   (ID =' + _db(theData.ID) + ') ';
   result := cmd_bySQL(s);
@@ -15380,6 +15383,19 @@ end;
 constructor TrecItemHolder.Create;
 begin
   initItemHolder(recHolder);
+end;
+
+constructor TrecItemHolder.Create(arecItem: recItemHolder);
+begin
+  Create;
+  recHolder := aRecItem;
+end;
+
+{ TrecItemHolderList }
+
+procedure TrecItemHolderList.AddrecItem(aRecItem: recitemHolder);
+begin
+  Add(TrecItemHolder.Create(aRecItem));
 end;
 
 initialization
