@@ -33,6 +33,7 @@ type
     procedure FormCreate(Sender: TObject);
     procedure btOfflineClick(Sender: TObject);
     procedure timTopmostOffTimer(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     { Private declarations }
     FNoInternet: boolean;
@@ -78,7 +79,6 @@ function AskUserForCredentials(var aUsername: String; var aPassword: String; var
 var
   lLoginForm: TfrmRoomerLoginForm;
 begin
-  result := lrCancel;
   lLoginForm := TfrmRoomerLoginForm.Create(nil);
   try
     // Disable use of commandline parameters if previous login failed
@@ -169,6 +169,7 @@ begin
     lblServerProblem.Caption := cPlatformUnreachable + cOfflineMessage
   else
     lblServerProblem.Caption := '';
+
 end;
 
 procedure TfrmRoomerLoginForm.btLoginClick(Sender: TObject);
@@ -202,6 +203,12 @@ begin
   RoomerLanguage.TranslateThisForm(self);
 end;
 
+procedure TfrmRoomerLoginForm.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then
+    btCancelClick(Sender);
+end;
+
 procedure TfrmRoomerLoginForm.FormShow(Sender: TObject);
 begin
   if edtHotelCode.Text <> '' then
@@ -211,6 +218,10 @@ begin
   NoInternet := NOT d.roomerMainDataSet.IsConnectedToInternet;
   ServerUnreachable := NOT d.roomerMainDataSet.RoomerPlatformAvailable;
   btOffline.Visible := NoInternet OR ServerUnreachable;
+
+  if not d.roomerMainDataSet.RoomerUri.StartsWith(RoomerBase) then
+    Caption := 'Roomer Login (' + d.roomerMainDataSet.RoomerUri + ')';
+
 end;
 
 end.

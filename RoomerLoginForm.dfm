@@ -12,9 +12,11 @@ object frmRoomerLoginForm: TfrmRoomerLoginForm
   Font.Height = -10
   Font.Name = 'Tahoma'
   Font.Style = []
+  KeyPreview = True
   OldCreateOrder = False
   Position = poScreenCenter
   OnCreate = FormCreate
+  OnKeyDown = FormKeyDown
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 12
@@ -428,6 +430,8 @@ object frmRoomerLoginForm: TfrmRoomerLoginForm
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 3
+    ExplicitLeft = -5
+    ExplicitTop = 279
     object btLogin: TcxButton
       Left = 224
       Top = 4
