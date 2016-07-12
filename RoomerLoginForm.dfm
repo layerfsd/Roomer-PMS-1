@@ -15,6 +15,7 @@ object frmRoomerLoginForm: TfrmRoomerLoginForm
   KeyPreview = True
   OldCreateOrder = False
   Position = poScreenCenter
+  OnActivate = FormActivate
   OnCreate = FormCreate
   OnKeyDown = FormKeyDown
   OnShow = FormShow
@@ -430,8 +431,6 @@ object frmRoomerLoginForm: TfrmRoomerLoginForm
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 3
-    ExplicitLeft = -5
-    ExplicitTop = 279
     object btLogin: TcxButton
       Left = 224
       Top = 4

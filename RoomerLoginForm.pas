@@ -34,6 +34,7 @@ type
     procedure btOfflineClick(Sender: TObject);
     procedure timTopmostOffTimer(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure FormActivate(Sender: TObject);
   private
     { Private declarations }
     FNoInternet: boolean;
@@ -198,6 +199,12 @@ begin
   Close;
 end;
 
+procedure TfrmRoomerLoginForm.FormActivate(Sender: TObject);
+begin
+  if not d.roomerMainDataSet.RoomerUri.StartsWith(RoomerBase) then
+    Caption := 'Roomer Login (' + d.roomerMainDataSet.RoomerUri + ')';
+end;
+
 procedure TfrmRoomerLoginForm.FormCreate(Sender: TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
@@ -218,9 +225,6 @@ begin
   NoInternet := NOT d.roomerMainDataSet.IsConnectedToInternet;
   ServerUnreachable := NOT d.roomerMainDataSet.RoomerPlatformAvailable;
   btOffline.Visible := NoInternet OR ServerUnreachable;
-
-  if not d.roomerMainDataSet.RoomerUri.StartsWith(RoomerBase) then
-    Caption := 'Roomer Login (' + d.roomerMainDataSet.RoomerUri + ')';
 
 end;
 
