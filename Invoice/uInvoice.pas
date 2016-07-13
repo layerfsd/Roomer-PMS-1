@@ -5376,79 +5376,12 @@ begin
 
       zCreditType := ctManual;;
       zRefNum := -1;
-
-      // BHG: NO Reference needed as this is only used when credit with no reference is being created...
-      // ****
-      // _frmCreditPrompt := TfrmCreditPrompt.Create(nil);
-      // try
-      // _frmCreditPrompt.ShowModal;
-      // if _frmCreditPrompt.ModalResult = mrCancel then
-      // begin
-      // zExit := true;
-      // zCreditType := ctErr;
-      // zRefNum := -1;
-      // end
-      // else
-      // begin
-      // refText := trim(_frmCreditPrompt.edRefNumber.Text);
-      // if refText <> '' then
-      // begin
       invNo := 0;
-
-      // if _isInteger(refText) then
-      // begin
-      // invNo := strToInt(refText);
-      // end
-      // else
-      // begin
-      // showmessage(format(GetTranslatedText('shTx_Invoice_NotANumber'),[_frmCreditPrompt.edRefNumber.Text]));
-      // zExit := true;
-      // zCreditType := ctErr;
-      // zRefNum := -1;
-      // end;
-
-      // if invNo > 0 then // Will never happen...!!!
-      // begin
-      // if not(hData.InvoiceExists(invNo)) then
-      // begin
-      // showmessage(format(GetTranslatedText('shTx_Invoice_InvoiceNumber'),[refText]));
-      // zExit := true;
-      // zCreditType := ctErr;
-      // zRefNum := -1;
-      // end
-      // else if (d.isKredit(invNo)) then
-      // begin
-      // showmessage(GetTranslatedText('shTx_Invoice_CreditInvoice'));
-      // zExit := true;
-      // zCreditType := ctErr;
-      // zRefNum := -1;
-      // end;
-      // end;
-
-      // zCreditType := ctReference;
       zRefNum := invNo;
 
-      // if zRefNum = 0 then
-      // begin
       zCreditType := ctManual;
       zRefNum := -1;
       zOriginalInvoice := zRefNum;
-      // end
-      // else
-      // begin
-      // btnGetCurrency.Enabled := false;
-      // btnGetRate.Enabled     := false;
-      // edtCurrency.Enabled    := false;
-      // edtRate.Enabled        := false;
-      // zOriginalInvoice      := zRefNum;
-      // LoadKreditLines;
-      // end;
-      // end;
-      // end;
-
-      // finally
-      // FreeAndNil(_frmCreditPrompt);
-      // end;
     end;
 
     // DataChanged := false;
@@ -5457,11 +5390,12 @@ begin
     zDataChanged := chkChanged;
   end;
 
-  try
-  agrLines.ColWidths[col_ItemCount] := 100;
-  agrLines.ColWidths[col_ItemPrice] := 100;
-  agrLines.ColWidths[col_TotalPrice] := 100;
-  except end;
+  if (agrLines.ColCount >= col_TotalPrice) then
+  begin
+    agrLines.ColWidths[col_ItemCount] := 100;
+    agrLines.ColWidths[col_ItemPrice] := 100;
+    agrLines.ColWidths[col_TotalPrice] := 100;
+  end;
 
   result := NOT zExit;
 

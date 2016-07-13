@@ -689,8 +689,12 @@ end;
 
 procedure TfrmFinishedInvoices2.PerformPrint;
 begin
-  d.CreateMtFields;
-  doPrint;
+  try
+    d.CreateMtFields;
+    doPrint;
+  except
+
+  end;
 end;
 
 procedure TfrmFinishedInvoices2.FormShow(Sender: TObject);
@@ -783,7 +787,7 @@ end;
 
 Procedure TfrmFinishedInvoices2.doPrint;
 var
-  FileName        : string;
+  lFileName        : string;
   NativeCurrency  : string;
   Currency       : string;
   s : string;
@@ -808,35 +812,26 @@ begin
           zSavedRoomReservation,
           zSavedRoom);
 
-  if _trimlower(NativeCurrency) <> _trimLower(Currency) then
-  begin
-    try
-      Filename := getForeignInvoiceFilePath;
-    EXCEPT
-      on e: Exception do begin
-        DebugMessage(e.Message);
-        raise;
-      end;
+  lFileName := '';
+  try
+    if _trimlower(NativeCurrency) <> _trimLower(Currency) then
+      lFileName := FileDependencyManager.getForeignInvoiceFilePath
+    else
+      lFileName := FileDependencyManager.getLocalInvoiceFilePath;
+  except
+    on e: Exception do
+    begin
+      DebugMessage('Exception during getinvoicefilepath');
     end;
-  end else
-  begin
-    TRY
-      Filename := getLocalInvoiceFilePath;
-    EXCEPT
-      on e: Exception do begin
-        DebugMessage(e.Message);
-        raise;
-      end;
-    END;
   end;
 
-  if (not fileExists(filename)) OR (uFileSystemUtils.GetFileSize(filename) = 0) then
+  if (lFileName.IsEmpty or not fileExists(lFileName)) OR (uFileSystemUtils.GetFileSize(lFileName) = 0) then
   begin
-  	showmessage(format(GetTranslatedText('shTx_FinishedInvoices2_FileNotFound'), [filename]));
+  	showmessage(format(GetTranslatedText('shTx_FinishedInvoices2_FileNotFound'), [lFileName]));
     exit;
   end;
 
-  frxReport1.LoadFromFile(filename);
+  frxReport1.LoadFromFile(lFileName);
   frxReport1.PrintOptions.Printer := 'Default';
 
 
@@ -880,7 +875,7 @@ begin
   d.InsertMTdata(zInvoiceNumber,zXML_export,false,false);
 
   TRY
-    Filename := getLocalInvoiceFilePath;
+    Filename := FileDependencyManager.getLocalInvoiceFilePath;
   EXCEPT
   END;
 
@@ -888,7 +883,7 @@ begin
   if _trimlower(ctrlGetString('NativeCurrency')) <> _trimlower(Currency) then
   begin
     TRY
-      Filename := getForeignInvoiceFilePath;;
+      Filename := FileDependencyManager.getForeignInvoiceFilePath;;
     EXCEPT
     END;
   end;
@@ -970,7 +965,7 @@ var
 begin
   d.InsertMTdata(zInvoiceNumber,false,false,chkShowPackage.Checked);
   TRY
-    Filename := getLocalInvoiceFilePath;
+    Filename := FileDependencyManager.getLocalInvoiceFilePath;
   EXCEPT
   END;
 
@@ -978,7 +973,7 @@ begin
   if _trimlower(ctrlGetString('NativeCurrency')) <> _trimlower(Currency) then
   begin
     TRY
-      Filename := getForeignInvoiceFilePath;;
+      Filename := FileDependencyManager.getForeignInvoiceFilePath;;
     EXCEPT
     END;
   end;
@@ -1007,7 +1002,7 @@ begin
   end;
   frxReport1.Clear;
 
-  sendChangedFile(filename);
+  FileDependencyManager.sendChangedFile(filename);
 end;
 
 procedure TfrmFinishedInvoices2.timCloseTimer(Sender: TObject);

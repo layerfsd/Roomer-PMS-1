@@ -72,7 +72,6 @@ type
     sLabel3: TsLabel;
     cbxLocation: TsComboBox;
     procedure FormShow(Sender: TObject);
-    procedure agrPayTypesExit(Sender: TObject);
     procedure agrPayTypesSelectCell(Sender: TObject; ACol, ARow: Integer;
       var CanSelect: Boolean);
     procedure agrPayTypesKeyDown(Sender: TObject; var Key: Word;
@@ -83,8 +82,6 @@ type
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure BtnOkClick(Sender: TObject);
     procedure agrPayTypesGetAlignment(Sender: TObject; ARow, ACol: Integer; var HAlign: TAlignment; var VAlign: TVAlignment);
-    procedure agrPayTypesMouseDown(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
     procedure agrPayTypesClickCell(Sender: TObject; ARow, ACol: Integer);
 
   private
@@ -229,96 +226,6 @@ begin
 end;
 
 
-//begin
-//  // --
-//  result := false;
-//  Application.CreateForm(TfrmInvoicePayment, frmInvoicePayment);
-//  try
-//    frmInvoicePayment.FAmount := Amount;
-//    FConfirmation := '';
-//    frmInvoicePayment.edtAmount.text := trim( _FloatToStr( Amount, 9, 2 ) );
-//    frmInvoicePayment.FCustomer := Customer;
-//    frmInvoicePayment.lblSelected.caption := '0';
-//    frmInvoicePayment.lblLeft.caption := trim( _FloatToStr( Amount, 9, 2 ) );
-//    frmInvoicePayment.dtInvDate.Date := Date;
-//    frmInvoicePayment.dtPayDate.Date := Date;
-//    sSelectedCustomer := Customer;
-//    stlPaySelections.clear;
-//
-//    for I := 0 to lst.Count-1 do
-//    begin
-//      frmInvoicePayment.cbxLocation.items.add(lst [i]);
-//      showmessage(lst[i]);
-//    end;
-//
-//    if lst.Count = 0 then
-//    begin
-//      // get all locations from data
-//      glb.Locations.First;
-//      while not glb.Locations.Eof do begin
-//        frmInvoicePayment.cbxLocation.items.Add(glb.Locations.FieldByName('Location').asstring);
-//        glb.Locations.Next;
-//      end;
-//
-//      frmInvoicePayment.cbxLocation.ItemIndex := 0;
-//    end else
-//    if lst.Count = 1 then
-//    begin
-//      frmInvoicePayment.cbxLocation.ItemIndex := 1;
-//      frmInvoicePayment.cbxLocation.Enabled := true;
-//    end else
-//    begin
-//      // More than one location
-//      frmInvoicePayment.cbxLocation.ItemIndex := 0;
-//    end;
-//
-//    if PaymentType = ptDownPayment then
-//    begin
-//      // frmInvoicePayment.Caption := 'Down payment';
-//      frmInvoicePayment.Caption := GetTranslatedText('shTx_InvoicePayment_DownPayment');
-//      frmInvoicePayment.panel2.visible := true;
-//    end else
-//    begin
-//    //  frmInvoicePayment.Caption := 'Invocie Payment';
-//	    frmInvoicePayment.Caption := GetTranslatedText('shTx_InvoicePayment_InvoicePayment');
-//      frmInvoicePayment.panel2.visible := false;
-//    end;
-//
-//    if frmInvoicePayment.ShowModal <> mrOK then
-//    begin
-//      result := false;
-//    end else
-//    begin
-//      result := true;
-//      sSelectedCustomer := frmInvoicePayment.edtCustomer.text;
-//      fSelectedAmount   := _StrToFloat( frmInvoicePayment.edtAmount.text );
-//      zInvoiceDate      := frmInvoicePayment.dtInvDate.date;
-//      zPayDate          := frmInvoicePayment.dtPayDate.date;
-//
-//
-//      zLocation := '';
-//
-//      if frmInvoicePayment.cbxLocation.itemindex > 0 then
-//      begin
-//        zLocation := frmInvoicePayment.cbxLocation.items[frmInvoicePayment.cbxLocation.itemindex];
-//      end;
-//
-//      for i := 0 to frmInvoicePayment.agrPayTypes.RowCount - 1  do
-//      begin
-//        if GridCellFloatValue( frmInvoicePayment.agrPayTypes, 1, i ) <> 0 then
-//        begin
-//          stlPaySelections.add( frmInvoicePayment.agrPayTypes.Cells[ 0, i ] + '|' + frmInvoicePayment.agrPayTypes.Cells[ 1, i ] );
-//          if d.AskApproval( frmInvoicePayment.agrPayTypes.Cells[ 0, i ] ) then
-//            // FConfirmation := InputBox( 'Confirm code', 'Code :', '' );
-//    			 FConfirmation := InputBox( GetTranslatedText('shTx_InvoicePayment_ConfirmCode'), GetTranslatedText('shTx_InvoicePayment_Code'), '' );
-//        end;
-//      end;
-//    end;
-//  finally
-//    frmInvoicePayment.free;
-//  end;
-//end;
-
 
 const WM_ActivateAmount = WM_User + 381;
 
@@ -416,11 +323,6 @@ begin
   postmessage( handle, WM_ActivateAmount, 0, 0 );
 end;
 
-procedure TfrmInvoicePayment.agrPayTypesExit(Sender: TObject);
-begin
- //  Recalc;
-end;
-
 procedure TfrmInvoicePayment.agrPayTypesGetAlignment(Sender: TObject; ARow, ACol: Integer; var HAlign: TAlignment; var VAlign: TVAlignment);
 begin
   HAlign := taRightJustify;
@@ -466,12 +368,6 @@ begin
       Recalc;
 end;
 
-procedure TfrmInvoicePayment.agrPayTypesMouseDown(Sender: TObject;
-  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-begin
-//  recalc;
-end;
-
 procedure TfrmInvoicePayment.agrPayTypesClickCell(Sender: TObject; ARow,
   ACol: Integer);
 begin
@@ -480,13 +376,8 @@ end;
 
 procedure TfrmInvoicePayment.agrPayTypesEnter(Sender: TObject);
 begin
-  // --
-  if FAmount = 0 then
-  begin
-    if edtAmount.visible then
-         try ActiveControl := edtAmount; except end;
-  end;
-  // --
+  if (FAmount = 0) and edtAmount.CanFocus then
+    ActiveControl := edtAmount;
   postMessage( handle, WM_ActivateAmount, 0, 0 );
 end;
 
@@ -505,7 +396,6 @@ begin
   glb.PerformAuthenticationAssertion(self);
   PlaceFormOnVisibleMonitor(self);
   closeOk := true;
-  //RestoreWinPos( AppInifile, TForm( Self ).Name,  TForm( Self ) );
 end;
 
 procedure TfrmInvoicePayment.FormCloseQuery(Sender: TObject;

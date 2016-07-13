@@ -10,6 +10,8 @@ uses Generics.Collections,
      ComObj,
      MSXML;
 
+{.$define TestRunningTabsAPI}
+
 type
 
   TInvoiceSourceType = (istRoom, istGroup);
@@ -656,7 +658,7 @@ begin
     exp := 'true'
   else
     exp := 'false';
-{$IFDEF DEBUG}
+{$IFDEF TestRunningTabsAPI}
   url := 'runningTab/test/id/' + LowerCase(d.roomerMainDataSet.HotelId) + '/' + inttostr(RoomReservation) + '?expanded=' + exp;
 {$ELSE}
   url := format('runningTab/id/%d?expanded=%s', [RoomReservation, exp]);
@@ -678,7 +680,7 @@ begin
   end;
   if sTemp <> '' then
   begin
-{$IFDEF DEBUG}
+{$IFDEF TestRunningTabsAPI}
     url := 'runningTab/test/delete/payment/' + LowerCase(d.roomerMainDataSet.HotelId) + '/' + sTemp;
 {$ELSE}
     url := 'runningTab/delete/payment/' + sTemp;
@@ -701,7 +703,7 @@ begin
   end;
   if sTemp <> '' then
   begin
-{$IFDEF DEBUG}
+{$IFDEF TestRunningTabsAPI}
     url := 'runningTab/test/delete/item/' + LowerCase(d.roomerMainDataSet.HotelId) + '/' + sTemp;
 {$ELSE}
     url := 'runningTab/delete/item/' + sTemp;
@@ -718,7 +720,7 @@ begin
 
   if NOT isChanged then Exit;
 
-{$IFDEF DEBUG}
+{$IFDEF TestRunningTabsAPI}
   url := 'runningTab/add/test/' + LowerCase(d.roomerMainDataSet.HotelId);
 {$ELSE}
   url := 'runningTab/add';

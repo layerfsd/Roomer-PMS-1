@@ -2,6 +2,7 @@
 
 interface
 
+{$i Roomer.inc}
 uses
   Windows, Messages, IOUtils, System.Generics.Collections, IdComponent, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, ExtCtrls, Grids, ComCtrls, Db,
@@ -5395,7 +5396,7 @@ begin
     if invType = 2 then
        _iRoomReservation := 0;
 
-{$IFDEF DEBUG}
+{$IFDEF UseEditInvoce2015}
     if IsControlKeyPressed then
       EditInvoice2015(_iReservation, _iRoomReservation, 0, false, false, '', g.qExpandRoomRentOnInvoice)
     else
