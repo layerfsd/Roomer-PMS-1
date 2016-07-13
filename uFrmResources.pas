@@ -166,7 +166,7 @@ begin
     begin
       _FrmResources.ShowModal;
     end;
-    ResetDependencyFileList;
+    FileDependencyManager.ResetDependencyFileList;
   finally
     if (embedPanel = nil) then
       FreeAndNil(_FrmResources);

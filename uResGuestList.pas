@@ -602,7 +602,7 @@ begin
   // **+
   updateHeadInfo;
 
-  FileName := getGuestListReportFilePath;
+  FileName := FileDependencyManager.getGuestListReportFilePath;
 
   if not fileExists(FileName) then
   begin
@@ -627,7 +627,7 @@ begin
   // **+
   updateHeadInfo;
 
-  FileName := getGuestListReportFilePath;
+  FileName := FileDependencymanager.getGuestListReportFilePath;
 
   if not fileExists(FileName) then
   begin
@@ -644,7 +644,7 @@ var
 begin
   updateHeadInfo;
 
-  FileName := getCustomerStayReportFilePath;
+  FileName := FileDependencymanager.getCustomerStayReportFilePath;
 
   if not fileExists(FileName) then
   begin
@@ -668,7 +668,7 @@ var
 begin
   updateHeadInfo;
 
-  FileName := getCustomerStayReportFilePath;
+  FileName := FileDependencymanager.getCustomerStayReportFilePath;
 
   if not fileExists(FileName) then
   begin

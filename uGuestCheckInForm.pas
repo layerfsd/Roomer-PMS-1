@@ -767,7 +767,7 @@ begin
   dsForm.Open;
   rptForm.DataSets.Add(dsForm);
   try
-    rptForm.LoadFromFile(getRegistrationFormFilePath);
+    rptForm.LoadFromFile(FileDependencyManager.getRegistrationFormFilePath);
     rptForm.PrepareReport(True);
     rptForm.Print;
   finally
@@ -972,14 +972,14 @@ procedure TFrmGuestCheckInForm.FormDesignMode;
 var
   filename: String;
 begin
-  filename := getRegistrationFormFilePath;
+  filename := FileDependencyManager.getRegistrationFormFilePath;
   dsForm.DataSet := ResSetGuest;
   dsForm.Open;
   rptForm.DataSets.Add(dsForm);
   try
     rptForm.LoadFromFile(filename);
     rptForm.DesignReport(True);
-    sendChangedFile(filename);
+    FileDependencyManager.sendChangedFile(filename);
   finally
     rptForm.DataSets.Clear;
   end;

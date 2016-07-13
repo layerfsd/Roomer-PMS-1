@@ -73,7 +73,7 @@ var
 begin
   tsWas := uDateUtils.DateTimeToDBString(GetFileTimeStamp(filename));
 
-  sPath := getHtmlEditorFilePath(false);
+  sPath := FileDependencymanager.getHtmlEditorFilePath(false);
   if sPath <> '' then
      ExecuteFile(frmMain.handle, sPath, '"' + filename + '"', [eoWait]);
 
@@ -89,7 +89,7 @@ var
 begin
   tsWas := uDateUtils.DateTimeToDBString(GetFileTimeStamp(filename));
 
-  sPath := getHtmlEditorFilePath(false);
+  sPath := FileDependencyManager.getHtmlEditorFilePath(false);
   if sPath <> '' then
   begin
     _FrmEmbeddedHtmlEditor := TFrmEmbeddedHtmlEditor.Create(nil);

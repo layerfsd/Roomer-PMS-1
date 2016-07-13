@@ -2,95 +2,104 @@ unit uFileDependencyManager;
 
 interface
 
-{$include roomer.inc}
+{$INCLUDE roomer.inc}
 
-uses Generics.Collections,
-    SysUtils,
-    IOUtils,
 
-    IdHTTP,
-    IdGlobal,
-    IdIOHandler,
-    IdIOHandlerSocket,
-    IdIOHandlerStack,
-    IdSSL,
-    IdSSLOpenSSL,
-
-    uFileSystemUtils,
-    uG,
-    uD,
-    PrjConst,
-    cmpRoomerDataSet,
-    alHttpCommon,
-    uDateUtils,
-    uFrmResources;
+uses
+  Generics.Collections,
+  SysUtils
+  ;
 
 type
+  EFileDependencyManagerException = class(Exception);
 
-   TResourceInfo = class
-     Filename : String;
-     Timestamp : TDateTime;
-     URI : String;
-     Size : Integer;
-   public
-     constructor Create(_Filename : String; _Timestamp : TDateTime; _Size : Integer; _URI : String);
-   end;
+  TFileDependencymanager = class(TObject)
+  type
+    TResourceInfo = class
+      Filename: String;
+      Timestamp: TDateTime;
+      URI: String;
+      Size: Integer;
+    public
+      constructor Create(const _Filename: String; _Timestamp: TDateTime; _Size: Integer; const _URI: String);
+    end;
+  private
+    FFileList: TObjectList<TResourceInfo>;
 
-var fileList : TObjectList<TResourceInfo>;
+    procedure prepareDependencyManager;
 
-procedure prepareDependencyManager;
-function getAnyFilePath(filename : String) : String;
-function getRegistrationFormFilePath(throwExceptionOnError : Boolean = true) : String;
-function getForeignInvoiceFilePath(throwExceptionOnError : Boolean = true) : String;
-function getLocalInvoiceFilePath(throwExceptionOnError : Boolean = true) : String;
-function getGuestListReportFilePath(throwExceptionOnError : Boolean = true) : String;
-function getCustomerStayReportFilePath(throwExceptionOnError : Boolean = true) : String;
-function getOneCustomerInvoiceFilePath(throwExceptionOnError : Boolean = true) : String;
-function getMaidsListReportFilePath(throwExceptionOnError : Boolean = true) : String;
-function getHtmlEditorFilePath(throwExceptionOnError : Boolean = true) : String;
-procedure sendChangedFile(filename : String);
+    procedure AssertResourcesPrepared;
+    function findFile(const Filename: String): TResourceInfo;
+    function getExeFilePath(const Filename, toFile: String): String;
+    function getFileInfoViaHead(const Filename: String): TResourceInfo;
+    function getFilePath(const Filename: String; throwExceptionOnError: Boolean): String;
+    function getFullFilename(const Filename: String): String;
+    procedure ReadFilesFromStaticResources;
 
-//procedure _prepareDependencyManager;
-//function _getForeignInvoiceFilePath : String;
-//function _getLocalInvoiceFilePath : String;
-//function _getGuestListReportFilePath : String;
-//function _getCustomerStayReportFilePath : String;
-//function _getOneCustomerInvoiceFilePath : String;
-//function _getMaidsListReportFilePath : String;
-//procedure _sendChangedFile(filename : String);
+  public
+    constructor Create;
+    destructor Destroy; override;
 
-function getRoomerUpgradeAgentFilePath(ToFile : String) : String;
-function getRoomerVersionXmlFilePath(ToFile : String) : String;
-function getAnyFileFromRoomerStore(FromFile, ToFile : String) : String;
+    function getHtmlEditorFilePath(throwExceptionOnError: Boolean = true): String;
+    procedure ResetDependencyFileList;
+    function getForeignInvoiceFilePath(throwExceptionOnError: Boolean = true): String;
+    function getLocalInvoiceFilePath(throwExceptionOnError: Boolean = true): String;
+    procedure sendChangedFile(const Filename: String);
+    function getRegistrationFormFilePath(throwExceptionOnError: Boolean = true): String;
+    function getGuestListReportFilePath(throwExceptionOnError: Boolean = true): String;
+    function getCustomerStayReportFilePath(throwExceptionOnError: Boolean = true): String;
+    function getOneCustomerInvoiceFilePath(throwExceptionOnError: Boolean = true): String;
+    function getMaidsListReportFilePath(throwExceptionOnError: Boolean = true): String;
+    function getAnyFileFromRoomerStore(const FromFile, toFile: String): String;
+    function getRoomerUpgradeAgentFilePath(const toFile: String): String;
+    function getRoomerVersionXmlFilePath(const toFile: String): String;
 
-procedure ResetDependencyFileList;
+  end;
+
+function FileDependencyManager: TFileDependencymanager;
 
 implementation
 
 uses
-   uManageFilesOnServer
-  , uAPIDataHandler
-  , uUtils
-  , uRunWithElevatedOption
-  , Forms
-  , Dialogs
+  cmpRoomerDataSet
+  , uManageFilesOnServer
   , uResourceManagement
+  , IOUtils
+  , IdHTTP
+  , IdSSLOpenSSL
+  , uFileSystemUtils
+  , uD
+  , PrjConst
+  , uDateUtils
+  , uFrmResources
   ;
 
-procedure ReadFilesFromStaticResources;
-var ASet : TRoomerDataSet;
+var
+  gFileDependencyMgr: TFileDependencymanager;
+
+function FileDependencyManager: TFileDependencymanager;
 begin
-  fileList.Clear;
+  if not assigned(gFileDependencyMgr) then
+    gFileDependencyMgr := TFileDependencymanager.Create;
+
+  Result := gFileDependencyMgr;
+end;
+
+procedure TFileDependencymanager.ReadFilesFromStaticResources;
+var
+  ASet: TRoomerDataSet;
+begin
+  FFileList.Clear;
   ASet := CreateNewDataSet;
   try
     ASet.OpenDataset(ASet.SystemGetStaticResourcesFiltered(ANY_FILE));
     ASet.First;
     while NOT ASet.Eof do
     begin
-      fileList.Add(TResourceInfo.Create(ASet['ORIGINAL_NAME'],
-                                        ASet['LAST_MODIFIED'],
-                                        0,
-                                        ASet['URI']));
+      FFileList.Add(TResourceInfo.Create(ASet['ORIGINAL_NAME'],
+        ASet['LAST_MODIFIED'],
+        0,
+        ASet['URI']));
       ASet.Next;
     end;
   finally
@@ -98,14 +107,14 @@ begin
   end;
 end;
 
-procedure prepareDependencyManager;
+procedure TFileDependencymanager.prepareDependencyManager;
 begin
   if d.roomerMainDataSet.OfflineMode then
     exit;
 
   ReadFilesFromStaticResources;
   try
-    if fileList.Count = 0 then
+    if FFileList.Count = 0 then
     begin
       UploadKnownFilesToStaticResourceBundle(d.roomerMainDataSet);
       ReadFilesFromStaticResources;
@@ -115,51 +124,50 @@ begin
   end;
 end;
 
-procedure AssertResource;
+procedure TFileDependencymanager.AssertResourcesPrepared;
 begin
-  if fileList.Count = 0 then
+  if FFileList.Count = 0 then
     prepareDependencyManager;
 end;
 
-procedure ResetDependencyFileList;
+procedure TFileDependencymanager.ResetDependencyFileList;
 begin
-  fileList.Clear;
+  FFileList.Clear;
   prepareDependencyManager;
 end;
 
-function findFile(filename: String) : TResourceInfo;
-var i : integer;
+function TFileDependencymanager.findFile(const Filename: String): TResourceInfo;
+var
+  i: Integer;
 begin
-  result := nil;
-  for i := 0 to fileList.Count - 1 do
-    if Lowercase(fileList[i].Filename) = Lowercase(filename) then
+  Result := nil;
+  for i := 0 to FFileList.Count - 1 do
+    if Lowercase(FFileList[i].Filename) = Lowercase(Filename) then
     begin
-      result := fileList[i];
+      Result := FFileList[i];
       Break;
     end;
 
 end;
 
-var wasDownloaded : Boolean;
-
-function getFullFilename(filename : String) : String;
+function TFileDependencymanager.getFullFilename(const Filename: String): String;
 begin
-    filename := ExtractFileName(filename);
-    result := TPath.Combine(GetCurrenctRoomerPath, filename);
+  Result := ExtractFileName(Filename);
+  Result := TPath.Combine(GetCurrenctRoomerPath, Result);
 end;
 
-function getFilePath(filename : String; throwExceptionOnError : Boolean) : String;
-var sFullFilename : String;
-    DateOfFile : TDateTime;
-    RemoteFile : TResourceInfo;
+function TFileDependencymanager.getFilePath(const Filename: String; throwExceptionOnError: Boolean): String;
+var
+  sFullFilename: String;
+  DateOfFile: TDateTime;
+  RemoteFile: TResourceInfo;
 begin
-  result := '';
-  wasDownloaded := False;
+  Result := '';
   try
-    if fileList.Count = 0 then
-      raise Exception.Create(GetTranslatedText('shTx_ManageFiles_RetrieveList'));
-    filename := ExtractFileName(filename);
-    sFullFilename := TPath.Combine(GetCurrenctRoomerPath, filename);
+    if FFileList.Count = 0 then
+      raise EFileDependencyManagerException.Create(GetTranslatedText('shTx_ManageFiles_RetrieveList'));
+    sFullFilename := ExtractFileName(Filename);
+    sFullFilename := TPath.Combine(GetCurrenctRoomerPath, sFullFilename);
     if uFileSystemUtils.GetFileSize(sFullFilename) = 0 then
       DeleteFile(sFullFilename);
 
@@ -167,96 +175,92 @@ begin
     if FileExists(sFullFilename) then
       FileAge(sFullFilename, DateOfFile);
 
-    RemoteFile := findFile(filename);
+    RemoteFile := findFile(Filename);
     if RemoteFile = nil then
-      result := ''
+      Result := ''
     else
     begin
       if DateTimeToComparableString(DateOfFile) <> DateTimeToComparableString(RemoteFile.Timestamp) then
       begin
         d.roomerMainDataSet.DownloadFileResourceOpenAPI(RemoteFile.URI, sFullFilename);
         TouchFile(sFullFilename, RemoteFile.Timestamp);
-        wasDownloaded := True;
       end;
-      result := sFullFilename;
+      Result := sFullFilename;
     end;
   except
-    On Ex : Exception do
+    On Ex: Exception do
     begin
       if throwExceptionOnError then
-        raise Ex;
+        raise EFileDependencyManagerException.Create(Ex.Message);
     end;
   end;
 end;
 
-function getAnyFilePath(filename : String) : String;
-begin
-  AssertResource;
-  result := getFilePath(filename, true); //g.qInvoiceFormFileERL);
-end;
+const
+  REG_FORM_NAME = 'Registration_Form.fr3';
 
-const REG_FORM_NAME = 'Registration_Form.fr3';
-
-function getRegistrationFormFilePath(throwExceptionOnError : Boolean = true) : String;
-var error : Boolean;
-    FullFilename : String;
+function TFileDependencymanager.getRegistrationFormFilePath(throwExceptionOnError: Boolean = true): String;
+var
+  error: Boolean;
+  FullFilename: String;
 begin
-  AssertResource;
+  AssertResourcesPrepared;
   error := False;
   try
-    result := getFilePath(REG_FORM_NAME, false); // throwExceptionOnError);
+    Result := getFilePath(REG_FORM_NAME, False); // throwExceptionOnError);
   except
-    error := True;
+    error := true;
   end;
   FullFilename := getFullFilename(REG_FORM_NAME);
-  if error OR (result='') OR (GetFileSize(FullFilename)<10) then
+  if error OR (Result = '') OR (GetFileSize(FullFilename) < 10) then
   begin
     d.roomerMainDataSet.SystemDownloadFileFromURI('http://roomerstore.com/Registration_Form.fr3', FullFilename);
     sendChangedFile(FullFilename);
-    result := FullFilename;
+    Result := FullFilename;
   end;
 end;
 
-function getForeignInvoiceFilePath(throwExceptionOnError : Boolean = true) : String;
+function TFileDependencymanager.getForeignInvoiceFilePath(throwExceptionOnError: Boolean = true): String;
 begin
-  AssertResource;
-  result := getFilePath('erlInvoice.fr3', throwExceptionOnError); //g.qInvoiceFormFileERL);
+  AssertResourcesPrepared;
+  Result := getFilePath('erlInvoice.fr3', throwExceptionOnError); // g.qInvoiceFormFileERL);
 end;
 
-function getLocalInvoiceFilePath(throwExceptionOnError : Boolean = true) : String;
+function TFileDependencymanager.getLocalInvoiceFilePath(throwExceptionOnError: Boolean = true): String;
 begin
-  AssertResource;
-  result := getFilePath('islInvoice.fr3', throwExceptionOnError); //g.qInvoiceFormFileISL);
+  AssertResourcesPrepared;
+  Result := getFilePath('islInvoice.fr3', throwExceptionOnError); // g.qInvoiceFormFileISL);
 end;
 
-function getGuestListReportFilePath(throwExceptionOnError : Boolean = true) : String;
+function TFileDependencymanager.getGuestListReportFilePath(throwExceptionOnError: Boolean = true): String;
 begin
-  AssertResource;
-  result := getFilePath('rptResGuests01.fr3', throwExceptionOnError);
+  AssertResourcesPrepared;
+  Result := getFilePath('rptResGuests01.fr3', throwExceptionOnError);
 end;
 
-function getCustomerStayReportFilePath(throwExceptionOnError : Boolean = true) : String;
+function TFileDependencymanager.getCustomerStayReportFilePath(throwExceptionOnError: Boolean = true): String;
 begin
-  AssertResource;
-  result := getFilePath('rptCustomerStayInvoice.fr3', throwExceptionOnError);
+  AssertResourcesPrepared;
+  Result := getFilePath('rptCustomerStayInvoice.fr3', throwExceptionOnError);
 end;
 
-function getOneCustomerInvoiceFilePath(throwExceptionOnError : Boolean = true) : String;
+function TFileDependencymanager.getOneCustomerInvoiceFilePath(throwExceptionOnError: Boolean = true): String;
 begin
-  AssertResource;
-  result := getFilePath('rptOneCustInvoice.fr3', throwExceptionOnError);
+  AssertResourcesPrepared;
+  Result := getFilePath('rptOneCustInvoice.fr3', throwExceptionOnError);
 end;
 
-function getMaidsListReportFilePath(throwExceptionOnError : Boolean = true) : String;
+function TFileDependencymanager.getMaidsListReportFilePath(throwExceptionOnError: Boolean = true): String;
 begin
-  AssertResource;
-  result := getFilePath('rptMaidList001.fr3', throwExceptionOnError);
+  AssertResourcesPrepared;
+  Result := getFilePath('rptMaidList001.fr3', throwExceptionOnError);
 end;
 
-function getFileInfoViaHead(filename : String) : TResourceInfo;
-var http : TIdHTTP;
-    IdSSLIOHandlerSocketOpenSSL1 : TIdSSLIOHandlerSocketOpenSSL;
-    URI : String;
+function TFileDependencymanager.getFileInfoViaHead(const Filename: String): TResourceInfo;
+var
+  http: TIdHTTP;
+  IdSSLIOHandlerSocketOpenSSL1: TIdSSLIOHandlerSocketOpenSSL;
+  URI: String;
 begin
   http := TIdHTTP.Create(nil);
   try
@@ -267,9 +271,9 @@ begin
       http.Request.Referer := 'Mozilla/3.0 (compatible; Roomer PMS)';
       http.HTTPOptions := [hoForceEncodeParams];
 
-      URI := 'http://roomerstore.com/' + filename;
+      URI := 'http://roomerstore.com/' + Filename;
       http.Head(URI);
-      result := TResourceInfo.Create(filename, http.Response.LastModified, http.Response.ContentLength, URI);
+      Result := TResourceInfo.Create(Filename, http.Response.LastModified, http.Response.ContentLength, URI);
     finally
       IdSSLIOHandlerSocketOpenSSL1.Free;
     end;
@@ -278,122 +282,69 @@ begin
   end;
 end;
 
-function getExeFilePath(filename, toFile : String) : String;
-var sFullFilename : String;
-    DateOfFile : TDateTime;
-    RemoteFile : TResourceInfo;
+function TFileDependencymanager.getExeFilePath(const Filename, toFile: String): String;
+var
+  sFullFilename: String;
+  DateOfFile: TDateTime;
+  RemoteFile: TResourceInfo;
 begin
-  wasDownloaded := False;
-  filename := ExtractFileName(filename);
-  sFullFilename := ToFile; // TPath.Combine(GetCurrenctRoomerPath, filename);
+  sFullFilename := ExtractFileName(Filename);
   DateOfFile := 0;
-  if FileExists(sFullFilename) then
-    FileAge(sFullFilename, DateOfFile);
+  if FileExists(toFile) then
+    FileAge(toFile, DateOfFile);
 
-  RemoteFile := getFileInfoViaHead(filename);
+  RemoteFile := getFileInfoViaHead(sFullFilename);
   if RemoteFile = nil then
-    result := ''
+    Result := ''
   else
   begin
     if DateTimeToComparableString(DateOfFile) <> DateTimeToComparableString(RemoteFile.Timestamp) then
     begin
-      d.roomerMainDataSet.SystemDownloadFileFromURI(RemoteFile.URI, sFullFilename);
-      TouchFile(sFullFilename, RemoteFile.Timestamp);
-      wasDownloaded := True;
+      d.roomerMainDataSet.SystemDownloadFileFromURI(RemoteFile.URI, toFile);
+      TouchFile(toFile, RemoteFile.Timestamp);
     end;
-    result := sFullFilename;
+    Result := toFile;
   end;
 end;
 
-
-//function getHtmlEditorFilePath(throwExceptionOnError : Boolean = true) : String;
-//var sPath, regApp, parameters : String;
-//begin
-//  sPath := TPath.Combine(LocalAppDataPath, 'Roomer');
-//  forceDirectories(sPath);
-//  parameters := TPath.Combine(sPath, 'RoomerHtmlEdit.ocx');
-//  result := getExeFilePath('RoomerHtmlEdit.ocx', parameters);
-//
-//  if ((result <> '') AND wasDownloaded) then
-//  begin
-//    regApp := GetSystemPath + 'regsvr32.exe';
-//    parameters := '/s ' + DoubleQuoteIfNeeded(result);
-//    ShowMessage('Romer PMS needs to register a tool for editing rich text document.' + #13 +
-//                'When/if a security warning message is shown, please select [Yes] for a successful registration.');
-//    ExecuteFile(Application.MainForm.Handle, regApp, parameters, [eoElevate]);
-//  end;
-//end;
-
-function getHtmlEditorFilePath(throwExceptionOnError : Boolean = true) : String;
-var sPath, parameters : String;
+function TFileDependencymanager.getHtmlEditorFilePath(throwExceptionOnError: Boolean = true): String;
+var
+  sPath, parameters: String;
 begin
   sPath := TPath.Combine(LocalAppDataPath, 'Roomer');
   forceDirectories(sPath);
   parameters := TPath.Combine(sPath, 'RoomerHtmlEditorControl.dll');
-  result := getExeFilePath('RoomerHtmlEditorControl.dll', parameters);
+  getExeFilePath('RoomerHtmlEditorControl.dll', parameters);
 
   parameters := TPath.Combine(sPath, 'Microsoft.mshtml.dll');
-  result := getExeFilePath('Microsoft.mshtml.dll', parameters);
+  getExeFilePath('Microsoft.mshtml.dll', parameters);
 
   parameters := TPath.Combine(sPath, 'RoomerHtmlEditor.exe');
-  result := getExeFilePath('RoomerHtmlEditor.exe', parameters);
-
-
-//  if ((result <> '') AND wasDownloaded) then
-//  begin
-//    regApp := GetSystemPath + 'regsvr32.exe';
-//    parameters := '/s ' + DoubleQuoteIfNeeded(result);
-//    ShowMessage('Romer PMS needs to register a tool for editing rich text document.' + #13 +
-//                'When/if a security warning message is shown, please select [Yes] for a successful registration.');
-//    ExecuteFile(Application.MainForm.Handle, regApp, parameters, [eoElevate]);
-//  end;
+  Result := getExeFilePath('RoomerHtmlEditor.exe', parameters);
 end;
 
 
 // *********************************************************************
 
-function getRunningExePathOfFile(ToFile : String) : String;
+function TFileDependencymanager.getRoomerUpgradeAgentFilePath(const toFile: String): String;
 begin
-  result := TPath.Combine(ExtractFilePath(Application.ExeName), ToFile);
+  Result := getExeFilePath('RoomerUpgradeAgent.exe', toFile);
 end;
 
-const LIBEAY = 'libeay32.dll';
-      LIBSSL = 'libssl32.dll';
-      SSLEAY = 'ssleay32.dll';
-
-function getRoomerLibEayDLLPath : String;
+function TFileDependencymanager.getRoomerVersionXmlFilePath(const toFile: String): String;
 begin
-  result := getRunningExePathOfFile(LIBEAY);
+  Result := getExeFilePath('Roomer.xml', toFile);
 end;
 
-function getRoomerLibSslDLLPath : String;
+function TFileDependencymanager.getAnyFileFromRoomerStore(const FromFile, toFile: String): String;
 begin
-  result := getRunningExePathOfFile(LIBSSL);
+  Result := getExeFilePath(FromFile, toFile);
 end;
 
-function getRoomerSslEayDLLPath : String;
-begin
-  result := getRunningExePathOfFile(SSLEAY);
-end;
-
-function getRoomerUpgradeAgentFilePath(ToFile : String) : String;
-begin
-  result := getExeFilePath('RoomerUpgradeAgent.exe', ToFile);
-end;
-
-function getRoomerVersionXmlFilePath(ToFile : String) : String;
-begin
-  result := getExeFilePath('Roomer.xml', ToFile);
-end;
-
-function getAnyFileFromRoomerStore(FromFile, ToFile : String) : String;
-begin
-  result := getExeFilePath(FromFile, ToFile);
-end;
-
-procedure sendChangedFile(filename : String);
-var FrmResources: TFrmResources;
-    Resource : TResourceInfo;
+procedure TFileDependencymanager.sendChangedFile(const Filename: String);
+var
+  FrmResources: TFrmResources;
+  Resource: TResourceInfo;
 begin
   FrmResources := TFrmResources.Create(nil);
   try
@@ -402,13 +353,13 @@ begin
     FrmResources.ResourceParameters := nil;
     FrmResources.PrepareUserInterface;
 
-    FrmResources.RemoveFileForUpload(filename);
-    UploadFileToResources(ANY_FILE, ACCESS_RESTRICTED, ExtractFilename(filename), filename);
+    FrmResources.RemoveFileForUpload(Filename);
+    UploadFileToResources(ANY_FILE, ACCESS_RESTRICTED, ExtractFileName(Filename), Filename);
 
     ReadFilesFromStaticResources;
-    Resource := findFile(ExtractFilename(filename));
-    if Assigned(Resource) then
-      TouchFile(filename, Resource.Timestamp);
+    Resource := findFile(ExtractFileName(Filename));
+    if assigned(Resource) then
+      TouchFile(Filename, Resource.Timestamp);
   finally
     FreeAndNil(FrmResources);
   end;
@@ -418,21 +369,32 @@ end;
 
 { TResourceInfo }
 
-constructor TResourceInfo.Create(_Filename : String; _Timestamp: TDateTime; _Size: Integer; _URI : String);
+constructor TFileDependencymanager.TResourceInfo.Create(const _Filename: String; _Timestamp: TDateTime; _Size: Integer;
+  const _URI: String);
 begin
-  inherited Create;
   Filename := _Filename;
   Timestamp := _Timestamp;
   Size := _Size;
   URI := _URI;
 end;
 
+{ TFileDependencymanager }
+
+constructor TFileDependencymanager.Create;
+begin
+  FFileList := TObjectList<TResourceInfo>.Create(true);
+end;
+
+destructor TFileDependencymanager.Destroy;
+begin
+  FFileList.Free;
+  inherited;
+end;
+
 initialization
 
-  fileList := TObjectList<TResourceInfo>.Create(True);
-
 finalization
-  fileList.Clear;
-  fileList.Free;
+
+gFileDependencyMgr.Free;
 
 end.

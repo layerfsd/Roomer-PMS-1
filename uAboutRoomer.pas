@@ -164,7 +164,7 @@ begin
             RoomerDataset.Password ]);
 
   DashboardExeFilenameAndPath := TPath.Combine(sPath, filename);
-  getAnyFileFromRoomerStore(filename, DashboardExeFilenameAndPath);
+  FileDependencymanager.getAnyFileFromRoomerStore(filename, DashboardExeFilenameAndPath);
   ExecuteFile(Handle, DashboardExeFilenameAndPath, parameters, []);
 end;
 
@@ -194,7 +194,7 @@ begin
   sPath := TPath.Combine(LocalAppDataPath, 'Roomer');
   forceDirectories(sPath);
   RemoteSupportFilenameAndPath := TPath.Combine(sPath, filename);
-  getAnyFileFromRoomerStore(filename, RemoteSupportFilenameAndPath);
+  FileDependencymanager.getAnyFileFromRoomerStore(filename, RemoteSupportFilenameAndPath);
   ExecuteFile(Handle, RemoteSupportFilenameAndPath, '', []);
 end;
 
@@ -208,7 +208,7 @@ begin
     sPath := TPath.Combine(LocalAppDataPath, 'Roomer');
     forceDirectories(sPath);
     UpgradeManagerPath := TPath.Combine(sPath, 'RoomerUpgradeAgent.exe');
-    getRoomerUpgradeAgentFilePath(UpgradeManagerPath);
+    FileDependencymanager.getRoomerUpgradeAgentFilePath(UpgradeManagerPath);
     ExecuteFile(Handle, UpgradeManagerPath, '"' + Application.ExeName + '"', [eoElevate]);
   except
   end;
@@ -222,7 +222,7 @@ begin
   sTempName := GetEnvironmentVariable('TEMP') + '\roomerversion.xml';
 
   try
-    getRoomerVersionXmlFilePath(sTempName);
+    FileDependencymanager.getRoomerVersionXmlFilePath(sTempName);
   except
     exit;
   end;

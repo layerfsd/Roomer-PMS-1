@@ -3261,7 +3261,7 @@ begin
   ViewMode := vmOneDay;
 
   try
-    prepareDependencyManager;
+//    FileDependencymanager.prepareDependencyManager;
     UpdateHotelsList;
 
     InitializeTaxes;

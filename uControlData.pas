@@ -866,7 +866,7 @@ begin
   chkShowSideBar.checked := g.qShowSideBar;
 
 //  try
-    defFile := getLocalInvoiceFilePath(false);
+    defFile := FileDependencyManager.getLocalInvoiceFilePath(false);
 //  Except
 //  end;
 
@@ -895,7 +895,7 @@ begin
 
   edInvoiceFormFileERL.Text := g.qInvoiceFormFileERL;
 //  try
-    defFile := getForeignInvoiceFilePath(false);
+    defFile := FileDependencyManager.getForeignInvoiceFilePath(false);
 //  EXCEPT
 //  end;
 
