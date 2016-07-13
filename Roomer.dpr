@@ -229,7 +229,8 @@ uses
   uCurrencyHandler in 'uCurrencyHandler.pas',
   uFloatUtils in 'RoomerVCLs\Source\uFloatUtils.pas',
   uRptStockItems in 'uRptStockItems.pas' {frmRptStockItems},
-  uOpenAPICaller in 'OpenAPI\uOpenAPICaller.pas';
+  uOpenAPICaller in 'OpenAPI\uOpenAPICaller.pas',
+  ufrmPaymentReqRoomtypeGroup in 'ufrmPaymentReqRoomtypeGroup.pas' {frmPaymentReqRoomtypeGroup};
 
 {$R *.RES}
 

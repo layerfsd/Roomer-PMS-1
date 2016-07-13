@@ -5520,6 +5520,28 @@ select_roomTypesGroups : string =
 ' ORDER BY '#10+
 '   %s ';
 
+select_PaymentRequirementForRoomTypeGroup : string =
+' SELECT '#10 +
+'  channelManagerId '#10 +
+'  ,name '#10 +
+' , PAYMENT_REQUIRED '#10 +
+' , PREPAID_PERCENTAGE '#10 +
+' FROM channels' +
+' LEFT OUTER JOIN home100.PAYMENT_REQUIREMENT_MATRIX '#10 +
+'   ON channelmanagerid=CHANNEL_ID and HOTEL_ID=(SELECT CompanyID FROM control LIMIT 1) AND ROOM_TYPE_GROUP_CODE=%s '#10 +
+' where active  '#10 +
+' ORDER BY channelManagerId'#10;
+
+delete_PaymentRequirementsForRoomTypeGroup: string =
+' DELETE '#10 +
+' FROM home100.PAYMENT_REQUIREMENT_MATRIX '#10 +
+' WHERE HOTEL_ID=(SELECT CompanyID FROM control LIMIT 1) AND ROOM_TYPE_GROUP_CODE=%s ';
+
+insert_PaymentRequirementsForRoomTypeGroup: string =
+' INSERT INTO home100.PAYMENT_REQUIREMENT_MATRIX '#10 +
+'     (HOTEL_ID, CHANNEL_ID, ROOM_TYPE_GROUP_CODE, PAYMENT_REQUIRED, PREPAID_PERCENTAGE) '#10 +
+'      VALUES (%s, %s, %s, 1, %s)';
+
 select_Seasons : string =
 'SELECT '#10+
 '  ID '#10+
@@ -6005,7 +6027,7 @@ select_Persons_byReservation : string =
     ///	    Format parameters
     ///	  </para>
     ///	  <para>
-    ///	    1. %s  = sqlStringDate '2010-12-31'
+    ///	    1. %s ï¿½= sqlStringDate '2010-12-31'
     ///	  </para>
     ///	</summary>
     ///	<param name="occRooms">
@@ -6376,7 +6398,7 @@ end;
     s := s+ '   (roomreservations.RoomReservation in %s ) '#10; //zRoomReservationList
 
     s := s+' ORDER BY '#10;
-    //@hj breytti hér
+    //@hj breytti hï¿½r
     s := s+'   reservations.Reservation, roomreservations.Room '#10;
     result := s;
   end;

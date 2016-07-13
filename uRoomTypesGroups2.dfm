@@ -431,6 +431,7 @@ object frmRoomTypesGroups2: TfrmRoomTypesGroups2
               Default = True
               Kind = bkEllipsis
             end>
+          Properties.ReadOnly = True
           Properties.OnButtonClick = tvDataPAYMENTS_REQUIREDPropertiesButtonClick
           Width = 100
         end
@@ -438,13 +439,6 @@ object frmRoomTypesGroups2: TfrmRoomTypesGroups2
           Caption = 'Auto Charge Creditcards'
           DataBinding.FieldName = 'AutoChargeCreditcards'
           Width = 169
-        end
-        object tvDataprepaidPercentage: TcxGridDBColumn
-          Caption = 'Prepaid percentage'
-          DataBinding.FieldName = 'prepaidPercentage'
-          PropertiesClassName = 'TcxCurrencyEditProperties'
-          Properties.DisplayFormat = '0.00;0.00'
-          Width = 110
         end
         object tvDataRateExtraBed: TcxGridDBColumn
           Caption = 'Rate Extra Bed'
@@ -882,8 +876,9 @@ object frmRoomTypesGroups2: TfrmRoomTypesGroups2
     object m_connectLOSToMasterRate: TBooleanField
       FieldName = 'connectLOSToMasterRate'
     end
-    object m_prepaidPercentage: TFloatField
-      FieldName = 'prepaidPercentage'
+    object m_PAYMENTS_REQUIRED: TWideStringField
+      FieldName = 'PAYMENTS_REQUIRED'
+      Size = 255
     end
     object m_PAYMENTS_REQUIRED: TWideStringField
       FieldName = 'PAYMENTS_REQUIRED'

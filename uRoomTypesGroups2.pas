@@ -169,7 +169,6 @@ type
     m_TopClass: TWideStringField;
     m_AvailabilityTypes: TWideStringField;
     FormStore: TcxPropertiesStore;
-    chkActive: TsCheckBox;
     m_defAvailability: TIntegerField;
     m_defStopSale: TBooleanField;
     m_defRate: TFloatField;
@@ -312,8 +311,6 @@ type
 function openRoomTypeGroups(act : TActTableAction; var theData : recRoomTypeGroupHolder;
         embedPanel : TsPanel = nil;
         WindowCloseEvent : TNotifyEvent = nil) : boolean;
-//function getRoomTypeGroup(ed : TAdvEdit; lab : TLabel) : boolean;
-//function payGroupValidate(ed : TAdvEdit; lab: TLabel) : boolean;
 
 var
   frmRoomTypesGroups2: TfrmRoomTypesGroups2;
@@ -339,7 +336,7 @@ uses
   , uDynamicPricing
   , UITypes
 
-  ;
+  , ufrmPaymentReqRoomtypeGroup;
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -463,7 +460,6 @@ begin
         m_['connectCODToMasterRate'] := rSet['connectCODToMasterRate'];
         m_['connectLOSToMasterRate'] := rSet['connectLOSToMasterRate'];
         m_['RATE_PLAN_TYPE'] := rSet['RATE_PLAN_TYPE'];
-        m_['prepaidPercentage'] := rSet['prepaidPercentage'];
 
         m_.Post;
         rSet.Next;
@@ -483,21 +479,6 @@ begin
     freeandnil(rSet);
   end;
 end;
-
-
-(*
- Active
- Description
- color
-
- Code
- PriorityRule
- MaxCount
- minGuests
- maxGuests
- maxChildren
-*)
-
 
 
 procedure TfrmRoomTypesGroups2.fillHolder;
@@ -553,7 +534,6 @@ begin
   zData.connectCODToMasterRate := m_['connectCODToMasterRate'];
   zData.connectLOSToMasterRate := m_['connectLOSToMasterRate'];
   zData.RATE_PLAN_TYPE := m_['RATE_PLAN_TYPE'];
-  zData.prepaidPercentage := m_['prepaidPercentage'];
 
 end;
 
@@ -563,7 +543,6 @@ procedure TfrmRoomTypesGroups2.changeAllowgridEdit;
 begin
     tvDataID.Options.Editing             := false;
     tvDataRATE_PLAN_TYPE.Options.Editing         := zAllowGridEdit;
-    tvDataprepaidPercentage.Options.Editing         := zAllowGridEdit;
 
     tvDataRecId.Options.Editing         := zAllowGridEdit;
     tvDataActive.Options.Editing         := zAllowGridEdit;
@@ -838,7 +817,7 @@ begin
     zData.connectCODToMasterRate := m_['connectCODToMasterRate'];
     zData.connectLOSToMasterRate := m_['connectLOSToMasterRate'];
     zData.RATE_PLAN_TYPE := m_['RATE_PLAN_TYPE'];
-    zData.prepaidPercentage := m_['prepaidPercentage'];
+//    zData.prepaidPercentage := m_['prepaidPercentage'];
   end;
 end;
 
@@ -1016,7 +995,6 @@ begin
   dataset['connectCODToMasterRate'] := false;
   dataset['connectLOSToMasterRate'] := false;
   dataset['RATE_PLAN_TYPE'] := 'STANDARD';
-  dataset['prepaidPercentage'] := 100;
 end;
 
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -1053,42 +1031,9 @@ begin
 end;
 
 procedure TfrmRoomTypesGroups2.tvDataPAYMENTS_REQUIREDPropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
-var
-  newValue: String;
-  lSplit: TStrings;
 begin
-  newValue := LookupForDataItem('Channels', glb.ChannelsSet, 'channelManagerId',
-    'Name', m_['PAYMENTS_REQUIRED'], true, false, 'Active', nil, '');
-
-  if newValue <> m_['PAYMENTS_REQUIRED'] then
-  begin
-    m_.Edit;
-    m_['PAYMENTS_REQUIRED'] := newValue;
-    m_.Post;
-    lSplit := SplitStringToTStrings(',', newValue);
-    try
-      RefreshRequirementsForRate(m_['Code'], lSPlit);
-    finally
-      lSplit.Free;
-    end;
-  end;
-end;
-
-procedure TfrmRoomTypesGroups2.RefreshRequirementsForRate(Rate : String; Channels : TStrings);
-var sql : String;
-    channel : String;
-begin
-  sql := Format('DELETE FROM home100.PAYMENT_REQUIREMENT_MATRIX WHERE HOTEL_ID=%s AND ROOM_TYPE_GROUP_CODE=%s',
-                [_db(d.roomerMainDataSet.hotelId), _db(Rate)]);
-  d.roomerMainDataSet.DoCommand(sql);
-  for channel IN Channels do
-  begin
-    sql := Format('INSERT INTO home100.PAYMENT_REQUIREMENT_MATRIX (HOTEL_ID, CHANNEL_ID, ROOM_TYPE_GROUP_CODE, PAYMENT_REQUIRED) ' +
-                  'VALUES (%s, %s, %s, 1)',
-                [_db(d.roomerMainDataSet.hotelId), _db(channel), _db(Rate)]);
-    d.roomerMainDataSet.DoCommand(sql);
-  end;
-
+  if EditPaymentRequirements(m_Code.AsString) then
+    fillGridFromDataset(m_Code.AsString);
 end;
 
 procedure TfrmRoomTypesGroups2.tvDataPriorityRulePropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
