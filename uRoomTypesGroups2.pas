@@ -292,7 +292,6 @@ type
     procedure FetchRatePlanTypes;
     procedure FillDataHolderFromDataSet(dataset : TDataSet);
 
-
   public
     { Public declarations }
     zAct   : TActTableAction;
