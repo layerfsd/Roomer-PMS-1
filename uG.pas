@@ -550,7 +550,7 @@ function LeftAlign(s : string; iLen : integer) : string;
 function RightAligned(s : string; iNum : integer) : string;
 
 function ResObjToBorder(Status : string; ascIndex, descIndex : integer; var BorderColor : TColor; var Left, Top, Right,Bottom : integer) : boolean;
-function RoomIndex(aGrid : TAdvStringGrid; const sRoom : string; var lastRow : integer; const sRoomType : String = ''; AddIfNeeded : boolean = false) : integer;
+function RoomRowNumber(aGrid : TAdvStringGrid; const sRoom : string; var lastRow : integer; const sRoomType : String = ''; AddIfNeeded : boolean = false) : integer;
 procedure FillTheGrid(Grid : TADVStringGrid; sWith : string; iStartCol, iStartRow : integer);
 procedure EmptyStringGrid(Grid : TADVStringGrid);
 function GridFloatValueFromString(aValue : String) : double;
@@ -2195,7 +2195,7 @@ end;
 ///  If the room is not found and AddIfNEeded is true than the lastrow of the grid will be set to room and roomtype, <br />
 ///  if a new room is added to the grid, lastrow will be increased
 /// </summary>
-function RoomIndex(aGrid : TAdvStringGrid; const sRoom : string; var lastRow : integer; const sRoomType : String = ''; AddIfNeeded : boolean = false) : integer;
+function RoomRowNumber(aGrid : TAdvStringGrid; const sRoom : string; var lastRow : integer; const sRoomType : String = ''; AddIfNeeded : boolean = false) : integer;
 var
   i : integer;
 begin

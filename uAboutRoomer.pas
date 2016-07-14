@@ -307,7 +307,7 @@ begin
   sTempName := GetEnvironmentVariable('TEMP') + '\roomerversion.xml';
 
   try
-    getRoomerVersionXmlFilePath(sTempName);
+    FileDependencyManager.getRoomerVersionXmlFilePath(sTempName);
   except
     exit;
   end;

@@ -1633,7 +1633,8 @@ const
   PERIOD_GRID_RECTANGLES_WIDTH = 10;
 
   DEFAULT_UNPARSABLE_INT_VALUE: integer = -99999;
-  cGoingStr = '» ';
+  //cGoingStr = '» ';
+  cGoingStr: string = char($bb);
   cgrRoom_RoomColumn = 1;
   cgrRoom_RoomTypeColumn = 2;
   cgrRoom_RoomDescriptionColumn = 3;
@@ -3987,8 +3988,9 @@ begin
 
   s := Key;
 
-  if CharInSet(Key, ['a' .. 'z', 'A' .. 'Z', '�', '�', '�', '�', '�', '�', '�', '�', '�', '�', '�', '�', '�', '�', '�',
-    '�', '�', '�', '�', '�']) then
+//   CharInSet(Key, ['a' .. 'z', 'A' .. 'Z', '�', '�', '�', '�', '�', '�', '�', '�', '�', '�', '�', '�', '�', '�', '�',
+//    '�', '�', '�', '�', '�']) then
+  if InRange(ord(Key), ord('A'), ord('Z')) or InRange(ord(Key), ord('a'), ord('z')) or InRange(ord(Key), $C0, $FF) then
   begin
     ActiveControl := edtSearch;
     SendKeys(PChar(s), true);
@@ -5692,9 +5694,6 @@ var
 
   Floors: TSet_Of_Integer;
   Locations: TSet_Of_Integer;
-
-  tempString: Utf8String;
-
   lRoom: TRoomObject;
   ii: Integer;
 
@@ -5791,24 +5790,6 @@ begin
                                                                                   and (aRoom.Departure = zOneDay_dtDate));
                                                                 end) do
             begin
-
-                // -- This prevents those that have not already checked in from being
-                // visible on the date of their departure...
-                //
-//                if (lRoom.ResStatus in [rsReservations, rsOverbooked, rsAlotment, rsNoShow, rsCanceled, rsTmp1, rsTmp2, rsBlocked, rsDeparted])
-//                then
-//                    if FReservationsModel.Reservations[i].Rooms[Z].Departure = zOneDay_dtDate then
-//                      continue;
-
-                // ATHOLD Do not display BLOCKED *********************
-//                  if FReservationsModel.Reservations[i].Rooms[Z].ResStatus = rsBlocked then
-//                    if FReservationsModel.Reservations[i].Rooms[Z].Departure = zOneDay_dtDate then
-//                      continue; // Go next cycle !
-
-//                  if FReservationsModel.Reservations[i].Rooms[Z].ResStatus = rsDeparted then
-//                    if FReservationsModel.Reservations[i].Rooms[Z].Departure = zOneDay_dtDate then
-//                      continue; // Go next cycle !
-
                 // -- See comments about the iRound cycle above...
                 //
                 if ((iRound = 2) and (lRoom.ResStatus = rsDeparting)) or
@@ -5819,7 +5800,7 @@ begin
                       ((iRoomRound = 2) AND (lRoom.IsUnAssigned OR (Copy(lRoom.RRNumber, 1, 1) = '<'))) then
                   begin
                     // -- Rooms
-                    lRoomIndex := RoomIndex(grOneDayRooms, lRoom.RoomNumber, iRowCounter, lRoom.RoomType,
+                    lRoomIndex := RoomRowNumber(grOneDayRooms, lRoom.RoomNumber, iRowCounter, lRoom.RoomType,
                                             (SearchOrGroupFilterActive AND (Locations.Count = 0) AND (Floors.Count = 0)) OR
                                             (iRoomRound = 2));
                     if lRoomIndex <> -1 then
@@ -5832,7 +5813,6 @@ begin
 
                       if not lRoom.IsUnAssigned or (Copy(lRoom.RRNumber, 1, 1) = '<') then
                       begin
-//                          tempString := lRoom.FirstGuestName;
                         grOneDayRooms.cells[2, lRoomIndex] := lRoom.FirstGuestName;
                       end
                       else
@@ -5846,10 +5826,10 @@ begin
 
                       if lRoom.ResStatus = rsDeparting then
                       begin
-                        if frmMain.IsRoomReserved(lRoom.RoomNumber, i, Z) then
+                        if frmMain.IsRoomReserved(lRoom.RoomNumber, zOneDayResPointers[lRoomIndex].ptrRooms[1, 1], zOneDayResPointers[lRoomIndex].ptrRooms[1, 2]) then
                           try
                             zOneDay_bIsOverlapped := true;
-                            grOneDayRooms.cells[2, lRoomIndex] := '� ' + lRoom.FirstGuestName;
+                            grOneDayRooms.cells[2, lRoomIndex] := cGoingStr + ' ' +  lRoom.FirstGuestName;
                           finally
                             zOneDay_bIsOverlapped := false;
                           end;
@@ -6051,10 +6031,6 @@ begin
       resultSearch := pos(ANSIlowercase(edtSearch.Text), ANSIlowercase(s)) > 0;
     end;
 
-    // if (lblAndOr.Tag = 1) OR FreeRoomsFiltered then
-    // result := resultFilter OR resultSearch
-    // else
-    // result := resultFilter AND resultSearch;
     result := resultSearch AND resultGroup AND resultStatus;
 
   end;
@@ -6222,7 +6198,7 @@ begin
             exit;
           end;
 
-          if (Copy(TAdvStringGrid(Sender).cells[ACol, ARow], 1, 2) = cGoingStr) then
+          if TAdvStringGrid(Sender).cells[ACol, ARow].StartsWith(cGoingStr) then
           begin
             // Invoice with unpaid items
             Rect := grOneDayRooms.CellRect(ACol, ARow);
@@ -6682,9 +6658,6 @@ begin
             trim(inttostr(FReservationsModel.Reservations[iReservation].Reservation)) + ' / ' +
             trim(inttostr(ro.RoomRes));
 
-          // --
-          // grOneDayRooms.Hint := HintStr;
-          // ActivateHint(APoint, grOneDayRooms);
           exit;
         end;
 
@@ -6816,11 +6789,6 @@ begin
     iLastShownHintCol := ACol;
     ApplicationCancelGuestHint;
   end;
-
-  // if g.qShowhint then
-  // OneDay_CheckHint(X, Y)
-  // else
-  // ApplicationCancelGuestHint;
 
   if FOneDay_bMouseDown then
   begin
@@ -7153,7 +7121,7 @@ begin
 
         // Ef gestur er a� fara og annar a� koma er GestCellan Tv�skipt
         // annar hlutinn Gr�r (s� sem er a� fara) en hinn Aqua (s� sem er a� koma)
-        if (Copy(Grid.cells[ACol, ARow], 1, 2) = cGoingStr) then
+        if Grid.cells[ACol, ARow].StartsWith(cGoingStr) then
         begin
           // Who is leaving
           LeavingName := Grid.cells[ACol, ARow];
@@ -7730,11 +7698,6 @@ begin
   // Rooms Index
   iRoomReservation := FReservationsModel.Reservations[idxReservation].Rooms[idxRoomReservation].RoomRes;
 
-  // if ACol > 6 then
-  // ACol := 7
-  // else
-  // ACol := 0;
-
   MoveToRoomEnh2(iRoomReservation, '');
   RefreshGrid;
 end;
@@ -7810,14 +7773,6 @@ begin
       AFont.Color := sSkinManager1.GetGlobalFontColor;
     end;
     AFont.Style := [fsBold];
-    // if (ARow IN [0, 1]) OR (ACol > _grid.FixedCols) then
-    // if weekDay IN [1, 7] then
-    // begin
-    // if cbxViewTypes.ItemIndex = 0 then
-    // ABrush.Color := HexToTColor('FFC2C2')
-    // else
-    // ABrush.Color := HexToTColor('F7F7F7');
-    // end;
     exit;
   end;
 
@@ -8523,9 +8478,7 @@ begin
     for ii := grPeriodRooms.FixedRows to grPeriodRooms.RowCount - 2 do
     begin
       grPeriodRooms.Objects[i, ii].Free;
-      grPeriodRooms.Objects[i, ii] := TresCell.Create(-1, -1, -1, -1, -1, -1, false, '', '', '', '', false, 1, '', '',
-        '', '', '', '', '', '', '', 0.00, 0.00,
-        false, false, 0, '', false, false, '', 0, 0, 0, '', '', 0, 0);
+      grPeriodRooms.Objects[i, ii] := nil;
     end;
   end;
 
@@ -8585,9 +8538,7 @@ var
       begin
         Grid.cells[iCol, iRow] := '';
         Grid.Objects[iCol, iRow].Free;
-        Grid.Objects[iCol, iRow] := TresCell.Create(-1, -1, -1, -1, -1, -1, false, '', '', '', '', false, 1, '', '', '',
-          '', '', '', '', '', '', 0.00, 0.00,
-          false, false, 0, '', false, false, '', 0, 0, 0, '', '', 0, 0);
+        Grid.Objects[iCol, iRow] := nil;
       end;
     exit;
 
@@ -8611,9 +8562,7 @@ var
         begin
           Grid.cells[Grid.FixedCols, iRow] := '';
           Grid.Objects[Grid.FixedCols, iRow].Free;
-          Grid.Objects[Grid.FixedCols, iRow] := TresCell.Create(-1, -1, -1, -1, -1, -1, false, '', '', '', '', false, 1,
-            '', '', '', '', '', '', '', '', '',
-            0.00, 0.00, false, false, 0, '', false, false, '', 0, 0, 0, '', '', 0, 0);
+          Grid.Objects[Grid.FixedCols, iRow] := nil;
         end;
       end;
     end
@@ -8634,9 +8583,7 @@ var
         begin
           Grid.cells[Grid.ColCount - 1, iRow] := '';
           Grid.Objects[Grid.ColCount - 1, iRow].Free;
-          Grid.Objects[Grid.ColCount - 1, iRow] := TresCell.Create(-1, -1, -1, -1, -1, -1, false, '', '', '', '', false,
-            1, '', '', '', '', '', '', '', '', '',
-            0.00, 0.00, false, false, 0, '', false, false, '', 0, 0, 0, '', '', 0, 0);
+          Grid.Objects[Grid.ColCount - 1, iRow] := nil;
         end;
       end;
     end;
@@ -8772,17 +8719,6 @@ begin
                   MessageDlg('Room: ' + Room + #13#13 + E.message, mtError, [mbOk], 0);
 {$ENDIF}
               end;
-
-//              try
-//                if grPeriodRooms.Objects[cords.col, cords.row] <> nil then
-//                begin
-//                  TresCell(grPeriodRooms.Objects[cords.col, cords.row]).Free;
-//                end;
-//              except
-//                ShowMessage( { 1080 } GetTranslatedText('sh1080') + #10 + Room + #10 + inttostr(cords.col) + '/1 ' +
-//                  inttostr(cords.row));
-//              end;
-
               try
                 grPeriodRooms.Objects[cords.col, cords.row].Free;
                 grPeriodRooms.Objects[cords.col, cords.row] := TresCell.Create(RoomReservation, Reservation, Channel,
@@ -8836,21 +8772,6 @@ begin
               grPeriodRooms_NO.cells[cords.col, cords.row] := s;
               grPeriodRooms_NO.cells[1, cords.row] := Room;
               grPeriodRooms_NO.cells[2, cords.row] := RoomType;
-
-//              try
-//                if grPeriodRooms_NO.Objects[cords.col, cords.row] <> nil then
-//                begin
-//                  TresCell(grPeriodRooms_NO.Objects[cords.col, cords.row]).Free;
-//                  grPeriodRooms_NO.Objects[cords.col, cords.row] := nil;
-//                end;
-//                if assigned((grPeriodRooms_NO.Objects[cords.col, cords.row] as TresCell)) then
-//                begin
-//                  (grPeriodRooms_NO.Objects[cords.col, cords.row] as TresCell).Free;
-//                end;
-//              except
-//                ShowMessage( { 1081 } GetTranslatedText('sh1081') + ' ' + #10 + Room + #10 + inttostr(cords.col) + '/2 '
-//                  + inttostr(cords.row));
-//              end;
 
               try
                 grPeriodRooms_NO.Objects[cords.col, cords.row].Free;
@@ -9503,15 +9424,8 @@ begin
   begin
     for r := grPeriodRooms_NO.FixedRows to grPeriodRooms_NO.RowCount - 1 do
     begin
-//      if grPeriodRooms_NO.Objects[c, r] <> nil then
-//      begin
-//        TresCell(grPeriodRooms_NO.Objects[c, r]).Free;
-//        grPeriodRooms_NO.Objects[c, r] := nil;
-//      end;
       grPeriodRooms_NO.Objects[c, r].Free;
-      grPeriodRooms_NO.Objects[c, r] := TresCell.Create(-1, -1, -1, -1, -1, -1, false, '', '', '', '', false, 1, '', '',
-        '', '', '', '', '', '', '', 0.00, 0.00,
-        false, false, 0, '', false, false, '', 0, 0, 0, '', '', 0, 0);
+      grPeriodRooms_NO.Objects[c, r] := nil;
     end;
   end;
 end;
@@ -9522,15 +9436,8 @@ var
 begin
   for c := grPeriodRooms_NO.FixedCols to grPeriodRooms_NO.ColCount - 1 do
   begin
-//    if grPeriodRooms_NO.Objects[c, r] <> nil then
-//    begin
-//      TresCell(grPeriodRooms_NO.Objects[c, r]).Free;
-//      grPeriodRooms_NO.Objects[c, r] := nil;
-//    end;
     grPeriodRooms_NO.Objects[c, r].Free;
-    grPeriodRooms_NO.Objects[c, r] := TresCell.Create(-1, -1, -1, -1, -1, -1, false, '', '', '', '', false, 1, '', '',
-      '', '', '', '', '', '', '', 0.00, 0.00,
-      false, false, 0, '', false, false, '', 0, 0, 0, '', '', 0, 0);
+    grPeriodRooms_NO.Objects[c, r] := nil;
   end;
 end;
 

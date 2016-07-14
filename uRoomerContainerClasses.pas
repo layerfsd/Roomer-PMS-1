@@ -49,9 +49,8 @@ type
       Room, RoomType, resFlag, CustomerName: string; isNoRoom: boolean; Date: Tdate; Information, Fax, Tel2, Tel1, GuestName, PMInfo, PriceType, Currency,
       BookingId: String; Price, Discount: Double; Percentage: boolean; ItemsOnInvoice: boolean; numGuests: integer; RoomClass: string;
       _OutOfOrderBlocking, _BlockMove: boolean; _BlockMoveReason: String; _OngoingSale, _OngoingRent, _OngoingTaxes: Double; _Invoices, _Guarantee: String; _TotalPayments: Double
-      ; _InvoiceIndex : Integer);
-
-    destructor Destroy; override;
+      ; _InvoiceIndex : Integer); overload;
+    constructor Create; overload;
 
     property RoomReservation: integer read FRoomReservation write FRoomReservation;
     property Reservation: integer read FReservation write FReservation;
@@ -112,7 +111,7 @@ constructor TresCell.Create(RoomReservation, Reservation, Channel, PaymentInvoic
   _OutOfOrderBlocking, _BlockMove: boolean; _BlockMoveReason: String; _OngoingSale, _OngoingRent, _OngoingTaxes: Double; _Invoices, _Guarantee: String; _TotalPayments: Double; _InvoiceIndex : Integer);
 
 begin
-  inherited Create;
+  Create;
   FRoomReservation := RoomReservation;
   FReservation := Reservation;
   FChannel := Channel;
@@ -159,9 +158,19 @@ begin
   FInvoiceIndex := _InvoiceIndex;
 end;
 
-destructor TresCell.Destroy;
+constructor TresCell.Create;
 begin
-  inherited Destroy;
+//-1, -1, -1, -1, -1, -1, false, '', '', '', '', false, 1, '', '', '',
+//          '', '', '', '', '', '', 0.00, 0.00,
+//          false, false, 0, '', false, false, '', 0, 0, 0, '', '', 0, 0);
+
+  FRoomReservation := -1;
+  FReservation := -1;
+  FChannel := -1;
+  FPaymentInvoice := -1;
+  FAscIndex := -1;
+  FDescIndex := -1;
+  FDate := 1;
 end;
 
 end.
