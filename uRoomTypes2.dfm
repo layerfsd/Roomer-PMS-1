@@ -231,7 +231,6 @@ object frmRoomTypes2: TfrmRoomTypes2
         Align = alClient
         TabOrder = 3
         LookAndFeel.NativeStyle = False
-        ExplicitHeight = 369
         object tvData: TcxGridDBTableView
           OnDblClick = tvDataDblClick
           Navigator.Buttons.CustomButtons = <>
@@ -427,7 +426,6 @@ object frmRoomTypes2: TfrmRoomTypes2
     Left = 28
     Top = 208
     object prLink_grData: TdxGridReportLink
-      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.GrayShading = True
@@ -441,7 +439,6 @@ object frmRoomTypes2: TfrmRoomTypes2
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
       ReportDocument.CreationDate = 41334.495374884260000000
-      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       BuiltInReportLink = True
     end
   end

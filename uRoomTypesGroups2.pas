@@ -232,8 +232,6 @@ type
     tvDatadefClosedToArrival: TcxGridDBColumn;
     tvDatadefClosedToDeparture: TcxGridDBColumn;
     tvDataColumn2: TcxGridDBColumn;
-    m_prepaidPercentage: TFloatField;
-    tvDataprepaidPercentage: TcxGridDBColumn;
     m_PAYMENTS_REQUIRED: TWideStringField;
     tvDataPAYMENTS_REQUIRED: TcxGridDBColumn;
     procedure FormCreate(Sender: TObject);
@@ -293,8 +291,6 @@ type
     procedure SetEditedValuesIn_M_Dataset;
     procedure FetchRatePlanTypes;
     procedure FillDataHolderFromDataSet(dataset : TDataSet);
-    procedure RefreshRequirementsForRate(Rate: String; Channels: TStrings);
-
 
   public
     { Public declarations }

@@ -880,10 +880,6 @@ object frmRoomTypesGroups2: TfrmRoomTypesGroups2
       FieldName = 'PAYMENTS_REQUIRED'
       Size = 255
     end
-    object m_PAYMENTS_REQUIRED: TWideStringField
-      FieldName = 'PAYMENTS_REQUIRED'
-      Size = 255
-    end
   end
   object FormStore: TcxPropertiesStore
     Components = <
