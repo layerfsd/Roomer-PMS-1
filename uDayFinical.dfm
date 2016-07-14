@@ -13,7 +13,6 @@ object frmDayFinical: TfrmDayFinical
   KeyPreview = True
   OldCreateOrder = False
   Position = poOwnerFormCenter
-  OnClose = FormClose
   OnCreate = FormCreate
   OnKeyDown = FormKeyDown
   OnShow = FormShow
@@ -35,7 +34,6 @@ object frmDayFinical: TfrmDayFinical
     BevelOuter = bvNone
     TabOrder = 1
     SkinData.SkinSection = 'PANEL'
-    ExplicitTop = -6
     object labLocations: TsLabel
       AlignWithMargins = True
       Left = 657
@@ -71,6 +69,7 @@ object frmDayFinical: TfrmDayFinical
       Width = 100
       Height = 28
       Caption = 'Refresh'
+      Default = True
       ImageIndex = 28
       Images = DImages.PngImageList1
       TabOrder = 0
@@ -239,7 +238,6 @@ object frmDayFinical: TfrmDayFinical
       FullRepaint = False
       TabOrder = 5
       SkinData.SkinSection = 'PANEL'
-      ExplicitTop = -1
       object cxButton3: TsButton
         AlignWithMargins = True
         Left = 4
@@ -346,10 +344,6 @@ object frmDayFinical: TfrmDayFinical
       ImageIndex = 4
       SkinData.CustomColor = False
       SkinData.CustomFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Panel9: TsPanel
         Left = 265
         Top = 0
@@ -382,10 +376,6 @@ object frmDayFinical: TfrmDayFinical
             Caption = 'Sale type / paymentgroup'
             SkinData.CustomColor = False
             SkinData.CustomFont = False
-            ExplicitLeft = 0
-            ExplicitTop = 0
-            ExplicitWidth = 0
-            ExplicitHeight = 0
             object grSums2: TcxGrid
               Left = 0
               Top = 0
@@ -489,7 +479,7 @@ object frmDayFinical: TfrmDayFinical
                   DataBinding.FieldName = 'Sale'
                   PropertiesClassName = 'TcxCurrencyEditProperties'
                   Properties.DisplayFormat = ',0.00;-,0.00'
-                  OnGetProperties = tvSums2SaleGetProperties
+                  OnGetProperties = GetNativeCurrencyProperties
                   Options.Editing = False
                   Options.Filtering = False
                   Options.FilteringFilteredItemsList = False
@@ -502,7 +492,7 @@ object frmDayFinical: TfrmDayFinical
                   DataBinding.FieldName = 'Payment'
                   PropertiesClassName = 'TcxCurrencyEditProperties'
                   Properties.DisplayFormat = ',0.00;-,0.00'
-                  OnGetProperties = tvSums2PaymentGetProperties
+                  OnGetProperties = GetNativeCurrencyProperties
                   Options.Editing = False
                   Options.Filtering = False
                   Options.FilteringFilteredItemsList = False
@@ -524,10 +514,6 @@ object frmDayFinical: TfrmDayFinical
             ImageIndex = 1
             SkinData.CustomColor = False
             SkinData.CustomFont = False
-            ExplicitLeft = 0
-            ExplicitTop = 0
-            ExplicitWidth = 0
-            ExplicitHeight = 0
             object grSums: TcxGrid
               Left = 0
               Top = 0
@@ -603,14 +589,14 @@ object frmDayFinical: TfrmDayFinical
                   DataBinding.FieldName = 'Sale'
                   PropertiesClassName = 'TcxCurrencyEditProperties'
                   Properties.DisplayFormat = ',0.00;-,0.00'
-                  OnGetProperties = tvSumsSaleGetProperties
+                  OnGetProperties = GetNativeCurrencyProperties
                   Width = 84
                 end
                 object tvSumsPayment: TcxGridDBColumn
                   DataBinding.FieldName = 'Payment'
                   PropertiesClassName = 'TcxCurrencyEditProperties'
                   Properties.DisplayFormat = ',0.00;-,0.00'
-                  OnGetProperties = tvSumsPaymentGetProperties
+                  OnGetProperties = GetNativeCurrencyProperties
                   Width = 84
                 end
               end
@@ -850,10 +836,6 @@ object frmDayFinical: TfrmDayFinical
       ImageIndex = 3
       SkinData.CustomColor = False
       SkinData.CustomFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Panel4: TsPanel
         Left = 0
         Top = 0
@@ -988,7 +970,6 @@ object frmDayFinical: TfrmDayFinical
               Column = tvInvoiceHeadsReservation
             end>
           DataController.Summary.SummaryGroups = <>
-          DataController.Summary.OnAfterSummary = tvInvoiceHeadsDataControllerSummaryAfterSummary
           OptionsBehavior.IncSearch = True
           OptionsData.CancelOnExit = False
           OptionsData.Deleting = False
@@ -1018,7 +999,7 @@ object frmDayFinical: TfrmDayFinical
             DataBinding.FieldName = 'ihAmountWithTax'
             PropertiesClassName = 'TcxCurrencyEditProperties'
             Properties.DisplayFormat = ',0.00;-,0.00'
-            OnGetProperties = tvInvoiceHeadsihAmountWithTaxGetProperties
+            OnGetProperties = GetNativeCurrencyProperties
             Width = 84
           end
           object tvInvoiceHeadsihAmountNoTax: TcxGridDBColumn
@@ -1026,7 +1007,7 @@ object frmDayFinical: TfrmDayFinical
             DataBinding.FieldName = 'ihAmountNoTax'
             PropertiesClassName = 'TcxCurrencyEditProperties'
             Properties.DisplayFormat = ',0.00;-,0.00'
-            OnGetProperties = tvInvoiceHeadsihAmountNoTaxGetProperties
+            OnGetProperties = GetNativeCurrencyProperties
             Width = 70
           end
           object tvInvoiceHeadsihAmountTax: TcxGridDBColumn
@@ -1034,7 +1015,7 @@ object frmDayFinical: TfrmDayFinical
             DataBinding.FieldName = 'ihAmountTax'
             PropertiesClassName = 'TcxCurrencyEditProperties'
             Properties.DisplayFormat = ',0.00;-,0.00'
-            OnGetProperties = tvInvoiceHeadsihAmountTaxGetProperties
+            OnGetProperties = GetNativeCurrencyProperties
             Width = 72
           end
           object tvInvoiceHeadsCustomer: TcxGridDBColumn
@@ -1230,7 +1211,7 @@ object frmDayFinical: TfrmDayFinical
             DataBinding.FieldName = 'Price'
             PropertiesClassName = 'TcxCurrencyEditProperties'
             Properties.DisplayFormat = ',0.00;-,0.00'
-            OnGetProperties = tvInvoiceLinesPriceGetProperties
+            OnGetProperties = GetNativeCurrencyProperties
           end
           object tvInvoiceLinesVATType: TcxGridDBColumn
             DataBinding.FieldName = 'VATType'
@@ -1239,19 +1220,19 @@ object frmDayFinical: TfrmDayFinical
             DataBinding.FieldName = 'ilAmountWithTax'
             PropertiesClassName = 'TcxCurrencyEditProperties'
             Properties.DisplayFormat = ',0.00;-,0.00'
-            OnGetProperties = tvInvoiceLinesilAmountWithTaxGetProperties
+            OnGetProperties = GetNativeCurrencyProperties
           end
           object tvInvoiceLinesilAmountNoTax: TcxGridDBColumn
             DataBinding.FieldName = 'ilAmountNoTax'
             PropertiesClassName = 'TcxCurrencyEditProperties'
             Properties.DisplayFormat = ',0.00;-,0.00'
-            OnGetProperties = tvInvoiceLinesilAmountNoTaxGetProperties
+            OnGetProperties = GetNativeCurrencyProperties
           end
           object tvInvoiceLinesilAmountTax: TcxGridDBColumn
             DataBinding.FieldName = 'ilAmountTax'
             PropertiesClassName = 'TcxCurrencyEditProperties'
             Properties.DisplayFormat = ',0.00;-,0.00'
-            OnGetProperties = tvInvoiceLinesilAmountTaxGetProperties
+            OnGetProperties = GetNativeCurrencyProperties
           end
           object tvInvoiceLinesCurrency: TcxGridDBColumn
             DataBinding.FieldName = 'Currency'
@@ -1290,10 +1271,6 @@ object frmDayFinical: TfrmDayFinical
       ImageIndex = 2
       SkinData.CustomColor = False
       SkinData.CustomFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Panel3: TsPanel
         Left = 0
         Top = 0
@@ -1384,14 +1361,14 @@ object frmDayFinical: TfrmDayFinical
             DataBinding.FieldName = 'Total'
             PropertiesClassName = 'TcxCurrencyEditProperties'
             Properties.DisplayFormat = ',0.00;-,0.00'
-            OnGetProperties = tvItemSaleTotalGetProperties
+            OnGetProperties = GetNativeCurrencyProperties
             Width = 101
           end
           object tvItemSaleTotalWoVat: TcxGridDBColumn
             DataBinding.FieldName = 'TotalWoVat'
             PropertiesClassName = 'TcxCurrencyEditProperties'
             Properties.DisplayFormat = ',0.00;-,0.00'
-            OnGetProperties = tvItemSaleTotalWoVatGetProperties
+            OnGetProperties = GetNativeCurrencyProperties
             Width = 97
           end
           object tvItemSaleTotalVat: TcxGridDBColumn
@@ -1399,7 +1376,7 @@ object frmDayFinical: TfrmDayFinical
             DataBinding.FieldName = 'TotalVat'
             PropertiesClassName = 'TcxCurrencyEditProperties'
             Properties.DisplayFormat = ',0.00;-,0.00'
-            OnGetProperties = tvItemSaleTotalVatGetProperties
+            OnGetProperties = GetNativeCurrencyProperties
             Width = 75
           end
           object tvItemSaleItemType: TcxGridDBColumn
@@ -1431,10 +1408,6 @@ object frmDayFinical: TfrmDayFinical
       ImageIndex = 5
       SkinData.CustomColor = False
       SkinData.CustomFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Panel7: TsPanel
         Left = 0
         Top = 0
@@ -1533,21 +1506,21 @@ object frmDayFinical: TfrmDayFinical
             DataBinding.FieldName = 'Total'
             PropertiesClassName = 'TcxCurrencyEditProperties'
             Properties.DisplayFormat = ',0.00;-,0.00'
-            OnGetProperties = tvItemTypeSaleTotalGetProperties
+            OnGetProperties = GetNativeCurrencyProperties
           end
           object tvItemTypeSaleTotalWoVat: TcxGridDBColumn
             Caption = 'Total W/O VAT'
             DataBinding.FieldName = 'TotalWoVat'
             PropertiesClassName = 'TcxCurrencyEditProperties'
             Properties.DisplayFormat = ',0.00;-,0.00'
-            OnGetProperties = tvItemTypeSaleTotalWoVatGetProperties
+            OnGetProperties = GetNativeCurrencyProperties
           end
           object tvItemTypeSaleTotalVat: TcxGridDBColumn
             Caption = 'VAT'
             DataBinding.FieldName = 'TotalVat'
             PropertiesClassName = 'TcxCurrencyEditProperties'
             Properties.DisplayFormat = ',0.00;-,0.00'
-            OnGetProperties = tvItemTypeSaleTotalVatGetProperties
+            OnGetProperties = GetNativeCurrencyProperties
           end
           object tvItemTypeSaleVATCode: TcxGridDBColumn
             Caption = 'VAT code'
@@ -1564,10 +1537,6 @@ object frmDayFinical: TfrmDayFinical
       ImageIndex = 7
       SkinData.CustomColor = False
       SkinData.CustomFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Panel13: TsPanel
         Left = 0
         Top = 0
@@ -1662,7 +1631,7 @@ object frmDayFinical: TfrmDayFinical
             DataBinding.FieldName = 'Total'
             PropertiesClassName = 'TcxCurrencyEditProperties'
             Properties.DisplayFormat = ',0.00;-,0.00'
-            OnGetProperties = tvItemVATsaleTotalGetProperties
+            OnGetProperties = GetNativeCurrencyProperties
             Width = 82
           end
           object tvItemVATsaleTotalWoVat: TcxGridDBColumn
@@ -1670,7 +1639,7 @@ object frmDayFinical: TfrmDayFinical
             DataBinding.FieldName = 'TotalWoVat'
             PropertiesClassName = 'TcxCurrencyEditProperties'
             Properties.DisplayFormat = ',0.00;-,0.00'
-            OnGetProperties = tvItemVATsaleTotalWoVatGetProperties
+            OnGetProperties = GetNativeCurrencyProperties
             Width = 88
           end
           object tvItemVATsaleTotalVat: TcxGridDBColumn
@@ -1678,7 +1647,7 @@ object frmDayFinical: TfrmDayFinical
             DataBinding.FieldName = 'TotalVat'
             PropertiesClassName = 'TcxCurrencyEditProperties'
             Properties.DisplayFormat = ',0.00;-,0.00'
-            OnGetProperties = tvItemVATsaleTotalVatGetProperties
+            OnGetProperties = GetNativeCurrencyProperties
             Width = 88
           end
           object tvItemVATsaleVATPercentage: TcxGridDBColumn
@@ -1703,10 +1672,6 @@ object frmDayFinical: TfrmDayFinical
       ImageIndex = 4
       SkinData.CustomColor = False
       SkinData.CustomFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Panel5: TsPanel
         Left = 0
         Top = 0
@@ -1801,7 +1766,7 @@ object frmDayFinical: TfrmDayFinical
             DataBinding.FieldName = 'Amount'
             PropertiesClassName = 'TcxCurrencyEditProperties'
             Properties.DisplayFormat = ',0.00;-,0.00'
-            OnGetProperties = tvPaymentsAmountGetProperties
+            OnGetProperties = GetNativeCurrencyProperties
             Width = 77
           end
           object tvPaymentsPayTypeDescription: TcxGridDBColumn
@@ -1899,10 +1864,6 @@ object frmDayFinical: TfrmDayFinical
       ImageIndex = 3
       SkinData.CustomColor = False
       SkinData.CustomFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Panel1: TsPanel
         Left = 0
         Top = 0
@@ -1988,7 +1949,7 @@ object frmDayFinical: TfrmDayFinical
             DataBinding.FieldName = 'Amount'
             PropertiesClassName = 'TcxCurrencyEditProperties'
             Properties.DisplayFormat = ',0.00;-,0.00'
-            OnGetProperties = tvPaymentTypeAmountGetProperties
+            OnGetProperties = GetNativeCurrencyProperties
           end
           object tvPaymentTypePayGroup: TcxGridDBColumn
             DataBinding.FieldName = 'PayGroup'
@@ -2010,10 +1971,6 @@ object frmDayFinical: TfrmDayFinical
       ImageIndex = 6
       SkinData.CustomColor = False
       SkinData.CustomFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Panel8: TsPanel
         Left = 0
         Top = 0
@@ -2094,7 +2051,7 @@ object frmDayFinical: TfrmDayFinical
             DataBinding.FieldName = 'Amount'
             PropertiesClassName = 'TcxCurrencyEditProperties'
             Properties.DisplayFormat = ',0.00;-,0.00'
-            OnGetProperties = tvPaymentGroupsAmountGetProperties
+            OnGetProperties = GetNativeCurrencyProperties
             Width = 95
           end
           object tvPaymentGroupsInvoiceCount: TcxGridDBColumn
@@ -2406,7 +2363,7 @@ object frmDayFinical: TfrmDayFinical
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
       ReportDocument.Caption = 'Sums2'
-      ReportDocument.CreationDate = 42558.578254675930000000
+      ReportDocument.CreationDate = 42563.510392708330000000
       ReportTitle.TextAlignX = taLeft
       AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       BuiltInReportLink = True
@@ -2427,7 +2384,7 @@ object frmDayFinical: TfrmDayFinical
       PrinterPage.PageSize.Y = 297000
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
-      ReportDocument.CreationDate = 42558.578254687500000000
+      ReportDocument.CreationDate = 42563.510392719910000000
       AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       BuiltInReportLink = True
     end
@@ -2467,7 +2424,7 @@ object frmDayFinical: TfrmDayFinical
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
       ReportDocument.Caption = 'Sums2'
-      ReportDocument.CreationDate = 42558.578254699070000000
+      ReportDocument.CreationDate = 42563.510392731480000000
       AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       BuiltInReportLink = True
     end
@@ -2488,7 +2445,7 @@ object frmDayFinical: TfrmDayFinical
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
       ReportDocument.Caption = 'Sums2'
-      ReportDocument.CreationDate = 42558.578254710650000000
+      ReportDocument.CreationDate = 42563.510392743050000000
       AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       BuiltInReportLink = True
     end
@@ -2509,7 +2466,7 @@ object frmDayFinical: TfrmDayFinical
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
       ReportDocument.Caption = 'Sums2'
-      ReportDocument.CreationDate = 42558.578254722220000000
+      ReportDocument.CreationDate = 42563.510392777770000000
       AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       BuiltInReportLink = True
     end
@@ -2530,7 +2487,7 @@ object frmDayFinical: TfrmDayFinical
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
       ReportDocument.Caption = 'Sums2'
-      ReportDocument.CreationDate = 42558.578254733790000000
+      ReportDocument.CreationDate = 42563.510392824070000000
       AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       BuiltInReportLink = True
     end
@@ -2570,7 +2527,7 @@ object frmDayFinical: TfrmDayFinical
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
       ReportDocument.Caption = 'Sums2'
-      ReportDocument.CreationDate = 42558.578254768520000000
+      ReportDocument.CreationDate = 42563.510392835650000000
       AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       BuiltInReportLink = True
     end
