@@ -245,6 +245,7 @@ type
     procedure m_ItemsCalcFields(DataSet: TDataSet);
     procedure tvDataAvailableStockCustomDrawCell(Sender: TcxCustomGridTableView; ACanvas: TcxCanvas;
       AViewInfo: TcxGridTableDataCellViewInfo; var ADone: Boolean);
+    procedure kbmStockItempricesAfterPost(DataSet: TDataSet);
   private
     { Private declarations }
     financeLookupList : TKeyPairList;
@@ -665,6 +666,11 @@ begin
 
 end;
 
+procedure TfrmItems2.kbmStockItempricesAfterPost(DataSet: TDataSet);
+begin
+//  FillStockItemPrices; // glb.ForceTableRefresh;
+end;
+
 procedure TfrmItems2.fillHolder;
 begin
   zData := CopyDatasetToRecItem;
@@ -990,10 +996,7 @@ begin
   case Dataset.State of
     dsEdit:   Upd_StockItemprice(lStockItemData);
     dsInsert: if Ins_StockitemPrice(lStockItemData, lnewID) then
-              begin
                 kbmStockitemPricesID.AsInteger := lNewID;
-                FillStockItemPrices; // glb.ForceTableRefresh;
-              end
               else
                 Abort;
   end;

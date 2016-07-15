@@ -173,8 +173,8 @@ object frmItems2: TfrmItems2
     object chkActive: TsCheckBox
       Left = 55
       Top = 63
-      Width = 246
-      Height = 19
+      Width = 238
+      Height = 20
       Caption = 'Active (if checked then just active are visible)'
       Checked = True
       State = cbChecked
@@ -518,6 +518,7 @@ object frmItems2: TfrmItems2
       DataController.Summary.SummaryGroups = <>
       DateTimeHandling.UseLongDateFormat = False
       NewItemRow.Visible = True
+      OptionsBehavior.FocusCellOnTab = True
       OptionsCustomize.ColumnFiltering = False
       OptionsCustomize.ColumnGrouping = False
       OptionsCustomize.ColumnSorting = False
@@ -605,6 +606,7 @@ object frmItems2: TfrmItems2
     Left = 80
     Top = 136
     object prLink_grData: TdxGridReportLink
+      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 5080
       PrinterPage.GrayShading = True
@@ -618,6 +620,7 @@ object frmItems2: TfrmItems2
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
       ReportDocument.CreationDate = 41334.495374884260000000
+      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       BuiltInReportLink = True
     end
   end
@@ -755,6 +758,7 @@ object frmItems2: TfrmItems2
     SubLanguageID = 1
     LocaleID = 1024
     BeforePost = m_StockitemPricesBeforePost
+    AfterPost = kbmStockItempricesAfterPost
     BeforeDelete = m_StockitemPricesBeforeDelete
     OnNewRecord = m_StockitemPricesNewRecord
     Left = 240
