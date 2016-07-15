@@ -849,6 +849,8 @@ begin
   glb.PerformAuthenticationAssertion(self);
   PlaceFormOnVisibleMonitor(self);
 
+  FrmAlertPanel := TFrmAlertPanel.Create(self);
+
   BlockReasons := TList<String>.Create;
   FOutOfOrderBlocking := false;
   mainPage.ActivePage := RoomsTab;
@@ -863,9 +865,11 @@ procedure TfrmReservationProfile.FormDestroy(Sender: TObject);
 begin
   DynamicRates.free;
   BlockReasons.Free;
-  FreeAndNil(FrmAlertPanel);
-  AlertList.postChanges;
-  AlertList.free;
+  if assigned(AlertList) then
+  begin
+    AlertList.postChanges;
+    AlertList.free;
+  end;
 end;
 
 procedure TfrmReservationProfile.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -2120,8 +2124,8 @@ begin
   begin
     if NOT DataSet.Eof then
     begin
-      zGuestName := DataSet['GuestName'];
-      zRoomReservation := DataSet.fieldbyname('Roomreservation').asInteger;
+      zGuestName := mRoomsGuestName.AsString;
+      zRoomReservation := mRoomsRoomReservation.asInteger;
       d.RR_GetMemoBothTextForRoom(zRoomReservation, HiddenInfo, ChannelRequest);
       gbxRoomInformation.caption := 'Notes for Room : ' + mRoomsRoom.asstring;
       memRoomNotes.Lines.text := HiddenInfo;
@@ -3531,13 +3535,15 @@ end;
 
 procedure TfrmReservationProfile.timStartTimer(Sender: TObject);
 begin
-  pnlDataWait.Show;
   timStart.enabled := false;
-  Display;
-  enabled := true;
+  try
+    pnlDataWait.Show;
+    Display;
+  finally
+    Enabled := true;
+  end;
 
   ShowAlertsForReservation(zReservation, 0, atOPEN_RESERVATION);
-  FrmAlertPanel := TFrmAlertPanel.Create(self);
   AlertList := CreateAlertsForRoomReservation(zReservation, 0, atUNKNOWN);
   FrmAlertPanel.PlaceEditPanel(pnlAlertHolder, AlertList);
 end;

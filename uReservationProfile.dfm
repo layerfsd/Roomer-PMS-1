@@ -2951,18 +2951,20 @@ object frmReservationProfile: TfrmReservationProfile
           object lblSpecialRequests: TsLabel
             Left = 2
             Top = 13
-            Width = 69
+            Width = 250
             Height = 11
             Align = alTop
             Caption = 'Special Requests'
+            ExplicitWidth = 69
           end
           object lblNotes: TsLabel
             Left = 2
             Top = 97
-            Width = 24
+            Width = 250
             Height = 11
             Align = alTop
             Caption = 'Notes'
+            ExplicitWidth = 24
           end
           object edtSpecialRequests: TMemo
             AlignWithMargins = True
