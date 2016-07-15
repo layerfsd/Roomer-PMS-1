@@ -23,7 +23,7 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
     Top = 0
     Width = 1108
     Height = 572
-    ActivePage = tabRoomRates
+    ActivePage = tabSelectType
     Align = alClient
     TabOrder = 0
     OnChange = pgcMainChange
@@ -1534,6 +1534,10 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
             TabVisible = False
             SkinData.CustomColor = False
             SkinData.CustomFont = False
+            ExplicitLeft = 0
+            ExplicitTop = 0
+            ExplicitWidth = 0
+            ExplicitHeight = 0
             object clabTel2: TsLabel
               Left = 204
               Top = 125
@@ -2087,6 +2091,10 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
       ImageIndex = 2
       SkinData.CustomColor = False
       SkinData.CustomFont = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object panSelectRoomsTop: TsPanel
         Left = 0
         Top = 0
@@ -2802,6 +2810,10 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
             Caption = 'Alerts'
             SkinData.CustomColor = False
             SkinData.CustomFont = False
+            ExplicitLeft = 0
+            ExplicitTop = 0
+            ExplicitWidth = 0
+            ExplicitHeight = 0
           end
         end
       end

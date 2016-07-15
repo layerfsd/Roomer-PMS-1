@@ -7025,7 +7025,7 @@ var
   iTempColor, iRectangleSpaceForUnpaidItems, iRectangleSpaceForInvoiceMade, iRectangleSpaceForChannelColor: integer;
   chRect: TRect;
 
-  tempString: Utf8String;
+  tempString: String;
   Grid: TAdvStringGrid;
 
   penStyle: TPenStyle;
@@ -8521,7 +8521,7 @@ var
 
   found: boolean;
 
-  s: Utf8String;
+  s: String;
 
   GuestName: string;
 
@@ -9116,8 +9116,14 @@ begin
   begin
     for r := grPeriodRooms.FixedRows to grPeriodRooms.RowCount - 2 do
     begin
-      asc := (grPeriodRooms.Objects[c, r] as TresCell).AscIndex;
-      desc := (grPeriodRooms.Objects[c, r] as TresCell).DescIndex;
+      if assigned(grPeriodRooms.Objects[c, r]) then
+        asc := (grPeriodRooms.Objects[c, r] as TresCell).AscIndex
+      else
+        asc := -1;
+      if assigned(grPeriodRooms.Objects[c, r]) then
+        desc := (grPeriodRooms.Objects[c, r] as TresCell).DescIndex
+      else
+        desc := -1;
 
       mergeCount := desc + 1;
       ColsLeft := (grPeriodRooms.ColCount) - c;
@@ -10042,16 +10048,13 @@ begin
     resCell := (grPeriodRooms.Objects[ACol, ARow] as TresCell);
     grPeriodRooms_NO.col := grPeriodRooms.col;
 
-    // if  (ssShift in shift) or (ssCtrl in shift)  then
-    // begin
-    try
+    if assigned(resCell) then
+    begin
       iRoomReservation := resCell.RoomReservation;
       AscIndex := (grPeriodRooms.Objects[ACol, ARow] as TresCell).AscIndex;
-    except
     end;
 
-    allow := (* (trunc(Period_ColToDate(ACol)) = resCell.Date - resCell.AscIndex) AND *) (iRoomReservation > 0) and
-      (AscIndex = 0);
+    allow := (iRoomReservation > 0) and (AscIndex = 0);
 
     // result.Departure := (result.DescIndex + result.Date) + 1;
 
@@ -10071,20 +10074,6 @@ begin
       zzSourceCol := ACol;
       zzSourceRow := ARow;
       zzSourceGridID := 1;
-      // grPeriodRooms.BeginDrag(false, 4);
-
-      // if grPeriodViewFilterOn then
-      // begin
-      // ZPeriodRoomOnTheMoveRoomReservation := zzRoomReservation;
-      // ZPeriodRoomOnTheMoveCol := ACol;
-      // ZPeriodRoomNumberOnTheMoveRoomReservation := zzRoom;
-      // ZPeriodRoomGuestOnTheMoveRoomReservation := (grPeriodRooms.Objects[ACol, ARow] as TresCell).GuestName;
-      // ZPeriodRoomOnTheMoveExternal := False;
-      // grPeriodRooms.UnHideRowsAll;
-      // HideRowsWithNotFittingRooms({grPeriodRooms.Row}-1, zzArrival, zzDeparture);
-      // SetFilterColorsOn;
-      // end;
-
     end;
     // end;
   end;
@@ -10430,7 +10419,7 @@ var
   rri: RecRRInfo;
   Grid: TAdvStringGrid;
   Text, s, sType, sStatus, sRoom: String;
-  tempString: Utf8String;
+  tempString: String;
   iTemp: integer;
 
   rec: recStatusAttr;

@@ -2286,6 +2286,7 @@ begin
 
   if pgcMain.ActivePageIndex = 0 then
   begin
+    addAvailableRoomTypes;
     if FNewReservation.IsQuick then
     begin
       pgcMain.ActivePageIndex := 3;
@@ -2715,7 +2716,7 @@ begin
       memRoomNotes.Enabled := false;
       clabRoomNotes.Visible := false;
     end;
-    addAvailableRoomTypes;
+//    addAvailableRoomTypes;
   end
   else
     if pgcMain.ActivePageIndex = 2 then
