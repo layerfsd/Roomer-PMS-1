@@ -127,6 +127,8 @@ var
   lCurrencyHandler: TCurrencyHandler;
 begin
   sLabel1.Visible := False;
+  pnlRoomBalance.Visible := False;
+  pnlGroupBalance.Visible := False;
 
   if FRoomInvoice.InvoiceLines.Count > 0 then with FRoomInvoice do
   begin
@@ -179,7 +181,12 @@ begin
   cbxForce.Visible := SameValue(FRoomInvoice.Balance, 0) AND not SameValue(FGroupInvoice.Balance, 0);
   BtnCheckOut.Enabled := ((NOT pnlRoomBalance.Visible) AND (NOT pnlGroupBalance.Visible));
   sLabel1.Visible := BtnCheckOut.Enabled;
-
+  if sLabel1.Visible then
+  begin
+    sLabel1.Left := 5;
+    sLabel1.Top := (Height - panBtn.Height) div 2;
+    Width := sLabel1.Width + 20;
+  end;
 end;
 
 procedure TFrmCheckOut.FormCreate(Sender: TObject);
