@@ -1,4 +1,4 @@
-unit uSqlDefinitions;
+﻿unit uSqlDefinitions;
 
 interface
    uses hData, System.SysUtils, _Glob, PrjConst, uRoomerDefinitions, ud, uDateUtils, uUtils;
@@ -5237,6 +5237,7 @@ select_Taxes_fillGridFromDataset : string =
 '  ,Tax_Base '#10+
 '  ,Time_Due '#10+
 '  ,Retaxable '#10+
+'  ,TaxChildren  '#10+
 '  ,Amount '#10+
 '  ,Booking_Item_Id '#10+
 '  ,(SELECT Item FROM items WHERE id=Booking_Item_Id) AS Booking_Item '#10+
@@ -5260,6 +5261,7 @@ select_Taxes_fillGridFromDataset2 : string =
 '  ,Tax_Base '#10+
 '  ,Time_Due '#10+
 '  ,Retaxable '#10+
+'  ,TaxChildren  '#10+
 '  ,Amount '#10+
 '  ,Booking_Item_Id '#10+
 '  ,(SELECT Item FROM items WHERE id=Booking_Item_Id) AS Booking_Item '#10+
@@ -5284,6 +5286,7 @@ select_Taxes_fillGridFromDataset_current : string =
 '  ,Tax_Base '#10+
 '  ,Time_Due '#10+
 '  ,Retaxable '#10+
+'  ,TaxChildren  '#10+
 '  ,Amount '#10+
 '  ,Booking_Item_Id '#10+
 '  ,(SELECT Item FROM items WHERE id=Booking_Item_Id) AS Booking_Item '#10+
