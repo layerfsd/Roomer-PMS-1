@@ -11331,7 +11331,7 @@ begin
     Result := cmd_bySQL(s);
     if Result then
     begin
-      theData.ID := GetLastID('items');
+      NewID := GetLastID('items');
       if theData.Stockitem and (theData.TotalStock > 0) then
       begin
         s := 'INSERT INTO stockitems (itemid, totalstock) VALUES '#10 +

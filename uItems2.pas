@@ -1311,6 +1311,8 @@ procedure TfrmItems2.tvDataDataControllerDetailExpanding(ADataController: TcxCus
 begin
   // Only allow when a stockitem
   aAllow := aDataController.Values[aRecordindex, tvDataStockItem.Index];
+  if aAllow and (m_Items.State in [dsInsert, dsEdit]) then
+    m_Items.Post;
 end;
 
 procedure TfrmItems2.tvDataDataControllerFilterChanged(Sender: TObject);
