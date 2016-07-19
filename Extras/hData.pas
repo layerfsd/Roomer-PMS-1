@@ -11336,7 +11336,7 @@ begin
       begin
         s := 'INSERT INTO stockitems (itemid, totalstock) VALUES '#10 +
              ' ( ' +
-                _db(theData.ID) + ' ' +
+                _db(newId) + ' ' +
                 ', ' + _db(theData.TotalStock) + ' ' +
                 ')  ';
       result := cmd_bySQL(s);
