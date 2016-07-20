@@ -518,7 +518,6 @@ object frmItems2: TfrmItems2
       DataController.Summary.FooterSummaryItems = <>
       DataController.Summary.SummaryGroups = <>
       DateTimeHandling.UseLongDateFormat = False
-      NewItemRow.Visible = True
       OptionsBehavior.FocusCellOnTab = True
       OptionsCustomize.ColumnFiltering = False
       OptionsCustomize.ColumnGrouping = False
@@ -607,6 +606,7 @@ object frmItems2: TfrmItems2
     Left = 80
     Top = 136
     object prLink_grData: TdxGridReportLink
+      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 5080
       PrinterPage.GrayShading = True
@@ -620,6 +620,7 @@ object frmItems2: TfrmItems2
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
       ReportDocument.CreationDate = 41334.495374884260000000
+      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       BuiltInReportLink = True
     end
   end
@@ -631,6 +632,7 @@ object frmItems2: TfrmItems2
     SortOptions = [soCaseInsensitive]
     BeforeInsert = m_ItemsBeforeInsert
     BeforePost = m_ItemsBeforePost
+    AfterPost = m_ItemsAfterPost
     BeforeDelete = m_ItemsBeforeDelete
     OnCalcFields = m_ItemsCalcFields
     OnNewRecord = m_ItemsNewRecord

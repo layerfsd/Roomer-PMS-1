@@ -2027,7 +2027,9 @@ procedure TTableEntity.Refresh;
 begin
   if NOT FRefreshEnabled then
     exit;
-  if FRSet.Active then FRSet.Close;
+
+  FRSet.Close;
+
   FRSet.CommandText := FSql;
   try
     FRSet.Open(true, false, True); // Open(doLowerCase: Boolean = true; setLastAccess: Boolean = true; Threaded: Boolean = False);
