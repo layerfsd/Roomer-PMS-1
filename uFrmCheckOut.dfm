@@ -22,10 +22,9 @@ object FrmCheckOut: TFrmCheckOut
     AlignWithMargins = True
     Left = 316
     Top = 100
-    Width = 307
-    Height = 131
+    Width = 323
+    Height = 25
     Margins.Top = 100
-    Align = alClient
     Alignment = taCenter
     Caption = 'Click [Checkout] button to confirm'
     ParentFont = False
@@ -34,8 +33,6 @@ object FrmCheckOut: TFrmCheckOut
     Font.Height = -21
     Font.Name = 'Tahoma'
     Font.Style = []
-    ExplicitWidth = 323
-    ExplicitHeight = 25
   end
   object panBtn: TsPanel
     Left = 0

@@ -246,6 +246,7 @@ type
     procedure tvDataAvailableStockCustomDrawCell(Sender: TcxCustomGridTableView; ACanvas: TcxCanvas;
       AViewInfo: TcxGridTableDataCellViewInfo; var ADone: Boolean);
     procedure kbmStockItempricesAfterPost(DataSet: TDataSet);
+    procedure m_ItemsAfterPost(DataSet: TDataSet);
   private
     { Private declarations }
     financeLookupList : TKeyPairList;
@@ -257,6 +258,7 @@ type
     FShowItemsOfType: TShowItemOfTypeSet;
     FAvailSet: TRoomerDataset;
 
+    FLocateAfterPost: integer;
 
     Procedure fillGridFromDataset(sGoto : string);
     procedure fillHolder;
@@ -668,7 +670,9 @@ end;
 
 procedure TfrmItems2.kbmStockItempricesAfterPost(DataSet: TDataSet);
 begin
-//  FillStockItemPrices; // glb.ForceTableRefresh;
+  if FLocateAfterPost > 0 then
+    kbmStockItemprices.Locate('ID', FLocateAfterPost, []);
+  FLocateAfterPost := 0;
 end;
 
 procedure TfrmItems2.fillHolder;
@@ -931,6 +935,14 @@ end;
 // memory table
 ////////////////////////////////////////////////////////////////////////////////////////
 
+procedure TfrmItems2.m_ItemsAfterPost(DataSet: TDataSet);
+begin
+  if zFirstTime then Exit;
+
+  RoomerMessages.RefreshLists;
+  glb.RefreshTablesWhenNeeded;
+end;
+
 procedure TfrmItems2.m_ItemsBeforeDelete(DataSet: TDataSet);
 var
   s : string;
@@ -947,16 +959,8 @@ begin
   s := s+GetTranslatedText('shDeleteItem')+' '+zData.Description+' '+chr(10);
   s := s+GetTranslatedText('shContinue');
 
-  if MessageDlg(s,mtConfirmation, [mbYes, mbNo], 0) = mrYes then
-  begin
-    if not Del_Item(zData) then
-    begin
-      abort;
-    end
-  end else
-  begin
-    abort
-  end;
+  if (MessageDlg(s,mtConfirmation, [mbYes, mbNo], 0) = mrNo) or not Del_Item(zData) then
+    abort;
 end;
 
 procedure TfrmItems2.m_ItemsBeforeInsert(DataSet: TDataSet);
@@ -992,11 +996,14 @@ begin
   if zFirstTime then exit;
 
   lStockItemData := CopyStockItemPricesToRec;
-
+  FLocateAfterPost := lStockitemData.ID;
   case Dataset.State of
     dsEdit:   Upd_StockItemprice(lStockItemData);
     dsInsert: if Ins_StockitemPrice(lStockItemData, lnewID) then
+              begin
+                FLocateAfterPost := lNewID;
                 kbmStockitemPricesID.AsInteger := lNewID;
+              end
               else
                 Abort;
   end;
@@ -1053,17 +1060,10 @@ begin
       exit;
     end;
     if ins_Item(zData,nID) then
-    begin
-      m_ItemsID.AsInteger := nID;
-      glb.ForceTableRefresh;
-    end else
-    begin
+      m_ItemsID.AsInteger := nID
+    else
       abort;
-      exit;
-    end;
   end;
-  RoomerMessages.RefreshLists;
-  glb.RefreshTablesWhenNeeded;
 end;
 
 
@@ -1311,6 +1311,8 @@ procedure TfrmItems2.tvDataDataControllerDetailExpanding(ADataController: TcxCus
 begin
   // Only allow when a stockitem
   aAllow := aDataController.Values[aRecordindex, tvDataStockItem.Index];
+  if aAllow and (m_Items.State in [dsInsert, dsEdit]) then
+    m_Items.Post;
 end;
 
 procedure TfrmItems2.tvDataDataControllerFilterChanged(Sender: TObject);

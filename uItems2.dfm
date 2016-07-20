@@ -361,6 +361,7 @@ object frmItems2: TfrmItems2
       DataController.OnDetailExpanding = tvDataDataControllerDetailExpanding
       DataController.OnSortingChanged = tvDataDataControllerSortingChanged
       OptionsBehavior.AlwaysShowEditor = True
+      OptionsBehavior.FocusCellOnTab = True
       OptionsBehavior.IncSearch = True
       OptionsData.Appending = True
       OptionsData.CancelOnExit = False
@@ -517,7 +518,6 @@ object frmItems2: TfrmItems2
       DataController.Summary.FooterSummaryItems = <>
       DataController.Summary.SummaryGroups = <>
       DateTimeHandling.UseLongDateFormat = False
-      NewItemRow.Visible = True
       OptionsBehavior.FocusCellOnTab = True
       OptionsCustomize.ColumnFiltering = False
       OptionsCustomize.ColumnGrouping = False
@@ -632,6 +632,7 @@ object frmItems2: TfrmItems2
     SortOptions = [soCaseInsensitive]
     BeforeInsert = m_ItemsBeforeInsert
     BeforePost = m_ItemsBeforePost
+    AfterPost = m_ItemsAfterPost
     BeforeDelete = m_ItemsBeforeDelete
     OnCalcFields = m_ItemsCalcFields
     OnNewRecord = m_ItemsNewRecord
