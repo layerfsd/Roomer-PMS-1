@@ -1,4 +1,4 @@
-unit uSqlDefinitions;
+﻿unit uSqlDefinitions;
 
 interface
    uses hData, System.SysUtils, _Glob, PrjConst, uRoomerDefinitions, ud, uDateUtils, uUtils;
@@ -403,6 +403,8 @@ var
   '   ,Description '+
   '   ,AValue '+
   '   ,Active '+
+  '   ,displayFormat '+
+  '   ,decimals '+
   ' FROM '+
   '   currencies '+
   ' WHERE '+

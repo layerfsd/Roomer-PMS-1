@@ -5,6 +5,7 @@ interface
 uses
     hData
   , SysUtils
+  , cxEdit
   ;
 
 type
@@ -39,6 +40,10 @@ type
     ///   Format aAmount according to the formatsettings of the currency
     /// </summary>
     function FormattedValue(aAmount: double): string;
+    /// <summary>
+    ///   Get the CustomEditProperties component defined in uD , based on currencycode
+    /// </summary>
+    function GetcxEditProperties: TcxCustomEditProperties;
   end;
 
 
@@ -47,7 +52,8 @@ implementation
 uses
     uAppGlobal
   , uStringUtils
-  , uFloatUtils;
+  , uFloatUtils
+  , uD;
 
 { TCurrencyHandler }
 
@@ -77,6 +83,11 @@ end;
 function TCurrencyHandler.FormattedValue(aAmount: double): string;
 begin
   Result := Format('%s %s', [FCurrencyRec.CurrencySign, FormatCurr(FCurrencyRec.Displayformat, RoundedValue(aAmount), FFormatSettings)]);
+end;
+
+function TCurrencyHandler.GetcxEditProperties: TcxCustomEditProperties;
+begin
+  Result := d.getCurrencyProperties(FCurrencyRec.Currency);
 end;
 
 function TCurrencyHandler.RoundedValue(aAmount: double): double;

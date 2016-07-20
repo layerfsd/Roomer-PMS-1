@@ -164,7 +164,7 @@ type
     FormStore: TcxPropertiesStore;
     pnlHolder: TsPanel;
     tvDataID: TcxGridDBColumn;
-    m_displayformat: TStringField;
+    m_displayformat: TWideStringField;
     m_decimals: TIntegerField;
     tvDatadisplayformat: TcxGridDBColumn;
     tvDatadecimals: TcxGridDBColumn;
