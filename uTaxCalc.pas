@@ -33,7 +33,7 @@ type
       IncludedInPrice : TEnumTaxIncl_Excl;
       Percentage : Boolean;
     private
-    function GetTotal: Double;
+      function GetTotal: Double;
     public
 
       constructor Create(_BookingItem : String;
@@ -637,7 +637,6 @@ begin
               begin
                 baseAmount := Room.Price / (1 + (Tax.AMOUNT/100)); // (Room.Price - Room.Vat)
                 Amount :=  baseAmount * Tax.AMOUNT / 100;
-  //              Amount :=  RoundTo(baseAmount * Tax.AMOUNT / 100, Tax.ROUND_VALUE)
               end else
               begin
                 baseAmount := Room.Price;
@@ -645,10 +644,6 @@ begin
               end;
             end;
 
-  //          if TaxIsIncluded(Tax, customerIncludeDefault) then
-  //            Amount :=  RoundTo(PriceAmount / (100 + Tax.AMOUNT) * Tax.AMOUNT, Tax.ROUND_VALUE)
-  //          else
-  //            Amount :=  RoundTo(PriceAmount * Tax.AMOUNT / 100, Tax.ROUND_VALUE)
           end;
 
           if Tax.TAX_BASE = TB_ROOM_NIGHT then

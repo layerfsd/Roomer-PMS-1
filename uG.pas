@@ -2396,7 +2396,6 @@ var
 begin
   if aGrid.HasCheckBox(0, iRow) then
     aGrid.RemoveCheckBox(0, iRow);
-  aGrid.Objects[0, iRow] := nil;
   for i := 0 to aGrid.ColCount - 1 do
   begin
     aGrid.Cells[i, iRow] := '';
