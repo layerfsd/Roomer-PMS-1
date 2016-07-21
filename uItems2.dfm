@@ -17,6 +17,7 @@ object frmItems2: TfrmItems2
   OnClose = FormClose
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
   OnKeyDown = FormKeyDown
   OnKeyPress = FormKeyPress
   OnShow = FormShow
@@ -173,8 +174,8 @@ object frmItems2: TfrmItems2
     object chkActive: TsCheckBox
       Left = 55
       Top = 63
-      Width = 238
-      Height = 20
+      Width = 246
+      Height = 19
       Caption = 'Active (if checked then just active are visible)'
       Checked = True
       State = cbChecked
@@ -391,10 +392,18 @@ object frmItems2: TfrmItems2
         DataBinding.FieldName = 'Description'
         Width = 181
       end
+      object tvDataStockItem: TcxGridDBColumn
+        DataBinding.FieldName = 'StockItem'
+        PropertiesClassName = 'TcxCheckBoxProperties'
+        Properties.Alignment = taCenter
+        Width = 55
+      end
       object tvDataPrice: TcxGridDBColumn
         DataBinding.FieldName = 'Price'
         PropertiesClassName = 'TcxCurrencyEditProperties'
         Properties.DisplayFormat = ',0.00;-,0.00'
+        OnCustomDrawCell = tvDataPriceCustomDrawCell
+        OnGetProperties = GetPriceProperties
         Width = 83
       end
       object tvDataNumberBase: TcxGridDBColumn
@@ -480,12 +489,6 @@ object frmItems2: TfrmItems2
         DataBinding.FieldName = 'Hide'
         Visible = False
       end
-      object tvDataStockItem: TcxGridDBColumn
-        DataBinding.FieldName = 'StockItem'
-        PropertiesClassName = 'TcxCheckBoxProperties'
-        Properties.Alignment = taCenter
-        Width = 55
-      end
       object tvDataTotalStock: TcxGridDBColumn
         Caption = 'Total Stock'
         DataBinding.FieldName = 'TotalStock'
@@ -524,10 +527,10 @@ object frmItems2: TfrmItems2
       OptionsCustomize.ColumnSorting = False
       OptionsData.Appending = True
       OptionsData.DeletingConfirmation = False
-      OptionsView.NavigatorOffset = 200
+      OptionsView.NavigatorOffset = 500
       OptionsView.GroupByBox = False
       OptionsView.Indicator = True
-      Preview.LeftIndent = 200
+      Preview.LeftIndent = 300
       object tvPricesitemID: TcxGridDBColumn
         DataBinding.FieldName = 'itemID'
         Visible = False
@@ -542,6 +545,7 @@ object frmItems2: TfrmItems2
         Caption = 'Price'
         DataBinding.FieldName = 'price'
         PropertiesClassName = 'TcxCalcEditProperties'
+        OnGetProperties = GetPriceProperties
         Width = 83
       end
     end
@@ -606,7 +610,6 @@ object frmItems2: TfrmItems2
     Left = 80
     Top = 136
     object prLink_grData: TdxGridReportLink
-      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 5080
       PrinterPage.GrayShading = True
@@ -620,7 +623,6 @@ object frmItems2: TfrmItems2
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
       ReportDocument.CreationDate = 41334.495374884260000000
-      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       BuiltInReportLink = True
     end
   end

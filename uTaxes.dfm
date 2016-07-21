@@ -129,8 +129,8 @@ object frmTaxes: TfrmTaxes
       object chkActive: TsCheckBox
         Left = 56
         Top = 62
-        Width = 246
-        Height = 17
+        Width = 238
+        Height = 20
         Caption = 'Active (if checked then just active are visible)'
         Checked = True
         State = cbChecked
@@ -373,6 +373,15 @@ object frmTaxes: TfrmTaxes
             'TRUE')
           MinWidth = 84
         end
+        object tvDataTaxChildren: TcxGridDBColumn
+          Caption = 'Tax Children'
+          DataBinding.FieldName = 'TaxChildren'
+          PropertiesClassName = 'TcxComboBoxProperties'
+          Properties.Items.Strings = (
+            'FALSE'
+            'TRUE')
+          Width = 84
+        end
         object tvDataBooking_Item_Id: TcxGridDBColumn
           DataBinding.FieldName = 'Booking_Item_Id'
           PropertiesClassName = 'TcxButtonEditProperties'
@@ -559,6 +568,11 @@ object frmTaxes: TfrmTaxes
     end
     object m_Valid_To: TDateField
       FieldName = 'Valid_To'
+    end
+    object m_TaxChildren: TWideStringField
+      DisplayWidth = 10
+      FieldName = 'TaxChildren'
+      Size = 10
     end
   end
   object FormStore: TcxPropertiesStore

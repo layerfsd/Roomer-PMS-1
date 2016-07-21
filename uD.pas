@@ -441,6 +441,8 @@ type
     function UpdateExpectedCheckoutTime(aReservation, aRoomReservation: Integer; const aCheckoutTime: string): boolean;
     function UpdateExpectedTimeOfArrival(aReservation, aRoomReservation: Integer; const aTimeOfArrival: string)
       : boolean;
+    function UpdateChildrenCount(aReservation, aRoomReservation: Integer; const aChildren: integer): boolean;
+    function UpdateInfantCount(aReservation, aRoomReservation: Integer; const aInfants: integer): boolean;
 
     function isAllRRSameCurrency(reservation: Integer): boolean;
     // Er Allar herbergisbókanir innan bókunnar í sama gjaldmiðli
@@ -3373,6 +3375,32 @@ begin
     s := s + '  AND RoomReservation = ' + inttostr(aRoomReservation) + chr(10);
     result := cmd_bySQL(s);
   end;
+end;
+
+function Td.UpdateChildrenCount(aReservation, aRoomReservation: Integer; const aChildren: integer): boolean;
+var
+  s: string;
+begin
+  s := '';
+  s := s + 'UPDATE roomreservations ' + chr(10);
+  s := s + 'Set' + chr(10);
+  s := s + '  numChildren= ' + _db(aChildren) + chr(10);
+  s := s + 'WHERE Reservation = ' + _db(aReservation) + chr(10);
+  s := s + '  AND RoomReservation = ' + inttostr(aRoomReservation) + chr(10);
+  result := cmd_bySQL(s);
+end;
+
+function Td.UpdateInfantCount(aReservation, aRoomReservation: Integer; const aInfants: integer): boolean;
+var
+  s: string;
+begin
+  s := '';
+  s := s + 'UPDATE roomreservations ' + chr(10);
+  s := s + 'Set' + chr(10);
+  s := s + '  numInfants = ' + _db(aInfants) + chr(10);
+  s := s + 'WHERE Reservation = ' + _db(aReservation) + chr(10);
+  s := s + '  AND RoomReservation = ' + inttostr(aRoomReservation) + chr(10);
+  result := cmd_bySQL(s);
 end;
 
 function Td.UpdateExpectedTimeOfArrival(aReservation, aRoomReservation: Integer; const aTimeOfArrival: string): boolean;

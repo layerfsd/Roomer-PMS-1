@@ -862,10 +862,6 @@ object frmReservationProfile: TfrmReservationProfile
               ImageIndex = 1
               SkinData.CustomColor = False
               SkinData.CustomFont = False
-              ExplicitLeft = 0
-              ExplicitTop = 0
-              ExplicitWidth = 0
-              ExplicitHeight = 0
               object Label10: TsLabel
                 Left = 33
                 Top = 13
@@ -2049,8 +2045,23 @@ object frmReservationProfile: TfrmReservationProfile
               end>
             Properties.ViewStyle = vsHideCursor
             Properties.OnButtonClick = tvRoomsGuestCountPropertiesButtonClick
+            HeaderAlignmentHorz = taCenter
             Options.ShowEditButtons = isebAlways
             Width = 58
+          end
+          object tvRoomschildrencount: TcxGridDBColumn
+            Caption = 'Children'
+            DataBinding.FieldName = 'childrencount'
+            PropertiesClassName = 'TcxSpinEditProperties'
+            Properties.AssignedValues.MinValue = True
+            HeaderAlignmentHorz = taCenter
+          end
+          object tvRoomsinfantcount: TcxGridDBColumn
+            Caption = 'Infants'
+            DataBinding.FieldName = 'infantcount'
+            PropertiesClassName = 'TcxSpinEditProperties'
+            Properties.AssignedValues.MinValue = True
+            HeaderAlignmentHorz = taCenter
           end
           object tvRoomsdefGuestCount: TcxGridDBColumn
             DataBinding.FieldName = 'defGuestCount'
@@ -2525,8 +2536,8 @@ object frmReservationProfile: TfrmReservationProfile
         object chkShowAllGuests: TsCheckBox
           Left = 333
           Top = 11
-          Width = 90
-          Height = 15
+          Width = 85
+          Height = 20
           Caption = 'Show all guests'
           Anchors = [akLeft, akTop, akRight]
           TabOrder = 4
@@ -3072,10 +3083,6 @@ object frmReservationProfile: TfrmReservationProfile
       Caption = 'ALERTS'
       SkinData.CustomColor = False
       SkinData.CustomFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object pnlAlertHolder: TsPanel
         Left = 0
         Top = 0

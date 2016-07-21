@@ -1085,6 +1085,7 @@ type
     Tax_Base: String;
     Time_Due: String;
     ReTaxable: String;
+    TaxChildren: string;
     Booking_Item_Id: integer;
     Booking_Item: String;
     Amount: double;
@@ -9822,6 +9823,7 @@ begin
     Tax_Base := 'ROOM_NIGHT';
     Time_Due := 'CHECKOUT';
     ReTaxable := 'FALSE';
+    TaxChildren := 'FALSE';
     Booking_Item := '';
     Incl_Excl := 'EXCLUDED';
     NETTO_AMOUNT_BASED := 'TRUE';
@@ -9848,6 +9850,7 @@ begin
   '  ,Tax_Base '#10+
   '  ,Time_Due '#10+
   '  ,Retaxable '#10+
+  '  ,TaxChildren '#10+
   '  ,Amount '#10+
   '  ,Booking_Item_Id '#10+
   '  ,(SELECT Item FROM items WHERE id=Booking_Item_Id) AS Booking_Item '#10+
@@ -9876,6 +9879,7 @@ begin
       result.Tax_Base           := Rset['Tax_Base'];    //'ROOM_NIGHT';
       result.Time_Due           := Rset['Time_Due'];    //'CHECKOUT';
       result.ReTaxable          := Rset['ReTaxable'];   //'FALSE';
+      result.TaxChildren        := RSet['TaxChildren'];
       result.Booking_Item       := Rset['Booking_Item']; //'';
       result.Incl_Excl          := Rset['Incl_Excl'];   //'EXCLUDED';
       result.NETTO_AMOUNT_BASED := Rset['NETTO_AMOUNT_BASED']; //'TRUE';
@@ -9915,6 +9919,7 @@ begin
   s := s + '   , TAX_BASE =' + _db(theData.Tax_Base) + ' ' + #10;
   s := s + '   , TIME_DUE =' + _db(theData.Time_Due) + ' ' + #10;
   s := s + '   , RETAXABLE =' + _db(theData.ReTaxable) + ' ' + #10;
+  s := s + '   , TAXCHILDREN =' + _db(theData.TaxChildren) + ' ' + #10;
   s := s + '   , AMOUNT =' + _db(theData.Amount) + ' ' + #10;
   s := s + '   , BOOKING_ITEM_ID =(SELECT id FROM home100_' + LowerCase(theData.Hotel_Id) + '.items WHERE Item=' + _db(theData.Booking_Item) +
     ' LIMIT 1) ' + #10;
@@ -9944,6 +9949,7 @@ begin
   s := s + '  , TAX_BASE ' + #10;
   s := s + '  , TIME_DUE ' + #10;
   s := s + '  , RETAXABLE ' + #10;
+  s := s + '  , TAXCHILDREN' + #10;
   s := s + '  , BOOKING_ITEM_ID ' + #10;
   s := s + '  , INCL_EXCL ' + #10;
   s := s + '  , NETTO_AMOUNT_BASED ' + #10;
@@ -9962,6 +9968,7 @@ begin
   s := s + '   ,' + _db(theData.Tax_Base) + ' ' + #10;
   s := s + '   ,' + _db(theData.Time_Due) + ' ' + #10;
   s := s + '   ,' + _db(theData.ReTaxable) + ' ' + #10;
+  s := s + '   ,' + _db(theData.TaxChildren) + ' ' + #10;
   s := s + '   ,(SELECT id FROM home100_' + LowerCase(theData.Hotel_Id) + '.items WHERE Item=' + _db(theData.Booking_Item) + ' LIMIT 1) ' + #10;
   s := s + '   ,' + _db(theData.Incl_Excl) + ' ' + #10;
   s := s + '   ,' + _db(theData.NETTO_AMOUNT_BASED) + ' ' + #10;

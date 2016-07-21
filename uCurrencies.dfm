@@ -163,8 +163,8 @@ object frmCurrencies: TfrmCurrencies
       object chkActive: TsCheckBox
         Left = 56
         Top = 65
-        Width = 273
-        Height = 20
+        Width = 281
+        Height = 19
         Caption = 'Active (if checked then just active are visible else all)'
         Checked = True
         State = cbChecked
@@ -359,7 +359,7 @@ object frmCurrencies: TfrmCurrencies
     object m_active: TBooleanField
       FieldName = 'active'
     end
-    object m_displayformat: TStringField
+    object m_displayformat: TWideStringField
       FieldName = 'displayformat'
     end
     object m_decimals: TIntegerField
@@ -415,6 +415,7 @@ object frmCurrencies: TfrmCurrencies
     object prLink_grData: TdxGridReportLink
       Active = True
       Component = grData
+      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.GrayShading = True
@@ -427,7 +428,8 @@ object frmCurrencies: TfrmCurrencies
       PrinterPage.PageSize.Y = 297000
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
-      ReportDocument.CreationDate = 42550.412503692130000000
+      ReportDocument.CreationDate = 42571.460104328700000000
+      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       BuiltInReportLink = True
     end
   end

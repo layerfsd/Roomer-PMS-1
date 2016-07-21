@@ -69,7 +69,7 @@ uses
   System.Types,
   uAlertEditPanel,
   uAlerts,
-  uDynamicRates
+  uDynamicRates, cxSpinEdit
     ;
 
 type
@@ -545,6 +545,8 @@ type
     tvRoomsStockItemsCount: TcxGridDBColumn;
     mRoomschildrencount: TIntegerField;
     mRoomsinfantcount: TIntegerField;
+    tvRoomschildrencount: TcxGridDBColumn;
+    tvRoomsinfantcount: TcxGridDBColumn;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -1769,6 +1771,8 @@ var
   newRoomType: String;
   lExpectedTOA: string;
   lExpectedCOT: string;
+  lCHildrenCOunt: integer;
+  lInfantCount: integer;
 begin
   // Add roomreservation as noroom
 
@@ -1811,6 +1815,8 @@ begin
       lExpectedTOA := mRoomsExpectedTimeOfArrival.AsString;
       lExpectedCOT := mRoomsExpectedCheckoutTime.AsString;
       dayCount := trunc(departure) - trunc(arrival);
+      lChildrenCount := mRoomschildrencount.AsInteger;
+      lInfantCount := mRoomsinfantcount.AsInteger;
 
       RoomType := newRoomType;
 
@@ -1877,6 +1883,8 @@ begin
       roomReservationData.Hallres := 0;
       roomReservationData.ExpectedTimeOfArrival := lExpectedTOA;
       roomReservationData.ExpectedCheckoutTime := lExpectedCOT;
+      roomReservationData.numChildren := lCHildrenCOunt;
+      roomReservationData.numInfants := lInfantCount;
 
       ExecutionPlan.AddExec(SQL_INS_RoomReservation(roomReservationData));
 
@@ -2147,8 +2155,17 @@ begin
     if mRoomsExpectedTimeOfArrival.OldValue <> mRoomsExpectedTimeOfArrival.AsString then
       if not d.UpdateExpectedTimeOfArrival(zReservation, zRoomReservation, mRoomsExpectedTimeOfArrival.AsString.Trim) then
         Abort;
+
     if mRoomsExpectedCheckoutTime.OldValue <> mRoomsExpectedCheckoutTime.AsString then
       if not d.UpdateExpectedCheckoutTime(zReservation, zRoomReservation, mRoomsExpectedCheckoutTime.AsString.Trim) then
+        Abort;
+
+    if mRoomschildrencount.OldValue <> mRoomschildrencount.AsInteger then
+      if not d.UpdateChildrenCount(zReservation, zRoomReservation, mRoomschildrencount.AsInteger) then
+        Abort;
+
+    if mRoomsinfantcount.OldValue <> mRoomsinfantcount.AsInteger then
+      if not d.UpdateInfantCount(zReservation, zRoomReservation, mRoomsinfantcount.AsInteger) then
         Abort;
 
   finally

@@ -604,10 +604,11 @@ begin
       try
         s := format('SELECT (SELECT RoomRentItem FROM control LIMIT 1) AS RoomRentItem, ' +
           '(SELECT COUNT(id) FROM persons WHERE RoomReservation IN (%s) LIMIT 1) AS Guests, ' +
+          '(SELECT numChildren from RoomReservations rr where rr.roomreservation IN (%s) LIMIT 1) AS Children, ' +
           '(SELECT COUNT(id) FROM roomsdate WHERE RoomReservation IN (%s) AND (NOT ResFlag IN (''X'',''C'',''O'',''N'')) LIMIT 1) AS Nights, ' +
           '%s/1.00 AS Price, ' +
           '%s - %s/(1 + (SELECT VATPercentage FROM vatcodes WHERE VATCode = (SELECT VATCode FROM itemtypes WHERE ItemType=(SELECT ItemType FROM items WHERE Item=(SELECT RoomRentItem FROM control LIMIT 1))))/100) AS VAT ',
-          [param, param, uStringUtils.FloatToDBString(ResSetGuest['TotalPrice']), uStringUtils.FloatToDBString(ResSetGuest['TotalPrice']),
+          [param, param, param, uStringUtils.FloatToDBString(ResSetGuest['TotalPrice']), uStringUtils.FloatToDBString(ResSetGuest['TotalPrice']),
           uStringUtils.FloatToDBString(ResSetGuest['TotalPrice'])]);
 
         if rSet_bySQL(tempRSet, s) then
@@ -617,7 +618,7 @@ begin
           taxes := nil;
           try
             RoomTaxEntities := TInvoiceRoomEntityList.Create(True);
-            RoomTaxEntities.Add(TInvoiceRoomEntity.Create(tempRSet['RoomRentItem'], tempRSet['Guests'], tempRSet['Nights'],
+            RoomTaxEntities.Add(TInvoiceRoomEntity.Create(tempRSet['RoomRentItem'], tempRSet['Guests'], tempRSet['Children'], tempRSet['Nights'],
               tempRSet['Price'] / tempRSet['Nights'], tempRSet['VAT'] / tempRSet['Nights'], 0));
             ItemTaxEntities := TInvoiceItemEntityList.Create(True);
 

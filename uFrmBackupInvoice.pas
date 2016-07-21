@@ -131,12 +131,9 @@ begin
 end;
 
 procedure TFrmBackupInvoice.PrepareInvoiceHeader;
-var i, totalWidth : Integer;
+var
+  i: integer;
 begin
-  totalWidth := 0;
-  for i := 0 to sgInvoice.ColCount do
-    totalWidth := totalWidth + sgInvoice.ColWidths[i];
-
   // Start header
   linesStartRow := 0;
   sgInvoice.RowCount := linesStartRow + 1;
