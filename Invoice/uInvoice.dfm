@@ -273,7 +273,6 @@ object frmInvoice: TfrmInvoice
         TabOrder = 10
         OnChange = edtCurrencyChange
         OnDblClick = edtCurrencyDblClick
-        OnExit = edtCustomerExit
         SkinData.SkinSection = 'EDIT'
         BoundLabel.Font.Charset = DEFAULT_CHARSET
         BoundLabel.Font.Color = clWindowText
@@ -290,7 +289,6 @@ object frmInvoice: TfrmInvoice
         ParentBackground = False
         TabOrder = 9
         OnClick = rgrInvoiceTypeClick
-        OnExit = edtCustomerExit
         SkinData.SkinSection = 'GROUPBOX'
         Checked = False
         ItemIndex = 1
@@ -318,7 +316,6 @@ object frmInvoice: TfrmInvoice
         ReadOnly = True
         TabOrder = 12
         OnDblClick = edtRateDblClick
-        OnExit = edtCustomerExit
         SkinData.SkinSection = 'EDIT'
         BoundLabel.Font.Charset = DEFAULT_CHARSET
         BoundLabel.Font.Color = clWindowText
@@ -342,7 +339,6 @@ object frmInvoice: TfrmInvoice
         MaxLength = 30
         ParentFont = False
         TabOrder = 15
-        OnExit = edtCustomerExit
         SkinData.SkinSection = 'EDIT'
         BoundLabel.Font.Charset = DEFAULT_CHARSET
         BoundLabel.Font.Color = clWindowText
@@ -386,7 +382,6 @@ object frmInvoice: TfrmInvoice
         ParentFont = False
         ReadOnly = True
         TabOrder = 14
-        OnExit = edtCustomerExit
         SkinData.SkinSection = 'EDIT'
         BoundLabel.Font.Charset = DEFAULT_CHARSET
         BoundLabel.Font.Color = clWindowText
@@ -412,7 +407,6 @@ object frmInvoice: TfrmInvoice
         TabOrder = 0
         OnChange = edtCustomerChange
         OnDblClick = edtCustomerDblClick
-        OnExit = edtCustomerExit
         SkinData.SkinSection = 'EDIT'
         BoundLabel.Font.Charset = DEFAULT_CHARSET
         BoundLabel.Font.Color = clWindowText
@@ -437,7 +431,6 @@ object frmInvoice: TfrmInvoice
         ParentFont = False
         TabOrder = 3
         OnDblClick = edtCustomerDblClick
-        OnExit = edtCustomerExit
         SkinData.SkinSection = 'EDIT'
         BoundLabel.Font.Charset = DEFAULT_CHARSET
         BoundLabel.Font.Color = clWindowText
@@ -460,7 +453,6 @@ object frmInvoice: TfrmInvoice
         Font.Style = []
         ParentFont = False
         TabOrder = 4
-        OnExit = edtCustomerExit
         SkinData.SkinSection = 'EDIT'
         BoundLabel.Font.Charset = DEFAULT_CHARSET
         BoundLabel.Font.Color = clWindowText
@@ -483,7 +475,6 @@ object frmInvoice: TfrmInvoice
         Font.Style = []
         ParentFont = False
         TabOrder = 5
-        OnExit = edtCustomerExit
         SkinData.SkinSection = 'EDIT'
         BoundLabel.Font.Charset = DEFAULT_CHARSET
         BoundLabel.Font.Color = clWindowText
@@ -506,7 +497,6 @@ object frmInvoice: TfrmInvoice
         Font.Style = []
         ParentFont = False
         TabOrder = 6
-        OnExit = edtCustomerExit
         SkinData.SkinSection = 'EDIT'
         BoundLabel.Font.Charset = DEFAULT_CHARSET
         BoundLabel.Font.Color = clWindowText
@@ -529,7 +519,6 @@ object frmInvoice: TfrmInvoice
         Font.Style = []
         ParentFont = False
         TabOrder = 7
-        OnExit = edtCustomerExit
         SkinData.SkinSection = 'EDIT'
         BoundLabel.Font.Charset = DEFAULT_CHARSET
         BoundLabel.Font.Color = clWindowText
@@ -552,7 +541,6 @@ object frmInvoice: TfrmInvoice
         Font.Style = []
         ParentFont = False
         TabOrder = 8
-        OnExit = edtCustomerExit
         SkinData.SkinSection = 'EDIT'
         BoundLabel.Font.Charset = DEFAULT_CHARSET
         BoundLabel.Font.Color = clWindowText
@@ -641,7 +629,6 @@ object frmInvoice: TfrmInvoice
         Text = '0'
         Visible = False
         OnChange = edtTotalChange
-        OnExit = edtCustomerExit
         SkinData.SkinSection = 'EDIT'
         BoundLabel.Font.Charset = DEFAULT_CHARSET
         BoundLabel.Font.Color = clWindowText
@@ -652,8 +639,8 @@ object frmInvoice: TfrmInvoice
       object chkShowPackage: TsCheckBox
         Left = 906
         Top = 135
-        Width = 119
-        Height = 17
+        Width = 111
+        Height = 20
         Caption = 'Package on invoice'
         Anchors = [akTop, akRight]
         Checked = True
@@ -693,10 +680,6 @@ object frmInvoice: TfrmInvoice
         object tabInvoice: TTabSheet
           Caption = 'Invoice'
           TabVisible = False
-          ExplicitLeft = 0
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
           object Panel2: TsPanel
             Left = 0
             Top = 340
@@ -725,7 +708,6 @@ object frmInvoice: TfrmInvoice
               ParentFont = False
               ScrollBars = ssVertical
               TabOrder = 0
-              OnExit = memExtraTextExit
             end
             object sPanel2: TsPanel
               Left = 337
@@ -830,7 +812,6 @@ object frmInvoice: TfrmInvoice
                 ReadOnly = True
                 TabOrder = 0
                 OnChange = edtTotalChange
-                OnExit = edtCustomerExit
                 SkinData.SkinSection = 'EDIT'
                 BoundLabel.Font.Charset = DEFAULT_CHARSET
                 BoundLabel.Font.Color = clWindowText
@@ -856,7 +837,6 @@ object frmInvoice: TfrmInvoice
                 ReadOnly = True
                 TabOrder = 1
                 OnChange = edtTotalChange
-                OnExit = edtCustomerExit
                 SkinData.SkinSection = 'EDIT'
                 BoundLabel.Font.Charset = DEFAULT_CHARSET
                 BoundLabel.Font.Color = clWindowText
@@ -882,7 +862,6 @@ object frmInvoice: TfrmInvoice
                 ReadOnly = True
                 TabOrder = 2
                 OnChange = edtTotalChange
-                OnExit = edtCustomerExit
                 SkinData.SkinSection = 'EDIT'
                 BoundLabel.Font.Charset = DEFAULT_CHARSET
                 BoundLabel.Font.Color = clWindowText
@@ -908,7 +887,6 @@ object frmInvoice: TfrmInvoice
                 ReadOnly = True
                 TabOrder = 3
                 OnChange = edtTotalChange
-                OnExit = edtCustomerExit
                 SkinData.SkinSection = 'EDIT'
                 BoundLabel.Font.Charset = DEFAULT_CHARSET
                 BoundLabel.Font.Color = clWindowText
@@ -934,7 +912,6 @@ object frmInvoice: TfrmInvoice
                 ReadOnly = True
                 TabOrder = 4
                 OnChange = edtTotalChange
-                OnExit = edtCustomerExit
                 SkinData.SkinSection = 'EDIT'
                 BoundLabel.Font.Charset = DEFAULT_CHARSET
                 BoundLabel.Font.Color = clWindowText
@@ -1385,10 +1362,6 @@ object frmInvoice: TfrmInvoice
         object tabRoomPrice: TTabSheet
           Caption = 'RoomPrice'
           TabVisible = False
-          ExplicitLeft = 0
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
           object panTopRoomRates: TsPanel
             Left = 0
             Top = 0
@@ -1453,8 +1426,8 @@ object frmInvoice: TfrmInvoice
               object chkReCalcPrices: TsCheckBox
                 Left = 9
                 Top = 20
-                Width = 203
-                Height = 17
+                Width = 195
+                Height = 20
                 Caption = 'Recalc price on guestcount  changes'
                 Checked = True
                 State = cbChecked
@@ -1466,8 +1439,8 @@ object frmInvoice: TfrmInvoice
               object chkAutoUpdateNullPrice: TsCheckBox
                 Left = 9
                 Top = 46
-                Width = 134
-                Height = 17
+                Width = 126
+                Height = 20
                 Caption = 'Auto update Null Price'
                 Checked = True
                 State = cbChecked
@@ -2302,12 +2275,10 @@ object frmInvoice: TfrmInvoice
       object GuestName1: TMenuItem
         Caption = 'Copy Guest name to clipboard'
         ShortCut = 16455
-        OnClick = GuestName1Click
       end
       object Refrence1: TMenuItem
         Caption = 'Copy Refrence to clipboard'
         ShortCut = 16466
-        OnClick = Refrence1Click
       end
     end
     object Invoice2: TMenuItem
@@ -2559,7 +2530,6 @@ object frmInvoice: TfrmInvoice
     object actCompressLines: TAction
       Category = 'Lines'
       Caption = 'Compress items'
-      OnExecute = actCompressLinesExecute
     end
     object actAddPackage: TAction
       Caption = 'Add Package'

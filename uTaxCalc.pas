@@ -33,7 +33,7 @@ type
       IncludedInPrice : TEnumTaxIncl_Excl;
       Percentage : Boolean;
     private
-    function GetTotal: Double;
+      function GetTotal: Double;
     public
 
       constructor Create(_BookingItem : String;
@@ -50,6 +50,7 @@ type
     TInvoiceRoomEntity = class
       RoomItem : String;
       Guests : Integer;
+      Children: integer;
       Nights : double;
       Price : Double;
       Vat : Double;
@@ -57,6 +58,7 @@ type
     public
       constructor Create(_RoomItem : String;
                          _Guests : Integer;
+                         _Children: integer;
                          _Nights : double;
                          _Price : Double;
                          _Vat : Double;
@@ -92,6 +94,7 @@ type
         TAX_BASE : TEnumTaxBase;
         TIME_DUE : TEnumTaxDue;
         RETAXABLE : Boolean;
+        TAXCHILDREN: boolean;
         BOOKING_ITEM : String;
         INCL_EXCL : TEnumTaxIncl_Excl;
         NETTO_AMOUNT_BASED : Boolean;
@@ -115,6 +118,7 @@ type
                          _tax_Base,
                          _time_due,
                          _reTaxable,
+                         _taxChildren,
                          _booking_item,
                          _incl_Excl,
                          _netto_Amount_Based,
@@ -193,6 +197,7 @@ begin
           rSet['Tax_Base'],
           rSet['Time_Due'],
           rSet['Retaxable'],
+          rSet['TaxChildren'],
           rSet['Booking_Item'],
           rSet['INCL_EXCL'],
           rSet['NETTO_AMOUNT_BASED'],
@@ -570,6 +575,7 @@ var
 
   Percentage : Boolean;
   VatPercentage : Double;
+  taxGuests: integer;
 
 begin
  //
@@ -601,6 +607,12 @@ begin
             else
               Amount := Tax.AMOUNT;
           end else
+
+          taxGuests := Room.Guests;
+          if Tax.TAXCHILDREN then
+            taxGuests := taxGuests + Room.Children;
+
+
           if Tax.TAX_TYPE = TT_FIXED_AMOUNT then
           begin
             Amount := Tax.AMOUNT;
@@ -625,7 +637,6 @@ begin
               begin
                 baseAmount := Room.Price / (1 + (Tax.AMOUNT/100)); // (Room.Price - Room.Vat)
                 Amount :=  baseAmount * Tax.AMOUNT / 100;
-  //              Amount :=  RoundTo(baseAmount * Tax.AMOUNT / 100, Tax.ROUND_VALUE)
               end else
               begin
                 baseAmount := Room.Price;
@@ -633,23 +644,19 @@ begin
               end;
             end;
 
-  //          if TaxIsIncluded(Tax, customerIncludeDefault) then
-  //            Amount :=  RoundTo(PriceAmount / (100 + Tax.AMOUNT) * Tax.AMOUNT, Tax.ROUND_VALUE)
-  //          else
-  //            Amount :=  RoundTo(PriceAmount * Tax.AMOUNT / 100, Tax.ROUND_VALUE)
           end;
 
           if Tax.TAX_BASE = TB_ROOM_NIGHT then
             NumItems := Room.Nights
           else
           if Tax.TAX_BASE = TB_GUEST_NIGHT then
-            NumItems := Room.Nights * Room.Guests
+            NumItems := Room.Nights * taxGuests
           else
           if Tax.TAX_BASE = TB_ROOM then
             NumItems := 1
           else
           if Tax.TAX_BASE = TB_GUEST then
-            NumItems := Room.Guests
+            NumItems := taxGuests
           else
           if Tax.TAX_BASE = TB_BOOKING then
             NumItems := 1;
@@ -820,6 +827,7 @@ constructor TTax.Create(_id: Integer; _description: String;
                         _tax_Base,
                         _time_due,
                         _reTaxable,
+                        _TAxChildren,
                         _booking_item,
                         _incl_Excl,
                         _netto_Amount_Based,
@@ -835,6 +843,7 @@ begin
   TAX_BASE := getEnumTaxBase(_tax_base);
   TIME_DUE := getEnumTaxDue(_time_due);
   RETAXABLE := UpperCase(_retaxable) = 'TRUE';
+  TAXCHILDREN := UpperCase(_taxChildren) = 'TRUE';
   BOOKING_ITEM := _booking_item;
   INCL_EXCL := getEnumTaxIncl_Excl(_incl_excl);
   NETTO_AMOUNT_BASED := UpperCase(_netto_Amount_Based) = 'TRUE';
@@ -909,10 +918,11 @@ end;
 
 { TRoomTaxEntity }
 
-constructor TInvoiceRoomEntity.Create(_RoomItem: String; _Guests : integer; _Nights: double; _Price, _Vat, _Discount: Double);
+constructor TInvoiceRoomEntity.Create(_RoomItem: String; _Guests : integer; _CHildren: integer; _Nights: double; _Price, _Vat, _Discount: Double);
 begin
   RoomItem := _RoomItem;
   Guests := _Guests;
+  Children := _Children;
   Nights := _Nights;
   Price := _Price;
   Discount := _Discount;

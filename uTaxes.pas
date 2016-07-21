@@ -167,6 +167,8 @@ type
     tvDataValid_To: TcxGridDBColumn;
     PopupMenu1: TPopupMenu;
     C1: TMenuItem;
+    m_TaxChildren: TWideStringField;
+    tvDataTaxChildren: TcxGridDBColumn;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormKeyPress(Sender: TObject; var Key: Char);
@@ -314,7 +316,7 @@ begin
   rSet := CreateNewDataSet;
   try
     s := format(select_Taxes_fillGridFromDataset , [zSortStr]);
-//    copytoclipboard(s);
+    copytoclipboard(s);
 //    debugmessage(s);
 
 
@@ -350,6 +352,7 @@ begin
   zData.Tax_Base       := m_['Tax_Base'];
   zData.Time_Due       := m_['Time_Due'];
   zData.ReTaxable       := m_['ReTaxable'];
+  zData.TaxChildren     := m_TaxChildren.AsString;
   zData.Booking_Item_Id       := m_['Booking_Item_Id'];
   zData.Booking_Item    := m_['Booking_Item'];
   zData.Incl_Excl    := m_['Incl_Excl'];
@@ -371,6 +374,7 @@ begin
   tvDataTax_Base.Options.Editing := zAllowGridEdit;
   tvDataTime_Due.Options.Editing := zAllowGridEdit;
   tvDataReTaxable.Options.Editing := zAllowGridEdit;
+  tvDataTaxChildren.Options.Editing := zAllowGridEdit;
   tvDataBooking_Item.Options.Editing := zAllowGridEdit;
   tvDataBooking_Item_Id.Options.Editing := zAllowGridEdit;
   tvDataIncl_Excl.Options.Editing := zAllowGridEdit;
@@ -568,6 +572,7 @@ begin
   zData.Tax_Base      := dataset['Tax_Base'];
   zData.Time_Due      := dataset['Time_Due'];
   zData.ReTaxable      := dataset['ReTaxable'];
+  zData.TaxChildren    := dataset['TaxChildren'];
   zData.Booking_Item_Id      := dataset['Booking_Item_Id'];
   zData.Booking_Item   := dataset['Booking_Item'];
   zData.Incl_Excl      := dataset['Incl_Excl'];
