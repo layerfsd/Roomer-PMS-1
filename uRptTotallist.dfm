@@ -179,7 +179,7 @@ object frmRptTotallist: TfrmRptTotallist
         MaxLength = 10
         ParentFont = False
         TabOrder = 0
-        Text = '  -  -    '
+        Text = '  .  .    '
         OnChange = dtDateFromChange
         CheckOnExit = True
         SkinData.SkinSection = 'EDIT'
@@ -202,7 +202,7 @@ object frmRptTotallist: TfrmRptTotallist
         MaxLength = 10
         ParentFont = False
         TabOrder = 1
-        Text = '  -  -    '
+        Text = '  .  .    '
         OnChange = dtDateFromChange
         CheckOnExit = True
         SkinData.SkinSection = 'EDIT'
@@ -589,7 +589,7 @@ object frmRptTotallist: TfrmRptTotallist
     LoadedCompletely = False
     SavedCompletely = False
     FilterOptions = []
-    Version = '7.22.00 Standard Edition'
+    Version = '7.62.00 Standard Edition'
     LanguageID = 0
     SortID = 0
     SubLanguageID = 1

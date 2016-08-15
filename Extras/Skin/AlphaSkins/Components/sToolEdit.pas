@@ -1421,7 +1421,7 @@ end;
 
 function TsCustomDateEdit.GetCheckOnExit: boolean;
 begin
-  Result := FCheckOnEdit;
+  Result := FCheckOnExit;
 end;
 
 end.

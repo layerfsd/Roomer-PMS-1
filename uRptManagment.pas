@@ -320,17 +320,17 @@ begin
   s := s + '					JOIN rooms r on r.room=rr2.room and r.wildcard=0 and r.active=1 and statistics=1 and hidden=0 '#10 ;
   s := s + '					WHERE rr2.Arrival=pdd.date AND rr2.Status='+_db(STATUS_ARRIVED)+') AS checkedInToday, '#10 ;
   s := s + '				(SELECT COUNT(rr2.id) FROM roomreservations   rr2 '#10 ;
-  s := s + '					JOIN rooms r on r.room=rr2.room and r.wildcard=0 and r.active=1 and statistics=1 and hidden=0 '#10 ;
+//  s := s + '					JOIN rooms r on r.room=rr2.room and r.wildcard=0 and r.active=1 and statistics=1 and hidden=0 '#10 ;
   s := s + '					WHERE rr2.Arrival=pdd.date AND rr2.Status='+_db(STATUS_NOT_ARRIVED)+') AS arrivingRooms, '#10 ;
   s := s + '				(SELECT COUNT(rr2.id) FROM roomreservations rr2 '#10 ;
-  s := s + '					JOIN rooms r on r.room=rr2.room and r.wildcard=0 and r.active=1 and statistics=1 and hidden=0 '#10 ;
+//  s := s + '					JOIN rooms r on r.room=rr2.room and r.wildcard=0 and r.active=1 and statistics=1 and hidden=0 '#10 ;
   s := s + '					WHERE rr2.Arrival=DATE_ADD(pdd.date,INTERVAL -1 DAY) AND rr2.Status='+_db(STATUS_NO_SHOW)+') AS noShow, '#10 ;
   s := s + '				(SELECT COUNT(rr2.id) FROM roomreservations rr2 '#10 ;
-  s := s + '					JOIN rooms r on r.room=rr2.room and r.wildcard=0 and r.active=1 and statistics=1 and hidden=0 '#10 ;
+//  s := s + '					JOIN rooms r on r.room=rr2.room and r.wildcard=0 and r.active=1 and statistics=1 and hidden=0 '#10 ;
   s := s + '					WHERE rr2.Departure=pdd.date AND rr2.Status='+_db(STATUS_ARRIVED)+') AS departingRooms, '#10 ;
   s := s + '				(SELECT COUNT(rr2.id) FROM roomreservations rr2 '#10 ;
   s := s + '					JOIN rooms r on r.room=rr2.room and r.wildcard=0 and r.active=1 and statistics=1 and hidden=0 '#10 ;
-  s := s + '                    WHERE rr2.Departure=pdd.date AND rr2.Status='+_db(STATUS_CHECKED_OUT)+') AS departedRooms, '#10 ;
+  s := s + '           WHERE rr2.Departure=pdd.date AND rr2.Status='+_db(STATUS_CHECKED_OUT)+') AS departedRooms, '#10 ;
   s := s + '				(SELECT COUNT(rd2.id) FROM roomsdate rd2 '#10 ;
   s := s + '					JOIN rooms r on r.room=rd2.room and r.wildcard=0 and r.active=1 and statistics=1 and hidden=0 '#10 ;
   s := s + '					WHERE ADate=pdd.date AND ResFlag='+_db(STATUS_ARRIVED)+') AS occupiedRooms, '#10 ;
@@ -339,9 +339,10 @@ begin
   s := s + '		 FROM predefineddates pdd '#10 ;
   s := s + '		 JOIN roomsdate rd on pdd.date=rd.ADate AND (NOT rd.ResFlag IN ('+_db(STATUS_DELETED)+','+_db(STATUS_CANCELLED)+','+_db(STATUS_WAITING_LIST)+','+_db(STATUS_NO_SHOW)+','+_db(STATUS_BLOCKED)+')) '#10 ;
   s := s + '		 JOIN currencies curr on curr.Currency=rd.Currency '#10 ;
-  s := s + '		 JOIN rooms r on rd.room = r.room and r.wildcard=0 and r.active=1 and statistics=1 and hidden=0 '#10 ;
+//  s := s + '		 JOIN rooms r on rd.room = r.room and r.wildcard=0 and r.active=1 and statistics=1 and hidden=0 '#10 ;
   s := s + '		 WHERE '#10 ;
   s := s + '				((pdd.date>='+_DateToDbDate(zDateFrom,true)+' AND pdd.date<='+_DateToDbDate(zDateTo,true)+')) '#10 ;
+  s := s + '		    AND (SUBSTR(rd.room, 1, 1) = ''<'' OR NOT ISNULL((SELECT 1 FROM rooms r WHERE r.room=rd.room and r.wildcard=0 and r.active=1 and statistics=1 and hidden=0 LIMIT 1))) '#10 ;
   s := s + '		 GROUP BY pdd.date '#10 ;
   s := s + '		 ORDER BY pdd.date '#10 ;
   s := s + '		 ) baseData1 '#10 ;
@@ -361,7 +362,7 @@ begin
   s := s + '				CAST(0 AS SIGNED) AS checkedInToday, '#10 ;
   s := s + '				CAST(0 AS SIGNED) AS arrivingRooms, '#10 ;
   s := s + '				(SELECT COUNT(rr2.id) FROM roomreservations rr2 '#10 ;
-  s := s + '					JOIN rooms r on r.room=rr2.room and r.wildcard=0 and r.active=1 and statistics=1 and hidden=0 '#10 ;
+//  s := s + '					JOIN rooms r on r.room=rr2.room and r.wildcard=0 and r.active=1 and statistics=1 and hidden=0 '#10 ;
   s := s + '                    WHERE rr2.Arrival=DATE_ADD(pdd.date,INTERVAL -1 DAY) AND rr2.Status='+_db(STATUS_NO_SHOW)+') AS noShow, '#10 ;
   s := s + '				(SELECT COUNT(rr2.id) FROM roomreservations rr2 '#10 ;
   s := s + '					JOIN rooms r on r.room=rr2.room and r.wildcard=0 and r.active=1 and statistics=1 and hidden=0 '#10 ;
@@ -386,6 +387,7 @@ begin
   s := s + ' ORDER BY date ';
 
     ExecutionPlan.AddQuery(s);
+    CopyToClipboard(s);
     //////////////////// Execute!
 
     screen.Cursor := crHourGlass;

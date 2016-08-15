@@ -837,21 +837,6 @@ object FrmRoomClassEdit: TFrmRoomClassEdit
           OnClick = sSpeedButton4Click
           SkinData.SkinSection = 'SPEEDBUTTON'
         end
-        object sLabel31: TsLabel
-          Left = 150
-          Top = 70
-          Width = 221
-          Height = 13
-          Alignment = taRightJustify
-          AutoSize = False
-          Caption = 'Prepaid percentage:'
-          ParentFont = False
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clBlack
-          Font.Height = -11
-          Font.Name = 'Tahoma'
-          Font.Style = []
-        end
         object cbxNonRefundable: TsCheckBox
           Left = 235
           Top = 24
@@ -886,24 +871,6 @@ object FrmRoomClassEdit: TFrmRoomClassEdit
           OnKeyPress = edtdefRateKeyPress
           SkinData.SkinSection = 'EDIT'
         end
-        object cbxAutoChargeCreditcards: TsCheckBox
-          Left = 235
-          Top = 47
-          Width = 158
-          Height = 17
-          Caption = 'Charge cards automatically'
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clWindowText
-          Font.Height = -11
-          Font.Name = 'Tahoma'
-          Font.Style = []
-          ParentFont = False
-          TabOrder = 2
-          OnClick = cbxAutoChargeCreditcardsClick
-          SkinData.SkinSection = 'CHECKBOX'
-          ImgChecked = 0
-          ImgUnchecked = 0
-        end
         object edtPackage: TsEdit
           Left = 235
           Top = 127
@@ -916,25 +883,17 @@ object FrmRoomClassEdit: TFrmRoomClassEdit
           Font.Name = 'Tahoma'
           Font.Style = []
           ParentFont = False
-          TabOrder = 3
+          TabOrder = 2
           SkinData.SkinSection = 'EDIT'
         end
-        object edtPrepaidPercentage: TsEdit
-          Left = 377
-          Top = 67
-          Width = 113
-          Height = 21
-          Alignment = taRightJustify
-          Color = clWhite
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clBlack
-          Font.Height = -11
-          Font.Name = 'Tahoma'
-          Font.Style = []
-          ParentFont = False
-          TabOrder = 4
-          OnKeyPress = edtdefRateKeyPress
-          SkinData.SkinSection = 'EDIT'
+        object btnAutocharge: TsButton
+          Left = 238
+          Top = 54
+          Width = 275
+          Height = 25
+          Caption = 'Creditcards auto charge rules'
+          TabOrder = 3
+          OnClick = btnAutochargeClick
         end
       end
       object sGroupBox2: TsGroupBox

@@ -266,6 +266,8 @@ type
 var
   frmRptResStatsRooms: TfrmRptResStatsRooms;
 
+procedure ShowReservationStatistics;
+
 implementation
 
 {$R *.dfm}
@@ -281,6 +283,17 @@ uses
   , PrjConst
   , uDImages;
 
+
+procedure ShowReservationStatistics;
+var _frmRptResStatsRooms: TfrmRptResStatsRooms;
+begin
+  Application.CreateForm(TfrmRptResStatsRooms, _frmRptResStatsRooms);
+  try
+    _frmRptResStatsRooms.ShowModal;
+  finally
+    freeandNil(_frmRptResStatsRooms);
+  end;
+end;
 
 procedure TfrmRptResStatsRooms.updateDrilldown;
 begin
@@ -658,11 +671,12 @@ begin
     //  s := s+ '    ,(SELECT Statistics FROM rooms WHERE room=rd.room) AS Statistics '#10;
     s := s+ '  FROM roomsdate rd '#10;
     s := s+ '       INNER JOIN roomreservations rr ON rr.RoomReservation = rd.RoomReservation '#10;
-    s := s+ '       INNER JOIN rooms rrro ON (rr.room=rrro.room and rrro.wildcard=0) '#10;
+    ///ERROR Corrected
+//    s := s+ '       INNER JOIN rooms rrro ON (rr.room=rrro.room and rrro.wildcard=0) '#10;
     s := s+ '       INNER JOIN roomtypes rt ON rt.RoomType = rd.RoomType '#10;
     s := s+ '       LEFT OUTER JOIN rooms ro ON (ro.Room = rd.Room and ro.wildcard=0) '#10;
     s := s+ ' WHERE rd.ADate>='+_DateToDbDate(zDateFrom,true)+' AND rd.ADate<='+_DateToDbDate(zDateTo,true)+' '#10;
-
+    s := s+ ' AND (SUBSTR(rd.Room, 1, 1)=''<'' OR NOT ISNULL((SELECT ID FROM rooms r WHERE r.Room=rd.Room AND r.wildcard=0)))';
     statusIn := StatusSQL;
     if statusIn <> '' then
     begin
@@ -676,7 +690,7 @@ begin
 //    s := s+'AND (ro.Statistics = 1) '#10;
     s := s+ ' ORDER BY ADATE DESC,room '#10;
 
-//    copytoclipboard(s);
+    copytoclipboard(s);
 //    debugmessage(s);
 
     ExecutionPlan.AddQuery(s);

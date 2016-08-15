@@ -29,10 +29,6 @@ object frmPaymentReqRoomtypeGroup: TfrmPaymentReqRoomtypeGroup
     BevelOuter = bvNone
     TabOrder = 0
     SkinData.SkinSection = 'PANEL'
-    ExplicitLeft = -218
-    ExplicitTop = -321
-    ExplicitWidth = 853
-    ExplicitHeight = 620
     object sPanel1: TsPanel
       Left = 0
       Top = 0
@@ -41,7 +37,6 @@ object frmPaymentReqRoomtypeGroup: TfrmPaymentReqRoomtypeGroup
       Align = alTop
       TabOrder = 0
       SkinData.SkinSection = 'PANEL'
-      ExplicitTop = -6
       object cLabFilter: TsLabel
         Left = 19
         Top = 11
@@ -74,7 +69,7 @@ object frmPaymentReqRoomtypeGroup: TfrmPaymentReqRoomtypeGroup
         Height = 21
         Color = clWhite
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 4473924
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -91,9 +86,6 @@ object frmPaymentReqRoomtypeGroup: TfrmPaymentReqRoomtypeGroup
       Height = 19
       Panels = <>
       SkinData.SkinSection = 'STATUSBAR'
-      ExplicitLeft = -72
-      ExplicitTop = 429
-      ExplicitWidth = 651
     end
     object panBtn: TsPanel
       Left = 0
@@ -103,8 +95,6 @@ object frmPaymentReqRoomtypeGroup: TfrmPaymentReqRoomtypeGroup
       Align = alBottom
       TabOrder = 2
       SkinData.SkinSection = 'PANEL'
-      ExplicitTop = 568
-      ExplicitWidth = 853
       DesignSize = (
         465
         33)
@@ -122,7 +112,6 @@ object frmPaymentReqRoomtypeGroup: TfrmPaymentReqRoomtypeGroup
         ModalResult = 2
         TabOrder = 0
         SkinData.SkinSection = 'BUTTON'
-        ExplicitLeft = 764
       end
       object BtnOk: TsButton
         Left = 284
@@ -148,7 +137,6 @@ object frmPaymentReqRoomtypeGroup: TfrmPaymentReqRoomtypeGroup
       Align = alClient
       TabOrder = 3
       LookAndFeel.NativeStyle = False
-      ExplicitTop = 63
       object tvData: TcxGridDBTableView
         Navigator.Buttons.CustomButtons = <>
         Navigator.Buttons.First.Visible = True
@@ -249,6 +237,7 @@ object frmPaymentReqRoomtypeGroup: TfrmPaymentReqRoomtypeGroup
     Left = 96
     Top = 192
     object prLink_grData: TdxGridReportLink
+      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.GrayShading = True
@@ -262,6 +251,7 @@ object frmPaymentReqRoomtypeGroup: TfrmPaymentReqRoomtypeGroup
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
       ReportDocument.CreationDate = 41334.495374884260000000
+      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       BuiltInReportLink = True
     end
   end
@@ -299,10 +289,10 @@ object frmPaymentReqRoomtypeGroup: TfrmPaymentReqRoomtypeGroup
           'Top'
           'Width')
       end>
-    StorageName = 'Software\Roomer\FormStatus\RoomClasses'
+    StorageName = 'Software\Roomer\FormStatus\RoomClassPaymentRequirements'
     StorageType = stRegistry
-    Left = 607
-    Top = 152
+    Left = 369
+    Top = 135
   end
   object mnuOther: TPopupMenu
     Images = DImages.PngImageList1

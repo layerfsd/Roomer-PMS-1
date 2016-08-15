@@ -1,7 +1,12 @@
-function TRoomerDataSet.SystemGetDayGrid(fromDate: TDateTime; toDate: TDateTime; resType : String): String;
+function TRoomerDataSet.SystemGetDayGrid(fromDate: TDateTime; toDate: TDateTime; resType : String; SkipCancelled : Boolean = False): String;
 var res : String;
+    sSkipCancelled : String;
 begin
-  res := downloadUrlAsString(  RoomerUri + 'pms/business/daygrid?from=' + uDateUtils.dateToSqlString(fromDate) + '&to=' + uDateUtils.dateToSqlString(toDate) + '&resType=' + resType);
+  if SkipCancelled then
+    sSkipCancelled := 'true'
+  else
+    sSkipCancelled := 'false';
+  res := downloadUrlAsString(  RoomerUri + 'pms/business/daygrid2000?from=' + uDateUtils.dateToSqlString(fromDate) + '&to=' + uDateUtils.dateToSqlString(toDate) + '&resType=' + resType + '&skipCancelled=' + sSkipCancelled);
   Result := res;
 end;
 

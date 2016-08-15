@@ -12,7 +12,7 @@ uses
   dxPScxPageControlProducer, dxPScxGridLnk, dxPScxGridLayoutViewLnk, dxPScxEditorProducers, dxPScxExtEditorProducers,
   dxSkinsdxBarPainter, dxSkinsdxRibbonPainter, cxCalc, Vcl.Menus, cxGridCustomTableView, cxGridTableView,
   cxGridDBTableView, cxPropertiesStore, dxmdaset, dxPSCore, dxPScxCommon, cxGridLevel, cxClasses, cxGridCustomView,
-  cxGrid, Vcl.StdCtrls, sButton, Vcl.ComCtrls, sStatusBar, sEdit, Vcl.Buttons, Vcl.Controls, System.Classes;
+  cxGrid, Vcl.StdCtrls, sButton, Vcl.ComCtrls, sStatusBar, sEdit, Vcl.Buttons, Vcl.Controls, System.Classes, dxPScxPivotGridLnk;
 
 type
   TfrmPaymentReqRoomtypeGroup = class(TForm)

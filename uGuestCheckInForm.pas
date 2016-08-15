@@ -129,6 +129,9 @@ type
     sLabel41: TsLabel;
     lbTaxes: TsLabel;
     pnlHidePayment: TsPanel;
+    lblMarket: TsLabel;
+    cbxMarket: TsComboBox;
+    shpMarket: TShape;
     procedure FormCreate(Sender: TObject);
     procedure cbxGuaranteeTypesCloseUp(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -147,6 +150,7 @@ type
     procedure edFirstnameCloseUp(Sender: TObject);
     procedure edFirstnameKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure cbActiveLiveSearchClick(Sender: TObject);
+    procedure cbxMarketChange(Sender: TObject);
   private
     FisCheckIn: Boolean;
     procedure Prepare;
@@ -262,7 +266,8 @@ const
 
     ' p.CompFax=%s, ' + ' p.CompVATNumber=%s, ' + ' p.SocialSecurityNumber=%s, ' +
 
-    '	p.PersonalIdentificationId=%s, ' + '	p.DateOfBirth=%s, ' + '	r.PaymentGuaranteeType=%s ' + 'WHERE p.ID=%d ' + 'AND r.RoomReservation=p.RoomReservation';
+    '	p.PersonalIdentificationId=%s, ' + '	p.DateOfBirth=%s, ' + '	r.PaymentGuaranteeType=%s ' +
+    'WHERE p.ID=%d AND r.RoomReservation=p.RoomReservation ';
 
 
   UPDATE_PROFILE_FROM_PERSON = 'UPDATE persons pe ' +
@@ -382,6 +387,11 @@ end;
 procedure TFrmGuestCheckInForm.cbxGuaranteeTypesCloseUp(Sender: TObject);
 begin
   pgGuaranteeTypes.ActivePageIndex := cbxGuaranteeTypes.ItemIndex;
+  EnableOrDisableOKButton;
+end;
+
+procedure TFrmGuestCheckInForm.cbxMarketChange(Sender: TObject);
+begin
   EnableOrDisableOKButton;
 end;
 
@@ -535,11 +545,14 @@ begin
   BtnOk.Enabled := (Trim(edFirstname.Text) <> '') AND (Trim(edLastName.Text) <> '') AND (Trim(edCity.Text) <> '') AND (Trim(edCountry.Text) <> '') AND
 
     ((NOT isCheckIn) OR (((cbxGuaranteeTypes.ItemIndex = 0) AND cbCreditCard.Checked) OR ((cbxGuaranteeTypes.ItemIndex = 1) AND
-    (StrToFloatDef(edAmount.Text, -99999) <> -99999)) OR ((cbxGuaranteeTypes.ItemIndex = 2))));
+    (StrToFloatDef(edAmount.Text, -99999) <> -99999)) OR ((cbxGuaranteeTypes.ItemIndex = 2))))
+    AND ((NOT g.qStayd3pActive) OR (cbxMarket.ItemIndex > 0));
   shpFirstname.Visible := Trim(edFirstname.Text) = '';
   shpLastname.Visible := Trim(edLastName.Text) = '';
   shpCity.Visible := Trim(edCity.Text) = '';
   shpCountry.Visible := Trim(edCountry.Text) = '';
+  shpMarket.Visible := NOT((NOT g.qStayd3pActive) OR (cbxMarket.ItemIndex > 0));
+
   shpGuarantee.Visible := NOT(((cbxGuaranteeTypes.ItemIndex = 0) AND cbCreditCard.Checked) OR
     ((cbxGuaranteeTypes.ItemIndex = 1) AND (StrToFloatDef(edAmount.Text, -99999) <> -99999)) OR ((cbxGuaranteeTypes.ItemIndex = 2)));
   shpCC.Visible := shpGuarantee.Visible;
@@ -727,6 +740,9 @@ begin
     _DB(edCardId.Text), _DB(uDateUtils.dateToSqlString(edDateOfBirth.Date)),
 
     _DB(PAYMENT_GUARANTEE_TYPE[cbxGuaranteeTypes.ItemIndex]), PersonId]);
+
+  d.UpdateReservationMarket(Reservation, TReservationmarketType(cbxMarket.itemIndex));
+
   CopyToClipboard(s);
   if NOT cmd_bySQL(s, false) then
     raise Exception.Create('Unable to save changes.');
@@ -992,6 +1008,8 @@ begin
   cbxGuaranteeTypes.ItemIndex := 3;
   pgGuaranteeTypes.ActivePageIndex := cbxGuaranteeTypes.ItemIndex;
   LoadGuestInfo;
+
+  shpMarket.Visible := g.qStayd3pActive;
 
   FillQuickFind;
 end;

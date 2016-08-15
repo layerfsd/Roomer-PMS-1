@@ -89,7 +89,7 @@ object frmReservationProfile: TfrmReservationProfile
         Color = clWhite
         EditMask = '!99/99/9999;1; '
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 4473924
+        Font.Color = clBlack
         Font.Height = -9
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -112,7 +112,7 @@ object frmReservationProfile: TfrmReservationProfile
         Color = clWhite
         EditMask = '!99/99/9999;1; '
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 4473924
+        Font.Color = clBlack
         Font.Height = -9
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -229,7 +229,7 @@ object frmReservationProfile: TfrmReservationProfile
         TabStop = False
         Color = clWhite
         Font.Charset = ANSI_CHARSET
-        Font.Color = 4473924
+        Font.Color = clBlack
         Font.Height = -9
         Font.Name = 'Arial'
         Font.Style = []
@@ -264,7 +264,7 @@ object frmReservationProfile: TfrmReservationProfile
         CharCase = ecUpperCase
         Color = clWhite
         Font.Charset = ANSI_CHARSET
-        Font.Color = 4473924
+        Font.Color = clBlack
         Font.Height = -9
         Font.Name = 'Arial'
         Font.Style = []
@@ -295,7 +295,7 @@ object frmReservationProfile: TfrmReservationProfile
         Left = 176
         Top = 79
         Width = 20
-        Height = 20
+        Height = 16
         TabOrder = 4
         SkinData.SkinSection = 'CHECKBOX'
         ImgChecked = 0
@@ -313,7 +313,7 @@ object frmReservationProfile: TfrmReservationProfile
         Style = csDropDownList
         Color = clWhite
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 4473924
+        Font.Color = clBlack
         Font.Height = -9
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -501,7 +501,7 @@ object frmReservationProfile: TfrmReservationProfile
         Style = csDropDownList
         Color = clWhite
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 4473924
+        Font.Color = clBlack
         Font.Height = -9
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -533,7 +533,7 @@ object frmReservationProfile: TfrmReservationProfile
         Style = csDropDownList
         Color = clWhite
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 4473924
+        Font.Color = clBlack
         Font.Height = -9
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -558,7 +558,7 @@ object frmReservationProfile: TfrmReservationProfile
         Style = csDropDownList
         Color = clWhite
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 4473924
+        Font.Color = clBlack
         Font.Height = -9
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -585,8 +585,6 @@ object frmReservationProfile: TfrmReservationProfile
     object TabSheet3: TsTabSheet
       Caption = 'Main'
       TabVisible = False
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
       object Panel3: TsPanel
         Left = 0
         Top = 0
@@ -614,8 +612,6 @@ object frmReservationProfile: TfrmReservationProfile
             SkinData.SkinSection = 'PAGECONTROL'
             object TabSheet4: TsTabSheet
               Caption = 'Customer'
-              SkinData.CustomColor = False
-              SkinData.CustomFont = False
               object Label9: TsLabel
                 Left = 2
                 Top = 3
@@ -705,7 +701,7 @@ object frmReservationProfile: TfrmReservationProfile
                 Height = 20
                 Color = clWhite
                 Font.Charset = ANSI_CHARSET
-                Font.Color = 4473924
+                Font.Color = clBlack
                 Font.Height = -9
                 Font.Name = 'Arial'
                 Font.Style = []
@@ -727,7 +723,7 @@ object frmReservationProfile: TfrmReservationProfile
                 Height = 20
                 Color = clWhite
                 Font.Charset = ANSI_CHARSET
-                Font.Color = 4473924
+                Font.Color = clBlack
                 Font.Height = -9
                 Font.Name = 'Arial'
                 Font.Style = []
@@ -748,7 +744,7 @@ object frmReservationProfile: TfrmReservationProfile
                 Height = 20
                 Color = clWhite
                 Font.Charset = ANSI_CHARSET
-                Font.Color = 4473924
+                Font.Color = clBlack
                 Font.Height = -9
                 Font.Name = 'Arial'
                 Font.Style = []
@@ -769,7 +765,7 @@ object frmReservationProfile: TfrmReservationProfile
                 Height = 20
                 Color = clWhite
                 Font.Charset = ANSI_CHARSET
-                Font.Color = 4473924
+                Font.Color = clBlack
                 Font.Height = -9
                 Font.Name = 'Arial'
                 Font.Style = []
@@ -790,7 +786,7 @@ object frmReservationProfile: TfrmReservationProfile
                 Height = 20
                 Color = clWhite
                 Font.Charset = ANSI_CHARSET
-                Font.Color = 4473924
+                Font.Color = clBlack
                 Font.Height = -9
                 Font.Name = 'Arial'
                 Font.Style = []
@@ -811,7 +807,7 @@ object frmReservationProfile: TfrmReservationProfile
                 Height = 20
                 Color = clWhite
                 Font.Charset = ANSI_CHARSET
-                Font.Color = 4473924
+                Font.Color = clBlack
                 Font.Height = -9
                 Font.Name = 'Arial'
                 Font.Style = []
@@ -832,7 +828,7 @@ object frmReservationProfile: TfrmReservationProfile
                 Height = 20
                 Color = clWhite
                 Font.Charset = ANSI_CHARSET
-                Font.Color = 4473924
+                Font.Color = clBlack
                 Font.Height = -9
                 Font.Name = 'Arial'
                 Font.Style = []
@@ -860,8 +856,6 @@ object frmReservationProfile: TfrmReservationProfile
             object TabSheet5: TsTabSheet
               Caption = 'Customer Tel / Email'
               ImageIndex = 1
-              SkinData.CustomColor = False
-              SkinData.CustomFont = False
               object Label10: TsLabel
                 Left = 33
                 Top = 13
@@ -1146,7 +1140,7 @@ object frmReservationProfile: TfrmReservationProfile
             Height = 19
             Color = clWhite
             Font.Charset = DEFAULT_CHARSET
-            Font.Color = 4473924
+            Font.Color = clBlack
             Font.Height = -9
             Font.Name = 'Tahoma'
             Font.Style = []
@@ -1167,7 +1161,7 @@ object frmReservationProfile: TfrmReservationProfile
             Height = 20
             Color = clWhite
             Font.Charset = ANSI_CHARSET
-            Font.Color = 4473924
+            Font.Color = clBlack
             Font.Height = -9
             Font.Name = 'Arial'
             Font.Style = []
@@ -1188,7 +1182,7 @@ object frmReservationProfile: TfrmReservationProfile
             Height = 20
             Color = clWhite
             Font.Charset = ANSI_CHARSET
-            Font.Color = 4473924
+            Font.Color = clBlack
             Font.Height = -9
             Font.Name = 'Arial'
             Font.Style = []
@@ -1209,7 +1203,7 @@ object frmReservationProfile: TfrmReservationProfile
             Height = 20
             Color = clWhite
             Font.Charset = ANSI_CHARSET
-            Font.Color = 4473924
+            Font.Color = clBlack
             Font.Height = -9
             Font.Name = 'Arial'
             Font.Style = []
@@ -1230,7 +1224,7 @@ object frmReservationProfile: TfrmReservationProfile
             Height = 19
             Color = clWhite
             Font.Charset = DEFAULT_CHARSET
-            Font.Color = 4473924
+            Font.Color = clBlack
             Font.Height = -9
             Font.Name = 'Tahoma'
             Font.Style = []
@@ -1251,7 +1245,7 @@ object frmReservationProfile: TfrmReservationProfile
             Height = 19
             Color = clWhite
             Font.Charset = DEFAULT_CHARSET
-            Font.Color = 4473924
+            Font.Color = clBlack
             Font.Height = -9
             Font.Name = 'Tahoma'
             Font.Style = []
@@ -1272,7 +1266,7 @@ object frmReservationProfile: TfrmReservationProfile
             Height = 20
             Color = clWhite
             Font.Charset = ANSI_CHARSET
-            Font.Color = 4473924
+            Font.Color = clBlack
             Font.Height = -9
             Font.Name = 'Arial'
             Font.Style = []
@@ -1293,7 +1287,7 @@ object frmReservationProfile: TfrmReservationProfile
             Height = 19
             Color = clWhite
             Font.Charset = DEFAULT_CHARSET
-            Font.Color = 4473924
+            Font.Color = clBlack
             Font.Height = -9
             Font.Name = 'Tahoma'
             Font.Style = []
@@ -1314,7 +1308,7 @@ object frmReservationProfile: TfrmReservationProfile
             Height = 20
             Color = clWhite
             Font.Charset = ANSI_CHARSET
-            Font.Color = 4473924
+            Font.Color = clBlack
             Font.Height = -9
             Font.Name = 'Arial'
             Font.Style = []
@@ -1384,7 +1378,7 @@ object frmReservationProfile: TfrmReservationProfile
               BorderStyle = bsNone
               Color = clWhite
               Font.Charset = DEFAULT_CHARSET
-              Font.Color = 4473924
+              Font.Color = clBlack
               Font.Height = -9
               Font.Name = 'Tahoma'
               Font.Style = []
@@ -1415,7 +1409,7 @@ object frmReservationProfile: TfrmReservationProfile
               BorderStyle = bsNone
               Color = clWhite
               Font.Charset = DEFAULT_CHARSET
-              Font.Color = 4473924
+              Font.Color = clBlack
               Font.Height = -9
               Font.Name = 'Tahoma'
               Font.Style = []
@@ -1506,7 +1500,7 @@ object frmReservationProfile: TfrmReservationProfile
               BorderStyle = bsNone
               Color = clWhite
               Font.Charset = DEFAULT_CHARSET
-              Font.Color = 4473924
+              Font.Color = clBlack
               Font.Height = -9
               Font.Name = 'Tahoma'
               Font.Style = []
@@ -1527,7 +1521,7 @@ object frmReservationProfile: TfrmReservationProfile
               BorderStyle = bsNone
               Color = clWhite
               Font.Charset = DEFAULT_CHARSET
-              Font.Color = 4473924
+              Font.Color = clBlack
               Font.Height = -9
               Font.Name = 'Tahoma'
               Font.Style = []
@@ -1569,8 +1563,6 @@ object frmReservationProfile: TfrmReservationProfile
     SkinData.SkinSection = 'PAGECONTROL'
     object RoomsTab: TsTabSheet
       Caption = 'Rooms'
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
       object grRooms: TcxGrid
         Left = 0
         Top = 82
@@ -2474,8 +2466,6 @@ object frmReservationProfile: TfrmReservationProfile
     object GuestsTab: TsTabSheet
       Caption = 'Guests'
       ImageIndex = 1
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
       object Panel10: TsPanel
         Left = 0
         Top = 0
@@ -2536,8 +2526,8 @@ object frmReservationProfile: TfrmReservationProfile
         object chkShowAllGuests: TsCheckBox
           Left = 333
           Top = 11
-          Width = 85
-          Height = 20
+          Width = 93
+          Height = 16
           Caption = 'Show all guests'
           Anchors = [akLeft, akTop, akRight]
           TabOrder = 4
@@ -3081,8 +3071,6 @@ object frmReservationProfile: TfrmReservationProfile
     end
     object sTabSheet2: TsTabSheet
       Caption = 'ALERTS'
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
       object pnlAlertHolder: TsPanel
         Left = 0
         Top = 0
@@ -3097,8 +3085,6 @@ object frmReservationProfile: TfrmReservationProfile
     object InvoicesTab: TsTabSheet
       Caption = 'Finished Invoices'
       ImageIndex = 2
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
       object Panel11: TsPanel
         Left = 0
         Top = 0
