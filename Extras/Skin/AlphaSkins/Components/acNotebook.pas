@@ -1,8 +1,7 @@
 unit acNoteBook;
 {$I sDefs.inc}
 //{$DEFINE LOGGED}
-
-
+//+
 interface
 
 uses
@@ -80,9 +79,9 @@ uses
 
 constructor TsNotebook.Create(AOwner: TComponent);
 begin
-  inherited Create(AOwner);
   FCommonData := TsCommonData.Create(Self, True);
   FCommonData.COC := COC_TsCheckBox;
+  inherited Create(AOwner);
 end;
 
 
@@ -90,9 +89,7 @@ destructor TsNotebook.Destroy;
 var
   i: integer;
 begin
-  if Assigned(FCommonData) then
-    FreeAndNil(FCommonData);
-
+  FreeAndNil(FCommonData);
   for i := 0 to Length(wa) - 1 do
     if (wa[i] <> nil) and wa[i].Destroyed then
       FreeAndNil(wa[i]);
@@ -159,15 +156,17 @@ begin
             if Controls[i] is TPage then
               SendMessage(TPage(Controls[i]).Handle, Message.Msg, Message.WParam, Message.LParam);
 
-          if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
+          if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then begin
             CommonWndProc(Message, FCommonData);
-            RedrawWindow(Handle, nil, 0, RDW_FRAME or RDW_INVALIDATE or RDW_UPDATENOW or RDW_NOERASE or RDW_ALLCHILDREN);
+            RedrawWindow(Handle, nil, 0, RDWA_ALLNOW);
           end;
           Exit;
         end;
 
         AC_SETNEWSKIN: begin
-          if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then CommonWndProc(Message, FCommonData);
+          if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then
+            CommonWndProc(Message, FCommonData);
+
           for i := 0 to ControlCount - 1 do
             if Controls[i] is TPage then
               SendMessage(TPage(Controls[i]).Handle, Message.Msg, Message.WParam, Message.LParam);
@@ -176,9 +175,9 @@ begin
         end;
 
         AC_REFRESH: begin
-          if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
+          if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then begin
             CommonWndProc(Message, FCommonData);
-            RedrawWindow(Handle, nil, 0, RDW_FRAME or RDW_INVALIDATE or RDW_ERASE or RDW_ALLCHILDREN);
+            RedrawWindow(Handle, nil, 0, RDWA_ALL);
           end;
           for i := 0 to ControlCount - 1 do
             if Controls[i] is TPage then begin
@@ -201,7 +200,7 @@ begin
         AC_GETBG:
           if (SkinData.SkinManager <> nil) and SkinData.SkinManager.IsValidSkinIndex(SkinData.SkinIndex) then begin
             InitBGInfo(FCommonData, PacBGInfo(Message.LParam), 0);
-            if (PacBGInfo(Message.LParam)^.BgType = btNotReady) or (PacBGInfo(Message.LParam)^.BgType = btFill) then
+            if PacBGInfo(Message.LParam)^.BgType in [btNotReady, btFill] then
               Exit;
             // If BG is not ready yet
             if SkinData.BGChanged and ((SkinData.FCacheBmp.Width <> Width) or (SkinData.FCacheBmp.Height <> Height)) and not SkinData.Updating then begin
@@ -230,7 +229,7 @@ begin
 
         AC_INVALIDATE: begin
           if PageIndex >= 0 then begin
-            sd := TsCommonData(SendMessage(TPage(Controls[PageIndex]).Handle, SM_ALPHACMD, MakeWParam(0, AC_GETSKINDATA), 0));
+            sd := TsCommonData(SendMessage(TPage(Controls[PageIndex]).Handle, SM_ALPHACMD, AC_GETSKINDATA_HI, 0));
             if (sd <> nil) and (sd.SkinSection <> SkinData.SkinSection) then
               sd.SkinSection := SkinData.SkinSection;
           end;
@@ -291,7 +290,7 @@ begin
         WM_ERASEBKGND:
           if not bFlag then begin
             bFlag := True;
-            if (PageIndex >= 0) and (PageIndex < Length(wa)) then begin
+            if IsValidIndex(PageIndex, Length(wa)) then begin
               Message.Result := SendMessage(wa[PageIndex].CtrlHandle, Message.Msg, Message.WParam, 1);
               Exit;
             end;
@@ -373,7 +372,7 @@ begin
       end;
 
       AC_SETNEWSKIN: begin
-        if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then
+        if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then
           CommonWndProc(Message, SkinData);
 
         AlphaBroadCastCheck(Skindata.FOwnerControl, CtrlHandle, Message);
@@ -392,7 +391,7 @@ begin
     if Message.Msg = SM_ALPHACMD then
       case Message.WParamHi of
         AC_REMOVESKIN: begin
-          if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
+          if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then begin
             CommonWndProc(Message, SkinData);
             RedrawWindow(Page.Handle, nil, 0, RDW_FRAME or RDW_INVALIDATE or RDW_UPDATENOW or RDW_NOERASE or RDW_ALLCHILDREN);
           end;
@@ -407,7 +406,7 @@ begin
         end;
 
         AC_REFRESH: begin
-          if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then
+          if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then
             CommonWndProc(Message, SkinData);
 
           AlphaBroadCastCheck(Skindata.FOwnerControl, CtrlHandle, Message);
@@ -421,11 +420,11 @@ begin
         AC_GETBG:
           if (SkinData.SkinManager <> nil) and SkinData.SkinManager.IsValidSkinIndex(SkinData.SkinIndex) then begin
             InitBGInfo(SkinData, PacBGInfo(Message.LParam), 0);
-            if (PacBGInfo(Message.LParam)^.BgType = btNotReady) or (PacBGInfo(Message.LParam)^.BgType = btFill) then
+            if PacBGInfo(Message.LParam)^.BgType in [btNotReady, btFill] then
               Exit;
             // If BG is not ready yet
             if SkinData.BGChanged and ((SkinData.FCacheBmp.Width <> NoteBook.Width) or (SkinData.FCacheBmp.Height <> NoteBook.Height)) and not SkinData.Updating then
-              if (NoteBook.Parent = nil) or not NoteBook.Parent.HandleAllocated or GetBoolMsg(NoteBook.Parent.Handle, ac_CtrlHandled) then begin // If parent is skinned
+              if (NoteBook.Parent = nil) or not NoteBook.Parent.HandleAllocated or WndIsSkinned(NoteBook.Parent.Handle) then begin // If parent is skinned
                 PacBGInfo(Message.LParam)^.BgType := btNotReady;
                 SkinData.FUpdating := True;
                 Exit;
@@ -436,7 +435,7 @@ begin
 
         AC_ENDPARENTUPDATE: begin
           if not InUpdating(SkinData, True) then
-            RedrawWindow(CtrlHandle, nil, 0, RDW_INVALIDATE or RDW_ERASE or RDW_FRAME or RDW_UPDATENOW);
+            RedrawWindow(CtrlHandle, nil, 0, RDWA_NOCHILDRENNOW);
 
           SetParentUpdated(Page);
           Exit;
@@ -494,13 +493,13 @@ begin
 
       CM_SHOWINGCHANGED:
         if SkinData.FOwnerControl.Visible then begin
-          if (SkinData.SkinManager.Options.OptimizingPriority = opMemory) then
+          if SkinData.SkinManager.Options.OptimizingPriority = opMemory then
             SkinData.FUpdating := False;
 
           AddToAdapter(TWinControl(SkinData.FOwnerControl));
-          M := MakeMessage(SM_ALPHACMD, MakeWParam(0, AC_SETNEWSKIN), Longint(SkinData.SkinManager), 0);
+          M := MakeMessage(SM_ALPHACMD, AC_SETNEWSKIN_HI, Longint(SkinData.SkinManager), 0);
           AlphaBroadCastCheck(SkinData.FOwnerControl, CtrlHandle, M);
-          M := MakeMessage(SM_ALPHACMD, MakeWParam(0, AC_REFRESH), Longint(SkinData.SkinManager), 0);
+          M := MakeMessage(SM_ALPHACMD, AC_REFRESH_HI, Longint(SkinData.SkinManager), 0);
           AlphaBroadCastCheck(SkinData.FOwnerControl, CtrlHandle, M);
         end;
 
@@ -508,7 +507,7 @@ begin
         SkinData.BGChanged := True;
 
       WM_PARENTNOTIFY:
-        if (Message.WParamLo = WM_CREATE) or (Message.WParamLo = WM_DESTROY) then begin
+        if Message.WParamLo in [WM_CREATE, WM_DESTROY] then begin
           inherited;
           if (Message.WParamLo = WM_CREATE) and Assigned(Notebook) then
             AddToAdapter(Notebook);

@@ -32,12 +32,14 @@ Type
     function IndexOf(const S: string): Integer; override;
   end;
 
+
   TsCustomComboBoxStringsClass = class of TsCustomComboBoxStrings;
   TsComboBoxStrings = class(TsCustomComboBoxStrings)
   public
     function Add(const S: string): Integer; override;
     procedure Insert(Index: Integer; const S: string); override;
   end;
+
 
   TsCustomListControl = class(TWinControl)
   private
@@ -66,6 +68,7 @@ Type
   published
     property BoundLabel : TsBoundLabel read FBoundLabel write FBoundLabel;
   end;
+
 
   TsCommonCombo = class(TsCustomListControl)
   private
@@ -169,6 +172,7 @@ Type
     property ShowButton : boolean read FShowButton write SetShowButton default True;
   end;
 
+
   TsCommonComboBox = class(TsCommonCombo)
   private
     FAutoComplete: Boolean;
@@ -192,7 +196,7 @@ Type
     procedure WMLButtonDown(var Message: TWMLButtonDown); message WM_LBUTTONDOWN;
     procedure WMPaint(var Message: TWMPaint); message WM_PAINT;
     procedure WMLButtonDblClk(var Message: TMessage); message WM_LBUTTONDBLCLK;
-    procedure SkinPaint(DC : HDC); virtual;
+    procedure SkinPaint(DC: HDC); virtual;
     procedure SetDisabledKind(const Value: TsDisabledKind);
   protected
     procedure CreateParams(var Params: TCreateParams); override;
@@ -200,7 +204,7 @@ Type
     procedure DestroyWnd; override;
     procedure DrawItem(Index: Integer; Rect: TRect; State: TOwnerDrawState); virtual;
     procedure DrawSkinItem(Index: Integer; Rect: TRect; State: TOwnerDrawState); virtual;
-    function  GetItemHt: Integer; override;
+    function GetItemHt: Integer; override;
     function GetItemsClass: TsCustomComboBoxStringsClass; override;
     function GetSelText: string;
     procedure KeyPress(var Key: Char); override;
@@ -226,9 +230,11 @@ Type
     property ReadOnly : boolean read FReadOnly write FReadOnly default False;
   end;
 
+
   TsColorBoxStyles = (cbStandardColors, cbExtendedColors, cbSystemColors, cbIncludeNone, cbIncludeDefault, cbCustomColor, cbPrettyNames, cbCustomColors);
   TsColorBoxStyle = set of TsColorBoxStyles;
 {$ENDIF} // NOTFORHELP
+
 
 {$IFNDEF NOTFORHELP}
   TsCustomColorBox = class;
@@ -280,9 +286,11 @@ Type
   end;
 {$ENDIF} // NOTFORHELP
 
+
 {$IFNDEF NOTFORHELP}
   TsCustomComboBoxEx = class;
   TsComboItem = class;
+
 
   TsComboItems = class(TCollection)
   private
@@ -299,6 +307,7 @@ Type
     destructor Destroy; override;
     property Items[Index: Integer]: TsComboItem read GetItem write SetItem; default;
   end;
+
 
   TsComboItem = class(TCollectionItem)
   private
@@ -317,30 +326,38 @@ Type
     procedure Assign(Source: TPersistent); override;
     function GetDisplayName: string; override;
   published
-    property Caption : string read FCaption write SetCaption;
-    property ImageIndex : TImageIndex read FImageIndex write FImageIndex default -1;
-    property Indend : integer read FIndend write FIndend default -1;
-    property OverlayImageIndex : TImageIndex read FOverlayImageIndex write FOverlayImageIndex default -1;
-    property SelectedImageIndex : TImageIndex read FSelectedImageIndex write FSelectedImageIndex default -1;
+    property Caption: string read FCaption write SetCaption;
+    property ImageIndex: TImageIndex read FImageIndex write FImageIndex default -1;
+    property Indend: integer read FIndend write FIndend default -1;
+    property OverlayImageIndex: TImageIndex read FOverlayImageIndex write FOverlayImageIndex default -1;
+    property SelectedImageIndex: TImageIndex read FSelectedImageIndex write FSelectedImageIndex default -1;
   end;
 {$ENDIF} // NOTFORHELP
+
 
 {$IFNDEF NOTFORHELP}
   TsCustomComboBoxEx = class(TsCommonComboBox)
   private
-    FImageChangeLink: TChangeLink;
-    FImages: TCustomImageList;
+    State: integer;
+    NeedToUpdate: boolean;
     FItemsEx: TsComboItems;
-    NeedToUpdate : boolean;
+    FImages: TCustomImageList;
+    FImageChangeLink: TChangeLink;
     procedure ImageListChange(Sender: TObject);
     procedure SetImages(const Value: TCustomImageList);
     procedure SetItemsEx(const Value: TsComboItems);
     function GetSelectedItem: TsComboItem;
   protected
+    FDropDown: boolean;
+    function AllowDropDown: boolean; virtual;
+    procedure DoDropDown; virtual;
     procedure DrawItem(Index: Integer; Rect: TRect; State: TOwnerDrawState); override;
     procedure DrawSkinItem(Index: Integer; Rect: TRect; State: TOwnerDrawState); override;
-    function ImgRect(Item : TsComboItem; State: TOwnerDrawState) : TRect;
-    function CurrentImage(Item : TsComboItem; State: TOwnerDrawState) : integer;
+    function ImgRect(Item: TsComboItem; State: TOwnerDrawState): TRect;
+    function CurrentImage(Item: TsComboItem; State: TOwnerDrawState): integer;
+    procedure ComboWndProc(var Message: TMessage; ComboWnd: HWnd; ComboProc: Pointer); override;
+    procedure WMLButtonDblClk (var Message: TMessage);       message WM_LBUTTONDBLCLK;
+    procedure WMLButtonDown   (var Message: TWMLButtonDown); message WM_LBUTTONDOWN;
   public
     procedure Clear; override;
     procedure UpdateList;
@@ -349,16 +366,17 @@ Type
     procedure CreateWnd; override;
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
     procedure UpdateMargins; override;
-    property Images : TCustomImageList read FImages write SetImages;
-    property ItemsEx : TsComboItems read FItemsEx write SetItemsEx;
+    property Images: TCustomImageList read FImages write SetImages;
+    property ItemsEx: TsComboItems read FItemsEx write SetItemsEx;
     property SelectedItem : TsComboItem read GetSelectedItem;
   end;
 {$ENDIF} // NOTFORHELP
 
+
 implementation
 
 uses sStyleSimply, sMaskData, sSkinProps, sVclUtils, Consts, sMessages, sBorders, commctrl, sAlphaGraph,
-  sThirdParty, sSKinManager, sComboBoxes;
+  sThirdParty, sSkinManager, sComboBoxes, sColorDialog;
 
 const
   StandardColorsCount = 16;
@@ -376,7 +394,7 @@ function HasPopup(Control: TControl): Boolean;
 begin
   Result := True;
   while Control <> nil do
-    if TsHackedControl(Control).PopupMenu <> nil then
+    if TsAccessControl(Control).PopupMenu <> nil then
       Exit
     else
       Control := Control.Parent;
@@ -394,9 +412,9 @@ end;
 
 constructor TsCustomListControl.Create(AOwner: TComponent);
 begin
-  inherited Create(AOwner);
   FCommonData := TsCommonData.Create(Self, True);
   FCommonData.COC := COC_TsCustom;
+  inherited Create(AOwner);
   if FCommonData.SkinSection = '' then
     FCommonData.SkinSection := s_ComboBOx;
 
@@ -407,9 +425,7 @@ end;
 destructor TsCustomListControl.Destroy;
 begin
   FreeAndNil(FBoundLabel);
-  if Assigned(FCommonData) then
-    FreeAndNil(FCommonData);
-
+  FreeAndNil(FCommonData);
   inherited Destroy;
 end;
 
@@ -427,11 +443,13 @@ begin
   end;
 end;
 
+
 procedure TsCustomListControl.MoveSelection(Destination: TsCustomListControl);
 begin
   CopySelection(Destination);
   DeleteSelected;
 end;
+
 
 procedure TsCustomListControl.WndProc(var Message: TMessage);
 var
@@ -452,19 +470,19 @@ begin
         Exit
       end;
 
-      AC_REMOVESKIN: if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
+      AC_REMOVESKIN: if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then begin
         CommonWndProc(Message, FCommonData);
         if not FCommonData.CustomColor then Color := clWindow;
         if not FCommonData.CustomFont then Font.Color := clWindowText;
         Exit
       end;
 
-      AC_SETNEWSKIN: if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
+      AC_SETNEWSKIN: if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then begin
         CommonWndProc(Message, FCommonData);
-        exit
+        Exit
       end;
 
-      AC_REFRESH: if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
+      AC_REFRESH: if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then begin
         CommonWndProc(Message, FCommonData);
         if FCommonData.Skinned then begin
           if not FCommonData.CustomColor then
@@ -474,7 +492,7 @@ begin
             Font.Color := FCommonData.SkinManager.gd[FCommonData.SkinIndex].Props[0].FontColor.Color;
         end;
         Repaint;
-        exit
+        Exit
       end;
 
       AC_ENDPARENTUPDATE: if FCommonData.Updating then begin
@@ -528,14 +546,13 @@ begin
           SendMessage(Handle, WM_NCPAINT, 0, 0);
         end;
 
-        CM_MOUSELEAVE, CM_MOUSEENTER: begin
+        CM_MOUSELEAVE, CM_MOUSEENTER:
           if not FCommonData.FFocused and not(csDesigning in ComponentState) then begin
             FCommonData.FMouseAbove := Message.Msg = CM_MOUSEENTER;
             FCommonData.BGChanged := True;
             SendMessage(Handle, WM_NCPAINT, 0, 0);
             Repaint;
           end;
-        end;
 
         WM_SETFONT: begin
           FCommonData.BGChanged := True;
@@ -563,7 +580,7 @@ begin
   if Count > DropDownCount then
     Count := DropDownCount;
 
-  if Count < 1 then
+  if Count <= 0 then
     Count := 1;
 
   FDroppingDown := True;
@@ -628,21 +645,25 @@ begin
   ItemIndex := -1;
 end;
 
+
 procedure TsCommonCombo.CloseUp;
 begin
   if Assigned(FOnCloseUp) then FOnCloseUp(Self);
 end;
+
 
 procedure TsCommonCombo.CMCancelMode(var Message: TCMCancelMode);
 begin
   if Message.Sender <> Self then Perform(CB_SHOWDROPDOWN, 0, 0);
 end;
 
+
 procedure TsCommonCombo.CMCtl3DChanged(var Message: TMessage);
 begin
   if NewStyleControls then RecreateWnd;
   inherited;
 end;
+
 
 procedure TsCommonCombo.CNCommand(var Message: TWMCommand);
 begin
@@ -694,12 +715,13 @@ begin
   end;
 end;
 
+
 procedure TsCommonCombo.CNMeasureItem(var Message: TWMMeasureItem);
 begin
-  with Message.MeasureItemStruct^ do begin
+  with Message.MeasureItemStruct^ do
     itemHeight := FItemHeight;
-  end;
 end;
+
 
 procedure TsCommonCombo.ComboWndProc(var Message: TMessage; ComboWnd: HWnd; ComboProc: Pointer);
 var
@@ -722,8 +744,7 @@ begin
 
         WM_CHAR: begin
           if DoKeyPress(TWMKey(Message)) then Exit;
-          if ((TWMKey(Message).CharCode = VK_RETURN) or
-               (TWMKey(Message).CharCode = VK_ESCAPE)) and DroppedDown then begin
+          if (TWMKey(Message).CharCode in [VK_RETURN, VK_ESCAPE]) and DroppedDown then begin
             DroppedDown := False;
             Exit;
           end;
@@ -772,18 +793,24 @@ begin
   end;
 end;
 
+
 procedure TsCommonCombo.CopySelection(Destination: TsCustomListControl);
 begin
-  if ItemIndex <> -1 then
+  if ItemIndex >= 0 then
     Destination.AddItem(Items[ItemIndex], Items.Objects[ItemIndex]);
 end;
+
 
 constructor TsCommonCombo.Create(AOwner: TComponent);
 const
   ComboBoxStyle = [csCaptureMouse, csSetCaption, csDoubleClicks, csFixedHeight, csReflector, csOpaque];
 begin
   inherited Create(AOwner);
-  if NewStyleControls then ControlStyle := ComboBoxStyle else ControlStyle := ComboBoxStyle + [csFramed];
+  if NewStyleControls then
+    ControlStyle := ComboBoxStyle
+  else
+    ControlStyle := ComboBoxStyle + [csFramed];
+
   Width := 145;
   TabStop := True;
   ParentColor := False;
@@ -799,6 +826,7 @@ begin
   Height := 22;
 end;
 
+
 procedure TsCommonCombo.CreateWnd;
 begin
   inherited CreateWnd;
@@ -807,10 +835,13 @@ begin
   FListHandle := 0;
 end;
 
+
 procedure TsCommonCombo.DeleteSelected;
 begin
-  if ItemIndex <> -1 then Items.Delete(ItemIndex);
+  if ItemIndex >= 0 then
+    Items.Delete(ItemIndex);
 end;
+
 
 destructor TsCommonCombo.Destroy;
 begin
@@ -825,6 +856,7 @@ begin
   inherited Destroy;
 end;
 
+
 procedure TsCommonCombo.DestroyWindowHandle;
 begin
   inherited DestroyWindowHandle;
@@ -838,10 +870,12 @@ begin
   FDropHandle := 0;
 end;
 
+
 procedure TsCommonCombo.DropDown;
 begin
   if Assigned(FOnDropDown) then FOnDropDown(Self);
 end;
+
 
 procedure TsCommonCombo.EditWndProc(var Message: TMessage);
 var
@@ -860,19 +894,19 @@ begin
 
   ComboWndProc(Message, FEditHandle, FDefEditProc);
   case Message.Msg of
-    WM_LBUTTONDOWN, WM_LBUTTONDBLCLK : begin
+    WM_LBUTTONDOWN, WM_LBUTTONDBLCLK:
       if DragMode = dmAutomatic then begin
         GetCursorPos(P);
         P := ScreenToClient(P);
         SendMessage(FEditHandle, WM_LBUTTONUP, 0, LPARAM(PointToSmallPoint(P)));
         BeginDrag(False);
       end;
-    end;
-    WM_SETFONT : if NewStyleControls then begin
+
+    WM_SETFONT: if NewStyleControls then
       SendMessage(FEditHandle, EM_SETMARGINS, EC_LEFTMARGIN or EC_RIGHTMARGIN, 0);
-    end;
   end;
 end;
+
 
 function TsCommonCombo.Focused: Boolean;
 var
@@ -885,25 +919,27 @@ begin
   end;
 end;
 
+
 function TsCommonCombo.GetCount: Integer;
 begin
   Result := GetItemCount;
 end;
+
 
 function TsCommonCombo.GetDroppedDown: Boolean;
 begin
   Result := LongBool(SendMessage(Handle, CB_GETDROPPEDSTATE, 0, 0));
 end;
 
+
 function TsCommonCombo.GetItemIndex: Integer;
 begin
-  if csLoading in ComponentState then begin
+  if csLoading in ComponentState then
     Result := FItemIndex
-  end
-  else begin
+  else
     Result := SendMessage(Handle, CB_GETCURSEL, 0, 0);
-  end;
 end;
+
 
 function TsCommonCombo.GetSelLength: Integer;
 var
@@ -913,25 +949,31 @@ begin
   Result := Selection.EndPos - Selection.StartPos;
 end;
 
+
 function TsCommonCombo.GetSelStart: Integer;
 begin
   SendMessage(Handle, CB_GETEDITSEL, WPARAM(@Result), 0);
 end;
+
 
 procedure TsCommonCombo.ListWndProc(var Message: TMessage);
 begin
   ComboWndProc(Message, FListHandle, FDefListProc);
 end;
 
+
 procedure TsCommonCombo.Loaded;
 begin
   inherited Loaded;
-  if FItemIndex <> -1 then SetItemIndex(FItemIndex);
+  if FItemIndex >= 0 then
+    SetItemIndex(FItemIndex);
 end;
+
 
 procedure TsCommonCombo.MeasureItem(Index: Integer; var Height: Integer);
 begin
-  if Assigned(FOnMeasureItem) then FOnMeasureItem(Self, Index, Height)
+  if Assigned(FOnMeasureItem) then
+    FOnMeasureItem(Self, Index, Height)
 end;
 
 
@@ -948,10 +990,10 @@ begin
 
   R := ButtonRect;
   with SkinData.SkinManager.ConstData.ComboBtn do begin
-    if SkinIndex > -1 then begin
+    if SkinIndex >= 0 then begin
       TmpBtn := CreateBmpLike(FCommonData.FCacheBmp);
       BitBlt(TmpBtn.Canvas.Handle, 0, 0, TmpBtn.Width, TmpBtn.Height, FCommonData.FCacheBmp.Canvas.Handle, 0, 0, SRCCOPY);
-      PaintItem(SkinIndex, SkinSection, MakeCacheInfo(FCommonData.FCacheBmp),
+      PaintItem(SkinIndex, MakeCacheInfo(FCommonData.FCacheBmp),
                 True, Mode, R, MkPoint, FCommonData.FCacheBmp, FCommonData.SkinManager, BGIndex[0], BGIndex[1]);
       FreeAndNil(TmpBtn);
     end;
@@ -963,6 +1005,7 @@ begin
   end;
 end;
 
+
 procedure TsCommonCombo.Select;
 begin
   if Assigned(FOnSelect) then
@@ -971,15 +1014,18 @@ begin
     Change;
 end;
 
+
 procedure TsCommonCombo.SelectAll;
 begin
   SendMessage(Handle, CB_SETEDITSEL, 0, Integer($FFFF0000));
 end;
 
+
 procedure TsCommonCombo.SetDropDownCount(const Value: Integer);
 begin
   FDropDownCount := Value;
 end;
+
 
 procedure TsCommonCombo.SetDroppedDown(Value: Boolean);
 var
@@ -990,14 +1036,18 @@ begin
   InvalidateRect(Handle, @R, True);
 end;
 
+
 procedure TsCommonCombo.SetItemHeight(Value: Integer);
 begin
   if Value > 0 then begin
     FItemHeight := Value;
-    if HandleAllocated then SendMessage(Handle, CB_SETITEMHEIGHT, 0, Value);
+    if HandleAllocated then
+      SendMessage(Handle, CB_SETITEMHEIGHT, 0, Value);
+
     RecreateWnd;
   end;
 end;
+
 
 procedure TsCommonCombo.SetItemIndex(const Value: Integer);
 begin
@@ -1006,9 +1056,11 @@ begin
   else
     if GetItemIndex <> Value then begin
       SendMessage(Handle, CB_SETCURSEL, Value, 0);
-      if Assigned(FCommonData.SkinManager) and FCommonData.SkinManager.IsValidSkinIndex(FCommonData.SkinIndex) then Repaint;
+      if Assigned(FCommonData.SkinManager) and FCommonData.SkinManager.IsValidSkinIndex(FCommonData.SkinIndex) then
+        Repaint;
     end;
 end;
+
 
 procedure TsCommonCombo.SetItems(const Value: TStrings);
 begin
@@ -1018,14 +1070,19 @@ begin
     FItems := Value;
 end;
 
+
 procedure TsCommonCombo.SetMaxLength(Value: Integer);
 begin
-  if Value < 0 then Value := 0;
+  if Value < 0 then
+    Value := 0;
+
   if FMaxLength <> Value then begin
     FMaxLength := Value;
-    if HandleAllocated then SendMessage(Handle, CB_LIMITTEXT, Value, 0);
+    if HandleAllocated then
+      SendMessage(Handle, CB_LIMITTEXT, Value, 0);
   end;
 end;
+
 
 procedure TsCommonCombo.SetSelLength(Value: Integer);
 var
@@ -1036,6 +1093,7 @@ begin
   SendMessage(Handle, CB_SETEDITSEL, 0, MakeLParam(Word(Selection.StartPos), Word(Selection.EndPos)));
 end;
 
+
 procedure TsCommonCombo.SetSelStart(Value: Integer);
 var
   Selection: TSelection;
@@ -1045,6 +1103,7 @@ begin
   SendMessage(Handle, CB_SETEDITSEL, 0, MakeLParam(Word(Selection.StartPos), Word(Selection.EndPos)));
 end;
 
+
 procedure TsCommonCombo.SetShowButton(const Value: boolean);
 begin
   if FShowButton <> Value then begin
@@ -1053,32 +1112,40 @@ begin
   end;
 end;
 
+
 procedure TsCommonCombo.UpdateMargins;
 begin
 //
 end;
 
+
 procedure TsCommonCombo.WMCreate(var Message: TWMCreate);
 begin
   inherited;
-  if WindowText <> nil then SetWindowText(Handle, WindowText);
+  if WindowText <> nil then
+    SetWindowText(Handle, WindowText);
 end;
+
 
 procedure TsCommonCombo.WMDeleteItem(var Message: TWMDeleteItem);
 begin
   DefaultHandler(Message);
 end;
 
+
 procedure TsCommonCombo.WMDrawItem(var Message: TWMDrawItem);
 begin
   DefaultHandler(Message);
 end;
 
+
 procedure TsCommonCombo.WMGetDlgCode(var Message: TWMGetDlgCode);
 begin
   inherited;
-  if DroppedDown then Message.Result := Message.Result or DLGC_WANTALLKEYS;
+  if DroppedDown then
+    Message.Result := Message.Result or DLGC_WANTALLKEYS;
 end;
+
 
 procedure TsCommonCombo.WndProc(var Message: TMessage);
 var
@@ -1090,7 +1157,9 @@ begin
          not Dragging then begin
 
     if DragMode = dmAutomatic then begin
-      if IsControlMouseMsg(TWMMouse(Message)) then Exit;
+      if IsControlMouseMsg(TWMMouse(Message)) then
+        Exit;
+
       ControlState := ControlState + [csLButtonDown];
       Dispatch(Message);  {overrides TControl's BeginDrag}
       Exit;
@@ -1098,30 +1167,33 @@ begin
   end;
   with Message do begin
     case Msg of
-      WM_SIZE: begin
+      WM_SIZE:
         if FDroppingDown then begin
           DefaultHandler(Message);
           Exit;
         end;
-      end;
+
       WM_CTLCOLORMSGBOX..WM_CTLCOLORSTATIC: begin
         {$R-}
         h := hdc(WParam);
         {$R+}
-        if (Message.Msg = WM_CTLCOLORLISTBOX) and SkinData.Skinned and not (csLoading in ComponentState) and (lBoxHandle = 0) then begin
+        if (Message.Msg = WM_CTLCOLORLISTBOX) and SkinData.Skinned and not (csLoading in ComponentState) and (lBoxHandle = 0) then
           if Items.Count > DropDownCount then begin
             lBoxHandle := hwnd(Message.LParam);
 //            SetWindowLong(lBoxHandle, GWL_STYLE, GetWindowLong(lBoxHandle, GWL_STYLE) and not WS_BORDER or WS_THICKFRAME);
             ListSW := TacComboListWnd.CreateEx(lboxhandle, nil, SkinData.SkinManager, s_Edit, True, False);
           end;
-        end;
+
         SetTextColor(h, ColorToRGB(Font.Color));
         SetBkColor(h, ColorToRGB(Brush.Color));
         Result := LRESULT(Brush.Handle);
         Exit;
       end;
+
       WM_CHAR: begin
-        if DoKeyPress(TWMKey(Message)) then Exit;
+        if DoKeyPress(TWMKey(Message)) then
+          Exit;
+
         if ((TWMKey(Message).CharCode = VK_RETURN) or (TWMKey(Message).CharCode = VK_ESCAPE)) and DroppedDown then begin
           DroppedDown := False;
           Exit;
@@ -1133,21 +1205,21 @@ begin
   case Message.Msg of
     CN_COMMAND:
       case TWMCommand(Message).NotifyCode of
-        CBN_CLOSEUP : begin
+        CBN_CLOSEUP:
           if ListSW <> nil then
             ListSW.SkinData.BGChanged := True;
-        end;
       end;
   end;
 end;
 
-{ TsCommonComboBox }
 
 procedure TsCommonComboBox.CMParentColorChanged(var Message: TMessage);
 begin
   inherited;
-  if not NewStyleControls and (Style < csDropDownList) then Invalidate;
+  if not NewStyleControls and (Style < csDropDownList) then
+    Invalidate;
 end;
+
 
 procedure TsCommonComboBox.CNDrawItem(var Message: TWMDrawItem);
 var
@@ -1155,22 +1227,28 @@ var
   ds : TDrawItemStruct;
 begin
   ds := Message.DrawItemStruct^;
-  if ds.hDC = 0 then Exit;
+  if ds.hDC = 0 then
+    Exit;
+
   State := TOwnerDrawState(LongRec(ds.itemState).Lo);
   FCanvas.Handle := ds.hDC;
   FCanvas.Font := Font;
   FCanvas.Brush := Brush;
-  if (ds.itemState and ODS_DEFAULT) <> 0 then Include(State, odDefault);
+  if (ds.itemState and ODS_DEFAULT) <> 0 then
+    Include(State, odDefault);
 
   if FCommonData.Skinned then begin
     if ds.itemState and ODS_COMBOBOXEDIT <> 0 then begin
       Exit;
       Include(State, odComboBoxEdit);
     end;
-    if Integer(ds.itemID) >= 0 then DrawSkinItem(ds.itemID, ds.rcItem, State)
+    if Integer(ds.itemID) >= 0 then
+      DrawSkinItem(ds.itemID, ds.rcItem, State)
   end
   else begin
-    if ds.itemState and ODS_COMBOBOXEDIT <> 0 then Include(State, odComboBoxEdit);
+    if ds.itemState and ODS_COMBOBOXEDIT <> 0 then
+      Include(State, odComboBoxEdit);
+
     if (Integer(ds.itemID) >= 0) and (odSelected in State) then begin
       FCanvas.Brush.Color := clHighlight;
       FCanvas.Font.Color := clHighlightText
@@ -1190,6 +1268,7 @@ begin
   FCanvas.Handle := 0;
 end;
 
+
 constructor TsCommonComboBox.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
@@ -1201,6 +1280,7 @@ begin
   FDisabledKind := DefDisabledKind;
   FReadOnly := False;
 end;
+
 
 procedure TsCommonComboBox.CreateParams(var Params: TCreateParams);
 const
@@ -1216,6 +1296,7 @@ begin
                   ComboBoxStyles[FStyle] or Sorts[FSorted] or CharCases[FCharCase];
 end;
 
+
 procedure TsCommonComboBox.CreateWnd;
 var
   ChildHandle: THandle;
@@ -1226,8 +1307,10 @@ begin
     FItems.Assign(FSaveItems);
     FSaveItems.Free;
     FSaveItems := nil;
-    if FSaveIndex <> -1 then begin
-      if FItems.Count < FSaveIndex then FSaveIndex := Items.Count;
+    if FSaveIndex >= 0 then begin
+      if FItems.Count < FSaveIndex then
+        FSaveIndex := Items.Count;
+
       SendMessage(Handle, CB_SETCURSEL, FSaveIndex, 0);
     end;
   end;
@@ -1249,12 +1332,14 @@ begin
     SendMessage(FEditHandle, EM_SETMARGINS, EC_LEFTMARGIN or EC_RIGHTMARGIN, 0);
 end;
 
+
 destructor TsCommonComboBox.Destroy;
 begin
   FItems.Free;
   FSaveItems.Free;
   inherited Destroy;
 end;
+
 
 procedure TsCommonComboBox.DestroyWnd;
 begin
@@ -1265,6 +1350,7 @@ begin
   end;
   inherited DestroyWnd;
 end;
+
 
 procedure TsCommonComboBox.DrawItem(Index: Integer; Rect: TRect; State: TOwnerDrawState);
 begin
@@ -1277,33 +1363,41 @@ begin
   end;
 end;
 
+
 procedure TsCommonComboBox.DrawSkinItem(Index: Integer; Rect: TRect; State: TOwnerDrawState);
 begin
 //
 end;
+
 
 function TsCommonComboBox.GetItemCount: Integer;
 begin
   Result := FItems.Count;
 end;
 
+
 function TsCommonComboBox.GetItemHt: Integer;
 begin
-  if FStyle in [csOwnerDrawFixed, csOwnerDrawVariable]
-    then Result := FItemHeight
-    else Result := Perform(CB_GETITEMHEIGHT, 0, 0);
+  if FStyle in [csOwnerDrawFixed, csOwnerDrawVariable] then
+    Result := FItemHeight
+  else
+    Result := Perform(CB_GETITEMHEIGHT, 0, 0);
 end;
+
 
 function TsCommonComboBox.GetItemsClass: TsCustomComboBoxStringsClass;
 begin
   Result := TsComboBoxStrings;
 end;
 
+
 function TsCommonComboBox.GetSelText: string;
 begin
   Result := '';
-  if FStyle < csDropDownList then Result := Copy(Text, GetSelStart + 1, GetSelLength);
+  if FStyle < csDropDownList then
+    Result := Copy(Text, GetSelStart + 1, GetSelLength);
 end;
+
 
 procedure TsCommonComboBox.KeyPress(var Key: Char);
 
@@ -1333,42 +1427,48 @@ var
   SaveText: String;
 begin
   inherited KeyPress(Key);
-  if not AutoComplete then exit;
+  if not AutoComplete then
+    Exit;
+
   if Style in [csDropDown, csSimple] then
     FFilter := Text
   else begin
     if GetTickCount - FLastTime >= 500 then
       FFilter := '';
+
     FLastTime := GetTickCount;
   end;
 
   case Ord(Key) of
     VK_ESCAPE:
-      exit;
+      Exit;
+
     VK_TAB:
       if FAutoDropDown and DroppedDown then
         DroppedDown := False;
-    VK_BACK:
-      begin
-        if HasSelectedText(StartPos, EndPos) then
-          DeleteSelectedText
+
+    VK_BACK: begin
+      if HasSelectedText(StartPos, EndPos) then
+        DeleteSelectedText
+      else
+        if (Style in [csDropDown, csSimple]) and (Length(Text) > 0) then begin
+          SaveText := Text;
+          OldText := Copy(SaveText, 1, StartPos - 1);
+          SendMessage(Handle, CB_SETCURSEL, -1, 0);
+          Text := OldText + Copy(SaveText, EndPos + 1, MaxInt);
+          SendMessage(Handle, CB_SETEDITSEL, 0, MakeLParam(Word(StartPos - 1), Word(StartPos - 1)));
+          FFilter := Text;
+        end
         else
-          if (Style in [csDropDown, csSimple]) and (Length(Text) > 0) then begin
-            SaveText := Text;
-            OldText := Copy(SaveText, 1, StartPos - 1);
-            SendMessage(Handle, CB_SETCURSEL, -1, 0);
-            Text := OldText + Copy(SaveText, EndPos + 1, MaxInt);
-            SendMessage(Handle, CB_SETEDITSEL, 0, MakeLParam(Word(StartPos - 1), Word(StartPos - 1)));
-            FFilter := Text;
-          end
-          else
-            Delete(FFilter, Length(FFilter), 1);
-        Key := #0;
-        Change;
-      end;
+          Delete(FFilter, Length(FFilter), 1);
+
+      Key := #0;
+      Change;
+    end;
   else
     if FAutoDropDown and not DroppedDown then
       DroppedDown := True;
+
     if HasSelectedText(StartPos, EndPos) then begin
       if SelectItem(Copy(FFilter, 1, StartPos) + Key) then
         Key := #0
@@ -1379,10 +1479,13 @@ begin
   end;
 end;
 
+
 procedure TsCommonComboBox.MeasureItem(Index: Integer; var Height: Integer);
 begin
-  if Assigned(FOnMeasureItem) then FOnMeasureItem(Self, Index, Height)
+  if Assigned(FOnMeasureItem) then
+    FOnMeasureItem(Self, Index, Height)
 end;
+
 
 function TsCommonComboBox.SelectItem(const AnItem: String): Boolean;
 var
@@ -1396,8 +1499,10 @@ begin
     exit;
   end;
   Idx := SendMessage(Handle, CB_FINDSTRING, -1, LPARAM(PChar(AnItem)));
-  Result := (Idx <> CB_ERR);
-  if not Result then exit;
+  Result := Idx <> CB_ERR;
+  if not Result then
+    Exit;
+
   ValueChange := Idx <> ItemIndex;
   SendMessage(Handle, CB_SETCURSEL, Idx, 0);
   if (Style in [csDropDown, csSimple]) then begin
@@ -1414,6 +1519,7 @@ begin
   end;
 end;
 
+
 procedure TsCommonComboBox.SetCharCase(Value: TEditCharCase);
 begin
   if FCharCase <> Value then begin
@@ -1421,6 +1527,7 @@ begin
     RecreateWnd;
   end;
 end;
+
 
 procedure TsCommonComboBox.SetDisabledKind(const Value: TsDisabledKind);
 begin
@@ -1430,6 +1537,7 @@ begin
   end;
 end;
 
+
 procedure TsCommonComboBox.SetSelText(const Value: string);
 begin
   if FStyle < csDropDownList then begin
@@ -1437,6 +1545,7 @@ begin
     SendMessage(FEditHandle, EM_REPLACESEL, 0, LPARAM(PChar(Value)));
   end;
 end;
+
 
 procedure TsCommonComboBox.SetSorted(Value: Boolean);
 begin
@@ -1446,6 +1555,7 @@ begin
   end;
 end;
 
+
 procedure TsCommonComboBox.SetStyle(Value: TComboBoxStyle);
 begin
   if FStyle <> Value then begin
@@ -1453,6 +1563,7 @@ begin
     RecreateWnd;
   end;
 end;
+
 
 procedure TsCommonComboBox.SkinPaint(DC: HDC);
 var
@@ -1471,7 +1582,9 @@ begin
     SkinData.FCacheBmp, False
   );
   UpdateCorners(FCommonData, 0);
-  if FShowButton then PaintButton;
+  if FShowButton then
+    PaintButton;
+
   FCommonData.BGChanged := False;
 
   if not Enabled then
@@ -1483,12 +1596,14 @@ begin
   InflateRect(R, -3, -3);
 
   State := [odComboBoxEdit];
-  if FCommonData.FFocused
-    then State := State + [odFocused];
+  if FCommonData.FFocused then
+    State := State + [odFocused];
+
   Canvas.Handle := DC;
   DrawSkinItem(ItemIndex, R, State);
   Canvas.Handle := 0;
 end;
+
 
 procedure TsCommonComboBox.WMEraseBkgnd(var Message: TWMEraseBkgnd);
 begin
@@ -1496,23 +1611,25 @@ begin
     FillDC(Message.DC, ClientRect, Color);
 end;
 
+
 procedure TsCommonComboBox.WMLButtonDblClk(var Message: TMessage);
 begin
   if FReadOnly then begin
     SetFocus;
-    if Assigned(OnDblClick) then OnDblClick(Self);
+    if Assigned(OnDblClick) then
+      OnDblClick(Self);
   end
   else
     inherited;
 end;
+
 
 procedure TsCommonComboBox.WMLButtonDown(var Message: TWMLButtonDown);
 var
   Form: TCustomForm;
 begin
   if FReadOnly then SetFocus else begin
-    if (DragMode = dmAutomatic) and (Style = csDropDownList) and
-         (Message.XPos < (Width - GetSystemMetrics(SM_CXHSCROLL))) then begin
+    if (DragMode = dmAutomatic) and (Style = csDropDownList) and (Message.XPos < Width - GetSystemMetrics(SM_CXHSCROLL)) then begin
       SetFocus;
       BeginDrag(False);
       Exit;
@@ -1520,10 +1637,12 @@ begin
     inherited;
     if MouseCapture then begin
       Form := GetParentForm(Self);
-      if (Form <> nil) and (Form.ActiveControl <> Self) then MouseCapture := False;
+      if (Form <> nil) and (Form.ActiveControl <> Self) then
+        MouseCapture := False;
     end;
   end;
 end;
+
 
 procedure TsCommonComboBox.WMPaint(var Message: TWMPaint);
 const
@@ -1541,11 +1660,15 @@ var
   SavedDC: hdc;
 begin
   if FCommonData.Skinned then begin
-    if not SkinData.CustomColor then Color := FCommonData.SkinManager.gd[FCommonData.SkinIndex].Props[1].Color;
+    if not SkinData.CustomColor then
+      Color := FCommonData.SkinManager.gd[FCommonData.SkinIndex].Props[1].Color;
+
     Brush.Style := bsClear;
     DC := Message.DC;
     BeginPaint(Handle, PS);
-    if DC = 0 then DC := GetWindowDC(Handle);
+    if DC = 0 then
+      DC := GetWindowDC(Handle);
+
     SavedDC := SaveDC(DC);
     try
       SkinData.FUpdating := SkinData.Updating;
@@ -1553,60 +1676,68 @@ begin
         SkinPaint(DC);
     finally
       RestoreDC(DC, SavedDC);
-      if Message.DC = 0 then ReleaseDC(Handle, DC);
+      if Message.DC = 0 then
+        ReleaseDC(Handle, DC);
+
       EndPaint(Handle, PS);
     end;
   end
   else begin
     inherited;
-    if BevelKind = bkNone then Exit;
+    if BevelKind = bkNone then
+      Exit;
+
     C := TControlCanvas.Create;
     try
-    C.Control := Self;
-    R := ClientRect;
-    C.Brush.Color := Color;
-    C.FillRect(R);
-    C.FrameRect(R);
-    InflateRect(R,-1,-1);
-    C.FrameRect(R);
-    if BevelKind <> bkNone then begin
-      EdgeSize := 0;
-      if BevelInner <> bvNone then Inc(EdgeSize, BevelWidth);
-      if BevelOuter <> bvNone then Inc(EdgeSize, BevelWidth);
-      if EdgeSize = 0 then begin
-        R := ClientRect;
-        C.Brush.Color := Color;
-        C.FrameRect(R);
-        InflateRect(R,-1,-1);
-        C.FrameRect(R);
-      end;
-      R := BoundsRect;
-      with R do begin
-        WinStyle := GetWindowLong(Handle, GWL_STYLE);
-        if beLeft in BevelEdges then Dec(Left, EdgeSize);
-        if beTop in BevelEdges then Dec(Top, EdgeSize);
-        if beRight in BevelEdges then Inc(Right, EdgeSize);
-        if (WinStyle and WS_VSCROLL) <> 0 then Inc(Right, GetSystemMetrics(SM_CYVSCROLL));
-        if beBottom in BevelEdges then Inc(Bottom, EdgeSize);
-        if (WinStyle and WS_HSCROLL) <> 0 then Inc(Bottom, GetSystemMetrics(SM_CXHSCROLL));
-      end;
-      if not EqualRect(BoundsRect, R) then BoundsRect := R;
+      C.Control := Self;
       R := ClientRect;
-      DrawEdge(C.Handle, R, InnerStyles[BevelInner] or OuterStyles[BevelOuter], Byte(BevelEdges) or EdgeStyles[BevelKind] or Ctl3DStyles[Ctl3D] or BF_ADJUST);
-      R.Left := R.Right - GetSystemMetrics(SM_CXHTHUMB) - 1;
-      if DroppedDown then begin
-        DrawFrameControl(C.Handle, R, DFC_SCROLL, DFCS_FLAT or DFCS_SCROLLCOMBOBOX)
-      end
-      else begin
-        DrawFrameControl(C.Handle, R, DFC_SCROLL, DFCS_FLAT or DFCS_SCROLLCOMBOBOX);
+      C.Brush.Color := Color;
+      C.FillRect(R);
+      C.FrameRect(R);
+      InflateRect(R,-1,-1);
+      C.FrameRect(R);
+      if BevelKind <> bkNone then begin
+        EdgeSize := 0;
+        if BevelInner <> bvNone then
+          Inc(EdgeSize, BevelWidth);
+
+        if BevelOuter <> bvNone then
+          Inc(EdgeSize, BevelWidth);
+
+        if EdgeSize = 0 then begin
+          R := ClientRect;
+          C.Brush.Color := Color;
+          C.FrameRect(R);
+          InflateRect(R,-1,-1);
+          C.FrameRect(R);
+        end;
+        R := BoundsRect;
+        with R do begin
+          WinStyle := GetWindowLong(Handle, GWL_STYLE);
+          if beLeft in BevelEdges then Dec(Left, EdgeSize);
+          if beTop in BevelEdges then Dec(Top, EdgeSize);
+          if beRight in BevelEdges then Inc(Right, EdgeSize);
+          if (WinStyle and WS_VSCROLL) <> 0 then Inc(Right, GetSystemMetrics(SM_CYVSCROLL));
+          if beBottom in BevelEdges then Inc(Bottom, EdgeSize);
+          if (WinStyle and WS_HSCROLL) <> 0 then Inc(Bottom, GetSystemMetrics(SM_CXHSCROLL));
+        end;
+        if not EqualRect(BoundsRect, R) then BoundsRect := R;
+        R := ClientRect;
+        DrawEdge(C.Handle, R, InnerStyles[BevelInner] or OuterStyles[BevelOuter], Byte(BevelEdges) or EdgeStyles[BevelKind] or Ctl3DStyles[Ctl3D] or BF_ADJUST);
+        R.Left := R.Right - GetSystemMetrics(SM_CXHTHUMB) - 1;
+        if DroppedDown then
+          DrawFrameControl(C.Handle, R, DFC_SCROLL, DFCS_FLAT or DFCS_SCROLLCOMBOBOX)
+        else
+          DrawFrameControl(C.Handle, R, DFC_SCROLL, DFCS_FLAT or DFCS_SCROLLCOMBOBOX);
+
+        SendMessage(Handle, WM_NCPAINT, 0, 0);
       end;
-      SendMessage(Handle, WM_NCPAINT, 0, 0);
-    end;
     finally
       C.Free;
     end;
   end;
 end;
+
 
 procedure TsCommonComboBox.WndProc(var Message: TMessage);
 begin
@@ -1627,13 +1758,13 @@ begin
   inherited WndProc(Message);
 end;
 
-{ TsCustomColorBox }
 
 procedure TsCustomColorBox.CloseUp;
 begin
   inherited CloseUp;
   FListSelected := True;
 end;
+
 
 procedure TsCustomColorBox.ColorCallBack(const AName: string);
 var
@@ -1677,6 +1808,7 @@ begin
     InflateRect(Result, - 1, - 1);
 end;
 
+
 constructor TsCustomColorBox.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
@@ -1690,11 +1822,13 @@ begin
   PopulateList;
 end;
 
+
 procedure TsCustomColorBox.CreateWnd;
 begin
   inherited CreateWnd;
   if FNeedToPopulate then PopulateList;
 end;
+
 
 procedure TsCustomColorBox.DrawItem(Index: Integer; Rect: TRect; State: TOwnerDrawState);
   //
@@ -1744,6 +1878,7 @@ begin
       TextRect(Rect, Rect.Left, Rect.Top + (Rect.Bottom - Rect.Top - TextHeight(Items[Index])) div 2, Items[Index]);
   end;
 end;
+
 
 procedure TsCustomColorBox.DrawSkinItem(Index: Integer; Rect: TRect; State: TOwnerDrawState);
 var
@@ -1871,6 +2006,7 @@ begin
   end;
 end;
 
+
 function TsCustomColorBox.GetColor(Index: Integer): TColor;
 begin
   if Index < 0 then begin
@@ -1880,15 +2016,17 @@ begin
   Result := TColor(Items.Objects[Index]);
 end;
 
+
 function TsCustomColorBox.GetColorName(Index: Integer): string;
 begin
   Result := Items[Index];
 end;
 
+
 function TsCustomColorBox.GetSelected: TColor;
 begin
   if HandleAllocated then
-    if ItemIndex <> -1 then
+    if ItemIndex >= 0 then
       Result := Colors[ItemIndex]
     else
       Result := NoColorSelected
@@ -1896,11 +2034,13 @@ begin
     Result := FSelectedColor;
 end;
 
+
 procedure TsCustomColorBox.KeyDown(var Key: Word; Shift: TShiftState);
 begin
   FListSelected := False;
   inherited KeyDown(Key, Shift);
 end;
+
 
 procedure TsCustomColorBox.KeyPress(var Key: Char);
 begin
@@ -1911,11 +2051,14 @@ begin
   end;
 end;
 
+
 function TsCustomColorBox.PickCustomColor: Boolean;
 var
   LColor: TColor;
 begin
-  if ColDlg = nil then ColDlg := TsColorDialog.Create(nil);// else ColDlg := TColorDialog.Create(nil);
+  if ColDlg = nil then
+    ColDlg := TsColorDialog.Create(nil);// else ColDlg := TColorDialog.Create(nil);
+
   LColor := ColorToRGB(TColor(Items.Objects[0]));
   ColDlg.Color := LColor;
   Result := ColDlg.Execute;
@@ -1925,17 +2068,26 @@ begin
   end;
 end;
 
+
 procedure TsCustomColorBox.PopulateList;
-  //
-  procedure DeleteRange(const AMin, AMax: Integer); var I: Integer; begin
-    for I := AMax downto AMin do Items.Delete(I);
+
+  procedure DeleteRange(const AMin, AMax: Integer);
+  var
+    I: Integer;
+  begin
+    for I := AMax downto AMin do
+      Items.Delete(I);
   end;
-  //
-  procedure DeleteColor(const AColor: TColor); var I: Integer; begin
+
+  procedure DeleteColor(const AColor: TColor);
+  var
+    I: Integer;
+  begin
     I := Items.IndexOfObject(TObject(AColor));
-    if I <> -1 then Items.Delete(I);
+    if I >= 0 then
+      Items.Delete(I);
   end;
-  //
+
 var
   LSelectedColor, LCustomColor: TColor;
 begin
@@ -1943,7 +2095,9 @@ begin
     Items.BeginUpdate;
     try
       LCustomColor := clBlack;
-      if (cbCustomColor in Style) and (Items.Count > 0) then LCustomColor := TColor(Items.Objects[0]);
+      if (cbCustomColor in Style) and (Items.Count > 0) then
+        LCustomColor := TColor(Items.Objects[0]);
+        
       LSelectedColor := FSelectedColor;
       Items.Clear;
       GetColorValues(ColorCallBack);
@@ -1964,17 +2118,17 @@ begin
     FNeedToPopulate := True;
 end;
 
+
 procedure TsCustomColorBox.Select;
 begin
   if FListSelected then begin
     FListSelected := False;
-    if (cbCustomColor in Style) and
-         (ItemIndex = 0) and
-           not PickCustomColor then
+    if (cbCustomColor in Style) and (ItemIndex = 0) and not PickCustomColor then
       Exit;
   end;
   inherited Select;
 end;
+
 
 procedure TsCustomColorBox.SetDefaultColorColor(const Value: TColor);
 begin
@@ -1983,6 +2137,7 @@ begin
     FCommonData.Invalidate;
   end;
 end;
+
 
 procedure TsCustomColorBox.SetMargin(const Value: integer);
 begin
@@ -1993,6 +2148,7 @@ begin
   end;
 end;
 
+
 procedure TsCustomColorBox.SetNoneColorColor(const Value: TColor);
 begin
   if Value <> FNoneColorColor then begin
@@ -2001,6 +2157,7 @@ begin
   end;
 end;
 
+
 procedure TsCustomColorBox.SetSelected(const AColor: TColor);
 var
   I: Integer;
@@ -2008,34 +2165,37 @@ begin
   if HandleAllocated then begin
     I := Items.IndexOfObject(TObject(AColor));
     if AColor <> 0 then begin
-      if (I = -1) and (cbCustomColor in Style) and (AColor <> NoColorSelected) then begin
+      if (I < 0) and (cbCustomColor in Style) and (AColor <> NoColorSelected) then begin
         Items.Objects[0] := TObject(AColor);
         I := 0;
       end;
       ItemIndex := I;
     end
-    else begin
-      if (cbCustomColor in Style) then begin
-        if (I = -1) and ((AColor <> NoColorSelected)) then begin
+    else
+      if cbCustomColor in Style then begin
+        if (I < 0) and (AColor <> NoColorSelected) then begin
           Items.Objects[0] := TObject(AColor);
           I := 0;
         end;
         if (I = 0) and (Items.Objects[0] = TObject(AColor)) then begin
           ItemIndex := 0;
-          for I := 1 to Items.Count - 1 do begin
+          for I := 1 to Items.Count - 1 do
             if Items.Objects[0] = TObject(AColor) then begin
               ItemIndex := I;
               Break;
             end;
-          end;
+
         end
-        else ItemIndex := I;
+        else
+          ItemIndex := I;
       end
-      else ItemIndex := I;
-    end;
+      else
+        ItemIndex := I;
+
   end;
   FSelectedColor := AColor;
 end;
+
 
 procedure TsCustomColorBox.SetShowColorName(const Value: boolean);
 begin
@@ -2044,6 +2204,7 @@ begin
     FCommonData.Invalidate;
   end;
 end;
+
 
 procedure TsCustomColorBox.SetStyle(AStyle: TsColorBoxStyle);
 begin
@@ -2054,7 +2215,6 @@ begin
   end;
 end;
 
-{ TsCustomComboBoxStrings }
 
 procedure TsCustomComboBoxStrings.Clear;
 var
@@ -2066,10 +2226,12 @@ begin
   ComboBox.Update;
 end;
 
+
 procedure TsCustomComboBoxStrings.Delete(Index: Integer);
 begin
   SendMessage(ComboBox.Handle, CB_DELETESTRING, Index, 0);
 end;
+
 
 function TsCustomComboBoxStrings.Get(Index: Integer): string;
 var
@@ -2077,14 +2239,18 @@ var
   Len: Integer;
 begin
   Len := SendMessage(ComboBox.Handle, CB_GETLBTEXT, Index, LPARAM(@Text));
-  if Len = CB_ERR then Len := 0;
+  if Len = CB_ERR then
+    Len := 0;
+
   SetString(Result, Text, Len);
 end;
+
 
 function TsCustomComboBoxStrings.GetCount: Integer;
 begin
   Result := SendMessage(ComboBox.Handle, CB_GETCOUNT, 0, 0);
 end;
+
 
 function TsCustomComboBoxStrings.GetObject(Index: Integer): TObject;
 begin
@@ -2093,24 +2259,26 @@ begin
     Error('List index out of bounds', Index);
 end;
 
+
 function TsCustomComboBoxStrings.IndexOf(const S: string): Integer;
 begin
   Result := SendMessage(ComboBox.Handle, CB_FINDSTRINGEXACT, -1, LPARAM(PChar(S)));
 end;
 
-procedure TsCustomComboBoxStrings.PutObject(Index: Integer;
-  AObject: TObject);
+
+procedure TsCustomComboBoxStrings.PutObject(Index: Integer; AObject: TObject);
 begin
   SendMessage(ComboBox.Handle, CB_SETITEMDATA, Index, LPARAM(AObject));
 end;
 
+
 procedure TsCustomComboBoxStrings.SetUpdateState(Updating: Boolean);
 begin
   SendMessage(ComboBox.Handle, WM_SETREDRAW, Ord(not Updating), 0);
-  if not Updating then ComboBox.Refresh;
+  if not Updating then
+    ComboBox.Refresh;
 end;
 
-{ TsComboBoxStrings }
 
 function TsComboBoxStrings.Add(const S: string): Integer;
 begin
@@ -2119,18 +2287,57 @@ begin
     raise EOutOfResources.Create(SInsertLineError);
 end;
 
+
 procedure TsComboBoxStrings.Insert(Index: Integer; const S: string);
 begin
-  if SendMessage(ComboBox.Handle, CB_INSERTSTRING, Index, LPARAM(PChar(S))) < 0 then raise EOutOfResources.Create(SInsertLineError);
+  if SendMessage(ComboBox.Handle, CB_INSERTSTRING, Index, LPARAM(PChar(S))) < 0 then
+    raise EOutOfResources.Create(SInsertLineError);
 end;
 
-{ TsCustomComboBoxEx }
+
+function TsCustomComboBoxEx.AllowDropDown: boolean;
+begin
+  Result := True;
+end;
+
 
 procedure TsCustomComboBoxEx.Clear;
 begin
   inherited;
   FItemsEx.Clear;
 end;
+
+
+procedure TsCustomComboBoxEx.ComboWndProc(var Message: TMessage; ComboWnd: HWnd; ComboProc: Pointer);
+begin
+  if FReadOnly or not AllowDropDown then
+    case Message.Msg of
+      WM_KEYDOWN, WM_CHAR, WM_KEYUP, WM_SYSKEYUP, CN_KEYDOWN, CN_CHAR, CN_SYSKEYDOWN, CN_SYSCHAR, WM_PASTE, WM_CUT, WM_CLEAR, WM_UNDO:
+        Exit;
+
+      WM_DRAWITEM: begin
+        WMDrawItem(TWMDrawItem(Message));
+        if Message.Result = 1 then
+          Exit
+      end;
+
+      WM_LBUTTONDOWN, WM_LBUTTONDBLCLK:
+        if ReadOnly then begin
+          if not Focused then
+            SetFocus;
+
+          Exit;
+        end
+        else
+          if not AllowDropdown then begin
+            WndProc(Message);
+            Exit;
+          end;
+    end;
+
+  inherited;
+end;
+
 
 constructor TsCustomComboBoxEx.Create(AOwner: TComponent);
 begin
@@ -2139,49 +2346,77 @@ begin
   FItemsEx := TsComboItems.Create(Self);
   FImageChangeLink := TChangeLink.Create;
   FImageChangeLink.OnChange := ImageListChange;
+  FDropDown := False;
   UpdateList;
 end;
+
 
 procedure TsCustomComboBoxEx.CreateWnd;
 begin
   inherited CreateWnd;
-  if NeedToUpdate then UpdateList;
+  if NeedToUpdate then
+    UpdateList;
+
   UpdateMargins;
 end;
+
 
 function TsCustomComboBoxEx.CurrentImage(Item : TsComboItem; State: TOwnerDrawState): integer;
 begin
   Result := -1;
-  if (Images = nil) or (Item = nil) then Exit;
-  if odComboBoxEdit in State then begin
-    Result := Item.ImageIndex;
-  end
-  else if odSelected in State then begin
-    Result := Item.SelectedImageIndex;
-    if Result < 0 then Result := Item.ImageIndex;
-  end
-  else begin
-    Result := Item.ImageIndex;
-  end;
+  if (Images = nil) or (Item = nil) then
+    Exit;
+
+  if odComboBoxEdit in State then
+    Result := Item.ImageIndex
+  else
+    if odSelected in State then begin
+      Result := Item.SelectedImageIndex;
+      if Result < 0 then
+        Result := Item.ImageIndex;
+    end
+    else
+      Result := Item.ImageIndex;
 end;
+
 
 destructor TsCustomComboBoxEx.Destroy;
 begin
   try
-    if Images <> nil then Images.UnRegisterChanges(FImageChangeLink);
+    if Images <> nil then
+      Images.UnRegisterChanges(FImageChangeLink);
+
     FImageChangeLink.OnChange := nil;
     FreeAndNil(FImageChangeLink);
   finally
-    if Assigned(FItemsEX) then FreeAndNil(FItemsEx);
+    if Assigned(FItemsEX) then
+      FreeAndNil(FItemsEx);
+
     inherited Destroy;
   end;
 end;
 
+
+procedure TsCustomComboBoxEx.DoDropDown;
+begin
+  if CanFocus then
+    SetFocus;
+
+  if Assigned(OnDropDown) then begin
+    FDropDown := True;
+    State := 2;
+    OnDropDown(Self);
+  end;
+end;
+
+
 procedure TsCustomComboBoxEx.DrawItem(Index: Integer; Rect: TRect; State: TOwnerDrawState);
 var
-  R, rText : TRect;
-  i : integer;
-  function ColorToBorderColor(AColor: TColor): TColor; begin
+  R, rText: TRect;
+  i: integer;
+
+  function ColorToBorderColor(AColor: TColor): TColor;
+  begin
     if (TsColor(AColor).R > 192) or (TsColor(AColor).G > 192) or (TsColor(AColor).B > 192) then
       Result := clBlack
     else
@@ -2190,6 +2425,7 @@ var
       else
         Result := AColor;
   end;
+
 begin
   R := Rect;
   Canvas.Brush.Style := bsSolid;
@@ -2204,10 +2440,10 @@ begin
       Canvas.FillRect(R);
     end;
     R.Right := R.Right - 3;
-    if Index > -1 then begin
+    if Index >= 0 then begin
       R := ImgRect(SelectedItem, State);
       i := CurrentImage(ItemsEx[Index], State);
-      if i > -1 then begin
+      if i >= 0 then begin
         Images.Draw(FCanvas, R.Left, R.Top, i, Enabled);
       end
       else
@@ -2219,9 +2455,9 @@ begin
     rText.Right := Width - WidthOf(ButtonRect) - 3 * integer(FShowButton);
     Canvas.Brush.Style := bsClear;
     Canvas.Font.Assign(Font);
-    if (odFocused in state) then begin
+    if (odFocused in state) then
       Canvas.Font.Color := clHighLightText;
-    end;
+
     Canvas.TextRect(rText, rText.Left, rText.Top + (rText.Bottom - rText.Top - Canvas.TextHeight(Items[Index])) div 2, Items[Index]);
   end
   else begin
@@ -2241,9 +2477,8 @@ begin
     R.Bottom := Rect.Bottom;
     if WidthOf(R) > 0 then begin
       i := CurrentImage(ItemsEx[Index], State);
-      if i > -1 then begin
+      if i >= 0 then
         Images.Draw(FCanvas, R.Left, R.Top, i, True);
-      end;
     end;
     rText := Rect;
     rText.Left := R.Right + 5;
@@ -2251,6 +2486,7 @@ begin
     Canvas.TextRect(rText, rText.Left, rText.Top + (rText.Bottom - rText.Top - Canvas.TextHeight(Items[Index])) div 2, Items[Index]);
   end;
 end;
+
 
 procedure TsCustomComboBoxEx.DrawSkinItem(Index: Integer; Rect: TRect; State: TOwnerDrawState);
 var
@@ -2261,11 +2497,10 @@ begin
   Canvas.Brush.Style := bsSolid;
   if odComboBoxEdit in State then begin // if editor window ...
     Canvas.Font.Assign(Font);
-    if (Index > -1) and (Index < ItemsEx.Count) then begin
+    if (Index >= 0) and (Index < ItemsEx.Count) then begin
       i := CurrentImage(ItemsEx[Index], State);
-      if i > -1 then begin
-        R := ImgRect(SelectedItem, State);
-      end
+      if i >= 0 then
+        R := ImgRect(SelectedItem, State)
       else begin
         R := Rect;
         R.Right := R.Left - 3;
@@ -2285,9 +2520,9 @@ begin
       Canvas.FillRect(Classes.Rect(Rect.Left, Rect.Top, RText.Right, Rect.Bottom));
       DrawFocusRect(Canvas.Handle, Classes.Rect(Rect.Left, Rect.Top, RText.Right, Rect.Bottom));
     end;
-    if (Index > -1) and (Index < ItemsEx.Count) then begin
+    if (Index >= 0) and (Index < ItemsEx.Count) then begin
       i := CurrentImage(ItemsEx[Index], State);
-      if i > -1 then
+      if i >= 0 then
         Images.Draw(FCanvas, R.Left, R.Top, i, True)
     end;
     // Text out
@@ -2300,8 +2535,11 @@ begin
       WriteTextEx(Canvas, PChar(Items[Index]), Enabled, rText, DT_NOPREFIX or DT_VCENTER or DT_SINGLELINE, FCommonData, ControlIsActive(FCommonData));
   end
   else begin
-    if Index > ItemsEx.Count - 1 then Exit;
-    if Index < 0 then Exit;
+    if Index >= ItemsEx.Count then
+      Exit;
+
+    if Index < 0 then
+      Exit;
 
     Canvas.Brush.Color := FCommonData.SkinManager.gd[SkinData.SkinIndex].Props[0].Color;
     Canvas.FillRect(Rect);
@@ -2327,7 +2565,8 @@ begin
 
     if WidthOf(R) > 0 then begin
       i := CurrentImage(ItemsEx[Index], State);
-      if i > -1 then Images.Draw(FCanvas, R.Left, R.Top, i, True);
+      if i >= 0 then
+        Images.Draw(FCanvas, R.Left, R.Top, i, True);
     end;
 
     Canvas.Brush.Style := bsClear;
@@ -2335,23 +2574,26 @@ begin
   end;
 end;
 
+
 function TsCustomComboBoxEx.GetSelectedItem: TsComboItem;
 begin
-  if ItemIndex > -1 then begin
-    Result := ItemsEx[ItemIndex];
-  end
+  if ItemIndex >= 0 then
+    Result := ItemsEx[ItemIndex]
   else
     Result := nil
 end;
 
+
 procedure TsCustomComboBoxEx.ImageListChange(Sender: TObject);
 begin
   if Sender <> nil then begin
-    if HandleAllocated then Perform(CBEM_SETIMAGELIST, 0, TCustomImageList(Sender).Handle);
+    if HandleAllocated then
+      Perform(CBEM_SETIMAGELIST, 0, TCustomImageList(Sender).Handle);
   end
   else
     Images := nil;
 end;
+
 
 function TsCustomComboBoxEx.ImgRect(Item : TsComboItem; State: TOwnerDrawState): TRect;
 begin
@@ -2367,6 +2609,7 @@ begin
     Result := MkRect;
 end;
 
+
 procedure TsCustomComboBoxEx.Notification(AComponent: TComponent; Operation: TOperation);
 begin
   inherited Notification(AComponent, Operation);
@@ -2375,68 +2618,77 @@ begin
       FImages := nil;
 end;
 
+
 procedure TsCustomComboBoxEx.SetImages(const Value: TCustomImageList);
 begin
-  if Images <> nil then Images.UnRegisterChanges(FImageChangeLink);
+  if Images <> nil then
+    Images.UnRegisterChanges(FImageChangeLink);
+
   FImages := Value;
   if Images <> nil then begin
     Images.RegisterChanges(FImageChangeLink);
     Images.FreeNotification(Self);
     if HandleAllocated then
       PostMessage(Handle, CBEM_SETIMAGELIST, 0, integer(Images.Handle));
-    if ItemHeight < Images.Height then ItemHeight := Images.Height;
+
+    if ItemHeight < Images.Height then
+      ItemHeight := Images.Height;
   end
-  else begin
+  else
     if HandleAllocated then begin
       Perform(CBEM_SETIMAGELIST, 0, 0);
       RecreateWnd;
     end;
-  end;
+
   UpdateMargins;
 end;
+
 
 procedure TsCustomComboBoxEx.SetItemsEx(const Value: TsComboItems);
 begin
   FItemsEx.Assign(Value);
 end;
 
+
 procedure TsCustomComboBoxEx.UpdateList;
 var
-  i : integer;
+  i: integer;
 begin
   if HandleAllocated then begin
     Items.BeginUpdate;
     try
       Items.Clear;
-      for i := 0 to ItemsEx.Count - 1 do begin
+      for i := 0 to ItemsEx.Count - 1 do
         Items.Insert(ItemsEx[i].Index, ItemsEx[i].Caption);
-      end;
     finally
       Items.EndUpdate;
       NeedToUpdate := False;
     end;
   end
-  else NeedToUpdate := True;
+  else
+    NeedToUpdate := True;
 end;
+
 
 procedure TsCustomComboBoxEx.UpdateMargins;
 begin
-  if Self = nil then Exit;
-  if (Images <> nil) and (ItemIndex > -1) then begin
-    SendMessage(EditHandle, EM_SETMARGINS, EC_LEFTMARGIN, MakeLong(Images.Width, 0));
-  end
+  if Self = nil then
+    Exit;
+
+  if (Images <> nil) and (ItemIndex >= 0) then
+    SendMessage(EditHandle, EM_SETMARGINS, EC_LEFTMARGIN, MakeLong(Images.Width, 0))
   else begin
     SendMessage(EditHandle, EM_SETMARGINS, EC_LEFTMARGIN, 0);
     Invalidate;
   end;
 end;
 
-{ TsComboItems }
 
 function TsComboItems.Add: TsComboItem;
 begin
   Result := TsComboItem(inherited Add);
 end;
+
 
 function TsComboItems.AddItem(const Caption: String;
 const
@@ -2452,11 +2704,13 @@ begin
   Result.Data := Data;
 end;
 
+
 constructor TsComboItems.Create(AOwner: TsCustomComboBoxEx);
 begin
   inherited Create(TsComboItem);
   FOwner := AOwner;
 end;
+
 
 destructor TsComboItems.Destroy;
 begin
@@ -2464,32 +2718,36 @@ begin
   inherited Destroy;
 end;
 
+
 function TsComboItems.GetItem(Index: Integer): TsComboItem;
 begin
   Result := TsComboItem(inherited GetItem(Index))
 end;
+
 
 function TsComboItems.GetOwner: TPersistent;
 begin
   Result := FOwner;
 end;
 
+
 procedure TsComboItems.SetItem(Index: Integer; Value: TsComboItem);
 begin
   inherited SetItem(Index, Value);
 end;
+
 
 procedure TsComboItems.Update(Item: TCollectionItem);
 begin
   inherited;
 end;
 
-{ TsComboItem }
 
 procedure TsComboItem.Assign(Source: TPersistent);
 begin
   inherited;
 end;
+
 
 constructor TsComboItem.Create(Collection: TCollection);
 begin
@@ -2500,19 +2758,21 @@ begin
   SelectedImageIndex := -1;
 end;
 
+
 destructor TsComboItem.Destroy;
 begin
   inherited;
 end;
 
+
 function TsComboItem.GetDisplayName: string;
 begin
-  if FCaption <> '' then begin
-    Result := FCaption;
-  end
+  if FCaption <> '' then
+    Result := FCaption
   else
     Result := inherited GetDisplayName;
 end;
+
 
 procedure TsComboItem.SetCaption(const Value: string);
 begin
@@ -2522,15 +2782,45 @@ begin
   end;
 end;
 
+
 procedure TsComboItem.SetData(const Value: Pointer);
 begin
   FData := Value;
 end;
 
+
+procedure TsCustomComboBoxEx.WMLButtonDblClk(var Message: TMessage);
+begin
+  if ReadOnly then begin
+    SetFocus;
+    if Assigned(OnDblClick) then
+      OnDblClick(Self);
+  end
+  else
+    if not AllowDropDown then
+      DoDropDown
+    else
+      inherited;
+end;
+
+
+procedure TsCustomComboBoxEx.WMLButtonDown(var Message: TWMLButtonDown);
+begin
+  if ReadOnly then
+    SetFocus
+  else
+    if not AllowDropDown then
+      DoDropDown
+    else
+      inherited
+end;
+
+
 initialization
   ColDlg := nil;
 
 finalization
-  if Assigned(ColDlg) then FreeAndNil(ColDlg);
+  if Assigned(ColDlg) then
+    FreeAndNil(ColDlg);
 
 end.

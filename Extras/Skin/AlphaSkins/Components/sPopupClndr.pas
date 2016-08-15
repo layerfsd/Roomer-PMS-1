@@ -1,11 +1,11 @@
 unit sPopupClndr;
 {$I sDefs.inc}
 //{$DEFINE LOGGED}
-
+//+
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Menus, 
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Menus,
   {$IFDEF DELPHI6UP}Variants, {$ENDIF}
   sMonthCalendar, sConst, sPanel, acntUtils, sCustomComboEdit, ExtCtrls;
 
@@ -23,22 +23,17 @@ type
     procedure sToolButton1Click(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure CalendarClick;
-    procedure FormDeactivate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
-    procedure WMMouseActivate(var Message: TMessage); message WM_MOUSEACTIVATE;
+    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
   protected
     FCloseUp: TNotifyEvent;
     procedure KeyPress(var Key: Char); override;
     function GetValue: Variant;
     procedure SetValue(const Value: Variant);
-    procedure FillArOR;
-    function GetRgnFromArOR: hrgn;
   public
     FEditor: TsCustomComboEdit;
-    function IsValidDate(Date: TDateTime): boolean;
+    function IsValidDate(ADate: TDateTime): boolean;
     procedure CloseUp;
-    procedure CreateWnd; override;
-    procedure CreateParams(var Params: TCreateParams); override;
     procedure WndProc(var Message: TMessage); override;
     property FCalendar: TsMonthCalendar read sMonthCalendar1 write sMonthCalendar1;
     property OnCloseUp: TNotifyEvent read FCloseUp write FCloseUp;
@@ -54,13 +49,9 @@ uses
   sToolEdit, sSkinManager, sGraphUtils;
 
 
-var
-  ArOR: sConst.TAOR;
-
-
 function TsPopupCalendar.GetValue: Variant;
 begin
-  if (csDesigning in ComponentState) then
+  if csDesigning in ComponentState then
     Result := VarFromDateTime(SysUtils.Date)
   else
     Result := VarFromDateTime(FCalendar.CalendarDate);
@@ -109,16 +100,8 @@ end;
 
 
 procedure TsPopupCalendar.FormShow(Sender: TObject);
-var
-  rgn: hrgn;
 begin
   sMonthCalendar1.FDragBar.Cursor := crDefault;
-  if (FEditor.SkinData.SkinManager <> nil) and FEditor.SkinData.SkinManager.Active then begin
-    FillArOR;
-    rgn := GetRgnFromArOR;
-    SetWindowRgn(Handle, rgn, True);
-  end;
-
   if (DefaultManager <> nil) and DefaultManager.Active then
     Color := DefaultManager.GetGlobalColor
   else
@@ -148,12 +131,12 @@ begin
       if Assigned(TsCustomDateEdit(FEditor).OnChange) then
         TsCustomDateEdit(FEditor).OnChange(TsCustomDateEdit(FEditor));
 
-      Visible := False;
+      Close;
       if sPopupCalendar = Self then
         sPopupCalendar := nil;
 
       if Assigned(FEditor) and FEditor.Visible and FEditor.Enabled then begin
-        if FEditor.CanFocus then
+        if FEditor.CanFocus and IsWindowVisible(FEditor.Handle) then
           FEditor.SetFocus;
 
         CloseUp;
@@ -169,66 +152,27 @@ begin
 end;
 
 
-procedure TsPopupCalendar.FormDeactivate(Sender: TObject);
-begin
-  Close;
-end;
-
-
 procedure TsPopupCalendar.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   sMonthCalendar1.FGrid.Clicked := False;
   if sPopupCalendar = Self then
     sPopupCalendar := nil;
 
-  Inherited;
-end;
-
-
-procedure TsPopupCalendar.CreateParams(var Params: TCreateParams);
-begin
   inherited;
-  Params.Style := Params.Style or WS_CLIPSIBLINGS or WS_POPUP;
-  Params.ExStyle := Params.ExStyle or WS_EX_TOOLWINDOW;
 end;
 
 
-procedure TsPopupCalendar.CreateWnd;
+type
+  TAccessCalendar = class(TsMonthCalendar);
+
+procedure TsPopupCalendar.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 begin
-  inherited;
-  SetClassLong(Handle, GCL_STYLE, GetClassLong(Handle, GCL_STYLE) or $20000);
-end;
-
-
-procedure TsPopupCalendar.FillArOR;
-begin
-  SetLength(ArOR, 0);
-  if FEditor.SkinData.SkinManager.IsValidImgIndex(sMonthCalendar1.SkinData.BorderIndex) then begin
-    AddRgn(ArOR, Width, FEditor.SkinData.SkinManager.ma[sMonthCalendar1.SkinData.BorderIndex], 0, False);
-    AddRgn(ArOR, Width, FEditor.SkinData.SkinManager.ma[sMonthCalendar1.SkinData.BorderIndex], Height - FEditor.SkinData.SkinManager.ma[sMonthCalendar1.SkinData.BorderIndex].WB, True);
-  end;
-end;
-
-
-function TsPopupCalendar.GetRgnFromArOR: hrgn;
-var
-  l, i: integer;
-  subrgn: HRGN;
-begin
-  l := Length(ArOR);
-  Result := CreateRectRgn(0, 0, Width, Height);
-  if l > 0 then
-    for i := 0 to l - 1 do begin
-      subrgn := CreateRectRgn(ArOR[i].Left, ArOR[i].Top, ArOR[i].Right, ArOR[i].Bottom);
-      CombineRgn(Result, Result, subrgn, RGN_DIFF);
-      DeleteObject(subrgn);
-    end;
+  with TAccessCalendar(sMonthCalendar1) do
+    CanClose := (PopMenu = nil) or (PopMenu.PopupComponent = nil);
 end;
 
 
 procedure TsPopupCalendar.WndProc(var Message: TMessage);
-var
-  rgn: hrgn;
 begin
 {$IFDEF LOGGED}
   AddToLog(Message);
@@ -237,35 +181,21 @@ begin
     WM_ERASEBKGND:
       if Assigned(DefaultManager) and DefaultManager.Active then
         Exit;
-
-    WM_NCPAINT:
-      if (FEditor <> nil) and
-           (TsCustomDateEdit(FEditor).SkinData.SkinManager <> nil) and
-              TsCustomDateEdit(FEditor).SkinData.SkinManager.Active then begin
-        FillArOR;
-        rgn := GetRgnFromArOR;
-        SetWindowRgn(Handle, rgn, False);
-      end;
   end;
   inherited;
 end;
 
 
-function TsPopupCalendar.IsValidDate(Date: TDateTime): boolean;
+function TsPopupCalendar.IsValidDate(ADate: TDateTime): boolean;
 begin
-  if (TsCustomDateEdit(FEditor).MinDate <> 0) and (Date < TsCustomDateEdit(FEditor).MinDate) then
-    Result := False
-  else
-    if (TsCustomDateEdit(FEditor).MaxDate <> 0) and (Date > TsCustomDateEdit(FEditor).MaxDate) then
+  with TsCustomDateEdit(FEditor) do
+    if (MinDate <> 0) and (ADate < MinDate) then
       Result := False
     else
-      Result := True;
-end;
-
-
-procedure TsPopupCalendar.WMMouseActivate(var Message: TMessage);
-begin
-  Message.Result := MA_NOACTIVATE;
+      if (MaxDate <> 0) and (ADate > MaxDate) then
+        Result := False
+      else
+        Result := True;
 end;
 
 end.

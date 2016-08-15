@@ -47,6 +47,7 @@ type
 
   
 const
+  iBTN_ARROW      = -1;
   iBTN_OPENFILE   = 0;
   iBTN_OPENFOLDER = 1;
   iBTN_DATE       = 2;
@@ -123,16 +124,19 @@ end;
 
 function TsGlyphMode.Width: Integer;
 begin
-  if Assigned(FImages) and (ImageIndex > -1) and (ImageIndex < GetImageCount(FImages)) then
-    Result := FImages.Width div ImageCount
+  if FOwner is TsCustomComboEdit and TsCustomComboEdit(FOwner).Button.ComboBtn then
+    Result := GetSystemMetrics(SM_CXVSCROLL) - 3
   else
-    Result := acResImgList.Width div ImageCount;
+    if Assigned(FImages) and IsValidIndex(ImageIndex, GetImageCount(FImages)) then
+      Result := FImages.Width div ImageCount
+    else
+      Result := acResImgList.Width div ImageCount;
 end;
 
 
 function TsGlyphMode.Height: Integer;
 begin
-  if Assigned(FImages) and (ImageIndex > -1) and (ImageIndex < GetImageCount(FImages)) then
+  if Assigned(FImages) and IsValidIndex(ImageIndex, GetImageCount(FImages)) then
     Result := FImages.Height
   else
     Result := acResImgList.Height
@@ -143,7 +147,7 @@ function TsGlyphMode.ImageCount: integer;
 var
   w, h: integer;
 begin
-  if Assigned(FImages) and (ImageIndex > -1) and (ImageIndex < GetImageCount(FImages)) then begin
+  if Assigned(FImages) and IsValidIndex(ImageIndex, GetImageCount(FImages)) then begin
     w := FImages.Width;
     h := FImages.Height
   end
@@ -214,7 +218,7 @@ end;
 
 function TsGlyphMode.BtnIsReady: boolean;
 begin
-  Result := (Btn <> nil) and not (csLoading in Btn.ComponentState) and not (csDestroying in Btn.ComponentState)
+  Result := (Btn <> nil) and ([csLoading, csDestroying] * Btn.ComponentState = [])
 end;
 
 
@@ -256,7 +260,7 @@ var
 initialization
   // Load glyphs from resources
   acResImgList := TsAlphaImageList.Create(nil);
-  acResImgList.Width  := 48; // 16 x 3
+  acResImgList.Width  := 32; // 16 x 2
   acResImgList.Height := 16;
   for it := 0 to 4 do begin
     s := TResourceStream.Create(hInstance, acGlyphsResNames[it], RT_RCDATA);

@@ -20,12 +20,10 @@ type
     ActionClear: TAction;
     ActionExtract: TAction;
     ActionUpdateAll: TAction;
+    sPanel1: TsPanel;
     sPanel2: TsPanel;
     ListBox1: TsListBox;
     sPanel3: TsPanel;
-    sLabel1: TsLabel;
-    sLabel2: TsLabel;
-    sPanel1: TsPanel;
     sPanel4: TsPanel;
     sButton2: TsButton;
     sButton3: TsButton;
@@ -35,6 +33,9 @@ type
     sButton6: TsButton;
     sPanel5: TsPanel;
     sBitBtn1: TsButton;
+    sPanel6: TsPanel;
+    sLabel1: TsLabel;
+    sLabel2: TsLabel;
     procedure ActionAddNewExecute(Sender: TObject);
     procedure ActionCloseExecute(Sender: TObject);
     procedure ActionRenameExecute(Sender: TObject);
@@ -72,17 +73,18 @@ var
   i: integer;
 begin
   s := NormalDir(NewDir) + NewName + s_Dot + acSkinExt;
-  if FileExists(s) then begin
-    IntName := NewName + s_Space + acs_InternalSkin;
-    for i := 0 to SkinManager.InternalSkins.Count - 1 do
-      if SkinManager.InternalSkins[i].Name = IntName then
-        Exit;
+  if FileExists(s) then
+    with SkinManager do begin
+      IntName := NewName + s_Space + acs_InternalSkin;
+      for i := 0 to InternalSkins.Count - 1 do
+        if InternalSkins[i].Name = IntName then
+          Exit;
 
-    SkinManager.InternalSkins.Add;
-    SkinManager.InternalSkins[SkinManager.InternalSkins.Count - 1].Name := IntName;
-    SkinManager.InternalSkins[SkinManager.InternalSkins.Count - 1].PackedData.LoadFromFile(s);
-    ListBox1.Items.Add(SkinManager.InternalSkins[SkinManager.InternalSkins.Count - 1].Name);
-  end
+      InternalSkins.Add;
+      InternalSkins[InternalSkins.Count - 1].Name := IntName;
+      InternalSkins[InternalSkins.Count - 1].PackedData.LoadFromFile(s);
+      ListBox1.Items.Add(InternalSkins[InternalSkins.Count - 1].Name);
+    end
   else begin
     s := s + s_Dot + acSkinExt + ' file with a skin data does not exists';
     ShowWarning(s);
@@ -104,11 +106,13 @@ begin
   if NewName <> '' then
     sl.Add(NewName);
 
-  if SelectSkin(sl, NewDir, stPacked) then
+  if SelectSkin(sl, NewDir, stPacked) then begin
+    SkinManager.SkinDirectory := NewDir;
     for i := 0 to sl.Count - 1 do begin
       NewName := sl[i];
       AddNewSkin;
     end;
+  end;
 
   sLabel1.Caption := NewDir;
   FreeAndNil(sl);
@@ -116,15 +120,17 @@ begin
   fod := TOpenDialog.Create(Application);
   fod.Filter := 'Packed AlphaSkins|*.' + acSkinExt;
   fod.InitialDir := NewDir;
-  if fod.Execute then begin
-    NewDir := ExtractFilePath(fod.FileName);
-    NewName := ExtractFileName(fod.FileName);
-    Delete(NewName, Length(NewName) - 3, 4);
-    SkinManager.InternalSkins.Add;
-    SkinManager.InternalSkins[SkinManager.InternalSkins.Count - 1].Name := NewName + s_Space + acs_InternalSkin;
-    SkinManager.InternalSkins[SkinManager.InternalSkins.Count - 1].PackedData.LoadFromFile(fod.FileName);
-    ListBox1.Items.Add(SkinManager.InternalSkins[SkinManager.InternalSkins.Count - 1].Name);
-  end;
+  if fod.Execute then
+    with SkinManager do begin
+      NewDir := ExtractFilePath(fod.FileName);
+      NewName := ExtractFileName(fod.FileName);
+      Delete(NewName, Length(NewName) - 3, 4);
+      InternalSkins.Add;
+      InternalSkins[InternalSkins.Count - 1].Name := NewName + s_Space + acs_InternalSkin;
+      InternalSkins[InternalSkins.Count - 1].PackedData.LoadFromFile(fod.FileName);
+      ListBox1.Items.Add(InternalSkins[InternalSkins.Count - 1].Name);
+    end;
+
   sLabel1.Caption := fod.InitialDir;
   fod.Free;
 {$ENDIF}
@@ -145,7 +151,7 @@ var
 begin
   s := ListBox1.Items[ListBox1.ItemIndex];
   if InputQuery('String input', 'Enter new name:', s) then begin
-    if ListBox1.ItemIndex > -1 then begin
+    if ListBox1.ItemIndex >= 0 then begin
       for i := 0 to SkinManager.InternalSkins.Count - 1 do
         if SkinManager.InternalSkins.Items[i].Name = ListBox1.Items[ListBox1.ItemIndex] then begin
           SkinManager.InternalSkins.Items[i].Name := s;
@@ -163,7 +169,7 @@ procedure TFormInternalSkins.ActionDeleteExecute(Sender: TObject);
 var
   i: integer;
 begin
-  if ListBox1.ItemIndex > -1 then begin
+  if ListBox1.ItemIndex >= 0 then begin
     for i := 0 to SkinManager.InternalSkins.Count - 1 do
       if SkinManager.InternalSkins.Items[i].Name = ListBox1.Items[ListBox1.ItemIndex] then begin
         SkinManager.InternalSkins.Delete(i);
@@ -196,9 +202,9 @@ end;
 
 procedure TFormInternalSkins.UpdateMyActions;
 begin
-  ActionClear.Enabled := (ListBox1.Items.Count > 0);
+  ActionClear.Enabled := ListBox1.Items.Count > 0;
   ActionUpdateAll.Enabled := ActionClear.Enabled;
-  ActionDelete.Enabled := ActionClear.Enabled and (ListBox1.ItemIndex > -1);
+  ActionDelete.Enabled := ActionClear.Enabled and (ListBox1.ItemIndex >= 0);
   ActionRename.Enabled := ActionDelete.Enabled;
   ActionExtract.Enabled := ActionDelete.Enabled;
 end;

@@ -18,12 +18,11 @@
 //{$DEFINE NOJPG}               // Jpegs will not be used
 //{$DEFINE NOFONTSCALEPATCH}    // Disables the patch for systems with big fonts
 //{$DEFINE FIXGRAPHERROR}       // Solves graphic problem in design-time (if exists)
+//{$DEFINE ALITE} // Free Lite Edition
 
 {$IFNDEF NOJPG}
 //  {$DEFINE TINYJPG}
 {$ENDIF}
-
-// -- Experimental features -- //
 
 //{$DEFINE NOSLOWDETAILS} // Simplified output without slow effects
 
@@ -31,6 +30,7 @@
 
 {$DEFINE ALPHASKINS}
 
+{$IFDEF VER310} {$DEFINE DELPHI_10BERLIN}{$ENDIF}
 {$IFDEF VER300} {$DEFINE DELPHI_10}  {$ENDIF}
 {$IFDEF VER290} {$DEFINE DELPHI_XE8} {$ENDIF}
 {$IFDEF VER280} {$DEFINE DELPHI_XE7} {$ENDIF}
@@ -49,6 +49,7 @@
 {$IFDEF VER140} {$DEFINE DELPHI6UP}  {$ENDIF}
 {$IFDEF VER130} {$DEFINE DELPHI5}    {$ENDIF}
 
+{$IFDEF DELPHI_10BERLIN}{$DEFINE DELPHI_10}{$ENDIF}
 {$IFDEF DELPHI_10}  {$DEFINE DELPHI_XE8} {$ENDIF}
 {$IFDEF DELPHI_XE8} {$DEFINE DELPHI_XE7} {$ENDIF}
 {$IFDEF DELPHI_XE7} {$DEFINE DELPHI_XE6} {$ENDIF}
@@ -96,7 +97,7 @@
   {$ENDIF}
 {$ENDIF}
 
-//{$DEFINE WARN_DEPRECATED} // Notify us about deprecated functions
+{$DEFINE WARN_DEPRECATED} // Notify us about deprecated functions
 
 {$IFDEF DELPHI6UP}
   {$IFDEF WARN_DEPRECATED}

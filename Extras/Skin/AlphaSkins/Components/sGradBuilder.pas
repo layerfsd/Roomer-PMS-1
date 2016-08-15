@@ -1,5 +1,6 @@
 unit sGradBuilder;
 {$I sDefs.inc}
+//+
 
 interface
 
@@ -7,11 +8,13 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs, ExtCtrls, Menus, StdCtrls, Buttons, ComCtrls,
 
   sGradient, sSkinProvider, sPanel, sLabel, sButton, sComboBox, sRadioButton, sDialogs, sPageControl, sColorSelect,
-  sSpeedButton, sGroupBox, sConst;
+  sSpeedButton, sGroupBox, sConst, sMessages;
 
 
 type
   TGradPoint = class(TPanel)
+  protected
+    procedure acSMAlphaCmd(var Message: TMessage); message SM_ALPHACMD;
   public
     Number: integer;
     constructor Create(AOwner: TComponent); override;
@@ -86,12 +89,14 @@ type
 
 const
   PointHeight = 6;
+  PointAmount = 5;
 
 
 var
-  GradBuilder: TGradBuilder;
   NoMouse: boolean;
+  GradBuilder: TGradBuilder;
   ColorDialog: TColorDialog;
+  ColSelects: array[0..PointAmount - 1] of TsColorSelect;
 
 
 procedure CreateEditorForm; overload;
@@ -101,7 +106,8 @@ procedure KillForm;
 
 implementation
 
-uses math, acntUtils, sStyleSimply, sGraphUtils;
+uses math,
+  acntUtils, sStyleSimply, sGraphUtils, sColorDialog, acPopupController;
 
 
 const
@@ -117,15 +123,21 @@ end;
 
 
 procedure CreateEditorForm(CustomDlg: TColorDialog); overload;
+var
+  i: integer;
 begin
   CreateEditorForm;
   ColorDialog := CustomDlg;
-  GradBuilder.ColorDialog1 := CustomDlg;
-  GradBuilder.sColorSelect1.ColorDialog := CustomDlg;
-  GradBuilder.sColorSelect2.ColorDialog := CustomDlg;
-  GradBuilder.sColorSelect3.ColorDialog := CustomDlg;
-  GradBuilder.sColorSelect4.ColorDialog := CustomDlg;
-  GradBuilder.sColorSelect5.ColorDialog := CustomDlg;
+  with GradBuilder do begin
+    ColorDialog1 := CustomDlg;
+    ColSelects[0] := sColorSelect1;
+    ColSelects[1] := sColorSelect5;
+    ColSelects[2] := sColorSelect2;
+    ColSelects[3] := sColorSelect4;
+    ColSelects[4] := sColorSelect3;
+    for i := 0 to PointAmount - 1 do
+      ColSelects[i].ColorDialog := CustomDlg;
+  end;
 end;
 
 
@@ -174,22 +186,22 @@ begin
     for i := 0 to c - 1 do begin
       CurPoint := GetMinPoint(PrevPoint.Top);
       SetLength(g, Length(g) + 1);
-      g[Length(g) - 1].Color1 := ColorToRGB(PrevPoint.Color);
-      g[Length(g) - 1].Color2 := ColorToRGB(CurPoint.Color);
-      n := Round((CurPoint.Top - PrevPoint.Top) / 2.2);//* 100 / (PaintPanel.Height - PointHeight));
-      g[Length(g) - 1].Percent :=  min(n, 100);
-      g[Length(g) - 1].Mode1 := max(Direction, 0);
+      with g[Length(g) - 1] do begin
+        Color1 := ColorToRGB(PrevPoint.Color);
+        Color2 := ColorToRGB(CurPoint.Color);
+        n := Round((CurPoint.Top - PrevPoint.Top) / 2.2);//* 100 / (PaintPanel.Height - PointHeight));
+        Percent :=  min(n, 100);
+        Mode1 := max(Direction, 0);
+      end;
       PrevPoint := CurPoint;
     end;
     GradBuilder.PaintBox1.Repaint;
   end
   else begin
     c := Length(g);
-    if c > 0 then g[0].color1 := sColorSelect1.ColorValue;
-    if c > 1 then g[1].color1 := sColorSelect5.ColorValue;
-    if c > 2 then g[2].color1 := sColorSelect2.ColorValue;
-    if c > 3 then g[3].color1 := sColorSelect4.ColorValue;
-    if c > 4 then g[4].color1 := sColorSelect3.ColorValue;
+    for i := 0 to PointAmount - 1 do
+      if c > i then g[i].color1 := ColSelects[i].ColorValue;
+
     GradBuilder.PaintBox2.Repaint;
   end;
 end;
@@ -212,10 +224,12 @@ begin
   a[c - 1].PopupMenu := GradBuilder.PopupMenu1;
   a[c - 1].Number := Length(a) - 1;
 
-  a[c - 1].onMouseDown := GradBuilder.TemplatePanel.OnMouseDown;
-  a[c - 1].onMouseUp   := GradBuilder.TemplatePanel.OnMouseUp;
-  a[c - 1].onMouseMove := GradBuilder.TemplatePanel.OnMouseMove;
-  a[c - 1].onDblClick  := GradBuilder.TemplatePanel.OnDblClick;
+  with GradBuilder.TemplatePanel do begin
+    a[c - 1].onMouseDown := OnMouseDown;
+    a[c - 1].onMouseUp   := OnMouseUp;
+    a[c - 1].onMouseMove := OnMouseMove;
+    a[c - 1].onDblClick  := OnDblClick;
+  end;
 end;
 
 
@@ -233,6 +247,19 @@ begin
   p.onMouseUp := nil;
   if Assigned(p) then
     FreeAndNil(p);
+end;
+
+
+procedure TGradPoint.acSMAlphaCmd(var Message: TMessage);
+begin
+  inherited;
+  case Message.WParamHi of
+    AC_POPUPCLOSED:
+      if (Message.LParam <> 0) and (TsColorDialogForm(Message.LParam).ModalResult = mrOk) then begin
+        Color := ColorToRGB(TsColorDialogForm(Message.LParam).sColor.C);
+        GradBuilder.ReCalcData;
+      end;
+  end;
 end;
 
 
@@ -268,7 +295,7 @@ end;
 
 procedure TGradBuilder.FormCreate(Sender: TObject);
 begin
-  MakefirstPoints
+  MakefirstPoints;
 end;
 
 
@@ -299,15 +326,7 @@ end;
 
 procedure TGradBuilder.Changecolor1Click(Sender: TObject);
 begin
-  if ColorDialog1 = nil then
-    ColorDialog1 := TsColorDialog.Create(Application);
-
-  ColorDialog := ColorDialog1;
-  ColorDialog.Color := LastPoint.Color;
-  if ColorDialog1.Execute then begin
-    LastPoint.Color := ColorToRGB(ColorDialog1.Color);
-    ReCalcData;
-  end;
+  TemplatePanelDblClick(LastPoint);
 end;
 
 
@@ -364,12 +383,13 @@ var
 begin
   Result := '';
   for i := 0 to Length(g) - 1 do
-    Result := Result +
-              IntToStr(ColorToRGB(g[i].Color1)) + ';' +
-              IntToStr(ColorToRGB(g[i].Color2)) + ';' +
-              IntToStr(g[i].Percent) + ';' +
-              IntToStr(g[i].Mode1) + ';' +
-              IntToStr(g[i].Mode2) + ';';
+    with g[i] do
+      Result := Result +
+                IntToStr(ColorToRGB(Color1)) + ';' +
+                IntToStr(ColorToRGB(Color2)) + ';' +
+                IntToStr(Percent) + ';' +
+                IntToStr(Mode1) + ';' +
+                IntToStr(Mode2) + ';';
 
   Delete(Result, Length(Result), 1);
 end;
@@ -383,13 +403,15 @@ begin
   c := Length(NewArray) - 1;
   if c > 0 then begin
     SetLength(g, c + 1);
-    for i := 0 to c do begin
-      g[i].Color1  := NewArray[i].Color1;
-      g[i].Color2  := NewArray[i].Color2;
-      g[i].Percent := NewArray[i].Percent;
-      g[i].Mode1   := NewArray[i].Mode1;
-      g[i].Mode2   := NewArray[i].Mode2;
-    end;
+    for i := 0 to c do
+      with NewArray[i] do begin
+        g[i].Color1  := Color1;
+        g[i].Color2  := Color2;
+        g[i].Percent := Percent;
+        g[i].Mode1   := Mode1;
+        g[i].Mode2   := Mode2;
+      end;
+
     Direction := NewArray[0].Mode1;
   end;
 end;
@@ -403,16 +425,17 @@ end;
 
 procedure TGradBuilder.TemplatePanelDblClick(Sender: TObject);
 begin
-  if ColorDialog1 = nil then
-    ColorDialog1 := TsColorDialog.Create(Application);
-
   LastPoint := TGradPoint(Sender);
   NoMouse := True;
-  ColorDialog1.Color := LastPoint.Color;
-  if ColorDialog1.Execute then begin
-    LastPoint.Color := ColorToRGB(ColorDialog1.Color);
-    ReCalcData;
-  end;
+  if sColorDialogForm = nil then
+    sColorDialogForm := TsColorDialogForm.Create(Application);
+
+  sColorDialogForm.InitControls(True, False, LastPoint.Color, bsNone);
+  sColorDialogForm.SetCurrentColor(LastPoint.Color);
+  ShowPopupForm(sColorDialogForm, LastPoint);//Self);
+  // Allow showing of Dlg when screen is captured
+  SetWindowLong(sColorDialogForm.Handle, GWL_EXSTYLE, GetWindowLong(sColorDialogForm.Handle, GWL_EXSTYLE) and not WS_EX_LAYERED);
+  NoMouse := False;
 end;
 
 
@@ -455,13 +478,13 @@ begin
     0: begin
       sRadioButton1.Checked := True;
       sGroupBox1.BringToFront;
-      MakefirstPoints
+      MakefirstPoints;
     end;
 
     1: begin
       sRadioButton2.Checked := True;
       sGroupBox1.BringToFront;
-      MakefirstPoints
+      MakefirstPoints;
     end;
 
     2: begin
@@ -516,11 +539,14 @@ begin
     while Panel2.ComponentCount > 0 do
       Panel2.Components[0].Destroy;
 
-    if c > 0 then sColorSelect1.ColorValue := g[0].color1 else sColorSelect1.ColorValue := 0;
-    if c > 1 then sColorSelect5.ColorValue := g[1].color1 else sColorSelect5.ColorValue := sColorSelect1.ColorValue;
-    if c > 2 then sColorSelect2.ColorValue := g[2].color1 else sColorSelect2.ColorValue := sColorSelect5.ColorValue;
-    if c > 3 then sColorSelect4.ColorValue := g[3].color1 else sColorSelect4.ColorValue := sColorSelect2.ColorValue;
-    if c > 4 then sColorSelect3.ColorValue := g[4].color1 else sColorSelect3.ColorValue := sColorSelect4.ColorValue;
+    for i := 0 to PointAmount - 1 do
+      if c > i then
+        ColSelects[i].ColorValue := g[i].color1
+      else
+        if i = 0 then
+          ColSelects[i].ColorValue := 0
+        else
+          ColSelects[i].ColorValue := ColSelects[i - 1].ColorValue;
   end;
   ReCalcData;
 end;
@@ -533,7 +559,6 @@ begin
     SetLength(a, 1);
     NewPoint(Panel2, 0, clWhite);
     a[Length(a) - 1].Name := acs_FirstPoint;
-
     // LastPoint
     SetLength(a, 2);
     NewPoint(Panel2, Panel2.Height - PointHeight, clBtnShadow);
@@ -543,25 +568,25 @@ end;
 
 
 procedure TGradBuilder.InitTriangles;
+var
+  i, p: integer;
 begin
-  if Length(g) < 5 then
-    SetLength(g, 5);
-    
-  g[0].Color1 := sColorSelect1.ColorValue;
-  g[0].Color2 := sColorSelect5.ColorValue;
-  g[0].Percent := 24;
-  g[1].Color1 := sColorSelect5.ColorValue;
-  g[1].Color2 := sColorSelect2.ColorValue;
-  g[1].Percent := 24;
-  g[2].Color1 := sColorSelect2.ColorValue;
-  g[2].Color2 := sColorSelect4.ColorValue;
-  g[2].Percent := 24;
-  g[3].Color1 := sColorSelect4.ColorValue;
-  g[3].Color2 := sColorSelect3.ColorValue;
-  g[3].Percent := 24;
-  g[4].Color1 := sColorSelect3.ColorValue;
-  g[4].Color2 := sColorSelect3.ColorValue;
-  g[4].Percent := 0;
+  p := 100 div PointAmount - 1;
+  if Length(g) < PointAmount then
+    SetLength(g, PointAmount);
+
+  for i := 0 to PointAmount - 1 do
+    with g[i] do
+      if i < PointAmount - 1 then begin
+        Color1 := ColSelects[i].ColorValue;
+        Color2 := ColSelects[i + 1].ColorValue;
+        Percent := p;
+      end
+      else begin
+        Color1 := ColSelects[i].ColorValue;
+        Color2 := ColSelects[i].ColorValue;
+        Percent := 0;
+      end;
 end;
 
 end.

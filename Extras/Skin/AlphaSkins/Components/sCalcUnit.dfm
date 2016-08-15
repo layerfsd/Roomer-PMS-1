@@ -1,5 +1,5 @@
 object sCalcForm: TsCalcForm
-  Tag = -98
+  Tag = 256
   Left = 428
   Top = 301
   BorderStyle = bsNone
@@ -17,7 +17,6 @@ object sCalcForm: TsCalcForm
   Position = poMainFormCenter
   Scaled = False
   OnCreate = FormCreate
-  OnDeactivate = FormDeactivate
   OnKeyPress = FormKeyPress
   OnShow = FormShow
   PixelsPerInch = 96
@@ -50,7 +49,6 @@ object sCalcForm: TsCalcForm
         Spacing = 0
         OnClick = sSpeedButton1Click
         SkinData.SkinSection = 'SPEEDBUTTON_SMALL'
-        DisabledGlyphKind = []
       end
       object sSpeedButton2: TsSpeedButton
         Left = 153
@@ -62,7 +60,6 @@ object sCalcForm: TsCalcForm
         Spacing = 3
         OnClick = sSpeedButton2Click
         SkinData.SkinSection = 'SPEEDBUTTON_SMALL'
-        DisabledGlyphKind = []
       end
       object sSpeedButton3: TsSpeedButton
         Left = 5
@@ -75,7 +72,6 @@ object sCalcForm: TsCalcForm
         Spacing = 3
         OnClick = sSpeedButton3Click
         SkinData.SkinSection = 'SPEEDBUTTON_SMALL'
-        DisabledGlyphKind = []
       end
       object sSpeedButton4: TsSpeedButton
         Tag = 7
@@ -88,7 +84,6 @@ object sCalcForm: TsCalcForm
         Spacing = 3
         OnClick = sSpeedButton22Click
         SkinData.SkinSection = 'SPEEDBUTTON_SMALL'
-        DisabledGlyphKind = []
       end
       object sSpeedButton5: TsSpeedButton
         Tag = 8
@@ -101,7 +96,6 @@ object sCalcForm: TsCalcForm
         Spacing = 3
         OnClick = sSpeedButton22Click
         SkinData.SkinSection = 'SPEEDBUTTON_SMALL'
-        DisabledGlyphKind = []
       end
       object sSpeedButton6: TsSpeedButton
         Tag = 9
@@ -114,7 +108,6 @@ object sCalcForm: TsCalcForm
         Spacing = 3
         OnClick = sSpeedButton22Click
         SkinData.SkinSection = 'SPEEDBUTTON_SMALL'
-        DisabledGlyphKind = []
       end
       object sSpeedButton7: TsSpeedButton
         Left = 137
@@ -126,7 +119,6 @@ object sCalcForm: TsCalcForm
         Spacing = 3
         OnClick = sSpeedButton7Click
         SkinData.SkinSection = 'SPEEDBUTTON_SMALL'
-        DisabledGlyphKind = []
       end
       object sSpeedButton8: TsSpeedButton
         Left = 170
@@ -138,7 +130,6 @@ object sCalcForm: TsCalcForm
         Spacing = 3
         OnClick = sSpeedButton8Click
         SkinData.SkinSection = 'SPEEDBUTTON_SMALL'
-        DisabledGlyphKind = []
       end
       object sSpeedButton9: TsSpeedButton
         Left = 5
@@ -151,7 +142,6 @@ object sCalcForm: TsCalcForm
         Spacing = 3
         OnClick = sSpeedButton9Click
         SkinData.SkinSection = 'SPEEDBUTTON_SMALL'
-        DisabledGlyphKind = []
       end
       object sSpeedButton10: TsSpeedButton
         Tag = 4
@@ -164,7 +154,6 @@ object sCalcForm: TsCalcForm
         Spacing = 3
         OnClick = sSpeedButton22Click
         SkinData.SkinSection = 'SPEEDBUTTON_SMALL'
-        DisabledGlyphKind = []
       end
       object sSpeedButton11: TsSpeedButton
         Tag = 5
@@ -177,7 +166,6 @@ object sCalcForm: TsCalcForm
         Spacing = 3
         OnClick = sSpeedButton22Click
         SkinData.SkinSection = 'SPEEDBUTTON_SMALL'
-        DisabledGlyphKind = []
       end
       object sSpeedButton12: TsSpeedButton
         Tag = 6
@@ -190,7 +178,6 @@ object sCalcForm: TsCalcForm
         Spacing = 3
         OnClick = sSpeedButton22Click
         SkinData.SkinSection = 'SPEEDBUTTON_SMALL'
-        DisabledGlyphKind = []
       end
       object sSpeedButton13: TsSpeedButton
         Left = 137
@@ -202,7 +189,6 @@ object sCalcForm: TsCalcForm
         Spacing = 3
         OnClick = sSpeedButton13Click
         SkinData.SkinSection = 'SPEEDBUTTON_SMALL'
-        DisabledGlyphKind = []
       end
       object sSpeedButton14: TsSpeedButton
         Left = 170
@@ -214,7 +200,6 @@ object sCalcForm: TsCalcForm
         Spacing = 3
         OnClick = sSpeedButton14Click
         SkinData.SkinSection = 'SPEEDBUTTON_SMALL'
-        DisabledGlyphKind = []
       end
       object sSpeedButton15: TsSpeedButton
         Left = 5
@@ -226,7 +211,6 @@ object sCalcForm: TsCalcForm
         Spacing = 3
         OnClick = sSpeedButton15Click
         SkinData.SkinSection = 'SPEEDBUTTON_SMALL'
-        DisabledGlyphKind = []
       end
       object sSpeedButton16: TsSpeedButton
         Tag = 1
@@ -239,7 +223,6 @@ object sCalcForm: TsCalcForm
         Spacing = 3
         OnClick = sSpeedButton22Click
         SkinData.SkinSection = 'SPEEDBUTTON_SMALL'
-        DisabledGlyphKind = []
       end
       object sSpeedButton17: TsSpeedButton
         Tag = 2
@@ -252,7 +235,6 @@ object sCalcForm: TsCalcForm
         Spacing = 3
         OnClick = sSpeedButton22Click
         SkinData.SkinSection = 'SPEEDBUTTON_SMALL'
-        DisabledGlyphKind = []
       end
       object sSpeedButton18: TsSpeedButton
         Tag = 3
@@ -265,7 +247,6 @@ object sCalcForm: TsCalcForm
         Spacing = 3
         OnClick = sSpeedButton22Click
         SkinData.SkinSection = 'SPEEDBUTTON_SMALL'
-        DisabledGlyphKind = []
       end
       object sSpeedButton19: TsSpeedButton
         Left = 137
@@ -277,7 +258,6 @@ object sCalcForm: TsCalcForm
         Spacing = 3
         OnClick = sSpeedButton19Click
         SkinData.SkinSection = 'SPEEDBUTTON_SMALL'
-        DisabledGlyphKind = []
       end
       object sSpeedButton20: TsSpeedButton
         Left = 170
@@ -289,7 +269,6 @@ object sCalcForm: TsCalcForm
         Spacing = 3
         OnClick = sSpeedButton20Click
         SkinData.SkinSection = 'SPEEDBUTTON_SMALL'
-        DisabledGlyphKind = []
       end
       object sSpeedButton21: TsSpeedButton
         Left = 5
@@ -301,7 +280,6 @@ object sCalcForm: TsCalcForm
         Spacing = 3
         OnClick = sSpeedButton21Click
         SkinData.SkinSection = 'SPEEDBUTTON_SMALL'
-        DisabledGlyphKind = []
       end
       object sSpeedButton22: TsSpeedButton
         Left = 38
@@ -313,7 +291,6 @@ object sCalcForm: TsCalcForm
         Spacing = 3
         OnClick = sSpeedButton22Click
         SkinData.SkinSection = 'SPEEDBUTTON_SMALL'
-        DisabledGlyphKind = []
       end
       object sSpeedButton23: TsSpeedButton
         Left = 71
@@ -321,11 +298,10 @@ object sCalcForm: TsCalcForm
         Width = 31
         Height = 20
         Cursor = crHandPoint
-        Caption = #177
+        Caption = '±'
         Spacing = 3
         OnClick = sSpeedButton23Click
         SkinData.SkinSection = 'SPEEDBUTTON_SMALL'
-        DisabledGlyphKind = []
       end
       object sSpeedButton24: TsSpeedButton
         Left = 104
@@ -337,7 +313,6 @@ object sCalcForm: TsCalcForm
         Spacing = 3
         OnClick = sSpeedButton24Click
         SkinData.SkinSection = 'SPEEDBUTTON_SMALL'
-        DisabledGlyphKind = []
       end
       object sSpeedButton25: TsSpeedButton
         Left = 137
@@ -349,7 +324,6 @@ object sCalcForm: TsCalcForm
         Spacing = 3
         OnClick = sSpeedButton25Click
         SkinData.SkinSection = 'SPEEDBUTTON_SMALL'
-        DisabledGlyphKind = []
       end
       object sSpeedButton26: TsSpeedButton
         Left = 170
@@ -361,7 +335,6 @@ object sCalcForm: TsCalcForm
         Spacing = 3
         OnClick = sSpeedButton26Click
         SkinData.SkinSection = 'SPEEDBUTTON_SMALL'
-        DisabledGlyphKind = []
       end
       object sSpeedButton27: TsSpeedButton
         Left = 100
@@ -373,7 +346,6 @@ object sCalcForm: TsCalcForm
         Spacing = 3
         OnClick = sSpeedButton27Click
         SkinData.SkinSection = 'SPEEDBUTTON_SMALL'
-        DisabledGlyphKind = []
       end
       object FCalcPanel: TsPanel
         Left = 8
@@ -406,7 +378,6 @@ object sCalcForm: TsCalcForm
         OnClick = sToolButton3Click
         Align = alRight
         SkinData.SkinSection = 'TOOLBUTTON'
-        DisabledGlyphKind = []
       end
       object sToolButton1: TsSpeedButton
         Left = 186
@@ -419,7 +390,6 @@ object sCalcForm: TsCalcForm
         OnClick = sToolButton1Click
         Align = alRight
         SkinData.SkinSection = 'TOOLBUTTON'
-        DisabledGlyphKind = []
       end
     end
     object FDisplayPanel: TsPanel

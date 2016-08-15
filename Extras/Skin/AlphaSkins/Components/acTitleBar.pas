@@ -1,6 +1,6 @@
 unit acTitleBar;
 {$I sDefs.inc}
-
+//+
 interface
 
 uses
@@ -8,7 +8,7 @@ uses
   {$IFNDEF DELPHI5}Types, {$ENDIF}
   {$IFDEF DELPHI_XE2}UITypes, {$ENDIF}
   {$IFDEF TNTUNICODE}TntControls, {$ENDIF}
-  sConst;
+  acntTypes, sConst;
 
 
 type
@@ -23,7 +23,7 @@ type
     MaxIterations: integer;
 
     AForm,
-    OldForm: TForm;
+    OldForm: TacGlowForm;
 
     ToShow: boolean;
     NewBmp: TBitmap;
@@ -125,6 +125,7 @@ type
     FDropdownMenu: TPopupMenu;
     FOnDrawItem: TacDrawItemEvent;
     FAlignment: TAlignment;
+    FTag: integer;
 {$IFDEF ALPHASKINS}
     FHotImageIndex,
     FPressedImageIndex,
@@ -150,6 +151,7 @@ type
     procedure SetImageIndex (const AIndex, Value: integer); // Calc size when AutoSize is True
     function GetState: integer;
     procedure OnGlyphChange(Sender: TObject);
+    procedure SetEnabled(const Value: boolean);
   protected
     FDown: boolean;
     FState: integer;
@@ -163,10 +165,11 @@ type
     Rect: TRect;
     Data: ^TObject;
     Timer: TacItemAnimation;
-    ExtForm: TForm;
+    ExtForm: TacGlowForm;
     procedure AssignTo(Dest: TPersistent); override;
     constructor Create(ACollection: TCollection); override;
     destructor Destroy; override;
+    procedure ScaleItem(NewValue, OldValue: integer);
     procedure InitFont;
 
     procedure DoMouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
@@ -195,7 +198,7 @@ type
     property Caption: acString read FCaption write SetCaption;
     property DropdownMenu: TPopupMenu read FDropdownMenu write FDropdownMenu;
     property Down: boolean read FDown write SetDown default False;
-    property Enabled: boolean read FEnabled write FEnabled default True;
+    property Enabled: boolean read FEnabled write SetEnabled default True;
     property FontData: TacFontData read FFontData write FFontData;
     property Glyph: TBitmap read FGlyph write SetGlyph;
     property Height: integer read FHeight write SetHeight default 18;
@@ -215,6 +218,7 @@ type
 {$ENDIF}
     property Spacing: integer read FSpacing write SetSpacing default 4;
     property Style: TacBtnStyle read FStyle write SetStyle default bsButton;
+    property Tag: integer read FTag write FTag default 0;
     property Visible: boolean read FVisible write SetVisible default True;
     property Width: integer read FWidth write SetWidth default 22;
     property OnClick: TNotifyEvent read FOnClick write FOnClick;
@@ -261,14 +265,14 @@ type
     FShowCaption: boolean;
     FImages: TCustomImageList;
     FImageChangeLink: TChangeLink;
+    FRightSpacing: integer;
     procedure SetItems       (const Value: TacTitleItems);
-    procedure SetItemsMargin (const Value: integer);
-    procedure SetItemsSpacing(const Value: integer);
     procedure SetImages      (const Value: TCustomImageList);
     procedure SetShowCaption (const Value: boolean);
   protected
     FFullRight,
-    FBarVCenter: integer;
+    FBarVCenter,
+    OldScaleValue: integer;
 
     FBarRect: TRect;
     FUpdating: boolean;
@@ -279,6 +283,7 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Loaded; override;
+    procedure UpdateScale(NewValue: integer);
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
     procedure Invalidate;
 
@@ -290,8 +295,9 @@ type
 {$ENDIF}
     property Images: TCustomImageList read FImages write SetImages;
     property Items: TacTitleItems read FItems write SetItems;
-    property ItemsMargin: integer read FItemsMargin write SetItemsMargin default 3;
-    property ItemsSpacing: integer read FItemsSpacing write SetItemsSpacing default 0;
+    property ItemsMargin:  integer read FItemsMargin  write FItemsMargin  default 3;
+    property ItemsSpacing: integer read FItemsSpacing write FItemsSpacing default 0;
+    property RightSpacing: integer read FRightSpacing write FRightSpacing default 0;
     property ShowCaption: boolean read FShowCaption write SetShowCaption;
   end;
 
@@ -300,7 +306,7 @@ type
 procedure PaintItemNoAlpha(const DstBmp, SrcBmp: TBitmap; const DstRect, SrcRect, BorderWidths: TRect);
 procedure ShowHintWnd(Item: TacTitleBarItem);
 procedure HideHintWnd(Item: TacTitleBarItem);
-procedure StartItemAnimation(const Item: TacTitleBarItem; const Iterations: integer; const Show: boolean; ExtendedForm: TForm = nil);
+procedure StartItemAnimation(const Item: TacTitleBarItem; const Iterations: integer; const Show: boolean; ExtendedForm: TacGlowForm = nil);
 
 
 const
@@ -313,11 +319,11 @@ implementation
 
 uses
   SysUtils, math,
-  sMessages, sGraphUtils, sSkinMenus, sVclUtils, sAlphaGraph, acntUtils, sThirdParty;
+  sMessages, sGraphUtils, sSkinMenus, sVclUtils, sAlphaGraph, acntUtils, sThirdParty, sSkinManager, sSkinProvider;
 
 {$R acTitleBar.res}
 
-procedure StartItemAnimation(const Item: TacTitleBarItem; const Iterations: integer; const Show: boolean; ExtendedForm: TForm = nil);
+procedure StartItemAnimation(const Item: TacTitleBarItem; const Iterations: integer; const Show: boolean; ExtendedForm: TacGlowForm = nil);
 begin
   with Item do
     if Timer = nil then begin
@@ -378,17 +384,9 @@ end;
 
 function acGetTitleFont: hFont;
 var
-{$IFDEF TNTUNICODE}
-  NonClientMetrics: TNonClientMetricsW;
-{$ELSE}
-  NonClientMetrics: TNonClientMetrics;
-{$ENDIF}
+  NonClientMetrics: {$IFDEF TNTUNICODE}TNonClientMetricsW{$ELSE}TNonClientMetrics{$ENDIF};
 begin
-{$IFDEF D2010}
-  NonClientMetrics.cbSize := TNonClientMetrics.SizeOf;
-{$ELSE}
-  NonClientMetrics.cbSize := SizeOf(NonClientMetrics);
-{$ENDIF}
+  NonClientMetrics.cbSize := {$IFDEF D2010}TNonClientMetrics.SizeOf{$ELSE}SizeOf(NonClientMetrics){$ENDIF};
 {$IFDEF TNTUNICODE}
   if SystemParametersInfoW(SPI_GETNONCLIENTMETRICS, 0, @NonClientMetrics, 0) then
     Result := CreateFontIndirectW(NonClientMetrics.lfCaptionFont)
@@ -403,22 +401,10 @@ end;
 
 function GetCaptionFontSize: integer;
 var
-{$IFDEF TNTUNICODE}
-  NonClientMetrics: TNonClientMetricsW;
-{$ELSE}
-  NonClientMetrics: TNonClientMetrics;
-{$ENDIF}
+  NonClientMetrics: {$IFDEF TNTUNICODE}TNonClientMetricsW{$ELSE}TNonClientMetrics{$ENDIF};
 begin
-{$IFDEF D2010}
-  NonClientMetrics.cbSize := TNonClientMetrics.SizeOf;
-{$ELSE}
-  NonClientMetrics.cbSize := SizeOf(NonClientMetrics);
-{$ENDIF}
-{$IFDEF TNTUNICODE}
-  if SystemParametersInfoW(SPI_GETNONCLIENTMETRICS, 0, @NonClientMetrics, 0) then
-{$ELSE}
-  if SystemParametersInfo(SPI_GETNONCLIENTMETRICS, 0, @NonClientMetrics, 0) then
-{$ENDIF}
+  NonClientMetrics.cbSize := {$IFDEF D2010}TNonClientMetrics.SizeOf{$ELSE}SizeOf(NonClientMetrics){$ENDIF};
+  if {$IFDEF TNTUNICODE}SystemParametersInfoW{$ELSE}SystemParametersInfo{$ENDIF}(SPI_GETNONCLIENTMETRICS, 0, @NonClientMetrics, 0) then
     Result := NonClientMetrics.lfCaptionFont.lfHeight
   else
     Result := 0;
@@ -449,12 +435,13 @@ end;
 
 procedure UpdateAlphaTitle(Img: TBitmap);
 var
-  x, y: integer;
-  S: PRGBAArray;
+  iWidth, x, y: integer;
+  S: PRGBAArray_;
 begin
+  iWidth := Img.Width - 1;
   for Y := 0 to Img.Height - 1 do begin
     S := Img.ScanLine[Y];
-    for X := 0 to Img.Width - 1 do
+    for X := 0 to iWidth do
       with S[X] do
         if C <> clFuchsia then begin
           A := MaxByte - A;
@@ -468,20 +455,21 @@ end;
 
 procedure CopyTransRect(DstBmp, SrcBmp: Graphics.TBitMap; X, Y: integer; SrcRect: TRect);
 var
-  D0, S0, D, S: PRGBAArray;
+  S0, S: PRGBAArray_S;
+  D0, D: PRGBAArray_D;
   DeltaS, DeltaD, sX, sY, DstX, DstY, SrcX, SrcY, h, w, dh: integer;
 begin
   // Check ranges
   if SrcRect.Top < 0 then
     SrcRect.Top := 0;
 
-  if SrcRect.Bottom > SrcBmp.Height - 1 then
+  if SrcRect.Bottom >= SrcBmp.Height then
     SrcRect.Bottom := SrcBmp.Height - 1;
 
   if SrcRect.Left < 0 then
     SrcRect.Left := 0;
 
-  if SrcRect.Right > SrcBmp.Width - 1 then
+  if SrcRect.Right >= SrcBmp.Width then
     SrcRect.Right := SrcBmp.Width - 1;
   // Calc delta
   h := SrcRect.Bottom - SrcRect.Top;
@@ -498,8 +486,8 @@ begin
         SrcX := SrcRect.Left;
         for sX := 0 to w do begin
           with S[SrcX] do
-            if (C <> clFuchsia) then
-              D[DstX].C := C;
+            if (SC <> clFuchsia) then
+              D[DstX].DC := SC;
 
           inc(DstX);
           inc(SrcX);
@@ -512,46 +500,43 @@ end;
 
 
 procedure PaintItemNoAlpha(const DstBmp, SrcBmp: TBitmap; const DstRect, SrcRect, BorderWidths: TRect);
-var
-  w, h: integer;
 begin
-  DstBmp.Transparent := True;
-  DstBmp.TransparentColor := clFuchsia;
-  SrcBmp.Transparent := True;
-  SrcBmp.TransparentColor := clFuchsia;
-  SetStretchBltMode(DstBmp.Canvas.Handle, COLORONCOLOR);
-  // Copy corners
-  // Left top
-  CopyTransRect(DstBmp, SrcBmp, DstRect.Left, DstRect.Top, Rect(SrcRect.Left, SrcRect.Top, SrcRect.Left + BorderWidths.Right - 1, SrcRect.Top + BorderWidths.Top - 1));
-  // Left bottom
-  CopyTransRect(DstBmp, SrcBmp, DstRect.Left, DstRect.Bottom - BorderWidths.Bottom, Rect(SrcRect.Left, SrcRect.Bottom - BorderWidths.Bottom, SrcRect.Left + BorderWidths.Right - 1, SrcRect.Bottom - 1));
-  // Right top
-  CopyTransRect(DstBmp, SrcBmp, DstRect.Right - BorderWidths.Right, DstRect.Top, Rect(SrcRect.Right - BorderWidths.Right, SrcRect.Top, SrcRect.Right - 1, SrcRect.Top + BorderWidths.Top - 1));
-  // Right bottom
-  CopyTransRect(DstBmp, SrcBmp, DstRect.Right - BorderWidths.Right, DstRect.Bottom - BorderWidths.Bottom, Rect(SrcRect.Right - BorderWidths.Right, SrcRect.Bottom - BorderWidths.Bottom, SrcRect.Right - 1, SrcRect.Bottom - 1));
+  with TSrcRect(SrcRect), TDstRect(DstRect), BorderWidths do begin
+    DstBmp.Transparent := True;
+    DstBmp.TransparentColor := clFuchsia;
+    SrcBmp.Transparent := True;
+    SrcBmp.TransparentColor := clFuchsia;
+    SetStretchBltMode(DstBmp.Canvas.Handle, COLORONCOLOR);
+    // Copy corners
+    // Left top
+    CopyTransRect(DstBmp, SrcBmp, DLeft, DTop, Rect(SLeft, STop, SLeft + Right - 1, STop + Top - 1));
+    // Left bottom
+    CopyTransRect(DstBmp, SrcBmp, DLeft, DBottom - Bottom, Rect(SLeft, SBottom - Bottom, SLeft + Right - 1, SBottom - 1));
+    // Right top
+    CopyTransRect(DstBmp, SrcBmp, DRight - Right, DTop, Rect(SRight - Right, STop, SRight - 1, STop + Top - 1));
+    // Right bottom
+    CopyTransRect(DstBmp, SrcBmp, DRight - Right, DBottom - Bottom, Rect(SRight - Right, SBottom - Bottom, SRight - 1, SBottom - 1));
 
-  w := max(0, SrcRect.Right - SrcRect.Left - BorderWidths.Right - BorderWidths.Left);
-  h := max(0, SrcRect.Bottom - SrcRect.Top - BorderWidths.Bottom - BorderWidths.Top);
-
-  if (h <> 0) then begin
-    // Left border
-    StretchBlt(DstBmp.Canvas.Handle, DstRect.Left, DstRect.Top + BorderWidths.Top, BorderWidths.Left, DstRect.Bottom - DstRect.Top - BorderWidths.Top - BorderWidths.Bottom,
-               SrcBmp.Canvas.Handle, SrcRect.Left, SrcRect.Top + BorderWidths.Top, BorderWidths.Left, SrcRect.Bottom - SrcRect.Top - BorderWidths.Top - BorderWidths.Bottom, SRCCOPY);
-    // Right border
-    StretchBlt(DstBmp.Canvas.Handle, DstRect.Right - BorderWidths.Right, DstRect.Top + BorderWidths.Top, BorderWidths.Right, DstRect.Bottom - DstRect.Top - BorderWidths.Bottom - BorderWidths.Top,
-               SrcBmp.Canvas.Handle, SrcRect.Right - BorderWidths.Right, SrcRect.Top + BorderWidths.Top, BorderWidths.Right, SrcRect.Bottom - SrcRect.Top - BorderWidths.Bottom - BorderWidths.Top, SRCCOPY);
+    if max(0, SBottom - STop - Bottom - Top) <> 0 then begin
+      // Left border
+      StretchBlt(DstBmp.Canvas.Handle, DLeft, DTop + Top, Left, DBottom - DTop - Top - Bottom,
+                 SrcBmp.Canvas.Handle, SLeft, STop + Top, Left, SBottom - STop - Top - Bottom, SRCCOPY);
+      // Right border
+      StretchBlt(DstBmp.Canvas.Handle, DRight - Right, DTop + Top, Right, DBottom - DTop - Bottom - Top,
+                 SrcBmp.Canvas.Handle, SRight - Right, STop + Top, Right, SBottom - STop - Bottom - Top, SRCCOPY);
+    end;
+    if max(0, SRight - SLeft - Right - Left) <> 0 then begin
+      // Top border
+      StretchBlt(DstBmp.Canvas.Handle, DLeft + Left, DTop, DRight - DLeft - Left - Right, Top,
+                 SrcBmp.Canvas.Handle, SLeft + Left, STop, SRight - SLeft - Left - Right, Top, SRCCOPY);
+      // Bottom border
+      StretchBlt(DstBmp.Canvas.Handle, DLeft + Left, DBottom - Bottom, DRight - DLeft - Right - Left, Bottom,
+                 SrcBmp.Canvas.Handle, SLeft + Left, SBottom - Bottom, SRight - SLeft - Right - Left, Bottom, SRCCOPY);
+    end;
+    // Center
+    StretchBlt(DstBmp.Canvas.Handle, DLeft + Left, DTop + Top, DRight - DLeft - Right - Left, DBottom - DTop - Bottom - Top,
+               SrcBmp.Canvas.Handle, SLeft + Left, STop + Top, SRight - SLeft - Right - Left, SBottom - STop - Bottom - Top, SRCCOPY);
   end;
-  if (w <> 0) then begin
-    // Top border
-    StretchBlt(DstBmp.Canvas.Handle, DstRect.Left + BorderWidths.Left, DstRect.Top, DstRect.Right - DstRect.Left - BorderWidths.Left - BorderWidths.Right, BorderWidths.Top,
-               SrcBmp.Canvas.Handle, SrcRect.Left + BorderWidths.Left, SrcRect.Top, SrcRect.Right - SrcRect.Left - BorderWidths.Left - BorderWidths.Right, BorderWidths.Top, SRCCOPY);
-    // Bottom border
-    StretchBlt(DstBmp.Canvas.Handle, DstRect.Left + BorderWidths.Left, DstRect.Bottom - BorderWidths.Bottom, DstRect.Right - DstRect.Left - BorderWidths.Right - BorderWidths.Left, BorderWidths.Bottom,
-               SrcBmp.Canvas.Handle, SrcRect.Left + BorderWidths.Left, SrcRect.Bottom - BorderWidths.Bottom, SrcRect.Right - SrcRect.Left - BorderWidths.Right - BorderWidths.Left, BorderWidths.Bottom, SRCCOPY);
-  end;             
-  // Center
-  StretchBlt(DstBmp.Canvas.Handle, DstRect.Left + BorderWidths.Left, DstRect.Top + BorderWidths.Top, DstRect.Right - DstRect.Left - BorderWidths.Right - BorderWidths.Left, DstRect.Bottom - DstRect.Top - BorderWidths.Bottom - BorderWidths.Top,
-             SrcBmp.Canvas.Handle, SrcRect.Left + BorderWidths.Left, SrcRect.Top + BorderWidths.Top, SrcRect.Right - SrcRect.Left - BorderWidths.Right - BorderWidths.Left, SrcRect.Bottom - SrcRect.Top - BorderWidths.Bottom - BorderWidths.Top, SRCCOPY);
 end;
 
 
@@ -561,38 +546,40 @@ var
 
   procedure CalcItem(Item: TacTitleBarItem);
   begin
-    case Item.Style of
-      bsButton:  Item.Rect.Top := FBarVCenter - Item.Height div 2;
-      bsMenu:    Item.Rect.Top := FBarRect.Top;
-      bsTab:     Item.Rect.Top := FBarRect.Bottom - Item.Height;
-      bsSpacing: Item.Rect.Top := FBarVCenter - Item.Height div 2;
-      bsInfo:    Item.Rect.Top := FBarVCenter - Item.Height div 2;
-    end;
-
-    Item.Rect.Bottom := Item.Rect.Top + Item.Height;
-    case Item.Align of
-      tbaLeft: begin
-        Item.Rect.Left := LastLeft;
-        Item.Rect.Right := Item.Rect.Left + Item.Width;
-        inc(LastLeft, Item.Width);
+    with TDstRect(Item.Rect) do begin
+      case Item.Style of
+        bsButton:  DTop := FBarVCenter - Item.Height div 2;
+        bsMenu:    DTop := FBarRect.Top;
+        bsTab:     DTop := FBarRect.Bottom - Item.Height;
+        bsSpacing: DTop := FBarVCenter - Item.Height div 2;
+        bsInfo:    DTop := FBarVCenter - Item.Height div 2;
       end;
 
-      tbaRight: begin
-        Item.Rect.Left := LastRight;
-        Item.Rect.Right := Item.Rect.Left + Item.Width;
-        inc(LastRight, Item.Width);
-      end;
+      DBottom := DTop + Item.Height;
+      case Item.Align of
+        tbaLeft: begin
+          DLeft := LastLeft;
+          DRight := DLeft + Item.Width;
+          inc(LastLeft, Item.Width);
+        end;
 
-      tbaCenter: begin
-        Item.Rect.Left := LastCenter;
-        Item.Rect.Right := Item.Rect.Left + Item.Width;
-        inc(LastCenter, Item.Width);
-      end;
+        tbaRight: begin
+          DLeft := LastRight;
+          DRight := DLeft + Item.Width;
+          inc(LastRight, Item.Width);
+        end;
 
-      tbaCenterInSpace: begin
-        Item.Rect.Left := LastCenterS;
-        Item.Rect.Right := Item.Rect.Left + Item.Width;
-        inc(LastCenterS, Item.Width);
+        tbaCenter: begin
+          DLeft := LastCenter;
+          DRight := DLeft + Item.Width;
+          inc(LastCenter, Item.Width);
+        end;
+
+        tbaCenterInSpace: begin
+          DLeft := LastCenterS;
+          DRight := DLeft + Item.Width;
+          inc(LastCenterS, Item.Width);
+        end;
       end;
     end;
   end;
@@ -600,7 +587,7 @@ var
 begin
   // Init
   FLeftWidth    := 0;
-  FRightWidth   := 0;
+  FRightWidth   := FRightSpacing;
   FCenterWidth  := 0;
   FCenterWidthS := 0;
   // Calc main parts sizes
@@ -636,10 +623,12 @@ begin
   UpdateAlphaTitle(FDefaultMenuBtn);
   FCaptionRect := MkRect;
   FFullRight := 0;
+  OldScaleValue := 100;
   FImageChangeLink := TChangeLink.Create;
   FImageChangeLink.OnChange := ImageListChange;
   FItems := TacTitleItems.Create(Self);
   FItemsMargin := 3;
+  FRightSpacing := 0;
   FUpdating := False;
 end;
 
@@ -668,7 +657,7 @@ end;
 procedure TsTitleBar.Invalidate;
 begin
   if Assigned(Form) and not (csLoading in Form.ComponentState) then
-    SendMessage(Form.Handle, SM_ALPHACMD, MakeWParam(0, AC_NCPAINT), 1);
+    SendMessage(Form.Handle, SM_ALPHACMD, AC_NCPAINT shl 16, 1);
 end;
 
 
@@ -686,7 +675,7 @@ end;
 procedure TsTitleBar.Notification(AComponent: TComponent; Operation: TOperation);
 begin
   inherited Notification(AComponent, Operation);
-  if (AComponent is TCustomImageList) then
+  if AComponent is TCustomImageList then
     case Operation of
       opRemove:
         if FImages = AComponent then
@@ -718,24 +707,24 @@ begin
 end;
 
 
-procedure TsTitleBar.SetItemsMargin(const Value: integer);
-begin
-  FItemsMargin := Value;
-end;
-
-
-procedure TsTitleBar.SetItemsSpacing(const Value: integer);
-begin
-  FItemsSpacing := Value;
-end;
-
-
 procedure TsTitleBar.SetShowCaption(const Value: boolean);
 begin
   if FShowCaption <> Value then begin
     FShowCaption := Value;
     Invalidate;
   end;
+end;
+
+
+procedure TsTitleBar.UpdateScale(NewValue: integer);
+var
+  i: integer;
+begin
+  for i := 0 to Items.Count - 1 do
+    Items[i].ScaleItem(NewValue, OldScaleValue);
+
+  CalcSizes;
+  OldScaleValue := NewValue;
 end;
 
 
@@ -773,6 +762,7 @@ constructor TacTitleBarItem.Create(ACollection: TCollection);
 begin
   FAutoSize := True;
   FFontData := TacFontData.Create;
+  FFontData.WndHandle := TacTitleItems(ACollection).FOwner.Form.Handle;
   FGlyph := TBitmap.Create;
   FGlyph.OnChange := OnGlyphChange;
   FEnabled := True;
@@ -785,6 +775,7 @@ begin
   FNumGlyphs := 1;
   FHeight := 18;
   FWidth := 22;
+  FTag := 0;
 
   FDisabledImageIndex := -1;
   FImageIndex := -1;
@@ -840,9 +831,9 @@ begin
     case Style of
       bsMenu, bsButton:
         if (FDropDownMenu <> nil) and (FDropDownMenu.Items.Count > 0) then begin
-  {$IFNDEF FPC}
+{$IFNDEF FPC}
           FDropDownMenu.WindowHandle := TacTitleItems(Collection).FOwner.Form.Handle;
-  {$ENDIF}
+{$ENDIF}
           p.X := Rect.Left;
           p.Y := Rect.Bottom;
           if Assigned(ExtForm) then begin
@@ -865,9 +856,9 @@ begin
             FreeAndNil(Timer);
           // Repaint a form title
           Invalidate;
-  {$IFNDEF FPC}
+{$IFNDEF FPC}
           FDropDownMenu.WindowHandle := 0;
-  {$ENDIF}
+{$ENDIF}
           DoClick;
         end;
 
@@ -894,11 +885,13 @@ begin
     if Assigned(FOnMouseUp) then
       FOnMouseUp(Self, Button, Shift, X, Y);
 
-    if FPressed and (Style <> bsTab) then
-      DoClick;
+    if Button <> mbRight then begin
+      if FPressed and (Style <> bsTab) then
+        DoClick;
 
-    FPressed := False;
-    FState := 1;
+      FPressed := False;
+      FState := 1;
+    end;
   end;
 end;
 
@@ -911,7 +904,7 @@ end;
 
 function TacTitleBarItem.GetState: integer;
 begin
-  if (FDroppedDown or FDown) then
+  if FDroppedDown or FDown then
     Result := 2
   else
     Result := FState;
@@ -927,10 +920,10 @@ begin
   if not FFontData.UseSysFontName then
     FFontData.UsedFont.Name := FFontData.Font.Name;
 
-  if not FFontData.FUseSysSize then
+  if not FFontData.FUseSysSize or (DefaultManager = nil) then
     FFontData.UsedFont.Height := FFontData.Font.Height
   else
-    FFontData.UsedFont.Height := GetCaptionFontSize;
+    FFontData.UsedFont.Height := DefaultManager.ScaleInt(GetCaptionFontSize, DefaultManager.SysFontScale);
 end;
 
 
@@ -945,26 +938,40 @@ end;
 
 procedure TacTitleBarItem.Invalidate;
 begin
-  if Assigned(TacTitleItems(Collection).FOwner.Form) and not (csLoading in TacTitleItems(Collection).FOwner.Form.ComponentState) then begin
-    if RecalcSize and FAutoSize then
-      UpdateSize;
+  with TacTitleItems(Collection).FOwner do
+    if Assigned(Form) and not (csLoading in Form.ComponentState) then begin
+      if RecalcSize and FAutoSize then
+        UpdateSize;
 
-    if Timer <> nil then begin
-      if Timer.NewBmp <> nil then
-        FreeAndNil(Timer.NewBmp);
+      if Timer <> nil then begin
+        if Timer.NewBmp <> nil then
+          FreeAndNil(Timer.NewBmp);
 
-      if Timer.AForm <> nil then
-        FreeAndNil(Timer.AForm);
+        if Timer.AForm <> nil then
+          FreeAndNil(Timer.AForm);
+      end;
+      if not FUpdating and (SendAMessage(Form.Handle, AC_PREPARING) = 0) then
+        SendMessage(Form.Handle, SM_ALPHACMD, AC_NCPAINT shl 16, 1); // Change cache in AlphaSkins and repaint a non-client area
     end;
-    if not TacTitleItems(Collection).FOwner.FUpdating and (SendAMessage(TacTitleItems(Collection).FOwner.Form.Handle, AC_PREPARING) = 0) then
-      SendMessage(TacTitleItems(Collection).FOwner.Form.Handle, SM_ALPHACMD, MakeWParam(0, AC_NCPAINT), 1); // Change cache in AlphaSkins and repaint a non-client area
-  end;
 end;
 
 
 procedure TacTitleBarItem.OnGlyphChange(Sender: TObject);
 begin
 //  if Data.Timer <> nil then FreeAndNil(Data.Timer);
+end;
+
+
+procedure TacTitleBarItem.ScaleItem(NewValue, OldValue: integer);
+begin
+  FFontData.FFont.Height := MulDiv(FFontData.FFont.Height, NewValue, OldValue);
+  Spacing := MulDiv(Spacing, NewValue, OldValue);
+  if not AutoSize then begin
+    Width   := MulDiv(Width,  NewValue, OldValue);
+    Height  := MulDiv(Height, NewValue, OldValue);
+  end
+  else
+    UpdateSize;
 end;
 
 
@@ -1005,10 +1012,28 @@ end;
 
 
 procedure TacTitleBarItem.SetDown(const Value: boolean);
+var
+  i: integer;
 begin
   if FDown <> Value then begin
     FDown := Value;
     State := integer(Value) * 2;
+    if FDown and (GroupIndex <> 0) then
+      for i := 0 to TacTitleItems(Collection).Count - 1 do
+        if (TacTitleItems(Collection).GetItem(i) <> Self) and (TacTitleItems(Collection).GetItem(i).GroupIndex = GroupIndex) then begin
+          TacTitleItems(Collection).GetItem(i).FDown := False;
+          TacTitleItems(Collection).GetItem(i).FState := 0;
+        end;
+
+    Invalidate;
+  end;
+end;
+
+
+procedure TacTitleBarItem.SetEnabled(const Value: boolean);
+begin
+  if FEnabled <> Value then begin
+    FEnabled := Value;
     Invalidate;
   end;
 end;
@@ -1150,7 +1175,7 @@ begin
   if Visible then
     with TacTitleItems(Collection).FOwner do begin
       // Size and pos of icon
-      if Assigned(TacTitleItems(Collection).FOwner.Images) and (GetImageCount(TacTitleItems(Collection).FOwner.Images) > ImageIndex) and (ImageIndex >= 0) then
+      if Assigned(Images) and IsValidIndex(ImageIndex, GetImageCount(Images)) then
         FContentSize := MkSize(Images.Width, Images.Height)
       else // Min size
         if Assigned(FGlyph) and not FGlyph.Empty then
@@ -1164,8 +1189,11 @@ begin
         InitFont;
         s := Caption;
         ts := GetStringSize(FFontData.UsedFont.Handle, s);
-        if FContentSize.cx <> 0 then
+        if FContentSize.cx <> 0 then begin
           inc(FContentSize.cx, FSpacing); // If image is defined then add a spacing
+//          if FontData.UseSysSized then
+//          FContentSize.cx := DefaultManager.ScaleInt(GetCaptionFontSize, DefaultManager.SysFontScale);
+        end;
 
         FContentSize := MkSize(FContentSize.cx + ts.cx + 4 * integer(Style = bsTab), max(FContentSize.cy, ts.cy));
       end;
@@ -1187,8 +1215,8 @@ begin
         inc(FContentSize.cy, 1);
 
       if not ContentOnly and not (Style in [bsSpacing]) then begin
-        FWidth  := max(16, FContentSize.cx + 2 * (TacTitleItems(Collection).FOwner.ItemsMargin + IntXMargin));
-        FHeight := max(16, FContentSize.cy + 2 * (TacTitleItems(Collection).FOwner.ItemsMargin));
+        FWidth  := max(16, FContentSize.cx + 2 * (ItemsMargin + IntXMargin));
+        FHeight := max(16, FContentSize.cy + 2 * (ItemsMargin));
       end;
     end;
 end;
@@ -1226,7 +1254,14 @@ end;
 
 
 function TacTitleItems.Insert(Index: Integer): TacTitleBarItem;
+var
+  sp: TsSkinProvider;
 begin
+  if FOwner.Form <> nil then begin
+    sp := GetSkinProvider(FOwner.Form);
+    if sp.biClicked then
+      sp.KillAnimations;
+  end;
   Result := TacTitleBarItem(inherited Insert(Index));
 end;
 
@@ -1278,7 +1313,7 @@ end;
 procedure TacFontData.Invalidate;
 begin
   if WndHandle <> 0 then
-    SendMessage(WndHandle, SM_ALPHACMD, MakeWParam(0, AC_NCPAINT), 1); // Change cache in AlphaSkins and repaint a non-client area
+    SendMessage(WndHandle, SM_ALPHACMD, AC_NCPAINT shl 16, 1); // Change cache in AlphaSkins and repaint a non-client area
 end;
 
 
@@ -1396,14 +1431,13 @@ end;
 procedure TacItemAnimation.MakeForm;
 begin
   if AForm = nil then begin
-    AForm := TForm.Create(nil);
-    AForm.Tag := ExceptTag; // Except this form from automatic skinning
-    AForm.Visible := False;
-    AForm.BorderStyle := bsNone;
-    SetClassLong(AForm.Handle, GCL_STYLE, GetClassLong(AForm.Handle, GCL_STYLE) and not NCS_DROPSHADOW);
-    SetWindowLong(AForm.Handle, GWL_EXSTYLE, GetWindowLong(AForm.Handle, GWL_EXSTYLE) or WS_EX_TOOLWINDOW or WS_EX_NOACTIVATE or WS_EX_TRANSPARENT);
-    if (Item.ExtForm <> nil) and (Item.ExtForm.FormStyle = fsStayOnTop) then
-      SetWindowLong(AForm.Handle, GWL_EXSTYLE, GetWindowLong(AForm.Handle, GWL_EXSTYLE) or WS_EX_TOPMOST);
+    AForm := TacGlowForm.CreateNew(nil);
+    AForm.HandleNeeded;
+    if (AForm <> nil) and AForm.HandleAllocated then begin
+      SetWindowLong(AForm.Handle, GWL_EXSTYLE, GetWindowLong(AForm.Handle, GWL_EXSTYLE) or {WS_EX_TOOLWINDOW or WS_EX_NOACTIVATE or }WS_EX_TRANSPARENT);
+      if (Item.ExtForm <> nil) and (TForm(Item.ExtForm).FormStyle = fsStayOnTop) then
+        SetWindowLong(AForm.Handle, GWL_EXSTYLE, GetWindowLong(AForm.Handle, GWL_EXSTYLE) or WS_EX_TOPMOST);
+    end;
   end;
 end;
 
@@ -1455,10 +1489,10 @@ begin
       if CurrentLevel <= 0 then begin // Hiding is finished
         CurrentState := -1;
         Enabled := False;
-        if (NewBmp <> nil) then
+        if NewBmp <> nil then
           FreeAndNil(NewBmp);
 
-        if (AForm <> nil) then
+        if AForm <> nil then
           FreeAndNil(AForm);
       end
       else begin
@@ -1481,10 +1515,7 @@ begin
       ToShow := Show;
       UpdateForm(min(Step, MaxByte));
       inc(CurrentLevel);
-//      if Maxiterations > 1 then
-        Enabled := True{
-      else
-        CheckMouseLeave};
+      Enabled := True;
     end
     else begin
       ToShow := False;
@@ -1531,7 +1562,7 @@ begin
     else
       OwnerHandle := FormHandle;
 
-    if GetWindowLong(OwnerHandle, GWL_EXSTYLE) and WS_EX_TOPMOST = WS_EX_TOPMOST then
+    if GetWindowLong(OwnerHandle, GWL_EXSTYLE) and WS_EX_TOPMOST <> 0 then
       iInsAfter := HWND_TOPMOST
     else
       iInsAfter := GetNextWindow(OwnerHandle, GW_HWNDPREV);

@@ -35,8 +35,6 @@ type
     procedure SetDisabledKind      (const Value: TsDisabledKind);
     procedure SetVerticalAlignment (const Value: TVerticalAlignment);
   protected
-    actM,
-    actD,
     State,
     FGlyphIndex: integer;
 
@@ -57,10 +55,10 @@ type
     procedure WndProc         (var Message: TMessage); override;
     function  HandleAlphaMsg  (var Message: TMessage): boolean;
     procedure ComboWndProc    (var Message: TMessage; ComboWnd: HWnd; ComboProc: Pointer); override;
-    procedure WMLButtonDown   (var Message: TWMLButtonDown); message WM_LBUTTONDOWN;
     procedure CNMeasureItem   (var Message: TWMMeasureItem); message CN_MEASUREITEM;
     procedure CNDrawItem      (var Message: TWMDrawItem);    message CN_DRAWITEM;
     procedure WMLButtonDblClk (var Message: TMessage);       message WM_LBUTTONDBLCLK;
+    procedure WMLButtonDown   (var Message: TWMLButtonDown); message WM_LBUTTONDOWN;
   public
     AllowDropDown: boolean;
     constructor Create(AOwner:TComponent); override;
@@ -243,7 +241,7 @@ begin
           end;
 
           Alpha := LimitIt(Round(Glow), 0, MaxByte);
-          if (sd.AnimTimer.Iteration >= sd.AnimTimer.Iterations) then begin
+          if sd.AnimTimer.Iteration >= sd.AnimTimer.Iterations then begin
             if (State = 0) and (Alpha > 0) then begin
               if sd.GlowID >= 0 then
                 SetGlowAlpha(sd.GlowID, Alpha);
@@ -296,7 +294,7 @@ function TsCustomComboBox.ButtonHeight: integer;
 begin
   with SkinData.SkinManager.ConstData.ComboBtn do
     if FCommonData.Skinned and (FGlyphIndex >= 0) then
-      Result := HeightOfImage(FCommonData.SkinManager.ma[FGlyphIndex])
+      Result := FCommonData.SkinManager.ma[FGlyphIndex].Height
     else
       Result := 16;
 end;
@@ -311,14 +309,14 @@ begin
   else
     w := 0;
 
-  if UseRightToLeftAlignment then
-    Result.Left := SkinData.SkinManager.CommonSkinData.ComboBoxMargin
-  else
-    Result.Left := Width - w - SkinData.SkinManager.CommonSkinData.ComboBoxMargin;
-
   Result.Top := SkinData.SkinManager.CommonSkinData.ComboBoxMargin;
+  if UseRightToLeftAlignment then
+    Result.Left := Result.Top
+  else
+    Result.Left := Width - w - Result.Top;
+
   Result.Right := Result.Left + w;
-  Result.Bottom := Height - SkinData.SkinManager.CommonSkinData.ComboBoxMargin;
+  Result.Bottom := Height - Result.Top;
 end;
 
 
@@ -361,15 +359,15 @@ end;
 
 constructor TsCustomComboBox.Create(AOwner: TComponent);
 begin
+  FCommonData := TsCtrlSkinData.Create(Self, True);
+  FCommonData.COC := COC_TsComboBox;
   inherited Create(AOwner);
   AllowDropDown := True;
   DropDownCount := 16;
-  FCommonData := TsCtrlSkinData.Create(Self, True);
-  FCommonData.COC := COC_TsComboBox;
   FDisabledKind := DefDisabledKind;
   FAllowMouseWheel := True;
-  actM := 1;
-  actD := 1;
+//  actM := 1;
+//  actD := 1;
   FBoundLabel := TsBoundLabel.Create(Self, FCommonData);
   FDropDown := False;
   FReadOnly := False;
@@ -411,7 +409,7 @@ begin
   Result := False;
   if HandleAllocated then begin
     FocusedWnd := GetFocus;
-    Result := (FocusedWnd <> 0) and ((FocusedWnd = EditHandle) or (FocusedWnd = ListHandle)) or (Assigned(FCommonData) and FCommonData.FFocused);
+    Result := (FocusedWnd <> 0) and ((FocusedWnd = EditHandle) or (FocusedWnd = ListHandle)) or FCommonData.FFocused;
   end;
 end;
 
@@ -503,42 +501,43 @@ begin
     Mode := integer((State = 1) or (AllowBtnStyle and (FCommonData.FMouseAbove or FCommonData.FFocused)));
 
   R := ButtonRect;
-  if not AllowBtnStyle then
-    with SkinData.SkinManager.ConstData.ComboBtn do begin
-      if SkinIndex > -1 then begin
-        TmpBtn := CreateBmpLike(FCommonData.FCacheBmp);
-        BitBlt(TmpBtn.Canvas.Handle, 0, 0, TmpBtn.Width, TmpBtn.Height, FCommonData.FCacheBmp.Canvas.Handle, 0, 0, SRCCOPY);
-        PaintItem(SkinIndex, MakeCacheInfo(FCommonData.FCacheBmp), True, Mode, R, MkPoint, FCommonData.FCacheBmp, FCommonData.SkinManager, BGIndex[0], BGIndex[1]);
-        FreeAndNil(TmpBtn);
-      end;
-      if not FCommonData.SkinManager.gd[FCommonData.SkinIndex].GiveOwnFont and FCommonData.SkinManager.IsValidImgIndex(FGlyphIndex) then
-        DrawSkinGlyph(FCommonData.FCacheBmp, Point(R.Left + (WidthOf(R) - WidthOfImage(FCommonData.SkinManager.ma[FGlyphIndex])) div 2,
-                      (Height - ButtonHeight) div 2), Mode, 1, FCommonData.SkinManager.ma[FGlyphIndex], MakeCacheInfo(SkinData.FCacheBmp))
-      else begin // Paint without glyph
-        if SkinIndex >= 0 then // If COMBOBTN used
-          C := FCommonData.SkinManager.gd[SkinIndex].Props[min(Mode, ac_MaxPropsIndex)].FontColor.Color
-        else
-          if SkinData.SkinIndex >= 0 then
-            C := FCommonData.SkinManager.gd[SkinData.SkinIndex].Props[min(Mode, ac_MaxPropsIndex)].FontColor.Color
+  with SkinData.SkinManager do
+    if not AllowBtnStyle then
+      with ConstData.ComboBtn do begin
+        if SkinIndex >= 0 then begin
+          TmpBtn := CreateBmpLike(FCommonData.FCacheBmp);
+          BitBlt(TmpBtn.Canvas.Handle, 0, 0, TmpBtn.Width, TmpBtn.Height, FCommonData.FCacheBmp.Canvas.Handle, 0, 0, SRCCOPY);
+          PaintItem(SkinIndex, MakeCacheInfo(FCommonData.FCacheBmp), True, Mode, R, MkPoint, FCommonData.FCacheBmp, FCommonData.SkinManager, BGIndex[0], BGIndex[1]);
+          FreeAndNil(TmpBtn);
+        end;
+        if not gd[FCommonData.SkinIndex].GiveOwnFont and IsValidImgIndex(FGlyphIndex) then
+          DrawSkinGlyph(FCommonData.FCacheBmp, Point(R.Left + (WidthOf(R) - ma[FGlyphIndex].Width) div 2,
+                        (Height - ButtonHeight) div 2), Mode, 1, ma[FGlyphIndex], MakeCacheInfo(SkinData.FCacheBmp))
+        else begin // Paint without glyph
+          if SkinIndex >= 0 then // If COMBOBTN used
+            C := gd[SkinIndex].Props[min(Mode, ac_MaxPropsIndex)].FontColor.Color
           else
-            C := ColorToRGB(clWindowText);
+            if SkinData.SkinIndex >= 0 then
+              C := gd[SkinData.SkinIndex].Props[min(Mode, ac_MaxPropsIndex)].FontColor.Color
+            else
+              C := ColorToRGB(clWindowText);
 
-        DrawColorArrow(FCommonData.FCacheBmp.Canvas, C, R, asBottom);
+          DrawColorArrow(FCommonData.FCacheBmp, C, R, asBottom);
+        end;
+      end
+    else begin
+      if not gd[FCommonData.SkinIndex].GiveOwnFont and IsValidImgIndex(FGlyphIndex) then
+        DrawSkinGlyph(FCommonData.FCacheBmp, Point(R.Left + (WidthOf(R) - ma[FGlyphIndex].Width) div 2,
+                      (Height - ButtonHeight) div 2), Mode, 1, ma[FGlyphIndex], MakeCacheInfo(SkinData.FCacheBmp))
+      else begin // Paint without glyph
+        if SkinData.SkinIndex >= 0 then
+          C := gd[SkinData.SkinIndex].Props[min(Mode, ac_MaxPropsIndex)].FontColor.Color
+        else
+          C := ColorToRGB(clWindowText);
+
+        DrawColorArrow(FCommonData.FCacheBmp, C, R, asBottom);
       end;
-    end
-  else begin
-    if not FCommonData.SkinManager.gd[FCommonData.SkinIndex].GiveOwnFont and FCommonData.SkinManager.IsValidImgIndex(FGlyphIndex) then
-      DrawSkinGlyph(FCommonData.FCacheBmp, Point(R.Left + (WidthOf(R) - WidthOfImage(FCommonData.SkinManager.ma[FGlyphIndex])) div 2,
-                    (Height - ButtonHeight) div 2), Mode, 1, FCommonData.SkinManager.ma[FGlyphIndex], MakeCacheInfo(SkinData.FCacheBmp))
-    else begin // Paint without glyph
-      if SkinData.SkinIndex >= 0 then
-        C := FCommonData.SkinManager.gd[SkinData.SkinIndex].Props[min(Mode, ac_MaxPropsIndex)].FontColor.Color
-      else
-        C := ColorToRGB(clWindowText);
-
-      DrawColorArrow(FCommonData.FCacheBmp.Canvas, C, R, asBottom);
     end;
-  end;
 end;
 
 
@@ -689,7 +688,7 @@ begin
     if not (csLoading in ComponentState) then
       case Message.Msg of
         CM_FONTCHANGED:
-          if SkinData.CtrlSkinState and ACS_CHANGING <> ACS_CHANGING then begin
+          if HandleAllocated and (SkinData.CtrlSkinState and ACS_CHANGING = 0) then begin
             if IsWindowVisible(Handle) then
               ItemHeight := ItemHeight; // Update control size
 
@@ -699,10 +698,13 @@ begin
   end
   else begin
     case Message.Msg of
+//      CM_RECREATEWND: if EmptyScaling then
+//        Exit;
+//
       CM_COLORCHANGED, CM_MOUSEWHEEL:
         FCommonData.BGChanged := True;
 
-     CN_COMMAND:
+      CN_COMMAND:
         case TWMCommand(Message).NotifyCode of
           CBN_CLOSEUP: begin
             FDropDown := False;
@@ -715,12 +717,13 @@ begin
               SkinData.FMouseAbove := False;
               State := 0;
             end;
-            if (FCommonData.AnimTimer <> nil) then
+            if FCommonData.AnimTimer <> nil then
               FCommonData.AnimTimer.CopyFrom(FCommonData.AnimTimer.BmpOut, FCommonData.FCacheBmp, MkRect(FCommonData.FCacheBmp));
 
             if AllowBtnStyle then
               AnimateCtrl(integer(SkinData.FMouseAbove));
           end;
+
           CBN_DROPDOWN: begin
             FDropDown := True;
             State := 2;
@@ -731,7 +734,7 @@ begin
         end;
 
       WM_SETFOCUS, CM_ENTER: if CanFocus then begin
-        if SkinData.CtrlSkinState and ACS_FOCUSCHANGING <> ACS_FOCUSCHANGING then begin
+        if SkinData.CtrlSkinState and ACS_FOCUSCHANGING = 0 then begin
           FCommonData.CtrlSkinState := FCommonData.CtrlSkinState or ACS_FOCUSCHANGING;
           FinishTimer(SkinData.AnimTimer);
           FCommonData.FFocused := True;
@@ -749,7 +752,7 @@ begin
       end;
 
       WM_KILLFOCUS, CM_EXIT: begin
-        if SkinData.CtrlSkinState and ACS_FOCUSCHANGING <> ACS_FOCUSCHANGING then begin
+        if SkinData.CtrlSkinState and ACS_FOCUSCHANGING = 0 then begin
           FCommonData.CtrlSkinState := FCommonData.CtrlSkinState or ACS_FOCUSCHANGING;
           StopTimer(SkinData);
           if not SkinData.FMouseAbove then
@@ -875,10 +878,10 @@ begin
 {$ENDIF}
 
       CM_VISIBLECHANGED, CM_ENABLEDCHANGED, WM_SETFONT:
-        if SkinData.CtrlSkinState and ACS_CHANGING <> ACS_CHANGING then
+        if SkinData.CtrlSkinState and ACS_CHANGING = 0 then
           FCommonData.BGChanged := True
         else
-          Exit;
+            Exit;
 
       WM_PRINT: begin
         SkinData.FUpdating := False;
@@ -899,7 +902,7 @@ begin
         end;
 
       CM_VISIBLECHANGED:
-        if (SkinData.CtrlSkinState and ACS_CHANGING <> ACS_CHANGING) then
+        if SkinData.CtrlSkinState and ACS_CHANGING = 0 then
           Repaint;
 
       CM_ENABLEDCHANGED, WM_SETFONT:
@@ -912,7 +915,7 @@ begin
       end;
 
       CM_FONTCHANGED:
-        if SkinData.CtrlSkinState and ACS_CHANGING <> ACS_CHANGING then begin
+        if SkinData.CtrlSkinState and ACS_CHANGING = 0 then begin
           if IsWindowVisible(Handle) then
             ItemHeight := ItemHeight; // Update control size
 
@@ -1024,7 +1027,7 @@ begin
     mNdx := SkinData.SkinIndex;
     Bmp := CreateBmp32(Rect);
     Bmp.Canvas.Font.Assign(Font);
-    if (odComboBoxEdit in State) then begin
+    if odComboBoxEdit in State then begin
       CI := MakeCacheInfo(FCommonData.FCacheBmp, Rect.Left, Rect.Top);
       aState := integer(ControlIsActive(SkinData) or Focused or (BtnStyle and SkinData.FMouseAbove));
     end
@@ -1064,7 +1067,7 @@ begin
       sNdx := -1;
     end;
     if Assigned(OnDrawItem) and (Style in [csOwnerDrawFixed, csOwnerDrawVariable]) then begin
-      if (Index > -1) and (Index < l) then begin
+      if IsValidIndex(Index, l) then begin
         OldDC := Canvas.Handle;
         Canvas.Handle := Bmp.Canvas.Handle;
         Bmp.Canvas.Lock;
@@ -1108,7 +1111,7 @@ begin
       end
       else begin
         InflateRect(aRect, -2, 0);
-        if sNdx = -1 then begin // Selected is not visible
+        if sNdx < 0 then begin // Selected is not visible
           Bmp.Canvas.Font.Color := GetFontColor;
           Bmp.Canvas.Brush.Style := bsClear;
           AcDrawText(Bmp.Canvas.Handle, s, aRect, DrawStyle);
@@ -1128,7 +1131,7 @@ begin
   end
   else begin
     Canvas.Font.Assign(Font);
-    if (odSelected in State) then begin
+    if odSelected in State then begin
       TmpColor := ColorToRGB(clHighLight);
       Canvas.Font.Color := ColorToRGB(clHighLightText);
       Canvas.Brush.Color := ColorToRGB(clHighLight);
@@ -1139,7 +1142,7 @@ begin
       Canvas.Brush.Color := Color;
     end;
     FillDC(Canvas.Handle, Rect, TmpColor);
-    if (Index > -1) and (Index < Items.Count) then begin
+    if (Index >= 0) and (Index < Items.Count) then begin
       InflateRect(Rect, -2, 0);
       if Assigned(OnDrawItem) and (Style in [csOwnerDrawFixed, csOwnerDrawVariable]) then
         OnDrawItem(Self, Index, Rect, State)
@@ -1152,7 +1155,7 @@ begin
         end;
         AcDrawText(Canvas.Handle, Items[Index], Rect, DrawStyle);
       end;
-      if (odFocused in State) then begin
+      if odFocused in State then begin
         InflateRect(Rect, 2, 0);
         DrawFocusRect(Canvas.Handle, Rect);
       end;
@@ -1168,22 +1171,19 @@ var
 {$ENDIF}
 begin
 {$IFDEF DELPHI6UP}
-//  if not (csLoading in ComponentState) then begin
   if not (Style in [csOwnerDrawFixed, csOwnerDrawVariable]) then begin
     Canvas.Font.Assign(Font);
-    if SkinData.CtrlSkinState and ACS_CHANGING <> ACS_CHANGING then
-//      Message.MeasureItemStruct^.itemHeight := MulDiv(Canvas.TextHeight('A'), actM, actD) + 2
+    if SkinData.CtrlSkinState and ACS_CHANGING = 0 then
       Message.MeasureItemStruct^.itemHeight := Canvas.TextHeight('A') + 2
   end
   else
     inherited;
 {$ELSE}
   if {not (Style in [csOwnerDrawFixed, csOwnerDrawVariable]) and }not (csLoading in ComponentState) then begin
-    if SkinData.CtrlSkinState and ACS_CHANGING <> ACS_CHANGING then begin
+    if SkinData.CtrlSkinState and ACS_CHANGING = 0 then begin
       Bmp := TBitmap.Create;
       Bmp.Canvas.Font.Assign(Font);
       Message.MeasureItemStruct^.itemHeight := Bmp.Canvas.TextHeight('A') + 2;
-//      Message.MeasureItemStruct^.itemHeight := MulDiv(Bmp.Canvas.TextHeight('A'), actM, actD) + 2;
       Bmp.Free;
     end;
   end
@@ -1205,15 +1205,14 @@ end;
 
 
 procedure TsCustomComboBox.ChangeScale(M, D: Integer);
-var
-  UpdateNeeded: boolean;
 begin
-  UpdateNeeded := (M / D) <> 1;
-  actM := M * actM;
-  actD := D * actD;
-  inherited;
-  if UpdateNeeded then
-    RecreateWnd;
+  if M <> D then begin
+    inherited;
+    if Showing then
+      ItemHeight := MulDiv(ItemHeight, M, D);
+  end
+  else
+    inherited;
 end;
 
 
@@ -1243,7 +1242,7 @@ begin
       end;
 
     AC_REFRESH:
-      if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
+      if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then begin
         HideGlow(SkinData.GlowID);
         i := ItemIndex;
         SendMessage(Handle, CB_SHOWDROPDOWN, 0, 0);
@@ -1254,8 +1253,13 @@ begin
         Repaint;
       end;
 
+    AC_SETSCALE: begin
+      if BoundLabel <> nil then BoundLabel.UpdateScale(Message.LParam);
+      Exit;
+    end;
+
     AC_SETNEWSKIN:
-      if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
+      if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then begin
         HideGlow(SkinData.GlowID);
         CommonWndProc(Message, FCommonData);
         UpdateIndexes;
@@ -1304,7 +1308,10 @@ end;
 procedure TsCustomComboBox.UpdateIndexes;
 begin
   if (SkinData.SkinManager <> nil) and (SkinData.SkinIndex >= 0) then
-    FGlyphIndex := SkinData.SkinManager.GetMaskIndex(SkinData.SkinIndex, s_ItemGlyph)
+    if AllowBtnStyle then
+      FGlyphIndex := SkinData.SkinManager.GetMaskIndex(FCommonData.SkinManager.ConstData.Sections[ssComboBox], s_ItemGlyph)
+    else
+      FGlyphIndex := SkinData.SkinManager.GetMaskIndex(SkinData.SkinIndex, s_ItemGlyph)
   else
     FGlyphIndex := -1;
 end;

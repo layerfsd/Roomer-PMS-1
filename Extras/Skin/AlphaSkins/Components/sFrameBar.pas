@@ -1,6 +1,6 @@
 unit sFrameBar;
 {$I sDefs.inc}
-
+//+
 interface
 
 uses
@@ -17,6 +17,7 @@ type
   TOnFrameChangeEvent   = procedure (Sender: TObject;    TitleItem: TsTitleItem) of object;
   TOnFrameClosingEvent  = procedure (Sender: TObject;    TitleItem: TsTitleItem; var CanClose:  boolean) of object;
   TOnFrameChangingEvent = procedure (Sender: TObject; NewTitleItem: TsTitleItem; var CanChange: boolean) of object;
+  TOnChangedStateEvent  = procedure (Sender: TObject;    TitleItem: TsTitleItem; State: TsTitleState)    of object;
 
 
 {$IFDEF DELPHI_XE3}[ComponentPlatformsAttribute(pidWin32 or pidWin64)]{$ENDIF}
@@ -29,7 +30,7 @@ type
     FAutoFrameSize: boolean;
 
     FSpacing,
-    FActiveFrame,
+    FActiveFrameIndex,
     FBorderWidth,
     FTitleHeight: integer;
 
@@ -38,6 +39,16 @@ type
     FOnChange:   TOnFrameChangeEvent;
     FOnChanging: TOnFrameChangingEvent;
     FOnClosing:  TOnFrameClosingEvent;
+
+    fAnimationSteps: integer;
+    fOnChangedState: TOnChangedStateEvent;
+    fTitleFont: TFont;
+	  function GetActiveFrame: TCustomFrame;
+    procedure ChangedTitleFontNotify(Sender: TObject);
+    procedure SetTitleFont(Value: TFont);
+    procedure CMFontChanged      (var Message: TMessage); message CM_FONTCHANGED;
+    procedure CMParentFontChanged(var Message: TMessage); message CM_PARENTFONTCHANGED;
+
     function Offset: integer;
     procedure UpdateWidths;
     function CalcClientRect: TRect;
@@ -55,6 +66,7 @@ type
     destructor Destroy; override;
     procedure Loaded; override;
     procedure WndProc(var Message: TMessage); override;
+    procedure ChangeScale(M, D: Integer); override;
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
 {$ENDIF} // NOTFORHELP
     procedure ArrangeTitles;
@@ -66,12 +78,17 @@ type
     procedure CollapseAll(AllowAnimation: boolean);
     procedure Rearrange;
   published
+	  property ActiveFrame: TCustomFrame read GetActiveFrame;
+    property AnimationSteps: integer read fAnimationSteps write fAnimationSteps;
+    // TitleFont works only if skinData.CustomFont = true;
+    property TitleFont: TFont read fTitleFont write SetTitleFont;
+    property OnChangedState: TOnChangedStateEvent read fOnChangedState write fOnChangedState;
 {$IFNDEF NOTFORHELP}
     property Align default alLeft;
     property BorderStyle;
     property BorderWidth:      integer index 0 read FBorderWidth write SetInteger default 2;
 {$ENDIF} // NOTFORHELP
-    property ActiveFrameIndex: integer index 1 read FActiveFrame write SetInteger;
+    property ActiveFrameIndex: integer index 1 read FActiveFrameIndex write SetInteger;
     property TitleHeight:      integer index 2 read FTitleHeight write SetInteger default 28;
     property Spacing:          integer index 3 read FSpacing     write SetInteger default 2;
 
@@ -115,6 +132,7 @@ type
     FOwner: TsFrameBar;
     Active: boolean;
     procedure Ac_CMMouseEnter; override;
+    procedure Ac_CMMouseLeave; override; // define TsSpeedButton method Ac_CMMouseLeave as virtual !!
   public
     TitleItem: TsTitleItem;
     constructor InternalCreate(AOwner: TsFrameBar; Index: integer);
@@ -149,13 +167,16 @@ type
 
     FOnCreateFrame:      TCreateFrameEvent;
     FOnFrameDestroy:     TFrameDestroyEvent;
+    FGroupIndex: integer;
     function GetMargin: integer;
     function GetSpacing: integer;
 
     function GetPopupMenu: TPopupMenu;
     function GetSkinSection: string;
+    function GetAlignment: TAlignment;
     function GetTextAlignment: TAlignment;
     procedure TitleButtonClick(Sender: TObject);
+    procedure SetAlignment    (const Value: TAlignment);
     procedure SetTextAlignment(const Value: TAlignment);
     procedure SetCaption      (const Value: acString);
     procedure SetVisible      (const Value: boolean);
@@ -184,7 +205,10 @@ type
   published
     property DisplayName;
 {$ENDIF} // NOTFORHELP
+    property Alignment: TAlignment read GetAlignment write SetAlignment default taCenter;
+
     property ImageIndex: integer read FImageIndex write SetImageIndex default -1;
+    property GroupIndex: integer read FGroupIndex write FGroupIndex   default 0;
     property Margin:     integer read GetMargin   write SetMargin     default 5;
     property Spacing:    integer read GetSpacing  write SetSpacing    default 8;
 
@@ -272,10 +296,11 @@ var
 
   procedure SetActive(Index: integer; Active: boolean);
   begin
-    if (Items[Index].TitleButton.Active <> Active) and (Items[Index].State in [stClosed, stOpened]) then begin
-      Items[Index].TitleButton.Active := Active;
-      Items[Index].TitleButton.SkinData.Invalidate;
-    end;
+    with Items[Index] do
+      if (TitleButton.Active <> Active) and (State in [stClosed, stOpened]) then begin
+        TitleButton.Active := Active;
+        TitleButton.SkinData.Invalidate;
+      end;
   end;
 
   procedure LockControl(Locked: boolean);
@@ -291,8 +316,8 @@ var
   var
     j: integer;
   begin
-    FActiveFrame := i;
-    if AutoHeight <> -1 then begin
+    FActiveFrameIndex := i;
+    if AutoHeight >= 0 then begin
       sDiv := AutoHeight;
       ti.FrameSize := AutoHeight;
       if ti.Frame <> nil then
@@ -306,8 +331,8 @@ var
 
   procedure DoClosed(ti: TsTitleItem);
   begin
-    if FActiveFrame = i then
-      FActiveFrame := -1;
+    if FActiveFrameIndex = i then
+      FActiveFrameIndex := -1;
 
     if ti.Frame <> nil then begin
       CanDestroy := True;
@@ -315,7 +340,9 @@ var
         ti.FOnFrameDestroy(Items[i], Items[i].Frame, CanDestroy);
 
       if CanDestroy then
-        FreeAndNil(ti.Frame);
+        FreeAndNil(ti.Frame)
+      else
+        ti.Frame.Visible := False;
 
       ti.FrameSize := 0;
       sDiv := 0;
@@ -328,9 +355,9 @@ var
 
   procedure DoOpening(ti: TsTitleItem);
   begin
-    if (ii = Steps) then begin
+    if ii = Steps then begin
       if ti.Frame <> nil then
-        if (AutoHeight <> -1) then begin
+        if AutoHeight <> -1 then begin
           sDiv := AutoHeight;
           ti.FrameSize := AutoHeight;
           if ti.Frame <> nil then
@@ -371,6 +398,9 @@ var
   var
     j: integer;
   begin
+    if not ti.TitleButton.SkinData.CustomFont and SkinData.CustomFont then
+      ti.TitleButton.SkinData.CustomFont := true;
+
     ti.TitleButton.Alpha := ii;
     ti.TitleButton.SkinData.BGChanged := True;
     lTicks := GetTickCount;
@@ -433,12 +463,12 @@ var
   end;
 
 begin
-  if not visible or Arranging or (csReading in ComponentState) or (Items.Count = 0) then
-    FActiveFrame := -1
+  if not Visible or Arranging or (csReading in ComponentState) or (Items.Count = 0) then
+    FActiveFrameIndex := -1
   else
     if Items.UpdateCount <= 0 then begin
       DoAnimation := FAnimation and ((SkinData.SkinManager = nil) or SkinData.SkinManager.Effects.AllowAnimation);
-      if not DontAnim and DoAnimation and not (csDesigning in ComponentState) and Visible and not (csLoading in ComponentState)  then
+      if not DontAnim and DoAnimation and ([csDesigning, csLoading] * ComponentState = []) and Visible then
         Steps := acMaxIterations
       else
         Steps := 0;
@@ -471,11 +501,12 @@ begin
       end;
 
       for i := 0 to Items.Count - 1 do
-        if Items[i].TitleButton <> nil then begin
-          Items[i].LastBottom := Items[i].TitleButton.Top + Items[i].TitleButton.Height;
-          Items[i].TitleButton.SkinData.FMouseAbove := False;
-          StopTimer(Items[i].TitleButton.SkinData);
-        end;
+        if Items[i].TitleButton <> nil then
+          with Items[i] do begin
+            LastBottom := TitleButton.Top + TitleButton.Height;
+            TitleButton.SkinData.FMouseAbove := False;
+            StopTimer(TitleButton.SkinData);
+          end;
 
       for ii := 0 to Steps do begin
         LockControl(True);
@@ -489,7 +520,7 @@ begin
               ti.TitleButton.Parent := Self;
 
             inc(sHeight, FTitleHeight);
-            if (ii = 0) then begin
+            if ii = 0 then begin
               ti.TempHeight := 0;
               if (ti.Frame <> nil) then
                 ti.FrameSize := ti.Frame.Height;
@@ -505,14 +536,21 @@ begin
               stClosed:  DoClosed (ti);
             end;
             inc(sHeight, FSpacing);
-            if (ti.Frame <> nil) and (ti.State in [stOpened, stOpening, stClosing]) then begin
-              if ti.Frame.Parent = nil then
-                ti.Frame.Parent := Self;
+            if ti.Frame <> nil then begin
+              if ti.State in [stOpened, stOpening, stClosing] then begin
+                if ti.Frame.Parent = nil then
+                  ti.Frame.Parent := Self;
 
-              inc(sHeight, sDiv);
-            end;
-            if (ti.Frame <> nil) and (ti.State = stOpened) then
-              SetWindowRgn(ti.Frame.Handle, 0, False);
+                inc(sHeight, sDiv);
+              end;
+              if ti.State = stOpened then
+                SetWindowRgn(ti.Frame.Handle, 0, False);
+            end
+            else
+              if ti.State = stOpening then begin
+                ti.State := stClosed;
+                ti.TitleButton.SkinData.FMouseAbove := True;
+              end;
 
             inc(sHeight, BorderWidth);
             SetActive(i, ti.State in [stOpened, stOpening]);
@@ -521,11 +559,11 @@ begin
         LockControl(False);
         if Showing then begin
           InvalidateRect(Handle, nil, True);
-          RedrawWindow(Handle, nil, 0, RDW_ALLCHILDREN or RDW_INVALIDATE or RDW_ERASE or RDW_FRAME or RDW_UPDATENOW);
+          RedrawWindow(Handle, nil, 0, RDWA_ALLNOW);
           SetParentUpdated(Self);
         end;
         if Assigned(acMagnForm) then
-          SendMessage(acMagnForm.Handle, SM_ALPHACMD, MakeWParam(0, AC_REFRESH), 0);
+          acMagnForm.Perform(SM_ALPHACMD, AC_REFRESH_HI, 0);
       end;
       bCanChange := False;
       FadingForbidden := False;
@@ -536,10 +574,10 @@ begin
       Arranging := False;
       UpdateWidths;
       if Showing then
-        RedrawWindow(Handle, nil, 0, RDW_ALLCHILDREN or RDW_INVALIDATE or RDW_ERASE or RDW_FRAME);
+        RedrawWindow(Handle, nil, 0, RDWA_ALL);
 
       if Assigned(acMagnForm) then
-        SendMessage(acMagnForm.Handle, SM_ALPHACMD, MakeWParam(0, AC_REFRESH), 0);
+        SendMessage(acMagnForm.Handle, SM_ALPHACMD, AC_REFRESH_HI, 0);
 
       Application.ShowHint := AppShowHint;
       ShowHintStored := False;
@@ -554,22 +592,30 @@ begin
   else
     Result := MkRect(Self);
 
-
-  InflateRect(Result,  -BorderWidth, -BorderWidth);
+  InflateRect(Result, -BorderWidth, -BorderWidth);
 end;
 
 
+procedure TsFrameBar.ChangeScale(M, D: Integer);
+begin
+  inherited;
+  if M <> D then
+    TitleHeight := MulDiv(TitleHeight, M, D);
+end;
+
 procedure TsFrameBar.ChangeSize(Index: integer; AllowAnimation: boolean; Height: integer);
 begin
-  if Assigned(Items[Index].Frame) then begin
-    Items[Index].FrameSize := Height;
-    Items[Index].Frame.Height := Height;
+  with Items[Index] do begin
+    if Assigned(Frame) then begin
+      FrameSize := Height;
+      Frame.Height := Height;
+    end;
+    FrameSize := Height;
+    if AllowAnimation then
+      State := stOpening
+    else
+      State := stOpened;
   end;
-  Items[Index].FrameSize := Height;
-  if AllowAnimation then
-    Items[Index].State := stOpening
-  else
-    Items[Index].State := stOpened;
 
   DontAnim := not AllowAnimation;
   ArrangeTitles;
@@ -579,22 +625,25 @@ end;
 
 procedure TsFrameBar.CloseItem(Index: integer; AllowAnimation: boolean);
 begin
-  if AllowAnimation then
-    Items[Index].State := stClosing
-  else
-    Items[Index].State := stClosed;
+  with Items[Index] do begin
+    if AllowAnimation then
+      State := stClosing
+    else
+      State := stClosed;
 
-  DontAnim := not AllowAnimation;
-  ArrangeTitles;
-  DontAnim := False;
-  if Assigned(Items[Index].FOnFrameClose) then
-    Items[Index].FOnFrameClose(Items[Index]);
+    DontAnim := not AllowAnimation;
+    ArrangeTitles;
+    DontAnim := False;
+    if Assigned(FOnFrameClose) then
+      FOnFrameClose(Items[Index]);
+  end;
 end;
 
 
 procedure TsFrameBar.CollapseAll(AllowAnimation: boolean);
 var
   i: integer;
+  b: boolean;
 begin
   for i := 0 to Items.Count - 1 do
     if AllowAnimation then
@@ -602,7 +651,14 @@ begin
     else
       Items[i].State := stClosed;
 
-  ArrangeTitles;
+  if AllowAnimation then
+    ArrangeTitles
+  else begin
+    b := FAnimation;
+    FAnimation := False;
+    ArrangeTitles;
+    FAnimation := b;
+  end;
 end;
 
 
@@ -621,7 +677,10 @@ begin
   FAnimation := True;
   FAllowAllClose := False;
   FAllowAllOpen := False;
-  FActiveFrame := -1;
+  FActiveFrameIndex := -1;
+
+  fTitleFont := TFont.Create;
+  fTitleFont.OnChange := ChangedTitleFontNotify;
 end;
 
 
@@ -630,17 +689,22 @@ var
   lbl: TsLabel;
 begin
   Result := TFrame.Create(Self);
-  Result.Height := 150;
-  TsFrameAdapter.Create(Result).SkinData.SkinManager := Self.SkinData.FSkinManager;
-  TsFrameAdapter.Create(Result).SkinData.SkinSection := s_BarPanel;
+{  if SkinData.SkinManager <> nil then
+    Result.Height := SkinData.SkinManager.ScaleInt(150)
+  else}
+    Result.Height := 150;
+
+  with TsFrameAdapter.Create(Result), SkinData do begin
+    SkinManager := Self.SkinData.FSkinManager;
+    SkinSection := s_BarPanel;
+  end;
   lbl := TsLabel.Create(Result);
   with lbl do begin
-    lbl.Align := alClient;
+    Align := alClient;
     Caption := 'Frame creation'#13#10'event has not been defined.';
     Alignment := taCenter;
     Layout := tlCenter;
     WordWrap := True;
-    lbl.Font.color := clRed;
     Parent := Result;
   end;
 end;
@@ -649,6 +713,7 @@ end;
 destructor TsFrameBar.Destroy;
 begin
   FreeAndNil(FItems);
+  fTitleFont.Free;
   inherited Destroy;
 end;
 
@@ -714,10 +779,10 @@ var
   l, i: integer;
   ClosedItems: array of integer;
 begin
-  if (Index = -1) or (Index >= Items.Count) then
+  if (Index < 0) or (Index >= Items.Count) then
     raise Exception.Create('Open Index Out of Range: ' + IntToStr(Index));
 
-  FActiveFrame := Index;
+  FActiveFrameIndex := Index;
   if AllowAnimation then
     Items[Index].State := stOpening
   else
@@ -725,7 +790,7 @@ begin
 
   if not AllowAllOpen then begin
     for i := 0 to Items.Count - 1 do
-      if Items[i].State = stOpened then begin
+      if (Items[i].State = stOpened) and (Items[i].GroupIndex = Items[Index].GroupIndex) then begin
         Items[i].State := stClosing;
         if (i <> Index) and Assigned(Items[Index].FOnFrameClose) then begin
           l := Length(ClosedItems);
@@ -754,6 +819,15 @@ begin
   DontAnim := True;
   ArrangeTitles;
   DontAnim := False;
+end;
+
+
+function TsFrameBar.GetActiveFrame: TCustomFrame;
+begin
+  if ActiveFrameIndex >= 0 then
+    Result := Items[ActiveFrameIndex].Frame
+  else
+    Result := nil;
 end;
 
 
@@ -802,36 +876,30 @@ end;
 procedure TsFrameBar.SetInteger(const Index, Value: integer);
 begin
   case Index of
-    0: begin
-      if FBorderWidth <> Value then begin
-        FBorderWidth := Value;
-        RecreateWnd;
-        if not (csLoading in ComponentState) then
-          Rearrange;
-      end;
+    0: if FBorderWidth <> Value then begin
+      FBorderWidth := Value;
+      RecreateWnd;
+      if not (csLoading in ComponentState) then
+        Rearrange;
     end;
 
     1: begin
-      if (Value >= 0) and (Value < Items.Count) then
+      if IsValidIndex(Value, Items.Count) then
         OpenItem(Value, True);
 
-      FActiveFrame := Value;
+      FActiveFrameIndex := Value;
     end;
 
-    2: begin
-      if FTitleHeight <> Value then begin
-        FTitleHeight := Value;
-        if not (csLoading in ComponentState) then
-          Rearrange;
-      end;
+    2: if FTitleHeight <> Value then begin
+      FTitleHeight := Value;
+      if not (csLoading in ComponentState) then
+        Rearrange;
     end;
 
-    3: begin
-      if FSpacing <> Value then begin
-        FSpacing := Value;
-        if not (csLoading in ComponentState) then
-          Rearrange;
-      end;
+    3: if FSpacing <> Value then begin
+      FSpacing := Value;
+      if not (csLoading in ComponentState) then
+        Rearrange;
     end;
   end;
 end;
@@ -849,7 +917,7 @@ var
 
   procedure CallOnChange;
   begin
-    if (Items[i].Frame <> nil) then begin
+    if Items[i].Frame <> nil then begin
       if bCanChange and Assigned(FOnChange) then
         FOnChange(Self, Items[i]);
 
@@ -859,60 +927,65 @@ var
 
 begin
   Result := False;
-  if Items.Count > i then begin
-    if (Items[i].Frame = nil) and not (csDesigning in ComponentState) then begin
-      if Assigned(Items[i].OnCreateFrame) then
-        Items[i].OnCreateFrame(Items[i], Items[i].Frame)
-      else
-        Items[i].Frame := CreateDefaultFrame;
-
-      CallOnChange;
-    end
-    else
-      if not Items[i].Frame.Visible and (h <> 0) then begin
-        Items[i].Frame.Visible := True;
-        CallOnChange;
-      end;
-
-    if (Items[i].Frame <> nil) and Items[i].Frame.Visible then begin
-      if (Items[i].FrameSize = 0) then
-        Items[i].FrameSize := Items[i].Frame.Height;
-
-      if h = -1 then begin
-        h := Items[i].FrameSize; // if frame has not been created
-        Items[i].Frame.Height := Items[i].FrameSize;
-      end;
-      if h < Items[i].LastBottom - y then
-        h := Items[i].LastBottom - y
-      else
-        if h = 0 then // Frame was created and will be opened now
-          h := Round(Items[i].Frame.Height / Speed);
-
-      if h > Items[i].FrameSize then
-        h := Items[i].FrameSize;
-
-      if h = 0 then begin
-        rgn := CreateRectRgn(-1, -1, -1, -1);
-        SetWindowRgn(Items[i].Frame.Handle, rgn, False);
-        Items[i].Frame.Visible := False;
-      end
-      else begin
-        if h = Items[i].Frame.Height then
-          SetWindowRgn(Items[i].Frame.Handle, 0, False)
-        else begin
-          if Items[i].Frame.Parent = nil then
-            Items[i].Frame.Parent := Self;
-
-          rgn := CreateRectRgn(0, Items[i].Frame.Height - h, w, Items[i].Frame.Height);
-          SetWindowRgn(Items[i].Frame.Handle, rgn, False);
+  if Items.Count > i then
+    with Items[i] do begin
+      if (Frame = nil) and not (csDesigning in ComponentState) then begin
+        if Assigned(OnCreateFrame) then
+          OnCreateFrame(Items[i], Frame)
+        else
+          Frame := CreateDefaultFrame;
+{
+        if SkinData.SkinManager <> nil then begin
+          Items[i].Frame.HandleNeeded;
+          SkinData.SkinManager.UpdateScale(Items[i].Frame);
         end;
-        Items[i].Frame.Visible := True;
-      end;
+}
+        CallOnChange;
+      end
+      else
+        if not Frame.Visible and (h <> 0) then begin
+          Frame.Visible := True;
+          CallOnChange;
+        end;
 
-      Items[i].Frame.SetBounds(Items[i].TitleButton.Left, y - (Items[i].Frame.Height - h), w, Items[i].Frame.Height);
-      Result := True;
+      if (Frame <> nil) and Frame.Visible then begin
+        if FrameSize = 0 then
+          FrameSize := Frame.Height;
+
+        if h = -1 then begin
+          h := FrameSize; // if frame has not been created
+          Frame.Height := FrameSize;
+        end;
+        if h < LastBottom - y then
+          h := LastBottom - y
+        else
+          if h = 0 then // Frame was created and will be opened now
+            h := Round(Frame.Height / Speed);
+
+        if h > FrameSize then
+          h := FrameSize;
+
+        if h = 0 then begin
+//          rgn := CreateRectRgn(-1, -1, -1, -1);
+//          SetWindowRgn(Frame.Handle, rgn, False);
+          Frame.Visible := False;
+        end
+        else begin
+          if h = Frame.Height then
+            SetWindowRgn(Frame.Handle, 0, False)
+          else begin
+            if Frame.Parent = nil then
+              Frame.Parent := Self;
+
+            rgn := CreateRectRgn(0, Frame.Height - h, w, Frame.Height);
+            SetWindowRgn(Frame.Handle, rgn, False);
+          end;
+          Frame.Visible := True;
+        end;
+        Frame.SetBounds(TitleButton.Left, y - (Frame.Height - h), w, Frame.Height);
+        Result := True;
+      end;
     end;
-  end;
 end;
 
 
@@ -922,8 +995,8 @@ var
   CanDestroy: boolean;
   sDiv, i, j, sHeight, cWidth, AutoHeight: integer;
 begin
-  if not Visible or Arranging or (csReading in ComponentState) or (csDestroying in ComponentState) or (Items.Count = 0) then
-    FActiveFrame := -1
+  if not Visible or Arranging or ([csReading,csDestroying] * ComponentState <> []) or (Items.Count = 0) then
+    FActiveFrameIndex := -1
   else
     if Items.UpdateCount <= 0 then begin
       cRect := CalcClientRect;
@@ -934,13 +1007,14 @@ begin
         AutoScroll := False;
         sHeight := cRect.Top;
         for i := 0 to Items.Count - 1 do
-          if Items[i].Visible and (Items[i].TitleButton <> nil) and Items[i].TitleButton.Visible then begin
-            inc(sHeight, FTitleHeight);
-            if (Items[i].State in [stOpened]) then
-              inc(sHeight, BorderWidth);
+          with Items[i] do
+            if Visible and (TitleButton <> nil) and TitleButton.Visible then begin
+              inc(sHeight, FTitleHeight);
+              if State in [stOpened] then
+                inc(sHeight, BorderWidth);
 
-            inc(sHeight, BorderWidth);
-          end;
+              inc(sHeight, BorderWidth);
+            end;
 
         AutoHeight := HeightOf(cRect) - sHeight;
       end;
@@ -949,74 +1023,76 @@ begin
       sHeight := cRect.Top;
       cWidth := WidthOf(cRect);
       for i := 0 to Items.Count - 1 do
-        if Items[i].Visible and (Items[i].TitleButton <> nil) and Items[i].TitleButton.Visible then begin
-          Items[i].TitleButton.SetBounds(cRect.Left, sHeight - Offset, cWidth, FTitleHeight);
-          if Items[i].TitleButton.Parent <> Self then
-            Items[i].TitleButton.Parent := Self;
+        with Items[i] do
+          if Visible and (TitleButton <> nil) and TitleButton.Visible then begin
+            TitleButton.SetBounds(cRect.Left, sHeight - Offset, cWidth, FTitleHeight);
+            if TitleButton.Parent <> Self then
+              TitleButton.Parent := Self;
 
-          inc(sHeight, FTitleHeight);
-          if Items[i].Frame <> nil then begin
-            Items[i].FrameSize := Items[i].Frame.Height;
-            sDiv := Items[i].FrameSize;
-          end
-          else begin
-            Items[i].FrameSize := 0;
-            sDiv := 0;
-          end;
-          if (Items[i].State = stOpening) then
-            Items[i].State := stOpened;
-
-          case Items[i].State of
-            stOpened: begin
-              FActiveFrame := i;
-              if AutoHeight <> -1 then begin
-                Items[i].FrameSize := AutoHeight;
-                if Items[i].Frame <> nil then
-                  Items[i].Frame.Height := Items[i].FrameSize;
-              end
-              else
-                if Items[i].Frame <> nil then
-                  Items[i].FrameSize := Items[i].Frame.Height;
-
-              j := -1;
-              UpdateFrame(i, sHeight - Offset, j, cWidth);
-              sDiv := Items[i].Frame.Height;
-              inc(sHeight, FSpacing);
+            inc(sHeight, FTitleHeight);
+            if Frame <> nil then begin
+              FrameSize := Frame.Height;
+              sDiv := FrameSize;
+            end
+            else begin
+              FrameSize := 0;
+              sDiv := 0;
             end;
+            if State = stOpening then
+              State := stOpened;
 
-            stClosed: begin
-              if FActiveFrame = i then
-                FActiveFrame := -1;
+            case State of
+              stOpened: begin
+                FActiveFrameIndex := i;
+                if AutoHeight <> -1 then begin
+                  FrameSize := AutoHeight;
+                  if Frame <> nil then
+                    Frame.Height := FrameSize;
+                end
+                else
+                  if Frame <> nil then
+                    FrameSize := Frame.Height;
 
-              if Items[i].Frame <> nil then begin
-                CanDestroy := True;
-                if Assigned(Items[i].FOnFrameDestroy) then
-                  Items[i].FOnFrameDestroy(Items[i], Items[i].Frame, CanDestroy);
-
-                if CanDestroy then
-                  FreeAndNil(Items[i].Frame);
-
-                Items[i].FrameSize := 0;
-                sDiv := 0;
-                if Items[i].Frame <> nil then
-                  UpdateFrame(i, sHeight - Offset, sDiv, cWidth);
-
-                Items[i].FrameSize := 0;
+                j := -1;
+                UpdateFrame(i, sHeight - Offset, j, cWidth);
+                sDiv := Frame.Height;
+                inc(sHeight, FSpacing);
               end;
-              inc(sHeight, FSpacing);
-            end;
-          end;
-          if (Items[i].Frame <> nil) and (Items[i].State in [stOpened]) then begin
-            if Items[i].Frame.Parent = nil then
-              Items[i].Frame.Parent := Self;
 
-            inc(sHeight, sDiv + BorderWidth);
+              stClosed: begin
+                if FActiveFrameIndex = i then
+                  FActiveFrameIndex := -1;
+
+                if Frame <> nil then begin
+                  CanDestroy := True;
+                  if Assigned(FOnFrameDestroy) then
+                    FOnFrameDestroy(Items[i], Frame, CanDestroy);
+
+                  if CanDestroy then
+                    FreeAndNil(Frame);
+
+                  FrameSize := 0;
+                  sDiv := 0;
+                  if Frame <> nil then
+                    UpdateFrame(i, sHeight - Offset, sDiv, cWidth);
+
+                  FrameSize := 0;
+                end;
+                inc(sHeight, FSpacing);
+              end;
+            end;
+            if (Frame <> nil) and (State in [stOpened]) then begin
+              if Frame.Parent = nil then
+                Frame.Parent := Self;
+
+              inc(sHeight, sDiv + BorderWidth);
+            end;
+            inc(sHeight, BorderWidth);
           end;
-          inc(sHeight, BorderWidth);
-        end;
+
 
       if Assigned(acMagnForm) then
-        SendMessage(acMagnForm.Handle, SM_ALPHACMD, MakeWParam(0, AC_REFRESH), 0);
+        acMagnForm.Perform(SM_ALPHACMD, AC_REFRESH_HI, 0);
 
       bCanChange := False;
       inc(sHeight, BorderWidth + 2 * integer(BorderStyle = bsSingle));
@@ -1027,10 +1103,10 @@ begin
       Perform(WM_SETREDRAW, 1, 0);
       SkinData.EndUpdate;
       if Showing and DoRepaint then
-        RedrawWindow(Handle, nil, 0, RDW_ALLCHILDREN or RDW_INVALIDATE or RDW_ERASE or RDW_FRAME);
+        RedrawWindow(Handle, nil, 0, RDWA_ALL);
 
       if Assigned(acMagnForm) then
-        SendMessage(acMagnForm.Handle, SM_ALPHACMD, MakeWParam(0, AC_REFRESH), 0);
+        acMagnForm.Perform(SM_ALPHACMD, AC_REFRESH_HI, 0);
     end;
 end;
 
@@ -1043,14 +1119,15 @@ begin
     Arranging := True;
     cWidth := WidthOf(CalcClientRect);
     for i := 0 to Items.Count - 1 do
-      if (Items[i].TitleButton <> nil) and Items[i].TitleButton.Visible and Items[i].Visible then begin
-        if Items[i].TitleButton.Width <> cWidth then begin
-          Items[i].TitleButton.SkinData.BGChanged := True;
-          Items[i].TitleButton.Width := cWidth;
+      with Items[i] do
+        if (TitleButton <> nil) and TitleButton.Visible and Visible then begin
+          if TitleButton.Width <> cWidth then begin
+            TitleButton.SkinData.BGChanged := True;
+            TitleButton.Width := cWidth;
+          end;
+          if (Frame <> nil) and (Frame.Width <> cWidth) then
+            Frame.Width := cWidth;
         end;
-        if (Items[i].Frame <> nil) and (Items[i].Frame.Width <> cWidth) then
-          Items[i].Frame.Width := cWidth;
-      end;
 
     Arranging := False;
     if AutoScroll then
@@ -1079,11 +1156,13 @@ begin
         Rearrange;
 
     CM_ENABLEDCHANGED: begin
-      for i := 0 to Items.Count - 1 do begin
-        Items[i].TitleButton.Enabled := Enabled;
-        if Items[i].Frame <> nil then
-          Items[i].Frame.Enabled := Enabled;
-      end;
+      for i := 0 to Items.Count - 1 do
+        with Items[i] do begin
+          TitleButton.Enabled := Enabled;
+          if Frame <> nil then
+            Frame.Enabled := Enabled;
+        end;
+
       Repaint;
     end;
   end;
@@ -1091,10 +1170,47 @@ begin
     case Message.WParamHi of
       AC_REFRESH:
         if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) and SkinData.Skinned then begin
-          SetWindowPos(Handle, 0, 0, 0, 0, 0, SWP_NOMOVE or SWP_NOSIZE or SWP_NOZORDER or SWP_NOACTIVATE or SWP_FRAMECHANGED);
+          SetWindowPos(Handle, 0, 0, 0, 0, 0, SWPA_FRAMECHANGED);
           UpdateWidths;
         end;
     end;
+end;
+
+
+procedure TsFrameBar.CMParentFontChanged(var Message: TMessage);
+begin
+  inherited;
+  if ParentFont then
+    TitleFont := Font;
+end;
+
+
+procedure TsFrameBar.CMFontChanged(var Message: TMessage);
+begin
+  inherited;
+  //if not SkinData.CustomFont then   // look also at TsTitleButton.InternalCreate
+ // if ParentFont then
+ //   fTitleFont.Assign(Font);        // default font.
+end;
+
+
+procedure TsFrameBar.ChangedTitleFontNotify(Sender: TObject);
+var
+  i: Integer;
+begin
+  for i := 0 to Items.Count - 1 do begin
+    if Items[i].TitleButton.ParentFont then
+      Items[i].TitleButton.SkinData.CustomFont := SkinData.CustomFont;
+
+    if SkinData.CustomFont then
+      Items[i].TitleButton.Font := fTitleFont;
+  end;
+end;
+
+
+procedure TsFrameBar.SetTitleFont(Value: TFont);
+begin
+  fTitleFont.Assign(Value);
 end;
 
 
@@ -1187,6 +1303,15 @@ begin
 end;
 
 
+function TsTitleItem.GetAlignment: TAlignment;
+begin
+  if TitleButton <> nil then
+    Result := TitleButton.Alignment
+  else
+    Result := taCenter;
+end;
+
+
 function TsTitleItem.GetTextAlignment: TAlignment;
 begin
   if TitleButton <> nil then
@@ -1270,6 +1395,13 @@ begin
 end;
 
 
+procedure TsTitleItem.SetAlignment(const Value: TAlignment);
+begin
+  if TitleButton <> nil then
+    TitleButton.Alignment := Value;
+end;
+
+
 procedure TsTitleItem.SetVisible(const Value: boolean);
 begin
   if FVisible <> Value then begin
@@ -1298,6 +1430,7 @@ begin
 
     case State of
       stClosed: begin
+        TitleButton.SkinData.CustomFont := False;
         State := stOpening;
         if Assigned(FOwner.FOwner.FOnChanging) then begin
           b := True;
@@ -1309,7 +1442,7 @@ begin
         end;
         if not FOwner.FOwner.AllowAllOpen then
           for i := 0 to FOwner.Count - 1 do
-            if FOwner[i].State = stOpened then begin
+            if (FOwner[i].State = stOpened) and (FOwner[i].GroupIndex = Self.GroupIndex) then begin
               FOwner[i].State := stClosing;
               if (i <> Index) and Assigned(FOwner[i].FOnFrameClose) then begin
                 l := Length(ClosedItems);
@@ -1340,6 +1473,9 @@ begin
     if (State = stOpened) and Assigned(FOnFrameShow) then
       FOnFrameShow(Self);
 
+    if Assigned(FOwner.FOwner.fOnChangedState) then
+      FOwner.FOwner.fOnChangedState(FOwner.FOwner, Self, State);
+
     for i := 0 to Length(ClosedItems) - 1 do
       if (ClosedItems[i] < FOwner.Count) and Assigned(FOwner[i].FOnFrameClose) then
         FOwner[ClosedItems[i]].FOnFrameClose(FOwner[ClosedItems[i]]);
@@ -1347,8 +1483,30 @@ begin
 end;
 
 
+procedure TsTitleButton.Ac_CMMouseLeave;
+begin
+  // Ashy:
+  if TitleItem.State <> stOpened then
+    if (Owner as TsFrameBar).SkinData.CustomFont then
+      SkinData.CustomFont := True;
+
+  SkinData.FMouseAbove := False;
+  if SkinData.SkinManager.ActiveGraphControl = Self then
+    SkinData.SkinManager.ActiveGraphControl := nil;
+
+  SkinData.BGChanged := False;
+  if not FMenuOwnerMode then
+    DoChangePaint(SkinData, 0, UpdateGraphic_CB, EventEnabled(aeMouseLeave, AnimatEvents), False, False)
+  else
+    SkinData.BGChanged := True;
+end;
+
+
 procedure TsTitleButton.Ac_CMMouseEnter;
 begin
+  if SkinData.CustomFont then
+    SkinData.CustomFont := False;
+
   if Assigned(OnMouseEnter) then
     OnMouseEnter(Self);
 
@@ -1377,15 +1535,17 @@ begin
   else
     Result := inherited CurrentState;
 
-  if Active and SkinData.Skinned and SkinData.SkinManager.IsValidImgIndex(SkinData.BorderIndex) then
-    case Result of
-      0:
-        Result := iff(SkinData.SkinManager.ma[SkinData.BorderIndex].ImageCount > 3, 3, 1);
+  if Active and SkinData.Skinned then
+    with SkinData, SkinManager do
+      if IsValidImgIndex(BorderIndex) then
+        case Result of
+          0:
+            Result := iff(ma[BorderIndex].ImageCount > 3, 3, 1);
 
-      else
-        if SkinData.SkinManager.ma[SkinData.BorderIndex].ImageCount > 3 then
-          Result := 3;
-    end;
+          else
+            if ma[BorderIndex].ImageCount > 3 then
+              Result := 3;
+        end;
 end;
 
 
@@ -1397,6 +1557,8 @@ end;
 
 
 constructor TsTitleButton.InternalCreate(AOwner: TsFrameBar; Index: integer);
+const
+  sComponentName = 'sTitleButton';
 var
   i: Integer;
 begin
@@ -1404,19 +1566,31 @@ begin
   TempState := -1;
   FOwner := AOwner;
   SkinData.COC := COC_TsBarTitle;
+  i := aOwner.FItems.Count;
+  while AOwner.FindComponent(sComponentName + IntToStr(i)) <> nil do
+    inc(i);
+
+  Name := sComponentName + IntToStr(i);
+{
   i := 0;
   repeat
     inc(i);
-    if AOwner.FindComponent('sTitleButton' + IntToStr(i)) = nil then begin
-      Name := 'sTitleButton' + IntToStr(i);
+    if AOwner.FindComponent(sComponentName + IntToStr(i)) = nil then begin
+      Name := sComponentName + IntToStr(i);
       break;
     end;
   until False;
-  Alignment := taLeftJustify;
+}
+  Alignment := taCenter;
   Spacing := 8;
   Margin := 5;
   FOwner.UpdatePositions;
   TextAlignment := taLeftJustify;
+
+  if (Owner as TsFrameBar).SkinData.CustomFont then begin
+    SkinData.CustomFont := True;
+    Font.Assign(TsFrameBar(Owner).fTitleFont);
+  end;
 end;
 
 

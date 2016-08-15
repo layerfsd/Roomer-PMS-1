@@ -1,5 +1,6 @@
 unit sGradient;
 {$I sDefs.inc}
+//+
 
 interface
 
@@ -31,25 +32,27 @@ type
 var
   GradientFillAC: function(DC: hDC; pVertex: Pointer; dwNumVertex: DWORD; pMesh: Pointer; dwNumMesh, dwMode: DWORD): DWORD; stdcall;
 
-  
+
 procedure PaintGrad(Bmp: TBitMap; aRect: TRect; const Data: TsGradArray; OffsetX: integer = 0; OffsetY: integer = 0); overload;
 var
   R, G, B: single;
   CurrentColor: TsColor_;
   C, Color1, Color2: TsColor;
-  S0, SSrc1, SSrc: PRGBAArray;
+  S0, SSrc1, SSrc: PRGBAArray_;
   RStep, GStep, BStep, p: real;
   vert:  array [0..4] of TRIVERTEX;
   gRect: array [0..3] of GRADIENT_TRIANGLE;
   i, dX, dY, w, Y, X, DeltaLine: integer;
-  Count, Percent, CurrentX, MaxX, CurrentY, MaxY: integer;
+  bHeight, bWidth, Count, Percent, CurrentX, MaxX, CurrentY, MaxY: integer;
 begin
   if not IsRectEmpty(aRect) then begin
-    if aRect.Right > Bmp.Width then
-      aRect.Right := Bmp.Width;
+    bHeight := Bmp.Height;
+    bWidth := Bmp.Width;
+    if aRect.Right > bWidth then
+      aRect.Right := bWidth;
 
-    if aRect.Bottom > Bmp.Height then
-      aRect.Bottom := Bmp.Height;
+    if aRect.Bottom > bHeight then
+      aRect.Bottom := bHeight;
 
     if aRect.Left < 0 then
       aRect.Left := 0;
@@ -64,8 +67,8 @@ begin
         0: begin
           C.A := MaxByte;
           MaxY := aRect.Top + OffsetY;
-          w := min(WidthOf(aRect) + aRect.Left, bmp.Width) - 1;
-          dX := (w - aRect.Left + 1);
+          w := min(WidthOf(aRect) + aRect.Left, bWidth) - 1;
+          dX := w - aRect.Left + 1;
           if InitLine(Bmp, Pointer(S0), DeltaLine) then
             for i := 0 to Count do begin
               Color1.C := Data[i].Color1;
@@ -74,16 +77,16 @@ begin
               CurrentY := MaxY;
               MaxY := CurrentY + ((HeightOf(aRect) + OffsetY) * Percent) div 100;
               if i = Count then
-                MaxY := min(aRect.Bottom, Bmp.Height) - 1
+                MaxY := min(aRect.Bottom, bHeight) - 1
               else
-                MaxY := min(MaxY, min(aRect.Bottom, Bmp.Height) - 1);
+                MaxY := min(MaxY, min(aRect.Bottom, bHeight) - 1);
 
               if MaxY - CurrentY > 0 then begin
                 R := Color1.R;
                 G := Color1.G;
                 B := Color1.B;
-                if (i = Count) or (MaxY > bmp.Height - 1) then
-                  MaxY := min(aRect.Bottom - 1, bmp.Height - 1);
+                if (i = Count) or (MaxY >= bHeight) then
+                  MaxY := min(aRect.Bottom, bHeight) - 1;
 
                 dY := MaxY - CurrentY;
                 if dY > 0 then
@@ -106,9 +109,9 @@ begin
                     GStep := (Color2.G - Color1.G) / dY;
                     BStep := (Color2.B - Color1.B) / dY;
                     for Y := CurrentY to MaxY do begin
-                      CurrentColor.R := Trunc(R);
-                      CurrentColor.G := Trunc(G);
-                      CurrentColor.B := Trunc(B);
+                      CurrentColor.R := Round(R);
+                      CurrentColor.G := Round(G);
+                      CurrentColor.B := Round(B);
                       SSrc := Pointer(LongInt(S0) + DeltaLine * Y);
 {$IFDEF WIN64}
                       for X := aRect.Left to aRect.Left + dX - 1 do
@@ -136,11 +139,11 @@ begin
               Color2.C := Data[i].Color2;
               Percent  := Data[i].Percent;
               CurrentX := MaxX;
-              MaxX := Trunc(CurrentX + (p * Percent));
+              MaxX := Round(CurrentX + (p * Percent));
               if i = Count then
-                MaxX := min(aRect.Right, Bmp.Width) - 1
+                MaxX := min(aRect.Right, bWidth) - 1
               else
-                MaxX := min(MaxX, min(aRect.Right, Bmp.Width) - 1);
+                MaxX := min(MaxX, min(aRect.Right, bWidth) - 1);
 
               if MaxX - CurrentX > 0 then begin
                 dX := MaxX - CurrentX;
@@ -151,9 +154,9 @@ begin
                 GStep := (Color2.G - Color1.G) / dX;
                 BStep := (Color2.B - Color1.B) / dX;
                 for X := CurrentX to MaxX do begin
-                  CurrentColor.R := Trunc(R);
-                  CurrentColor.G := Trunc(G);
-                  CurrentColor.B := Trunc(B);
+                  CurrentColor.R := Round(R);
+                  CurrentColor.G := Round(G);
+                  CurrentColor.B := Round(B);
                   SSrc1[X] := CurrentColor;
                   R := R + RStep;
                   G := G + GStep;
@@ -171,57 +174,67 @@ begin
           end;
 
         2: begin // Triangles
-          if Count > -1 then
+          if Count >= 0 then
             c.C := Data[0].Color1
           else
             c.C := 0;
           // Left-top
-          vert[0].Alpha := $FF00;
-          vert[0].x     := aRect.Left;
-          vert[0].y     := aRect.Top;
-          vert[0].Red   := c.R shl 8;
-          vert[0].Green := c.G shl 8;
-          vert[0].Blue  := c.B shl 8;
+          with vert[0] do begin
+            Alpha := $FF00;
+            x     := aRect.Left;
+            y     := aRect.Top;
+            Red   := c.R shl 8;
+            Green := c.G shl 8;
+            Blue  := c.B shl 8;
+          end;
 
           if Count > 0 then
             c.C := Data[1].Color1;
           // Center
-          vert[1].Alpha := $FF00;
-          vert[1].x     := aRect.Left + WidthOf(aRect) div 2;
-          vert[1].y     := aRect.Top + HeightOf(aRect) div 2;
-          vert[1].Red   := c.R shl 8;
-          vert[1].Green := c.G shl 8;
-          vert[1].Blue  := c.B shl 8;
+          with vert[1] do begin
+            Alpha := $FF00;
+            x     := aRect.Left + WidthOf(aRect) div 2;
+            y     := aRect.Top + HeightOf(aRect) div 2;
+            Red   := c.R shl 8;
+            Green := c.G shl 8;
+            Blue  := c.B shl 8;
+          end;
 
           if Count > 1 then
             c.C := Data[2].Color1;
           // Right-top
-          vert[2].Alpha := $FF00;
-          vert[2].x     := aRect.Right;
-          vert[2].y     := aRect.Top;
-          vert[2].Red   := c.R shl 8;
-          vert[2].Green := c.G shl 8;
-          vert[2].Blue  := c.B shl 8;
+          with vert[2] do begin
+            Alpha := $FF00;
+            x     := aRect.Right;
+            y     := aRect.Top;
+            Red   := c.R shl 8;
+            Green := c.G shl 8;
+            Blue  := c.B shl 8;
+          end;
 
           if Count > 2 then
             c.C := Data[3].Color1;
           // Right-bottom
-          vert[3].Alpha := $FF00;
-          vert[3].x     := aRect.Right;
-          vert[3].y     := aRect.Bottom;
-          vert[3].Red   := c.R shl 8;
-          vert[3].Green := c.G shl 8;
-          vert[3].Blue  := c.B shl 8;
+          with vert[3] do begin
+            Alpha := $FF00;
+            x     := aRect.Right;
+            y     := aRect.Bottom;
+            Red   := c.R shl 8;
+            Green := c.G shl 8;
+            Blue  := c.B shl 8;
+          end;
 
           if Count > 3 then
             c.C := Data[4].Color1;
           // Left-bottom
-          vert[4].Alpha := $FF00;
-          vert[4].x     := aRect.Left;
-          vert[4].y     := aRect.Bottom;
-          vert[4].Red   := c.R shl 8;
-          vert[4].Green := c.G shl 8;
-          vert[4].Blue  := c.B shl 8;
+          with vert[4] do begin
+            Alpha := $FF00;
+            x     := aRect.Left;
+            y     := aRect.Bottom;
+            Red   := c.R shl 8;
+            Green := c.G shl 8;
+            Blue  := c.B shl 8;
+          end;
 
           gRect[0].Vertex1 := 0; // Top
           gRect[0].Vertex2 := 1;
@@ -258,21 +271,25 @@ end;
 
 procedure PaintGradTxt(Bmp: TBitMap; aRect: TRect; const Data: TsGradArray; TextureBmp: TBitmap; TextureRect: TRect; TextureAlpha: byte; AlphaChannel: byte = MaxByte);
 var
-  R, G, B: single;
+  snR, snG, snB: single;
   Color1, Color2: TsColor;
   RStep, GStep, BStep, p: real;
-  Y, X, DeltaS, DeltaT: integer;
-  CurrentColor, TxtColor, C_: TsColor_;
+  YPos, XPos, DeltaS, DeltaT: integer;
+  CurrentColor, C_: TsColor_;
   i, w, h, dX, dY, TxtW, TxtH: Integer;
-  S0, SSrc1, SSrc, STxt1, STxt: PRGBAArray;
-  Count, Percent, CurrentX, MaxX, CurrentY, MaxY: integer;
+  SSrc: PRGBAArray_D;
+  STxt: PRGBAArray_S;
+  S0, SSrc1, STxt1: PRGBAArray_;
+  bWidth, bHeight, Count, Percent, CurrentX, MaxX, CurrentY, MaxY: integer;
 begin
   if not IsRectEmpty(aRect) then begin
-    if aRect.Right > Bmp.Width then
-      aRect.Right := Bmp.Width;
+    bWidth := Bmp.Width;
+    bHeight := Bmp.Height;
+    if aRect.Right > bWidth then
+      aRect.Right := bWidth;
 
-    if aRect.Bottom > Bmp.Height then
-      aRect.Bottom := Bmp.Height;
+    if aRect.Bottom > bHeight then
+      aRect.Bottom := bHeight;
 
     if aRect.Left < 0 then
       aRect.Left := 0;
@@ -287,10 +304,10 @@ begin
 
     TxtW := WidthOf (TextureRect, True);
     TxtH := HeightOf(TextureRect, True);
-    if TextureRect.Top + TxtH > TextureBmp.Height - 1 then
+    if TextureRect.Top + TxtH >= TextureBmp.Height then
       TxtH := TextureBmp.Height - 1 - TextureRect.Top;
 
-    if TextureRect.Left + TxtW > TextureBmp.Width - 1 then
+    if TextureRect.Left + TxtW >= TextureBmp.Width then
       TxtW := TextureBmp.Width - 1 - TextureRect.Left;
 
     if (TxtH < 0) or (TxtW < 0) then
@@ -306,18 +323,18 @@ begin
             Color2.C := Data[i].Color2;
             Percent  := Data[i].Percent;
             CurrentY := MaxY;
-            MaxY := CurrentY + ((HeightOf(aRect)) * Percent) div 100;
+            MaxY := CurrentY + (HeightOf(aRect) * Percent) div 100;
             if i = Count then
-              MaxY := min(aRect.Bottom, Bmp.Height) - 1
+              MaxY := min(aRect.Bottom, bHeight) - 1
             else
-              MaxY := min(MaxY, min(aRect.Bottom, Bmp.Height) - 1);
+              MaxY := min(MaxY, min(aRect.Bottom, bHeight) - 1);
 
             if MaxY - CurrentY > 0 then begin
-              R := Color1.R;
-              G := Color1.G;
-              B := Color1.B;
-              if (i = Count) or (MaxY > bmp.Height - 1) then
-                MaxY := min(aRect.Bottom - 1, bmp.Height - 1);
+              snR := Color1.R;
+              snG := Color1.G;
+              snB := Color1.B;
+              if (i = Count) or (MaxY >= bHeight) then
+                MaxY := min(aRect.Bottom, bHeight) - 1;
 
               dY := MaxY - CurrentY;
               if dY > 0 then begin
@@ -325,25 +342,25 @@ begin
                 GStep := (Color2.G - Color1.G) / dY;
                 BStep := (Color2.B - Color1.B) / dY;
                 if InitLine(Bmp, Pointer(S0), DeltaS) and InitLine(TextureBmp, Pointer(STxt1), DeltaT) then
-                  for Y := CurrentY to MaxY do begin
-                    CurrentColor.R := Trunc(R);
-                    CurrentColor.G := Trunc(G);
-                    CurrentColor.B := Trunc(B);
-                    SSrc := Pointer(LongInt(S0) + DeltaS * Y);
-                    STxt := Pointer(LongInt(STxt1) + DeltaT * (TextureRect.Top + Y mod TxtH));
-                    for X := aRect.Left to aRect.Right - 1 do begin
-                      TxtColor := STxt[TextureRect.Left + X mod TxtW];
-                      with SSrc[X] do begin
-                        R := ((TxtColor.R - CurrentColor.R) * TextureAlpha + CurrentColor.R shl 8) shr 8;
-                        G := ((TxtColor.G - CurrentColor.G) * TextureAlpha + CurrentColor.G shl 8) shr 8;
-                        B := ((TxtColor.B - CurrentColor.B) * TextureAlpha + CurrentColor.B shl 8) shr 8;
-                        A := AlphaChannel;
-                      end;
+                  for YPos := CurrentY to MaxY do
+                    with CurrentColor do begin
+                      R := Round(snR);
+                      G := Round(snG);
+                      B := Round(snB);
+                      SSrc := Pointer(LongInt(S0) + DeltaS * YPos);
+                      STxt := Pointer(LongInt(STxt1) + DeltaT * (TextureRect.Top + YPos mod TxtH));
+                      for XPos := aRect.Left to aRect.Right - 1 do
+                        with SSrc[XPos], STxt[TextureRect.Left + XPos mod TxtW] do begin
+                          DR := ((SR - R) * TextureAlpha + R shl 8) shr 8;
+                          DG := ((SG - G) * TextureAlpha + G shl 8) shr 8;
+                          DB := ((SB - B) * TextureAlpha + B shl 8) shr 8;
+                          DA := AlphaChannel;
+                        end;
+
+                      snR := snR + RStep;
+                      snG := snG + GStep;
+                      snB := snB + BStep;
                     end;
-                    R := R + RStep;
-                    G := G + GStep;
-                    B := B + BStep;
-                  end;
               end;
             end;
           end;
@@ -360,29 +377,29 @@ begin
               Color2.C := Data[i].Color2;
               Percent  := Data[i].Percent;
               CurrentX := MaxX;
-              MaxX := Trunc(CurrentX + (p * Percent));
+              MaxX := Round(CurrentX + (p * Percent));
               if i = Count then
-                MaxX := min(aRect.Right, Bmp.Width) - 1
+                MaxX := min(aRect.Right, bWidth) - 1
               else
-                MaxX := min(MaxX, min(aRect.Right, Bmp.Width) - 1);
+                MaxX := min(MaxX, min(aRect.Right, bWidth) - 1);
 
               if MaxX - CurrentX > 0 then begin
                 dX := MaxX - CurrentX;
-                R := Color1.R;
-                G := Color1.G;
-                B := Color1.B;
+                snR := Color1.R;
+                snG := Color1.G;
+                snB := Color1.B;
                 RStep := (Color2.R - Color1.R) / dX;
                 GStep := (Color2.G - Color1.G) / dX;
                 BStep := (Color2.B - Color1.B) / dX;
-                for X := CurrentX to MaxX do begin
-                  CurrentColor.R := Trunc(R);
-                  CurrentColor.G := Trunc(G);
-                  CurrentColor.B := Trunc(B);
-                  SSrc1[X] := CurrentColor;
-                  R := R + RStep;
-                  G := G + GStep;
-                  B := B + BStep;
-                end;
+                for XPos := CurrentX to MaxX do
+                  with SSrc1[XPos] do begin
+                    R := Round(snR);
+                    G := Round(snG);
+                    B := Round(snB);
+                    snR := snR + RStep;
+                    snG := snG + GStep;
+                    snB := snB + BStep;
+                  end;
               end;
             end;
             h := min(TxtH, HeightOf(aRect, True)) - 1;
@@ -390,28 +407,25 @@ begin
             for CurrentY := aRect.Top + 1 to h + aRect.Top do begin
               SSrc := Pointer(LongInt(S0) + DeltaS * CurrentY);
               STxt := Pointer(LongInt(STxt1) + DeltaT * (TextureRect.Top + CurrentY mod TxtH));
-              for X := aRect.Left to aRect.Right - 1 do begin
-                TxtColor := STxt[TextureRect.Left + X mod TxtW];
-                CurrentColor := SSrc1[X];
-                with SSrc[X] do begin
-                  R := ((TxtColor.R - CurrentColor.R) * TextureAlpha + CurrentColor.R shl 8) shr 8;
-                  G := ((TxtColor.G - CurrentColor.G) * TextureAlpha + CurrentColor.G shl 8) shr 8;
-                  B := ((TxtColor.B - CurrentColor.B) * TextureAlpha + CurrentColor.B shl 8) shr 8;
-                  A := AlphaChannel;
+              for XPos := aRect.Left to aRect.Right - 1 do
+                with SSrc[XPos], STxt[TextureRect.Left + XPos mod TxtW], SSrc1[XPos] do begin
+                  DR := ((SR - R) * TextureAlpha + R shl 8) shr 8;
+                  DG := ((SG - G) * TextureAlpha + G shl 8) shr 8;
+                  DB := ((SB - B) * TextureAlpha + B shl 8) shr 8;
+                  DA := AlphaChannel;
                 end;
-              end;
+
             end;
             // Texture for the first line
             CurrentY := aRect.Top;
             STxt := Pointer(LongInt(STxt1) + DeltaT * (TextureRect.Top + CurrentY mod TxtH));
-            for X := aRect.Left to aRect.Right - 1 do begin
-              TxtColor := STxt[TextureRect.Left + X mod TxtW];
-              CurrentColor := SSrc1[X];
-              CurrentColor.R := ((TxtColor.R - CurrentColor.R) * TextureAlpha + CurrentColor.R shl 8) shr 8;
-              CurrentColor.G := ((TxtColor.G - CurrentColor.G) * TextureAlpha + CurrentColor.G shl 8) shr 8;
-              CurrentColor.B := ((TxtColor.B - CurrentColor.B) * TextureAlpha + CurrentColor.B shl 8) shr 8;
-              SSrc1[X] := CurrentColor
-            end;
+            for XPos := aRect.Left to aRect.Right - 1 do
+              with STxt[TextureRect.Left + XPos mod TxtW], SSrc1[XPos] do begin
+                R := ((SR - R) * TextureAlpha + R shl 8) shr 8;
+                G := ((SG - G) * TextureAlpha + G shl 8) shr 8;
+                B := ((SB - B) * TextureAlpha + B shl 8) shr 8;
+              end;
+
             CurrentY := aRect.Top + h;
             w := WidthOf(aRect);
             if w > 0 then

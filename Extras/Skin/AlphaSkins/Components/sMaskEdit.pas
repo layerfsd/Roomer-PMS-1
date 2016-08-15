@@ -1,7 +1,7 @@
 unit sMaskEdit;
 {$I sDefs.inc}
 //{$DEFINE LOGGED}
-
+//+
 interface
 
 
@@ -12,7 +12,7 @@ uses
   sCommonData, sConst, sDefaults;
 
 type
-  TValidateErrorEvent = procedure(Sender: TObject; var Text: string) of object;
+  TValidateErrorEvent = procedure(Sender: TObject; Text: string) of object;
   
 {$IFDEF DELPHI_XE3}[ComponentPlatformsAttribute(pidWin32 or pidWin64)]{$ENDIF}
   TsMaskEdit = class(TMaskEdit)
@@ -66,7 +66,7 @@ type
 
 implementation
 
-uses sStyleSimply, sVCLUtils, sMessages, acntUtils, sGraphUtils, sAlphaGraph, sSkinProps;
+uses sStyleSimply, sVCLUtils, sMessages, acntUtils, sGraphUtils, sAlphaGraph, sSkinProps, sEdit;
 
 
 procedure TsMaskEdit.AfterConstruction;
@@ -78,10 +78,10 @@ end;
 
 constructor TsMaskEdit.Create(AOwner: TComponent);
 begin
-  inherited Create(AOwner);
-  ControlStyle := ControlStyle - [csSetCaption];
   FCommonData := TsCtrlSkinData.Create(Self, True);
   FCommonData.COC := COC_TsEdit;
+  inherited Create(AOwner);
+  ControlStyle := ControlStyle - [csSetCaption];
   FCheckOnExit := True;
   FDisabledKind := DefDisabledKind;
   FBoundLabel := TsBoundLabel.Create(Self, FCommonData);
@@ -91,9 +91,7 @@ end;
 destructor TsMaskEdit.Destroy;
 begin
   FreeAndNil(FBoundLabel);
-  if Assigned(FCommonData) then
-    FreeAndNil(FCommonData);
-
+  FreeAndNil(FCommonData);
   inherited Destroy;
 end;
 
@@ -159,36 +157,34 @@ const
 var
   NewDC, SavedDC: HDC;
 begin
-  if not Assigned(Parent) or not Visible or not Parent.Visible or (csCreating in ControlState) or (BorderStyle = bsNone) then
-    Exit;
-
-  if not InUpdating(SkinData) then begin
-    if DC = 0 then
-      NewDC := GetWindowDC(Handle)
-    else
-      NewDC := DC;
-
-    SavedDC := SaveDC(NewDC);
-    try
-      if FCommonData.BGChanged then
-        PrepareCache;
-
-      UpdateCorners(FCommonData, 0);
-      BitBltBorder(NewDC, 0, 0, Width, Height, FCommonData.FCacheBmp.Canvas.Handle, 0, 0, BordWidth);
-    finally
-      RestoreDC(NewDC, SavedDC);
+  if Assigned(Parent) and Visible and Parent.Visible and not (csCreating in ControlState) and (BorderStyle <> bsNone) then
+    if not InUpdating(SkinData) then begin
       if DC = 0 then
-        ReleaseDC(Handle, NewDC);
+        NewDC := GetWindowDC(Handle)
+      else
+        NewDC := DC;
+
+      SavedDC := SaveDC(NewDC);
+      try
+        if FCommonData.BGChanged then
+          PrepareCache;
+
+        UpdateCorners(FCommonData, 0);
+        BitBltBorder(NewDC, 0, 0, Width, Height, FCommonData.FCacheBmp.Canvas.Handle, 0, 0, BordWidth);
+      finally
+        RestoreDC(NewDC, SavedDC);
+        if DC = 0 then
+          ReleaseDC(Handle, NewDC);
+      end;
     end;
-  end;
 end;
 
 
 procedure TsMaskEdit.PaintText;
 var
   R: TRect;
-  aText: acString;
   bw: integer;
+  aText: acString;
 begin
   aText := EditText;
   if aText = '' then begin
@@ -198,7 +194,7 @@ begin
       bw := BorderWidth;
       R := Rect(bw, bw, Width - bw, bw + acTextHeight(FCommonData.FCacheBMP.Canvas, TextHint) + 2);
       if FCommonData.Skinned then
-        FCommonData.FCacheBMP.Canvas.Font.Color := MixColors(ColorToRGB(Font.Color), ColorToRGB(Color), 0.65)
+        FCommonData.FCacheBMP.Canvas.Font.Color := BlendColors(ColorToRGB(Font.Color), ColorToRGB(Color), 167)
       else
         FCommonData.FCacheBMP.Canvas.Font.Color := clGrayText;
 
@@ -273,20 +269,25 @@ begin
 {$ENDIF}
   if Message.Msg = SM_ALPHACMD then
     case Message.WParamHi of
+      AC_SETSCALE: begin
+        if BoundLabel <> nil then BoundLabel.UpdateScale(Message.LParam);
+        Exit;
+      end;
+
       AC_CTRLHANDLED: begin
         Message.Result := 1;
         Exit;
       end; // AlphaSkins supported
 
       AC_SETNEWSKIN:
-        if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
-          CommonWndProc(Message, FCommonData);
+        if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then begin
+          CommonMessage(Message, FCommonData);
           Exit;
         end;
 
       AC_REFRESH:
-        if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
-          CommonWndProc(Message, FCommonData);
+        if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then begin
+          CommonMessage(Message, FCommonData);
           if HandleAllocated then
             SendMessage(Handle, WM_NCPaint, 0, 0);
 
@@ -295,8 +296,8 @@ begin
         end;
 
       AC_REMOVESKIN:
-        if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
-          CommonWndProc(Message, FCommonData);
+        if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then begin
+          CommonMessage(Message, FCommonData);
           Invalidate;
           Exit
         end;
@@ -319,6 +320,11 @@ begin
 
   if (FCommonData = nil) or not FCommonData.Skinned or not ControlIsReady(Self) then
     case Message.Msg of
+      WM_PRINT: begin
+        PaintTo(TWMPaint(Message).DC, 0, 0);
+        Exit;
+      end;
+
       WM_PAINT: begin
         if not Focused then begin
           b := False;
@@ -330,16 +336,16 @@ begin
 
           BeginPaint(Handle, PS);
           PrepareCache;
-
           bw := integer(BorderStyle <> bsNone) * 2;
-          if b then // If buttons exists
-            for i := 0 to ControlCount - 1 do
-              if Controls[i] is TGraphicControl then begin
-                SavedDC := SaveDC(SkinData.FCacheBmp.Canvas.Handle);
-                MoveWindowOrg(SkinData.FCacheBmp.Canvas.Handle, Controls[i].Left + bw, Controls[i].Top + bw);
-                TGraphicControl(Controls[i]).Perform(WM_PAINT, WPARAM(SkinData.FCacheBmp.Canvas.Handle), 0);
-                RestoreDC(SkinData.FCacheBmp.Canvas.Handle, SavedDC);
-              end;
+          with SkinData.FCacheBmp do
+            if b then // If buttons exists
+              for i := 0 to ControlCount - 1 do
+                if Controls[i] is TGraphicControl then begin
+                  SavedDC := SaveDC(Canvas.Handle);
+                  MoveWindowOrg(Canvas.Handle, Controls[i].Left + bw, Controls[i].Top + bw);
+                  TGraphicControl(Controls[i]).Perform(WM_PAINT, WPARAM(Canvas.Handle), 0);
+                  RestoreDC(Canvas.Handle, SavedDC);
+                end;
 
           DC := GetWindowDC(Handle);
           BitBlt(DC, bw, bw, SkinData.FCacheBmp.Width - 2 * bw, SkinData.FCacheBmp.Height - 2 * bw, SkinData.FCacheBmp.Canvas.Handle, bw, bw, SRCCOPY);
@@ -408,7 +414,7 @@ begin
         FCommonData.BGChanged := True;
 
       WM_SETTEXT:
-        if (csDesigning in ComponentState) then
+//        if csDesigning in ComponentState then
           FCommonData.BGChanged := True;
     end;
     if CommonWndProc(Message, FCommonData) then
@@ -440,6 +446,7 @@ end;
 
 function TsMaskEdit.BorderWidth: integer;
 begin
+//  Result := EditBorderWidth(TEdit(Self));
   Result := integer(BorderStyle <> bsNone) * (2 + integer(Ctl3d));
 end;
 
@@ -451,7 +458,8 @@ begin
   if ControlCount <> 0 then begin
     bw := integer(BorderStyle <> bsNone) * (2 + integer(Ctl3d)) - 1;
     for i := 0 to ControlCount - 1 do
-      ExcludeClipRect(DC, Controls[i].Left + bw, Controls[i].Top + bw, Controls[i].BoundsRect.Right + bw, Controls[i].BoundsRect.Bottom + bw);
+      with Controls[i] do
+        ExcludeClipRect(DC, Left + bw, Top + bw, BoundsRect.Right + bw, BoundsRect.Bottom + bw);
   end;
 end;
 

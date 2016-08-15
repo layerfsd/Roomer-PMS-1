@@ -1,7 +1,7 @@
 unit sToolBar;
 {$I sDefs.inc}
 //{$DEFINE LOGGED}
-
+//+
 interface
 
 uses
@@ -31,6 +31,7 @@ type
     function OffsetX: integer;
     function OffsetY: integer;
     function PrepareCache: boolean;
+    procedure ChangeScale(M, D: Integer); override;
     procedure OurAdvancedCustomDraw(Sender: TToolBar; const ARect: TRect; Stage: TCustomDrawStage; var DefaultDraw: Boolean);
     procedure OurAdvancedCustomDrawButton(Sender: TToolBar; Button: TToolButton; State: TCustomDrawState;
                                           Stage: TCustomDrawStage; var Flags: TTBCustomDrawFlags; var DefaultDraw: Boolean);
@@ -142,12 +143,34 @@ begin
 end;
 {$ENDIF}
 
+{
+type
+  TAccessToolBar = class(TToolWindow)
+  protected
+    FBitmap: TBitmap;
+    FAllowTextButtons: Boolean;
+    FButtonWidth: Integer;
+    FButtonHeight: Integer;
+  end;
+}
+
+procedure TsToolBar.ChangeScale(M, D: Integer);
+begin
+//  DisableAlign;
+  Font.Height := MulDiv(Font.Height, M, D);
+  Height := MulDiv(Height, M, D);
+//  TAccessToolBar(Self).FButtonWidth := MulDiv(ButtonWidth, M, D);
+{$IFDEF D2005}
+  ButtonHeight := MulDiv(ButtonHeight, M, D);
+{$ENDIF}
+end;
+
 
 constructor TsToolBar.Create(AOwner: TComponent);
 begin
-  inherited Create(AOwner);
   FCommonData := TsCommonData.Create(Self, True);
   FCommonData.COC := COC_TsToolBar;
+  inherited Create(AOwner);
   FDisabledKind := DefDisabledKind;
   DoubleBuffered := True;
   HotButtonIndex := -1;
@@ -156,9 +179,7 @@ end;
 
 destructor TsToolBar.Destroy;
 begin
-  if Assigned(FCommonData) then
-    FreeAndNil(FCommonData);
-    
+  FreeAndNil(FCommonData);
   inherited Destroy;
 end;
 
@@ -203,21 +224,21 @@ begin
   IntersectClipRect(DstDC, DstRect.Left, DstRect.Top, DstRect.Right, DstRect.Bottom);
   Designing := csDesigning in Control.ComponentState;
   try
-    for i := 0 to Control.ControlCount - 1 do begin
-      if (Control.Controls[i] is TToolButton) and (csDesigning in Control.ComponentState) then
-        Continue;
+    for i := 0 to Control.ControlCount - 1 do
+      with Control, Controls[i] do begin
+        if (Controls[i] is TToolButton) and (csDesigning in ComponentState) then
+          Continue;
 
-      if (Control.Controls[i] is TGraphicControl) and StdTransparency then
-        Continue;
+        if (Controls[i] is TGraphicControl) and StdTransparency then
+          Continue;
 
-      if not Control.Controls[i].Visible or not RectIsVisible(DstRect, Control.Controls[i].BoundsRect) then
-        Continue;
+        if not Visible or not RectIsVisible(DstRect, BoundsRect) then
+          Continue;
 
-      if (csOpaque in Control.Controls[i].ControlStyle) or (Control.Controls[i] is TGraphicControl) or Designing then
-        ExcludeClipRect(DstDC, Control.Controls[i].Left, Control.Controls[i].Top,
-                        Control.Controls[i].Left + Control.Controls[i].Width,
-                        Control.Controls[i].Top + Control.Controls[i].Height);
-    end;
+        if (csOpaque in ControlStyle) or (Controls[i] is TGraphicControl) or Designing then
+          ExcludeClipRect(DstDC, Left, Top, Left + Width, Top + Height);
+      end;
+
     BitBlt(DstDC, DstRect.Left, DstRect.Top, WidthOf(DstRect), HeightOf(DstRect), SkinData.FCacheBmp.Canvas.Handle, SrcRect.Left, SrcRect.Top, SRCCOPY);
   finally
     RestoreDC(DstDC, SaveIndex);
@@ -235,7 +256,7 @@ begin
     FCommonData.FUpdating := FCommonData.Updating;
     if not (Stage in [cdPrePaint]) then
       DefaultDraw := False
-    else 
+    else
       if not FCommonData.BGChanged or PrepareCache then begin
         FCommonData.FCacheBMP.Canvas.Font.Assign(Font);
         Windows.GetClientRect(Handle, RC);
@@ -264,11 +285,11 @@ var
   R, iR: TRect;
   ci: TCacheInfo;
   BtnBmp: TBitmap;
-  bWidth, bHeight, Mode, SkinIndex: integer;
+  bWidth, bHeight, Mode, iSkinIndex: integer;
 
   function AddedWidth: integer;
   begin
-    if (Button.Style = tbsDropDown) then
+    if Button.Style = tbsDropDown then
       Result := GetScrollSize(Skindata.SkinManager) - 2
     else
       Result := 0
@@ -286,18 +307,20 @@ var
 
   function ImgRect: TRect;
   begin
-    if not List then begin
-      Result.Left   := (IntButtonWidth - Images.Width) div 2 + 1;
-      Result.Top    := (Button.Height - Images.Height - integer(ShowCaptions) * (FCommonData.FCacheBMP.Canvas.TextHeight('A') + 3)) div 2;
-      Result.Right  := Result.Left + Images.Width;
-      Result.Bottom := Result.Bottom + Images.Height;
-    end
-    else begin
-      Result.Left   := 5;
-      Result.Top    := (Button.Height - Images.Height) div 2;
-      Result.Right  := Result.Left + Images.Width;
-      Result.Bottom := Result.Bottom + Images.Height;
-    end;
+    with Result do
+      if not List then begin
+        Left   := (IntButtonWidth - Images.Width) div 2 + 1;
+        Top    := (Button.Height - Images.Height - integer(ShowCaptions) * (FCommonData.FCacheBMP.Canvas.TextHeight('A') + 3)) div 2;
+        Right  := Result.Left + Images.Width;
+        Bottom := Result.Bottom + Images.Height;
+      end
+      else begin
+        Left   := 5;
+        Top    := (Button.Height - Images.Height) div 2;
+        Right  := Result.Left + Images.Width;
+        Bottom := Result.Bottom + Images.Height;
+      end;
+
     if Mode = 2 then
       if SkinData.Skinned and SkinData.SkinManager.ButtonsOptions.ShowFocusRect then
         OffsetRect(Result, 1, 1);
@@ -345,17 +368,21 @@ var
 {$IFDEF TNTUNICODE}
       if Button is TTntToolButton then
         WriteTextExW(BtnBMP.Canvas, PWideChar(TTntToolButton(Button).Caption), True, cRect,
-                     DT_CENTER or DT_VCENTER or DT_SINGLELINE, GetFontIndex(Button, SkinIndex, SkinData.SkinManager), Mode > 0)
+                     DT_CENTER or DT_VCENTER or DT_SINGLELINE, GetFontIndex(Button, iSkinIndex, SkinData.SkinManager), Mode > 0)
       else
 {$ENDIF}
-        acWriteTextEx(BtnBMP.Canvas, PacChar(Button.Caption), Enabled and (DisabledImages = nil), cRect,
-                      DT_CENTER or DT_VCENTER or DT_SINGLELINE, GetFontIndex(Button, SkinIndex, SkinData.SkinManager), Mode > 0);
+        if NeedParentFont(SkinData.SkinManager, iSkinIndex, Mode) then
+          acWriteTextEx(BtnBMP.Canvas, PacChar(Button.Caption), Enabled and (DisabledImages = nil), cRect,
+                      DT_CENTER or DT_VCENTER or DT_SINGLELINE, GetFontIndex(Self, Self.SkinData.SkinIndex, SkinData.SkinManager), Mode > 0)
+        else
+          acWriteTextEx(BtnBMP.Canvas, PacChar(Button.Caption), Enabled and (DisabledImages = nil), cRect,
+                      DT_CENTER or DT_VCENTER or DT_SINGLELINE, iSkinIndex, Mode > 0)
     end;
   end;
 
   procedure DrawBtnGlyph;
   begin
-    if Assigned(Images) and (Button.ImageIndex >= 0) and (Button.ImageIndex < GetImageCount(Images)) then
+    if Assigned(Images) and IsValidIndex(Button.ImageIndex, GetImageCount(Images)) then
       sThirdParty.CopyToolBtnGlyph(Self, Button, State, Stage, Flags, BtnBmp);
   end;
 
@@ -363,24 +390,25 @@ var
   var
     Mode, x, y: integer;
   begin
-    with FCommonData.SkinManager do begin
-      if ((DroppedButton = Button) and Assigned(Button.DropDownMenu) or Button.Down) then
+    with FCommonData.SkinManager, gd[iSkinIndex] do begin
+      if (DroppedButton = Button) and Assigned(Button.DropDownMenu) or Button.Down then
         Mode := 2
       else
         Mode := integer(cdsHot in State);
 
       R.Left := IntButtonWidth;
       R.Right := Button.Width;
-      if IsValidImgIndex(gd[SkinIndex].BorderIndex) then
-        DrawSkinRect(BtnBmp, R, ci, ma[gd[SkinIndex].BorderIndex], Mode, True);
+      if IsValidImgIndex(BorderIndex) then
+        DrawSkinRect(BtnBmp, R, ci, ma[BorderIndex], Mode, True);
 
-      if (ConstData.ScrollBtns[asBottom].GlyphIndex >= 0) and (ConstData.ScrollBtns[asBottom].GlyphIndex < High(ma)) then begin
-        x := IntButtonWidth + (AddedWidth - 3 - WidthOfImage(ma[ConstData.ScrollBtns[asBottom].GlyphIndex])) div 2 + 2;
-        y := (ButtonHeight - HeightOfImage(ma[ConstData.ScrollBtns[asBottom].GlyphIndex])) div 2;
-        DrawSkinGlyph(BtnBmp, Point(x, y), Mode, 1, ma[ConstData.ScrollBtns[asBottom].GlyphIndex], MakeCacheInfo(BtnBmp));
-      end
-      else
-        DrawColorArrow(BtnBmp.Canvas, FCommonData.SkinManager.gd[SkinIndex].Props[integer(Mode > 0)].FontColor.Color, R, asBottom);
+      with ConstData.ScrollBtns[asBottom] do
+        if IsValidIndex(GlyphIndex, High(ma)) then begin
+          x := IntButtonWidth + (AddedWidth - 3 - ma[GlyphIndex].Width) div 2 + 2;
+          y := (ButtonHeight - ma[GlyphIndex].Height) div 2;
+          DrawSkinGlyph(BtnBmp, Point(x, y), Mode, 1, ma[GlyphIndex], MakeCacheInfo(BtnBmp));
+        end
+        else
+          DrawColorArrow(BtnBmp, FCommonData.SkinManager.gd[iSkinIndex].Props[integer(Mode > 0)].FontColor.Color, R, asBottom);
     end;
   end;
 
@@ -391,7 +419,7 @@ begin
     if not (Stage in [cdPrePaint]) then
       DefaultDraw := False
     else
-      if (Stage in [cdPrePaint]) then begin
+      if Stage in [cdPrePaint] then begin
         if not Flat and not (csDesigning in ComponentState) and (HotButtonIndex = Button.Index) then
           State := State + [cdsHot];
 
@@ -402,21 +430,21 @@ begin
           iR := GetButtonRect(Button.Index);
         end;
         if WidthOf(iR) <> 0 then begin
-          bWidth := WidthOf(iR);
-          bHeight := HeightOf(iR);
+          bWidth := WidthOf(iR, True);
+          bHeight := HeightOf(iR, True);
           BtnBmp := CreateBmp32(bWidth, bHeight);
           BtnBmp.Canvas.Font.Assign(Font);
           if not Button.Marked and not Button.Indeterminate and ((State = []) or (State = [cdsDisabled])) then
             Mode := 0
           else
-            Mode := 1 + integer((cdsSelected in State) or (cdsChecked in State) or Button.Marked or Button.Indeterminate);
+            Mode := 1 + integer(([cdsSelected, cdsChecked] * State <> []) or Button.Marked or Button.Indeterminate);
 
           if Flat then
-            SkinIndex := FCommonData.SkinManager.ConstData.Sections[ssToolButton]
+            iSkinIndex := FCommonData.SkinManager.ConstData.Sections[ssToolButton]
           else
-            SkinIndex := FCommonData.SkinManager.ConstData.Sections[ssSpeedButton];
+            iSkinIndex := FCommonData.SkinManager.ConstData.Sections[ssSpeedButton];
 
-          if SkinIndex >= 0 then begin
+          if iSkinIndex >= 0 then begin
             ci := MakeCacheInfo(FCommonData.FCacheBmp,
                                 BorderWidth * 2 + integer(ebLeft in EdgeBorders) * (integer(EdgeInner <> esNone) + integer(EdgeOuter <> esNone)),
                                 BorderWidth * 2 + integer(ebTop  in EdgeBorders) * (integer(EdgeInner <> esNone) + integer(EdgeOuter <> esNone)));
@@ -424,20 +452,20 @@ begin
             R := MkRect(bWidth, Button.Height);
             OffsetRect(R, ClientRect.Left, ClientRect.Top);
 
-            PaintItemBg(SkinIndex, ci, Mode, R, Point(Button.Left, Button.Top), BtnBmp, FCommonData.SkinManager);
+            PaintItemBg(iSkinIndex, ci, Mode, R, Point(Button.Left, Button.Top), BtnBmp, FCommonData.SkinManager);
             R.Right := bWidth - AddedWidth;
 
             ci.X := ci.X + Button.Left;
             ci.Y := ci.Y + Button.Top;
-            if FCommonData.SkinManager.gd[SkinIndex].BorderIndex >= 0 then
-              DrawSkinRect(BtnBmp, R, ci, FCommonData.SkinManager.ma[FCommonData.SkinManager.gd[SkinIndex].BorderIndex], Mode, True);
+            if FCommonData.SkinManager.gd[iSkinIndex].BorderIndex >= 0 then
+              DrawSkinRect(BtnBmp, R, ci, FCommonData.SkinManager.ma[FCommonData.SkinManager.gd[iSkinIndex].BorderIndex], Mode, True);
 
             DrawBtnCaption;
             DrawBtnGlyph;
             if Button.Style = tbsDropDown then
               DrawArrow;
 
-            if (not Button.Enabled or Button.Indeterminate) then
+            if not Button.Enabled or Button.Indeterminate then
               BmpDisabledKind(BtnBmp, FDisabledKind, Parent, CI, MkPoint);
 
             BitBlt(Canvas.Handle, Button.Left, Button.Top, bWidth, bHeight, BtnBmp.Canvas.Handle, 0, 0, SRCCOPY);
@@ -463,14 +491,14 @@ begin
     // InvalidRectH
     if (CurrentBounds.Right = SkinData.FCacheBmp.Width) or
          (SkinData.SkinManager.gd[SkinData.SkinIndex].Props[State].GradientPercent <> 0) and
-           (SkinData.BGType and BGT_GRADIENTHORZ = BGT_GRADIENTHORZ) then
+           (SkinData.BGType and BGT_GRADIENTHORZ <> 0) then
       // If Rect is not used
       SkinData.InvalidRectH.Right := 0
     else begin
       if SkinData.BorderIndex < 0 then
         bWidth := 0
       else
-        bWidth := SkinData.SkinManager.MaskWidthRight(SkinData.BorderIndex);
+        bWidth := SkinData.SkinManager.ma[SkinData.BorderIndex].WR;
 
       if CurrentBounds.Right > SkinData.FCacheBmp.Width then begin
         SkinData.InvalidRectH.Left := SkinData.FCacheBmp.Width - bWidth;
@@ -486,14 +514,14 @@ begin
     // InvalidRectV
     if (CurrentBounds.Bottom = SkinData.FCacheBmp.Height)
          or (SkinData.SkinManager.gd[SkinData.SkinIndex].Props[State].GradientPercent <> 0)
-           and (SkinData.BGType and BGT_GRADIENTVERT = BGT_GRADIENTVERT) then
+           and (SkinData.BGType and BGT_GRADIENTVERT <> 0) then
       // If Rect is not used
       SkinData.InvalidRectV.Bottom := 0
     else begin
       if SkinData.BorderIndex < 0 then
         bWidth := 0
       else
-        bWidth := SkinData.SkinManager.MaskWidthBottom(SkinData.BorderIndex);
+        bWidth := SkinData.SkinManager.ma[SkinData.BorderIndex].WB;
 
       if CurrentBounds.Bottom > SkinData.FCacheBmp.Height then begin
         SkinData.InvalidRectV.Top := SkinData.FCacheBmp.Height - bWidth;
@@ -639,15 +667,22 @@ begin
 //  if (Form1 <> nil) and (Form1.sPageControl1 <> nil) and Form1.sPageControl1.Visible then
     AddToLog(Message);
 {$ENDIF}
-  if (Message.Msg = SM_ALPHACMD) then begin
+  if Message.Msg = SM_ALPHACMD then begin
     case Message.WParamHi of
       AC_CTRLHANDLED: begin
         Message.Result := 1;
         Exit;
       end;
-
+{
+      AC_SETSCALE:
+        if SkinData.SkinManager <> nil then begin
+          Height := MulDiv(Height, Message.LParam, SkinData.ScalePercent);
+          CommonMessage(Message, SkinData);
+          Exit;
+        end;
+}
       AC_SETNEWSKIN:
-        if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
+        if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then begin
           AlphaBroadCast(Self, Message);
           CommonWndProc(Message, FCommonData);
           UpdateEvents;
@@ -659,13 +694,13 @@ begin
           FCommonData.Updating := False;
           FCommonData.BGChanged := True;
           if HandleAllocated then
-            RedrawWindow(Handle, nil, 0, RDW_UPDATENOW or RDW_ERASE or RDW_INVALIDATE or RDW_FRAME);
+            RedrawWindow(Handle, nil, 0, RDWA_NOCHILDRENNOW);
 
           Exit;
         end;
 
       AC_REFRESH:
-        if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
+        if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then begin
           DroppedButton := nil;
           CommonWndProc(Message, FCommonData);
           AlphaBroadcast(Self, Message);
@@ -676,7 +711,7 @@ begin
         end;
 
       AC_REMOVESKIN:
-        if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
+        if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then begin
           DroppedButton := nil;
           CommonWndProc(Message, FCommonData);
           AlphaBroadcast(Self, Message);
@@ -700,17 +735,18 @@ begin
   else begin
     if Message.Msg = SM_ALPHACMD then
       case Message.WParamHi of
-        AC_GETBG: begin
-          PacBGInfo(Message.LParam)^.Offset := MkPoint;
-          InitBGInfo(FCommonData, PacBGInfo(Message.LParam), 0);
-          inc(PacBGInfo(Message.LParam)^.Offset.X, OffsetX);
-          inc(PacBGInfo(Message.LParam)^.Offset.Y, OffsetY);
-          if (PacBGInfo(Message.LParam)^.BgType = btFill) and (PacBGInfo(Message.LParam)^.Bmp <> nil) then begin
-            PacBGInfo(Message.LParam).FillRect.Left := PacBGInfo(Message.LParam)^.Offset.X - PacBGInfo(Message.LParam).FillRect.Left;
-            PacBGInfo(Message.LParam).FillRect.Top  := PacBGInfo(Message.LParam)^.Offset.Y - PacBGInfo(Message.LParam).FillRect.Top;
-          end;
-          Exit;
-        end
+        AC_GETBG:
+          with Message, PacBGInfo(LParam)^ do begin
+            Offset := MkPoint;
+            InitBGInfo(FCommonData, PacBGInfo(LParam), 0);
+            inc(Offset.X, OffsetX);
+            inc(Offset.Y, OffsetY);
+            if (BgType = btFill) and (Bmp <> nil) then begin
+              FillRect.Left := Offset.X - FillRect.Left;
+              FillRect.Top  := Offset.Y - FillRect.Top;
+            end;
+            Exit;
+          end
 
         else
           if CommonMessage(Message, SkinData) then
@@ -718,34 +754,36 @@ begin
       end
     else
       case Message.Msg of
-        WM_PRINT: begin
-          FCommonData.Updating := False;
-          RC := ACClientRect(Handle);
-          w := WidthOf(Rc);
-          h := HeightOf(Rc);
-          PrepareCache;
-          BitBlt(TWMPaint(Message).DC, 0, 0, Width, Rc.Top, SkinData.FCacheBmp.Canvas.Handle, 0, 0, SRCCOPY);
-          BitBlt(TWMPaint(Message).DC, 0, Rc.Top, Rc.Left, h, SkinData.FCacheBmp.Canvas.Handle, 0, Rc.Top, SRCCOPY);
-          BitBlt(TWMPaint(Message).DC, 0, Rc.Bottom, Width, Height - h - Rc.Top, SkinData.FCacheBmp.Canvas.Handle, 0, Rc.Bottom, SRCCOPY);
-          BitBlt(TWMPaint(Message).DC, Rc.Right, Rc.Top, Width - Rc.Left - w, h, SkinData.FCacheBmp.Canvas.Handle, Rc.Right, Rc.Top, SRCCOPY);
-          MoveWindowOrg(TWMPaint(Message).DC, Rc.Left, Rc.Top);
-          IntersectClipRect(TWMPaint(Message).DC, 0, 0, w, h);
-          if aSkinChanging then begin // Preventing of blinking when skin is changed
-            SendMessage(Parent.Handle, WM_SETREDRAW, 0, 0);
-            SendMessage(Handle, WM_PAINT, Message.WParam, 0);
-            SendMessage(Parent.Handle, WM_SETREDRAW, 1, 0);
-          end
-          else
-            SendMessage(Handle, WM_PAINT, Message.WParam, 0);
+        WM_PRINT:
+          with TWMPaint(Message) do begin
+            FCommonData.Updating := False;
+            RC := ACClientRect(Handle);
+            w := WidthOf(Rc);
+            h := HeightOf(Rc);
+            PrepareCache;
+            BitBlt(DC, 0, 0, Width, Rc.Top, SkinData.FCacheBmp.Canvas.Handle, 0, 0, SRCCOPY);
+            BitBlt(DC, 0, Rc.Top, Rc.Left, h, SkinData.FCacheBmp.Canvas.Handle, 0, Rc.Top, SRCCOPY);
+            BitBlt(DC, 0, Rc.Bottom, Width, Height - h - Rc.Top, SkinData.FCacheBmp.Canvas.Handle, 0, Rc.Bottom, SRCCOPY);
+            BitBlt(DC, Rc.Right, Rc.Top, Width - Rc.Left - w, h, SkinData.FCacheBmp.Canvas.Handle, Rc.Right, Rc.Top, SRCCOPY);
+            MoveWindowOrg(DC, Rc.Left, Rc.Top);
+            IntersectClipRect(DC, 0, 0, w, h);
+            if aSkinChanging then begin // Preventing of blinking when skin is changed
+              SendMessage(Parent.Handle, WM_SETREDRAW, 0, 0);
+              SendMessage(Handle, WM_PAINT, Message.WParam, 0);
+              SendMessage(Parent.Handle, WM_SETREDRAW, 1, 0);
+            end
+            else
+              SendMessage(Handle, WM_PAINT, Message.WParam, 0);
 
-          for i := 0 to ButtonCount - 1 do
-            if (Buttons[i].Style in [tbsSeparator, tbsDivider]) and Buttons[i].Visible and not Buttons[i].Wrap then begin
-              rc := Buttons[i].BoundsRect;
-              PaintSeparator(TWMPaint(Message).DC, rc, Self, (Buttons[i].Style = tbsDivider));
-            end;
+            for i := 0 to ButtonCount - 1 do
+              with Buttons[i] do
+                if (Style in [tbsSeparator, tbsDivider]) and Visible and not Wrap then begin
+                  rc := BoundsRect;
+                  PaintSeparator(DC, rc, Self, (Style = tbsDivider));
+                end;
 
-          Exit;
-        end;
+            Exit;
+          end;
 
         WM_ERASEBKGND:
           if not (csDesigning in ComponentState) then begin
@@ -816,11 +854,12 @@ begin
           w := SkinData.SkinManager.ConstData.Sections[ssDivider];
           if SkinData.SkinManager.IsValidSkinIndex(w) then
             for i := 0 to ButtonCount - 1 do
-              if (Buttons[i].Style in [tbsSeparator, tbsDivider]) and Buttons[i].Visible then
-                if not Buttons[i].Wrap then begin
-                  rc := Buttons[i].BoundsRect;
-                  PaintSeparator(DC, rc, Self, (Buttons[i].Style = tbsDivider));
-                end;
+              with Buttons[i] do
+                if (Style in [tbsSeparator, tbsDivider]) and Visible then
+                  if not Wrap then begin
+                    rc := BoundsRect;
+                    PaintSeparator(DC, rc, Self, (Style = tbsDivider));
+                  end;
 
           if TWMPAint(Message).DC = 0 then
             ReleaseDC(Handle, DC);
@@ -847,8 +886,8 @@ begin
       WM_MOUSEMOVE:
         if not Flat and not (csDesigning in ComponentState) then
           with TWMMouse(Message) do begin
-            i := IndexByMouse(Point(TWMMouse(Message).XPos, TWMMouse(Message).YPos));
-            if (i <> HotButtonIndex) then begin
+            i := IndexByMouse(Point(XPos, YPos));
+            if i <> HotButtonIndex then begin
               if (i >= 0) and not Buttons[i].Enabled then
                 Exit;
 

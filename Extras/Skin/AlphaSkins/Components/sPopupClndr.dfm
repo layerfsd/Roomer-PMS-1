@@ -16,7 +16,7 @@ object sPopupCalendar: TsPopupCalendar
   OldCreateOrder = True
   Scaled = False
   OnClose = FormClose
-  OnDeactivate = FormDeactivate
+  OnCloseQuery = FormCloseQuery
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
@@ -30,7 +30,6 @@ object sPopupCalendar: TsPopupCalendar
     BorderWidth = 3
     Caption = ' '
     TabOrder = 0
-    SkinData.SkinSection = 'PANEL'
   end
   object PopupMenu1: TPopupMenu
     Left = 153

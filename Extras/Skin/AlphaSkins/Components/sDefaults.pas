@@ -212,6 +212,7 @@ const
 var
   ACPngFirst: boolean = True;//False;   // If True then ACPng handler have first priority (solves an issue in using of Png in Button.Glyph in design-time)
   DefDisabledBlend: real = 0.4;         // 0..1
+  DefBlendDisabled: byte = 100;         // 0..255
   DefDisabledSaturation: integer = -90; // -100..100
 
 //{$IFNDEF NOTFORHELP}

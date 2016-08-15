@@ -1,6 +1,6 @@
 unit ac3rdPartyEditor;
 {$I sDefs.inc}
-
+//+
 interface
 
 uses
@@ -33,8 +33,8 @@ type
     sPanel2: TsPanel;
     sListBox2: TsCheckListBox;
     Edit1: TMenuItem;
-    sCheckBox1: TsCheckBox;
     sSpeedButton2: TsSpeedButton;
+    sCheckBox1: TsCheckBox;
     procedure sBitBtn2Click(Sender: TObject);
     procedure sBitBtn1Click(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -408,7 +408,7 @@ begin
   sListView1.Items.Clear;
   for j := 0 to Length(Lists) - 1 do
     for i := 0 to Lists[j].Count - 1 do
-      if (Lists[j][i] <> s_Space) then begin
+      if Lists[j][i] <> s_Space then begin
         sListView1.Items.Add;
         sListView1.Items[sListView1.Items.Count - 1].Caption := Lists[j][i];
         sListView1.Items[sListView1.Items.Count - 1].SubItems.Add(acThirdCaptions[j]);
@@ -477,7 +477,7 @@ begin
   UpdateNames;
   Populate;
 {$IFDEF DELPHI6UP}
-  if LastIndex > sListView1.Items.Count - 1 then
+  if LastIndex >= sListView1.Items.Count then
     sListView1.ItemIndex := sListView1.Items.Count - 1
   else
     sListView1.ItemIndex := LastIndex;
@@ -545,12 +545,12 @@ procedure TForm3rdPartyEditor.sListBox1Click(Sender: TObject);
     i, j{$IFDEF ALITE}, d, c{$ENDIF}: integer;
     s1, s2: string;
   begin
-    sListBox2.Sorted := False;
     sListBox2.SkinData.BeginUpdate;
     sListBox2.Items.BeginUpdate;
     sListBox2.Items.Clear;
     sl := TStringList.Create;
     sl.Text := acCtrlsArray[sListBox1.ItemIndex];
+    sl.Sorted := True;
     for i := 0 to sl.Count - 1 do begin
       s1 := acntUtils.ExtractWord(1, sl[i], ['=']); // Name of type
       s2 := acntUtils.ExtractWord(2, sl[i], ['=']); // Rule of skinning
@@ -559,7 +559,7 @@ procedure TForm3rdPartyEditor.sListBox1Click(Sender: TObject);
         if acThirdCaptions[j] = s2 then begin
 {$IFDEF ALITE}
           d := 1;
-          for c := 0 to Length(acLiteCtrls) - 1 do 
+          for c := 0 to Length(acLiteCtrls) - 1 do
             if s1 = acLiteCtrls[c] then
               // Type was found
               d := 0;
@@ -571,9 +571,7 @@ procedure TForm3rdPartyEditor.sListBox1Click(Sender: TObject);
           Break;
         end;
     end;
-    sListBox2.Items.EndUpdate;
-    sListBox2.Items.BeginUpdate;
-    sListBox2.Sorted := True;
+
     for i := 0 to sListBox2.Items.Count - 1 do
 {$IFDEF ALITE}
       if (sListBox1.ItemIndex <> 0) or (TAccessListbox(sListBox2).GetItemData(i) = 1) then
@@ -584,12 +582,13 @@ procedure TForm3rdPartyEditor.sListBox1Click(Sender: TObject);
 
     sl.Free;
     sListBox2.Items.EndUpdate;
-    sListBox2.SkinData.EndUpdate;
+    sListBox2.SkinData.EndUpdate(True);
   end;
 
 begin
   ShowSupportedControls;
   sSpeedButton2.Enabled := {$IFNDEF ALITE}sListBox1.ItemIndex >= 0{$ELSE}sListBox1.ItemIndex = 0{$ENDIF};
+  sCheckBox1.Enabled := sSpeedButton2.Enabled;
   SelectCtrls(sListBox1.ItemIndex);
 end;
 
@@ -610,7 +609,7 @@ begin
       if acThirdCaptions[j] = s2 then begin
         l := sListBox2.Items.IndexOf(s1);
         // If found and checked
-        if (l > -1) and (sListBox2.Checked[l]) then
+        if (l >= 0) and (sListBox2.Checked[l]) then
           if Lists[j].Text = s_Space + s_0D0A then
             Lists[j].Text := s1
           else
@@ -684,7 +683,7 @@ begin
     iFile := TMeminiFile.Create(SaveDialog1.FileName);
     for j := 0 to Length(Lists) - 1 do
       for i := 0 to Lists[j].Count - 1 do
-        if (Lists[j][i] <> s_Space) then begin
+        if Lists[j][i] <> s_Space then begin
           s1 := Lists[j][i];
           s2 := acThirdCaptions[j];
           WriteIniStr(s_ThirdParty, s1, s2, iFile);

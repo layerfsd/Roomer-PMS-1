@@ -1,12 +1,19 @@
 object FormNewThirdClass: TFormNewThirdClass
   Left = 405
   Top = 430
+  AutoScroll = False
   BorderStyle = bsDialog
   Caption = 'New third-party control'
   ClientHeight = 141
   ClientWidth = 334
   Color = clBtnFace
   OldCreateOrder = False
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  ParentFont = False
   Position = poScreenCenter
   Scaled = False
   OnCreate = FormCreate

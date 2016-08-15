@@ -1,7 +1,7 @@
 unit sGroupBox;
 {$I sDefs.inc}
 //{$DEFINE LOGGED}
-
+//+
 interface
 
 uses
@@ -103,8 +103,10 @@ type
     property Touch;
 {$ENDIF}
     property CheckBoxVisible: boolean read FCheckBoxVisible write SetCheckBoxVisible default False;
-    property Checked: boolean read FChecked write SetChecked;
+    property Checked: boolean read FChecked write SetChecked default False;
     property OnCheckBoxChanged: TNotifyEvent read FOnCheckBoxChanged write FOnCheckBoxChanged;
+    property OnKeyDown;
+    property OnKeyPress;
   end;
 
 
@@ -215,7 +217,7 @@ begin
       Bmp.Free;
 
       with sd.AnimTimer do
-        if (sd.AnimTimer.Iteration >= sd.AnimTimer.Iterations) then begin
+        if sd.AnimTimer.Iteration >= sd.AnimTimer.Iterations then begin
           if (State = 0) and (Alpha > 0) then begin
             Iteration := Iteration - 1;
             UpdateCheckBox_CB(Data, iIteration);
@@ -329,7 +331,7 @@ begin
   if SkinData.Skinned then begin
     GlyphNdx := CheckBoxIndex;
     if SkinData.SkinManager.IsValidImgIndex(GlyphNdx) then
-      Result := HeightOfImage(FCommonData.SkinManager.ma[GlyphNdx])
+      Result := FCommonData.SkinManager.ma[GlyphNdx].Height
     else
       Result := 0;
   end
@@ -380,7 +382,7 @@ begin
   if SkinData.Skinned then begin
     GlyphNdx := CheckBoxIndex;
     if SkinData.SkinManager.IsValidImgIndex(GlyphNdx) then
-      Result := WidthOfImage(FCommonData.SkinManager.ma[GlyphNdx])
+      Result := FCommonData.SkinManager.ma[GlyphNdx].Width
     else
       Result := 0;
   end
@@ -396,15 +398,15 @@ end;
 
 constructor TsGroupBox.Create(AOwner: TComponent);
 begin
-  inherited Create(AOwner);
-//  ControlStyle := ControlStyle - [csOpaque];
   FCommonData := TsCommonData.Create(Self, True);
   FCommonData.COC := COC_TsGroupBox;
+  inherited Create(AOwner);
   FCaptionLayout := clTopLeft;
   FCaptionYOffset := 0;
   FCaptionMargin := TsMargin.Create(Self);
   FCaptionWidth := 0;
   FCheckBoxVisible := False;
+  FChecked := False;
   CheckPressed := False;
   CheckHot := False;
 end;
@@ -412,9 +414,7 @@ end;
 
 destructor TsGroupBox.Destroy;
 begin
-  if Assigned(FCommonData) then
-    FreeAndNil(FCommonData);
-
+  FreeAndNil(FCommonData);
   FCaptionMargin.Free;
   inherited Destroy;
 end;
@@ -556,7 +556,7 @@ var
 
 begin
   if FCommonData.Skinned(True) then begin
-    if not (csDestroying in ComponentState) and (Visible or (csDesigning in componentState)) then
+    if not (csDestroying in ComponentState) and (Visible or (csDesigning in ComponentState)) then
       if not InAnimationProcess or (DC = SkinData.PrintDC) then
         if not InUpdating(FCommonData) then begin
           // If transparent and form resizing processed
@@ -602,28 +602,29 @@ begin
   if BG.BgType = btNotReady then begin
     Result := False;
     SkinData.FUpdating := True;
-    Exit;
+  end
+  else begin
+    CI := BGInfoToCI(@BG);
+    aRect := MkRect(Width, Height);
+    cRect := CaptionRect;
+    // Caption BG painting
+    if CI.Ready then
+      BitBlt(FCommonData.FCacheBmp.Canvas.Handle, aRect.Left, aRect.Top, Width, HeightOf(cRect), CI.Bmp.Canvas.Handle, Left + CI.X, Top + CI.Y, SRCCOPY)
+    else
+      if Parent <> nil then
+        FillDC(FCommonData.FCacheBmp.Canvas.Handle, MkRect(Width, cRect.Bottom), CI.FillColor);
+
+    if FCaptionYOffset < 0 then
+      aRect.Top := 0
+    else
+      aRect.Top := HeightOf(cRect) div 2;
+
+    PaintItem(FCommonData, CI, False, 0, Rect(0, aRect.Top, Width, Height), Point(Left, Top + aRect.Top), FCommonData.FCacheBMP, True);
+    PaintCaptionArea(cRect, CI, 0);
+    SkinData.PaintOuterEffects(Self, MkPoint);
+    FCommonData.BGChanged := False;
+    Result := True;
   end;
-  CI := BGInfoToCI(@BG);
-  aRect := MkRect(Width, Height);
-  cRect := CaptionRect;
-  // Caption BG painting
-  if CI.Ready then
-    BitBlt(FCommonData.FCacheBmp.Canvas.Handle, aRect.Left, aRect.Top, Width, HeightOf(cRect), CI.Bmp.Canvas.Handle, Left + CI.X, Top + CI.Y, SRCCOPY)
-  else
-    if Parent <> nil then
-      FillDC(FCommonData.FCacheBmp.Canvas.Handle, MkRect(Width, cRect.Bottom), CI.FillColor);
-
-  if FCaptionYOffset < 0 then
-    aRect.Top := 0
-  else
-    aRect.Top := HeightOf(cRect) div 2;
-
-  PaintItem(FCommonData, CI, False, 0, Rect(0, aRect.Top, Width, Height), Point(Left, Top + aRect.Top), FCommonData.FCacheBMP, True);
-  PaintCaptionArea(cRect, CI, 0);
-  SkinData.PaintOuterEffects(Self, MkPoint);
-  FCommonData.BGChanged := False;
-  Result := True;
 end;
 
 
@@ -636,7 +637,7 @@ begin
   if SkinData.Skinned then
     if DoAnimation and SkinData.SkinManager.Effects.AllowAnimation and (State <> 2) then begin
       i := GetNewTimer(SkinData.AnimTimer, SkinData.FOwnerControl, State);
-      if (SkinData.AnimTimer.State <> -1) and (State = SkinData.AnimTimer.State) then // Started already
+      if (SkinData.AnimTimer.State >= 0) and (State = SkinData.AnimTimer.State) then // Started already
         Exit;
 
       cRect := SumRects(CaptionRect, CheckBoxRect);
@@ -721,11 +722,13 @@ procedure TsGroupBox.SetChecked(const Value: boolean);
 begin
   if FChecked <> Value then begin
     FChecked := Value;
-    if not CheckPressed then
-      FCommonData.Invalidate;
+    if not (csLoading in ComponentState) then begin
+      if not CheckPressed then
+        FCommonData.Invalidate;
 
-    if not (csLoading in ComponentState) and Assigned(OnCheckBoxChanged) then
-      OnCheckBoxChanged(Self);
+      if Assigned(OnCheckBoxChanged) then
+        OnCheckBoxChanged(Self);
+    end;
   end;
 end;
 
@@ -760,21 +763,29 @@ begin
           Exit
         end;
 
+        AC_SETSCALE:
+          if SkinData.SkinManager <> nil then begin
+            CaptionWidth := MulDiv(CaptionWidth, Message.LParam, SkinData.ScalePercent);
+            CommonMessage(Message, SkinData);
+            Exit;
+          end;
+
         AC_SETNEWSKIN: begin
           AlphaBroadCast(Self, Message);
-          if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then
+          if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then
             CommonWndProc(Message, FCommonData);
 
           Exit;
         end;
 
         AC_GETBG:
-          if CaptionSkin <> '' then begin // If BG of groupbox used
-            PacBGInfo(Message.LParam)^.Bmp := SkinData.FCacheBmp;
-            PacBGInfo(Message.LParam)^.Offset := MkPoint;
-            PacBGInfo(Message.LParam)^.BgType := btCache;
-            Exit;
-          end;
+          if CaptionSkin <> '' then
+            with PacBGInfo(Message.LParam)^ do begin // If BG of groupbox used
+              Bmp := SkinData.FCacheBmp;
+              Offset := MkPoint;
+              BgType := btCache;
+              Exit;
+            end;
 
         AC_PREPARECACHE: begin
           if SkinData.Skinned and not InUpdating(SkinData) and not PrepareCache then
@@ -802,7 +813,7 @@ begin
             end;
 
         AC_REFRESH, AC_REMOVESKIN: begin
-          if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
+          if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then begin
             CommonWndProc(Message, FCommonData);
             AlphaBroadCast(Self, Message);
             Repaint;
@@ -865,20 +876,21 @@ begin
   else begin
     if Message.Msg = SM_ALPHACMD then
       case Message.WParamHi of
+{
         AC_PREPARING: begin // Remove this case in the Beta
           Message.Result := LRESULT(FCommonData.BGChanged or FCommonData.Updating);
           Exit
         end;
-
+}
         AC_ENDPARENTUPDATE: begin
           if FCommonData.FUpdating then begin
             if Showing and not InUpdating(FCommonData, True) then begin
-              RedrawWindow(Handle, nil, 0, RDW_ERASE or RDW_FRAME or RDW_INVALIDATE or RDW_UPDATENOW);// or RDW_ALLCHILDREN);
+              RedrawWindow(Handle, nil, 0, RDWA_NOCHILDRENNOW);
               SetParentUpdated(Self);
             end;
           end
           else
-            if SkinData.CtrlSkinState and ACS_FAST = ACS_FAST then
+            if SkinData.CtrlSkinState and ACS_FAST <> 0 then
               SetParentUpdated(Self);
 
           Exit;
@@ -929,11 +941,11 @@ begin
         WM_ERASEBKGND: begin
           if not (csPaintCopy in ControlState) and (Message.WParam <> WParam(Message.LParam) {PerformEraseBackground, TntSpeedButtons}) then begin
             Message.Result := 1;
-            if (csDesigning in ComponentState) then
+            if csDesigning in ComponentState then
               inherited; // Drawing in the BDS IDE
           end
           else
-            if (Message.WParam <> 0) then // From PaintTo
+            if Message.WParam <> 0 then // From PaintTo
               if not FCommonData.BGChanged then
                 if IsCached(FCommonData) then
                   BitBlt(TWMPaint(Message).DC, 0, 0, Width, Height, FCommonData.FCacheBmp.Canvas.Handle, 0, 0, SRCCOPY)
@@ -959,7 +971,7 @@ begin
       inherited;
       case Message.Msg of
         WM_SIZE:
-          if (csDesigning in ComponentState) then
+          if csDesigning in ComponentState then
             SendMessage(Handle, WM_PAINT, 0, 0);
       end
     end;
@@ -980,12 +992,15 @@ begin
 
   if FCaptionSkin = '' then begin
     CI := GetParentCache(FCommonData);
-    sIndex := SkinData.SkinManager.ConstData.Sections[ssTransparent];
-    if CheckBoxVisible then
+    if CheckBoxVisible then begin
+      sIndex := SkinData.SkinManager.ConstData.Sections[ssCheckBox];
       if BidiMode = bdLeftToRight then
         R.Left := R.Left - CheckBoxWidth - CheckIndent - 2
       else
         R.Right := R.Right + CheckBoxWidth + CheckIndent + 2;
+    end
+    else
+      sIndex := SkinData.SkinManager.ConstData.Sections[ssTransparent];
 
     if not CI.Ready then
       FillDC(FCommonData.FCacheBmp.Canvas.Handle, R, CI.FillColor)
@@ -1002,10 +1017,20 @@ begin
     inc(R.Top,     FCaptionMargin.Top);
     inc(R.Right,  -FCaptionMargin.Right);
     inc(R.Bottom, -FCaptionMargin.Bottom);
+    if {not CheckHot or }(sIndex < 0) then
+      sIndex := SkinData.SkinIndex;
+
+    if NeedParentFont(SkinData.SkinManager, sIndex, integer(CheckHot)) then begin
+      sIndex := GetFontIndex(Parent, sIndex, SkinData.SkinManager, integer(CheckHot));
+    end;
+
+    acWriteTextEx(FCommonData.FCacheBMP.Canvas, PacChar(Caption), True, R, Flags, sIndex, CheckHot, FCommonData.SkinManager);
+{
     if CheckHot and (sIndex >= 0) then
       acWriteTextEx(FCommonData.FCacheBMP.Canvas, PacChar(Caption), True, R, Flags, sIndex, CheckHot, FCommonData.SkinManager)
     else
       acWriteTextEx(FCommonData.FCacheBMP.Canvas, PacChar(Caption), True, R, Flags, SkinData, CheckHot, FCommonData.SkinManager);
+}
   end
   else begin
     CI := MakeCacheInfo(FCommonData.FCacheBmp);
@@ -1076,11 +1101,12 @@ begin
   if not FInClick and not FInModifying and not (csLoading in ComponentState) then begin
     FInClick := True;
     try
-      if ((Message.NotifyCode = BN_CLICKED) or (Message.NotifyCode = BN_DOUBLECLICKED)) and TsRadioGroup(Parent).CanModify(TsRadioGroup(Parent).FButtons.IndexOf(Self)) then begin
-        inherited;
-        if Assigned(TsRadioGroup(Parent).FOnChange) then
-          TsRadioGroup(Parent).FOnChange(Parent);
-      end;
+      with TsRadioGroup(Parent) do
+        if (Message.NotifyCode in [BN_CLICKED, BN_DOUBLECLICKED]) and CanModify(FButtons.IndexOf(Self)) then begin
+          inherited;
+          if Assigned(FOnChange) then
+            FOnChange(Parent);
+        end;
     except
       Application.HandleException(Self);
     end;
@@ -1092,9 +1118,11 @@ end;
 procedure TsGroupButton.KeyPress(var Key: Char);
 begin
   inherited KeyPress(Key);
-  TsRadioGroup(Parent).KeyPress(Key);
-  if ((Key = #8) or (Key = s_Space)) and not TsRadioGroup(Parent).CanModify(TsRadioGroup(Parent).FButtons.IndexOf(Self)) then
-    Key := #0;
+  with TsRadioGroup(Parent) do begin
+    KeyPress(Key);
+    if ((Key = #8) or (Key = s_Space)) and not CanModify(FButtons.IndexOf(Self)) then
+      Key := #0;
+  end;
 end;
 
 
@@ -1137,11 +1165,11 @@ begin
     try
       for I := 0 to FButtons.Count - 1 do
         with TsGroupButton(FButtons[I]) do begin
-          TsGroupButton(FButtons[I]).SkinData.SkinManager := Self.SkinData.SkinManager;
+          SkinData.SkinManager := Self.SkinData.SkinManager;
           BiDiMode := self.BiDiMode;
-          TsGroupButton(FButtons[I]).ShowFocus := Self.ShowFocus;
+          ShowFocus := Self.ShowFocus;
           if UseRightToLeftAlignment then
-            ALeft := (I div ButtonsPerCol) * ButtonWidth + 8 + ButtonWidth - TsGroupButton(FButtons[I]).Width
+            ALeft := (I div ButtonsPerCol) * ButtonWidth + 8 + ButtonWidth - Width
           else
             ALeft := (I div ButtonsPerCol) * ButtonWidth + 8;
             
@@ -1263,7 +1291,7 @@ procedure TsRadioGroup.Loaded;
 begin
   inherited Loaded;
   UpdateButtons;
-  if (FItemIndex >= 0) and (FItemIndex < FButtons.Count) then begin
+  if IsValidIndex(FItemIndex, FButtons.Count) then begin
     FUpdating := True;
     TsGroupButton(FButtons[FItemIndex]).Checked := True;
     FUpdating := False;
@@ -1311,9 +1339,8 @@ begin
   if FReading then
     FItemIndex := Value
   else begin
-    if Value < -1 then begin
-      Value := -1;
-    end
+    if Value < -1 then
+      Value := -1
     else
       if Value >= FButtons.Count then
         Value := FButtons.Count - 1;
@@ -1367,7 +1394,7 @@ begin
   if Message.Msg = SM_ALPHACMD then
     case Message.WParamHi of
       AC_REFRESH:
-        if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then
+        if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then
           ArrangeButtons;
     end;
 

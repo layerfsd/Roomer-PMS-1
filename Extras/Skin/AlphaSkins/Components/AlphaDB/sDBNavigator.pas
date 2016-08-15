@@ -1,7 +1,7 @@
 unit sDBNavigator;
 {$I sDefs.inc}
 {$R SDBRES.RES}
-
+//+
 interface
 
 uses
@@ -251,7 +251,7 @@ begin
   FocusedButton := TsNavButton(Sender).Index;
   if TabStop and (GetFocus <> Handle) and CanFocus then begin
     SetFocus;
-    if (GetFocus <> Handle) then
+    if GetFocus <> Handle then
       Exit;
   end
   else
@@ -284,11 +284,10 @@ end;
 
 procedure TsDBNavigator.CalcMinSize(var W, H: Integer);
 begin
-  if (csLoading in ComponentState) or (Buttons[nbFirst] = nil) then
-    Exit;
-
-  W := Max(W, ButtonsCount * MinBtnSize.X + 2 * MarginWidth);
-  H := Max(H, MinBtnSize.Y + 2 * MarginWidth);
+  if not (csLoading in ComponentState) and (Buttons[nbFirst] <> nil) then begin
+    W := Max(W, ButtonsCount * MinBtnSize.X + 2 * MarginWidth);
+    H := Max(H, MinBtnSize.Y + 2 * MarginWidth);
+  end;
 end;
 
 
@@ -414,7 +413,7 @@ end;
 
 function TsDBNavigator.GetHints: TStrings;
 begin
-  if (csDesigning in ComponentState) and not (csWriting in ComponentState) and not (csReading in ComponentState) and (FHints.Count = 0) then
+  if (csDesigning in ComponentState) and ([csWriting, csReading] * ComponentState = []) and (FHints.Count = 0) then
     Result := FDefHints
   else
     Result := FHints;
@@ -498,7 +497,7 @@ begin
         if NewFocus < High(Buttons) then
           NewFocus := Succ(NewFocus);
       until
-        (NewFocus = High(Buttons)) or (Buttons[NewFocus].Visible);
+        (NewFocus = High(Buttons)) or Buttons[NewFocus].Visible;
         
       if NewFocus <> FocusedButton then begin
         FocusedButton := NewFocus;
@@ -513,7 +512,7 @@ begin
         if NewFocus > Low(Buttons) then
           NewFocus := Pred(NewFocus);
       until
-        (NewFocus = Low(Buttons)) or (Buttons[NewFocus].Visible);
+        (NewFocus = Low(Buttons)) or Buttons[NewFocus].Visible;
 
       if NewFocus <> FocusedButton then begin
         FocusedButton := NewFocus;
@@ -550,7 +549,7 @@ end;
 procedure TsDBNavigator.Notification(AComponent: TComponent; Operation: TOperation);
 begin
   inherited Notification(AComponent, Operation);
-  if (Operation = opRemove) then
+  if Operation = opRemove then
     if (FDataLink <> nil) and (AComponent = DataSource) then
       DataSource := nil
     else
@@ -658,32 +657,31 @@ var
   I: TNavigateBtn;
   Space, Temp, Remain, X: Integer;
 begin
-  if (csLoading in ComponentState) or (Parent = nil) or (Buttons[nbFirst] = nil) then
-    Exit;
+  if not (csLoading in ComponentState) and (Parent <> nil) and (Buttons[nbFirst] <> nil) then begin
+    Temp := ButtonsCount * ButtonWidth;
+    if Align = alNone then
+      W := Temp + 2 * MarginWidth;
 
-  Temp := ButtonsCount * ButtonWidth;
-  if Align = alNone then
-    W := Temp + 2 * MarginWidth;
-
-  X := MarginWidth;
-  Remain := Width - 2 * MarginWidth - Temp;
-  Temp := ButtonsCount div 2;
-  for I := Low(Buttons) to High(Buttons) do
-    if Buttons[I] <> nil then 
-      if Buttons[I].Visible then begin
-        Space := 0;
-        if Remain <> 0 then begin
-          Dec(Temp, Remain);
-          if Temp < 0 then begin
-            Inc(Temp, ButtonsCount);
-            Space := 1;
+    X := MarginWidth;
+    Remain := Width - 2 * MarginWidth - Temp;
+    Temp := ButtonsCount div 2;
+    for I := Low(Buttons) to High(Buttons) do
+      if Buttons[I] <> nil then
+        if Buttons[I].Visible then begin
+          Space := 0;
+          if Remain <> 0 then begin
+            Dec(Temp, Remain);
+            if Temp < 0 then begin
+              Inc(Temp, ButtonsCount);
+              Space := 1;
+            end;
           end;
-        end;
-        Buttons[I].SetBounds(X, MarginWidth, ButtonWidth + Space, Height - 2 * MarginWidth - 1);
-        Inc(X, ButtonWidth + Space);
-      end
-      else
-        Buttons[I].SetBounds(Width + 1, MarginWidth, ButtonWidth, Height - 2 * MarginWidth - 1);
+          Buttons[I].SetBounds(X, MarginWidth, ButtonWidth + Space, Height - 2 * MarginWidth - 1);
+          Inc(X, ButtonWidth + Space);
+        end
+        else
+          Buttons[I].SetBounds(Width + 1, MarginWidth, ButtonWidth, Height - 2 * MarginWidth - 1);
+  end;
 end;
 
 
@@ -758,7 +756,7 @@ end;
 procedure TsDBNavigator.WMWindowPosChanging(var Message: TWMWindowPosChanging);
 begin
   inherited;
-  if (SWP_NOSIZE and Message.WindowPos.Flags) = 0 then
+  if SWP_NOSIZE and Message.WindowPos.Flags = 0 then
     CalcMinSize(Message.WindowPos.cx, Message.WindowPos.cy);
 end;
 
@@ -804,8 +802,9 @@ procedure TsNavButton.DrawGlyph;
 var
   R: TRect;
   C: TColor;
-  D0, D, S0, S: PRGBAArray;
-  i, DeltaD, DeltaS, x, y: integer;
+  S0, S: PRGBAArray_S;
+  D0, D: PRGBAArray_D;
+  w, i, DeltaD, DeltaS, x, y: integer;
 {$IFDEF DELPHI_XE3}
   LButton: TThemedDataNavButtons;
   Details: TThemedElementDetails;
@@ -863,17 +862,18 @@ begin
       R.Bottom := R.Top + Glyph.Height;
 
       Glyph.Handle; // Generate a handle
+      w := Glyph.Width - 1;
       if (R.Bottom < Height) and (R.Right < Width) then
         if InitLine(SkinData.FCacheBmp, Pointer(D0), DeltaD) and InitLine(Glyph, Pointer(S0), DeltaS) then
           for y := 0 to Glyph.Height - 1 do begin
             S := Pointer(LongInt(S0) + DeltaS * Y);
             D := Pointer(LongInt(D0) + DeltaD * (Y + R.Top));
-            for x := 0 to Glyph.Width - 1 do
-              if S[X].A = $FF then
-                D[X + R.Left].C := C;
+            for x := 0 to w do
+              if S[X].SA = MaxByte then
+                D[X + R.Left].DC := C;
           end
     end
-    else    
+    else
       inherited;
 end;
 
@@ -902,17 +902,16 @@ end;
 
 procedure TsNavButton.Paint;
 begin
-  if (csDestroying in ComponentState) or (csLoading in ComponentState) then
-    Exit;
+  if [csDestroying, csLoading] * ComponentState = [] then begin
+    if (GetFocus = Parent.Handle) and (FIndex = TsDBNavigator (Parent).FocusedButton) then
+      SkinData.FFocused := True;
 
-  if (GetFocus = Parent.Handle) and (FIndex = TsDBNavigator (Parent).FocusedButton) then
-    SkinData.FFocused := True;
+    if Glyph.Empty then
+      LoadGlyph(Self, FIndex);
 
-  if Glyph.Empty then
-    LoadGlyph(Self, FIndex);
-
-  inherited Paint;
-  SkinData.FFocused := False;
+    inherited Paint;
+    SkinData.FFocused := False;
+  end;
 end;
 
 

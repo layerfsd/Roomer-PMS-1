@@ -2,6 +2,7 @@ object acMagnForm: TacMagnForm
   Tag = -98
   Left = 340
   Top = 229
+  AutoScroll = False
   BorderStyle = bsNone
   Caption = 'Mgn'
   ClientHeight = 250
@@ -13,6 +14,7 @@ object acMagnForm: TacMagnForm
   Font.Name = 'Tahoma'
   Font.Style = []
   FormStyle = fsStayOnTop
+  ParentFont = False
   KeyPreview = True
   OldCreateOrder = True
   PopupMenu = PopupMenu1

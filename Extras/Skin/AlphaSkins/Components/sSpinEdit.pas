@@ -1,7 +1,7 @@
 unit sSpinEdit;
 {$I sDefs.inc}
 //{$DEFINE LOGGED}
-
+//+
 interface
 
 uses
@@ -69,6 +69,7 @@ type
     property UpGlyph: TBitmap read GetUpGlyph write SetUpGlyph;
     property Visible;
     property OnDownClick: TNotifyEvent read FOnDownClick write FOnDownClick;
+{
     property OnDragDrop;
     property OnDragOver;
     property OnEndDock;
@@ -77,6 +78,7 @@ type
     property OnExit;
     property OnStartDock;
     property OnStartDrag;
+}
     property OnUpClick: TNotifyEvent read FOnUpClick write FOnUpClick;
   end;
 {$ENDIF} // NOTFORHELP
@@ -105,10 +107,10 @@ type
     procedure WMGetDlgCode(var Message: TWMGetDlgCode); message WM_GETDLGCODE;
     procedure SetAlignment      (const Value: TAlignment);
     procedure SetFlatSpinButtons(const Value: Boolean);
-    procedure SetShowSpinButtons(const Value: Boolean);
+    procedure SetShowSpinButtons(const Value: Boolean); virtual;
   protected
     procedure ExcludeChildControls(DC: hdc); override;
-    procedure SetEditRect;
+    procedure SetEditRect; virtual;
     procedure UpClick  (Sender: TObject); virtual; abstract;
     procedure DownClick(Sender: TObject); virtual; abstract;
     procedure KeyDown   (var Key: Word; Shift: TShiftState); override;
@@ -199,7 +201,6 @@ type
     procedure SetDecimalPlaces(New: Integer);
   public
     constructor Create(AOwner: TComponent); override;
-    procedure CreateWnd; override;
   published
 {$ENDIF} // NOTFORHELP
     property HideExcessZeros: boolean read FHideExcessZeros write SetHideExcessZeros default False;
@@ -237,9 +238,24 @@ type
   end;
 
 
+  TacTimePanel = class(TWinControl)
+  private
+    FOwner: TsSpinEdit;
+    function ActualWidth: integer;
+  protected
+    procedure Loaded; override;
+    procedure WndProc(var Message: TMessage); override;
+  public
+    PM: boolean;
+    procedure SetMode(aPM: boolean);
+    procedure UpdatePosition;
+    procedure PaintWindow(aDC: HDC); override;
+    constructor Create(AOwner: TComponent); override;
+  end;
+
   TacTimePortion = (tvHours, tvMinutes, tvSeconds);
 
-  
+
 {$IFDEF DELPHI_XE3}[ComponentPlatformsAttribute(pidWin32 or pidWin64)]{$ENDIF}
   TsTimePicker = class(TsBaseSpinEdit)
   private
@@ -249,18 +265,27 @@ type
 
     FDoBeep,
     FUse12Hour,
+    TextChanging,
+    ValueChanging,
     FShowSeconds: boolean;
     function GetValue: TDateTime;
     procedure SetValue (NewValue: TDateTime);
     function CheckValue(NewValue: TDateTime): TDateTime;
     procedure SetShowSeconds(const Value: boolean);
     procedure SetUse12Hour  (const Value: boolean);
+    procedure CMChanged   (var Message: TMessage);      message CM_CHANGED;
     procedure CMExit      (var Message: TCMExit);       message CM_EXIT;
     procedure CMMouseWheel(var Message: TCMMouseWheel); message CM_MOUSEWHEEL;
+    procedure SetShowSpinButtons(const Value: Boolean); override;
   protected
     FPos: integer;
+    TimePanel: TacTimePanel;
+    procedure UpdateTimePanel;
+    procedure SetEditRect; override;
     function IsValidChar(var Key: Char): Boolean; override;
+    function ActualHour: integer;
     procedure ClickUpDown(Up: boolean);
+    procedure ChangeScale(M, D: Integer); override;
     procedure UpClick  (Sender: TObject); override;
     procedure DownClick(Sender: TObject); override;
     procedure MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
@@ -275,13 +300,11 @@ type
     procedure KeyDown (var Key: Word; Shift: TShiftState); override;
     procedure KeyPress(var Key: Char); override;
     procedure HighlightPos(APos: integer);
-    function EmptyText: acString;
-    function TextLength: integer;
     function Sec: word;
   public
-    MaxHour: integer;
     constructor Create(AOwner: TComponent); override;
     procedure Loaded; override;
+    procedure WndProc(var Message: TMessage); override;
   published
     property Date:  TDateTime read GetValue write SetValue;
     property Value: TDateTime read GetValue write SetValue;
@@ -298,13 +321,20 @@ implementation
 uses
   Math, Menus,
   {$IFDEF LOGGED}sDebugMsgs, {$ENDIF}
-  sSkinProps, sMessages, sCommonData, sSkinManager, sVCLUtils, sAlphaGraph, sStyleSimply;
+  sSkinProps, sDefaults, sMessages, sCommonData, sSkinManager, sVCLUtils, sAlphaGraph, sStyleSimply;
 
 
 {$IFNDEF NOTFORHELP}
 const
   InitRepeatPause = 400;  { pause before repeat timer (ms) }
   RepeatPause     = 100;  { pause before hint window displays (ms)}
+  iMaxHour        = 24;
+  iMaxMin         = 60;
+  aIncrement:  array [boolean] of integer = (-1, 1);
+  aTextLength: array [boolean] of integer = (5,  8);
+  aTimeText:   array [boolean] of string = ('AM',          'PM');
+  aEmptyText:  array [boolean] of string = ('00:00',       '00:00:00');
+  aFormat:     array [boolean] of string = ('%0.2d:%0.2d', '%0.2d:%0.2d:%0.2d');
 {$ENDIF} // NOTFORHELP
 
 
@@ -350,9 +380,7 @@ end;
 procedure TsSpinButton.AdjustSize(var W, H: Integer);
 begin
   if (FUpButton <> nil) and not (csLoading in ComponentState) and (H <> 0) then begin
-    if W < 15 then
-      W := 15;
-
+    W := max(15, W);
     FUpButton.SetBounds(0, 0, W, H div 2);
     FDownButton.SetBounds(0, FUpButton.Height, W, H - FUpButton.Height);
   end;
@@ -447,10 +475,10 @@ end;
 
 procedure TsSpinButton.SetFocusBtn(Btn: TsTimerSpeedButton);
 begin
-  if TabStop and CanFocus and  (Btn <> FFocusedButton) then begin
+  if TabStop and CanFocus and (Btn <> FFocusedButton) then begin
     FFocusedButton.TimeBtnState := FFocusedButton.TimeBtnState - [tbFocusRect];
     FFocusedButton := Btn;
-    if (GetFocus = Handle) then begin
+    if GetFocus = Handle then begin
       FFocusedButton.TimeBtnState := FFocusedButton.TimeBtnState + [tbFocusRect];
       Invalidate;
     end;
@@ -528,7 +556,7 @@ begin
             SendAMessage(FOwner.Handle, AC_PREPARECACHE);
 
           PacBGInfo(Message.LParam).BgType := btCache;
-          PacBGInfo(Message.LParam).Color  := SendMessage(FOwner.Handle, SM_ALPHACMD, MakeWParam(0, AC_GETCONTROLCOLOR), 0);
+          PacBGInfo(Message.LParam).Color  := TrySendMessage(FOwner.Handle, SM_ALPHACMD, AC_GETCONTROLCOLOR_HI, 0);
           PacBGInfo(Message.LParam).Bmp    := FOwner.SkinData.FCacheBmp;
           PacBGInfo(Message.LParam).Offset := Point(Left + BordWidth, Top + BordWidth);
           FOwner.SkinData.CtrlSkinState := FOwner.SkinData.CtrlSkinState and not ACS_BGRECEIVING;
@@ -537,6 +565,11 @@ begin
 
         AC_PREPARING: begin
           Message.Result := LRESULT(FOwner.SkinData.FUpdating);
+          Exit;
+        end;
+
+        AC_CTRLHANDLED: begin
+          Message.Result := 1;
           Exit;
         end;
 
@@ -616,6 +649,7 @@ var
   myForm: TCustomForm;
   CtlDir: integer;
   M: tagMsg;
+  C: Char;
 begin
   inherited KeyDown(Key, Shift);
   case Key of
@@ -648,7 +682,12 @@ begin
           SendMessage(myForm.Handle, WM_NEXTDLGCTL, CtlDir, 0);
 
         Exit;
-      end;
+      end
+      else
+        if Assigned(OnKeyPress) then begin
+          C := #13;
+          OnKeyPress(Self, C);
+        end;
     end;
 
     ord('A'):
@@ -671,7 +710,7 @@ begin
   C := Key;
   err := not IsValidChar(C);
   if err or (C = #0) then begin
-    if (C = #0) then
+    if C = #0 then
       Key := #0;
 
     if err then
@@ -685,9 +724,10 @@ end;
 function TsBaseSpinEdit.IsValidChar(var Key: Char): Boolean;
 begin
   Result := CharInSet(Key, [{$IFDEF DELPHI_XE}FormatSettings.{$ENDIF}DecimalSeparator, CharPlus, CharMinus, ZeroChar..'9']) or
-            ((Key < #32) and (Key <> Chr(VK_RETURN)));
+            (Key < #32) and (Key <> Chr(VK_RETURN));
+
   if Result then
-    Result := (FAllowNegative or (Key <> CharMinus));
+    Result := FAllowNegative or (Key <> CharMinus);
 
   if not FEditorEnabled and Result and ((Key >= #32) or CharInSet(Key, [Char(VK_BACK), Char(VK_DELETE)])) then
     Result := False;
@@ -707,7 +747,7 @@ begin
         if not fAllowNegative then
           Result := False
         else begin
-          if (Length(Text) > 0) then begin
+          if Length(Text) > 0 then begin
             if SelLength = 0 then
               if Text[1] = CharMinus then
                 Result := False
@@ -719,7 +759,7 @@ begin
                 Result := True;
               end
             else
-              if (DWord(SendMessage(Handle, EM_GETSEL, 0, 0)) mod $10000 = 0) then
+              if DWord(SendMessage(Handle, EM_GETSEL, 0, 0)) mod $10000 = 0 then
                 Result := True;
           end
           else
@@ -727,7 +767,7 @@ begin
         end;
 
       CharPlus:
-        if (Length(Text) > 0) then begin
+        if Length(Text) > 0 then begin
           if SelLength = 0 then
             if Text[1] = CharPlus then
               Result := False
@@ -739,14 +779,14 @@ begin
               Result := True;
             end
           else
-            if (DWord(SendMessage(Handle, EM_GETSEL, 0, 0)) mod $10000 = 0) then
+            if DWord(SendMessage(Handle, EM_GETSEL, 0, 0)) mod $10000 = 0 then
               Result := True;
         end
         else
           Result := True;
 
-    else
-      Result := True;
+      else
+        Result := True;
     end;
   end;
 end;
@@ -775,9 +815,9 @@ begin
   SendMessage(Handle, EM_GETRECT, 0, LPARAM(@Loc));
   Loc.TopLeft := MkPoint;
   Loc.Bottom := ClientHeight + 1;  {+1 is workaround for windows paint bug}
-  Loc.Right := Width - FButton.Width * Ord(FButton.Visible and ShowSpinButtons) - 3;
+  Loc.Right := ClientWidth - FButton.Width * Ord(FButton.Visible and ShowSpinButtons) + 1;
   SendMessage(Handle, EM_SETRECTNP, 0, LPARAM(@Loc));
-  SendMessage(Handle, EM_GETRECT,   0, LPARAM(@Loc));  {debug}
+//  SendMessage(Handle, EM_GETRECT,   0, LPARAM(@Loc));  {debug}
 end;
 
 
@@ -870,7 +910,7 @@ begin
 end;
 
 
-procedure TsSpinEdit.DownClick (Sender: TObject);
+procedure TsSpinEdit.DownClick(Sender: TObject);
 begin
   if ReadOnly then
     MessageBeep(0)
@@ -984,13 +1024,13 @@ end;
 
 constructor TsDecimalSpinEdit.Create(AOwner:TComponent);
 begin
-   inherited create(AOwner);
-   ValueChanging := False;
-   TextChanging := False;
-   FUseSystemDecSeparator := True;
-   FHideExcessZeros := False;
-   FIncrement := 1.0;
-   FDecimalPlaces := 2;
+  inherited create(AOwner);
+  ValueChanging := False;
+  TextChanging := False;
+  FUseSystemDecSeparator := True;
+  FHideExcessZeros := False;
+  FIncrement := 1;
+  FDecimalPlaces := 2;
 end;
 
 
@@ -1008,7 +1048,9 @@ procedure TsDecimalSpinEdit.UpClick(Sender: TObject);
 var
   CurValue: real;
 begin
-  if ReadOnly then MessageBeep(0) else begin
+  if ReadOnly then
+    MessageBeep(0)
+  else begin
     CurValue := Value;
     if Assigned(FOnUpClick) then
       FOnUpClick(Self)
@@ -1055,21 +1097,23 @@ end;
 
 procedure TsDecimalSpinEdit.SetValue(NewValue: Extended);
 begin
-  if (NewValue < 0) and not FAllowNegative then
-    NewValue := max(0, FMinValue);
+  if FValue <> NewValue then begin
+    if (NewValue < 0) and not FAllowNegative then
+      NewValue := max(0, FMinValue);
 
-  if MaxValue > MinValue then
-    FValue := max(min(NewValue, MaxValue), MinValue)
-  else
-    FValue := NewValue;
+    if MaxValue > MinValue then
+      FValue := max(min(NewValue, MaxValue), MinValue)
+    else
+      FValue := NewValue;
 
-  ValueChanging := True;
-  if not TextChanging then begin
-    SendMessage(Handle, WM_SETTEXT, 0, LPARAM(PChar(GetFormattedText)));
-    if not (csLoading in ComponentState) and Assigned(OnChange) then
-      OnChange(Self);
+    ValueChanging := True;
+    if not TextChanging then begin
+      SendMessage(Handle, WM_SETTEXT, 0, LPARAM(PChar(GetFormattedText)));
+      if not (csLoading in ComponentState) and Assigned(OnChange) then
+        OnChange(Self);
+    end;
+    ValueChanging := False;
   end;
-  ValueChanging := False;
 end;
 
 
@@ -1166,12 +1210,6 @@ begin
     Result := 0;
   end;
 {$ENDIF}
-end;
-
-
-procedure TsDecimalSpinEdit.CreateWnd;
-begin
-  inherited;
 end;
 
 
@@ -1286,7 +1324,7 @@ procedure TsTimerSpeedButton.Paint;
 var
   R: TRect;
 begin
-  if not (csDestroying in ComponentState) and not (csLoading in ComponentState) {and not InAnimationProcess }then begin
+  if [csDestroying, csLoading] * ComponentState = [] {and not InAnimationProcess }then begin
     inherited Paint;
     if (tbFocusRect in FTimeBtnState) and SkinData.SkinManager.ButtonsOptions.ShowFocusRect then begin
       R := Bounds(0, 0, Width, Height);
@@ -1318,36 +1356,36 @@ begin
       StopTimer(FButton.FUpButton.SkinData);
       StopTimer(FButton.FDownButton.SkinData);
     end;
-  end;
+    end;
   inherited;
   case Message.Msg of
     SM_ALPHACMD:
       case Message.WParamHi of
         AC_REMOVESKIN, AC_SETNEWSKIN, AC_REFRESH:
-          if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
-            FButton.FUpButton.Perform  (Message.Msg, Message.WParam, Message.LParam);
-            FButton.FdownButton.Perform(Message.Msg, Message.WParam, Message.LParam);
-            if Message.WParamHi in [AC_REFRESH, AC_REMOVESKIN] then begin
-              FButton.FUpButton.Invalidate;
-              FButton.FDownButton.Invalidate;
-              if Message.WParamHi = AC_REMOVESKIN then
-                FButton.RecreateWnd;
-            end
-            else begin
-              FButton.FUpButton.Enabled := True;
-              FButton.FDownButton.Enabled := True;
+          with Message do
+            if (ACUInt(LParam) = ACUInt(SkinData.SkinManager)) then begin
+              FButton.FUpButton.Perform  (Msg, WParam, LParam);
+              FButton.FdownButton.Perform(Msg, WParam, LParam);
+              if WParamHi in [AC_REFRESH, AC_REMOVESKIN] then begin
+                FButton.FUpButton.Invalidate;
+                FButton.FDownButton.Invalidate;
+                if WParamHi = AC_REMOVESKIN then
+                  FButton.RecreateWnd;
+              end
+              else begin
+                FButton.FUpButton.Enabled := True;
+                FButton.FDownButton.Enabled := True;
+              end;
+              if (AC_SETNEWSKIN <> WParamHi) and not SkinData.BGChanged then begin
+                FButton.SetUpGlyph(nil);
+                FButton.SetDownGlyph(nil);
+              end;
+              SetEditRect;
             end;
-            if (AC_SETNEWSKIN <> Message.WParamHi) and not SkinData.BGChanged then begin
-              FButton.SetUpGlyph(nil);
-              FButton.SetDownGlyph(nil);
-            end;
-            SetEditRect;
-          end;
 
         AC_ENDPARENTUPDATE:
           if not InUpdating(SkinData) and FButton.HandleAllocated then
-            RedrawWindow(FButton.Handle, nil, 0, RDW_INVALIDATE or RDW_UPDATENOW or RDW_ALLCHILDREN);
-//            FButton.Repaint;
+            RedrawWindow(FButton.Handle, nil, 0, RDWA_ALLNOW);
 
         AC_GETBG:
           InitBGInfo(SkinData, PacBGInfo(Message.LParam), 0);
@@ -1377,8 +1415,8 @@ begin
     WM_PAINT:
       if SkinData.Skinned then
         if not InUpdating(SkinData) and Enabled then begin
-          Button.FUpButton.Perform  (SM_ALPHACMD, MakeWParam(0, AC_STOPFADING), 0);
-          Button.FDownButton.Perform(SM_ALPHACMD, MakeWParam(0, AC_STOPFADING), 0);
+          Button.FUpButton.Perform  (SM_ALPHACMD, AC_STOPFADING_HI, 0);
+          Button.FDownButton.Perform(SM_ALPHACMD, AC_STOPFADING_HI, 0);
           if not TabStop and ShowSpinButtons and not Focused then // Repaint of hidden buttons
             FButton.Repaint;
         end;
@@ -1395,17 +1433,14 @@ begin
       if AutoSelect then
         Self.SelectAll;
 
-    CM_MOUSELEAVE: begin
+    CM_MOUSELEAVE:
       SkinData.BGChanged := True; // Update cache will be required (repaint buttons there)
-//      PrepareCache;
-    end;
 
-    CM_COLORCHANGED: begin
-      if SkinData.CustomColor then
+    CM_COLORCHANGED:
+      if SkinData.CustomColor then begin
         PrepareCache;
-
-      RedrawWindow(Handle, nil, 0, RDW_FRAME or RDW_INVALIDATE);
-    end;
+        RedrawWindow(Handle, nil, 0, RDW_FRAME or RDW_INVALIDATE);
+      end;
   end;
 end;
 
@@ -1425,19 +1460,20 @@ var
 begin
   if (Glyph = nil) or Glyph.Empty then begin
     if SkinData.SkinIndex >= 0 then
-      if (CurrentState = 0) and (FOwner.FOwner <> nil) then
-        if FOwner.FOwner.FlatSpinButtons or (SkinData.SkinManager.gd[SkinData.SkinIndex].Props[0].Transparency = 100) then
-          C := ColorToRGB(SkinData.SkinManager.gd[FOwner.FOwner.SkinData.SkinIndex].Props[0].FontColor.Color)//FOwner.FOwner.Font.Color
-        else
-          C := ColorToRGB(SkinData.SkinManager.gd[SkinData.SkinIndex].Props[0].FontColor.Color)
-      else
-        if not FOwner.FOwner.SkinData.CustomFont then
-          if FOwner.FOwner.FlatSpinButtons or (SkinData.SkinManager.gd[SkinData.SkinIndex].Props[1].Transparency = 100) then
-            C := ColorToRGB(SkinData.SkinManager.gd[SkinData.SkinIndex].Props[1].FontColor.Color)
+      with SkinData, SkinManager.gd[SkinIndex] do
+        if (CurrentState = 0) and (FOwner.FOwner <> nil) then
+          if FOwner.FOwner.FlatSpinButtons or (Props[0].Transparency = 100) then
+            C := ColorToRGB(Props[0].FontColor.Color)//FOwner.FOwner.Font.Color
           else
-            C := ColorToRGB(SkinData.SkinManager.gd[FOwner.FOwner.SkinData.SkinIndex].Props[0].FontColor.Color)//FOwner.FOwner.Font.Color
+            C := ColorToRGB(Props[0].FontColor.Color)
         else
-          C := ColorToRGB(iff(Enabled, ColorToRGB(SkinData.SkinManager.gd[FOwner.FOwner.SkinData.SkinIndex].Props[0].FontColor.Color), clGrayText))
+          if not FOwner.FOwner.SkinData.CustomFont then
+            if FOwner.FOwner.FlatSpinButtons or (Props[1].Transparency = 100) then
+              C := ColorToRGB(Props[1].FontColor.Color)
+            else
+              C := ColorToRGB(Props[0].FontColor.Color)//FOwner.FOwner.Font.Color
+          else
+            C := ColorToRGB(iff(Enabled, ColorToRGB(SkinManager.gd[FOwner.FOwner.SkinData.SkinIndex].Props[0].FontColor.Color), clGrayText))
     else
       C := FOwner.FOwner.Font.Color;
 
@@ -1457,10 +1493,11 @@ begin
     P.X := (Width  - 9) div 2;
     P.Y := (Height - 5) div 2;
 
-    if Up then
-      aCanvas.Polygon([Point(P.X + 1, P.Y + 4), Point(P.X + 7, P.Y + 4), Point(P.X + 4, P.Y + 1)])
-    else
-      aCanvas.Polygon([Point(P.X + 1, P.Y + 1), Point(P.X + 7, P.Y + 1), Point(P.X + 4, P.Y + 4)]);
+    with P do
+      if Up then
+        aCanvas.Polygon([Point(X + 1, Y + 4), Point(X + 7, Y + 4), Point(X + 4, Y + 1)])
+      else
+        aCanvas.Polygon([Point(X + 1, Y + 1), Point(X + 7, Y + 1), Point(X + 4, Y + 4)]);
   end
   else
     inherited;
@@ -1470,7 +1507,8 @@ end;
 constructor TsTimePicker.Create(AOwner:TComponent);
 begin
   inherited create(AOwner);
-  MaxHour := 24;
+  ValueChanging := False;
+  TextChanging := False;
   FShowSeconds := True;
   FDoBeep := False;
   fHour := 0;
@@ -1498,18 +1536,17 @@ begin
       MessageBeep(0);
   end
   else
-    if length(Text) = TextLength then begin
-      Increment := iff(Up, 1, -1);
-      DecodeValue;
+    if length(Text) = aTextLength[ShowSeconds] then begin
+      Increment := aIncrement[Up];
       case Portion of
         tvHours:   SetHour(FHour + Increment);
         tvMinutes: SetMin (FMin  + Increment);
         tvSeconds: SetSec (FSec  + Increment);
       end;
       if ShowSeconds then
-        Text := Format('%0.2d:%0.2d:%0.2d', [fHour, fMin, fSec])
+        Text := Format(aFormat[True], [ActualHour, fMin, fSec])
       else
-        Text := Format('%0.2d:%0.2d', [fHour, fMin]);
+        Text := Format(aFormat[False], [ActualHour, fMin]);
 
       if (not (csLoading in ComponentState)) then begin
         case cPortion of
@@ -1530,6 +1567,59 @@ begin
 end;
 
 
+procedure TsTimePicker.UpdateTimePanel;
+begin
+  if FUse12Hour then begin
+    ControlStyle := ControlStyle - [csSetCaption] + [csAcceptsControls];
+    if TimePanel = nil then
+      TimePanel := TacTimePanel.Create(Self);
+
+    TimePanel.UpdatePosition;
+    TimePanel.Parent := Self;
+    TimePanel.Visible := True;
+    TimePanel.Color := clRed;
+    InvalidateRect(TimePanel.Handle, nil, True);
+    ControlStyle := ControlStyle - [csAcceptsControls];
+  end
+  else
+    FreeAndNil(TimePanel);
+end;
+
+
+procedure TsTimePicker.WndProc(var Message: TMessage);
+begin
+  inherited;
+  case Message.Msg of
+    SM_ALPHACMD:
+      case Message.WParamHi of
+        AC_ENDPARENTUPDATE:
+          if not InUpdating(SkinData) and (TimePanel <> nil) and TimePanel.HandleAllocated then
+            RedrawWindow(TimePanel.Handle, nil, 0, RDWA_ALLNOW);
+      end;
+
+    CM_ENABLEDCHANGED:
+      if TimePanel <> nil then
+        TimePanel.Repaint;
+
+    WM_PAINT:
+      if SkinData.Skinned and (TimePanel <> nil) then
+        if not InUpdating(SkinData) then
+          TimePanel.Repaint;
+
+    WM_SETTEXT:
+      if TimePanel <> nil then
+        TimePanel.SetMode(Value >= EncodeTime(12, 0, 0, 0));
+
+    WM_SIZE:
+      if TimePanel <> nil then
+        TimePanel.UpdatePosition;
+
+    CM_EXIT:
+      Value := Value;
+  end;
+end;
+
+
 procedure TsTimePicker.DownClick(Sender: TObject);
 begin
   ClickUpDown(False);
@@ -1538,14 +1628,11 @@ end;
 
 function TsTimePicker.GetValue: TDateTime;
 begin
-  Result := 0;
-  if Length(Text) = TextLength then
-    try
-      DecodeValue;
-      Result := EncodeTime(FHour, FMin, Sec, 0)
-    except
-      Result := 0;
-    end;
+  try
+    Result := EncodeTime(FHour, FMin, Sec, 0)
+  except
+    Result := 0;
+  end;
 end;
 
 
@@ -1556,12 +1643,31 @@ var
 begin
   DecodeTime(NewValue, FHour, FMin, FSec, dMSec);
   if ShowSeconds then
-    NewText := Format('%0.2d:%0.2d:%0.2d', [FHour, FMin, FSec])
+    NewText := Format(aFormat[True], [ActualHour, FMin, FSec])
   else
-    NewText := Format('%0.2d:%0.2d', [FHour, FMin]);
+    NewText := Format(aFormat[False], [ActualHour, FMin]);
 
-  if not (csLoading in ComponentState) then
+  if not (csLoading in ComponentState) and not TextChanging then begin
+    ValueChanging := True;
     Text := NewText;
+    ValueChanging := False;
+  end;
+end;
+
+
+function TsTimePicker.ActualHour: integer;
+begin
+  if FUse12Hour then
+    Result := FHour mod 12
+  else
+    Result := FHour;
+end;
+
+
+procedure TsTimePicker.ChangeScale(M, D: Integer);
+begin
+  inherited;
+  UpdateTimePanel;
 end;
 
 
@@ -1607,7 +1713,7 @@ begin
         if (FPos = 1) and (StrToInt(Key) > 2) then
           Result := False
         else begin
-          if (i > 23) then
+          if i > 23 then
             if AllEditSelected(Self) then begin
               s[2] := '3';
               Text := s;
@@ -1648,14 +1754,7 @@ begin
     if ShowSpinButtons and (not Enabled or not ControlIsActive(SkinData)) then begin
       bw := integer(BorderStyle <> bsNone) * (1 + integer(Ctl3d));
       SkinData.FCacheBmp.Canvas.Lock;
-
-//      if ShowSpinButtons and not (SkinData.AnimTimer <> nil) and (SkinData.AnimTimer.Enabled or (SkinData.AnimTimer.State <> -1)) and
-//           (SkinData.CtrlSkinState and ACS_BGRECEIVING <> ACS_BGRECEIVING) then
-
-//      if ShowSpinButtons and //(not ((SkinData.AnimTimer <> nil) and (SkinData.AnimTimer.Enabled or (SkinData.AnimTimer.State <> -1))) and
-//           (SkinData.CtrlSkinState and ACS_BGRECEIVING <> ACS_BGRECEIVING) then
-        FButton.PaintTo(SkinData.FCacheBmp.Canvas.Handle, Point(FButton.Left + bw, FButton.Top + bw));
-
+      FButton.PaintTo(SkinData.FCacheBmp.Canvas.Handle, Point(FButton.Left + bw, FButton.Top + bw));
       SkinData.FCacheBmp.Canvas.UnLock;
     end;
     if not Enabled then
@@ -1679,16 +1778,16 @@ begin
       DownClick(Self);
 
     VK_RIGHT:
-      if (Shift = []) then
+      if Shift = [] then
         IncPos
       else begin
-        FPos := min(TextLength, FPos + 1);
+        FPos := min(aTextLength[ShowSeconds], FPos + 1);
         inherited;
         Exit;
       end;
 
     VK_LEFT:
-      if (Shift = []) then
+      if Shift = [] then
         SetPos(max(1, FPos - 1 - integer(FPos in [4, 7])), (Shift = []))
       else begin
         FPos := max(1, FPos - 1);
@@ -1710,16 +1809,16 @@ begin
       end
       else
         if not ReadOnly then begin
-          if (not (csLoading in ComponentState)) and not (csDesigning in ComponentState) and Visible then begin
+          if ([csLoading, csDesigning] * ComponentState = []) and Visible then begin
             SelStart := 0;
             SelLength := 0;
           end;
-          Text := EmptyText;
+          Text := aEmptyText[ShowSeconds];
           SetPos(1);
         end;
 
-    ord('A'): 
-      if (ShortCut(Key, Shift) = scCtrl + ord('A')) then begin
+    ord('A'):
+      if ShortCut(Key, Shift) = scCtrl + ord('A') then begin
         Key := 0;
         SelectAll;
         PeekMessage(M, Handle, WM_CHAR, WM_CHAR, PM_REMOVE);
@@ -1731,10 +1830,10 @@ begin
   inherited;
   case Key of
     VK_END: begin
-      FPos := TextLength;
-      if (Shift = []) then begin
-        if (not (csLoading in ComponentState)) and not (csDesigning in ComponentState) and Visible then begin
-          SelStart := TextLength - 1;
+      FPos := aTextLength[ShowSeconds];
+      if Shift = [] then begin
+        if ([csLoading, csDesigning] * ComponentState = []) and Visible then begin
+          SelStart := aTextLength[ShowSeconds] - 1;
           SelLength := 1;
         end;
         Key := 0;
@@ -1742,8 +1841,8 @@ begin
     end;
 
     VK_HOME: begin
-      if (Shift = []) then begin
-        if (not (csLoading in ComponentState)) and not (csDesigning in ComponentState) and Visible then begin
+      if Shift = [] then begin
+        if ([csLoading, csDesigning] * ComponentState = []) and Visible then begin
           SelStart := 0;
           SelLength := 1;
         end;
@@ -1781,13 +1880,14 @@ begin
 
     Key := #0;
     IncPos;
+    DecodeValue;
   end;
 end;
 
 
 procedure TsTimePicker.HighlightPos(APos: integer);
 begin
-  if (not (csLoading in ComponentState)) and not (csDesigning in ComponentState) and Visible then begin
+  if ([csLoading, csDesigning] * ComponentState = []) and Visible then begin
     SelStart := APos - 1;
     SelLength := 1;
   end
@@ -1819,7 +1919,7 @@ end;
 
 procedure TsTimePicker.IncPos;
 begin
-  SetPos(min(TextLength, FPos + 1 + integer(FPos in [2, 5])));
+  SetPos(min(aTextLength[ShowSeconds], FPos + 1 + integer(FPos in [2, 5])));
 end;
 
 
@@ -1843,20 +1943,37 @@ begin
   s := Text;
   FHour := StrToInt(copy(s, 1, 2));
   FMin  := StrToInt(copy(s, 4, 2));
-  if (TextLength <= Length(Text)) and ShowSeconds then
+  if (aTextLength[ShowSeconds] <= Length(Text)) and ShowSeconds then
     FSec := StrToInt(copy(s, 7, 2))
   else
     FSec := 0;
 end;
 
 
+procedure TsTimePicker.SetEditRect;
+var
+  Loc: TRect;
+begin
+  SendMessage(Handle, EM_GETRECT, 0, LPARAM(@Loc));
+  Loc.TopLeft := MkPoint;
+  Loc.Bottom := ClientHeight + 1;  {+1 is workaround for windows paint bug}
+  if TimePanel <> nil then
+    Loc.Right := Width - FButton.Width * Ord(FButton.Visible and ShowSpinButtons) - 3 - TimePanel.ActualWidth
+  else
+    Loc.Right := Width - FButton.Width * Ord(FButton.Visible and ShowSpinButtons) - 3;
+
+  SendMessage(Handle, EM_SETRECTNP, 0, LPARAM(@Loc));
+  SendMessage(Handle, EM_GETRECT,   0, LPARAM(@Loc));  {debug}
+end;
+
+
 procedure TsTimePicker.SetHour(NewHour: integer);
 begin
-  if NewHour >= MaxHour then
-    SetHour(NewHour - MaxHour)
+  if NewHour >= iMaxHour then
+    SetHour(NewHour - iMaxHour)
   else
     if NewHour < 0 then
-      SetHour(NewHour + MaxHour)
+      SetHour(NewHour + iMaxHour)
     else
       FHour := NewHour;
 end;
@@ -1864,14 +1981,14 @@ end;
 
 procedure TsTimePicker.SetMin(NewMin: integer);
 begin
-  if NewMin >= 60 then begin
+  if NewMin >= iMaxMin then begin
     SetHour(FHour + 1);
-    SetMin(NewMin - 60);
+    SetMin(NewMin - iMaxMin);
   end
   else
     if NewMin < 0 then begin
       SetHour(FHour - 1);
-      SetMin(NewMin + 60);
+      SetMin(NewMin + iMaxMin);
     end
     else
       FMin := NewMin
@@ -1880,14 +1997,14 @@ end;
 
 procedure TsTimePicker.SetSec(NewSec: integer);
 begin
-  if NewSec >= 60 then begin
+  if NewSec >= iMaxMin then begin
     SetMin(FMin + 1);
-    SetSec(NewSec - 60);
+    SetSec(NewSec - iMaxMin);
   end
   else
     if NewSec < 0 then begin
       SetMin(FMin - 1);
-      SetSec(NewSec + 60);
+      SetSec(NewSec + iMaxMin);
     end
     else
       FSec := NewSec
@@ -1898,12 +2015,14 @@ procedure TsTimePicker.Loaded;
 begin
   inherited;
   if AllEditSelected(Self) then
-    FPos := TextLength + 1
+    FPos := aTextLength[ShowSeconds] + 1
   else
     SetPos(1);
 
   if Text = '' then
-    Text := EmptyText;
+    Text := aEmptyText[ShowSeconds];
+
+  UpdateTimePanel;
 end;
 
 
@@ -1912,7 +2031,7 @@ begin
   inherited;
   if SelLength = 0 then begin
     FPos := DWord(SendMessage(Handle, EM_GETSEL, 0, 0)) mod $10000;
-    SetPos(min(TextLength, FPos) + 1)
+    SetPos(min(aTextLength[ShowSeconds], FPos) + 1)
   end
   else
     FPos := SelStart + 1;
@@ -1933,28 +2052,25 @@ begin
 end;
 
 
-function TsTimePicker.EmptyText: acString;
+procedure TsTimePicker.SetShowSpinButtons(const Value: Boolean);
 begin
-  Result := iff(ShowSeconds, '00:00:00', '00:00');
-end;
-
-
-function TsTimePicker.TextLength: integer;
-begin
-  Result := iff(ShowSeconds, 8, 5);
+  inherited;
+  if not (csLoading in COmponentState) and (TimePanel <> nil) then
+    TimePanel.UpdatePosition;
 end;
 
 
 function TsTimePicker.Sec: word;
 begin
-  Result := integer(FShowSeconds) * FSec
+  Result := integer(FShowSeconds) * FSec;
 end;
 
 
 procedure TsTimePicker.SetUse12Hour(const Value: boolean);
 begin
   FUse12Hour := Value;
-  MaxHour := iff(Value, 12, 24);
+  if not (csLoading in ComponentState) then
+    UpdateTimePanel;
 end;
 
 
@@ -1984,7 +2100,6 @@ begin
 
   Flags := DT_TOP or DT_NOPREFIX or DT_SINGLELINE;
   R := Rect(BordWidth + 1, BordWidth + 1, Width - BordWidth - FButton.Width * integer(FShowSpinButtons), Height - BordWidth);
-{$IFDEF TNTUNICODE}
   if PasswordChar <> #0 then
     for i := 1 to Length(Text) do
       s := s + PasswordChar
@@ -1992,15 +2107,6 @@ begin
     s := Text;
 
   acWriteTextEx(SkinData.FCacheBMP.Canvas, PacChar(s), True, R, Flags or Cardinal(GetStringFlags(Self, Alignment)) and not DT_VCENTER, SkinData, ControlIsActive(SkinData));
-{$ELSE}
-  if PasswordChar <> #0 then
-    for i := 1 to Length(Text) do
-      s := s + PasswordChar
-  else
-    s := Text;
-
-  acWriteTextEx(SkinData.FCacheBMP.Canvas, PacChar(s), True, R, Flags or Cardinal(GetStringFlags(Self, Alignment)) and not DT_VCENTER, SkinData, ControlIsActive(SkinData));
-{$ENDIF}
 end;
 
 
@@ -2036,7 +2142,7 @@ begin
     if not (csLoading in ComponentState) then begin
       SetEditRect;
       SkinData.BGChanged := True;
-      RedrawWindow(Handle, nil, 0, RDW_ERASE or RDW_INVALIDATE or RDW_ALLCHILDREN or RDW_UPDATENOW);
+      RedrawWindow(Handle, nil, 0, RDWA_ALLNOW);
       if FButton.Visible then
         FButton.Repaint;
     end;
@@ -2051,8 +2157,179 @@ begin
   if ControlCount <> 0 then begin
     bw := integer(BorderStyle <> bsNone) * (2 + integer(Ctl3d)) - 1;
     for i := 0 to ControlCount - 1 do
-      if not (Controls[i] is TsSpinButton) then
-        ExcludeClipRect(DC, Controls[i].Left + bw, Controls[i].Top + bw, Controls[i].BoundsRect.Right + bw, Controls[i].BoundsRect.Bottom + bw);
+      if not (Controls[i] is TsSpinButton) and not (Controls[i] is TacTimePanel) then
+        with Controls[i] do
+          ExcludeClipRect(DC, Left + bw, Top + bw, BoundsRect.Right + bw, BoundsRect.Bottom + bw);
+  end;
+end;
+
+
+function TacTimePanel.ActualWidth: integer;
+begin
+  FOwner.SkinData.FCacheBmp.Canvas.Font.Assign(FOwner.Font);
+  Result := FOwner.SkinData.FCacheBmp.Canvas.TextExtent('AM').cx + 6;
+end;
+
+
+constructor TacTimePanel.Create(AOwner: TComponent);
+begin
+  inherited Create(AOwner);
+  ControlStyle := ControlStyle - [csAcceptsControls, csSetCaption];
+  FOwner := TsSpinEdit(AOwner);
+  Width := 22;
+end;
+
+
+procedure TacTimePanel.Loaded;
+begin
+  inherited Loaded;
+  if FOwner.SkinData.FCacheBmp <> nil then
+    FOwner.SkinData.FCacheBmp.Canvas.Font.Assign(Font);
+end;
+
+
+procedure TacTimePanel.PaintWindow(aDC: HDC);
+var
+  DC: hdc;
+  R: TRect;
+  bWidth: integer;
+  Bmp: TBitmap;
+  Flags: Cardinal;
+begin
+  if aDC = 0 then
+    DC := GetWindowDC(Handle)
+  else
+    DC := aDC;
+
+  Bmp := CreateBmp32(Self);
+  R := MkRect(Bmp);
+  Flags := DT_TOP or DT_NOPREFIX or DT_SINGLELINE;
+  Bmp.Canvas.Font.Assign(FOwner.Font);
+  if FOwner.SkinData.SkinIndex < 0 then
+    FillDC(Bmp.Canvas.Handle, R, ColortoRGB(FOwner.Color))
+  else begin
+    bWidth := EditBorderWidth(FOwner);
+    BitBlt(Bmp.Canvas.Handle, 0, 0, Width, Height, FOwner.SkinData.FCacheBmp.Canvas.Handle, bWidth + Left, bWidth, SRCCOPY);
+    if not FOwner.Enabled then
+      Bmp.Canvas.Font.Color := BlendColors(Bmp.Canvas.Font.Color, FOwner.Color, DefBlendDisabled);
+  end;
+  inc(R.Top);
+  inc(R.Left, 3);
+  Bmp.Canvas.Brush.Style := bsClear;
+  acWriteText(Bmp.Canvas, PacChar(aTimeText[PM]), True, R, Flags);
+  BitBlt(DC, 0, 0, Width, Height, Bmp.Canvas.Handle, 0, 0, SRCCOPY);
+  Bmp.Free;
+end;
+
+
+procedure TacTimePanel.SetMode(aPM: boolean);
+begin
+  if PM <> aPM then begin
+    PM := aPM;
+    Repaint;
+  end;
+end;
+
+
+procedure TacTimePanel.UpdatePosition;
+var
+  bWidth: integer;
+begin
+  bWidth := EditBorderWidth(FOwner);
+  Width := ActualWidth;
+  Height := FOwner.Height - 2 * bWidth;
+  Left := bWidth + FOwner.SkinData.FCacheBmp.Canvas.TextExtent(FOwner.Text).cx + 2;
+  Top := 0;
+  Cursor := FOwner.Cursor;
+end;
+
+
+procedure TacTimePanel.WndProc(var Message: TMessage);
+var
+  PS: TPaintStruct;
+  BordWidth: integer;
+begin
+  case Message.Msg of
+    WM_LBUTTONDOWN: if FOwner.CanFocus then
+      FOwner.SetFocus;
+
+    WM_PAINT: begin
+      TWMPaint(Message).DC := BeginPaint(Handle, PS);
+      PaintWindow(TWMPaint(Message).DC);
+      EndPaint(Handle, PS);
+      Exit;
+    end;
+
+    WM_ERASEBKGND: begin
+      PaintWindow(TWMPaint(Message).DC);
+      Exit;
+    end;
+
+    WM_WINDOWPOSCHANGING: begin
+      inherited;
+      BordWidth := EditBorderWidth(FOwner);
+      with TWMWindowPosChanging(Message).WindowPos^ do begin
+        cx := ActualWidth;
+        cy := FOwner.Height - 2 * BordWidth;
+        Y := 0;
+        X := BordWidth + FOwner.SkinData.FCacheBmp.Canvas.TextExtent(FOwner.Text).cx + 2;
+      end;
+      Exit;
+    end;
+  end;
+  inherited;
+end;
+
+
+procedure TsTimePicker.CMChanged(var Message: TMessage);
+
+  procedure DecodeText(AText: string);
+  var
+    l, i: integer;
+    s: string;
+  begin
+    l := WordCount(AText, [':']);
+    if l > 0 then begin
+      s := ExtractWord(1, AText, [':']);
+{$IFDEF DELPHI6UP}
+      if TryStrToInt(s, i) then begin
+{$ELSE}
+      i := StrToInt(s);
+      begin
+{$ENDIF}
+        SetHour(i);
+        s := ExtractWord(2, AText, [':']);
+{$IFDEF DELPHI6UP}
+        if TryStrToInt(s, i) then begin
+{$ELSE}
+        i := StrToInt(s);
+        begin
+{$ENDIF}
+          SetMin(i);
+          if l > 2 then begin
+            s := ExtractWord(3, AText, [':']);
+{$IFDEF DELPHI6UP}
+            if TryStrToInt(s, i) then
+{$ELSE}
+            i := StrToInt(s);
+{$ENDIF}
+              SetSec(i);
+          end;
+        end;
+      end;
+    end;
+  end;
+
+begin
+  inherited;
+  if not (csLoading in ComponentState) and not ValueChanging then begin
+    TextChanging := True;
+    if Text = '' then
+      Value := 0
+    else
+      DecodeText(Text);
+
+    TextChanging := False;
   end;
 end;
 

@@ -1,6 +1,7 @@
 unit sFrameAdapter;
 {$I sDefs.inc}
 //{$DEFINE LOGGED}
+//+
 
 interface
 
@@ -39,7 +40,7 @@ implementation
 
 uses
   menus,
-  sVclUtils, sBorders, sGraphUtils, sSkinProps, sSkinManager, acntUtils, sMessages, sStyleSimply, sSpeedButton;
+  sVclUtils, sBorders, sGraphUtils, sSkinProps, sSkinManager, acntUtils, acntTypes, sMessages, sStyleSimply, sSpeedButton;
 
 
 const
@@ -78,26 +79,25 @@ end;
 procedure TsFrameAdapter.AfterConstruction;
 begin
   inherited;
-  if Assigned(Frame) {and (GetBoolMsg(Frame, AC_CTRLHANDLED) or not Frame.HandleAllocated)} then begin
-//    SendAMessage(Frame.Handle, AC_SETNEWSKIN, LParam(SkinData.SkinManager));
+  if Assigned(Frame) then begin
     FCommonData.InitCommonProp;
-    Frame.Perform(SM_ALPHACMD, MakeWParam(0, AC_SETNEWSKIN), LParam(SkinData.SkinManager));
+    Frame.Perform(SM_ALPHACMD, AC_SETNEWSKIN_HI, LParam(SkinData.SkinManager));
   end;
 end;
 
 
 constructor TsFrameAdapter.Create(AOwner: TComponent);
 begin
+  FCommonData := TsScrollWndData.Create(Self, True);
+  FCommonData.COC := COC_TsFrameAdapter;
   inherited Create(AOwner);
   if not (AOwner is TCustomFrame) then begin
     Frame := nil;
     Raise Exception.Create(acs_FrameAdapterError1);
   end;
-  FCommonData := TsScrollWndData.Create(Self, True);
   if (FCommonData.SkinSection = ClassName) or (FCommonData.SkinSection = '') then
     FCommonData.SkinSection := s_GroupBox;
 
-  FCommonData.COC := COC_TsFrameAdapter;
   Frame := TFrame(AOwner);
   FCommonData.FOwnerControl := TControl(AOwner);
   if Frame <> nil then begin
@@ -117,9 +117,7 @@ begin
     Frame.WindowProc := OldWndProc;
 
   Frame := nil;
-  if FCommonData <> nil then
-    FreeAndNil(FCommonData);
-
+  FreeAndNil(FCommonData);
   inherited Destroy;
 end;
 
@@ -129,20 +127,20 @@ var
   i: integer;
 begin
   inherited Loaded;
-  if Assigned(Frame) and GetBoolMsg(Frame, AC_CTRLHANDLED) and Assigned(SkinData) and Assigned(SkinData.SkinManager) then
-    with SkinData.SkinManager do begin
-      SkinData.UpdateIndexes;
+  if Assigned(Frame) and WndIsSkinned(Frame.Handle) and Assigned(SkinData) and Assigned(SkinData.SkinManager) then
+    with SkinData, SkinManager do begin
+      UpdateIndexes;
       if CommonSkinData.Active and not (csDesigning in ComponentState) then begin
         if (csDesigning in Frame.ComponentState) and // Updating of form color in design-time
              (Frame.Parent.ClassName = sWinControlForm) and
-               FCommonData.SkinManager.IsValidSkinIndex(FCommonData.SkinManager.ConstData.IndexGlobalInfo) then
-          TsHackedControl(Frame.Parent).Color := gd[FCommonData.SkinManager.ConstData.IndexGlobalInfo].Props[0].Color;
+               IsValidSkinIndex(SkinManager.ConstData.IndexGlobalInfo) then
+          TacAccessControl(Frame.Parent).Color := gd[ConstData.IndexGlobalInfo].Props[0].Color;
         // Popups initialization
         for i := 0 to Frame.ComponentCount - 1 do
           if (Frame.Components[i] is TPopupMenu) and SkinnedPopups then
             SkinableMenus.HookPopupMenu(TPopupMenu(Frame.Components[i]), True);
 
-        if SkinData.Skinned and (srThirdParty in SkinningRules) then
+        if Skinned and (srThirdParty in SkinningRules) then
           AddToAdapter(Frame);
       end;
 
@@ -154,6 +152,7 @@ end;
 procedure TsFrameAdapter.NewWndProc(var Message: TMessage);
 var
   i: integer;
+  b: boolean;
   m: TMessage;
 begin
 {$IFDEF LOGGED}
@@ -171,42 +170,44 @@ begin
           end;
 
           AC_SETNEWSKIN:
-            if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
+            if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then begin
               AlphaBroadCast(Frame, Message);
               CommonWndProc(Message, FCommonData);
-              if Assigned(SkinData.SkinManager) then begin
-                for i := 0 to Frame.ComponentCount - 1 do
-                  if (Frame.Components[i] is TPopupMenu) and SkinData.SkinManager.SkinnedPopups then
-                    SkinData.SkinManager.SkinableMenus.HookPopupMenu(TPopupMenu(Frame.Components[i]), True);
+              if Assigned(SkinData.SkinManager) then
+                with SkinData, SkinManager do begin
+                  for i := 0 to Frame.ComponentCount - 1 do
+                    if (Frame.Components[i] is TPopupMenu) and SkinnedPopups then
+                      SkinableMenus.HookPopupMenu(TPopupMenu(Frame.Components[i]), Active);
 
-  {$IFDEF CHANGEFORMSINDESIGN}
-                if (csDesigning in Frame.ComponentState) and // Updating of form color in design-time
-                     (Frame.Parent.ClassName = sWinControlForm) and
-                       (FCommonData.SkinManager.ConstData.IndexGlobalInfo > -1) then
-                  TsHackedControl(Frame.Parent).Color := SkinData.SkinManager.gd[FCommonData.SkinManager.ConstData.IndexGlobalInfo].Props[0].Color;
-  {$ENDIF}
-              end;
+{$IFDEF CHANGEFORMSINDESIGN}
+                  if (csDesigning in Frame.ComponentState) and // Updating of form color in design-time
+                       (Frame.Parent.ClassName = sWinControlForm) and (ConstData.IndexGlobalInfo >= 0) then
+                    TacAccessControl(Frame.Parent).Color := gd[ConstData.IndexGlobalInfo].Props[0].Color;
+{$ENDIF}
+                end;
+
               Exit;
             end;
 
           AC_REFRESH:
-            if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
+            if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then begin
               CommonWndProc(Message, FCommonData);
               FCommonData.UpdateIndexes;
-              if Assigned(FCommonData.SkinManager) then begin
-  {$IFDEF CHANGEFORMSINDESIGN}
-                if (csDesigning in Frame.ComponentState) and // Updating of form color in design-time
-                     (Frame.Parent.ClassName = sWinControlForm) and
-                       (FCommonData.SkinManager.ConstData.IndexGlobalInfo >= 0) then
-                  TsHackedControl(Frame.Parent).Color := SkinData.SkinManager.gd[FCommonData.SkinManager.ConstData.IndexGlobalInfo].Props[0].Color;
-  {$ENDIF}
+              if Assigned(FCommonData.SkinManager) then
+                with SkinData, SkinManager do begin
+{$IFDEF CHANGEFORMSINDESIGN}
+                  if (csDesigning in Frame.ComponentState) and // Updating of form color in design-time
+                       (Frame.Parent.ClassName = sWinControlForm) and (ConstData.IndexGlobalInfo >= 0) then
+                    TacAccessControl(Frame.Parent).Color := gd[ConstData.IndexGlobalInfo].Props[0].Color;
+{$ENDIF}
 
-                if Message.WParamLo <> 1 then
-                  AlphaBroadcast(Frame, Message);
+                  if Message.WParamLo <> 1 then
+                    AlphaBroadcast(Frame, Message);
 
-                RedrawWindow(Frame.Handle, nil, 0, RDW_ERASE or RDW_UPDATENOW or RDW_INVALIDATE or RDW_ALLCHILDREN or RDW_FRAME);
-                RefreshScrolls(SkinData, ListSW);
-              end;
+                  RedrawWindow(Frame.Handle, nil, 0, RDWA_ALLNOW);
+                  RefreshScrolls(SkinData, ListSW);
+                end;
+
               Exit;
             end;
 
@@ -222,11 +223,11 @@ begin
           AC_AFTERSCROLL:
             if GetBoolMsg(Frame, AC_CHILDCHANGED) or FCommonData.RepaintIfMoved then begin
               Frame.Perform(WM_SETREDRAW, 1, 0);
-              RedrawWindow(Frame.Handle, nil, 0, RDW_UPDATENOW or RDW_INVALIDATE or RDW_ALLCHILDREN or RDW_FRAME);
+              RedrawWindow(Frame.Handle, nil, 0, RDWA_ALLNOW);
             end;
 
           AC_REMOVESKIN:
-            if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
+            if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then begin
               if ListSW <> nil then
                 FreeAndNil(ListSW);
 
@@ -234,11 +235,11 @@ begin
               if (csDesigning in Frame.ComponentState) and // Updating of form color in design-time
                    Assigned(Frame.Parent) and
                      (Frame.Parent.ClassName = sWinControlForm) then
-                TsHackedControl(Frame.Parent).Color := clBtnFace;
+                TacAccessControl(Frame.Parent).Color := clBtnFace;
 
               if not Application.Terminated then begin
-                SetWindowPos(Frame.Handle, 0, 0, 0, 0, 0, SWP_NOMOVE or SWP_NOSIZE or SWP_FRAMECHANGED);
-                RedrawWindow(Frame.Handle, nil, 0, RDW_ERASE or RDW_UPDATENOW or RDW_INVALIDATE or RDW_ALLCHILDREN or RDW_FRAME);
+                SetWindowPos(Frame.Handle, 0, 0, 0, 0, 0, SWPA_FRAMECHANGED);
+                RedrawWindow(Frame.Handle, nil, 0, RDWA_ALLNOW);
                 Application.ProcessMessages; // Repaint graphic controls
               end;
               AlphaBroadcast(Frame, Message);
@@ -254,7 +255,7 @@ begin
 
           AC_GETDEFINDEX: begin
   {$IFNDEF ALITE}
-            if (SkinData.SkinSection <> '') then begin
+            if SkinData.SkinSection <> '' then begin
               SkinData.UpdateIndexes;
               Message.Result := SkinData.SkinIndex + 1;
             end
@@ -267,9 +268,15 @@ begin
           end;
 
           AC_GETSKININDEX: begin
-            PacSectionInfo(Message.LParam)^.SkinIndex := FCommonData.SkinIndex;
+            PacSectionInfo(Message.LParam)^.siSkinIndex := FCommonData.SkinIndex;
             Exit;
           end;
+
+{          AC_SETSCALE:
+            begin
+              CommonMessage(Message, SkinData);
+              Exit;
+            end;}
         end;
 
       WM_SIZE:
@@ -279,8 +286,7 @@ begin
     if (csDestroying in ComponentState) or
          (csDestroying in Frame.ComponentState) or
            not FCommonData.Skinned or
-             not ((SkinData.SkinManager <> nil) and
-               SkinData.SkinManager.CommonSkinData.Active) then begin
+             not ((SkinData.SkinManager <> nil) and SkinData.SkinManager.CommonSkinData.Active) then begin
       if SkinData.SkinManager <> nil then
         if SkinData.SkinManager.CommonSkinData.Active then
           case Message.Msg of
@@ -288,7 +294,7 @@ begin
               if Assigned(Frame) and Frame.HandleAllocated then begin
                 SkinData.UpdateIndexes;
                 UpdateSkinState(SkinData, True);
-                m := MakeMessage(SM_ALPHACMD, MakeWParam(AC_SETNEWSKIN, AC_SETNEWSKIN), LPARAM(SkinData.SkinManager), 0);
+                m := MakeMessage(SM_ALPHACMD, AC_SETNEWSKIN_HI, LPARAM(SkinData.SkinManager), 0);
                 AlphaBroadCast(Frame, m);
               end;
           end;
@@ -299,16 +305,17 @@ begin
       case Message.Msg of
         SM_ALPHACMD:
           case Message.WParamHi of
-            AC_CHILDCHANGED: begin
-              if (SkinData.SkinIndex < 0) or not Assigned(SkinData.SkinManager) then
-                Message.LParam := 0
-              else
-                Message.LParam := LPARAM((SkinData.SkinManager.gd[SkinData.SkinIndex].Props[0].GradientPercent +
-                                          SkinData.SkinManager.gd[SkinData.SkinIndex].Props[0].ImagePercent > 0) or
-                                         SkinData.RepaintIfMoved);
-              Message.Result := Message.LParam;
-              Exit;
-            end;
+            AC_CHILDCHANGED:
+              with SkinData, SkinManager do begin
+                if (SkinIndex < 0) or not Assigned(SkinManager) then
+                  Message.LParam := 0
+                else
+                  with gd[SkinIndex].Props[0] do
+                    Message.LParam := LPARAM((GradientPercent + ImagePercent > 0) or RepaintIfMoved);
+
+                Message.Result := Message.LParam;
+                Exit;
+              end;
 
             AC_UPDATING: begin
               FCommonData.Updating := Message.WParamLo = 1;
@@ -319,20 +326,21 @@ begin
             end;
 
             AC_ENDPARENTUPDATE: begin
-              if FCommonData.FUpdating {$IFDEF D2006} and not (csRecreating in Frame.ControlState) and not (csAligning in Frame.ControlState) {$ENDIF} then begin
+              if FCommonData.FUpdating {$IFDEF D2006} and ([csRecreating, csAligning] * Frame.ControlState = []) {$ENDIF} then begin
                 if not InUpdating(FCommonData, True) then begin
-                  if SkinData.BGChanged and Assigned(Frame.OnResize) then begin
-                    RedrawWindow(Frame.Handle, nil, 0, RDW_INVALIDATE or RDW_UPDATENOW or RDW_ERASE or RDW_FRAME);
+                  b := SkinData.BGChanged and Assigned(Frame.OnResize);
+                  if SkinData.BGChanged then
+                    PrepareCache;
+
+                  RedrawWindow(Frame.Handle, nil, 0, RDWA_ALLNOW);
+                  if b then
                     Frame.OnResize(Frame);
-                  end
-                  else
-                    RedrawWindow(Frame.Handle, nil, 0, RDW_INVALIDATE or RDW_UPDATENOW or RDW_ERASE or RDW_FRAME);
 
                   SetParentUpdated(Frame);
                 end;
               end
               else
-                if SkinData.CtrlSkinState and ACS_FAST = ACS_FAST then
+                if SkinData.CtrlSkinState and ACS_FAST <> 0 then
                   SetParentUpdated(Frame);
 
               Exit;
@@ -347,43 +355,46 @@ begin
 
             AC_GETCONTROLCOLOR:
               if SkinData.Skinned then
-                if not IsCached(SkinData) then
-                  case SkinData.SkinManager.gd[SkinData.Skinindex].Props[0].Transparency of
-                    0:
-                      Message.Result := LRESULT(SkinData.SkinManager.gd[SkinData.Skinindex].Props[0].Color);
+                with SkinData, SkinManager do
+                  if not IsCached(SkinData) then
+                    case gd[Skinindex].Props[0].Transparency of
+                      0:
+                        Message.Result := LRESULT(gd[Skinindex].Props[0].Color);
 
-                    100:
-                      if Frame.Parent <> nil then begin
-                        Message.Result := Frame.Parent.Perform(SM_ALPHACMD, MakeWParam(0, AC_GETCONTROLCOLOR), 0);
-                        if Message.Result = clFuchsia {if AlphaMessage not supported} then
-                          Message.Result := LRESULT(TsHackedControl(Frame.Parent).Color)
+                      100:
+                        if Frame.Parent <> nil then begin
+                          Message.Result := Frame.Parent.Perform(SM_ALPHACMD, AC_GETCONTROLCOLOR_HI, 0);
+                          if Message.Result = clFuchsia {if AlphaMessage not supported} then
+                            Message.Result := LRESULT(TsAccessControl(Frame.Parent).Color)
+                        end
+                        else
+                          Message.Result := LRESULT(ColorToRGB(Frame.Color));
+
+                      else begin
+                        if Frame.Parent <> nil then
+                          Message.Result := Frame.Parent.Perform(SM_ALPHACMD, AC_GETCONTROLCOLOR_HI, 0)
+                        else
+                          Message.Result := LRESULT(ColorToRGB(Frame.Color));
+                        // Mixing of colors
+                        C1.C := TColor(Message.Result);
+                        with gd[Skinindex].Props[0] do begin
+                          C2.C := Color;
+                          C1.R := ((C1.R - C2.R) * Transparency + C2.R shl 8) shr 8;
+                          C1.G := ((C1.G - C2.G) * Transparency + C2.G shl 8) shr 8;
+                          C1.B := ((C1.B - C2.B) * Transparency + C2.B shl 8) shr 8;
+                        end;
+                        Message.Result := LRESULT(C1.C);
                       end
-                      else
-                        Message.Result := LRESULT(ColorToRGB(Frame.Color));
-
-                    else begin
-                      if Frame.Parent <> nil then
-                        Message.Result := Frame.Parent.Perform(SM_ALPHACMD, MakeWParam(0, AC_GETCONTROLCOLOR), 0)
-                      else
-                        Message.Result := LRESULT(ColorToRGB(Frame.Color));
-                      // Mixing of colors
-                      C1.C := TColor(Message.Result);
-                      C2.C := SkinData.SkinManager.gd[SkinData.Skinindex].Props[0].Color;
-                      C1.R := ((C1.R - C2.R) * SkinData.SkinManager.gd[SkinData.SkinIndex].Props[0].Transparency + C2.R shl 8) shr 8;
-                      C1.G := ((C1.G - C2.G) * SkinData.SkinManager.gd[SkinData.SkinIndex].Props[0].Transparency + C2.G shl 8) shr 8;
-                      C1.B := ((C1.B - C2.B) * SkinData.SkinManager.gd[SkinData.SkinIndex].Props[0].Transparency + C2.B shl 8) shr 8;
-                      Message.Result := LRESULT(C1.C);
                     end
-                  end
-                else begin
-                  if SkinData.CtrlSkinState and ACS_BGUNDEF = ACS_BGUNDEF then
-                    UpdateSkinState(SkinData, False);
+                  else begin
+                    if CtrlSkinState and ACS_BGUNDEF <> 0 then
+                      UpdateSkinState(SkinData, False);
 
-                  Message.LParam := LRESULT(clFuchsia);
-                end
-              else
-                if Assigned(Frame) then
-                  Message.LParam := LPARAM(ColorToRGB(TsHackedControl(Frame).Color));
+                    Message.LParam := LRESULT(clFuchsia);
+                  end
+                else
+                  if Assigned(Frame) then
+                    Message.LParam := LPARAM(ColorToRGB(TsAccessControl(Frame).Color));
 
             else
               try
@@ -418,13 +429,13 @@ begin
           UpdateSkinState(SkinData, True);
           OldWndProc(Message);
           if Assigned(SkinData.SkinManager) then
-            Frame.Perform(SM_ALPHACMD, MakeWParam(0, AC_REFRESH), LongWord(SkinData.SkinManager));
+            Frame.Perform(SM_ALPHACMD, AC_REFRESH_HI, LongWord(SkinData.SkinManager));
         end;
 
         WM_WINDOWPOSCHANGED, WM_SIZE, WM_MOVE: begin
           FCommonData.BGChanged := FCommonData.BGChanged or (Message.Msg = WM_SIZE) or FCommonData.RepaintIfMoved;
           if FCommonData.BGChanged then begin
-            m := MakeMessage(SM_ALPHACMD, MakeWParam(1, AC_SETBGCHANGED), 0, 0);
+            m := MakeMessage(SM_ALPHACMD, AC_SETBGCHANGED_HI + 1, 0, 0);
             Frame.BroadCast(m);
           end;
           if Message.Msg <> WM_MOVE then
@@ -448,7 +459,7 @@ begin
           UpdateSkinState(SkinData, True);
           OldWndProc(Message);
           RefreshScrolls(SkinData, ListSW);
-          if (srThirdParty in SkinData.SkinManager.SkinningRules) then
+          if srThirdParty in SkinData.SkinManager.SkinningRules then
             AddToAdapter(Frame);
         end;
 
@@ -529,7 +540,7 @@ begin
           end
           else begin
             SavedDC := SaveDC(DC);
-            ExcludeControls(DC, Frame, actGraphic, 0, 0);
+            ExcludeControls(DC, Frame, 0, 0);
             FillBG(MkRect(Frame.Width, Frame.Height));
             RestoreDC(DC, SavedDC);
           end
@@ -537,7 +548,7 @@ begin
         else begin
           Changed := FCommonData.BGChanged or FCommonData.HalfVisible;
           i := GetClipBox(DC, R);
-          if (i = 0) {or IsRectEmpty(R) is not redrawn while resizing }then
+          if i = 0 {or IsRectEmpty(R) is not redrawn while resizing }then
             Exit;
 
           if SkinData.RepaintIfMoved and (Frame.Parent <> nil) then
@@ -567,7 +578,7 @@ begin
         
       try
         SavedDC := SaveDC(DC);
-        ExcludeControls(DC, Frame, actGraphic, 0, 0);
+        ExcludeControls(DC, Frame, 0, 0);
         if i = 0 then
           FillBG(R) { Just fill BG}
         else begin

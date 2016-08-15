@@ -361,6 +361,7 @@ type
 
     rgn: hrgn;
     FMousePos: TacMousePosition;
+    OldFrameProc: TWndMethod;
     procedure CreateAlphaBmp(const Width, Height: integer); virtual;
     procedure CreateParams(var Params: TCreateParams); override;
     function GetMask: TBitmap;
@@ -370,8 +371,10 @@ type
     function SkinMargin(Border: byte): integer;
     procedure TextOut(Bmp: TBitmap);
     function FullLayer: boolean;
+    function ContentRect: TRect;
     function ShadowSizes: TRect;
     procedure WndProc(var Message: TMessage); override;
+    procedure FrameWndProc(var Message: TMessage);
     procedure Paint; override;
   public
     procedure ActivateHint(Rect: TRect; const AHint: string); {$IFNDEF TNTUNICODE} override; {$ENDIF}
@@ -401,12 +404,12 @@ uses
   {$IFNDEF WIN64} acZLibEx, {$ELSE} ZLib, {$ENDIF}
   {$IFNDEF ACHINTS} sVclUtils, sMessages, sSkinProps, sSkinManager, {$ENDIF}
   {$IFDEF LOGGED} sDebugMsgs, {$ENDIF}
-  sAlphaGraph, sStyleSimply;
+  sAlphaGraph, sCommonData, sStyleSimply;
 
 {$R acHints.res}
 
 const
-  SkinBorderWidth = 4;
+//  SkinBorderWidth = 4;
 
   acAlignmentArray: array [TAlignment] of word = (DT_LEFT, DT_RIGHT, DT_CENTER);
 
@@ -435,6 +438,21 @@ begin
   RegisterComponents('AlphaTools', [TsAlphaHints]);
 end;
 {$ENDIF}
+
+
+function SkinBorderWidth: integer;
+begin
+  Result := 4;
+  if DefaultManager <> nil then
+    Result := DefaultManager.ScaleInt(Result);
+end;
+
+
+procedure UpdateFontSize(AFont: TFont);
+begin
+  if DefaultManager <> nil then
+    AFont.Height := DefaultManager.ScaleInt(AFont.Height);
+end;
 
 
 constructor TsAlphaHints.Create(AOwner: TComponent);
@@ -697,7 +715,7 @@ end;
 procedure TsAlphaHints.SetActive(const Value: boolean);
 begin
   FActive := Value;
-  if not FActive then
+  if not FActive and not (csDestroying in ComponentState) then
     HideAll;
 
   UpdateHWClass;
@@ -711,10 +729,14 @@ begin
       Manager := Self;
       HintWindowClass := TacPngHintWindow
     end
-    else begin
-      Manager := nil;
-      HintWindowClass := THintWindow;
-    end;
+    else
+      if Manager = Self then begin
+        Manager := nil;
+        HintWindowClass := THintWindow;
+      end
+      else
+        if Manager <> nil then
+          Manager.FHintLocation := MkPoint;
 end;
 
 
@@ -951,7 +973,7 @@ begin
     FreeAndNil(Manager.CheckTimer);
     Manager.HintShowing := True;
 
-    if (Manager.AnimWindow <> nil) then // If moved
+    if Manager.AnimWindow <> nil then // If moved
       if (Manager.AnimWindow.Width = 0) or (Manager.AnimWindow.Left = 0) and (Manager.AnimWindow.Top = 0) then
         FreeAndNil(Manager.AnimWindow) // Fix for DevEx hints
       else
@@ -1000,7 +1022,11 @@ begin
 
     Manager.NewBounds := Rect;
     if Manager.AnimWindow = nil then
-      Manager.AnimWindow := CreateHintWindow(Rect);
+      Manager.AnimWindow := CreateHintWindow(Rect)
+    else begin
+      Manager.AnimWindow.Width := w;
+      Manager.AnimWindow.Height := h;
+    end;
 
     if acLayered then
       if Manager.Animated then begin
@@ -1100,8 +1126,10 @@ begin
 {$ENDIF}
         Result := MkRect(iff(Manager.MaxWidth <= 0, Screen.Width, Manager.MaxWidth), 0);
 {$IFNDEF ACHINTS}
-        if Manager.Skinned then
+        if Manager.Skinned then begin
           Manager.FCacheBmp.Canvas.Font.Assign(Screen.HintFont);
+          UpdateFontSize(Manager.FCacheBmp.Canvas.Font);
+        end;
 {$ENDIF}
         if Manager.FHTMLMode then begin
           sHTML := TsHtml.Create;
@@ -1133,6 +1161,25 @@ begin
 end;
 
 
+function TacCustomHintWindow.ContentRect: TRect;
+begin
+  Result := MainRect;
+  with Result do
+    if Manager.Skinned then begin
+      Left   := Left   + SkinMargin(0) + SkinBorderWidth;
+      Top    := Top    + SkinMargin(1) + SkinBorderWidth;
+      Right  := Right  - SkinMargin(2) - SkinBorderWidth;
+      Bottom := Bottom - SkinMargin(3) - SkinBorderWidth;
+    end
+    else begin
+      inc(Left,   Image.ClientMargins.Left);
+      inc(Top,    Image.ClientMargins.Top);
+      dec(Right,  Image.ClientMargins.Right);
+      dec(Bottom, Image.ClientMargins.Bottom);
+    end;
+end;
+
+
 procedure TacCustomHintWindow.WMEraseBkGND(var Message: TWMPaint);
 begin
   Message.Result := 1;
@@ -1160,6 +1207,7 @@ var
 {$ENDIF}
   R, RCalc, RText: TRect;
   GlyphPos: TPoint;
+  sd: TsCommonData;
   SaveIndex: hdc;
   sHTML: TsHtml;
   i: integer;
@@ -1259,6 +1307,16 @@ begin
         Manager.HintFrame.SetBounds(R.Left, R.Top, Manager.HintFrame.Width, Manager.HintFrame.Height);
         Manager.HintFrame.Parent := Self;
         Manager.HintFrame.Visible := True;
+        Manager.HintFrame.HandleNeeded;
+
+        sd := GetCommonData(Manager.HintFrame.Handle);
+        if (sd <> nil) and Assigned(sd.WndProc) then begin
+          OldFrameProc := sd.WndProc;
+          sd.WndProc := FrameWndProc;
+        end;
+//        OldFrameProc := Manager.HintFrame.WindowProc;
+//        Manager.HintFrame.WindowProc := FrameWndProc;
+
         SaveIndex := SaveDC(Bmp.Canvas.Handle);
         Bmp.Canvas.Lock;
         for i := 0 to Manager.HintFrame.ControlCount - 1 do
@@ -1268,6 +1326,12 @@ begin
             MovewindowOrg(Bmp.Canvas.Handle, -R.Left - Manager.HintFrame.Controls[i].Left, -R.Top - Manager.HintFrame.Controls[i].Top);
             FillAlphaRect(Bmp, R, MaxByte);
           end;
+
+        if (sd <> nil) and Assigned(sd.WndProc) then begin
+          sd.WndProc := OldFrameProc;
+          OldFrameProc := nil;
+        end;
+//        Manager.HintFrame.WindowProc := OldFrameProc;
         // Next two line are called after labels painting for avoiding of "Reflected text" error
         Bmp.PixelFormat := pf32bit;
         Bmp.HandleType := bmDIB;
@@ -1286,8 +1350,10 @@ begin
           aText := iff(Text <> '', Text, Caption);
 
 {$IFNDEF ACHINTS}
-        if Manager.Skinned then
+        if Manager.Skinned then begin
           Bmp.Canvas.Font.Assign(Screen.HintFont);
+          UpdateFontSize(Bmp.Canvas.Font);
+        end;
 {$ENDIF}
 
         if Manager.FHTMLMode then begin
@@ -1388,6 +1454,29 @@ begin
 end;
 
 
+procedure TacCustomHintWindow.FrameWndProc(var Message: TMessage);
+begin
+  if Message.Msg = SM_ALPHACMD then
+    case Message.WParamHi of
+      AC_GETBG: begin
+        PacBGInfo(Message.LParam)^.Bmp := AlphaBmp;
+        PacBGInfo(Message.LParam)^.Offset := MkPoint;
+        if AlphaBmp <> nil then
+          PacBGInfo(Message.LParam)^.BgType := btCache
+        else begin
+          PacBGInfo(Message.LParam)^.BgType := btFill;
+          PacBGInfo(Message.LParam)^.Color := Color;
+        end;
+        Exit;
+      end
+      else
+        OldFrameProc(Message);
+    end
+  else
+    OldFrameProc(Message);
+end;
+
+
 procedure TacCustomHintWindow.DoDestroy;
 begin
   OnCloseHint;
@@ -1460,7 +1549,7 @@ function TacCustomHintWindow.GetMask: TBitmap;
 var
   White, Black: TsColor_;
   x, y, h, w: integer;
-  S0, S: PRGBAArray;
+  S0, S: PRGBAArray_;
   DeltaS: integer;
   CI: TCacheInfo;
   CC: TsColor;
@@ -1558,7 +1647,7 @@ procedure TacCustomHintWindow.CreateAlphaBmp;
 var
   c: TsColor_;
   FBlend: TBlendFunction;
-  D0, S0, M0, SH0, D, S, M, SH: PRGBAArray;
+  D0, S0, M0, SH0, D, S, M, SH: PRGBAArray_;
   x, y, DeltaD, DeltaS, DeltaM, DeltaSH: integer;
 begin
   FBlend := DefBlend;
@@ -1724,7 +1813,7 @@ begin
   CreateAlphaBmp(w, h);
   if not Manager.HintShowing then
     SetFormBlendValue(Manager.AnimWindow.Handle, AlphaBmp, 0);
-    
+
   FBlend := DefBlend;
   // Show window with hint
   if Manager.Animated and IsNTFamily and not Manager.HintShowing then begin
@@ -1736,7 +1825,7 @@ begin
 
       StepCount := max(DefAnimationTime div acTimerInterval, 1);
       FBlend.SourceConstantAlpha := 0;
-      if (Manager.AnimWindow <> nil) then begin
+      if Manager.AnimWindow <> nil then begin
         SrcRect := Manager.AnimWindow.BoundsRect;
         DstRect := Manager.NewBounds;
         FBlend.SourceConstantAlpha := MaxByte - i;
@@ -1812,19 +1901,20 @@ begin
     if not Manager.Skinned then begin
       Manager.InitTemplate;
       Manager.FCacheBmp.Canvas.Font.Assign(Template.FFont);
+      UpdateFontSize(Manager.FCacheBmp.Canvas.Font);
 
       DefRect := inherited CalcHintRect(MaxWidth, AHint, AData);
 
       Result := DefRect;
       UpdateHintRect;
-      if (Manager.TmpShowData.Control <> nil) then begin
+      if Manager.TmpShowData.Control <> nil then begin
         Manager.FHintLocation := Manager.TmpShowData.Position;
         Manager.CurrentHintInfo.HintControl := Manager.TmpShowData.Control;
         Manager.CheckAutoHintPos;
         OffsetRect(Result, Manager.FHintLocation.x, Manager.FHintLocation.y);
       end
       else
-        if (Manager.TmpShowData.Width <> 0) then
+        if Manager.TmpShowData.Width <> 0 then
           p := Manager.TmpShowData.Position
         else begin
           if (Manager.FHintLocation.X = 0) or (Manager.FHintLocation.Y = 0) then
@@ -1835,7 +1925,7 @@ begin
           OffsetRect(Result, p.x, p.y);
           FMousePos := GetArrowPos(Result, p);
         end;
-        
+
       OffsetRect(Result, - ShadowSizes.Left, - ShadowSizes.Top);
       Result := DefRect;
       case FMousePos of
@@ -1922,13 +2012,13 @@ begin
   else begin
     SetWindowRgn(Handle, 0, False);
     if AlphaBmp <> nil then
-      FreeAndNil(AlphaBmp);
+      AlphaBmp.Free;
 
     AlphaBmp := CreateBmp32(Width, Height);
     FBlend := DefBlend;
     FBlend.SourceConstantAlpha := MaxByte;
-    if (Template <> nil) then begin
-      if Image.FImage.Empty and (Image.FImageData.Size <> 0) then begin
+    if Template <> nil then begin
+      if Image.FImage.Empty and (Image.FImageData.Size > 0) then begin
         Image.FImageData.Seek(0, 0);
         Image.FImage.LoadFromStream(Image.FImageData);
       end;
@@ -1943,9 +2033,10 @@ begin
     end;
     TempBmp := TBitmap.Create;
     TempBmp.Assign(AlphaBmp);
-    if Template <> nil then
+    if Template <> nil then begin
       AlphaBmp.Canvas.Font.Assign(Template.FFont);
-
+      UpdateFontSize(AlphaBmp.Canvas.Font);
+    end;
     TextOut(AlphaBmp);
     CopyChannel32(AlphaBmp, TempBmp, 3);
     FreeAndNil(TempBmp);
@@ -2710,10 +2801,10 @@ procedure TsAlphaHints.OnCheckTimer(Sender: TObject);
 begin
   if (Manager <> nil) and ((acHintWindow = nil) or not IsWindowVisible(acHintWindow.Handle) or not Manager.HintShowing) then begin // ????
     Blend := 0;
-    if (AnimWindow <> nil) then
+    if AnimWindow <> nil then
       FreeAndNil(AnimWindow);
 
-    if (NewWindow <> nil) then
+    if NewWindow <> nil then
       FreeAndNil(NewWindow);
 
     Application.HintPause := Manager.FOldHintPause;
@@ -2783,11 +2874,11 @@ begin
           y := y + dy;
           dx := (Manager.NewBounds.Left - x) / Speed;
           dy := (Manager.NewBounds.Top - y) / Speed;
-          if (NewWindow <> nil) then // Recreate window if shadow mode must be changed
+          if NewWindow <> nil then // Recreate window if shadow mode must be changed
             if (GetClassLong(NewWindow.Handle, GCL_STYLE) and NCS_DROPSHADOW = NCS_DROPSHADOW) = CurrentHintForm.FullLayer then
               FreeAndNil(NewWindow);
 
-          if (NewWindow = nil) then
+          if NewWindow = nil then
             NewWindow := CurrentHintForm.CreateHintWindow(SrcRect);
 
           if OldAlphaBmp = nil then
@@ -2806,7 +2897,7 @@ begin
       end
       else begin // Finish
         Enabled := False;
-        if (NewWindow <> nil) then begin // If was moved
+        if NewWindow <> nil then begin // If was moved
           FreeAndNil(AnimWindow);
           AnimWindow := NewWindow;
           NewWindow := nil;
@@ -2828,7 +2919,7 @@ end;
 
 procedure TacCustomHintWindow.OnCloseHint;
 begin
-  if (Manager <> nil) then begin
+  if Manager <> nil then begin
     if Manager.ShowTimer <> nil then begin
       Manager.ShowTimer.Enabled := False;
       Manager.ResetHintInfo;

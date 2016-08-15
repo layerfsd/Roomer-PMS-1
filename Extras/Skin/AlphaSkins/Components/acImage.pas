@@ -1,7 +1,7 @@
 unit acImage;
 {$I sDefs.inc}
 //{$DEFINE LOGGED}
-
+//+
 interface
 
 uses
@@ -49,7 +49,7 @@ type
     function Empty: boolean;
     destructor Destroy; override;
     procedure acWM_Paint(var Message: TWMPaint); message WM_PAINT;
-    procedure WndProc (var Message: TMessage); override;
+    procedure WndProc(var Message: TMessage); override;
 
     property Blend: TPercent read FBlend write SetBlend default 0;
     property UseFullSize: boolean read FUseFullSize write SetUseFullSize default False;
@@ -101,9 +101,9 @@ end;
 
 constructor TsCustomImage.Create(AOwner: TComponent);
 begin
-  inherited;
   FCommonData := TsCtrlSkinData.Create(Self, True);
   FCommonData.COC := COC_TsImage;
+  inherited;
   FImageChangeLink := TChangeLink.Create;
   FImageChangeLink.OnChange := ImageListChange;
   ImageChanged := True;
@@ -113,9 +113,7 @@ end;
 
 destructor TsCustomImage.Destroy;
 begin
-  if Assigned(FCommonData) then
-    FreeAndNil(FCommonData);
-
+  FreeAndNil(FCommonData);
   FreeAndNil(FImageChangeLink);
   inherited;
 end;
@@ -143,6 +141,9 @@ procedure TsCustomImage.SetImageIndex(const Value: integer);
 begin
   if FImageIndex <> Value then begin
     FImageIndex := Value;
+    if AutoSize then
+      AdjustSize;
+
     Skindata.Invalidate;
   end;
 end;
@@ -219,18 +220,18 @@ var
             xyaspect := Result.cx / Result.cy;
             if Result.cx > Result.cy then begin
               Result.cx := Width;
-              Result.cy := Trunc(Width / xyaspect);
+              Result.cy := Round(Width / xyaspect);
               if Result.cy > SrcHeight then begin
                 Result.cy := SrcHeight;
-                Result.cx := Trunc(Result.cy * xyaspect);
+                Result.cx := Round(Result.cy * xyaspect);
               end;
             end
             else begin
               Result.cy := SrcHeight;
-              Result.cx := Trunc(Result.cy * xyaspect);
+              Result.cx := Round(Result.cy * xyaspect);
               if Result.cx > Width then begin
                 Result.cx := Width;
-                Result.cy := Trunc(Result.cx / xyaspect);
+                Result.cy := Round(Result.cx / xyaspect);
               end;
             end;
           end
@@ -264,10 +265,10 @@ var
       end;
     end
     else
-      if not (Picture.Graphic is TBitmap) {$IFDEF D2010}{or not Picture.Graphic.SupportsPartialTransparency uncomment in the Beta}{$ENDIF} then begin
-        BitBlt(TmpBmp.Canvas.Handle, 0, 0, Width, Height, FCommonData.FCacheBmp.Canvas.Handle, 0, 0, SRCCOPY);
+      if not (Picture.Graphic is TBitmap) {$IFDEF D2010}or not Picture.Graphic.SupportsPartialTransparency {$ENDIF} then begin
         TmpBmp.Width := StretchSize.cx;
         TmpBmp.Height := StretchSize.cy;
+        BitBlt(TmpBmp.Canvas.Handle, 0, 0, Width, Height, FCommonData.FCacheBmp.Canvas.Handle, 0, 0, SRCCOPY);
         R := MkRect(TmpBmp);
         if Stretch then begin
           R.Right := min(Width, R.Left + StretchSize.cx);
@@ -299,7 +300,7 @@ var
       l := (Width - TmpBmp.Width) div 2;
       t := (Height - TmpBmp.Height - integer(FUseFullSize) * (TmpBmp.Height div 2)) div 2;
     end;
-    CopyBmp32(Rect(l, t, l + TmpBmp.Width, t + TmpBmp.Height), MkRect(TmpBmp), FCommonData.FCacheBmp, TmpBmp, EmptyCI, False,
+    CopyBmp32(Rect(l, t, l + TmpBmp.Width, t + TmpBmp.Height), MkRect(TmpBmp), FCommonData.FCacheBmp, TmpBmp, CI, False,
                                                                iff(Grayed, $FFFFFF, clNone), Blend, Reflected);
     TmpBmp.Free;
   end;
@@ -314,15 +315,22 @@ begin
   else begin
     CI := BGInfoToCI(@BGInfo);
     InitCacheBmp(SkinData);
-    if CI.Ready and CI.Bmp.Empty then
-      Exit;
+    if not CI.Ready or not CI.Bmp.Empty then begin
+      if Transparent then
+        if not CI.Ready and (CI.FillColor = sFuchsia.C) then
+          BitBlt(FCommonData.FCacheBmp.Canvas.Handle, 0, 0, Width, Height, DC, 0, 0, SRCCOPY)
+        else
+          if not CI.Ready or (CI.Bmp = nil) then
+            FillDC(FCommonData.FCacheBmp.Canvas.Handle, MkRect(Self), CI.FillColor)
+          else
+            BitBlt(FCommonData.FCacheBmp.Canvas.Handle, 0, 0, Width, Height, CI.Bmp.Canvas.Handle, {CI.X{ + }Left, {CI.Y{ + }Top, SRCCOPY);
 
-    if Transparent then
-      BitBlt(FCommonData.FCacheBmp.Canvas.Handle, 0, 0, Width, Height, DC, 0, 0, SRCCOPY);
+      if FCommonData.SkinSection <> '' then
+        PaintItem(FCommonData, CI, True, 0, MkRect(Self), MkPoint(Left, Top), FCommonData.FCacheBMP, True, 0, 0);
 
-    PaintItem(FCommonData, CI, True, 0, MkRect(Self), MkPoint(Self), FCommonData.FCacheBMP, True, 0, 0);
-    DrawImage;
-    FCommonData.BGChanged := False;
+      DrawImage;
+      FCommonData.BGChanged := False;
+    end;
   end;
 end;
 
@@ -380,7 +388,7 @@ end;
 
 function TsCustomImage.Empty: boolean;
 begin
-  if (FImages <> nil) and ((FImageIndex >= 0) and (FImageIndex < GetImageCount(FImages))) then
+  if (FImages <> nil) and IsValidIndex(FImageIndex, GetImageCount(FImages)) then
     Result := False
   else
     if Picture.Graphic <> nil then
@@ -395,7 +403,7 @@ end;
 
 procedure TsCustomImage.UpdateImage;
 begin
-  if not (csLoading in ComponentState) and not (csDestroying in ComponentState) then
+  if [csLoading, csDestroying] * ComponentState = [] then
     Repaint;
 end;
 
@@ -415,7 +423,7 @@ var
 begin
   Result := True;
   if not (csDesigning in ComponentState) or not Empty then begin
-    if (Images <> nil) and Between(ImageIndex, 0, GetImageCount(Images)) then begin
+    if (Images <> nil) and IsValidIndex(ImageIndex, GetImageCount(Images)) then begin
       w := Images.Width;
       h := Images.Height;
     end

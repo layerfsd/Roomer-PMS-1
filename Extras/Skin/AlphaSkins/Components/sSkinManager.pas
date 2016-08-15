@@ -2,7 +2,7 @@ unit sSkinManager;
 {$I sDefs.inc}
 // {$DEFINE LOGGED}
 // {$DEFINE DEBUGOBJ}
-
+//+
 interface
 
 uses
@@ -13,10 +13,10 @@ uses
   {$IFDEF  FPC}        LMessages,  {$ENDIF}
   sConst, sMaskData, sSkinMenus, sStyleSimply, sDefaults, acntUtils;
 
-  
+
 {$IFNDEF NOTFORHELP}
 const
-  acCurrentVersion = '10.25';
+  acCurrentVersion = '11.12';
 
 {$R sXB.res}   // Default ext borders
 {$R sOEff.res} // Default outer masks
@@ -28,6 +28,11 @@ const
 
 type
 {$IFNDEF NOTFORHELP}
+  TacSkinListData = record
+    skName: string;
+    skImageIndex: integer;
+  end;
+
   TacSkinData = packed record // Data for exchange with SkinEditor
     Magic:    integer;
     SkinName: array [0..127] of AnsiChar;
@@ -39,6 +44,7 @@ type
 
   TacSkinTypes = (stUnpacked, stPacked, stAllSkins);
   TacSkinPlaces = (spInternal, spExternal, spAllPlaces);
+  TacScaleMode = (sm100, sm125, sm150, smAuto, smOldMode);
 
   TacMenuItemData = record
     Font: TFont;
@@ -170,8 +176,8 @@ type
     FFormHide,
     FDialogHide: TacFormHide;
 
-    FButtons:       TacBtnEffects;
     FFormShow:      TacFormShow;
+    FButtons:       TacBtnEffects;
     FPageChange:    TacPageChange;
     FMinimizing:    TacMinimizing;
     FDialogShow:    TacDialogShow;
@@ -319,13 +325,15 @@ type
 
   TacPaletteColors = (pcMainColor, pcLabelText, pcWebText, pcWebTextHot, pcEditText, pcEditBG,
     pcSelectionBG, pcSelectionText, pcSelectionBG_Focused, pcSelectionText_Focused,
-    pcEditBG_Inverted, pcEditText_Inverted, pcEditBG_OddRow, pcEditBG_EvenRow,       // Not ready
+    pcEditBG_Inverted, pcEditText_Inverted, pcEditBG_OddRow, pcEditBG_EvenRow, // Reserved
     pcEditText_Ok, pcEditText_Warning, pcEditText_Alert, pcEditText_Caution, pcEditText_Bypassed,
     pcEditBG_Ok, pcEditBG_Warning, pcEditBG_Alert, pcEditBG_Caution, pcEditBG_Bypassed,
-    pcEditText_Highlight1, pcEditText_Highlight2, pcEditText_Highlight3,             // Not ready
-    pcBorder);
+    pcEditText_Highlight1, pcEditText_Highlight2, pcEditText_Highlight3, // Reserved
+    pcBorder, pcHintBG, pcHintText);
 
   TacPaletteArray = array [TacPaletteColors] of TColor;
+
+  TacBrushes = array [pcEditBG..pcEditBG] of HBRUSH;
 
   TacScrollBarsSupport = class(TPersistent)
   private
@@ -374,9 +382,11 @@ type
     FNativeBordersMaximized: boolean;
 
     FOwner: TsSkinManager;
+    FScaleMode: TacScaleMode;
     FOptimizingPriority: TacOptimizingPriority;
     function  GetBool(const Index: Integer): boolean;
     procedure SetBool(const Index: Integer; const Value: boolean);
+    procedure SetScaleMode(const Value: TacScaleMode);
   public
     constructor Create(AOwner: TsSkinManager);
   published
@@ -385,17 +395,46 @@ type
     property ChangeSysColors        : boolean index 4 read GetBool write SetBool default False;
     property CheckEmptyAlpha        : boolean index 0 read GetBool write SetBool default False;
     property NativeBordersMaximized : boolean index 2 read GetBool write SetBool default False;
+    property ScaleMode: TacScaleMode read FScaleMode write SetScaleMode default smOldMode;
     property OptimizingPriority: TacOptimizingPriority read FOptimizingPriority write FOptimizingPriority default opSpeed;
   end;
 
 
+  TacSkinListController = class(TObject)
+  public
+    SkinManager: TsSkinManager;
+    Timer: TTimer;
+    ImgList: TImageList;
+    SkinList: array of TacSkinListData;
+    Controls: array of TControl;
+    procedure SendSkinChanged;
+    procedure SendListChanged;
+    procedure UpdateData(UpdateNow: boolean = False);
+    constructor Create(AOwner: TsSkinManager);
+    function CtrlIndex(Ctrl: TControl): integer;
+    procedure AddControl(Ctrl: TControl);
+    procedure DelControl(Ctrl: TControl);
+    destructor Destroy; override;
+  end;
+
+
   TacImageItem = record
-    FileName:   string;
-    IsBitmap:   boolean;
+    FileName: string;
+    IsBitmap: boolean;
     FileStream: TMemoryStream;
   end;
 
   TacImageItems = array of TacImageItem;
+
+
+  TScaleChangeData = record
+    OldScaleMode: TacScaleMode;
+    NewScaleMode: TacScaleMode;
+    OldScalePercent: integer;
+    NewScalePercent: integer;
+  end;
+
+  TScaleChangeEvent = procedure (Sended: TObject; ScaleChangeData: TScaleChangeData) of object;
 
 
   TacSkinConvertor = class(TPersistent)
@@ -403,7 +442,7 @@ type
     Options,
     PackedData: TMemoryStream;
     ImageCount: integer;
-    Files:      TacImageItems;
+    Files: TacImageItems;
     procedure Clear;
     destructor Destroy; override;
   end;
@@ -449,6 +488,7 @@ type
     FOnGetPopupLineData: TacGetExtraLineData;
     FOnGetPopupItemData: TacGetPopupItemData;
     FOnSysDlgInit: TacSysDlgInit;
+    FOnScaleModeChange: TScaleChangeEvent;
 {$IFNDEF FPC}
     FSkinableMenus: TsSkinableMenus;
 {$ENDIF}
@@ -479,18 +519,19 @@ type
     procedure SetBuiltInSkins       (const Value: TsStoredSkins);
     procedure SetActiveGraphControl (const Value: TGraphicControl);
     procedure SetFSkinningRules     (const Value: TacSkinningRules);
+    procedure SetCommonSections     (const Value: TStringList);
   protected
-    NoAutoUpdate: boolean;
     FActiveGraphControl: TGraphicControl;
 {$IFNDEF DELPHI2005}
     TimerCheckHot: TTimer;
     procedure OnCheckHot(Sender: TObject);
-{$ENDIF}    
+{$ENDIF}
     procedure SendNewSkin(Repaint: boolean = True);
     procedure SendRemoveSkin;
     procedure FreeBitmaps;
 {$ENDIF} // NOTFORHELP
   public
+    NoAutoUpdate: boolean;
     ShowState: TShowAction;
     PreviewBuffer: TacSkinData;
     CommonSkinData: TsSkinData;
@@ -515,72 +556,79 @@ type
     ConstData: TConstantSkinData;
     FormShadowSize: TRect;
     ThirdLists: TStringLists;
-
     Palette: TacPaletteArray;
-
-    procedure InitConstantIndexes;
-    procedure CheckShadows;
-
-    procedure LoadAllGeneralData;
+    Brushes: TacBrushes;
+    SkinListController: TacSkinListController;
+    // Skin loading
     procedure LoadAllMasks;
     procedure InitMaskIndexes;
-    function MakeNewItem(SkinIndex: integer; PropertyName, AClassName: string; ImgType: TacImgType; R: TRect; Count, DrawMode: integer; Masktype: smallint): integer;
-    procedure SetCommonSections(const Value: TStringList);
-
-    constructor Create(AOwner: TComponent); override;
-    destructor Destroy; override;
-
-    procedure AfterConstruction; override;
-    procedure Loaded; override;
+    procedure LoadAllGeneralData;
+    function MakeNewItem(SkinIndex: integer; const PropertyName, AClassName: string; ImgType: TacImgType; R: TRect; Count, DrawMode: integer; Masktype: smallint): integer;
+    procedure InitConstantIndexes;
     procedure ReloadSkin;
     procedure ReloadPackedSkin;
-    procedure InstallHook;
-    procedure UnInstallHook;
     procedure CheckVersion;
-
-    procedure Notification(AComponent: TComponent; Operation: TOperation); override;
-    procedure UpdateSkinSection(const SectionName: string);
-    property GroupIndex: integer read FGroupIndex write FGroupIndex;
-{$IFNDEF FPC}
-    property SkinableMenus: TsSkinableMenus read FSkinableMenus write FSkinableMenus;
-{$ENDIF}
-    property ActiveControl: hwnd read FActiveControl write SetActiveControl;
-    property ActiveGraphControl: TGraphicControl read FActiveGraphControl write SetActiveGraphControl;
-    procedure RepaintForms(DoLockForms: boolean = True);
+    procedure CheckShadows;
+    // Getting info
+    function GetScale: integer;
+    function GetSkinNames        (sl: TacStrings; SkinType: TacSkinTypes = stAllSkins): acString;
+    function GetExternalSkinNames(sl: TacStrings; SkinType: TacSkinTypes = stAllSkins): acString;
+    function GetFullSkinDirectory: string;
+    function GetRandomSkin: acString;
+    // Getting current skin info
     function GetSkinIndex(const SkinSection: string): integer;
     function GetMaskIndex(const SkinSection, mask: string): integer; overload;
     function GetMaskIndex(const SkinIndex: integer; mask: string): integer; overload;
     function GetMaskIndex(const SkinIndex: integer; const SkinSection, mask: string): integer; overload;
-    function GetTextureIndex(SkinIndex: integer; const SkinSection, PropName: string): integer; overload;
-    function GetTextureIndex(SkinIndex: integer; const PropName: string): integer; overload;
-{$ENDIF} // NOTFORHELP
-    function GetFullSkinDirectory: string;
-    function GetSkinNames        (sl: TacStrings; SkinType: TacSkinTypes = stAllSkins): acString;
-    function GetExternalSkinNames(sl: TacStrings; SkinType: TacSkinTypes = stAllSkins): acString;
+    function GetTextureIndex(aSkinIndex: integer; const SkinSection, PropName: string): integer; overload;
+    function GetTextureIndex(aSkinIndex: integer; const PropName: string): integer; overload;
     procedure GetSkinSections(sl: TStrings);
-    procedure ExtractInternalSkin(const NameOfSkin, DestDir: string);
-    procedure ExtractByIndex(Index: integer; const DestDir: string);
-    procedure UpdateSkin(Repaint: boolean = True);
-
-    function GetRandomSkin: acString;
-
+(*
+    function MaskWidthTop    (MaskIndex: integer): integer; {$IFDEF WARN_DEPRECATED} deprecated; {$ENDIF}
+    function MaskWidthLeft   (MaskIndex: integer): integer; {$IFDEF WARN_DEPRECATED} deprecated; {$ENDIF}
+    function MaskWidthBottom (MaskIndex: integer): integer; {$IFDEF WARN_DEPRECATED} deprecated; {$ENDIF}
+    function MaskWidthRight  (MaskIndex: integer): integer; {$IFDEF WARN_DEPRECATED} deprecated; {$ENDIF}
+*)
+    function IsValidSkinIndex(SkinIndex: integer): boolean;
+    function IsValidImgIndex(ImageIndex: integer): boolean;
+    // Getting colors
     function GetGlobalColor:         TColor;
     function GetGlobalFontColor:     TColor;
     function GetActiveEditColor:     TColor;
     function GetActiveEditFontColor: TColor;
     function GetHighLightColor    (Focused: boolean = True): TColor;
     function GetHighLightFontColor(Focused: boolean = True): TColor;
-{$IFNDEF NOTFORHELP}
+    // Updating
     procedure BeginUpdate;
     procedure EndUpdate(Repaint: boolean = False; AllowAnimation: boolean = True);
-    function MaskWidthTop    (MaskIndex: integer): integer;
-    function MaskWidthLeft   (MaskIndex: integer): integer;
-    function MaskWidthBottom (MaskIndex: integer): integer;
-    function MaskWidthRight  (MaskIndex: integer): integer;
-    function IsValidSkinIndex(SkinIndex: integer): boolean;
-    function IsValidImgIndex(ImageIndex: integer): boolean;
+    function ScaleInt(Value: integer; SysScale: integer = 0): integer;
+    procedure RepaintForms(DoLockForms: boolean = True);
+    procedure UpdateSkin(Repaint: boolean = True);
+    procedure UpdateSkinSection(const SectionName: string);
+    procedure UpdateScale(Ctrl: TWinControl; iCurrentScale: integer = 100);
+    procedure UpdateAllScale;
+    // Hooks
+    procedure InstallHook;
+    procedure UnInstallHook;
+    // Other routines
+    procedure ExtractInternalSkin(const NameOfSkin, DestDir: string);
+    procedure ExtractByIndex(Index: integer; const DestDir: string);
+    // Inherited
+    constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
+    procedure AfterConstruction; override;
+    procedure Loaded; override;
+    // Properties
+    property GroupIndex: integer read FGroupIndex write FGroupIndex;
+{$IFNDEF FPC}
+    property SkinableMenus: TsSkinableMenus read FSkinableMenus write FSkinableMenus;
+{$ENDIF}
+    property ActiveControl: hwnd read FActiveControl write SetActiveControl;
+    property ActiveGraphControl: TGraphicControl read FActiveGraphControl write SetActiveGraphControl;
 {$ENDIF} // NOTFORHELP
   published
+    property OnScaleModeChange: TScaleChangeEvent read FOnScaleModeChange write FOnScaleModeChange; // Declare before the Options property
+
     property Effects: TacSkinEffects read FEffects write FEffects;
     property ExtendedBorders: boolean read GetExtendedBorders write SetExtendedBorders default False;
 {$IFNDEF FPC}
@@ -632,6 +680,7 @@ var
   acMemSkinFile: TStringList;
 
 
+function SysColorToSkin(const AColor: TColor; ASkinManager: TsSkinManager = nil): TColor;
 {$IFDEF D2007}
 procedure UpdateCommonDlgs(sManager: TsSkinManager);
 {$ENDIF}
@@ -649,6 +698,9 @@ procedure ReceiveData(SkinReceiver: TsSkinManager);
 {$ENDIF}
 
 function ExtractPackedData(var Convertor: TacSkinConvertor; pwds: TStringList; SkinManager: TComponent): boolean;
+function GetPreviewStream(aStream: TMemoryStream; SkinFileName: string): boolean; overload;
+function GetPreviewStream(aStream: TMemoryStream; SrcStream: TMemoryStream): boolean; overload;
+function GetPreviewImage(aBitmap: TBitmap; SkinFileName: string): boolean;
 
 {$IFNDEF DEBUGOBJ}
   {$IFDEF WIN64}
@@ -656,7 +708,7 @@ function ExtractPackedData(var Convertor: TacSkinConvertor; pwds: TStringList; S
   {$ELSE}
     {$l xdecode32.obj}
   {$ENDIF}
-function acSkinDecode(PackedData: TsCharArray; Keys: array of Int64; const Length, FormSum: integer; out FilesCount: integer; out Offset: integer): integer; cdecl; external;
+function asSkinDecode(PackedData: TsCharArray; Keys: array of Int64; const Length, FormSum: integer; out FilesCount: integer; out Offset: integer): integer; cdecl; external;
 {$ENDIF}
 
 {$ENDIF} // NOTFORHELP
@@ -664,7 +716,7 @@ implementation
 
 
 uses
-  math, StdCtrls,
+  math, StdCtrls, ImgList,
 {$IFDEF FPC}
   ZLibEx,
 {$ELSE}
@@ -677,14 +729,19 @@ uses
 {$IFDEF DEBUGOBJ}
   xdecode,
 {$ENDIF}
-  sMessages, sVclUtils, sCommonData, acGlow, sThirdParty, sSkinProps, acDials, sGraphUtils, sGradient, sSkinProvider, sAlphaGraph;
+{$IFNDEF ALITE}
+  acPathDialog, acPopupController,
+{$ENDIF}
+  sMessages, acAlphaImageList, sVclUtils, sCommonData, acGlow, sThirdParty, sSkinProps, acDials, sGraphUtils,
+  sGradient, sSkinProvider, sAlphaGraph;
 
 
 var
   rsta: TBitmap = nil;
   rsti: TBitmap = nil;
-  OSVerInfo: TOSVersionInfo;
   sc: TacSkinConvertor;
+  OSVerInfo: TOSVersionInfo;
+  ac_SetProcessDPIAware: function(): BOOL; stdcall;
 
 
 const
@@ -754,10 +811,112 @@ begin
 end;
 
 
+function SysColorToSkin(const AColor: TColor; ASkinManager: TsSkinManager = nil): TColor;
+{$IFNDEF DELPHI7UP}
+const
+  clHotLight                = TColor($FF000000 or 26);
+  clGradientActiveCaption   = TColor($FF000000 or 27);
+  clGradientInactiveCaption = TColor($FF000000 or 28);
+  clMenuHighlight           = TColor($FF000000 or 29);
+  clMenuBar                 = TColor($FF000000 or 30);
+{$ENDIF}
+begin
+  if ASkinManager = nil then
+    ASkinManager := DefaultManager;
+
+  if (ASkinManager <> nil) and ASkinManager.CommonSkinData.Active then
+    case AColor of
+      clScrollBar, clBackground, clBtnFace, clAppWorkSpace, clMenu:
+        Result := ASkinManager.Palette[pcMainColor];
+
+      clWindow:
+        Result := ASkinManager.Palette[pcEditBG];
+
+      clWindowText:
+        Result := ASkinManager.Palette[pcEditText];
+
+      clInactiveBorder, clActiveBorder, cl3DLight, cl3DDkShadow, clBtnShadow, clWindowFrame:
+        Result := ASkinManager.Palette[pcBorder];
+
+
+      clGradientActiveCaption, clActiveCaption:
+        if ASkinManager.ConstData.Sections[ssFormTitle] >= 0 then
+          Result := ASkinManager.gd[ASkinManager.ConstData.Sections[ssFormTitle]].Props[1].Color
+        else
+          Result := ASkinManager.Palette[pcMainColor];
+
+      clCaptionText:
+        if ASkinManager.ConstData.Sections[ssFormTitle] >= 0 then
+          Result := ASkinManager.gd[ASkinManager.ConstData.Sections[ssFormTitle]].Props[1].FontColor.Color
+        else
+          Result := ASkinManager.Palette[pcMainColor];
+
+      clGradientInactiveCaption, clInactiveCaption:
+        if ASkinManager.ConstData.Sections[ssFormTitle] >= 0 then
+          Result := ASkinManager.gd[ASkinManager.ConstData.Sections[ssFormTitle]].Props[0].Color
+        else
+          Result := ASkinManager.Palette[pcMainColor];
+
+      clInactiveCaptionText:
+        if ASkinManager.ConstData.Sections[ssFormTitle] >= 0 then
+          Result := ASkinManager.gd[ASkinManager.ConstData.Sections[ssFormTitle]].Props[0].FontColor.Color
+        else
+          Result := ASkinManager.Palette[pcMainColor];
+
+      clMenuBar:
+        Result := ASkinManager.Palette[pcMainColor];
+
+      clMenuText:
+        Result := ASkinManager.Palette[pcLabelText];
+
+      clHighlight:
+        Result := ASkinManager.Palette[pcSelectionBG_Focused];
+
+      clHighlightText:
+        Result := ASkinManager.Palette[pcSelectionText_Focused];
+
+      clGrayText:
+        Result := BlendColors(ASkinManager.Palette[pcMainColor], ASkinManager.Palette[pcLabelText], 127);
+
+      clBtnText:
+        if ASkinManager.ConstData.Sections[ssButton] >= 0 then
+          Result := ASkinManager.gd[ASkinManager.ConstData.Sections[ssButton]].Props[0].FontColor.Color
+        else
+          Result := ASkinManager.Palette[pcMainColor];
+
+      clBtnHighlight:
+        if ASkinManager.ConstData.Sections[ssButton] >= 0 then
+          Result := ASkinManager.gd[ASkinManager.ConstData.Sections[ssButton]].Props[1].Color
+        else
+          Result := ASkinManager.Palette[pcMainColor];
+
+      clInfoText:
+        Result := ASkinManager.Palette[pcHintText];
+
+      clInfoBk:
+        Result := ASkinManager.Palette[pcHintBG];
+
+      clHotLight:
+        Result := ASkinManager.Palette[pcWebText];
+
+      clMenuHighlight:
+        if ASkinManager.ConstData.Sections[ssMenuItem] >= 0 then
+          Result := ASkinManager.gd[ASkinManager.ConstData.Sections[ssMenuItem]].Props[1].Color
+        else
+          Result := ColorToRGB(AColor)
+
+      else
+        Result := ColorToRGB(AColor);
+    end
+  else
+    Result := ColorToRGB(AColor);
+end;
+
+
 {$IFDEF D2007}
 procedure UpdateCommonDlgs(sManager: TsSkinManager);
 begin
-  if (DefaultManager = sManager) then
+  if DefaultManager = sManager then
     UseLatestCommonDialogs := not (srStdDialogs in sManager.SkinningRules) or not sManager.Active;
 end;
 {$ENDIF}
@@ -786,7 +945,7 @@ function GetCornerType(sm: TsSkinManager; const mask: TsMaskData): integer;
 var
   C: TsColor;
   Bmp: TBitmap;
-  X, Y, w, h, l, t: integer;
+  dx, i, X, Y, w, h, l, t: integer;
 
   procedure Checkbits;
   begin
@@ -806,7 +965,7 @@ var
   end;
   
 begin
-  if (mask.ClassName = s_ButtonHuge) and (mask.PropertyName = s_BordersMask) then
+  if (mask.SkinIndex = sm.ConstData.Sections[ssButtonHuge]) and (mask.PropertyName = s_BordersMask) then
     Result := 2 {Region changed}
   else begin
     Result := 0; // Normal corner
@@ -815,28 +974,32 @@ begin
         Bmp := Mask.Bmp
       else
         Bmp := sm.MasterBitmap;
-      // Left top
-      l := mask.R.Left;
-      t := mask.R.Top;
-      w := min(mask.R.Left + mask.WL, Bmp.Width  - 1);
-      h := min(mask.R.Top  + mask.WT, Bmp.Height - 1);
-      Checkbits;
-      if Result = 0 then begin // Right top
-        l := mask.R.Left + WidthOf(mask.R) div mask.ImageCount - mask.WR;
+
+      dx := Mask.Width;
+      for i := 0 to Mask.ImageCount - 1 do begin
+        // Left top
+        l := mask.R.Left + i * dx;
+        t := mask.R.Top;
+        w := min(l + mask.WL, Bmp.Width  - 1);
+        h := min(mask.R.Top  + mask.WT, Bmp.Height - 1);
+        Checkbits;
+        if Result > 0 then Exit;
+        // Right top
+        l := mask.R.Left + i * dx + WidthOf(mask.R) div mask.ImageCount - mask.WR;
         t := mask.R.Top;
         w := min(l + mask.WR, Bmp.Width - 1);
         h := min(mask.R.Top + mask.WT, Bmp.Height - 1);
         Checkbits;
-      end;
-      if Result = 0 then begin // Left bottom
-        l := mask.R.Left;
+        if Result > 0 then Exit;
+        // Left bottom
+        l := mask.R.Left + i * dx;
         t := mask.R.Top + HeightOf(mask.R) div (mask.MaskType + 1) - mask.WB;
         w := min(mask.R.Left + mask.WL, Bmp.Width - 1);
         h := min(t + mask.WB, Bmp.Height - 1);
         Checkbits;
-      end;
-      if Result = 0 then begin // Right bottom
-        l := mask.R.Left + WidthOf(mask.R) div mask.ImageCount - mask.WR;
+        if Result > 0 then Exit;
+        // Right bottom
+        l := mask.R.Left + i * dx + WidthOf(mask.R) div mask.ImageCount - mask.WR;
         t := mask.R.Top + HeightOf(mask.R) div (mask.MaskType + 1) - mask.WB;
         w := min(mask.R.Left + mask.WL, Bmp.Width - 1);
         h := min(t + mask.WB, Bmp.Height - 1);
@@ -885,20 +1048,22 @@ begin
           if not Result then begin
             l := Length(ma) + 1;
             SetLength(ma, l);
-            ma[l - 1].PropertyName := '';
-            ma[l - 1].ClassName := '';
-            try
-              ma[l - 1].Bmp := TBitmap.Create;
-              ma[l - 1].Bmp.LoadFromFile(FileName);
-            finally
-              ma[l - 1].PropertyName := s;
-              ma[l - 1].ClassName := UpperCase(SkinSection);
-              ma[l - 1].Manager := sm;
-              ma[l - 1].R := MkRect(ma[l - 1].Bmp);
-              ma[l - 1].ImageCount := 1;
-              ma[l - 1].ImgType := itisaTexture;
+            with ma[l - 1] do begin
+              PropertyName := '';
+              ClassName := '';
+              try
+                Bmp := TBitmap.Create;
+                Bmp.LoadFromFile(FileName);
+              finally
+                PropertyName := s;
+                ClassName := UpperCase(SkinSection);
+                Manager := sm;
+                R := MkRect(Bmp);
+                ImageCount := 1;
+                ImgType := itisaTexture;
+              end;
             end;
-            if ma[l - 1].Bmp.Width < 1 then begin
+            if ma[l - 1].Bmp.Width <= 0 then begin
               FreeAndNil(ma[l - 1].Bmp);
               SetLength(ma, l - 1);
             end;
@@ -912,11 +1077,12 @@ begin
           l := Length(ma);
           if l > 0 then
             for i := 0 to l - 1 do
-              if (ma[i].PropertyName = s) and (ma[i].ClassName = UpperCase(skinSection)) then begin
-                ma[i].Bmp.LoadFromFile(FileName);
-                Result := True;
-                Exit
-              end;
+              with ma[i] do
+                if (PropertyName = s) and (ClassName = UpperCase(SkinSection)) then begin
+                  Bmp.LoadFromFile(FileName);
+                  Result := True;
+                  Exit
+                end;
         end;
     end;
 end;
@@ -925,7 +1091,7 @@ end;
 const
   ChangeableColors: set of TacPaletteColors = [pcMainColor, pcLabelText, pcWebText, pcEditText, pcEditBG,
     pcSelectionBG, pcSelectionText, pcSelectionBG_Focused, pcSelectionText_Focused,
-    pcEditBG_Inverted, pcEditText_Inverted, pcEditBG_OddRow, pcEditBG_EvenRow, pcBorder];
+    pcEditBG_Inverted, pcEditText_Inverted, pcEditBG_OddRow, pcEditBG_EvenRow, pcBorder, pcHintBG, pcHintText];
 
     
 procedure ChangeSkinSaturation(sManager: TsSkinManager; Value: integer);
@@ -934,7 +1100,7 @@ var
   pc: TacPaletteColors;
 begin
   if Value <> 0 then begin
-    Value := LimitIt(Trunc(Value * 2.55), -MaxByte, MaxByte);
+    Value := LimitIt(Value * MaxByte div 100, -MaxByte, MaxByte);
     with sManager do begin
       ChangeBitmapPixels(MasterBitmap, ChangeColorSaturation, Value, clFuchsia);
       l := Length(ExtArray);
@@ -996,8 +1162,8 @@ begin
       RestoreMasterMasks;
       for i := 0 to Length(ExtArray) - 1 do
         with ExtArray[i] do
-          if (Bmp <> nil) then
-            if (MaskType = 0) then begin // Loaded from PNG
+          if Bmp <> nil then
+            if MaskType = 0 then begin // Loaded from PNG
               ChangeBitmapPixels(Bmp, ChangeColorBrightness, Value, clFuchsia);
               if Value > 0 then
                 if CommonSkindata.Version >= acTranspVer then {New mode of layered wnd}
@@ -1005,23 +1171,26 @@ begin
                 else
                   UpdateTransPixels(Bmp);
             end
-            else begin
-              MasksBmp.Width := Bmp.Width;
-              MasksBmp.Height := Bmp.Height div 2;
-              BitBlt(MasksBmp.Canvas.Handle, 0, 0, MasksBmp.Width, MasksBmp.Height, Bmp.Canvas.Handle, 0, MasksBmp.Height, SRCCOPY); // Save mask
-              ChangeBitmapPixels(Bmp, ChangeColorBrightness, Value, clFuchsia);
-              BitBlt(Bmp.Canvas.Handle, 0, MasksBmp.Height, MasksBmp.Width, MasksBmp.Height, MasksBmp.Canvas.Handle, 0, 0, SRCCOPY); // Restore mask
-            end;
+            else
+              with MasksBmp do begin
+                Width := Bmp.Width;
+                Height := Bmp.Height div 2;
+                BitBlt(Canvas.Handle, 0, 0, Width, Height, Bmp.Canvas.Handle, 0, Height, SRCCOPY); // Save mask
+                ChangeBitmapPixels(Bmp, ChangeColorBrightness, Value, clFuchsia);
+                BitBlt(Bmp.Canvas.Handle, 0, Height, Width, Height, Canvas.Handle, 0, 0, SRCCOPY); // Restore mask
+              end;
 
       MasksBmp.Free;
       for i := 0 to Length(gd) - 1 do
         with gd[i] do
           for j := 0 to ac_MaxPropsIndex do
             with Props[j] do begin
-              for n := 0 to Length(GradientArray) - 1 do begin
-                GradientArray[n].Color1 := ChangeBrightness(GradientArray[n].Color1, Value);
-                GradientArray[n].Color2 := ChangeBrightness(GradientArray[n].Color2, Value);
-              end;
+              for n := 0 to Length(GradientArray) - 1 do
+                with GradientArray[n] do begin
+                  Color1 := ChangeBrightness(Color1, Value);
+                  Color2 := ChangeBrightness(Color2, Value);
+                end;
+
               if Color            <> -1 then Color            := ChangeBrightness(Color,            Value);
               if GlowColor        <> -1 then GlowColor        := ChangeBrightness(GlowColor,        Value);
               if FontColor.Color  <> -1 then FontColor.Color  := ChangeBrightness(FontColor.Color,  Value);
@@ -1054,17 +1223,16 @@ var
 
   begin
     Index := sManager.GetMaskIndex(sManager.ConstData.IndexGlobalInfo, Name);
-    if (Index > -1) then
+    if Index >= 0 then
       with sManager.ma[Index] do begin
-        if (Bmp = nil) { If Image is in MasterBitmap } then
+        if Bmp = nil { If Image is in MasterBitmap } then
           with R do
             ExcludeClipRect(sManager.MasterBitmap.Canvas.Handle, Left, Top, Right, Bottom)
         else
           AddToArray(Bmp);
         // Glow glyphs
-        i := sManager.GetMaskIndex(sManager.ConstData.IndexGlobalInfo, Name + s_Glow + ZeroChar);
-        if (i > -1) and (Bmp <> nil) then
-          AddToArray(sManager.ma[i].Bmp);
+        if (sManager.GetMaskIndex(sManager.ConstData.IndexGlobalInfo, Name + s_Glow + ZeroChar) >= 0) and (Bmp <> nil) then
+          AddToArray(Bmp);
       end;
   end;
 
@@ -1102,11 +1270,11 @@ begin
 
       for i := 0 to Length(ExtArray) - 1 do
         if Assigned(ExtArray[i].Bmp) then begin
-          if (CommonSkinData.BIKeepHUE > 0) then begin
+          if CommonSkinData.BIKeepHUE > 0 then begin
             x := Length(ExceptNdx) - 1;
             y := 0;
             for j := 0 to x do
-              if (ExceptNdx[j] = ExtArray[i].Bmp) then begin
+              if ExceptNdx[j] = ExtArray[i].Bmp then begin
                 y := 1;
                 Break
               end;
@@ -1122,10 +1290,11 @@ begin
           for j := 0 to ac_MaxPropsIndex do
             with Props[j] do begin
               if GradientPercent > 0 then
-                for n := 0 to Length(GradientArray) - 1 do begin
-                  GradientArray[n].Color1 := ChangeHue(Value, GradientArray[n].Color1);
-                  GradientArray[n].Color2 := ChangeHue(Value, GradientArray[n].Color2);
-                end;
+                for n := 0 to Length(GradientArray) - 1 do
+                  with GradientArray[n] do begin
+                    Color1 := ChangeHue(Value, Color1);
+                    Color2 := ChangeHue(Value, Color2);
+                  end;
 
               if Color            <> -1 then Color           := ChangeHue(Value, Color);
               if GlowColor        <> -1 then GlowColor       := ChangeHue(Value, GlowColor);
@@ -1136,10 +1305,10 @@ begin
               if FontColor.Bottom <> -1 then FontColor.Bottom:= ChangeHue(Value, FontColor.Bottom);
             end;
 
-      with sManager do begin
-        CommonSkinData.Shadow1Color := ChangeHue(Value, CommonSkinData.Shadow1Color);
+      with sManager, CommonSkinData do begin
+        Shadow1Color := ChangeHue(Value, Shadow1Color);
         for pc := Low(Palette) to High(Palette) do
-          if (pc in ChangeableColors) then
+          if pc in ChangeableColors then
             Palette[pc] := ChangeHue(Value, Palette[pc]);
       end;
     end;
@@ -1167,7 +1336,7 @@ type
 
   PAbsoluteIndirectJmp = ^TAbsoluteIndirectJmp;
   TAbsoluteIndirectJmp = packed record
-    OpCode: Word;   //$FF25(Jmp, FF /4)
+    OpCode: Word; // $FF25(Jmp, FF /4)
     Addr: PPointer;
   end;
 
@@ -1186,7 +1355,7 @@ begin
     if (Win32Platform <> VER_PLATFORM_WIN32_NT) and IsWin9xDebugThunk(Proc) then
       Proc := PWin9xDebugThunk(Proc).Addr;
 
-    if (PAbsoluteIndirectJmp(Proc).OpCode = $25FF) then
+    if PAbsoluteIndirectJmp(Proc).OpCode = $25FF then
       Result := PAbsoluteIndirectJmp(Proc).Addr^
     else
       Result := Proc;
@@ -1235,19 +1404,20 @@ procedure UnHookGetSysColorBrush; forward;
 function acCreatePen(Style, Width: Integer; Color: COLORREF): HPEN; stdcall;
 begin
   if DefaultManager <> nil then
-    case Color of
-      COLOR_INACTIVEBORDER:Color := DefaultManager.CommonSkinData.SysInactiveBorderColor;
-      COLOR_HIGHLIGHT:     Color := DefaultManager.Palette[pcSelectionBG_Focused];
-      COLOR_HIGHLIGHTTEXT: Color := DefaultManager.Palette[pcSelectionText_Focused];
-      COLOR_WINDOW:        Color := DefaultManager.Palette[pcEditBG];
-      COLOR_BTNFACE:       Color := DefaultManager.Palette[pcMainColor];
-      COLOR_WINDOWFRAME:   Color := DefaultManager.Palette[pcBorder];
-      COLOR_BTNSHADOW:     Color := MixColors(DefaultManager.Palette[pcMainColor], 0, 0.8);
-      COLOR_3DDKSHADOW:    Color := MixColors(DefaultManager.Palette[pcMainColor], 0, 0.8);
-      COLOR_3DLIGHT:       Color := MixColors(DefaultManager.Palette[pcMainColor], $FFFFFF, 0.8);
-      clSilver:            Color := MixColors(DefaultManager.Palette[pcEditText], DefaultManager.Palette[pcEditBG], 0.15);
-      $F0F0F0:             Color := MixColors(DefaultManager.Palette[pcEditText], DefaultManager.Palette[pcEditBG], 0.15);
-    end;
+    with DefaultManager do
+      case Color of
+        COLOR_INACTIVEBORDER:Color := CommonSkinData.SysInactiveBorderColor;
+        COLOR_HIGHLIGHT:     Color := Palette[pcSelectionBG_Focused];
+        COLOR_HIGHLIGHTTEXT: Color := Palette[pcSelectionText_Focused];
+        COLOR_WINDOW:        Color := Palette[pcEditBG];
+        COLOR_BTNFACE:       Color := Palette[pcMainColor];
+        COLOR_WINDOWFRAME:   Color := Palette[pcBorder];
+        COLOR_BTNSHADOW:     Color := BlendColors(Palette[pcMainColor], 0, 205);
+        COLOR_3DDKSHADOW:    Color := BlendColors(Palette[pcMainColor], 0, 205);
+        COLOR_3DLIGHT:       Color := BlendColors(Palette[pcMainColor], $FFFFFF, 205);
+        clSilver:            Color := BlendColors(Palette[pcEditText], Palette[pcEditBG], 38);
+        $F0F0F0:             Color := BlendColors(Palette[pcEditText], Palette[pcEditBG], 38);
+      end;
 
   UnHookCreatePen;
   Result := CreatePen(Style, Width, Color);
@@ -1258,22 +1428,23 @@ end;
 function acGetSysColor(nIndex: Integer): DWORD; stdcall;
 begin
   if DefaultManager <> nil then
-    case nIndex of
-      COLOR_INACTIVEBORDER:Result := DefaultManager.CommonSkinData.SysInactiveBorderColor;
-      COLOR_HIGHLIGHT:     Result := DefaultManager.Palette[pcSelectionBG_Focused];
-      COLOR_HIGHLIGHTTEXT: Result := DefaultManager.Palette[pcSelectionText_Focused];
-      COLOR_WINDOW:        Result := DefaultManager.Palette[pcEditBG];
-      COLOR_WINDOWTEXT:    Result := DefaultManager.Palette[pcEditText];
-      COLOR_WINDOWFRAME:   Result := DefaultManager.Palette[pcBorder];
-      COLOR_BTNSHADOW:     Result := MixColors(DefaultManager.Palette[pcMainColor], 0, 0.8);
-      COLOR_3DDKSHADOW:    Result := MixColors(DefaultManager.Palette[pcMainColor], 0, 0.8);
-      COLOR_3DLIGHT:       Result := MixColors(DefaultManager.Palette[pcMainColor], $FFFFFF, 0.8)
-      else begin
-        UnHookGetSysColor;
-        Result := GetSysColor(nIndex);
-        HookGetSysColor;
-      end;
-    end
+    with DefaultManager do
+      case nIndex of
+        COLOR_INACTIVEBORDER:Result := CommonSkinData.SysInactiveBorderColor;
+        COLOR_HIGHLIGHT:     Result := Palette[pcSelectionBG_Focused];
+        COLOR_HIGHLIGHTTEXT: Result := Palette[pcSelectionText_Focused];
+        COLOR_WINDOW:        Result := Palette[pcEditBG];
+        COLOR_WINDOWTEXT:    Result := Palette[pcEditText];
+        COLOR_WINDOWFRAME:   Result := Palette[pcBorder];
+        COLOR_BTNSHADOW:     Result := BlendColors(Palette[pcMainColor], 0, 205);
+        COLOR_3DDKSHADOW:    Result := BlendColors(Palette[pcMainColor], 0, 205);
+        COLOR_3DLIGHT:       Result := BlendColors(Palette[pcMainColor], $FFFFFF, 205)
+        else begin
+          UnHookGetSysColor;
+          Result := GetSysColor(nIndex);
+          HookGetSysColor;
+        end;
+      end
   else
     Result := 0;
 end;
@@ -1282,17 +1453,18 @@ end;
 function acGetSysColorBrush(nIndex: Integer): HBRUSH; stdcall;
 begin
   if DefaultManager <> nil then
-    case nIndex of
-      COLOR_HIGHLIGHT:     Result := CreateSolidBrush(Cardinal(DefaultManager.Palette[pcSelectionBG_Focused]));
-      COLOR_HIGHLIGHTTEXT: Result := CreateSolidBrush(Cardinal(DefaultManager.Palette[pcSelectionText_Focused]));
-      COLOR_WINDOW:        Result := CreateSolidBrush(Cardinal(DefaultManager.Palette[pcEditBG]));
-      COLOR_WINDOWTEXT:    Result := CreateSolidBrush(Cardinal(DefaultManager.Palette[pcEditText]))
-      else begin
-        UnHookGetSysColorBrush;
-        Result := GetSysColorBrush(nIndex);
-        HookGetSysColorBrush;
-      end;
-    end
+    with DefaultManager do
+      case nIndex of
+        COLOR_HIGHLIGHT:     Result := CreateSolidBrush(Cardinal(Palette[pcSelectionBG_Focused]));
+        COLOR_HIGHLIGHTTEXT: Result := CreateSolidBrush(Cardinal(Palette[pcSelectionText_Focused]));
+        COLOR_WINDOW:        Result := Brushes[pcEditBG];
+        COLOR_WINDOWTEXT:    Result := CreateSolidBrush(Cardinal(Palette[pcEditText]))
+        else begin
+          UnHookGetSysColorBrush;
+          Result := GetSysColorBrush(nIndex);
+          HookGetSysColorBrush;
+        end;
+      end
   else
     Result := 0;
 end;
@@ -1404,8 +1576,12 @@ begin
   if FSkinDirectory = '' then
     FSkinDirectory := DefSkinsDir;
 
-  if not (csLoading in ComponentState) and not (csReading in ComponentState) and Assigned(InitDevEx) then
+  if ([csLoading, csReading] * ComponentState = []) and Assigned(InitDevEx) then begin
+    if (Options.ScaleMode <> smOldMode) and Assigned(ac_SetProcessDPIaware) then
+      ac_SetProcessDPIaware;
+
     InitDevEx(Active and (SkinName <> ''));
+  end;
 end;
 
 
@@ -1426,6 +1602,8 @@ var
   i, l: integer;
   Section: TacSection;
 begin
+  CommonSkinData := TsSkinData.Create;
+  CommonSkinData.Active := False;
   inherited Create(AOwner);
   FEffects := TacSkinEffects.Create;
   FEffects.Manager := Self;
@@ -1454,8 +1632,6 @@ begin
     ThirdLists[i] := TStringList.Create;
     SetCaseSens(ThirdLists[i]);
   end;
-  CommonSkinData := TsSkinData.Create;
-  CommonSkinData.Active := False;
   CommonSkinData.SysInactiveBorderColor := ColorToRGB(clInactiveBorder);
   FBuiltInSkins := TsStoredSkins.Create(Self);
   FCommonSections := TStringList.Create;
@@ -1476,7 +1652,8 @@ begin
   FAnimEffects.Manager := Self;
   GlobalHookInstalled := False;
   FSkinningRules := [srStdForms, srStdDialogs, srThirdParty];
-  if (DefaultManager = nil) then begin
+  SkinListController := TacSkinListController.Create(Self);
+  if DefaultManager = nil then begin
     DefaultManager := Self;
 {$IFNDEF FPC}
     if IsNT and not (csDesigning in ComponentState) then
@@ -1485,7 +1662,7 @@ begin
   end;
   FActive := True;
   SkinRemoving := False;
-  
+
 {$IFNDEF FPC}
   FSkinableMenus := TsSkinableMenus.Create(Self);
 {$ENDIF}
@@ -1495,7 +1672,6 @@ begin
   TimerCheckHot.Interval := 100;
   TimerCheckHot.OnTimer := OnCheckHot;
 {$ENDIF}
-
   SetLength(gd, 0);
   SetLength(ma, 0);
 end;
@@ -1503,25 +1679,20 @@ end;
 
 destructor TsSkinManager.Destroy;
 var
+  ColorItem: TacPaletteColors;
   i: integer;
 begin
   Active := False;
   FExtendedBorders := False;
   FreeAndNil(FAnimEffects);
-  if Assigned(FBuiltInSkins) then
-    FreeAndNil(FBuiltInSkins);
-
+  FreeAndNil(FBuiltInSkins);
 {$IFNDEF FPC}
-  if Assigned(FSkinableMenus) then
-    FreeAndNil(FSkinableMenus);
+  FreeAndNil(FSkinableMenus);
 {$ENDIF}
-
 {$IFNDEF DELPHI2005}
   TimerCheckHot.Free;
 {$ENDIF}
-
   FreeAndNil(FEffects);
-
   if ShdaTemplate <> nil then
     FreeAndNil(ShdaTemplate);
 
@@ -1531,16 +1702,15 @@ begin
   FreeAndNil(FCommonSections);
   FreeAndNil(FKeyList);
 
-  if Assigned(CommonSkinData) then
-    FreeAndNil(CommonSkinData);
-
+  FreeAndNil(CommonSkinData);
   FreeAndNil(FMenuSupport);
   FreeAndNil(FOptions);
   FreeAndNil(FScrollsOptions);
   FreeAndNil(FButtonsSupport);
   FreeAndNil(FLabelsSupport);
+  FreeAndNil(SkinListController);
   FreeBitmaps;
-  if (DefaultManager = Self) then begin
+  if DefaultManager = Self then begin
 {$IFNDEF FPC}
     if IsNT and not (csDesigning in ComponentState) then
       Application.UnHookMainWindow(MainWindowHook);
@@ -1553,8 +1723,12 @@ begin
     if ThirdLists[i] <> nil then
       FreeAndNil(ThirdLists[i]);
 
+  for ColorItem := low(Brushes) to high(Brushes) do 
+    if Brushes[ColorItem] <> 0 then
+      DeleteObject(Brushes[ColorItem]);
+
   SetLength(ThirdLists, 0);
-  FreeAndNil(FThirdParty); 
+  FreeAndNil(FThirdParty);
   inherited Destroy;
 end;
 
@@ -1601,9 +1775,9 @@ end;
 function TsSkinManager.GetExternalSkinNames(sl: TacStrings; SkinType: TacSkinTypes = stAllSkins): acString;
 var
   FileInfo: TacSearchRec;
-  DosCode: Integer;
   s, SkinPath: acString;
   stl: TacStringList;
+  DosCode: Integer;
 begin
   Result := '';
   SkinPath := GetFullskinDirectory;
@@ -1615,16 +1789,16 @@ begin
     DosCode := acFindFirst(s, faDirectory, FileInfo);
     try
       while DosCode = 0 do begin
-        if (FileInfo.Name[1] <> s_Dot) then
+        if FileInfo.Name[1] <> s_Dot then
           if (SkinType in [stUnpacked, stAllSkins]) and
-                (FileInfo.Attr and faDirectory = faDirectory) and
+                (FileInfo.Attr and faDirectory <> 0) and
                   FileExists(SkinPath + s_Slash + FileInfo.Name + s_Slash + OptionsDatName) then begin
             stl.Add(FileInfo.Name);
             if Result = '' then
               Result := FileInfo.Name;
           end
           else
-            if (SkinType in [stPacked, stAllSkins]) and (FileInfo.Attr and faDirectory <> faDirectory) and (ExtractFileExt(FileInfo.Name) = s_Dot + acSkinExt) then begin
+            if (SkinType in [stPacked, stAllSkins]) and (FileInfo.Attr and faDirectory = 0) and (ExtractFileExt(FileInfo.Name) = s_Dot + acSkinExt) then begin
               s := FileInfo.Name;
               Delete(s, pos(s_Dot + acSkinExt, LowerCase(s)), 4);
               stl.Add(s);
@@ -1649,7 +1823,7 @@ var
   s: string;
 begin
   Result := SkinDirectory;
-  if (pos('..', Result) = 1) then begin
+  if pos('..', Result) = 1 then begin
     s := GetAppPath;
     Delete(s, Length(s), 1);
     while (s[Length(s)] <> '/') and (s[Length(s)] <> s_Slash) do
@@ -1664,10 +1838,10 @@ begin
       Result := GetAppPath + Result;
     end
     else
-      if (s_Dot = Result) then
+      if s_Dot = Result then
         Result := GetAppPath
       else
-        if (pos(':', Result) < 1) and (pos('\\', Result) < 1) then
+        if (pos(':', Result) <= 0) and (pos('\\', Result) <= 0) then
           Result := GetAppPath + Result;
 
   NormalDir(Result);
@@ -1689,9 +1863,9 @@ end;
 function TsSkinManager.GetSkinNames(sl: TacStrings; SkinType: TacSkinTypes = stAllSkins): acString;
 var
   FileInfo: TacSearchRec;
-  DosCode: Integer;
   s, SkinPath: acString;
   stl: TacStringList;
+  DosCode: Integer;
 begin
   Result := '';
   SkinPath := GetFullskinDirectory;
@@ -1710,16 +1884,16 @@ begin
     DosCode := acFindFirst(s, faDirectory, FileInfo);
     try
       while DosCode = 0 do begin
-        if (FileInfo.Name[1] <> s_Dot) then
+        if FileInfo.Name[1] <> s_Dot then
           if (SkinType in [stUnpacked, stAllSkins]) and
-                (FileInfo.Attr and faDirectory = faDirectory) and
+                (FileInfo.Attr and faDirectory <> 0) and
                   FileExists(SkinPath + s_Slash + FileInfo.Name + s_Slash + OptionsDatName) then begin
             stl.Add(FileInfo.Name);
             if Result = '' then
               Result := FileInfo.Name;
           end
           else
-            if (SkinType in [stPacked, stAllSkins]) and (FileInfo.Attr and faDirectory <> faDirectory) and (ExtractFileExt(FileInfo.Name) = s_Dot + acSkinExt) then begin
+            if (SkinType in [stPacked, stAllSkins]) and (FileInfo.Attr and faDirectory = 0) and (ExtractFileExt(FileInfo.Name) = s_Dot + acSkinExt) then begin
               s := FileInfo.Name;
               Delete(s, pos(s_Dot + acSkinExt, LowerCase(s)), 4);
               stl.Add(s);
@@ -1775,16 +1949,121 @@ procedure TsSkinManager.InitConstantIndexes;
 var
   b: boolean;
   Side: TacSide;
+  tg: TacTitleGlyph;
+  i, iScale: integer;
   tPos: TacTabLayout;
   Section: TacSection;
   CheckState: TCheckBoxState;
 
-  procedure ReadConstElementData(var ed: TacConstElementData; ASection: string = ''; AltSection1: string = ''; AltSection2: string = '');
+  function GetGlobalIndex(const sName: string): integer;
+  begin
+    Result := GetMaskIndex(ConstData.IndexGlobalInfo, s_GlobalInfo, sName)
+  end;
+
+  function GetGlyphNdx(const sName: string; const SectionIndex: integer = -1; Png: boolean = False): integer;
+  var
+    C: TColor;
+    SrcBmp: TBitmap;
+    CanFree: boolean;
+    S0, S1, S2: PRGBAArray_S;
+    h, x, y, Delta: integer;
+
+    function InExternal(Bmp: TBitmap): boolean;
+    var
+      i: integer;
+    begin
+      for i := 0 to Length(ExtArray) - 1 do
+        if ExtArray[i].Bmp = Bmp then begin
+          Result := True;
+          Exit;
+        end;
+
+      Result := False;
+    end;
+
+  begin
+    if SectionIndex < 0 then
+      Result := GetGlobalIndex(sName + aSfxs[iScale])
+    else
+      Result := GetMaskIndex(SectionIndex, sName + aSfxs[iScale]);
+
+    if (Result < 0) and (aSfxs[iScale] <> '') then begin // Make new scaled glyph
+      if SectionIndex < 0 then
+        Result := GetGlobalIndex(sName)
+      else
+        Result := GetMaskIndex(SectionIndex, sName);
+
+      if Result >= 0 then
+        with ma[Result] do begin
+          CanFree := True;
+          h := HeightOf(R);
+          // Prepare SrcBmp
+          if not Png then begin
+            if MaskType = 0 then begin
+              SrcBmp := CreateBmp32(WidthOf(R), h * 2);
+              FillRect32(SrcBmp, Rect(0, h, SrcBmp.Width, SrcBmp.Height), 0, 0);
+              if Bmp <> nil then begin
+                BitBlt(SrcBmp.Canvas.Handle, 0, 0, SrcBmp.Width, h, Bmp.Canvas.Handle, 0, 0, SRCCOPY);
+                if not InExternal(Bmp) then
+                  FreeAndNil(Bmp);
+              end
+              else
+                BitBlt(SrcBmp.Canvas.Handle, 0, 0, SrcBmp.Width, h, MasterBitmap.Canvas.Handle, R.Left, R.Top, SRCCOPY);
+            end
+            else
+              if Bmp <> nil then begin
+                SrcBmp := Bmp;
+                CanFree := False;
+              end
+              else begin
+                SrcBmp := CreateBmp32(WidthOf(R), HeightOf(R));
+                BitBlt(SrcBmp.Canvas.Handle, 0, 0, SrcBmp.Width, SrcBmp.Height, MasterBitmap.Canvas.Handle, R.Left, R.Top, SRCCOPY);
+              end;
+
+            h := SrcBmp.Height div 2;
+            C := Palette[pcMainColor];
+            if InitLine(SrcBmp, Pointer(S0), Delta) then
+              for y := 0 to h - 1 do begin
+                S1 := Pointer(LongInt(S0) + Delta * Y);
+                S2 := Pointer(LongInt(S0) + Delta * (h + Y));
+                for X := 0 to SrcBmp.Width - 1 do
+                  with S1[X] do
+                    if SC = sFuchsia.C then begin
+                      S2[X].SC := $FFFFFF;
+                      SC := C;
+                      SA := 0;
+                    end;
+              end;
+
+            Bmp := CreateBmp32(ScaleInt(WidthOf(R) div ImageCount) * ImageCount, ScaleInt(HeightOf(R) * iff(MaskType = 0, 2, 1) div 2) * 2);
+          end
+          else begin
+            CanFree := False;
+            SrcBmp := Bmp;
+            Bmp := CreateBmp32(ScaleInt(WidthOf(R) div ImageCount) * ImageCount, ScaleInt(HeightOf(R)));
+          end;
+          Stretch(SrcBmp, Bmp, Bmp.Width, Bmp.Height, ftMitchell);
+          MaskType := 1;
+          R := MkRect(Bmp);
+          if CanFree then
+            SrcBmp.Free;
+        end;
+    end;
+  end;
+
+  function GetExtBordNdx(const sName: string): integer;
+  begin
+    Result := GetGlobalIndex(sName + aSfxs[iScale]);
+    if (Result < 0) and (aSfxs[iScale] <> '') then
+      Result := GetGlobalIndex(sName);
+  end;
+
+  procedure ReadConstElementData(var ed: TacConstElementData; const ASection: string = ''; const AltSection1: string = ''; const AltSection2: string = ''; ScaleGlyph: boolean = True);
   begin
     with ed do begin
       if ASection <> '' then
         SkinSection := ASection;
-        
+
       SkinIndex  := GetSkinIndex(SkinSection);
       if SkinIndex < 0 then begin
         Skinsection := AltSection1;
@@ -1795,32 +2074,54 @@ var
         end;
       end;
       MaskIndex  := GetMaskIndex(SkinIndex, SkinSection, s_BordersMask);
-      GlyphIndex := GetMaskIndex(SkinIndex, SkinSection, s_ItemGlyph);
+      if ScaleGlyph then
+        GlyphIndex := GetGlyphNdx(s_ItemGlyph, SkinIndex)
+      else
+        GlyphIndex := GetMaskIndex(SkinIndex, s_ItemGlyph);
+
       BGIndex[0] := GetMaskIndex(SkinIndex, SkinSection, s_Pattern);
       BGIndex[1] := GetMaskIndex(SkinIndex, SkinSection, s_HotPattern);
     end;
   end;
 
-  function GetGlobalIndex(sName: string): integer;
+  procedure ReadTrackBarData(var Data: TacTrackBarData; Horz: boolean);
   begin
-    Result := GetMaskIndex(ConstData.IndexGlobalInfo, s_GlobalInfo, sName)
+    with Data do begin
+      SkinIndex  := GetSkinIndex(s_TrackBar);
+      MaskIndex  := GetMaskIndex(SkinIndex, s_BordersMask);
+      ProgIndex  := GetMaskIndex(SkinIndex, ProgArray[Horz]);
+      TickIndex  := GetGlyphNdx(ThickArray[Horz], SkinIndex);
+      SlideIndex := GetMaskIndex(SkinIndex, s_SliderChannelMask);
+      if not Horz then
+        GlyphIndex := GetGlyphNdx(s_SliderVertMask, SkinIndex)
+      else
+        GlyphIndex := -1;
+
+      if GlyphIndex < 0 then
+        GlyphIndex := GetGlyphNdx(s_SliderHorzMask, SkinIndex);
+
+      BGIndex[0] := GetMaskIndex(SkinIndex, s_Pattern);
+      BGIndex[1] := GetMaskIndex(SkinIndex, s_HotPattern);
+    end;
   end;
 
 begin
+  iScale := GetScale;
   with ConstData do begin
     IndexGlobalInfo := GetSkinIndex(s_GlobalInfo);
+    // Glyphs
+    for CheckState := cbUnchecked to cbGrayed do
+      CheckBox[CheckState] := GetGlyphNdx(acCheckGlyphs[CheckState]);
 
     for CheckState := cbUnchecked to cbGrayed do
-      CheckBox[CheckState] := GetGlobalIndex(acCheckGlyphs[CheckState]);
-
-    for CheckState := cbUnchecked to cbGrayed do
-      SmallCheckBox[CheckState] := GetGlobalIndex(acSmallChecks[CheckState]);
+      SmallCheckBox[CheckState] := GetGlyphNdx(acSmallChecks[CheckState]);
 
     for b := False to True do
-      RadioButton[b] := GetGlobalIndex(acRadioGlyphs[b]);
+      RadioButton[b] := GetGlyphNdx(acRadioGlyphs[b]);
 
-    ExBorder        := GetGlobalIndex(s_ExBorder);
-    GripRightBottom := GetGlobalIndex(s_GripImage);
+    // Masks
+    ExBorder        := GetExtBordNdx(s_ExBorder);
+    GripRightBottom := GetGlyphNdx(s_GripImage);
     GripHorizontal  := GetGlobalIndex(s_GripHorz);
     GripVertical    := GetGlobalIndex(s_GripVert);
 
@@ -1828,32 +2129,45 @@ begin
     ReadConstElementData(ComboBtn, s_ComboBtn);
     ComboBtn.GlyphIndex := GetMaskIndex(s_ComboBox, s_ItemGlyph);
 
+    // Some sections
     for tPos := tlFirst to tlSingle do
       for Side := asLeft to asBottom do
         ReadConstElementData(Tabs[tPos][Side], acTabSections[tPos][Side]);
 
-    for b := False to True do
+    for b := False to True do begin
       ReadConstElementData(Sliders[b], acScrollSliders[b]);
+      ReadTrackBarData(TrackBar[b], b);
+    end;
 
     for Side := asLeft to asBottom do begin
-      ReadConstElementData(ScrollBtns[Side], acScrollBtns [Side]);
-      ReadConstElementData(Scrolls   [Side], acScrollParts[Side]);
-      ReadConstElementData(UpDownBtns[Side], acUpDownBtns [Side], s_UpDown, s_Button);
+      ReadConstElementData(ScrollBtns[Side], acScrollBtns [Side], '', '', False);
+      ReadConstElementData(Scrolls   [Side], acScrollParts[Side], '', '', False);
+      ReadConstElementData(UpDownBtns[Side], acUpDownBtns [Side], s_UpDown, s_Button, False);
     end;
-    // Sys icons
-    MaskCloseBtn      := GetGlobalIndex(s_BorderIconClose);
-    MaskCloseAloneBtn := GetGlobalIndex(s_BorderIconCloseAlone);
-    MaskMaxBtn        := GetGlobalIndex(s_BorderIconMaximize);
-    MaskNormBtn       := GetGlobalIndex(s_BorderIconNormalize);
-    MaskMinBtn        := GetGlobalIndex(s_BorderIconMinimize);
-    MaskHelpBtn       := GetGlobalIndex(s_BorderIconHelp);
+    // Title icons
+    for tg := Low(TacTitleGlyph) to High(TacTitleGlyph) do
+      TitleGlyphs[tg] := GetGlyphNdx(acTitleGlyphs[tg]);
 
-    MaskCloseSmall    := GetGlobalIndex(s_SmallIconClose);
-    MaskMaxSmall      := GetGlobalIndex(s_SmallIconMaximize);
-    MaskNormSmall     := GetGlobalIndex(s_SmallIconNormalize);
-    MaskMinSmall      := GetGlobalIndex(s_SmallIconMinimize);
-    MaskHelpSmall     := GetGlobalIndex(s_SmallIconHelp);
+    if TitleGlyphs[tgCloseAlone] < 0 then
+      TitleGlyphs[tgCloseAlone] := TitleGlyphs[tgClose];
 
+    for tg := tgSmallClose to tgSmallHelp do
+      if TitleGlyphs[tg] < 0 then
+        TitleGlyphs[tg] := TitleGlyphs[TacTitleGlyph(ord(tg) - 5)];
+
+    // Title icons glows
+    for tg := tgCloseAlone to tgNormal do
+      for i := 0 to Length(TitleGlows[tg]) - 1 do
+        TitleGlows[tg][i] := GetGlyphNdx(acTitleGlyphs[tg] + s_Glow + IntToStr(i), ConstData.IndexGlobalInfo, True);
+
+    if TitleGlyphs[tgCloseAlone] = TitleGlyphs[tgClose] then begin
+      GlowMargins[tgCloseAlone] := GlowMargins[tgClose];
+      SetLength(TitleGlows[tgCloseAlone], Length(TitleGlows[tgClose]));
+      for i := 0 to Length(TitleGlows[tgCloseAlone]) - 1 do
+        TitleGlows[tgCloseAlone][i] := TitleGlows[tgClose][0];
+    end;
+
+    // Some sections
     for Section := Low(Sections) to High(Sections) do
       Sections[Section] := GetSkinIndex(acSectNames[Section]);
   end;
@@ -1865,6 +2179,19 @@ end;
 procedure TsSkinManager.InitMaskIndexes;
 var
   i: integer;
+
+  procedure CheckBorderWidth(var AValue: SmallInt; md: TsMaskData; AVert: boolean);
+  begin
+    if AValue <= 0 then
+      if md.BorderWidth > 0 then
+        AValue := md.BorderWidth
+      else
+        if AVert then
+          AValue := md.Height
+        else
+          AValue := md.Width;
+  end;
+
 begin
   for i := 0 to Length(gd) - 1 do
     if i <> ConstData.IndexGlobalInfo then
@@ -1889,21 +2216,45 @@ begin
           ScrollBorderOffset := -2
         else
           if (ClassName = s_Edit) or (ClassName = s_AlphaEdit) then
-            with ma[gd[i].BorderIndex] do begin
+            with ma[gd[i].BorderIndex] do
               if (WL = 1) and (WT = 1) and (WR = 1) and (WB = 1) then
                 ScrollBorderOffset := -1
               else
-                ScrollBorderOffset := 0;
-            end
+                ScrollBorderOffset := 0
           else
             ScrollBorderOffset := 0;
       end;
+
+  for i := 0 to Length(ma) - 1 do
+    with ma[i] do begin
+      case ImageCount of
+        0:   Width := 0;
+        1:   Width := WidthOf(R)
+        else Width := WidthOf(R) div ImageCount;
+      end;
+      case MaskType of
+       -1:   Height := 0;
+        0:   Height := HeightOf(R);
+        1:   Height := HeightOf(R) div 2
+        else Height := HeightOf(R) div (MaskType + 1)
+      end;
+      if ImageCount = 0 then begin
+        CheckBorderWidth(WT, ma[i], True);
+        CheckBorderWidth(WB, ma[i], True);
+        CheckBorderWidth(WL, ma[i], False);
+        CheckBorderWidth(WB, ma[i], False);
+        ImageCount := 1;
+      end;
+    end;
 end;
 
 
 procedure TsSkinManager.Loaded;
 begin
   inherited;
+  if (Options.ScaleMode <> smOldMode) and Assigned(ac_SetProcessDPIaware) then
+    ac_SetProcessDPIaware;
+
   if FSkinDirectory = '' then
     FSkinDirectory := DefSkinsDir;
 
@@ -1917,17 +2268,13 @@ begin
 {$IFDEF D2007}
   UpdateCommonDlgs(Self);
 {$ENDIF}
-  if not (csLoading in ComponentState) and not (csReading in ComponentState) and Assigned(InitDevEx) then
+  if ([csLoading, csReading] * ComponentState = []) and Assigned(InitDevEx) then
     InitDevEx(Active and (SkinName <> ''));
 
   if Assigned(FOnActivate) and FActive and not (csDesigning in ComponentState) then
     FOnActivate(Self);
-end;
 
-
-procedure TsSkinManager.Notification(AComponent: TComponent; Operation: TOperation);
-begin
-  inherited Notification(AComponent, Operation);
+  SkinListController.UpdateData(False);
 end;
 
 
@@ -1940,7 +2287,7 @@ begin
     GetWindowRect(FActiveControl, R);
     if not PtInRect(R, acMousePos) then begin
       ActiveControl := 0;
-      ActiveGraphControl.Perform(SM_ALPHACMD, MakeWParam(0, AC_MOUSELEAVE), LPARAM(ActiveGraphControl));
+      ActiveGraphControl.Perform(SM_ALPHACMD, AC_MOUSELEAVE_HI, LPARAM(ActiveGraphControl));
     end;
   end;
 end;
@@ -1952,7 +2299,7 @@ var
   M: TMessage;
   i: integer;
 begin
-  if not (csLoading in ComponentState) and not (csReading in ComponentState) then begin
+  if [csLoading, csReading] * ComponentState = [] then begin
     if IsDefault then
       ClearGlows;
 
@@ -1960,23 +2307,21 @@ begin
       LockForms(Self);
 
 {$IFNDEF FPC}
-    if SkinableMenus <> nil then
-      SkinableMenus.SkinBorderWidth := -1;
+    SkinableMenus.SkinBorderWidth := -1;
 {$ENDIF}
 
     CommonSkinData.Active := False;
     RestrictDrawing := True;
 
-    InitConstantIndexes;
-
     M.Msg := SM_ALPHACMD;
-    M.WParam := MakeWParam(0, AC_SETNEWSKIN);
+    M.WParam := AC_SETNEWSKIN_HI;
     M.LParam := LPARAM(Self);
     M.Result := 0;
     if csDesigning in ComponentState then
       for i := 0 to Screen.FormCount - 1 do begin
-        if (Screen.Forms[i].Name = '') or (Screen.Forms[i].Name = 'AppBuilder') or (Screen.Forms[i].Name = 'PropertyInspector') then
-          Continue;
+        with Screen.Forms[i] do
+          if (Name = '') or (Name = 'AppBuilder') or (Name = 'PropertyInspector') then
+            Continue;
 
         AlphaBroadCast(Screen.Forms[i], M);
         SendToHooked(M);
@@ -2009,22 +2354,24 @@ begin
   if IsDefault and Assigned(InitDevEx) then
     InitDevEx(False);
 
+{$IFNDEF ALITE}
+  if acIntController <> nil then
+    acIntController.KillAllForms(nil);
+{$ENDIF}
+
   SkinRemoving := True;
   ClearGlows;
   UninstallHook;
   CommonSkinData.Active := False;
   M.Msg := SM_ALPHACMD;
-  M.WParam := MakeWParam(0, AC_REMOVESKIN);
+  M.WParam := AC_REMOVESKIN_HI;
   M.LParam := LPARAM(Self);
   M.Result := 0;
   if csDesigning in ComponentState then
     for i := 0 to Screen.FormCount - 1 do begin
-      if (Screen.Forms[i].Name = '') or
-           (Screen.Forms[i].Name = 'AppBuilder') or
-             (pos('EditWindow_', Screen.Forms[i].Name) > 0) or
-               (pos('DockSite', Screen.Forms[i].Name) > 0) or
-                 (Screen.Forms[i].Name = 'PropertyInspector') then
-        Continue;
+      with Screen.Forms[i] do
+        if (Name = '') or (Name = 'AppBuilder') or (pos('EditWindow_', Name) > 0) or (pos('DockSite', Name) > 0) or (Name = 'PropertyInspector') then
+          Continue;
 
       AlphaBroadCast(Screen.Forms[i], M);
       SendToHooked(M);
@@ -2051,13 +2398,14 @@ begin
 {$IFDEF D2007}
         UpdateCommonDlgs(Self);
 {$ENDIF}
-        if Assigned(FOnDeactivate) and not (csDesigning in ComponentState) then
+        if Assigned(FOnDeactivate) and ([csDesigning, csDestroying] * ComponentState = []) then
           FOnDeactivate(Self);
       end;
     end
     else
       SkinName := FSkinName;
   end;
+  SkinListController.SendSkinChanged;
 end;
 
 
@@ -2087,6 +2435,7 @@ begin
   if FSkinDirectory <> Value then begin
     FSkinDirectory := Value;
     CommonSkinData.SkinPath := GetFullSkinDirectory;
+    SkinListController.UpdateData(False);
     if Assigned(FOnSkinListChanged) then
       FOnSkinListChanged(Self);
   end;
@@ -2142,13 +2491,14 @@ begin
     else
       SendRemoveSkin;
 
-    if Assigned(FOnActivate) and not (csDesigning in ComponentState) and not (csLoading in ComponentState) then
+    if Assigned(FOnActivate) and ([csDesigning, csLoading] * ComponentState = []) then
       FOnActivate(Self);
 
     aSkinChanging := False;
     if not NoAutoUpdate and Assigned(OnAfterChange) then
       FOnAfterChange(Self);
   end;
+  SkinListController.SendSkinChanged;
 {$IFDEF D2007}
   UpdateCommonDlgs(Self);
 {$ENDIF}
@@ -2188,6 +2538,60 @@ begin
 end;
 
 
+type
+  TAccessControl = class(TWinControl);
+
+
+procedure TsSkinManager.UpdateScale(Ctrl: TWinControl; iCurrentScale: integer = 100);
+const
+  SWP_HIDE = SWP_NOSIZE + SWP_NOMOVE + SWP_NOZORDER + SWP_NOACTIVATE + SWP_HIDEWINDOW;
+  SWP_SHOW = SWP_NOSIZE + SWP_NOMOVE + SWP_NOZORDER + SWP_NOACTIVATE + SWP_SHOWWINDOW;
+var
+  R: TRect;
+  b, IsVisible: boolean;
+  w, h, iOldScale, iNewScale: integer;
+begin
+  iOldScale := Ctrl.Perform(SM_ALPHACMD, AC_GETSCALE shl 16, 0);
+  if iOldScale = 0 then
+    iOldScale := iCurrentScale;
+
+  // If system scale not changed
+{
+  if SysFontScale = 0 then
+    iNewScale := aScalePercents[GetScale]
+  else
+}
+    iNewScale := aScalePercents[GetScale];
+//    iNewScale := 100;
+
+  if iNewScale <> iOldScale then
+    with TAccessControl(Ctrl) do begin
+      w := MulDiv(Width, iNewScale, iOldScale);
+      h := MulDiv(Height, iNewScale, iOldScale);
+      R := BoundsRect;
+
+      b := Effects.AllowAnimation;
+      Effects.AllowAnimation := False;
+      IsVisible := HandleAllocated and IsWindowVisible(Handle);
+
+      if IsVisible then
+        SetWindowPos(Handle, 0, 0, 0, 0, 0, SWP_HIDE);
+
+      DisableAlign;
+      ChangeScale(iNewScale, iOldScale);
+
+      SetBounds(R.Left, R.Top, w, h);
+      Perform(SM_ALPHACMD, AC_SETSCALE_HI, iNewScale);
+
+      EnableAlign;
+      if IsVisible then
+        SetWindowPos(Handle, 0, 0, 0, 0, 0, SWP_SHOW);
+
+      Effects.AllowAnimation := b;
+    end;
+end;
+
+
 procedure TsSkinManager.UpdateSkin(Repaint: boolean = True);
 begin
   if Active then
@@ -2216,23 +2620,24 @@ end;
 
 procedure TsSkinManager.RepaintForms(DoLockForms: boolean = True);
 var
+  ap: TacProvider;
   M: TMessage;
   i: integer;
-  ap: TacProvider;
 begin
   M.Msg := SM_ALPHACMD;
   M.LParam := LPARAM(Self);
   if not (csDesigning in ComponentState) then begin
-    M.WParam := MakeWParam(0, AC_STOPFADING);
+    M.WParam := AC_STOPFADING_HI;
     M.Result := 0;
     AppBroadCastS(M);
   end;
-  M.WParam := MakeWParam(0, AC_REFRESH);
+  M.WParam := AC_REFRESH_HI;
   M.Result := 0;
   if csDesigning in ComponentState then
     for i := 0 to Screen.FormCount - 1 do begin
-      if (Screen.Forms[i].Name = '') or (Screen.Forms[i].Name = 'AppBuilder') or (Screen.Forms[i].Name = 'PropertyInspector') then
-        Continue;
+      with Screen.Forms[i] do
+        if (Name = '') or (Name = 'AppBuilder') or (Name = 'PropertyInspector') then
+          Continue;
 
       AlphaBroadCast(Screen.Forms[i], M);
       SendToHooked(M);
@@ -2255,7 +2660,7 @@ begin
     for i := 0 to acSupportedList.Count - 1 do begin
       ap := TacProvider(acSupportedList[i]);
       if (ap <> nil) and (ap.ListSW <> nil) and IsWindowVisible(ap.ListSW.CtrlHandle) then
-        RedrawWindow(ap.ListSW.CtrlHandle, nil, 0, RDW_ERASE or RDW_FRAME or RDW_INVALIDATE or RDW_UPDATENOW or RDW_ALLCHILDREN);
+        RedrawWindow(ap.ListSW.CtrlHandle, nil, 0, RDWA_ALL);
     end;
 end;
 
@@ -2310,7 +2715,7 @@ end;
 
 function TsSkinManager.IsValidSkinIndex(SkinIndex: integer): boolean;
 begin
-  Result := (CommonSkinData <> nil) and (SkinIndex > -1) and (SkinIndex < Length(gd));
+  Result := {(CommonSkinData <> nil) and} (SkinIndex >= 0) and (SkinIndex < Length(gd));
 end;
 
 
@@ -2328,12 +2733,12 @@ end;
 
 procedure TsSkinManager.LoadAllMasks;
 var
+  i, j, l, iGlobal, iScale, iMasterBmp: integer;
   Sections, Values: TStringList;
-  i, j, l: integer;
   sf: TMemIniFile;
   s: string;
 
-  function AddExternalItem(s: string; Stream: TMemoryStream; MaskType: integer = 0): TBitmap;
+  function AddExternalItem(s: string; Stream: TMemoryStream; aMaskType: integer = 0): TBitmap;
   var
     n: integer;
     sName: string;
@@ -2341,7 +2746,7 @@ var
   begin
     Result := nil;
     if Stream = nil then begin
-      if (pos(':', s) < 1) then
+      if pos(':', s) <= 0 then
         sName := CommonSkinData.SkinPath + s
       else
         sName := s;
@@ -2351,47 +2756,49 @@ var
     end;
     n := Length(ExtArray);
     SetLength(ExtArray, n + 1);
-    ExtArray[n].FileName := s;
-    ExtArray[n].MaskType := MaskType;
-    if Stream <> nil then
-      Stream.Seek(0, 0);
+    with ExtArray[n] do begin
+      FileName := s;
+      MaskType := aMaskType;
+      if Stream <> nil then
+        Stream.Seek(0, 0);
 
-    ExtArray[n].Bmp := TBitmap.Create;
-    if (pos('.BMP', s) > 0) then
-      if Stream = nil then
-        ExtArray[n].Bmp.LoadFromFile(sName)
-      else
-        ExtArray[n].Bmp.LoadFromStream(Stream)
-    else
-      if (pos('.JPG', s) > 0) or (pos('.JPEG', s) > 0) then begin
-        TempJpg := TacJpegClass.Create;
+      Bmp := TBitmap.Create;
+      if pos('.BMP', s) > 0 then
         if Stream = nil then
-          TempJpg.LoadFromFile(sName)
+          Bmp.LoadFromFile(sName)
         else
-          TempJpg.LoadFromStream(Stream);
-
-        ExtArray[n].Bmp.Width  := TempJpg.Width;
-        ExtArray[n].Bmp.Height := TempJpg.Height;
-        ExtArray[n].Bmp.Canvas.Draw(0, 0, TempJpg);
-        TempJpg.Free;
-      end
+          Bmp.LoadFromStream(Stream)
       else
-        if (pos('.PNG', s) > 0) then begin
+        if (pos('.JPG', s) > 0) or (pos('.JPEG', s) > 0) then begin
+          TempJpg := TacJpegClass.Create;
           if Stream = nil then
-            LoadBmpFromPngFile(ExtArray[n].Bmp, sName)
+            TempJpg.LoadFromFile(sName)
           else
-            LoadBmpFromPngStream(ExtArray[n].Bmp, Stream);
+            TempJpg.LoadFromStream(Stream);
 
-          if FBrightness <= 0 then // Otherwise updated later (after changing of brightness)
-            if CommonSkindata.Version > acTranspVer then // New mode of layered wnd
-              UpdateAlpha(ExtArray[n].Bmp, MkRect(ExtArray[n].Bmp));
-        end;
+          Bmp.Width  := TempJpg.Width;
+          Bmp.Height := TempJpg.Height;
+          Bmp.Canvas.Draw(0, 0, TempJpg);
+          TempJpg.Free;
+        end
+        else
+          if pos('.PNG', s) > 0 then begin
+            if Stream = nil then
+              LoadBmpFromPngFile(Bmp, sName)
+            else
+              LoadBmpFromPngStream(Bmp, Stream);
 
-    if ExtArray[n].Bmp.PixelFormat <> pf32bit then begin
-      SetBmp32Pixels(ExtArray[n].Bmp);
-      FillAlphaRect(ExtArray[n].Bmp, MkRect(ExtArray[n].Bmp), MaxByte, clFuchsia);
+            if FBrightness <= 0 then // Otherwise updated later (after changing of brightness)
+              if CommonSkindata.Version > acTranspVer then // New mode of layered wnd
+                UpdateAlpha(Bmp, MkRect(Bmp));
+          end;
+
+      if Bmp.PixelFormat <> pf32bit then begin
+        SetBmp32Pixels(Bmp);
+        FillAlphaRect(Bmp, MkRect(Bmp), MaxByte, clFuchsia);
+      end;
+      Result := Bmp;
     end;
-    Result := ExtArray[n].Bmp;
   end;
 
   procedure LoadExtFile(s: string; var Item: TsMaskData; Delimiter: char);
@@ -2430,9 +2837,11 @@ var
   procedure LoadBorder(s: string);
   var
     l: integer;
-  begin // acImgTypes[Min(ExtInt(4, s, [CharExt])
+  begin
+    if iScale > 0 then // Search a better source
+      s := UpperCase(sf.ReadString(Sections[i], Values[j] + aSfxs[iScale], s));
+
     l := MakeNewItem(i, Values[j], Sections[i], acImgTypes[Min(ExtInt(4, s, [CharExt]), Length(acImgTypes) - 1)], CopyRect(s, 2), CopyInt(s, 42, 1), CopyInt(s, 46, 1), CopyInt(s, 44, 1));
-//    l := MakeNewItem(i, Values[j], Sections[i], itisaGlyph, CopyRect(s, 2), CopyInt(s, 42, 1), CopyInt(s, 46, 1), CopyInt(s, 44, 1));
     with ma[l] do begin
       WL := CopyInt(s, 22, 4);
       WT := CopyInt(s, 27, 4);
@@ -2460,20 +2869,27 @@ var
   procedure LoadExternal(s: string);
   var
     c, NewNdx: integer;
+    sName, sExt: string;
     Bmp: TBitmap;
-    sName: string;
   begin
+    if iScale > 0 then begin // Search a better source
+      sName := UpperCase(sf.ReadString(Sections[i], Values[j] + aSfxs[iScale], ''));
+      if sName <> '' then begin
+        s := sName;
+        sExt := aSfxs[iScale];
+      end;
+    end;
     sName := ExtractWord(1, s, [CharExt]);
     Bmp := SearchExtFile(sName);
     if Bmp = nil then // If without bmp still - loading
-      if SkinIsPacked then
-        for c := 0 to sc.ImageCount - 1 do begin
+      if SkinIsPacked then begin
+        for c := 0 to sc.ImageCount - 1 do
           if UpperCase(sc.Files[c].FileName) = sName then begin
             // Add Bitmap to external bitmaps list
             Bmp := AddExternalItem(sName, sc.Files[c].FileStream);
             Break; // Found and loaded
           end;
-        end
+      end
       else
         Bmp := AddExternalItem(sName, nil);
 
@@ -2485,6 +2901,7 @@ var
         NewNdx := MakeNewItem(i, Values[j], Sections[i], itisaTexture, MkRect(Bmp), 1, 0, 0);
 
       ma[NewNdx].Bmp := Bmp;
+      ma[NewNdx].PropertyName := ma[NewNdx].PropertyName + sExt;
       Bmp.Canvas.Handle;
       Bmp.Canvas.Lock;
       with ma[NewNdx] do begin
@@ -2515,10 +2932,11 @@ var
 begin
   FreeBitmaps;
   if SkinFile <> nil then begin
+    iScale := GetScale;
     sf := SkinFile;
     CommonSkinData.Version := GetSkinVersion(sf);
     // Reading of the MasterBitmap if exists
-    s := sf.ReadString(s_GLOBALINFO, s_MASTERBITMAP, '');
+    s := sf.ReadString(s_GlobalInfo, s_MasterBitmap, '');
     MasterBitmap := TBitmap.Create;
     if SkinIsPacked then begin
       for i := 0 to sc.ImageCount - 1 do
@@ -2531,7 +2949,7 @@ begin
         end
     end
     else begin
-      if (pos(':', s) < 1) then
+      if pos(':', s) <= 0 then
         s := CommonSkinData.SkinPath + s;
 
       if (s <> '') and FileExists(s) then
@@ -2547,23 +2965,36 @@ begin
     Sections := TStringList.Create;
     SetCaseSens(Sections);
     Values := TStringList.Create;
+    iGlobal := -1;
+    iMasterBmp := -1;
     SetCaseSens(Values);
     try
       sf.ReadSections(Sections);
       for i := 0 to Sections.Count - 1 do begin
+        if (iGlobal < 0) and (Sections[i] = s_GlobalInfo) then
+          iGlobal := i;
+
         sf.ReadSection(Sections[i], Values);
         // Search and load all images from section
         for j := 0 to Values.Count - 1 do begin
-          if (Sections[i] = s_GlobalInfo) and (Values[j] = s_MasterBitmap) then
-            Continue; // Check for the MASTERBITMAP property
-
+          if (i = iGlobal) and (iMasterBmp = -1) and (Values[j] = s_MasterBitmap) then begin
+            iMasterBmp := j;
+            Continue;
+          end;
           s := UpperCase(sf.ReadString(Sections[i], Values[j], ''));
           if s <> '' then
             case s[1] of
-              TexChar:   LoadTexture(s);
+              TexChar: LoadTexture(s);
               CharGlyph: MakeNewItem(i, Values[j], Sections[i], itisaGlyph, CopyRect(s, 2), CopyInt(s, 22, 1), 0, CopyInt(s, 24, 1));
-              CharMask:  LoadBorder(s);
-              CharExt:   LoadExternal(s)
+              CharMask:
+                if pos('*', Values[j]) = 0 then // Ignore non standard property
+                  LoadBorder(s);
+
+              CharExt: begin
+                if pos('*', Values[j]) = 0 then // Ignore non standard property
+                  LoadExternal(s);
+              end
+
               else
                 if (pos('.JPG', s) > 0) or (pos('.BMP', s) > 0) then
                   LoadExternal(s);
@@ -2571,18 +3002,14 @@ begin
         end;
       end;
     finally
-      if Assigned(Values) then
-        FreeAndNil(Values);
-
-      if Assigned(Sections) then
-        FreeAndNil(Sections);
-
+      FreeAndNil(Values);
+      FreeAndNil(Sections);
       sf := nil;
     end;
   end;
 
   if CommonSections.Count > 0 then begin
-    sf := TMemInifile.Create('1.tmp');
+    sf := TMemInifile.Create('');
     SetCaseSens(sf);
     sf.SetStrings(CommonSections);
 
@@ -2595,14 +3022,14 @@ begin
       sf.ReadSections(Sections);
       sf.SetStrings(CommonSections);
       for i := 0 to Sections.Count - 1 do begin
-        if UpperCase(Sections[i]) = s_GLOBALINFO then
+        if UpperCase(Sections[i]) = s_GlobalInfo then
           Continue;
 
         sf.ReadSection(Sections[i], Values);
         for j := 0 to Values.Count - 1 do begin
           s := AnsiUpperCase(sf.ReadString(Sections[i], Values[j], CharMinus));
-          if (pos('.BMP', s) > 0) then begin
-            if (pos(':', s) < 1) then
+          if pos('.BMP', s) > 0 then begin
+            if pos(':', s) <= 0 then
               s := CommonSkinData.SkinPath + s;
 
             if FileExists(s) then begin
@@ -2623,10 +3050,8 @@ begin
                   PropertyName := UpperCase(Values[j]);
                   ClassName := UpperCase(Sections[i]);
                 end;
-                if (Bmp.Width < 1) then begin
-                  if Assigned(bmp) then
-                    FreeAndNil(Bmp);
-
+                if Bmp.Width <= 0 then begin
+                  FreeAndNil(Bmp);
                   SetLength(ma, l - 1);
                 end
               end;
@@ -2635,9 +3060,7 @@ begin
         end
       end;
     finally
-      if Assigned(Values) then
-        FreeAndNil(Values);
-
+      FreeAndNil(Values);
       FreeAndNil(sf);
       FreeAndNil(Sections);
     end;
@@ -2647,20 +3070,23 @@ end;
 
 procedure TsSkinManager.FreeBitmaps;
 var
-  j: integer;
+  j, l: integer;
 begin
   while Length(ma) > 0 do begin
-    if ma[Length(ma) - 1].Bmp <> nil then begin
-      for j := 0 to Length(ExtArray) - 1 do
-        if ma[Length(ma) - 1].Bmp = ExtArray[j].Bmp then begin
-          ma[Length(ma) - 1].Bmp := nil; // Will be destroyed in ClearExtArray
-          Break;
-        end;
+    l := Length(ma) - 1;
+    with ma[l] do
+      if Bmp <> nil then begin
+        for j := 0 to Length(ExtArray) - 1 do
+          if Bmp = ExtArray[j].Bmp then begin
+            Bmp := nil; // Will be destroyed in ClearExtArray
+            Break;
+          end;
 
-      if ma[Length(ma) - 1].Bmp <> nil then
-        FreeAndNil(ma[Length(ma) - 1].Bmp);
-    end;
-    SetLength(ma, Length(ma) - 1);
+        if Bmp <> nil then
+          FreeAndNil(Bmp);
+      end;
+
+    SetLength(ma, l);
   end;
   ClearExtArray;
   if Assigned(MasterBitmap) then
@@ -2717,8 +3143,9 @@ const
     );
   );
 var
+  iScale, i, j, l, SkinIndex, ParentIndex: integer;
   gData, gTempData, acDefGenData: TsGeneralData;
-  i, j, l, SkinIndex, ParentIndex: integer;
+  ColorItem: TacPaletteColors;
   Sections, Ini: TStringList;
   sf: TMemIniFile;
   s: string;
@@ -2759,12 +3186,12 @@ var
     s: string;
   begin
     Result := sf.ReadInteger(ClassName, PropertyName, -1);
-    if Result = -1 then begin
+    if Result < 0 then begin
       s := sf.ReadString(ClassName, s_ParentClass, CharQuest);
       if (s <> '') and (s <> CharQuest) and (s <> ClassName) then
         Result := FindInteger(s, PropertyName, -1);
 
-      if Result = -1 then
+      if Result < 0 then
         Result := DefaultValue
       else
         Result := ColorToRGB(Result);
@@ -2777,7 +3204,7 @@ var
   function GetPropInteger(const Section, Name: string; AlternateValue: integer): integer;
   begin
     Result := acntUtils.ReadIniInteger(Ini, Sections, Section, Name, -1);
-    if Result = -1 then
+    if Result < 0 then
       Result := AlternateValue;
   end;
 
@@ -2920,23 +3347,35 @@ var
 
 
   procedure LoadGlobalData;
+  var
+    tg: TacTitleGlyph;
 
     function GlobalInteger(Name: string; Def: integer): integer;
     begin
       Result := sf.ReadInteger(s_GlobalInfo, Name, Def);
     end;
-    
+
+    function ScaledInteger(Name: string; Def: integer): integer;
+    begin
+      Result := sf.ReadInteger(s_GlobalInfo, Name + aSfxs[iScale], -1);
+      if (Result < 0) and (aSfxs[iScale] <> '') then // Make new scaled value
+        Result := sf.ReadInteger(s_GlobalInfo, Name, Def) * aScalePercents[iScale] div 100
+    end;
+
   begin
-    with CommonSkinData do begin
+    with CommonSkinData, ConstData do begin
+      iScale := GetScale;
       Author        := sf.ReadString(s_GlobalInfo, s_Author,      '');
       Description   := sf.ReadString(s_GlobalInfo, s_Description, '');
 
       ExBorderWidth := GlobalInteger(s_BorderWidth,    4);
-      ExTitleHeight := GlobalInteger(s_TitleHeight,   30); if ExTitleHeight = 0 then ExTitleHeight := 30;
-      ExMaxHeight   := GlobalInteger(s_MaxTitleHeight, 0); if ExMaxHeight   = 0 then ExMaxHeight   := ExTitleHeight;
 
-      ExContentOffs := GlobalInteger(s_FormOffset,     GetSystemMetrics(SM_CXSIZEFRAME));
-      ExCenterOffs  := GlobalInteger(s_CenterOffset,   0);
+      // << Scaled values
+      ExTitleHeight := ScaledInteger(s_TitleHeight,   30); if ExTitleHeight <= 0 then ExTitleHeight := 30;
+      ExMaxHeight   := ScaledInteger(s_MaxTitleHeight, 0); if ExMaxHeight   <= 0 then ExMaxHeight   := ExTitleHeight;
+      ExCenterOffs  := ScaledInteger(s_CenterOffset,   0);
+      // Scaled values >>
+      ExContentOffs := GlobalInteger(s_FormOffset, GetSystemMetrics(SM_CXSIZEFRAME));
       ExDrawMode    := GlobalInteger(s_BorderMode,     0);
 
       BrightMin     := GlobalInteger(s_BrightMin,    -50);
@@ -2947,7 +3386,8 @@ var
       ExShadowOffsT := GlobalInteger(s_ShadowOffsetT,  ExShadowOffs);
       ExShadowOffsB := GlobalInteger(s_ShadowOffsetB,  ExShadowOffs);
 
-      BISpacing     := GlobalInteger(s_BISpacing,      0);
+      BISpacing     := ScaleInt(GlobalInteger(s_BISpacing, 0));
+
       BIVAlign      := GlobalInteger(s_BIVAlign,       0);
       BIRightMargin := GlobalInteger(s_BIRightMargin,  0);
       BILeftMargin  := GlobalInteger(s_BILeftMargin,   0);
@@ -2956,12 +3396,10 @@ var
 
       UseAeroBluring := GlobalInteger(s_UseAeroBluring, 0) <> 0;
 
-      BICloseGlow         := GlobalInteger(s_BorderIconClose    + s_Glow,       0);
-      BICloseGlowMargin   := GlobalInteger(s_BorderIconClose    + s_GlowMargin, 0);
-      BIMaxGlow           := GlobalInteger(s_BorderIconMaximize + s_Glow,       0);
-      BIMaxGlowMargin     := GlobalInteger(s_BorderIconMaximize + s_GlowMargin, 0);
-      BIMinGlow           := GlobalInteger(s_BorderIconMinimize + s_Glow,       0);
-      BIMinGlowMargin     := GlobalInteger(s_BorderIconMinimize + s_GlowMargin, 0);
+      for tg := tgCloseAlone to tgNormal do begin
+        GlowMargins[tg] := ScaledInteger(acTitleGlyphs[tg] + s_GlowMargin, 0);
+        SetLength(TitleGlows[tg], GlobalInteger(s_BorderIconClose + s_Glow, 0));
+      end;
 
       Shadow1Color        := GlobalInteger(s_Shadow1Color,        0);
       Shadow1Offset       := GlobalInteger(s_Shadow1Offset,       0);
@@ -3035,42 +3473,43 @@ begin
           l := Length(gd) + 1;
           SetLength(gd, l);
           // General data
-          gd[i].ClassName          := Sections[i];
-          gd[i].ParentClass        := sf.ReadString(s, s_ParentClass,   '');
-          gd[i].ReservedBoolean    := FindBoolean(s, s_ReservedBoolean, False);
-          gd[i].GiveOwnFont        := FindBoolean(s, s_GiveOwnFont,     False);
+          with gd[i] do begin
+            ClassName          := Sections[i];
+            ParentClass        := sf.ReadString(s, s_ParentClass,   '');
+            ReservedBoolean    := FindBoolean(s, s_ReservedBoolean, False);
+            GiveOwnFont        := FindBoolean(s, s_GiveOwnFont,     False);
 
-          gd[i].GlowCount          := FindInteger(s, s_Glow,           0, MaxByte);
-          gd[i].GlowMargin         := FindInteger(s, s_GlowMargin,     0, MaxByte);
-          gd[i].States             := FindInteger(s, s_States,         3, MaxByte);
+            GlowCount          := FindInteger(s, s_Glow,           0, MaxByte);
+            GlowMargin         := FindInteger(s, s_GlowMargin,     0, MaxByte);
+            States             := FindInteger(s, s_States,         3, MaxByte);
 
-          gd[i].OuterOffset.Left   := FindInteger(s, s_OuterOffsL,     0, MaxByte);
-          gd[i].OuterOffset.Top    := FindInteger(s, s_OuterOffsT,     0, MaxByte);
-          gd[i].OuterOffset.Right  := FindInteger(s, s_OuterOffsR,     0, MaxByte);
-          gd[i].OuterOffset.Bottom := FindInteger(s, s_OuterOffsB,     0, MaxByte);
-          gd[i].OuterOpacity       := FindInteger(s, s_OuterOpacity, 200, MaxByte);
-          gd[i].OuterMode          := FindInteger(s, s_OuterMode,      2); // Shadowed by definition
-          gd[i].ImgTL := -1;
-          gd[i].ImgTR := -1;
-          gd[i].ImgBL := -1;
-          gd[i].ImgBR := -1;
+            OuterOffset.Left   := FindInteger(s, s_OuterOffsL,     0, MaxByte);
+            OuterOffset.Top    := FindInteger(s, s_OuterOffsT,     0, MaxByte);
+            OuterOffset.Right  := FindInteger(s, s_OuterOffsR,     0, MaxByte);
+            OuterOffset.Bottom := FindInteger(s, s_OuterOffsB,     0, MaxByte);
+            OuterOpacity       := FindInteger(s, s_OuterOpacity, 200, MaxByte);
+            OuterMode          := FindInteger(s, s_OuterMode,      2); // Shadowed by definition
+            ImgTL := -1;
+            ImgTR := -1;
+            ImgBL := -1;
+            ImgBR := -1;
 
-          FillProps(gd[i].Props[0], acDefProp, 0, False);
+            FillProps(Props[0], acDefProp, 0, False);
 
-          if gd[i].States > 1 then
-            FillProps(gd[i].Props[1], acDefProp, 1, False)
-          else
-            CopyProperties(gd[i].Props[1], gd[i].Props[0]); // For back/w compatibility
+            if States > 1 then
+              FillProps(Props[1], acDefProp, 1, False)
+            else
+              CopyProperties(Props[1], Props[0]); // For back/w compatibility
 
-          gd[i].UseState2 := FindInteger(s, s_UseState2, 0) = 1;
-          if gd[i].UseState2 then
-            FillProps(gd[i].Props[2], acDefProp, 2, False)
-          else
-            CopyProperties(gd[i].Props[2], gd[i].Props[1]); // For back/w compatibility
+            UseState2 := FindInteger(s, s_UseState2, 0) = 1;
+            if UseState2 then
+              FillProps(Props[2], acDefProp, 2, False)
+            else
+              CopyProperties(Props[2], Props[1]); // For back/w compatibility
+          end;
         end;
       finally
-        if Assigned(Sections) then
-          FreeAndNil(Sections);
+        FreeAndNil(Sections);
       end;
     end;
 
@@ -3084,7 +3523,7 @@ begin
       ReservedBoolean := False;
       GlowCount := 0;
       GlowMargin := 0;
-    end;           
+    end;
     Sections := TStringList.Create;
     SetCaseSens(Sections);
     GetIniSections(CommonSections, Sections);
@@ -3116,7 +3555,7 @@ begin
         end;
         // General data
         if Ini <> nil then begin
-          if ParentIndex > -1 then
+          if ParentIndex >= 0 then
             gTempData := gd[ParentIndex]
           else
             gTempData := acDefGenData;
@@ -3128,12 +3567,18 @@ begin
           else
             CopyProperties(gData.Props[1], gData.Props[0]);
 
+          gd[i].UseState2 := FindInteger(s, s_UseState2, 0) = 1;
+          if gd[i].UseState2 then
+            FillProps(gData.Props[2], gTempData.Props[2], 2, True)
+          else
+            CopyProperties(gData.Props[2], gData.Props[1]);
+
           gData.ReservedBoolean := GetPropBool   (Sections[i], s_ReservedBoolean, gTempData.ReservedBoolean);
           gData.GiveOwnFont     := GetPropBool   (Sections[i], s_GiveOwnFont,     gTempData.GiveOwnFont);
           gData.GlowCount       := GetPropInteger(Sections[i], s_Glow,            gTempData.GlowCount);
           gData.GlowMargin      := GetPropInteger(Sections[i], s_GlowMargin,      gTempData.GlowMargin);
           if gData.ClassName <> '' then begin
-            if SkinIndex > -1 then
+            if SkinIndex >= 0 then
               gd[SkinIndex] := gData
             else
               gd[l - 1] := gData;
@@ -3144,17 +3589,19 @@ begin
       end;
     finally
       if Assigned(Sections) then begin
-        while Sections.Count > 0 do begin
-          if Sections.Objects[0] <> nil then
-            TStringList(Sections.Objects[0]).Free;
+        with Sections do
+          while Count > 0 do begin
+            if Objects[0] <> nil then
+              TStringList(Objects[0]).Free;
 
-          Sections.Delete(0);
-        end;
+            Delete(0);
+          end;
+
         FreeAndNil(Sections);
       end;
     end;
   end;
-  InitMaskIndexes;
+//  InitMaskIndexes;
   // Load a main color palette
   Palette[pcMainColor] := sf.ReadInteger(s_GlobalInfo, s_Color,     ColorToRGB(clBtnFace));
   Palette[pcLabelText] := sf.ReadInteger(s_GlobalInfo, s_FontColor, clBlack);
@@ -3165,13 +3612,23 @@ begin
   Palette[pcBorder] := sf.ReadInteger(s_GlobalInfo, s_BorderColor, clBlack);
   // Receive edit color from EDIT section
   i := GetSkinIndex(s_Edit);
-  if (i > -1) then begin
+  if i >= 0 then begin
     Palette[pcEditText] := ColorToRGB(gd[i].Props[0].FontColor.Color);
     Palette[pcEditBG]   := ColorToRGB(gd[i].Props[0].Color);
   end
   else begin
     Palette[pcEditText] := ColorToRGB(clWindowText);
     Palette[pcEditBG]   := ColorToRGB(clWindow);
+  end;
+  // Receive colors from HINT section
+  i := GetSkinIndex(s_Hint);
+  if i >= 0 then begin
+    Palette[pcHintText] := ColorToRGB(gd[i].Props[0].FontColor.Color);
+    Palette[pcHintBG]   := ColorToRGB(gd[i].Props[0].Color);
+  end
+  else begin
+    Palette[pcHintText] := ColorToRGB(clInfoText);
+    Palette[pcHintBG]   := ColorToRGB(clInfoBk);
   end;
   // Receive a selection Text Color
   i := GetSkinIndex(s_Selection);
@@ -3232,7 +3689,15 @@ begin
   Palette[pcEditText_Inverted] := sf.ReadInteger(s_GlobalInfo, s_EditText_Inverted, Palette[pcEditBG]);
   Palette[pcEditBG_Inverted]   := sf.ReadInteger(s_GlobalInfo, s_EditBG_Inverted,   Palette[pcEditText]);
   Palette[pcEditBG_OddRow]     := sf.ReadInteger(s_GlobalInfo, s_EditBG_OddRow,     Palette[pcEditBG]);
-  Palette[pcEditBG_EvenRow]    := sf.ReadInteger(s_GlobalInfo, s_EditBG_EvenRow,    MixColors(Palette[pcEditText], Palette[pcEditBG], 0.05));
+  Palette[pcEditBG_EvenRow]    := sf.ReadInteger(s_GlobalInfo, s_EditBG_EvenRow,    BlendColors(Palette[pcEditText], Palette[pcEditBG], 13));
+
+  for ColorItem := low(Brushes) to high(Brushes) do begin
+    if Brushes[ColorItem] <> 0 then
+      DeleteObject(Brushes[ColorItem]);
+
+    Brushes[ColorItem] := CreateSolidBrush(Palette[ColorItem]);
+  end;
+
   // Add TRANSPARENT skin section
   if GetSkinIndex(s_Transparent) < 0 then begin
     l := Length(gd);
@@ -3252,10 +3717,43 @@ begin
         FontColor.Bottom := -1;
       end;
   end;
+
   // Change skin Colors if needed
   ChangeSkinHue(Self, HueOffset);
   ChangeSkinSaturation(Self, Saturation);
   ChangeSkinBrightness(Self, FBrightness);
+
+  // Add TRANSPARENT skin section
+  if GetSkinIndex(s_MainColor) < 0 then begin
+    l := Length(gd);
+    SetLength(gd, l + 1);
+    // General data
+    gd[l].ClassName   := s_MainColor;
+    gd[l].ParentClass := '';
+    gd[l].States      := 1;
+    for i := 0 to ac_MaxPropsIndex do
+      with gd[l].Props[i] do begin
+        Transparency := 0;
+        Color := Palette[pcMainColor];
+        FontColor.Color  := Palette[pcLabelText];
+        FontColor.Left   := -1;
+        FontColor.Top    := -1;
+        FontColor.Right  := -1;
+        FontColor.Bottom := -1;
+      end;
+  end;
+end;
+
+
+function TsSkinManager.GetScale: integer;
+begin
+  if (csDesigning in ComponentState) or (Options.ScaleMode = smOldMode) then
+    Result := 0
+  else
+    if Options.ScaleMode = smAuto then
+      Result := SysFontScale
+    else
+      Result := ord(Options.ScaleMode);
 end;
 
 
@@ -3264,7 +3762,7 @@ var
   i, l: integer;
 begin
   Result := -1;
-  if (SkinSection <> '') then begin
+  if SkinSection <> '' then begin
     l := Length(gd);
     if l > 0 then
       for i := 0 to l - 1 do
@@ -3281,7 +3779,6 @@ var
   i: integer;
   s: string;
 begin
-  Result := -1;
   if SkinIndex >= 0 then begin
     for i := 0 to Length(ma) - 1 do
       if (ma[i].SkinIndex = SkinIndex) and (ma[i].PropertyName = mask) then begin
@@ -3289,15 +3786,18 @@ begin
         Exit;
       end;
 
-    if Between(SkinIndex, -1, Length(ma) - 1) then begin
+    if IsValidIndex(SkinIndex, Length(ma)) then begin
       s := gd[SkinIndex].ParentClass;
       if (s <> '') and (SkinSection <> s) then begin
         i := GetSkinIndex(s);
-        if i >= 0 then
+        if i >= 0 then begin
           Result := GetMaskIndex(i, s, mask);
+          Exit;
+        end;
       end;
     end;
   end;
+  Result := -1;
 end;
 
 
@@ -3336,48 +3836,54 @@ begin
 end;
 
 
-function TsSkinManager.GetTextureIndex(SkinIndex: integer; const SkinSection, PropName: string): integer;
+function TsSkinManager.GetTextureIndex(aSkinIndex: integer; const SkinSection, PropName: string): integer;
 var
   i, l: integer;
 begin
-  Result := -1;
-  if SkinIndex >= 0 then begin
+  if aSkinIndex >= 0 then begin
     l := Length(ma);
     if (l > 0) and (SkinSection <> '') then begin
       for i := 0 to l - 1 do
-        if (ma[i].ImgType = itisaTexture) and (ma[i].PropertyName = PropName) and (ma[i].ClassName = SkinSection) then begin
-          Result := i;
+        with ma[i] do
+          if (ImgType = itisaTexture) and (PropertyName = PropName) and (ClassName = SkinSection) then begin
+            Result := i;
+            Exit;
+          end;
+
+      if (gd[aSkinIndex].ParentClass <> '') and (SkinSection <> gd[aSkinIndex].ParentClass) then begin
+        i := GetSkinIndex(gd[aSkinIndex].ParentClass);
+        if i >= 0 then begin
+          Result := GetTextureIndex(i, gd[aSkinIndex].ParentClass, PropName);
           Exit;
         end;
-
-      if (gd[SkinIndex].ParentClass <> '') and (SkinSection <> gd[SkinIndex].ParentClass) then begin
-        i := GetSkinIndex(gd[SkinIndex].ParentClass);
-        if i >= 0 then
-          Result := GetTextureIndex(i, gd[SkinIndex].ParentClass, PropName);
       end;
     end;
   end;
+  Result := -1;
 end;
 
 
-function TsSkinManager.GetTextureIndex(SkinIndex: integer; const PropName: string): integer;
+function TsSkinManager.GetTextureIndex(aSkinIndex: integer; const PropName: string): integer;
 var
   i, l: integer;
 begin
-  Result := -1;
-  if SkinIndex >= 0 then begin
+  if aSkinIndex >= 0 then begin
     l := Length(ma);
-    if (l > 0) and (SkinIndex >= 0) then begin
+    if l > 0 then begin
       for i := 0 to l - 1 do
-        if (ma[i].SkinIndex = SkinIndex) and (ma[i].ImgType = itisaTexture) and (ma[i].PropertyName = PropName) then begin
-          Result := i;
-          Exit;
-        end;
+        with ma[i] do
+          if (SkinIndex = aSkinIndex) and (ImgType = itisaTexture) and (PropertyName = PropName) then begin
+            Result := i;
+            Exit;
+          end;
 
-      if gd[SkinIndex].ParentClass <> '' then 
-        Result := GetTextureIndex(GetSkinIndex(gd[SkinIndex].ParentClass), PropName);
+      if gd[aSkinIndex].ParentClass <> '' then begin
+        Result := GetTextureIndex(GetSkinIndex(gd[aSkinIndex].ParentClass), PropName);
+        Exit;
+      end;
     end;
   end;
+  Result := -1;
 end;
 
 
@@ -3385,14 +3891,14 @@ function TsSkinManager.GetMaskIndex(const SkinSection, mask: string): integer;
 var
   i: integer;
 begin
-  Result := -1;
   if SkinSection <> '' then
     for i := 0 to Length(ma) - 1 do
-      if ma[i].ClassName = SkinSection then
-        if ma[i].PropertyName = mask then begin
-          Result := i;
-          Exit;
-        end;
+      if (ma[i].ClassName = SkinSection) and (ma[i].PropertyName = mask) then begin
+        Result := i;
+        Exit;
+      end;
+
+  Result := -1;
 end;
 
 
@@ -3489,7 +3995,7 @@ begin
         with PCopyDataStruct(Message.LParam)^ do
           if (Message.LParam <> 0) and (Message.WParam = 7) and (PacSkinData(lpData)^.Magic = ASE_MSG) then begin
             CopyMemory(@PreviewBuffer, PacSkinData(lpData), SizeOf(TacSkinData));
-            PostMessage(Application.{$IFNDEF FPC}Handle{$ELSE}MainFormHandle{$ENDIF}, SM_ALPHACMD, MakeWParam(0, AC_COPYDATA), 0);
+            PostMessage(Application.{$IFNDEF FPC}Handle{$ELSE}MainFormHandle{$ENDIF}, SM_ALPHACMD, AC_COPYDATA shl 16, 0);
           end;
 
         acSkinPreviewUpdating := False;
@@ -3505,7 +4011,7 @@ begin
             Wnd := WindowFromPoint(Point(r.Left + WidthOf(r) div 2, r.Top + HeightOf(r) div 2));
             if (Wnd <> 0) and (GetWndClassName(Wnd) = '#32768') then begin // If menu is found
               mi := SkinableMenus.GetMenuInfo(FMenuItem, 0, 0, nil, Wnd);
-              if (mi.Bmp <> nil) then
+              if mi.Bmp <> nil then
                 SkinableMenus.DrawWndBorder(Wnd, mi.Bmp);
             end;
           end;
@@ -3537,7 +4043,7 @@ begin
       Wnd := HWND(Message.LParam);
       if (Wnd <> 0) and (GetWndClassName(Wnd) = '#32768') then begin // If menu is found
         mi := SkinableMenus.GetMenuInfo(nil, 0, 0, nil, Wnd);
-        if (mi.Bmp <> nil) then
+        if mi.Bmp <> nil then
           SkinableMenus.DrawWndBorder(Wnd, mi.Bmp);
       end;
       Result := True;
@@ -3569,7 +4075,7 @@ begin
 
 {$IFNDEF NOWNDANIMATION}
     WM_WINDOWPOSCHANGED: if acLayered then 
-      if (TWMWindowPosChanged(Message).WindowPos.Flags and SWP_HIDEWINDOW = SWP_HIDEWINDOW) then
+      if (TWMWindowPosChanged(Message).WindowPos.Flags and SWP_HIDEWINDOW <> 0) then
         if (AnimEffects.FormHide.Active) and Effects.AllowAnimation and (AnimEffects.FormHide.Time > 0) and not IsIconic(Application.{$IFDEF FPC}MainFormHandle{$ELSE}Handle{$ENDIF}) and Application.Terminated then begin
           if (Application.MainForm = nil) or not Application.MainForm.HandleAllocated or not IsWindowVisible(Application.MainForm.Handle) then
             Exit;
@@ -3613,7 +4119,7 @@ begin
                     acSetAnimation(b);
                   end;
                   if (i = 0) and (sp.BorderForm <> nil) and (sp.BorderForm.AForm <> nil) then
-                    if (sp.FormState and FS_ANIMMINIMIZING <> FS_ANIMMINIMIZING) then begin
+                    if sp.FormState and FS_ANIMMINIMIZING = 0 then begin
                       sp.BorderForm.ExBorderShowing := True;
                       FreeAndNil(sp.BorderForm.AForm);
                       sp.BorderForm.ExBorderShowing := False;
@@ -3633,7 +4139,7 @@ begin
         SC_RESTORE: begin
           ShowState := saRestore;
 {$IFNDEF NOWNDANIMATION}
-          if (Application.MainForm <> nil) then begin
+          if Application.MainForm <> nil then begin
             if not Application.MainForm.Showing then
 {$IFDEF D2007}if not Application.MainFormOnTaskBar then {$ENDIF}
                 Exit;
@@ -3642,7 +4148,7 @@ begin
             if sp = nil then
               Exit;
 
-            if sp.FormState and FS_ANIMCLOSING = FS_ANIMCLOSING then begin // If all windows were hidden
+            if sp.FormState and FS_ANIMCLOSING <> 0 then begin // If all windows were hidden
               sp.FormState := sp.FormState and not FS_ANIMCLOSING;
               // Update ExtBorders in the WM_NCPAINT message
               if sp.SkinData.SkinManager.ExtendedBorders and sp.AllowExtBorders and (sp.BorderForm = nil) then
@@ -3655,8 +4161,8 @@ begin
               acSetAnimation(False);
               Application.Restore;
               if AeroIsEnabled then begin
-                RedrawWindow(Application.MainForm.Handle, nil, 0, RDW_INVALIDATE or RDW_ALLCHILDREN or RDW_FRAME or RDW_ERASE);// or RDW_UPDATENOW);
-                if GetWindowLong(Application.MainForm.Handle, GWL_EXSTYLE) and WS_EX_LAYERED = WS_EX_LAYERED then begin
+                RedrawWindow(Application.MainForm.Handle, nil, 0, RDWA_ALL);
+                if GetWindowLong(Application.MainForm.Handle, GWL_EXSTYLE) and WS_EX_LAYERED <> 0 then begin
                   sp.SkinData.BGChanged := True;
                   SetWindowLong(Application.MainForm.Handle, GWL_EXSTYLE, GetWindowLong(Application.MainForm.Handle, GWL_EXSTYLE) and not WS_EX_LAYERED);
                 end;
@@ -3670,21 +4176,21 @@ begin
                     Exit;
 
                   if not StartRestoring(sp) then
-                    if (TAccessProvider(sp).CoverForm <> nil) then begin
-                      if TAccessProvider(sp).CoverForm.HandleAllocated then
-                        SetWindowPos(Application.MainForm.Handle, TAccessProvider(sp).CoverForm.Handle, 0, 0, 0, 0,
-                                     SWP_NOSIZE or SWP_NOMOVE or SWP_NOREDRAW or SWP_SHOWWINDOW or SWP_NOSENDCHANGING or SWP_NOOWNERZORDER);
-                      InvalidateRect(Application.MainForm.Handle, nil, True);
-                      RedrawWindow(Application.MainForm.Handle, nil, 0, RDW_INVALIDATE or RDW_ALLCHILDREN or RDW_FRAME or RDW_ERASE or RDW_UPDATENOW);
-                      if TAccessProvider(sp).CoverForm <> nil then
-                        FreeAndNil(TAccessProvider(sp).CoverForm);
-                    end
-                    else begin
-                      ShowWindow(Application.MainForm.Handle, SW_RESTORE);
-                      InvalidateRect(Application.MainForm.Handle, nil, True);
-                      RedrawWindow(Application.MainForm.Handle, nil, 0, RDW_INVALIDATE or RDW_ALLCHILDREN or RDW_FRAME or RDW_ERASE or RDW_UPDATENOW);
-                    end;
+                    with TAccessProvider(sp), Application.MainForm do
+                      if CoverForm <> nil then begin
+                        if CoverForm.HandleAllocated then
+                          SetWindowPos(Handle, CoverForm.Handle, 0, 0, 0, 0, SWPA_SHOWZORDERONLY);
 
+                        InvalidateRect(Handle, nil, True);
+                        RedrawWindow(Handle, nil, 0, RDWA_ALLNOW);
+                        if CoverForm <> nil then
+                          FreeAndNil(CoverForm);
+                      end
+                      else begin
+                        ShowWindow(Handle, SW_RESTORE);
+                        InvalidateRect(Handle, nil, True);
+                        RedrawWindow(Handle, nil, 0, RDWA_ALLNOW);
+                      end;
                 end;
                 if not AeroIsEnabled then begin
                   Result := True;
@@ -3699,17 +4205,17 @@ begin
 {$IFDEF D2009}
                   if not Application.MainFormOnTaskBar then
 {$ENDIF}
-                  begin
+                  with Application.MainForm do begin
                     Result := True;
                     b := acGetAnimation;
                     acSetAnimation(False);
                     Application.Restore;
-                    if not Application.MainForm.Visible then
-                      Application.MainForm.Show; // If app was started as minimized
+                    if not Visible then
+                      Show; // If app was started as minimized
 
                     acSetAnimation(b);
-                    InvalidateRect(Application.MainForm.Handle, nil, True);
-                    RedrawWindow(Application.MainForm.Handle, nil, 0, RDW_INVALIDATE or RDW_ALLCHILDREN or RDW_FRAME or RDW_ERASE);
+                    InvalidateRect(Handle, nil, True);
+                    RedrawWindow(Handle, nil, 0, RDWA_ALL);
                   end;
           end;
 {$ENDIF} // NOWNDANIMATION
@@ -3747,12 +4253,12 @@ begin
       else begin // If used internal skins
         CommonSkinData.SkinPath := '';
         i := InternalSkins.IndexOf(FSkinName);
-        if (i = -1) and (InternalSkins.Count > 0) then begin
+        if (i < 0) and (InternalSkins.Count > 0) then begin
           FSkinName := InternalSkins.Items[0].Name;
           i := 0;
         end
         else
-          if (InternalSkins.Count < 1) then begin
+          if InternalSkins.Count <= 0 then begin
             FActive := False;
             Exit;
           end;
@@ -3802,69 +4308,40 @@ begin
   end;
 end;
 
-
+{
 function TsSkinManager.MaskWidthBottom(MaskIndex: integer): integer;
 begin
-  if ma[MaskIndex].WB > 0 then
-    Result := ma[MaskIndex].WB
-  else
-    if ma[MaskIndex].BorderWidth > 0 then
-      Result := ma[MaskIndex].BorderWidth
-    else
-      Result := HeightOfImage(ma[MaskIndex]);
+  Result := ma[MaskIndex].WB;
 end;
 
 
 function TsSkinManager.MaskWidthLeft(MaskIndex: integer): integer;
 begin
-  if ma[MaskIndex].WL > 0 then
-    Result := ma[MaskIndex].WL
-  else
-    if ma[MaskIndex].BorderWidth > 0 then
-      Result := ma[MaskIndex].BorderWidth
-    else begin
-      if ma[MaskIndex].ImageCount = 0 then
-        ma[MaskIndex].ImageCount := 1;
-
-      Result := WidthOfImage(ma[MaskIndex]);
-    end
+  Result := ma[MaskIndex].WL;
 end;
 
 
 function TsSkinManager.MaskWidthRight(MaskIndex: integer): integer;
 begin
-  if ma[MaskIndex].WR > 0 then
-    Result := ma[MaskIndex].WR
-  else
-    if ma[MaskIndex].BorderWidth > 0 then
-      Result := ma[MaskIndex].BorderWidth
-    else
-      Result := WidthOfImage(ma[MaskIndex]);
+  Result := ma[MaskIndex].WR;
 end;
 
 
 function TsSkinManager.MaskWidthTop(MaskIndex: integer): integer;
 begin
-  if ma[MaskIndex].WT > 0 then
-    Result := ma[MaskIndex].WT
-  else
-    if ma[MaskIndex].BorderWidth > 0 then
-      Result := ma[MaskIndex].BorderWidth
-    else
-      Result := HeightOfImage(ma[MaskIndex]);
+  Result := ma[MaskIndex].WT;
 end;
-
+}
 
 procedure TsSkinManager.SetActiveControl(const Value: hwnd);
 var
   OldHwnd: hwnd;
 begin
-  if (FActiveControl <> Value) then begin
-//    Sleep(100);
+  if FActiveControl <> Value then begin
     // Try reset graph control
     if (FActiveControl <> 0) and (FActiveGraphControl <> nil) then begin
       ActiveGraphControl := nil;
-      if (FActiveGraphControl <> nil) then
+      if FActiveGraphControl <> nil then
         Exit; // If control is hot yet
     end;
     OldHwnd := FActiveControl;
@@ -4005,7 +4482,7 @@ begin
         ReloadSkin;
 
       aSkinChanging := False;
-      if not (csLoading in ComponentState) and not (csReading in ComponentState) and not (csDesigning in ComponentState) then
+      if [csLoading, csReading, csDesigning] * ComponentState = [] then
         RepaintForms;
     end;
   end;
@@ -4025,20 +4502,21 @@ begin
 
     ShdaTemplate := TBitmap.Create;
     ShdiTemplate := TBitmap.Create;
-    if ConstData.ExBorder > -1 then begin
+    if ConstData.ExBorder >= 0 then begin
       with CommonSkinData do
-        if ExDrawMode = 0 then begin // Shadow only
-          // Calc a width from beginning of image to beginning of content
-          FormShadowSize.Top    := ma[ConstData.ExBorder].WT - CommonSkinData.ExContentOffs;
-          FormShadowSize.Left   := ma[ConstData.ExBorder].WL - ExContentOffs;
-          FormShadowSize.Right  := ma[ConstData.ExBorder].WR - ExContentOffs;
-          FormShadowSize.Bottom := ma[ConstData.ExBorder].WB - ExContentOffs;
-        end
+        if ExDrawMode = 0 then
+          with ma[ConstData.ExBorder] do begin // Shadow only
+            // Calc a width from beginning of image to beginning of content
+            FormShadowSize.Top    := WT - CommonSkinData.ExContentOffs;
+            FormShadowSize.Left   := WL - ExContentOffs;
+            FormShadowSize.Right  := WR - ExContentOffs;
+            FormShadowSize.Bottom := WB - ExContentOffs;
+          end
         else // Receive an offset to content
           FormShadowSize := Rect(ExContentOffs, ExContentOffs, ExContentOffs, ExContentOffs);
 
-      w := WidthOfImage (ma[ConstData.ExBorder]);
-      h := HeightOfImage(ma[ConstData.ExBorder]);
+      w := ma[ConstData.ExBorder].Width;
+      h := ma[ConstData.ExBorder].Height;
       ShdiTemplate.PixelFormat := pf32bit;
       ShdiTemplate.Width := w;
       ShdiTemplate.Height := h;
@@ -4069,10 +4547,12 @@ procedure TsSkinManager.CheckVersion;
 var
   b: boolean;
 begin
-  if (CommonSkinData.Version < CompatibleSkinVersion) then
-    ShowMessage('You are using an old version of the "' + SkinName + '" skin. ' +
-                'Please, update skins to latest or contact the AlphaControls support for upgrading of existing skin.' + s_0D0A + s_0D0A +
-                'This notification occurs in design-time only for your information and will not occur in real-time.')
+  if CommonSkinData.Version < CompatibleSkinVersion then begin
+    if csDesigning in ComponentState then
+      ShowMessage('You are using an old version of the "' + SkinName + '" skin. ' +
+                  'Please, update skins to latest or contact the AlphaControls support for upgrading of existing skin.' + s_0D0A + s_0D0A +
+                  'This notification occurs in design-time only for your information and will not occur in real-time.')
+  end
   else
     if CommonSkinData.Version > MaxCompSkinVersion then begin
       b := srStdDialogs in SkinningRules;
@@ -4117,32 +4597,67 @@ end;
 
 procedure TsSkinManager.SetActiveGraphControl(const Value: TGraphicControl);
 var
-  l: integer;
+  sd: TsCommonData;
   OldControl: TGraphicControl;
 begin
   if Value <> FActiveGraphControl then begin
     // Check if graph control is Hot still
     if (Value = nil) and (FActiveGraphControl <> nil) then begin
-      l := FActiveGraphControl.Perform(SM_ALPHACMD, MakeWParam(0, AC_GETSKINDATA), 0);
-      if (l <> 0) and TsCommonData(l).FMouseAbove then
+      sd := TsCommonData(FActiveGraphControl.Perform(SM_ALPHACMD, AC_GETSKINDATA_HI, 0));
+      if (sd <> nil) and sd.FMouseAbove then
         Exit;
     end;
     OldControl := FActiveGraphControl;
     FActiveGraphControl := Value;
-  //  if (FActiveGraphControl <> nil) and (FActiveControl <> 0) then
-//      FActiveControl := 0;
-
     if OldControl <> nil then
-      OldControl.Perform(SM_ALPHACMD, MakeWParam(0, AC_MOUSELEAVE), LPARAM(Self));
+      OldControl.Perform(SM_ALPHACMD, AC_MOUSELEAVE_HI, LPARAM(Self));
   end;
 end;
 
 
 procedure TsSkinManager.SetBrightness(const Value: integer);
+var
+  i: integer;
 begin
-  if FBrightness <> LimitIt(Value, -100, 100) then begin
-    FBrightness := LimitIt(Value, -100, 100);
+  i := LimitIt(Value, -100, 100);
+  if FBrightness <> i then begin
+    FBrightness := i;
     UpdateCurrentSkin;
+  end;
+end;
+
+
+procedure ScaleImageList(ImgList: TCustomImageList; Data: Longint);
+begin
+  if ImgList is TsAlphaImageList then
+    with TsAlphaImageList(ImgList) do begin
+      acBeginUpdate;
+      ScaleValue := Data;
+      acEndUpdate(False);
+    end
+  else
+    if ImgList is TsVirtualImageList then
+      with TsVirtualImageList(ImgList) do begin
+        acBeginUpdate;
+        Width  := MulDiv(Width,  aScalePercents[Data], aScalePercents[CurrentScale]);
+        Height := MulDiv(Height, aScalePercents[Data], aScalePercents[CurrentScale]);
+        CurrentScale := Data;
+        acEndUpdate(False);
+      end;
+end;
+
+
+procedure TsSkinManager.UpdateAllScale;
+var
+  i: integer;
+begin
+  i := 0;
+  IterateImageLists(ScaleImageList, GetScale);
+  while i < Length(HookedComponents) do begin
+    if HookedComponents[i] is TForm then
+      UpdateScale(TForm(HookedComponents[i]));
+
+    inc(i);
   end;
 end;
 
@@ -4151,7 +4666,7 @@ procedure TsSkinManager.UpdateCurrentSkin;
 var
   s: string;
 begin
-  if FActive and not (csLoading in ComponentState) and not (csReading in ComponentState) then begin
+  if FActive and ([csLoading, csReading] * ComponentState = []) then begin
     aSkinChanging := True;
     s := NormalDir(SkinDirectory) + SkinName + s_Dot + acSkinExt;
     SkinIsPacked := FileExists(s);
@@ -4160,6 +4675,7 @@ begin
     else
       ReloadSkin;
 
+    SendNewSkin;
     aSkinChanging := False;
     if not NoAutoUpdate then begin
       if Assigned(FOnAfterChange) then
@@ -4272,9 +4788,7 @@ end;
 
 destructor TsStoredSkin.Destroy;
 begin
-  if Assigned(FMasterBitmap) then
-    FreeAndNil(FMasterBitmap);
-    
+  FreeAndNil(FMasterBitmap);
   FreeAndNil(PackedData);
   inherited Destroy;
 end;
@@ -4416,11 +4930,6 @@ begin
 end;
 
 
-var
-  rst: TResourceStream = nil;
-  ic: integer;
-
-
 constructor TacSkinEffects.Create;
 begin
   FAllowGlowing      := True;
@@ -4468,8 +4977,8 @@ end;
 
 constructor TacScrollBarsSupport.Create;
 begin
-  FScrollSize := -1;
   FButtonsSize := -1;
+  FScrollSize := -1;
   FOwner := AOwner;
 end;
 
@@ -4520,6 +5029,7 @@ begin
   FNativeBordersMaximized := False;
   FStdGlyphsOrder         := False;
   FChangeSysColors        := False;
+  FScaleMode              := smOldMode;
   FOptimizingPriority     := opSpeed;
 end;
 
@@ -4546,7 +5056,7 @@ begin
     4: begin
       FChangeSysColors := Value;
 {$IFNDEF WIN64}
-      if FOwner.IsDefault and not (csDesigning in FOwner.ComponentState) and not (csLoading in FOwner.ComponentState) then
+      if FOwner.IsDefault and ([csDesigning, csLoading] * FOwner.ComponentState = []) then
         if not Value then begin
           UnHookGetSysColor;
           UnHookGetSysColorBrush;
@@ -4563,6 +5073,47 @@ begin
 end;
 
 
+procedure TacOptions.SetScaleMode(const Value: TacScaleMode);
+var
+  OldScale: integer;
+  ScaleChangeData: TScaleChangeData;
+
+  procedure UpdateVariables;
+  begin
+    if FOwner.IsDefault then begin
+      ac_ArrowWidth := MulDiv(ac_ArrowWidth, aScalePercents[FOwner.GetScale], aScalePercents[OldScale]);
+      ac_ArrowHeight := ac_ArrowWidth div 2 + ac_ArrowWidth mod 2;
+    end;
+  end;
+
+begin
+  if FScaleMode <> Value then begin
+    OldScale := FOwner.GetScale;
+
+    if Assigned(FOwner.OnScaleModeChange) then begin
+      ScaleChangeData.OldScaleMode := FScaleMode;
+      ScaleChangeData.NewScaleMode := Value;
+
+      ScaleChangeData.OldScalePercent := aScalePercents[OldScale];
+      ScaleChangeData.NewScalePercent := aScalePercents[ord(Value)];
+
+      FOwner.OnScaleModeChange(FOwner, ScaleChangeData);
+    end;
+    FScaleMode := Value;
+    with FOwner do
+      if not (csDesigning in FOwner.ComponentState) then begin
+        UpdateVariables;
+        if not (csLoading in ComponentState) then begin
+          BeginUpdate;
+          UpdateAllScale;
+          UpdateCurrentSkin;
+          EndUpdate(True, False);
+        end;
+      end;
+  end;
+end;
+
+
 procedure TsSkinManager.ClearExtArray;
 var
   i: integer;
@@ -4575,20 +5126,50 @@ begin
 end;
 
 
+function TsSkinManager.ScaleInt(Value: integer; SysScale: integer = 0): integer;
+var
+  iScale: integer;
+begin
+  if Options.ScaleMode = smOldMode then
+    Result := Value
+  else
+    if SysScale = 0 then
+      case GetScale of
+        1:   Result := Value + Value div 4;
+        2:   Result := Value + Value div 2
+        else Result := Value;
+      end
+    else begin
+      iScale := GetScale;
+      if iScale > SysScale then
+        Result := Value * aScalePercents[SysScale] div 100
+      else
+        if iScale < SysScale then
+          Result := Value
+        else
+          Result := Value;
+    end;
+{    if Value < SysScale then
+      Result := Value * 100 div SysScale
+    else}
+end;
+
+
 function TsSkinManager.SearchExtFile(s: string): TBitmap;
 var
   i: integer;
 begin
-  Result := nil;
   for i := 0 to Length(ExtArray) - 1 do
     if ExtArray[i].FileName = s then begin
       Result := ExtArray[i].Bmp;
       Exit;
     end;
+
+  Result := nil;
 end;
 
 
-function TsSkinManager.MakeNewItem(SkinIndex: integer; PropertyName, AClassName: string; ImgType: TacImgType; R: TRect; Count, DrawMode: integer; Masktype: smallint): integer;
+function TsSkinManager.MakeNewItem(SkinIndex: integer; const PropertyName, AClassName: string; ImgType: TacImgType; R: TRect; Count, DrawMode: integer; Masktype: smallint): integer;
 begin
   Result := Length(ma);
   SetLength(ma, Result + 1);
@@ -4652,18 +5233,22 @@ var
 
   procedure DisableManager;
   begin
-    bStdDialogs := (srStdDialogs in TsSkinManager(SkinManager).SkinningRules);
-    TsSkinManager(SkinManager).SkinningRules := TsSkinManager(SkinManager).SkinningRules - [srStdDialogs];
-    bSysColors := TsSkinManager(SkinManager).Options.ChangeSysColors;
-    TsSkinManager(SkinManager).Options.ChangeSysColors := False;
+    with TsSkinManager(SkinManager) do begin
+      bStdDialogs := srStdDialogs in SkinningRules;
+      SkinningRules := SkinningRules - [srStdDialogs];
+      bSysColors := Options.ChangeSysColors;
+      Options.ChangeSysColors := False;
+    end;
   end;
 
   procedure EnableManager;
   begin
-    if bStdDialogs then
-      TsSkinManager(SkinManager).SkinningRules := TsSkinManager(SkinManager).SkinningRules + [srStdDialogs];
+    with TsSkinManager(SkinManager) do begin
+      if bStdDialogs then
+        SkinningRules := SkinningRules + [srStdDialogs];
 
-    TsSkinManager(SkinManager).Options.ChangeSysColors := bSysColors;
+      Options.ChangeSysColors := bSysColors;
+    end;
   end;
 
 begin
@@ -4688,7 +5273,7 @@ begin
 
   Convertor.PackedData.Read(cArray, SizeOf(TsCharArray));
   DisableManager;
-  l := acSkinDecode(cArray, KeysArray, pwds.Count, c, c, r);
+  l := asSkinDecode(cArray, KeysArray, pwds.Count, c, c, r);
   EnableManager;
   case l of
    -1: begin
@@ -4704,11 +5289,7 @@ begin
       if l = -3 then
         MessageDlg('Unregistered skin has been loaded.'#13#10'If you have a key for this skin, please insert it in the KeyList.', mtInformation, [mbOk], 0);
 {$ENDIF}
-      if l = 0 then
-        Convertor.PackedData.Seek(8, 0)
-      else
-        Convertor.PackedData.Seek(10, 0);
-
+      Convertor.PackedData.Seek(iff(l = 0, 8, 10), 0);
       // Extract all files
       Convertor.ImageCount := c - 1;
       for i := 1 to c do begin
@@ -4727,10 +5308,12 @@ begin
         end
         else begin
           SetLength(Convertor.Files, Length(Convertor.Files) + 1);
-          Convertor.Files[Length(Convertor.Files) - 1].FileName := s;
-          Convertor.Files[Length(Convertor.Files) - 1].IsBitmap := UpperCase(ExtractFileExt(s)) = '.BMP';
-          Convertor.Files[Length(Convertor.Files) - 1].FileStream := TMemoryStream.Create;
-          Convertor.Files[Length(Convertor.Files) - 1].FileStream.CopyFrom(Decompr, l - r);
+          with Convertor.Files[Length(Convertor.Files) - 1] do begin
+            FileName := s;
+            IsBitmap := UpperCase(ExtractFileExt(s)) = '.BMP';
+            FileStream := TMemoryStream.Create;
+            FileStream.CopyFrom(Decompr, l - r);
+          end;
         end;
         FreeAndNil(Decompr);
       end;
@@ -4739,6 +5322,224 @@ begin
   end;
 end;
 
+
+function GetPreviewStream(aStream: TMemoryStream; SkinFileName: string): boolean; overload;
+var
+  fs: TMemoryStream;
+begin
+  Result := False;
+  if FileExists(SkinFileName) then begin
+    fs := TMemoryStream.Create;
+    fs.LoadFromFile(SkinFileName);
+    try
+      Result := GetPreviewStream(aStream, fs);
+    finally
+      fs.Free;
+    end;
+  end;
+end;
+
+
+function GetPreviewStream(aStream: TMemoryStream; SrcStream: TMemoryStream): boolean; overload;
+const
+  sMagic = 'previewimg';
+  sEncoded: array [0..3] of AnsiChar = ('A', 'S', 'z', 'c');
+var
+  l, position: integer;
+  sStream: TStringStream;
+begin
+  Result := False;
+
+  sStream := TStringStream.Create{$IFNDEF D2010}(''){$ENDIF};
+  SrcStream.Seek(0, 0);
+  sStream.CopyFrom(SrcStream, SrcStream.Size);
+
+  position := Pos(sMagic, AnsiString(sStream.DataString));
+  if position > 0 then begin
+    SrcStream.Seek(position + Length(sMagic) - 1, 0);
+    SrcStream.Read(l, SizeOf(l));
+    try
+      aStream.Size := l;
+      aStream.CopyFrom(SrcStream, l);
+      aStream.Seek(0, 0);
+    finally
+      Result := True;
+    end;
+  end;
+  sStream.Free;
+end;
+
+
+function GetPreviewImage(aBitmap: TBitmap; SkinFileName: string): boolean;
+var
+  ImgStream: TMemoryStream;
+begin
+  Result := False;
+  aBitmap.Assign(nil);
+  ImgStream := TMemoryStream.Create;
+  if GetPreviewStream(ImgStream, SkinFileName) then
+    try
+      aBitmap.LoadFromStream(ImgStream);
+    finally
+      Result := True;
+    end;
+
+  ImgStream.Free;
+end;
+
+
+var
+  rst: TResourceStream = nil;
+  ic: integer;
+
+
+procedure TacSkinListController.AddControl(Ctrl: TControl);
+var
+  i: integer;
+  DoUpdate: boolean;
+begin
+  DoUpdate := (Length(Controls) = 0) and (Length(SkinList) = 0);
+  i := CtrlIndex(Ctrl);
+  if i < 0 then begin
+    SetLength(Controls, Length(Controls) + 1);
+    Controls[Length(Controls) - 1] := Ctrl;
+  end;
+  if DoUpdate then
+    UpdateData(True);
+end;
+
+
+constructor TacSkinListController.Create(AOwner: TsSkinManager);
+begin
+  SkinManager := AOwner;
+  ImgList := TsAlphaImageList.Create(AOwner);
+  TsAlphaImageList(ImgList).IgnoreTransparency := True;
+  ImgList.Height := 100;
+  ImgList.Width := 140;
+  TsAlphaImageList(ImgList).AllowScale := False;
+end;
+
+
+function TacSkinListController.CtrlIndex(Ctrl: TControl): integer;
+var
+  i: integer;
+begin
+  for i := 0 to Length(Controls) - 1 do
+    if Controls[i] = Ctrl then begin
+      Result := i;
+      Exit;
+    end;
+
+  Result := -1;
+end;
+
+
+procedure TacSkinListController.DelControl(Ctrl: TControl);
+var
+  i: integer;
+begin
+  i := CtrlIndex(Ctrl);
+  if i >= 0 then
+    Controls[i] := nil;
+end;
+
+
+destructor TacSkinListController.Destroy;
+begin
+  ImgList.Free;
+  inherited;
+end;
+
+
+procedure TacSkinListController.SendListChanged;
+var
+  i: integer;
+begin
+  for i := 0 to Length(Controls) - 1 do
+    if Controls[i] <> nil then
+      Controls[i].Perform(SM_ALPHACMD, AC_SKINLISTCHANGED shl 16, 0);
+end;
+
+
+procedure TacSkinListController.SendSkinChanged;
+var
+  i: integer;
+begin
+  for i := 0 to Length(Controls) - 1 do
+    if Controls[i] <> nil then
+      if (Controls[i] is TWinControl) and TWinControl(Controls[i]).HandleAllocated then
+        PostMessage(TWinControl(Controls[i]).Handle, SM_ALPHACMD, AC_SKINCHANGED shl 16, 0)
+      else
+        Controls[i].Perform(SM_ALPHACMD, AC_SKINCHANGED shl 16, 0);
+end;
+
+
+procedure TacSkinListController.UpdateData(UpdateNow: boolean);
+var
+  FileInfo: TacSearchRec;
+  i, DosCode: Integer;
+  sp: string;
+
+  procedure AddSkin(const AName: string; IntIndex: integer);
+  var
+    l: integer;
+    Stream: TMemoryStream;
+  begin
+    Stream := TMemoryStream.Create;
+    l := Length(SkinList);
+    SetLength(SkinList, l + 1);
+    SkinList[l].skName := AName;
+    SkinList[l].skImageIndex := -1;
+    if IntIndex < 0 then begin // External
+      if GetPreviewStream(Stream, sp + AName) then
+        if TsAlphaImageList(ImgList).TryLoadFromPngStream(Stream) then
+          SkinList[l].skImageIndex := TsAlphaImageList(ImgList).Items.Count - 1;
+
+      Delete(SkinList[l].skName, pos(s_Dot + acSkinExt, LowerCase(AName)), 4);
+    end
+    else begin
+      if GetPreviewStream(Stream, SkinManager.InternalSkins[IntIndex].PackedData) then
+        if TsAlphaImageList(ImgList).TryLoadFromPngStream(Stream) then
+          SkinList[l].skImageIndex := TsAlphaImageList(ImgList).Items.Count - 1;
+    end;
+    Stream.Free;
+  end;
+
+begin
+  if [csLoading, csDestroying] * SkinManager.ComponentState = [] then begin
+    SetLength(SkinList, 0);
+    TsAlphaImageList(ImgList).Clear;
+    TsAlphaImageList(ImgList).Handle;
+
+    sp := NormalDir(SkinManager.GetFullskinDirectory);
+    // Internal skins names loading
+    if SkinManager.InternalSkins.Count > 0 then
+      for i := 0 to SkinManager.InternalSkins.Count - 1 do
+        AddSkin(SkinManager.InternalSkins[i].Name, i);
+
+    // External skins names loading
+    if acDirExists(sp) then begin
+  //    sp := sp + '\*.*';
+      DosCode := acFindFirst(sp + '*.*', faDirectory, FileInfo);
+      try
+        while DosCode = 0 do begin
+          if FileInfo.Name[1] <> s_Dot then
+            if (FileInfo.Attr and faDirectory = 0) and (ExtractFileExt(FileInfo.Name) = s_Dot + acSkinExt) then
+              AddSkin(FileInfo.Name, -1);
+
+          DosCode := acFindNext(FileInfo);
+        end;
+      finally
+        acFindClose(FileInfo);
+      end;
+    end;
+    SendListChanged;
+  end;
+end;
+
+
+var
+  huser32: HMODULE = 0;
 
 initialization
   OSVerInfo.dwOSVersionInfoSize := sizeof(OSVerInfo);
@@ -4764,8 +5565,15 @@ initialization
         Break;
       end;
 
+  huser32 := LoadLibrary(user32);
+  if huser32 <> 0 then
+    ac_SetProcessDPIAware := GetProcAddress(huser32, 'SetProcessDPIAware');
+
 finalization
   FreeAndNil(rsta);
   FreeAndNil(rsti);
+
+  if huser32 <> 0 then
+    FreeLibrary(huser32);
 
 end.

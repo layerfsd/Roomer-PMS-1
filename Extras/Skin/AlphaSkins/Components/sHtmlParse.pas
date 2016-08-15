@@ -157,25 +157,6 @@ begin
 
             Font.Color := SwapInteger(HexToInt(Value));
           end;
-{
-            if Value = 'AQUA'    then Font.Color := clAqua    else
-            if Value = 'BLACK'   then Font.Color := clBlack   else
-            if Value = 'BLUE'    then Font.Color := clBlue    else
-            if Value = 'FUCHSIA' then Font.Color := clFuchsia else
-            if Value = 'GRAY'    then Font.Color := clGray    else
-            if Value = 'GREEN'   then Font.Color := clGreen   else
-            if Value = 'LIME'    then Font.Color := clLime    else
-            if Value = 'MAROON'  then Font.Color := clMaroon  else
-            if Value = 'NAVY'    then Font.Color := clNavy    else
-            if Value = 'OLIVE'   then Font.Color := clOlive   else
-            if Value = 'PURPLE'  then Font.Color := clPurple  else
-            if Value = 'RED'     then Font.Color := clRed     else
-            if Value = 'SILVER'  then Font.Color := clSilver  else
-            if Value = 'TEAL'    then Font.Color := clTeal    else
-            if Value = 'WHITE'   then Font.Color := clWhite   else
-            if Value = 'YELLOW'  then Font.Color := clYellow  else
-                                      Font.Color := SwapInteger(HexToInt(Value));
-}                                      
       end
       else
         if Atom = 'FACE' then begin
@@ -270,8 +251,6 @@ function TsHtml.ExecTag(const s: acString; CurPos: integer = -1): boolean;
     Delete(str, 1, hr_pos + 3);
     hr_pos := pos('=', UpperCase(str));
     Delete(str, 1, hr_pos + 1);
-//    hr_pos := GetWordNumber('HREF', UpperCase(str), [' ', '=']);
-//    Result := ExtractWord(hr_pos + 1, str, [' ', '=']);
     Result := str;
     Result := DelChars(Result, '''');
     Result := DelChars(Result, '"');
@@ -280,69 +259,73 @@ function TsHtml.ExecTag(const s: acString; CurPos: integer = -1): boolean;
 
 begin
   Result := True;
-  if (s <> '') and (s[2] = '/') then begin
-    if CloseTag('B') then
-      Bitmap.Canvas.Font.Style := Bitmap.Canvas.Font.Style - [fsBold]
-    else
-      if CloseTag('I') then
-        Bitmap.Canvas.Font.Style := Bitmap.Canvas.Font.Style - [fsItalic]
+  with Bitmap.Canvas, Font do
+    if (s <> '') and (s[2] = '/') then begin
+      if CloseTag('B') then
+        Style := Style - [fsBold]
       else
-        if CloseTag('U') then
-          Bitmap.Canvas.Font.Style := Bitmap.Canvas.Font.Style - [fsUnderline]
+        if CloseTag('I') then
+          Style := Style - [fsItalic]
         else
-          if CloseTag('FONT') then
-            BackFont
+          if CloseTag('U') then
+            Style := Style - [fsUnderline]
           else
-            if CloseTag('A') then begin
-              Links[Length(Links) - 1].URL := ExtractAddress(Links[Length(Links) - 1].URL);
-              Links[Length(Links) - 1].Bounds.Right := CurX;
-              Links[Length(Links) - 1].Bounds.Bottom := Links[Length(Links) - 1].Bounds.Top + CurrentRowHeight;
-              BackFont;
-            end
+            if CloseTag('FONT') then
+              BackFont
             else
-              Result := False;
-  end
-  else
-    if OpenTag('BR') or OpenTag('BR/') then begin
-      CurX := Area.Left;
-      if CurrentRowHeight = 0 then
-         CurrentRowHeight := Bitmap.Canvas.TextHeight('X');
-
-      NewRow;
+              if CloseTag('A') then
+                with Links[Length(Links) - 1] do begin
+                  URL := ExtractAddress(URL);
+                  Bounds.Right := CurX;
+                  Bounds.Bottom := Bounds.Top + CurrentRowHeight;
+                  BackFont;
+                end
+              else
+                Result := False;
     end
     else
-      if OpenTag('B') then
-        Bitmap.Canvas.Font.Style := Bitmap.Canvas.Font.Style + [fsBold]
-      else
-        if OpenTag('I') then
-          Bitmap.Canvas.Font.Style := Bitmap.Canvas.Font.Style + [fsItalic]
-        else
-          if OpenTag('U') then
-            Bitmap.Canvas.Font.Style := Bitmap.Canvas.Font.Style + [fsUnderline]
-          else
-            if OpenTag('P') then begin
-              CurX := Area.Left;
-              if CurrentRowHeight = 0 then
-                CurrentRowHeight := Bitmap.Canvas.TextHeight('X');
+      if OpenTag('BR') or OpenTag('BR/') then begin
+        CurX := Area.Left;
+        if CurrentRowHeight = 0 then
+           CurrentRowHeight := TextHeight('X');
 
-              NewRow;
-            end
+        NewRow;
+      end
+      else
+        if OpenTag('B') then
+          Style := Style + [fsBold]
+        else
+          if OpenTag('I') then
+            Style := Style + [fsItalic]
+          else
+            if OpenTag('U') then
+              Style := Style + [fsUnderline]
             else
-              if OpenTag('FONT') then
-                NewFont(s)
+              if OpenTag('P') then begin
+                CurX := Area.Left;
+                if CurrentRowHeight = 0 then
+                  CurrentRowHeight := TextHeight('X');
+
+                NewRow;
+              end
               else
-                if OpenTag('A') then begin
-                  NewFont(s, True, integer(Length(Links) = PressedLink) + integer(Length(Links) = HotLink));
-                  SetLength(Links, Length(Links) + 1);
-                  Links[Length(Links) - 1].Bounds.Left := CurX;
-                  Links[Length(Links) - 1].Bounds.Top := CurY;
-                  if CurPos >= 0 then
-                    Links[Length(Links) - 1].URL := Copy(origin, CurPos, Length(s)) // Save all tag for future processing
-                  else
-                    Links[Length(Links) - 1].URL := s; // Save all tag for future processing
-                end
+                if OpenTag('FONT') then
+                  NewFont(s)
                 else
-                  Result := False;
+                  if OpenTag('A') then begin
+                    NewFont(s, True, integer(Length(Links) = PressedLink) + integer(Length(Links) = HotLink));
+                    SetLength(Links, Length(Links) + 1);
+                    with Links[Length(Links) - 1] do begin
+                      Bounds.Left := CurX;
+                      Bounds.Top := CurY;
+                      if CurPos >= 0 then
+                        URL := Copy(origin, CurPos, Length(s)) // Save all tag for future processing
+                      else
+                        URL := s; // Save all tag for future processing
+                    end;
+                  end
+                  else
+                    Result := False;
 end;
 
 
@@ -447,7 +430,7 @@ begin
   Result := Copy(inString, Succ(inPos), 255);
   SemiColonPos := Pos(';', Result);
   SpacePos := Pos(s_Space, Result);
-  if (SemiColonPos = 0) or ((SpacePos > 0) and (SpacePos < SemiColonPos)) then
+  if (SemiColonPos = 0) or (SpacePos > 0) and (SpacePos < SemiColonPos) then
     Result := ''
   else begin
     Result := Copy(Result, 1, Pred(SemiColonPos));
@@ -500,11 +483,13 @@ begin
             ShowCut(CurPos, LastPos);
 
           sCurrentChar := GetSpecialCharacter(origin, CurPos);
-          if (sCurrentChar <> '') then begin
+          if sCurrentChar <> '' then begin
             inc(CurPos, Length(sCurrentChar));
             LastPos := CurPos;
             dec(CurPos);
-          end;
+          end
+          else
+            LastPos := CurPos + integer(UppedText[CurPos + 1] = '&' {Skip second char});
         end;
 
         '<':
@@ -588,7 +573,7 @@ begin
     if (SkinManager <> nil) and TsSkinManager(SkinManager).Active then
       with TsSkinManager(SkinManager) do
         case State of
-          2:   Bitmap.Canvas.Font.Color := Mixcolors(Palette[pcWebTextHot], Palette[pcLabelText], 0.5);
+          2:   Bitmap.Canvas.Font.Color := BlendColors(Palette[pcWebTextHot], Palette[pcLabelText], 127);
           1:   Bitmap.Canvas.Font.Color := Palette[pcWebTextHot]
           else Bitmap.Canvas.Font.Color := Palette[pcWebText]
         end

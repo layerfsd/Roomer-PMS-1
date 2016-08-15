@@ -80,7 +80,7 @@ var
           CaptRect.BottomRight := Point(CaptRect.Left + Band.Height, CaptRect.Top + CaptSize);
           TempBmp := CreateBmp32(Band.Height, CaptSize);
           BitBlt(TempBmp.Canvas.Handle, 0, 0, TempBmp.Width, TempBmp.Height, FCommonData.FCacheBmp.Canvas.Handle, CaptRect.Left + CI.X, CaptRect.Top + CI.Y, SRCCOPY);
-          if FGripIndex <> -1 then
+          if FGripIndex >= 0 then
             PaintItem(FGripIndex, Ci, True, 0,
                       MkRect(Band.Height, GripSize - 2), Point(CaptRect.Left, CaptRect.Top),
                       TempBmp, SkinData.SkinManager, FGripTexture);
@@ -88,7 +88,7 @@ var
           rText := CaptRect;
           OffsetRect(rText, -rText.Left, -rText.Top);
           inc(rText.Top, GripSize);
-          if Assigned(Images) and (Band.ImageIndex > -1) then begin
+          if Assigned(Images) and (Band.ImageIndex >= 0) then begin
             Images.DrawingStyle := dsTransparent;
             Images.Draw(TempBmp.Canvas, (WidthOf(CaptRect) - Images.Width) div 2, GripSize, Band.ImageIndex);
             inc(rText.Top, Images.Height + 2);
@@ -113,13 +113,13 @@ var
           CaptRect.BottomRight := Point(CaptRect.Left + CaptSize, CaptRect.Top + Band.Height);
           TempBmp := CreateBmp32(CaptSize, Band.Height);
           BitBlt(TempBmp.Canvas.Handle, 0, 0, TempBmp.Width, TempBmp.Height, FCommonData.FCacheBmp.Canvas.Handle, CaptRect.Left + CI.X, CaptRect.Top + CI.Y, SRCCOPY);
-          if FGripIndex <> -1 then
+          if FGripIndex >= 0 then
             PaintItem(FGripIndex, Ci, True, 0, MkRect(GripSize - 2, Band.Height), CaptRect.TopLeft, TempBmp, SkinData.SkinManager, FGripTexture);
 
           rText := CaptRect;
           OffsetRect(rText, -rText.Left, -rText.Top);
           inc(rText.Left, GripSize);
-          if Assigned(Images) and (Band.ImageIndex > -1) then begin
+          if Assigned(Images) and (Band.ImageIndex >= 0) then begin
             Images.DrawingStyle := dsTransparent;
             Images.Draw(TempBmp.Canvas, GripSize, (Band.Height - Images.Height) div 2, Band.ImageIndex);
             inc(rText.Left, Images.Width + 2);
@@ -216,9 +216,9 @@ end;
 
 constructor TsCoolBar.Create(AOwner: TComponent);
 begin
-  inherited Create(AOwner);
   FCommonData := TsCommonData.Create(Self, True);
   FCommonData.COC := COC_TsCoolBar;
+  inherited Create(AOwner);
   UpdateGripIndex;
 end;
 
@@ -614,7 +614,7 @@ begin
       FGripsection := s_GripH;
 
     FGripIndex := SkinData.SkinManager.GetSkinIndex(FGripsection);
-    if FGripIndex <> -1 then
+    if FGripIndex >= 0 then
       FGripTexture := SkinData.SkinManager.GetTextureIndex(FGripIndex, FGripsection, s_Pattern)
     else begin
       FGripsection := s_ProgressV;

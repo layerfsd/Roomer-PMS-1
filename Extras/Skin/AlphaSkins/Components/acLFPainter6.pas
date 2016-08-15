@@ -972,7 +972,7 @@ begin
         cxbsPressed: State := 2
         else         State := 0
       end;
-      if State > DefaultManager.ma[i].ImageCount - 1 then
+      if State >= DefaultManager.ma[i].ImageCount then
         State := DefaultManager.ma[i].ImageCount - 1;
 
       DrawSkinGlyph(TmpBmp, MkPoint, State, 1, DefaultManager.ma[i], MakeCacheInfo(TmpBmp));
@@ -1103,7 +1103,7 @@ begin
         cxbsPressed: State := 2
         else         State := 0
       end;
-      if State > DefaultManager.ma[i].ImageCount - 1 then
+      if State >= DefaultManager.ma[i].ImageCount then
         State := DefaultManager.ma[i].ImageCount - 1;
 
       NewLeft := (WidthOf(R) - Size.cx) div 2;
@@ -1135,7 +1135,7 @@ begin // +
         cxbsPressed: State := 2
         else         State := 0
       end;
-      if State > DefaultManager.ma[i].ImageCount - 1 then
+      if State >= DefaultManager.ma[i].ImageCount then
         State := DefaultManager.ma[i].ImageCount - 1;
 
       DrawSkinGlyph(TmpBmp, MkPoint, State, 1, DefaultManager.ma[i], MakeCacheInfo(TmpBmp));

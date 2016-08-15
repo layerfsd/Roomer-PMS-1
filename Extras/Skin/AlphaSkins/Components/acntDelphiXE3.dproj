@@ -1,4 +1,4 @@
-﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <ProjectGuid>{E4301002-BA9D-4868-B204-C3E7043228E0}</ProjectGuid>
         <MainSource>acntDelphiXE3.dpk</MainSource>

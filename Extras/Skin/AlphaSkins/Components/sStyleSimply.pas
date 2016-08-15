@@ -1,26 +1,48 @@
 unit sStyleSimply;
 {$I sDefs.inc}
-
+//+
 interface
 
 uses
   Windows, Graphics, Classes, Controls, SysUtils, Forms, StdCtrls, Messages,
+  {$IFDEF DELPHI7UP} Types, {$ENDIF}
   acntUtils, sConst, sSkinProps;
 
 
 type
   TacSection =
     (ssMenuItem, ssCheckBox, ssSpeedButton, ssSpeedButton_Small, ssToolButton, ssTransparent, ssGroupBox, ssDivider, ssWebBtn, // <- Transparent sections
-    ssButton, ssToolBar, ssEdit, ssGauge, ssSelection, ssStatusBar, ssPanel, ssPanelLow, ssTrackBar, ssColHeader, ssProgressV,
+    ssButton, ssButtonHuge, ssToolBar, ssEdit, ssGauge, ssSelection, ssStatusBar, ssPanel, ssPanelLow, ssTrackBar, ssColHeader, ssProgressV,
     ssDragBar, ssGripH, ssGripV, ssProgressH, ssTabSheet, ssMenuButton, ssUpDown, ssComboBox, ssCaption, ssMenuLine, ssMainMenu,
-    ssSplitter);
+    ssSplitter, ssSlider_Off, ssSlider_On, ssThumb_Off, ssThumb_On, ssComboBtn, ssFormTitle, ssHint, ssMenuCaption, ssDividerV);
+
+
+  TacTitleGlyph =
+    (tgCloseAlone,
+     tgClose, tgMax, tgMin, tgNormal, tgHelp,
+     tgSmallClose, tgSmallMax, tgSmallMin, tgSmallNormal, tgSmallHelp, tgUser, tgNone);
+
 
 const
+  acGlowedGlyphs = [tgCloseAlone..tgNormal];
+
+
   acSectNames: array [TacSection] of string =
     (s_MenuItem, s_CheckBox, s_SpeedButton, s_SpeedButton_Small, s_ToolButton, s_Transparent, s_GroupBox, s_Divider, s_WebBtn,
-    s_Button, s_ToolBar, s_Edit, s_Gauge, s_Selection, s_StatusBar, s_Panel, s_PanelLow, s_TrackBar, s_ColHeader, s_ProgressV,
+    s_Button, s_ButtonHuge, s_ToolBar, s_Edit, s_Gauge, s_Selection, s_StatusBar, s_Panel, s_PanelLow, s_TrackBar, s_ColHeader, s_ProgressV,
     s_DragBar, s_GripH, s_GripV, s_ProgressH, s_TabSheet, s_MenuButton, s_UpDown, s_ComboBox, s_Caption, s_MenuLine, s_MainMenu,
-    s_Splitter);
+    s_Splitter, s_Slider_Off, s_Slider_On, s_Thumb_Off, s_Thumb_On, s_ComboBtn, s_FormTitle, s_Hint, s_MenuCaption, s_DividerV);
+
+
+  acTitleGlyphs: array [TacTitleGlyph] of string =
+    (s_BorderIconCloseAlone,
+     s_BorderIconClose, s_BorderIconMaximize, s_BorderIconMinimize, s_BorderIconNormalize, s_BorderIconHelp,
+     s_SmallIconClose, s_SmallIconMaximize, s_SmallIconMinimize, s_SmallIconNormalize, s_SmallIconHelp, s_TitleButtonMask, '');
+
+
+  ProgArray:  array [boolean] of string = (s_ProgVert, s_ProgHorz);
+  ThickArray: array [boolean] of string = (s_TickVert, s_TickHorz);
+
 
 type
   TsSkinData = class(TObject)
@@ -54,13 +76,6 @@ type
     BILeftMargin,
     BITopMargin,
     BIKeepHUE,      // 0 - variable HUE, 1 - keep unchanged
-                    // Glow Effects for border icons props
-    BICloseGlow,
-    BICloseGlowMargin,
-    BIMaxGlow,
-    BIMaxGlowMargin,
-    BIMinGlow,
-    BIMinGlowMargin,
 
     ComboBoxMargin,
     SliderMargin,
@@ -90,12 +105,28 @@ type
   end;
 
 
+  TacTrackBarData = record
+    SkinIndex,
+    MaskIndex,
+    GlyphIndex: integer;
+    BGIndex: array [0..ac_MaxPropsIndex] of integer;
+    TickIndex,
+    ProgIndex,
+    SlideIndex: integer;
+  end;
+
+
   TacIntSections  = array [TacSection]   of integer;
   TacSideElements = array [TacSide]      of TacConstElementData;
   TacBoolElements = array [boolean]      of TacConstElementData;
   TacAllTabs      = array [TacTabLayout] of TacSideElements;
 
   TConstantSkinData = record
+    // Some sections indexes
+    IndexGLobalInfo: integer;
+    Sections: TacIntSections;
+    Tabs: TacAllTabs;
+
     Scrolls,
     ScrollBtns,
     UpDownBtns: TacSideElements;
@@ -105,29 +136,21 @@ type
     MenuItem,
     ComboBtn: TacConstElementData;
 
-    MaskCloseBtn,
-    MaskCloseAloneBtn,
-    MaskMaxBtn,
-    MaskNormBtn,
-    MaskMinBtn,
-    MaskHelpBtn,
-    MaskCloseSmall,
-    MaskMaxSmall,
-    MaskNormSmall,
-    MaskMinSmall,
-    MaskHelpSmall: integer;
+    // Glyphs indexes
+    TitleGlows:    array [tgCloseAlone..tgSmallClose] of array of integer;
+    GlowMargins:   array [tgCloseAlone..tgSmallClose] of integer;
+    TitleGlyphs:   array [TacTitleGlyph]  of integer;
     RadioButton:   array [boolean]        of integer;
     CheckBox:      array [TCheckBoxState] of integer;
     SmallCheckBox: array [TCheckBoxState] of integer;
 
+    TrackBar: array [boolean] of TacTrackBarData;
+
+    // Other indexes
     ExBorder,
-    IndexGLobalInfo,
     GripRightBottom,
     GripHorizontal,
     GripVertical: integer;
-    // Some sections indexes
-    Sections: TacIntSections;
-    Tabs: TacAllTabs;
   end;
 
 
@@ -176,24 +199,19 @@ end;
 
 procedure IterateForms(sm: TsSkinManager; FormCallBack: TacFormCallBack; Data: integer = 0);
 var
-  f: TForm;
   i: integer;
   sp: TAccessSkinProvider;
 begin
   i := 0;
   while i <= Length(HookedComponents) - 1 do begin
-    if (HookedComponents[i] is TCustomForm) then begin
-      f := TForm(HookedComponents[i]);
-      if (f.WindowState <> wsMinimized) and
-           (f.FormStyle <> fsMDIChild) and
-             (f.Parent = nil) and
-                f.HandleAllocated and
-                  f.Visible { IsWindowVisible(f.Handle)} then begin
-          sp := TAccessSkinProvider(SendAMessage(f, AC_GETPROVIDER));
+    if HookedComponents[i] is TCustomForm then
+      with TForm(HookedComponents[i]) do
+        if (WindowState <> wsMinimized) and (FormStyle <> fsMDIChild) and (Parent = nil) and HandleAllocated and Visible then begin
+          sp := TAccessSkinProvider(SendAMessage(TForm(HookedComponents[i]), AC_GETPROVIDER));
           if (sp <> nil) and (sp.SkinData.SkinManager = sm) then
             FormCallBack(sp, Data);
-      end;
-    end;
+        end;
+
     inc(i);
   end;
 end;
@@ -201,29 +219,33 @@ end;
 
 procedure CopyExFormsCB(sp: TAccessSkinProvider; Data: integer);
 begin
-  if (sp.BorderForm <> nil) and (sp.BorderForm.AForm <> nil) then begin
-    sp.FormState := sp.FormState or FS_CHANGING;
-    if sp.CoverBmp <> nil then
-       FreeAndNil(sp.CoverBmp);
+  with sp do begin
+    if BorderForm <> nil then
+      with BorderForm do
+        if AForm <> nil then begin
+          sp.FormState := sp.FormState or FS_CHANGING;
+          if CoverBmp <> nil then
+            FreeAndNil(CoverBmp);
 
-    sp.CoverBmp := GetFormImage(sp);
+          CoverBmp := GetFormImage(sp);
+        end;
+
+    sp.FInAnimation := True;
   end;
-  sp.FInAnimation := True;
 end;
 
 
 procedure CopyExForms(SkinManager: TComponent);
 begin
-  if IsIconic(Application.{$IFDEF FPC}MainFormHandle{$ELSE}Handle{$ENDIF}) or
-       (csDesigning in SkinManager.ComponentState) or
-         (csLoading in SkinManager.ComponentState) or
-           (csReading in SkinManager.ComponentState) then
-    Exit;
+  with TsSkinManager(SkinManager) do
+    if not IsIconic(Application.{$IFDEF FPC}MainFormHandle{$ELSE}Handle{$ENDIF}) and
+        ([csDesigning, csLoading, csReading] * ComponentState = []) then begin
 
-  if TsSkinManager(SkinManager).IsDefault and (TsSkinManager(SkinManager).AnimEffects.SkinChanging.Active) then
-    InAnimationProcess := True;
+      if IsDefault and (AnimEffects.SkinChanging.Active) then
+        InAnimationProcess := True;
 
-  IterateForms(TsSkinManager(SkinManager), CopyExFormsCB);
+      IterateForms(TsSkinManager(SkinManager), CopyExFormsCB);
+    end;
 end;
 
 
@@ -231,33 +253,39 @@ procedure LockFormsCB(sp: TAccessSkinProvider; Data: integer);
 var
   Alpha: integer;
 begin
-  sp.FInAnimation := True;
-  sp.FormState := sp.FormState or FS_LOCKED;
-  if (sp.BorderForm <> nil) and (sp.BorderForm.AForm <> nil) then begin
-    if sp.CoverBmp <> nil then begin
+  with sp do begin
+    FInAnimation := True;
+    FormState := FormState or FS_LOCKED;
+    if BorderForm <> nil then
+      with BorderForm do
+        if AForm <> nil then begin
+          if CoverBmp <> nil then begin
 {$IFDEF DELPHI7UP}
-      if sp.Form.AlphaBlend then
-        Alpha := sp.Form.AlphaBlendValue
-      else
+            if Form.AlphaBlend then
+              Alpha := Form.AlphaBlendValue
+            else
 {$ENDIF}
-        Alpha := MaxByte;
+              Alpha := MaxByte;
 
-      SetFormBlendValue(sp.BorderForm.AForm.Handle, sp.CoverBmp, Alpha);
-    end;
-    SetWindowRgn(sp.BorderForm.AForm.Handle, sp.BorderForm.MakeRgn, False);
+            SetFormBlendValue(AForm.Handle, CoverBmp, Alpha);
+          end;
+          SetWindowRgn(AForm.Handle, MakeRgn, False);
+        end;
+
+    Form.Perform(WM_SETREDRAW, 0, 0);
   end;
-  sp.Form.Perform(WM_SETREDRAW, 0, 0);
 end;
 
 
 procedure LockForms(SkinManager: TComponent);
 begin
-  if not IsIconic(Application.{$IFDEF FPC}MainFormHandle{$ELSE}Handle{$ENDIF}) then begin
-    if TsSkinManager(SkinManager).IsDefault and (TsSkinManager(SkinManager).AnimEffects.SkinChanging.Active) then
-      InAnimationProcess := True;
+  with TsSkinManager(SkinManager) do
+    if not IsIconic(Application.{$IFDEF FPC}MainFormHandle{$ELSE}Handle{$ENDIF}) then begin
+      if IsDefault and (AnimEffects.SkinChanging.Active) then
+        InAnimationProcess := True;
 
-    IterateForms(TsSkinManager(SkinManager), LockFormsCB);
-  end;
+      IterateForms(TsSkinManager(SkinManager), LockFormsCB);
+    end;
 end;
 
 
@@ -267,7 +295,7 @@ var
 
 procedure AllowRedrawCB(sp: TAccessSkinProvider; Data: integer);
 begin
-  if sp.FormState and FS_LOCKED = FS_LOCKED then
+  if sp.FormState and FS_LOCKED <> 0 then
     sp.Form.Perform(WM_SETREDRAW, 1, 0);
 end;
 
@@ -275,65 +303,64 @@ end;
 procedure DoRepaintCB(sp: TAccessSkinProvider; Data: integer);
 var
   ActWnd: hwnd;
-  Flags: Cardinal;
   AlphaValue: byte;
 begin
-  if (sp.Form.WindowState <> wsMinimized) then
-    if sp.FormState and FS_LOCKED = FS_LOCKED then begin
-      if Data = 1 then begin
-        if sp.SkinData.SkinManager.AnimEffects.SkinChanging.Active then begin
+  with sp, SkinData.SkinManager, AnimEffects.SkinChanging do
+    if Form.WindowState <> wsMinimized then
+      if FormState and FS_LOCKED <> 0 then begin
+        if Data = 1 then begin
+          if Active then begin
 {$IFDEF DELPHI7UP}
-          if sp.Form.AlphaBlend then
-            AlphaValue := sp.Form.AlphaBlendValue
-          else
+            if Form.AlphaBlend then
+              AlphaValue := Form.AlphaBlendValue
+            else
 {$ENDIF}
-            AlphaValue := MaxByte;
+              AlphaValue := MaxByte;
 
-          if sp.DrawNonClientArea then
-            case sp.SkinData.SkinManager.AnimEffects.SkinChanging.Mode of
-              atAero: AnimShowControl(sp.Form, sp.SkinData.SkinManager.AnimEffects.SkinChanging.Time, AlphaValue, atcAero)
-              else    AnimShowControl(sp.Form, sp.SkinData.SkinManager.AnimEffects.SkinChanging.Time, AlphaValue, atcFade)
-            end
+            if DrawNonClientArea then
+              case Mode of
+                atAero: AnimShowControl(Form, Time, AlphaValue, atcAero)
+                else    AnimShowControl(Form, Time, AlphaValue, atcFade)
+              end
+            else
+              AnimShowControl(sp.Form, 0);
+          end;
+          FormState := FormState and not FS_CHANGING;
+          if (BorderForm <> nil) and (Form.WindowState = wsMaximized) then // Title height may be changed
+            if iLatestTitleHeight <> ActualTitleHeight then begin // If height of title is really changed
+              iLatestTitleHeight := ActualTitleHeight;
+              ActWnd := GetActiveWindow;
+              SetWindowLong(Form.Handle, GWL_STYLE, GetWindowLong(Form.Handle, GWL_STYLE) and not WS_VISIBLE);
+              ShowWindow(Form.Handle, SW_SHOWMAXIMIZED);
+              SetWindowLong(Form.Handle, GWL_STYLE, GetWindowLong(Form.Handle, GWL_STYLE) or WS_VISIBLE);
+              if ActWnd <> 0 then
+                SetActiveWindow(ActWnd);
+            end;
+
+          FInAnimation := False;
+          if DrawNonClientArea then begin
+            if {(Win32MajorVersion < 6) or }not AeroIsEnabled then
+              SetWindowRgn(Form.Handle, 0, False); // Fixing of Aero bug
+
+            sSkinProvider.FillArOR(sp); // Update rgn data for skin
+            sSkinProvider.UpdateRgn(sp, True, True); // Update of native borders
+            RedrawWindow(sp.Form.Handle, nil, 0, RDWA_ALLNOW); // Redraw main form under layered form
+            if BorderForm <> nil then begin
+              SetWindowRgn(BorderForm.AForm.Handle, BorderForm.MakeRgn, False); // Avoiding a flickering
+              BorderForm.UpdateExBordersPos;
+            end;
+          end
           else
-            AnimShowControl(sp.Form, 0);
-        end;
-        sp.FormState := sp.FormState and not FS_CHANGING;
-        if (sp.BorderForm <> nil) and (sp.Form.WindowState = wsMaximized) then // Title height may be changed
-          if iLatestTitleHeight <> sp.ActualTitleHeight then begin // If height of title is really changed
-            iLatestTitleHeight := sp.ActualTitleHeight;
-            ActWnd := GetActiveWindow;
-            SetWindowLong(sp.Form.Handle, GWL_STYLE, GetWindowLong(sp.Form.Handle, GWL_STYLE) and not WS_VISIBLE);
-            ShowWindow(sp.Form.Handle, SW_SHOWMAXIMIZED);
-            SetWindowLong(sp.Form.Handle, GWL_STYLE, GetWindowLong(sp.Form.Handle, GWL_STYLE) or WS_VISIBLE);
-            if ActWnd <> 0 then
-              SetActiveWindow(ActWnd);
-          end;
-
-        sp.FInAnimation := False;
-        if sp.DrawNonClientArea then begin
-          if {(Win32MajorVersion < 6) or }not AeroIsEnabled then
-            SetWindowRgn(sp.Form.Handle, 0, False); // Fixing of Aero bug
-
-          sSkinProvider.FillArOR(sp); // Update rgn data for skin
-          sSkinProvider.UpdateRgn(sp, True, True); // Update of native borders
-          Flags := RDW_ERASE or RDW_UPDATENOW or RDW_INVALIDATE or RDW_ALLCHILDREN;
-          RedrawWindow(sp.Form.Handle, nil, 0, Flags); // Redraw main form under layered form
-          if sp.BorderForm <> nil then begin
-            SetWindowRgn(sp.BorderForm.AForm.Handle, sp.BorderForm.MakeRgn, False); // Avoiding a flickering
-            sp.BorderForm.UpdateExBordersPos;
-          end;
+            RedrawWindow(Form.Handle, nil, 0, RDWA_ALLNOW);
         end
-        else
-          RedrawWindow(sp.Form.Handle, nil, 0, RDW_ERASE or RDW_UPDATENOW or RDW_INVALIDATE or RDW_ALLCHILDREN or RDW_FRAME);
-      end
-      else begin
-        sp.FormState := sp.FormState and not FS_CHANGING;
-        SendMessage(sp.Form.Handle, WM_SETREDRAW, 1, 0);
-        if Data = 1 then
-          RedrawWindow(sp.Form.Handle, nil, 0, RDW_NOERASE or RDW_UPDATENOW or RDW_INVALIDATE or RDW_ALLCHILDREN or RDW_FRAME);
+        else begin
+          FormState := FormState and not FS_CHANGING;
+          SendMessage(Form.Handle, WM_SETREDRAW, 1, 0);
+          if Data = 1 then
+            RedrawWindow(Form.Handle, nil, 0, RDWA_ALLNOW);
+        end;
+        FormState := FormState and not FS_LOCKED;
       end;
-      sp.FormState := sp.FormState and not FS_LOCKED;
-    end;
 end;
 
 
@@ -358,12 +385,10 @@ begin
     if i >= Application.ComponentCount then
       Exit;
     // Sending a message to all forms (non-MDIChild first)
-    if (Application.Components[i] is TForm) then
+    if Application.Components[i] is TForm then
       with TForm(Application.Components[i]), TMessage(Message) do
         if FormStyle <> fsMDIChild then
-          if not (csDestroying in ComponentState) and
-               not (csLoading in ComponentState) and
-                 not WndIsSkinned(Handle){GetBoolMsg(Handle, AC_CTRLHANDLED)} then begin
+          if ([csDestroying, csLoading] * ComponentState = []) and not WndIsSkinned(Handle) then begin
             // Form must be handled first
             SendMessage(Handle, Msg, WParam, LParam);
             AlphaBroadCast(TWinControl(Application.Components[i]), Message);
@@ -383,7 +408,7 @@ var
   i: integer;
 begin
   i := 0;
-  while i <= Length(HookedComponents) - 1 do begin
+  while i < Length(HookedComponents) do begin
     if HookedComponents[i] is TForm then
       with TMessage(Message), TForm(HookedComponents[i]) do
         if not (csDestroying in ComponentState) then begin
@@ -422,7 +447,7 @@ begin
       HookedComponents[l] := nil;
     end;
 
-  if (l >= 0) then
+  if l >= 0 then
     if HookedComponents[l] = nil then
       SetLength(HookedComponents, l)
 end;

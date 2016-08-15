@@ -1,6 +1,6 @@
 unit sStoreUtils;
 {$I sDefs.inc}
-
+//+
 interface
 
 uses
@@ -11,7 +11,7 @@ uses
 
   
 // Work with Windows registry and ini
-function ReadRegString  (Key: HKEY; const Section, Named: string): string;
+function  ReadRegString (Key: HKEY; const Section, Named: string): string;
 procedure WriteRegString(Key: HKEY; const Section, Named, Value: string);
 procedure DeleteRegParam(Key: HKEY; const Section, Named: string);
 procedure WriteRegInteger(const Section, Named: string; Value: integer);

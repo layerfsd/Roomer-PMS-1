@@ -1,6 +1,6 @@
 unit acDBComboEdit;
 {$I sDefs.inc}
-
+//+
 interface
 
 uses
@@ -179,9 +179,8 @@ end;
 procedure TsDBComboEdit.KeyDown(var Key: Word; Shift: TShiftState);
 begin
   inherited;
-  if ((Key = VK_DELETE) or ((Key = VK_INSERT) and (ssShift in Shift))) or
-       ((GetKeyState(VK_Up) and 128) = 128) or
-         ((GetKeyState(VK_Down) and 128) = 128) then
+  if (Key = VK_DELETE) or ((Key = VK_INSERT) and (ssShift in Shift)) or
+       (GetKeyState(VK_Up) and 128 = 128) or (GetKeyState(VK_Down) and 128 = 128) then
     if CanEdit then
       FDataLink.Edit
     else begin
@@ -202,7 +201,7 @@ begin
     else
       FDataLink.Edit;
   end;
-  if not CanEdit and ((Key=^V) or (Key=^X)) then begin
+  if not CanEdit and ((Key = ^V) or (Key = ^X)) then begin
     Reset;
     Key := #0;
   end;

@@ -1,7 +1,7 @@
 unit sScrollBar;
 {$I sDefs.inc}
 //{$DEFINE LOGGED}
-
+//+
 interface
 
 uses
@@ -15,24 +15,27 @@ type
   TsScrollBar = class(TScrollBar)
   private
 {$IFNDEF NOTFORHELP}
-    FBtn1Rect: TRect;
-    FBtn2Rect: TRect;
-    FBar1Rect: TRect;
-    FBar2Rect: TRect;
+    FBtn1Rect,
+    FBtn2Rect,
+    FBar1Rect,
+    FBar2Rect,
     FSliderRect: TRect;
-    Timer: TTimer;
-    FBtn1State: integer;
-    FBar2State: integer;
-    FBtn2State: integer;
-    FBar1State: integer;
+
+    FCurrPos,
+    FBtn1State,
+    FBar2State,
+    FBtn2State,
+    FBar1State,
     FSliderState: integer;
+
+    FBeginTrack,
+    SkinnedRecreate,
+    MustBeRecreated: boolean;
+
+    Timer: TTimer;
+    FSI: TScrollInfo;
     FCommonData: TsCommonData;
     FDisabledKind: TsDisabledKind;
-    SkinnedRecreate: boolean;
-    MustBeRecreated: boolean;
-    FSI: TScrollInfo;
-    FCurrPos: integer;
-    FBeginTrack: boolean;
     procedure CNHScroll(var Message: TWMHScroll); message CN_HSCROLL;
     procedure CNVScroll(var Message: TWMVScroll); message CN_VSCROLL;
     procedure CMMouseLeave(var Msg: TMessage); message CM_MOUSELEAVE;
@@ -77,24 +80,26 @@ type
     procedure IncPos(Offset: integer);
     procedure SetPos(Pos: integer);
   public
-    ScrollCode: integer;
-    RepaintNeeded: boolean;
+    ScrollCode,
     MouseOffset: integer;
+
+    RepaintNeeded,
+    DoSendChanges,
     DrawingForbidden: boolean;
+
     LinkedControl: TWinControl;
-    DoSendChanges: boolean;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure AfterConstruction; override;
     procedure Loaded; override;
     procedure UpdateBar;
-    procedure OnTimer(Sender: TObject);
+    procedure OnTimer   (Sender: TObject);
     procedure OnBtnTimer(Sender: TObject);
     procedure OnBarTimer(Sender: TObject);
-    property Btn1State: integer index 0 read FBtn1State write SetInteger;
-    property Btn2State: integer index 1 read FBtn2State write SetInteger;
-    property Bar1State: integer index 2 read FBar1State write SetInteger;
-    property Bar2State: integer index 3 read FBar2State write SetInteger;
+    property Btn1State:   integer index 0 read FBtn1State   write SetInteger;
+    property Btn2State:   integer index 1 read FBtn2State   write SetInteger;
+    property Bar1State:   integer index 2 read FBar1State   write SetInteger;
+    property Bar2State:   integer index 3 read FBar2State   write SetInteger;
     property SliderState: integer index 4 read FSliderState write SetInteger;
     property SkinData: TsCommonData read FCommonData write FCommonData;
 {$ENDIF}
@@ -134,13 +139,15 @@ type
 
 function Skinned(sb: TsScrollBar): boolean;
 begin
-  if not Assigned(sb.SkinData.SkinManager) then
-    sb.SkinData.SkinManager := DefaultManager;
+  with sb.SkinData do begin
+    if not Assigned(SkinManager) then
+      SkinManager := DefaultManager;
 
-  if Assigned(sb.SkinData.SkinManager) and sb.SkinData.SkinManager.CommonSkinData.Active then
-    Result := True
-  else
-    Result := False;
+    if Assigned(SkinManager) and SkinManager.CommonSkinData.Active then
+      Result := True
+    else
+      Result := False;
+  end;
 end;
 
 
@@ -157,9 +164,9 @@ var
   begin
     Style := GetWindowLong(Handle, GWL_STYLE);
     case fnBar of
-      SB_VERT: Result := (Style and WS_VSCROLL) <> 0;
-      SB_HORZ: Result := (Style and WS_HSCROLL) <> 0;
-      SB_BOTH: Result := ((Style and WS_VSCROLL) <> 0) and ((Style and WS_HSCROLL) <> 0)
+      SB_VERT: Result := Style and WS_VSCROLL <> 0;
+      SB_HORZ: Result := Style and WS_HSCROLL <> 0;
+      SB_BOTH: Result := (Style and WS_VSCROLL <> 0) and (Style and WS_HSCROLL <> 0)
       else     Result := False
     end;
   end;
@@ -284,12 +291,12 @@ end;
 
 constructor TsScrollBar.Create(AOwner: TComponent);
 begin
+  FCommonData := TsCommonData.Create(TWinControl(Self), True);
+  FCommonData.COC := COC_TsScrollBar;
   inherited Create(AOwner);
   RecreateCount := 0;
   SkinnedRecreate := False;
-  FCommonData := TsCommonData.Create(TWinControl(Self), True);
   CI := MakeCacheInfo(FCommonData.FCacheBmp);
-  FCommonData.COC := COC_TsScrollBar;
   FSI.nMax := FSI.nMin - 1;
 
   Btn1State := 0;
@@ -367,10 +374,8 @@ begin
     Timer.Enabled := False;
     FreeAndNil(Timer);
   end;
-  if Assigned(FCommonData) then
-    FreeAndNil(FCommonData);
-
   inherited Destroy;
+  FreeAndNil(FCommonData);
 end;
 
 
@@ -393,6 +398,11 @@ end;
 
 
 procedure TsScrollBar.MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+const
+  BtnCodes1:  array[boolean] of integer = (SB_LINELEFT,  SB_LINEUP);
+  BtnCodes2:  array[boolean] of integer = (SB_LINERIGHT, SB_LINEDOWN);
+  PageCodes1: array[boolean] of integer = (SB_PAGELEFT,  SB_PAGEUP);
+  PageCodes2: array[boolean] of integer = (SB_PAGERIGHT, SB_PAGEDOWN);
 var
   i: integer;
 begin
@@ -410,11 +420,7 @@ begin
     // If Button1 pressed...
     if PtInRect(Btn1Rect, Point(x,y)) then begin
       if Btn1State <> 2 then begin
-        if Kind = sbVertical then
-          ScrollCode := SB_LINEUP
-        else
-          ScrollCode := SB_LINELEFT;
-
+        ScrollCode := BtnCodes1[Kind = sbVertical];
         Btn1State := 2;
         DrawingForbidden := True;
         IncPos(-1);
@@ -425,12 +431,8 @@ begin
     else
       if PtInRect(Btn2Rect, Point(x,y)) then begin
         if Btn2State <> 2 then begin
+          ScrollCode := BtnCodes2[Kind = sbVertical];
           Btn2State := 2;
-          if Kind = sbVertical then
-            ScrollCode := SB_LINEDOWN
-          else
-            ScrollCode := SB_LINERIGHT;
-
           DrawingForbidden := True;
           IncPos(1);
           PrepareBtnTimer;
@@ -449,13 +451,9 @@ begin
             PrepareTimer;
           end;
         end
-        else begin
+        else
           if PtInRect(Bar1Rect, Point(x,y)) then begin
-            if Kind = sbVertical then
-              ScrollCode := SB_PAGEUP
-            else
-              ScrollCode := SB_PAGELEFT;
-
+            ScrollCode := PageCodes1[Kind = sbVertical];
             if Bar1State <> 2 then begin
               Bar1State := 2;
               Bar2State := integer(BarIsHot);
@@ -465,11 +463,7 @@ begin
             end;
           end
           else begin
-            if Kind = sbVertical then
-              ScrollCode := SB_PAGEDOWN
-            else
-              ScrollCode := SB_PAGERIGHT;
-
+            ScrollCode := PageCodes2[Kind = sbVertical];
             if Bar2State <> 2 then begin
               Bar1State := integer(BarIsHot);
               Bar2State := 2;
@@ -478,7 +472,6 @@ begin
               PrepareBarTimer;
             end;
           end;
-        end;
 
     UpdateBar;
     inherited;
@@ -490,193 +483,173 @@ procedure TsScrollBar.MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: In
 begin
   if not Skinned(Self) or not Enabled then
     inherited
-  else begin
-    if not ControlIsReady(Self) then
-      Exit;
-
-    if Assigned(Timer) then begin
-      Timer.Enabled := False;
-      if Assigned(Timer) then
-        FreeAndNil(Timer);
-    end;
-    if PtInRect(SliderRect, Point(X, Y)) or (SliderState = 2) then begin
-      ScrollCode := SB_THUMBPOSITION;
-      Bar1State := integer(BarIsHot);
-      Bar2State := Bar1State;
-      if SliderState = 2 then begin
-        DrawingForbidden := True;
-        IncPos(0);
-        if PtInRect(SliderRect, Point(X, Y)) then
-          SliderState := 1
-        else
-          SliderState := 0;
-
-      end
-    end
-    else
-      if PtInRect(Btn1Rect, Point(X, Y)) and (Btn1State = 2) then
-        Btn1State := 1
-      else
-        if PtInRect(Btn2Rect, Point(X, Y)) and (Btn2State = 2) then
-          Btn2State := 1
-        else
-          if (Bar1State = 2) then
-            Bar1State := integer(BarIsHot)
+  else
+    if ControlIsReady(Self) then begin
+      if Assigned(Timer) then begin
+        Timer.Enabled := False;
+        if Assigned(Timer) then
+          FreeAndNil(Timer);
+      end;
+      if PtInRect(SliderRect, Point(X, Y)) or (SliderState = 2) then begin
+        ScrollCode := SB_THUMBPOSITION;
+        Bar1State := integer(BarIsHot);
+        Bar2State := Bar1State;
+        if SliderState = 2 then begin
+          DrawingForbidden := True;
+          IncPos(0);
+          if PtInRect(SliderRect, Point(X, Y)) then
+            SliderState := 1
           else
-            if (Bar2State = 2) then
-              Bar2State := integer(BarIsHot);
+            SliderState := 0;
+        end
+      end
+      else
+        if PtInRect(Btn1Rect, Point(X, Y)) and (Btn1State = 2) then
+          Btn1State := 1
+        else
+          if PtInRect(Btn2Rect, Point(X, Y)) and (Btn2State = 2) then
+            Btn2State := 1
+          else
+            if (Bar1State = 2) then
+              Bar1State := integer(BarIsHot)
+            else
+              if (Bar2State = 2) then
+                Bar2State := integer(BarIsHot);
 
-    UpdateBar;
-    ReleaseCapture;
-    inherited;
-    ScrollCode := SB_ENDSCROLL;
-    IncPos(0);
-    Application.ShowHint := AppShowHint;
-  end;
+      UpdateBar;
+      ReleaseCapture;
+      inherited;
+      ScrollCode := SB_ENDSCROLL;
+      IncPos(0);
+      Application.ShowHint := AppShowHint;
+    end;
 end;
 
 
 procedure TsScrollBar.OnTimer(Sender: TObject);
 begin
-  if not Assigned(Timer) or
-       not ControlIsReady(Self) or
-         (csDestroying in Timer.ComponentState) or
-           FCommonData.FMouseAbove then
-    Exit;
-
-  SetPos(CoordToPosition(ScreenToClient(acMousePos)) - MouseOffset);
-  SetCapture(Handle);
+  if Assigned(Timer) and ControlIsReady(Self) and not (csDestroying in Timer.ComponentState) and not FCommonData.FMouseAbove then begin
+    SetPos(CoordToPosition(ScreenToClient(acMousePos)) - MouseOffset);
+    SetCapture(Handle);
+  end;
 end;
 
 
 procedure TsScrollBar.Paint(MsgDC: hdc);
 var
-  DC, SavedDC: hdc;
-  bmp: TBitmap;
-  lCI: TCacheInfo;
   LocalState: integer;
-  c: TsColor;
   PS: TPaintStruct;
+  DC, SavedDC: hdc;
+  lCI: TCacheInfo;
   BG: TacBGInfo;
   Side: TacSide;
+  bmp: TBitmap;
+  c: TsColor;
 begin
-  if not HandleAllocated then
-    Exit;
+  if HandleAllocated then begin
+    bmp := nil;
+    BeginPaint(Handle, PS);
+    if MsgDC = 0 then
+      DC := GetWindowDC(Handle)
+    else
+      DC := MsgDC;
 
-  bmp := nil;
-  BeginPaint(Handle, PS);
-  if MsgDC = 0 then
-    DC := GetWindowDC(Handle)
-  else
-    DC := MsgDC;
+    SavedDC := SaveDC(DC);
+    try
+      if ([csDestroying, csLoading] * ComponentState = []) and
+            not (DrawingForbidden or not ControlIsReady(Self) or RestrictDrawing or FCommonData.Updating) then begin
+        RepaintNeeded := False;
+        InitCacheBmp(SkinData);
+        if not Enabled then
+          bmp := CreateBmpLike(FCommonData.FCacheBmp)
+        else
+          bmp := FCommonData.FCacheBmp;
 
-  SavedDC := SaveDC(DC);
-  try
-    if not (DrawingForbidden or
-         not ControlIsReady(Self) or
-           RestrictDrawing or
-             (csDestroying in ComponentState) or
-               (csLoading in ComponentState) or
-                 FCommonData.Updating) then begin
-      RepaintNeeded := False;
-      InitCacheBmp(SkinData);
-
-      if not Enabled then
-        bmp := CreateBmpLike(FCommonData.FCacheBmp)
-      else
-        bmp := FCommonData.FCacheBmp;
-
-      BG.PleaseDraw := False;
-      if (LinkedControl <> nil) and (LinkedControl is TWinControl) then begin
-        GetBGInfo(@BG, LinkedControl);
-        lCI := BGInfoToCI(@BG);
-        if not (LinkedControl is TCustomForm) then begin
-          dec(lCI.X, LinkedControl.Left);
-          dec(lCI.Y, LinkedControl.Top);
-        end;
-      end
-      else begin
-        GetBGInfo(@BG, Parent);
-        lCI := BGInfoToCI(@BG);
-      end;
-
-      with FCommonData.SkinManager.ConstData do begin
-        Bar1Rect;
-        if not IsRectEmpty(FBar1Rect) then begin
-          if Enabled then
-            LocalState := math.max(Bar1State, integer(BarIsHot))
-          else
-            LocalState := 0;
-
-          if Kind = sbHorizontal then
-            Side := asLeft
-          else
-            Side := asTop;
-
-          with SkinManager.ConstData.Scrolls[Side] do
-            if SkinData.SkinManager.IsValidSkinIndex(SkinIndex) then
-              PaintItemFast(SkinIndex, MaskIndex, BGIndex[0], BGIndex[1], 
-                            lCi, True, LocalState, FBar1Rect, Point(Left, Top), FCommonData.FCacheBmp, SkinData.SkinManager);
-        end;
-        Bar2Rect;
-        if not IsRectEmpty(FBar2Rect) then begin
-          if Enabled then
-            LocalState := math.max(Bar2State, integer(BarIsHot))
-          else
-            LocalState := 0;
-
-          if Kind = sbHorizontal then
-            Side := asRight
-          else
-            Side := asBottom;
-
-          with SkinManager.ConstData.Scrolls[Side] do
-            if SkinData.SkinManager.IsValidSkinIndex(SkinIndex) then
-              PaintItemFast(SkinIndex, MaskIndex, BGIndex[0], BGIndex[1], 
-                            lCi, True, LocalState, FBar2Rect, Point(Left + FBar2Rect.Left, Top + FBar2Rect.Top), FCommonData.FCacheBmp, SkinData.SkinManager);
-        end;
-      end;
-      BitBlt(bmp.Canvas.Handle, 0, 0, bmp.Width, bmp.Height, FCommonData.FCacheBmp.Canvas.Handle, 0, 0, SRCCOPY);
-
-      if SysBtnSize <> 0 then
-        if Kind = sbHorizontal then begin
-          ac_DrawScrollBtn(Btn1Rect, Btn1State, Bmp, SkinData, asLeft);
-          ac_DrawScrollBtn(Btn2Rect, Btn2State, Bmp, SkinData, asRight);
-        end
-        else begin
-          ac_DrawScrollBtn(Btn1Rect, Btn1State, Bmp, SkinData, asTop);
-          ac_DrawScrollBtn(Btn2Rect, Btn2State, Bmp, SkinData, asBottom);
-        end;
-
-      if Enabled then DrawSlider(bmp);
-
-      BG.PleaseDraw := False;
-      if not Enabled then
-        if (LinkedControl <> nil) then begin
+        BG.PleaseDraw := False;
+        if (LinkedControl <> nil) and (LinkedControl is TWinControl) then begin
           GetBGInfo(@BG, LinkedControl);
           lCI := BGInfoToCI(@BG);
-          if lCI.Ready then
-            BmpDisabledKind(bmp, FDisabledKind, Parent, lCI, Point(Left - LinkedControl.Left, Top - LinkedControl.Top))
-          else begin
-            c.C := lCI.FillColor;
-            FadeBmp(bmp, MkRect(bmp.Width + 1, bmp.Height + 1), 60, c, 0, 0);
+          if not (LinkedControl is TCustomForm) then begin
+            dec(lCI.X, LinkedControl.Left);
+            dec(lCI.Y, LinkedControl.Top);
           end;
         end
         else begin
-          lCI := GetParentCache(FCommonData);
-          BmpDisabledKind(bmp, FDisabledKind, Parent, lCI, Point(Left, Top));
+          GetBGInfo(@BG, Parent);
+          lCI := BGInfoToCI(@BG);
         end;
 
-      BitBlt(DC, 0, 0, bmp.Width, bmp.Height, bmp.Canvas.Handle, 0, 0, SRCCOPY);
-    end;
-    if not Enabled and Assigned(bmp) then
-      FreeAndNil(bmp);
-  finally
-    RestoreDC(DC, SavedDC);
-    if MsgDC = 0 then
-      ReleaseDC(Handle, DC);
+        with FCommonData.SkinManager.ConstData do begin
+          Bar1Rect;
+          if not IsRectEmpty(FBar1Rect) then begin
+            if Enabled then
+              LocalState := math.max(Bar1State, integer(BarIsHot))
+            else
+              LocalState := 0;
 
-    EndPaint(Handle, PS);
+            Side := TacSide(integer(Kind <> sbHorizontal));
+            with SkinManager.ConstData.Scrolls[Side] do
+              if SkinData.SkinManager.IsValidSkinIndex(SkinIndex) then
+                PaintItemFast(SkinIndex, MaskIndex, BGIndex[0], BGIndex[1],
+                              lCi, True, LocalState, FBar1Rect, Point(Left, Top), FCommonData.FCacheBmp, SkinData.SkinManager);
+          end;
+          Bar2Rect;
+          if not IsRectEmpty(FBar2Rect) then begin
+            if Enabled then
+              LocalState := math.max(Bar2State, integer(BarIsHot))
+            else
+              LocalState := 0;
+
+            Side := TacSide(integer(Kind <> sbHorizontal) + 2);
+            with SkinManager.ConstData.Scrolls[Side] do
+              if SkinData.SkinManager.IsValidSkinIndex(SkinIndex) then
+                PaintItemFast(SkinIndex, MaskIndex, BGIndex[0], BGIndex[1],
+                              lCi, True, LocalState, FBar2Rect, Point(Left + FBar2Rect.Left, Top + FBar2Rect.Top), FCommonData.FCacheBmp, SkinData.SkinManager);
+          end;
+        end;
+        BitBlt(bmp.Canvas.Handle, 0, 0, bmp.Width, bmp.Height, FCommonData.FCacheBmp.Canvas.Handle, 0, 0, SRCCOPY);
+
+        if SysBtnSize <> 0 then
+          if Kind = sbHorizontal then begin
+            ac_DrawScrollBtn(Btn1Rect, Btn1State, Bmp, SkinData, asLeft);
+            ac_DrawScrollBtn(Btn2Rect, Btn2State, Bmp, SkinData, asRight);
+          end
+          else begin
+            ac_DrawScrollBtn(Btn1Rect, Btn1State, Bmp, SkinData, asTop);
+            ac_DrawScrollBtn(Btn2Rect, Btn2State, Bmp, SkinData, asBottom);
+          end;
+
+        if Enabled then
+          DrawSlider(bmp);
+
+        BG.PleaseDraw := False;
+        if not Enabled then
+          if LinkedControl <> nil then begin
+            GetBGInfo(@BG, LinkedControl);
+            lCI := BGInfoToCI(@BG);
+            if lCI.Ready then
+              BmpDisabledKind(bmp, FDisabledKind, Parent, lCI, Point(Left - LinkedControl.Left, Top - LinkedControl.Top))
+            else begin
+              c.C := lCI.FillColor;
+              FadeBmp(bmp, MkRect(bmp.Width + 1, bmp.Height + 1), 60, c, 0, 0);
+            end;
+          end
+          else begin
+            lCI := GetParentCache(FCommonData);
+            BmpDisabledKind(bmp, FDisabledKind, Parent, lCI, Point(Left, Top));
+          end;
+
+        BitBlt(DC, 0, 0, bmp.Width, bmp.Height, bmp.Canvas.Handle, 0, 0, SRCCOPY);
+      end;
+      if not Enabled and Assigned(bmp) then
+        FreeAndNil(bmp);
+    finally
+      RestoreDC(DC, SavedDC);
+      if MsgDC = 0 then
+        ReleaseDC(Handle, DC);
+
+      EndPaint(Handle, PS);
+    end;
   end;
 end;
 
@@ -762,13 +735,13 @@ begin
         end;
 
       AC_SETNEWSKIN:
-        if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
+        if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then begin
           CommonWndProc(Message, FCommonData);
           Exit;
         end;
 
       AC_REFRESH:
-        if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
+        if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then begin
           CommonWndProc(Message, FCommonData);
           FCommonData.BGChanged := True;
           if not SkinnedRecreate then begin
@@ -788,35 +761,35 @@ begin
       end
     end;
 
-  if Assigned(FCommonData) then begin
-    case Message.Msg of
-      WM_PRINT:
-        if (DefaultManager <> nil) and DefaultManager.Active then begin
-          SendMessage(Handle, WM_PAINT, Message.WParam, Message.LParam);
-          Perform(WM_NCPAINT, Message.WParam, Message.LParam);
-          Exit;
-        end;
+  case Message.Msg of
+    WM_PRINT:
+      if (DefaultManager <> nil) and DefaultManager.Active then begin
+        SendMessage(Handle, WM_PAINT, Message.WParam, Message.LParam);
+        Perform(WM_NCPAINT, Message.WParam, Message.LParam);
+        Exit;
+      end;
 
-      WM_NCHITTEST:
-        if MustBeRecreated and not InAnimationProcess then begin // Control must be recreated for the skinned mode using without std blinking
-          MustBeRecreated := False;
-          SkinnedRecreate := True;
-          OldPos := Position;
-          if Parent <> nil then
-            SendMessage(Parent.Handle, WM_SETREDRAW, 0, 0);
-
+    WM_NCHITTEST:
+      if MustBeRecreated and not InAnimationProcess then begin // Control must be recreated for the skinned mode using without std blinking
+        MustBeRecreated := False;
+        SkinnedRecreate := True;
+        OldPos := Position;
+        if Parent <> nil then begin
+          SendMessage(Parent.Handle, WM_SETREDRAW, 0, 0);
           RecreateWnd;
-          if Parent <> nil then
-            SendMessage(Parent.Handle, WM_SETREDRAW, 1, 0);
+          SendMessage(Parent.Handle, WM_SETREDRAW, 1, 0);
+        end
+        else
+          RecreateWnd;
 
-          Position := OldPos;
-          SkinnedRecreate := False;
-        end;
-    end;
-    if CommonWndProc(Message, FCommonData) then
-      Exit;
+        Position := OldPos;
+        SkinnedRecreate := False;
+      end;
   end;
-  if Assigned(FCommonData) and Skinned(Self) then begin
+  if CommonWndProc(Message, FCommonData) then
+    Exit;
+
+  if Skinned(Self) then begin
     case Message.Msg of
       CM_ENABLEDCHANGED: begin
         inherited;
@@ -884,7 +857,8 @@ begin
             if FSI.nPos > (FSI.nMax - Math.Max(Integer(FSI.nPage) - 1, 0)) then
               FSI.nPos := (FSI.nMax - Math.Max(Integer(FSI.nPage) - 1, 0));
 
-          if (ScrollCode <> SB_THUMBTRACK) then FCurrPos := FSI.nPos;
+          if ScrollCode <> SB_THUMBTRACK then
+            FCurrPos := FSI.nPos;
         end;
         if Visible then begin
           SendMessage(Handle, WM_SETREDRAW, 0, 0);
@@ -927,7 +901,7 @@ var
   R: TRect;
 begin
   R := SliderRect;
-  if (Kind = sbVertical) then begin
+  if Kind = sbVertical then begin
     if HeightOf(R) > Height - HeightOf(FBtn1Rect) - HeightOf(FBtn2Rect) then
       Exit
   end
@@ -943,7 +917,7 @@ procedure TsScrollBar.WMNCHitTest(var Message: TWMNCHitTest);
 var
   i: integer;
 begin
-  if Skinned(Self) and Enabled and (not (csDesigning in ComponentState)) then begin
+  if Skinned(Self) and Enabled and not (csDesigning in ComponentState) then begin
     if not ControlIsReady(Self) then
       Exit;
 
@@ -968,7 +942,7 @@ begin
             Btn2State := 1;
         end
         else
-          if (SliderState = 2) then begin
+          if SliderState = 2 then begin
             i := CoordToPosition(CoordToPoint(SmallPointToPoint(Message.Pos)));
             if FCurrPos <> i then begin
               DrawingForbidden := True;
@@ -990,20 +964,19 @@ end;
 
 procedure TsScrollBar.OnBtnTimer(Sender: TObject);
 begin
-  if not Assigned(Timer) or (csDestroying in Timer.ComponentState) then
-    Exit;
-
-  if Btn1State = 2 then
-    IncPos(-1)
-  else
-    if Btn2State = 2 then
-      IncPos(1)
+  if Assigned(Timer) and not (csDestroying in Timer.ComponentState) then begin
+    if Btn1State = 2 then
+      IncPos(-1)
     else
-      if Assigned(Timer) then
-        FreeAndNil(Timer);
+      if Btn2State = 2 then
+        IncPos(1)
+      else
+        if Assigned(Timer) then
+          FreeAndNil(Timer);
 
-  if Assigned(Timer) and (Timer.Interval > 50) then
-    Timer.Interval := 50;
+    if Assigned(Timer) and (Timer.Interval > 50) then
+      Timer.Interval := 50;
+  end;
 end;
 
 
@@ -1021,7 +994,7 @@ end;
 
 function TsScrollBar.PositionToCoord: integer;
 begin
-  if Enabled and ((FSI.nMax - FSI.nMin - Math.Max(Integer(FSI.nPage) - 1, 0)) <> 0) then
+  if Enabled and (FSI.nMax - FSI.nMin - Math.Max(Integer(FSI.nPage) - 1, 0) <> 0) then
     if Kind = sbHorizontal then
       Result := SysBtnSize + SliderSize div 2 + Round((FCurrPos - FSI.nMin) * ((Width - 2 * SysBtnSize - SliderSize) / (FSI.nMax - FSI.nMin - Math.Max(Integer(FSI.nPage) - 1,0))))
     else
@@ -1091,20 +1064,19 @@ end;
 
 procedure TsScrollBar.OnBarTimer(Sender: TObject);
 begin
-  if not Assigned(Timer) or (csDestroying in Timer.ComponentState) then
-    Exit;
-
-  if (Bar1State = 2) and (FCurrPos > CoordToPosition(ScreenToClient(acMousePos))) then
-    IncPos(-Math.Max(Integer(FSI.nPage),1))
-  else
-    if (Bar2State = 2) and (FCurrPos < CoordToPosition(ScreenToClient(acMousePos))) then
-      IncPos(Math.Max(Integer(FSI.nPage),1))
+  if Assigned(Timer) and not (csDestroying in Timer.ComponentState) then begin
+    if (Bar1State = 2) and (FCurrPos > CoordToPosition(ScreenToClient(acMousePos))) then
+      IncPos(-Math.Max(Integer(FSI.nPage), 1))
     else
-      if Assigned(Timer) then
-        FreeAndNil(Timer);
+      if (Bar2State = 2) and (FCurrPos < CoordToPosition(ScreenToClient(acMousePos))) then
+        IncPos(Math.Max(Integer(FSI.nPage), 1))
+      else
+        if Assigned(Timer) then
+          FreeAndNil(Timer);
 
-  if assigned(Timer) and (Timer.Interval > 50) then
-    Timer.Interval := 50;
+    if assigned(Timer) and (Timer.Interval > 50) then
+      Timer.Interval := 50;
+  end;
 end;
 
 
@@ -1129,15 +1101,13 @@ begin
   if Kind = sbHorizontal then begin
     FBar2Rect.Left := PositionToCoord;
     FBar2Rect.Top := 0;
-    FBar2Rect.Right := Width;
-    FBar2Rect.Bottom := Height;
   end
   else begin
     FBar2Rect.Left := 0;
     FBar2Rect.Top := PositionToCoord;
-    FBar2Rect.Right := Width;
-    FBar2Rect.Bottom := Height;
   end;
+  FBar2Rect.Right := Width;
+  FBar2Rect.Bottom := Height;
   Result := FBar2Rect;
 end;
 
@@ -1241,10 +1211,7 @@ end;
 
 function TsScrollBar.WorkSize: integer;
 begin
-  if Kind = sbHorizontal then
-    Result := Width - 2 * SysBtnSize
-  else
-    Result := Height - 2 * SysBtnSize;
+  Result := iff(Kind = sbHorizontal, Width, Height) - 2 * SysBtnSize
 end;
 
 
@@ -1271,7 +1238,6 @@ var
   m: TWMScroll;
 begin
   FCurrPos := Pos;
-
   if FCurrPos < FSI.nMin then
     FCurrPos := FSI.nMin
   else
@@ -1282,7 +1248,7 @@ begin
   m.ScrollBar := Handle;
   m.ScrollCode := SmallInt(ScrollCode);
 
-  if (m.ScrollCode = SB_THUMBTRACK) then begin
+  if m.ScrollCode = SB_THUMBTRACK then begin
     if (FSI.nTrackPos = FCurrPos) and (not FBeginTrack) then
       Exit;
 

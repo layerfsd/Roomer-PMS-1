@@ -1,6 +1,6 @@
 unit sDBCalcEdit;
 {$I sDefs.inc}
-
+//+
 interface
 
 uses
@@ -68,13 +68,11 @@ end;
 
 procedure TsDBCalcEdit.DataChange(Sender: TObject);
 begin
-  if csDestroying in ComponentState then
-    Exit;
-
-  if (FDataLink <> nil) and (FDataLink.Field <> nil) then
-    Self.Value := FDataLink.Field.AsFloat
-  else
-    Self.Value := 0;
+  if not (csDestroying in ComponentState) then
+    if (FDataLink <> nil) and (FDataLink.Field <> nil) then
+      Value := FDataLink.Field.AsFloat
+    else
+      Value := 0;
 end;
 
 
@@ -89,7 +87,7 @@ var
   V: Extended;
 begin
   ValidateEdit;
-  V := Self.Value;
+  V := Value;
   if (V <> 0) or not FNullIfZero then
     FDataLink.Field.AsFloat := V
   else
@@ -164,12 +162,11 @@ end;
 procedure TsDBCalcEdit.KeyDown(var Key: Word; Shift: TShiftState);
 begin
   inherited;
-  if ReadOnly then begin
-    Key := 0;
-    Exit;
-  end;
-  if not ReadOnly and ((Key = VK_DELETE) or ((Key = VK_INSERT) and (ssShift in Shift))) then
-    FDataLink.Edit;
+  if ReadOnly then
+    Key := 0
+  else
+    if not ReadOnly and ((Key = VK_DELETE) or ((Key = VK_INSERT) and (ssShift in Shift))) then
+      FDataLink.Edit;
 end;
 
 

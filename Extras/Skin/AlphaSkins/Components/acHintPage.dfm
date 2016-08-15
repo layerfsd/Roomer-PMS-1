@@ -3,6 +3,13 @@ object FrameHintPage: TFrameHintPage
   Top = 0
   Width = 505
   Height = 391
+  AutoScroll = False
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  ParentFont = False
   TabOrder = 0
   object sSpeedButton3: TsSpeedButton
     Tag = 1
@@ -185,7 +192,6 @@ object FrameHintPage: TFrameHintPage
     Enabled = False
     TabOrder = 3
     CaptionLayout = clTopCenter
-    Checked = False
     object sLabel14: TsLabel
       Tag = 2
       Left = 147
@@ -267,9 +273,9 @@ object FrameHintPage: TFrameHintPage
       Enabled = False
       TabOrder = 0
       OnChange = sTrackBar1Change
+      ShowProgress = True
       BarOffsetV = 0
       BarOffsetH = 0
-      ShowProgress = True
     end
     object sTrackBar4: TsTrackBar
       Tag = 2
@@ -280,9 +286,9 @@ object FrameHintPage: TFrameHintPage
       Enabled = False
       TabOrder = 1
       OnChange = sTrackBar4Change
+      ShowProgress = True
       BarOffsetV = 0
       BarOffsetH = 0
-      ShowProgress = True
     end
     object sTrackBar6: TsTrackBar
       Tag = 2
@@ -293,9 +299,9 @@ object FrameHintPage: TFrameHintPage
       Enabled = False
       TabOrder = 2
       OnChange = sTrackBar6Change
+      ShowProgress = True
       BarOffsetV = 0
       BarOffsetH = 0
-      ShowProgress = True
     end
     object sTrackBar8: TsTrackBar
       Tag = 2
@@ -306,9 +312,9 @@ object FrameHintPage: TFrameHintPage
       Enabled = False
       TabOrder = 3
       OnChange = sTrackBar8Change
+      ShowProgress = True
       BarOffsetV = 0
       BarOffsetH = 0
-      ShowProgress = True
     end
   end
   object sGroupBox3: TsGroupBox
@@ -321,7 +327,6 @@ object FrameHintPage: TFrameHintPage
     Enabled = False
     TabOrder = 4
     CaptionLayout = clTopCenter
-    Checked = False
     object sLabel4: TsLabel
       Tag = 2
       Left = 147
@@ -403,9 +408,9 @@ object FrameHintPage: TFrameHintPage
       Enabled = False
       TabOrder = 0
       OnChange = sTrackBar2Change
+      ShowProgress = True
       BarOffsetV = 0
       BarOffsetH = 0
-      ShowProgress = True
     end
     object sTrackBar3: TsTrackBar
       Tag = 2
@@ -416,9 +421,9 @@ object FrameHintPage: TFrameHintPage
       Enabled = False
       TabOrder = 1
       OnChange = sTrackBar3Change
+      ShowProgress = True
       BarOffsetV = 0
       BarOffsetH = 0
-      ShowProgress = True
     end
     object sTrackBar5: TsTrackBar
       Tag = 2
@@ -429,9 +434,9 @@ object FrameHintPage: TFrameHintPage
       Enabled = False
       TabOrder = 2
       OnChange = sTrackBar5Change
+      ShowProgress = True
       BarOffsetV = 0
       BarOffsetH = 0
-      ShowProgress = True
     end
     object sTrackBar7: TsTrackBar
       Tag = 2
@@ -442,9 +447,9 @@ object FrameHintPage: TFrameHintPage
       Enabled = False
       TabOrder = 3
       OnChange = sTrackBar7Change
+      ShowProgress = True
       BarOffsetV = 0
       BarOffsetH = 0
-      ShowProgress = True
     end
   end
   object sGroupBox4: TsGroupBox
@@ -457,7 +462,6 @@ object FrameHintPage: TFrameHintPage
     Enabled = False
     TabOrder = 0
     CaptionLayout = clTopCenter
-    Checked = False
     object sLabel34: TsLabel
       Tag = 2
       Left = 36
@@ -674,7 +678,6 @@ object FrameHintPage: TFrameHintPage
     Enabled = False
     TabOrder = 5
     CaptionLayout = clTopCenter
-    Checked = False
     object sLabel1: TsLabel
       Tag = 2
       Left = 147
@@ -757,9 +760,9 @@ object FrameHintPage: TFrameHintPage
       Max = 20
       TabOrder = 0
       OnChange = sTrackBar9Change
+      ShowProgress = True
       BarOffsetV = 0
       BarOffsetH = 0
-      ShowProgress = True
     end
     object sTrackBar10: TsTrackBar
       Tag = 2
@@ -771,9 +774,9 @@ object FrameHintPage: TFrameHintPage
       Max = 20
       TabOrder = 1
       OnChange = sTrackBar10Change
+      ShowProgress = True
       BarOffsetV = 0
       BarOffsetH = 0
-      ShowProgress = True
     end
     object sTrackBar11: TsTrackBar
       Tag = 2
@@ -785,9 +788,9 @@ object FrameHintPage: TFrameHintPage
       Max = 20
       TabOrder = 2
       OnChange = sTrackBar11Change
+      ShowProgress = True
       BarOffsetV = 0
       BarOffsetH = 0
-      ShowProgress = True
     end
     object sTrackBar12: TsTrackBar
       Tag = 2
@@ -799,9 +802,9 @@ object FrameHintPage: TFrameHintPage
       Max = 20
       TabOrder = 3
       OnChange = sTrackBar12Change
+      ShowProgress = True
       BarOffsetV = 0
       BarOffsetH = 0
-      ShowProgress = True
     end
   end
   object sSpinEdit1: TsSpinEdit
@@ -815,15 +818,6 @@ object FrameHintPage: TFrameHintPage
     SkinData.SkinSection = 'EDIT'
     BoundLabel.Active = True
     BoundLabel.Caption = 'Horz offset:'
-    BoundLabel.Indent = 0
-    BoundLabel.Font.Charset = DEFAULT_CHARSET
-    BoundLabel.Font.Color = clWindowText
-    BoundLabel.Font.Height = -11
-    BoundLabel.Font.Name = 'Tahoma'
-    BoundLabel.Font.Style = []
-    BoundLabel.Layout = sclLeft
-    BoundLabel.MaxWidth = 0
-    BoundLabel.UseSkinColor = True
     MaxValue = 31
     MinValue = -32
     Value = 0
@@ -839,15 +833,6 @@ object FrameHintPage: TFrameHintPage
     SkinData.SkinSection = 'EDIT'
     BoundLabel.Active = True
     BoundLabel.Caption = 'Vert offset:'
-    BoundLabel.Indent = 0
-    BoundLabel.Font.Charset = DEFAULT_CHARSET
-    BoundLabel.Font.Color = clWindowText
-    BoundLabel.Font.Height = -11
-    BoundLabel.Font.Name = 'Tahoma'
-    BoundLabel.Font.Style = []
-    BoundLabel.Layout = sclLeft
-    BoundLabel.MaxWidth = 0
-    BoundLabel.UseSkinColor = True
     MaxValue = 31
     MinValue = -32
     Value = 0

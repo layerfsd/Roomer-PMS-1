@@ -1,6 +1,7 @@
 unit sFontCtrls;
 {$I sDefs.inc}
 //{$DEFINE LOGGED}
+//+
 
 interface
 
@@ -175,15 +176,16 @@ var
   FBitmaps: TBitmapArray;
 
 
-function GetNearestSize(ACanvas: TCanvas; AHeight: integer): integer;
+function GetNearestFontHeight(ACanvas: TCanvas; AHeight: integer; DefHeight: integer): integer;
 var
   Size: TSize;
 begin
-  Result := ACanvas.Font.Size - 1;
+  ACanvas.Font.Height := DefHeight + 2;
+  Result := ACanvas.Font.Height;
   if acGetTextExtent(ACanvas.Handle, TestStr, Size) then
-    while Size.cy < AHeight - 1 do begin
-      Result := ACanvas.Font.Size;
-      ACanvas.Font.Size := ACanvas.Font.Size + 1;
+    while Size.cy < AHeight - 2 do begin
+      Result := ACanvas.Font.Height;
+      ACanvas.Font.Height := ACanvas.Font.Height - 1;
       if not acGetTextExtent(ACanvas.Handle, TestStr, Size) then
         Exit;
     end;
@@ -343,18 +345,18 @@ end;
 
 procedure TsFontListBox.DrawItem(Index: Integer; Rect: TRect; State: TOwnerDrawState);
 var
-  Bmp, fBmp: TBitmap;
-  aRect, BRect: TRect;
-  TmpColor: TColor;
   TmpFontClass: TFontClass;
-  ts: TSize;
-  sNdx: integer;
-  CI: TCacheInfo;
   DrawStyle: Cardinal;
+  aRect, BRect: TRect;
+  Bmp, fBmp: TBitmap;
+  TmpColor: TColor;
+  CI: TCacheInfo;
+  sNdx: integer;
+  ts: TSize;
 begin
   TmpFontClass := nil;
   Bmp := nil;
-  if (Index >= 0) and (Index < Items.Count) and (Items.Objects[Index] <> nil) then begin
+  if IsValidIndex(Index, Items.Count) and (Items.Objects[Index] <> nil) then begin
     TmpFontClass := TFontClass(Items.Objects[Index]);
     fBmp := FBitmaps[ord(TmpFontClass.FntType)];
     fBmp.Transparent := True;
@@ -366,7 +368,7 @@ begin
   if SkinData.Skinned then begin
     Bmp := CreateBmp32(Rect);
     Bmp.Canvas.Font.Assign(Font);
-    if (odSelected in State) then begin
+    if odSelected in State then begin
       CI.Bmp := nil;
       CI.Ready := False;
       CI.FillColor := Color;
@@ -381,15 +383,18 @@ begin
       FillDC(Bmp.Canvas.Handle, MkRect(Bmp), Color);
     end;
     if Assigned(TmpFontClass) and Assigned(fBmp) then begin
-      brect := MkRect(Bmp.Height, Bmp.Height);
+      bRect := MkRect(Bmp.Height, Bmp.Height);
+      OffsetRect(bRect, 2, (Bmp.Height - fBmp.Height) div 2);
       Bmp.Canvas.Draw(bRect.Left, bRect.Top, fBmp);
       aRect.Right := Bmp.Width;
       aRect.Left := brect.right;
+      aRect.Top := 0;
+      aRect.Bottom := Bmp.Height;
       if DrawFont then
         Bmp.Canvas.Font.Name := TmpFontClass.FntName;
 
-      if True then
-        Bmp.Canvas.Font.Size := GetNearestSize(Bmp.Canvas, ItemHeight);
+//      if True then
+      Bmp.Canvas.Font.Height := GetNearestFontHeight(Bmp.Canvas, ItemHeight, Font.Height);
 
       DrawStyle := DT_NOPREFIX or DT_EXPANDTABS or DT_SINGLELINE or DT_VCENTER or DT_NOCLIP;
       InflateRect(aRect, -1, 0);
@@ -413,14 +418,15 @@ begin
     TmpColor := ColorToRGB(iff(odSelected in State, clHighLight, Color));
     FillDC(Canvas.Handle, Rect, TmpColor);
     if Assigned(TmpFontClass) then begin
-      brect := classes.Rect(rect.left, rect.top, rect.bottom - rect.top + rect.left, rect.bottom);
+      bRect := classes.Rect(Rect.Left, Rect.Top, Rect.Bottom - Rect.Top + Rect.Left, Rect.Bottom);
+      OffsetRect(bRect, 2, (Rect.Bottom - Rect.Top - fBmp.Height) div 2);
       Canvas.Draw(bRect.Left, bRect.Top, fBmp);
       Rect.Left := Rect.Left + brect.right;
       if DrawFont then
         Canvas.Font.Name := TmpFontClass.FntName;
 
-      if True then
-        Canvas.Font.Size := GetNearestSize(Canvas, ItemHeight);
+//      if True then
+      Canvas.Font.Height := GetNearestFontHeight(Canvas, ItemHeight, Font.Height);
 
       Canvas.Font.Color := iff(odSelected in State, ColorToRGB(clHighlightText), Font.Color);
       GetTextExtentPoint32(Canvas.Handle, PChar(TmpFontClass.FntName), Length(TmpFontClass.FntName), ts);
@@ -441,12 +447,11 @@ var
   sNdx, ItemHeight: integer;
   CI: TCacheInfo;
   DrawStyle: Cardinal;
-
 begin
   TmpFontClass := nil;
   Bmp := nil;
   ItemHeight := HeightOf(Rect);
-  if (Index >= 0) and (Index < Items.Count) and (Items.Objects[Index] <> nil) then begin
+  if IsValidIndex(Index, Items.Count) and (Items.Objects[Index] <> nil) then begin
     TmpFontClass := TFontClass(Items.Objects[Index]);
     fBmp := FBitmaps[ord(TmpFontClass.FntType)];
     fBmp.Transparent := True;
@@ -496,7 +501,7 @@ begin
         Bmp.Canvas.Font.Name := TmpFontClass.FntName;
 
       if True then
-        Bmp.Canvas.Font.Size := GetNearestSize(Bmp.Canvas, ItemHeight);
+        Bmp.Canvas.Font.Height := GetNearestFontHeight(Bmp.Canvas, ItemHeight, Font.Height);
 
       DrawStyle := DT_NOPREFIX or DT_EXPANDTABS or DT_SINGLELINE or DT_NOCLIP;
       case VerticalAlignment of
@@ -531,7 +536,7 @@ begin
         Canvas.Font.Name := TmpFontClass.FntName;
 
       if True then
-        Canvas.Font.Size := GetNearestSize(Canvas, ItemHeight);
+        Canvas.Font.Height := GetNearestFontHeight(Canvas, ItemHeight, Font.Height);
 
       Canvas.Font.Color := iff(odSelected in State, ColorToRGB(clHighlightText), Font.Color);
       GetTextExtentPoint32(Canvas.Handle, PChar(TmpFontClass.FntName), Length(TmpFontClass.FntName), ts);
@@ -546,7 +551,7 @@ procedure TsFontListBox.CMFontChanged(var Message: TMessage);
 var
   h: integer;
 begin
-  if SkinData.CtrlSkinState and ACS_CHANGING <> ACS_CHANGING then begin
+  if SkinData.CtrlSkinState and ACS_CHANGING = 0 then begin
     SkinData.FCacheBMP.Canvas.Font.Assign(Font);
     h := acTextHeight(SkinData.FCacheBMP.Canvas, 'Wy') + 4;
     if ItemHeight <> h then

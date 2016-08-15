@@ -1,7 +1,7 @@
 unit sSplitter;
 {$I sDefs.inc}
 //{$DEFINE LOGGED}
-
+//+
 interface
 
 
@@ -123,9 +123,9 @@ end;
 
 constructor TsSplitter.Create(AOwner: TComponent);
 begin
-  inherited Create(AOwner);
   FCommonData := TsCommonData.Create(Self, False);
   FCommonData.COC := COC_TsSplitter;
+  inherited Create(AOwner);
   FGlyph := TBitmap.Create;
   ControlStyle := [csAcceptsControls, csCaptureMouse, csClickEvents, csOpaque, csDoubleClicks];
   ResizeStyle := rsUpdate;
@@ -141,9 +141,7 @@ end;
 
 destructor TsSplitter.Destroy;
 begin
-  if Assigned(FCommonData) then
-    FreeAndNil(FCommonData);
-
+  FreeAndNil(FCommonData);
   if Assigned(FGlyph) then
     FreeAndNil(FGlyph);
 
@@ -161,8 +159,8 @@ begin
   else
     C := Color;
 
-  ColorLight := MixColors(C, $FFFFFF, 0.5);
-  ColorDark := MixColors(C, 0, 0.5);
+  ColorLight := BlendColors(C, $FFFFFF, 127);
+  ColorDark := BlendColors(C, 0, 127);
   y := R.Top;
   while y < R.Bottom do begin
     x := R.Left;
@@ -178,17 +176,19 @@ end;
 
 function TsSplitter.FindControl: TControl;
 var
+  EmptyControl: TControl;
   P: TPoint;
   I: Integer;
   R: TRect;
 begin
-  P := Point(Left, Top);        
+  P := Point(Left, Top);
+  EmptyControl := nil;
   case Align of
 {$IFDEF D2006}
     alLeft:   Dec(P.X, iff(AlignWithMargins, Margins.Left   + 1,          1));
-    alRight:  Inc(P.X, iff(AlignWithMargins, Margins.Right  + 1 + Width,  1));
+    alRight:  Inc(P.X, iff(AlignWithMargins, Margins.Right  + 1 + Width,  Width + 1));
     alTop:    Dec(P.Y, iff(AlignWithMargins, Margins.Top    + 1,          1));
-    alBottom: Inc(P.Y, iff(AlignWithMargins, Margins.Bottom + 1 + Height, 1))
+    alBottom: Inc(P.Y, iff(AlignWithMargins, Margins.Bottom + 1 + Height, Height + 1))
 {$ELSE}
     alLeft:   Dec(P.X);
     alRight:  Inc(P.X, Width);
@@ -202,7 +202,7 @@ begin
   end;
   for I := 0 to Parent.ControlCount - 1 do begin
     Result := Parent.Controls[I];
-    if Result.Visible and Result.Enabled then begin
+    if Result.Visible and Result.Enabled and (Result <> Self) then begin
       R := Result.BoundsRect;
 {$IFDEF D2006}
       if Result.AlignWithMargins then begin
@@ -212,23 +212,46 @@ begin
         Dec(R.Top,    Result.Margins.Top);
       end;
 {$ENDIF}
-      if (R.Right - R.Left) = 0 then
-        if Align in [alTop, alLeft] then
+      if R.Right - R.Left = 0 then begin
+        if Result.Align in [alTop, alLeft] then
           Dec(R.Left)
         else
           Inc(R.Right);
+      end;
 
-      if (R.Bottom - R.Top) = 0 then
-        if Align in [alTop, alLeft] then
+      if R.Bottom - R.Top = 0 then begin
+        if Result.Align in [alTop, alLeft] then
           Dec(R.Top)
-        else
-          Inc(R.Bottom);
+        else begin
+          dec(R.Right);
+          dec(R.Bottom);
+        end;
+
+        if PtInRect(BoundsRect, R.TopLeft) or PtInRect(BoundsRect, R.BottomRight) then
+          EmptyControl := Result;
+      end;
 
       if PtInRect(R, P) then
         Exit;
     end;
   end;
-  Result := nil;
+  Result := EmptyControl;
+  if EmptyControl <> nil then // Bugfix for situation when coords of cntrol are changed by VCL
+    case EmptyControl.Align of
+      alLeft:   begin
+        EmptyControl.Left := Left - 1;
+        Left := Left + 1;
+      end;
+      alTop:    begin
+        EmptyControl.Top  := Top - 1;
+        Top := Top + 1;
+      end;
+      alRight:
+        EmptyControl.Left := Left + Width + 1;
+
+      alBottom:
+        EmptyControl.Top  := Top + Height + 1;
+    end;
 end;
 
 
@@ -265,6 +288,7 @@ var
   i: integer;
 begin
   StopTimer(SkinData);
+  TAccessSplitter(Self).FControl := FindControl;
   if FSizingByClick then
     if PtInRect(GripRect(True), Point(X, Y)) then begin
       Pressed := True;
@@ -278,7 +302,7 @@ begin
   end;
   if AutoSnap and (Parent <> nil) then  // Hack for standard bug with Realign procedure removing
     for i := 0 to Parent.ControlCount - 1 do
-      case Align of
+      case Parent.Controls[i].Align of
         alLeft:
           if Parent.Controls[i].Width = 0 then
             Parent.Controls[i].Left := Left;
@@ -286,6 +310,10 @@ begin
         alTop:
           if Parent.Controls[i].Height = 0 then
             Parent.Controls[i].Top := Top;
+
+        alBottom:
+          if Parent.Controls[i].Height = 0 then
+            Parent.Controls[i].Top := Top + Height;
       end;
 
   if not FSizingByClick or Pressed then begin
@@ -298,7 +326,7 @@ begin
 
   if (FGripState <> 0) or not FSizingByClick then begin
     FSizing := True;
-    if (ResizeStyle = rsUpdate) then
+    if ResizeStyle = rsUpdate then
       Repaint;
   end;
 end;
@@ -350,8 +378,9 @@ var
   i, j: integer;
 begin
   if SizingByClick and Pressed then
-    with TAccessSplitter(Self) do
-      if FControl <> nil then begin
+    with TAccessSplitter(Self) do begin
+      TAccessSplitter(Self).FControl := FindControl;
+      if TAccessSplitter(Self).FControl <> nil then begin
         if PrevSize = 0 then begin
           j := iff(Align in [alLeft, alRight], FControl.Width, FControl.Height);
           i := 0;
@@ -368,15 +397,15 @@ begin
         end;
         SetGripState(0);
       end;
+    end;
 
   if not SizingByClick or Pressed then begin
     Pressed := False;
     inherited MouseUp(Button, Shift, X, Y);
     FSizing := False;
-    if (ResizeStyle = rsUpdate) then
+    if ResizeStyle = rsUpdate then
       Repaint;
   end;
-
   Application.ShowHint := AppShowHint;
   ShowHintStored := False;
 end;
@@ -413,7 +442,7 @@ begin
           case FGripState of
             0:   C := clScrollBar;
             2:   C := clGray
-            else C := MixColors(ColorToRGB(clScrollBar), $FFFFFF, 0.7);
+            else C := BlendColors(ColorToRGB(clScrollBar), $FFFFFF, 180);
           end;
           FillDC(Canvas.Handle, GripRect(True), C);
           DrawColorArrow(Canvas, clBtnText, GripRect(True), Directions[PrevSize <> 0, Align]);
@@ -421,7 +450,7 @@ begin
         else
           FillGripColor(Canvas, GripRect(False));
   end
-  else begin
+  else
     if TimerIsActive(SkinData) then
       with SkinData.AnimTimer do begin
         if Assigned(BmpOut) and (BmpOut.Width = Width) then
@@ -442,7 +471,6 @@ begin
       if Assigned(OnPaint) then
         OnPaint(Self);
     end;
-  end;
 end;
 
 
@@ -484,7 +512,7 @@ begin
           R := GripRect(True);
           if ConstData.Sections[ssSpeedButton] >= 0 then begin
             TmpBmp := CreateBmp32(R);
-            PaintItem(ConstData.Sections[ssSpeedButton], MakeCacheInfo(FCommonData.FCacheBmp), True, FGripState, MkRect(TmpBmp), Point(0, 0), TmpBmp, FCommonData.SkinManager);
+            PaintItem(ConstData.Sections[ssSpeedButton], MakeCacheInfo(FCommonData.FCacheBmp), True, FGripState, MkRect(TmpBmp), R.TopLeft, TmpBmp, FCommonData.SkinManager);
             BitBlt(FCommonData.FCacheBmp.Canvas.Handle, R.Left, R.Top, TmpBmp.Width, TmpBmp.Height, TmpBmp.Canvas.Handle, 0, 0, SRCCOPY);
             FreeAndNil(TmpBmp);
             C := gd[ConstData.Sections[ssSpeedButton]].Props[min(FGripState, ac_MaxPropsIndex)].FontColor.Color;
@@ -492,14 +520,18 @@ begin
           else
             C := 0;
 
+          if NeedParentFont(SkinData.SkinManager, ConstData.Sections[ssSpeedButton], FGripState) then begin
+            Ndx := GetFontIndex(Parent, ConstData.Sections[ssSpeedButton], SkinData.SkinManager, FGripState);
+            C := gd[Ndx].Props[min(FGripState, ac_MaxPropsIndex)].FontColor.Color;
+          end;
           if Align in [alTop..alRight] then
-            DrawColorArrow(FCommonData.FCacheBmp.Canvas, C, GripRect(True), Directions[PrevSize <> 0, Align]);
+            DrawColorArrow(FCommonData.FCacheBmp, C, GripRect(True), Directions[PrevSize <> 0, Align]);
         end
         else begin
           Ndx := iff(Align in [alLeft, alRight], ConstData.GripVertical, ConstData.GripHorizontal);
           if Ndx >= 0 then begin
-            GripPos.X := (Width  - WidthOfImage (SkinData.SkinManager.ma[Ndx])) div 2;
-            GripPos.Y := (Height - HeightOfImage(SkinData.SkinManager.ma[Ndx])) div 2;
+            GripPos.X := (Width  - SkinData.SkinManager.ma[Ndx].Width) div 2;
+            GripPos.Y := (Height - SkinData.SkinManager.ma[Ndx].Height) div 2;
             DrawSkinGlyph(FCommonData.FCacheBmp, GripPos, AState, 1, FCommonData.SkinManager.ma[Ndx], MakeCacheInfo(FCommonData.FCacheBmp));
           end
           else
@@ -600,7 +632,7 @@ begin
       end;
 
       AC_SETNEWSKIN, AC_REMOVESKIN, AC_REFRESH:
-        if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
+        if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then begin
           CommonWndProc(Message, FCommonData);
           if Message.WParamHi <> AC_SETNEWSKIN then
             Repaint;
@@ -675,26 +707,22 @@ begin
     inherited;
     case Message.Msg of
       WM_SETFOCUS, CM_ENTER, WM_KILLFOCUS, CM_EXIT: begin
-        FCommonData.FFocused := (Message.Msg = CM_ENTER) or (Message.Msg = WM_SETFOCUS);
+        FCommonData.FFocused := (Message.Msg = WM_SETFOCUS) or (Message.Msg = CM_ENTER);
         FCommonData.FMouseAbove := False;
         FCommonData.BGChanged := True;
         Repaint;
       end;
 
       CM_MOUSELEAVE, CM_MOUSEENTER: begin
-        if not FCommonData.FFocused and not(csDesigning in ComponentState) then begin
+        if not FCommonData.FFocused and not (csDesigning in ComponentState) then begin
           FCommonData.FMouseAbove := Message.Msg = CM_MOUSEENTER;
           SetGripState(0);
           if FCommonData.BGChanged then
             PrepareCache;
 
-{          if not ShowGrip or not SizingByClick then
-            Repaint
-          else}
           if not FCommonData.FMouseAbove or not SizingByClick then
             DoChangePaint(FCommonData, integer(FCommonData.FMouseAbove), UpdateGraphic_CB, True, False);
         end;
-//        Pressed := False;
         if (CM_MOUSELEAVE = Message.Msg) and Assigned(FOnMouseLeave) then
           FOnMouseLeave(Self);
       end;

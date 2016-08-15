@@ -1,7 +1,7 @@
 unit sPageControl;
 {$I sDefs.inc}
 //{$DEFINE LOGGED}
-
+//+
 interface
 
 uses
@@ -60,6 +60,7 @@ type
     procedure SetTabType    (const Value: TacTabType);
   protected
     AnimTimer: TacThreadedTimer;
+    procedure ChangeScale(M, D: Integer); override;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -173,6 +174,9 @@ type
     BtnWidth,
     DroppedDownItem,
     BtnHeight: integer;
+{$IFDEF DELPHI_10BERLIN}
+    DontScale: boolean;
+{$ENDIF}
     SpinWnd: TacSpinWnd;
     function BtnOffset(TabHeight: integer; Active: boolean): integer;
     procedure DoAddDockClient(Client: TControl; const ARect: TRect); override;
@@ -183,6 +187,7 @@ type
     function CheckActiveTab(PageIndex: integer): TTabSheet;
     function PageIndexFromTabIndex(TabIndex: Integer): Integer;
     function SkinTabRect(Index: integer; Active: boolean): TRect;
+    procedure ChangeScale(M, D: Integer); override;
 
     function PrepareCache: boolean;
 {$IFDEF DELPHI7UP}
@@ -257,19 +262,21 @@ begin
     if AFast then
       Iterations := Iterations div 2;
 
-    if (BmpOut <> nil) then
+    if BmpOut <> nil then
       CopyFrom(BmpFrom, BmpOut, MkRect(BmpOut));
 
     case AState of
-      0: case State of
-        1:   Iteration := max(0, (acMaxIterations - Iteration) * 2)
-        else Iteration := 0;
-      end;
+      0:
+        case State of
+          1:   Iteration := max(0, (acMaxIterations - Iteration) * 2)
+          else Iteration := 0;
+        end;
 
-      1: case State of
-        0, 2, 3: Iteration := AIteration;
-        else     Iteration := 0
-      end
+      1:
+        case State of
+          0, 2, 3: Iteration := AIteration;
+          else     Iteration := 0
+        end
 
       else Iteration := 0
     end;
@@ -314,7 +321,7 @@ begin
           ReleaseDC(pc.Handle, DC);
         end;
         Bmp.Free;
-        if (TsTabSheet(Data).AnimTimer.Iteration >= TsTabSheet(Data).AnimTimer.Iterations) then begin
+        if TsTabSheet(Data).AnimTimer.Iteration >= TsTabSheet(Data).AnimTimer.Iterations then begin
           if (TsTabSheet(Data).AnimTimer.State in [0, 3]) and (b < MaxByte) then begin
             Result := UpdateTab_CB(Data, Iteration);
             Exit;
@@ -346,8 +353,8 @@ var
 
 procedure DeletePage(Page: TsTabSheet);
 begin
-  if (Page <> nil) then begin
-    if (Page.PageIndex > 0) then
+  if Page <> nil then begin
+    if Page.PageIndex > 0 then
       Page.PageIndex := Page.PageIndex - 1;
 
     Page.Free
@@ -370,7 +377,7 @@ begin
   if not (csLoading in ComponentState) and not (csCreating in ControlState) and HandleAllocated then
     if FCommonData.Skinned then begin
       Wnd := FindWindowEx(Handle, 0, UPDOWN_CLASS, nil);
-      if (Wnd <> 0) then
+      if Wnd <> 0 then
         if FShowUpDown then begin
           if (SpinWnd <> nil) and (SpinWnd.CtrlHandle <> Wnd) then
             FreeAndNil(SpinWnd);
@@ -379,7 +386,8 @@ begin
             sp.SkinSection := SpinSection;
             sp.Control := nil;
             SpinWnd := TacSpinWnd.Create(Wnd, nil, SkinData.SkinManager, sp);
-            InitCtrlData(Wnd, SpinWnd.ParentWnd, SpinWnd.WndRect, SpinWnd.ParentRect, SpinWnd.WndSize, SpinWnd.WndPos);
+            with SpinWnd do
+              InitCtrlData(Wnd, ParentWnd, WndRect, ParentRect, WndSize, WndPos);
           end;
         end
         else
@@ -436,17 +444,16 @@ var
   Item: integer;
   P: TPoint;
 begin
-  with TCMHintShow(Message) do begin
-    Item := GetTabUnderMouse(Point(HintInfo.CursorPos.X, HintInfo.CursorPos.Y));
-    if (Item <> -1) and (Pages[Item].Hint <> '') then
-      with HintInfo^ do begin
-        P := ClientToScreen(HintInfo.CursorPos);
-        P.X := P.X + GetSystemMetrics(SM_CXCURSOR) div 2;
-        P.Y := P.Y + GetSystemMetrics(SM_CYCURSOR) div 2;
-        HintInfo.HintPos := P;
-        HintInfo.HintStr := Pages[Item].Hint;
-        Message.Result := 0;
-      end
+  with TCMHintShow(Message), HintInfo^ do begin
+    Item := GetTabUnderMouse(Point(CursorPos.X, CursorPos.Y));
+    if (Item >= 0) and (Pages[Item].Hint <> '') then begin
+      P := ClientToScreen(CursorPos);
+      P.X := P.X + GetSystemMetrics(SM_CXCURSOR) div 2;
+      P.Y := P.Y + GetSystemMetrics(SM_CYCURSOR) div 2;
+      HintPos := P;
+      HintStr := Pages[Item].Hint;
+      Message.Result := 0;
+    end
     else
       inherited;
   end;
@@ -462,7 +469,7 @@ begin
           KillTimers;
           inherited;
           FCommonData.Updating := True;
-          AnimShowControl(Self, FCommonData.SkinManager.AnimEffects.PageChange.Time, MaxByte);//, atBluring);
+          AnimShowControl(Self, FCommonData.SkinManager.AnimEffects.PageChange.Time, MaxByte);
           if ActivePage <> nil then
             RedrawWindow(ActivePage.Handle, nil, 0, RDW_ERASE or RDW_INVALIDATE or RDW_ALLCHILDREN);
         end
@@ -472,7 +479,7 @@ begin
             inherited;
             SkinData.Updating := False;
             FCommonData.BGChanged := True;
-            RedrawWindow(Handle, nil, 0, RDW_UPDATENOW or RDW_ERASE or RDW_INVALIDATE or RDW_ALLCHILDREN);
+            RedrawWindow(Handle, nil, 0, RDWA_ALLNOW);
           end
           else
             inherited;
@@ -496,8 +503,6 @@ begin
           Perform(WM_SETREDRAW, 1, 0);
           if ow <> nil then
             FreeAndNil(ow);
-
-//          SendMessage(Handle, WM_MOUSEMOVE, 0, 0);
         end;
     end;
 end;
@@ -505,9 +510,9 @@ end;
 
 constructor TsPageControl.Create(AOwner: TComponent);
 begin
-  inherited Create(AOwner);
   FCommonData := TsCommonData.Create(Self, True);
   FCommonData.COC := COC_TsPageControl;
+  inherited Create(AOwner);
   FAnimatEvents := [aeGlobalDef];
   FShowCloseBtns := False;
   FShowUpDown := True;
@@ -537,9 +542,7 @@ begin
   if Assigned(SpinWnd) then
     FreeAndNil(SpinWnd);
 
-  if Assigned(FCommonData) then
-    FreeAndNil(FCommonData);
-
+  FreeAndNil(FCommonData);
   inherited Destroy;
 end;
 
@@ -572,7 +575,7 @@ var
   TabLayout: TacTabLayout;
   TempBmp: Graphics.TBitmap;
   aRect, rTab, rTabs, rBmp: TRect;
-  TabsCovering, TabIndex, TabState: integer;
+  FontIndex, TabsCovering, TabIndex, TabState: integer;
 begin
   if (PageIndex >= 0) and not FCommonData.FUpdating then begin
     bTabMenu := IsSpecialTab(PageIndex);
@@ -619,6 +622,11 @@ begin
                 TabIndex := SM.ConstData.Sections[ssToolButton];
             end;
 
+        if NeedParentFont(SM, TabIndex, State) then
+          FontIndex := GetFontIndex(Parent, TabIndex, SM, State)
+        else
+          FontIndex := TabIndex;
+
         aRect := rTab;
 {$IFDEF TNTUNICODE}
         if Page is TTntTabSheet then
@@ -638,11 +646,17 @@ begin
         // Draw tab on bitmap
         TempBmp := CreateBmp32(rTab);
         rBmp := MkRect(TempBmp);
-        if Page.SkinData.CustomFont then
+        if Page.SkinData.CustomFont or (FontIndex < 0) then
           TempBmp.Canvas.Font.Assign(Page.Font)
         else begin
           TempBmp.Canvas.Font.Assign(Font);
-          TempBmp.Canvas.Font.Color := SM.gd[TabIndex].Props[min(State, ac_MaxPropsIndex)].FontColor.Color;
+          if NeedParentFont(SM, TabIndex, State) then
+            FontIndex := GetFontIndex(Parent, TabIndex, SM, State)
+          else
+            FontIndex := TabIndex;
+
+          TempBmp.Canvas.Font.Color := SM.gd[FontIndex].Props[min(State, ac_MaxPropsIndex)].FontColor.Color;
+//            TempBmp.Canvas.Font.Color := SM.gd[TabIndex].Props[min(State, ac_MaxPropsIndex)].FontColor.Color;
         end;
         if ActiveIsBold and (Page = ActivePage) then
           TempBmp.Canvas.Font.Style := TempBmp.Canvas.Font.Style + [fsBold];
@@ -651,14 +665,16 @@ begin
         if (TabIndex >= 0) and (SM.gd[TabIndex].States <= TabState) then
           TabState := SM.gd[TabIndex].States - 1;
 
-        if TabsCovering > 0 then
-          CI := MakeCacheInfo(FCommonData.FCacheBmp)
+        if TabsCovering > 0 then begin
+          CI := MakeCacheInfo(FCommonData.FCacheBmp);
+          PaintItem(TabIndex, CI, True, TabState, rBmp, rTab.TopLeft, TempBmp, SM);
+        end
         else begin
           rTabs := TabsBGRect;
-          CI := MakeCacheInfo(TabsBG, TabsBGOffset[TabPosition].X - rTabs.Left, TabsBGOffset[TabPosition].Y - rTabs.Top);
+          CI := MakeCacheInfo(TabsBG, - rTabs.Left, - rTabs.Top);
+          PaintItem(TabIndex, CI, True, TabState, rBmp, rTab.TopLeft, TempBmp, SM);
         end;
 
-        PaintItem(TabIndex, CI, True, TabState, rBmp, rTab.TopLeft, TempBmp, SM);
         // End of tabs drawing
         if TabPosition in [tpTop, tpBottom] then begin
           if TabsCovering > 0 then
@@ -671,7 +687,7 @@ begin
         if not OwnerDraw then begin
           // Tab content drawing
           TempBmp.Canvas.Lock;
-          Flags := DT_SINGLELINE or DT_VCENTER;// or DT_LEFT;
+          Flags := DT_SINGLELINE or DT_VCENTER;
           if UseRightToLeftReading then
             Flags := Flags or DT_RTLREADING or DT_NOCLIP;
 
@@ -684,7 +700,7 @@ begin
           if not IsRectEmpty(dContent.GlyphRect) then
             if (Images is TsAlphaImageList) and SM.Effects.DiscoloredGlyphs then begin
               if State = 0 then
-                if TabIndex <> -1 then
+                if TabIndex >= 0 then
                   C := SM.gd[TabIndex].Props[0].Color
                 else
                   C := clBtnFace
@@ -706,10 +722,10 @@ begin
             SelectObject(TempBmp.Canvas.Handle, OldFont); // Returning prev. font
           end
           else
-            if Page.SkinData.CustomFont then
+            if Page.SkinData.CustomFont or (FontIndex < 0) then
               acTextRect(TempBmp.Canvas, dContent.TextRect, dContent.TextPos.X, dContent.TextPos.Y, lCaption)
             else
-              WriteText32(TempBmp, PacChar(lCaption), True, dContent.TextRect, Flags, TabIndex, boolean(State), SM);
+              WriteText32(TempBmp, PacChar(lCaption), True, dContent.TextRect, Flags, FontIndex{TabIndex}, boolean(State), SM);
           // Paint focus rect
           if not IsRectEmpty(dContent.FocusRect) then begin
             TempBmp.Canvas.Pen.Color := clWindowFrame;
@@ -721,11 +737,11 @@ begin
           if not IsRectEmpty(dContent.BtnRect) then
             PaintButton(TempBmp.Canvas.Handle, dContent.BtnRect, integer(FHoveredBtnIndex = PageIndex) + integer(FPressedBtnIndex = PageIndex));
           // Draw Arrow
-          if not IsRectEmpty(dContent.ArrowRect) then
-            DrawColorArrow(TempBmp.Canvas, SkinData.SkinManager.gd[TabIndex].Props[TabState].FontColor.Color, dContent.ArrowRect, dContent.ArrowDirection);
+          if not IsRectEmpty(dContent.ArrowRect) and (FontIndex >= 0) then
+            DrawColorArrow(TempBmp, SkinData.SkinManager.gd[FontIndex{TabIndex}].Props[TabState].FontColor.Color, dContent.ArrowRect, dContent.ArrowDirection);
 
           if not Page.Enabled or not Enabled then
-            BlendTransRectangle(TempBmp, 0, 0, FCommonData.FCacheBmp, rTab, DefDisabledBlend);
+            BlendTransRectangle(TempBmp, 0, 0, FCommonData.FCacheBmp, rTab, DefBlendDisabled);
 
           BitBlt(DstDC, aRect.Left, aRect.Top, TempBmp.Width, TempBmp.Height, TempBmp.Canvas.Handle, 0, 0, SRCCOPY);
           TempBmp.Canvas.Unlock;
@@ -770,7 +786,7 @@ begin
 
     Bmp.Canvas.Lock;
     if FTabsLineIndex >= 0 then
-      PaintItem(FTabsLineIndex, CI, True, 0, R, Point(0, 0), Bmp, SkinData.SkinManager)
+      PaintItem(FTabsLineIndex, CI, True, 0, R, Point(Left, Top), Bmp, SkinData.SkinManager)
     else
       if not ci.Ready then
         FillDC(Bmp.Canvas.Handle, R, CI.FillColor)
@@ -782,13 +798,14 @@ begin
       RTabsBG := TabsBGRect;
       TabsBG.Width  := WidthOf (RTabsBG);
       TabsBG.Height := HeightOf(RTabsBG);
-      BitBlt(TabsBG.Canvas.Handle, 0, 0, TabsBG.Width, TabsBG.Height, Bmp.Canvas.Handle, R.Left - TabsBGOffset[TabPosition].X, R.Top - TabsBGOffset[TabPosition].Y, SRCCOPY);
+      BitBlt(TabsBG.Canvas.Handle, 0, 0, TabsBG.Width, TabsBG.Height, Bmp.Canvas.Handle, RTabsBG.Left, RTabsBG.Top, SRCCOPY);
       FillAlphaRect(TabsBG, MkRect(TabsBG), MaxByte);
     end;
 
     for i := PageCount - 1 downto 0 do
-      if Pages[i].TabVisible and ((Pages[i] <> ActivePage) or (TsTabSheet(Pages[i]).TabType <> ttTab)) then
-        DrawSkinTab(i, iff((DroppedDownItem = i) or ((FPressedBtnIndex = i) and (TsTabSheet(Pages[i]).TabType <> ttTab)), 2, integer(CurItem = i)), Bmp.Canvas.Handle);
+      with TsTabSheet(Pages[i]) do
+        if TabVisible and ((Pages[i] <> ActivePage) or (TabType <> ttTab)) then
+          DrawSkinTab(i, iff((DroppedDownItem = i) or ((FPressedBtnIndex = i) and (TabType <> ttTab)), 2, integer(CurItem = i)), Bmp.Canvas.Handle);
 
     // Draw active tab
     if (Tabs.Count > 0) and (ActivePage <> nil) and (ActivePage.TabType = ttTab) then
@@ -870,17 +887,18 @@ var
     if (Ndx <> CurItem) or not HotTrack and (State = 1) then
       Result := 0
     else
-      if (CurItem = FPressedBtnIndex) then
+      if CurItem = FPressedBtnIndex then
         Result := 4
       else
-        if (CurItem = FHoveredBtnIndex) then
+        if CurItem = FHoveredBtnIndex then
           Result := 3
         else
-          Result := 1 + integer((FPressedBtnIndex = CurItem) or (DroppedDownItem = CurItem));
+          Result := 1 + integer((CurItem = FPressedBtnIndex) or (CurItem = DroppedDownItem));
+//          Result := 1 + integer(CurItem in [FPressedBtnIndex, DroppedDownItem]);
   end;
 
 begin
-  if not (FCommonData.FUpdating and SkinData.Skinned) and BetWeen(Ndx, 0, PageCount - 1) then begin
+  if not (FCommonData.FUpdating and SkinData.Skinned) and IsValidIndex(Ndx, PageCount) then begin
     if SkinData.Skinned then begin
       if not SkinData.SkinManager.Effects.AllowAnimation then
         AllowAnimation := False;
@@ -933,13 +951,13 @@ begin
           InflateRect(R, 2, 2);
           ExcludeClipRect(DC, R.Left, R.Top, R.Right, R.Bottom)
         end;
-        if (DroppedDownItem = Ndx) then
+        if DroppedDownItem = Ndx then
           State := 2;
 
-        if (Pages[Ndx] = ActivePage) then
+        if Pages[Ndx] = ActivePage then
           State := 2
         else
-          if (State > 2) then
+          if State > 2 then
             State := 1;
 
         DrawStdTab(Ndx, State, DC);
@@ -972,17 +990,18 @@ var
   function GetTabCovering(aIndex: integer): integer;
   begin
     Result := 0;
-    if TsTabSheet(Pages[aIndex]).TabType = ttTab then
-      if TsTabSheet(Pages[aIndex]).TabSkin = '' then
-        Result := FCommonData.SkinManager.CommonSkinData.TabsCovering
-      else
-        if TsTabSheet(Pages[aIndex]).TabSkin = s_RibbonTab then
-          Result := FCommonData.SkinManager.CommonSkinData.RibbonCovering;
+    with FCommonData.SkinManager, TsTabSheet(Pages[aIndex]) do
+      if TabType = ttTab then
+        if TabSkin = '' then
+          Result := CommonSkinData.TabsCovering
+        else
+          if TsTabSheet(Pages[aIndex]).TabSkin = s_RibbonTab then
+            Result := CommonSkinData.RibbonCovering;
   end;
 
 begin
   Result := MkRect;
-  if BetWeen(Index, 0, PageCount - 1) then begin
+  if IsValidIndex(Index, PageCount) then begin
     Result := TabRect(Index);
     if FActiveTabEnlarged then begin
       if (Style = tsTabs) and (Result.Left <> Result.Right) and Active then
@@ -1123,7 +1142,7 @@ begin
       FCommonData.FUpdating := GetBoolMsg(Parent, AC_PREPARING); // Transparent BG may be not ready if PageControl haven't cached BG
 
     if not FCommonData.FUpdating then begin
-      if (SkinData.CtrlSkinState and ACS_PRINTING = ACS_PRINTING) and (Message.DC = SkinData.PrintDC) then
+      if (SkinData.CtrlSkinState and ACS_PRINTING <> 0) and (Message.DC = SkinData.PrintDC) then
         DC := Message.DC
       else
         DC := GetDC(Handle);
@@ -1149,12 +1168,12 @@ begin
           CopyWinControlCache(Self, FCommonData,  MkRect, MkRect(Self), DC, True);
 
         sVCLUtils.PaintControls(DC, Self, True, MkPoint); // Paint skinned TGraphControls
-        if (ActivePage <> nil) then begin // Draw active tab
+        if ActivePage <> nil then begin // Draw active tab
 {$IFDEF D2005}
-          if (csDesigning in ComponentState) then
+          if csDesigning in ComponentState then
             RedrawWindow(ActivePage.Handle, nil, 0, RDW_INVALIDATE or RDW_UPDATENOW or RDW_ERASE);
 {$ENDIF}
-          if (ActivePage.BorderWidth > 0) then
+          if ActivePage.BorderWidth > 0 then
             ActivePage.Perform(WM_NCPAINT, 0, 0);
 
           SetParentUpdated(Self);
@@ -1170,14 +1189,11 @@ end;
 
 
 function CanBeActive(Page: TsTabSheet; PageControl: TsPageControl): boolean;
-var
-  b: boolean;
 begin
   if (Page <> nil) and (Page.TabType = ttTab) and (PageControl.AccessibleDisabledPages or Page.Enabled) then
     if Assigned(PageControl.OnPageChanging) then begin
-      b := True;
-      PageControl.OnPageChanging(PageControl, Page, b);
-      Result := b;
+      Result := True;
+      PageControl.OnPageChanging(PageControl, Page, Result);
     end
     else
       Result := True
@@ -1205,7 +1221,7 @@ begin
 {$ENDIF}
   case Message.Msg of
     WM_PAINT:
-      if (Visible or (csDesigning in ComponentState)) then begin
+      if Visible or (csDesigning in ComponentState) then begin
         BeginPaint(Handle, PS);
         TWMPaint(Message).DC := GetDC(Handle);
         try
@@ -1213,10 +1229,11 @@ begin
             if IsCached(FCommonData) and not InAnimationProcess or (csDesigning in ComponentState) then begin
               b := False;
               for i := 0 to PageCount - 1 do
-                if (TsTabSheet(Pages[i]).AnimTimer <> nil) and TsTabSheet(Pages[i]).AnimTimer.Enabled then begin
-                  b := True;
-                  Break;
-                end;
+                with TsTabSheet(Pages[i]) do
+                  if (AnimTimer <> nil) and AnimTimer.Enabled then begin
+                    b := True;
+                    Break;
+                  end;
 
               if not b then
                 AcPaint(TWMPaint(Message));
@@ -1308,7 +1325,7 @@ begin
         end;
 
     WM_MOUSELEAVE, CM_MOUSELEAVE:
-      if not (csDesigning in ComponentState) and not (csDestroying in ComponentState) and (CurItem <> -1) then begin
+      if ([csDesigning, csDestroying] * ComponentState = []) and (CurItem >= 0) then begin
         p := ScreeNToClient(acMousePos);
         R := TabsRect;
         if not SkinData.Skinned then
@@ -1317,7 +1334,7 @@ begin
         FPressedBtnIndex := -1;
         FHoveredBtnIndex := -1;
         acBtnPressed := False;
-        if BetWeen(CurItem, 0, PageCount - 1) and Assigned(FOnTabMouseLeave) then
+        if IsValidIndex(CurItem, PageCount) and Assigned(FOnTabMouseLeave) then
           FOnTabMouseLeave(Self, CurItem);
 
         CurItem := -1;
@@ -1325,14 +1342,14 @@ begin
       end;
 
     WM_MOUSEMOVE:
-      if not (csDesigning in ComponentState) and not (csDestroying in ComponentState) then begin
+      if [csDesigning, csDestroying] * ComponentState = [] then begin
         if (DefaultManager <> nil) and not (csDesigning in DefaultManager.ComponentState) then
           DefaultManager.ActiveControl := Handle;
 
         p.x := TCMHitTest(Message).XPos;
         p.y := TCMHitTest(Message).YPos;
         NewItem := GetTabUnderMouse(p);
-        if BetWeen(NewItem, 0, PageCount - 1) and TsTabSheet(Pages[NewItem]).Enabled then begin // If tab is hovered
+        if IsValidIndex(NewItem, PageCount) and TsTabSheet(Pages[NewItem]).Enabled then begin // If tab is hovered
           Page := TsTabSheet(Pages[NewItem]);
           inherited;
           if not SkinData.Skinned or not SkinData.SkinManager.Effects.AllowAnimation then begin
@@ -1344,16 +1361,16 @@ begin
               ttTab: begin // Check if Close button was hovered
                 InitTabContentData(Canvas, Page, TabRect(Page.TabIndex), 1 + integer(Page = ActivePage), False, TabData);
                 if PtInRect(TabData.BtnRect, p) then begin
-                  if (FHoveredBtnIndex <> NewItem) then begin
+                  if FHoveredBtnIndex <> NewItem then begin
                     i := FHoveredBtnIndex;
                     FHoveredBtnIndex := NewItem;
                     RepaintTab(FHoveredBtnIndex);
-                    if (i <> -1) then
+                    if i >= 0 then
                       RepaintTab(i);
                   end;
                 end
                 else
-                  if (FHoveredBtnIndex <> -1) then begin
+                  if FHoveredBtnIndex >= 0 then begin
                     FHoveredBtnIndex := -1;
                     FPressedBtnIndex := -1;
                     RepaintTab(NewItem);
@@ -1361,8 +1378,8 @@ begin
               end
             end;
 
-          if (NewItem <> CurItem) then begin // If hot item is changed
-            if BetWeen(CurItem, 0, PageCount - 1) then begin
+          if NewItem <> CurItem then begin // If hot item is changed
+            if IsValidIndex(CurItem, PageCount) then begin
               if ShowHint and (Page.Hint <> '') then begin
                 Application.HideHint;
                 Application.ActivateHint(acMousePos);
@@ -1382,7 +1399,7 @@ begin
         else begin
           FHoveredBtnIndex := -1;
           FPressedBtnIndex := -1;
-          if (CurItem <> -1) and ((CurItem <> ActivePageIndex) or ShowCloseBtns) then begin
+          if (CurItem >= 0) and ((CurItem <> ActivePageIndex) or ShowCloseBtns) then begin
             CurItem := -1;
             acBtnPressed := False;
           end;
@@ -1391,14 +1408,11 @@ begin
       end;
 
     WM_LBUTTONUP, WM_LBUTTONDOWN:
-      if not (csDesigning in ComponentState) then begin
-        if not Enabled then
-          Exit;
-
+      if not (csDesigning in ComponentState) and Enabled then begin
         p.x := TCMHitTest(Message).XPos;
         p.y := TCMHitTest(Message).YPos;
         NewItem := GetTabUnderMouse(p);
-        if (NewItem > -1) then begin // If tab is pressed
+        if NewItem >= 0 then begin // If tab is pressed
           Page := TsTabSheet(Pages[NewItem]);
           if not FAccessibleDisabledPages and not Page.Enabled then
             Exit;
@@ -1424,7 +1438,7 @@ begin
               CurItem := -1;
               KillTimers;
               FCommonData.Updating := False;
-              RedrawWindow(Handle, nil, 0, RDW_ERASE or RDW_INVALIDATE or RDW_UPDATENOW or RDW_FRAME);
+              RedrawWindow(Handle, nil, 0, RDWA_NOCHILDRENNOW);
               Perform(WM_NCPAINT, 0, 0);
               Exit;
             end;
@@ -1446,7 +1460,7 @@ begin
                 if PtInRect(TabData.BtnRect, p) then begin
                   FPressedBtnIndex := iff(Message.Msg = WM_LBUTTONDOWN, NewItem, -1);
                   RepaintTab(NewItem);
-                  if (WM_LBUTTONUP = Message.Msg) then begin
+                  if WM_LBUTTONUP = Message.Msg then begin
                     if not acBtnPressed then
                       Exit;
 
@@ -1465,7 +1479,7 @@ begin
                       else
                         Page.TabVisible := False;
 
-                      if BetWeen(i, 0, PageCount - 1) then begin
+                      if IsValidIndex(i, PageCount) then begin
                         ActivePage := TsTabSheet(Pages[min(i, PageCount - 1)]);
                         if Assigned(OnChange) then
                           OnChange(Self);
@@ -1473,7 +1487,7 @@ begin
                       SkinData.EndUpdate;
                       Perform(WM_SETREDRAW, 1, 0);
                       FCommonData.BGChanged := True;
-                      RedrawWindow(Handle, nil, 0, RDW_ERASE or RDW_INVALIDATE or RDW_UPDATENOW or RDW_FRAME);
+                      RedrawWindow(Handle, nil, 0, RDWA_NOCHILDRENNOW);
                     end;
                     acBtnPressed := False;
                     FPressedBtnIndex := -1;
@@ -1487,7 +1501,7 @@ begin
                   if not CanBeActive(Page, Self) then
                     Exit; // Preventing of the page activation
 
-                  if (WM_LBUTTONUP = Message.Msg) then
+                  if WM_LBUTTONUP = Message.Msg then
                     FPressedBtnIndex := -1;
                 end;
               end
@@ -1502,7 +1516,7 @@ begin
         end;
       end;
   end;
-  if (Message.Msg = SM_ALPHACMD) and Assigned(FCommonData) then
+  if Message.Msg = SM_ALPHACMD then
     case Message.WParamHi of
       AC_REMOVESKIN: begin
         if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) and (SkinData.SkinIndex >= 0) then begin
@@ -1510,8 +1524,8 @@ begin
           CheckUpDown;
           UpdateBtnData;
           AlphaBroadcast(Self, Message);
-          if HandleAllocated and Showing and not (csLoading in ComponentState) and not (csDestroying in ComponentState) then
-            RedrawWindow(Handle, nil, 0, RDW_ERASE or RDW_INVALIDATE or RDW_FRAME or RDW_UPDATENOW);
+          if HandleAllocated and Showing and ([csLoading, csDestroying] * ComponentState = []) then
+            RedrawWindow(Handle, nil, 0, RDWA_NOCHILDRENNOW);
         end
         else
           AlphaBroadcast(Self, Message);
@@ -1520,27 +1534,27 @@ begin
       end;
 
       AC_REFRESH:
-        if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
-          if (Message.LParam = LPARAM(SkinData.SkinManager)) then begin
+        if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then begin
+          if Message.LParam = LPARAM(SkinData.SkinManager) then begin
             KillTimers;
             CommonWndProc(Message, FCommonData);
             UpdateBtnData;
             if HandleAllocated and Showing and not (csLoading in ComponentState) then
-              RedrawWindow(Handle, nil, 0, RDW_ERASE or RDW_INVALIDATE or RDW_FRAME or RDW_UPDATENOW);
+              RedrawWindow(Handle, nil, 0, RDWA_NOCHILDRENNOW);
 
             AddToAdapter(ActivePage);
             CheckUpDown;
-            if (SpinWnd <> nil) then
+            if SpinWnd <> nil then
               SendMessage(SpinWnd.CtrlHandle, Message.Msg, Message.WParam, Message.LParam);
           end;
           AlphaBroadcast(Self, Message);
           Exit;
         end;
 
-      AC_SETNEWSKIN:
-        if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
-          AlphaBroadcast(Self, Message);
-          if (Message.LParam = LPARAM(SkinData.SkinManager)) then
+      AC_SETNEWSKIN: begin
+        AlphaBroadcast(Self, Message);
+        if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then begin
+          if Message.LParam = LPARAM(SkinData.SkinManager) then
             CommonWndProc(Message, FCommonData);
 
           UpdateBtnData;
@@ -1550,6 +1564,7 @@ begin
           FTabsLineIndex := SkinData.SkinManager.GetSkinIndex(FTabsLineSkin);
           Exit;
         end;
+      end;
 
       AC_PREPARECACHE: begin
         if not InUpdating(SkinData) then
@@ -1567,13 +1582,13 @@ begin
       AC_ENDPARENTUPDATE: begin
         if FCommonData.FUpdating then
           if not GetBoolMsg(Parent, AC_PREPARING) and not InUpdating(SkinData, True) then
-            RedrawWindow(Handle, nil, 0, RDW_INVALIDATE or RDW_ERASE or RDW_FRAME or RDW_UPDATENOW)
+            RedrawWindow(Handle, nil, 0, RDWA_NOCHILDRENNOW)
           else begin
             FCommonData.FUpdating := True;
             SetParentUpdated(Self);
           end
         else
-          if (SkinData.CtrlSkinState and ACS_FAST = ACS_FAST) and Assigned(ActivePage) then
+          if (SkinData.CtrlSkinState and ACS_FAST <> 0) and Assigned(ActivePage) then
             SetParentUpdated(ActivePage);
 
         Exit;
@@ -1581,7 +1596,7 @@ begin
 
       AC_ENDUPDATE:
         if not FCommonData.FUpdating then begin
-          RedrawWindow(Handle, nil, 0, RDW_INVALIDATE or RDW_ALLCHILDREN or RDW_UPDATENOW or RDW_ERASE or RDW_FRAME);
+          RedrawWindow(Handle, nil, 0, RDWA_ALLNOW);
           SetParentUpdated(Self);
         end;
 
@@ -1602,8 +1617,7 @@ begin
             UpdateSkinState(FCommonData, False); // Copy Skin state from Parent
             if ActivePage <> nil then
               for i := 0 to ActivePage.ControlCount - 1 do
-                ActivePage.Controls[i].Perform(SM_ALPHACMD, MakeWParam(0, AC_GETSKINSTATE), 1);
-//                SendAMessage(ActivePage.Controls[i], AC_GETSKINSTATE, 1);
+                ActivePage.Controls[i].Perform(SM_ALPHACMD, AC_GETSKINSTATE_HI, 1);
           end;
         end
         else
@@ -1643,7 +1657,7 @@ begin
           Exit;
       end;
 
-  if Assigned(FCommonData) and FCommonData.Skinned then begin
+  if (FCommonData <> nil) and FCommonData.Skinned then begin
     if CommonWndProc(Message, FCommonData) then
       Exit;
 
@@ -1664,38 +1678,36 @@ begin
         Exit;
       end;
 
-      WM_NCPAINT: begin
-        if InAnimationProcess or (DroppedDownItem <> -1) then
-          Exit;
+      WM_NCPAINT:
+        if not InAnimationProcess and (DroppedDownItem < 0) then begin
+          if ActivePage <> nil then begin
+            if InUpdating(FCommonData) then
+              Exit;
 
-        if ActivePage <> nil then begin
-          if InUpdating(FCommonData) then
-            Exit;
+            DC := GetDC(Handle);
+            SavedDC := SaveDC(DC);
+            try
+              if FCommonData.BGChanged then
+                PrepareCache;
 
-          DC := GetDC(Handle);
-          SavedDC := SaveDC(DC);
-          try
-            if FCommonData.BGChanged then
-              PrepareCache;
-
-            if (ActivePage <> nil) then begin
-              R := ActivePage.BoundsRect;
-              ExcludeClipRect(DC, R.Left, R.Top, R.Right, R.Bottom);
+              if ActivePage <> nil then begin
+                R := ActivePage.BoundsRect;
+                ExcludeClipRect(DC, R.Left, R.Top, R.Right, R.Bottom);
+              end;
+              CopyWinControlCache(Self, FCommonData, MkRect, MkRect(Self), DC, True);
+            finally
+              RestoreDC(DC, SavedDC);
+              ReleaseDC(Handle, DC);
             end;
-            CopyWinControlCache(Self, FCommonData, MkRect, MkRect(Self), DC, True);
-          finally
-            RestoreDC(DC, SavedDC);
-            ReleaseDC(Handle, DC);
           end;
-        end;
-        if (SpinWnd <> nil) and not FCommonData.BGChanged then
-          RedrawWindow(SpinWnd.CtrlHandle, nil, 0, RDW_INVALIDATE or RDW_FRAME or RDW_UPDATENOW);
+          if (SpinWnd <> nil) and not FCommonData.BGChanged then
+            RedrawWindow(SpinWnd.CtrlHandle, nil, 0, RDW_INVALIDATE or RDW_FRAME or RDW_UPDATENOW);
 
-        Message.Result := 0;
-      end;
+          Message.Result := 0;
+        end;
 
       WM_ERASEBKGND: begin
-        if not (InAnimationProcess or (SkinData.CtrlSkinState and ACS_FAST <> ACS_FAST)) and not InAnimationProcess then
+        if not (InAnimationProcess or (SkinData.CtrlSkinState and ACS_FAST = 0)) and not InAnimationProcess then
           AcPaint(TWMPaint(Message));
 
         Message.Result := 1;
@@ -1718,10 +1730,10 @@ begin
         end;
 
       WM_PARENTNOTIFY:
-        if not ((csDesigning in ComponentState) or (csLoading in ComponentState)) and (Message.WParamLo in [WM_CREATE, WM_DESTROY]) then begin
+        if ([csDesigning, csLoading] * ComponentState = []) and (Message.WParamLo in [WM_CREATE, WM_DESTROY]) then begin
           i := PageCount;
           inherited;
-          if (Message.WParamLo = WM_CREATE) then
+          if Message.WParamLo = WM_CREATE then
             if (srThirdParty in SkinData.SkinManager.SkinningRules) and (i <> PageCount) then
               AddToAdapter(Self);
 
@@ -1734,7 +1746,7 @@ begin
         inherited;
         if i <> PageCount then begin
           CheckUpDown;
-          if (srThirdParty in SkinData.SkinManager.SkinningRules) then
+          if srThirdParty in SkinData.SkinManager.SkinningRules then
             AddToAdapter(Self);
         end;
         Exit;
@@ -1743,6 +1755,11 @@ begin
   end;
   inherited;
   case Message.Msg of
+    WM_PRINT: begin
+      StdPaint(TWMPaint(Message));
+      Exit;
+    end;
+
     WM_STYLECHANGED:
       if not (csLoading in ComponentState) then begin
         FCommonData.UpdateIndexes;
@@ -1764,7 +1781,7 @@ begin
         SkinData.BGChanged := True;
 
     WM_LBUTTONDBLCLK:
-      if BetWeen(CurItem, 0, PageCount - 1) and ((Style <> tsTabs) or (TsTabSheet(Pages[CurItem]).TabType = ttButton)) then
+      if IsValidIndex(CurItem, PageCount) and ((Style <> tsTabs) or (TsTabSheet(Pages[CurItem]).TabType = ttButton)) then
         RepaintTab(CurItem, False); // If button is dblclicked
 
     WM_CREATE:
@@ -1775,7 +1792,7 @@ begin
       end;
 
     CM_ENABLEDCHANGED:
-      if not (csDestroying in ComponentState) and not (csLoading in ComponentState) then
+      if [csDestroying, csLoading] * ComponentState = [] then
         SkinData.Invalidate;
   end;
 end;
@@ -1818,7 +1835,7 @@ begin
     TmpBmp := CreateBmp32(BtnWidth, BtnHeight);
     BitBlt(TmpBmp.Canvas.Handle, 0, 0, BtnWidth, BtnHeight, DC, TabRect.Left, TabRect.Top, SRCCOPY);
     if CloseBtnSkin = '' then
-      DrawSkinGlyph(TmpBmp, Point(BtnWidth - WidthOfImage(FCommonData.SkinManager.ma[BtnIndex]), 0), State, 1, FCommonData.SkinManager.ma[BtnIndex], MakeCacheInfo(TmpBmp))
+      DrawSkinGlyph(TmpBmp, Point(BtnWidth - FCommonData.SkinManager.ma[BtnIndex].Width, 0), State, 1, FCommonData.SkinManager.ma[BtnIndex], MakeCacheInfo(TmpBmp))
     else begin
       PaintItem(BtnIndex, MakeCacheInfo(TmpBmp), True, State, MkRect(TmpBmp), MkPoint, TmpBmp, SkinData.SkinManager);
       SelectObject(TmpBmp.Canvas.Handle, CreatePen(PS_SOLID, 2, clRed));
@@ -1841,19 +1858,17 @@ begin
   BtnWidth := iBtnSize;
   BtnHeight := iBtnSize;
   if FCommonData.Skinned then
-    with FCommonData.SkinManager do
+    with FCommonData.SkinManager do begin
       if CloseBtnSkin <> '' then
         BtnIndex := GetSkinIndex(CloseBtnSkin)
-      else begin
-        BtnIndex := GetMaskIndex(ConstData.IndexGlobalInfo, s_SmallIconClose);
-        if BtnIndex < 0 then
-          BtnIndex := GetMaskIndex(ConstData.IndexGlobalInfo, s_BorderIconClose);
+      else
+        BtnIndex := ConstData.TitleGlyphs[tgSmallClose];
 
-        if BtnIndex > -1 then begin
-          BtnWidth := max(WidthOfImage(ma[BtnIndex]), 8);
-          BtnHeight := HeightOfImage(ma[BtnIndex]);
-        end;
+      if BtnIndex >= 0 then begin
+        BtnWidth := max(ma[BtnIndex].Width, 8);
+        BtnHeight := ma[BtnIndex].Height;
       end;
+    end;
 
   if not bUpdating then begin
     bUpdating := True;
@@ -1878,7 +1893,7 @@ var
 begin
   FShowUpDown := Value;
   if not FShowUpDown then begin
-    if (SpinWnd <> nil) then begin
+    if SpinWnd <> nil then begin
       Wnd := SpinWnd.CtrlHandle;
       FreeAndNil(SpinWnd);
     end
@@ -1901,16 +1916,19 @@ var
   i, TabsCovering: integer;
 begin
   if HandleAllocated then begin
-    if FCommonData.Skinned then
-      TabsCovering := FCommonData.SkinManager.CommonSkinData.TabsCovering
-    else
+    if FCommonData.Skinned then begin
+      TabsCovering := FCommonData.SkinManager.CommonSkinData.TabsCovering;
+      i := FCommonData.SkinManager.ScaleInt(OffsArray[Value, Images = nil] + FTabPadding + TabsCovering);
+    end
+    else begin
       TabsCovering := 0;
+      i := OffsArray[Value, Images = nil] + FTabPadding + TabsCovering;
+    end;
 
-    i := OffsArray[Value, Images = nil];
     if Value then
-      SendMessage(Handle, TCM_SETPADDING, 0, MakeLParam(BtnWidth div 2 + i + FTabPadding + TabsCovering, 3))
+      SendMessage(Handle, TCM_SETPADDING, 0, MakeLParam(BtnWidth div 2 + i, 3))
     else
-      SendMessage(Handle, TCM_SETPADDING, 0, MakeLParam(i + FTabPadding + TabsCovering, 3));
+      SendMessage(Handle, TCM_SETPADDING, 0, MakeLParam(i, 3));
   end;
 end;
 
@@ -1966,10 +1984,10 @@ procedure TsPageControl.SetTabIndex(Value: Integer);
 var
   PageIndex: integer;
 begin
-  if BetWeen(Value, 0, PageCount - 1) then begin
+  if IsValidIndex(Value, PageCount) then begin
     PageIndex := PageIndexFromTabIndex(Value);
-    if BetWeen(PageIndex, 0, PageCount - 1) then
-      if (TsTabSheet(Pages[PageIndex]).TabType = ttTab) then begin
+    if IsValidIndex(PageIndex, PageCount) then
+      if TsTabSheet(Pages[PageIndex]).TabType = ttTab then begin
         inherited;
         AddToAdapter(ActivePage);
       end;
@@ -2039,7 +2057,7 @@ ENDIF}
     end;
     StoredVisiblePageCount := VisibleTabsCount;
 
-    if (Message.DC <> 0) then begin
+    if Message.DC <> 0 then begin
       SavedDC := 0;
       DC := Message.DC;
     end
@@ -2113,15 +2131,15 @@ var
 {$ENDIF}
   SavedDC: hdc;
   OldFont: hFont;
-  aRect, R, rTmp: TRect;
+  Flags: Cardinal;
   Page: TsTabSheet;
   TempBmp: TBitmap;
-  lCaption: ACString;
-  Flags: Cardinal;
   bTabMenu: boolean;
+  lCaption: ACString;
   dContent: TacTabData;
+  aRect, R, rTmp: TRect;
 begin
-  if (PageIndex >= 0) then begin
+  if PageIndex >= 0 then begin
     bTabMenu := IsSpecialTab(PageIndex);
     Page := TsTabSheet(Pages[PageIndex]);
     R := TabRect(Pages[PageIndex].TabIndex);
@@ -2180,7 +2198,7 @@ begin
       else
         case Style of
           tsTabs: begin
-            if (TabPosition <> tpTop) then // Others tabs are not supported by API
+            if TabPosition <> tpTop then // Others tabs are not supported by API
               case State of
                 0: begin
                   ToolBtn := ttbButtonPressed;
@@ -2203,12 +2221,14 @@ begin
               end;
               Details := acThemeServices.GetElementDetails(Tab);
             end;
-            case TabPosition of
-              tpTop:    acThemeServices.DrawElement(TempBmp.Canvas.Handle, Details, aRect); // Draw tab
-              tpBottom: acThemeServices.DrawElement(TempBmp.Canvas.Handle, Details, Rect(0, -FixOffset, TempBmp.Width, TempBmp.Height)); // Draw button
-              tpLeft:   acThemeServices.DrawElement(TempBmp.Canvas.Handle, Details,  MkRect(TempBmp.Width + FixOffset, TempBmp.Height)); // Draw button
-              tpRight:  acThemeServices.DrawElement(TempBmp.Canvas.Handle, Details, Rect(-FixOffset, 0, TempBmp.Width, TempBmp.Height)); // Draw button
-            end;
+            with acThemeServices, TempBmp do
+              case TabPosition of
+                tpTop:    DrawElement(Canvas.Handle, Details, aRect); // Draw tab
+                tpBottom: DrawElement(Canvas.Handle, Details, Rect(0, -FixOffset, Width, Height)); // Draw button
+                tpLeft:   DrawElement(Canvas.Handle, Details,  MkRect(Width + FixOffset, Height)); // Draw button
+                tpRight:  DrawElement(Canvas.Handle, Details, Rect(-FixOffset, 0, Width, Height)); // Draw button
+              end;
+
             Details.Part := -1;
           end;
 
@@ -2320,7 +2340,7 @@ begin
           TempBmp.Canvas.Font.Color := ColorToRGB(iff(Page.SkinData.CustomFont, Page.Font.Color, clBtnText));
 
       if not Page.Enabled or not Enabled then
-        TempBmp.Canvas.Font.Color := MixColors(TempBmp.Canvas.Font.Color, ColorToRGB(clBtnFace), sDefaults.DefDisabledBlend);
+        TempBmp.Canvas.Font.Color := BlendColors(TempBmp.Canvas.Font.Color, ColorToRGB(clBtnFace), sDefaults.DefBlendDisabled);
 
       TempBmp.Canvas.Brush.Style := bsClear;
       if OldFont <> 0 then begin // If font is rotated
@@ -2342,7 +2362,7 @@ begin
         DrawCloseBtn(TempBmp.Canvas.Handle, dContent.BtnRect, integer(FHoveredBtnIndex = PageIndex) + integer(FPressedBtnIndex = PageIndex));
       // Draw Arrow
       if not IsRectEmpty(dContent.ArrowRect) then
-        DrawColorArrow(TempBmp.Canvas, TempBmp.Canvas.Font.Color, dContent.ArrowRect, dContent.ArrowDirection);
+        DrawColorArrow(TempBmp, TempBmp.Canvas.Font.Color, dContent.ArrowRect, dContent.ArrowDirection);
     end
     else
       if Assigned(OnDrawTab) then begin
@@ -2385,6 +2405,7 @@ const
 procedure TsPageControl.InitTabContentData(Canvas: TCanvas; Page: TTabSheet; TabRect: TRect; State: integer; IsTabMenu: boolean; var Data: TacTabData);
 var
   IsVertical, ArrowUnderText: boolean;
+  imgWidth, imgHeight: integer;
   lCaption: ACString;
   R: TRect;
 begin
@@ -2469,18 +2490,20 @@ begin
     else
       Data.BtnRect := MkRect;
     // Image rect
-    if (Images <> nil) and (Page.ImageIndex > -1) and (Page.ImageIndex <= GetImageCount(Images) - 1) then begin
+    if (Images <> nil) and IsValidIndex(Page.ImageIndex, GetImageCount(Images)) then begin
+      imgWidth := GetImageWidth(Images);
+      imgHeight := GetImageHeight(Images);
       if not IsRectEmpty(Data.BtnRect) or (TabAlignment = taLeftJustify) then // If button exists or left aligned
         Data.GlyphRect.Left := TabRect.Left + TabMargin // then content aligned to the left
       else // Glyph with text are aligned to center
-        if (TabAlignment = taRightJustify) then
-          Data.GlyphRect.Left := TabRect.Right - Data.TextSize.cx - Images.Width - TabSpacing - TabMargin
+        if TabAlignment = taRightJustify then
+          Data.GlyphRect.Left := TabRect.Right - Data.TextSize.cx - imgWidth - TabSpacing - TabMargin
         else
-          Data.GlyphRect.Left := max(Data.TextRect.Left + (WidthOf(Data.TextRect) - (Data.TextSize.cx + Images.Width + TabSpacing)) div 2, TabRect.Left + TabMargin);
+          Data.GlyphRect.Left := max(Data.TextRect.Left + (WidthOf(Data.TextRect) - (Data.TextSize.cx + imgWidth + TabSpacing)) div 2, TabRect.Left + TabMargin);
 
-      Data.GlyphRect.Top := TabRect.Top + (HeightOf(TabRect) - Images.Height) div 2;
-      Data.GlyphRect.Right := Data.GlyphRect.Left + Images.Width;
-      Data.GlyphRect.Bottom := Data.GlyphRect.Top + Images.Height;
+      Data.GlyphRect.Top := TabRect.Top + (HeightOf(TabRect) - imgHeight) div 2;
+      Data.GlyphRect.Right := Data.GlyphRect.Left + imgWidth;
+      Data.GlyphRect.Bottom := Data.GlyphRect.Top + imgHeight;
       Data.TextRect.Left := Data.GlyphRect.Right + TabSpacing; // Change text rect
       if (State = 2) and FActiveTabEnlarged then
         if not SkinData.Skinned or (SkinData.SkinManager <> nil) and SkinData.SkinManager.ButtonsOptions.ShiftContentOnClick then
@@ -2494,7 +2517,7 @@ begin
                (ShowCloseBtns and (TsTabSheet(Page).TabType = ttTab)) then // If button or arrow exists or left aligned
         Data.TextRect.Left := TabRect.Left + TabMargin + TabPadding
       else
-        if (TabAlignment = taRightJustify) then
+        if TabAlignment = taRightJustify then
           Data.TextRect.Left := TabRect.Right - Data.TextSize.cx - TabMargin
         else
           Data.TextRect.Left := TabRect.Left + (WidthOf(TabRect) - Data.TextSize.cx) div 2;
@@ -2533,7 +2556,7 @@ begin
   end
   else begin
     if IsTabMenu then begin
-      if (State = 2) then
+      if State = 2 then
         if not SkinData.Skinned or (SkinData.SkinManager <> nil) and SkinData.SkinManager.ButtonsOptions.ShiftContentOnClick then
           OffsetRect(TabRect, 1, 1);
     end
@@ -2551,7 +2574,7 @@ begin
       Data.ArrowRect.Bottom := Data.ArrowRect.Top + ArrowSize;
       Data.TextRect.Top := Data.ArrowRect.Bottom + 2;
       Data.ArrowDirection := asRight;
-      if (State = 2) then
+      if State = 2 then
         if IsVertical then
           OffsetRect(Data.ArrowRect, 0, -1)
         else
@@ -2574,15 +2597,17 @@ begin
     else
       Data.BtnRect := MkRect;
     // Image rect
-    if (Images <> nil) and (Page.ImageIndex > -1) and (Page.ImageIndex <= GetImageCount(Images) - 1) then begin
+    if (Images <> nil) and IsValidIndex(Page.ImageIndex, GetImageCount(Images)) then begin
+      imgWidth := GetImageWidth(Images);
+      imgHeight := GetImageHeight(Images);
       if not IsRectEmpty(Data.BtnRect) then          // If button exists
         Data.GlyphRect.Bottom := TabRect.Bottom - 3 // then content aligned to bottom
       else // Glyph with text are aligned to center
-        Data.GlyphRect.Bottom := min(TabRect.Bottom - (HeightOf(TabRect) - (Data.TextSize.cx + Images.Height + TabSpacing)) div 2, TabRect.Bottom - 3);
+        Data.GlyphRect.Bottom := min(TabRect.Bottom - (HeightOf(TabRect) - (Data.TextSize.cx + imgHeight + TabSpacing)) div 2, TabRect.Bottom - 3);
 
-      Data.GlyphRect.Top := Data.GlyphRect.Bottom - Images.Height;
-      Data.GlyphRect.Left := TabRect.Left + (WidthOf(TabRect) - Images.Width) div 2 + 1;
-      Data.GlyphRect.Right := Data.GlyphRect.Left + Images.Width;
+      Data.GlyphRect.Top := Data.GlyphRect.Bottom - imgHeight;
+      Data.GlyphRect.Left := TabRect.Left + (WidthOf(TabRect) - imgWidth) div 2 + 1;
+      Data.GlyphRect.Right := Data.GlyphRect.Left + imgWidth;
       if (State = 2) and FActiveTabEnlarged then
         if IsVertical and IsTabMenu then
           OffsetRect(Data.GlyphRect, 3, 0);
@@ -2655,7 +2680,7 @@ end;
 
 procedure TsPageControl.SetActivePageIndex(const Value: Integer);
 begin
-  if BetWeen(Value, 0, PageCount - 1) and (TsTabSheet(Pages[Value]).TabType = ttTab) then begin
+  if IsValidIndex(Value, PageCount) and (TsTabSheet(Pages[Value]).TabType = ttTab) then begin
     inherited ActivePageIndex := Value;
     if not Pages[Value].TabVisible then
       SetParentUpdated(Pages[Value]); // Update because TCM_SETCURSEL is not received
@@ -2672,7 +2697,7 @@ begin
       FActiveIsBold := Value;
       if not (csLoading in ComponentState) and (Visible or (csDesigning in ComponentState)) then begin
         SkinData.BGChanged := True;
-        RedrawWindow(Handle, nil, 0, RDW_ERASE or RDW_FRAME or RDW_INVALIDATE);
+        RedrawWindow(Handle, nil, 0, RDWA_REPAINT);
       end;
     end;
 
@@ -2706,14 +2731,14 @@ begin
         end;
         SkinData.BGChanged := True;
         Perform(WM_SETREDRAW, 1, 0);
-        RedrawWindow(Handle, nil, 0, RDW_ERASE or RDW_FRAME or RDW_INVALIDATE or RDW_ALLCHILDREN);
+        RedrawWindow(Handle, nil, 0, RDWA_ALL);
       end;
     end;
 
     3: if FShowCloseBtns <> Value then begin
       FShowCloseBtns := Value;
       UpdateBtnData;
-      if HandleAllocated and not(csLoading in ComponentState) then begin
+      if HandleAllocated and not (csLoading in ComponentState) then begin
         Perform(WM_SIZE, 0, 0);
         if SkinData.Skinned then
           RedrawWindow(Handle, nil, 0, RDW_ERASE or RDW_INVALIDATE or RDW_UPDATENOW);
@@ -2752,15 +2777,15 @@ procedure TsPageControl.SetCurItem(const Value: integer);
 var
   Old: integer;
 begin
-  if (FCurItem <> Value) then begin
+  if FCurItem <> Value then begin
     Old := FCurItem;
     FCurItem := Value;
-    if (DroppedDownItem = -1) then begin
-      if (BetWeen(Value, 0, PageCount - 1)) then
+    if DroppedDownItem < 0 then begin
+      if IsValidIndex(Value, PageCount) then
         if (Pages[Value] <> ActivePage) or ShowCloseBtns then
           RepaintTab(Value); // Repaint new tab
 
-      if (BetWeen(Old, 0, PageCount - 1)) then
+      if IsValidIndex(Old, PageCount) then
         if (Pages[Old] <> ActivePage) or ShowCloseBtns then
           RepaintTab(Old); // Repaint old tab in normal state
     end;
@@ -2776,7 +2801,6 @@ var
 begin
   InitCacheBmp(SkinData);
   Result := True;
-//  InitCacheBmp(SkinData);
   CI := GetParentCache(FCommonData);
   R := PageRect;
   PaintItemBG(FCommonData, CI, 0, R, Point(Left + R.Left, Top + r.Top), FCommonData.FCacheBmp);
@@ -2785,15 +2809,15 @@ begin
       DrawSkinGlyph(FCommonData.FCacheBmp, Point(R.Left, R.Top), 0, 1, ma[ImgTL], MakeCacheInfo(FCommonData.FCacheBmp));
 
     if IsValidImgIndex(ImgTR) then
-      DrawSkinGlyph(FCommonData.FCacheBmp, Point(R.Right - WidthOfImage(ma[ImgTR]), R.Top), 0, 1, ma[ImgTR], MakeCacheInfo(FCommonData.FCacheBmp));
+      DrawSkinGlyph(FCommonData.FCacheBmp, Point(R.Right - ma[ImgTR].Width, R.Top), 0, 1, ma[ImgTR], MakeCacheInfo(FCommonData.FCacheBmp));
 
     if IsValidImgIndex(ImgBL) then
-      DrawSkinGlyph(FCommonData.FCacheBmp, Point(0, R.Bottom - HeightOfImage(ma[ImgBL])), 0, 1, ma[ImgBL], MakeCacheInfo(FCommonData.FCacheBmp));
+      DrawSkinGlyph(FCommonData.FCacheBmp, Point(0, R.Bottom - ma[ImgBL].Height), 0, 1, ma[ImgBL], MakeCacheInfo(FCommonData.FCacheBmp));
 
     if IsValidImgIndex(ImgBR) then
-      DrawSkinGlyph(FCommonData.FCacheBmp, Point(R.Right - WidthOfImage(ma[ImgBR]), R.Bottom - HeightOfImage(ma[ImgBR])), 0, 1, ma[ImgBR], MakeCacheInfo(FCommonData.FCacheBmp));
+      DrawSkinGlyph(FCommonData.FCacheBmp, Point(R.Right - ma[ImgBR].Width, R.Bottom - ma[ImgBR].Height), 0, 1, ma[ImgBR], MakeCacheInfo(FCommonData.FCacheBmp));
   end;
-  if FCommonData.BorderIndex > -1 then
+  if FCommonData.BorderIndex >= 0 then
     DrawSkinRect(FCommonData.FCacheBmp, R, CI, FCommonData.SkinManager.ma[FCommonData.BorderIndex], 0, True);
 
   if (ActivePage <> nil) and not (csDestroying in ActivePage.ComponentState) and (ActivePage.SkinData.SkinSection <> '') then begin
@@ -2835,10 +2859,18 @@ begin
 end;
 
 
+procedure TsTabSheet.ChangeScale(M, D: Integer);
+begin
+{$IFDEF DELPHI_10BERLIN}
+  if not TsPageControl(PageControl).DontScale then
+{$ENDIF}
+    inherited;
+end;
+
 constructor TsTabSheet.Create(AOwner: TComponent);
 begin
-  inherited;
   FCommonData := TsTabSkinData.Create;
+  inherited;
   FCommonData.FPage := Self;
   FUseCloseBtn := True;
   FTabType := ttTab;
@@ -2849,7 +2881,7 @@ procedure TsTabSheet.CreateParams(var Params: TCreateParams);
 begin
   inherited CreateParams(Params);
   with Params.WindowClass do
-    style := style and not (CS_HREDRAW or CS_VREDRAW);
+    Style := Style and not (CS_HREDRAW or CS_VREDRAW);
 end;
 
 
@@ -2859,7 +2891,6 @@ begin
     AnimTimer.Enabled := False;
     FreeAndNil(AnimTimer);
   end;
-
   FreeAndNil(FCommonData);
   inherited;
 end;
@@ -2929,26 +2960,26 @@ end;
 procedure TsTabSheet.WMEraseBkGnd(var Message: TWMPaint);
 begin
   if not (csDestroying in ComponentState) and (PageControl <> nil) and not (csDestroying in PageControl.ComponentState) and
-       TsPageControl(PageControl).SkinData.Skinned and Showing then begin
+       TsPageControl(PageControl).SkinData.Skinned and Showing then
+    with TsPageControl(PageControl).SkinData do begin
 {$IFDEF D2005}
-    if (csDesigning in PageControl.ComponentState) then
-      inherited; // Fixing of designer issue
+      if csDesigning in PageControl.ComponentState then
+        inherited; // Fixing of designer issue
 {$ENDIF}
-    TsPageControl(PageControl).SkinData.FUpdating := TsPageControl(PageControl).SkinData.Updating;
-    if (Message.DC = 0) or
-         (TsPageControl(PageControl).SkinData.CtrlSkinState and ACS_PRINTING = ACS_PRINTING) and (Message.DC <> TsPageControl(PageControl).SkinData.PrintDC) then
-      Exit;
+      FUpdating := Updating;
+      if (Message.DC = 0) or (CtrlSkinState and ACS_PRINTING <> 0) and (Message.DC <> PrintDC) then
+        Exit;
 
-    if not TsPageControl(PageControl).SkinData.FUpdating then begin
-      if TsPageControl(PageControl).SkinData.BGChanged then
-        TsPageControl(PageControl).PrepareCache;
+      if not FUpdating then begin
+        if BGChanged then
+          TsPageControl(PageControl).PrepareCache;
 
-      CopyWinControlCache(Self, TsPageControl(PageControl).SkinData, Rect(Left + BorderWidth, Top + BorderWidth, 0, 0), MkRect(Self), Message.DC, False);
-      sVCLUtils.PaintControls(Message.DC, Self, True, MkPoint);
-      SetParentUpdated(Self);
-    end;
-    Message.Result := 1;
-  end
+        CopyWinControlCache(Self, TsPageControl(PageControl).SkinData, Rect(Left + BorderWidth, Top + BorderWidth, 0, 0), MkRect(Self), Message.DC, False);
+        sVCLUtils.PaintControls(Message.DC, Self, True, MkPoint);
+        SetParentUpdated(Self);
+      end;
+      Message.Result := 1;
+    end
   else
     inherited;
 end;
@@ -2962,7 +2993,7 @@ begin
     if TsPageControl(PageControl).SkinData.Skinned then begin
       TsPageControl(PageControl).SkinData.Updating := TsPageControl(PageControl).SkinData.Updating;
       if not TsPageControl(PageControl).SkinData.FUpdating then begin
-        if (TsPageControl(PageControl).SkinData.CtrlSkinState and ACS_PRINTING = ACS_PRINTING) and (Message.DC = TsPageControl(PageControl).SkinData.PrintDC) then
+        if (TsPageControl(PageControl).SkinData.CtrlSkinState and ACS_PRINTING <> 0) and (Message.DC = TsPageControl(PageControl).SkinData.PrintDC) then
           DC := Message.DC
         else
           DC := GetWindowDC(Handle);
@@ -3000,7 +3031,7 @@ begin
 //  AddToLog(Message);
 {$ENDIF}
   if PageControl <> nil then
-    if (Message.Msg = SM_ALPHACMD) then
+    if Message.Msg = SM_ALPHACMD then
       case Message.WParamHi of
         AC_CTRLHANDLED: begin
           Message.Result := 1;
@@ -3030,34 +3061,35 @@ begin
         end;
 
         AC_GETBG:
-          if TsPageControl(PageControl).SkinData.Skinned then begin
-            if (SkinData <> nil) and (SkinData.SkinSection <> '') and not TsPageControl(PageControl).SkinData.FCacheBmp.Empty then begin
-              PacBGInfo(Message.LParam).BgType := btCache;
-              PacBGInfo(Message.LParam).Bmp := TsPageControl(PageControl).SkinData.FCacheBmp;
-              PacBGInfo(Message.LParam).Offset := MkPoint;
-            end
-            else begin
-              CommonMessage(Message, TsPageControl(PageControl).SkinData);
-              if PacBGInfo(Message.LParam).BgType = btNotReady then begin
-                TsPageControl(PageControl).SkinData.Updating := True;
-                Exit;
+          if TsPageControl(PageControl).SkinData.Skinned then
+            with PacBGInfo(Message.LParam)^ do begin
+              if (SkinData <> nil) and (SkinData.SkinSection <> '') and not TsPageControl(PageControl).SkinData.FCacheBmp.Empty then begin
+                BgType := btCache;
+                Bmp := TsPageControl(PageControl).SkinData.FCacheBmp;
+                Offset := MkPoint;
+              end
+              else begin
+                CommonMessage(Message, TsPageControl(PageControl).SkinData);
+                if BgType = btNotReady then begin
+                  TsPageControl(PageControl).SkinData.Updating := True;
+                  Exit;
+                end;
+                FillRect := MkRect;
               end;
-              PacBGInfo(Message.LParam).FillRect := MkRect;
-            end;
-            if (PacBGInfo(Message.LParam)^.Bmp <> nil) and not PacBGInfo(Message.LParam)^.PleaseDraw then begin
-              PacBGInfo(Message.LParam)^.Offset.X := PacBGInfo(Message.LParam)^.Offset.X + Left + BorderWidth;
-              PacBGInfo(Message.LParam)^.Offset.Y := PacBGInfo(Message.LParam)^.Offset.Y + Top  + BorderWidth;
-              if PacBGInfo(Message.LParam)^.BgType = btFill then begin
-                PacBGInfo(Message.LParam).FillRect.Left := PacBGInfo(Message.LParam)^.Offset.X - PacBGInfo(Message.LParam).FillRect.Left;
-                PacBGInfo(Message.LParam).FillRect.Top  := PacBGInfo(Message.LParam)^.Offset.Y - PacBGInfo(Message.LParam).FillRect.Top;
+              if (Bmp <> nil) and not PleaseDraw then begin
+                Offset.X := Offset.X + Left + BorderWidth;
+                Offset.Y := Offset.Y + Top  + BorderWidth;
+                if BgType = btFill then begin
+                  FillRect.Left := Offset.X - FillRect.Left;
+                  FillRect.Top  := Offset.Y - FillRect.Top;
+                end;
               end;
+              Exit;
             end;
-            Exit;
-          end;
 
         AC_GETCONTROLCOLOR:
           if TsPageControl(PageControl).SkinData.Skinned then begin
-            Message.Result := PageControl.Perform(SM_ALPHACMD, MakeWParam(0, AC_GETCONTROLCOLOR), 0);
+            Message.Result := PageControl.Perform(SM_ALPHACMD, AC_GETCONTROLCOLOR_HI, 0);
             Exit;
           end;
 
@@ -3069,25 +3101,27 @@ begin
 
         AC_CHILDCHANGED:
           with TsPageControl(PageControl).SkinData do
-            if Skinned then begin
-              Message.Result := LRESULT((SkinManager.gd[SkinIndex].Props[0].GradientPercent + SkinManager.gd[SkinIndex].Props[0].ImagePercent > 0) or RepaintIfMoved);
-              Exit;
-            end;
+            if Skinned then
+              with SkinManager.gd[SkinIndex].Props[0] do begin
+                Message.Result := LRESULT((GradientPercent + ImagePercent > 0) or RepaintIfMoved);
+                Exit;
+              end;
 
-        AC_GETSKININDEX: begin
-          if (SkinData <> nil) and (SkinData.SkinSection <> '') then begin
-            PacSectionInfo(Message.LParam)^.SkinIndex := TsPageControl(PageControl).SkinData.SkinManager.GetSkinIndex(SkinData.SkinSection);
-            if PacSectionInfo(Message.LParam)^.SkinIndex < 0 then
-              PacSectionInfo(Message.LParam)^.SkinIndex := TsPageControl(PageControl).SkinData.SkinIndex;
-          end
-          else
-            PacSectionInfo(Message.LParam)^.SkinIndex := TsPageControl(PageControl).SkinData.SkinIndex;
+        AC_GETSKININDEX:
+          with PacSectionInfo(Message.LParam)^, TsPageControl(PageControl) do begin
+            if (SkinData <> nil) and (SkinData.SkinSection <> '') then begin
+              siSkinIndex := SkinData.SkinManager.GetSkinIndex(SkinData.SkinSection);
+              if siSkinIndex < 0 then
+                siSkinIndex := SkinData.SkinIndex;
+            end
+            else
+              siSkinIndex := SkinData.SkinIndex;
 
-          Exit
-        end;
+            Exit
+          end;
 
         AC_ENDPARENTUPDATE: begin
-          RedrawWindow(Handle, nil, 0, RDW_ERASE or RDW_INVALIDATE or RDW_UPDATENOW);
+          RedrawWindow(Handle, nil, 0, RDWA_ERASENOW);
           SetParentUpdated(Self);
           Exit;
         end;
@@ -3097,7 +3131,7 @@ begin
             for i := 0 to ControlCount - 1 do
               SendAMessage(Controls[i], AC_GETSKINSTATE, 1)
           else begin
-            if TsPageControl(PageControl).SkinData.CtrlSkinState and ACS_BGUNDEF = ACS_BGUNDEF then
+            if TsPageControl(PageControl).SkinData.CtrlSkinState and ACS_BGUNDEF <> 0 then
               UpdateSkinState(TsPageControl(PageControl).SkinData, False);
 
             Message.Result := TsPageControl(PageControl).SkinData.CtrlSkinState;
@@ -3113,17 +3147,17 @@ begin
         end;
 
         AC_GETFONTINDEX:
-          with TsPageControl(PageControl) do begin
+          with TsPageControl(PageControl), PacPaintInfo(Message.LParam)^ do begin
             if SkinData.Skinned then
               with SkinData.SkinManager.gd[SkinData.SkinIndex] do
-                if NeedParentFont(SkinData) then begin
-                  inc(PacPaintInfo(Message.LParam)^.R.Left, SkinData.FOwnerControl.Left);
-                  inc(PacPaintInfo(Message.LParam)^.R.Top,  SkinData.FOwnerControl.Top);
+                if NeedParentFont(SkinData, State) then begin
+                  inc(R.Left, SkinData.FOwnerControl.Left);
+                  inc(R.Top,  SkinData.FOwnerControl.Top);
                   Message.Result := GetFontIndex(SkinData.FOwnerControl.Parent, PacPaintInfo(Message.LParam))
                 end
                 else
                   if GiveOwnFont then begin
-                    PacPaintInfo(Message.LParam)^.FontIndex := SkinData.SkinIndex;
+                    FontIndex := SkinData.SkinIndex;
                     Message.Result := 1;
                   end;
 
@@ -3135,13 +3169,13 @@ begin
               b := RepaintIfMoved;
               BGChanged := BGChanged or b;
               if FOwnerControl is TWinControl then begin
-                if (Message.WParamLo = 1) then
-                  RedrawWindow(Handle, nil, 0, RDW_NOERASE + RDW_NOINTERNALPAINT + RDW_INVALIDATE + RDW_ALLCHILDREN);
+                if Message.WParamLo = 1 then
+                  RedrawWindow(Handle, nil, 0, RDW_NOERASE or RDW_NOINTERNALPAINT or RDW_INVALIDATE or RDW_ALLCHILDREN);
 
                 if b then
                   for i := 0 to ControlCount - 1 do
                     if (i < ControlCount) and not (csDestroying in Controls[i].ComponentState) then
-                      Controls[i].Perform(SM_ALPHACMD, MakeWParam(1, AC_SETCHANGEDIFNECESSARY), 0);
+                      Controls[i].Perform(SM_ALPHACMD, AC_SETCHANGEDIFNECESSARY shl 16 + 1, 0);
               end;
               Exit;
             end;
@@ -3155,7 +3189,7 @@ begin
                 DefaultManager.ActiveControl := Handle;
 
           WM_PARENTNOTIFY:
-            if not ((csDesigning in ComponentState) or (csLoading in ComponentState)) and (Message.WParamLo in [WM_CREATE, WM_DESTROY]) then begin
+            if ([csDesigning, csLoading] * ComponentState = []) and (Message.WParamLo in [WM_CREATE, WM_DESTROY]) then begin
               inherited;
               if Message.WParamLo = WM_CREATE then begin
                 AddToAdapter(Self);
@@ -3166,7 +3200,7 @@ begin
             end;
 
           WM_PAINT:
-            if (Visible or (csDesigning in ComponentState)) then begin
+            if Visible or (csDesigning in ComponentState) then begin
               if not (csDestroying in ComponentState) and (Parent <> nil) then // Background update
                 InvalidateRect(Handle, nil, True); // Background update (for repaint of graphic controls and for tabsheets refreshing)
 
@@ -3199,7 +3233,7 @@ begin
           else begin
             with TsPageControl(PageControl).SkinData.SkinManager do
               if not (AnimEffects.PageChange.Active and TsPageControl(PageControl).AllowAnimSwitching and Effects.AllowAnimation) then
-                RedrawWindow(Parent.Handle, nil, 0, RDW_ERASE or RDW_ALLCHILDREN or RDW_INVALIDATE or RDW_FRAME or RDW_UPDATENOW);
+                RedrawWindow(Parent.Handle, nil, 0, RDWA_ALLNOW);
 
             SetParentUpdated(Handle);
           end;
@@ -3212,9 +3246,9 @@ begin
         TsPageControl(PageControl).KillTimers;
 
       CM_ENABLEDCHANGED:
-        if not (csDestroying in ComponentState) and not (csLoading in ComponentState) and (Parent <> nil) then begin
+        if ([csDestroying, csLoading] * ComponentState = []) and (Parent <> nil) then begin
           TsPageControl(Parent).SkinData.BGChanged := True;
-          RedrawWindow(Parent.Handle, nil, 0, RDW_ERASE or RDW_INVALIDATE or RDW_FRAME);
+          RedrawWindow(Parent.Handle, nil, 0, RDWA_REPAINT);
         end;
     end;
 end;
@@ -3225,7 +3259,7 @@ begin
   FCustomFont := Value;
   if (FPage <> nil) and (FPage.PageControl <> nil) and not (csLoading in FPage.PageControl.ComponentState) then begin
     TsPageControl(FPage.PageControl).SkinData.BGChanged := True;
-    RedrawWindow(FPage.PageControl.Handle, nil, 0, RDW_INVALIDATE or RDW_UPDATENOW or RDW_FRAME or RDW_NOERASE);
+    RedrawWindow(FPage.PageControl.Handle, nil, 0, RDWA_FRAMENOW);
   end;
 end;
 
@@ -3284,7 +3318,7 @@ end;
 function TsPageControl.GetTabLayout(PageIndex: Integer; R: TRect): TacTabLayout;
 begin
   if {(PageIndex <> ActivePageIndex) and} (SkinData.SkinManager.ConstData.Tabs[tlFirst][acTabSides[TabPosition]].SkinIndex >= 0) then
-    if (GetNeighborIndex(PageIndex, False) < 0) then
+    if GetNeighborIndex(PageIndex, False) < 0 then
       Result := tlFirst
     else
       if GetNeighborIndex(PageIndex, True) < 0 then
@@ -3323,6 +3357,22 @@ begin
     FActiveTabEnlarged := Value;
     SkinData.Invalidate;
   end;
+end;
+
+
+procedure TsPageControl.ChangeScale(M, D: Integer);
+begin
+{$IFDEF DELPHI_10BERLIN}
+  DontScale := True; // Do not scale twelse in Delph Berlin
+{$ENDIF}
+  inherited;
+{$IFDEF DELPHI_10BERLIN}
+  DontScale := False;
+{$ENDIF}
+{$IFNDEF DELPHI_10}
+  TabHeight := MulDiv(TabHeight, M, D);
+  TabWidth := MulDiv(TabWidth, M, D);
+{$ENDIF}
 end;
 
 end.

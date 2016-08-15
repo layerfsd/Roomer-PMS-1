@@ -1,6 +1,6 @@
 unit acDBDecimalSpinEdit;
 {$I sDefs.inc}
-
+//+
 interface        
 
 uses
@@ -50,11 +50,12 @@ var
   rValue: Extended;
 begin
   if Assigned(FDataLink) {and not Formatting }then begin
-    FDataLink.Modified;
+	  FDataLink.Modified;
     if not FDataLink.Editing then begin
       rValue := Value;
       FDataLink.Edit;
       Value := rValue;
+  	  FDataLink.Modified;
     end;
   end;
   inherited Change;
@@ -94,16 +95,14 @@ end;
 
 procedure TsDBDecimalSpinEdit.DataChange(Sender: TObject);
 begin
-  if csDestroying in ComponentState then
-    Exit;
-
-  if (FDataLink <> nil) and (FDataLink.Field <> nil) then
-    if DecimalPlaces = 0 then
-      Value := FDataLink.Field.AsInteger
+  if not (csDestroying in ComponentState) then
+    if (FDataLink <> nil) and (FDataLink.Field <> nil) then
+      if DecimalPlaces = 0 then
+        Value := FDataLink.Field.AsInteger
+      else
+        Value := FDataLink.Field.AsFloat
     else
-      Value := FDataLink.Field.AsFloat
-  else
-    Value := 0;
+      Value := 0;
 end;
 
 
@@ -149,30 +148,27 @@ end;
 procedure TsDBDecimalSpinEdit.KeyDown(var Key: Word; Shift: TShiftState);
 begin
   inherited KeyDown(Key, Shift);
-  if ReadOnly then begin
+  if ReadOnly then
     Key := 0;
-    Exit;
-  end;
 end;
 
 
 procedure TsDBDecimalSpinEdit.KeyPress(var Key: Char);
 begin
   inherited KeyPress(Key);
-  if ReadOnly or not FDataLink.CanModify then begin
-    Key := #0;
-    Exit;
-  end;
-  case Key of
-    ^H, ^V, ^X, '0'..'9', '-', '+':
-      FDataLink.Edit;
+  if ReadOnly or not FDataLink.CanModify then
+    Key := #0
+  else
+    case Key of
+      ^H, ^V, ^X, '0'..'9', '-', '+':
+        FDataLink.Edit;
 
-    #27: begin // Esc
-      FDataLink.Reset;
-      SelectAll;
-      Key := #0;
+      #27: begin // Esc
+        FDataLink.Reset;
+        SelectAll;
+        Key := #0;
+      end;
     end;
-  end;
 end;
 
 

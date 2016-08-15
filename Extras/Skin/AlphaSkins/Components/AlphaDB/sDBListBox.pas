@@ -1,6 +1,6 @@
 unit sDBListBox;
 {$I sDefs.inc}
-
+//+
 interface
 
 uses
@@ -46,9 +46,9 @@ end;
 
 constructor TsDBListBox.Create(AOwner: TComponent);
 begin
-  inherited Create(AOwner);
   FCommonData := TsScrollWndData.Create(Self, True);
   FCommonData.COC := COC_TsEdit;
+  inherited Create(AOwner);
   ControlStyle := ControlStyle + [csReplicatable];
   FDisabledKind := DefDisabledKind;
   FBoundLabel := TsBoundLabel.Create(Self, FCommonData);
@@ -61,9 +61,7 @@ begin
     FreeAndNil(ListSW);
 
   FreeAndNil(FBoundLabel);
-  if Assigned(FCommonData) then
-    FreeAndNil(FCommonData);
-
+  FreeAndNil(FCommonData);
   inherited Destroy;
 end;
 
@@ -110,7 +108,7 @@ begin
         end;
 
       AC_REFRESH:
-        if (Message.LParam = LongInt(SkinData.SkinManager)) then begin
+        if Message.LParam = LongInt(SkinData.SkinManager) then begin
           CommonWndProc(Message, FCommonData);
           if FCommonData.Skinned then begin
             if not FCommonData.CustomColor then
@@ -132,7 +130,7 @@ begin
         end;
 
       AC_SETNEWSKIN:
-        if (Message.LParam = LongInt(SkinData.SkinManager)) then begin
+        if Message.LParam = LongInt(SkinData.SkinManager) then begin
           CommonWndProc(Message, FCommonData);
           if HandleAllocated then
             RefreshEditScrolls(SkinData, ListSW);

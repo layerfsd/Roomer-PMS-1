@@ -1,7 +1,7 @@
 unit sListView;
 {$I sDefs.inc}
 //{$DEFINE LOGGED}
-
+//+
 interface
 
 uses
@@ -46,7 +46,7 @@ type
     FOldAdvancedCustomDraw:     TLVAdvancedCustomDrawEvent;
     FOldAdvancedCustomDrawItem: TLVAdvancedCustomDrawItemEvent;
 
-    FhWndHeader: HWnd;
+    FhWndHeader: HWND;
     FBoundLabel: TsBoundLabel;
     FCommonData: TsScrollWndData;
     FOnMeasureItem: TMeasureItemEvent;
@@ -321,9 +321,9 @@ begin
   HotItem := -1;
   Loading := True;
   Invalidating := False;
-  inherited Create(AOwner);
   FCommonData := TsScrollWndData.Create(Self, True);
   FCommonData.COC := COC_TsListView;
+  inherited Create(AOwner);
   SkinData.BGChanged := True;
   FBoundLabel := TsBoundLabel.Create(Self, FCommonData);
   FHighlightHeaders := True;
@@ -355,9 +355,7 @@ begin
 
   FreeAndNil(FBoundLabel);
   InitControl(False);
-  if Assigned(FCommonData) then
-    FreeAndNil(FCommonData);
-
+  FreeAndNil(FCommonData);
   inherited Destroy;
 end;
 
@@ -404,52 +402,48 @@ begin
 
       AC_REMOVESKIN:
         if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then begin
-//          CommonWndProc(Message, FCommonData);
           if ListSW <> nil then begin
             Items.BeginUpdate;
             FreeAndNil(ListSW);
-
             // ScrollBars update
-            SetWindowPos(Handle, 0, 0, 0, 0, 0, SWP_NOSIZE or SWP_NOMOVE or SWP_NOZORDER or SWP_NOREPOSITION or SWP_FRAMECHANGED);
+            SetWindowPos(Handle, 0, 0, 0, 0, 0, SWPA_FRAMECHANGED);
             if not FCommonData.CustomColor then begin
-  //            Color := clWindow;
               ListView_SetBkColor    (Handle, ColorToRGB(Color));
               ListView_SetTextBkColor(Handle, ColorToRGB(Color));
             end;
             Items.EndUpdate;
             InitControl(False);
-  //          Font.Color := clWindowText;
             ListView_SetTextColor(Handle, ColorToRGB(Font.Color));
-            RedrawWindow(Handle, nil, 0, RDW_FRAME or RDW_INVALIDATE or RDW_ERASE);
+            RedrawWindow(Handle, nil, 0, RDW_NOCHILDREN);
           end;
           Exit;
         end;
 
       AC_SETNEWSKIN:
-        if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
+        if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then begin
           CommonWndProc(Message, FCommonData);
           InitControl(FCommonData.Skinned);
           Exit;
         end;
 
       AC_REFRESH:
-        if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
-          Items.BeginUpdate;
-          InitControl(True);
-          if HandleAllocated and Assigned(Ac_UninitializeFlatSB) then
-            Ac_UninitializeFlatSB(Handle);
-
-          RefreshEditScrolls(SkinData, ListSW);
-          CommonWndProc(Message, FCommonData);
+        if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then begin
           if FCommonData.Skinned and not Loading then begin
+            Items.BeginUpdate;
+            InitControl(True);
+            if HandleAllocated and Assigned(Ac_UninitializeFlatSB) then
+              Ac_UninitializeFlatSB(Handle);
+
+            RefreshEditScrolls(SkinData, ListSW);
+            CommonWndProc(Message, FCommonData);
             if not FCommonData.CustomColor then
               Color := FCommonData.SkinManager.gd[FCommonData.SkinIndex].Props[0].Color;
 
             InitSkinParams;
             PrepareCache;
-            RedrawWindow(Handle, nil, 0, RDW_FRAME or RDW_INVALIDATE or RDW_UPDATENOW or RDW_ALLCHILDREN);
+            RedrawWindow(Handle, nil, 0, RDWA_ALLNOW);
+            Items.EndUpdate;
           end;
-          Items.EndUpdate;
           Exit;
         end;
 
@@ -517,31 +511,22 @@ begin
       WM_SETFOCUS, WM_KILLFOCUS: begin
         if IsWindowVisible(Handle) then
           ListSW.SetSkinParams;
-          
+
         if Selected <> nil then
           Self.UpdateItems(Selected.Index, Selected.Index);
       end;
 
-      WM_ERASEBKGND:
+      WM_ERASEBKGND: begin
         if (SkinData.PrintDC <> 0) and not StyleChanging then begin
           TWMPaint(Message).DC := SkinData.PrintDC;
           inherited;
-          Exit;
         end
-        else begin
+        else
           if not InUpdating(FCommonData) then begin
             FTempItemAdvancedValue := NewAdvancedCustomDrawItem;
-            if (addr(OnAdvancedCustomDrawItem) = addr(FTempITemAdvancedValue)) then begin
-              if not (ViewStyle in [vsSmallIcon, vsIcon]) then
-                TopIndex := ListView_GetTopIndex(Handle)
-              else
-                TopIndex := 0;
-
-              if ViewStyle in [vsReport, vsList] then
-                LastIndex := min(TopIndex + ListView_GetCountPerPage(Handle), Items.Count - 1)
-              else
-                LastIndex := Items.Count - 1;
-
+            if (addr(OnAdvancedCustomDrawItem) = addr(FTempITemAdvancedValue)) and not (ViewStyle in [vsSmallIcon, vsIcon]) then begin
+              TopIndex := ListView_GetTopIndex(Handle);
+              LastIndex := min(TopIndex + ListView_GetCountPerPage(Handle), Items.Count - 1);
               SavedDC := SaveDC(TWMPaint(Message).DC);
               try
                 for i := TopIndex to LastIndex do
@@ -556,8 +541,9 @@ begin
             else
               inherited;
           end;
-          Exit;
-        end;
+
+        Exit;
+      end;
 
       WM_VSCROLL: begin
         UpdateScrolls(ListSW, True);
@@ -624,6 +610,7 @@ begin
             PaintHeader;
             Exit;
           end;
+
           SB_LINELEFT, SB_LINERIGHT: begin
             inherited;
             InvalidateSmooth(False);
@@ -635,14 +622,14 @@ begin
       Exit;
 
     inherited;
-    if Assigned(FCommonData) and FCommonData.Skinned then
+    if {Assigned(FCommonData) and }FCommonData.Skinned then
       case Message.Msg of
         WM_MOUSEMOVE:
-          if (Win32MajorVersion >= 6) then begin
+          if Win32MajorVersion >= 6 then begin
             R.TopLeft := ScreenToClient(acMousePos);
             li := GetItemAt(R.Left, R.Top);
             if li <> nil then
-              if (HotItem >= 0) and (HotItem < Items.Count) then // Repaint prev Hot Item
+              if IsValidIndex(HotItem, Items.Count) then // Repaint prev Hot Item
                 if li.Index <> HotItem then begin
                   R := Items[HotItem].DisplayRect(drBounds);
                   InvalidateRect(Handle, @R, True);
@@ -651,7 +638,7 @@ begin
           end;
 
         CM_MOUSEWHEEL, WM_MOUSEWHEEL:
-          if (TWMMouseWheel(Message).Keys = 0) then
+          if TWMMouseWheel(Message).Keys = 0 then
             InvalidateSmooth(False);
 
         CN_KEYDOWN, CN_KEYUP:
@@ -701,12 +688,13 @@ begin
 
   case Message.Msg of
     CN_MEASUREITEM, WM_MEASUREITEM:
-      if Assigned(FOnMeasureItem) and (ViewStyle = vsReport) then begin
-        i := TWMMeasureItem(Message).MeasureItemStruct^.itemHeight;
-        FOnMeasureItem(TListView(Self), integer(TWMMeasureItem(Message).MeasureItemStruct^.itemID), i);
-        TWMMeasureItem(Message).MeasureItemStruct^.itemHeight := i;
-        Message.Result := 1;
-      end;
+      if Assigned(FOnMeasureItem) and (ViewStyle = vsReport) then
+        with TWMMeasureItem(Message).MeasureItemStruct^ do begin
+          i := itemHeight;
+          FOnMeasureItem(TListView(Self), integer(itemID), i);
+          itemHeight := i;
+          Message.Result := 1;
+        end;
   end;
 end;
 
@@ -854,8 +842,14 @@ begin
             Exit;
           end;
 
-          WM_WINDOWPOSCHANGING:
-            TWMWindowPosChanging(Message).WindowPos^.X := HeaderOffset;
+          WM_WINDOWPOSCHANGING: begin
+            if Assigned(ListSW) and Assigned(ListSW.sBarHorz) then
+              w := ListSW.sBarHorz.ScrollInfo.nPos
+            else
+              w := 0;
+
+            TWMWindowPosChanging(Message).WindowPos^.X := HeaderOffset - w;
+          end;
         end;
         Result := CallWindowProc(FhDefHeaderProc, FhWndHeader, Msg, WParam, LParam);
         case Msg of
@@ -890,22 +884,21 @@ procedure TsCustomListView.WMParentNotify(var Message: TWMParentNotify);
 var
   WndName: string;
 begin
-  try
-    with Message do begin
+  with Message do
+    try
       SetLength(WndName, 96);
       SetLength(WndName, GetClassName(ChildWnd, PChar(WndName), Length(WndName)));
       if (WndName = WC_HEADER) and (Event in [WM_CREATE, WM_DESTROY]) then begin
-        if (FhWndHeader <> 0) then begin
+        if FhWndHeader <> 0 then begin
           SetWindowLong(FhWndHeader, GWL_WNDPROC, LONG_PTR(FhDefHeaderProc));
           FhWndHeader := 0;
         end;
-        if (FhWndHeader = 0) then begin
+        if FhWndHeader = 0 then begin
           FhWndHeader := ChildWnd;
           FhDefHeaderProc := Pointer(GetWindowLong(FhWndHeader, GWL_WNDPROC));
           SetWindowLong(FhWndHeader, GWL_WNDPROC, LONG_PTR(FhHeaderProc));
         end;
       end;
-    end;
   except
     Application.HandleException(Self);
   end;
@@ -924,7 +917,7 @@ begin
     if not FCommonData.FCacheBmp.Empty and not StyleChanging then begin
       RightPos := 0;
       Count := Header_GetItemCount(FhWndHeader) - 1;
-      if Count > -1 then
+      if Count >= 0 then
         // Draw Columns Headers
         for i := 0 to Count do begin
           rc := GetHeaderColumnRect(i);
@@ -1018,12 +1011,12 @@ begin
       else
         gWidth := SmallImages.Width + 4;
 
-      if item.fmt and HDF_SORTDOWN = HDF_SORTDOWN then begin
+      if item.fmt and HDF_SORTDOWN <> 0 then begin
         ArrowSide := asBottom;
         ArrowIndex := SkinData.SkinManager.ConstData.ScrollBtns[asBottom].GlyphIndex;
       end
       else
-        if item.fmt and HDF_SORTUP = HDF_SORTUP then begin
+        if item.fmt and HDF_SORTUP <> 0 then begin
           ArrowSide := asTop;
           ArrowIndex := SkinData.SkinManager.ConstData.ScrollBtns[asTop].GlyphIndex;
         end
@@ -1034,7 +1027,7 @@ begin
 
       if ArrowIndex <> -2 then
         if ArrowIndex >= 0 then
-          ArrowSize := MkSize(WidthOfImage(SkinData.SkinManager.ma[ArrowIndex]) + 6, HeightOfImage(SkinData.SkinManager.ma[ArrowIndex]))
+          ArrowSize := MkSize(SkinData.SkinManager.ma[ArrowIndex].Width + 6, SkinData.SkinManager.ma[ArrowIndex].Height)
         else
           ArrowSize := MkSize(6, 3)
       else
@@ -1043,7 +1036,7 @@ begin
       {$IFDEF TNTUNICODE}GetTextExtentPoint32W{$ELSE}GetTextExtentPoint32{$ENDIF}(TempBmp.Canvas.Handle, PacChar(ws), Length(ws), ts);
       inc(ts.cx, 6);
       rWidth := WidthOf(ControlRect, True) - 6;
-      case (Item.fmt and $0ff) of
+      case Item.fmt and $0ff of
         HDF_CENTER:
           if ts.cx + gWidth + ArrowSize.cx + 6 >= rWidth then begin
             TextRc.Left := gWidth + 6;
@@ -1070,26 +1063,26 @@ begin
       if ArrowIndex >= 0 then
         DrawSkinGlyph(TempBmp, Point(TextRc.Right + 6, (HeightOf(TextRc) - ArrowSize.cy) div 2), State, 1, SkinData.SkinManager.ma[ArrowIndex], MakeCacheInfo(TempBmp))
       else
-        if ArrowIndex = -1 then begin
+        if (ArrowIndex < 0) and (ArrowSide <> asLeft) then begin
           gR.Left := TextRc.Right + 6;
           gR.Top := (HeightOf(TextRc) - ArrowSize.cy) div 2;
           gR.Right := gR.Left + 6;
           gR.Bottom := gR.Top + 3;
           C := SkinData.SkinManager.gd[si].Props[min(State, ac_MaxPropsIndex)].FontColor.Color;
-          DrawColorArrow(TempBmp.Canvas, C, gR, ArrowSide);
+          DrawColorArrow(TempBmp, C, gR, ArrowSide);
         end;
 
-      if (State = 2) then
+      if State = 2 then
         OffsetRect(TextRc, 1, 1);
 
       if UseRightToLeftReading then
         Flags := Flags or DT_RTLREADING;
 
-      acWriteTextEx(TempBmp.Canvas, PacChar(ws), True, TextRc, Flags, si, (State <> 0), SkinData.SkinManager);
-      if (item.iImage <> -1) then
+      acWriteTextEx(TempBmp.Canvas, PacChar(ws), True, TextRc, Flags, si, State <> 0, SkinData.SkinManager);
+      if item.iImage >= 0 then
         if (SmallImages is TsAlphaImageList) and SkinData.SkinManager.Effects.DiscoloredGlyphs then begin
           if State = 0 then
-            if si <> -1 then
+            if si >= 0 then
               C := FCommonData.SkinManager.gd[si].Props[0].Color
             else
               C := clBtnFace
@@ -1134,7 +1127,7 @@ end;
 procedure TsCustomListView.WMHitTest(var Message: TMessage);
 begin
   inherited;
-  if FCommonData.Skinned and (HoverColIndex > -1) and FHighLightHeaders then begin
+  if FCommonData.Skinned and (HoverColIndex >= 0) and FHighLightHeaders then begin
     HoverColIndex := -2;
     PaintHeader;
   end;
@@ -1168,7 +1161,7 @@ begin
   else begin
     DefaultDraw := False;
     if not StyleChanging and not (Stage in [cdPostErase, cdPostPaint]) then begin
-      if (Stage in [cdPreErase, cdPrePaint]) then begin
+      if Stage in [cdPreErase, cdPrePaint] then begin
         DefaultDraw := True;
         if SkinData.Skinned then begin
           if InUpdating(FCommonData) then
@@ -1249,7 +1242,7 @@ end;
 
 procedure TsCustomListView.SelectItem(const Index: Integer);
 begin
-  if (Index > -1) and (Index < Items.Count) then begin
+  if IsValidIndex(Index, Items.Count) then begin
     TListItem(Items[Index]).Selected := True;
     TListItem(Items[Index]).Focused := True;
     SendMessage(Handle, LVM_ENSUREVISIBLE, Index, 0);
@@ -1280,18 +1273,20 @@ end;
 
 procedure TsCustomListView.UpdateCanvasColors(Active, Selected: boolean);
 begin
-  if Selected then
-    Canvas.Font.Color := SkinData.SkinManager.GetHighLightFontColor(SkinData.FFocused or Active)
-  else
-    if SkinData.CustomFont then
-      Canvas.Font.Color := Font.Color
+  if (SkinData.SkinManager <> nil) and SkinData.SkinManager.CommonSkinData.Active then begin
+    if Selected then
+      Canvas.Font.Color := SkinData.SkinManager.GetHighLightFontColor(SkinData.FFocused or Active)
     else
-      Canvas.Font.Color := ColorToRGB(SkinData.SkinManager.gd[SkinData.SkinIndex].Props[integer(SkinData.FFocused or Active)].FontColor.Color);
+      if SkinData.CustomFont then
+        Canvas.Font.Color := Font.Color
+      else
+        Canvas.Font.Color := ColorToRGB(SkinData.SkinManager.gd[SkinData.SkinIndex].Props[integer(SkinData.FFocused or Active)].FontColor.Color);
 
-  if SkinData.CustomColor then
-    Canvas.Brush.Color := Color
-  else
-    Canvas.Brush.Color := ColorToRGB(SkinData.SkinManager.gd[SkinData.SkinIndex].Props[integer(SkinData.FFocused or Active)].Color);
+    if SkinData.CustomColor then
+      Canvas.Brush.Color := Color
+    else
+      Canvas.Brush.Color := ColorToRGB(SkinData.SkinManager.gd[SkinData.SkinIndex].Props[integer(SkinData.FFocused or Active)].Color);
+  end;
 end;
 
 
@@ -1483,7 +1478,7 @@ var
         cw := 0;
 
       if Item.ImageIndex >= 0 then begin
-        if (ImgList <> nil) then begin
+        if ImgList <> nil then begin
           cx := ImgList.Width;
           cy := ImgList.Height;
         end
@@ -1499,9 +1494,8 @@ var
             cx := 0;
         end;
 
-        if (cx <> 0) and
-              ListView_GetItemRect(Handle, Item.Index, aImage, LVIR_ICON) and not IsRectEmpty(aImage) then begin
-          if (Win32MajorVersion > 5) then // if Vista or newer
+        if (cx <> 0) and ListView_GetItemRect(Handle, Item.Index, aImage, LVIR_ICON) and not IsRectEmpty(aImage) then begin
+          if Win32MajorVersion > 5 then // if Vista or newer
             if vStyle in [vsList, vsReport] then
               aImage.Left := aImage.Left + (WidthOf(aImage) - cx) div 2
             else
@@ -1524,7 +1518,7 @@ var
         if vStyle = vsIcon then
           if aImage.Right <> aImage.Left then begin
             aCheck := Item.DisplayRect(drIcon);
-            if (Win32MajorVersion > 5) then begin // if Vista and newer
+            if Win32MajorVersion > 5 then begin // if Vista and newer
               aCheck.Left := aCheck.Left + (WidthOf(aCheck) - LargeImages.Width - cw) div 2 - iRect.Left;
               aCheck.Top := iRect.Top + aImage.Top + (ImgList.Height - cw) div 2 - iRect.Top;
             end
@@ -1534,7 +1528,7 @@ var
             end;
           end
           else begin
-            if (Win32MajorVersion > 5) then // if Vista and newer
+            if Win32MajorVersion > 5 then // if Vista and newer
               aCheck.Top := 2
             else
               aCheck.Top := Item.DisplayRect(drLabel).Top - cw - 6;
@@ -1562,7 +1556,7 @@ var
         aCheck.Right := aCheck.Left;
       end;
 
-      if (StateImages <> nil) and (Item.StateIndex >= 0) and (Item.StateIndex < GetImageCount(StateImages)) then begin
+      if (StateImages <> nil) and IsValidIndex(Item.StateIndex, GetImageCount(StateImages)) then begin
         aState.Top := (h - StateImages.Height) div 2;
         aState.Bottom := aState.Top + StateImages.Height;
         aState.Left := aCheck.Right;
@@ -1575,7 +1569,7 @@ var
       if CheckBoxes then
         inc(aState.Left, 2);
 
-      if (SmallImages <> nil) then begin
+      if SmallImages <> nil then begin
         cx := ImgList.Width;
         cy := ImgList.Height;
         aImage.Top := (h - cy) div 2;
@@ -1632,7 +1626,7 @@ var
     InitRects(rImage, rCheck, rText, rSelect, rState);
     aRect := MkRect(Bmp.Width - integer(GridLines), Bmp.Height - integer(GridLines));
     if bSelected then
-      if (sNdx < 0) then
+      if sNdx < 0 then
         FillDC(Bmp.Canvas.Handle, aRect, Canvas.Brush.Color)
       else begin
         PaintItem(sNdx, CI, True, integer(Focused or (cdsFocused in State)), aRect, Point(iRect.Left, iRect.Top), Bmp, SkinData.SkinManager);
@@ -1641,7 +1635,7 @@ var
           if BorderStyle <> bsNone then
             OffsetRect(fText, 2, 2);
 
-          BlendTransRectangle(Bmp, 0, 0, FCommonData.FCacheBmp, fText, 0.5);
+          BlendTransRectangle(Bmp, 0, 0, FCommonData.FCacheBmp, fText, 128);
         end;
       end
     else
@@ -1651,8 +1645,8 @@ var
     ACanvas.Brush.Color := Canvas.Brush.Color;
     SetBkMode(ACanvas.Handle, TRANSPARENT);
 
-    if (StateImages <> nil) then begin
-      if (Item.StateIndex >= 0) and (Item.StateIndex < GetImageCount(StateImages)) then begin
+    if StateImages <> nil then begin
+      if IsValidIndex(Item.StateIndex, GetImageCount(StateImages)) then begin
         fText.Left := 2;
         cw := StateImages.Width + 2;
         fText.Right := fText.Left + cw;
@@ -1666,7 +1660,7 @@ var
             FillDC(Bmp.Canvas.Handle, fText, Canvas.Brush.Color);
 
           if Item.StateIndex >= 0 then
-            StateImages.Draw(Bmp.Canvas, 2, 0, Item.StateIndex, True);
+            StateImages.Draw(Bmp.Canvas, rState.Left + 2, (Bmp.Height - StateImages.Height) div 2, Item.StateIndex, True);
         end
         else
           if Item.StateIndex >= 0 then begin
@@ -1697,7 +1691,7 @@ var
 
     if rText.Right > rText.Left then begin
       inc(rText.Left);
-      if (sNdx = -1) or (SkinData.CustomFont) then
+      if (sNdx < 0) or (SkinData.CustomFont) then
         if SkinData.CustomFont then
           AcDrawText(ACanvas.Handle, {$IFDEF TNTUNICODE}TTntListItem{$ENDIF}(Item).Caption, rText, DrawStyle)
         else begin
@@ -1709,9 +1703,7 @@ var
     end;
 
     if GridLines and (Mouse.Capture = 0) {If column is not resized} then begin // Draw grid horz line
-//      if SkinData.SkinManager.Options.ChangeSysColors then
       ACanvas.Pen.Color := SkinData.SkinManager.CommonSkinData.SysInactiveBorderColor;
-//      ACanvas.Pen.Color := clBtnFace;//ColorToRGB(clBtnFace);//clMenuBar;//clScrollBar;
       ACanvas.MoveTo(0, Bmp.Height - 1);
       ACanvas.LineTo(Width, Bmp.Height - 1);
     end;
@@ -1723,7 +1715,7 @@ var
     for i := 0 to Length(SectionOrder) - 1 do begin
       ActNdx := SectionOrder[i];
       if (ActNdx <> 0) and (Columns[i].Width <> 0) then begin
-        if (ActNdx <= Columns.Count - 1) then begin
+        if ActNdx <= Columns.Count - 1 then begin
           b := True;
           NewAdvancedCustomDrawSubItem(Self, Item, ActNdx - 1, State, Stage, b, Bmp)
         end;
@@ -1771,9 +1763,9 @@ var
         SetBkMode(ACanvas.Handle, TRANSPARENT);
       end
       else begin
-        if (Win32MajorVersion >= 6) then begin
+        if Win32MajorVersion >= 6 then begin
           cRect := rText;
-          if (vStyle = vsReport) then begin
+          if vStyle = vsReport then begin
             inc(cRect.Left, ColLeft);
             cRect.Right := cRect.Left + ColWidth;
           end;
@@ -1787,7 +1779,7 @@ var
           cRect := iRect;
           cw := integer(BorderStyle <> bsNone) * (1 + integer(Ctl3d));
           OffsetRect(cRect, cw, cw);
-          BlendTransRectangle(Bmp, 0, 0, FCommonData.FCacheBmp, cRect, 0.5);
+          BlendTransRectangle(Bmp, 0, 0, FCommonData.FCacheBmp, cRect, 128);
           OffsetRect(cRect, -cw, -cw);
         end;
         SetBkMode(ACanvas.Handle, TRANSPARENT);
@@ -1801,10 +1793,7 @@ var
         inc(rText.Left);
         InflateRect(rText, -1, 0);
       end;
-//      if (vStyle = vsIcon) and not (bSelected and not bHot) then
-//        sTemp := EllipsifyEnd(ACanvas.Handle, sTemp, WidthOf(rText), HeightOf(rText), DrawStyle);
-
-      if (sNdx = -1) or (SkinData.CustomFont) then begin
+      if (sNdx < 0) or SkinData.CustomFont then begin
         SetTextColor(Bmp.Canvas.Handle, ColorToRGB(Canvas.Font.Color));
         AcDrawText(Bmp.Canvas.Handle, {$IFDEF TNTUNICODE}TTntListItem{$ENDIF}(Item).Caption, rText, DrawStyle);
       end
@@ -1813,9 +1802,9 @@ var
         if not RowSelect then begin
 //          Canvas.Font.Color := Font.Color;
           ACanvas.Font.Color := Canvas.Font.Color;
-        end;             
+        end;
       end;
-      if bSelected and (Focused) and (sNdx < 0) then
+      if bSelected and Focused and (sNdx < 0) then
         DrawFocusRect(ACanvas.Handle, rText);
     end;
 {    if bSelected and Focused then
@@ -1823,7 +1812,7 @@ var
     else          }
       iDrawStyle := dsNormal;
 
-    if (StateImages <> nil) and Between(Item.StateIndex, 0, GetImageCount(StateImages) - 1) and (rState.Left <> rState.Right) {and (vStyle = vsList)} then
+    if (StateImages <> nil) and IsValidIndex(Item.StateIndex, GetImageCount(StateImages)) and (rState.Left <> rState.Right) {and (vStyle = vsList)} then
 {$IFDEF DELPHI6UP}
       StateImages.Draw(Bmp.Canvas, rState.Left, rState.Top, Item.StateIndex, iDrawStyle, itImage)
 {$ELSE}
@@ -1833,8 +1822,8 @@ var
       if CheckBoxes then
         acDrawCheck(rCheck, sConst.CheckBoxStates[integer(Item.Checked)], True, Bmp, MakeCacheInfo(Bmp), SkinData.SkinManager, acSmallCheckBoxes);
 
-    if (Item.ImageIndex >= 0) then begin
-      if (rImage.Right > rImage.Left) then begin
+    if Item.ImageIndex >= 0 then begin
+      if rImage.Right > rImage.Left then begin
         if ImgList <> nil then
 {$IFDEF DELPHI6UP}
           ImgList.Draw(Bmp.Canvas, rImage.Left, rImage.Top, Item.ImageIndex, iDrawStyle, itImage)
@@ -1852,7 +1841,7 @@ var
         end;
       end;
     end;
-    if (vStyle = vsReport) then begin
+    if vStyle = vsReport then begin
       if GridLines and (Mouse.Capture = 0) {If column is not in resizing}then begin // Draw grid horz line
 //        ACanvas.Pen.Color := ColorToRGB(clBtnFace);//$EFEFEF;
         ACanvas.Pen.Color := SkinData.SkinManager.CommonSkinData.SysInactiveBorderColor;
@@ -1879,12 +1868,11 @@ var
     end;
   end;
 
-
   function PaintThisItem: boolean;
   begin
     Result := False;
     ColNdx := GetColumnIndex;
-    if (vStyle = vsReport) then begin
+    if vStyle = vsReport then begin
       ColWidth := ListView_GetColumnWidth(Handle, 0);
       ColLeft := iRect.Left + ColumnLeft(ColNdx);
     end
@@ -1921,7 +1909,7 @@ begin
       if not DefaultDraw then
         Exit;
     end;
-    if (Stage in [cdPrePaint, cdPostPaint]) then begin
+    if Stage in [cdPrePaint, cdPostPaint] then begin
       bSelected := Item.Selected and not (HideSelection and not Focused);
       cw := 0;
       CI.Bmp := nil;
@@ -1939,9 +1927,9 @@ begin
 
         Bmp := CreateBmp32(iRect);
         ACanvas := Bmp.Canvas;
-        aRect := MkRect(Bmp);//.Width - integer(GridLines), Bmp.Height - integer(GridLines));
+        aRect := MkRect(Bmp);
         ACanvas.Brush.Color := Canvas.Brush.Color;
-        ACanvas.FillRect(aRect); // Fill if other color has been defined
+        ACanvas.FillRect(aRect);
         ACanvas.Font.Assign(Canvas.Font);
         DefaultDraw := not PaintThisItem;
         BitBlt(TAccessCanvas(Canvas).FHandle, iRect.Left, iRect.Top, Bmp.Width, Bmp.Height, Bmp.Canvas.Handle, 0, 0, SRCCOPY);
@@ -1954,7 +1942,7 @@ end;
 
 function TsCustomListView.GetImageList: TCustomImageList;
 begin
-  if (ViewStyle in [vsIcon]) then
+  if ViewStyle in [vsIcon] then
     Result := LargeImages
   else
     Result := SmallImages;
@@ -2013,7 +2001,6 @@ begin
         Exit;
     end;
     if SubItem < Columns.Count - 1 then begin
-//    if SubItem < Item.SubItems.Count then begin
       if Assigned(OnCustomDrawSubItem) {and not bSelected} then begin
         OldDC := Canvas.Handle;
         Canvas.Handle := Bmp.Canvas.Handle;
@@ -2035,9 +2022,9 @@ begin
 
       bRect := mkRect(Bmp);
       if SkinData.Skinned then
-        if (Stage in [cdPrePaint, cdPostPaint]) then begin
+        if Stage in [cdPrePaint, cdPostPaint] then begin
           ColNdx := SubItem + 1;
-          if (Columns.Count > 0) then begin
+          if Columns.Count > 0 then begin
             SetLength(SectionOrder, Columns.Count);
             Header_GetOrderArray(FhWndHeader, Columns.Count, PInteger(SectionOrder));
             for iNdx := 0 to Columns.Count - 1 do
@@ -2064,7 +2051,7 @@ begin
           if SubItem < Item.SubItems.Count then begin
             iNdx := Item.SubItemImages[SubItem];
             if Assigned(SmallImages) then
-              if (iNdx <> -1) and (iNdx < GetImageCount(SmallImages)) then begin
+              if IsValidIndex(iNdx, GetImageCount(SmallImages)) then begin
                 SmallImages.Draw(Bmp.Canvas, fText.Left + 1, fText.Top + (fText.Bottom - fText.Top - SmallImages.Height) div 2, iNdx);
                 inc(fText.Left, SmallImages.Width + 2);
               end;
@@ -2077,6 +2064,7 @@ begin
                 if Bmp <> nil then begin
                   Bmp.Canvas.Font.Color := AverageColor(Bmp.Canvas.Font.Color, Color);
                   Bmp.Canvas.Brush.Style := bsClear;
+                  Bmp.Canvas.Brush.Color := OldColor;
                 end;
 
               SelectObject(Bmp.Canvas.Handle, Canvas.Font.Handle);
@@ -2118,7 +2106,7 @@ begin
                     end;
                   end
                   else
-                    Bmp.Canvas.Font.Color := Canvas.Font.Color;// SkinData.SkinManager.gd[SkinData.SkinIndex].Props[integer(Focused)].FontColor.Color;
+                    Bmp.Canvas.Font.Color := Canvas.Font.Color;
                 end
                 else
                   Bmp.Canvas.Font.Color := Canvas.Font.Color;
@@ -2130,8 +2118,8 @@ begin
                 AcDrawText(Bmp.Canvas.Handle, Item.SubItems[SubItem], fText, DrawStyle);
               end;
           end;
-          Canvas.Brush.Color := Bmp.Canvas.Brush.Color;
-          Canvas.Font.Color := Bmp.Canvas.Font.Color;
+          Canvas.Brush.Color := OldColor;//Bmp.Canvas.Brush.Color;
+          Bmp.Canvas.Font.Color := Canvas.Font.Color;
           DefaultDraw := False;
         end;
     end;
@@ -2174,13 +2162,13 @@ begin
 
   iteminfo.Mask := HDI_TEXT;
   iteminfo.pszText := buf;
-  iteminfo.cchTextMax := sizeof(buf)-1;
-  Header_GetItem( hwndHeader, itemindex, iteminfo );
-  if CompareStr(Columns[itemindex].Caption, iteminfo.pszText ) = 0 then
+  iteminfo.cchTextMax := sizeof(buf) - 1;
+  Header_GetItem(hwndHeader, itemindex, iteminfo);
+  if CompareStr(Columns[itemindex].Caption, iteminfo.pszText) = 0 then
     Result := itemindex
   else
     for itemindex := 0 to Columns.count - 1 do
-      if CompareStr(Columns[itemindex].Caption, iteminfo.pszText ) = 0 then begin
+      if CompareStr(Columns[itemindex].Caption, iteminfo.pszText) = 0 then begin
         Result := itemindex;
         Exit;
       end;
@@ -2190,8 +2178,9 @@ end;
 function TsCustomListView.FindColumnWidth(const pHeader: pNMHdr): integer;
 begin
   Result := -1;
-  if Assigned(PHDNotify( pHeader )^.pItem ) and ((PHDNotify( pHeader )^.pItem^.mask and HDI_WIDTH) <> 0) then
-    Result := PHDNotify( pHeader )^.pItem^.cxy;
+  with PHDNotify(pHeader)^ do
+    if Assigned(pItem) and (pItem^.mask and HDI_WIDTH <> 0) then
+      Result := pItem^.cxy;
 end;
 
 
@@ -2245,7 +2234,7 @@ begin
         nRect.Right  := min(R.Right,  cRect.Right);
         nRect.Bottom := min(R.Bottom, cRect.Bottom);
         if PtInRect(nRect, p) then begin
-          if (HotItem >= 0) and (HotItem < Items.Count) and (HotItem <> Item.Index) then begin // Repaint prev Hot Item
+          if IsValidIndex(HotItem, Items.Count) and (HotItem <> Item.Index) then begin // Repaint prev Hot Item
             cRect := Items[HotItem].DisplayRect(drBounds);
             InvalidateRect(Handle, @cRect, True);
           end;

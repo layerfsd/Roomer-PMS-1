@@ -3,13 +3,13 @@ unit sMessages;
 
 interface
 
-uses Controls {$IFDEF FPC}, LMessages{$ENDIF};
+uses Windows, Controls {$IFDEF FPC}, LMessages{$ENDIF};
 
-type                
+type
   TacSectionInfo = record
-    Name: string;
-    SkinIndex: integer;
-    RepaintNeeded: boolean;
+    siName: string;
+    siSkinIndex: integer;
+    siRepaintNeeded: boolean;
   end;
 
   PacSectionInfo = ^TacSectionInfo;
@@ -71,10 +71,42 @@ const
   AC_GETPOSCHANGING         = 64;
   AC_SETALPHA               = 65;
   AC_GETFONTINDEX           = 66;
-  AC_GETBORDERWIDTH         = 68;
+  AC_GETBORDERWIDTH         = 67;
+  AC_SETSCALE               = 68;
+  AC_GETSCALE               = 69;
 
   AC_GETOUTRGN              = 70;
   AC_COPYDATA               = 71;
+
+  AC_POPUPCLOSED            = 72;
+  AC_UPDATESHADOW           = 73;
+
+  AC_SKINCHANGED            = 74;
+  AC_SKINLISTCHANGED        = 75;
+
+  AC_GETBG_HI               = WPARAM(AC_GETBG           shl 16);
+  AC_REFRESH_HI             = WPARAM(AC_REFRESH         shl 16);
+  AC_UPDATING_HI            = WPARAM(AC_UPDATING        shl 16);
+  AC_SETNEWSKIN_HI          = WPARAM(AC_SETNEWSKIN      shl 16);
+  AC_GETSERVICEINT_HI       = WPARAM(AC_GETSERVICEINT   shl 16);
+  AC_REMOVESKIN_HI          = WPARAM(AC_REMOVESKIN      shl 16);
+  AC_PREPARECACHE_HI        = WPARAM(AC_PREPARECACHE    shl 16);
+  AC_BEGINUPDATE_HI         = WPARAM(AC_BEGINUPDATE     shl 16);
+  AC_ENDUPDATE_HI           = WPARAM(AC_ENDUPDATE       shl 16);
+  AC_PAINTOUTER_HI          = WPARAM(AC_PAINTOUTER      shl 16);
+  AC_SETBGCHANGED_HI        = WPARAM(AC_SETBGCHANGED    shl 16);
+  AC_GETCONTROLCOLOR_HI     = WPARAM(AC_GETCONTROLCOLOR shl 16);
+  AC_GETDEFINDEX_HI         = WPARAM(AC_GETDEFINDEX     shl 16);
+  AC_CLEARCACHE_HI          = WPARAM(AC_CLEARCACHE      shl 16);
+  AC_SETSCALE_HI            = WPARAM(AC_SETSCALE        shl 16);
+  AC_GETSKINDATA_HI         = WPARAM(AC_GETSKINDATA     shl 16);
+  AC_MOUSELEAVE_HI          = WPARAM(AC_MOUSELEAVE      shl 16);
+  AC_GETPROVIDER_HI         = WPARAM(AC_GETPROVIDER     shl 16);
+  AC_ENDPARENTUPDATE_HI     = WPARAM(AC_ENDPARENTUPDATE shl 16);
+  AC_GETSKINSTATE_HI        = WPARAM(AC_GETSKINSTATE    shl 16);
+  AC_CTRLHANDLED_HI         = WPARAM(AC_CTRLHANDLED     shl 16);
+  AC_GETFONTINDEX_HI        = WPARAM(AC_GETFONTINDEX    shl 16);
+  AC_STOPFADING_HI          = WPARAM(AC_STOPFADING      shl 16);
 
   WM_DRAWMENUBORDER         = CN_NOTIFY + 101;
   WM_DRAWMENUBORDER2        = CN_NOTIFY + 102;

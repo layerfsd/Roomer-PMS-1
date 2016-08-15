@@ -218,7 +218,7 @@ var
   var
     ResClr: TsColor;
   begin
-    if BetWeen(y, 0, Bmp.Height - 1) and BetWeen(x, 0, Bmp.Width - 1) then begin
+    if IsValidIndex(y, Bmp.Height) and IsValidIndex(x, Bmp.Width) then begin
       ResClr := GetAPixel(Bmp, iff(Swapped, y, x), iff(Swapped, x, y));
       ResClr.R := Round(ResClr.R * (1 - c) + C_.R * c);
       ResClr.G := Round(ResClr.G * (1 - c) + C_.G * c);
@@ -532,7 +532,7 @@ var
       if BGInfo.BgType = btFill then
         FillDC(DC, R, BGInfo.Color)
       else
-        FillDC(DC, R, TsHackedControl(Parent).Color);
+        FillDC(DC, R, TsAccessControl(Parent).Color);
   end;
 
 begin
@@ -610,7 +610,7 @@ var
 
   procedure BlendTransBmpByMask(SrcBmp, MskBmp: Graphics.TBitMap; const BlendColor: TsColor);
   var
-    S0, S: PRGBAArray;
+    S0, S: PRGBAArray_;
     DeltaS, X, Y: Integer;
   begin
     if InitLine(MskBmp, Pointer(S0), DeltaS) then
@@ -973,7 +973,7 @@ begin
       Images.RegisterChanges(FImageChangeLink);
       Images.FreeNotification(Self);
     end;
-    if (Visible or (csDesigning in ComponentState)) and not (csLoading in ComponentState) then
+    if (Visible or ([csDesigning, csLoading] * ComponentState = [])) then
       Repaint;
   end;
 end;

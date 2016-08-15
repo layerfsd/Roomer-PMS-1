@@ -1,7 +1,7 @@
 unit acDBGrid;
 {$I sDefs.inc}
 //{$DEFINE LOGGED}
-
+//+
 interface
 
 uses
@@ -436,6 +436,7 @@ end;
 
 constructor TsDBGrid.Create(Owner: TComponent);
 begin
+  FCommonData := TsScrollWndData.Create(Self, True);
   inherited Create(Owner);
   Columns.State := csDefault;
   UsesBitmap;
@@ -448,7 +449,6 @@ begin
   FTitleButtonDown := -1;
   FOldTitleButtonDown := -1;
   FCellButtonDown := -1;
-  FCommonData := TsScrollWndData.Create(Self, True);
   FCommonData.COC := COC_TsDBGrid;
 end;
 
@@ -458,9 +458,7 @@ begin
   if ListSW <> nil then
     FreeAndNil(ListSW);
 
-  if Assigned(FCommonData) then
-    FreeAndNil(FCommonData);
-
+  FreeAndNil(FCommonData);
   ReleaseBitmap;
   inherited;
 end;
@@ -519,7 +517,7 @@ var
   i: integer;
   ResizedColumn: integer;
 begin
-  if FColumnStretch and not (csLoading in ComponentState) and (not FExecSizing) then begin
+  if FColumnStretch and not (csLoading in ComponentState) and not FExecSizing then begin
     FExecSizing := True;
     ResizedColumn := -1;
     for i := 0 to Columns.Count - 1 do
@@ -528,7 +526,7 @@ begin
         break;
       end;
 
-    if ResizedColumn <> -1 then begin
+    if ResizedColumn >= 0 then begin
       if ColWidths[ResizedColumn + IndicatorOffset] <= TacDBColumn(Columns[ResizedColumn]).MinWidth then
         ColWidths[ResizedColumn + IndicatorOffset] := TacDBColumn(Columns[ResizedColumn]).MinWidth;
 
@@ -537,7 +535,7 @@ begin
     FExecSizing := False;
   end
   else
-    if not (csLoading in ComponentState) and (not FExecSizing) then
+    if not (csLoading in ComponentState) and not FExecSizing then
       CalcTableSpacePercent;
 
   inherited;
@@ -573,7 +571,7 @@ begin
         if TacDBColumn(Columns[i]).Visible then
           Dec(GridSize, GridLineWidth);
 
-    if ResizedColumn > -1 then begin
+    if ResizedColumn >= 0 then begin
       ColumnsSize := 0;
       UnresizedSize := 0;
       MinimizeRest := False;
@@ -695,12 +693,12 @@ begin
           Brush.Style := bsSolid;
           FillRect(B);
           SetBkMode(Handle, TRANSPARENT);
-          if (ACanvas.CanvasOrientation = coRightToLeft) then
+          if ACanvas.CanvasOrientation = coRightToLeft then
             ChangeBiDiModeAlignment(Alignment);
 
           DrawText(Handle, PChar(Text), Length(Text), R, AlignFlags[Alignment] or RTL[ARightToLeft]);
         end;
-        if (ACanvas.CanvasOrientation = coRightToLeft) then begin
+        if ACanvas.CanvasOrientation = coRightToLeft then begin
           Hold := ARect.Left;
           ARect.Left := ARect.Right;
           ARect.Right := Hold;
@@ -718,7 +716,7 @@ var
   aCellRect: TRect;
 begin
   aCellRect := CellRect(Cell.X, Cell.Y);
-  if (aCellRect.Right - aCellRect.Left < aCellRect.Bottom - aCellRect.Top + 5) then
+  if aCellRect.Right - aCellRect.Left < aCellRect.Bottom - aCellRect.Top + 5 then
     Result := MkRect
   else begin
     Result.Left := aCellRect.Right - (aCellRect.Bottom - aCellRect.Top) + 1;
@@ -792,6 +790,19 @@ begin
 end;
 
 
+function IsDigids(const Value: string): boolean;
+var
+  i: integer;
+begin
+  Result := True;
+  for i := 0 to Length(Value) - 1 do
+    if not (Value[i] in ['1'..'0']) then begin
+      Result := False;
+      Exit;
+    end;
+end;
+
+
 procedure TsDBGrid.DrawColumnCell(const Rect: TRect; DataCol: integer; Column: TColumn; State: TGridDrawState);
 var
   TextWidth, ThreeDotWidth, ColWidth, SelNdx, TextMargin, i: integer;
@@ -840,7 +851,7 @@ begin
     ColWidth := ColWidth - (Rect.Bottom - Rect.Top);
 
   if TextWidth > ColWidth then begin
-    if Field is TNumericField then begin
+    if (Field is TNumericField) and IsDigids(Value) then begin
       for i := 1 to Length(Value) do
         if (Value[i] >= '0') and (Value[i] <= '9') then
           Value[i] := '#';
@@ -921,7 +932,7 @@ begin
           CI.FillColor := Color;
           CI.FillRect := MkRect;
           CI.Ready := False;
-          PaintItem(SelNdx, '', CI, True, 1, Rect, MkPoint, Canvas.Handle, SkinData.SkinManager);
+          PaintItem(SelNdx, CI, True, 1, Rect, MkPoint, Canvas.Handle, SkinData.SkinManager);
           Canvas.Font.Color := SkinData.SkinManager.GetHighLightFontColor;
         end
         else begin
@@ -942,7 +953,7 @@ begin
 
   inherited DrawColumnCell(Rect, DataCol, Column, State);
   if isDrawButton then
-    if FCellButtonDown > -1 then
+    if FCellButtonDown >= 0 then
       DrawButton(Col, Row, FCellButtonPressed)
     else
       DrawButton(COl, Row, False);
@@ -955,7 +966,7 @@ begin
     Result := MkRect
   else begin
     Result.Top    := Level * (DefaultRowHeight + 1);
-    Result.Bottom := Result.Top + (DefaultRowHeight + 1);
+    Result.Bottom := Result.Top + DefaultRowHeight + 1;
     Result.Left   := 0;
     Result.Right  := 0;
     if dgRowLines in Options then
@@ -968,15 +979,13 @@ procedure TsDBGrid.CalcTitleLevel(Level: integer; var aRect: TRect);
 var
   X: TRect;
 begin
-  if Columns.Count = 0 then begin
-    aRect.Top   := 0;
-    aRect.Bottom:= 0;
-  end
+  if Columns.Count = 0 then
+    aRect.TopLeft := MkPoint
   else begin
     X := GetTitleLevel(Level);
     aRect.Top    := X.Top;
     aRect.Bottom := X.Bottom;
-  end;
+  end;                         
 end;
 
 
@@ -1027,7 +1036,7 @@ var
       iSkinNdx := -1;
 
     if iSkinNdx >= 0 then
-      PaintItem(iSkinNdx, '', CI, True, 0, ARect, MkPoint, Canvas.Handle, FCommonData.SkinManager)
+      PaintItem(iSkinNdx, CI, True, 0, ARect, MkPoint, Canvas.Handle, FCommonData.SkinManager)
     else
       FillDC(Canvas.Handle, ARect, SkinData.SkinManager.GetGlobalColor);
 
@@ -1082,7 +1091,7 @@ var
     else
       iSkinNdx := -1;
 
-    if (MasterCol = nil) then begin
+    if MasterCol = nil then begin
       if not (bSkinned {$IFDEF DELPHI7UP} or acThemesEnabled{$ENDIF}) then
         Canvas.FillRect(ARect);
 
@@ -1182,11 +1191,11 @@ var
       InflateRect(TextRect, -1, -1);
       if not lvRightBorder then begin
         inc(TextRect.Right);
-        if (dgColLines in Options) then
+        if dgColLines in Options then
           inc(TextRect.Right);
       end;
 
-      if CurLevel <> (CaptionDepth - 1) then begin
+      if CurLevel <> CaptionDepth - 1 then begin
         Canvas.Font := Self.TitleFont;
         Canvas.Brush.Color := Self.FixedColor;
         lvCaptionAligment := taLeftJustify;
@@ -1394,7 +1403,7 @@ begin
       FActiveRowSelected := False;
 
     if SkinData.Skinned then begin
-      if (ACol - IndicatorOffset) < 0 then begin
+      if ACol - IndicatorOffset < 0 then begin
         inc(ARect.Right);
         inc(ARect.Bottom);
         DrawIndicator(ARect);
@@ -1404,7 +1413,7 @@ begin
 
       if not (gdFixed in AState) then begin
         Canvas.Pen.Width := 1;
-        Canvas.Pen.color := MixColors(SkinData.SkinManager.Palette[pcEditText], SkinData.SkinManager.Palette[pcEditBG], 0.15);
+        Canvas.Pen.color := BlendColors(SkinData.SkinManager.Palette[pcEditText], SkinData.SkinManager.Palette[pcEditBG], 38);
         Canvas.Pen.style := psSolid;
         if dgColLines in Options then begin
           Canvas.MoveTo(aRect.Right, aRect.Top);
@@ -1480,9 +1489,9 @@ begin
           i := FTitleButtonDown;
           FTitleButtonDown := RawToDataColumn(Cell.X);
           FOldTitleButtonDown := FTitleButtonDown;
-          if i > -1 then
+          if i >= 0 then
             InvalidateCol(i + 1);
-            
+
           invalidatecol(FTitleButtonDown + 1);
         end;
       end;
@@ -1537,18 +1546,18 @@ begin
   else
     State := FGridState;
 
-  if FCellButtonDown > -1 then begin
+  if FCellButtonDown >= 0 then begin
     FCellButtonPressed := PtInRect(FCellButtonBRect, Point(x, y));
     DrawButton(FCellButtonCol,FCellButtonRow,FCellButtonPressed);
   end;
-  if (ssLeft in Shift) and (FOldTitleButtonDown > -1) then begin
+  if (ssLeft in Shift) and (FOldTitleButtonDown >= 0) then begin
     Rect := CalcTitleRect(Columns[FOldTitleButtonDown], 0, Col);
-    if (FTitleButtonDown = -1) and PtInRect(Rect, Point(X, Y)) then begin
+    if (FTitleButtonDown < 0) and PtInRect(Rect, Point(X, Y)) then begin
       FTitleButtonDown := FOldTitleButtonDown;
       InvalidateCol(FTitleButtonDown + 1);
     end
     else
-      if (FTitleButtonDown > -1) and ((Y < Rect.Top) or (Y > Rect.Bottom) or ((X < Self.Left) and
+      if (FTitleButtonDown >= 0) and ((Y < Rect.Top) or (Y > Rect.Bottom) or ((X < Self.Left) and
            (Columns[FTitleButtonDown].Index = 0)) or ((X > Self.Left + Self.Width) and
              (Columns[FTitleButtonDown].Index = Columns.Count - 1))) then begin
         Index := FTitleButtonDown + 1;
@@ -1579,22 +1588,24 @@ begin
   FTitleBarUp := False;
   if not (State in [gsColSizing]) and DataLink.Active and not FExecColAjust then begin
     Cell := MouseCoord(X,Y);
-    if not (dgRowSelect in Options) then if FCellButtonDown > -1 then begin
-      DrawButton(Cell.X,Cell.Y,False);
-      if FCellButtonDown = RawToDataColumn(Cell.X) then
-        if FCellButtonPressed then begin
-          FCellButtonDown := -1;
-          FCellButtonRow := -1;
-          FCellButtonCol := -1;
-          invalidate;
-        end;
-    end;
+    if not (dgRowSelect in Options) then
+      if FCellButtonDown >= 0 then begin
+        DrawButton(Cell.X,Cell.Y,False);
+        if FCellButtonDown = RawToDataColumn(Cell.X) then
+          if FCellButtonPressed then begin
+            FCellButtonDown := -1;
+            FCellButtonRow := -1;
+            FCellButtonCol := -1;
+            invalidate;
+          end;
+      end;
+
     FCellButtonDown := -1;
     FCellButtonRow := -1;
     FCellButtonCol := -1;
     LastBtn := FTitleButtonDown;
     FOldTitleButtonDown := -1;
-    if FTitleButtonDown > -1 then begin
+    if FTitleButtonDown >= 0 then begin
       invalidatecol(FTitleButtonDown + 1);
       FTitleButtonDown := - 1;
     end;
@@ -1642,7 +1653,7 @@ begin
         FHeaderHeight := Cur;
     end;
     aHeight := (DefaultRowHeight + 1) * FHeaderHeight;
-    RowHeights[0]:= aHeight - 1;
+    RowHeights[0] := aHeight - 1;
   end;
 end;
 
@@ -1699,7 +1710,7 @@ begin
   Rect := CalcTitleRect(Column, Index, MasterCol);
   Index := GetCaptionDepth(Column.Title.Caption, FLevelDelimiterChar);
   if Index > 0 then begin
-    Index := (Index-1) * (DefaultRowHeight + 1);
+    Index := (Index - 1) * (DefaultRowHeight + 1);
     Rect.Top := Index;
     Rect.Bottom := CalcFilterBar(Column).top;
     Result := PtInRect(Rect, Point(X, Y));
@@ -1726,7 +1737,7 @@ end;
 
 function TsDBGrid.CanEditShow: boolean;
 begin
-  if (Columns.Count > 0) and Assigned(SelectedField) and ((SelectedField is TMemoField) and TacDBColumn(SelectedField).CanShowBtn) then
+  if (Columns.Count > 0) and (SelectedField is TMemoField) and TacDBColumn(SelectedField).CanShowBtn then
     Result := False
   else
     Result := inherited CanEditShow;
@@ -1828,7 +1839,7 @@ begin
         end;
 
         AC_SETNEWSKIN:
-          if (LongWord(Message.LParam) = LongWord(SkinData.SkinManager)) then begin
+          if LongWord(Message.LParam) = LongWord(SkinData.SkinManager) then begin
             if ListSW = nil then
               RefreshGridScrolls(SkinData, ListSW);
 
@@ -1837,7 +1848,7 @@ begin
           end;
 
         AC_REFRESH:
-          if (LongWord(Message.LParam) = LongWord(SkinData.SkinManager)) then begin
+          if LongWord(Message.LParam) = LongWord(SkinData.SkinManager) then begin
             CommonWndProc(Message, FCommonData);
             if FCommonData.Skinned and not (csLoading in ComponentState) then begin
               RefreshGridScrolls(SkinData, ListSW);
@@ -1847,13 +1858,13 @@ begin
           end;
 
         AC_REMOVESKIN:
-          if (LongWord(Message.LParam) = LongWord(SkinData.SkinManager)) and (SkinData.FOwnerControl <> nil) and (SkinData.FOwnerControl is TCustomGrid) then begin
+          if (LongWord(Message.LParam) = LongWord(SkinData.SkinManager)) and (SkinData.FOwnerControl is TCustomGrid) then begin
             Color := clWindow;
             Font.Color := clWindowText;
             SkinData.SkinIndex := -1;
             FreeAndNil(ListSW);
             RedrawWindow(Handle, nil, 0, RDW_FRAME or RDW_INVALIDATE or RDW_UPDATENOW);
-            SetWindowPos(Handle, 0, 0, 0, 0, 0, SWP_NOSIZE or SWP_NOMOVE or SWP_NOZORDER or SWP_NOCOPYBITS or SWP_NOSENDCHANGING or SWP_NOREPOSITION or SWP_FRAMECHANGED);
+            SetWindowPos(Handle, 0, 0, 0, 0, 0, SWPA_FRAMECHANGED);
           end;
 
         AC_GETDEFINDEX: begin
@@ -1891,8 +1902,8 @@ begin
 
         MoveWindowOrg(DC, Offset, Offset);
         IntersectClipRect(DC, 0, 0,
-                          SkinData.FCacheBmp.Width  {- 2 * cxLeftEdge} - integer(sBarVert.fScrollVisible) * GetScrollMetric(sBarVert, SM_SCROLLWIDTH),
-                          SkinData.FCacheBmp.Height {- 2 * cxLeftEdge} - integer(sBarHorz.fScrollVisible) * GetScrollMetric(sBarHorz, SM_SCROLLWIDTH));
+                          SkinData.FCacheBmp.Width  - integer(sBarVert.fScrollVisible) * GetScrollMetric(sBarVert, SM_SCROLLWIDTH),
+                          SkinData.FCacheBmp.Height - integer(sBarHorz.fScrollVisible) * GetScrollMetric(sBarHorz, SM_SCROLLWIDTH));
         SendMessage(CtrlHandle, WM_PAINT, WParam(DC), 0);
         RestoreDC(DC, SavedDC);
         SkinData.CtrlSkinState := SkinData.CtrlSkinState and not ACS_PRINTING;
@@ -1925,7 +1936,7 @@ begin
       try
         GetClipBox(DC, R);
         Paint;
-        bWidth := integer(SkinData.CtrlSkinState and ACS_PRINTING = ACS_PRINTING) * 2;
+        bWidth := integer(SkinData.CtrlSkinState and ACS_PRINTING <> 0) * 2;
         BitBlt(DC, bWidth, bWidth, Width, Height, Bmp.Canvas.Handle, 0, 0, SRCCOPY);
       finally
         _TCustomControl(Self).FCanvas := SavedCanvas;

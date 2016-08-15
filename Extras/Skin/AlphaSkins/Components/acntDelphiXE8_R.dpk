@@ -131,6 +131,9 @@ contains
   acWebBrowser in 'acWebBrowser.pas',
   acWB in 'acWB.pas',
   acMeter in 'acMeter.pas',
+  acPopupCtrls in 'acPopupCtrls.pas',
+  acPopupController in 'acPopupController.pas',
+  acntTypes in 'acntTypes.pas',
   acZLibEx in 'acZLibEx.pas';
 
 end.

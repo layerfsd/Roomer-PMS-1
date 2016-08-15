@@ -1,6 +1,6 @@
 unit sCheckListBox;
 {$I sDefs.inc}
-
+//+
 {$T-,H+,X+}
 
 interface
@@ -28,6 +28,7 @@ type
     FAllowGrayed: Boolean;
     FHeaderSkin: TsSkinSection;
     FOnClickCheck: TNotifyEvent;
+    FDblClickToggle: boolean;
     procedure DrawCheck(R: TRect; AState: TCheckBoxState; AEnabled: Boolean; Bmp: TBitmap; const CI: TCacheInfo); overload;
     procedure DrawCheck(R: TRect; AState: TCheckBoxState; AEnabled: Boolean; C: TCanvas); overload;
     procedure ToggleClickCheck(Index: Integer);
@@ -84,7 +85,8 @@ type
   published
     {:@event}
     property OnClickCheck: TNotifyEvent read FOnClickCheck write FOnClickCheck;
-    property AllowGrayed: Boolean read FAllowGrayed write FAllowGrayed default False;
+    property AllowGrayed: boolean read FAllowGrayed write FAllowGrayed default False;
+    property DblClickToggle: boolean read FDblClickToggle write FDblClickToggle default False;
     property HeaderColor: TColor read FHeaderColor write SetHeaderColor default clInfoText;
     property HeaderBackgroundColor: TColor read FHeaderBackgroundColor write SetHeaderBackgroundColor default clInfoBk;
     property HeaderSkin: TsSkinSection read FHeaderSkin write SetHeaderSkin;
@@ -218,6 +220,7 @@ begin
   inherited;
   FHeaderColor := clInfoText;
   FHeaderBackgroundColor := clInfoBk;
+  FDblClickToggle := False;
 {$IFDEF D2007}
   FWrapperList := TList.Create;
 {$ENDIF}
@@ -285,7 +288,7 @@ begin
   begin
     LWrapper := TsCheckListBoxDataWrapper(GetWrapper(Index));
     LIndex := FWrapperList.IndexOf(LWrapper);
-    if LIndex <> -1 then
+    if LIndex >= 0 then
       FWrapperList.Delete(LIndex);
 
     LWrapper.Free;
@@ -337,10 +340,8 @@ end;
 
 procedure TsCheckListBox.DrawCheck(R: TRect; AState: TCheckBoxState; AEnabled: Boolean; C: TCanvas);
 const
-  exB = 2;
+  exB = 1;
 var
-  OldPenColor, OldBrushColor: TColor;
-  OldBrushStyle: TBrushStyle;
   Rgn, SaveRgn: HRgn;
   DrawState: Integer;
   DrawRect: TRect;
@@ -357,7 +358,7 @@ begin
   end;
   if not AEnabled then
     DrawState := DrawState or DFCS_INACTIVE;
-    
+
   C.Brush.Style := bsClear;
   C.Pen.Style := psSolid;
   SaveRgn := CreateRectRgn(0, 0, 0, 0);
@@ -365,18 +366,9 @@ begin
   Rgn := CreateRectRgn(DrawRect.Left + exB, DrawRect.Top + exB, DrawRect.Right - exB, DrawRect.Bottom - exB);
   SelectClipRgn(C.Handle, Rgn);
   DeleteObject(Rgn);
-  DrawFrameControl(C.Handle, DrawRect, DFC_BUTTON, DrawState);
+  DrawFrameControl(C.Handle, DrawRect, DFC_BUTTON, DFCS_FLAT or DrawState);
   SelectClipRgn(C.Handle, SaveRgn);
   DeleteObject(SaveRgn);
-  OldBrushStyle := C.Brush.Style;
-  OldBrushColor := C.Brush.Color;
-  OldPenColor := C.Pen.Color;
-  C.Brush.Style := bsClear;
-  C.Pen.Color := clBtnShadow;
-  C.Rectangle(DrawRect.Left + 1, DrawRect.Top + 1, DrawRect.Right - 1, DrawRect.Bottom - 1);
-  C.Brush.Style := OldBrushStyle;
-  C.Brush.Color := OldBrushColor;
-  C.Pen.Color := OldPenColor;
 end;
 
 
@@ -389,7 +381,7 @@ var
   rText, rCheck: TRect;
   CI: TCacheInfo;
 begin
-  if (Index >= 0) and (Index < Items.Count) then begin
+  if IsValidIndex(Index, Items.Count) then begin
     if (Columns = 0) and (ListSW <> nil) and (ListSW.sBarHorz <> nil) then
       XOffset := ListSW.sBarHorz.ScrollInfo.nPos
     else
@@ -401,7 +393,6 @@ begin
         Rect.Left := Rect.Left + ACheckWidth + CheckOffset
       else
         Rect.Right := Rect.Right - ACheckWidth - CheckOffset;
-
 
       if {not Enabled or }not GetItemEnabled(Index) then
         State := State + [odDisabled];
@@ -455,7 +446,7 @@ begin
         else begin
           if (HeaderSkin <> '') and SkinData.Skinned then begin
             ACheckWidth := SkinData.SkinManager.GetSkinIndex(HeaderSkin);
-            if ACheckWidth > -1 then begin
+            if ACheckWidth >= 0 then begin
               PaintItem(ACheckWidth, CI, True, 1, rText, MkPoint, Bmp);
               Bmp.Canvas.Font.Color := SkinData.SkinManager.gd[ACheckWidth].Props[1].FontColor.Color;
             end;
@@ -463,7 +454,7 @@ begin
             acWriteText(Bmp.Canvas, PacChar(Items[Index]), True, rText, DT_VCENTER or DT_NOPREFIX)
           end
           else begin
-            if SkinData.Skinned and (SkinData.SkinManager.ConstData.IndexGlobalInfo > -1) then begin
+            if SkinData.Skinned and (SkinData.SkinManager.ConstData.IndexGlobalInfo >= 0) then begin
               Bmp.Canvas.Brush.Color := SkinData.SkinManager.gd[SkinData.SkinManager.ConstData.IndexGlobalInfo].Props[0].Color;
               Bmp.Canvas.Font.Color := SkinData.SkinManager.GetGlobalFontColor;
             end
@@ -495,7 +486,7 @@ begin
     if LB_ERR = Integer(Result) then
       raise EListError.CreateResFmt(@SListIndexError, [Index]);
 
-    if (Result <> nil) and (not (Result is TsCheckListBoxDataWrapper)) then
+    if (Result <> nil) and not (Result is TsCheckListBoxDataWrapper) then
       Result := nil;
   end;
 end;
@@ -536,7 +527,7 @@ end;
 function TsCheckListBox.GetItemEnabled(Index: Integer): Boolean;
 begin
   Result := False;
-  if (Index >= 0) and (Index < Items.Count) then
+  if IsValidIndex(Index, Items.Count) then
     if HaveWrapper(Index) then
       Result := not TsCheckListBoxDataWrapper(GetWrapper(Index)).Disabled
     else
@@ -579,11 +570,14 @@ begin
 end;
 
 
+type
+  TAccessStrings = class(TStrings);
+
 procedure TsCheckListBox.InvalidateCheck(Index: Integer);
 var
   R: TRect;
 begin
-  if not GetHeader(Index) then begin
+  if not GetHeader(Index) {$IFDEF DELPHI7UP}and (TAccessStrings(Items).UpdateCount = 0){$ENDIF} {and not Items.Add }then begin
     R := ItemRect(Index);
     if not UseRightToLeftAlignment then
       R.Right := R.Left + GetCheckWidth
@@ -636,26 +630,24 @@ begin
 
     VK_UP: begin
       i := SearchNextItem(False);
-      if (ItemIndex <> i) then begin
-        if (ItemIndex = i - 1) then
+      if ItemIndex <> i then
+        if ItemIndex = i - 1 then
           inherited
         else begin
           Key := 0;
           ItemIndex := i;
         end;
-      end;
     end;
 
     VK_DOWN: begin
       i := SearchNextItem(True);
-      if (ItemIndex <> i) then begin
-        if (ItemIndex = i + 1) then
+      if ItemIndex <> i then
+        if ItemIndex = i + 1 then
           inherited
         else begin
           Key := 0;
           ItemIndex := i;
         end;
-      end;
     end
     else
       inherited;
@@ -737,7 +729,7 @@ begin
     LWrapper := TsCheckListBoxDataWrapper(ExtractWrapper(I));
     if Assigned(LWrapper) then begin
       Index := FWrapperList.IndexOf(LWrapper);
-      if Index <> -1 then
+      if Index >= 0 then
         FWrapperList.Delete(Index);
 
       LWrapper.Free;
@@ -768,7 +760,7 @@ begin
   end
   else
     for i := ItemIndex - 1 downto 0 do
-      if (i <> -1) and ItemEnabled[i] then begin
+      if (i >= 0) and ItemEnabled[i] then begin
         Result := i;
         Exit;
       end;
@@ -854,7 +846,7 @@ procedure TsCheckListBox.ToggleClickCheck(Index: Integer);
 var
   State: TCheckBoxState;
 begin
-  if (Index >= 0) and (Index < Items.Count) and GetItemEnabled(Index) then begin
+  if IsValidIndex(Index, Items.Count) and GetItemEnabled(Index) then begin
     State := GetState(Index);
     case State of
       cbUnchecked:
@@ -881,7 +873,7 @@ var
   i: Integer;
 begin
   if Items <> nil then
-    for i := 0 to Items.Count -1 do
+    for i := 0 to Items.Count - 1 do
       ExtractWrapper(i).Free;
 
   inherited;
@@ -894,20 +886,11 @@ var
   Index: Integer;
 begin
   inherited;
-  Index := ItemAtPos(Point(Message.XPos,Message.YPos), True);
-  if (Index <> -1) and GetItemEnabled(Index) then 
-    ToggleClickCheck(Index)
-{
-    if not UseRightToLeftAlignment then begin
-      if Message.XPos - ItemRect(Index).Left < GetCheckWidth then
-        ToggleClickCheck(Index)
-    end
-    else begin
-      Dec(Message.XPos, ItemRect(Index).Right - GetCheckWidth);
-      if (Message.XPos > 0) and (Message.XPos < GetCheckWidth) then
-        ToggleClickCheck(Index)
-    end;
-}
+  if FDblClickToggle then begin
+    Index := ItemAtPos(Point(Message.XPos,Message.YPos), True);
+    if (Index >= 0) and GetItemEnabled(Index) then
+      ToggleClickCheck(Index)
+  end;
 end;
 
 
@@ -917,7 +900,7 @@ var
 begin
   inherited;
   Index := ItemAtPos(Point(Message.XPos,Message.YPos), True);
-  if (Index <> -1) and GetItemEnabled(Index) then
+  if (Index >= 0) and GetItemEnabled(Index) then
     if not UseRightToLeftAlignment then begin
       if Message.XPos - ItemRect(Index).Left < GetCheckWidth then
         ToggleClickCheck(Index)

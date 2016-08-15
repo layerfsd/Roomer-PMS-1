@@ -1,6 +1,7 @@
 object Form3rdPartyEditor: TForm3rdPartyEditor
   Left = 260
   Top = 125
+  AutoScroll = False
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = '3rd-party controls names'
@@ -9,6 +10,12 @@ object Form3rdPartyEditor: TForm3rdPartyEditor
   Color = clBtnFace
   Constraints.MinHeight = 140
   Constraints.MinWidth = 440
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  ParentFont = False
   Position = poScreenCenter
   Scaled = False
   ShowHint = True
@@ -81,10 +88,7 @@ object Form3rdPartyEditor: TForm3rdPartyEditor
       'ensitive):'
     BoundLabel.Indent = 2
     BoundLabel.Layout = sclTopLeft
-    BoundLabel.MaxWidth = 0
-    BoundLabel.UseSkinColor = True
     SkinData.SkinSection = 'EDIT'
-    Color = clWhite
     Columns = <
       item
         Caption = 'Control class name'
@@ -124,27 +128,13 @@ object Form3rdPartyEditor: TForm3rdPartyEditor
     Height = 453
     TabOrder = 2
     object sSpeedButton2: TsSpeedButton
-      Left = 176
+      Left = 175
       Top = 416
-      Width = 145
+      Width = 150
       Height = 25
-      Caption = 'Add selected items'
+      Caption = 'Add/use selected items'
       Enabled = False
       OnClick = sSpeedButton2Click
-    end
-    object sCheckBox1: TsCheckBox
-      Tag = 1
-      Left = 177
-      Top = 12
-      Width = 20
-      Height = 20
-      AutoSize = False
-      Checked = True
-      State = cbChecked
-      TabOrder = 2
-      OnClick = sCheckBox1Click
-      ImgChecked = 0
-      ImgUnchecked = 0
     end
     object sListBox1: TsListBox
       Left = 16
@@ -176,22 +166,14 @@ object Form3rdPartyEditor: TForm3rdPartyEditor
       BoundLabel.Caption = '  Packages:'
       BoundLabel.Indent = 2
       BoundLabel.Layout = sclTopLeft
-      BoundLabel.MaxWidth = 0
-      BoundLabel.UseSkinColor = True
       SkinData.SkinSection = 'EDIT'
     end
     object sListBox2: TsCheckListBox
       Left = 175
       Top = 32
       Width = 150
-      Height = 377
+      Height = 354
       BorderStyle = bsSingle
-      Color = clWhite
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clBlack
-      Font.Height = -11
-      Font.Name = 'MS Sans Serif'
-      Font.Style = []
       ItemHeight = 13
       ParentFont = False
       TabOrder = 1
@@ -199,9 +181,22 @@ object Form3rdPartyEditor: TForm3rdPartyEditor
       BoundLabel.Caption = '         Supported controls:'
       BoundLabel.Indent = 2
       BoundLabel.Layout = sclTopLeft
-      BoundLabel.MaxWidth = 0
-      BoundLabel.UseSkinColor = True
       SkinData.SkinSection = 'EDIT'
+    end
+    object sCheckBox1: TsCheckBox
+      Tag = 1
+      Left = 185
+      Top = 392
+      Width = 114
+      Height = 18
+      Caption = 'Select/deselect all'
+      Checked = True
+      Enabled = False
+      State = cbChecked
+      TabOrder = 2
+      OnClick = sCheckBox1Click
+      ImgChecked = 0
+      ImgUnchecked = 0
     end
   end
   object sPanel2: TsPanel

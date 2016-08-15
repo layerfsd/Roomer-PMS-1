@@ -1,5 +1,6 @@
 unit sDateUtils;
 {$I sDefs.inc}
+//+
 
 interface
 
@@ -213,7 +214,7 @@ begin
 
   Tmp := '';
   ix := Length(Format);
-  if not((ix < Cnt) or (ix < J)) then
+  if not ((ix < Cnt) or (ix < J)) then
     while ix < 20 do begin
       if (ix < J) then
         break;

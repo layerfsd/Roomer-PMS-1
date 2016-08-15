@@ -4,7 +4,7 @@ package acntDX10_R;
 {$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
-{$DEBUGINFO ON}
+{$DEBUGINFO OFF}
 {$EXTENDEDSYNTAX ON}
 {$IMPORTEDDATA ON}
 {$IOCHECKS ON}
@@ -14,12 +14,12 @@ package acntDX10_R;
 {$OPTIMIZATION OFF}
 {$OVERFLOWCHECKS OFF}
 {$RANGECHECKS OFF}
-{$REFERENCEINFO OFF}
-{$SAFEDIVIDE ON}
+{$REFERENCEINFO ON}
+{$SAFEDIVIDE OFF}
 {$STACKFRAMES ON}
 {$TYPEDADDRESS OFF}
 {$VARSTRINGCHECKS ON}
-{$WRITEABLECONST ON}
+{$WRITEABLECONST OFF}
 {$MINENUMSIZE 1}
 {$IMAGEBASE $400000}
 {$DEFINE DEBUG}
@@ -36,9 +36,7 @@ requires
   vclimg;
 
 contains
-{$IFNDEF NOJPG}
   acTinyJPG in 'acTinyJPG.pas',
-{$ENDIF}
   sEdit in 'sEdit.pas',
   sMemo in 'sMemo.pas',
   sComboBoxes in 'sComboBoxes.pas',
@@ -131,6 +129,9 @@ contains
   acWebBrowser in 'acWebBrowser.pas',
   acWB in 'acWB.pas',
   acMeter in 'acMeter.pas',
+  acPopupCtrls in 'acPopupCtrls.pas',
+  acPopupController in 'acPopupController.pas',
+  acntTypes in 'acntTypes.pas',
   acZLibEx in 'acZLibEx.pas';
 
 end.

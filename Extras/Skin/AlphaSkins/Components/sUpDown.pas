@@ -1,7 +1,7 @@
 unit sUpDown;
 {$I sDefs.inc}
 //{$DEFINE LOGGED}
-
+//+
 interface
 
 uses
@@ -80,7 +80,7 @@ uses
   math,
   {$IFDEF LOGGED}sDebugMsgs, {$ENDIF}
   sStyleSimply, sPageControl, sMessages, sGraphUtils, sSkinProps, acntUtils,
-  sAlphaGraph, sSkinManager, sCommonData, sVCLUtils, sMaskData;
+  acntTypes, sAlphaGraph, sSkinManager, sCommonData, sVCLUtils, sMaskData;
 
 
 function TsUpDown.BtnRect: TRect;
@@ -196,7 +196,7 @@ begin
         R := BtnRect;
         p := ScreenToClient(Point(TWMMouse(Message).XPos, TWMMouse(Message).YPos));
         if PtInRect(R, p) then begin
-          if (FShowInaccessibility and BtnPrevDisabled) then
+          if FShowInaccessibility and BtnPrevDisabled then
             DrawingState := dsDefault
           else
             if (DrawingState <> dsPrevUp) and not Pressed then begin
@@ -205,7 +205,7 @@ begin
             end
         end
         else
-          if (FShowInaccessibility and BtnNextDisabled) then
+          if FShowInaccessibility and BtnNextDisabled then
             DrawingState := dsDefault
           else
             if (DrawingState <> dsNextUp) and not Pressed then begin
@@ -217,17 +217,17 @@ begin
 
     WM_LBUTTONUP: begin
       inherited;
-      if not (csDesigning in ComponentState) then 
+      if not (csDesigning in ComponentState) then
         if Pressed then begin
           Pressed := False;
           if DrawingState = dsPrevDown then begin
-            if (FShowInaccessibility and (Position = Max)) then
+            if FShowInaccessibility and (Position = Max) then
               Exit;
 
             DrawingState := dsPrevUp
           end
           else begin
-            if (FShowInaccessibility and (Position = Min)) then
+            if FShowInaccessibility and (Position = Min) then
               Exit;
 
             DrawingState := dsNextUp;
@@ -406,13 +406,13 @@ begin
       end;
       Ci.Bmp := Btn;
       CI.Ready := True;
-      if (sArrowMask >= 0) then begin
+      if sArrowMask >= 0 then begin
         if SkinManager.ma[sArrowMask].Bmp = nil then begin
-          p.x := (Btn.Width  - WidthOfImage (SkinManager.ma[sArrowMask])) div 2;
-          p.y := (Btn.Height - HeightOfImage(SkinManager.ma[sArrowMask])) div 2;
+          p.x := (Btn.Width  - SkinManager.ma[sArrowMask].Width) div 2;
+          p.y := (Btn.Height - SkinManager.ma[sArrowMask].Height) div 2;
         end
         else
-          if (SkinManager.ma[sArrowMask].Bmp.Height div 2 < Btn.Height) then begin
+          if SkinManager.ma[sArrowMask].Bmp.Height div 2 < Btn.Height then begin
             p.x := (Btn.Width  - SkinManager.ma[sArrowMask].Bmp.Width  div 3) div 2;
             p.y := (Btn.Height - SkinManager.ma[sArrowMask].Bmp.Height div 2) div 2;
           end;
@@ -430,15 +430,15 @@ begin
             OffsetRect(R, 1, 1);
 
         if sArrowMask >= 0 then
-          DrawColorArrow(Btn.Canvas, SkinManager.gd[sArrowMask].Props[math.min(integer(State > 0), SkinManager.gd[sArrowMask].States - 1)].FontColor.Color, R, Side)
+          DrawColorArrow(Btn, SkinManager.gd[sArrowMask].Props[math.min(integer(State > 0), SkinManager.gd[sArrowMask].States - 1)].FontColor.Color, R, Side)
         else
-          DrawColorArrow(Btn.Canvas, Font.Color, R, Side);
+          DrawColorArrow(Btn, Font.Color, R, Side);
       end;
 
       if not Enabled or (FShowInaccessibility and (Position = sLimPosition)) then begin
         CI := GetParentCacheHwnd(Handle);
         if not CI.Ready then begin
-          c.C := ColorToRGB(TsHackedControl(Parent).Color);
+          c.C := ColorToRGB(TacAccessControl(Parent).Color);
           FadeBmp(Btn, MkRect(Btn.Width + 1, Btn.Height + 1), 60, c, 0, 0);
         end
         else

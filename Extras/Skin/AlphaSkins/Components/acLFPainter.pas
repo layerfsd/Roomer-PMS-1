@@ -5,8 +5,8 @@ unit acLFPainter;
 // WARNING! This unit is compatible with Devexpress version 2011
 // for older versions used the acLFPainter6.pas unit
 
-//{$DEFINE VER14_1_2} // cxGrid version 14.1.2 and newer
-//{$DEFINE VER13_2_2}
+{$DEFINE VER14_1_2} // cxGrid version 14.1.2 and newer
+{$DEFINE VER13_2_2}
 {$DEFINE VER12_2_3}
 {$DEFINE VER12_1_6}
 {$DEFINE VER26}
@@ -135,8 +135,7 @@ type
     function ButtonSymbolState(AState: TcxButtonState): TcxButtonState; override;
     procedure DrawButton(ACanvas: TcxCanvas; R: TRect; const ACaption: string; AState: TcxButtonState;
       ADrawBorder: Boolean = True; AColor: TColor = clDefault; ATextColor: TColor = clDefault;
-      AWordWrap: Boolean = False; AIsToolButton: Boolean = False
-      {$IFDEF VER13_2_2}; APart: TcxButtonPart = cxbpButton{$ENDIF}); override;
+      AWordWrap: Boolean = False; AIsToolButton: Boolean = False); override;
     procedure DrawButtonBorder(ACanvas: TcxCanvas; R: TRect; AState: TcxButtonState); override;
     procedure DrawExpandButton(ACanvas: TcxCanvas; const R: TRect; AExpanded: Boolean; AColor: TColor = clDefault); override;
     function DrawExpandButtonFirst: Boolean; override;
@@ -333,7 +332,7 @@ type
     procedure DrawTrackBarTrack(ACanvas: TcxCanvas; const ARect, ASelection: TRect; AShowSelection, AEnabled, AHorizontal: Boolean; ATrackColor: TColor); override;
     procedure DrawTrackBarTrackBounds(ACanvas: TcxCanvas; const ARect: TRect); override;
 {$IFDEF VER14_1_2}
-    procedure DrawTrackBarThumbBorderUpDown(ACanvas: TcxCanvas; const ALightPolyLine, AShadowPolyLine, ADarkPolyLine: TPoints); override;
+    procedure DrawTrackBarThumbBorderUpDown(ACanvas: TcxCanvas; const ALightPolyLine, AShadowPolyLine, ADarkPolyLine: TPointArray); override;
 {$ELSE}
     procedure DrawTrackBarThumbBorderUpDown(ACanvas: TcxCanvas; const ALightPolyLine, AShadowPolyLine, ADarkPolyLine: TPointArray); override;
 {$ENDIF}
@@ -376,7 +375,7 @@ type
     class procedure DrawPanelSeparator(AStatusBar: TdxCustomStatusBar; ACanvas: TcxCanvas; const R: TRect); override;
     class procedure DrawTopBorder(AStatusBar: TdxCustomStatusBar; ACanvas: TcxCanvas; const R: TRect); override;
     class function GetPanelColor(AStatusBar: TdxCustomStatusBar; APanel: TdxStatusBarPanel): TColor; override;
-    class procedure DrawSizeGrip(AStatusBar: TdxCustomStatusBar; ACanvas: TcxCanvas; R: TRect); override;
+    class procedure DrawSizeGrip(AStatusBar: TdxCustomStatusBar; ACanvas: TcxCanvas; R: TRect{$IFNDEF VER14_1_2}; AOverlapped: Boolean{$ENDIF}); override;
   end;
 {$endif}
 
@@ -393,11 +392,11 @@ uses
 
 var
   DefManager: TsSkinManager = nil;
-  OldDXSkin: string;
+//  OldDXSkin: string;
 
 
 type
-  TAcesscxControl = class(TcxControl);
+  TAccesscxControl = class(TcxControl);
 
 
 const
@@ -625,12 +624,12 @@ var
   Ndx: integer;
 begin
   if Skinned then begin
-    if DefaultManager.ConstData.SmallCheckBox[cbChecked] > -1 then
+    if DefaultManager.ConstData.SmallCheckBox[cbChecked] >= 0 then
       Ndx := DefaultManager.ConstData.SmallCheckBox[cbChecked]
     else
       Ndx := DefaultManager.ConstData.CheckBox[cbChecked];
 
-    if Ndx > -1 then
+    if Ndx >= 0 then
       Result := MkSize(DefaultManager.ma[Ndx])
     else
       Result := inherited CheckButtonSize;
@@ -670,7 +669,7 @@ end;
 function TcxACLookAndFeelPainter.DefaultVGridLineColor: TColor;
 begin
   if Skinned then
-    Result := MixColors(DefaultManager.GetActiveEditFontColor, DefaultManager.GetActiveEditColor, 0.3)
+    Result := BlendColors(DefaultManager.GetActiveEditFontColor, DefaultManager.GetActiveEditColor, 77)
   else
     Result := inherited DefaultVGridLineColor;
 end;
@@ -679,7 +678,7 @@ end;
 function TcxACLookAndFeelPainter.DefaultVGridBandLineColor: TColor;
 begin
   if Skinned then
-    Result := MixColors(DefaultManager.GetActiveEditFontColor, DefaultManager.GetActiveEditColor, 0.3)
+    Result := BlendColors(DefaultManager.GetActiveEditFontColor, DefaultManager.GetActiveEditColor, 77)
   else
     Result := inherited DefaultVGridBandLineColor;
 end;
@@ -688,7 +687,7 @@ end;
 function TcxACLookAndFeelPainter.DefaultContentColor: TColor;
 begin
   if Skinned then
-    Result := MixColors(DefaultManager.GetActiveEditColor, DefaultManager.GetGlobalColor, 0.5)
+    Result := BlendColors(DefaultManager.GetActiveEditColor, DefaultManager.GetGlobalColor, 127)
   else
     Result := inherited DefaultContentColor
 end;
@@ -770,7 +769,7 @@ function TcxACLookAndFeelPainter.DefaultEditorBackgroundColor(AIsDisabled: Boole
 begin
   if Skinned then
     if AIsDisabled then
-      Result := MixColors(DefaultManager.GetActiveEditColor, DefaultManager.GetGlobalColor, 0.5)
+      Result := BlendColors(DefaultManager.GetActiveEditColor, DefaultManager.GetGlobalColor, 127)
     else
       Result := DefaultManager.GetActiveEditColor
   else
@@ -783,7 +782,7 @@ begin
   if Skinned then
     case AKind of
       esckDisabled:
-        Result := MixColors(DefaultManager.GetActiveEditColor, DefaultManager.GetGlobalColor, DefDisabledBlend)
+        Result := BlendColors(DefaultManager.GetActiveEditColor, DefaultManager.GetGlobalColor, DefBlendDisabled)
       else
         Result := DefaultManager.GetActiveEditColor
     end
@@ -796,7 +795,7 @@ function TcxACLookAndFeelPainter.DefaultEditorTextColor(AIsDisabled: Boolean): T
 begin
   if Skinned then
     if AIsDisabled then
-      Result := MixColors(DefaultManager.GetActiveEditFontColor, DefaultManager.GetActiveEditColor, DefDisabledBlend)
+      Result := BlendColors(DefaultManager.GetActiveEditFontColor, DefaultManager.GetActiveEditColor, DefBlendDisabled)
     else
       Result := DefaultManager.GetActiveEditFontColor
   else
@@ -809,7 +808,7 @@ begin
   if Skinned then
     case AKind of
       esckDisabled:
-        Result := MixColors(DefaultManager.GetActiveEditColor, DefaultManager.GetActiveEditFontColor, DefDisabledBlend)
+        Result := BlendColors(DefaultManager.GetActiveEditColor, DefaultManager.GetActiveEditFontColor, DefBlendDisabled)
       else
         Result := DefaultManager.GetActiveEditFontColor
     end
@@ -866,7 +865,7 @@ end;
 function TcxACLookAndFeelPainter.DefaultSchedulerViewContentColor: TColor;
 begin
   if Skinned then
-    Result := MixColors(DefaultManager.GetActiveEditColor, DefaultManager.GetGlobalColor, 0.5)
+    Result := BlendColors(DefaultManager.GetActiveEditColor, DefaultManager.GetGlobalColor, 127)
   else
     Result := inherited DefaultSchedulerViewContentColor;
 end;
@@ -938,7 +937,7 @@ end;
 function TcxACLookAndFeelPainter.DefaultFixedSeparatorColor: TColor;
 begin
   if Skinned then
-    Result := MixColors(DefaultManager.Palette[pcMainColor], DefaultManager.Palette[pcLabelText], 0.8)
+    Result := BlendColors(DefaultManager.Palette[pcMainColor], DefaultManager.Palette[pcLabelText], 204)
   else
     Result := inherited DefaultFixedSeparatorColor;
 end;
@@ -974,7 +973,7 @@ end;
 function TcxACLookAndFeelPainter.DefaultGridLineColor: TColor;
 begin
   if Skinned then
-    Result := MixColors(DefaultManager.GetActiveEditFontColor, DefaultManager.GetActiveEditColor, 0.3)
+    Result := BlendColors(DefaultManager.GetActiveEditFontColor, DefaultManager.GetActiveEditColor, 77)
   else
     Result := inherited DefaultGridLineColor;
 end;
@@ -1127,7 +1126,7 @@ end;
 function TcxACLookAndFeelPainter.DefaultChartDiagramValueBorderColor: TColor;
 begin
   if Skinned then
-    Result := MixColors(DefaultManager.GetActiveEditColor, DefaultManager.GetActiveEditFontColor, 0.2)
+    Result := BlendColors(DefaultManager.GetActiveEditColor, DefaultManager.GetActiveEditFontColor, 51)
   else
     Result := inherited DefaultChartDiagramValueBorderColor;
 end;
@@ -1145,7 +1144,7 @@ end;
 function TcxACLookAndFeelPainter.DefaultChartHistogramAxisColor: TColor;
 begin
   if Skinned then
-    Result := MixColors(DefaultManager.GetActiveEditColor, DefaultManager.GetActiveEditFontColor, 0.3)
+    Result := BlendColors(DefaultManager.GetActiveEditColor, DefaultManager.GetActiveEditFontColor, 77)
   else
     Result := inherited DefaultChartHistogramAxisColor;
 end;
@@ -1154,7 +1153,7 @@ end;
 function TcxACLookAndFeelPainter.DefaultChartHistogramGridLineColor: TColor;
 begin
   if Skinned then
-    Result := MixColors(DefaultManager.GetActiveEditColor, DefaultManager.GetActiveEditFontColor, 0.8)
+    Result := BlendColors(DefaultManager.GetActiveEditColor, DefaultManager.GetActiveEditFontColor, 204)
   else
     Result := inherited DefaultChartHistogramGridLineColor;
 end;
@@ -1199,7 +1198,7 @@ end;
 function TcxACLookAndFeelPainter.DefaultChartToolBoxDataLevelInfoBorderColor: TColor;
 begin
   if Skinned then
-    Result := MixColors(DefaultManager.GetActiveEditColor, DefaultManager.GetActiveEditFontColor, 0.5)
+    Result := BlendColors(DefaultManager.GetActiveEditColor, DefaultManager.GetActiveEditFontColor, 127)
   else
     Result := inherited DefaultChartToolBoxDataLevelInfoBorderColor;
 end;
@@ -1208,7 +1207,7 @@ end;
 function TcxACLookAndFeelPainter.DefaultChartToolBoxItemSeparatorColor: TColor;
 begin
   if Skinned then
-    Result := MixColors(DefaultManager.GetActiveEditColor, DefaultManager.GetActiveEditFontColor, 0.8)
+    Result := BlendColors(DefaultManager.GetActiveEditColor, DefaultManager.GetActiveEditFontColor, 204)
   else
     Result := inherited DefaultChartToolBoxItemSeparatorColor;
 end;
@@ -1217,7 +1216,7 @@ end;
 function TcxACLookAndFeelPainter.DefaultTimeGridMajorScaleColor: TColor;
 begin
   if Skinned then
-    Result := MixColors(DefaultManager.GetGlobalColor, DefaultManager.GetActiveEditColor, 0.5)
+    Result := BlendColors(DefaultManager.GetGlobalColor, DefaultManager.GetActiveEditColor, 127)
   else
     Result := inherited DefaultTimeGridMajorScaleColor
 end;
@@ -1235,7 +1234,7 @@ end;
 function TcxACLookAndFeelPainter.DefaultTimeGridMinorScaleColor: TColor;
 begin
   if Skinned then
-    Result := MixColors(DefaultManager.GetGlobalColor, DefaultManager.GetActiveEditColor, 0.9)
+    Result := BlendColors(DefaultManager.GetGlobalColor, DefaultManager.GetActiveEditColor, 230)
   else
     Result := inherited DefaultTimeGridMinorScaleColor
 end;
@@ -1253,7 +1252,7 @@ end;
 function TcxACLookAndFeelPainter.DefaultTimeGridSelectionBarColor: TColor;
 begin
   if Skinned then
-    Result := MixColors(DefaultManager.GetGlobalColor, DefaultManager.GetActiveEditColor, 0.5)
+    Result := BlendColors(DefaultManager.GetGlobalColor, DefaultManager.GetActiveEditColor, 127)
   else
     Result := inherited DefaultTimeGridSelectionBarColor
 end;
@@ -1300,8 +1299,7 @@ end;
 
 procedure TcxACLookAndFeelPainter.DrawButton(ACanvas: TcxCanvas; R: TRect; const ACaption: string; AState: TcxButtonState;
       ADrawBorder: Boolean = True; AColor: TColor = clDefault; ATextColor: TColor = clDefault;
-      AWordWrap: Boolean = False; AIsToolButton: Boolean = False
-      {$IFDEF VER13_2_2}; APart: TcxButtonPart = cxbpButton{$ENDIF});
+      AWordWrap: Boolean = False; AIsToolButton: Boolean = False);
 var
   i: integer;
   TmpBmp: TBitmap;
@@ -1327,14 +1325,14 @@ begin
         DrawText(TmpBmp.Canvas.Handle, PChar(ACaption), Length(ACaption), rText, DT_EXPANDTABS or DT_VCENTER or DT_CENTER or DT_SINGLELINE);
       end;
 {$IFDEF VER13_2_2}
-      if APart = cxbpDropDownRightPart then begin
-        if i >= 0 then
-          C := DefaultManager.gd[i].Props[min(StateValues[AState], ac_MaxPropsIndex)].FontColor.Color
-        else
-          C := ColorToRGB(clWindowText);
-
-        DrawColorArrow(TmpBmp.Canvas, C, MkRect(TmpBmp), asBottom);
-      end;
+//      if APart = cxbpDropDownRightPart then begin
+//        if i >= 0 then
+//          C := DefaultManager.gd[i].Props[min(StateValues[AState], ac_MaxPropsIndex)].FontColor.Color
+//        else
+//          C := ColorToRGB(clWindowText);
+//
+//        DrawColorArrow(TmpBmp.Canvas, C, MkRect(TmpBmp), asBottom);
+//      end;
 {$ENDIF}
       BitBlt(ACanvas.Handle, R.Left, R.Top, TmpBmp.Width, TmpBmp.Height, TmpBmp.Canvas.Handle, 0, 0, SRCCOPY);
       FreeAndNil(TmpBmp);
@@ -1376,19 +1374,19 @@ begin
     with DefaultManager.ConstData do
       case ACheckState of
         cbsUnchecked:
-          if SmallCheckBox[cbUnChecked] > -1 then
+          if SmallCheckBox[cbUnChecked] >= 0 then
             i := SmallCheckBox[cbUnChecked]
           else
             i := CheckBox[cbUnChecked];
 
         cbsChecked:
-          if SmallCheckBox[cbChecked] > -1 then
+          if SmallCheckBox[cbChecked] >= 0 then
             i := SmallCheckBox[cbChecked]
           else
             i := CheckBox[cbChecked];
 
         cbsGrayed:
-          if SmallCheckBox[cbGrayed] > -1 then
+          if SmallCheckBox[cbGrayed] >= 0 then
             i := SmallCheckBox[cbGrayed]
           else
             i := CheckBox[cbGrayed];
@@ -1399,13 +1397,13 @@ begin
       TmpBmp := CreateBmp32(Size);
       BitBlt(TmpBmp.Canvas.Handle, 0, 0, Size.cx, Size.cy, ACanvas.Handle, R.Left, R.Top, SRCCOPY);
       State := StateValues[AState];
-      if State > DefaultManager.ma[i].ImageCount - 1 then
+      if State >= DefaultManager.ma[i].ImageCount then
         State := DefaultManager.ma[i].ImageCount - 1;
 
       DrawSkinGlyph(TmpBmp, MkPoint, State, 1, DefaultManager.ma[i], MakeCacheInfo(TmpBmp));
       if cxbsDisabled = AState then begin
         C.C := DefaultManager.GetGlobalColor;
-        BlendTransBitmap(TmpBmp, DefDisabledBlend, C);
+        BlendTransBitmap(TmpBmp, DefBlendDisabled, C);
       end;
 
       BitBlt(ACanvas.Handle, R.Left, R.Top, Size.cx, Size.cy, TmpBmp.Canvas.Handle, 0, 0, SRCCOPY);
@@ -1516,9 +1514,9 @@ begin
       cxbkEditorBtn:    s := '';
       cxbkEllipsisBtn:  s := s_Ellipsis;
     end;
-    if glIndex > -1 then
-      DrawSkinGlyph(TmpBmp, Point((WidthOf(R) - WidthOfImage(DefaultManager.ma[glIndex])) div 2,
-        (HeightOf(R) - HeightOfImage(DefaultManager.ma[glIndex])) div 2), StateValues[AState], 1, DefaultManager.ma[glIndex], MakeCacheInfo(TmpBmp))
+    if glIndex >= 0 then
+      DrawSkinGlyph(TmpBmp, Point((WidthOf(R) - DefaultManager.ma[glIndex].Width) div 2,
+        (HeightOf(R) - DefaultManager.ma[glIndex].Height) div 2), StateValues[AState], 1, DefaultManager.ma[glIndex], MakeCacheInfo(TmpBmp))
     else
       case AButtonKind of
         cxbkCloseBtn, cxbkEllipsisBtn: begin
@@ -1626,8 +1624,8 @@ begin
     R := MkRect(TmpBmp);
     if glIndex >= 0 then
       DrawSkinGlyph(TmpBmp,
-                    Point((WidthOf(R)  - WidthOfImage( DefaultManager.ma[glIndex])) div 2,
-                          (HeightOf(R) - HeightOfImage(DefaultManager.ma[glIndex])) div 2),
+                    Point((WidthOf(R)  - DefaultManager.ma[glIndex].Width) div 2,
+                          (HeightOf(R) - DefaultManager.ma[glIndex].Height) div 2),
                     State, 1, DefaultManager.ma[glIndex], MakeCacheInfo(TmpBmp))
     else
       case Side of
@@ -1685,7 +1683,7 @@ begin
       TmpBmp := CreateBmp32(Size);
       BitBlt(TmpBmp.Canvas.Handle, 0, 0, Size.cx, Size.cy, ACanvas.Handle, R.Left, R.Top, SRCCOPY);
       State := StateValues[AState];
-      if State > DefaultManager.ma[i].ImageCount - 1 then
+      if State >= DefaultManager.ma[i].ImageCount then
         State := DefaultManager.ma[i].ImageCount - 1;
 
       NewLeft := (WidthOf(R) - Size.cx) div 2;
@@ -1713,7 +1711,7 @@ begin
       TmpBmp := CreateBmp32(Size);
       BitBlt(TmpBmp.Canvas.Handle, 0, 0, Size.cx, Size.cy, ACanvas.Handle, X, Y, SRCCOPY);
       State := StateValues[AButtonState];
-      if State > DefaultManager.ma[i].ImageCount - 1 then
+      if State >= DefaultManager.ma[i].ImageCount then
         State := DefaultManager.ma[i].ImageCount - 1;
 
       DrawSkinGlyph(TmpBmp, MkPoint, State, 1, DefaultManager.ma[i], MakeCacheInfo(TmpBmp));
@@ -1895,9 +1893,9 @@ begin
       cxgpLeft:            aBord := aBord - [bRight];
       cxgpRight:           aBord := aBord - [bLeft];
     end;
-    ACanvas.FillRect(ACaptionRect, MixColors(DefaultManager.GetGlobalColor, DefaultManager.Palette[pcBorder], 0.7));
+    ACanvas.FillRect(ACaptionRect, BlendColors(DefaultManager.GetGlobalColor, DefaultManager.Palette[pcBorder], 178));
     ACanvas.FrameRect(ACaptionRect, DefaultManager.Palette[pcBorder], 1, aBord);
-    ACanvas.FrameRect(ACaptionRect, MixColors(DefaultManager.GetGlobalColor, DefaultManager.Palette[pcBorder], 0.4), 1, cxBordersAll - aBord);
+    ACanvas.FrameRect(ACaptionRect, BlendColors(DefaultManager.GetGlobalColor, DefaultManager.Palette[pcBorder], 102), 1, cxBordersAll - aBord);
   end
   else
     inherited;
@@ -1962,7 +1960,7 @@ begin
       if AFont <> nil then
         ACanvas.Font.Assign(AFont);
 
-      if i <> -1 then
+      if i >= 0 then
         ACanvas.Font.Color := DefaultManager.gd[i].Props[min(StateValues[AState], ac_MaxPropsIndex)].FontColor.Color;
 
       ACanvas.Brush.Style := bsClear;
@@ -2034,7 +2032,7 @@ begin
         ACanvas.Font.Assign(AFont);
 
       i := DefaultManager.GetSkinIndex(Section);
-      if i <> -1 then
+      if i >= 0 then
         ACanvas.Font.Color := DefaultManager.gd[i].Props[integer(StateValues[AState] <> 0)].FontColor.Color;
 
       ACanvas.Brush.Style := bsClear;
@@ -2123,10 +2121,10 @@ begin
     rText := HeaderContentBounds(ABounds, []);
     DrawHeader(ACanvas, ABounds, rText, ANeighbors, [], cxbsNormal, taCenter, vaCenter, False, False, AText, ACanvas.Font, clNone, clNone);
     i := DefaultManager.GetSkinIndex(s_ColHeader);
-    if i = -1 then
+    if i < 0 then
       DefaultManager.GetSkinIndex(s_Button);
 
-    if i <> -1 then
+    if i >= 0 then
       DrawMonthHeaderArrows(ACanvas, ABounds, AArrows, ASideWidth, DefaultManager.gd[i].Props[0].FontColor.Color)
     else
       DrawMonthHeaderArrows(ACanvas, ABounds, AArrows, ASideWidth, clWindowText);
@@ -2215,7 +2213,7 @@ begin
   else
     inherited
 //  Old Flat style //
-//  if Skinned then ACanvas.FillRect(ARect, MixColors(DefaultManager.GetActiveEditFontColor, DefaultManager.GetActiveEditColor, 0.5)) else inherited;
+//  if Skinned then ACanvas.FillRect(ARect, BlendColors(DefaultManager.GetActiveEditFontColor, DefaultManager.GetActiveEditColor, 0.5)) else inherited;
 end;
 
 
@@ -2335,8 +2333,8 @@ var
   begin
     with DefaultManager do
       if IsValidImgIndex(MaskIndex) then begin
-        p.x := (WidthOf(R)  - WidthOfImage (ma[MaskIndex])) div 2;
-        p.y := (HeightOf(R) - HeightOfImage(ma[MaskIndex])) div 2;
+        p.x := (WidthOf(R)  - ma[MaskIndex].Width) div 2;
+        p.y := (HeightOf(R) - ma[MaskIndex].Height) div 2;
         if (p.x < 0) or (p.y < 0) then
           Exit;
 
@@ -2438,7 +2436,7 @@ begin
           CI := MakeCacheInfo(BGBmp);
           with ScrollBtns[asLeft] do begin
             if DefaultManager.gd[SkinIndex].ReservedBoolean and (MaskIndex >= 0) then
-              TmpBmp.Width := math.max(GetSystemMetrics(SM_CXHSCROLL), WidthOfImage(DefaultManager.ma[MaskIndex]));
+              TmpBmp.Width := math.max(GetSystemMetrics(SM_CXHSCROLL), DefaultManager.ma[MaskIndex].Width);
 
             PaintItemFast(SkinIndex, MaskIndex, BGIndex[0], BGIndex[1], CI, True, StateValues[AState], MkRect(TmpBmp), MkPoint, TmpBmp, DefaultManager);
             FreeAndNil(BGBmp);
@@ -2452,7 +2450,7 @@ begin
           CI := MakeCacheInfo(BGBmp);
           with ScrollBtns[asRight] do begin
             if DefaultManager.gd[SkinIndex].ReservedBoolean and (MaskIndex >= 0) then
-              TmpBmp.Width := math.max(GetSystemMetrics(SM_CXHSCROLL), WidthOfImage(DefaultManager.ma[MaskIndex]));
+              TmpBmp.Width := math.max(GetSystemMetrics(SM_CXHSCROLL), DefaultManager.ma[MaskIndex].Width);
 
             PaintItemFast(SkinIndex, MaskIndex, BGIndex[0], BGIndex[1], CI, True, StateValues[AState], MkRect(TmpBmp), MkPoint, TmpBmp, DefaultManager);
             FreeAndNil(BGBmp);
@@ -2485,7 +2483,7 @@ begin
           CI := MakeCacheInfo(BGBmp);
           with ScrollBtns[asTop] do begin
             if DefaultManager.gd[SkinIndex].ReservedBoolean and (MaskIndex >= 0) then
-              TmpBmp.Height := math.max(GetSystemMetrics(SM_CXHSCROLL), HeightOfImage(DefaultManager.ma[MaskIndex]));
+              TmpBmp.Height := math.max(GetSystemMetrics(SM_CXHSCROLL), DefaultManager.ma[MaskIndex].Height);
 
             PaintItemFast(SkinIndex, MaskIndex, BGIndex[0], BGIndex[1], CI, True, StateValues[AState], MkRect(TmpBmp), MkPoint, TmpBmp, DefaultManager);
             FreeAndNil(BGBmp);
@@ -2499,7 +2497,7 @@ begin
           CI := MakeCacheInfo(BGBmp);
           with ScrollBtns[asBottom] do begin
             if DefaultManager.gd[SkinIndex].ReservedBoolean and (MaskIndex >= 0) then
-              TmpBmp.Height := math.max(GetSystemMetrics(SM_CXHSCROLL), HeightOfImage(DefaultManager.ma[MaskIndex]));
+              TmpBmp.Height := math.max(GetSystemMetrics(SM_CXHSCROLL), DefaultManager.ma[MaskIndex].Height);
 
             PaintItemFast(SkinIndex, MaskIndex, BGIndex[0], BGIndex[1], CI, True, StateValues[AState], MkRect(TmpBmp), MkPoint, TmpBmp, DefaultManager);
             FreeAndNil(BGBmp);
@@ -2529,8 +2527,8 @@ begin
     if DefaultManager.IsValidImgIndex(i) then begin
       TmpBmp := CreateBmp32(WidthOf(ARect), HeightOf(ARect));
 
-      p.x := (WidthOf(ARect) - WidthOfImage(DefaultManager.ma[i]));
-      p.y := (HeightOf(ARect) - HeightOfImage(DefaultManager.ma[i]));
+      p.x := (WidthOf(ARect) - DefaultManager.ma[i].Width);
+      p.y := (HeightOf(ARect) - DefaultManager.ma[i].Height);
 
       FillDC(TmpBmp.Canvas.Handle, ARect, DefaultManager.GetGlobalColor);
       DrawSkinGlyph(TmpBmp, p, 0, 1, DefaultManager.ma[i], MakeCacheInfo(TmpBmp));
@@ -2562,8 +2560,8 @@ var
   begin
     with DefaultManager do
       if DefaultManager.IsValidImgIndex(ConstData.ScrollBtns[Side].GlyphIndex) then begin
-        p.x := (WidthOf(R)  - WidthOfImage (ma[ConstData.ScrollBtns[Side].GlyphIndex])) div 2;
-        p.y := (HeightOf(R) - HeightOfImage(ma[ConstData.ScrollBtns[Side].GlyphIndex])) div 2;
+        p.x := (WidthOf(R)  - ma[ConstData.ScrollBtns[Side].GlyphIndex].Width) div 2;
+        p.y := (HeightOf(R) - ma[ConstData.ScrollBtns[Side].GlyphIndex].Height) div 2;
         if (p.x < 0) or (p.y < 0) then
           Exit;
 
@@ -2694,11 +2692,11 @@ begin
 end;
 
 
-{$IFDEF VER14_1_2}
-procedure TcxACLookAndFeelPainter.DrawTrackBarThumbBorderUpDown(ACanvas: TcxCanvas; const ALightPolyLine, AShadowPolyLine, ADarkPolyLine: dxCore.TPoints);
-{$ELSE}
+//{$IFDEF VER14_1_2}
+//procedure TcxACLookAndFeelPainter.DrawTrackBarThumbBorderUpDown(ACanvas: TcxCanvas; const ALightPolyLine, AShadowPolyLine, ADarkPolyLine: dxCore.TPoints);
+//{$ELSE}
 procedure TcxACLookAndFeelPainter.DrawTrackBarThumbBorderUpDown(ACanvas: TcxCanvas; const ALightPolyLine, AShadowPolyLine, ADarkPolyLine: TPointArray);
-{$ENDIF}
+//{$ENDIF}
 begin
   inherited;
 end;
@@ -2762,8 +2760,8 @@ begin
       i := DefaultManager.ConstData.CheckBox[cbChecked];
 
     if DefaultManager.IsValidImgIndex(i) then begin
-      Result.x := WidthOfImage (DefaultManager.ma[i]);
-      Result.y := HeightOfImage(DefaultManager.ma[i]);
+      Result.x := DefaultManager.ma[i].Width;
+      Result.y := DefaultManager.ma[i].Height;
     end
     else
       Result := inherited FilterCloseButtonSize;
@@ -2778,13 +2776,13 @@ var
   i: integer;
 begin
   if Skinned then begin
-    i := DefaultManager.ConstData.MaskCloseSmall;
+    i := DefaultManager.ConstData.TitleGlyphs[tgSmallClose];
     if i < 0 then
-      i := DefaultManager.ConstData.MaskCloseBtn;
+      i := DefaultManager.ConstData.TitleGlyphs[tgClose];
 
     if DefaultManager.IsValidImgIndex(i) then begin
-      Result.x := WidthOfImage (DefaultManager.ma[i]);
-      Result.y := HeightOfImage(DefaultManager.ma[i]);
+      Result.x := DefaultManager.ma[i].Width;
+      Result.y := DefaultManager.ma[i].Height;
     end
     else
       Result := inherited FilterCloseButtonSize;
@@ -2836,7 +2834,7 @@ end;
 function TcxACLookAndFeelPainter.FooterSeparatorColor: TColor;
 begin
   if Skinned then
-    Result := MixColors(DefaultManager.GetGlobalFontColor, DefaultManager.GetGlobalColor, 0.5)
+    Result := BlendColors(DefaultManager.GetGlobalFontColor, DefaultManager.GetGlobalColor, 127)
   else
     Result := inherited FooterSeparatorColor
 end;
@@ -3212,22 +3210,22 @@ function _CheckDevEx(const Control: TControl): boolean;
 begin
   if (RootLookAndFeel.SkinName = s_AlphaSkins) then begin
     if Control.ClassName = 'TcxGrid' then begin
-      TAcesscxControl(Control).Loaded;
+      TAccesscxControl(Control).Loaded;
       Result := True;
     end
     else
       if (Control.ClassName = 'TcxPivotGrid') or (Control.ClassName = 'TcxDBPivotGrid') then begin
-        TAcesscxControl(Control).FontChanged;
+        TAccesscxControl(Control).FontChanged;
         Result := True;
       end
       else
         if Control.ClassName = 'TcxScheduler' then begin
-          TAcesscxControl(Control).Loaded;
+          TAccesscxControl(Control).Loaded;
           Result := True;
         end
         else
           if Control is TcxControl then begin
-            TAcesscxControl(Control).Invalidate;
+            TAccesscxControl(Control).Invalidate;
             Result := True;
           end
           else
@@ -3452,7 +3450,7 @@ begin
 end;
 
 
-class procedure TdxACStatusBarSkinPainter.DrawSizeGrip(AStatusBar: TdxCustomStatusBar; ACanvas: TcxCanvas; R: TRect);
+class procedure TdxACStatusBarSkinPainter.DrawSizeGrip(AStatusBar: TdxCustomStatusBar; ACanvas: TcxCanvas; R: TRect{$IFNDEF VER14_1_2}; AOverlapped: Boolean{$ENDIF});
 var
   Bmp: TBitmap;
 begin

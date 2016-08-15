@@ -126,6 +126,9 @@ contains
   acSlider in 'acSlider.pas',
   acPageScroller in 'acPageScroller.pas',
   acMeter in 'acMeter.pas',
+  acPopupCtrls in 'acPopupCtrls.pas',
+  acPopupController in 'acPopupController.pas',
+  acntTypes in 'acntTypes.pas',
   acGlow in 'acGlow.pas';
 
 end.

@@ -1,6 +1,6 @@
 unit sDBCheckBox;
 {$I sDefs.inc}
-
+//+
 interface
 
 uses
@@ -17,6 +17,7 @@ type
     FValueUncheck: string;
     FPaintControl: TPaintControl;
     FNullValue: TCheckBoxState;
+    FOnChange: TNotifyEvent;
     procedure DataChange(Sender: TObject);
     function GetDataField: string;
     function GetDataSource: TDataSource;
@@ -51,6 +52,7 @@ type
     property NullValue: TCheckBoxState read FNullValue write FNullValue default cbGrayed;
     property ValueChecked: string read FValueCheck write SetValueCheck;
     property ValueUnchecked: string read FValueUncheck write SetValueUncheck;
+    property OnChange: TNotifyEvent read FOnChange write FOnChange;
   end;
 
 
@@ -212,14 +214,13 @@ end;
 
 procedure TsDBCheckBox.SetDataSource(Value: TDataSource);
 begin
-  if not Assigned(FDataLink) then
-    Exit;
+  if Assigned(FDataLink) then begin
+    if not (FDataLink.DataSourceFixed and (csLoading in ComponentState)) then
+      FDataLink.DataSource := Value;
 
-  if not (FDataLink.DataSourceFixed and (csLoading in ComponentState)) then
-    FDataLink.DataSource := Value;
-
-  if Value <> nil then
-    Value.FreeNotification(Self);
+    if Value <> nil then
+      Value.FreeNotification(Self);
+  end;
 end;
 
 
@@ -295,9 +296,18 @@ end;
 procedure TsDBCheckBox.WndProc(var Message: TMessage);
 begin
   with Message do
-    if (Msg = WM_CREATE) or (Msg = WM_WINDOWPOSCHANGED) or
-          (Msg = CM_TEXTCHANGED) or (Msg = CM_FONTCHANGED) then
-      FPaintControl.DestroyHandle;
+    case Msg of
+      WM_CREATE, WM_WINDOWPOSCHANGED, CM_FONTCHANGED, CM_TEXTCHANGED:
+        FPaintControl.DestroyHandle;
+
+      CM_CHANGED: begin
+        inherited;
+        if not (csDesigning in COmponentState) and Assigned(FOnChange) then
+          FOnChange(Self);
+
+        Exit;
+      end
+    end;
 
   if not (csPaintCopy in ControlState) or (Message.Msg <> WM_PAINT) or (csDesigning in componentState) then
     inherited

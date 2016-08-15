@@ -1,6 +1,7 @@
 unit sPanel;
 {$I sDefs.inc}
 //{$DEFINE LOGGED}
+//+
 
 interface
 
@@ -89,8 +90,8 @@ type
 
 
   TsColInfo = record
-    Color: TColor;
-    R: TRect;
+    ciColor: TColor;
+    ciRect: TRect;
   end;
 
 
@@ -138,6 +139,94 @@ type
   end;
 
 
+  TsGradientPanel = class;
+  TacGradPaintData = class;
+
+  TacColorData1 = class(TPersistent)
+  private
+    FOwner: TacGradPaintData;
+    FUseSkinColor: boolean;
+    FColor: TColor;
+    procedure SetUseSkinColor(const Value: boolean);
+    procedure SetColor(const Value: TColor);
+  public
+    constructor Create(AOwner: TacGradPaintData);
+    procedure Invalidate;
+  published
+    property Color: TColor read FColor write SetColor default clWhite;
+    property UseSkinColor: boolean read FUseSkinColor write SetUseSkinColor default False;
+  end;
+
+
+  TacColorData2 = class(TacColorData1)
+  public
+    constructor Create(AOwner: TacGradPaintData);
+  published
+    property Color default clBtnFace;
+    property UseSkinColor default True;
+  end;
+
+
+  TacGradPaintData = class(TPersistent)
+  private
+    FIsVertical: boolean;
+    FOwner: TsGradientPanel;
+    FColor1: TacColorData1;
+    FColor2: TacColorData2;
+    FCustomGradient: string;
+    procedure SetIsVertical(const Value: boolean);
+    procedure SetColor1(const Value: TacColorData1);
+    procedure SetColor2(const Value: TacColorData2);
+    procedure SetCustomGradient(const Value: string);
+  public
+    constructor Create(AOwner: TsGradientPanel);
+    destructor Destroy; override;
+    procedure Invalidate;
+  published
+    property IsVertical: boolean read FIsVertical write SetIsVertical default True;
+    property Color1: TacColorData1 read FColor1 write SetColor1;
+    property Color2: TacColorData2 read FColor2 write SetColor2;
+    property CustomGradient: string read FCustomGradient write SetCustomGradient;
+  end;
+
+
+{$IFDEF DELPHI_XE3}[ComponentPlatformsAttribute(pidWin32 or pidWin64)]{$ENDIF}
+  TsGradientPanel = class(TPanel)
+{$IFNDEF NOTFORHELP}
+  private
+    FOnPaint: TPaintEvent;
+    FPaintData: TacGradPaintData;
+{$IFNDEF D2010}
+    FOnMouseLeave,
+    FOnMouseEnter: TNotifyEvent;
+{$ENDIF}
+  protected
+    FCacheBmp: TBitmap;
+    procedure CopyCache(DC: hdc); virtual;
+  public
+    BGChanged: boolean;
+    constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
+    procedure AfterConstruction; override;
+    procedure Loaded; override;
+    procedure Paint; override;
+    procedure UpdatePalette;
+    procedure OurPaint(DC: HDC = 0; SendUpdated: boolean = True); virtual;
+    function PrepareCache: boolean; virtual;
+    procedure WndProc(var Message: TMessage); override;
+    procedure WriteText(R: TRect; aCanvas: TCanvas = nil; aDC: hdc = 0);
+    procedure PaintWindow(DC: HDC); override;
+  published
+{$ENDIF} // NOTFORHELP
+    property PaintData: TacGradPaintData read FPaintData write FPaintData;
+    property OnPaint: TPaintEvent read FOnPaint write FOnPaint;
+{$IFNDEF D2010}
+    property OnMouseEnter: TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
+    property OnMouseLeave: TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
+{$ENDIF}
+  end;
+
+
   TsStdColorsPanel = class(TsColorsPanel);
 {$ENDIF} // NOTFORHELP
 
@@ -147,7 +236,7 @@ implementation
 uses
   math, TypInfo,
   {$IFDEF LOGGED} sDebugMsgs, {$ENDIF}
-  sSkinProps, sMessages, sGraphUtils, sVCLUtils, sSkinManager, sBorders, acntUtils, sMaskData, sAlphaGraph, sStyleSimply;
+  sSkinProps, sMessages, sGraphUtils, sVCLUtils, sSkinManager, sBorders, acntUtils, sMaskData, sAlphaGraph, sStyleSimply, sGradient;
 
 
 procedure TsPanel.AfterConstruction;
@@ -165,17 +254,15 @@ end;
 
 constructor TsPanel.Create(AOwner: TComponent);
 begin
-  inherited Create(AOwner);
   FCommonData := TsCommonData.Create(Self, True);
   FCommonData.COC := COC_TsPanel;
+  inherited Create(AOwner);
 end;
 
 
 destructor TsPanel.Destroy;
 begin
-  if Assigned(FCommonData) then
-    FreeAndNil(FCommonData);
-
+  FreeAndNil(FCommonData);
   inherited Destroy;
 end;
 
@@ -204,9 +291,6 @@ begin
     else
       NewDC := Canvas.Handle;
 
-//    if (GetClipBox(DC, R) = NULLREGION) or (R.Left = R.Right) or (R.Top = R.Bottom) then
-//      Exit; Uncomment in Beta
-
     if IsCached(FCommonData) and not SkinData.CustomColor or (Self is TsColorsPanel) or InAnimationProcess then begin
       i := GetClipBox(NewDC, R);
       if (i = 0) {or IsRectEmpty(R) is not redrawn while resizing }then
@@ -232,7 +316,7 @@ begin
       FCommonData.FUpdating := False;
       i := SkinBorderMaxWidth(FCommonData);
       SavedDC := SaveDC(NewDC);
-      ExcludeControls(NewDC, Self, actGraphic, 0, 0);
+      ExcludeControls(NewDC, Self, 0, 0);
       if not SkinData.CustomColor then begin
         ParentBG.PleaseDraw := False;
         GetBGInfo(@ParentBG, Self.Parent);
@@ -248,7 +332,7 @@ begin
       if (FCommonData.SkinManager.gd[FCommonData.SkinIndex].Props[0].Transparency = 100) and (ParentBG.BgType = btCache) then begin
         if not InUpdating(FCommonData) then
           if i = 0 then
-            BitBlt(NewDC, 0, 0, Width, Height, ParentBG.Bmp.Canvas.Handle, ParentBG.Offset.X, ParentBG.Offset.Y, SRCCOPY)
+            BitBlt(NewDC, 0, 0, Width, Height, ParentBG.Bmp.Canvas.Handle, ParentBG.Offset.X + Left, ParentBG.Offset.Y + Top, SRCCOPY)
           else begin
             if FCommonData.FCacheBmp = nil then
               FCommonData.FCacheBmp := CreateBmp32(Width, Height);
@@ -269,9 +353,9 @@ begin
         case FCommonData.SkinManager.gd[FCommonData.SkinIndex].Props[0].Transparency of
           100: C := ParentBG.Color;
           0:   C := iff(FCommonData.CustomColor, Color, FCommonData.SkinManager.gd[FCommonData.SkinIndex].Props[0].Color)
-          else C := MixColors(ParentBG.Color,
+          else C := BlendColors(ParentBG.Color,
                               iff(FCommonData.CustomColor, ColorToRGB(Color), FCommonData.SkinManager.gd[FCommonData.SkinIndex].Props[0].Color),
-                              FCommonData.SkinManager.gd[FCommonData.SkinIndex].Props[0].Transparency / 100);
+                              FCommonData.SkinManager.gd[FCommonData.SkinIndex].Props[0].Transparency * MaxByte div 100);
         end;
         if i = 0 then
           FillDC(DC, R, C)
@@ -281,7 +365,7 @@ begin
 
           if (FCommonData.SkinManager.gd[FCommonData.SkinIndex].Props[0].Transparency <> 100) or
                FCommonData.SkinManager.IsValidImgIndex(FCommonData.BorderIndex) and
-                 (FCommonData.SkinManager.ma[FCommonData.BorderIndex].DrawMode and BDM_FILL <> BDM_FILL) then begin
+                 (FCommonData.SkinManager.ma[FCommonData.BorderIndex].DrawMode and BDM_FILL = 0) then begin
             R := PaintBorderFast(NewDC, R, i, FCommonData, 0);
             FillDC(NewDC, R, C);
             BitBltBorder(NewDC, 0, 0, Width, Height, FCommonData.FCacheBmp.Canvas.Handle, 0, 0, i);
@@ -293,7 +377,7 @@ begin
         end;
       end;
       R := ClientRect;
-      i := BorderWidth + integer(BevelInner <> bvNone) * BevelWidth + integer(BevelOuter <> bvNone) * BevelWidth;
+      i := BorderWidth + (integer(BevelInner <> bvNone) + integer(BevelOuter <> bvNone)) * BevelWidth;
       InflateRect(R, -i, -i);
       if DC = 0 then
         TmpCanvas := Canvas
@@ -314,7 +398,6 @@ begin
       RestoreDC(NewDC, SavedDC);
       sVCLUtils.PaintControls(NewDC, Self, True, MkPoint);
     end;
-
     if SendUpdated and not (csPaintCopy in ControlState) {and not InUpdating(FCommonData) test in Beta } then
       SetParentUpdated(Self);
   end;
@@ -372,14 +455,10 @@ begin
             end;
           end;
 
-          if SkinData.SkinManager.ConstData.MaskCloseSmall < 0 then
-            Ndx := SkinData.SkinManager.ConstData.MaskCloseBtn
-          else
-            Ndx := SkinData.SkinManager.ConstData.MaskCloseSmall;
-
+          Ndx := SkinData.SkinManager.ConstData.TitleGlyphs[tgSmallClose];
           if Ndx >= 0 then begin
-            Bmp.Width  := WidthOfImage (SkinData.SkinManager.ma[Ndx]);
-            Bmp.Height := HeightOfImage(SkinData.SkinManager.ma[Ndx]);
+            Bmp.Width  := SkinData.SkinManager.ma[Ndx].Width;
+            Bmp.Height := SkinData.SkinManager.ma[Ndx].Height;
             if Bmp.Height > DragSize then
               dRatio := DragSize / Bmp.Height
             else
@@ -477,7 +556,7 @@ begin
 
       AC_REMOVESKIN: begin
         ControlStyle := ControlStyle - [csOpaque];
-        if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
+        if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then begin
           CommonMessage(Message, FCommonData);
           Invalidate;
         end;
@@ -488,21 +567,21 @@ begin
       AC_SETNEWSKIN: begin
         ControlStyle := ControlStyle - [csOpaque];
         AlphaBroadCast(Self, Message);
-        if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then
+        if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then
           CommonMessage(Message, FCommonData);
 
         Exit;
       end;
 
       AC_REFRESH: begin
-        if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
+        if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then begin
           CommonMessage(Message, FCommonData);
           if Assigned(OnPaint) or DockSite then
             SkinData.CtrlSkinState := SkinData.CtrlSkinState and not ACS_FAST;
 
           if HandleAllocated and not (csLoading in ComponentState) and Visible then begin
             InvalidateRect(Handle, nil, True);
-            RedrawWindow(Handle, nil, 0, RDW_FRAME or RDW_INVALIDATE or RDW_UPDATENOW or RDW_ERASE);
+            RedrawWindow(Handle, nil, 0, RDWA_NOCHILDRENNOW);
             AlphaBroadCast(Self, Message);
           end;
         end
@@ -518,31 +597,34 @@ begin
             SkinData.CtrlSkinState := SkinData.CtrlSkinState and not ACS_FAST;
 
           InitBGInfo(FCommonData, PacBGInfo(Message.LParam), 0);
-          if (PacBGInfo(Message.LParam)^.BgType = btNotReady) or (PacBGInfo(Message.LParam)^.BgType = btFill) then
-            Exit;
-          // If BG is not ready yet
-          if SkinData.BGChanged and ((SkinData.FCacheBmp.Width <> Width) or (SkinData.FCacheBmp.Height <> Height)) and not SkinData.Updating then
-            if (Parent = nil) or not Parent.HandleAllocated or GetBoolMsg(Parent.Handle, ac_CtrlHandled) then begin // If parent is skinned
-              PacBGInfo(Message.LParam)^.BgType := btNotReady;
-              Exit;
+          if not (PacBGInfo(Message.LParam)^.BgType in [btNotReady, btFill]) then
+            with PacBGInfo(Message.LParam)^ do begin
+              // If BG is not ready yet
+              if SkinData.BGChanged and ((SkinData.FCacheBmp.Width <> Width) or (SkinData.FCacheBmp.Height <> Height)) and not SkinData.Updating then
+                if (Parent = nil) or not Parent.HandleAllocated or GetBoolMsg(Parent.Handle, ac_CtrlHandled) then begin // If parent is skinned
+                  BgType := btNotReady;
+                  Exit;
+                end;
+
+              if (WidthOf(ClientRect) <> Width) and (BgType = btCache) and not PleaseDraw then begin
+                SaveIndex := BorderWidth + BevelWidth * (integer(BevelInner <> bvNone) + integer(BevelOuter <> bvNone));
+                inc(Offset.X, SaveIndex);
+                inc(Offset.Y, SaveIndex);
+              end;
             end;
 
-          if (WidthOf(ClientRect) <> Width) and (PacBGInfo(Message.LParam)^.BgType = btCache) and not PacBGInfo(Message.LParam)^.PleaseDraw then begin
-            SaveIndex := BorderWidth + BevelWidth * (integer(BevelInner <> bvNone) + integer(BevelOuter <> bvNone));
-            inc(PacBGInfo(Message.LParam)^.Offset.X, SaveIndex);
-            inc(PacBGInfo(Message.LParam)^.Offset.Y, SaveIndex);
-          end;
           Exit;
         end;
 
       AC_GETDEFINDEX: begin
         if FCommonData.SkinManager <> nil then
-          case BevelOuter of
-            bvRaised:  Message.Result := FCommonData.SkinManager.ConstData.Sections[ssPanel] + 1;
-            bvLowered: Message.Result := FCommonData.SkinManager.ConstData.Sections[ssPanelLow] + 1;
-            bvSpace:   Message.Result := FCommonData.SkinManager.ConstData.Sections[ssGroupBox] + 1;
-            bvNone:    Message.Result := FCommonData.SkinManager.ConstData.Sections[ssTransparent] + 1;
-          end;
+          with FCommonData.SkinManager.ConstData, Message do
+            case BevelOuter of
+              bvRaised:  Result := 1 + Sections[ssPanel];
+              bvLowered: Result := 1 + Sections[ssPanelLow];
+              bvSpace:   Result := 1 + Sections[ssGroupBox];
+              bvNone:    Result := 1 + Sections[ssTransparent];
+            end;
 
         Exit;
       end;
@@ -557,7 +639,7 @@ begin
             BitBlt(TWMPaint(Message).DC, 0, 0, Width, Height, Canvas.Handle, 0, 0, SRCCOPY);
         end
         else
-          inherited;
+          Perform(WM_PAINT, Message.WParam, Message.LParam);
 
       WM_ERASEBKGND:
         if not Assigned(FOnPaint) then
@@ -583,7 +665,7 @@ begin
               SetParentUpdated(Self);
             end
             else
-              if SkinData.CtrlSkinState and ACS_FAST = ACS_FAST then
+              if SkinData.CtrlSkinState and ACS_FAST <> 0 then
                 SetParentUpdated(Self);
 
             Exit;
@@ -610,7 +692,7 @@ begin
             FCommonData.FCacheBMP := CreateBmp32;
 
           DC := TWMPaint(Message).DC;
-          if not IsCached(FCommonData) or  SkinData.CustomColor or FCommonData.BGChanged then
+          if not IsCached(FCommonData) or SkinData.CustomColor or FCommonData.BGChanged then
             PrepareCache;
 
           OurPaint(DC, False);
@@ -679,7 +761,7 @@ begin
               inherited;
         end
         else
-          if (Message.WParam <> 0) then begin // From PaintTo
+          if Message.WParam <> 0 then begin // From PaintTo
             if FCommonData.BGChanged then
               PrepareCache;
 
@@ -708,12 +790,11 @@ begin
         Exit;
       end;
 
-      CM_INVALIDATE: begin
+      CM_INVALIDATE:
         if FOldBevel <> BevelOuter then begin
           FCommonData.UpdateIndexes;
           FOldBevel := BevelOuter;
         end;
-      end;
 
       CM_COLORCHANGED:
         if SkinData.CustomColor then
@@ -730,7 +811,7 @@ begin
 
       WM_WINDOWPOSCHANGING:
         if (SkinData.SkinManager.gd[SkinData.SkinIndex].Props[0].Transparency <> 0) then
-          if (TWMWindowPosChanging(Message).WindowPos.flags and SWP_NOMOVE <> SWP_NOMOVE) then
+          if (TWMWindowPosChanging(Message).WindowPos.flags and SWP_NOMOVE = 0) then
             FCommonData.BGChanged := True;
 
       WM_SIZE:
@@ -741,8 +822,8 @@ begin
     case Message.Msg of
       WM_WINDOWPOSCHANGED, WM_SIZE:
         if not InUpdating(FCommonData) then begin
-          if FCommonData.BGChanged then
-            Repaint;
+//          if FCommonData.BGChanged then
+//            Repaint;
 
           if Assigned(OnResize) and (Message.Msg = WM_SIZE) then
             OnResize(Self);
@@ -778,7 +859,7 @@ begin
     Exit;
 {$ENDIF}
   if Caption <> '' then begin
-    if (aCanvas = nil) then
+    if aCanvas = nil then
       if aDC <> 0 then begin
         C := TCanvas.Create;
         C.Handle := aDC;
@@ -859,8 +940,8 @@ end;
 procedure TsDragBar.Notification(AComponent: TComponent; Operation: TOperation);
 begin
   inherited;
-  if (Operation = opRemove) then
-    if (AComponent = DraggedControl) then
+  if Operation = opRemove then
+    if AComponent = DraggedControl then
       DraggedControl := nil
 end;
 
@@ -939,7 +1020,7 @@ end;
 procedure TsColorsPanel.ChangeScale(M, D: Integer);
 begin
   inherited;
-  if (M <> D) then begin
+  if M <> D then begin
     FItemWidth  := MulDiv(FItemWidth,  M, D);
     FItemHeight := MulDiv(FItemHeight, M, D);
     ItemMargin  := MulDiv(ItemMargin,  M, D);
@@ -952,7 +1033,7 @@ begin
   if FItemIndex < 0 then
     Result := clWhite
   else
-    Result := ColorsArray[FItemIndex].Color;
+    Result := ColorsArray[FItemIndex].ciColor;
 end;
 
 
@@ -995,18 +1076,20 @@ begin
   for y := 0 to RowCount - 1 do
     for x := 0 to ColCount - 1 do begin
       SetLength(ColorsArray, i + 1);
-      if i < FColors.Count then begin
-        s := ExtractWord(1, FColors[i], [#13, #10, s_Space]);
-        ColorsArray[i].Color := SwapInteger(HexToInt(s));
-      end
-      else begin
-        ColorsArray[i].Color := SwapInteger(ColorToRgb(clWhite));
-        FColors.Add('FFFFFF');
+      with ColorsArray[i] do begin
+        if i < FColors.Count then begin
+          s := ExtractWord(1, FColors[i], [#13, #10, s_Space]);
+          ciColor := SwapInteger(HexToInt(s));
+        end
+        else begin
+          ciColor := SwapInteger(ColorToRgb(clWhite));
+          FColors.Add('FFFFFF');
+        end;
+        ciRect.Left   := ItemMargin + x * (ItemWidth + ItemMargin);
+        ciRect.Top    := ItemMargin + y * (ItemHeight + ItemMargin);
+        ciRect.Right  := ciRect.Left + ItemWidth;
+        ciRect.Bottom := ciRect.Top + ItemHeight;
       end;
-      ColorsArray[i].R.Left := ItemMargin + x * (ItemWidth + ItemMargin);
-      ColorsArray[i].R.Top := ItemMargin + y * (ItemHeight + ItemMargin);
-      ColorsArray[i].R.Right := ColorsArray[i].R.Left + ItemWidth;
-      ColorsArray[i].R.Bottom := ColorsArray[i].R.Top + ItemHeight;
       inc(i);
     end;
 end;
@@ -1019,7 +1102,7 @@ var
 begin
   Result := - 1;
   for i := 0 to Count - 1 do begin
-    R := ColorsArray[i].R;
+    R := ColorsArray[i].ciRect;
     InflateRect(R, ItemMargin, ItemMargin);
     if PtInRect(R, p) then begin
       Result := i;
@@ -1039,7 +1122,9 @@ end;
 procedure TsColorsPanel.MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
   inherited;
-  SetFocus;
+  if CanFocus and IsWindowVisible(Handle) then
+    SetFocus;
+
   ItemIndex := GetItemByCoord(Point(x, y));
 end;
 
@@ -1056,7 +1141,7 @@ begin
   else
     NewDC := Canvas.Handle;
 
-  if not (csDestroying in ComponentState) and not (csCreating in Parent.ControlState) and Assigned(FCommonData) then begin
+  if not (csDestroying in ComponentState) and not (csCreating in Parent.ControlState) then begin
     if FCommonData.Skinned then begin
       if not InUpdating(FCommonData) then begin
         InitCacheBmp(SkinData);
@@ -1087,8 +1172,8 @@ begin
         PaintColors(NewDC);
     end;
     // Selected item
-    if (FItemIndex <> -1) and not Assigned(FOnPaint) then begin
-      R := ColorsArray[FItemIndex].R;
+    if (FItemIndex >= 0) and not Assigned(FOnPaint) then begin
+      R := ColorsArray[FItemIndex].ciRect;
       Brush := TBrush.Create;
       Brush.Style := bsSolid;
       Brush.Color := clWhite;
@@ -1111,9 +1196,18 @@ end;
 procedure TsColorsPanel.PaintColors(const DC: hdc);
 var
   i: integer;
+  bordColor: TColor;
 begin
+  if SkinData.Skinned then
+    bordColor := SkinData.SkinManager.Palette[pcBorder]
+  else
+    bordColor := clBtnShadow;
+
   for i := 0 to Count - 1 do
-    FillDC(DC, ColorsArray[i].R, ColorsArray[i].Color);
+    with ColorsArray[i] do begin
+      FillDC(DC, ciRect, ciColor);
+      FillDCBorder(DC, ciRect, 1, 1, 1, 1, bordColor);
+    end;
 end;
 
 
@@ -1135,7 +1229,7 @@ begin
     end;
 
     1: begin
-      if FItemIndex > Count - 1 then
+      if FItemIndex >= Count then
         FItemIndex := - 1;
 
       if FItemIndex <> Value then begin
@@ -1180,9 +1274,475 @@ begin
   inherited;
   case Message.Msg of
     WM_SETFOCUS, WM_KILLFOCUS:
-      if FItemIndex <> -1 then
+      if FItemIndex >= 0 then
         Repaint;
   end;
+end;
+
+
+procedure TsGradientPanel.AfterConstruction;
+begin
+  inherited;
+end;
+
+
+procedure TsGradientPanel.CopyCache(DC: hdc);
+begin
+  BitBlt(DC, 0, 0, Width, Height, FCacheBmp.Canvas.Handle, 0, 0, SRCCOPY)
+end;
+
+
+constructor TsGradientPanel.Create(AOwner: TComponent);
+begin
+  inherited;
+  BGChanged := True;
+  FCacheBmp := CreateBmp32;
+  FPaintData := TacGradPaintData.Create(Self);
+end;
+
+
+destructor TsGradientPanel.Destroy;
+begin
+  FCacheBmp.Free;
+  FPaintData.Free;
+  inherited;
+end;
+
+
+procedure TsGradientPanel.Loaded;
+begin
+  inherited;
+  ControlStyle := ControlStyle - [csOpaque];
+end;
+
+
+procedure TsGradientPanel.OurPaint(DC: HDC; SendUpdated: boolean);
+var
+  R: TRect;
+  i: integer;
+  b: boolean;
+  NewDC: HDC;
+begin
+  if Showing then begin
+    if DC <> 0 then
+      NewDC := DC
+    else
+      NewDC := Canvas.Handle;
+
+    b := BGChanged;
+    if BGChanged and not PrepareCache then
+      Exit;
+
+    i := GetClipBox(NewDC, R);
+    if (i = 0) {or IsRectEmpty(R) is not redrawn while resizing }then
+      Exit;
+
+    CopyCache(NewDC);
+    sVCLUtils.PaintControls(NewDC, Self, b, MkPoint);
+
+    if SendUpdated and not (csPaintCopy in ControlState) {and not InUpdating(FCommonData) test in Beta } then
+      SetParentUpdated(Self);
+  end;
+end;
+
+
+
+procedure TsGradientPanel.Paint;
+begin
+  inherited;
+  if Showing and Assigned(FOnPaint) then
+    FOnPaint(Self, Canvas)
+end;
+
+
+procedure TsGradientPanel.PaintWindow(DC: HDC);
+begin
+  if not (csPaintCopy in ControlState) then
+    inherited;
+
+  OurPaint(DC);
+end;
+
+
+function TsGradientPanel.PrepareCache: boolean;
+var
+  R: TRect;
+  s, s1, s2: string;
+begin
+  FCacheBmp.Width := Width;
+  FCacheBmp.Height := Height;
+
+  R := MkRect(FCacheBmp);
+  // Paint here
+  if (PaintData.CustomGradient = '') {or (PaintData.CustomGradient = 'N/A') }then begin
+    if FPaintData.Color1.UseSkinColor and (DefaultManager <> nil) and DefaultManager.CommonSkinData.Active then
+      s1 := IntToStr(DefaultManager.Palette[pcMainColor])
+    else
+      s1 := IntToStr(ColorToRGB(FPaintData.Color1.Color));
+
+    if FPaintData.Color2.UseSkinColor and (DefaultManager <> nil) and DefaultManager.CommonSkinData.Active then
+      s2 := IntToStr(DefaultManager.Palette[pcMainColor])
+    else
+      s2 := IntToStr(ColorToRGB(FPaintData.Color2.Color));
+
+    s := s1 + ';' + s2 + ';' + IntToStr(100) + ';' + IntToStr(integer(not PaintData.IsVertical)) + ';' + IntToStr(integer(not PaintData.IsVertical)) + ';';
+    s := s + s2 + ';' + s2 + ';' + IntToStr(0) + ';' + IntToStr(integer(not PaintData.IsVertical)) + ';' + IntToStr(integer(not PaintData.IsVertical)) + ';';
+    PaintGrad(FCacheBmp, R, s);
+  end
+  else
+    PaintGrad(FCacheBmp, R, PaintData.CustomGradient);
+
+  FCacheBmp.Canvas.Brush.Style := bsClear;
+  WriteText(R, FCacheBmp.Canvas);
+  if Assigned(FOnPaint) then
+    FOnPaint(Self, FCacheBmp.Canvas);
+
+  BGChanged := False;
+  Result := True;
+end;
+
+
+procedure TsGradientPanel.UpdatePalette;
+begin
+
+end;
+
+
+procedure TsGradientPanel.WndProc(var Message: TMessage);
+var
+  SaveIndex: Integer;
+  PS: TPaintStruct;
+  DC: HDC;
+begin
+{$IFDEF LOGGED}
+  AddToLog(Message);
+{$ENDIF}
+  if Message.Msg = SM_ALPHACMD then
+    case Message.WParamHi of
+      AC_CTRLHANDLED: begin
+        Message.Result := 1;
+        Exit;
+      end;
+
+      AC_REMOVESKIN: begin
+        if ACUInt(Message.LParam) = ACUInt(DefaultManager) then begin
+          UpdatePalette;
+          Invalidate;
+        end;
+        AlphaBroadCast(Self, Message);
+        Exit;
+      end;
+
+      AC_SETNEWSKIN: begin
+        AlphaBroadCast(Self, Message);
+        Exit;
+      end;
+
+      AC_REFRESH: begin
+        if ACUInt(Message.LParam) = ACUInt(DefaultManager) then begin
+          if HandleAllocated and not (csLoading in ComponentState) and Visible then begin
+            InvalidateRect(Handle, nil, True);
+            RedrawWindow(Handle, nil, 0, RDWA_NOCHILDRENNOW);
+            AlphaBroadCast(Self, Message);
+          end;
+        end
+        else
+          AlphaBroadCast(Self, Message);
+
+        Exit;
+      end;
+
+      AC_GETBG: begin
+        if not BGChanged or PrepareCache then begin
+          PacBGInfo(Message.LParam)^.Bmp := FCacheBmp;
+          PacBGInfo(Message.LParam)^.Offset := MkPoint;
+          PacBGInfo(Message.LParam)^.R := MkRect;
+          PacBGInfo(Message.LParam)^.BgType := btCache;
+        end;
+        Exit;
+      end;
+    end;
+
+  if not ControlIsReady(Self) then
+    case Message.Msg of
+      WM_PRINT:
+        if Assigned(OnPaint) then begin
+          OnPaint(Self, Canvas);
+          if TWMPaint(Message).DC <> 0 then
+            BitBlt(TWMPaint(Message).DC, 0, 0, Width, Height, Canvas.Handle, 0, 0, SRCCOPY);
+        end
+        else
+          Perform(WM_PAINT, Message.WParam, Message.LParam);
+
+      WM_ERASEBKGND:
+        if not Assigned(FOnPaint) then
+          inherited;
+
+      else
+        inherited;
+    end
+  else begin
+    case Message.Msg of
+      SM_ALPHACMD: begin
+        case Message.WParamHi of
+          AC_ENDPARENTUPDATE:
+            SetParentUpdated(Self);
+
+          AC_PREPARECACHE:
+            PrepareCache;
+        end;
+        Exit;
+      end;
+
+      WM_PRINT: begin
+        if ControlIsReady(Self) then begin
+          DC := TWMPaint(Message).DC;
+          PrepareCache;
+          OurPaint(DC, False);
+        end;
+        Exit;
+      end;
+
+      WM_PAINT:
+        if Visible or (csDesigning in ComponentState) then begin
+          BeginPaint(Handle, PS);
+          if TWMPAINT(Message).DC = 0 then
+            DC := GetDC(Handle)
+          else
+            DC := TWMPAINT(Message).DC;
+
+          try
+            SaveIndex := SaveDC(DC);
+            ControlState := ControlState + [csCustomPaint];
+            Canvas.Lock;
+            Canvas.Handle := DC;
+            try
+              TControlCanvas(Canvas).UpdateTextFlags;
+              OurPaint(DC);
+            finally
+              Canvas.Handle := 0;
+              Canvas.Unlock;
+            end;
+            RestoreDC(DC, SaveIndex);
+          finally
+            ControlState := ControlState - [csCustomPaint];
+            if TWMPaint(Message).DC = 0 then
+              ReleaseDC(Handle, DC);
+          end;
+          EndPaint(Handle, PS);
+          Message.Result := 0;
+          Exit;
+        end;
+
+      CM_TEXTCHANGED: begin
+        BGChanged := True;
+        Exit;
+      end;
+
+      WM_ERASEBKGND: begin
+        if not (csPaintCopy in ControlState) and (Message.WParam <> WParam(Message.LParam) {PerformEraseBackground, TntSpeedButtons}) then begin
+{          if not InUpdating(FCommonData) and not IsCached(SkinData) then
+            OurPaint(TWMPaint(Message).DC)
+          else}
+            if csDesigning in ComponentState then
+              inherited;
+        end
+        else
+          if Message.WParam <> 0 then begin // From PaintTo
+            if BGChanged then
+              PrepareCache;
+
+            if not BGChanged then
+              CopyCache(TWMPaint(Message).DC);
+          end;
+
+        Message.Result := 1;
+        Exit;
+      end;
+
+      CM_VISIBLECHANGED: begin
+        BGChanged := True;
+        if Visible then begin
+          PrepareCache;
+          inherited;
+          SetParentUpdated(Self);
+        end
+        else
+          inherited;
+
+        Exit;
+      end;
+
+      WM_KILLFOCUS, WM_SETFOCUS: begin
+        inherited;
+        Exit
+      end;
+
+      WM_SIZE:
+        BGChanged := True;
+    end;
+    inherited;
+    case Message.Msg of
+      WM_WINDOWPOSCHANGED, WM_SIZE:
+        if Assigned(OnResize) and (Message.Msg = WM_SIZE) then
+          OnResize(Self);
+
+      WM_SETFONT:
+        if Caption <> '' then begin
+          BGChanged := True;
+          Repaint;
+        end;
+    end;
+  end;
+{$IFNDEF D2010}
+  case Message.Msg of
+    CM_MOUSEENTER: if Assigned(FOnMouseEnter) then FOnMouseEnter(Self);
+    CM_MOUSELEAVE: if Assigned(FOnMouseLeave) then FOnMouseLeave(Self);
+  end;
+{$ENDIF}
+end;
+
+
+procedure TsGradientPanel.WriteText(R: TRect; aCanvas: TCanvas; aDC: hdc);
+var
+  C: TCanvas;
+  TmpRect: TRect;
+  Flags: Cardinal;
+begin
+{$IFDEF D2009}
+  if not ShowCaption then
+    Exit;
+{$ENDIF}
+  if Caption <> '' then begin
+    if aCanvas = nil then
+      if aDC <> 0 then begin
+        C := TCanvas.Create;
+        C.Handle := aDC;
+      end
+      else
+        Exit
+    else
+      C := aCanvas;
+
+    TmpRect := R;
+    C.Font.Assign(Font);
+{$IFDEF D2005}
+    if VerticalAlignment <> taVerticalCenter then begin
+      Flags := GetStringFlags(Self, alignment) or DT_SINGLELINE;
+      Flags := Flags and not DT_VCENTER and not DT_WORDBREAK;
+      if VerticalAlignment = taAlignBottom then
+        Flags := Flags or DT_BOTTOM;
+    end
+    else
+{$ENDIF}
+    begin
+      Flags := GetStringFlags(Self, alignment) or DT_WORDBREAK;
+      acDrawText(C.Handle, Caption, TmpRect, Flags or DT_CALCRECT);
+      R.Top := R.Top + (HeightOf(R) - HeightOf(TmpRect, True)) div 2 + BorderWidth;
+      R.Bottom := R.Top + HeightOf(TmpRect, True);
+    end;
+    acWriteText(C, PacChar(Caption), Enabled, R, Flags);
+    if (aCanvas = nil) and (C <> nil) then
+      FreeAndNil(C);
+  end;
+end;
+
+
+constructor TacGradPaintData.Create(AOwner: TsGradientPanel);
+begin
+  FOwner := AOwner;
+  FIsVertical := True;
+  FColor1 := TacColorData1.Create(Self);
+  FColor2 := TacColorData2.Create(Self);
+end;
+
+
+destructor TacGradPaintData.Destroy;
+begin
+  FColor2.Free;
+  FColor1.Free;
+  inherited;
+end;
+
+
+procedure TacGradPaintData.Invalidate;
+begin
+  FOwner.BGChanged := True;
+  if [csLoading, csDestroying] * FOwner.ComponentState = [] then
+    FOwner.Invalidate;
+end;
+
+
+procedure TacGradPaintData.SetColor1(const Value: TacColorData1);
+begin
+  if FColor1 <> Value then begin
+    FColor1 := Value;
+    Invalidate;
+  end;
+end;
+
+
+procedure TacGradPaintData.SetColor2(const Value: TacColorData2);
+begin
+  if FColor2 <> Value then begin
+    FColor2 := Value;
+    Invalidate;
+  end;
+end;
+
+
+procedure TacGradPaintData.SetCustomGradient(const Value: string);
+begin
+  if FCustomGradient <> Value then begin
+    FCustomGradient := Value;
+    Invalidate;
+  end;
+end;
+
+
+procedure TacGradPaintData.SetIsVertical(const Value: boolean);
+begin
+  if FIsVertical <> Value then begin
+    FIsVertical := Value;
+    Invalidate;
+  end;
+end;
+
+
+constructor TacColorData1.Create(AOwner: TacGradPaintData);
+begin
+  FOwner := AOwner;
+  FUseSkinColor := False;
+  FColor := clWhite;
+end;
+
+
+procedure TacColorData1.Invalidate;
+begin
+  FOwner.Invalidate;
+end;
+
+
+procedure TacColorData1.SetColor(const Value: TColor);
+begin
+  if FColor <> Value then begin
+    FColor := Value;
+    Invalidate;
+  end;
+end;
+
+
+procedure TacColorData1.SetUseSkinColor(const Value: boolean);
+begin
+  FUseSkinColor := Value;
+end;
+
+
+constructor TacColorData2.Create(AOwner: TacGradPaintData);
+begin
+  FOwner := AOwner;
+  FColor := clBtnFace;
+  FUseSkinColor := True;
 end;
 
 end.

@@ -1,6 +1,6 @@
 unit acDBListBoxEx;
 {$I sDefs.inc}
-
+//+
 interface
 
 
@@ -50,7 +50,7 @@ var
 begin
   if Field <> nil then begin
     ind := FValues.IndexOf(Field.Text);
-    if ind = -1 then
+    if ind < 0 then
       ind := Items.IndexOf(Field.Text);
 
     ItemIndex := ind;
@@ -79,7 +79,7 @@ end;
 procedure TsDBListBoxEx.UpdateData(Sender: TObject);
 begin
   if Assigned(Field) then begin
-    if ItemIndex > -1 then
+    if ItemIndex >= 0 then
       if ItemIndex < FValues.Count then
         Field.Value := FValues[ItemIndex]
       else

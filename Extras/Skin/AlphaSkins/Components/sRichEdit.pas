@@ -1,7 +1,7 @@
 unit sRichEdit;
 {$I sDefs.inc}
 //{$DEFINE LOGGED}
-
+//+
 interface
 
 uses
@@ -60,9 +60,9 @@ end;
 
 constructor TsRichEdit.Create(AOwner: TComponent);
 begin
-  inherited Create(AOwner);
   FCommonData := TsScrollWndData.Create(Self, True);
   FCommonData.COC := COC_TsMemo;
+  inherited Create(AOwner);
   FDisabledKind := DefDisabledKind;
   FBoundLabel := TsBoundLabel.Create(Self, FCommonData);
   Perform(WM_USER + 53{EM_EXLIMITTEXT}, 0, $7FFFFFF0);
@@ -75,9 +75,7 @@ begin
     FreeAndNil(ListSW);
 
   FreeAndNil(FBoundLabel);
-  if Assigned(FCommonData) then
-    FreeAndNil(FCommonData);
-
+  FreeAndNil(FCommonData);
   inherited Destroy;
 end;
 
@@ -190,7 +188,7 @@ begin
         end;
 
       AC_SETNEWSKIN:
-        if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
+        if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then begin
           CommonMessage(Message, FCommonData);
           Exit;
         end;
@@ -205,6 +203,9 @@ begin
 
         Exit;
       end;
+
+      AC_ENDUPDATE:
+        Perform(CM_INVALIDATE, 0, 0);
     end;
 
   if not ControlIsReady(Self) or not Assigned(FCommonData) or not FCommonData.Skinned then

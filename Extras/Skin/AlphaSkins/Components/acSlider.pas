@@ -1,6 +1,6 @@
 unit acSlider;
 {$I sDefs.inc}
-
+//+
 interface
 
 uses
@@ -82,6 +82,7 @@ type
     function BtnInBeginning: boolean;
     function StateFromPos: boolean;
     function ThumbMargin(Side: TacSide): integer;
+    procedure ChangeScale(M, D: Integer); override;
     function CanAutoSize(var NewWidth, NewHeight: Integer): Boolean; override;
     procedure ChangeValueAnim(DoChange: boolean = False);
     procedure ButtonMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
@@ -109,6 +110,7 @@ type
     procedure BeginUpdate;
     procedure EndUpdate(DoRepaint: boolean);
     procedure UpdateSize;
+    procedure CreateWnd; override;
     procedure WndProc(var Message: TMessage); override;
   published
     property BevelOuter default bvLowered;
@@ -130,7 +132,7 @@ type
     property SliderCursor: TCursor read FSliderCursor write SetSliderCursor default crDefault;
     property SliderCaptionOn:  acString read FSliderCaptionOn  write SetSliderCaptionOn;
     property SliderCaptionOff: acString read FSliderCaptionOff write SetSliderCaptionOff;
-    property ThumbSection:     acString read FThumbSection write SetThumbSection;
+    property ThumbSection:     String read FThumbSection write SetThumbSection;
     property ContentPlacing: TSliderContentPlacing read FContentPlacing write SetContentPlacing default scpThumb;
     property ThumbSizeInPercent: TPercent read FThumbSizeInPercent write SetThumbSizeInPercent default 50;
 
@@ -209,14 +211,14 @@ begin
             SliderOn := not SliderOn;
       end
       else
-        if (FButton.Left - (MouseDownSpot.X - X) - ThumbMargin(asLeft) < 0) then begin
+        if FButton.Left - (MouseDownSpot.X - X) - ThumbMargin(asLeft) < 0 then begin
           if FButton.Left <> ThumbMargin(asLeft) then begin
             FButton.Left := ThumbMargin(asLeft);
             SliderOn := StateFromPos;
           end;
         end
         else
-          if (FButton.Left - (MouseDownSpot.X - X) + FButton.Width > Width) then begin
+          if FButton.Left - (MouseDownSpot.X - X) + FButton.Width > Width then begin
             FButton.Left := Width - FButton.Width - ThumbMargin(asRight);
             SliderOn := StateFromPos;
           end;
@@ -233,14 +235,14 @@ begin
             SliderOn := not SliderOn;
       end
       else
-        if (FButton.Top - (MouseDownSpot.Y - Y) - ThumbMargin(asTop) < 0) then begin
+        if FButton.Top - (MouseDownSpot.Y - Y) - ThumbMargin(asTop) < 0 then begin
           if FButton.Top <> ThumbMargin(asTop) then begin
             FButton.Top := ThumbMargin(asTop);
             SliderOn := StateFromPos;
           end;
         end
         else
-          if (FButton.Top - (MouseDownSpot.Y - Y) + FButton.Height > Height) then begin
+          if FButton.Top - (MouseDownSpot.Y - Y) + FButton.Height > Height then begin
             FButton.Top := Height - FButton.Height - ThumbMargin(asBottom);
             SliderOn := StateFromPos;
           end;
@@ -259,16 +261,6 @@ begin
     SetFocus;
     if Dragged then
       SliderOn := StateFromPos
-{      if Orientation = coHorizontal then
-        if not Reversed then
-          SliderOn := (FButton.Left < Round((Width - FButton.Width) * FThumbSizeInPercent / 100))
-        else
-          SliderOn := (FButton.Left > Round(FButton.Width * FThumbSizeInPercent / 100))
-      else
-        if not Reversed then
-          SliderOn := (FButton.Top < Round((Height - FButton.Height) * FThumbSizeInPercent / 100))
-        else
-          SliderOn := (FButton.Top < Round(FButton.Height * FThumbSizeInPercent / 100))}
     else
       ChangeValueAnim;
 
@@ -283,24 +275,24 @@ var
   NCR: TRect;
   Bmp: TBitmap;
 begin
-  if CustomImageUsed then begin
-    if not SkinData.Skinned then begin
-      Bmp := CreateBmp32(FButton);
-      BitBlt(Bmp.Canvas.Handle, 0, 0, FButton.Width, FButton.Height, SkinData.FCacheBmp.Canvas.Handle, FButton.Left, FButton.Top, SRCCOPY);
-      Images.Draw(Bmp.Canvas, (FButton.Width - Images.Width) div 2, (FButton.Height - Images.Height) div 2, ThumbImgIndex);
-      BitBlt(Canvas.Handle, 0, 0, FButton.Width, FButton.Height, Bmp.Canvas.Handle, 0, 0, SRCCOPY);
-      Bmp.Free;
-    end
-    else
-      Images.Draw(Canvas, (FButton.Width - Images.Width) div 2, (FButton.Height - Images.Height) div 2, ThumbImgIndex)
-  end
+  if CustomImageUsed then
+    with FButton do
+      if not SkinData.Skinned then begin
+        Bmp := CreateBmp32(FButton);
+        BitBlt(Bmp.Canvas.Handle, 0, 0, Width, Height, SkinData.FCacheBmp.Canvas.Handle, Left, Top, SRCCOPY);
+        Images.Draw(Bmp.Canvas, (Width - Images.Width) div 2, (Height - Images.Height) div 2, ThumbImgIndex);
+        BitBlt(Canvas.Handle, 0, 0, Width, Height, Bmp.Canvas.Handle, 0, 0, SRCCOPY);
+        Bmp.Free;
+      end
+      else
+        Images.Draw(Canvas, (Width - Images.Width) div 2, (Height - Images.Height) div 2, ThumbImgIndex)
   else begin
     if not SkinData.Skinned then begin
       NCR := MkRect(FButton);
       Frame3D(Canvas, NCR, clBtnHighlight, clBtnShadow, FButton.BevelWidth);
       FillDC(Canvas.Handle, NCR, FButton.Color);
     end;
-    if {FShowCaption and }(ContentPlacing <> scpBackground) then
+    if {FShowCaption and }ContentPlacing <> scpBackground then
       PaintContent(MkRect(FButton), Canvas);
   end;
 end;
@@ -339,7 +331,7 @@ begin
     end;
     if FShowCaption then begin
       NewWidth := (cx + max(Canvas.TextWidth(SliderCaptionOff), Canvas.TextWidth(SliderCaptionOn)) + ContentMargin) * 2;
-      NewHeight := (max(cy + Canvas.TextHeight(SliderCaptionOn), h) + ContentMargin);
+      NewHeight := max(cy + Canvas.TextHeight(SliderCaptionOn), h) + ContentMargin;
     end
     else begin
       NewWidth := (cx + ContentMargin) * 2;
@@ -355,6 +347,14 @@ begin
   Result := True;
   if Assigned(FOnChanging) then
     FOnChanging(Self, Result);
+end;
+
+
+procedure TsSlider.ChangeScale(M, D: Integer);
+begin
+  inherited;
+  UpdateSize;
+  FontOn.Height := MulDiv(FontOn.Height, M, D);
 end;
 
 
@@ -578,6 +578,13 @@ begin
 end;
 
 
+procedure TsSlider.CreateWnd;
+begin
+  inherited;
+  UpdateSize;
+end;
+
+
 destructor TsSlider.Destroy;
 begin
   FreeAndNil(FBoundLabel);
@@ -601,10 +608,12 @@ end;
 
 procedure TsSlider.ImageListChange(Sender: TObject);
 begin
+  UpdateSize;
   if SkinData.Skinned then
     SkinData.Invalidate
-  else
+  else begin
     Repaint;
+  end;
 end;
 
 
@@ -628,7 +637,7 @@ end;
 
 procedure TsSlider.OurPaint(DC: HDC; SendUpdated: boolean);
 begin
-  if UpdateCount < 1 then begin
+  if UpdateCount <= 0 then begin
     SkinData.CtrlSkinState := SkinData.CtrlSkinState and not ACS_FAST;
     if not SkinData.Skinned and CustomImageUsed then begin
       SkinData.FCacheBmp.Width := Width;
@@ -661,7 +670,7 @@ begin
   w := WidthOf(R);
   h := HeightOf(R);
   if not SkinData.CustomFont and SkinData.Skinned then
-    if (ContentPlacing = scpThumb) then
+    if ContentPlacing = scpThumb then
       Ndx := FButton.SkinData.SkinIndex
     else
       Ndx := SkinData.SkinIndex
@@ -713,7 +722,7 @@ begin
         if s = '' then
           x := R.Left + Round((w - Images.Width) * rPercent);
 
-        Images.Draw(aCanvas, x, Round((h - Images.Height) * rPercent), iff(FSliderOn, GlyphIndexOn, GlyphIndexOff));
+        Images.Draw(aCanvas, x, R.Top + Round((h - Images.Height) * rPercent), iff(FSliderOn, GlyphIndexOn, GlyphIndexOff));
         inc(x, Images.Width + 2);
       end
       else begin
@@ -722,7 +731,7 @@ begin
       end;
     end;
 
-    if (s <> '') then begin
+    if s <> '' then begin
       R.Left := x;
       R.Top := y;
       acWriteTextEx(aCanvas, PacChar(s), Enabled, R, DT_CENTER or DT_VCENTER or DT_SINGLELINE, Ndx, False, SkinData.SkinManager);
@@ -822,11 +831,11 @@ begin
     if Images <> nil then begin
       Images.RegisterChanges(FImageChangeLink);
       Images.FreeNotification(Self);
-      AdjustSize;
-      UpdateButton;
+//      AdjustSize;
     end;
-    if (Visible or (csDesigning in ComponentState)) and (SkinData.CtrlSkinState and ACS_LOCKED <> ACS_LOCKED) then begin
+    if (Visible or (csDesigning in ComponentState)) and (SkinData.CtrlSkinState and ACS_LOCKED = 0) then begin
       UpdateSize;
+      UpdateButton;
       SkinData.Invalidate;
     end;
   end;
@@ -951,7 +960,7 @@ end;
 procedure TsSlider.UpdateButton;
 begin
   if Orientation = coHorizontal then begin
-    FButton.Width := Round(Width * FThumbSizeInPercent / 100);
+    FButton.Width := Width * FThumbSizeInPercent div 100;
     FButton.Height := Height - ThumbMargin(asTop) - ThumbMargin(asBottom);
     if not Capturing then
       if BtnInBeginning then
@@ -963,7 +972,7 @@ begin
   end
   else begin
     FButton.Width := Width - ThumbMargin(asLeft) - ThumbMargin(asRight);
-    FButton.Height := Round(Height * FThumbSizeInPercent / 100);
+    FButton.Height := Height * FThumbSizeInPercent div 100;
     FButton.Left := ThumbMargin(asLeft);
     if not Capturing then
       if BtnInBeginning then
@@ -977,8 +986,18 @@ end;
 
 
 procedure TsSlider.UpdateSize;
+var
+  w, h: integer;
 begin
   if AutoSize then begin
+    if CustomImageUsed then begin
+      w := Width;
+      h := Height;
+      if CanAutoSize(w, h) then begin
+        Width := w;
+        Height := h;
+      end;
+    end;
     AdjustSize;
     UpdateButton;
   end;
@@ -1006,6 +1025,9 @@ begin
     FButton.SkinData.Updating := False;
 end;
 
+const
+  aSliderSections: array [boolean] of TacSection = (ssSlider_Off, ssSlider_On);
+
 
 procedure TsSlider.WndProc(var Message: TMessage);
 begin
@@ -1013,11 +1035,11 @@ begin
     SM_ALPHACMD:
       case Message.WParamHi of
         AC_GETDEFINDEX: begin
-          if SkinData.SkinManager <> nil then
-            Message.Result := SkinData.SkinManager.GetSkinIndex(iff(SliderOn, s_Slider_On, s_Slider_Off)) + 1;
+          if SkinData.SkinManager <> nil then begin
+            Message.Result := SkinData.SkinManager.ConstData.Sections[aSliderSections[SliderOn]] + 1;
             if Message.Result <= 0 then
               Message.Result := SkinData.SkinManager.ConstData.Sections[ssPanelLow] + 1;
-
+          end;
           Exit;
         end;
 
@@ -1025,6 +1047,11 @@ begin
           PacBGInfo(Message.LParam).BgType := btCache;
           PacBGInfo(Message.LParam).Bmp    := SkinData.FCacheBmp;
           PacBGInfo(Message.LParam).Offset := Point(0, 0);
+          Exit;
+        end;
+
+        AC_SETSCALE: begin
+          if BoundLabel <> nil then BoundLabel.UpdateScale(Message.LParam);
           Exit;
         end;
 
@@ -1037,7 +1064,7 @@ begin
         AC_SETCHANGEDIFNECESSARY: begin
           SkinData.BGChanged := True;
           FButton.SkinData.BGChanged := True;
-          if (Message.WParamLo = 1) then
+          if Message.WParamLo = 1 then
             RedrawWindow(Handle, nil, 0, RDW_NOERASE + RDW_NOINTERNALPAINT + RDW_INVALIDATE + RDW_ALLCHILDREN);
 
           Exit;
@@ -1102,26 +1129,34 @@ begin
       SkinData.Invalidate;
     end;
 
-    2: if (FSliderOn <> Value) and CanChange then begin
-      SkinData.BeginUpdate;
-      FSliderOn := Value;
-      UpdateButton;
-      UpdateBtnFont;
-      SkinData.UpdateIndexes;
-      SkinData.CtrlSkinState := SkinData.CtrlSkinState and not ACS_FAST;
-      SkinData.EndUpdate;
-      if not (csLoading in ComponentState) then begin
-        SkinData.BGChanged := True;
-        RedrawWindow(Handle, nil, 0, RDW_UPDATENOW or RDW_INVALIDATE or RDW_ALLCHILDREN);
-      end;
-      if Assigned(FOnSliderChange) then begin
-        FOnSliderChange(Self);
+    2: if (FSliderOn <> Value) then begin
+      if CanChange then begin
+        SkinData.BeginUpdate;
+        FSliderOn := Value;
+        UpdateButton;
+        UpdateBtnFont;
+        SkinData.UpdateIndexes;
+        SkinData.CtrlSkinState := SkinData.CtrlSkinState and not ACS_FAST;
+        SkinData.EndUpdate;
+        if not (csLoading in ComponentState) then begin
+          SkinData.BGChanged := True;
+          RedrawWindow(Handle, nil, 0, RDW_UPDATENOW or RDW_INVALIDATE or RDW_ALLCHILDREN);
+        end;
+        if Assigned(FOnSliderChange) then begin
+          FOnSliderChange(Self);
+          if GetCapture <> Handle then begin
+            Dragged := False;
+            Capturing := False;
+            UpdateButton;
+          end;
+        end;
+      end
+      else
         if GetCapture <> Handle then begin
           Dragged := False;
           Capturing := False;
           UpdateButton;
         end;
-      end;
     end;
 
     3: if FUseSymbols <> Value then begin

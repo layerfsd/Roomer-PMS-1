@@ -1,6 +1,6 @@
 unit sImgListEditor;
 {$I sDefs.inc}
-
+//+
 interface
 
 uses
@@ -101,7 +101,7 @@ begin
     else
       dx := 0;
 
-  if (dx <> 0) then begin
+  if dx <> 0 then begin
     FormImgListEditor.ListView1.Scroll(dx, 0);
     FormImgListEditor.ListView1.Invalidate;
   end;
@@ -174,20 +174,18 @@ begin
   DragAcceptFiles(Handle, True);
   ListView1.Height := ImageList1.Height + GetFontHeight(ListView1.Font.Handle) + GetSystemMetrics(SM_CYVSCROLL) + 8;
 
-  Height := 124 + ListView1.Height;
+  sEdit1.Top := ListView1.BoundsRect.Bottom + 8;
+  sEdit1.Width := ListView1.BoundsRect.Right - sEdit1.BoundLabel.FTheLabel.Width - 22;
+  sEdit1.Left := ListView1.BoundsRect.Right - sEdit1.Width;
+
+  ClientHeight := sEdit1.BoundsRect.Bottom + 16;
   Constraints.MinHeight := Height;
-//  sBitBtn7.Top := ListView1.BoundsRect.Top;//Bottom - sBitBtn7.Height + 19;
-//  sBitBtn6.Top := sBitBtn7.Top - sBitBtn6.Height - 4;
-//  sBitBtn5.Top := sBitBtn6.Top - sBitBtn5.Height - 4;
 
   ListView1.Anchors := ListView1.Anchors + [akBottom, akRight];
   sBitBtn5.Anchors := sBitBtn5.Anchors + [akRight] - [akLeft];
   sBitBtn6.Anchors := sBitBtn6.Anchors + [akRight] - [akLeft];
   sBitBtn7.Anchors := sBitBtn7.Anchors + [akRight] - [akLeft];
-
-  sEdit1.Top := ListView1.BoundsRect.Bottom + 8;
-  sEdit1.Width := ListView1.BoundsRect.Right - 72;
-
+  sEdit1.Anchors := [akLeft, akBottom, akRight];
 end;
 
 
@@ -195,8 +193,8 @@ procedure TFormImgListEditor.ListView1Click(Sender: TObject);
 begin
 
 {$IFDEF DELPHI7UP}
-  SpeedButton2.Enabled := ListView1.ItemIndex > -1;
-  if ListView1.ItemIndex > -1 then
+  SpeedButton2.Enabled := ListView1.ItemIndex >= 0;
+  if ListView1.ItemIndex >= 0 then
     sEdit1.Text := ImageList1.Items[ListView1.ItemIndex].Text
   else
     sEdit1.Text := '';
@@ -250,7 +248,7 @@ begin
         if j >= i then
           ListView1.Items[j].ImageIndex := ListView1.Items[j].ImageIndex - 1;
       end;
-      if i > ListView1.Items.Count - 1 then
+      if i >= ListView1.Items.Count then
         i := ListView1.Items.Count - 1;
 
       ListView1.Selected := ListView1.Items[i];
@@ -366,7 +364,7 @@ begin
   if SelectDirectory(sPath, [], -1) then begin
 {$ENDIF}
     for j := 0 to ListView1.Items.Count - 1 do
-      if (ImageList1.Items[j].ImgData <> nil) then begin
+      if ImageList1.Items[j].ImgData <> nil then begin
         s := iff(ImageList1.Items[j].ImageName <> '', ImageList1.Items[j].ImageName, IntToStr(j));
         ImageList1.Items[j].ImgData.SaveToFile(sPath + s_Slash + s + s_Dot + iff(ImageList1.Items[j].ImageFormat = ifPNG, acPngExt, acIcoExt));
       end
@@ -430,7 +428,7 @@ procedure TFormImgListEditor.SpeedButton6Click(Sender: TObject);
 var
   j: integer;
 begin
-  if (ListView1.Selected <> nil) then begin
+  if ListView1.Selected <> nil then begin
     j := ListView1.Selected.Index;
     if ImageList1.Items[j].ImageFormat = ifPNG then begin
       SaveDialog1.Filter := 'Portable Network Graphics|*.png';
@@ -468,7 +466,7 @@ end;
 procedure TFormImgListEditor.sEdit1Change(Sender: TObject);
 begin
 {$IFDEF DELPHI7UP}
-  if ListView1.ItemIndex > -1 then
+  if ListView1.ItemIndex >= 0 then
     ImageList1.Items[ListView1.ItemIndex].Text := sEdit1.Text;
 {$ELSE}
   if ListView1.Selected <> nil then

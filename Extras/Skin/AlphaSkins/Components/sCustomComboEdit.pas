@@ -23,9 +23,15 @@ type
   private
     FOwner: TsCustomComboEdit;
   public
+    procedure CopyFromCache(aDC: hdc); override;
+    function ComboBtn: boolean;
+    function CurrentState: integer; override;
+    function AllowBtnStyle: boolean;
+    procedure PaintGlyph;
     procedure BeginInitGlyph;
     procedure EndInitGlyph;
     constructor Create(AOwner: TComponent); override;
+    procedure StdPaint(PaintButton: boolean = True); override;
     procedure WndProc(var Message: TMessage); override;
     procedure PaintTo(DC: hdc; R: TPoint);
     function PrepareCache: boolean; override;
@@ -54,8 +60,12 @@ type
     FGlyphMode: TsGlyphMode;
     FDisabledKind: TsDisabledKind;
     FPopupWindowAlign: TPopupWindowAlign;
+
     procedure EditButtonMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure EditButtonMouseUp  (Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure EditButtonClick(Sender: TObject);
+    procedure EditButtonDblClick(Sender: TObject);
+
     function GetDroppedDown: Boolean;
     procedure SetDirectInput(Value: Boolean);
 {$IFNDEF D2009}
@@ -69,9 +79,9 @@ type
     procedure WMCut           (var Message: TWMCut);          message WM_CUT;
   protected
     FOnButtonClick: TNotifyEvent;
+    FDroppedDown: boolean;
     procedure PaintText; override;
     procedure SetEditRect; override;
-    procedure EditButtonClick(Sender: TObject);
     procedure PaintBorder(DC: hdc); override;
     procedure OurPaintHandler(DC: hdc); override;
 
@@ -149,21 +159,28 @@ type
     property OnContextPopup;
 {$ENDIF} // NOTFORHELP
     property OnButtonClick: TNotifyEvent read FOnButtonClick write FOnButtonClick;
-    property ShowButton: boolean read FShowButton write SetShowButton default True;
     property ClickKey: TShortCut read FClickKey write FClickKey default scAlt + vk_Down;
     property DisabledKind: TsDisabledKind read FDisabledKind write SetDisabledKind default DefDisabledKind;
     property GlyphMode: TsGlyphMode read FGlyphMode write FGlyphMode;
+
     property DirectInput: Boolean read FDirectInput write SetDirectInput default True;
     property ReadOnly: Boolean read GetReadOnly write SetReadOnly default False;
+    property ShowButton: boolean read FShowButton write SetShowButton default True;
   end;
 
 
 implementation
 
 uses
+  math,
   {$IFDEF LOGGED}sDebugMsgs, {$ENDIF}
-  sToolEdit, sVCLUtils, sMessages, sAlphaGraph, sThirdParty;
+  {$IFDEF DELPHI7UP} Themes, {$ENDIF}
+  sMaskData, sToolEdit, sVCLUtils, sMessages, sAlphaGraph, sThirdParty, acSBUtils,
+  acPopupController, sStyleSimply, sSkinManager;
 
+
+const
+  BordWidth = 2;
 
 function BtnOffset(ComboEdit: TsCustomComboEdit): integer;
 begin
@@ -171,31 +188,71 @@ begin
 end;
 
 
+function TsEditButton.AllowBtnStyle: boolean;
+begin
+  Result := False;
+end;
+
+
 procedure TsEditButton.BeginInitGlyph;
 begin
   if not (csLoading in ComponentState) and not (csCreating in ControlState) then begin
     SkinData.CtrlSkinState := SkinData.CtrlSkinState or ACS_LOCKED;
-    if Assigned(FOwner.GlyphMode.Images) and (FOwner.GlyphMode.ImageIndex > -1) and (FOwner.GlyphMode.ImageIndex < GetImageCount(FOwner.GlyphMode.Images)) then begin
-      Blend  := FOwner.GlyphMode.Blend;
-      Grayed := FOwner.GlyphMode.Grayed;
-      Images := FOwner.GlyphMode.Images;
-      case CurrentState of
-        0: ImageIndex := FOwner.GlyphMode.ImageIndex;
-        1: ImageIndex := FOwner.GlyphMode.ImageIndexHot;
-        2: ImageIndex := FOwner.GlyphMode.ImageIndexPressed;
-      end;
-      if (ImageIndex < 0) or (ImageIndex > GetImageCount(FOwner.GlyphMode.Images) - 1) then
-        ImageIndex := FOwner.GlyphMode.ImageIndex;
-
-      NumGlyphs := 1;
+    if ComboBtn then begin
+      Images := nil;
+      ImageIndex := -1;
     end
-    else begin
-      Images := acResImgList;
-      ImageIndex := FOwner.FDefBmpID;
-      NumGlyphs := 3;
-    end;
+    else
+      with FOwner do
+        if Assigned(GlyphMode.Images) and IsValidIndex(GlyphMode.ImageIndex, GetImageCount(GlyphMode.Images)) then begin
+          Blend  := GlyphMode.Blend;
+          Grayed := GlyphMode.Grayed;
+          Images := GlyphMode.Images;
+          case CurrentState of
+            0: ImageIndex := GlyphMode.ImageIndex;
+            1: ImageIndex := GlyphMode.ImageIndexHot;
+            2: ImageIndex := GlyphMode.ImageIndexPressed;
+          end;
+          if not IsValidIndex(ImageIndex, GetImageCount(GlyphMode.Images)) then
+            ImageIndex := GlyphMode.ImageIndex;
+
+          NumGlyphs := 1;
+        end
+        else begin
+          Images := acResImgList;
+          ImageIndex := FDefBmpID;
+          NumGlyphs := 2;
+        end;
+
     SkinData.CtrlSkinState := SkinData.CtrlSkinState and not ACS_LOCKED;
   end;
+end;
+
+
+function TsEditButton.ComboBtn: boolean;
+begin
+  Result := FOwner.FDefBmpID = iBTN_ARROW;
+end;
+
+
+procedure TsEditButton.CopyFromCache(aDC: hdc);
+var
+  DC, SavedDC: hdc;
+  bWidth: integer;
+begin
+  if ComboBtn then begin
+    DC := GetWindowDC(Parent.Handle);
+    SavedDC := SaveDC(DC);
+    try
+      bWidth := max(0, FOwner.BorderWidth);
+      BitBlt(DC, Left + bWidth, Top + bWidth, Width, Height, aDC, 0, 0, SRCCOPY)
+    finally
+      RestoreDC(DC, SavedDC);
+      ReleaseDC(Parent.Handle, DC);
+    end;
+  end
+  else
+    inherited;
 end;
 
 
@@ -203,16 +260,25 @@ constructor TsEditButton.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   FOwner := TsCustomComboEdit(AOwner);
-  SkinData.SkinSection := s_SpeedButton_Small;
   DisabledGlyphKind := [dgBlended];
 {$IFDEF CHECKXP}
   Flat := True;
 {$ENDIF}
   Cursor := crArrow;
   Align := alRight; // Button is aligned by right side
+  Top := 0;
   Width := 22;
   ShowCaption := False;
   AnimatEvents := [aeMouseEnter, aeMouseLeave];
+end;
+
+
+function TsEditButton.CurrentState: integer;
+begin
+  if FOwner.DroppedDown and ComboBtn then
+    Result := 2
+  else
+    Result := inherited CurrentState;
 end;
 
 
@@ -231,11 +297,13 @@ begin
   FShowButton := True;
 
   FDefBmpID := iBTN_ELLIPSIS;
+  FDroppedDown := False;
 
   FButton := TsEditButton.Create(Self);
   FButton.Parent := Self;
   FButton.Visible := True;
   FButton.OnClick := EditButtonClick;
+  FButton.OnDblClick := EditButtonDblClick;
   FButton.OnMouseDown := EditButtonMouseDown;
   FButton.OnMouseUp := EditButtonMouseUp;
 
@@ -272,6 +340,11 @@ begin
     FPopupWindow.Visible := False;
     FPopupWindow.Width := FPopupWidth;
     FPopupWindow.Height := FPopupHeight;
+{    if SkinData.SkinManager <> nil then begin
+//      FPopupWindow.ScaleBy(Round(rScale[SkinData.SkinManager.GetScale] * 100), 100);
+      FPopupWindow.Width := SkinData.SkinManager.ScaleInt(FPopupWindow.Width);
+      FPopupWindow.Height := SkinData.SkinManager.ScaleInt(FPopupWindow.Height);
+    end;             }
     P := Parent.ClientToScreen(Point(Left, Top));
     Y := P.Y + Height;
 
@@ -296,17 +369,22 @@ begin
         P.X := Screen.DesktopWidth - FPopupWindow.Width;
 
     Form := GetParentForm(Self);
-    if CanFocus then
+    if CanFocus then begin
       SetFocus;
+      ValidateRect(Handle, nil);
+    end;
 
     if Form <> nil then begin
       if (FPopupWindow is TForm) and (TForm(Form).FormStyle = fsStayOnTop) then
         TForm(FPopupWindow).FormStyle := fsStayOnTop;
 
-      Flags := SWP_NOCOPYBITS or SWP_SHOWWINDOW or SWP_NOACTIVATE or SWP_NOOWNERZORDER;
+      Flags := SWPA_ZORDER;// SWP_NOCOPYBITS or SWP_SHOWWINDOW or SWP_NOACTIVATE or SWP_NOOWNERZORDER;
       SetWindowPos(FPopupWindow.Handle, HWND_TOPMOST, P.X, Y, FPopupWindow.Width, FPopupWindow.Height, Flags);
     end;
-    FPopupWindow.Visible := True;
+    if FPopupWindow is TForm then
+      ShowPopupForm(TForm(FPopupWindow), Self)
+    else
+      FPopupWindow.Visible := True;
   end;
 end;
 
@@ -326,11 +404,13 @@ begin
   inherited KeyDown(Key, Shift);
   sc := ShortCut(Key, Shift);
   if (sc = FClickKey) and (GlyphMode.Width > 0) then begin
-    EditButtonClick(Self);
+    if not FReadOnly then
+      ButtonClick;
+
     Key := 0;
   end
   else
-    if (sc = scCtrl + ord('A')) then begin
+    if sc = scCtrl + ord('A') then begin
       SelectAll;
       Key := 0;
       PeekMessage(M, Handle, WM_CHAR, WM_CHAR, PM_REMOVE);
@@ -376,22 +456,30 @@ end;
 
 function TsCustomComboEdit.GetDroppedDown: Boolean;
 begin
-  Result := (FPopupWindow <> nil) and FPopupWindow.Visible;
+  Result := FDroppedDown or (FPopupWindow <> nil) and FPopupWindow.Visible;
 end;
 
 
 procedure TsCustomComboEdit.CMCancelMode(var Message: TCMCancelMode);
 begin
-  if (Message.Sender <> Self) and
-       (Message.Sender <> FPopupWindow) and
-         (Message.Sender <> FButton) and
-           ((FPopupWindow <> nil) and IsWindowVisible(FPopupWindow.Handle) and
-             not FPopupWindow.ContainsControl(Message.Sender)) then
-    PopupWindowClose;
+  with Message do
+    if (Sender <> Self) and
+         (Sender <> FPopupWindow) and
+           (Sender <> FButton) and
+             (FPopupWindow <> nil) and IsWindowVisible(FPopupWindow.Handle) and
+               not FPopupWindow.ContainsControl(Sender) then
+      PopupWindowClose;
 end;
 
 
 procedure TsCustomComboEdit.EditButtonClick(Sender: TObject);
+begin
+  if not FReadOnly and not FButton.ComboBtn then
+    ButtonClick;
+end;
+
+
+procedure TsCustomComboEdit.EditButtonDblClick(Sender: TObject);
 begin
   if not FReadOnly then
     ButtonClick;
@@ -418,7 +506,7 @@ end;
 
 procedure TsCustomComboEdit.SelectAll;
 begin
-  if (Text <> '') then
+  if Text <> '' then
     SendMessage(Handle, EM_SETSEL, 0, -1);
 end;
 
@@ -476,10 +564,17 @@ begin
   case Message.Msg of
     SM_ALPHACMD:
       case Message.WParamHi of
-        AC_GETBG: begin
-          InitBGInfo(SkinData, PacBGInfo(Message.LParam), 0);
-          PacBGInfo(Message.LParam)^.Offset.X := BorderWidth;
-          PacBGInfo(Message.LParam)^.Offset.Y := PacBGInfo(Message.LParam)^.Offset.X;
+        AC_GETBG:
+          with Message, PacBGInfo(Message.LParam)^ do begin
+            InitBGInfo(SkinData, PacBGInfo(LParam), 0);
+            PacBGInfo(Message.LParam)^.Offset.X := BorderWidth;
+            Offset.Y := Offset.X;
+            Exit;
+          end;
+
+        AC_POPUPCLOSED: begin
+          FPopupWindow := nil;
+          PopupWindowClose;
           Exit;
         end;
       end;
@@ -620,12 +715,19 @@ begin
   inherited;
   SkinData.Loaded;
   SetEditRect;
+
+  if FButton.ComboBtn then begin
+    FButton.SkinData.SkinSection := s_ComboBtn;
+    if FButton.SkinData.SkinIndex < 0 then
+      FButton.SkinData.SkinSection := s_Transparent;
+  end;
 end;
 
 
 procedure TsCustomComboEdit.EditButtonMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
-//
+  if not FReadOnly and FButton.ComboBtn then
+    ButtonClick;
 end;
 
 
@@ -666,7 +768,6 @@ begin
   SavedDC := SaveDC(NewDC);
   try
     if SkinData.Skinned then begin
-//      SkinData.Updating := SkinData.Updating;
       if not InUpdating(SkinData) then begin
         SkinData.BGChanged := SkinData.BGChanged or SkinData.HalfVisible or GetBoolMsg(Parent, AC_GETHALFVISIBLE);
         SkinData.HalfVisible := not RectInRect(Parent.ClientRect, BoundsRect);
@@ -701,8 +802,6 @@ end;
 
 
 procedure TsCustomComboEdit.PaintBorder(DC: hdc);
-const
-  BordWidth = 2;
 var
   NewDC, SavedDC: HDC;
 begin
@@ -736,23 +835,33 @@ end;
 
 procedure TsEditButton.EndInitGlyph;
 begin
-  if not (csLoading in ComponentState) and not (csCreating in ControlState) then begin
-    SkinData.CtrlSkinState := SkinData.CtrlSkinState or ACS_LOCKED;
-    Images := nil;
-    SkinData.CtrlSkinState := SkinData.CtrlSkinState and not ACS_LOCKED;
-  end;
+  if not (csLoading in ComponentState) and not (csCreating in ControlState) then
+    with SkinData do begin
+      CtrlSkinState := CtrlSkinState or ACS_LOCKED;
+      Images := nil;
+      CtrlSkinState := CtrlSkinState and not ACS_LOCKED;
+    end;
 end;
 
 
 function TsEditButton.GlyphHeight: integer;
 begin
-  Result := FOwner.GlyphMode.Height;
+  if ComboBtn then
+    if SkinData.Skinned then
+      Result := Parent.Height - 2 * SkinData.SkinManager.CommonSkinData.ComboBoxMargin
+    else
+      Result := Parent.Height
+  else
+    Result := FOwner.GlyphMode.Height;
 end;
 
 
 function TsEditButton.GlyphWidth: integer;
 begin
-  Result := FOwner.GlyphMode.Width;
+  if ComboBtn then
+    Result := GetComboBtnSize(SkinData.SkinManager)
+  else
+    Result := FOwner.GlyphMode.Width;
 end;
 
 
@@ -787,40 +896,42 @@ var
   bw: integer;
   aText: acString;
 begin
-  SkinData.FCacheBMP.Canvas.Font.Assign(Font);
-  bw := BorderWidth;
-  aText := EditText;
-  R := Rect(bw + 2 * integer(not Ctl3D), bw, Width - bw - integer(FShowButton) * Button.Width, Height - bw);
-  if Text <> '' then begin
-    if PasswordChar <> #0 then
-      acFillString(aText, Length(aText), acChar(PasswordChar));
+  with SkinData.FCacheBMP do begin
+    Canvas.Font.Assign(Font);
+    bw := BorderWidth;
+    aText := EditText;
+    R := Rect(bw + 2 * integer(not Ctl3D), bw, Width - bw - integer(FShowButton) * Button.Width, Height - bw);
+    if Text <> '' then begin
+      if PasswordChar <> #0 then
+        acFillString(aText, Length(aText), acChar(PasswordChar));
 
-    SavedDC := SaveDC(SkinData.FCacheBMP.Canvas.Handle);
-    IntersectClipRect(SkinData.FCacheBMP.Canvas.Handle, 0, 0, R.Right, R.Bottom);
-    try
-      acWriteTextEx(SkinData.FCacheBMP.Canvas, PacChar(aText), Enabled or SkinData.Skinned, R, DT_TOP or GetStringFlags(Self, Alignment) or DT_NOPREFIX, SkinData, ControlIsActive(SkinData));
-    finally
-      RestoreDC(SkinData.FCacheBMP.Canvas.Handle, SavedDC);
-    end;
-  end
-{$IFDEF D2009}
-  else
-    if (TextHint <> '') then begin
-      SkinData.FCacheBMP.Canvas.Brush.Style := bsClear;
-      if SkinData.Skinned then
-        SkinData.FCacheBMP.Canvas.Font.Color := MixColors(ColorToRGB(Font.Color), ColorToRGB(Color), 0.65)
-      else
-        SkinData.FCacheBMP.Canvas.Font.Color := clGrayText;
-
-      SavedDC := SaveDC(SkinData.FCacheBMP.Canvas.Handle);
-      IntersectClipRect(SkinData.FCacheBMP.Canvas.Handle, 0, 0, R.Right, R.Bottom);
+      SavedDC := SaveDC(Canvas.Handle);
+      IntersectClipRect(Canvas.Handle, 0, 0, R.Right, R.Bottom);
       try
-        acDrawText(SkinData.FCacheBMP.Canvas.Handle, TextHint, R, DT_TOP or GetStringFlags(Self, Alignment) and not DT_VCENTER);
+        acWriteTextEx(Canvas, PacChar(aText), Enabled or SkinData.Skinned, R, DT_TOP or GetStringFlags(Self, Alignment) or DT_NOPREFIX, SkinData, ControlIsActive(SkinData));
       finally
-        RestoreDC(SkinData.FCacheBMP.Canvas.Handle, SavedDC);
+        RestoreDC(Canvas.Handle, SavedDC);
       end;
-    end;
+    end
+{$IFDEF D2009}
+    else
+      if TextHint <> '' then begin
+        Canvas.Brush.Style := bsClear;
+        if SkinData.Skinned then
+          Canvas.Font.Color := BlendColors(ColorToRGB(Font.Color), ColorToRGB(Color), 166)
+        else
+          Canvas.Font.Color := clGrayText;
+
+        SavedDC := SaveDC(Canvas.Handle);
+        IntersectClipRect(Canvas.Handle, 0, 0, R.Right, R.Bottom);
+        try
+          acDrawText(Canvas.Handle, TextHint, R, DT_TOP or GetStringFlags(Self, Alignment) and not DT_VCENTER);
+        finally
+          RestoreDC(Canvas.Handle, SavedDC);
+        end;
+      end;
 {$ENDIF}
+  end;
 end;
 
 
@@ -828,17 +939,104 @@ function TsEditButton.PrepareCache: boolean;
 var
   CI: TCacheInfo;
 begin
-  Result := True;
-  BeginInitGlyph;
-  InitCacheBmp(SkinData);
-  BitBlt(SkinData.FCacheBmp.Canvas.Handle, 0, 0, Width, Height, FOwner.SkinData.FCacheBmp.Canvas.Handle, Left + BtnOffset(FOwner), Top + BtnOffset(FOwner), SRCCOPY);
-  DrawGlyph;
-  SkinData.BGChanged := False;
-  EndInitGlyph;
-  if not Enabled or FOwner.ReadOnly then begin
-    CI := MakeCacheInfo(FOwner.SkinData.FCacheBmp, 2, 2);
-    BmpDisabledKind(SkinData.FCacheBmp, DisabledKind, Parent, CI, Point(Left, Top));
+  if ComboBtn then begin
+    Result := inherited PrepareCache;
+    PaintGlyph;
+  end
+  else begin
+    Result := True;
+    BeginInitGlyph;
+    InitCacheBmp(SkinData);
+    BitBlt(SkinData.FCacheBmp.Canvas.Handle, 0, 0, Width, Height, FOwner.SkinData.FCacheBmp.Canvas.Handle, Left + BtnOffset(FOwner), Top + BtnOffset(FOwner), SRCCOPY);
+    DrawGlyph;
+    SkinData.BGChanged := False;
+    EndInitGlyph;
+    if not Enabled or FOwner.ReadOnly then begin
+      CI := MakeCacheInfo(FOwner.SkinData.FCacheBmp, 2, 2);
+      BmpDisabledKind(SkinData.FCacheBmp, DisabledKind, Parent, CI, Point(Left, Top));
+    end;
   end;
+end;
+
+
+procedure TsEditButton.StdPaint(PaintButton: boolean);
+begin
+  if ComboBtn then begin
+    PaintGlyph;
+    try
+      BitBlt(Canvas.Handle, Left, Top, Width, Height, SkinData.FCacheBmp.Canvas.Handle, CurrentState * Glyph.Width, 0, SRCCOPY);
+    finally
+    end;
+  end
+  else
+    inherited;
+end;
+
+
+{$IFDEF DELPHI7UP}
+const
+  ComboStates: array[0..2] of TThemedComboBox = (tcDropDownButtonNormal, tcDropDownButtonHot,  tcDropDownButtonPressed);
+{$ENDIF}
+
+
+procedure TsEditButton.PaintGlyph;
+var
+  R: TRect;
+  C: TColor;
+  Mode: integer;
+{$IFDEF DELPHI7UP}
+  cBox: TThemedComboBox;
+  Details: TThemedElementDetails;
+{$ENDIF}
+begin
+  with SkinData do
+    if Skinned then begin
+      Mode := CurrentState;
+      R := MkRect(FCacheBmp);
+      with SkinManager, ConstData.ComboBtn do
+        if not AllowBtnStyle then
+          if not gd[SkinData.SkinIndex].GiveOwnFont and IsValidImgIndex(GlyphIndex) then
+            DrawSkinGlyph(FCacheBmp, Point(R.Left + (WidthOf(R) - ma[GlyphIndex].Width) div 2,
+                          (Height - ma[GlyphIndex].Height) div 2), Mode, 1, ma[GlyphIndex], MakeCacheInfo(FCacheBmp))
+          else begin // Paint without glyph
+            if SkinData.SkinIndex >= 0 then // If COMBOBTN used
+              C := SkinData.SkinManager.gd[SkinData.SkinIndex].Props[min(Mode, ac_MaxPropsIndex)].FontColor.Color
+            else
+              if SkinData.SkinIndex >= 0 then
+                C := gd[SkinData.SkinIndex].Props[min(Mode, ac_MaxPropsIndex)].FontColor.Color
+              else
+                C := ColorToRGB(clWindowText);
+
+            DrawColorArrow(FCacheBmp, C, R, asBottom);
+          end
+        else
+          if not gd[SkinData.SkinIndex].GiveOwnFont and IsValidImgIndex(GlyphIndex) then
+            DrawSkinGlyph(FCacheBmp, Point(R.Left + (WidthOf(R) - ma[GlyphIndex].Width) div 2,
+                          (Height - ma[GlyphIndex].Height) div 2), Mode, 1, ma[GlyphIndex], MakeCacheInfo(FCacheBmp))
+          else begin // Paint without glyph
+            if SkinData.SkinIndex >= 0 then
+              C := gd[SkinData.SkinIndex].Props[min(Mode, ac_MaxPropsIndex)].FontColor.Color
+            else
+              C := ColorToRGB(clWindowText);
+
+            DrawColorArrow(FCacheBmp, C, R, asBottom);
+          end;
+    end
+    else begin
+      FCacheBmp.Width := Width;
+      FCacheBmp.Height := Height;
+      R := MkRect(Self);
+{$IFDEF DELPHI7UP}
+      if acThemesEnabled then begin
+        PerformEraseBackground(Self, FCacheBmp.Canvas.Handle);
+        cBox := ComboStates[CurrentState];
+        Details := acThemeServices.GetElementDetails(cBox);
+        acThemeServices.DrawElement(FCacheBmp.Canvas.Handle, Details, R);
+      end
+      else
+        DrawColorArrow(FCacheBmp, Font.Color, R, asBottom);
+{$ENDIF}
+    end;
 end;
 
 
@@ -846,6 +1044,27 @@ procedure TsEditButton.WndProc(var Message: TMessage);
 begin
   if Assigned(FOwner) and Assigned(FOwner.SkinData) and FOwner.SkinData.Skinned then
     case Message.Msg of
+      SM_ALPHACMD:
+        case Message.WParamHi of
+          AC_GETDEFINDEX: begin
+            if SkinData.SkinManager <> nil then
+              with SkinData.SkinManager.ConstData do
+                if Self.ComboBtn then
+                  Message.Result := 1 + iff(Sections[ssComboBtn] >= 0, Sections[ssComboBtn], Sections[ssTransparent])
+                else
+                  Message.Result := 1 + iff(Flat, Sections[ssToolButton], Sections[ssSpeedButton]);
+
+            Exit;
+          end;
+
+          AC_SETNEWSKIN:
+            if ComboBtn then begin
+              SkinData.SkinSection := s_ComboBtn;
+              if SkinData.SkinIndex < 0 then
+                SkinData.SkinSection := s_Transparent;
+            end;
+        end;
+
       CM_MOUSELEAVE, WM_MOUSELEAVE:
         if not acMouseInControl(FOwner) then
           FOwner.WndProc(Message);
@@ -855,6 +1074,21 @@ begin
     end;
 
   inherited;
+  case Message.Msg of
+    SM_ALPHACMD:
+      case Message.WParamHi of
+        AC_GETDEFINDEX: begin
+          if SkinData.SkinManager <> nil then
+            with SkinData.SkinManager.ConstData do
+              if Self.ComboBtn and (ComboBtn.SkinIndex >= 0) then
+                Message.Result := 1 + ComboBtn.SkinIndex
+              else
+                Message.Result := 1 + Sections[ssComboBox];
+
+          Exit;
+        end;
+      end;
+  end;
 end;
 
 

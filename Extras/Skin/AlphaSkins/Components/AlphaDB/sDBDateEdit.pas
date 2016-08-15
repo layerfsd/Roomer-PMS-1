@@ -1,6 +1,6 @@
 unit sDBDateEdit;
 {$I sDefs.inc}
-
+//+
 interface
 
 uses
@@ -44,7 +44,25 @@ type
     destructor Destroy; override;
     property Field: TField read GetField;
   published
+    property BlanksChar;
+    property CalendarHints;
     property CheckOnExit;
+    property ClickKey;
+    property DialogTitle;
+    property MaxDate;
+    property MinDate;
+    property PopupAlign;
+    property PopupHeight;
+    property PopupWidth;
+    property StartOfWeek;
+    property Weekends;
+    property WeekendColor;
+    property YearDigits;
+    property OnAcceptDate;
+    property OnButtonClick;
+    property OnChange;
+    property OnContextPopup;
+
     property DataField: string read GetDataField write SetDataField;
     property DataSource: TDataSource read GetDataSource write SetDataSource;
     property ReadOnly: Boolean read GetReadOnly write SetReadOnly default False;
@@ -60,7 +78,7 @@ procedure TsDBDateEdit.AfterPopup(Sender: TObject; var Date: TDateTime; var Acti
 var
   DataSet: TDataSet;
 begin
-  if (DataSource <> nil) then
+  if DataSource <> nil then
     DataSet := DataSource.DataSet else DataSet := nil;
 
   Action := Action and (DataSet <> nil) and DataSet.Active and DataSet.CanModify;
@@ -108,6 +126,7 @@ begin
     SelectAll;
     if CanFocus then
       SetFocus;
+
     raise;
   end;
   CheckCursor;
@@ -217,8 +236,7 @@ procedure TsDBDateEdit.KeyDown(var Key: Word; Shift: TShiftState);
 begin
   inherited;
   if ((Key = VK_DELETE) or ((Key = VK_INSERT) and (ssShift in Shift))) or
-       ((GetKeyState(VK_Up) and 128) = 128) or
-         ((GetKeyState(VK_Down) and 128) = 128) then
+       (GetKeyState(VK_Up) and 128 = 128) or (GetKeyState(VK_Down) and 128 = 128) then
     if CanEdit then
       FDataLink.Edit
     else begin

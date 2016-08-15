@@ -1,16 +1,15 @@
 unit sComboBoxes;
 {$I sDefs.inc}
 //{$DEFINE LOGGED}
-
-
+//+
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, ComCtrls, ImgList, Dialogs,
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, ComCtrls, ImgList, Dialogs, Forms,
   {$IFDEF LOGGED} sDebugMsgs, {$ENDIF}
   {$IFNDEF DELPHI5} types, {$ENDIF}
   {$IFNDEF DELPHI6UP} acD5Ctrls, {$ENDIF}
-  sCommonData, sDefaults, sConst, acntUtils, sGraphUtils, acSBUtils;
+  sCommonData, sDefaults, sConst, acntUtils, sGraphUtils, acSBUtils, acAlphaImageList, sSpeedButton;
 
 
 type
@@ -39,6 +38,7 @@ type
     ListSW: TacScrollWnd;
     FGlyphIndex: integer;
     function GetItemHt: Integer; override;
+    function AllowDropDown: boolean; virtual;
     function AllowBtnStyle: boolean;
     function BrdWidth: integer;
     function DrawSkinItem(aIndex: Integer; aRect: TRect; aState: TOwnerDrawState; aDC: hdc): boolean; virtual;
@@ -50,6 +50,9 @@ type
     procedure ComboWndProc(var Message: TMessage; ComboWnd: HWnd; ComboProc: Pointer); override;
     procedure CreateParams(var Params: TCreateParams); override;
     procedure UpdateIndexes;
+    procedure DoDropDown; virtual;
+    procedure WMLButtonDblClk (var Message: TMessage);       message WM_LBUTTONDBLCLK;
+    procedure WMLButtonDown   (var Message: TWMLButtonDown); message WM_LBUTTONDOWN;
   public
     constructor Create(AOwner: TComponent); override;
     procedure CreateWnd; override;
@@ -151,6 +154,7 @@ type
   TGetColorsEvent = procedure(Sender: TsCustomColorBox; Items: TStrings) of object;
   TOnColorName    = procedure(Sender: TsCustomColorBox; Value: TColor; var ColorName: string) of object;
 
+  TacColorPopupMode = (pmColorList, pmPickColor);
 
   TsCustomColorBox = class(TsCustomComboBoxEx)
   private
@@ -163,6 +167,7 @@ type
 
     FMargin: integer;
     FStyle: TsColorBoxStyle;
+    FPopupMode: TacColorPopupMode;
     FOnColorName: TOnColorName;
     FOnGetColors: TGetColorsEvent;
     function GetSelected: TColor;
@@ -173,10 +178,12 @@ type
     procedure SetShowColorName    (const Value: boolean);
     procedure SetMargin           (const Value: integer);
     procedure SetSelected         (const AColor: TColor);
+    procedure SetPopupMode        (const Value: TacColorPopupMode);
     procedure ColorCallBack       (const AName: string);
     procedure WMDrawItem(var Message: TWMDrawItem); override;
   protected
     procedure CloseUp; override;
+    function AllowDropDown: boolean; override;
     function ColorRect(SourceRect: TRect; State: TOwnerDrawState): TRect;
     function DrawSkinItem(aIndex: Integer; aRect: TRect; aState: TOwnerDrawState; aDC: hdc): boolean; override;
     procedure KeyDown(var Key: Word; Shift: TShiftState); override;
@@ -184,6 +191,7 @@ type
     function GetItemHt: Integer; override;
     procedure PopulateList;
     procedure Select; override;
+    procedure DoDropDown; override;
     procedure SetStyle(AStyle: TsColorBoxStyle); reintroduce;
   public
     constructor Create(AOwner: TComponent); override;
@@ -201,6 +209,8 @@ type
     property Selected:          TColor read GetSelected        write SetSelected          default clBlack;
     property DefaultColorColor: TColor read FDefaultColorColor write SetDefaultColorColor default clBlack;
     property NoneColorColor:    TColor read FNoneColorColor    write SetNoneColorColor    default clBlack;
+
+    property PopupMode: TacColorPopupMode read FPopupMode write SetPopupMode default pmColorList;
 
     property OnColorName: TOnColorName    read FOnColorName write FOnColorName;
     property OnGetColors: TGetColorsEvent read FOnGetColors write FOnGetColors;
@@ -269,24 +279,138 @@ type
   end;
 
 
+  TsSkinSelector = class;
+
+
+  TacSkinSelectBtn = class(TsSpeedButton)
+  public
+    FDoClick: boolean;
+    procedure Click; override;
+    constructor Create(AOwner: TComponent); override;
+    procedure WndProc(var Message: TMessage); override;
+  end;
+
+
+  TacSkinSelectForm = class(TForm)
+  protected
+    ScrollBox: TWinControl;
+    Selector: TsSkinSelector;
+    ImgList: TsVirtualImageList;
+  public
+    BtnIndex,
+    ItemCount,
+    ItemWidth,
+    ItemHeight: integer;
+    procedure SetBtnIndex(NewIndex: integer);
+    constructor CreateNew(AOwner: TComponent; Dummy: Integer = 0); override;
+    procedure ClickBtn(AButton: TacSkinSelectBtn);
+    procedure UpdateControls;
+    procedure UpdateHotControl;
+  end;
+
+
+  TacThumbSize = (tsSmall, tsMedium, tsBig);
+
+  TsSkinSelector = class(TsCustomComboBoxEx)
+  private
+    FColCount,
+    FRowCount,
+    FItemMargin,
+    FMinItemWidth: byte;
+    Form: TacSkinSelectForm;
+    FShowNoSkin: boolean;
+    FThumbSize: TacThumbSize;
+    procedure SetThumbSize(const Value: TacThumbSize);
+    procedure SetShowNoSkin(const Value: boolean);
+  protected
+    procedure PopulateList;
+    procedure UpdateItemIndex;
+    procedure DoDropDown; override;
+    function AllowDropDown: boolean; override;
+    procedure KeyDown(var Key: Word; Shift: TShiftState); override;
+    procedure SetIndex(BtnIndex: integer; Step: integer);
+  public
+    procedure KillPopupForm;
+    procedure Loaded; override;
+    destructor Destroy; override;
+    function DroppedDown: boolean;
+    procedure CreateWnd; override;
+    constructor Create(AOwner: TComponent); override;
+    procedure WndProc(var Message: TMessage); override;
+    procedure SetItemIndex(const Value: Integer); override;
+    procedure CreateParams(var Params: TCreateParams); override;
+    procedure ComboWndProc(var Message: TMessage; ComboWnd: HWnd; ComboProc: Pointer); override;
+  published
+    property ItemMargin: byte read FItemMargin write FItemMargin default 4;
+    property ColCount: byte read FColCount write FColCount default 3;
+    property RowCount: byte read FRowCount write FRowCount default 5;
+    property MinItemWidth: byte read FMinItemWidth write FMinItemWidth default 0;
+    property ShowNoSkin: boolean read FShowNoSkin write SetShowNoSkin default True;
+    property ThumbSize: TacThumbSize read FThumbSize write SetThumbSize default tsBig;
+
+    property Align;
+    property Anchors;
+    property Constraints;
+    property DragCursor;
+    property DragKind;
+    property DragMode;
+    property Enabled;
+    property Font;
+    property ImeMode;
+    property ImeName;
+    property ItemHeight;
+    property MaxLength;
+    property ParentBiDiMode;
+    property ParentFont;
+    property ParentShowHint;
+    property PopupMenu;
+    property ShowHint;
+    property TabOrder;
+    property TabStop;
+    property Text;
+    property Visible;
+{
+    property OnChange;
+    property OnClick;
+    property OnContextPopup;
+    property OnDblClick;
+    property OnDragDrop;
+    property OnDragOver;
+    property OnDropDown;
+}
+    property OnEndDock;
+    property OnEndDrag;
+    property OnEnter;
+    property OnExit;
+    property OnKeyDown;
+    property OnKeyPress;
+    property OnKeyUp;
+    property OnStartDock;
+    property OnStartDrag;
+  end;
+
+
 {$IFNDEF NOTFORHELP}
-var
-  ColDlg: TColorDialog = nil;
+//var
+//  ColDlg: TColorDialog = nil;
+
 {$ENDIF} // NOTFORHELP
 
 
 implementation
 
 uses
-  math,
+  math, Consts, Buttons, Menus,
   {$IFDEF DELPHI7UP}Themes, {$ENDIF}
-  sAlphaGraph, sMaskData, sSkinProps, sMessages, sVCLUtils, acGlow, sSkinManager, sDialogs, sFade, sStyleSimply, sThirdParty;
+  sAlphaGraph, sMaskData, sSkinProps, sMessages, sVCLUtils, acGlow, sSkinManager, sDialogs, sFade,
+  sStyleSimply, sThirdParty, sColorDialog, acPopupController, sScrollBox, sSkinProvider;
 
 
 const
   StandardColorsCount = 16;
   ExtendedColorsCount = 4;
   NoColorSelected = TColor($FF000000);
+  ThumbSizes: array [boolean, TacThumbSize] of integer = ((17, 50, 100), (24, 70, 140));
 
 
 {$IFDEF DELPHI6UP}
@@ -336,7 +460,7 @@ begin
           end;
 
           Alpha := LimitIt(Round(Glow), 0, MaxByte);
-          if (sd.AnimTimer.Iteration >= sd.AnimTimer.Iterations) then begin
+          if sd.AnimTimer.Iteration >= sd.AnimTimer.Iterations then begin
             if (State = 0) and (Alpha > 0) then begin
               if sd.GlowID >= 0 then
                 SetGlowAlpha(sd.GlowID, Alpha);
@@ -370,10 +494,11 @@ end;
 
 procedure TsCustomComboBoxEx.UpdateIndexes;
 begin
-  if (SkinData.SkinManager <> nil) and (SkinData.SkinIndex >= 0) then
-    FGlyphIndex := SkinData.SkinManager.GetMaskIndex(SkinData.SkinIndex, s_ItemGlyph)
-  else
-    FGlyphIndex := -1;
+  with SkinData do
+    if (SkinManager <> nil) and (SkinIndex >= 0) then
+      FGlyphIndex := SkinManager.GetMaskIndex(SkinIndex, s_ItemGlyph)
+    else
+      FGlyphIndex := -1;
 end;
 
 
@@ -385,9 +510,9 @@ end;
 
 function TsCustomComboBoxEx.ButtonHeight: integer;
 begin
-  with SkinData.SkinManager.ConstData.ComboBtn do 
-    if FCommonData.Skinned and (GlyphIndex > -1) then
-      Result := HeightOfImage(FCommonData.SkinManager.ma[GlyphIndex])
+  with SkinData, SkinManager.ConstData.ComboBtn do
+    if Skinned and (GlyphIndex >= 0) then
+      Result := SkinManager.ma[GlyphIndex].Height
     else
       Result := 16;
 end;
@@ -397,19 +522,21 @@ function TsCustomComboBoxEx.ButtonRect: TRect;
 var
   w: integer;
 begin
-  if (Style <> csExSimple) and FShowButton then
-    w := GetComboBtnSize(SkinData.SkinManager) - 1
-  else
-    w := 0;
+  with SkinData, SkinManager.CommonSkinData do begin
+    if (Style <> csExSimple) and FShowButton then
+      w := GetComboBtnSize(SkinManager) - 1
+    else
+      w := 0;
 
-  if UseRightToLeftAlignment then
-    Result.Left := SkinData.SkinManager.CommonSkinData.ComboBoxMargin
-  else
-    Result.Left := Width - w - SkinData.SkinManager.CommonSkinData.ComboBoxMargin;
+    if UseRightToLeftAlignment then
+      Result.Left := ComboBoxMargin
+    else
+      Result.Left := Width - w - ComboBoxMargin;
 
-  Result.Top := SkinData.SkinManager.CommonSkinData.ComboBoxMargin;
-  Result.Right := Result.Left + w;
-  Result.Bottom := Height - SkinData.SkinManager.CommonSkinData.ComboBoxMargin;
+    Result.Top := ComboBoxMargin;
+    Result.Right := Result.Left + w;
+    Result.Bottom := Height - ComboBoxMargin;
+  end;
 end;
 
 
@@ -450,7 +577,7 @@ var
   R, cR, bR: TRect;
   ps: TPaintStruct;
 begin
-  if FReadOnly then
+  if FReadOnly or not AllowDropDown then
     case Message.Msg of
       WM_KEYDOWN, WM_CHAR, WM_KEYUP, WM_SYSKEYUP, CN_KEYDOWN, CN_CHAR, CN_SYSKEYDOWN, CN_SYSCHAR, WM_PASTE, WM_CUT, WM_CLEAR, WM_UNDO:
         Exit;
@@ -467,7 +594,12 @@ begin
             SetFocus;
 
           Exit;
-        end;
+        end
+        else
+          if not AllowDropdown then begin
+            WndProc(Message);
+            Exit;
+          end;
     end;
 
   if not (csDestroying in ComponentState) and FCommonData.Skinned then
@@ -481,9 +613,7 @@ begin
 
       WM_MOUSEMOVE:
         if not (csDesigning in ComponentState) then begin
-          if (SkinData.SkinManager.ActiveControl <> Handle) then
-            SkinData.SkinManager.ActiveControl := Handle;
-
+          SkinData.SkinManager.ActiveControl := Handle;
           if not DroppedDown and not AllowBtnStyle then begin
             GetWindowRect(Handle, R);
             bR := ButtonRect;
@@ -518,10 +648,9 @@ begin
 
       WM_PAINT: begin
         if ComboWnd = ExHandle then
-          if (TWMPaint(Message).DC = 0) then begin
+          if TWMPaint(Message).DC = 0 then begin
             DC := BeginPaint(ComboWnd, PS);
-            SkinData.FUpdating := SkinData.Updating;
-            if not SkinData.FUpdating and not (SkinData.SkinManager.Effects.AllowAnimation and (SkinData.AnimTimer <> nil) and SkinData.AnimTimer.Enabled) then begin
+            if not InUpdating(SkinData) and not (SkinData.SkinManager.Effects.AllowAnimation and (SkinData.AnimTimer <> nil) and SkinData.AnimTimer.Enabled) then begin
               TWMPaint(Message).DC := DC;
               WMPaint(TWMPaint(Message));
             end;
@@ -553,12 +682,18 @@ begin
 end;
 
 
+function TsCustomComboBoxEx.AllowDropDown: boolean;
+begin
+  Result := True;
+end;
+
+
 constructor TsCustomComboBoxEx.Create(AOwner: TComponent);
 begin
-  inherited;
-  FDisabledKind := DefDisabledKind;
   FCommonData := TsCtrlSkinData.Create(Self, True);
   FCommonData.COC := COC_TsComboBox;
+  inherited;
+  FDisabledKind := DefDisabledKind;
   FAllowMouseWheel := True;
   FBoundLabel := TsBoundLabel.Create(Self, FCommonData);
   FReadOnly := False;
@@ -596,11 +731,12 @@ begin
     UninitializeACScroll(lBoxHandle, True, False, ListSW);
     lBoxHandle := 0;
   end;
-  FreeAndNil(FBoundLabel);
-  if Assigned(FCommonData) then
-    FreeAndNil(FCommonData);
+  if HandleAllocated then // Avoiding of error in standard destructor under DX10 (linked with changed Style in CreateWnd)
+    DestroyWindowHandle;
 
   inherited;
+  FreeAndNil(FBoundLabel);
+  FreeAndNil(FCommonData);
 end;
 
 
@@ -641,7 +777,7 @@ begin
     DC := SkinData.FCacheBmp.Canvas.Handle;
 
   bSelected := False;
-  bEdit := (odComboBoxEdit in aState);
+  bEdit := odComboBoxEdit in aState;
   BtnStyle := AllowBtnStyle and bEdit;
   CI.Ready := False;
   State := integer((ControlIsActive(SkinData) or Focused) and (SkinData.SkinManager.gd[SkinData.SkinIndex].States > 1));
@@ -670,8 +806,8 @@ begin
   Bmp := CreateBmp32(aRect);
   Bmp.Canvas.Font.Assign(Font);
   rText := MkRect(Bmp);
-  if not bEdit and (aIndex >-1) then begin
-    if ItemsEx.ComboItems[aIndex].Indent > -1 then begin
+  if not bEdit and (aIndex >= 0) then begin
+    if ItemsEx.ComboItems[aIndex].Indent >= 0 then begin
       i := 10 * ItemsEx.ComboItems[aIndex].Indent;
       FillDC(Bmp.Canvas.Handle, Rect(rText.Left, 0, rText.Left + i, Bmp.Height), CI.FillColor);
       rText.Left := rText.Left + i;
@@ -681,7 +817,8 @@ begin
   end;
 
   if bSelected and not BtnStyle then
-    if (Style = csExDropDown) then begin
+    if Style = csExDropDown then begin
+//    if GetWindowLong(Handle, GWL_STYLE) and CBS_DROPDOWN = CBS_DROPDOWN {(Style = csExDropDown)} then begin
       FillDC(Bmp.Canvas.Handle, MkRect(Bmp), CI.FillColor);
       GetTextExtentPoint32(Bmp.Canvas.Handle, PChar(Items[aIndex]), Length(Items[aIndex]), Size);
       R := rText;
@@ -711,13 +848,13 @@ begin
     gRect := rText;
     gRect.Right := gRect.Left + Images.Width;
     rText.Left := gRect.Right + 4;
-    if (aIndex > -1) then begin
-      if bEdit and (ItemsEx.ComboItems[aIndex].SelectedImageIndex > -1) then
+    if aIndex >= 0 then begin
+      if bEdit and (ItemsEx.ComboItems[aIndex].SelectedImageIndex >= 0) then
         imgNdx := ItemsEx.ComboItems[aIndex].SelectedImageIndex
       else
         imgNdx := ItemsEx.ComboItems[aIndex].ImageIndex;
 
-      if (imgNdx > -1) and (imgNdx < GetImageCount(Images)) then begin
+      if IsValidIndex(imgNdx, GetImageCount(Images)) then begin
         i := (HeightOf(gRect) - Images.Height) div 2;
         Images.Draw(Bmp.Canvas, gRect.Left, gRect.Top + i, imgNdx, True);
       end;
@@ -725,11 +862,12 @@ begin
   end;
 
   if bEdit and (Style = csExDropDown) then begin
+//  if bEdit and (GetWindowLong(Handle, GWL_STYLE) and CBS_DROPDOWN = CBS_DROPDOWN {(Style = csExDropDown)}) then begin
     OffsetRect(rText, -1, 1);
     WriteTextEx(Bmp.Canvas, PChar(Text), True, rText, DrawStyle, sNdx, True, SkinData.SkinManager);
   end
   else
-    if (aIndex >= 0) and (aIndex < Items.Count) then
+    if IsValidIndex(aIndex, Items.Count) then
       if sNdx < 0 then begin
         if odSelected in aState then
           Bmp.Canvas.Font.Color := SkinData.SkinManager.GetHighLightFontColor(True)
@@ -747,6 +885,47 @@ begin
     DrawFocusRect(DC, aRect);
 
   FreeAndNil(Bmp);
+end;
+
+
+procedure TsCustomComboBoxEx.WMLButtonDblClk(var Message: TMessage);
+begin
+  if ReadOnly then begin
+    SetFocus;
+    if Assigned(OnDblClick) then
+      OnDblClick(Self);
+  end
+  else
+    if not AllowDropDown then
+      DoDropDown
+    else
+      inherited;
+end;
+
+
+procedure TsCustomComboBoxEx.WMLButtonDown(var Message: TWMLButtonDown);
+begin
+  if ReadOnly then
+    SetFocus
+  else
+    if not AllowDropDown then
+      DoDropDown
+    else
+      inherited
+end;
+
+
+procedure TsCustomComboBoxEx.DoDropDown;
+begin
+  if CanFocus then
+    SetFocus;
+
+  if Assigned(OnDropDown) then begin
+    FDropDown := True;
+    State := 2;
+    AnimateCtrl(2);
+    OnDropDown(Self);
+  end;
 end;
 
 
@@ -774,38 +953,39 @@ begin
     Mode := integer((State = 1) or (AllowBtnStyle and (FCommonData.FMouseAbove or FCommonData.FFocused)));
 
   R := ButtonRect;
-  if not AllowBtnStyle then
-    with SkinData.SkinManager.ConstData.ComboBtn do begin
-      if SkinIndex > -1 then begin
-        TmpBtn := CreateBmpLike(FCommonData.FCacheBmp);
-        BitBlt(TmpBtn.Canvas.Handle, 0, 0, TmpBtn.Width, TmpBtn.Height, FCommonData.FCacheBmp.Canvas.Handle, 0, 0, SRCCOPY);
-        PaintItem(SkinIndex, MakeCacheInfo(FCommonData.FCacheBmp), True, Mode, R, MkPoint, FCommonData.FCacheBmp, FCommonData.SkinManager, BGIndex[0], BGIndex[1]);
-        FreeAndNil(TmpBtn);
-      end;
-      if not FCommonData.SkinManager.gd[FCommonData.SkinIndex].GiveOwnFont and FCommonData.SkinManager.IsValidImgIndex(GlyphIndex) then
-        DrawSkinGlyph(FCommonData.FCacheBmp, Point(R.Left + (WidthOf(R) - WidthOfImage(FCommonData.SkinManager.ma[GlyphIndex])) div 2,
-                      (Height - ButtonHeight) div 2), Mode, 1, FCommonData.SkinManager.ma[GlyphIndex], MakeCacheInfo(SkinData.FCacheBmp))
+  with FCommonData.SkinManager do
+    if not AllowBtnStyle then
+      with ConstData.ComboBtn do begin
+        if SkinIndex >= 0 then begin
+          TmpBtn := CreateBmpLike(FCommonData.FCacheBmp);
+          BitBlt(TmpBtn.Canvas.Handle, 0, 0, TmpBtn.Width, TmpBtn.Height, FCommonData.FCacheBmp.Canvas.Handle, 0, 0, SRCCOPY);
+          PaintItem(SkinIndex, MakeCacheInfo(FCommonData.FCacheBmp), True, Mode, R, MkPoint, FCommonData.FCacheBmp, FCommonData.SkinManager, BGIndex[0], BGIndex[1]);
+          FreeAndNil(TmpBtn);
+        end;
+        if not gd[FCommonData.SkinIndex].GiveOwnFont and IsValidImgIndex(GlyphIndex) then
+          DrawSkinGlyph(FCommonData.FCacheBmp, Point(R.Left + (WidthOf(R) - ma[GlyphIndex].Width) div 2,
+                        (Height - ButtonHeight) div 2), Mode, 1, ma[GlyphIndex], MakeCacheInfo(SkinData.FCacheBmp))
+        else begin // Paint without glyph
+          if (SkinIndex >= 0) and not AllowBtnStyle then
+            C := gd[SkinIndex].Props[min(Mode, ac_MaxPropsIndex)].FontColor.Color
+          else
+            C := ColorToRGB(clWindowText);
+
+          DrawColorArrow(FCommonData.FCacheBmp, C, R, asBottom);
+        end;
+      end
+    else
+      if not gd[FCommonData.SkinIndex].GiveOwnFont and IsValidImgIndex(FGlyphIndex) then
+        DrawSkinGlyph(FCommonData.FCacheBmp, Point(R.Left + (WidthOf(R) - ma[FGlyphIndex].Width) div 2,
+                      (Height - ButtonHeight) div 2), Mode, 1, ma[FGlyphIndex], MakeCacheInfo(SkinData.FCacheBmp))
       else begin // Paint without glyph
-        if (SkinIndex >= 0) and not AllowBtnStyle then
-          C := FCommonData.SkinManager.gd[SkinIndex].Props[min(Mode, ac_MaxPropsIndex)].FontColor.Color
+        if FCommonData.SkinIndex >= 0 then
+          C := gd[FCommonData.SkinIndex].Props[min(Mode, ac_MaxPropsIndex)].FontColor.Color
         else
           C := ColorToRGB(clWindowText);
 
-        DrawColorArrow(FCommonData.FCacheBmp.Canvas, C, R, asBottom);
+        DrawColorArrow(FCommonData.FCacheBmp, C, R, asBottom);
       end;
-    end
-  else 
-    if not FCommonData.SkinManager.gd[FCommonData.SkinIndex].GiveOwnFont and FCommonData.SkinManager.IsValidImgIndex(FGlyphIndex) then
-      DrawSkinGlyph(FCommonData.FCacheBmp, Point(R.Left + (WidthOf(R) - WidthOfImage(FCommonData.SkinManager.ma[FGlyphIndex])) div 2,
-                    (Height - ButtonHeight) div 2), Mode, 1, FCommonData.SkinManager.ma[FGlyphIndex], MakeCacheInfo(SkinData.FCacheBmp))
-    else begin // Paint without glyph
-      if FCommonData.SkinIndex >= 0 then
-        C := FCommonData.SkinManager.gd[FCommonData.SkinIndex].Props[min(Mode, ac_MaxPropsIndex)].FontColor.Color
-      else
-        C := ColorToRGB(clWindowText);
-
-      DrawColorArrow(FCommonData.FCacheBmp.Canvas, C, R, asBottom);
-    end;
 end;
 
 
@@ -820,7 +1000,7 @@ begin
     State := 2
   else
     State := integer(ControlIsActive(FCommonData) or AllowBtnStyle and FCommonData.FMouseAbove);
-    
+
   if Style <> csExSimple then begin
     PaintItem(FCommonData, GetParentCache(FCommonData), True, State, MkRect(Width, FCommonData.FCacheBmp.Height), Point(Left, top), FCommonData.FCacheBmp, True);//False);
     if FShowButton then
@@ -918,6 +1098,11 @@ begin
             Exit;
           end; // AlphaSkins supported
 
+          AC_SETSCALE: begin
+            if BoundLabel <> nil then BoundLabel.UpdateScale(Message.LParam);
+            Exit;
+          end;
+
           AC_REMOVESKIN:
             if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then begin
               CommonWndProc(Message, FCommonData);
@@ -936,7 +1121,7 @@ begin
             end;
 
           AC_REFRESH:
-            if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
+            if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then begin
               if FDropDown and (ExHandle <> 0) then // Close up
                 SendMessage(Handle, CB_SHOWDROPDOWN, 0, 0);
 
@@ -963,7 +1148,7 @@ begin
             end;
 
           AC_SETNEWSKIN:
-            if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
+            if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then begin
               CommonWndProc(Message, FCommonData);
               UpdateIndexes;
               if ListSW <> nil then
@@ -1007,16 +1192,16 @@ begin
       WM_SYSCHAR, WM_SYSKEYDOWN, CN_SYSCHAR, CN_SYSKEYDOWN, WM_KEYDOWN, CN_KEYDOWN:
         case TWMKey(Message).CharCode of
           VK_SPACE..VK_DOWN, $39..$39, $41..$5A:
-            if FReadOnly then
-              Exit;
+            if ReadOnly or not AllowDropDown then
+                Exit;
         end;
 
       WM_CHAR:
-        if FReadOnly then
+        if ReadOnly or not AllowDropDown then
           Exit;
 
       WM_COMMAND, CN_COMMAND:
-        if (Message.WParamHi in [CBN_DROPDOWN, CBN_SELCHANGE, CBN_EDITCHANGE]) and FReadOnly then begin
+        if (Message.WParamHi in [CBN_DROPDOWN, CBN_SELCHANGE, CBN_EDITCHANGE]) and (FReadOnly or not AllowDropDown) then begin
           Message.Result := 1;
           Exit;
         end;
@@ -1033,7 +1218,7 @@ begin
   else begin
     case Message.Msg of
       WM_CTLCOLOREDIT:
-        if (Win32MajorVersion < 6) and (GetWindowLong(Handle, GWL_STYLE) and CBS_DROPDOWNLIST = CBS_DROPDOWNLIST){(Style = csExDropDownList)} then begin // Forbid a filling by system
+        if (Win32MajorVersion < 6) and (GetWindowLong(Handle, GWL_STYLE) and CBS_DROPDOWNLIST <> 0){(Style = csExDropDownList)} then begin // Forbid a filling by system
           if Message.WParam <> 0 then
             SetBkMode(hdc(Message.WParam), TRANSPARENT);
 
@@ -1047,7 +1232,7 @@ begin
           SkinData.SkinManager.ActiveControl := Handle;
           SendMessage(Handle, CM_MOUSEENTER, 0, 0);
         end;
-{$ENDIF}
+{$ENDIF} // D2010
 
       WM_STYLECHANGED: begin
         lBoxHandle := 0;
@@ -1071,19 +1256,13 @@ begin
               SkinData.FMouseAbove := False;
             end;
             RedrawWindow(Handle, nil, 0, RDW_INVALIDATE or RDW_UPDATENOW or RDW_ALLCHILDREN);
-            if (FCommonData.AnimTimer <> nil) then
+            if FCommonData.AnimTimer <> nil then
               FCommonData.AnimTimer.CopyFrom(FCommonData.AnimTimer.BmpOut, FCommonData.FCacheBmp, MkRect(FCommonData.FCacheBmp));
 
             if AllowBtnStyle then
               AnimateCtrl(integer(SkinData.FMouseAbove))
-{
-            FCommonData.BGChanged := True;
-            FDropDown := False;
-            Perform(CM_MOUSELEAVE, 0, 0);
-            if ExHandle <> 0 then
-              RedrawWindow(ExHandle, nil, 0, RDW_INVALIDATE or RDW_UPDATENOW or RDW_ALLCHILDREN);
-}
           end;
+
           CBN_DROPDOWN: begin
             FDropDown := True;
             FCommonData.BGChanged := True;
@@ -1095,7 +1274,7 @@ begin
         end;
 
       WM_SETFOCUS, CM_ENTER:
-        if CanFocus and (FCommonData.CtrlSkinState and ACS_FOCUSCHANGING <> ACS_FOCUSCHANGING) then begin
+        if CanFocus and (FCommonData.CtrlSkinState and ACS_FOCUSCHANGING = 0) then begin
           FCommonData.CtrlSkinState := FCommonData.CtrlSkinState or ACS_FOCUSCHANGING;
           FinishTimer(SkinData.AnimTimer);
           inherited;
@@ -1104,14 +1283,11 @@ begin
           FCommonData.BGChanged := True;
           FCommonData.CtrlSkinState := FCommonData.CtrlSkinState and not ACS_FOCUSCHANGING;
           RedrawWindow(Handle, nil, 0, RDW_INVALIDATE or RDW_UPDATENOW or RDW_ALLCHILDREN);
-//          if ExHandle <> 0 then
-//            RedrawWindow(ExHandle, nil, 0, RDW_INVALIDATE or RDW_UPDATENOW or RDW_ALLCHILDREN);
-
           Exit;
         end;
 
       WM_KILLFOCUS, CM_EXIT:
-        if (FCommonData.CtrlSkinState and ACS_FOCUSCHANGING <> ACS_FOCUSCHANGING) then begin
+        if FCommonData.CtrlSkinState and ACS_FOCUSCHANGING = 0 then begin
           FCommonData.CtrlSkinState := FCommonData.CtrlSkinState or ACS_FOCUSCHANGING;
           StopTimer(SkinData);
           if not SkinData.FMouseAbove then
@@ -1124,9 +1300,6 @@ begin
           inherited;
           FCommonData.CtrlSkinState := FCommonData.CtrlSkinState and not ACS_FOCUSCHANGING;
           RedrawWindow(Handle, nil, 0, RDW_INVALIDATE or RDW_UPDATENOW or RDW_ALLCHILDREN);
-//          if ExHandle <> 0 then
-//            RedrawWindow(ExHandle, nil, 0, RDW_INVALIDATE or RDW_UPDATENOW or RDW_ALLCHILDREN);
-
           Exit;
         end;
 
@@ -1186,16 +1359,6 @@ begin
               i := integer(PtInRect(bR, p));
               State := i;
               AnimateCtrl(1 + 2 * i)
-
-//              inherited;
-//              if ExHandle <> 0 then
-//                RedrawWindow(ExHandle, nil, 0, RDW_INVALIDATE or RDW_UPDATENOW or RDW_ALLCHILDREN);
-{
-              if FCommonData.FMouseAbove then
-                ShowGlowingIfNeeded(SkinData, False, Handle, 0, True)
-              else
-                HideGlow(SkinData.GlowID, True);
-}
             end;
           end
           else
@@ -1214,23 +1377,6 @@ begin
               State := 0;
               AnimateCtrl(0);
             end;
-{
-            GetWindowRect(Handle, R);
-            P := acMousePos;
-            if PtInRect(R, P) then
-              Exit; // If mouse is in Edit
-
-            FCommonData.FMouseAbove := False;
-            FCommonData.BGChanged := True;
-            inherited;
-            if ExHandle <> 0 then
-              RedrawWindow(ExHandle, nil, 0, RDW_INVALIDATE or RDW_UPDATENOW or RDW_ALLCHILDREN);
-
-            if FCommonData.FMouseAbove then
-              ShowGlowingIfNeeded(SkinData, False, Handle, 0, True)
-            else
-              HideGlow(SkinData.GlowID, True);
-}
           end
           else
             inherited;
@@ -1241,7 +1387,7 @@ begin
       WM_COMMAND:
         case Message.WParamHi of
           CBN_DROPDOWN:
-            if FReadOnly then
+            if ReadOnly or not AllowDropDown then
               Exit;
 
           CBN_CLOSEUP: begin
@@ -1261,7 +1407,7 @@ begin
           else
             TacComboListWnd(ListSW).Color := Color;
         end;
-{$ENDIF}
+{$ENDIF} // TNTUNICODE
 
       CB_SETITEMHEIGHT, CM_VISIBLECHANGED, CM_ENABLEDCHANGED, WM_SETFONT:
         FCommonData.BGChanged := True;
@@ -1284,7 +1430,7 @@ begin
         end;
 
       CM_VISIBLECHANGED:
-        if (SkinData.CtrlSkinState and ACS_CHANGING <> ACS_CHANGING) then
+        if SkinData.CtrlSkinState and ACS_CHANGING = 0 then
           Repaint;
 
       WM_SIZE, CM_CHANGED, CM_TEXTCHANGED, CB_SETCURSEL: begin
@@ -1309,6 +1455,27 @@ procedure TsCustomComboBoxEx.CreateParams(var Params: TCreateParams);
 begin
   inherited;
   Params.Style := Params.Style or CBS_OWNERDRAWFIXED and not CBS_OWNERDRAWVARIABLE;
+end;
+
+
+function TsCustomComboBoxEx.GetSelectedItem: TComboExItem;
+begin
+  if ItemIndex >= 0 then
+    Result := ItemsEx.ComboItems[ItemIndex]
+  else
+    Result := nil
+end;
+
+
+function TsCustomComboBoxEx.AllowBtnStyle: boolean;
+begin
+  Result := (GetWindowLong(Handle, GWL_STYLE) and CBS_DROPDOWNLIST = CBS_DROPDOWNLIST){(Style in [csExDropDownList])} and (SkinData.SkinSection = '');
+end;
+
+
+function TsCustomComboBoxEx.GetItemHt: Integer;
+begin
+  Result := Perform(CB_GETITEMHEIGHT, 0, 0);
 end;
 
 
@@ -1374,6 +1541,7 @@ begin
   FStyle := [cbStandardColors, cbExtendedColors, cbSystemColors];
   FSelectedColor := clBlack;
   FDefaultColorColor := clBlack;
+  FPopupMode := pmColorList;
   FShowColorName := True;
   FNoneColorColor := clBlack;
   FCommonData.COC := COC_TsColorBox;
@@ -1389,7 +1557,9 @@ end;
 
 procedure TsCustomColorBox.CreateWnd;
 begin
-  inherited Style := csExDropDownList;
+  if not (csDesigning in ComponentState) then
+    inherited Style := csExDropDownList;
+
   inherited CreateWnd;
   PopulateList;
 end;
@@ -1446,7 +1616,7 @@ begin
       else
         Exit;
 
-    if ControlIsActive(SkinData) and Skinned and (SkinData.SkinManager.gd[SkinData.SkinIndex].States > 1) then
+    if (ControlIsActive(SkinData) or (SkinData.FMouseAbove and AllowBtnStyle)) and Skinned and (SkinData.SkinManager.gd[SkinData.SkinIndex].States > 1) then
       State := 1
     else
       State := 0;
@@ -1487,7 +1657,7 @@ begin
     // Paint BG
     if (odSelected in aState) and (ShowcolorName or not (odComboBoxEdit in aState)) and not BtnStyle then
       if Skinned then
-        if (sNdx > -1) then
+        if sNdx >= 0 then
           PaintItem(sNdx, CI, True, 1{Focused}, MkRect(Bmp), MkPoint, Bmp, SkinData.SkinManager)
         else
           FillDC(Bmp.Canvas.Handle, rText, SkinData.SkinManager.GetHighLightColor)
@@ -1524,12 +1694,12 @@ begin
 
       rText.Left := gRect.Right + 5;
       DrawStyle := DT_NOPREFIX or DT_EXPANDTABS or DT_SINGLELINE or DT_VCENTER or DT_NOCLIP;
-      if (aIndex >= 0) and (aIndex < Items.Count) then
-        if Skinned and (sNdx > -1) then
+      if IsValidIndex(aIndex, Items.Count) then
+        if Skinned and (sNdx >= 0) then
           if odSelected in aState then
             WriteTextEx(Bmp.Canvas, PChar(Items[aIndex]), True, rText, DrawStyle, sNdx, True, SkinData.SkinManager)
           else
-            WriteTextEx(Bmp.Canvas, PChar(Items[aIndex]), True, rText, DrawStyle, sNdx, (State > 0), SkinData.SkinManager)
+            WriteTextEx(Bmp.Canvas, PChar(Items[aIndex]), True, rText, DrawStyle, sNdx, State > 0, SkinData.SkinManager)
         else begin
           Bmp.Canvas.Brush.Style := bsClear;
           Bmp.Canvas.Font.Color := GetFontColor;
@@ -1544,7 +1714,7 @@ begin
       if odSelected in aState then begin
         gRect := MkRect(Bmp);
         FillDC(Bmp.Canvas.Handle, gRect, C);
-        if (odFocused in aState) then
+        if odFocused in aState then
           DrawFocusRect(Bmp.Canvas.Handle, gRect);
       end
       else begin
@@ -1569,6 +1739,12 @@ begin
 end;
 
 
+function TsCustomColorBox.AllowDropDown: boolean;
+begin
+  Result := PopupMode = pmColorList;
+end;
+
+
 function TsCustomColorBox.GetColorName(Index: Integer): string;
 begin
   Result := Items[Index];
@@ -1584,7 +1760,7 @@ end;
 function TsCustomColorBox.GetSelected: TColor;
 begin
   if HandleAllocated then
-    if ItemIndex <> -1 then
+    if ItemIndex >= 0 then
       Result := GetColor(ItemIndex)
     else
       Result := NoColorSelected
@@ -1619,7 +1795,7 @@ begin
   Result := ColDlg.Execute;
   if Result then begin
     SendMessage(ExHandle, WM_SETREDRAW, 0, 0);
-    if (cbSavedColors in Style) then
+    if cbSavedColors in Style then
       PopulateList;
 
     SendMessage(ExHandle, WM_SETREDRAW, 1, 0);
@@ -1646,7 +1822,7 @@ procedure TsCustomColorBox.PopulateList;
     I: Integer;
   begin
     I := Items.IndexOfObject(TObject(AColor));
-    if I <> -1 then
+    if I >= 0 then
       Items.Delete(I);
   end;
 
@@ -1682,16 +1858,16 @@ begin
         DeleteRange(0, StandardColorsCount - 1);
 
       if (cbSavedColors in Style) and (ColDlg <> nil) then
-        for i := 0 to ColDlg.CustomColors.Count - 1 do
-          if ColDlg.CustomColors[i] <> 'FFFFFF' then begin
-            Items.Insert(0, ColDlg.CustomColors[i]);
-            C := HexToInt(ColDlg.CustomColors[i]);
+        for i := 0 to acCustomColors.Count - 1 do
+          if acCustomColors[i] <> 'FFFFFF' then begin
+            Items.Insert(0, acCustomColors[i]);
+            C := HexToInt(acCustomColors[i]);
             C := SwapRedBlue(C);
             TComboBoxExStrings(Items).ItemsEx[0].Data := TObject(C);
           end;
 
       if cbCustomColor in Style then begin
-        Items.Insert(0, 'Custom...');
+        Items.Insert(0, SColorBoxCustomCaption);
         TComboBoxExStrings(Items).ItemsEx[0].Data := TObject(LCustomColor);
       end;
       if (cbCustomColors in Style) and Assigned(OnGetColors) then begin
@@ -1746,6 +1922,16 @@ begin
 end;
 
 
+procedure TsCustomColorBox.SetPopupMode(const Value: TacColorPopupMode);
+begin
+  if FPopupMode <> Value then begin
+    FPopupMode := Value;
+    if Value = pmPickColor then
+      Style := Style + [cbCustomColor];
+  end;
+end;
+
+
 procedure TsCustomColorBox.SetSelected(const AColor: TColor);
 var
   I, J: Integer;
@@ -1753,16 +1939,16 @@ begin
   if HandleAllocated then begin
     I := Items.IndexOfObject(TObject(AColor));
     if AColor <> 0 then begin
-      if (cbCustomColor in Style) and (AColor <> NoColorSelected) then
+      if ((cbCustomColor in Style) or (PopupMode = pmPickColor)) and (AColor <> NoColorSelected) then
         TComboBoxExStrings(Items).ItemsEx[0].Data := TObject(AColor);
 
-      if (I = -1) then
+      if I = -1 then
         ItemIndex := 0
       else
         ItemIndex := I;
     end
     else
-      if (cbCustomColor in Style) then begin
+      if cbCustomColor in Style then begin
         if (I = -1) and (AColor <> NoColorSelected) then begin
           TComboBoxExStrings(Items).ItemsEx[0].Data := TObject(AColor);
           I := 0;
@@ -1806,13 +1992,43 @@ begin
 end;
 
 
+procedure TsCustomColorBox.DoDropDown;
+begin
+  if AllowDropDown then
+    inherited
+  else
+    if not FDropDown then begin
+      FDropDown := True;
+      if sColorDialogForm = nil then
+        sColorDialogForm := TsColorDialogForm.Create(Application);
+
+      sColorDialogForm.InitControls(True, False, Selected, bsNone);
+      sColorDialogForm.SetCurrentColor(Selected);
+
+      StopTimer(SkinData);
+      SkinData.Invalidate(True);
+
+      ShowPopupForm(sColorDialogForm, Self);
+      // Allow showing of Dlg when screen is captured
+      SetWindowLong(sColorDialogForm.Handle, GWL_EXSTYLE, GetWindowLong(sColorDialogForm.Handle, GWL_EXSTYLE) and not WS_EX_LAYERED);
+    end
+    else
+      if (sColorDialogForm <> nil) and IsWindowVisible(sColorDialogForm.Handle) then begin
+        FDropDown := False;
+        StopTimer(SkinData);
+        SkinData.Invalidate(True);
+        sColorDialogForm.Close;
+      end;
+end;
+
+
 procedure TsCustomColorBox.WMDrawItem(var Message: TWMDrawItem);
 var
   ds: TDrawItemStruct;
   State: TOwnerDrawState;
 begin
   ds := Message.DrawItemStruct^;
-  if ds.itemState and ODS_COMBOBOXEDIT = ODS_COMBOBOXEDIT then
+  if ds.itemState and ODS_COMBOBOXEDIT <> 0 then
     State := [odComboBoxEdit]
   else
     State := [];
@@ -1820,13 +2036,13 @@ begin
   if ds.itemState and
     ODS_FOCUS = ODS_FOCUS then State := State + [odFocused];
 
-  if ds.itemState and ODS_SELECTED = ODS_SELECTED then
+  if ds.itemState and ODS_SELECTED <> 0 then
     State := State + [odSelected];
 
-  if ds.itemState and ODS_HOTLIGHT = ODS_HOTLIGHT then
+  if ds.itemState and ODS_HOTLIGHT <> 0 then
     State := State + [odSelected];
 
-  if ds.itemState and ODS_DISABLED = ODS_DISABLED then
+  if ds.itemState and ODS_DISABLED <> 0 then
     State := State + [odDisabled];
 
   Message.Result := LRESULT(DrawSkinItem(integer(ds.itemID), ds.rcItem, State, ds.hDC))
@@ -1839,35 +2055,613 @@ begin
 //  AddToLog(Message);
 {$ENDIF}
   case Message.Msg of
+    SM_ALPHACMD:
+      case Message.WParamHi of
+        AC_POPUPCLOSED: begin
+          FDropDown := False;
+          StopTimer(SkinData);
+          SkinData.Invalidate(True);
+        end;
+
+        AC_SETSCALE:
+          if sColorDialogForm <> nil then
+            FreeAndNil(sColorDialogForm);
+      end;
+
     CN_COMMAND:
       case TWMCommand(Message).NotifyCode of
         CBN_DROPDOWN:
-          if (cbSavedColors in Style) then
+          if cbSavedColors in Style then
             PopulateList;
       end;
   end;
   inherited;
 end;
+{$ENDIF} // DELPHI6UP
 
 
-function TsCustomComboBoxEx.GetSelectedItem: TComboExItem;
+procedure TacSkinSelectBtn.Click;
 begin
-  if ItemIndex > -1 then
-    Result := ItemsEx.ComboItems[ItemIndex]
+  FDoClick := True;
+end;
+
+
+constructor TacSkinSelectBtn.Create(AOwner: TComponent);
+begin
+  inherited;
+  FDoClick := False;
+end;
+
+
+procedure TacSkinSelectBtn.WndProc(var Message: TMessage);
+begin
+  inherited;
+  case Message.Msg of
+    WM_LBUTTONUP:
+      if FDoClick then begin
+        FDoClick := False;
+        Application.ProcessMessages;
+        TacSkinSelectForm(Parent.Parent).ClickBtn(Self);
+      end;
+  end;
+end;
+
+
+type
+  TAccessScrollBox = class(TsScrollBox);
+
+constructor TacSkinSelectForm.CreateNew(AOwner: TComponent; Dummy: Integer = 0);
+const
+  gMargin = 4;
+var
+  sbWidth: integer;
+begin
+  inherited;
+  TsSkinProvider.Create(Self);
+  Position := poDesigned;
+  AutoScroll := False;
+  Selector := TsSkinSelector(AOwner);
+  BorderStyle := bsNone;
+
+  ItemCount := Selector.ItemsEx.Count;
+  if Selector.ThumbSize <> tsSmall then
+    inc(ItemHeight, 20);
+
+  if Selector.ShowNoSkin then
+    inc(ItemCount);
+
+  ItemWidth := max(Selector.MinItemWidth, ThumbSizes[True, Selector.ThumbSize] + Selector.ItemMargin * 2);
+  ItemHeight := ThumbSizes[False, Selector.ThumbSize] + Selector.ItemMargin * 2;
+  if Selector.ThumbSize <> tsSmall then
+    inc(ItemHeight, GetFontHeight(Selector.Handle) + 4 {Spacing});
+
+  Height := min(Selector.RowCount, ItemCount div Selector.ColCount + integer((ItemCount mod Selector.ColCount) <> 0)) * ItemHeight + gMargin;
+  Width := min(Selector.ColCount, ItemCount) * ItemWidth + gMargin;
+
+  ImgList := TsVirtualImageList.Create(Self);
+  ImgList.Width := Selector.SkinData.SkinManager.ScaleInt(ThumbSizes[True, Selector.ThumbSize]);
+  ImgList.Height := Selector.SkinData.SkinManager.ScaleInt(ThumbSizes[False, Selector.ThumbSize]);
+  ImgList.AlphaImageList := TsAlphaImageList(Selector.SkinData.SkinManager.SkinListController.ImgList);
+  ImgList.Loaded;
+
+  ScrollBox := TsScrollBox.Create(Self);
+  with TAccessScrollBox(ScrollBox) do begin
+    HorzScrollBar.Visible := False;
+    AutoMouseWheel := True;
+    VertScrollBar.Tracking := True;
+    SkinData.VertScrollData.ButtonsSize := 0;
+    SkinData.SkinSection := s_MainMenu;
+    Parent := Self;
+    Align := alClient;
+    Visible := True;
+
+    if ItemCount > Selector.RowCount * Selector.ColCount then begin
+      AutoScroll := True;
+      if ListSW = nil then begin
+        HandleNeeded;
+        RefreshScrolls(SkinData, ListSW);
+      end;
+      if ListSW <> nil then
+        sbWidth := GetScrollMetric(ListSW.sBarVert, SM_SCROLLWIDTH) + 4
+      else
+        sbWidth := GetSystemMetrics(SM_CXVSCROLL) + 4;
+
+      Self.Width := Self.Width + sbWidth;
+    end
+    else begin
+      sbWidth := 0;
+      AutoScroll := False;
+    end;
+
+    if Selector.MinItemWidth <= 0 then begin
+      Self.Width := max(Self.Width, Selector.Width);
+      ItemWidth := (Self.Width - sbWidth - gMargin) div min(Selector.ColCount, ItemCount);
+    end;
+  end;
+end;
+
+
+//type
+//  TAccessSpeedButton = class(TsSpeedButton);
+
+
+procedure TacSkinSelectForm.UpdateControls;
+var
+  X, Y, i: integer;
+  sb: TAccessScrollBox;
+
+  function AddBtn(ACaption: string; ImgIndex: integer): TacSkinSelectBtn;
+  begin
+    Result := TacSkinSelectBtn.Create(ScrollBox);
+    Result.Width := ItemWidth;
+    Result.Height := ItemHeight;
+    Result.Left := X * ItemWidth;
+    Result.Top := Y * ItemHeight;
+    Result.Parent := ScrollBox;
+    Result.Visible := True;
+    Result.Caption := ACaption;
+    Result.ImageIndex := ImgIndex;
+    Result.SkinData.SkinSection := s_MenuItem;
+    Result.Images := ImgList;
+    if Selector.ThumbSize = tsSmall then begin
+      Result.Margin := Selector.ItemMargin;
+      Result.TextAlignment := taLeftJustify;
+      Result.Layout := blGlyphLeft;
+      Result.Alignment := taLeftJustify;
+      Result.WordWrap := False;
+    end
+    else
+      Result.Layout := blGlyphTop;
+
+    Result.Flat := True;
+    Result.Tag := i;
+    if Selector.SkinData.SkinManager.SkinName = Result.Caption then begin
+      BtnIndex := i + integer(Selector.ShowNoSkin);
+      Result.FHotState := True;
+    end;
+    inc(X);
+    if X >= Selector.ColCount then begin
+      X := 0;
+      inc(Y);
+    end;
+  end;
+
+begin
+{  X := Selector.SkinData.SkinManager.ScaleInt(ThumbSizes[True, Selector.ThumbSize]);
+  Y := Selector.SkinData.SkinManager.ScaleInt(ThumbSizes[False, Selector.ThumbSize]);
+  if X <> ImgList.Width then
+    ImgList.Width := X;
+
+  if Y <> ImgList.Height then
+    ImgList.Height := Y;
+}
+//  ImgList.UpdateList;
+  Font.Name := Selector.Font.Name;
+  sb := TAccessScrollBox(Scrollbox);
+  sb.DisableAlign;
+
+  X := 0;
+  Y := 0;
+
+  for i := ScrollBox.ControlCount - 1 downto 0 do
+    ScrollBox.Controls[i].Free;
+
+  i := -1;
+  if Selector.ShowNoSkin then
+    with AddBtn('Standard theme', -1) do
+      if not Selector.SkinData.SkinManager.CommonSkinData.Active then
+        Enabled := False;
+
+  for i := 0 to Selector.ItemsEx.Count - 1 do
+    AddBtn(Selector.ItemsEx[i].Caption, Selector.ItemsEx[i].ImageIndex);
+
+  ScrollBox.EnableAlign;
+end;
+
+
+procedure TacSkinSelectForm.UpdateHotControl;
+var
+  i: integer;
+begin
+  for i := 0 to ScrollBox.ControlCount - 1 do
+    if ScrollBox.Controls[i] is TacSkinSelectBtn then
+      with TacSkinSelectBtn(ScrollBox.Controls[i]) do
+        if FHotState <> (Caption = Selector.SkinData.SkinManager.SkinName) then begin
+          FHotState := Caption = Selector.SkinData.SkinManager.SkinName;
+          SkinData.Invalidate(True);
+        end;
+
+  if Selector.ShowNoSkin and (ScrollBox.ControlCount > 0) then begin
+    TacSkinSelectBtn(ScrollBox.Controls[0]).Enabled := Selector.SkinData.SkinManager.Active;
+    if not Selector.SkinData.SkinManager.Active then
+      TacSkinSelectBtn(ScrollBox.Controls[0]).FHotState := True;
+  end;
+end;
+
+
+procedure TacSkinSelectForm.ClickBtn(AButton: TacSkinSelectBtn);
+var
+  sName: string;
+begin
+  if Selector.ShowNoSkin and (AButton.Tag = -1) then
+    sName := ''
   else
-    Result := nil
+    sName := AButton.Caption;
+
+  Close;
+  AButton.Flat := False;
+  Selector.KillPopupForm;
+  Selector.ItemIndex := Selector.Items.IndexOf(sName);
 end;
 
 
-function TsCustomComboBoxEx.AllowBtnStyle: boolean;
+procedure TacSkinSelectForm.SetBtnIndex(NewIndex: integer);
 begin
-  Result := (GetWindowLong(Handle, GWL_STYLE) and CBS_DROPDOWNLIST = CBS_DROPDOWNLIST){(Style in [csExDropDownList])} and (SkinData.SkinSection = '');
+  if BtnIndex <> NewIndex then begin
+    with TacSkinSelectBtn(ScrollBox.Controls[BtnIndex]) do begin
+      FHotState := False;
+      SkinData.Invalidate(True);
+    end;
+    BtnIndex := NewIndex;
+    with TacSkinSelectBtn(ScrollBox.Controls[BtnIndex]) do begin
+      FHotState := True;
+      SkinData.Invalidate(True);
+    end;
+    if (TsScrollBox(ScrollBox).ListSW <> nil) and TsScrollBox(ScrollBox).ListSW.sBarVert.fScrollVisible then begin
+      TsScrollBox(ScrollBox).ScrollInView(ScrollBox.Controls[BtnIndex]);
+      UpdateScrolls(TsScrollBox(ScrollBox).ListSW, True);
+    end;
+  end;
 end;
 
 
-function TsCustomComboBoxEx.GetItemHt: Integer;
+function TsSkinSelector.AllowDropDown: boolean;
 begin
-  Result := Perform(CB_GETITEMHEIGHT, 0, 0);
+  Result := False;
+end;
+
+
+constructor TsSkinSelector.Create(AOwner: TComponent);
+begin
+  inherited Create(AOwner);
+  FShowNoSkin := True;
+  FThumbSize := tsBig;
+  FColCount := 3;
+  FRowCount := 5;
+  FItemMargin := 4;
+  FMinItemWidth := 0;
+end;
+
+
+procedure TsSkinSelector.CreateParams(var Params: TCreateParams);
+begin
+  inherited;
+  Params.Style := Params.Style or CBS_DROPDOWNLIST;
+end;
+
+
+procedure TsSkinSelector.CreateWnd;
+begin
+{$IFDEF DELPHI6UP}
+  if not (csDesigning in ComponentState) then
+    inherited Style := csExDropDownList;
+{$ENDIF}
+
+  inherited CreateWnd;
+  if SkinData.SkinManager <> nil then
+    SkinData.SkinManager.SkinListController.AddControl(Self);
+
+  PopulateList;
+  UpdateItemIndex;
+end;
+
+
+procedure TsSkinSelector.Loaded;
+begin
+  inherited;
+end;
+
+
+destructor TsSkinSelector.Destroy;
+begin
+  if SkinData.SkinManager <> nil then
+    SkinData.SkinManager.SkinListController.DelControl(Self);
+
+  inherited;
+end;
+
+
+procedure TsSkinSelector.KeyDown(var Key: Word; Shift: TShiftState);
+var
+  sc: TShortCut;
+begin
+  inherited KeyDown(Key, Shift);
+  sc := ShortCut(Key, Shift);
+  if sc = scAlt + vk_Down then begin
+    ReleaseCapture;
+    DoDropDown;
+    Key := 0;
+  end
+  else
+    case Key of
+      VK_ESCAPE:
+        if Form <> nil then begin
+          Key := 0;
+          Form.Close;
+        end;
+
+      VK_HOME:
+        if ReadOnly then
+          MessageBeep(0)
+        else
+          SetIndex(0, 0);
+
+      VK_END:
+        if ReadOnly then
+          MessageBeep(0)
+        else
+          SetIndex(Items.Count - 1, 0);
+
+      VK_LEFT:
+        if ReadOnly then
+          MessageBeep(0)
+        else
+          SetIndex(0, -1);
+
+      VK_UP:
+        if ReadOnly then
+          MessageBeep(0)
+        else
+          if (Form <> nil) and FDropDown then
+            SetIndex(0, -Self.ColCount)
+          else
+            SetIndex(0, -1);
+
+      VK_RIGHT:
+        if ReadOnly then
+          MessageBeep(0)
+        else
+          SetIndex(0, 1);
+
+      VK_DOWN:
+        if ReadOnly then
+          MessageBeep(0)
+        else
+          if (Form <> nil) and FDropDown then
+            SetIndex(0, Self.ColCount)
+          else
+            SetIndex(0, 1);
+
+      VK_RETURN:
+        if (Form <> nil) and IsValidIndex(Form.BtnIndex, Form.ScrollBox.ControlCount) then
+          TacSkinSelectBtn(Form.ScrollBox.Controls[Form.BtnIndex]).Click;
+    end;
+end;
+
+
+procedure TsSkinSelector.KillPopupForm;
+begin
+  if Form <> nil then begin
+    Form.Release;
+    Form := nil;
+  end;
+end;
+
+
+procedure TsSkinSelector.DoDropDown;
+begin
+  if AllowDropDown then
+    inherited
+  else
+    if not FDropDown then begin
+      if SkinData.SkinManager <> nil then begin
+        if CanFocus then
+          SetFocus;
+
+        FDropDown := True;
+        StopTimer(SkinData);
+        SkinData.Invalidate(True);
+        if Form = nil then begin
+          Form := TacSkinSelectForm.CreateNew(Self);
+          Form.UpdateControls;
+        end
+        else
+          Form.UpdateHotControl;
+
+        ShowPopupForm(Form, Self);
+      end;
+    end
+    else
+      if (Form <> nil) and IsWindowVisible(Form.Handle) then begin
+        FDropDown := False;
+        StopTimer(SkinData);
+        SkinData.Invalidate(True);
+        Form.Close;
+      end;
+end;
+
+
+function TsSkinSelector.DroppedDown: boolean;
+begin
+  Result := FDropDown;
+end;
+
+
+procedure TsSkinSelector.SetIndex(BtnIndex: integer; Step: integer);
+begin
+  if (Form <> nil) and FDropDown and (Form.ScrollBox <> nil) and (Form.ScrollBox.ControlCount > 0) then
+    if Step <> 0 then
+      Form.SetBtnIndex(max(0, min(ItemCount - 1, Form.BtnIndex + Step)))
+    else
+      Form.SetBtnIndex(BtnIndex)
+  else
+    if Step <> 0 then
+      ItemIndex := max(0, min(ItemCount - 1, ItemIndex + Step))
+    else
+      ItemIndex := BtnIndex;
+end;
+
+
+procedure TsSkinSelector.SetItemIndex(const Value: Integer);
+begin
+  if ItemIndex <> Value then begin
+    inherited;
+    if IsValidIndex(ItemIndex, Items.Count) then begin
+      if SkinData.SkinManager.SkinName <> ItemsEx[ItemIndex].Caption then
+        SkinData.SkinManager.SkinName := ItemsEx[ItemIndex].Caption;
+
+      SkinData.SkinManager.Active := True;
+    end
+    else
+      SkinData.SkinManager.Active := False;
+  end;
+end;
+
+
+procedure TsSkinSelector.SetShowNoSkin(const Value: boolean);
+begin
+  if FShowNoSkin <> Value then begin
+    FShowNoSkin := Value;
+    if not (csLoading in ComponentState) then begin
+      PopulateList;
+      UpdateItemIndex;
+    end;
+  end;
+end;
+
+
+procedure TsSkinSelector.SetThumbSize(const Value: TacThumbSize);
+begin
+  if FThumbSize <> Value then begin
+    FThumbSize := Value;
+    if not (csLoading in ComponentState) then begin
+      PopulateList;
+      UpdateItemIndex;
+    end;
+  end;
+end;
+
+
+procedure TsSkinSelector.PopulateList;
+var
+  i: integer;
+begin
+  ItemsEx.Clear;
+  ItemsEx.BeginUpdate;
+  if Assigned(SkinData.SkinManager) then
+    for i := 0 to Length(SkinData.SkinManager.SkinListController.SkinList) - 1 do
+      with SkinData.SkinManager.SkinListController.SkinList[i], ItemsEx.Add do begin
+        Caption := skName;
+        ImageIndex := skImageIndex;
+{$IFNDEF DELPHI6UP}
+        Items.Add(skName);
+{$ENDIF}
+      end;
+
+{$IFDEF DELPHI6UP}
+  ItemsEx.Sort;
+{$ENDIF}
+  ItemsEx.EndUpdate;
+  KillPopupForm;
+end;
+
+
+procedure TsSkinSelector.UpdateItemIndex;
+var
+  i: integer;
+begin
+  if (SkinData.SkinManager <> nil) and SkinData.SkinManager.Active and (SkinData.SkinManager.SkinName <> '') then begin
+    i := Items.IndexOf(SkinData.SkinManager.SkinName);
+    if i >= 0 then
+      ItemIndex := i;
+  end
+  else
+    ItemIndex := -1;
+end;
+
+
+procedure TsSkinSelector.ComboWndProc(var Message: TMessage; ComboWnd: HWnd; ComboProc: Pointer);
+var
+  m: TCMMouseWheel;
+begin
+  case Message.Msg of
+    WM_DESTROY:
+      ItemsEx.Clear;
+
+    WM_MOUSEWHEEL: begin
+      if (Form <> nil) and (Form.ScrollBox <> nil) and FDropDown then begin
+        m := TCMMouseWheel(Message);
+        TsScrollBox(Form.ScrollBox).DoMouseWheel(m.ShiftState, m.WheelDelta * Form.ItemHeight div 2, Point(m.XPos, m.YPos))
+      end
+      else
+        if TCMMouseWheel(Message).WheelDelta < 0 then
+          ItemIndex := min(ItemIndex + 1, Items.Count - 1)
+        else
+          ItemIndex := max(ItemIndex - 1, -1);
+
+      Exit;
+    end;
+  end;
+  inherited;
+  case Message.Msg of
+    WM_KEYDOWN:
+      KeyDown(TWMKey(Message).CharCode, KeysToShiftState(word(TWMKeyDown(Message).KeyData)));
+  end;
+end;
+
+
+procedure TsSkinSelector.WndProc(var Message: TMessage);
+begin
+{$IFDEF LOGGED}
+//  AddToLog(Message);
+{$ENDIF}
+  case Message.Msg of
+    SM_ALPHACMD:
+      case Message.WParamHi of
+        AC_SETNEWSKIN: begin
+          inherited;
+          if Form <> nil then
+            AlphaBroadCast(Form, Message);
+
+          UpdateItemIndex;
+          Exit;
+        end;
+
+        AC_POPUPCLOSED: begin
+          FDropDown := False;
+          StopTimer(SkinData);
+          SkinData.Invalidate(True);
+        end;
+
+        AC_SKINLISTCHANGED: begin
+          PopulateList;
+          UpdateItemIndex;
+        end;
+
+        AC_SKINCHANGED: begin
+          UpdateItemIndex;
+          if ItemIndex < 0 then // Not skinned
+            KillPopupForm;
+        end;
+
+        AC_SETSCALE:
+          KillPopupForm;
+
+        AC_REMOVESKIN: begin
+          KillPopupForm;
+          if sColorDialogForm <> nil then
+            FreeAndNil(sColorDialogForm);
+        end;
+      end;
+
+
+    CN_COMMAND:
+      case TWMCommand(Message).NotifyCode of
+        CBN_DROPDOWN:
+          DoDropDown;
+      end;
+  end;
+  inherited;
 end;
 
 
@@ -1876,7 +2670,6 @@ initialization
 finalization
   if ColDlg <> nil then
     FreeAndNil(ColDlg);
-{$ENDIF} // DELPHI6UP
 
 end.
 

@@ -1,6 +1,7 @@
 unit sEdit;
 {$I sDefs.inc}
 //{$DEFINE LOGGED}
+//+
 
 interface
 
@@ -24,6 +25,10 @@ type
     FCommonData: TsCtrlSkinData;
     FDisabledKind: TsDisabledKind;
     FBoundLabel: TsBoundLabel;
+{$IFNDEF DELPHI6UP}
+    FOnMouseLeave: TNotifyEvent;
+    FOnMouseEnter: TNotifyEvent;
+{$ENDIF}
     procedure SetDisabledKind(const Value: TsDisabledKind);
   protected
     procedure PaintBorder;
@@ -34,7 +39,6 @@ type
   public
     procedure AfterConstruction; override;
     constructor Create(AOwner: TComponent); override;
-    procedure CreateParams(var Params: TCreateParams); override;
     destructor Destroy; override;
     procedure Loaded; override;
     procedure WndProc(var Message: TMessage); override;
@@ -44,12 +48,29 @@ type
     property DisabledKind: TsDisabledKind read FDisabledKind write SetDisabledKind default DefDisabledKind;
     property SkinData: TsCtrlSkinData read FCommonData write FCommonData;
     property BoundLabel: TsBoundLabel read FBoundLabel write FBoundLabel;
+{$IFNDEF DELPHI6UP}
+    property OnMouseEnter: TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
+    property OnMouseLeave: TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
+{$ENDIF}
   end;
 
+
+function EditBorderWidth(aEditCtrl: {$IFDEF TNTUNICODE}TTntEdit{$ELSE}TEdit{$ENDIF}): integer;
 
 implementation
 
 uses sStyleSimply, sVCLUtils, sMessages, sGraphUtils, sAlphaGraph, acntUtils;
+
+
+function EditBorderWidth(aEditCtrl: {$IFDEF TNTUNICODE}TTntEdit{$ELSE}TEdit{$ENDIF}): integer;
+begin
+  with aEditCtrl do begin
+    Result := integer(BorderStyle <> bsNone) * (1 + integer(Ctl3d));
+{$IFDEF DELPHI7UP}
+    inc(Result, integer(BevelKind <> bkNone) * (integer(BevelOuter <> bvNone) + integer(BevelInner <> bvNone)));
+{$ENDIF}
+  end;
+end;
 
 
 procedure TsEdit.AfterConstruction;
@@ -61,9 +82,9 @@ end;
 
 constructor TsEdit.Create(AOwner: TComponent);
 begin
-  inherited Create(AOwner);
   FCommonData := TsCtrlSkinData.Create(Self, True);
   FCommonData.COC := COC_TsEdit;
+  inherited Create(AOwner);
   FDisabledKind := DefDisabledKind;
   FBoundLabel := TsBoundLabel.Create(Self, FCommonData);
 end;
@@ -72,9 +93,7 @@ end;
 destructor TsEdit.Destroy;
 begin
   FreeAndNil(FBoundLabel);
-  if Assigned(FCommonData) then
-    FreeAndNil(FCommonData);
-
+  FreeAndNil(FCommonData);
   inherited Destroy;
 end;
 
@@ -166,7 +185,7 @@ begin
           Exit;
         end;
 
-      BordWidth := integer(BorderStyle <> bsNone) * (1 + integer(Ctl3d));
+      BordWidth := EditBorderWidth({$IFDEF TNTUNICODE}TTntEdit{$ELSE}TEdit{$ENDIF}(Self));
 {$IFDEF DELPHI7UP}
       if BordWidth = 0 then begin
         if BevelInner <> bvNone then
@@ -216,7 +235,7 @@ begin
   end;
 {$ENDIF}
   if Text <> '' then begin
-    if (PasswordChar <> #0) then begin
+    if PasswordChar <> #0 then begin
 {$IFDEF D2009}
       if PasswordChar = '*' then
         pc := #9679
@@ -236,10 +255,10 @@ begin
   end
 {$IFDEF D2009}
   else
-    if (TextHint <> '') then begin
+    if TextHint <> '' then begin
       FCommonData.FCacheBMP.Canvas.Brush.Style := bsClear;
       if FCommonData.Skinned then
-        FCommonData.FCacheBMP.Canvas.Font.Color := MixColors(ColorToRGB(Font.Color), ColorToRGB(Color), 0.65)
+        FCommonData.FCacheBMP.Canvas.Font.Color := BlendColors(ColorToRGB(Font.Color), ColorToRGB(Color), 166)
       else
         FCommonData.FCacheBMP.Canvas.Font.Color := clGrayText;
 
@@ -277,16 +296,16 @@ begin
           end;
 
         AC_REFRESH:
-          if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
+          if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then begin
             CommonWndProc(Message, FCommonData);
             if not InAnimationProcess and HandleAllocated and Visible then
-              RedrawWindow(Handle, nil, 0, RDW_INVALIDATE or RDW_ERASE or RDW_FRAME);
+              RedrawWindow(Handle, nil, 0, RDWA_REPAINT);
 
             Exit;
           end;
 
         AC_SETNEWSKIN:
-          if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
+          if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then begin
             CommonWndProc(Message, FCommonData);
             Exit;
           end;
@@ -315,8 +334,15 @@ begin
       end;
   end;
 
-  if not ControlIsReady(Self) or not FCommonData.Skinned then
+  if not ControlIsReady(Self) or not FCommonData.Skinned then begin
+    case Message.Msg of
+      WM_PRINT: begin
+        PaintTo(TWMPaint(Message).DC, 0, 0);
+        Exit;
+      end;
+    end;
     inherited
+  end
   else begin
     case Message.Msg of
       WM_ERASEBKGND, CN_DRAWITEM: begin
@@ -326,7 +352,7 @@ begin
         Exit;
       end;
 
-      WM_NCPAINT: begin
+      WM_NCPAINT: if IsWindowVisible(Handle) then begin
         PaintBorder;
         Exit;
       end;
@@ -362,7 +388,7 @@ begin
         OurPaintHandler(DC);
         Exit;
       end;
-      
+
       CM_COLORCHANGED:
         if FCommonData.CustomColor then
           FCommonData.BGChanged := True;
@@ -383,6 +409,22 @@ begin
 
         end;
 
+{$IFNDEF DELPHI6UP}
+      CM_MOUSEENTER, CM_MOUSELEAVE:
+        if not (csDestroying in ComponentState) and not (csDesigning in ComponentState) and Enabled then begin
+          SkinData.FMouseAbove := Message.Msg = CM_MOUSEENTER;
+          if SkinData.FMouseAbove then begin
+            if Assigned(FOnMouseEnter) then
+              FOnMouseEnter(Self);
+          end
+          else
+            if Assigned(FOnMouseLeave) then
+              FOnMouseLeave(Self);
+
+          RedrawWindow(Handle, nil, 0, RDW_INVALIDATE or RDW_NOERASE or RDW_UPDATENOW);
+        end;
+{$ENDIF}
+
       WM_SETTEXT, CM_TEXTCHANGED, CM_VISIBLECHANGED, CM_ENABLEDCHANGED, WM_SETFONT:
         if not (csLoading in ComponentState) and not InAnimationProcess then begin
           FCommonData.BGChanged := True;
@@ -400,13 +442,6 @@ begin
 end;
 
 
-procedure TsEdit.CreateParams(var Params: TCreateParams);
-begin
-  inherited;
-//  Params.ExStyle := Params.ExStyle or WS_EX_TRANSPARENT;
-end;
-
-
 procedure TsEdit.ExcludeChildControls;
 var
   i, bw: integer;
@@ -414,7 +449,8 @@ begin
   if ControlCount <> 0 then begin
     bw := integer(BorderStyle <> bsNone) * (2 + integer(Ctl3d)) - 1;
     for i := 0 to ControlCount - 1 do
-      ExcludeClipRect(DC, Controls[i].Left + bw, Controls[i].Top + bw, Controls[i].BoundsRect.Right + bw, Controls[i].BoundsRect.Bottom + bw);
+      with Controls[i].BoundsRect do
+        ExcludeClipRect(DC, Left + bw, Top + bw, BoundsRect.Right + bw, BoundsRect.Bottom + bw);
   end;
 end;
 

@@ -1,6 +1,6 @@
 unit acSelectSkin;
 {$I sDefs.inc}
-
+//+
 
 interface
 
@@ -56,6 +56,7 @@ uses
   acntUtils, sStoreUtils, sConst, acSkinPreview;
 
 {$R *.dfm}
+
 
 function SelectSkin(SkinManager: TsSkinManager; SkinPlaces: TacSkinPlaces = spAllPlaces): boolean;
 var
@@ -152,8 +153,8 @@ end;
 
 procedure TFormSkinSelect.sListBox1Click(Sender: TObject);
 begin
-  if (FormSkinSelect.sListBox1.ItemIndex > -1) and (FormSkinSelect.sListBox1.ItemIndex < FormSkinSelect.sListBox1.Items.Count) then begin
-    FormSkinPreview.PreviewManager.SkinName := FormSkinSelect.sListBox1.Items[FormSkinSelect.sListBox1.ItemIndex];
+  if IsValidIndex(sListBox1.ItemIndex, sListBox1.Items.Count) then begin
+    FormSkinPreview.PreviewManager.SkinName := sListBox1.Items[sListBox1.ItemIndex];
     FormSkinPreview.PreviewManager.Active := True;
     sBitBtn1.Enabled := True;
   end
@@ -193,10 +194,10 @@ begin
     sListBox1.Items.EndUpdate;
     if not sBitBtn1.Enabled and (sName <> '') then begin
       i := sListBox1.Items.IndexOf(sName);
-      if i > -1 then
+      if i >= 0 then
         sListBox1.ItemIndex := i;
     end;
-    sBitBtn1.Enabled := sListBox1.ItemIndex > -1;
+    sBitBtn1.Enabled := sListBox1.ItemIndex >= 0;
     if not sBitBtn1.Enabled then begin
       FormSkinPreview.Visible := False;
       FormSkinPreview.PreviewManager.Active := False;
