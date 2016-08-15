@@ -192,7 +192,7 @@ end;
 
 function TsCustomNumEdit.IsFormatStored: Boolean;
 begin
-  Result := (DisplayFormat <> DefFormat);
+  Result := DisplayFormat <> DefFormat;
 end;
 
 
@@ -203,7 +203,7 @@ var
   RetValue: Extended;
 begin
   Result := False;
-  if (Key = CharMinus) and ((MinValue >= 0) and (MaxValue <> MinValue)) then
+  if (Key = CharMinus) and (MinValue >= 0) and (MaxValue <> MinValue) then
     Exit;
 
   S := EditText;
@@ -212,7 +212,7 @@ begin
   System.Insert(Key, S, SelStart + 1);
   S := TextToValText(S);
   DecPos := Pos({$IFDEF DELPHI_XE}FormatSettings.{$ENDIF}DecimalSeparator, S);
-  if (DecPos > 0) then begin
+  if DecPos > 0 then begin
     SelStart := Pos('E', UpperCase(S));
     if (SelStart > DecPos) then
       DecPos := SelStart - DecPos
@@ -253,10 +253,11 @@ begin
           Exit;
         end;
 
-        if (Key = #45) and (Value = 0) or not ShowButton then
+        if (Key = #45) and (Value = 0) {or not ShowButton} then
           Exit;
 
-        EditButtonClick(Self);
+        DoClick;
+//        EditButtonClick(Self);
 {$IFNDEF ALITE}
         if Assigned(FPopupWindow) and IsWindowVisible(FPopupWindow.Handle) then
           TsCalcForm(FPopupWindow).OnKeyPress(FPopupWindow, Key);
@@ -611,12 +612,15 @@ procedure TsCustomNumEdit.PopupWindowShow;
 begin
   FadingForbidden := True;
 {$IFNDEF ALITE}
-  if not Assigned(FPopupWindow) then begin
-    FPopupWindow := TsCalcForm.Create(Self);
-    with TsCalcForm(FPopupWindow) do begin
-      ChangeBtnsStyle(FlatButtons);
-      TsCalcForm(FPopupWindow).Height := PopupHeight - TsCalcForm(FPopupWindow).sDragBar1.Height - TsCalcForm(FPopupWindow).FDisplayPanel.Height;
-    end;
+  FreeAndNil(FPopupWindow);
+  FPopupWindow := TsCalcForm.Create(Self);
+  TsCalcForm(FPopupWindow).Font.Assign(Font);
+  if Self.SkinData.SkinManager <> nil then
+    TsCalcForm(FPopupWindow).Font.Height := Self.Font.Height * 100 div aScalePercents[Self.SkinData.SkinManager.GetScale];
+
+  with TsCalcForm(FPopupWindow) do begin
+    ChangeBtnsStyle(FlatButtons);
+    TsCalcForm(FPopupWindow).Height := PopupHeight - TsCalcForm(FPopupWindow).sDragBar1.Height - TsCalcForm(FPopupWindow).FDisplayPanel.Height;
   end;
   with TsCalcForm(FPopupWindow) do begin
     Position := poDefault;
@@ -626,15 +630,15 @@ begin
 
     FPrecision := 16;
     FEditor := Self;
-    if SkinData.Skinned then begin
+//    if SkinData.Skinned then begin
       FMainPanel.BorderStyle := bsNone;
       FDisplayPanel.BorderStyle := bsNone;
-    end
+{    end
     else begin
       FMainPanel.Ctl3D := False;
       FMainPanel.BorderStyle := bsSingle;
       FDisplayPanel.BorderStyle := bsSingle;
-    end;
+    end;}
     SetText(Text);
     OnClose := CalcWindowClose;
   end;

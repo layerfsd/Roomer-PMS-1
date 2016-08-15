@@ -1,7 +1,7 @@
 unit sTrackBar;
 {$I sDefs.inc}
 //{$DEFINE LOGGED}
-
+//+
 interface
 
 uses
@@ -62,7 +62,6 @@ type
     FTickNdx,
     FThumbNdx,
     FSliderNdx,
-//    TrackBarNdx,
     FProgressNdx: integer;
 
     iStep: real;
@@ -87,13 +86,14 @@ type
     procedure PaintWindow(DC: HDC); override;
     property Canvas: TCanvas read FCanvas;
     procedure WndProc(var Message: TMessage); override;
+    procedure ChangeScale(M, D: Integer); override;
     procedure UserChanged(Finished: boolean);
   public
     function ThumbRect: TRect;
     function ChannelRect: TRect;
     function TickPos(i: integer): integer;
     function TickCount: integer;
-    function TicksArray: TAPoint;
+    function TicksArray(ChRect: TRect): TAPoint;
     constructor Create(AOwner: TComponent); override;
     procedure CreateWnd; override;
     destructor Destroy; override;
@@ -145,9 +145,9 @@ const
 
 constructor TsTrackBar.Create(AOwner: TComponent);
 begin
-  inherited Create(AOwner);
   FCommonData := TsCommonData.Create(Self, True);
   FCommonData.COC := COC_TsTrackBar;
+  inherited Create(AOwner);
 
   FCanvas := TControlCanvas.Create;
   TControlCanvas(FCanvas).Control := Self;
@@ -173,14 +173,10 @@ end;
 
 destructor TsTrackBar.Destroy;
 begin
-  if Assigned(FCommonData) then
-    FreeAndNil(FCommonData);
-
-  if Assigned(Thumb) then
-    FreeAndNil(Thumb);
-    
+  FreeAndNil(Thumb);
   FreeAndNil(FCanvas);
   FreeAndNil(FThumbGlyph);
+  FreeAndNil(FCommonData);
   inherited Destroy;
 end;
 
@@ -269,21 +265,24 @@ begin
           end;
 
         AC_SETNEWSKIN:
-          if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
+          if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then begin
             CommonMessage(Message, FCommonData);
             UpdateIndexes(SkinData.SkinIndex);
             Exit;
           end;
 
         AC_REFRESH:
-          if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
+          if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then begin
             CommonMessage(Message, FCommonData);
+            UpdateIndexes(SkinData.SkinIndex);
             Repaint;
             Exit;
           end;
 
-        AC_PREPARECACHE:
+        AC_PREPARECACHE: begin
           PrepareCache;
+          Exit;
+        end;
 
         AC_DRAWANIMAGE: begin
           Message.Result := 0;
@@ -305,9 +304,8 @@ begin
         end;
 
         AC_GETDEFINDEX: begin
-          if FCommonData.SkinManager <> nil then begin
-            Message.Result := FCommonData.SkinManager.ConstData.Sections[ssTrackBar] + 1;
-          end
+          if FCommonData.SkinManager <> nil then
+            Message.Result := FCommonData.SkinManager.ConstData.Sections[ssTrackBar] + 1
           else
             Message.Result := 0;
 
@@ -315,11 +313,18 @@ begin
           Exit;
         end;
 
-        AC_ENDPARENTUPDATE:
+        AC_ENDPARENTUPDATE: begin
           if FCommonData.Updating then begin
             FCommonData.Updating := False;
             Repaint;
-          end
+          end;
+          Exit;
+        end;
+
+        AC_GETSKINDATA: begin
+          Message.Result := LRESULT(SkinData);
+          Exit;
+        end;
       end;
 
       CM_MOUSEENTER:
@@ -414,6 +419,7 @@ begin
       WM_PRINT: begin
         SkinData.FUpdating := False;
         PaintWindow(TWMPaint(Message).DC);
+        Exit;
       end;
 
       WM_PAINT: begin
@@ -479,7 +485,6 @@ begin
 
       CN_HSCROLL, CN_VSCROLL: begin
         StopTimer(SkinData);
-//        RedrawWindow(Handle, nil, 0, RDW_UPDATENOW or RDW_INVALIDATE);
         PaintWindow(0);
       end;
     end;
@@ -508,13 +513,22 @@ begin
 end;
 
 
+procedure TsTrackBar.ChangeScale(M, D: Integer);
+begin
+  inherited;
+{$IFNDEF DELPHI_10}
+  ThumbLength := MulDiv(ThumbLength, M, D);
+{$ENDIF}
+end;
+
+
 procedure TsTrackBar.PaintBody;
 var
   R: TRect;
   fColor: TColor;
 begin
   R := ClientRect;
-  if SkinData.SkinIndex >= 0 then begin
+  if SkinData.Skinned then begin
     PaintItem(FCommonData, GetParentCache(FCommonData), True, integer(ControlIsActive(FCommonData)), R, Point(Left, Top), FCommonData.FCacheBmp, False);
     if SkinData.SkinIndex >= 0 then begin
       PaintBar;
@@ -548,13 +562,12 @@ var
   CI: TCacheInfo;
 begin
   aRect := ChannelRect;
-//  i := SkinData.SkinManager.GetMaskIndex(TrackBarNdx, s_SliderChannelMask);
   if SkinData.SkinManager.IsValidImgIndex(FSliderNdx) then begin
     CI := MakeCacheInfo(FCommonData.FCacheBmp);
     pos := SendMessage(Handle, TBM_GETPOS, 0, 0);
     case Orientation of
       trHorizontal: begin
-        h := HeightOfImage(SkinData.SkinManager.ma[FSliderNdx]) - 1;
+        h := SkinData.SkinManager.ma[FSliderNdx].Height - 1;
         w := HeightOf(aRect);
         aRect.Top := aRect.Top + (w - h) div 2;
         aRect.Bottom := aRect.Top + h;
@@ -581,7 +594,7 @@ begin
               sRect.Right := sRect.Right - j;
             end
           else
-            if (pos < ShowProgressFrom) then begin
+            if pos < ShowProgressFrom then begin
               sRect.Right := sRect.Left + j;
               sRect.Left := sRect.Left + i;
             end
@@ -595,7 +608,7 @@ begin
       end;
 
       trVertical: begin
-        h := WidthOfImage(SkinData.SkinManager.ma[FSliderNdx]) - 1;
+        h := SkinData.SkinManager.ma[FSliderNdx].Width - 1;
         w := WidthOf(aRect);
         aRect.Left := aRect.Left + (w - h) div 2;
         aRect.Right := aRect.Left + h;
@@ -613,7 +626,7 @@ begin
             j := Round(HeightOf(aRect) * d / (Max - Min));
           end;
           if Reversed then begin
-            if (pos < ShowProgressFrom) then begin
+            if pos < ShowProgressFrom then begin
               sRect.Top    := sRect.Bottom - j;
               sRect.Bottom := sRect.Bottom - i;
             end
@@ -632,13 +645,6 @@ begin
               sRect.Top    := sRect.Top + j;
             end;
           end;
-{
-          i := Round(HeightOf(aRect) * (SendMessage(Handle, TBM_GETPOS, 0, 0) - Min) / (Max - Min));
-          if Reversed then
-            sRect.Top := sRect.Bottom - i
-          else
-            sRect.Bottom := sRect.Top + i;
-}
           PaintProgress(sRect, False);
         end;
       end;
@@ -666,8 +672,8 @@ begin
   pa := nil;
   mh := 0;
   if TickStyle <> tsNone then begin
-    pa := TicksArray;
     cr := ChannelRect;
+    pa := TicksArray(cr);
     mh := (HeightOf(ThumbRect) - HeightOf(cr)) div 2 + 2;
     if TickMarks in [tmTopLeft, tmBoth] then
       for i := 0 to High(pa) do
@@ -681,7 +687,7 @@ begin
   end;
   if (SelStart <> 0) or (SelEnd <> 0) then begin
     sStart := math.max(SelStart, Min);
-    sEnd := Math.min(SelEnd, Max);
+    sEnd := math.min(SelEnd, Max);
     dw := (WidthOf(ChannelRect) - WidthOf(ThumbRect)) / (Max - Min);
     SetLength(ArrowPoints, 3);
     FCommonData.FCacheBmp.Canvas.Brush.Style := bsSolid;
@@ -721,23 +727,29 @@ end;
 
 procedure RotateBmp180(Bmp: TBitmap; Horz: boolean);
 var
-  x, y: integer;
+  x, y, bSize, bSizeD2: integer;
   c: TColor;
 begin
-  if not Horz then
+  if not Horz then begin
+    bSize := Bmp.Height - 1;
+    bSizeD2 := bSize div 2;
     for x := 0 to Bmp.Width - 1 do
-      for y := 0 to (Bmp.Height - 1) div 2 do begin
+      for y := 0 to bSizeD2 do begin
         c := Bmp.Canvas.Pixels[x, y];
-        Bmp.Canvas.Pixels[x, y] := Bmp.Canvas.Pixels[x, Bmp.Height - y - 1];
-        Bmp.Canvas.Pixels[x, Bmp.Height - y - 1] := c
+        Bmp.Canvas.Pixels[x, y] := Bmp.Canvas.Pixels[x, bSize - y];
+        Bmp.Canvas.Pixels[x, bSize - y] := c
       end
-  else
+  end
+  else begin
+    bSize := Bmp.Width - 1;
+    bSizeD2 := bSize div 2;
     for y := 0 to Bmp.Height - 1 do
-      for x := 0 to (Bmp.Width - 1) div 2 do begin
+      for x := 0 to bSizeD2 do begin
         c := Bmp.Canvas.Pixels[x, y];
-        Bmp.Canvas.Pixels[x, y] := Bmp.Canvas.Pixels[Bmp.Width - x - 1, y];
-        Bmp.Canvas.Pixels[Bmp.Width - x - 1, y] := c
+        Bmp.Canvas.Pixels[x, y] := Bmp.Canvas.Pixels[bSize - x, y];
+        Bmp.Canvas.Pixels[bSize - x, y] := c
       end;
+  end;
 end;
 
 
@@ -747,23 +759,25 @@ var
   GlyphSize: TSize;
   DrawPoint: TPoint;
   Stretched: boolean;
+  ActThumbSize: integer;
   aRect, DrawRect: TRect;
 
   procedure PaintGlyph(R: TRect);
   var
     b: boolean;
-    S0, S: PRGBAArray;
-    Y, X, DeltaS: integer;
+    S0, S: PRGBAArray_S;
+    bWidth, Y, X, DeltaS: integer;
   begin
     if ThumbGlyph.PixelFormat = pfDevice then begin
       ThumbGlyph.HandleType := bmDIB;
       if (ThumbGlyph.Handle <> 0) and (ThumbGlyph.PixelFormat = pf32bit) then begin // Checking for an empty alpha-channel
         b := False;
+        bWidth := ThumbGlyph.Width - 1;
         if InitLine(ThumbGlyph, Pointer(S0), DeltaS) then
           for Y := 0 to ThumbGlyph.Height - 1 do begin
             S := Pointer(LongInt(S0) + DeltaS * Y);
-            for X := 0 to ThumbGlyph.Width - 1 do
-              if S[X].A = MaxByte then begin
+            for X := 0 to bWidth do
+              if S[X].SA = MaxByte then begin
                 b := True;
                 Break;
               end;
@@ -810,7 +824,7 @@ var
     if FCommonData.FCacheBmp <> Bmp then begin
       if TickMarks = tmTopLeft then
         RotateBmp180(Bmp, Orientation <> trHorizontal);
-        
+
       TmpBmp := CreateBmp32(aRect);
       Stretch(Bmp, TmpBmp, TmpBmp.Width, TmpBmp.Height, ftMitchell);
       BitBlt(FCommonData.FCacheBmp.Canvas.Handle, aRect.Left, aRect.Top, WidthOf(aRect), HeightOf(aRect), TmpBmp.Canvas.Handle, 0, 0, SRCCOPY);
@@ -821,18 +835,15 @@ var
 begin
   aRect := ThumbRect;
   if ThumbGlyph.Empty then begin
-{    if Orientation = trVertical then
-      i := SkinData.SkinManager.GetMaskIndex(TrackBarNdx, s_SliderVertMask)
-    else
-      i := -1;
-
-    if i = -1 then
-      i := SkinData.SkinManager.GetMaskIndex(TrackBarNdx, s_SliderHorzMask);
-}
     with SkinData.SkinManager do
       if IsValidImgIndex(FThumbNdx) then begin
+        if GetScale = 0 then
+          ActThumbSize := iThumbSize
+        else
+          ActThumbSize := ScaleInt(iThumbSize) + 1;
+
         GlyphSize := MkSize(ma[FThumbNdx]);
-        if (Orientation = trHorizontal) and (HeightOf(aRect) = iThumbSize) or (Orientation = trVertical) and (WidthOf(aRect) = iThumbSize) then
+        if (Orientation = trHorizontal) and (HeightOf(aRect) = ActThumbSize) or (Orientation = trVertical) and (WidthOf(aRect) = ActThumbSize) then
           Stretched := False
         else
           Stretched := (HeightOf(aRect) <> GlyphSize.cy) or (WidthOf(aRect) <> GlyphSize.cx);
@@ -858,8 +869,8 @@ end;
 procedure TsTrackBar.TBMGetThumbRect(var Message: TMessage);
 var
   pR: PRect;
-  Size: integer;
   M: TMessage;
+  Size: integer;
 begin
   M := Message;
   DefaultHandler(M);
@@ -914,46 +925,55 @@ begin
 end;
 
 
-function TsTrackBar.TicksArray: TAPoint;
+function TsTrackBar.TicksArray(ChRect: TRect): TAPoint;
 var
   i, w, c: integer;
-  ChRect, ThRect: TRect;
+  ThRect: TRect;
 begin
   Result := nil;
-  ChRect := ChannelRect;
   ThRect := ThumbRect;
   c := TickCount;
   SetLength(Result, c);
-  if TickStyle = tsAuto then
-    if Orientation = trVertical then begin
+  if Orientation = trVertical then begin
+    if SkinData.Skinned and (FTickNdx >= 0) then
+      OffsetRect(ChRect, 0, SkinData.SkinManager.ma[FTickNdx].Height div 2 + 1)
+    else
+      OffsetRect(ChRect, 0, 2);
+
+    w := HeightOf(ThRect) div 2;
+    if TickStyle = tsAuto then begin
       iStep := (HeightOf(ChRect) - HeightOf(ThRect)) / (TickCount - 1);
-      w := HeightOf(ThRect) div 2;
       for i := 0 to c - 1 do
         Result[i] := Point(0, Round(ChRect.Top + i * iStep + w));
     end
     else begin
-      OffsetRect(ChRect, 2, 0);
-      iStep := (WidthOf(ChRect) - WidthOf(ThRect)) / (TickCount - 1);
-      w := WidthOf(ThRect) div 2;
-      for i := 0 to c - 1 do
-        Result[i] := Point(Round(ChRect.Left + i * iStep + w), 0);
-    end
-  else
-    if Orientation = trVertical then begin
-      Result[0] := Point(0, ChRect.Top + HeightOf(ThRect) div 2);
+      Result[0] := Point(0, ChRect.Top + w);
       for i := 0 to c - 3 do
         Result[i + 1] := Point(0, TickPos(i));
 
-      Result[c - 1] := Point(0, ChRect.Bottom - HeightOf(ThRect) div 2);
+      Result[c - 1] := Point(0, ChRect.Bottom - w);
+    end
+  end
+  else begin
+    if SkinData.Skinned and (FTickNdx >= 0) then
+      OffsetRect(ChRect, SkinData.SkinManager.ma[FTickNdx].Width div 2 + 1, 0)
+    else
+      OffsetRect(ChRect, 2, 0);
+
+    w := WidthOf(ThRect) div 2;
+    if TickStyle = tsAuto then begin
+      iStep := (WidthOf(ChRect) - WidthOf(ThRect)) / (TickCount - 1);
+      for i := 0 to c - 1 do
+        Result[i] := Point(Round(ChRect.Left + i * iStep + w), 0);
     end
     else begin
-      OffsetRect(ChRect, 2, 0);
-      Result[0] := Point(ChRect.Left + WidthOf(ThRect) div 2, 0);
+      Result[0] := Point(ChRect.Left + w, 0);
       for i := 0 to c - 3 do
         Result[i + 1] := Point(TickPos(i), 0);
 
-      Result[c - 1] := Point(ChRect.Right - WidthOf(ThRect) div 2, 0);
+      Result[c - 1] := Point(ChRect.Right - w, 0);
     end;
+  end;
 end;
 
 
@@ -967,8 +987,8 @@ var
 begin
   mh := 0;
   if TickStyle <> tsNone then begin
-    pa := TicksArray;
     cr := ChannelRect;
+    pa := TicksArray(cr);
     mh := (WidthOf(ThumbRect) - WidthOf(cr)) div 2 + 2;
     if TickMarks in [tmTopLeft, tmBoth] then
       for i := 0 to High(pa) do
@@ -983,43 +1003,44 @@ begin
   else
     pa := nil;
 
-  if (SelStart > 0) or (SelEnd > 0) then begin
-    sStart := math.max(SelStart, Min);
-    sEnd := Math.min(SelEnd, Max);
-    dh := (HeightOf(ChannelRect) - HeightOf(ThumbRect)) / (Max - Min);
-    SetLength(ArrowPoints, 3);
-    FCommonData.FCacheBmp.Canvas.Brush.Style := bsSolid;
-    FCommonData.FCacheBmp.Canvas.Brush.Color := FCommonData.SkinManager.GetGlobalFontColor;
-    FCommonData.FCacheBmp.Canvas.Pen.Color := FCommonData.SkinManager.GetGlobalFontColor;
-    if TickMarks in [tmTopLeft, tmBoth] then begin
-      // SelStart
-      i := Round(dh * (sStart + 1)) + ChannelRect.Top + 4;
-      ArrowPoints[0] := Point(cr.Left - mh - TickHeight, i);
-      ArrowPoints[1] := Point(ArrowPoints[0].X - SelSize, ArrowPoints[0].Y - SelSize);
-      ArrowPoints[2] := Point(ArrowPoints[0].X - SelSize, ArrowPoints[0].Y);
-      FCommonData.FCacheBmp.Canvas.Polygon(ArrowPoints);
-      // SelEnd
-      i := Round(dh * (sEnd + 1)) + ChannelRect.Top + 4;
-      ArrowPoints[0] := Point(cr.Left - mh - TickHeight, i);
-      ArrowPoints[1] := Point(ArrowPoints[0].X - SelSize, ArrowPoints[0].Y);
-      ArrowPoints[2] := Point(ArrowPoints[0].X - SelSize, ArrowPoints[0].Y + SelSize);
-      FCommonData.FCacheBmp.Canvas.Polygon(ArrowPoints);
+  if (SelStart > 0) or (SelEnd > 0) then
+    with FCommonData.FCacheBmp.Canvas do begin
+      sStart := math.max(SelStart, Min);
+      sEnd := math.min(SelEnd, Max);
+      dh := (HeightOf(ChannelRect) - HeightOf(ThumbRect)) / (Max - Min);
+      SetLength(ArrowPoints, 3);
+      Brush.Style := bsSolid;
+      Brush.Color := FCommonData.SkinManager.GetGlobalFontColor;
+      Pen.Color := FCommonData.SkinManager.GetGlobalFontColor;
+      if TickMarks in [tmTopLeft, tmBoth] then begin
+        // SelStart
+        i := Round(dh * (sStart + 1)) + ChannelRect.Top + 4;
+        ArrowPoints[0] := Point(cr.Left - mh - TickHeight, i);
+        ArrowPoints[1] := Point(ArrowPoints[0].X - SelSize, ArrowPoints[0].Y - SelSize);
+        ArrowPoints[2] := Point(ArrowPoints[0].X - SelSize, ArrowPoints[0].Y);
+        Polygon(ArrowPoints);
+        // SelEnd
+        i := Round(dh * (sEnd + 1)) + ChannelRect.Top + 4;
+        ArrowPoints[0] := Point(cr.Left - mh - TickHeight, i);
+        ArrowPoints[1] := Point(ArrowPoints[0].X - SelSize, ArrowPoints[0].Y);
+        ArrowPoints[2] := Point(ArrowPoints[0].X - SelSize, ArrowPoints[0].Y + SelSize);
+        Polygon(ArrowPoints);
+      end;
+      if TickMarks in [tmBottomRight, tmBoth] then begin
+        // SelStart
+        i := Round(dh * (sStart + 1)) + ChannelRect.Top + 4;
+        ArrowPoints[0] := Point(cr.Right + mh, i);
+        ArrowPoints[1] := Point(ArrowPoints[0].X + SelSize, ArrowPoints[0].Y - SelSize);
+        ArrowPoints[2] := Point(ArrowPoints[0].X + SelSize, ArrowPoints[0].Y);
+        Polygon(ArrowPoints);
+        // SelEnd
+        i := Round(dh * (sEnd + 1)) + ChannelRect.Top + 4;
+        ArrowPoints[0] := Point(cr.Right + mh, i);
+        ArrowPoints[1] := Point(ArrowPoints[0].X + SelSize, ArrowPoints[0].Y);
+        ArrowPoints[2] := Point(ArrowPoints[0].X + SelSize, ArrowPoints[0].Y + SelSize);
+        Polygon(ArrowPoints);
+      end;
     end;
-    if TickMarks in [tmBottomRight, tmBoth] then begin
-      // SelStart
-      i := Round(dh * (sStart + 1)) + ChannelRect.Top + 4;
-      ArrowPoints[0] := Point(cr.Right + mh, i);
-      ArrowPoints[1] := Point(ArrowPoints[0].X + SelSize, ArrowPoints[0].Y - SelSize);
-      ArrowPoints[2] := Point(ArrowPoints[0].X + SelSize, ArrowPoints[0].Y);
-      FCommonData.FCacheBmp.Canvas.Polygon(ArrowPoints);
-      // SelEnd
-      i := Round(dh * (sEnd + 1)) + ChannelRect.Top + 4;
-      ArrowPoints[0] := Point(cr.Right + mh, i);
-      ArrowPoints[1] := Point(ArrowPoints[0].X + SelSize, ArrowPoints[0].Y);
-      ArrowPoints[2] := Point(ArrowPoints[0].X + SelSize, ArrowPoints[0].Y + SelSize);
-      FCommonData.FCacheBmp.Canvas.Polygon(ArrowPoints);
-    end
-  end
 end;
 
 
@@ -1149,7 +1170,7 @@ begin
         j := Round(HeightOf(aRect) * d / (Max - Min));
       end;
       if Reversed then
-        if (pos < ShowProgressFrom) then begin
+        if pos < ShowProgressFrom then begin
           sRect.Top := sRect.Bottom - j;
           sRect.Bottom := sRect.Bottom - i;
         end
@@ -1158,7 +1179,7 @@ begin
           sRect.Bottom := sRect.Bottom - j;
         end
       else
-        if (pos < ShowProgressFrom) then begin
+        if pos < ShowProgressFrom then begin
           sRect.Bottom := sRect.Top + j;
           sRect.Top := sRect.Top + i;
         end
@@ -1177,7 +1198,7 @@ begin
         j := Round(WidthOf(aRect) * d / (Max - Min));
       end;
       if Reversed then
-        if (pos < ShowProgressFrom) then begin
+        if pos < ShowProgressFrom then begin
           sRect.Left := sRect.Right - j;
           sRect.Right := sRect.Right - i;
         end
@@ -1186,7 +1207,7 @@ begin
           sRect.Right := sRect.Right - j;
         end
       else
-        if (pos < ShowProgressFrom) then begin
+        if pos < ShowProgressFrom then begin
           sRect.Right := sRect.Left + j;
           sRect.Left := sRect.Left + i;
         end
@@ -1222,29 +1243,32 @@ begin
 end;
 
 
-const
-  ProgArray:  array [boolean] of string = (s_ProgVert, s_ProgHorz);
-  ThickArray: array [boolean] of string = (s_TickVert, s_TickHorz);
-
 procedure TsTrackBar.UpdateIndexes(MainNdx: integer);
 var
   Horz: boolean;
 begin
   Horz := Orientation = trHorizontal;
   if MainNdx >= 0 then
-    with SkinData.SkinManager do begin
-      FTickNdx     := GetMaskIndex(MainNdx, ThickArray[Horz]);
-      FProgressNdx := GetMaskIndex(MainNdx, ProgArray[Horz]);
-      FSliderNdx   := GetMaskIndex(MainNdx, s_SliderChannelMask);
+    with SkinData.SkinManager, ConstData, TrackBar[Horz] do
+      if SkinIndex = MainNdx then begin
+        FTickNdx     := TickIndex;
+        FProgressNdx := ProgIndex;
+        FSliderNdx   := SlideIndex;
+        FThumbNdx    := GlyphIndex;
+      end
+      else begin
+        FTickNdx     := GetMaskIndex(MainNdx, ThickArray[Horz]);
+        FProgressNdx := GetMaskIndex(MainNdx, ProgArray[Horz]);
+        FSliderNdx   := GetMaskIndex(MainNdx, s_SliderChannelMask);
 
-      if not Horz then
-        FThumbNdx := GetMaskIndex(MainNdx, s_SliderVertMask)
-      else
-        FThumbNdx := -1;
+        if not Horz then
+          FThumbNdx := GetMaskIndex(MainNdx, s_SliderVertMask)
+        else
+          FThumbNdx := -1;
 
-      if FThumbNdx = -1 then
-        FThumbNdx := GetMaskIndex(MainNdx, s_SliderHorzMask);
-    end
+        if FThumbNdx < 0 then
+          FThumbNdx := GetMaskIndex(MainNdx, s_SliderHorzMask);
+      end
   else begin
     FTickNdx     := -1;
     FProgressNdx := -1;
@@ -1288,15 +1312,11 @@ end;
 
 
 procedure TsTrackBar.PrepareCache;
-var
-  CI: TCacheInfo;
 begin
   InitCacheBmp(SkinData);
   PaintBody;
-  if (SkinData.SkinIndex >= 0) and not Enabled then begin
-    CI := GetParentCache(FCommonData);
-    BmpDisabledKind(FCommonData.FCacheBmp, FDisabledKind, Parent, CI, Point(Left, Top));
-  end;
+  if (SkinData.SkinIndex >= 0) and not Enabled then
+    BmpDisabledKind(FCommonData.FCacheBmp, FDisabledKind, Parent, GetParentCache(FCommonData), Point(Left, Top));
 end;
 
 
@@ -1307,11 +1327,11 @@ var
 begin
   if SkinData.SkinIndex >= 0 then
     with SkinData.SkinManager do begin
-      if FTickNdx <> -1 then begin
+      if FTickNdx >= 0 then begin
         if Horz then
-          dec(P.x, WidthOfImage (ma[FTickNdx]))
+          dec(P.x, ma[FTickNdx].Width)
         else
-          dec(P.y, HeightOfImage(ma[FTickNdx]));
+          dec(P.y, ma[FTickNdx].Height);
 
         DrawSkinGlyph(SkinData.FCacheBmp, P, Mode, 1, ma[FTickNdx], MakeCacheInfo(FCommonData.FCacheBmp))
       end
@@ -1338,7 +1358,7 @@ end;
 
 function TsTrackBar.Mode: integer;
 begin
-  if (csLButtonDown in ControlState) then
+  if csLButtonDown in ControlState then
     Result := 2
   else
     Result := integer(ControlIsActive(FCommonData));
@@ -1354,14 +1374,10 @@ end;
 
 
 procedure TsTrackBar.PaintProgress(R: TRect; Horz: boolean);
-var
-  CI: TCacheInfo;
 begin
-  with SkinData.SkinManager do begin
-    CI := MakeCacheInfo(FCommonData.FCacheBmp);
+  with SkinData.SkinManager do
     if IsValidImgIndex(FProgressNdx) then
-      DrawSkinRect(FCommonData.FCacheBmp, R, CI, ma[FProgressNdx], integer(ControlIsActive(FCommonData)), True);
-  end;
+      DrawSkinRect(FCommonData.FCacheBmp, R, MakeCacheInfo(FCommonData.FCacheBmp), ma[FProgressNdx], integer(ControlIsActive(FCommonData)), True);
 end;
 
 
@@ -1374,14 +1390,15 @@ const
      (ttbThumbNormal,       ttbThumbHot,       ttbThumbPressed)),
 
     ((ttbThumbRightNormal, ttbThumbRightHot, ttbThumbRightPressed),
-     (ttbThumbLeftNormal, ttbThumbLeftHot, ttbThumbLeftPressed),
-     (ttbThumbVertNormal, ttbThumbVertHot, ttbThumbVertPressed)));
+     (ttbThumbLeftNormal,  ttbThumbLeftHot,  ttbThumbLeftPressed),
+     (ttbThumbVertNormal,  ttbThumbVertHot,  ttbThumbVertPressed)));
 {$ENDIF}
 var
   Bmp: TBitmap;
   GlyphSize: TSize;
   DrawPoint: TPoint;
   Stretched: boolean;
+  ActThumbSize: integer;
   aRect, DrawRect: TRect;
 {$IFDEF DELPHI7UP}
   Details: TThemedElementDetails;
@@ -1427,7 +1444,7 @@ var
   procedure PaintGlyph(R: TRect);
   var
     b: boolean;
-    S0, S: PRGBAArray;
+    S0, S: PRGBAArray_S;
     Y, X, DeltaS: integer;
   begin
     if ThumbGlyph.PixelFormat = pfDevice then begin
@@ -1438,7 +1455,7 @@ var
           for Y := 0 to ThumbGlyph.Height - 1 do begin
             S := Pointer(LongInt(S0) + DeltaS * Y);
             for X := 0 to ThumbGlyph.Width - 1 do
-              if S[X].A = MaxByte then begin
+              if S[X].SA = MaxByte then begin
                 b := True;
                 Break;
               end;
@@ -1451,7 +1468,7 @@ var
           ThumbGlyph.PixelFormat := pf24bit;
       end;
     end;
-    if (ThumbGlyph.PixelFormat = pf32bit) then  // Patch if Png, don't work in std. mode
+    if ThumbGlyph.PixelFormat = pf32bit then  // Patch if Png, don't work in std. mode
       CopyBmp32(R, MkRect(ThumbGlyph), FCommonData.FCacheBmp, ThumbGlyph, EmptyCI, False, clNone, 0, False)
     else
       BitBlt(FCommonData.FCacheBmp.Canvas.Handle, R.Left, R.Top, ThumbGlyph.Width, ThumbGlyph.Height, ThumbGlyph.Canvas.Handle, 0, 0, SRCCOPY);
@@ -1459,10 +1476,15 @@ var
 
 begin
   aRect := ThumbRect;
-  if ThumbGlyph.Empty then begin
-    with SkinData.SkinManager do begin
+  if ThumbGlyph.Empty then
+    with SkinData do begin
+      if (SkinData.SkinManager = nil) or (SkinData.SkinManager.GetScale = 0) then
+        ActThumbSize := iThumbSize
+      else
+        ActThumbSize := SkinData.SkinManager.ScaleInt(iThumbSize) + 1;
+
       GlyphSize := MkSize(aRect);
-      if (Orientation = trHorizontal) and (HeightOf(aRect) = iThumbSize) or (Orientation = trVertical) and (WidthOf(aRect) = iThumbSize) then
+      if (Orientation = trHorizontal) and (HeightOf(aRect) = ActThumbSize) or (Orientation = trVertical) and (WidthOf(aRect) = ActThumbSize) then
         Stretched := False
       else
         Stretched := (HeightOf(aRect) <> GlyphSize.cy) or (WidthOf(aRect) <> GlyphSize.cx);
@@ -1488,7 +1510,6 @@ begin
       if Bmp <> FCommonData.FCacheBmp then
         FreeAndNil(Bmp);
     end
-  end
   else begin
     DrawRect.Left   := aRect.Left    + (WidthOf (aRect) - ThumbGlyph.Width)  div 2;
     DrawRect.Top    := aRect.Top     + (HeightOf(aRect) - ThumbGlyph.Height) div 2;

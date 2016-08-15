@@ -47,6 +47,8 @@ type
 
 
 function GetImageCount(ImgList: TCustomImageList): integer;
+function GetImageWidth(ImgList: TCustomImageList): integer;
+function GetImageHeight(ImgList: TCustomImageList): integer;
 procedure DrawBtnGlyph(Button: TControl; Canvas: TCanvas = nil);
 procedure CopyToolBtnGlyph(ToolBar: TToolBar; Button: TToolButton; State: TCustomDrawState; Stage: TCustomDrawStage; var Flags: TTBCustomDrawFlags; BtnBmp: TBitmap);
 procedure acDrawGlyphEx(DrawData: TacDrawGlyphData);
@@ -59,6 +61,7 @@ uses
   {$IFDEF DEVEX2011} acLFPainter, {$ENDIF}
   {$IFDEF DEVEX6} acLFPainter6, {$ENDIF} // for projects which uses the DEVEX key
   sDefaults, sGraphUtils, acAlphaImageList, acntUtils, sButton, sAlphaGraph, sMessages;
+
 
 
 function GetImageCount(ImgList: TCustomImageList): integer;
@@ -78,11 +81,29 @@ begin
 end;
 
 
+function GetImageWidth(ImgList: TCustomImageList): integer;
+begin
+  if ImgList is TsAlphaImageList then
+    Result := TsAlphaImageList(ImgList).Width
+  else
+    Result := ImgList.Width;
+end;
+
+
+function GetImageHeight(ImgList: TCustomImageList): integer;
+begin
+  if ImgList is TsAlphaImageList then
+    Result := TsAlphaImageList(ImgList).Height
+  else
+    Result := ImgList.Height;
+end;
+
+
 procedure acDrawGlyphEx(DrawData: TacDrawGlyphData);
 var
   b: boolean;
   GrayColor: TColor;
-  S0, S: PRGBAArray;
+  S0, S: PRGBAArray_;
   MaskColor: TsColor;
   TmpBmp, Bmp: TBitmap;
   nEvent: TNotifyEvent;
@@ -95,8 +116,8 @@ var
   procedure PrepareGlyph;
   begin
     with DrawData do begin
-      Bmp.Width := Images.Width;
-      Bmp.Height := Images.Height;
+      Bmp.Width := GetImageWidth(Images);
+      Bmp.Height := GetImageHeight(Images);
       Bmp.PixelFormat := pf32bit;
       if Images.BkColor <> clNone then
         MaskColor.C := Images.BkColor
@@ -130,7 +151,7 @@ begin
       end;
     end;
 
-    if Assigned(Images) and (ImageIndex >= 0) and (GetImageCount(Images) > ImageIndex) then begin
+    if Assigned(Images) and IsValidIndex(ImageIndex, GetImageCount(Images)) then begin
       IRect := ImgRect;
 {$IFDEF USEPNG}
       if (Images is TPngImageList) and (TPngImageCollectionItem(TPngImageList(Images).PngImages.Items[ImageIndex]).PngImage <> nil) then begin
@@ -214,7 +235,7 @@ begin
                 GrayScaleTrans(Bmp, TsColor(Bmp.Canvas.Pixels[0, 0]));
 
               if dgBlended in DisabledGlyphKind then
-                BlendTransRectangle(DstBmp, IRect.Left, IRect.Top, Bmp, MkRect(Bmp), 0.5)
+                BlendTransRectangle(DstBmp, IRect.Left, IRect.Top, Bmp, MkRect(Bmp), 127)
               else
                 CopyTransBitmaps(DstBmp, Bmp, IRect.Left, IRect.Top, MaskColor);
             end
@@ -223,7 +244,7 @@ begin
                 GrayScaleTrans(Bmp, TsColor(Bmp.Canvas.Pixels[0, 0]));
 
               if (CurrentState = 0) and (Blend > 0) then
-                BlendTransRectangle(DstBmp, IRect.Left, IRect.Top, Bmp, MkRect(Bmp), Blend / 100)
+                BlendTransRectangle(DstBmp, IRect.Left, IRect.Top, Bmp, MkRect(Bmp), byte(Blend))
               else
                 CopyTransBitmaps(DstBmp, Bmp, IRect.Left, IRect.Top, MaskColor);
             end;
@@ -252,13 +273,13 @@ begin
                     Break;
                   end;
               end;
-              
+
             if not b then
               Glyph.PixelFormat := pf24bit;
           end;
           Glyph.OnChange := nEvent;
         end;
-        if (Glyph.PixelFormat = pf32bit) then begin // Patch if Png, dosn't work in std. mode
+        if Glyph.PixelFormat = pf32bit then begin // Patch if Png, dosn't work in std. mode
           SrcRect.Left := WidthOf(ImgRect, True) * min(CurrentState, NumGlyphs - 1);
           SrcRect.Top := 0;
           SrcRect.Right := SrcRect.Left + WidthOf(ImgRect, True);
@@ -280,10 +301,11 @@ begin
                 for Y := 0 to TmpBmp.Height - 1 do begin
                   S := Pointer(LongInt(S0) + DeltaS * Y);
                   for X := 0 to TmpBmp.Width - 1 do
-                    S[X].A := (S[X].A * ActBlend) div 100;
+                    with S[X] do
+                      A := (A * ActBlend) div 100;
                 end;
 
-            if (not Enabled and (dgGrayed in DisabledGlyphKind)) or ((CurrentState = 0) and Grayed) then
+            if not Enabled and (dgGrayed in DisabledGlyphKind) or (CurrentState = 0) and Grayed then
               GrayScale(TmpBmp);
 
             Bmp := CreateBmp32(ImgRect);
@@ -325,7 +347,7 @@ var
       DrawData.SkinIndex := SkinData.SkinIndex;
 
     if SkinData.CustomColor then
-      DrawData.BGColor := TsHackedControl(Button).Color
+      DrawData.BGColor := TsAccessControl(Button).Color
     else
       if (SkinData.SkinManager <> nil) and SkinData.SkinManager.IsValidSkinIndex(DrawData.SkinIndex) then
         DrawData.BGColor := SkinData.SkinManager.gd[DrawData.SkinIndex].Props[0].Color
@@ -384,6 +406,10 @@ begin
         DrawData.DisabledGlyphKind := DisabledGlyphKind;
         DrawData.Reflected         := Reflected;
         GetCommonData(SkinData);
+        if GlyphColorTone <> clNone then begin
+          DrawData.Grayed := True;
+          DrawData.BGColor := GlyphColorTone;
+        end;
       end
     else
       if Button is TsSpeedButton then
@@ -408,6 +434,10 @@ begin
           DrawData.DisabledGlyphKind := DisabledGlyphKind;
           DrawData.Reflected         := Reflected;
           GetCommonData(SkinData);
+          if GlyphColorTone <> clNone then begin
+            DrawData.Grayed := True;
+            DrawData.BGColor := GlyphColorTone;
+          end;
         end
       else
         Exit;
@@ -459,11 +489,12 @@ var
   end;
 
 begin
+  DrawData.Grayed := False;
   with ToolBar do begin
-    if (cdsSelected in State) then
+    if cdsSelected in State then
       DrawData.CurrentState := 2
     else
-      if (cdsHot in State) then
+      if cdsHot in State then
         DrawData.CurrentState := 1
       else
         DrawData.CurrentState := integer(cdsChecked in State) * 2;
@@ -475,7 +506,7 @@ begin
     end
     else
 {$ENDIF}
-      sd := TsCommonData(SendMessage(Handle, SM_ALPHACMD, MakeWParam(0, AC_GETSKINDATA), 0));
+      sd := TsCommonData(SendMessage(Handle, SM_ALPHACMD, AC_GETSKINDATA_HI, 0));
 
     if sd <> nil then begin
       DrawData.Grayed := DrawData.Grayed or (DrawData.CurrentState = 0) and (sd.SkinManager <> nil) and sd.SkinManager.Effects.DiscoloredGlyphs;
@@ -486,7 +517,6 @@ begin
         DrawData.SkinIndex := GetFontIndex(ToolBar, sd.SkinIndex, sd.SkinManager)
       else
         DrawData.SkinIndex := sd.SkinIndex;
-
     end
     else begin
       DrawData.Grayed            := False;
@@ -523,7 +553,7 @@ begin
     DrawData.DstBmp            := BtnBmp;
     DrawData.Canvas            := BtnBmp.Canvas;
   end;
-  if (DrawData.CurrentState = 2) then
+  if DrawData.CurrentState = 2 then
     if (DrawData.SkinManager = nil) or TsSkinManager(DrawData.SkinManager).ButtonsOptions.ShiftContentOnClick then
       OffsetRect(DrawData.ImgRect, 1, 1);
 

@@ -23,6 +23,13 @@ type
   end;
 
 
+  TsGradientProperty = class(TStringProperty)
+  public
+    function GetAttributes: TPropertyAttributes; override;
+    procedure Edit; override;
+  end;
+
+
   TsPageControlEditor = class(TDefaultEditor)
   public
     procedure ExecuteVerb(Index: Integer); override;
@@ -128,6 +135,8 @@ type
   public
     function GetAttributes: TPropertyAttributes; override;
     procedure Edit; override;
+    function GetValue: string; override;
+    procedure SetValue(const Value: string); override;
   end;
 
 
@@ -167,6 +176,7 @@ implementation
 
 
 uses
+  stdreg, Menus,
 {$IFDEF USEFILTEDIT}
   FiltEdit,
 {$ENDIF}
@@ -175,10 +185,27 @@ uses
 {$ENDIF}
 {$IFNDEF ALITE}
   sToolEdit, sComboBoxes, sBitBtn, sLabel, sStrEdit, acShellCtrls, acRootEdit, acPathDialog, sFrameBar,
-  sMemo, acAlphaHintsEdit, acNotebook, acAlphaHints, acImage, acSlider,
+  sMemo, acAlphaHintsEdit, acNotebook, acAlphaHints, acImage, acSlider, sColorDialog, sGradBuilder,
 {$ENDIF}
-  sCommonData, sDefaults, sSkinManager, sMaskData, sSkinProps, Menus, sInternalSkins, stdreg, sSpeedButton, sStyleSimply,
-  acAlphaImageList, sImgListEditor, ac3rdPartyEditor, acSkinInfo, acTitleBar, sSkinProvider;
+  sCommonData, sDefaults, sSkinManager, sMaskData, sSkinProps, sStoreUtils, sInternalSkins, sSpeedButton, sStyleSimply,
+  sGradient, acAlphaImageList, sImgListEditor, ac3rdPartyEditor, acSkinInfo, acTitleBar, sSkinProvider;
+
+
+const
+  sectName = 'DesignOptions';
+  optionName = 'SkinsDirectory';
+
+
+var
+  FFileName: string = '';
+
+function FileName: string;
+begin
+  if FFileName = '' then
+    FFileName := NormalDir(GetAppPath) + 'AlphaCfg.ini';
+
+  Result := FFileName;
+end;
 
 
 {$IFNDEF ALITE}
@@ -189,8 +216,8 @@ begin
   case Index of
     0: begin
       NewPage := TsTabSheet.Create(Designer.GetRoot);
-      NewPage.Parent := (Component as TsPageControl);
-      NewPage.PageControl := (Component as TsPageControl);
+      NewPage.Parent := Component as TsPageControl;
+      NewPage.PageControl := Component as TsPageControl;
       NewPage.Caption := Designer.UniqueName('sTabSheet');
       NewPage.Name := NewPage.Caption;
     end;
@@ -299,6 +326,7 @@ begin
   RegisterPropertyEditor(TypeInfo(string), TsFileNameEdit, 'Filter', TFilterProperty);
 {$ENDIF}
 
+  RegisterPropertyEditor(TypeInfo(string), TacGradPaintData, 'CustomGradient', TsGradientProperty);
   // Shell ctrls
   RegisterPropertyEditor(TypeInfo(TacRoot), TsShellListView, 'Root', TacRootProperty);
   RegisterPropertyEditor(TypeInfo(TacRoot), TsShellTreeView, 'Root', TacRootProperty);
@@ -394,6 +422,30 @@ begin
 end;
 
 
+function TsDirProperty.GetValue: string;
+var
+  s: string;
+begin
+  Result := inherited GetValue;
+  if Result = DefSkinsDir then begin
+    s := sStoreUtils.ReadRegString(HKEY_CURRENT_USER, 'SOFTWARE\' + s_RegName, s_IntSkinsPath);
+//    s := sStoreUtils.ReadRegString(sectName, optionName, fileName);
+    if (s <> '') and DirectoryExists(s) then begin
+      Result := s;
+      TsSkinManager(GetComponent(0)).SkinDirectory := s;
+    end;
+  end;
+end;
+
+
+procedure TsDirProperty.SetValue(const Value: string);
+begin
+  inherited;
+//  sStoreUtils.WriteIniStr(sectName, optionName, Value, fileName);
+  sStoreUtils.WriteRegString(HKEY_CURRENT_USER, 'SOFTWARE\' + s_RegName, s_IntSkinsPath, Value);
+end;
+
+
 procedure TsInternalSkinsProperty.Edit;
 var
   i: integer;
@@ -407,6 +459,8 @@ begin
   if (FormInternalSkins.ShowModal = mrOk) and (Designer <> nil) then
     Designer.Modified;
 
+//  sStoreUtils.WriteIniStr(sectName, optionName, FormInternalSkins.SkinManager.SkinDirectory, fileName);
+  sStoreUtils.WriteRegString(HKEY_CURRENT_USER, 'SOFTWARE\' + s_RegName, s_IntSkinsPath, FormInternalSkins.SkinManager.SkinDirectory);
   if Assigned(FormInternalSkins) then
     FreeAndNil(FormInternalSkins);
 
@@ -435,6 +489,8 @@ begin
         FormInternalSkins.ListBox1.Items.Add(sm.InternalSkins.Items[i].Name);
 
       FormInternalSkins.ShowModal;
+//      sStoreUtils.WriteIniStr(sectName, optionName, FormInternalSkins.SkinManager.SkinDirectory, fileName);
+      sStoreUtils.WriteRegString(HKEY_CURRENT_USER, 'SOFTWARE\' + s_RegName, s_IntSkinsPath, FormInternalSkins.SkinManager.SkinDirectory);
       if Assigned(FormInternalSkins) then
         FreeAndNil(FormInternalSkins);
 
@@ -647,8 +703,9 @@ end;
 procedure TacAlphaHintsEditor.ExecuteVerb(Index: Integer);
 begin
   case Index of
-    0: if EditHints(TsAlphaHints(Component)) and (Designer <> nil) then
-         Designer.Modified;
+    0:
+      if EditHints(TsAlphaHints(Component)) and (Designer <> nil) then
+        Designer.Modified;
   end;
 end;
 
@@ -680,6 +737,33 @@ begin
   inherited;
   for i := 0 to TsAlphaHints(GetComponent(0)).Templates.Count - 1 do
     Proc(TsAlphaHints(GetComponent(0)).Templates[i].Name);
+end;
+
+
+procedure TsGradientProperty.Edit;
+var
+  GradArray: TsGradArray;
+  PaintData: TObject;
+begin
+  PaintData := GetComponent(0);
+  if (PaintData is TacGradPaintData) then
+    with TacGradPaintData(PaintData) do begin
+      CreateEditorForm(ColDlg);
+      PrepareGradArray(CustomGradient, GradArray);
+      GradBuilder.LoadFromArray(GradArray);
+      GradBuilder.ShowModal;
+      case GradBuilder.ModalResult of
+        mrOk:   CustomGradient := GradBuilder.AsString;
+        mrNone: CustomGradient := '';
+      end;
+      KillForm;
+    end;
+end;
+
+
+function TsGradientProperty.GetAttributes: TPropertyAttributes;
+begin
+  Result := [paDialog, paReadOnly];//, paFullWidthName];
 end;
 {$ENDIF}
 
@@ -859,7 +943,7 @@ end;
 
 function TacSkinInfoProperty.GetAttributes: TPropertyAttributes;
 begin
-  Result := [paDialog, paReadOnly, paFullWidthName];
+  Result := [paDialog, paReadOnly, {$IFDEF DELPHI_XE}{paDisplayReadOnly, }{$ENDIF}paFullWidthName];
 end;
 
 

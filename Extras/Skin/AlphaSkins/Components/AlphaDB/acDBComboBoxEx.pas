@@ -47,21 +47,20 @@ procedure TsDBComboBoxEx.DataChange(Sender: TObject);
 var
   ind: Integer;
 begin
-  if not (Style = csSimple) and DroppedDown then
-    Exit;
+  if (Style = csSimple) or not DroppedDown then begin
+    if Field <> nil then begin
+      ind := FValues.IndexOf(Field.Text);
+      if ind < 0 then
+        ind := Items.IndexOf(Field.Text);
 
-  if Field <> nil then begin
-    ind := FValues.IndexOf(Field.Text);
-    if ind = -1 then
-      ind := Items.IndexOf(Field.Text);
-
-    ItemIndex := ind;
-  end
-  else
-    if csDesigning in ComponentState then
-      Text := Name
+      ItemIndex := ind;
+    end
     else
-      ItemIndex := -1;
+      if csDesigning in ComponentState then
+        Text := Name
+      else
+        ItemIndex := -1;
+  end;
 end;
 
 
@@ -84,7 +83,7 @@ end;
 procedure TsDBComboBoxEx.UpdateData(Sender: TObject);
 begin
   if Assigned(Field) then begin
-    if ItemIndex > -1 then
+    if ItemIndex >= 0 then
       if ItemIndex < FValues.Count then
         Field.Value := FValues[ItemIndex]
       else

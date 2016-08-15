@@ -5,7 +5,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, ExtCtrls, Menus, Clipbrd, Mask, Buttons,
-  sPanel, sSpeedButton, sSkinProvider;
+  sConst, sPanel, sSpeedButton, sSkinProvider;
 
 
 type
@@ -79,7 +79,6 @@ type
     procedure sToolButton3Click(Sender: TObject);
     procedure sToolButton1Click(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure FormDeactivate(Sender: TObject);
     procedure sSpeedButton27Click(Sender: TObject);
   protected
     FOperand: Extended;
@@ -93,6 +92,7 @@ type
 
     FOnCalcKey: TKeyPressEvent;
   private
+//    Rects: TRects;
     procedure TextChanged;
   public
     FText: string;
@@ -102,12 +102,10 @@ type
     FStatus: TsCalcState;
     FOperator: Char;
     FEditor: TCustomMaskEdit;
-    procedure FillArOR;
-    function GetRgnFromArOR: hrgn;
+//    procedure FillArOR;
+//    function GetRgnFromRects: hrgn;
     function GetValue: Variant;
     procedure WndProc (var Message: TMessage); override;
-    procedure CreateWnd; override;
-    procedure CreateParams(var Params: TCreateParams); override;
     procedure SetValue(const Value: Variant);
     procedure SetText(const Value: string);
     procedure ChangeBtnsStyle(Flat: boolean);
@@ -133,7 +131,7 @@ type
 
 implementation
 
-uses sCurrEdit, sCustomComboEdit, acntUtils, sSkinManager, sConst, sGraphUtils, sMessages, sVCLUtils, sSkinProps;
+uses sCurrEdit, sCustomComboEdit, acntUtils, sSkinManager, sGraphUtils, sMessages, sVCLUtils, sSkinProps;
 
 {$R *.dfm}
 
@@ -144,7 +142,6 @@ const
 var
   s_Close:    acString = '';
   s_Minimize: acString = '';
-  ArOR: sConst.TAOR;
 
 
 procedure TsCalcForm.CalcKey(Key: Char);
@@ -577,12 +574,35 @@ end;
 
 
 procedure TsCalcForm.FormCreate(Sender: TObject);
+{
+  procedure ScaleControl(Ctrl: TWinControl);
+  var
+    i, iScaleFactor: integer;
+  begin
+    DisableAlign;
+    iScaleFactor := aScalePercents[DefaultManager.GetScale];
+    for i := 0 to Ctrl.ControlCOunt - 1 do begin
+      with Ctrl.Controls[i] do begin
+        Left   := Left   * iScaleFactor div 100;
+        Top    := Top    * iScaleFactor div 100;
+        Width  := Width  * iScaleFactor div 100;
+        Height := Height * iScaleFactor div 100;
+      end;
+      if Ctrl.Controls[i] is TWinControl then
+        ScaleControl(TWinControl(Ctrl.Controls[i]));
+    end;
+
+    EnableAlign;
+  end;
+}
 begin
   sToolButton1.Hint := s_Close;
   sToolButton3.Hint := s_Minimize;
-  SetClassLong(Handle, GCL_STYLE, GetClassLong(Handle, GCL_STYLE) or $20000);
+//  SetClassLong(Handle, GCL_STYLE, GetClassLong(Handle, GCL_STYLE) or NCS_DROPSHADOW);
   FText := ZeroChar;
   sSpeedButton24.Caption := {$IFDEF DELPHI_XE}FormatSettings.{$ENDIF}DecimalSeparator;
+//  if (DefaultManager <> nil){ and (DefaultManager.SysFontScale <> DefaultManager.GetScale)} then
+//    ScaleControl(Self);
 end;
 
 
@@ -612,26 +632,19 @@ end;
 
 procedure TsCalcForm.FormShow(Sender: TObject);
 var
-  rgn: hrgn;
   m: TMessage;
+//  rgn: hrgn;
 begin
-  if (FEditor <> nil) and (TsCustomNumEdit(FEditor).SkinData.SkinManager <> nil) and TsCustomNumEdit(FEditor).SkinData.SkinManager.Active then begin
-    Color := TsCustomNumEdit(FEditor).SkinData.SkinManager.GetGlobalColor;
+{  if (FEditor <> nil) and (TsCustomNumEdit(FEditor).SkinData.SkinManager <> nil) and TsCustomNumEdit(FEditor).SkinData.SkinManager.Active then begin
     FillArOR;
-    rgn := GetRgnFromArOR;
+    rgn := GetRgnFromRects;
     SetWindowRgn(Handle, rgn, False);
-  end;
-{  else
-    if (DefaultManager <> nil) and DefaultManager.Active then
-      Color := DefaultManager.GetGlobalColor
-    else
-      Color := clBtnFace;
-}
+  end;}
   if FEditor <> nil then
     SetDisplay(TsCustomNumEdit(FEditor).Value);
 
-  if (DefaultManager <> nil) and DefaultManager.Active then begin
-    m := MakeMessage(SM_ALPHACMD, MakeWParam(1, AC_SETBGCHANGED), 1, 0);
+  if (DefaultManager <> nil) and DefaultManager.CommonSkinData.Active then begin
+    m := MakeMessage(SM_ALPHACMD, AC_SETBGCHANGED_HI + 1, 1, 0);
     FCalculatorPanel.BroadCast(m);
   end
   else
@@ -642,6 +655,15 @@ end;
 procedure TsCalcForm.WndProc(var Message: TMessage);
 begin
   case Message.Msg of
+    SM_ALPHACMD:
+      case Message.WParamHi of
+        AC_GETBG: begin
+          PacBGInfo(Message.LParam)^.Color := TsCustomNumEdit(FEditor).SkinData.SkinManager.GetGlobalColor;
+          PacBGInfo(Message.LParam)^.BgType := btFill;
+        end;
+      end;
+
+
     WM_ERASEBKGND:
       if Assigned(DefaultManager) and DefaultManager.Active then
         Exit;
@@ -649,58 +671,40 @@ begin
   inherited;
 end;
 
-
-procedure TsCalcForm.FormDeactivate(Sender: TObject);
-begin
-  Close;
-end;
-
-
+{
 procedure TsCalcForm.FillArOR;
 begin
-  SetLength(ArOR, 0);
+  SetLength(Rects, 0);
   if (FEditor <> nil) then
     with TsCustomNumEdit(FEditor).SkinData.SkinManager, FMainPanel.SkinData do
       if IsValidImgIndex(BorderIndex) then begin
-        AddRgn(ArOR, Width, ma[BorderIndex], 0, False);
-        AddRgn(ArOR, Width, ma[BorderIndex], Height - ma[BorderIndex].WB, True);
+        AddRgn(Rects, Width, ma[BorderIndex], 0, False);
+        AddRgn(Rects, Width, ma[BorderIndex], Height - ma[BorderIndex].WB, True);
       end;
 end;
 
 
-function TsCalcForm.GetRgnFromArOR: hrgn;
+function TsCalcForm.GetRgnFromRects: hrgn;
 var
   l, i: integer;
   subrgn: HRGN;
 begin
-  l := Length(ArOR);
+  l := Length(Rects);
   Result := CreateRectRgn(0, 0, Width, Height);
   if l > 0 then
     for i := 0 to l - 1 do begin
-      subrgn := CreateRectRgn(ArOR[i].Left, ArOR[i].Top, ArOR[i].Right, ArOR[i].Bottom);
+      with Rects[i] do
+        subrgn := CreateRectRgn(Left, Top, Right, Bottom);
+
       CombineRgn(Result, Result, subrgn, RGN_DIFF);
       DeleteObject(subrgn);
     end;
 end;
-
+}
 
 var
   Lib: HMODULE = 0;
   ResStringRec: TResStringRec;
-
-
-procedure TsCalcForm.CreateParams(var Params: TCreateParams);
-begin
-  inherited;
-  Params.Style := Params.Style or WS_POPUP;
-end;
-
-
-procedure TsCalcForm.CreateWnd;
-begin
-  inherited;
-  SetClassLong(Handle, GCL_STYLE, GetClassLong(Handle, GCL_STYLE) or $20000);
-end;
 
 
 procedure TsCalcForm.sSpeedButton27Click(Sender: TObject);

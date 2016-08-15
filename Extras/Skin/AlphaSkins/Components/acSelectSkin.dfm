@@ -1,6 +1,7 @@
 object FormSkinSelect: TFormSkinSelect
   Left = 555
   Top = 522
+  AutoScroll = False
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = 'Select skin'
@@ -9,6 +10,12 @@ object FormSkinSelect: TFormSkinSelect
   Constraints.MinHeight = 360
   Constraints.MinWidth = 500
   OldCreateOrder = False
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  ParentFont = False
   Position = poScreenCenter
   Scaled = False
   OnDestroy = FormDestroy

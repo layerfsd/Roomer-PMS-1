@@ -26,14 +26,14 @@ type
   TMagnifierOwner = class;
   TMagnifierWindow = class
   private
-    FHandle: HWND;
-    FWndStyle: Cardinal;
-    FWidth: Integer;
-    FTop: Integer;
-    FLeft: Integer;
+    FTop,
+    FLeft,
+    FWidth,
     FHeight: Integer;
+    FHandle: HWND;
     FMagFactor: Byte;
     FVisible: Boolean;
+    FWndStyle: Cardinal;
     FParent: TMagnifierOwner;
     procedure SetMagFactor(const Value: Byte);
     procedure SetVisible(const Value: Boolean);
@@ -53,9 +53,9 @@ type
     procedure WMMove(var m: TMessage); message WM_MOVE;
     procedure FormMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
   public
-    cL: integer;
-    cT: integer;
-    cR: integer;
+    cL,
+    cT,
+    cR,
     cB: integer;
     ParentForm: TForm;
     MagnWnd: TMagnifierWindow;
@@ -81,9 +81,9 @@ implementation
 uses
   math,
   {$IFDEF DELPHI5}sConst, {$ENDIF}
-  sSkinProvider, acMagn, sGraphUtils;
+  sSkinProvider, acMagn, sGraphUtils, acntUtils;
 
-{$R *.dfm}                           
+{$R *.dfm}
 
 const
   WC_MAGNIFIER = 'Magnifier';
@@ -103,12 +103,11 @@ begin
   Top := ParentForm.Top + cT;
   Width  := TacMagnForm(AOwner).MagnSize.cx - cL - cR;
   Height := TacMagnForm(AOwner).MagnSize.cy - cT - cB;
-  if not HandleAllocated then
-    Exit;
-
-  MagnWnd := TMagnifierWindow.Create(Self);
-  MagnWnd.MagFactor := TacMagnForm(ParentForm).Caller.Scaling;
-  UpdatePosition(True);
+  if HandleAllocated then begin
+    MagnWnd := TMagnifierWindow.Create(Self);
+    MagnWnd.MagFactor := TacMagnForm(ParentForm).Caller.Scaling;
+    UpdatePosition(True);
+  end;
 end;
 
 
@@ -136,25 +135,24 @@ end;
 
 constructor TMagnifierWindow.Create(Parent: TMagnifierOwner);
 begin
-  if not Assigned(acMagInitialize) then
-    Exit;
+  if Assigned(acMagInitialize) then begin
+    if not acMagInitialize then
+      {$IFDEF DELPHI6UP} RaiseLastOSError{$ENDIF};
 
-  if not acMagInitialize then
-    {$IFDEF DELPHI6UP} RaiseLastOSError{$ENDIF};
+    FVisible := False;
+    PosUpdating := False;
+    FParent := Parent;
+    FLeft := 0;
+    FTop := 0;
 
-  FVisible := False;
-  PosUpdating := False;
-  FParent := Parent;
-  FLeft := 0;
-  FTop := 0;
-
-  FWidth := Parent.ClientWidth;
-  FHeight := Parent.ClientHeight;
-  SetLayeredWindowAttributes(Handle, 0, MaxByte, ULW_ALPHA);
-  FWndStyle := WS_CHILD or WS_VISIBLE or WS_CLIPSIBLINGS;   
-  FHandle := CreateWindow(WC_MAGNIFIER, 'acMagWnd', FWndStyle, FLeft, FTop, FWidth, FHeight, FParent.Handle, 0, HInstance, nil);
-  if FHandle = 0 then
-    {$IFDEF DELPHI6UP} RaiseLastOSError{$ENDIF};
+    FWidth := Parent.ClientWidth;
+    FHeight := Parent.ClientHeight;
+    SetLayeredWindowAttributes(Handle, 0, MaxByte, ULW_ALPHA);
+    FWndStyle := WS_CHILD or WS_VISIBLE or WS_CLIPSIBLINGS;
+    FHandle := CreateWindow(WC_MAGNIFIER, 'acMagWnd', FWndStyle, FLeft, FTop, FWidth, FHeight, FParent.Handle, 0, HInstance, nil);
+    if FHandle = 0 then
+      {$IFDEF DELPHI6UP} RaiseLastOSError{$ENDIF};
+  end;
 end;
 
 
@@ -201,27 +199,32 @@ end;
 
 procedure TMagnifierWindow.UpdateSource;
 var
+  p: TPoint;
   SourceRect: TRect;
   warray: THWNDArray;
 begin
-  if PosUpdating then
-    Exit;
+  if not PosUpdating then begin
+    PosUpdating := True;
+    SourceRect := Rect(FLeft, FTop, FLeft + FWidth, FTop + FHeight);
+    InflateRect(SourceRect, ((FWidth div FMagFactor) - FWidth) div 2, ((FHeight div FMagFactor) - FHeight) div 2);
+    SourceRect.TopLeft := FParent.ClientToScreen(SourceRect.TopLeft);
+    SourceRect.BottomRight := FParent.ClientToScreen(SourceRect.BottomRight);
+    if Assigned(TacMagnForm(FParent.ParentForm).Caller.OnGetSourceCoords) then begin
+      p := SourceRect.TopLeft;
+      TacMagnForm(FParent.ParentForm).Caller.OnGetSourceCoords(p);
+      SourceRect := Rect(p.x, p.y, WidthOf(SourceRect), HeightOf(SourceRect));
+    end;
+    SetWindowPos(FHandle, HWND_TOP, 0, 0, FWidth, FHeight, SWP_NOREDRAW or SWP_NOMOVE or SWP_NOACTIVATE or SWP_NOREDRAW or SWP_NOSENDCHANGING or SWP_NOOWNERZORDER or SWP_NOZORDER);
+    warray[0] := FParent.ParentForm.Handle;
+    warray[1] := FParent.Handle;
+    acMagSetWindowFilterList(FHandle, 0, 2, @warray);
+    if not acMagSetWindowSource(FHandle, SourceRect) then
+      {$IFDEF DELPHI6UP} RaiseLastOSError{$ENDIF};
 
-  PosUpdating := True;
-  SourceRect := Rect(FLeft, FTop, FLeft + FWidth, FTop + FHeight);
-  InflateRect(SourceRect, ((FWidth div FMagFactor) - FWidth) div 2, ((FHeight div FMagFactor) - FHeight) div 2);
-  SourceRect.TopLeft := FParent.ClientToScreen(SourceRect.TopLeft);
-  SourceRect.BottomRight := FParent.ClientToScreen(SourceRect.BottomRight);
-  SetWindowPos(FHandle, HWND_TOP, 0, 0, FWidth, FHeight, SWP_NOREDRAW or SWP_NOMOVE or SWP_NOACTIVATE or SWP_NOREDRAW or SWP_NOSENDCHANGING or SWP_NOOWNERZORDER or SWP_NOZORDER);
-  warray[0] := FParent.ParentForm.Handle;
-  warray[1] := FParent.Handle;
-  acMagSetWindowFilterList(FHandle, 0, 2, @warray);
-  if not acMagSetWindowSource(FHandle, SourceRect) then
-    {$IFDEF DELPHI6UP} RaiseLastOSError{$ENDIF};
-
-  Visible := True;
-  Refresh;
-  PosUpdating := False;
+    Visible := True;
+    Refresh;
+    PosUpdating := False;
+  end;
 end;
 
 
@@ -239,7 +242,7 @@ begin
   if Full then begin
     InitDwm(Handle, True);
     with MagnWnd do begin
-      FWidth := min(max(TacMagnForm(ParentForm).MinSize, ParentForm.Width), amMaxSize) - cL - cR;
+      FWidth  := min(max(TacMagnForm(ParentForm).MinSize, ParentForm.Width),  amMaxSize) - cL - cR;
       FHeight := min(max(TacMagnForm(ParentForm).MinSize, ParentForm.Height), amMaxSize) - cT - cB;
     end;
     SetWindowPos(Handle, ParentForm.Handle, ParentForm.Left + cL + TestOffset, ParentForm.Top + cT, MagnWnd.FWidth, MagnWnd.FHeight, SWP_NOACTIVATE or SWP_NOREDRAW or SWP_SHOWWINDOW or SWP_NOSENDCHANGING or SWP_NOOWNERZORDER);

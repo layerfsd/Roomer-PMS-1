@@ -1,7 +1,7 @@
 unit sDBText;
 {$I sDefs.inc}
 //{$DEFINE LOGGED}
-
+//+
 interface
 
 uses
@@ -82,8 +82,7 @@ end;
 
 function TsDBText.ExecuteAction(Action: TBasicAction): Boolean;
 begin
-  Result := inherited ExecuteAction(Action) or (FDataLink <> nil) and
-            FDataLink.ExecuteAction(Action);
+  Result := inherited ExecuteAction(Action) or (FDataLink <> nil) and FDataLink.ExecuteAction(Action);
 end;
 
 
@@ -135,7 +134,7 @@ end;
 procedure TsDBText.Loaded;
 begin
   inherited Loaded;
-  if (csDesigning in ComponentState) then
+  if csDesigning in ComponentState then
     DataChange(Self);
 end;
 
@@ -143,9 +142,7 @@ end;
 procedure TsDBText.Notification(AComponent: TComponent; Operation: TOperation);
 begin
   inherited Notification(AComponent, Operation);
-  if (Operation = opRemove) and
-       (FDataLink <> nil) and
-         (AComponent = DataSource) then
+  if (Operation = opRemove) and (FDataLink <> nil) and (AComponent = DataSource) then
     DataSource := nil;
 end;
 

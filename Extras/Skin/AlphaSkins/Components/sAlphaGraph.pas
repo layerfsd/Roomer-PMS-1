@@ -1,6 +1,6 @@
 unit sAlphaGraph;
 {$I sDefs.inc}
-
+//+
 interface
 
 uses
@@ -15,21 +15,22 @@ type
   TsCorner = (scLeftTop, scLeftBottom, scRightTop, scRightBottom);
   TsCorners = set of TsCorner;
 
-  
+
 {$ENDIF} // NOTFORHELP
-function SwapColor(Color: TColor): TColor;
+function SwapColor(const Color: TColor): TColor;
 function SwapRedBlue(const Color: TColor): TColor;
-procedure BlendColorRect(Bmp: TBitmap; R: TRect; Transparency: TPercent; Color: TColor);
+procedure BlendColorRect(Bmp: TBitmap; R: TRect; Transparency: TPercent; Color: TColor); overload; {$IFDEF WARN_DEPRECATED} deprecated; {$ENDIF}
+procedure BlendColorRect(Bmp: TBitmap; R: TRect; Blend: byte; Color: TColor); overload;
 procedure FillRect32(const Bmp: TBItmap; R: TRect; const Color: TColor; Alpha: byte = MaxByte);
 procedure FillAlphaRect(const Bmp: TBItmap; const R: TRect; Value: byte; TransparentColor: TColor = clNone);
 {$IFNDEF ACHINTS}
 // Copy with AlphaMask from MasterBmp (get transp. pixels from parent)
-procedure CopyMasterRect(R1, R2: TRect; const Bmp: TBitmap; const CI: TCacheInfo; const MaskData: TsMaskData);
-procedure DrawSmallSkinRect(Bmp: TBitmap; R: TRect; const ci: TCacheInfo; const MaskData: TsMaskData; State: integer);
+procedure CopyMasterRect(R1, R2: TRect; const aBmp: TBitmap; const CI: TCacheInfo; const MaskData: TsMaskData);
+procedure DrawSmallSkinRect(Bmp: TBitmap; aRect: TRect; const ci: TCacheInfo; const MaskData: TsMaskData; State: integer);
 // Skinned rectangle with transparent corners
-procedure DrawSkinRect    (Bmp: TBitmap; const R: TRect; const ci: TCacheInfo; const MaskData: TsMaskData; const State: integer; const UpdateCorners: boolean);
-procedure DrawSkinRect32  (Bmp: TBitmap; const R: TRect; const ci: TCacheInfo; const MaskData: TsMaskData; const State: integer);
-procedure DrawSkinRect32Ex(Bmp: TBitmap; const R: TRect; const ci: TCacheInfo; const MaskData: TsMaskData; const State: integer; MaxWidths: TRect; Opacity: integer);
+procedure DrawSkinRect    (aBmp: TBitmap; const aRect: TRect; const ci: TCacheInfo; const MaskData: TsMaskData; const State: integer; const UpdateCorners: boolean);
+procedure DrawSkinRect32  (aBmp: TBitmap; const aRect: TRect; const ci: TCacheInfo; const MaskData: TsMaskData; const State: integer);
+procedure DrawSkinRect32Ex(aBmp: TBitmap; const aRect: TRect; const ci: TCacheInfo; const MaskData: TsMaskData; const State: integer; MaxWidths: TRect; Opacity: integer);
 // Skip transparent part of corners
 procedure DrawSkinGlyph(Bmp: TBitmap; P: TPoint; State, AddedTransparency: integer; const MaskData: TsMaskData; const CI: TCacheInfo);
 procedure StretchBltMask    (DstX1, DstY1, Dst_Width, Dst_Height, SrcX1, SrcY1, Src_Width, Src_Height: integer; BmpDst, BmpSrc: TBitmap; MaskOffset: integer; NoStdStretch: boolean = False);
@@ -47,7 +48,6 @@ procedure FillTransPixels32(const DstBmp, SrcBmp: TBitmap; const DstRect: TRect;
 {$IFNDEF WIN64}
 procedure FillLongword(var X; Count: Integer; Value: Longword);
 {$ENDIF}
-// Copy mask (red channel in bitmap) as AlphaChannel
 procedure WriteColor(const Bmp: TBitmap; Text: PacChar; Enabled: boolean; lRect: TRect; Flags: Cardinal; Color: TColor; IsAnsi: boolean = False);
 procedure WriteText32(const Bmp: TBitmap; Text: PacChar; Enabled: boolean; var aRect: TRect; Flags: Cardinal; SkinIndex: integer; Hot: boolean; SkinManager: TObject = nil; IsAnsi: boolean = False);
 procedure FillDCBorder32(const Bmp: TBitmap; const aRect: TRect; const wl, wt, wr, wb: integer; const Color: TColor);
@@ -56,29 +56,32 @@ function MakeIcon32(Img: TBitmap; UpdateAlphaChannell: boolean = False): HICON;
 function SwapLong(Value: Cardinal): Cardinal; overload;
 procedure SwapLong(P: PInteger; Count: Cardinal); overload;
 function GetAPixel(const Bmp: TBitmap; x, y: integer): TsColor;
-procedure SetAPixel(const Bmp: TBitmap; x, y: integer; const Value: TsColor);
+procedure SetAPixel(const Bmp: TBitmap; x, y: integer; const Value: TsColor); overload;
+procedure SetAPixel(const Bmp: TBitmap; x, y: integer; const Value: TColor); overload;
 procedure PaintItem32(SkinIndex: integer; Filling: boolean; State: integer; R: TRect; pP: TPoint; ItemBmp: TBitmap; SkinManager: TObject = nil); overload;
 procedure PaintItemBG32(SkinIndex: integer; State: integer; R: TRect; ItemBmp: TBitmap; SkinManager: TObject; CustomColor: TColor = clFuchsia);
 procedure UpdateAlpha(Img: TBitmap); overload;
-procedure UpdateAlpha(Img: TBitmap; R: TRect); overload;
+procedure UpdateAlpha(Img: TBitmap; const R: TRect); overload;
 {$ENDIF} // NOTFORHELP
 {$ENDIF}
 implementation
 
-Uses acntUtils, sGraphUtils{$IFNDEF ACHINTS}, sDefaults, sVclUtils, sSkinManager{$ENDIF}, sGradient;
+Uses acntTypes, sSkinProvider, acntUtils, sGraphUtils{$IFNDEF ACHINTS}, sDefaults, sVclUtils, sSkinManager{$ENDIF}, sGradient;
 
 
 procedure UpdateTransPixels(Img: TBitmap);
 var
-  x, y, DeltaS: integer;
-  S0, S: PRGBAArray;
+  x, y, w, h, DeltaS: integer;
+  S0, S: PRGBAArray_;
 begin
+  w := Img.Height - 1;
+  h := Img.Width - 1;
   if InitLine(Img, Pointer(S0), DeltaS) then
-    for Y := 0 to Img.Height - 1 do begin
+    for Y := 0 to h do begin
       S := Pointer(LongInt(S0) + DeltaS * Y);
-      for X := 0 to Img.Width - 1 do
+      for X := 0 to w do
         with S[X] do
-          if (I = clWhite) then
+          if C = clWhite then
             I := 0;
     end;
 end;
@@ -90,8 +93,8 @@ var
   TransColor: TColor;
   IconInfo: TIconInfo;
   MaskBitmap: TBitmap;
-  S0, S: PRGBAArray_RGB;
-  X, Y, DeltaS, DeltaD: integer;
+  S0, S: PRGBAArray_S;
+  X, Y, w, h, DeltaS, DeltaD: integer;
 begin
   MaskBitmap := TBitmap.Create;
   MaskBitmap.PixelFormat := pf8bit;
@@ -101,18 +104,19 @@ begin
   TransColor := GetAPixel(Img, 0, 0).C;
   Img.PixelFormat := pf32bit;
 
+  w := Img.Width - 1;
+  h := Img.Height - 1;
   if InitLine(Img, Pointer(S0), DeltaS) and InitLine(MaskBitmap, Pointer(D0), DeltaD) then
-    for Y := 0 to Img.Height - 1 do begin
+    for Y := 0 to h do begin
       S := Pointer(LongInt(S0) + DeltaS * Y);
       D := Pointer(LongInt(D0) + DeltaD * Y);
-      for X := 0 to Img.Width - 1 do
-        with S[X] do
-          if Col <> TransColor then
-            D[X] := 0
-          else
-            D[X] := $FF;
+      for X := 0 to w do
+        if S[X].SC <> TransColor then
+          D[X] := 0
+        else
+          D[X] := $FF;
     end;
-    
+
   MaskBitmap.PixelFormat := pf1bit;
   try
     IconInfo.fIcon := True;
@@ -168,42 +172,66 @@ begin
 end;
 
 
-procedure UpdateAlpha(Img: TBitmap; R: TRect);
+const
+  bLimit = $F4;
+
+
+procedure UpdateAlpha(Img: TBitmap; const R: TRect);
 var
-  S0, S: PRGBAArray;
+  S0, S: PRGBAArray_S;
   x, y, Delta: integer;
 begin
   if InitLine(Img, Pointer(S0), Delta) then
-    for Y := R.Top to R.Bottom - 1 do begin
-      S := Pointer(LongInt(S0) + Delta * Y);
-      for X := R.Left to R.Right - 1 do
-        with S[X] do
-          if (I = clWhite) then
-            I := 0
-          else begin
-            R := (R * A) shr 8;
-            G := (G * A) shr 8;
-            B := (B * A) shr 8;
-          end;
-    end;
+    if AeroIsEnabled then
+      for Y := R.Top to R.Bottom - 1 do begin
+        S := Pointer(LongInt(S0) + Delta * Y);
+        for X := R.Left to R.Right - 1 do
+          with S[X] do
+            if (SI = clWhite) then
+              SI := 0
+            else begin
+              SR := SR * SA shr 8;
+              SG := SG * SA shr 8;
+              SB := SB * SA shr 8;
+            end;
+      end
+    else
+      for Y := R.Top to R.Bottom - 1 do begin
+        S := Pointer(LongInt(S0) + Delta * Y);
+        for X := R.Left to R.Right - 1 do
+          with S[X] do
+            if (SI = clWhite) then
+              SI := 0
+            else
+              if (SR > bLimit) and (SG > bLimit) and (SR > bLimit) then begin
+                SR := min(bLimit, SR * SA shr 8);
+                SG := min(bLimit, SG * SA shr 8);
+                SB := min(bLimit, SB * SA shr 8);
+              end
+              else begin
+                SR := SR * SA shr 8;
+                SG := SG * SA shr 8;
+                SB := SB * SA shr 8;
+              end;
+      end
 end;
 
 
 function GetAPixel(const Bmp: TBitmap; x, y: integer): TsColor;
-var
-  S: PRGBAArray;
 begin
-  S := Bmp.ScanLine[Y];
-  Result.I := S[X].I;
+  Result.I := PRGBAArray_(Bmp.ScanLine[Y])^[X].I;
 end;
 
 
 procedure SetAPixel(const Bmp: TBitmap; x, y: integer; const Value: TsColor);
-var
-  S: PRGBAArray;
 begin
-  S := Bmp.ScanLine[Y];
-  S[X].I := Value.I;
+  PRGBAArray_(Bmp.ScanLine[Y])^[X].I := Value.I;
+end;
+
+
+procedure SetAPixel(const Bmp: TBitmap; x, y: integer; const Value: TColor);
+begin
+  PRGBAArray_(Bmp.ScanLine[Y])^[X].C := Value;
 end;
 
 
@@ -212,8 +240,9 @@ var
   C: TsColor_;
   mOffset: TPoint;
   MaskBmp: TBitmap;
-  M0, M: PRGBAArray;
-  S0, D0, S, D: PRGBAArray;
+  M0, M: PRGBAArray_M;
+  S0, S: PRGBAArray_S;
+  D0, D: PRGBAArray_D;
   X, Y, w, h, wi, hi: integer;
   DeltaS, DeltaD, DeltaM: integer;
 begin
@@ -224,12 +253,12 @@ begin
       for Y := 0 to h do begin
         S := Pointer(LongInt(S0) + DeltaS * (SrcPoint.Y  + Y));
         D := Pointer(LongInt(D0) + DeltaD * (DstRect.Top + Y));
-        for X := 0 to w do begin
-          C := D[DstRect.Left + X];
-          C.A := 0;
-          if C.C = clFuchsia then
-            D[DstRect.Left + X] := S[SrcPoint.X + X];
-        end;
+        for X := 0 to w do
+          with D[DstRect.Left + X] do begin
+            DA := 0;
+            if DC = clFuchsia then
+              D[DstRect.Left + X].DC := S[SrcPoint.X + X].SC;
+          end;
       end;
   end
   else
@@ -238,14 +267,15 @@ begin
       if MaskBMp = nil then
         MaskBmp := MasterBitmap;
 
-      wi := WidthOfImage(ma[MaskIndex]);
-      hi := HeightOfImage(ma[MaskIndex]);
-      case MaskPos of
-        HTTOPLEFT    : mOffset := ma[MaskIndex].R.TopLeft;
-        HTTOPRIGHT   : mOffset := Point(ma[MaskIndex].R.Left + wi - ma[MaskIndex].WR, ma[MaskIndex].R.Top);
-        HTBOTTOMLEFT : mOffset := Point(ma[MaskIndex].R.Left, ma[MaskIndex].R.Top + hi - ma[MaskIndex].WB);
-        HTBOTTOMRIGHT: mOffset := Point(ma[MaskIndex].R.Left + wi - ma[MaskIndex].WR, ma[MaskIndex].R.Top + hi - ma[MaskIndex].WB);
-        else           mOffset := ma[MaskIndex].R.TopLeft;
+      with ma[MaskIndex] do begin
+        wi := Width;
+        hi := Height;
+        case MaskPos of
+          HTTOPRIGHT    : mOffset := Point(R.Left + wi - WR, R.Top);
+          HTBOTTOMLEFT  : mOffset := Point(R.Left, R.Top + hi - WB);
+          HTBOTTOMRIGHT : mOffset := Point(R.Left + wi - WR, R.Top + hi - WB);
+          else{HTTOPLEFT} mOffset := R.TopLeft;
+        end;
       end;
       if InitLine(SrcBmp, Pointer(S0), DeltaS) and InitLine(DstBmp, Pointer(D0), DeltaD) and InitLine(MaskBmp, Pointer(M0), DeltaM) then
         for Y := 0 to h do begin
@@ -253,10 +283,10 @@ begin
           D := Pointer(LongInt(D0) + DeltaD * (DstRect.Top + Y));
           M := Pointer(LongInt(M0) + DeltaM * (mOffset.Y   + Y));
           for X := 0 to w do begin
-            C := M[mOffset.X + X];
+            C.C := M[mOffset.X + X].MC;
             C.A := 0;
             if C.C = clFuchsia then
-              D[DstRect.Left + X] := S[SrcPoint.X + X];
+              D[DstRect.Left + X].DC := S[SrcPoint.X + X].SC;
           end;
         end;
     end;
@@ -265,9 +295,9 @@ end;
 
 procedure WriteColor(const Bmp: TBitmap; Text: PacChar; Enabled: boolean; lRect: TRect; Flags: Cardinal; Color: TColor; IsAnsi: boolean = False);
 var
-  x, y, h, w, miny, minx: integer;
-  S0, D0, S, D: PRGBAArray;
-  DeltaS, DeltaD: integer;
+  DeltaS, DeltaD, x, y, h, w, miny, minx: integer;
+  S0, S: PRGBAArray_S;
+  D0, D: PRGBAArray_D;
   SrcColor: TsColor;
   TmpBmp: TBitmap;
   CC: TsColor_;
@@ -289,10 +319,10 @@ begin
   h := TmpBmp.Height - 1;
   w := TmpBmp.Width  - 1;
 
-  if lRect.Top + h > Bmp.Height - 1 then
+  if lRect.Top + h >= Bmp.Height then
     h := Bmp.Height - 1 - lRect.Top;
 
-  if lRect.Left + w > Bmp.Width - 1 then
+  if lRect.Left + w >= Bmp.Width then
     w := Bmp.Width - 1 - lRect.Left;
 
   if lRect.Top < 0 then
@@ -307,44 +337,45 @@ begin
 
   CC.A := MaxByte;
   SrcColor.C := Color;
-  if InitLine(TmpBmp, Pointer(S0), DeltaS) and InitLine(Bmp, Pointer(D0), DeltaD) then begin
-    if Enabled then
-      for y := miny to h do begin
-        S := Pointer(LongInt(S0) + DeltaS * Y);
-        D := Pointer(LongInt(D0) + DeltaD * (y + lRect.Top));
-        for x := minx to w do
-          if (S[x].C <> clWhite) and (S[x].I <> -1) then
-            with D[x + lRect.Left] do begin
-              bC := (S[x].R + S[x].G + S[x].B) div 3;
-              A := max((A + MaxByte) shr 1, MaxByte - bC);
-              R := ((R - SrcColor.R) * bC + SrcColor.R shl 8) * A shr 16;
-              G := ((G - SrcColor.G) * bC + SrcColor.G shl 8) * A shr 16;
-              B := ((B - SrcColor.B) * bC + SrcColor.B shl 8) * A shr 16;
-            end;
-      end
-    else
-      for y := miny to h do begin
-        S := Pointer(LongInt(S0) + DeltaS * Y);
-        D := Pointer(LongInt(D0) + DeltaD * (y + lRect.Top));
-        for x := minx to w do
-          if (S[x].C <> clWhite) and (S[x].I <> -1) then
-            with D[x + lRect.Left] do begin
-              A := MaxByte;
-              R := ((R - SrcColor.R) * S[x].R + SrcColor.R shl 8) shr 8;
-              G := ((G - SrcColor.G) * S[x].G + SrcColor.G shl 8) shr 8;
-              B := ((B - SrcColor.B) * S[x].B + SrcColor.B shl 8) shr 8;
-            end;
-      end;
-  end;
+  if InitLine(TmpBmp, Pointer(S0), DeltaS) and InitLine(Bmp, Pointer(D0), DeltaD) then
+    with SrcColor do
+      if Enabled then
+        for y := miny to h do begin
+          S := Pointer(LongInt(S0) + DeltaS * Y);
+          D := Pointer(LongInt(D0) + DeltaD * (y + lRect.Top));
+          for x := minx to w do
+            with S[x] do
+              if (SC <> clWhite) and (SI <> -1) then
+                with D[x + lRect.Left] do begin
+                  bC := Round(0.299 * SR + 0.587 * SG + 0.114 * SB);
+                  DA := max((DA + MaxByte) shr 1, MaxByte - bC);
+                  DR := ((DR - R) * bC + R shl 8) * DA shr 16;
+                  DG := ((DG - G) * bC + G shl 8) * DA shr 16;
+                  DB := ((DB - B) * bC + B shl 8) * DA shr 16;
+                end;
+        end
+      else
+        for y := miny to h do begin
+          S := Pointer(LongInt(S0) + DeltaS * Y);
+          D := Pointer(LongInt(D0) + DeltaD * (y + lRect.Top));
+          for x := minx to w do
+            with S[x] do
+              if (SC <> clWhite) and (SI <> -1) then
+                with D[x + lRect.Left] do begin
+                  DA := MaxByte;
+                  DR := ((DR - R) * SR + R shl 8) shr 8;
+                  DG := ((DG - G) * SG + G shl 8) shr 8;
+                  DB := ((DB - B) * SB + B shl 8) shr 8;
+                end;
+        end;
+
   FreeAndNil(TmpBmp);
 end;
 
 
 procedure WriteText32(const Bmp: TBitmap; Text: PacChar; Enabled: boolean; var aRect: TRect; Flags: Cardinal; SkinIndex: integer; Hot: boolean; SkinManager: TObject = nil; IsAnsi: boolean = False);
 var
-  State: Integer;
   R, Rd: TRect;
-  C: TColor;
 begin
  if (Text <> '') and not IsRectEmpty(aRect) then begin
     if SkinManager = nil then
@@ -353,40 +384,35 @@ begin
     if Assigned(SkinManager) then
       with TsSkinManager(SkinManager) do begin
         R := aRect;
-        if IsValidSkinIndex(SkinIndex) then begin
-          State := integer(Hot);
-          if Enabled then begin
-            // Left
-            C := gd[SkinIndex].Props[State].FontColor.Left;
-            if C <> -1 then begin
-              Rd := Rect(R.Left - 1, R.Top, R.Right - 1, R.Bottom);
-              WriteColor(Bmp, Text, True, Rd, Flags, C);
+        if IsValidSkinIndex(SkinIndex) then
+          with gd[SkinIndex].Props[integer(Hot)], R do begin
+            if Enabled then begin
+              // Left
+              if FontColor.Left <> -1 then begin
+                Rd := Rect(Left - 1, Top, Right - 1, Bottom);
+                WriteColor(Bmp, Text, True, Rd, Flags, FontColor.Left);
+              end;
+              // Top
+              if FontColor.Top <> -1 then begin
+                Rd := Rect(Left, Top - 1, Right, Bottom - 1);
+                WriteColor(Bmp, Text, True, Rd, Flags, FontColor.Top);
+              end;
+              // Right
+              if FontColor.Right <> -1 then begin
+                Rd := Rect(Left + 1, Top, Right + 1, Bottom);
+                WriteColor(Bmp, Text, True, Rd, Flags, FontColor.Right);
+              end;
+              // Bottom
+              if FontColor.Bottom <> -1 then begin
+                Rd := Rect(Left, Top + 1, Right, Bottom + 1);
+                WriteColor(Bmp, Text, True, Rd, Flags, FontColor.Bottom);
+              end;
             end;
-            // Top
-            C := gd[SkinIndex].Props[State].FontColor.Top;
-            if C <> -1 then begin
-              Rd := Rect(R.Left, R.Top - 1, R.Right, R.Bottom - 1);
-              WriteColor(Bmp, Text, True, Rd, Flags, C);
-            end;
-            // Right
-            C := gd[SkinIndex].Props[State].FontColor.Right;
-            if C <> -1 then begin
-              Rd := Rect(R.Left + 1, R.Top, R.Right + 1, R.Bottom);
-              WriteColor(Bmp, Text, True, Rd, Flags, C);
-            end;
-            // Bottom
-            C := gd[SkinIndex].Props[State].FontColor.Bottom;
-            if C <> -1 then begin
-              Rd := Rect(R.Left, R.Top + 1, R.Right, R.Bottom + 1);
-              WriteColor(Bmp, Text, True, Rd, Flags, C);
-            end;
-          end;
-          // Center
-          C := gd[SkinIndex].Props[State].FontColor.Color;
-          WriteColor(Bmp, Text, Enabled, R, Flags, C);
-        end
-        else
-          WriteColor(Bmp, Text, Enabled, R, Flags, Bmp.Canvas.Font.Color);
+            // Center
+            WriteColor(Bmp, Text, Enabled, R, Flags, FontColor.Color);
+          end
+          else
+            WriteColor(Bmp, Text, Enabled, R, Flags, Bmp.Canvas.Font.Color);
       end
     else
       WriteColor(Bmp, Text, Enabled, aRect, Flags, Bmp.Canvas.Font.Color);
@@ -396,53 +422,99 @@ end;
 
 procedure FillDCBorder32(const Bmp: TBitmap; const aRect: TRect; const wl, wt, wr, wb: integer; const Color: TColor);
 begin
-  FillRect32(Bmp, Rect(aRect.Left,       aRect.Top,         aRect.Right,     aRect.Top + wt),    Color);
-  FillRect32(Bmp, Rect(aRect.Left,       aRect.Top + wt,    aRect.Left + wl, aRect.Bottom),      Color);
-  FillRect32(Bmp, Rect(aRect.Left + wl,  aRect.Bottom - wb, aRect.Right,     aRect.Bottom),      Color);
-  FillRect32(Bmp, Rect(aRect.Right - wr, aRect.Top + wt,    aRect.Right,     aRect.Bottom - wb), Color);
+  with aRect do begin
+    FillRect32(Bmp, Rect(Left,       Top,         Right,     Top + wt),    Color);
+    FillRect32(Bmp, Rect(Left,       Top + wt,    Left + wl, Bottom),      Color);
+    FillRect32(Bmp, Rect(Left + wl,  Bottom - wb, Right,     Bottom),      Color);
+    FillRect32(Bmp, Rect(Right - wr, Top + wt,    Right,     Bottom - wb), Color);
+  end;
 end;
 
 
 procedure BlendColorRect(Bmp: TBitmap; R: TRect; Transparency: TPercent; Color: TColor);
 var
-  rT, tR: real;
-  bR, bG, bB: byte;
-  S0, S: PRGBAArray;
+  S0, S: PRGBAArray_;
   BlendColor: TsColor;
   Delta, x, y: integer;
+  bR, bG, bB, byteT, byteR: byte;
 begin
-  if R.Left < 0 then
-    R.Left := 0;
+  with R do begin
+    if Left < 0 then
+      Left := 0;
 
-  if R.Top < 0 then
-    R.Top := 0;
+    if Top < 0 then
+      Top := 0;
 
-  if R.Right > Bmp.Width - 1 then
-    R.Right := Bmp.Width - 1;
+    if Right >= Bmp.Width then
+      Right := Bmp.Width - 1;
 
-  if R.Bottom > Bmp.Height - 1 then
-    R.Bottom := Bmp.Height - 1;
+    if Bottom >= Bmp.Height then
+      Bottom := Bmp.Height - 1;
 
-  BlendColor.C := ColorToRGB(Color);
-  bR := BlendColor.R;
-  bG := BlendColor.G;
-  bB := BlendColor.B;
-  rT := Transparency / 100;
-  tR := 1 - rT;
-  if InitLine(Bmp, Pointer(S0), Delta) then
-    for y := R.Top to R.Bottom do begin
-      S := Pointer(LongInt(S0) + Delta * Y);
-      for x := R.Left to R.Right do
-        with S[X] do begin
-          R := Round(R * rT + bR * tR);
-          G := Round(G * rT + bG * tR);
-          B := Round(B * rT + bB * tR);
-        end;
+    BlendColor.C := ColorToRGB(Color);
+    byteT := Transparency * MaxByte div 100;
+    with BlendColor do begin
+      byteR := MaxByte - byteT;
+      bR := R * byteR;
+      bG := G * byteR;
+      bB := B * byteR;
     end;
+    if InitLine(Bmp, Pointer(S0), Delta) then
+      for y := Top to Bottom do begin
+        S := Pointer(LongInt(S0) + Delta * Y);
+        for x := Left to Right do
+          with S[X] do begin
+            R := (R * byteT + bR) shr 8;
+            G := (G * byteT + bG) shr 8;
+            B := (B * byteT + bB) shr 8;
+          end;
+      end;
+  end;
 end;
 
 
-function SwapColor(Color: TColor): TColor;
+procedure BlendColorRect(Bmp: TBitmap; R: TRect; Blend: byte; Color: TColor);
+var
+  S0, S: PRGBAArray_S;
+  BlendColor: TsColor;
+  bR, bG, bB, Delta, x, y: integer;
+  BlendR: byte;
+begin
+  with R do begin
+    if Left < 0 then
+      Left := 0;
+
+    if Top < 0 then
+      Top := 0;
+
+    if Right >= Bmp.Width then
+      Right := Bmp.Width - 1;
+
+    if Bottom >= Bmp.Height then
+      Bottom := Bmp.Height - 1;
+
+    BlendR := MaxByte - Blend;
+    with BlendColor do begin
+      C := ColorToRGB(Color);
+      bR := R * BlendR;
+      bG := G * BlendR;
+      bB := B * BlendR;
+    end;
+    if InitLine(Bmp, Pointer(S0), Delta) then
+      for y := Top to Bottom do begin
+        S := Pointer(LongInt(S0) + Delta * Y);
+        for x := Left to Right do
+          with S[X] do begin
+            SR := (SR * Blend + bR) shr 8;
+            SG := (SG * Blend + bG) shr 8;
+            SB := (SB * Blend + bB) shr 8;
+          end;
+      end;
+  end;
+end;
+
+
+function SwapColor(const Color: TColor): TColor;
 {$IFDEF WIN64}
 begin
   Result := Color;
@@ -468,51 +540,58 @@ end;
 procedure FillRect32(const Bmp: TBItmap; R: TRect; const Color: TColor; Alpha: byte = MaxByte);
 var
   C: TsColor_;
-  S0, S: PRGBAArray;
-  Delta, X, Y: integer;
+  S0, S: PRGBAArray_;
+  Delta, h, w, X, Y: integer;
 begin
-  if Bmp.Height < R.Bottom then
-    R.Bottom := Bmp.Height;
+  with TDstRect(R), Bmp do begin
+    h := Height;
+    w := Width;
+    if Height < R.Bottom then
+      R.Bottom := Height;
 
-  C.C := SwapRedBlue(Color);
-  C.A := Alpha;
-  if InitLine(Bmp, Pointer(S0), Delta) then
-    for Y := max(0, R.Top) to min(Bmp.Height, R.Bottom) - 1 do begin
-      S := Pointer(LongInt(S0) + Delta * Y);
-      for X := max(0, R.Left) to min(Bmp.Width, R.Right) - 1 do
-        S[X] := C;
-    end;
+    C.C := SwapRedBlue(Color);
+    C.A := Alpha;
+    if InitLine(Bmp, Pointer(S0), Delta) then
+      for Y := max(0, DTop) to min(h, DBottom) - 1 do begin
+        S := Pointer(LongInt(S0) + Delta * Y);
+        for X := max(0, DLeft) to min(w, DRight) - 1 do
+          S[X] := C;
+      end;
+  end;
 end;
 
 
 procedure BlendRect32(const Bmp: TBItmap; R: TRect; Color: TColor; BlendValue: byte; Alpha: byte = MaxByte);
 var
   Col: TsColor_;
-  S0, S: PRGBAArray;
-  Delta, X, Y: integer;
+  S0, S: PRGBAArray_S;
+  Delta, h, w, X, Y: integer;
 begin
-  if Bmp.Height < R.Bottom then
-    R.Bottom := Bmp.Height;
+  w := Bmp.Width;
+  h := Bmp.Height;
+  if h < R.Bottom then
+    R.Bottom := h;
 
   Col.C := SwapRedBlue(Color);
   Col.A := Alpha;
   if InitLine(Bmp, Pointer(S0), Delta) then
-    for Y := max(0, R.Top) to min(Bmp.Height, R.Bottom) - 1 do begin
-      S := Pointer(LongInt(S0) + Delta * Y);
-      for X := max(0, R.Left) to min(Bmp.Width, R.Right) - 1 do
-        with S[X] do begin
-          R := R - BlendValue * (R - Col.R) div 100;
-          G := G - BlendValue * (G - Col.G) div 100;
-          B := B - BlendValue * (B - Col.B) div 100;
-          A := Col.A;
-        end;
-    end;
+    with TDstRect(R), Col do
+      for Y := max(0, DTop) to min(h, DBottom) - 1 do begin
+        S := Pointer(LongInt(S0) + Delta * Y);
+        for X := max(0, DLeft) to min(w, DRight) - 1 do
+          with S[X] do begin
+            SR := SR - BlendValue * (SR - R) div 100;
+            SG := SG - BlendValue * (SG - G) div 100;
+            SB := SB - BlendValue * (SB - B) div 100;
+            SA := Alpha;
+          end;
+      end;
 end;
 
 
 procedure FillAlphaRect(const Bmp: TBItmap; const R: TRect; Value: byte; TransparentColor: TColor = clNone);
 var
-  S0, S: PRGBAArray;
+  S0, S: PRGBAArray_;
   Delta, X, Y, w, h: integer;
 begin
   w := WidthOf (R, True) - 1;
@@ -522,8 +601,9 @@ begin
       for Y := 0 to h do begin
         S := Pointer(LongInt(S0) + Delta * (R.Top + Y));
         for X := 0 to w do
-          if TsColor_(S[R.Left + X]).C <> TransparentColor then
-            TsColor_(S[R.Left + X]).A := Value;
+          with S[R.Left + X] do
+            if C <> TransparentColor then
+              A := Value;
       end
     else
       for Y := 0 to h do begin
@@ -540,17 +620,17 @@ var
   C: TColor;
   R: TRect;
 begin
-  if (dkGrayed in DisabledKind) then
+  if dkGrayed in DisabledKind then
     if DefDisabledSaturation = -100 then
       GrayScale(Bmp)
     else
-      ChangeBitmapPixels(Bmp, ChangeColorSaturation, Round(DefDisabledSaturation * MaxByte / 100), clFuchsia);
+      ChangeBitmapPixels(Bmp, ChangeColorSaturation, DefDisabledSaturation * MaxByte div 100, clFuchsia);
 
-  if (dkBlended in DisabledKind) then begin
+  if dkBlended in DisabledKind then begin
     R := MkRect(Bmp);
     if CI.Ready then begin
       OffsetRect(R, CI.X + Offset.X, CI.Y + Offset.Y);
-      BlendTransRectangle(Bmp, 0, 0, CI.Bmp, R, DefDisabledBlend);
+      BlendTransRectangle(Bmp, 0, 0, CI.Bmp, R, DefBlendDisabled);
     end
     else begin
       if CI.FillColor <> clFuchsia then
@@ -558,23 +638,19 @@ begin
       else
         C := GetControlColor(Parent);
 
-      BlendColorRect(Bmp, R, Trunc(DefDisabledBlend * 100), C);
+      BlendColorRect(Bmp, R, byte(DefBlendDisabled), C);
     end;
   end;
 end;
 
 
-procedure DrawSmallSkinRect(Bmp: TBitmap; R: TRect; const ci: TCacheInfo; const MaskData: TsMaskData; State: integer);
+procedure DrawSmallSkinRect(Bmp: TBitmap; aRect: TRect; const ci: TCacheInfo; const MaskData: TsMaskData; State: integer);
 var
-  x, y, w, h, dw, dh: integer;
-  mw, mh, minhp, minwp, minh, minw: integer;
+  x, y, w, h, h2, w2, w3, dw, dh, mw, mh, minhp, minwp, minh, minw: integer;
 begin
-  if MaskData.Bmp = nil then
+  if (MaskData.Bmp = nil) and (MaskData.Manager <> nil) then
     with TsSkinManager(MaskData.Manager) do begin
-      if MaskData.Manager = nil then
-        Exit;
-
-      if (WidthOf(R) < 2) or (HeightOf(R) < 2) then
+      if (WidthOf(aRect) < 2) or (HeightOf(aRect) < 2) then
         Exit;
 
       if MaskData.ImageCount = 0 then
@@ -587,21 +663,20 @@ begin
       dh := HeightOf(MaskData.R) div (1 + MaskData.MaskType);      // Height of mask
       w := WidthOf (MaskData.R) div (3 * MaskData.ImageCount);
       h := HeightOf(MaskData.R) div (3 * (1 + MaskData.MaskType));
-
-      if WidthOf(R) < w * 2 then
-        mw := WidthOf(R) div 2
+      if WidthOf(aRect) < w * 2 then
+        mw := WidthOf(aRect) div 2
       else
         mw := 0;
 
-      if HeightOf(R) < h * 2 then
-        mh := HeightOf(R) div 2
+      if HeightOf(aRect) < h * 2 then
+        mh := HeightOf(aRect) div 2
       else
         mh := 0;
 
       if mh > 0 then begin
         minh := mh;
         minhp := minh;
-        if HeightOf(R) mod 2 <> 0 then
+        if HeightOf(aRect) mod 2 <> 0 then
           inc(minhp);
       end
       else begin
@@ -612,7 +687,7 @@ begin
       if mw > 0 then begin
         minw := mw;
         minwp := minw;
-        if WidthOf(R) mod 2 <> 0 then
+        if WidthOf(aRect) mod 2 <> 0 then
           inc(minwp);
       end
       else begin
@@ -620,539 +695,533 @@ begin
         minwp := w;
       end;
 
-      if MaskData.MaskType = 0 then begin
-        // left - top
-        CopyTransRect(Bmp, MasterBitmap, R.Left, R.Top, Rect(MaskData.R.Left + dw, MaskData.R.Top, MaskData.R.Left + dw + minw, MaskData.R.Top + minh), clFuchsia, CI, True);
-        // left - middle
-        y := R.Top + h;
-        if MaskData.DrawMode and BDM_STRETCH = 0 then begin
-          while y < R.Bottom - h do begin
-            BitBlt(Bmp.Canvas.Handle, R.Left, y, minw, h, MasterBitmap.Canvas.Handle, MaskData.R.Left + dw, MaskData.R.Top + h, SRCCOPY);
+      w3 := w * 3;
+      with TDstRect(aRect), MaskData, TSrcRect(R), MasterBitmap.Canvas do
+        if MaskType = 0 then begin
+          // left - top
+          CopyTransRect(Bmp, MasterBitmap, DLeft, DTop, Rect(SLeft + dw, STop, SLeft + dw + minw, STop + minh), clFuchsia, CI, True);
+          // left - middle
+          y := DTop + h;
+          if DrawMode and BDM_STRETCH = 0 then begin
+            while y < DBottom - h do begin
+              BitBlt(Bmp.Canvas.Handle, DLeft, y, minw, h, Handle, SLeft + dw, STop + h, SRCCOPY);
+              inc(y, h);
+            end;
+            if y < DBottom - h then
+              BitBlt(Bmp.Canvas.Handle, DLeft, y, minw, h, Handle, SLeft + dw, STop + h, SRCCOPY);
+          end
+          else
+            StretchBlt(Bmp.Canvas.Handle, DLeft, y, DLeft + minw, DBottom - minh - y, Handle, SLeft + dw, STop + h, minw, h, SRCCOPY);
+
+          // top - middle
+          x := DLeft + minw;
+          if DrawMode and BDM_STRETCH = 0 then begin
+            while x < DRight - w - minw do begin
+              BitBlt(Bmp.Canvas.Handle, x, DTop, w, minh, Handle, SLeft + dw + w, STop, SRCCOPY);
+              inc(x, w);
+            end;
+            if x < DRight - minw then
+              BitBlt(Bmp.Canvas.Handle, x, DTop, DRight - minw - x, minh, Handle, SLeft + dw + w, STop, SRCCOPY);
+          end
+          else
+            StretchBlt(Bmp.Canvas.Handle, x, DTop, DRight - minw - x, minh, Handle, SLeft + dw + w, STop, w, minh, SRCCOPY);
+
+          // left - bottom
+          CopyTransRect(Bmp, MasterBitmap, DLeft, DBottom - minhp, Rect(SLeft + dw, SBottom - minhp, SLeft + dw + minw - 1,
+                        SBottom - 1), clFuchsia, CI, True);
+          // bottom - middle
+          x := DLeft + minw;
+          if DrawMode and BDM_STRETCH = 0 then begin
+            while x < DRight - w - minw do begin
+              BitBlt(Bmp.Canvas.Handle, x, DBottom - minh, w, minh, Handle, SLeft + dw + w, SBottom - minh, SRCCOPY);
+              inc(x, w);
+            end;
+            if x < DRight - minw then
+              BitBlt(Bmp.Canvas.Handle, x, DBottom - minh, DRight - minw - x, minh, Handle, SLeft + dw + w,  SBottom - minh, SRCCOPY);
+          end
+          else
+            StretchBlt(Bmp.Canvas.Handle, x, DBottom - minh, DRight - minw - x, minh, Handle, SLeft + dw + w, SBottom - minh, w, minh, SRCCOPY);
+          // right - bottom
+          CopyTransRect(Bmp, MasterBitmap, DRight - minwp, DBottom - minhp,
+                        Rect(SLeft + dw + w3 - minwp, SBottom - minhp, SLeft + dw + w3 - 1, SBottom - 1), clFuchsia, CI, True);
+          // right - top
+          CopyTransRect(Bmp, MasterBitmap, DRight - minwp, DTop,
+                        Rect(SLeft + dw + w3 - minwp, STop, SLeft + dw + w3 - 1, STop + minh - 1), clFuchsia, CI, True);
+          // right - middle
+          y := DTop + h;
+          while y < DBottom - h do begin
+            BitBlt(Bmp.Canvas.Handle, DRight - minwp, y, minwp, h, Handle,  SLeft + dw + w3 - minwp, STop + h, SRCCOPY);
             inc(y, h);
           end;
-          if y < R.Bottom - h then
-            BitBlt(Bmp.Canvas.Handle, R.Left, y, minw, h, MasterBitmap.Canvas.Handle, MaskData.R.Left + dw, MaskData.R.Top + h, SRCCOPY);
-        end
-        else
-          StretchBlt(Bmp.Canvas.Handle, R.Left, y, R.Left + minw, R.Bottom - minh - y, MasterBitmap.Canvas.Handle, MaskData.R.Left + dw, MaskData.R.Top + h, minw, h, SRCCOPY);
+          if y < DBottom - h then
+            BitBlt(Bmp.Canvas.Handle, DRight - minwp, y, minwp, DBottom - h - y, Handle,  SLeft + dw + w3 - minwp, STop + h, SRCCOPY);
 
-        // top - middle
-        x := R.Left + minw;
-        if MaskData.DrawMode and BDM_STRETCH = 0 then begin
-          while x < R.Right - w - minw do begin
-            BitBlt(Bmp.Canvas.Handle, x, R.Top, w, minh, MasterBitmap.Canvas.Handle, MaskData.R.Left + dw + w, MaskData.R.Top, SRCCOPY);
+          // Fill
+          if DrawMode and BDM_FILL <> 0 then begin
+            y := DTop + h;
+            while y < DBottom - 2 * h do begin
+              x := DLeft + w;
+              while x < DRight - 2 * w do begin
+                BitBlt(Bmp.Canvas.Handle, x, y, w, h, Handle, SLeft + dw + w, STop + h, SRCCOPY);
+                inc(x, w);
+              end;
+              if x < DRight - w then
+                BitBlt(Bmp.Canvas.Handle, x, y, DRight - w - x, DBottom - h - y, Handle, SLeft + dw + w, STop + h, SRCCOPY);
+
+              inc(y, h);
+            end;
+            x := DLeft + w;
+            if y < DBottom - h then begin
+              while x < DRight - 2 * w do begin
+                BitBlt(Bmp.Canvas.Handle, x, y, w, DBottom - h - y, Handle, SLeft + dw + w, STop + h, SRCCOPY);
+                inc(x, w);
+              end;
+              if x < DRight - w then
+                BitBlt(Bmp.Canvas.Handle, x, y, DRight - w - x, DBottom - h - y, Handle, SLeft + dw + w, STop + h, SRCCOPY);
+            end;
+          end;
+        end
+        else begin
+          h2 := h * 2;
+          w2 := w * 2;
+          CopyMasterRect(Rect(DLeft, DTop, DLeft + minw + 1, DTop + minh + 1), Rect(SLeft + dw, STop, SLeft + dw + minw, STop + minh), Bmp, ci, MaskData);
+          // left - middle
+          y := DTop + h;
+          while y < DBottom - h do begin
+            CopyMasterRect(Rect(DLeft, y, DLeft + minw + 1, y + h + 1), Rect(SLeft + dw, STop + h, SLeft + dw + minw, STop + h2), Bmp, CI, MaskData);
+            inc(y, h);
+          end;
+          if y < DBottom - h then
+            CopyMasterRect(Rect(DLeft, y, DLeft + minw, DBottom - h), Rect(SLeft + dw, STop + h, SLeft + dw + minw, STop + dh - h), Bmp, CI, MaskData);
+          // top - middle
+          x := DLeft + w;
+          while x < DRight - w2 do begin
+            CopyMasterRect(Rect(x, DTop, x + w, DTop + minh), Rect(SLeft + dw + w, STop, SLeft + dw + w2, STop + minh), Bmp, CI, MaskData);
             inc(x, w);
           end;
-          if x < R.Right - minw then
-            BitBlt(Bmp.Canvas.Handle, x, R.Top, R.Right - minw - x, minh, MasterBitmap.Canvas.Handle, MaskData.R.Left + dw + w, MaskData.R.Top, SRCCOPY);
-        end
-        else
-          StretchBlt(Bmp.Canvas.Handle, x, R.Top, R.Right - minw - x, minh, MasterBitmap.Canvas.Handle, MaskData.R.Left + dw + w, MaskData.R.Top, w, minh, SRCCOPY);
-
-        // left - bottom
-        CopyTransRect(Bmp, MasterBitmap, R.Left, R.Bottom - minhp, Rect(MaskData.R.Left + dw, MaskData.R.Bottom - minhp, MaskData.R.Left + dw + minw - 1,
-                      MaskData.R.Bottom - 1), clFuchsia, CI, True);
-        // bottom - middle
-        x := R.Left + minw;
-        if MaskData.DrawMode and BDM_STRETCH = 0 then begin
-          while x < R.Right - w - minw do begin
-            BitBlt(Bmp.Canvas.Handle, x, R.Bottom - minh, w, minh, MasterBitmap.Canvas.Handle, MaskData.R.Left + dw + w, MaskData.R.Bottom - minh, SRCCOPY);
+          if x < DRight - w then
+            CopyMasterRect(Rect(x, DTop, DRight - w, DTop + minh), Rect(SLeft + dw + w, STop, SLeft + dw + w2, STop + minh), Bmp, CI, MaskData);
+          // left - bottom
+          CopyMasterRect(Rect(DLeft, DBottom - minhp, DLeft + minw, DBottom), Rect(SLeft + dw, STop + dh - minhp, SLeft + dw + minw, STop + dh), Bmp, CI, MaskData);
+          // bottom - middle
+          x := DLeft + w;
+          while x < DRight - w2 do begin
+            CopyMasterRect(Rect(x, DBottom - minhp, x + w, DBottom), Rect(SLeft + dw + w, STop + dh - minhp, SLeft + dw + w2, STop + dh), Bmp, CI, MaskData);
             inc(x, w);
           end;
-          if x < R.Right - minw then
-            BitBlt(Bmp.Canvas.Handle, x, R.Bottom - minh, R.Right - minw - x, minh, MasterBitmap.Canvas.Handle, MaskData.R.Left + dw + w, MaskData.R.Bottom - minh, SRCCOPY);
-        end
-        else
-          StretchBlt(Bmp.Canvas.Handle, x, R.Bottom - minh, R.Right - minw - x, minh, MasterBitmap.Canvas.Handle, MaskData.R.Left + dw + w, MaskData.R.Bottom - minh, w, minh, SRCCOPY);
-        // right - bottom
-        CopyTransRect(Bmp, MasterBitmap, R.Right - minwp, R.Bottom - minhp,
-                      Rect(MaskData.R.Left + dw + 3 * w - minwp, MaskData.R.Bottom - minhp, MaskData.R.Left + dw + 3 * w - 1, MaskData.R.Bottom - 1), clFuchsia, CI, True);
-        // right - top
-        CopyTransRect(Bmp, MasterBitmap, R.Right - minwp, R.Top,
-                      Rect(MaskData.R.Left + dw + 3 * w - minwp, MaskData.R.Top, MaskData.R.Left + dw + 3 * w - 1, MaskData.R.Top + minh - 1), clFuchsia, CI, True);
-        // right - middle
-        y := R.Top + h;
-        while y < R.Bottom - h do begin
-          BitBlt(Bmp.Canvas.Handle, R.Right - minwp, y, minwp, h, MasterBitmap.Canvas.Handle, MaskData.R.Left + dw + 3 * w - minwp, MaskData.R.Top + h, SRCCOPY);
-          inc(y, h);
-        end;
-        if y < R.Bottom - h then
-          BitBlt(Bmp.Canvas.Handle, R.Right - minwp, y, minwp, R.Bottom - h - y, MasterBitmap.Canvas.Handle, MaskData.R.Left + dw + 3 * w - minwp, MaskData.R.Top + h, SRCCOPY);
-
-        // Fill
-        if (MaskData.DrawMode and BDM_FILL = BDM_FILL) then begin
-          y := R.Top + h;
-          while y < R.Bottom - 2 * h do begin
-            x := R.Left + w;
-            while x < R.Right - 2 * w do begin
-              BitBlt(Bmp.Canvas.Handle, x, y, w, h, MasterBitmap.Canvas.Handle, MaskData.R.Left + dw + w, MaskData.R.Top + h, SRCCOPY);
-              inc(x, w);
-            end;
-            if x < R.Right - w then
-              BitBlt(Bmp.Canvas.Handle, x, y, R.Right - w - x,  R.Bottom - h - y, MasterBitmap.Canvas.Handle, MaskData.R.Left + dw + w, MaskData.R.Top + h, SRCCOPY);
-
+          if x < DRight - w then
+            CopyMasterRect(Rect(x, DBottom - minhp, DRight - w, DBottom), Rect(SLeft + dw + w, STop + dh - minhp, SLeft + dw + w2, STop + dh), Bmp, CI, MaskData);
+          // right - bottom
+          CopyMasterRect(Rect(DRight - minwp, DBottom - minhp, DRight, DBottom), Rect(SLeft + dw + w3 - minwp, STop + dh - minhp, SLeft + dw + w3, STop + dh), Bmp, CI, MaskData);
+          // right - top
+          CopyMasterRect(Rect(DRight - minwp, DTop, DRight, DTop + minh), Rect(SLeft + dw + w3 - minwp, STop, SLeft + dw + w3, STop + minh), Bmp, CI, MaskData);
+          // right - middle
+          y := DTop + h;
+          while y < DBottom - h do begin
+            CopyMasterRect(Rect(DRight - minwp, y, DRight, y + h), Rect(SLeft + dw + w3 - minwp, STop + h, SLeft + dw + w3, STop + h2), Bmp, CI, MaskData);
             inc(y, h);
           end;
-          x := R.Left + w;
-          if y < R.Bottom - h then begin
-            while x < R.Right - 2 * w do begin
-              BitBlt(Bmp.Canvas.Handle, x, y, w,  R.Bottom - h - y, MasterBitmap.Canvas.Handle, MaskData.R.Left + dw + w, MaskData.R.Top + h, SRCCOPY);
-              inc(x, w);
+          if y < DBottom - h then
+            CopyMasterRect(Rect(DRight - minwp, y, DRight, DBottom - h), Rect(SLeft + dw + w3 - minwp, STop + h, SLeft + dw + w3, STop + h2), Bmp, CI, MaskData);
+          // Fill
+          if DrawMode and BDM_FILL <> 0 then begin
+            y := DTop + h;
+            while y < DBottom - h do begin
+              x := DLeft + w;
+              while x < DRight - w2 do begin
+                CopyMasterRect(Rect(x, y, x + w, y + h), Rect(SLeft + dw + w, STop + h, SLeft + dw + w2, STop + h2), Bmp, EmptyCI, MaskData);
+                inc(x, w);
+              end;
+              if x < DRight - w then
+                CopyMasterRect(Rect(x, y, DRight - w, y + h), Rect(SLeft + dw + w, STop + h, SLeft + dw + w2, STop + h2), Bmp, EmptyCI, MaskData);
+              inc(y, h);
             end;
-            if x < R.Right - w then
-              BitBlt(Bmp.Canvas.Handle, x, y, R.Right - w - x, R.Bottom - h - y, MasterBitmap.Canvas.Handle, MaskData.R.Left + dw + w, MaskData.R.Top + h, SRCCOPY);
+            x := DLeft + w;
+            if y < DBottom - h then begin
+              while x < DRight - w2 do begin
+                CopyMasterRect(Rect(x, y, x + w, DBottom - h), Rect(SLeft + dw + w, STop + h, SLeft + dw + w2, STop + h2), Bmp, EmptyCI, MaskData);
+                inc(x, w);
+              end;
+              if x < DRight - w then
+                CopyMasterRect(Rect(x, y, DRight - w, DBottom - h), Rect(R.Left + dw + w, R.Top + h, R.Left + dw + w2, R.Top + h2), Bmp, EmptyCI, MaskData);
+            end;
           end;
         end;
-      end
-      else begin
-        CopyMasterRect(Rect(R.Left, R.Top, R.Left + minw + 1, R.Top + minh + 1), Rect(MaskData.R.Left + dw, MaskData.R.Top, MaskData.R.Left + dw + minw, MaskData.R.Top + minh), Bmp, ci, MaskData);
-        // left - middle
-        y := R.Top + h;
-        while y < R.Bottom - h do begin
-          CopyMasterRect(Rect(R.Left, y, R.Left + minw + 1, y + h + 1), Rect(MaskData.R.Left + dw, MaskData.R.Top + h, MaskData.R.Left + dw + minw, MaskData.R.Top + 2 * h), Bmp, CI, MaskData);
-          inc(y, h);
-        end;
-        if y < R.Bottom - h then
-          CopyMasterRect(Rect(R.Left, y, R.Left + minw, R.Bottom - h), Rect(MaskData.R.Left + dw, MaskData.R.Top + h, MaskData.R.Left + dw + minw, MaskData.R.Top + dh - h), Bmp, CI, MaskData);
-        // top - middle
-        x := R.Left + w;
-        while x < R.Right - 2 * w do begin
-          CopyMasterRect(Rect(x, R.Top, x + w, R.Top + minh), Rect(MaskData.R.Left + dw + w, MaskData.R.Top, MaskData.R.Left + dw + 2 * w, MaskData.R.Top + minh), Bmp, CI, MaskData);
-          inc(x, w);
-        end;
-        if x < R.Right - w then
-          CopyMasterRect(Rect(x, R.Top, R.Right - w, R.Top + minh), Rect(MaskData.R.Left + dw + w, MaskData.R.Top, MaskData.R.Left + dw + 2 * w, MaskData.R.Top + minh), Bmp, CI, MaskData);
-        // left - bottom
-        CopyMasterRect(Rect(R.Left, R.Bottom - minhp, R.Left + minw, R.Bottom), Rect(MaskData.R.Left + dw, MaskData.R.Top + dh - minhp, MaskData.R.Left + dw + minw, MaskData.R.Top + dh), Bmp, CI, MaskData);
-        // bottom - middle
-        x := R.Left + w;
-        while x < R.Right - 2 * w do begin
-          CopyMasterRect(Rect(x, R.Bottom - minhp, x + w, R.Bottom), Rect(MaskData.R.Left + dw + w, MaskData.R.Top + dh - minhp, MaskData.R.Left + dw + 2 * w, MaskData.R.Top + dh), Bmp, CI, MaskData);
-          inc(x, w);
-        end;
-        if x < R.Right - w then
-          CopyMasterRect(Rect(x, R.Bottom - minhp, R.Right - w, R.Bottom), Rect(MaskData.R.Left + dw + w, MaskData.R.Top + dh - minhp, MaskData.R.Left + dw + 2 * w, MaskData.R.Top + dh), Bmp, CI, MaskData);
-        // right - bottom
-        CopyMasterRect(Rect(R.Right - minwp, R.Bottom - minhp, R.Right, R.Bottom), Rect(MaskData.R.Left + dw + 3 * w - minwp, MaskData.R.Top + dh - minhp, MaskData.R.Left + dw + 3 * w, MaskData.R.Top + dh), Bmp, CI, MaskData);
-        // right - top
-        CopyMasterRect(Rect(R.Right - minwp, R.Top, R.Right, R.Top + minh), Rect(MaskData.R.Left + dw + 3 * w - minwp, MaskData.R.Top, MaskData.R.Left + dw + 3 * w, MaskData.R.Top + minh), Bmp, CI, MaskData);
-        // right - middle
-        y := R.Top + h;
-        while y < R.Bottom - h do begin
-          CopyMasterRect(Rect(R.Right - minwp, y, R.Right, y + h), Rect(MaskData.R.Left + dw + 3 * w - minwp, MaskData.R.Top + h, MaskData.R.Left + dw + 3 * w, MaskData.R.Top + 2 * h), Bmp, CI, MaskData);
-          inc(y, h);
-        end;
-        if y < R.Bottom - h then
-          CopyMasterRect(Rect(R.Right - minwp, y, R.Right, R.Bottom - h), Rect(MaskData.R.Left + dw + 3 * w - minwp, MaskData.R.Top + h, MaskData.R.Left + dw + 3 * w, MaskData.R.Top + 2 * h), Bmp, CI, MaskData);
-        // Fill
-        if (MaskData.DrawMode and BDM_FILL = BDM_FILL) then begin
-          y := R.Top + h;
-          while y < R.Bottom - h do begin
-            x := R.Left + w;
-            while x < R.Right - 2 * w do begin
-              CopyMasterRect(Rect(x, y, x + w, y + h), Rect(MaskData.R.Left + dw + w, MaskData.R.Top + h, MaskData.R.Left + dw + 2 * w, MaskData.R.Top + 2 * h), Bmp, EmptyCI, MaskData);
-              inc(x, w);
-            end;
-            if x < R.Right - w then
-              CopyMasterRect(Rect(x, y, R.Right - w, y + h), Rect(MaskData.R.Left + dw + w, MaskData.R.Top + h, MaskData.R.Left + dw + 2 * w, MaskData.R.Top + 2 * h), Bmp, EmptyCI, MaskData);
-            inc(y, h);
-          end;
-          x := R.Left + w;
-          if y < R.Bottom - h then begin
-            while x < R.Right - 2 * w do begin
-              CopyMasterRect(Rect(x, y, x + w, R.Bottom - h), Rect(MaskData.R.Left + dw + w, MaskData.R.Top + h, MaskData.R.Left + dw + 2 * w, MaskData.R.Top + 2 * h), Bmp, EmptyCI, MaskData);
-              inc(x, w);
-            end;
-            if x < R.Right - w then
-              CopyMasterRect(Rect(x, y, R.Right - w, R.Bottom - h), Rect(MaskData.R.Left + dw + w, MaskData.R.Top + h, MaskData.R.Left + dw + 2 * w, MaskData.R.Top + 2 * h), Bmp, EmptyCI, MaskData);
-          end;
-        end;
-      end;
     end;
 end;
 
 
-procedure DrawSkinRect(Bmp: TBitmap; const R: TRect; const ci: TCacheInfo; const MaskData: TsMaskData; const State: integer; const UpdateCorners: boolean);
+procedure DrawSkinRect(aBmp: TBitmap; const aRect: TRect; const ci: TCacheInfo; const MaskData: TsMaskData; const State: integer; const UpdateCorners: boolean);
 var
   BmpSrc: TBitmap;
   Stretch: boolean;
-  x, y, w, h, dw, dh, dhm: integer;
-  NewState, wl, wt, wr, wb: integer;
+  x, y, w, h, dw, dh, dhm, NewState, lWidth, tWidth, rWidth, bWidth: integer;
 begin
-  if (State = 0) and (MaskData.DrawMode and BDM_ACTIVEONLY = BDM_ACTIVEONLY) then
-    Exit;
+  if (State <> 0) or (MaskData.DrawMode and BDM_ACTIVEONLY = 0) then begin
+    if (WidthOf(aRect) > 1) and (HeightOf(aRect) > 1) and (MaskData.Manager <> nil) then begin
+      lWidth := MaskData.WL; //<---
+      tWidth := MaskData.WT;
+      rWidth := MaskData.WR;
+      bWidth := MaskData.WB;
+      if lWidth + rWidth > WidthOf(aRect) then begin
+        y := lWidth + rWidth - WidthOf(aRect);
+        x := y div 2;
+        dec(lWidth, x);
+        dec(rWidth, x);
+        if y mod 2 > 0 then
+          dec(rWidth);
 
-  if (WidthOf(R) < 2) or (HeightOf(R) < 2) or (MaskData.Manager = nil) then
-    Exit;
+        if lWidth < 0 then
+          lWidth := 0;
 
-  wl := MaskData.WL;
-  wt := MaskData.WT;
-  wr := MaskData.WR;
-  wb := MaskData.WB;
-  if wl + wr > WidthOf(R) then begin
-    y := ((wl + wr) - WidthOf(R));
-    x := y div 2;
-    dec(wl, x);
-    dec(wr, x);
-    if y mod 2 > 0 then
-      dec(wr);
+        if rWidth < 0 then
+          rWidth := 0;
+      end;
+      if tWidth + bWidth > HeightOf(aRect) then begin
+        y := tWidth + bWidth - HeightOf(aRect);
+        x := y div 2;
+        dec(tWidth, x);
+        dec(bWidth, x);
+        if y mod 2 > 0 then
+          dec(bWidth);
 
-    if wl < 0 then
-      wl := 0;
+        if tWidth < 0 then
+          tWidth := 0;
 
-    if wr < 0 then
-      wr := 0;
-  end;
-  if wt + wb > HeightOf(R) then begin
-    y := ((wt + wb) - HeightOf(R));
-    x := y div 2;
-    dec(wt, x);
-    dec(wb, x);
-    if y mod 2 > 0 then
-      dec(wb);
+        if bWidth < 0 then
+          bWidth := 0;
+      end;
+      if State >= MaskData.ImageCount then
+        NewState := MaskData.ImageCount - 1
+      else
+        NewState := State;
 
-    if wt < 0 then
-      wt := 0;
+      dw := MaskData.Width;
+      dh := MaskData.Height;
+      if MaskData.MaskType = 0 then
+        dhm := 0
+      else
+        dhm := dh;
 
-    if wb < 0 then
-      wb := 0;
-  end;
-  if State >= MaskData.ImageCount then
-    NewState := MaskData.ImageCount - 1
-  else
-    NewState := State;
-
-  dw := WidthOfImage(MaskData);  // Width of mask
-  dh := HeightOfImage(MaskData); // Height of mask
-  if MaskData.MaskType = 0 then
-    dhm := 0
-  else
-    dhm := dh;
-
-  if MaskData.DrawMode and BDM_STRETCH = BDM_STRETCH then begin
-    Stretch := True;
-    SetStretchBltMode(Bmp.Canvas.Handle, COLORONCOLOR);
-  end
-  else
-    Stretch := False;
-
-  w := dw - wl - wr;
-  if w < 0 then
-    Exit;              // Width of middle piece must be > 0
-
-  h := dh - wt - wb;
-  if h < 0 then
-    Exit;              // Height of middle piece must be > 0
-
-  dw := dw * NewState; // Offset of mask
-
-  if MaskData.Bmp <> nil then
-    BmpSrc := MaskData.Bmp
-  else
-    BmpSrc := TsSkinManager(MaskData.Manager).MasterBitmap;
-
-  if MaskData.MaskType = 0 then begin // Copy without mask
-    // left - top
-    CopyTransRect(Bmp, BmpSrc, R.Left, R.Top, Rect(MaskData.R.Left + dw, MaskData.R.Top, MaskData.R.Left + dw + wl - 1, MaskData.R.Top + wt - 1), clFuchsia, CI, UpdateCorners and (MaskData.CornerType > 0));
-    y := R.Top + wt;
-    // left - middle
-    if not Stretch then begin
-      if h > 0 then
-        while y < R.Bottom - h - wb do begin
-          BitBlt(Bmp.Canvas.Handle, R.Left, y, wl, h, BmpSrc.Canvas.Handle, MaskData.R.Left + dw, MaskData.R.Top + wt, SRCCOPY);
-          inc(y, h);
-        end;
-
-      if y < R.Bottom - wb then
-        BitBlt(Bmp.Canvas.Handle, R.Left, y, wl, R.Bottom - wb - y, BmpSrc.Canvas.Handle, MaskData.R.Left + dw, MaskData.R.Top + wt, SRCCOPY);
-    end
-    else
-      StretchBlt(Bmp.Canvas.Handle, R.Left, y, wl, R.Bottom - wb - y, BmpSrc.Canvas.Handle, MaskData.R.Left + dw, MaskData.R.Top + wt, wl, h, SRCCOPY);
-    // top - middle
-    x := R.Left + wl;
-    if not Stretch then begin
-      if w > 0 then
-        while x < R.Right - w - wr do begin
-          BitBlt(Bmp.Canvas.Handle, x, R.Top, w, wt, BmpSrc.Canvas.Handle, MaskData.R.Left + dw + wl, MaskData.R.Top, SRCCOPY);
-          inc(x, w);
-        end;
-
-      if x < R.Right - wr then
-        BitBlt(Bmp.Canvas.Handle, x, R.Top, R.Right - wr - x, wt, BmpSrc.Canvas.Handle, MaskData.R.Left + dw + wl, MaskData.R.Top, SRCCOPY);
-    end
-    else
-      StretchBlt(Bmp.Canvas.Handle, x, R.Top, R.Right - wr - x, wt, BmpSrc.Canvas.Handle, MaskData.R.Left + dw + wl, MaskData.R.Top, w, wt, SRCCOPY);
-
-    // left - bottom
-    CopyTransRect(Bmp, BmpSrc, R.Left, R.Bottom - wb, Rect(MaskData.R.Left + dw, MaskData.R.Bottom - wb, MaskData.R.Left + dw + wl - 1, MaskData.R.Bottom - 1), clFuchsia, CI, UpdateCorners and (MaskData.CornerType > 0));
-    // bottom - middle
-    x := R.Left + wl;
-    if not Stretch then begin
-      if w > 0 then
-        while x < R.Right - w - wr do begin
-          BitBlt(Bmp.Canvas.Handle, x, R.Bottom - wb, w, wb, BmpSrc.Canvas.Handle, MaskData.R.Left + dw + wl, MaskData.R.Bottom - wb, SRCCOPY);
-          inc(x, w);
-        end;
-
-      if x < R.Right - wr then
-        BitBlt(Bmp.Canvas.Handle, x, R.Bottom - wb, R.Right - wr - x, wb, BmpSrc.Canvas.Handle, MaskData.R.Left + dw + wl, MaskData.R.Bottom - wb, SRCCOPY);
-    end
-    else
-      StretchBlt(Bmp.Canvas.Handle, x, R.Bottom - wb, R.Right - wr - x, wb, BmpSrc.Canvas.Handle, MaskData.R.Left + dw + wl, MaskData.R.Bottom - wb, w, wb, SRCCOPY);
-
-    // right - bottom
-    CopyTransRect(Bmp, BmpSrc, R.Right - wr, R.Bottom - wb, Rect(MaskData.R.Left + dw + w + wl, MaskData.R.Bottom - wb, MaskData.R.Left + dw + w + wl + wr - 1, MaskData.R.Bottom - 1), clFuchsia, CI, UpdateCorners and (MaskData.CornerType > 0));
-    // right - top
-    CopyTransRect(Bmp, BmpSrc, R.Right - wr, R.Top, Rect(MaskData.R.Left + dw + w + wl, MaskData.R.Top, MaskData.R.Left + dw + w + wl + wr - 1, MaskData.R.Top + wt - 1), clFuchsia, CI, UpdateCorners and (MaskData.CornerType > 0));
-    y := R.Top + wt;
-    // right - middle
-    if not Stretch then begin
-      if h > 0 then
-        while y < R.Bottom - h - wb do begin
-          BitBlt(Bmp.Canvas.Handle, R.Right - wr, y, wr, h, BmpSrc.Canvas.Handle, MaskData.R.Left + dw + wl + w, MaskData.R.Top + wt, SRCCOPY);
-          inc(y, h);
-        end;
-
-      if y < R.Bottom - wb then
-        BitBlt(Bmp.Canvas.Handle, R.Right - wr, y, wr, R.Bottom - wb - y, BmpSrc.Canvas.Handle, MaskData.R.Left + dw + w + wl, MaskData.R.Top + wt, SRCCOPY);
-    end
-    else
-      StretchBlt(Bmp.Canvas.Handle, R.Right - wr, y, wr, R.Bottom - wb - y, BmpSrc.Canvas.Handle, MaskData.R.Left + dw + wl + w, MaskData.R.Top + wt, wr, h, SRCCOPY);
-    // Fill
-    if (MaskData.DrawMode and BDM_FILL = BDM_FILL) then begin
-      if not Stretch then begin
-        y := R.Top + wt;
-        if h > 0 then
-          while y < R.Bottom - h - wb do begin
-            x := R.Left + wl;
-            if w > 0 then
-              while x < R.Right - w - wr do begin
-                BitBlt(Bmp.Canvas.Handle, x, y, w, h, BmpSrc.Canvas.Handle, MaskData.R.Left + dw + wl, MaskData.R.Top + wt, SRCCOPY);
-                inc(x, w);
-              end;
-
-            if x < R.Right - wr then
-              BitBlt(Bmp.Canvas.Handle, x, y, R.Right - wr - x,  R.Bottom - wb - y, BmpSrc.Canvas.Handle, MaskData.R.Left + dw + wl, MaskData.R.Top + wt, SRCCOPY);
-
-            inc(y, h);
-          end;
-
-        x := R.Left + wl;
-        if y < R.Bottom - wb then begin
-          if w > 0 then
-            while x < R.Right - w - wr do begin
-              BitBlt(Bmp.Canvas.Handle, x, y, w, R.Bottom - wb - y, BmpSrc.Canvas.Handle, MaskData.R.Left + dw + wl, MaskData.R.Top + wt, SRCCOPY);
-              inc(x, w);
-            end;
-
-          if x < R.Right - wr then
-            BitBlt(Bmp.Canvas.Handle, x, y, R.Right - wr - x, R.Bottom - wb - y, BmpSrc.Canvas.Handle, MaskData.R.Left + dw + wl, MaskData.R.Top + wt, SRCCOPY);
-        end;
+      if MaskData.DrawMode and BDM_STRETCH <> 0 then begin
+        Stretch := True;
+        SetStretchBltMode(aBmp.Canvas.Handle, COLORONCOLOR);
       end
-      else begin
-        y := R.Top + wt;
-        x := R.Left + wl;
-        StretchBlt(Bmp.Canvas.Handle, x, y, R.Right - wr - x, R.Bottom - wb - y, BmpSrc.Canvas.Handle, MaskData.R.Left + dw + wl, MaskData.R.Top + wt, w, h, SRCCOPY);
+      else
+        Stretch := False;
+
+      w := dw - lWidth - rWidth;
+      if w >= 0 then begin // Width of middle piece must be > 0
+        h := dh - tWidth - bWidth;
+        if h >= 0 then begin // Height of middle piece must be > 0
+          dw := dw * NewState; // Offset of mask
+          if MaskData.Bmp <> nil then
+            BmpSrc := MaskData.Bmp
+          else
+            BmpSrc := TsSkinManager(MaskData.Manager).MasterBitmap;
+
+          with aRect, MaskData, TSrcRect(R) do
+            if MaskType = 0 then begin // Copy without mask
+              // left - top
+              CopyTransRect(aBmp, BmpSrc, Left, Top, Rect(SLeft + dw, STop, SLeft + dw + lWidth - 1, STop + tWidth - 1), clFuchsia, CI, UpdateCorners and (CornerType > 0));
+              y := Top + tWidth;
+              // left - middle
+              if not Stretch then begin
+                if h > 0 then
+                  while y < Bottom - h - bWidth do begin
+                    BitBlt(aBmp.Canvas.Handle, Left, y, lWidth, h, BmpSrc.Canvas.Handle, SLeft + dw, STop + tWidth, SRCCOPY);
+                    inc(y, h);
+                  end;
+
+                if y < Bottom - bWidth then
+                  BitBlt(aBmp.Canvas.Handle, Left, y, lWidth, Bottom - bWidth - y, BmpSrc.Canvas.Handle, SLeft + dw, STop + tWidth, SRCCOPY);
+              end
+              else
+                StretchBlt(aBmp.Canvas.Handle, Left, y, lWidth, Bottom - bWidth - y, BmpSrc.Canvas.Handle, SLeft + dw, STop + tWidth, lWidth, h, SRCCOPY);
+              // top - middle
+              x := Left + lWidth;
+              if not Stretch then begin
+                if w > 0 then
+                  while x < Right - w - rWidth do begin
+                    BitBlt(aBmp.Canvas.Handle, x, Top, w, tWidth, BmpSrc.Canvas.Handle, SLeft + dw + lWidth, STop, SRCCOPY);
+                    inc(x, w);
+                  end;
+
+                if x < Right - rWidth then
+                  BitBlt(aBmp.Canvas.Handle, x, Top, Right - rWidth - x, tWidth, BmpSrc.Canvas.Handle, SLeft + dw + lWidth, STop, SRCCOPY);
+              end
+              else
+                StretchBlt(aBmp.Canvas.Handle, x, Top, Right - rWidth - x, tWidth, BmpSrc.Canvas.Handle, SLeft + dw + lWidth, STop, w, tWidth, SRCCOPY);
+
+              // left - bottom
+              CopyTransRect(aBmp, BmpSrc, Left, Bottom - bWidth, Rect(SLeft + dw, SBottom - bWidth, SLeft + dw + lWidth - 1, SBottom - 1), clFuchsia, CI, UpdateCorners and (CornerType > 0));
+              // bottom - middle
+              x := Left + lWidth;
+              if not Stretch then begin
+                if w > 0 then
+                  while x < Right - w - rWidth do begin
+                    BitBlt(aBmp.Canvas.Handle, x, Bottom - bWidth, w, bWidth, BmpSrc.Canvas.Handle, SLeft + dw + lWidth, SBottom - bWidth, SRCCOPY);
+                    inc(x, w);
+                  end;
+
+                if x < Right - rWidth then
+                  BitBlt(aBmp.Canvas.Handle, x, Bottom - bWidth, Right - rWidth - x, bWidth, BmpSrc.Canvas.Handle, SLeft + dw + lWidth, SBottom - bWidth, SRCCOPY);
+              end
+              else
+                StretchBlt(aBmp.Canvas.Handle, x, Bottom - bWidth, Right - rWidth - x, bWidth, BmpSrc.Canvas.Handle, SLeft + dw + lWidth, SBottom - bWidth, w, bWidth, SRCCOPY);
+
+              // right - bottom
+              CopyTransRect(aBmp, BmpSrc, Right - rWidth, Bottom - bWidth, Rect(SLeft + dw + w + lWidth, SBottom - bWidth, SLeft + dw + w + lWidth + rWidth - 1, SBottom - 1), clFuchsia, CI, UpdateCorners and (CornerType > 0));
+              // right - top
+              CopyTransRect(aBmp, BmpSrc, Right - rWidth, Top, Rect(SLeft + dw + w + lWidth, STop, SLeft + dw + w + lWidth + rWidth - 1, STop + tWidth - 1), clFuchsia, CI, UpdateCorners and (CornerType > 0));
+              y := Top + tWidth;
+              // right - middle
+              if not Stretch then begin
+                if h > 0 then
+                  while y < Bottom - h - bWidth do begin
+                    BitBlt(aBmp.Canvas.Handle, Right - rWidth, y, rWidth, h, BmpSrc.Canvas.Handle, SLeft + dw + lWidth + w, STop + tWidth, SRCCOPY);
+                    inc(y, h);
+                  end;
+
+                if y < Bottom - bWidth then
+                  BitBlt(aBmp.Canvas.Handle, Right - rWidth, y, rWidth, Bottom - bWidth - y, BmpSrc.Canvas.Handle, SLeft + dw + w + lWidth, STop + tWidth, SRCCOPY);
+              end
+              else
+                StretchBlt(aBmp.Canvas.Handle, Right - rWidth, y, rWidth, Bottom - bWidth - y, BmpSrc.Canvas.Handle, SLeft + dw + lWidth + w, STop + tWidth, rWidth, h, SRCCOPY);
+              // Fill
+              if DrawMode and BDM_FILL <> 0 then begin
+                if not Stretch then begin
+                  y := Top + tWidth;
+                  if h > 0 then
+                    while y < Bottom - h - bWidth do begin
+                      x := Left + lWidth;
+                      if w > 0 then
+                        while x < Right - w - rWidth do begin
+                          BitBlt(aBmp.Canvas.Handle, x, y, w, h, BmpSrc.Canvas.Handle, SLeft + dw + lWidth, STop + tWidth, SRCCOPY);
+                          inc(x, w);
+                        end;
+
+                      if x < Right - rWidth then
+                        BitBlt(aBmp.Canvas.Handle, x, y, Right - rWidth - x,  Bottom - bWidth - y, BmpSrc.Canvas.Handle, SLeft + dw + lWidth, STop + tWidth, SRCCOPY);
+
+                      inc(y, h);
+                    end;
+
+                  x := Left + lWidth;
+                  if y < Bottom - bWidth then begin
+                    if w > 0 then
+                      while x < Right - w - rWidth do begin
+                        BitBlt(aBmp.Canvas.Handle, x, y, w, Bottom - bWidth - y, BmpSrc.Canvas.Handle, SLeft + dw + lWidth, STop + tWidth, SRCCOPY);
+                        inc(x, w);
+                      end;
+
+                    if x < Right - rWidth then
+                      BitBlt(aBmp.Canvas.Handle, x, y, Right - rWidth - x, Bottom - bWidth - y, BmpSrc.Canvas.Handle, SLeft + dw + lWidth, STop + tWidth, SRCCOPY);
+                  end;
+                end
+                else begin
+                  y := Top + tWidth;
+                  x := Left + lWidth;
+                  StretchBlt(aBmp.Canvas.Handle, x, y, Right - rWidth - x, Bottom - bWidth - y, BmpSrc.Canvas.Handle, SLeft + dw + lWidth, STop + tWidth, w, h, SRCCOPY);
+                end;
+              end;
+            end
+            else begin
+              // left - top
+              CopyByMask(Rect(Left, Top, Left + lWidth, Top + tWidth), Rect(SLeft + dw, STop, SLeft + dw + lWidth, STop + tWidth), aBmp, BmpSrc, CI, UpdateCorners and (CornerType > 0), MaskData);
+              y := Top + tWidth;
+              // left - middle
+              if not Stretch then begin
+                while y < Bottom - h - bWidth do begin
+                  CopyByMask(Rect(Left, y, Left + lWidth, y + h), Rect(SLeft + dw, STop + tWidth, SLeft + dw + lWidth, STop + h + tWidth), aBmp, BmpSrc, EmptyCI, False, MaskData);
+                  inc(y, h);
+                end;
+                if y < Bottom - bWidth then
+                  CopyByMask(Rect(Left, y, Left + lWidth, Bottom - bWidth), Rect(SLeft + dw, STop + tWidth, SLeft + dw + lWidth, STop + tWidth + h), aBmp, BmpSrc, EmptyCI, False, MaskData);
+              end
+              else
+                StretchBltMask(Left, y, lWidth, Bottom - bWidth - y, SLeft + dw, STop + tWidth, lWidth, h, aBmp, BmpSrc, dhm);
+
+              // top - middle
+              x := Left + lWidth;
+              if not Stretch then begin
+                while x < Right - w - rWidth do begin
+                  CopyByMask(Rect(x, Top, x + w, Top + tWidth), Rect(SLeft + dw + lWidth, STop, SLeft + dw + w + lWidth, STop + tWidth), aBmp, BmpSrc, EmptyCI, False, MaskData);
+                  inc(x, w);
+                end;
+                if x < Right - rWidth then
+                  CopyByMask(Rect(x, Top, Right - rWidth, Top + tWidth), Rect(SLeft + dw + lWidth, STop, SLeft + dw + w + lWidth, STop + tWidth), aBmp, BmpSrc, EmptyCI, False, MaskData);
+              end
+              else
+                StretchBltMask(x, Top, Right - rWidth - x, tWidth, SLeft + dw + lWidth, STop, w, tWidth, aBmp, BmpSrc, dhm);
+
+              // left - bottom
+              CopyByMask(Rect(Left, Bottom - bWidth, Left + lWidth, Bottom), Rect(SLeft + dw, STop + dh - bWidth, SLeft + dw + lWidth, STop + dh), aBmp, BmpSrc, CI, UpdateCorners and (CornerType > 0), MaskData);
+              // bottom - middle
+              x := Left + lWidth;
+              if not Stretch then begin
+                while x < Right - w - rWidth do begin
+                  CopyByMask(Rect(x, Bottom - bWidth, x + w, Bottom), Rect(SLeft + dw + lWidth, STop + dh - bWidth, SLeft + dw + w + lWidth, STop + dh), aBmp, bmpSrc, EmptyCI, False, MaskData);
+                  inc(x, w);
+                end;
+                if x < Right - rWidth then
+                  CopyByMask(Rect(x, Bottom - bWidth, Right - rWidth, Bottom), Rect(SLeft + dw + lWidth, STop + dh - bWidth, SLeft + dw + w + lWidth, STop + dh), aBmp, BmpSrc, EmptyCI, False, MaskData);
+              end
+              else
+                StretchBltMask(x, Bottom - bWidth, Right - rWidth - x, bWidth, SLeft + dw + lWidth, STop + dh - bWidth, w, bWidth, aBmp, BmpSrc, dhm);
+
+              // right - bottom
+              CopyByMask(Rect(Right - rWidth, Bottom - bWidth, Right, Bottom), Rect(SLeft + dw + w + lWidth, STop + dh - bWidth, SLeft + dw + w + lWidth + rWidth, STop + dh), aBmp, BmpSrc, CI, UpdateCorners and (CornerType > 0), MaskData);
+              // right - top
+              CopyByMask(Rect(Right - rWidth, Top, Right, Top + tWidth), Rect(SLeft + dw + w + lWidth, STop, SLeft + dw + w + lWidth + rWidth, STop + tWidth), aBmp, BmpSrc, CI, UpdateCorners and (CornerType > 0), MaskData);
+              // right - middle
+              y := Top + tWidth;
+              if not Stretch then begin
+                while y < Bottom - h - bWidth do begin
+                  CopyByMask(Rect(Right - rWidth, y, Right, y + h), Rect(SLeft + dw + w + lWidth, STop + tWidth, SLeft + dw + w + lWidth + rWidth, STop + h + tWidth), aBmp, BmpSrc, EmptyCI, False, MaskData);
+                  inc(y, h);
+                end;
+                if y < Bottom - bWidth then
+                  CopyByMask(Rect(Right - rWidth, y, Right, Bottom - bWidth), Rect(SLeft + dw + w + lWidth, STop + tWidth, SLeft + dw + w + lWidth + rWidth, STop + h + tWidth), aBmp, BmpSrc, EmptyCI, False, MaskData);
+              end
+              else
+                StretchBltMask(Right - rWidth, y, rWidth, Bottom - bWidth - y, SLeft + dw + lWidth + w, STop + tWidth, rWidth, h, aBmp, BmpSrc, dhm);
+
+              // Fill
+              if DrawMode and BDM_FILL <> 0 then
+                if Stretch then begin
+                  y := Top + tWidth;
+                  x := Left + lWidth;
+                  StretchBltMask(x, y, Right - rWidth - x, Bottom - bWidth - y, SLeft + dw + lWidth, STop + tWidth, w, h, aBmp, BmpSrc, dhm, True)
+                end
+                else begin
+                  y := Top + tWidth;
+                  while y < Bottom - h - bWidth do begin
+                    x := Left + lWidth;
+                    while x < Right - w - rWidth do begin
+                      CopyByMask(Rect(x, y, x + w, y + h), Rect(SLeft + dw + lWidth, STop + tWidth, SLeft + dw + w + lWidth, STop + h + tWidth), aBmp, BmpSrc, EmptyCI, False, MaskData);
+                      inc(x, w);
+                    end;
+                    if x < Right - rWidth then
+                      CopyByMask(Rect(x, y, Right - rWidth, y + h), Rect(SLeft + dw + lWidth, STop + tWidth, SLeft + dw + w + lWidth, STop + h + tWidth), aBmp, BmpSrc, EmptyCI, False, MaskData);
+
+                    inc(y, h);
+                  end;
+                  x := Left + lWidth;
+                  if y < Bottom - bWidth then begin
+                    while x < Right - w - rWidth do begin
+                      CopyByMask(Rect(x, y, x + w, Bottom - bWidth), Rect(SLeft + dw + lWidth, STop + tWidth, SLeft + dw + w + lWidth, STop + h + tWidth), aBmp, BmpSrc, EmptyCI, False, MaskData);
+                      inc(x, w);
+                    end;
+                    if x < Right - rWidth then
+                      CopyByMask(Rect(x, y, Right - rWidth, Bottom - bWidth), Rect(SLeft + dw + lWidth, STop + tWidth, SLeft + dw + w + lWidth, STop + h + tWidth), aBmp, BmpSrc, EmptyCI, False, MaskData);
+                  end;
+                end;
+            end;
+          end;
       end;
     end;
-  end
-  else begin
-    // left - top
-    CopyByMask(Rect(R.Left, R.Top, R.Left + wl, R.Top + wt), Rect(MaskData.R.Left + dw, MaskData.R.Top, MaskData.R.Left + dw + wl, MaskData.R.Top + wt), Bmp, BmpSrc, CI, UpdateCorners and (MaskData.CornerType > 0), MaskData);
-    y := R.Top + wt;
-    // left - middle
-    if not Stretch then begin
-      while y < R.Bottom - h - wb do begin
-        CopyByMask(Rect(R.Left, y, R.Left + wl, y + h), Rect(MaskData.R.Left + dw, MaskData.R.Top + wt, MaskData.R.Left + dw + wl, MaskData.R.Top + h + wt), Bmp, BmpSrc, EmptyCI, False, MaskData);
-        inc(y, h);
-      end;
-      if y < R.Bottom - wb then
-        CopyByMask(Rect(R.Left, y, R.Left + wl, R.Bottom - wb), Rect(MaskData.R.Left + dw, MaskData.R.Top + wt, MaskData.R.Left + dw + wl, MaskData.R.Top + wt + h), Bmp, BmpSrc, EmptyCI, False, MaskData);
-    end
-    else
-      StretchBltMask(R.Left, y, wl, R.Bottom - wb - y, MaskData.R.Left + dw, MaskData.R.Top + wt, wl, h, Bmp, BmpSrc, dhm);
-
-    // top - middle
-    x := R.Left + wl;
-    if not Stretch then begin
-      while x < R.Right - w - wr do begin
-        CopyByMask(Rect(x, R.Top, x + w, R.Top + wt), Rect(MaskData.R.Left + dw + wl, MaskData.R.Top, MaskData.R.Left + dw + w + wl, MaskData.R.Top + wt), Bmp, BmpSrc, EmptyCI, False, MaskData);
-        inc(x, w);
-      end;
-      if x < R.Right - wr then
-        CopyByMask(Rect(x, R.Top, R.Right - wr, R.Top + wt), Rect(MaskData.R.Left + dw + wl, MaskData.R.Top, MaskData.R.Left + dw + w + wl, MaskData.R.Top + wt), Bmp, BmpSrc, EmptyCI, False, MaskData);
-    end
-    else
-      StretchBltMask(x, R.Top, R.Right - wr - x, wt, MaskData.R.Left + dw + wl, MaskData.R.Top, w, wt, Bmp, BmpSrc, dhm);
-
-    // left - bottom
-    CopyByMask(Rect(R.Left, R.Bottom - wb, R.Left + wl, R.Bottom), Rect(MaskData.R.Left + dw, MaskData.R.Top + dh - wb, MaskData.R.Left + dw + wl, MaskData.R.Top + dh), Bmp, BmpSrc, CI, UpdateCorners and (MaskData.CornerType > 0), MaskData);
-    // bottom - middle
-    x := R.Left + wl;
-    if not Stretch then begin
-      while x < R.Right - w - wr do begin
-        CopyByMask(Rect(x, R.Bottom - wb, x + w, R.Bottom), Rect(MaskData.R.Left + dw + wl, MaskData.R.Top + dh - wb, MaskData.R.Left + dw + w + wl, MaskData.R.Top + dh), Bmp, bmpSrc, EmptyCI, False, MaskData);
-        inc(x, w);
-      end;
-      if x < R.Right - wr then
-        CopyByMask(Rect(x, R.Bottom - wb, R.Right - wr, R.Bottom), Rect(MaskData.R.Left + dw + wl, MaskData.R.Top + dh - wb, MaskData.R.Left + dw + w + wl, MaskData.R.Top + dh), Bmp, BmpSrc, EmptyCI, False, MaskData);
-    end
-    else
-      StretchBltMask(x, R.Bottom - wb, R.Right - wr - x, wb, MaskData.R.Left + dw + wl, MaskData.R.Top + dh - wb, w, wb, Bmp, BmpSrc, dhm);
-
-    // right - bottom
-    CopyByMask(Rect(R.Right - wr, R.Bottom - wb, R.Right, R.Bottom), Rect(MaskData.R.Left + dw + w + wl, MaskData.R.Top + dh - wb, MaskData.R.Left + dw + w + wl + wr, MaskData.R.Top + dh), Bmp, BmpSrc, CI, UpdateCorners and (MaskData.CornerType > 0), MaskData);
-    // right - top
-    CopyByMask(Rect(R.Right - wr, R.Top, R.Right, R.Top + wt), Rect(MaskData.R.Left + dw + w + wl, MaskData.R.Top, MaskData.R.Left + dw + w + wl + wr, MaskData.R.Top + wt), Bmp, BmpSrc, CI, UpdateCorners and (MaskData.CornerType > 0), MaskData);
-    // right - middle
-    y := R.Top + wt;
-    if not Stretch then begin
-      while y < R.Bottom - h - wb do begin
-        CopyByMask(Rect(R.Right - wr, y, R.Right, y + h), Rect(MaskData.R.Left + dw + w + wl, MaskData.R.Top + wt, MaskData.R.Left + dw + w + wl + wr, MaskData.R.Top + h + wt), Bmp, BmpSrc, EmptyCI, False, MaskData);
-        inc(y, h);
-      end;
-      if y < R.Bottom - wb then
-        CopyByMask(Rect(R.Right - wr, y, R.Right, R.Bottom - wb), Rect(MaskData.R.Left + dw + w + wl, MaskData.R.Top + wt, MaskData.R.Left + dw + w + wl + wr, MaskData.R.Top + h + wt), Bmp, BmpSrc, EmptyCI, False, MaskData);
-    end
-    else
-      StretchBltMask(R.Right - wr, y, wr, R.Bottom - wb - y, MaskData.R.Left + dw + wl + w, MaskData.R.Top + wt, wr, h, Bmp, BmpSrc, dhm);
-
-    // Fill
-    if (MaskData.DrawMode and BDM_FILL = BDM_FILL) then
-      if Stretch then begin
-        y := R.Top + wt;
-        x := R.Left + wl;
-        StretchBltMask(x, y, R.Right - wr - x, R.Bottom - wb - y, MaskData.R.Left + dw + wl, MaskData.R.Top + wt, w, h, Bmp, BmpSrc, dhm, True)
-      end
-      else begin
-        y := R.Top + wt;
-        while y < R.Bottom - h - wb do begin
-          x := R.Left + wl;
-          while x < R.Right - w - wr do begin
-            CopyByMask(Rect(x, y, x + w, y + h), Rect(MaskData.R.Left + dw + wl, MaskData.R.Top + wt, MaskData.R.Left + dw + w + wl, MaskData.R.Top + h + wt), Bmp, BmpSrc, EmptyCI, False, MaskData);
-            inc(x, w);
-          end;
-          if x < R.Right - wr then
-            CopyByMask(Rect(x, y, R.Right - wr, y + h), Rect(MaskData.R.Left + dw + wl, MaskData.R.Top + wt, MaskData.R.Left + dw + w + wl, MaskData.R.Top + h + wt), Bmp, BmpSrc, EmptyCI, False, MaskData);
-
-          inc(y, h);
-        end;
-        x := R.Left + wl;
-        if y < R.Bottom - wb then begin
-          while x < R.Right - w - wr do begin
-            CopyByMask(Rect(x, y, x + w, R.Bottom - wb), Rect(MaskData.R.Left + dw + wl, MaskData.R.Top + wt, MaskData.R.Left + dw + w + wl, MaskData.R.Top + h + wt), Bmp, BmpSrc, EmptyCI, False, MaskData);
-            inc(x, w);
-          end;
-          if x < R.Right - wr then
-            CopyByMask(Rect(x, y, R.Right - wr, R.Bottom - wb), Rect(MaskData.R.Left + dw + wl, MaskData.R.Top + wt, MaskData.R.Left + dw + w + wl, MaskData.R.Top + h + wt), Bmp, BmpSrc, EmptyCI, False, MaskData);
-        end;
-      end;
   end;
 end;
 
 
-procedure CopyMasterRect(R1, R2: TRect; const Bmp: TBitmap; const CI: TCacheInfo; const MaskData: TsMaskData);
+procedure CopyMasterRect(R1, R2: TRect; const aBmp: TBitmap; const CI: TCacheInfo; const MaskData: TsMaskData);
 var
   col_: TsColor_;
-  S0, D0, S, D, M: PRGBAArray;
-  DeltaS, DeltaD, hd2, X, Y, h, w, dx: Integer;
+  S0, D0: Pointer;
+  D: PRGBAArray_D;
+  M: PRGBAArray_M;
+  S: PRGBAArray_S;
+  DeltaS, DeltaD, hd2, PosX, PosY, h, w, dx: Integer;
 begin
   if MaskData.Manager <> nil then
     with TsSkinManager(MaskData.Manager) do begin
       h := Min(HeightOf(R1), HeightOf(R2));
-      h := Min(h, Bmp.Height - R1.Top);
-      h := Min(h, TsSkinManager(MaskData.Manager).MasterBitmap.Height - R2.Top) - 1;
-      if h < 0 then
-        Exit;
-
-      w := Min(WidthOf(R1), WidthOf(R2));
-      w := Min(w, Bmp.Width - R1.Left);
-      w := Min(w, MasterBitmap.Width - R2.Left) - 1;
-      if w < 0 then
-        Exit;
-
-      if R1.Left < R2.Left then begin
-        if (R1.Left < 0) then begin
-          inc(R2.Left, - R1.Left);
-          dec(w, - R1.Left);
-          R1.Left := 0;
-        end;
-      end
-      else
-        if (R2.Left < 0) then begin
-          inc(R1.Left, - R2.Left);
-          dec(w, - R2.Left);
-          R2.Left := 0;
-        end;
-
-      if R1.Top < R2.Top then begin
-        if (R1.Top < 0) then begin
-          inc(R2.Top, - R1.Top);
-          dec(h, - R1.Top);
-          R1.Top := 0;
-        end;
-      end
-      else
-        if (R2.Top < 0) then begin
-          inc(R1.Top, - R2.Top);
-          dec(h, - R2.Top);
-          R2.Top := 0;
-        end;
-
-      hd2 := HeightOf(MaskData.R) div 2;
-      if InitLine(MasterBitmap, Pointer(S0), DeltaS) and InitLine(Bmp, Pointer(D0), DeltaD) then begin
-        col_.C := SwapRedBlue(CI.FillColor);
-        if not CI.Ready then
-          for Y := 0 to h do begin
-            D := Pointer(LongInt(D0) + DeltaD * (R1.Top + Y));
-            S := Pointer(LongInt(S0) + DeltaS * (R2.Top + Y));
-            M := Pointer(LongInt(S0) + DeltaS * (R2.Top + hd2 + Y));
-            for X := 0 to w do begin
-              dx := R2.Left + X;
-              if (S[dx].C <> clFuchsia) then
-                with D[R1.Left + X] do begin
-                  R := ((R - S[dx].R) * M[dx].R + S[dx].R shl 8) shr 8;
-                  G := ((G - S[dx].G) * M[dx].G + S[dx].G shl 8) shr 8;
-                  B := ((B - S[dx].B) * M[dx].B + S[dx].B shl 8) shr 8;
-                end
-              else
-                if CI.FillColor <> clFuchsia then
-                  D[R1.Left + X] := col_;
+      h := Min(h, aBmp.Height - R1.Top);
+      h := Min(h, MasterBitmap.Height - R2.Top) - 1;
+      if h >= 0 then begin
+        w := Min(WidthOf(R1), WidthOf(R2));
+        w := Min(w, aBmp.Width - R1.Left);
+        w := Min(w, MasterBitmap.Width - R2.Left) - 1;
+        if w >= 0 then begin
+          if R1.Left < R2.Left then begin
+            if R1.Left < 0 then begin
+              inc(R2.Left, - R1.Left);
+              dec(w, - R1.Left);
+              R1.Left := 0;
             end;
           end
-        else
-          for Y := 0 to h do begin
-            D := Pointer(LongInt(D0) + DeltaD * (R1.Top + Y));
-            S := Pointer(LongInt(S0) + DeltaS * (R2.Top + Y));
-            M := Pointer(LongInt(S0) + DeltaS * (R2.Top + hd2 + Y));
-            for X := 0 to w do begin
-              dx := R2.Left + X;
-              if (S[dx].C <> clFuchsia) then
-                with D[R1.Left + X] do begin
-                  R := ((R - S[dx].R) * M[dx].R + S[dx].R shl 8) shr 8;
-                  G := ((G - S[dx].G) * M[dx].G + S[dx].G shl 8) shr 8;
-                  B := ((B - S[dx].B) * M[dx].B + S[dx].B shl 8) shr 8;
-                end
-              else
-                if CI.FillColor <> clFuchsia then
-                  D[R1.Left + X] := col_
-                else begin
-                  if (CI.Bmp.Height <= R1.Top + ci.Y + Y) then
-                    Continue;
-
-                  if (CI.Bmp.Width <= R1.Left + ci.X + X) then
-                    Break;
-
-                  if R1.Top + ci.Y + Y < 0 then
-                    Continue;
-
-                  if R1.Left + ci.X + X < 0 then
-                    Continue;
-
-                  D[R1.Left + X].C := GetAPixel(ci.Bmp, R1.Left + ci.X + X, R1.Top + ci.Y + Y).C;
-                end;
+          else
+            if R2.Left < 0 then begin
+              inc(R1.Left, - R2.Left);
+              dec(w, - R2.Left);
+              R2.Left := 0;
             end;
+
+          if R1.Top < R2.Top then begin
+            if R1.Top < 0 then begin
+              inc(R2.Top, - R1.Top);
+              dec(h, - R1.Top);
+              R1.Top := 0;
+            end;
+          end
+          else
+            if R2.Top < 0 then begin
+              inc(R1.Top, - R2.Top);
+              dec(h, - R2.Top);
+              R2.Top := 0;
+            end;
+
+          hd2 := HeightOf(MaskData.R) div 2;
+          if InitLine(MasterBitmap, Pointer(S0), DeltaS) and InitLine(aBmp, Pointer(D0), DeltaD) then begin
+            col_.C := SwapRedBlue(CI.FillColor);
+            if not CI.Ready then
+              for PosY := 0 to h do begin
+                D := Pointer(integer(D0) + DeltaD * (R1.Top + PosY));
+                S := Pointer(integer(S0) + DeltaS * (R2.Top + PosY));
+                M := Pointer(integer(S0) + DeltaS * (R2.Top + hd2 + PosY));
+                for PosX := 0 to w do begin
+                  dx := R2.Left + PosX;
+                  with S[dx] do
+                    if SC <> clFuchsia then
+                      with D[R1.Left + PosX], M[dx] do begin
+                        DR := ((DR - SR) * MR + SR shl 8) shr 8;
+                        DG := ((DG - SG) * MG + SG shl 8) shr 8;
+                        DB := ((DB - SB) * MB + SB shl 8) shr 8;
+                      end
+                    else
+                      if CI.FillColor <> clFuchsia then
+                        D[R1.Left + PosX].DC := col_.C;
+                end;
+              end
+            else
+              for PosY := 0 to h do begin
+                D := Pointer(integer(D0) + DeltaD * (R1.Top + PosY));
+                S := Pointer(integer(S0) + DeltaS * (R2.Top + PosY));
+                M := Pointer(integer(S0) + DeltaS * (R2.Top + hd2 + PosY));
+                for PosX := 0 to w do begin
+                  dx := R2.Left + PosX;
+                  with S[dx] do
+                    if SC <> clFuchsia then
+                      with D[R1.Left + PosX], M[dx] do begin
+                        DR := ((DR - SR) * MR + SR shl 8) shr 8;
+                        DG := ((DG - SG) * MG + SG shl 8) shr 8;
+                        DB := ((DB - SB) * MB + SB shl 8) shr 8;
+                      end
+                    else
+                      with CI do
+                        if FillColor <> clFuchsia then
+                          D[R1.Left + PosX].DC := col_.C
+                        else
+                          if (Bmp.Height > R1.Top + Y + PosY) and (R1.Top + Y + PosY >= 0) and (R1.Left + X + PosX >= 0) then
+                            if Bmp.Width <= R1.Left + X + PosX then
+                              Break
+                            else
+                              D[R1.Left + PosX].DC := GetAPixel(Bmp, R1.Left + X + PosX, R1.Top + Y + PosY).C;
+                end;
+              end;
           end;
+        end;
       end;
     end;
 end;
@@ -1160,9 +1229,10 @@ end;
 
 procedure CopyByMask32(R1, R2: TRect; const Bmp1, Bmp2: TBitmap; const CI: TCacheInfo; const MaskData: TsMaskData);
 var
-  Cur: TsColor_;
-  S0, D0, S, D, M, CacheBMP: PRGBAArray;
-  X, Y, h, w, dX1, dX2, hdiv2, k1, aa, a_, DeltaS, DeltaD: integer;
+  S0, D0, D, CacheBMP: PRGBAArray_;
+  S: PRGBAArray_S;
+  M: PRGBAArray_M;
+  PosX, PosY, h, w, dX1, dX2, hdiv2, k1, a_, DeltaS, DeltaD: integer;
 begin
 {$IFDEF NOSLOWDETAILS} Exit;{$ENDIF}
   h := R1.Bottom - R1.Top;
@@ -1192,34 +1262,33 @@ begin
 
     if w >= 0 then begin
       if R1.Left < R2.Left then begin
-        if (R1.Left < 0) then begin
+        if R1.Left < 0 then begin
           inc(R2.Left, - R1.Left);
           dec(w, - R1.Left);
           R1.Left := 0;
         end;
       end
       else
-        if (R2.Left < 0) then begin
+        if R2.Left < 0 then begin
           inc(R1.Left, - R2.Left);
           dec(w, - R2.Left);
           R2.Left := 0;
         end;
 
       if R1.Top < R2.Top then begin
-        if (R1.Top < 0) then begin
+        if R1.Top < 0 then begin
           inc(R2.Top, - R1.Top);
           dec(h, - R1.Top);
           R1.Top := 0;
         end;
       end
       else
-        if (R2.Top < 0) then begin
+        if R2.Top < 0 then begin
           inc(R1.Top, - R2.Top);
           dec(h, - R2.Top);
           R2.Top := 0;
         end;
 
-      Cur.A := 0;
       C1.A := 0;
       hdiv2 := (MaskData.R.Bottom - MaskData.R.Top) div 2;
       k1 := min(R2.Top + hdiv2, Bmp2.Height - h - 1); // Mask offset
@@ -1228,58 +1297,57 @@ begin
           if h >= CI.Bmp.Height then
             h := CI.Bmp.Height - 1;
 
-          for Y := 0 to h do begin
-            S := Pointer(LongInt(S0) + DeltaS * (R2.Top + Y));
-            D := Pointer(LongInt(D0) + DeltaD * (R1.Top + Y));
-            M := Pointer(LongInt(S0) + DeltaS * (k1 + Y));
-            CacheBMP := CI.Bmp.ScanLine[R1.Top + Y + CI.Y];
-            dX1 := R1.Left;
-            dX2 := R2.Left;
-            for X := 0 to w do begin
-              cur := S[dX2];
-              if cur.C <> clFuchsia then
-                with D[dX1] do begin
-                  aa := M[dX2].R;
-                  a_ := MaxByte - aa;
-                  R := (R * aa + cur.R * a_) shr 8;
-                  G := (G * aa + cur.G * a_) shr 8;
-                  B := (B * aa + cur.B * a_) shr 8;
-                  case A of
-                    $FF: ;                       // Do not change
-                    $00: A := MaxByte - M[dX2].R // Full transparency
-                    else A := max(A, MaxByte - M[dX2].R);
-                  end;
-                end
-              else
-                D[dX1] := CacheBMP[dX1 + CI.X];
+          with CI do
+            for PosY := 0 to h do begin
+              S := Pointer(LongInt(S0) + DeltaS * (PosY + R2.Top));
+              D := Pointer(LongInt(D0) + DeltaD * (PosY + R1.Top));
+              M := Pointer(LongInt(S0) + DeltaS * (PosY + k1));
+              CacheBMP := Bmp.ScanLine[R1.Top + PosY + Y];
+              dX1 := R1.Left;
+              dX2 := R2.Left;
+              for PosX := 0 to w do begin
+                with S[dX2] do
+                  if SC <> clFuchsia then
+                    with D[dX1], M[dX2] do begin
+                      a_ := MaxByte - MR;
+                      R := (R * MR + SR * a_) shr 8;
+                      G := (G * MR + SG * a_) shr 8;
+                      B := (B * MR + SB * a_) shr 8;
+                      case A of
+                        MaxByte: ;             // Do not change
+                        $00: A := MaxByte - MR // Full transparency
+                        else A := max(A, MaxByte - MR);
+                      end;
+                    end
+                  else
+                    D[dX1] := CacheBMP[dX1 + X];
 
-              inc(dX1);
-              inc(dX2);
+                inc(dX1);
+                inc(dX2);
+              end;
             end;
-          end;
         end
         else
-          for Y := 0 to h do begin
-            S := Pointer(LongInt(S0) + DeltaS * (R2.Top + Y));
-            D := Pointer(LongInt(D0) + DeltaD * (R1.Top + Y));
-            M := Pointer(LongInt(S0) + DeltaS * (k1 + Y));
+          for PosY := 0 to h do begin
+            S := Pointer(LongInt(S0) + DeltaS * (PosY + R2.Top));
+            D := Pointer(LongInt(D0) + DeltaD * (PosY + R1.Top));
+            M := Pointer(LongInt(S0) + DeltaS * (PosY + k1));
             dX1 := R1.Left;
             dX2 := R2.Left;
-            for X := 0 to w do begin
-              cur := S[dX2];
-              with D[dX1] do
-                if cur.C <> clFuchsia then begin
-                  aa := M[dX2].R;
-                  a_ := MaxByte - aa;
-                  R := (R * aa + cur.R * a_) shr 8;
-                  G := (G * aa + cur.G * a_) shr 8;
-                  B := (B * aa + cur.B * a_) shr 8;
-                  case A of
-                    $FF: ;                       // Do not change
-                    $00: A := MaxByte - M[dX2].R // Full transparency
-                    else A := max(A, MaxByte - M[dX2].R);
-                  end;
-                end
+            for PosX := 0 to w do begin
+              with D[dX1], S[dX2] do
+                if SC <> clFuchsia then
+                  with M[dX2] do begin
+                    a_ := MaxByte - MR;
+                    R := (R * MR + SR * a_) shr 8;
+                    G := (G * MR + SG * a_) shr 8;
+                    B := (B * MR + SB * a_) shr 8;
+                    case A of
+                      MaxByte: ;             // Do not change
+                      $00: A := MaxByte - MR // Full transparency
+                      else A := max(A, MaxByte - MR);
+                    end;
+                  end
                 else
                   A := 0;
 
@@ -1295,9 +1363,11 @@ end;
 
 procedure CopyByMask32Ex(R1, R2: TRect; Bmp1, Bmp2: TBitmap; const CI: TCacheInfo; const MaskData: TsMaskData; Opacity: integer);
 var
-  Cur: TsColor_;
-  S0, D0, S, D, M, CacheBMP: PRGBAArray;
-  aa, a_, DeltaS, DeltaD, X, Y, h, w, dX1, dX2, hdiv2, k1: integer;
+  S: PRGBAArray_S;
+  M: PRGBAArray_M;
+  D: PRGBAArray_D;
+  S0, D0, CacheBMP: PRGBAArray_;
+  aa, a_, DeltaS, DeltaD, PosX, PosY, h, w, dX1, dX2, hdiv2, k1: integer;
 begin
 {$IFDEF NOSLOWDETAILS} Exit;{$ENDIF}
   h := R1.Bottom - R1.Top;
@@ -1327,34 +1397,33 @@ begin
 
     if w >= 0 then begin
       if R1.Left < R2.Left then begin
-        if (R1.Left < 0) then begin
+        if R1.Left < 0 then begin
           inc(R2.Left, - R1.Left);
           dec(w, - R1.Left);
           R1.Left := 0;
         end;
       end
       else
-        if (R2.Left < 0) then begin
+        if R2.Left < 0 then begin
           inc(R1.Left, - R2.Left);
           dec(w, - R2.Left);
           R2.Left := 0;
         end;
 
       if R1.Top < R2.Top then begin
-        if (R1.Top < 0) then begin
+        if R1.Top < 0 then begin
           inc(R2.Top, - R1.Top);
           dec(h, - R1.Top);
           R1.Top := 0;
         end;
       end
       else
-        if (R2.Top < 0) then begin
+        if R2.Top < 0 then begin
           inc(R1.Top, - R2.Top);
           dec(h, - R2.Top);
           R2.Top := 0;
         end;
 
-      Cur.A := 0;
       C1.A := 0;
       hdiv2 := (MaskData.R.Bottom - MaskData.R.Top) div 2;
       k1 := min(R2.Top + hdiv2, Bmp2.Height - h - 1); // Mask offset
@@ -1363,30 +1432,30 @@ begin
           if h >= CI.Bmp.Height then
             h := CI.Bmp.Height - 1;
 
-          for Y := 0 to h do begin
-            S := Pointer(LongInt(S0) + DeltaS * (R2.Top + Y));
-            D := Pointer(LongInt(D0) + DeltaD * (R1.Top + Y));
-            M := Pointer(LongInt(S0) + DeltaS * (k1 + Y));
-            CacheBMP := CI.Bmp.ScanLine[R1.Top + Y + CI.Y];
+          for PosY := 0 to h do begin
+            S := Pointer(LongInt(S0) + DeltaS * (PosY + R2.Top));
+            D := Pointer(LongInt(D0) + DeltaD * (PosY + R1.Top));
+            M := Pointer(LongInt(S0) + DeltaS * (PosY + k1));
+            CacheBMP := CI.Bmp.ScanLine[PosY + R1.Top + CI.Y];
             dX1 := R1.Left;
             dX2 := R2.Left;
-            for X := 0 to w do begin
-              cur := S[dX2];
-              if cur.C <> clFuchsia then
-                with D[dX1] do begin
-                  a_ := (MaxByte - M[dX2].R) * Opacity shr 8;
-                  aa := (MaxByte - a_);
-                  R := (R * aa + cur.R * a_) shr 8;
-                  G := (G * aa + cur.G * a_) shr 8;
-                  B := (B * aa + cur.B * a_) shr 8;
-                  case A of
-                    0:   A := MaxByte - M[dX2].R; // Full transparency
-                    $FF:                          // Do not change
-                    else A := max(A, MaxByte  - M[dX2].R);
-                  end;
-                end
-              else
-                D[dX1] := CacheBMP[dX1 + CI.X];
+            for PosX := 0 to w do begin
+              with S[dX2] do
+                if SC <> clFuchsia then
+                  with D[dX1], M[dX2] do begin
+                    a_ := (MaxByte - MR) * Opacity shr 8;
+                    aa := (MaxByte - a_);
+                    DR := (DR * aa + SR * a_) shr 8;
+                    DG := (DG * aa + SG * a_) shr 8;
+                    DB := (DB * aa + SB * a_) shr 8;
+                    case DA of
+                      0:   DA := MaxByte - MR; // Full transparency
+                      MaxByte:                 // Do not change
+                      else DA := max(DA, MaxByte - MR);
+                    end;
+                  end
+                else
+                  D[dX1].DC := CacheBMP[dX1 + CI.X].C;
 
               inc(dX1);
               inc(dX2);
@@ -1394,29 +1463,29 @@ begin
           end;
         end
         else
-          for Y := 0 to h do begin
-            S := Pointer(LongInt(S0) + DeltaS * (R2.Top + Y));
-            D := Pointer(LongInt(D0) + DeltaD * (R1.Top + Y));
-            M := Pointer(LongInt(S0) + DeltaS * (k1 + Y));
+          for PosY := 0 to h do begin
+            S := Pointer(LongInt(S0) + DeltaS * (PosY + R2.Top));
+            D := Pointer(LongInt(D0) + DeltaD * (PosY + R1.Top));
+            M := Pointer(LongInt(S0) + DeltaS * (PosY + k1));
             dX1 := R1.Left;
             dX2 := R2.Left;
-            for X := 0 to w do begin
-              cur := S[dX2];
-              with D[dX1] do begin
-                if cur.C <> clFuchsia then begin
-                  a_ := (MaxByte - M[dX2].R) * Opacity shr 8;
-                  aa := (MaxByte - a_);
-                  R := (R * aa + cur.R * a_) shr 8;
-                  G := (G * aa + cur.G * a_) shr 8;
-                  B := (B * aa + cur.B * a_) shr 8;
-                  case A of
-                    0:   A := MaxByte  - M[dX2].R; // Full transparency
-                    $FF:                           // Do not change
-                    else A := max(A, MaxByte  - M[dX2].R);
-                  end;
-                end
+            for PosX := 0 to w do begin
+              with S[dX2], D[dX1] do begin
+                if SC <> clFuchsia then
+                  with M[dX2] do begin
+                    a_ := (MaxByte - MR) * Opacity shr 8;
+                    aa := MaxByte - a_;
+                    DR := (DR * aa + SR * a_) shr 8;
+                    DG := (DG * aa + SG * a_) shr 8;
+                    DB := (DB * aa + SB * a_) shr 8;
+                    case DA of
+                      0:   DA := MaxByte - MR; // Full transparency
+                      MaxByte:                 // Do not change
+                      else DA := max(DA, MaxByte - MR);
+                    end;
+                  end
                 else
-                  A := 0;
+                  DA := 0;
               end;
               inc(dX1);
               inc(dX2);
@@ -1431,270 +1500,262 @@ procedure DrawSkinGlyph(Bmp: TBitmap; P: TPoint; State, AddedTransparency: integ
 var
   w, h, cy, cx, dw: integer;
 begin
-  w := WidthOfImage (MaskData);
-  h := HeightOfImage(MaskData);
-
-  if State > MaskData.ImageCount - 1 then
+  w := MaskData.Width;
+  h := MaskData.Height;
+  if State >= MaskData.ImageCount then
     State := MaskData.ImageCount - 1;
 
   dw := State * w;
   cy := iff(p.y < 0, -p.y, 0);
   cx := iff(p.x < 0, -p.x, 0);
-  if MaskData.Bmp = nil then
-    with TsSkinManager(MaskData.Manager) do begin
-      if (MaskData.Manager <> nil) and (MaskData.ImageCount > 0) then
-        if (MaskData.MaskType > 0) then
-          BlendGlyphByMask(Rect(p.x + cx, p.y + cy, p.x + w - 1 + cx, p.y + h + cy {- 1}),
-                           Rect(dw + cx + MaskData.R.Left, cy + MaskData.R.Top, dw + w - 1 + cx + MaskData.R.Left, h - 1 + cy + MaskData.R.Top),
-                           Bmp, MasterBitmap, AddedTransparency, MaskData)
-        else
-          if AddedTransparency <> 1 then
-            BlendTransRectangle(Bmp, p.x + cx, p.y + cy, MasterBitmap,
-                                Rect(dw + cx + MaskData.R.Left, cy + MaskData.R.Top, dw + cx + MaskData.R.Left + w - 1,
-                                cy + MaskData.R.Top + h - 1), 0.5)
+  with MaskData.R do
+    if MaskData.Bmp = nil then
+      with TsSkinManager(MaskData.Manager) do begin
+        if (MaskData.Manager <> nil) and (MaskData.ImageCount > 0) then
+          if MaskData.MaskType > 0 then
+            BlendGlyphByMask(Rect(p.x + cx, p.y + cy, p.x + w - 1 + cx, p.y + h + cy {- 1}),
+                             Rect(dw + cx + Left, cy + Top, dw + w - 1 + cx + Left, h - 1 + cy + Top),
+                             Bmp, MasterBitmap, AddedTransparency, MaskData)
           else
-            CopyTransRect(Bmp, MasterBitmap, p.x + cx, p.y + cy,
-                          Rect(dw + cx + MaskData.R.Left, cy + MaskData.R.Top, dw + cx + MaskData.R.Left + w - 1,
-                          cy + MaskData.R.Top + h - 1), clFuchsia, CI, True);
-    end
-  else
-    if (MaskData.R.Right <= MaskData.Bmp.Width) and (MaskData.R.Bottom <= MaskData.Bmp.Height) then
-      BlendGlyphByMask(Rect(p.x + cx, p.y + cy, p.x + w - 1 + cx, p.y + h + cy - 1),
-                       Rect(dw + cx + MaskData.R.Left, cy + MaskData.R.Top, dw + w - 1 + cx + MaskData.R.Left, h - 1 + cy + MaskData.R.Top),
-                       Bmp, MaskData.Bmp, AddedTransparency, MaskData);
+            if AddedTransparency <> 1 then
+              BlendTransRectangle(Bmp, p.x + cx, p.y + cy, MasterBitmap,
+                                  Rect(dw + cx + Left, cy + Top, dw + cx + Left + w - 1, cy + Top + h - 1),
+                                  127)
+            else
+              CopyTransRect(Bmp, MasterBitmap, p.x + cx, p.y + cy,
+                            Rect(dw + cx + Left, cy + Top, dw + cx + Left + w - 1, cy + Top + h - 1),
+                            clFuchsia, CI, True);
+      end
+    else
+      if (Right <= MaskData.Bmp.Width) and (Bottom <= MaskData.Bmp.Height) then
+        BlendGlyphByMask(Rect(p.x + cx, p.y + cy, p.x + w - 1 + cx, p.y + h + cy - 1),
+                         Rect(dw + cx + Left, cy + Top, dw + w - 1 + cx + Left, h - 1 + cy + Top),
+                         Bmp, MaskData.Bmp, AddedTransparency, MaskData);
 end;
 
 
 procedure StretchBltMask(DstX1, DstY1, Dst_Width, Dst_Height, SrcX1, SrcY1, Src_Width, Src_Height: integer; BmpDst, BmpSrc: TBitmap; MaskOffset: integer; NoStdStretch: boolean = False);
 var
-  CC: TsColor_RGB_;
-  S0, S: PRGBAArray_RGB;
-  D0, M0, D, M: PRGBAArray;
+  CC: TsColor_;
+  S0, S: PRGBAArray_S;
+  D0, D: PRGBAArray_D;
+  M0, M: PRGBAArray_M;
   MaskBmp, Bmp, TmpBmp: TBitmap;
   DeltaM, DeltaS, DeltaD, X, Y, iY, iX: Integer;
 begin
-  if (DstX1 < 0) or (DstY1 < 0) or (Dst_Width < 0) or (Dst_Height < 1) or (Dst_Width < 1) or (BmpDst.Height < 2) or (BmpDst.Width < 2) then
-    Exit;
+  if (DstX1 >= 0) and (DstY1 >= 0) and (Dst_Width >= 0) and (Dst_Height > 0) and (Dst_Width > 0) and (BmpDst.Height > 1) and (BmpDst.Width > 1) then
+    if MaskOffset <> 0 then begin // If masked
+      if (BmpSrc.Width >= SrcX1 + Src_Width) and (BmpSrc.Height >= SrcY1 + Src_Height) then
+        if NoStdStretch and (Src_Width = 1) and (Src_Height = 1) then begin
+          if SrcY1 + MaskOffset < BmpSrc.Height then
+            if InitLine(BmpSrc, Pointer(S0), DeltaS) and InitLine(BmpDst, Pointer(D0), DeltaD) then begin
+              S := Pointer(LongInt(S0) + DeltaS * SrcY1);
+              CC.C := S[SrcX1].SC;
+              M := Pointer(LongInt(S0) + DeltaS * (SrcY1 + MaskOffset));
+              CC.A := M[SrcX1].MR; // Get mask value
+              case CC.A of
+                0: begin // If not transparent pixel
+                  CC.C := SwapRedBlue(CC.C);
+                  FillRect32(BmpDst, Rect(DstX1, DstY1, DstX1 + Dst_Width, DstY1 + Dst_Height), CC.C);
+                end;
 
-  if (MaskOffset <> 0) then begin // If masked
-    if BmpSrc.Width < SrcX1 + Src_Width then
-      Exit;
+                $FF: // Dst Changed
 
-    if BmpSrc.Height < SrcY1 + Src_Height then
-      Exit;
+                else
+                  for Y := DstY1 to DstY1 + Dst_Height - 1 do begin
+                    D := Pointer(LongInt(D0) + DeltaD * Y);
+                    for X := DstX1 to DstX1 + Dst_Width - 1 do
+                      with D[X], CC do begin
+                        DR := ((DR - R) * A + R shl 8) shr 8;
+                        DG := ((DG - G) * A + G shl 8) shr 8;
+                        DB := ((DB - B) * A + B shl 8) shr 8;
+                      end;
+                  end;
+              end;
+            end;
+        end
+        else begin
+          Bmp := CreateBmp32(Dst_Width, Dst_Height);
+          MaskBmp := CreateBmp32(Dst_Width, Dst_Height);
+          if ((Src_Width > Dst_Width) and (Src_Height = Dst_Height) or (Src_Width = Dst_Width) and (Src_Height > Dst_Height) or NoStdStretch) and (Dst_Width > 1) and (Dst_Height > 1) then begin
+            TmpBmp := CreateBmp32(max(Src_Width, 2), max(Src_Height, 2));
+            BitBlt(TmpBmp.Canvas.Handle, 0, 0, Src_Width, Src_Height, BmpSrc.Canvas.Handle, SrcX1, SrcY1, SRCCOPY);
+            if Src_Width = 1 then
+              BitBlt(TmpBmp.Canvas.Handle, 1, 0, 1, Src_Height, TmpBmp.Canvas.Handle, 0, 0, SRCCOPY);
 
-    if NoStdStretch and (Src_Width = 1) and (Src_Height = 1) then begin
-      if SrcY1 + MaskOffset >= BmpSrc.Height then
-        Exit;
+            if Src_Height = 1 then
+              BitBlt(TmpBmp.Canvas.Handle, 0, 1, Src_Width, 1, TmpBmp.Canvas.Handle, 0, 0, SRCCOPY);
 
-      if InitLine(BmpSrc, Pointer(S0), DeltaS) and InitLine(BmpDst, Pointer(D0), DeltaD) then begin
-        S := Pointer(LongInt(S0) + DeltaS * SrcY1);
-        CC.Col := S[SrcX1].Col;
-        M := Pointer(LongInt(S0) + DeltaS * (SrcY1 + MaskOffset));
-        CC.Alpha := M[SrcX1].R; // Get mask value
-        case CC.Alpha of
-          0: begin // If not transparent pixel
-            CC.Col := SwapRedBlue(CC.Col);
-            FillRect32(BmpDst, Rect(DstX1, DstY1, DstX1 + Dst_Width, DstY1 + Dst_Height), CC.Col);
+            Stretch(TmpBmp, Bmp, Dst_Width, Dst_Height, ftMitchell);
+            BitBlt(TmpBmp.Canvas.Handle, 0, 0, Src_Width, Src_Height, BmpSrc.Canvas.Handle, SrcX1, SrcY1 + MaskOffset, SRCCOPY);
+            if Src_Width = 1 then
+              BitBlt(TmpBmp.Canvas.Handle, 1, 0, 1, Src_Height, TmpBmp.Canvas.Handle, 0, 0, SRCCOPY);
+
+            if Src_Height = 1 then
+              BitBlt(TmpBmp.Canvas.Handle, 0, 1, Src_Width, 1, TmpBmp.Canvas.Handle, 0, 0, SRCCOPY);
+
+            Stretch(TmpBmp, MaskBmp, Dst_Width, Dst_Height, ftMitchell);
+            TmpBmp.Free;
+          end
+          else begin
+            StretchBlt(Bmp.Canvas.Handle, 0, 0, Dst_Width, Dst_Height, BmpSrc.Canvas.Handle, SrcX1, SrcY1, Src_Width, Src_Height, SRCCOPY);
+            StretchBlt(MaskBmp.Canvas.Handle, 0, 0, Dst_Width, Dst_Height, BmpSrc.Canvas.Handle, SrcX1, SrcY1 + MaskOffset, Src_Width, Src_Height, SRCCOPY);
           end;
+          iY := 0;
+          if DstY1 + Dst_Height > BmpDst.Height then
+            Dst_Height := BmpDst.Height - DstY1;
 
-          $FF: // Dst Changed
-
-          else
+          if InitLine(Bmp, Pointer(S0), DeltaS) and InitLine(MaskBmp, Pointer(M0), DeltaM) and InitLine(BmpDst, Pointer(D0), DeltaD) then
             for Y := DstY1 to DstY1 + Dst_Height - 1 do begin
               D := Pointer(LongInt(D0) + DeltaD * Y);
+              S := Pointer(LongInt(S0) + DeltaS * iY);
+              M := Pointer(LongInt(M0) + DeltaM * iY);
+              iX := 0;
               for X := DstX1 to DstX1 + Dst_Width - 1 do
-                with D[X], CC do begin
-                  R := ((R - CC.Red)   * CC.Alpha + CC.Red   shl 8) shr 8;
-                  G := ((G - CC.Green) * CC.Alpha + CC.Green shl 8) shr 8;
-                  B := ((B - CC.Blue)  * CC.Alpha + CC.Blue  shl 8) shr 8;
+                with D[X], S[iX], M[iX] do begin
+                  DR := ((DR - SR) * MR + SR shl 8) shr 8;
+                  DG := ((DG - SG) * MG + SG shl 8) shr 8;
+                  DB := ((DB - SB) * MB + SB shl 8) shr 8;
+                  DA := MaxByte;
+                  inc(iX);
                 end;
+
+              inc(iY);
             end;
-        end;
-      end;
-      Exit;
-    end;
 
-    Bmp := CreateBmp32(Dst_Width, Dst_Height);
-    MaskBmp := CreateBmp32(Dst_Width, Dst_Height);
-    if ((Src_Width > Dst_Width) and (Src_Height = Dst_Height) or (Src_Width = Dst_Width) and (Src_Height > Dst_Height) or NoStdStretch) and (Dst_Width > 1) and (Dst_Height > 1) then begin
-      TmpBmp := CreateBmp32(max(Src_Width, 2), max(Src_Height, 2));
-      BitBlt(TmpBmp.Canvas.Handle, 0, 0, Src_Width, Src_Height, BmpSrc.Canvas.Handle, SrcX1, SrcY1, SRCCOPY);
-      if Src_Width = 1 then
-        BitBlt(TmpBmp.Canvas.Handle, 1, 0, 1, Src_Height, TmpBmp.Canvas.Handle, 0, 0, SRCCOPY);
-
-      if Src_Height = 1 then
-        BitBlt(TmpBmp.Canvas.Handle, 0, 1, Src_Width, 1, TmpBmp.Canvas.Handle, 0, 0, SRCCOPY);
-
-      Stretch(TmpBmp, Bmp, Dst_Width, Dst_Height, ftMitchell);
-      BitBlt(TmpBmp.Canvas.Handle, 0, 0, Src_Width, Src_Height, BmpSrc.Canvas.Handle, SrcX1, SrcY1 + MaskOffset, SRCCOPY);
-      if Src_Width = 1 then
-        BitBlt(TmpBmp.Canvas.Handle, 1, 0, 1, Src_Height, TmpBmp.Canvas.Handle, 0, 0, SRCCOPY);
-
-      if Src_Height = 1 then
-        BitBlt(TmpBmp.Canvas.Handle, 0, 1, Src_Width, 1, TmpBmp.Canvas.Handle, 0, 0, SRCCOPY);
-
-      Stretch(TmpBmp, MaskBmp, Dst_Width, Dst_Height, ftMitchell);
-      TmpBmp.Free;
+          MaskBmp.Free;
+          Bmp.Free;
+        end
     end
-    else begin
-      StretchBlt(Bmp.Canvas.Handle, 0, 0, Dst_Width, Dst_Height, BmpSrc.Canvas.Handle, SrcX1, SrcY1, Src_Width, Src_Height, SRCCOPY);
-      StretchBlt(MaskBmp.Canvas.Handle, 0, 0, Dst_Width, Dst_Height, BmpSrc.Canvas.Handle, SrcX1, SrcY1 + MaskOffset, Src_Width, Src_Height, SRCCOPY);
-    end;
-    iY := 0;
-    if DstY1 + Dst_Height > BmpDst.Height then
-      Dst_Height := BmpDst.Height - DstY1;
-
-    if InitLine(Bmp, Pointer(S0), DeltaS) and InitLine(MaskBmp, Pointer(M0), DeltaM) and InitLine(BmpDst, Pointer(D0), DeltaD) then
-      for Y := DstY1 to DstY1 + Dst_Height - 1 do begin
-        D := Pointer(LongInt(D0) + DeltaD * Y);
-        S := Pointer(LongInt(S0) + DeltaS * iY);
-        M := Pointer(LongInt(M0) + DeltaM * iY);
-        iX := 0;
-        for X := DstX1 to DstX1 + Dst_Width - 1 do
-          with D[X], S[iX] do begin
-            R := ((R - Red)   * M[iX].R + Red   shl 8) shr 8;
-            G := ((G - Green) * M[iX].G + Green shl 8) shr 8;
-            B := ((B - Blue)  * M[iX].B + Blue  shl 8) shr 8;
-            A := MaxByte;
-            inc(iX);
-          end;
-
-        inc(iY);
-      end;
-
-    MaskBmp.Free;
-    Bmp.Free;
-  end
-  else
-    StretchBlt(BmpDst.Canvas.Handle, DstX1, DstY1, Dst_Width, Dst_Height, BmpSrc.Canvas.Handle, SrcX1, SrcY1, Src_Width, Src_Height, SRCCOPY);
+    else
+      StretchBlt(BmpDst.Canvas.Handle, DstX1, DstY1, Dst_Width, Dst_Height, BmpSrc.Canvas.Handle, SrcX1, SrcY1, Src_Width, Src_Height, SRCCOPY);
 end;
 
 
 procedure StretchBltMask32(DstX1, DstY1, Dst_Width, Dst_Height, SrcX1, SrcY1, Src_Width, Src_Height: integer; BmpDst, BmpSrc: TBitmap; MaskOffset: integer; NoStdStretch: boolean = False);
 var
   aa, a_: byte;
-  CC: TsColor_RGB_;
-  S0, S: PRGBAArray_RGB;
-  D0, M0, D, M: PRGBAArray;
+  CC: TsColor_;
+  S0, S: PRGBAArray_S;
+  D0, D: PRGBAArray_D;
+  M0, M: PRGBAArray_M;
   MaskBmp, Bmp, TmpBmp: TBitmap;
   DeltaM, DeltaS, DeltaD, X, Y, iY, iX: Integer;
 begin
-  if (DstX1 < 0) or (DstY1 < 0) or (Dst_Width < 0) or (Dst_Height < 1) or (Dst_Width < 1) or (BmpDst.Height < 2) or (BmpDst.Width < 2) then
-    Exit;
-
-  if (MaskOffset <> 0) then begin // If masked
-    if BmpSrc.Width < SrcX1 + Src_Width then
-      Exit;
-
-    if BmpSrc.Height < SrcY1 + Src_Height then
-      Exit;
-
-    if NoStdStretch and (Src_Width = 1) and (Src_Height = 1) then begin
-      if SrcY1 + MaskOffset >= BmpSrc.Height then
+  if (DstX1 >= 0) and (DstY1 >= 0) and (Dst_Width >= 0) and (Dst_Height > 0) and (Dst_Width > 0) and (BmpDst.Height > 1) and (BmpDst.Width > 1) then
+    if MaskOffset <> 0 then begin // If masked
+      if BmpSrc.Width < SrcX1 + Src_Width then
         Exit;
 
-      if InitLine(BmpSrc, Pointer(S0), DeltaS) and InitLine(BmpDst, Pointer(D0), DeltaD) then begin
-        S := Pointer(LongInt(S0) + DeltaS * SrcY1);
-        CC.Col := S[SrcX1].Col;
-        M := Pointer(LongInt(S0) + DeltaS * (SrcY1 + MaskOffset));
-        CC.Alpha := M[SrcX1].R; // Get mask value
+      if BmpSrc.Height < SrcY1 + Src_Height then
+        Exit;
 
-        CC := S[SrcX1];
-        CC.Alpha := M[SrcX1].R; // Get mask value
-        case CC.Alpha of
-          MaxByte:
-            ; // Dst Changed
-          0: begin // If not transparent pixel
-            CC.Col := SwapRedBlue(CC.Col);
-            FillRect32(BmpDst, Rect(DstX1, DstY1, DstX1 + Dst_Width, DstY1 + Dst_Height), CC.Col);
-          end
-          else
-            for Y := DstY1 to DstY1 + Dst_Height - 1 do begin
-              D := Pointer(LongInt(D0) + DeltaD * Y);
-              for X := DstX1 to DstX1 + Dst_Width - 1 do
-                with D[X], CC do begin
-                  aa := min(CC.Alpha, A);
-                  a_ := MaxByte - aa;
-                  R := (R * aa + Red   * a_) shr 8;
-                  G := (G * aa + Green * a_) shr 8;
-                  B := (B * aa + Blue  * a_) shr 8;
-                  A := max(A, MaxByte - Alpha);
+      if NoStdStretch and (Src_Width = 1) and (Src_Height = 1) then begin
+        if SrcY1 + MaskOffset >= BmpSrc.Height then
+          Exit;
+
+        if InitLine(BmpSrc, Pointer(S0), DeltaS) and InitLine(BmpDst, Pointer(D0), DeltaD) then begin
+          S := Pointer(LongInt(S0) + DeltaS * SrcY1);
+//          CC.Col := S[SrcX1].SC;
+          M := Pointer(LongInt(S0) + DeltaS * (SrcY1 + MaskOffset));
+//          CC.Alpha := M[SrcX1].R; // Get mask value
+
+          CC.C := S[SrcX1].SC;
+          CC.A := M[SrcX1].MR; // Get mask value
+          with CC do
+            case A of
+              MaxByte:
+                ; // Dst Changed
+              0: begin // If not transparent pixel
+                C := SwapRedBlue(C);
+                FillRect32(BmpDst, Rect(DstX1, DstY1, DstX1 + Dst_Width, DstY1 + Dst_Height), C);
+              end
+              else
+                for Y := DstY1 to DstY1 + Dst_Height - 1 do begin
+                  D := Pointer(LongInt(D0) + DeltaD * Y);
+                  for X := DstX1 to DstX1 + Dst_Width - 1 do
+                    with D[X] do begin
+                      aa := min(A, DA);
+                      a_ := MaxByte - aa;
+                      DR := (DR * aa + R * a_) shr 8;
+                      DG := (DG * aa + G * a_) shr 8;
+                      DB := (DB * aa + B * a_) shr 8;
+                      DA := max(DA, MaxByte - A);
+                    end;
                 end;
             end;
-        end;
-      End;
-      Exit;
-    end;
-
-    Bmp     := CreateBmp32(Dst_Width, Dst_Height);
-    MaskBmp := CreateBmp32(Dst_Width, Dst_Height);
-    if ((Src_Width > Dst_Width) and (Src_Height = Dst_Height) or (Src_Width = Dst_Width) and (Src_Height > Dst_Height) or NoStdStretch) and (Dst_Width > 1) and (Dst_Height > 1) then begin
-      TmpBmp := CreateBmp32(max(Src_Width, 2), max(Src_Height, 2));
-      BitBlt(TmpBmp.Canvas.Handle, 0, 0, Src_Width, Src_Height, BmpSrc.Canvas.Handle, SrcX1, SrcY1, SRCCOPY);
-      if Src_Width = 1 then
-        BitBlt(TmpBmp.Canvas.Handle, 1, 0, 1, Src_Height, TmpBmp.Canvas.Handle, 0, 0, SRCCOPY);
-
-      if Src_Height = 1 then
-        BitBlt(TmpBmp.Canvas.Handle, 0, 1, Src_Width, 1, TmpBmp.Canvas.Handle, 0, 0, SRCCOPY);
-
-      Stretch(TmpBmp, Bmp, Dst_Width, Dst_Height, ftMitchell);
-      BitBlt(TmpBmp.Canvas.Handle, 0, 0, Src_Width, Src_Height, BmpSrc.Canvas.Handle, SrcX1, SrcY1 + MaskOffset, SRCCOPY);
-      if Src_Width = 1 then
-        BitBlt(TmpBmp.Canvas.Handle, 1, 0, 1, Src_Height, TmpBmp.Canvas.Handle, 0, 0, SRCCOPY);
-
-      if Src_Height = 1 then
-        BitBlt(TmpBmp.Canvas.Handle, 0, 1, Src_Width, 1, TmpBmp.Canvas.Handle, 0, 0, SRCCOPY);
-
-      Stretch(TmpBmp, MaskBmp, Dst_Width, Dst_Height, ftHermite);
-      TmpBmp.Free;
-    end
-    else begin
-      StretchBlt(Bmp.Canvas.Handle,     0, 0, Dst_Width, Dst_Height, BmpSrc.Canvas.Handle, SrcX1, SrcY1,              Src_Width, Src_Height, SRCCOPY);
-      StretchBlt(MaskBmp.Canvas.Handle, 0, 0, Dst_Width, Dst_Height, BmpSrc.Canvas.Handle, SrcX1, SrcY1 + MaskOffset, Src_Width, Src_Height, SRCCOPY);
-    end;
-
-    iY := 0;
-    if DstY1 + Dst_Height > BmpDst.Height then
-      Dst_Height := BmpDst.Height - DstY1;
-
-    if InitLine(Bmp, Pointer(S0), DeltaS) and InitLine(MaskBmp, Pointer(M0), DeltaM) and InitLine(BmpDst, Pointer(D0), DeltaD) then
-      for Y := DstY1 to DstY1 + Dst_Height - 1 do begin
-        D := Pointer(LongInt(D0) + DeltaD * Y);
-        S := Pointer(LongInt(S0) + DeltaS * iY);
-        M := Pointer(LongInt(M0) + DeltaM * iY);
-        iX := 0;
-        for X := DstX1 to DstX1 + Dst_Width - 1 do begin
-          with D[X], S[iX] do
-            case M[iX].R of
-              MaxByte:
-                ; // Continue;
-
-              0: begin
-                I := Intg;
-                A := MaxByte;
-              end
-
-              else begin
-                aa := min(M[iX].R, A);
-                a_ := MaxByte - aa;
-                R := (R * aa + Red   * a_) shr 8;
-                G := (G * aa + Green * a_) shr 8;
-                B := (B * aa + Blue  * a_) shr 8;
-                A := max(A, MaxByte - M[iX].R);
-              end;
-            end;
-
-          inc(iX);
-        end;
-        inc(iY);
+        End;
+        Exit;
       end;
 
-    MaskBmp.Free;
-    Bmp.Free;
-  end
-  else
-    StretchBlt(BmpDst.Canvas.Handle, DstX1, DstY1, Dst_Width, Dst_Height, BmpSrc.Canvas.Handle, SrcX1, SrcY1, Src_Width, Src_Height, SRCCOPY);
+      Bmp     := CreateBmp32(Dst_Width, Dst_Height);
+      MaskBmp := CreateBmp32(Dst_Width, Dst_Height);
+      if ((Src_Width > Dst_Width) and (Src_Height = Dst_Height) or (Src_Width = Dst_Width) and (Src_Height > Dst_Height) or NoStdStretch) and (Dst_Width > 1) and (Dst_Height > 1) then begin
+        TmpBmp := CreateBmp32(max(Src_Width, 2), max(Src_Height, 2));
+        BitBlt(TmpBmp.Canvas.Handle, 0, 0, Src_Width, Src_Height, BmpSrc.Canvas.Handle, SrcX1, SrcY1, SRCCOPY);
+        if Src_Width = 1 then
+          BitBlt(TmpBmp.Canvas.Handle, 1, 0, 1, Src_Height, TmpBmp.Canvas.Handle, 0, 0, SRCCOPY);
+
+        if Src_Height = 1 then
+          BitBlt(TmpBmp.Canvas.Handle, 0, 1, Src_Width, 1, TmpBmp.Canvas.Handle, 0, 0, SRCCOPY);
+
+        Stretch(TmpBmp, Bmp, Dst_Width, Dst_Height, ftMitchell);
+        BitBlt(TmpBmp.Canvas.Handle, 0, 0, Src_Width, Src_Height, BmpSrc.Canvas.Handle, SrcX1, SrcY1 + MaskOffset, SRCCOPY);
+        if Src_Width = 1 then
+          BitBlt(TmpBmp.Canvas.Handle, 1, 0, 1, Src_Height, TmpBmp.Canvas.Handle, 0, 0, SRCCOPY);
+
+        if Src_Height = 1 then
+          BitBlt(TmpBmp.Canvas.Handle, 0, 1, Src_Width, 1, TmpBmp.Canvas.Handle, 0, 0, SRCCOPY);
+
+        Stretch(TmpBmp, MaskBmp, Dst_Width, Dst_Height, ftHermite);
+        TmpBmp.Free;
+      end
+      else begin
+        StretchBlt(Bmp.Canvas.Handle,     0, 0, Dst_Width, Dst_Height, BmpSrc.Canvas.Handle, SrcX1, SrcY1,              Src_Width, Src_Height, SRCCOPY);
+        StretchBlt(MaskBmp.Canvas.Handle, 0, 0, Dst_Width, Dst_Height, BmpSrc.Canvas.Handle, SrcX1, SrcY1 + MaskOffset, Src_Width, Src_Height, SRCCOPY);
+      end;
+
+      iY := 0;
+      if DstY1 + Dst_Height > BmpDst.Height then
+        Dst_Height := BmpDst.Height - DstY1;
+
+      if InitLine(Bmp, Pointer(S0), DeltaS) and InitLine(MaskBmp, Pointer(M0), DeltaM) and InitLine(BmpDst, Pointer(D0), DeltaD) then
+        for Y := DstY1 to DstY1 + Dst_Height - 1 do begin
+          D := Pointer(LongInt(D0) + DeltaD * Y);
+          S := Pointer(LongInt(S0) + DeltaS * iY);
+          M := Pointer(LongInt(M0) + DeltaM * iY);
+          iX := 0;
+          for X := DstX1 to DstX1 + Dst_Width - 1 do begin
+            with D[X], S[iX], M[iX] do
+              case MR of
+                MaxByte:
+                  ; // Continue;
+
+                0: begin
+                  DI := SI;
+                  DA := MaxByte;
+                end
+
+                else begin
+                  aa := min(MR, DA);
+                  a_ := MaxByte - aa;
+                  DR := (DR * aa + SR * a_) shr 8;
+                  DG := (DG * aa + SG * a_) shr 8;
+                  DB := (DB * aa + SB * a_) shr 8;
+                  DA := max(DA, MaxByte - MR);
+                end;
+              end;
+
+            inc(iX);
+          end;
+          inc(iY);
+        end;
+
+      MaskBmp.Free;
+      Bmp.Free;
+    end
+    else
+      StretchBlt(BmpDst.Canvas.Handle, DstX1, DstY1, Dst_Width, Dst_Height, BmpSrc.Canvas.Handle, SrcX1, SrcY1, Src_Width, Src_Height, SRCCOPY);
 end;
 
 
@@ -1702,168 +1763,171 @@ procedure StretchBltMask32Ex(DstX1, DstY1, Dst_Width, Dst_Height, SrcX1, SrcY1, 
 var
   DeltaM, DeltaS, DeltaD, X, Y, iY, iX: Integer;
   MaskBmp, Bmp, TmpBmp: TBitmap;
-  D0, M0, D, M: PRGBAArray;
-  S0, S: PRGBAArray_RGB;
+  D0, D: PRGBAArray_D;
+  M0, M: PRGBAArray_M;
+  S0, S: PRGBAArray_S;
   CC: TsColor_RGB_;
   aa, a_: byte;
 begin
-  if (DstX1 < 0) or (DstY1 < 0) or (Dst_Width < 0) or (Dst_Height < 1) or (Dst_Width < 1) or (BmpDst.Height < 2) or (BmpDst.Width < 2) then
-    Exit;
-
-  if (MaskOffset <> 0) then begin // If masked
-    if (BmpSrc.Width < SrcX1 + Src_Width) or (BmpSrc.Height < SrcY1 + Src_Height) then
-      Exit;
-
-    if NoStdStretch and (Src_Width = 1) and (Src_Height = 1) then begin
-      if SrcY1 + MaskOffset >= BmpSrc.Height then
+  if (DstX1 >= 0) and (DstY1 >= 0) and (Dst_Width >= 0) and (Dst_Height > 0) and (Dst_Width > 0) and (BmpDst.Height > 1) and (BmpDst.Width > 1) then
+    if MaskOffset <> 0 then begin // If masked
+      if (BmpSrc.Width < SrcX1 + Src_Width) or (BmpSrc.Height < SrcY1 + Src_Height) then
         Exit;
 
-      if InitLine(BmpSrc, Pointer(S0), DeltaS) and InitLine(BmpDst, Pointer(D0), DeltaD) then begin
-        S := Pointer(LongInt(S0) + DeltaS * SrcY1);
-        CC.Col := S[SrcX1].Col;
-        M := Pointer(LongInt(S0) + DeltaS * (SrcY1 + MaskOffset));
-        CC.Alpha := M[SrcX1].R; // Get mask value
-        CC := S[SrcX1];
-        CC.Alpha := M[SrcX1].R; // Get mask value
-        case CC.Alpha of
-          MaxByte:
-            ; // Dst Changed
+      if NoStdStretch and (Src_Width = 1) and (Src_Height = 1) then begin
+        if SrcY1 + MaskOffset >= BmpSrc.Height then
+          Exit;
 
-          0: begin // If not transparent pixel
-            CC.Col := SwapRedBlue(CC.Col);
-            FillRect32(BmpDst, Rect(DstX1, DstY1, DstX1 + Dst_Width, DstY1 + Dst_Height), CC.Col);
-          end
+        if InitLine(BmpSrc, Pointer(S0), DeltaS) and InitLine(BmpDst, Pointer(D0), DeltaD) then begin
+          S := Pointer(LongInt(S0) + DeltaS * SrcY1);
+          CC.Col := S[SrcX1].SC;
+          M := Pointer(LongInt(S0) + DeltaS * (SrcY1 + MaskOffset));
+          CC.Alpha := M[SrcX1].MR; // Get mask value
+          CC.Col := S[SrcX1].SC;
+          CC.Alpha := M[SrcX1].MR; // Get mask value
+          case CC.Alpha of
+            MaxByte:
+              ; // Dst Changed
 
-          else
-            for Y := DstY1 to DstY1 + Dst_Height - 1 do begin
-              D := Pointer(LongInt(D0) + DeltaD * Y);
-              for X := DstX1 to DstX1 + Dst_Width - 1 do
-                with D[X], CC do begin
-                  a_ := (MaxByte - CC.Alpha) * Opacity shr 8;
-                  aa := (MaxByte - a_);
-                  R := (R * aa + Red   * a_) shr 8;
-                  G := (G * aa + Green * a_) shr 8;
-                  B := (B * aa + Blue  * a_) shr 8;
-                  case A of
-                    0:   A := MaxByte - Alpha;         // Full transparency
-                    $FF:                               // Do not change
-                    else begin
-                      aa := MaxByte - Alpha;
-                      if aa > A then
-                        A := aa;
+            0: begin // If not transparent pixel
+              CC.Col := SwapRedBlue(CC.Col);
+              FillRect32(BmpDst, Rect(DstX1, DstY1, DstX1 + Dst_Width, DstY1 + Dst_Height), CC.Col);
+            end
+
+            else
+              for Y := DstY1 to DstY1 + Dst_Height - 1 do begin
+                D := Pointer(LongInt(D0) + DeltaD * Y);
+                for X := DstX1 to DstX1 + Dst_Width - 1 do
+                  with D[X], CC do begin
+                    a_ := (MaxByte - CC.Alpha) * Opacity shr 8;
+                    aa := (MaxByte - a_);
+                    DR := (DR * aa + Red   * a_) shr 8;
+                    DG := (DG * aa + Green * a_) shr 8;
+                    DB := (DB * aa + Blue  * a_) shr 8;
+                    case DA of
+                      0: DA := MaxByte - Alpha; // Full transparency
+                      $FF:                      // Do not change
+                      else begin
+                        aa := MaxByte - Alpha;
+                        if aa > DA then
+                          DA := aa;
+                      end;
+                    end;
+                  end;
+              end;
+          end;
+        end;
+      end
+      else begin
+        Bmp := CreateBmp32(Dst_Width, Dst_Height);
+        MaskBmp := CreateBmp32(Dst_Width, Dst_Height);
+        if ((Src_Width > Dst_Width) and
+              (Src_Height = Dst_Height) or (Src_Width = Dst_Width) and
+                (Src_Height > Dst_Height) or NoStdStretch) and
+                  (Dst_Width > 1) and
+                    (Dst_Height > 1) then begin
+          TmpBmp := CreateBmp32(max(Src_Width, 2), max(Src_Height, 2));
+          BitBlt(TmpBmp.Canvas.Handle, 0, 0, Src_Width, Src_Height, BmpSrc.Canvas.Handle, SrcX1, SrcY1, SRCCOPY);
+          if Src_Width = 1 then
+            BitBlt(TmpBmp.Canvas.Handle, 1, 0, 1, Src_Height, TmpBmp.Canvas.Handle, 0, 0, SRCCOPY);
+
+          if Src_Height = 1 then
+            BitBlt(TmpBmp.Canvas.Handle, 0, 1, Src_Width, 1, TmpBmp.Canvas.Handle, 0, 0, SRCCOPY);
+
+          Stretch(TmpBmp, Bmp, Dst_Width, Dst_Height, ftMitchell);
+          BitBlt(TmpBmp.Canvas.Handle, 0, 0, Src_Width, Src_Height, BmpSrc.Canvas.Handle, SrcX1, SrcY1 + MaskOffset, SRCCOPY);
+          if Src_Width = 1 then
+            BitBlt(TmpBmp.Canvas.Handle, 1, 0, 1, Src_Height, TmpBmp.Canvas.Handle, 0, 0, SRCCOPY);
+
+          if Src_Height = 1 then
+            BitBlt(TmpBmp.Canvas.Handle, 0, 1, Src_Width, 1, TmpBmp.Canvas.Handle, 0, 0, SRCCOPY);
+        
+          Stretch(TmpBmp, MaskBmp, Dst_Width, Dst_Height, ftHermite);
+          TmpBmp.Free;
+        end
+        else begin
+          StretchBlt(Bmp.Canvas.Handle, 0, 0, Dst_Width, Dst_Height, BmpSrc.Canvas.Handle, SrcX1, SrcY1, Src_Width, Src_Height, SRCCOPY);
+          StretchBlt(MaskBmp.Canvas.Handle, 0, 0, Dst_Width, Dst_Height, BmpSrc.Canvas.Handle, SrcX1, SrcY1 + MaskOffset, Src_Width, Src_Height, SRCCOPY);
+        end;
+
+        iY := 0;
+        if DstY1 + Dst_Height > BmpDst.Height then
+          Dst_Height := BmpDst.Height - DstY1;
+
+        if DstX1 + Dst_Width > BmpDst.Width then
+          Dst_Width := BmpDst.Width - DstX1;
+
+        if InitLine(Bmp, Pointer(S0), DeltaS) and InitLine(MaskBmp, Pointer(M0), DeltaM) and InitLine(BmpDst, Pointer(D0), DeltaD) then
+          for Y := DstY1 to DstY1 + Dst_Height - 1 do begin
+            D := Pointer(LongInt(D0) + DeltaD * Y);
+            S := Pointer(LongInt(S0) + DeltaS * iY);
+            M := Pointer(LongInt(M0) + DeltaM * iY);
+            iX := 0;
+            for X := DstX1 to DstX1 + Dst_Width - 1 do begin
+              with D[X], S[iX], M[iX] do
+                case MR of
+                  MaxByte:
+                    ; // Continue;
+
+                  0: begin
+                    DI := SI;
+                    DA := MaxByte;
+                  end
+
+                  else begin
+                    a_ := (MaxByte - MR) * Opacity shr 8;
+                    aa := (MaxByte - a_);
+                    DR := (DR * aa + SR * a_) shr 8;
+                    DG := (DG * aa + SG * a_) shr 8;
+                    DB := (DB * aa + SB * a_) shr 8;
+                    case DA of
+                      0: DA := MaxByte - MR; // Full transparency
+
+                      $FF:                   // Do not change
+
+                      else begin
+                        aa := MaxByte - MR;
+                        if aa > DA then
+                          DA := aa;
+                      end;
                     end;
                   end;
                 end;
+
+              inc(iX);
             end;
-        end;
-      End;
-      Exit;
-    end;
-    Bmp := CreateBmp32(Dst_Width, Dst_Height);
-    MaskBmp := CreateBmp32(Dst_Width, Dst_Height);
-    if ((Src_Width > Dst_Width) and
-          (Src_Height = Dst_Height) or (Src_Width = Dst_Width) and
-            (Src_Height > Dst_Height) or NoStdStretch) and
-              (Dst_Width > 1) and
-                (Dst_Height > 1) then begin
-      TmpBmp := CreateBmp32(max(Src_Width, 2), max(Src_Height, 2));
-      BitBlt(TmpBmp.Canvas.Handle, 0, 0, Src_Width, Src_Height, BmpSrc.Canvas.Handle, SrcX1, SrcY1, SRCCOPY);
-      if Src_Width = 1 then
-        BitBlt(TmpBmp.Canvas.Handle, 1, 0, 1, Src_Height, TmpBmp.Canvas.Handle, 0, 0, SRCCOPY);
+            inc(iY);
+          end;
 
-      if Src_Height = 1 then
-        BitBlt(TmpBmp.Canvas.Handle, 0, 1, Src_Width, 1, TmpBmp.Canvas.Handle, 0, 0, SRCCOPY);
-
-      Stretch(TmpBmp, Bmp, Dst_Width, Dst_Height, ftMitchell);
-      BitBlt(TmpBmp.Canvas.Handle, 0, 0, Src_Width, Src_Height, BmpSrc.Canvas.Handle, SrcX1, SrcY1 + MaskOffset, SRCCOPY);
-      if Src_Width = 1 then
-        BitBlt(TmpBmp.Canvas.Handle, 1, 0, 1, Src_Height, TmpBmp.Canvas.Handle, 0, 0, SRCCOPY);
-
-      if Src_Height = 1 then
-        BitBlt(TmpBmp.Canvas.Handle, 0, 1, Src_Width, 1, TmpBmp.Canvas.Handle, 0, 0, SRCCOPY);
-        
-      Stretch(TmpBmp, MaskBmp, Dst_Width, Dst_Height, ftHermite);
-      TmpBmp.Free;
+        MaskBmp.Free;
+        Bmp.Free;
+      end
     end
-    else begin
-      StretchBlt(Bmp.Canvas.Handle, 0, 0, Dst_Width, Dst_Height, BmpSrc.Canvas.Handle, SrcX1, SrcY1, Src_Width, Src_Height, SRCCOPY);
-      StretchBlt(MaskBmp.Canvas.Handle, 0, 0, Dst_Width, Dst_Height, BmpSrc.Canvas.Handle, SrcX1, SrcY1 + MaskOffset, Src_Width, Src_Height, SRCCOPY);
-    end;
-
-    iY := 0;
-    if DstY1 + Dst_Height > BmpDst.Height then
-      Dst_Height := BmpDst.Height - DstY1;
-
-    if DstX1 + Dst_Width > BmpDst.Width then
-      Dst_Width := BmpDst.Width - DstX1;
-
-    if InitLine(Bmp, Pointer(S0), DeltaS) and InitLine(MaskBmp, Pointer(M0), DeltaM) and InitLine(BmpDst, Pointer(D0), DeltaD) then
-      for Y := DstY1 to DstY1 + Dst_Height - 1 do begin
-        D := Pointer(LongInt(D0) + DeltaD * Y);
-        S := Pointer(LongInt(S0) + DeltaS * iY);
-        M := Pointer(LongInt(M0) + DeltaM * iY);
-        iX := 0;
-        for X := DstX1 to DstX1 + Dst_Width - 1 do begin
-          with D[X], S[iX] do
-            case M[iX].R of
-              MaxByte:
-                ; // Continue;
-
-              0: begin
-                I := Intg;
-                A := MaxByte;
-              end
-
-              else begin
-                a_ := (MaxByte - M[iX].R) * Opacity shr 8;
-                aa := (MaxByte - a_);
-                R := (R * aa + Red   * a_) shr 8;
-                G := (G * aa + Green * a_) shr 8;
-                B := (B * aa + Blue  * a_) shr 8;
-                case A of
-                  0:   A := MaxByte - M[iX].R;         // Full transparency
-                  $FF:                                 // Do not change
-                  else begin
-                    aa := MaxByte - M[iX].R;
-                    if aa > A then
-                      A := aa;
-                  end;
-                end;
-              end;
-            end;
-
-          inc(iX);
-        end;
-        inc(iY);
-      end;
-
-    MaskBmp.Free;
-    Bmp.Free;
-  end
-  else
-    StretchBlt(BmpDst.Canvas.Handle, DstX1, DstY1, Dst_Width, Dst_Height, BmpSrc.Canvas.Handle, SrcX1, SrcY1, Src_Width, Src_Height, SRCCOPY);
+    else
+      StretchBlt(BmpDst.Canvas.Handle, DstX1, DstY1, Dst_Width, Dst_Height, BmpSrc.Canvas.Handle, SrcX1, SrcY1, Src_Width, Src_Height, SRCCOPY);
 end;
 
 
 procedure BlendGlyphByMask(R1, R2: TRect; Bmp1, Bmp2: TBitmap; AddedTransparency: integer; const MaskData: TsMaskData);
 var
   cc: TsColor_RGB_;
-  D0, D, M: PRGBAArray;
-  S0, S: PRGBAArray_RGB;DeltaS, DeltaD: integer;
-  X, Y, h, w, hdiv2, dx1, dy1, dx2, dy2: Integer;
+  M: PRGBAArray_M;
+  D0, D: PRGBAArray_D;
+  S0, S: PRGBAArray_S;
+  DeltaS, DeltaD, X, Y, h, w, hdiv2, dx1, dy1, dx2, dy2: integer;
 begin
   hdiv2 := HeightOf(MaskData.R) div (MaskData.MaskType + 1);
   h := Min(HeightOf(R1), HeightOf(R2));
   h := min(h, Bmp1.Height - R1.Top - 1);
   h := min(h, Bmp2.Height - R2.Top - hdiv2 - 1);
 
-  if MaskData.ImageCount < 1 then
+  if MaskData.ImageCount <= 0 then
     h := min(h, hdiv2 - R2.Top - 1);
 
   w := Min(WidthOf(R1), WidthOf(R2));
   w := min(w, Bmp1.Width - R1.Left - 1);
 
-  if MaskData.ImageCount < 1 then
+  if MaskData.ImageCount <= 0 then
     w := min(w, Bmp2.Width - R2.Left - 1);
 
   if MaskData.MaskType = 0 then
@@ -1882,20 +1946,20 @@ begin
             dx1 := R1.Left;
             dx2 := R2.Left;
             for X := 0 to w do begin
-              cc := S[R2.Left + X];
-              with D[dx1], S[dx2] do
-                if (Col <> clFuchsia) and (M[dx2].R <> MaxByte) then
+              cc.Col := S[R2.Left + X].SC;
+              with D[dx1], S[dx2], M[dx2] do
+                if (SC <> clFuchsia) and (MR <> MaxByte) then
                   if AddedTransparency <> 1 then begin
-                    R := ((R - Red)   * min(M[dx2].R + 100, MaxByte) + Red   shl 8) shr 8;
-                    G := ((G - Green) * min(M[dx2].G + 100, MaxByte) + Green shl 8) shr 8;
-                    B := ((B - Blue)  * min(M[dx2].B + 100, MaxByte) + Blue  shl 8) shr 8;
-                    A := A + ((MaxByte - A) * (MaxByte - M[dx2].R)) shr 8;
+                    DR := ((DR - SR) * min(MR + 100, MaxByte) + SR shl 8) shr 8;
+                    DG := ((DG - SG) * min(MG + 100, MaxByte) + SG shl 8) shr 8;
+                    DB := ((DB - SB) * min(MB + 100, MaxByte) + SB shl 8) shr 8;
+                    DA := DA + ((MaxByte - DA) * (MaxByte - MR)) shr 8;
                   end
                   else begin
-                    R := ((R - Red)   * M[dx2].R + Red   shl 8) shr 8;
-                    G := ((G - Green) * M[dx2].G + Green shl 8) shr 8;
-                    B := ((B - Blue)  * M[dx2].B + Blue  shl 8) shr 8;
-                    A := A + ((MaxByte - A) * (MaxByte - M[dx2].R)) shr 8;
+                    DR := ((DR - SR) * MR + SR shl 8) shr 8;
+                    DG := ((DG - SG) * MG + SG shl 8) shr 8;
+                    DB := ((DB - SB) * MB + SB shl 8) shr 8;
+                    DA := DA + ((MaxByte - DA) * (MaxByte - MR)) shr 8;
                   end;
 
               inc(dx1);
@@ -1908,149 +1972,145 @@ begin
 end;
 
 
-procedure CopyTransCorner(const SrcBmp: Graphics.TBitMap; const X, Y: integer; SrcRect: TRect; const BGInfo: TacBGInfo; const SkinData: TsCommonData);
+procedure CopyTransCorner(const SrcBmp: Graphics.TBitMap; const PosX, PosY: integer; SrcRect: TRect; const BGInfo: TacBGInfo; const SkinData: TsCommonData);
 var
-  S0, D0, Dst, Src: PRGBAArray;
-  h, w, DeltaS, DeltaD, sX, sY, SrcX, DstX, DstY: integer;
+  S0, Src: PRGBAArray_S;
+  D0, Dst: PRGBAArray_D;
+  bWidth1, bHeight1, bWidth2, bHeight2, h, w, DeltaS, DeltaD, sX, sY, SrcX, DstX, DstY: integer;
 begin
   if SrcRect.Top < 0 then
     SrcRect.Top := 0;
 
-  if SrcRect.Bottom > SrcBmp.Height - 1 then
+  if SrcRect.Bottom >= SrcBmp.Height then
     SrcRect.Bottom := SrcBmp.Height - 1;
 
   if SrcRect.Left < 0 then
     SrcRect.Left := 0;
 
-  if SrcRect.Right > SrcBmp.Width - 1 then
+  if SrcRect.Right >= SrcBmp.Width then
     SrcRect.Right := SrcBmp.Width - 1;
 
   h := HeightOf(SrcRect);
   w := WidthOf (SrcRect);
-  if InitLine(SrcBmp, Pointer(S0), DeltaS) and InitLine(SkinData.FCacheBmp, Pointer(D0), DeltaD) then begin
-    if (BGInfo.BgType = btCache) and (BGInfo.Bmp <> nil) then
-      for sY := 0 to h do begin
-        DstY := sY + Y;
-        if (BGInfo.Offset.Y + DstY >= BGInfo.Bmp.Height) or (BGInfo.Offset.Y + DstY < 0) then
-          Continue;
-
-        if (DstY <= SkinData.FCacheBmp.Height - 1) and (DstY >= 0) then begin
-          Src := Pointer(LongInt(S0) + DeltaS * (sY + SrcRect.Top));
-          Dst := Pointer(LongInt(D0) + DeltaD * DstY);
-          for sX := 0 to w do begin
-            DstX := sX + X;
-            if (DstX <= SkinData.FCacheBmp.Width - 1) and (DstX >= 0) then begin
-              SrcX := sX + SrcRect.Left;
-              if (Src[SrcX].C = clFuchsia) {if transparent pixel} then begin
-                if (BGInfo.Offset.X + DstX >= BGInfo.Bmp.Width) or (BGInfo.Offset.X + DstX < 0) then
-                  Continue;
-
-                Dst[DstX].C := {SwapRedBlue}(GetAPixel(BGInfo.Bmp, BGInfo.Offset.X + DstX, BGInfo.Offset.Y + DstY).C);
-              end;
-            end;
-          end
-        end;
-      end
-    else
-      if BGInfo.Color <> clFuchsia then
+  bHeight1 := SkinData.FCacheBmp.Height;
+  bWidth1 := SkinData.FCacheBmp.Width;
+  if InitLine(SrcBmp, Pointer(S0), DeltaS) and InitLine(SkinData.FCacheBmp, Pointer(D0), DeltaD) then
+    with BGInfo do begin
+      if (BgType = btCache) and (Bmp <> nil) then begin
+        bHeight2 := Bmp.Height;
+        bWidth2 := Bmp.Width;
         for sY := 0 to h do begin
-          DstY := sY + Y;
-          if (DstY <= SkinData.FCacheBmp.Height - 1) and (DstY >= 0) then begin
-            Src := Pointer(LongInt(S0) + DeltaS * (sY + SrcRect.Top));
-            Dst := Pointer(LongInt(D0) + DeltaD * DstY);
-            for sX := 0 to w do begin
-              DstX := sX + X;
-              if (DstX <= SkinData.FCacheBmp.Width - 1) and (DstX >= 0) then
-                if (Src[sX + SrcRect.Left].C = clFuchsia) then
-                  Dst[DstX].C := SwapRedBlue(BGInfo.Color);
-            end
+          DstY := sY + PosY;
+          if (Offset.Y + DstY < bHeight2) and (Offset.Y + DstY >= 0) then
+            if IsValidIndex(DstY, bHeight1) then begin
+              Src := Pointer(LongInt(S0) + DeltaS * (sY + SrcRect.Top));
+              Dst := Pointer(LongInt(D0) + DeltaD * DstY);
+              for sX := 0 to w do begin
+                DstX := sX + PosX;
+                if IsValidIndex(DstX, bWidth1) then begin
+                  SrcX := sX + SrcRect.Left;
+                  if Src[SrcX].SC = clFuchsia {if pixel is transparent} then 
+                    if (Offset.X + DstX < bWidth2) and (Offset.X + DstX >= 0) then
+                      Dst[DstX].DC := {SwapRedBlue}(GetAPixel(Bmp, Offset.X + DstX, Offset.Y + DstY).C);
+                end;
+              end
+            end;
+        end
+      end
+      else
+        if Color <> clFuchsia then
+          for sY := 0 to h do begin
+            DstY := sY + PosY;
+            if IsValidIndex(DstY, bHeight1) then begin
+              Src := Pointer(LongInt(S0) + DeltaS * (sY + SrcRect.Top));
+              Dst := Pointer(LongInt(D0) + DeltaD * DstY);
+              for sX := 0 to w do begin
+                DstX := sX + PosX;
+                if IsValidIndex(DstX, bWidth1) then
+                  if Src[sX + SrcRect.Left].SC = clFuchsia then
+                    Dst[DstX].DC := SwapRedBlue(Color);
+              end
+            end;
           end;
-        end;
-  end;
+    end;
 end;
 
 
-procedure CopyMasterCorner(R1, R2: TRect; const Bmp: TBitmap; const BGInfo: TacBGInfo; const SkinData: TsCommonData);
+procedure CopyMasterCorner(R1, R2: TRect; const aBmp: TBitmap; const BGInfo: TacBGInfo; const SkinData: TsCommonData);
 var
-  X, Y, h, w, DeltaS, DeltaD: integer;
-  S0, D0, S, D: PRGBAArray;
+  PosX, PosY, h, w, DeltaS, DeltaD: integer;
+  S0, S: PRGBAArray_S;
+  D0, D: PRGBAArray_D;
   col_: TsColor_;
 begin
   h := Min(HeightOf(R1), HeightOf(R2));
   h := Min(h, SkinData.FCacheBmp.Height - R1.Top);
-  h := Min(h, Bmp.Height - R2.Top) - 1;
+  h := Min(h, aBmp.Height - R2.Top) - 1;
   if h >= 0 then begin
     w := Min(WidthOf(R1), WidthOf(R2));
     w := Min(w, SkinData.FCacheBmp.Width - R1.Left);
-    w := Min(w, Bmp.Width - R2.Left) - 1;
+    w := Min(w, aBmp.Width - R2.Left) - 1;
     if w >= 0 then begin
       if R1.Left < R2.Left then begin
-        if (R1.Left < 0) then begin
+        if R1.Left < 0 then begin
           inc(R2.Left, - R1.Left);
           dec(w, - R1.Left);
           R1.Left := 0;
         end;
       end
       else
-        if (R2.Left < 0) then begin
+        if R2.Left < 0 then begin
           inc(R1.Left, - R2.Left);
           dec(w, - R2.Left);
           R2.Left := 0;
         end;
 
       if R1.Top < R2.Top then begin
-        if (R1.Top < 0) then begin
+        if R1.Top < 0 then begin
           inc(R2.Top, - R1.Top);
           dec(h, - R1.Top);
           R1.Top := 0;
         end;
       end
       else
-        if (R2.Top < 0) then begin
+        if R2.Top < 0 then begin
           inc(R1.Top, - R2.Top);
           dec(h, - R2.Top);
           R2.Top := 0;
         end;
 
-      col_.C := BGInfo.Color;
-      col_.B := TsColor(BGInfo.Color).B;
-      col_.R := TsColor(BGInfo.Color).R;
-      if InitLine(Bmp, Pointer(S0), DeltaS) and InitLine(SkinData.FCacheBmp, Pointer(D0), DeltaD) then
-        if BGInfo.BgType <> btCache then
-          for Y := 0 to h do begin
-            S := Pointer(LongInt(S0) + DeltaS * (R2.Top + Y));
-            D := Pointer(LongInt(D0) + DeltaD * (R1.Top + Y));
-            for X := 0 to w do
-              if (S[R2.Left + X].C = clFuchsia) then
-                D[R1.Left + X] := col_;
-          end
-        else
-          for Y := 0 to h do begin
-            S := Pointer(LongInt(S0) + DeltaS * (R2.Top + Y));
-            D := Pointer(LongInt(D0) + DeltaD * (R1.Top + Y));
-            if BGInfo.BgType <> btCache then begin
-              for X := 0 to w do
-                if (S[R2.Left + X].C = clFuchsia) then
-                  D[R1.Left + X] := col_;
+      with R1, BGInfo do begin
+        col_.C := Color;
+        col_.B := TsColor(Color).B;
+        col_.R := TsColor(Color).R;
+        if InitLine(aBmp, Pointer(S0), DeltaS) and InitLine(SkinData.FCacheBmp, Pointer(D0), DeltaD) then
+          if BgType <> btCache then
+            for PosY := 0 to h do begin
+              S := Pointer(LongInt(S0) + DeltaS * (R2.Top + PosY));
+              D := Pointer(LongInt(D0) + DeltaD * (Top + PosY));
+              for PosX := 0 to w do
+                if S[R2.Left + PosX].SC = clFuchsia then
+                  D[Left + PosX].DC := col_.C;
             end
-            else
-              for X := 0 to w do
-                if (S[R2.Left + X].C = clFuchsia) then begin
-                  if (BGInfo.Bmp.Height <= R1.Top + BGInfo.Offset.Y + Y) then
-                    Continue;
-
-                  if (BGInfo.Bmp.Width <= R1.Left + BGInfo.Offset.X + X) then
-                    Break;
-
-                  if R1.Top + BGInfo.Offset.Y + Y < 0 then
-                    Break;
-
-                  if R1.Left + BGInfo.Offset.X + X < 0 then
-                    Continue;
-
-                  D[R1.Left + X].C := GetAPixel(BGInfo.Bmp, R1.Left + BGInfo.Offset.X + X, R1.Top + BGInfo.Offset.Y + Y).C;
-                end
-          end;
+          else
+            for PosY := 0 to h do begin
+              S := Pointer(LongInt(S0) + DeltaS * (R2.Top + PosY));
+              D := Pointer(LongInt(D0) + DeltaD * (Top + PosY));
+              if BgType <> btCache then begin
+                for PosX := 0 to w do
+                  if S[R2.Left + PosX].SC = clFuchsia then
+                    D[Left + PosX].DC := col_.C;
+              end
+              else
+                for PosX := 0 to w do
+                  if S[R2.Left + PosX].SC = clFuchsia then
+                    if (Bmp.Height > Top + Offset.Y + PosY) and (Left + Offset.X + PosX >= 0) then 
+                      if (Bmp.Width <= Left + Offset.X + PosX) or (Top + Offset.Y + PosY < 0) then
+                        Break
+                      else
+                        D[Left + PosX].DC := GetAPixel(Bmp, Left + Offset.X + PosX, Top + Offset.Y + PosY).C;
+            end;
+      end;
     end;
   end;
 end;
@@ -2058,81 +2118,84 @@ end;
 
 procedure UpdateCorners(SkinData: TsCommonData; State: integer; Corners: TsCorners = [scLeftTop, scLeftBottom, scRightTop, scRightBottom]);
 var
-  w, Width, Height, dw, dh, wl, wt, wr, wb: integer;
+  w, iWidth, iHeight, dw, dh, wl, wt, wr, wb: integer;
   MaskData: TsMaskData;
   BGInfo: TacBGInfo;
   SrcBmp: TBitmap;
 begin
-  if not Skindata.SkinManager.IsValidImgIndex(SkinData.BorderIndex) or not Assigned(SkinData.FCacheBmp) or (SkinData.FOwnerControl = nil) then
-    Exit;
+  with SkinData, SkinManager do
+    if IsValidImgIndex(BorderIndex) and Assigned(FCacheBmp) and (FOwnerControl <> nil) then begin
+      MaskData := ma[BorderIndex];
+      if MaskData.CornerType <> 0 then begin
+        BGInfo.PleaseDraw := False;
+        BGInfo.DrawDC := 0;
+        if FOwnerControl.Parent = nil then
+          if FOwnerControl is TWinControl then
+            GetBGInfo(@BGInfo, GetParent(TWinControl(FOwnerControl).Handle))
+          else
+            Exit
+        else
+          GetBGInfo(@BGInfo, FOwnerControl.Parent);
 
-  MaskData := SkinData.SkinManager.ma[SkinData.BorderIndex];
-  if MaskData.CornerType <> 0 then begin
-    BGInfo.PleaseDraw := False;
-    BGInfo.DrawDC := 0;
-    if SkinData.FOwnerControl.Parent = nil then
-      if SkinData.FOwnerControl is TWinControl then
-        GetBGInfo(@BGInfo, GetParent(TWinControl(SkinData.FOwnerControl).Handle))
-      else
-        Exit
-    else
-      GetBGInfo(@BGInfo, SkinData.FOwnerControl.Parent);
+        iWidth  := FOwnerControl.Width;
+        iHeight := FOwnerControl.Height;
+        wl := MaskData.WL;
+        wt := MaskData.WT;
+        wr := MaskData.WR;
+        wb := MaskData.WB;
+        if (MaskData.ImageCount = 0) and (MaskData.Bmp <> nil) then begin // if external
+          MaskData.MaskType := 1;
+          MaskData.ImageCount := 3;
+          MaskData.R := MkRect(MaskData.Bmp);
+        end;
 
-    Width  := SkinData.FOwnerControl.Width;
-    Height := SkinData.FOwnerControl.Height;
-    wl := MaskData.WL;
-    wt := MaskData.WT;
-    wr := MaskData.WR;
-    wb := MaskData.WB;
-    if (MaskData.ImageCount = 0) and (MaskData.Bmp <> nil) then begin // if external
-      MaskData.MaskType := 1;
-      MaskData.ImageCount := 3;
-      MaskData.R := MkRect(MaskData.Bmp);
+        if BGInfo.BgType = btCache then begin
+          inc(BGInfo.Offset.X, FOwnerControl.Left);
+          inc(BGInfo.Offset.Y, FOwnerControl.Top);
+        end;
+
+        if State >= MaskData.ImageCount then
+          State := MaskData.ImageCount - 1;
+
+        dw := State * MaskData.Width;
+        dh := MaskData.Height;
+
+        w := MaskData.Width - wl - wr;             // Width of piece of mask
+
+        if MaskData.Bmp <> nil then
+          SrcBmp := MaskData.Bmp
+        else
+          SrcBmp := MasterBitmap;
+
+        with MaskData.R do
+          if MaskData.MaskType = 0 then begin // Copy without mask
+            if scLeftTop in Corners then
+              CopyTransCorner(SrcBmp, 0, 0, Rect(Left + dw, Top, Left + dw + wl - 1, Top + wt - 1), BGInfo, SkinData);
+
+            if scLeftBottom in Corners then
+              CopyTransCorner(SrcBmp, 0, iHeight - wb, Rect(Left + dw, Bottom - wb, Left + dw + wl - 1, Bottom - 1), BGInfo, SkinData);
+
+            if scRightBottom in Corners then
+              CopyTransCorner(SrcBmp, iWidth - wr, iHeight - wb, Rect(Left + dw + wl + w, Bottom - wb, Left + dw + wl + w + wr - 1, Bottom - 1), BGInfo, SkinData);
+
+            if scRightTop in Corners then
+              CopyTransCorner(SrcBmp, iWidth - wr, 0, Rect(Left + dw + wl + w, Top, Left + dw + wl + w + wr - 1, Top + wt - 1), BGInfo, SkinData);
+          end
+          else begin
+            if scLeftTop in Corners then
+              CopyMasterCorner(MkRect(wl + 1, wt + 1), Rect(Left + dw, Top, Left + dw + wl, Top + wt), SrcBmp, BGInfo, SkinData);
+
+            if scLeftBottom in Corners then
+              CopyMasterCorner(Rect(0, iHeight - wb, wl, iHeight), Rect(Left + dw, Top + dh - wb, Left + dw + wl, Top + dh), SrcBmp, BGInfo, SkinData);
+
+            if scRightBottom in Corners then
+              CopyMasterCorner(Rect(iWidth - wr, iHeight - wb, iWidth, iHeight), Rect(Left + dw + wl + w, Top + dh - wb, Left + dw + wl + w + wr, Top + dh), SrcBmp, BGInfo, SkinData);
+
+            if scRightTop in Corners then
+              CopyMasterCorner(Rect(iWidth - wr, 0, iWidth, wt), Rect(Left + dw + wl + w, Top, Left + dw + wl + w + wr, Top + wt), SrcBmp, BGInfo, SkinData);
+          end;
+      end;
     end;
-
-    if BGInfo.BgType = btCache then begin
-      inc(BGInfo.Offset.X, SkinData.FOwnerControl.Left);
-      inc(BGInfo.Offset.Y, SkinData.FOwnerControl.Top);
-    end;
-
-    if State >= MaskData.ImageCount then State := MaskData.ImageCount - 1;
-    dw := State * (WidthOfImage(MaskData));
-    dh := HeightOfImage(MaskData);
-
-    w := WidthOfImage(MaskData) - wl - wr;             // Width of piece of mask
-
-    if MaskData.Bmp <> nil then
-      SrcBmp := MaskData.Bmp
-    else
-      SrcBmp := SkinData.SkinManager.MasterBitmap;
-    
-    if MaskData.MaskType = 0 then begin // Copy without mask
-      if (scLeftTop in Corners) then
-        CopyTransCorner(SrcBmp, 0, 0, Rect(MaskData.R.Left + dw, MaskData.R.Top, MaskData.R.Left + dw + wl - 1, MaskData.R.Top + wt - 1), BGInfo, SkinData);
-
-      if (scLeftBottom in Corners) then
-        CopyTransCorner(SrcBmp, 0, Height - wb, Rect(MaskData.R.Left + dw, MaskData.R.Bottom - wb, MaskData.R.Left + dw + wl - 1, MaskData.R.Bottom - 1), BGInfo, SkinData);
-
-      if (scRightBottom in Corners) then
-        CopyTransCorner(SrcBmp, Width - wr, Height - wb, Rect(MaskData.R.Left + dw + wl + w, MaskData.R.Bottom - wb, MaskData.R.Left + dw + wl + w + wr - 1, MaskData.R.Bottom - 1), BGInfo, SkinData);
-
-      if (scRightTop in Corners) then
-        CopyTransCorner(SrcBmp, Width - wr, 0, Rect(MaskData.R.Left + dw + wl + w, MaskData.R.Top, MaskData.R.Left + dw + wl + w + wr - 1, MaskData.R.Top + wt - 1), BGInfo, SkinData);
-    end
-    else begin
-      if (scLeftTop in Corners) then
-        CopyMasterCorner(MkRect(wl + 1, wt + 1), Rect(MaskData.R.Left + dw, MaskData.R.Top, MaskData.R.Left + dw + wl, MaskData.R.Top + wt), SrcBmp, BGInfo, SkinData);
-
-      if (scLeftBottom in Corners) then
-        CopyMasterCorner(Rect(0, Height - wb, wl, Height), Rect(MaskData.R.Left + dw, MaskData.R.Top + dh - wb, MaskData.R.Left + dw + wl, MaskData.R.Top + dh), SrcBmp, BGInfo, SkinData);
-
-      if (scRightBottom in Corners) then
-        CopyMasterCorner(Rect(Width - wr, Height - wb, Width, Height), Rect(MaskData.R.Left + dw + wl + w, MaskData.R.Top + dh - wb, MaskData.R.Left + dw + wl + w + wr, MaskData.R.Top + dh), SrcBmp, BGInfo, SkinData);
-
-      if (scRightTop in Corners) then
-        CopyMasterCorner(Rect(Width - wr, 0, Width, wt), Rect(MaskData.R.Left + dw + wl + w, MaskData.R.Top, MaskData.R.Left + dw + wl + w + wr, MaskData.R.Top + wt), SrcBmp, BGInfo, SkinData);
-    end;
-  end;
 end;
 {$ENDIF}
 
@@ -2162,26 +2225,27 @@ var
   CacheBmp: TBitmap;
 begin
   if (ItemBmp <> nil) and not IsRectEmpty(R) then begin
-    if (SkinManager = nil) then
+    if SkinManager = nil then
       SkinManager := DefaultManager;
 
-    if Assigned(SkinManager) and TsSkinManager(SkinManager).IsValidSkinIndex(SkinIndex) and (R.Bottom <= ItemBmp.Height) and (R.Right <= ItemBmp.Width) and
-        (R.Left >= 0) and (R.Top >= 0) then begin
-      // Count of allowed states is limited in skin
-      if TsSkinManager(SkinManager).gd[SkinIndex].States <= State then
-        State := TsSkinManager(SkinManager).gd[SkinIndex].States - 1;
+    if Assigned(SkinManager) then
+      with TsSkinManager(SkinManager) do
+        if IsValidSkinIndex(SkinIndex) and (R.Bottom <= ItemBmp.Height) and (R.Right <= ItemBmp.Width) and (R.Left >= 0) and (R.Top >= 0) then begin
+          // Count of allowed states is limited in skin
+          if gd[SkinIndex].States <= State then
+            State := gd[SkinIndex].States - 1;
 
-      mState := min(State, ac_MaxPropsIndex);
-      CacheBmp := CreateBmp32(WidthOf(R) + 1, HeightOf(R) + 1);
-      BitBlt(CacheBmp.Canvas.Handle, 0, 0, CacheBmp.Width, CacheBmp.Height, ItemBmp.Canvas.Handle, R.Left, R.Top, SRCCOPY);
-      PaintItemBG32(SkinIndex, mState {normal or hot}, R, ItemBmp, SkinManager);
-      if TsSkinManager(SkinManager).IsValidImgIndex(TsSkinManager(SkinManager).gd[SkinIndex].BorderIndex) then
-        DrawSkinRect32(ItemBmp, R, MakeCacheInfo(CacheBmp, -R.Left, -R.Top), TsSkinManager(SkinManager).ma[TsSkinManager(SkinManager).gd[SkinIndex].BorderIndex], State);
+          mState := min(State, ac_MaxPropsIndex);
+          CacheBmp := CreateBmp32(WidthOf(R) + 1, HeightOf(R) + 1);
+          BitBlt(CacheBmp.Canvas.Handle, 0, 0, CacheBmp.Width, CacheBmp.Height, ItemBmp.Canvas.Handle, R.Left, R.Top, SRCCOPY);
+          PaintItemBG32(SkinIndex, mState {normal or hot}, R, ItemBmp, SkinManager);
+          if IsValidImgIndex(gd[SkinIndex].BorderIndex) then
+            DrawSkinRect32(ItemBmp, R, MakeCacheInfo(CacheBmp, -R.Left, -R.Top), ma[gd[SkinIndex].BorderIndex], State);
 
-      CacheBmp.Free;
-      if (ItemBmp.Width = WidthOf(R)) and (ItemBmp.Height = HeightOf(R)) then
-        UpdateAlpha(ItemBmp, R) // Updating for using of bitmap in layered windows
-    end;
+          CacheBmp.Free;
+          if (ItemBmp.Width = WidthOf(R)) and (ItemBmp.Height = HeightOf(R)) then
+            UpdateAlpha(ItemBmp, R) // Updating for using of bitmap in layered windows
+        end;
   end;
 end;
 
@@ -2214,9 +2278,9 @@ var
     else begin
       R := aRect;
       // BGImage painting
-      if (ImagePercent > 0) then
+      if ImagePercent > 0 then
         with sMan do begin
-          if (PatternIndex > -1) and (PatternIndex < Length(ma)) then begin
+          if IsValidIndex(PatternIndex, Length(ma)) then begin
             if boolean(ma[PatternIndex].MaskType) then
               TileMasked(aBmp, R, EmptyCI {!}, ma[PatternIndex], acFillModes[ma[PatternIndex].DrawMode])
             else
@@ -2224,11 +2288,11 @@ var
 
             iDrawed := True;
           end;
-          if R.Right <> -1 then
+          if R.Right >= 0 then
             FillRect32(aBmp, R, Color); // If not all rect was filled by texture
         end;
       // BGGradient painting
-      if (GradientPercent > 0) then
+      if GradientPercent > 0 then
         if iDrawed then begin // If texture exists
           Bmp := CreateBmp32(WidthOf(aRect, True), HeightOf(aRect, True));
           try
@@ -2252,7 +2316,7 @@ var
 
       case GradientPercent + ImagePercent of
         1..99:
-          BlendColorRect(aBmp, aRect, GradientPercent + ImagePercent, Color); // Mix with color
+          BlendColorRect(aBmp, aRect, byte((GradientPercent + ImagePercent) * MaxByte div 100), Color); // Mix with color
 
         0: begin
           // Just fill by color
@@ -2271,577 +2335,571 @@ var
       end;
     end;
   end;
-  
+
 begin
   sMan := TsSkinManager(SkinManager);
-  if Assigned(sMan) and sMan.IsValidSkinIndex(SkinIndex) then begin
-    Transparency := sMan.gd[SkinIndex].Props[min(State, ac_MaxPropsIndex)].Transparency;
-    if (Transparency = 100) then begin
-      if (ItemBmp.Width = WidthOf(R)) and (ItemBmp.Height = HeightOf(R)) then // Make
-        FillRect32(ItemBmp, R, clBlack, 0);
-    end // Exit without changes
-    else
-      with sMan do begin
-        aRect := R;
-        PatternIndex := -1;
-        if CustomColor = clFuchsia then begin // Get skin props
-          State := min(State, ac_MaxPropsIndex);
-          Color := gd[SkinIndex].Props[State].Color;
-          ImagePercent := gd[SkinIndex].Props[State].ImagePercent;
-          GradientPercent := gd[SkinIndex].Props[State].GradientPercent;
-          if GradientPercent > 0 then
-            GradientArray := gd[SkinIndex].Props[State].GradientArray;
+  if Assigned(sMan) and sMan.IsValidSkinIndex(SkinIndex) then
+    with sMan.gd[SkinIndex] do begin
+      State := min(State, ac_MaxPropsIndex);
+      Transparency := Props[State].Transparency;
+      if Transparency = 100 then begin
+        if (ItemBmp.Width = WidthOf(R)) and (ItemBmp.Height = HeightOf(R)) then // Make
+          FillRect32(ItemBmp, R, clBlack, 0);
+      end // Exit without changes
+      else
+        with sMan do begin
+          aRect := R;
+          PatternIndex := -1;
+          if CustomColor = clFuchsia then begin // Get skin props
+            Color := Props[State].Color;
+            ImagePercent := Props[State].ImagePercent;
+            GradientPercent := Props[State].GradientPercent;
+            if GradientPercent > 0 then
+              GradientArray := Props[State].GradientArray;
 
-          if (ImagePercent > 0) then
-            PatternIndex := gd[SkinIndex].Props[State].TextureIndex
+            if ImagePercent > 0 then
+              PatternIndex := Props[State].TextureIndex
+          end
+          else begin // Filling by custom color only
+            ImagePercent := 0;
+            GradientPercent := 0;
+            Color := CustomColor;
+            Transparency := 0;
+          end;
+          PaintAddons(ItemBmp);
+        end;
+    end;
+end;
+
+
+procedure DrawSkinRect32(aBmp: TBitmap; const aRect: TRect; const ci: TCacheInfo; const MaskData: TsMaskData; const State: integer);
+var
+  BmpSrc: TBitmap;
+  Stretch: boolean;
+  x, y, w, h, dw, dh, dhm, lWidth, tWidth, rWidth, bWidth, NewState: integer;
+begin
+  if (State <> 0) or (MaskData.DrawMode and BDM_ACTIVEONLY = 0) then
+    if (WidthOf(aRect) > 1) and (HeightOf(aRect) > 1) and (MaskData.Manager <> nil) then begin
+      lWidth := MaskData.WL;
+      tWidth := MaskData.WT;
+      rWidth := MaskData.WR;
+      bWidth := MaskData.WB;
+      if lWidth + rWidth > WidthOf(aRect) then begin
+        y := lWidth + rWidth - WidthOf(aRect);
+        x := y div 2;
+        dec(lWidth, x);
+        dec(rWidth, x);
+        if y mod 2 > 0 then
+          dec(rWidth);
+
+        if lWidth < 0 then
+          lWidth := 0;
+
+        if rWidth < 0 then
+          rWidth := 0;
+      end;
+      if tWidth + bWidth > HeightOf(aRect) then begin
+        y := tWidth + bWidth - HeightOf(aRect);
+        x := y div 2;
+        dec(tWidth, x);
+        dec(bWidth, x);
+        if y mod 2 > 0 then
+          dec(bWidth);
+
+        if tWidth < 0 then
+          tWidth := 0;
+
+        if bWidth < 0 then
+          bWidth := 0;
+      end;
+      if State >= MaskData.ImageCount then
+        NewState := MaskData.ImageCount - 1
+      else
+        NewState := State;
+
+      dw := MaskData.Width;                  // Width of mask
+      dh := MaskData.Height;                 // Height of mask
+      if MaskData.MaskType = 0 then
+        dhm := 0
+      else
+        dhm := dh;
+
+      if MaskData.DrawMode and BDM_STRETCH <> 0 then begin
+        Stretch := True;
+        SetStretchBltMode(aBmp.Canvas.Handle, COLORONCOLOR);
+      end
+      else
+        Stretch := False;
+
+      w := dw - lWidth - rWidth;
+      if w < 0 then
+        Exit;      // Width of middle piece must be > 0
+
+      h := dh - tWidth - bWidth;
+      if h < 0 then
+        Exit;      // Height of middle piece must be > 0
+
+      dw := dw * NewState;                        // Offset of mask
+
+      if MaskData.Bmp <> nil then
+        BmpSrc := MaskData.Bmp
+      else
+        BmpSrc := TsSkinManager(MaskData.Manager).MasterBitmap;
+
+      with aRect, MaskData do
+        if MaskType = 0 then begin // Copy without mask
+          // left - top
+          CopyTransRect(aBmp, BmpSrc, Left, Top, Rect(R.Left + dw, R.Top, R.Left + dw + lWidth - 1, R.Top + tWidth - 1), clFuchsia, CI, True);
+          y := Top + tWidth;
+          // left - middle
+          if not Stretch then begin
+            if h > 0 then
+              while y < Bottom - h - bWidth do begin
+                BitBlt(aBmp.Canvas.Handle, Left, y, lWidth, h, BmpSrc.Canvas.Handle, R.Left + dw, R.Top + tWidth, SRCCOPY);
+                inc(y, h);
+              end;
+
+            if y < Bottom - bWidth then
+              BitBlt(aBmp.Canvas.Handle, Left, y, lWidth, Bottom - bWidth - y, BmpSrc.Canvas.Handle, R.Left + dw, R.Top + tWidth, SRCCOPY);
+          end
+          else
+            StretchBlt(aBmp.Canvas.Handle, Left, y, lWidth, Bottom - bWidth - y, BmpSrc.Canvas.Handle, R.Left + dw, R.Top + tWidth, lWidth, h, SRCCOPY);
+
+          // top - middle
+          x := Left + lWidth;
+          if not Stretch then begin
+            if w > 0 then
+              while x < Right - w - rWidth do begin
+                BitBlt(aBmp.Canvas.Handle, x, Top, w, tWidth, BmpSrc.Canvas.Handle, R.Left + dw + lWidth, R.Top, SRCCOPY);
+                inc(x, w);
+              end;
+
+            if x < Right - rWidth then
+              BitBlt(aBmp.Canvas.Handle, x, Top, Right - rWidth - x, tWidth, BmpSrc.Canvas.Handle, R.Left + dw + lWidth, R.Top, SRCCOPY);
+          end
+          else
+            StretchBlt(aBmp.Canvas.Handle, x, Top, Right - rWidth - x, tWidth, BmpSrc.Canvas.Handle, R.Left + dw + lWidth, R.Top, w, tWidth, SRCCOPY);
+
+          // left - bottom
+          CopyTransRect(aBmp, BmpSrc, Left, Bottom - bWidth, Rect(R.Left + dw, R.Bottom - bWidth, R.Left + dw + lWidth - 1, R.Bottom - 1), clFuchsia, CI, True);
+
+          // bottom - middle
+          x := Left + lWidth;
+          if not Stretch then begin
+            if w > 0 then
+              while x < Right - w - rWidth do begin
+                BitBlt(aBmp.Canvas.Handle, x, Bottom - bWidth, w, bWidth, BmpSrc.Canvas.Handle, R.Left + dw + lWidth, R.Bottom - bWidth, SRCCOPY);
+                inc(x, w);
+              end;
+
+            if x < Right - rWidth then
+              BitBlt(aBmp.Canvas.Handle, x, Bottom - bWidth, Right - rWidth - x, bWidth, BmpSrc.Canvas.Handle, R.Left + dw + lWidth, R.Bottom - bWidth, SRCCOPY);
+          end
+          else
+            StretchBlt(aBmp.Canvas.Handle, x, Bottom - bWidth, Right - rWidth - x, bWidth, BmpSrc.Canvas.Handle, R.Left + dw + lWidth, R.Bottom - bWidth, w, bWidth, SRCCOPY);
+
+          // right - bottom
+          CopyTransRect(aBmp, BmpSrc, Right - rWidth, Bottom - bWidth, Rect(R.Left + dw + w + lWidth, R.Bottom - bWidth, R.Left + dw + w + lWidth + rWidth - 1, R.Bottom - 1), clFuchsia, CI, True);
+          // right - top
+          CopyTransRect(aBmp, BmpSrc, Right - rWidth, Top, Rect(R.Left + dw + w + lWidth, R.Top, R.Left + dw + w + lWidth + rWidth - 1, R.Top + tWidth - 1), clFuchsia, CI, True);
+          y := Top + tWidth;
+          // right - middle
+          if not Stretch then begin
+            if h > 0 then
+              while y < Bottom - h - bWidth do begin
+                BitBlt(aBmp.Canvas.Handle, Right - rWidth, y, rWidth, h, BmpSrc.Canvas.Handle, R.Left + dw + lWidth + w, R.Top + tWidth, SRCCOPY);
+                inc(y, h);
+              end;
+
+            if y < Bottom - bWidth then
+              BitBlt(aBmp.Canvas.Handle, Right - rWidth, y, rWidth, Bottom - bWidth - y, BmpSrc.Canvas.Handle, R.Left + dw + w + lWidth, R.Top + tWidth, SRCCOPY);
+          end
+          else
+            StretchBlt(aBmp.Canvas.Handle, Right - rWidth, y, rWidth, Bottom - bWidth - y, BmpSrc.Canvas.Handle, R.Left + dw + lWidth + w, R.Top + tWidth, rWidth, h, SRCCOPY);
+
+          // Fill
+          if DrawMode and BDM_FILL <> 0 then
+            if not Stretch then begin
+              y := Top + tWidth;
+              if h > 0 then
+                while y < Bottom - h - bWidth do begin
+                  x := Left + lWidth;
+                  if w > 0 then
+                    while x < Right - w - rWidth do begin
+                      BitBlt(aBmp.Canvas.Handle, x, y, w, h, BmpSrc.Canvas.Handle, R.Left + dw + lWidth, R.Top + tWidth, SRCCOPY);
+                      inc(x, w);
+                    end;
+
+                  if x < Right - rWidth then
+                    BitBlt(aBmp.Canvas.Handle, x, y, Right - rWidth - x,  Bottom - bWidth - y, BmpSrc.Canvas.Handle, R.Left + dw + lWidth, R.Top + tWidth, SRCCOPY);
+
+                  inc(y, h);
+                end;
+
+              x := Left + lWidth;
+              if y < Bottom - bWidth then begin
+                if w > 0 then
+                  while x < Right - w - rWidth do begin
+                    BitBlt(aBmp.Canvas.Handle, x, y, w, Bottom - bWidth - y, BmpSrc.Canvas.Handle, R.Left + dw + lWidth, R.Top + tWidth, SRCCOPY);
+                    inc(x, w);
+                  end;
+
+                if x < Right - rWidth then
+                  BitBlt(aBmp.Canvas.Handle, x, y, Right - rWidth - x, Bottom - bWidth - y, BmpSrc.Canvas.Handle, R.Left + dw + lWidth, R.Top + tWidth, SRCCOPY);
+              end;
+            end
+            else begin
+              y := Top + tWidth;
+              x := Left + lWidth;
+              StretchBlt(aBmp.Canvas.Handle, x, y, Right - rWidth - x, Bottom - bWidth - y, BmpSrc.Canvas.Handle, R.Left + dw + lWidth, R.Top + tWidth, w, h, SRCCOPY);
+            end;
         end
-        else begin // Filling by custom color only
-          ImagePercent := 0;
-          GradientPercent := 0;
-          Color := CustomColor;
-          Transparency := 0;
+        else begin
+          // left - top
+          CopyByMask32(Rect(Left, Top, Left + lWidth, Top + tWidth), Rect(R.Left + dw, R.Top, R.Left + dw + lWidth, R.Top + tWidth), aBmp, BmpSrc, CI, MaskData);
+          y := Top + tWidth;
+          // left - middle
+          if not Stretch then begin
+            while y < Bottom - h - bWidth do begin
+              CopyByMask32(Rect(Left, y, Left + lWidth, y + h), Rect(R.Left + dw, R.Top + tWidth, R.Left + dw + lWidth, R.Top + h + tWidth), aBmp, BmpSrc, EmptyCI, MaskData);
+              inc(y, h);
+            end;
+            if y < Bottom - bWidth then
+              CopyByMask32(Rect(Left, y, Left + lWidth, Bottom - bWidth), Rect(R.Left + dw, R.Top + tWidth, R.Left + dw + lWidth, R.Top + tWidth + h), aBmp, BmpSrc, EmptyCI, MaskData);
+          end
+          else
+            StretchBltMask32(Left, y, lWidth, Bottom - bWidth - y, R.Left + dw, R.Top + tWidth, lWidth, h, aBmp, BmpSrc, dhm);
+          // top - middle
+          x := Left + lWidth;
+          if not Stretch then begin
+            while x < Right - w - rWidth do begin
+              CopyByMask32(Rect(x, Top, x + w, Top + tWidth), Rect(R.Left + dw + lWidth, R.Top, R.Left + dw + w + lWidth, R.Top + tWidth), aBmp, BmpSrc, EmptyCI, MaskData);
+              inc(x, w);
+            end;
+            if x < Right - rWidth then
+              CopyByMask32(Rect(x, Top, Right - rWidth, Top + tWidth), Rect(R.Left + dw + lWidth, R.Top, R.Left + dw + w + lWidth, R.Top + tWidth), aBmp, BmpSrc, EmptyCI, MaskData);
+          end
+          else
+            StretchBltMask32(x, Top, Right - rWidth - x, tWidth, R.Left + dw + lWidth, R.Top, w, tWidth, aBmp, BmpSrc, dhm);
+
+          // left - bottom
+          CopyByMask32(Rect(Left, Bottom - bWidth, Left + lWidth, Bottom), Rect(R.Left + dw, R.Top + dh - bWidth, R.Left + dw + lWidth, R.Top + dh), aBmp, BmpSrc, CI, MaskData);
+          // bottom - middle
+          x := Left + lWidth;
+          if not Stretch then begin
+            while x < Right - w - rWidth do begin
+              CopyByMask32(Rect(x, Bottom - bWidth, x + w, Bottom), Rect(R.Left + dw + lWidth, R.Top + dh - bWidth, R.Left + dw + w + lWidth, R.Top + dh), aBmp, BmpSrc, EmptyCI, MaskData);
+              inc(x, w);
+            end;
+            if x < Right - rWidth then
+              CopyByMask32(Rect(x, Bottom - bWidth, Right - rWidth, Bottom), Rect(R.Left + dw + lWidth, R.Top + dh - bWidth, R.Left + dw + w + lWidth, R.Top + dh), aBmp, BmpSrc, EmptyCI, MaskData);
+          end
+          else
+            StretchBltMask32(x, Bottom - bWidth, Right - rWidth - x, bWidth, R.Left + dw + lWidth, R.Top + dh - bWidth, w, bWidth, aBmp, BmpSrc, dhm);
+
+          // right - bottom
+          CopyByMask32(Rect(Right - rWidth, Bottom - bWidth, Right, Bottom), Rect(R.Left + dw + w + lWidth, R.Top + dh - bWidth, R.Left + dw + w + lWidth + rWidth, R.Top + dh), aBmp, BmpSrc, CI, MaskData);
+          // right - top
+          CopyByMask32(Rect(Right - rWidth, Top, Right, Top + tWidth), Rect(R.Left + dw + w + lWidth, R.Top, R.Left + dw + w + lWidth + rWidth, R.Top + tWidth), aBmp, BmpSrc, CI, MaskData);
+          // right - middle
+          y := Top + tWidth;
+          if not Stretch then begin
+            while y < Bottom - h - bWidth do begin
+              CopyByMask32(Rect(Right - rWidth, y, Right, y + h), Rect(R.Left + dw + w + lWidth, R.Top + tWidth, R.Left + dw + w + lWidth + rWidth, R.Top + h + tWidth), aBmp, BmpSrc, EmptyCI, MaskData);
+              inc(y, h);
+            end;
+            if y < Bottom - bWidth then
+              CopyByMask32(Rect(Right - rWidth, y, Right, Bottom - bWidth), Rect(R.Left + dw + w + lWidth, R.Top + tWidth, R.Left + dw + w + lWidth + rWidth, R.Top + h + tWidth), aBmp, BmpSrc, EmptyCI, MaskData);
+          end
+          else
+            StretchBltMask32(Right - rWidth, y, rWidth, Bottom - bWidth - y, R.Left + dw + lWidth + w, R.Top + tWidth, rWidth, h, aBmp, BmpSrc, dhm);
+          // Fill
+          if DrawMode and BDM_FILL <> 0 then
+            if Stretch then begin
+              y := Top + tWidth;
+              x := Left + lWidth;
+              StretchBltMask32(x, y, Right - rWidth - x, Bottom - bWidth - y, R.Left + dw + lWidth, R.Top + tWidth, w, h, aBmp, BmpSrc, dhm, True)
+            end
+            else begin
+              y := Top + tWidth;
+              while y < Bottom - h - bWidth do begin
+                x := Left + lWidth;
+                while x < Right - w - rWidth do begin
+                  CopyByMask32(Rect(x, y, x + w, y + h), Rect(R.Left + dw + lWidth, R.Top + tWidth, R.Left + dw + w + lWidth, R.Top + h + tWidth), aBmp, BmpSrc, EmptyCI, MaskData);
+                  inc(x, w);
+                end;
+                if x < Right - rWidth then
+                  CopyByMask32(Rect(x, y, Right - rWidth, y + h), Rect(R.Left + dw + lWidth, R.Top + tWidth, R.Left + dw + w + lWidth, R.Top + h + tWidth), aBmp, BmpSrc, EmptyCI, MaskData);
+
+                inc(y, h);
+              end;
+              x := Left + lWidth;
+              if y < Bottom - bWidth then begin
+                while x < Right - w - rWidth do begin
+                  CopyByMask32(Rect(x, y, x + w, Bottom - bWidth), Rect(R.Left + dw + lWidth, R.Top + tWidth, R.Left + dw + w + lWidth, R.Top + h + tWidth), aBmp, BmpSrc, EmptyCI, MaskData);
+                  inc(x, w);
+                end;
+                if x < Right - rWidth then
+                  CopyByMask32(Rect(x, y, Right - rWidth, Bottom - bWidth), Rect(R.Left + dw + lWidth, R.Top + tWidth, R.Left + dw + w + lWidth, R.Top + h + tWidth), aBmp, BmpSrc, EmptyCI, MaskData);
+              end;
+            end;
         end;
-        PaintAddons(ItemBmp);
-      end;
-  end;
+    end;
 end;
 
 
-procedure DrawSkinRect32(Bmp: TBitmap; const R: TRect; const ci: TCacheInfo; const MaskData: TsMaskData; const State: integer);
+procedure DrawSkinRect32Ex(aBmp: TBitmap; const aRect: TRect; const ci: TCacheInfo; const MaskData: TsMaskData; const State: integer; MaxWidths: TRect; Opacity: integer);
 var
-  BmpSrc: TBitmap;
-  Stretch: boolean;
-  x, y, w, h, dw, dh, dhm: integer;
-  wl, wt, wr, wb, NewState: integer;
-begin
-  if (State = 0) and (MaskData.DrawMode and BDM_ACTIVEONLY = BDM_ACTIVEONLY) then
-    Exit;
-
-  if (WidthOf(R) < 2) or (HeightOf(R) < 2) or (MaskData.Manager = nil) then
-    Exit;
-    
-  wl := MaskData.WL;
-  wt := MaskData.WT;
-  wr := MaskData.WR;
-  wb := MaskData.WB;
-  if wl + wr > WidthOf(R) then begin
-    y := ((wl + wr) - WidthOf(R));
-    x := y div 2;
-    dec(wl, x);
-    dec(wr, x);
-    if y mod 2 > 0 then
-      dec(wr);
-      
-    if wl < 0 then
-      wl := 0;
-
-    if wr < 0 then
-      wr := 0;
-  end;
-  if wt + wb > HeightOf(R) then begin
-    y := ((wt + wb) - HeightOf(R));
-    x := y div 2;
-    dec(wt, x);
-    dec(wb, x);
-    if y mod 2 > 0 then
-      dec(wb);
-
-    if wt < 0 then
-      wt := 0;
-
-    if wb < 0 then
-      wb := 0;
-  end;
-  if State >= MaskData.ImageCount then
-    NewState := MaskData.ImageCount - 1
-  else
-    NewState := State;
-    
-  dw := WidthOfImage(MaskData);                  // Width of mask
-  dh := HeightOfImage(MaskData);                 // Height of mask
-  if MaskData.MaskType = 0 then
-    dhm := 0
-  else
-    dhm := dh;
-
-  if MaskData.DrawMode and BDM_STRETCH = BDM_STRETCH then begin
-    Stretch := True;
-    SetStretchBltMode(Bmp.Canvas.Handle, COLORONCOLOR);
-  end
-  else
-    Stretch := False;
-
-  w := dw - wl - wr;
-  if w < 0 then
-    Exit;      // Width of middle piece must be > 0
-
-  h := dh - wt - wb;
-  if h < 0 then
-    Exit;      // Height of middle piece must be > 0
-
-  dw := dw * NewState;                        // Offset of mask
-
-  if MaskData.Bmp <> nil then
-    BmpSrc := MaskData.Bmp
-  else
-    BmpSrc := TsSkinManager(MaskData.Manager).MasterBitmap;
-
-  if MaskData.MaskType = 0 then begin // Copy without mask
-    // left - top
-    CopyTransRect(Bmp, BmpSrc, R.Left, R.Top, Rect(MaskData.R.Left + dw, MaskData.R.Top, MaskData.R.Left + dw + wl - 1, MaskData.R.Top + wt - 1), clFuchsia, CI, True);
-    y := R.Top + wt;
-    // left - middle
-    if not Stretch then begin
-      if h > 0 then
-        while y < R.Bottom - h - wb do begin
-          BitBlt(Bmp.Canvas.Handle, R.Left, y, wl, h, BmpSrc.Canvas.Handle, MaskData.R.Left + dw, MaskData.R.Top + wt, SRCCOPY);
-          inc(y, h);
-        end;
-
-      if y < R.Bottom - wb then
-        BitBlt(Bmp.Canvas.Handle, R.Left, y, wl, R.Bottom - wb - y, BmpSrc.Canvas.Handle, MaskData.R.Left + dw, MaskData.R.Top + wt, SRCCOPY);
-    end
-    else
-      StretchBlt(Bmp.Canvas.Handle, R.Left, y, wl, R.Bottom - wb - y, BmpSrc.Canvas.Handle, MaskData.R.Left + dw, MaskData.R.Top + wt, wl, h, SRCCOPY);
-
-    // top - middle
-    x := R.Left + wl;
-    if not Stretch then begin
-      if w > 0 then
-        while x < R.Right - w - wr do begin
-          BitBlt(Bmp.Canvas.Handle, x, R.Top, w, wt, BmpSrc.Canvas.Handle, MaskData.R.Left + dw + wl, MaskData.R.Top, SRCCOPY);
-          inc(x, w);
-        end;
-
-      if x < R.Right - wr then
-        BitBlt(Bmp.Canvas.Handle, x, R.Top, R.Right - wr - x, wt, BmpSrc.Canvas.Handle, MaskData.R.Left + dw + wl, MaskData.R.Top, SRCCOPY);
-    end
-    else
-      StretchBlt(Bmp.Canvas.Handle, x, R.Top, R.Right - wr - x, wt, BmpSrc.Canvas.Handle, MaskData.R.Left + dw + wl, MaskData.R.Top, w, wt, SRCCOPY);
-
-    // left - bottom
-    CopyTransRect(Bmp, BmpSrc, R.Left, R.Bottom - wb, Rect(MaskData.R.Left + dw, MaskData.R.Bottom - wb, MaskData.R.Left + dw + wl - 1, MaskData.R.Bottom - 1), clFuchsia, CI, True);
-
-    // bottom - middle
-    x := R.Left + wl;
-    if not Stretch then begin
-      if w > 0 then
-        while x < R.Right - w - wr do begin
-          BitBlt(Bmp.Canvas.Handle, x, R.Bottom - wb, w, wb, BmpSrc.Canvas.Handle, MaskData.R.Left + dw + wl, MaskData.R.Bottom - wb, SRCCOPY);
-          inc(x, w);
-        end;
-
-      if x < R.Right - wr then
-        BitBlt(Bmp.Canvas.Handle, x, R.Bottom - wb, R.Right - wr - x, wb, BmpSrc.Canvas.Handle, MaskData.R.Left + dw + wl, MaskData.R.Bottom - wb, SRCCOPY);
-    end
-    else
-      StretchBlt(Bmp.Canvas.Handle, x, R.Bottom - wb, R.Right - wr - x, wb, BmpSrc.Canvas.Handle, MaskData.R.Left + dw + wl, MaskData.R.Bottom - wb, w, wb, SRCCOPY);
-
-    // right - bottom
-    CopyTransRect(Bmp, BmpSrc, R.Right - wr, R.Bottom - wb, Rect(MaskData.R.Left + dw + w + wl, MaskData.R.Bottom - wb, MaskData.R.Left + dw + w + wl + wr - 1, MaskData.R.Bottom - 1), clFuchsia, CI, True);
-    // right - top
-    CopyTransRect(Bmp, BmpSrc, R.Right - wr, R.Top, Rect(MaskData.R.Left + dw + w + wl, MaskData.R.Top, MaskData.R.Left + dw + w + wl + wr - 1, MaskData.R.Top + wt - 1), clFuchsia, CI, True);
-    y := R.Top + wt;
-    // right - middle
-    if not Stretch then begin
-      if h > 0 then
-        while y < R.Bottom - h - wb do begin
-          BitBlt(Bmp.Canvas.Handle, R.Right - wr, y, wr, h, BmpSrc.Canvas.Handle, MaskData.R.Left + dw + wl + w, MaskData.R.Top + wt, SRCCOPY);
-          inc(y, h);
-        end;
-
-      if y < R.Bottom - wb then
-        BitBlt(Bmp.Canvas.Handle, R.Right - wr, y, wr, R.Bottom - wb - y, BmpSrc.Canvas.Handle, MaskData.R.Left + dw + w + wl, MaskData.R.Top + wt, SRCCOPY);
-    end
-    else
-      StretchBlt(Bmp.Canvas.Handle, R.Right - wr, y, wr, R.Bottom - wb - y, BmpSrc.Canvas.Handle, MaskData.R.Left + dw + wl + w, MaskData.R.Top + wt, wr, h, SRCCOPY);
-
-    // Fill
-    if (MaskData.DrawMode and BDM_FILL = BDM_FILL) then
-      if not Stretch then begin
-        y := R.Top + wt;
-        if h > 0 then
-          while y < R.Bottom - h - wb do begin
-            x := R.Left + wl;
-            if w > 0 then
-              while x < R.Right - w - wr do begin
-                BitBlt(Bmp.Canvas.Handle, x, y, w, h, BmpSrc.Canvas.Handle, MaskData.R.Left + dw + wl, MaskData.R.Top + wt, SRCCOPY);
-                inc(x, w);
-              end;
-
-            if x < R.Right - wr then
-              BitBlt(Bmp.Canvas.Handle, x, y, R.Right - wr - x,  R.Bottom - wb - y, BmpSrc.Canvas.Handle, MaskData.R.Left + dw + wl, MaskData.R.Top + wt, SRCCOPY);
-
-            inc(y, h);
-          end;
-
-        x := R.Left + wl;
-        if y < R.Bottom - wb then begin
-          if w > 0 then
-            while x < R.Right - w - wr do begin
-              BitBlt(Bmp.Canvas.Handle, x, y, w, R.Bottom - wb - y, BmpSrc.Canvas.Handle, MaskData.R.Left + dw + wl, MaskData.R.Top + wt, SRCCOPY);
-              inc(x, w);
-            end;
-
-          if x < R.Right - wr then
-            BitBlt(Bmp.Canvas.Handle, x, y, R.Right - wr - x, R.Bottom - wb - y, BmpSrc.Canvas.Handle, MaskData.R.Left + dw + wl, MaskData.R.Top + wt, SRCCOPY);
-        end;
-      end
-      else begin
-        y := R.Top + wt;
-        x := R.Left + wl;
-        StretchBlt(Bmp.Canvas.Handle, x, y, R.Right - wr - x, R.Bottom - wb - y, BmpSrc.Canvas.Handle, MaskData.R.Left + dw + wl, MaskData.R.Top + wt, w, h, SRCCOPY);
-      end;
-  end
-  else begin
-    // left - top
-    CopyByMask32(Rect(R.Left, R.Top, R.Left + wl, R.Top + wt), Rect(MaskData.R.Left + dw, MaskData.R.Top, MaskData.R.Left + dw + wl, MaskData.R.Top + wt), Bmp, BmpSrc, CI, MaskData);
-    y := R.Top + wt;
-    // left - middle
-    if not Stretch then begin
-      while y < R.Bottom - h - wb do begin
-        CopyByMask32(Rect(R.Left, y, R.Left + wl, y + h), Rect(MaskData.R.Left + dw, MaskData.R.Top + wt, MaskData.R.Left + dw + wl, MaskData.R.Top + h + wt), Bmp, BmpSrc, EmptyCI, MaskData);
-        inc(y, h);
-      end;
-      if y < R.Bottom - wb then
-        CopyByMask32(Rect(R.Left, y, R.Left + wl, R.Bottom - wb), Rect(MaskData.R.Left + dw, MaskData.R.Top + wt, MaskData.R.Left + dw + wl, MaskData.R.Top + wt + h), Bmp, BmpSrc, EmptyCI, MaskData);
-    end
-    else
-      StretchBltMask32(R.Left, y, wl, R.Bottom - wb - y, MaskData.R.Left + dw, MaskData.R.Top + wt, wl, h, Bmp, BmpSrc, dhm);
-    // top - middle
-    x := R.Left + wl;
-    if not Stretch then begin
-      while x < R.Right - w - wr do begin
-        CopyByMask32(Rect(x, R.Top, x + w, R.Top + wt), Rect(MaskData.R.Left + dw + wl, MaskData.R.Top, MaskData.R.Left + dw + w + wl, MaskData.R.Top + wt), Bmp, BmpSrc, EmptyCI, MaskData);
-        inc(x, w);
-      end;
-      if x < R.Right - wr then
-        CopyByMask32(Rect(x, R.Top, R.Right - wr, R.Top + wt), Rect(MaskData.R.Left + dw + wl, MaskData.R.Top, MaskData.R.Left + dw + w + wl, MaskData.R.Top + wt), Bmp, BmpSrc, EmptyCI, MaskData);
-    end
-    else
-      StretchBltMask32(x, R.Top, R.Right - wr - x, wt, MaskData.R.Left + dw + wl, MaskData.R.Top, w, wt, Bmp, BmpSrc, dhm);
-
-    // left - bottom
-    CopyByMask32(Rect(R.Left, R.Bottom - wb, R.Left + wl, R.Bottom), Rect(MaskData.R.Left + dw, MaskData.R.Top + dh - wb, MaskData.R.Left + dw + wl, MaskData.R.Top + dh), Bmp, BmpSrc, CI, MaskData);
-    // bottom - middle
-    x := R.Left + wl;
-    if not Stretch then begin
-      while x < R.Right - w - wr do begin
-        CopyByMask32(Rect(x, R.Bottom - wb, x + w, R.Bottom), Rect(MaskData.R.Left + dw + wl, MaskData.R.Top + dh - wb, MaskData.R.Left + dw + w + wl, MaskData.R.Top + dh), Bmp, BmpSrc, EmptyCI, MaskData);
-        inc(x, w);
-      end;
-      if x < R.Right - wr then
-        CopyByMask32(Rect(x, R.Bottom - wb, R.Right - wr, R.Bottom), Rect(MaskData.R.Left + dw + wl, MaskData.R.Top + dh - wb, MaskData.R.Left + dw + w + wl, MaskData.R.Top + dh), Bmp, BmpSrc, EmptyCI, MaskData);
-    end
-    else
-      StretchBltMask32(x, R.Bottom - wb, R.Right - wr - x, wb, MaskData.R.Left + dw + wl, MaskData.R.Top + dh - wb, w, wb, Bmp, BmpSrc, dhm);
-
-    // right - bottom
-    CopyByMask32(Rect(R.Right - wr, R.Bottom - wb, R.Right, R.Bottom), Rect(MaskData.R.Left + dw + w + wl, MaskData.R.Top + dh - wb, MaskData.R.Left + dw + w + wl + wr, MaskData.R.Top + dh), Bmp, BmpSrc, CI, MaskData);
-    // right - top
-    CopyByMask32(Rect(R.Right - wr, R.Top, R.Right, R.Top + wt), Rect(MaskData.R.Left + dw + w + wl, MaskData.R.Top, MaskData.R.Left + dw + w + wl + wr, MaskData.R.Top + wt), Bmp, BmpSrc, CI, MaskData);
-    // right - middle
-    y := R.Top + wt;
-    if not Stretch then begin
-      while y < R.Bottom - h - wb do begin
-        CopyByMask32(Rect(R.Right - wr, y, R.Right, y + h), Rect(MaskData.R.Left + dw + w + wl, MaskData.R.Top + wt, MaskData.R.Left + dw + w + wl + wr, MaskData.R.Top + h + wt), Bmp, BmpSrc, EmptyCI, MaskData);
-        inc(y, h);
-      end;
-      if y < R.Bottom - wb then
-        CopyByMask32(Rect(R.Right - wr, y, R.Right, R.Bottom - wb), Rect(MaskData.R.Left + dw + w + wl, MaskData.R.Top + wt, MaskData.R.Left + dw + w + wl + wr, MaskData.R.Top + h + wt), Bmp, BmpSrc, EmptyCI, MaskData);
-    end
-    else
-      StretchBltMask32(R.Right - wr, y, wr, R.Bottom - wb - y, MaskData.R.Left + dw + wl + w, MaskData.R.Top + wt, wr, h, Bmp, BmpSrc, dhm);
-    // Fill
-    if (MaskData.DrawMode and BDM_FILL = BDM_FILL) then
-      if Stretch then begin
-        y := R.Top + wt;
-        x := R.Left + wl;
-        StretchBltMask32(x, y, R.Right - wr - x, R.Bottom - wb - y, MaskData.R.Left + dw + wl, MaskData.R.Top + wt, w, h, Bmp, BmpSrc, dhm, True)
-      end
-      else begin
-        y := R.Top + wt;
-        while y < R.Bottom - h - wb do begin
-          x := R.Left + wl;
-          while x < R.Right - w - wr do begin
-            CopyByMask32(Rect(x, y, x + w, y + h), Rect(MaskData.R.Left + dw + wl, MaskData.R.Top + wt, MaskData.R.Left + dw + w + wl, MaskData.R.Top + h + wt), Bmp, BmpSrc, EmptyCI, MaskData);
-            inc(x, w);
-          end;
-          if x < R.Right - wr then
-            CopyByMask32(Rect(x, y, R.Right - wr, y + h), Rect(MaskData.R.Left + dw + wl, MaskData.R.Top + wt, MaskData.R.Left + dw + w + wl, MaskData.R.Top + h + wt), Bmp, BmpSrc, EmptyCI, MaskData);
-
-          inc(y, h);
-        end;
-        x := R.Left + wl;
-        if y < R.Bottom - wb then begin
-          while x < R.Right - w - wr do begin
-            CopyByMask32(Rect(x, y, x + w, R.Bottom - wb), Rect(MaskData.R.Left + dw + wl, MaskData.R.Top + wt, MaskData.R.Left + dw + w + wl, MaskData.R.Top + h + wt), Bmp, BmpSrc, EmptyCI, MaskData);
-            inc(x, w);
-          end;
-          if x < R.Right - wr then
-            CopyByMask32(Rect(x, y, R.Right - wr, R.Bottom - wb), Rect(MaskData.R.Left + dw + wl, MaskData.R.Top + wt, MaskData.R.Left + dw + w + wl, MaskData.R.Top + h + wt), Bmp, BmpSrc, EmptyCI, MaskData);
-        end;
-      end;
-  end;
-end;
-
-
-procedure DrawSkinRect32Ex(Bmp: TBitmap; const R: TRect; const ci: TCacheInfo; const MaskData: TsMaskData; const State: integer; MaxWidths: TRect; Opacity: integer);
-var
-  x, y, w, h, dw, dh, dhm: integer;
-  NewState, wl, wt, wr, wb: integer;
-  maxl, maxt, maxr, maxb: integer;
+  x, y, w, h, dw, dh, dhm, NewState, lWidth, tWidth, rWidth, bWidth, maxl, maxt, maxr, maxb: integer;
   BmpSrc: TBitmap;
   Stretch: boolean;
 begin
-  if (State = 0) and (MaskData.DrawMode and BDM_ACTIVEONLY = BDM_ACTIVEONLY) then
-    Exit;
+  if (State <> 0) or (MaskData.DrawMode and BDM_ACTIVEONLY = 0) then
+    if (WidthOf(aRect) > 1) and (HeightOf(aRect) > 1) and (MaskData.Manager <> nil) then begin
+      lWidth := MaskData.WL;
+      tWidth := MaskData.WT;
+      rWidth := MaskData.WR;
+      bWidth := MaskData.WB;
+      if lWidth + rWidth > WidthOf(aRect) then begin
+        y := lWidth + rWidth - WidthOf(aRect);
+        x := y div 2;
+        dec(lWidth, x);
+        dec(rWidth, x);
+        if y mod 2 > 0 then
+          dec(rWidth);
 
-  if (WidthOf(R) < 2) or (HeightOf(R) < 2) or (MaskData.Manager = nil) then
-    Exit;
-    
-  wl := MaskData.WL;
-  wt := MaskData.WT;
-  wr := MaskData.WR;
-  wb := MaskData.WB;
-  if wl + wr > WidthOf(R) then begin
-    y := (wl + wr) - WidthOf(R);
-    x := y div 2;
-    dec(wl, x);
-    dec(wr, x);
-    if y mod 2 > 0 then
-      dec(wr);
+        if lWidth < 0 then
+          lWidth := 0;
 
-    if wl < 0 then
-      wl := 0;
+        if rWidth < 0 then
+          rWidth := 0;
+      end;
+      if tWidth + bWidth > HeightOf(aRect) then begin
+        y := tWidth + bWidth - HeightOf(aRect);
+        x := y div 2;
+        dec(tWidth, x);
+        dec(bWidth, x);
+        if y mod 2 > 0 then
+          dec(bWidth);
 
-    if wr < 0 then
-      wr := 0;
-  end;
-  if wt + wb > HeightOf(R) then begin
-    y := ((wt + wb) - HeightOf(R));
-    x := y div 2;
-    dec(wt, x);
-    dec(wb, x);
-    if y mod 2 > 0 then
-      dec(wb);
+        if tWidth < 0 then
+          tWidth := 0;
 
-    if wt < 0 then
-      wt := 0;
+        if bWidth < 0 then
+          bWidth := 0;
+      end;
+      if State >= MaskData.ImageCount then
+        NewState := MaskData.ImageCount - 1
+      else
+        NewState := State;
 
-    if wb < 0 then
-      wb := 0;
-  end;
-  if State >= MaskData.ImageCount then
-    NewState := MaskData.ImageCount - 1
-  else
-    NewState := State;
+      dw := MaskData.Width;                  // Width of mask
+      dh := MaskData.Height;                 // Height of mask
+      if MaskData.MaskType = 0 then
+        dhm := 0
+      else
+        dhm := dh;
 
-  dw := WidthOfImage(MaskData);                  // Width of mask
-  dh := HeightOfImage(MaskData);                 // Height of mask
-  if MaskData.MaskType = 0 then
-    dhm := 0
-  else
-    dhm := dh;
+      if MaskData.DrawMode and BDM_STRETCH <> 0 then begin
+        Stretch := True;
+        SetStretchBltMode(aBmp.Canvas.Handle, COLORONCOLOR);
+      end
+      else
+        Stretch := False;
 
-  if MaskData.DrawMode and BDM_STRETCH = BDM_STRETCH then begin
-    Stretch := True;
-    SetStretchBltMode(Bmp.Canvas.Handle, COLORONCOLOR);
-  end
-  else
-    Stretch := False;
+      w := dw - lWidth - rWidth;
+      if w < 0 then
+        Exit; // Width of middle piece must be > 0
 
-  w := dw - wl - wr;
-  if w < 0 then
-    Exit; // Width of middle piece must be > 0
+      h := dh - tWidth - bWidth;
+      if h < 0 then
+        Exit; // Height of middle piece must be > 0
 
-  h := dh - wt - wb;
-  if h < 0 then
-    Exit; // Height of middle piece must be > 0
+      dw := dw * NewState; // Offset of mask
 
-  dw := dw * NewState; // Offset of mask
+      if MaskData.Bmp <> nil then
+        BmpSrc := MaskData.Bmp
+      else
+        BmpSrc := TsSkinManager(MaskData.Manager).MasterBitmap;
 
-  if MaskData.Bmp <> nil then
-    BmpSrc := MaskData.Bmp
-  else
-    BmpSrc := TsSkinManager(MaskData.Manager).MasterBitmap;
+      MaxT := min(tWidth, MaxWidths.Top);
+      MaxL := min(lWidth, MaxWidths.Left);
+      MaxR := min(rWidth, MaxWidths.Right);
+      MaxB := min(bWidth, MaxWidths.Bottom);
 
-  MaxT := min(wt, MaxWidths.Top);
-  MaxL := min(wl, MaxWidths.Left);
-  MaxR := min(wr, MaxWidths.Right);
-  MaxB := min(wb, MaxWidths.Bottom);
+      with aRect, MaskData do
+        if MaskType = 0 then begin // Copy without mask
+          // left - top
+          CopyTransRect(aBmp, BmpSrc, Left, Top, Rect(R.Left + dw, R.Top, R.Left + dw + lWidth - 1, R.Top + tWidth - 1), clFuchsia, CI, True);
+          y := Top + tWidth;
+          // left - middle
+          if not Stretch then begin
+            if h > 0 then
+              while y < Bottom - h - bWidth do begin
+                BitBlt(aBmp.Canvas.Handle, Left, y, lWidth, h, BmpSrc.Canvas.Handle, R.Left + dw, R.Top + tWidth, SRCCOPY);
+                inc(y, h);
+              end;
 
-  if MaskData.MaskType = 0 then begin // Copy without mask
-    // left - top
-    CopyTransRect(Bmp, BmpSrc, R.Left, R.Top, Rect(MaskData.R.Left + dw, MaskData.R.Top, MaskData.R.Left + dw + wl - 1, MaskData.R.Top + wt - 1), clFuchsia, CI, True);
-    y := R.Top + wt;
-    // left - middle
-    if not Stretch then begin
-      if h > 0 then
-        while y < R.Bottom - h - wb do begin
-          BitBlt(Bmp.Canvas.Handle, R.Left, y, wl, h, BmpSrc.Canvas.Handle, MaskData.R.Left + dw, MaskData.R.Top + wt, SRCCOPY);
-          inc(y, h);
-        end;
+            if y < Bottom - bWidth then
+              BitBlt(aBmp.Canvas.Handle, Left, y, lWidth, Bottom - bWidth - y, BmpSrc.Canvas.Handle, R.Left + dw, R.Top + tWidth, SRCCOPY);
+          end
+          else
+            StretchBlt(aBmp.Canvas.Handle, Left, y, lWidth, Bottom - bWidth - y, BmpSrc.Canvas.Handle, R.Left + dw, R.Top + tWidth, lWidth, h, SRCCOPY);
 
-      if y < R.Bottom - wb then
-        BitBlt(Bmp.Canvas.Handle, R.Left, y, wl, R.Bottom - wb - y, BmpSrc.Canvas.Handle, MaskData.R.Left + dw, MaskData.R.Top + wt, SRCCOPY);
-    end
-    else
-      StretchBlt(Bmp.Canvas.Handle, R.Left, y, wl, R.Bottom - wb - y, BmpSrc.Canvas.Handle, MaskData.R.Left + dw, MaskData.R.Top + wt, wl, h, SRCCOPY);
-
-    // top - middle
-    x := R.Left + wl;
-    if not Stretch then begin
-      if w > 0 then
-        while x < R.Right - w - wr do begin
-          BitBlt(Bmp.Canvas.Handle, x, R.Top, w, wt, BmpSrc.Canvas.Handle, MaskData.R.Left + dw + wl, MaskData.R.Top, SRCCOPY);
-          inc(x, w);
-        end;
-
-      if x < R.Right - wr then
-        BitBlt(Bmp.Canvas.Handle, x, R.Top, R.Right - wr - x, wt, BmpSrc.Canvas.Handle, MaskData.R.Left + dw + wl, MaskData.R.Top, SRCCOPY);
-    end
-    else
-      StretchBlt(Bmp.Canvas.Handle, x, R.Top, R.Right - wr - x, wt, BmpSrc.Canvas.Handle, MaskData.R.Left + dw + wl, MaskData.R.Top, w, wt, SRCCOPY);
-
-    // left - bottom
-    CopyTransRect(Bmp, BmpSrc, R.Left, R.Bottom - wb, Rect(MaskData.R.Left + dw, MaskData.R.Bottom - wb, MaskData.R.Left + dw + wl - 1, MaskData.R.Bottom - 1), clFuchsia, CI, True);
-
-    // bottom - middle
-    x := R.Left + wl;
-    if not Stretch then begin
-      if w > 0 then
-        while x < R.Right - w - wr do begin
-          BitBlt(Bmp.Canvas.Handle, x, R.Bottom - wb, w, wb, BmpSrc.Canvas.Handle, MaskData.R.Left + dw + wl, MaskData.R.Bottom - wb, SRCCOPY);
-          inc(x, w);
-        end;
-
-      if x < R.Right - wr then
-        BitBlt(Bmp.Canvas.Handle, x, R.Bottom - wb, R.Right - wr - x, wb, BmpSrc.Canvas.Handle, MaskData.R.Left + dw + wl, MaskData.R.Bottom - wb, SRCCOPY);
-    end
-    else
-      StretchBlt(Bmp.Canvas.Handle, x, R.Bottom - wb, R.Right - wr - x, wb, BmpSrc.Canvas.Handle, MaskData.R.Left + dw + wl, MaskData.R.Bottom - wb, w, wb, SRCCOPY);
-
-    // right - bottom
-    CopyTransRect(Bmp, BmpSrc, R.Right - wr, R.Bottom - wb, Rect(MaskData.R.Left + dw + w + wl, MaskData.R.Bottom - wb, MaskData.R.Left + dw + w + wl + wr - 1, MaskData.R.Bottom - 1), clFuchsia, CI, True);
-    // right - top
-    CopyTransRect(Bmp, BmpSrc, R.Right - wr, R.Top, Rect(MaskData.R.Left + dw + w + wl, MaskData.R.Top, MaskData.R.Left + dw + w + wl + wr - 1, MaskData.R.Top + wt - 1), clFuchsia, CI, True);
-    y := R.Top + wt;
-    // right - middle
-    if not Stretch then begin
-      if h > 0 then
-        while y < R.Bottom - h - wb do begin
-          BitBlt(Bmp.Canvas.Handle, R.Right - wr, y, wr, h, BmpSrc.Canvas.Handle, MaskData.R.Left + dw + wl + w, MaskData.R.Top + wt, SRCCOPY);
-          inc(y, h);
-        end;
-
-      if y < R.Bottom - wb then
-        BitBlt(Bmp.Canvas.Handle, R.Right - wr, y, wr, R.Bottom - wb - y, BmpSrc.Canvas.Handle, MaskData.R.Left + dw + w + wl, MaskData.R.Top + wt, SRCCOPY);
-    end
-    else
-      StretchBlt(Bmp.Canvas.Handle, R.Right - wr, y, wr, R.Bottom - wb - y, BmpSrc.Canvas.Handle, MaskData.R.Left + dw + wl + w, MaskData.R.Top + wt, wr, h, SRCCOPY);
-
-    // Fill
-    if (MaskData.DrawMode and BDM_FILL = BDM_FILL) then
-      if not Stretch then begin
-        y := R.Top + wt;
-        if h > 0 then
-          while y < R.Bottom - h - wb do begin
-            x := R.Left + wl;
+          // top - middle
+          x := Left + lWidth;
+          if not Stretch then begin
             if w > 0 then
-              while x < R.Right - w - wr do begin
-                BitBlt(Bmp.Canvas.Handle, x, y, w, h, BmpSrc.Canvas.Handle, MaskData.R.Left + dw + wl, MaskData.R.Top + wt, SRCCOPY);
+              while x < Right - w - rWidth do begin
+                BitBlt(aBmp.Canvas.Handle, x, Top, w, tWidth, BmpSrc.Canvas.Handle, R.Left + dw + lWidth, R.Top, SRCCOPY);
                 inc(x, w);
               end;
 
-            if x < R.Right - wr then
-              BitBlt(Bmp.Canvas.Handle, x, y, R.Right - wr - x,  R.Bottom - wb - y, BmpSrc.Canvas.Handle, MaskData.R.Left + dw + wl, MaskData.R.Top + wt, SRCCOPY);
+            if x < Right - rWidth then
+              BitBlt(aBmp.Canvas.Handle, x, Top, Right - rWidth - x, tWidth, BmpSrc.Canvas.Handle, R.Left + dw + lWidth, R.Top, SRCCOPY);
+          end
+          else
+            StretchBlt(aBmp.Canvas.Handle, x, Top, Right - rWidth - x, tWidth, BmpSrc.Canvas.Handle, R.Left + dw + lWidth, R.Top, w, tWidth, SRCCOPY);
 
-            inc(y, h);
-          end;
+          // left - bottom
+          CopyTransRect(aBmp, BmpSrc, Left, Bottom - bWidth, Rect(R.Left + dw, R.Bottom - bWidth, R.Left + dw + lWidth - 1, R.Bottom - 1), clFuchsia, CI, True);
 
-        x := R.Left + wl;
-        if y < R.Bottom - wb then begin
-          if w > 0 then
-            while x < R.Right - w - wr do begin
-              BitBlt(Bmp.Canvas.Handle, x, y, w, R.Bottom - wb - y, BmpSrc.Canvas.Handle, MaskData.R.Left + dw + wl, MaskData.R.Top + wt, SRCCOPY);
+          // bottom - middle
+          x := Left + lWidth;
+          if not Stretch then begin
+            if w > 0 then
+              while x < Right - w - rWidth do begin
+                BitBlt(aBmp.Canvas.Handle, x, Bottom - bWidth, w, bWidth, BmpSrc.Canvas.Handle, R.Left + dw + lWidth, R.Bottom - bWidth, SRCCOPY);
+                inc(x, w);
+              end;
+
+            if x < Right - rWidth then
+              BitBlt(aBmp.Canvas.Handle, x, Bottom - bWidth, Right - rWidth - x, bWidth, BmpSrc.Canvas.Handle, R.Left + dw + lWidth, R.Bottom - bWidth, SRCCOPY);
+          end
+          else
+            StretchBlt(aBmp.Canvas.Handle, x, Bottom - bWidth, Right - rWidth - x, bWidth, BmpSrc.Canvas.Handle, R.Left + dw + lWidth, R.Bottom - bWidth, w, bWidth, SRCCOPY);
+
+          // right - bottom
+          CopyTransRect(aBmp, BmpSrc, Right - rWidth, Bottom - bWidth, Rect(R.Left + dw + w + lWidth, R.Bottom - bWidth, R.Left + dw + w + lWidth + rWidth - 1, R.Bottom - 1), clFuchsia, CI, True);
+          // right - top
+          CopyTransRect(aBmp, BmpSrc, Right - rWidth, Top, Rect(R.Left + dw + w + lWidth, R.Top, R.Left + dw + w + lWidth + rWidth - 1, R.Top + tWidth - 1), clFuchsia, CI, True);
+          y := Top + tWidth;
+          // right - middle
+          if not Stretch then begin
+            if h > 0 then
+              while y < Bottom - h - bWidth do begin
+                BitBlt(aBmp.Canvas.Handle, Right - rWidth, y, rWidth, h, BmpSrc.Canvas.Handle, R.Left + dw + lWidth + w, R.Top + tWidth, SRCCOPY);
+                inc(y, h);
+              end;
+
+            if y < Bottom - bWidth then
+              BitBlt(aBmp.Canvas.Handle, Right - rWidth, y, rWidth, Bottom - bWidth - y, BmpSrc.Canvas.Handle, R.Left + dw + w + lWidth, R.Top + tWidth, SRCCOPY);
+          end
+          else
+            StretchBlt(aBmp.Canvas.Handle, Right - rWidth, y, rWidth, Bottom - bWidth - y, BmpSrc.Canvas.Handle, R.Left + dw + lWidth + w, R.Top + tWidth, rWidth, h, SRCCOPY);
+
+          // Fill
+          if DrawMode and BDM_FILL <> 0 then
+            if not Stretch then begin
+              y := Top + tWidth;
+              if h > 0 then
+                while y < Bottom - h - bWidth do begin
+                  x := Left + lWidth;
+                  if w > 0 then
+                    while x < Right - w - rWidth do begin
+                      BitBlt(aBmp.Canvas.Handle, x, y, w, h, BmpSrc.Canvas.Handle, R.Left + dw + lWidth, R.Top + tWidth, SRCCOPY);
+                      inc(x, w);
+                    end;
+
+                  if x < Right - rWidth then
+                    BitBlt(aBmp.Canvas.Handle, x, y, Right - rWidth - x,  Bottom - bWidth - y, BmpSrc.Canvas.Handle, R.Left + dw + lWidth, R.Top + tWidth, SRCCOPY);
+
+                  inc(y, h);
+                end;
+
+              x := Left + lWidth;
+              if y < Bottom - bWidth then begin
+                if w > 0 then
+                  while x < Right - w - rWidth do begin
+                    BitBlt(aBmp.Canvas.Handle, x, y, w, Bottom - bWidth - y, BmpSrc.Canvas.Handle, R.Left + dw + lWidth, R.Top + tWidth, SRCCOPY);
+                    inc(x, w);
+                  end;
+
+                if x < Right - rWidth then
+                  BitBlt(aBmp.Canvas.Handle, x, y, Right - rWidth - x, Bottom - bWidth - y, BmpSrc.Canvas.Handle, R.Left + dw + lWidth, R.Top + tWidth, SRCCOPY);
+              end;
+            end
+            else begin
+              y := Top + tWidth;
+              x := Left + lWidth;
+              StretchBlt(aBmp.Canvas.Handle, x, y, Right - rWidth - x, Bottom - bWidth - y, BmpSrc.Canvas.Handle, R.Left + dw + lWidth, R.Top + tWidth, w, h, SRCCOPY);
+            end;
+        end
+        else begin
+          // left - top
+          CopyByMask32Ex(Rect(Left, Top, Left + lWidth, Top + tWidth), Rect(R.Left + dw, R.Top, R.Left + dw + lWidth, R.Top + tWidth), aBmp, BmpSrc, CI, MaskData, Opacity);
+          y := Top + tWidth;
+          // left - middle
+          if not Stretch then begin
+            while y < Bottom - h - bWidth do begin
+              CopyByMask32Ex(Rect(Left, y, Left + MaxL, y + h), Rect(R.Left + dw, R.Top + tWidth, R.Left + dw + MaxL, R.Top + h + tWidth), aBmp, BmpSrc, EmptyCI, MaskData, Opacity);
+              inc(y, h);
+            end;
+            if y < Bottom - bWidth then
+              CopyByMask32Ex(Rect(Left, y, Left + MaxL, Bottom - bWidth), Rect(R.Left + dw, R.Top + tWidth, R.Left + dw + MaxL, R.Top + tWidth + h), aBmp, BmpSrc, EmptyCI, MaskData, Opacity);
+          end
+          else
+            StretchBltMask32Ex(Left, y, MaxL, Bottom - bWidth - y, R.Left + dw, R.Top + tWidth, MaxL, h, aBmp, BmpSrc, dhm, Opacity);
+
+          // top - middle
+          x := Left + lWidth;
+          if not Stretch then begin
+            while x < Right - w - rWidth do begin
+              CopyByMask32Ex(Rect(x, Top, x + w, Top + MaxT), Rect(R.Left + dw + lWidth, R.Top, R.Left + dw + w + lWidth, R.Top + MaxT), aBmp, BmpSrc, EmptyCI, MaskData, Opacity);
               inc(x, w);
             end;
+            if x < Right - rWidth then
+              CopyByMask32Ex(Rect(x, Top, Right - rWidth, Top + MaxT), Rect(R.Left + dw + lWidth, R.Top, R.Left + dw + w + lWidth, R.Top + MaxT), aBmp, BmpSrc, EmptyCI, MaskData, Opacity);
+          end
+          else
+            StretchBltMask32Ex(x, Top, Right - rWidth - x, MaxT, R.Left + dw + lWidth, R.Top, w, MaxT, aBmp, BmpSrc, dhm, Opacity);
 
-          if x < R.Right - wr then
-            BitBlt(Bmp.Canvas.Handle, x, y, R.Right - wr - x, R.Bottom - wb - y, BmpSrc.Canvas.Handle, MaskData.R.Left + dw + wl, MaskData.R.Top + wt, SRCCOPY);
+          // left - bottom
+          CopyByMask32Ex(Rect(Left, Bottom - bWidth, Left + lWidth, Bottom), Rect(R.Left + dw, R.Top + dh - bWidth, R.Left + dw + lWidth, R.Top + dh), aBmp, BmpSrc, CI, MaskData, Opacity);
+          // bottom - middle
+          x := Left + lWidth;
+          if not Stretch then begin
+            while x < Right - w - rWidth do begin
+              CopyByMask32Ex(Rect(x, Bottom - MaxB, x + w, Bottom), Rect(R.Left + dw + lWidth, R.Top + dh - MaxB, R.Left + dw + w + lWidth, R.Top + dh), aBmp, BmpSrc, EmptyCI, MaskData, Opacity);
+              inc(x, w);
+            end;
+            if x < Right - rWidth then
+              CopyByMask32Ex(Rect(x, Bottom - MaxB, Right - rWidth, Bottom), Rect(R.Left + dw + lWidth, R.Top + dh - MaxB, R.Left + dw + w + lWidth, R.Top + dh), aBmp, BmpSrc, EmptyCI, MaskData, Opacity);
+          end
+          else
+            StretchBltMask32Ex(x, Bottom - MaxB, Right - rWidth - x, MaxB, R.Left + dw + lWidth, R.Top + dh - MaxB, w, MaxB, aBmp, BmpSrc, dhm, Opacity);
+
+          // right - bottom
+          CopyByMask32Ex(Rect(Right - rWidth, Bottom - bWidth, Right, Bottom), Rect(R.Left + dw + w + lWidth, R.Top + dh - bWidth, R.Left + dw + w + lWidth + rWidth, R.Top + dh), aBmp, BmpSrc, CI, MaskData, Opacity);
+          // right - top
+          CopyByMask32Ex(Rect(Right - rWidth,   Top,   Right,   Top + tWidth),
+                       Rect(R.Left + dw + w + lWidth,   R.Top,   R.Left + dw + w + lWidth + rWidth,   R.Top + tWidth),   aBmp,   BmpSrc,   CI,   MaskData, Opacity);
+          // right - middle
+          y := Top + tWidth;
+          if not Stretch then begin
+            while y < Bottom - h - bWidth do begin
+              CopyByMask32Ex(Rect(Right - MaxR, y, Right,   y + h),
+                           Rect(R.Left + dw + w + lWidth + rWidth - MaxR, R.Top + tWidth,   R.Left + dw + w + lWidth + rWidth,   R.Top + h + tWidth), aBmp, BmpSrc, EmptyCI, MaskData, Opacity);
+              inc(y, h);
+            end;
+            if y < Bottom - bWidth then
+              CopyByMask32Ex(Rect(Right - MaxR, y, Right, Bottom - bWidth),
+                           Rect(R.Left + dw + w + lWidth + rWidth - MaxR, R.Top + tWidth,   R.Left + dw + w + lWidth + rWidth,   R.Top + h + tWidth), aBmp, BmpSrc, EmptyCI, MaskData, Opacity);
+          end
+          else
+            StretchBltMask32Ex(Right - MaxR, y, MaxR, Bottom - bWidth - y, R.Left + dw + lWidth + w + rWidth - MaxR,   R.Top + tWidth,   MaxR,   h,   aBmp,   BmpSrc,   dhm, Opacity);
         end;
-      end
-      else begin
-        y := R.Top + wt;
-        x := R.Left + wl;
-        StretchBlt(Bmp.Canvas.Handle, x, y, R.Right - wr - x, R.Bottom - wb - y, BmpSrc.Canvas.Handle, MaskData.R.Left + dw + wl, MaskData.R.Top + wt, w, h, SRCCOPY);
       end;
-  end
-  else begin
-    // left - top
-    CopyByMask32Ex(Rect(R.Left, R.Top, R.Left + wl, R.Top + wt), Rect(MaskData.R.Left + dw, MaskData.R.Top, MaskData.R.Left + dw + wl, MaskData.R.Top + wt), Bmp, BmpSrc, CI, MaskData, Opacity);
-    y := R.Top + wt;
-    // left - middle
-    if not Stretch then begin
-      while y < R.Bottom - h - wb do begin
-        CopyByMask32Ex(Rect(R.Left, y, R.Left + MaxL, y + h), Rect(MaskData.R.Left + dw, MaskData.R.Top + wt, MaskData.R.Left + dw + MaxL, MaskData.R.Top + h + wt), Bmp, BmpSrc, EmptyCI, MaskData, Opacity);
-        inc(y, h);
-      end;
-      if y < R.Bottom - wb then
-        CopyByMask32Ex(Rect(R.Left, y, R.Left + MaxL, R.Bottom - wb), Rect(MaskData.R.Left + dw, MaskData.R.Top + wt, MaskData.R.Left + dw + MaxL, MaskData.R.Top + wt + h), Bmp, BmpSrc, EmptyCI, MaskData, Opacity);
-    end
-    else
-      StretchBltMask32Ex(R.Left, y, MaxL, R.Bottom - wb - y, MaskData.R.Left + dw, MaskData.R.Top + wt, MaxL, h, Bmp, BmpSrc, dhm, Opacity);
-
-    // top - middle
-    x := R.Left + wl;
-    if not Stretch then begin
-      while x < R.Right - w - wr do begin
-        CopyByMask32Ex(Rect(x, R.Top, x + w, R.Top + MaxT), Rect(MaskData.R.Left + dw + wl, MaskData.R.Top, MaskData.R.Left + dw + w + wl, MaskData.R.Top + MaxT), Bmp, BmpSrc, EmptyCI, MaskData, Opacity);
-        inc(x, w);
-      end;
-      if x < R.Right - wr then
-        CopyByMask32Ex(Rect(x, R.Top, R.Right - wr, R.Top + MaxT), Rect(MaskData.R.Left + dw + wl, MaskData.R.Top, MaskData.R.Left + dw + w + wl, MaskData.R.Top + MaxT), Bmp, BmpSrc, EmptyCI, MaskData, Opacity);
-    end
-    else
-      StretchBltMask32Ex(x, R.Top, R.Right - wr - x, MaxT, MaskData.R.Left + dw + wl, MaskData.R.Top, w, MaxT, Bmp, BmpSrc, dhm, Opacity);
-
-    // left - bottom
-    CopyByMask32Ex(Rect(R.Left, R.Bottom - wb, R.Left + wl, R.Bottom), Rect(MaskData.R.Left + dw, MaskData.R.Top + dh - wb, MaskData.R.Left + dw + wl, MaskData.R.Top + dh), Bmp, BmpSrc, CI, MaskData, Opacity);
-    // bottom - middle
-    x := R.Left + wl;
-    if not Stretch then begin
-      while x < R.Right - w - wr do begin
-        CopyByMask32Ex(Rect(x, R.Bottom - MaxB, x + w, R.Bottom), Rect(MaskData.R.Left + dw + wl, MaskData.R.Top + dh - MaxB, MaskData.R.Left + dw + w + wl, MaskData.R.Top + dh), Bmp, BmpSrc, EmptyCI, MaskData, Opacity);
-        inc(x, w);
-      end;
-      if x < R.Right - wr then
-        CopyByMask32Ex(Rect(x, R.Bottom - MaxB, R.Right - wr, R.Bottom), Rect(MaskData.R.Left + dw + wl, MaskData.R.Top + dh - MaxB, MaskData.R.Left + dw + w + wl, MaskData.R.Top + dh), Bmp, BmpSrc, EmptyCI, MaskData, Opacity);
-    end
-    else
-      StretchBltMask32Ex(x, R.Bottom - MaxB, R.Right - wr - x, MaxB, MaskData.R.Left + dw + wl, MaskData.R.Top + dh - MaxB, w, MaxB, Bmp, BmpSrc, dhm, Opacity);
-
-    // right - bottom
-    CopyByMask32Ex(Rect(R.Right - wr, R.Bottom - wb, R.Right, R.Bottom), Rect(MaskData.R.Left + dw + w + wl, MaskData.R.Top + dh - wb, MaskData.R.Left + dw + w + wl + wr, MaskData.R.Top + dh), Bmp, BmpSrc, CI, MaskData, Opacity);
-    // right - top
-    CopyByMask32Ex(Rect(R.Right - wr,   R.Top,   R.Right,   R.Top + wt),
-                 Rect(MaskData.R.Left + dw + w + wl,   MaskData.R.Top,   MaskData.R.Left + dw + w + wl + wr,   MaskData.R.Top + wt),   Bmp,   BmpSrc,   CI,   MaskData, Opacity);
-    // right - middle
-    y := R.Top + wt;
-    if not Stretch then begin
-      while y < R.Bottom - h - wb do begin
-        CopyByMask32Ex(Rect(R.Right - MaxR,   y,   R.Right,   y + h),
-                     Rect(MaskData.R.Left + dw + w + wl + wr - MaxR,   MaskData.R.Top + wt,   MaskData.R.Left + dw + w + wl + wr,   MaskData.R.Top + h + wt), Bmp, BmpSrc, EmptyCI, MaskData, Opacity);
-        inc(y, h);
-      end;
-      if y < R.Bottom - wb then
-        CopyByMask32Ex(Rect(R.Right - MaxR,   y,   R.Right,   R.Bottom - wb),
-                     Rect(MaskData.R.Left + dw + w + wl + wr - MaxR,   MaskData.R.Top + wt,   MaskData.R.Left + dw + w + wl + wr,   MaskData.R.Top + h + wt), Bmp, BmpSrc, EmptyCI, MaskData, Opacity);
-    end
-    else
-      StretchBltMask32Ex(R.Right - MaxR,   y,  MaxR,   R.Bottom - wb - y,   MaskData.R.Left + dw + wl + w + wr - MaxR,   MaskData.R.Top + wt,   MaxR,   h,   Bmp,   BmpSrc,   dhm, Opacity);
-  end;
 end;
 
 end.

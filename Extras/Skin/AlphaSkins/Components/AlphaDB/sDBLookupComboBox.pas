@@ -1,7 +1,7 @@
 unit sDBLookupComboBox;
 {$I sDefs.inc}
 //{$DEFINE LOGGED}
-
+//+
 interface
 
 uses
@@ -31,7 +31,6 @@ type
     procedure PaintText;
     procedure OurPaintHandler;
     procedure WndProc(var Message: TMessage); override;
-    procedure WMMouseWheel(var Message: TMessage); message WM_MOUSEWHEEL;
   public
     procedure AfterConstruction; override;
     constructor Create(AOwner:TComponent); override;
@@ -87,8 +86,8 @@ end;
 function TsDBLookupComboBox.ButtonHeight: integer;
 begin
   with FCommonData.SkinManager.ConstData.ComboBtn do
-    if FCommonData.Skinned and (GlyphIndex > -1) then
-      Result := HeightOfImage(FCommonData.SkinManager.ma[GlyphIndex])
+    if FCommonData.Skinned and (GlyphIndex >= 0) then
+      Result := FCommonData.SkinManager.ma[GlyphIndex].Height
     else
       Result := 16;
 end;
@@ -116,12 +115,12 @@ end;
 
 constructor TsDBLookupComboBox.Create(AOwner: TComponent);
 begin
+  FCommonData := TsCommonData.Create(Self, True);
+  FCommonData.COC := COC_TsComboBox;
   inherited Create(AOwner);
   ControlStyle := ControlStyle - [csFixedHeight, csFramed, csOpaque];
   TControlCanvas(Canvas).Control := self;
   ParentColor := False;
-  FCommonData := TsCommonData.Create(Self, True);
-  FCommonData.COC := COC_TsComboBox;
   FDisabledKind := DefDisabledKind;
   FBoundLabel := TsBoundLabel.Create(Self, FCommonData);
   FButtonMargin := 2;
@@ -141,9 +140,7 @@ begin
     FreeAndNil(ListSW);
 
   FreeAndNil(FBoundLabel);
-  if Assigned(FCommonData) then
-    FreeAndNil(FCommonData);
-
+  FreeAndNil(FCommonData);
   inherited Destroy;
 end;
 
@@ -280,20 +277,20 @@ begin
     Mode := integer(ControlIsActive(FCommonData));
 
   R := ButtonRect;
-  with SkinData.SkinManager.ConstData.ComboBtn do begin
-    if SkinIndex > -1 then begin
+  with SkinData.SkinManager, ConstData.ComboBtn do begin
+    if SkinIndex >= 0 then begin
       TmpBtn := CreateBmpLike(FCommonData.FCacheBmp);
       BitBlt(TmpBtn.Canvas.Handle, 0, 0, TmpBtn.Width, TmpBtn.Height, FCommonData.FCacheBmp.Canvas.Handle, 0, 0, SRCCOPY);
       PaintItem(SkinIndex, MakeCacheInfo(FCommonData.FCacheBmp),
                 True, Mode, R, Point(0, 0), FCommonData.FCacheBmp, FCommonData.SkinManager, BGIndex[0], BGIndex[1]);
       FreeAndNil(TmpBtn);
     end;
-    if FCommonData.SkinManager.IsValidImgIndex(GlyphIndex) then
-      DrawSkinGlyph(FCommonData.FCacheBmp, Point(R.Left + (WidthOf(R) - WidthOfImage(FCommonData.SkinManager.ma[GlyphIndex])) div 2,
-                    (Height - ButtonHeight) div 2), Mode, 1, FCommonData.SkinManager.ma[GlyphIndex], MakeCacheInfo(SkinData.FCacheBmp))
+    if IsValidImgIndex(GlyphIndex) then
+      DrawSkinGlyph(FCommonData.FCacheBmp, Point(R.Left + (WidthOf(R) - ma[GlyphIndex].Width) div 2,
+                    (Height - ButtonHeight) div 2), Mode, 1, ma[GlyphIndex], MakeCacheInfo(SkinData.FCacheBmp))
     else begin // Paint without glyph
       if SkinIndex >= 0 then
-        C := FCommonData.SkinManager.gd[SkinIndex].Props[min(Mode, 1)].FontColor.Color
+        C := gd[SkinIndex].Props[min(Mode, 1)].FontColor.Color
       else
         C := ColorToRGB(clWindowText);
 
@@ -356,19 +353,6 @@ begin
 end;
 
 
-procedure TsDBLookupComboBox.WMMouseWheel(var Message: TMessage);
-begin
-  case Message.Msg of
-    WM_MOUSEWHEEL: begin
-      Message.Msg := WM_KEYDOWN;
-      Message.lParam := 0;
-      Message.wParam := iff(SmallInt(Message.wParamHi) > 0, VK_UP, VK_DOWN);
-      MainWndProc(Message);
-    end;
-  end;
-end;
-
-
 procedure TsDBLookupComboBox.WndProc(var Message: TMessage);
 begin
 {$IFDEF LOGGED}
@@ -422,7 +406,7 @@ begin
 
       AC_GETDEFINDEX: begin
         if FCommonData.SkinManager <> nil then
-          Message.Result := FCommonData.SkinManager.GetSkinIndex(s_ComboBox) + 1;
+          Message.Result := FCommonData.SkinManager.ConstData.Sections[ssComboBox] + 1;
 
         Exit;
       end;
@@ -446,21 +430,19 @@ begin
         end;
 
       WM_MOUSEWHEEL:
-        if Integer(Message.WParam) < 0 then
-          Perform(WM_KEYDOWN, VK_DOWN, 0)
-        else
-          Perform(WM_KEYDOWN, VK_UP, 0);
+        Perform(WM_KEYDOWN, iff(Integer(Message.WParam) < 0, VK_DOWN, VK_UP), 0);
 
       WM_KILLFOCUS, CM_EXIT: begin
         FCommonData.FFocused := False;
         FCommonData.BGChanged := True;
         if IsWindowVisible(Handle) then
           inherited
-        else begin
-          if TsDBLookupComboBox_(Self).FDataList.Handle <> 0 then
-            ShowWindow(TsDBLookupComboBox_(Self).FDataList.Handle, SW_HIDE);
+        else
+        with TsDBLookupComboBox_(Self) do begin
+          if FDataList.Handle <> 0 then
+            ShowWindow(FDataList.Handle, SW_HIDE);
 
-          TsDBLookupComboBox_(Self).FListVisible := False;
+          FListVisible := False;
         end;
         Exit
       end;

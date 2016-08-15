@@ -60,9 +60,9 @@ end;
 
 constructor TsWebBrowser.Create(AOwner: TComponent);
 begin
-  inherited Create(AOwner);
   FCommonData := TsScrollWndData.Create(Self);
   FCommonData.COC := COC_TsEdit;
+  inherited Create(AOwner);
 end;
 
 
@@ -71,9 +71,7 @@ begin
   if ListSW <> nil then
     FreeAndNil(ListSW);
 
-  if Assigned(FCommonData) then
-    FreeAndNil(FCommonData);
-
+  FreeAndNil(FCommonData);
   inherited;
 end;
 

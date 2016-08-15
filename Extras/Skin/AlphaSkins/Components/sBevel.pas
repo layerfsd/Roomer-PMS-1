@@ -56,17 +56,15 @@ end;
 
 constructor TsBevel.Create(AOwner: TComponent);
 begin
-  inherited;
   FCommonData := TsCommonData.Create(Self, True);
-  FCommonData.COC := COC_TsSPEEDBUTTON;
+  FCommonData.COC := COC_TsSpeedButton;
+  inherited;
 end;
 
 
 destructor TsBevel.Destroy;
 begin
-  if Assigned(FCommonData) then
-    FreeAndNil(FCommonData);
-
+  FreeAndNil(FCommonData);
   inherited;
 end;
 
@@ -165,6 +163,7 @@ begin
         FCommonData.FUpdating := False;
         FCommonData.BGChanged := True;
         Repaint;
+        Exit;
       end;
     end;
 

@@ -1,5 +1,6 @@
 unit sColorSelect;
 {$I sDefs.inc}
+//+
 
 interface
 
@@ -26,6 +27,8 @@ type
     ColorDialog: TColorDialog;
     procedure AfterConstruction; override;
     constructor Create(AOwner: TComponent); override;
+    procedure DrawGlyph; override;
+    destructor Destroy; override;
     procedure Click; override;
     procedure Loaded; override;
     procedure WndProc(var Message: TMessage); override;
@@ -42,7 +45,7 @@ type
 
 implementation
 
-uses acntUtils, sDialogs, sCommonData, sMessages, sAlphaGraph, sConst;
+uses sGraphUtils, acntUtils, sDialogs, sCommonData, sMessages, sAlphaGraph, sConst;
 
 
 procedure TsColorSelect.AfterConstruction;
@@ -71,7 +74,7 @@ begin
     if Assigned(FOnChange) then
       FOnChange(Self);
   end;
-  FCustomColors.Free;
+  CustomColors.Assign(cd.CustomColors);
   if ColorDialog <> cd then
     FreeAndNil(cd);
 
@@ -83,9 +86,25 @@ constructor TsColorSelect.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   FCustomColors := TStringList.Create;
+  FStandardDlg := False;
   FImgHeight := 15;
   FImgWidth := 15;
-  FStandardDlg := False;
+end;
+
+
+destructor TsColorSelect.Destroy;
+begin
+  FCustomColors.Free;
+  inherited;
+end;
+
+
+procedure TsColorSelect.DrawGlyph;
+begin
+  if SkinData.Skinned then
+    FillDC(SkinData.FCacheBmp.Canvas.Handle, ImgRect, ColorValue)
+  else
+    FillDC(Canvas.Handle, ImgRect, ColorValue)
 end;
 
 
@@ -129,12 +148,13 @@ end;
 procedure TsColorSelect.UpdateGlyph;
 begin
   if not (csLoading in ComponentState) then
-    if (FImgHeight <> 0) and (FImgWidth <> 0) and (Glyph.Canvas.Pixels[FImgWidth div 2, FImgHeight div 2] <> ColorValue) then begin
+    if (FImgHeight <> 0) and (FImgWidth <> 0) {and (Glyph.Canvas.Pixels[FImgWidth div 2, FImgHeight div 2] <> ColorValue)} then begin
       Glyph.OnChange := nil;
       OldOnChange := nil;
       Glyph.PixelFormat := pf32bit;
       Glyph.Width := FImgWidth;
       Glyph.Height := FImgHeight;
+{
       FillRect32(Glyph, MkRect(FImgWidth, FImgHeight), ColorToRGB(ColorValue));
       // Transparent pixels in corners
       Glyph.Canvas.Pixels[0, FImgHeight - 1]             := sFuchsia.C;
@@ -145,6 +165,7 @@ begin
         SkinData.BGChanged := True;
         GraphRepaint;
       end;
+}
     end;
 end;
 
@@ -161,7 +182,7 @@ begin
   if Message.Msg = SM_ALPHACMD then
     case Message.WParamHi of
       AC_REFRESH:
-        if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then
+        if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then
           UpdateGlyph;
     end;
 end;

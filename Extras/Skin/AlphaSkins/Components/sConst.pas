@@ -6,19 +6,15 @@ unit sConst;
 interface
 
 uses
-{$IFNDEF NOJPG}
-  {$IFDEF TINYJPG} acTinyJpg, {$ELSE} Jpeg, {$ENDIF}
-{$ENDIF}
-  {$IFDEF TNTUNICODE} TntMenus, {$ENDIF}
-  Graphics,
-  Windows, comctrls, controls, classes, Forms, StdCtrls, Menus;
+  Graphics, Windows, comctrls, controls, classes, Forms, StdCtrls,
+  acntTypes;
 
 {$R SRES.RES}
 
 {$IFNDEF NOTFORHELP}
 const
-  CompatibleSkinVersion = 7.45; // Version of supported skins in current version of the package
-  MaxCompSkinVersion = 10.99;
+  CompatibleSkinVersion = 8.45; // Version of supported skins in current version of the package
+  MaxCompSkinVersion = 11.99;
   ExceptTag = $100 {256}; // Bit Mask for the tag value in 3rd-party controls which will not be skinned automatically (Old value is -98)
 
   // Data characters for skins
@@ -55,19 +51,50 @@ const
   BGT_TEXTURERIGHT  = $40;
   BGT_TEXTUREBOTTOM = $80;
 
-//  BGT_STRETCHVERT   = BGT_STRETCH or BGT_TEXTURELEFT ;
-//  BGT_STRETCHHORZ   = 4;
+  BGT_TEXTUREVERT   = BGT_TEXTURELEFT or BGT_TEXTURERIGHT;
+  BGT_TEXTUREHORZ   = BGT_TEXTURETOP or BGT_TEXTUREBOTTOM;
+
+  BGT_STRETCHVERT   = BGT_STRETCH or BGT_TEXTUREVERT;
+  BGT_STRETCHHORZ   = BGT_STRETCH or BGT_TEXTUREHORZ;
+
+//  BGT_DYNAMICVERT   = BGT_STRETCHVERT or BGT_GRADIENTVERT;
+//  BGT_DYNAMICHORZ   = BGT_STRETCHHORZ or BGT_GRADIENTHORZ;
 
   BGT_TOPLEFT       = $100;
   BGT_TOPRIGHT      = $200;
   BGT_BOTTOMLEFT    = $400;
   BGT_BOTTOMRIGHT   = $800;
 
+  RDWA_FRAME    = RDW_INVALIDATE or RDW_FRAME or RDW_NOERASE;
+  RDWA_FRAMENOW = RDWA_FRAME or RDW_UPDATENOW;
+  RDWA_REPAINT  = RDW_ERASE or RDW_INVALIDATE or RDW_FRAME;
+  RDWA_ERASENOW = RDW_INVALIDATE or RDW_ERASE or RDW_UPDATENOW;
+  RDWA_ALL      = RDW_ALLCHILDREN or RDW_INVALIDATE or RDW_ERASE or RDW_FRAME;
+  RDWA_ALLNOW   = RDWA_ALL or RDW_UPDATENOW;
+  RDWA_ALLCHILDREN = RDW_NOERASE or RDW_NOINTERNALPAINT or RDW_INVALIDATE or RDW_ALLCHILDREN;
+
+  RDWA_NOCHILDREN = RDW_INVALIDATE or RDW_ERASE or RDW_FRAME or RDW_NOCHILDREN;
+  RDWA_NOCHILDRENNOW = RDWA_NOCHILDREN or RDW_UPDATENOW;
+
+
+  SWPA_FRAMECHANGED = SWP_NOSIZE or SWP_NOMOVE or SWP_NOZORDER or SWP_NOCOPYBITS or SWP_NOSENDCHANGING or SWP_NOREPOSITION or SWP_FRAMECHANGED;
+  SWPA_NOCOPYBITS = SWP_NOSIZE or SWP_NOMOVE or SWP_NOREDRAW or SWP_NOZORDER or SWP_NOCOPYBITS or SWP_NOSENDCHANGING or SWP_NOREPOSITION;
+  SWPA_SHOW = SWP_NOACTIVATE or SWP_NOREDRAW or SWP_SHOWWINDOW or SWP_NOSENDCHANGING or SWP_NOOWNERZORDER;
+  SWPA_HIDE = SWP_NOACTIVATE or SWP_NOREDRAW or SWP_HIDEWINDOW or SWP_NOSENDCHANGING or SWP_NOOWNERZORDER;
+
+  SWPA_SHOWZORDER = SWP_NOSIZE or SWP_NOACTIVATE or SWP_NOREDRAW or SWP_SHOWWINDOW or SWP_NOSENDCHANGING or SWP_NOOWNERZORDER;
+  SWPA_SHOWZORDERONLY = SWPA_SHOWZORDER or SWP_NOMOVE;
+
+  SWPA_ZORDER = SWP_NOSIZE or SWP_NOMOVE or SWP_NOACTIVATE or SWP_NOREDRAW or SWP_NOSENDCHANGING or SWP_NOOWNERZORDER;
+  EllipsFlags = DT_END_ELLIPSIS or DT_PATH_ELLIPSIS or DT_WORD_ELLIPSIS;
+
   // Predefined internal tags for ListWnd objects
   ACT_RELCAPT = -1; // Release capture after MouseUp
 
   PNGMagic: array [0..7] of Byte = (137, 80, 78, 71, 13, 10, 26, 10);
   CheckBoxStates: array [0..2] of TCheckBoxState = (cbUnchecked, cbChecked, cbGrayed);
+  TextWrapping: array [boolean] of Cardinal = (DT_SINGLELINE, DT_WORDBREAK);
+  TextEllips:   array [boolean] of Cardinal = (0, EllipsFlags);
 
 type
   TacOuterEffectStyle = (oeNone, oeShadow, oeLowered);
@@ -75,29 +102,13 @@ type
   TacGrayedMode = (gmAlways, gmInactive);
   TacSide = (asLeft, asTop, asRight, asBottom);
   TacTabLayout = (tlFirst, tlLast, tlMiddle, tlSingle);
-  TStringLists = array of TStringList;
-  TRects = array of TRect;
 
-  TacJpegClass = {$IFDEF TINYJPG}TacTinyJPGImage{$ELSE}TJPEGImage{$ENDIF};
-  TacMenuItem = {$IFDEF TNTUNICODE}TTntMenuItem{$ELSE}TMenuItem{$ENDIF};
-
-{$IFDEF FPC}
-  TShowAction = (saIgnore, saRestore, saMinimize, saMaximize);
-
-  TWMCopyData = packed record
-    Msg: Cardinal;
-    From: HWND;
-    CopyDataStruct: PCopyDataStruct;
-    Result: Longint;
-  end;
-
-  TWMNCActivate = packed record
-    Msg: Cardinal;
-    Active: BOOL;
-    Unused,
-    Result: Longint;
-  end;
-{$ENDIF}
+  TStringLists    = acntTypes.TStringLists;
+  TRects          = acntTypes.TRects;
+  TacJpegClass    = acntTypes.TacJpegClass;
+  TacMenuItem     = acntTypes.TacMenuItem;
+  TsAccessControl = acntTypes.TacAccessControl;
+  TAccessCanvas   = acntTypes.TacAccessCanvas;
 
 {$IFDEF UNICODE}
   ACString = String;
@@ -152,7 +163,6 @@ type
 
   PACString = ^ACString;
 
-  TAOR = array of Windows.TRect;
   TPaintEvent    = procedure (Sender: TObject; Canvas: TCanvas) of object;
   TBmpPaintEvent = procedure (Sender: TObject; Bmp: Graphics.TBitmap) of object;
 
@@ -163,39 +173,21 @@ type
   TacRoot  = type string;
 
   TFadeDirection = (fdNone, fdUp, fdDown); // remove soon
-  TacAnimType = (atFading, atAero);
+  TacAnimType = (atFading, atAero, atDropDown);
   TacAnimTypeCtrl = (atcFade, atcAero, atcBlur);
 
   TacBtnEvent = (beMouseEnter, beMouseLeave, beMouseDown, beMouseUp);
   TacBtnEvents = set of TacBtnEvent;
-
-  TacCtrlType = (actGraphic); // remove soon
 
   TacAnimatEvent = (aeMouseEnter, aeMouseLeave, aeMouseDown, aeMouseUp, aeGlobalDef);
   TacAnimatEvents = set of TacAnimatEvent;
   TacImgType = (itisaBorder, itisaTexture, itisaGlyph, itisaGlow, itisaPngGlyph);
   TacFillMode = (fmTiled, fmStretched, fmTiledHorz, fmTiledVert, fmStretchHorzTop, fmStretchVertLeft,
                  fmTileHorBtm, fmTileVertRight, fmStretchHorBtm, fmStretchVertRight,
-                 fmDisTiled, fmStretchHorz, fmStretchVert, fmReserved1, fmReserved2
-                );
+                 fmDisTiled, fmStretchHorz, fmStretchVert, fmFromBottomToTop, fmReserved1);
 
   TvaAlign = (vaTop, vaMiddle, vaBottom);
 
-  TsHackedControl = class(TControl)
-  public
-    property AutoSize;
-    property ParentColor;
-    property Color;
-    property ParentFont;
-    property PopupMenu;
-    property Font;
-  end;
-
-
-  TAccessCanvas = class({$IFDEF D2010}TCustomCanvas{$ELSE}TPersistent{$ENDIF})
-  public
-    FHandle: HDC;
-  end;
 
   PacBGInfo = ^TacBGInfo;
   TacBGType = (btUnknown, btFill, btCache, btNotReady); // Returned by control type of BG
@@ -236,10 +228,6 @@ type
 {$IFDEF MAKEOBJ}
   TsCharArray = array [1..16] of AnsiChar;
 {$ENDIF}
-{$IFDEF USEHINTMANAGER}
-  TsHintStyle = (hsSimply, hsComics, hsEllipse, hsBalloon, hsStandard, hsNone); // deprecated;
-  TsHintsPredefinitions = (shSimply, shGradient, shTransparent, shEllipse, shBalloon, shComicsGradient, shComicsTransparent, shStandard, shNone, shCustom); // deprecated;
-{$ENDIF}
   { Shapes of the shadows (ssRectangle, ssEllipse).}
   TsShadowingShape = (ssRectangle, ssEllipse);
   { Set of window_show types}
@@ -259,14 +247,35 @@ type
       2: (Intg: integer);
     end;
 
-  TsColor_ = packed record // Bytes inverted (for fast calcs)
+  TsColor_D = packed record // Bytes inverted (for fast calcs)
+    case integer of
+      0: (DC: TColor);
+      1: (DB, DG, DR, DA: Byte);
+      2: (DI: integer);
+    end;
+
+  TsColor_S = packed record // Bytes inverted
+    case integer of
+      0: (SC: TColor);
+      1: (SB, SG, SR, SA: Byte);
+      2: (SI: integer);
+    end;
+
+  TsColor_M = packed record // Bytes inverted
+    case integer of
+      0: (MC: TColor);
+      1: (MB, MG, MR, MA: Byte);
+      2: (MI: integer);
+    end;
+
+  TsColor_ = packed record // Bytes inverted
     case integer of
       0: (C: TColor);
       1: (B, G, R, A: Byte);
       2: (I: integer);
     end;
 
-  TsColor_RGB_ = packed record // Bytes inverted (for fast calcs)
+  TsColor_RGB_ = packed record // Bytes inverted
     case integer of
       0: (Col: TColor);
       1: (Blue, Green, Red, Alpha: Byte);
@@ -274,10 +283,20 @@ type
     end;
 
   PRGBAArray = ^TRGBAArray;
-  TRGBAArray = packed array[0..100000] of TsColor_;
+  TRGBAArray = packed array[0..10000] of TsColor;
 
-  PRGBAArray_RGB = ^TRGBAArray_RGB;
-  TRGBAArray_RGB = packed array[0..100000] of TsColor_RGB_;
+  PRGBAArray_ = ^TRGBAArray_;
+  TRGBAArray_ = packed array[0..10000] of TsColor_;
+
+  PRGBAArray_D = ^TRGBAArray_D;
+  TRGBAArray_D = packed array[0..10000] of TsColor_D;
+
+  PRGBAArray_S = ^TRGBAArray_S;
+  TRGBAArray_S = packed array[0..10000] of TsColor_S;
+
+  PRGBAArray_M = ^TRGBAArray_M;
+  TRGBAArray_M = packed array[0..10000] of TsColor_M;
+
 
   TsDisabledGlyphKind = set of (dgBlended, dgGrayed);
   TsDisabledKind = set of (dkBlended, dkGrayed);
@@ -294,20 +313,24 @@ type
 
 const
   NCS_DROPSHADOW = $20000;
-  EmptyCI: TCacheInfo = (
-    Bmp:       nil;
-    X:        -99;
-    Y:        -99;
-    FillColor: clFuchsia;
-    Ready:     False
-  );
+{$IFNDEF DELPHI_XE3}
+  BS_SPLITBUTTON    = 12;
+  BS_DEFSPLITBUTTON = 13;
+  BS_COMMANDLINK    = 14;
+  BS_DEFCOMMANDLINK = 15;
+{$ENDIF}
+
+  EmptyCI: TCacheInfo = (Bmp: nil; X: -99; Y: -99; FillColor: clFuchsia; Ready: False);
   sFuchsia: TsColor = (C: $FF00FF); // Transparent color
   sTabPositions: array [TTabPosition] of string = ('', 'BOTTOM', 'LEFT', 'RIGHT');
+  aScalePercents: array [0..2] of integer = (100, 125, 150);
+  aSfxs: array [0..2] of string = ('', '*125', '*150');
 
-  s_RegName      = 'AlphaSkins';
-  s_IntSkinsPath = 'IntSkinsPath';
+  s_RegName        = 'AlphaSkins';
+  s_IntSkinsPath   = 'IntSkinsPath';
   s_WinControlForm = 'TWinControlForm';
-  s_NoFocusProp = 'ACNOFOCUS';
+  s_NoFocusProp    = 'ACNOFOCUS';
+  s_acScale        = 'ACSCALE';
 
 {$IFNDEF DISABLEPREVIEWMODE} // Used with ASkinEditor
   s_PreviewKey   = '/acpreview';           //
@@ -366,11 +389,8 @@ const
   acImgTypes:  array [0..4]  of TacImgType = (itisaBorder, itisaTexture, itisaGlyph, itisaGlow, itisaPngGlyph);
   acFillModes: array [0..14] of TacFillMode = (fmTiled, fmStretched, fmTiledHorz, fmTiledVert, fmStretchHorzTop,
     fmStretchVertLeft, fmTileHorBtm, fmTileVertRight, fmStretchHorBtm, fmStretchVertRight, fmDisTiled,
-    fmStretchHorz, fmStretchVert, fmReserved1, fmReserved2
+    fmStretchHorz, fmStretchVert, fmFromBottomToTop, fmReserved1
   );
-{$IFDEF USEHINTMANAGER}
-  aHintStyles: array [0..5] of TsHintStyle = (hsSimply, hsComics, hsEllipse, hsBalloon, hsStandard, hsNone);
-{$ENDIF}
   acBtnEvents: array [TacAnimatEvent] of TacBtnEvent = (beMouseEnter, beMouseLeave, beMouseDown, beMouseUp, beMouseUp);
 
   COC_TsCustom           = 1;
@@ -435,9 +455,7 @@ const
   COC_TsHeaderControl    = 152;
   COC_TsGauge            = 161;
   COC_TsTrackBar         = 165;
-{$IFDEF USEHINTMANAGER}
-  COC_TsHintManager      = 211;
-{$ENDIF}
+
   COC_TsSkinProvider     = 224;
   COC_TsMDIForm          = 225;
   COC_TsFrameAdapter     = 226;
@@ -462,9 +480,11 @@ const
 
   ssScrolledEdits: TsCodes = [COC_TsMemo, COC_TsListBox, COC_TsListView, COC_TsDBGrid, COC_TsDBMemo, COC_TsDBListBox, COC_TsTreeView, COC_TsAdapterEdit];
 
+  ssButtons: TsCodes       = [COC_TsButton, COC_TsBitBtn, COC_TsSpeedButton];
+
 var
-  sPopupCalendar: TForm;
   acWinVer: integer;
+  sPopupCalendar: TForm;
   acDebugMode: boolean = False;
 
 {$IFDEF LOGGED}
@@ -522,6 +542,9 @@ var
   ac_CYCAPTION:    integer = 0;
   ac_CYSMCAPTION:  integer = 0;
 
+  ac_ArrowWidth:   integer = 7;
+  ac_ArrowHeight:  integer = 4;
+
 const
   SC_DRAGMOVE      = $F012;
 {$IFDEF DELPHI5}
@@ -533,12 +556,7 @@ const
   AC_SRC_ALPHA     = $01;
   CS_DROPSHADOW    = $20000;
 {$ENDIF}
-  DefBlend: TBlendFunction = (
-    BlendOp:             AC_SRC_OVER;
-    BlendFlags:          0;
-    SourceConstantAlpha: 0;
-    AlphaFormat:         AC_SRC_ALPHA
-  );
+  DefBlend: TBlendFunction = (BlendOp: AC_SRC_OVER; BlendFlags: 0; SourceConstantAlpha: 0; AlphaFormat: AC_SRC_ALPHA);
 
 {$IFDEF RUNIDEONLY}
   sIsRunIDEOnlyMessage = 'Trial version of the AlphaControls package has been used.' + s_0D0A +
@@ -584,34 +602,6 @@ var
 
   acs_Font                 : acString; // "Font"
   acs_FontColor            : acString;
-{$IFDEF USEHINTMANAGER}
-  // Hint designer
-  acs_HintDsgnTitle        : acString; // "Hint Designer Form"
-  acs_HintDsgnPreserved    : acString; // "Preserved settings :"
-  acs_HintDsgnStyle        : acString; // "Style :"
-  acs_HintDsgnBevelWidth   : acString; // "Bevel width"
-  acs_Blur                 : acString; // "Blur"
-  acs_HintDsgnArrowLength  : acString; // "Arrow length"
-  acs_HintDsgnHorizMargin  : acString; // "Horiz. margin"
-  acs_HintDsgnVertMargin   : acString; // "Vert. margin"
-  acs_HintDsgnRadius       : acString; // "Corners radius"
-  acs_HintDsgnMaxWidth     : acString; // "Max width"
-  acs_HintDsgnPauseHide    : acString; // "Pause hide (ms)"
-  acs_Percent              : acString; // "Percent"
-  acs_HintDsgnOffset       : acString; // "Offset"
-  acs_HintDsgnTransparency : acString; // "Transparency"
-  acs_HintDsgnNoPicture    : acString; // "No picture available"
-  acs_Texture              : acString; // "Texture"
-  acs_HintDsgnLoad         : acString; // "Load from file"
-  acs_HintDsgnSave         : acString; // "Save to file as..."
-  acs_HintDsgnColor        : acString; // "Color"
-  acs_HintDsgnBorderTop    : acString; // "Top border"
-  acs_HintDsgnBorderBottom : acString; // "Bottom border"
-  acs_Shadow               : acString; // "Shadow"
-  acs_Background           : acString; // "Background"
-  acs_Gradient             : acString; // "Gradient"
-  acs_PreviewHint          : acString; // "Preview of the future hint window"
-{$ENDIF}
   // File dialogs
   acs_Root                 : acString; // "Root:"
   acs_SelectDir            : acString; // "Select directory"
@@ -628,7 +618,8 @@ var
 
 implementation
 
-uses SysUtils, sStrings;
+uses
+  SysUtils, sStrings;
 
 
 procedure acLoadResStr(var AValue: acString; ALib: HModule; AIdent, DefValue: integer; Suffix: acString = ''); overload;
@@ -737,37 +728,7 @@ initialization
   acLoadResStr(acs_FontColor, Lib, 5273, 'Font color:', ':');
   FreeLibrary(Lib);
 
-{$IFDEF USEHINTMANAGER}
-  // Hint designer
-  acs_HintDsgnTitle        := LoadStr(s_HintDsgnTitle);
-  acs_HintDsgnPreserved    := LoadStr(s_HintDsgnPreserved);
-  acs_HintDsgnStyle        := LoadStr(s_HintDsgnStyle);
-  acs_HintDsgnBevelWidth   := LoadStr(s_HintDsgnBevelWidth);
-  acs_Blur                 := LoadStr(s_Blur);
-  acs_HintDsgnArrowLength  := LoadStr(s_HintDsgnArrowLength);
-  acs_HintDsgnHorizMargin  := LoadStr(s_HintDsgnHorizMargin);
-  acs_HintDsgnVertMargin   := LoadStr(s_HintDsgnVertMargin);
-  acs_HintDsgnRadius       := LoadStr(s_HintDsgnRadius);
-  acs_HintDsgnMaxWidth     := LoadStr(s_HintDsgnMaxWidth);
-  acs_HintDsgnPauseHide    := LoadStr(s_HintDsgnPauseHide);
-  acs_Percent              := LoadStr(s_Percent);
-  acs_HintDsgnOffset       := LoadStr(s_HintDsgnOffset);
-  acs_HintDsgnTransparency := LoadStr(s_HintDsgnTransparency);
-  acs_HintDsgnNoPicture    := LoadStr(s_HintDsgnNoPicture);
-  acs_Texture              := LoadStr(s_Texture);
-  acs_HintDsgnLoad         := LoadStr(s_HintDsgnLoad);
-  acs_HintDsgnSave         := LoadStr(s_HintDsgnSave);
-  acs_HintDsgnColor        := LoadStr(s_HintDsgnColor);
-  acs_HintDsgnBorderTop    := LoadStr(s_HintDsgnBorderTop);
-  acs_HintDsgnBorderBottom := LoadStr(s_HintDsgnBorderBottom);
-  acs_Shadow               := LoadStr(s_Shadow);
-  acs_Background           := LoadStr(s_Background);
-  acs_Gradient             := LoadStr(s_Gradient);
-  acs_PreviewHint          := LoadStr(s_PreviewHint);
-{$ENDIF}
-
   acs_InvalidDate          := LoadStr(s_InvalidDate);
-
   acs_AvailSkins           := LoadStr(s_AvailSkins);
   acs_InternalSkin         := LoadStr(s_InternalSkin);
 

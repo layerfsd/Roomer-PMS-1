@@ -35,9 +35,9 @@ type
     FTimerThread: {$IFDEF USE_TIMER}TTimer{$ELSE}TacTimerThread{$ENDIF};
     FThreadPriority: TThreadPriority;
 {$IFDEF DEBUG}
-    FState: integer;
+    FState,
     FIteration: integer;
-    procedure SetState(const Value: integer);
+    procedure SetState    (const Value: integer);
     procedure SetIteration(const Value: integer);
 {$ENDIF}
     procedure StartTimer;
@@ -59,8 +59,8 @@ type
     procedure TimeEvent(Sender: TObject); // Temporary (while AnimProc is not used anywhere)
   public
     Glow,
-    GlowStep,
     Value,
+    GlowStep,
     ValueStep: real;
 
 {$IFNDEF DEBUG}
@@ -429,8 +429,8 @@ begin
   if DstBmp = nil then
     DstBmp := CreateBmp32(R)
   else begin
-    SrcBmp.Width  := WidthOf(R);
-    SrcBmp.Height := HeightOf(R);
+    SrcBmp.Width  := WidthOf(R, True);
+    SrcBmp.Height := HeightOf(R, True);
   end;
   BitBlt(DstBmp.Canvas.Handle, 0, 0, DstBmp.Width, DstBmp.Height, SrcBmp.Canvas.Handle, R.Left, R.Top, SRCCOPY);
 end;

@@ -1,7 +1,7 @@
 unit sRadioButton;
 {$I sDefs.inc}
 //{$DEFINE LOGGED}
-
+//+
 interface
 
 
@@ -223,10 +223,11 @@ begin
       Result := Rect(Width - GlyphWidth - Margin, GlyphTop, Width - Margin, GlyphHeight + GlyphTop)
   end
   else
-    if SkinData.SkinManager.IsValidImgIndex(FCommonData.SkinManager.ConstData.RadioButton[Checked]) then
-      Result := SkinCheckRect(FCommonData.SkinManager.ConstData.RadioButton[Checked])
-    else
-      Result := MkRect(16, 16);
+    with SkinData.SkinManager, ConstData do
+      if IsValidImgIndex(RadioButton[Checked]) then
+        Result := SkinCheckRect(RadioButton[Checked])
+      else
+        Result := MkRect(16, 16);
 end;
 
 
@@ -246,9 +247,9 @@ end;
 
 constructor TsRadioButton.Create(AOwner: TComponent);
 begin
-  inherited Create(AOwner);
   FCommonData := TsCommonData.Create(Self, False);
   FCommonData.COC := COC_TsRadioButton;
+  inherited Create(AOwner);
   FCommonData.FOwnerControl := Self;
   FMargin := 2;
   FShowFocus := True;
@@ -285,9 +286,7 @@ end;
 
 destructor TsRadioButton.Destroy;
 begin
-  if Assigned(FCommonData) then
-    FreeAndNil(FCommonData);
-
+  FreeAndNil(FCommonData);
   if Assigned(FGlyphChecked) then
     FreeAndNil(FGlyphChecked);
 
@@ -315,21 +314,23 @@ begin
     PaintGlyph(Glyph, GlyphIndex);
   end
   else
-    if SkinData.SkinManager.IsValidImgIndex(FCommonData.SkinManager.ConstData.RadioButton[Checked]) then
-      DrawSkinGlyph(FCommonData.SkinManager.ConstData.RadioButton[Checked]);
+    with SkinData.SkinManager, ConstData do
+      if IsValidImgIndex(RadioButton[Checked]) then
+        DrawSkinGlyph(RadioButton[Checked]);
 end;
 
 
 procedure TsRadioButton.DrawCheckText;
 var
   rText: TRect;
-  Fmt, State, t, b, w, h, dx: integer;
+  Fmt: Cardinal;
+  State, t, b, w, h, dx: integer;
 begin
   if Caption <> '' then begin
     w := Width - (WidthOf(CheckRect) + FTextIndent + 2 * Margin + 2);
 
     rText := MkRect(w, 0);
-    Fmt := DT_CALCRECT or iff(WordWrap, DT_WORDBREAK, DT_SINGLELINE);
+    Fmt := DT_CALCRECT or TextWrapping[WordWrap];
 
     AcDrawText(FCommonData.FCacheBMP.Canvas.Handle, Caption, rText, Fmt);
     h := HeightOf(rText);
@@ -353,7 +354,7 @@ begin
       rText := Rect(Margin, t, w + Margin, b);
 
     OffsetRect(rText, -integer(WordWrap), -1);
-    Fmt := Fmt or iff(WordWrap, DT_WORDBREAK, DT_SINGLELINE);
+    Fmt := Fmt or TextWrapping[WordWrap];
       
     if UseRightToLeftReading then
       Fmt := Fmt or DT_RTLREADING;
@@ -499,8 +500,8 @@ end;
 procedure TsRadioButton.PaintHandler(M: TWMPaint);
 var
   PS: TPaintStruct;
-  DC: hdc;
   SavedDC: hdc;
+  DC: hdc;
 begin
   if M.DC = 0 then begin
     BeginPaint(Handle, PS);
@@ -677,13 +678,13 @@ end;
 
 function TsRadioButton.SkinGlyphHeight(i: integer): integer;
 begin
-  Result := HeightOfImage(FCommonData.SkinManager.ma[i]);
+  Result := FCommonData.SkinManager.ma[i].Height;
 end;
 
 
 function TsRadioButton.SkinGlyphWidth(i: integer): integer;
 begin
-  Result := WidthOfImage(FCommonData.SkinManager.ma[i]);
+  Result := FCommonData.SkinManager.ma[i].Width;
 end;
 
 
@@ -719,7 +720,7 @@ begin
           end;
 
         AC_REFRESH:
-          if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
+          if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then begin
             SetClassLong(Handle, GCL_STYLE, GetClassLong(Handle, GCL_STYLE) and not CS_VREDRAW and not CS_HREDRAW);
             CommonWndProc(Message, FCommonData);
             AdjustSize;
@@ -740,14 +741,14 @@ begin
         end;
 
         AC_SETNEWSKIN:
-          if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
+          if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then begin
             CommonWndProc(Message, FCommonData);
             Exit;
           end;
       end;
 
       CM_FONTCHANGED, CM_TEXTCHANGED:
-        if AutoSize then begin
+        if AutoSize and HandleAllocated then begin
           if not (csDesigning in ComponentState) then
             HandleNeeded;
 
@@ -948,10 +949,12 @@ begin
     else
       case Message.Msg of
         CM_FONTCHANGED, CM_TEXTCHANGED: begin
-          if AutoSize then
-            AdjustSize;
+          if HandleAllocated then begin
+            if AutoSize then
+              AdjustSize;
 
-          Repaint;
+            Repaint;
+          end;
           Exit;
         end;
 

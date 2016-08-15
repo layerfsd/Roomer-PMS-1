@@ -192,6 +192,7 @@ type
     FSavePath: string;
     FNodeToMonitor: TTreeNode;
     FShowExtension: TacShowExtension;
+    FActive: boolean;
     function FolderExists(FindID: PItemIDList; InNode: TTreeNode): TTreeNode;
     function GetFolder(Index: Integer): TacShellFolder;
     function GetPath: string;
@@ -205,6 +206,7 @@ type
     function GetUpdating: boolean;
     procedure DefferedRefreshEvent;
     procedure OnDefferedRefreshEvent(var Message: TMessage); message WM_DEFFERED_REFRESH;
+    procedure SetActive(const Value: boolean);
   protected
     procedure CreateRoot;
     procedure CreateWnd; override;
@@ -222,11 +224,7 @@ type
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
     function CanChange(Node: TTreeNode): Boolean; override;
     function CanExpand(Node: TTreeNode): Boolean; override;
-{$IFDEF TNTUNICODE}
-    procedure PopulateNode(Node: TTntTreeNode);
-{$ELSE}
-    procedure PopulateNode(Node: TTreeNode);
-{$ENDIF}
+    procedure PopulateNode(Node: {$IFDEF TNTUNICODE}TTntTreeNode{$ELSE}TTreeNode{$ENDIF});
     procedure RootChanged;
     procedure SetObjectTypes(Value: TacShellObjectTypes); virtual;
     procedure WMDestroy(var Message: TWMDestroy); virtual;
@@ -243,6 +241,7 @@ type
     property Folders[Index: Integer]: TacShellFolder read GetFolder; default;
     property Items;
     property Path: TsDirectory read GetPath write SetPath;
+    property Active: boolean read FActive write SetActive default True;
     property AutoContextMenus: Boolean read FAutoContext write FAutoContext default True;
     property ObjectTypes: TacShellObjectTypes read FObjectTypes write SetObjectTypes;
     property Root: TacRoot read FRoot write SetRoot;
@@ -288,6 +287,7 @@ type
     property OnExpanded;
     property OnEditing;
     property OnEdited;
+    property Active;
     property Align;
     property Anchors;
     property BorderStyle;
@@ -814,13 +814,12 @@ procedure DestroyPIDLList(List: TList);
 var
   I: Integer;
 begin
-  If List = nil then
-    Exit;
+  if List <> nil then begin
+    for I := 0 to List.Count-1 do
+      DisposePIDL(List[I]);
 
-  for I := 0 to List.Count-1 do
-    DisposePIDL(List[I]);
-
-  FreeAndNil(List);
+    FreeAndNil(List);
+  end;
 end;
 
 
@@ -919,25 +918,24 @@ var
   Flags: LongWord;
 begin
   Result := [];
-  if ParentFolder = nil then
-    Exit;
+  if ParentFolder <> nil then begin
+    if UseAllFolderAttributes then
+      Flags := SFGAO_DISPLAYATTRMASK
+    else
+      Flags := SFGAO_LINK + SFGAO_SHARE + SFGAO_GHOSTED;
 
-  if UseAllFolderAttributes then
-    Flags := SFGAO_DISPLAYATTRMASK
-  else
-    Flags := SFGAO_LINK + SFGAO_SHARE + SFGAO_GHOSTED;
-
-  ParentFolder.GetAttributesOf(1, PIDL, Flags);
-  if IsElement(SFGAO_GHOSTED,  Flags) then Include(Result, fpCut);
-  if IsElement(SFGAO_LINK,     Flags) then Include(Result, fpIsLink);
-  if IsElement(SFGAO_READONLY, Flags) then Include(Result, fpReadOnly);
-  if IsElement(SFGAO_SHARE,    Flags) then Include(Result, fpShared);
-  Flags := 0;
-  ParentFolder.GetAttributesOf(1, PIDL, Flags);
-  if IsElement(SFGAO_FILESYSTEM,      Flags) then Include(Result, fpFileSystem);
-  if IsElement(SFGAO_FILESYSANCESTOR, Flags) then Include(Result, fpFileSystemAncestor);
-  if IsElement(SFGAO_REMOVABLE,       Flags) then Include(Result, fpRemovable);
-  if IsElement(SFGAO_VALIDATE,        Flags) then Include(Result, fpValidate);
+    ParentFolder.GetAttributesOf(1, PIDL, Flags);
+    if IsElement(SFGAO_GHOSTED,  Flags) then Include(Result, fpCut);
+    if IsElement(SFGAO_LINK,     Flags) then Include(Result, fpIsLink);
+    if IsElement(SFGAO_READONLY, Flags) then Include(Result, fpReadOnly);
+    if IsElement(SFGAO_SHARE,    Flags) then Include(Result, fpShared);
+    Flags := 0;
+    ParentFolder.GetAttributesOf(1, PIDL, Flags);
+    if IsElement(SFGAO_FILESYSTEM,      Flags) then Include(Result, fpFileSystem);
+    if IsElement(SFGAO_FILESYSANCESTOR, Flags) then Include(Result, fpFileSystemAncestor);
+    if IsElement(SFGAO_REMOVABLE,       Flags) then Include(Result, fpRemovable);
+    if IsElement(SFGAO_VALIDATE,        Flags) then Include(Result, fpValidate);
+  end;
 end;
 
 
@@ -957,7 +955,7 @@ var
 begin
   Flags := SFGAO_LINK;
   ParentFolder.GetAttributesOf(1, PIDL, Flags);
-  Result := (SFGAO_LINK and Flags <> 0);
+  Result := SFGAO_LINK and Flags <> 0;
 end;
 
 
@@ -967,7 +965,7 @@ var
 begin
   Flags := SFGAO_READONLY;
   ParentFolder.GetAttributesOf(1, PIDL, Flags);
-  Result := (SFGAO_READONLY and Flags <> 0);
+  Result := SFGAO_READONLY and Flags <> 0;
 end;
 
 
@@ -1010,18 +1008,17 @@ var
   ErrMode: Integer;
 begin
   Result := False;
-  if ShellFolder = nil then
-    Exit;
+  if ShellFolder <> nil then begin
+    ErrMode := SetErrorMode(SEM_FAILCRITICALERRORS);
+    try
+      HR := ShellFolder.EnumObjects(0, Flags, EnumList);
+      if HR <> S_OK then
+        Exit;
 
-  ErrMode := SetErrorMode(SEM_FAILCRITICALERRORS);
-  try
-    HR := ShellFolder.EnumObjects(0, Flags, EnumList);
-    if HR <> S_OK then
-      Exit;
-
-    Result := EnumList.Next(1, ID, NumIDs) = S_OK;
-  finally
-    SetErrorMode(ErrMode);
+      Result := EnumList.Next(1, ID, NumIDs) = S_OK;
+    finally
+      SetErrorMode(ErrMode);
+    end;
   end;
 end;
 
@@ -1091,7 +1088,7 @@ begin
     end;
   end;
   { TODO 2 -oMGD -cShell Controls : Remove this hack (on Win2k, GUIDs are returned for the PathName of standard folders)}
-  if (Pos('::{', Result) = 1) then
+  if Pos('::{', Result) = 1 then
     Result := GetDisplayName(ParentFolder, PIDL, SHGDN_NORMAL, ShowExt);
 end;
 
@@ -1125,53 +1122,51 @@ var
   SCV: IacShellCommandVerb;
   HR: HResult;
 begin
-  if AFolder = nil then
-    Exit;
+  if AFolder <> nil then begin
+    PIDL := AFolder.RelativeID;
+    AFolder.ParenTacShellFolder.GetUIObjectOf(Owner.Handle, 1, PIDL, IID_IContextMenu, nil, CM);
+    if CM = nil then
+      Exit;
 
-  PIDL := AFolder.RelativeID;
-  AFolder.ParenTacShellFolder.GetUIObjectOf(Owner.Handle, 1, PIDL, IID_IContextMenu, nil, CM);
-  if CM = nil then
-    Exit;
+    P.X := X;
+    P.Y := Y;
 
-  P.X := X;
-  P.Y := Y;
-
-  Windows.ClientToScreen(Owner.Handle, P);
-  Menu := CreatePopupMenu;
-  try
-    CM.QueryContextMenu(Menu, 0, 1, $7FFF, CMF_EXPLORE or CMF_CANRENAME);
-    CM.QueryInterface(IID_IContextMenu2, ICM2); //To handle submenus.
+    Windows.ClientToScreen(Owner.Handle, P);
+    Menu := CreatePopupMenu;
     try
-      Command := TrackPopupMenu(Menu, TPM_LEFTALIGN or TPM_LEFTBUTTON or TPM_RIGHTBUTTON or TPM_RETURNCMD, P.X, P.Y, 0, Owner.Handle, nil);
-    finally
-      ICM2 := nil;
-    end;
-
-    if Command then begin
-      ICmd := LongInt(Command) - 1;
-      HR := CM.GetCommandString(ICmd, GCS_VERBA, nil, ZVerb, SizeOf(ZVerb));
-      Verb := {$IFDEF USTRPAS}AnsiStrings.{$ENDIF}StrPas(ZVerb);
-      Handled := False;
-      if Supports(Owner, IacShellCommandVerb, SCV) then begin
-        HR := 0;
-        SCV.ExecuteCommand(Verb, Handled);
+      CM.QueryContextMenu(Menu, 0, 1, $7FFF, CMF_EXPLORE or CMF_CANRENAME);
+      CM.QueryInterface(IID_IContextMenu2, ICM2); //To handle submenus.
+      try
+        Command := TrackPopupMenu(Menu, TPM_LEFTALIGN or TPM_LEFTBUTTON or TPM_RIGHTBUTTON or TPM_RETURNCMD, P.X, P.Y, 0, Owner.Handle, nil);
+      finally
+        ICM2 := nil;
       end;
 
-      if not Handled then begin
-        FillChar(ICI, SizeOf(ICI), #0);
-        with ICI do begin
-          cbSize := SizeOf(ICI);
-          hWND := Owner.Handle;
-          lpVerb := MakeIntResourceA(ICmd);
-          nShow := SW_SHOWNORMAL;
+      if Command then begin
+        ICmd := LongInt(Command) - 1;
+        HR := CM.GetCommandString(ICmd, GCS_VERBA, nil, ZVerb, SizeOf(ZVerb));
+        Verb := {$IFDEF USTRPAS}AnsiStrings.{$ENDIF}StrPas(ZVerb);
+        Handled := False;
+        if Supports(Owner, IacShellCommandVerb, SCV) then begin
+          HR := 0;
+          SCV.ExecuteCommand(Verb, Handled);
         end;
-        HR := CM.InvokeCommand(ICI);
+        if not Handled then begin
+          FillChar(ICI, SizeOf(ICI), #0);
+          with ICI do begin
+            cbSize := SizeOf(ICI);
+            hWND := Owner.Handle;
+            lpVerb := MakeIntResourceA(ICmd);
+            nShow := SW_SHOWNORMAL;
+          end;
+          HR := CM.InvokeCommand(ICI);
+        end;
+        if Assigned(SCV) then
+          SCV.CommandCompleted(Verb, HR = S_OK);
       end;
-      if Assigned(SCV) then
-        SCV.CommandCompleted(Verb, HR = S_OK);
+    finally
+      DestroyMenu(Menu);
     end;
-  finally
-    DestroyMenu(Menu);
   end;
 end;
 
@@ -1182,20 +1177,19 @@ var
   CM: IContextMenu;
   PIDL: PItemIDList;
 begin
-  if AFolder = nil then
-    Exit;
-
-  FillChar(ICI, SizeOf(ICI), #0);
-  with ICI do begin
-    cbSize := SizeOf(ICI);
-    fMask := CMIC_MASK_ASYNCOK;
-    hWND := 0;
-    lpVerb := Verb;
-    nShow := SW_SHOWNORMAL;
+  if AFolder <> nil then begin
+    FillChar(ICI, SizeOf(ICI), #0);
+    with ICI do begin
+      cbSize := SizeOf(ICI);
+      fMask := CMIC_MASK_ASYNCOK;
+      hWND := 0;
+      lpVerb := Verb;
+      nShow := SW_SHOWNORMAL;
+    end;
+    PIDL := AFolder.RelativeID;
+    AFolder.ParenTacShellFolder.GetUIObjectOf(0, 1, PIDL, IID_IContextMenu, nil, CM);
+    CM.InvokeCommand(ICI);
   end;
-  PIDL := AFolder.RelativeID;
-  AFolder.ParenTacShellFolder.GetUIObjectOf(0, 1, PIDL, IID_IContextMenu, nil, CM);
-  CM.InvokeCommand(ICI);
 end;
 
 
@@ -1237,7 +1231,7 @@ function GetIShellFolder2(IFolder: IShellFolder; PIDL: PItemIDList; Handle: THan
 var
   HR: HResult;
 begin
-  if (Win32MajorVersion >= 5) then begin
+  if Win32MajorVersion >= 5 then begin
     HR := DesktopShellFolder.BindToObject(PIDL, nil, IID_IShellFolder2, Pointer(Result));
     if HR <> S_OK then
       IFolder.GetUIObjectOf(Handle, 1, PIDL, IID_IShellFolder2, nil, Pointer(Result));
@@ -1290,25 +1284,6 @@ begin
     ErrorMsg := Format('Error Setting Path: %s', [ NewRoot ] );
     NewRoot := OldRoot;
     raise Exception.Create( ErrorMsg );
-{
-    if GetEnumValue(TypeInfo(TacRootFolder), NewRoot) >= 0 then
-      HR := SHGetSpecialFolderLocation(0, nFolder[GetCSIDLType(NewRoot)], NewPIDL)
-    else
-      if Length(NewRoot) > 0 then begin
-        NewRoot := NormalDir(NewRoot);
-        if NewRoot[Length(NewRoot)] = ':' then
-          NewRoot := NewRoot + s_Slash;
-
-        NumChars := Length(NewRoot);
-        Flags := 0;
-        P := StringToOleStr(ExpandFilename(NewRoot));
-        HR := DesktopShellFolder.ParseDisplayName(0, nil, P, NumChars, NewPIDL, Flags);
-      end;
-
-    if HR <> S_OK then
-      Raise Exception.Create(ErrorMsg)
-    else
-      ShowError(ErrorMsg);}
   end;
   Result := CreateRootFromPIDL(NewPIDL);
   if Assigned(RootFolder) then
@@ -1432,7 +1407,7 @@ procedure TacShellFolder.LoadColumnDetails(RootFolder: TacShellFolder; Handle: T
 
   function CalcFileSize(FindData: TWin32FindData): int64;
   begin
-    if (FindData.dwFileAttributes and FILE_ATTRIBUTE_DIRECTORY) = 0 then
+    if FindData.dwFileAttributes and FILE_ATTRIBUTE_DIRECTORY = 0 then
       Result := FindData.nFileSizeHigh * MAXDWORD + FindData.nFileSizeLow
     else
       Result := -1;
@@ -1443,7 +1418,7 @@ procedure TacShellFolder.LoadColumnDetails(RootFolder: TacShellFolder; Handle: T
     LocalFileTime: TFileTime;
     Age: integer;
   begin
-    if (FindData.dwFileAttributes and FILE_ATTRIBUTE_DIRECTORY) = 0 then begin
+    if FindData.dwFileAttributes and FILE_ATTRIBUTE_DIRECTORY = 0 then begin
       FileTimeToLocalFileTime(FindData.ftLastWriteTime, LocalFileTime);
       if FileTimeToDosDateTime(LocalFileTime, LongRec(Age).Hi, LongRec(Age).Lo) then begin
         Result := FileDateToDateTime(Age);
@@ -1500,7 +1475,7 @@ begin
         AddDetail(HR, FPIDL, SD);
       end
     else
-      if (fpFileSystem in RootFolder.Properties) then begin
+      if fpFileSystem in RootFolder.Properties then begin
         GetDetailsOf(Self, FindData);
         for J := 1 to ColumnCount do
           FDetails.Add(DefaultDetailColumn(FindData, J));
@@ -1512,7 +1487,7 @@ end;
 function TacShellFolder.GetDetails(Index: integer): string;
 begin
   if FDetails.Count > 0 then
-    Result := FDetails[Index-1] // Index is 1-based
+    Result := FDetails[Index - 1] // Index is 1-based
   else
     Raise Exception.CreateFmt('%s: Missing call to LoadColumnDetails', [ Self.DisplayName(seSystem) ] );
 end;
@@ -1590,21 +1565,20 @@ var
   NewPIDL: PItemIDList;
 begin
   Result := False;
-  if not (fcCanRename in Capabilities) then
-    Exit;
-
-  Result := ParenTacShellFolder.SetNameOf(0, FPIDL, PWideChar(NewName), SHGDN_NORMAL, NewPIDL) = S_OK;
-  if Result then begin
-    DisposePIDL(FPIDL);
-    DisposePIDL(FFullPIDL);
-    FPIDL := NewPIDL;
-    if (FParent <> nil) then
-      FFullPIDL := ConcatPIDLs(FParent.FPIDL, NewPIDL)
+  if fcCanRename in Capabilities then begin
+    Result := ParenTacShellFolder.SetNameOf(0, FPIDL, PWideChar(NewName), SHGDN_NORMAL, NewPIDL) = S_OK;
+    if Result then begin
+      DisposePIDL(FPIDL);
+      DisposePIDL(FFullPIDL);
+      FPIDL := NewPIDL;
+      if FParent <> nil then
+        FFullPIDL := ConcatPIDLs(FParent.FPIDL, NewPIDL)
+      else
+        FFullPIDL := CopyPIDL(NewPIDL);
+    end
     else
-      FFullPIDL := CopyPIDL(NewPIDL);
-  end
-  else
-    Raise Exception.Create(Format('Rename to %s failed',[NewName]));
+      Raise Exception.Create(Format('Rename to %s failed',[NewName]));
+  end;
 end;
 
 
@@ -1864,9 +1838,10 @@ begin
   FUpdating := False;
   FComboBox := nil;
   FListView := nil;
+  FActive := True;
   FImageListChanging := False;
   FUseShellImages := True;
-  FShowExtension := (seSystem);
+  FShowExtension := seSystem;
   FNotifier := nil;
   FRoot := SRFDesktop;
   FLoadingRoot := False;
@@ -1897,11 +1872,11 @@ end;
 procedure TacCustomShellTreeView.CreateWnd;
 begin
   inherited CreateWnd;
-  if (Items.Count > 0) then
+  if Items.Count > 0 then
     ClearItems;
 
   SetUseShellImages(FUseShellImages);
-  if (not FLoadingRoot) then
+  if not FLoadingRoot then
     CreateRoot;
 end;
 
@@ -1917,24 +1892,22 @@ procedure TacCustomShellTreeView.CommandCompleted(const Verb: String; Succeeded:
 var
   Fldr: TacShellFolder;
 begin
-  if not Succeeded then
-    Exit;
-
-  if Assigned(Selected) then
-    if SameText(Verb, SCmdVerbDelete) then begin
-      Fldr := TacShellFolder(Selected.Data);
-      if not FileExists(Fldr.PathName) then begin
-        Selected.Data := nil;
-        Selected.Delete;
-        FreeAndNil(Fldr);
-      end;
-    end
-    else
-      if SameText(Verb, SCmdVerbPaste) then
-        Refresh(Selected)
+  if Succeeded then
+    if Assigned(Selected) then
+      if SameText(Verb, SCmdVerbDelete) then begin
+        Fldr := TacShellFolder(Selected.Data);
+        if not FileExists(Fldr.PathName) then begin
+          Selected.Data := nil;
+          Selected.Delete;
+          FreeAndNil(Fldr);
+        end;
+      end
       else
-        if SameText(Verb, SCmdVerbOpen) then
-          SetCurrentDirectory(PChar(FSavePath));
+        if SameText(Verb, SCmdVerbPaste) then
+          Refresh(Selected)
+        else
+          if SameText(Verb, SCmdVerbOpen) then
+            SetCurrentDirectory(PChar(FSavePath));
 end;
 
 
@@ -1958,8 +1931,8 @@ end;
 
 function TreeSortFunc(Node1, Node2: TTreeNode; lParam: Integer): Integer; stdcall;
 begin
-  Result := SmallInt(TacShellFolder(Node1.Data).ParenTacShellFolder.CompareIDs(
-              0, TacShellFolder(Node1.Data).RelativeID, TacShellFolder(Node2.Data).RelativeID));
+  with TacShellFolder(Node1.Data) do
+    Result := SmallInt(ParenTacShellFolder.CompareIDs(0, RelativeID, TacShellFolder(Node2.Data).RelativeID));
 end;
 
 
@@ -2062,7 +2035,7 @@ var
   end;
 
 begin
-  if (csLoading in ComponentState) or (csDesigning in ComponentState) or DontFoldersGenerate then
+  if ([csLoading, csDesigning] * ComponentState <> []) or DontFoldersGenerate or not FActive then
     Exit;
 
   try
@@ -2109,7 +2082,7 @@ begin
     end;
   end;
   if ErrorMsg <> '' then
-    Raise Exception.Create( ErrorMsg );
+    Raise Exception.Create(ErrorMsg);
 end;
 
 
@@ -2126,7 +2099,7 @@ begin
     OnExpanding(Self, Node, Result);
 
   if Result then
-    if Fldr.IsFolder and (Node.HasChildren) and (Node.Count = 0) then
+    if Fldr.IsFolder and Node.HasChildren and (Node.Count = 0) then
 {$IFDEF TNTUNICODE}
       PopulateNode(TTntTreeNode(Node))
 {$ELSE}
@@ -2160,7 +2133,7 @@ begin
       if Assigned(OnEdited) then
         OnEdited(Self, Node, S);
 
-      if ( Node <> nil ) and TacShellFolder(Node.Data).Rename(S) then begin
+      if (Node <> nil) and TacShellFolder(Node.Data).Rename(S) then begin
         Node.Text := S;
         if Node.Parent <> nil then
           Refresh(Node.Parent);
@@ -2180,7 +2153,7 @@ var
   HR: HResult;
 begin
   Result := ParentNode.GetFirstChild;
-  while (Result <> nil) do begin
+  while Result <> nil do begin
     HR := TacShellFolder(ParentNode.Data).ShellFolder.CompareIDs(0, ID, TacShellFolder(Result.Data).RelativeID);
     if HR = 0 then
       Exit;
@@ -2223,19 +2196,18 @@ end;
 
 procedure TacCustomShellTreeView.RootChanged;
 begin
-  if InUpdating then
-    Exit;
+  if not InUpdating then begin
+    FUpdating := True;
+    try
+      CreateRoot;
+      if Assigned(FComboBox) then
+        FComboBox.SetRoot(FRoot);
 
-  FUpdating := True;
-  try
-    CreateRoot;
-    if Assigned(FComboBox) then
-      FComboBox.SetRoot(FRoot);
-
-    if Assigned(FListView) then
-      FListView.SetRoot(FRoot);
-  finally
-    FUpdating := False;
+      if Assigned(FListView) then
+        FListView.SetRoot(FRoot);
+    finally
+      FUpdating := False;
+    end;
   end;
 end;
 
@@ -2274,84 +2246,83 @@ var
   TopID, SelID: PItemIDList;
   ParentFolder: TacShellFolder;
 begin
-  if TacShellFolder(Node.Data).ShellFolder = nil then
-    Exit;
-
-  SaveCursor := Screen.Cursor;
-  ParentFolder := nil;
-  //Need absolute PIDL to search for top item once tree is rebuilt.
-  TopID := CopyPIDL(TacShellFolder(TopItem.Data).RelativeID);
-  if TacShellFolder(TopItem.Data).Parent <> nil then
-    TopID := ConcatPIDLs(TacShellFolder(TopItem.Data).Parent.AbsoluteID, TopID);
-  //Same thing for SelID
-  SelID := nil;
-  if (Selected <> nil) and (Selected.Data <> nil) then begin
-    SelID := CopyPIDL(TacShellFolder(Selected.Data).RelativeID);
-    if TacShellFolder(Selected.Data).Parent <> nil then
-      SelID := ConcatPIDLs(TacShellFolder(Selected.Data).Parent.AbsoluteID, SelID);
-  end;
-  Items.BeginUpdate;
-  SkinData.BeginUpdate;
-  try
-    Screen.Cursor := crHourglass;
-    OldFolder := Node.Data;
-{$IFDEF TNTUNICODE}
-    NewNode := Items.Insert(TTntTreeNode(Node), '');
-{$ELSE}
-    NewNode := Items.Insert(Node, '');
-{$ENDIF}
-    if Node.Parent <> nil then
-      ParentFolder := TacShellFolder(Node.Parent.Data);
-
-    NewNode.Data := TacShellFolder.Create(ParentFolder, OldFolder.RelativeID, OldFolder.ShellFolder);
-{$IFDEF TNTUNICODE}
-    PopulateNode(TTntTreeNode(NewNode));
-{$ELSE}
-    PopulateNode(NewNode);
-{$ENDIF}
-    with NewNode do begin
-      NewFolder := Data;
-      ImageIndex := GetShellImage(NewFolder.AbsoluteID, False, False);
-      SelectedIndex := GetShellImage(NewFolder.AbsoluteID, False, True);
-      HasChildren := NewFolder.SubFolders;
-      Text := NewFolder.DisplayName(FShowExtension);
+  if TacShellFolder(Node.Data).ShellFolder <> nil then begin
+    SaveCursor := Screen.Cursor;
+    ParentFolder := nil;
+    //Need absolute PIDL to search for top item once tree is rebuilt.
+    TopID := CopyPIDL(TacShellFolder(TopItem.Data).RelativeID);
+    if TacShellFolder(TopItem.Data).Parent <> nil then
+      TopID := ConcatPIDLs(TacShellFolder(TopItem.Data).Parent.AbsoluteID, TopID);
+    //Same thing for SelID
+    SelID := nil;
+    if (Selected <> nil) and (Selected.Data <> nil) then begin
+      SelID := CopyPIDL(TacShellFolder(Selected.Data).RelativeID);
+      if TacShellFolder(Selected.Data).Parent <> nil then
+        SelID := ConcatPIDLs(TacShellFolder(Selected.Data).Parent.AbsoluteID, SelID);
     end;
-    ThisLevel := Node.Level;
-    OldNode := Node;
-    repeat
-      Temp := FolderExists(TacShellFolder(OldNode.Data).AbsoluteID, NewNode);
-      if (Temp <> nil) and OldNode.Expanded then
-        Temp.Expand(False);
-
-      OldNode := OldNode.GetNext;
-    until (OldNode = nil) or (OldNode.Level = ThisLevel);
-    if Assigned(Node.Data) then begin
-      TacShellFolder(Node.Data).Free;
-      Node.Data := nil;
-    end;
-    Node.Delete;
-    if SelID <> nil then begin
-      Temp := FolderExists(SelID, Items[0]);
+    Items.BeginUpdate;
+    SkinData.BeginUpdate;
+    try
+      Screen.Cursor := crHourglass;
+      OldFolder := Node.Data;
 {$IFDEF TNTUNICODE}
-      Selected := TTntTreeNode(Temp);
+      NewNode := Items.Insert(TTntTreeNode(Node), '');
 {$ELSE}
-      Selected := Temp;
+      NewNode := Items.Insert(Node, '');
 {$ENDIF}
-    end;
-    Temp := FolderExists(TopID, Items[0]);
-{$IFDEF TNTUNICODE}
-    TopItem := TTntTreeNode(Temp);
-{$ELSE}
-    TopItem := Temp;
-{$ENDIF}
-  finally
-    SkinData.EndUpdate;
-    Items.EndUpdate;
-    DisposePIDL(TopID);
-    if SelID <> nil then
-      DisposePIDL(SelID);
+      if Node.Parent <> nil then
+        ParentFolder := TacShellFolder(Node.Parent.Data);
 
-    Screen.Cursor := SaveCursor;
+      NewNode.Data := TacShellFolder.Create(ParentFolder, OldFolder.RelativeID, OldFolder.ShellFolder);
+{$IFDEF TNTUNICODE}
+      PopulateNode(TTntTreeNode(NewNode));
+{$ELSE}
+      PopulateNode(NewNode);
+{$ENDIF}
+      with NewNode do begin
+        NewFolder := Data;
+        ImageIndex := GetShellImage(NewFolder.AbsoluteID, False, False);
+        SelectedIndex := GetShellImage(NewFolder.AbsoluteID, False, True);
+        HasChildren := NewFolder.SubFolders;
+        Text := NewFolder.DisplayName(FShowExtension);
+      end;
+      ThisLevel := Node.Level;
+      OldNode := Node;
+      repeat
+        Temp := FolderExists(TacShellFolder(OldNode.Data).AbsoluteID, NewNode);
+        if (Temp <> nil) and OldNode.Expanded then
+          Temp.Expand(False);
+
+        OldNode := OldNode.GetNext;
+      until (OldNode = nil) or (OldNode.Level = ThisLevel);
+      if Assigned(Node.Data) then begin
+        TacShellFolder(Node.Data).Free;
+        Node.Data := nil;
+      end;
+      Node.Delete;
+      if SelID <> nil then begin
+        Temp := FolderExists(SelID, Items[0]);
+{$IFDEF TNTUNICODE}
+        Selected := TTntTreeNode(Temp);
+{$ELSE}
+        Selected := Temp;
+{$ENDIF}
+      end;
+      Temp := FolderExists(TopID, Items[0]);
+{$IFDEF TNTUNICODE}
+      TopItem := TTntTreeNode(Temp);
+{$ELSE}
+      TopItem := Temp;
+{$ENDIF}
+    finally
+      SkinData.EndUpdate;
+      Items.EndUpdate;
+      DisposePIDL(TopID);
+      if SelID <> nil then
+        DisposePIDL(SelID);
+
+      Screen.Cursor := SaveCursor;
+    end;
   end;
 end;
 
@@ -2359,11 +2330,11 @@ end;
 procedure TacCustomShellTreeView.Notification(AComponent: TComponent; Operation: TOperation);
 begin
   inherited Notification(AComponent, Operation);
-  if (Operation = opRemove) then
-    if (AComponent = FComboBox) then
+  if Operation = opRemove then
+    if AComponent = FComboBox then
       FComboBox := nil
     else
-      if (AComponent = FListView) then
+      if AComponent = FListView then
         FListView := nil;
 end;
 
@@ -2380,7 +2351,7 @@ var
   StayFresh: boolean;
 begin
   Result := inherited CanChange(Node);
-  if Result and (not InUpdating) and Assigned(Node) then begin
+  if Result and not InUpdating and Assigned(Node) then begin
     Fldr := TacShellFolder(Node.Data);
     StayFresh := FAutoRefresh;
     AutoRefresh := False;
@@ -2459,9 +2430,8 @@ var
 begin
   if InUpdating or
        (csLoading in ComponentState) or
-         ((SelectedFolder <> nil) and
-           SamePIDL(SelectedFolder.AbsoluteID, ID)) or
-             (Items.Count < 1) then
+         ((SelectedFolder <> nil) and SamePIDL(SelectedFolder.AbsoluteID, ID)) or
+           (Items.Count < 1) then
     Exit;
 
   FUpdating := True;
@@ -2614,48 +2584,59 @@ end;
 
 procedure TacCustomShellTreeView.SetComboBox(Value: TacCustomShellComboBox);
 begin
-  if Value = FComboBox then
-    Exit;
+  if Value <> FComboBox then begin
+    if Value <> nil then begin
+      Value.Root := Root;
+      Value.FTreeView := Self;
+    end
+    else
+      if FComboBox <> nil then
+        FComboBox.FTreeView := nil;
 
-  if Value <> nil then begin
-    Value.Root := Root;
-    Value.FTreeView := Self;
-  end
-  else
     if FComboBox <> nil then
-      FComboBox.FTreeView := nil;
+      FComboBox.FreeNotification(Self);
 
-  if FComboBox <> nil then
-    FComboBox.FreeNotification(Self);
-
-  FComboBox := Value;
+    FComboBox := Value;
+  end;
 end;
 
 
 procedure TacCustomShellTreeView.SetListView(const Value: TacCustomShellListView);
 begin
-  if Value = FListView then
-    Exit;
+  if Value <> FListView then begin
+    if Value <> nil then begin
+      Value.Root := Root;
+      Value.FTreeView := Self;
+    end
+    else
+      if FListView <> nil then
+        FListView.FTreeView := nil;
 
-  if Value <> nil then begin
-    Value.Root := Root;
-    Value.FTreeView := Self;
-  end
-  else
     if FListView <> nil then
-      FListView.FTreeView := nil;
+      FListView.FreeNotification(Self);
 
-  if FListView <> nil then
-    FListView.FreeNotification(Self);
+    FListView := Value;
+  end;
+end;
 
-  FListView := Value;
+
+procedure TacCustomShellTreeView.SetActive(const Value: boolean);
+begin
+  if FActive <> Value then begin
+    FActive := Value;
+    if not (csLoading in ComponentState) then
+      if Value then
+        CreateRoot
+      else
+        ClearItems;
+  end;
 end;
 
 
 procedure TacCustomShellTreeView.SetAutoRefresh(const Value: boolean);
 begin
   FAutoRefresh := Value;
-  if not (csLoading in ComponentState) and not (csDesigning in ComponentState) then
+  if [csLoading, csDesigning] * ComponentState = [] then
     if FAutoRefresh then begin
       if Assigned(FNotifier) then
         FreeAndNil(FNotifier);
@@ -2680,10 +2661,8 @@ end;
 
 procedure TacCustomShellTreeView.WMNCPaint(var Message: TMessage);
 begin
-  if InAnimationProcess then
-    Exit;
-
-  inherited;
+  if not InAnimationProcess then
+    inherited;
 end;
 
 
@@ -2712,9 +2691,6 @@ begin
   FRootFolder := nil;
   FUpdating := False;
   SetImages := False;
-{$IFDEF DELPHI6UP}
-  Style := csExDropDownList;
-{$ENDIF}
   FObjectTypes := [otFolders];
   FRoot := SRFDesktop;
   FUseShellImages := True;
@@ -2749,37 +2725,36 @@ var
   Text: string;
   ImageIndex: integer;
 begin
-  if (csLoading in ComponentState) or (csDesigning in ComponentState) then
-    Exit;
-
-  ClearItems;
+  if [csLoading, csDesigning] * ComponentState = [] then begin
+    ClearItems;
 {$IFDEF DELPHI6UP}
-  ItemsEx.BeginUpdate;
+    ItemsEx.BeginUpdate;
 {$ENDIF}
-  try
-    if FRootFolder <> nil then
-      FreeAndNil(FRootFolder);
+    try
+      if FRootFolder <> nil then
+        FreeAndNil(FRootFolder);
 
-    FRootFolder := CreateRootFolder(FRootFolder, FOldRoot, FRoot);
-    AFolder := TacShellFolder.Create(nil, FRootFolder.AbsoluteID, FRootFolder.ShellFolder);
+      FRootFolder := CreateRootFolder(FRootFolder, FOldRoot, FRoot);
+      AFolder := TacShellFolder.Create(nil, FRootFolder.AbsoluteID, FRootFolder.ShellFolder);
 
-    Text := AFolder.DisplayName(seSystem); //! PathName;
+      Text := AFolder.DisplayName(seSystem); //! PathName;
 
-    ImageIndex := GetShellImageIndex(AFolder);
-    ItemsEx.AddItem(Text, ImageIndex, ImageIndex, -1, 0, AFolder);
+      ImageIndex := GetShellImageIndex(AFolder);
+      ItemsEx.AddItem(Text, ImageIndex, ImageIndex, -1, 0, AFolder);
 {$IFNDEF DELPHI6UP}
-    Items.Add(Text);
+      Items.Add(Text);
 {$ENDIF}
-    Init;
-    ItemIndex := 0;
-    if FUseShellImages then begin // Force image update
-      SetUseShellImages(False);
-      SetUseShellImages(True);
-    end;
-  finally
+      Init;
+      ItemIndex := 0;
+      if FUseShellImages then begin // Force image update
+        SetUseShellImages(False);
+        SetUseShellImages(True);
+      end;
+    finally
 {$IFDEF DELPHI6UP}
-    ItemsEx.EndUpdate;
+      ItemsEx.EndUpdate;
 {$ENDIF}
+    end;
   end;
 end;
 
@@ -2787,6 +2762,9 @@ end;
 procedure TacCustomShellComboBox.CreateWnd;
 begin
   inherited CreateWnd;
+{$IFDEF DELPHI6UP}
+  Style := csExDropDownList;
+{$ENDIF}
   if not SetImages then begin
     SetImages := True;
     SetUseShellImages(FUseShellImages);
@@ -2814,9 +2792,7 @@ end;
 
 procedure TacCustomShellComboBox.TreeUpdate(NewPath: PItemIDList);
 begin
-  if InUpdating or
-       ((ItemIndex > -1) and
-         SamePIDL(Folders[ItemIndex].AbsoluteID, NewPath)) then
+  if InUpdating or ((ItemIndex >= 0) and SamePIDL(Folders[ItemIndex].AbsoluteID, NewPath)) then
     Exit;
 
   FUpdating := True;
@@ -2832,62 +2808,60 @@ end;
 
 procedure TacCustomShellComboBox.SetTreeView(Value: TacCustomShellTreeView);
 begin
-  if Value = FTreeView then
-    Exit;
+  if Value <> FTreeView then begin
+    if Value <> nil then begin
+      Value.Root := Root;
+      Value.FComboBox := Self;
+    end
+    else
+      if FTreeView <> nil then
+        FTreeView.FComboBox := nil;
 
-  if Value <> nil then begin
-    Value.Root := Root;
-    Value.FComboBox := Self;
-  end
-  else
     if FTreeView <> nil then
-      FTreeView.FComboBox := nil;
+      FTreeView.FreeNotification(Self);
 
-  if FTreeView <> nil then
-    FTreeView.FreeNotification(Self);
-
-  FTreeView := Value;
+    FTreeView := Value;
+  end;
 end;
 
 
 procedure TacCustomShellComboBox.SetListView(Value: TacCustomShellListView);
 begin
-  if Value = FListView then
-    Exit;
+  if Value <> FListView then begin
+    if Value <> nil then begin
+      Value.Root := Root;
+      Value.FComboBox := Self;
+    end
+    else
+      if FListView <> nil then
+        FListView.FComboBox := nil;
 
-  if Value <> nil then begin
-    Value.Root := Root;
-    Value.FComboBox := Self;
-  end
-  else
     if FListView <> nil then
-      FListView.FComboBox := nil;
+      FListView.FreeNotification(Self);
 
-  if FListView <> nil then
-    FListView.FreeNotification(Self);
-
-  FListView := Value;
+    FListView := Value;
+  end;
 end;
 
 
 procedure TacCustomShellComboBox.Notification(AComponent: TComponent; Operation: TOperation);
 begin
   inherited Notification(AComponent, Operation);
-  if (Operation = opRemove) then
-    if (AComponent = FTreeView) then
+  if Operation = opRemove then
+    if AComponent = FTreeView then
       FTreeView := nil
     else
-      if (AComponent = FListView) then
+      if AComponent = FListView then
         FListView := nil
       else
-        if (AComponent = FImageList) then
+        if AComponent = FImageList then
           FImageList := nil;
 end;
 
 
 function TacCustomShellComboBox.GetFolder(Index: Integer): TacShellFolder;
 begin
-  if Index > ItemsEx.Count - 1 then
+  if Index >= ItemsEx.Count then
     Index := ItemsEx.Count - 1;
 
   Result := TacShellFolder(ItemsEx[Index].Data);
@@ -2912,22 +2886,19 @@ const
   R: array[Boolean] of Byte = (0, 1);
 begin
   Result := 0;
-  if (Item1 = nil) or (Item2 = nil) then
-    Exit;
-
-  Result := R[TacShellFolder(Item2).IsFolder] - R[TacShellFolder(Item1).IsFolder];
-  if (Result = 0) and (TacShellFolder(Item1).ParenTacShellFolder <> nil) then
-    Result := Smallint(TacShellFolder(Item1).ParenTacShellFolder.CompareIDs(0, TacShellFolder(Item1).RelativeID, TacShellFolder(Item2).RelativeID));
+  if (Item1 <> nil) and (Item2 <> nil) then begin
+    Result := R[TacShellFolder(Item2).IsFolder] - R[TacShellFolder(Item1).IsFolder];
+    if (Result = 0) and (TacShellFolder(Item1).ParenTacShellFolder <> nil) then
+      Result := Smallint(TacShellFolder(Item1).ParenTacShellFolder.CompareIDs(0, TacShellFolder(Item1).RelativeID, TacShellFolder(Item2).RelativeID));
+  end;
 end;
 
 
 function ComboSortFunc(Item1, Item2: Pointer): Integer;
 begin
   Result := 0;
-  if CompareFolder = nil then
-    Exit;
-
-  Result := SmallInt(CompareFolder.ShellFolder.CompareIDs(0, PItemIDList(Item1), PItemIDList(Item2)));
+  if CompareFolder <> nil then
+    Result := SmallInt(CompareFolder.ShellFolder.CompareIDs(0, PItemIDList(Item1), PItemIDList(Item2)));
 end;
 
 
@@ -3001,7 +2972,7 @@ begin
     if Root = SRFDesktop then begin
       SHGetSpecialFolderLocation(0, CSIDL_DRIVES, MyComputer);
       Index := IndexFromID(MyComputer);
-      if Index <> -1 then
+      if Index >= 0 then
         AddItems(Index, Folders[Index]);
     end;
   finally
@@ -3054,7 +3025,7 @@ var
   Folder: TacShellFolder;
 begin
   Result := '';
-  if ItemIndex > -1 then begin
+  if ItemIndex >= 0 then begin
     Folder := Folders[ItemIndex];
     if Assigned(Folder) then
       Result := NormalDir(Folder.PathName)
@@ -3131,10 +3102,10 @@ begin
   try
     Pidls := CreatePIDLList(ID);
     try
-      I := Pidls.Count-1;
+      I := Pidls.Count - 1;
       while I >= 0 do begin
         Item := IndexFromID(Pidls[I]);
-        if Item <> -1 then
+        if Item >= 0 then
           Break;
 
         Dec(I);
@@ -3142,19 +3113,19 @@ begin
       if I < 0 then
         Exit;
 
-      while I < Pidls.Count-1 do begin
+      while I < Pidls.Count - 1 do begin
         Inc(I);
         RelID := RelativeFromAbsolute(Pidls[I]);
         AFolder := InitItem(Folders[Item], RelID);
-        InsertItemObject(Item+1, AFolder.DisplayName(seSystem), AFolder);
+        InsertItemObject(Item + 1, AFolder.DisplayName(seSystem), AFolder);
         Inc(Item);
-      end;   
+      end;
       Temp := IndexFromID(ID);
       if Temp < 0 then begin
         RelID := RelativeFromAbsolute(ID);
         AFolder := InitItem(Folders[Item], RelID);
         Temp := Item + 1;
-        InsertItemObject(Item+1, AFolder.DisplayName(seSystem), AFolder);
+        InsertItemObject(Item + 1, AFolder.DisplayName(seSystem), AFolder);
       end;
       ItemIndex := Temp;
     finally
@@ -3260,7 +3231,7 @@ begin
     Exit;
 {$ENDIF}
   inherited Change;
-  if (ItemIndex > -1) and (not InUpdating) and (not DroppedDown) then begin
+  if (ItemIndex >= 0) and (not InUpdating) and (not DroppedDown) then begin
     FUpdating := True;
     try
       Node := Folders[ItemIndex];
@@ -3357,7 +3328,7 @@ begin
   if not (csDestroying in ComponentState) then
     Items.Clear;
     
-  for I := 0 to FFolders.Count-1 do
+  for I := 0 to FFolders.Count - 1 do
     if Assigned(Folders[i]) then
       Folders[I].Free;
 
@@ -3524,11 +3495,11 @@ end;
 procedure TacCustomShellListView.Notification(AComponent: TComponent; Operation: TOperation);
 begin
   inherited Notification(AComponent, Operation);
-  if (Operation = opRemove) then
-    if (AComponent = FTreeView) then
+  if Operation = opRemove then
+    if AComponent = FTreeView then
       FTreeView := nil
     else
-      if (AComponent = FComboBox) then
+      if AComponent = FComboBox then
         FComboBox := nil;
 end;
 
@@ -3573,9 +3544,11 @@ end;
 procedure TacCustomShellListView.SetAutoRefresh(const Value: Boolean);
 begin
   FAutoRefresh := Value;
-  if not (csLoading in ComponentState) and Assigned(FRootFolder) and not (csDesigning in ComponentState) then
+  if ([csLoading, csDesigning] * ComponentState = []) and Assigned(FRootFolder) then
     if FAutoRefresh then begin
-      if Assigned(FNotifier) then FreeAndNil(FNotifier);
+      if Assigned(FNotifier) then
+        FreeAndNil(FNotifier);
+
       FNotifier := TacShellChangeNotifier.Create(Self);
 {$IFDEF DELPHI6UP}
       FNotifier.FComponentStyle := FNotifier.FComponentStyle + [csSubComponent];
@@ -3618,21 +3591,20 @@ var
 begin
   Result := True;
   AFolder := Folders[Item.Index];
-  if Assigned(AFolder) then begin
-    if (Item.Index > FFolders.Count - 1) or (Item.Index < 0) then
-      Exit;
-  //  if irText in Request then // Items may be empty if not commented
-    Item.Caption := AFolder.DisplayName(FShowExtension);
-//    if irImage in Request then
-    Item.ImageIndex := AFolder.ImageIndex(ViewStyle = vsIcon);
+  if Assigned(AFolder) then
+    if IsValidIndex(Item.Index, FFolders.Count) then begin
+//    if irText in Request then // Items may be empty if not commented
+      Item.Caption := AFolder.DisplayName(FShowExtension);
+//      if irImage in Request then
+      Item.ImageIndex := AFolder.ImageIndex(ViewStyle = vsIcon);
 
-    if ViewStyle = vsReport then begin
-      //PIDL := AFolder.FPIDL;
-      AFolder.LoadColumnDetails(FRootFolder, Self.Handle, Columns.Count);
-      for J := 1 to Columns.Count - 1 do
-        Item.SubItems.Add(AFolder.Details[J]);
+      if ViewStyle = vsReport then begin
+        //PIDL := AFolder.FPIDL;
+        AFolder.LoadColumnDetails(FRootFolder, Self.Handle, Columns.Count);
+        for J := 1 to Columns.Count - 1 do
+          Item.SubItems.Add(AFolder.Details[J]);
+      end;
     end;
-  end;
 end;
 
 
@@ -3654,9 +3626,9 @@ var
 begin
   Result := -1;
   I := StartIndex;
-  if (Find = ifExactString) or (Find = ifPartialString) then begin
+  if Find in [ifExactString, ifPartialString] then begin
     repeat
-      if (I = FFolders.Count-1) then
+      if I = FFolders.Count - 1 then
         if Wrap then
           I := 0
         else
@@ -3666,7 +3638,7 @@ begin
       Inc(I);
     until Found or (I = StartIndex);
     if Found then
-      Result := I-1;
+      Result := I - 1;
   end;
 end;
 
@@ -3811,14 +3783,14 @@ begin
         else begin
           ISD := FRootFolder.ShellDetails;
           if Assigned(ISD) then
-            while (ISD.GetDetailsOf(nil, Col, SD) = S_OK) do begin
-              if (AddColumn(SD)) then
+            while ISD.GetDetailsOf(nil, Col, SD) = S_OK do begin
+              if AddColumn(SD) then
                 Inc(Col)
               else
                 Break;
             end
           else
-            if (fpFileSystem in FRootFolder.Properties) then
+            if fpFileSystem in FRootFolder.Properties then
               AddDefaultColumns(4)
             else
               AddDefaultColumns(1);
@@ -3838,6 +3810,7 @@ end;
 
 procedure TacCustomShellListView.KeyDown(var Key: Word; Shift: TShiftState);
 begin
+//  CanLog := not CanLog;
   if FAutoNavigate then
     case Key of
       VK_RETURN:
@@ -3846,16 +3819,16 @@ begin
           Key := 0;
         end
         else
-          if (SelectedFolder <> nil) then
+          if SelectedFolder <> nil then
             if SelectedFolder.IsFolder then
               SetPathFromID(SelectedFolder.AbsoluteID)
             else
               SelectedFolder.ExecuteDefault;
-              
+
       VK_BACK:
         if not IsEditing then
           Back;
-        
+
       VK_F5:
         Refresh;
     end;
@@ -3912,7 +3885,7 @@ end;
 procedure TacCustomShellListView.WndProc(var Message: TMessage);
 begin
 {$IFDEF LOGGED}
-//  AddToLog(Message);
+  AddToLog(Message);
 {$ENDIF}
   //to handle submenus of context menus.
   with Message do
@@ -3954,7 +3927,7 @@ begin
   finally
     DisposePIDL(RootPIDL);
   end;
-  if (SelectedIndex > -1) and (SelectedIndex < Items.Count - 1) then
+  if IsValidIndex(SelectedIndex, Items.Count) then
     Selected := Items[SelectedIndex];
 end;
 
@@ -4238,7 +4211,7 @@ begin
       SysSmallImageList := TsAlphaImageList.Create(nil);
       SysSmallImageList.Handle := SysSmallImages;
       SysSmallImageList.ShareImages := True;
-      SysSmallImageList.AcEndUpdate(True);
+      SysSmallImageList.AcEndUpdate(False);//(True);
       ImageList_SetBkColor(SysSmallImageList.Handle, CLR_NONE);
     end;
   end;

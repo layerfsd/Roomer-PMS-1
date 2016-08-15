@@ -58,9 +58,9 @@ end;
 
 constructor TsHeaderControl.Create(AOwner: TComponent);
 begin
-  inherited Create(AOwner);
   FCommonData := TsCommonData.Create(Self, True);
   FCommonData.COC := COC_TsHeaderControl;
+  inherited Create(AOwner);
   CurItem := -1;
   PressedItem := -1;
 end;
@@ -68,9 +68,7 @@ end;
 
 destructor TsHeaderControl.Destroy;
 begin
-  if Assigned(FCommonData) then
-    FreeAndNil(FCommonData);
-
+  FreeAndNil(FCommonData);
   inherited Destroy;
 end;
 
@@ -78,16 +76,13 @@ end;
 function TsHeaderControl.GetItemUnderMouse(p: TPoint): integer;
 var
   i: integer;
-  R: TRect;
 begin
   Result := -1;
-  for i := 0 to Sections.Count - 1 do begin
-    R := Rect(Sections[i].Left, BorderWidth, Sections[i].Right, Height - BorderWidth);
-    if PtInRect(R, p) then begin
+  for i := 0 to Sections.Count - 1 do
+    if PtInRect(Rect(Sections[i].Left, BorderWidth, Sections[i].Right, Height - BorderWidth), p) then begin
       Result := i;
       Exit;
     end;
-  end;
 end;
 
 
@@ -134,13 +129,13 @@ begin
     Header_GetItemRect(Handle, Index, @ItemRc);
     TempBmp := CreateBmp32(WidthOf(ItemRc), Height - 2 * BorderWidth);
     R := MkRect(TempBmp);
-    if (i = 0) and (i = Sections.Count - 1) and (IndexAlone <> -1) then
+    if (i = 0) and (i = Sections.Count - 1) and (IndexAlone >= 0) then
       si := IndexAlone
     else
-      if (i = 0) and (IndexLeft <> -1) then
+      if (i = 0) and (IndexLeft >= 0) then
         si := IndexLeft
       else
-        if (i = Sections.Count - 1) and (IndexRight <> -1) then
+        if (i = Sections.Count - 1) and (IndexRight >= 0) then
           si := IndexRight
         else
           si := Ndx;
@@ -193,7 +188,7 @@ begin
         if ImgW > 0 then
           if (Images is TsAlphaImageList) and SkinData.SkinManager.Effects.DiscoloredGlyphs then begin
             if State = 0 then
-              if FCommonData.SkinIndex <> -1 then
+              if FCommonData.SkinIndex >= 0 then
                 C := FCommonData.SkinManager.gd[FCommonData.SkinIndex].Props[0].Color
               else
                 C := $FFFFFF
@@ -343,7 +338,7 @@ begin
         end;
 
       AC_SETNEWSKIN:
-        if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
+        if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then begin
           FCommonData.BGChanged := True;
           CommonWndProc(Message, FCommonData);
           UpdateIndexes;
@@ -351,20 +346,20 @@ begin
         end;
 
       AC_REFRESH:
-        if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
+        if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then begin
           CommonWndProc(Message, FCommonData);
-          RedrawWindow(Handle, nil, 0, RDW_ERASE or RDW_FRAME or RDW_INVALIDATE or RDW_UPDATENOW);
+          RedrawWindow(Handle, nil, 0, RDWA_NOCHILDRENNOW);
           Exit;
         end;
 
       AC_ENDPARENTUPDATE:
         if FCommonData.Updating then begin
           FCommonData.Updating := False;
-          RedrawWindow(Handle, nil, 0, RDW_ERASE or RDW_FRAME or RDW_INVALIDATE or RDW_UPDATENOW);
+          RedrawWindow(Handle, nil, 0, RDWA_NOCHILDRENNOW);
           Exit;
         end;
     end;
-    
+
   if not ControlIsReady(Self) or not FCommonData.Skinned then
     inherited
   else begin
@@ -378,7 +373,7 @@ begin
       end;
 
       WM_MOVE:
-        if (FCommonData.SkinManager.gd[FCommonData.SkinIndex].Props[0].Transparency > 0) then
+        if FCommonData.SkinManager.gd[FCommonData.SkinIndex].Props[0].Transparency > 0 then
           FCommonData.BGChanged := True;
 
       WM_PRINT: begin
@@ -420,14 +415,14 @@ begin
           NewItem := GetItemUnderMouse(p);
           if (NewItem <> CurItem) then FCommonData.BGChanged := True;
           inherited;
-          if (NewItem <> CurItem) then begin
+          if NewItem <> CurItem then begin
             CurItem := NewItem;
             Repaint
           end;
           Exit;
         end
         else
-          if (csLButtonDown in ControlState) then
+          if csLButtonDown in ControlState then
             FCommonData.BGChanged := True;
     end;
     CommonWndProc(Message, FCommonData);

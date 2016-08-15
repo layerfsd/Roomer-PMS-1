@@ -1,7 +1,7 @@
 unit sVclUtils;
 {$I sDefs.inc}
 //{$DEFINE LOGGED}
-
+//+
 interface
 
 uses
@@ -12,7 +12,7 @@ uses
   {$IFDEF DELPHI7UP} Themes, {$ENDIF}
   {$IFDEF LOGGED} sDebugMsgs, {$ENDIF}
   {$IFDEF TNTUNICODE} TntControls, {$ENDIF}
-  sSkinProvider, acSBUtils, sConst, acntUtils, sCommonData, acDials, acThdTimer, sGraphUtils;
+  acntTypes, sSkinProvider, acSBUtils, sConst, acntUtils, sCommonData, acDials, acThdTimer, sGraphUtils;
 
 
 type
@@ -48,13 +48,14 @@ function DoLayered(FormHandle: Hwnd; Layered: boolean; AlphaValue: byte = 1): bo
 
 function acShowHintWnd(HintText: string; Pos: TPoint): {$IFDEF TNTUNICODE}TTntHintWindow{$ELSE}THintWindow{$ENDIF};
 {$IFNDEF ALITE}
-procedure acHideHintWnd(Wnd: {$IFDEF TNTUNICODE}TTntHintWindow{$ELSE}THintWindow{$ENDIF});
+procedure acHideHintWnd(var Wnd: {$IFDEF TNTUNICODE}TTntHintWindow{$ELSE}THintWindow{$ENDIF});
 {$ENDIF}
 function acWorkRect(Form: TForm): TRect; overload;
 function acWorkRect(Coord: TPoint): TRect; overload;
 
 procedure SetParentUpdated(const wc: TWinControl); overload;
 procedure SetParentUpdated(const pHwnd: hwnd); overload;
+procedure ChangeControlColors(AControl: TControl; AFontColor, AColor: TColor); // clNone will reset a color to default
 function GetControlColor(const Control: TControl): TColor; overload;
 function GetControlColor(const Handle: THandle): TColor; overload;
 function GetControlFontColor(const Control: TControl; SkinManager: TObject): TColor;
@@ -68,13 +69,16 @@ procedure SetRedraw(Ctrl:   TGraphicControl; Value: integer = 0); overload;
 
 function SendAMessage(const Handle: hwnd; const Cmd: Integer; LParam: LPARAM = 0): LRESULT; overload; // may be removed later
 function SendAMessage(const Control: TControl; const Cmd: Integer; LParam: LPARAM = 0): LRESULT; overload;
+function TrySendMessage(const Control: TControl; Message: TMessage): LRESULT; overload;
+function TrySendMessage(const Control: TControl; Msg: Cardinal; WParam: WPARAM; LParam: LPARAM = 0): LRESULT; overload;
+function TrySendMessage(AHandle: THandle; Msg: Cardinal; WParam: WPARAM; LParam: LPARAM = 0): LRESULT; overload;
 function GetBoolMsg(const Control: TWinControl; const Cmd: Cardinal): boolean; overload;
 function GetBoolMsg(const CtrlHandle: hwnd; const Cmd: Cardinal): boolean; overload;
 function ControlIsReady(const Control: TControl): boolean;
 function GetOwnerForm (const Component: TComponent): TCustomForm;
 function GetOwnerFrame(const Component: TComponent): TCustomFrame;
 procedure SetControlsEnabled(Parent: TWinControl; Value: boolean; Recursion: boolean = False);
-function GetStringFlags(const Control: TControl; const al: TAlignment): longint;
+function GetStringFlags(const Control: TControl; const al: TAlignment): Cardinal;
 procedure RepaintsControls(const Owner: TWinControl; const BGChanged: boolean);
 procedure AlphaBroadCast(const Control: TWinControl; var Message); overload;
 procedure AlphaBroadCast(const Handle: hwnd; var Message); overload;
@@ -104,7 +108,7 @@ type
     Dlg: TacDialogWnd;
     ParentWnd: THandle;
     DC: hdc;
-    Form: TForm;
+    Form: TacGlowForm;
     FBmpSize: TSize;
     FBmpTopLeft: TPoint;
     FBlend: TBlendFunction;
@@ -169,10 +173,25 @@ end;
 
 function acMouseInControl(Control: TControl): boolean;
 var
+  DC: hdc;
+  R: TRect;
   p: TPoint;
 begin
   p := Control.ScreenToClient(acMousePos);
   Result := PtInRect(TWinControl(Control).ClientRect, p);
+  if Result then
+    if (Control is TGraphicControl) and (Control.Parent <> nil) then begin
+      DC := GetDC(Control.Parent.Handle);
+      try
+        if GetClipBox(DC, R) = 0 then
+          Result := False
+        else
+          if (R.Left > p.X) or (R.Top > p.Y) then
+            Result := False
+      finally
+        ReleaseDC(Control.Parent.Handle, DC);
+      end;
+    end;
 end;
 
 
@@ -185,14 +204,15 @@ begin
     Result := DefaultManager.ActiveGraphControl
   else begin
     Result := FindVCLWindow(Mouse.CursorPos);
-    if Result <> nil then begin
-      p := Result.ScreenToClient(Mouse.CursorPos);
-      for i := TWinControl(Result).ControlCount - 1 downto 0 do
-        if PtInRect(TWinControl(Result).Controls[i].BoundsRect, p) then begin
-          Result := TWinControl(Result).Controls[i];
-          Exit;
-        end;
-    end;
+    if Result <> nil then
+      with TWinControl(Result) do begin
+        p := ScreenToClient(Mouse.CursorPos);
+        for i := ControlCount - 1 downto 0 do
+          if PtInRect(Controls[i].BoundsRect, p) then begin
+            Result := Controls[i];
+            Exit;
+          end;
+      end;
   end;
 end;
 
@@ -210,12 +230,11 @@ procedure AddToAdapter(const Frame: TWinControl);
 var
   c: TWinControl;
 begin
-  if Frame <> nil then 
-    if not (csDesigning in Frame.ComponentState) and not (csLoading in Frame.ComponentState) then begin
+  if Frame <> nil then
+    if [csDesigning, csLoading] * Frame.ComponentState = [] then begin
       c := GetParentForm(Frame);
       if c <> nil then
-        c.Perform(SM_ALPHACMD, MakeWParam(0, AC_CONTROLLOADED), longword(Frame));
-//        SendMessage(c.Handle, SM_ALPHACMD, MakeWParam(0, AC_CONTROLLOADED), longword(Frame));
+        TrySendMessage(c.Handle, SM_ALPHACMD, AC_CONTROLLOADED shl 16, longword(Frame));
     end;
 end;
 
@@ -226,8 +245,8 @@ var
 begin
   hCtrl := GetTopWindow(Ctrl);
   while hCtrl <> 0 do begin
-    if (GetWindowLong(hCtrl, GWL_STYLE) and WS_CHILD) = WS_CHILD then
-      SendMessage(hCtrl, Message.Msg, Message.WParam, Message.LParam);
+    if GetWindowLong(hCtrl, GWL_STYLE) and WS_CHILD <> 0 then
+      TrySendMessage(hCtrl, Message.Msg, Message.WParam, Message.LParam);
 
     hCtrl := GetNextWindow(hCtrl, GW_HWNDNEXT);
   end;
@@ -271,8 +290,8 @@ end;
 
 procedure SkinPaintTo(const Bmp: TBitmap; const Ctrl: TControl; const Left: integer = 0; const Top: integer = 0; const SkinProvider: TComponent = nil);
 var
-  cDC, DC: hdc;
-  cR, ClipR: TRect;
+  DC: hdc;
+  cR: TRect;
   I: Integer;
   SaveIndex: hdc;
   ParentBG: TacBGInfo;
@@ -289,6 +308,7 @@ begin
   else begin
     DC := Bmp.Canvas.Handle;
     if (SkinProvider = nil) or (TsSkinProvider(SkinProvider).BorderForm = nil) then
+{
       if ((Ctrl.Width > Bmp.Width) or (Ctrl.Height > Bmp.Height)) and (Ctrl is TWinControl) and IsWindowVisible(TWinControl(Ctrl).Handle) then begin
         cDC := GetWindowDC(TWinControl(Ctrl).Handle);
         try
@@ -298,7 +318,9 @@ begin
           ReleaseDC(TWinControl(Ctrl).Handle, DC);
         end;
       end
-      else begin
+      else
+}
+      begin
         GetWindowRect(TWinControl(Ctrl).Handle, cR);
         IntersectClipRect(DC, 0, 0, Ctrl.Width, Ctrl.Height);
       end;
@@ -316,13 +338,16 @@ begin
         MoveWindowOrg(DC, TTabSheet(Ctrl).BorderWidth, TTabSheet(Ctrl).BorderWidth);
 
       try
-        if GetBoolMsg (TWinControl(Ctrl), AC_CTRLHANDLED) then begin
-          SendAMessage(TWinControl(Ctrl).Handle, AC_PRINTING, LPARAM(DC));
-          SendMessage (TWinControl(Ctrl).Handle, WM_PRINT, WPARAM(DC), 0);
-          SendAMessage(TWinControl(Ctrl).Handle, AC_PRINTING, 0);
+        if WndIsSkinned(TWinControl(Ctrl).Handle) then begin
+          SendAMessage  (TWinControl(Ctrl).Handle, AC_PRINTING, LPARAM(DC));
+          SendMessage(TWinControl(Ctrl).Handle, WM_PRINT, WPARAM(DC), 0);
+          SendAMessage  (TWinControl(Ctrl).Handle, AC_PRINTING, 0);
         end
-        else
+        else begin
+          FillDC(DC, MkRect(TWinControl(Ctrl)), TacAccessControl(Ctrl).Color);
+//          SendMessage (TWinControl(Ctrl).Handle, WM_PRINT, WPARAM(DC), 0);
           TWinControl(Ctrl).PaintTo(DC, 0, 0);
+        end;
       except
       end;
 
@@ -365,15 +390,16 @@ end;
 
 
 const
-  acwDivider = 16;//8;
+  acwDivider = 32;
+  acwPopupDiv = 2;
 
 
-procedure CleanPixelsByArOR(const ArOR: TAOR; Bmp: TBitmap);
+procedure CleanPixelsByRects(const Rects: TRects; Bmp: TBitmap);
 var
   i: integer;
 begin
-  for i := 0 to Length(ArOR) - 1 do
-    FillRect32(Bmp, ArOR[i], 0, 0);
+  for i := 0 to Length(Rects) - 1 do
+    FillRect32(Bmp, Rects[i], 0, 0);
 end;
 
 
@@ -388,7 +414,7 @@ var
   lTicks: DWord;
   Flags: Cardinal;
   FBmpSize: TSize;
-  AnimForm: TForm;
+  AnimForm: TacGlowForm;
   FBmpTopLeft: TPoint;
   FBlend: TBlendFunction;
   AnimBmp, acDstBmp: TBitmap;
@@ -400,9 +426,18 @@ var
     trans := 0;
     p := MaxTransparency / StepCount;
     case AnimType of
+      atDropDown: begin
+        l := 0;
+        t := 0;
+        r := 0;
+        b := 0;
+        dx := (acDstBmp.Width  - r) / acwPopupDiv;
+        dy := (acDstBmp.Height - b) / acwPopupDiv;
+      end;
+
       atAero: begin
         l := acDstBmp.Width / acwDivider;
-        t := acDstBmp.Height / acwDivider;                         
+        t := acDstBmp.Height / acwDivider;
         dx := l / StepCount;
         dy := t / StepCount;
         r := acDstBmp.Width  - l;
@@ -414,8 +449,8 @@ var
         dy := 0;
         l := 0;
         t := 0;
-        r := 0;
-        b := 0;
+        r := acDstBmp.Width;
+        b := acDstBmp.Height;
       end;
     end
   end;
@@ -425,6 +460,12 @@ var
     trans := min(Trans + p, MaxTransparency);
     FBlend.SourceConstantAlpha := Round(Trans);
     case AnimType of
+      atDropDown:
+        if (l < 0) or (t < 0) then
+          BitBlt(AnimBmp.Canvas.Handle, 0, 0, acDstBmp.Width, acDstBmp.Height, acDstBmp.Canvas.Handle, 0, 0, SRCCOPY)
+        else
+          StretchBlt(AnimBmp.Canvas.Handle, Round(l), Round(t), Round(r - l), Round(b - t), acDstBmp.Canvas.Handle, 0, 0, acDstBmp.Width, acDstBmp.Height, SRCCOPY);
+
       atAero:
         if (l < 0) or (t < 0) then
           BitBlt(AnimBmp.Canvas.Handle, 0, 0, acDstBmp.Width, acDstBmp.Height, acDstBmp.Canvas.Handle, 0, 0, SRCCOPY)
@@ -442,6 +483,15 @@ var
   procedure Anim_GoToNext;
   begin
     case AnimType of
+      atDropDown: begin
+        l := 0;
+        t := 0;
+        r := acDstBmp.Width - dx;
+        b := acDstBmp.Height - dy;
+        dx := dx / acwPopupDiv;
+        dy := dy / acwPopupDiv;
+      end;
+
       atAero: begin
         l := l - dx;
         t := t - dy;
@@ -453,6 +503,9 @@ var
 
 begin
   if (sp.SkinData <> nil) and not IsIconic(sp.Form.Handle) then begin
+    if sp.Form.BorderStyle = bsNone then
+      AnimType := atDropDown;
+
     InAnimationProcess := True;
     if sp.BorderForm <> nil then begin
       if sp.BorderForm.AForm = nil then
@@ -464,13 +517,10 @@ begin
     end
     else begin
       TAccessProvider(sp).PaintAll;
-      AnimForm := TForm.Create(Application);
-      AnimForm.BorderStyle := bsNone;
-      AnimForm.Tag := ExceptTag;
-      SetWindowLong(AnimForm.Handle, GWL_EXSTYLE, GetWindowLong(AnimForm.Handle, GWL_EXSTYLE) or WS_EX_TOOLWINDOW or WS_EX_NOACTIVATE);
+      AnimForm := TacGlowForm.CreateNew(Application);
     end;
 
-    if (sp.SkinData.FCacheBmp <> nil) then begin
+    if sp.SkinData.FCacheBmp <> nil then begin
       acDstBmp := CreateBmp32(sp.SkinData.FCacheBmp);
       acDstBmp.Canvas.Lock;
       SkinPaintTo(acDstBmp, sp.Form, 0, 0, sp);
@@ -507,12 +557,12 @@ begin
         else begin
           GetWindowRect(sp.Form.Handle, fR);
           FillArOR(sp);
-          CleanPixelsByArOR(TAccessProvider(sp).ArOR, acDstBmp);
+          CleanPixelsByRects(TAccessProvider(sp).Rects, acDstBmp);
         end;
 
         SetWindowLong(AnimForm.Handle, GWL_EXSTYLE, GetWindowLong(AnimForm.Handle, GWL_EXSTYLE) or WS_EX_NOACTIVATE);
-        if (GetWindowLong(sp.Form.Handle, GWL_EXSTYLE) and WS_EX_TOPMOST = WS_EX_TOPMOST) then begin
-          AnimForm.FormStyle := fsStayOnTop;
+        if GetWindowLong(sp.Form.Handle, GWL_EXSTYLE) and WS_EX_TOPMOST <> 0 then begin
+          TForm(AnimForm).FormStyle := fsStayOnTop;
           AnimForm.Width := 0;
           AnimForm.Height := 0;
           SetWindowLong(AnimForm.Handle, GWL_EXSTYLE, GetWindowLong(AnimForm.Handle, GWL_EXSTYLE) or WS_EX_LAYERED);
@@ -520,21 +570,23 @@ begin
         end
         else begin
           if fsModal in sp.Form.FormState then
-            AnimForm.FormStyle := fsStayOnTop;
+            TForm(AnimForm).FormStyle := fsStayOnTop;
 
-          h := GetWindow(sp.Form.Handle, GW_HWNDPREV);
+          h := sp.Form.Handle;//HWND_TOP;//GetWindow(sp.Form.Handle, GW_HWNDPREV);
         end;
 
         DC := GetDC(0);
-        if GetWindowLong(AnimForm.Handle, GWL_EXSTYLE) and WS_EX_LAYERED <> WS_EX_LAYERED then
+        if GetWindowLong(AnimForm.Handle, GWL_EXSTYLE) and WS_EX_LAYERED = 0 then
           SetWindowLong(AnimForm.Handle, GWL_EXSTYLE, GetWindowLong(AnimForm.Handle, GWL_EXSTYLE) or WS_EX_LAYERED);
 
         UpdateLayeredWindow(AnimForm.Handle, DC, nil, @FBmpSize, acDstBmp.Canvas.Handle, @FBmpTopLeft, clNone, @FBlend, ULW_ALPHA);
         AnimForm.SetBounds(fR.Left - cx + DebugOffsX, fR.Top - cy + DebugOffsY, acDstBmp.Width, acDstBmp.Height);
 
+        SetWindowPos(AnimForm.Handle, 0, 0, 0, 0, 0, SWPA_SHOW or SWP_NOMOVE or SWP_NOSIZE);
         ShowWindow(AnimForm.Handle, SW_SHOWNOACTIVATE);
+//        AnimForm.Show;
 
-        SetWindowPos(AnimForm.Handle, h, AnimForm.Left, AnimForm.Top, FBmpSize.cx, FBmpSize.cy, Flags or SWP_NOREDRAW);
+        SetWindowPos(AnimForm.Handle, h, AnimForm.Left, AnimForm.Top, FBmpSize.cx, FBmpSize.cy, Flags);// or SWP_NOREDRAW);
         AnimBmp := CreateBmp32(FBmpSize);
         FillDC(AnimBmp.Canvas.Handle, MkRect(AnimBmp), 0);
         SetStretchBltMode(AnimBmp.Canvas.Handle, COLORONCOLOR);
@@ -546,6 +598,7 @@ begin
             Anim_DoNext;
             lTicks := GetTickCount;
             UpdateLayeredWindow(AnimForm.Handle, DC, nil, @FBmpSize, AnimBmp.Canvas.Handle, @FBmpTopLeft, clNone, @FBlend, ULW_ALPHA);
+//            UpdateShadowPos(sp.Form.Handle, acBounds(sp.Form.Left + Round(l), sp.Form.Top + Round(t), Round(r - l), Round(b - t)), FBlend.SourceConstantAlpha);
             Anim_GoToNext;
             inc(i);
             if StepCount > 0 then
@@ -558,17 +611,19 @@ begin
 
         FreeAndNil(AnimBmp);
         ReleaseDC(0, DC);
-        if (sp <> nil) then begin
+        if sp <> nil then begin
           sp.FInAnimation := False;
 {$IFDEF DELPHI7UP}
           if sp.Form.AlphaBlend then
-            sp.Form.AlphaBlendValue := MaxTransparency
+            DoLayered(sp.Form.Handle, True, sp.Form.AlphaBlendValue)
+//            sp.Form.AlphaBlendValue := MaxTransparency
 
           else
 {$ENDIF}
-            while SetWindowLong(sp.Form.Handle, GWL_EXSTYLE, GetWindowLong(sp.Form.Handle, GWL_EXSTYLE) and not WS_EX_LAYERED) = 0 do;
+            SetWindowLong(sp.Form.Handle, GWL_EXSTYLE, GetWindowLong(sp.Form.Handle, GWL_EXSTYLE) and not WS_EX_LAYERED);
+//            while SetWindowLong(sp.Form.Handle, GWL_EXSTYLE, GetWindowLong(sp.Form.Handle, GWL_EXSTYLE) and not WS_EX_LAYERED) = 0 do;
 
-          SetWindowPos(sp.Form.Handle, AnimForm.Handle, 0, 0, 0, 0, Flags or SWP_NOMOVE or SWP_NOSIZE);
+          SetWindowPos(sp.Form.Handle, AnimForm.Handle, 0, 0, 0, 0, SWPA_ZORDER);
           InAnimationProcess := False;
           if sp.BorderForm <> nil then
             sp.BorderForm.ExBorderShowing := True; // Do not update extended borders
@@ -581,7 +636,8 @@ begin
           if sp.BorderForm <> nil then
             sSkinProvider.UpdateRgn(sp, True, True); // Guarantees that region is updated
 
-          while not RedrawWindow(sp.Form.Handle, nil, 0, RDW_FRAME or RDW_ALLCHILDREN or RDW_INVALIDATE or RDW_ERASE or RDW_UPDATENOW or RDW_ERASENOW) do;
+//          while not RedrawWindow(sp.Form.Handle, nil, 0, RDWA_ALLNOW) do;
+          RedrawWindow(sp.Form.Handle, nil, 0, RDWA_ALLNOW);
 
           if sp.BorderForm <> nil then
             sp.BorderForm.ExBorderShowing := False;
@@ -590,9 +646,7 @@ begin
           if AeroIsEnabled then
             Sleep(2 * acTimerInterval); // Removing of blinking in Aero
 
-          Application.ProcessMessages;
-
-          SetWindowPos(AnimForm.Handle, sp.Form.Handle, 0, 0, 0, 0, Flags or SWP_NOSIZE or SWP_NOMOVE);
+          SetWindowPos(AnimForm.Handle, sp.Form.Handle, 0, 0, 0, 0, SWPA_ZORDER);
           if sp.BorderForm = nil then
             FreeAndNil(AnimForm)
           else begin
@@ -611,7 +665,7 @@ begin
 end;
 
 
-procedure HideAnimForm(Form: TForm; SrcBmp: TBitmap; ATime: integer; StartBlendValue: integer; AnimType: TacAnimType; ParentWnd: THandle);
+procedure HideAnimForm(Form: TacGlowForm; SrcBmp: TBitmap; ATime: integer; StartBlendValue: integer; AnimType: TacAnimType; ParentWnd: THandle);
 var
   h: hwnd;
   lTicks: DWord;
@@ -657,15 +711,14 @@ begin
     SetWindowLong(Form.Handle, GWL_EXSTYLE, GetWindowLong(Form.Handle, GWL_EXSTYLE) or WS_EX_LAYERED or WS_EX_NOACTIVATE);
 
     UpdateLayeredWindow(Form.Handle, acHideTimer.DC, nil, @acHideTimer.FBmpSize, SrcBmp.Canvas.Handle, @acHideTimer.FBmpTopLeft, clNone, @acHideTimer.FBlend, ULW_ALPHA);
-    ShowWindow(Form.Handle, SW_SHOWNOACTIVATE);
+    SetWindowPos(Form.Handle, 0, 0, 0, 0, 0, SWPA_NOCOPYBITS);
+    Form.Show;
 
-  {
-    if GetWindowLong(Form.Handle, GWL_EXSTYLE) and WS_EX_TOPMOST = WS_EX_TOPMOST then
+
+    if GetWindowLong(Form.Handle, GWL_EXSTYLE) and WS_EX_TOPMOST <> 0 then
       h := HWND_TOPMOST
     else
-  }
-    h := HWND_TOPMOST;
-  //}GetWindow(Form.Handle, GW_HWNDPREV);
+      h := Form.Handle;//HWND_TOPMOST;
 
     SetWindowPos(Form.Handle, h, Form.Left, Form.Top, acHideTimer.FBmpSize.cx, acHideTimer.FBmpSize.cy, SWP_NOACTIVATE or SWP_NOREDRAW or SWP_NOCOPYBITS or SWP_NOOWNERZORDER or SWP_NOREDRAW);
     if acHideTimer.DstBmp <> nil then
@@ -693,7 +746,7 @@ end;
 procedure AnimHideForm(SkinProvider: TObject);
 var
   sp: TAccessProvider;
-  AnimForm: TForm;
+  AnimForm: TacGlowForm;
   acDstBmp: TBitmap;
   b: byte;
 begin
@@ -709,7 +762,7 @@ begin
         b := MaxByte;
 
       InAnimationProcess := True;
-      if sp.FormState and FS_ANIMCLOSING <> FS_ANIMCLOSING then
+      if sp.FormState and FS_ANIMCLOSING = 0 then
         sp.PaintAll;
 
       if sp.BorderForm <> nil then begin
@@ -725,7 +778,10 @@ begin
         BitBlt(acDstBmp.Canvas.Handle, 0, 0, sp.SkinData.FCacheBmp.Width, sp.SkinData.FCacheBmp.Height, sp.SkinData.FCacheBmp.Canvas.Handle, 0, 0, SRCCOPY);
         sp.BorderForm.AForm := nil;
 {.$IFDEF D2011}
-        DoLayered(sp.Form.Handle, True, 1);
+        if not AeroIsEnabled then
+          SetWindowPos(sp.Form.Handle, 0, 0, 0, 0, 0, SWP_HIDEWINDOW or SWP_NOSIZE or SWP_NOMOVE)
+        else
+          DoLayered(sp.Form.Handle, True, 1);
 {.$ENDIF}
       end
       else begin
@@ -739,18 +795,18 @@ begin
         DoLayered(sp.Form.Handle, True, 1);
         acDstBmp := CreateBmp32(sp.SkinData.FCacheBmp);
         BitBlt(acDstBmp.Canvas.Handle, 0, 0, sp.SkinData.FCacheBmp.Width, sp.SkinData.FCacheBmp.Height, sp.SkinData.FCacheBmp.Canvas.Handle, 0, 0, SRCCOPY);
-        CleanPixelsByArOR(sp.ArOR, acDstBmp);
+        CleanPixelsByRects(sp.Rects, acDstBmp);
       end;
       ////////////////////////////////
       HideAnimForm(AnimForm, acDstBmp, sp.SkinData.SkinManager.AnimEffects.FormHide.Time, b{MaxByte}, sp.SkinData.SkinManager.AnimEffects.FormHide.Mode, sp.Form.Handle);
       if sp.Form <> nil then
         DoLayered(sp.Form.Handle, b <> MaxByte, b);
 
-      if (sp.BorderForm <> nil) then
+      if sp.BorderForm <> nil then
         if Application.Terminated then
           FreeAndNil(sp.BorderForm)
         else
-          if (sp.BorderForm.AForm <> nil) then
+          if sp.BorderForm.AForm <> nil then
             FreeAndNil(sp.BorderForm.AForm);
       ////////////////////////////////
       InAnimationProcess := False;
@@ -804,7 +860,7 @@ end;
 
 procedure AnimHideDlg(ListSW: TacDialogWnd);
 var
-  AnimForm: TForm;
+  AnimForm: TacGlowForm;
   acDstBmp: TBitmap;
 begin
   InAnimationProcess := True;
@@ -840,7 +896,7 @@ function DoLayered(FormHandle: Hwnd; Layered: boolean; AlphaValue: byte = 1): bo
 begin
   Result := False;
   if Layered and acLayered then begin
-    if GetWindowLong(FormHandle, GWL_EXSTYLE) and WS_EX_LAYERED <> WS_EX_LAYERED then begin
+    if GetWindowLong(FormHandle, GWL_EXSTYLE) and WS_EX_LAYERED = 0 then begin
       SetWindowLong(FormHandle, GWL_EXSTYLE, GetWindowLong(FormHandle, GWL_EXSTYLE) or WS_EX_LAYERED);
       Result := True;
     end;
@@ -887,7 +943,7 @@ begin
         if R.Bottom > wR.Bottom then
           OffsetRect(R, 0, wR.Bottom - R.Bottom);
 
-        if SendMessage(Handle, SM_ALPHACMD, MakeWParam(0, 7 {AC_CTRLHANDLED}), 0) = 1 then
+        if TrySendMessage(Handle, SM_ALPHACMD, MakeWParam(0, 7 {AC_CTRLHANDLED}), 0) = 1 then
           ActivateHint(R, HintText)
         else begin
           // < Solving the "Owner Z-ordering" problem when BorderForm is used
@@ -920,7 +976,7 @@ end;
 
 
 {$IFNDEF ALITE}
-procedure acHideHintWnd(Wnd: {$IFDEF TNTUNICODE}TTntHintWindow{$ELSE}THintWindow{$ENDIF});
+procedure acHideHintWnd(var Wnd: {$IFDEF TNTUNICODE}TTntHintWindow{$ELSE}THintWindow{$ENDIF});
 begin
   if (Manager <> nil) and Manager.Active and (Manager.HintWindow <> nil) then
     FreeAndNil(Manager.HintWindow)
@@ -949,7 +1005,7 @@ var
 begin
 {$IFDEF DELPHI6UP}
   Result := MkRect;
-  for i := 0 to Screen.MonitorCount do
+  for i := 0 to Screen.MonitorCount - 1 do
     if PtInRect(Screen.Monitors[i].WorkareaRect, Coord) then begin
       Result := Screen.Monitors[i].WorkareaRect;
       Exit;
@@ -966,9 +1022,9 @@ var
   cy, cx, i, StepCount: integer;
   DstBmp, AnimBmp: TBitmap;
   FBlend: TBlendFunction;
+  AnimForm: TacGlowForm;
   FBmpTopLeft: TPoint;
   PrintDC, DC: hdc;
-  AnimForm: TForm;
   Flags: Cardinal;
   FBmpSize: TSize;
   lTicks: DWord;
@@ -1036,12 +1092,12 @@ begin
 //  MaxTransparency := 250;
   if ListSW.BorderForm <> nil then
     AnimForm := ListSW.BorderForm.AForm
-  else begin
-    AnimForm := TForm.Create(Application);
-    AnimForm.BorderStyle := bsNone;
-    AnimForm.Tag := ExceptTag;
-    SetWindowLong(AnimForm.Handle, GWL_EXSTYLE, GetWindowLong(AnimForm.Handle, GWL_EXSTYLE) or WS_EX_TOOLWINDOW or WS_EX_NOACTIVATE);
-  end;
+  else //begin
+    AnimForm := TacGlowForm.CreateNew(Application);
+//    AnimForm.BorderStyle := bsNone;
+//    AnimForm.Tag := ExceptTag;
+//    SetWindowLong(AnimForm.Handle, GWL_EXSTYLE, GetWindowLong(AnimForm.Handle, GWL_EXSTYLE) or WS_EX_TOOLWINDOW or WS_EX_NOACTIVATE);
+//  end;
   ListSW.PaintAll;
   GetClientRect(ListSW.CtrlHandle, cR);
   DstBmp := CreateBmp32(ListSW.SkinData.FCacheBmp);
@@ -1090,16 +1146,16 @@ begin
     cx := 0;
   end;
   GetWindowRect(ListSW.CtrlHandle, fR);
-  AnimForm.SetBounds(fR.Left - cx, fR.Top - cy, DstBmp.Width, DstBmp.Height);
-  if GetWindowLong(ListSW.CtrlHandle, GWL_EXSTYLE) and WS_EX_TOPMOST = WS_EX_TOPMOST then begin
-    AnimForm.FormStyle := fsStayOnTop;
+  if GetWindowLong(ListSW.CtrlHandle, GWL_EXSTYLE) and WS_EX_TOPMOST <> 0 then begin
+    TForm(AnimForm).FormStyle := fsStayOnTop;
     h := HWND_TOPMOST;
   end
   else
-    h := GetWindow(ListSW.CtrlHandle, GW_HWNDPREV);
+    h := ListSW.CtrlHandle; // HWND_TOP; // GetWindow(ListSW.CtrlHandle, GW_HWNDPREV);
 
   DC := GetDC(0);
   SetWindowLong(AnimForm.Handle, GWL_EXSTYLE, GetWindowLong(AnimForm.Handle, GWL_EXSTYLE) or WS_EX_LAYERED or WS_EX_NOACTIVATE);
+  AnimForm.SetBounds(fR.Left - cx, fR.Top - cy, DstBmp.Width, DstBmp.Height);
   UpdateLayeredWindow(AnimForm.Handle, DC, nil, @FBmpSize, DstBmp.Canvas.Handle, @FBmpTopLeft, clNone, @FBlend, ULW_ALPHA);
   ShowWindow(AnimForm.Handle, SW_SHOWNOACTIVATE);
 
@@ -1130,16 +1186,17 @@ begin
   ReleaseDC(0, DC);
   acDials.UpdateRgn(ListSW, False);
 
-  SetWindowPos(ListSW.CtrlHandle, AnimForm.Handle, 0, 0, 0, 0, SWP_NOMOVE or SWP_NOSIZE or SWP_NOREDRAW or SWP_NOACTIVATE or SWP_NOSENDCHANGING or SWP_NOOWNERZORDER);
+  SetWindowPos(ListSW.CtrlHandle, AnimForm.Handle, 0, 0, 0, 0, SWPA_ZORDER);
 //  if (Win32MajorVersion = 6) and (Win32MinorVersion = 0) then // Patch for Vista
     SetWindowLong(ListSW.CtrlHandle, GWL_STYLE, GetWindowLong(ListSW.CtrlHandle, GWL_STYLE) or WS_VISIBLE); // Form must be visible
 
-  SendMessage(ListSW.CtrlHandle, WM_SETREDRAW, 1, 0); // Vista
+//  TrySendMessage(ListSW.CtrlHandle, WM_SETREDRAW, 1, 0); // Vista
+  ListSW.ProcessMessage(WM_SETREDRAW, 1); // Vista
   InAnimationProcess := False;
-  
+
   if ListSW.BorderForm <> nil then begin
     ListSW.BorderForm.ExBorderShowing := True;
-    RedrawWindow(ListSW.CtrlHandle, nil, 0, RDW_FRAME or RDW_ALLCHILDREN or RDW_INVALIDATE or RDW_ERASE or RDW_UPDATENOW);
+    RedrawWindow(ListSW.CtrlHandle, nil, 0, RDWA_ALLNOW);
     acDials.UpdateRgn(ListSW, False);
     ListSW.BorderForm.ExBorderShowing := False;
     if AeroIsEnabled then
@@ -1150,7 +1207,7 @@ begin
     acDials.UpdateRgn(ListSW, False{True}); // Guarantees that region is updated
   end
   else begin
-    RedrawWindow(ListSW.CtrlHandle, nil, 0, RDW_FRAME or RDW_ALLCHILDREN or RDW_INVALIDATE or RDW_ERASE or RDW_UPDATENOW);
+    RedrawWindow(ListSW.CtrlHandle, nil, 0, RDWA_ALLNOW);
     if AeroIsEnabled then
       Sleep(4 * acTimerInterval); // Blinking in Aero removing
 
@@ -1168,15 +1225,14 @@ var
 
 procedure PrepareForAnimation(const Ctrl: TWinControl; AnimType: TacAnimTypeCtrl = atcFade);
 var
-  Y, X, j, DeltaS, DeltaD: integer;
+  bWidth, Y, X, j, DeltaS, DeltaD: integer;
   CtrlsParent: TWinControl;
-  D0, D: PRGBAArray_RGB;
-  S0, S: PRGBAArray;
+  D0, D: PRGBAArray_D;
+  S0, S: PRGBAArray_S;
   ScrDC, SavedDC: hdc;
   BGInfo: TacBGInfo;
   Flags: dword;
   R: TRect;
-
 begin
   if IsWindowVisible(Ctrl.Handle) and not IsIconic(GetRootParent(Ctrl.Handle)) then begin
     GetWindowRect(Ctrl.Handle, R);
@@ -1205,10 +1261,19 @@ begin
           SetLength(acCtrlRects1, Y);
           acCtrlRects1[Y - 1] := CtrlsParent.Controls[Y - 1].BoundsRect;
           InflateRect(acCtrlRects1[Y - 1], 4, 4);
-          if acCtrlRects1[Y - 1].Left   < 0                  then acCtrlRects1[Y - 1].Left   := 0;
-          if acCtrlRects1[Y - 1].Top    < 0                  then acCtrlRects1[Y - 1].Top    := 0;
-          if acCtrlRects1[Y - 1].Right  > CtrlsParent.Width  then acCtrlRects1[Y - 1].Right  := CtrlsParent.Width;
-          if acCtrlRects1[Y - 1].Bottom > CtrlsParent.Height then acCtrlRects1[Y - 1].Bottom := CtrlsParent.Height;
+          with acCtrlRects1[Y - 1] do begin
+            if Left < 0 then
+              Left := 0
+            else
+              if Right > CtrlsParent.Width then
+                Right := CtrlsParent.Width;
+
+            if Top < 0 then
+              Top := 0
+            else
+              if Bottom > CtrlsParent.Height then
+                Bottom := CtrlsParent.Height;
+          end;
         end;
 
       if acAnimBmp2 = nil then
@@ -1227,16 +1292,17 @@ begin
       RestoreDC(acAnimBmp2.Canvas.Handle, SavedDC);
 
       // Leave not equal pixels only
+      bWidth := acAnimBmp2.Width - 1;
       if InitLine(acAnimBmp2, Pointer(S0), DeltaS) and InitLine(acAnimBmp, Pointer(D0), DeltaD) then
         for Y := 0 to acAnimBmp2.Height - 1 do begin
           D := Pointer(LongInt(D0) + DeltaD * Y);
           S := Pointer(LongInt(S0) + DeltaS * Y);
-          for X := 0 to acAnimBmp2.Width - 1 do
+          for X := 0 to bWidth do
             with S[X], D[X] do
-              if (Red = R) and (Green = G) and (Blue = B) then
-                Intg := 0
+              if (DR = SR) and (DG = SG) and (DB = SB) then
+                DI := 0
               else
-                Alpha := MaxByte;
+                DA := MaxByte;
         end;
     end;
 
@@ -1267,10 +1333,10 @@ end;
 procedure SumBmpRect32(BmpTo: TBitmap; RectTo: TRect; BmpFrom: TBitmap; PointFrom: TPoint; BlendValue: byte = MaxByte);
 var
   DeltaS, DeltaD, Y, X, Y1, X1: integer;
-  D, D0: PRGBAArray_RGB;
-  S, S0: PRGBAArray;
+  D, D0: PRGBAArray_D;
+  S, S0: PRGBAArray_;
   hh, ww: integer;
-  aa: byte;
+  aa_, aa: byte;
 begin
   // Correct Left
   if RectTo.Left < 0 then begin
@@ -1313,18 +1379,21 @@ begin
     end;
     if hh > 0 then begin
       Y1 := PointFrom.Y;
+      dec(RectTo.Bottom);
+      dec(RectTo.Right);
       if InitLine(BmpFrom, Pointer(S0), DeltaS) and InitLine(BmpTo, Pointer(D0), DeltaD) then
-        for Y := RectTo.Top to RectTo.Bottom - 1 do begin
+        for Y := RectTo.Top to RectTo.Bottom do begin
           D := Pointer(LongInt(D0) + DeltaD * Y);
           S := Pointer(LongInt(S0) + DeltaS * Y1);
           X1 := PointFrom.X;
-          for X := RectTo.Left to RectTo.Right - 1 do begin
+          for X := RectTo.Left to RectTo.Right do begin
             with S[X1], D[X] do
               if A <> 0 then begin
                 aa := (A * BlendValue) shr 8;
-                Red   := (Red   * (MaxByte - aa) + R * aa) shr 8;
-                Green := (Green * (MaxByte - aa) + G * aa) shr 8;
-                Blue  := (Blue  * (MaxByte - aa) + B * aa) shr 8;
+                aa_ := MaxByte - aa;
+                DR := (DR * aa_ + R * aa) shr 8;
+                DG := (DG * aa_ + G * aa) shr 8;
+                DB := (DB * aa_ + B * aa) shr 8;
               end;
 
             inc(X1);
@@ -1346,16 +1415,16 @@ var
   FBmpSize: TSize;
   SavedDC, DC: hdc;
   BGInfo: TacBGInfo;
-  S0, S: PRGBAArray;
+  S0, S: PRGBAArray_S;
   FBmpTopLeft: TPoint;
-  OldAlphaForm: TForm;
+  OldAlphaForm: TacGlowForm;
   sp: TAccessProvider;
-  D0, D: PRGBAArray_RGB;
+  D0, D: PRGBAArray_D;
   FBlend: TBlendFunction;
   bExtendedBorders: Boolean;
-  dx, dy, l, t, rr, bb, trans, p: real;
+  dx, dy, l, t, rr, bb, trans, prc, Percent1, Percent2, p: real;
   NewBmp, BGBmp, BlurBmp, TmpBmp, AnimBmp, acDstBmp, OldAlphaBmp: TBitmap;
-  j, k, n, StepCount, prc, cy, cx, Percent1, Percent2, Y, X, DeltaS, DeltaD: integer;
+  j, k, n, StepCount, cy, cx, Y, X, DeltaS, DeltaD: integer;
 
   procedure Anim_Init;
   begin
@@ -1419,7 +1488,7 @@ begin
 
   InAnimationProcess := True;
   if Ctrl is TCustomForm then
-    sp := TAccessProvider(SendMessage(Ctrl.Handle, SM_ALPHACMD, MakeWParam(0, AC_GETPROVIDER), 0))
+    sp := TAccessProvider(TrySendMessage(Ctrl.Handle, SM_ALPHACMD, AC_GETPROVIDER_HI, 0))
   else
     sp := nil;
 
@@ -1533,7 +1602,7 @@ begin
   {$ENDIF}
       Ctrl.Perform(WM_SETREDRAW, 1, 0); // Vista
 
-      RedrawWindow(Ctrl.Handle, nil, 0, RDW_ERASE or RDW_FRAME or RDW_ALLCHILDREN or RDW_INVALIDATE or RDW_UPDATENOW);
+      RedrawWindow(Ctrl.Handle, nil, 0, RDWA_ALLNOW);
       SetWindowRgn(sp.BorderForm.AForm.Handle, sp.BorderForm.MakeRgn, False);
       SetWindowPos(sp.BorderForm.AForm.Handle, 0, fR.Left - cx, fr.Top - cy, FBmpSize.cx, FBmpSize.cy, Flags or SWP_NOZORDER);
       sp.BorderForm.UpdateExBordersPos(False);
@@ -1543,20 +1612,24 @@ begin
     else begin
       GetWindowRect(Ctrl.Handle, fR);
 
-      TForm(ow) := TForm.Create(nil);
-      TForm(ow).BorderStyle := bsNone;
-      TForm(ow).Tag := ExceptTag;
+      TacGlowForm(ow) := TacGlowForm.CreateNew(nil);
+//      TForm(ow) := TForm.Create(nil);
+//      TForm(ow).BorderStyle := bsNone;
+      //TForm(ow).Tag := ExceptTag;
 
       ow.Left := Ctrl.Left;
       ow.Top := Ctrl.Top;
       ow.Width := Ctrl.Width;
       ow.Height := Ctrl.Height;
-      if GetWindowLong(Ctrl.Handle, GWL_EXSTYLE) and WS_EX_TOPMOST = WS_EX_TOPMOST then begin
+      if GetWindowLong(Ctrl.Handle, GWL_EXSTYLE) and WS_EX_TOPMOST <> 0 then begin
         TForm(ow).FormStyle := fsStayOnTop;
         h := HWND_TOPMOST
       end
       else
-        h := GetWindow(sp.Form.Handle, GW_HWNDPREV);
+        if sp.BorderForm <> nil then
+          h := sp.Form.Handle
+        else
+          h := GetWindow(sp.Form.Handle, GW_HWNDPREV);
 
       SetWindowPos(ow.Handle, h, Ctrl.Left, Ctrl.Top, FBmpSize.cx, FBmpSize.cy, Flags and not SWP_NOMOVE);
       DC := GetDC(0);
@@ -1593,7 +1666,7 @@ begin
         sp.Form.AlphaBlendValue := MaxTransparency;
   {$ENDIF}
       Ctrl.Perform(WM_SETREDRAW, 1, 0); // Vista
-      RedrawWindow(Ctrl.Handle, nil, 0, RDW_ERASE or RDW_FRAME or RDW_ALLCHILDREN or RDW_INVALIDATE or RDW_UPDATENOW);
+      RedrawWindow(Ctrl.Handle, nil, 0, RDWA_ALLNOW);
       FreeAndNil(ow);
     end;
     FreeAndNil(AnimBmp);
@@ -1637,16 +1710,17 @@ begin
       BGBmp.Canvas.Lock;
       GetBGInfo(@BGInfo, Ctrl.Handle, True);
       BGBmp.Canvas.Unlock;
+      j := BGBmp.Width - 1;
       if InitLine(BGBmp, Pointer(S0), DeltaS) and InitLine(acDstBmp, Pointer(D0), DeltaD) then // Leave not equal pixels only
         for Y := 0 to BGBmp.Height - 1 do begin
           S := Pointer(LongInt(S0) + DeltaS * Y);
           D := Pointer(LongInt(D0) + DeltaD * Y);
-          for X := 0 to BGBmp.Width - 1 do
+          for X := 0 to j do
             with S[X], D[X] do
-              if (R = Red) and (G = Green) and (B = Blue) then
-                Intg := 0
+              if (SR = DR) and (SG = DG) and (SB = DB) then
+                DI := 0
               else
-                Alpha := MaxByte;
+                DA := MaxByte;
         end;
 
       BlurBmp.Assign(acDstBmp);
@@ -1659,8 +1733,7 @@ begin
 
     DC := GetWindowDC(ow.Handle);
     if StepCount > 0 then begin
-//      Blur8(acAnimBmp, 3);
-      prc := MaxByte div StepCount;
+      prc := MaxByte / StepCount;
       Percent1 := MaxByte - prc - 127;
       Percent2 := MaxByte;
       j := 0;
@@ -1681,54 +1754,54 @@ begin
               for k := 0 to n - 1 do begin
                 fR := acCtrlRects1[k];
                 InflateRect(fR, j * 2 + 1, j * 2 + 1);
-                TmpBmp.Width := WidthOf(fR);
-                TmpBmp.Height := HeightOf(fR);
+                TmpBmp.Width := WidthOf(fR, True);
+                TmpBmp.Height := HeightOf(fR, True);
                 StretchBlt(TmpBmp.Canvas.Handle, 0, 0, TmpBmp.Width, TmpBmp.Height, acAnimBmp.Canvas.Handle,
                            acCtrlRects1[k].Left, acCtrlRects1[k].Top, WidthOf(acCtrlRects1[k]), HeightOf(acCtrlRects1[k]), SRCCOPY);
                 // Copy Bmp to NewBmp //
-                SumBmpRect32(NewBmp, fR, TmpBmp, MkPoint, Percent1);
+                SumBmpRect32(NewBmp, fR, TmpBmp, MkPoint, Round(Percent1));
               end;
           end
           else begin // Copy blured controls to NewBmp
             NewBmp.Assign(BGBmp);
-            SumBmpRect32(NewBmp, MkRect(acAnimBmp), acAnimBmp, MkPoint, Percent1);
+            SumBmpRect32(NewBmp, MkRect(acAnimBmp), acAnimBmp, MkPoint, Round(Percent1));
           end;
-          SumBmpRect32(NewBmp, MkRect(BlurBmp), BlurBmp, MkPoint, MaxByte - Percent2);
+          SumBmpRect32(NewBmp, MkRect(BlurBmp), BlurBmp, MkPoint, MaxByte - Round(Percent2));
           // Blur End controls (prc - blend value)
           BitBlt(DC, 0, 0, Ctrl.Width, Ctrl.Height, NewBmp.Canvas.Handle, 0, 0, SRCCOPY);
         end
         else begin
-          SumBitmapsByMask(NewBmp, acAnimBmp, acDstBmp, nil, max(0, Percent2));
+          SumBitmapsByMask(NewBmp, acAnimBmp, acDstBmp, nil, max(0, Round(Percent2)));
           BitBlt(DC, 0, 0, Ctrl.Width, Ctrl.Height, NewBmp.Canvas.Handle, 0, 0, SRCCOPY);
         end;
         if Assigned(acMagnForm) then
-          SendMessage(acMagnForm.Handle, SM_ALPHACMD, MakeWParam(0, AC_REFRESH), 0);
+          SendMessage(acMagnForm.Handle, SM_ALPHACMD, AC_REFRESH_HI, 0);
 
         inc(j);
 //        Percent1 := max(0, Percent1 - prc * j div 3);
         Percent1 := max(0, Percent1 - prc);
-        dec(Percent2, prc);
-        if (j > StepCount) then
+        Percent2 := Percent2 - prc;
+        if j > StepCount then
           Break;
 
-        while lTicks + acTimerInterval > GetTickCount
+        while lTicks + acTimerInterval{ * 20} > GetTickCount
           do {wait here};
       end;
     end;
-    if (AnimType <> atcBlur) then
+    if AnimType <> atcBlur then
       BitBlt(DC, 0, 0, Ctrl.width, Ctrl.Height, acDstBmp.Canvas.Handle, 0, 0, SRCCOPY);
 
     if Assigned(acMagnForm) then
-      SendMessage(acMagnForm.Handle, SM_ALPHACMD, MakeWParam(0, AC_REFRESH), 0);
+      SendMessage(acMagnForm.Handle, SM_ALPHACMD, AC_REFRESH_HI, 0);
 
     InAnimationProcess := False;
     if Ctrl.Visible then begin
       Ctrl.Perform(WM_SETREDRAW, 1, 0); // Vista
       SetFormBlendValue(ow.Handle, NewBmp, MaxByte);
       if Win32MajorVersion >= 6 then
-        RedrawWindow(Ctrl.Handle, nil, 0, RDW_ERASE or RDW_FRAME or RDW_ALLCHILDREN or RDW_INVALIDATE or RDW_UPDATENOW);
+        RedrawWindow(Ctrl.Handle, nil, 0, RDWA_ALLNOW);
 
-      if not (Ctrl is TCustomForm) or (DWord(GetWindowLong(Ctrl.Handle, GWL_EXSTYLE)) and WS_EX_LAYERED <> WS_EX_LAYERED) then
+      if not (Ctrl is TCustomForm) or (DWord(GetWindowLong(Ctrl.Handle, GWL_EXSTYLE)) and WS_EX_LAYERED = 0) then
         SetWindowPos(ow.Handle, 0, 0, 0, 0, 0, SWP_NOZORDER or SWP_HIDEWINDOW or SWP_NOREDRAW or SWP_NOACTIVATE);
     end;
     ReleaseDC(ow.Handle, DC);
@@ -1761,12 +1834,11 @@ begin
         if not (csDestroying in wc.Controls[i].ComponentState) then
           if wc.Controls[i] is TWinControl then begin
             if TWinControl(wc.Controls[i]).HandleAllocated and TWinControl(wc.Controls[i]).Showing then
-//              TControl(wc.Controls[i]).Perform(SM_ALPHACMD, MakeWParam(0, AC_ENDPARENTUPDATE), 0);
-              SendMessage(TWinControl(wc.Controls[i]).Handle, SM_ALPHACMD, MakeWParam(0, AC_ENDPARENTUPDATE), 0);
+              TrySendMessage(TWinControl(wc.Controls[i]).Handle, SM_ALPHACMD, AC_ENDPARENTUPDATE_HI, 0);
           end
           else
             if wc.Controls[i] is TControl then
-              TControl(wc.Controls[i]).Perform(SM_ALPHACMD, MakeWParam(0, AC_ENDPARENTUPDATE), 0);
+              TControl(wc.Controls[i]).Perform(SM_ALPHACMD, AC_ENDPARENTUPDATE_HI, 0);
 end;
 
 
@@ -1776,7 +1848,7 @@ var
 begin
   hCtrl := GetTopWindow(pHwnd);
   while hCtrl <> 0 do begin
-    if (GetWindowLong(hCtrl, GWL_STYLE) and WS_CHILD) = WS_CHILD then
+    if GetWindowLong(hCtrl, GWL_STYLE) and WS_CHILD <> 0 then
       SendAMessage(hCtrl, AC_ENDPARENTUPDATE);
 
     hCtrl := GetNextWindow(hCtrl, GW_HWNDNEXT);
@@ -1784,14 +1856,31 @@ begin
 end;
 
 
+procedure ChangeControlColors(AControl: TControl; AFontColor, AColor: TColor); // clNone will reset a color to default
+var
+  SkinData: TsCommonData;
+begin
+  SkinData := TsCommonData(AControl.Perform(SM_ALPHACMD, AC_GETSKINDATA_HI, 0));
+  if SkinData <> nil then begin
+    SkinData.CustomFont := AFontColor <> clNone;
+    SkinData.CustomColor := AColor <> clNone;
+  end;
+  if AFontColor <> clNone then
+    TsAccessControl(AControl).Font.Color := AFontColor;
+
+  if AColor <> clNone then
+    TsAccessControl(AControl).Color := AColor;
+end;
+
+
 function GetControlColor(const Control: TControl): TColor;
 begin
   Result := clFuchsia;
   if Control <> nil then
-    if SendAMessage(Control, AC_CTRLHANDLED) = 1 then
-      Result := ColorToRGB(Control.Perform(SM_ALPHACMD, MakeWParam(0, AC_GETCONTROLCOLOR), Result))
+    if CtrlIsSkinned(Control) then
+      Result := ColorToRGB(Control.Perform(SM_ALPHACMD, AC_GETCONTROLCOLOR_HI, Result))
     else
-      Result := ColorToRGB(TsHackedControl(Control).Color); // message is not supported by parent control
+      Result := ColorToRGB(TsAccessControl(Control).Color); // message is not supported by parent control
 end;
 
 
@@ -1799,7 +1888,7 @@ function GetControlColor(const Handle: THandle): TColor; overload;
 begin
   Result := clFuchsia;
   if Handle <> 0 then
-    Result := ColorToRGB(SendMessage(Handle, SM_ALPHACMD, MakeWParam(0, AC_GETCONTROLCOLOR), Result));
+    Result := ColorToRGB(TrySendMessage(Handle, SM_ALPHACMD, AC_GETCONTROLCOLOR_HI, Result));
 end;
 
 
@@ -1882,10 +1971,10 @@ begin
         I := 0;
         while I < Count do begin
           if ControlIsReady(OwnerControl.Controls[I]) then begin
-            if (OwnerControl is TForm) then
-            with TForm(OwnerControl) do
-              if (FormStyle = fsMDIForm) and (Controls[I].Align <> alNone) and (Controls[I] is TGraphicControl) then
-              OwnerControl.Controls[I].Perform(SM_ALPHACMD, MakeWParam(0, AC_INVALIDATE), 0);
+            if OwnerControl is TForm then
+              with TForm(OwnerControl) do
+                if (FormStyle = fsMDIForm) and (Controls[I].Align <> alNone) and (Controls[I] is TGraphicControl) then
+                  Controls[I].Perform(SM_ALPHACMD, AC_INVALIDATE shl 16, 0);
 
             if not MemDCExists then begin
               tDC := GetDC(0);
@@ -1895,36 +1984,37 @@ begin
               OldBitmap := SelectObject(MemDC, MemBitmap);
               MemDCExists := True;
               for j := 0 to Count - 1 do // Copy parent BG
-                if ControlIsReady(OwnerControl.Controls[J]) then
-                  if not (csOpaque in OwnerControl.Controls[J].ControlStyle) {???or (OwnerControl.Controls[J] is TGraphicControl)} then
-                    if (BGInfo.BgType = btCache) and (BGInfo.Bmp <> nil) then // If with cache
-                      BitBlt(MemDC, OwnerControl.Controls[J].Left, OwnerControl.Controls[J].Top, OwnerControl.Controls[J].Width, OwnerControl.Controls[J].Height, BGInfo.Bmp.Canvas.Handle, OwnerControl.Controls[J].Left + BGInfo.Offset.X, OwnerControl.Controls[J].Top + BGInfo.Offset.Y, SRCCOPY)
-                    else begin
-                      if (BGInfo.Bmp <> nil) then begin
-                        bRect := OwnerControl.Controls[J].BoundsRect;
-                        FillDC(MemDC, bRect, BGInfo.Color);
+                with OwnerControl, Controls[J] do
+                  if ControlIsReady(Controls[J]) then
+                    if not (csOpaque in ControlStyle) {???or (OwnerControl.Controls[J] is TGraphicControl)} then
+                      if (BGInfo.BgType = btCache) and (BGInfo.Bmp <> nil) then // If with cache
+                        BitBlt(MemDC, Left, Top, Width, Height, BGInfo.Bmp.Canvas.Handle, Left + BGInfo.Offset.X, Top + BGInfo.Offset.Y, SRCCOPY)
+                      else begin
+                        if BGInfo.Bmp <> nil then begin
+                          bRect := BoundsRect;
+                          FillDC(MemDC, bRect, BGInfo.Color);
 
-                        if bRect.Top < BGInfo.FillRect.Top then
-                          BitBlt(MemDC, bRect.Left, bRect.Top, OwnerControl.Controls[J].Width, BGInfo.FillRect.Top - bRect.Top, BGInfo.Bmp.Canvas.Handle, bRect.Left + BGInfo.Offset.X, bRect.Top + BGInfo.Offset.Y, SRCCOPY);
+                          if bRect.Top < BGInfo.FillRect.Top then
+                            BitBlt(MemDC, bRect.Left, bRect.Top, Width, BGInfo.FillRect.Top - bRect.Top, BGInfo.Bmp.Canvas.Handle, bRect.Left + BGInfo.Offset.X, bRect.Top + BGInfo.Offset.Y, SRCCOPY);
 
-                        if bRect.Left < BGInfo.FillRect.Left then
-                          BitBlt(MemDC, bRect.Left, bRect.Top, BGInfo.FillRect.Left - bRect.Left, OwnerControl.Controls[J].Height, BGInfo.Bmp.Canvas.Handle, bRect.Left + BGInfo.Offset.X, bRect.Top + BGInfo.Offset.Y, SRCCOPY);
+                          if bRect.Left < BGInfo.FillRect.Left then
+                            BitBlt(MemDC, bRect.Left, bRect.Top, BGInfo.FillRect.Left - bRect.Left, Height, BGInfo.Bmp.Canvas.Handle, bRect.Left + BGInfo.Offset.X, bRect.Top + BGInfo.Offset.Y, SRCCOPY);
 
-                        if (bRect.Bottom + BGInfo.Offset.Y > (BGInfo.Bmp.Height - BGInfo.FillRect.Bottom)) and (BGInfo.Offset.Y >= 0 {Not scrolled}) then begin
-                          d := bRect.Bottom - (BGInfo.Bmp.Height - BGInfo.FillRect.Bottom);
-                          BitBlt(MemDC, bRect.Left, bRect.Bottom - d, OwnerControl.Controls[J].Width, d, BGInfo.Bmp.Canvas.Handle, bRect.Left + BGInfo.Offset.X, bRect.Bottom + BGInfo.Offset.Y - d, SRCCOPY);
-                        end;
+                          if (bRect.Bottom + BGInfo.Offset.Y > (BGInfo.Bmp.Height - BGInfo.FillRect.Bottom)) and (BGInfo.Offset.Y >= 0 {Not scrolled}) then begin
+                            d := bRect.Bottom - (BGInfo.Bmp.Height - BGInfo.FillRect.Bottom);
+                            BitBlt(MemDC, bRect.Left, bRect.Bottom - d, Width, d, BGInfo.Bmp.Canvas.Handle, bRect.Left + BGInfo.Offset.X, bRect.Bottom + BGInfo.Offset.Y - d, SRCCOPY);
+                          end;
 
-                        if (bRect.Right + BGInfo.Offset.X > (BGInfo.Bmp.Width - BGInfo.FillRect.Right)) and (BGInfo.Offset.X >= 0 {Not scrolled}) then begin
-                          d := bRect.Right - (BGInfo.Bmp.Width - BGInfo.FillRect.Right);
-                          BitBlt(MemDC, bRect.Right - d, bRect.Top, d, OwnerControl.Controls[J].Height, BGInfo.Bmp.Canvas.Handle, bRect.Right + BGInfo.Offset.X - d, bRect.Top + BGInfo.Offset.Y, SRCCOPY);
-                        end;
+                          if (bRect.Right + BGInfo.Offset.X > (BGInfo.Bmp.Width - BGInfo.FillRect.Right)) and (BGInfo.Offset.X >= 0 {Not scrolled}) then begin
+                            d := bRect.Right - (BGInfo.Bmp.Width - BGInfo.FillRect.Right);
+                            BitBlt(MemDC, bRect.Right - d, bRect.Top, d, Height, BGInfo.Bmp.Canvas.Handle, bRect.Right + BGInfo.Offset.X - d, bRect.Top + BGInfo.Offset.Y, SRCCOPY);
+                          end;
+                        end
+                        else
+                          FillDC(MemDC, BoundsRect, BGInfo.Color);
                       end
-                      else
-                        FillDC(MemDC, OwnerControl.Controls[J].BoundsRect, BGInfo.Color);
-                    end
-                  else
-                    FillDC(MemDC, OwnerControl.Controls[J].BoundsRect, GetControlColor(OwnerControl.Controls[J]));
+                    else
+                      FillDC(MemDC, BoundsRect, GetControlColor(Controls[J]));
             end;
             SaveIndex := SaveDC(MemDC);
             if not RectVisible(DC, OwnerControl.Controls[I].BoundsRect) then
@@ -1969,9 +2059,9 @@ begin
           J := 0;
           while J < Count do begin // Copy graphic controls
             if ControlIsReady(OwnerControl.Controls[J]) then
-              if GetPixel(MemDC, OwnerControl.Controls[J].Left + Offset.X, OwnerControl.Controls[J].Top + Offset.Y) <> DWord(clFuchsia) then
-                BitBlt(DC, OwnerControl.Controls[J].Left + Offset.X, OwnerControl.Controls[J].Top + Offset.Y, OwnerControl.Controls[J].Width, OwnerControl.Controls[J].Height,
-                       MemDC, OwnerControl.Controls[J].Left, OwnerControl.Controls[J].Top, SRCCOPY);
+              with OwnerControl.Controls[J] do
+                if GetPixel(MemDC, Left + Offset.X, Top + Offset.Y) <> DWord(clFuchsia) then
+                  BitBlt(DC, Left + Offset.X, Top + Offset.Y, Width, Height, MemDC, Left, Top, SRCCOPY);
 
             inc(J);
           end;
@@ -2015,7 +2105,7 @@ end;
 
 procedure SetRedraw(Handle: THandle; Value: integer = 0); overload;
 begin
-  SendMessage(Handle, WM_SETREDRAW, Value, 0);
+  TrySendMessage(Handle, WM_SETREDRAW, Value, 0);
 end;
 
 
@@ -2027,20 +2117,86 @@ end;
 
 function SendAMessage(const Handle: hwnd; const Cmd: Integer; LParam: LPARAM = 0): LRESULT; overload;
 begin
-  Result := SendMessage(Handle, SM_ALPHACMD, MakeWParam(0, Word(Cmd)), LParam);
+  Result := TrySendMessage(Handle, SM_ALPHACMD, WPARAM(Word(Cmd)) shl 16, LParam);
+//  Result := SendMessage(Handle, SM_ALPHACMD, WPARAM(Word(Cmd)) shl 16, LParam);
 end;
 
 
 function SendAMessage(const Control: TControl; const Cmd: Integer; LParam: LPARAM = 0): LRESULT; overload;
 begin
-  Result := 0;
-  if (Control is TWinControl) then begin
-    if not (csDestroying in Control.ComponentState) and TWinControl(Control).HandleAllocated then
-//      Result := Control.Perform(SM_ALPHACMD, MakeWParam(0, Word(Cmd)), LParam)
-      Result := SendMessage(TWinControl(Control).Handle, SM_ALPHACMD, MakeWParam(0, Word(Cmd)), LParam)
+  Result := TrySendMessage(Control, SM_ALPHACMD, WPARAM(Word(Cmd)) shl 16, LParam);
+{
+  if Control is TWinControl then
+    with TWinControl(Control) do
+      if not (csDestroying in ComponentState) and HandleAllocated then
+        Result := SendMessage(Handle, SM_ALPHACMD, WPARAM(Word(Cmd)) shl 16, LParam)
+      else
+        Result := 0
+  else
+    Result := Control.Perform(SM_ALPHACMD, WPARAM(Word(Cmd)) shl 16, LParam);
+}
+end;
+
+
+function TrySendMessage(const Control: TControl; Message: TMessage): LRESULT; overload;
+var
+  sd: TsCommonData;
+begin
+  if Control is TWinControl then
+    with TWinControl(Control) do
+      if not (csDestroying in ComponentState) and HandleAllocated then begin
+        sd := GetCommonData(Handle);
+        if (sd <> nil) and Assigned(sd.WndProc) then begin
+          sd.WndProc(Message);
+          Result := Message.Result;
+        end
+        else
+          Result := SendMessage(Handle, Message.Msg, Message.WParam, Message.LParam);
+      end
+      else
+        Result := 0
+  else
+    Result := Control.Perform(Message.Msg, Message.WParam, Message.LParam);
+end;
+
+
+function TrySendMessage(const Control: TControl; Msg: Cardinal; WParam: WPARAM; LParam: LPARAM = 0): LRESULT;
+var
+  M: TMessage;
+  sd: TsCommonData;
+begin
+  if Control is TWinControl then
+    with TWinControl(Control) do
+      if not (csDestroying in ComponentState) and HandleAllocated then begin
+        sd := GetCommonData(Handle);
+        if (sd <> nil) and Assigned(sd.WndProc) then begin
+          M := MakeMessage(Msg, WPAram, LParam, 0);
+          sd.WndProc(M);
+          Result := M.Result;
+        end
+        else
+          Result := SendMessage(Handle, Msg, WParam, LParam);
+      end
+      else
+        Result := 0
+  else
+    Result := Control.Perform(Msg, WParam, LParam);
+end;
+
+
+function TrySendMessage(AHandle: THandle; Msg: Cardinal; WParam: WPARAM; LParam: LPARAM = 0): LRESULT; overload;
+var
+  M: TMessage;
+  sd: TsCommonData;
+begin
+  sd := GetCommonData(AHandle);
+  if (sd <> nil) and Assigned(sd.WndProc) then begin
+    M := MakeMessage(Msg, WPAram, LParam, 0);
+    sd.WndProc(M);
+    Result := M.Result;
   end
   else
-    Result := Control.Perform(SM_ALPHACMD, MakeWParam(0, Word(Cmd)), LParam)
+    Result := SendMessage(AHandle, Msg, WParam, LParam);
 end;
 
 
@@ -2056,7 +2212,7 @@ var
   LParam: cardinal;
 begin
   LParam := 0;
-  if SendMessage(CtrlHandle, SM_ALPHACMD, MakeWParam(0, Cmd), LParam) = 1 then
+  if SendAMessage(CtrlHandle, WPARAM(Cmd), LParam) = 1 then
     Result := True
   else
     Result := LParam = 1;
@@ -2065,15 +2221,11 @@ end;
 
 function ControlIsReady(const Control: TControl): boolean;
 begin
-  Result := False;
-  if (Control = nil) or ((Control is TWinControl) and not TWinControl(Control).HandleAllocated) then
-    Exit;
-
-  Result := not (csCreating in Control.ControlState) and
-            not (csReadingState in Control.ControlState) and //not (csAlignmentNeeded in Control.ControlState) and
-            not (csLoading in Control.ComponentState) and
-            not (csDestroying in Control.ComponentState) and
-            (Control.Parent <> nil);
+  if (Control <> nil) and (Control.Parent <> nil) and (not (Control is TWinControl) or TWinControl(Control).HandleAllocated) then
+    with Control do
+      Result := ([csLoading, csDestroying] * ComponentState = []) and ([csCreating, csReadingState] * ControlState = [])
+  else
+    Result := False;
 end;
 
 
@@ -2086,7 +2238,7 @@ begin
   while Assigned(c) and not (c is TCustomForm) do
     c := c.Owner;
 
-  if (c is TCustomForm) then
+  if c is TCustomForm then
     Result := TCustomForm(c);
 end;
 
@@ -2100,7 +2252,7 @@ begin
   while Assigned(c) and not (c is TCustomFrame) do
     c := c.Owner;
 
-  if (c is TCustomFrame) then
+  if c is TCustomFrame then
     Result := TCustomFrame(c);
 end;
 
@@ -2118,7 +2270,7 @@ begin
 end;
 
 
-function GetStringFlags(const Control: TControl; const al: TAlignment): longint;
+function GetStringFlags(const Control: TControl; const al: TAlignment): Cardinal;
 begin
 {$IFDEF FPC}
   Result := DT_EXPANDTABS or DT_VCENTER or AlignToInt[al];
@@ -2153,16 +2305,23 @@ begin
       if (i >= Control.ControlCount) or (csDestroying in Control.Controls[i].ComponentState) then
         Exit;
 
-      if (Control.Controls[i] is TWincontrol) then
+      if Control.Controls[i] is TWincontrol then
         with TWinControl(Control.Controls[i]) do begin
           if not HandleAllocated then
             Perform(Msg, Wparam, LParam)
-          else
+          else begin
+            TrySendMessage(Handle, Msg, WParam, LParam);
+            if not WndIsSkinned(TWinControl(Control.Controls[i]).Handle) then
+              if not Assigned(CheckDevEx) or not CheckDevEx(Control.Controls[i]) then
+                AlphaBroadCast(TWinControl(Control.Controls[i]), Message);
+          end;
+(*
             if WndIsSkinned(TWinControl(Control.Controls[i]).Handle){ GetBoolMsg(TWinControl(Control.Controls[i]), AC_CTRLHANDLED)} then
-              SendMessage(Handle, Msg, WParam, LParam)
+              TrySendMessage(Handle, Msg, WParam, LParam)
             else
               if not Assigned(CheckDevEx) or not CheckDevEx(Control.Controls[i]) then
                 AlphaBroadCast(TWinControl(Control.Controls[i]), Message);
+*)
         end
       else
         Control.Controls[i].Perform(Msg, Wparam, LParam);
@@ -2187,7 +2346,7 @@ var
 begin
   MsgI := PacMsgInfo(Data)^;
   if GetParent(Child) = MsgI.Sender then
-    SendMessage(Child, MsgI.Message.Msg, MsgI.Message.WParam, MsgI.Message.LParam);
+    TrySendMessage(Child, MsgI.Message.Msg, MsgI.Message.WParam, MsgI.Message.LParam);
 
   Result := True;
 end;
@@ -2223,7 +2382,7 @@ var
 begin
   Result := False;
   if Control <> nil then
-    if (Control is TLabel) and (Control.Tag and ExceptTag <> ExceptTag) and (DefaultManager <> nil) and DefaultManager.Active then
+    if (Control is TLabel) and (Control.Tag and ExceptTag = 0) and (DefaultManager <> nil) and DefaultManager.Active then
       with DefaultManager do begin
         Ndx := GetSkinIndex(SectionName);
         if Ndx >= 0 then
@@ -2233,10 +2392,9 @@ begin
 
         Result := True;
       end
-
     else begin
-      si.Name := SectionName;
-      Result := Control.Perform(SM_ALPHACMD, MakeWParam(0, AC_SETSECTION), LPARAM(@si)) = 1;
+      si.siName := SectionName;
+      Result := Control.Perform(SM_ALPHACMD, AC_SETSECTION shl 16, LPARAM(@si)) = 1;
     end;
 end;
 
@@ -2266,7 +2424,7 @@ begin
   with Params do
     if (Parent = nil) and (ParentWindow = 0) then begin
       Params.Style := WS_POPUP;
-      if(Owner is TWinControl) and ((DWord(GetWindowLong(TWinControl(Owner).Handle, GWL_EXSTYLE)) and WS_EX_TOPMOST) <> 0) then
+      if (Owner is TWinControl) and (DWord(GetWindowLong(TWinControl(Owner).Handle, GWL_EXSTYLE)) and WS_EX_TOPMOST <> 0) then
         Params.ExStyle := ExStyle or WS_EX_TOPMOST;
 
 {$IFDEF FPC}
@@ -2295,12 +2453,13 @@ var
   i: integer;
 begin
   Result := 0;
-  for i := 0 to Ctrl.ControlCount - 1 do
-    if Ctrl.Controls[i].Visible and (Ctrl.Controls[i].Align = Align) and (GraphCtrlsToo or not (Ctrl.Controls[i] is TGraphicControl)) then
-      case Align of
-        alLeft, alRight: inc(Result, Ctrl.Controls[i].Width);
-        alTop, alBottom: inc(Result, Ctrl.Controls[i].Height);
-      end;
+  with Ctrl do
+    for i := 0 to ControlCount - 1 do
+      if Controls[i].Visible and (Controls[i].Align = Align) and (GraphCtrlsToo or not (Controls[i] is TGraphicControl)) then
+        case Align of
+          alLeft, alRight: inc(Result, Controls[i].Width);
+          alTop, alBottom: inc(Result, Controls[i].Height);
+        end;
 end;
 
 
@@ -2458,7 +2617,7 @@ begin
 
   DC := GetDC(0);
   try
-    if GetWindowLong(FormHandle, GWL_EXSTYLE) and WS_EX_LAYERED <> WS_EX_LAYERED then begin
+    if GetWindowLong(FormHandle, GWL_EXSTYLE) and WS_EX_LAYERED = 0 then begin
       if not AeroIsEnabled then
         SetWindowLong(FormHandle, GWL_STYLE, GetWindowLong(FormHandle, GWL_STYLE) and not WS_VISIBLE);
 
@@ -2493,14 +2652,13 @@ end;
 
 
 initialization
-  {$IFDEF DELPHI_XE2}
-    acThemeServices := StyleServices;
-  {$ELSE}
-    {$IFDEF DELPHI7UP}
-    acThemeServices := ThemeServices;
-    {$ENDIF}
+{$IFDEF DELPHI_XE2}
+  acThemeServices := StyleServices;
+{$ELSE}
+  {$IFDEF DELPHI7UP}
+  acThemeServices := ThemeServices;
   {$ENDIF}
-
+{$ENDIF}
   uxthemeLib := LoadLibrary('UXTHEME');
   if uxthemeLib <= HINSTANCE_ERROR then
     uxthemeLib := 0;

@@ -142,7 +142,8 @@ const
   s_EditBGAlert          = 'EDITBG_ALERT';
 
   // Standard SkinSections
-  s_Transparent          = 'TRANSPARENT'; // Special fully transparent section    
+  s_MainColor            = 'MAINCOLOR';   // Just filled by main skin color     
+  s_Transparent          = 'TRANSPARENT'; // Special fully transparent section
 
   s_Caption              = 'CAPTION';
   s_FormTitle            = 'FORMTITLE';
@@ -246,6 +247,7 @@ const
 //  s_Unknown              = 'UNKNOWN';
 
   s_MasterBitmap         = 'MASTERBITMAP';
+  s_Preview              = 'PREVIEW';
   s_CheckGlyph           = 'CHECK';
   s_CheckBoxChecked      = 'BOXCHECKED';
   s_CheckBoxUnChecked    = 'BOXUNCHECKED';

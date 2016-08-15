@@ -143,16 +143,16 @@ begin
     FCalc.Position := poDesigned;
     FCalc.Top := TopPos;
   end;
-  if (DefaultManager <> nil) and DefaultManager.Active then begin
+  if (DefaultManager <> nil) and DefaultManager.CommonSkinData.Active then begin
     FCalc.FDisplayPanel.BorderStyle := bsNone;
     FCalc.FMainPanel.BorderStyle := bsNone;
   end;
   M.Msg := SM_ALPHACMD;
   M.LParam := LPARAM(DefaultManager);
   M.Result := 0;
-  M.WParam := MakeWParam(0, AC_SETNEWSKIN);
+  M.WParam := AC_SETNEWSKIN_HI;
   AlphaBroadCast(FCalc, M);
-  M.WParam := MakeWParam(0, AC_REFRESH);
+  M.WParam := AC_REFRESH_HI;
   AlphaBroadCast(FCalc, M);
   if (FScaleIncrement <> 0) and not Scaled then begin
     FCalc.ScaleBy(100 + FScaleIncrement, 100);

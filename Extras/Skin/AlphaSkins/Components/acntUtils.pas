@@ -1,5 +1,6 @@
 unit acntUtils;
 {$I sDefs.inc}
+//+
 
 interface
 
@@ -29,13 +30,13 @@ procedure Alert; overload;
 procedure Alert(const s: string); overload;
 procedure Alert(const i: integer); overload;
 function CustomRequest(const s: string): boolean;
-function DeleteRequest: boolean;
+function DeleteRequest: boolean; {$IFDEF WARN_DEPRECATED} deprecated; {$ENDIF}
 { Show message with icon mtWarning}
 procedure ShowWarning(const S: string);
 { Show message with icon mtError}
 procedure ShowError(const s: string);
 function IsNTFamily: boolean;
-function MakeCacheInfo(const Bmp: TBitmap; const x: integer = 0; const y: integer = 0): TCacheInfo;
+function MakeCacheInfo(const aBmp: TBitmap; const xOffs: integer = 0; const yOffs: integer = 0): TCacheInfo;
 function AddChar(const C: AnsiChar; const S: AnsiString; const N: Integer): AnsiString;
 function acCharIn(const C: acChar; const SysCharSet: TSysCharSet): Boolean;
 { Returns formated string, represented float value}
@@ -49,7 +50,7 @@ function ReadIniString(IniList, SectionsList: TStringList; const Section, Ident,
 function ReadIniInteger(IniList, SectionsList: TStringList; const Section, Ident: string; Default: Longint): Longint;
 function ReadRegInt(Key: HKEY; const Section, Named: string): integer;
 
-function MakeMessage(const Msg: Longint; const WParam: WPARAM; const LParam: LPARAM; const aResult: LRESULT): TMessage;
+function MakeMessage(const aMsg: Longint; const aWParam: WPARAM; const aLParam: LPARAM; const aResult: LRESULT): TMessage;
 { Returns percent i2 of i1}
 function SumTrans(const i1, i2: integer): integer;
 { Returns max value from i1 and i2}
@@ -60,6 +61,7 @@ function Mini(const i1, i2: integer): integer;
 function LimitIt(const Value, MinValue, MaxValue: integer): integer;
 { Returns True if Value is valid float}
 function IsValidFloat(const Value: AnsiString; var RetValue: Extended): Boolean;
+function IsValidIndex(Value, Amount: integer; First: integer = 0): Boolean;
 
 function acGetAnimation: Boolean;
 procedure acSetAnimation(const Value: Boolean);
@@ -92,7 +94,6 @@ function iff(const L: boolean; const s1, s2: string): string; overload;
 function iff(const L: boolean; const o1, o2: TObject): TObject; overload;
 function iff(const L: boolean; const i1, i2: integer): integer; overload;
 function iff(const L: boolean; const b1, b2: boolean): boolean; overload;
-function iffi(const L: boolean; const i1, i2: integer): integer; {$IFDEF WARN_DEPRECATED} deprecated; {$ENDIF}
 { Returns position of word number N in string S. WordDelims - chars, word delimiters}
 function acWordPosition(const N: Integer; const S: acString; const WordDelims: TSysCharSet): Integer;
 function WordPosition(const N: Integer; const S: AnsiString; const WordDelims: TSysCharSet): Integer;
@@ -196,7 +197,7 @@ uses
   Dialogs, Math, TypInfo, Registry,
   {$IFDEF TNTUNICODE} TntSystem, TntWindows, TntWideStrUtils,{$ENDIF}
   {$IFNDEF ALITE}sDialogs, {$ENDIF}
-  sSkinProvider;
+  sSkinProvider, acntTypes;
 
 
 var
@@ -206,22 +207,10 @@ var
 
 function GetCaptionFontSize: integer;
 var
-{$IFDEF TNTUNICODE}
-  NonClientMetrics: TNonClientMetricsW;
-{$ELSE}
-  NonClientMetrics: TNonClientMetrics;
-{$ENDIF}
+  NonClientMetrics: {$IFDEF TNTUNICODE}TNonClientMetricsW{$ELSE}TNonClientMetrics{$ENDIF};
 begin
-{$IFDEF D2010}
-  NonClientMetrics.cbSize := TNonClientMetrics.SizeOf;
-{$ELSE}
-  NonClientMetrics.cbSize := SizeOf(NonClientMetrics);
-{$ENDIF}
-{$IFDEF TNTUNICODE}
-  if SystemParametersInfoW(SPI_GETNONCLIENTMETRICS, 0, @NonClientMetrics, 0) then
-{$ELSE}
-  if SystemParametersInfo(SPI_GETNONCLIENTMETRICS, 0, @NonClientMetrics, 0) then 
-{$ENDIF}
+  NonClientMetrics.cbSize := {$IFDEF D2010}TNonClientMetrics.SizeOf{$ELSE}SizeOf(NonClientMetrics){$ENDIF};
+  if {$IFDEF TNTUNICODE}SystemParametersInfoW{$ELSE}SystemParametersInfo{$ENDIF}(SPI_GETNONCLIENTMETRICS, 0, @NonClientMetrics, 0) then
     Result := NonClientMetrics.lfCaptionFont.lfHeight
   else
     Result := 0;
@@ -230,17 +219,9 @@ end;
 
 function acGetTitleFont: hFont;
 var
-{$IFDEF TNTUNICODE}
-  NonClientMetrics: TNonClientMetricsW;
-{$ELSE}
-  NonClientMetrics: TNonClientMetrics;
-{$ENDIF}
+  NonClientMetrics: {$IFDEF TNTUNICODE}TNonClientMetricsW{$ELSE}TNonClientMetrics{$ENDIF};
 begin
-{$IFDEF D2010}
-  NonClientMetrics.cbSize := TNonClientMetrics.SizeOf;
-{$ELSE}
-  NonClientMetrics.cbSize := SizeOf(NonClientMetrics);
-{$ENDIF}
+  NonClientMetrics.cbSize := {$IFDEF D2010}TNonClientMetrics.SizeOf{$ELSE}SizeOf(NonClientMetrics){$ENDIF};
 {$IFDEF TNTUNICODE}
   if SystemParametersInfoW(SPI_GETNONCLIENTMETRICS, 0, @NonClientMetrics, 0) then
     Result := CreateFontIndirectW(NonClientMetrics.lfCaptionFont)
@@ -257,34 +238,34 @@ function HexToInt(HexStr: AnsiString): Int64;
 var
   i: byte;
 begin
-  if HexStr = '' then begin
-    Result := 0;
-    Exit;
-  end;
-  HexStr := UpperCase(HexStr);
-  if HexStr[length(HexStr)] = 'H' then
-    Delete(HexStr,length(HexStr),1);
+  if HexStr <> '' then begin
+    HexStr := UpperCase(HexStr);
+    if HexStr[length(HexStr)] = 'H' then
+      Delete(HexStr,length(HexStr),1);
 
-  Result := 0;
-  for i := 1 to length(HexStr) do begin
-    Result := Result shl 4;
-    if CharInSet(HexStr[i], [ZeroChar..'9']) then
-      Result := Result + (byte(HexStr[i]) - 48)
-    else
-      if CharInSet(HexStr[i], ['A'..'F']) then
-        Result := Result + (byte(HexStr[i]) - 55)
-      else begin
-        Result := 0;
-        break;
-      end;
-  end;
+    Result := 0;
+    for i := 1 to length(HexStr) do begin
+      Result := Result shl 4;
+      if CharInSet(HexStr[i], [ZeroChar..'9']) then
+        Result := Result + (byte(HexStr[i]) - 48)
+      else
+        if CharInSet(HexStr[i], ['A'..'F']) then
+          Result := Result + (byte(HexStr[i]) - 55)
+        else begin
+          Result := 0;
+          break;
+        end;
+    end;
+  end
+  else
+    Result := 0;
 end;
 
 
 procedure GetIniSections(const IniList, SectionsList: TStringList);
 var
-  I: Integer;
   S: string;
+  I: Integer;
   Strings: TStrings;
 begin
   SectionsList.Clear;
@@ -374,27 +355,14 @@ begin
 end;
 
 
-function StringToFloat(S: String): Extended;
-var
-  E, i: Integer;
+function MakeMessage(const aMsg: Longint; const aWParam: WPARAM; const aLParam: LPARAM; const aResult: LRESULT): TMessage;
 begin
-  s := Trim(s);
-  for i := 1 to Length(s) do
-    if S[i] = s_Comma then
-      S[i] := s_Dot;
-
-  Val(S, Result, E);
-  if E <> 0 then
-    Result := 0;
-end;
-
-
-function MakeMessage(const Msg: Longint; const WParam: WPARAM; const LParam: LPARAM; const aResult: LRESULT): TMessage;
-begin
-  Result.Msg := Msg;
-  Result.WParam := WParam;
-  Result.LParam := LParam;
-  Result.Result := aResult;
+  with Result do begin
+    Msg := aMsg;
+    WParam := aWParam;
+    LParam := aLParam;
+    Result := aResult;
+  end;
 end;
 
 
@@ -413,15 +381,6 @@ begin
     Result := o1
   else
     Result := o2;
-end;
-
-
-function iffi(const L: boolean; const i1, i2: integer): integer;
-begin
-  if l then
-    Result := i1
-  else
-    Result := i2;
 end;
 
 
@@ -512,6 +471,11 @@ begin
 end;
 
 
+function IsValidIndex(Value, Amount: integer; First: integer = 0): Boolean;
+begin
+  Result := (Value >= First) and (Value < Amount);
+end;
+
 function FormatFloatStr(const S: AnsiString; const Thousands: Boolean): string;
 var
   I, MaxSym, MinSym, Group: Integer;
@@ -572,11 +536,8 @@ end;
 
 function RectIsVisible(const ParentRect, Rect: TRect): boolean;
 begin
-  Result := (Rect.Bottom > ParentRect.Top) and
-            (Rect.Right > ParentRect.Left) and
-            (Rect.Left < ParentRect.Right) and
-            (Rect.Top < ParentRect.Bottom) and
-            not IsRectEmpty(Rect);
+  with TSrcRect(ParentRect), TDstRect(Rect) do
+    Result := (DBottom > STop) and (DRight > SLeft) and (DLeft < SRight) and (DTop < SBottom) and not IsRectEmpty(Rect);
 end;
 
 
@@ -592,21 +553,23 @@ function RotateRect(R: TRect): TRect;
 var
   i: integer;
 begin
-  i := R.left;
-  R.left := R.top;
-  R.top := i;
-  i := R.right;
-  R.right := R.bottom;
-  R.bottom := i;
+  with R do begin
+    i := left;
+    left := top;
+    top := i;
+    i := right;
+    right := bottom;
+    bottom := i;
+  end;
   Result := R;
 end;
 
 
 function RectsAnd(const R1, R2: TRect): TRect;
 begin
-  Result.Left   := max(R1.Left, R2.Left);
-  Result.Top    := max(R1.Top, R2.Top);
-  Result.Right  := min(R1.Right, R2.Right);
+  Result.Left   := max(R1.Left,   R2.Left);
+  Result.Top    := max(R1.Top,    R2.Top);
+  Result.Right  := min(R1.Right,  R2.Right);
   Result.Bottom := min(R1.Bottom, R2.Bottom);
 end;
 
@@ -862,7 +825,7 @@ end;
 
 function MakeStr(C: AnsiChar; N: Integer): AnsiString;
 begin
-  if N < 1 then
+  if N <= 0 then
     Result := ''
   else begin
     SetLength(Result, N);
@@ -971,14 +934,16 @@ begin
 end;
 
 
-function MakeCacheInfo(const Bmp: TBitmap; const x: integer = 0; const y: integer = 0): TCacheInfo;
+function MakeCacheInfo(const aBmp: TBitmap; const xOffs: integer = 0; const yOffs: integer = 0): TCacheInfo;
 begin
-  Result.Bmp := Bmp;
-  Result.FillColor := clFuchsia;
-  Result.FillRect := MkRect;
-  Result.X := X;
-  Result.Y := Y;
-  Result.Ready := True;
+  with Result do begin
+    Bmp := aBmp;
+    FillColor := clFuchsia;
+    FillRect := MkRect;
+    X := xOffs;
+    Y := yOffs;
+    Ready := True;
+  end;
 end;
 
 
@@ -999,31 +964,19 @@ end;
 
 function CustomRequest(const s: string): boolean;
 begin
-{$IFNDEF ALITE}
-  Result := sMessageDlg(s, mtConfirmation, [mbYes, mbNo], 0) = mrYes;
-{$ELSE}
-  Result := MessageDlg (s, mtConfirmation, [mbYes, mbNo], 0) = mrYes;
-{$ENDIF}
+  Result := {$IFNDEF ALITE}sMessageDlg{$ELSE}MessageDlg{$ENDIF}(s, mtConfirmation, [mbYes, mbNo], 0) = mrYes;
 end;
 
 
 procedure ShowWarning(const s: string);
 begin
-{$IFNDEF ALITE}
-  sMessageDlg(s, mtWarning, [mbOk], 0);
-{$ELSE}
-  MessageDlg (s, mtWarning, [mbOk], 0);
-{$ENDIF}
+  {$IFNDEF ALITE}sMessageDlg{$ELSE}MessageDlg{$ENDIF}(s, mtWarning, [mbOk], 0);
 end;
 
 
 procedure ShowError(const s: string);
 begin
-{$IFNDEF ALITE}
-  sMessageDlg(s, mtError, [mbOk], 0);
-{$ELSE}
-  MessageDlg (s, mtError, [mbOk], 0);
-{$ENDIF}
+  {$IFNDEF ALITE}sMessageDlg{$ELSE}MessageDlg{$ENDIF}(s, mtError, [mbOk], 0);
 end;
 
 
@@ -1034,7 +987,7 @@ begin
   FirstTickCount := GetTickCount;
   repeat
     Application.ProcessMessages
-  until ((GetTickCount - FirstTickCount) >= DWord(MSecs));
+  until GetTickCount - FirstTickCount >= DWord(MSecs);
 end;
 
 
@@ -1138,7 +1091,7 @@ begin
     I := Integer(GetOrdProp(Component, PropInfo));
     s := SetToString(PropInfo, I);
     if Value then begin
-      if pos(s, ValueName) < 1 then begin
+      if pos(s, ValueName) <= 0 then begin
         s := s + s_Comma + ValueName;
         SetSetProp(Component, PropInfo, s);
       end;
@@ -1194,7 +1147,7 @@ begin
     if Result[Length(Result)] = '/' then
       Result[Length(Result)] := s_Slash
     else
-      if (Length(Result) = 1) then
+      if Length(Result) = 1 then
         Result := Result + ':\'
       else
         Result := Result + s_Slash;
@@ -1203,21 +1156,13 @@ end;
 
 function acFindNextFile(hFindFile: THandle; var lpFindFileData: TacWIN32FindData): BOOL;
 begin
-{$IFDEF TNTUNICODE}
-  Result := Tnt_FindNextFileW(hFindFile, lpFindFileData);
-{$ELSE}
-  Result := FindNextFile(hFindFile, lpFindFileData);
-{$ENDIF}
+  Result := {$IFDEF TNTUNICODE}Tnt_FindNextFileW{$ELSE}FindNextFile{$ENDIF}(hFindFile, lpFindFileData);
 end;
 
 
 function acFindFirstFile(lpFileName: PacChar; var lpFindFileData: TacWIN32FindData): THandle;
 begin
-{$IFDEF TNTUNICODE}
-  Result := Tnt_FindFirstFileW(lpFileName, lpFindFileData);
-{$ELSE}
-  Result := FindFirstFile(lpFileName, lpFindFileData);
-{$ENDIF}
+  Result := {$IFDEF TNTUNICODE}Tnt_FindFirstFileW{$ELSE}FindFirstFile{$ENDIF}(lpFileName, lpFindFileData);
 end;
 
 
@@ -1236,13 +1181,9 @@ function ValidFileName(const FileName: ACString): Boolean;
   end;
 
 begin
-  Result := (FileName <> '') and (not HasAny(FileName, '<>"|*?/'));
+  Result := (FileName <> '') and not HasAny(FileName, '<>"|*?/');
   if Result then
-{$IFDEF TNTUNICODE}
-    Result := Pos(s_Slash, WideExtractFileName(FileName)) = 0;
-{$else}
-    Result := Pos(s_Slash,     ExtractFileName(FileName)) = 0;
-{$ENDIF}
+    Result := Pos(s_Slash, {$IFDEF TNTUNICODE}WideExtractFileName{$else}ExtractFileName{$ENDIF}(FileName)) = 0;
 end;
 
 
@@ -1255,7 +1196,7 @@ var
 begin
   Result := False;
   Code := GetFileAttributes(PChar(Directory));
-  if Code <> INVALID_FILE_ATTRIBUTES then begin
+  if Code <> INVALID_FILE_ATTRIBUTES then
     if faSymLink and Code = 0 then
       Result := faDirectory and Code <> 0
     else
@@ -1277,8 +1218,7 @@ begin
           end
           else
             Result := True;
-        end;
-  end
+        end
   else begin
     LastError := GetLastError;
     Result := not (LastError in [ERROR_FILE_NOT_FOUND, ERROR_PATH_NOT_FOUND, ERROR_INVALID_NAME, ERROR_BAD_NETPATH, ERROR_NOT_READY]);
@@ -1299,34 +1239,24 @@ var
 {$ENDIF}
 begin
 {$R-}
-
 {$IFDEF TNTUNICODE}
   Code := Tnt_GetFileAttributesW(PACChar(Name));
   Result := (Code <> -1) and (FILE_ATTRIBUTE_DIRECTORY and Code <> 0);
 {$ELSE}
   {$IFDEF DELPHI7UP}
-    {$IFDEF DELPHI_XE}
-  Result := FixedDirectoryExists(Name);
-    {$ELSE}
-  Result := DirectoryExists(Name);
-    {$ENDIF}
+    Result := {$IFDEF DELPHI_XE}FixedDirectoryExists{$ELSE}DirectoryExists{$ENDIF}(Name);
   {$ELSE}
-  Code := GetFileAttributes(PACChar(Name));
-  Result := (Code <> -1) and (FILE_ATTRIBUTE_DIRECTORY and Code <> 0);
+    Code := GetFileAttributes(PACChar(Name));
+    Result := (Code <> -1) and (FILE_ATTRIBUTE_DIRECTORY and Code <> 0);
   {$ENDIF}
 {$ENDIF}
-
 {$R+}
 end;
 
 
 function ShortToLongFileName(const ShortName: ACString): ACString;
 var
-{$IFDEF TNTUNICODE}
-  Temp: TWin32FindDataW;
-{$ELSE}
-  Temp: TWin32FindDataA;
-{$ENDIF}
+  Temp: {$IFDEF TNTUNICODE}TWin32FindDataW{$ELSE}TWin32FindDataA{$ENDIF};
   SearchHandle: THandle;
 begin
 {$IFDEF TNTUNICODE}
@@ -1348,11 +1278,7 @@ end;
 
 function LongToShortFileName(const LongName: ACstring): ACString;
 var
-{$IFDEF TNTUNICODE}
-  Temp: TWin32FindDataW;
-{$ELSE}
-  Temp: TWin32FindDataA;
-{$ENDIF}
+  Temp: {$IFDEF TNTUNICODE}TWin32FindDataW{$ELSE}TWin32FindDataA{$ENDIF};
   SearchHandle: THandle;
 begin
 {$IFDEF TNTUNICODE}
@@ -1374,28 +1300,19 @@ end;
 
 function ShortToLongPath(const ShortName: ACString): ACString;
 var
-  TempPathPtr: PACChar;
-  LastSlash: PACChar;
+  TempPathPtr, LastSlash: PACChar;
   s: acString;
 begin
   Result := '';
   s := ShortName;
   UniqueString(s);
   TempPathPtr := PACChar(s);
-{$IFDEF TNTUNICODE}
-  LastSlash := WStrRScan(TempPathPtr, s_Slash);
-{$ELSE}
-  LastSlash := StrRScan(TempPathPtr, s_Slash);
-{$ENDIF}
+  LastSlash := {$IFDEF TNTUNICODE}WStrRScan{$ELSE}StrRScan{$ENDIF}(TempPathPtr, s_Slash);
   while LastSlash <> nil do begin
     Result := s_Slash + ShortToLongFileName(TempPathPtr) + Result;
     if LastSlash <> nil then begin
       LastSlash^ := #0;
-{$IFDEF TNTUNICODE}
-      LastSlash := WStrRScan(TempPathPtr, s_Slash);
-{$ELSE}
-      LastSlash := StrRScan(TempPathPtr, s_Slash);
-{$ENDIF}
+      LastSlash := {$IFDEF TNTUNICODE}WStrRScan{$ELSE}StrRScan{$ENDIF}(TempPathPtr, s_Slash);
     end;
   end;
   Result := TempPathPtr + Result;
@@ -1404,8 +1321,7 @@ end;
 
 function LongToShortPath(const LongName: ACString): ACString;
 var
-  TempPathPtr: PACChar;
-  LastSlash: PACChar;
+  TempPathPtr, LastSlash: PACChar;
   s: acString;
 begin
   Result := '';
@@ -1455,7 +1371,7 @@ end;
 function acSetCurrentDir(const DirName: ACString): Boolean;
 begin
 {$IFDEF TNTUNICODE}
-  Result := Tnt_SetCurrentDirectoryW(PACChar(DirName) );
+  Result := Tnt_SetCurrentDirectoryW(PACChar(DirName));
 {$else}
   Result := SetCurrentDirectory(PacChar(DirName));
 {$ENDIF}
@@ -1536,11 +1452,11 @@ begin
     DosCode := acFindFirst(NormalDir(Path) + '*.*', faAnyFile, FileInfo);
     try
       while DosCode = 0 do begin
-        if (FileInfo.Name[1] <> s_Dot) then begin
-          if (FileInfo.Attr and faDirectory = faDirectory) then
+        if FileInfo.Name[1] <> s_Dot then begin
+          if FileInfo.Attr and faDirectory <> 0 then
             Result := ClearDir(NormalDir(Path) + FileInfo.Name, Delete) and Result
           else
-            if (FileInfo.Attr and faReadOnly = faReadOnly) then
+            if FileInfo.Attr and faReadOnly <> 0 then
               acFileSetAttr(NormalDir(Path) + FileInfo.Name, faArchive);
 
             Result := acDeleteFile(NormalDir(Path) + FileInfo.Name) and Result;
@@ -1615,19 +1531,19 @@ procedure acFillString(var S: acString; const nCount: Integer; const C: acChar);
 var
   i: Integer;
 begin
-  if nCount < 1 then
+  if nCount <= 0 then
     S := ''
   else begin
     if Length(S) <> nCount then
       SetLength(S, nCount);
 
-    for i:=1 to nCount do
-      S[i]:=C;
+    for i := 1 to nCount do
+      S[i] := C;
   end;
 end;
 {$ELSE}
 begin
-  if nCount < 1 then
+  if nCount <= 0 then
     S := ''
   else begin
     if Length(S) <> nCount then
@@ -1671,6 +1587,7 @@ initialization
       x64woAero := True;
   end;
   InitSysProc;
+
 
 finalization
   if hKern32 <> 0 then

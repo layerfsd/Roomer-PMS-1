@@ -1,7 +1,7 @@
 unit sTabControl;
 {$I sDefs.inc}
 //{$DEFINE LOGGED}
-
+//+
 interface
 
 uses
@@ -62,7 +62,7 @@ begin
   TabDC := 0;
   SkinData.FUpdating := SkinData.Updating;
   if not SkinData.FUpdating then begin
-    if (Message.Unused = 1) or InAnimationProcess or (SkinData.CtrlSkinState and ACS_PRINTING = ACS_PRINTING) then
+    if (Message.Unused = 1) or InAnimationProcess or (SkinData.CtrlSkinState and ACS_PRINTING <> 0) then
       DC := Message.DC
     else begin
       DC := GetDC(Handle);
@@ -71,12 +71,6 @@ begin
     try
       // If transparent and form resizing processed
       SkinData.BGChanged := True;
-{
-      if SkinData.SkinSection = s_PageControl then
-        SkinData.SkinIndex := SkinData.SkinManager.GetSkinIndex(s_PageControl + sTabPositions[TabPosition])
-      else
-        SkinData.SkinIndex := SkinData.SkinManager.GetSkinIndex(SkinData.SkinSection);
-}
       CI := GetParentCache(SkinData);
       if SkinData.BGChanged then begin
         InitCacheBmp(SkinData);
@@ -129,31 +123,29 @@ var
   Wnd: HWND;
   sp: TacSkinParams;
 begin
-  if (csLoading in ComponentState) or (csCreating in ControlState) then
-    Exit;
+  if not (csLoading in ComponentState) and not (csCreating in ControlState) then
+    if FCommonData.Skinned and HandleAllocated then begin
+      Wnd := FindWindowEx(Handle, 0, 'msctls_updown32', nil);
+      if Wnd <> 0 then begin
+        if BtnSW <> nil then
+          FreeAndNil(BtnSW);
 
-  if FCommonData.Skinned and HandleAllocated then begin
-    Wnd := FindWindowEx(Handle, 0, 'msctls_updown32', nil);
-    if Wnd <> 0 then begin
-      if BtnSW <> nil then
-        FreeAndNil(BtnSW);
-
-      sp.SkinSection := s_UpDown;
-      sp.Control := nil;
-      BtnSW := TacSpinWnd.Create(Wnd, nil, SkinData.SkinManager, sp);
-    end
-    else
-      if BtnSW <> nil then
-        FreeAndNil(BtnSW);
-  end;
+        sp.SkinSection := s_UpDown;
+        sp.Control := nil;
+        BtnSW := TacSpinWnd.Create(Wnd, nil, SkinData.SkinManager, sp);
+      end
+      else
+        if BtnSW <> nil then
+          FreeAndNil(BtnSW);
+    end;
 end;
 
 
 constructor TsTabControl.Create(AOwner: TComponent);
 begin
-  inherited Create(AOwner);
   FCommonData := TsCommonData.Create(Self, True);
   FCommonData.COC := COC_TsTabControl;
+  inherited Create(AOwner);
   BtnSW := nil;
   CurItem := -1;
 end;
@@ -161,9 +153,7 @@ end;
 
 destructor TsTabControl.Destroy;
 begin
-  if Assigned(FCommonData) then
-    FreeAndNil(FCommonData);
-
+  FreeAndNil(FCommonData);
   if BtnSW <> nil then
     FreeAndNil(BtnSW);
 
@@ -183,7 +173,7 @@ var
   pFont: PLogFontA;
   i, h, w, iHeight, iWidth: integer;
   CI: TCacheInfo;
-  TabsCovering, TabSkinIndex, TabMask, TabState: integer;
+  TabsCovering, TabSkinIndex, {TabMask, }TabState: integer;
   TabSection: string;
   TempBmp: Graphics.TBitmap;
   SavedDC,MaskDC: hdc;
@@ -228,216 +218,216 @@ var
   end;
 
 begin
-  if (Index = -1) then
-    Exit;
+  if Index >= 0 then begin
+    bFont := LongWord(SendMessage(Handle, WM_GETFONT, 0, 0));
+    cFont := SelectObject(Bmp.Canvas.Handle, bFont);
 
-  bFont := LongWord(SendMessage(Handle, WM_GETFONT, 0, 0));
-  cFont := SelectObject(Bmp.Canvas.Handle, bFont);
+    R := SkinTabRect(Index, Index = TabIndex);
+    if (State = 1) and (R.Left < 0) then
+      Exit;
 
-  R := SkinTabRect(Index, Index = TabIndex);
-  if (State = 1) and (R.Left < 0) then
-    Exit;
+    rText := SkinTabRect(Index, (State = 2) and (Index = TabIndex));
+    aRect := rText;
 
-  rText := SkinTabRect(Index, (State = 2) and (Index = TabIndex));
-  aRect := rText;
+    ItemData.mask := TCIF_IMAGE or TCIF_STATE or TCIF_TEXT;
+    ItemData.dwStateMask := TCIF_STATE;
+    ItemData.pszText := Buffer;
+    ItemData.cchTextMax := SizeOf(Buffer);
 
-  ItemData.mask := TCIF_IMAGE or TCIF_STATE or TCIF_TEXT;
-  ItemData.dwStateMask := TCIF_STATE;
-  ItemData.pszText := Buffer;
-  ItemData.cchTextMax := SizeOf(Buffer);
+  {$IFDEF TNTUNICODE}
+    SendMessage(Handle, TCM_GETITEMW, Index, LPARAM(@ItemData));
+  {$ELSE}
+    SendMessage(Handle, TCM_GETITEM, Index, LPARAM(@ItemData));
+  {$ENDIF}
+    lCaption := Buffer;
+    TabsCovering := 0;
+    // Tabs drawing
+    with SkinData.SkinManager do
+      if ConstData.Tabs[tlSingle][asTop].SkinIndex >= 0 then begin // new style
+        TabState := State;
+        case Style of
+          tsTabs: begin
+            TabSkinIndex := ConstData.Tabs[tlSingle][acTabSides[TabPosition]].SkinIndex;
+//            TabMask      := ConstData.Tabs[tlSingle][acTabSides[TabPosition]].MaskIndex;
+            TabSection   := ConstData.Tabs[tlSingle][acTabSides[TabPosition]].SkinSection;
+            TabsCovering := CommonSkinData.TabsCovering;
+          end;
 
-{$IFDEF TNTUNICODE}
-  SendMessage(Handle, TCM_GETITEMW, Index, LPARAM(@ItemData));
-{$ELSE}
-  SendMessage(Handle, TCM_GETITEM, Index, LPARAM(@ItemData));
-{$ENDIF}
-  lCaption := Buffer;
-  TabsCovering := 0;
-  // Tabs drawing
-  with SkinData.SkinManager do
-    if ConstData.Tabs[tlSingle][asTop].SkinIndex > 0 then begin // new style
-      TabState := State;
-      case Style of
-        tsTabs: begin
-          TabSkinIndex := ConstData.Tabs[tlSingle][acTabSides[TabPosition]].SkinIndex;
-          TabMask      := ConstData.Tabs[tlSingle][acTabSides[TabPosition]].MaskIndex;
-          TabSection   := ConstData.Tabs[tlSingle][acTabSides[TabPosition]].SkinSection;
-          TabsCovering := CommonSkinData.TabsCovering;
+          tsButtons: begin
+            TabSection := s_Button;
+            TabSkinIndex := GetSkinIndex(TabSection);
+//            TabMask := GetMaskIndex(TabSection, s_BordersMask);
+          end
+
+          else begin
+            TabSection := s_ToolButton;
+            TabSkinIndex := GetSkinIndex(TabSection);
+//            TabMask := GetMaskIndex(TabSection, s_BordersMask);
+          end;
+        end;
+        if TabSkinIndex >= 0 then begin
+          if FCommonData.SkinManager.gd[TabSkinIndex].States <= TabState then
+            TabState := FCommonData.SkinManager.gd[TabSkinIndex].States - 1;
+
+//        if IsValidImgIndex(TabMask) then begin // Drawing of tab
+          TempBmp := CreateBmp32(aRect);
+          try
+            if (State = 2) and (Index = TabIndex) then
+              with OffsetPoint do begin
+                // Restore BG for Active tab
+                BitBlt(TempBmp.Canvas.Handle, aRect.Left + x, aRect.Top + y, TempBmp.Width, TempBmp.Height,
+                       SkinData.FCacheBmp.Canvas.Handle, aRect.Left, aRect.Top, SRCCOPY);
+                OffsetRect(R, X, Y);
+                BitBlt(TempBmp.Canvas.Handle, 0, 0, TempBmp.Width, TempBmp.Height,
+                       SkinData.FCacheBmp.Canvas.Handle, SkinTabRect(Index, Index = TabIndex).Left,
+                       SkinTabRect(Index, Index = TabIndex).Top, SRCCOPY);
+                // Paint active tab
+                BitBlt(Bmp.Canvas.Handle, aRect.Left + x, aRect.Top + y, TempBmp.Width, TempBmp.Height, TempBmp.Canvas.Handle, 0, 0, SRCCOPY);
+                CI := MakeCacheInfo(TempBmp);
+                PaintItem(TabSkinIndex, CI, True, TabState, MkRect(TempBmp),
+                          Point(0, 0), Bmp, SkinData.SkinManager);
+              end
+            else begin
+              CI := MakeCacheInfo(SkinData.FCacheBmp);
+              if State = 1 then
+                CI.X := 0;
+
+              PaintItem(TabSkinIndex, CI, True, TabState, MkRect(TempBmp), aRect.TopLeft, TempBmp, SkinData.SkinManager);
+              SavedDC := SaveDC(Bmp.Canvas.Handle);
+              R := PageRect;
+              if TabPosition in [tpLeft, tpTop] then
+                ExcludeClipRect(Bmp.Canvas.Handle, R.Left, R.Top, R.Right, R.Bottom);
+
+              BitBlt(Bmp.Canvas.Handle, aRect.Left + OffsetPoint.x, aRect.Top + OffsetPoint.y, TempBmp.Width, TempBmp.Height, TempBmp.Canvas.Handle, 0, 0, SRCCOPY);
+              RestoreDC(Bmp.Canvas.Handle, SavedDC);
+            end;
+          finally
+            FreeAndNil(TempBmp);
+          end;
+        end;
+      end
+      else
+        TabState := 0;
+    // End of tabs drawing
+    if not (OwnerDraw and Assigned(OnDrawTab)) then begin
+      // Drawing of the tab content
+      OffsetRect(rText, OffsetPoint.x, OffsetPoint.y);
+      R := rText;
+      InflateRect(R, -3, -3);
+      ImgList := SendMessage(Handle, TCM_GETIMAGELIST, 0, 0);
+      Bmp.Canvas.Font.Assign(Self.Font);
+      Flags := DT_CENTER or DT_SINGLELINE or DT_VCENTER;
+      if UseRightToLeftReading then
+        Flags := Flags or DT_RTLREADING;
+
+      if TabPosition in [tpTop, tpBottom] then begin
+        if TabsCovering > 0 then
+          InflateRect(R, -TabsCovering * 2, 0);
+      end
+      else
+        if TabsCovering > 0 then
+          InflateRect(R, 0, -TabsCovering * 2);
+
+      case TabPosition of
+        tpTop, tpBottom: begin
+          if (ImgList <> 0) and (ItemData.iImage >= 0) then begin
+            ImageList_GetIconSize(ImgList, w, h);
+            Images.Draw(Bmp.Canvas, rText.Left + (WidthOf(rText) - (acTextWidth(Bmp.Canvas, lCaption) + Images.Width + 8)) div 2,
+                        rText.Top + (HeightOf(rText) - Images.Height) div 2, ItemData.iImage, True);
+            inc(rText.Left, w);
+          end;
+          R := rText;
+          acWriteTextEx(Bmp.Canvas, PacChar(lCaption), True, rText, Flags, TabSkinIndex, TabState <> 0, SkinData.SkinManager);
         end;
 
-        tsButtons: begin
-          TabSection := s_Button;
-          TabSkinIndex := GetSkinIndex(TabSection);
-          TabMask := GetMaskIndex(TabSection, s_BordersMask);
-        end
+        tpLeft: begin
+          Bmp.Canvas.Brush.Style := bsClear;
+          MakeVertFont(-2700);
+          with acTextExtent(bmp.Canvas, lCaption) do begin
+            h := cx;
+            w := cy;
+          end;
+          if (ImgList <> 0) and (ItemData.iImage >= 0) then begin
+            ImageList_GetIconSize(ImgList, iWidth, iHeight);
+            if Index = TabIndex then
+              OffsetRect(rText, 2, 0);
 
-        else begin
-          TabSection := s_ToolButton;
-          TabSkinIndex := GetSkinIndex(TabSection);
-          TabMask := GetMaskIndex(TabSection, s_BordersMask);
-        end;
-      end;
-      if TabSkinIndex <> -1 then
-        if FCommonData.SkinManager.gd[TabSkinIndex].States <= TabState then
-          TabState := FCommonData.SkinManager.gd[TabSkinIndex].States - 1;
-
-      if IsValidImgIndex(TabMask) then begin // Drawing of tab
-        TempBmp := CreateBmp32(aRect);
-        try
-          if (State = 2) and (Index = TabIndex) then begin
-            // Restore BG for Active tab
-            BitBlt(TempBmp.Canvas.Handle, aRect.Left + OffsetPoint.x, aRect.Top + OffsetPoint.y, TempBmp.Width, TempBmp.Height,
-                   SkinData.FCacheBmp.Canvas.Handle, aRect.Left, aRect.Top, SRCCOPY);
-            OffsetRect(R, OffsetPoint.X, OffsetPoint.Y);
-            BitBlt(TempBmp.Canvas.Handle, 0, 0, TempBmp.Width, TempBmp.Height,
-                   SkinData.FCacheBmp.Canvas.Handle, SkinTabRect(Index, Index = TabIndex).Left,
-                   SkinTabRect(Index, Index = TabIndex).Top, SRCCOPY);
-            // Paint active tab
-            BitBlt(Bmp.Canvas.Handle, aRect.Left + OffsetPoint.x, aRect.Top + OffsetPoint.y, TempBmp.Width, TempBmp.Height, TempBmp.Canvas.Handle, 0, 0, SRCCOPY);
-            CI := MakeCacheInfo(TempBmp);
-            PaintItem(TabSkinIndex, CI, True, TabState, MkRect(TempBmp),
-                      Point(0, 0), Bmp, SkinData.SkinManager);
+            i := rText.Bottom - (HeightOf(rText) - (iHeight + 4 + h)) div 2 - iHeight;
+            Images.Draw(Bmp.Canvas, rText.Left + (WidthOf(rText) - Images.Width) div 2, i, ItemData.iImage, Enabled);
+            Bmp.Canvas.Brush.Style := bsClear;
+            acTextRect(bmp.Canvas, rText, rText.Left + (WidthOf(rText) - w) div 2, i - 4, lCaption);
+            InflateRect(rText, (w - WidthOf(rText)) div 2, (h - HeightOf(rText)) div 2 + 2);
+            OffsetRect(rText, 0, - (4 + h) div 2);
           end
           else begin
-            CI := MakeCacheInfo(SkinData.FCacheBmp);
-            if State = 1 then
-              CI.X := 0;
-
-            PaintItem(TabSkinIndex, CI, True, TabState, MkRect(TempBmp), aRect.TopLeft, TempBmp, SkinData.SkinManager);
-            SavedDC := SaveDC(Bmp.Canvas.Handle);
-            R := PageRect;
-            if TabPosition in [tpLeft, tpTop] then
-              ExcludeClipRect(Bmp.Canvas.Handle, R.Left, R.Top, R.Right, R.Bottom);
-
-            BitBlt(Bmp.Canvas.Handle, aRect.Left + OffsetPoint.x, aRect.Top + OffsetPoint.y, TempBmp.Width, TempBmp.Height, TempBmp.Canvas.Handle, 0, 0, SRCCOPY);
-            RestoreDC(Bmp.Canvas.Handle, SavedDC);
+            Bmp.Canvas.Brush.Style := bsClear;
+            acTextRect(Bmp.Canvas, rText, rText.Left + (WidthOf(rText) - w) div 2, rText.Bottom - (HeightOf(rText) - h) div 2, lCaption);
+            InflateRect(rText, (w - WidthOf(rText)) div 2, (h - HeightOf(rText)) div 2);
           end;
+          KillVertFont;
+        end;
+
+        tpRight: begin
+          Bmp.Canvas.Brush.Style := bsClear;
+          MakeVertFont(-900);
+          OffsetRect(rText, -2, -1);
+          with acTextExtent(bmp.Canvas, lCaption) do begin
+            h := cx;
+            w := cy;
+          end;
+          if (ImgList <> 0) and (ItemData.iImage >= 0) then begin
+            ImageList_GetIconSize(ImgList, iWidth, iHeight);
+            if Index = TabIndex then
+              OffsetRect(rText, 2, 0);
+
+            i := rText.Top + (HeightOf(rText) - (iHeight + 4 + h)) div 2;
+            Images.Draw(Bmp.Canvas, rText.Left + (WidthOf(rText) - Images.Width) div 2, i, ItemData.iImage, Enabled);
+            Bmp.Canvas.Brush.Style := bsClear;
+            acTextRect(Bmp.Canvas, rText, rText.Left + (WidthOf(rText) - w) div 2 + Bmp.Canvas.TextHeight(lCaption), i + 4 + iHeight, lCaption);
+            InflateRect(rText, (w - WidthOf(rText)) div 2, (h - HeightOf(rText)) div 2 + 2);
+            OffsetRect(rText, 0, + (4 + iHeight) div 2);
+          end
+          else begin
+            Bmp.Canvas.Brush.Style := bsClear;
+            acTextRect(Bmp.Canvas, rText, rText.Left + (WidthOf(rText) + w) div 2, rText.Top + (HeightOf(rText) - h) div 2, lCaption);
+            InflateRect(rText, (w - WidthOf(rText)) div 2, (h - HeightOf(rText)) div 2 + 2);
+          end;
+          KillVertFont;
+        end;
+      end;
+    end
+    else begin
+      Bmp.Canvas.Lock;
+      R := SkinTabRect(Index, Index = TabIndex);
+      InflateRect(R, -3, -3);
+      if Bmp <> SkinData.FCacheBmp then
+      begin
+        aRect :=TabsRect;
+        TempBmp := CreateBmp32(aRect);
+        MaskDC := CreateCompatibleDC(0);
+        try
+          TempBmp.Canvas.Lock;
+          TempBmp.Canvas.FillRect(aRect);
+          Canvas.Handle := TempBmp.Canvas.Handle;
+          OnDrawTab(Self, Index, R, Index = TabIndex);
+          TempBmp.Canvas.Unlock;
+          SelectObject(MaskDC, TempBmp.MaskHandle);
+          TransparentStretchBlt(Bmp.Canvas.Handle, 3, 3, WidthOf(R), HeightOf(R),
+            TempBmp.Canvas.Handle, R.Left, R.Top, WidthOf(R), HeightOf(R), MaskDC, R.Left, R.Top);
         finally
+          DeleteDC(MaskDC);
           FreeAndNil(TempBmp);
         end;
-      end;
-    end
-    else
-      TabState := 0;
-  // End of tabs drawing
-  if not (OwnerDraw and Assigned(OnDrawTab)) then begin
-    // Drawing of the tab content
-    OffsetRect(rText, OffsetPoint.x, OffsetPoint.y);
-    R := rText;
-    InflateRect(R, -3, -3);
-    ImgList := SendMessage(Handle, TCM_GETIMAGELIST, 0, 0);
-    Bmp.Canvas.Font.Assign(Self.Font);
-    Flags := DT_CENTER or DT_SINGLELINE or DT_VCENTER;
-    if UseRightToLeftReading then
-      Flags := Flags or DT_RTLREADING;
-
-    if TabPosition in [tpTop, tpBottom] then begin
-      if TabsCovering > 0 then
-        InflateRect(R, -TabsCovering * 2, 0);
-    end
-    else
-      if TabsCovering > 0 then
-        InflateRect(R, 0, -TabsCovering * 2);
-
-    case TabPosition of
-      tpTop, tpBottom: begin
-        if (ImgList <> 0) and (ItemData.iImage > -1) then begin
-          ImageList_GetIconSize(ImgList, w, h);
-          Images.Draw(Bmp.Canvas, rText.Left + (WidthOf(rText) - (acTextWidth(Bmp.Canvas, lCaption) + Images.Width + 8)) div 2,
-                      rText.Top + (HeightOf(rText) - Images.Height) div 2, ItemData.iImage, True);
-          inc(rText.Left, w);
-        end;
-        R := rText;
-        acWriteTextEx(Bmp.Canvas, PacChar(lCaption), True, rText, Flags, TabSkinIndex, TabState <> 0, SkinData.SkinManager);
-      end;
-
-      tpLeft: begin
-        Bmp.Canvas.Brush.Style := bsClear;
-        MakeVertFont(-2700);
-        with acTextExtent(bmp.Canvas, lCaption) do begin
-          h := cx;
-          w := cy;
-        end;
-        if (ImgList <> 0) and (ItemData.iImage > -1) then begin
-          ImageList_GetIconSize(ImgList, iWidth, iHeight);
-          if Index = TabIndex then
-            OffsetRect(rText, 2, 0);
-
-          i := rText.Bottom - (HeightOf(rText) - (iHeight + 4 + h)) div 2 - iHeight;
-          Images.Draw(Bmp.Canvas, rText.Left + (WidthOf(rText) - Images.Width) div 2, i, ItemData.iImage, Enabled);
-          Bmp.Canvas.Brush.Style := bsClear;
-          acTextRect(bmp.Canvas, rText, rText.Left + (WidthOf(rText) - w) div 2, i - 4, lCaption);
-          InflateRect(rText, (w - WidthOf(rText)) div 2, (h - HeightOf(rText)) div 2 + 2);
-          OffsetRect(rText, 0, - (4 + h) div 2);
-        end
-        else begin
-          Bmp.Canvas.Brush.Style := bsClear;
-          acTextRect(Bmp.Canvas, rText, rText.Left + (WidthOf(rText) - w) div 2, rText.Bottom - (HeightOf(rText) - h) div 2, lCaption);
-          InflateRect(rText, (w - WidthOf(rText)) div 2, (h - HeightOf(rText)) div 2);
-        end;
-        KillVertFont;
-      end;
-
-      tpRight: begin
-        Bmp.Canvas.Brush.Style := bsClear;
-        MakeVertFont(-900);
-        OffsetRect(rText, -2, -1);
-        with acTextExtent(bmp.Canvas, lCaption) do begin
-          h := cx;
-          w := cy;
-        end;
-        if (ImgList <> 0) and (ItemData.iImage > -1) then begin
-          ImageList_GetIconSize(ImgList, iWidth, iHeight);
-          if Index = TabIndex then
-            OffsetRect(rText, 2, 0);
-
-          i := rText.Top + (HeightOf(rText) - (iHeight + 4 + h)) div 2;
-          Images.Draw(Bmp.Canvas, rText.Left + (WidthOf(rText) - Images.Width) div 2, i, ItemData.iImage, Enabled);
-          Bmp.Canvas.Brush.Style := bsClear;
-          acTextRect(Bmp.Canvas, rText, rText.Left + (WidthOf(rText) - w) div 2 + Bmp.Canvas.TextHeight(lCaption), i + 4 + iHeight, lCaption);
-          InflateRect(rText, (w - WidthOf(rText)) div 2, (h - HeightOf(rText)) div 2 + 2);
-          OffsetRect(rText, 0, + (4 + iHeight) div 2);
-        end
-        else begin
-          Bmp.Canvas.Brush.Style := bsClear;
-          acTextRect(Bmp.Canvas, rText, rText.Left + (WidthOf(rText) + w) div 2, rText.Top + (HeightOf(rText) - h) div 2, lCaption);
-          InflateRect(rText, (w - WidthOf(rText)) div 2, (h - HeightOf(rText)) div 2 + 2);
-        end;
-        KillVertFont;
-      end;
-    end;
-  end
-  else begin
-    Bmp.Canvas.Lock;
-    R := SkinTabRect(Index, Index = TabIndex);
-    InflateRect(R, -3, -3);
-    if Bmp <> SkinData.FCacheBmp then
-    begin
-      aRect :=TabsRect;
-      TempBmp := CreateBmp32(aRect);
-      MaskDC := CreateCompatibleDC(0);
-      try
-        TempBmp.Canvas.Lock;
-        TempBmp.Canvas.FillRect(aRect);
-        Canvas.Handle := TempBmp.Canvas.Handle;
+      end
+      else
+      begin
+        Canvas.Handle := Bmp.Canvas.Handle;
         OnDrawTab(Self, Index, R, Index = TabIndex);
-        TempBmp.Canvas.Unlock;
-        SelectObject(MaskDC, TempBmp.MaskHandle);
-        TransparentStretchBlt(Bmp.Canvas.Handle, 3, 3, WidthOf(R), HeightOf(R),
-          TempBmp.Canvas.Handle, R.Left, R.Top, WidthOf(R), HeightOf(R), MaskDC, R.Left, R.Top);
-      finally
-        DeleteDC(MaskDC);
-        FreeAndNil(TempBmp);
       end;
-    end
-    else
-    begin
-      Canvas.Handle := Bmp.Canvas.Handle;
-      OnDrawTab(Self, Index, R, Index = TabIndex);
+      Bmp.Canvas.Unlock;
     end;
-    Bmp.Canvas.Unlock;
+    SelectObject(Bmp.Canvas.Handle, cFont);
   end;
-  SelectObject(Bmp.Canvas.Handle, cFont);
 end;
 
 
@@ -446,14 +436,13 @@ var
   aRect: TRect;
   TempBmp: TBitmap;
 begin
-  if (Index < 0) then
-    Exit;
-
-  aRect := SkinTabRect(Index, State = 2);
-  TempBmp := CreateBmp32(aRect);
-  DrawSkinTab(Index, State, TempBmp, Point(-aRect.Left, -aRect.Top));
-  BitBlt(DC, aRect.Left, aRect.Top, WidthOf(aRect), HeightOf(aRect), TempBmp.Canvas.Handle, 0, 0, SRCCOPY);
-  FreeAndNil(TempBmp);
+  if Index >= 0 then begin
+    aRect := SkinTabRect(Index, State = 2);
+    TempBmp := CreateBmp32(aRect);
+    DrawSkinTab(Index, State, TempBmp, Point(-aRect.Left, -aRect.Top));
+    BitBlt(DC, aRect.Left, aRect.Top, WidthOf(aRect), HeightOf(aRect), TempBmp.Canvas.Handle, 0, 0, SRCCOPY);
+    FreeAndNil(TempBmp);
+  end;
 end;
 
 
@@ -463,14 +452,15 @@ var
   aRect: TRect;
 begin
   aRect := TabsRect;
-  if not ci.Ready then begin
-    SkinData.FCacheBmp.Canvas.Brush.Style := bsSolid;
-    SkinData.FCacheBmp.Canvas.Brush.Color := CI.FillColor;
-    SkinData.FCacheBmp.Canvas.FillRect(aRect);
-  end
-  else
-    BitBlt(SkinData.FCacheBmp.Canvas.Handle, aRect.Left, aRect.Top, min(WidthOf(aRect), ci.Bmp.Width), min(HeightOf(aRect), ci.Bmp.Height),
-           ci.Bmp.Canvas.Handle, ci.X + Left + aRect.Left, ci.Y + Top + aRect.Top, SRCCOPY);
+  with SkinData.FCacheBmp.Canvas do
+    if not ci.Ready then begin
+      Brush.Style := bsSolid;
+      Brush.Color := CI.FillColor;
+      FillRect(aRect);
+    end
+    else
+      BitBlt(Handle, aRect.Left, aRect.Top, min(WidthOf(aRect), ci.Bmp.Width), min(HeightOf(aRect), ci.Bmp.Height),
+             ci.Bmp.Canvas.Handle, ci.X + Left + aRect.Left, ci.Y + Top + aRect.Top, SRCCOPY);
   // Draw tabs in special order
   rc := TabCtrl_GetRowCount(Handle);
   for Row := 1 to rc do
@@ -567,7 +557,7 @@ var
   aTabsCovering: integer;
 begin
   Result := MkRect;
-  if (Index > Tabs.Count - 1) or (Index < 0) or (Tabs.Count < 1) then
+  if not IsValidIndex(Index, Tabs.Count) or (Tabs.Count < 1) then
     Exit;
 
   Result := TabRect(Index);
@@ -575,7 +565,7 @@ begin
     Exit;
 
   aTabsCovering := 0;
-  if (Style = tsTabs) then
+  if Style = tsTabs then
     aTabsCovering := SkinData.SkinManager.CommonSkinData.TabsCovering;
 
   if Active then
@@ -696,19 +686,19 @@ begin
 
       AC_REMOVESKIN: begin
         if Message.LParam = LPARAM(SkinData.SkinManager) then begin
-          CommonWndProc(Message, FCommonData);
+          CommonMessage(Message, FCommonData);
           CheckUpDown;
           if BtnSW <> nil then
             FreeAndNil(BtnSW);
 
-          RedrawWindow(Handle, nil, 0, RDW_UPDATENOW or RDW_ALLCHILDREN or RDW_INVALIDATE or RDW_FRAME or RDW_ERASE);
+          RedrawWindow(Handle, nil, 0, RDWA_ALLNOW);
         end;
         AlphaBroadcast(Self, Message);
       end;
 
       AC_REFRESH:
-        if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
-          CommonWndProc(Message, FCommonData);
+        if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then begin
+          CommonMessage(Message, FCommonData);
           Repaint;
           SendMessage(Handle, WM_NCPAINT, 0, 0);
           CheckUpDown;
@@ -717,9 +707,9 @@ begin
         end;
 
       AC_SETNEWSKIN:
-        if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
+        if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then begin
           AlphaBroadcast(Self, Message);
-          CommonWndProc(Message, FCommonData);
+          CommonMessage(Message, FCommonData);
           Exit;
         end;
 
@@ -750,7 +740,7 @@ begin
 
       AC_GETBG:
         if SkinData.Skinned then begin
-          CommonWndProc(Message, SkinData);
+          CommonMessage(Message, SkinData);
           Exit;
         end;
     end;
@@ -794,7 +784,7 @@ begin
             end;
 
             CM_VISIBLECHANGED, WM_MOUSEWHEEL:
-              if FCommonData.Skinned and not (csReading in ComponentState) and not (csLoading in ComponentState) then begin
+              if FCommonData.Skinned and ([csReading, csLoading] * ComponentState = []) then begin
                 FCommonData.BGChanged := True;
                 Repaint;
                 if not FCommonData.Updating then
@@ -806,7 +796,7 @@ begin
                 FCommonData.FFocused := (Message.Msg = CM_ENTER) or (Message.Msg = WM_SETFOCUS);
                 FCommonData.FMouseAbove := False;
                 FCommonData.BGChanged := True;
-                if not (csReading in ComponentState) and not (csLoading in ComponentState) and not (csCreating in ControlState) then begin
+                if ([csReading, csLoading] * ComponentState = []) and not (csCreating in ControlState) then begin
                   Repaint;
                   SendMessage(Handle, WM_NCPAINT, 0, 0);
                   if not FCommonData.Updating then
@@ -824,7 +814,7 @@ begin
             WM_MOUSELEAVE, CM_MOUSELEAVE:
               if not (csDesigning in ComponentState) and HotTrack then begin
                 inherited;
-                if (CurItem <> -1) and (CurItem <> TabIndex) then
+                if (CurItem >= 0) and (CurItem <> TabIndex) then
                   if HotTrack then
                     RepaintTab(CurItem, 0);
 
@@ -837,22 +827,23 @@ begin
                 if (DefaultManager <> nil) and not (csDesigning in DefaultManager.ComponentState) then
                   DefaultManager.ActiveControl := 0;
 
-                b := (HotTrack or (Style <> tsTabs));
+                b := HotTrack or (Style <> tsTabs);
                 if b then begin
-                  p.x := TCMHitTest(Message).XPos; p.y := TCMHitTest(Message).YPos;
+                  p.x := TCMHitTest(Message).XPos;
+                  p.y := TCMHitTest(Message).YPos;
                   if PtInRect(TabsRect, p) then begin
                     Application.ProcessMessages;
                     NewItem := GetTabUnderMouse(p);
-                    if (NewItem <> CurItem) then begin // if changed
-                      if (CurItem <> -1) then begin
+                    if NewItem <> CurItem then begin // if changed
+                      if CurItem >= 0 then begin
                         if HotTrack then
                           if b then
                             RepaintTab(CurItem, 0);
                       end;
                       inherited;
                       CurItem := NewItem;
-                      if (CurItem <> -1) and HotTrack then
-                        if (TabIndex <> CurItem) then begin
+                      if (CurItem >= 0) and HotTrack then
+                        if TabIndex <> CurItem then begin
                           if b then
                             RepaintTab(CurItem, integer(HotTrack));
                         end
@@ -861,7 +852,7 @@ begin
                     end;
                   end
                   else
-                    if (CurItem <> -1) then begin
+                    if CurItem >= 0 then begin
                       if b then
                         RepaintTab(CurItem, 0);
 
@@ -891,11 +882,11 @@ begin
         CheckUpDown;
         GetWindowRect(Handle, R);
         if (WidthOf(R) < Width) or (HeightOf(R) < Height) then
-          RedrawWindow(Handle, nil, 0, RDW_FRAME or RDW_INVALIDATE or RDW_NOERASE or RDW_NOINTERNALPAINT or RDW_NOCHILDREN);
+          RedrawWindow(Handle, nil, 0, RDWA_NOCHILDREN);
       end;
 
       WM_MOVE:
-        if not (csReading in ComponentState) and not (csLoading in ComponentState) then
+        if [csReading, csLoading] * ComponentState = [] then
           Repaint;
     end;
 end;

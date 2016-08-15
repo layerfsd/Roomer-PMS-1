@@ -66,7 +66,7 @@ implementation
 
 uses
   TypInfo, ShlObj, ShellAPI,
-  acntUtils, acSBUtils, sSpeedButton, sSkinProps;
+  sThirdParty, acntUtils, acSBUtils, sSpeedButton, sSkinProps;
 
 {$R *.DFM}
 
@@ -154,28 +154,31 @@ end;
 
 function Btn_AutoSize(Btn: TsSpeedButton): Boolean;
 var
-  iL_BtnHeight: Integer;
+  iL_BtnHeight, iScalePercent: Integer;
   tL_TextSize: TSize;
 begin
-  Result := (False);
+  if Btn <> nil then begin
+    if Btn.SkinData.SkinManager <> nil then
+      iScalePercent := aScalePercents[Btn.SkinData.SkinManager.GetScale]
+    else
+      iScalePercent := 100;
 
-  if (Btn = NIL) then
-    Exit;
+    if (Btn.Margin < 0) then
+      Btn.Margin := 10 * iScalePercent div 100;
 
-  if (Btn.Margin < 0) then
-    Btn.Margin := (5);
+    tL_TextSize := (Btn.TextRectSize);
+    if Btn.Layout in [blGlyphTop, blGlyphBottom] then
+      iL_BtnHeight := (GetImageHeight(Btn.Images) + tL_TextSize.cy + Btn.Spacing * iScalePercent div 100 + (2 * Btn.Margin))
+    else
+      iL_BtnHeight := (Maxi(GetImageHeight(Btn.Images), tL_TextSize.cy) + (2 * Btn.Margin));
 
-  tL_TextSize := (Btn.TextRectSize);
-  // Unterstützung für Icons Top oder Bottom
-  if Btn.Layout in [blGlyphTop, blGlyphBottom] then
-    iL_BtnHeight := (Btn.Images.Height + tL_TextSize.cy + Btn.Spacing + (2 * Btn.Margin))
+    if (iL_BtnHeight <> Btn.Height) then
+      Btn.Height := iL_BtnHeight;
+
+    Result := True;
+  end
   else
-    iL_BtnHeight := (Maxi(Btn.Images.Height, tL_TextSize.cy) + (2 * Btn.Margin));
-
-  if (iL_BtnHeight <> Btn.Height) then
-    Btn.Height   := (iL_BtnHeight);
-
-  Result := (True);
+    Result := False;
 end;
 
 

@@ -84,6 +84,8 @@ type
     FImages: TCustomImageList;
     FImageAlignment: TImageAlignment;
     FImageMargins: TImageMargins;
+{$ELSE}
+    OldImageIndex: integer;
 {$ENDIF}
 {$IFNDEF DELPHI7UP}
     FWordWrap: boolean;
@@ -101,11 +103,9 @@ type
     procedure CNMeasureItem(var Message: TWMMeasureItem); message CN_MEASUREITEM;
     function GetDown: boolean;
 {$IFNDEF D2009}
-    function IsImageIndexStored: Boolean;
     procedure ImageListChange(Sender: TObject);
     procedure ImageMarginsChange(Sender: TObject);
     procedure SetImages            (const Value: TCustomImageList);
-    procedure SetImageIndex        (const Value: TImageIndex);
     procedure SetImageMargins      (const Value: TImageMargins);
     procedure SetHotImageIndex     (const Value: TImageIndex);
     procedure SetImageAlignment    (const Value: TImageAlignment);
@@ -113,7 +113,12 @@ type
     procedure SetPressedImageIndex (const Value: TImageIndex);
     procedure SetDisabledImageIndex(const Value: TImageIndex);
     procedure SetSelectedImageIndex(const Value: TImageIndex);
+    procedure SetImageIndex        (const Value: TImageIndex);
+{$ELSE}
+    function GetImageIndex: TImageIndex;
+    procedure SetImageIndex        (const Value: TImageIndex);
 {$ENDIF}
+    function IsImageIndexStored: Boolean;
   protected
     IsFocused,
     DroppedDown: boolean;
@@ -143,6 +148,7 @@ type
     function GlyphRect: TRect;
     destructor Destroy; override;
     procedure AfterConstruction; override;
+    procedure Invalidate; override;
     procedure Loaded; override;
     procedure WndProc(var Message: TMessage); override;
   published
@@ -165,9 +171,11 @@ type
 
     property HotImageIndex:      TImageIndex read FHotImageIndex      write SetHotImageIndex default -1;
     property DisabledImageIndex: TImageIndex read FDisabledImageIndex write SetDisabledImageIndex default -1;
-    property ImageIndex:         TImageIndex read FImageIndex         write SetImageIndex stored IsImageIndexStored default -1;
     property PressedImageIndex:  TImageIndex read FPressedImageIndex  write SetPressedImageIndex default -1;
     property SelectedImageIndex: TImageIndex read FSelectedImageIndex write SetSelectedImageIndex default -1;
+    property ImageIndex:         TImageIndex read FImageIndex         write SetImageIndex stored IsImageIndexStored default -1;
+{$ELSE}
+    property ImageIndex:         TImageIndex read GetImageIndex       write SetImageIndex stored IsImageIndexStored default -1;
 {$ENDIF}
     property Style: TButtonStyle read FStyle write SetStyle default bsPushButton;
 {$ENDIF} // NOTFORHELP
@@ -183,7 +191,7 @@ uses
   ActnList, math,
   {$IFDEF DELPHI7UP}Themes, {$ENDIF}
   sVCLUtils, sMessages, acntUtils, sGraphUtils, sAlphaGraph, sBorders, sSkinManager, sThirdParty,
-  sStyleSimply, acGlow;
+  sStyleSimply, acGlow, acntTypes;
 
 
 {$IFNDEF D2009}
@@ -215,7 +223,7 @@ end;
 function GetImageSize(Button: TsButton; AddMargins: boolean = True): TSize;
 begin
   with Button do begin
-    if (Images <> nil) and (ImageIndex > -1) and (ImageIndex < GetImageCount(Images)) then
+    if (Images <> nil) and (ImageIndex >= 0) and (ImageIndex < GetImageCount(Images)) then
       Result := MkSize(Images.Width, Images.Height)
     else
       Result := MkSize(32, 32);
@@ -232,7 +240,7 @@ var
   Flags: Cardinal;
 begin
   with Button do
-    if (Caption <> '') then begin
+    if Caption <> '' then begin
       SelectObject(SkinData.FCacheBmp.Canvas.Handle, Button.Font.Handle);
       if Style = bsCommandLink then begin
         SkinData.FCacheBmp.Canvas.Font.Style := SkinData.FCacheBmp.Canvas.Font.Style + [fsBold];
@@ -267,7 +275,7 @@ var
   Flags: Cardinal;
 begin
   with Button do
-    if (CommandLinkHint <> '') then begin
+    if CommandLinkHint <> '' then begin
       Flags := DT_EXPANDTABS or DT_CENTER or DT_CALCRECT or DT_WORDBREAK;
       R := MkRect(MaxContentWidth(Button) - GetImageSize(Button).cx, 0);
       acDrawText(SkinData.FCacheBmp.Canvas.Handle, CommandLinkHint, R, Flags);
@@ -309,13 +317,24 @@ begin
 end;
 
 
+procedure TsButton.Invalidate;
+begin
+{$IFDEF D2009}
+  if OldImageIndex <> ImageIndex then begin
+    OldImageIndex := ImageIndex;
+    FCommonData.BGChanged := True;
+  end;
+{$ENDIF}
+  inherited;
+end;
+
+
 procedure TsButton.SetButtonStyle(ADefault: Boolean);
 begin
   if ADefault <> IsFocused then
     IsFocused := ADefault;
 
-  if SkinData <> nil then
-    SkinData.Invalidate
+  SkinData.Invalidate;
 end;
 
 
@@ -387,10 +406,10 @@ end;
 
 constructor TsButton.Create(AOwner: TComponent);
 begin
+  FCommonData := sCommonData.TsCtrlSkinData.Create(Self, True);
+  FCommonData.COC := COC_TsButton;
   inherited Create(AOwner);
   ControlStyle := ControlStyle - [csOpaque, csDoubleClicks];// + [csAcceptsControls];
-  FCommonData := sCommonData.TsCtrlSkinData.Create(Self, True);
-  FCommonData.COC := COC_TsBUTTON;
   FDisabledKind := DefDisabledKind;
   FFocusMargin := 1;
   FDown := False;
@@ -420,6 +439,8 @@ begin
   FImageIndex := -1;
   FPressedImageIndex := -1;
   FSelectedImageIndex := -1;
+{$ELSE}
+  OldImageIndex := -1;
 {$ENDIF}
 end;
 
@@ -445,9 +466,7 @@ begin
   FreeAndNil(FImageChangeLink);
   FreeAndNil(FImageMargins);
 {$ENDIF}
-  if Assigned(FCommonData) then
-    FreeAndNil(FCommonData);
-
+  FreeAndNil(FCommonData);
   inherited Destroy;
 end;
 
@@ -543,10 +562,10 @@ begin
 
   case State of
     0: Result := ImageIndex;
-    1: Result := iff((HotImageIndex > -1)      and (HotImageIndex      < GetImageCount(Images)), HotImageIndex,      ImageIndex);
-    2: Result := iff((PressedImageIndex > -1)  and (PressedImageIndex  < GetImageCount(Images)), PressedImageIndex,  ImageIndex);
-    3: Result := iff((SelectedImageIndex > -1) and (SelectedImageIndex < GetImageCount(Images)), SelectedImageIndex, ImageIndex);
-    4: Result := iff((DisabledImageIndex > -1) and (DisabledImageIndex < GetImageCount(Images)), DisabledImageIndex, ImageIndex)
+    1: Result := iff((HotImageIndex >= 0)      and (HotImageIndex      < GetImageCount(Images)), HotImageIndex,      ImageIndex);
+    2: Result := iff((PressedImageIndex >= 0)  and (PressedImageIndex  < GetImageCount(Images)), PressedImageIndex,  ImageIndex);
+    3: Result := iff((SelectedImageIndex >= 0) and (SelectedImageIndex < GetImageCount(Images)), SelectedImageIndex, ImageIndex);
+    4: Result := iff((DisabledImageIndex >= 0) and (DisabledImageIndex < GetImageCount(Images)), DisabledImageIndex, ImageIndex)
     else Result := -1;
   end;
 end;
@@ -648,7 +667,7 @@ begin
         ShowHintStored := True;
       end;
       FMouseClicked := True;
-      if (Button = mbLeft) then
+      if Button = mbLeft then
         if not Down then begin
           RegionChanged := True;
           FCommonData.FUpdating := FCommonData.Updating;
@@ -703,11 +722,10 @@ end;
 
 procedure TsButton.OurPaintHandler;
 var
-  R: TRect;
+  aRect: TRect;
   b: boolean;
   DC, SavedDC: hdc;
   PS: TPaintStruct;
-  l, t, right, bottom: integer;
 
   procedure ToFinish;
   begin
@@ -732,14 +750,14 @@ begin
 
   try
     if not InUpdating(FCommonData) and not TimerIsActive(SkinData) then begin
-      if (GetClipBox(DC, R) = 0) {or IsRectEmpty(R) is not redrawn while resizing }then begin
+      if (GetClipBox(DC, aRect) = 0) {or IsRectEmpty(R) is not redrawn while resizing }then begin
         ToFinish;
         Exit;
       end;
 
       FCommonData.BGChanged := FCommonData.BGChanged or FCommonData.HalfVisible;// or GetBoolMsg(Parent, AC_GETHALFVISIBLE);
 //      FCommonData.HalfVisible := not RectInRect(Parent.ClientRect, BoundsRect);
-      FCommonData.HalfVisible := (WidthOf(R, True) <> Width) or (HeightOf(R, True) <> Height);
+      FCommonData.HalfVisible := (WidthOf(aRect, True) <> Width) or (HeightOf(aRect, True) <> Height);
       b := (FRegion = 1) or aSkinChanging;
       FRegion := 0;
       if RegionChanged and
@@ -752,31 +770,29 @@ begin
           Exit;
         end;
         UpdateCorners(FCommonData, CurrentState);
-        l :=      FCommonData.SkinManager.MaskWidthLeft  (FCommonData.BorderIndex);
-        t :=      FCommonData.SkinManager.MaskWidthTop   (FCommonData.BorderIndex);
-        right  := FCommonData.SkinManager.MaskWidthRight (FCommonData.BorderIndex);
-        bottom := FCommonData.SkinManager.MaskWidthBottom(FCommonData.BorderIndex);
-        BitBlt(DC, 0, 0, l, t, FCommonData.FCacheBmp.Canvas.Handle, 0, 0, SRCCOPY);
-        BitBlt(DC, 0, Height - bottom, Width, bottom, FCommonData.FCacheBmp.Canvas.Handle, 0, Height - bottom, SRCCOPY);
-        BitBlt(DC, Width - right, Height - bottom, right, bottom, FCommonData.FCacheBmp.Canvas.Handle, Width - right, Height - bottom, SRCCOPY);
-        BitBlt(DC, Width - right, 0, right, t, FCommonData.FCacheBmp.Canvas.Handle, Width - right, 0, SRCCOPY);
+        with FCommonData, SkinManager.ma[FCommonData.BorderIndex] do begin
+          BitBlt(DC, 0, 0, WL, WT, FCacheBmp.Canvas.Handle, 0, 0, SRCCOPY);
+          BitBlt(DC, 0, Height - WB, Width, WB, FCacheBmp.Canvas.Handle, 0, Height - WB, SRCCOPY);
+          BitBlt(DC, Width - WR, Height - WB, WR, WB, FCacheBmp.Canvas.Handle, Width - WR, Height - WB, SRCCOPY);
+          BitBlt(DC, Width - WR, 0, WR, WT, FCacheBmp.Canvas.Handle, Width - WR, 0, SRCCOPY);
+          if (DC <> SkinData.PrintDC) {$IFNDEF FPC} and not (csAlignmentNeeded in ControlState) {$ENDIF} then // Set region
+            if FRegion <> 0 then begin
+              SetWindowRgn(Handle, FRegion, b); // Speed increased if repainting is disabled
+              if (Width < WidthOf(LastRect)) or (Height < HeightOf(LastRect)) then
+                if not GetParentCache(SkinData).Ready then
+                  with TSrcRect(LastRect) do begin
+                    aRect := Rect(SRight - WR, STop, SRight, STop + WT);
+                    InvalidateRect(Parent.Handle, @aRect, True); // Top-right
+                    aRect := Rect(SRight - WR, SBottom - WB, SRight, SBottom);
+                    InvalidateRect(Parent.Handle, @aRect, True); // Bottom-right
+                    aRect := Rect(SLeft, SBottom - WB, SLeft + WL, SBottom);
+                    InvalidateRect(Parent.Handle, @aRect, True); // Left-bottom
+                  end;
 
-        if (DC <> SkinData.PrintDC) {$IFNDEF FPC} and not (csAlignmentNeeded in ControlState) {$ENDIF} then // Set region
-          if FRegion <> 0 then begin
-            SetWindowRgn(Handle, FRegion, b); // Speed increased if repainting is disabled
-            if (Width < WidthOf(LastRect)) or (Height < HeightOf(LastRect)) then
-              if not GetParentCache(SkinData).Ready then begin
-                R := Rect(LastRect.Right - SkinData.SkinManager.ma[SkinData.BorderIndex].WR, LastRect.Top, LastRect.Right, LastRect.Top + SkinData.SkinManager.ma[SkinData.BorderIndex].WT);
-                InvalidateRect(Parent.Handle, @R, True); // Top-right
-                R := Rect(LastRect.Right - SkinData.SkinManager.ma[SkinData.BorderIndex].WR, LastRect.Bottom - SkinData.SkinManager.ma[SkinData.BorderIndex].WB, LastRect.Right, LastRect.Bottom);
-                InvalidateRect(Parent.Handle, @R, True); // Bottom-right
-                R := Rect(LastRect.Left, LastRect.Bottom - SkinData.SkinManager.ma[SkinData.BorderIndex].WB, LastRect.Left + SkinData.SkinManager.ma[SkinData.BorderIndex].WL, LastRect.Bottom);
-                InvalidateRect(Parent.Handle, @R, True); // Left-bottom
-              end;
-
-            LastRect := BoundsRect;
-            FRegion := 0;
-          end;
+              LastRect := BoundsRect;
+              FRegion := 0;
+            end;
+        end;
       end
       else
         if FCommonData.BGChanged and not PrepareCache then begin
@@ -827,11 +843,11 @@ begin
           DeleteObject(FRegion);
 
         FRegion := CreateRectRgn(0, 0, Width, Height);
-        if (State <> 0) or (sm.ma[FCommonData.BorderIndex].DrawMode and BDM_ACTIVEONLY <> BDM_ACTIVEONLY) then
+        if (State <> 0) or (sm.ma[FCommonData.BorderIndex].DrawMode and BDM_ACTIVEONLY = 0) then
           PaintRgnBorder(FCommonData.FCacheBmp, FRegion, True, sm.ma[FCommonData.BorderIndex], State);
       end
       else  // Empty region
-        if (State <> 0) or (sm.ma[FCommonData.BorderIndex].DrawMode and BDM_ACTIVEONLY <> BDM_ACTIVEONLY) then begin
+        if (State <> 0) or (sm.ma[FCommonData.BorderIndex].DrawMode and BDM_ACTIVEONLY = 0) then begin
           inc(CI.X, Left);
           inc(CI.Y, Top);
           DrawSkinRect(FCommonData.FCacheBmp, MkRect(FCommonData.FCacheBmp), CI, sm.ma[FCommonData.BorderIndex], State, True);
@@ -842,13 +858,15 @@ begin
     UpdateBmpColors(FCommonData.FCacheBmp, SkinData, True, State);
     DrawGlyph;
     DrawCaption;
-    if Style = bsSplitButton then begin
-      FCommonData.FCacheBmp.Canvas.Pen.Color := ColorToRGB(FCommonData.SkinManager.gd[FCommonData.SkinIndex].Props[integer(State <> 0)].FontColor.Color);
-      FCommonData.FCacheBmp.Canvas.Pen.Width := 1;
-      FCommonData.FCacheBmp.Canvas.MoveTo(Width - DropWidth + 1, 4);
-      FCommonData.FCacheBmp.Canvas.LineTo(Width - DropWidth + 1, Height - 4);
-      DrawColorArrow(FCommonData.FCacheBmp.Canvas, FCommonData.FCacheBmp.Canvas.Pen.Color, Rect(Width - DropWidth, 0, Width, Height), asBottom);
-    end;
+    if Style = bsSplitButton then
+      with FCommonData, FCacheBmp.Canvas do begin
+        Pen.Color := ColorToRGB(SkinManager.gd[SkinIndex].Props[integer(State <> 0)].FontColor.Color);
+        Pen.Width := 1;
+        MoveTo(Width - DropWidth + 1, 4);
+        LineTo(Width - DropWidth + 1, Height - 4);
+        DrawColorArrow(FCacheBmp, Pen.Color, Rect(Width - DropWidth, 0, Width, Height), asBottom);
+      end;
+
     if not Enabled or ((Action <> nil) and not Assigned(TAction(Action).OnExecute){ not TAction(Action).Enabled // Button not repainted immediately if Action.Enabled changed }) then
       BmpDisabledKind(FCommonData.FCacheBmp, FDisabledKind, Parent, CI, Point(Left, Top));
 
@@ -892,7 +910,7 @@ end;
 
 procedure TsButton.SetFocusMargin(const Value: integer);
 begin
-  if (FFocusMargin <> Value) then
+  if FFocusMargin <> Value then
     FFocusMargin := Value;
 end;
 
@@ -933,7 +951,7 @@ begin
       end; // AlphaSkins supported
 
       AC_SETNEWSKIN:
-        if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
+        if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then begin
           RegionChanged := True;
           CommonMessage(Message, FCommonData);
           Exit;
@@ -992,7 +1010,6 @@ begin
                 FOnMouseLeave(Self);
 
             RedrawWindow(Handle, nil, 0, RDW_INVALIDATE or RDW_NOERASE or RDW_UPDATENOW);
-//            Repaint;
           end;
 
         CM_ENABLEDCHANGED:
@@ -1028,7 +1045,7 @@ begin
         SkinData.Updating := False;
 
       CM_DIALOGCHAR:
-        if (Enabled and Focused and (TCMDialogChar(Message).CharCode = VK_SPACE)) then begin
+        if Enabled and Focused and (TCMDialogChar(Message).CharCode = VK_SPACE) then begin
           StopTimer(SkinData);
           RegionChanged := True;
           FCommonData.BGChanged := True;
@@ -1206,7 +1223,7 @@ begin
           end;
 
         CM_ACTIONUPDATE:
-          if (Action <> nil) then
+          if Action <> nil then
             Enabled := TCustomAction(Action).Enabled;
       end;
   end;
@@ -1495,12 +1512,12 @@ end;
 procedure TsButton.Notification(AComponent: TComponent; Operation: TOperation);
 begin
   inherited;
-  if (Operation = opRemove) then
-    if (AComponent = Images) then
+  if Operation = opRemove then
+    if AComponent = Images then
       Images := nil
 {$IFNDEF D2009}
     else
-      if (AComponent = DropDownMenu) then
+      if AComponent = DropDownMenu then
         DropDownMenu := nil;
 {$ENDIF}
 end;
@@ -1564,6 +1581,33 @@ begin
   if IsImageIndexLinked then
     TsButton(FClient).ImageIndex := Value;
 end;
+
+
+{$ELSE}
+
+
+procedure TsButton.SetImageIndex(const Value: TImageIndex);
+begin
+  inherited ImageIndex := Value;
+  FCommonData.Invalidate(True);
+end;
+
+
+function TsButton.GetImageIndex: TImageIndex;
+begin
+  Result := inherited ImageIndex;
+end;
+
+
+type
+  TAccessActionLink = class(TPushButtonActionLink);
+
+function TsButton.IsImageIndexStored: Boolean;
+begin
+  Result := (ActionLink = nil) or not TAccessActionLink(ActionLink).IsImageIndexLinked;
+end;
+
 {$ENDIF}
 
 end.
+

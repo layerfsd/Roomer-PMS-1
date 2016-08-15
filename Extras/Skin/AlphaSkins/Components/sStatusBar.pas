@@ -1,7 +1,7 @@
 unit sStatusBar;
 {$I sDefs.inc}
 //{$DEFINE LOGGED}
-
+//+
 interface
 
 uses
@@ -26,6 +26,7 @@ type
     procedure PaintGrip;
     procedure PaintPanels;
     function PanelOffset(ExceptNdx: integer): integer;
+    procedure ChangeScale(M, D: Integer); override;
 {$IFDEF TNTUNICODE}
     procedure DrawPanel(Panel: TTntStatusPanel; const Rect: TRect); reintroduce;
     procedure InternalDrawPanel(Panel: TTntStatusPanel; const Text: WideString; Rect: TRect);
@@ -63,20 +64,30 @@ begin
 end;
 
 
+procedure TsStatusBar.ChangeScale(M, D: Integer);
+var
+  i: integer;
+begin
+  if M <> D then
+    for i := 0 to Panels.Count - 1 do
+      Panels[i].Width := MulDiv(Panels[i].Width, M, D);
+
+  inherited;
+end;
+
+
 constructor TsStatusBar.Create(AOwner: TComponent);
 begin
-  inherited Create(AOwner);
   FCommonData := TsCommonData.Create(Self, True);
   FCommonData.COC := COC_TsStatusBar;
+  inherited Create(AOwner);
   ControlStyle := ControlStyle + [csOpaque, csAcceptsControls];
 end;
 
 
 destructor TsStatusBar.Destroy;
 begin
-  if Assigned(FCommonData) then
-    FreeAndNil(FCommonData);
-
+  FreeAndNil(FCommonData);
   inherited Destroy;
 end;
 
@@ -117,28 +128,30 @@ var
 begin
   aRect := Rect;
   InflateRect(aRect, -1, -1);
-  index := FCommonData.SkinManager.GetMaskIndex(FCommonData.SkinIndex, s_StatusPanelMask);
-  if FCommonData.SkinManager.IsValidSkinIndex(FCommonData.SkinIndex) then
-    if FCommonData.SkinManager.IsValidImgIndex(index) then
-      if SimplePanel or (Panels.Count = 0) then
-        DrawSkinRect(FCommonData.FCacheBmp, MkRect(Self), EmptyCI, FCommonData.SkinManager.ma[index], 0, True)
+  with FCommonData.SkinManager do begin
+    index := GetMaskIndex(FCommonData.SkinIndex, s_StatusPanelMask);
+    if IsValidSkinIndex(FCommonData.SkinIndex) then
+      if IsValidImgIndex(index) then
+        if SimplePanel or (Panels.Count = 0) then
+          DrawSkinRect(FCommonData.FCacheBmp, MkRect(Self), EmptyCI, FCommonData.SkinManager.ma[index], 0, True)
+        else
+          DrawSkinRect(FCommonData.FCacheBmp, Rect, EmptyCI, FCommonData.SkinManager.ma[index], 0, True)
       else
-        DrawSkinRect(FCommonData.FCacheBmp, Rect, EmptyCI, FCommonData.SkinManager.ma[index], 0, True)
-    else
-      if not (SimplePanel or (Panels.Count = 0) or (Panel.Index = Panels.Count - 1)) then begin
-        si := FCommonData.SkinManager.ConstData.Sections[ssDivider];
-        if FCommonData.SkinManager.IsValidskinIndex(si) then begin
-          mi := FCommonData.SkinManager.GetMaskIndex(si, s_BordersMask);
-          if FCommonData.SkinManager.IsValidImgIndex(mi) then begin
-            TempBmp := CreateBmp32(max(2, (FCommonData.SkinManager.ma[mi].WL + FCommonData.SkinManager.ma[mi].WR)), Height - 2);
-            dx := TempBmp.Width div 2;
-            CI := MakeCacheInfo(FCommonData.FCacheBmp);
-            PaintItem(si, CI, True, 0, MkRect(TempBmp), Point(Rect.Right - dx - 1, 1), TempBmp, SkinData.SkinManager);
-            BitBlt(FCommonData.FCacheBmp.Canvas.Handle, Rect.Right - dx - 1, 1, TempBmp.Width, TempBmp.Height, TempBmp.Canvas.Handle, 0, 0, SRCCOPY);
-            FreeAndNil(TempBmp);
+        if not (SimplePanel or (Panels.Count = 0) or (Panel.Index = Panels.Count - 1)) then begin
+          si := ConstData.Sections[ssDivider];
+          if IsValidskinIndex(si) then begin
+            mi := GetMaskIndex(si, s_BordersMask);
+            if IsValidImgIndex(mi) then begin
+              TempBmp := CreateBmp32(max(2, (ma[mi].WL + ma[mi].WR)), Height - 2);
+              dx := TempBmp.Width div 2;
+              CI := MakeCacheInfo(FCommonData.FCacheBmp);
+              PaintItem(si, CI, True, 0, MkRect(TempBmp), Point(Rect.Right - dx - 1, 1), TempBmp, SkinData.SkinManager);
+              BitBlt(FCommonData.FCacheBmp.Canvas.Handle, Rect.Right - dx - 1, 1, TempBmp.Width, TempBmp.Height, TempBmp.Canvas.Handle, 0, 0, SRCCOPY);
+              FreeAndNil(TempBmp);
+            end;
           end;
         end;
-      end;
+  end;
 
   if Assigned(Panel) and (Panel.Style = psOwnerDraw) and Assigned(OnDrawPanel) then begin
     SavedDC := SaveDC(FCommonData.FCacheBmp.Canvas.Handle);
@@ -205,11 +218,11 @@ var
   GripPos: TPoint;
 begin
   if FCommonData.SkinManager <> nil then
-    with FCommonData.SkinManager do
-      if IsValidImgIndex(ConstData.GripRightBottom) then begin
-        GripPos := point(Width  - WidthOfImage(ma[FCommonData.SkinManager.ConstData.GripRightBottom])  - BorderWidth,
-                         Height - HeightOfImage(ma[FCommonData.SkinManager.ConstData.GripRightBottom]) - BorderWidth);
-        DrawSkinGlyph(FCommonData.FCacheBmp, GripPos, 0, 1, ma[ConstData.GripRightBottom], MakeCacheInfo(FCommonData.FCacheBmp));
+    with FCommonData.SkinManager, ConstData do
+      if IsValidImgIndex(GripRightBottom) then begin
+        GripPos := point(Width  - ma[GripRightBottom].Width - BorderWidth,
+                         Height - ma[GripRightBottom].Height - BorderWidth);
+        DrawSkinGlyph(FCommonData.FCacheBmp, GripPos, 0, 1, ma[GripRightBottom], MakeCacheInfo(FCommonData.FCacheBmp));
       end;
 end;
 
@@ -261,14 +274,16 @@ begin
   b := FCommonData.BGChanged or FCommonData.HalfVisible or GetBoolMsg(Parent, AC_GETHALFVISIBLE);
   FCommonData.HalfVisible := not (PtInRect(Parent.ClientRect, Point(Left, Top)) and PtInRect(Parent.ClientRect, Point(Left + Width, Top + Height)));
   if b then begin
-    CI := GetParentCache(FCommonData);
     InitCacheBmp(SkinData);
-    PaintItem(FCommonData, CI, False, 0, MkRect(Self), Point(Left, Top), FCommonData.FCacheBMP, False);
-    PaintPanels;
-    if SizeGrip then
-      PaintGrip;
+    if not FCommonData.FCacheBMP.Empty then begin
+      CI := GetParentCache(FCommonData);
+      PaintItem(FCommonData, CI, False, 0, MkRect(Self), Point(Left, Top), FCommonData.FCacheBMP, False);
+      PaintPanels;
+      if SizeGrip then
+        PaintGrip;
 
-    FCommonData.BGChanged := False;
+      FCommonData.BGChanged := False;
+    end;
   end;
 end;
 
@@ -307,10 +322,10 @@ begin
       end;
 
       AC_REFRESH: begin
-        if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
+        if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then begin
           CommonMessage(Message, FCommonData);
           if HandleAllocated and not (csLoading in ComponentState) and Visible then begin
-            RedrawWindow(Handle, nil, 0, RDW_FRAME or RDW_INVALIDATE or RDW_UPDATENOW or RDW_ERASE);
+            RedrawWindow(Handle, nil, 0, RDWA_ALLNOW);
             AlphaBroadCast(Self, Message);
           end;
         end
@@ -327,8 +342,9 @@ begin
         Exit;
       end
 
-      else if CommonMessage(Message, FCommonData) then
-        Exit;
+      else
+        if CommonMessage(Message, FCommonData) then
+          Exit;
     end;
 
   if not ControlIsReady(Self) or not FCommonData.Skinned then

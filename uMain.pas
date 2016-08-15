@@ -1816,6 +1816,7 @@ begin
       'User ' + d.roomerMainDataSet.userName + ' Successfully with FORCE logged out.');
   end;
   LoggedIn := false;
+  d.roomerMainDataSet.LoggedIn := False;
   try
     EnterDayView;
   except

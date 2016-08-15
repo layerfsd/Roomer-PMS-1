@@ -1,7 +1,7 @@
 unit sDBRichEdit;
 {$I sDefs.inc}
 //{$DEFINE LOGGED}
-
+//+
 interface
 
 uses
@@ -62,10 +62,10 @@ end;
 
 constructor TsDBRichEdit.Create(AOwner: TComponent);
 begin
-  inherited Create(AOwner);
-  ControlStyle := ControlStyle + [csReplicatable];
   FCommonData := TsScrollWndData.Create(Self, True);
   FCommonData.COC := COC_TsMemo;
+  inherited Create(AOwner);
+  ControlStyle := ControlStyle + [csReplicatable];
   FDisabledKind := DefDisabledKind;
   FBoundLabel := TsBoundLabel.Create(Self, FCommonData);
   Perform(EM_EXLIMITTEXT, 0, $7FFFFFF0);
@@ -79,9 +79,7 @@ begin
     FreeAndNil(ListSW);
 
   FreeAndNil(FBoundLabel);
-  if Assigned(FCommonData) then
-    FreeAndNil(FCommonData);
-
+  FreeAndNil(FCommonData);
   inherited Destroy;
 end;
 
@@ -188,14 +186,15 @@ begin
           Color := FCommonData.SkinManager.gd[FCommonData.SkinIndex].Props[0].Color;
 
         if not FCommonData.CustomFont then
-          if not Enabled then begin
-            Font.Color := AverageColor(FCommonData.SkinManager.gd[FCommonData.SkinIndex].Props[0].FontColor.Color, Color);
-            DefAttributes.Color := Font.Color;
-          end
-          else begin
-            Font.Color := FCommonData.SkinManager.gd[FCommonData.SkinIndex].Props[0].FontColor.Color;
-            DefAttributes.Color := FCommonData.SkinManager.gd[FCommonData.SkinIndex].Props[0].FontColor.Color;
-          end;
+          with FCommonData.SkinManager.gd[FCommonData.SkinIndex].Props[0] do
+            if not Enabled then begin
+              Font.Color := AverageColor(FontColor.Color, Color);
+              DefAttributes.Color := Font.Color;
+            end
+            else begin
+              Font.Color := FontColor.Color;
+              DefAttributes.Color := FontColor.Color;
+            end;
       end;
     end;
   end;

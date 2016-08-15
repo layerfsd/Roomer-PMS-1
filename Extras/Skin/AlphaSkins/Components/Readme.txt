@@ -1,7 +1,7 @@
-AlphaControls 2015
+AlphaControls 2016
 --------------------
 
- The Library contains skinning tool for Delphi 5/6/7/2005-2010/XE-XE8, C++ Builder 6/2006-2010/XE-XE8, RAD Studio 10 Seattle
+ The Library contains skinning tool for Delphi 5/6/7/2005-2010/XE-XE8, C++ Builder 6/2006-2010/XE-XE8, RAD Studio 10 Seattle, , RAD Studio 10.1 Berlin
 
 TABLE OF CONTENTS
 ---------------

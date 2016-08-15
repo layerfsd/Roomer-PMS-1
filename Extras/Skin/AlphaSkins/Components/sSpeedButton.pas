@@ -1,7 +1,7 @@
 unit sSpeedButton;
 {$I sDefs.inc}
 //{$DEFINE LOGGED}
-
+//+
 interface
 
 uses
@@ -47,6 +47,7 @@ type
     FAlignment,
     FTextAlignment:     TAlignment;
 
+    FGlyphColorTone:    TColor;
     FStdBG:             TBitmap;
     FDropdownMenu:      TPopupMenu;
     FImageChangeLink:   TChangeLink;
@@ -68,6 +69,7 @@ type
     procedure SetDisabledGlyphKind(const Value: TsDisabledGlyphKind);
     procedure SetInteger          (const Index: Integer; const Value: integer);
     procedure SetBoolean          (const Index: Integer; const Value: boolean);
+    procedure SetGlyphColorTone   (const Value: TColor);
     procedure ImageListChange(Sender: TObject);
   protected
     FGrayed,
@@ -87,6 +89,7 @@ type
     procedure DrawGlyph; {$IFNDEF FPC}virtual;{$ENDIF}
     function GlyphWidth:  integer; virtual;
     function GlyphHeight: integer; virtual;
+    procedure CopyFromCache(aDC: hdc); virtual;
 
     function PrepareCache: boolean; virtual;
 
@@ -95,12 +98,15 @@ type
     procedure ActionChange (Sender: TObject; CheckDefaults: Boolean); override;
     procedure GlyphChanged (Sender: TObject);
     procedure Ac_CMMouseEnter; virtual;
-    procedure Ac_CMMouseLeave;
-    procedure StdPaint(PaintButton: boolean = True);
+    procedure Ac_CMMouseLeave; virtual;
+    procedure StdPaint(PaintButton: boolean = True); virtual;
     procedure Paint; override;
     procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
     procedure MouseUp  (Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
+{$IFDEF DELPHI7UP}
+    function GetActionLinkClass: TControlActionLinkClass; override;
+{$ENDIF}
   public
     function CurrentState: integer; virtual;
     function CurrentImageIndex: integer;
@@ -143,6 +149,7 @@ type
     property Images: TCustomImageList read FImages write SetImages;
     property TextAlignment: TAlignment read FTextAlignment write SetTextAlignment default taCenter;
     property GrayedMode: TacGrayedMode read FGrayedMode write FGrayedMode default gmInactive;
+    property GlyphColorTone: TColor read FGlyphColorTone write SetGlyphColorTone default clNone;
 
     property Blend:              integer index 0 read FBlend      write SetInteger default 0;
     property ImageIndex:         integer index 1 read FImageIndex write SetInteger default -1;
@@ -160,6 +167,15 @@ type
     property WordWrap:       boolean index 4 read FWordWrap       write SetBoolean default True;
     property UseEllipsis:    boolean index 5 read FUseEllipsis    write SetBoolean default True;
   end;
+
+
+{$IFDEF DELPHI7UP}
+  TacSpeedButtonActionLink = class(TSpeedButtonActionLink)
+  protected
+    procedure SetImageIndex(Value: Integer); override;
+  public
+  end;
+{$ENDIF}
 
 
 {$IFNDEF NOTFORHELP}
@@ -186,7 +202,6 @@ uses
 
 const
   AddedWidth = 16;
-  EllipsFlags = DT_END_ELLIPSIS or DT_PATH_ELLIPSIS or DT_WORD_ELLIPSIS;
 
 
 type
@@ -213,7 +228,7 @@ end;
 function IsImgListDefined(Btn: TsSpeedButton): boolean;
 begin
   with Btn do
-    Result := Assigned(Images) and BetWeen(ImageIndex, 0, GetImageCount(Images) - 1);
+    Result := Assigned(Images) and IsValidIndex(ImageIndex, GetImageCount(Images));
 end;
 
 
@@ -226,23 +241,25 @@ begin
   with Button do begin
     R := BoundsRect;
     for i := 0 to Parent.ControlCount - 1 do
-      if (Parent.Controls[i] <> Button) and (Parent.Controls[i].Visible or (csDesigning in Parent.Controls[i].ComponentState)) and (csOpaque in Parent.Controls[i].ControlStyle) then begin
-        cR := Parent.Controls[i].BoundsRect;
-        if PtInRect(R, cR.TopLeft) or PtInRect(R, cR.BottomRight) then begin
-          SavedDC := SaveDC(aCanvas.Handle);
-          try
-            aCanvas.Lock;
-            Parent.Controls[i].ControlState := Parent.Controls[i].ControlState + [csPaintCopy];
-            MoveWindowOrg(aCanvas.Handle, cR.Left - R.Left, cr.Top - R.Top);
-            IntersectClipRect(aCanvas.Handle, 0, 0, Parent.Controls[i].Width, Parent.Controls[i].Height);
-            Parent.Controls[i].Perform(WM_PAINT, WPARAM(aCanvas.Handle), 0);
-            Parent.Controls[i].ControlState := Parent.Controls[i].ControlState - [csPaintCopy];
-            aCanvas.UnLock;
-          finally
-            RestoreDC(aCanvas.Handle, SavedDC);
+      if Parent.Controls[i] <> Button then
+        with Parent.Controls[i] do
+          if (Visible or (csDesigning in ComponentState)) and (csOpaque in ControlStyle) then begin
+            cR := BoundsRect;
+            if PtInRect(R, cR.TopLeft) or PtInRect(R, cR.BottomRight) then begin
+              SavedDC := SaveDC(aCanvas.Handle);
+              try
+                aCanvas.Lock;
+                ControlState := ControlState + [csPaintCopy];
+                MoveWindowOrg(aCanvas.Handle, cR.Left - R.Left, cr.Top - R.Top);
+                IntersectClipRect(aCanvas.Handle, 0, 0, Width, Height);
+                Perform(WM_PAINT, WPARAM(aCanvas.Handle), 0);
+                ControlState := ControlState - [csPaintCopy];
+                aCanvas.UnLock;
+              finally
+                RestoreDC(aCanvas.Handle, SavedDC);
+              end;
+            end;
           end;
-        end;
-      end;
   end;
 end;
 
@@ -251,7 +268,7 @@ function MaxCaptionWidth(Button: TsSpeedButton): integer;
 begin
   with Button do
     if ShowCaption and (Caption <> '') then begin
-      Result := Width - 2 * Margin - ArrowWidth;
+      Result := Width - 2 * max(0, Margin) - ArrowWidth;
       if Layout in [blGlyphLeft, blGlyphRight] then
         Result := Result - (Spacing + GlyphWidth) * integer(GlyphWidth <> 0)
     end
@@ -265,7 +282,7 @@ var
   w, m: integer;
   cr, ir: TRect;
 begin
-  if (ButtonStyle = tbsDropDown) then begin
+  if ButtonStyle = tbsDropDown then begin
     w := AddedWidth;
     if not Assigned(OnCLick) then begin
       ir := ImgRect(False);
@@ -297,8 +314,8 @@ begin
       Result.Left := Width - w;
 
     Result.Right := Result.Left + w;
-    Result.Top := 0;
-    Result.Bottom := Height;
+    Result.Top := 1;
+    Result.Bottom := Height - 1;
   end
   else
     Result := MkRect;
@@ -338,7 +355,7 @@ begin
   iGlyphWidth := GlyphWidth;
   iSpacing := Spacing * integer((iGlyphWidth > 0) and (Caption <> ''));
   iMargin := GenMargin;
-  if (ButtonStyle = tbsDropDown) then
+  if ButtonStyle = tbsDropDown then
     if not Assigned(OnCLick) then begin
       iAddedWidth := 0;
       iArrowWidth := AddedWidth;
@@ -364,7 +381,7 @@ begin
 
             taCenter:
               if iGlyphWidth = 0 then
-                l := (Width - Size.cx) div 2
+                l := iMargin
               else
                 l := emptyw div 2 + iGlyphWidth + iSpacing + iMargin;
 
@@ -456,11 +473,17 @@ begin
 end;
 
 
+procedure TsSpeedButton.CopyFromCache(aDC: hdc);
+begin
+  BitBlt(Canvas.Handle, 0, 0, Width, Height, aDC, 0, 0, SRCCOPY)
+end;
+
+
 constructor TsSpeedButton.Create(AOwner: TComponent);
 begin
-  inherited Create(AOwner);
   FCommonData := TsCtrlSkinData.Create(Self, True);
   FCommonData.COC := COC_TsSpeedButton;
+  inherited Create(AOwner);
   FImageChangeLink := TChangeLink.Create;
   FImageChangeLink.OnChange := ImageListChange;
   FButtonStyle := tbsButton;
@@ -485,6 +508,7 @@ begin
   FDisabledKind := DefDisabledKind;
   FOffset := 0;
   FAlignment := taCenter;
+  FGlyphColorTone := clNone;
   FShowCaption := True;
   FUseEllipsis := True;
   FDrawOverBorder := True;
@@ -532,15 +556,14 @@ type
 
 destructor TsSpeedButton.Destroy;
 begin
-  if Action <> nil then
-    TAccessBasicAction(Action).OnChange := nil;
+//  if ActionLink <> nil then
+//    TAccessBasicAction(Action).OnChange := nil;
+//    ActionLink.OnChange := nil;
 
   if (FCommonData.SkinManager <> nil) and (FCommonData.SkinManager.ActiveGraphControl = Self) then
     FCommonData.SkinManager.ActiveGraphControl := nil;
 
-  if Assigned(FCommonData) then
-    FreeAndNil(FCommonData);
-
+  FreeAndNil(FCommonData);
   FreeAndNil(FStdBG);
   FreeAndNil(FImageChangeLink);
   inherited Destroy;
@@ -580,21 +603,13 @@ end;
 
 procedure TsSpeedButton.DrawCaption;
 var
-  Flags: integer;
   R: TRect;
 begin
   if ShowCaption then begin
     FCommonData.FCacheBmp.Canvas.Font.Assign(Font);
     FCommonData.FCacheBMP.Canvas.Brush.Style := bsClear;
-    Flags := GetStringFlags(Self, FTextAlignment);
-    if WordWrap then
-      Flags := Flags or DT_WORDBREAK;
-
     R := CaptionRect;
-    if UseEllipsis then
-      Flags := Flags or EllipsFlags;
-
-    DoDrawText(R, Flags);
+    DoDrawText(R, GetStringFlags(Self, FTextAlignment) or TextWrapping[WordWrap] or TextEllips[UseEllipsis]);
   end;
 end;
 
@@ -612,6 +627,14 @@ function TsSpeedButton.GenMargin: integer;
 begin
   Result := iff(Margin < 0, 0, Margin + 3);
 end;
+
+
+{$IFDEF DELPHI7UP}
+function TsSpeedButton.GetActionLinkClass: TControlActionLinkClass;
+begin
+  Result := TacSpeedButtonActionLink;
+end;
+{$ENDIF}
 
 
 function TsSpeedButton.GlyphHeight: integer;
@@ -640,27 +663,27 @@ end;
 
 procedure TsSpeedButton.GraphRepaint;
 begin
-  if not (csCreating in ControlState) and not (csDestroying in ComponentState) and
-       not (csLoading in ComponentState) and Assigned(Parent) and not InAnimationProcess then
+  if ([csDestroying, csLoading] * ComponentState = []) and not (csCreating in ControlState) and not InAnimationProcess then
+    if (Visible or (csDesigning in ComponentState)) then
+      if Assigned(Parent) and Parent.HandleAllocated and IsWindowVisible(Parent.Handle) then
+        with Skindata do
+          if Skinned and not (csDesigning in ComponentState) then begin
+            if not Updating then begin
+              if BGChanged then begin
+                if not PrepareCache then
+                  Exit;
 
-    if Parent.HandleAllocated and (Visible or (csDesigning in ComponentState)) and IsWindowVisible(Parent.Handle) then
-      if Skindata.Skinned and not (csDesigning in ComponentState) then begin
-        if not Skindata.Updating then begin
-          if FCommonData.BGChanged then begin
-            if not PrepareCache then
-              Exit;
-
-            if not (csPaintCopy in ControlState) then
-              PaintParentControls(Self, FCommonData.FCacheBmp.Canvas)
-          end;
-          if TimerIsActive(SkinData) and (SkinData.AnimTimer.BmpOut <> nil) then
-            BitBlt(Canvas.Handle, 0, 0, Width, Height, SkinData.AnimTimer.BmpOut.Canvas.Handle, 0, 0, SRCCOPY)
+                if not (csPaintCopy in ControlState) then
+                  PaintParentControls(Self, FCacheBmp.Canvas)
+              end;
+              if TimerIsActive(SkinData) and (AnimTimer.BmpOut <> nil) then
+                CopyFromCache(SkinData.AnimTimer.BmpOut.Canvas.Handle)
+              else
+                CopyFromCache(FCacheBmp.Canvas.Handle);
+            end;
+          end
           else
-            BitBlt(Canvas.Handle, 0, 0, Width, Height, FCommonData.FCacheBmp.Canvas.Handle, 0, 0, SRCCOPY);
-        end;
-      end
-      else
-        Repaint;
+            Repaint;
 end;
 
 
@@ -676,7 +699,7 @@ begin
   gw := GlyphWidth;
   TextSize := TextRectSize;
   iMargin := GenMargin;
-  if (ButtonStyle = tbsDropDown) then
+  if ButtonStyle = tbsDropDown then
     if not Assigned(OnCLick) then begin
       iAddedWidth := 0;
       iArrowWidth := AddedWidth;
@@ -752,8 +775,8 @@ begin
   if IsImgListDefined(Self) then
     Glyph.Assign(nil);
 
-  if Action <> nil then
-    TAccessBasicAction(Action).OnChange := ActionChanged;
+//  if ActionLink <> nil then
+//    ActionLink.OnChange := ActionChanged;
 end;
 
 
@@ -795,12 +818,12 @@ begin
                 FCommonData.HalfVisible := False;
 
               if not FCommonData.BGChanged then begin
-                if (FOldNumGlyphs <> NumGlyphs) then begin
+                if FOldNumGlyphs <> NumGlyphs then begin
                   FCommonData.BGChanged := True;
                   FOldNumGlyphs := NumGlyphs;
                 end
                 else
-                  if (FOldSpacing <> Spacing) then begin
+                  if FOldSpacing <> Spacing then begin
                     FCommonData.BGChanged := True;
                     FOldSpacing := Spacing;
                   end;
@@ -821,7 +844,6 @@ end;
 function TsSpeedButton.PrepareCache: boolean;
 var
   R: TRect;
-  DC: hdc;
   CI: TCacheInfo;
   BGInfo: TacBGInfo;
   ArrowMode, si, mi, w, Mode, x, y, z: integer;
@@ -895,6 +917,9 @@ var
             PaintItemBG(FCommonData, ci, Mode, MkRect(Width - ArrowWidth, Height), Point(Left, Top), FCommonData.FCacheBMP, integer(Down), integer(Down));
             DrawCaption;
             DrawGlyph;
+            if Assigned(FOnPaint) then
+              FOnPaint(Self, FCommonData.FCacheBmp);
+
             inc(ci.X, Left);
             inc(ci.Y, Top);
             if FCommonData.SkinManager.IsValidImgIndex(FCommonData.BorderIndex) then
@@ -908,13 +933,14 @@ var
               R := ArrowRect;
               PaintArrow(@R, Mode);
             end;
+            if Assigned(FOnPaint) then
+              FOnPaint(Self, FCommonData.FCacheBmp);
+
           end;
           if not Enabled then begin
             CI := GetParentCache(FCommonData);
             BmpDisabledKind(FCommonData.FCacheBmp, FDisabledKind, Parent, CI, Point(Left, Top));
           end;
-          if Assigned(FOnPaint) then
-            FOnPaint(Self, FCommonData.FCacheBmp);
         end;
       end;
       FCommonData.BGChanged := False;
@@ -929,10 +955,11 @@ begin
     BGInfo.BgType := btUnknown;
     BGInfo.PleaseDraw := False;
     BGInfo.FillRect := MkRect;
-    Parent.Perform(SM_ALPHACMD, MakeWParam(0, AC_GETBG), LPARAM(@BGInfo));
+    Parent.Perform(SM_ALPHACMD, AC_GETBG_HI, LPARAM(@BGInfo));
 
     if BGInfo.BgType = btUnknown then begin
       FStdParent := True;
+{
       if Transparent then begin
         ControlStyle := ControlStyle - [csOpaque];
         if not FBGCopying then begin
@@ -959,12 +986,13 @@ begin
           FBGCopying := False;
         end;
       end
-      else begin
+      else }
+      begin
         ControlStyle := ControlStyle + [csOpaque];
         InitCacheBmp(SkinData);
         CI.Ready := False;
         CI.Bmp := nil;
-        CI.FillColor := ColorToRGB(TsHackedControl(Parent).Color);
+        CI.FillColor := ColorToRGB(TsAccessControl(Parent).Color);
         PaintControl;
       end;
     end
@@ -1045,21 +1073,16 @@ end;
 function TsSpeedButton.TextRectSize: TSize;
 var
   R: TRect;
-  Flag: Cardinal;
 begin
   R := MkRect(MaxCaptionWidth(Self), 0);
-  Flag := iff(FWordWrap, DT_WORDBREAK, DT_SINGLELINE);
-  if UseEllipsis then
-    Flag := Flag or EllipsFlags;
-
-  acDrawText(FCommonData.FCacheBMP.Canvas.Handle, Caption, R, Flag or DT_EXPANDTABS or DT_CALCRECT);
+  acDrawText(FCommonData.FCacheBMP.Canvas.Handle, Caption, R, TextWrapping[FWordWrap] or TextEllips[UseEllipsis] or DT_EXPANDTABS or DT_CALCRECT);
   Result := MkSize(R);
 end;
 
 
 procedure TsSpeedButton.UpdateControl;
 begin
-  if (Visible or (csDesigning in ComponentState)) and (SkinData.CtrlSkinState and ACS_LOCKED <> ACS_LOCKED) then begin
+  if (Visible or (csDesigning in ComponentState)) and (SkinData.CtrlSkinState and ACS_LOCKED = 0) then begin
     FCommonData.BGChanged := True;
     GraphRepaint;
   end;
@@ -1080,7 +1103,7 @@ begin
       end;
 
       AC_SETNEWSKIN:
-        if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
+        if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then begin
           CommonMessage(Message, FCommonData);
           if FCommonData.Skinned then
             ControlStyle := ControlStyle + [csOpaque];
@@ -1104,7 +1127,7 @@ begin
       end;
 
       AC_REFRESH:
-        if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
+        if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then begin
           CommonMessage(Message, FCommonData);
           if Visible or (csDesigning in ComponentState) then
             Repaint;
@@ -1134,22 +1157,23 @@ begin
       end;
     end;
 
-  if not ControlIsReady(Self) or (FCommonData = nil) or not FCommonData.Skinned then begin
+  if not ControlIsReady(Self) or not FCommonData.Skinned then begin
     case Message.Msg of
-      CM_MOUSEENTER:
-        if Enabled and not (csDesigning in ComponentState) then begin
-          if Assigned(FCommonData) then
-            FCommonData.FMouseAbove := True;
+//      CM_ACTIONUPDATE:
+//        ActionChanged(Self);
+//        if Action <> nil then
+//          Enabled := TCustomAction(Action).Enabled;
 
+      CM_MOUSEENTER:
+        if Enabled and ([csDesigning, csDestroying] * ComponentState = []) then begin
+          FCommonData.FMouseAbove := True;
           if Assigned(FOnMouseEnter) then
             FOnMouseEnter(Self);
         end;
 
       CM_MOUSELEAVE:
-        if Enabled and not (csDesigning in ComponentState) then begin
-          if Assigned(FCommonData) then
-            FCommonData.FMouseAbove := False;
-
+        if Enabled and ([csDesigning, csDestroying] * ComponentState = []) then begin
+          FCommonData.FMouseAbove := False;
           if Assigned(FOnMouseLeave) then
             FOnMouseLeave(Self);
 
@@ -1187,7 +1211,7 @@ begin
         end;
 
       WM_MOUSELEAVE, CM_MOUSELEAVE:
-        if Enabled then begin
+        if Enabled and not InAnimationProcess then begin
           Ac_CMMouseLeave;
           inherited;
           Exit;
@@ -1236,7 +1260,7 @@ begin
 
         WM_MOUSEMOVE:
           if SkinData.FMouseAbove then
-            if (FCommonData.SkinManager.ActiveGraphControl <> Self) then begin
+            if FCommonData.SkinManager.ActiveGraphControl <> Self then begin
               SkinData.FMouseAbove := False;
               Ac_CMMouseEnter;
               Perform(CM_MOUSEENTER, 0, 0);
@@ -1263,13 +1287,13 @@ begin
          end;
 
         WM_LBUTTONUP:
-          if Visible and not (csDesigning in ComponentState) and not (csDestroying in ComponentState) and (SkinData <> nil) then
+          if Visible and ([csDesigning, csDestroying] * ComponentState = []) and (SkinData <> nil) then
             DoChangePaint(SkinData, integer(SkinData.FMouseAbove), UpdateGraphic_CB, EventEnabled(aeMouseUp, FAnimatEvents), True)
           else
             Message.Result := -1;
 
         CM_ENABLEDCHANGED:
-          if (Visible or (csDesigning in ComponentState)) then begin
+          if Visible or (csDesigning in ComponentState) then begin
             if not Enabled then
               StopTimer(SkinData);
 
@@ -1299,6 +1323,16 @@ begin
     FDropdownMenu := Value;
     if Value <> nil then
       Value.FreeNotification(Self);
+  end;
+end;
+
+
+procedure TsSpeedButton.SetGlyphColorTone(const Value: TColor);
+begin
+  if FGlyphColorTone <> Value then begin
+    FGlyphColorTone := Value;
+    FCommonData.BGChanged := True;
+    GraphRepaint;
   end;
 end;
 
@@ -1348,12 +1382,14 @@ begin
         if not Assigned(OnCLick) then
           FState := bsUp;
 
-//        DoChangePaint(SkinData, 0, UpdateGraphic_CB, EventEnabled(aeMouseDown, FAnimatEvents));//, True);
         if not SkinData.Skinned then
           Repaint
         else begin
-//          SkinData.BGChanged := True;
           GraphRepaint;
+        end;
+        if ShowHintStored then begin
+          Application.ShowHint := AppShowHint;
+          ShowHintStored := False;
         end;
       end;
     end
@@ -1361,6 +1397,7 @@ begin
       inherited
   else
     inherited;
+
 end;
 
 
@@ -1381,11 +1418,11 @@ end;
 procedure TsSpeedButton.Notification(AComponent: TComponent; Operation: TOperation);
 begin
   inherited;
-  if (Operation = opRemove) then
-    if (AComponent = Images) then
+  if Operation = opRemove then
+    if AComponent = Images then
       Images := nil
     else
-      if (AComponent = DropDownMenu) then
+      if AComponent = DropDownMenu then
         DropDownMenu := nil;
 end;
 
@@ -1395,27 +1432,28 @@ var
   b: boolean;
 begin
   inherited ActionChange(Sender, CheckDefaults);
-  if not (csLoading in ComponentState) then begin
-    if (TCustomAction(Sender).ActionList <> nil) and (Images <> TCustomAction(Sender).ActionList.Images) then begin
-      Images := TCustomAction(Sender).ActionList.Images;
-      b := True;
-    end
-    else
-      b := False;
+  if not (csLoading in ComponentState) then
+    with TCustomAction(Sender) do begin
+      if (ActionList <> nil) and (Self.Images <> ActionList.Images) then begin
+        Self.Images := ActionList.Images;
+        b := True;
+      end
+      else
+        b := False;
 
-    if ImageIndex <> TCustomAction(Sender).ImageIndex then begin
-      ImageIndex := TCustomAction(Sender).ImageIndex;
-      b := True;
+      if Self.ImageIndex <> ImageIndex then begin
+        Self.ImageIndex := ImageIndex;
+        b := True;
+      end;
+      if b and (Self.Images <> nil) and IsValidIndex(Self.ImageIndex, GetImageCount(Self.Images)) then
+        Glyph.Assign(nil);
+
+//      if ActionLink <> nil then
+//        ActionLink.OnChange := ActionChanged;
+
+      if not (csDestroying in ComponentState) then
+        FCommonData.Invalidate;
     end;
-    if b and (Images <> nil) and (ImageIndex >= 0) and (ImageIndex < GetImageCount(Images)) then
-      Glyph.Assign(nil);
-
-    if Action <> nil then
-      TAccessBasicAction(Action).OnChange := ActionChanged;
-
-    if not (csDestroying in ComponentState) then
-      FCommonData.Invalidate;
-  end;
 end;
 
 
@@ -1424,7 +1462,7 @@ begin
   if Assigned(OldOnChange) then
     OldOnChange(Glyph);
 
-  if not (csLoading in ComponentState) and not (csDestroying in ComponentState) and not (csCreating in ControlState) then
+  if ([csLoading, csDestroying] * ComponentState = []) and not (csCreating in ControlState) then
     FCommonData.Invalidate;
 end;
 
@@ -1442,19 +1480,22 @@ procedure TsSpeedButton.ActionChanged(Sender: TObject);
 var
   b: boolean;
 begin
-  if not FCommonData.FUpdating and (Action <> nil) and (TCustomAction(Sender).ActionList <> nil) then begin
-    b := False;
-    if (Images <> TCustomAction(Sender).ActionList.Images) then begin
-      Images := TCustomAction(Sender).ActionList.Images;
-      b := True;
+  with TCustomAction(Sender) do
+    if not FCommonData.FUpdating and (Action <> nil) and (ActionList <> nil) then begin
+      b := False;
+      if Self.Images <> ActionList.Images then begin
+        Self.Images := ActionList.Images;
+        b := True;
+      end;
+{$IFDEF DELPHI2010}
+      if Self.ImageIndex <> TacSpeedButtonActionLink(ActionLink).FImageIndex then begin
+        Self.ImageIndex := TacSpeedButtonActionLink(ActionLink).FImageIndex;
+        b := True;
+      end;
+{$ENDIF}
+      if b then
+        Repaint;
     end;
-    if (ImageIndex <> TCustomAction(Sender).ImageIndex) then begin
-      ImageIndex := TCustomAction(Sender).ImageIndex;
-      b := True;
-    end;
-    if b then
-      Repaint;
-  end;
 end;
 
 
@@ -1480,7 +1521,7 @@ type
 
 procedure TsSpeedButton.Ac_CMMouseLeave;
 begin
-  if FCommonData.FMouseAbove then begin
+  if FCommonData.FMouseAbove and not (csDestroying in ComponentState) and not acMouseInControl(Self) then begin
     if Assigned(FOnMouseLeave) then
       FOnMouseLeave(Self);
 
@@ -1581,7 +1622,7 @@ begin
             if FState in [bsDown, bsExclusive] then
               Button := tbPushButtonPressed
             else
-              if MouseInControl then
+              if MouseInControl or FHotState then
                 Button := tbPushButtonHot
               else
                 Button := tbPushButtonNormal;
@@ -1617,7 +1658,7 @@ begin
             PaintRect := ClientRect;
             PaintRect.Left := PaintRect.Right - ArrowWidth;
 
-            if ((Assigned(DropDownMenu) and DroppedDown) or Down or (FState in [bsDown, bsExclusive])) then
+            if (Assigned(DropDownMenu) and DroppedDown) or Down or (FState in [bsDown, bsExclusive]) then
               if ToolButton = ttbToolbarDontCare then begin
                 Button := tbPushButtonPressed;
                 Details := acThemeServices.GetElementDetails(Button);
@@ -1674,7 +1715,7 @@ begin
             PaintRect := ClientRect;
             PaintRect.Left := PaintRect.Right - ArrowWidth;
             if Assigned(OnCLick) then
-              if ((Assigned(DropDownMenu) and DroppedDown) or Down or (FState in [bsDown, bsExclusive])) then
+              if (Assigned(DropDownMenu) and DroppedDown) or Down or (FState in [bsDown, bsExclusive]) then
                 if not Flat then begin
                   DrawFlags := DFCS_BUTTONPUSH or DFCS_ADJUSTRECT or DFCS_PUSHED;
                   DrawFrameControl(Canvas.Handle, PaintRect, DFC_BUTTON, DrawFlags);
@@ -1760,15 +1801,16 @@ procedure TsSpeedButton.PaintArrow(const pR: PRect; Mode: integer);
 var
   iNdx: integer;
 begin
-  if FCommonData.Skinned then begin
-    iNdx := GetFontIndex(Self, FCommonData.SkinIndex, FCommonData.SkinManager, Mode); // Receive parent font if needed
-    if iNdx >= 0 then
-      DrawColorArrow(FCommonData.FCacheBmp.Canvas, FCommonData.SkinManager.gd[iNdx].Props[min(integer(Mode > 0), ac_MaxPropsIndex)].FontColor.Color, pR^, asBottom)
+  with FCommonData do
+    if Skinned then begin
+      iNdx := GetFontIndex(Self, SkinIndex, SkinManager, Mode); // Receive parent font if needed
+      if iNdx >= 0 then
+        DrawColorArrow(FCacheBmp, SkinManager.gd[iNdx].Props[min(Mode, ac_MaxPropsIndex)].FontColor.Color, pR^, asBottom)
+      else
+        DrawColorArrow(FCacheBmp, Font.Color, pR^, asBottom);
+    end
     else
-      DrawColorArrow(FCommonData.FCacheBmp.Canvas, Font.Color, pR^, asBottom);
-  end
-  else
-    DrawColorArrow(FCommonData.FCacheBmp.Canvas, Font.Color, pR^, asBottom);
+      DrawColorArrow(FCacheBmp.Canvas, Font.Color, pR^, asBottom);
 end;
 
 
@@ -1780,11 +1822,16 @@ end;
 
 
 procedure TsSpeedButton.SetInteger(const Index: Integer; const Value: integer);
+var
+  i: integer;
 begin
   case Index of
-    0: if FBlend <> Value then begin
-      FBlend := LimitIt(Value, 0, 100);
-      UpdateControl;
+    0: begin
+      i := LimitIt(Value, 0, 100);
+      if FBlend <> i then begin
+        FBlend := i;
+        UpdateControl;
+      end;
     end;
 
     1: if FImageIndex <> Value then begin
@@ -1818,5 +1865,19 @@ begin
     end;
   end;
 end;
+
+
+{$IFDEF DELPHI7UP}
+procedure TacSpeedButtonActionLink.SetImageIndex(Value: Integer);
+begin
+  if IsImageIndexLinked or FClient.Glyph.Empty then begin
+{$IFDEF DELPHI2010}
+    FImageIndex := Value;
+{$ENDIF}
+    if (Action is TCustomAction) and (FClient is TsSpeedButton) then
+      TsSpeedButton(FClient).ActionChanged(Action);
+  end;
+end;
+{$ENDIF}
 
 end.

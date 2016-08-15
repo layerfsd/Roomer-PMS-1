@@ -84,7 +84,6 @@ type
     function CheckRect: TRect;
     function GlyphWidth: integer;
     function GlyphHeight: integer;
-//    function GlyphMaskIndex(State: TCheckBoxState): smallint;
     function PrepareCache: boolean;
 {$IFDEF TNTUNICODE}
     procedure CreateWindowHandle(const Params: TCreateParams); override;
@@ -279,12 +278,12 @@ begin
       else
         Result := Rect(Width - GlyphWidth - Margin, GlyphTop, Width - Margin, GlyphHeight + GlyphTop)
     end
-    else begin
-      if FCommonData.SkinManager.IsValidImgIndex(FCommonData.SkinManager.ConstData.CheckBox[State]) then
-        Result := SkinCheckRect(FCommonData.SkinManager.ConstData.CheckBox[State])
-      else
-        Result := MkRect(16, 16);
-    end;
+    else
+      with FCommonData.SkinManager do
+        if IsValidImgIndex(ConstData.CheckBox[State]) then
+          Result := SkinCheckRect(ConstData.CheckBox[State])
+        else
+          Result := MkRect(16, 16);
 end;
 
 
@@ -307,10 +306,9 @@ end;
 
 constructor TsCheckBox.Create(AOwner: TComponent);
 begin
-  inherited Create(AOwner);
   FCommonData := TsCommonData.Create(Self, False);
   FCommonData.COC := COC_TsCheckBox;
-  FCommonData.FOwnerControl := Self;
+  inherited Create(AOwner);
   FMargin := 2;
   FShowFocus := True;
   FTextIndent := 0;
@@ -346,15 +344,9 @@ end;
 
 destructor TsCheckBox.Destroy;
 begin
-  if Assigned(FCommonData) then
-    FreeAndNil(FCommonData);
-
-  if Assigned(FGlyphChecked) then
-    FreeAndNil(FGlyphChecked);
-
-  if Assigned(FGlyphUnchecked) then
-    FreeAndNil(FGlyphUnChecked);
-
+  FreeAndNil(FCommonData);
+  FreeAndNil(FGlyphChecked);
+  FreeAndNil(FGlyphUnChecked);
   inherited Destroy;
 end;
 
@@ -367,7 +359,7 @@ var
 begin
   if Assigned(Images) and (ImgChecked >= 0) and (ImgUnChecked >= 0) then begin
     ImgIndex := iff(Checked, ImgChecked, ImgUnChecked);
-    if (ImgIndex >= 0) then begin
+    if ImgIndex >= 0 then begin
       R := CheckRect;
       GlyphCount := Images.Width div Images.Height;
       if (GlyphCount > 1) and (Images.Width mod Images.Height = 0) then begin // If complex image
@@ -432,7 +424,7 @@ begin
   if Caption <> '' then begin
     w := Width - (WidthOf(CheckRect) + FTextIndent + 2 * Margin + 2);
     rText := MkRect(w, 0);
-    Fmt := DT_CALCRECT or iff(WordWrap, DT_WORDBREAK, DT_SINGLELINE);
+    Fmt := DT_CALCRECT or TextWrapping[WordWrap];
     AcDrawText(FCommonData.FCacheBMP.Canvas.Handle, Caption, rText, Fmt);
     h := HeightOf(rText);
     dx := WidthOf(rText);
@@ -462,7 +454,6 @@ begin
     FCommonData.FCacheBmp.Canvas.Pen.Style := psClear;
     FCommonData.FCacheBmp.Canvas.Brush.Style := bsSolid;
     if Focused and ShowFocus then begin
-//      dec(rText.Bottom, integer(not WordWrap));
       inc(rText.Top);
       InflateRect(rText, 2, 1);
       State := min(ac_MaxPropsIndex, SkinData.SkinManager.gd[SkinData.SkinIndex].States);
@@ -598,7 +589,7 @@ var
   DC, SavedDC: hdc;
 begin
   DC := M.DC;
-  if (DC = 0) or (SkinData.CtrlSkinState and ACS_PRINTING <> ACS_PRINTING) then
+  if (DC = 0) or (SkinData.CtrlSkinState and ACS_PRINTING = 0) then
     DC := BeginPaint(Handle, PS);
 
   SavedDC := SaveDC(DC);
@@ -607,7 +598,7 @@ begin
       PaintControl(DC);
   finally
     RestoreDC(DC, SavedDC);
-    if (M.DC = 0) or (SkinData.CtrlSkinState and ACS_PRINTING <> ACS_PRINTING) then
+    if (M.DC = 0) or (SkinData.CtrlSkinState and ACS_PRINTING = 0) then
       EndPaint(Handle, PS);
   end;
 end;
@@ -661,7 +652,7 @@ var
 begin
   b := False;
   if not (csLoading in ComponentState) then begin
-    if (Value <> Checked) then begin
+    if Value <> Checked then begin
       FCommonData.BGChanged := True;
       b := True;
     end;
@@ -669,7 +660,7 @@ begin
     if FCommonData.BGChanged then
       Repaint;
 
-    if b and assigned(FOnValueChanged) then
+    if b and Assigned(FOnValueChanged) then
       FOnValueChanged(self);
   end
   else
@@ -824,7 +815,6 @@ var
 begin
   h := SkinGlyphHeight(i);
   w := SkinGlyphWidth(i);
-
   case FVerticalAlign of
     vaTop:    hdiv := 0;
     vaMiddle: hdiv := (Height - h) div 2
@@ -839,13 +829,13 @@ end;
 
 function TsCheckBox.SkinGlyphHeight(i: integer): integer;
 begin
-  Result := HeightOfImage(FCommonData.SkinManager.ma[i]);
+  Result := FCommonData.SkinManager.ma[i].Height;
 end;
 
 
 function TsCheckBox.SkinGlyphWidth(i: integer): integer;
 begin
-  Result := WidthOfImage(FCommonData.SkinManager.ma[i]);
+  Result := FCommonData.SkinManager.ma[i].Width;
 end;
 
 
@@ -881,7 +871,7 @@ begin
           end;
 
         AC_REFRESH:
-          if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
+          if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then begin
             CommonWndProc(Message, FCommonData);
             AdjustSize;
             Repaint;
@@ -901,14 +891,14 @@ begin
         end;
 
         AC_SETNEWSKIN:
-          if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
+          if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then begin
             CommonWndProc(Message, FCommonData);
             Exit;
           end
       end;
 
     CM_FONTCHANGED, CM_TEXTCHANGED:
-      if AutoSize then begin
+      if AutoSize and HandleAllocated then begin
         if not (csDesigning in ComponentState) then
           HandleNeeded;
 
@@ -1015,13 +1005,14 @@ begin
           Exit;
         end;
 
-        WM_ERASEBKGND: begin
-          if (TWMPaint(Message).DC <> 0) and (Skindata.FCacheBmp <> nil) and not FCommonData.BGChanged and not TimerIsActive(SkinData) then
-            CopyWinControlCache(Self, FCommonData, MkRect, MkRect(Self), TWMPaint(Message).DC, False);
+        WM_ERASEBKGND:
+          if IsWindowVisible(Handle) then begin
+            if (TWMPaint(Message).DC <> 0) and (Skindata.FCacheBmp <> nil) and not FCommonData.BGChanged and not TimerIsActive(SkinData) then
+              CopyWinControlCache(Self, FCommonData, MkRect, MkRect(Self), TWMPaint(Message).DC, False);
 
-          Message.Result := 1;
-          Exit;
-        end;
+            Message.Result := 1;
+            Exit;
+          end;
 
         WM_PRINT: begin
           SkinData.FUpdating := False;
@@ -1029,17 +1020,20 @@ begin
           Exit;
         end;
 
-        WM_PAINT: begin
-          PaintHandler(TWMPaint(Message));
-          if not (csDesigning in ComponentState) then
-            Exit;
-        end;
+        WM_PAINT:
+          if IsWindowVisible(Handle) then begin
+            PaintHandler(TWMPaint(Message));
+            if not (csDesigning in ComponentState) then
+              Exit;
+          end;
 
         CM_FONTCHANGED, CM_TEXTCHANGED: begin
-          if AutoSize then
-            AdjustSize;
+          if HandleAllocated then begin
+            if AutoSize then
+              AdjustSize;
 
-          Repaint;
+            Repaint;
+          end;
           Exit;
         end;
 

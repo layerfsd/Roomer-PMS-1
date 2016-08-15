@@ -205,10 +205,8 @@ begin
       MonInfo.cbSize := Sizeof(TMonitorInfo);
       GetMonitorInfo(MBMonitor, @MonInfo);
       GetWindowRect(Handle, Rect);
-      SetWindowPos(Handle, 0,
-                   MonInfo.rcMonitor.Left + ((MonInfo.rcMonitor.Right - MonInfo.rcMonitor.Left) div 2),
-                   MonInfo.rcMonitor.Top + ((MonInfo.rcMonitor.Bottom - MonInfo.rcMonitor.Top) div 2),
-                   0, 0, SWP_NOACTIVATE or SWP_NOREDRAW or SWP_NOSIZE or SWP_NOZORDER);
+      with MonInfo.rcMonitor do
+        SetWindowPos(Handle, 0, Left + (Right - Left) div 2, Top + (Bottom - Top) div 2, 0, 0, SWP_NOACTIVATE or SWP_NOREDRAW or SWP_NOSIZE or SWP_NOZORDER);
     end;
     WindowList := DisableTaskWindows(ActiveWindow);
     FocusState := SaveFocusState;
@@ -317,7 +315,8 @@ begin
 {$IFDEF DELPHI7UP}
   Application.ModalFinished;
 {$ENDIF}
-  DlgLeft := -1; DlgTop := -1;
+  DlgLeft := -1;
+  DlgTop := -1;
 end;
 
 
@@ -399,10 +398,8 @@ end;
 
 procedure TsOpenPictureDialog.DoSelectionChange;
 begin
-  if csDestroying in ComponentState then
-    Exit;
-
-  inherited DoSelectionChange;
+  if not (csDestroying in ComponentState) then
+    inherited DoSelectionChange;
 end;
 
 
@@ -414,7 +411,7 @@ end;
 
 function TsOpenPictureDialog.IsFilterStored: Boolean;
 begin
-  Result := not (Filter = GraphicFilter(TGraphic));
+  Result := Filter <> GraphicFilter(TGraphic);
 end;
 
 
@@ -436,7 +433,7 @@ end;
 
 function TsSavePictureDialog.IsFilterStored: Boolean;
 begin
-  Result := not (Filter = GraphicFilter(TGraphic));
+  Result := Filter <> GraphicFilter(TGraphic);
 end;
 
 
@@ -472,43 +469,37 @@ function TsColorDialog.Execute: Boolean;
 begin
   if not FStandardDlg and Assigned(DefaultManager) then begin
     sColorDialogForm := TsColorDialogForm.Create(Application);
-    sColorDialogForm.InitLngCaptions;
-    sColorDialogForm.Owner := Self;
-    if CustomColors.Count > 0 then begin
-      sColorDialogForm.AddPal.Colors.Assign(CustomColors);
-      sColorDialogForm.AddPal.GenerateColors;
+    with sColorDialogForm do begin
+//      InitLngCaptions;
+      Owner := Self;
+
+      if CustomColors.Count > 0 then
+        AddPal.Colors.Assign(CustomColors)
+      else
+        AddPal.Colors.Assign(acCustomColors);
+
+      AddPal.GenerateColors;
+
+      if MainColors.Count > 0 then begin
+        MainPal.Colors.Assign(MainColors);
+        MainPal.GenerateColors;
+      end;
+
+      ModalResult := mrCancel;
+      BorderStyle := bsSingle;
+
+      InitControls(cdFullOpen in Options, cdShowHelp in Options, Self.Color, bsSingle);
+
+      ShowModal;
+      Result := ModalResult = mrOk;
+      CustomColors.Assign(AddPal.Colors);
+      DoClose;
+      if Result then
+        Self.Color := SelectedPanel.Brush.Color;
+
+      if sColorDialogForm <> nil then
+        FreeAndNil(sColorDialogForm);
     end;
-    if MainColors.Count > 0 then begin
-      sColorDialogForm.MainPal.Colors.Assign(MainColors);
-      sColorDialogForm.MainPal.GenerateColors;
-    end;
-    sColorDialogForm.ModalResult := mrCancel;
-    sColorDialogForm.BorderStyle := bsSingle;
-    sColorDialogForm.sBitBtn4.Enabled := not (cdFullOpen in Options);
-
-    if sColorDialogForm.sBitBtn4.Enabled then
-      sColorDialogForm.Width := sColorDialogForm.Constraints.MinWidth
-    else
-      sColorDialogForm.Width := sColorDialogForm.Constraints.MaxWidth;
-
-    if (cdPreventFullOpen in Options) then
-      sColorDialogForm.sBitBtn4.Enabled := False;
-
-    sColorDialogForm.sBitBtn5.Visible := (cdShowHelp in Options);
-    sColorDialogForm.sSkinProvider1.PrepareForm;
-    sColorDialogForm.SelectedPanel.Brush.Color := Color;
-    sColorDialogForm.SelectedPanel.Pen.Color := sColorDialogForm.SelectedPanel.Brush.Color;
-    sColorDialogForm.OldPanel.Brush.Color := sColorDialogForm.SelectedPanel.Brush.Color;
-    sColorDialogForm.OldPanel.Pen.Color := sColorDialogForm.OldPanel.Brush.Color;
-    sColorDialogForm.ShowModal;
-    Result := sColorDialogForm.ModalResult = mrOk;
-    CustomColors.Assign(sColorDialogForm.AddPal.Colors);
-    DoClose;
-    if Result then
-      Color := sColorDialogForm.SelectedPanel.Brush.Color;
-
-    if sColorDialogForm <> nil then
-      sColorDialogForm.Free;
   end
   else
     Result := inherited Execute;
@@ -521,3 +512,13 @@ begin
 end;
 
 end.
+
+
+
+
+
+
+
+
+
+

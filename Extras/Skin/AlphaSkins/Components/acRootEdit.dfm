@@ -3,6 +3,7 @@ object acRootPathEditDlg: TacRootPathEditDlg
   Top = 321
   Width = 340
   Height = 240
+  AutoScroll = False
   BorderStyle = bsSizeToolWin
   Caption = 'Select Root Path'
   Color = clBtnFace
@@ -10,6 +11,12 @@ object acRootPathEditDlg: TacRootPathEditDlg
   Constraints.MinWidth = 340
   ParentFont = True
   OldCreateOrder = True
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  ParentFont = False
   Position = poScreenCenter
   Scaled = False
   OnClose = FormClose

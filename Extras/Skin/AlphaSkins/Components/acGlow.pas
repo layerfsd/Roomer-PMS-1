@@ -8,10 +8,11 @@ uses
   Windows, Controls, Classes, Forms, SysUtils, Graphics, Messages,
   {$IFNDEF DELPHI5} Types, {$ENDIF}
   {$IFDEF LOGGED} sDebugMsgs, {$ENDIF}
-  sSkinManager, sCommonData;
+  acntTypes, sSkinManager, sCommonData;
 
 
-function ShowGlow(const RealRect: TRect; const SkinSection, Name: string; const Margin, Alpha: integer; WndHandle: HWND; SkinData: TsCommonData = nil): integer;
+function ShowGlow(const RealRect: TRect; const SkinSection, Name: string; const Margin, Alpha: integer; WndHandle: HWND; SkinData: TsCommonData = nil): integer; overload;
+function ShowGlow(const RealRect: TRect; MaskIndexes: array of integer; const Margin, Alpha: integer; WndHandle: HWND; SkinData: TsCommonData = nil): integer; overload;
 procedure HideGlow(var ID: integer; DoAnimation: boolean = False);
 procedure SetGlowAlpha(ID: integer; aAlpha: byte);
 procedure ClearGlows(ManualFreeing: boolean = False);
@@ -34,7 +35,7 @@ type
     Margin,
     MaskIndex: integer;
 
-    Wnd: TForm;
+    Wnd: TacGlowForm;
     AlphaBmp: TBitmap;
     Destroyed: boolean;
     OldWndProc: TWndMethod;
@@ -91,7 +92,7 @@ begin
     NewGlow.SkinData := SkinData;
     NewGlow.SkinManager := SkinData.SkinManager;
     mi := NewGlow.SkinManager.GetMaskIndex(SkinSection, Name + ZeroChar);
-    if mi > -1 then begin
+    if mi >= 0 then begin
       Result := Length(acgEffects);
       SetLength(acgEffects, Result + 1);
       acgEffects[Result] := NewGlow;
@@ -107,12 +108,37 @@ begin
 end;
 
 
+function ShowGlow(const RealRect: TRect; MaskIndexes: array of integer; const Margin, Alpha: integer; WndHandle: HWND; SkinData: TsCommonData = nil): integer; overload;
+var
+  NewGlow: TacGlowEffect;
+begin
+  Result := -1;
+  if acLayered and (SkinData <> nil) and (GetCapture = 0) then begin
+    NewGlow := TacGlowEffect.Create;
+    NewGlow.SkinData := SkinData;
+    NewGlow.SkinManager := SkinData.SkinManager;
+    if (Length(MaskIndexes) > 0) and (MaskIndexes[0] >= 0) then begin
+      Result := Length(acgEffects);
+      SetLength(acgEffects, Result + 1);
+      acgEffects[Result] := NewGlow;
+      NewGlow.Margin := Margin;
+      NewGlow.MaskIndex := MaskIndexes[0];
+      NewGlow.Show(RealRect, RealRect, Alpha, WndHandle)
+    end
+    else begin
+      Result := -1;
+      FreeAndNil(NewGlow);
+    end;
+  end;
+end;
+
+
 procedure HideGlow(var ID: integer; DoAnimation: boolean = False);
 var
   sd: TsCommonData;
   i: integer;
 begin
-  if BetWeen(ID, 0, Length(acgEffects) - 1) and (acgEffects[ID] <> nil) then begin
+  if IsValidIndex(ID, Length(acgEffects)) and (acgEffects[ID] <> nil) then begin
     sd := acgEffects[ID].SkinData;
     if DoAnimation and sd.SkinManager.Effects.AllowAnimation and not Application.Terminated and ((sd.AnimTimer = nil) or (sd.AnimTimer.ThreadType = TT_GLOWING)) then begin
       i := GetNewTimer(sd.AnimTimer, sd.FOwnerControl, 1);
@@ -133,10 +159,12 @@ begin
         end;
         bGlowingDestroying := False;
       end;
+
       if (ID >= 0) and (acgEffects[ID] <> nil) then begin
         acgEffects[ID].Free;
         acgEffects[ID] := nil;
       end;
+
       ID := -1;
       if sd.AnimTimer <> nil then
         StopTimer(sd);
@@ -148,7 +176,7 @@ end;
 
 procedure SetGlowAlpha(ID: integer; aAlpha: byte);
 begin
-  if (ID >= 0) and (Length(acgEffects) > ID) and (acgEffects[ID] <> nil) then
+  if IsValidIndex(ID, Length(acgEffects)) and (acgEffects[ID] <> nil) then
     SetFormBlendValue(acgEffects[ID].Wnd.Handle, acgEffects[ID].AlphaBmp, AAlpha);
 end;
 
@@ -192,7 +220,7 @@ begin
 
   AlphaBmp := CreateBmp32(Width, Height);
   FillDC(AlphaBmp.Canvas.Handle, MkRect(AlphaBmp), 0);
-  if MaskIndex > -1 then
+  if MaskIndex >= 0 then
     DrawSkinRect(AlphaBmp, MkRect(AlphaBmp), EmptyCI, SkinManager.ma[MaskIndex], 0, False);
 
   UpdateBmpColors(AlphaBmp, SkinData, False, 0);
@@ -214,9 +242,6 @@ begin
   if AlphaBmp <> nil then
     FreeAndNil(AlphaBmp);
 
-//  if (SkinData.AnimTimer <> nil) and not SkinData.AnimTimer.Destroyed and (SkinData.AnimTimer.ThreadType = TT_GLOWING) then
-//    FreeAndNil(SkinData.AnimTimer);
-
   inherited;
 end;
 
@@ -236,48 +261,46 @@ end;
 procedure TacGlowEffect.Show(R, RealRect: TRect; const Alpha: integer; WndHandle: HWND);
 var
   DC: hdc;
-  FBmpSize: TSize;
-  FBmpTopLeft: TPoint;
   h: HWND;
   NewR: TRect;
+  FBmpSize: TSize;
+  FBmpTopLeft: TPoint;
   AddedStyle: {$IFDEF DELPHI7UP}NativeInt{$ELSE}longword{$ENDIF};
 begin
   if Wnd = nil then begin
-    Wnd := TForm.Create(nil);
-    Wnd.Visible := False;
-    Wnd.BorderStyle := bsNone;
+    Wnd := TacGlowForm.CreateNew(nil);
 
-    Wnd.Tag := ExceptTag;
-    SetClassLong(Wnd.Handle, GCL_STYLE, GetClassLong(Wnd.Handle, GCL_STYLE) and not NCS_DROPSHADOW);
     Wnd.ControlStyle := Wnd.ControlStyle - [csCaptureMouse];
 
     OldWndProc := Wnd.WindowProc;
     Wnd.WindowProc := NewWndProc;
     R := RealRect;
 
-    FBmpSize.cx := WidthOf (R, True) + SkinManager.MaskWidthLeft(MaskIndex) + SkinManager.MaskWidthRight(MaskIndex)  - 2 * Margin;
-    FBmpSize.cy := HeightOf(R, True) + SkinManager.MaskWidthTop (MaskIndex) + SkinManager.MaskWidthBottom(MaskIndex) - 2 * Margin;
+    FBmpSize.cx := WidthOf (R, True) + SkinManager.ma[MaskIndex].WL + SkinManager.ma[MaskIndex].WR - 2 * Margin;
+    FBmpSize.cy := HeightOf(R, True) + SkinManager.ma[MaskIndex].WT + SkinManager.ma[MaskIndex].WB - 2 * Margin;
     FBlend.SourceConstantAlpha := MaxByte;
 
     CreateAlphaBmp(FBmpSize.cx, FBmpSize.cy);
 
     Wnd.Width := FBmpSize.cx;
     Wnd.Height := FBmpSize.cy;
-    if (GetWindowLong(WndHandle, GWL_EXSTYLE) and WS_EX_TOPMOST = WS_EX_TOPMOST) or (SkinData.FOwnerObject = nil) then
+    if (GetWindowLong(WndHandle, GWL_EXSTYLE) and WS_EX_TOPMOST <> 0) or (SkinData.FOwnerObject = nil) then
       h := HWND_TOPMOST
     else
       h := GetNextWindow(WndHandle, GW_HWNDPREV);
 
-    NewR := Rect(R.Left - SkinManager.MaskWidthLeft(MaskIndex) + Margin, R.Top - SkinManager.MaskWidthTop(MaskIndex) + Margin, 0, 0);
+    NewR := Rect(R.Left - SkinManager.ma[MaskIndex].WL + Margin, R.Top - SkinManager.ma[MaskIndex].WT + Margin, 0, 0);
     if h = 0 then
       h := WndHandle;
 
     Wnd.HandleNeeded;
     if Wnd.HandleAllocated then begin
-      AddedStyle := WS_EX_LAYERED or WS_EX_NOACTIVATE or WS_EX_TRANSPARENT or WS_EX_TOOLWINDOW;
+      AddedStyle := WS_EX_LAYERED{ or WS_EX_NOACTIVATE} or WS_EX_TRANSPARENT;// or WS_EX_TOOLWINDOW;
       SetWindowLong(Wnd.Handle, GWL_EXSTYLE, GetWindowLong(Wnd.Handle, GWL_EXSTYLE) or AddedStyle);
+
       SetWindowPos(Wnd.Handle, h, NewR.Left, NewR.Top,
         0, 0, SWP_NOACTIVATE or SWP_NOOWNERZORDER or SWP_NOSENDCHANGING or SWP_NOSIZE {or SWP_NOZORDER {Preventing of windows positions changing});
+
       Wnd.Left := NewR.Left;
       Wnd.Top := NewR.Top;
       FBmpTopLeft := MkPoint;

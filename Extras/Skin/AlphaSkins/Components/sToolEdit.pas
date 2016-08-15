@@ -1,7 +1,7 @@
 unit sToolEdit;
 {$I sDefs.inc}
 //{$DEFINE LOGGED}
-
+//+
 interface
 
 uses
@@ -61,9 +61,7 @@ type
     FDialogKind: TFileDialogKind;
     procedure CreateEditDialog;
     function GetFileName:    string;
-    function GetDefaultExt:  string;
     function GetFilter:      string;
-    function GetInitialDir:  string;
     function GetDialogTitle: string;
     function GetFileEditStyle: TFileEditStyle;
     function GetOptions:       TOpenOptions;
@@ -72,9 +70,7 @@ type
     function GetFilterIndex:   Integer;
 
     procedure SetFileName   (const Value: string);
-    procedure SetDefaultExt (const Value: string);
     procedure SetFilter     (const Value: string);
-    procedure SetInitialDir (const Value: string);
     procedure SetDialogTitle(const Value: string);
     procedure SetFileEditStyle(Value: TFileEditStyle);
     procedure SetDialogKind   (Value: TFileDialogKind);
@@ -84,6 +80,8 @@ type
 
     function IsCustomTitle:  boolean;
     function IsCustomFilter: boolean;
+    function GetString(const Index: Integer): string;
+    procedure SetString(const Index: Integer; const Value: string);
   protected
     procedure ReceptFileDir(const AFileName: acString); override;
     procedure ButtonClick; override;
@@ -100,15 +98,15 @@ type
   published
     property AcceptFiles;
 {$IFNDEF NOTFORHELP}
-    property DefaultExt:  string  read GetDefaultExt  write SetDefaultExt;
     property FilterIndex: Integer read GetFilterIndex write SetFilterIndex default 1;
-    property InitialDir:  string  read GetInitialDir  write SetInitialDir;
+    property DefaultExt: string index 0 read GetString write SetString;
+    property InitialDir: string index 1 read GetString write SetString;
 {$ENDIF} // NOTFORHELP
-    property DialogKind: TFileDialogKind read FDialogKind write SetDialogKind default dkOpen;
-    property FileName: string read GetFileName write SetFileName stored False;
-    property Filter: string read GetFilter write SetFilter stored IsCustomFilter;
-    property HistoryList: TStrings read GetHistoryList write SetHistoryList;
-    property DialogOptions: TOpenOptions read GetOptions write SetOptions default [ofHideReadOnly, ofEnableSizing];
+    property FileName:   string read GetFileName write SetFileName stored False;
+    property Filter:     string read GetFilter write SetFilter stored IsCustomFilter;
+    property DialogKind: TFileDialogKind read FDialogKind    write SetDialogKind default dkOpen;
+    property HistoryList: TStrings       read GetHistoryList write SetHistoryList;
+    property DialogOptions: TOpenOptions read GetOptions     write SetOptions default [ofHideReadOnly, ofEnableSizing];
   end;
 
 
@@ -176,9 +174,8 @@ type
     FOnGetCellParams: TGetCellParams;
     FOnGetPopupFont:  TGetPopupFont;
     FOnAcceptDate:    TOnAcceptDate;
-    FAnimated: boolean;
-    function GetDate: TDateTime;
-    procedure SetDate(Value: TDateTime);
+    FAnimated,
+    FTextChanging: boolean;
     procedure SetYearDigits(Value: TYearDigits);
     function GetDialogTitle: string;
     procedure SetDialogTitle(const Value: string);
@@ -192,12 +189,12 @@ type
     function TextStored: boolean;
     function FourDigitYear: boolean;
     function FormatSettingsChange(var Message: TMessage): boolean;
-    procedure SetMinDate(const Value: TDateTime);
-    procedure SetMaxDate(const Value: TDateTime);
-    procedure SetShowCurrentDate(const Value: boolean);
     procedure CMExit       (var Message: TCMExit);        message CM_EXIT;
     procedure WMLButtonDown(var Message: TWMLButtonDown); message WM_LBUTTONDOWN;
-    function GetCheckOnExit: boolean;
+//    function GetCheckOnExit: boolean;
+    procedure SetDate(const Index: Integer; const Value: TDateTime);
+    function GetDate(const Index: Integer): TDateTime;
+    procedure SetBoolean(const Index: Integer; const Value: boolean);
   protected
     function CaretPos(X: integer): integer;
     procedure Change; override;
@@ -217,8 +214,10 @@ type
 {$ENDIF} // NOTFORHELP
     property BlanksChar: Char read FBlanksChar write SetBlanksChar default s_Space;
     property CalendarHints: TStrings read FCalendarHints write SetCalendarHints;
-    property CheckOnExit: boolean read GetCheckOnExit write FCheckOnExit default False;
+
+    property CheckOnExit: boolean read FCheckOnExit{GetCheckOnExit} write FCheckOnExit default True;//False;
     property DefaultToday: boolean read FDefaultToday write FDefaultToday default False;
+
     property MaxLength stored False;
     property StartOfWeek: TCalDayOfWeek read FStartOfWeek write SetStartOfWeek default dowLocaleDefault;
     property Weekends: sConst.TDaysOfWeek read FWeekends write SetWeekends default DefWeekends;
@@ -230,24 +229,26 @@ type
     procedure Loaded; override;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
+    function IsEmpty: boolean;
     function CheckValidDate(CreateRaise: boolean = True): boolean;
     function GetDateMask: string;
     procedure WndProc (var Message: TMessage); override;
     procedure UpdateMask;
 {$ENDIF} // NOTFORHELP
-    property Date: TDateTime read GetDate write SetDate;
     property Text stored DateIsStored;
+    property Date:    TDateTime index 2 read GetDate  write SetDate;
   published
-    property Animated: boolean read FAnimated write FAnimated default True;
-    property MinDate: TDateTime read FMinDate write SetMinDate;
-    property MaxDate: TDateTime read FMaxDate write SetMaxDate;
-    property ShowCurrentDate: boolean read FShowCurrentDate write SetShowCurrentDate default True;
-    property ShowWeeks: boolean read FShowWeeks write FShowWeeks default False;
-    property ShowTodayBtn: boolean read FShowTodayBtn write FShowTodayBtn default True;
+    property MinDate: TDateTime index 0 read FMinDate write SetDate;
+    property MaxDate: TDateTime index 1 read FMaxDate write SetDate;
+
+    property Animated:        boolean index 0 read FAnimated        write FAnimated     default True;
+    property ShowCurrentDate: boolean index 1 read FShowCurrentDate write SetBoolean    default True;
+    property ShowWeeks:       boolean index 2 read FShowWeeks       write FShowWeeks    default False;
+    property ShowTodayBtn:    boolean index 3 read FShowTodayBtn    write FShowTodayBtn default True;
 
     property OnGetCellParams: TGetCellParams read FOnGetCellParams write FOnGetCellParams;
     property OnGetPopupFont:  TGetPopupFont  read FOnGetPopupFont  write FOnGetPopupFont;
-    property OnCloseUp: TNotifyEvent read FCloseUp write FCloseUp;
+    property OnCloseUp:       TNotifyEvent   read FCloseUp         write FCloseUp;
   end;
 
 
@@ -448,13 +449,19 @@ begin
   if Flag then begin
     if ValidFileName(Temp) then begin
       if acDirExists(ExtractFilePath(Temp)) then
-        SetInitialDir(ExtractFilePath(Temp));
+        InitialDir := ExtractFilePath(Temp);
 
       if (ExtractFileName(Temp) = '') or not ValidFileName(ExtractFileName(Temp)) then
         Temp := '';
 
       FDialog.FileName := Temp;
-    end;
+    end
+    else
+      FDialog.FileName := '';
+
+    if acDirExists(InitialDir) then
+      FDialog.InitialDir := InitialDir;
+
     FDialog.HelpContext := Self.HelpContext;
     Flag := FDialog.Execute;
     if Flag then
@@ -466,26 +473,9 @@ begin
     DoAfterDialog(Temp, Flag);
     if Flag then begin
       inherited Text := Temp;
-      SetInitialDir(ExtractFilePath(FDialog.FileName));
+      InitialDir := ExtractFilePath(FDialog.FileName);
     end;
   end;
-end;
-
-
-function TsFilenameEdit.GetFileName: string;
-begin
-  Result := inherited Text;
-end;
-
-
-procedure TsFilenameEdit.SetFileName(const Value: string);
-begin
-  if (Value = '') or ValidFileName(Value) then begin
-    inherited Text := Value;
-    ClearFileList;
-  end
-  else
-    raise Exception.CreateFmt('Invalid file name', [Value]);
 end;
 
 
@@ -498,6 +488,15 @@ end;
 function TsFilenameEdit.GetShortName: string;
 begin
   Result := FileName;
+end;
+
+
+function TsFilenameEdit.GetString(const Index: Integer): string;
+begin
+  case Index of
+    0: Result := FDialog.DefaultExt;
+    1: Result := FDialog.InitialDir;
+  end;
 end;
 
 
@@ -526,15 +525,15 @@ begin
 end;
 
 
-function TsFilenameEdit.GetDefaultExt: string;
-begin
-  Result := FDialog.DefaultExt;
-end;
-
-
 function TsFilenameEdit.GetFileEditStyle: TFileEditStyle;
 begin
   Result := FDialog.FileEditStyle;
+end;
+
+
+function TsFilenameEdit.GetFileName: string;
+begin
+  Result := inherited Text;
 end;
 
 
@@ -547,12 +546,6 @@ end;
 function TsFilenameEdit.GetFilterIndex: Integer;
 begin
   Result := FDialog.FilterIndex;
-end;
-
-
-function TsFilenameEdit.GetInitialDir: string;
-begin
-  Result := FDialog.InitialDir;
 end;
 
 
@@ -583,15 +576,20 @@ begin
 end;
 
 
-procedure TsFilenameEdit.SetDefaultExt(const Value: string);
-begin
-  FDialog.DefaultExt := Value;
-end;
-
-
 procedure TsFilenameEdit.SetFileEditStyle(Value: TFileEditStyle);
 begin
   FDialog.FileEditStyle := Value;
+end;
+
+
+procedure TsFilenameEdit.SetFileName(const Value: string);
+begin
+  if (Value = '') or ValidFileName(Value) then begin
+    inherited Text := Value;
+    ClearFileList;
+  end
+  else
+    raise Exception.CreateFmt('Invalid file name', [Value]);
 end;
 
 
@@ -604,12 +602,6 @@ end;
 procedure TsFilenameEdit.SetFilterIndex(Value: Integer);
 begin
   FDialog.FilterIndex := Value;
-end;
-
-
-procedure TsFilenameEdit.SetInitialDir(const Value: string);
-begin
-  FDialog.InitialDir := Value;
 end;
 
 
@@ -626,6 +618,15 @@ begin
     FDialog.Options := Value;
     if not FMultipleDirs then
       ClearFileList;
+  end;
+end;
+
+
+procedure TsFilenameEdit.SetString(const Index: Integer; const Value: string);
+begin
+  case Index of
+    0: FDialog.DefaultExt := Value;
+    1: FDialog.InitialDir := Value;
   end;
 end;
 
@@ -669,40 +670,42 @@ begin
       s := '';
 
     PathDialogForm := TPathDialogForm.Create(Application);
-    PathDialogForm.InitLngCaptions;
-    PathDialogForm.sBitBtn3.Visible := sdAllowCreate in DialogOptions;
-    if ShowRootBtns then begin
-      PathDialogForm.sScrollBox1.Visible := True;
-      PathDialogForm.sLabel1.Visible := True;
-      bw := GetSystemMetrics(SM_CXSIZEFRAME);
-      PathDialogForm.sShellTreeView1.Left := PathDialogForm.sShellTreeView1.Left + PathDialogForm.sScrollBox1.Width + 4;
-      PathDialogForm.sBitBtn1.Left := PathDialogForm.sBitBtn1.Left + PathDialogForm.sScrollBox1.Width + 4;
-      PathDialogForm.sBitBtn2.Left := PathDialogForm.sBitBtn2.Left + PathDialogForm.sScrollBox1.Width + 4;
-      PathDialogForm.Width := PathDialogForm.Width + PathDialogForm.sScrollBox1.Width + 4 + bw;
-      PathDialogForm.GenerateButtons;
-    end
-    else
-      PathDialogForm.sLabel1.Visible := False;
-
-    PathDialogForm.UpdateAnchors;
-    try
-      PathDialogForm.sShellTreeView1.BoundLabel.Caption := DialogText;
-      PathDialogForm.sShellTreeView1.Root := FRoot;
-      if (s <> '') and acDirExists(s) then
-        PathDialogForm.sShellTreeView1.Path := s;
-
-      if PathDialogForm.ShowModal = mrOk then begin
-        s := PathDialogForm.sShellTreeView1.Path;
-        if (s <> '') and acDirExists(s) then
-          InitialDir := s;
+    with PathDialogForm do begin
+      InitLngCaptions;
+      sBitBtn3.Visible := sdAllowCreate in DialogOptions;
+      if ShowRootBtns then begin
+        sScrollBox1.Visible := True;
+        sLabel1.Visible := True;
+        bw := GetSystemMetrics(SM_CXSIZEFRAME);
+        sShellTreeView1.Left := sShellTreeView1.Left + sScrollBox1.Width + 4;
+        sBitBtn1.Left := sBitBtn1.Left + sScrollBox1.Width + 4;
+        sBitBtn2.Left := sBitBtn2.Left + sScrollBox1.Width + 4;
+        Width := Width + sScrollBox1.Width + 4 + bw;
+        GenerateButtons;
       end
-      else begin
-        s := Text;
-        Flag := False;
-      end;
+      else
+        sLabel1.Visible := False;
 
-    finally
-      FreeAndNil(PathDialogForm);
+      UpdateAnchors;
+      try
+        sShellTreeView1.BoundLabel.Caption := DialogText;
+        sShellTreeView1.Root := FRoot;
+        if (s <> '') and acDirExists(s) then
+          sShellTreeView1.Path := s;
+
+        if ShowModal = mrOk then begin
+          s := sShellTreeView1.Path;
+          if (s <> '') and acDirExists(s) then
+            InitialDir := s;
+        end
+        else begin
+          s := Text;
+          Flag := False;
+        end;
+
+      finally
+        FreeAndNil(PathDialogForm);
+      end;
     end;
     DoAfterDialog(s, Flag);
     if Flag then
@@ -797,6 +800,8 @@ begin
   FShowTodayBtn := True;
   FDefaultToday := False;
   FAnimated := True;
+  FTextChanging := False;
+  FCheckOnExit := True;
 
   ControlState := ControlState + [csCreating];
   Width := 86;
@@ -854,6 +859,18 @@ begin
 end;
 
 
+function TsCustomDateEdit.GetDate(const Index: Integer): TDateTime;
+begin
+  if (Pos(s_Space, Text) > 0) or (NullDate = FIntDate) then
+    if DefaultToday and not (csDesigning in ComponentState) then
+      Result := SysUtils.Date
+    else
+      Result := NullDate
+  else
+    Result := FIntDate;
+end;
+
+
 function TsCustomDateEdit.GetDateFormat: string; // Unused
 begin
   Result := FDateFormat;
@@ -862,7 +879,7 @@ end;
 
 function TsCustomDateEdit.TextStored: boolean;
 begin
-  Result := not IsEmptyStr(Text, [#0, s_Space, {$IFDEF DELPHI_XE}FormatSettings.{$ENDIF}DateSeparator, FBlanksChar]);
+  Result := not IsEmpty;
 end;
 
 
@@ -899,7 +916,7 @@ begin
 {$IFDEF DELPHI7UP}
         Result := TryStrToDate(Text, D);
         if Result then
-          SetDate(D)
+          SetDate(2, D)
         else begin
           s := acs_InvalidDate + ': ' + Text;
           if Assigned(OnValidateError) then
@@ -909,7 +926,7 @@ begin
               Raise EConvertError.CreateFmt(acs_InvalidDate, [Text]);
         end;
 {$ELSE}
-        SetDate(StrToDateFmt(FDateFormat, Text));
+        SetDate(2, StrToDateFmt(FDateFormat, Text));
         Result := True;
 {$ENDIF}
       finally
@@ -956,11 +973,21 @@ end;
 procedure TsCustomDateEdit.SetBlanksChar(Value: Char);
 begin
   if Value <> FBlanksChar then begin
-    if (Value < s_Space) then
+    if Value < s_Space then
       Value := s_Space;
 
     FBlanksChar := Value;
     UpdateMask;
+  end;
+end;
+
+
+procedure TsCustomDateEdit.SetBoolean(const Index: Integer; const Value: boolean);
+begin
+  case Index of
+    1:
+      if FShowCurrentDate <> Value then
+        FShowCurrentDate := Value;
   end;
 end;
 
@@ -970,7 +997,7 @@ var
   DateValue: TDateTime;
   OldFormat: string[10];
 begin
-  DateValue := GetDate;
+  DateValue := GetDate(2);
   OldFormat := FDateFormat;
   UpdateFormat;
   if (GetDateMask <> EditMask) or (OldFormat <> FDateFormat) then begin { force update }
@@ -978,7 +1005,7 @@ begin
     EditMask := GetDateMask;
   end;
   UpdatePopup;
-  SetDate(DateValue);
+  SetDate(2, DateValue);
 end;
 
 
@@ -992,7 +1019,7 @@ end;
 
 function TsCustomDateEdit.FourDigitYear: boolean;
 begin
-  Result := (FYearDigits = dyFour);
+  Result := FYearDigits = dyFour;
   Result := Result or ((FYearDigits = dyDefault) and sDateUtils.NormalYears);
 end;
 
@@ -1003,53 +1030,9 @@ begin
 end;
 
 
-function TsCustomDateEdit.GetDate: TDateTime;
-begin
-  if (Pos(s_Space, Text) > 0) or (NullDate = FIntDate) then
-    if DefaultToday and not (csDesigning in ComponentState) then
-      Result := SysUtils.Date
-    else
-      Result := NullDate
-  else
-    Result := FIntDate;
-end;
-
-
-var
-  acTextChanging: boolean = False;
-
-
-procedure TsCustomDateEdit.SetDate(Value: TDateTime);
-var
-  D: TDateTime;
-begin
-  if not ValidDate(Value) or (Value = NullDate) then
-    if DefaultToday and not (csDesigning in ComponentState) then
-      FIntDate := SysUtils.Date
-    else
-      FIntDate := NullDate
-  else
-    FIntDate := Value;
-
-  D := Self.Date;
-  if not acTextChanging then begin
-    acTextChanging := True;
-    if FIntDate = NullDate then
-      Text := ''
-    else
-      TEdit(Self).Text := FormatDateTime(FDateFormat, FIntDate);
-
-    acTextChanging := False;
-  end;
-
-  Modified := D <> Date;
-  SkinData.BGChanged := SkinData.BGChanged or Modified;
-end;
-
-
 procedure TsCustomDateEdit.ApplyDate(Value: TDateTime);
 begin
-  SetDate(Value);
+  SetDate(2, Value);
   SelectAll;
 end;
 
@@ -1060,6 +1043,51 @@ begin
 end;
 
 
+procedure TsCustomDateEdit.SetDate(const Index: Integer; const Value: TDateTime);
+var
+  D: TDateTime;
+begin
+  case Index of
+    0:
+      if (FMaxDate = NullDate) or (Value <= FMaxDate) then
+        if FMinDate <> Value then begin
+          FMinDate := Value;
+          if Date < FMinDate then
+            Date := FMinDate;
+        end;
+
+    1:
+      if (FMaxDate <> Value) and (Value >= FMinDate) then begin
+        FMaxDate := Value;
+        if Date > FMaxDate then
+          Date := FMaxDate;
+      end;
+
+    2: begin
+      if not ValidDate(Value) or (Value = NullDate) then
+        if DefaultToday and not (csDesigning in ComponentState) then
+          FIntDate := SysUtils.Date
+        else
+          FIntDate := NullDate
+      else
+        FIntDate := Value;
+
+      D := Self.Date;
+      if not FTextChanging then begin
+        FTextChanging := True;
+        if FIntDate = NullDate then
+          Text := ''
+        else
+          TEdit(Self).Text := FormatDateTime(FDateFormat, FIntDate);
+
+        FTextChanging := False;
+      end;
+      Modified := D <> Date;
+      SkinData.BGChanged := SkinData.BGChanged or Modified;
+    end;
+  end;
+end;
+
 procedure TsCustomDateEdit.SetDialogTitle(const Value: string);
 begin
   FTitle := Value;
@@ -1069,6 +1097,12 @@ end;
 function TsCustomDateEdit.IsCustomTitle: boolean;
 begin
   Result := (CompareStr('Date select', DialogTitle) <> 0) and (FTitle <> '');
+end;
+
+
+function TsCustomDateEdit.IsEmpty: boolean;
+begin
+  Result := IsEmptyStr(Text, [#0, s_Space, {$IFDEF DELPHI_XE}FormatSettings.{$ENDIF}DateSeparator, FBlanksChar]);
 end;
 
 
@@ -1134,7 +1168,7 @@ procedure TsCustomDateEdit.CalendarHintsChanged(Sender: TObject);
 begin
   TStringList(FCalendarHints).OnChange := nil;
   try
-    while (FCalendarHints.Count > 4) do
+    while FCalendarHints.Count > 4 do
       FCalendarHints.Delete(FCalendarHints.Count - 1);
   finally
     TStringList(FCalendarHints).OnChange := CalendarHintsChanged;
@@ -1230,20 +1264,25 @@ begin
       sPopupCalendar.Close;
 
   sPopupCalendar := TForm(FPopupWindow);
-  TsPopupCalendar(FPopupWindow).Font.Assign(Font);
-  if Assigned(OnGetPopupFont) then
-    OnGetPopupFont(Self, TsPopupCalendar(FPopupWindow).Font);
+  with TsPopupCalendar(FPopupWindow) do begin
+    Font.Assign(Self.Font);
+    if Self.SkinData.SkinManager <> nil then
+      Font.Height := Self.Font.Height * 100 div aScalePercents[Self.SkinData.SkinManager.GetScale];
 
-  TsPopupCalendar(FPopupWindow).FCalendar.MaxDate := MaxDate;
-  TsPopupCalendar(FPopupWindow).FCalendar.MinDate := MinDate;
-  TsPopupCalendar(FPopupWindow).FCalendar.Animated := FAnimated; 
-  if Self.Date <> NullDate then
-    TsPopupCalendar(FPopupWindow).FCalendar.CalendarDate := Self.Date
-  else
-    TsPopupCalendar(FPopupWindow).FCalendar.CalendarDate := SysUtils.Date;
+    if Assigned(OnGetPopupFont) then
+      OnGetPopupFont(Self, Font);
 
-  TsPopupCalendar(FPopupWindow).FCalendar.ControlStyle := TsPopupCalendar(FPopupWindow).FCalendar.ControlStyle - [csDoubleClicks];
-  TsPopupCalendar(FPopupWindow).FEditor := Self;
+    FCalendar.MaxDate := MaxDate;
+    FCalendar.MinDate := MinDate;
+    FCalendar.Animated := FAnimated;
+    if Self.Date <> NullDate then
+      FCalendar.CalendarDate := Self.Date
+    else
+      FCalendar.CalendarDate := SysUtils.Date;
+
+    FCalendar.ControlStyle := FCalendar.ControlStyle - [csDoubleClicks];
+    FEditor := Self;
+  end;
   UpdatePopup;
   inherited;
 end;
@@ -1274,7 +1313,7 @@ begin
           end;
 
         AC_SETNEWSKIN, AC_REFRESH:
-          if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
+          if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then begin
             if Assigned (FPopupWindow) then
               FPopupWindow.BroadCast(Message);
 
@@ -1286,36 +1325,15 @@ begin
   inherited;
   case Message.Msg of
     CM_CHANGED, CM_TEXTCHANGED:
-      if not (csLoading in ComponentState) and not acTextChanging then begin
-        acTextChanging := True;
+      if not (csLoading in ComponentState) and not FTextChanging then begin
+        FTextChanging := True;
         if (Text = '') or (Pos(s_Space, Text) > 0) or not TextStored then
           Date := 0
         else
-          SetDate(StrToDateFmtDef(FDateFormat, Text, Date));
+          SetDate(2, StrToDateFmtDef(FDateFormat, Text, Date));
 
-        acTextChanging := False;
+        FTextChanging := False;
      end;
-  end;
-end;
-
-
-procedure TsCustomDateEdit.SetMinDate(const Value: TDateTime);
-begin
-  if (FMaxDate = NullDate) or (Value <= FMaxDate) then
-    if (FMinDate <> Value) then begin
-      FMinDate := Value;
-      if Date < FMinDate then
-        Date := FMinDate;
-    end;
-end;
-
-
-procedure TsCustomDateEdit.SetMaxDate(const Value: TDateTime);
-begin
-  if (FMaxDate <> Value) and (Value >= FMinDate) then begin
-    FMaxDate := Value;
-    if Date > FMaxDate then
-      Date := FMaxDate;
   end;
 end;
 
@@ -1326,33 +1344,30 @@ begin
 end;
 
 
-procedure TsCustomDateEdit.SetShowCurrentDate(const Value: boolean);
-begin
-  if FShowCurrentDate <> Value then
-    FShowCurrentDate := Value;
-end;
-
-
 procedure TsCustomDateEdit.WMLButtonDown(var Message: TWMLButtonDown);
+var
+  l, Pos, YearOffset: integer;
 begin
   inherited;
-  if not AutoSelect or (CaretPos(Message.XPos) < Length(Text)) then
-    case CaretPos(Message.XPos) of
-      1..3: begin
-        SelStart  := 0;
-        SelLength := 2;
-      end;
-
-      4..7: begin
-        SelStart  := 3;
+  Pos := CaretPos(Message.XPos);
+  l := Length(Text);
+  if not AutoSelect or (Pos <= l) then begin
+    YearOffset := 2 * integer(FourDigitYear and (UpperCase(FDateFormat[1]) = 'Y'));
+    Pos := CaretPos(Message.XPos);
+    if Between(Pos, 1, 3 + YearOffset) then begin
+      SelStart  := 0;
+      SelLength := 2 + YearOffset;
+    end
+    else
+      if Between(Pos, 4 + YearOffset, 6 + YearOffset) then begin
+        SelStart  := 3 + YearOffset;
         SelLength := 2;
       end
-
       else begin
-        SelStart  := 6;
-        SelLength := 4;
+        SelStart  := 6 + YearOffset;
+        SelLength := 2 + 2 * integer(FourDigitYear and (UpperCase(FDateFormat[1]) <> 'Y'));
       end;
-    end;
+  end;
 end;
 
 
@@ -1368,7 +1383,6 @@ begin
       3, 6: w := GetStringSize(Font.Handle, s_Comma).cx
       else  w := GetStringSize(Font.Handle, ZeroChar).cx;
     end;
-
     if X < pos + w then begin
       Result := i;
       Exit;
@@ -1416,12 +1430,6 @@ function StrToDateFmt(const DateFormat, S: string): TDateTime;
 begin
   if not InternalStrToDate(DateFormat, S, Result) then
     Raise EConvertError.CreateFmt(acs_InvalidDate, [S]);
-end;
-
-
-function TsCustomDateEdit.GetCheckOnExit: boolean;
-begin
-  Result := FCheckOnExit;
 end;
 
 end.

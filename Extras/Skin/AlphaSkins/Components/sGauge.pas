@@ -1,6 +1,7 @@
 unit sGauge;
 {$I sDefs.inc}
 //{$DEFINE LOGGED}
+//+
 
 interface
 
@@ -30,20 +31,22 @@ type
     FMaxValue,
     FCurValue: acInt64;
 
-    FKind: TsGaugeKind;
-    FShowText: Boolean;
-    FOnChange: TNotifyEvent;
+    FAnimPos,
+    FLongTime: integer;
+
+    FShowText,
+    FAnimated,
+    FCalcPercents: boolean;
+
+    Light: TBitmap;
     FSuffix: string;
+    FKind: TsGaugeKind;
+    FOnChange: TNotifyEvent;
     FCommonData: TsCommonData;
-    FForeColor, FBackColor: TColor;
     FBorderStyle: TBorderStyle;
     FProgressSkin: TsSkinSection;
-    FCalcPercents: boolean;
-    FAnimated: boolean;
-    FLongTime: integer;
-    FAnimPos: integer;
-    Light: TBitmap;
     FOnPaintText: TPrintTextEvent;
+    FForeColor, FBackColor: TColor;
     procedure PaintBackground(AnImage: TBitmap);
     procedure PaintAsText    (AnImage: TBitmap; PaintRect: TRect);
     procedure PaintAsNothing (AnImage: TBitmap; PaintRect: TRect);
@@ -162,16 +165,15 @@ end;
 
 constructor TsGauge.Create(AOwner: TComponent);
 begin
+  FCommonData := TsCommonData.Create(Self, False);
+  FCommonData.COC := COC_TsGauge;
   inherited Create(AOwner);
-
   Timer := TTimer.Create(Self);
   Timer.Enabled := False;
   Timer.Interval := acTimerInterval;
   Timer.OnTimer := TimerAction;
   FLongTime := AnimLongDelay + 1;
   FAnimPos := 9999;
-  FCommonData := TsCommonData.Create(Self, False);
-  FCommonData.COC := COC_TsGauge;
   ControlStyle := ControlStyle + [csOpaque];
 
   FMinValue := 0;
@@ -203,63 +205,59 @@ var
   OverlayImage: TBitmap;
   PaintRect: TRect;
 begin
-  if (Width < 1) or (Height < 1) then
-    Exit;
+  if (Width > 0) and (Height > 0) then
+    if FCommonData.Skinned then
+      if FCommonData.Updating then
+        SetPixel(Canvas.Handle, 0, 0, clFuchsia)
+      else begin
+        PrepareCache;
+        UpdateCorners(FCommonData, 0);
 
-  if FCommonData.Skinned then begin
-    if FCommonData.Updating then begin
-      SetPixel(Canvas.Handle, 0, 0, clFuchsia);
-      Exit;
-    end;
-
-    PrepareCache;
-    UpdateCorners(FCommonData, 0);
-
-    BitBlt(Canvas.Handle, 0, 0, Width, Height, FCommonData.FCacheBmp.Canvas.Handle, 0, 0, SRCCOPY);
-    FreeAndNil(FCommonData.FCacheBmp);
-  end
-  else
-    with Canvas do begin
-      TheImage := CreateBmp32(Width, Height);
-      try
-        PaintBackground(TheImage);
-        PaintRect := ClientRect;
-        if FBorderStyle = bsSingle then
-          InflateRect(PaintRect, -1, -1);
-
-        OverlayImage := CreateBmpLike(TheImage);
-        OverlayImage.Canvas.Brush.Color := clWindowFrame;
-        OverlayImage.Canvas.Brush.Style := bsSolid;
-        OverlayImage.Canvas.FillRect(MkRect(Self));
+        BitBlt(Canvas.Handle, 0, 0, Width, Height, FCommonData.FCacheBmp.Canvas.Handle, 0, 0, SRCCOPY);
+        FreeAndNil(FCommonData.FCacheBmp);
+      end
+    else
+      with Canvas do begin
+        TheImage := CreateBmp32(Width, Height);
         try
-          PaintBackground(OverlayImage);
-          case FKind of
-            gkText:
-              PaintAsNothing(OverlayImage, PaintRect);
+          PaintBackground(TheImage);
+          PaintRect := ClientRect;
+          if FBorderStyle = bsSingle then
+            InflateRect(PaintRect, -1, -1);
 
-            gkHorizontalBar, gkVerticalBar:
-              PaintAsBar(OverlayImage, PaintRect);
+          OverlayImage := CreateBmpLike(TheImage);
+          OverlayImage.Canvas.Brush.Color := clWindowFrame;
+          OverlayImage.Canvas.Brush.Style := bsSolid;
+          OverlayImage.Canvas.FillRect(MkRect(Self));
+          try
+            PaintBackground(OverlayImage);
+            case FKind of
+              gkText:
+                PaintAsNothing(OverlayImage, PaintRect);
 
-            gkPie:
-              PaintAsPie(OverlayImage, PaintRect);
+              gkHorizontalBar, gkVerticalBar:
+                PaintAsBar(OverlayImage, PaintRect);
 
-            gkNeedle:
-              PaintAsNeedle(OverlayImage, PaintRect);
+              gkPie:
+                PaintAsPie(OverlayImage, PaintRect);
+
+              gkNeedle:
+                PaintAsNeedle(OverlayImage, PaintRect);
+            end;
+            TheImage.Canvas.CopyMode := cmSrcInvert;
+            TheImage.Canvas.Draw(0, 0, OverlayImage);
+            TheImage.Canvas.CopyMode := cmSrcCopy;
+            if FShowText then
+              PaintAsText(TheImage, PaintRect);
+          finally
+            OverlayImage.Free;
           end;
-          TheImage.Canvas.CopyMode := cmSrcInvert;
-          TheImage.Canvas.Draw(0, 0, OverlayImage);
-          TheImage.Canvas.CopyMode := cmSrcCopy;
-          if FShowText then
-            PaintAsText(TheImage, PaintRect);
+          Canvas.CopyMode := cmSrcCopy;
+          Canvas.Draw(0, 0, TheImage);
         finally
-          OverlayImage.Free;
+          TheImage.Destroy;
         end;
-        Canvas.CopyMode := cmSrcCopy;
-        Canvas.Draw(0, 0, TheImage);
-      finally
-        TheImage.Destroy;
       end;
-    end;
 end;
 
 
@@ -280,13 +278,13 @@ end;
 
 procedure TsGauge.SkinPaintAsBar(aRect: TRect);
 var
-  FillSize: acInt64;
-  W, H, X, RgnIndex, index: integer;
   CI: TCacheInfo;
+  IsVert: boolean;
+  FillSize: acInt64;
   pSkinSection, s: string;
   bRect, R1, R2, RR: TRect;
+  W, H, X, RgnIndex, index: integer;
   TempBmp, MaskBmp, SrcBmp, LightBmp, RtSrc: TBitmap;
-  IsVert: boolean;
 
   function GetFillSize: integer;
   begin
@@ -463,54 +461,55 @@ end;
 
 procedure TsGauge.SkinPaintAsPie(aRect: TRect);
 var
-  MiddleX, MiddleY: Integer;
+  W, H, MiddleX, MiddleY: Integer;
   Angle: Double;
-  W, H: Integer;
 begin
   W := WidthOf (aRect, True);
   H := HeightOf(aRect, True);
-
-  FCommonData.FCacheBmp.Canvas.Pen.Width := 1;
-  FCommonData.FCacheBmp.Canvas.Brush.Style := bsSolid;
-  FCommonData.FCacheBmp.Canvas.Pen.Style := psSolid;
-  FCommonData.FCacheBmp.Canvas.Pen.Color := ForeColor;
-  FCommonData.FCacheBmp.Canvas.Ellipse(aRect.Left, aRect.Top, W, H);
-  FCommonData.FCacheBmp.Canvas.Pen.Style := psSolid;
-  FCommonData.FCacheBmp.Canvas.Brush.Color := ForeColor;
-  if PercentDone > 0 then begin
-    MiddleX := W div 2;
-    MiddleY := H div 2;
-    Angle := (Pi * ((PercentDone / 50) + 0.5));
-    FCommonData.FCacheBmp.Canvas.Pie(aRect.Left, aRect.Top, W, H, Integer(Round(MiddleX * (1 - Cos(Angle)))),
-                                     Integer(Round(MiddleY * (1 - Sin(Angle)))), MiddleX, 0);
+  with FCommonData.FCacheBmp.Canvas do begin
+    Pen.Width := 1;
+    Brush.Style := bsSolid;
+    Pen.Style := psSolid;
+    Pen.Color := ForeColor;
+    Ellipse(aRect.Left, aRect.Top, W, H);
+    Pen.Style := psSolid;
+    Brush.Color := ForeColor;
+    if PercentDone > 0 then begin
+      MiddleX := W div 2;
+      MiddleY := H div 2;
+      Angle := Pi * (PercentDone / 50 + 0.5);
+      Pie(aRect.Left, aRect.Top, W, H, Integer(Round(MiddleX * (1 - Cos(Angle)))),
+                                       Integer(Round(MiddleY * (1 - Sin(Angle)))), MiddleX, 0);
+    end;
   end;
 end;
 
 
 procedure TsGauge.SkinPaintAsNeedle(aRect: TRect);
 var
-  MiddleX: Integer;
+  MiddleX, X, Y, W, H: Integer;
   Angle: Double;
-  X, Y, W, H: Integer;
 begin
   X := aRect.Left;
   Y := aRect.Top;
   W := WidthOf(aRect, True);
   H := HeightOf(aRect, True);
 
-  FCommonData.FCacheBmp.Canvas.Brush.Style := bsClear;
-  FCommonData.FCacheBmp.Canvas.Pen.Width := 1;
-  FCommonData.FCacheBmp.Canvas.Pie(X, Y, W, H * 2 - 1, X + W, aRect.Bottom - 1, X, aRect.Bottom - 1);
-  FCommonData.FCacheBmp.Canvas.MoveTo(X, aRect.Bottom);
-  FCommonData.FCacheBmp.Canvas.LineTo(X + W, aRect.Bottom);
-  FCommonData.FCacheBmp.Canvas.Pen.Color := ForeColor;
-  FCommonData.FCacheBmp.Canvas.Pen.Style := psSolid;
-  FCommonData.FCacheBmp.Canvas.Pie(X, Y, W, H * 2 - 1, X + W, aRect.Bottom - 1, X, aRect.Bottom - 1);
-  if PercentDone > 0 then begin
-    MiddleX := Width div 2;
-    FCommonData.FCacheBmp.Canvas.MoveTo(MiddleX, aRect.Bottom - 1);
-    Angle := (Pi * ((PercentDone / 100)));
-    FCommonData.FCacheBmp.Canvas.LineTo(Integer(Round(MiddleX * (1 - Cos(Angle)))), Integer(Round((aRect.Bottom - 1) * (1 - Sin(Angle)))));
+  with FCommonData.FCacheBmp.Canvas do begin
+    Brush.Style := bsClear;
+    Pen.Width := 1;
+    Pie(X, Y, W, H * 2 - 1, X + W, aRect.Bottom - 1, X, aRect.Bottom - 1);
+    MoveTo(X, aRect.Bottom);
+    LineTo(X + W, aRect.Bottom);
+    Pen.Color := ForeColor;
+    Pen.Style := psSolid;
+    Pie(X, Y, W, H * 2 - 1, X + W, aRect.Bottom - 1, X, aRect.Bottom - 1);
+    if PercentDone > 0 then begin
+      MiddleX := Width div 2;
+      MoveTo(MiddleX, aRect.Bottom - 1);
+      Angle := (Pi * ((PercentDone / 100)));
+      LineTo(Integer(Round(MiddleX * (1 - Cos(Angle)))), Integer(Round((aRect.Bottom - 1) * (1 - Sin(Angle)))));
+    end;
   end;
 end;
 
@@ -602,7 +601,7 @@ begin
   if Light <> nil then
     FreeAndNil(Light);
 
-  if (FTmpProgressBmp <> nil) then
+  if FTmpProgressBmp <> nil then
     FreeAndNil(FTmpProgressBmp);
 
   inherited Destroy;
@@ -635,7 +634,7 @@ begin
           if Animated and SkinData.SkinManager.Effects.AllowAnimation then
             Timer.Enabled := False;
 
-          if (FTmpProgressBmp <> nil) then
+          if FTmpProgressBmp <> nil then
             FreeAndNil(FTmpProgressBmp);
 
           CommonWndProc(Message, FCommonData);
@@ -644,8 +643,8 @@ begin
         end;
 
       AC_REFRESH:
-        if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
-          if (FTmpProgressBmp <> nil) then
+        if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then begin
+          if FTmpProgressBmp <> nil then
             FreeAndNil(FTmpProgressBmp);
 
           CommonWndProc(Message, FCommonData);
@@ -657,8 +656,8 @@ begin
         end;
 
       AC_SETNEWSKIN:
-        if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
-          if (FTmpProgressBmp <> nil) then
+        if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then begin
+          if FTmpProgressBmp <> nil then
             FreeAndNil(FTmpProgressBmp);
 
           CommonWndProc(Message, FCommonData);
@@ -928,7 +927,7 @@ begin
       Pen.Color := ForeColor;
       MiddleX := Width div 2;
       MoveTo(MiddleX, PaintRect.Bottom - 1);
-      Angle := (Pi * ((PercentDone / 100)));
+      Angle := (Pi * PercentDone / 100);
       LineTo(Integer(Round(MiddleX * (1 - Cos(Angle)))), Integer(Round((PaintRect.Bottom - 1) * (1 - Sin(Angle)))));
     end;
   end;
@@ -1013,7 +1012,7 @@ begin
   if FAnimated <> Value then begin
     FAnimated := Value;
     if not (csDesigning in ComponentState) then begin
-      if (FTmpProgressBmp <> nil) then
+      if FTmpProgressBmp <> nil then
         FreeAndNil(FTmpProgressBmp);
 
       Timer.Enabled := Value and SkinData.SkinManager.Effects.AllowAnimation;
@@ -1039,7 +1038,7 @@ begin
     FProgressSkin := Value;
     if FTmpProgressBmp <> nil then
       FreeAndNil(FTmpProgressBmp);
-      
+
     FCommonData.BGChanged := True;
     Repaint;
   end;

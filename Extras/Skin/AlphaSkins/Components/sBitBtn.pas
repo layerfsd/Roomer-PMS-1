@@ -46,6 +46,7 @@ type
     FTextAlignment: TAlignment;
 
     LastRect: TRect;
+    FGlyphColorTone: TColor;
     FOnPaint: TBmpPaintEvent;
     FImages: TCustomImageList;
     FCommonData: TsCtrlSkinData;
@@ -78,10 +79,11 @@ type
     procedure SetReflected        (const Value: boolean);
     procedure SetTextAlignment    (const Value: TAlignment);
     procedure SetVerticalAlignment(const Value: TVerticalAlignment);
-    procedure SetAcceptsControls  (const Value: boolean); 
+    procedure SetAcceptsControls  (const Value: boolean);
 
     procedure WMKeyUp    (var Message: TWMKey);      message WM_KEYUP;
     procedure CNDrawItem (var Message: TWMDrawItem); message CN_DRAWITEM;
+    procedure SetGlyphColorTone(const Value: TColor);
   protected
     IsFocused,
     ControlsShifted: boolean;
@@ -127,6 +129,7 @@ type
     property DrawOverBorder: boolean read FDrawOverBorder write SetDrawOverBorder default True;
     property FocusMargin: integer read FFocusMargin write SetFocusMargin default 1;
     property Grayed: boolean read GetGrayed write SetGrayed default False;
+    property GlyphColorTone: TColor read FGlyphColorTone write SetGlyphColorTone default clNone;
     property ImageIndex: integer read FImageIndex write SetImageIndex default -1;
     property Images: TCustomImageList read FImages write SetImages;
     property VerticalAlignment: TVerticalAlignment read FVerticalAlignment write SetVerticalAlignment default taVerticalCenter;
@@ -151,7 +154,7 @@ implementation
 uses
   math, ActnList,
   {$IFDEF DELPHI7UP} Themes, {$ENDIF}
-  sVCLUtils, sMessages, acntUtils, sGraphUtils, sAlphaGraph, acGlow, sBorders, sThirdParty, sSkinManager, sStyleSimply;
+  sVCLUtils, sMessages, acntUtils, sGraphUtils, sAlphaGraph, acGlow, sBorders, sThirdParty, sSkinManager, sStyleSimply, acntTypes;
 
 
 var
@@ -160,7 +163,8 @@ var
 
 function IsImgListDefined(Btn: TsBitBtn): boolean;
 begin
-  Result := Assigned(Btn.Images) and (GetImageCount(Btn.Images) > 0) and (Btn.ImageIndex >= 0) and (Btn.ImageIndex < GetImageCount(Btn.Images))
+  with Btn do
+    Result := Assigned(Images) and (ImageIndex >= 0) and (ImageIndex < GetImageCount(Btn.Images))
 end;
 
 
@@ -185,8 +189,7 @@ begin
   if ADefault <> IsFocused then
     IsFocused := ADefault;
 
-  if SkinData <> nil then
-    SkinData.Invalidate
+  SkinData.Invalidate;
 end;
 
 
@@ -200,10 +203,10 @@ end;
 
 constructor TsBitBtn.Create(AOwner: TComponent);
 begin
-  inherited Create(AOwner);
-  ControlStyle := ControlStyle - [csOpaque];// + [csAcceptsControls];
   FCommonData := TsCtrlSkinData.Create(Self, True);
   FCommonData.COC := COC_TsBitBtn;
+  inherited Create(AOwner);
+  ControlStyle := ControlStyle - [csOpaque];// + [csAcceptsControls];
   FImageChangeLink := TChangeLink.Create;
   FImageChangeLink.OnChange := ImageListChange;
   FFocusMargin := 1;
@@ -221,6 +224,7 @@ begin
   FVerticalAlignment := taVerticalCenter;
   FOffset := 0;
   FAlignment := taCenter;
+  FGlyphColorTone := clNone;
   FShowCaption := True;
   FTextAlignment := taCenter;
   FShowFocus := True;
@@ -238,12 +242,11 @@ function TsBitBtn.CurrentState: integer;
 var
   Wnd: THandle;
 begin
-  if ((SendMessage(Handle, BM_GETSTATE, 0, 0) and BST_PUSHED = BST_PUSHED) or
-       fGlobalFlag) and
-         (SkinData.FMouseAbove or
-           not (csLButtonDown in ControlState) or
-             ((SkinData.SkinManager <> nil) and SkinData.SkinManager.Options.NoMouseHover))
-               or FDown then
+  if ((SendMessage(Handle, BM_GETSTATE, 0, 0) and BST_PUSHED = BST_PUSHED) or fGlobalFlag) and
+       (SkinData.FMouseAbove or
+         not (csLButtonDown in ControlState) or
+           ((SkinData.SkinManager <> nil) and SkinData.SkinManager.Options.NoMouseHover))
+             or FDown then
     Result := 2
   else
     if not (csDesigning in ComponentState) and ControlIsActive(FCommonData) then
@@ -252,7 +255,7 @@ begin
       if Default then begin
         Wnd := GetFocus;
         // Focused control is a button
-        if (Wnd <> 0) then
+        if Wnd <> 0 then
           Result := iff(GetWindowLong(Wnd, GWL_STYLE) and BS_USERBUTTON = BS_USERBUTTON, 0, 3)
         else
           Result := 3
@@ -265,9 +268,7 @@ end;
 destructor TsBitBtn.Destroy;
 begin
   FreeAndNil(FImageChangeLink);
-  if Assigned(FCommonData) then
-    FreeAndNil(FCommonData);
-
+  FreeAndNil(FCommonData);
   inherited Destroy;
 end;
 
@@ -293,7 +294,7 @@ begin
   Canvas.Font.Assign(Font);
   Canvas.Brush.Style := bsClear;
   R := CaptionRect;
-  if (CurrentState = 2) then
+  if CurrentState = 2 then
     if not SkinData.Skinned or (SkinData.SkinManager <> nil) and SkinData.SkinManager.ButtonsOptions.ShiftContentOnClick then
       OffsetRect(R, 1, 1);
 
@@ -342,7 +343,7 @@ end;
 function TsBitBtn.GlyphHeight: integer;
 begin
   if IsImgListDefined(Self) then
-    Result := Images.Height
+    Result := GetImageHeight(Images)
   else
     if (Glyph <> nil) and (Glyph.Height > 0) then
       Result := Glyph.Height
@@ -354,7 +355,7 @@ end;
 function TsBitBtn.GlyphWidth: integer;
 begin
   if IsImgListDefined(Self) then
-    Result := Images.Width div NumGlyphs
+    Result := GetImageWidth(Images) div NumGlyphs
   else
     if (Glyph <> nil) and (Glyph.Width > 0) then
       Result := Glyph.Width div NumGlyphs
@@ -380,7 +381,7 @@ end;
 
 procedure TsBitBtn.Invalidate;
 begin
-  if (OldLayout <> Layout) then begin
+  if OldLayout <> Layout then begin
     OldLayout := Layout;
     FCommonData.BGChanged := True;
   end;
@@ -408,7 +409,7 @@ begin
       ShowHintStored := True;
     end;
     FMouseClicked := True;
-    if (Button = mbLeft) then
+    if Button = mbLeft then
       if not Down then begin
         RegionChanged := True;
         FCommonData.FUpdating := FCommonData.Updating;
@@ -433,7 +434,7 @@ begin
         Application.ShowHint := AppShowHint;
         ShowHintStored := False;
       end;
-      if FMouseClicked and not (csDestroying in ComponentState) then begin
+      if FMouseClicked then begin
         FMouseClicked := False;
         if (Button = mbLeft) and Enabled then begin
           if (SkinData.AnimTimer <> nil) and SkinData.AnimTimer.Enabled then begin
@@ -454,7 +455,7 @@ begin
         end;
       end
       else
-        if (SkinData.AnimTimer <> nil) then
+        if SkinData.AnimTimer <> nil then
           FreeAndNil(SkinData.AnimTimer);
     end;
     inherited MouseUp(Button, Shift, X, Y);
@@ -472,11 +473,10 @@ end;
 
 procedure TsBitBtn.OurPaintHandler;
 var
-  l, t, right, bottom: integer;
   DC, SavedDC: hdc;
   PS: TPaintStruct;
+  aRect: TRect;
   b: boolean;
-  R: TRect;
 
   procedure ToFinish;
   begin
@@ -504,7 +504,7 @@ begin
       FCommonData.BGChanged := FCommonData.BGChanged or FCommonData.HalfVisible or GetBoolMsg(Parent, AC_GETHALFVISIBLE);
       FCommonData.HalfVisible := not RectInRect(Parent.ClientRect, BoundsRect);
       if not FCommonData.BGChanged then
-        if (FOldSpacing <> Spacing) then begin
+        if FOldSpacing <> Spacing then begin
           FCommonData.BGChanged := True;
           FOldSpacing := Spacing;
         end;
@@ -518,30 +518,29 @@ begin
             Exit;
           end;
           UpdateCorners(FCommonData, CurrentState);
-          l      := MaskWidthLeft  (FCommonData.BorderIndex);
-          t      := MaskWidthTop   (FCommonData.BorderIndex);
-          right  := MaskWidthRight (FCommonData.BorderIndex);
-          bottom := MaskWidthBottom(FCommonData.BorderIndex);
-          BitBlt(DC, 0, 0, l, t, FCommonData.FCacheBmp.Canvas.Handle, 0, 0, SRCCOPY);
-          BitBlt(DC, 0, Height - bottom, Width, bottom, FCommonData.FCacheBmp.Canvas.Handle, 0, Height - bottom, SRCCOPY);
-          BitBlt(DC, Width - right, Height - bottom, right, bottom, FCommonData.FCacheBmp.Canvas.Handle, Width - right, Height - bottom, SRCCOPY);
-          BitBlt(DC, Width - right, 0, right, t, FCommonData.FCacheBmp.Canvas.Handle, Width - right, 0, SRCCOPY);
-          if (DC <> SkinData.PrintDC) {$IFNDEF FPC}and not (csAlignmentNeeded in ControlState){$ENDIF} then // Set region
-            if FRegion <> 0 then begin
-              SetWindowRgn(Handle, FRegion, b); // Speed increased if repainting is disabled
-              if (Width < WidthOf(LastRect)) or (Height < HeightOf(LastRect)) then
-                if not GetParentCache(SkinData).Ready then begin
-                  R := Rect(LastRect.Right - ma[SkinData.BorderIndex].WR, LastRect.Top, LastRect.Right, LastRect.Top + ma[SkinData.BorderIndex].WT);
-                  InvalidateRect(Parent.Handle, @R, True); // Top-right
-                  R := Rect(LastRect.Right - ma[SkinData.BorderIndex].WR, LastRect.Bottom - ma[SkinData.BorderIndex].WB, LastRect.Right, LastRect.Bottom);
-                  InvalidateRect(Parent.Handle, @R, True); // Bottom-right
-                  R := Rect(LastRect.Left, LastRect.Bottom - ma[SkinData.BorderIndex].WB, LastRect.Left + ma[SkinData.BorderIndex].WL, LastRect.Bottom);
-                  InvalidateRect(Parent.Handle, @R, True); // Left-bottom
-                end;
+          with FCommonData, SkinManager.ma[FCommonData.BorderIndex] do begin
+            BitBlt(DC, 0, 0, WL, WT, FCacheBmp.Canvas.Handle, 0, 0, SRCCOPY);
+            BitBlt(DC, 0, Height - WB, Width, WB, FCacheBmp.Canvas.Handle, 0, Height - WB, SRCCOPY);
+            BitBlt(DC, Width - WR, Height - WB, WR, WB, FCacheBmp.Canvas.Handle, Width - WR, Height - WB, SRCCOPY);
+            BitBlt(DC, Width - WR, 0, WR, WT, FCacheBmp.Canvas.Handle, Width - WR, 0, SRCCOPY);
+            if (DC <> SkinData.PrintDC) {$IFNDEF FPC}and not (csAlignmentNeeded in ControlState){$ENDIF} then // Set region
+              if FRegion <> 0 then begin
+                SetWindowRgn(Handle, FRegion, b); // Speed increased if repainting is disabled
+                if (Width < WidthOf(LastRect)) or (Height < HeightOf(LastRect)) then
+                  if not GetParentCache(SkinData).Ready then
+                    with TSrcRect(LastRect) do begin
+                      aRect := Rect(SRight - WR, STop, SRight, STop + WT);
+                      InvalidateRect(Parent.Handle, @aRect, True); // Top-right
+                      aRect := Rect(SRight - WR, SBottom - WB, SRight, SBottom);
+                      InvalidateRect(Parent.Handle, @aRect, True); // Bottom-right
+                      aRect := Rect(SLeft, SBottom - WB, SLeft + WL, SBottom);
+                      InvalidateRect(Parent.Handle, @aRect, True); // Left-bottom
+                    end;
 
-              LastRect := BoundsRect;
-              FRegion := 0;
-            end;
+                LastRect := BoundsRect;
+                FRegion := 0;
+              end;
+          end;
         end
         else
           if (FCommonData.BGChanged or (csDesigning in ComponentState {for glyph changing})) then
@@ -594,12 +593,12 @@ begin
 
         FRegion := CreateRectRgn(0, 0, Width, Height);
         if FDrawOverBorder then
-          if (State <> 0) or (sm.ma[FCommonData.BorderIndex].DrawMode and BDM_ACTIVEONLY <> BDM_ACTIVEONLY) then
+          if (State <> 0) or (sm.ma[FCommonData.BorderIndex].DrawMode and BDM_ACTIVEONLY = 0) then
             PaintRgnBorder(FCommonData.FCacheBmp, FRegion, True, sm.ma[FCommonData.BorderIndex], State);
       end
       else // Empty region
         if FDrawOverBorder then
-          if (State <> 0) or (sm.ma[FCommonData.BorderIndex].DrawMode and BDM_ACTIVEONLY <> BDM_ACTIVEONLY) then begin
+          if (State <> 0) or (sm.ma[FCommonData.BorderIndex].DrawMode and BDM_ACTIVEONLY = 0) then begin
             inc(CI.X, Left);
             inc(CI.Y, Top);
             DrawSkinRect(FCommonData.FCacheBmp, MkRect(FCommonData.FCacheBmp), CI, sm.ma[FCommonData.BorderIndex], State, True);
@@ -611,12 +610,21 @@ begin
     CalcButtonLayout(ClientRect, Point(GlyphWidth, GlyphHeight), TextRectSize, Layout, Alignment, Margin, Spacing, GlyphPos,
                      CaptionRect, {$IFDEF FPC}0{$ELSE}DrawTextBiDiModeFlags(0){$ENDIF}, VerticalAlignment);
 
+    if FOffset <> 0 then
+      case Layout of
+        blGlyphLeft, blGlyphRight: OffsetRect(CaptionRect, FOffset, 0);
+        blGlyphTop, blGlyphBottom: OffsetRect(CaptionRect, 0, FOffset);
+      end;
+
     if ShowCaption then
       DrawCaption;
 
     DrawBtnGlyph(Self);
+    if Assigned(FOnPaint) then
+      FOnPaint(Self, FCommonData.FCacheBmp);
+
     if not FDrawOverBorder and sm.IsValidImgIndex(FCommonData.BorderIndex) then
-      if (State <> 0) or (sm.ma[FCommonData.BorderIndex].DrawMode and BDM_ACTIVEONLY <> BDM_ACTIVEONLY) then
+      if (State <> 0) or (sm.ma[FCommonData.BorderIndex].DrawMode and BDM_ACTIVEONLY = 0) then
         if (sm.ma[FCommonData.BorderIndex].CornerType = 2) and not (csDesigning in ComponentState) then
           PaintRgnBorder(FCommonData.FCacheBmp, FRegion, True, sm.ma[FCommonData.BorderIndex], State)
         else
@@ -624,9 +632,6 @@ begin
 
     if not Enabled or ((Action <> nil) and not Assigned(TAction(Action).OnExecute){ not TAction(Action).Enabled // Button not repainted immediately if Action.Enabled changed }) then
       BmpDisabledKind(FCommonData.FCacheBmp, FDisabledKind, Parent, CI, Point(Left, Top));
-
-    if Assigned(FOnPaint) then
-      FOnPaint(Self, FCommonData.FCacheBmp);
 
     FCommonData.BGChanged := False;
     if State = 2 then begin
@@ -709,8 +714,17 @@ end;
 
 procedure TsBitBtn.SetFocusMargin(const Value: integer);
 begin
-  if (FFocusMargin <> Value) then
+  if FFocusMargin <> Value then
     FFocusMargin := Value;
+end;
+
+
+procedure TsBitBtn.SetGlyphColorTone(const Value: TColor);
+begin
+  if FGlyphColorTone <> Value then begin
+    FGlyphColorTone := Value;
+    FCommonData.Invalidate;
+  end;
 end;
 
 
@@ -750,7 +764,7 @@ end;
 
 procedure TsBitBtn.SetOffset(const Value: Integer);
 begin
-  if (FOffset <> Value) then begin
+  if FOffset <> Value then begin
     FOffset := Value;
     FCommonData.Invalidate;
   end;
@@ -836,17 +850,17 @@ begin
       end; // AlphaSkins is supported
 
       AC_SETNEWSKIN:
-        if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
+        if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then begin
           RegionChanged := True;
           AlphaBroadCast(Self, Message);
-          CommonWndProc(Message, FCommonData);
+          CommonMessage(Message, FCommonData);
           Exit;
         end;
 
       AC_REMOVESKIN:
         if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) and not (csDestroying in ComponentState) then begin
           AlphaBroadCast(Self, Message);
-          CommonWndProc(Message, FCommonData);
+          CommonMessage(Message, FCommonData);
           FRegion := 0;
           SetWindowRgn(Handle, 0, False);
           Repaint;
@@ -856,7 +870,7 @@ begin
       AC_REFRESH:
         if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then begin
           SetWindowRgn(Handle, 0, False);
-          CommonWndProc(Message, FCommonData);
+          CommonMessage(Message, FCommonData);
           RegionChanged := True;
           if SkinData.PrintDC = 0 then
             Repaint;
@@ -900,6 +914,11 @@ begin
         if Assigned(FOnMouseLeave) and Enabled and not (csDesigning in ComponentState) then
           FOnMouseLeave(Self);
       end;
+
+      WM_PRINT: begin
+        Perform(WM_PAINT, Message.WParam, Message.LParam);
+        Exit;
+      end;
     end;
     inherited
   end
@@ -932,7 +951,7 @@ begin
         SkinData.Updating := False;
 
       CM_DIALOGCHAR:
-        if (Enabled and Focused and (TCMDialogChar(Message).CharCode = VK_SPACE)) then begin
+        if Enabled and Focused and (TCMDialogChar(Message).CharCode = VK_SPACE) then begin
           StopTimer(SkinData);
           RegionChanged := True;
           FCommonData.BGChanged := True;
@@ -1006,7 +1025,7 @@ begin
 
       WM_PAINT:
         if Visible or (csDesigning in ComponentState) then begin
-          if (Parent = nil) then
+          if Parent = nil then
             Exit;
 
           OurPaintHandler(TWMPaint(Message).DC);
@@ -1112,7 +1131,7 @@ begin
         end;
 
       CM_ACTIONUPDATE:
-        if (Action <> nil) then
+        if Action <> nil then
           Enabled := TCustomAction(Action).Enabled;
     end;
   end;
@@ -1126,7 +1145,7 @@ begin
     if (TCustomAction(Sender).ActionList <> nil) and (Images = nil) then
       Images := TCustomAction(Sender).ActionList.Images;
 
-    if ImageIndex = -1 then
+    if ImageIndex < 0 then
       ImageIndex := TCustomAction(Sender).ImageIndex;
 
     if not (csDestroying in ComponentState) then
@@ -1170,6 +1189,13 @@ begin
     Canvas.Handle := DrawItemStruct.hDC;
     CalcButtonLayout(ClientRect, Point(GlyphWidth, GlyphHeight), TextRectSize, Layout, Alignment, Margin, Spacing,
                      GlyphPos, CaptionRect, {$IFDEF FPC}0{$ELSE}DrawTextBiDiModeFlags(0){$ENDIF}, VerticalAlignment);
+
+    if FOffset <> 0 then
+      case Layout of
+        blGlyphLeft, blGlyphRight: OffsetRect(CaptionRect, FOffset, 0);
+        blGlyphTop, blGlyphBottom: OffsetRect(CaptionRect, 0, FOffset);
+      end;
+
     R := ClientRect;
     with DrawItemStruct do begin
       Canvas.Handle := hDC;

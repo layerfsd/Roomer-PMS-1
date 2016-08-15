@@ -13,9 +13,7 @@ type
   TsComboEdit = class(TsCustomComboEdit)
 {$IFNDEF NOTFORHELP}
   public
-    constructor Create(AOwner:TComponent); override;
-    procedure Loaded; override;
-    procedure AfterConstruction; override;
+    constructor Create(AOwner: TComponent); override;
   published
     property Alignment;
     property CharCase;
@@ -78,23 +76,11 @@ implementation
 uses sGlyphUtils;
 
 
-procedure TsComboEdit.AfterConstruction;
-begin
-  inherited;
-end;
-
-
-constructor TsComboEdit.Create(AOwner:TComponent);
+constructor TsComboEdit.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   SkinData.COC := COC_TsComboEdit;
   FDefBmpID := iBTN_ELLIPSIS;
-end;
-
-
-procedure TsComboEdit.Loaded;
-begin
-  inherited;
 end;
 
 end.

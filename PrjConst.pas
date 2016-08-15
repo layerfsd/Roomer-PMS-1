@@ -177,6 +177,10 @@ uses uAppGlobal,
   uAlertEditPanel,
   uFrmCustomerDepartmentEdit
 
+  , uRptDepartures
+  , uRptStockItems
+  , ufrmPaymentReqRoomtypeGroup
+
   , uOfflineReportGrid
   , uHotelStatusOfflineReport
   , uHotelArrivalsOfflineReport
@@ -1760,6 +1764,11 @@ begin
   TfrmArrivalsReport.Create(nil).Free;
 
   TFrmRoomReservationCancellationDialog.Create(nil).Free;
+
+  TfrmDeparturesReport.Create(nil).Free;
+  TfrmRptStockItems.Create(nil).Free;
+  TfrmPaymentReqRoomtypeGroup.Create(nil).Free;
+
 end;
 
 ///////////////////////////////////////////////////////////////////////////////////////

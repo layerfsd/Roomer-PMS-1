@@ -18,6 +18,7 @@ const
 
 type
   TPosChangingEvent = procedure(var X: integer; var Y: integer) of object;
+  TGetSourceCoords = procedure(var ATopLeft: TPoint) of object;
   TMagnSize = amMinSize..amMaxSize;
   TacSizingMode = (asmNone, asmFreeAspectRatio, asmFixedAspectRatio);
   TacMagnStyle = (amsRectangle, amsLens);
@@ -35,11 +36,12 @@ type
     FHeight: TMagnSize;
 
     FScaling: integer;
+    FStyle: TacMagnStyle;
     FPopupMenu: TPopupMenu;
-    FOnPosChanging: TPosChangingEvent;
     FOnDblClick: TNotifyEvent;
     FSizingMode: TacSizingMode;
-    FStyle: TacMagnStyle;
+    FOnPosChanging: TPosChangingEvent;
+    FOnGetSourceCoords: TGetSourceCoords;
     procedure SetScaling(const Value: integer);
     procedure SetWidth (const Value: TMagnSize);
     procedure SetHeight(const Value: TMagnSize);
@@ -66,6 +68,7 @@ type
     property OnMouseDown: TMouseEvent read FOnMouseDown write FOnMouseDown;
     property OnMouseUp: TMouseEvent read FOnMouseUp write FOnMouseUp;
     property OnPosChanging: TPosChangingEvent read FOnPosChanging write FOnPosChanging;
+    property OnGetSourceCoords: TGetSourceCoords read FOnGetSourceCoords write FOnGetSourceCoords;
   end;
 
 
@@ -80,12 +83,12 @@ type
     
     Timer1: TTimer;
     PopupMenu1: TPopupMenu;
+    procedure FormShow(Sender: TObject);
     procedure Close1Click(Sender: TObject);
     procedure Zoom1x1Click(Sender: TObject);
+    procedure Image1DblClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-    procedure FormShow(Sender: TObject);
-    procedure Image1DblClick(Sender: TObject);
 
     procedure Image1MouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
 
@@ -112,9 +115,9 @@ type
     FTempBmp,
     AlphaBmp: TBitmap;
 
+    Scale: Smallint;
     Caller: TsMagnifier;
     MagnOwner: TMagnifierOwner;
-    Scale: Smallint;
     procedure UpdateAero;
     function ContentMargins: TRect;
     procedure FormCreateInit;
@@ -151,15 +154,14 @@ uses
 procedure TacMagnForm.ShowGlass(x, y: integer);
 var
   DC: hdc;
+  lTicks: DWord;
   FBmpSize: TSize;
   FBmpTopLeft: TPoint;
   FBlend: TBlendFunction;
-  w, h, XOffs, YOffs, i, p, StepCount: integer;
-  cL, cT: integer;
-  lTicks: DWord;
+  cL, cT, w, h, XOffs, YOffs, i, p, StepCount: integer;
 begin
   if not IntUpdating and not Closing then begin
-    if (DefaultManager <> nil) then
+    if DefaultManager <> nil then
       DefaultManager.SkinableMenus.HookPopupMenu(PopupMenu, (DefaultManager.Active and (DefaultManager.SkinName <> '')));
 
     MakeAeroMagnifier;
@@ -175,6 +177,12 @@ begin
       FTempBmp.Width := w;
       FTempBmp.Height := h;
       DC := GetDC(0); // Copy image from screen
+      if Assigned(Caller.OnGetSourceCoords) then begin
+        FBmpTopLeft := Point(XOffs, YOffs);
+        Caller.OnGetSourceCoords(FBmpTopLeft);
+        XOffs := FBmpTopLeft.X;
+        YOffs := FBmpTopLeft.Y;
+      end;
       StretchBlt(FTempBmp.Canvas.Handle, 0, 0, w, h, DC, XOffs, YOffs, w div Scale, h div Scale, SrcCopy);
       ReleaseDC(0, DC);
     end;
@@ -203,7 +211,7 @@ begin
           FBlend.SourceConstantAlpha := i * p;
           UpdateLayeredWindow(Handle, DC, nil, @FBmpSize, AlphaBmp.Canvas.Handle, @FBmpTopLeft, clNone, @FBlend, ULW_ALPHA);
           inc(i);
-          if (i > StepCount) then
+          if i > StepCount then
             Break;
 
           if StepCount > 0 then
@@ -222,7 +230,7 @@ end;
 
 procedure TacMagnForm.Timer1Timer(Sender: TObject);
 begin
-  if (MagnOwner <> nil) then
+  if MagnOwner <> nil then
     MagnOwner.MagnWnd.UpdateSource
   else
     ShowGlass(Left, Top);
@@ -349,8 +357,7 @@ end;
 
 procedure TacMagnForm.WMPosChanging(var Message: TWMWindowPosChanging);
 var
-  w, h, l, r, t, b: integer;
-  cL, cT, cB, cR: integer;
+  w, h, l, r, t, b, cL, cT, cB, cR: integer;
 
   function DesktopLeft: integer;
   var
@@ -376,10 +383,9 @@ begin
   if not IntUpdating then begin
     if not Showed or
          Closing or
-           (csloading in ComponentState) or
+           ([csloading, csDestroying] * ComponentState <> []) or
              (csCreating in ControlState) or
-               (csDestroying in ComponentState) or
-                 (csDestroying in Application.ComponentState) then
+               (csDestroying in Application.ComponentState) then
       Exit;
 
     if Assigned(TsMagnifier(Caller).OnPosChanging) and (Message.WindowPos^.cx <> 0) and (Message.WindowPos^.cy <> 0) then
@@ -423,8 +429,7 @@ end;
 
 procedure TacMagnForm.EstablishAspectRatio(Side: word; var Rect: TRect);
 var
-  OldW, OldH, i, NewH, NewW: integer;
-  cL, cR, cT, cB: integer;
+  OldW, OldH, i, NewH, NewW, cL, cR, cT, cB: integer;
   AspRatio: real;
 begin
   with ContentMargins do begin
@@ -555,7 +560,7 @@ begin
       UpdateThumbPos(False);
 
     WM_SIZE, WM_ACTIVATE:
-      if not (csDestroying in ComponentState) and not (csDestroying in Application.ComponentState) and not (csLoading in ComponentState) and Visible then 
+      if ([csDestroying, csLoading] * ComponentState = []) and not (csDestroying in Application.ComponentState) and Visible then
         if not AeroIsEnabled or (Message.Msg = WM_SIZE) then
           ShowGlass(Left, Top);
   end;
@@ -582,13 +587,11 @@ end;
 
 procedure TacMagnForm.CreateAlphaBmp;
 var
-  x, y: integer;
-  CSrc, CDst: TsColor_;
   Bmp: TBitmap;
   mRect: TRect;
-  Mask, Dst, Src: PRGBAArray;
-  wL, wR, wT, wB: integer;
-  cL, cR, cT, cB: integer;
+  CSrc, CDst: TsColor_;
+  Mask, Dst, Src: PRGBAArray_;
+  x, y, wL, wR, wT, wB, cL, cR, cT, cB: integer;
 begin
   mRect := MClientRect;
   if AlphaBmp = nil then
@@ -711,7 +714,7 @@ var
   WasVisible, WasIconic: Boolean;
 begin
   Style := GetWindowLong(Handle, GWL_EXSTYLE);
-  if (SetAppWindow and (Style and WS_EX_APPWINDOW = 0)) or (not SetAppWindow and (Style and WS_EX_APPWINDOW = WS_EX_APPWINDOW)) then begin
+  if (SetAppWindow and (Style and WS_EX_APPWINDOW = 0)) or (not SetAppWindow and (Style and WS_EX_APPWINDOW <> 0)) then begin
     WasIconic := Windows.IsIconic(Handle);
     WasVisible := IsWindowVisible(Handle);
     if WasVisible or WasIconic then
@@ -759,12 +762,12 @@ begin
           Break;
         end;
 
-    if GetWindowLong(acMagnForm.Handle, GWL_EXSTYLE) and WS_EX_LAYERED <> WS_EX_LAYERED then
+    if GetWindowLong(acMagnForm.Handle, GWL_EXSTYLE) and WS_EX_LAYERED = 0 then
       SetWindowLong(TacMagnForm(acMagnForm).Handle, GWL_EXSTYLE, GetWindowLong(acMagnForm.Handle, GWL_EXSTYLE) or WS_EX_LAYERED);
 
     if IsModal then
       TacMagnForm(acMagnForm).ShowModal
-    else
+    else 
       TacMagnForm(acMagnForm).Show;
   end
   else begin
@@ -782,6 +785,7 @@ begin
     end;
     TacMagnForm(acMagnForm).BringToFront;
   end;
+  SetWindowPos(acMagnForm.Handle, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOACTIVATE or SWP_NOSIZE or SWP_NOMOVE or SWP_NOOWNERZORDER);
 end;
 
 
@@ -798,7 +802,7 @@ begin
   if Assigned(TsMagnifier(Caller).OnMouseDown) then
     TsMagnifier(Caller).OnMouseDown(Caller, Button, Shift, X, Y);
 
-  if (mbLeft = Button) then begin
+  if mbLeft = Button then begin
     acIsDragging := True;
     LastMousePos := acMousePos;
   end;
@@ -807,7 +811,7 @@ end;
 
 procedure TacMagnForm.FormResize(Sender: TObject);
 begin
-  if (MagnOwner <> nil) then
+  if MagnOwner <> nil then
     MagnOwner.UpdatePosition;
 end;
 
@@ -843,16 +847,15 @@ end;
 
 procedure TsMagnifier.SetScaling(const Value: integer);
 begin
-  if FScaling = Value then
-    Exit;
+  if FScaling <> Value then begin
+    if Value < 2 then
+      FScaling := 2
+    else
+      FScaling := iff(Value > 16, 16, Value);
 
-  if Value < 2 then
-    FScaling := 2
-  else
-    FScaling := iff(Value > 16, 16, Value);
-
-  if acMagnForm <> nil then
-    TacMagnForm(acMagnForm).SetZooming(FScaling);
+    if acMagnForm <> nil then
+      TacMagnForm(acMagnForm).SetZooming(FScaling);
+  end;
 end;
 
 
@@ -902,8 +905,10 @@ end;
 
 procedure TsMagnifier.Refresh;
 begin
-  if Assigned(acMagnForm) then
-    SendMessage(acMagnForm.Handle, SM_ALPHACMD, MakeWParam(0, AC_REFRESH), 0);
+  if Assigned(acMagnForm) then begin
+    SendMessage(acMagnForm.Handle, SM_ALPHACMD, AC_REFRESH_HI, 0);
+    SetWindowPos(acMagnForm.Handle, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOACTIVATE or SWP_NOSIZE or SWP_NOMOVE or SWP_NOOWNERZORDER);
+  end;
 end;
 
 
@@ -971,15 +976,13 @@ end;
 
 procedure TacMagnForm.MakeAeroMagnifier;
 begin
-  if acMagnLib = 0 then
-    Exit;
-
-  if MagnOwner = nil then begin
-    MagnOwner := TMagnifierOwner.Create(Self);
-    UpdateAero;
-  end
-  else
-    MagnOwner.MagnWnd.Refresh;
+  if acMagnLib <> 0 then
+    if MagnOwner = nil then begin
+      MagnOwner := TMagnifierOwner.Create(Self);
+      UpdateAero;
+    end
+    else
+      MagnOwner.MagnWnd.Refresh;
 end;
 
 

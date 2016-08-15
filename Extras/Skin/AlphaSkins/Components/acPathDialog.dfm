@@ -1,6 +1,7 @@
 object PathDialogForm: TPathDialogForm
   Left = 434
   Top = 310
+  AutoScroll = False
   Caption = 'Select directory'
   ClientHeight = 415
   ClientWidth = 370
@@ -8,8 +9,14 @@ object PathDialogForm: TPathDialogForm
   Constraints.MinHeight = 415
   Constraints.MinWidth = 370
   OldCreateOrder = True
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  ParentFont = False
   Position = poScreenCenter
-  Scaled = True
+  Scaled = False
   PixelsPerInch = 96
   TextHeight = 13
   object sLabel1: TsLabel

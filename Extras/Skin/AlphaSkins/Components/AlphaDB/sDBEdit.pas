@@ -1,7 +1,7 @@
 unit sDBEdit;
 {$I sDefs.inc}
 //{$DEFINE LOGGED}
-
+//+
 interface
 
 uses
@@ -46,9 +46,9 @@ end;
 
 constructor TsDBEdit.Create(AOwner: TComponent);
 begin
-  inherited Create(AOwner);
   FCommonData := TsScrollWndData.Create(Self, True);
   FCommonData.COC := COC_TsDBEdit;
+  inherited Create(AOwner);
   FDisabledKind := DefDisabledKind;
   FBoundLabel := TsBoundLabel.Create(Self, FCommonData);
 end;
@@ -60,9 +60,7 @@ begin
     FreeAndNil(ListSW);
 
   FreeAndNil(FBoundLabel);
-  if Assigned(FCommonData) then
-    FreeAndNil(FCommonData);
-
+  FreeAndNil(FCommonData);
   inherited Destroy;
 end;
 
@@ -110,7 +108,7 @@ begin
       AC_REFRESH: begin
         CommonWndProc(Message, FCommonData);
         if not InAnimationProcess then
-          RedrawWindow(Handle, nil, 0, RDW_INVALIDATE or RDW_ERASE or RDW_FRAME);
+          RedrawWindow(Handle, nil, 0, RDWA_REPAINT);
 
         RefreshEditScrolls(SkinData, ListSW);
         Exit;

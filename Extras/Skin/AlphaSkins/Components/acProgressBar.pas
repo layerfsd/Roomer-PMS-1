@@ -1,6 +1,6 @@
 unit acProgressBar;
 {$I sDefs.inc}
-
+//+
 interface
 
 uses
@@ -88,6 +88,8 @@ end;
 
 constructor TsProgressBar.Create(AOwner: TComponent);
 begin
+  FCommonData := TsCommonData.Create(Self, False);
+  FCommonData.COC := COC_TsGauge;
   inherited Create(AOwner);
   FMarqSize := 40;
   FMarqStep := 8;
@@ -96,8 +98,6 @@ begin
   FMarqueeInterval := 10;
   FStyle := pbstNormal;
 {$ENDIF}
-  FCommonData := TsCommonData.Create(Self, False);
-  FCommonData.COC := COC_TsGauge;
   ControlStyle := ControlStyle + [csOpaque];
   Timer := TTimer.Create(Self);
   Timer.Enabled := False;
@@ -155,37 +155,36 @@ procedure TsProgressBar.Paint;
 var
   NewDC, SavedDC: hdc;
 begin
-  if (Width < 1) or (Height < 1) then
-    Exit;
+  if (Width >= 0) or (Height >= 0) then begin
 {$IFDEF D2009}
-  if Style = pbstMarquee then
-    Timer.Enabled := True;
+    if Style = pbstMarquee then
+      Timer.Enabled := True;
 {$ENDIF}
 
-  if DC = 0 then
-    NewDC := GetWindowDC(Handle)
-  else
-    NewDC := DC;
-
-  SavedDC := SaveDC(NewDC);
-  try
-    if not InUpdating(FCommonData) then begin
-      FCommonData.BGChanged := FCommonData.BGChanged or FCommonData.HalfVisible or GetBoolMsg(Parent, AC_GETHALFVISIBLE);
-      FCommonData.HalfVisible := not RectInRect(Parent.ClientRect, BoundsRect);
-
-      if FCommonData.BGChanged then
-        PrepareCache;
-
-      if FCommonData.FCacheBmp <> nil then begin
-        UpdateCorners(FCommonData, 0);
-        CopyWinControlCache(Self, FCommonData, MkRect, MkRect(Width, Height), NewDC, True);
-        sVCLUtils.PaintControls(NewDC, Self, True, MkPoint);
-      end;
-    end;
-  finally
-    RestoreDC(NewDC, SavedDC);
     if DC = 0 then
-      ReleaseDC(Handle, NewDC);
+      NewDC := GetWindowDC(Handle)
+    else
+      NewDC := DC;
+
+    SavedDC := SaveDC(NewDC);
+    try
+      if not InUpdating(FCommonData) then begin
+        FCommonData.BGChanged := FCommonData.BGChanged or FCommonData.HalfVisible or GetBoolMsg(Parent, AC_GETHALFVISIBLE);
+        FCommonData.HalfVisible := not RectInRect(Parent.ClientRect, BoundsRect);
+        if FCommonData.BGChanged then
+          PrepareCache;
+
+        if FCommonData.FCacheBmp <> nil then begin
+          UpdateCorners(FCommonData, 0);
+          CopyWinControlCache(Self, FCommonData, MkRect, MkRect(Width, Height), NewDC, True);
+          sVCLUtils.PaintControls(NewDC, Self, True, MkPoint);
+        end;
+      end;
+    finally
+      RestoreDC(NewDC, SavedDC);
+      if DC = 0 then
+        ReleaseDC(Handle, NewDC);
+    end;
   end;
 end;
 
@@ -210,7 +209,7 @@ begin
         c := h div (iSize.cy + iNdent);
       end;
 
-      if (c > 1) and (Max > Min) and (Position > Min) and ((Max - Min) <> 0) then
+      if (c > 1) and (Max > Min) and (Position > Min) and (Max - Min <> 0) then
         value := Round(c / (Max - Min) * (Position - Min))
       else
         value := 0;
@@ -223,100 +222,101 @@ begin
 
   InitCacheBmp(FCommonData);
   PaintItem(FCommonData, GetParentCache(FCommonData), True, 0, MkRect(Self), Point(Left, Top), FCommonData.FCacheBMP, False);
-  if Max <= Min then
-    Exit;
 
-  if (ProgressSkin <> '') then
-    si := FCommonData.SkinManager.GetSkinIndex(ProgressSkin)
-  else
-    if Orientation = pbVertical then
-      si := FCommonData.SkinManager.ConstData.Sections[ssProgressV]
-    else
-      si := FCommonData.SkinManager.ConstData.Sections[ssProgressH];
-
-  ci := MakeCacheInfo(FCommonData.FCacheBmp);
-  prRect := ProgressRect;
-  if (prRect.Right <= prRect.Left) or (prRect.Bottom <= prRect.Top) then
-    Exit;
-
-  iSize := ItemSize;
-  if (iSize.cx < 2) or (iSize.cy < 2) then
-    Exit;
-    
-  Bmp := CreateBmp32(iSize);
-  if Style = pbstMarquee then begin
-    d := 1;
-    if Orientation = pbHorizontal then
-      for i := 0 to 4 do begin
-        c := prRect.Left + i * (iSize.cx + d);
-        if c > Width then
-          c := c - Width;
-
-        PaintItem(si, ci, True, 0, MkRect(Bmp), Point(c, prRect.Top), BMP, FCommonData.SkinManager);
-        BitBlt(FCommonData.FCacheBmp.Canvas.Handle, c, prRect.Top, Bmp.Width, Bmp.Height, Bmp.Canvas.Handle, 0, 0, SRCCOPY);
-      end
-    else
-      for i := 0 to 4 do begin
-        c := prRect.Bottom - i * (iSize.cy + d) - iSize.cy;
-        if c < 0 then
-          c := Height + c;
-
-        PaintItem(si, ci, True, 0, MkRect(Bmp), Point(prRect.Left, c), BMP, FCommonData.SkinManager);
-        BitBlt(FCommonData.FCacheBmp.Canvas.Handle, prRect.Left, c, Bmp.Width, Bmp.Height, Bmp.Canvas.Handle, 0, 0, SRCCOPY);
-      end;
-  end
-  else
-    if Orientation = pbHorizontal then begin
-      if Smooth then begin
-        Bmp.Width := WidthOf(prRect);
-        PaintItem(si, ci, True, 0, MkRect(Bmp), prRect.TopLeft, BMP, FCommonData.SkinManager);
-        BitBlt(FCommonData.FCacheBmp.Canvas.Handle, prRect.Left, prRect.Top, Bmp.Width, Bmp.Height, Bmp.Canvas.Handle, 0, 0, SRCCOPY);
-      end
+  if Max > Min then begin
+    with FCommonData.SkinManager do
+      if ProgressSkin <> '' then
+        si := GetSkinIndex(ProgressSkin)
       else
-        if (Max > Min) and (Position > Min) then begin
-          w := WidthOf(clRect) - iNdent;
-          c := w div (iSize.cx + iNdent);
-          if c > 1 then begin
-            d := (w - c * iSize.cx) div (c - 1);
-            value := Round(c / (Max - Min) * (Position - Min));
-            for i := 0 to value - 1 do begin
-              PaintItem(si, ci, True, 0, MkRect(Bmp), Point(prRect.Left + i * (iSize.cx + d), prRect.Top), BMP, FCommonData.SkinManager);
-              BitBlt(FCommonData.FCacheBmp.Canvas.Handle, prRect.Left + i * (iSize.cx + d), prRect.Top, Bmp.Width, Bmp.Height, Bmp.Canvas.Handle, 0, 0, SRCCOPY);
-            end;
-            if (Value > 0) and (Position = Max) and (w - (Value - 1) * (iSize.cx + d) - iSize.cx > 3) then begin
-              Bmp.Width := w - (Value - 1) * (iSize.cx + d) - iSize.cx;
-              PaintItem(si, ci, True, 0, MkRect(Bmp), Point(prRect.Left + Value * (iSize.cx + d), prRect.Top), BMP, FCommonData.SkinManager);
-              BitBlt(FCommonData.FCacheBmp.Canvas.Handle, prRect.Left + (Value * (iSize.cx + d)), prRect.Top, Bmp.Width, Bmp.Height, Bmp.Canvas.Handle, 0, 0, SRCCOPY);
-            end;
-          end;
+        if Orientation = pbVertical then
+          si := ConstData.Sections[ssProgressV]
+        else
+          si := ConstData.Sections[ssProgressH];
+
+    ci := MakeCacheInfo(FCommonData.FCacheBmp);
+    prRect := ProgressRect;
+    if (prRect.Right <= prRect.Left) or (prRect.Bottom <= prRect.Top) then
+      Exit;
+
+    iSize := ItemSize;
+    if (iSize.cx < 2) or (iSize.cy < 2) then
+      Exit;
+    
+    Bmp := CreateBmp32(iSize);
+    if Style = pbstMarquee then begin
+      d := 1;
+      if Orientation = pbHorizontal then
+        for i := 0 to 4 do begin
+          c := prRect.Left + i * (iSize.cx + d);
+          if c > Width then
+            c := c - Width;
+
+          PaintItem(si, ci, True, 0, MkRect(Bmp), Point(c, prRect.Top), Bmp, FCommonData.SkinManager);
+          BitBlt(FCommonData.FCacheBmp.Canvas.Handle, c, prRect.Top, Bmp.Width, Bmp.Height, Bmp.Canvas.Handle, 0, 0, SRCCOPY);
         end
+      else
+        for i := 0 to 4 do begin
+          c := prRect.Bottom - i * (iSize.cy + d) - iSize.cy;
+          if c < 0 then
+            c := Height + c;
+
+          PaintItem(si, ci, True, 0, MkRect(Bmp), Point(prRect.Left, c), Bmp, FCommonData.SkinManager);
+          BitBlt(FCommonData.FCacheBmp.Canvas.Handle, prRect.Left, c, Bmp.Width, Bmp.Height, Bmp.Canvas.Handle, 0, 0, SRCCOPY);
+        end;
     end
     else
-      if Smooth then begin
-        Bmp.Height := HeightOf(prRect);
-        PaintItem(si, ci, True, 0, MkRect(Bmp), prRect.TopLeft, BMP, FCommonData.SkinManager);
-        BitBlt(FCommonData.FCacheBmp.Canvas.Handle, prRect.Left, prRect.Top, Bmp.Width, Bmp.Height, Bmp.Canvas.Handle, 0, 0, SRCCOPY);
+      if Orientation = pbHorizontal then begin
+        if Smooth then begin
+          Bmp.Width := WidthOf(prRect);
+          PaintItem(si, ci, True, 0, MkRect(Bmp), prRect.TopLeft, Bmp, FCommonData.SkinManager);
+          BitBlt(FCommonData.FCacheBmp.Canvas.Handle, prRect.Left, prRect.Top, Bmp.Width, Bmp.Height, Bmp.Canvas.Handle, 0, 0, SRCCOPY);
+        end
+        else
+          if (Max > Min) and (Position > Min) then begin
+            w := WidthOf(clRect) - iNdent;
+            c := w div (iSize.cx + iNdent);
+            if c > 1 then begin
+              d := (w - c * iSize.cx) div (c - 1);
+              value := Round(c / (Max - Min) * (Position - Min));
+              for i := 0 to value - 1 do begin
+                PaintItem(si, ci, True, 0, MkRect(Bmp), Point(prRect.Left + i * (iSize.cx + d), prRect.Top), Bmp, FCommonData.SkinManager);
+                BitBlt(FCommonData.FCacheBmp.Canvas.Handle, prRect.Left + i * (iSize.cx + d), prRect.Top, Bmp.Width, Bmp.Height, Bmp.Canvas.Handle, 0, 0, SRCCOPY);
+              end;
+              if (Value > 0) and (Position = Max) and (w - (Value - 1) * (iSize.cx + d) - iSize.cx > 3) then begin
+                Bmp.Width := w - (Value - 1) * (iSize.cx + d) - iSize.cx;
+                PaintItem(si, ci, True, 0, MkRect(Bmp), Point(prRect.Left + Value * (iSize.cx + d), prRect.Top), Bmp, FCommonData.SkinManager);
+                BitBlt(FCommonData.FCacheBmp.Canvas.Handle, prRect.Left + (Value * (iSize.cx + d)), prRect.Top, Bmp.Width, Bmp.Height, Bmp.Canvas.Handle, 0, 0, SRCCOPY);
+              end;
+            end;
+          end
       end
       else
-        if (Max > Min) and (Position > Min) then begin
-          h := HeightOf(clRect) - iNdent;
-          c := h div (iSize.cy + iNdent);
-          if c > 1 then begin
-            d := (h - c * iSize.cy) div (c - 1);
-            value := Round(c / (Max - Min) * (Position - Min));
-            for i := 0 to value - 1 do begin
-              PaintItem(si, ci, True, 0, MkRect(Bmp), Point(prRect.Left, prRect.Bottom - i * (iSize.cy + d) - iSize.cy), BMP, FCommonData.SkinManager);
-              BitBlt(FCommonData.FCacheBmp.Canvas.Handle, prRect.Left, prRect.Bottom - i * (iSize.cy + d) - iSize.cy, Bmp.Width, Bmp.Height, Bmp.Canvas.Handle, 0, 0, SRCCOPY);
-            end;
-            if (Value > 0) and (Position = Max) and (h - (Value - 1) * (iSize.cy + d) - iSize.cy > 3) then begin
-              Bmp.Height := HeightOf(clRect) - Value * (iSize.cy + d);
-              PaintItem(si, ci, True, 0, MkRect(Bmp), prRect.TopLeft, BMP, FCommonData.SkinManager);
-              BitBlt(FCommonData.FCacheBmp.Canvas.Handle, prRect.Left, prRect.Top, Bmp.Width, Bmp.Height, Bmp.Canvas.Handle, 0, 0, SRCCOPY);
+        if Smooth then begin
+          Bmp.Height := HeightOf(prRect);
+          PaintItem(si, ci, True, 0, MkRect(Bmp), prRect.TopLeft, Bmp, FCommonData.SkinManager);
+          BitBlt(FCommonData.FCacheBmp.Canvas.Handle, prRect.Left, prRect.Top, Bmp.Width, Bmp.Height, Bmp.Canvas.Handle, 0, 0, SRCCOPY);
+        end
+        else
+          if (Max > Min) and (Position > Min) then begin
+            h := HeightOf(clRect) - iNdent;
+            c := h div (iSize.cy + iNdent);
+            if c > 1 then begin
+              d := (h - c * iSize.cy) div (c - 1);
+              value := Round(c / (Max - Min) * (Position - Min));
+              for i := 0 to value - 1 do begin
+                PaintItem(si, ci, True, 0, MkRect(Bmp), Point(prRect.Left, prRect.Bottom - i * (iSize.cy + d) - iSize.cy), Bmp, FCommonData.SkinManager);
+                BitBlt(FCommonData.FCacheBmp.Canvas.Handle, prRect.Left, prRect.Bottom - i * (iSize.cy + d) - iSize.cy, Bmp.Width, Bmp.Height, Bmp.Canvas.Handle, 0, 0, SRCCOPY);
+              end;
+              if (Value > 0) and (Position = Max) and (h - (Value - 1) * (iSize.cy + d) - iSize.cy > 3) then begin
+                Bmp.Height := HeightOf(clRect) - Value * (iSize.cy + d);
+                PaintItem(si, ci, True, 0, MkRect(Bmp), prRect.TopLeft, Bmp, FCommonData.SkinManager);
+                BitBlt(FCommonData.FCacheBmp.Canvas.Handle, prRect.Left, prRect.Top, Bmp.Width, Bmp.Height, Bmp.Canvas.Handle, 0, 0, SRCCOPY);
+              end;
             end;
           end;
-        end;
 
-  FreeAndNil(Bmp);
+    FreeAndNil(Bmp);
+  end;
 end;
 
 
@@ -418,14 +418,16 @@ begin
 
       AC_REMOVESKIN:
         if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then begin
-          if Style = pbstMarquee then Timer.Enabled := False;
+          if Style = pbstMarquee then
+            Timer.Enabled := False;
+
           CommonWndProc(Message, FCommonData);
-          RedrawWindow(Handle, nil, 0, RDW_ERASE or RDW_INVALIDATE or RDW_FRAME or RDW_UPDATENOW);
+          RedrawWindow(Handle, nil, 0, RDWA_NOCHILDRENNOW);
           Exit;
         end;
 
       AC_REFRESH:
-        if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
+        if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then begin
           CommonWndProc(Message, FCommonData);
           Repaint;
           FOldCount := -1;
@@ -433,7 +435,7 @@ begin
         end;
 
       AC_SETNEWSKIN:
-        if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
+        if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then begin
           CommonWndProc(Message, FCommonData);
           if not (csDesigning in ComponentState) and (Style = pbstMarquee) then
             Timer.Enabled := True;
@@ -449,12 +451,13 @@ begin
           Exit;
         end;
 
-      AC_GETBG: begin
-        PacBGInfo(Message.LParam)^.Offset := MkPoint;
-        PacBGInfo(Message.LParam).Bmp := FCommonData.FCacheBmp;
-        PacBGInfo(Message.LParam)^.BgType := btCache;
-        Exit;
-      end;
+      AC_GETBG:
+        with PacBGInfo(Message.LParam)^ do begin
+          Offset := MkPoint;
+          Bmp := FCommonData.FCacheBmp;
+          BgType := btCache;
+          Exit;
+        end;
 
       AC_GETDEFINDEX: begin
         if FCommonData.SkinManager <> nil then
@@ -556,7 +559,7 @@ begin
       end
       else
 {$ENDIF}
-        if (FMarqPos >= Width - FMarqStep) then
+        if FMarqPos >= Width - FMarqStep then
           FMarqPos := 0;
     end;
   end

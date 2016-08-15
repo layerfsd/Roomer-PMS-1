@@ -1,10 +1,11 @@
 unit acAlphaImageList;
 {$I sDefs.inc}
-
+//+
 interface
 
 uses
   Windows, Classes, SysUtils, Controls, Graphics, CommCtrl, ImgList,
+  {$IFNDEF DELPHI5} Types, {$ENDIF}
   {$IFDEF DELPHI_XE2}UITypes, {$ENDIF}
   sConst, acntUtils;
 
@@ -63,8 +64,10 @@ type
   TsAlphaImageList = class(TImageList)
 {$IFNDEF NOTFORHELP}
   private
+    FLoaded,
     FUseCache,
     AcChanging,
+    FAllowScale,
     StdListIsGenerated: boolean;
 
     FItems: TsImgListItems;
@@ -74,16 +77,21 @@ type
     procedure SetBkColor (const Value: TColor);
     procedure SetUseCache(const Value: boolean);
   protected
+    FSavedScale,
+    SavedHeight,
+    SavedWidth: integer;
+    procedure ScaleSize;
+    procedure SetNewScale(Value: Integer);
+
     procedure SetHeight(Value: Integer);
     function GetHeight: Integer;
     procedure SetWidth(Value: Integer);
     function GetWidth: Integer;
     procedure CreateImgList;
+    function CanScale: boolean;
     procedure DoDraw(Index: Integer; Canvas: TCanvas; X, Y: Integer; Style: Cardinal; Enabled: Boolean = True); {$IFNDEF FPC}override;{$ENDIF}
     procedure KillImgList;
     function IsDuplicated: boolean;
-    function TryLoadFromFile(const FileName: acString): boolean;
-    function TryLoadFromPngStream(Stream: TStream): Boolean;
 {$IFDEF DELPHI7UP}
     procedure ReadData (Stream: TStream); override;
     procedure WriteData(Stream: TStream); override;
@@ -91,9 +99,11 @@ type
     procedure ItemsClear;
   public
     DoubleData: boolean;
+    IgnoreTransparency: boolean;
     procedure AcBeginUpdate;
     procedure AcEndUpdate(DoChange: boolean = True);
     procedure Change; {$IFNDEF FPC}override;{$ENDIF}
+    procedure Clear; reintroduce;
     function Add(Image, Mask: TBitmap): Integer;
     procedure AfterConstruction; override;
     procedure Assign(Source: TPersistent); override;
@@ -107,8 +117,12 @@ type
     procedure Loaded; override;
     procedure LoadFromFile(const FileName: acString);
     procedure LoadFromPngStream(const Stream: TStream);
+    function TryLoadFromFile(const FileName: acString): boolean;
+    function TryLoadFromPngStream(Stream: TStream): Boolean;
     procedure MoveItem(CurIndex, NewIndex: integer);
     procedure SetNewDimensions(Value: HImageList);
+    property ScaleValue: integer read FSavedScale write SetNewScale default 0;
+    property AllowScale: boolean read FAllowScale write FAllowScale default True;
   published
     property Height read GetHeight write SetHeight;
     property Width read GetWidth write SetWidth;
@@ -148,13 +162,14 @@ type
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
     procedure ImageListChange(Sender: TObject);
   public
+    CurrentScale: integer;
     procedure AcBeginUpdate;
     procedure AcEndUpdate(DoChange: boolean = True);
     procedure Change; {$IFNDEF FPC}override;{$ENDIF}
     procedure AfterConstruction; override;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    function Count: integer; 
+    function Count: integer;
     procedure GenerateStdList;
     function GetBitmap32(Index: Integer; Image: TBitmap): Boolean;
     function CreateBitmap32(Index: Integer): TBitmap;
@@ -170,6 +185,8 @@ type
     property UseCache: boolean read FUseCache write SetUseCache default True;
   end;
 
+TIterImagesProc = procedure(ImgList: TCustomImageList; Data: Longint);
+
 
 {$IFNDEF NOTFORHELP}
 function GetImageFormat(const FileName: acString; var ImageFormat: TsImageFormat): boolean; overload;
@@ -182,13 +199,26 @@ procedure DrawAlphaImgListDC(const ImgList: TCustomImageList; const DC: hdc; con
                              const NumGlyphs: integer; const Reflected: boolean);
 {$ENDIF}
 function AddImageFromRes(aInstance: LongWord; ImageList: TsAlphaimageList; const ResName: String; aImageFormat: TsImageFormat): Boolean; // Png must be compiled in resource as RcData
-
+procedure IterateImageLists(CallBack: TIterImagesProc; Data: Longint);
 
 implementation
 
 uses
   math, ShellAPI, Dialogs, ActiveX,
   sAlphaGraph, sThirdParty, sSkinManager, sGraphUtils;
+
+
+var
+  acListsArray: TList = nil;
+
+
+procedure IterateImageLists(CallBack: TIterImagesProc; Data: Longint);
+var
+  i: integer;
+begin
+  for i := 0 to acListsArray.Count - 1 do
+    CallBack(TCustomImageList(acListsArray[i]), Data);
+end;
 
 
 function GetBpp: integer;
@@ -282,46 +312,58 @@ function DrawAlphaImgList(const ImgList: TCustomImageList; const DestBmp: TBitma
 var
   Bmp: TBitmap;
   R1, R2: TRect;
-  w, Count: integer;
   vil: TsVirtualImageList;
+  imgWidth, imgHeight, w, Count: integer;
 begin
   if (DestBmp.Width > 0) and ImgList.HandleAllocated and (ImageIndex >= 0) then begin
+    imgWidth  := GetImageWidth (ImgList);
+    imgHeight := GetImageHeight(ImgList);
     Count := max(1, NumGlyphs);
-    w := ImgList.Width div Count;
+    w := imgWidth div Count;
     if State >= Count then
       State := Count - 1;
 
-    R1 := Rect(Left, Top, Left + w, Top + ImgList.Height);
-    R2 := MkRect(w, ImgList.Height);
-    Result := MkSize(w, ImgList.Height);
+    R1 := Rect(Left, Top, Left + w, Top + ImgHeight);
+    R2 := MkRect(w, ImgHeight);
+    Result := MkSize(w, ImgHeight);
     OffsetRect(R2, w * State, 0);
 
     Bmp := nil;
-    if (ImgList is TsAlphaImageList) then begin
-      Bmp := TsAlphaImageList(ImgList).CreateBitmap32(ImageIndex, ImgList.Width, ImgList.Height);
+    if ImgList is TsAlphaImageList then begin
+      Bmp := TsAlphaImageList(ImgList).CreateBitmap32(ImageIndex, ImgWidth, ImgHeight);
       if Bmp <> nil then
-        CopyBmp32(R1, R2, DestBmp, Bmp, EmptyCI, False, GrayedColor, Blend, Reflected);
+        if TsAlphaImageList(ImgList).IgnoreTransparency then
+          BitBlt(DestBmp.Canvas.Handle, R1.Left, R1.Top, Bmp.Width, Bmp.Height, Bmp.Canvas.Handle, 0, 0, SRCCOPY)
+        else
+          CopyBmp32(R1, R2, DestBmp, Bmp, EmptyCI, False, GrayedColor, Blend, Reflected);
     end
     else
-      if (ImgList is TsVirtualImageList) then begin
+      if ImgList is TsVirtualImageList then begin
         vil := TsVirtualImageList(ImgList);
         if vil.UseCache then begin
-          if (Length(vil.CachedImages) > ImageIndex) then begin
+          if Length(vil.CachedImages) > ImageIndex then begin
             if vil.CachedImages[ImageIndex] = nil then
-              vil.CachedImages[ImageIndex] := vil.AlphaImageList.CreateBitmap32(ImageIndex, ImgList.Width, ImgList.Height);
+              vil.CachedImages[ImageIndex] := vil.AlphaImageList.CreateBitmap32(ImageIndex, ImgWidth, ImgHeight);
 
-            CopyBmp32(R1, R2, DestBmp, vil.CachedImages[ImageIndex], EmptyCI, False, GrayedColor, Blend, Reflected)
+            if (vil.AlphaImageList <> nil) and vil.AlphaImageList.IgnoreTransparency then
+              with vil.CachedImages[ImageIndex] do
+                BitBlt(DestBmp.Canvas.Handle, R1.Left, R1.Top, Width, Height, vil.CachedImages[ImageIndex].Canvas.Handle, 0, 0, SRCCOPY)
+            else
+              CopyBmp32(R1, R2, DestBmp, vil.CachedImages[ImageIndex], EmptyCI, False, GrayedColor, Blend, Reflected)
           end;
         end
         else begin
-          Bmp := CreateBmp32(ImgList.Width, ImgList.Height);
+          Bmp := CreateBmp32(ImgWidth, ImgHeight);
           TsVirtualImageList(ImgList).GetBitmap32(ImageIndex, Bmp);
           if Bmp <> nil then
-            CopyBmp32(R1, R2, DestBmp, Bmp, EmptyCI, False, GrayedColor, Blend, Reflected);
+            if (vil.AlphaImageList <> nil) and vil.AlphaImageList.IgnoreTransparency then
+              BitBlt(DestBmp.Canvas.Handle, R1.Left, R1.Top, Bmp.Width, Bmp.Height, Bmp.Canvas.Handle, 0, 0, SRCCOPY)
+            else
+              CopyBmp32(R1, R2, DestBmp, Bmp, EmptyCI, False, GrayedColor, Blend, Reflected);
         end
       end
       else begin
-        Bmp := CreateBmp32(ImgList.Width, ImgList.Height);
+        Bmp := CreateBmp32(ImgWidth, ImgHeight);
         BitBlt(Bmp.Canvas.Handle, R2.Left, R2.Top, WidthOf(R2), HeightOf(R2), DestBmp.Canvas.Handle, R1.Left, R1.Top, SRCCOPY);
         ImgList.Draw(Bmp.Canvas, 0, 0, ImageIndex, True);
         BitBlt(DestBmp.Canvas.Handle, R1.Left, R1.Top, WidthOf(R2), HeightOf(R2), Bmp.Canvas.Handle, R2.Left, R2.Top, SRCCOPY);
@@ -337,8 +379,11 @@ procedure DrawAlphaImgListDC(const ImgList: TCustomImageList; const DC: hdc; con
   const ImageIndex: integer; const Blend: integer; const GrayedColor: TColor; const State: integer; const NumGlyphs: integer; const Reflected: boolean);
 var
   Bmp: TBitmap;
+  imgWidth, imgHeight: integer;
 begin
-  Bmp := CreateBmp32(ImgList.Width, ImgList.Height + Integer(Reflected) * ImgList.Height div 2);
+  imgWidth  := GetImageWidth (ImgList);
+  imgHeight := GetImageHeight(ImgList);
+  Bmp := CreateBmp32(ImgWidth, ImgHeight + Integer(Reflected) * ImgHeight div 2);
   BitBlt(Bmp.Canvas.Handle, 0, 0, Bmp.Width, Bmp.Height, DC, Left, Top, SRCCOPY);
   DrawAlphaImgList(ImgList, Bmp, 0, 0, ImageIndex, Blend, GrayedColor, State, NumGlyphs, Reflected);
   BitBlt(DC, Left, Top, Bmp.Width, Bmp.Height, Bmp.Canvas.Handle, 0, 0, SRCCOPY);
@@ -386,13 +431,8 @@ end;
 procedure TsAlphaImageList.AfterConstruction;
 begin
   inherited;
-  if not (csLoading in ComponentState) then begin
-    if not HandleAllocated then
-      CreateImgList;
-
-    if not StdListIsGenerated then
-      GenerateStdList;
-  end;
+  if not (csLoading in ComponentState) then
+    FLoaded := True;
 end;
 
 
@@ -415,7 +455,7 @@ begin
   else
     if Source is TsAlphaImageList then begin
       AcBeginUpdate;
-      Clear;
+      inherited Clear;
       ImageList := TsAlphaImageList(Source);
       Masked := ImageList.Masked;
       ImageType := ImageList.ImageType;
@@ -489,7 +529,7 @@ begin
       GenerateStdList;
     end
     else begin
-      Clear;
+      inherited Clear;
       ImageList_SetBkColor(Handle, CLR_NONE);
       for i := 0 to ImgList.Count - 1 do begin
         Ico := ImageList_GetIcon(ImgList.Handle, i, ILD_TRANSPARENT);
@@ -503,18 +543,34 @@ end;
 
 constructor TsAlphaImageList.Create(AOwner: TComponent);
 begin
+  FLoaded := False;
+  FSavedScale := 0;
   inherited;
   FItems := TsImgListItems.Create(Self);
+  FAllowScale := True;
   FBkColor := clNone;
   FUseCache := True;
+  IgnoreTransparency := False;
   DoubleData := True;
+  if acListsArray = nil then
+    acListsArray := TList.Create;
+
+  acListsArray.Add(Self);
 end;
 
 
 procedure TsAlphaImageList.CreateImgList;
 begin
 {$IFNDEF FPC}
-  Handle := ImageList_Create(Width, Height, ILC_COLOR32 or (Integer(Masked) * ILC_MASK), 0, AllocBy);
+  if (SavedWidth = 0) and FLoaded and not (csLoading in ComponentState) then begin
+    SavedWidth := Width;
+    SavedHeight := Height;
+  end;
+
+  if CanScale then
+    Handle := ImageList_Create(DefaultManager.ScaleInt(SavedWidth), DefaultManager.ScaleInt(SavedHeight), ILC_COLOR32 or (Integer(Masked) * ILC_MASK), 0, AllocBy)
+  else
+    Handle := ImageList_Create(SavedWidth, SavedHeight, ILC_COLOR32 or (Integer(Masked) * ILC_MASK), 0, AllocBy);
 {$ELSE}
   ReferenceNeeded;
 {$ENDIF}
@@ -523,6 +579,9 @@ end;
 
 destructor TsAlphaImageList.Destroy;
 begin
+  if acListsArray <> nil then
+    acListsArray.Extract(Self);
+
   FreeAndNil(FItems);
   inherited;
 end;
@@ -534,7 +593,7 @@ var
   TmpBmp, Bmp: TBitmap;
 begin
   if HandleAllocated and (Index >= 0) then
-    if (Items.Count > Index) then
+    if Items.Count > Index then
       case Items[Index].ImageFormat of
         ifPng, ifBmp32: begin
           Bmp := CreateBitmap32(Index, Width, Height);
@@ -581,7 +640,7 @@ begin
         ifIco: begin
           ImageList_SetBkColor(Handle, CLR_NONE);
           Ico := ImageList_GetIcon(Handle, Index, ILD_TRANSPARENT);
-          if (Ico > 0) then begin
+          if Ico > 0 then begin
             DrawIconEx(Canvas.Handle, X, Y, Ico, Width, Height, 0, 0, DI_NORMAL);
             DestroyIcon(Ico);
           end;
@@ -590,7 +649,7 @@ begin
     else begin
       ImageList_SetBkColor(Handle, CLR_NONE);
       Ico := ImageList_GetIcon(Handle, Index, ILD_TRANSPARENT);
-      if (Ico > 0) then begin
+      if Ico > 0 then begin
         DrawIconEx(Canvas.Handle, X, Y, Ico, Width, Height, 0, 0, DI_NORMAL);
         DestroyIcon(Ico);
       end;
@@ -605,84 +664,97 @@ var
   Icon: TIcon;
   Ico: hIcon;
 begin
-  if HandleAllocated then begin
+  // Check if default size was not initialized yet
+  if (SavedHeight = 0) and (inherited Width = 16) and (inherited Height = 16) and not AcChanging then begin
     AcChanging := True;
-    Clear;
-    for i := 0 to Items.Count - 1 do
-      case Items[i].ImageFormat of
-        ifPNG: begin
-          Items[i].ImgData.Seek(0, 0);
-          Bmp := TBitmap.Create;
-          LoadBmpFromPngStream(Bmp, Items[i].ImgData);
-          Items[i].OrigWidth := Bmp.Width;
-          Items[i].OrigHeight := Bmp.Height;
+    KillImgList;
+    SetWidth(inherited Width);
+    SetHeight(inherited Height);
+  end;
+
+  if SavedHeight <> 0 then begin
+    if not HandleAllocated then
+      CreateImgList;
+
+    if HandleAllocated then begin
+      AcChanging := True;
+      inherited Clear;
+      for i := 0 to Items.Count - 1 do
+        case Items[i].ImageFormat of
+          ifPNG: begin
+            Items[i].ImgData.Seek(0, 0);
+            Bmp := TBitmap.Create;
+            LoadBmpFromPngStream(Bmp, Items[i].ImgData);
+            Items[i].OrigWidth := Bmp.Width;
+            Items[i].OrigHeight := Bmp.Height;
 //{$IFDEF DELPHI7UP}
-          if IsNTFamily then
-            Ico := MakeCompIcon(Bmp, ColorToRGB(TColor(ImageList_GetBkColor(Handle))))
-          else
+            if IsNTFamily then
+              Ico := MakeCompIcon(Bmp, ColorToRGB(TColor(ImageList_GetBkColor(Handle))))
+            else
 //{$ENDIF}
-            Ico := MakeIcon32(Bmp);
+              Ico := MakeIcon32(Bmp);
 
-          ImageList_AddIcon(Handle, Ico);
-          DestroyIcon(Ico);
-          FreeAndNil(Bmp);
-        end;
+            ImageList_AddIcon(Handle, Ico);
+            DestroyIcon(Ico);
+            FreeAndNil(Bmp);
+          end;
 
-        ifBMP32: begin
-          Bmp := TBitmap.Create;
-          Items[i].ImgData.Seek(0, 0);
-          Bmp.LoadFromStream(Items[i].ImgData);
-          Items[i].OrigWidth := Bmp.Width;
-          Items[i].OrigHeight := Bmp.Height;
-          Bmp.PixelFormat := pf32bit;
+          ifBMP32: begin
+            Bmp := TBitmap.Create;
+            Items[i].ImgData.Seek(0, 0);
+            Bmp.LoadFromStream(Items[i].ImgData);
+            Items[i].OrigWidth := Bmp.Width;
+            Items[i].OrigHeight := Bmp.Height;
+            Bmp.PixelFormat := pf32bit;
 //{$IFDEF DELPHI7UP}
-          if IsNTFamily then
-            Ico := MakeCompIcon(Bmp, ColorToRGB(TColor(ImageList_GetBkColor(Handle))))
-          else
+            if IsNTFamily then
+              Ico := MakeCompIcon(Bmp, ColorToRGB(TColor(ImageList_GetBkColor(Handle))))
+            else
 //{$ENDIF}
-            Ico := MakeIcon32(Bmp);
+              Ico := MakeIcon32(Bmp);
 
-          ImageList_AddIcon(Handle, Ico);
-          DestroyIcon(Ico);
-          FreeAndNil(Bmp);
+            ImageList_AddIcon(Handle, Ico);
+            DestroyIcon(Ico);
+            FreeAndNil(Bmp);
+          end;
+
+          ifICO: begin
+            Icon := TIcon.Create;
+            Items[i].ImgData.Seek(0, 0);
+            Icon.LoadFromStream(Items[i].ImgData);
+            Items[i].OrigWidth := Icon.Width;
+            Items[i].OrigHeight := Icon.Height;
+            ImageList_AddIcon(Handle, Icon.Handle);
+            FreeAndNil(Icon);
+          end;
         end;
 
-        ifICO: begin
-          Icon := TIcon.Create;
-          Items[i].ImgData.Seek(0, 0);
-          Icon.LoadFromStream(Items[i].ImgData);
-          Items[i].OrigWidth := Icon.Width;
-          Items[i].OrigHeight := Icon.Height;
-          ImageList_AddIcon(Handle, Icon.Handle);
-          FreeAndNil(Icon);
-        end;
+      if Items.Count > 0 then begin
+        StdListIsGenerated := True;
+        if not IsDuplicated then
+          Items.Clear;
       end;
-
-    if Items.Count > 0 then begin
-      StdListIsGenerated := True;
-      if not IsDuplicated then
-        Items.Clear;
+      AcChanging := False;
     end;
-    AcChanging := False;
   end;
 end;
 
 
 procedure CorrectPixelFrmt(Bmp: TBitmap);
 var
-  x, y, DeltaS: integer;
+  w, h, x, y, DeltaS: integer;
   TransColor: TColor;
-  S0, S: PRGBAArray;
+  S0, S: PRGBAArray_;
   Color: TsColor;
-  C: TsColor_;
 begin
+  w := Bmp.Width - 1;
+  h := Bmp.Height - 1;
   TransColor := clFuchsia;
   if InitLine(Bmp, Pointer(S0), DeltaS) then
-    for Y := 0 to Bmp.Height - 1 do begin // Check if alphachannel if fully clear
+    for Y := 0 to h do begin // Check if alphachannel is fully clear
       S := Pointer(LongInt(S0) + DeltaS * Y);
-      for X := 0 to Bmp.Width - 1 do begin
-        C := S[X];
-        if C.A <> 0 then begin
+      for X := 0 to w do begin
+        if S[X].A <> 0 then begin
           TransColor := clNone;
           Break;
         end;
@@ -692,9 +764,9 @@ begin
     end;
 
   if TransColor = clFuchsia then begin
-    TransColor := Bmp.Canvas.Pixels[0, Bmp.Height - 1];
-    for X := 0 to Bmp.Width - 1 do
-      for Y := 0 to Bmp.Height - 1 do begin
+    TransColor := Bmp.Canvas.Pixels[0, h];
+    for X := 0 to w do
+      for Y := 0 to h do begin
         Color.C := GetAPixel(Bmp, X, Y).C;
         if Color.C <> TransColor then begin
           Color.A := MaxByte;
@@ -712,19 +784,18 @@ var
   TmpBmp, Bmp: TBitmap;
 begin
   Result := False;
-  if HandleAllocated and (Image <> nil) and (Index >= 0) and (Index < Count) then 
+  if HandleAllocated and (Image <> nil) and IsValidIndex(Index, Count) then
     if IsDuplicated and (Index < Items.Count) and (Items[Index].ImgData.Size > 0) then // Using of original image if exists
       case Items[Index].ImageFormat of
         ifPNG: begin
-          if FUseCache then
-            if (Items[Index].CacheBmp <> nil) then
-              if (Items[Index].CacheBmp.Width = Image.Width) and (Items[Index].CacheBmp.Height = Image.Height) then begin
-                Image.Assign(Items[Index].CacheBmp);
-                Result := True;
-                Exit;
-              end
-              else
-                FreeAndNil(Items[Index].CacheBmp); // Reset cache
+          if FUseCache and (Items[Index].CacheBmp <> nil) then
+            if (Items[Index].CacheBmp.Width = Image.Width) and (Items[Index].CacheBmp.Height = Image.Height) then begin
+              Image.Assign(Items[Index].CacheBmp);
+              Result := True;
+              Exit;
+            end
+            else
+              FreeAndNil(Items[Index].CacheBmp); // Reset cache
 
           Bmp := TBitmap.Create;
           Items[Index].ImgData.Seek(0, 0);
@@ -752,15 +823,14 @@ begin
         end;
 
         ifBMP32: begin
-          if FUseCache then
-            if (Items[Index].CacheBmp <> nil) then
-              if (Items[Index].CacheBmp.Width = Image.Width) and (Items[Index].CacheBmp.Height = Image.Height) then begin
-                Image.Assign(Items[Index].CacheBmp);
-                Result := True;
-                Exit;
-              end
-              else
-                FreeAndNil(Items[Index].CacheBmp); // Reset cache
+          if FUseCache and (Items[Index].CacheBmp <> nil) then
+            if (Items[Index].CacheBmp.Width = Image.Width) and (Items[Index].CacheBmp.Height = Image.Height) then begin
+              Image.Assign(Items[Index].CacheBmp);
+              Result := True;
+              Exit;
+            end
+            else
+              FreeAndNil(Items[Index].CacheBmp); // Reset cache
 
           Items[Index].ImgData.Seek(0, 0);
           if (Items[Index].OrigWidth <> Image.Width) or (Items[Index].OrigHeight <> Image.Height) then begin // If must be scaled
@@ -848,7 +918,7 @@ var
   Ico: hIcon;
 begin
   Result := nil;
-  if HandleAllocated and (Index >= 0) and (Index < Count) then
+  if HandleAllocated and IsValidIndex(Index, Count) then
     if IsDuplicated and (Index < Items.Count) and (Items[Index].ImgData.Size > 0) then begin // Using of original image if exists
       case Items[Index].ImageFormat of
         ifPNG: begin
@@ -931,7 +1001,7 @@ begin
               Result.Handle := iInfo.hbmColor;
               Result.HandleType := bmDIB;
               Result.PixelFormat := pf32bit;
-              if (Win32MajorVersion < 6) then // Update alpha channel
+              if Win32MajorVersion < 6 then // Update alpha channel
                 if (GetBpp < 32) or ((DefaultManager = nil) or DefaultManager.Options.CheckEmptyAlpha) then
                   CorrectPixelFrmt(Result);
 
@@ -950,7 +1020,7 @@ begin
           Result.Handle := iInfo.hbmColor;
           Result.HandleType := bmDIB;
           Result.PixelFormat := pf32bit;
-          if (Win32MajorVersion < 6) then // Update alpha channel
+          if Win32MajorVersion < 6 then // Update alpha channel
             if (GetBpp < 32) or ((DefaultManager = nil) or DefaultManager.Options.CheckEmptyAlpha) then
               CorrectPixelFrmt(Result);
 
@@ -976,15 +1046,33 @@ begin
 {$IFNDEF FPC}
   Handle := 0;
 {$ENDIF}
-  Change;
+  if not AcChanging then
+    Change;
 end;
 
 
 procedure TsAlphaImageList.Loaded;
+var
+  w, h: integer;
 begin
   inherited;
-  if not HandleAllocated then
-    CreateImgList;
+  FLoaded := True;
+  if SavedWidth = 0 then begin
+    w := inherited Width;
+    h := inherited Height;
+    if (w = 16) and (h = 16) then begin // If default size - reinit
+      AcChanging := True;
+      KillImgList;
+      SetWidth(w);
+      SetHeight(h);
+    end;
+  end;
+
+  if SavedWidth = 0 then
+    SetWidth(Width);
+
+  if SavedHeight = 0 then
+    SetHeight(Height);
 
   if not StdListIsGenerated then begin
     GenerateStdList;
@@ -1049,6 +1137,32 @@ end;
 {$ENDIF}
 
 
+procedure TsAlphaImageList.SetNewScale(Value: Integer);
+var
+  b: boolean;
+begin
+  if (FSavedScale <> Value) and CanScale then begin
+    b := AcChanging;
+    AcChanging := True;
+    FSavedScale := Value;
+    inherited Clear;
+    KillImgList;
+//    CreateImgList;
+    GenerateStdList;
+    AcChanging := b;
+    if not AcChanging then
+      inherited Change;
+  end;
+end;
+
+
+procedure TsAlphaImageList.ScaleSize;
+begin
+  if CanScale and not (csLoading in ComponentState) and (SavedWidth <> 0) then
+    ScaleValue := DefaultManager.GetScale;
+end;
+
+
 procedure TsAlphaImageList.SetBkColor(const Value: TColor);
 begin
   FBkColor := Value;
@@ -1079,12 +1193,15 @@ var
   Ico: HICON;
   Bmp: TBitmap;
   iInfo: TIconInfo;
-  S0, S: PRGBAArray;
-  X, Y, DeltaS: integer;
+  S0, S: PRGBAArray_;
   iFormat: TsImageFormat;
+  w, h, X, Y, DeltaS: integer;
 begin
   Result := False;
   Ico := 0;
+  if not HandleAllocated then
+    GenerateStdList;
+
   if HandleAllocated and GetImageFormat(FileName, iFormat) then begin
     if IsDuplicated then // If double data used
       with TsImgListItem(Items.Add) do begin
@@ -1126,11 +1243,13 @@ begin
             OrigWidth := Bmp.Width;
             OrigHeight := Bmp.Height;
             PixelFormat := pf24bit;
-            if (Bmp.PixelFormat = pf32bit) then // Check the alpha channel
+            w := Bmp.Width - 1;
+            h := Bmp.Height - 1;
+            if Bmp.PixelFormat = pf32bit then // Check the alpha channel
               if InitLine(Bmp, Pointer(S0), DeltaS) then
-                for Y := 0 to Bmp.Height - 1 do begin
+                for Y := 0 to h do begin
                   S := Pointer(LongInt(S0) + DeltaS * Y);
-                  for X := 0 to Bmp.Width - 1 do
+                  for X := 0 to w do
                     if S[X].A <> 0 then begin
                       PixelFormat := pf32bit;
                       Break;
@@ -1167,7 +1286,7 @@ begin
       end;
 
     if Ico <> 0 then begin
-      Result := ImageList_AddIcon(Handle, Ico) > -1;
+      Result := ImageList_AddIcon(Handle, Ico) >= 0;
       DestroyIcon(Ico);
     end;
     Change;
@@ -1181,6 +1300,14 @@ var
 begin
   for i := 0 to Items.Count - 1 do
     Items[i].ImgData.Clear;
+
+  Items.Clear;
+end;
+
+
+function TsAlphaImageList.CanScale: boolean;
+begin
+  Result := FAllowScale and FLoaded and (DefaultManager <> nil) and not (csDesigning in ComponentState) and (Items.Count > 0);
 end;
 
 
@@ -1190,7 +1317,7 @@ var
   Bmp: TBitmap;
   iInfo: TIconInfo;
   Ico, NewIco: HICON;
-  S0, S: PRGBAArray_RGB;
+  S0, S: PRGBAArray_S;
   X, Y, DeltaS, i, c, h, w: integer;
 begin
   if not AcChanging then
@@ -1200,7 +1327,7 @@ begin
 
       if not (csDesigning in ComponentState) then
         if IsDuplicated and (Count <= Items.Count) {If icon was not added using AddIcon or other std. way (not stored in Items)} then begin
-          if (Count < Items.Count) then begin
+          if Count < Items.Count then begin
             AcChanging := True;
             GenerateStdList;
             AcChanging := False;
@@ -1209,7 +1336,7 @@ begin
         end
         else begin
           c := ImageList_GetImageCount(Handle) - 1;
-          if c > -1 then begin
+          if c >= 0 then begin
             Bmp := TBitmap.Create;
             for i := 0 to c do begin
               Ico := ImageList_GetIcon(Handle, i, ILD_NORMAL);
@@ -1221,12 +1348,11 @@ begin
               h := Bmp.Height - 1;
               w := Bmp.Width - 1;
               Bmp.PixelFormat := pf32bit;
-
               if InitLine(Bmp, Pointer(S0), DeltaS) then begin
                 for Y := 0 to h do begin // Check if AlphaChannel is empty
                   S := Pointer(LongInt(S0) + DeltaS * Y);
                   for X := 0 to w do
-                    if S[X].Alpha <> 0 then begin
+                    if S[X].SA <> 0 then begin
                       b := True;
                       Break;
                     end;
@@ -1239,8 +1365,8 @@ begin
                     S := Pointer(LongInt(S0) + DeltaS * Y);
                     for X := 0 to w do
                       with S[X] do
-                        if Col <> sFuchsia.C then
-                          Alpha := $FF;
+                        if SC <> sFuchsia.C then
+                          SA := MaxByte;
                   end;
                   iInfo.hbmColor := Bmp.Handle;
                   NewIco := CreateIconIndirect(iInfo);
@@ -1254,7 +1380,17 @@ begin
             FreeAndNil(Bmp);
           end;
         end;
-    end;
+    end;{
+    else
+      if not HandleAllocated and not (csLoading in ComponentState) then
+        SavedScale := 0;}
+end;
+
+
+procedure TsAlphaImageList.Clear;
+begin
+  ItemsClear;
+  inherited Clear;
 end;
 
 
@@ -1328,14 +1464,22 @@ end;
 
 function TsAlphaImageList.GetHeight: Integer;
 begin
+  ScaleSize;
   Result := inherited Height;
 end;
 
 
 procedure TsAlphaImageList.SetHeight(Value: Integer);
 begin
+  if FLoaded then begin
+    SavedHeight := Value;
+    if DefaultManager <> nil then
+      ScaleValue := DefaultManager.GetScale
+    else
+      ScaleValue := 0;
+  end;
   inherited Height := Value;
-  if not (csLoading in ComponentState) then begin
+  if not (csLoading in ComponentState) and (Count <= Items.Count) {If can generate new} then begin
     GenerateStdList;
     Change;
   end;
@@ -1344,14 +1488,22 @@ end;
 
 function TsAlphaImageList.GetWidth: Integer;
 begin
+  ScaleSize;
   Result := inherited Width;
 end;
 
 
 procedure TsAlphaImageList.SetWidth(Value: Integer);
 begin
+  if FLoaded then begin
+    SavedWidth := Value;
+    if DefaultManager <> nil then
+      ScaleValue := DefaultManager.GetScale
+    else
+      ScaleValue := 0;
+  end;
   inherited Width := Value;
-  if not (csLoading in ComponentState) then begin
+  if not (csLoading in ComponentState) and FLoaded and (Count <= Items.Count) {If can generate new} then begin
     GenerateStdList;
     Change;
   end;
@@ -1479,12 +1631,14 @@ end;
 procedure TsVirtualImageList.AfterConstruction;
 begin
   inherited;
+{
   if not (csLoading in ComponentState) then begin
     if not HandleAllocated then
       CreateImgList;
 
     UpdateList(False);
   end;
+}
 end;
 
 
@@ -1521,10 +1675,15 @@ begin
   inherited;
   FHeight := 16;
   FWidth := 16;
+  CurrentScale := 0;
   FUseCache := True;
   DrawingStyle := dsTransparent;
   FImageChangeLink := TChangeLink.Create;
   FImageChangeLink.OnChange := ImageListChange;
+  if acListsArray = nil then
+    acListsArray := TList.Create;
+
+  acListsArray.Add(Self);
 end;
 
 
@@ -1540,6 +1699,9 @@ end;
 
 destructor TsVirtualImageList.Destroy;
 begin
+  if acListsArray <> nil then
+    acListsArray.Extract(Self);
+
   FreeAndNil(FImageChangeLink);
   ClearItems;
   inherited;
@@ -1552,12 +1714,12 @@ var
 begin
   if HandleAllocated and (Index >= 0) then
     if FUseCache then begin
-      if (Count > Index) then begin
+      if Count > Index then begin
         if CachedImages[Index] = nil then begin
           CachedImages[Index] := CreateBmp32(Width, Height);
           FAlphaImageList.GetBitmap32(Index, CachedImages[Index]);
         end;
-        if (CachedImages[Index] <> nil) then begin
+        if CachedImages[Index] <> nil then begin
           TmpBmp := CreateBmp32(Width, Height);
           TmpBmp.Canvas.Lock;
           try
@@ -1572,7 +1734,7 @@ begin
       end;
     end
     else
-      if (Count > Index) then begin
+      if Count > Index then begin
         TmpBmp := CreateBmp32(Width, Height);
         IcoBmp := CreateBmp32(Width, Height);
         TmpBmp.Canvas.Lock;
@@ -1599,8 +1761,8 @@ begin
   if HandleAllocated then begin
     AcChanging := True;
     ClearItems;
-    Clear;
-    if (FAlphaImageList <> nil) then
+    inherited Clear;
+    if FAlphaImageList <> nil then
       if FUseCache then begin
         // Make empty cache
         SetLength(CachedImages, FAlphaImageList.Count);
@@ -1618,7 +1780,6 @@ begin
           end
           else
             FreeAndNil(CachedImages[i]);
-//            CachedImages[i] := nil;
         end;
       end
       else begin
@@ -1646,12 +1807,12 @@ begin
   Result := False;
   if HandleAllocated and (Index >= 0) then
     if FUseCache then begin
-      if (Count > Index) then begin
+      if Count > Index then begin
         if CachedImages[Index] = nil then begin
           CachedImages[Index] := CreateBmp32(Width, Height);
           FAlphaImageList.GetBitmap32(Index, CachedImages[Index]);
         end;
-        if (CachedImages[Index] <> nil) then
+        if CachedImages[Index] <> nil then
           CopyBmp(Image, CachedImages[Index]);
       end;
     end
@@ -1682,12 +1843,20 @@ end;
 
 
 procedure TsVirtualImageList.Loaded;
+var
+  i: integer;
 begin
   inherited;
   if not HandleAllocated then
     CreateImgList;
 
   UpdateList(False);
+  i := DefaultManager.GetScale;
+  if i > 0 then begin
+    Width  := MulDiv(Width,  aScalePercents[i], aScalePercents[CurrentScale]);
+    Height := MulDiv(Height, aScalePercents[i], aScalePercents[CurrentScale]);
+    CurrentScale := i;
+  end;
 end;
 
 
@@ -1771,7 +1940,7 @@ end;
 
 procedure TsVirtualImageList.UpdateList;
 begin
-  if (IgnoreGenerated or not StdListIsGenerated) and not AcChanging then begin
+  if (IgnoreGenerated or not StdListIsGenerated) and not AcChanging and HandleAllocated then begin
     GenerateStdList;
     StdListIsGenerated := Count > 0;
     Change;
@@ -1781,13 +1950,13 @@ end;
 
 function TsVirtualImageList.CreateBitmap32(Index: Integer): TBitmap;
 begin
-  if (Count > Index) then begin
+  if Count > Index then begin
     if FUseCache then begin
       Result := TBitmap.Create;
       GetBitmap32(Index, Result);
     end
     else
-      if (FAlphaImageList <> nil) then
+      if FAlphaImageList <> nil then
         Result := FAlphaImageList.CreateBitmap32(Index, Width, Height)
       else
         Result := nil;
@@ -1805,36 +1974,41 @@ var
 begin
   Result := False;
   Ico := 0;
-  if HandleAllocated and GetImageFormat(Stream, iFormat) then begin
-    if IsDuplicated then // If double data used
-      with TsImgListItem(Items.Add) do begin
-        ImgData.LoadFromStream(Stream);
-        ImageFormat := iFormat;
+  try
+    if HandleAllocated and GetImageFormat(Stream, iFormat) then begin
+      if IsDuplicated then // If double data used
+        with TsImgListItem(Items.Add) do begin
+          ImgData.LoadFromStream(Stream);
+          ImageFormat := iFormat;
+          case iFormat of
+            ifPNG: begin
+              PixelFormat := pf32bit;
+              Bmp := TBitmap.Create;
+              LoadBmpFromPngStream(Bmp, ImgData);
+              Ico := MakeIcon32(Bmp);
+              FreeAndNil(Bmp);
+            end;
+          end;
+        end
+      else
         case iFormat of
           ifPNG: begin
-            PixelFormat := pf32bit;
             Bmp := TBitmap.Create;
-            LoadBmpFromPngStream(Bmp, ImgData);
+
+            LoadBmpFromPngStream(Bmp, Stream);
             Ico := MakeIcon32(Bmp);
             FreeAndNil(Bmp);
           end;
         end;
-      end
-    else
-      case iFormat of
-        ifPNG: begin
-          Bmp := TBitmap.Create;
-          LoadBmpFromPngStream(Bmp, Stream);
-          Ico := MakeIcon32(Bmp);
-          FreeAndNil(Bmp);
-        end;
-      end;
 
-    if Ico <> 0 then begin
-      Result := ImageList_AddIcon(Handle, Ico) > -1;
-      DestroyIcon(Ico);
+      if Ico <> 0 then begin
+        Result := ImageList_AddIcon(Handle, Ico) >= 0;
+        DestroyIcon(Ico);
+      end;
+      Change;
     end;
-    Change;
+  except
+    Result := False;
   end;
 end;
 
@@ -1876,5 +2050,11 @@ begin
 {$ENDIF}
 end;
 {$ENDIF}
+
+
+initialization
+
+finalization
+  FreeAndNil(acListsArray);
 
 end.

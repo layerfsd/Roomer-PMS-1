@@ -1,6 +1,6 @@
 unit sDBLookupListBox;
 {$I sDefs.inc}
-
+//+
 interface
 
 uses
@@ -45,9 +45,9 @@ end;
 
 constructor TsDBLookupListBox.Create(AOwner: TComponent);
 begin
-  inherited Create(AOwner);
   FCommonData := TsScrollWndData.Create(Self, True);
   FCommonData.COC := COC_TsEdit;
+  inherited Create(AOwner);
   FDisabledKind := DefDisabledKind;
   FBoundLabel := TsBoundLabel.Create(Self, FCommonData);
 end;
@@ -59,9 +59,7 @@ begin
     FreeAndNil(ListSW);
 
   FreeAndNil(FBoundLabel);
-  if Assigned(FCommonData) then
-    FreeAndNil(FCommonData);
-
+  FreeAndNil(FCommonData);
   inherited Destroy;
 end;
 

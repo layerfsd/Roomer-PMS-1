@@ -1,5 +1,147 @@
 AlphaControls :: history
 
+12.08.2016 AlphaControls v11.12 Stable released
+
+  * Fixed error in decoding of skins under Win64 compiler
+  * Fixed "Out of range" error in the TsButton when the Default property is True
+  * Solved issue with switching of the BorderIcons property
+  * Solved issue with access to config file when developer works without administrator rights
+  * Improved receiving of text color in ToolButtons
+  * Improved scaling of the TsPageControl component
+  * Improved autoselect the TsDateEdit component
+  * Improved painting of the TsPanel component
+  * Improved scaling of BoundLabel
+  * Added changing of TsSpeedButton ImageIndex property after changing of Action.ImageIndex
+  * Added new TsSkinManager.OnScaleModeChange event
+  * Added automatic scaling of the TsVirtualImageList component sizes
+
+25.07.2016 AlphaControls v11.11 Stable released
+
+  * Added GlyphColorTone property in the TsSpeedButton and TsBitBtn components
+  * Added the TsSkinSelector.DroppedDown function
+  * Removed a memory leak in file dialogs
+  * Solved issue with rendering of disabled semitransparent controls
+  * Solved issue with "Internal Skins", "Gradient Builder" and "Color" dialogs under Delphi 5
+
+21.07.2016 AlphaControls v11.10 Stable released
+
+  * Improved work of scrolls with negative Min value
+  * Improved painting of transparent images on hints with frames
+  * Added TsMonthCalendar.AllowChangeMonth property
+  * Fixed problem in the TsDateEdit when MinDate or MaxDate specified
+  * Minor improvements and bugfixes
+
+04.07.2016 AlphaControls v11.05 Beta released
+
+  * Solved issue with animated changing of skin
+  * Solved problem with AlphaCfg file in design-time
+  * Fixed a memory leak in the TsDateEdit component
+  * Fixed 'Scan line index out of range' error in dialogs
+  * Added ActiveFrame, TitleFont properties and OnChangedState event in the TsFrameBar component
+  * Minor improvements and bigfixes
+
+04.07.2016 AlphaControls v10.31 Stable released
+
+  * Solved problem with compiling of the package under C++ Builder
+  * Solved problem with double link clicking in the TsHTMLLabel and TsWebLabel components
+  * Improved showing of magnifier
+  * Added TsDBCheckBox.OnChange event
+
+24.06.2016 AlphaControls v11.04 Beta released
+
+  * Solved problem with compiling under C++ Builder 6
+  * Solved problem with double link clicking in the TsHTMLLabel and TsWebLabel components
+  * Solved problem in using of popup forms with FastMM4
+  * Changed declaration of the "Text" parameter in the TsDateEdit.OnValidateError event
+  * Text color of transparent controls received from parent control now
+  * Improved showing of magnifier
+  * Added new type of texture filling: from bottom to top
+  * Added the TsHTMLLabel.OnLinkClick event
+  * Added new "Blue waves (CS)" skin
+
+15.06.2016 AlphaControls v11.03 Beta released
+
+  * Added the TsMagnifier.OnGetSourceCoords event
+  * Fixed error in the TsTrackEdit component
+  * Added the ShowProgress property in the TsTrackEdit component
+  * TsScrollBox is transparent if BorderStyle is bsNone and SkinData.SkinSection property is empty
+  * Many minor improvements and bugfixes
+  * Added new "AlterMetro 2016" skin
+
+11.06.2016 AlphaControls v10.30 Stable released
+
+  * Added automatic repainting of the main menu after changing
+  * Added MousePosToDate function and CellDate property in the TsMonthCalendar
+  * Added new SysColorToSkin function, declared in the sSkinManager unit
+  * Solved issue with slow forms activation under Windows XP
+  * Solved issue with wrapped BoundLabels
+  * Default value of the TsDateEdit.CheckOnExit property changed to True
+  * Minor bug-fixes
+
+29.05.2016 AlphaControls v11.02 Beta released
+
+  * Added new TsGradientPanel component
+  * Added default 'MAINCOLOR' skin section
+  * Solved problem with compilation under CX 10.1 Berlin
+  * Minor bugfixes and improvements
+  * Added new "TV-c (CS)" skin
+
+18.05.2016 AlphaControls v11.01 Beta released
+
+  * Fixed error which occurs under Windows XP
+  * Fixed error in the TsBevel component
+  * Added TsPopupBox.OnBeforePopup event
+  * Added automatic repainting of the main menu after changing
+  * Added new TsDateEdit.IsEmpty function
+  * Added new Alignment property in the TsFrameBar title items
+  * A lot of minor improvements and bugfixes
+
+11.05.2016 AlphaControls v11.00 Beta released
+
+  * Added new TsPopupBox component
+  * Added new TsTrackEdit component
+  * Added new TsSkinSelector component
+  * Added new TsSkinProvider.DisabledBlendColor property
+  * Added new TsColorSelect.PopupMode property with cpmColorList and cpmPickColor values
+  * Added new ChangeControlColors procedure
+  * Added CustomFont and Font properties in the TsSkinManager.MenuSupport
+  * Added solution for scaling of forms (TsSkinManager.Options.ScalingMode property)
+  * Added showing of 'AM/PM' in the TsTimePicker component when Use12Hour property is True
+
+07.05.2016 AlphaControls v10.29 Stable released
+
+  * Added TsAlphaImageList.Clear procedure
+  * Added TsShellTreeView.Active property
+  * Added suppot of the RAD Studio 10.1 Berlin
+  * Many small improvements and bug-fixes
+
+ 07.04.2016 AlphaControls v10.28 Stable released
+
+  * Fixed error in the TsTrackBar component
+  * Fixed error in destroying of TDBGridEH component in run-time
+  * Improved work of the SkinData.CustomColor property
+  * Improved support of the TVirtualStringTree component
+  * Some improvements in forms minimizing/restoring procedure
+  * Small bug-fixes and improvements
+
+22.03.2016 AlphaControls v10.27 Stable released
+
+  * Added new TsSkinProvider.DisabledBlendColor property
+  * Added new TsCheckListBox.DblClickToggle property
+  * Added new TsTitleBar.RightSpacing property
+  * Fixed error in the TsShellComboBox creation in design-time
+  * Improved painting of ListView items with vsIcon style
+  * Improved support of standard TDBCheckBox component
+  * Improved support of custom drawing in listboxes
+  * Improved support of PNG8
+
+18.02.2016 AlphaControls v10.26 Stable released
+
+  * Solved issue with changing of the Enabled property in the TsGroupBox and TsRadioGroup components
+  * Fixed error in the TsColorSelect component
+  * Improved work of the TsSkinManager.CommonSections property
+  * Small bug-fixes and cosmetic improvements
+
 09.02.2016 AlphaControls v10.25 Stable released
 
   * Fixed Range Check Error in the 64 bit mode

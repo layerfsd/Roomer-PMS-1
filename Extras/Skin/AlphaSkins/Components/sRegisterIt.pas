@@ -5,22 +5,22 @@ interface
 
 
 uses
-  Classes, sScrollBar, sLabel, sButton, sBitBtn, sSpeedButton, sPanel,
-  sListBox, acTitleBar,
+  Classes,
+  sScrollBar, sLabel, sButton, sBitBtn, sSpeedButton, sPanel, sListBox, acTitleBar,
 {$IFNDEF ALITE}
-{$IFDEF USEHINTMANAGER}
+  {$IFDEF USEHINTMANAGER}
   sHintManager,
-{$ENDIF}   
+  {$ENDIF}
   sToolBar, sColorSelect, sDialogs, sCurrencyEdit, sSpinEdit, sRadioButton, sComboEdit, sPageControl,
   sCurrEdit, sToolEdit, sMonthCalendar, sBevel, sGroupBox, sStatusBar, sTrackBar, sCalculator,
   sMaskEdit, sComboBoxes, sSplitter, sTabControl, sFontCtrls, sScrollBox, sRichEdit, sFileCtrl,
   sTreeView, sFrameAdapter, sUpDown, acSlider, acImage, sFrameBar, acShellCtrls, acCoolBar,
-  acProgressBar, acNotebook, acAlphaHints, acHeaderControl, acMagn, acPageScroller, acMeter,
-{$IFNDEF BCB}   
-{$IFDEF DELPHI7UP}   
+  acProgressBar, acNotebook, acAlphaHints, acHeaderControl, acMagn, acPageScroller, acMeter, acPopupCtrls,
+  {$IFNDEF BCB}
+    {$IFDEF DELPHI7UP}
   acWebBrowser,
-{$ENDIF}  
-{$ENDIF}  
+    {$ENDIF}
+  {$ENDIF}
 {$ENDIF}
   sListView, sGauge, sEdit, sSkinManager, sSkinProvider, sComboBox, sCheckBox, acAlphaImageList, sMemo, sCheckListBox;
 
@@ -31,8 +31,9 @@ procedure Register;
 implementation
 
 
-uses Registry, Windows, Graphics, acntUtils,
-  SysUtils{$IFNDEF ALITE}, acPathDialog, sColorDialog, sStoreUtils{$ENDIF}{$IFDEF SPLASH}, ToolsAPI{$ENDIF};
+uses Registry, Windows, Graphics, SysUtils,
+  {$IFDEF SPLASH}ToolsAPI, {$ENDIF}
+  acntUtils{$IFNDEF ALITE}, acPathDialog, sColorDialog, sStoreUtils{$ENDIF};
 
 
 {$IFDEF ALITE}
@@ -84,7 +85,8 @@ begin
     TsFileNameEdit, TsFilterComboBox, TsFontComboBox, TsFontListBox, TsLabelFX,
     TsFrameBar, TsColorsPanel, TsStickyLabel, TsShellTreeView, TsShellComboBox,
     TsShellListView, TsTimePicker, TsSlider, TsHTMLLabel, TsPageScroller, TsMeter
-    {$IFNDEF BCB}{$IFDEF DELPHI7UP}, TsWebBrowser{$ENDIF}{$ENDIF}, TsTreeViewEx]);
+    {$IFNDEF BCB}{$IFDEF DELPHI7UP}, TsWebBrowser{$ENDIF}{$ENDIF}, TsTreeViewEx,
+    TsPopupBox, TsTrackEdit, TsSkinSelector, TsGradientPanel]);
 
   RegisterComponents('AlphaTools', [
     TsSkinManager, TsSkinProvider, TsFrameAdapter, TsCalculator, TsOpenDialog,

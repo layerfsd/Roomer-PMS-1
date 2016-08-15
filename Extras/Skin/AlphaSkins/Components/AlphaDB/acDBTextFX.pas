@@ -1,7 +1,7 @@
 unit acDBTextFX;
 {$I sDefs.inc}
 //{$DEFINE LOGGED}
-
+//+
 interface
 
 uses
@@ -134,7 +134,7 @@ end;
 procedure TsDBTextFX.Loaded;
 begin
   inherited Loaded;
-  if (csDesigning in ComponentState) then
+  if csDesigning in ComponentState then
     DataChange(Self);
 end;
 

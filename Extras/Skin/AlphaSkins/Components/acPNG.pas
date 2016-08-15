@@ -188,6 +188,7 @@ type
 var
   UseACPng: boolean = True;
 
+procedure UpdateTransparency(Bmp: TBitmap; Png: TPNGGraphic);
 
 implementation
 
@@ -313,6 +314,50 @@ end;
 procedure CompressionError(const ErrorString: String); overload;
 begin
   raise EGraphicCompression.Create(ErrorString);
+end;
+
+
+procedure UpdateTransparency(Bmp: TBitmap; Png: TPNGGraphic);
+var
+  DeltaS, DeltaD, X, Y: integer;
+  D0, D: PRGBAArray_;
+  S0, S: PByteArray;
+begin
+//  if (Png.ImageProperties.ColorScheme = csIndexed) then
+    if (Png.ImageProperties.ColorScheme in [csIndexed]) and (Length(Png.Transparency) > 0) then begin // Adding of indexed transparency
+      Bmp.Assign(Png);
+      Bmp.PixelFormat := pf32bit;
+      if InitLine(Png, Pointer(S0), DeltaS) and InitLine(Bmp, Pointer(D0), DeltaD) then
+        for Y := 0 to Png.Height - 1 do begin
+          S := Pointer(LongInt(S0) + DeltaS * Y);
+          D := Pointer(LongInt(D0) + DeltaD * Y);
+          for X := 0 to Png.Width - 1 do
+            D[X].A := Png.Transparency[S[X]];
+        end;
+    end
+    else begin
+      Bmp.Assign(Png);
+      if Bmp.PixelFormat <> pf32bit then begin // If alpha-channell is empty
+        Bmp.PixelFormat := pf32bit;
+        if InitLine(Bmp, Pointer(D0), DeltaD) then
+          if ioUseGamma in Png.ImageProperties.Options then
+            for Y := 0 to Png.Height - 1 do begin
+              D := Pointer(LongInt(D0) + DeltaD * Y);
+              for X := 0 to Png.Width - 1 do begin
+                D[X].A := MaxByte - D[X].R;
+                D[X].R := 0;
+                D[X].G := 0;
+                D[X].B := 0;
+              end;
+            end
+          else
+            for Y := 0 to Png.Height - 1 do begin
+              D := Pointer(LongInt(D0) + DeltaD * Y);
+              for X := 0 to Png.Width - 1 do
+                D[X].A := MaxByte;
+            end;
+      end;
+    end;
 end;
 
 
@@ -509,7 +554,6 @@ begin
         Inc(TargetRun);
       end;
       Dec(BytesPerRow, BPP);
-
       while BytesPerRow > 0 do begin
         TargetRun^ := Byte(Raw^ + Floor((Decoded^ + Prior^) / 2));
         Inc(Raw);
@@ -748,16 +792,16 @@ begin
       0, 4:
         case BitDepth of
           2:   FBackgroundColor := MulDiv16(Swap(PWord(FRawBuffer)^), 15, 3);
-          16:  FBackgroundColor := MulDiv16(Swap(PWord(FRawBuffer)^), $FF, 65535);
+          16:  FBackgroundColor := MulDiv16(Swap(PWord(FRawBuffer)^), $FF, $FFFF);
           else FBackgroundColor := Byte(Swap(PWord(FRawBuffer)^));
         end;
 
       2, 6: begin
         Run := FRawBuffer;
         if BitDepth = 16 then begin
-          R := MulDiv16(Swap(Run^), $FF, 65535); Inc(Run);
-          G := MulDiv16(Swap(Run^), $FF, 65535); Inc(Run);
-          B := MulDiv16(Swap(Run^), $FF, 65535);
+          R := MulDiv16(Swap(Run^), $FF, $FFFF); Inc(Run);
+          G := MulDiv16(Swap(Run^), $FF, $FFFF); Inc(Run);
+          B := MulDiv16(Swap(Run^), $FF, $FFFF);
         end
         else begin
           R := Byte(Swap(Run^)); Inc(Run);
@@ -781,16 +825,10 @@ const
   ColumnIncrement: array [0..6] of Integer = (8, 8, 4, 4, 2, 2, 1);
   PassMask:        array [0..6] of Byte = ($80, $08, $88, $22, $AA, $55, $FF);
 var
-  Row: Integer;
-  TargetBPP: Integer;
-  RowBuffer: array[Boolean] of PAnsiChar;
   Row0: Pointer;
-  Delta: integer;
   EvenRow: Boolean;
-  Pass: Integer;
-  BytesPerRow,
-  InterlaceRowBytes,
-  InterlaceWidth: Integer;
+  RowBuffer: array[Boolean] of PAnsiChar;
+  BytesPerRow, InterlaceRowBytes, Row, Pass, Delta, TargetBPP, InterlaceWidth: Integer;
 begin
   Progress(Self, psStarting, 0, False, FProgressRect, gesTransfering);
   RowBuffer[False] := nil;
@@ -887,7 +925,7 @@ begin
       0: begin
         case BitDepth of
           2:   R := MulDiv16(Swap(PWord(FRawBuffer)^), 15, 3);
-          16:  R := MulDiv16(Swap(PWord(FRawBuffer)^), $FF, 65535);
+          16:  R := MulDiv16(Swap(PWord(FRawBuffer)^), $FF, $FFFF);
           else R := Byte(Swap(PWord(FRawBuffer)^));
         end;
         FTransparentColor := RGB(R, R, R);
@@ -896,9 +934,9 @@ begin
       2: begin
         Run := FRawBuffer;
         if BitDepth = 16 then begin
-          R := MulDiv16(Swap(Run^), $FF, 65535); Inc(Run);
-          G := MulDiv16(Swap(Run^), $FF, 65535); Inc(Run);
-          B := MulDiv16(Swap(Run^), $FF, 65535);
+          R := MulDiv16(Swap(Run^), $FF, $FFFF); Inc(Run);
+          G := MulDiv16(Swap(Run^), $FF, $FFFF); Inc(Run);
+          B := MulDiv16(Swap(Run^), $FF, $FFFF);
         end
         else begin
           R := Byte(Swap(Run^)); Inc(Run);
@@ -953,11 +991,7 @@ begin
         FCurrentCRC := LoadAndSwapHeader;
       end;
     end;
-    FDecoder.Decode(FCurrentSource,
-                    LocalBuffer,
-                    FIDATSize - (Integer(FCurrentSource) - Integer(FRawBuffer)),
-                    PendingOutput);
-
+    FDecoder.Decode(FCurrentSource, LocalBuffer, FIDATSize - (Integer(FCurrentSource) - Integer(FRawBuffer)), PendingOutput);
     if FDecoder.ZLibResult = Z_STREAM_END then begin
       if (FDecoder.AvailableOutput <> 0) or (FDecoder.AvailableInput <> 0) then
         GraphicExError(gesExtraCompressedData, ['PNG']);
@@ -1178,11 +1212,9 @@ begin
   SetGamma(1, DefaultDisplayGamma);
   FSourceScheme := csRGB;
   FTargetScheme := csBGR;
-
   FYCbCrCoefficients[0] := 0.299;
   FYCbCrCoefficients[1] := 0.587;
   FYCbCrCoefficients[2] := 0.114;
-
   FChanged := True;
 end;
 
@@ -1207,25 +1239,25 @@ end;
 
 function TColorManager.ComponentScaleConvert(Value: Word): Byte;
 begin
-  Result := MulDiv16(Value, $FF, 65535);
+  Result := MulDiv16(Value, $FF, $FFFF);
 end;
 
 
 function TColorManager.ComponentScaleGammaConvert(Value: Word): Byte;
 begin
-  Result := FGammaTable[MulDiv16(Value, $FF, 65535)];
+  Result := FGammaTable[MulDiv16(Value, $FF, $FFFF)];
 end;
 
 
 function TColorManager.ComponentSwapScaleGammaConvert(Value: Word): Byte;
 begin
-  Result := FGammaTable[MulDiv16(Swap(Value), $FF, 65535)];
+  Result := FGammaTable[MulDiv16(Swap(Value), $FF, $FFFF)];
 end;
 
 
 function TColorManager.ComponentSwapScaleConvert(Value: Word): Byte;
 begin
-  Result := MulDiv16(Swap(Value), $FF, 65535);
+  Result := MulDiv16(Swap(Value), $FF, $FFFF);
 end;
 
 
@@ -1375,10 +1407,10 @@ begin
             TargetRunA16 := Target;
             while Count > 0 do begin
               if Boolean(Mask and BitRun) then begin
-                TargetRunA16.R := Convert16_16(MulDiv16(Convert8_8(SourceR8^), 65535, $FF));
-                TargetRunA16.G := Convert16_16(MulDiv16(Convert8_8(SourceG8^), 65535, $FF));
-                TargetRunA16.B := Convert16_16(MulDiv16(Convert8_8(SourceB8^), 65535, $FF));
-                TargetRunA16.A := Convert16_16(MulDiv16(SourceA8^, 65535, $FF));
+                TargetRunA16.R := Convert16_16(MulDiv16(Convert8_8(SourceR8^), $FFFF, $FF));
+                TargetRunA16.G := Convert16_16(MulDiv16(Convert8_8(SourceG8^), $FFFF, $FF));
+                TargetRunA16.B := Convert16_16(MulDiv16(Convert8_8(SourceB8^), $FFFF, $FF));
+                TargetRunA16.A := Convert16_16(MulDiv16(SourceA8^, $FFFF, $FF));
 
                 Inc(SourceB8, SourceIncrement);
                 Inc(SourceG8, SourceIncrement);
@@ -1394,9 +1426,9 @@ begin
             TargetRun16 := Target;
             while Count > 0 do begin
               if Boolean(Mask and BitRun) then begin
-                TargetRun16.R := Convert16_16(MulDiv16(Convert8_8(SourceR8^), 65535, $FF));
-                TargetRun16.G := Convert16_16(MulDiv16(Convert8_8(SourceG8^), 65535, $FF));
-                TargetRun16.B := Convert16_16(MulDiv16(Convert8_8(SourceB8^), 65535, $FF));
+                TargetRun16.R := Convert16_16(MulDiv16(Convert8_8(SourceR8^), $FFFF, $FF));
+                TargetRun16.G := Convert16_16(MulDiv16(Convert8_8(SourceG8^), $FFFF, $FF));
+                TargetRun16.B := Convert16_16(MulDiv16(Convert8_8(SourceB8^), $FFFF, $FF));
 
                 Inc(SourceB8, SourceIncrement);
                 Inc(SourceG8, SourceIncrement);
@@ -1689,10 +1721,10 @@ begin
             TargetRunA16 := Target;
             while Count > 0 do begin
               if Boolean(Mask and BitRun) then begin
-                TargetRunA16.R := Convert16_16(MulDiv16(Convert8_8(SourceR8^), 65535, $FF));
-                TargetRunA16.G := Convert16_16(MulDiv16(Convert8_8(SourceG8^), 65535, $FF));
-                TargetRunA16.B := Convert16_16(MulDiv16(Convert8_8(SourceB8^), 65535, $FF));
-                TargetRunA16.A := Convert16_16(MulDiv16(SourceA8^, 65535, $FF));
+                TargetRunA16.R := Convert16_16(MulDiv16(Convert8_8(SourceR8^), $FFFF, $FF));
+                TargetRunA16.G := Convert16_16(MulDiv16(Convert8_8(SourceG8^), $FFFF, $FF));
+                TargetRunA16.B := Convert16_16(MulDiv16(Convert8_8(SourceB8^), $FFFF, $FF));
+                TargetRunA16.A := Convert16_16(MulDiv16(SourceA8^, $FFFF, $FF));
 
                 Inc(SourceB8, SourceIncrement);
                 Inc(SourceG8, SourceIncrement);
@@ -1708,9 +1740,9 @@ begin
             TargetRun16 := Target;
             while Count > 0 do begin
               if Boolean(Mask and BitRun) then begin
-                TargetRun16.R := Convert16_16(MulDiv16(Convert8_8(SourceR8^), 65535, $FF));
-                TargetRun16.G := Convert16_16(MulDiv16(Convert8_8(SourceG8^), 65535, $FF));
-                TargetRun16.B := Convert16_16(MulDiv16(Convert8_8(SourceB8^), 65535, $FF));
+                TargetRun16.R := Convert16_16(MulDiv16(Convert8_8(SourceR8^), $FFFF, $FF));
+                TargetRun16.G := Convert16_16(MulDiv16(Convert8_8(SourceG8^), $FFFF, $FF));
+                TargetRun16.B := Convert16_16(MulDiv16(Convert8_8(SourceB8^), $FFFF, $FF));
 
                 Inc(SourceB8, SourceIncrement);
                 Inc(SourceG8, SourceIncrement);
@@ -1978,11 +2010,11 @@ begin
                 Z := T * T * T;
               end;
 
-              Target16^ := MulDiv16(ClampByte(Round($FF * ( 0.099 * X - 0.198 * Y + 1.099 * Z))), 65535, $FF);
+              Target16^ := MulDiv16(ClampByte(Round($FF * ( 0.099 * X - 0.198 * Y + 1.099 * Z))), $FFFF, $FF);
               Inc(Target16);
-              Target16^ := MulDiv16(ClampByte(Round($FF * (-0.952 * X + 1.893 * Y + 0.059 * Z))), 65535, $FF);
+              Target16^ := MulDiv16(ClampByte(Round($FF * (-0.952 * X + 1.893 * Y + 0.059 * Z))), $FFFF, $FF);
               Inc(Target16);
-              Target16^ := MulDiv16(ClampByte(Round($FF * ( 2.998 * X - 1.458 * Y - 0.541 * Z))), 65535, $FF);
+              Target16^ := MulDiv16(ClampByte(Round($FF * ( 2.998 * X - 1.458 * Y - 0.541 * Z))), $FFFF, $FF);
               Inc(Target16, 1 + AlphaSkip);
             end
             else
@@ -2119,13 +2151,11 @@ end;
 
 procedure TColorManager.RowConvertCIELAB2RGB(const Source: array of Pointer; Target: Pointer; Count: Cardinal; Mask: Byte);
 var
-  LRun8, aRun8, bRun8: PByte;
-  LRun16, aRun16, bRun16: PWord;
+  Target8, LRun8, aRun8, bRun8: PByte;
   L, a, b, X, Y, Z, T, YYn3: Extended;
-  Target8: PByte;
+  LRun16, aRun16, bRun16: PWord;
+  Increment, AlphaSkip: Integer;
   Target16: PWord;
-  Increment: Integer;
-  AlphaSkip: Integer;
   BitRun: Byte;
 begin
   BitRun := $80;
@@ -2235,11 +2265,11 @@ begin
                 Z := T * T * T;
               end;
 
-              Target16^ := MulDiv16(ClampByte(Round($FF * ( 2.998 * X - 1.458 * Y - 0.541 * Z))), 65535, $FF);
+              Target16^ := MulDiv16(ClampByte(Round($FF * ( 2.998 * X - 1.458 * Y - 0.541 * Z))), $FFFF, $FF);
               Inc(Target16);
-              Target16^ := MulDiv16(ClampByte(Round($FF * (-0.952 * X + 1.893 * Y + 0.059 * Z))), 65535, $FF);
+              Target16^ := MulDiv16(ClampByte(Round($FF * (-0.952 * X + 1.893 * Y + 0.059 * Z))), $FFFF, $FF);
               Inc(Target16);
-              Target16^ := MulDiv16(ClampByte(Round($FF * ( 0.099 * X - 0.198 * Y + 1.099 * Z))), 65535, $FF);
+              Target16^ := MulDiv16(ClampByte(Round($FF * ( 0.099 * X - 0.198 * Y + 1.099 * Z))), $FFFF, $FF);
               Inc(Target16, 1 + AlphaSkip);
             end
             else
@@ -2387,145 +2417,146 @@ var
   BitRun: Byte;
 begin
   BitRun := $80;
-  AlphaSkip := Ord(coAlpha in FTargetOptions);   
+  AlphaSkip := Ord(coAlpha in FTargetOptions);
   case FSourceBPS of
-    8:
-      begin
-        if Length(Source) = 4 then begin
-          C8 := Source[0];
-          M8 := Source[1];
-          Y8 := Source[2];
-          K8 := Source[3];
-          Increment := 1;
-        end
-        else begin
-          C8 := Source[0];
-          M8 := C8; Inc(M8);
-          Y8 := M8; Inc(Y8);
-          K8 := Y8; Inc(K8);
-          Increment := 4;
-        end;
+    8: begin
+      if Length(Source) = 4 then begin
+        C8 := Source[0];
+        M8 := Source[1];
+        Y8 := Source[2];
+        K8 := Source[3];
+        Increment := 1;
+      end
+      else begin
+        C8 := Source[0];
+        M8 := C8; Inc(M8);
+        Y8 := M8; Inc(Y8);
+        K8 := Y8; Inc(K8);
+        Increment := 4;
+      end;
 
-        case FTargetBPS of
-          8: begin
-            Target8 := Target;
-            while Count > 0 do begin
-              if Boolean(Mask and BitRun) then begin
-                Target8^ := ClampByte($FF - (Y8^ - MulDiv16(Y8^, K8^, $FF) + K8^));
-                Inc(Target8);
-                Target8^ := ClampByte($FF - (M8^ - MulDiv16(M8^, K8^, $FF) + K8^));
-                Inc(Target8);
-                Target8^ := ClampByte($FF - (C8^ - MulDiv16(C8^, K8^, $FF) + K8^));
-                Inc(Target8, 1 + AlphaSkip);
+      case FTargetBPS of
+        8: begin
+          Target8 := Target;
+          while Count > 0 do begin
+            if Boolean(Mask and BitRun) then begin
+              Target8^ := ClampByte($FF - (Y8^ - MulDiv16(Y8^, K8^, $FF) + K8^));
+              Inc(Target8);
+              Target8^ := ClampByte($FF - (M8^ - MulDiv16(M8^, K8^, $FF) + K8^));
+              Inc(Target8);
+              Target8^ := ClampByte($FF - (C8^ - MulDiv16(C8^, K8^, $FF) + K8^));
+              Inc(Target8, 1 + AlphaSkip);
 
-                Inc(C8, Increment);
-                Inc(M8, Increment);
-                Inc(Y8, Increment);
-                Inc(K8, Increment);
-              end
-              else
-                Inc(Target8, 3 + AlphaSkip);
+              Inc(C8, Increment);
+              Inc(M8, Increment);
+              Inc(Y8, Increment);
+              Inc(K8, Increment);
+            end
+            else
+              Inc(Target8, 3 + AlphaSkip);
 
-              BitRun := (BitRun shr 1) or byte(BitRun shl 7);
-              Dec(Count);
-            end;
+            BitRun := (BitRun shr 1) or byte(BitRun shl 7);
+            Dec(Count);
           end;
+        end;
+        16: begin
+          Target16 := Target;
+          while Count > 0 do begin
+            if Boolean(Mask and BitRun) then begin
+              Target16^ := MulDiv16(ClampByte($FF - (Y8^ - MulDiv16(Y8^, K8^, $FF) + K8^)), $FFFF, $FF);
+              Inc(Target16);
+              Target16^ := MulDiv16(ClampByte($FF - (M8^ - MulDiv16(M8^, K8^, $FF) + K8^)), $FFFF, $FF);
+              Inc(Target16);
+              Target16^ := MulDiv16(ClampByte($FF - (C8^ - MulDiv16(C8^, K8^, $FF) + K8^)), $FFFF, $FF);
+              Inc(Target16, 1 + AlphaSkip);
 
-          16: begin
-            Target16 := Target;
-            while Count > 0 do begin
-              if Boolean(Mask and BitRun) then begin
-                Target16^ := MulDiv16(ClampByte($FF - (Y8^ - MulDiv16(Y8^, K8^, $FF) + K8^)), 65535, $FF);
-                Inc(Target16);
-                Target16^ := MulDiv16(ClampByte($FF - (M8^ - MulDiv16(M8^, K8^, $FF) + K8^)), 65535, $FF);
-                Inc(Target16);
-                Target16^ := MulDiv16(ClampByte($FF - (C8^ - MulDiv16(C8^, K8^, $FF) + K8^)), 65535, $FF);
-                Inc(Target16, 1 + AlphaSkip);
+              Inc(C8, Increment);
+              Inc(M8, Increment);
+              Inc(Y8, Increment);
+              Inc(K8, Increment);
+            end
+            else
+              Inc(Target16, 3 + AlphaSkip);
 
-                Inc(C8, Increment);
-                Inc(M8, Increment);
-                Inc(Y8, Increment);
-                Inc(K8, Increment);
-              end
-              else
-                Inc(Target16, 3 + AlphaSkip);
-
-              BitRun := (BitRun shr 1) or byte(BitRun shl 7);
-              Dec(Count);
-            end;
+            BitRun := (BitRun shr 1) or byte(BitRun shl 7);
+            Dec(Count);
           end;
         end;
       end;
-    16:
-      begin
-        if Length(Source) = 4 then begin
-          C16 := Source[0];
-          M16 := Source[1];
-          Y16 := Source[2];
-          K16 := Source[3];
-          Increment := 1;
-        end
-        else begin
-          C16 := Source[0];
-          M16 := C16; Inc(M16);
-          Y16 := M16; Inc(Y16);
-          K16 := Y16; Inc(K16);
-          Increment := 4;
+    end;
+
+    16: begin
+      if Length(Source) = 4 then begin
+        C16 := Source[0];
+        M16 := Source[1];
+        Y16 := Source[2];
+        K16 := Source[3];
+        Increment := 1;
+      end
+      else begin
+        C16 := Source[0];
+        M16 := C16; Inc(M16);
+        Y16 := M16; Inc(Y16);
+        K16 := Y16; Inc(K16);
+        Increment := 4;
+      end;
+
+      case FTargetBPS of
+        8: begin // 161616 to 888
+          Target8 := Target;
+          while Count > 0 do begin
+            if Boolean(Mask and BitRun) then begin
+              // blue
+              Target8^ := ClampByte($FF - MulDiv16((Y16^ - MulDiv16(Y16^, K16^, $FFFF) + K16^), $FF, $FFFF));
+              Inc(Target8);
+              // green
+              Target8^ := ClampByte($FF - MulDiv16((M16^ - MulDiv16(M16^, K16^, $FFFF) + K16^), $FF, $FFFF));
+              Inc(Target8);
+              // blue
+              Target8^ := ClampByte($FF - MulDiv16((C16^ - MulDiv16(C16^, K16^, $FFFF) + K16^), $FF, $FFFF));
+              Inc(Target8, 1 + AlphaSkip);
+
+              Inc(C16, Increment);
+              Inc(M16, Increment);
+              Inc(Y16, Increment);
+              Inc(K16, Increment);
+            end
+            else
+              Inc(Target8, 3 + AlphaSkip);
+
+            BitRun := (BitRun shr 1) or byte(BitRun shl 7);
+            Dec(Count);
+          end;
         end;
 
-        case FTargetBPS of
-          8: // 161616 to 888
-            begin
-              Target8 := Target;
-              while Count > 0 do begin
-                if Boolean(Mask and BitRun) then begin
-                  // blue
-                  Target8^ := ClampByte($FF - MulDiv16((Y16^ - MulDiv16(Y16^, K16^, 65535) + K16^), $FF, 65535));
-                  Inc(Target8);
-                  // green
-                  Target8^ := ClampByte($FF - MulDiv16((M16^ - MulDiv16(M16^, K16^, 65535) + K16^), $FF, 65535));
-                  Inc(Target8);
-                  // blue
-                  Target8^ := ClampByte($FF - MulDiv16((C16^ - MulDiv16(C16^, K16^, 65535) + K16^), $FF, 65535));
-                  Inc(Target8, 1 + AlphaSkip);
+        16: begin // 161616 to 161616
+          Target16 := Target;
+          while Count > 0 do begin
+            if Boolean(Mask and BitRun) then begin
+              // blue
+              Target16^ := $FFFF - (Y16^ - MulDiv16(Y16^, K16^, $FFFF) + K16^);
+              Inc(Target16);
+              // green
+              Target16^ := $FFFF - (M16^ - MulDiv16(M16^, K16^, $FFFF) + K16^);
+              Inc(Target16);
+              // blue
+              Target16^ := $FFFF - (C16^ - MulDiv16(C16^, K16^, $FFFF) + K16^);
+              Inc(Target16, 1 + AlphaSkip);
 
-                  Inc(C16, Increment);
-                  Inc(M16, Increment);
-                  Inc(Y16, Increment);
-                  Inc(K16, Increment);
-                end
-                else Inc(Target8, 3 + AlphaSkip);
-                BitRun := (BitRun shr 1) or byte(BitRun shl 7);
-                Dec(Count);
-              end;
-            end;
-          16: // 161616 to 161616
-            begin
-              Target16 := Target;
-              while Count > 0 do begin
-                if Boolean(Mask and BitRun) then begin
-                  // blue
-                  Target16^ := 65535 - (Y16^ - MulDiv16(Y16^, K16^, 65535) + K16^);
-                  Inc(Target16);
-                  // green
-                  Target16^ := 65535 - (M16^ - MulDiv16(M16^, K16^, 65535) + K16^);
-                  Inc(Target16);
-                  // blue
-                  Target16^ := 65535 - (C16^ - MulDiv16(C16^, K16^, 65535) + K16^);
-                  Inc(Target16, 1 + AlphaSkip);
+              Inc(C16, Increment);
+              Inc(M16, Increment);
+              Inc(Y16, Increment);
+              Inc(K16, Increment);
+            end
+            else
+              Inc(Target16, 3 + AlphaSkip);
 
-                  Inc(C16, Increment);
-                  Inc(M16, Increment);
-                  Inc(Y16, Increment);
-                  Inc(K16, Increment);
-                end
-                else Inc(Target16, 3 + AlphaSkip);
-                BitRun := (BitRun shr 1) or byte(BitRun shl 7);
-                Dec(Count);
-              end;
-            end;
+            BitRun := (BitRun shr 1) or byte(BitRun shl 7);
+            Dec(Count);
+          end;
         end;
       end;
+    end;
   end;
 end;
 
@@ -2543,157 +2574,151 @@ begin
   BitRun := $80;
   AlphaSkip := Ord(coAlpha in FTargetOptions); // 0 if no alpha must be skipped, otherwise 1
   case FSourceBPS of
-    8:
-      begin
-        if Length(Source) = 4 then begin
-          // plane mode
-          C8 := Source[0];
-          M8 := Source[1];
-          Y8 := Source[2];
-          K8 := Source[3];
-          Increment := 1;
-        end
-        else begin // interleaved mode
-          C8 := Source[0];
-          M8 := C8; Inc(M8);
-          Y8 := M8; Inc(Y8);
-          K8 := Y8; Inc(K8);
-          Increment := 4;
-        end;
-
-        case FTargetBPS of
-          8: // 888 to 888
-            begin
-              Target8 := Target;
-              while Count > 0 do begin
-                if Boolean(Mask and BitRun) then begin
-                  // red
-                  Target8^ := ClampByte($FF - (C8^ - MulDiv16(C8^, K8^, $FF) + K8^));
-                  Inc(Target8);
-                  // green
-                  Target8^ := ClampByte($FF - (M8^ - MulDiv16(M8^, K8^, $FF) + K8^));
-                  Inc(Target8);
-                  // blue
-                  Target8^ := ClampByte($FF - (Y8^ - MulDiv16(Y8^, K8^, $FF) + K8^));
-                  Inc(Target8, 1 + AlphaSkip);
+    8: begin
+      if Length(Source) = 4 then begin
+        // plane mode
+        C8 := Source[0];
+        M8 := Source[1];
+        Y8 := Source[2];
+        K8 := Source[3];
+        Increment := 1;
+      end
+      else begin // interleaved mode
+        C8 := Source[0];
+        M8 := C8; Inc(M8);
+        Y8 := M8; Inc(Y8);
+        K8 := Y8; Inc(K8);
+        Increment := 4;
+      end;
+      case FTargetBPS of
+        8: begin // 888 to 888
+          Target8 := Target;
+          while Count > 0 do begin
+            if Boolean(Mask and BitRun) then begin
+              // red
+              Target8^ := ClampByte($FF - (C8^ - MulDiv16(C8^, K8^, $FF) + K8^));
+              Inc(Target8);
+              // green
+              Target8^ := ClampByte($FF - (M8^ - MulDiv16(M8^, K8^, $FF) + K8^));
+              Inc(Target8);
+              // blue
+              Target8^ := ClampByte($FF - (Y8^ - MulDiv16(Y8^, K8^, $FF) + K8^));
+              Inc(Target8, 1 + AlphaSkip);
                   
-                  Inc(C8, Increment);
-                  Inc(M8, Increment);
-                  Inc(Y8, Increment);
-                  Inc(K8, Increment);
-                end
-                else
-                  Inc(Target8, 3 + AlphaSkip);
+              Inc(C8, Increment);
+              Inc(M8, Increment);
+              Inc(Y8, Increment);
+              Inc(K8, Increment);
+            end
+            else
+              Inc(Target8, 3 + AlphaSkip);
 
-                BitRun := (BitRun shr 1) or byte(BitRun shl 7);
-                Dec(Count);
-              end;
-            end;
-          16: // 888 to 161616
-            begin
-              Target16 := Target;
-              while Count > 0 do begin
-                if Boolean(Mask and BitRun) then begin
-                  // red
-                  Target16^ := MulDiv16(ClampByte($FF - (C8^ - MulDiv16(C8^, K8^, $FF) + K8^)), 65535, $FF);
-                  Inc(Target16);
-                  // green
-                  Target16^ := MulDiv16(ClampByte($FF - (M8^ - MulDiv16(M8^, K8^, $FF) + K8^)), 65535, $FF);
-                  Inc(Target16);
-                  // blue
-                  Target16^ := MulDiv16(ClampByte($FF - (Y8^ - MulDiv16(Y8^, K8^, $FF) + K8^)), 65535, $FF);
-                  Inc(Target16, 1 + AlphaSkip);
+            BitRun := (BitRun shr 1) or byte(BitRun shl 7);
+            Dec(Count);
+          end;
+        end;
+        16: begin // 888 to 161616
+          Target16 := Target;
+          while Count > 0 do begin
+            if Boolean(Mask and BitRun) then begin
+              // red
+              Target16^ := MulDiv16(ClampByte($FF - (C8^ - MulDiv16(C8^, K8^, $FF) + K8^)), $FFFF, $FF);
+              Inc(Target16);
+              // green
+              Target16^ := MulDiv16(ClampByte($FF - (M8^ - MulDiv16(M8^, K8^, $FF) + K8^)), $FFFF, $FF);
+              Inc(Target16);
+              // blue
+              Target16^ := MulDiv16(ClampByte($FF - (Y8^ - MulDiv16(Y8^, K8^, $FF) + K8^)), $FFFF, $FF);
+              Inc(Target16, 1 + AlphaSkip);
 
-                  Inc(C8, Increment);
-                  Inc(M8, Increment);
-                  Inc(Y8, Increment);
-                  Inc(K8, Increment);
-                end
-                else
-                  Inc(Target16, 3 + AlphaSkip);
+              Inc(C8, Increment);
+              Inc(M8, Increment);
+              Inc(Y8, Increment);
+              Inc(K8, Increment);
+            end
+            else
+              Inc(Target16, 3 + AlphaSkip);
 
-                BitRun := (BitRun shr 1) or byte(BitRun shl 7);
-                Dec(Count);
-              end;
-            end;
+            BitRun := (BitRun shr 1) or byte(BitRun shl 7);
+            Dec(Count);
+          end;
         end;
       end;
-    16:
-      begin
-        if Length(Source) = 4 then begin
-          // plane mode
-          C16 := Source[0];
-          M16 := Source[1];
-          Y16 := Source[2];
-          K16 := Source[3];
-          Increment := 1;
-        end
-        else begin
-          // interleaved mode
-          C16 := Source[0];
-          M16 := C16; Inc(M16);
-          Y16 := M16; Inc(Y16);
-          K16 := Y16; Inc(K16);
-          Increment := 4;
+    end;
+
+    16: begin
+      if Length(Source) = 4 then begin
+        // plane mode
+        C16 := Source[0];
+        M16 := Source[1];
+        Y16 := Source[2];
+        K16 := Source[3];
+        Increment := 1;
+      end
+      else begin
+        // interleaved mode
+        C16 := Source[0];
+        M16 := C16; Inc(M16);
+        Y16 := M16; Inc(Y16);
+        K16 := Y16; Inc(K16);
+        Increment := 4;
+      end;
+
+      case FTargetBPS of
+        8: begin // 161616 to 888
+          Target8 := Target;
+          while Count > 0 do begin
+            if Boolean(Mask and BitRun) then begin
+              // red
+              Target8^ := ClampByte($FF - MulDiv16((C16^ - MulDiv16(C16^, K16^, $FFFF) + K16^), $FF, $FFFF));
+              Inc(Target8);
+              // green
+              Target8^ := ClampByte($FF - MulDiv16((M16^ - MulDiv16(M16^, K16^, $FFFF) + K16^), $FF, $FFFF));
+              Inc(Target8);
+              // blue
+              Target8^ := ClampByte($FF - MulDiv16((Y16^ - MulDiv16(Y16^, K16^, $FFFF) + K16^), $FF, $FFFF));
+              Inc(Target8, 1 + AlphaSkip);
+
+              Inc(C16, Increment);
+              Inc(M16, Increment);
+              Inc(Y16, Increment);
+              Inc(K16, Increment);
+            end
+            else
+              Inc(Target8, 3 + AlphaSkip);
+
+            BitRun := (BitRun shr 1) or byte(BitRun shl 7);
+            Dec(Count);
+          end;
         end;
+        16: begin // 161616 to 161616
+          Target16 := Target;
+          while Count > 0 do begin
+            if Boolean(Mask and BitRun) then begin
+              // red
+              Target16^ := $FFFF - (C16^ - MulDiv16(C16^, K16^, $FFFF) + K16^);
+              Inc(Target16);
+              // green
+              Target16^ := $FFFF - (M16^ - MulDiv16(M16^, K16^, $FFFF) + K16^);
+              Inc(Target16);
+              // blue
+              Target16^ := $FFFF - (Y16^ - MulDiv16(Y16^, K16^, $FFFF) + K16^);
+              Inc(Target16, 1 + AlphaSkip);
 
-        case FTargetBPS of
-          8: // 161616 to 888
-            begin
-              Target8 := Target;
-              while Count > 0 do begin
-                if Boolean(Mask and BitRun) then begin
-                  // red
-                  Target8^ := ClampByte($FF - MulDiv16((C16^ - MulDiv16(C16^, K16^, 65535) + K16^), $FF, 65535));
-                  Inc(Target8);
-                  // green
-                  Target8^ := ClampByte($FF - MulDiv16((M16^ - MulDiv16(M16^, K16^, 65535) + K16^), $FF, 65535));
-                  Inc(Target8);
-                  // blue
-                  Target8^ := ClampByte($FF - MulDiv16((Y16^ - MulDiv16(Y16^, K16^, 65535) + K16^), $FF, 65535));
-                  Inc(Target8, 1 + AlphaSkip);
+              Inc(C16, Increment);
+              Inc(M16, Increment);
+              Inc(Y16, Increment);
+              Inc(K16, Increment);
+            end
+            else
+              Inc(Target16, 3 + AlphaSkip);
 
-                  Inc(C16, Increment);
-                  Inc(M16, Increment);
-                  Inc(Y16, Increment);
-                  Inc(K16, Increment);
-                end
-                else
-                  Inc(Target8, 3 + AlphaSkip);
-                  
-                BitRun := (BitRun shr 1) or byte(BitRun shl 7);
-                Dec(Count);
-              end;
-            end;
-          16: // 161616 to 161616
-            begin
-              Target16 := Target;
-              while Count > 0 do begin
-                if Boolean(Mask and BitRun) then begin
-                  // red
-                  Target16^ := 65535 - (C16^ - MulDiv16(C16^, K16^, 65535) + K16^);
-                  Inc(Target16);
-                  // green
-                  Target16^ := 65535 - (M16^ - MulDiv16(M16^, K16^, 65535) + K16^);
-                  Inc(Target16);
-                  // blue
-                  Target16^ := 65535 - (Y16^ - MulDiv16(Y16^, K16^, 65535) + K16^);
-                  Inc(Target16, 1 + AlphaSkip);
-
-                  Inc(C16, Increment);
-                  Inc(M16, Increment);
-                  Inc(Y16, Increment);
-                  Inc(K16, Increment);
-                end
-                else
-                  Inc(Target16, 3 + AlphaSkip);
-
-                BitRun := (BitRun shr 1) or byte(BitRun shl 7);
-                Dec(Count);
-              end;
-            end;
+            BitRun := (BitRun shr 1) or byte(BitRun shl 7);
+            Dec(Count);
+          end;
         end;
       end;
+    end;
   end;
 end;
 
@@ -2732,7 +2757,7 @@ begin
           Target16 := Target;
           while Count > 0 do begin
             if Boolean(Mask and BitRun) then begin
-              Target16^ := MulDiv16(Source8^, 65535, $FF);
+              Target16^ := MulDiv16(Source8^, $FFFF, $FF);
               Inc(Source8, 1 + AlphaSkip);
             end;
             BitRun := (BitRun shr 1) or byte(BitRun shl 7);
@@ -2798,7 +2823,7 @@ var
   SourceRun, TargetRun: PByte;
   Value, BitRun, TargetMask, SourceMask,
   SourceShift, TargetShift, MaxInSample, MaxOutSample,
-  SourceBPS,          // local copies to ease assembler access
+  SourceBPS, // local copies to ease assembler access
   TargetBPS: Byte;
   Done: Cardinal;
 begin
@@ -2833,7 +2858,6 @@ begin
         end;
         SourceMask := (SourceMask shr SourceBPS) or byte(SourceMask shl (8 - SourceBPS));
       end;
-
       BitRun := (BitRun shr 1) or byte(BitRun shl 7);
       TargetMask := (TargetMask shr TargetBPS) or byte(TargetMask shl (8 - TargetBPS));
 
@@ -2904,9 +2928,9 @@ begin
   while Count > 0 do begin
     if Boolean(Mask and BitRun) then begin
       if coNeedByteSwap in FSourceOptions then
-        Value := MulDiv16(Swap(SourceRun16^), MaxOutSample, 65535)
+        Value := MulDiv16(Swap(SourceRun16^), MaxOutSample, $FFFF)
       else
-        Value := MulDiv16(SourceRun16^, MaxOutSample, 65535);
+        Value := MulDiv16(SourceRun16^, MaxOutSample, $FFFF);
 
       TargetRun8^ := (TargetRun8^ and TargetMask) or (Value shl TargetShift);
       Inc(SourceRun16);
@@ -2951,7 +2975,7 @@ begin
       // adjust shift value by source bit depth
       Dec(SourceShift, SourceBPS);
       Value := (SourceRun8^ and SourceMask) shr SourceShift;
-      Value := MulDiv16(Value, 65535, MaxInSample);
+      Value := MulDiv16(Value, $FFFF, MaxInSample);
       if coNeedByteSwap in FSourceOptions then
         TargetRun16^ := Swap(Value)
       else
@@ -3105,10 +3129,10 @@ begin
             TargetRunA16 := Target;
             while Count > 0 do begin
               if Boolean(Mask and BitRun) then begin
-                TargetRunA16.R := Convert16_16(MulDiv16(Convert8_8(SourceR8^), 65535, $FF));
-                TargetRunA16.G := Convert16_16(MulDiv16(Convert8_8(SourceG8^), 65535, $FF));
-                TargetRunA16.B := Convert16_16(MulDiv16(Convert8_8(SourceB8^), 65535, $FF));
-                TargetRunA16.A := Convert16_16(MulDiv16(SourceA8^, 65535, $FF));
+                TargetRunA16.R := Convert16_16(MulDiv16(Convert8_8(SourceR8^), $FFFF, $FF));
+                TargetRunA16.G := Convert16_16(MulDiv16(Convert8_8(SourceG8^), $FFFF, $FF));
+                TargetRunA16.B := Convert16_16(MulDiv16(Convert8_8(SourceB8^), $FFFF, $FF));
+                TargetRunA16.A := Convert16_16(MulDiv16(SourceA8^, $FFFF, $FF));
 
                 Inc(SourceB8, SourceIncrement);
                 Inc(SourceG8, SourceIncrement);
@@ -3124,9 +3148,9 @@ begin
             TargetRun16 := Target;
             while Count > 0 do begin
               if Boolean(Mask and BitRun) then begin
-                TargetRun16.R := Convert16_16(MulDiv16(Convert8_8(SourceR8^), 65535, $FF));
-                TargetRun16.G := Convert16_16(MulDiv16(Convert8_8(SourceG8^), 65535, $FF));
-                TargetRun16.B := Convert16_16(MulDiv16(Convert8_8(SourceB8^), 65535, $FF));
+                TargetRun16.R := Convert16_16(MulDiv16(Convert8_8(SourceR8^), $FFFF, $FF));
+                TargetRun16.G := Convert16_16(MulDiv16(Convert8_8(SourceG8^), $FFFF, $FF));
+                TargetRun16.B := Convert16_16(MulDiv16(Convert8_8(SourceB8^), $FFFF, $FF));
 
                 Inc(SourceB8, SourceIncrement);
                 Inc(SourceG8, SourceIncrement);
@@ -3411,10 +3435,10 @@ begin
             TargetRunA16 := Target;
             while Count > 0 do begin
               if Boolean(Mask and BitRun) then begin
-                TargetRunA16.R := Convert16_16(MulDiv16(Convert8_8(SourceR8^), 65535, $FF));
-                TargetRunA16.G := Convert16_16(MulDiv16(Convert8_8(SourceG8^), 65535, $FF));
-                TargetRunA16.B := Convert16_16(MulDiv16(Convert8_8(SourceB8^), 65535, $FF));
-                TargetRunA16.A := Convert16_16(MulDiv16(SourceA8^, 65535, $FF));
+                TargetRunA16.R := Convert16_16(MulDiv16(Convert8_8(SourceR8^), $FFFF, $FF));
+                TargetRunA16.G := Convert16_16(MulDiv16(Convert8_8(SourceG8^), $FFFF, $FF));
+                TargetRunA16.B := Convert16_16(MulDiv16(Convert8_8(SourceB8^), $FFFF, $FF));
+                TargetRunA16.A := Convert16_16(MulDiv16(SourceA8^, $FFFF, $FF));
 
                 Inc(SourceB8, SourceIncrement);
                 Inc(SourceG8, SourceIncrement);
@@ -3430,9 +3454,9 @@ begin
             TargetRun16 := Target;
             while Count > 0 do begin
               if Boolean(Mask and BitRun) then begin
-                TargetRun16.R := Convert16_16(MulDiv16(Convert8_8(SourceR8^), 65535, $FF));
-                TargetRun16.G := Convert16_16(MulDiv16(Convert8_8(SourceG8^), 65535, $FF));
-                TargetRun16.B := Convert16_16(MulDiv16(Convert8_8(SourceB8^), 65535, $FF));
+                TargetRun16.R := Convert16_16(MulDiv16(Convert8_8(SourceR8^), $FFFF, $FF));
+                TargetRun16.G := Convert16_16(MulDiv16(Convert8_8(SourceG8^), $FFFF, $FF));
+                TargetRun16.B := Convert16_16(MulDiv16(Convert8_8(SourceB8^), $FFFF, $FF));
 
                 Inc(SourceB8, SourceIncrement);
                 Inc(SourceG8, SourceIncrement);
@@ -3655,13 +3679,13 @@ begin
               Inc(Cr8Run, Increment);
 
               // blue
-              Target16^ := MulDiv16(ClampByte(Y + FCbToBlueTable[Cb]), 65535, $FF);
+              Target16^ := MulDiv16(ClampByte(Y + FCbToBlueTable[Cb]), $FFFF, $FF);
               Inc(Target16);
               // green
-              Target16^ := MulDiv16(ClampByte(Y + FCbToGreenTable[Cb] + FCrToGreentable[Cr]), 65535, $FF);
+              Target16^ := MulDiv16(ClampByte(Y + FCbToGreenTable[Cb] + FCrToGreentable[Cr]), $FFFF, $FF);
               Inc(Target16);
               // red
-              Target16^ := MulDiv16(ClampByte(Y + FCrToRedTable[Cr]), 65535, $FF);
+              Target16^ := MulDiv16(ClampByte(Y + FCrToRedTable[Cr]), $FFFF, $FF);
               Inc(Target16, 1 + AlphaSkip);
             end
             else
@@ -3692,11 +3716,11 @@ begin
           Target8 := Target;
           while Count > 0 do begin
             if Boolean(Mask and BitRun) then begin
-              Y := MulDiv16(Y16Run^, $FF, 65535);
+              Y := MulDiv16(Y16Run^, $FF, $FFFF);
               Inc(Y16Run, Increment);
-              Cb := MulDiv16(Cb16Run^, $FF, 65535);
+              Cb := MulDiv16(Cb16Run^, $FF, $FFFF);
               Inc(Cb16Run, Increment);
-              Cr := MulDiv16(Cr16Run^, $FF, 65535);
+              Cr := MulDiv16(Cr16Run^, $FF, $FFFF);
               Inc(Cr16Run, Increment);
               // blue
               Target8^ := ClampByte(Y + FCbToBlueTable[Cb]);
@@ -3725,9 +3749,9 @@ begin
             if Boolean(Mask and BitRun) then begin
               Yf := 1.3584 * Y16Run^;
               Inc(Y16Run, Increment);
-              Cbf := Cb16Run^ - 40092; // (156 * 65535) div $FF
+              Cbf := Cb16Run^ - 40092; // (156 * $FFFF) div $FF
               Inc(Cb16Run, Increment);
-              Crf := Cr16Run^ - 35209; // (137 * 65535) div $FF
+              Crf := Cr16Run^ - 35209; // (137 * $FFFF) div $FF
               Inc(Cr16Run, Increment);       
               // blue
               Target16^ := Round(Yf + 2.2179 * Cbf);
@@ -3820,13 +3844,13 @@ begin
               Cr := Cr8Run^;
               Inc(Cr8Run, Increment);       
               // red
-              Target16^ := MulDiv16(ClampByte(Y + FCrToRedTable[Cr]), 65535, $FF);
+              Target16^ := MulDiv16(ClampByte(Y + FCrToRedTable[Cr]), $FFFF, $FF);
               Inc(Target16, 1 + AlphaSkip);
               // green
-              Target16^ := MulDiv16(ClampByte(Y + FCbToGreenTable[Cb] + FCrToGreentable[Cr]), 65535, $FF);
+              Target16^ := MulDiv16(ClampByte(Y + FCbToGreenTable[Cb] + FCrToGreentable[Cr]), $FFFF, $FF);
               Inc(Target16);
               // blue
-              Target16^ := MulDiv16(ClampByte(Y + FCbToBlueTable[Cb]), 65535, $FF);
+              Target16^ := MulDiv16(ClampByte(Y + FCbToBlueTable[Cb]), $FFFF, $FF);
               Inc(Target16);
             end
             else
@@ -3857,11 +3881,11 @@ begin
           Target8 := Target;
           while Count > 0 do begin
             if Boolean(Mask and BitRun) then begin
-              Y := MulDiv16(Y16Run^, $FF, 65535);
+              Y := MulDiv16(Y16Run^, $FF, $FFFF);
               Inc(Y16Run, Increment);
-              Cb := MulDiv16(Cb16Run^, $FF, 65535);
+              Cb := MulDiv16(Cb16Run^, $FF, $FFFF);
               Inc(Cb16Run, Increment);
-              Cr := MulDiv16(Cr16Run^, $FF, 65535);
+              Cr := MulDiv16(Cr16Run^, $FF, $FFFF);
               Inc(Cr16Run, Increment);
               // red
               Target8^ := ClampByte(Y + FCrToRedTable[Cr]);
@@ -3890,9 +3914,9 @@ begin
             if Boolean(Mask and BitRun) then begin
               Yf := 1.3584 * Y16Run^;
               Inc(Y16Run, Increment);
-              Cbf := Cb16Run^ - 40092; // (156 * 65535) div $FF
+              Cbf := Cb16Run^ - 40092; // (156 * $FFFF) div $FF
               Inc(Cb16Run, Increment);
-              Crf := Cr16Run^ - 35209; // (137 * 65535) div $FF
+              Crf := Cr16Run^ - 35209; // (137 * $FFFF) div $FF
               Inc(Cr16Run, Increment);
               // red
               Target16^ := Round(Yf + 1.8215 * Crf);
@@ -3985,13 +4009,13 @@ begin
               Cr := Cr8Run^;
               Inc(Cr8Run, Increment);       
               // blue
-              Target16^ := MulDiv16(ClampByte(Y + FCbToBlueTable[Cb]), 65535, $FF);
+              Target16^ := MulDiv16(ClampByte(Y + FCbToBlueTable[Cb]), $FFFF, $FF);
               Inc(Target16);
               // green
-              Target16^ := MulDiv16(ClampByte(Y + FCbToGreenTable[Cb] + FCrToGreentable[Cr]), 65535, $FF);
+              Target16^ := MulDiv16(ClampByte(Y + FCbToGreenTable[Cb] + FCrToGreentable[Cr]), $FFFF, $FF);
               Inc(Target16);
               // red
-              Target16^ := MulDiv16(ClampByte(Y + FCrToRedTable[Cr]), 65535, $FF);
+              Target16^ := MulDiv16(ClampByte(Y + FCrToRedTable[Cr]), $FFFF, $FF);
               Inc(Target16, 1 + AlphaSkip);
             end
             else
@@ -4022,11 +4046,11 @@ begin
           Target8 := Target;
           while Count > 0 do begin
             if Boolean(Mask and BitRun) then begin
-              Y := MulDiv16(Y16Run^, $FF, 65535);
+              Y := MulDiv16(Y16Run^, $FF, $FFFF);
               Inc(Y16Run, Increment);
-              Cb := MulDiv16(Cb16Run^, $FF, 65535);
+              Cb := MulDiv16(Cb16Run^, $FF, $FFFF);
               Inc(Cb16Run, Increment);
-              Cr := MulDiv16(Cr16Run^, $FF, 65535);
+              Cr := MulDiv16(Cr16Run^, $FF, $FFFF);
               Inc(Cr16Run, Increment);
 
               // blue
@@ -4056,9 +4080,9 @@ begin
             if Boolean(Mask and BitRun) then begin
               Yf := 1.3584 * Y16Run^;
               Inc(Y16Run, Increment);
-              Cbf := Cb16Run^ - 40092; // (156 * 65535) div $FF
+              Cbf := Cb16Run^ - 40092; // (156 * $FFFF) div $FF
               Inc(Cb16Run, Increment);
-              Crf := Cr16Run^ - 35209; // (137 * 65535) div $FF
+              Crf := Cr16Run^ - 35209; // (137 * $FFFF) div $FF
               Inc(Cr16Run, Increment);
               // blue
               Target16^ := Round(Yf + 2.2179 * Cbf);
@@ -4151,13 +4175,13 @@ begin
               Cr := Cr8Run^;
               Inc(Cr8Run, Increment);
               // red
-              Target16^ := MulDiv16(ClampByte(Y + FCrToRedTable[Cr]), 65535, $FF);
+              Target16^ := MulDiv16(ClampByte(Y + FCrToRedTable[Cr]), $FFFF, $FF);
               Inc(Target16, 1 + AlphaSkip);
               // green
-              Target16^ := MulDiv16(ClampByte(Y + FCbToGreenTable[Cb] + FCrToGreentable[Cr]), 65535, $FF);
+              Target16^ := MulDiv16(ClampByte(Y + FCbToGreenTable[Cb] + FCrToGreentable[Cr]), $FFFF, $FF);
               Inc(Target16);
               // blue
-              Target16^ := MulDiv16(ClampByte(Y + FCbToBlueTable[Cb]), 65535, $FF);
+              Target16^ := MulDiv16(ClampByte(Y + FCbToBlueTable[Cb]), $FFFF, $FF);
               Inc(Target16);
             end
             else Inc(Target16, 3 + AlphaSkip);
@@ -4186,11 +4210,11 @@ begin
           Target8 := Target;
           while Count > 0 do begin
             if Boolean(Mask and BitRun) then begin
-              Y := MulDiv16(Y16Run^, $FF, 65535);
+              Y := MulDiv16(Y16Run^, $FF, $FFFF);
               Inc(Y16Run, Increment);
-              Cb := MulDiv16(Cb16Run^, $FF, 65535);
+              Cb := MulDiv16(Cb16Run^, $FF, $FFFF);
               Inc(Cb16Run, Increment);
-              Cr := MulDiv16(Cr16Run^, $FF, 65535);
+              Cr := MulDiv16(Cr16Run^, $FF, $FFFF);
               Inc(Cr16Run, Increment);
               // red
               Target8^ := ClampByte(Y + FCrToRedTable[Cr]);
@@ -4219,9 +4243,9 @@ begin
             if Boolean(Mask and BitRun) then begin
               Yf := 1.3584 * Y16Run^;
               Inc(Y16Run, Increment);
-              Cbf := Cb16Run^ - 40092; // (156 * 65535) div $FF
+              Cbf := Cb16Run^ - 40092; // (156 * $FFFF) div $FF
               Inc(Cb16Run, Increment);
-              Crf := Cr16Run^ - 35209; // (137 * 65535) div $FF
+              Crf := Cr16Run^ - 35209; // (137 * $FFFF) div $FF
               Inc(Cr16Run, Increment);
               // red
               Target16^ := Round(Yf + 1.8215 * Crf);
@@ -4248,14 +4272,13 @@ end;
 
 procedure TColorManager.CreateYCbCrLookup;
 var
-  F1, F2, F3, F4: Single;
   LumaRed, LumaGreen, LumaBlue: Single;
-  I: Integer;
-  Offset1, Offset2: Integer;
+  I, Offset1, Offset2: Integer;
+  F1, F2, F3, F4: Single;
 begin
-  LumaRed := FYCbCrCoefficients[0];
+  LumaRed   := FYCbCrCoefficients[0];
   LumaGreen := FYCbCrCoefficients[1];
-  LumaBlue := FYCbCrCoefficients[2];
+  LumaBlue  := FYCbCrCoefficients[2];
 
   F1 := 2 - 2 * LumaRed;
   F2 := LumaRed * F1 / LumaGreen;
@@ -4316,26 +4339,16 @@ begin
   case SamplesPerPixel of
     1: // one sample per pixel, this is usually a palette format
       case BitsPerSample of
-        1:
-          Result := pf1Bit;
-
-        2..4: // values < 4 should be upscaled
-          Result := pf4bit;
-
-        8..16: // values > 8 bits must be downscaled to 8 bits
-          Result := pf8bit;
-
-        else
-          Result := pfCustom;
+        1:     Result := pf1Bit;
+        2..4:  Result := pf4bit; // values < 4 should be upscaled
+        8..16: Result := pf8bit  // values > 8 bits must be downscaled to 8 bits
+        else   Result := pfCustom;
       end;
 
     3: // Typical case is RGB or CIE L*a*b* (565 and 555 16 bit color formats would also be possible, but aren't handled by the manager).
       case BitsPerSample of
-        1..5: // values < 5 should be upscaled
-          Result := pf15Bit;
-
-        else // values > 8 bits should be downscaled
-          Result := pf24bit;
+        1..5: Result := pf15Bit // values < 5 should be upscaled
+        else  Result := pf24bit; // values > 8 bits should be downscaled
       end;
 
     4: // Typical cases: RGBA and CMYK (with 8 bps, other formats like PCX's 4 planes with 1 bit must be handled elsewhere)
@@ -4577,7 +4590,7 @@ var
   LogPalette: TMaxLogPalette;
   RunR8, RunG8, RunB8: PByte;
   RunR16, RunG16, RunB16: PWord;
-  Convert8: function(Value: Byte): Byte of object;
+  Convert8:  function(Value: Byte): Byte of object;
   Convert16: function(Value: Word): Byte of object;
 begin
   FillChar(LogPalette, SizeOf(LogPalette), 0);
@@ -4596,21 +4609,39 @@ begin
         Convert8 := ComponentNoConvert8;
 
       if RGB then
-        for I := 0 to LogPalette.palNumEntries - 1 do begin
-          LogPalette.palPalEntry[I].peBlue := Convert8(RunR8^); Inc(RunR8);
-          LogPalette.palPalEntry[I].peGreen := Convert8(RunR8^); Inc(RunR8);
-          LogPalette.palPalEntry[I].peRed := Convert8(RunR8^); Inc(RunR8);
-          if DataFormat = pfInterlaced8Quad then
+        if DataFormat = pfInterlaced8Quad then
+          for I := 0 to LogPalette.palNumEntries - 1 do begin
+            with LogPalette.palPalEntry[I] do begin
+              peBlue  := Convert8(RunR8^); Inc(RunR8);
+              peGreen := Convert8(RunR8^); Inc(RunR8);
+              peRed   := Convert8(RunR8^); Inc(RunR8);
+            end;
             Inc(RunR8);
-        end
+          end
+        else
+          for I := 0 to LogPalette.palNumEntries - 1 do
+            with LogPalette.palPalEntry[I] do begin
+              peBlue  := Convert8(RunR8^); Inc(RunR8);
+              peGreen := Convert8(RunR8^); Inc(RunR8);
+              peRed   := Convert8(RunR8^); Inc(RunR8);
+            end
       else
-        for I := 0 to LogPalette.palNumEntries - 1 do begin
-          LogPalette.palPalEntry[I].peRed := Convert8(RunR8^); Inc(RunR8);
-          LogPalette.palPalEntry[I].peGreen := Convert8(RunR8^); Inc(RunR8);
-          LogPalette.palPalEntry[I].peBlue := Convert8(RunR8^); Inc(RunR8);
-          if DataFormat = pfInterlaced8Quad then
+        if DataFormat = pfInterlaced8Quad then
+          for I := 0 to LogPalette.palNumEntries - 1 do begin
+            with LogPalette.palPalEntry[I] do begin
+              peRed   := Convert8(RunR8^); Inc(RunR8);
+              peGreen := Convert8(RunR8^); Inc(RunR8);
+              peBlue  := Convert8(RunR8^); Inc(RunR8);
+            end;
             Inc(RunR8);
-        end;
+          end
+        else
+          for I := 0 to LogPalette.palNumEntries - 1 do
+            with LogPalette.palPalEntry[I] do begin
+              peRed   := Convert8(RunR8^); Inc(RunR8);
+              peGreen := Convert8(RunR8^); Inc(RunR8);
+              peBlue  := Convert8(RunR8^); Inc(RunR8);
+            end
     end;
 
     pfPlane8Triple, pfPlane8Quad: begin
@@ -4623,9 +4654,9 @@ begin
         Convert8 := ComponentNoConvert8;
 
       for I := 0 to LogPalette.palNumEntries - 1 do begin
-        LogPalette.palPalEntry[I].peRed := Convert8(RunR8^); Inc(RunR8);
+        LogPalette.palPalEntry[I].peRed   := Convert8(RunR8^); Inc(RunR8);
         LogPalette.palPalEntry[I].peGreen := Convert8(RunG8^); Inc(RunG8);
-        LogPalette.palPalEntry[I].peBlue := Convert8(RunB8^); Inc(RunB8);
+        LogPalette.palPalEntry[I].peBlue  := Convert8(RunB8^); Inc(RunB8);
       end;
     end;
 
@@ -4644,17 +4675,17 @@ begin
 
       if RGB then
         for I := 0 to LogPalette.palNumEntries - 1 do begin
-          LogPalette.palPalEntry[I].peRed := Convert16(RunR16^); Inc(RunR16);
+          LogPalette.palPalEntry[I].peRed   := Convert16(RunR16^); Inc(RunR16);
           LogPalette.palPalEntry[I].peGreen := Convert16(RunR16^); Inc(RunR16);
-          LogPalette.palPalEntry[I].peBlue := Convert16(RunR16^); Inc(RunR16);
+          LogPalette.palPalEntry[I].peBlue  := Convert16(RunR16^); Inc(RunR16);
           if DataFormat = pfInterlaced16Quad then
             Inc(RunR16);
         end
       else
         for I := 0 to LogPalette.palNumEntries - 1 do begin
-          LogPalette.palPalEntry[I].peBlue := Convert16(RunR16^); Inc(RunR16);
+          LogPalette.palPalEntry[I].peBlue  := Convert16(RunR16^); Inc(RunR16);
           LogPalette.palPalEntry[I].peGreen := Convert16(RunR16^); Inc(RunR16);
-          LogPalette.palPalEntry[I].peRed := Convert16(RunR16^); Inc(RunR16);
+          LogPalette.palPalEntry[I].peRed   := Convert16(RunR16^); Inc(RunR16);
           if DataFormat = pfInterlaced16Quad then
             Inc(RunR16);
         end;
@@ -4731,9 +4762,9 @@ begin
   if MinimumIsWhite then
     if not (coApplyGamma in FTargetOptions) then
       for I := 0 to Upper do begin
-        LogPalette.palPalEntry[Upper - I].peBlue := I * Factor;
+        LogPalette.palPalEntry[Upper - I].peBlue  := I * Factor;
         LogPalette.palPalEntry[Upper - I].peGreen := I * Factor;
-        LogPalette.palPalEntry[Upper - I].peRed := I * Factor;
+        LogPalette.palPalEntry[Upper - I].peRed   := I * Factor;
       end
     else
       for I := 0 to Upper do begin

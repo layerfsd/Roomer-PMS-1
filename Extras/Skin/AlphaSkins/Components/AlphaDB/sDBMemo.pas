@@ -1,6 +1,6 @@
 unit sDBMemo;
 {$I sDefs.inc}
-
+//+
 interface
 
 uses
@@ -28,6 +28,7 @@ type
     constructor Create(AOwner:TComponent); override;
     destructor Destroy; override;
     procedure Loaded; override;
+    function IsEmpty: boolean;
   published
     property BoundLabel: TsBoundLabel read FBoundLabel write FBoundLabel;
     property CharCase;
@@ -56,10 +57,10 @@ end;
 
 constructor TsDBMemo.Create(AOwner: TComponent);
 begin
-  inherited Create(AOwner);
-  ControlStyle := ControlStyle - [csOpaque];
   FCommonData := TsScrollWndData.Create(Self, True);
   FCommonData.COC := COC_TsMemo;
+  inherited Create(AOwner);
+  ControlStyle := ControlStyle - [csOpaque];
   FDisabledKind := DefDisabledKind;
   FBoundLabel := TsBoundLabel.Create(Self, FCommonData);
   ParentColor := False;                                 
@@ -80,9 +81,7 @@ begin
     FreeAndNil(ListSW);
 
   FreeAndNil(FBoundLabel);
-  if Assigned(FCommonData) then
-    FreeAndNil(FCommonData);
-
+  FreeAndNil(FCommonData);
   inherited Destroy;
 end;
 
@@ -170,6 +169,12 @@ begin
 
   if Assigned(BoundLabel) then
     BoundLabel.HandleOwnerMsg(Message, Self);
+end;
+
+
+function TsDBMemo.IsEmpty: boolean;
+begin
+  Result := Text = '';
 end;
 
 end.

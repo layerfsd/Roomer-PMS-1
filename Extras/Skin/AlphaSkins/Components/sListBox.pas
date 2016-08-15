@@ -1,13 +1,14 @@
 unit sListBox;
 {$I sDefs.inc}
 //{$DEFINE LOGGED}
-
+//+
 interface
 
 uses
   StdCtrls, controls, classes, forms, graphics, messages, windows, sysutils,
   {$IFDEF LOGGED} sDebugMsgs, {$ENDIF}
   {$IFNDEF DELPHI5} Types, {$ENDIF}
+  {$IFDEF DELPHI_XE2} UITypes, {$ENDIF}
   {$IFDEF TNTUNICODE} TntStdCtrls, TntClasses, {$ENDIF}
   acSBUtils, sConst, sDefaults, sCommonData;
 
@@ -36,6 +37,7 @@ type
     procedure SetAutoHideScroll(const Value: boolean);
     procedure DrawItem(Index: Integer; Rect: TRect; State: TOwnerDrawState); override;
     procedure CreateParams(var Params: TCreateParams); override;
+    procedure ChangeScale(M, D: Integer); override;
   public
     ListSW: TacScrollWnd;
     constructor Create(AOwner: TComponent); override;
@@ -68,37 +70,41 @@ uses math,
   sVCLUtils, sMessages, sGraphUtils, sAlphaGraph, sSkinProps, acntUtils, sStyleSimply;
 
 
+procedure TsCustomListBox.ChangeScale(M, D: Integer);
+begin
+  inherited ChangeScale(M, D);
+  ItemHeight := MulDiv(ItemHeight, M, D);
+end;
+
+
 procedure TsCustomListBox.CNDrawItem(var Message: TWMDrawItem);
 var
   State: TOwnerDrawState;
   XOffset: integer;
 begin
-  with Message.DrawItemStruct^ do begin
-    State := TOwnerDrawState(LongRec(itemState).Lo);
-    Canvas.Handle := hDC;
-    if Message.Result = 0 then begin // If received not from WM_PAINT handler
-      if (Columns = 0) and (ListSW <> nil) and (ListSW.sBarHorz <> nil) then
-        XOffset := ListSW.sBarHorz.ScrollInfo.nPos
-      else
-        XOffset := 0;
+//  if not InAnimationProcess then
+    with Message.DrawItemStruct^ do begin
+      State := TOwnerDrawState(LongRec(itemState).Lo);
+      if Message.Result = 0 then begin // If received not from WM_PAINT handler
+        if (Columns = 0) and (ListSW <> nil) and (ListSW.sBarHorz <> nil) then
+          XOffset := ListSW.sBarHorz.ScrollInfo.nPos
+        else
+          XOffset := 0;
 
-      OffsetRect(rcItem, XOffset, 0);
-      State := State + [odReserved1];
+        OffsetRect(rcItem, XOffset, 0);
+        State := State + [odReserved1];
+      end;
+      DrawItem(integer(itemID), rcItem, State);
     end;
-    Canvas.Lock;
-    DrawItem(integer(itemID), rcItem, State);
-    Canvas.UnLock;
-    Canvas.Handle := 0;
-  end;
 end;
 
 
 constructor TsCustomListBox.Create(AOwner: TComponent);
 begin
-  inherited Create(AOwner);
-  ControlStyle := ControlStyle - [csOpaque];
   FCommonData := TsScrollWndData.Create(Self, True);
   FCommonData.COC := COC_TsListBox;
+  inherited Create(AOwner);
+  ControlStyle := ControlStyle - [csOpaque];
   FAutoCompleteDelay := 500;
   FAutoHideScroll := True;
   if FCommonData.SkinSection = '' then
@@ -135,9 +141,9 @@ begin
   if ListSW <> nil then
     FreeAndNil(ListSW);
 
-  FreeAndNil(FBoundLabel);
-  FreeAndNil(FCommonData);
   inherited Destroy;
+  FreeAndNil(FCommonData);
+  FreeAndNil(FBoundLabel);
 end;
 
 
@@ -145,11 +151,12 @@ procedure TsCustomListBox.DrawItem(Index: Integer; Rect: TRect; State: TOwnerDra
 var
   w, h, XOffset, sNdx, l: integer;
   Bmp: Graphics.TBitmap;
-  SavedDC: hdc;
   DrawStyle: Cardinal;
   bSelected: boolean;
   TmpColor: TColor;
+  fs: TFontStyles;
   CI: TCacheInfo;
+  SavedDC: hdc;
   aRect: TRect;
   s: PACChar;
 begin
@@ -166,7 +173,7 @@ begin
       h := HeightOf(Rect, True);
       if (w > 0) and (h > 0) then begin
         Bmp := CreateBmp32(w, h);
-        if BorderStyle <> bsNone then
+        if (BorderStyle <> bsNone) and (ListSW <> nil) then
           CI := MakeCacheInfo(SkinData.FCacheBmp, ListSW.cxLeftEdge, ListSW.cxLeftEdge)
         else
           CI := MakeCacheInfo(SkinData.FCacheBmp);
@@ -175,15 +182,14 @@ begin
           XOffset := ListSW.sBarHorz.ScrollInfo.nPos
         else
           XOffset := 0;
-        
+
         if odReserved1 in State then
           BitBlt(Bmp.Canvas.Handle, 0, 0, Bmp.Width, Bmp.Height, SkinData.FCacheBmp.Canvas.Handle, Rect.Left + CI.X - 2 * XOffset, Rect.Top + CI.Y, SRCCOPY)
         else
           BitBlt(Bmp.Canvas.Handle, 0, 0, Bmp.Width, Bmp.Height, SkinData.FCacheBmp.Canvas.Handle, Rect.Left + CI.X - XOffset, Rect.Top + CI.Y, SRCCOPY);
 
         if Assigned(OnDrawItem) then begin
-          Canvas.Lock;
-          SavedDC := SaveDC(Canvas.Handle);
+          BitBlt(Canvas.Handle, Rect.Left - XOffset, Rect.Top, Bmp.Width, Bmp.Height, Bmp.Canvas.Handle, 0, 0, SRCCOPY);
           if bSelected then begin
             Canvas.Brush.Color := SkinData.SkinManager.GetHighLightColor(odFocused in State);
             Canvas.Font.Color := SkinData.SkinManager.GetHighLightFontColor(odFocused in State);
@@ -192,33 +198,12 @@ begin
             Canvas.Brush.Color := Color;
             Canvas.Font.Color := Font.Color;
           end;
+          SavedDC := SaveDC(Canvas.Handle);
+          fs := Canvas.Font.Style;
           OnDrawItem(Self, Index, Rect, State);
+          Canvas.Font.Style := fs;
           RestoreDC(Canvas.Handle, SavedDC);
-          Canvas.UnLock;
-//          Canvas.Handle := TmpDC;
-{
-          Bmp.Canvas.Lock;
-
-          SavedDC := SaveDC(Bmp.Canvas.Handle);
-          MoveWindowOrg(Bmp.Canvas.Handle, -Rect.Left, -Rect.Top);
-          if bSelected then begin
-            Bmp.Canvas.Brush.Color := SkinData.SkinManager.GetHighLightColor(odFocused in State);
-            Bmp.Canvas.Font.Color := SkinData.SkinManager.GetHighLightFontColor(odFocused in State);
-          end
-          else begin
-            Bmp.Canvas.Brush.Color := Color;
-            Bmp.Canvas.Font.Color := Font.Color;
-          end;
-          TmpDC := Canvas.Handle;
-          Canvas.Handle := Bmp.Canvas.Handle;
-
-          OnDrawItem(Self, Index, Rect, State);
-          MoveWindowOrg(Canvas.Handle, Rect.Left, Rect.Top);
-
-          RestoreDC(Canvas.Handle, SavedDC);
-          Bmp.Canvas.UnLock;
-          Canvas.Handle := TmpDC;
-}
+          FreeAndNil(Bmp);
           Exit;
         end
         else begin
@@ -232,14 +217,14 @@ begin
           else
             sNdx := -1;
 
-          if (Index > -1) and (Index < l) then begin
+          if IsValidIndex(Index, l) then begin
             Bmp.Canvas.Font.Assign(Font);
             aRect := MkRect(Bmp);
             InflateRect(aRect, -1, 0);
             if (ListSW <> nil) and (ListSW.cxLeftEdge < integer(BorderStyle = bsSingle) * (1 + integer(Ctl3D))) then
               inc(aRect.Left);
 
-            if sNdx = -1 then begin
+            if sNdx < 0 then begin
               if bSelected then
                 Bmp.Canvas.Font.Color := SkinData.SkinManager.GetHighLightFontColor(odFocused in State)
               else
@@ -249,9 +234,9 @@ begin
                 else
                   Bmp.Canvas.Font.Color := Font.Color;
 
-              if (odDisabled in State) then
-                Bmp.Canvas.Font.Color := MixColors(Bmp.Canvas.Font.Color, Color, DefDisabledBlend);
-              
+              if odDisabled in State then
+                Bmp.Canvas.Font.Color := BlendColors(Bmp.Canvas.Font.Color, Color, DefBlendDisabled);
+
               Bmp.Canvas.Brush.Style := bsClear;
               AcDrawText(Bmp.Canvas.Handle, s, aRect, DrawStyle);
             end
@@ -282,22 +267,22 @@ begin
       end;
       FillDC(Canvas.Handle, Rect, TmpColor);
       Canvas.Brush.Color := TmpColor;
-      if (odDisabled in State) then
-        Canvas.Font.Color := MixColors(ColortoRGB(Canvas.Font.Color), TmpColor, DefDisabledBlend);
+      if odDisabled in State then
+        Canvas.Font.Color := BlendColors(ColortoRGB(Canvas.Font.Color), TmpColor, DefBlendDisabled);
 
       if Assigned(OnDrawItem) then begin
         OnDrawItem(Self, Index, Rect, State);
-        if (odFocused in State) then begin
+        if odFocused in State then begin
           InflateRect(Rect, 1, 0);
           DrawFocusRect(Canvas.Handle, Rect);
         end;
       end
       else begin
         InflateRect(Rect, -1, 0);
-        if (Index > -1) and (Index < Items.Count) then begin
+        if IsValidIndex(Index, Items.Count) then begin
           Canvas.Brush.Style := bsClear;
           AcDrawText(Canvas.Handle, s, Rect, DrawStyle);
-          if (odFocused in State) then begin
+          if odFocused in State then begin
             InflateRect(Rect, 1, 0);
             DrawFocusRect(Canvas.Handle, Rect);
           end;
@@ -382,7 +367,7 @@ var
 
         MeasureItemStruct.itemWidth := WidthOf(R);
         MeasureItemStruct.itemHeight := ItemHeight;
-        if (i >= 0) and (i < Items.Count) and (GetItemData(i) <> LB_ERR) then
+        if IsValidIndex(i, Items.Count) and (GetItemData(i) <> LB_ERR) then
           DrawItemStruct.itemData := DWORD(Pointer(Items.Objects[I]))
         else
           DrawItemStruct.itemData := 0;
@@ -407,76 +392,83 @@ var
   end;
 
 begin
-  if SkinData.Skinned then begin
-    if Message.DC <> 0 then
-      DC := Message.DC
-    else begin
-      BeginPaint(Handle, PS);
-      DC := GetDC(Handle);
-    end;
-    if not InUpdating(SkinData) then begin
-      if BorderStyle <> bsNone then
-        bw := iff(Ctl3d, ListSW.cxLeftEdge, 1)
-      else
-        bw := 0;
-
-      PaintListBox;
-    end;
-    if Message.DC <> DC then begin
-      ReleaseDC(Handle, DC);
-      EndPaint(Handle, PS);
-    end;
+{  if InAnimationProcess then begin
+    BeginPaint(Handle, PS);
+    EndPaint(Handle, PS);
   end
-  else
-    inherited;
+  else}
+    if (SkinData.Skinned or (Style in [lbOwnerDrawFixed, lbOwnerDrawVariable])) then begin
+      if Message.DC <> 0 then
+        DC := Message.DC
+      else begin
+        BeginPaint(Handle, PS);
+        DC := GetDC(Handle);
+      end;
+      if not InUpdating(SkinData) then begin
+        if (BorderStyle <> bsNone) and (ListSW <> nil) then
+          bw := iff(Ctl3d, ListSW.cxLeftEdge, 1)
+        else
+          bw := 0;
+
+        Canvas.Handle := DC;
+        Canvas.Lock;
+        Canvas.Font.Assign(Font);
+        PaintListBox;
+        Canvas.UnLock;
+        Canvas.Handle := 0;
+      end;
+      if Message.DC <> DC then begin
+        ReleaseDC(Handle, DC);
+        EndPaint(Handle, PS);
+      end;
+    end
+    else
+      inherited;
 end;
 
 
 procedure TsCustomListBox.WndProc(var Message: TMessage);
+var
+  M: TMessage;
 begin
 {$IFDEF LOGGED}
   AddToLog(Message);
 {$ENDIF}
   case Message.Msg of
-    SM_ALPHACMD:
+    SM_ALPHACMD: begin
       case Message.WParamHi of
-        AC_CTRLHANDLED: begin
+        AC_CTRLHANDLED:
           Message.Result := 1;
-          Exit;
-        end;
 
         AC_REMOVESKIN:
-          if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then begin
+          if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then
             if ListSW <> nil then
               FreeAndNil(ListSW);
 
-            Exit;
-          end;
-
         AC_REFRESH:
-          if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
+          if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then begin
             if HandleAllocated then
               RefreshEditScrolls(SkinData, ListSW);
 
-            CommonWndProc(Message, FCommonData);
+            CommonMessage(Message, FCommonData);
             if not InAnimationProcess then
-              RedrawWindow(Handle, nil, 0, RDW_INVALIDATE or RDW_ERASE or RDW_FRAME);
-
-            Exit;
+              RedrawWindow(Handle, nil, 0, RDWA_REPAINT);
           end;
 
         AC_SETNEWSKIN:
-          if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
-            CommonWndProc(Message, FCommonData);
-            Exit;
-          end;
+          if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then
+            CommonMessage(Message, FCommonData);
 
         AC_GETCONTROLCOLOR:
-          if not FCommonData.Skinned then begin
+          if not FCommonData.Skinned then
             Message.Result := ColorToRGB(Color);
-            Exit;
-          end;
+
+        AC_ENDUPDATE:
+          Perform(CM_INVALIDATE, 0, 0);
       end;
+      if SkinData.Skinned then // Do not call it again
+        Exit;
+    end;
 
     CM_MOUSEENTER, CM_MOUSELEAVE: begin
       CommonWndProc(Message, FCommonData);
@@ -489,6 +481,15 @@ begin
 
       Exit;
     end;
+
+    WM_PRINT:
+      if (Style <> lbStandard) and (TWMPaint(Message).DC <> 0) then begin
+        Canvas.Handle := TWMPaint(Message).DC;
+        M := MakeMessage(WM_PAINT, Message.WParam, Message.LParam, 0);
+        WMPaint(TWMPaint(M));
+        Ac_NCDraw(ListSW, Handle, -1, TWMPaint(Message).DC);
+        Exit;
+      end;
   end;
 
   if not ControlIsReady(Self) or not FCommonData.Skinned then
@@ -541,7 +542,7 @@ begin
   // Aligning of the bound label
   case Message.Msg of
     WM_SIZE, WM_WINDOWPOSCHANGED:
-      if Assigned(BoundLabel) and Assigned(BoundLabel.FtheLabel) then
+      if not (csDestroying in ComponentState) and Assigned(BoundLabel) and Assigned(BoundLabel.FtheLabel) then
         BoundLabel.AlignLabel;
 
     CM_VISIBLECHANGED:
@@ -563,14 +564,13 @@ begin
       end;
 
     CM_FONTCHANGED:
-      if (Style = lbStandard) and not (csLoading in ComponentState) and
-           not (csFreeNotification in ComponentState) and HandleAllocated and IsWindowVisible(Handle)
-             and (SkinData.CtrlSkinState and ACS_CHANGING <> ACS_CHANGING) then begin
+      if (Style = lbStandard) and ([csLoading, csFreeNotification] * ComponentState = []) and
+           HandleAllocated and IsWindowVisible(Handle) and (SkinData.CtrlSkinState and ACS_CHANGING = 0) then begin
         Canvas.Font.Assign(Font);
         ItemHeight := Canvas.TextHeight('Ag') + 3;
       end;
 
-    WM_VSCROLL: 
+    WM_VSCROLL:
       if Assigned(FOnVScroll) then
         FOnVScroll(Self);
   end;

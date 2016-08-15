@@ -57,7 +57,9 @@ type
     WB: smallint;        // Bottom
 
     CornerType,          // 1 - has transparent pixels, 2 - control region must be changed
-    SkinIndex: integer;
+    SkinIndex,
+    Width,
+    Height: integer;
   end;
   PsMaskData = ^TsMaskData;
 
@@ -124,8 +126,8 @@ type
   TsGeneralDataArray = array of TsGeneralData;
 
 
-function WidthOfImage (const md: TsMaskData): integer;
-function HeightOfImage(const md: TsMaskData): integer;
+function WidthOfImage (const md: TsMaskData): integer; {$IFDEF WARN_DEPRECATED} deprecated; {$ENDIF} // Use md.Width
+function HeightOfImage(const md: TsMaskData): integer; {$IFDEF WARN_DEPRECATED} deprecated; {$ENDIF} // Use md.Height
 function MkSize       (const md: TsMaskData): TSize; overload;
 
 implementation
@@ -135,29 +137,31 @@ uses acntUtils;
 
 function WidthOfImage(const md: TsMaskData): integer;
 begin
-  case md.ImageCount of
+  Result := md.Width;
+{  case md.ImageCount of
     0:   Result := 0;
     1:   Result := WidthOf(md.R)
     else Result := WidthOf(md.R) div md.ImageCount
-  end;
+  end;}
 end;
 
 
 function HeightOfImage(const md: TsMaskData): integer;
 begin
-  case md.MaskType of
+  Result := md.Height;
+{  case md.MaskType of
    -1:   Result := 0;
     0:   Result := HeightOf(md.R);
     1:   Result := HeightOf(md.R) div 2
     else Result := HeightOf(md.R) div (md.MaskType + 1)
-  end;
+  end;}
 end;
 
 
 function MkSize(const md: TsMaskData): TSize;
 begin
-  Result.cx := WidthOfImage (md);
-  Result.cy := HeightOfImage(md);
+  Result.cx := md.Width;
+  Result.cy := md.Height;
 end;
 
 end.

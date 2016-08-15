@@ -1,5 +1,6 @@
 unit sFade;
 {$I sDefs.inc}
+//+
 
 interface
 {$R+}
@@ -77,7 +78,7 @@ begin
     sd := TsCommonData(Data);
     if (sd.FOwnerControl is TGraphicControl) and not (csDestroying in sd.FOwnerControl.ComponentState) and (sd.AnimTimer.Iterations <> 0) and not sd.AnimTimer.Destroyed then
       with sd.AnimTimer do
-        if (Iterations > 0) then begin
+        if Iterations > 0 then begin
           Ctrl := TGraphicControl(sd.FOwnerControl);
           if BmpOut <> nil then begin
             BmpOut.Width  := Ctrl.Width;
@@ -99,7 +100,7 @@ begin
           if Assigned(acMagnForm) then
             SendAMessage(acMagnForm.Handle, AC_REFRESH);
 
-          if (sd.AnimTimer.Iteration >= sd.AnimTimer.Iterations) then begin
+          if sd.AnimTimer.Iteration >= sd.AnimTimer.Iterations then begin
             if (State = 0) and (Alpha > 0) then begin
               if sd.GlowID >= 0 then
                 SetGlowAlpha(sd.GlowID, Alpha);
@@ -139,12 +140,15 @@ var
   sd: TsCommonData;
 begin
   Result := False;
-  if (Data is TsCommonData) then begin
+  if Data is TsCommonData then begin
     sd := TsCommonData(Data);
     if Assigned(sd.AnimTimer) and not sd.AnimTimer.Destroyed then begin
       if sd.FOwnerControl is TWinControl then begin
         R := TWinControl(sd.FOwnerControl).BoundsRect;
-        Handle := TWinControl(sd.FOwnerControl).Handle;
+        if (TWinControl(sd.FOwnerControl).HandleAllocated) then
+          Handle := TWinControl(sd.FOwnerControl).Handle
+        else
+          Handle := 0;
       end
       else
         if sd.OwnerHandle <> 0 then begin
@@ -251,31 +255,33 @@ procedure AnimChange(SkinData: TsCommonData; State: integer; AAnimProc: TacAnimP
 var
   i: integer;
 begin
-  i := GetNewTimer(SkinData.AnimTimer, SkinData.FOwnerControl, State);
-  if (SkinData.AnimTimer.State = -1) or (State <> SkinData.AnimTimer.State) then begin // If not started already
-    if (SkinData.AnimTimer.BmpOut = nil) or (SkinData.FCacheBmp.Width <> SkinData.AnimTimer.BmpOut.Width) or (SkinData.FCacheBmp.Height <> SkinData.AnimTimer.BmpOut.Height) then begin
-      if (SkinData.AnimTimer.BmpOut <> nil) then
-        FreeAndNil(SkinData.AnimTimer.BmpOut);
+  with SkinData do begin
+    i := GetNewTimer(AnimTimer, FOwnerControl, State);
+    if (AnimTimer.State = -1) or (State <> AnimTimer.State) then begin // If not started already
+      if (AnimTimer.BmpOut = nil) or (SkinData.FCacheBmp.Width <> SkinData.AnimTimer.BmpOut.Width) or (SkinData.FCacheBmp.Height <> SkinData.AnimTimer.BmpOut.Height) then begin
+        if AnimTimer.BmpOut <> nil then
+          FreeAndNil(AnimTimer.BmpOut);
+      end;
+      AnimTimer.CopyFrom(AnimTimer.BmpFrom, FCacheBmp, MkRect(FCacheBmp));
+      if BGChanged then
+        if FOwnerControl <> nil then begin
+          if SendAMessage(FOwnerControl, AC_PREPARECACHE) <> 0 then // BG is not ready
+            AnimTimer.Enabled := False;
+
+          if (FOwnerControl is TButtonControl) and (TWinControl(FOwnerControl).ControlCount > 0) then begin
+            FCacheBmp.Canvas.Lock;
+            sVCLUtils.PaintControls(FCacheBmp.Canvas.Handle, TWinControl(FOwnerControl), True, MkPoint);
+            FCacheBmp.Canvas.UnLock;
+          end;
+        end
+        else
+          if SendAMessage(OwnerHandle, AC_PREPARECACHE) <> 0 then // BG is not ready
+            AnimTimer.Enabled := False;
+
+      AnimTimer.CopyFrom(AnimTimer.BmpTo, FCacheBmp, MkRect(FCacheBmp));
+      AnimTimer.InitData(SkinData, i, AAnimProc, State, Fast);
+      AnimTimer.TimeHandler;
     end;
-    SkinData.AnimTimer.CopyFrom(SkinData.AnimTimer.BmpFrom, SkinData.FCacheBmp, MkRect(SkinData.FCacheBmp));
-    if SkinData.BGChanged then
-      if SkinData.FOwnerControl <> nil then begin
-        if SendAMessage(SkinData.FOwnerControl, AC_PREPARECACHE) <> 0 then // BG is not ready
-          SkinData.AnimTimer.Enabled := False;
-
-        if (SkinData.FOwnerControl is TButtonControl) and (TWinControl(SkinData.FOwnerControl).ControlCount > 0) then begin
-          SkinData.FCacheBmp.Canvas.Lock;
-          sVCLUtils.PaintControls(SkinData.FCacheBmp.Canvas.Handle, TWinControl(SkinData.FOwnerControl), True, MkPoint);
-          SkinData.FCacheBmp.Canvas.UnLock;
-        end;
-      end
-      else
-        if SendAMessage(SkinData.OwnerHandle, AC_PREPARECACHE) <> 0 then // BG is not ready
-          SkinData.AnimTimer.Enabled := False;
-
-    SkinData.AnimTimer.CopyFrom(SkinData.AnimTimer.BmpTo, SkinData.FCacheBmp, MkRect(SkinData.FCacheBmp));
-    SkinData.AnimTimer.InitData(SkinData, i, AAnimProc, State, Fast);
-    SkinData.AnimTimer.TimeHandler;
   end;
 end;
 

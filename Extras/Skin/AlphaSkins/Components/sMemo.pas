@@ -1,6 +1,7 @@
 unit sMemo;
 {$I sDefs.inc}
 //{$DEFINE LOGGED}
+//+
 
 interface
 
@@ -70,10 +71,10 @@ end;
 
 constructor TsMemo.Create(AOwner: TComponent);
 begin
-  inherited Create(AOwner);
-  ControlStyle := ControlStyle - [csOpaque];
   FCommonData := TsScrollWndData.Create(Self);
   FCommonData.COC := COC_TsMemo;
+  inherited Create(AOwner);
+  ControlStyle := ControlStyle - [csOpaque];
   FDisabledKind := DefDisabledKind;
   FBoundLabel := TsBoundLabel.Create(Self, FCommonData);
 end;
@@ -85,9 +86,7 @@ begin
     FreeAndNil(ListSW);
     
   FreeAndNil(FBoundLabel);
-  if Assigned(FCommonData) then
-    FreeAndNil(FCommonData);
-
+  FreeAndNil(FCommonData);
   inherited Destroy;
 end;
 
@@ -126,7 +125,7 @@ begin
         end; // AlphaSkins supported
 
         AC_SETNEWSKIN:
-          if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
+          if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then begin
             CommonMessage(Message, FCommonData);
             Exit;
           end;
@@ -135,18 +134,17 @@ begin
           if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then begin
             if ListSW <> nil then begin
               FreeAndNil(ListSW);
-//            CommonWndProc(Message, FCommonData);
               RecreateWnd;
             end;
             Exit;
           end;
 
         AC_REFRESH:
-          if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
+          if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then begin
             RefreshEditScrolls(SkinData, ListSW);
             CommonMessage(Message, FCommonData);
             if HandleAllocated and Visible then
-              RedrawWindow(Handle, nil, 0, RDW_INVALIDATE or RDW_ERASE or RDW_FRAME);
+              RedrawWindow(Handle, nil, 0, RDWA_REPAINT);
 
             Exit;
           end;
@@ -161,7 +159,7 @@ begin
 
     CM_FONTCHANGED:
       if Showing and HandleAllocated then
-        RedrawWindow(Handle, nil, 0, RDW_ERASE or RDW_INVALIDATE or RDW_FRAME);
+        RedrawWindow(Handle, nil, 0, RDWA_REPAINT);
   end;
 
   if not ControlIsReady(Self) or not FCommonData.Skinned then
@@ -173,11 +171,21 @@ begin
         if not SkinData.CustomColor and (SkinData.SkinIndex >= 0) then
           with SkinData.SkinManager.gd[SkinData.SkinIndex] do begin
             State := integer(SkinData.FFocused or SkinData.FMouseAbove and MayBeHot(SkinData));
-            if (Color <> Props[State].Color) then
+            if Color <> Props[State].Color then begin
+              SkinData.SavedColor := Color;
+              SkinData.BGChanged := True;
               Color := Props[State].Color;
+            end;
+          end;
 
-            if (Font.Color <> Props[State].FontColor.Color) then
+        if not SkinData.CustomFont and (SkinData.SkinIndex >= 0) then
+          with SkinData.SkinManager.gd[SkinData.SkinIndex] do begin
+            State := integer(SkinData.FFocused or SkinData.FMouseAbove and MayBeHot(SkinData));
+            if Font.Color <> Props[State].FontColor.Color then begin
+              SkinData.SavedFontColor := Font.Color;
+              SkinData.BGChanged := True;
               Font.Color := Props[State].FontColor.Color;
+            end;
           end;
 
         if InUpdating(FCommonData) then begin // Exit if parent is not ready yet
@@ -224,7 +232,7 @@ var
   M: tagMsg;
 begin
   inherited KeyDown(Key, Shift);
-  if (ShortCut(Key, Shift) = scCtrl + ord('A')) then begin
+  if ShortCut(Key, Shift) = scCtrl + ord('A') then begin
     SelectAll;
     Key := 0;
     PeekMessage(M, Handle, WM_CHAR, WM_CHAR, PM_REMOVE);

@@ -1,7 +1,7 @@
 unit sScrollBox;
 {$I sDefs.inc}
 //{$DEFINE LOGGED}
-
+//+
 interface
 
 uses
@@ -33,10 +33,10 @@ type
     acTrackPos: integer;
     FBorderStyle: TBorderStyle;
     function ActBorderWidth: integer;
-    procedure WMEraseBkGnd  (var Message: TWMPaint); message WM_ERASEBKGND;
-    procedure WMNCPaint     (var Message: TWMPaint); message WM_NCPAINT;
     procedure WMPrint       (var Message: TWMPaint); message WM_PRINT;
+    procedure WMNCPaint     (var Message: TWMPaint); message WM_NCPAINT;
     procedure WMNCHitTest   (var Message: TMessage); message WM_NCHITTEST;
+    procedure WMEraseBkGnd  (var Message: TWMPaint); message WM_ERASEBKGND;
     procedure CMCtl3DChanged(var Message: TMessage); message CM_CTL3DCHANGED;
     procedure SetParent(AParent: TWinControl); override;
   public
@@ -87,6 +87,7 @@ type
     property TabStop;
 {$IFDEF D2010}
     property Touch;
+    property OnGesture;
 {$ENDIF}
     property Visible;
     property OnCanResize;
@@ -144,10 +145,10 @@ end;
 
 constructor TsScrollBox.Create(AOwner: TComponent);
 begin
-  inherited Create(AOwner);
-  FAutoMouseWheel := False;
   FCommonData := TsScrollWndData.Create(Self, True);
   FCommonData.COC := COC_TsScrollBox;
+  inherited Create(AOwner);
+  FAutoMouseWheel := False;
   ControlStyle := ControlStyle + [csAcceptsControls];
   FCanvas := TControlCanvas.Create;
   FCanvas.Control := Self;
@@ -179,12 +180,10 @@ begin
   if ListSW <> nil then
     FreeAndNil(ListSW);
 
-  if Assigned(FCommonData) then
-    FreeAndNil(FCommonData);
-
   if Assigned(FCanvas) then
     FreeAndNil(FCanvas);
 
+  FreeAndNil(FCommonData);
   inherited Destroy;
 end;
 
@@ -241,7 +240,7 @@ begin
     i := SkinBorderMaxWidth(FCommonData);
     R := MkRect(Self);
     SavedDC := SaveDC(DC);
-    ExcludeControls(DC, Self, actGraphic, 0, 0);
+    ExcludeControls(DC, Self, 0, 0);
     MoveWindowOrg(DC, -bWidth, -bWidth);
     ParentBG.PleaseDraw := False;
     if not SkinData.CustomColor then
@@ -311,16 +310,17 @@ begin
   if not PaintSkinControl(FCommonData, Parent, False, 0, MkRect(Self), Point(Left, Top), FCommonData.FCacheBMP, True) then begin
     SkinData.FUpdating := True; // Check it later in LC projects
     Result := False;
-    Exit;
-  end;
-  Result := True;
-  SkinData.BGChanged := False;
-  bWidth := BorderWidth + ActBorderWidth * integer(BorderStyle = bsSingle);
-  SkinData.PaintOuterEffects(Self, Point(bWidth, bWidth));
-  if Assigned(FOnPaint) then begin
-    FCommonData.FCacheBmp.Canvas.Lock;
-    OnPaint(FCommonData.FCacheBmp);
-    FCommonData.FCacheBmp.Canvas.UnLock;
+  end
+  else begin
+    Result := True;
+    SkinData.BGChanged := False;
+    bWidth := BorderWidth + ActBorderWidth * integer(BorderStyle = bsSingle);
+    SkinData.PaintOuterEffects(Self, Point(bWidth, bWidth));
+    if Assigned(FOnPaint) then begin
+      FCommonData.FCacheBmp.Canvas.Lock;
+      OnPaint(FCommonData.FCacheBmp);
+      FCommonData.FCacheBmp.Canvas.UnLock;
+    end;
   end;
 end;
 
@@ -345,7 +345,7 @@ end;
 procedure TsScrollBox.SetParent(AParent: TWinControl);
 begin
   inherited;
-  if (Parent <> nil) then
+  if Parent <> nil then
     FCommonData.Loaded;
 end;
 
@@ -362,38 +362,37 @@ var
   bWidth: integer;
 begin
   if FCommonData.Skinned and (BorderStyle <> bsNone) and Visible then begin
-    if InAnimationProcess then
-      Exit;
+    if not InAnimationProcess then begin
+      if csDesigning in ComponentState then
+        inherited;
 
-    if csDesigning in ComponentState then
-      inherited;
+      if IsCached(FCommonData) then begin
+        if ControlIsReady(Self) and not InUpdating(FCommonData, False) then begin
+          if SkinData.BGChanged or (FCommonData.FCacheBmp = nil) then
+            PrepareCache;
 
-    if IsCached(FCommonData) then begin
-      if ControlIsReady(Self) and not InUpdating(FCommonData, False) then begin
-        if SkinData.BGChanged or (FCommonData.FCacheBmp = nil) then
-          PrepareCache;
+          UpdateCorners(FCommonData, 0);
+          bWidth := ActBorderWidth * integer(BorderStyle = bsSingle) + BorderWidth;
+          DC := GetWindowDC(Handle);
+          SavedDC := SaveDC(DC);
+          BitBltBorder(DC, 0, 0, Width, Height, FCommonData.FCacheBmp.Canvas.Handle, 0, 0, bWidth);
+          if Assigned(ListSW) and Assigned(ListSW.sBarVert) then
+            Ac_NCDraw(ListSW, Handle, -1, DC);
 
-        UpdateCorners(FCommonData, 0);
-        bWidth := ActBorderWidth * integer(BorderStyle = bsSingle) + BorderWidth;
+          RestoreDC(DC, SavedDC);
+          ReleaseDC(Handle, DC);
+        end;
+      end
+      else begin
         DC := GetWindowDC(Handle);
         SavedDC := SaveDC(DC);
-        BitBltBorder(DC, 0, 0, Width, Height, FCommonData.FCacheBmp.Canvas.Handle, 0, 0, bWidth);
-        if Assigned(ListSW) and Assigned(ListSW.sBarVert) then
-          Ac_NCDraw(ListSW, Handle, -1, DC);
+        PaintBorderFast(DC, MkRect(Self), 2 * integer(BorderStyle = bsSingle) + BorderWidth, SkinData, 0);
+        if FCommonData.FCacheBmp <> nil then
+          FreeAndNil(FCommonData.FCacheBmp);
 
         RestoreDC(DC, SavedDC);
         ReleaseDC(Handle, DC);
       end;
-    end
-    else begin
-      DC := GetWindowDC(Handle);
-      SavedDC := SaveDC(DC);
-      PaintBorderFast(DC, MkRect(Self), 2 * integer(BorderStyle = bsSingle) + BorderWidth, SkinData, 0);
-      if FCommonData.FCacheBmp <> nil then
-        FreeAndNil(FCommonData.FCacheBmp);
-
-      RestoreDC(DC, SavedDC);
-      ReleaseDC(Handle, DC);
     end;
   end
   else
@@ -404,25 +403,26 @@ end;
 procedure TsScrollBox.WMEraseBkGnd(var Message: TWMPaint);
 begin
   if SkinData.Skinned then begin
-    if not InUpdating(SkinData) then
-      if not (csPaintCopy in ControlState) and (TMessage(Message).WParam <> WParam(TMessage(Message).LParam) {PerformEraseBackground, TntSpeedButtons}) then begin
-        if InAnimationProcess and (Message.DC <> SkinData.PrintDC) or not ControlIsReady(Self) then
-          Exit; // Prevent of BG drawing in Aero
+    with Message do
+      if not InUpdating(SkinData) then
+        if not (csPaintCopy in ControlState) and (TMessage(Message).WParam <> WParam(TMessage(Message).LParam) {PerformEraseBackground, TntSpeedButtons}) then begin
+          if InAnimationProcess and (DC <> SkinData.PrintDC) or not ControlIsReady(Self) then
+            Exit; // Prevent of BG drawing in Aero
 
-        Paint(Message.DC);
-        Message.Result := 1;
-      end
-      else
-        if (TMessage(Message).WParam <> 0) then begin // From PaintTo
-          if FCommonData.BGChanged then
-            PrepareCache;
+          Paint(DC);
+          Message.Result := 1;
+        end
+        else
+          if DC <> 0 then begin // From PaintTo
+            if FCommonData.BGChanged then
+              PrepareCache;
 
-          if not FCommonData.BGChanged then
-            if IsCached(FCommonData) then
-              BitBlt(TWMPaint(Message).DC, 0, 0, Width, Height, FCommonData.FCacheBmp.Canvas.Handle, 0, 0, SRCCOPY)
-            else
-              FillDC(TWMPaint(Message).DC, MkRect(Self), GetControlColor(Handle));
-        end;
+            if not FCommonData.BGChanged then
+              if IsCached(FCommonData) then
+                BitBlt(DC, 0, 0, Width, Height, FCommonData.FCacheBmp.Canvas.Handle, 0, 0, SRCCOPY)
+              else
+                FillDC(DC, MkRect(Self), GetControlColor(Handle));
+          end;
   end
   else
     inherited;
@@ -437,26 +437,27 @@ var
 begin
   if FCommonData.Skinned then begin
     FCommonData.Updating := False;
-    if ControlIsReady(Self) then begin
-      PrepareCache;
-      bWidth := BorderWidth + ActBorderWidth * integer(BorderStyle = bsSingle);
-      // Paint borders
-      BitBltBorder(Message.DC, 0, 0, Width, Height, FCommonData.FCacheBmp.Canvas.Handle, 0, 0, bWidth);
-      // And scrolls
-      Ac_NCDraw(ListSW, Handle, -1, Message.DC);
-      // Paint GraphicControls
-      MoveWindowOrg(Message.DC, bWidth, bWidth);
-      cR := GetClientRect;
-      IntersectClipRect(Message.DC, 0, 0, WidthOf(cR), HeightOf(cR));
-      SavedDC := SaveDC(Message.DC);
-      try
-        FCommonData.HalfVisible := False;
-        Paint(TWMPaint(Message).DC);
-        MoveWindowOrg(Message.DC, -bWidth, -bWidth);
-      finally
-        RestoreDC(Message.DC, SavedDC);
+    with Message do
+      if ControlIsReady(Self) then begin
+        PrepareCache;
+        bWidth := BorderWidth + ActBorderWidth * integer(BorderStyle = bsSingle);
+        // Paint borders
+        BitBltBorder(DC, 0, 0, Width, Height, FCommonData.FCacheBmp.Canvas.Handle, 0, 0, bWidth);
+        // And scrolls
+        Ac_NCDraw(ListSW, Handle, -1, DC);
+        // Paint GraphicControls
+        MoveWindowOrg(DC, bWidth, bWidth);
+        cR := GetClientRect;
+        IntersectClipRect(DC, 0, 0, WidthOf(cR), HeightOf(cR));
+        SavedDC := SaveDC(DC);
+        try
+          FCommonData.HalfVisible := False;
+          Paint(DC);
+          MoveWindowOrg(DC, -bWidth, -bWidth);
+        finally
+          RestoreDC(DC, SavedDC);
+        end;
       end;
-    end;
   end
   else
     inherited;
@@ -480,7 +481,7 @@ begin
       end;
 
       AC_SETNEWSKIN: begin
-        if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
+        if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then begin
           AlphaBroadCast(Self, Message);
           CommonWndProc(Message, FCommonData);
         end
@@ -491,12 +492,12 @@ begin
       end;
 
       AC_REFRESH: begin
-        if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
+        if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then begin
           CommonWndProc(Message, FCommonData);
           if not InUpdating(SkinData) and not InAnimationProcess then
-            RedrawWindow(Handle, nil, 0, RDW_FRAME + RDW_INVALIDATE + RDW_UPDATENOW + RDW_ERASE)
+            RedrawWindow(Handle, nil, 0, RDWA_NOCHILDRENNOW)
           else
-            RedrawWindow(Handle, nil, 0, RDW_FRAME + RDW_INVALIDATE + RDW_ERASE);
+            RedrawWindow(Handle, nil, 0, RDWA_NOCHILDREN);
 
           RefreshScrolls(SkinData, ListSW);
         end;
@@ -511,7 +512,6 @@ begin
             if Assigned(Ac_InitializeFlatSB) then
               Ac_InitializeFlatSB(Handle);
           end;
-//          CommonWndProc(Message, FCommonData);
           AlphaBroadCast(Self, Message);
           if not (csDestroying in ComponentState) then
             RecreateWnd;
@@ -523,7 +523,7 @@ begin
       end;
 
       AC_INVALIDATE:
-        RedrawWindow(Handle, nil, 0, RDW_ERASE or RDW_INVALIDATE or RDW_ALLCHILDREN or RDW_FRAME);
+        RedrawWindow(Handle, nil, 0, RDWA_ALL);
 
       AC_BEFORESCROLL: begin
         if Assigned(FOnBeforeScroll) then
@@ -545,7 +545,7 @@ begin
             RedrawWindow(Handle, nil, 0, RDW_ERASE or RDW_INVALIDATE or RDW_UPDATENOW or RDW_ALLCHILDREN)
           else begin
             SendMessage(Handle, WM_SETREDRAW, 1, 0);
-            m := MakeMessage(SM_ALPHACMD, MakeWParam(1, AC_SETCHANGEDIFNECESSARY), 0, 0);
+            m := MakeMessage(SM_ALPHACMD, AC_SETCHANGEDIFNECESSARY shl 16 + 1, 0, 0);
             BroadCast(m);
             RedrawWindow(Handle, nil, 0, RDW_ERASE or RDW_INVALIDATE or RDW_ALLCHILDREN or RDW_UPDATENOW);
             if Message.LParamHi = WM_HSCROLL then
@@ -557,7 +557,7 @@ begin
             end;
           end
         else
-          if (Message.LParamHi = WM_HSCROLL) and HorzScrollBar.Tracking or (Message.LParamHi = WM_VSCROLL) and VertScrollBar.Tracking then begin
+          if ((Message.LParamHi = WM_HSCROLL) and HorzScrollBar.Tracking) or ((Message.LParamHi = WM_VSCROLL) and VertScrollBar.Tracking) then begin
             if Message.LParamHi = WM_HSCROLL then begin
               acTrackPos := acTrackPos - HorzScrollBar.Position;
               if acTrackPos < 0 then
@@ -572,7 +572,7 @@ begin
               else
                 R := MkRect(Width, acTrackPos);
             end;
-            RedrawWindow(Handle, @R, 0, RDW_ERASE or RDW_INVALIDATE or RDW_ALLCHILDREN or RDW_FRAME or RDW_UPDATENOW);
+            RedrawWindow(Handle, @R, 0, RDWA_ALLNOW);
           end;
 
         if Assigned(FOnAfterScroll) then
@@ -599,7 +599,10 @@ begin
 
       AC_GETDEFINDEX: begin
         if FCommonData.SkinManager <> nil then
-          Message.Result := FCommonData.SkinManager.ConstData.Sections[ssPanelLow] + 1;
+          if BorderStyle = bsNone then
+            Message.Result := FCommonData.SkinManager.ConstData.Sections[ssTransparent] + 1
+          else
+            Message.Result := FCommonData.SkinManager.ConstData.Sections[ssPanelLow] + 1;
 
         Exit;
       end;
@@ -607,12 +610,12 @@ begin
       AC_ENDPARENTUPDATE: begin
         if FCommonData.FUpdating then begin
           if not InUpdating(FCommonData, True) then
-            RedrawWindow(Handle, nil, 0, RDW_INVALIDATE or RDW_ERASE or RDW_FRAME or RDW_UPDATENOW);
+            RedrawWindow(Handle, nil, 0, RDWA_NOCHILDRENNOW);
 
           SetParentUpdated(Self);
         end
         else
-          if SkinData.CtrlSkinState and ACS_FAST = ACS_FAST then
+          if SkinData.CtrlSkinState and ACS_FAST <> 0 then
             SetParentUpdated(Self);
 
         Exit;
@@ -645,10 +648,12 @@ begin
                 Message.Result := 0;
 
               InitBGInfo(FCommonData, PacBGInfo(Message.LParam), 0);
-              if (PacBGInfo(Message.LParam)^.BgType = btCache) and not PacBGInfo(Message.LParam)^.PleaseDraw then begin
-                PacBGInfo(Message.LParam)^.Offset.X := PacBGInfo(Message.LParam)^.Offset.X + 2 * integer(BorderStyle = bsSingle) + BorderWidth;
-                PacBGInfo(Message.LParam)^.Offset.Y := PacBGInfo(Message.LParam)^.Offset.Y + 2 * integer(BorderStyle = bsSingle) + BorderWidth;
-              end;
+              with PacBGInfo(Message.LParam)^ do
+                if (BgType = btCache) and not PleaseDraw then begin
+                  Offset.X := Offset.X + 2 * integer(BorderStyle = bsSingle) + BorderWidth;
+                  Offset.Y := Offset.Y + 2 * integer(BorderStyle = bsSingle) + BorderWidth;
+                end;
+
               Exit;
             end
 
@@ -699,8 +704,11 @@ begin
     inherited;
     if (Message.Result >= 0) {Avoiding an issue when ScrollBox is killed by child control already} and (FCommonData <> nil) and FCommonData.Skinned then
       case Message.Msg of
+        45138 {CM_GESTURE}:
+          UpdateScrolls(ListSW, True);
+
         WM_SIZE:
-          RedrawWindow(Handle, nil, 0, RDW_INVALIDATE or RDW_FRAME or RDW_ERASE or RDW_ALLCHILDREN);
+          RedrawWindow(Handle, nil, 0, RDWA_ALL);
 
         CM_FOCUSCHANGED:
           UpdateScrolls(ListSW, True);
@@ -743,7 +751,7 @@ begin
       if Form <> nil then begin
         c := Form.ActiveControl;
         m.Result := 0;
-        if (c <> nil) then begin
+        if c <> nil then begin
           m.Pos := PointToSmallPoint(MousePos);
           m.ShiftState := Shift;
           m.WheelDelta := WheelDelta;

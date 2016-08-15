@@ -1,6 +1,6 @@
 unit sDBRadioGroup;
 {$I sDefs.inc}
-
+//+
 interface
 
 
@@ -117,7 +117,7 @@ begin
     if ItemIndex >= 0 then begin
       if GetButtonValue(ItemIndex) <> Value then
         FDataLink.Edit;
-        
+
       Value := GetButtonValue(ItemIndex);
     end;
     if FDataLink.Editing then
@@ -249,9 +249,7 @@ end;
 procedure TsDBRadioGroup.Notification(AComponent: TComponent; Operation: TOperation);
 begin
   inherited Notification(AComponent, Operation);
-  if (Operation = opRemove) and
-       (FDataLink <> nil) and
-         (AComponent = DataSource) then
+  if (Operation = opRemove) and (FDataLink <> nil) and (AComponent = DataSource) then
     DataSource := nil;
 end;
 
@@ -305,7 +303,7 @@ begin
     finally
       FInSetValue := False;
     end;
-    if ItemIndex <> -1 then
+    if ItemIndex >= 0 then
       FValue := Value;
 
     Change;

@@ -82,7 +82,7 @@ var
 implementation
 
 uses
-  sDialogs, sConst, acntUtils;
+  sDialogs, sConst, acntUtils, sSkinManager;
 
 {$R *.dfm}
 
@@ -103,6 +103,9 @@ end;
 function EditHints(acHints: TsAlphaHints): boolean;
 begin
   Application.CreateForm(TAlphaHintsEdit, AlphaHintsEdit);
+  if DefaultManager <> nil then
+    DefaultManager.UpdateScale(AlphaHintsEdit);
+
   AlphaHintsEdit.Hints.Assign(acHints);
   AlphaHintsEdit.LoadTemplates;
   AlphaHintsEdit.ShowModal;
@@ -128,6 +131,9 @@ procedure TAlphaHintsEdit.sCheckBox1Click(Sender: TObject);
   function CreateHintPage(AName: string; AParent: TsTabSheet; ATemplate: TacHintImage): TFrameHintPage;
   begin
     Result := TFrameHintPage.Create(Self);
+    if DefaultManager <> nil then
+      DefaultManager.UpdateScale(Result);
+
     Result.Parent := AParent;
     Result.Left := 2;
     Result.Top := 2;

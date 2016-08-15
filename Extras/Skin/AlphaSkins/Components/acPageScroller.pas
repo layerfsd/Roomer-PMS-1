@@ -1,7 +1,7 @@
 unit acPageScroller;
 {$I sDefs.inc}
 //{$DEFINE LOGGED}
-
+//+
 interface
 
 uses
@@ -81,6 +81,7 @@ type
   protected
     CanDoClick: boolean;
     AnimTimers: array [0..1] of TacThreadedTimer;
+    procedure ChangeScale(M, D: Integer); override;
     procedure CopyCache(DC: hdc); override;
   public
     procedure AlignControls(AControl: TControl; var Rect: TRect); override;
@@ -200,15 +201,15 @@ var
   R: TRect;
 begin
   if not Updating then
-    if (Control <> nil) then begin
+    if Control <> nil then begin
       Updating := True;
       if NCUpdate then
-        SetWindowPos(Handle, 0, 0, 0, 0, 0, SWP_NOSIZE or SWP_NOMOVE or SWP_NOZORDER or SWP_NOREPOSITION or SWP_FRAMECHANGED);
+        SetWindowPos(Handle, 0, 0, 0, 0, 0, SWPA_FRAMECHANGED);
 
       if Orientation = soHorizontal then begin
         R.Left := -FPosition;
-        if (Control.Width > ClientWidth) then begin
-          if (R.Left + Control.Width < ClientWidth) then
+        if Control.Width > ClientWidth then begin
+          if R.Left + Control.Width < ClientWidth then
             R.Left := ClientWidth - Control.Width
         end
         else
@@ -218,8 +219,8 @@ begin
       end
       else begin
         R.Top := -FPosition;
-        if (Control.Height > ClientHeight) then begin
-          if (R.Top + Control.Height < ClientHeight) then
+        if Control.Height > ClientHeight then begin
+          if R.Top + Control.Height < ClientHeight then
             R.Top := ClientHeight - Control.Height;
         end
         else
@@ -230,7 +231,7 @@ begin
       Updating := False;
     end
     else
-      SetWindowPos(Handle, 0, 0, 0, 0, 0, SWP_NOSIZE or SWP_NOMOVE or SWP_NOZORDER or SWP_NOREPOSITION or SWP_FRAMECHANGED);
+      SetWindowPos(Handle, 0, 0, 0, 0, 0, SWPA_FRAMECHANGED);
 end;
 
 
@@ -428,9 +429,9 @@ begin
           ReleaseDC(TsPageScroller(AnimControl).Handle, DC);
           Bmp.Free;
         end;
-        if (Iteration >= TacThreadedTimer(Data).Iterations) then begin
-          if (State = 0) then begin
-            if (b > 0) then begin
+        if Iteration >= TacThreadedTimer(Data).Iterations then begin
+          if State = 0 then begin
+            if b > 0 then begin
               Sleep(acTimerInterval);
               Result := UpdateBtn_CB(Data, Iteration);
             end
@@ -459,7 +460,7 @@ begin
     AnimTimers[Btn].AnimRect := R;
     AnimTimers[Btn].AnimControl := Self;
     with AnimTimers[Btn] do
-      if (State = -1) or (AState <> AnimTimers[Btn].State) then begin // Not started already
+      if (State < 0) or (AState <> AnimTimers[Btn].State) then begin // Not started already
         if AnimTimers[Btn].BmpFrom <> nil then
           FreeAndNil(AnimTimers[Btn].BmpFrom);
 
@@ -494,7 +495,7 @@ begin
       end;
   end
   else begin
-    if (AnimTimers[Btn] <> nil) then begin
+    if AnimTimers[Btn] <> nil then begin
       AnimTimers[Btn].Enabled := False;
       FreeAndNil(AnimTimers[Btn]);
     end;
@@ -504,6 +505,22 @@ begin
   end;
 end;
 
+
+procedure TsPageScroller.ChangeScale(M, D: Integer);
+var
+  i: integer;
+begin
+  if M <> D then begin
+    inherited;
+    ButtonSize := MulDiv(FButtonSize, M, D);
+    for i := 0 to 1 do
+      if AnimTimers[i] <> nil then begin
+        FreeAndNil(AnimTimers[i]);
+      end;
+  end
+  else
+    inherited;
+end;
 
 procedure TsPageScroller.CMControlChange(var Message: TCMControlChange);
 begin
@@ -616,7 +633,7 @@ end;
 
 function TsPageScroller.BtnState(Btn: integer): integer;
 begin
-  if (Btn = 0) and (FPosition = 0) or (Btn = 1) and (FPosition = Range) then
+  if ((Btn = 0) and (FPosition = 0)) or ((Btn = 1) and (FPosition = Range)) then
     Result := 3
   else
     Result := iff(FPressedIndex = Btn, 2, integer(FHoverIndex = Btn));
@@ -801,12 +818,13 @@ begin
       if ScrollPosition = spDefault then begin
         if not BtnVisible(1) and (Delta > 0) then begin
           j1 := ButtonSize;
-          if SkinData.Skinned then
+          if SkinData.Skinned then begin
             Perform(WM_SETREDRAW, 0, 0);
-
-          Position := j1;
-          if SkinData.Skinned then
+            Position := j1;
             Perform(WM_SETREDRAW, 1, 0);
+          end
+          else
+            Position := j1;
         end;
       end
       else
@@ -903,7 +921,7 @@ begin
     0:
       if FPosition > 0 then begin
         Perform(WM_SETREDRAW, 0, 0);
-        if (FPosition <= ButtonSize) then begin // Repaint when button is hiding
+        if FPosition <= ButtonSize then begin // Repaint when button is hiding
           Position := 0;
           b := True;
         end
@@ -981,14 +999,14 @@ begin
         if (State = 0) and (SkinData.SkinManager.gd[BtnNdx].Props[0].Transparency = 100) then
           iNdx := GetFontIndex(Self, SkinData.SkinIndex, SkinData.SkinManager)
         else
-          iNdx := BtnNdx; // ?? Checkbox ??
+          iNdx := BtnNdx;
 
         if iNdx >= 0 then
           C := SkinData.SkinManager.gd[iNdx].Props[min(State, ac_MaxPropsIndex)].Fontcolor.Color
       end;
-      DrawColorArrow(Bmp.Canvas, C, MkRect(Bmp), BtnSizes[Orientation <> soHorizontal, Btn]);
+      DrawColorArrow(Bmp, C, MkRect(Bmp), BtnSizes[Orientation <> soHorizontal, Btn]);
       if b then // If disabled
-        BlendTransRectangle(Bmp, 0, 0, CI.Bmp, R, DefDisabledBlend);
+        BlendTransRectangle(Bmp, 0, 0, CI.Bmp, R, DefBlendDisabled);
 
       BitBlt(DC, R.Left, R.Top, Bmp.Width, Bmp.Height, Bmp.Canvas.Handle, 0, 0, SRCCOPY);
       Bmp.Free;

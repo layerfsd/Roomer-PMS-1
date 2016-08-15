@@ -257,7 +257,7 @@ type
     function MaxCaptionWidth: integer; virtual;
     function TextRectSize: TSize;
     procedure Repaint;
-    procedure PrepareCache;
+    procedure PrepareCache; virtual;
     procedure SetSkinParams; override;
     procedure RestoreStdParams; override;
     procedure ac_WMPaint(const Message: TWMPaint);
@@ -273,6 +273,15 @@ type
     function MaxCaptionWidth: integer; override;
     function GlyphSize: TSize; override;
     procedure DrawGlyph; override;
+  end;
+
+
+  TacSplitBtnWnd = class(TacBtnWnd)
+  public
+    ArrowWidth: integer;
+    function ArrowRect: TRect;
+    function CaptionRect: TRect; override;
+    procedure PrepareCache; override;
   end;
 
 
@@ -335,7 +344,7 @@ type
     function TickStyle: TTickStyle;
     function TickCount: integer;
     function TicksArray: TAPoint;
-    function TickPos(i: integer): integer;
+    function TickPos(const i: integer): integer;
     function ThumbRect: TRect;
     function ChannelRect: TRect;
     function Mode: integer;
@@ -809,6 +818,7 @@ type
     procedure acWndProc(var Message: TMessage); override;
   end;
 
+  TGetDBFieldCheckState = function(DataLink: TObject): TCheckBoxState;
 
 const
   // TabControl offsets
@@ -818,7 +828,6 @@ const
   RightOffset  = 1;
   acTabSides: array [TTabPosition] of TacSide = (asTop, asBottom, asLeft, asRight);
 
-
 var
   nLastSBPos:     integer = -1;
   acMinThumbSize: integer = 16;
@@ -827,6 +836,7 @@ var
   Ac_UninitializeFlatSB: procedure(hWnd: HWND); stdcall;
   Ac_InitializeFlatSB:    function(hWnd: HWND): Bool; stdcall;
 
+  GetDBFieldCheckState: TGetDBFieldCheckState = nil;
 
 type
   TacScrollWndClass = class of TacMainWnd;
@@ -870,7 +880,7 @@ uses
   {$IFDEF USEPNG} PngImageList, PngFunctions, PngImage, {$ENDIF}
   {$IFDEF ADDWEBBROWSER} acWB, {$ENDIF}
   acntUtils, sGraphUtils, sStyleSimply, sSkinProps, sDefaults, sSkinProvider, acDials, sSkinMenus, sFade, sBorders,
-  sThirdParty, acGlow, sAlphaGraph, sMessages, sVclUtils, sMaskData, sMDIForm, acAlphaImageList, acThdTimer;
+  sThirdParty, acGlow, sAlphaGraph, sMessages, sVclUtils, sMaskData, sMDIForm, acAlphaImageList, acThdTimer, acntTypes;
 
 
 const
@@ -1081,14 +1091,14 @@ var
 begin
   with ListSW, SkinData.FCacheBMP do
     if SkinData.FOwnerControl <> nil then begin
-      Canvas.Font.Assign(TsHackedControl(SkinData.FOwnerControl).Font);
+      Canvas.Font.Assign(TsAccessControl(SkinData.FOwnerControl).Font);
       SelectObject(Canvas.Handle, Canvas.Font.Handle);
     end
     else begin
-      hf := Cardinal(SendMessage(CtrlHandle, WM_GETFONT, 0, 0));
+      hf := Cardinal(TrySendMessage(CtrlHandle, WM_GETFONT, 0, 0));
       if hf <> 0 then begin
         Canvas.Font.Handle := hf;
-        if (Canvas.Font.Charset = 0) and (Canvas.Font.Name <> 'MS Shell Dlg') {avoid a bad font output in file dialogs} then
+        if (Canvas.Font.Charset = 0) and (Pos('MS Shell Dlg', Canvas.Font.Name) = 0) {avoid a bad font output in file dialogs} then
           Canvas.Font.Charset := DEFAULT_CHARSET;
 
         SelectObject(Canvas.Handle, hf);
@@ -1111,14 +1121,12 @@ end;
 function MayBeHot(const SkinData: TsCommonData; const ByMouse: boolean = True): boolean;
 begin
   Result := False;
-  if (SkinData = nil) or (SkinData.SkinManager = nil) or (SkinData.SkinIndex < 0) or (SkinData.BorderIndex < 0) then
-    Exit;
-
-  if ByMouse and (SkinData.COC in sNoHotEdits) and not ac_AllowHotEdits then
-    Exit;
-
-  with SkinData.SkinManager do
-    Result := (not Options.NoMouseHover or not ByMouse) and ((ma[SkinData.BorderIndex].ImageCount > 1) or (gd[SkinData.SkinIndex].States > 1));
+  with SkinData do
+    if (SkinData <> nil) and (SkinManager <> nil) and (SkinIndex >= 0) and (BorderIndex >= 0) then begin
+      if not ByMouse or not (COC in sNoHotEdits) or ac_AllowHotEdits then
+        with SkinManager do
+          Result := (not Options.NoMouseHover or not ByMouse) and ((ma[BorderIndex].ImageCount > 1) or (gd[SkinIndex].States > 1));
+  end;
 end;
 
 
@@ -1152,15 +1160,16 @@ var
   i: integer;
 begin
   Result := nil;
-  for i := 0 to Component.ComponentCount - 1 do begin
-    if (Component.Components[i] is TWinControl) and TWinControl(Component.Components[i]).HandleAllocated and (TWinControl(Component.Components[i]).Handle = Wnd) then begin
-      Result := TWinControl(Component.Components[i]);
-      Exit;
+  with Component do
+    for i := 0 to ComponentCount - 1 do begin
+      if (Components[i] is TWinControl) and TWinControl(Components[i]).HandleAllocated and (TWinControl(Components[i]).Handle = Wnd) then begin
+        Result := TWinControl(Components[i]);
+        Exit;
+      end;
+      Result := SearchWndAsCtrl(Wnd, Components[i]);
+      if Result <> nil then
+        Exit;
     end;
-    Result := SearchWndAsCtrl(Wnd, Component.Components[i]);
-    if Result <> nil then
-      Exit;
-  end;
 end;
 
 
@@ -1177,8 +1186,7 @@ end;
 
 procedure UpdateWndCorners(SkinData: TsCommonData; State: integer; Wnd: TacMainWnd);
 var
-  dw, dh, w, Width, Height, wl, wt, wr, wb: integer;
-  MaskData: TsMaskData;
+  dw, dh, w, iWidth, iHeight: integer;
   ParentColor: TsColor;
   ParentRGB: TsColor_;
   SrcBmp: TBitmap;
@@ -1187,90 +1195,94 @@ var
   procedure CopyTransCorner(SrcBmp: Graphics.TBitMap; X, Y: integer; SrcRect: TRect);
   var
     h, w, DeltaS, DeltaD, sX, sY, SrcX, DstX, DstY: Integer;
-    D0, S0, D, S: PRGBAArray;
-    NewColor: TsColor_;
-    col: TsColor;
+    CacheWidth, CacheHeight, CIWidth, CIHeight: integer;
+    S0, S: PRGBAArray_S;
+    D0, D: PRGBAArray_D;
   begin
-    if SkinData.FCacheBmp.Empty then
-      Exit;
+    if not SkinData.FCacheBmp.Empty then begin
+      if SrcRect.Top < 0 then
+        SrcRect.Top := 0;
 
-    if SrcRect.Top < 0 then
-      SrcRect.Top := 0;
+      if SrcRect.Bottom >= SrcBmp.Height then
+        SrcRect.Bottom := SrcBmp.Height - 1;
 
-    if SrcRect.Bottom > SrcBmp.Height - 1 then
-      SrcRect.Bottom := SrcBmp.Height - 1;
+      if SrcRect.Left < 0 then
+        SrcRect.Left := 0;
 
-    if SrcRect.Left < 0 then
-      SrcRect.Left := 0;
+      if SrcRect.Right >= SrcBmp.Width then
+        SrcRect.Right := SrcBmp.Width - 1;
 
-    if SrcRect.Right > SrcBmp.Width - 1 then
-      SrcRect.Right := SrcBmp.Width - 1;
+      h := HeightOf(SrcRect);
+      w := WidthOf(SrcRect);
 
-    h := HeightOf(SrcRect);
-    w := WidthOf(SrcRect);
-
-    if ci.Ready then begin
-      if (ci.Bmp.PixelFormat = pf32bit) then
-        if not InitLine(SrcBmp, Pointer(S0), DeltaS) and InitLine(SkinData.FCacheBmp, Pointer(D0), DeltaD) then
-          for sY := 0 to h do begin
-            DstY := sY + Y;
-            if (DstY <= SkinData.FCacheBmp.Height - 1) and (DstY >= 0) then begin
-              S := Pointer(LongInt(S0) + DeltaS * (sY + SrcRect.Top));
-              D := Pointer(LongInt(D0) + DeltaD * DstY);
-              for sX := 0 to w do begin
-                DstX := sX + X;
-                if (DstX <= SkinData.FCacheBmp.Width - 1) and (DstX >= 0) then begin
-                  SrcX := sX + SrcRect.Left;
-                  if S[SrcX].C = sFuchsia.C {if transparent pixel} then begin
-                    if (ci.Y + DstY >= ci.Bmp.Height) or (ci.X + DstX >= ci.Bmp.Width) or (ci.Y + DstY < 0) or (ci.X + DstX < 0) then
-                      Continue;
-
-                    try
-                      col.C := GetAPixel(ci.Bmp, ci.X + DstX, ci.Y + DstY).C;
-                    finally
-                      NewColor.R := col.B;
-                      NewColor.G := col.G;
-                      NewColor.B := col.R;
-                      D[DstX] := NewColor
-                    end
+      if ci.Ready then begin
+        if ci.Bmp.PixelFormat = pf32bit then
+          if not InitLine(SrcBmp, Pointer(S0), DeltaS) and InitLine(SkinData.FCacheBmp, Pointer(D0), DeltaD) then
+            try
+              CacheWidth := SkinData.FCacheBmp.Width;
+              CacheHeight := SkinData.FCacheBmp.Height;
+              CIWidth := ci.Bmp.Width;
+              CIHeight := ci.Bmp.Height;
+              for sY := 0 to h do begin
+                DstY := sY + Y;
+                if (DstY < CacheHeight) and (DstY >= 0) then begin
+                  S := Pointer(LongInt(S0) + DeltaS * (sY + SrcRect.Top));
+                  D := Pointer(LongInt(D0) + DeltaD * DstY);
+                  for sX := 0 to w do begin
+                    DstX := sX + X;
+                    if (DstX < CacheWidth) and (DstX >= 0) then begin
+                      SrcX := sX + SrcRect.Left;
+                      if S[SrcX].SC = sFuchsia.C {if transparent pixel} then
+                        if (ci.Y + DstY < CIHeight) and (ci.X + DstX < CIWidth) and (ci.Y + DstY >= 0) and (ci.X + DstX >= 0) then
+                          with GetAPixel(ci.Bmp, ci.X + DstX, ci.Y + DstY), D[DstX] do begin
+                            DR := B;
+                            DG := G;
+                            DB := R;
+                          end;
+                    end;
+                  end
+                end;
+              end;
+            finally
+            end;
+      end
+      else
+        if ParentColor.C <> clFuchsia then
+          if not InitLine(SrcBmp, Pointer(S0), DeltaS) and InitLine(SkinData.FCacheBmp, Pointer(D0), DeltaD) then begin
+            CacheWidth := SkinData.FCacheBmp.Width;
+            CacheHeight := SkinData.FCacheBmp.Height;
+            for sY := 0 to h do begin
+              DstY := sY + Y;
+              if (DstY < CacheHeight) and (DstY >= 0) then begin
+                S := Pointer(LongInt(S0) + DeltaS * (sY + SrcRect.Top));
+                D := Pointer(LongInt(D0) + DeltaD * DstY);
+                for sX := 0 to w do begin
+                  DstX := sX + X;
+                  if (DstX < CacheWidth) and (DstX >= 0) then begin
+                    SrcX := sX + SrcRect.Left;
+                    if S[SrcX].SC = sFuchsia.C {if transparent pixel} then
+                      D[DstX].DC := ParentRGB.C
                   end;
-                end;
-              end
+                end
+              end;
             end;
           end;
-    end
-    else
-      if ParentColor.C <> clFuchsia then
-        if not InitLine(SrcBmp, Pointer(S0), DeltaS) and InitLine(SkinData.FCacheBmp, Pointer(S0), DeltaS) then
-          for sY := 0 to h do begin
-            DstY := sY + Y;
-            if (DstY <= SkinData.FCacheBmp.Height - 1) and (DstY >= 0) then begin
-              S := Pointer(LongInt(S0) + DeltaS * (sY + SrcRect.Top));
-              D := Pointer(LongInt(D0) + DeltaD * DstY);
-              for sX := 0 to w do begin
-                DstX := sX + X;
-                if (DstX <= SkinData.FCacheBmp.Width - 1) and (DstX >= 0) then begin
-                  SrcX := sX + SrcRect.Left;
-                  if S[SrcX].C = sFuchsia.C {if transparent pixel} then
-                    D[DstX] := ParentRGB
-                end;
-              end
-            end;
-          end;
+    end;
   end;
 
   procedure CopyMasterCorner(R1, R2: TRect; Bmp: TBitmap);
   var
-    D0, S0, D, S: PRGBAArray;
+    S0, S: PRGBAArray_S;
+    D0, D: PRGBAArray_D;
     DeltaS, DeltaD, X, Y, h, w, dX1, dX2: Integer;
     col: TsColor;
   begin
     if not SkinData.FCacheBmp.Empty then begin
       if CI.Ready then begin
-        if (R1.Left + ci.X < 0) then
+        if R1.Left + ci.X < 0 then
           R1.Left := -ci.X;
 
-        if (R1.Top + ci.Y < 0) then
+        if R1.Top + ci.Y < 0 then
           R1.Top := -ci.Y;
       end;
       h := Min(HeightOf(R1), HeightOf(R2));
@@ -1284,38 +1296,38 @@ var
       w := Min(w, Bmp.Width - R2.Left) - 1;
 
       if CI.Ready then begin
-        if (R1.Left + w + CI.X > CI.Bmp.Width) then
+        if R1.Left + w + CI.X > CI.Bmp.Width then
           w := CI.Bmp.Width - R1.Left - CI.X;
 
-        if (R1.Top + h + CI.Y > CI.Bmp.Height) then
+        if R1.Top + h + CI.Y > CI.Bmp.Height then
           h := CI.Bmp.Height - R1.Top - CI.Y;
       end;
       if (w <= 0) or (h <= 0) then
         Exit;
 
       if R1.Left < R2.Left then begin
-        if (R1.Left < 0) then begin
+        if R1.Left < 0 then begin
           inc(R2.Left, - R1.Left);
           dec(h, - R1.Left);
           R1.Left := 0;
         end;
       end
       else
-        if (R2.Left < 0) then begin
+        if R2.Left < 0 then begin
           inc(R1.Left, - R2.Left);
           dec(h, - R2.Left);
           R2.Left := 0;
         end;
 
       if R1.Top < R2.Top then begin
-        if (R1.Top < 0) then begin
+        if R1.Top < 0 then begin
           inc(R2.Top, - R1.Top);
           dec(h, - R1.Top);
           R1.Top := 0;
         end;
       end
       else
-        if (R2.Top < 0) then begin
+        if R2.Top < 0 then begin
           inc(R1.Top, - R2.Top);
           dec(h, - R2.Top);
           R2.Top := 0;
@@ -1329,8 +1341,8 @@ var
               S := Pointer(LongInt(S0) + DeltaS * (R2.Top + Y));
               D := Pointer(LongInt(D0) + DeltaD * (R1.Top + Y));
               for X := 0 to w do
-                if S[R2.Left + X].C = sFuchsia.C then
-                  D[R1.Left + X].C := col.C
+                if S[R2.Left + X].SC = sFuchsia.C then
+                  D[R1.Left + X].DC := col.C
             end;
 
       end
@@ -1342,8 +1354,8 @@ var
             dX1 := R1.Left;
             dX2 := R2.Left;
             for X := 0 to w do begin
-              if S[dX2].C = sFuchsia.C then
-                D[dX1].C := GetAPixel(ci.Bmp, dX1 + ci.X, R1.Top + ci.Y + Y).C;
+              if S[dX2].SC = sFuchsia.C then
+                D[dX1].DC := GetAPixel(ci.Bmp, dX1 + ci.X, R1.Top + ci.Y + Y).C;
 
               inc(dX1);
               inc(dX2);
@@ -1353,63 +1365,57 @@ var
   end;
 
 begin
-  if Assigned(Skindata.SkinManager) and not Wnd.DlgMode then begin
-    if (SkinData.BorderIndex < 0) or
-         not Skindata.SkinManager.IsValidImgIndex(SkinData.BorderIndex) or
-           not Assigned(SkinData.FCacheBmp) or (Wnd.WndSize.cx < 2) or (Wnd.WndSize.cy < 2) then
-      Exit;
+  with Skindata do
+    if Assigned(SkinManager) and not Wnd.DlgMode then begin
+      if SkinManager.IsValidImgIndex(BorderIndex) and Assigned(FCacheBmp) and (Wnd.WndSize.cx > 1) and (Wnd.WndSize.cy > 1) then begin
+        CI := GetParentCacheHwnd(Wnd.CtrlHandle);
+        with SkinManager.ma[BorderIndex] do begin
+          dw := Width;  // Width of mask
+          dh := Height; // Height of mask
+          if (dw <> 0) and (dh <> 0) then begin
+            iWidth  := Wnd.WndSize.cx;
+            iHeight := Wnd.WndSize.cy;
+            if (ImageCount = 0) and (Bmp <> nil) then begin // if external
+              MaskType := 1;
+              ImageCount := 3;
+              R := MkRect(Bmp);
+            end;
+            if not CI.Ready then begin
+              ParentColor.C := ColorToRGB(CI.FillColor);
+              ParentRGB.R := ParentColor.R;
+              ParentRGB.G := ParentColor.G;
+              ParentRGB.B := ParentColor.B;
+            end
+            else begin
+              inc(CI.X, Wnd.WndPos.x);
+              inc(CI.Y, Wnd.WndPos.y);
+            end;
+            if State >= ImageCount then
+              State := ImageCount - 1;
 
-    CI := GetParentCacheHwnd(Wnd.CtrlHandle);
-    MaskData := SkinData.SkinManager.ma[SkinData.BorderIndex];
+            dw := State * dw;
+            w := Width - wl - wr; // Width of piece of mask
+            if Bmp <> nil then
+              SrcBmp := Bmp
+            else
+              SrcBmp := SkinManager.MasterBitmap;
 
-    dw := WidthOfImage(MaskData);  // Width of mask
-    dh := HeightOfImage(MaskData); // Height of mask
-    if (dw <> 0) and (dh <> 0) then begin
-      Width  := Wnd.WndSize.cx;
-      Height := Wnd.WndSize.cy;
-      wl := MaskData.WL;
-      wt := MaskData.WT;
-      wr := MaskData.WR;
-      wb := MaskData.WB;
-      if (MaskData.ImageCount = 0) and (MaskData.Bmp <> nil) then begin // if external
-        MaskData.MaskType := 1;
-        MaskData.ImageCount := 3;
-        MaskData.R := MkRect(MaskData.Bmp);
-      end;
-      if not CI.Ready then begin
-        ParentColor.C := ColorToRGB(CI.FillColor);
-        ParentRGB.R := ParentColor.R;
-        ParentRGB.G := ParentColor.G;
-        ParentRGB.B := ParentColor.B;
-      end
-      else begin
-        inc(CI.X, Wnd.WndPos.x);
-        inc(CI.Y, Wnd.WndPos.y);
-      end;
-      if State >= MaskData.ImageCount then
-        State := MaskData.ImageCount - 1;
-
-      dw := State * dw;
-      w := WidthOfImage(MaskData) - wl - wr; // Width of piece of mask
-      if MaskData.Bmp <> nil then
-        SrcBmp := MaskData.Bmp
-      else
-        SrcBmp := SkinData.SkinManager.MasterBitmap;
-
-      if MaskData.MaskType = 0 then begin // Copy without mask
-        CopyTransCorner(SrcBmp, 0, 0, Classes.Rect(MaskData.R.Left + dw, MaskData.R.Top, MaskData.R.Left + dw + wl - 1, MaskData.R.Top + wt - 1));
-        CopyTransCorner(SrcBmp, 0, Height - wb, Classes.Rect(MaskData.R.Left, MaskData.R.Bottom - wb, MaskData.R.Left + wl - 1, MaskData.R.Bottom - 1));
-        CopyTransCorner(SrcBmp, Width - wr, Height - wb, Classes.Rect(MaskData.R.Left + dw + wl + w, MaskData.R.Bottom - wb, MaskData.R.Left + dw + wl + w + wr - 1, MaskData.R.Bottom - 1));
-        CopyTransCorner(SrcBmp, Width - wr, 0, Classes.Rect(MaskData.R.Left + dw + wl + w, MaskData.R.Top, MaskData.R.Left + dw + wl + w + wr - 1, MaskData.R.Top + wb - 1));
-      end
-      else begin
-        CopyMasterCorner(MkRect(wl + 1, wt + 1), Classes.Rect(MaskData.R.Left + dw, MaskData.R.Top, MaskData.R.Left + dw + wl, MaskData.R.Top + wt), SrcBmp);
-        CopyMasterCorner(Classes.Rect(0, Height - wb, wl, Height), Classes.Rect(MaskData.R.Left + dw, MaskData.R.Top + dh - wb, MaskData.R.Left + dw + wl, MaskData.R.Top + dh), SrcBmp);
-        CopyMasterCorner(Classes.Rect(Width - wr, Height - wb, Width, Height), Classes.Rect(MaskData.R.Left + dw + wl + w, MaskData.R.Top + dh - wb, MaskData.R.Left + dw + wl + w + wr, MaskData.R.Top + dh), SrcBmp);
-        CopyMasterCorner(Classes.Rect(Width - wr, 0, Width, wt), Classes.Rect(MaskData.R.Left + dw + wl + w, MaskData.R.Top, MaskData.R.Left + dw + wl + w + wr, MaskData.R.Top + wt), SrcBmp);
+            if MaskType = 0 then begin // Copy without mask
+              CopyTransCorner(SrcBmp, 0, 0, Rect(R.Left + dw, R.Top, R.Left + dw + wl - 1, R.Top + wt - 1));
+              CopyTransCorner(SrcBmp, 0, iHeight - wb, Rect(R.Left, R.Bottom - wb, R.Left + wl - 1, R.Bottom - 1));
+              CopyTransCorner(SrcBmp, iWidth - wr, iHeight - wb, Rect(R.Left + dw + wl + w, R.Bottom - wb, R.Left + dw + wl + w + wr - 1, R.Bottom - 1));
+              CopyTransCorner(SrcBmp, iWidth - wr, 0, Rect(R.Left + dw + wl + w, R.Top, R.Left + dw + wl + w + wr - 1, R.Top + wb - 1));
+            end
+            else begin
+              CopyMasterCorner(MkRect(wl + 1, wt + 1), Rect(R.Left + dw, R.Top, R.Left + dw + wl, R.Top + wt), SrcBmp);
+              CopyMasterCorner(Rect(0, iHeight - wb, wl, iHeight), Rect(R.Left + dw, R.Top + dh - wb, R.Left + dw + wl, R.Top + dh), SrcBmp);
+              CopyMasterCorner(Rect(iWidth - wr, iHeight - wb, iWidth, iHeight), Rect(R.Left + dw + wl + w, R.Top + dh - wb, R.Left + dw + wl + w + wr, R.Top + dh), SrcBmp);
+              CopyMasterCorner(Rect(iWidth - wr, 0, iWidth, wt), Rect(R.Left + dw + wl + w, R.Top, R.Left + dw + wl + w + wr, R.Top + wt), SrcBmp);
+            end;
+          end;
+        end;
       end;
     end;
-  end;
 end;
 
 
@@ -1417,7 +1423,7 @@ procedure RefreshScrolls(SkinData: TsScrollWndData; var ListSW: TacScrollWnd);
 var
   sp: TacSkinParams;
 begin
-  if not (csLoading in SkinData.FOwnerControl.ComponentState) and not (csDestroying in SkinData.FOwnerControl.ComponentState) and not (csDesigning in SkinData.FOwnerControl.ComponentState) then
+  if [csLoading, csDestroying, csDesigning] * SkinData.FOwnerControl.ComponentState = [] then
     if SkinData.Skinned then begin
       if Assigned(Ac_UninitializeFlatSB) then
         Ac_UninitializeFlatSB(TWinControl(SkinData.FOwnerControl).Handle);
@@ -1478,21 +1484,18 @@ end;
 procedure UpdateScrolls(const sw: TacScrollWnd; const Repaint: boolean = False);
 begin
   if sw <> nil then
-    if IsWindowVisible(sw.CtrlHandle) then begin
-      if (sw.SkinData <> nil) and sw.SkinData.FUpdating then
-        Exit;
-
-      if (sw.sbarHorz <> nil) and (sw.sbarVert <> nil) then begin
-        sw.sbarHorz.ScrollInfo.cbSize := SizeOf(TScrollInfo);
-        sw.sbarHorz.ScrollInfo.fMask := SIF_ALL;
-        GetScrollInfo(sw.CtrlHandle, SB_HORZ, {$IFDEF FPC}@sw.sbarHorz.ScrollInfo{$ELSE}sw.sbarHorz.ScrollInfo{$ENDIF});
-        sw.sbarVert.ScrollInfo.cbSize := SizeOf(TScrollInfo);
-        sw.sbarVert.ScrollInfo.fMask := SIF_ALL;
-        GetScrollInfo(sw.CtrlHandle, SB_VERT, {$IFDEF FPC}@sw.sbarVert.ScrollInfo{$ELSE}sw.sbarVert.ScrollInfo{$ENDIF});
-        if Repaint and not InAnimationProcess then
-          Ac_NCDraw(sw, sw.CtrlHandle);
-      end;
-    end;
+    if IsWindowVisible(sw.CtrlHandle) then
+      if (sw.SkinData = nil) or not sw.SkinData.FUpdating then
+        if (sw.sbarHorz <> nil) and (sw.sbarVert <> nil) then begin
+          sw.sbarHorz.ScrollInfo.cbSize := SizeOf(TScrollInfo);
+          sw.sbarHorz.ScrollInfo.fMask := SIF_ALL;
+          GetScrollInfo(sw.CtrlHandle, SB_HORZ, {$IFDEF FPC}@sw.sbarHorz.ScrollInfo{$ELSE}sw.sbarHorz.ScrollInfo{$ENDIF});
+          sw.sbarVert.ScrollInfo.cbSize := SizeOf(TScrollInfo);
+          sw.sbarVert.ScrollInfo.fMask := SIF_ALL;
+          GetScrollInfo(sw.CtrlHandle, SB_VERT, {$IFDEF FPC}@sw.sbarVert.ScrollInfo{$ELSE}sw.sbarVert.ScrollInfo{$ENDIF});
+          if Repaint and not InAnimationProcess then
+            Ac_NCDraw(sw, sw.CtrlHandle);
+        end;
 end;
 
 
@@ -1504,7 +1507,7 @@ begin
   if pWnd <> 0 then
     SendControlLoaded(pWnd)
   else
-    SendMessage(Ctrl, SM_ALPHACMD, MakeWParam(0, AC_CONTROLLOADED), 0);
+    SendAMessage(Ctrl, AC_CONTROLLOADED, 0);
 end;
 
 
@@ -1560,7 +1563,7 @@ begin
 
       if (Application.BiDiMode = bdRightToLeft) and (CI.Bmp <> nil) then begin
         DC := GetDC(GetParent(CtrlHandle));
-        if (acGetLayout(DC) <> 0) then begin
+        if acGetLayout(DC) <> 0 then begin
           p.X := CI.Bmp.Width - p.X; // Inversion of control coords if canvas is mirrored
           if Assigned(SkinData.SkinManager) and SkinData.SkinManager.ExtendedBorders then
             dec(p.X, 2 * ci.X);
@@ -1598,7 +1601,7 @@ begin
         end;
       {$ENDIF}
         if Text <> '' then begin
-          if (PasswordChar <> #0) then begin
+          if PasswordChar <> #0 then begin
       {$IFDEF D2009}
             if PasswordChar = '*' then
               pc := #9679
@@ -1616,9 +1619,9 @@ begin
         end
       {$IFDEF D2009}
         else
-          if (TextHint <> '') then begin
+          if TextHint <> '' then begin
             SkinData.FCacheBMP.Canvas.Brush.Style := bsClear;
-            SkinData.FCacheBMP.Canvas.Font.Color := MixColors(Font.Color, Color, 0.65);
+            SkinData.FCacheBMP.Canvas.Font.Color := BlendColors(Font.Color, Color, 180);
             acDrawText(SkinData.FCacheBMP.Canvas.Handle, TextHint, R, Flags {$IFDEF D2009}or Cardinal(GetStringFlags(SkinData.FOwnerControl, Alignment)) and not DT_VCENTER{$ENDIF});
           end;
       {$ENDIF}
@@ -1652,9 +1655,9 @@ end;
 procedure Ac_RedrawNonClient(Handle: hwnd; fFrameChanged: boolean);
 begin
   if not fFrameChanged then
-    SendMessage(Handle, WM_NCPAINT, 1, 0)
+    TrySendMessage(Handle, WM_NCPAINT, 1, 0)
   else
-    SetWindowPos(Handle, 0, 0, 0, 0, 0, SWP_NOMOVE or SWP_NOSIZE or SWP_NOZORDER or SWP_NOACTIVATE or SWP_FRAMECHANGED);
+    SetWindowPos(Handle, 0, 0, 0, 0, 0, SWPA_FRAMECHANGED);
 end;
 
 
@@ -1663,11 +1666,13 @@ begin
   if ListSW <> nil then begin
     if not ListSW.Destroyed and (ListSW.SkinData <> nil) and (ListSW.SkinData.FOwnerControl <> nil) then begin
       // restore the window procedure with the original one
-      if Assigned(ListSW.OldWndProc) then
-        if (ListSW.SkinData.FOwnerObject is TsSkinProvider) then
+      if Assigned(ListSW.OldWndProc) then begin
+        ListSW.SkinData.WndProc := ListSW.OldWndProc;
+        if ListSW.SkinData.FOwnerObject is TsSkinProvider then
           TsSkinProvider(ListSW.SkinData.FOwnerObject).Form.WindowProc := ListSW.OldWndProc
         else
-          TacWinControl(ListSW.SkinData.FOwnerControl).WindowProc := ListSW.OldWndProc
+          TacWinControl(ListSW.SkinData.FOwnerControl).WindowProc := ListSW.OldWndProc;
+      end
       else begin
         if DWord(GetWindowLong(Handle, GWL_WNDPROC)) = DWord(ListSW.NewWndProcInstance) then
           SetWindowLong(Handle, GWL_WNDPROC, LONG_PTR(ListSW.oldproc));
@@ -1747,12 +1752,12 @@ var
 begin
   Result := False;
   if Ac_GetScrollWndFromHwnd(Handle) <> nil then begin
-    if (wBar = SB_HORZ) or (wBar = SB_BOTH) then begin
+    if wBar in [SB_HORZ, SB_BOTH] then begin
       sBar := Ac_GetScrollBarFromHwnd(Handle, SB_HORZ);
       if sBar <> nil then
         sBar.nMinThumbSize := Size;
     end;
-    if (wBar = SB_VERT) or (wBar = SB_BOTH) then begin
+    if wBar in [SB_VERT, SB_BOTH] then begin
       sBar := Ac_GetScrollBarFromHwnd(Handle, SB_VERT);
       if sBar <> nil then
         sBar.nMinThumbSize := Size;
@@ -1768,8 +1773,9 @@ begin
     DontRepaint := False;
     CtrlHandle := AHandle;
     SetProp(CtrlHandle, acPropStr, Cardinal(sw));
-    if (sw.SkinData.FOwnerControl <> nil) or (sw.SkinData.FOwnerObject is TsSkinProvider) then 
-      if (sw.SkinData.FOwnerObject is TsSkinProvider) then begin
+    if (sw.SkinData.FOwnerControl <> nil) or (sw.SkinData.FOwnerObject is TsSkinProvider) then begin
+      sw.SkinData.WndProc := acWndProc;
+      if sw.SkinData.FOwnerObject is TsSkinProvider then begin
         OldWndProc := TsSkinProvider(sw.SkinData.FOwnerObject).Form.WindowProc;
         TsSkinProvider(sw.SkinData.FOwnerObject).Form.WindowProc := acWndProc;
       end
@@ -1777,6 +1783,7 @@ begin
         OldWndProc := TacWinControl(sw.SkinData.FOwnerControl).WindowProc;
         TacWinControl(sw.SkinData.FOwnerControl).WindowProc := acWndProc;
       end
+    end
     else begin
       OldProc := Pointer(GetWindowLong(CtrlHandle, GWL_WNDPROC));
       NewWndProcInstance := {$IFDEF DELPHI7UP}Classes.{$ENDIF}MakeObjectInstance(acWndProc);
@@ -1830,7 +1837,6 @@ begin
     if Ac_GetScrollWndFromHwnd(CtrlHandle) <> nil then begin
       sbarVert := Ac_GetScrollBarFromHwnd(CtrlHandle, SB_VERT);
       sbarHorz := Ac_GetScrollBarFromHwnd(CtrlHandle, SB_HORZ);
-
       if Repaint then
         Ac_RedrawNonClient(CtrlHandle, True);
     end;
@@ -1847,7 +1853,8 @@ begin
     if not ListSW.Destroyed then begin
       // restore the window procedure with the original one
       if Assigned(ListSW.OldWndProc) then begin
-        if (ListSW.SkinData.FOwnerObject is TsSkinProvider) then
+        ListSW.SkinData.WndProc := ListSW.OldWndProc;
+        if ListSW.SkinData.FOwnerObject is TsSkinProvider then
           TsSkinProvider(ListSW.SkinData.FOwnerObject).Form.WindowProc := ListSW.OldWndProc
         else
           if ListSW.SkinData.FOwnerControl <> nil then
@@ -1890,7 +1897,7 @@ var
 begin
   Result.cbSize := 0;
   sb := Ac_GetScrollBarFromHwnd(Handle, fnBar);
-  if (sb <> nil) then
+  if sb <> nil then
     if fnBar = SB_HORZ then
       Result := sb.scrollInfo
     else
@@ -1912,7 +1919,7 @@ begin
   if Ac_GetScrollWndFromHwnd(Handle) = nil then
     Result := ShowScrollBar(Handle, wBar, fShow)
   else begin
-    if ((wBar = SB_HORZ) or (wBar = SB_BOTH)) then begin
+    if wBar in [SB_HORZ, SB_BOTH] then begin
       sbar := Ac_GetScrollBarFromHwnd(Handle, SB_HORZ);
       if sbar <> nil then begin
         sbar.fScrollFlags := sbar.fScrollFlags and not CSBS_VISIBLE;
@@ -1923,12 +1930,11 @@ begin
           SetWindowLong(Handle, GWL_STYLE, dwStyle and not WS_HSCROLL);
       end;
     end;
-    if ((wBar = SB_VERT) or (wBar = SB_BOTH)) then begin
+    if wBar in [SB_VERT, SB_BOTH] then begin
       sbar := Ac_GetScrollBarFromHwnd(Handle, SB_VERT);
       if sbar <> nil then begin
         sbar.fScrollFlags := sbar.fScrollFlags and not CSBS_VISIBLE;
         sbar.fScrollFlags := sbar.fScrollFlags or (integer(fShow) * CSBS_VISIBLE);
-
         if fShow then
           SetWindowLong(Handle, GWL_STYLE, dwStyle or WS_VSCROLL)
         else
@@ -1938,7 +1944,7 @@ begin
     if bFailed then
       Result := False
     else begin
-      SetWindowPos(Handle, 0, 0, 0, 0, 0, SWP_NOMOVE or SWP_NOSIZE or SWP_NOZORDER or SWP_NOACTIVATE or SWP_FRAMECHANGED);
+      SetWindowPos(Handle, 0, 0, 0, 0, 0, SWPA_FRAMECHANGED);
       Result := True;
     end;
   end;
@@ -2073,7 +2079,7 @@ end;
 
 function Ac_IsScrollInfoActive(const si: TScrollInfo): boolean;
 begin
-  if ((si.nPage > UINT(si.nMax)) or (si.nMax <= si.nMin) or (si.nMax = 0)) then
+  if (si.nPage > UINT(si.nMax)) or (si.nMax <= si.nMin) or (si.nMax = 0) then
     Result := False
   else
     Result := True;
@@ -2095,17 +2101,17 @@ begin
     if not Ac_GetScrollBarInfo(sb.sw.CtrlHandle, longint(idObject), sbi) then
       Result := False
     else
-      if (((sb.fScrollFlags and ESB_DISABLE_BOTH) = ESB_DISABLE_BOTH) or
-              ((sb.fScrollFlags and CSBS_THUMBALWAYS) <> 0) and not Ac_IsScrollInfoActive(sb.scrollInfo)) or
-                  (sbi.rgstate[0] and STATE_SYSTEM_UNAVAILABLE = STATE_SYSTEM_UNAVAILABLE) then
+      if ((sb.fScrollFlags and ESB_DISABLE_BOTH = ESB_DISABLE_BOTH) or
+              (sb.fScrollFlags and CSBS_THUMBALWAYS <> 0) and not Ac_IsScrollInfoActive(sb.scrollInfo)) or
+                  (sbi.rgstate[0] and STATE_SYSTEM_UNAVAILABLE <> 0) then
         Result := False
       else
         Result := True
   else // Win95
     if sb.nBarType = SB_VERT then
-      Result := (GetWindowLong(sb.sw.CtrlHandle, GWL_STYLE) and WS_VSCROLL) = WS_VSCROLL
+      Result := (GetWindowLong(sb.sw.CtrlHandle, GWL_STYLE) and WS_VSCROLL <> 0)
     else
-      Result := (GetWindowLong(sb.sw.CtrlHandle, GWL_STYLE) and WS_HSCROLL) = WS_HSCROLL;
+      Result := (GetWindowLong(sb.sw.CtrlHandle, GWL_STYLE) and WS_HSCROLL <> 0);
 end;
 
 
@@ -2163,8 +2169,8 @@ var
 begin
   with sm do
     if IsValidImgIndex(Ndx) then begin
-      w := WidthOfImage (ma[Ndx]);
-      h := HeightOfImage(ma[Ndx]);
+      w := ma[Ndx].Width;
+      h := ma[Ndx].Height;
       p.x := R.Left + (WidthOf(R) - w) div 2;
       p.y := R.Top + (HeightOf(R) - h) div 2;
       DrawSkinGlyph(b, p, State, 1, ma[Ndx], MakeCacheInfo(b));
@@ -2208,7 +2214,7 @@ begin
         if (State > 1) and cd.SkinManager.ButtonsOptions.ShiftContentOnClick then
           OffsetRect(gRect, 1, 1);
 
-        DrawColorArrow(b.Canvas, C, gRect, Side);
+        DrawColorArrow(b, C, gRect, Side);
       end;
     end;
     BitBlt(Bmp.Canvas.Handle, dRect.Left, dRect.Top, b.Width, b.Height, b.Canvas.Handle, 0, 0, SRCCOPY);
@@ -2266,7 +2272,7 @@ begin
     else
       IsEnabled := Ac_IsScrollbarActive(sb);
 
-    fBarHot := (sb.nBarType = uMouseOverScrollbar);
+    fBarHot := sb.nBarType = uMouseOverScrollbar;
     fMouseOverL := (uHitTestPortion = HTSCROLL_LEFT)  and fBarHot and IsEnabled and (Handle = hwndCurSB);
     fMouseOverR := (uHitTestPortion = HTSCROLL_RIGHT) and fBarHot and IsEnabled and (Handle = hwndCurSB);
     if Handle <> hwndCurSB then
@@ -2277,12 +2283,12 @@ begin
       thumbpos := SliderPos;
 
     if Handle = hwndCurSB then begin
-      if (uDrawFlags = HTSCROLL_LEFT) then
+      if uDrawFlags = HTSCROLL_LEFT then
         lbState := 2
       else
         lbState := integer(fMouseOverL);
 
-      if (uDrawFlags = HTSCROLL_RIGHT) then
+      if uDrawFlags = HTSCROLL_RIGHT then
         rbState := 2
       else
         rbState := integer(fMouseOverR)
@@ -2302,22 +2308,24 @@ begin
       BG.Offset.Y := thumb.Top - ctrl.top;
     end
     else
-      if (sb.sw.SkinData.FOwnerObject is TsSkinProvider) then
+      if sb.sw.SkinData.FOwnerObject is TsSkinProvider then
         if TsSkinProvider(sb.sw.SkinData.FOwnerObject).BorderForm = nil then
           BG.Offset := MkPoint
         else
           BG.Offset := Point(DiffBorder(TsSkinProvider(sb.sw.SkinData.FOwnerObject).BorderForm) + sb.sw.SkinData.SkinManager.FormShadowSize.Left,
                              DiffTitle (TsSkinProvider(sb.sw.SkinData.FOwnerObject).BorderForm) + sb.sw.SkinData.SkinManager.FormShadowSize.Top);
-    
+
     CI := BGInfoToCI(@BG);
-    if (scrollwidth > butwidth * 2) then begin
+    if scrollwidth > butwidth * 2 then begin
       tdiv2 := thumbpos + thumbwidth div 2 - R.Left;
       with sm.ConstData.Scrolls[asLeft] do
         PaintItemFast(SkinIndex, MaskIndex, BGIndex[0], BGIndex[1],
-                      CI, True, integer(uDrawFlags = HTSCROLL_PAGELEFT) * 2, MkRect(tdiv2, Bmp.Height), R.TopLeft, Bmp, sm);
+                      CI, True, integer(uDrawFlags = HTSCROLL_PAGELEFT) * 2, MkRect(tdiv2, Bmp.Height),
+                      Point(R.Left - sb.sw.cxLeftEdge, R.Top - sb.sw.cyTopEdge), Bmp, sm);
       with sm.ConstData.Scrolls[asRight] do
         PaintItemFast(SkinIndex, MaskIndex, BGIndex[0], BGIndex[1],
-                      CI, True, integer(uDrawFlags = HTSCROLL_PAGERIGHT) * 2, Rect(tdiv2, 0, Bmp.Width, Bmp.Height), Point(R.Left + tdiv2, R.Top), Bmp, sm);
+                      CI, True, integer(uDrawFlags = HTSCROLL_PAGERIGHT) * 2, Rect(tdiv2, 0, Bmp.Width, Bmp.Height),
+                      Point(R.Left + tdiv2 - sb.sw.cxLeftEdge, R.Top - sb.sw.cyTopEdge), Bmp, sm);
       // LEFT ARROW
       SetRect(ctrl, R.left, R.top, R.left + butwidth, R.bottom);
       ac_DrawScrollBtn(MkRect(WidthOf(Ctrl), HeightOf(Ctrl)), lbState, Bmp, sb.sw.SkinData, asLeft);
@@ -2353,12 +2361,12 @@ begin
       BG.PleaseDraw := False;
       GetBGInfo(@BG, Handle);
       CI := BGInfoToCI(@BG);
-      if (sb.sw.SkinData.FOwnerObject is TsSkinProvider) then begin
+      if sb.sw.SkinData.FOwnerObject is TsSkinProvider then begin
         CI.X := 0;
         CI.Y := 0;
       end;
       if CI.Ready then
-        BlendTransRectangle(Bmp, 0, 0, CI.Bmp, R, DefDisabledBlend)
+        BlendTransRectangle(Bmp, 0, 0, CI.Bmp, R, DefBlendDisabled)
       else begin
         c.C := CI.FillColor;
         FadeBmp(bmp, MkRect(bmp.Width + 1, bmp.Height + 1), 60, c, 0, 0);
@@ -2400,7 +2408,7 @@ begin
       else
         IsEnabled := Ac_IsScrollbarActive(sb);
 
-      fBarHot := (sb.nBarType = uMouseOverScrollbar);
+      fBarHot := sb.nBarType = uMouseOverScrollbar;
       if Handle = hwndCurSB then begin
         fMouseOverT := (uHitTestPortion = HTSCROLL_UP)   and fBarHot and IsEnabled and (Handle = hwndCurSB);
         fMouseOverB := (uHitTestPortion = HTSCROLL_DOWN) and fBarHot and IsEnabled and (Handle = hwndCurSB);
@@ -2417,12 +2425,12 @@ begin
         thumbpos := SliderPos;
 
       if Handle = hwndCurSB then begin
-        if (uDrawFlags = HTSCROLL_UP) then
+        if uDrawFlags = HTSCROLL_UP then
           lbState := 2
         else
           lbState := integer(fMouseOverT);
 
-        if (uDrawFlags = HTSCROLL_DOWN) then
+        if uDrawFlags = HTSCROLL_DOWN then
           rbState := 2
         else
           rbState := integer(fMouseOverB);
@@ -2442,21 +2450,23 @@ begin
         BG.Offset.Y := thumb.Top  - ctrl.top;
       end
       else
-        if (sb.sw.SkinData.FOwnerObject is TsSkinProvider) then
+        if sb.sw.SkinData.FOwnerObject is TsSkinProvider then
           if TsSkinProvider(sb.sw.SkinData.FOwnerObject).BorderForm = nil then
             BG.Offset := MkPoint
           else
             BG.Offset := Point(DiffBorder(TsSkinProvider(sb.sw.SkinData.FOwnerObject).BorderForm) + sb.sw.SkinData.SkinManager.FormShadowSize.Left, DiffTitle(TsSkinProvider(sb.sw.SkinData.FOwnerObject).BorderForm) + sb.sw.SkinData.SkinManager.FormShadowSize.Top);
 
       CI := BGInfoToCI(@BG);
-      if (scrollHeight > butheight * 2) then begin
+      if scrollHeight > butheight * 2 then begin
         tdiv2 := thumbpos + thumbHeight div 2 - R.Top;
         with sm.ConstData.Scrolls[asTop] do
           PaintItemFast(SkinIndex, MaskIndex, BGIndex[0], BGIndex[1],
-                        CI, True, integer(uDrawFlags = HTSCROLL_PAGEUP) * 2, MkRect(Bmp.Width, tdiv2), R.TopLeft, Bmp, sm);
+                        CI, True, integer(uDrawFlags = HTSCROLL_PAGEUP) * 2, MkRect(Bmp.Width, tdiv2),
+                        Point(R.Left - sb.sw.cxLeftEdge, R.Top - sb.sw.cyTopEdge), Bmp, sm);
         with sm.ConstData.Scrolls[asBottom] do
           PaintItemFast(SkinIndex, MaskIndex, BGIndex[0], BGIndex[1],
-                        CI, True, integer(uDrawFlags = HTSCROLL_PAGEDOWN) * 2, Rect(0, tdiv2, Bmp.Width, Bmp.Height), Point(R.Left, R.Top + tdiv2), Bmp, sm);
+                        CI, True, integer(uDrawFlags = HTSCROLL_PAGEDOWN) * 2, Rect(0, tdiv2, Bmp.Width, Bmp.Height),
+                        Point(R.Left - sb.sw.cxLeftEdge, R.Top + tdiv2 - sb.sw.cyTopEdge), Bmp, sm);
         // TOP ARROW
         SetRect(ctrl, R.left, R.top, R.Right, R.Top + butheight);
         OffsetRect(ctrl, -R.Left, -R.Top);
@@ -2495,12 +2505,12 @@ begin
         BG.PleaseDraw := False;
         GetBGInfo(@BG, Handle);
         CI := BGInfoToCI(@BG);
-        if (sb.sw.SkinData.FOwnerObject is TsSkinProvider) then begin
+        if sb.sw.SkinData.FOwnerObject is TsSkinProvider then begin
           CI.X := 0;
           CI.Y := 0;
         end;
         if CI.Ready then
-          BlendTransRectangle(Bmp, 0, 0, CI.Bmp, R, DefDisabledBlend)
+          BlendTransRectangle(Bmp, 0, 0, CI.Bmp, R, DefBlendDisabled)
         else begin
           c.C := CI.FillColor;
           FadeBmp(bmp, MkRect(bmp.Width + 1, bmp.Height + 1), 60, c, 0, 0);
@@ -2525,7 +2535,7 @@ var
 begin
   Result := 0;
   if sw <> nil then begin
-    if (sw.SkinData <> nil) then
+    if sw.SkinData <> nil then
       with sw.SkinData do begin
         if InUpdating(sw.SkinData) then
           Exit;
@@ -2581,33 +2591,33 @@ begin
           GetBGInfo(@BGInfo, Handle);
           bGrip := CreateBmp32(R);
           // If scrolls are not transparent
-          if (sw.SkinManager.ConstData.Scrolls[asLeft].SkinIndex >= 0) and
-               (sw.SkinManager.gd[sw.SkinManager.ConstData.Scrolls[asLeft].SkinIndex].Props[0].Transparency <> 100) then begin
-            if sw.SkinManager.gd[sw.SkinManager.ConstData.Scrolls[asLeft].SkinIndex].Props[0].Color <> clFuchsia then
-              BGInfo.Color := sw.SkinManager.gd[sw.SkinManager.ConstData.Scrolls[asLeft].SkinIndex].Props[0].Color
-            else
-              BGInfo.Color := sw.SkinManager.GetGlobalColor;
+          with sw.SkinManager, ConstData.Scrolls[asLeft] do
+            if (SkinIndex >= 0) and (gd[SkinIndex].Props[0].Transparency <> 100) then begin
+              if gd[SkinIndex].Props[0].Color <> clFuchsia then
+                BGInfo.Color := sw.SkinManager.gd[sw.SkinManager.ConstData.Scrolls[asLeft].SkinIndex].Props[0].Color
+              else
+                BGInfo.Color := GetGlobalColor;
 
-            if not Ac_IsScrollbarActive(sw.sBarVert) or not Ac_IsScrollbarActive(sw.sBarHorz) then
-              BGInfo.Color := MixColors(sw.SkinManager.gd[sw.SkinData.SkinIndex].Props[integer(ControlIsActive(sw.SkinData))].Color, BGInfo.Color, sDefaults.DefDisabledBlend);
+              if not Ac_IsScrollbarActive(sw.sBarVert) or not Ac_IsScrollbarActive(sw.sBarHorz) then
+                BGInfo.Color := BlendColors(gd[sw.SkinData.SkinIndex].Props[integer(ControlIsActive(sw.SkinData))].Color, BGInfo.Color, sDefaults.DefBlendDisabled);
 
-            FillDC(bGrip.Canvas.Handle, MkRect(bGrip), BGInfo.Color);
-          end
-          else
-            if (BGInfo.BgType = btCache) then // If AlphaSkins are fully supported
-              BitBlt(bGrip.Canvas.Handle, 0, 0, bGrip.Width, bGrip.Height, BGInfo.Bmp.Canvas.Handle, R.Left, R.Top, SRCCOPY)
-            else begin
-              BGInfo.Color := sw.SkinManager.GetGlobalColor;
               FillDC(bGrip.Canvas.Handle, MkRect(bGrip), BGInfo.Color);
-            end;
+            end
+            else
+              if (BGInfo.BgType = btCache) then // If AlphaSkins are fully supported
+                BitBlt(bGrip.Canvas.Handle, 0, 0, bGrip.Width, bGrip.Height, BGInfo.Bmp.Canvas.Handle, R.Left, R.Top, SRCCOPY)
+              else begin
+                BGInfo.Color := GetGlobalColor;
+                FillDC(bGrip.Canvas.Handle, MkRect(bGrip), BGInfo.Color);
+              end;
 
           // Grip if exists
           if Ac_GripVisible(sw, Handle, R2) then begin
             LeftRight := sw.SkinManager.ConstData.GripRightBottom;
             if sw.SkinManager.IsValidImgIndex(LeftRight) then
-              DrawSkinGlyph(bGrip, Point(bGrip.Width  - (WidthOfImage (sw.SkinManager.ma[LeftRight])),
-                                         bGrip.Height - (HeightOfImage(sw.SkinManager.ma[LeftRight]))),
-                            0, 1, sw.SkinManager.ma[LeftRight], BGInfoToCI(@BGInfo));
+              with sw.SkinManager.ma[LeftRight] do
+                DrawSkinGlyph(bGrip, Point(bGrip.Width - Width, bGrip.Height - Height),
+                                  0, 1, sw.SkinManager.ma[LeftRight], BGInfoToCI(@BGInfo));
           end;
           BitBlt(dc, R.Left, R.Top, bGrip.Width, bGrip.Height, bGrip.Canvas.Handle, 0, 0, SRCCOPY);
           FreeAndNil(bGrip);
@@ -2622,7 +2632,7 @@ end;
 
 function Ac_NCDrawScrollbar(sb: TacScrollBar; Handle: hwnd; DC: hdc; R: TRect; uDrawFlags: integer; ThumbPos: integer = -1): LRESULT;
 begin
-  if (sb.nBarType = SB_HORZ) then
+  if sb.nBarType = SB_HORZ then
     Result := Ac_NCDrawHScrollbar(sb, Handle, dc, R, uDrawFlags, ThumbPos)
   else
     Result := Ac_NCDrawVScrollbar(sb, Handle, dc, R, uDrawFlags, ThumbPos);
@@ -2635,80 +2645,80 @@ var
   nwStyle, dwStyle: ACNativeInt;
   sb: TacScrollBar;
 begin
-//Result := sw.CallPrevWndProc(Handle, WM_NCCALCSIZE, wParam, lParam);
-//Exit;
-  OldRect := TNCCalcSizeParams(Pointer(lParam)^).rgrc[0];
-  dwStyle := GetWindowLong(Handle, GWL_STYLE);
-  if ((dwStyle and WS_VSCROLL = WS_VSCROLL) or (dwStyle and WS_HSCROLL = WS_HSCROLL)) then begin
-    nwStyle := dwStyle and not WS_VSCROLL and not WS_HSCROLL;
-    sw.bPreventStyleChange := True;
-    SetWindowLong(Handle, GWL_STYLE, nwStyle);
-    Result := sw.CallPrevWndProc(Handle, WM_NCCALCSIZE, wParam, lParam);
-    SetWindowLong(Handle, GWL_STYLE, dwStyle);
-    sw.bPreventStyleChange := False;
-  end
-  else
-    Result := sw.CallPrevWndProc(Handle, WM_NCCALCSIZE, wParam, lParam);
-
-
-  if not (sw.SkinData.FOwnerObject is TsSkinProvider) and not ((sw is TacListViewWnd) and TacListViewWnd(sw).AutoSizedCols) then
-    if (sw.SkinManager.gd[sw.SkinData.SkinIndex].ScrollBorderOffset < 0) and (TNCCalcSizeParams(Pointer(lParam)^).rgrc[0].left - oldrect.left > 1) then
-      InflateRect(TNCCalcSizeParams(Pointer(lParam)^).rgrc[0], -sw.SkinManager.gd[sw.SkinData.SkinIndex].ScrollBorderOffset, -sw.SkinManager.gd[sw.SkinData.SkinIndex].ScrollBorderOffset);
-
-  R := TNCCalcSizeParams(Pointer(lParam)^).rgrc[0];
-  sw.cxLeftEdge   := R.left - oldrect.left;
-  sw.cxRightEdge  := oldrect.right - R.right;
-  sw.cyTopEdge    := R.top - oldrect.top;
-  sw.cyBottomEdge := oldrect.bottom - R.bottom;
-
-  sb := sw.sbarHorz;
-{$IFDEF ADDWEBBROWSER}
-  if sw is TacWBWnd then begin
-    if TacWBWnd(sw).Container <> nil then begin
-      if TacWBWnd(sw).Container.HScrollBar.Visible then
-        if (R.bottom - R.top >= GetScrollMetric(sb, SM_SCROLLWIDTH)) then
-          dec(TNCCalcSizeParams(Pointer(lParam)^).rgrc[0].bottom, GetScrollMetric(sb, SM_SCROLLWIDTH) - GetSystemMetrics(SM_CYHSCROLL));
-
-      if TacWBWnd(sw).Container.VScrollBar.Visible then
-        if (R.right - R.left >= GetScrollMetric(sw.sbarVert, SM_SCROLLWIDTH)) then
-          if sw.fLeftScrollbar then
-            inc(TNCCalcSizeParams(Pointer(lParam)^).rgrc[0].left, GetScrollMetric(sw.sbarVert, SM_SCROLLWIDTH) - GetSystemMetrics(SM_CXVSCROLL))
-          else
-            dec(TNCCalcSizeParams(Pointer(lParam)^).rgrc[0].right, GetScrollMetric(sw.sbarVert, SM_SCROLLWIDTH) - GetSystemMetrics(SM_CXVSCROLL));
-    end;
-  end
-  else
-{$ENDIF}
-    if sb <> nil then begin
-      if dwStyle and WS_HSCROLL = WS_HSCROLL then
-        sb.fScrollFlags := CSBS_VISIBLE
-      else
-        sb.fScrollFlags := 0;
-
-      if ((sb.fScrollFlags and CSBS_VISIBLE = CSBS_VISIBLE) and (R.bottom - R.top >= GetScrollMetric(sb, SM_SCROLLWIDTH))) then begin
-        dec(TNCCalcSizeParams(Pointer(lParam)^).rgrc[0].bottom, GetScrollMetric(sb, SM_SCROLLWIDTH));
-        sb.fScrollVisible := True;
-      end
-      else
-        sb.fScrollVisible := False;
-
-      sb := sw.sbarVert;
-      if dwStyle and WS_VSCROLL = WS_VSCROLL then
-        sb.fScrollFlags := CSBS_VISIBLE
-      else
-        sb.fScrollFlags := 0;
-
-      if ((sb.fScrollFlags and CSBS_VISIBLE) <> 0) and (R.right - R.left >= GetScrollMetric(sb, SM_SCROLLWIDTH)) then begin
-        if sw.fLeftScrollbar then
-          inc(TNCCalcSizeParams(Pointer(lParam)^).rgrc[0].left, GetScrollMetric(sb, SM_SCROLLWIDTH))
-        else
-          dec(TNCCalcSizeParams(Pointer(lParam)^).rgrc[0].right, GetScrollMetric(sb, SM_SCROLLWIDTH));
-
-        sb.fScrollVisible := True;
-      end
-      else
-        sb.fScrollVisible := False;
+  with TNCCalcSizeParams(Pointer(lParam)^) do begin
+    OldRect := rgrc[0];
+    dwStyle := GetWindowLong(Handle, GWL_STYLE);
+    if dwStyle and (WS_VSCROLL or WS_HSCROLL) <> 0 then begin
+      nwStyle := dwStyle and not WS_VSCROLL and not WS_HSCROLL;
+      sw.bPreventStyleChange := True;
+      SetWindowLong(Handle, GWL_STYLE, nwStyle);
+      Result := sw.CallPrevWndProc(Handle, WM_NCCALCSIZE, wParam, lParam);
+      SetWindowLong(Handle, GWL_STYLE, dwStyle);
+      sw.bPreventStyleChange := False;
     end
+    else
+      Result := sw.CallPrevWndProc(Handle, WM_NCCALCSIZE, wParam, lParam);
+
+
+    if not (sw.SkinData.FOwnerObject is TsSkinProvider) and not ((sw is TacListViewWnd) and TacListViewWnd(sw).AutoSizedCols) then
+      if (sw.SkinManager.gd[sw.SkinData.SkinIndex].ScrollBorderOffset < 0) and (rgrc[0].left - oldrect.left > 1) then
+        InflateRect(rgrc[0], -sw.SkinManager.gd[sw.SkinData.SkinIndex].ScrollBorderOffset, -sw.SkinManager.gd[sw.SkinData.SkinIndex].ScrollBorderOffset);
+
+    R := rgrc[0];
+    sw.cxLeftEdge   := R.left - oldrect.left;
+    sw.cxRightEdge  := oldrect.right - R.right;
+    sw.cyTopEdge    := R.top - oldrect.top;
+    sw.cyBottomEdge := oldrect.bottom - R.bottom;
+
+    sb := sw.sbarHorz;
+  {$IFDEF ADDWEBBROWSER}
+    if sw is TacWBWnd then begin
+      if TacWBWnd(sw).Container <> nil then begin
+        if TacWBWnd(sw).Container.HScrollBar.Visible then
+          if R.bottom - R.top >= GetScrollMetric(sb, SM_SCROLLWIDTH) then
+            dec(rgrc[0].bottom, GetScrollMetric(sb, SM_SCROLLWIDTH) - GetSystemMetrics(SM_CYHSCROLL));
+
+        if TacWBWnd(sw).Container.VScrollBar.Visible then
+          if R.right - R.left >= GetScrollMetric(sw.sbarVert, SM_SCROLLWIDTH) then
+            if sw.fLeftScrollbar then
+              inc(rgrc[0].left, GetScrollMetric(sw.sbarVert, SM_SCROLLWIDTH) - GetSystemMetrics(SM_CXVSCROLL))
+            else
+              dec(rgrc[0].right, GetScrollMetric(sw.sbarVert, SM_SCROLLWIDTH) - GetSystemMetrics(SM_CXVSCROLL));
+      end;
+    end
+    else
+  {$ENDIF}
+      if sb <> nil then begin
+        if dwStyle and WS_HSCROLL <> 0 then
+          sb.fScrollFlags := CSBS_VISIBLE
+        else
+          sb.fScrollFlags := 0;
+
+        if (sb.fScrollFlags and CSBS_VISIBLE <> 0) and (R.bottom - R.top >= GetScrollMetric(sb, SM_SCROLLWIDTH)) then begin
+          dec(rgrc[0].bottom, GetScrollMetric(sb, SM_SCROLLWIDTH));
+          sb.fScrollVisible := True;
+        end
+        else
+          sb.fScrollVisible := False;
+
+        sb := sw.sbarVert;
+        if dwStyle and WS_VSCROLL = WS_VSCROLL then
+          sb.fScrollFlags := CSBS_VISIBLE
+        else
+          sb.fScrollFlags := 0;
+
+        if (sb.fScrollFlags and CSBS_VISIBLE <> 0) and (R.right - R.left >= GetScrollMetric(sb, SM_SCROLLWIDTH)) then begin
+          if sw.fLeftScrollbar then
+            inc(rgrc[0].left, GetScrollMetric(sb, SM_SCROLLWIDTH))
+          else
+            dec(rgrc[0].right, GetScrollMetric(sb, SM_SCROLLWIDTH));
+
+          sb.fScrollVisible := True;
+        end
+        else
+          sb.fScrollVisible := False;
+      end
+  end;
 end;
 
 
@@ -2738,10 +2748,10 @@ begin
   btnWidth := GetScrollMetric(sbar, SM_BTNSIZE, True);
 
   thumbpos := pt.x - nThumbMouseOffset;
-  if (thumbpos < rc.left) then
+  if thumbpos < rc.left then
     thumbpos := rc.left;
 
-  if (thumbpos > rc.right - nThumbSize) then
+  if thumbpos > rc.right - nThumbSize then
     thumbpos := rc.right - nThumbSize;
 
   GetWindowRect(Handle, WinRect);
@@ -2754,7 +2764,7 @@ begin
 
   BG.PleaseDraw := False;
   GetBGInfo(@BG, Handle);
-  if (sbar.sw.SkinData.FOwnerObject is TsSkinProvider) then
+  if sbar.sw.SkinData.FOwnerObject is TsSkinProvider then
     if TsSkinProvider(sbar.sw.SkinData.FOwnerObject).BorderForm = nil then
       BG.Offset := MkPoint
     else
@@ -2764,10 +2774,12 @@ begin
   dec(thumbpos, winrect.left);
   tdiv2 := thumbpos + nThumbSize div 2 - R.Left;
   with sm.ConstData.Scrolls[asLeft] do
-    PaintItemFast(SkinIndex, MaskIndex, BGIndex[0], BGIndex[1], CI, True, 0, MkRect(tdiv2, Bmp.Height), R.TopLeft, Bmp, sm);
+    PaintItemFast(SkinIndex, MaskIndex, BGIndex[0], BGIndex[1], CI, True, 0, MkRect(tdiv2, Bmp.Height),
+    Point(R.Left - sbar.sw.cxLeftEdge, R.Top - sbar.sw.cyTopEdge), Bmp, sm);
 
   with sm.ConstData.Scrolls[asRight] do
-    PaintItemFast(SkinIndex, MaskIndex, BGIndex[0], BGIndex[1], CI, True, 0, Rect(tdiv2, 0, Bmp.Width, Bmp.Height), Point(R.Left + tdiv2, R.Top), Bmp, sm);
+    PaintItemFast(SkinIndex, MaskIndex, BGIndex[0], BGIndex[1], CI, True, 0, Rect(tdiv2, 0, Bmp.Width, Bmp.Height),
+    Point(R.Left + tdiv2 - sbar.sw.cxLeftEdge, R.Top - sbar.sw.cyTopEdge), Bmp, sm);
 
   if btnWidth <> 0 then begin
     ac_DrawScrollBtn(MkRect(BtnWidth, Bmp.Height), 0, Bmp, sbar.sw.SkinData, asLeft);
@@ -2785,9 +2797,9 @@ begin
     pos := thumbpos - Rc.left;
 
   if pos <> nLastSBPos then begin
-    sbar.scrollInfo.nTrackPos := pos;
+    sbar.scrollInfo.nTrackPos := sbar.scrollInfo.nMin + pos;
     sbar.sw.DontRepaint := True;
-    SendScrollMessage(Handle, uScrollTimerMsg, SB_THUMBTRACK, pos);
+    SendScrollMessage(Handle, uScrollTimerMsg, SB_THUMBTRACK, sbar.scrollInfo.nTrackPos);
     sbar.sw.DontRepaint := False;
   end;
   nLastSBPos := pos;
@@ -2815,10 +2827,10 @@ begin
   btnHeight := GetScrollMetric(sbar, SM_BTNSIZE, true);
 
   thumbpos := pt.y - nThumbMouseOffset;
-  if (thumbpos < rc.Top) then
+  if thumbpos < rc.Top then
     thumbpos := rc.Top;
 
-  if (thumbpos > rc.Bottom - nThumbSize) then
+  if thumbpos > rc.Bottom - nThumbSize then
     thumbpos := rc.Bottom - nThumbSize;
 
   GetWindowRect(Handle, WinRect);
@@ -2829,7 +2841,7 @@ begin
   OffsetRect(rc, -winrect.left, -winrect.top);
   BG.PleaseDraw := False;
   GetBGInfo(@BG, Handle);
-  if (sbar.sw.SkinData.FOwnerObject is TsSkinProvider) then
+  if sbar.sw.SkinData.FOwnerObject is TsSkinProvider then
     if TsSkinProvider(sbar.sw.SkinData.FOwnerObject).BorderForm = nil then
       BG.Offset := MkPoint
     else
@@ -2840,10 +2852,12 @@ begin
   tdiv2 := thumbpos + nThumbSize div 2 - R.Top;
   with sm.ConstData.Scrolls[asTop] do
     PaintItemFast(SkinIndex, MaskIndex, BGIndex[0], BGIndex[1],
-                  CI, True, 0, MkRect(Bmp.Width, tdiv2), R.TopLeft, Bmp, sm);
+                  CI, True, 0, MkRect(Bmp.Width, tdiv2),
+                  Point(R.Left - sbar.sw.cxLeftEdge, R.Top - sbar.sw.cyTopEdge), Bmp, sm);
   with sm.ConstData.Scrolls[asBottom] do
-    PaintItemFast(SkinIndex, MaskIndex, BGIndex[0], BGIndex[1], 
-                  CI, True, 0, Rect(0, tdiv2, Bmp.Width, Bmp.Height), Point(R.Left, R.Top + tdiv2), Bmp, sm);
+    PaintItemFast(SkinIndex, MaskIndex, BGIndex[0], BGIndex[1],
+                  CI, True, 0, Rect(0, tdiv2, Bmp.Width, Bmp.Height),
+                  Point(R.Left - sbar.sw.cxLeftEdge, R.Top + tdiv2 - sbar.sw.cyTopEdge), Bmp, sm);
 
   if btnHeight <> 0 then begin
     ac_DrawScrollBtn(MkRect(Bmp.Width, BtnHeight), 0, Bmp, sbar.sw.SkinData, asTop);
@@ -2867,9 +2881,9 @@ begin
     pos := thumbpos - Rc.Top;
 
   if pos <> nLastSBPos then begin
-    sbar.scrollInfo.nTrackPos := pos;
+    sbar.scrollInfo.nTrackPos := sbar.scrollInfo.nMin + pos;
     sbar.sw.DontRepaint := True;
-    SendScrollMessage(Handle, uScrollTimerMsg, SB_THUMBTRACK, pos);
+    SendScrollMessage(Handle, uScrollTimerMsg, SB_THUMBTRACK, sbar.scrollInfo.nTrackPos);
     sbar.sw.DontRepaint := False;
   end;
   nLastSBPos := pos;
@@ -2984,10 +2998,10 @@ end;
 
 function Ac_GetPortion(sbar: TacScrollBar; Handle: hwnd; R: TRect; x, y: integer): integer;
 begin
-  if (sbar.nBarType = SB_HORZ) then
+  if sbar.nBarType = SB_HORZ then
     Result := Ac_GetHorzPortion(sbar, Handle, R, x, y)
   else
-    if (sbar.nBarType = SB_VERT) then
+    if sbar.nBarType = SB_VERT then
       Result := Ac_GetVertPortion(sbar, Handle, R, x, y)
     else
       Result := HTSCROLL_NONE;
@@ -2996,20 +3010,20 @@ end;
 
 procedure Ac_GetRealHorzScrollRect(sb: TacScrollBar; var R: TRect);
 begin
-  if (sb.fButVisibleBefore) then
+  if sb.fButVisibleBefore then
     inc(R.Left, sb.nButSizeBefore);
 
-  if (sb.fButVisibleAfter) then
+  if sb.fButVisibleAfter then
     dec(R.Right, sb.nButSizeAfter);
 end;
 
 
 procedure Ac_GetRealVertScrollRect(sb: TacScrollBar; var R: TRect);
 begin
-  if(sb.fButVisibleBefore) then
+  if sb.fButVisibleBefore then
     inc(R.top, sb.nButSizeBefore);
 
-  if(sb.fButVisibleAfter) then
+  if sb.fButVisibleAfter then
     dec(R.bottom, sb.nButSizeAfter);
 end;
 
@@ -3048,7 +3062,7 @@ begin
       end
     end;
   end;
-  if (uCurrentScrollPortion = HTSCROLL_NONE) then
+  if uCurrentScrollPortion = HTSCROLL_NONE then
     Result := sw.CallPrevWndProc(Handle, WM_MOUSEMOVE, WParam, LParam)
   else begin
     LongWord(nlParam) := GetMessagePos();
@@ -3113,7 +3127,6 @@ begin
     uMouseOverScrollbar := SBTypes[wHitTest];
     uMouseOverId := SetTimer(Handle, COOLSB_TIMERID3, COOLSB_TIMERINTERVAL3, nil);
     Ac_NCDraw(sw, Handle);
-//    DoChangePaint(sw.SkinData, 0, UpdateWndPart_CB, True);
   end;
   Result := sw.CallPrevWndProc(Handle, WM_NCMOUSEMOVE, wHitTest, LParam);
 end;
@@ -3195,10 +3208,10 @@ begin
         SetScrollInfo(Handle, BarFlag, {$IFDEF FPC}@si{$ELSE}si{$ENDIF}, False);
       end;
     end;
-    SendMessage(Handle, Cardinal(ScrMsg), MakeWParam(Longword(ScrId), min(Longword(Pos), MaxWord)), 0);
+    TrySendMessage(Handle, Cardinal(ScrMsg), MakeWParam(Longword(ScrId), min(Longword(Pos), MaxWord)), 0);
   end
   else
-    SendMessage(Handle, Cardinal(ScrMsg), MakeWParam(Longword(ScrId), min(Longword(Pos), MaxWord)), Pos {Sending this value specially for a ListView});
+    TrySendMessage(Handle, Cardinal(ScrMsg), MakeWParam(Longword(ScrId), min(Longword(Pos), MaxWord)), Pos {Sending this value specially for a ListView});
 
   SendAMessage(Handle, AC_AFTERSCROLL, MakeLPAram(Word(ScrId), Word(ScrMsg)));
 end;
@@ -3207,15 +3220,15 @@ end;
 function Ac_NCLButtonDown(sw: TacScrollWnd; Handle: hwnd; wParam: WPARAM; lParam: LPARAM): LRESULT;
 var
   R, WinRect: TRect;
-  DC: hdc;
   sb: TacScrollBar;
   pt: TPoint;
+  DC: hdc;
 
   procedure JustDoIt;
   begin
     if Ac_IsScrollbarActive(sb) then begin
       Ac_GetRealScrollRect(sb, R);
-      if (uCurrentScrollbar = SB_HORZ) then
+      if uCurrentScrollbar = SB_HORZ then
         uScrollTimerPortion := Ac_GetHorzScrollPortion(sb, R, pt.x, pt.y)
       else
         uScrollTimerPortion := Ac_GetVertScrollPortion(sb, R, pt.x, pt.y);
@@ -3247,6 +3260,7 @@ begin
       Ac_GetHScrollRect(sw, Handle, R);
       uCurrentScrollPortion := Ac_GetHorzPortion(sb, Handle, R, SmallInt(LoWord(LongWord(lParam))), SmallInt(HiWord(LongWord(lParam))));
     end;
+
     HTVSCROLL: begin
       uScrollTimerMsg := WM_VSCROLL;
       uCurrentScrollbar := SB_VERT;
@@ -3254,6 +3268,7 @@ begin
       Ac_GetVScrollRect(sw, Handle, R);
       uCurrentScrollPortion := Ac_GetVertPortion(sb, Handle, R, SmallInt(LOWORD(LongWord(lParam))), SmallInt(HIWORD(LongWord(lParam))));
     end
+
     else begin // NORMAL PROCESSING
       uCurrentScrollPortion := HTSCROLL_NONE;
       Result := sw.CallPrevWndProc(Handle, WM_NCLBUTTONDOWN, WParam, LParam);
@@ -3313,7 +3328,7 @@ var
 begin
   Result := 0;
   // current scrollportion is the button that we clicked down on
-  if (uCurrentScrollPortion <> HTSCROLL_NONE) then begin
+  if uCurrentScrollPortion <> HTSCROLL_NONE then begin
     // For popup listboxes
     if (sw.SkinData.FOwnerControl <> nil) or not ((sw is TacComboListWnd) and not TacComboListWnd(sw).SimplyBox) or (sw.Tag = ACT_RELCAPT) then
       ReleaseCapture;
@@ -3402,7 +3417,7 @@ begin
     uScrollTimerMsg       := 0;
     uCurrentScrollbar     := COOLSB_NONE;
     if longint(WParam) <> -1 then // Do not call default handler
-      if (sw.SkinData.FOwnerControl <> nil) then begin
+      if sw.SkinData.FOwnerControl <> nil then begin
         if (sw.SkinData.FOwnerControl.ClassName <> 'TImageEnView') and (sw.SkinData.FOwnerControl.ClassName <> 'TImageEnVect') then
           Result := sw.CallPrevWndProc(Handle, WM_LBUTTONUP, WParam, LParam);
       end
@@ -3471,14 +3486,14 @@ begin
   // regular timer interval to auto-generate scroll messages
   // this gives a slight pause between first pressing the scroll arrow, and the
   // actual scroll starting
-  if (wTimerID = COOLSB_TIMERID1) then begin
+  if wTimerID = COOLSB_TIMERID1 then begin
     KillTimer(Handle, uScrollTimerId);
     uScrollTimerId := SetTimer(Handle, COOLSB_TIMERID2, COOLSB_TIMERINTERVAL2, nil);
     Result := 0;
   end
   // send the scrollbar message repeatedly
   else
-    if (wTimerID = COOLSB_TIMERID2) then begin
+    if wTimerID = COOLSB_TIMERID2 then begin
       // need to process a spoof WM_MOUSEMOVE, so that
       // we know where the mouse is each time the scroll timer goes off.
       // This is so we can stop sending scroll messages if the thumb moves
@@ -3492,7 +3507,7 @@ begin
         pt.Y := 0;
 
       Ac_MouseMove(sw, Handle, MK_LBUTTON, MAKELPARAM(Word(pt.x), Word(pt.y)));
-      if (uScrollTimerPortion <> HTSCROLL_NONE) then begin
+      if uScrollTimerPortion <> HTSCROLL_NONE then begin
         sw.DontRepaint := True;
         SendScrollMessage(Handle, uScrollTimerMsg, uScrollTimerPortion, 0);
         sw.DontRepaint := False;
@@ -3526,9 +3541,9 @@ begin
   case Message.Msg of
 {$IFNDEF FPC}
     WM_CONTEXTMENU:
-      if (SkinData <> nil) and (SkinData.FOwnerControl <> nil) and (TsHackedControl(SkinData.FOwnerControl).PopupMenu <> nil) then
+      if (SkinData <> nil) and (SkinData.FOwnerControl <> nil) and (TsAccessControl(SkinData.FOwnerControl).PopupMenu <> nil) then
         if SkinData.SkinManager <> nil then
-          SkinData.SkinManager.SkinableMenus.HookPopupMenu(TsHackedControl(SkinData.FOwnerControl).PopupMenu, SkinData.SkinManager.Active);
+          SkinData.SkinManager.SkinableMenus.HookPopupMenu(TsAccessControl(SkinData.FOwnerControl).PopupMenu, SkinData.SkinManager.Active);
 {$ENDIF}
 
     WM_UPDATEUISTATE:
@@ -3536,7 +3551,7 @@ begin
 
     CM_RECREATEWND: begin
 {$IFNDEF DELPHI6UP}
-      if (SkinData.FOwnerControl is TTreeView) then // TreeView have a problem under D5
+      if SkinData.FOwnerControl is TTreeView then // TreeView have a problem under D5
         Exit;
 {$ENDIF}
       if not IsWindowVisible(CtrlHandle) and (SkinData.FOwnerControl is TCustomComboBox) and (SkinData.FOwnerControl.Name = '') then
@@ -3545,10 +3560,10 @@ begin
 
     WM_DESTROY, WM_NCDESTROY:
       if not Destroyed then begin
-        if (SkinData.FOwnerControl is TWinControl) then
+        if SkinData.FOwnerControl is TWinControl then
           with TWinControl(SkinData.FOwnerControl) do
             for i := 0 to ControlCount - 1 do
-              if (Controls[i] is TSpeedButton) then
+              if Controls[i] is TSpeedButton then
                 Controls[i].Perform(WM_DESTROY, 0, 0);
 
         if (OldProc <> nil) or Assigned(OldWndProc) then begin
@@ -3556,7 +3571,7 @@ begin
           try
             if SkinData.FOwnerControl <> nil then begin
               UninitializeACScroll(CtrlHandle, False, False, ListSW);
-              Message.Result := SendMessage(CtrlHandle, Message.Msg, Message.WParam, Message.LParam);
+              Message.Result := TrySendMessage(CtrlHandle, Message.Msg, Message.WParam, Message.LParam);
             end
             else begin
               Message.Result := CallPrevWndProc(CtrlHandle, Message.Msg, Message.WParam, Message.LParam);
@@ -3568,7 +3583,7 @@ begin
           end;
         end
         else
-          Message.Result := SendMessage(CtrlHandle, Message.Msg, Message.WParam, Message.LParam);
+          Message.Result := TrySendMessage(CtrlHandle, Message.Msg, Message.WParam, Message.LParam);
 
         Exit;
       end;
@@ -3578,7 +3593,7 @@ begin
       if Assigned(SkinData) and (Message.Msg = SM_ALPHACMD) then
         case Message.WParamHi of
           AC_SETNEWSKIN:
-            if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then
+            if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then
               SkinData.UpdateIndexes;
 
           AC_GETSKINDATA: begin
@@ -3602,6 +3617,11 @@ begin
                 Exit;
               end;
 
+            AC_GETSCALE: begin
+              Message.Result := CurrentScale(SkinData);
+              Exit;
+            end;
+
             AC_GETLISTSW: begin
               Message.Result := LResult(Self);
               Exit;
@@ -3618,13 +3638,13 @@ begin
             end;
 
             AC_REMOVESKIN:
-              if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then
+              if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then
                 if not Destroyed then
                   RestoreStdParams;
 
             AC_SETSECTION: begin
               if (Message.LParam <> 0) and (SkinData <> nil) then begin
-                SkinData.SkinSection := PacSectionInfo(Message.LParam).Name;
+                SkinData.SkinSection := PacSectionInfo(Message.LParam).siName;
                 Message.Result := 1;
               end
               else
@@ -3634,7 +3654,7 @@ begin
             end;
 
             AC_SETNEWSKIN:
-              if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
+              if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then begin
                 SkinData.UpdateIndexes;
                 Message.Result := CallPrevWndProc(CtrlHandle, Message.Msg, Message.WParam, Message.LParam);
                 AlphaBroadCastCheck(SkinData.FOwnerControl, CtrlHandle, Message);
@@ -3642,7 +3662,7 @@ begin
               end;
 
             AC_REFRESH:
-              if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
+              if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then begin
                 SkinData.UpdateIndexes;
                 SkinData.BGChanged := True;
               end;
@@ -3665,7 +3685,7 @@ begin
             AC_ENDPARENTUPDATE: {if SkinData.FUpdating then ??? }begin
 {$IFNDEF ALITE}
   {$IFDEF D2006}
-              if (SkinData.FOwnerObject is TsFrameAdapter) then
+              if SkinData.FOwnerObject is TsFrameAdapter then
 {                if (csAligning in TsFrameAdapter(SkinData.FOwnerObject).Frame.ControlState) then} begin
                   Message.Result := CallPrevWndProc(CtrlHandle, Message.Msg, Message.WParam, Message.LParam);
                   Exit;
@@ -3676,13 +3696,13 @@ begin
                 if not InUpdating(SkinData, True) then begin
 //                  InvalidateRect(CtrlHandle, nil, True);
 //                  SendMessage(CtrlHandle, WM_ERASEBKGND, 0, 0);
-                  RedrawWindow(CtrlHandle, nil, 0, RDW_INVALIDATE or RDW_UPDATENOW or RDW_ERASE or RDW_FRAME or RDW_ALLCHILDREN);
+                  RedrawWindow(CtrlHandle, nil, 0, RDWA_ALLNOW);
                   if SkinData.FOwnerControl <> nil then
                     SetParentUpdated(TWinControl(SkinData.FOwnerControl));
                 end;
               end
               else
-                if (SkinData.CtrlSkinState and ACS_FAST = ACS_FAST) and (SkinData.FOwnerControl <> nil) then
+                if (SkinData.CtrlSkinState and ACS_FAST <> 0) and (SkinData.FOwnerControl <> nil) then
                   SetParentUpdated(TWinControl(SkinData.FOwnerControl));
 
               Exit;
@@ -3732,19 +3752,19 @@ begin
 
         WM_NCPAINT: begin
           if not ScrollsInitialized then
-            SetWindowPos(CtrlHandle, 0, 0, 0, 0, 0, SWP_NOMOVE or SWP_NOSIZE or SWP_NOZORDER or SWP_NOACTIVATE or SWP_FRAMECHANGED);
+            SetWindowPos(CtrlHandle, 0, 0, 0, 0, 0, SWPA_FRAMECHANGED);
 
           if IsWindowVisible(CtrlHandle) and not InUpdating(SkinData) and not DontRepaint and ScrollsInitialized then
             Message.Result := LRESULT(Ac_NCDraw(Self, CtrlHandle));//, Message.WParam, Message.LParam));
         end;
 
         WM_NCRBUTTONDOWN, WM_NCRBUTTONUP, WM_NCMBUTTONDOWN, WM_NCMBUTTONUP:
-          if (Message.wParam = HTHSCROLL) or (Message.wParam = HTVSCROLL) then begin
+          if Message.wParam in [HTHSCROLL, HTVSCROLL] then begin
             Message.Result := 0;
             Exit;
           end;
 
-        WM_NCLBUTTONDBLCLK: if (Message.wParam = HTHSCROLL) or (Message.wParam = HTVSCROLL) then begin
+        WM_NCLBUTTONDBLCLK: if Message.wParam in [HTHSCROLL, HTVSCROLL] then begin
           Message.Result := Ac_NCLButtonDown(Self, CtrlHandle, Message.wParam, Message.lParam);
           Exit;
         end;
@@ -3754,7 +3774,7 @@ begin
           Exit;
         end;
 
-        WM_NCLBUTTONDOWN: if (Message.wParam = HTHSCROLL) or (Message.wParam = HTVSCROLL) then begin
+        WM_NCLBUTTONDOWN: if Message.wParam in [HTHSCROLL, HTVSCROLL] then begin
           Message.Result := Ac_NCLButtonDown(Self, CtrlHandle, Message.wParam, Message.lParam);
           Exit;
         end;
@@ -3870,7 +3890,7 @@ begin
       if not DlgMode then
         UpdateWndCorners(SkinData, 0, Self);
 
-      if PRF_CLIENT and Message.LParam = PRF_CLIENT then begin // Patch for using with BE
+      if PRF_CLIENT and Message.LParam <> 0 then begin // Patch for using with BE
         MoveWindowOrg(DC, -cxLeftEdge, -cxLeftEdge);
         IntersectClipRect(DC, 0, 0, SkinData.FCacheBmp.Width - cxLeftEdge, SkinData.FCacheBmp.Height - cxLeftEdge);
       end
@@ -3888,7 +3908,7 @@ begin
 
       if IsCached(SkinData) then
         with SkinData.FCacheBmp do
-          if PRF_CLIENT and Message.LParam = PRF_CLIENT then // Patch for using with BE
+          if PRF_CLIENT and Message.LParam <> 0 then // Patch for using with BE
             BitBlt(DC, 0, 0, Width, Height, Canvas.Handle, 0, 0, SRCCOPY)
           else
             BitBlt(DC, 0, 0, Width, Height, Canvas.Handle, cxLeftEdge, cxLeftEdge, SRCCOPY)
@@ -3896,15 +3916,15 @@ begin
         FillDC(DC, MkRect(WndSize), Color);
 
 {$IFNDEF D2005}
-      if (SkinData.FOwnerControl is TCustomListBox) then begin // Fix empty ListBox drawing bug, fixed in latest Delphi versions
-        if (TCustomListBox(SkinData.FOwnerControl).Items.Count <> 0) then
-          SendMessage(CtrlHandle, WM_PAINT, WPARAM(DC), 0);
+      if SkinData.FOwnerControl is TCustomListBox then begin // Fix empty ListBox drawing bug, fixed in latest Delphi versions
+        if TCustomListBox(SkinData.FOwnerControl).Items.Count <> 0 then
+          TrySendMessage(CtrlHandle, WM_PAINT, WPARAM(DC), 0);
       end
       else
 {$ENDIF}
-        SendMessage(CtrlHandle, WM_PAINT, WPARAM(DC), 0);
+        TrySendMessage(CtrlHandle, WM_PAINT, WPARAM(DC), 0);
 
-      SendMessage(CtrlHandle, WM_PRINTCLIENT, WPARAM(DC), PRF_CLIENT or PRF_OWNED);
+      TrySendMessage(CtrlHandle, WM_PRINTCLIENT, WPARAM(DC), PRF_CLIENT or PRF_OWNED);
       RestoreDC(DC, SavedDC);
       if not (SkinData.COC in [COC_TsListView]) then
         Exit;
@@ -3912,9 +3932,9 @@ begin
 
     WM_SETTEXT, CM_ENABLEDCHANGED, CM_FONTCHANGED: begin
       Skindata.BGChanged := True;
-      if (SkinData.CtrlSkinState and ACS_CHANGING <> ACS_CHANGING) then begin
+      if SkinData.CtrlSkinState and ACS_CHANGING = 0 then begin
         if not SkinData.FUpdating then
-          RedrawWindow(CtrlHandle, nil, 0, RDW_ERASE or RDW_INVALIDATE or RDW_FRAME);
+          RedrawWindow(CtrlHandle, nil, 0, RDWA_REPAINT);
       end;{
       else
         Exit;}
@@ -3962,7 +3982,7 @@ begin
           EndPaint(CtrlHandle, {$IFDEF FPC}@PS{$ELSE}PS{$ENDIF});
           Exit;
         end;
-        if InUpdating(SkinData) or (InAnimationProcess and (SkinData.PrintDC = 0)) then begin
+        if InUpdating(SkinData) or InAnimationProcess and (SkinData.PrintDC = 0) then begin
           EmulPaint;
           Exit;
         end
@@ -4001,10 +4021,10 @@ begin
           try
             Message.Result := Ac_NCDraw(Self, Self.CtrlHandle, -1, DC);
             if (DC <> 0) and (SkinData <> nil) then begin
-{$IFNDEF DELPHI7UP}
+//{$IFNDEF DELPHI7UP}
               if cxLeftEdge < 0 then
-                cxLeftEdge := 1;
-{$ENDIF}
+                cxLeftEdge := 2;
+//{$ENDIF}
               BitBltBorder(DC, 0, 0, SkinData.FCacheBmp.Width, SkinData.FCacheBmp.Height, SkinData.FCacheBmp.Canvas.Handle, 0, 0, max(0, cxLeftEdge))
             end;
           finally
@@ -4016,10 +4036,7 @@ begin
       end;
 
     WM_SETFOCUS, WM_KILLFOCUS: begin
-      if MayBeHot(SkinData, False) and
-           (Skindata.FOwnerControl is TWinControl) and
-             TWinControl(Skindata.FOwnerControl).CanFocus and
-               TWinControl(Skindata.FOwnerControl).TabStop then begin
+      if MayBeHot(SkinData, False) and (Skindata.FOwnerControl is TWinControl) and TWinControl(Skindata.FOwnerControl).CanFocus and TWinControl(Skindata.FOwnerControl).TabStop then begin
         Skindata.BGChanged := True;
         Skindata.FFocused := WM_SETFOCUS = Message.Msg;
         inherited acWndProc(Message);
@@ -4038,12 +4055,12 @@ begin
       CtrlListChanged := True;
 
     WM_PARENTNOTIFY:
-      if (Message.WParamLo in [WM_CREATE, WM_DESTROY]) then
+      if Message.WParamLo in [WM_CREATE, WM_DESTROY] then
         if (Message.WParamLo = WM_CREATE) and (srThirdParty in SkinData.SkinManager.SkinningRules) then
           CtrlListChanged := True;
 
     LB_GETTOPINDEX: // Fix of empty ListBox drawing bug
-      if (SkinData.FOwnerControl is TCustomListBox) then
+      if SkinData.FOwnerControl is TCustomListBox then
         if (Message.Result = 0) and (TCustomListBox(SkinData.FOwnerControl).Items.Count = 0) then
           Message.Result := -1;
 
@@ -4068,7 +4085,7 @@ begin
 
     WM_MOUSEMOVE:
       if (DefaultManager <> nil) and not (csDesigning in DefaultManager.ComponentState) and IsWindowEnabled(CtrlHandle) then begin
-        if (DefaultManager.ActiveControl <> CtrlHandle) then
+        if DefaultManager.ActiveControl <> CtrlHandle then
           DefaultManager.ActiveControl := CtrlHandle;
 
         if not SkinData.Updating and (GetCapture <> 0) then
@@ -4095,7 +4112,7 @@ begin
            not (Self is TacVirtualTreeViewWnd) and
              (uxthemeLib <> 0) and
                (SkinParams.SkinSection <> s_Dialog) then
-      if (ASkinData = nil) then begin
+      if ASkinData = nil then begin
         if (Win32MajorVersion < 6) or (SkinParams.SkinSection = s_ComboBox) then
           Ac_SetWindowTheme(AHandle, s_Space, s_Space) // Don't touch win themes in dialogs
       end
@@ -4158,7 +4175,7 @@ begin
     InitializeACScrolls(Self, AHandle, Repaint);
     if SkinData.FOwnerControl <> nil then begin
       OldCtrlStyle := SkinData.FOwnerControl.ControlStyle;
-      SingleLineEdit := (SkinData.FOwnerControl is TCustomEdit) and (GetWindowLong(CtrlHandle, GWL_STYLE) and ES_MULTILINE <> ES_MULTILINE);
+      SingleLineEdit := (SkinData.FOwnerControl is TCustomEdit) and (GetWindowLong(CtrlHandle, GWL_STYLE) and ES_MULTILINE = 0);
       if not (SkinData.FOwnerControl is TCustomListView) then
         SkinData.FOwnerControl.ControlStyle := SkinData.FOwnerControl.ControlStyle + [csOpaque];
     end
@@ -4184,10 +4201,16 @@ begin
       Result := True;
     end;
 
+    AC_SETSCALE: begin
+      Message.Result := CallPrevWndProc(CtrlHandle, Message.Msg, Message.WParam, Message.LParam);
+      Result := CommonMessage(Message, SkinData);
+      Exit;
+    end;
+
     AC_ENDPARENTUPDATE:
       if SkinData.FUpdating then
         if not InUpdating(SkinData, True) then
-          RedrawWindow(CtrlHandle, nil, 0, RDW_ALLCHILDREN or RDW_INVALIDATE or RDW_FRAME or RDW_UPDATENOW or RDW_ERASE);
+          RedrawWindow(CtrlHandle, nil, 0, RDWA_ALLNOW);
 
     AC_PREPARECACHE: begin
       InitCtrlData(CtrlHandle, ParentWnd, WndRect, ParentRect, WndSize, WndPos);
@@ -4197,20 +4220,20 @@ begin
     end;
 
     AC_GETSKININDEX: begin
-      PacSectionInfo(Message.LParam)^.SkinIndex := SkinData.SkinIndex;
+      PacSectionInfo(Message.LParam)^.siSkinIndex := SkinData.SkinIndex;
       Result := True;
     end;
 
     AC_REFRESH:
-      if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
+      if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then begin
         inherited acWndProc(Message);
         if SkinData <> nil then
           SetSkinParams;
       end;
 
     AC_BEFORESCROLL: begin
-      if GetWindowLong(CtrlHandle, GWL_EXSTYLE) and WS_EX_LEFTSCROLLBAR = WS_EX_LEFTSCROLLBAR then
-        SendMessage(CtrlHandle, WM_SETREDRAW, 0, 0)
+      if GetWindowLong(CtrlHandle, GWL_EXSTYLE) and WS_EX_LEFTSCROLLBAR <> 0 then
+        TrySendMessage(CtrlHandle, WM_SETREDRAW, 0, 0)
       else
         inherited acWndProc(Message);
 
@@ -4218,8 +4241,8 @@ begin
     end;
 
     AC_AFTERSCROLL: begin
-      if GetWindowLong(CtrlHandle, GWL_EXSTYLE) and WS_EX_LEFTSCROLLBAR = WS_EX_LEFTSCROLLBAR then begin
-        SendMessage(CtrlHandle, WM_SETREDRAW, 1, 0);
+      if GetWindowLong(CtrlHandle, GWL_EXSTYLE) and WS_EX_LEFTSCROLLBAR <> 0 then begin
+        TrySendMessage(CtrlHandle, WM_SETREDRAW, 1, 0);
         InvalidateRect(CtrlHandle, nil, True);
       end
       else
@@ -4231,20 +4254,21 @@ begin
     AC_GETBG:
       if SkinData <> nil then begin
         Message.Result := CallPrevWndProc(CtrlHandle, Message.Msg, Message.WParam, Message.LParam);
-        if PacBGInfo(Message.LParam).BgType = btUnknown then
-          if SkinData.CustomColor then begin // Used in ComboListWnd and similar windows
-            PacBGInfo(Message.LParam).BgType := btFill;
-            if SkinData.FOwnerControl <> nil then
-              PacBGInfo(Message.LParam).Color := TsHackedControl(SkinData.FOwnerControl).Color
+        with PacBGInfo(Message.LParam)^ do begin
+          if BgType = btUnknown then
+            if SkinData.CustomColor then begin // Used in ComboListWnd and similar windows
+              BgType := btFill;
+              if SkinData.FOwnerControl <> nil then
+                Color := TsAccessControl(SkinData.FOwnerControl).Color
+              else
+                Color := Self.Color;
+            end
             else
-              PacBGInfo(Message.LParam).Color := Color;
-          end
-          else begin
-            InitBGInfo(SkinData, PacBGInfo(Message.LParam), 0);
-            inc(PacBGInfo(Message.LParam).Offset.X, cxLeftEdge);
-            inc(PacBGInfo(Message.LParam).Offset.Y, cyTopEdge);
-          end;
+              InitBGInfo(SkinData, PacBGInfo(Message.LParam), 0);
 
+          inc(Offset.X, cxLeftEdge);
+          inc(Offset.Y, cyTopEdge);
+        end;
         Result := True;
       end;
 
@@ -4259,6 +4283,8 @@ type
 
 
 procedure TacEditWnd.RestoreStdParams;
+var
+  TempOnChange: TNotifyEvent;
 begin
   inherited;
   if Assigned(SkinData) then
@@ -4272,16 +4298,19 @@ begin
 {$ENDIF}
       if Assigned(FOwnerControl) and not (csDestroying in FOwnerControl.ComponentState) then begin
         if SkinData.CustomColor then
-          TsHackedControl(FOwnerControl).Color := StdColor
+//          TsAccessControl(FOwnerControl).Color := StdColor
         else
-          TsHackedControl(FOwnerControl).Color := clWindow;
+          TsAccessControl(FOwnerControl).Color := clWindow;
 
         CtrlSkinState := CtrlSkinState or ACS_CHANGING;
-        TsHackedControl(FOwnerControl).Font.OnChange := nil; // Prevent recreating of some controls
+        TempOnChange := TsAccessControl(FOwnerControl).Font.OnChange;
+        TsAccessControl(FOwnerControl).Font.OnChange := nil; // Prevent a recreating of some controls
         if SkinData.CustomFont then
-          TsHackedControl(FOwnerControl).Font.Color := StdFontColor
+//          TsAccessControl(FOwnerControl).Font.Color := StdFontColor
         else
-          TsHackedControl(FOwnerControl).Font.Color := clWindowText;
+          TsAccessControl(FOwnerControl).Font.Color := clWindowText;
+
+        TsAccessControl(FOwnerControl).Font.OnChange := TempOnChange;
 
         CtrlSkinState := CtrlSkinState and not ACS_CHANGING;
 
@@ -4289,7 +4318,7 @@ begin
           SetIntProp(SkinData.FOwnerControl, acFocusColor, FocusColor);
       end;
       if IsWindowVisible(CtrlHandle) and not (csDestroying in FOwnerControl.ComponentState) then // Scrollbars updating if exists
-        SetWindowPos(CtrlHandle, 0, 0, 0, 0, 0, SWP_NOSIZE or SWP_NOMOVE or SWP_NOZORDER or SWP_NOREPOSITION or SWP_FRAMECHANGED);
+        SetWindowPos(CtrlHandle, 0, 0, 0, 0, 0, SWPA_FRAMECHANGED);
     end;
 end;
 
@@ -4305,8 +4334,8 @@ begin
   end;
 {$ENDIF}
   if Assigned(SkinData) and Assigned(SkinData.FOwnerControl) then begin
-    StdColor := TsHackedControl(SkinData.FOwnerControl).Color;
-    StdFontColor := TsHackedControl(SkinData.FOwnerControl).Font.Color;
+    StdColor := TsAccessControl(SkinData.FOwnerControl).Color;
+    StdFontColor := TsAccessControl(SkinData.FOwnerControl).Font.Color;
     if HasProperty(SkinData.FOwnerControl, acFocusColor) then
       FocusColor := GetIntProp(SkinData.FOwnerControl, acFocusColor);
   end
@@ -4329,36 +4358,36 @@ begin
       if DrawingStyle <> gdsClassic then
         TsAccessGrid(SkinData.FOwnerControl).DrawingStyle := gdsGradient;
 
-      TsAccessGrid(SkinData.FOwnerControl).GradientStartColor := MixColors(SkinData.SkinManager.GetGlobalColor, SkinData.SkinManager.GetActiveEditColor, 0.5);
+      TsAccessGrid(SkinData.FOwnerControl).GradientStartColor := BlendColors(SkinData.SkinManager.GetGlobalColor, SkinData.SkinManager.GetActiveEditColor, 127);
       TsAccessGrid(SkinData.FOwnerControl).GradientEndColor := SkinData.SkinManager.GetGlobalColor;
     end;
 {$ENDIF}
     if Assigned(SkinData) and Assigned(SkinData.SkinManager) and SkinData.SkinManager.IsValidSkinIndex(SkinData.SkinIndex) then begin
       if Assigned(SkinData.FOwnerControl) then begin // If VCL used
         if ControlIsActive(SkinData) then
-          b := (SkinData.SkinManager.gd[SkinData.SkinIndex].States > 1)
+          b := SkinData.SkinManager.gd[SkinData.SkinIndex].States > 1
         else
           b := False;
 
         if not SkinData.CustomColor then begin
           C := GetBGColor(SkinData, integer(b));
           if HasProperty(SkinData.FOwnerControl, acFocusColor) then begin
-            if TsHackedControl(SkinData.FOwnerControl).Color <> C then
+            if TsAccessControl(SkinData.FOwnerControl).Color <> C then
               SetIntProp(SkinData.FOwnerControl, acColor, C);
 
             SetIntProp(SkinData.FOwnerControl, acFocusColor, C);
           end
           else
-            if TsHackedControl(SkinData.FOwnerControl).Color <> C then
-              TsHackedControl(SkinData.FOwnerControl).Color := C;
+            if TsAccessControl(SkinData.FOwnerControl).Color <> C then
+              TsAccessControl(SkinData.FOwnerControl).Color := C;
 
           Color := C;
         end;
-        if Assigned(SkinData) and not SkinData.CustomFont then begin
+        if not SkinData.CustomFont then begin
           C := SkinData.SkinManager.gd[SkinData.SkinIndex].Props[integer(b)].FontColor.Color;
-          if TsHackedControl(SkinData.FOwnerControl).Font.Color <> C then begin
+          if TsAccessControl(SkinData.FOwnerControl).Font.Color <> C then begin
             SkinData.CtrlSkinState := SkinData.CtrlSkinState or ACS_CHANGING;
-            TsHackedControl(SkinData.FOwnerControl).Font.Color := C;
+            TsAccessControl(SkinData.FOwnerControl).Font.Color := C;
             SkinData.CtrlSkinState := SkinData.CtrlSkinState and not ACS_CHANGING;
             if Destroyed then
               Exit;
@@ -4403,12 +4432,12 @@ begin
     SM_ALPHACMD:
       case Message.WParamHi of
         AC_GETSKININDEX: begin
-          PacSectionInfo(Message.LParam)^.SkinIndex := SkinData.SkinIndex;
+          PacSectionInfo(Message.LParam)^.siSkinIndex := SkinData.SkinIndex;
           Exit;
         end;
 
         AC_REFRESH:
-          if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
+          if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then begin
             inherited;
             M := MakeMessage(WM_PAINT, 0, 0, 0);
             HeaderWndProc(M);
@@ -4430,14 +4459,14 @@ begin
     end;
 
     WM_NCHITTEST:
-      if (HoverColIndex > -1) or (FPressedColumn > -1) then begin
+      if (HoverColIndex >= 0) or (FPressedColumn >= 0) then begin
         HoverColIndex := -1;
         FPressedColumn := -1;
         PaintHeader(0);
       end;
 
     WM_VSCROLL: begin
-      if (Message.WParamLo = SB_THUMBTRACK) then begin
+      if Message.WParamLo = SB_THUMBTRACK then begin
         DstPos := iff(Message.LParam <> 0, Message.LParam, Message.WParamHi);
         if nLastSBPos <> DstPos then begin // If CurPos is changed
           Delta := DstPos - nLastSBPos;
@@ -4514,10 +4543,10 @@ begin
       with TWMParentNotify(Message) do begin
         SetLength(WndName, 96);
         SetLength(WndName, GetClassName(ChildWnd, PChar(WndName), Length(WndName)));
-        if (WndName = WC_HEADER) then
+        if WndName = WC_HEADER then
           case Event of
             WM_CREATE:
-              if (FhWndHeader <> 0) then begin
+              if FhWndHeader <> 0 then begin
                 SetWindowLong(FhWndHeader, GWL_WNDPROC, LONG_PTR(FhDefHeaderProc));
                 FhWndHeader := 0;
               end
@@ -4552,7 +4581,7 @@ begin
   Wnd := FindWindowEx(CtrlHandle, 0, WC_HEADER{'SysHeader32'}, nil);
   FPressedColumn := -1;
   if Wnd <> 0 then
-    if (FhWndHeader = 0) then begin
+    if FhWndHeader = 0 then begin
       FhWndHeader := Wnd;
       FhDefHeaderProc := Pointer(GetWindowLong(FhWndHeader, GWL_WNDPROC));
       SetWindowLong(FhWndHeader, GWL_WNDPROC, LONG_PTR(FhHeaderProc));
@@ -4564,7 +4593,6 @@ function TacListViewWnd.AutoSizedCols: boolean;
 var
   i: integer;
 begin
-  Result := False;
   if SkinData.FOwnerControl is TCustomListView then
     with TListView(SkinData.FOwnerControl) do
       for i := 0 to Columns.Count - 1 do
@@ -4572,6 +4600,8 @@ begin
           Result := True;
           Exit;
         end;
+
+  Result := False;
 end;
 
 
@@ -4654,8 +4684,8 @@ begin
 
       if ArrowIndex <> -2 then
         if ArrowIndex >= 0 then
-          ArrowSize := MkSize(WidthOfImage(SkinData.SkinManager.ma[ArrowIndex]) + 6, HeightOfImage(SkinData.SkinManager.ma[ArrowIndex]))
-        else 
+          ArrowSize := MkSize(SkinData.SkinManager.ma[ArrowIndex].Width + 6, SkinData.SkinManager.ma[ArrowIndex].Height)
+        else
           ArrowSize := MkSize(6, 3)
       else
         ArrowSize := MkSize;
@@ -4665,7 +4695,7 @@ begin
       GetTextExtentPoint32(TempBmp.Canvas.Handle, PacChar(ws), Length(ws), ts);
 {$ENDIF}
       inc(ts.cx, 5);
-      case (Item.fmt and $0ff) of
+      case Item.fmt and $0ff of
         HDF_CENTER: begin
           TextRc.Left := (WidthOf(TextRc) - ts.cx - ArrowSize.cx - gWidth) div 2 + TextRc.Left + gWidth;
           TextRc.Right := TextRc.Left + ts.cx;
@@ -4688,14 +4718,14 @@ begin
           gR.Right := gR.Left + 6;
           gR.Bottom := gR.Top + 3;
           C := SkinData.SkinManager.gd[si].Props[min(State, ac_MaxPropsIndex)].FontColor.Color;
-          DrawColorArrow(TempBmp.Canvas, C, gR, ArrowSide);
+          DrawColorArrow(TempBmp, C, gR, ArrowSide);
         end;
 
-      if (State = 2) then
+      if State = 2 then
         if not SkinData.Skinned or (SkinData.SkinManager <> nil) and SkinData.SkinManager.ButtonsOptions.ShiftContentOnClick then
           OffsetRect(TextRc, 1, 1);
-        
-      acWriteTextEx(TempBmp.Canvas, PacChar(ws), True, TextRc, Flags, si, (State <> 0), SkinData.SkinManager);
+
+      acWriteTextEx(TempBmp.Canvas, PacChar(ws), True, TextRc, Flags, si, State <> 0, SkinData.SkinManager);
 {$IFNDEF FPC}
       if (item.iImage > 0) and (SkinData.FOwnerControl <> nil) then
         TacAccessLV(SkinData.FOwnerControl).SmallImages.Draw(TempBmp.Canvas, TextRc.Left - gWidth, (HeightOf(TextRc) - TacAccessLV(SkinData.FOwnerControl).SmallImages.Height) div 2 + integer(State = 2), Item.iImage, TacAccessLV(SkinData.FOwnerControl).Enabled);
@@ -4727,7 +4757,7 @@ var
   rc: TRect;
   SectionOrder: array of Integer;
 begin
-  if GetWindowLong(FhWndHeader, GWL_STYLE) and HDS_FULLDRAG = HDS_FULLDRAG then begin
+  if GetWindowLong(FhWndHeader, GWL_STYLE) and HDS_FULLDRAG <> 0 then begin
     SetLength(SectionOrder, Header_GetItemCount(FhWndHeader));
     Header_GetOrderArray(FhWndHeader, Header_GetItemCount(FhWndHeader), {$IFDEF FPC}LParam{$ELSE}PInteger{$ENDIF}(SectionOrder));
     if Length(SectionOrder) > 0 then
@@ -4761,7 +4791,7 @@ var
       ltPoint.Y := p.y - rc.Top;
     end;
     Result := -2;
-    c := (Header_GetItemCount(FhWndHeader) - 1);
+    c := Header_GetItemCount(FhWndHeader) - 1;
     for i := 0 to c do begin
       rc := GetHeaderColumnRect(i);
       if PtInRect(rc, ltPoint) then begin
@@ -4804,7 +4834,6 @@ begin
           WM_WINDOWPOSCHANGING:
             if IsWindowVisible(CtrlHandle) then
               ProcessMessage(WM_NCPAINT, 0, 0);
-//              SendMessage(CtrlHandle, WM_NCPAINT, 0, 0);
 
           WM_NCDESTROY: begin
             Result := CallWindowProc(FhDefHeaderProc, FhWndHeader, Msg, WParam, LParam);
@@ -4857,7 +4886,7 @@ begin
     try
       RightPos := 0;
       count := Header_GetItemCount(FhWndHeader) - 1;
-      if count > -1 then
+      if count >= 0 then
         // Draw Columns Headers
         for i := 0 to count do begin
           rc := GetHeaderColumnRect(i);
@@ -4898,7 +4927,7 @@ begin
   ListView_SetTextColor(CtrlHandle, ColorToRGB(StdFontColor));
   ListView_SetTextBkColor(CtrlHandle, ColorToRGB(StdColor));
   if SkinData.FOwnerControl <> nil then
-    TsHackedControl(SkinData.FOwnerControl).Color := StdColor;
+    TsAccessControl(SkinData.FOwnerControl).Color := StdColor;
     
   RedrawWindow(CtrlHandle, nil, 0, RDW_INVALIDATE);
 end;
@@ -4909,8 +4938,8 @@ begin
   inherited;
   if CtrlHandle <> 0 then
     if SkinData.FOwnerControl <> nil then begin
-      StdColor     := TsHackedControl(SkinData.FOwnerControl).Color;
-      StdFontColor := TsHackedControl(SkinData.FOwnerControl).Font.Color;
+      StdColor     := TsAccessControl(SkinData.FOwnerControl).Color;
+      StdFontColor := TsAccessControl(SkinData.FOwnerControl).Font.Color;
     end
     else begin
       StdColor     := TColor(SendMessage(CtrlHandle, LVM_GETBKCOLOR,   0, 0));
@@ -4926,20 +4955,21 @@ begin
   inherited;
   if CtrlHandle <> 0 then
     if DlgMode then begin
-      ListView_SetBkColor(CtrlHandle, ColorToRgb(clWindow));
-      ListView_SetTextBkColor(CtrlHandle, ColorToRgb(clWindow));
-      ListView_SetTextColor(CtrlHandle, ColorToRgb(clWindowText));
+      ListView_SetBkColor(CtrlHandle, ColorToRGB(clWindow));
+      ListView_SetTextBkColor(CtrlHandle, ColorToRGB(clWindow));
+      ListView_SetTextColor(CtrlHandle, ColorToRGB(clWindowText));
     end
     else
-      if DefaultManager.IsValidSkinIndex(SkinData.SkinIndex) then begin
-        State := integer(ControlIsActive(SkinData) and (SkinData.SkinManager.gd[Skindata.SkinIndex].States > 1));
-        if not SkinData.CustomColor then begin
-          ListView_SetBkColor(CtrlHandle, DefaultManager.gd[SkinData.SkinIndex].Props[State].Color);
-          ListView_SetTextBkColor(CtrlHandle, ColorToRGB(DefaultManager.gd[SkinData.SkinIndex].Props[State].Color));
+      if DefaultManager.IsValidSkinIndex(SkinData.SkinIndex) then
+        with SkinData.SkinManager.gd[Skindata.SkinIndex] do begin
+          State := integer(ControlIsActive(SkinData) and (States > 1));
+          if not SkinData.CustomColor then begin
+            ListView_SetBkColor(CtrlHandle, Props[State].Color);
+            ListView_SetTextBkColor(CtrlHandle, ColorToRGB(Props[State].Color));
+          end;
+          if not SkinData.CustomFont then
+            ListView_SetTextColor(CtrlHandle, Props[State].FontColor.Color);
         end;
-        if not SkinData.CustomFont then
-          ListView_SetTextColor(CtrlHandle, DefaultManager.gd[SkinData.SkinIndex].Props[State].FontColor.Color);
-      end;
 end;
 
 
@@ -4987,50 +5017,50 @@ begin
         end;
       end;
 
-    WM_VSCROLL: begin
-      // TDBGrid params
-      if (TWMVScroll(Message).ScrollCode = SB_THUMBPOSITION) and HasProperty(SkinData.FOwnerControl, acDataSource) then begin
-        if TWMVScroll(Message).Pos > 4 then
-          TWMVScroll(Message).Pos := TWMVScroll(Message).Pos;
+    WM_VSCROLL:
+      with TWMVScroll(Message), sBarVert.ScrollInfo do begin
+        // TDBGrid params
+        if (ScrollCode = SB_THUMBPOSITION) and HasProperty(SkinData.FOwnerControl, acDataSource) then begin
+//          if Pos > 4 then
+//            TWMVScroll(Message).Pos := TWMVScroll(Message).Pos;
+          cbSize := SizeOf(TScrollInfo);
+          fMask := SIF_ALL;
+          nPos := nTrackPos;
+          if not HasProperty(SkinData.FOwnerControl, 'DataSource') then // SkinData.FOwnerControl.ClassName = acTwwDBGrid
+            inc(sBarVert.ScrollInfo.nPos);
 
-        sBarVert.ScrollInfo.cbSize := SizeOf(TScrollInfo);
-        sBarVert.ScrollInfo.fMask := SIF_ALL;
-        sBarVert.ScrollInfo.nPos := sBarVert.ScrollInfo.nTrackPos;
-        if not HasProperty(SkinData.FOwnerControl, 'DataSource') then // SkinData.FOwnerControl.ClassName = acTwwDBGrid
-          inc(sBarVert.ScrollInfo.nPos);
-
-        SetScrollInfo(CtrlHandle, SB_VERT, {$IFDEF FPC}@sBarVert.ScrollInfo{$ELSE}sBarVert.ScrollInfo{$ENDIF}, False);
+          SetScrollInfo(CtrlHandle, SB_VERT, {$IFDEF FPC}@sBarVert.ScrollInfo{$ELSE}sBarVert.ScrollInfo{$ENDIF}, False);
+        end;
+        // For DBGridEH
+        if (ScrollCode = SB_THUMBTRACK) and HasProperty(SkinData.FOwnerControl, acDataSource) then begin
+          cbSize := SizeOf(TScrollInfo);
+          fMask := SIF_ALL;
+          nPos := nTrackPos;
+          SetScrollInfo(CtrlHandle, SB_VERT, {$IFDEF FPC}@sBarVert.ScrollInfo{$ELSE}sBarVert.ScrollInfo{$ENDIF}, False);
+        end;
+        if (ScrollCode = SB_ENDSCROLL) and HasProperty(SkinData.FOwnerControl, acDataSource) and (SkinData.FOwnerControl.ClassName <> acTwwDBGrid) then
+          SendScrollMessage(CtrlHandle, WM_VSCROLL, SB_THUMBPOSITION, sBarVert.ScrollInfo.nTrackPos);
       end;
-      // For DBGridEH
-      if (TWMVScroll(Message).ScrollCode = SB_THUMBTRACK) and HasProperty(SkinData.FOwnerControl, acDataSource) then begin
-        sBarVert.ScrollInfo.cbSize := SizeOf(TScrollInfo);
-        sBarVert.ScrollInfo.fMask := SIF_ALL;
-        sBarVert.ScrollInfo.nPos := sBarVert.ScrollInfo.nTrackPos;
-        SetScrollInfo(CtrlHandle, SB_VERT, {$IFDEF FPC}@sBarVert.ScrollInfo{$ELSE}sBarVert.ScrollInfo{$ENDIF}, False);
-      end;
-      if (TWMVScroll(Message).ScrollCode = SB_ENDSCROLL) and HasProperty(SkinData.FOwnerControl, acDataSource) and (SkinData.FOwnerControl.ClassName <> acTwwDBGrid) then
-        SendScrollMessage(CtrlHandle, WM_VSCROLL, SB_THUMBPOSITION, sBarVert.ScrollInfo.nTrackPos);
-    end;
 
-    WM_PRINT: begin
-      inherited acWndProc(Message);
-      SavedDC := SaveDC(TWMPaint(Message).DC);
-      MoveWindowOrg(TWMPaint(Message).DC, cxLeftEdge, cxLeftEdge);
-      IntersectClipRect(TWMPaint(Message).DC, 0, 0,
-                        SkinData.FCacheBmp.Width  - 2 * cxLeftEdge - integer(sBarVert.fScrollVisible) * GetScrollMetric(sBarVert, SM_SCROLLWIDTH),
-                        SkinData.FCacheBmp.Height - 2 * cxLeftEdge - integer(sBarHorz.fScrollVisible) * GetScrollMetric(sBarHorz, SM_SCROLLWIDTH));
-      SendMessage(CtrlHandle, WM_PAINT, Message.WParam, Message.LParam);
-      RestoreDC(TWMPaint(Message).DC, SavedDC);
-      Exit;
-    end;
+    WM_PRINT:
+      with TWMPaint(Message) do begin
+        inherited acWndProc(Message);
+        SavedDC := SaveDC(DC);
+        MoveWindowOrg(DC, cxLeftEdge, cxLeftEdge);
+        IntersectClipRect(DC, 0, 0,
+                          SkinData.FCacheBmp.Width  - 2 * cxLeftEdge - integer(sBarVert.fScrollVisible) * GetScrollMetric(sBarVert, SM_SCROLLWIDTH),
+                          SkinData.FCacheBmp.Height - 2 * cxLeftEdge - integer(sBarHorz.fScrollVisible) * GetScrollMetric(sBarHorz, SM_SCROLLWIDTH));
+        SendMessage(CtrlHandle, WM_PAINT, Message.WParam, Unused);
+        RestoreDC(DC, SavedDC);
+        Exit;
+      end;
   end;
   inherited acWndProc(Message);
   case Message.Msg of
     SM_ALPHACMD:
       case Message.WParamHi of
         AC_REMOVESKIN:
-          if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) and
-               (SkinData.FOwnerControl is TCustomGrid) then begin
+          if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) and (SkinData.FOwnerControl is TCustomGrid) then begin
             Grid := TsAccessGrid(SkinData.FOwnerControl);
             sb := Grid.ScrollBars;
             Grid.ScrollBars := ssNone;
@@ -5041,7 +5071,6 @@ begin
     WM_WINDOWPOSCHANGED:
       if IsWindowVisible(CtrlHandle) then
         ProcessMessage(WM_NCPAINT, 0, 0);
-//        SendMessage(CtrlHandle, WM_NCPAINT, 0, 0);
 
     WM_PAINT:
       UpdateScrolls(Self, True)
@@ -5176,51 +5205,53 @@ var
   CGlobal: TColor;
 begin
   inherited;
-  CGlobal := SkinData.SkinManager.Palette[pcMainColor];
-  TryChangeIntProp(SkinData.FOwnerControl, acFixedColor, CGlobal);
-  // TDBGrid params
-  if HasProperty(SkinData.FOwnerControl, acTitleFont) then begin
-    f := TFont(GetObjProp(SkinData.FOwnerControl, acTitleFont));
-    TFont(f).Color := SkinData.SkinManager.Palette[pcLabelText];
-  end;
-  // AdvGrid params <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-  if HasProperty(SkinData.FOwnerControl, acControlLook) then begin
-    if HasProperty(SkinData.FOwnerControl, acFixedFont) then begin
-      f := TFont(GetObjProp(SkinData.FOwnerControl, acFixedFont));
-      TFont(f).Color := SkinData.SkinManager.Palette[pcLabelText];
+  with SkinData, SkinManager do begin
+    CGlobal := Palette[pcMainColor];
+    TryChangeIntProp(FOwnerControl, acFixedColor, CGlobal);
+    // TDBGrid params
+    if HasProperty(FOwnerControl, acTitleFont) then begin
+      f := TFont(GetObjProp(FOwnerControl, acTitleFont));
+      TFont(f).Color := Palette[pcLabelText];
     end;
-    TryChangeIntProp(SkinData.FOwnerControl, acGridFixedLineColor, SkinData.SkinManager.Palette[pcBorder]);
-    TryChangeIntProp(SkinData.FOwnerControl, acGridLineColor, MixColors(DefaultManager.GetActiveEditColor, DefaultManager.GetActiveEditFontColor, 0.7));
-    l := TObject(GetObjProp(SkinData.FOwnerControl, acControlLook));
+    // AdvGrid params <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+    if HasProperty(FOwnerControl, acControlLook) then begin
+      if HasProperty(FOwnerControl, acFixedFont) then begin
+        f := TFont(GetObjProp(FOwnerControl, acFixedFont));
+        TFont(f).Color := Palette[pcLabelText];
+      end;
+      TryChangeIntProp(FOwnerControl, acGridFixedLineColor, Palette[pcBorder]);
+      TryChangeIntProp(FOwnerControl, acGridLineColor, BlendColors(GetActiveEditColor, GetActiveEditFontColor, 180));
+      l := TObject(GetObjProp(FOwnerControl, acControlLook));
+      if l <> nil then begin
+        TryChangeIntProp(l, acFixedGradientFrom,       BlendColors(CGlobal, GetActiveEditColor, 127));
+        TryChangeIntProp(l, acFixedGradientTo,         CGlobal);
+        TryChangeIntProp(l, acFixedGradientMirrorFrom, BlendColors(CGlobal, 0, 243));
+        TryChangeIntProp(l, acFixedGradientMirrorTo,   BlendColors(CGlobal, clWhite, 230));
+      end;
+      TryChangeIntProp(FOwnerControl, acSelectionColor,     GetHighLightColor);
+      TryChangeIntProp(FOwnerControl, acSelectionTextColor, GetHighLightFontColor);
+    end; // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    // TSMDBGrid params
+    l := TObject(GetObjProp(FOwnerControl, acGridStyle));
     if l <> nil then begin
-      TryChangeIntProp(l, acFixedGradientFrom,       MixColors(CGlobal, SkinData.SkinManager.GetActiveEditColor, 0.5));
-      TryChangeIntProp(l, acFixedGradientTo,         CGlobal);
-      TryChangeIntProp(l, acFixedGradientMirrorFrom, MixColors(CGlobal, 0, 0.95));
-      TryChangeIntProp(l, acFixedGradientMirrorTo,   MixColors(CGlobal, clWhite, 0.9));
+      f := TObject(GetObjProp(l, acTitle));
+      if f <> nil then begin
+        TryChangeIntProp(f, acStartColor, BlendColors(CGlobal, GetActiveEditColor, 127));
+        TryChangeIntProp(f, acEndColor, CGlobal);
+      end;
     end;
-    TryChangeIntProp(SkinData.FOwnerControl, acSelectionColor,     SkinData.SkinManager.GetHighLightColor);
-    TryChangeIntProp(SkinData.FOwnerControl, acSelectionTextColor, SkinData.SkinManager.GetHighLightFontColor);
-  end; // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  // TSMDBGrid params
-  l := TObject(GetObjProp(SkinData.FOwnerControl, acGridStyle));
-  if l <> nil then begin
-    f := TObject(GetObjProp(l, acTitle));
-    if f <> nil then begin
-      TryChangeIntProp(f, acStartColor, MixColors(CGlobal, SkinData.SkinManager.GetActiveEditColor, 0.5));
-      TryChangeIntProp(f, acEndColor, CGlobal);
+    // wwDBGrid params
+    if HasProperty(FOwnerControl, acLineColors) then begin
+      l := GetObjProp(FOwnerControl, acLineColors);
+      TryChangeIntProp(l, acFixedColor,  Palette[pcBorder]);
+      TryChangeIntProp(l, acDataColor,   BlendColors(GetActiveEditColor, GetActiveEditFontColor, 205));
+      TryChangeIntProp(l, acShadowColor, BlendColors(GetActiveEditColor, GetActiveEditFontColor, 205));
     end;
+    TryChangeIntProp(FOwnerControl, acFooterColor,     gd[ConstData.IndexGlobalInfo].Props[0].Color);
+    TryChangeIntProp(FOwnerControl, acFooterCellColor, gd[ConstData.IndexGlobalInfo].Props[0].Color);
+    TryChangeIntProp(FOwnerControl, acTitleColor,      gd[ConstData.IndexGlobalInfo].Props[0].Color);
+    TryChangeIntProp(FOwnerControl, acIndColor,        gd[SkinIndex].Props[0].FontColor.Color);
   end;
-  // wwDBGrid params
-  if HasProperty(SkinData.FOwnerControl, acLineColors) then begin
-    l := GetObjProp(SkinData.FOwnerControl, acLineColors);
-    TryChangeIntProp(l, acFixedColor,  SkinData.SkinManager.Palette[pcBorder]);
-    TryChangeIntProp(l, acDataColor,   MixColors(DefaultManager.GetActiveEditColor, DefaultManager.GetActiveEditFontColor, 0.8));
-    TryChangeIntProp(l, acShadowColor, MixColors(DefaultManager.GetActiveEditColor, DefaultManager.GetActiveEditFontColor, 0.8));
-  end;
-  TryChangeIntProp(SkinData.FOwnerControl, acFooterColor,     SkinData.SkinManager.gd[SkinData.SkinManager.ConstData.IndexGlobalInfo].Props[0].Color);
-  TryChangeIntProp(SkinData.FOwnerControl, acFooterCellColor, SkinData.SkinManager.gd[SkinData.SkinManager.ConstData.IndexGlobalInfo].Props[0].Color);
-  TryChangeIntProp(SkinData.FOwnerControl, acTitleColor,      SkinData.SkinManager.gd[SkinData.SkinManager.ConstData.IndexGlobalInfo].Props[0].Color);
-  TryChangeIntProp(SkinData.FOwnerControl, acIndColor,        SkinData.SkinManager.gd[SkinData.SkinIndex].Props[0].FontColor.Color);
 end;
 
 
@@ -5257,8 +5288,8 @@ begin
                   C := SkinData.SkinManager.gd[SkinData.SkinIndex].Props[State].Color
                 end
                 else
-                  if (SkinData.FOwnerControl <> nil) then
-                    C := TsHackedControl(SkinData.FOwnerControl).Color
+                  if SkinData.FOwnerControl <> nil then
+                    C := TsAccessControl(SkinData.FOwnerControl).Color
                   else
                     C := ColorToRGB(clWindow);
 
@@ -5303,30 +5334,32 @@ begin
     TreeView_SetTextColor(CtrlHandle, ColorToRGB(clWindowText));
   end
   else
-    if (SkinData <> nil) then begin
-      State := integer(ControlIsActive(SkinData));
-      if not SkinData.CustomColor then
-        C := SkinData.SkinManager.gd[SkinData.SkinIndex].Props[State].Color
-      else
-        if (SkinData.FOwnerControl <> nil) then
-          C := TsHackedControl(SkinData.FOwnerControl).Color;
+    if SkinData <> nil then
+      with SkinData do begin
+        State := integer(ControlIsActive(SkinData));
+        if not CustomColor then
+          C := SkinManager.gd[SkinIndex].Props[State].Color
+        else
+          if FOwnerControl <> nil then
+            C := TsAccessControl(FOwnerControl).Color;
 
-      if not SkinData.CustomFont then
-        fC := SkinData.SkinManager.gd[SkinData.SkinIndex].Props[State].FontColor.Color
-      else
-        if (SkinData.FOwnerControl <> nil) then
-          fC := TsHackedControl(SkinData.FOwnerControl).Font.Color;
+        if not CustomFont then
+          fC := SkinManager.gd[SkinIndex].Props[State].FontColor.Color
+        else
+          if FOwnerControl <> nil then
+            fC := TsAccessControl(FOwnerControl).Font.Color;
 
-      if (SkinData.FOwnerControl <> nil) then begin
-        if (TsHackedControl(SkinData.FOwnerControl).Font.Color <> fC) then
-          TsHackedControl(SkinData.FOwnerControl).Font.Color := fC;
+        if FOwnerControl <> nil then
+          with TsAccessControl(FOwnerControl) do begin
+            if Font.Color <> fC then
+              Font.Color := fC;
 
-        if (TsHackedControl(SkinData.FOwnerControl).Color <> C) then
+            if Color <> C then
+              TreeView_SetBkColor(CtrlHandle, ColorToRGB(C));
+          end
+        else
           TreeView_SetBkColor(CtrlHandle, ColorToRGB(C));
-      end
-      else
-        TreeView_SetBkColor(CtrlHandle, ColorToRGB(C));
-    end;
+      end;
 end;
 
 
@@ -5417,7 +5450,8 @@ begin
       if SkinData <> nil then
         with SkinData do begin
           if (FOwnerControl is TComboBox) and (TComboBox(FOwnerControl).ItemIndex >= 0) then
-            DrawItem(TComboBox(FOwnerControl).ItemIndex, Rect(3, 3, FOwnerControl.Width - WidthOf(ButtonRect), FOwnerControl.Height - 3), [odComboBoxEdit], FCacheBmp.Canvas.Handle)
+            with TComboBox(FOwnerControl) do
+              DrawItem(ItemIndex, Rect(3, 3, Width - WidthOf(ButtonRect), Height - 3), [odComboBoxEdit], FCacheBmp.Canvas.Handle)
           else
             PaintText;
 
@@ -5455,7 +5489,7 @@ begin
       end
       else begin
         SkinData.BGChanged := True;
-        SendMessage(CtrlHandle, SM_ALPHACMD, MakeWParam(0, AC_PREPARECACHE), 0);
+        SendMessage(CtrlHandle, SM_ALPHACMD, AC_PREPARECACHE_HI, 0);
         BitBltBorder(DC, 0, 0, SkinData.FCacheBmp.Width, SkinData.FCacheBmp.Height, SkinData.FCacheBmp.Canvas.Handle, 0, 0, 3);
         PaintButton(DC);
       end;
@@ -5466,7 +5500,7 @@ begin
 
     CM_MOUSEENTER:
       if not SkinData.FMouseAbove then begin
-        SkinData.FMouseAbove := True;//ac_AllowHotEdits;
+        SkinData.FMouseAbove := True;
         SkinData.BGChanged := True;
         inherited;
 {$IFNDEF DELPHI5}
@@ -5508,18 +5542,18 @@ begin
       SkinData.FFocused := True;
       if MayBeHot(SkinData, False) and Assigned(Skindata.FOwnerControl) and TWinControl(Skindata.FOwnerControl).CanFocus and TWinControl(Skindata.FOwnerControl).TabStop then begin
         SetSkinParams;
-        RedrawWindow(CtrlHandle, nil, 0, RDW_UPDATENOW or RDW_INVALIDATE or RDW_FRAME or RDW_ERASE);
+        RedrawWindow(CtrlHandle, nil, 0, RDWA_NOCHILDRENNOW);
       end;
       Message.Result := CallPrevWndProc(CtrlHandle, Message.Msg, Message.WParam, Message.LParam);
-      if (SkinData <> nil) then
+      if SkinData <> nil then
         RepaintButton;
     end;
 
     CM_EXIT, WM_KILLFOCUS: begin
 {$IFNDEF DELPHI5}
-      if (SkinData.FOwnerControl <> nil) then begin
+      if SkinData.FOwnerControl <> nil then begin
         fHandle := GetFocus;
-        SkinData.FFocused := (fHandle = {$IFNDEF FPC}TAccessCombo(SkinData.FOwnerControl).FEditHandle{$ELSE}CtrlHandle{$ENDIF})
+        SkinData.FFocused := (fHandle = {$IFNDEF FPC}TAccessCombo(SkinData.FOwnerControl).FEditHandle{$ELSE}CtrlHandle{$ENDIF});
       end
       else
 {$ENDIF}
@@ -5535,7 +5569,7 @@ begin
           SendMessage(TAccessCombo(SkinData.FOwnerControl).FEditHandle, EM_SETSEL, -1, 0);
 {$ENDIF}
 {$ENDIF}
-        RedrawWindow(CtrlHandle, nil, 0, RDW_UPDATENOW or RDW_INVALIDATE or RDW_FRAME or RDW_ERASE);
+        RedrawWindow(CtrlHandle, nil, 0, RDWA_NOCHILDRENNOW);
       end;
       RepaintButton;
     end;
@@ -5554,7 +5588,7 @@ begin
     end;
 
     WM_COMMAND: begin
-      if GetWindowLong(CtrlHandle, GWL_STYLE) and CBS_SIMPLE <> CBS_SIMPLE then
+      if GetWindowLong(CtrlHandle, GWL_STYLE) and CBS_SIMPLE = 0 then
         if TWMCommand(Message).NotifyCode = CBN_CLOSEUP then begin
           SkinData.BGChanged := True;
           bDroppedDown := False;
@@ -5574,10 +5608,10 @@ begin
 {$IFDEF TNTUNICODE}
         if SkinData.FOwnerControl is TTntCustomComboBox then Exit;
 {$ENDIF}
-        if (FListHandle = 0) then begin
+        if FListHandle = 0 then begin
           FListHandle := Message.LParam;
           if ListSW = nil then begin
-            Simple := (GetWindowLong(CtrlHandle, GWL_STYLE) and CBS_DROPDOWNLIST = CBS_SIMPLE);
+            Simple := GetWindowLong(CtrlHandle, GWL_STYLE) and CBS_DROPDOWNLIST = CBS_SIMPLE;
             if SkinData.FOwnerControl = nil then
               acDlgMode := DlgMode;
 
@@ -5586,16 +5620,17 @@ begin
             if SkinData.FOwnerControl = nil then
               acDlgMode := False;
           end;
-          si.SkinIndex := -1;
-          SendMessage(FListHandle, SM_ALPHACMD, MakeWParam(0, AC_GETSKININDEX), LPARAM(@si));// - 1;
-          i := si.SkinIndex;
-          if (i > -1) and not DlgMode then begin
-            if SkinData.SkinManager.gd[i].Props[0].FontColor.Color >= 0 then
-              SetTextColor(hdc(Message.WParam), Cardinal(SkinData.SkinManager.gd[i].Props[0].FontColor.Color));
+          si.siSkinIndex := -1;
+          SendMessage(FListHandle, SM_ALPHACMD, AC_GETSKININDEX shl 16, LPARAM(@si));// - 1;
+          i := si.siSkinIndex;
+          if (i >= 0) and not DlgMode then
+            with SkinData.SkinManager.gd[i].Props[0] do begin
+              if FontColor.Color >= 0 then
+                SetTextColor(hdc(Message.WParam), Cardinal(FontColor.Color));
 
-            SetBkColor(hdc(Message.WParam), Cardinal(SkinData.SkinManager.gd[i].Props[0].Color));
-            Message.Result := LRESULT(CreateSolidBrush(Cardinal(SkinData.SkinManager.gd[i].Props[0].Color)));
-          end;
+              SetBkColor(hdc(Message.WParam), Cardinal(Color));
+              Message.Result := LRESULT(CreateSolidBrush(Cardinal(Color)));
+            end;
         end;
         LBoxOpening := False;
       end;
@@ -5617,8 +5652,8 @@ end;
 function TacComboBoxWnd.ButtonHeight: integer;
 begin
   with SkinData.SkinManager.ConstData.ComboBtn do
-    if (GlyphIndex > -1) then
-      Result := HeightOfImage(SkinData.SkinManager.ma[GlyphIndex])
+    if GlyphIndex >= 0 then
+      Result := SkinData.SkinManager.ma[GlyphIndex].Height
     else
       Result := 16;
 end;
@@ -5644,7 +5679,7 @@ begin
       w := 0;
 
   GetWindowRect(CtrlHandle, r);
-  if GetWindowLong(CtrlHandle, GWL_EXSTYLE) and WS_EX_RTLREADING = WS_EX_RTLREADING {SysLocale.MiddleEast }then
+  if GetWindowLong(CtrlHandle, GWL_EXSTYLE) and WS_EX_RTLREADING <> 0 {SysLocale.MiddleEast }then
     Result.Left := SkinData.SkinManager.CommonSkinData.ComboBoxMargin
   else
     Result.Left := WidthOf(r) - w - SkinData.SkinManager.CommonSkinData.ComboBoxMargin;
@@ -5728,7 +5763,7 @@ begin
     aState := integer(SkinData.SkinManager.gd[SkinData.SkinIndex].States > 1);
   end;
   s := ComboBox.Items[Index];
-  if (odSelected in State) then begin
+  if odSelected in State then begin
     sNdx := SkinData.SkinManager.ConstData.Sections[ssSelection];
     C := SkinData.SkinManager.GetHighLightColor(True);
     ComboBox.Canvas.Brush.Color := C;
@@ -5756,8 +5791,8 @@ begin
     Bmp.Canvas.Font.Color := SkinData.SkinManager.gd[SkinData.SkinIndex].Props[min(aState, ac_MaxPropsIndex)].FontColor.Color;
 
   if Assigned(ComboBox.OnDrawItem) and (ComboBox.Style in [csOwnerDrawFixed, csOwnerDrawVariable]) then begin
-    if (Index > -1) and (Index < ComboBox.Items.Count) then begin
-{$IFDEF DELPHI6UP}      
+    if IsValidIndex(Index, ComboBox.Items.Count) then begin
+{$IFDEF DELPHI6UP}
       if not ComboBox.Canvas.HandleAllocated then
         OldDC := 0
       else
@@ -5814,7 +5849,7 @@ end;
 
 function TacComboBoxWnd.EasyComboBox: boolean;
 begin
-  Result := (SkinData.FOwnerControl is TCustomComboBox);
+  Result := SkinData.FOwnerControl is TCustomComboBox;
 end;
 
 
@@ -5844,8 +5879,8 @@ begin
 
     R := ButtonRect;
     TmpBtn := CreateBmpLike(SkinData.FCacheBmp);
-    with SkinData.SkinManager.ConstData.ComboBtn do begin
-      if SkinIndex > -1 then begin
+    with SkinData.SkinManager, ConstData.ComboBtn do begin
+      if SkinIndex >= 0 then begin
         BitBlt(TmpBtn.Canvas.Handle, 0, 0, TmpBtn.Width, TmpBtn.Height, SkinData.FCacheBmp.Canvas.Handle, 0, 0, SRCCOPY);
         PaintItem(SkinIndex, MakeCacheInfo(TmpBtn),
                   True, Mode, R, MkPoint, TmpBtn, SkinData.SkinManager, BGIndex[0], BGIndex[1]);
@@ -5855,12 +5890,12 @@ begin
 
       if GlyphIndex >= 0 then begin
         GetWindowRect(CtrlHandle, wR);
-        DrawSkinGlyph(TmpBtn, Point(R.Left + (WidthOf(R) - WidthOfImage(SkinData.SkinManager.ma[GlyphIndex])) div 2,
-                      (HeightOf(wR) - ButtonHeight) div 2), Mode, 1, SkinData.SkinManager.ma[GlyphIndex], MakeCacheInfo(TmpBtn));
+        DrawSkinGlyph(TmpBtn, Point(R.Left + (WidthOf(R) - ma[GlyphIndex].Width) div 2,
+                      (HeightOf(wR) - ButtonHeight) div 2), Mode, 1, ma[GlyphIndex], MakeCacheInfo(TmpBtn));
       end
       else begin // Paint without glyph
-        C := iff(SkinIndex >= 0, SkinData.SkinManager.gd[SkinIndex].Props[min(Mode, ac_MaxPropsIndex)].FontColor.Color, clBlack);
-        DrawColorArrow(TmpBtn.Canvas, C, R, asBottom);
+        C := iff(SkinIndex >= 0, gd[SkinIndex].Props[min(Mode, ac_MaxPropsIndex)].FontColor.Color, clBlack);
+        DrawColorArrow(TmpBtn, C, R, asBottom);
       end;
     end;
     BitBlt(DC, R.Left, R.Top, WidthOf(R), HeightOf(R), TmpBtn.Canvas.Handle, R.Left, R.Top, SRCCOPY);
@@ -5878,16 +5913,16 @@ var
   Text: array [0..4095] of Char;
 begin
   if SkinData.FOwnerControl <> nil then
-    SkinData.FCacheBMP.Canvas.Font.Assign(TsHackedControl(SkinData.FOwnerControl).Font);
+    SkinData.FCacheBMP.Canvas.Font.Assign(TsAccessControl(SkinData.FOwnerControl).Font);
 
   GetWindowRect(CtrlHandle, wR);
-  if GetWindowLong(CtrlHandle, GWL_EXSTYLE) and WS_EX_RTLREADING = WS_EX_RTLREADING then
+  if GetWindowLong(CtrlHandle, GWL_EXSTYLE) and WS_EX_RTLREADING <> 0 then
     R := Rect(ButtonRect.Right, 3, WndSize.cx - 3, 3)
   else
     R := Rect(3, 3, ButtonRect.Left, HeightOf(wR) - 3);
 
   li := ProcessMessage(CB_GETCURSEL, 0, 0);
-  if li > -1 then begin
+  if li >= 0 then begin
     Len := ProcessMessage(CB_GETLBTEXT, li, LPARAM(@Text));
     if Len = CB_ERR then
       Len := 0;
@@ -5980,54 +6015,56 @@ var
   obj: TObject;
 begin
   inherited;
-  // Disable themed columns
+  if not (csDestroying in SkinData.FOwnerControl.ComponentState) then begin
+    // Disable themed columns
 {$IFNDEF FPC}
-  if {$IFDEF DELPHI7UP}acThemesEnabled and {$ENDIF} HasProperty(SkinData.FOwnerControl, acOptionsEh) then
-    SetSetPropValue(SkinData.FOwnerControl, acOptionsEh, acdghFixed3D, Fixed3D);
+    if {$IFDEF DELPHI7UP}acThemesEnabled and {$ENDIF} HasProperty(SkinData.FOwnerControl, acOptionsEh) then
+      SetSetPropValue(SkinData.FOwnerControl, acOptionsEh, acdghFixed3D, Fixed3D);
 {$ENDIF}
-  TryChangeIntProp(SkinData.FOwnerControl, acEvenRowColor, EvenRowColor);
-  TryChangeIntProp(SkinData.FOwnerControl, acOddRowColor, OddRowColor);
+    TryChangeIntProp(SkinData.FOwnerControl, acEvenRowColor, EvenRowColor);
+    TryChangeIntProp(SkinData.FOwnerControl, acOddRowColor, OddRowColor);
 
-  obj := GetObjProp(SkinData.FOwnerControl, acGridLineParams);
-  if obj <> nil then begin
-    BrightColor   := TryGetColorProp(obj, acBrightColor);
-    DataHorzColor := TryGetColorProp(obj, acDataHorzColor);
-    DataVertColor := TryGetColorProp(obj, acDataVertColor);
-    DarkColor     := TryGetColorProp(obj, acDarkColor);
-  end;
+    obj := GetObjProp(SkinData.FOwnerControl, acGridLineParams);
+    if obj <> nil then begin
+      BrightColor   := TryGetColorProp(obj, acBrightColor);
+      DataHorzColor := TryGetColorProp(obj, acDataHorzColor);
+      DataVertColor := TryGetColorProp(obj, acDataVertColor);
+      DarkColor     := TryGetColorProp(obj, acDarkColor);
+    end;
 
-  obj := GetObjProp(SkinData.FOwnerControl, acIndicatorParams);
-  if obj <> nil then begin
-    TryChangeIntProp(obj, acColor, IndColor);
-    TryChangeIntProp(obj, acHorzLines, IndHorzLines);
-    TryChangeIntProp(obj, acVertLines, IndVertLines);
-    SetOrdProp(obj, acFillStyle, InfFillStyle);
-  end;
+    obj := GetObjProp(SkinData.FOwnerControl, acIndicatorParams);
+    if obj <> nil then begin
+      TryChangeIntProp(obj, acColor, IndColor);
+      TryChangeIntProp(obj, acHorzLines, IndHorzLines);
+      TryChangeIntProp(obj, acVertLines, IndVertLines);
+      SetOrdProp(obj, acFillStyle, InfFillStyle);
+    end;
 
-  obj := GetObjProp(SkinData.FOwnerControl, acTitleParams);
-  if obj <> nil then begin
-    TryChangeIntProp(obj, acColor, TitleColor);
-    TryChangeIntProp(obj, acSecondColor, FixedGradientTo);
-//    TryChangeIntProp(obj, acHorzLines, TitleHorzLines);
-    SetOrdProp(obj, acFillStyle, TitleFillStyle);
-    TryChangeIntProp(obj, acVertLineColor, GridFixedLineColor);
-  end;
+    obj := GetObjProp(SkinData.FOwnerControl, acTitleParams);
+    if obj <> nil then begin
+      TryChangeIntProp(obj, acColor, TitleColor);
+      TryChangeIntProp(obj, acSecondColor, FixedGradientTo);
+  //    TryChangeIntProp(obj, acHorzLines, TitleHorzLines);
+      SetOrdProp(obj, acFillStyle, TitleFillStyle);
+      TryChangeIntProp(obj, acVertLineColor, GridFixedLineColor);
+    end;
 
-  obj := GetObjProp(SkinData.FOwnerControl, acDataGrouping);
-  if (obj <> nil) and (GetIntProp(obj, 'ParentColor') = 1) then
-    TryChangeIntProp(obj, acColor, DataGroupColor);
+    obj := GetObjProp(SkinData.FOwnerControl, acDataGrouping);
+    if (obj <> nil) and (GetIntProp(obj, 'ParentColor') = 1) then
+      TryChangeIntProp(obj, acColor, DataGroupColor);
 
-  obj := GetObjProp(SkinData.FOwnerControl, acRowCategories);
-  if obj <> nil then begin
-    TryChangeIntProp(obj, acColor, CategoriesColor);
-    obj := GetObjProp(obj, acFont);
+    obj := GetObjProp(SkinData.FOwnerControl, acRowCategories);
+    if obj <> nil then begin
+      TryChangeIntProp(obj, acColor, CategoriesColor);
+      obj := GetObjProp(obj, acFont);
+      if obj <> nil then
+        TryChangeIntProp(obj, acColor, CategoriesFontColor);
+    end;
+
+    obj := GetObjProp(SkinData.FOwnerControl, acRowDetailPanel);
     if obj <> nil then
-      TryChangeIntProp(obj, acColor, CategoriesFontColor);
+      RowDetailColor := TryGetColorProp(obj, acColor);
   end;
-
-  obj := GetObjProp(SkinData.FOwnerControl, acRowDetailPanel);
-  if obj <> nil then
-    RowDetailColor := TryGetColorProp(obj, acColor);
 end;
 
 
@@ -6096,56 +6133,58 @@ var
   obj: TObject;
 begin
   inherited;
+  with SkinData, SkinManager do begin
 {$IFNDEF FPC}
-  if {$IFDEF DELPHI7UP}acThemesEnabled and {$ENDIF} HasProperty(SkinData.FOwnerControl, acOptionsEh) then
-    SetSetPropValue(SkinData.FOwnerControl, acOptionsEh, acdghFixed3D, False);
+    if {$IFDEF DELPHI7UP}acThemesEnabled and {$ENDIF} HasProperty(FOwnerControl, acOptionsEh) then
+      SetSetPropValue(FOwnerControl, acOptionsEh, acdghFixed3D, False);
 {$ENDIF}
 
-  if EvenRowColor <> OddRowColor then begin
-    TryChangeIntProp(SkinData.FOwnerControl, acEvenRowColor, SkinManager.Palette[pcEditBG_EvenRow]);
-    TryChangeIntProp(SkinData.FOwnerControl, acOddRowColor,  SkinManager.Palette[pcEditBG_OddRow]);
-  end;
+    if EvenRowColor <> OddRowColor then begin
+      TryChangeIntProp(FOwnerControl, acEvenRowColor, Palette[pcEditBG_EvenRow]);
+      TryChangeIntProp(FOwnerControl, acOddRowColor,  Palette[pcEditBG_OddRow]);
+    end;
 
-  obj := GetObjProp(SkinData.FOwnerControl, acGridLineParams);
-  if obj <> nil then begin
-    TryChangeIntProp(obj, acBrightColor,   MixColors(clWhite, SkinData.SkinManager.GetActiveEditColor, 0.2));
-    TryChangeIntProp(obj, acDataHorzColor, MixColors(SkinData.SkinManager.GetActiveEditFontColor, SkinData.SkinManager.GetActiveEditColor, 0.2));
-    TryChangeIntProp(obj, acDataVertColor, MixColors(SkinData.SkinManager.GetActiveEditFontColor, SkinData.SkinManager.GetActiveEditColor, 0.2));
-    TryChangeIntProp(obj, acDarkColor,     MixColors(clBlack, SkinData.SkinManager.GetGlobalColor, 0.3));
-  end;
+    obj := GetObjProp(FOwnerControl, acGridLineParams);
+    if obj <> nil then begin
+      TryChangeIntProp(obj, acBrightColor,   BlendColors(clWhite, GetActiveEditColor, 51));
+      TryChangeIntProp(obj, acDataHorzColor, BlendColors(GetActiveEditFontColor, GetActiveEditColor, 51));
+      TryChangeIntProp(obj, acDataVertColor, BlendColors(GetActiveEditFontColor, GetActiveEditColor, 51));
+      TryChangeIntProp(obj, acDarkColor,     BlendColors(clBlack, GetGlobalColor, 77));
+    end;
 
-  obj := GetObjProp(SkinData.FOwnerControl, acIndicatorParams);
-  if obj <> nil then begin
-    TryChangeIntProp(obj, acColor, SkinData.SkinManager.Palette[pcMainColor]);
-    TryChangeIntProp(obj, acHorzLines, 0);
-    TryChangeIntProp(obj, acVertLines, 0);
-    SetOrdProp(obj, acFillStyle, 2);
-  end;
+    obj := GetObjProp(FOwnerControl, acIndicatorParams);
+    if obj <> nil then begin
+      TryChangeIntProp(obj, acColor, Palette[pcMainColor]);
+      TryChangeIntProp(obj, acHorzLines, 0);
+      TryChangeIntProp(obj, acVertLines, 0);
+      SetOrdProp(obj, acFillStyle, 2);
+    end;
 
-  obj := GetObjProp(SkinData.FOwnerControl, acTitleParams);
-  if obj <> nil then begin
-    TryChangeIntProp(obj, acColor, SkinData.SkinManager.Palette[pcMainColor]);
-    TryChangeIntProp(obj, acSecondColor, MixColors($FFFFFF, SkinData.SkinManager.Palette[pcMainColor], 0.1));
-//    TryChangeIntProp(obj, acHorzLines, 0);
-    SetOrdProp(obj, acFillStyle, 3);
-    TryChangeIntProp(obj, acVertLineColor, SkinData.SkinManager.Palette[pcBorder]);
-  end;
+    obj := GetObjProp(FOwnerControl, acTitleParams);
+    if obj <> nil then begin
+      TryChangeIntProp(obj, acColor, Palette[pcMainColor]);
+      TryChangeIntProp(obj, acSecondColor, BlendColors($FFFFFF, Palette[pcMainColor], 26));
+  //    TryChangeIntProp(obj, acHorzLines, 0);
+      SetOrdProp(obj, acFillStyle, 3);
+      TryChangeIntProp(obj, acVertLineColor, Palette[pcBorder]);
+    end;
 
-  obj := GetObjProp(SkinData.FOwnerControl, acDataGrouping);
-  if (obj <> nil) and (GetIntProp(obj, 'ParentColor') = 1) then
-    TryChangeIntProp(obj, acColor, MixColors($FFFFFF, SkinData.SkinManager.Palette[pcMainColor], 0.1));
+    obj := GetObjProp(FOwnerControl, acDataGrouping);
+    if (obj <> nil) and (GetIntProp(obj, 'ParentColor') = 1) then
+      TryChangeIntProp(obj, acColor, BlendColors($FFFFFF, Palette[pcMainColor], 26));
 
-  obj := GetObjProp(SkinData.FOwnerControl, acRowCategories);
-  if obj <> nil then begin
-    TryChangeIntProp(obj, acColor, MixColors($FFFFFF, SkinData.SkinManager.Palette[pcMainColor], 0.1));
-    obj := GetObjProp(obj, acFont);
+    obj := GetObjProp(FOwnerControl, acRowCategories);
+    if obj <> nil then begin
+      TryChangeIntProp(obj, acColor, BlendColors($FFFFFF, Palette[pcMainColor], 26));
+      obj := GetObjProp(obj, acFont);
+      if obj <> nil then
+        TryChangeIntProp(obj, acColor, Palette[pcLabelText]);
+    end;
+
+    obj := GetObjProp(FOwnerControl, acRowDetailPanel);
     if obj <> nil then
-      TryChangeIntProp(obj, acColor, SkinData.SkinManager.Palette[pcLabelText]);
+      TryChangeIntProp(obj, acColor, Palette[pcMainColor]);
   end;
-
-  obj := GetObjProp(SkinData.FOwnerControl, acRowDetailPanel);
-  if obj <> nil then
-    TryChangeIntProp(obj, acColor, SkinData.SkinManager.Palette[pcMainColor]);
 end;
 
 
@@ -6162,18 +6201,19 @@ var
     InitCtrlData(CtrlHandle, ParentWnd, WndRect, ParentRect, WndSize, WndPos);
     if SimplyBox then
       SendAMessage(CtrlHandle, AC_PREPARECACHE)
-    else begin
-      GetWindowRect(CtrlHandle, wR);
-      SkinData.UpdateIndexes;
-      SetSkinParams;
-      SkinData.FCacheBmp.Width := WidthOf(wR);
-      SkinData.FCacheBmp.Height := HeightOf(wR);
-      SkinData.FCacheBmp.Canvas.Brush.Style := bsSolid;
-      SkinData.FCacheBmp.Canvas.Brush.Color := Color;
-      SkinData.FCacheBmp.Canvas.Pen.Color := FrameColor;
-      SkinData.FCacheBmp.Canvas.Rectangle(MkRect(SkinData.FCacheBmp));
-      SkinData.BGChanged := False;
-    end;
+    else
+      with SkinData do begin
+        GetWindowRect(CtrlHandle, wR);
+        UpdateIndexes;
+        SetSkinParams;
+        FCacheBmp.Width := WidthOf(wR);
+        FCacheBmp.Height := HeightOf(wR);
+        FCacheBmp.Canvas.Brush.Style := bsSolid;
+        FCacheBmp.Canvas.Brush.Color := Color;
+        FCacheBmp.Canvas.Pen.Color := FrameColor;
+        FCacheBmp.Canvas.Rectangle(MkRect(FCacheBmp));
+        BGChanged := False;
+      end;
   end;
 
 begin
@@ -6202,52 +6242,54 @@ begin
       Exit;
     end;
 
-    WM_NCLBUTTONDBLCLK, WM_NCLBUTTONDOWN: begin
-      Message.wParam := Ac_NCHitTest(Self, CtrlHandle, Message.WParam, Message.LParam);
-      if (Message.wParam = HTHSCROLL) or (Message.wParam = HTVSCROLL) then
-        Message.Result := Ac_NCLButtonDown(Self, CtrlHandle, Message.wParam, Message.lParam);
+    WM_NCLBUTTONDBLCLK, WM_NCLBUTTONDOWN:
+      with Message do begin
+        wParam := Ac_NCHitTest(Self, CtrlHandle, WParam, LParam);
+        if wParam in [HTHSCROLL, HTVSCROLL] then
+          Result := Ac_NCLButtonDown(Self, CtrlHandle, wParam, lParam);
 
-      Exit;
-    end;
-
-    WM_LBUTTONUP: begin
-      InitCtrlData(CtrlHandle, ParentWnd, WndRect, ParentRect, WndSize, WndPos);
-      h := Message.LParam;
-      pt.x := SmallInt(LoWord(longword(Message.LParam)));
-      pt.y := SmallInt(HiWord(longWord(Message.LParam)));
-      inc(pt.X, Self.WndRect.Left);
-      inc(pt.Y, Self.WndRect.Top);
-      Message.LParam := MakeLParam(Word(pt.X), Word(pt.Y));
-      Message.WParam := Ac_NCHitTest(Self, CtrlHandle, Message.WParam, Message.LParam);
-      if (Message.WParam <> Windows.HTNOWHERE) and (Message.WParam <> HTCLIENT) then begin
-        Message.Result := Ac_LButtonUp(Self, CtrlHandle, Message.WParam, Message.LParam);
-        if SimplyBox then
-          ReleaseCapture;
-      end
-      else begin
-        Message.LParam := h;
-        Ac_LButtonUp(Self, CtrlHandle, Message.WParam, Message.LParam);
- //       Message.Result := CallPrevWndProc(CtrlHandle, Message.Msg, Message.WParam, Message.LParam)
+        Exit;
       end;
-      Exit;
-    end;
 
-    WM_PRINT, WM_PRINTCLIENT: begin
-      if (Message.WParam <> 0) and IsWindowVisible(CtrlHandle) then begin
-        PrepareCache;
-        Message.Result := CallPrevWndProc(CtrlHandle, Message.Msg, Message.WParam, Message.LParam);
-        if (Message.Msg = WM_PRINTCLIENT) or (ProcessMessage(LB_GETCOUNT, 0, 0) < 1) then
-          Exit;
-
-        DC := hdc(Message.WParam);
-        OffsetRect(wR, -wR.Left, -wR.Top);
-        if (uCurrentScrollPortion = HTSCROLL_NONE) and not Showed then
-          BitBltBorder(DC, wR.Left, wR.Top, WidthOf(wR), HeightOf(wR), SkinData.FCacheBmp.Canvas.Handle, 0, 0, 1);
-
-        Message.Result := Ac_NCDraw(Self, Self.CtrlHandle, -1, DC);
+    WM_LBUTTONUP:
+      with Message do begin
+        InitCtrlData(CtrlHandle, ParentWnd, WndRect, ParentRect, WndSize, WndPos);
+        h := LParam;
+        pt.x := SmallInt(LoWord(longword(LParam)));
+        pt.y := SmallInt(HiWord(longWord(LParam)));
+        inc(pt.X, Self.WndRect.Left);
+        inc(pt.Y, Self.WndRect.Top);
+        LParam := MakeLParam(Word(pt.X), Word(pt.Y));
+        WParam := Ac_NCHitTest(Self, CtrlHandle, WParam, LParam);
+        if not (WParam in [Windows.HTNOWHERE, HTCLIENT]) then begin
+          Result := Ac_LButtonUp(Self, CtrlHandle, WParam, LParam);
+          if SimplyBox then
+            ReleaseCapture;
+        end
+        else begin
+          LParam := h;
+          Ac_LButtonUp(Self, CtrlHandle, WParam, LParam);
+        end;
+        Exit;
       end;
-      Exit;
-    end;
+
+    WM_PRINT, WM_PRINTCLIENT:
+      with Message do begin
+        if (WParam <> 0) and IsWindowVisible(CtrlHandle) then begin
+          PrepareCache;
+          Result := CallPrevWndProc(CtrlHandle, Msg, WParam, LParam);
+          if (Msg = WM_PRINTCLIENT) or (ProcessMessage(LB_GETCOUNT, 0, 0) < 1) then
+            Exit;
+
+          DC := hdc(WParam);
+          OffsetRect(wR, -wR.Left, -wR.Top);
+          if (uCurrentScrollPortion = HTSCROLL_NONE) and not Showed then
+            BitBltBorder(DC, wR.Left, wR.Top, WidthOf(wR), HeightOf(wR), SkinData.FCacheBmp.Canvas.Handle, 0, 0, 1);
+
+          Result := Ac_NCDraw(Self, Self.CtrlHandle, -1, DC);
+        end;
+        Exit;
+      end;
 
     WM_NCPAINT:
       if not DontRepaint then begin
@@ -6328,17 +6370,16 @@ begin
   sp.VertScrollSize := -1;
   sp.UseSkinColor := True;
   sp.UseSkinFontColor := True;
-  sp.Control := nil;         
+  sp.Control := nil;
   Create(AHandle, ASkinData, ASkinManager, sp, Repaint);
   if not SimplyBox then
-    SetWindowPos(CtrlHandle, 0, 0, 0, WndSize.cx + 1, WndSize.cy,
-                 SWP_NOMOVE or SWP_NOOWNERZORDER or SWP_NOZORDER or SWP_NOCOPYBITS or SWP_NOSENDCHANGING or SWP_NOREPOSITION or SWP_FRAMECHANGED);
+    SetWindowPos(CtrlHandle, 0, 0, 0, WndSize.cx + 1, WndSize.cy, SWPA_FRAMECHANGED and not SWP_NOSIZE);
 end;
 
 
 destructor TacComboListWnd.Destroy;
 begin
-  if (uxthemeLib <> 0) then
+  if uxthemeLib <> 0 then
     Ac_SetWindowTheme(CtrlHandle, nil, nil);
 
   if SkinData <> nil then
@@ -6355,21 +6396,22 @@ begin
       SkinData.Updating := True;
 
     bPreventStyleChange := True;
-    if Assigned(SkinData) and Assigned(SkinData.SkinManager) and SkinData.SkinManager.IsValidSkinIndex(SkinData.SkinIndex) then begin
-      if not SkinData.CustomColor then
-        if not DlgMode then
-          Color := SkinData.SkinManager.gd[SkinData.SkinIndex].Props[integer(SkinData.SkinManager.gd[SkinData.SkinIndex].States > 1)].Color
-        else
-          Color := ColorToRGB(clWindow);
+    with SkinData, SkinManager do
+      if Assigned(SkinData) and Assigned(SkinManager) and IsValidSkinIndex(SkinIndex) then begin
+        if not CustomColor then
+          if not DlgMode then
+            Color := gd[SkinIndex].Props[integer(gd[SkinIndex].States > 1)].Color
+          else
+            Color := ColorToRGB(clWindow);
 
-      FrameColor := SkinData.SkinManager.Palette[pcBorder];
-      if SkinData <> nil then begin
-        SkinData.BGChanged := True;
-        SkinData.Updating := False;
-      end;
-    end
-    else
-      FrameColor := clBlack;
+        FrameColor := Palette[pcBorder];
+        if SkinData <> nil then begin
+          BGChanged := True;
+          Updating := False;
+        end;
+      end
+      else
+        FrameColor := clBlack;
 
     bPreventStyleChange := False;
   end;
@@ -6385,7 +6427,7 @@ begin
       SM_ALPHACMD:
         case Message.WParamHi of
           AC_REFRESH:
-            if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
+            if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then begin
               inherited;
               if IsWindowVisible(CtrlHandle) then
                 SendMessage(CtrlHandle, WM_NCPAINT, 0, 0);
@@ -6461,46 +6503,51 @@ var
   var
     SrcR, DstR: TRect;
     bw, W, H: Integer;
+    sp: TAccessProvider;
   begin
-    if not TsSkinProvider(SkinProvider).fAnimating then begin
-      SrcR := SrcRect(TsSkinProvider(SkinProvider));
-      DstR := DstRect(TsSkinProvider(SkinProvider));
-      w := WidthOf(SrcR);
-      h := HeightOf(SrcR);
-      bw := TsSkinProvider(SkinProvider).SkinData.SkinManager.GetSkinIndex(s_MdiArea);
-      if IsCached(TsSkinProvider(SkinProvider).SkinData) or (bw > -1) then begin
-        if (TsSkinProvider(SkinProvider).SkinData.FCacheBmp = nil) or TsSkinProvider(SkinProvider).SkinData.BGChanged then
-          TAccessProvider(SkinProvider).PaintAll;
+    sp := TAccessProvider(SkinProvider);
+    if not sp.fAnimating then
+      with sp.SkinData do begin
+        SrcR := SrcRect(sp);
+        DstR := DstRect(sp);
+        w := WidthOf(SrcR);
+        h := HeightOf(SrcR);
+        bw := SkinManager.GetSkinIndex(s_MdiArea);
+        if IsCached(sp.SkinData) or (bw >= 0) then begin
+          if (FCacheBmp = nil) or BGChanged then
+            sp.PaintAll;
 
-        if TsSkinProvider(SkinProvider).SkinData.FCacheBmp <> nil then begin
-          if PaintBorder then
-            bw := 0
-          else
-            bw := integer((GetWindowLong(CtrlHandle, GWL_EXSTYLE) and WS_EX_CLIENTEDGE) = WS_EX_CLIENTEDGE) * 2;
+          if FCacheBmp <> nil then begin
+            if PaintBorder then
+              bw := 0
+            else
+              bw := integer(GetWindowLong(CtrlHandle, GWL_EXSTYLE) and WS_EX_CLIENTEDGE <> 0) * 2;
 
-          BitBlt(DC, DstR.Left, DstR.Top, w, h, TsSkinProvider(SkinProvider).SkinData.FCacheBmp.Canvas.Handle, SrcR.Left + bw, SrcR.Top + bw, SRCCOPY);
-        end;
-      end
-      else
-        FillDC(DC, DstR, TsSkinProvider(SkinProvider).FormColor);
-    end;
+            BitBlt(DC, DstR.Left, DstR.Top, w, h, FCacheBmp.Canvas.Handle, SrcR.Left + bw, SrcR.Top + bw, SRCCOPY);
+          end;
+        end
+        else
+          FillDC(DC, DstR, sp.FormColor);
+      end;
   end;
 
   procedure PaintBorders(const DC: HDC);
   var
+    sp: TAccessProvider;
     bw, W, H: Integer;
     R: TRect;
   begin
+    sp := TAccessProvider(SkinProvider);
     if MDISkinData.FCacheBmp <> nil then begin
-      R := SrcRect(TsSkinProvider(SkinProvider));
+      R := SrcRect(sp);
       w := WidthOf(R);
       h := HeightOf(R);
-      bw := TsSkinProvider(SkinProvider).SkinData.SkinManager.GetSkinIndex(s_MdiArea);
-      if IsCached(TsSkinProvider(SkinProvider).SkinData) or (bw > -1) then
+      bw := sp.SkinData.SkinManager.GetSkinIndex(s_MdiArea);
+      if IsCached(sp.SkinData) or (bw >= 0) then
         BitBltBorder(DC, 0, 0, w, h, MDISkinData.FCacheBmp.Canvas.Handle, R.Left, R.Top, 2)
       else begin
-        bw := integer((GetWindowLong(CtrlHandle, GWL_EXSTYLE) and WS_EX_CLIENTEDGE) = WS_EX_CLIENTEDGE) * 2;
-        FillDCBorder(DC, MkRect(w, h), bw, bw, bw, bw, TsSkinProvider(SkinProvider).FormColor);
+        bw := integer(GetWindowLong(CtrlHandle, GWL_EXSTYLE) and WS_EX_CLIENTEDGE <> 0) * 2;
+        FillDCBorder(DC, MkRect(w, h), bw, bw, bw, bw, sp.FormColor);
       end;
     end;
   end;
@@ -6610,29 +6657,31 @@ begin
         WM_WINDOWPOSCHANGING:
           TsSkinProvider(MDISkinProvider).SkinData.BGChanged := True;
 
-        WM_MDISETMENU: begin
-          Message.Result := CallPrevWndProc(CtrlHandle, Message.Msg, Message.WParam, Message.LParam);
-          TsSkinProvider(MDISkinProvider).SkinData.BGChanged := True;
-          TsSkinProvider(MDISkinProvider).MenuChanged := True;
-          TAccessProvider(MDISkinProvider).FLinesCount := -1;
-          Exit;
-        end;
+        WM_MDISETMENU:
+          with TAccessProvider(MDISkinProvider) do begin
+            Message.Result := CallPrevWndProc(CtrlHandle, Message.Msg, Message.WParam, Message.LParam);
+            SkinData.BGChanged := True;
+            MenuChanged := True;
+            FLinesCount := -1;
+            Exit;
+          end;
 
-        WM_MDITILE, WM_MDICASCADE: begin
-          Message.Result := CallPrevWndProc(CtrlHandle, Message.Msg, Message.WParam, Message.LParam);
-          TsSkinProvider(SkinProvider).SkinData.BGChanged := True;
-          TAccessProvider(SkinProvider).FLinesCount := -1;
-          if (TsSkinProvider(SkinProvider).Form.FormStyle = fsMDIForm) and Assigned(TsSkinProvider(SkinProvider).Form.ActiveMDIChild) then
-            SetWindowLong(TsSkinProvider(SkinProvider).Form.ActiveMDIChild.Handle, GWL_STYLE,
-                          GetWindowLong(TsSkinProvider(SkinProvider).Form.ActiveMDIChild.Handle, GWL_STYLE) and not WS_SYSMENU);
-          if Assigned(TsSkinProvider(SkinProvider).MDIForm) then
-            TsMDIForm(TsSkinProvider(SkinProvider).MDIForm).UpdateMDIIconItem;
+        WM_MDITILE, WM_MDICASCADE:
+          with TAccessProvider(MDISkinProvider) do begin
+            Message.Result := CallPrevWndProc(CtrlHandle, Message.Msg, Message.WParam, Message.LParam);
+            SkinData.BGChanged := True;
+            FLinesCount := -1;
+            if (Form.FormStyle = fsMDIForm) and Assigned(Form.ActiveMDIChild) then
+              SetWindowLong(Form.ActiveMDIChild.Handle, GWL_STYLE, GetWindowLong(Form.ActiveMDIChild.Handle, GWL_STYLE) and not WS_SYSMENU);
 
-          InvalidateRect(CtrlHandle, nil, True);
-          RedrawWindow(TsSkinProvider(SkinProvider).Form.ClientHandle, nil, 0, RDW_FRAME or RDW_INVALIDATE or RDW_ALLCHILDREN);
-          TsSkinProvider(SkinProvider).SystemMenu.UpdateItems;
-          Exit;
-        end;
+            if Assigned(MDIForm) then
+              TsMDIForm(MDIForm).UpdateMDIIconItem;
+
+            InvalidateRect(CtrlHandle, nil, True);
+            RedrawWindow(Form.ClientHandle, nil, 0, RDW_FRAME or RDW_INVALIDATE or RDW_ALLCHILDREN);
+            SystemMenu.UpdateItems;
+            Exit;
+          end;
 
         WM_WINDOWPOSCHANGED:
           if SkinProvider <> nil then // Update menu after restoring of child windows (WindowState := wsNormal)
@@ -6657,7 +6706,7 @@ begin
           end;
         end;
       end;
-      
+
   inherited;
   case Message.Msg of
     SM_ALPHACMD:
@@ -6668,7 +6717,7 @@ begin
         AC_AFTERSCROLL: begin
           SendMessage(CtrlHandle, WM_SETREDRAW, 1, 0);
           if Message.LParamLo <> SB_THUMBTRACK then begin
-            RedrawWindow(CtrlHandle, nil, 0, RDW_ERASE or RDW_UPDATENOW or RDW_INVALIDATE or RDW_ALLCHILDREN or RDW_FRAME);
+            RedrawWindow(CtrlHandle, nil, 0, RDWA_ALL);
             UpdateScrolls(Self, False);
             ReleaseCapture
           end
@@ -6679,8 +6728,8 @@ begin
       UpdateSkinCaption(TsSkinProvider(SkinProvider));
 
     WM_PARENTNOTIFY, 63: begin
-      sbarVert.fScrollVisible := GetWindowLong(CtrlHandle, GWL_STYLE) and WS_VSCROLL = WS_VSCROLL;
-      sbarHorz.fScrollVisible := GetWindowLong(CtrlHandle, GWL_STYLE) and WS_HSCROLL = WS_HSCROLL;
+      sbarVert.fScrollVisible := GetWindowLong(CtrlHandle, GWL_STYLE) and WS_VSCROLL <> 0;
+      sbarHorz.fScrollVisible := GetWindowLong(CtrlHandle, GWL_STYLE) and WS_HSCROLL <> 0;
       UpdateScrolls(Self, True);
     end;
   end;
@@ -6710,7 +6759,7 @@ begin
         BG.PleaseDraw := True;
         BG.R := FForm.Controls[i].BoundsRect;
         BG.DrawDC := FForm.Canvas.Handle;
-        SendMessage(FForm.Handle, SM_ALPHACMD, MakeWParam(0, AC_GETBG), LPARAM(@BG));
+        SendMessage(FForm.Handle, SM_ALPHACMD, AC_GETBG_HI, LPARAM(@BG));
       end;
 {$ENDIF}
 end;
@@ -6726,7 +6775,7 @@ begin
   if Assigned(SkinData) and SkinData.Skinned then
     case Message.Msg of
       WM_HSCROLL: begin
-        if (TWMVScroll(Message).ScrollCode = SB_THUMBTRACK) then begin
+        if TWMVScroll(Message).ScrollCode = SB_THUMBTRACK then begin
           sBarHorz.ScrollInfo.cbSize := SizeOf(TScrollInfo);
           sBarHorz.ScrollInfo.fMask := SIF_ALL;
           sBarHorz.ScrollInfo.nPos := sBarHorz.ScrollInfo.nTrackPos;
@@ -6737,7 +6786,7 @@ begin
       end;
 
       WM_VSCROLL: begin
-        if (TWMVScroll(Message).ScrollCode = SB_THUMBTRACK) then begin
+        if TWMVScroll(Message).ScrollCode = SB_THUMBTRACK then begin
           sBarVert.ScrollInfo.cbSize := SizeOf(TScrollInfo);
           sBarVert.ScrollInfo.fMask := SIF_ALL;
           sBarVert.ScrollInfo.nPos := sBarVert.ScrollInfo.nTrackPos;
@@ -6746,7 +6795,7 @@ begin
         SendMessage(CtrlHandle, WM_SETREDRAW, 0, 0);
         inherited;
         SendMessage(CtrlHandle, WM_SETREDRAW, 1, 0);
-        RedrawWindow(TWinControl(SkinData.FOwnerControl).Handle, nil, 0, RDW_FRAME or RDW_INVALIDATE or RDW_UPDATENOW or RDW_ERASE or RDW_ALLCHILDREN);
+        RedrawWindow(TWinControl(SkinData.FOwnerControl).Handle, nil, 0, RDWA_ALLNOW);
         Exit;
       end;
 
@@ -6921,7 +6970,7 @@ begin
       SetIntProp(obj, acFocusedSelectionBorderColor, C);
       SetIntProp(obj, acFocusedSelectionColor, C);
       SetIntProp(obj, acHotColor, SkinData.SkinManager.GetActiveEditFontColor);
-      C := Mixcolors(C, SkinData.SkinManager.GetActiveEditColor, 0.5);
+      C := BlendColors(C, SkinData.SkinManager.GetActiveEditColor, 127);
       SetIntProp(obj, acUnfocusedSelectionBorderColor, C);
       SetIntProp(obj, acUnfocusedSelectionColor, C);
       SetIntProp(obj, acSelectionTextColor, SkinData.SkinManager.GetHighLightfontColor);
@@ -6965,7 +7014,7 @@ begin
       obj := GetObjProp(HeaderProp, acFont);
       TryChangeIntProp(obj, acColor, SkinData.SkinManager.GetGlobalFontColor);
       if TWinControl(SkinData.FOwnerControl).HandleAllocated then
-        RedrawWindow(TWinControl(SkinData.FOwnerControl).Handle, nil, 0, RDW_FRAME or RDW_INVALIDATE or RDW_UPDATENOW or RDW_ERASE);
+        RedrawWindow(TWinControl(SkinData.FOwnerControl).Handle, nil, 0, RDWA_NOCHILDRENNOW);
     end;
   end;
 end;
@@ -7015,96 +7064,100 @@ var
   si, State, Index: integer;
   HeaderProp, FontProp: TObject;
 begin
-  if Assigned(Self) and not DontRepaint and Assigned(SkinData) and SkinData.Skinned and (PaintInfo.TargetCanvas <> nil) then begin
-    if PaintInfo.Column = nil then
-      FillDC(PaintInfo.TargetCanvas.Handle, PaintInfo.PaintRectangle, DefaultManager.gd[SkinData.SkinIndex].Props[0].Color)
-    else begin
-      if DefaultManager.IsValidSkinIndex(DefaultManager.ConstData.Sections[ssColHeader]) then
-        si := DefaultManager.ConstData.Sections[ssColHeader]
+  if Assigned(Self) and not DontRepaint and Assigned(SkinData) and SkinData.Skinned and (PaintInfo.TargetCanvas <> nil) then
+    with SkinData.SkinManager do begin
+      if IsValidSkinIndex(ConstData.Sections[ssColHeader]) then
+        si := ConstData.Sections[ssColHeader]
       else
-        si := DefaultManager.ConstData.Sections[ssButton];
+        si := ConstData.Sections[ssButton];
 
-      if PaintInfo.IsDownIndex then
-        State := 2
-      else
-        State := integer(PaintInfo.IsHoverIndex);
-
-      Bmp := CreateBmp32(PaintInfo.PaintRectangle);
-      if (hpeBackground in Elements) then begin
-        PaintItem(si, MakeCacheInfo(SkinData.FCacheBmp), True, State, MkRect(Bmp), PaintInfo.PaintRectangle.TopLeft, Bmp);
+      if PaintInfo.Column = nil then begin
+        Bmp := CreateBmp32(PaintInfo.PaintRectangle);
+        PaintItem(si, MakeCacheInfo(SkinData.FCacheBmp), True, 0, MkRect(Bmp), PaintInfo.PaintRectangle.TopLeft, Bmp);
         BitBlt(PaintInfo.TargetCanvas.Handle, PaintInfo.PaintRectangle.Left, PaintInfo.PaintRectangle.Top, Bmp.Width, Bmp.Height, Bmp.Canvas.Handle, 0, 0, SRCCOPY);
+        Bmp.Free;
       end
       else begin
-        BitBlt(Bmp.Canvas.Handle, 0, 0, Bmp.Width, Bmp.Height, PaintInfo.TargetCanvas.Handle, PaintInfo.PaintRectangle.Left, PaintInfo.PaintRectangle.Top, SRCCOPY);
-        if (hpeText in Elements) and not (hpeDropMark in Elements) then begin
+        if PaintInfo.IsDownIndex then
+          State := 2
+        else
+          State := integer(PaintInfo.IsHoverIndex);
+
+        Bmp := CreateBmp32(PaintInfo.PaintRectangle);
+        if hpeBackground in Elements then begin
+          PaintItem(si, MakeCacheInfo(SkinData.FCacheBmp), True, State, MkRect(Bmp), PaintInfo.PaintRectangle.TopLeft, Bmp);
+          BitBlt(PaintInfo.TargetCanvas.Handle, PaintInfo.PaintRectangle.Left, PaintInfo.PaintRectangle.Top, Bmp.Width, Bmp.Height, Bmp.Canvas.Handle, 0, 0, SRCCOPY);
+        end
+        else begin
+          BitBlt(Bmp.Canvas.Handle, 0, 0, Bmp.Width, Bmp.Height, PaintInfo.TargetCanvas.Handle, PaintInfo.PaintRectangle.Left, PaintInfo.PaintRectangle.Top, SRCCOPY);
+          if (hpeText in Elements) and not (hpeDropMark in Elements) then begin
 {$IFDEF TNTUNICODE}
-          Text := GetWideStrProp(PaintInfo.Column, acText);
+            Text := GetWideStrProp(PaintInfo.Column, acText);
 {$ELSE}
-          Text := GetStrProp(PaintInfo.Column, acText);
+            Text := GetStrProp(PaintInfo.Column, acText);
 {$ENDIF}
-          if Text <> '' then begin
-            TextRC := PaintInfo.TextRectangle;
-            OffsetRect(TextRC, -PaintInfo.PaintRectangle.Left, -PaintInfo.PaintRectangle.Top);
+            if Text <> '' then begin
+              TextRC := PaintInfo.TextRectangle;
+              OffsetRect(TextRC, -PaintInfo.PaintRectangle.Left, -PaintInfo.PaintRectangle.Top);
+              HeaderProp := GetObjProp(SkinData.FOwnerControl, acHeader);
+              if HeaderProp <> nil then begin
+                FontProp := GetObjProp(HeaderProp, acFont);
+                if FontProp <> nil then
+                  Bmp.Canvas.Font.Assign(TFont(FontProp));
+              end;
+              acWriteTextEx(Bmp.Canvas, PacChar(Text), True, TextRC, 0, Si, State <> 0, DefaultManager);
+            end;
+          end;
+          if (hpeSortGlyph in Elements) and PaintInfo.ShowSortGlyph then begin
             HeaderProp := GetObjProp(SkinData.FOwnerControl, acHeader);
             if HeaderProp <> nil then begin
-              FontProp := GetObjProp(HeaderProp, acFont);
-              if FontProp <> nil then
-                Bmp.Canvas.Font.Assign(TFont(FontProp));
-            end;
-            acWriteTextEx(Bmp.Canvas, PacChar(Text), True, TextRC, 0, Si, (State <> 0), DefaultManager);
-          end;
-        end;
-        if (hpeSortGlyph in Elements) and PaintInfo.ShowSortGlyph then begin
-          HeaderProp := GetObjProp(SkinData.FOwnerControl, acHeader);
-          if HeaderProp <> nil then begin
-            Side := asTop;
-            if GetOrdProp(HeaderProp, acSortDirection) = 0 then
-              Index := SkinData.SkinManager.ConstData.ScrollBtns[asTop].GlyphIndex
-            else
-              Index := SkinData.SkinManager.ConstData.ScrollBtns[asBottom].GlyphIndex;
+              Side := asTop;
+              if GetOrdProp(HeaderProp, acSortDirection) = 0 then
+                Index := ConstData.ScrollBtns[asTop].GlyphIndex
+              else
+                Index := ConstData.ScrollBtns[asBottom].GlyphIndex;
 
-            if Index > -1 then
-              DrawSkinGlyph(Bmp, Point(PaintInfo.SortGlyphPos.x - PaintInfo.PaintRectangle.Left,
-                            (HeightOf(PaintInfo.PaintRectangle) - (HeightOf(DefaultManager.ma[Index].R) div (DefaultManager.ma[Index].MaskType + 1))) div 2),
-                            State, 1, DefaultManager.ma[Index], MakeCacheInfo(Bmp))
-            else begin
-              C := DefaultManager.gd[DefaultManager.ConstData.ScrollBtns[Side].SkinIndex].Props[min(State, ac_MaxPropsIndex)].FontColor.Color;
-              gR.Left := PaintInfo.SortGlyphPos.x - PaintInfo.PaintRectangle.Left;
-              gR.Top := (HeightOf(PaintInfo.PaintRectangle) - (HeightOf(DefaultManager.ma[Index].R) div (DefaultManager.ma[Index].MaskType + 1))) div 2;
-              gR.Bottom := gR.Top + 3;
-              gR.Right := gR.Left + 6;
-              if (State > 1) and DefaultManager.ButtonsOptions.ShiftContentOnClick then
-                OffsetRect(gR, 1, 1);
+              if Index >= 0 then
+                DrawSkinGlyph(Bmp, Point(PaintInfo.SortGlyphPos.x - PaintInfo.PaintRectangle.Left,
+                              (HeightOf(PaintInfo.PaintRectangle) - ma[Index].Height) div 2), State, 1, ma[Index], MakeCacheInfo(Bmp))
+              else begin
+                C := gd[ConstData.ScrollBtns[Side].SkinIndex].Props[min(State, ac_MaxPropsIndex)].FontColor.Color;
+                gR.Left := PaintInfo.SortGlyphPos.x - PaintInfo.PaintRectangle.Left;
+                gR.Top := (HeightOf(PaintInfo.PaintRectangle) - ma[Index].Height) div 2;
+                gR.Bottom := gR.Top + 3;
+                gR.Right := gR.Left + 6;
+                if (State > 1) and ButtonsOptions.ShiftContentOnClick then
+                  OffsetRect(gR, 1, 1);
 
-              DrawColorArrow(Bmp.Canvas, C, gR, Side);
+                DrawColorArrow(Bmp, C, gR, Side);
+              end;
             end;
           end;
-        end;
-        if hpeDropMark in Elements then begin
+          if hpeDropMark in Elements then begin
 {$IFDEF TNTUNICODE}
-          Text := GetWideStrProp(PaintInfo.Column, acText);
+            Text := GetWideStrProp(PaintInfo.Column, acText);
 {$ELSE}
-          Text := GetStrProp(PaintInfo.Column, acText);
+            Text := GetStrProp(PaintInfo.Column, acText);
 {$ENDIF}
-          if Text <> '' then begin
-            TextRC := PaintInfo.TextRectangle;
-            OffsetRect(TextRC, -PaintInfo.PaintRectangle.Left, -PaintInfo.PaintRectangle.Top);
-            HeaderProp := GetObjProp(SkinData.FOwnerControl, acHeader);
-            if HeaderProp <> nil then begin
-              FontProp := GetObjProp(HeaderProp, acFont);
-              if FontProp <> nil then
-                Bmp.Canvas.Font.Assign(TFont(FontProp));
+            if Text <> '' then begin
+              TextRC := PaintInfo.TextRectangle;
+              OffsetRect(TextRC, -PaintInfo.PaintRectangle.Left, -PaintInfo.PaintRectangle.Top);
+              HeaderProp := GetObjProp(SkinData.FOwnerControl, acHeader);
+              if HeaderProp <> nil then begin
+                FontProp := GetObjProp(HeaderProp, acFont);
+                if FontProp <> nil then
+                  Bmp.Canvas.Font.Assign(TFont(FontProp));
+              end;
+              // HTG
+              Flags := DT_VCENTER or DT_END_ELLIPSIS + TextWrapping[Pos(accoWrapCaption, GetSetProp(PaintInfo.Column, acOptions)) > 0];
+              acWriteTextEx(Bmp.Canvas, PacChar(Text), True, TextRC, Flags, Si, State <> 0, DefaultManager);
             end;
-            // HTG
-            Flags := DT_VCENTER or DT_END_ELLIPSIS + iff((Pos(accoWrapCaption, GetSetProp(PaintInfo.Column, acOptions)) > 0), DT_WORDBREAK, DT_SINGLELINE);
-            acWriteTextEx(Bmp.Canvas, PacChar(Text), True, TextRC, Flags, Si, (State <> 0), DefaultManager);
           end;
+          BitBlt(PaintInfo.TargetCanvas.Handle, PaintInfo.PaintRectangle.Left, PaintInfo.PaintRectangle.Top, Bmp.Width, Bmp.Height, Bmp.Canvas.Handle, 0, 0, SRCCOPY);
         end;
-        BitBlt(PaintInfo.TargetCanvas.Handle, PaintInfo.PaintRectangle.Left, PaintInfo.PaintRectangle.Top, Bmp.Width, Bmp.Height, Bmp.Canvas.Handle, 0, 0, SRCCOPY);
+        FreeAndNil(Bmp);
       end;
-      FreeAndNil(Bmp);
     end;
-  end;
 end;
 
 
@@ -7145,9 +7198,11 @@ begin
 
 {$IFNDEF FPC}
     WM_CONTEXTMENU:
-      if (SkinData <> nil) and (SkinData.FOwnerControl <> nil) and (TsHackedControl(SkinData.FOwnerControl).PopupMenu <> nil) then
-        if SkinData.SkinManager <> nil then
-          SkinData.SkinManager.SkinableMenus.HookPopupMenu(TsHackedControl(SkinData.FOwnerControl).PopupMenu, SkinData.SkinManager.Active);
+      if (SkinData <> nil) and (SkinData.FOwnerControl <> nil) then
+        with SkinData, TsAccessControl(FOwnerControl) do
+          if PopupMenu <> nil then
+            if SkinManager <> nil then
+              SkinManager.SkinableMenus.HookPopupMenu(PopupMenu, SkinManager.Active);
 {$ENDIF}
 
     WM_DESTROY, WM_NCDESTROY: begin
@@ -7155,10 +7210,11 @@ begin
         StopTimer(SkinData);
 
       HideGlow(SkinData.GlowID);
-      if (SkinData.FOwnerControl is TWinControl) then
-        for i := 0 to TWinControl(SkinData.FOwnerControl).ControlCount - 1 do
-          if (TWinControl(SkinData.FOwnerControl).Controls[i] is TSpeedButton) then
-            TWinControl(SkinData.FOwnerControl).Controls[i].Perform(WM_DESTROY, 0, 0);
+      if SkinData.FOwnerControl is TWinControl then
+        with TWinControl(SkinData.FOwnerControl) do
+          for i := 0 to ControlCount - 1 do
+            if Controls[i] is TSpeedButton then
+              Controls[i].Perform(WM_DESTROY, 0, 0);
 
       if (OldProc <> nil) or Assigned(OldWndProc) then
         try
@@ -7210,7 +7266,7 @@ begin
         end;
 
         AC_GETBG:
-          if (SkinData <> nil) then begin
+          if SkinData <> nil then begin
             InitBGInfo(SkinData, PacBGInfo(Message.LParam), 0, CtrlHandle);
             Exit;
           end;
@@ -7225,17 +7281,18 @@ begin
         end;
 
         AC_SETNEWSKIN:
-          if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
-            SkinData.UpdateIndexes;
-            SkinData.BGChanged := True;
-            AlphaBroadCastCheck(SkinData.FOwnerControl, CtrlHandle, Message);
-          end;
+          with SkinData do
+            if ACUInt(Message.LParam) = ACUInt(SkinManager) then begin
+              UpdateIndexes;
+              BGChanged := True;
+              AlphaBroadCastCheck(FOwnerControl, CtrlHandle, Message);
+            end;
 
         AC_ENDPARENTUPDATE:
           if SkinData.FUpdating then begin
             if not InUpdating(SkinData, True) then begin
               SendMessage(CtrlHandle, WM_NCPAINT, 0, 0);
-              RedrawWindow(CtrlHandle, nil, 0, RDW_ALLCHILDREN or RDW_INVALIDATE or RDW_UPDATENOW);
+              RedrawWindow(CtrlHandle, nil, 0, RDWA_ALLNOW);
             end;
             if SkinData.FOwnerControl <> nil then
               SetParentUpdated(TWinControl(SkinData.FOwnerControl));
@@ -7249,32 +7306,33 @@ begin
         end;
 
         AC_REFRESH:
-          if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
-            SkinData.UpdateIndexes;
-            SkinData.BGChanged := True;
-            SkinData.Updating := False;
-            if not InAnimationProcess then
-              if (SkinData.FOwnerControl <> nil) then begin
-                if SkinData.FOwnerControl.Visible then
-                  SendMessage(CtrlHandle, WM_PAINT, 0, 0);
-              end
-              else
-                if IsWindowVisible(CtrlHandle) then
-                  SendMessage(CtrlHandle, WM_PAINT, 0, 0);
+          with SkinData do
+            if ACUInt(Message.LParam) = ACUInt(SkinManager) then begin
+              UpdateIndexes;
+              BGChanged := True;
+              Updating := False;
+              if not InAnimationProcess then
+                if FOwnerControl <> nil then begin
+                  if FOwnerControl.Visible then
+                    SendMessage(CtrlHandle, WM_PAINT, 0, 0);
+                end
+                else
+                  if IsWindowVisible(CtrlHandle) then
+                    SendMessage(CtrlHandle, WM_PAINT, 0, 0);
 
-            AlphaBroadCastCheck(SkinData.FOwnerControl, CtrlHandle, Message);
-            Exit;
-          end;
+              AlphaBroadCastCheck(FOwnerControl, CtrlHandle, Message);
+              Exit;
+            end;
 
         AC_PREPARING:
-          if (SkinData <> nil) then begin
+          if SkinData <> nil then begin
             Message.Result := LRESULT(SkinData.Updating);
             Exit;
           end;
 
         AC_SETSECTION: begin
           if (Message.LParam <> 0) and (SkinData <> nil) then begin
-            SkinData.SkinSection := PacSectionInfo(Message.LParam).Name;
+            SkinData.SkinSection := PacSectionInfo(Message.LParam).siName;
             Message.Result := 1;
           end
           else
@@ -7284,7 +7342,7 @@ begin
         end;
 
         AC_REMOVESKIN:
-          if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then
+          if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then
             RestoreStdParams;
 
         AC_PREPARECACHE:
@@ -7369,8 +7427,8 @@ begin
   CtrlHandle := AHandle;
   OldWndProc := nil;
   OldProc := nil;
-  if (uxthemeLib <> 0) then
-    if (ASkinData = nil) or not (ASkinData.FOwnerObject is TsSkinProvider) or TsSkinProvider(ASkinData.FOwnerObject).DrawNonClientArea then
+  if uxthemeLib <> 0 then
+    if (ASkinData = nil) or (ASkinData.COC <> COC_TsSkinProvider) {or not (ASkinData.FOwnerObject is TsSkinProvider) or TsSkinProvider(ASkinData.FOwnerObject).DrawNonClientArea} then
       if {$IFNDEF NOMNUHOOK}not (Self is TacMnuWnd) and{$ENDIF} (SkinParams.SkinSection <> s_Dialog) and not acDlgMode then
         Ac_SetWindowTheme(AHandle, s_Space, s_Space);
 
@@ -7412,20 +7470,22 @@ end;
 
 destructor TacMainWnd.Destroy;
 begin
-  if (SkinData <> nil) then begin
-    if (SkinManager <> nil) then
+  if SkinData <> nil then begin
+    if SkinManager <> nil then
       if not Destroyed then begin
         if (SkinData.FOwnerControl <> nil) and (OldCtrlStyle <> []) then
           SkinData.FOwnerControl.ControlStyle := OldCtrlStyle;
 
         if not ItemsRemoving or SkinManager.SkinRemoving or (Adapter <> nil) and TacCtrlAdapter(Adapter).Provider.SkinData.SkinManager.SkinRemoving then begin
-          if Assigned(OldWndProc) then
-            if (SkinData.FOwnerObject is TsSkinProvider) then
+          if Assigned(OldWndProc) then begin
+            SkinData.WndProc := OldWndProc;
+            if SkinData.FOwnerObject is TsSkinProvider then
               TsSkinProvider(SkinData.FOwnerObject).Form.WindowProc := OldWndProc
             else
               TacWinControl(SkinData.FOwnerControl).WindowProc := OldWndProc
+          end
           else
-            if (OldProc <> nil) then begin
+            if OldProc <> nil then begin
               if DWord(GetWindowLong(CtrlHandle, GWL_WNDPROC)) = DWord(NewWndProcInstance) then
                 SetWindowLong(CtrlHandle, GWL_WNDPROC, LONG_PTR(oldproc));
 
@@ -7502,7 +7562,7 @@ begin
 {$IFDEF LOGGED}
 //  AddToLog(Message);
 {$ENDIF}
-  if (GetWindowLong(CtrlHandle, GWL_STYLE) and WS_TABSTOP <> WS_TABSTOP) and (GetWindowLong(CtrlHandle, GWL_EXSTYLE) and WS_EX_STATICEDGE <> WS_EX_STATICEDGE) then
+  if (GetWindowLong(CtrlHandle, GWL_STYLE) and WS_TABSTOP = 0) and (GetWindowLong(CtrlHandle, GWL_EXSTYLE) and WS_EX_STATICEDGE = 0) then
     case Message.Msg of
       WM_UPDATEUISTATE:
         if IsWindowVisible(CtrlHandle) then begin
@@ -7637,6 +7697,8 @@ function TacStaticWnd.PaintText: boolean;
 var
   rText: TRect;
   Flags: Cardinal;
+  pi: TacPaintInfo;
+  FontIndex: integer;
 begin
   if Caption <> '' then begin
     SkinData.FCacheBmp.Canvas.Brush.Style := bsClear;
@@ -7644,16 +7706,26 @@ begin
     LoadCtrlFont(Self);
     Flags := DT_EXPANDTABS or DT_WORDBREAK or DT_NOCLIP or DT_TABSTOP;
     Flags := Flags or MAKEWORD(0, 10);
-    if GetWindowLong(CtrlHandle, GWL_STYLE) and SS_NOPREFIX = SS_NOPREFIX then
+    if GetWindowLong(CtrlHandle, GWL_STYLE) and SS_NOPREFIX <> 0 then
       Flags := Flags or DT_NOPREFIX;
 
-    if GetWindowLong(CtrlHandle, GWL_EXSTYLE) and WS_EX_RIGHT = WS_EX_RIGHT then
+    if GetWindowLong(CtrlHandle, GWL_EXSTYLE) and WS_EX_RIGHT <> 0 then
       Flags := Flags or DT_RIGHT;
 
     if Application.BiDiMode = bdRightToLeft then
       Flags := Flags or DT_RTLREADING;
 
-    acWriteTextEx(SkinData.FCacheBmp.Canvas, PacChar(Caption), True, rText, Flags, SkinData, False);
+    pi.SkinManager := SkinData.SkinManager;
+    pi.R := MkRect;
+    pi.State := 0;
+    pi.FontIndex := -1;
+
+    if (SendMessage(CtrlHandle, SM_ALPHACMD, AC_GETFONTINDEX_HI, LParam(@pi)) > 0) and (pi.FontIndex >= 0) then
+      FontIndex := pi.FontIndex
+    else
+      FontIndex := SkinData.SkinIndex;
+
+    acWriteTextEx(SkinData.FCacheBmp.Canvas, PacChar(Caption), True, rText, Flags, FontIndex, False);
   end;
   Result := True;
 end;
@@ -7736,7 +7808,7 @@ begin
         AC_ENDPARENTUPDATE:
           if SkinData.FUpdating then begin
             if not InUpdating(SkinData, True) then
-              RedrawWindow(CtrlHandle, nil, 0, RDW_ALLCHILDREN or RDW_INVALIDATE or RDW_FRAME or RDW_UPDATENOW);
+              RedrawWindow(CtrlHandle, nil, 0, RDWA_ALLNOW);
 
             Exit;
           end;
@@ -7748,7 +7820,7 @@ begin
       end;
 
     WM_PAINT:
-      if IsWindowVisible(CtrlHandle) or (SkinData.CtrlSkinState and ACS_PRINTING = ACS_PRINTING) then begin
+      if IsWindowVisible(CtrlHandle) or (SkinData.CtrlSkinState and ACS_PRINTING <> 0) then begin
         if not ParamsChanged then
           SetSkinParams;
 
@@ -7911,7 +7983,7 @@ begin
   p := WndPos;
   if (Application.BiDiMode = bdRightToLeft) and (CI.Bmp <> nil) then begin
     DC := GetDC(GetParent(CtrlHandle));
-    if (acGetLayout(DC) <> 0) then begin
+    if acGetLayout(DC) <> 0 then begin
       p.X := CI.Bmp.Width - p.X; // Inversion of control coords if canvas is mirrored
       if Assigned(SkinData.SkinManager) and SkinData.SkinManager.ExtendedBorders then
         dec(p.X, 2 * ci.X);
@@ -7926,11 +7998,11 @@ begin
       C.A := MaxByte;
       R := MkRect(WndSize);
       OffsetRect(R, WndPos.x + CI.x, WndPos.y + CI.y);
-      BlendTransRectangle(SkinData.FCacheBmp, 0, 0, CI.Bmp, R, DefDisabledBlend);
+      BlendTransRectangle(SkinData.FCacheBmp, 0, 0, CI.Bmp, R, DefBlendDisabled);
     end
     else begin
       C.C := CI.FillColor;
-      BlendTransBitmap(SkinData.FCacheBmp, DefDisabledBlend, C);
+      BlendTransBitmap(SkinData.FCacheBmp, DefBlendDisabled, C);
     end;
 
   SkinData.BGChanged := False;
@@ -7947,22 +8019,22 @@ begin
     if not IsWindowEnabled(CtrlHAndle) then
       Result := 0
     else begin
-      if (SkinData.FOwnerControl <> nil) then begin // Patch Andreas for activ button
+      if SkinData.FOwnerControl <> nil then begin // Patch Andreas for activ button
         if not (csDesigning in SkinData.FOwnerControl.ComponentState) and ControlIsActive(SkinData) then begin
           Result := 1;
           Exit;
         end;
       end
       else
-        if ((GetFocus = CtrlHandle) or (DefaultManager.ActiveControl = CtrlHandle) or SkinData.FFocused) then begin
+        if (GetFocus = CtrlHandle) or (DefaultManager.ActiveControl = CtrlHandle) or SkinData.FFocused then begin
           Result := 1;
           Exit;
         end;
 
-      if (SkinData.FOwnerControl <> nil) then
+      if SkinData.FOwnerControl <> nil then
         Result := integer(GetWindowLong(CtrlHandle, GWL_STYLE) and BS_DEFPUSHBUTTON = BS_DEFPUSHBUTTON)
       else
-        Result := 3 * integer((CtrlStyle and BS_DEFPUSHBUTTON <> 0));
+        Result := 3 * integer(CtrlStyle and BS_DEFPUSHBUTTON <> 0);
     end;
 end;
 
@@ -7992,21 +8064,23 @@ begin
   if CtrlStyle and BS_MULTILINE = BS_MULTILINE then
     DrawStyle := DrawStyle or DT_WORDBREAK;
 
-  if GetWindowLong(CtrlHandle, GWL_EXSTYLE) and WS_EX_RTLREADING = WS_EX_RTLREADING then
+  if GetWindowLong(CtrlHandle, GWL_EXSTYLE) and WS_EX_RTLREADING <> 0 then
     DrawStyle := DrawStyle or DT_RTLREADING;
 
-  SetBkMode(SkinData.FCacheBMP.Canvas.Handle, TRANSPARENT);
-  DoDrawText(R, DrawStyle);
-  if IsWindowEnabled(CtrlHandle) and SkinData.SkinManager.ButtonsOptions.ShowFocusRect and (ProcessMessage(BM_GETSTATE, 0, 0) and BST_FOCUS = BST_FOCUS) and (Caption <> '') then begin
-    InflateRect(R, 2, 1);
-    if R.Top < 3 then
-      R.Top := 3;
+  with SkinData do begin
+    SetBkMode(FCacheBMP.Canvas.Handle, TRANSPARENT);
+    DoDrawText(R, DrawStyle);
+    if IsWindowEnabled(CtrlHandle) and SkinManager.ButtonsOptions.ShowFocusRect and (ProcessMessage(BM_GETSTATE, 0, 0) and BST_FOCUS <> 0) and (Caption <> '') then begin
+      InflateRect(R, 2, 1);
+      if R.Top < 3 then
+        R.Top := 3;
 
-    if R.Bottom > WndSize.cy - 3 then
-      R.Bottom := WndSize.cy - 3;
+      if R.Bottom > WndSize.cy - 3 then
+        R.Bottom := WndSize.cy - 3;
 
-    State := min(1, SkinData.SkinManager.gd[SkinData.SkinIndex].States);
-    FocusRect(SkinData.FCacheBMP.Canvas, R, SkinData.SkinManager.gd[SkinData.SkinIndex].Props[min(State, ac_MaxPropsIndex)].FontColor.Color, clNone);
+      State := min(1, SkinManager.gd[SkinIndex].States);
+      FocusRect(FCacheBMP.Canvas, R, SkinManager.gd[SkinIndex].Props[min(State, ac_MaxPropsIndex)].FontColor.Color, clNone);
+    end;
   end;
 end;
 
@@ -8063,7 +8137,7 @@ end;
 
 function TacBtnWnd.MaxCaptionWidth: integer;
 begin
-  if (Caption <> '') then
+  if Caption <> '' then
     if Glyphsize.cx <> 0 then
       Result := max(0, WndSize.cx - Glyphsize.cx)
     else
@@ -8121,9 +8195,9 @@ begin
       BG.Offset.X := WndPos.X;
       BG.Offset.Y := WndPos.Y;
       BG.PleaseDraw := True;
-      SendMessage(ParentWnd, SM_ALPHACMD, MakeWParam(0, AC_GETBG), LPARAM(@BG));
+      SendMessage(ParentWnd, SM_ALPHACMD, AC_GETBG_HI, LPARAM(@BG));
       with SkinData.SkinManager do
-        DrawSkinGlyph(Bmp, Point(max(WndSize.cx - WidthOfImage(ma[i]), 0), max(WndSize.cy - HeightOfImage(ma[i]), 0)), 0, 1, ma[i], MakeCacheInfo(Bmp));
+        DrawSkinGlyph(Bmp, Point(max(WndSize.cx - ma[i].Width, 0), max(WndSize.cy - ma[i].Height, 0)), 0, 1, ma[i], MakeCacheInfo(Bmp));
 
       BitBlt(DC, 0, 0, WndSize.cx, WndSize.cy, Bmp.Canvas.Handle, 0, 0, SRCCOPY);
     end;
@@ -8197,7 +8271,7 @@ begin
   case Message.Msg of
     WM_WINDOWPOSCHANGED, WM_SIZE: begin
       SkinData.BGChanged := True;
-      RedrawWindow(CtrlHandle, nil, 0, RDW_UPDATENOW or RDW_INVALIDATE or RDW_ALLCHILDREN);
+      RedrawWindow(CtrlHandle, nil, 0, RDWA_ALLNOW);
     end;
 
     WM_MOUSEMOVE:
@@ -8217,7 +8291,7 @@ procedure TacToolBarWnd.AC_WMNCPaint(const Message: TMessage);
 var
   DC, SavedDC: hdc;
 begin
-  if GetWindowLong(CtrlHandle, GWL_EXSTYLE) and WS_EX_CLIENTEDGE = WS_EX_CLIENTEDGE then
+  if GetWindowLong(CtrlHandle, GWL_EXSTYLE) and WS_EX_CLIENTEDGE <> 0 then
     if not InUpdating(SkinData) then begin
       PrepareCache;
       DC := GetWindowDC(CtrlHandle);
@@ -8270,7 +8344,7 @@ begin
   else
     DC := Message.DC;
 
-  FillAlphaRect(TempBmp, MkRect(TempBmp), 255);
+  FillAlphaRect(TempBmp, MkRect(TempBmp), MaxByte);
   BitBlt(DC, 0, 0, SkinData.FCacheBmp.Width - 2 * BorderWidth, SkinData.FCacheBmp.Height - 2 * BorderWidth, TempBmp.Canvas.Handle, BorderWidth, BorderWidth, SRCCOPY);
   FreeAndNil(TempBmp);
   if Message.DC = 0 then
@@ -8322,9 +8396,9 @@ var
   buf: array [0..1023] of acChar;
   BtnIndex, i, cx, cy, count, Ndx, si, mi, State, ArrowIndex, pOffset: integer;
 begin
-  if (ProcessMessage(TB_GETBUTTON, Index, LPARAM(@Btn)) <> 0) then begin
+  if ProcessMessage(TB_GETBUTTON, Index, LPARAM(@Btn)) <> 0 then begin
     BtnBmp := CreateBmp32(r);
-    if (Btn.fsStyle = TBSTYLE_SEP) then begin // Separator
+    if Btn.fsStyle = TBSTYLE_SEP then begin // Separator
       si := DefaultManager.GetSkinIndex(s_Divider);
       mi := DefaultManager.GetMaskIndex(si, s_BordersMask);
       if DefaultManager.IsValidImgIndex(mi) then begin
@@ -8343,10 +8417,10 @@ begin
     cx := 0;
     BtnIndex := SkinData.SkinManager.ConstData.Sections[ssToolButton];
     pOffset := 0;
-    if Btn.fsState and TBSTATE_ENABLED <> TBSTATE_ENABLED then
+    if Btn.fsState and TBSTATE_ENABLED = 0 then
       State := 0
     else
-      if Btn.fsState and TBSTATE_PRESSED = TBSTATE_PRESSED then begin
+      if Btn.fsState and TBSTATE_PRESSED <> 0 then begin
         State := 2;
         pOffset := 1;
       end
@@ -8373,7 +8447,7 @@ begin
         ImageList_SetBkColor(i, CLR_NONE);
         if Btn.fsStyle and $0080 = $0080 then begin // BTNS_WHOLEDROPDOWN
           ArrowIndex := SkinData.SkinManager.ConstData.ScrollBtns[asBottom].GlyphIndex;
-          if ArrowIndex <> -1 then begin
+          if ArrowIndex >= 0 then begin
             ArrowSize := MkSize(DefaultManager.ma[ArrowIndex]);
             if s <> '' then begin
               DrawSkinGlyph(BtnBmp, Point((BtnBmp.Width - ArrowSize.cx) div 2 + pOffset, (BtnBmp.Height - ArrowSize.cy) div 2 + pOffset), State, 1, DefaultManager.ma[ArrowIndex], MakeCacheInfo(BtnBmp));
@@ -8436,10 +8510,10 @@ begin
       if OldFont <> 0 then
         SelectObject(BtnBmp.Canvas.Handle, OldFont);
     end;
-    if Btn.fsState and TBSTATE_ENABLED <> TBSTATE_ENABLED then begin
+    if Btn.fsState and TBSTATE_ENABLED = 0 then begin
       rText := MkRect(BtnBmp);
       OffsetRect(rText, R.Left, R.Top);
-      BlendTransRectangle(BtnBmp, 0, 0, SkinData.FCacheBmp, rText, DefDisabledBlend);
+      BlendTransRectangle(BtnBmp, 0, 0, SkinData.FCacheBmp, rText, DefBlendDisabled);
     end;
     BitBlt(DC, r.Left, r.Top, BtnBmp.Width, BtnBmp.Height, BtnBmp.Canvas.Handle, 0, 0, SRCCOPY);
     FreeAndNil(BtnBmp);
@@ -8528,9 +8602,9 @@ begin
     PrepareCache;
     if DlgMode then begin
       cRect.Top    := HeightOf(CaptionRect);
-      cRect.Left   := DefaultManager.MaskWidthLeft(SkinData.BorderIndex);
-      cRect.Right  := WndSize.cx - DefaultManager.MaskWidthRight(SkinData.BorderIndex);
-      cRect.Bottom := WndSize.cy - DefaultManager.MaskWidthBottom(SkinData.BorderIndex);
+      cRect.Left   := DefaultManager.ma[SkinData.BorderIndex].WL;
+      cRect.Right  := WndSize.cx - DefaultManager.ma[SkinData.BorderIndex].WR;
+      cRect.Bottom := WndSize.cy - DefaultManager.ma[SkinData.BorderIndex].WB;
       ExcludeClipRect(DC, cRect.Left, cRect.Top, cRect.Right, cRect.Bottom);
     end;
     if SkinData.FOwnerControl <> nil then begin
@@ -8566,11 +8640,11 @@ begin
     WM_ERASEBKGND:
       if not DlgMode then begin
         if (SkinData.FOwnerControl <> nil) and not (csPaintCopy in SkinData.FOwnerControl.ControlState) and (Message.WParam <> WParam(Message.LParam)) then begin
-          if (csDesigning in SkinData.FOwnerControl.ComponentState) then
+          if csDesigning in SkinData.FOwnerControl.ComponentState then
             inherited; // Drawing in the BDS IDE
         end
         else
-          if (Message.WParam <> 0) then begin // From PaintTo
+          if Message.WParam <> 0 then begin // From PaintTo
             if SkinData.BGChanged then
               PrepareCache;
 
@@ -8622,14 +8696,14 @@ begin
       inherited;
       SetRedraw(CtrlHandle, 1);
       SkinData.BGChanged := True;
-      RedrawWindow(CtrlHandle, nil, 0, RDW_INVALIDATE or RDW_ERASE or RDW_FRAME);
+      RedrawWindow(CtrlHandle, nil, 0, RDWA_REPAINT);
       Exit;
     end;
 
     WM_SETTEXT: begin
       inherited;
       SkinData.BGChanged := True;
-      RedrawWindow(CtrlHandle, nil, 0, RDW_INVALIDATE or RDW_ERASE or RDW_FRAME);
+      RedrawWindow(CtrlHandle, nil, 0, RDWA_REPAINT);
       Exit;
     end;    
   end;
@@ -8678,7 +8752,7 @@ begin
     acDrawText(SkinData.FCacheBMP.Canvas.Handle, Caption, Result, DT_CENTER or DT_CALCRECT);
 
   Size := MkSize(Result);
-  if GetWindowLong(CtrlHandle, GWL_EXSTYLE) and WS_EX_RTLREADING = WS_EX_RTLREADING then
+  if GetWindowLong(CtrlHandle, GWL_EXSTYLE) and WS_EX_RTLREADING <> 0 then
     Result.Left := WndSize.cx - Size.cx - 2 * Margin - 6
   else
     Result.Left := 6;
@@ -8693,7 +8767,9 @@ end;
 
 procedure TacGroupBoxWnd.WriteText(R: TRect);
 var
+  FontIndex: integer;
   BGInfo: TacBGInfo;
+  pi: TacPaintInfo;
   Flags: Cardinal;
 begin
   BGInfo.PleaseDraw := False;
@@ -8705,10 +8781,20 @@ begin
 
   SkinData.FCacheBMP.Canvas.Brush.Style := bsClear;
   Flags := DT_CENTER or DT_SINGLELINE or DT_VCENTER;
-  if GetWindowLong(CtrlHandle, GWL_EXSTYLE) and WS_EX_RTLREADING = WS_EX_RTLREADING then
+  if GetWindowLong(CtrlHandle, GWL_EXSTYLE) and WS_EX_RTLREADING <> 0 then
     Flags := Flags or DT_RTLREADING;
 
-  acWriteTextEx(SkinData.FCacheBMP.Canvas, PacChar(Caption), True, R, Flags, SkinData, False);
+  pi.SkinManager := SkinData.SkinManager;
+  pi.R := MkRect;
+  pi.State := 0;
+  pi.FontIndex := -1;
+
+  if (SendMessage(CtrlHandle, SM_ALPHACMD, AC_GETFONTINDEX_HI, LParam(@pi)) > 0) and (pi.FontIndex >= 0) then
+    FontIndex := pi.FontIndex
+  else
+    FontIndex := SkinData.SkinIndex;
+
+  acWriteTextEx(SkinData.FCacheBMP.Canvas, PacChar(Caption), True, R, Flags, FontIndex, False);
 end;
 
 
@@ -8730,7 +8816,7 @@ begin
   if not TimerIsActive(SkinData) then begin
     InitCtrlData(CtrlHandle, ParentWnd, WndRect, ParentRect, WndSize, WndPos);
     if not InUpdating(SkinData) then
-      if not OwnerDraw then begin
+      if not OwnerDraw then
         if IsWindowVisible(CtrlHandle) or (Message.DC <> 0) then begin
           InitCtrlData(CtrlHandle, ParentWnd, WndRect, ParentRect, WndSize, WndPos);
           if Message.DC = 0 then
@@ -8743,7 +8829,6 @@ begin
           if Message.DC = 0 then
             ReleaseDC(CtrlHandle, DC);
         end;
-      end;
   end
   else begin
     DC := GetDC(CtrlHandle);
@@ -8843,7 +8928,7 @@ begin
   inherited;
   case Message.Msg of
     WM_KEYUP, WM_KEYDOWN:
-      if (TWMKey(Message).CharCode = VK_SPACE) then
+      if TWMKey(Message).CharCode = VK_SPACE then
         SendMessage(CtrlHandle, WM_PAINT, 0, 0);
 
     WM_SETFOCUS, WM_KILLFOCUS:
@@ -8874,11 +8959,11 @@ begin
       if CI.Ready then begin
         R := MkRect(WndSize);
         OffsetRect(R, CI.X + WndPos.x, CI.Y + WndPos.y);
-        BlendTransRectangle(SkinData.FCacheBmp, 0, 0, CI.Bmp, R, DefDisabledBlend);
+        BlendTransRectangle(SkinData.FCacheBmp, 0, 0, CI.Bmp, R, DefBlendDisabled);
       end
       else begin
         C.C := CI.FillColor;
-        BlendTransBitmap(SkinData.FCacheBmp, DefDisabledBlend, C);
+        BlendTransBitmap(SkinData.FCacheBmp, DefBlendDisabled, C);
       end;
   end;
 end;
@@ -8889,6 +8974,8 @@ const
   Margin = 0;
 var
   rText: TRect;
+  pi: TacPaintInfo;
+  FontIndex: integer;
   WordWrap, Focused: boolean;
   Fmt, State, t, b, w, h, dx: integer;
 begin
@@ -8919,7 +9006,7 @@ begin
       OffsetRect(rText, -integer(WordWrap), -1);
     end
     else
-      if GetWindowLong(CtrlHandle, GWL_EXSTYLE) and WS_EX_RTLREADING = WS_EX_RTLREADING then begin
+      if GetWindowLong(CtrlHandle, GWL_EXSTYLE) and WS_EX_RTLREADING <> 0 then begin
         rText.Right := WndSize.cx - Margin - WidthOf(CheckRect) - 6;
         rText.Left := rText.Right - dx;
         rText.Top := t;
@@ -8937,7 +9024,17 @@ begin
     else
       Fmt := Fmt or DT_SINGLELINE or DT_TOP;
 
-    acWriteTextEx(SkinData.FCacheBmp.Canvas, PacChar(Caption), True, rText, Fmt, SkinData, ControlIsActive(SkinData));
+    pi.SkinManager := SkinData.SkinManager;
+    pi.R := MkRect;
+    pi.State := 0;
+    pi.FontIndex := -1;
+
+    if (SendMessage(CtrlHandle, SM_ALPHACMD, AC_GETFONTINDEX_HI, LParam(@pi)) > 0) and (pi.FontIndex >= 0) then
+      FontIndex := pi.FontIndex
+    else
+      FontIndex := SkinData.SkinIndex;
+
+    acWriteTextEx(SkinData.FCacheBmp.Canvas, PacChar(Caption), True, rText, Fmt, FontIndex, ControlIsActive(SkinData));
     SkinData.FCacheBmp.Canvas.Pen.Style := psClear;
     SkinData.FCacheBmp.Canvas.Brush.Style := bsSolid;
     if Focused then begin
@@ -8963,10 +9060,10 @@ end;
 
 function TacCheckBoxWnd.CtlState: integer;
 begin
-  if ProcessMessage(BM_GETSTATE, 0, 0) and BST_PUSHED = BST_PUSHED then
+  if ProcessMessage(BM_GETSTATE, 0, 0) and BST_PUSHED <> 0 then
     Result := 2
   else
-    if not SkinData.SkinManager.Options.NoMouseHover and ((ProcessMessage(BM_GETSTATE, 0, 0) and BST_FOCUS = BST_FOCUS) or (DefaultManager.ActiveControl = CtrlHandle)) then
+    if not SkinData.SkinManager.Options.NoMouseHover and ((ProcessMessage(BM_GETSTATE, 0, 0) and BST_FOCUS <> 0) or (DefaultManager.ActiveControl = CtrlHandle)) then
       Result := 1
     else
       Result := 0
@@ -8979,11 +9076,10 @@ var
 begin
   Style := GetWindowLong(CtrlHandle, GWL_STYLE);
   with SkinData.SkinManager do
-    if (Style and BS_RADIOBUTTON <> BS_RADIOBUTTON) and
-         (Style and BS_AUTORADIOBUTTON <> BS_AUTORADIOBUTTON) or
-           (Style and BS_AUTOCHECKBOX = BS_AUTOCHECKBOX) or
-             (Style and BS_CHECKBOX = BS_CHECKBOX) or
-               (Style and BS_3STATE = BS_3STATE) then
+    if (Style and BS_RADIOBUTTON <> BS_RADIOBUTTON) and (Style and BS_AUTORADIOBUTTON <> BS_AUTORADIOBUTTON) or
+         (Style and BS_AUTOCHECKBOX = BS_AUTOCHECKBOX) or
+           (Style and BS_CHECKBOX = BS_CHECKBOX) or
+             (Style and BS_3STATE = BS_3STATE) then
       Result := ConstData.CheckBox[AState]
     else
       Result := ConstData.RadioButton[AState = cbChecked];
@@ -8995,7 +9091,7 @@ var
   h, w, hdiv: integer;
 begin
   Result := MkRect;
-  if i > -1 then begin
+  if i >= 0 then begin
     h := SkinGlyphHeight(i);
     w := SkinGlyphWidth(i);
     hdiv := (WndSize.cy - h) div 2;
@@ -9009,25 +9105,23 @@ end;
 
 function TacCheckBoxWnd.SkinGlyphHeight(const i: integer): integer;
 begin
-  with SkinData.SkinManager do
+{  with SkinData.SkinManager do
     if Assigned(ma[i].Bmp) then
       Result := ma[i].Bmp.Height div 2
-    else
-      Result := HeightOfImage(ma[i]);
+    else}
+      Result := SkinData.SkinManager.ma[i].Height;
 end;
 
 
 function TacCheckBoxWnd.SkinGlyphWidth(const i: integer): integer;
 begin
-  with SkinData.SkinManager do begin
+{  with SkinData.SkinManager do begin
+
     if ma[i].ImageCount = 0 then
       ma[i].ImageCount := 1;
-
-    if Assigned(ma[i].Bmp) then
-      Result := ma[i].Bmp.Width div 3
-    else
-      Result := WidthOfImage(ma[i]);
-  end;
+}
+    Result := SkinData.SkinManager.ma[i].Width;
+//  end;
 end;
 
 
@@ -9043,11 +9137,20 @@ end;
 
 
 function TacCheckBoxWnd.State: TCheckBoxState;
+var
+  dLink: TObject;
 begin
-  if ProcessMessage(BM_GETSTATE, 0, 0) and BST_INDETERMINATE = BST_INDETERMINATE then
+  if (SkinData.FOwnerControl is TCustomCheckBox) and Assigned(GetDBFieldCheckState) and HasProperty(SkinData.FOwnerControl, 'DataField') then begin
+    dLink := TObject(SkinData.FOwnerControl.Perform(CM_GETDATALINK, 0, 0));
+    if dLink <> nil then begin
+      Result := GetDBFieldCheckState(dLink);
+      Exit;
+    end;
+  end;
+  if ProcessMessage(BM_GETSTATE, 0, 0) and BST_INDETERMINATE <> 0 then
     Result := cbGrayed
   else
-    if ProcessMessage(BM_GETSTATE, 0, 0) and BST_CHECKED = BST_CHECKED then
+    if ProcessMessage(BM_GETSTATE, 0, 0) and BST_CHECKED <> 0 then
       Result := cbChecked
     else
       Result := cbUnChecked
@@ -9072,7 +9175,7 @@ procedure TacLinkWnd.acWndProc(var Message: TMessage);
 var
   ps: TPaintStruct;
 begin
-  if (GetWindowLong(CtrlHandle, GWL_EXSTYLE) and WS_EX_STATICEDGE <> WS_EX_STATICEDGE) then
+  if GetWindowLong(CtrlHandle, GWL_EXSTYLE) and WS_EX_STATICEDGE = 0 then
     case Message.Msg of
       WM_UPDATEUISTATE:
         if IsWindowVisible(CtrlHandle) then
@@ -9096,14 +9199,14 @@ begin
       WM_MOVE: begin
         SkinData.BGChanged := True;
         Message.Result := CallPrevWndProc(CtrlHandle, Message.Msg, Message.WParam, Message.LParam);
-        RedrawWindow(CtrlHandle, nil, 0, RDW_ERASE or RDW_UPDATENOW or RDW_INVALIDATE);
+        RedrawWindow(CtrlHandle, nil, 0, RDWA_ALLNOW);
       end;
-      
+
       WM_SETTEXT: begin
         Message.Result := CallPrevWndProc(CtrlHandle, Message.Msg, Message.WParam, Message.LParam);
         Caption := GetWndText(CtrlHandle);
         SkinData.BGChanged := True;
-        RedrawWindow(CtrlHandle, nil, 0, RDW_INVALIDATE or RDW_ERASE or RDW_UPDATENOW);
+        RedrawWindow(CtrlHandle, nil, 0, RDWA_ALLNOW);
       end
 
       else
@@ -9342,7 +9445,7 @@ begin
     SM_ALPHACMD:
       case Message.WParamHi of
         AC_MOUSELEAVE:
-          RedrawWindow(CtrlHandle, nil, 0, RDW_INVALIDATE or RDW_FRAME or RDW_UPDATENOW);
+          RedrawWindow(CtrlHandle, nil, 0, RDWA_ALLNOW);
       end;
 
     WM_NCPAINT, WM_ERASEBKGND: begin
@@ -9393,8 +9496,8 @@ end;
 procedure TacSpinWnd.PrepareCache;
 var
   R, Btn1Rect, Btn2Rect: TRect;
-  ParentBG: TacBGInfo;
   sArrowMask: integer;
+  ParentBG: TacBGInfo;
   CI: TCacheInfo;
   p: TPoint;
 begin
@@ -9413,9 +9516,9 @@ begin
       SkinData.SkinSection := SkinData.SkinManager.ConstData.UpDownBtns[asTop].SkinSection;
       PaintItem(SkinData, CI, True, Btn1State, Btn1Rect, Point(WndPos.X + Btn1Rect.Left, WndPos.Y + Btn1Rect.Top), SkinData.FCacheBMP, False);
       with ConstData.ScrollBtns[asTop] do
-        if GlyphIndex > -1 then begin
-          p.x := Btn1Rect.Left + (WidthOf(Btn1Rect) - WidthOfImage(ma[GlyphIndex])) div 2;
-          p.y := Btn1Rect.Top + (HeightOf(Btn1Rect) - HeightOfImage(ma[GlyphIndex])) div 2;
+        if GlyphIndex >= 0 then begin
+          p.x := Btn1Rect.Left + (WidthOf(Btn1Rect) - ma[GlyphIndex].Width) div 2;
+          p.y := Btn1Rect.Top + (HeightOf(Btn1Rect) - ma[GlyphIndex].Height) div 2;
           DrawSkinGlyph(SkinData.FCacheBMP, p, Btn1State, 1, ma[GlyphIndex], MakeCacheInfo(SkinData.FCacheBmp));
         end
         else begin
@@ -9426,17 +9529,17 @@ begin
               OffsetRect(R, 1, 1);
 
           if sArrowMask >= 0 then
-            DrawColorArrow(SkinData.FCacheBMP.Canvas, gd[sArrowMask].Props[math.min(integer(Btn1State > 0), ac_MaxPropsIndex)].FontColor.Color, R, asTop)
+            DrawColorArrow(SkinData.FCacheBMP, gd[sArrowMask].Props[math.min(integer(Btn1State > 0), ac_MaxPropsIndex)].FontColor.Color, R, asTop)
           else
-            DrawColorArrow(SkinData.FCacheBMP.Canvas, 0, R, asTop);
+            DrawColorArrow(SkinData.FCacheBMP, 0, R, asTop);
         end;
 
       SkinData.SkinSection := SkinData.SkinManager.ConstData.UpDownBtns[asbottom].SkinSection;
-      PaintItem(SkinData, CI, True, Btn2State, Btn2Rect, Point(WndPos.Y + Btn2Rect.Left, WndPos.Y + Btn2Rect.Top), SkinData.FCacheBMP, False);
+      PaintItem(SkinData, CI, True, Btn2State, Btn2Rect, Point(WndPos.X + Btn2Rect.Left, WndPos.Y + Btn2Rect.Top), SkinData.FCacheBMP, False);
       with ConstData.ScrollBtns[asBottom] do
-        if GlyphIndex > -1 then begin
-          p.x := Btn2Rect.Left + (WidthOf(Btn2Rect) - WidthOfImage (ma[GlyphIndex])) div 2;
-          p.y := Btn2Rect.Top + (HeightOf(Btn2Rect) - HeightOfImage(ma[GlyphIndex])) div 2;
+        if GlyphIndex >= 0 then begin
+          p.x := Btn2Rect.Left + (WidthOf(Btn2Rect) - ma[GlyphIndex].Width) div 2;
+          p.y := Btn2Rect.Top + (HeightOf(Btn2Rect) - ma[GlyphIndex].Height) div 2;
           DrawSkinGlyph(SkinData.FCacheBMP, p, Btn2State, 1, ma[GlyphIndex], MakeCacheInfo(SkinData.FCacheBmp));
         end
         else begin
@@ -9447,9 +9550,9 @@ begin
               OffsetRect(R, 1, 1);
 
           if sArrowMask >= 0 then
-            DrawColorArrow(SkinData.FCacheBMP.Canvas, gd[sArrowMask].Props[math.min(integer(Btn2State > 0), ac_MaxPropsIndex)].FontColor.Color, R, asBottom)
+            DrawColorArrow(SkinData.FCacheBMP, gd[sArrowMask].Props[math.min(integer(Btn2State > 0), ac_MaxPropsIndex)].FontColor.Color, R, asBottom)
           else
-            DrawColorArrow(SkinData.FCacheBMP.Canvas, 0, R, asBottom);
+            DrawColorArrow(SkinData.FCacheBMP, 0, R, asBottom);
         end;
     end;
   end
@@ -9464,9 +9567,9 @@ begin
       SkinData.SkinSection := SkinData.SkinManager.ConstData.UpDownBtns[asLeft].SkinSection;
       PaintItem(SkinData, CI, True, Btn1State, Btn1Rect, Point(WndPos.X, WndPos.Y), SkinData.FCacheBMP, True);
       with ConstData.ScrollBtns[asLeft] do
-        if GlyphIndex > -1 then begin
-          p.x := Btn1Rect.Left + (WidthOf(Btn1Rect) - WidthOfImage (ma[GlyphIndex])) div 2;
-          p.y := Btn1Rect.Top + (HeightOf(Btn1Rect) - HeightOfImage(ma[GlyphIndex])) div 2;
+        if GlyphIndex >= 0 then begin
+          p.x := Btn1Rect.Left + (WidthOf(Btn1Rect) - ma[GlyphIndex].Width) div 2;
+          p.y := Btn1Rect.Top + (HeightOf(Btn1Rect) - ma[GlyphIndex].Height) div 2;
           DrawSkinGlyph(SkinData.FCacheBMP, p, Btn1State, 1, ma[GlyphIndex], MakeCacheInfo(SkinData.FCacheBmp));
         end
         else begin
@@ -9477,17 +9580,17 @@ begin
               OffsetRect(R, 1, 1);
 
           if sArrowMask >= 0 then
-            DrawColorArrow(SkinData.FCacheBMP.Canvas, gd[sArrowMask].Props[math.min(integer(Btn1State > 0), ac_MaxPropsIndex)].FontColor.Color, R, asLeft)
+            DrawColorArrow(SkinData.FCacheBMP, gd[sArrowMask].Props[math.min(integer(Btn1State > 0), ac_MaxPropsIndex)].FontColor.Color, R, asLeft)
           else
-            DrawColorArrow(SkinData.FCacheBMP.Canvas, 0, R, asLeft);
+            DrawColorArrow(SkinData.FCacheBMP, 0, R, asLeft);
         end;
 
       SkinData.SkinSection := SkinData.SkinManager.ConstData.UpDownBtns[asRight].SkinSection;
       PaintItem(SkinData, CI, True, Btn2State, Btn2Rect, Point(WndPos.X, WndPos.Y), SkinData.FCacheBMP, True);
       with ConstData.ScrollBtns[asRight] do
-        if GlyphIndex > -1 then begin
-          p.x := Btn2Rect.Left + (WidthOf(Btn2Rect) - WidthOfImage (ma[GlyphIndex])) div 2;
-          p.y := Btn2Rect.Top + (HeightOf(Btn2Rect) - HeightOfImage(ma[GlyphIndex])) div 2;
+        if GlyphIndex >= 0 then begin
+          p.x := Btn2Rect.Left + (WidthOf(Btn2Rect) - ma[GlyphIndex].Width) div 2;
+          p.y := Btn2Rect.Top + (HeightOf(Btn2Rect) - ma[GlyphIndex].Height) div 2;
           DrawSkinGlyph(SkinData.FCacheBMP, p, Btn2State, 1, ma[GlyphIndex], MakeCacheInfo(SkinData.FCacheBmp));
         end
         else begin
@@ -9498,9 +9601,9 @@ begin
               OffsetRect(R, 1, 1);
 
           if sArrowMask >= 0 then
-            DrawColorArrow(SkinData.FCacheBMP.Canvas, gd[sArrowMask].Props[math.min(integer(Btn2State > 0), ac_MaxPropsIndex)].FontColor.Color, R, asRight)
+            DrawColorArrow(SkinData.FCacheBMP, gd[sArrowMask].Props[math.min(integer(Btn2State > 0), ac_MaxPropsIndex)].FontColor.Color, R, asRight)
           else
-            DrawColorArrow(SkinData.FCacheBMP.Canvas, 0, R, asRight);
+            DrawColorArrow(SkinData.FCacheBMP, 0, R, asRight);
         end;
     end;
   end;
@@ -9530,7 +9633,7 @@ var
 begin
   gSize := GlyphSize;
   cSize := TextRectSize;
-  if SkinData.FOwnerControl <> nil then begin
+  if SkinData.FOwnerControl is TBitBtn then begin
     CalcButtonLayout(MkRect(WndSize), Point(gSize.cx, gSize.cy), cSize, TBitBtn(SkinData.FOwnerControl).Layout, taCenter, 0, 0, GlyphPos, Result, DT_CENTER);
     if CurrentState = 2 then
       if not SkinData.Skinned or (SkinData.SkinManager <> nil) and SkinData.SkinManager.ButtonsOptions.ShiftContentOnClick then
@@ -9558,14 +9661,14 @@ begin
       Exit
     end;
 
-    if (SkinData.FOwnerControl <> nil) then begin // Patch Andreas for activ button
+    if SkinData.FOwnerControl <> nil then begin // Patch Andreas for activ button
       if not (csDesigning in SkinData.FOwnerControl.ComponentState) and ControlIsActive(SkinData) then begin
         Result := 1;
         Exit;
       end;
     end
     else
-      if ((GetFocus = CtrlHandle) or (DefaultManager.ActiveControl = CtrlHandle) or SkinData.FFocused) then begin
+      if (GetFocus = CtrlHandle) or (DefaultManager.ActiveControl = CtrlHandle) or SkinData.FFocused then begin
         Result := 1;
         Exit;
       end;
@@ -9574,7 +9677,7 @@ begin
     if (SkinData.FOwnerControl is TBitBtn) and TBitBtn(SkinData.FOwnerControl).Default then begin
       Wnd := GetFocus;
       // Focused control is a button
-      if (Wnd <> 0) then
+      if Wnd <> 0 then
         Result := iff(GetWindowLong(Wnd, GWL_STYLE) and BS_USERBUTTON = BS_USERBUTTON, 0, 3)
       else
         Result := 3
@@ -9589,7 +9692,7 @@ procedure TacBitBtnWnd.DrawGlyph;
 var
   DrawData: TacDrawGlyphData;
 begin
-  if SkinData.FOwnerControl <> nil then
+  if SkinData.FOwnerControl is TBitBtn then
     with TBitBtn(SkinData.FOwnerControl) do begin
       if Glyph.PixelFormat = pfDevice then
         Glyph.HandleType := bmDIB;
@@ -9605,10 +9708,13 @@ begin
       DrawData.Enabled           := Enabled;
       DrawData.Blend             := 0;
       DrawData.Down              := Down;
-      DrawData.Grayed            := SkinData.Skinned and (SkinData.SkinManager <> nil) and SkinData.SkinManager.Effects.DiscoloredGlyphs;
       DrawData.CurrentState      := CurrentState;
+      DrawData.Grayed            := (DrawData.CurrentState = 0) and (SkinData.SkinManager <> nil) and SkinData.SkinManager.Effects.DiscoloredGlyphs and SkinData.Skinned;
       DrawData.DisabledGlyphKind := DefDisabledGlyphKind;
       DrawData.Reflected         := False;
+      if DrawData.Grayed then
+        DrawData.BGColor := SkinData.SkinManager.gd[DrawData.SkinIndex].Props[0].Color;
+
       acDrawGlyphEx(DrawData);
     end
 end;
@@ -9621,7 +9727,7 @@ var
   x, y, sp, dh, dw: integer;
 begin
   Size := GlyphSize;
-  if SkinData.FOwnerControl <> nil then begin
+  if SkinData.FOwnerControl is TBitBtn then begin
     x := 0;
     y := 0;
     Result := MkRect;
@@ -9675,7 +9781,7 @@ function TacBitBtnWnd.GlyphSize: TSize;
 var
   hBmp: hBitmap;
 begin
-  if SkinData.FOwnerControl <> nil then
+  if SkinData.FOwnerControl is TBitBtn then
     if TBitBtn(SkinData.FOwnerControl).Glyph <> nil then
       with TBitBtn(SkinData.FOwnerControl).Glyph do
         Result := MkSize(Width div TBitBtn(SkinData.FOwnerControl).NumGlyphs, Height)
@@ -9693,9 +9799,9 @@ end;
 
 function TacBitBtnWnd.MaxCaptionWidth: integer;
 begin
-  if SkinData.FOwnerControl <> nil then
+  if SkinData.FOwnerControl is TBitBtn then
     with SkinData.FOwnerControl as TBitBtn do
-      if (Caption <> '') then begin
+      if Caption <> '' then begin
         Result := Width - 2 * Margin;
         case Layout of
           blGlyphLeft, blGlyphRight:
@@ -9714,7 +9820,7 @@ function TacButtonWnd.HaveImage: boolean;
 begin
   if Btn <> nil then
     with Btn do
-      Result := (Images <> nil) and (ImageIndex >= 0) and (ImageIndex < GetImageCount(Images))
+      Result := (Images <> nil) and IsValidIndex(ImageIndex, GetImageCount(Images))
   else
     Result := False;
 end;
@@ -9822,15 +9928,15 @@ begin
     if CurrentState = 2 then
       State := 2
     else
-      State := iffi(Btn.Focused, 3, CurrentState);
+      State := iff(Btn.Focused, 3, CurrentState);
 
   with Btn do
     case State of
       0: Result := ImageIndex;
-      1: Result := iffi((HotImageIndex > -1)      and (HotImageIndex      < GetImageCount(Images)), HotImageIndex,      ImageIndex);
-      2: Result := iffi((PressedImageIndex > -1)  and (PressedImageIndex  < GetImageCount(Images)), PressedImageIndex,  ImageIndex);
-      3: Result := iffi((SelectedImageIndex > -1) and (SelectedImageIndex < GetImageCount(Images)), SelectedImageIndex, ImageIndex);
-      4: Result := iffi((DisabledImageIndex > -1) and (DisabledImageIndex < GetImageCount(Images)), DisabledImageIndex, ImageIndex)
+      1: Result := iff(IsValidIndex(HotImageIndex,      GetImageCount(Images)), HotImageIndex,      ImageIndex);
+      2: Result := iff(IsValidIndex(PressedImageIndex,  GetImageCount(Images)), PressedImageIndex,  ImageIndex);
+      3: Result := iff(IsValidIndex(SelectedImageIndex, GetImageCount(Images)), SelectedImageIndex, ImageIndex);
+      4: Result := iff(IsValidIndex(DisabledImageIndex, GetImageCount(Images)), DisabledImageIndex, ImageIndex)
       else Result := -1;
     end;
 end;
@@ -9976,14 +10082,14 @@ begin
         WM_WINDOWPOSCHANGING: begin
           inherited;
           if not bFlag then
-            if (TWMWindowPosChanged(Message).WindowPos.Flags and SWP_NOREDRAW <> SWP_NOREDRAW) and
-               (TWMWindowPosChanged(Message).WindowPos.Flags and SWP_SHOWWINDOW = SWP_SHOWWINDOW) then
-              if not IsWindowVisible(CtrlHandle) then begin
-                bFlag := True;
-                SetWindowLong(CtrlHandle, GWL_EXSTYLE, GetWindowLong(CtrlHandle, GWL_EXSTYLE) or WS_EX_LAYERED);
-                SetLayeredWindowAttributes(CtrlHandle, clNone, 0, ULW_ALPHA); // Hide window for a blinking avoiding
-                bFlag := False;
-              end;
+            with TWMWindowPosChanged(Message) do
+              if (WindowPos.Flags and SWP_NOREDRAW = 0) and (WindowPos.Flags and SWP_SHOWWINDOW <> 0) then
+                if not IsWindowVisible(CtrlHandle) then begin
+                  bFlag := True;
+                  SetWindowLong(CtrlHandle, GWL_EXSTYLE, GetWindowLong(CtrlHandle, GWL_EXSTYLE) or WS_EX_LAYERED);
+                  SetLayeredWindowAttributes(CtrlHandle, clNone, 0, ULW_ALPHA); // Hide window for a blinking avoiding
+                  bFlag := False;
+                end;
         end;
 
         WM_ERASEBKGND: begin
@@ -10117,7 +10223,7 @@ begin
     w := 0;
 
   GetWindowRect(CtrlHandle, r);
-  if GetWindowLong(CtrlHandle, GWL_EXSTYLE) and WS_EX_RTLREADING = WS_EX_RTLREADING then
+  if GetWindowLong(CtrlHandle, GWL_EXSTYLE) and WS_EX_RTLREADING <> 0 then
     Result.Left := bWidth
   else
     Result.Left := WidthOf(r) - w - bWidth;
@@ -10139,8 +10245,8 @@ end;
 
 function TacWWComboBoxWnd.GetShowButton(aCtrl: TWinControl): Boolean;
 begin
-  if (aCtrl is TComboBox) then
-    Result := ((aCtrl as TComboBox).Style in [StdCtrls.csDropDown, StdCtrls.csDropDownList])
+  if aCtrl is TComboBox then
+    Result := (aCtrl as TComboBox).Style in [StdCtrls.csDropDown, StdCtrls.csDropDownList]
   else
     Result := True;
 end;
@@ -10241,7 +10347,7 @@ begin
         AC_ENDPARENTUPDATE: begin
           if SkinData.FUpdating then begin
             SkinData.Updating := False;
-            RedrawWindow(CtrlHandle, nil, 0, RDW_INVALIDATE or RDW_UPDATENOW or RDW_ERASE)
+            RedrawWindow(CtrlHandle, nil, 0, RDWA_ALLNOW)
           end;
           if SkinData.FOwnerControl <> nil then
             SetParentUpdated(TWinControl(SkinData.FOwnerControl));
@@ -10277,6 +10383,7 @@ begin
           end;
 
           WM_PRINT: begin
+            SkinData.BGChanged := True;
             AC_WMPaint(TWMPaint(Message).DC);
             AC_WMNCPaint(TWMPaint(Message).DC);
             Exit;
@@ -10284,13 +10391,13 @@ begin
 
           CM_SHOWINGCHANGED:
             if SkinData.FOwnerControl.Visible then begin
-              if (SkinData.SkinManager.Options.OptimizingPriority = opMemory) then
+              if SkinData.SkinManager.Options.OptimizingPriority = opMemory then
                 SkinData.Updating := False;
 
               AddToAdapter(TWinControl(SkinData.FOwnerControl));
-              M := MakeMessage(SM_ALPHACMD, MakeWParam(0, AC_SETNEWSKIN), Longint(SkinData.SkinManager), 0);
+              M := MakeMessage(SM_ALPHACMD, AC_SETNEWSKIN_HI, Longint(SkinData.SkinManager), 0);
               AlphaBroadCastCheck(SkinData.FOwnerControl, CtrlHandle, M);
-              M := MakeMessage(SM_ALPHACMD, MakeWParam(0, AC_REFRESH), Longint(SkinData.SkinManager), 0);
+              M := MakeMessage(SM_ALPHACMD, AC_REFRESH_HI, Longint(SkinData.SkinManager), 0);
               AlphaBroadCastCheck(SkinData.FOwnerControl, CtrlHandle, M);
             end;
 
@@ -10376,7 +10483,7 @@ var
   w: integer;
   ClRect: TRect;
 begin
-  if not SkinData.Updating then begin
+  if not InUpdating(SkinData) then begin
     GetWindowRect(CtrlHandle, WndRect);
     GetClientRect(CtrlHandle, ClRect);
     WndSize := MkSize(WndRect);
@@ -10408,7 +10515,7 @@ var
 begin
   if (Panel = nil) or (Panel.Tag <> 999) then begin // If SilentPanel
     if SkinData.FOwnerControl <> nil then
-      aCanvas.Font.Assign(TsHackedControl(SkinData.FOwnerControl).Font);
+      aCanvas.Font.Assign(TsAccessControl(SkinData.FOwnerControl).Font);
 
     aCanvas.Brush.Style := bsClear;
     h := aCanvas.TextHeight('Wg');
@@ -10446,7 +10553,7 @@ begin
 
     SkinData.Updating := b;
     m.Msg := SM_ALPHACMD;
-    m.WParam := MakeWParam(0, AC_SETNEWSKIN);
+    m.WParam := AC_SETNEWSKIN_HI;
     m.LParam := LParam(SkinData.SkinManager);
     AlphaBroadCast(Panel, m);
   end
@@ -10468,7 +10575,7 @@ begin
   SavedDC := 0;
   TabDC := 0;
   if not InUpdating(SkinData) then begin
-    if (Message.Unused = 1) or InAnimationProcess or (SkinData.CtrlSkinState and ACS_PRINTING = ACS_PRINTING) then
+    if (Message.Unused = 1) or InAnimationProcess or (SkinData.CtrlSkinState and ACS_PRINTING <> 0) then
       DC := Message.DC
     else begin
       DC := GetDC(CtrlHandle);
@@ -10477,7 +10584,7 @@ begin
     try
       // If transparent and form resizing processed
       SkinData.BGChanged := True;
-      if TabCount < 1 then
+      if TabCount <= 0 then
         ChangedSkinSection := s_Transparent
       else
         if SkinData.SkinSection = s_PageControl then
@@ -10533,7 +10640,7 @@ begin
 {$IFDEF LOGGED}
 //  AddToLog(Message);
 {$ENDIF}
-  if (SkinData <> nil) then
+  if SkinData <> nil then
     if Message.Msg = SM_ALPHACMD then
       case Message.WParamHi of
         AC_GETSERVICEINT: begin
@@ -10552,7 +10659,7 @@ begin
             CheckUpDown;
             AlphaBroadCastCheck(SkinData.FOwnerControl, CtrlHandle, Message);
             InvalidateRect(CtrlHandle, nil, True);
-            RedrawWindow(CtrlHandle, nil, 0, RDW_FRAME or RDW_ERASE or RDW_INVALIDATE or RDW_INTERNALPAINT or RDW_ERASENOW or RDW_UPDATENOW or RDW_ALLCHILDREN);
+            RedrawWindow(CtrlHandle, nil, 0, RDWA_ALLNOW);
           end
           else
             AlphaBroadCastCheck(SkinData.FOwnerControl, CtrlHandle, Message);
@@ -10561,7 +10668,7 @@ begin
         end;
 
         AC_REFRESH: begin
-          if (Message.LParam = LPARAM(SkinData.SkinManager)) then begin
+          if Message.LParam = LPARAM(SkinData.SkinManager) then begin
             CommonWndProc(Message, SkinData);
             InvalidateRect(CtrlHandle, nil, True);
             CheckUpDown;
@@ -10571,7 +10678,7 @@ begin
         end;
 
         AC_SETNEWSKIN: begin
-          if (Message.LParam = LPARAM(SkinData.SkinManager)) then
+          if Message.LParam = LPARAM(SkinData.SkinManager) then
             CommonWndProc(Message, SkinData);
 
           if SkinData.FOwnerControl <> nil then // Be sure that Tabs handles allocated already
@@ -10664,7 +10771,7 @@ begin
         CheckUpDown;
         GetWindowRect(CtrlHandle, R);
         if (WidthOf(R) < WndSize.cx) or (HeightOf(R) < WndSize.cy) then
-          RedrawWindow(CtrlHandle, nil, 0, RDW_FRAME or RDW_INVALIDATE or RDW_NOERASE or RDW_NOINTERNALPAINT or RDW_NOCHILDREN);
+          RedrawWindow(CtrlHandle, nil, 0, RDWA_NOCHILDREN);
       end;
     end;
 end;
@@ -10724,11 +10831,11 @@ var
   aTabsCovering: integer;
 begin
   Result := MkRect;
-  if (Index < TabCount) and (Index >= 0) then begin
+  if IsValidIndex(Index, TabCount) then begin
     Result := TabRect(Index);
     if (Style = tsTabs) and (Result.Left <> Result.Right) then begin
       aTabsCovering := 0;
-      if (Style = tsTabs) then
+      if Style = tsTabs then
         aTabsCovering := SkinData.SkinManager.CommonSkinData.TabsCovering;
 
       if Active then
@@ -10812,7 +10919,7 @@ var
   function ColorTone: TColor;
   begin
     if State = 0 then
-      if TabIndex <> -1 then
+      if TabIndex >= 0 then
         Result := SkinData.SkinManager.gd[TabIndex].Props[0].Color
       else
         Result := clBtnFace
@@ -10875,7 +10982,7 @@ begin
     ItemData.cchTextMax := SizeOf(Buffer);
     ProcessMessage({$IFDEF TNTUNICODE}TCM_GETITEMW{$ELSE}TCM_GETITEM{$ENDIF}, Index, LPARAM(@ItemData));
     lCaption := Buffer;
-    if (SkinData.FOwnerControl is TPageControl) then
+    if SkinData.FOwnerControl is TPageControl then
       PageControl := TPageControl(SkinData.FOwnerControl)
     else
       PageControl := nil;
@@ -10947,12 +11054,9 @@ begin
     OffsetRect(rText, OffsetPoint.x, OffsetPoint.y);
     R := rText;
 {$IFNDEF FPC}
-    if (PageControl <> nil) and
-         TPageControl(SkinData.FOwnerControl).OwnerDraw and
-           Assigned(TPageControl(SkinData.FOwnerControl).OnDrawTab) then begin
-
+    if (PageControl <> nil) and TPageControl(SkinData.FOwnerControl).OwnerDraw and Assigned(TPageControl(SkinData.FOwnerControl).OnDrawTab) then begin
       PageControl.Canvas.Handle := Bmp.Canvas.Handle;
-      PageControl.Canvas.Font.Assign(TsHackedControl(SkinData.FOwnerControl).Font);
+      PageControl.Canvas.Font.Assign(TsAccessControl(SkinData.FOwnerControl).Font);
       Bmp.Canvas.Font.Assign(PageControl.Canvas.Font);
       if TabIndex >= 0 then begin
         Bmp.Canvas.Font.Color := SkinData.SkinManager.gd[TabIndex].Props[min(State, ac_MaxPropsIndex)].FontColor.Color;
@@ -10991,11 +11095,11 @@ begin
         InflateRect(R, 0, -TabsCovering * 2);
 
     if (SkinData.FOwnerControl <> nil) and not bFontChanged then
-      Bmp.Canvas.Font.Assign(TsHackedControl(SkinData.FOwnerControl).Font);
+      Bmp.Canvas.Font.Assign(TsAccessControl(SkinData.FOwnerControl).Font);
 
     case TabPosition of
       tpTop, tpBottom: begin
-        if (ImgList <> 0) and (ItemData.iImage > -1) then begin
+        if (ImgList <> 0) and (ItemData.iImage >= 0) then begin
           ImageList_GetIconSize(ImgList, w, h);
           if ImageList <> nil then
             if (ImageList is TsAlphaImageList) and SkinData.SkinManager.Effects.DiscoloredGlyphs then
@@ -11031,7 +11135,7 @@ begin
           h := cx;
           w := cy;
         end;
-        if (ImgList <> 0) and (ItemData.iImage > -1) then begin
+        if (ImgList <> 0) and (ItemData.iImage >= 0) then begin
           ImageList_GetIconSize(ImgList, iWidth, iHeight);
           if Index = ActiveTabIndex then
             OffsetRect(rText, 2, 0);
@@ -11066,7 +11170,7 @@ begin
           h := cx;
           w := cy;
         end;
-        if (ImgList <> 0) and (ItemData.iImage > -1) then begin
+        if (ImgList <> 0) and (ItemData.iImage >= 0) then begin
           ImageList_GetIconSize(ImgList, iWidth, iHeight);
           if Index = ActiveTabIndex then
             OffsetRect(rText, 2, 0);
@@ -11103,7 +11207,7 @@ var
   aRect: TRect;
   TempBmp: TBitmap;
 begin
-  if (Index >= 0) then begin
+  if Index >= 0 then begin
     aRect := SkinTabRect(Index, State = 2);
     TempBmp := CreateBmp32(aRect);
     DrawSkinTab(Index, State, TempBmp, Point(-aRect.Left, -aRect.Top));
@@ -11129,7 +11233,7 @@ var
 begin
   ParentWnd := PHWND(Data)^;
   if GetParent(Child) = ParentWnd then begin
-    SkinManager := SendMessage(ParentWnd, SM_ALPHACMD, MakeWParam(0, AC_GETSERVICEINT), 0);
+    SkinManager := SendMessage(ParentWnd, SM_ALPHACMD, AC_GETSERVICEINT_HI, 0);
     if (SkinManager <> 0) and not GetBoolMsg(Child, AC_CTRLHANDLED) then begin
       if ServWndList = nil then
         ServWndList := TList.Create;
@@ -11196,13 +11300,13 @@ var
   Style: ACNativeInt;
 begin
   Style := GetWindowLong(CtrlHandle, GWL_STYLE);
-  if Style and TCS_VERTICAL = TCS_VERTICAL then 
-    if Style and TCS_RIGHT = TCS_RIGHT then
+  if Style and TCS_VERTICAL <> 0 then
+    if Style and TCS_RIGHT <> 0 then
       Result := tpRight
     else
       Result := tpLeft
   else
-    if Style and TCS_BOTTOM = TCS_BOTTOM then
+    if Style and TCS_BOTTOM <> 0 then
       Result := tpBottom
     else
       Result := tpTop;
@@ -11214,10 +11318,10 @@ var
   Style: ACNativeInt;
 begin
   Style := GetWindowLong(CtrlHandle, GWL_STYLE);
-  if Style and TCS_FLATBUTTONS = TCS_FLATBUTTONS then
+  if Style and TCS_FLATBUTTONS <> 0 then
     Result := tsFlatButtons
   else
-    if Style and TCS_BUTTONS = TCS_BUTTONS then
+    if Style and TCS_BUTTONS <> 0 then
       Result := tsButtons
     else
       Result := tsTabs
@@ -11288,7 +11392,7 @@ begin
           end;
 
           AC_REFRESH: begin
-            if (Message.LParam = LPARAM(SkinData.SkinManager)) then begin
+            if Message.LParam = LPARAM(SkinData.SkinManager) then begin
               CommonWndProc(Message, SkinData);
               InvalidateRect(CtrlHandle, nil, True);
             end;
@@ -11297,7 +11401,7 @@ begin
           end;
 
           AC_SETNEWSKIN: begin
-            if (Message.LParam = LPARAM(SkinData.SkinManager)) then
+            if Message.LParam = LPARAM(SkinData.SkinManager) then
               CommonMessage(Message, SkinData);
               
             AlphaBroadCastCheck(SkinData.FOwnerControl, CtrlHandle, Message);
@@ -11316,18 +11420,19 @@ begin
               Exit;
             end;
 
-          AC_GETBG: begin
-            GetBGInfo(PacBGInfo(Message.LParam), GetParent(CtrlHandle), PacBGInfo(Message.LParam)^.PleaseDraw);
-            if Page <> nil then begin
-              PacBGInfo(Message.LParam)^.Offset.X := PacBGInfo(Message.LParam)^.Offset.X + Page.Left;
-              PacBGInfo(Message.LParam)^.Offset.Y := PacBGInfo(Message.LParam)^.Offset.Y + Page.Top;
-            end
-            else begin
-              PacBGInfo(Message.LParam)^.Offset.X := PacBGInfo(Message.LParam)^.Offset.X + WndPos.X;
-              PacBGInfo(Message.LParam)^.Offset.Y := PacBGInfo(Message.LParam)^.Offset.Y + WndPos.Y;
+          AC_GETBG:
+            with PacBGInfo(Message.LParam)^ do begin
+              GetBGInfo(PacBGInfo(Message.LParam), GetParent(CtrlHandle), PleaseDraw);
+              if Page <> nil then begin
+                Offset.X := Offset.X + Page.Left;
+                Offset.Y := Offset.Y + Page.Top;
+              end
+              else begin
+                Offset.X := Offset.X + WndPos.X;
+                Offset.Y := Offset.Y + WndPos.Y;
+              end;
+              Exit;
             end;
-            Exit;
-          end;
         end;
 
       WM_PRINT: begin
@@ -11358,7 +11463,7 @@ begin
   inherited;
   case Message.Msg of
     WM_PARENTNOTIFY:
-      if (Message.WParamLo = WM_CREATE) then
+      if Message.WParamLo = WM_CREATE then
         SendControlLoaded(CtrlHandle);
   end
 end;
@@ -11408,13 +11513,13 @@ var
   Style: ACNativeInt;
 begin
   Style := GetWindowLong(GetParent(CtrlHandle), GWL_STYLE);
-  if Style and TCS_VERTICAL = TCS_VERTICAL then
-    if Style and TCS_RIGHT = TCS_RIGHT then
+  if Style and TCS_VERTICAL <> 0 then
+    if Style and TCS_RIGHT <> 0 then
       Result := tpRight
     else
       Result := tpLeft
   else
-    if Style and TCS_BOTTOM = TCS_BOTTOM then
+    if Style and TCS_BOTTOM <> 0 then
       Result := tpBottom
     else
       Result := tpTop;
@@ -11451,7 +11556,7 @@ begin
         end;
 
       TCM_SETCURSEL:
-        if (SkinData.FOwnerControl <> nil) then begin
+        if SkinData.FOwnerControl <> nil then begin
           InitPages;
           AddToAdapter(TWinControl(SkinData.FOwnerControl));
         end;
@@ -11496,24 +11601,22 @@ var
   ChildWnd: HWND;
   sp: TacSkinParams;
 begin
-  if (SkinData.FOwnerControl is TPageControl) then
+  if SkinData.FOwnerControl is TPageControl then
     with TPageControl(SkinData.FOwnerControl) do
       for i := 0 to PageCount - 1 do begin
-        if not Pages[i].HandleAllocated then
-          Continue;
+        if Pages[i].HandleAllocated then
+          if not WndIsSkinned(Pages[i].Handle) then begin
+            if ServWndList = nil then
+              ServWndList := TList.Create;
 
-        if not GetBoolMsg(Pages[i].Handle, AC_CTRLHANDLED) then begin
-          if ServWndList = nil then
-            ServWndList := TList.Create;
-
-          sp.SkinSection := s_Transparent;
-          sp.Control := nil;
-          pw := TacPageWnd.Create(Pages[i].Handle, nil, TsSkinManager(SkinManager), sp);
-          pw.Page := Pages[i];
-          pw.SkinData.FOwnerControl := Pages[i];
-          pw.SkinData.FOwnerObject := Pages[i];
-          ServWndList.Add(pw);
-        end;
+            sp.SkinSection := s_Transparent;
+            sp.Control := nil;
+            pw := TacPageWnd.Create(Pages[i].Handle, nil, TsSkinManager(SkinManager), sp);
+            pw.Page := Pages[i];
+            pw.SkinData.FOwnerControl := Pages[i];
+            pw.SkinData.FOwnerObject := Pages[i];
+            ServWndList.Add(pw);
+          end;
       end
   else begin
     ChildWnd := CtrlHandle;
@@ -11544,7 +11647,7 @@ begin
   if Message.Msg = SM_ALPHACMD then
     case Message.WParamHi of
       AC_REFRESH:
-        if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then
+        if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then
           DroppedButton := nil;
 
 {$IFNDEF FPC}
@@ -11555,7 +11658,7 @@ begin
 {$ENDIF}
 
       AC_REMOVESKIN:
-        if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
+        if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then begin
 {$IFNDEF FPC}
           ToolBar.OnAdvancedCustomDraw := nil;
           ToolBar.OnAdvancedCustomDrawButton := nil;
@@ -11567,7 +11670,7 @@ begin
         Exit;
 
       AC_GETBG:
-        if (SkinData <> nil) then begin
+        if SkinData <> nil then begin
           InitCtrlData(CtrlHandle, ParentWnd, WndRect, ParentRect, WndSize, WndPos);
           InitBGInfo(SkinData, PacBGInfo(Message.LParam), 0, CtrlHandle);
           PacBGInfo(Message.LParam).Offset.X := PacBGInfo(Message.LParam).Offset.X + DisplayRect.Left;
@@ -11609,13 +11712,15 @@ begin
         if SkinData.BGChanged then
           PrepareCache;
 
-        BitBlt(TWMPaint(Message).DC, 0, 0, ToolBar.Width, Rc.Top, SkinData.FCacheBmp.Canvas.Handle, 0, 0, SRCCOPY);
-        BitBlt(TWMPaint(Message).DC, 0, Rc.Top, Rc.Left, h, SkinData.FCacheBmp.Canvas.Handle, 0, Rc.Top, SRCCOPY);
-        BitBlt(TWMPaint(Message).DC, 0, Rc.Bottom, ToolBar.Width, ToolBar.Height - h - Rc.Top, SkinData.FCacheBmp.Canvas.Handle, 0, Rc.Bottom, SRCCOPY);
-        BitBlt(TWMPaint(Message).DC, Rc.Right, Rc.Top, ToolBar.Width - Rc.Left - w, h, SkinData.FCacheBmp.Canvas.Handle, Rc.Right, Rc.Top, SRCCOPY);
-        MoveWindowOrg(TWMPaint(Message).DC, Rc.Left, Rc.Top);
-        IntersectClipRect(TWMPaint(Message).DC, 0, 0, w, h);
-        SendMessage(CtrlHandle, WM_PAINT, Message.WParam, 0);
+        with TWMPaint(Message) do begin
+          BitBlt(DC, 0, 0, ToolBar.Width, Rc.Top, SkinData.FCacheBmp.Canvas.Handle, 0, 0, SRCCOPY);
+          BitBlt(DC, 0, Rc.Top, Rc.Left, h, SkinData.FCacheBmp.Canvas.Handle, 0, Rc.Top, SRCCOPY);
+          BitBlt(DC, 0, Rc.Bottom, ToolBar.Width, ToolBar.Height - h - Rc.Top, SkinData.FCacheBmp.Canvas.Handle, 0, Rc.Bottom, SRCCOPY);
+          BitBlt(DC, Rc.Right, Rc.Top, ToolBar.Width - Rc.Left - w, h, SkinData.FCacheBmp.Canvas.Handle, Rc.Right, Rc.Top, SRCCOPY);
+          MoveWindowOrg(DC, Rc.Left, Rc.Top);
+          IntersectClipRect(DC, 0, 0, w, h);
+          SendMessage(CtrlHandle, WM_PAINT, Message.WParam, 0);
+        end;
         Exit;
       end;
 
@@ -11661,7 +11766,7 @@ begin
             OldIndex := HotButtonIndex;
             HotButtonIndex := -1;
 {$IFNDEF FPC}
-            if (OldIndex > -1) and not ToolBar.Buttons[OldIndex].Down then
+            if (OldIndex >= 0) and not ToolBar.Buttons[OldIndex].Down then
               RepaintButton(OldIndex);
 {$ENDIF}
 
@@ -11672,17 +11777,17 @@ begin
           if not ToolBar.Flat and not (csDesigning in ToolBar.ComponentState) then
             with TWMMouse(Message) do begin
               i := IndexByMouse(Point(TWMMouse(Message).XPos, TWMMouse(Message).YPos));
-              if (i <> HotButtonIndex) then begin
-                if (i > -1) and not ToolBar.Buttons[i].Enabled then
+              if i <> HotButtonIndex then begin
+                if (i >= 0) and not ToolBar.Buttons[i].Enabled then
                   Exit;
 
                 OldIndex := HotButtonIndex;
                 HotButtonIndex := i;
 {$IFNDEF FPC}
-                if (OldIndex > -1) and not ToolBar.Buttons[OldIndex].Down then
+                if (OldIndex >= 0) and not ToolBar.Buttons[OldIndex].Down then
                   RepaintButton(OldIndex);
 
-                if (HotButtonIndex > -1) and not ToolBar.Buttons[HotButtonIndex].Down then
+                if (HotButtonIndex >= 0) and not ToolBar.Buttons[HotButtonIndex].Down then
                   RepaintButton(HotButtonIndex);
 {$ENDIF}
               end;
@@ -11698,28 +11803,30 @@ var
   SaveIndex: HDC;
   Designing: boolean;
 begin
-  sAlphaGraph.UpdateCorners(SkinData, 0);
-  SaveIndex := SaveDC(DstDC);
-  IntersectClipRect(DstDC, DstRect.Left, DstRect.Top, DstRect.Right, DstRect.Bottom);
-  Designing := csDesigning in Control.ComponentState;
-  try
-    for i := 0 to Control.ControlCount - 1 do begin
-      if (Control.Controls[i] is TToolButton) and (csDesigning in Control.ComponentState) then
-        Continue;
+  with Control do begin
+    sAlphaGraph.UpdateCorners(SkinData, 0);
+    SaveIndex := SaveDC(DstDC);
+    IntersectClipRect(DstDC, DstRect.Left, DstRect.Top, DstRect.Right, DstRect.Bottom);
+    Designing := csDesigning in ComponentState;
+    try
+      for i := 0 to Control.ControlCount - 1 do begin
+        if (Controls[i] is TToolButton) and (csDesigning in ComponentState) then
+          Continue;
 
-      if (Control.Controls[i] is TGraphicControl) and StdTransparency then
-        Continue;
+        if (Controls[i] is TGraphicControl) and StdTransparency then
+          Continue;
 
-      if not Control.Controls[i].Visible or not RectIsVisible(DstRect, Control.Controls[i].BoundsRect) then
-        Continue;
+        if not Controls[i].Visible or not RectIsVisible(DstRect, Controls[i].BoundsRect) then
+          Continue;
 
-      if ((csOpaque in Control.Controls[i].ControlStyle) or (Control.Controls[i] is TGraphicControl) or Designing) then
-        ExcludeClipRect(DstDC, Control.Controls[i].Left, Control.Controls[i].Top,
-                        Control.Controls[i].Left + Control.Controls[i].Width, Control.Controls[i].Top + Control.Controls[i].Height);
+        if (csOpaque in Controls[i].ControlStyle) or (Controls[i] is TGraphicControl) or Designing then
+          ExcludeClipRect(DstDC, Controls[i].Left, Controls[i].Top,
+                          Controls[i].Left + Controls[i].Width, Controls[i].Top + Controls[i].Height);
+      end;
+      BitBlt(DstDC, DstRect.Left, DstRect.Top, WidthOf(DstRect), HeightOf(DstRect), SkinData.FCacheBmp.Canvas.Handle, SrcRect.Left, SrcRect.Top, SRCCOPY);
+    finally
+      RestoreDC(DstDC, SaveIndex);
     end;
-    BitBlt(DstDC, DstRect.Left, DstRect.Top, WidthOf(DstRect), HeightOf(DstRect), SkinData.FCacheBmp.Canvas.Handle, SrcRect.Left, SrcRect.Top, SRCCOPY);
-  finally
-    RestoreDC(DstDC, SaveIndex);
   end;
 end;
 
@@ -11727,7 +11834,7 @@ end;
 procedure TacToolBarVCLWnd.AfterCreation;
 begin
   HotButtonIndex := -1;
-  if (SkinData.FOwnerControl is TToolBar) then begin
+  if SkinData.FOwnerControl is TToolBar then begin
     ToolBar := TToolBar(SkinData.FOwnerControl);
 {$IFNDEF FPC}
     ToolBar.OnAdvancedCustomDraw := OurAdvancedCustomDraw;
@@ -11817,7 +11924,7 @@ var
 
   function AddedWidth: integer;
   begin
-    if (Button.Style = tbsDropDown) then
+    if Button.Style = tbsDropDown then
       Result := GetSystemMetrics(SM_CXVSCROLL) - 2
     else
       Result := 0
@@ -11851,7 +11958,7 @@ var
         Result := Rect(l - 1, t, r + 2, b);
       end
       else begin
-        if Assigned(ToolBar.Images) and (Button.ImageIndex > -1) then
+        if Assigned(ToolBar.Images) and (Button.ImageIndex >= 0) then
           Result.Left := 6 + ToolBar.Images.Width
         else
           Result.Left := 1;
@@ -11874,7 +11981,7 @@ var
 
   procedure DrawBtnGlyph;
   begin
-    if Assigned(ToolBar.Images) and (Button.ImageIndex > -1) and (Button.ImageIndex < GetImageCount(ToolBar.Images)) then
+    if Assigned(ToolBar.Images) and (Button.ImageIndex >= 0) and (Button.ImageIndex < GetImageCount(ToolBar.Images)) then
       CopyToolBtnGlyph(ToolBar, Button, State, Stage, Flags, BtnBmp);
   end;
 
@@ -11884,33 +11991,33 @@ var
     gR: TRect;
   begin
     with SkinData.SkinManager, ConstData.ScrollBtns[asBottom] do
-      if GlyphIndex > -1 then begin
-        if ((DroppedButton = Button) and Assigned(Button.DropDownMenu) or Button.Down) then
+      if GlyphIndex >= 0 then begin
+        if (DroppedButton = Button) and Assigned(Button.DropDownMenu) or Button.Down then
           Mode := 2
         else
           Mode := integer(cdsHot in State);
 
         R.Left := IntButtonWidth;
         R.Right := Button.Width;
-        BorderIndex := SkinData.SkinManager.GetMaskIndex(SkinIndex, s_BordersMask);
-        if SkinData.SkinManager.IsValidImgIndex(BorderIndex) then
-          DrawSkinRect(BtnBmp, R, ci, SkinData.SkinManager.ma[BorderIndex], Mode, True);
+        BorderIndex := GetMaskIndex(SkinIndex, s_BordersMask);
+        if IsValidImgIndex(BorderIndex) then
+          DrawSkinRect(BtnBmp, R, ci, ma[BorderIndex], Mode, True);
 
-        if (GlyphIndex > -1) and (GlyphIndex < High(SkinData.SkinManager.ma)) then begin
-          x := IntButtonWidth + (AddedWidth - 3 - WidthOfImage(ma[GlyphIndex])) div 2 + 2;
-          y := (ToolBar.ButtonHeight - HeightOfImage(ma[GlyphIndex])) div 2;
+        if (GlyphIndex >= 0) and (GlyphIndex < High(SkinData.SkinManager.ma)) then begin
+          x := IntButtonWidth + (AddedWidth - 3 - ma[GlyphIndex].Width) div 2 + 2;
+          y := (ToolBar.ButtonHeight - ma[GlyphIndex].Height) div 2;
           DrawSkinGlyph(BtnBmp, Point(x, y), Mode, 1, ma[GlyphIndex], MakeCacheInfo(BtnBmp));
         end
         else begin
-          gR.Left := IntButtonWidth + (AddedWidth - 3 - WidthOfImage(ma[GlyphIndex])) div 2 + 2;
-          gR.Top := (ToolBar.ButtonHeight - HeightOfImage(ma[GlyphIndex])) div 2;
+          gR.Left := IntButtonWidth + (AddedWidth - 3 - ma[GlyphIndex].Width) div 2 + 2;
+          gR.Top := (ToolBar.ButtonHeight - ma[GlyphIndex].Height) div 2;
           gR.Right := gR.Left + 6;
           gR.Bottom := gR.Top + 3;
           if Mode = 2 then
             if ButtonsOptions.ShiftContentOnClick then
               OffsetRect(R, 1, 1);
 
-          DrawColorArrow(BtnBmp.Canvas, gd[SkinData.SkinIndex].Props[math.min(integer(Mode > 0), ac_MaxPropsIndex)].FontColor.Color, gR, asBottom)
+          DrawColorArrow(BtnBmp, gd[SkinData.SkinIndex].Props[math.min(integer(Mode > 0), ac_MaxPropsIndex)].FontColor.Color, gR, asBottom)
         end;
       end;
   end;
@@ -11952,7 +12059,7 @@ begin
         ci.X := ci.X + Button.Left;
         ci.Y := ci.Y + Button.Top;
         BorderIndex := SkinData.SkinManager.GetMaskIndex(SkinIndex, s_BordersMask);
-        if BorderIndex > -1 then
+        if BorderIndex >= 0 then
           DrawSkinRect(BtnBmp, R, ci, SkinData.SkinManager.ma[BorderIndex], Mode, True);
 
         DrawBtnCaption;
@@ -11993,7 +12100,7 @@ var
   DC, SavedDC: HDC;
   Flags: TTBCustomDrawFlags;
 begin
-  if (Index > -1) and ToolBar.Buttons[Index].Visible then begin
+  if (Index >= 0) and ToolBar.Buttons[Index].Visible then begin
     Flags := [tbNoEtchedEffect, tbNoEdges];
     Def := False;
     DC := GetWindowDC(ToolBar.Handle);
@@ -12099,7 +12206,7 @@ begin
   if SkinData.SkinSection = '' then
     SkinData.SkinSection := s_StatusBar;
 
-  if (SkinData.FOwnerControl is TStatusBar) then
+  if SkinData.FOwnerControl is TStatusBar then
     StatusBar := TStatusBar(SkinData.FOwnerControl)
   else
     StatusBar := nil;
@@ -12135,56 +12242,53 @@ var
   TempBmp: TBitmap;
   si, mi, SkinIndex: integer;
 begin
-  if Assigned(SkinData.SkinManager) then begin
-    aRect := Rect;
-    InflateRect(aRect, -1, -1);
-    if SkinData.SkinManager.IsValidSkinIndex(SkinData.SkinIndex) then begin
-      SkinIndex := SkinData.SkinManager.GetMaskIndex(SkinData.SkinIndex, s_StatusPanelMask);
-      if SkinData.SkinManager.IsValidImgIndex(SkinIndex) then
-        if SimplePanel then
-          DrawSkinRect(SkinData.FCacheBmp, MkRect(WndSize), EmptyCI, SkinData.SkinManager.ma[SkinIndex], 0, True)
+  if Assigned(SkinData.SkinManager) then
+    with SkinData.SkinManager do begin
+      aRect := Rect;
+      InflateRect(aRect, -1, -1);
+      if IsValidSkinIndex(SkinData.SkinIndex) then begin
+        SkinIndex := GetMaskIndex(SkinData.SkinIndex, s_StatusPanelMask);
+        if IsValidImgIndex(SkinIndex) then
+          if SimplePanel then
+            DrawSkinRect(SkinData.FCacheBmp, MkRect(WndSize), EmptyCI, ma[SkinIndex], 0, True)
+          else
+            DrawSkinRect(SkinData.FCacheBmp, Rect, EmptyCI, ma[SkinIndex], 0, True)
         else
-          DrawSkinRect(SkinData.FCacheBmp, Rect, EmptyCI, SkinData.SkinManager.ma[SkinIndex], 0, True)
-      else
-        if not (SimplePanel or (Index = PartsCount - 1)) then begin
-          si := SkinData.SkinManager.ConstData.Sections[ssDivider];
-          if Assigned(SkinData.SkinManager) and SkinData.SkinManager.IsValidskinIndex(si) then begin
-            mi := SkinData.SkinManager.GetMaskIndex(si, s_BordersMask);
-            if SkinData.SkinManager.IsValidImgIndex(mi) then begin
-              TempBmp := CreateBmp32(max(2, (SkinData.SkinManager.ma[mi].WL + SkinData.SkinManager.ma[mi].WR)), WndSize.cy - 2);
-              BitBlt(TempBmp.Canvas.Handle, 0, 0, TempBmp.Width, TempBmp.Height, SkinData.FCacheBmp.Canvas.Handle, Rect.Right - TempBmp.Width, Rect.Top, SRCCOPY);
-              CI := MakeCacheInfo(SkinData.FCacheBmp);
-              PaintItem(si, CI, True, 0, MkRect(TempBmp.Width, TempBmp.Height), Point(Rect.Right - TempBmp.Width, 1), TempBmp, SkinData.SkinManager);
-              BitBlt(SkinData.FCacheBmp.Canvas.Handle, Rect.Right - TempBmp.Width, 1, TempBmp.Width, TempBmp.Height, TempBmp.Canvas.Handle, 0, 0, SRCCOPY);
-              FreeAndNil(TempBmp);
+          if not (SimplePanel or (Index = PartsCount - 1)) then begin
+            si := ConstData.Sections[ssDivider];
+            if IsValidskinIndex(si) then begin
+              mi := GetMaskIndex(si, s_BordersMask);
+              if IsValidImgIndex(mi) then begin
+                TempBmp := CreateBmp32(max(2, (ma[mi].WL + ma[mi].WR)), WndSize.cy - 2);
+                BitBlt(TempBmp.Canvas.Handle, 0, 0, TempBmp.Width, TempBmp.Height, SkinData.FCacheBmp.Canvas.Handle, Rect.Right - TempBmp.Width, Rect.Top, SRCCOPY);
+                CI := MakeCacheInfo(SkinData.FCacheBmp);
+                PaintItem(si, CI, True, 0, MkRect(TempBmp.Width, TempBmp.Height), Point(Rect.Right - TempBmp.Width, 1), TempBmp, SkinData.SkinManager);
+                BitBlt(SkinData.FCacheBmp.Canvas.Handle, Rect.Right - TempBmp.Width, 1, TempBmp.Width, TempBmp.Height, TempBmp.Canvas.Handle, 0, 0, SRCCOPY);
+                FreeAndNil(TempBmp);
+              end;
             end;
           end;
-        end;
+      end;
+      if (StatusBar <> nil) and IsValidIndex(Index, StatusBar.Panels.Count) and (StatusBar.Panels[Index].Style = psOwnerDraw) and Assigned(StatusBar.OnDrawPanel) then begin
+        SavedDC := StatusBar.Canvas.Handle;
+        StatusBar.Canvas.Handle := SkinData.FCacheBmp.Canvas.Handle;
+        StatusBar.OnDrawPanel(StatusBar, StatusBar.Panels[Index], Rect);
+        StatusBar.Canvas.Handle := SavedDC;
+      end
+      else begin
+        dec(aRect.Bottom, 1);
+        inc(aRect.Left, 2);
+        dec(aRect.Right, 4);
+        s := PartText(Index);
+        s := CutText(SkinData.FCacheBmp.Canvas, s, WidthOf(aRect));
+        if StatusBar <> nil then
+          with StatusBar do
+            if not SimplePanel and IsValidIndex(Index, Panels.Count) then
+              DoDrawText(s, aRect, GetStringFlags(StatusBar, Panels[Index].Alignment))
+            else
+              DoDrawText(s, aRect, GetStringFlags(StatusBar, taLeftJustify))
+      end;
     end;
-    if (StatusBar <> nil) and
-         (Index > -1) and
-           (Index < StatusBar.Panels.Count) and
-             (StatusBar.Panels[Index].Style = psOwnerDraw) and
-               Assigned(StatusBar.OnDrawPanel) then begin
-      SavedDC := StatusBar.Canvas.Handle;
-      StatusBar.Canvas.Handle := SkinData.FCacheBmp.Canvas.Handle;
-      StatusBar.OnDrawPanel(StatusBar, StatusBar.Panels[Index], Rect);
-      StatusBar.Canvas.Handle := SavedDC;
-    end
-    else begin
-      dec(aRect.Bottom, 1);
-      inc(aRect.Left, 2);
-      dec(aRect.Right, 4);
-      s := PartText(Index);
-      s := CutText(SkinData.FCacheBmp.Canvas, s, WidthOf(aRect));
-      if StatusBar <> nil then
-        with StatusBar do
-          if not SimplePanel and (Index > -1) and (Index < Panels.Count) then
-            DoDrawText(s, aRect, GetStringFlags(StatusBar, Panels[Index].Alignment))
-          else
-            DoDrawText(s, aRect, GetStringFlags(StatusBar, taLeftJustify))
-    end;
-  end;
 end;
 
 
@@ -12193,26 +12297,24 @@ var
   GripPos: TPoint;
 begin
   if (SkinData.SkinManager <> nil) and (SkinData.FOwnerControl is TStatusBar) then
-    with SkinData.SkinManager, TStatusBar(SkinData.FOwnerControl) do
-      if SizeGrip and IsValidImgIndex(ConstData.GripRightBottom) then begin
-        GripPos := point(SkinData.FCacheBmp.Width  - WidthOfImage(ma[ConstData.GripRightBottom])  - BorderWidth,
-                         SkinData.FCacheBmp.Height - HeightOfImage(ma[ConstData.GripRightBottom]) - BorderWidth);
-        DrawSkinGlyph(SkinData.FCacheBmp, GripPos, 0, 1, ma[ConstData.GripRightBottom], MakeCacheInfo(SkinData.FCacheBmp));
+    with SkinData.SkinManager, TStatusBar(SkinData.FOwnerControl), ConstData do
+      if SizeGrip and IsValidImgIndex(GripRightBottom) then begin
+        GripPos := point(SkinData.FCacheBmp.Width  - ma[GripRightBottom].Width - BorderWidth,
+                         SkinData.FCacheBmp.Height - ma[GripRightBottom].Height - BorderWidth);
+        DrawSkinGlyph(SkinData.FCacheBmp, GripPos, 0, 1, ma[GripRightBottom], MakeCacheInfo(SkinData.FCacheBmp));
       end;
 end;
 
 
 procedure TacStatusBarWnd.PaintPanels;
 var
-  i, l: integer;
+  i: integer;
 begin
   if SimplePanel then
     InternalDrawPanel(-1, Rect(0, 1, WndSize.cx - 1, WndSize.cy - 1))
-  else begin
-    l := PartsCount - 1;
-    for i := 0 to l do
+  else
+    for i := 0 to PartsCount - 1 do
       DrawPanel(i, PartRect(i));
-  end
 end;
 
 
@@ -12275,7 +12377,7 @@ var
   DC: hdc;
 begin
   InitCtrlData(CtrlHandle, ParentWnd, WndRect, ParentRect, WndSize, WndPos);
-  if (SkinData.FOwnerControl is TStatusBar) then begin
+  if SkinData.FOwnerControl is TStatusBar then begin
     if aDC = 0 then
       DC := GetWindowDC(CtrlHandle)
     else
@@ -12333,7 +12435,7 @@ begin
           end;
 
           AC_SETNEWSKIN:
-            if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
+            if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then begin
               CommonWndProc(Message, SkinData);
               Exit;
             end;
@@ -12345,6 +12447,7 @@ begin
                 Repaint;
 
               Ctrl.WindowProc := OldWndProc;
+              SkinData.WndProc := OldWndProc;
               Destroyed := True;
               Exit;
             end;
@@ -12356,7 +12459,7 @@ begin
             end;
 
           AC_REFRESH:
-            if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
+            if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then begin
               CommonWndProc(Message, SkinData);
               if Visible then
                 Repaint;
@@ -12376,6 +12479,7 @@ begin
         Destroyed := True;
         if Ctrl <> nil then begin
           Ctrl.WindowProc := OldWndProc;
+          SkinData.WndProc := OldWndProc;
           Ctrl := nil;
           PCtrl := nil;
           OldWndProc(Message);
@@ -12528,6 +12632,7 @@ begin
 
   OldWndProc := Ctrl.WindowProc;
   Ctrl.WindowProc := acWndProc;
+  SkinData.WndProc := acWndProc;
 end;
 
 
@@ -12544,8 +12649,11 @@ destructor TacSpeedButtonHandler.Destroy;
 begin
   try
     if not Destroyed and Assigned(Ctrl) and Assigned(PCtrl) then
-      if (Ctrl.Left <> Ctrl.Width) and (Ctrl.Top <> Ctrl.Height) and (Ctrl.Tag <> Ctrl.Left) then // If not destroyed already
-        Ctrl.WindowProc := OldWndProc;
+      with Ctrl do
+        if (Left <> Width) and (Top <> Height) and (Tag <> Left) then begin // If not destroyed already
+          WindowProc := OldWndProc;
+          SkinData.WndProc := OldWndProc;
+        end;
   finally
     SkinManager := nil;
   end;
@@ -12555,9 +12663,11 @@ end;
 
 procedure TacSpeedButtonHandler.DoDrawText(Rect: TRect; Flags: Integer);
 begin
-  Flags := {$IFDEF FPC}Flags{$ELSE}Ctrl.DrawTextBiDiModeFlags(Flags){$ENDIF} and not DT_SINGLELINE;
-  SkinData.FCacheBMP.Canvas.Font.Assign(TAccessButton(Ctrl).Font);
-  acWriteTextEx(SkinData.FCacheBMP.Canvas, PacChar(Caption), True, Rect, Flags, SkinData, CurrentState <> 0);
+  with TAccessButton(Ctrl) do begin
+    Flags := {$IFDEF FPC}Flags{$ELSE}DrawTextBiDiModeFlags(Flags){$ENDIF} and not DT_SINGLELINE;
+    SkinData.FCacheBMP.Canvas.Font.Assign(Font);
+    acWriteTextEx(SkinData.FCacheBMP.Canvas, PacChar(Caption), True, Rect, Flags, SkinData, CurrentState <> 0);
+  end;
 end;
 
 
@@ -12591,10 +12701,13 @@ begin
       DrawData.Enabled           := Enabled;
       DrawData.Blend             := 0;
       DrawData.Down              := Down;
-      DrawData.Grayed            := SkinData.Skinned and (SkinData.SkinManager <> nil) and SkinData.SkinManager.Effects.DiscoloredGlyphs;
       DrawData.CurrentState      := CurrentState;
+      DrawData.Grayed            := (DrawData.CurrentState = 0) and (SkinData.SkinManager <> nil) and SkinData.SkinManager.Effects.DiscoloredGlyphs and SkinData.Skinned;
       DrawData.DisabledGlyphKind := DefDisabledGlyphKind;
       DrawData.Reflected         := False;
+      if DrawData.Grayed then
+        DrawData.BGColor := SkinData.SkinManager.gd[DrawData.SkinIndex].Props[0].Color;
+
       acDrawGlyphEx(DrawData);
     end
 end;
@@ -12611,10 +12724,11 @@ end;
 
 function TacSpeedButtonHandler.GlyphWidth: integer;
 begin
-  if not TSpeedButton(Ctrl).Glyph.Empty then
-    Result := TSpeedButton(Ctrl).Glyph.Width div TSpeedButton(Ctrl).NumGlyphs
-  else
-    Result := 0;
+  with TSpeedButton(Ctrl) do
+    if not Glyph.Empty then
+      Result := Glyph.Width div NumGlyphs
+    else
+      Result := 0;
 end;
 
 
@@ -12628,7 +12742,7 @@ begin
     Result := MkRect;
     gw := GlyphWidth;
     gh := GlyphHeight;
-    dw := (TSpeedButton(Ctrl).Width - gw - TSpeedButton(Ctrl).Spacing * integer((gw > 0) and (TSpeedButton(Ctrl).Caption <> '')) - TextRectSize.cx) div 2;
+    dw := (Width  - gw - Spacing * integer((gw > 0) and (Caption <> '')) - TextRectSize.cx) div 2;
     dh := (Height - gh - Spacing * integer((gh > 0) and (Caption <> '')) - TextRectSize.cy) div 2;
     case Layout of
       blGlyphLeft: begin
@@ -12683,7 +12797,7 @@ var
 begin
   Result := True;
   InitCacheBmp(SkinData);
-  SkinData.FCacheBmp.Canvas.Font.Assign(TsHackedControl(Ctrl).Font);
+  SkinData.FCacheBmp.Canvas.Font.Assign(TsAccessControl(Ctrl).Font);
   ParentBG.BgType := btUnknown;
   ParentBG.DrawDC := 0;
   ParentBG.PleaseDraw := False;
@@ -12773,7 +12887,6 @@ begin
   InitCtrlData(CtrlHandle, ParentWnd, WndRect, ParentRect, WndSize, WndPos);
   BeginPaint(CtrlHandle, {$IFDEF FPC}@ps{$ELSE}ps{$ENDIF});
   if not InUpdating(SkinData) then begin
-//    Style := GetWindowLong(CtrlHandle, GWL_STYLE);
     InitCtrlData(CtrlHandle, ParentWnd, WndRect, ParentRect, WndSize, WndPos);
     SendMessage(ParentWnd, SM_ALPHACMD, MakeWParam(0, AC_GETCACHE), 0);
     if IsWindowVisible(CtrlHandle) or (Message.DC <> 0) then begin
@@ -12818,7 +12931,7 @@ end;
 
 function TacTrackWnd.IsVertical: boolean;
 begin
-  Result := GetWindowLong(CtrlHandle, GWL_STYLE) and TBS_VERT = TBS_VERT;
+  Result := GetWindowLong(CtrlHandle, GWL_STYLE) and TBS_VERT <> 0;
 end;
 
 
@@ -12845,10 +12958,10 @@ begin
       if CI.Ready then begin
         R := MkRect(WndSize);
         OffsetRect(R, CI.X + WndPos.x, CI.Y + WndPos.y);
-        BlendTransRectangle(SkinData.FCacheBmp, 0, 0, CI.Bmp, R, DefDisabledBlend);
+        BlendTransRectangle(SkinData.FCacheBmp, 0, 0, CI.Bmp, R, DefBlendDisabled);
       end
       else
-        BlendTransBitmap(SkinData.FCacheBmp, DefDisabledBlend, TsColor(CI.FillColor));
+        BlendTransBitmap(SkinData.FCacheBmp, DefBlendDisabled, TsColor(CI.FillColor));
   end;
 end;
 
@@ -12863,13 +12976,13 @@ begin
   i := SkinData.SkinManager.GetMaskIndex(SkinData.SkinManager.ConstData.Sections[ssTrackBar], s_SliderChannelMask);
   if SkinData.SkinManager.IsValidImgIndex(i) then begin
     if IsVertical then begin
-      h := WidthOfImage(SkinData.SkinManager.ma[i]) - 1;
+      h := SkinData.SkinManager.ma[i].Width - 1;
       w := WidthOf(aRect);
       aRect.Left := aRect.Left + (w - h) div 2;
       aRect.Right := aRect.Left + h;
     end
     else begin
-      h := HeightOfImage(SkinData.SkinManager.ma[i]) - 1;
+      h := SkinData.SkinManager.ma[i].Height - 1;
       w := HeightOf(aRect);
       aRect.Top := aRect.Top + (w - h) div 2;
       aRect.Bottom := aRect.Top + h;
@@ -12893,22 +13006,24 @@ var
 
   procedure RotateBmp180(const Bmp: TBitmap; const Horz: boolean);
   var
-    x, y: integer;
+    w, h, x, y: integer;
     c: TColor;
   begin
+    w := Bmp.Width - 1;
+    h := Bmp.Height - 1;
     if not Horz then
-      for x := 0 to Bmp.Width - 1 do
-        for y := 0 to (Bmp.Height - 1) div 2 do begin
-          c := Bmp.Canvas.Pixels[x, y];
-          Bmp.Canvas.Pixels[x, y] := Bmp.Canvas.Pixels[x, Bmp.Height - y - 1];
-          Bmp.Canvas.Pixels[x, Bmp.Height - y - 1] := c
+      for x := 0 to w do
+        for y := 0 to (h) div 2 do begin
+          c := GetAPixel(Bmp, x, y).C;
+          SetAPixel(Bmp, x, y, GetAPixel(Bmp, x, h - y));
+          SetAPixel(Bmp, x, h - y, c);
         end
     else
-      for y := 0 to Bmp.Height - 1 do
-        for x := 0 to (Bmp.Width - 1) div 2 do begin
-          c := Bmp.Canvas.Pixels[x, y];
-          Bmp.Canvas.Pixels[x, y] := Bmp.Canvas.Pixels[Bmp.Width - x - 1, y];
-          Bmp.Canvas.Pixels[Bmp.Width - x - 1, y] := c
+      for y := 0 to h do
+        for x := 0 to w div 2 do begin
+          c := GetAPixel(Bmp, x, y).C;
+          SetAPixel(Bmp, x, y, GetAPixel(Bmp, w - x, y));
+          SetAPixel(Bmp, w - x, y, c);
         end;
   end;
 
@@ -12924,7 +13039,7 @@ var
       Stretch(TmpBmp, Bmp, Bmp.Width, Bmp.Height, ftMitchell);
       if TickMarks = tmTopLeft then
         RotateBmp180(Bmp, IsVertical);
-        
+
       FreeAndNil(TmpBmp);
     end
     else begin
@@ -12950,16 +13065,16 @@ var
 
 begin
   aRect := ThumbRect;
-  if IsVertical then
-    i := SkinData.SkinManager.GetMaskIndex(SkinData.SkinManager.ConstData.Sections[ssTrackBar], s_SliderVertMask)
-  else
-    i := -1;
+  with SkinData.SkinManager do begin
+    if IsVertical then
+      i := GetMaskIndex(ConstData.Sections[ssTrackBar], s_SliderVertMask)
+    else
+      i := -1;
 
-  if i = -1 then
-    i := SkinData.SkinManager.GetMaskIndex(SkinData.SkinManager.ConstData.Sections[ssTrackBar], s_SliderHorzMask);
+    if i < 0 then
+      i := GetMaskIndex(ConstData.Sections[ssTrackBar], s_SliderHorzMask);
 
-  if SkinData.SkinManager.IsValidImgIndex(i) then
-    with SkinData.SkinManager do begin
+    if IsValidImgIndex(i) then begin
       GlyphSize := MkSize(ma[i]);
       if not IsVertical and (HeightOf(aRect) = 23) or IsVertical and (WidthOf(aRect) = 23) then
         Stretched := False
@@ -12972,6 +13087,7 @@ begin
       if Bmp <> Self.SkinData.FCacheBmp then
         FreeAndNil(Bmp);
     end;
+  end;
 end;
 
 
@@ -13036,10 +13152,10 @@ var
   Style: ACNativeInt;
 begin
   Style := GetWindowLong(CtrlHandle, GWL_STYLE);
-  if Style and TBS_BOTH = TBS_BOTH then
+  if Style and TBS_BOTH <> 0 then
     Result := tmBoth
   else
-    if Style and TBS_TOP = TBS_TOP then
+    if Style and TBS_TOP <> 0 then
       Result := tmTopLeft
     else
       Result := tmBottomRight;
@@ -13102,7 +13218,7 @@ end;
 
 function TacTrackWnd.TickStyle: TTickStyle;
 begin
-  if GetWindowLong(CtrlHandle, GWL_STYLE) and TBS_NOTICKS = TBS_NOTICKS then
+  if GetWindowLong(CtrlHandle, GWL_STYLE) and TBS_NOTICKS <> 0 then
     Result := tsNone
   else
     Result := tsAuto;
@@ -13116,15 +13232,15 @@ var
 begin
   with SkinData.SkinManager do begin
     if Horz then
-      GlyphIndex := GetMaskIndex(SkinData.SkinManager.ConstData.Sections[ssTrackBar], s_TickHorz)
+      GlyphIndex := GetMaskIndex(ConstData.Sections[ssTrackBar], s_TickHorz)
     else
-      GlyphIndex := GetMaskIndex(SkinData.SkinManager.ConstData.Sections[ssTrackBar], s_TickVert);
+      GlyphIndex := GetMaskIndex(ConstData.Sections[ssTrackBar], s_TickVert);
 
-    if GlyphIndex <> -1 then begin
+    if GlyphIndex >= 0 then begin
       if Horz then
-        dec(P.x, WidthOfImage(ma[GlyphIndex]))
+        dec(P.x, ma[GlyphIndex].Width)
       else
-        dec(P.y, HeightOfImage(ma[GlyphIndex]));
+        dec(P.y, ma[GlyphIndex].Height);
 
       DrawSkinGlyph(SkinData.FCacheBmp, P, Mode, 1, ma[GlyphIndex], MakeCacheInfo(SkinData.FCacheBmp))
     end
@@ -13147,12 +13263,9 @@ begin
 end;
 
 
-function TacTrackWnd.TickPos(i: integer): integer;
-var
-  Value: longint;
+function TacTrackWnd.TickPos(const i: integer): integer;
 begin
-  Value := longint(i);
-  Result := integer(ProcessMessage(TBM_GETTICPOS, Value, 0));
+  Result := integer(ProcessMessage(TBM_GETTICPOS, longint(i), 0));
 end;
 
 
@@ -13190,13 +13303,13 @@ begin
         end;
 
       AC_SETNEWSKIN:
-        if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
+        if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then begin
           CommonMessage(Message, SkinData);
           Exit;
         end;
 
       AC_REFRESH:
-        if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
+        if ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager) then begin
           CommonMessage(Message, SkinData);
           SkinData.BGChanged := True;
           Exit;
@@ -13209,13 +13322,13 @@ begin
         if SkinData.FUpdating then begin
           if not InUpdating(SkinData, True) then begin
             RedrawWindow(CtrlHandle, nil, 0, {RDW_ALLCHILDREN or }RDW_INVALIDATE or RDW_UPDATENOW or RDW_ERASE);
-            if (SkinData.FOwnerControl is TWinControl) then
+            if SkinData.FOwnerControl is TWinControl then
               SetParentUpdated(TWinControl(SkinData.FOwnerControl));
           end;
         end
         else
-          if SkinData.CtrlSkinState and ACS_FAST = ACS_FAST then
-            if (SkinData.FOwnerControl is TWinControl) then
+          if SkinData.CtrlSkinState and ACS_FAST <> 0 then
+            if SkinData.FOwnerControl is TWinControl then
               SetParentUpdated(TWinControl(SkinData.FOwnerControl));
 
         Exit;
@@ -13238,7 +13351,7 @@ begin
               FSI.nPos := PScrollInfo(Message.LParam)^.nPos;
 
             if Boolean(fMask and SIF_RANGE) and ((FSI.nMin <> nMin) or (FSI.nMax <> nMax)) then begin
-              if (nMax - nMin) < 0 then begin
+              if nMax - nMin < 0 then begin
                 FSI.nMin := 0;
                 FSI.nMax := 0;
               end
@@ -13247,7 +13360,7 @@ begin
                 FSI.nMax := nMax;
               end;
               if Boolean(fMask and SIF_POS) then begin
-                if (Control.Min <> FSI.nMin) then
+                if Control.Min <> FSI.nMin then
                   Control.Min := FSI.nMin;
 
                 if (Cardinal(Control.PageSize) <> FSI.nPage) and (FSI.nPage < Cardinal(Control.Max)) then
@@ -13256,7 +13369,7 @@ begin
                 if Control.PageSize > FSI.nMax then
                   Control.PageSize := FSI.nMax;
 
-                if (FSI.nMax <> Control.Max) then
+                if FSI.nMax <> Control.Max then
                   Control.Max := FSI.nMax;
               end;
             end;
@@ -13273,7 +13386,7 @@ begin
               if FSI.nPos > (FSI.nMax - Math.Max(Integer(FSI.nPage) - 1, 0)) then
                 FSI.nPos := (FSI.nMax - Math.Max(Integer(FSI.nPage) - 1, 0));
 
-            if (ScrollCode <> SB_THUMBTRACK) then
+            if ScrollCode <> SB_THUMBTRACK then
               FCurrPos := FSI.nPos;
           end;
           if Control.Visible then begin
@@ -13284,7 +13397,7 @@ begin
               ProcessMessage(WM_SETREDRAW, 1, 0); // Clear Lock
 
             InvalidateRect(Control.Handle, nil, True);
-            RedrawWindow(Control.Handle, nil, 0, RDW_FRAME or RDW_ERASE or RDW_INVALIDATE or RDW_UPDATENOW);
+            RedrawWindow(Control.Handle, nil, 0, RDWA_NOCHILDRENNOW);
             while FLockCount < i do
               ProcessMessage(WM_SETREDRAW, 0, 0); // Restore Lock
           end
@@ -13303,7 +13416,7 @@ begin
             ProcessMessage(WM_SETREDRAW, 1, 0); // Clear Lock
 
           InvalidateRect(Control.Handle, nil, True);
-          RedrawWindow(Control.Handle, nil, 0, RDW_FRAME or RDW_ERASE or RDW_INVALIDATE or RDW_UPDATENOW);
+          RedrawWindow(Control.Handle, nil, 0, RDWA_NOCHILDRENNOW);
           while FLockCount < i do
             ProcessMessage(WM_SETREDRAW, 0, 0); // Restore Lock
         end
@@ -13324,8 +13437,6 @@ begin
         Exit;
 
       WM_PAINT: begin
-//LogLines.Add('Max=' + IntToStr(Control.Max));
-//LogLines.Add('Pos=' + IntToStr(Control.Position));
         WMPaint(TWMPaint(Message));
         Exit;
       end;
@@ -13351,15 +13462,10 @@ begin
           while FLockCount > 0 do
             SetRedraw(Control.Handle, 1);
 
-//          SetRedraw(Control.Handle, 0);
-//          SetRedraw(Control.Parent.Handle, 0);
-//          SetWindowLong(Control.Parent.Handle, GWL_STYLE, GetWindowLong(Control.Handle, GWL_STYLE) or WS_VISIBLE);
           SetWindowLong(Control.Handle, GWL_STYLE, GetWindowLong(Control.Handle, GWL_STYLE) or WS_VISIBLE);
           inherited;
-//          SetRedraw(Control.Parent.Handle, 1);
-//          SetRedraw(Control.Handle, 1);
           InvalidateRect(Control.Handle, nil, True);
-          RedrawWindow(Control.Handle, nil, 0, RDW_FRAME or RDW_ERASE or RDW_INVALIDATE or RDW_UPDATENOW);
+          RedrawWindow(Control.Handle, nil, 0, RDWA_NOCHILDRENNOW);
         end
         else
           inherited;
@@ -13453,13 +13559,13 @@ var
 begin
   Result := R;
   with cd.SkinManager, ConstData.ScrollBtns[Side] do
-    if (SkinIndex > -1) and gd[SkinIndex].ReservedBoolean and (MaskIndex > -1) then begin
+    if (SkinIndex >= 0) and gd[SkinIndex].ReservedBoolean and (MaskIndex >= 0) then begin
       w := 17;//GetScrollSize(cd.SkinManager);
       case Side of
-        asLeft:   Result.Right  := Result.Right  + (WidthOfImage (ma[MaskIndex]) - w);
-        asTop:    Result.Bottom := Result.Bottom + (HeightOfImage(ma[MaskIndex]) - w);
-        asRight:  Result.Left   := Result.Left   - (WidthOfImage (ma[MaskIndex]) - w);
-        asBottom: Result.Top    := Result.Top    - (HeightOfImage(ma[MaskIndex]) - w);
+        asLeft:   Result.Right  := Result.Right  + (ma[MaskIndex].Width  - w);
+        asTop:    Result.Bottom := Result.Bottom + (ma[MaskIndex].Height - w);
+        asRight:  Result.Left   := Result.Left   - (ma[MaskIndex].Width  - w);
+        asBottom: Result.Top    := Result.Top    - (ma[MaskIndex].Height - w);
       end
     end;
 end;
@@ -13468,40 +13574,44 @@ end;
 function TacSBWnd.Btn1Rect: TRect;
 begin
   FBtn1Rect.TopLeft := MkPoint;
-  if Control.Kind = sbHorizontal then begin
-    FBtn1Rect.Bottom := Control.Height;
-    FBtn1Rect.Right := SysBtnSize;
-    if WidthOf(FBtn1Rect) > Control.Width div 2 then
-      FBtn1Rect.Right := Control.Width div 2;
-  end
-  else begin
-    FBtn1Rect.Right := Control.Width;
-    FBtn1Rect.Bottom := SysBtnSize;
-    if HeightOf(FBtn1Rect) > Control.Height div 2 then
-      FBtn1Rect.Bottom := Control.Height div 2;
-  end;
+  with Control do
+    if Kind = sbHorizontal then begin
+      FBtn1Rect.Bottom := Height;
+      FBtn1Rect.Right := SysBtnSize;
+      if WidthOf(FBtn1Rect) > Width div 2 then
+        FBtn1Rect.Right := Width div 2;
+    end
+    else begin
+      FBtn1Rect.Right := Width;
+      FBtn1Rect.Bottom := SysBtnSize;
+      if HeightOf(FBtn1Rect) > Height div 2 then
+        FBtn1Rect.Bottom := Height div 2;
+    end;
+
   Result := FBtn1Rect;
 end;
 
 
 function TacSBWnd.Btn2Rect: TRect;
 begin
-  if Control.Kind = sbHorizontal then begin
-    FBtn2Rect.Left := Control.Width - SysBtnSize;
-    FBtn2Rect.Top := 0;
-    FBtn2Rect.Right := Control.Width;
-    FBtn2Rect.Bottom := Control.Height;
-    if WidthOf(FBtn2Rect) > Control.Width div 2 then
-      FBtn2Rect.Left := Control.Width div 2;
-  end
-  else begin
-    FBtn2Rect.Left := 0;
-    FBtn2Rect.Top := Control.Height - SysBtnSize;
-    FBtn2Rect.Right := Control.Width;
-    FBtn2Rect.Bottom := Control.Height;
-    if HeightOf(FBtn2Rect) > Control.Height div 2 then
-      FBtn2Rect.Top := Control.Height div 2;
-  end;
+  with Control do
+    if Kind = sbHorizontal then begin
+      FBtn2Rect.Left := Width - SysBtnSize;
+      FBtn2Rect.Top := 0;
+      FBtn2Rect.Right := Width;
+      FBtn2Rect.Bottom := Height;
+      if WidthOf(FBtn2Rect) > Width div 2 then
+        FBtn2Rect.Left := Width div 2;
+    end
+    else begin
+      FBtn2Rect.Left := 0;
+      FBtn2Rect.Top := Height - SysBtnSize;
+      FBtn2Rect.Right := Width;
+      FBtn2Rect.Bottom := Height;
+      if HeightOf(FBtn2Rect) > Height div 2 then
+        FBtn2Rect.Top := Height div 2;
+    end;
+
   Result := FBtn2Rect;
 end;
 
@@ -13536,7 +13646,7 @@ begin
     ss := SliderSize;
     if Control.Kind = sbHorizontal then begin
       BtnSize := SysBtnSize;
-      r := (Control.Width - 2 * BtnSize - ss);
+      r := Control.Width - 2 * BtnSize - ss;
       if r = 0 then
         Result := 0
       else
@@ -13544,7 +13654,7 @@ begin
     end
     else begin
       BtnSize := SysBtnSize;
-      r := (Control.Height - 2 * BtnSize - ss);
+      r := Control.Height - 2 * BtnSize - ss;
       if r = 0 then
         Result := 0
       else
@@ -13561,7 +13671,7 @@ var
   R: TRect;
 begin
   R := SliderRect;
-  if (Control.Kind = sbVertical) then begin
+  if Control.Kind = sbVertical then begin
     if HeightOf(R) > Control.Height - HeightOf(FBtn1Rect) - HeightOf(FBtn2Rect) then
       Exit;
   end
@@ -13677,10 +13787,10 @@ begin
         if PtInRect(Btn2Rect, Point(X, Y)) and (Btn2State = 2) then
           Btn2State := 1
         else
-          if (Bar1State = 2) then
+          if Bar1State = 2 then
             Bar1State := integer(BarIsHot)
           else
-            if (Bar2State = 2) then
+            if Bar2State = 2 then
               Bar2State := integer(BarIsHot);
 
     UpdateBar;
@@ -13690,12 +13800,15 @@ end;
 
 
 function TacSBWnd.PositionToCoord: integer;
+var
+  i: integer;
 begin
-  if ((FSI.nMax - FSI.nMin - Math.Max(Integer(FSI.nPage) - 1, 0)) <> 0) then
+  i := FSI.nMax - FSI.nMin - Math.Max(Integer(FSI.nPage) - 1, 0);
+  if i <> 0 then
     if Control.Kind = sbHorizontal then
-      Result := SysBtnSize + SliderSize div 2 + Round((FCurrPos - FSI.nMin) * ((Control.Width - 2 * SysBtnSize - SliderSize) / (FSI.nMax - FSI.nMin - Math.Max(Integer(FSI.nPage) - 1,0))))
+      Result := SysBtnSize + SliderSize div 2 + Round((FCurrPos - FSI.nMin) * ((Control.Width - 2 * SysBtnSize - SliderSize) / i))
     else
-      Result := SysBtnSize + SliderSize div 2 + Round((FCurrPos - FSI.nMin) * ((Control.Height - 2 * SysBtnSize - SliderSize) / (FSI.nMax - FSI.nMin - Math.Max(Integer(FSI.nPage) - 1,0))))
+      Result := SysBtnSize + SliderSize div 2 + Round((FCurrPos - FSI.nMin) * ((Control.Height - 2 * SysBtnSize - SliderSize) / i))
   else
     if Control.Kind = sbHorizontal then
       Result := Control.Width div 2
@@ -13818,40 +13931,41 @@ procedure TacSBWnd.WMNCHitTest(var Message: TWMNCHitTest);
 var
   i: integer;
 begin
-  if Control.Enabled then begin
-    if PtInRect(SliderRect, Control.ScreenToClient(SmallPointToPoint(Message.Pos))) or (SliderState = 2) then
-      if SliderState <> 2 then
-        SliderState := 1
-      else begin
-        i := CoordToPosition(Control.ScreenToClient(Point(Message.Pos.X, Message.Pos.Y))) - MouseOffset;
-        if Control.Position <> i then
-          Control.Position := i;
-      end
-    else
-      if PtInRect(Btn1Rect, Control.ScreenToClient(SmallPointToPoint(Message.Pos))) then begin
-        if Btn1State <> 2 then
-          Btn1State := 1;
-      end
+  with Control do
+    if Enabled then begin
+      if PtInRect(SliderRect, ScreenToClient(SmallPointToPoint(Message.Pos))) or (SliderState = 2) then
+        if SliderState <> 2 then
+          SliderState := 1
+        else begin
+          i := CoordToPosition(ScreenToClient(Point(Message.Pos.X, Message.Pos.Y))) - MouseOffset;
+          if Position <> i then
+            Position := i;
+        end
       else
-        if PtInRect(Btn2Rect, Control.ScreenToClient(SmallPointToPoint(Message.Pos))) then begin
-          if Btn2State <> 2 then
-            Btn2State := 1;
+        if PtInRect(Btn1Rect, ScreenToClient(SmallPointToPoint(Message.Pos))) then begin
+          if Btn1State <> 2 then
+            Btn1State := 1;
         end
         else
-          if (SliderState = 2) then begin
-            i := CoordToPosition(Control.ScreenToClient(SmallPointToPoint(Message.Pos)));
-            if Control.Position <> i then
-              Control.Position := i;
+          if PtInRect(Btn2Rect, ScreenToClient(SmallPointToPoint(Message.Pos))) then begin
+            if Btn2State <> 2 then
+              Btn2State := 1;
           end
-          else begin
-            SliderState := 0;
-            Btn1State := 0;
-            Btn2State := 0;
-          end;
+          else
+            if (SliderState = 2) then begin
+              i := CoordToPosition(ScreenToClient(SmallPointToPoint(Message.Pos)));
+              if Position <> i then
+                Position := i;
+            end
+            else begin
+              SliderState := 0;
+              Btn1State := 0;
+              Btn2State := 0;
+            end;
 
-    if Self <> nil then
-      UpdateBar;
-  end;
+      if Self <> nil then
+        UpdateBar;
+    end;
   inherited;
 end;
 
@@ -13876,7 +13990,7 @@ begin
 
     SavedDC := SaveDC(DC);
     try
-      if ControlIsReady(Control) and not (csDestroying in Control.ComponentState) and not (csLoading in Control.ComponentState) and not SkinData.Updating then begin
+      if ControlIsReady(Control) and ([csDestroying, csLoading] * Control.ComponentState = []) and not SkinData.Updating then begin
         if Control.Width <> Control.Height then begin // If not grip
           InitCacheBmp(SkinData);
           if not Control.Enabled then
@@ -13887,7 +14001,7 @@ begin
           BG.PleaseDraw := False;
           GetBGInfo(@BG, Control.Parent);
           lCI := BGInfoToCI(@BG);
-          with SkinData.SkinManager.ConstData do begin
+          with SkinData, SkinManager.ConstData do begin
             Bar1Rect;
             if not IsRectEmpty(FBar1Rect) then begin
               if Control.Enabled then
@@ -13900,10 +14014,10 @@ begin
               else
                 Side := asTop;
 
-              with SkinManager.ConstData.Scrolls[Side] do
-                if SkinData.SkinManager.IsValidSkinIndex(SkinIndex) then
+              with Scrolls[Side] do
+                if SkinManager.IsValidSkinIndex(SkinIndex) then
                   PaintItemFast(SkinIndex, MaskIndex, BGIndex[0], BGIndex[1],
-                              lCi, True, LocalState, FBar1Rect, MkPoint(Control), SkinData.FCacheBmp, SkinData.SkinManager);
+                              lCi, True, LocalState, FBar1Rect, MkPoint(Control), FCacheBmp, SkinManager);
             end;
             Bar2Rect;
             if not IsRectEmpty(FBar2Rect) then begin
@@ -13917,10 +14031,10 @@ begin
               else
                 Side := asBottom;
 
-              with SkinManager.ConstData.Scrolls[Side] do
-                if SkinData.SkinManager.IsValidSkinIndex(SkinIndex) then
+              with Scrolls[Side] do
+                if SkinManager.IsValidSkinIndex(SkinIndex) then
                   PaintItemFast(SkinIndex, MaskIndex, BGIndex[0], BGIndex[1],
-                                lCi, True, LocalState, FBar2Rect, Point(Control.Left + FBar2Rect.Left, Control.Top + FBar2Rect.Top), SkinData.FCacheBmp, SkinData.SkinManager)
+                                lCi, True, LocalState, FBar2Rect, Point(Control.Left + FBar2Rect.Left, Control.Top + FBar2Rect.Top), FCacheBmp, SkinManager)
             end;
           end;
           BitBlt(bmp.Canvas.Handle, 0, 0, bmp.Width, bmp.Height, SkinData.FCacheBmp.Canvas.Handle, 0, 0, SRCCOPY);
@@ -13947,7 +14061,7 @@ begin
             FreeAndNil(bmp);
         end
         else
-          if SkinData.SkinManager.ConstData.Scrolls[asLeft].SkinIndex >= -1 then
+          if SkinData.SkinManager.ConstData.Scrolls[asLeft].SkinIndex >= 0 then
             FillDC(DC, MkRect(Control), SkinData.SkinManager.gd[SkinData.SkinManager.ConstData.Scrolls[asLeft].SkinIndex].Props[0].Color)
           else
             FillDC(DC, MkRect(Control), SkinData.SkinManager.GetGlobalColor);
@@ -14009,7 +14123,6 @@ begin
     PrepareCache;
     Ac_NCDraw(Self, Self.CtrlHandle, -1, DC);
     w := (WidthOf(WndRect) - WidthOf(ClRect)) div 2;
-
     if w > 0 then
       BitBltBorder(DC, 0, 0, WndSize.cx, WndSize.cy, SkinData.FCacheBmp.Canvas.Handle, 0, 0, w);
   finally
@@ -14028,8 +14141,8 @@ var
   b: boolean;
 begin
   Ctrl := TWinControl(SkinData.FOwnerControl);
-  if not (csDestroying in SkinData.FOwnerControl.ComponentState) then begin
-    if (SkinData.FOwnerControl.Parent <> nil) and (csCreating in SkinData.FOwnerControl.Parent.ControlState) then
+  if not (csDestroying in Ctrl.ComponentState) then begin
+    if (Ctrl.Parent <> nil) and (csCreating in Ctrl.Parent.ControlState) then
       Exit;
 
     if not InUpdating(SkinData) then begin
@@ -14095,8 +14208,8 @@ begin
         CommonMessage(Message, SkinData);
         AlphaBroadCastCheck(SkinData.FOwnerControl, CtrlHandle, Message);
         if AC_REFRESH = Message.WParamHi then
-          SetWindowPos(CtrlHandle, 0, 0, 0, 0, 0, SWP_NOSIZE or SWP_NOMOVE or SWP_NOZORDER or SWP_NOREPOSITION or SWP_FRAMECHANGED);
-            
+          SetWindowPos(CtrlHandle, 0, 0, 0, 0, 0, SWPA_FRAMECHANGED);
+
         Exit;
       end;
 
@@ -14104,7 +14217,7 @@ begin
         SkinData.SkinIndex := -1;
         SkinData.FOwnerControl.ControlStyle := SkinData.FOwnerControl.ControlStyle - [csOpaque];
         CommonMessage(Message, SkinData);
-        SetWindowPos(CtrlHandle, 0, 0, 0, 0, 0, SWP_NOSIZE or SWP_NOMOVE or SWP_NOZORDER or SWP_NOREPOSITION or SWP_FRAMECHANGED);
+        SetWindowPos(CtrlHandle, 0, 0, 0, 0, 0, SWPA_FRAMECHANGED);
         Exit;
       end;
 
@@ -14174,9 +14287,9 @@ begin
           CM_SHOWINGCHANGED:
             if SkinData.FOwnerControl.Visible then begin
               AddToAdapter(TWinControl(SkinData.FOwnerControl));
-              M := MakeMessage(SM_ALPHACMD, MakeWParam(0, AC_SETNEWSKIN), Longint(SkinData.SkinManager), 0);
+              M := MakeMessage(SM_ALPHACMD, AC_SETNEWSKIN_HI, Longint(SkinData.SkinManager), 0);
               AlphaBroadCastCheck(SkinData.FOwnerControl, CtrlHandle, M);
-              M := MakeMessage(SM_ALPHACMD, MakeWParam(0, AC_REFRESH), Longint(SkinData.SkinManager), 0);
+              M := MakeMessage(SM_ALPHACMD, AC_REFRESH_HI, Longint(SkinData.SkinManager), 0);
               AlphaBroadCastCheck(SkinData.FOwnerControl, CtrlHandle, M);
             end;
 
@@ -14289,7 +14402,7 @@ procedure TacContainerWnd.AC_WMNCPaint(const Message: TMessage);
 var
   DC, SavedDC: hdc;
 begin
-  if GetWindowLong(CtrlHandle, GWL_EXSTYLE) and WS_EX_CLIENTEDGE = WS_EX_CLIENTEDGE then
+  if GetWindowLong(CtrlHandle, GWL_EXSTYLE) and WS_EX_CLIENTEDGE <> 0 then
     if not InUpdating(SkinData) then begin
       PrepareCache;
       DC := GetWindowDC(CtrlHandle);
@@ -14470,8 +14583,8 @@ var
   Panel: TacAccessPanel;
 begin
   Panel := TacAccessPanel(SkinData.FOwnerControl);
-  if not (csDestroying in SkinData.FOwnerControl.ComponentState) then begin
-    if (SkinData.FOwnerControl.Parent <> nil) and (csCreating in SkinData.FOwnerControl.Parent.ControlState) then
+  if not (csDestroying in Panel.ComponentState) then begin
+    if (Panel.Parent <> nil) and (csCreating in Panel.Parent.ControlState) then
       Exit;
 
     if not InUpdating(SkinData) then begin
@@ -14518,7 +14631,7 @@ begin
 {$IFDEF LOGGED}
 //  AddToLog(Message);
 {$ENDIF}
-  if (SkinData.FOwnerControl <> nil) then begin
+  if SkinData.FOwnerControl <> nil then begin
     if Message.Msg = SM_ALPHACMD then
       case Message.WParamHi of
         AC_CTRLHANDLED: begin
@@ -14602,9 +14715,9 @@ begin
           CM_SHOWINGCHANGED:
             if SkinData.FOwnerControl.Visible then begin
               AddToAdapter(TWinControl(SkinData.FOwnerControl));
-              M := MakeMessage(SM_ALPHACMD, MakeWParam(0, AC_SETNEWSKIN), Longint(SkinData.SkinManager), 0);
+              M := MakeMessage(SM_ALPHACMD, AC_SETNEWSKIN_HI, Longint(SkinData.SkinManager), 0);
               AlphaBroadCastCheck(SkinData.FOwnerControl, CtrlHandle, M);
-              M := MakeMessage(SM_ALPHACMD, MakeWParam(0, AC_REFRESH), Longint(SkinData.SkinManager), 0);
+              M := MakeMessage(SM_ALPHACMD, AC_REFRESH_HI, Longint(SkinData.SkinManager), 0);
               AlphaBroadCastCheck(SkinData.FOwnerControl, CtrlHandle, M);
             end;
 
@@ -14702,29 +14815,31 @@ procedure TacStaticTextWnd.AfterCreation;
 var
   b: boolean;
 begin
-  if SkinData.FOwnerControl <> nil then begin
-    b := SkinData.FUpdating;
-    SkinData.Updating := True;
-    Control := TAccessWinControl(SkinData.FOwnerControl);
-    if SkinData.SkinSection = '' then
+  with SkinData do
+    if FOwnerControl <> nil then begin
+      b := FUpdating;
+      Updating := True;
+      Control := TWinControl(FOwnerControl);
+      if SkinSection = '' then
 {$IFNDEF FPC}
-      if TAccessWinControl(Control).BevelKind <> bkNone then
-        case TAccessWinControl(Control).BevelOuter of // If not custom SkinSection
-          bvRaised:  SkinData.SkinSection := iff(TAccessWinControl(Control).BevelInner = bvLowered, s_GroupBox, s_Panel);
-          bvLowered: SkinData.SkinSection := iff(TAccessWinControl(Control).BevelInner = bvRaised, s_GroupBox, s_PanelLow);
-          else       SkinData.SkinSection := s_Transparent
-        end
+        with TAccessWinControl(FOwnerControl) do
+          if BevelKind <> bkNone then
+            case BevelOuter of // If not custom SkinSection
+              bvRaised:  SkinSection := iff(BevelInner = bvLowered, s_GroupBox, s_Panel);
+              bvLowered: SkinSection := iff(BevelInner = bvRaised, s_GroupBox, s_PanelLow);
+              else       SkinSection := s_Transparent
+            end
 {$ENDIF}
-      else
-        if (SkinData.FOwnerControl is TStaticText) and (TStaticText(SkinData.FOwnerControl).BorderStyle <> sbsNone) then
-          SkinData.SkinSection := s_GroupBox
-        else
-          SkinData.SkinSection := s_Transparent;
+          else
+            if (FOwnerControl is TStaticText) and (TStaticText(FOwnerControl).BorderStyle <> sbsNone) then
+              SkinSection := s_GroupBox
+            else
+              SkinSection := s_Transparent;
 
-    SkinData.Updating := b;
-  end
-  else
-    Control := nil;
+      SkinData.Updating := b;
+    end
+    else
+      Control := nil;
 
   inherited;
 end;
@@ -14753,9 +14868,6 @@ begin
   case Message.Msg of
     WM_PAINT, WM_ERASEBKGND://, WM_NCPAINT:
       CallPrevWndProc(CtrlHandle, Message.Msg, Message.WParam, Message.LParam);
-
-//    CM_SHOWINGCHANGED, CM_VISIBLECHANGED:
-//      AddToAdapter(TWinControl(SkinData.FOwnerControl));
 
     SM_ALPHACMD:
       case Message.WParamHi of
@@ -14787,477 +14899,33 @@ begin
   inherited;
 end;
 
-(*
-procedure TacFrameWnd.acWndProc(var Message: TMessage);
-var
-  i: integer;
-  m: TMessage;
+
+function TacSplitBtnWnd.ArrowRect: TRect;
 begin
-{$IFDEF LOGGED}
-  AddToLog(Message);
-{$ENDIF}
-  case Message.Msg of
-    SM_ALPHACMD:
-      case Message.WParamHi of
-        AC_CTRLHANDLED: begin
-          Message.Result := 1;
-          Exit;
-        end;
-
-        AC_SETNEWSKIN:
-          if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
-            AlphaBroadCast(Frame, Message);
-            CommonWndProc(Message, SkinData);
-            if Assigned(SkinData.SkinManager) then begin
-              for i := 0 to Frame.ComponentCount - 1 do
-                if (Frame.Components[i] is TPopupMenu) and SkinData.SkinManager.SkinnedPopups then
-                  SkinData.SkinManager.SkinableMenus.HookPopupMenu(TPopupMenu(Frame.Components[i]), True);
-
-{$IFDEF CHANGEFORMSINDESIGN}
-              if (csDesigning in Frame.ComponentState) and // Updating of form color in design-time
-                   (Frame.Parent.ClassName = s_WinControlForm) and
-                     (SkinData.SkinManager.ConstData.IndexGlobalInfo >= 0) then
-                TsHackedControl(Frame.Parent).Color := SkinData.SkinManager.gd[SkinData.SkinManager.ConstData.IndexGlobalInfo].Props[0].Color;
-{$ENDIF}                
-            end;
-            Exit;
-          end;
-
-        AC_REFRESH:
-          if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
-            CommonWndProc(Message, SkinData);
-            SkinData.UpdateIndexes;
-            if Assigned(SkinData.SkinManager) then begin
-{$IFDEF CHANGEFORMSINDESIGN}
-              if (csDesigning in Frame.ComponentState) and // Updating of form color in design-time
-                   (Frame.Parent.ClassName = s_WinControlForm) and
-                     (SkinData.SkinManager.ConstData.IndexGlobalInfo >= 0) then
-                TsHackedControl(Frame.Parent).Color := SkinData.SkinManager.gd[SkinData.SkinManager.ConstData.IndexGlobalInfo].Props[0].Color;
-{$ENDIF}
-              if Message.WParamLo <> 1 then
-                AlphaBroadcast(Frame, Message);
-
-              RedrawWindow(Frame.Handle, nil, 0, RDW_ERASE or RDW_UPDATENOW or RDW_INVALIDATE or RDW_ALLCHILDREN or RDW_FRAME);
-            end;
-            Exit;
-          end;
-
-        AC_STOPFADING: begin
-          AlphaBroadcast(Frame, Message);
-          Exit;
-        end;
-
-        AC_BEFORESCROLL:
-          if GetBoolMsg(Frame, AC_CHILDCHANGED) or SkinData.RepaintIfMoved then
-            SendMessage(Frame.Handle, WM_SETREDRAW, 0, 0);
-
-        AC_AFTERSCROLL:
-          if GetBoolMsg(Frame, AC_CHILDCHANGED) or SkinData.RepaintIfMoved then begin
-            SendMessage(Frame.Handle, WM_SETREDRAW, 1, 0);
-            RedrawWindow(Frame.Handle, nil, 0, RDW_UPDATENOW or RDW_INVALIDATE or RDW_ALLCHILDREN or RDW_FRAME);
-          end;
-
-        AC_REMOVESKIN:
-          if (ACUInt(Message.LParam) = ACUInt(SkinData.SkinManager)) then begin
-            CommonWndProc(Message, SkinData);
-            if (csDesigning in Frame.ComponentState) and // Updating of form color in design-time
-                 Assigned(Frame.Parent) and
-                   (Frame.Parent.ClassName = s_WinControlForm) then
-              TsHackedControl(Frame.Parent).Color := clBtnFace;
-
-            if not Application.Terminated then begin
-              SetWindowPos(Frame.Handle, 0, 0, 0, 0, 0, SWP_NOMOVE or SWP_NOSIZE or SWP_FRAMECHANGED);
-              RedrawWindow(Frame.Handle, nil, 0, RDW_ERASE or RDW_UPDATENOW or RDW_INVALIDATE or RDW_ALLCHILDREN or RDW_FRAME);
-              Application.ProcessMessages; // Repaint graphic controls
-            end;
-            AlphaBroadcast(Frame, Message);
-            Exit;
-          end;
-
-        AC_PREPARECACHE: begin
-          if not InUpdating(SkinData) and not PrepareCache then
-            SkinData.Updating := True;
-
-          Exit;
-        end;
-
-        AC_GETDEFINDEX: begin
-{$IFNDEF ALITE}
-          if (Adapter <> nil) and (TsFrameAdapter(Adapter).SkinData.SkinSection <> '') then begin
-            TsFrameAdapter(Adapter).SkinData.UpdateIndexes;
-            Message.Result := TsFrameAdapter(Adapter).SkinData.SkinIndex + 1;
-          end
-          else
-{$ENDIF}
-            if SkinData.SkinManager <> nil then
-              Message.Result := SkinData.SkinManager.ConstData.Sections[ssTransparent] + 1;
-
-          Exit;
-        end;
-
-        AC_GETSKININDEX: begin
-          PacSectionInfo(Message.LParam)^.SkinIndex := SkinData.SkinIndex;
-          Exit;
-        end;
-      end;
-
-    WM_SIZE:
-      SkinData.BGChanged := True;
-  end;
-
-  if (csDestroying in Frame.ComponentState) or
-       not SkinData.Skinned or
-         not ((SkinData.SkinManager <> nil) and
-           SkinData.SkinManager.CommonSkinData.Active) then begin
-    if SkinData.SkinManager <> nil then
-      if SkinData.SkinManager.CommonSkinData.Active then
-        case Message.Msg of
-          CM_SHOWINGCHANGED, CM_VISIBLECHANGED:
-            if Assigned(Frame) and Frame.HandleAllocated then begin
-              SkinData.UpdateIndexes;
-              UpdateSkinState(SkinData, True);
-              m := MakeMessage(SM_ALPHACMD, MakeWParam(AC_SETNEWSKIN, AC_SETNEWSKIN), LPARAM(SkinData.SkinManager), 0);
-              AlphaBroadCast(Frame, m);
-            end;
-        end;
-
-    inherited;
-  end
-  else
-    case Message.Msg of
-      SM_ALPHACMD:
-        case Message.WParamHi of
-          AC_CHILDCHANGED: begin
-            if (SkinData.SkinIndex < 0) or not Assigned(SkinData.SkinManager) then
-              Message.LParam := 0
-            else
-              Message.LParam := LPARAM((SkinData.SkinManager.gd[SkinData.SkinIndex].Props[0].GradientPercent +
-                                        SkinData.SkinManager.gd[SkinData.SkinIndex].Props[0].ImagePercent > 0) or
-                                       SkinData.RepaintIfMoved);
-            Message.Result := Message.LParam;
-          end;
-
-          AC_UPDATING: begin
-            SkinData.Updating := Message.WParamLo = 1;
-            for i := 0 to Frame.ControlCount - 1 do
-              Frame.Controls[i].Perform(Message.Msg, Message.WParam, Message.LParam);
-          end;
-
-          AC_ENDPARENTUPDATE:
-            if SkinData.FUpdating {$IFDEF D2006} and not (csRecreating in Frame.ControlState) and not (csAligning in Frame.ControlState) {$ENDIF} then begin
-              if not InUpdating(SkinData, True) then begin
-                if SkinData.BGChanged and Assigned(Frame.OnResize) then begin
-                  RedrawWindow(Frame.Handle, nil, 0, RDW_INVALIDATE or RDW_UPDATENOW or RDW_ERASE or RDW_FRAME);
-                  Frame.OnResize(Frame);
-                end
-                else
-                  RedrawWindow(Frame.Handle, nil, 0, RDW_INVALIDATE or RDW_UPDATENOW or RDW_ERASE or RDW_FRAME);
-
-                SetParentUpdated(Frame);
-              end;
-            end
-            else
-              if SkinData.CtrlSkinState and ACS_FAST = ACS_FAST then
-                SetParentUpdated(Frame);
-
-          AC_PREPARECACHE:
-            if not PrepareCache then
-              SkinData.Updating := True;
-
-          AC_GETCONTROLCOLOR:
-            if SkinData.Skinned then
-              if not IsCached(SkinData) then
-                case SkinData.SkinManager.gd[SkinData.Skinindex].Props[0].Transparency of
-                  0:
-                    Message.Result := LRESULT(SkinData.SkinManager.gd[SkinData.Skinindex].Props[0].Color);
-
-                  100:
-                    if Frame.Parent <> nil then begin
-                      Message.Result := SendMessage(Frame.Parent.Handle, SM_ALPHACMD, MakeWParam(0, AC_GETCONTROLCOLOR), 0);
-                      if Message.Result = clFuchsia {if AlphaMessage not supported} then
-                        Message.Result := LRESULT(TsHackedControl(Frame.Parent).Color)
-                    end
-                    else
-                      Message.Result := LRESULT(ColorToRGB(Frame.Color));
-
-                  else begin
-                    if Frame.Parent <> nil then
-                      Message.Result := SendMessage(Frame.Parent.Handle, SM_ALPHACMD, MakeWParam(0, AC_GETCONTROLCOLOR), 0)
-                    else
-                      Message.Result := LRESULT(ColorToRGB(Frame.Color));
-                    // Mixing of colors
-                    C1.C := TColor(Message.Result);
-                    C2.C := SkinData.SkinManager.gd[SkinData.Skinindex].Props[0].Color;
-                    C1.R := ((C1.R - C2.R) * SkinData.SkinManager.gd[SkinData.SkinIndex].Props[0].Transparency + C2.R shl 8) shr 8;
-                    C1.G := ((C1.G - C2.G) * SkinData.SkinManager.gd[SkinData.SkinIndex].Props[0].Transparency + C2.G shl 8) shr 8;
-                    C1.B := ((C1.B - C2.B) * SkinData.SkinManager.gd[SkinData.SkinIndex].Props[0].Transparency + C2.B shl 8) shr 8;
-                    Message.Result := LRESULT(C1.C);
-                  end
-                end
-              else begin
-                if SkinData.CtrlSkinState and ACS_BGUNDEF = ACS_BGUNDEF then
-                  UpdateSkinState(SkinData, False);
-
-                Message.LParam := LRESULT(clFuchsia);
-              end
-            else begin
-              if Assigned(Frame) then
-                Message.LParam := LPARAM(ColorToRGB(TsHackedControl(Frame).Color))
-            end
-
-          else
-            try
-              if not CommonMessage(Message, SkinData) then
-                inherited;
-            except
-            end;
-        end;
-
-      CM_VISIBLECHANGED: begin
-        SkinData.BGChanged := True;
-        UpdateSkinState(SkinData, True);
-        Message.Result := CallPrevWndProc(CtrlHandle, Message.Msg, Message.WParam, Message.LParam);
-        if Assigned(SkinData.SkinManager) then
-          SendMessage(Frame.Handle, SM_ALPHACMD, MakeWParam(0, AC_REFRESH), LongWord(SkinData.SkinManager));
-      end;
-
-      WM_WINDOWPOSCHANGED, WM_SIZE, WM_MOVE: begin
-        if not SkinData.FUpdating then begin
-          SkinData.BGChanged := SkinData.BGChanged or (Message.Msg = WM_SIZE) or SkinData.RepaintIfMoved;
-          if SkinData.BGChanged then begin
-            m := MakeMessage(SM_ALPHACMD, MakeWParam(1, AC_SETBGCHANGED), 0, 0);
-            Frame.BroadCast(m);
-          end;
-          if Message.Msg <> WM_MOVE then
-            InvalidateRect(Frame.Handle, nil, True);
-        end;
-        Message.Result := CallPrevWndProc(CtrlHandle, Message.Msg, Message.WParam, Message.LParam);
-      end;
-
-      WM_PARENTNOTIFY:
-        if (Message.WParamLo in [WM_CREATE, WM_DESTROY]) {and not (csLoading in ComponentState)} and not (csCreating in Frame.ControlState) then begin
-          if (Message.WParamLo = WM_CREATE) and (srThirdParty in SkinData.SkinManager.SkinningRules) then
-            AddToAdapter(Frame);
-
-          inherited;
-          UpdateScrolls(Self, False);
-        end
-        else
-          inherited;
-
-      CM_SHOWINGCHANGED: begin
-        UpdateSkinState(SkinData, True);
-        inherited;
-//        RefreshScrolls(SkinData, ListSW);
-        if (srThirdParty in SkinData.SkinManager.SkinningRules) then
-          AddToAdapter(Frame);
-      end;
-
-      WM_PAINT:
-        if (csDesigning in Frame.ComponentState) or (Frame.Parent = nil) {or (csDestroying in ComponentState) }then
-          Message.Result := CallPrevWndProc(CtrlHandle, Message.Msg, Message.WParam, Message.LParam)
-        else begin
-          AC_WMPaint(TWMPaint(Message).DC);
-          Message.Result := 0;
-        end;
-
-      WM_PRINT:
-        if SkinData.Skinned then begin
-          SkinData.Updating := False;
-          if ControlIsReady(Frame) then begin
-            OurPaintHandler(TWMPaint(Message).DC);
-            Ac_NCDraw(Self, Frame.Handle, -1, TWMPaint(Message).DC); // Scrolls painting
-            if Assigned(Frame.OnResize) then
-              Frame.OnResize(Frame);
-          end;
-        end
-        else
-          Message.Result := CallPrevWndProc(CtrlHandle, Message.Msg, Message.WParam, Message.LParam);
-
-      WM_ERASEBKGND:
-        if (csDesigning in Frame.ComponentState) or not Frame.Showing then
-          Message.Result := CallPrevWndProc(CtrlHandle, Message.Msg, Message.WParam, Message.LParam)
-        else
-          if not InAnimationProcess then begin
-            if not InUpdating(SkinData) and (not IsCached(SkinData) or not SkinData.BGChanged) then
-              OurPaintHandler(TWMPaint(Message).DC);
-
-            Message.Result := 1;
-          end;
-
-      else
-        inherited;
-    end;
+  Result := MkRect(SkinData.FCacheBmp);
+  Result.Left := Result.Right - ArrowWidth * 2 - 6;
 end;
 
 
-procedure TacFrameWnd.AC_WMPaint(const aDC: hdc);
-var
-  DC, SavedDC: hdc;
-  PS: TPaintStruct;
+function TacSplitBtnWnd.CaptionRect: TRect;
 begin
-  if not (csDestroying in Frame.ComponentState) and (Frame.Parent <> nil) and not IsCached(SkinData) then
-    InvalidateRect(Frame.Handle, nil, True); // Background update (for repaint of graphic controls and for a frame refreshing)
-
-  BeginPaint(Frame.Handle, PS);
-  if aDC = 0 then
-    DC := GetDC(Frame.Handle)
-  else
-    DC := aDC;
-
-  SavedDC := SaveDC(DC);
-  try
-    if IsCached(SkinData) then
-      if not InUpdating(SkinData) then
-        OurPaintHandler(DC);
-  finally
-    RestoreDC(DC, SavedDC);
-    if aDC = 0 then
-      ReleaseDC(Frame.Handle, DC);
-
-    EndPaint(Frame.Handle, PS);
-  end;
+  ArrowWidth := 8;
+  Result := inherited CaptionRect;
+  OffsetRect(Result, -ArrowWidth, 0);
 end;
 
 
-procedure TacFrameWnd.OurPaintHandler(aDC: hdc);
+procedure TacSplitBtnWnd.PrepareCache;
 var
   R: TRect;
-  i: integer;
-  Changed: boolean;
-  DC, SavedDC: hdc;
-  BGInfo: TacBGInfo;
-
-  procedure FillBG(aRect: TRect);
-  begin
-    FillDC(DC, aRect, GetBGColor(SkinData, 0))
-  end;
-
+  C: TColor;
 begin
-  if (aDC <> 0) and (not InAnimationProcess or (aDC = SkinData.PrintDC)) then begin
-    DC := aDC;
-    if IsCached(SkinData) then begin
-      SavedDC := SaveDC(DC);
-      if not InUpdating(SkinData) then begin
-        Changed := True;
-        if (SkinData.BorderIndex < 0) and (SkinData.SkinManager.gd[SkinData.SkinIndex].Props[0].Transparency = 100) and not HaveOuterEffects(SkinData) then begin // Parent BG is taken
-          BGInfo.DrawDC := 0;
-          BGInfo.PleaseDraw := False;
-          GetBGInfo(@BGInfo, Frame.Parent);
-          if (BGInfo.BgType = btCache) and (BGInfo.Bmp <> nil) then begin
-            BitBlt(DC, 0, 0, Frame.Width, Frame.Height, BGInfo.Bmp.Canvas.Handle, Frame.Left + BGInfo.Offset.X, Frame.Top + BGInfo.Offset.Y, SRCCOPY);
-            InitCacheBmp(SkinData);
-            BitBlt(SkinData.FCacheBmp.Canvas.Handle, 0, 0, Frame.Width, Frame.Height, BGInfo.Bmp.Canvas.Handle, Frame.Left + BGInfo.Offset.X, Frame.Top + BGInfo.Offset.Y, SRCCOPY);
-          end
-          else begin
-            SavedDC := SaveDC(DC);
-            ExcludeControls(DC, Frame, actGraphic, 0, 0);
-            FillBG(MkRect(Frame.Width, Frame.Height));
-            RestoreDC(DC, SavedDC);
-          end
-        end
-        else begin
-          Changed := SkinData.BGChanged or SkinData.HalfVisible;
-          i := GetClipBox(DC, R);
-          if (i = 0) {or IsRectEmpty(R) is not redrawn while resizing }then
-            Exit;
-
-          if SkinData.RepaintIfMoved and (Frame.Parent <> nil) then
-            SkinData.HalfVisible := (WidthOf(R, True) <> Frame.Width) or (HeightOf(R, True) <> Frame.Height)
-          else
-            SkinData.HalfVisible := False;
-
-          if Changed then
-            if not PrepareCache then begin
-              RestoreDC(DC, SavedDC);
-              Exit;
-            end;
-
-          CopyWinControlCache(Frame, SkinData, MkRect, MkRect(Frame), DC, True);
-        end;
-        sVCLUtils.PaintControls(DC, Frame, Changed, MkPoint);
-        SetParentUpdated(Frame);
-      end;
-      RestoreDC(DC, SavedDC);
-    end
-    else begin
-      SkinData.Updating := False;
-      i := SkinBorderMaxWidth(SkinData);
-      R := MkRect(Frame.Width, Frame.Height);
-      if aDC <> SkinData.PrintDC then
-        DC := GetDC(Frame.Handle);
-
-      try
-        SavedDC := SaveDC(DC);
-        ExcludeControls(DC, Frame, actGraphic, 0, 0);
-        if i = 0 then
-          FillBG(R) { Just fill BG}
-        else begin
-          if SkinData.FCacheBmp = nil then
-            SkinData.FCacheBmp := CreateBmp32(Frame.Width, Frame.Height);
-
-          PaintBorderFast(DC, R, i, SkinData, 0);
-          InflateRect(R, i, i);
-          FillBG(R);
-        end;
-        RestoreDC(DC, SavedDC);
-        if i > 0 then
-          BitBltBorder(DC, 0, 0, Frame.Width, Frame.Height, SkinData.FCacheBmp.Canvas.Handle, 0, 0, i);
-
-        PaintControls(DC, Frame, True, MkPoint);
-        if SkinData.FCacheBmp <> nil then
-          FreeAndNil(SkinData.FCacheBmp);
-      finally
-        if aDC <> SkinData.PrintDC then
-          ReleaseDC(Frame.Handle, DC);
-      end;
-    end;
-  end;
+  inherited;
+  R := ArrowRect;
+  C := SkinManager.gd[SkinData.SkinIndex].Props[min(CurrentState, ac_MaxPropsIndex)].FontColor.Color;
+  DrawColorArrow(SkinData.FCacheBmp, C, R, asBottom);
 end;
 
-
-function TacFrameWnd.PrepareCache: boolean;
-var
-  BGInfo: TacBGInfo;
-begin
-  Result := False;
-//  SkinData.UpdateIndexes;
-  if IsCached(SkinData) then begin
-    if Frame.Parent <> nil then
-      GetBGInfo(@BGInfo, Frame.Parent.Handle, False)
-    else
-      BGInfo.BgType := btNotReady;
-
-    if BGInfo.BgType = btNotReady then begin
-      SkinData.Updating := True;
-      Exit;
-    end;
-    InitCacheBmp(SkinData);
-    SkinData.FCacheBMP.Canvas.Font.Assign(Frame.Font);
-    PaintItem(SkinData, BGInfoToCI(@BGInfo), False, 0, MkRect(Frame), MkPoint(Frame), SkinData.FCacheBMP, False);
-  end;
-  SkinData.PaintOuterEffects(Frame, MkPoint);
-  SkinData.BGChanged := False;
-  Result := True;
-end;
-
-
-procedure TacFrameWnd.SearchAdapter;
-{$IFNDEF ALITE}
-var
-  i: integer;
-{$ENDIF}
-begin
-  Adapter := nil;
-{$IFNDEF ALITE}
-  for i := 0 to Frame.ComponentCount - 1 do
-    if Frame.Components[i] is TsFrameAdapter then begin
-      Adapter := Frame.Components[i];
-      Exit;
-    end;
-{$ENDIF}
-end;
-*)
 
 initialization
   huser32 := LoadLibrary(user32);

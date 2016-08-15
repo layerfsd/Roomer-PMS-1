@@ -1,12 +1,19 @@
 object SkinInfoForm: TSkinInfoForm
   Left = 447
   Top = 369
+  AutoScroll = False
   BorderStyle = bsDialog
   Caption = 'Current skin information'
   ClientHeight = 193
   ClientWidth = 286
   Color = clBtnFace
   OldCreateOrder = False
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  ParentFont = False
   Position = poScreenCenter
   Scaled = False
   PixelsPerInch = 96

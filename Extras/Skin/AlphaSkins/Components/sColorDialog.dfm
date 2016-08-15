@@ -1,21 +1,27 @@
 object sColorDialogForm: TsColorDialogForm
-  Left = 347
-  Top = 283
+  Left = 388
+  Top = 297
+  ActiveControl = sEditDecimal
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'Color'
-  ClientHeight = 400
+  ClientHeight = 404
   ClientWidth = 544
   Color = clBtnFace
-  Constraints.MaxHeight = 438
-  Constraints.MaxWidth = 560
-  Constraints.MinHeight = 438
-  Constraints.MinWidth = 256
-  ParentFont = True
+  Constraints.MinHeight = 380
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  KeyPreview = True
   OldCreateOrder = False
   Position = poScreenCenter
+  Scaled = False
+  OnClose = FormClose
+  OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
-  OnDestroy = FormDestroy
+  OnKeyDown = PickFormKeyDown
   OnMouseDown = FormMouseDown
   OnMouseMove = FormMouseMove
   OnMouseUp = FormMouseUp
@@ -24,8 +30,8 @@ object sColorDialogForm: TsColorDialogForm
   PixelsPerInch = 96
   TextHeight = 13
   object sLabel2: TsLabel
-    Left = 17
-    Top = 197
+    Left = 21
+    Top = 160
     Width = 82
     Height = 13
     Caption = 'Additional colors:'
@@ -38,15 +44,15 @@ object sColorDialogForm: TsColorDialogForm
     Caption = 'o'
   end
   object sLabel5: TsLabel
-    Left = 430
-    Top = 314
+    Left = 431
+    Top = 315
     Width = 11
     Height = 13
     Caption = '%'
   end
   object sLabel6: TsLabel
-    Left = 430
-    Top = 338
+    Left = 431
+    Top = 339
     Width = 11
     Height = 13
     Caption = '%'
@@ -92,7 +98,7 @@ object sColorDialogForm: TsColorDialogForm
     Height = 25
     Caption = 'OK'
     Default = True
-    TabOrder = 8
+    TabOrder = 9
     OnClick = sBitBtn1Click
     ShowFocus = False
   end
@@ -101,18 +107,17 @@ object sColorDialogForm: TsColorDialogForm
     Top = 365
     Width = 67
     Height = 25
-    Cancel = True
     Caption = 'Cancel'
     ModalResult = 2
-    TabOrder = 9
+    TabOrder = 10
     OnClick = sBitBtn2Click
     ShowFocus = False
   end
   object ColorPanel: TsPanel
     Left = 243
     Top = 13
-    Width = 260
-    Height = 260
+    Width = 255
+    Height = 255
     BevelOuter = bvNone
     Caption = ' '
     Ctl3D = False
@@ -128,7 +133,7 @@ object sColorDialogForm: TsColorDialogForm
     Left = 511
     Top = 13
     Width = 20
-    Height = 260
+    Height = 255
     BevelOuter = bvNone
     Caption = ' '
     Ctl3D = False
@@ -140,56 +145,56 @@ object sColorDialogForm: TsColorDialogForm
     OnMouseUp = GradPanelMouseUp
     OnPaint = GradPanelPaint
   end
-  object sREdit: TsCurrencyEdit
+  object sREdit: TsTrackEdit
     Left = 503
     Top = 289
     Width = 33
     Height = 19
     AutoSize = False
     TabOrder = 5
+    Text = '0'
     OnChange = sREditChange
+    SkinData.SkinSection = 'EDIT'
     BoundLabel.Active = True
     BoundLabel.Caption = 'Red:'
-    SkinData.SkinSection = 'EDIT'
-    GlyphMode.Blend = 0
-    GlyphMode.Grayed = False
-    Alignment = taLeftJustify
+    AutoPopup = False
+    Increment = 1
+    MaxValue = 255
     DecimalPlaces = 0
-    DisplayFormat = '0'
   end
-  object sGEdit: TsCurrencyEdit
+  object sGEdit: TsTrackEdit
     Left = 503
     Top = 313
     Width = 33
     Height = 19
     AutoSize = False
     TabOrder = 6
+    Text = '0'
     OnChange = sREditChange
+    SkinData.SkinSection = 'EDIT'
     BoundLabel.Active = True
     BoundLabel.Caption = 'Green:'
-    SkinData.SkinSection = 'EDIT'
-    GlyphMode.Blend = 0
-    GlyphMode.Grayed = False
-    Alignment = taLeftJustify
+    AutoPopup = False
+    Increment = 1
+    MaxValue = 255
     DecimalPlaces = 0
-    DisplayFormat = '0'
   end
-  object sBEdit: TsCurrencyEdit
+  object sBEdit: TsTrackEdit
     Left = 503
     Top = 337
     Width = 33
     Height = 19
     AutoSize = False
     TabOrder = 7
+    Text = '0'
     OnChange = sREditChange
+    SkinData.SkinSection = 'EDIT'
     BoundLabel.Active = True
     BoundLabel.Caption = 'Blue:'
-    SkinData.SkinSection = 'EDIT'
-    GlyphMode.Blend = 0
-    GlyphMode.Grayed = False
-    Alignment = taLeftJustify
+    AutoPopup = False
+    Increment = 1
+    MaxValue = 255
     DecimalPlaces = 0
-    DisplayFormat = '0'
   end
   object sBitBtn3: TsBitBtn
     Left = 376
@@ -212,62 +217,62 @@ object sColorDialogForm: TsColorDialogForm
     OnClick = sBitBtn4Click
     ShowFocus = False
   end
-  object sHEdit: TsCurrencyEdit
+  object sHEdit: TsTrackEdit
     Left = 395
     Top = 289
     Width = 33
     Height = 19
     AutoSize = False
     TabOrder = 2
+    Text = '0'
     OnChange = sHEditChange
+    SkinData.SkinSection = 'EDIT'
     BoundLabel.Active = True
     BoundLabel.Caption = 'H:'
-    SkinData.SkinSection = 'EDIT'
-    GlyphMode.Blend = 0
-    GlyphMode.Grayed = False
-    Alignment = taLeftJustify
+    AutoPopup = False
+    Increment = 1
+    MaxValue = 359
     DecimalPlaces = 0
-    DisplayFormat = '0'
   end
-  object sSEdit: TsCurrencyEdit
+  object sSEdit: TsTrackEdit
     Left = 395
     Top = 313
     Width = 33
     Height = 19
     AutoSize = False
     TabOrder = 3
+    Text = '0'
     OnChange = sHEditChange
+    SkinData.SkinSection = 'EDIT'
     BoundLabel.Active = True
     BoundLabel.Caption = 'S:'
-    SkinData.SkinSection = 'EDIT'
-    GlyphMode.Blend = 0
-    GlyphMode.Grayed = False
-    Alignment = taLeftJustify
+    AutoPopup = False
+    Increment = 1
+    MaxValue = 100
     DecimalPlaces = 0
-    DisplayFormat = '0'
   end
-  object sVEdit: TsCurrencyEdit
+  object sVEdit: TsTrackEdit
     Left = 395
     Top = 337
     Width = 33
     Height = 19
     AutoSize = False
     TabOrder = 4
+    Text = '0'
     OnChange = sHEditChange
+    SkinData.SkinSection = 'EDIT'
     BoundLabel.Active = True
     BoundLabel.Caption = 'B:'
-    SkinData.SkinSection = 'EDIT'
-    GlyphMode.Blend = 0
-    GlyphMode.Grayed = False
-    Alignment = taLeftJustify
+    AutoPopup = False
+    Increment = 1
+    MaxValue = 100
     DecimalPlaces = 0
-    DisplayFormat = '0'
   end
   object MainPal: TsColorsPanel
     Left = 10
     Top = 13
     Width = 223
-    Height = 181
+    Height = 142
     BevelOuter = bvNone
     Caption = ' '
     TabOrder = 13
@@ -323,15 +328,15 @@ object sColorDialogForm: TsColorDialogForm
       '400040'
       'FFFFFF')
     ColCount = 8
-    ItemHeight = 23
+    ItemHeight = 17
     RowCount = 6
     OnChange = MainPalChange
   end
   object AddPal: TsColorsPanel
     Left = 10
-    Top = 210
+    Top = 173
     Width = 223
-    Height = 59
+    Height = 95
     BevelOuter = bvNone
     Caption = ' '
     TabOrder = 14
@@ -353,8 +358,19 @@ object sColorDialogForm: TsColorDialogForm
       'FFFFFF'
       'FFFFFF'
       'FFFFFF'
+      'FFFFFF'
+      'FFFFFF'
+      'FFFFFF'
+      'FFFFFF'
+      'FFFFFF'
+      'FFFFFF'
+      'FFFFFF'
+      'FFFFFF'
       'FFFFFF')
-    ColCount = 8
+    ColCount = 6
+    ItemHeight = 24
+    ItemWidth = 30
+    RowCount = 3
     OnChange = MainPalChange
   end
   object sEditDecimal: TsCurrencyEdit
@@ -363,11 +379,10 @@ object sColorDialogForm: TsColorDialogForm
     Width = 70
     Height = 19
     AutoSize = False
-    TabOrder = 1
+    TabOrder = 0
     OnChange = sEditDecimalChange
     BoundLabel.Active = True
     BoundLabel.Caption = 'Decimal - '
-    SkinData.SkinSection = 'EDIT'
     GlyphMode.Blend = 0
     GlyphMode.Grayed = False
     Alignment = taLeftJustify
@@ -382,14 +397,13 @@ object sColorDialogForm: TsColorDialogForm
     CharCase = ecUpperCase
     EditMask = 'AAAAAA;1; '
     MaxLength = 6
-    TabOrder = 0
+    TabOrder = 1
     Text = '      '
     OnChange = sEditHexChange
     OnKeyPress = sEditHexKeyPress
     CheckOnExit = True
     BoundLabel.Active = True
     BoundLabel.Caption = 'Hex - '
-    SkinData.SkinSection = 'EDIT'
   end
   object sBitBtn5: TsBitBtn
     Left = 16
@@ -397,7 +411,7 @@ object sColorDialogForm: TsColorDialogForm
     Width = 67
     Height = 25
     Caption = 'Help'
-    TabOrder = 10
+    TabOrder = 8
     OnClick = sBitBtn5Click
     ShowFocus = False
   end
@@ -425,14 +439,25 @@ object sColorDialogForm: TsColorDialogForm
     end
     object OldPanel: TShape
       Left = 0
-      Top = 57
+      Top = 50
       Width = 120
-      Height = 50
+      Height = 48
       Align = alClient
       Brush.Color = clGreen
       Pen.Color = clGreen
       Pen.Width = 0
     end
+  end
+  object sDragBar1: TsDragBar
+    Left = 0
+    Top = 0
+    Width = 544
+    Height = 6
+    Cursor = crHandPoint
+    Caption = ' '
+    TabOrder = 18
+    SkinData.SkinSection = 'DRAGBAR'
+    DraggedControl = Owner
   end
   object sSkinProvider1: TsSkinProvider
     ScreenSnap = True
@@ -441,6 +466,6 @@ object sColorDialogForm: TsColorDialogForm
     SkinData.SkinSection = 'DIALOG'
     TitleButtons = <>
     Left = 329
-    Top = 25
+    Top = 33
   end
 end

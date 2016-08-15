@@ -1,7 +1,7 @@
 unit sMonthCalendar;
 {$I sDefs.inc}
 //{$DEFINE LOGGED}
-
+//+
 interface
 
 uses Windows, Classes, Controls, SysUtils, Graphics, buttons, grids, messages, StdCtrls, forms, comctrls, Menus,
@@ -23,6 +23,8 @@ type
     procedure WMMouseActivate(var Message: TMessage); message WM_MOUSEACTIVATE;
   protected
     procedure WndProc(var Message: TMessage); override;
+    procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
+    procedure MouseUp  (Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
   public
     Clicked: boolean;
     procedure Click; override;
@@ -55,6 +57,7 @@ type
     FShowMonthBtns,
     FUseCurrentDate,
     FShowSelectAlways,
+    FAllowChangeMonth,
     FShowCurrentDate: boolean;
 
     FDate,
@@ -71,7 +74,6 @@ type
     FAnimated: boolean;
     function GetCellText   (ACol, ARow: Integer): string;
     function GetDayNum     (ACol, ARow: Integer): integer;
-    function GetCellDate   (ACol, ARow: Integer): TDateTime;
     function GetDateElement(Index: Integer): Integer;
 
     function IsWeekend(ACol, ARow: Integer): Boolean;
@@ -88,6 +90,7 @@ type
     procedure SetStartOfWeek   (Value: TCalDayOfWeek);
     procedure SetDateElement   (Index: Integer; Value: Integer);
 
+    procedure SetAllowChangeMonth(const Value: boolean);
     procedure SetShowTitle       (const Value: boolean);
     procedure SetShowCurrentDate (const Value: boolean);
     procedure SetShowWeeks       (const Value: boolean);
@@ -99,7 +102,7 @@ type
     procedure SetMinDate         (const Value: TDateTime);
   protected
     PopMenu: TPopupMenu;
-    FMonthOffset:  Integer;
+    FMonthOffset: Integer;
     procedure PrevMonthBtnClick(Sender: TObject);
     procedure NextMonthBtnClick(Sender: TObject);
     procedure PrevYearBtnClick (Sender: TObject);
@@ -112,9 +115,9 @@ type
     procedure UpdateNavBtns;
     procedure Change;
     function DaysThisMonth: Integer;
-    function ThisDayNum(ACol, ARow: integer): integer;
+    function ThisDayNum (ACol, ARow: integer): integer;
     procedure ChangeMonth(Delta: Integer; AllowAnimation: boolean = False);
-    procedure ChangeYear(Delta: Integer; AllowAnimation: boolean = False);
+    procedure ChangeYear (Delta: Integer; AllowAnimation: boolean = False);
   public
     FGrid: TsCalendGrid;
     FDragBar: TsDragBar;
@@ -123,14 +126,17 @@ type
     constructor Create(AOwner: TComponent); override;
     procedure CreateWnd; override;
     procedure Loaded; override;
+    function MousePosToDate(X, Y: Integer): TDateTime;
     function IsValidDate(Date: TDateTime): boolean;
     procedure NextMonth;
     procedure NextYear;
     procedure PrevMonth;
     procedure PrevYear;
     procedure UpdateCalendar;
-    property CellText[ACol, ARow: Integer]: string read GetCellText;
     procedure WndProc(var Message: TMessage); override;
+    function GetCellDate(ACol, ARow: Integer): TDateTime;
+    property CellDate[ACol, ARow: Integer]: TDateTime read GetCellDate;
+    property CellText[ACol, ARow: Integer]: string read GetCellText;
     property OnDrawDay: TGetCellParams read FOnDrawDay write FOnDrawDay;
     property MaxDate: TDateTime read FMaxDate write SetMaxDate;
     property MinDate: TDateTime read FMinDate write SetMinDate;
@@ -145,6 +151,7 @@ type
 {$ENDIF} // NOTFORHELP
     property OnChange: TNotifyEvent read FOnChange write FOnChange;
     property OnGetCellParams: TGetCellParams read FOnGetCellParams write FOnGetCellParams;
+    property AllowChangeMonth: boolean read FAllowChangeMonth write SetAllowChangeMonth default True;
     property Animated: boolean read FAnimated write FAnimated default True;
     property CalendarDate: TDateTime read FDate write SetCalendarDate stored StoreCalendarDate;
     property Day: Integer index 3 read GetDateElement write SetDateElement stored False;
@@ -175,7 +182,7 @@ uses
   ExtCtrls,
   {$IFDEF DELPHI6UP} DateUtils, {$ENDIF}
   {$IFDEF LOGGED} sDebugMsgs, {$ENDIF}
-  sSkinProps, sSkinManager, sPopupClndr, sVclUtils, sToolEdit;
+  sSkinProps, sSkinManager, sPopupClndr, sVclUtils, sToolEdit, sStyleSimply;
 
 
 function WeekNum(const TDT: TDateTime): Word;
@@ -225,12 +232,13 @@ begin
   FDragBar.Align := alTop;
   FDragBar.Top := -1;
   FAnimated := True;
+  FAllowChangeMonth := True;
 
   sp := TsPanel.Create(Self);
   with sp do begin
     Align := alTop;
     Height := 3;
-    sp.Skindata.SkinSection := s_CheckBox;
+    sp.Skindata.SkinSection := s_Transparent;
     Caption := '';
     BevelOuter := bvNone;
     Parent := Self;
@@ -313,7 +321,7 @@ begin
   DayNum := ThisDayNum(ACol, ARow);
   Y := Year;
   M := Month;
-  if (DayNum < 1) then begin
+  if DayNum < 1 then begin
     if M = 1 then begin // Get previous month
       dec(Y);
       M := 12;
@@ -324,7 +332,7 @@ begin
     Result := EncodeDate(Y, M, DaysPerMonth(Y, M) + DayNum);
   end
   else
-    if (DayNum > DaysThisMonth) then begin
+    if DayNum > DaysThisMonth then begin
       inc(M);
       if M > 12 then begin
         inc(Y);
@@ -397,6 +405,9 @@ begin
   if (FDate <> Value) and IsValidDate(Value) then begin
 {$IFDEF DELPHI7UP}
     DecodeDate(Value, Y, M, D);
+    if not FAllowChangeMonth and ((Y <> Year) or (M <> Month)) then
+      Exit;
+
     if not TryEncodeDate(Y, M, D, FDate) then
       Exit;
 {$ENDIF}
@@ -432,7 +443,7 @@ var
   DayNum, Y, M: integer;
 begin
   DayNum := ThisDayNum(ACol, ARow);
-  if (DayNum < 1) then begin
+  if DayNum < 1 then begin
     Y := Year;
     M := Month;
     if ARow <= 2 then begin
@@ -457,7 +468,7 @@ begin
     end;
   end
   else
-    if (DayNum > DaysThisMonth) then
+    if DayNum > DaysThisMonth then
       Result := DayNum - DaysThisMonth
     else
       Result := DayNum;
@@ -562,39 +573,41 @@ var
   OldBmp: TBitmap;
 {$ENDIF}
 begin
-  DecodeDate(FDate, AYear, AMonth, ADay);
-  CurDay := ADay;
-  if Delta > 0 then
-    ADay := DaysPerMonth(AYear, AMonth)
-  else
-    ADay := 1;
-
-  NewDate := EncodeDate(AYear, AMonth, ADay);
-  NewDate := NewDate + Delta;
-  DecodeDate(NewDate, AYear, AMonth, ADay);
-
-  if DaysPerMonth(AYear, AMonth) > CurDay then
-    ADay := CurDay
-  else
-    ADay := DaysPerMonth(AYear, AMonth);
-{$IFDEF DELPHI7UP}
-  if TryEncodeDate(AYear, AMonth, ADay, NewDate) then
-{$ENDIF}
-  begin
-{$IFDEF DELPHI6UP}
-    if FAnimated and AllowAnimation and ((SkinData.SkinManager = nil) or SkinData.SkinManager.Effects.AllowAnimation) then begin
-      OldBmp := CreateBmp32(FGrid);
-      FGrid.PaintTo(OldBmp.Canvas, 0, 0);
-
-      SendMessage(FGrid.Handle, WM_SETREDRAW, 0, 0);
-      CalendarDate := EncodeDate(AYear, AMonth, ADay);
-      SendMessage(FGrid.Handle, WM_SETREDRAW, 1, 0);
-
-      DoChangeAnimated(Delta > 0, OldBmp);
-    end
+  if FAllowChangeMonth then begin
+    DecodeDate(FDate, AYear, AMonth, ADay);
+    CurDay := ADay;
+    if Delta > 0 then
+      ADay := DaysPerMonth(AYear, AMonth)
     else
+      ADay := 1;
+
+    NewDate := EncodeDate(AYear, AMonth, ADay);
+    NewDate := NewDate + Delta;
+    DecodeDate(NewDate, AYear, AMonth, ADay);
+
+    if DaysPerMonth(AYear, AMonth) > CurDay then
+      ADay := CurDay
+    else
+      ADay := DaysPerMonth(AYear, AMonth);
+{$IFDEF DELPHI7UP}
+    if TryEncodeDate(AYear, AMonth, ADay, NewDate) then
+{$ENDIF}
+    begin
+{$IFDEF DELPHI6UP}
+      if FAnimated and AllowAnimation and ((SkinData.SkinManager = nil) or SkinData.SkinManager.Effects.AllowAnimation) then begin
+        OldBmp := CreateBmp32(FGrid);
+        FGrid.PaintTo(OldBmp.Canvas, 0, 0);
+
+        FGrid.Perform(WM_SETREDRAW, 0, 0);
+        CalendarDate := EncodeDate(AYear, AMonth, ADay);
+        FGrid.Perform(WM_SETREDRAW, 1, 0);
+
+        DoChangeAnimated(Delta > 0, OldBmp);
+      end
+      else
 {$ENDIF} // DELPHI6UP
-      CalendarDate := EncodeDate(AYear, AMonth, ADay);
+        CalendarDate := EncodeDate(AYear, AMonth, ADay);
+    end;
   end;
 end;
 
@@ -638,7 +651,7 @@ begin
 {$ELSE}
     FirstDate := EncodeDate(AYear, AMonth, 1);
 {$ENDIF}
-    FMonthOffset := 2 - ((DayOfWeek(FirstDate) - (FirstDay + 1) + 7) mod 7);
+    FMonthOffset := 2 - (DayOfWeek(FirstDate) - (FirstDay + 1) + 7) mod 7;
     if FMonthOffset in [1, 2] then
       FMonthOffset := FMonthOffset - 7;
 
@@ -738,6 +751,21 @@ begin
       for i := 0 to 3 do
         FBtns[i].Width := Size.cx + 10;
     end;
+  end;
+end;
+
+
+procedure TsMonthCalendar.SetAllowChangeMonth(const Value: boolean);
+begin
+  if FAllowChangeMonth <> Value then begin
+    FAllowChangeMonth := Value;
+    UpdateNavBtns;
+    if Value then
+      FDragBar.Cursor := crHandPoint
+    else
+      FDragBar.Cursor := Cursor;
+
+    Invalidate;
   end;
 end;
 
@@ -878,14 +906,18 @@ begin
   Result := FMonthOffset + ACol - Integer(ShowWeeks) + (ARow - 1) * 7;
 end;
 
+
 procedure TsMonthCalendar.TitleClick(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 var
   P: TPoint;
 begin
-  MakePopup;
-  P := acMousePos;
-  PopMenu.PopupComponent := Self;
-  PopMenu.Popup(P.X, P.Y);
+  if FAllowChangeMonth then begin
+    MakePopup;
+    P := acMousePos;
+    PopMenu.PopupComponent := Self;
+    PopMenu.Popup(P.X, P.Y);
+    PopMenu.PopupComponent := nil;
+  end;
 end;
 
 
@@ -955,10 +987,10 @@ end;
 
 procedure TsMonthCalendar.UpdateNavBtns;
 begin
-  FBtns[0].Visible := ShowYearBtns;
-  FBtns[1].Visible := ShowMonthBtns;
-  FBtns[2].Visible := ShowMonthBtns;
-  FBtns[3].Visible := ShowYearBtns;
+  FBtns[0].Visible := FAllowChangeMonth and ShowYearBtns;
+  FBtns[1].Visible := FAllowChangeMonth and ShowMonthBtns;
+  FBtns[2].Visible := FAllowChangeMonth and ShowMonthBtns;
+  FBtns[3].Visible := FAllowChangeMonth and ShowYearBtns;
 end;
 
 
@@ -988,14 +1020,25 @@ begin
 end;
 
 
+function TsMonthCalendar.MousePosToDate(X, Y: Integer): TDateTime;
+var
+  ACol, ARow: integer;
+begin
+  if not PtInRect(FGrid.BoundsRect, Point(X, Y)) then
+    Result := 0
+  else begin
+    FGrid.MouseToCell(X - FGrid.Left, Y - FGrid.Top, ACol, ARow);
+    Result := GetCellDate(ACol, ARow);
+  end;
+end;
+
+
 function TsMonthCalendar.IsValidDate(Date: TDateTime): boolean;
 begin
-  Result := True;
-  if (MinDate <> 0) and (Date < MinDate) then
-    Result := False;
-
-  if (MaxDate <> 0) and (Date > MaxDate) then
-    Result := False;
+  if ((MinDate <> 0) and (Date < MinDate)) or ((MaxDate <> 0) and (Date > MaxDate)) then
+    Result := False
+  else
+    Result := True;
 end;
 
 
@@ -1010,13 +1053,17 @@ begin
       TheCellText := FOwner.CellText[Col, Row];
       if TheCellText <> '' then begin
         DayNum := FOwner.ThisDayNum(Col, Row);
-        if DayNum < 1 then
-          FOwner.PrevMonth
-        else
-          if DayNum > FOwner.DaysThisMonth then
-            FOwner.NextMonth;
+        if FOwner.FAllowChangeMonth or ((DayNum >= 1) and (DayNum <= FOwner.DaysThisMonth)) then begin
+          if DayNum < 1 then
+            FOwner.PrevMonth
+          else
+            if DayNum > FOwner.DaysThisMonth then
+              FOwner.NextMonth;
 
-        FOwner.Day := StrToInt(TheCellText);
+          FOwner.Day := StrToInt(TheCellText);
+        end
+        else
+          FOwner.UpdateCalendar;
       end;
     end;
     if Assigned(FOwner.OnClick) then
@@ -1107,9 +1154,9 @@ begin
       Canvas.Brush.Style := bsSolid;
       Canvas.Pen.Style := psClear;
       if FOwner.SkinData.Skinned then
-        Canvas.Brush.Color := MixColors(FOwner.WeekendColor, FOwner.SkinData.SkinManager.GetGlobalColor, 0.3)
+        Canvas.Brush.Color := BlendColors(FOwner.WeekendColor, FOwner.SkinData.SkinManager.GetGlobalColor, 77)
       else
-        Canvas.Brush.Color := MixColors(FOwner.WeekendColor, ColortoRGB(clBtnFace), 0.3);
+        Canvas.Brush.Color := BlendColors(FOwner.WeekendColor, ColortoRGB(clBtnFace), 77);
 
       Canvas.RoundRect(R.Left, R.Top, R.Right, R.Bottom, 8, 8);
       Canvas.Font.Color := clWhite;
@@ -1130,7 +1177,7 @@ begin
               Canvas.Font.Style := [fsBold];
 
             if Skinned and Assigned(SkinManager) then
-              Canvas.Font.Color := MixColors(SkinManager.GetGlobalFontColor, SkinManager.GetGlobalColor, 0.3)
+              Canvas.Font.Color := BlendColors(SkinManager.GetGlobalFontColor, SkinManager.GetGlobalColor, 77)
             else
               Canvas.Font.Color := clGrayText;
 
@@ -1157,23 +1204,25 @@ begin
         DayNum := FOwner.ThisDayNum(ACol, ARow);
         if (DayNum <= 0) or (DayNum > FOwner.DaysThisMonth) then
           if FOwner.SkinData.Skinned then
-            Canvas.Font.Color := MixColors(Canvas.Font.Color, FOwner.SkinData.SkinManager.GetGlobalColor, 0.5)
+            Canvas.Font.Color := BlendColors(Canvas.Font.Color, FOwner.SkinData.SkinManager.GetGlobalColor, 127)
           else
-            Canvas.Font.Color := MixColors(ColorToRGB(Canvas.Font.Color), ColorToRGB(FOwner.Color), 0.5);
+            Canvas.Font.Color := BlendColors(ColorToRGB(Canvas.Font.Color), ColorToRGB(FOwner.Color), 127);
       end;
     end;
-    if (gdSelected in AState) then begin
+    if gdSelected in AState then begin
       if TheText = '' then
         Exit;
 
       Canvas.Font.Style := [fsBold];
       InflateRect(R, -2, -2);
-      dec(R.Top, 1);
+      dec(R.Top);
       inc(R.Left);
       if not IsToday then
         if FOwner.SkinData.Skinned then begin
-          FillDC(Canvas.Handle, R, FOwner.SkinData.SkinManager.GetHighLightColor);
-          Canvas.Font.Color := FOwner.SkinData.SkinManager.GetHighLightFontColor;
+          PaintItem(FOwner.SkinData.SkinManager.ConstData.Sections[ssSelection], BGInfoToCI(@BGInfo),
+                    True, integer(Focused or FOwner.Focused), R, Point(0, 0), Canvas.Handle);
+
+          Canvas.Font.Color := FOwner.SkinData.SkinManager.GetHighLightFontColor(Focused or FOwner.Focused);
         end
         else begin
           FillDC(Canvas.Handle, R, clHighlight);
@@ -1199,17 +1248,18 @@ begin
         end;
       end;
       if not FOwner.IsValidDate(d) then
-        Canvas.Font.Color := MixColors(ColorToRGB(Canvas.Font.Color), ColorToRGB(Canvas.Brush.Color), 0.3);
+        Canvas.Font.Color := BlendColors(ColorToRGB(Canvas.Font.Color), ColorToRGB(Canvas.Brush.Color), 77);
     end;
     Canvas.TextRect(ARect, ARect.Left + (ARect.Right - ARect.Left - Canvas.TextWidth(TheText)) div 2,
                     ARect.Top + (ARect.Bottom - ARect.Top - Canvas.TextHeight(TheText)) div 2, TheText);
 
-    if (gdSelected in AState) and (Canvas.Brush.Style <> bsSolid) and Focused then begin
-      InflateRect(R, 1, 1);
-      Canvas.Brush.Style := bsClear;
-      Canvas.Pen.Style := psClear;
-      DrawFocusRect(Canvas.Handle, R);
-    end;
+    if not FOwner.SkinData.Skinned then
+      if (gdSelected in AState) and (Canvas.Brush.Style <> bsSolid) and Focused then begin
+        InflateRect(R, 1, 1);
+        Canvas.Brush.Style := bsClear;
+        Canvas.Pen.Style := psClear;
+        DrawFocusRect(Canvas.Handle, R);
+      end;
   end;
 end;
 
@@ -1334,14 +1384,14 @@ end;
 
 procedure TsCalendGrid.Paint;
 begin
-  if not (csDestroying in ComponentState) and not (csLoading in ComponentState) then
+  if [csDestroying, csLoading] * ComponentState = [] then
     inherited;
 end;
 
 
 function TsCalendGrid.SelectCell(ACol, ARow: Integer): Boolean;
 begin
-  if ((not FOwner.FUpdating) and FOwner.FReadOnly) or (FOwner.CellText[ACol, ARow] = '') then
+  if not FOwner.FUpdating and FOwner.FReadOnly or (FOwner.CellText[ACol, ARow] = '') then
     Result := False
   else
     Result := inherited SelectCell(ACol, ARow);
@@ -1350,7 +1400,10 @@ end;
 
 procedure TsCalendGrid.WMMouseActivate(var Message: TMessage);
 begin
-  Message.Result := MA_NOACTIVATE;
+  if FOwner.Parent is TsPopupCalendar then
+    Message.Result := MA_NOACTIVATE
+  else
+    inherited;
 end;
 
 
@@ -1364,14 +1417,14 @@ end;
 {$HINTS OFF}
 type
   TAccessStdGrid = class(TCustomControl)
-    private
-      FAnchor:        TGridCoord;
-      FBorderStyle:   TBorderStyle;
-      FCanEditModify: Boolean;
-      FColCount:      Longint;
-      FColWidths,
-      FTabStops:      Pointer;
-      FCurrent:       TGridCoord;
+  private
+    FAnchor:        TGridCoord;
+    FBorderStyle:   TBorderStyle;
+    FCanEditModify: Boolean;
+    FColCount:      Longint;
+    FColWidths,
+    FTabStops:      Pointer;
+    FCurrent:       TGridCoord;
   end;
 {$ENDIF}
 
@@ -1383,6 +1436,9 @@ var
   BGInfo: TacBGInfo;
   SaveIndex, X, Y: integer;
 begin
+{$IFDEF LOGGED}
+  AddToLog(Message);
+{$ENDIF}
   case Message.Msg of
     WM_ERASEBKGND, CM_MOUSEENTER, CM_MOUSELEAVE, WM_MOUSEMOVE:
       ;
@@ -1391,7 +1447,7 @@ begin
       inherited;
       if Assigned(FOwner.OnDblClick) and (csDoubleClicks in FOwner.ControlStyle) then
         if FOwner.Parent is TsPopupCalendar then begin
-          if (TsPopupCalendar(FOwner.Parent).FEditor = nil) then
+          if TsPopupCalendar(FOwner.Parent).FEditor = nil then
             FOwner.OnDblClick(FOwner)
         end
         else
@@ -1423,39 +1479,39 @@ begin
       end;
     end;
 
-    WM_LBUTTONDOWN:
-//      if FOwner.Parent is TsPopupCalendar then begin
+    WM_LBUTTONDOWN: begin
+      if not (FOwner.Parent is TsPopupCalendar) then
+        inherited
+      else
         if FOwner.Parent.Visible then
           if not Clicked then begin
             Clicked := True;
             MouseToCell(TWMMouse(Message).XPos, TWMMouse(Message).YPos, X, Y);
             if not FOwner.ShowWeeks or (X > 0) then
               if (Y > 0) and FOwner.IsValidDate(FOwner.GetCellDate(X, Y)) then begin // If not a day name
-{$IFDEF DELPHI6UP}
+  {$IFDEF DELPHI6UP}
                 FocusCell(X, Y, False);
-{$ELSE}
+  {$ELSE}
                 TAccessStdGrid(Self).FCurrent.X := X;
                 TAccessStdGrid(Self).FCurrent.Y := Y;
                 Click;
-{$ENDIF}
+  {$ENDIF}
                 Invalidate;
               end;
 
             Clicked := False;
           end;
-{      end
-      else
-        inherited;}
+      end;
 
     WM_LBUTTONUP: begin
       inherited;
-      if (FOwner.Parent is TsPopupCalendar) then
+      if FOwner.Parent is TsPopupCalendar then
         if FOwner.Parent.Visible and not Clicked then begin
           Clicked := True;
           TsPopupCalendar(FOwner.Parent).CalendarClick;
           Clicked := False;
         end;
-    end;
+    end
 
     else
       inherited;
@@ -1463,12 +1519,28 @@ begin
 end;
 
 
+procedure TsCalendGrid.MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+begin
+  inherited;
+  if Assigned(FOwner.OnMouseDown) then
+    FOwner.OnMouseDown(FOwner, Button, Shift, X + Left, Y + Top);
+end;
+
+
+procedure TsCalendGrid.MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+begin
+  inherited;
+  if Assigned(FOwner.OnMouseUp) then
+    FOwner.OnMouseUp(FOwner, Button, Shift, X + Left, Y + Top);
+end;
+
+
 procedure TsMonthCalendar.DoChangeAnimated(ForwDirection: boolean; OldBmp: TBitmap);
 var
-  Position: Integer;
-  FPos: real;
   CacheBmp, NewBmp: TBitmap;
+  Position: Integer;
   lTicks: DWord;
+  FPos: real;
   DC: hdc;
 begin
   NewBmp := CreateBmp32(FGrid);
@@ -1513,26 +1585,28 @@ var
   NewDate: TDateTime;
 {$ENDIF}
 begin
-  if IsLeapYear(Year) and (Month = 2) and (Day = 29) then
-    Day := 28;
+  if FAllowChangeMonth then begin
+    if IsLeapYear(Year) and (Month = 2) and (Day = 29) then
+      Day := 28;
 
 {$IFDEF DELPHI7UP}
-  if TryEncodeDate(Year + Delta, Month, Day, NewDate) then
+    if TryEncodeDate(Year + Delta, Month, Day, NewDate) then
 {$ENDIF}
 {$IFDEF DELPHI6UP}
-    if FAnimated and AllowAnimation and ((SkinData.SkinManager = nil) or SkinData.SkinManager.Effects.AllowAnimation) then begin
-      OldBmp := CreateBmp32(FGrid);
-      FGrid.PaintTo(OldBmp.Canvas, 0, 0);
+      if FAnimated and AllowAnimation and ((SkinData.SkinManager = nil) or SkinData.SkinManager.Effects.AllowAnimation) then begin
+        OldBmp := CreateBmp32(FGrid);
+        FGrid.PaintTo(OldBmp.Canvas, 0, 0);
 
-      SendMessage(FGrid.Handle, WM_SETREDRAW, 0, 0);
-      Year := Year + Delta;
-      SendMessage(FGrid.Handle, WM_SETREDRAW, 1, 0);
+        FGrid.Perform(WM_SETREDRAW, 0, 0);
+        Year := Year + Delta;
+        FGrid.Perform(WM_SETREDRAW, 1, 0);
 
-      DoChangeAnimated(Delta > 0, OldBmp);
-    end
-    else
+        DoChangeAnimated(Delta > 0, OldBmp);
+      end
+      else
 {$ENDIF} // DELPHI6UP
-      Year := Year + Delta;
+        Year := Year + Delta;
+  end;
 end;
 
 
