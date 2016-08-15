@@ -121,10 +121,13 @@ begin
           dateToSqlString(ToDate),
 
           dateToSqlString(FromDate),
+          dateToSqlString(ToDate),
+
+          dateToSqlString(FromDate),
           dateToSqlString(ToDate)
          ]);
 
-//    copytoclipboard(s);
+    copytoclipboard(s);
 //    debugmessage(s);
 
     grdOccupancy.RowCount := 3 + (4 * ABS(ORD(OccupancyViewType = ovtAdvanced)));

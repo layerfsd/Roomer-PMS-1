@@ -6,7 +6,7 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, sMemo, sComboBox, Vcl.Buttons, sSpeedButton,
   sCheckBox, sEdit, sLabel, sGroupBox, Vcl.ComCtrls, sPageControl, sButton, Vcl.ExtCtrls, sPanel,
-  hData, cxClasses, cxPropertiesStore;
+  hData, cxClasses, cxPropertiesStore, ufrmPaymentReqRoomtypeGroup;
 
 type
   TFrmRoomClassEdit = class(TForm)
@@ -65,7 +65,6 @@ type
     edtdefAvailability: TsEdit;
     edtdefMinStay: TsEdit;
     edtdefMaxAvailability: TsEdit;
-    cbxAutoChargeCreditcards: TsCheckBox;
     sLabel3: TsLabel;
     edtPackage: TsEdit;
     sSpeedButton1: TsSpeedButton;
@@ -115,8 +114,7 @@ type
     edtdefMaxStay: TsEdit;
     cbxDefClosedToArrival: TsCheckBox;
     cbxDefClosedToDeparture: TsCheckBox;
-    edtPrepaidPercentage: TsEdit;
-    sLabel31: TsLabel;
+    btnAutocharge: TsButton;
     procedure cbxconnectRateToMasterRateValueChanged(Sender: TObject);
     procedure cbxconnectSingleUseRateToMasterRateValueChanged(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -134,7 +132,7 @@ type
     procedure FormCreate(Sender: TObject);
     procedure edtTopClassChange(Sender: TObject);
     procedure sButton1Click(Sender: TObject);
-    procedure cbxAutoChargeCreditcardsClick(Sender: TObject);
+    procedure btnAutochargeClick(Sender: TObject);
   private
     { Private declarations }
     zData : recRoomTypeGroupHolder;
@@ -192,9 +190,9 @@ begin
   end;
 end;
 
-procedure TFrmRoomClassEdit.cbxAutoChargeCreditcardsClick(Sender: TObject);
+procedure TFrmRoomClassEdit.btnAutochargeClick(Sender: TObject);
 begin
-  edtPrepaidPercentage.Enabled := cbxAutoChargeCreditcards.Checked;
+  if EditPaymentRequirements(edtCode.Text) then ;
 end;
 
 procedure TFrmRoomClassEdit.cbxconnectRateToMasterRateValueChanged(Sender: TObject);
@@ -228,7 +226,7 @@ begin
   edtDetailedDescriptionHtml.Lines.Text := zData.DetailedDescriptionHtml;
   edtTopClass.Text := zData.TopClass;
   edtdefRate.Text := FloatToStr(zData.defRate);
-  edtPrepaidPercentage.Text := FloatToStr(zData.prepaidPercentage);
+//  edtPrepaidPercentage.Text := FloatToStr(zData.prepaidPercentage);
   edtdefAvailability.Text := inttostr(zData.defAvailability);
   cbxdefStopSale.Checked := zData.defStopSale;
   edtdefMinStay.Text := inttostr(zData.defMinStay);
@@ -237,8 +235,8 @@ begin
   cbxDefClosedToDeparture.Checked := zData.defClosedToDeparture;
   edtdefMaxAvailability.Text := inttostr(zData.defMaxAvailability);
   cbxNonRefundable.Checked := zData.NonRefundable;
-  cbxAutoChargeCreditcards.Checked := zData.AutoChargeCreditcards;
-  cbxAutoChargeCreditcardsClick(nil);
+//  cbxAutoChargeCreditcards.Checked := zData.AutoChargeCreditcards;
+//  cbxAutoChargeCreditcardsClick(nil);
   edtRateExtraBed.Text := FloatToStr(zData.RateExtraBed);
   cbxsendAvailability.Checked := zData.sendAvailability;
   cbxsendRate.Checked := zData.sendRate;
@@ -362,7 +360,7 @@ begin
   zData.DetailedDescriptionHtml := edtDetailedDescriptionHtml.Lines.Text;
   zData.TopClass := edtTopClass.Text;
   zData.defRate := _StrToFloat(edtdefRate.Text);
-  zData.prepaidPercentage := _StrToFloat(edtPrepaidPercentage.Text);
+//  zData.prepaidPercentage := _StrToFloat(edtPrepaidPercentage.Text);
 
   zData.defAvailability := strToInt(edtdefAvailability.Text);
   zData.defStopSale := cbxdefStopSale.Checked;
@@ -372,7 +370,7 @@ begin
   zData.defClosedToDeparture := cbxDefClosedToDeparture.Checked;
   zData.defMaxAvailability := strToInt(edtdefMaxAvailability.Text);
   zData.NonRefundable := cbxNonRefundable.Checked;
-  zData.AutoChargeCreditcards := cbxAutoChargeCreditcards.Checked;
+//  zData.AutoChargeCreditcards := cbxAutoChargeCreditcards.Checked;
   zData.RateExtraBed := _StrToFloat(edtRateExtraBed.Text);
   zData.sendAvailability := cbxsendAvailability.Checked;
   zData.sendRate := cbxsendRate.Checked;

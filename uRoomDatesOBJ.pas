@@ -40,7 +40,7 @@ type
     constructor Create(Filter, SortOn : string);
     destructor Destroy; override;
 
-    function getFromDB(DateFrom, dateTo : Tdate) : integer;
+    function getFromDB(DateFrom, dateTo : Tdate; skipCancelledBookings : Boolean) : integer;
     function Refresh(Filter, SortOn : string) : integer;
 
     property Filter : string read FFilter write FFilter;
@@ -168,7 +168,7 @@ begin
   FSortOn := SortOn;
 end;
 
-function TRoomDates.getFromDB(DateFrom, dateTo : Tdate) : integer;
+function TRoomDates.getFromDB(DateFrom, dateTo : Tdate; skipCancelledBookings : Boolean) : integer;
 var
 //  s : string;
   rSet : TRoomerDataSet;
@@ -204,7 +204,7 @@ begin
     rSet := CreateNewDataSet;
 
     try
-      rrOBJ.getListFromDBViaDates(DateFrom, DateTo, rSet);
+      rrOBJ.getListFromDBViaDates(DateFrom, DateTo, rSet, skipCancelledBookings);
 //      rSet.CommandType := cmdText;
 //      rSet.CommandText := s;
 //      rSet.open;

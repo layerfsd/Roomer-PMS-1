@@ -52,7 +52,7 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
         Color = clWhite
         EditMask = '!99/99/9999;1; '
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = clBlack
+        Font.Color = 4473924
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -75,7 +75,7 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
         Color = clWhite
         EditMask = '!99/99/9999;1; '
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = clBlack
+        Font.Color = 4473924
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -120,7 +120,7 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
         VerticalAlignment = taAlignTop
         Color = clWhite
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = clBlack
+        Font.Color = 4473924
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -159,7 +159,7 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
         VerticalAlignment = taAlignTop
         Color = clWhite
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = clBlack
+        Font.Color = 4473924
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -203,13 +203,15 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
       TabOrder = 3
       SkinData.SkinSection = 'GROUPBOX'
       Checked = False
+      ExplicitLeft = 355
+      ExplicitTop = -4
       DesignSize = (
         810
         125)
       object btnsetUseStatusAsDefault: TsButton
-        Left = 626
+        Left = 491
         Top = 85
-        Width = 80
+        Width = 147
         Height = 33
         Anchors = [akTop, akRight]
         Caption = 'Set Default'
@@ -219,9 +221,9 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
         SkinData.SkinSection = 'BUTTON'
       end
       object btnGetUseStatusAsDefault: TsButton
-        Left = 711
+        Left = 644
         Top = 85
-        Width = 80
+        Width = 147
         Height = 33
         Anchors = [akTop, akRight]
         Caption = 'Get Default'
@@ -242,8 +244,8 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
         object chkExcluteWaitingList: TsCheckBox
           Left = 14
           Top = 17
-          Width = 77
-          Height = 19
+          Width = 74
+          Height = 17
           Caption = 'Waitinglist'
           Checked = True
           State = cbChecked
@@ -255,8 +257,8 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
         object chkExcluteAlotment: TsCheckBox
           Left = 14
           Top = 34
-          Width = 73
-          Height = 19
+          Width = 70
+          Height = 17
           Caption = 'Allotment'
           Checked = True
           State = cbChecked
@@ -268,8 +270,8 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
         object chkExcluteOrder: TsCheckBox
           Left = 14
           Top = 51
-          Width = 83
-          Height = 19
+          Width = 80
+          Height = 17
           Caption = 'Not Arrived'
           Checked = True
           State = cbChecked
@@ -281,8 +283,8 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
         object chkExcluteNoShow: TsCheckBox
           Left = 244
           Top = 34
-          Width = 69
-          Height = 19
+          Width = 66
+          Height = 17
           Caption = 'No show'
           Checked = True
           State = cbChecked
@@ -294,8 +296,8 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
         object chkExcluteDeparted: TsCheckBox
           Left = 134
           Top = 17
-          Width = 73
-          Height = 19
+          Width = 70
+          Height = 17
           Caption = 'Departed'
           Checked = True
           State = cbChecked
@@ -307,8 +309,8 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
         object chkExcluteBlocked: TsCheckBox
           Left = 244
           Top = 17
-          Width = 64
-          Height = 19
+          Width = 61
+          Height = 17
           Caption = 'Blocked'
           TabOrder = 5
           SkinData.SkinSection = 'CHECKBOX'
@@ -318,8 +320,8 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
         object chkExcluteGuest: TsCheckBox
           Left = 134
           Top = 34
-          Width = 56
-          Height = 19
+          Width = 53
+          Height = 17
           Caption = 'Guest'
           Checked = True
           State = cbChecked
@@ -342,8 +344,8 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
         object chkExcluteWaitingListNoRooms: TsCheckBox
           Left = 14
           Top = 17
-          Width = 77
-          Height = 19
+          Width = 74
+          Height = 17
           Caption = 'Waitinglist'
           Checked = True
           State = cbChecked
@@ -355,8 +357,8 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
         object chkExcluteAlotmentNoRooms: TsCheckBox
           Left = 14
           Top = 34
-          Width = 73
-          Height = 19
+          Width = 70
+          Height = 17
           Caption = 'Allotment'
           Checked = True
           State = cbChecked
@@ -368,8 +370,8 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
         object chkExcluteOrderNorooms: TsCheckBox
           Left = 14
           Top = 49
-          Width = 83
-          Height = 19
+          Width = 80
+          Height = 17
           Caption = 'Not Arrived'
           Checked = True
           State = cbChecked
@@ -381,8 +383,8 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
         object chkExcluteNoShowNoRooms: TsCheckBox
           Left = 246
           Top = 34
-          Width = 69
-          Height = 19
+          Width = 66
+          Height = 17
           Caption = 'No show'
           Checked = True
           State = cbChecked
@@ -394,8 +396,8 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
         object chkExcluteDepartedNoRooms: TsCheckBox
           Left = 134
           Top = 17
-          Width = 73
-          Height = 19
+          Width = 70
+          Height = 17
           Caption = 'Departed'
           Checked = True
           State = cbChecked
@@ -407,8 +409,8 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
         object chkExcluteBlockedNoRooms: TsCheckBox
           Left = 246
           Top = 17
-          Width = 64
-          Height = 19
+          Width = 61
+          Height = 17
           Caption = 'Blocked'
           TabOrder = 5
           SkinData.SkinSection = 'CHECKBOX'
@@ -418,8 +420,8 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
         object chkExcluteGuestNoRooms: TsCheckBox
           Left = 134
           Top = 34
-          Width = 56
-          Height = 19
+          Width = 53
+          Height = 17
           Caption = 'Guest'
           Checked = True
           State = cbChecked
@@ -432,8 +434,8 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
       object chkStatistics: TsCheckBox
         Left = 17
         Top = 90
-        Width = 251
-        Height = 19
+        Width = 248
+        Height = 17
         Caption = 'Only use rooms marked to be used in Statistics'
         Checked = True
         State = cbChecked
@@ -456,8 +458,10 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
     object SheetMainResult: TsTabSheet
       Caption = 'Pivot Result'
       OnShow = SheetMainResultShow
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Panel1: TPanel
         Left = 240
         Top = 0
@@ -483,8 +487,10 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
             SkinData.SkinSection = 'PAGECONTROL'
             object sTabSheet2: TsTabSheet
               Caption = 'Result'
-              SkinData.CustomColor = False
-              SkinData.CustomFont = False
+              ExplicitLeft = 0
+              ExplicitTop = 0
+              ExplicitWidth = 0
+              ExplicitHeight = 0
               object pg001: TcxDBPivotGrid
                 Left = 0
                 Top = 43
@@ -505,8 +511,6 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
                 OptionsView.FilterFields = False
                 OptionsView.RowFields = False
                 TabOrder = 0
-                ExplicitTop = 45
-                ExplicitHeight = 268
                 object pg001dtDate: TcxDBPivotGridField
                   Area = faRow
                   AreaIndex = 0
@@ -657,8 +661,8 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
                   AlignWithMargins = True
                   Left = 406
                   Top = 4
-                  Width = 3
-                  Height = 35
+                  Width = 4
+                  Height = 13
                   Align = alLeft
                   Caption = '-'
                   ParentFont = False
@@ -668,7 +672,6 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
                   Font.Height = -11
                   Font.Name = 'Tahoma'
                   Font.Style = []
-                  ExplicitLeft = 323
                 end
                 object btnPivgrRequestsExcel: TsButton
                   AlignWithMargins = True
@@ -683,7 +686,6 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
                   TabOrder = 0
                   OnClick = btnPivgrRequestsExcelClick
                   SkinData.SkinSection = 'BUTTON'
-                  ExplicitTop = 2
                 end
                 object btnpivgrRequestsPrint: TsButton
                   AlignWithMargins = True
@@ -719,8 +721,10 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
             end
             object sTabSheet3: TsTabSheet
               Caption = 'Graph'
-              SkinData.CustomColor = False
-              SkinData.CustomFont = False
+              ExplicitLeft = 0
+              ExplicitTop = 0
+              ExplicitWidth = 0
+              ExplicitHeight = 0
               object cxGrid: TcxGrid
                 Left = 0
                 Top = 0
@@ -755,6 +759,7 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
           HotZoneClassName = 'TcxMediaPlayer8Style'
           AlignSplitter = salTop
           Control = Panel5
+          ExplicitWidth = 8
         end
         object Panel6: TPanel
           Left = 1
@@ -772,8 +777,6 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
             Align = alClient
             TabOrder = 0
             LookAndFeel.NativeStyle = False
-            ExplicitTop = 46
-            ExplicitHeight = 234
             object tvDrill001: TcxGridDBTableView
               Navigator.Buttons.CustomButtons = <>
               DataController.DataSource = Dril001DS
@@ -908,7 +911,7 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
             VerticalAlignment = taAlignTop
             Color = clWhite
             Font.Charset = DEFAULT_CHARSET
-            Font.Color = clBlack
+            Font.Color = 4473924
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
@@ -932,7 +935,6 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
             ParentFont = False
             TabOrder = 1
             SkinData.SkinSection = 'BUTTON'
-            ExplicitTop = 34
           end
         end
         object gbxCustomization: TsGroupBox
@@ -950,8 +952,6 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
           TabOrder = 1
           SkinData.SkinSection = 'GROUPBOX'
           Checked = False
-          ExplicitTop = 237
-          ExplicitHeight = 396
         end
         object panLayoutShowMore: TsPanel
           Left = 1
@@ -962,7 +962,6 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
           TabOrder = 2
           Visible = False
           SkinData.SkinSection = 'PANEL'
-          ExplicitTop = 70
           DesignSize = (
             230
             167)
@@ -1003,8 +1002,6 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
             Caption = 'Create'
             TabOrder = 0
             SkinData.SkinSection = 'BUTTON'
-            ExplicitTop = 126
-            ExplicitHeight = 37
           end
           object edLayoutName: TsEdit
             Left = 4
@@ -1014,7 +1011,7 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
             Anchors = [akLeft, akTop, akRight]
             Color = clWhite
             Font.Charset = DEFAULT_CHARSET
-            Font.Color = clBlack
+            Font.Color = 4473924
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
@@ -1034,8 +1031,6 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
             Caption = 'Update'
             TabOrder = 2
             SkinData.SkinSection = 'BUTTON'
-            ExplicitTop = 126
-            ExplicitHeight = 37
           end
           object cxButton1: TsButton
             AlignWithMargins = True
@@ -1048,8 +1043,6 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
             Caption = 'Delete'
             TabOrder = 3
             SkinData.SkinSection = 'BUTTON'
-            ExplicitTop = 126
-            ExplicitHeight = 37
           end
           object memLayoutNotes: TsMemo
             Left = 4
@@ -1059,7 +1052,7 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
             Anchors = [akLeft, akTop, akRight]
             Color = clWhite
             Font.Charset = DEFAULT_CHARSET
-            Font.Color = clBlack
+            Font.Color = 4473924
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
@@ -1072,8 +1065,10 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
     end
     object sTabSheet4: TsTabSheet
       Caption = 'Data'
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object sPanel6: TsPanel
         Left = 0
         Top = 0
@@ -1262,7 +1257,6 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
     end
     object prLinkGrDrill: TdxGridReportLink
       Component = grDrill
-      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.GrayShading = True
@@ -1275,7 +1269,6 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
       PrinterPage.PageSize.Y = 297000
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
-      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       BuiltInReportLink = True
     end
   end

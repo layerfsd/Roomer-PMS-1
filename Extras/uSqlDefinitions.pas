@@ -18,10 +18,12 @@ const HOTEL_PERFORMANCE_QUERY_BETWEEN_DATES = 'SELECT ADate, RoomsSold/RoomCount
          '       AVG(RoomRate * cu.AValue) AS ADR, ' +
          '       COUNT(rd.id) AS RoomsSold, rd1.OOO ' +
          'FROM roomsdate rd ' +
+         '     LEFT JOIN rooms ro ON ro.Room = rd.Room ' +
+         '     JOIN reservations re ON re.Reservation=rd.Reservation ' +
          '     JOIN (SELECT pdd.date AS ADate, (SELECT COUNT(rd1.id) AS OOO ' +
          '                                      FROM  roomsdate rd1 ' +
          '                                      JOIN reservations r ON r.Reservation = rd1.Reservation AND outOfOrderBlocking = 1 ' +
-         '                                      WHERE rd1.ADate=pdd.date) AS OOO ' +
+         '                                      WHERE rd1.ADate=pdd.date AND NOT (rd1.ResFlag IN (''X'',''C'',''N'',''Z'',''O''))) AS OOO ' +
          '		       FROM predefineddates pdd ' +
          '           WHERE (pdd.date >= ''%s'' ' +
          '           AND pdd.date <= ''%s'')) rd1 ON rd1.ADate=rd.ADate, ' +
@@ -35,12 +37,9 @@ const HOTEL_PERFORMANCE_QUERY_BETWEEN_DATES = 'SELECT ADate, RoomsSold/RoomCount
          '     ) rm ' +
          'WHERE (rd.ADate>=''%s'' AND rd.ADate<=''%s'') ' +
          'AND (NOT rd.ResFlag IN (''X'',''C'',''N'',''W'',''Z'',''O'')) ' +
-         'AND ((SUBSTR(rd.Room, 1, 1)=''<'') OR ((SELECT WildCard FROM rooms WHERE Room=rd.Room LIMIT 1)=0) ' +
-         '    AND  ((SELECT Hidden FROM rooms WHERE Room=rd.Room LIMIT 1)=0) ' +
-         '    AND  ((SELECT Active FROM rooms WHERE Room=rd.Room LIMIT 1)=1) ' +
-         '    AND  ((SELECT Statistics FROM rooms WHERE Room=rd.Room LIMIT 1)=1)) ' +
+         'AND ((SUBSTR(rd.Room, 1, 1)=''<'')  OR ((NOT ISNULL(ro.Room)) AND ro.WildCard=0 AND ro.Hidden=0 AND ro.Active=1 AND ro.Statistics=1)) ' +
          'AND cu.Currency=rd.Currency ' +
-         'AND ((SELECT outOfOrderBlocking FROM reservations WHERE Reservation=rd.Reservation LIMIT 1) = 0) ' +
+         'AND re.outOfOrderBlocking = 0 ' +
          'GROUP BY rd.ADate) totals ' +
 
          'UNION ALL ' +
@@ -58,16 +57,15 @@ const HOTEL_PERFORMANCE_QUERY_BETWEEN_DATES = 'SELECT ADate, RoomsSold/RoomCount
          '       0 AS Revenue, ' +
          '       0 AS ADR, ' +
          '       0 AS RoomsSold ' +
-         'FROM predefineddates pdd, ' +
-         '     (SELECT COUNT(id) AS RoomCount ' +
+         'FROM predefineddates pdd ' +
+         '     LEFT JOIN (SELECT rd.ADate, rd.ResFlag FROM roomsdate rd WHERE (rd.ADate >= ''%s'' ' +
+         '        AND rd.ADate <= ''%s'')) ex ON pdd.date = ex.ADate AND (NOT ex.ResFlag IN (''X'' , ''C'', ''N'', ''W'', ''Z'', ''O'')), ' +
+         '    (SELECT COUNT(id) AS RoomCount ' +
          '      FROM rooms r ' +
          '      WHERE WildCard=0 AND Hidden=0 AND Active=1 AND Statistics=1' +
-//Changed HJ 2016-01-11
-         // '      WHERE WildCard=0 AND Hidden=0 AND Active=1' +
-
          '     ) rm ' +
          'WHERE (pdd.date>=''%s'' AND pdd.date<=''%s'') ' +
-         'AND ISNULL((SELECT rd.ADate FROM roomsdate rd WHERE rd.Adate=pdd.date AND (NOT rd.ResFlag IN (''X'',''C'',''N'',''W'',''Z'',''O'')) LIMIT 1)) ' +
+         '  AND ISNULL(ex.ADate) ' +
          'GROUP BY pdd.date) totals ' +
 
          'ORDER BY ADate';
@@ -1550,6 +1548,7 @@ select_RoomReservationOBJ_RoomReservation_getFromDB : string =
 '     , reservations.Customer '+
 '     , reservations.Channel '+
 '     , reservations.Name As CustomerName '+
+'     , (SELECT COUNT(id) FROM persons p WHERE p.RoomReservation=roomreservations.RoomReservation) AS NumGuests '+
 ' FROM '+
 '   roomreservations '+
 '   RIGHT OUTER JOIN '+
@@ -2453,6 +2452,7 @@ select_telLog_refresh : string =
     ' , (SELECT AuthValue FROM stafftypes WHERE StaffType=sm.StaffType2) AuthValue3 '+
     ' , (SELECT AuthValue FROM stafftypes WHERE StaffType=sm.StaffType3) AuthValue4 '+
     ' , (SELECT AuthValue FROM stafftypes WHERE StaffType=sm.StaffType4) AuthValue5 '+
+    ' , IFNULL((SELECT id FROM home100.hotelservices WHERE service=''3P'' AND active=1 AND hotelId=SUBSTR(DATABASE(), 9, 5)), 0) AS stays3PId '+
     'FROM staffmembers sm, control co '+
     'WHERE '+
     '(Initials =  %s ) ';

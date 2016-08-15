@@ -726,6 +726,7 @@ type
     dxBarButton6: TdxBarButton;
     btnRptDepartures: TdxBarLargeButton;
     dxRptStockitems: TdxBarLargeButton;
+    btnHideCancelledBookings: TdxBarLargeButton;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
@@ -1027,6 +1028,7 @@ type
     procedure grOneDayRoomsGetCellPrintColor(Sender: TObject; ARow, ACol: Integer; AState: TGridDrawState;
       ABrush: TBrush; AFont: TFont);
     procedure dxRptStockitemsClick(Sender: TObject);
+    procedure btnHideCancelledBookingsClick(Sender: TObject);
 
   private
     FReservationsModel: TReservationsModel;
@@ -1151,6 +1153,8 @@ type
 
     PeriodViewSelectedCol: integer;
     PeriodViewSelectedRow: integer;
+
+    AppIsClosing : Boolean;
 
     procedure OnRefreshMessagesRequest(var Msg: TMessage); message WM_REFRESH_MESSAGES;
     procedure Open_RR_EdForm(_grid: TAdvStringGrid);
@@ -2814,6 +2818,7 @@ var
 begin
   FormShowing := false;
   FOffLineMode := false;
+  AppIsClosing := False;
   OneDayGridFont := nil;
   FMessagesBeingDownloaded := false;
   StaffComm := nil;
@@ -2906,6 +2911,7 @@ begin
 
   btnShowHideStatClick(nil);
   btnShowHideHintClick(nil);
+  btnHideCancelledBookingsClick(nil);
 
   dxRibbon1.ActiveTab := rbTabHome;
 
@@ -3041,6 +3047,9 @@ begin
       btnShowHideStatClick(btnShowHideStat);
     // if btnShowHideHint.Down then
     // btnShowHideHintClick(btnShowHideHint);
+//    if btnHideCancelledBookings.Down then
+//       btnHideCancelledBookings(nil);
+
 
     if cbxViewTypes.ItemIndex < 0 then
       cbxViewTypes.ItemIndex := 0;
@@ -3881,7 +3890,6 @@ end;
 
 procedure TfrmMain.FormCloseQuery(Sender: TObject; var CanClose: boolean);
 begin
-
   if LoginCancelled OR FRBEMode OR not FAlreadyIn then
   begin
     CanClose := true;
@@ -3904,6 +3912,7 @@ begin
 {$IFNDEF DEBUG}
   timHalt.Enabled := CanClose;
 {$ENDIF}
+  AppIsClosing := CanClose;
 end;
 
 procedure TfrmMain.ShowHintWindow;
@@ -4069,6 +4078,7 @@ var
   lRoom: TRoomObject;
 
 begin
+  if AppIsClosing then exit;
   lastDate := 0;
   grOneDayRooms.BeginUpdate;
   try
@@ -4094,7 +4104,7 @@ begin
         iOldRow := grOneDayRooms.row;
 
         lDate := dtDate.Date;
-        FReservationsModel.Execute(lDate, lDate + 1, rsAll);
+        FReservationsModel.Execute(lDate, lDate + 1, rsAll, btnHideCancelledBookings.Down);
 
         ziFreeRackRoomCount := 0;
 
@@ -4261,6 +4271,9 @@ begin
       dateToSqlString(now + cbxStatDay.ItemIndex),
 
       dateToSqlString(now + cbxStatDay.ItemIndex),
+      dateToSqlString(now + cbxStatDay.ItemIndex),
+
+      dateToSqlString(now + cbxStatDay.ItemIndex),
       dateToSqlString(now + cbxStatDay.ItemIndex)
       ]);
     // CopyToClipboard(s);
@@ -4302,6 +4315,7 @@ begin
   end;
   StartTimeMeasure;
   BusyRefreshingTodaysGrid := true;
+  Screen.Cursor := crHourGlass;
   try
 
     UpdatePanelText;
@@ -4323,6 +4337,7 @@ begin
     end;
 
   finally
+    Screen.Cursor := crDefault;
     BusyRefreshingTodaysGrid := false;
     EndTimeMeasure;
   end;
@@ -4555,7 +4570,7 @@ begin
         if FReservationsModel.Reservations[i].Rooms[l].RoomNumber = RoomNumber then
         begin
           // if ReservationsModel.Reservations[ i ].Rooms[ l ].ResStatus = rsReservations then begin
-          if FReservationsModel.Reservations[i].Rooms[l].GuestCount > 0 then
+          if FReservationsModel.Reservations[i].Rooms[l].GuestNameCount > 0 then
           begin
             iRoom := l;
             iRes := i;
@@ -4609,7 +4624,7 @@ begin
         if FReservationsModel.Reservations[i].Rooms[l].RoomNumber = RoomNumber then
         begin
           // if ReservationsModel.Reservations[ i ].Rooms[ l ].ResStatus = rsReservations then begin
-          if FReservationsModel.Reservations[i].Rooms[l].GuestCount > 0 then
+          if FReservationsModel.Reservations[i].Rooms[l].GuestNameCount > 0 then
           begin
             result := FReservationsModel.Reservations[i].Rooms[l].Guests[0].GuestName;
             break;
@@ -5370,7 +5385,7 @@ begin
     _Name := FReservationsModel.Reservations[_idxReservation].name;
     if Not _NoRoom then
       _Name := Format('[%s] %s', [_Room, FReservationsModel.Reservations[_idxReservation].name]);
-    if FReservationsModel.Reservations[_idxReservation].Rooms[_idxRoomReservation].GuestCount > 0 then
+    if FReservationsModel.Reservations[_idxReservation].Rooms[_idxRoomReservation].GuestNameCount > 0 then
       _Guest := FReservationsModel.Reservations[_idxReservation].Rooms[_idxRoomReservation].Guests[0].GuestName;
     _ColorId := FReservationsModel.Reservations[_idxReservation].Rooms[_idxRoomReservation].colorId;
     _ColorValue := FReservationsModel.Reservations[_idxReservation].Rooms[_idxRoomReservation].CodedColor;
@@ -5698,6 +5713,7 @@ var
   ii: Integer;
 
 begin
+  if AppIsClosing then exit;
 
   FreeRoomsFilterOn := FreeRoomsFiltered;
   PrepareFilterOrSearchDisplay(FreeRoomsFilterOn);
@@ -6022,7 +6038,7 @@ begin
       s := s + aRoom.RoomNumber + ',' + aRoom.RoomType + ',' + aRoom.PriceType + ',' + aRoom.Currency + ',' +
         DateToStr(aRoom.Arrival) + ',' +
         DateToStr(aRoom.Departure) + ',' + aRoom.PMInfo + ',';
-      for I1 := 0 to aRoom.GuestCount - 1 do
+      for I1 := 0 to aRoom.GuestNameCount - 1 do
         s := s + aRoom.Guests[I1].GuestName + ',' + aRoom.Guests[I1].FirstName + ',' + aRoom.Guests[I1].SurName + ',' +
           aRoom.Guests[I1].Address1 + ',' +
           aRoom.Guests[I1].Address2 + ',' + aRoom.Guests[I1].Address3 + ',' + aRoom.Guests[I1].Address4 + ',' +
@@ -6383,6 +6399,7 @@ var
   iReservation, iRoom: integer;
   Rect: TRect;
 begin
+  if AppIsClosing then exit;
   Rect := grOneDayRooms.CellRect(ACol, ARow);
   X := Rect.Left + 10;
   Y := Rect.Top + 10;
@@ -8040,6 +8057,8 @@ procedure TfrmMain.SetViews(ViewIndex: integer);
 var
   aDate: integer;
 begin
+  Screen.Cursor := crHourGlass;
+  try
   case ViewIndex of
     1:
       begin
@@ -8062,6 +8081,7 @@ begin
         try
           EnterPeriodView;
           AutoSizePeriodColumns;
+          PostMessage(handle, WM_REFRESH_PERIOD_VIEW_BOTTOM_REFRESH, 0, 0);
         finally
           lblLoading.Hide;
         end;
@@ -8087,6 +8107,9 @@ begin
         FrmRateQuery.BeingViewed := true;
         EnterRateQueryView(aDate);
       end;
+  end;
+  finally
+    Screen.Cursor := crDefault;
   end;
 end;
 
@@ -8646,7 +8669,7 @@ begin
 
   rdOBJ := TRoomDates.Create('', '');
   try
-    rdOBJ.getFromDB(fromDate, toDate);
+    rdOBJ.getFromDB(fromDate, toDate, btnHideCancelledBookings.Down);
 
     rdOBJ.qMT_.SortFields := 'Room;rdDate';
     rdOBJ.qMT_.Sort([]);
@@ -9964,8 +9987,15 @@ begin
     begin
       // grNoRooms.Cells[c,r] := 'XX';
       try
-        asc := (grPeriodRooms_NO.Objects[c, r] as TresCell).AscIndex;
-        desc := (grPeriodRooms_NO.Objects[c, r] as TresCell).DescIndex;
+        if Assigned(grPeriodRooms_NO.Objects[c, r]) then
+        begin
+          asc := (grPeriodRooms_NO.Objects[c, r] as TresCell).AscIndex;
+          desc := (grPeriodRooms_NO.Objects[c, r] as TresCell).DescIndex;
+        end else
+        begin
+          asc := 0;
+          desc := 0;
+        end;
       except
         raise;
       end;
@@ -10733,6 +10763,7 @@ begin
   allow := false;
 
   if ACol <> zzSourceCol then
+
     exit;
 
   if (ACol >= grPeriodRooms.FixedCols) and (ARow >= grPeriodRooms.FixedRows) and
@@ -12295,27 +12326,7 @@ end;
 procedure TfrmMain.btnResStatClick(Sender: TObject);
 begin
   UserClickedDxLargeButton(Sender);
-  // Application.CreateForm(TfrmRebuildReservationStats, frmRebuildReservationStats);
-  // try
-  // frmRebuildReservationStats.ShowModal;
-  // finally
-  // frmRebuildReservationStats.free;
-  // end;
-  // exit;
-
-  // Application.CreateForm(TfrmRptResDates, frmrptResDates);
-  // try
-  // frmrptResDates.ShowModal;
-  // finally
-  // freeandnil(frmrptResDates);
-  // end;
-
-  Application.CreateForm(TfrmRptResStatsRooms, frmRptResStatsRooms);
-  try
-    frmRptResStatsRooms.ShowModal;
-  finally
-    freeandNil(frmRptResStatsRooms);
-  end;
+  ShowReservationStatistics;
 end;
 
 procedure TfrmMain.btnReservationNotesClick(Sender: TObject);
@@ -12428,6 +12439,12 @@ procedure TfrmMain.btnRatesClick(Sender: TObject);
 begin
   UserClickedDxLargeButton(Sender);
   _Rates;
+end;
+
+procedure TfrmMain.btnHideCancelledBookingsClick(Sender: TObject);
+begin
+  UserClickedDxLargeButton(Sender);
+  btnRefreshOneDay.Click;
 end;
 
 procedure TfrmMain.btnHideCaptonsClick(Sender: TObject);

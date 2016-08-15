@@ -1,4 +1,4 @@
-    function SystemGetDayGrid(fromDate: TDateTime; toDate: TDateTime; resType : String): String;
+    function SystemGetDayGrid(fromDate: TDateTime; toDate: TDateTime; resType : String; SkipCancelled : Boolean = False): String;
 
     function SystemGetRoomTypeStatus(fromDate: TDateTime; toDate: TDateTime): String;
 

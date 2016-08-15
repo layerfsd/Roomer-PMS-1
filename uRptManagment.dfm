@@ -1,7 +1,7 @@
 object frmRptManagment: TfrmRptManagment
   Left = 0
   Top = 0
-  Caption = 'Statitic'
+  Caption = 'Statistics'
   ClientHeight = 643
   ClientWidth = 1167
   Color = clBtnFace
@@ -198,7 +198,7 @@ object frmRptManagment: TfrmRptManagment
       Left = 306
       Top = 56
       Width = 116
-      Height = 19
+      Height = 17
       Caption = 'Compare last year'
       TabOrder = 3
       Visible = False
@@ -226,8 +226,10 @@ object frmRptManagment: TfrmRptManagment
     SkinData.SkinSection = 'PAGECONTROL'
     object tabStatGrid: TsTabSheet
       Caption = 'Data'
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object sPanel1: TsPanel
         Left = 0
         Top = 0
@@ -276,6 +278,7 @@ object frmRptManagment: TfrmRptManagment
         Align = alClient
         TabOrder = 1
         LookAndFeel.NativeStyle = False
+        ExplicitTop = 41
         object tvStat: TcxGridDBTableView
           Navigator.Buttons.CustomButtons = <>
           DataController.DataSource = StatDS
@@ -440,6 +443,7 @@ object frmRptManagment: TfrmRptManagment
             DataBinding.FieldName = 'revenue'
             PropertiesClassName = 'TcxCurrencyEditProperties'
             OnGetProperties = tvStatsrevenueGetProperties
+            HeaderAlignmentHorz = taRightJustify
             Position.BandIndex = 0
             Position.ColIndex = 1
             Position.RowIndex = 0
@@ -448,7 +452,9 @@ object frmRptManagment: TfrmRptManagment
             Caption = 'Total Discount'
             DataBinding.FieldName = 'totalDiscount'
             PropertiesClassName = 'TcxCurrencyEditProperties'
-            OnGetPropertiesForEdit = tvStatsrevenueGetProperties
+            Properties.Alignment.Horz = taRightJustify
+            OnGetProperties = tvStatsrevenueGetProperties
+            HeaderAlignmentHorz = taRightJustify
             Position.BandIndex = 1
             Position.ColIndex = 1
             Position.RowIndex = 0
@@ -457,7 +463,9 @@ object frmRptManagment: TfrmRptManagment
             Caption = 'Max'
             DataBinding.FieldName = 'maxRate'
             PropertiesClassName = 'TcxCurrencyEditProperties'
-            OnGetPropertiesForEdit = tvStatsrevenueGetProperties
+            Properties.Alignment.Horz = taRightJustify
+            OnGetProperties = tvStatsrevenueGetProperties
+            HeaderAlignmentHorz = taRightJustify
             Position.BandIndex = 1
             Position.ColIndex = 2
             Position.RowIndex = 0
@@ -466,7 +474,9 @@ object frmRptManagment: TfrmRptManagment
             Caption = 'MIN'
             DataBinding.FieldName = 'minRate'
             PropertiesClassName = 'TcxCurrencyEditProperties'
-            OnGetPropertiesForEdit = tvStatsrevenueGetProperties
+            Properties.Alignment.Horz = taRightJustify
+            OnGetProperties = tvStatsrevenueGetProperties
+            HeaderAlignmentHorz = taRightJustify
             Position.BandIndex = 1
             Position.ColIndex = 3
             Position.RowIndex = 0
@@ -475,7 +485,9 @@ object frmRptManagment: TfrmRptManagment
             Caption = 'Average'
             DataBinding.FieldName = 'averageRate'
             PropertiesClassName = 'TcxCurrencyEditProperties'
-            OnGetPropertiesForEdit = tvStatsrevenueGetProperties
+            Properties.Alignment.Horz = taRightJustify
+            OnGetProperties = tvStatsrevenueGetProperties
+            HeaderAlignmentHorz = taRightJustify
             Position.BandIndex = 1
             Position.ColIndex = 4
             Position.RowIndex = 0
@@ -573,7 +585,7 @@ object frmRptManagment: TfrmRptManagment
             Caption = 'ADR'
             DataBinding.FieldName = 'adr'
             PropertiesClassName = 'TcxCurrencyEditProperties'
-            OnGetPropertiesForEdit = tvStatsrevenueGetProperties
+            OnGetProperties = tvStatsrevenueGetProperties
             HeaderHint = 'Average daily rates'
             Position.BandIndex = 0
             Position.ColIndex = 3
@@ -597,8 +609,10 @@ object frmRptManagment: TfrmRptManagment
     end
     object tabGraph: TsTabSheet
       Caption = 'Charts'
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object pageCharts: TsPageControl
         Left = 0
         Top = 0
@@ -610,8 +624,10 @@ object frmRptManagment: TfrmRptManagment
         SkinData.SkinSection = 'PAGECONTROL'
         object tabOcc: TsTabSheet
           Caption = 'OCC'
-          SkinData.CustomColor = False
-          SkinData.CustomFont = False
+          ExplicitLeft = 0
+          ExplicitTop = 0
+          ExplicitWidth = 0
+          ExplicitHeight = 0
           object sPanel2: TsPanel
             Left = 0
             Top = 0

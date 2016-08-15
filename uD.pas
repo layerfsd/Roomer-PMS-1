@@ -3182,6 +3182,8 @@ begin
             g.qRestrictWithdrawalWithoutGuarantee := rSet['RestrictWithdrawalToGuarantee'];
             g.qExpandRoomRentOnInvoice := rSet['ExpandedRoomStayOnInvoice'];
 
+            g.qStayd3pActive := rSet['stays3PId'] > 0;
+
             g.qRoomInvoiceRoomRentIndex := rSet['RoomInvoiceRoomRentIndex'];
             g.qRoomInvoicePosItemIndex := rSet['RoomInvoicePosItemIndex'];
             g.qGroupInvoiceRoomRentIndex := rSet['GroupInvoiceRoomRentIndex'];

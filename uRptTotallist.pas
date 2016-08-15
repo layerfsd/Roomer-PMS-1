@@ -279,6 +279,7 @@ begin
     s := '';
     s := s+' SELECT '#10;
     s := s+'   pd.date AS dtDate '#10;
+    ///ERROR
     s := s+'   ,(SELECT count(rr.id) FROM roomreservations rr INNER JOIN rooms on (rooms.room=rr.room and rooms.wildcard=0 and rooms.active=1)' +
                 ' WHERE (rr.arrival = pd.Date) AND rr.status in ('+sArrival+')) AS roomsArrival '#10;
 

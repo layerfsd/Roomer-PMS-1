@@ -42,8 +42,6 @@ object frmNationalReport3: TfrmNationalReport3
     object sheetNationalStatistics1: TsTabSheet
       Caption = 'Room Nights'
       ImageIndex = 1
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
       ExplicitLeft = 0
       ExplicitTop = 0
       ExplicitWidth = 0
@@ -69,7 +67,6 @@ object frmNationalReport3: TfrmNationalReport3
           TabOrder = 0
           OnClick = btnNationalStatisticsExcelClick
           SkinData.SkinSection = 'BUTTON'
-          ExplicitLeft = 0
         end
         object btnNationalStatisticsReport: TsButton
           AlignWithMargins = True
@@ -84,7 +81,6 @@ object frmNationalReport3: TfrmNationalReport3
           TabOrder = 1
           OnClick = btnNationalStatisticsReportClick
           SkinData.SkinSection = 'BUTTON'
-          ExplicitLeft = 4
         end
       end
       object grNationalStatistics1: TcxGrid
@@ -96,8 +92,6 @@ object frmNationalReport3: TfrmNationalReport3
         BorderStyle = cxcbsNone
         TabOrder = 1
         LookAndFeel.NativeStyle = False
-        ExplicitTop = 49
-        ExplicitHeight = 395
         object tvNationalStatistics1: TcxGridDBTableView
           Navigator.Buttons.CustomButtons = <>
           Navigator.Buttons.First.Visible = True
@@ -223,12 +217,6 @@ object frmNationalReport3: TfrmNationalReport3
     object cxTabSheet1: TsTabSheet
       Caption = 'Guests'
       ImageIndex = 2
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Panel5: TsPanel
         Left = 0
         Top = 0
@@ -277,7 +265,6 @@ object frmNationalReport3: TfrmNationalReport3
           TabOrder = 3
           OnClick = btnExpandAllClick
           SkinData.SkinSection = 'BUTTON'
-          ExplicitLeft = 967
         end
         object btnCollapseAll: TsButton
           AlignWithMargins = True
@@ -291,7 +278,6 @@ object frmNationalReport3: TfrmNationalReport3
           TabOrder = 4
           OnClick = btnCollapseAllClick
           SkinData.SkinSection = 'BUTTON'
-          ExplicitLeft = 833
         end
         object cxButton1: TsButton
           AlignWithMargins = True
@@ -316,8 +302,6 @@ object frmNationalReport3: TfrmNationalReport3
         Align = alClient
         TabOrder = 1
         LookAndFeel.NativeStyle = False
-        ExplicitTop = 33
-        ExplicitHeight = 411
         object tvAllGuests: TcxGridDBTableView
           Navigator.Buttons.CustomButtons = <>
           Navigator.Buttons.First.Visible = True
@@ -525,7 +509,7 @@ object frmNationalReport3: TfrmNationalReport3
         Color = clWhite
         EditMask = '!99/99/9999;1; '
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = clBlack
+        Font.Color = 4473924
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -551,7 +535,7 @@ object frmNationalReport3: TfrmNationalReport3
         Color = clWhite
         EditMask = '!99/99/9999;1; '
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = clBlack
+        Font.Color = 4473924
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -596,7 +580,7 @@ object frmNationalReport3: TfrmNationalReport3
         VerticalAlignment = taAlignTop
         Color = clWhite
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = clBlack
+        Font.Color = 4473924
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -635,7 +619,7 @@ object frmNationalReport3: TfrmNationalReport3
         VerticalAlignment = taAlignTop
         Color = clWhite
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = clBlack
+        Font.Color = 4473924
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -1059,7 +1043,7 @@ object frmNationalReport3: TfrmNationalReport3
           Height = 21
           Color = clWhite
           Font.Charset = DEFAULT_CHARSET
-          Font.Color = clBlack
+          Font.Color = 4473924
           Font.Height = -11
           Font.Name = 'Tahoma'
           Font.Style = []
@@ -1078,7 +1062,7 @@ object frmNationalReport3: TfrmNationalReport3
           Height = 21
           Color = clWhite
           Font.Charset = DEFAULT_CHARSET
-          Font.Color = clBlack
+          Font.Color = 4473924
           Font.Height = -11
           Font.Name = 'Tahoma'
           Font.Style = []
@@ -1097,7 +1081,7 @@ object frmNationalReport3: TfrmNationalReport3
           Height = 21
           Color = clWhite
           Font.Charset = DEFAULT_CHARSET
-          Font.Color = clBlack
+          Font.Color = 4473924
           Font.Height = -11
           Font.Name = 'Tahoma'
           Font.Style = []

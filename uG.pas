@@ -290,6 +290,8 @@ type
     qRestrictWithdrawalWithoutGuarantee : Boolean;
     qExpandRoomRentOnInvoice : Boolean;
 
+    qStayd3pActive : Boolean;
+
     qWarnCheckInDirtyRoom,
     qWarnWhenOverbooking,
     qWarnMoveRoomToNewRoomtype : Boolean;

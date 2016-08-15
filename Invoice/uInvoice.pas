@@ -3776,6 +3776,12 @@ begin
 
 {$ENDREGION}
       end;
+
+      edtCurrency.Text := trim(zrSet.FieldByName('ihCurrency').asString);
+      zCurrentCurrency := edtCurrency.Text;
+      zCurrencyRate := GetRate(zCurrentCurrency);
+      edtRate.Text := floattostr(zCurrencyRate);
+
     end
     else
     begin
@@ -3788,8 +3794,10 @@ begin
       if zrSet.active then
         zrSet.close;
 
-      sql := ' SELECT r.* FROM  reservations r ' +
-        ' WHERE r.Reservation = %d ';
+      sql := 'SELECT r.*, rr.Currency ' +
+             'FROM reservations r ' +
+             'JOIN roomreservations rr ON r.Reservation=rr.Reservation ' +
+             'WHERE r.Reservation = %d ';
 
       sql := format(sql, [FReservation]);
 
@@ -3808,6 +3816,8 @@ begin
         invoiceHeadData.SplitNumber := FnewSplitNumber;
         invoiceHeadData.invoiceNumber := zInvoiceNumber;
         invoiceHeadData.InvoiceDate := _DateToDbDate(zInvoiceDate, false);
+        invoiceHeadData.ihCurrency := zrSet.FieldByName('Currency').asString;
+        invoiceHeadData.ihCurrencyRate := GetRate(zrSet.FieldByName('Currency').asString);
 
         invoiceHeadData.customer := zrSet.FieldByName('Customer').asString;
         invoiceHeadData.name := zrSet.FieldByName('Name').asString;
@@ -3880,11 +3890,11 @@ begin
     RoomRentPaidDays := 0.00;
 
     // Default
-    edtCurrency.Text := zNativeCurrency;
-    zCurrentCurrency := edtCurrency.Text;
-
-    zCurrencyRate := GetRate(zCurrentCurrency);
-    edtRate.Text := floattostr(zCurrencyRate);
+//    edtCurrency.Text := zNativeCurrency;
+//    zCurrentCurrency := edtCurrency.Text;
+//
+//    zCurrencyRate := GetRate(zCurrentCurrency);
+//    edtRate.Text := floattostr(zCurrencyRate);
 
     zRoomRSet.first;
     lExecutionPlan := d.roomerMainDataSet.CreateExecutionPlan;
@@ -3921,10 +3931,10 @@ begin
           end;
         end;
 
-        edtCurrency.Text := trim(zRoomRSet.FieldByName('Currency').asString);
-        zCurrentCurrency := edtCurrency.Text;
-        zCurrencyRate := GetRate(zCurrentCurrency);
-        edtRate.Text := floattostr(zCurrencyRate);
+//        edtCurrency.Text := trim(zRoomRSet.FieldByName('Currency').asString);
+//        zCurrentCurrency := edtCurrency.Text;
+//        zCurrencyRate := GetRate(zCurrentCurrency);
+//        edtRate.Text := floattostr(zCurrencyRate);
       end;
 
       // **
@@ -3934,8 +3944,8 @@ begin
         lRoomReservation := zRoomRSet.FieldByName('Roomreservation').asinteger;
         // package := zRoomRSet.FieldByName('Package').asString;
 
-        Arrival := zRoomRSet.FieldByName('rrArrival').asdateTime;
-        Departure := zRoomRSet.FieldByName('rrDeparture').asdateTime;
+//        Arrival := zRoomRSet.FieldByName('rrArrival').asdateTime;
+//        Departure := zRoomRSet.FieldByName('rrDeparture').asdateTime;
 
         s := 'SELECT '#10;
         s := s + 'rd.ADate, '#10;
@@ -3956,11 +3966,11 @@ begin
         s := s + 'WHERE '#10;
         // s := s + '((rd.roomreservation = %d AND rd.PaidBy=0) OR rd.PaidBy=%d) AND (rd.ADate >= %s ) AND (rd.ADate < %s ) AND (rd.paid=0) '#10;
         // s := s + '(rd.roomreservation = %d) AND (rd.ADate >= %s ) AND (rd.ADate < %s ) AND (rd.paid=0) '#10;
-        s := s + '(rd.roomreservation = %d) AND (rd.paid=0) '#10;
+        s := s + '(rd.roomreservation = %d) AND (rd.paid=0) AND rd.ResFlag NOT IN (''X'') '#10;
         s := s + 'ORDER BY '#10;
         s := s + '  ADate '#10;
         // s := format(s, [RoomReservation, RoomReservation, _DateToDbDate(Arrival, True), _DateToDbDate(Departure, True)]);
-        s := format(s, [lRoomReservation, _DateToDbDate(Arrival, True), _DateToDbDate(Departure, True)]);
+        s := format(s, [lRoomReservation]); //, _DateToDbDate(Arrival, True), _DateToDbDate(Departure, True)]);
 
         copytoclipboard(s);
         // debugmessage(s);
@@ -4193,7 +4203,7 @@ begin
                     floattostr(AvrageDiscount) + '%)';
                 end;
 
-                AddRoom(Room, AvrageRate, Arrival, Departure, UnpaidDays, sText, (FRoomReservation = 0), RoomReservation,
+                AddRoom(Room, AvrageRate, Arrival, Departure, UnpaidDays, sText, (FRoomReservation = 0), lRoomReservation,
                   AvrageDiscount, isPercentage, DiscountText, GuestName, NumberGuests, ChildrenCount, isPackage,
                   RoomReservation);
               end;
@@ -7679,8 +7689,7 @@ begin
     end
     else if (FRoomReservation > 0) then
     begin
-      UpdateCurrencyRoomPrice(FRoomReservation, zCurrentCurrency,
-        NewRate, convert);
+      UpdateCurrencyRoomPrice(FRoomReservation, zCurrentCurrency, NewRate, convert);
       mRoomRates.first;
       while not mRoomRates.eof do
       begin

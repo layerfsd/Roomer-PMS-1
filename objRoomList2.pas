@@ -442,6 +442,8 @@ var
 
 begin
   Clear;
+  RoomCount := 0;
+  if NOT d.roomerMainDataSet.LoggedIn then exit;
 
   glb.ForceTableRefresh;
 

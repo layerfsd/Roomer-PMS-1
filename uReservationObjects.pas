@@ -123,6 +123,7 @@ type
     FInvoiceIndex: Integer;
     FBlockMoveReason: String;
     FReservationObject: TSingleReservations;
+    FGuestCount: integer;
 
     function GetGuestCount : integer;
   public
@@ -164,7 +165,9 @@ type
     property PMInfo : string read FPMInfo write FPMInfo;
     property HiddenInfo : string read FHiddenInfo write FHiddenInfo;
 
-    property GuestCount : integer read GetGuestCount;
+//    property GuestCount : integer read GetGuestCount;
+    property GuestCount : integer read FGuestCount write FGuestCount;
+    property GuestNameCount : integer read GetGuestCount;
 
     property Meeting : integer read FMeeting write FMeeting;
     property TotalNoRent : double read FTotalNorent write FTotalNoRent;
@@ -283,7 +286,7 @@ type
     constructor Create;
     destructor Destroy; override;
     procedure Clear;
-    procedure Execute(_FromDate, _ToDate : TDate; _ReservationStatus : TReservationStatus);
+    procedure Execute(_FromDate, _ToDate : TDate; _ReservationStatus : TReservationStatus; SkipCancelled : Boolean = False);
 
     /// <summary>Enumerate all rooms from all reservations </summary>
     function AllRoomsEnumerator(aFilter: TRoomFilterFunction = nil): TAllRoomsEnumerator;
@@ -481,7 +484,7 @@ end;
 //  result := FReservationList[iIndex];
 //end;
 
-procedure TReservationsModel.Execute(_FromDate, _ToDate : TDate; _ReservationStatus : TReservationStatus);
+procedure TReservationsModel.Execute(_FromDate, _ToDate : TDate; _ReservationStatus : TReservationStatus; SkipCancelled : Boolean = False);
 var
 
   SingleReservations : TSingleReservations;
@@ -513,7 +516,7 @@ begin
     rSet := nil;
 //    if NOT d.roomerMainDataSet.OfflineMode then
       rSet := d.roomerMainDataSet.ActivateNewDataset(d.roomerMainDataSet.SystemGetDayGrid(_FromDate, _ToDate,
-              GetEnumName(TypeInfo(TReservationStatus), integer(_ReservationStatus))));
+              GetEnumName(TypeInfo(TReservationStatus), integer(_ReservationStatus)), SkipCancelled));
 //    else
 //      rSet := d.roomerMainDataSet.ActivateNewDataset(d.GetBackupTodaysGuests);
 
@@ -599,6 +602,7 @@ begin
             RoomObject := TRoomObject.Create(SingleReservations);
             RoomObject.FRoomRes := FieldByName('RoomReservation').asInteger;
             RoomObject.FReservation := FieldByName('Reservation').asInteger;
+            RoomObject.FGuestCount := FieldByName('NumGuests').asInteger;
             RoomObject.FArrival := _DBDateToDate(Trim(FieldByName('RoomArrival').asString));
             RoomObject.FDeparture := _DBDateToDate(Trim(FieldByName('RoomDeparture').asString));
             RoomObject.FRoomNumber := Trim(FieldByName('Room').asString);

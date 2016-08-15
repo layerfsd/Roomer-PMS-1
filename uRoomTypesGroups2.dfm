@@ -116,7 +116,7 @@ object frmRoomTypesGroups2: TfrmRoomTypesGroups2
         Height = 21
         Color = clWhite
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 4473924
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -155,18 +155,15 @@ object frmRoomTypesGroups2: TfrmRoomTypesGroups2
         OnClick = btnEditClick
         SkinData.SkinSection = 'BUTTON'
       end
-      object chkActive: TsCheckBox
+      object chkActive: TCheckBox
         Left = 55
         Top = 63
-        Width = 239
+        Width = 246
         Height = 17
-        Caption = 'Active (if checked then just active are visible'
+        Caption = 'Active (if checked then just active are visible)'
         Checked = True
         State = cbChecked
         TabOrder = 6
-        SkinData.SkinSection = 'CHECKBOX'
-        ImgChecked = 0
-        ImgUnchecked = 0
       end
     end
     object sbMain: TsStatusBar
@@ -228,7 +225,6 @@ object frmRoomTypesGroups2: TfrmRoomTypesGroups2
       Align = alClient
       TabOrder = 3
       LookAndFeel.NativeStyle = False
-      ExplicitTop = 87
       object tvData: TcxGridDBTableView
         OnDblClick = tvDataDblClick
         Navigator.Buttons.CustomButtons = <>

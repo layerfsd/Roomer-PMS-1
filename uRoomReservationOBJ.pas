@@ -41,7 +41,7 @@ TYPE
 
     function getFromDB(RoomReservation: integer): integer;
     function getListFromDB(var list :  TStringlist) : integer;
-    function getListFromDBViaDates(fromDate, toDate : TDateTime; var rExtraSet : TRoomerDataSet) : integer;
+    function getListFromDBViaDates(fromDate, toDate : TDateTime; var rExtraSet : TRoomerDataSet; skipCancelledBookings : Boolean) : integer;
     function Refresh(filter, sortOn : string) : integer;
     function DateOrders(RoomReservation: integer;
                                      Adate: Tdate;
@@ -107,6 +107,7 @@ begin
   qMt_.FieldDefs.Add('GuestName'       , ftString,60);
   qMt_.FieldDefs.Add('PaymentInvoice'  , ftInteger);
   qMt_.FieldDefs.Add('GroupAccount'    , ftBoolean);
+  qMt_.FieldDefs.Add('NumGuests'       , ftInteger);
 
 
   qMt_.CreateTable;
@@ -215,6 +216,7 @@ begin
         qMt_.FieldByName( 'Channel'         ).asInteger  := rSet.FieldByName('Channel').asInteger;
         qMt_.FieldByName( 'CustomerName'    ).asString   := rSet.FieldByName('CustomerName').asString;
         qMt_.FieldByName( 'GuestName'       ).asString   := D.RR_GetFirstGuestName(iRoomReservation);;
+        qMt_.FieldByName( 'NumGuests'       ).asInteger  := rSet.FieldByName('NumGuests').asInteger;
         qMt_.Post;
         rSet.Next;
       end;
@@ -294,6 +296,7 @@ begin
          qMt_.FieldByName( 'Customer'        ).asString   := rSet.FieldByName('Customer').asString;
          qMt_.FieldByName( 'CustomerName'    ).asString   := rSet.FieldByName('CustomerName').asString;
          qMt_.FieldByName( 'GuestName'       ).asString   := rSet.FieldByName('GuestName').asString;
+         qMt_.FieldByName( 'NumGuests'       ).asInteger  := rSet.FieldByName('NumGuests').asInteger;
          qMt_.Post;
          rSet.Next;
        end;
@@ -305,7 +308,7 @@ begin
   refresh(FFilter,FSortOn);
 end;
 
-function TRoomReservation.getListFromDBViaDates(fromDate, toDate : TDateTime; var rExtraSet : TRoomerDataSet) : integer;
+function TRoomReservation.getListFromDBViaDates(fromDate, toDate : TDateTime; var rExtraSet : TRoomerDataSet; skipCancelledBookings : Boolean) : integer;
 var
   RoomReservation   : integer ;
   s    : string;
@@ -331,23 +334,34 @@ begin
       '     , reservations.Channel '+
       '     , reservations.Name As CustomerName '+
       '     , persons.name As GuestName '+
+      '     , (SELECT COUNT(id) FROM persons p WHERE p.RoomReservation=roomreservations.RoomReservation) AS NumGuests '+
       ' FROM '+
       '   roomreservations '+
       '   RIGHT OUTER JOIN '+
       '         reservations ON roomreservations.Reservation = reservations.Reservation '+
-      '   LEFT OUTER JOIN persons ON roomreservations.roomreservation = persons.roomreservation '+
+      '   LEFT OUTER JOIN persons ON roomreservations.roomreservation = persons.roomreservation AND persons.MainName=1'+
       ' WHERE (roomreservations.RoomReservation in ( SELECT DISTINCT '+
       '    RoomReservation '+
       '  FROM  roomsdate '+
       '  WHERE (( ADate >= ''%s'' ) '+
       '   AND (ADate < ''%s'' )) '+
-      '   AND (ResFlag <> '+_db(STATUS_DELETED)+' ) '+ //**zxhj line added
-      '  ORDER BY RoomReservation '+
-      ' ) ) '+
-      'GROUP BY roomreservations.RoomReservation'; // rrList
+      '   AND (ResFlag <> '+_db(STATUS_DELETED)+' ) '; //**zxhj line added
+
+      if skipCancelledBookings then
+        sql := sql +
+               '   AND (ResFlag <> '+_db(STATUS_CANCELLED)+' ) '; //**zxhj line added
+
+
+      sql := sql +
+             '  ORDER BY RoomReservation '+
+             ' ) ) '+
+             'GROUP BY roomreservations.RoomReservation'; // rrList
 
       s := format(sql,[uDateUtils.dateToSqlString(fromDate), uDateUtils.dateToSqlString(toDate)]);
 
+      {$ifdef DEBUG}
+      CopyToClipboard(s);
+      {$endif}
       exePlan.AddQuery(s);
 
       if Assigned(rExtraSet) then
@@ -374,16 +388,16 @@ begin
              '            ) ' +
              '          ) ' +
              ' 	      ) / CurrencyRate) * numNights AS totalTaxes, ' +
-             '    CityTaxInCl, ' +
-             '    taxAmount, ' +
-             '    taxPercentage, ' +
-             '    taxRetaxable, ' +
-             '    taxRoomNight, ' +
-             '    taxGuestNight, ' +
-             '    taxGuest, ' +
-             '    taxBooking, ' +
-             '    taxNettoAmountBased, ' +
-             '    taxBaseAmount, ' +
+//             '    CityTaxInCl, ' +
+//             '    taxAmount, ' +
+//             '    taxPercentage, ' +
+//             '    taxRetaxable, ' +
+//             '    taxRoomNight, ' +
+//             '    taxGuestNight, ' +
+//             '    taxGuest, ' +
+//             '    taxBooking, ' +
+//             '    taxNettoAmountBased, ' +
+//             '    taxBaseAmount, ' +
              '    TotalRent, ' +
              '    Guarantee, ' +
              '    InvoiceIndex, ' +
@@ -401,7 +415,7 @@ begin
              '    Percentage, ' +
              '    PriceType, ' +
              '    Currency, ' +
-             '    CurrencyRate, ' +
+//             '    CurrencyRate, ' +
              '    ItemsOnInvoice ' +
              ' ' +
              'FROM ( ' +
@@ -458,10 +472,12 @@ begin
         s := s + ', rv.invRefrence AS BookingId ';
         s := s + ', rv.Tel2 ';
         s := s + ', rv.Tel1 ';
-        s := s + ', (SELECT count(id) FROM persons WHERE roomreservation=rd.roomreservation LIMIT 1) AS NumGuests ';
-        s := s + ', (SELECT IF(ISNULL((SELECT Name FROM persons WHERE MainName=True AND roomreservation=rd.roomreservation LIMIT 1)), ';
-        s := s + '          (SELECT Name FROM persons WHERE roomreservation=rd.roomreservation ORDER BY person DESC LIMIT 1), ';
-        s := s + '          (SELECT Name FROM persons WHERE MainName=True AND roomreservation=rd.roomreservation LIMIT 1))) AS MainName ';
+        s := s + ', pe.NumPersons AS NumGuests ';
+        s := s + ', pe.Name AS MainName ';
+//        s := s + ', (SELECT count(id) FROM persons WHERE roomreservation=rd.roomreservation LIMIT 1) AS NumGuests ';
+//        s := s + ', IFNULL((SELECT Name FROM persons WHERE MainName=True AND roomreservation=rd.roomreservation LIMIT 1), ';
+//        s := s + '          (SELECT Name FROM persons WHERE roomreservation=rd.roomreservation ORDER BY person DESC LIMIT 1) ';
+//        s := s + '          ) AS MainName ';
         s := s + ', rv.PMInfo ';
         s := s + ', rr.AvrageRate AS Price ';
         s := s + ', rr.Discount AS Discount ';
@@ -471,7 +487,19 @@ begin
         s := s + ', (SELECT id FROM invoicelines WHERE InvoiceNumber=-1 AND roomreservation=rd.roomreservation LIMIT 1) AS ItemsOnInvoice ';
         s := s + '  FROM ';
         s := s + ' roomsdate rd ';
-        s := s + '        JOIN currencies cur ON cur.Currency=rd.Currency ' +
+        s := s + 'LEFT JOIN rooms ro ON ro.Room=rd.Room ' +
+                 'JOIN currencies cur ON cur.Currency=rd.Currency ' +
+                 'JOIN (SELECT COUNT(id) AS NumPersons, ' +
+                 'RoomReservation, ' +
+                 'IF(MainName, Name, '''') AS Name ' +
+                 'FROM ' +
+                 'persons ' +
+                 'WHERE ' +
+                 'RoomReservation IN (SELECT RoomReservation FROM roomsdate rd1 WHERE rd1.ADate>=' +
+                      _DatetoDBDate(fromDate, true) + ' AND rd1.ADate<' + _DatetoDBDate(toDate, true) + ' AND rd1.ResFlag NOT IN (''X'')) ' +
+                 'GROUP BY RoomReservation ' +
+                 'ORDER BY MainName DESC ' +
+                 ') pe ON pe.roomreservation = rd.roomreservation ' +
              'JOIN roomreservations rr ON rr.RoomReservation = rd.RoomReservation ' +
              'JOIN reservations rv ON rv.Reservation = rd.Reservation ' +
              'JOIN customers cu ON cu.Customer=rv.Customer ' +
@@ -486,7 +514,12 @@ begin
         s := s + '  WHERE (( ADate >= ' + _DatetoDBDate(fromDate, true) + ' ) ';
         s := s + '   AND (ADate < ' + _DatetoDBDate(toDate, true) + ' )) ';
         s := s + '   AND (ResFlag <> '+_db(STATUS_DELETED)+' ) '; //**zxhj line added
-        s := s + '   AND (ISNULL((SELECT id FROM rooms WHERE room=rd.room LIMIT 1)) OR (NOT (SELECT hidden FROM rooms WHERE room=rd.room LIMIT 1))) ';
+
+        if skipCancelledBookings then
+          s := s +
+                 '   AND (ResFlag <> '+_db(STATUS_CANCELLED)+' ) ';
+
+        s := s + '   AND (ISNULL(ro.Room) OR NOT ro.Hidden) ';
 
         s := s + '  ORDER BY RoomReservation';
         s := s + ') xxx';
@@ -532,6 +565,7 @@ begin
          qMt_.FieldByName( 'Customer'        ).asString   := rSet.FieldByName('Customer').asString;
          qMt_.FieldByName( 'CustomerName'    ).asString   := rSet.FieldByName('CustomerName').asString;
          qMt_.FieldByName( 'GuestName'       ).asString   := rSet.FieldByName('GuestName').asString;
+         qMt_.FieldByName( 'NumGuests'       ).asInteger  := rSet.FieldByName('NumGuests').asInteger;
          qMt_.Post;
          rSet.Next;
        end;

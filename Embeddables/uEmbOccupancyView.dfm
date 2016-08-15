@@ -33,7 +33,7 @@ object embOccupancyView: TembOccupancyView
       RowCount = 3
       FixedRows = 0
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
+      Font.Color = clBlack
       Font.Height = -16
       Font.Name = 'Segoe UI'
       Font.Style = []
@@ -136,8 +136,6 @@ object embOccupancyView: TembOccupancyView
       SortSettings.DefaultFormat = ssAutomatic
       Version = '7.9.1.1'
       WordWrap = False
-      ExplicitLeft = 2
-      ExplicitTop = 2
     end
   end
 end

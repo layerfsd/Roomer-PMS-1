@@ -446,6 +446,9 @@ end;
 constructor TRoomerDataSet.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
+
+  FLoggedIn := False;
+
   FApplicationID := '';
   FAppSecret := '';
   FAppKey := '';

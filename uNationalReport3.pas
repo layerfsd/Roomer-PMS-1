@@ -556,10 +556,12 @@ begin
   '    INNER JOIN persons ON countries.country = persons.country '#10+
   '    INNER JOIN reservations ON persons.Reservation = reservations.Reservation '#10+
   '    INNER JOIN roomsdate ON persons.RoomReservation = roomsdate.RoomReservation '#10+
-  '    INNER JOIN rooms on (rooms.room=roomsdate.room and rooms.wildcard=0 and rooms.active=1) '#10+
+  ///ERROR Corrected
+//  '    INNER JOIN rooms on (rooms.room=roomsdate.room and rooms.wildcard=0 and rooms.active=1) '#10+
   ' WHERE '#10+
   '   (persons.RoomReservation IN %s )'#10+
-  '      AND (((Resflag in (''G'',''P'',''D'',''O'',''A'')) AND roomsdate.isNoRoom=0) OR ((Resflag in (''G'',''D'')) AND roomsdate.isNoRoom<>0)) '#10+
+  '      AND (((Resflag in (''G'',''P'',''D'',''O'',''A'')) AND (SUBSTR(roomsdate.room, 1, 1) != ''<'')) OR ((Resflag in (''G'',''D'')) AND (SUBSTR(roomsdate.room, 1, 1) = ''<''))) '#10+
+  '      AND (SUBSTR(roomsdate.room, 1, 1) = ''<'' OR NOT ISNULL((SELECT 1 FROM rooms r WHERE r.room=roomsdate.room and r.wildcard=0 and r.active=1 and statistics=1 and hidden=0 LIMIT 1))) '#10+
   ' GROUP BY '#10+
   '   countries.OrderIndex, '#10+
   '   countries.Country, '#10+
@@ -567,6 +569,37 @@ begin
   '   countries.CountryGroup, '#10+
   '   countrygroups.GroupName '#10+
   ' ORDER BY orderIndex DESC ';
+
+
+
+//  'SELECT '#10+
+//  'countries.Country, '#10+
+//  'countries.CountryName, '#10+
+//  'countries.CountryGroup, '#10+
+//  'countries.OrderIndex, '#10+
+//  'countrygroups.GroupName, '#10+
+//  'COUNT(DISTINCT persons.RoomReservation) AS RoomReservationCount, '#10+
+//  'COUNT(persons.ID) AS GuestNights, '#10+
+//  'COUNT(DISTINCT persons.ID) AS GuestCount, '#10+
+//  'COUNT(DISTINCT persons.Reservation) AS ReservationCount '#10+
+//  'FROM '#10+
+//  '  countries '#10+
+//  '    INNER JOIN countrygroups ON countries.countrygroup = countrygroups.CountryGroup '#10+
+//  '    INNER JOIN persons ON countries.country = persons.country '#10+
+//  '    INNER JOIN reservations ON persons.Reservation = reservations.Reservation '#10+
+//  '    INNER JOIN roomsdate ON persons.RoomReservation = roomsdate.RoomReservation '#10+
+//  ' WHERE '#10+
+//  '   (persons.RoomReservation IN %s )'#10+
+//  '      AND (((Resflag in (''G'',''P'',''D'',''O'',''A'')) AND roomsdate.isNoRoom=0) OR ((Resflag in (''G'',''D'')) AND roomsdate.isNoRoom<>0)) '#10+
+//  ' GROUP BY '#10+
+//  '   countries.OrderIndex, '#10+
+//  '   countries.Country, '#10+
+//  '   countries.CountryName, '#10+
+//  '   countries.CountryGroup, '#10+
+//  '   countrygroups.GroupName '#10+
+//  ' ORDER BY orderIndex DESC ';
+
+
 
 
   rSet := CreateNewDataSet;

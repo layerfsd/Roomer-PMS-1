@@ -1278,7 +1278,7 @@ begin
   m_['connectCODToMasterRate'] := zData.connectCODToMasterRate;
   m_['connectLOSToMasterRate'] := zData.connectLOSToMasterRate;
   m_['RATE_PLAN_TYPE'] := zData.RATE_PLAN_TYPE;
-  m_['prepaidPercentage'] := zData.prepaidPercentage;
+//  m_['prepaidPercentage'] := zData.prepaidPercentage;
 end;
 
 procedure TfrmRoomTypesGroups2.btnEditClick(Sender: TObject);
@@ -1295,6 +1295,7 @@ begin
       m_.edit;
       SetEditedValuesIn_M_Dataset;
       m_.Post;
+      fillGridFromDataset(m_Code.AsString);
   end;
 
 end;
