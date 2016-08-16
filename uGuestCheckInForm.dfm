@@ -26,10 +26,10 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
     Align = alClient
     TabOrder = 0
     SkinData.SkinSection = 'PAGECONTROL'
-    ExplicitHeight = 588
     object sTabSheet1: TsTabSheet
       Caption = 'Room 101'
-      ExplicitHeight = 560
+      SkinData.CustomColor = False
+      SkinData.CustomFont = False
       object sPanel1: TsPanel
         Left = 0
         Top = 0
@@ -42,7 +42,6 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
         Padding.Bottom = 5
         TabOrder = 0
         SkinData.SkinSection = 'TRANSPARENT'
-        ExplicitHeight = 560
         object sLabel7: TsLabel
           Left = 6
           Top = 6
@@ -67,9 +66,10 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
           Align = alClient
           TabOrder = 0
           SkinData.SkinSection = 'PAGECONTROL'
-          ExplicitHeight = 523
           object sTabSheet2: TsTabSheet
             Caption = 'Guest Info'
+            SkinData.CustomColor = False
+            SkinData.CustomFont = False
             SkinData.SkinSection = 'TRANSPARENT'
             ExplicitLeft = 8
             ExplicitTop = 19
@@ -139,11 +139,12 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
               Caption = '* City:'
             end
             object lbCountryName: TsLabel
-              Left = 253
-              Top = 477
+              Left = 254
+              Top = 511
               Width = 178
               Height = 13
               AutoSize = False
+              Caption = '-'
             end
             object sLabel13: TsLabel
               Left = 91
@@ -280,16 +281,16 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
               Caption = 'Social security number:'
             end
             object lblMarket: TsLabel
-              Left = 152
+              Left = 147
               Top = 261
-              Width = 32
-              Height = 11
+              Width = 37
+              Height = 13
               Alignment = taRightJustify
               Caption = 'Market:'
               ParentFont = False
               Font.Charset = DEFAULT_CHARSET
               Font.Color = clWindowText
-              Font.Height = -9
+              Font.Height = -11
               Font.Name = 'Tahoma'
               Font.Style = []
             end
@@ -348,7 +349,7 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
               Font.Name = 'Tahoma'
               Font.Style = []
               ParentFont = False
-              TabOrder = 11
+              TabOrder = 12
               SkinData.SkinSection = 'EDIT'
               BoundLabel.Caption = 'test'
             end
@@ -364,7 +365,7 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
               Font.Name = 'Tahoma'
               Font.Style = []
               ParentFont = False
-              TabOrder = 12
+              TabOrder = 13
               SkinData.SkinSection = 'EDIT'
               BoundLabel.Caption = 'test'
             end
@@ -380,7 +381,7 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
               Font.Name = 'Tahoma'
               Font.Style = []
               ParentFont = False
-              TabOrder = 13
+              TabOrder = 14
               SkinData.SkinSection = 'EDIT'
               BoundLabel.Caption = 'test'
             end
@@ -396,7 +397,7 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
               Font.Name = 'Tahoma'
               Font.Style = []
               ParentFont = False
-              TabOrder = 15
+              TabOrder = 16
               OnChange = edLastNameChange
               SkinData.SkinSection = 'EDIT'
               BoundLabel.Caption = 'test'
@@ -407,7 +408,7 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
               Width = 23
               Height = 21
               Caption = '...'
-              TabOrder = 16
+              TabOrder = 17
               OnClick = sButton1Click
               SkinData.SkinSection = 'BUTTON'
             end
@@ -426,7 +427,7 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
               Font.Style = []
               MaxLength = 10
               ParentFont = False
-              TabOrder = 6
+              TabOrder = 7
               Text = '  -  -    '
               Visible = False
               CheckOnExit = True
@@ -446,7 +447,7 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
             end
             object edCity: TsEdit
               Left = 190
-              Top = 481
+              Top = 482
               Width = 241
               Height = 21
               Color = clWhite
@@ -456,7 +457,7 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
               Font.Name = 'Tahoma'
               Font.Style = []
               ParentFont = False
-              TabOrder = 14
+              TabOrder = 15
               OnChange = edLastNameChange
               SkinData.SkinSection = 'EDIT'
               BoundLabel.Caption = 'test'
@@ -473,7 +474,7 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
               Font.Name = 'Tahoma'
               Font.Style = []
               ParentFont = False
-              TabOrder = 8
+              TabOrder = 9
               OnChange = edLastNameChange
               SkinData.SkinSection = 'EDIT'
               BoundLabel.Caption = 'test'
@@ -490,7 +491,7 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
               Font.Name = 'Tahoma'
               Font.Style = []
               ParentFont = False
-              TabOrder = 10
+              TabOrder = 11
               OnChange = edLastNameChange
               SkinData.SkinSection = 'EDIT'
               BoundLabel.Caption = 'test'
@@ -507,7 +508,7 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
               Font.Name = 'Tahoma'
               Font.Style = []
               ParentFont = False
-              TabOrder = 9
+              TabOrder = 10
               OnChange = edLastNameChange
               SkinData.SkinSection = 'EDIT'
               BoundLabel.Caption = 'test'
@@ -535,7 +536,7 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
               Width = 23
               Height = 21
               Caption = '...'
-              TabOrder = 17
+              TabOrder = 6
               OnClick = sButton3Click
               SkinData.SkinSection = 'BUTTON'
             end
@@ -596,9 +597,9 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
             end
             object cbActiveLiveSearch: TsCheckBox
               Left = 190
-              Top = 51
+              Top = 47
               Width = 82
-              Height = 17
+              Height = 19
               Caption = 'Live search'
               TabOrder = 20
               OnClick = cbActiveLiveSearchClick
@@ -647,7 +648,7 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
               Font.Style = []
               ItemIndex = -1
               ParentFont = False
-              TabOrder = 7
+              TabOrder = 8
               OnChange = cbxMarketChange
               Items.Strings = (
                 'Leisure'
@@ -656,6 +657,8 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
           end
           object sTabSheet6: TsTabSheet
             Caption = 'Company'
+            SkinData.CustomColor = False
+            SkinData.CustomFont = False
             object sLabel22: TsLabel
               Left = 11
               Top = 24
@@ -989,7 +992,6 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
         TabOrder = 1
         OnDblClick = sPanel2DblClick
         SkinData.SkinSection = 'TRANSPARENT'
-        ExplicitHeight = 560
         object sLabel8: TsLabel
           Left = 6
           Top = 6
@@ -1211,6 +1213,8 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
           SkinData.SkinSection = 'PAGECONTROL'
           object sTabSheet3: TsTabSheet
             Caption = 'Credit card'
+            SkinData.CustomColor = False
+            SkinData.CustomFont = False
             object sLabel12: TsLabel
               Left = 66
               Top = 69
@@ -1249,6 +1253,8 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
           end
           object sTabSheet4: TsTabSheet
             Caption = 'Cash'
+            SkinData.CustomColor = False
+            SkinData.CustomFont = False
             object sLabel16: TsLabel
               Left = 38
               Top = 21
@@ -1327,9 +1333,13 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
           end
           object sTabSheet5: TsTabSheet
             Caption = 'None'
+            SkinData.CustomColor = False
+            SkinData.CustomFont = False
           end
           object sTabSheet7: TsTabSheet
             Caption = 'Select'
+            SkinData.CustomColor = False
+            SkinData.CustomFont = False
           end
         end
       end
@@ -1343,7 +1353,6 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
     Align = alBottom
     TabOrder = 1
     SkinData.SkinSection = 'PANEL'
-    ExplicitTop = 588
     DesignSize = (
       842
       33)
