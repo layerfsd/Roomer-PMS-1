@@ -7258,7 +7258,7 @@ begin
   s := '';
   s := s + ' UPDATE currencies ' + #10;
   s := s + ' SET ' + #10;
-  s := s + '   , Description =' + _db(theData.Description) + ' ' + #10;
+  s := s + '     Description =' + _db(theData.Description) + ' ' + #10;
   s := s + '   , Avalue =' + _db(theData.Value) + ' ' + #10;
   s := s + '   , Decimals =' + _db(theData.Decimals) + ' ' + #10;
   s := s + '   , DisplayFormat=' + _db(theData.Displayformat) + ' ' + #10;
@@ -7266,6 +7266,7 @@ begin
   s := s + '   , Active =' + _db(theData.active) + ' ' + #10;
   s := s + ' WHERE ' + #10;
   s := s + '   (currency = ' + _db(theData.Currency) + ') ';
+  CopyToClipboard(s);
   result := cmd_bySQL(s);
 end;
 

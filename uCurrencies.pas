@@ -168,6 +168,8 @@ type
     m_decimals: TIntegerField;
     tvDatadisplayformat: TcxGridDBColumn;
     tvDatadecimals: TcxGridDBColumn;
+    m_SellValue: TFloatField;
+    m_CurrencySign: TStringField;
     procedure FormCreate(Sender: TObject);
     procedure btnCancelClick(Sender: TObject);
     procedure btnInsertClick(Sender: TObject);

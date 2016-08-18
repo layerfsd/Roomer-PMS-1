@@ -30,6 +30,7 @@ uses
   , treelist
   , Menus
   , ImgList
+  , Generics.Collections
   , DB
   , dateUtils
 
@@ -107,6 +108,21 @@ uses
   ;
 
   //
+
+type
+
+  TTimeZoneItem = class
+  private
+    FId: Integer;
+    FName : String;
+    FDescription: String;
+  public
+    constructor Create(_Name, _Description : String; _ID : Integer);
+    property Description : String read FDescription write FDescription;
+    property Name : String read FDescription write FDescription;
+    property ID : Integer read FID write FID;
+  end;
+
 
 
 type
@@ -622,7 +638,7 @@ type
     cbxQuery: TsComboBox;
     btnResources: TsButton;
     sLabel18: TsLabel;
-    editTZ: TsComboBox;
+    __editTZ: TsComboBox;
     lblNumShifts: TsLabel;
     edtNumShifts: TsEdit;
     edCurrencySymbol: TsEdit;
@@ -740,8 +756,6 @@ type
 
     financeCustomerList : TKeyPairList;
     financeLookupList : TKeyPairList;
-
-
 
     procedure LoadTable;
     procedure SaveTable;
@@ -1372,14 +1386,14 @@ begin
 
 
   try
-    editTZ.ItemIndex := editTZ.Items.IndexOf(rSethotelconfigurations.FieldByName('UTCTimeZoneOffset').AsString);
+    __editTZ.ItemIndex := __editTZ.Items.IndexOf(rSethotelconfigurations.FieldByName('UTCTimeZoneOffset').AsString);
   except
-    editTZ.ItemIndex := -1;
+    __editTZ.ItemIndex := -1;
   end;
-  if editTZ.ItemIndex = -1 then
+  if __editTZ.ItemIndex = -1 then
   begin
-    iTmp := editTZ.Items.IndexOf('+00:00');
-    editTZ.ItemIndex := iif((itmp >= 0), iTmp, 12);
+    iTmp := __editTZ.Items.IndexOf('UTC');
+    __editTZ.ItemIndex := iif((itmp >= 0), iTmp, 12);
   end;
 
 
@@ -1548,7 +1562,8 @@ end;
 
 procedure TfrmControlData.SaveTable;
 var
-  idx : Integer;
+  idx, idxTZ : Integer;
+  TimeZoneItem : TTimeZoneItem;
   springStartsMonth : integer;
   SummerStartsMonth : integer;
   autumnStartsMonth : integer;
@@ -1985,7 +2000,11 @@ begin
   end;
 
   try
-    rSethotelconfigurations.FieldByName('UTCTimeZoneOffset').AsString := editTZ.Text;
+    TimeZoneItem := nil;
+    if __editTZ.ItemIndex >= 0 then
+      TimeZoneItem := TTimeZoneItem(__editTZ.Items.Objects[__editTZ.ItemIndex]);
+    if Assigned(TimeZoneItem) then
+      rSethotelconfigurations.FieldByName('UTCTimeZoneOffset').AsString := TimeZoneItem.FName;
   except
   end;
 
@@ -2265,6 +2284,26 @@ var
   s : string;
   i : Integer;
   ExecutionPlan : TRoomerExecutionPlan;
+  rSetTimeZones : TRoomerDataSet;
+
+  procedure FillTimeZones;
+  var idxCurrent : Integer;
+      ID : Integer;
+  begin
+    rSetTimeZones.First;
+    if NOT rSetTimeZones.Eof then
+    begin
+      idxCurrent := rSetTimeZones['ID'];
+      while NOT rSetTimeZones.Eof do
+      begin
+        ID := rSetTimeZones['ID'];
+        if rSethotelconfigurations['UTCTimeZoneOffset'] = rSetHotelConfigurations['UTCTimeZoneOffset'] then
+          idxCurrent := ID;
+        __editTZ.Items.AddObject(rSetTimeZones['DESCRIPTION'], TTimeZoneItem.Create(rSetTimeZones['TIME_ZONE'], rSetTimeZones['DESCRIPTION'], ID));
+        rSetTimeZones.Next;
+      end;
+    end;
+  end;
 begin
   RoomerLanguage.TranslateThisForm(self);
   glb.PerformAuthenticationAssertion(self); PlaceFormOnVisibleMonitor(self);
@@ -2301,6 +2340,8 @@ begin
   s := 'SELECT *,(SELECT serviceType FROM home100.hotelservices WHERE hotelId=SUBSTR(DATABASE(), 9, 10) AND service=''RSS_CURR'' AND active=1) AS CurrencyFeedSource FROM hotelconfigurations';
   ExecutionPlan.AddQuery(s);
 
+  ExecutionPlan.AddQuery(select_TimeZones_FormCreate);
+
 
   try
     LoadColors(ExecutionPlan);
@@ -2309,12 +2350,14 @@ begin
   rSet := ExecutionPlan.Results[0];
   r_ := ExecutionPlan.Results[1];
   rSetHotelConfigurations := ExecutionPlan.Results[2];
+  rSetTimeZones := ExecutionPlan.Results[3];
 
 
   rSet.first;
   r_.first;
   rSetHotelConfigurations.First;
   updatePanColor;
+  FillTimeZones;
 end;
 
 procedure TfrmControlData.FormClose(Sender : TObject; var Action : TCloseAction);
@@ -2474,11 +2517,19 @@ begin
 end;
 
 procedure TfrmControlData.FormDestroy(Sender : TObject);
+var
+  i: Integer;
 begin
   gridFont.Free;
   grid5DayFont.Free;
   financeCustomerList.Free;
   financeLookupList.Free;
+  for i := 0 to __editTZ.Items.Count - 1 do
+  begin
+    TTimeZoneItem(__editTZ.Items.Objects[__editTZ.ItemIndex]).Free;
+    __editTZ.Items.Objects[__editTZ.ItemIndex] := nil;
+  end;
+  __editTZ.Items.Clear;
 end;
 
 procedure TfrmControlData.itemLookup(edit : TsComboEdit; lab : TsLabel);
@@ -3809,6 +3860,16 @@ end;
   callMinUnits	int	Checked
   callMinPrice	float	Checked
 *)
+
+{ TTimeZoneItem }
+
+constructor TTimeZoneItem.Create(_Name, _Description: String; _ID: Integer);
+begin
+  inherited Create;
+  FName := _Name;
+  FDescription := _Description;
+  FID := _ID;
+end;
 
 end.
 

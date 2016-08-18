@@ -164,7 +164,7 @@ object frmCurrencies: TfrmCurrencies
         Left = 56
         Top = 65
         Width = 281
-        Height = 19
+        Height = 17
         Caption = 'Active (if checked then just active are visible else all)'
         Checked = True
         State = cbChecked
@@ -242,6 +242,8 @@ object frmCurrencies: TfrmCurrencies
       Align = alClient
       TabOrder = 3
       LookAndFeel.NativeStyle = False
+      ExplicitLeft = -3
+      ExplicitTop = 88
       object tvData: TcxGridDBTableView
         OnDblClick = tvDataDblClick
         Navigator.Buttons.CustomButtons = <>
@@ -365,6 +367,13 @@ object frmCurrencies: TfrmCurrencies
     object m_decimals: TIntegerField
       FieldName = 'decimals'
     end
+    object m_SellValue: TFloatField
+      FieldName = 'SellValue'
+    end
+    object m_CurrencySign: TStringField
+      FieldName = 'CurrencySign'
+      Size = 5
+    end
   end
   object mnuOther: TPopupMenu
     Images = DImages.PngImageList1
@@ -415,7 +424,6 @@ object frmCurrencies: TfrmCurrencies
     object prLink_grData: TdxGridReportLink
       Active = True
       Component = grData
-      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.GrayShading = True
@@ -428,8 +436,7 @@ object frmCurrencies: TfrmCurrencies
       PrinterPage.PageSize.Y = 297000
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
-      ReportDocument.CreationDate = 42571.460104328700000000
-      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
+      ReportDocument.CreationDate = 42597.705107349540000000
       BuiltInReportLink = True
     end
   end

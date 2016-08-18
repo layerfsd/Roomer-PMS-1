@@ -4205,7 +4205,7 @@ begin
 
                 AddRoom(Room, AvrageRate, Arrival, Departure, UnpaidDays, sText, (FRoomReservation = 0), lRoomReservation,
                   AvrageDiscount, isPercentage, DiscountText, GuestName, NumberGuests, ChildrenCount, isPackage,
-                  RoomReservation);
+                  lRoomReservation);
               end;
 
               if (ABS(AvrageRate) = 0) and (status <> 'B') then

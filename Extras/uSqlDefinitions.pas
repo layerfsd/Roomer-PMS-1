@@ -286,7 +286,10 @@ var
 
   //TESTED NOT
   select_ControlData_FormCreate : string =
-  'SELECT * from control ';
+  'SELECT c.* from control c ';
+
+  select_TimeZones_FormCreate : string =
+  'SELECT ID, TIME_ZONE, DESCRIPTION FROM home100.TIME_ZONES ORDER BY DESCRIPTION';
 
   //TESTED NOT
   select_tblInc_All  : string =
@@ -400,9 +403,11 @@ var
   '   ,Currency '+
   '   ,Description '+
   '   ,AValue '+
+  '   ,SellValue '+
   '   ,Active '+
   '   ,displayFormat '+
   '   ,decimals '+
+  '   ,CurrencySign '+
   ' FROM '+
   '   currencies '+
   ' WHERE '+

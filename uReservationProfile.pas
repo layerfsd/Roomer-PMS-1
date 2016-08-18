@@ -834,7 +834,7 @@ procedure TfrmReservationProfile.FormShow(Sender: TObject);
 var
   i: Integer;
 begin
-  _restoreForm(frmReservationProfile);
+  _restoreForm(self);
   enabled := false;
   (tvRoomsStatusText.Properties AS TcxComboBoxProperties).Items.Clear;
   for i := 0 to cbxStatus.Items.Count - 1 do

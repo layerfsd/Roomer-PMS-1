@@ -769,7 +769,7 @@ var
   RoomRentVATCode : string;
   dTmp : double;
 begin
-  _restoreForm(frmRptResStats);
+  _restoreForm(self);
   InitControles;
   GetSel;
 

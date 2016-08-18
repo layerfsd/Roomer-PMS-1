@@ -6410,7 +6410,7 @@ begin
   X := Rect.Left + 10;
   Y := Rect.Top + 10;
 
-  if (Copy(grOneDayRooms.cells[ACol, ARow], 1, 2) = '� ') then
+  if (Copy(grOneDayRooms.cells[ACol, ARow], 1, 2) = char(187) + ' ') then
   begin
     if (X >= Rect.Left + ((Rect.Right - Rect.Left) DIV 2)) then
       Rect.Left := Rect.Left + ((Rect.Right - Rect.Left) DIV 2)
@@ -6434,7 +6434,7 @@ begin
     exit;
   end;
 
-  if (Copy(grOneDayRooms.cells[ACol, ARow], 1, 2) = '� ') and (X < Rect.Left + ((Rect.Right - Rect.Left) div 2)) then
+  if (Copy(grOneDayRooms.cells[ACol, ARow], 1, 2) = char(187) + ' ') and (X < Rect.Left + ((Rect.Right - Rect.Left) div 2)) then
   begin
     iReservation := zOneDayResPointers[ARow].ptrRooms[OneDay_GetIsLeftOrRight(ACol), 1]; // Reservation Index
     iRoom := zOneDayResPointers[ARow].ptrRooms[OneDay_GetIsLeftOrRight(ACol), 2]; // Rooms Index
@@ -6528,7 +6528,7 @@ begin
           APoint.Y := Y;
           APoint := grOneDayRooms.ClientToScreen(APoint);
 
-          if (Copy(grOneDayRooms.cells[ACol, ARow], 1, 2) = '� ') and
+          if (Copy(grOneDayRooms.cells[ACol, ARow], 1, 2) = char(187) + ' ') and
             (X < zOneDay_glbRect.Left + ((zOneDay_glbRect.Right - zOneDay_glbRect.Left) div 2)) then
           begin
             iReservation := zOneDayResPointers[ARow].ptrRooms[OneDay_GetIsLeftOrRight(ACol), 1]; // Reservation Index
@@ -6723,10 +6723,22 @@ begin
 
   zOneDay_bRightClick := Button = mbRight;
   zOneDay_bNewGuest := false;
+
+  MousePoint := Point(X, Y);
+  TAdvStringGrid(Sender).MouseToCell(X, Y, ACol, ARow);
+  if ARow > 0 then
+  begin
+    TAdvStringGrid(Sender).row := ARow;
+    TAdvStringGrid(Sender).col := ACol;
+    if Copy(TAdvStringGrid(Sender).cells[ACol, ARow], 1, 2) = char(187) + ' ' then
+    begin
+      Rect := TAdvStringGrid(Sender).CellRect(ACol, ARow);
+      zOneDay_bNewGuest := (X < Rect.Left + ((Rect.Right - Rect.Left) div 2));
+    end;
+  end;
+
   if zOneDay_bRightClick then
   begin
-    TAdvStringGrid(Sender).MouseToCell(X, Y, ACol, ARow);
-
     if (ACol in [2, 9]) then
     begin
       // --
@@ -6749,19 +6761,7 @@ begin
   end
   else
   begin
-    MousePoint := Point(X, Y);
     FOneDay_bMouseDown := true;
-    TAdvStringGrid(Sender).MouseToCell(X, Y, ACol, ARow);
-    if ARow > 0 then
-    begin
-      TAdvStringGrid(Sender).row := ARow;
-      TAdvStringGrid(Sender).col := ACol;
-      if Copy(TAdvStringGrid(Sender).cells[ACol, ARow], 1, 2) = '� ' then
-      begin
-        Rect := TAdvStringGrid(Sender).CellRect(ACol, ARow);
-        zOneDay_bNewGuest := (X < Rect.Left + ((Rect.Right - Rect.Left) div 2));
-      end;
-    end;
   end;
 end;
 
@@ -10281,7 +10281,7 @@ procedure TfrmMain.GetPriceInfo(rri: RecRRInfo; var CurrencySign: String; var Pr
 var
   discountAmount: Double;
 begin
-  CurrencySign := '�';
+  CurrencySign := '€';
   if rri.Discount <> 0 then
   begin
     if rri.Percentage then
@@ -13732,7 +13732,7 @@ end;
 
 procedure TfrmMain.btnCurrentGuestsReportClick(Sender: TObject);
 begin
-  ShowMessage( { 1096 } 'Ekki tilb�i�');
+  ShowMessage( { 1096 } 'Under construction');
 end;
 
 procedure TfrmMain.__dxBarCombo1CloseUp(Sender: TObject);

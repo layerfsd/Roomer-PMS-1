@@ -498,7 +498,7 @@ end;
 procedure TfrmRptManagment.FormShow(Sender: TObject);
 begin
   //**
-  _restoreForm(frmRptManagment);
+  _restoreForm(self);
   showdata;
 end;
 
