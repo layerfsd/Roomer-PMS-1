@@ -387,7 +387,7 @@ end;
 
 procedure TfrmRptResStatsRooms.FormShow(Sender: TObject);
 begin
-  _restoreForm(frmRptResStatsRooms);
+  _restoreForm(self);
   InitControles;
   pg001.Customization.Site := gbxCustomization;
   gbxCustomization.Visible :=  true;

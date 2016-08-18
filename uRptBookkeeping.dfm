@@ -66,7 +66,7 @@ object frmRptBookkeeping: TfrmRptBookkeeping
         VerticalAlignment = taAlignTop
         Color = clWhite
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 2302755
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -105,7 +105,7 @@ object frmRptBookkeeping: TfrmRptBookkeeping
         VerticalAlignment = taAlignTop
         Color = clWhite
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 2302755
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -164,7 +164,7 @@ object frmRptBookkeeping: TfrmRptBookkeeping
         Color = clWhite
         EditMask = '!99/99/9999;1; '
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 2302755
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -187,7 +187,7 @@ object frmRptBookkeeping: TfrmRptBookkeeping
         Color = clWhite
         EditMask = '!99/99/9999;1; '
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 2302755
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -213,7 +213,7 @@ object frmRptBookkeeping: TfrmRptBookkeeping
       Style = csDropDownList
       Color = clWhite
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = 2302755
+      Font.Color = clBlack
       Font.Height = -11
       Font.Name = 'Tahoma'
       Font.Style = []
@@ -226,8 +226,8 @@ object frmRptBookkeeping: TfrmRptBookkeeping
     object cbIncludeTotals: TsCheckBox
       Left = 8
       Top = 87
-      Width = 117
-      Height = 19
+      Width = 120
+      Height = 17
       Caption = 'Include totals in list'
       Checked = True
       State = cbChecked
@@ -256,12 +256,6 @@ object frmRptBookkeeping: TfrmRptBookkeeping
     SkinData.SkinSection = 'PAGECONTROL'
     object tabStatGrid: TsTabSheet
       Caption = 'Data'
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object sPanel1: TsPanel
         Left = 0
         Top = 0
@@ -408,7 +402,7 @@ object frmRptBookkeeping: TfrmRptBookkeeping
         SearchFooter.HintHighlight = 'Highlight occurrences'
         SearchFooter.MatchCaseCaption = 'Match case'
         SortSettings.DefaultFormat = ssAutomatic
-        Version = '7.9.1.0'
+        Version = '7.9.1.1'
         WordWrap = False
       end
     end
