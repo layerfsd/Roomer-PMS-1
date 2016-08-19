@@ -727,6 +727,8 @@ type
     btnRptDepartures: TdxBarLargeButton;
     dxRptStockitems: TdxBarLargeButton;
     btnHideCancelledBookings: TdxBarLargeButton;
+    barinnFinancials: TdxBar;
+    btnCloseCurrentDay: TdxBarLargeButton;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
@@ -1029,6 +1031,8 @@ type
       ABrush: TBrush; AFont: TFont);
     procedure dxRptStockitemsClick(Sender: TObject);
     procedure btnHideCancelledBookingsClick(Sender: TObject);
+    procedure btnDayClosingTimesClick(Sender: TObject);
+    procedure btnCloseCurrentDayClick(Sender: TObject);
 
   private
     FReservationsModel: TReservationsModel;
@@ -1521,6 +1525,7 @@ type
     procedure RefreshPeriodView;
     procedure FormatToReservationAttrib(aCanvas: TCanvas; const aAttrib: recStatusAttr);
     procedure ClearObjectsFromGrid(aGrid: TAdvStringGrid);
+    procedure DayClosingTimes;
 {$IFDEF USE_JCL}
     procedure LogException(ExceptObj: TObject; ExceptAddr: Pointer; IsOS: boolean);
 {$ENDIF}
@@ -1620,7 +1625,7 @@ uses
     , UITypes
     , Types
     , VCLTee.TeCanvas
-    , uRptStockItems;
+    , uRptStockItems, uDayClosingTimes, uDayClosingTimesAPICaller;
 
 {$R *.DFM}
 {$R Cursors.res}
@@ -11586,6 +11591,25 @@ begin
   _Close;
 end;
 
+procedure CloseFinancialDay;
+var
+  lCaller: TDayClosingTimesAPICaller;
+begin
+  lCaller := TDayClosingTimesAPICaller.Create;
+  try
+    lCaller.CloseRunningDay;
+  finally
+    lCaller.Free;
+  end;
+end;
+
+procedure TfrmMain.btnCloseCurrentDayClick(Sender: TObject);
+begin
+  UserClickedDxLargeButton(Sender);
+  if MessageDlg(GetTranslatedText('shTx_CloseFinancialDay'), mtConfirmation, [mbYes, mbCancel], 0) = mrYes then
+    CloseFinancialDay;
+end;
+
 procedure TfrmMain.lblLogoutClick(Sender: TObject);
 begin
   if Sender <> nil then
@@ -11877,6 +11901,12 @@ procedure TfrmMain.btnManagmentStatClick(Sender: TObject);
 begin
   UserClickedDxLargeButton(Sender);
   rptManagment;
+end;
+
+procedure TfrmMain.btnDayClosingTimesClick(Sender: TObject);
+begin
+  UserClickedDxLargeButton(Sender);
+  DayClosingTimes;
 end;
 
 procedure TfrmMain.btnDayFinalClick(Sender: TObject);
@@ -13178,6 +13208,11 @@ var
   theData: recPackageHolder;
 begin
   if OpenPackages(actNone, theData) then
+end;
+
+procedure TfrmMain.DayClosingTimes;
+begin
+  EditDayClosingTimes;
 end;
 
 // #######################  Employee  ########################################
