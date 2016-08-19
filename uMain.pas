@@ -7055,6 +7055,8 @@ var
 
 begin
 
+  if AppIsClosing then exit;
+
   if not(ACol in c_ALL) then
     exit;
 
