@@ -71,8 +71,6 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
             SkinData.CustomColor = False
             SkinData.CustomFont = False
             SkinData.SkinSection = 'TRANSPARENT'
-            ExplicitLeft = 8
-            ExplicitTop = 19
             object sLabel6: TsLabel
               Left = 97
               Top = 126
