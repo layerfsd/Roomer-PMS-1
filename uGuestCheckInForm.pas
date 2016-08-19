@@ -551,7 +551,7 @@ begin
   shpLastname.Visible := Trim(edLastName.Text) = '';
   shpCity.Visible := Trim(edCity.Text) = '';
   shpCountry.Visible := Trim(edCountry.Text) = '';
-  shpMarket.Visible := NOT((NOT g.qStayd3pActive) OR (cbxMarket.ItemIndex > 0));
+  shpMarket.Visible := g.qStayd3pActive and (cbxMarket.ItemIndex < 0);
 
   shpGuarantee.Visible := NOT(((cbxGuaranteeTypes.ItemIndex = 0) AND cbCreditCard.Checked) OR
     ((cbxGuaranteeTypes.ItemIndex = 1) AND (StrToFloatDef(edAmount.Text, -99999) <> -99999)) OR ((cbxGuaranteeTypes.ItemIndex = 2)));
@@ -1008,8 +1008,6 @@ begin
   cbxGuaranteeTypes.ItemIndex := 3;
   pgGuaranteeTypes.ActivePageIndex := cbxGuaranteeTypes.ItemIndex;
   LoadGuestInfo;
-
-  shpMarket.Visible := g.qStayd3pActive;
 
   FillQuickFind;
 end;
