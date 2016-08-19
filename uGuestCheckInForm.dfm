@@ -26,10 +26,10 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
     Align = alClient
     TabOrder = 0
     SkinData.SkinSection = 'PAGECONTROL'
-    ExplicitHeight = 588
     object sTabSheet1: TsTabSheet
       Caption = 'Room 101'
-      ExplicitHeight = 560
+      SkinData.CustomColor = False
+      SkinData.CustomFont = False
       object sPanel1: TsPanel
         Left = 0
         Top = 0
@@ -42,7 +42,6 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
         Padding.Bottom = 5
         TabOrder = 0
         SkinData.SkinSection = 'TRANSPARENT'
-        ExplicitHeight = 560
         object sLabel7: TsLabel
           Left = 6
           Top = 6
@@ -67,12 +66,11 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
           Align = alClient
           TabOrder = 0
           SkinData.SkinSection = 'PAGECONTROL'
-          ExplicitHeight = 523
           object sTabSheet2: TsTabSheet
             Caption = 'Guest Info'
+            SkinData.CustomColor = False
+            SkinData.CustomFont = False
             SkinData.SkinSection = 'TRANSPARENT'
-            ExplicitLeft = 8
-            ExplicitTop = 19
             object sLabel6: TsLabel
               Left = 97
               Top = 126
@@ -597,8 +595,8 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
             object cbActiveLiveSearch: TsCheckBox
               Left = 190
               Top = 51
-              Width = 82
-              Height = 17
+              Width = 74
+              Height = 20
               Caption = 'Live search'
               TabOrder = 20
               OnClick = cbActiveLiveSearchClick
@@ -656,6 +654,12 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
           end
           object sTabSheet6: TsTabSheet
             Caption = 'Company'
+            SkinData.CustomColor = False
+            SkinData.CustomFont = False
+            ExplicitLeft = 0
+            ExplicitTop = 0
+            ExplicitWidth = 0
+            ExplicitHeight = 0
             object sLabel22: TsLabel
               Left = 11
               Top = 24
@@ -989,7 +993,6 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
         TabOrder = 1
         OnDblClick = sPanel2DblClick
         SkinData.SkinSection = 'TRANSPARENT'
-        ExplicitHeight = 560
         object sLabel8: TsLabel
           Left = 6
           Top = 6
@@ -1211,6 +1214,8 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
           SkinData.SkinSection = 'PAGECONTROL'
           object sTabSheet3: TsTabSheet
             Caption = 'Credit card'
+            SkinData.CustomColor = False
+            SkinData.CustomFont = False
             object sLabel12: TsLabel
               Left = 66
               Top = 69
@@ -1249,6 +1254,12 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
           end
           object sTabSheet4: TsTabSheet
             Caption = 'Cash'
+            SkinData.CustomColor = False
+            SkinData.CustomFont = False
+            ExplicitLeft = 0
+            ExplicitTop = 0
+            ExplicitWidth = 0
+            ExplicitHeight = 0
             object sLabel16: TsLabel
               Left = 38
               Top = 21
@@ -1327,9 +1338,21 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
           end
           object sTabSheet5: TsTabSheet
             Caption = 'None'
+            SkinData.CustomColor = False
+            SkinData.CustomFont = False
+            ExplicitLeft = 0
+            ExplicitTop = 0
+            ExplicitWidth = 0
+            ExplicitHeight = 0
           end
           object sTabSheet7: TsTabSheet
             Caption = 'Select'
+            SkinData.CustomColor = False
+            SkinData.CustomFont = False
+            ExplicitLeft = 0
+            ExplicitTop = 0
+            ExplicitWidth = 0
+            ExplicitHeight = 0
           end
         end
       end
@@ -1343,7 +1366,6 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
     Align = alBottom
     TabOrder = 1
     SkinData.SkinSection = 'PANEL'
-    ExplicitTop = 588
     DesignSize = (
       842
       33)
