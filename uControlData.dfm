@@ -778,7 +778,7 @@ object frmControlData: TfrmControlData
               TabOrder = 1
               SkinData.SkinSection = 'EDIT'
               Increment = 10
-              MaxValue = 86400
+              MaxValue = 3000
               MinValue = 60
               Value = 0
             end

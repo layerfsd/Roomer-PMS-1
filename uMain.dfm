@@ -52,7 +52,6 @@ object frmMain: TfrmMain
     SunkenBorder = True
     UseOwnColor = True
     UseOwnSunkenBorder = True
-    ExplicitTop = 122
   end
   object panMain: TsPanel
     Left = 3
@@ -140,8 +139,6 @@ object frmMain: TfrmMain
           OnMouseUp = grOneDayRoomsMouseUp
           OnStartDrag = grOneDayRoomsStartDrag
           ActiveRowColor = clWhite
-          GridLineColor = 15527152
-          GridFixedLineColor = 13947601
           HoverRowCells = [hcNormal, hcSelected]
           OnGetCellPrintColor = grOneDayRoomsGetCellPrintColor
           OnGridHint = grOneDayRoomsGridHint
