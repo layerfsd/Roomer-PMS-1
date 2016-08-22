@@ -595,7 +595,7 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
             end
             object cbActiveLiveSearch: TsCheckBox
               Left = 190
-              Top = 51
+              Top = 47
               Width = 74
               Height = 20
               Caption = 'Live search'
