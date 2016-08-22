@@ -652,9 +652,9 @@ begin
     end;
     lbRoomRent.Caption := Trim(_floatToStr(ResSetGuest['TotalPrice'], 12, 2));
     lbSales.Caption := Trim(_floatToStr(ResSetGuest['CurrentSales'], 12, 2));
-    lbSubTotal.Caption := Trim(_floatToStr(ResSetGuest['TotalPrice'] + ResSetGuest['CurrentSales'], 12, 2));
     lbPAyments.Caption := Trim(_floatToStr(ResSetGuest['CurrentPayments'], 12, 2));
     lbTaxes.Caption := Trim(_floatToStr(ExtraTaxes, 12, 2));
+    lbSubTotal.Caption := Trim(_floatToStr(ResSetGuest['TotalPrice'] + ResSetGuest['CurrentSales'] + ExtraTaxes, 12, 2));
     CurrentRealBalance := ExtraTaxes + ResSetGuest['CurrentBalance'];
     lbBalance.Caption := Trim(_floatToStr(CurrentRealBalance, 12, 2));
 
