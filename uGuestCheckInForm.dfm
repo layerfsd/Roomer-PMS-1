@@ -26,6 +26,7 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
     Align = alClient
     TabOrder = 0
     SkinData.SkinSection = 'PAGECONTROL'
+    ExplicitTop = -2
     object sTabSheet1: TsTabSheet
       Caption = 'Room 101'
       SkinData.CustomColor = False
@@ -55,7 +56,7 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
           Font.Height = -21
           Font.Name = 'Tahoma'
           Font.Style = []
-          ExplicitWidth = 120
+          ExplicitTop = 0
         end
         object sPageControl2: TsPageControl
           Left = 6
@@ -71,6 +72,8 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
             SkinData.CustomColor = False
             SkinData.CustomFont = False
             SkinData.SkinSection = 'TRANSPARENT'
+            ExplicitLeft = 0
+            ExplicitTop = 32
             object sLabel6: TsLabel
               Left = 97
               Top = 126
@@ -306,9 +309,8 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
               Top = 123
               Width = 241
               Height = 21
-              Color = clWhite
               Font.Charset = DEFAULT_CHARSET
-              Font.Color = clBlack
+              Font.Color = clWindowText
               Font.Height = -11
               Font.Name = 'Tahoma'
               Font.Style = []
@@ -322,9 +324,8 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
               Top = 96
               Width = 241
               Height = 21
-              Color = clWhite
               Font.Charset = DEFAULT_CHARSET
-              Font.Color = clBlack
+              Font.Color = clWindowText
               Font.Height = -11
               Font.Name = 'Tahoma'
               Font.Style = []
@@ -339,9 +340,8 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
               Top = 400
               Width = 241
               Height = 21
-              Color = clWhite
               Font.Charset = DEFAULT_CHARSET
-              Font.Color = clBlack
+              Font.Color = clWindowText
               Font.Height = -11
               Font.Name = 'Tahoma'
               Font.Style = []
@@ -355,9 +355,8 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
               Top = 427
               Width = 241
               Height = 21
-              Color = clWhite
               Font.Charset = DEFAULT_CHARSET
-              Font.Color = clBlack
+              Font.Color = clWindowText
               Font.Height = -11
               Font.Name = 'Tahoma'
               Font.Style = []
@@ -371,9 +370,8 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
               Top = 454
               Width = 241
               Height = 21
-              Color = clWhite
               Font.Charset = DEFAULT_CHARSET
-              Font.Color = clBlack
+              Font.Color = clWindowText
               Font.Height = -11
               Font.Name = 'Tahoma'
               Font.Style = []
@@ -387,9 +385,8 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
               Top = 508
               Width = 34
               Height = 21
-              Color = clWhite
               Font.Charset = DEFAULT_CHARSET
-              Font.Color = clBlack
+              Font.Color = clWindowText
               Font.Height = -11
               Font.Name = 'Tahoma'
               Font.Style = []
@@ -415,10 +412,9 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
               Width = 107
               Height = 21
               AutoSize = False
-              Color = clWhite
               EditMask = '!99/99/9999;1; '
               Font.Charset = DEFAULT_CHARSET
-              Font.Color = 2302755
+              Font.Color = clWindowText
               Font.Height = -11
               Font.Name = 'Tahoma'
               Font.Style = []
@@ -447,9 +443,8 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
               Top = 481
               Width = 241
               Height = 21
-              Color = clWhite
               Font.Charset = DEFAULT_CHARSET
-              Font.Color = clBlack
+              Font.Color = clWindowText
               Font.Height = -11
               Font.Name = 'Tahoma'
               Font.Style = []
@@ -464,9 +459,8 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
               Top = 307
               Width = 241
               Height = 21
-              Color = clWhite
               Font.Charset = DEFAULT_CHARSET
-              Font.Color = clBlack
+              Font.Color = clWindowText
               Font.Height = -11
               Font.Name = 'Tahoma'
               Font.Style = []
@@ -481,9 +475,8 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
               Top = 361
               Width = 241
               Height = 21
-              Color = clWhite
               Font.Charset = DEFAULT_CHARSET
-              Font.Color = clBlack
+              Font.Color = clWindowText
               Font.Height = -11
               Font.Name = 'Tahoma'
               Font.Style = []
@@ -498,9 +491,8 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
               Top = 334
               Width = 241
               Height = 21
-              Color = clWhite
               Font.Charset = DEFAULT_CHARSET
-              Font.Color = clBlack
+              Font.Color = clWindowText
               Font.Height = -11
               Font.Name = 'Tahoma'
               Font.Style = []
@@ -515,9 +507,8 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
               Top = 204
               Width = 34
               Height = 21
-              Color = clWhite
               Font.Charset = DEFAULT_CHARSET
-              Font.Color = clBlack
+              Font.Color = clWindowText
               Font.Height = -11
               Font.Name = 'Tahoma'
               Font.Style = []
@@ -542,9 +533,8 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
               Top = 150
               Width = 52
               Height = 21
-              Color = clWhite
               Font.Charset = DEFAULT_CHARSET
-              Font.Color = clBlack
+              Font.Color = clWindowText
               Font.Height = -11
               Font.Name = 'Tahoma'
               Font.Style = []
@@ -580,9 +570,8 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
               Top = 177
               Width = 241
               Height = 21
-              Color = clWhite
               Font.Charset = DEFAULT_CHARSET
-              Font.Color = clBlack
+              Font.Color = clWindowText
               Font.Height = -11
               Font.Name = 'Tahoma'
               Font.Style = []
@@ -614,9 +603,8 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
               SkinData.SkinSection = 'COMBOBOX'
               VerticalAlignment = taAlignTop
               AutoComplete = False
-              Color = clWhite
               Font.Charset = DEFAULT_CHARSET
-              Font.Color = clBlack
+              Font.Color = clWindowText
               Font.Height = -11
               Font.Name = 'Tahoma'
               Font.Style = []
@@ -637,9 +625,8 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
               SkinData.SkinSection = 'COMBOBOX'
               VerticalAlignment = taAlignTop
               Style = csDropDownList
-              Color = clWhite
               Font.Charset = DEFAULT_CHARSET
-              Font.Color = clBlack
+              Font.Color = clWindowText
               Font.Height = -9
               Font.Name = 'Tahoma'
               Font.Style = []
@@ -656,10 +643,6 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
             Caption = 'Company'
             SkinData.CustomColor = False
             SkinData.CustomFont = False
-            ExplicitLeft = 0
-            ExplicitTop = 0
-            ExplicitWidth = 0
-            ExplicitHeight = 0
             object sLabel22: TsLabel
               Left = 11
               Top = 24
@@ -783,9 +766,8 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
               Top = 54
               Width = 241
               Height = 21
-              Color = clWhite
               Font.Charset = DEFAULT_CHARSET
-              Font.Color = 2302755
+              Font.Color = clWindowText
               Font.Height = -11
               Font.Name = 'Tahoma'
               Font.Style = []
@@ -800,9 +782,8 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
               Top = 268
               Width = 241
               Height = 21
-              Color = clWhite
               Font.Charset = DEFAULT_CHARSET
-              Font.Color = 2302755
+              Font.Color = clWindowText
               Font.Height = -11
               Font.Name = 'Tahoma'
               Font.Style = []
@@ -816,9 +797,8 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
               Top = 295
               Width = 241
               Height = 21
-              Color = clWhite
               Font.Charset = DEFAULT_CHARSET
-              Font.Color = 2302755
+              Font.Color = clWindowText
               Font.Height = -11
               Font.Name = 'Tahoma'
               Font.Style = []
@@ -832,9 +812,8 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
               Top = 322
               Width = 241
               Height = 21
-              Color = clWhite
               Font.Charset = DEFAULT_CHARSET
-              Font.Color = 2302755
+              Font.Color = clWindowText
               Font.Height = -11
               Font.Name = 'Tahoma'
               Font.Style = []
@@ -848,9 +827,8 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
               Top = 349
               Width = 241
               Height = 21
-              Color = clWhite
               Font.Charset = DEFAULT_CHARSET
-              Font.Color = 2302755
+              Font.Color = clWindowText
               Font.Height = -11
               Font.Name = 'Tahoma'
               Font.Style = []
@@ -865,9 +843,8 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
               Top = 376
               Width = 34
               Height = 21
-              Color = clWhite
               Font.Charset = DEFAULT_CHARSET
-              Font.Color = 2302755
+              Font.Color = clWindowText
               Font.Height = -11
               Font.Name = 'Tahoma'
               Font.Style = []
@@ -892,9 +869,8 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
               Top = 200
               Width = 241
               Height = 21
-              Color = clWhite
               Font.Charset = DEFAULT_CHARSET
-              Font.Color = 2302755
+              Font.Color = clWindowText
               Font.Height = -11
               Font.Name = 'Tahoma'
               Font.Style = []
@@ -909,9 +885,8 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
               Top = 146
               Width = 241
               Height = 21
-              Color = clWhite
               Font.Charset = DEFAULT_CHARSET
-              Font.Color = 2302755
+              Font.Color = clWindowText
               Font.Height = -11
               Font.Name = 'Tahoma'
               Font.Style = []
@@ -926,9 +901,8 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
               Top = 173
               Width = 241
               Height = 21
-              Color = clWhite
               Font.Charset = DEFAULT_CHARSET
-              Font.Color = 2302755
+              Font.Color = clWindowText
               Font.Height = -11
               Font.Name = 'Tahoma'
               Font.Style = []
@@ -943,9 +917,8 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
               Top = 81
               Width = 241
               Height = 21
-              Color = clWhite
               Font.Charset = DEFAULT_CHARSET
-              Font.Color = 2302755
+              Font.Color = clWindowText
               Font.Height = -11
               Font.Name = 'Tahoma'
               Font.Style = []
@@ -1187,9 +1160,8 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
           SkinData.SkinSection = 'COMBOBOX'
           VerticalAlignment = taAlignTop
           Style = csDropDownList
-          Color = clWhite
           Font.Charset = DEFAULT_CHARSET
-          Font.Color = clBlack
+          Font.Color = clWindowText
           Font.Height = -11
           Font.Name = 'Tahoma'
           Font.Style = []
@@ -1209,7 +1181,7 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
           Top = 294
           Width = 326
           Height = 170
-          ActivePage = sTabSheet3
+          ActivePage = sTabSheet4
           TabOrder = 1
           SkinData.SkinSection = 'PAGECONTROL'
           object sTabSheet3: TsTabSheet
@@ -1256,10 +1228,6 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
             Caption = 'Cash'
             SkinData.CustomColor = False
             SkinData.CustomFont = False
-            ExplicitLeft = 0
-            ExplicitTop = 0
-            ExplicitWidth = 0
-            ExplicitHeight = 0
             object sLabel16: TsLabel
               Left = 38
               Top = 21
@@ -1300,10 +1268,9 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
               Width = 67
               Height = 21
               Alignment = taRightJustify
-              Color = clWhite
               Enabled = False
               Font.Charset = DEFAULT_CHARSET
-              Font.Color = 2302755
+              Font.Color = clWindowText
               Font.Height = -11
               Font.Name = 'Tahoma'
               Font.Style = []
@@ -1340,19 +1307,11 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
             Caption = 'None'
             SkinData.CustomColor = False
             SkinData.CustomFont = False
-            ExplicitLeft = 0
-            ExplicitTop = 0
-            ExplicitWidth = 0
-            ExplicitHeight = 0
           end
           object sTabSheet7: TsTabSheet
             Caption = 'Select'
             SkinData.CustomColor = False
             SkinData.CustomFont = False
-            ExplicitLeft = 0
-            ExplicitTop = 0
-            ExplicitWidth = 0
-            ExplicitHeight = 0
           end
         end
       end

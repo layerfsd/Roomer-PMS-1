@@ -167,7 +167,7 @@ function CalculateCityTax(rentAmount : double;
 
 implementation
 
-uses uAppGlobal, _Glob, uMain;
+uses uAppGlobal, _Glob, uMain, uCurrencyHandler;
 
 procedure initializeTaxes;
 var s, filename : String;
@@ -537,6 +537,7 @@ begin
         result := _calcVAT(Price, ItemTypeInfo.VATPercentage);
     end;
   end;
+
 end;
 
 function GetVATForItem(Item : String; Price : Double; numItems : Double; RoomTaxEntity : TInvoiceRoomEntity; ItemTaxEntities : TInvoiceItemEntityList; ItemTypeInfo : TItemTypeInfo; Customer : String) : Double;
@@ -576,6 +577,7 @@ var
   Percentage : Boolean;
   VatPercentage : Double;
   taxGuests: integer;
+  lCurrencyHandler: TCurrencyHandler;
 
 begin
  //
@@ -643,7 +645,7 @@ begin
                 Amount :=  baseAmount * Tax.AMOUNT / 100;
               end;
             end;
-
+            Description := Description + Format(' (%n %% of %m)', [Tax.Amount, baseAmount]);
           end;
 
           if Tax.TAX_BASE = TB_ROOM_NIGHT then
@@ -661,6 +663,12 @@ begin
           if Tax.TAX_BASE = TB_BOOKING then
             NumItems := 1;
 
+          lCurrencyHandler := TCurrencyHandler.Create(ctrlGetString('NativeCurrency'));
+          try
+            Amount := lCurrencyHandler.RoundedValue(Amount);
+          finally
+            lCurrencyHandler.Free;
+          end;
           result.Add(TInvoiceTaxEntity.Create(BookingItem, Description, NumItems, Amount, IncludedInPrice, Percentage));
         end;
       end;

@@ -586,7 +586,7 @@ begin
   edtCity.Text := FInvoice.Address4;
   edtCountry.Text := FInvoice.Country;
 
-  edtCurrency.Text := FInvoice.newCurrency;
+  edtCurrency.Text := FInvoice.Currency;
   edtCurrencyRate.Text := FloatToXml(FInvoice.CurrencyRate, 5);
 
   DisplayLines;
@@ -639,7 +639,7 @@ begin
                         Rec.Notes,
                         d.roomerMainDataSet.username,
                         Now,
-                        FInvoice.newCurrency,
+                        FInvoice.Currency,
                         FInvoice.CurrencyRate,
                         0,
                         true
