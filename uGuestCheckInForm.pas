@@ -536,29 +536,33 @@ begin
 end;
 
 procedure TFrmGuestCheckInForm.EnableOrDisableOKButton;
+var
+  lErrors: boolean;
+  lErrorsForCheckIn: boolean;
 begin
-  BtnOk.Enabled := (Trim(edFirstname.Text) <> '') AND (Trim(edLastName.Text) <> '') AND (Trim(edCity.Text) <> '') AND (Trim(edCountry.Text) <> '') AND
-
-    ((NOT isCheckIn) OR (((cbxGuaranteeTypes.ItemIndex = 0) AND cbCreditCard.Checked) OR ((cbxGuaranteeTypes.ItemIndex = 1) AND
-    (StrToFloatDef(edAmount.Text, -99999) <> -99999)) OR ((cbxGuaranteeTypes.ItemIndex = 2))))
-    AND ((NOT g.qStayd3pActive) OR (cbxMarket.ItemIndex > 0));
   shpFirstname.Visible := Trim(edFirstname.Text) = '';
   shpLastname.Visible := Trim(edLastName.Text) = '';
   shpCity.Visible := Trim(edCity.Text) = '';
-  shpCountry.Visible := Trim(edCountry.Text) = '';
+  shpCountry.Visible := ((Trim(edCountry.Text) = '') or (edCountry.Text = '00'));
   shpMarket.Visible := g.qStayd3pActive and (cbxMarket.ItemIndex < 0);
 
   shpGuarantee.Visible := NOT(((cbxGuaranteeTypes.ItemIndex = 0) AND cbCreditCard.Checked) OR
-    ((cbxGuaranteeTypes.ItemIndex = 1) AND (StrToFloatDef(edAmount.Text, -99999) <> -99999)) OR ((cbxGuaranteeTypes.ItemIndex = 2)));
+                              ((cbxGuaranteeTypes.ItemIndex = 1) AND (StrToFloatDef(edAmount.Text, -99999) <> -99999)) OR
+                              ((cbxGuaranteeTypes.ItemIndex = 2))
+                             );
   shpCC.Visible := shpGuarantee.Visible;
   shpCash.Visible := shpGuarantee.Visible;
 
+  lErrors := shpFirstname.Visible or shpLastname.Visible or shpCity.Visible or shpCountry.Visible or shpMarket.Visible;
+  lErrorsForCheckin := shpGuarantee.Visible;
+  btnOK.Enabled := not lErrors and not (isCheckIn and lErrorsForCheckIn);
 end;
 
 procedure TFrmGuestCheckInForm.FormCreate(Sender: TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
-  glb.PerformAuthenticationAssertion(self); PlaceFormOnVisibleMonitor(self);
+  glb.PerformAuthenticationAssertion(self);
+  PlaceFormOnVisibleMonitor(self);
 
   FCurrencyhandler := nil;
   Prepare;

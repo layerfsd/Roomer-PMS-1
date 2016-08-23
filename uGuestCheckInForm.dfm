@@ -26,7 +26,6 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
     Align = alClient
     TabOrder = 0
     SkinData.SkinSection = 'PAGECONTROL'
-    ExplicitTop = -2
     object sTabSheet1: TsTabSheet
       Caption = 'Room 101'
       SkinData.CustomColor = False
@@ -56,7 +55,7 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
           Font.Height = -21
           Font.Name = 'Tahoma'
           Font.Style = []
-          ExplicitTop = 0
+          ExplicitWidth = 120
         end
         object sPageControl2: TsPageControl
           Left = 6
@@ -72,8 +71,6 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
             SkinData.CustomColor = False
             SkinData.CustomFont = False
             SkinData.SkinSection = 'TRANSPARENT'
-            ExplicitLeft = 0
-            ExplicitTop = 32
             object sLabel6: TsLabel
               Left = 97
               Top = 126
