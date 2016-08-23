@@ -20,13 +20,19 @@ type
 
   /// <summary>
   ///   Object to handle conversions and display of amounts in a certain currency <br />
-  ///  The handler is created for a certain currency code
+  ///  The handler is constructed for a certain currency code
   /// </summary>
   TCurrencyHandler = class
+  private
     FCurrencyRec: recCurrencyHolder;
     FFormatSettings: TFormatSettings;
+    function GetRate: double;
+    function GetCurrencyCode: string;
   public
     constructor Create(const aCurrencyCode: string);
+
+    property Rate: double read GetRate;
+    property CurrencyCode: string read GetCurrencyCode;
 
     /// <summary>
     ///   Convert aAmount in the currency of this handler to the amount of the currency provided
@@ -85,9 +91,19 @@ begin
   Result := Format('%s %s', [FCurrencyRec.CurrencySign, FormatCurr(FCurrencyRec.Displayformat, RoundedValue(aAmount), FFormatSettings)]);
 end;
 
+function TCurrencyHandler.GetCurrencyCode: string;
+begin
+  Result := FCurrencyRec.Currency;
+end;
+
 function TCurrencyHandler.GetcxEditProperties: TcxCustomEditProperties;
 begin
   Result := d.getCurrencyProperties(FCurrencyRec.Currency);
+end;
+
+function TCurrencyHandler.GetRate: double;
+begin
+  Result := FCurrencyRec.Value;
 end;
 
 function TCurrencyHandler.RoundedValue(aAmount: double): double;

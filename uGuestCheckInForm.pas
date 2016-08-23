@@ -6,7 +6,7 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, sEdit,
   sLabel, Vcl.ComCtrls, sPageControl, sButton, Vcl.ExtCtrls, sPanel, sComboBox, Vcl.Mask, sMaskEdit, sCustomComboEdit, sTooledit, sCheckBox, cmpRoomerDataSet,
   hData, uG, frxDesgn, frxClass, frxDBSet, System.Generics.Collections, uRoomerFilterComboBox
-
+  , uCurrencyHandler
     ;
 
 type
@@ -153,30 +153,30 @@ type
     procedure cbxMarketChange(Sender: TObject);
   private
     FisCheckIn: Boolean;
+    FCurrencyhandler: TCurrencyHandler;
+    FCurrentRealBalance: Double;
+    ResSetGuest: TRoomerDataSet;
+    rec: recDownPayment;
+    theDownPaymentData: recPaymentHolder;
+
     procedure Prepare;
     procedure EnableOrDisableOKButton;
     procedure FormDesignMode;
     procedure SetIsCheckIn(const Value: Boolean);
     procedure FillQuickFind;
+    function GetGuestInfoRSet(aRSet: TROomerDataset; aRoomReservation: integer; const  aRoomNumberList: string=''): boolean;
     { Private declarations }
   public
     { Public declarations }
     Reservation, RoomReservation: Integer;
-    RoomReservationList: String;
     PersonId: Integer;
-    NativeCurrency, Currency, Customer: String;
-    CurrencyRate: Double;
-    ResSetGuest: TRoomerDataSet;
-    rec: recDownPayment;
-    theDownPaymentData: recPaymentHolder;
-
-    CurrentRealBalance: Double;
-
+    NativeCurrency, Customer: String;
     procedure WndProc(var message: TMessage); override;
     procedure SaveGuestInfo;
 
     procedure LoadGuestInfo;
     procedure PrintReport;
+    procedure PrintReportForRoomList(const aRoomList: string);
     procedure Release;
 
     property isCheckIn: Boolean read FisCheckIn write SetIsCheckIn;
@@ -321,7 +321,7 @@ uses uRoomerLanguage,
   uStringUtils,
   uTaxCalc,
   DateUtils,
-  uRoomerDefinitions;
+  uRoomerDefinitions, uInvoiceContainer;
 
 const
   WM_SET_COMBO_TEXT = WM_User + 101;
@@ -360,23 +360,18 @@ var
 begin
   result := false;
   FrmGuestCheckInForm := TFrmGuestCheckInForm.Create(FrmGuestCheckInForm);
-  with FrmGuestCheckInForm do
-    try
-      sRoomResList := '';
-      for i := Low(_RoomReservations) to High(_RoomReservations) do
-        if sRoomResList = '' then
-          sRoomResList := inttostr(_RoomReservations[i])
-        else
-          sRoomResList := sRoomResList + ',' + inttostr(_RoomReservations[i]);
-      with FrmGuestCheckInForm do
-      begin
-        RoomReservationList := sRoomResList;
-        LoadGuestInfo;
-        PrintReport;
-      end;
-    finally
-      freeandnil(FrmGuestCheckInForm);
-    end;
+  try
+    sRoomResList := '';
+    for i := Low(_RoomReservations) to High(_RoomReservations) do
+      if sRoomResList = '' then
+        sRoomResList := inttostr(_RoomReservations[i])
+      else
+        sRoomResList := sRoomResList + ',' + inttostr(_RoomReservations[i]);
+
+      FrmGuestCheckInForm.PrintReportForRoomList(sRoomResList);
+  finally
+    FrmGuestCheckInForm.Free;
+  end;
 end;
 
 procedure TFrmGuestCheckInForm.cbCreditCardClick(Sender: TObject);
@@ -541,36 +536,41 @@ begin
 end;
 
 procedure TFrmGuestCheckInForm.EnableOrDisableOKButton;
+var
+  lErrors: boolean;
+  lErrorsForCheckIn: boolean;
 begin
-  BtnOk.Enabled := (Trim(edFirstname.Text) <> '') AND (Trim(edLastName.Text) <> '') AND (Trim(edCity.Text) <> '') AND (Trim(edCountry.Text) <> '') AND
-
-    ((NOT isCheckIn) OR (((cbxGuaranteeTypes.ItemIndex = 0) AND cbCreditCard.Checked) OR ((cbxGuaranteeTypes.ItemIndex = 1) AND
-    (StrToFloatDef(edAmount.Text, -99999) <> -99999)) OR ((cbxGuaranteeTypes.ItemIndex = 2))))
-    AND ((NOT g.qStayd3pActive) OR (cbxMarket.ItemIndex > 0));
   shpFirstname.Visible := Trim(edFirstname.Text) = '';
   shpLastname.Visible := Trim(edLastName.Text) = '';
   shpCity.Visible := Trim(edCity.Text) = '';
-  shpCountry.Visible := Trim(edCountry.Text) = '';
+  shpCountry.Visible := ((Trim(edCountry.Text) = '') or (edCountry.Text = '00'));
   shpMarket.Visible := g.qStayd3pActive and (cbxMarket.ItemIndex < 0);
 
   shpGuarantee.Visible := NOT(((cbxGuaranteeTypes.ItemIndex = 0) AND cbCreditCard.Checked) OR
-    ((cbxGuaranteeTypes.ItemIndex = 1) AND (StrToFloatDef(edAmount.Text, -99999) <> -99999)) OR ((cbxGuaranteeTypes.ItemIndex = 2)));
+                              ((cbxGuaranteeTypes.ItemIndex = 1) AND (StrToFloatDef(edAmount.Text, -99999) <> -99999)) OR
+                              ((cbxGuaranteeTypes.ItemIndex = 2))
+                             );
   shpCC.Visible := shpGuarantee.Visible;
   shpCash.Visible := shpGuarantee.Visible;
 
+  lErrors := shpFirstname.Visible or shpLastname.Visible or shpCity.Visible or shpCountry.Visible or shpMarket.Visible;
+  lErrorsForCheckin := shpGuarantee.Visible;
+  btnOK.Enabled := not lErrors and not (isCheckIn and lErrorsForCheckIn);
 end;
 
 procedure TFrmGuestCheckInForm.FormCreate(Sender: TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
-  glb.PerformAuthenticationAssertion(self); PlaceFormOnVisibleMonitor(self);
+  glb.PerformAuthenticationAssertion(self);
+  PlaceFormOnVisibleMonitor(self);
 
-  RoomReservationList := '';
+  FCurrencyhandler := nil;
   Prepare;
 end;
 
 procedure TFrmGuestCheckInForm.FormDestroy(Sender: TObject);
 begin
+  FCurrencyhandler.Free;
   Release;
 end;
 
@@ -579,141 +579,112 @@ begin
   freeandnil(ResSetGuest);
 end;
 
+function TFrmGuestCheckInForm.GetGuestInfoRSet(aRSet: TROomerDataset; aRoomReservation: integer; const  aRoomNumberList: string=''): boolean;
+var
+  lRoomnumbersList: String;
+  sql: string;
+begin
+  if aRoomNumberList = '' then
+    lRoomnumbersList := inttostr(aRoomReservation)
+  else
+    lRoomnumbersList := aRoomNumberList;
+
+  sql := format(GET_GUEST_CHECKIN_CHECKOUT, [lRoomnumbersList]);
+  CopyToClipboard(sql);
+  aRSet.Close;
+  Result := rSet_bySQL(aRSet, sql);
+end;
+
 procedure TFrmGuestCheckInForm.LoadGuestInfo;
 var
-  param: String;
-  taxes: TInvoiceTaxEntityList;
-  RoomTaxEntities: TInvoiceRoomEntityList;
-  ItemTaxEntities: TInvoiceItemEntityList;
-
-  ExtraTaxes: Double;
-  ItemTypeInfo: TItemTypeInfo;
-
-  tempRSet: TRoomerDataSet;
-  s: String;
-  i: Integer;
+  lRoomInvoice: TInvoice;
 begin
-  if RoomReservationList = '' then
-    param := inttostr(RoomReservation)
-  else
-    param := RoomReservationList;
-  s := format(GET_GUEST_CHECKIN_CHECKOUT, [param]);
-  CopyToClipboard(s);
-  if rSet_bySQL(ResSetGuest, s) then
+  if GetGuestInfoRSet(ResSetGuest, RoomReservation) then
   begin
     Reservation := ResSetGuest['Reservation'];
-    PersonId := ResSetGuest['ID'];
-    Customer := ResSetGuest['Customer'];
-    NativeCurrency := ResSetGuest['NativeCurrency'];
-    Currency := ResSetGuest['Currency'];
-    CurrencyRate := ResSetGuest['CurrencyRate'];
-    sTabSheet1.Caption := GetTranslatedText('shTx_RoomEdit_Room') + ResSetGuest['RoomNumber'];
 
-    ExtraTaxes := 0.00;
+    lRoomInvoice := TInvoice.Create(ritRoom, -1, Reservation, RoomReservation, 0, -1, ResSetGuest['RoomNumber'], false);
+    try
 
-    if NOT ctrlGetBoolean('StayTaxIncluted') then
-    begin
-      tempRSet := CreateNewDataset;
-      try
-        s := format('SELECT (SELECT RoomRentItem FROM control LIMIT 1) AS RoomRentItem, ' +
-          '(SELECT COUNT(id) FROM persons WHERE RoomReservation IN (%s) LIMIT 1) AS Guests, ' +
-          '(SELECT numChildren from RoomReservations rr where rr.roomreservation IN (%s) LIMIT 1) AS Children, ' +
-          '(SELECT COUNT(id) FROM roomsdate WHERE RoomReservation IN (%s) AND (NOT ResFlag IN (''X'',''C'',''O'',''N'')) LIMIT 1) AS Nights, ' +
-          '%s/1.00 AS Price, ' +
-          '%s - %s/(1 + (SELECT VATPercentage FROM vatcodes WHERE VATCode = (SELECT VATCode FROM itemtypes WHERE ItemType=(SELECT ItemType FROM items WHERE Item=(SELECT RoomRentItem FROM control LIMIT 1))))/100) AS VAT ',
-          [param, param, param, uStringUtils.FloatToDBString(ResSetGuest['TotalPrice']), uStringUtils.FloatToDBString(ResSetGuest['TotalPrice']),
-          uStringUtils.FloatToDBString(ResSetGuest['TotalPrice'])]);
+      PersonId := ResSetGuest['ID'];
+      Customer := ResSetGuest['Customer'];
+      NativeCurrency := ResSetGuest['NativeCurrency'];
 
-        if rSet_bySQL(tempRSet, s) then
-        begin
-          RoomTaxEntities := nil;
-          ItemTaxEntities := nil;
-          taxes := nil;
-          try
-            RoomTaxEntities := TInvoiceRoomEntityList.Create(True);
-            RoomTaxEntities.Add(TInvoiceRoomEntity.Create(tempRSet['RoomRentItem'], tempRSet['Guests'], tempRSet['Children'], tempRSet['Nights'],
-              tempRSet['Price'] / tempRSet['Nights'], tempRSet['VAT'] / tempRSet['Nights'], 0));
-            ItemTaxEntities := TInvoiceItemEntityList.Create(True);
-
-            ItemTypeInfo := d.Item_Get_ItemTypeInfo(trim(g.qRoomRentItem));
-            taxes := GetTaxesForInvoice(RoomTaxEntities, ItemTaxEntities, ItemTypeInfo, ctrlGetBoolean('StayTaxIncluted'));
-
-            for i := 0 to taxes.Count - 1 do
-              ExtraTaxes := ExtraTaxes + taxes[i].total;
-          finally
-            RoomTaxEntities.Free;
-            ItemTaxEntities.Free;
-            taxes.Free;
-          end;
-        end;
-      finally
-        tempRSet.Free;
+      if not assigned(FCurrencyhandler) or (not FCurrencyhandler.CurrencyCode.Equals(ResSetGuest['Currency'])) then
+      begin
+        FCurrencyhandler.Free;
+        FCurrencyhandler := TCurrencyHandler.Create(ResSetGuest['Currency']);
       end;
-    end;
-    lbRoomRent.Caption := Trim(_floatToStr(ResSetGuest['TotalPrice'], 12, 2));
-    lbSales.Caption := Trim(_floatToStr(ResSetGuest['CurrentSales'], 12, 2));
-    lbPAyments.Caption := Trim(_floatToStr(ResSetGuest['CurrentPayments'], 12, 2));
-    lbTaxes.Caption := Trim(_floatToStr(ExtraTaxes, 12, 2));
-    lbSubTotal.Caption := Trim(_floatToStr(ResSetGuest['TotalPrice'] + ResSetGuest['CurrentSales'] + ExtraTaxes, 12, 2));
-    CurrentRealBalance := ExtraTaxes + ResSetGuest['CurrentBalance'];
-    lbBalance.Caption := Trim(_floatToStr(CurrentRealBalance, 12, 2));
 
-    edFax.Text := ResSetGuest['CompFax'];
-    edVAT.Text := ResSetGuest['CompVATNumber'];
-    edSSN.Text := ResSetGuest['SocialSecurityNumber'];
+      sTabSheet1.Caption := GetTranslatedText('shTx_RoomEdit_Room') + ResSetGuest['RoomNumber'];
 
-    edCardId.Text := ResSetGuest['PersonalIdentificationId'];
-    btnPortfolio.Tag := ResSetGuest['PersonsProfilesId'];
-    edTitle.Text := ResSetGuest['title'];
-    edFirstname.Text := ResSetGuest['FirstName'];
-    edLastName.Text := ResSetGuest['LastName'];
-    edAddress1.Text := ResSetGuest['Address1'];
-    edAddress2.Text := ResSetGuest['Address2'];
-    edZipcode.Text := ResSetGuest['ZIPCode'];
-    edCity.Text := ResSetGuest['City'];
-    if ResSetGuest['Country'] <> '00' then
-      edCountry.Text := ResSetGuest['Country']
-    else
-      edCountry.Text := '';
+      lbRoomRent.Caption := FCurrencyHandler.FormattedValue(lRoomInvoice.TotalRoomRent); //Trim(_floatToStr(ResSetGuest['TotalPrice'], 12, 2));
+      lbSales.Caption := FCurrencyHandler.FormattedValue(lRoomInvoice.TotalSales); //Trim(_floatToStr(ResSetGuest['CurrentSales'], 12, 2));
+      lbSubTotal.Caption := FCurrencyHandler.FormattedValue(lRoomInvoice.TotalRoomRent
+                                                             + lRoomInvoice.TotalSales
+                                                             + lRoomInvoice.TotalTaxes); // Trim(_floatToStr(ResSetGuest['TotalPrice'] + ResSetGuest['CurrentSales'], 12, 2));
+      lbPAyments.Caption := FCurrencyHandler.FormattedValue(lRoomInvoice.TotalPayments); //Trim(_floatToStr(ResSetGuest['CurrentPayments'], 12, 2));
+      lbTaxes.Caption := FCurrencyHandler.FormattedValue(lRoomInvoice.TotalTaxes); //Trim(_floatToStr(ExtraTaxes, 12, 2));
+      lbBalance.Caption := FCurrencyHandler.FormattedValue(lRoomInvoice.Balance);// Trim(_floatToStr(CurrentRealBalance, 12, 2));
+      FCurrentRealBalance := lRoomInvoice.balance;
 
-    edTel1.Text := ResSetGuest['Telephone'];
-    edMobile.Text := ResSetGuest['MobileNumber'];
-    edEmail.Text := ResSetGuest['GuestEmail'];
+      edFax.Text := ResSetGuest['CompFax'];
+      edVAT.Text := ResSetGuest['CompVATNumber'];
+      edSSN.Text := ResSetGuest['SocialSecurityNumber'];
 
-    edNationality.Text := ResSetGuest['Nationality'];
+      edCardId.Text := ResSetGuest['PersonalIdentificationId'];
+      btnPortfolio.Tag := ResSetGuest['PersonsProfilesId'];
+      edTitle.Text := ResSetGuest['title'];
+      edFirstname.Text := ResSetGuest['FirstName'];
+      edLastName.Text := ResSetGuest['LastName'];
+      edAddress1.Text := ResSetGuest['Address1'];
+      edAddress2.Text := ResSetGuest['Address2'];
+      edZipcode.Text := ResSetGuest['ZIPCode'];
+      edCity.Text := ResSetGuest['City'];
+      if ResSetGuest['Country'] <> '00' then
+        edCountry.Text := ResSetGuest['Country']
+      else
+        edCountry.Text := '';
 
-    edCompany.Text := ResSetGuest['CompanyName'];
-    edCompAddress1.Text := ResSetGuest['CompAddress1'];
-    edCompAddress2.Text := ResSetGuest['CompAddress2'];
-    edCompZipcode.Text := ResSetGuest['CompZip'];
-    edCompCity.Text := ResSetGuest['CompCity'];
-    if ResSetGuest['CompCountry'] <> '00' then
-      edCompCountry.Text := ResSetGuest['CompCountry'];
-    edCompTelNumber.Text := ResSetGuest['CompTel'];
-    edCompEmail.Text := ResSetGuest['CompEmail'];
+      edTel1.Text := ResSetGuest['Telephone'];
+      edMobile.Text := ResSetGuest['MobileNumber'];
+      edEmail.Text := ResSetGuest['GuestEmail'];
 
-    edDateOfBirth.Date := ResSetGuest['DateOfBirth'];
+      edNationality.Text := ResSetGuest['Nationality'];
 
-    lbNationality.Caption := ResSetGuest['NationalityName'];
-    lbCountryName.Caption := ResSetGuest['CountryName'];
-    lbCompCountry.Caption := ResSetGuest['CompCountryName'];
+      edCompany.Text := ResSetGuest['CompanyName'];
+      edCompAddress1.Text := ResSetGuest['CompAddress1'];
+      edCompAddress2.Text := ResSetGuest['CompAddress2'];
+      edCompZipcode.Text := ResSetGuest['CompZip'];
+      edCompCity.Text := ResSetGuest['CompCity'];
+      if ResSetGuest['CompCountry'] <> '00' then
+        edCompCountry.Text := ResSetGuest['CompCountry'];
+      edCompTelNumber.Text := ResSetGuest['CompTel'];
+      edCompEmail.Text := ResSetGuest['CompEmail'];
 
-    // cbxGuaranteeTypes.ItemIndex := 3;
-    // if PAYMENT_GUARANTEE_TYPE.IndexOf(ResSetGuest['PaymentGuaranteeType'] then
+      edDateOfBirth.Date := ResSetGuest['DateOfBirth'];
 
-    cbxGuaranteeTypes.ItemIndex := IndexOfArray(PAYMENT_GUARANTEE_TYPE, ResSetGuest['PaymentGuaranteeType'], 3);
-    cbxGuaranteeTypesCloseUp(cbxGuaranteeTypes);
-    case cbxGuaranteeTypes.ItemIndex of
-      0:
-        cbCreditCard.Checked := (ResSetGuest['ResStatus'] = 'G') OR (ResSetGuest['ResStatus'] = 'D');
-      1:
-        begin
-          pnlHidePayment.Visible := (ResSetGuest['ResStatus'] = 'G') OR (ResSetGuest['ResStatus'] = 'D');
-          if pnlHidePayment.Visible then
-            pnlHidePayment.Align := alClient;
-        end;
-      2:
-        ;
+      lbNationality.Caption := ResSetGuest['NationalityName'];
+      lbCountryName.Caption := ResSetGuest['CountryName'];
+      lbCompCountry.Caption := ResSetGuest['CompCountryName'];
+
+      cbxGuaranteeTypes.ItemIndex := IndexOfArray(PAYMENT_GUARANTEE_TYPE, ResSetGuest['PaymentGuaranteeType'], 3);
+      cbxGuaranteeTypesCloseUp(cbxGuaranteeTypes);
+      case cbxGuaranteeTypes.ItemIndex of
+        0:
+          cbCreditCard.Checked := (ResSetGuest['ResStatus'] = 'G') OR (ResSetGuest['ResStatus'] = 'D');
+        1:
+          begin
+            pnlHidePayment.Visible := (ResSetGuest['ResStatus'] = 'G') OR (ResSetGuest['ResStatus'] = 'D');
+            if pnlHidePayment.Visible then
+              pnlHidePayment.Align := alClient;
+          end;
+        2:
+          ;
+      end;
+
+    finally
+      lRoomInvoice.Free;
     end;
   end;
 
@@ -778,6 +749,12 @@ begin
   PrintReport;
 end;
 
+procedure TFrmGuestCheckInForm.PrintReportForRoomList(const aRoomList: string);
+begin
+  if GetGuestInfoRSet(ResSetGuest, Roomreservation, aRoomList) then
+    PrintReport;
+end;
+
 procedure TFrmGuestCheckInForm.PrintReport;
 begin
   dsForm.DataSet := ResSetGuest;
@@ -790,7 +767,6 @@ begin
   finally
     rptForm.DataSets.Clear;
   end;
-  // rptForm.ShowReport(false);
 end;
 
 procedure TFrmGuestCheckInForm.sButton3Click(Sender: TObject);
@@ -823,7 +799,7 @@ begin
   rec.Invoice := -1;
   rec.Amount := 0;
 
-  rec.InvoiceBalance := CurrentRealBalance; // ResSetGuest['CurrentBalance'];
+  rec.InvoiceBalance := FCurrentRealBalance; // ResSetGuest['CurrentBalance'];
   rec.NotInvoice := True;
 
   if g.OpenDownPayment(actInsert, rec) then
