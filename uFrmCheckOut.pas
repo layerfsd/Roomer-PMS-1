@@ -132,12 +132,12 @@ begin
 
   if FRoomInvoice.InvoiceLines.Count > 0 then with FRoomInvoice do
   begin
-    lCurrencyHandler := TCurrencyHandler.Create(newCurrency);
+    lCurrencyHandler := TCurrencyHandler.Create(Currency);
     try
       pnlRoomBalance.Visible := not SameValue(lCurrencyHandler.RoundedValue(Balance), 0);
       if pnlRoomBalance.Visible then
       begin
-        lbCurrency.Caption    := newCurrency;
+        lbCurrency.Caption    := Currency;
         lbRoomRent.Caption    := lCurrencyHandler.FormattedValue(TotalRoomRent);
         lbSales.Caption       := lCurrencyHandler.FormattedValue(TotalSales);
         lbTaxes.Caption       := lCurrencyHandler.FormattedValue(TotalTaxes);
@@ -156,12 +156,12 @@ begin
 
   if FGroupInvoice.InvoiceLines.Count > 0 then with FGroupInvoice do
   begin
-    lCurrencyHandler := TCurrencyHandler.Create(newCurrency);
+    lCurrencyHandler := TCurrencyHandler.Create(Currency);
     try
       pnlGroupBalance.Visible := not SameValue(lCurrencyHandler.RoundedValue(Balance), 0);
       if pnlGroupBalance.Visible then
       begin
-        lbCurrencyGr.Caption  := newCurrency;
+        lbCurrencyGr.Caption  := Currency;
         lbRoomRentGr.Caption  := lCurrencyHandler.FormattedValue(TotalRoomRent);
         lbSalesGr.Caption     := lCurrencyHandler.FormattedValue(TotalSales);
         lbTaxesGr.Caption     := lCurrencyHandler.FormattedValue(TotalTaxes);
