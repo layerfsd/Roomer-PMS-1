@@ -1,41 +1,155 @@
 ﻿[Closed Files]
-File_0=TSourceModule,'C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\Roomer\Delphi Projects\RoomerVCLs\Tests\TestBed\uFrmDevAndTestBed.pas',0,1,1,56,14,0,0,,
-File_1=TSourceModule,'C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\uMain.pas',0,1,8073,5,8084,0,0,,{1
-File_2=TSourceModule,'C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\Invoice\uInvoice.pas',0,1,4175,72,4190,0,0,{{3749,0}
-File_3=TSourceModule,'C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\uGuestCheckInForm.pas',0,1,680,74,692,0,0,,
-File_4=TSourceModule,'C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\uRoomTypesGroups2.pas',0,1,797,30,816,0,0,,
-File_5=TSourceModule,'C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\uRoomClassEdit.pas',0,1,342,25,343,0,0,,
-File_6=TSourceModule,'C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\ufrmPaymentReqRoomtypeGroup.pas',0,1,1,33,1,0,0,,
-File_7=TSourceModule,'C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\uReservationProfile.pas',0,1,1551,15,1574,0,0,,
-File_8=TSourceModule,'C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\uRoomerDefinitions.pas',0,1,48,7,62,0,0,,
-File_9=TSourceModule,'C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\Extras\hData.pas',0,1,49,113,70,0,0,,
-File_10=TSourceModule,'C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\Embeddables\uEmbOccupancyView.pas',0,1,113,59,128,0,0,,{1
-File_11=TSourceModule,'C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\Extras\uSqlDefinitions.pas',0,1,6278,3,6275,0,0,,
-File_12=TSourceModule,'C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\uRoomDatesOBJ.pas',0,1,207,20,207,0,0,,
-File_13=TSourceModule,'C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\Extras\_Glob.pas',0,1,502,3,523,0,0,,
-File_14=TSourceModule,'C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\uRoomReservationOBJ.pas',0,1,492,5,508,0,0,,{1
+File_0=TSourceModule,'C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\uRptDepartures.pas',0,1,422,1,424,0,0,,
+File_1=TSourceModule,'C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\uRptStockItems.pas',0,1,230,1,232,0,0,,
+File_2=TSourceModule,'C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\ufrmPaymentReqRoomtypeGroup.pas',0,1,124,1,126,0,0,,
+File_3=TSourceModule,'C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\Roomer\Delphi Projects\RoomerVCLs\Tests\TestBed\uFrmDevAndTestBed.pas',0,1,1,56,14,0,0,,
+File_4=TSourceModule,'C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\uGuestCheckInForm.pas',0,1,680,74,692,0,0,,
+File_5=TSourceModule,'C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\uRoomTypesGroups2.pas',0,1,797,30,816,0,0,,
+File_6=TSourceModule,'C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\uRoomClassEdit.pas',0,1,342,25,343,0,0,,
+File_7=TSourceModule,'C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\uRoomerDefinitions.pas',0,1,48,7,62,0,0,,
+File_8=TSourceModule,'C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\Embeddables\uEmbOccupancyView.pas',0,1,113,59,128,0,0,,{1
+File_9=TSourceModule,'C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\uRoomDatesOBJ.pas',0,1,207,20,207,0,0,,
 
 [Modules]
-Module0=C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\uRunWithElevatedOption.pas
-Module1=C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\uAboutRoomer.pas
-Count=2
+Module0=C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\uAboutRoomer.pas
+Module1=C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\Invoice\uInvoice.pas
+Module2=C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\RoomerVCLs\Source\cmpRoomerDataSet.pas
+Module3=C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\uCurrencies.pas
+Module4=C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\Extras\uSqlDefinitions.pas
+Module5=C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\Extras\hData.pas
+Module6=C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\uMain.pas
+Module7=C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\Extras\Skin\AlphaSkins\Components\acLFPainter.pas
+Module8=C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\Extras\Skin\AlphaSkins\Components\sDefs.inc
+Module9=C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\Extras\Skin\AlphaSkins\Components\sGroupBox.pas
+Module10=C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\uNationalReport3.pas
+Module11=C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\uRunWithElevatedOption.pas
+Module12=C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\uActivityLogs.pas
+Module13=C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\PrjConst.pas
+Module14=C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\uReservationProfile.pas
+Module15=C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\Roomer.dproj
+Module16=C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\uRptManagment.pas
+Module17=C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\uChangeRRdates.pas
+Module18=C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\uD.pas
+Count=19
 EditWindowCount=1
-
-[C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\uRunWithElevatedOption.pas]
-ModuleType=TSourceModule
-FormState=0
-FormOnTop=0
 
 [C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\uAboutRoomer.pas]
 ModuleType=TSourceModule
 FormState=1
 FormOnTop=0
 
+[C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\Invoice\uInvoice.pas]
+ModuleType=TSourceModule
+FormState=1
+FormOnTop=0
+
+[C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\RoomerVCLs\Source\cmpRoomerDataSet.pas]
+ModuleType=TSourceModule
+FormState=0
+FormOnTop=0
+
+[C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\uCurrencies.pas]
+ModuleType=TSourceModule
+FormState=1
+FormOnTop=1
+
+[C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\Extras\uSqlDefinitions.pas]
+ModuleType=TSourceModule
+FormState=0
+FormOnTop=0
+
+[C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\Extras\hData.pas]
+ModuleType=TSourceModule
+FormState=0
+FormOnTop=0
+
+[C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\uMain.pas]
+ModuleType=TSourceModule
+FormState=1
+FormOnTop=0
+
+[C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\Extras\Skin\AlphaSkins\Components\acLFPainter.pas]
+ModuleType=TSourceModule
+FormState=0
+FormOnTop=0
+
+[C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\Extras\Skin\AlphaSkins\Components\sDefs.inc]
+ModuleType=TSourceModule
+
+[C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\Extras\Skin\AlphaSkins\Components\sGroupBox.pas]
+ModuleType=TSourceModule
+FormState=0
+FormOnTop=0
+
+[C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\uNationalReport3.pas]
+ModuleType=TSourceModule
+FormState=1
+FormOnTop=0
+
+[C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\uRunWithElevatedOption.pas]
+ModuleType=TSourceModule
+FormState=0
+FormOnTop=0
+
+[C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\uActivityLogs.pas]
+ModuleType=TSourceModule
+FormState=0
+FormOnTop=0
+
+[C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\PrjConst.pas]
+ModuleType=TSourceModule
+FormState=0
+FormOnTop=0
+
+[C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\uReservationProfile.pas]
+ModuleType=TSourceModule
+FormState=1
+FormOnTop=0
+
+[C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\Roomer.dproj]
+ModuleType=TBaseProject
+
+[C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\uRptManagment.pas]
+ModuleType=TSourceModule
+FormState=1
+FormOnTop=0
+
+[C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\uChangeRRdates.pas]
+ModuleType=TSourceModule
+FormState=1
+FormOnTop=0
+
+[C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\uD.pas]
+ModuleType=TSourceModule
+FormState=1
+FormOnTop=0
+
+[C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\uDImages.pas]
+FormState=1
+FormOnTop=0
+
 [EditWindow0]
-ViewCount=2
-CurrentEditView=C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\uRunWithElevatedOption.pas
+ViewCount=19
+CurrentEditView=C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\uAboutRoomer.pas
 View0=0
 View1=1
+View2=2
+View3=3
+View4=4
+View5=5
+View6=6
+View7=7
+View8=8
+View9=9
+View10=10
+View11=11
+View12=12
+View13=13
+View14=14
+View15=15
+View16=16
+View17=17
+View18=18
 PercentageSizes=1
 Create=1
 Visible=1
@@ -44,20 +158,20 @@ State=0
 Left=0
 Top=0
 Width=10000
-Height=9260
+Height=9106
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=10000
-ClientHeight=9260
+ClientHeight=9106
 DockedToMainForm=1
 BorlandEditorCodeExplorer=BorlandEditorCodeExplorer@EditWindow0
 TopPanelSize=0
 LeftPanelSize=1896
 LeftPanelClients=PropertyInspector,DockSite3
-LeftPanelData=00000800010100000000321000000000000001680700000000000001000000005C0E000009000000446F636B53697465330100000000CA1C00001100000050726F7065727479496E73706563746F72FFFFFFFF
+LeftPanelData=00000800010100000000DE0F00000000000001680700000000000001000000005C0E000009000000446F636B53697465330100000000361C00001100000050726F7065727479496E73706563746F72FFFFFFFF
 RightPanelSize=2000
 RightPanelClients=DockSite2,DockSite4
-RightPanelData=00000800010100000000321000000000000001D00700000000000001000000004412000009000000446F636B53697465320100000000CA1C000009000000446F636B5369746534FFFFFFFF
+RightPanelData=00000800010100000000DE0F00000000000001D00700000000000001000000004412000009000000446F636B53697465320100000000361C000009000000446F636B5369746534FFFFFFFF
 BottomPanelSize=1519
 BottomPanelClients=DockSite1,MessageView
 BottomPanelData=0000080001020100000009000000446F636B5369746531724500000000000002EF050000000000000100000000724500000F0000004D65737361676556696577466F726DFFFFFFFF
@@ -68,9 +182,9 @@ BottomMiddelPanelData=0000080001020200000009000000446F636B5369746530100000004772
 [View0]
 CustomEditViewType=TEditView
 Module=C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\uAboutRoomer.pas
-CursorX=9
-CursorY=168
-TopLine=147
+CursorX=23
+CursorY=354
+TopLine=328
 LeftCol=1
 Elisions=
 Bookmarks=
@@ -78,14 +192,201 @@ EditViewName=C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\uAboutRoo
 
 [View1]
 CustomEditViewType=TEditView
+Module=C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\uCurrencies.pas
+CursorX=15
+CursorY=571
+TopLine=561
+LeftCol=1
+Elisions=
+Bookmarks={1,575,10}{2,353,12}
+EditViewName=Borland.FormDesignerView
+
+[View2]
+CustomEditViewType=TEditView
+Module=C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\Extras\uSqlDefinitions.pas
+CursorX=35
+CursorY=399
+TopLine=376
+LeftCol=1
+Elisions=
+Bookmarks=
+EditViewName=C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\Extras\uSqlDefinitions.pas
+
+[View3]
+CustomEditViewType=TEditView
+Module=C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\Extras\hData.pas
+CursorX=1
+CursorY=7261
+TopLine=7237
+LeftCol=1
+Elisions=
+Bookmarks=
+EditViewName=C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\Extras\hData.pas
+
+[View4]
+CustomEditViewType=TEditView
 Module=C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\uRunWithElevatedOption.pas
-CursorX=17
-CursorY=4
+CursorX=35
+CursorY=14
 TopLine=1
 LeftCol=1
 Elisions=
 Bookmarks=
 EditViewName=C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\uRunWithElevatedOption.pas
+
+[View5]
+CustomEditViewType=TEditView
+Module=C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\uNationalReport3.pas
+CursorX=6
+CursorY=36
+TopLine=25
+LeftCol=1
+Elisions=
+Bookmarks=
+EditViewName=C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\uNationalReport3.pas
+
+[View6]
+CustomEditViewType=TEditView
+Module=C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\Extras\Skin\AlphaSkins\Components\sGroupBox.pas
+CursorX=7
+CursorY=2
+TopLine=1
+LeftCol=1
+Elisions=
+Bookmarks=
+EditViewName=C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\Extras\Skin\AlphaSkins\Components\sGroupBox.pas
+
+[View7]
+CustomEditViewType=TEditView
+Module=C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\Extras\Skin\AlphaSkins\Components\sDefs.inc
+CursorX=7
+CursorY=2
+TopLine=1
+LeftCol=1
+Elisions=
+Bookmarks=
+EditViewName=C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\Extras\Skin\AlphaSkins\Components\sDefs.inc
+
+[View8]
+CustomEditViewType=TEditView
+Module=C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\Extras\Skin\AlphaSkins\Components\acLFPainter.pas
+CursorX=57
+CursorY=2676
+TopLine=2675
+LeftCol=1
+Elisions=
+Bookmarks=
+EditViewName=C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\Extras\Skin\AlphaSkins\Components\acLFPainter.pas
+
+[View9]
+CustomEditViewType=TEditView
+Module=C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\uMain.pas
+CursorX=1
+CursorY=3224
+TopLine=3204
+LeftCol=1
+Elisions=
+Bookmarks={1,8232,10}{2,12494,6}{3,1820,1}
+EditViewName=C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\uMain.pas
+
+[View10]
+CustomEditViewType=TEditView
+Module=C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\RoomerVCLs\Source\cmpRoomerDataSet.pas
+CursorX=57
+CursorY=2041
+TopLine=2039
+LeftCol=1
+Elisions=
+Bookmarks=
+EditViewName=C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\RoomerVCLs\Source\cmpRoomerDataSet.pas
+
+[View11]
+CustomEditViewType=TEditView
+Module=C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\Invoice\uInvoice.pas
+CursorX=65
+CursorY=6782
+TopLine=6764
+LeftCol=1
+Elisions={{3749,0},{3777,11},{'Set Invoice type'}}
+Bookmarks=
+EditViewName=C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\Invoice\uInvoice.pas
+
+[View12]
+CustomEditViewType=TEditView
+Module=C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\uReservationProfile.pas
+CursorX=42
+CursorY=1362
+TopLine=1343
+LeftCol=1
+Elisions=
+Bookmarks=
+EditViewName=C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\uReservationProfile.pas
+
+[View13]
+CustomEditViewType=TEditView
+Module=C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\Roomer.dpr
+CursorX=17
+CursorY=232
+TopLine=220
+LeftCol=1
+Elisions=
+Bookmarks=
+EditViewName=C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\Roomer.dpr
+
+[View14]
+CustomEditViewType=TEditView
+Module=C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\PrjConst.pas
+CursorX=68
+CursorY=167
+TopLine=162
+LeftCol=1
+Elisions=
+Bookmarks={1,183,1}{2,1770,30}
+EditViewName=C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\PrjConst.pas
+
+[View15]
+CustomEditViewType=TEditView
+Module=C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\uActivityLogs.pas
+CursorX=15
+CursorY=6
+TopLine=1
+LeftCol=1
+Elisions=
+Bookmarks=
+EditViewName=C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\uActivityLogs.pas
+
+[View16]
+CustomEditViewType=TEditView
+Module=C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\uRptManagment.pas
+CursorX=45
+CursorY=282
+TopLine=274
+LeftCol=1
+Elisions=
+Bookmarks=
+EditViewName=C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\uRptManagment.pas
+
+[View17]
+CustomEditViewType=TEditView
+Module=C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\uChangeRRdates.pas
+CursorX=3
+CursorY=251
+TopLine=335
+LeftCol=1
+Elisions=
+Bookmarks=
+EditViewName=C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\uChangeRRdates.pas
+
+[View18]
+CustomEditViewType=TEditView
+Module=C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\uD.pas
+CursorX=1
+CursorY=885
+TopLine=859
+LeftCol=1
+Elisions=
+Bookmarks=
+EditViewName=C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\uD.pas
 
 [Watches]
 Count=5
@@ -117,7 +418,7 @@ Dockable=1
 StayOnTop=0
 
 [Breakpoints]
-Count=15
+Count=16
 Breakpoint0='C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\uReservationProfile.pas',2543,'',0,1,'',1,0,0,'',1,'','','',0,''
 Breakpoint1='C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\uReservationProfile.pas',2551,'',0,1,'',1,0,0,'',1,'','','',0,''
 Breakpoint2='C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\uReservationProfile.pas',3057,'',0,1,'',1,0,0,'',1,'','','',0,''
@@ -125,14 +426,15 @@ Breakpoint3='C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\uRptDepar
 Breakpoint4='C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\uRptResStats.pas',783,'',0,1,'',1,0,0,'',1,'','','',0,''
 Breakpoint5='C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\uRptResStats.pas',2652,'',0,1,'',1,0,0,'',1,'','','',0,''
 Breakpoint6='C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\uTaxCalc.pas',712,'',0,1,'',1,0,0,'',1,'','','',0,''
-Breakpoint7='C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\uRptManagment.pas',393,'',0,1,'',1,0,0,'',1,'','','',0,''
-Breakpoint8='C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\uRptResStatsRooms.pas',696,'',0,1,'',1,0,0,'',1,'','','',0,''
-Breakpoint9='C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\uRoomReservationOBJ.pas',194,'',0,1,'',1,0,0,'',1,'','','',0,''
-Breakpoint10='C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\uGuestCheckInForm.pas',744,'',0,1,'',1,0,0,'',1,'','','',0,''
-Breakpoint11='C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\Invoice\uInvoice.pas',6901,'',0,1,'',1,0,0,'',1,'','','',0,''
-Breakpoint12='C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\Invoice\uInvoice.pas',6804,'',0,1,'',1,0,0,'',1,'','','',0,''
-Breakpoint13='C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\Invoice\uInvoice.pas',4196,'',0,1,'',1,0,0,'',1,'','','',0,''
-Breakpoint14='C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\Invoice\uInvoice.pas',3877,'',0,1,'',1,0,0,'',1,'','','',0,''
+Breakpoint7='C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\uRptResStatsRooms.pas',696,'',0,1,'',1,0,0,'',1,'','','',0,''
+Breakpoint8='C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\uRoomReservationOBJ.pas',194,'',0,1,'',1,0,0,'',1,'','','',0,''
+Breakpoint9='C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\uGuestCheckInForm.pas',744,'',0,1,'',1,0,0,'',1,'','','',0,''
+Breakpoint10='C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\Invoice\uInvoice.pas',6901,'',0,1,'',1,0,0,'',1,'','','',0,''
+Breakpoint11='C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\Invoice\uInvoice.pas',6804,'',0,1,'',1,0,0,'',1,'','','',0,''
+Breakpoint12='C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\Invoice\uInvoice.pas',4196,'',0,1,'',1,0,0,'',1,'','','',0,''
+Breakpoint13='C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\Invoice\uInvoice.pas',3877,'',0,1,'',1,0,0,'',1,'','','',0,''
+Breakpoint14='C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\uD.pas',885,'',0,1,'',1,0,0,'',1,'','','',0,''
+Breakpoint15='C:\Users\BjornHeidarr\Dropbox (Promoir)\Hotel\MainProgXE3\Extras\hData.pas',7270,'',0,1,'',1,0,0,'',1,'','','',0,''
 
 [EmbarcaderoWin32Debugger_AddressBreakpoints]
 Count=0
@@ -148,18 +450,16 @@ PercentageSizes=1
 Create=1
 Visible=1
 Docked=0
-State=2
-Left=146
-Top=269
-Width=8932
-Height=8519
+State=0
+Left=1146
+Top=-154
+Width=10083
+Height=10000
 MaxLeft=-5
 MaxTop=-10
-MaxWidth=8932
-MaxHeight=8519
 ClientWidth=10000
-ClientHeight=9779
-BottomPanelSize=8917
+ClientHeight=9625
+BottomPanelSize=8769
 BottomPanelClients=EditWindow0
 BottomPanelData=0000080000000000000000000000000000000000000000000000000100000000000000000C0000004564697457696E646F775F30FFFFFFFF
 
@@ -210,11 +510,11 @@ State=0
 Left=0
 Top=0
 Width=2000
-Height=2577
+Height=2423
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=2000
-ClientHeight=2577
+ClientHeight=2423
 TBDockHeight=7154
 LRDockWidth=2000
 Dockable=1
@@ -229,11 +529,11 @@ State=0
 Left=0
 Top=420
 Width=1896
-Height=3615
+Height=3462
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=1896
-ClientHeight=3615
+ClientHeight=3462
 TBDockHeight=7019
 LRDockWidth=1896
 Dockable=1
@@ -242,8 +542,8 @@ SplitPos=111
 
 [PropInspDesignerSelection]
 ArrangeBy=Name
-SelectedItem=Action,
-ExpandedItems=Anchors=0,BorderIcons=0
+SelectedItem=Caption,
+ExpandedItems=Anchors=0,BorderIcons=0,Constraints=0,DataBinding=1,Options=1,Position=0,Properties=1,Styles=0,Summary=0,BackgroundBitmaps=0,DataController=1,DateTimeHandling=0,FilterBox=0,Filtering=0,FilterRow=0,Navigator=0,NewItemRow=0,OptionsBehavior=0,OptionsCustomize=0,OptionsData=0,OptionsSelection=0,OptionsView=0,Preview=0,DataController.DataModeController=0,DataController.DataSource=1,DataController.Filter=0,DataController.MultiThreadedOptions=0,DataController.Options=0,DataController.Summary=0,DataController.DataSource.DataSet=0,Properties.Alignment=1,Properties.AssignedValues=0,Font=0,LevelTabs=0,LiveBindings=0,LockedStateImageOptions=0,LookAndFeel=0,Margins=0,BevelEdges=0
 
 [TFileExplorerForm]
 PercentageSizes=1
@@ -723,7 +1023,7 @@ LRDockWidth=2745
 Dockable=1
 StayOnTop=0
 
-[Item__CE401FF6_F956_4BDB_9F54_088BD85F0CF4_]
+[Item__C74C7DBB_4D99_4FF4_BABE_F02A005254E6_]
 PercentageSizes=1
 Create=1
 Visible=0
@@ -742,7 +1042,7 @@ LRDockWidth=2745
 Dockable=1
 StayOnTop=0
 
-[Item__C74C7DBB_4D99_4FF4_BABE_F02A005254E6_]
+[Item__CE401FF6_F956_4BDB_9F54_088BD85F0CF4_]
 PercentageSizes=1
 Create=1
 Visible=0
@@ -890,11 +1190,11 @@ State=0
 Left=0
 Top=528
 Width=2000
-Height=2577
+Height=2423
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=2000
-ClientHeight=2577
+ClientHeight=2423
 TBDockHeight=7019
 LRDockWidth=2000
 Dockable=1
@@ -904,5 +1204,5 @@ ActiveTabID=ToolForm
 TabDockClients=ToolForm,TemplateView
 
 [ActiveProject]
-ActiveProject=13
+ActiveProject=1
 

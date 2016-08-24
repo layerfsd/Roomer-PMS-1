@@ -143,7 +143,6 @@ type
 
   TInvoice = class
   private
-
     FCurrency : String;
     FXml : String;
     FChanged: Boolean;
@@ -289,7 +288,7 @@ type
     property Balance : Double read GetBalance;
     property expanded : Boolean read FExpanded write SetExpanded;
     property NumberOfRentLines : Integer read GetNumberOfRentLines;
-    property newCurrency: string read GetCurrency;
+    property Currency: string read GetCurrency;
   end;
 
 implementation

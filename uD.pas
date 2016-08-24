@@ -6477,6 +6477,8 @@ var
 
   pckTotalsList: TRoomPackageLineEntryList;
 
+  lineInfo: TInvoiceLineInfo;
+
 begin
   initPaymentHolderRec(PaymentData);
   initInvoiceHeadHolderRec(invoiceData);
@@ -6631,20 +6633,20 @@ begin
         if (IvI.LinesList[i].IsPackage) and showPackage then
         begin
           inc(ii);
-
+          lineInfo := IvI.LinesList[i];
           AddOrCreateToPackage(pckTotalsList
-            , IvI.LinesList[i].Code
-            , IvI.LinesList[i].Description
-            , IvI.LinesList[i].RoomReservationAlias
-            , IvI.LinesList[i].TotalPrice
-            , IvI.LinesList[i].TotalWOVAT
-            , IvI.LinesList[i].VatAmount
-            , IvI.LinesList[i].Code = g.qRoomRentItem
-            , IvI.LinesList[i].ImportSource
-            , IvI.LinesList[i].ImportRefrence
-            , IvI.LinesList[i].LineNo
-            , IvI.LinesList[i].date
-            , IvI.LinesList[i].Count
+            , lineInfo.Code
+            , lineInfo.Description
+            , lineInfo.RoomReservationAlias
+            , lineInfo.TotalPrice
+            , lineInfo.TotalWOVAT
+            , lineInfo.VatAmount
+            , lineInfo.Code = g.qRoomRentItem
+            , lineInfo.ImportSource
+            , lineInfo.ImportRefrence
+            , lineInfo.LineNo
+            , lineInfo.date
+            , lineInfo.Count
             );
 
         end
@@ -6684,13 +6686,13 @@ begin
 
 
 
-          // tmpCode           := ivi.ivhPackage;
-          // tmpDescription    := ivi.IvhPackageText; // ivhPackageName;
-          // if tmpCount <> 0 then tmpPrice := tmpAmount/tmpCount;
-          // tmpfoPrice        := tmpPrice/rate;
-          // tmpfoAmount       := tmpAmount/rate;
-          // tmpfoAmountWoVat  := tmpAmountWoVat/rate;
-          // tmpfoVatAmount    := tmpfoVatAmount/rate;
+//          tmpCode           := ivi.ivhPackage;
+//          tmpDescription    := ivi.IvhPackageText; // ivhPackageName;
+//          if tmpCount <> 0 then tmpPrice := tmpAmount/tmpCount;
+//          tmpfoPrice        := tmpPrice/rate;
+//          tmpfoAmount       := tmpAmount/rate;
+//          tmpfoAmountWoVat  := tmpAmountWoVat/rate;
+//          tmpfoVatAmount    := tmpfoVatAmount/rate;
 
           tmpPrice := 0;
           if pckTotalsList[ii].ItemCount <> 0 then

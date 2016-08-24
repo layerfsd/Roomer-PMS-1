@@ -311,7 +311,7 @@ procedure TfrmRptNotes.FormShow(Sender: TObject);
 var
   lLocations: TSet_Of_Integer;
 begin
-  _restoreForm(frmRptNotes);
+  _restoreForm(self);
 
   lLocations := frmmain.FilteredLocations;
   try

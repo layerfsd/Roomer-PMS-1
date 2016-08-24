@@ -142,7 +142,7 @@ procedure TfrmRptBreakfastGuests.FormShow(Sender: TObject);
 var
   lLocations: TSet_Of_Integer;
 begin
-  _restoreForm(frmRptBreakfastGuests);
+  _restoreForm(self);
   lLocations := frmmain.FilteredLocations;
   try
   zLocationInString := glb.LocationSQLInString(lLocations);

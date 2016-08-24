@@ -345,8 +345,10 @@ object frmRptCashier: TfrmRptCashier
     object tabStatGrid: TsTabSheet
       Caption = 'Data'
       TabVisible = False
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object sPanel1: TsPanel
         Left = 0
         Top = 0
@@ -493,14 +495,16 @@ object frmRptCashier: TfrmRptCashier
         SearchFooter.HintHighlight = 'Highlight occurrences'
         SearchFooter.MatchCaseCaption = 'Match case'
         SortSettings.DefaultFormat = ssAutomatic
-        Version = '7.9.1.0'
+        Version = '7.9.1.1'
         WordWrap = False
       end
     end
     object sTabSheet1: TsTabSheet
       Caption = 'Cashier functions'
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object grGet: TcxGrid
         Left = 0
         Top = 43
@@ -738,8 +742,10 @@ object frmRptCashier: TfrmRptCashier
     end
     object sTabSheet2: TsTabSheet
       Caption = 'Received Payments'
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object sPanel2: TsPanel
         Left = 0
         Top = 0

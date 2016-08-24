@@ -453,7 +453,7 @@ end;
 procedure TfrmRptBookkeeping.FormShow(Sender: TObject);
 begin
   //**
-  _restoreForm(frmRptBookkeeping);
+  _restoreForm(self);
   showdata;
 //  btnRefresh.Enabled := False;
 end;

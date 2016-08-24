@@ -561,7 +561,7 @@ end;
 
 procedure TfrmMakeKreditInvoice.FormShow(Sender: TObject);
 begin
-  _restoreForm(frmMakeKreditInvoice);
+  _restoreForm(self);
   btnCancelChanges.Visible := False;
 
   __lblCustomer.Visible := False;

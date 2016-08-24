@@ -598,7 +598,6 @@ type
     procedure edtTypeDblClick(Sender: TObject);
     procedure edCountryDblClick(Sender: TObject);
     procedure edCountryKeyPress(Sender: TObject; var Key: Char);
-    procedure cbxStatusEnter(Sender: TObject);
     procedure mainPageChange(Sender: TObject);
     procedure edGetCustomerClick(Sender: TObject);
     procedure tvRoomsDeparturePropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
@@ -698,6 +697,7 @@ type
     procedure SetProfileAlertVisibility;
     procedure UpdateMarket;
     procedure SetMarketItemIndex(const aMarket: string);
+    function CheckForDirtyRooms(var aDirtyRoomList: String): boolean;
 
     property OutOfOrderBlocking: Boolean read FOutOfOrderBlocking write SetOutOfOrderBlocking;
   public
@@ -834,7 +834,7 @@ procedure TfrmReservationProfile.FormShow(Sender: TObject);
 var
   i: Integer;
 begin
-  _restoreForm(frmReservationProfile);
+  _restoreForm(self);
   enabled := false;
   (tvRoomsStatusText.Properties AS TcxComboBoxProperties).Items.Clear;
   for i := 0 to cbxStatus.Items.Count - 1 do
@@ -1412,8 +1412,8 @@ begin
   if sStatus = '' then
     exit;
 
-  ch := sStatus[1];
-  cbxStatus.ItemIndex := _StatusToIndex(ch, true);
+  vStatus := sStatus[1];
+  cbxStatus.ItemIndex := _StatusToIndex(vStatus, true);
   cbxStatus.Update;
   cbxStatus.Invalidate;
 end;
@@ -1495,11 +1495,37 @@ begin
   end;
 end;
 
+function TfrmReservationProfile.CheckForDirtyRooms(var aDirtyRoomList: String): boolean;
+var
+  bm: TBookmark;
+begin
+  Result := False;
+  aDirtyRoomList := '';
+  mRooms.DisableControls;
+  try
+    bm := mRooms.Bookmark;
+
+    mRooms.First;
+    while not mRooms.Eof do
+    begin
+      if g.oRooms.Room[mRooms['room']].IsDirty then
+      begin
+        aDirtyRoomList := aDirtyRoomList + ' ' + mRooms['room'];
+        Result := true;
+      end;
+      mRooms.Next;
+    end;
+  finally
+    mRooms.Bookmark := bm;
+    mRooms.EnableControls;
+  end;
+end;
+
 procedure TfrmReservationProfile.UpdateStatus;
 var
   s: string;
+  lMsgText: string;
   sChar: string;
-  sStr: string;
 begin
   if cbxStatus.ItemIndex = 0 then
   begin
@@ -1510,69 +1536,79 @@ begin
   if cbxStatus.ItemIndex = 1 then
   begin
     sChar := 'G';
-    sStr := GetTranslatedText('shTx_ReservationProfile_CheckedIn');
+    if g.qWarnCheckInDirtyRoom AND CheckForDirtyRooms(s) then
+      lMsgText := Format(GetTranslatedText('shTx_Various_RoomNotClean'), [s])
+    else
+      lMsgText := format(GetTranslatedText('shTx_ReservationProfile_ChangeStatus'), [GetTranslatedText('shTx_ReservationProfile_CheckedIn')]);
   end
   else
     if cbxStatus.ItemIndex = 2 then
   begin
     sChar := 'P';
-    sStr := GetTranslatedText('shTx_ReservationProfile_NotArrived');
+    lMsgText := format(GetTranslatedText('shTx_ReservationProfile_ChangeStatus'), [GetTranslatedText('shTx_ReservationProfile_NotArrived')]);
   end
   else
     if cbxStatus.ItemIndex = 3 then
   begin
     sChar := 'D';
-    sStr := GetTranslatedText('shTx_ReservationProfile_Departed');
+    lMsgText := format(GetTranslatedText('shTx_ReservationProfile_ChangeStatus'), [GetTranslatedText('shTx_ReservationProfile_Departed')]);
   end
   else
     if cbxStatus.ItemIndex = 4 then
   begin
     sChar := 'O';
-    sStr := GetTranslatedText('shTx_ReservationProfile_WaitingList');
+    lMsgText := format(GetTranslatedText('shTx_ReservationProfile_ChangeStatus'), [GetTranslatedText('shTx_ReservationProfile_WaitingList')]);
   end
   else
     if cbxStatus.ItemIndex = 5 then
   begin
     sChar := 'N';
-    sStr := GetTranslatedText('shTx_ReservationProfile_NoShow');
+    lMsgText := format(GetTranslatedText('shTx_ReservationProfile_ChangeStatus'), [GetTranslatedText('shTx_ReservationProfile_NoShow')]);
   end
   else
     if cbxStatus.ItemIndex = 6 then
   begin
     sChar := 'A';
-    sStr := GetTranslatedText('shTx_ReservationProfile_Allotment');
+    lMsgText := format(GetTranslatedText('shTx_ReservationProfile_ChangeStatus'), [GetTranslatedText('shTx_ReservationProfile_Allotment')]);
   end
   else
     if cbxStatus.ItemIndex = 7 then
   begin
     sChar := 'B';
-    sStr := GetTranslatedText('shTx_ReservationProfile_Blocked');
+    lMsgText := format(GetTranslatedText('shTx_ReservationProfile_ChangeStatus'), [GetTranslatedText('shTx_ReservationProfile_Blocked')]);
   end
   else
     if cbxStatus.ItemIndex = 8 then
   begin
     sChar := 'C';
-    sStr := GetTranslatedText('shTx_ReservationProfile_Canceled');
+    lMsgText := format(GetTranslatedText('shTx_ReservationProfile_ChangeStatus'), [GetTranslatedText('shTx_ReservationProfile_Canceled')]);
   end
   else
     if cbxStatus.ItemIndex = 9 then
   begin
     sChar := 'W';
-    sStr := GetTranslatedText('shTx_ReservationProfile_Tmp1');
+    lMsgText := format(GetTranslatedText('shTx_ReservationProfile_ChangeStatus'), [GetTranslatedText('shTx_ReservationProfile_Tmp1')]);
   end
   else
     if cbxStatus.ItemIndex = 10 then
   begin
     sChar := 'Z';
-    sStr := GetTranslatedText('shTx_ReservationProfile_Tmp2');
+    lMsgText := format(GetTranslatedText('shTx_ReservationProfile_ChangeStatus'), [GetTranslatedText('shTx_ReservationProfile_Tmp2')]);
   end;
 
-  s := format(GetTranslatedText('shTx_ReservationProfile_ChangeStatus'), [sStr]);
+  if sChar = vStatus then
+    Exit;
 
-  if MessageDlg(s, mtConfirmation, [mbYes, mbNo], 0) = mrYes then
+  if not lMsgtext.IsEmpty then
   begin
-    d.UpdateStatusSimple(zReservation, 0, sChar);
-    Display_rGrid(zRoomReservation);
+    if MessageDlg(lMsgText, mtConfirmation, [mbYes, mbNo], 0) = mrYes then
+    begin
+      d.UpdateStatusSimple(zReservation, 0, sChar);
+      vStatus := sChar;
+      Display_rGrid(zRoomReservation);
+    end
+    else
+      SetStatusItemindex(vStatus);
   end;
 end;
 
@@ -1595,36 +1631,6 @@ end;
 procedure TfrmReservationProfile.cbxStatusCloseUp(Sender: TObject);
 begin
   UpdateStatus;
-end;
-
-procedure TfrmReservationProfile.cbxStatusEnter(Sender: TObject);
-begin
-  case cbxStatus.ItemIndex of
-    0:
-      vStatus := ''; // 0  Mixed
-    1:
-      vStatus := 'P'; // 1 Not arrived
-    2:
-      vStatus := 'G'; // 2 Checked in
-    3:
-      vStatus := 'D'; // 3 Departed
-    4:
-      vStatus := 'O'; // 4 Waitinglist
-    5:
-      vStatus := 'A'; // 5 Alotment
-    6:
-      vStatus := 'N'; // 6 No-show
-    7:
-      vStatus := 'B'; // 7 Blocked
-    8:
-      vStatus := 'C'; // 8 Canceled
-    9:
-      vStatus := 'W'; // 9 [Unused]
-    // 10:
-    // vStatus := 'Z'; // Awaiting payment
-
-  end;
-
 end;
 
 procedure TfrmReservationProfile.chkShowAllGuestsClick(Sender: TObject);
@@ -2800,17 +2806,29 @@ begin
   end;
 end;
 
-procedure TfrmReservationProfile.tvRoomsStatusTextPropertiesChange
-  (Sender: TObject);
+procedure TfrmReservationProfile.tvRoomsStatusTextPropertiesChange(Sender: TObject);
 var
   sTmp: string;
+  lMsgText: string;
   iTMP: Integer;
 begin
-  if mRoomsDS.State = dsEdit then
-  begin
-    mRooms.Post;
-  end;
   sTmp := _IndexToStatus(TcxComboBox(Sender).ItemIndex, true);
+
+  if sTmp = 'G' then
+  begin
+    if g.qWarnCheckInDirtyRoom AND g.oRooms.Room[mROoms['room']].IsDirty then
+    begin
+      lMsgText := Format(GetTranslatedText('shTx_Various_RoomNotClean'), [mROoms['room']]);
+      if MessageDlg(lMsgText, mtConfirmation, [mbYes, mbNo], 0) = mrNo then
+      begin
+        mRooms.Cancel;
+        Exit;
+      end;
+    end;
+  end;
+
+  if mRoomsDS.State = dsEdit then
+    mRooms.Post;
 
   d.UpdateStatusSimple(zReservation, zRoomReservation, sTmp);
   frmMain.refreshGrid;

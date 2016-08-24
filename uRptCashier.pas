@@ -709,7 +709,7 @@ end;
 procedure TfrmRptCashier.FormShow(Sender: TObject);
 begin
   // **
-  _restoreForm(frmRptCashier);
+  _restoreForm(self);
   UserSelectVisible(false);
   ShowData;
 end;
@@ -1456,7 +1456,7 @@ begin
         Strings.Free;
       end;
     finally
-      d.roomerMainDataSet.SetTimeZoneComparedToUTC('+00:00');
+      d.roomerMainDataSet.SetTimeZoneComparedToUTC('UTC');
     end;
   finally
     payment.Free;

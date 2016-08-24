@@ -7258,7 +7258,7 @@ begin
   s := '';
   s := s + ' UPDATE currencies ' + #10;
   s := s + ' SET ' + #10;
-  s := s + '   , Description =' + _db(theData.Description) + ' ' + #10;
+  s := s + '     Description =' + _db(theData.Description) + ' ' + #10;
   s := s + '   , Avalue =' + _db(theData.Value) + ' ' + #10;
   s := s + '   , Decimals =' + _db(theData.Decimals) + ' ' + #10;
   s := s + '   , DisplayFormat=' + _db(theData.Displayformat) + ' ' + #10;
@@ -7266,6 +7266,7 @@ begin
   s := s + '   , Active =' + _db(theData.active) + ' ' + #10;
   s := s + ' WHERE ' + #10;
   s := s + '   (currency = ' + _db(theData.Currency) + ') ';
+  CopyToClipboard(s);
   result := cmd_bySQL(s);
 end;
 
@@ -9353,20 +9354,11 @@ function IVH_SetNewID: integer;
   end;
 
 var
-  id: integer;
+  id, iCount: integer;
 begin
-  id := getIT;
-  if id <> -1 then
-  begin
-    if InvoiceExists(id) then
-    begin
-      id := -1;
-    end;
-  end;
 
-  if id = -1 then
-  begin
-    sleep(1000);
+  iCount := 0;
+  repeat
     id := getIT;
     if id <> -1 then
     begin
@@ -9375,20 +9367,10 @@ begin
         id := -1;
       end;
     end;
-  end;
+    if id = -1 then
+      sleep(1000);
+  until (id <> -1) OR (iCount > 5);
 
-  if id = -1 then
-  begin
-    sleep(1000);
-    id := getIT;
-    if id <> -1 then
-    begin
-      if InvoiceExists(id) then
-      begin
-        id := -1;
-      end;
-    end;
-  end;
   result := id;
 end;
 
