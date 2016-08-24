@@ -48,6 +48,7 @@ type
     FOperationType: TOperationType;
     FFDArray: TFieldInfoArray;
   protected
+    Procedure Execute; override;
     procedure InternalExecute; override;
   public
     constructor Create(Const aSQL: String; aFDArray: TFieldInfoArray); overload;
@@ -81,7 +82,9 @@ uses
   Windows,
   ActiveX,
   uD,
-  SysUtils;
+  SysUtils,
+  TypInfo,
+  Dialogs;
 
 
 procedure TGetThreadedData.Execute(const sql: String; aOnCompletionHandler: TNotifyEvent);
@@ -160,20 +163,34 @@ begin
   FData := data;
 end;
 
+procedure TDBThread.Execute;
+begin
+  OutputDebugString(PChar(format('starting DBthread [%], Operation: [%s], sql: [%s], data: [%s]',
+                              [Classname, GetEnumName(TypeInfo(TOperationType), ord(FOperationType)), FSQL, FDATA])));
+  inherited;
+end;
+
 procedure TBaseDBThread.Execute;
 begin
   inherited;
   CoInitialize(nil);
   try
-    NameThreadForDebugging(Classname);
-    FRoomerDataSet := CreateNewDataSet;
     try
-      FRoomerDataSet.RoomerDataSet := nil;
+      NameThreadForDebugging(Classname);
+      FRoomerDataSet := CreateNewDataSet;
+      try
+        FRoomerDataSet.RoomerDataSet := nil;
 
-      InternalExecute;
+        InternalExecute;
 
-    finally
-      FRoomerDataSet.Free;
+      finally
+        FRoomerDataSet.Free;
+      end;
+    except
+//      {ifdef DEBUG}
+//      on E: Exception do
+//        MessageDlg(Format('Exception occured when executing thread [%s]'+ #10 + ' Messsge [%s]', [classname, e.Message]), mtError, [mbOK], 0);
+//      {endif}
     end;
   finally
     CoUnInitialize;

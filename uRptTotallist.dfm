@@ -2,8 +2,8 @@ object frmRptTotallist: TfrmRptTotallist
   Left = 0
   Top = 0
   Caption = 'Totallist'
-  ClientHeight = 586
-  ClientWidth = 963
+  ClientHeight = 633
+  ClientWidth = 1347
   Color = clBtnFace
   Constraints.MinWidth = 570
   Font.Charset = DEFAULT_CHARSET
@@ -23,11 +23,12 @@ object frmRptTotallist: TfrmRptTotallist
   object Panel3: TsPanel
     Left = 0
     Top = 0
-    Width = 963
+    Width = 1347
     Height = 97
     Align = alTop
     TabOrder = 0
     SkinData.SkinSection = 'PANEL'
+    ExplicitWidth = 963
     object labLocationsList: TsLabel
       Left = 170
       Top = 80
@@ -179,7 +180,7 @@ object frmRptTotallist: TfrmRptTotallist
         MaxLength = 10
         ParentFont = False
         TabOrder = 0
-        Text = '  .  .    '
+        Text = '  -  -    '
         OnChange = dtDateFromChange
         CheckOnExit = True
         SkinData.SkinSection = 'EDIT'
@@ -202,7 +203,7 @@ object frmRptTotallist: TfrmRptTotallist
         MaxLength = 10
         ParentFont = False
         TabOrder = 1
-        Text = '  .  .    '
+        Text = '  -  -    '
         OnChange = dtDateFromChange
         CheckOnExit = True
         SkinData.SkinSection = 'EDIT'
@@ -214,11 +215,12 @@ object frmRptTotallist: TfrmRptTotallist
   object Panel5: TsPanel
     Left = 0
     Top = 97
-    Width = 963
+    Width = 1347
     Height = 43
     Align = alTop
     TabOrder = 1
     SkinData.SkinSection = 'PANEL'
+    ExplicitWidth = 963
     object btnExcel: TsButton
       AlignWithMargins = True
       Left = 4
@@ -232,13 +234,12 @@ object frmRptTotallist: TfrmRptTotallist
       TabOrder = 0
       OnClick = btnExcelClick
       SkinData.SkinSection = 'BUTTON'
-      ExplicitLeft = 0
     end
   end
   object dxStatusBar1: TdxStatusBar
     Left = 0
-    Top = 566
-    Width = 963
+    Top = 613
+    Width = 1347
     Height = 20
     Panels = <>
     Font.Charset = DEFAULT_CHARSET
@@ -246,17 +247,19 @@ object frmRptTotallist: TfrmRptTotallist
     Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = []
+    ExplicitTop = 566
+    ExplicitWidth = 963
   end
   object grTotallist: TcxGrid
     Left = 0
     Top = 140
-    Width = 963
-    Height = 426
+    Width = 1347
+    Height = 473
     Align = alClient
     TabOrder = 3
     LookAndFeel.NativeStyle = False
-    ExplicitTop = 129
-    ExplicitHeight = 437
+    ExplicitWidth = 963
+    ExplicitHeight = 426
     object lvTotallist: TcxGridDBBandedTableView
       Navigator.Buttons.CustomButtons = <>
       Navigator.Buttons.Insert.Visible = False
@@ -271,41 +274,49 @@ object frmRptTotallist: TfrmRptTotallist
       DataController.Summary.DefaultGroupSummaryItems = <>
       DataController.Summary.FooterSummaryItems = <
         item
+          Format = '0'
           Kind = skSum
           FieldName = 'paxDeparture'
           Column = lvTotallistpaxDeparture
         end
         item
+          Format = '0'
           Kind = skSum
           FieldName = 'paxAllotment'
           Column = lvTotallistpaxAllotment
         end
         item
+          Format = '0'
           Kind = skSum
-          FieldName = 'roomsInhouse'
+          FieldName = 'paxInhouse'
           Column = lvTotallistpaxInhouse
         end
         item
+          Format = '0'
           Kind = skSum
           FieldName = 'paxArrival'
           Column = lvTotallistpaxArrival
         end
         item
+          Format = '0'
           Kind = skSum
           FieldName = 'paxStay'
           Column = lvTotallistpaxStay
         end
         item
+          Format = '0'
           Kind = skSum
           FieldName = 'paxWaitinglist'
           Column = lvTotallistpaxWaitinglist
         end
         item
+          Format = '0'
           Kind = skSum
           FieldName = 'RoomsAllotment'
           Column = lvTotallistRoomsAllotment
         end
         item
+          Format = '0'
           Kind = skSum
           FieldName = 'roomsArrival'
           Column = lvTotallistroomsArrival
@@ -316,23 +327,40 @@ object frmRptTotallist: TfrmRptTotallist
           Column = lvTotallistdtDate
         end
         item
+          Format = '0'
           Kind = skSum
           FieldName = 'roomsDeparture'
           Column = lvTotallistroomsDeparture
         end
         item
+          Format = '0'
           Kind = skSum
           FieldName = 'roomsInhouse'
           Column = lvTotallistroomsInhouse
         end
         item
+          Format = '0'
+          Kind = skSum
           FieldName = 'roomsStay'
           Column = lvTotallistroomsStay
         end
         item
+          Format = '0'
           Kind = skSum
           FieldName = 'roomsWaitinglist'
           Column = lvTotallistroomsWaitinglist
+        end
+        item
+          Format = '0'
+          Kind = skSum
+          FieldName = 'roomsOutOfOrder'
+          Column = lvTotallistroomsOutOfOrder
+        end
+        item
+          Format = '0'
+          Kind = skSum
+          FieldName = 'paxOutOfOrder'
+          Column = lvTotallistpaxOutOfOrder
         end>
       DataController.Summary.SummaryGroups = <>
       OptionsData.CancelOnExit = False
@@ -589,7 +617,7 @@ object frmRptTotallist: TfrmRptTotallist
     LoadedCompletely = False
     SavedCompletely = False
     FilterOptions = []
-    Version = '7.62.00 Standard Edition'
+    Version = '7.22.00 Standard Edition'
     LanguageID = 0
     SortID = 0
     SubLanguageID = 1

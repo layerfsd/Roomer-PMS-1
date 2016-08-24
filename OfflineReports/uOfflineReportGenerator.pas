@@ -43,7 +43,10 @@ begin
   if assigned(FRegisteredReports) then
     for lReportClass in FRegisteredReports do
       // Notice that Reportclass is derived from TTHread and has FreeOnterminate set to True so freeing is not needed here
+    begin
        lReportClass.Create(Now()).Start;
+       Sleep(1000);
+    end;
 end;
 
 class procedure TOfflineReportGenerator.RegisterOfflineReport(const aReportClass: TOfflineReportClass);
