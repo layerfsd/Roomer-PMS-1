@@ -298,9 +298,28 @@ begin
   ExecutionPlan := d.roomerMainDataSet.CreateExecutionPlan;
   try
 
-  s := 'SELECT *, '#10 ;
-  s := s + '	(SELECT NativeCurrency FROM control LIMIT 1) AS localCurrency '#10 ;
-  s := s + 'FROM '#10 ;
+  s := 'SELECT id, '+
+       'pd.date, '+
+       'DATE(IFNULL(ADate, pd.date)) AS ADate, '+
+       'soldRooms, '+
+       'revenue, '+
+       'totalDiscount, '+
+       'maxRate, '+
+       'minRate, '+
+       'averageRate, '+
+       'checkedInToday, '+
+       'arrivingRooms, '+
+       'noShow, '+
+       'departingRooms, '+
+       'departedRooms, '+
+       'occupiedRooms, '+
+       'totalRooms, '+
+       'totalGuests , '+
+       'occ, '+
+       'adr, '+
+       'revPar, '+
+       '(SELECT NativeCurrency FROM control LIMIT 1) AS localCurrency '+
+       'FROM '#10 ;
   s := s + 'predefineddates pd '#10 ;
   s := s + 'LEFT OUTER JOIN '#10 ;
   s := s + ' ( '#10 ;
