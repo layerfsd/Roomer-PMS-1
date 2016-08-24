@@ -70,6 +70,7 @@ type
     procedure mnuiGridToXmlClick(Sender: TObject);
     procedure edtLastDateChange(Sender: TObject);
     procedure btnRefreshClick(Sender: TObject);
+    procedure BtnOkClick(Sender: TObject);
   private
     FUpdatingGrid: Boolean;
     FRecordSet: TRoomerDataSet;
@@ -122,8 +123,6 @@ end;
 
 procedure TfrmDayClosingTimes.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
-  if tvdata.DataController.DataSet.State in [dsInsert, dsEdit] then
-    tvdata.DataController.Post;
   FRecordSet := nil;
 end;
 
@@ -140,6 +139,12 @@ end;
 procedure TfrmDayClosingTimes.btnNewClick(Sender: TObject);
 begin
   m_.Insert;
+end;
+
+procedure TfrmDayClosingTimes.BtnOkClick(Sender: TObject);
+begin
+  if tvdata.DataController.DataSet.State in [dsInsert, dsEdit] then
+    tvdata.DataController.Post;
 end;
 
 procedure TfrmDayClosingTimes.btnRefreshClick(Sender: TObject);

@@ -119,7 +119,7 @@ var
   lResponse: string;
   lStream: TStringStream;
 const
-  cCloseCurrentURI = '/closerunningday';
+  cCloseCurrentURI = '/runningday/close';
 begin
   roomerClient := d.roomerMainDataSet.CreateRoomerClient(True);
   try
@@ -139,10 +139,10 @@ end;
 function TDayClosingTimesAPICaller.constructXMLObject(aDay, aClosingtime: TDateTime): string;
 begin
   Result := '<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>'#10;
-  Result := result + '<rmrds:DayClosingTimeStampType xmlns:rmrds="http://roomer.promoir.nl/datamodel/canonical/datastructures/2014/01/" >'#10;
+  Result := result + '<rmrds:DayClosingTimestampType xmlns:rmrds="http://roomer.promoir.nl/datamodel/canonical/datastructures/2014/01/" >'#10;
   Result := result + Format('  <day>%s</day>', [dateTimeToXmlString(aDay)]) + #10;
   Result := result + Format('  <closingtimestamp>%s</closingtimestamp>', [dateTimeToXmlString(aClosingtime)]) +#10;
-  Result := result + '</rmrds:DayClosingTimeStampType>'#10;
+  Result := result + '</rmrds:DayClosingTimestampType>'#10;
 end;
 
 function TDayClosingTimesAPICaller.InsertDayClosingTime(aDay, aClosingTime: TDateTime): boolean;
@@ -156,6 +156,8 @@ begin
   try
     lStream := TStringStream.Create;
     try
+      roomerClient.RequestHeader.Accept := cAccMicrosoftDataset;
+      roomerClient.RequestHeader.contentType := 'application/xml';
       lStream.WriteString( constructXMLObject(aDay, aClosingtime));
       lURI := d.roomerMainDataSet.OpenApiUri + cResourcesURI + cDayClosingTimeURI;
 
@@ -179,6 +181,8 @@ begin
   try
     lStream := TStringStream.Create;
     try
+      roomerClient.RequestHeader.Accept := cAccMicrosoftDataset;
+      roomerClient.RequestHeader.contentType := 'application/xml';
       lStream.WriteString( constructXMLObject(aDay, aClosingtime));
       lURI := d.roomerMainDataSet.OpenApiUri + cResourcesURI + cDayClosingTimeURI;
 
