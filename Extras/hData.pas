@@ -9354,20 +9354,11 @@ function IVH_SetNewID: integer;
   end;
 
 var
-  id: integer;
+  id, iCount: integer;
 begin
-  id := getIT;
-  if id <> -1 then
-  begin
-    if InvoiceExists(id) then
-    begin
-      id := -1;
-    end;
-  end;
 
-  if id = -1 then
-  begin
-    sleep(1000);
+  iCount := 0;
+  repeat
     id := getIT;
     if id <> -1 then
     begin
@@ -9376,20 +9367,10 @@ begin
         id := -1;
       end;
     end;
-  end;
+    if id = -1 then
+      sleep(1000);
+  until (id <> -1) OR (iCount > 5);
 
-  if id = -1 then
-  begin
-    sleep(1000);
-    id := getIT;
-    if id <> -1 then
-    begin
-      if InvoiceExists(id) then
-      begin
-        id := -1;
-      end;
-    end;
-  end;
   result := id;
 end;
 
