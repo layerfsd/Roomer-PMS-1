@@ -32,7 +32,6 @@ object frmDayClosingTimes: TfrmDayClosingTimes
     BevelOuter = bvNone
     TabOrder = 0
     SkinData.SkinSection = 'PANEL'
-    ExplicitWidth = 832
     object sPanel2: TsPanel
       Left = 0
       Top = 0
@@ -41,7 +40,6 @@ object frmDayClosingTimes: TfrmDayClosingTimes
       Align = alTop
       TabOrder = 0
       SkinData.SkinSection = 'PANEL'
-      ExplicitWidth = 832
       object lbStartFrom: TsLabel
         Left = 13
         Top = 51
@@ -146,7 +144,6 @@ object frmDayClosingTimes: TfrmDayClosingTimes
       Height = 19
       Panels = <>
       SkinData.SkinSection = 'STATUSBAR'
-      ExplicitWidth = 832
     end
     object panBtn: TsPanel
       Left = 0
@@ -156,7 +153,6 @@ object frmDayClosingTimes: TfrmDayClosingTimes
       Align = alBottom
       TabOrder = 2
       SkinData.SkinSection = 'PANEL'
-      ExplicitWidth = 832
       DesignSize = (
         448
         33)
@@ -174,7 +170,6 @@ object frmDayClosingTimes: TfrmDayClosingTimes
         ModalResult = 2
         TabOrder = 1
         SkinData.SkinSection = 'BUTTON'
-        ExplicitLeft = 743
       end
       object BtnOk: TsButton
         Left = 267
@@ -189,8 +184,8 @@ object frmDayClosingTimes: TfrmDayClosingTimes
         Images = DImages.PngImageList1
         ModalResult = 1
         TabOrder = 0
+        OnClick = BtnOkClick
         SkinData.SkinSection = 'BUTTON'
-        ExplicitLeft = 651
       end
     end
     object grData: TcxGrid
@@ -201,7 +196,6 @@ object frmDayClosingTimes: TfrmDayClosingTimes
       Align = alClient
       TabOrder = 3
       LookAndFeel.NativeStyle = False
-      ExplicitWidth = 832
       object tvData: TcxGridDBTableView
         Navigator.Buttons.CustomButtons = <>
         Navigator.Buttons.First.Visible = True
@@ -247,6 +241,7 @@ object frmDayClosingTimes: TfrmDayClosingTimes
         DataController.Summary.FooterSummaryItems = <>
         DataController.Summary.SummaryGroups = <>
         OptionsBehavior.AlwaysShowEditor = True
+        OptionsBehavior.FocusCellOnTab = True
         OptionsBehavior.IncSearch = True
         OptionsData.Appending = True
         OptionsData.CancelOnExit = False
@@ -265,6 +260,7 @@ object frmDayClosingTimes: TfrmDayClosingTimes
         object tvDataClosingTime: TcxGridDBColumn
           DataBinding.FieldName = 'ClosingTimestamp'
           PropertiesClassName = 'TcxDateEditProperties'
+          Properties.Kind = ckDateTime
           HeaderAlignmentHorz = taCenter
           Width = 121
         end
@@ -354,7 +350,6 @@ object frmDayClosingTimes: TfrmDayClosingTimes
     Left = 96
     Top = 192
     object prLink_grData: TdxGridReportLink
-      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.GrayShading = True
@@ -368,7 +363,6 @@ object frmDayClosingTimes: TfrmDayClosingTimes
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
       ReportDocument.CreationDate = 41334.495374884260000000
-      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       BuiltInReportLink = True
     end
   end
