@@ -22,6 +22,7 @@ uses
   ;
 
 TYPE
+  ERoomListException = class(Exception);
 
   TRoomItem = class
 
@@ -91,6 +92,8 @@ TYPE
     constructor Create;
     destructor Destroy; override;
 
+    function IsDirty: boolean;
+
     property Room               : string    read  getRoom                  write setRoom               ;
     property RoomDescription    : string    read  getRoomDescription       write setRoomDescription    ;
     property RoomType           : string    read  getRoomType              write setRoomType           ;
@@ -142,6 +145,7 @@ TYPE
     function getRoomCount : integer;
     procedure FillList(var RoomCount : integer);
     procedure Clear;
+    function GetRoomByNumber(aRoomNumber: string): TRoomItem;
 
   public
     constructor Create(aHotelCode : string);
@@ -157,7 +161,7 @@ TYPE
 
     property RoomItemsList : TRoomItemsList read FRoomList;
     property RoomCount : integer read getRoomCount;
-
+    property Room[aRoomNumber: string]: TRoomItem read GetRoomByNumber;
 
   end;
 
@@ -290,6 +294,11 @@ begin
 end;
 
 
+
+function TRoomItem.IsDirty: boolean;
+begin
+  Result := CharInSet(Status.Chars[0], ['C', 'R']);
+end;
 
 ////////////////////////////////////////////////////////////////
 //
@@ -580,6 +589,22 @@ begin
     end;
 end;
 
+
+function TRooms.GetRoomByNumber(aRoomNumber: string): TRoomItem;
+var
+  lRoom: TRoomItem;
+begin
+  result := nil;
+  for lRoom in FRoomList do
+    if lRoom.Room.ToUpper.Equals(aRoomNumber.ToUpper) then
+    begin
+      result := lRoom;
+      Break;
+    end;
+
+  if result = nil then
+    raise ERoomlistException.CreateFmt('Roomnumber [%s] not found in roomlist', [aRoomNumber]);
+end;
 
 function TRooms.getRoomCount: integer;
 begin
