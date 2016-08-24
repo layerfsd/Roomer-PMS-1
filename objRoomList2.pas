@@ -297,7 +297,7 @@ end;
 
 function TRoomItem.IsDirty: boolean;
 begin
-  Result := CharInSet(Status.Chars[0], ['C', 'R']);
+  Result := not CharInSet(Status[1], ['C', 'R']);
 end;
 
 ////////////////////////////////////////////////////////////////
