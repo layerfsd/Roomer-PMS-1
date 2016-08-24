@@ -5163,8 +5163,7 @@ var
 begin
   if GetSelectedRoomInformation then
   begin
-    s := g.oRooms.FindRoomStatus(_Room);
-    if g.qWarnCheckInDirtyRoom AND (NOT((s = 'R') OR (s = 'C'))) then
+    if g.qWarnCheckInDirtyRoom AND g.oRooms.Room[_Room].IsDirty then
     begin
       s := Format(GetTranslatedText('shTx_Various_RoomNotClean'), [_Room]);
       if MessageDlg(s, mtWarning, [mbYes, mbCancel], 0) <> mrYes then
