@@ -295,7 +295,7 @@ object frmReservationProfile: TfrmReservationProfile
         Left = 176
         Top = 79
         Width = 20
-        Height = 20
+        Height = 18
         TabOrder = 4
         SkinData.SkinSection = 'CHECKBOX'
         ImgChecked = 0
@@ -509,7 +509,6 @@ object frmReservationProfile: TfrmReservationProfile
         ParentFont = False
         TabOrder = 0
         OnCloseUp = cbxStatusCloseUp
-        OnEnter = cbxStatusEnter
         Items.Strings = (
           'Mixed'
           'Not arrived'
@@ -1382,8 +1381,9 @@ object frmReservationProfile: TfrmReservationProfile
               BevelInner = bvNone
               BevelOuter = bvNone
               BorderStyle = bsNone
+              Color = clWhite
               Font.Charset = DEFAULT_CHARSET
-              Font.Color = clWindowText
+              Font.Color = clBlack
               Font.Height = -9
               Font.Name = 'Tahoma'
               Font.Style = []
@@ -1412,8 +1412,9 @@ object frmReservationProfile: TfrmReservationProfile
               BevelInner = bvNone
               BevelOuter = bvNone
               BorderStyle = bsNone
+              Color = clWhite
               Font.Charset = DEFAULT_CHARSET
-              Font.Color = clWindowText
+              Font.Color = clBlack
               Font.Height = -9
               Font.Name = 'Tahoma'
               Font.Style = []
@@ -1502,8 +1503,9 @@ object frmReservationProfile: TfrmReservationProfile
               BevelInner = bvNone
               BevelOuter = bvNone
               BorderStyle = bsNone
+              Color = clWhite
               Font.Charset = DEFAULT_CHARSET
-              Font.Color = clWindowText
+              Font.Color = clBlack
               Font.Height = -9
               Font.Name = 'Tahoma'
               Font.Style = []
@@ -1522,8 +1524,9 @@ object frmReservationProfile: TfrmReservationProfile
               BevelInner = bvNone
               BevelOuter = bvNone
               BorderStyle = bsNone
+              Color = clWhite
               Font.Charset = DEFAULT_CHARSET
-              Font.Color = clWindowText
+              Font.Color = clBlack
               Font.Height = -9
               Font.Name = 'Tahoma'
               Font.Style = []
@@ -2532,8 +2535,8 @@ object frmReservationProfile: TfrmReservationProfile
         object chkShowAllGuests: TsCheckBox
           Left = 333
           Top = 11
-          Width = 85
-          Height = 20
+          Width = 93
+          Height = 18
           Caption = 'Show all guests'
           Anchors = [akLeft, akTop, akRight]
           TabOrder = 4

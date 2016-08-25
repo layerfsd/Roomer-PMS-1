@@ -727,6 +727,8 @@ type
     btnRptDepartures: TdxBarLargeButton;
     dxRptStockitems: TdxBarLargeButton;
     btnHideCancelledBookings: TdxBarLargeButton;
+    barinnFinancials: TdxBar;
+    btnCloseCurrentDay: TdxBarLargeButton;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
@@ -1029,6 +1031,8 @@ type
       ABrush: TBrush; AFont: TFont);
     procedure dxRptStockitemsClick(Sender: TObject);
     procedure btnHideCancelledBookingsClick(Sender: TObject);
+    procedure btnDayClosingTimesClick(Sender: TObject);
+    procedure btnCloseCurrentDayClick(Sender: TObject);
 
   private
     FReservationsModel: TReservationsModel;
@@ -1521,6 +1525,7 @@ type
     procedure RefreshPeriodView;
     procedure FormatToReservationAttrib(aCanvas: TCanvas; const aAttrib: recStatusAttr);
     procedure ClearObjectsFromGrid(aGrid: TAdvStringGrid);
+    procedure DayClosingTimes;
 {$IFDEF USE_JCL}
     procedure LogException(ExceptObj: TObject; ExceptAddr: Pointer; IsOS: boolean);
 {$ENDIF}
@@ -1620,7 +1625,7 @@ uses
     , UITypes
     , Types
     , VCLTee.TeCanvas
-    , uRptStockItems;
+    , uRptStockItems, uDayClosingTimes, uDayClosingTimesAPICaller;
 
 {$R *.DFM}
 {$R Cursors.res}
@@ -5163,8 +5168,7 @@ var
 begin
   if GetSelectedRoomInformation then
   begin
-    s := g.oRooms.FindRoomStatus(_Room);
-    if g.qWarnCheckInDirtyRoom AND (NOT((s = 'R') OR (s = 'C'))) then
+    if g.qWarnCheckInDirtyRoom AND g.oRooms.Room[_Room].IsDirty then
     begin
       s := Format(GetTranslatedText('shTx_Various_RoomNotClean'), [_Room]);
       if MessageDlg(s, mtWarning, [mbYes, mbCancel], 0) <> mrYes then
@@ -11588,6 +11592,25 @@ begin
   _Close;
 end;
 
+procedure CloseFinancialDay;
+var
+  lCaller: TDayClosingTimesAPICaller;
+begin
+  lCaller := TDayClosingTimesAPICaller.Create;
+  try
+    lCaller.CloseRunningDay;
+  finally
+    lCaller.Free;
+  end;
+end;
+
+procedure TfrmMain.btnCloseCurrentDayClick(Sender: TObject);
+begin
+  UserClickedDxLargeButton(Sender);
+  if MessageDlg(GetTranslatedText('shTx_CloseFinancialDay'), mtConfirmation, [mbYes, mbCancel], 0) = mrYes then
+    CloseFinancialDay;
+end;
+
 procedure TfrmMain.lblLogoutClick(Sender: TObject);
 begin
   if Sender <> nil then
@@ -11879,6 +11902,12 @@ procedure TfrmMain.btnManagmentStatClick(Sender: TObject);
 begin
   UserClickedDxLargeButton(Sender);
   rptManagment;
+end;
+
+procedure TfrmMain.btnDayClosingTimesClick(Sender: TObject);
+begin
+  UserClickedDxLargeButton(Sender);
+  DayClosingTimes;
 end;
 
 procedure TfrmMain.btnDayFinalClick(Sender: TObject);
@@ -13180,6 +13209,11 @@ var
   theData: recPackageHolder;
 begin
   if OpenPackages(actNone, theData) then
+end;
+
+procedure TfrmMain.DayClosingTimes;
+begin
+  EditDayClosingTimes;
 end;
 
 // #######################  Employee  ########################################

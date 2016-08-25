@@ -11,13 +11,14 @@ type
   EOpenAPICallerException = class(Exception);
 
   TBaseOpenAPICaller = class abstract(TObject)
+  const
+    cAccMicrosoftDataset = 'application/x-microsoft-dataset';
   public
   end;
 
   TInventoriesOpenAPICaller = class(TBaseOpenAPICaller)
   const
     cResourcesURI = 'inventories/';
-    cAccMicrosoftDataset = 'application/x-microsoft-dataset';
   public
     /// <summary>
     ///   Implementation of /inventories/stocks endpoint, returning a dataset

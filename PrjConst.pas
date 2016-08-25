@@ -1497,7 +1497,8 @@ begin
 
   constants.Add('shTxExtraBedInvoiceText', 'Extra bed');
 
-  constants.Add('shTxThisConfirmAllottedBooking', 'This will change the full booking into a confirmed reservation.' + #10#10 +                                                                                                'Do you want to continue?');
+  constants.Add('shTxThisConfirmAllottedBooking', 'This will change the full booking into a confirmed reservation.' + #10#10 + 'Do you want to continue?');
+  constants.Add('shTx_CloseFinancialDay', 'This will close the current day for revenues and payments?' + #10#10 + 'Do you want to continue?');
 end;
 
 procedure AddConstants_7; // Baettu vid thennan ad vild
