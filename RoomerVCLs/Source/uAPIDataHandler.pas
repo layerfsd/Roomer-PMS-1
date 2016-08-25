@@ -145,6 +145,7 @@ var
 begin
   xml := CreateXmlDocument; // CoDOMDocument40.Create;
   temp := someXML;
+  CopyToClipboard(temp);
 //  temp := StringReplace(someXML, 'dt:type=''tinyint''', 'dt:type=''boolean''',
 //                          [rfReplaceAll, rfIgnoreCase]);
   try

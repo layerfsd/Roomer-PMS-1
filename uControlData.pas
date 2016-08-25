@@ -709,7 +709,6 @@ type
     procedure chkUnderlinePropertiesEditValueChanged(Sender : TObject);
     procedure chkStrikeOutPropertiesEditValueChanged(Sender : TObject);
     procedure btnOneColorToDefaultClick(Sender : TObject);
-    procedure panGuestStayingDblClick(Sender : TObject);
     procedure btnUpdateAllColorsClick(Sender : TObject);
     procedure btnAllColorsToDefaultClick(Sender : TObject);
     procedure edCallStartPriceChange(Sender : TObject);
@@ -746,6 +745,8 @@ type
     procedure btnResourcesClick(Sender: TObject);
     procedure btnSynchronizeFinanceTablesClick(Sender: TObject);
     procedure btnInvoiceTemplateResourcesClick(Sender: TObject);
+    procedure panGuestStayingClick(Sender: TObject);
+    procedure panGuestStayingDblClick(Sender: TObject);
 
   private
     { private declarations }
@@ -2486,7 +2487,16 @@ begin
   SetBtnPos;
 end;
 
-procedure TfrmControlData.panGuestStayingDblClick(Sender : TObject);
+procedure TfrmControlData.panGuestStayingClick(Sender: TObject);
+var
+  tag : Integer;
+begin
+  tag := (Sender as TPanel).tag;
+  cbxStatusAttr_.ItemIndex := tag;
+  setColorControls;
+end;
+
+procedure TfrmControlData.panGuestStayingDblClick(Sender: TObject);
 var
   tag : Integer;
 begin

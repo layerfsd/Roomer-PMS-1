@@ -133,7 +133,7 @@ object frmControlData: TfrmControlData
         Top = 1
         Width = 956
         Height = 612
-        ActivePage = tsCompany
+        ActivePage = tsColors
         Align = alClient
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
@@ -8459,6 +8459,7 @@ object frmControlData: TfrmControlData
               ParentBackground = False
               ParentFont = False
               TabOrder = 0
+              OnClick = panGuestStayingClick
               OnDblClick = panGuestStayingDblClick
               SkinData.SkinSection = 'UNKNOWN'
             end
@@ -8479,6 +8480,7 @@ object frmControlData: TfrmControlData
               ParentBackground = False
               ParentFont = False
               TabOrder = 1
+              OnClick = panGuestStayingClick
               OnDblClick = panGuestStayingDblClick
               SkinData.SkinSection = 'UNKNOWN'
             end
@@ -8499,6 +8501,7 @@ object frmControlData: TfrmControlData
               ParentBackground = False
               ParentFont = False
               TabOrder = 2
+              OnClick = panGuestStayingClick
               OnDblClick = panGuestStayingDblClick
               SkinData.SkinSection = 'UNKNOWN'
             end
@@ -8519,8 +8522,11 @@ object frmControlData: TfrmControlData
               ParentBackground = False
               ParentFont = False
               TabOrder = 3
+              OnClick = panGuestStayingClick
               OnDblClick = panGuestStayingDblClick
               SkinData.SkinSection = 'UNKNOWN'
+              ExplicitLeft = 6
+              ExplicitTop = 28
             end
             object panGuestStaying: TsPanel
               Left = 1
@@ -8538,8 +8544,11 @@ object frmControlData: TfrmControlData
               ParentBackground = False
               ParentFont = False
               TabOrder = 4
+              OnClick = panGuestStayingClick
               OnDblClick = panGuestStayingDblClick
               SkinData.SkinSection = 'UNKNOWN'
+              ExplicitLeft = 6
+              ExplicitTop = 3
             end
             object panBlocked: TsPanel
               Tag = 9
@@ -8558,6 +8567,7 @@ object frmControlData: TfrmControlData
               ParentBackground = False
               ParentFont = False
               TabOrder = 5
+              OnClick = panGuestStayingClick
               OnDblClick = panGuestStayingDblClick
               SkinData.SkinSection = 'UNKNOWN'
             end
@@ -8578,6 +8588,7 @@ object frmControlData: TfrmControlData
               ParentBackground = False
               ParentFont = False
               TabOrder = 6
+              OnClick = panGuestStayingClick
               OnDblClick = panGuestStayingDblClick
               SkinData.SkinSection = 'UNKNOWN'
             end
@@ -8598,6 +8609,7 @@ object frmControlData: TfrmControlData
               ParentBackground = False
               ParentFont = False
               TabOrder = 7
+              OnClick = panGuestStayingClick
               OnDblClick = panGuestStayingDblClick
               SkinData.SkinSection = 'UNKNOWN'
             end
@@ -8618,6 +8630,7 @@ object frmControlData: TfrmControlData
               ParentBackground = False
               ParentFont = False
               TabOrder = 8
+              OnClick = panGuestStayingClick
               OnDblClick = panGuestStayingDblClick
               SkinData.SkinSection = 'UNKNOWN'
             end
@@ -8638,6 +8651,7 @@ object frmControlData: TfrmControlData
               ParentBackground = False
               ParentFont = False
               TabOrder = 9
+              OnClick = panGuestStayingClick
               OnDblClick = panGuestStayingDblClick
               SkinData.SkinSection = 'UNKNOWN'
             end
@@ -8675,7 +8689,7 @@ object frmControlData: TfrmControlData
               end
             end
             object panCanceled: TsPanel
-              Tag = 9
+              Tag = 10
               Left = 1
               Top = 251
               Width = 547
@@ -8691,11 +8705,12 @@ object frmControlData: TfrmControlData
               ParentBackground = False
               ParentFont = False
               TabOrder = 11
+              OnClick = panGuestStayingClick
               OnDblClick = panGuestStayingDblClick
               SkinData.SkinSection = 'UNKNOWN'
             end
             object panTmp2: TsPanel
-              Tag = 9
+              Tag = 12
               Left = 1
               Top = 301
               Width = 547
@@ -8711,11 +8726,12 @@ object frmControlData: TfrmControlData
               ParentBackground = False
               ParentFont = False
               TabOrder = 12
+              OnClick = panGuestStayingClick
               OnDblClick = panGuestStayingDblClick
               SkinData.SkinSection = 'UNKNOWN'
             end
             object panTmp1: TsPanel
-              Tag = 9
+              Tag = 11
               Left = 1
               Top = 276
               Width = 547
@@ -8731,6 +8747,7 @@ object frmControlData: TfrmControlData
               ParentBackground = False
               ParentFont = False
               TabOrder = 13
+              OnClick = panGuestStayingClick
               OnDblClick = panGuestStayingDblClick
               SkinData.SkinSection = 'UNKNOWN'
             end
