@@ -26,7 +26,6 @@ object frmArrivalsReport: TfrmArrivalsReport
     Align = alTop
     TabOrder = 0
     SkinData.SkinSection = 'PANEL'
-    ExplicitTop = -6
     object btnRefresh: TsButton
       Left = 378
       Top = 14
@@ -69,8 +68,8 @@ object frmArrivalsReport: TfrmArrivalsReport
       object rbTomorrow: TsRadioButton
         Left = 4
         Top = 46
-        Width = 76
-        Height = 19
+        Width = 68
+        Height = 20
         Caption = 'Tomorrow'
         TabOrder = 1
         OnClick = rbRadioButtonClick
@@ -78,8 +77,8 @@ object frmArrivalsReport: TfrmArrivalsReport
       object rbManualRange: TsRadioButton
         Left = 119
         Top = 21
-        Width = 122
-        Height = 19
+        Width = 114
+        Height = 20
         Caption = 'Manual date range:'
         TabOrder = 2
         OnClick = rbRadioButtonClick
@@ -142,6 +141,7 @@ object frmArrivalsReport: TfrmArrivalsReport
       BevelOuter = bvNone
       TabOrder = 2
       SkinData.SkinSection = 'PANEL'
+      ExplicitLeft = 2
       object btnExcel: TsButton
         AlignWithMargins = True
         Left = 3
@@ -183,9 +183,6 @@ object frmArrivalsReport: TfrmArrivalsReport
         TabOrder = 2
         OnClick = btnProfileClick
         SkinData.SkinSection = 'BUTTON'
-        ExplicitLeft = 307
-        ExplicitTop = 5
-        ExplicitHeight = 29
       end
       object btnInvoice: TsButton
         AlignWithMargins = True
@@ -200,6 +197,7 @@ object frmArrivalsReport: TfrmArrivalsReport
         Images = DImages.PngImageList1
         Style = bsSplitButton
         TabOrder = 3
+        OnClick = mnuRoomInvoiceClick
         SkinData.SkinSection = 'BUTTON'
       end
       object btnReport: TsButton
@@ -215,7 +213,6 @@ object frmArrivalsReport: TfrmArrivalsReport
         TabOrder = 4
         OnClick = btnReportClick
         SkinData.SkinSection = 'BUTTON'
-        ExplicitLeft = 1018
       end
     end
   end
@@ -295,7 +292,7 @@ object frmArrivalsReport: TfrmArrivalsReport
       object grArrivalsListDBTableView1AverageRoomRate: TcxGridDBColumn
         Caption = 'Average Rate'
         DataBinding.FieldName = 'AverageRoomRate'
-        OnGetDisplayText = grArrivalsListDBTableView1AverageRoomRateGetDisplayText
+        OnGetProperties = grArrivalsListDBTableView1AverageRoomRateGetProperties
         Options.Editing = False
         Width = 82
       end

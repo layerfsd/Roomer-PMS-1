@@ -11930,10 +11930,8 @@ end;
 
 procedure TfrmMain.btnRptDeparturesClick(Sender: TObject);
 begin
-  {$IFDEF DEBUG}
   UserClickedDxLargeButton(Sender);
   ShowDeparturesReport;
-  {$ENDIF}
 end;
 
 procedure TfrmMain.btnRptFinanceForecastClick(Sender: TObject);

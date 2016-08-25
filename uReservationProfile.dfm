@@ -2326,6 +2326,7 @@ object frmReservationProfile: TfrmReservationProfile
           TabOrder = 1
           OnClick = OpenthisRoom1Click
           SkinData.SkinSection = 'BUTTON'
+          ExplicitTop = 2
         end
         object btnAddRoom: TsButton
           AlignWithMargins = True

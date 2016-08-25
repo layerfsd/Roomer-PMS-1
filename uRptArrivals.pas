@@ -144,8 +144,8 @@ type
       ARecord: TcxCustomGridRecord; var AText: string);
     procedure btnReportClick(Sender: TObject);
     procedure ppHeaderBand1BeforePrint(Sender: TObject);
-    procedure grArrivalsListDBTableView1AverageRoomRateGetDisplayText(Sender: TcxCustomGridTableItem;
-      ARecord: TcxCustomGridRecord; var AText: string);
+    procedure grArrivalsListDBTableView1AverageRoomRateGetProperties(Sender: TcxCustomGridTableItem;
+      ARecord: TcxCustomGridRecord; var AProperties: TcxCustomEditProperties);
   private
     FRefreshingdata: boolean;
     FCurrencyhandler: TCurrencyHandler;
@@ -344,9 +344,7 @@ begin
     s := Format(cSqlForDateRange, [FormatDateTime('yyyy-mm-dd', dtDateFrom.Date),
                                    FormatDateTime('yyyy-mm-dd', dtDateTo.Date)]);
   Result := Format(cSQL, [s]);
-  {$ifdef DEBUG}
-    CopyToClipboard(Result);
-  {$endif}
+  CopyToClipboard(Result);
 end;
 
 constructor TfrmArrivalsReport.Create(aOwner: TComponent);
@@ -397,10 +395,10 @@ begin
   EditInvoice(kbmArrivalsList['RoomerReservationID'], 0, 0, 0, 0, 0, false, true,false);
 end;
 
-procedure TfrmArrivalsReport.grArrivalsListDBTableView1AverageRoomRateGetDisplayText(Sender: TcxCustomGridTableItem;
-  ARecord: TcxCustomGridRecord; var AText: string);
+procedure TfrmArrivalsReport.grArrivalsListDBTableView1AverageRoomRateGetProperties(Sender: TcxCustomGridTableItem;
+  ARecord: TcxCustomGridRecord; var AProperties: TcxCustomEditProperties);
 begin
-  aText := FCurrencyhandler.FormattedValue(kbmArrivalsListAverageRoomRate.AsFloat);
+  AProperties := FCurrencyhandler.GetcxEditProperties;
 end;
 
 procedure TfrmArrivalsReport.grArrivalsListDBTableView1CellDblClick(Sender: TcxCustomGridTableView; ACellViewInfo: TcxGridTableDataCellViewInfo;
