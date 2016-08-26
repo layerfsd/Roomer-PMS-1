@@ -28,8 +28,6 @@ object frmGoToRoomandDate: TfrmGoToRoomandDate
     BevelOuter = bvNone
     TabOrder = 0
     SkinData.SkinSection = 'PANEL'
-    ExplicitTop = 148
-    ExplicitWidth = 280
     DesignSize = (
       332
       33)
@@ -47,7 +45,6 @@ object frmGoToRoomandDate: TfrmGoToRoomandDate
       TabOrder = 0
       OnClick = cxButton1Click
       SkinData.SkinSection = 'BUTTON'
-      ExplicitLeft = 200
     end
     object btnCancel: TsButton
       Left = 239
@@ -62,15 +59,14 @@ object frmGoToRoomandDate: TfrmGoToRoomandDate
       ModalResult = 2
       TabOrder = 1
       SkinData.SkinSection = 'BUTTON'
-      ExplicitLeft = 302
     end
   end
   object gbxFind: TsGroupBox
     Left = 11
-    Top = 81
+    Top = 82
     Width = 313
     Height = 70
-    Caption = 'Find by Refrence'
+    Caption = 'Find by Reference'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -11
@@ -98,9 +94,9 @@ object frmGoToRoomandDate: TfrmGoToRoomandDate
       Top = 19
       Width = 104
       Height = 21
-      Color = 3355443
+      Color = clWhite
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = 15724527
+      Font.Color = clBlack
       Font.Height = -11
       Font.Name = 'Tahoma'
       Font.Style = []
@@ -116,9 +112,9 @@ object frmGoToRoomandDate: TfrmGoToRoomandDate
       Alignment = taLeftJustify
       SkinData.SkinSection = 'COMBOBOX'
       VerticalAlignment = taAlignTop
-      Color = 3355443
+      Color = clWhite
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = 15724527
+      Font.Color = clBlack
       Font.Height = -11
       Font.Name = 'Tahoma'
       Font.Style = []
@@ -130,7 +126,7 @@ object frmGoToRoomandDate: TfrmGoToRoomandDate
         'Internal Room Reservation'
         'Internal Reservation'
         'Invoice'
-        'Booking refreance')
+        'Booking reference')
     end
   end
   object gbxGoto: TsGroupBox
@@ -181,9 +177,9 @@ object frmGoToRoomandDate: TfrmGoToRoomandDate
       Top = 15
       Width = 104
       Height = 21
-      Color = 3355443
+      Color = clWhite
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = 15724527
+      Font.Color = clBlack
       Font.Height = -11
       Font.Name = 'Tahoma'
       Font.Style = []
@@ -197,10 +193,10 @@ object frmGoToRoomandDate: TfrmGoToRoomandDate
       Width = 104
       Height = 21
       AutoSize = False
-      Color = 3355443
+      Color = clWhite
       EditMask = '!99/99/9999;1; '
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = 15724527
+      Font.Color = clBlack
       Font.Height = -11
       Font.Name = 'Tahoma'
       Font.Style = []
