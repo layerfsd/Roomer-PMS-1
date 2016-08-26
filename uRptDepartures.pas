@@ -206,7 +206,7 @@ begin
   s := s+'                        AND rd1.ResFlag = yyy.ResFlag) AS NumNights, ';
 
                                                     // ATH
-  s := s+'            IFNULL(rr.ExpectedCheckOutTime, ''12:00'') AS ExpectedCheckOutTime ';
+  s := s+'            rr.ExpectedCheckOutTime';
 //  s := s+'            yyy.Currency, ';
 //  s := s+'            yyy.CurrencyRate ';
   s := s+'    FROM ';
@@ -265,7 +265,7 @@ begin
   s := s+'                    roomsdate rd1 ';
   s := s+'                WHERE ';
   s := s+'                    rd1.RoomReservation = rr.RoomReservation ';
-  s := s+'                        AND NOT rd1.ResFlag IN (''X'' , ''C'') ';
+  s := s+'                        AND NOT rd1.ResFlag IN (''X'' , ''C'', ''D'') ';
   s := s+'                GROUP BY rd1.RoomReservation) AS NumNights, ';
   s := s+'            (SELECT ';
   s := s+'                    COUNT(pe.ID) ';
@@ -305,7 +305,7 @@ begin
   s := s+'                roomsdate rd ';
   s := s+'            WHERE ';
   s := s+'                rd.ADate BETWEEN DATE_ADD(params.StartDate, INTERVAL - 1 DAY) AND DATE_ADD(params.EndDate, INTERVAL - 1 DAY) ';
-  s := s+'                    AND rd.ResFlag = ''G'' ';
+//  s := s+'                    AND rd.ResFlag = ''G'' ';
   s := s+'                    AND (SELECT ';
   s := s+'                        rd1.ADate ';
   s := s+'                    FROM ';
@@ -314,8 +314,10 @@ begin
   s := s+'                        rd1.RoomReservation = rd.RoomReservation ';
   s := s+'                    ORDER BY rd1.ADate DESC ';
   s := s+'                    LIMIT 1) = rd.ADate) ';
-  s := s+'            AND NOT ResFlag IN (''X'' , ''C'') ';
-  s := s+'            AND rd.Paid = 0) xxx) yyy ';
+  s := s+'            AND NOT ResFlag IN (''X'' , ''C'', ''D'') ';
+//  s := s+'            AND rd.Paid = 0 ';
+  s := s+'      ) xxx ';
+  s := s+'  ) yyy ';
   s := s+'    JOIN roomreservations rr ON rr.RoomReservation = yyy.RoomReservation ';
   s := s+'    JOIN reservations r ON r.Reservation = yyy.Reservation ';
   s := s+'    JOIN customers cu ON cu.Customer = r.Customer AND cu.Active ';

@@ -68,8 +68,8 @@ object frmArrivalsReport: TfrmArrivalsReport
       object rbTomorrow: TsRadioButton
         Left = 4
         Top = 46
-        Width = 68
-        Height = 20
+        Width = 76
+        Height = 19
         Caption = 'Tomorrow'
         TabOrder = 1
         OnClick = rbRadioButtonClick
@@ -77,8 +77,8 @@ object frmArrivalsReport: TfrmArrivalsReport
       object rbManualRange: TsRadioButton
         Left = 119
         Top = 21
-        Width = 114
-        Height = 20
+        Width = 122
+        Height = 19
         Caption = 'Manual date range:'
         TabOrder = 2
         OnClick = rbRadioButtonClick
@@ -141,7 +141,6 @@ object frmArrivalsReport: TfrmArrivalsReport
       BevelOuter = bvNone
       TabOrder = 2
       SkinData.SkinSection = 'PANEL'
-      ExplicitLeft = 2
       object btnExcel: TsButton
         AlignWithMargins = True
         Left = 3
@@ -242,11 +241,32 @@ object frmArrivalsReport: TfrmArrivalsReport
       OnCellDblClick = grArrivalsListDBTableView1CellDblClick
       DataController.DataSource = ArrivalsListDS
       DataController.Options = [dcoAssignGroupingValues, dcoAssignMasterDetailKeys, dcoSaveExpanding, dcoGroupsAlwaysExpanded]
-      DataController.Summary.DefaultGroupSummaryItems = <>
-      DataController.Summary.FooterSummaryItems = <>
+      DataController.Summary.DefaultGroupSummaryItems = <
+        item
+          Kind = skCount
+          Position = spFooter
+          Column = grArrivalsListDBTableView1Room
+        end
+        item
+          Kind = skSum
+          Position = spFooter
+          Column = grArrivalsListDBTableView1NumGuests
+        end>
+      DataController.Summary.FooterSummaryItems = <
+        item
+          Kind = skCount
+          Column = grArrivalsListDBTableView1Room
+        end
+        item
+          Format = '0'
+          Kind = skSum
+          Column = grArrivalsListDBTableView1NumGuests
+        end>
       DataController.Summary.SummaryGroups = <>
       FilterRow.Visible = True
       OptionsView.ColumnAutoWidth = True
+      OptionsView.Footer = True
+      OptionsView.GroupFooters = gfAlwaysVisible
       Styles.Group = cxStyle1
       Styles.GroupSummary = cxStyle1
       object grArrivalsListDBTableView1Room: TcxGridDBColumn
