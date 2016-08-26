@@ -57,8 +57,8 @@ object frmDeparturesReport: TfrmDeparturesReport
       object rbToday: TsRadioButton
         Left = 4
         Top = 21
-        Width = 50
-        Height = 20
+        Width = 58
+        Height = 19
         Caption = 'Today'
         Checked = True
         TabOrder = 0
@@ -68,8 +68,8 @@ object frmDeparturesReport: TfrmDeparturesReport
       object rbTomorrow: TsRadioButton
         Left = 4
         Top = 46
-        Width = 68
-        Height = 20
+        Width = 76
+        Height = 19
         Caption = 'Tomorrow'
         TabOrder = 1
         OnClick = rbRadioButtonClick
@@ -77,8 +77,8 @@ object frmDeparturesReport: TfrmDeparturesReport
       object rbManualRange: TsRadioButton
         Left = 119
         Top = 21
-        Width = 114
-        Height = 20
+        Width = 122
+        Height = 19
         Caption = 'Manual date range:'
         TabOrder = 2
         OnClick = rbRadioButtonClick
@@ -154,8 +154,6 @@ object frmDeparturesReport: TfrmDeparturesReport
         TabOrder = 0
         OnClick = btnExcelClick
         SkinData.SkinSection = 'BUTTON'
-        ExplicitLeft = 15
-        ExplicitTop = 5
       end
       object btnCheckOut: TsButton
         AlignWithMargins = True
@@ -170,8 +168,6 @@ object frmDeparturesReport: TfrmDeparturesReport
         TabOrder = 1
         OnClick = btnCheckOutClick
         SkinData.SkinSection = 'BUTTON'
-        ExplicitLeft = 161
-        ExplicitTop = 5
       end
       object btnProfile: TsButton
         AlignWithMargins = True
@@ -186,8 +182,6 @@ object frmDeparturesReport: TfrmDeparturesReport
         TabOrder = 2
         OnClick = btnProfileClick
         SkinData.SkinSection = 'BUTTON'
-        ExplicitLeft = 307
-        ExplicitTop = 5
       end
       object btnInvoice: TsButton
         AlignWithMargins = True
@@ -204,8 +198,6 @@ object frmDeparturesReport: TfrmDeparturesReport
         TabOrder = 3
         OnClick = mnuRoomInvoiceClick
         SkinData.SkinSection = 'BUTTON'
-        ExplicitLeft = 453
-        ExplicitTop = 5
       end
     end
   end
@@ -220,6 +212,8 @@ object frmDeparturesReport: TfrmDeparturesReport
     Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = []
+    ExplicitLeft = 1
+    ExplicitTop = 571
   end
   object grDeparturesList: TcxGrid
     Left = 0
@@ -234,8 +228,26 @@ object frmDeparturesReport: TfrmDeparturesReport
     object tvDeparturesList: TcxGridDBTableView
       Navigator.Buttons.CustomButtons = <>
       DataController.DataSource = DeparturesListDS
-      DataController.Summary.DefaultGroupSummaryItems = <>
-      DataController.Summary.FooterSummaryItems = <>
+      DataController.Summary.DefaultGroupSummaryItems = <
+        item
+          Kind = skCount
+          Position = spFooter
+          Column = tvDeparturesListRoom
+        end
+        item
+          Kind = skSum
+          Position = spFooter
+          Column = tvDeparturesListNumGuests
+        end>
+      DataController.Summary.FooterSummaryItems = <
+        item
+          Kind = skCount
+          Column = tvDeparturesListRoom
+        end
+        item
+          Kind = skSum
+          Column = tvDeparturesListNumGuests
+        end>
       DataController.Summary.SummaryGroups = <>
       FilterRow.Visible = True
       OptionsData.CancelOnExit = False
@@ -244,6 +256,8 @@ object frmDeparturesReport: TfrmDeparturesReport
       OptionsData.Editing = False
       OptionsData.Inserting = False
       OptionsView.ColumnAutoWidth = True
+      OptionsView.Footer = True
+      OptionsView.GroupFooters = gfAlwaysVisible
       object tvDeparturesListRoom: TcxGridDBColumn
         DataBinding.FieldName = 'Room'
         SortIndex = 0
