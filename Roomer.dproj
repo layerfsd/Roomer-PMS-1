@@ -757,6 +757,7 @@
         <DCCReference Include="RoomerVCLs\Source\uDateTimeHelper.pas"/>
         <DCCReference Include="uDayClosingTimes.pas"/>
         <DCCReference Include="OpenAPI\uDayClosingTimesAPICaller.pas"/>
+        <DCCReference Include="RoomerVCLs\Source\uRoomerHttpClient.pas"/>
         <None Include="Roomer.todo"/>
         <None Include="notes.txt"/>
         <None Include="Roomer.inc"/>

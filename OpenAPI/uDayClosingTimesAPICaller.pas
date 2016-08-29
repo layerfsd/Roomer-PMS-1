@@ -10,10 +10,12 @@ uses
 type
   TDayClosingTimesAPICaller = class(TBaseOpenAPICaller)
   const
-    cResourcesURI = '/financials';
-    cDayClosingTimeURI = '/dayclosingtimes';
+    cResourcesURI = 'financials/';
+    cDayClosingTimeURI = 'dayclosingtimes/';
   private
-    function constructXMLObject(aDay, aClosingtime: TDateTime): string;
+    function constructDayClosingTimestampXMLObject(aDay, aClosingtime: TDateTime): string;
+    function ConstructNewRequest(aDay, aClosingtime: TDateTime): string;
+    function ConstructUpdateRequest(aDay, aClosingtime: TDateTime): string;
   public
     /// <summary>
     ///   Implementation of /configurationItems/dayclosingtimes endpoint, returning a dataset
@@ -37,7 +39,7 @@ uses
   , uD
   , Classes
   , SysUtils
-  ;
+  , uUtils;
 
 function TDayClosingTimesAPICaller.DeleteDayClosingTime(aDay: TDateTime): boolean;
 var
@@ -47,9 +49,10 @@ var
 begin
   roomerClient := d.roomerMainDataSet.CreateRoomerClient(True);
   try
-    lURI := d.roomerMainDataSet.OpenApiUri + cResourcesURI + '/' + dateToSqlString(aDay);
+    lURI := d.roomerMainDataSet.OpenApiUri + cResourcesURI  + cDayClosingTimeURI + '/' + dateToSqlString(aDay);
 
     lResponse := roomerClient.Delete(lURI);
+    Result := true;
   finally
     roomerClient.Free;
   end;
@@ -119,7 +122,7 @@ var
   lResponse: string;
   lStream: TStringStream;
 const
-  cCloseCurrentURI = '/runningday/close';
+  cCloseCurrentURI = '/runningday/closenow';
 begin
   roomerClient := d.roomerMainDataSet.CreateRoomerClient(True);
   try
@@ -128,6 +131,7 @@ begin
       lURI := d.roomerMainDataSet.OpenApiUri + cResourcesURI + cCloseCurrentURI;
 
       lResponse := roomerClient.POST(lURI, lStream);
+      Result := lResponse = '' ;
     finally
       lStream.Free;
     end;
@@ -136,13 +140,36 @@ begin
   end;
 end;
 
-function TDayClosingTimesAPICaller.constructXMLObject(aDay, aClosingtime: TDateTime): string;
+function TDayClosingTimesAPICaller.constructDayClosingTimestampXMLObject(aDay, aClosingtime: TDateTime): string;
+begin
+  Result := result + '<rmrds:DayClosingTimestampType '#10;
+  Result := result + Format('  day="%s" ', [dateToSQLString(aDay)]) + #10;
+  Result := result + Format('  closingtimestamp="%s"', [dateTimeToXmlString(aClosingtime)]) +#10;
+  Result := result + '/>'#10;
+end;
+
+function TDayClosingTimesAPICaller.ConstructNewRequest(aDay, aClosingtime: TDateTime): string;
 begin
   Result := '<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>'#10;
-  Result := result + '<rmrds:DayClosingTimestampType xmlns:rmrds="http://roomer.promoir.nl/datamodel/canonical/datastructures/2014/01/" >'#10;
-  Result := result + Format('  <day>%s</day>', [dateTimeToXmlString(aDay)]) + #10;
-  Result := result + Format('  <closingtimestamp>%s</closingtimestamp>', [dateTimeToXmlString(aClosingtime)]) +#10;
-  Result := result + '</rmrds:DayClosingTimestampType>'#10;
+  Result := result + '<NewDayClosingTimestampRequest '#10;
+  Result := Result + '    xmlns="http://www.promoir.nl/roomer/financials/2016/08" '#10;
+  Result := result + '    xmlns:rmrds="http://roomer.promoir.nl/datamodel/canonical/datastructures/2014/01/" '#10;
+  Result := result + '> '#10;
+  Result := Result + constructDayClosingTimestampXMLObject(aDay, aClosingTime);
+  Result := Result + '</NewDayClosingTimestampRequest>';
+
+end;
+
+function TDayClosingTimesAPICaller.ConstructUpdateRequest(aDay, aClosingtime: TDateTime): string;
+begin
+  Result := '<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>'#10;
+  Result := result + '<UpdateDayClosingTimestampRequest '#10;
+  Result := Result + '    xmlns="http://www.promoir.nl/roomer/financials/2016/08" '#10;
+  Result := result + '    xmlns:rmrds="http://roomer.promoir.nl/datamodel/canonical/datastructures/2014/01/" '#10;
+  Result := result + '> '#10;
+  Result := Result + constructDayClosingTimestampXMLObject(aDay, aClosingTime);
+  Result := Result + '</UpdateDayClosingTimestampRequest>';
+
 end;
 
 function TDayClosingTimesAPICaller.InsertDayClosingTime(aDay, aClosingTime: TDateTime): boolean;
@@ -158,10 +185,18 @@ begin
     try
       roomerClient.RequestHeader.Accept := cAccMicrosoftDataset;
       roomerClient.RequestHeader.contentType := 'application/xml';
-      lStream.WriteString( constructXMLObject(aDay, aClosingtime));
+      lStream.WriteString( ConstructNewRequest(aDay, aClosingtime));
       lURI := d.roomerMainDataSet.OpenApiUri + cResourcesURI + cDayClosingTimeURI;
 
-      lResponse := roomerClient.POST(lURI, lStream);
+      try
+        lResponse := roomerClient.POST(lURI, lStream);
+      except
+        on E: Exception do
+        begin
+          CopyToClipboard(E.Message);
+        end;
+      end;
+      Result := True;
     finally
       lStream.Free;
     end;
@@ -183,10 +218,11 @@ begin
     try
       roomerClient.RequestHeader.Accept := cAccMicrosoftDataset;
       roomerClient.RequestHeader.contentType := 'application/xml';
-      lStream.WriteString( constructXMLObject(aDay, aClosingtime));
+      lStream.WriteString( ConstructUpdateRequest(aDay, aClosingtime));
       lURI := d.roomerMainDataSet.OpenApiUri + cResourcesURI + cDayClosingTimeURI;
 
       lResponse := roomerClient.PUT(lURI, lStream);
+      Result := True;
     finally
       lStream.Free;
     end;

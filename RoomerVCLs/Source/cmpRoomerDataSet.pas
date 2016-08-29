@@ -11,14 +11,6 @@ uses
   System.SysUtils,
 
   System.Classes,
-  Data.DB,
-  Data.Win.ADODB,
-  ADOInt,
-  Web.HTTPApp,
-  Variants,
-  uAPIDataHandler,
-  RoomerMultipartFormData,
-  {.$.IFDEF USE_INDY}
   IdBaseComponent,
   IdHeaderList,
   IdComponent,
@@ -29,11 +21,16 @@ uses
   IdIOHandler,
   IdIOHandlerSocket,
   IdIOHandlerStack,
-  {.$.ELSE}
+  Data.DB,
+  Data.Win.ADODB,
+  ADOInt,
+  Web.HTTPApp,
+  Variants,
+  uAPIDataHandler,
+  RoomerMultipartFormData,
   ALWininetHttpClient,
   AlHttpCommon,
   ALHttpClient,
-  {.$.ENDIF}
   MSXML2_TLB,
   IdSSL,
   IdSSLOpenSSL,
@@ -42,7 +39,8 @@ uses
   Vcl.Dialogs,
   ActiveX,
   DateUtils,
-  uStringUtils;
+  uStringUtils,
+  uRoomerHttpClient;
 
 const
   ftTemplate = $0000;
@@ -147,7 +145,7 @@ type
     FRoomerDatasetsUri: String;
     FOnSessionExpired: TNotifyEvent;
 
-    FroomerClient: {$IFDEF USE_INDY}TIdHTTP{$ELSE}TALWininetHttpClient{$ENDIF};
+    FroomerClient: TRoomerHttpClient;
 {$IFDEF USE_INDY}IdSSLIOHandlerSocketOpenSSL1: TIdSSLIOHandlerSocketOpenSSL;
     {$ENDIF}
     FCommandType: TCommandType;
@@ -179,35 +177,33 @@ type
       hotel, user, password: String);
 
     function GetAsString(roomerClient:
-      {$IFDEF USE_INDY}TIdHTTP{$ELSE}TALWininetHttpClient{$ENDIF}
+      TRoomerHttpClient
       ; url: String; contentType: String = ''; force : Boolean = False): String;
 
     function PostAsString(roomerClient:
-      {$IFDEF USE_INDY}TIdHTTP{$ELSE}TALWininetHttpClient{$ENDIF}
+      TRoomerHttpClient
       ; url, Data: String; contentType: String = ''): String;
     function PostAsStringAsync(roomerClient:
-      {$IFDEF USE_INDY}TIdHTTP{$ELSE}TALWininetHttpClient{$ENDIF}
+      TRoomerHttpClient
       ; url, Data: String; contentType: String = ''): String;
     function DownloadFile(roomerClient:
-      {$IFDEF USE_INDY}TIdHTTP{$ELSE}TALWininetHttpClient{$ENDIF}
+      TRoomerHttpClient
       ; url, filename: String): Boolean;
-    procedure AddAuthenticationHeaders(roomerClient:
-      {$IFDEF USE_INDY}TIdHTTP{$ELSE}TALWininetHttpClient{$ENDIF}
-      );
+    procedure AddAuthenticationHeaders(roomerClient: TRoomerHttpClient ); deprecated 'Use TRoomerHttpClients.AddAuthenticationHeaders';
     function UploadFile(roomerClient:
-      {$IFDEF USE_INDY}TIdHTTP{$ELSE}TALWininetHttpClient{$ENDIF}
+      TRoomerHttpClient
       ; url, filename: String): Boolean;
 //    function GetAsJSON(roomerClient:
-//      {$IFDEF USE_INDY}TIdHTTP{$ELSE}TALWininetHttpClient{$ENDIF}
+//      TRoomerHttpClient
 //      ; url: String): String;
     function PostAsJSON(roomerClient:
-      {$IFDEF USE_INDY}TIdHTTP{$ELSE}TALWininetHttpClient{$ENDIF}
+      TRoomerHttpClient
       ; url, Data: String): String;
     function PutAsJSON(roomerClient:
-      {$IFDEF USE_INDY}TIdHTTP{$ELSE}TALWininetHttpClient{$ENDIF}
+      TRoomerHttpClient
       ; url, Data: String): String;
     function DeleteAsString(roomerClient:
-      {$IFDEF USE_INDY}TIdHTTP{$ELSE}TALWininetHttpClient{$ENDIF}
+      TRoomerHttpClient
       ; url: String): String;
     function GetOpenApiUri: String;
     procedure SetOpenApiUri(const Value: String);
@@ -217,11 +213,11 @@ type
       ; contentType: String = ''
       ; retryOnError : Boolean = true): String;
     function PutAsString(roomerClient:
-      {$IFDEF USE_INDY}TIdHTTP{$ELSE}TALWininetHttpClient{$ENDIF}
+      TRoomerHttpClient
       ; url, Data: String; contentType: String = ''
       ; retryOnError : Boolean = true): String;
     function PostStreamAsString(roomerClient:
-      {$IFDEF USE_INDY}TIdHTTP{$ELSE}TALWininetHttpClient{$ENDIF}
+      TRoomerHttpClient
       ; url: String; Data: TStream; contentType: String = ''): String;
     procedure SetOpenApiAuthHeaders(hdrs:
       {$IFDEF USE_INDY}TIdHeaderList{$ELSE}TAlHttpRequestHeader{$ENDIF});
@@ -249,7 +245,7 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
-    function CreateRoomerClient(aAddAuthenticationHeader: boolean = false): {$IFDEF USE_INDY}TIdHTTP{$ELSE}TALWininetHttpClient{$ENDIF};
+    function CreateRoomerClient(aAddAuthenticationHeader: boolean = false): TRoomerHttpClient;
     function GetFloatValue(Field: TField): Double;
     procedure Post; override;
     procedure OpenDataset(SqlResult: String);
@@ -377,7 +373,7 @@ type
 {$IFDEF USE_INDY}
     property roomerClient: TIdHTTP read FroomerClient;
 {$ELSE}
-    property roomerClient: TALWininetHttpClient read FroomerClient;
+    property roomerClient: TRoomerHttpClient read FroomerClient;
 {$ENDIF}
     property OnSessionExpired: TNotifyEvent read FOnSessionExpired
       write FOnSessionExpired;
@@ -472,31 +468,13 @@ begin
 {$ENDIF}
   FroomerClient := CreateRoomerClient;
   FLastAccess := now;
+
 end;
 
 function TRoomerDataSet.CreateRoomerClient(aAddAuthenticationHeader: boolean = false):
-                          {$IFDEF USE_INDY}TIdHTTP{$ELSE}TALWininetHttpClient{$ENDIF};
+                          TRoomerHttpClient;
 begin
-{$IFDEF USE_INDY}
-  result := TIdHTTP.Create(nil);
-  IdSSLIOHandlerSocketOpenSSL1 := TIdSSLIOHandlerSocketOpenSSL.Create(nil);
-
-  result.IOH1andler := IdSSLIOHandlerSocketOpenSSL1;
-  result.Request.Accept :=
-    'text/html,application/xhtml+xml,application/xml;application/octed-stream;q=0.9,*/*;q=0.8';
-  result.Request.Referer := 'Mozilla/3.0 (compatible; Roomer PMS)';
-  result.HTTPOptions := [hoForceEncodeParams];
-{$ELSE}
-  result := TALWininetHttpClient.Create(nil);
-  result.SendTimeout := 900000;
-  result.ReceiveTimeout := 900000;
-  result.ConnectTimeout := 10000;
-  result.AccessType := wHttpAt_Direct;
-  result.InternetOptions := [whttpIo_IGNORE_CERT_CN_INVALID,
-    whttpIo_IGNORE_CERT_DATE_INVALID, whttpIo_KEEP_CONNECTION,
-    whttpIo_NO_CACHE_WRITE, whttpIo_NO_UI, whttpIo_PRAGMA_NOCACHE,
-    whttpIo_RELOAD, whttpIo_RESYNCHRONIZE];
-{$ENDIF}
+  result := TRoomerHttpClient.Create(nil);
 
   if aAddAuthenticationHeader then
     AddAuthenticationHeaders(Result);
@@ -566,7 +544,7 @@ end;
 
 function TRoomerDataSet.RoomerPlatformAvailable: Boolean;
 var
-  lRoomerClient: {$IFDEF USE_INDY}TIdHTTP{$ELSE}TALWininetHttpClient{$ENDIF};
+  lRoomerClient: TRoomerHttpClient;
 begin
   result := True;
   try
@@ -792,24 +770,23 @@ begin
   result := downloadUrlAsString(RoomerUri + url, 0, SetLastAccess);
 end;
 
-procedure TRoomerDataSet.AddAuthenticationHeaders(roomerClient:
-  {$IFDEF USE_INDY}TIdHTTP{$ELSE}TALWininetHttpClient{$ENDIF}
-  );
+procedure TRoomerDataSet.AddAuthenticationHeaders(roomerClient: TRoomerHttpClient);
 begin
-  roomerClient.SendTimeout := 900000;
-  roomerClient.ReceiveTimeout := 900000;
-  roomerClient.ConnectTimeout := 10000;
-  SetAuthHeaders( roomerClient.{$IFDEF USE_INDY}Request.CustomHeaders{$ELSE}RequestHeader{$ENDIF}, self.hotelId, self.username, self.password);
+  roomerClient.AddAuthenticatioHeaders(HotelId, Username, Password, FAppName, FAppVersion, EXTRA_BUILD_ID);
+//  roomerClient.SendTimeout := 900000;
+//  roomerClient.ReceiveTimeout := 900000;
+//  roomerClient.ConnectTimeout := 10000;
+//  SetAuthHeaders( roomerClient.{$IFDEF USE_INDY}Request.CustomHeaders{$ELSE}RequestHeader{$ENDIF}, self.hotelId, self.username, self.password);
   SetOpenApiAuthHeaders(roomerClient.RequestHeader);
 end;
 
 (*
 function TRoomerDataSet.GetAsJSON(roomerClient:
-  {$IFDEF USE_INDY}TIdHTTP{$ELSE}TALWininetHttpClient{$ENDIF}
+  TRoomerHttpClient
   ; url: String): String;
 
 var
-  _roomerClient: {$IFDEF USE_INDY}TIdHTTP{$ELSE}TALWininetHttpClient{$ENDIF};
+  _roomerClient: TRoomerHttpClient;
 
 var retries : Integer;
 begin
@@ -835,11 +812,11 @@ end;
 
 *)
 function TRoomerDataSet.PostAsJSON(roomerClient:
-  {$IFDEF USE_INDY}TIdHTTP{$ELSE}TALWininetHttpClient{$ENDIF}
+  TRoomerHttpClient
   ; url, Data: String): String;
 var
   stream: TStringStream;
-  _roomerClient: {$IFDEF USE_INDY}TIdHTTP{$ELSE}TALWininetHttpClient{$ENDIF};
+  _roomerClient: TRoomerHttpClient;
 
 var retries : Integer;
 begin
@@ -873,11 +850,11 @@ begin
 end;
 
 function TRoomerDataSet.PutAsJSON(roomerClient:
-  {$IFDEF USE_INDY}TIdHTTP{$ELSE}TALWininetHttpClient{$ENDIF}
+  TRoomerHttpClient
   ; url, Data: String): String;
 var
   stream: TStringStream;
-  _roomerClient: {$IFDEF USE_INDY}TIdHTTP{$ELSE}TALWininetHttpClient{$ENDIF};
+  _roomerClient: TRoomerHttpClient;
 
 var retries : Integer;
 begin
@@ -911,10 +888,10 @@ begin
 end;
 
 function TRoomerDataSet.GetAsString(roomerClient:
-  {$IFDEF USE_INDY}TIdHTTP{$ELSE}TALWininetHttpClient{$ENDIF}
+  TRoomerHttpClient
   ; url: String; contentType: String = ''; force : Boolean = False): String;
 var
-  _roomerClient: {$IFDEF USE_INDY}TIdHTTP{$ELSE}TALWininetHttpClient{$ENDIF};
+  _roomerClient: TRoomerHttpClient;
 
 var retries : Integer;
 begin
@@ -945,12 +922,12 @@ begin
 end;
 
 function TRoomerDataSet.PostAsString(roomerClient:
-  {$IFDEF USE_INDY}TIdHTTP{$ELSE}TALWininetHttpClient{$ENDIF}
+  TRoomerHttpClient
   ; url, Data: String; contentType: String = ''): String;
 
 var
   stream: TStringStream;
-  _roomerClient: {$IFDEF USE_INDY}TIdHTTP{$ELSE}TALWininetHttpClient{$ENDIF};
+  _roomerClient: TRoomerHttpClient;
 
 begin
   _roomerClient := CreateRoomerClient;
@@ -976,12 +953,12 @@ begin
   end;
 end;
 
-function TRoomerDataSet.PostAsStringAsync(roomerClient: TALWininetHttpClient
+function TRoomerDataSet.PostAsStringAsync(roomerClient: TRoomerHttpClient
   ; url, Data: String; contentType: String = ''): String;
 
 var
   stream: TStringStream;
-  _roomerClient: TALWininetHttpClient;
+  _roomerClient: TRoomerHttpClient;
 
 begin
   _roomerClient := CreateRoomerClient;
@@ -1012,11 +989,11 @@ begin
 end;
 
 function TRoomerDataSet.PostStreamAsString(roomerClient:
-  {$IFDEF USE_INDY}TIdHTTP{$ELSE}TALWininetHttpClient{$ENDIF}
+  TRoomerHttpClient
   ; url: String; Data: TStream; contentType: String = ''): String;
 
 var
-  _roomerClient: {$IFDEF USE_INDY}TIdHTTP{$ELSE}TALWininetHttpClient{$ENDIF};
+  _roomerClient: TRoomerHttpClient;
 
 begin
   _roomerClient := CreateRoomerClient;
@@ -1043,13 +1020,13 @@ begin
 end;
 
 function TRoomerDataSet.PutAsString(roomerClient:
-  {$IFDEF USE_INDY}TIdHTTP{$ELSE}TALWininetHttpClient{$ENDIF}
+  TRoomerHttpClient
   ; url, Data: String; contentType: String = ''
   ; retryOnError : Boolean = true): String;
 
 var
   stream: TStringStream;
-  _roomerClient: {$IFDEF USE_INDY}TIdHTTP{$ELSE}TALWininetHttpClient{$ENDIF};
+  _roomerClient: TRoomerHttpClient;
 
 begin
   _roomerClient := CreateRoomerClient;
@@ -1075,11 +1052,11 @@ begin
 end;
 
 function TRoomerDataSet.DeleteAsString(roomerClient:
-  {$IFDEF USE_INDY}TIdHTTP{$ELSE}TALWininetHttpClient{$ENDIF}
+  TRoomerHttpClient
   ; url: String): String;
 
 var
-  _roomerClient: {$IFDEF USE_INDY}TIdHTTP{$ELSE}TALWininetHttpClient{$ENDIF};
+  _roomerClient: TRoomerHttpClient;
 
 var retries : Integer;
 begin
@@ -1104,7 +1081,7 @@ begin
 end;
 
 function TRoomerDataSet.DownloadFile(roomerClient:
-  {$IFDEF USE_INDY}TIdHTTP{$ELSE}TALWininetHttpClient{$ENDIF}
+  TRoomerHttpClient
   ; url, filename: String): Boolean;
 var
   stream: TFileStream;
@@ -1151,7 +1128,7 @@ begin
 end;
 
 function TRoomerDataSet.UploadFile(roomerClient:
-  {$IFDEF USE_INDY}TIdHTTP{$ELSE}TALWininetHttpClient{$ENDIF}
+  TRoomerHttpClient
   ; url, filename: String): Boolean;
 var
   stream: TMemoryStream;
@@ -1633,7 +1610,7 @@ end;
 
 function TRoomerDataSet.DeleteFileResourceOpenAPI(URI: String): String;
 var
-  _roomerClient: {$IFDEF USE_INDY}TIdHTTP{$ELSE}TALWininetHttpClient{$ENDIF};
+  _roomerClient: TRoomerHttpClient;
 begin
   _roomerClient := CreateRoomerClient;
   try
@@ -1651,7 +1628,7 @@ function TRoomerDataSet.DownloadFileResourceOpenAPI(URI,
 var
   stream: TFileStream;
 var
-  _roomerClient: {$IFDEF USE_INDY}TIdHTTP{$ELSE}TALWininetHttpClient{$ENDIF};
+  _roomerClient: TRoomerHttpClient;
 {$IFNDEF USE_INDY}aResponseContentHeader: TALHTTPResponseHeader; {$ENDIF}
 begin
 {$IFNDEF USE_INDY}aResponseContentHeader := TALHTTPResponseHeader.Create;
@@ -2140,7 +2117,7 @@ end;
 
 function TRoomerDataSet.HeadOfURI(URI: String): TALHTTPResponseHeader;
 var
-  _roomerClient: {$IFDEF USE_INDY}TIdHTTP{$ELSE}TALWininetHttpClient{$ENDIF};
+  _roomerClient: TRoomerHttpClient;
   ResponseContentStream: TMemoryStream;
   ResponseContentHeader: TALHTTPResponseHeader;
 begin

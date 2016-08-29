@@ -3143,7 +3143,6 @@ object frmMain: TfrmMain
       Index = 2
     end
     object rbTabReports: TdxRibbonTab
-      Active = True
       Caption = 'Reports'
       Groups = <
         item
@@ -3170,6 +3169,7 @@ object frmMain: TfrmMain
       Index = 3
     end
     object rbTabData: TdxRibbonTab
+      Active = True
       Caption = 'Data'
       Groups = <
         item
@@ -5075,7 +5075,7 @@ object frmMain: TfrmMain
     object barinnReportsInvoices: TdxBar
       Caption = 'Invoices'
       CaptionButtons = <>
-      DockedLeft = 827
+      DockedLeft = 885
       DockedTop = 0
       FloatLeft = 1324
       FloatTop = 8
@@ -5331,7 +5331,7 @@ object frmMain: TfrmMain
     object barinnBar10: TdxBar
       Caption = 'Ledger'
       CaptionButtons = <>
-      DockedLeft = 1036
+      DockedLeft = 1075
       DockedTop = 0
       FloatLeft = -183
       FloatTop = 8
@@ -6021,10 +6021,10 @@ object frmMain: TfrmMain
       Category = 0
       Hint = 'Edit day closing timestamps'
       Visible = ivAlways
-      LargeImageIndex = 70
+      LargeImageIndex = 135
       OnClick = btnDayClosingTimesClick
       SyncImageIndex = False
-      ImageIndex = 64
+      ImageIndex = 135
     end
     object btnHotelSpecificSqlQueries: TdxBarLargeButton
       Caption = 'Hotel specific SQL Queries'

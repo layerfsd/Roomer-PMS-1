@@ -1532,6 +1532,7 @@ begin
   constants.Add('shTx_frmReservationExtras_AddedMoreThenAvailableInPeriod',
                 'The Extra(s) [%s] do not have enough available stock for the whole reservation period: '+ #13 +
                 'Do you want to continue anyway?');
+  constants.Add('shDeleteDayClosingTime', 'Delete DayClosingtime');
 end;
 
 procedure AddConstants_OfflineReports;

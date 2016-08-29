@@ -233,7 +233,8 @@ uses
   ufrmPaymentReqRoomtypeGroup in 'ufrmPaymentReqRoomtypeGroup.pas' {frmPaymentReqRoomtypeGroup},
   uDateTimeHelper in 'RoomerVCLs\Source\uDateTimeHelper.pas',
   uDayClosingTimes in 'uDayClosingTimes.pas',
-  uDayClosingTimesAPICaller in 'OpenAPI\uDayClosingTimesAPICaller.pas';
+  uDayClosingTimesAPICaller in 'OpenAPI\uDayClosingTimesAPICaller.pas',
+  uRoomerHttpClient in 'RoomerVCLs\Source\uRoomerHttpClient.pas';
 
 {$R *.RES}
 

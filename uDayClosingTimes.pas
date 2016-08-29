@@ -253,16 +253,27 @@ end;
 procedure TfrmDayClosingTimes.m_BeforeDelete(DataSet: TDataSet);
 var
   s : string;
+  lCaller: TDayClosingTimesAPICaller;
 begin
+  if FUpdatingGrid then exit;
+
   s := '';
-  s := s+GetTranslatedText('shDeleteDayClosingTime')+' '+DataSet['code'] + ',' + DataSet['description']+' '+chr(10);
+  s := s+GetTranslatedText('shDeleteDayClosingTime')+' '+m_day.AsString;
   s := s+GetTranslatedText('shContinue');
 
-  if MessageDlg(s,mtConfirmation, [mbYes, mbNo], 0) = mrYes then
-    hData.cmd_bySQL('DELETE FROM dayclosingtime WHERE day=' + _db(TDate(Dataset['day'])))
+  if MessageDlg(s,mtConfirmation, [mbYes, mbNo], 0) <> mrYes then
+    Abort
   else
-    abort
+  begin
 
+    lCaller := TDayClosingTimesAPICaller.Create;
+    try
+      if not lCaller.DeleteDayClosingTime(Dataset['day']) then
+        Abort;
+    finally
+      lCaller.Free;
+    end;
+  end;
 end;
 
 procedure TfrmDayClosingTimes.m_BeforeInsert(DataSet: TDataSet);
