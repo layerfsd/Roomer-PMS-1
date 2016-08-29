@@ -13,6 +13,7 @@ type
   TBaseOpenAPICaller = class abstract(TObject)
   const
     cAccMicrosoftDataset = 'application/x-microsoft-dataset';
+  protected
   public
   end;
 

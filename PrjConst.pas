@@ -1499,6 +1499,7 @@ begin
 
   constants.Add('shTxThisConfirmAllottedBooking', 'This will change the full booking into a confirmed reservation.' + #10#10 + 'Do you want to continue?');
   constants.Add('shTx_CloseFinancialDay', 'This will close the current day for revenues and payments?' + #10#10 + 'Do you want to continue?');
+  constants.Add('shTx_CurrentFinancialDay',  'Current financial day: ');
 end;
 
 procedure AddConstants_7; // Baettu vid thennan ad vild
@@ -1532,6 +1533,7 @@ begin
   constants.Add('shTx_frmReservationExtras_AddedMoreThenAvailableInPeriod',
                 'The Extra(s) [%s] do not have enough available stock for the whole reservation period: '+ #13 +
                 'Do you want to continue anyway?');
+  constants.Add('shDeleteDayClosingTime', 'Delete DayClosingtime');
 end;
 
 procedure AddConstants_OfflineReports;
