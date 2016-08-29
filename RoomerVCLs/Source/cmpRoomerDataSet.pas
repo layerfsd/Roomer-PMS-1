@@ -772,7 +772,7 @@ end;
 
 procedure TRoomerDataSet.AddAuthenticationHeaders(roomerClient: TRoomerHttpClient);
 begin
-  roomerClient.AddAuthenticatioHeaders(HotelId, Username, Password, FAppName, FAppVersion, EXTRA_BUILD_ID);
+  roomerClient.AddAuthenticationHeaders(HotelId, Username, Password, FAppName, FAppVersion, EXTRA_BUILD_ID);
 //  roomerClient.SendTimeout := 900000;
 //  roomerClient.ReceiveTimeout := 900000;
 //  roomerClient.ConnectTimeout := 10000;

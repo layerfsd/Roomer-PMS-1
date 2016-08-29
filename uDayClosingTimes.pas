@@ -75,6 +75,7 @@ type
     FUpdatingGrid: Boolean;
     FRecordSet: TRoomerDataSet;
     procedure fillGridFromDataset;
+    procedure ShowError(const aOperation: string);
     { Private declarations }
   public
     { Public declarations }
@@ -97,6 +98,7 @@ uses
   , hData
   , cxGridExportLink
   , ShellAPI
+  , UITypes
   , uG
   , PrjConst
   , _Glob
@@ -171,7 +173,6 @@ end;
 
 procedure TfrmDayClosingTimes.fillGridFromDataset;
 var
-  s    : string;
   lCaller: TDayClosingTimesAPICaller;
 begin
   if ComponentRunning(Self) then
@@ -181,10 +182,14 @@ begin
     try
       lCaller := TDayClosingTimesAPICaller.Create;
       try
-        lCaller.GetDayClosingTimesAsDataset(FRecordSet, edtLastDate.Date.AddYears(-1), edtLastDate.Date);
-        if m_.active then m_.Close;
-        m_.LoadFromDataSet(FRecordSet);
-        m_.Open;
+        if lCaller.GetDayClosingTimesAsDataset(FRecordSet, edtLastDate.Date.AddYears(-1), edtLastDate.Date) then
+        begin
+          if m_.active then m_.Close;
+          m_.LoadFromDataSet(FRecordSet);
+          m_.Open;
+        end
+        else
+          ShowError('reading of DayClosing timestamps');
       finally
         lCaller.Free;
       end;
@@ -269,7 +274,8 @@ begin
     lCaller := TDayClosingTimesAPICaller.Create;
     try
       if not lCaller.DeleteDayClosingTime(Dataset['day']) then
-        Abort;
+        ShowError('delete of DayClosing Timestamp');
+//        Abort;
     finally
       lCaller.Free;
     end;
@@ -293,11 +299,13 @@ begin
     if tvData.DataController.DataSource.State = dsEdit then
     begin
       if not lCaller.UpdateDayClosingTime(Dataset['day'], Dataset['closingtimestamp']) then
-        Abort;
+        ShowError('update of DayCLosing Timestamp');
+//        Abort;
     end
     else if tvData.DataController.DataSource.State = dsInsert then
       if not lCaller.InsertDayClosingTime(Dataset['day'], Dataset['closingtimestamp']) then
-        Abort;
+        ShowError('insert of DayCLosing Timestamp');
+//        Abort;
   finally
     lCaller.Free;
   end;
@@ -310,6 +318,11 @@ begin
   else
     dataset['Day'] := TDateTime.Today;
   dataset['closingtimestamp'] := Now();
+end;
+
+procedure TfrmDayClosingTimes.ShowError(const aOperation: string);
+begin
+  raise Exception.CreateFmt('Error occured during %s.'+ #10 + 'Operation is cancelled', [aOperation]);
 end;
 
 end.

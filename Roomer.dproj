@@ -753,6 +753,7 @@
         <DCCReference Include="OpenAPI\uOpenAPICaller.pas"/>
         <DCCReference Include="ufrmPaymentReqRoomtypeGroup.pas">
             <Form>frmPaymentReqRoomtypeGroup</Form>
+            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="RoomerVCLs\Source\uDateTimeHelper.pas"/>
         <DCCReference Include="uDayClosingTimes.pas"/>

@@ -20,7 +20,7 @@ type
     /// <summary>
     ///   Implementation of /configurationItems/dayclosingtimes endpoint, returning a dataset
     /// </summary>
-    procedure GetDayClosingTimesAsDataset(aRSet: TRoomerDataset; aDaysFrom: TDateTime = -1; aDaysTo: TDatetime= -1);
+    function GetDayClosingTimesAsDataset(aRSet: TRoomerDataset; aDaysFrom: TDateTime = -1; aDaysTo: TDatetime= -1): boolean;
     function UpdateDayClosingTime(aDay: TDateTime; aClosingTime: TDateTime): boolean;
     function InsertDayClosingTime(aDay: TDateTime; aClosingTime: TDateTime): boolean;
     function DeleteDayClosingTime(aDay: TDateTime): boolean;
@@ -34,7 +34,7 @@ implementation
 
 uses
   uDateTimeHelper
-  , ALWininetHttpClient
+  , uRoomerHttpClient
   , uDateUtils
   , uD
   , Classes
@@ -43,7 +43,7 @@ uses
 
 function TDayClosingTimesAPICaller.DeleteDayClosingTime(aDay: TDateTime): boolean;
 var
-  roomerClient: TALWininetHttpClient;
+  roomerClient: TRoomerHttpClient;
   lURI: string;
   lResponse: string;
 begin
@@ -51,16 +51,15 @@ begin
   try
     lURI := d.roomerMainDataSet.OpenApiUri + cResourcesURI  + cDayClosingTimeURI + '/' + dateToSqlString(aDay);
 
-    lResponse := roomerClient.Delete(lURI);
-    Result := true;
+    Result := roomerClient.DeleteWithStatus(lURI, lResponse) = 200;
   finally
     roomerClient.Free;
   end;
 end;
 
-procedure TDayClosingTimesAPICaller.GetDayClosingTimesAsDataset(aRSet: TRoomerDataset; aDaysFrom: TDateTime = -1; aDaysTo: TDatetime= -1);
+function TDayClosingTimesAPICaller.GetDayClosingTimesAsDataset(aRSet: TRoomerDataset; aDaysFrom: TDateTime = -1; aDaysTo: TDatetime= -1): boolean;
 var
-  roomerClient: TALWininetHttpClient;
+  roomerClient: TRoomerHttpClient;
   lURI: string;
   lResponse: string;
   lSep: string;
@@ -81,8 +80,9 @@ begin
      if aDaysTo <> -1 then
       lUri := lURI + lSep + 'daysTo=' + dateToSqlString(aDaysTo);
 
-    lResponse := roomerClient.Get(lURI);
-    aRSet.OpenDataset(lResponse);
+    Result := roomerClient.GetWithStatus(lURI, lResponse) = 200;
+    if Result then
+      aRSet.OpenDataset(lResponse);
   finally
     roomerClient.Free;
   end;
@@ -90,7 +90,7 @@ end;
 
 function TDayClosingTimesAPICaller.GetRunningDay: TDateTime;
 var
-  roomerClient: TALWininetHttpClient;
+  roomerClient: TRoomerHttpClient;
   lURI: string;
   lResponse: string;
   lRSet: TRoomerDataSet;
@@ -104,9 +104,13 @@ begin
       roomerClient.RequestHeader.Accept := cAccMicrosoftDataset;
       lURI := lRSet.OpenApiUri + cResourcesURI + cRunningDayURI;
 
-      lResponse := roomerClient.GET(lURI);
-      lRSet.OpenDataset(lResponse);
-      Result := lRSet['runningday'];
+      if roomerClient.GETWithStatus(lURI, lResponse) = 200 then
+      begin
+        lRSet.OpenDataset(lResponse);
+        Result := lRSet['runningday'];
+      end
+      else
+        Result := now();
     finally
       lRSet.Free;
     end;
@@ -117,7 +121,7 @@ end;
 
 function TDayClosingTimesAPICaller.CloseRunningDay: boolean;
 var
-  roomerClient: TALWininetHttpClient;
+  roomerClient: TRoomerHttpClient;
   lURI: string;
   lResponse: string;
   lStream: TStringStream;
@@ -130,8 +134,7 @@ begin
     try
       lURI := d.roomerMainDataSet.OpenApiUri + cResourcesURI + cCloseCurrentURI;
 
-      lResponse := roomerClient.POST(lURI, lStream);
-      Result := lResponse = '' ;
+      Result := roomerClient.POSTWithStatus(lURI, lStream, lResponse) = 200;
     finally
       lStream.Free;
     end;
@@ -174,7 +177,7 @@ end;
 
 function TDayClosingTimesAPICaller.InsertDayClosingTime(aDay, aClosingTime: TDateTime): boolean;
 var
-  roomerClient: TALWininetHttpClient;
+  roomerClient: TRoomerHttpClient;
   lURI: string;
   lResponse: string;
   lStream: TStringStream;
@@ -188,15 +191,7 @@ begin
       lStream.WriteString( ConstructNewRequest(aDay, aClosingtime));
       lURI := d.roomerMainDataSet.OpenApiUri + cResourcesURI + cDayClosingTimeURI;
 
-      try
-        lResponse := roomerClient.POST(lURI, lStream);
-      except
-        on E: Exception do
-        begin
-          CopyToClipboard(E.Message);
-        end;
-      end;
-      Result := True;
+      Result := roomerClient.POSTWithStatus(lURI, lStream, lResponse) = 200;
     finally
       lStream.Free;
     end;
@@ -207,7 +202,7 @@ end;
 
 function TDayClosingTimesAPICaller.UpdateDayClosingTime(aDay, aClosingTime: TDateTime): boolean;
 var
-  roomerClient: TALWininetHttpClient;
+  roomerClient: TRoomerHttpClient;
   lURI: string;
   lResponse: string;
   lStream: TStringStream;
@@ -221,8 +216,7 @@ begin
       lStream.WriteString( ConstructUpdateRequest(aDay, aClosingtime));
       lURI := d.roomerMainDataSet.OpenApiUri + cResourcesURI + cDayClosingTimeURI;
 
-      lResponse := roomerClient.PUT(lURI, lStream);
-      Result := True;
+      Result := roomerClient.PUTWithStatus(lURI, lStream, lResponse) = 200;
     finally
       lStream.Free;
     end;

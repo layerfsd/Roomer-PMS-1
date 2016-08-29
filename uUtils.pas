@@ -153,6 +153,8 @@ function linuxLFCRToWindows(source : String) : String;
 
 function ComponentRunning(aComponent: TComponent): boolean;
 
+function RunningInMainThread: boolean;
+
 var SystemDecimalSeparator : char;
 
 
@@ -1638,12 +1640,17 @@ begin
   Result := (aComponent.ComponentState * [csLoading, csDestroying, csDesigning]) = [];
 end;
 
+function RunningInMainThread: boolean;
+begin
+  Result := (GetCurrentThreadId() = MainThreadID);
+end;
 { TIntValue }
 
 constructor TIntValue.Create(value: integer);
 begin
   fvalue := value;
 end;
+
 
 /////////////////////////////////////////////////////////
 procedure SetSystemDecimalSeparator;

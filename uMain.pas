@@ -1625,7 +1625,7 @@ uses
     , UITypes
     , Types
     , VCLTee.TeCanvas
-    , uRptStockItems, uDayClosingTimes, uDayClosingTimesAPICaller;
+    , uRptStockItems, uDayClosingTimes, uDayClosingTimesAPICaller, uDateTimeHelper;
 
 {$R *.DFM}
 {$R Cursors.res}
@@ -11595,10 +11595,14 @@ end;
 procedure CloseFinancialDay;
 var
   lCaller: TDayClosingTimesAPICaller;
+  lCurrentDay: TdateTime;
 begin
   lCaller := TDayClosingTimesAPICaller.Create;
   try
-    lCaller.CloseRunningDay;
+    lCurrentDay := lCaller.GetRunningDay;
+    if MessageDlg(GetTranslatedText('shTx_CloseFinancialDay') + #10 +
+                  GetTranslatedText('shTx_CurrentFinancialDay') + lCurrentDay.ToString, mtConfirmation, [mbYes, mbCancel], 0) = mrYes then
+      lCaller.CloseRunningDay;
   finally
     lCaller.Free;
   end;
@@ -11607,8 +11611,7 @@ end;
 procedure TfrmMain.btnCloseCurrentDayClick(Sender: TObject);
 begin
   UserClickedDxLargeButton(Sender);
-  if MessageDlg(GetTranslatedText('shTx_CloseFinancialDay'), mtConfirmation, [mbYes, mbCancel], 0) = mrYes then
-    CloseFinancialDay;
+  CloseFinancialDay;
 end;
 
 procedure TfrmMain.lblLogoutClick(Sender: TObject);
