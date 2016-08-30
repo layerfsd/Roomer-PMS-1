@@ -312,7 +312,7 @@ type
     procedure tvReservationsTotalRoomRentGetProperties(
       Sender: TcxCustomGridTableItem; ARecord: TcxCustomGridRecord;
       var AProperties: TcxCustomEditProperties);
-    procedure btnCloseKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     { Private declarations }
     zDateFrom : Tdate;
@@ -412,12 +412,6 @@ procedure TfrmRptReservations.btnCloseClick(Sender: TObject);
 begin
   if embedded then
     Close;
-end;
-
-procedure TfrmRptReservations.btnCloseKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-begin
-  if Key = VK_ESCAPE then
-    btnClose.Click;
 end;
 
 procedure TfrmRptReservations.btnCollapseAllClick(Sender: TObject);
@@ -635,6 +629,12 @@ begin
 end;
 
 
+
+procedure TfrmRptReservations.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then
+    btnClose.Click;
+end;
 
 procedure TfrmRptReservations.FormShow(Sender: TObject);
 begin

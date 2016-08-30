@@ -1,7 +1,7 @@
 object frmRptResStats: TfrmRptResStats
   Left = 0
   Top = 0
-  Caption = 'Revenue forecast'
+  Caption = 'Finance forecast'
   ClientHeight = 684
   ClientWidth = 1128
   Color = clBtnFace
@@ -221,7 +221,7 @@ object frmRptResStats: TfrmRptResStats
           Left = 14
           Top = 17
           Width = 77
-          Height = 17
+          Height = 19
           Caption = 'Waitinglist'
           Checked = True
           State = cbChecked
@@ -235,7 +235,7 @@ object frmRptResStats: TfrmRptResStats
           Left = 14
           Top = 34
           Width = 73
-          Height = 17
+          Height = 19
           Caption = 'Allotment'
           Checked = True
           State = cbChecked
@@ -249,7 +249,7 @@ object frmRptResStats: TfrmRptResStats
           Left = 14
           Top = 51
           Width = 83
-          Height = 17
+          Height = 19
           Caption = 'Not Arrived'
           Checked = True
           State = cbChecked
@@ -263,7 +263,7 @@ object frmRptResStats: TfrmRptResStats
           Left = 227
           Top = 34
           Width = 69
-          Height = 17
+          Height = 19
           Caption = 'No show'
           Checked = True
           State = cbChecked
@@ -277,7 +277,7 @@ object frmRptResStats: TfrmRptResStats
           Left = 129
           Top = 17
           Width = 73
-          Height = 17
+          Height = 19
           Caption = 'Departed'
           Checked = True
           State = cbChecked
@@ -291,7 +291,7 @@ object frmRptResStats: TfrmRptResStats
           Left = 227
           Top = 17
           Width = 64
-          Height = 17
+          Height = 19
           Caption = 'Blocked'
           TabOrder = 5
           OnClick = chkExcluteWaitingListClick
@@ -303,7 +303,7 @@ object frmRptResStats: TfrmRptResStats
           Left = 129
           Top = 34
           Width = 56
-          Height = 17
+          Height = 19
           Caption = 'Guest'
           Checked = True
           State = cbChecked
@@ -328,7 +328,7 @@ object frmRptResStats: TfrmRptResStats
           Left = 14
           Top = 17
           Width = 77
-          Height = 17
+          Height = 19
           Caption = 'Waitinglist'
           Checked = True
           State = cbChecked
@@ -342,7 +342,7 @@ object frmRptResStats: TfrmRptResStats
           Left = 14
           Top = 34
           Width = 73
-          Height = 17
+          Height = 19
           Caption = 'Allotment'
           Checked = True
           State = cbChecked
@@ -356,7 +356,7 @@ object frmRptResStats: TfrmRptResStats
           Left = 14
           Top = 49
           Width = 83
-          Height = 17
+          Height = 19
           Caption = 'Not Arrived'
           Checked = True
           State = cbChecked
@@ -370,7 +370,7 @@ object frmRptResStats: TfrmRptResStats
           Left = 215
           Top = 34
           Width = 69
-          Height = 17
+          Height = 19
           Caption = 'No show'
           Checked = True
           State = cbChecked
@@ -384,7 +384,7 @@ object frmRptResStats: TfrmRptResStats
           Left = 129
           Top = 17
           Width = 73
-          Height = 17
+          Height = 19
           Caption = 'Departed'
           Checked = True
           State = cbChecked
@@ -398,7 +398,7 @@ object frmRptResStats: TfrmRptResStats
           Left = 217
           Top = 17
           Width = 64
-          Height = 17
+          Height = 19
           Caption = 'Blocked'
           TabOrder = 5
           OnClick = chkExcluteWaitingListClick
@@ -410,7 +410,7 @@ object frmRptResStats: TfrmRptResStats
           Left = 129
           Top = 34
           Width = 56
-          Height = 17
+          Height = 19
           Caption = 'Guest'
           Checked = True
           State = cbChecked
@@ -457,10 +457,8 @@ object frmRptResStats: TfrmRptResStats
     object SheetMainResult: TsTabSheet
       Caption = 'Result'
       OnShow = SheetMainResultShow
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
+      SkinData.CustomColor = False
+      SkinData.CustomFont = False
       object Panel1: TPanel
         Left = 320
         Top = 0
@@ -487,10 +485,8 @@ object frmRptResStats: TfrmRptResStats
             object sTabSheet2: TsTabSheet
               Caption = 'Result'
               OnShow = sTabSheet2Show
-              ExplicitLeft = 0
-              ExplicitTop = 0
-              ExplicitWidth = 0
-              ExplicitHeight = 0
+              SkinData.CustomColor = False
+              SkinData.CustomFont = False
               object pg001: TcxDBPivotGrid
                 Left = 0
                 Top = 33
@@ -1156,6 +1152,8 @@ object frmRptResStats: TfrmRptResStats
             end
             object sTabSheet3: TsTabSheet
               Caption = 'Graph'
+              SkinData.CustomColor = False
+              SkinData.CustomFont = False
               ExplicitLeft = 0
               ExplicitTop = 0
               ExplicitWidth = 0
@@ -1195,7 +1193,6 @@ object frmRptResStats: TfrmRptResStats
           AlignSplitter = salTop
           NativeBackground = False
           Control = Panel5
-          ExplicitWidth = 8
         end
         object Panel6: TPanel
           Left = 1
@@ -1448,6 +1445,8 @@ object frmRptResStats: TfrmRptResStats
     end
     object sheetMainData: TsTabSheet
       Caption = 'Data'
+      SkinData.CustomColor = False
+      SkinData.CustomFont = False
       ExplicitLeft = 0
       ExplicitTop = 0
       ExplicitWidth = 0
@@ -1463,6 +1462,8 @@ object frmRptResStats: TfrmRptResStats
         SkinData.SkinSection = 'PAGECONTROL'
         object sTabSheet7: TsTabSheet
           Caption = 'Reservations'
+          SkinData.CustomColor = False
+          SkinData.CustomFont = False
           ExplicitLeft = 0
           ExplicitTop = 0
           ExplicitWidth = 0
@@ -1989,6 +1990,8 @@ object frmRptResStats: TfrmRptResStats
         end
         object sTabSheet8: TsTabSheet
           Caption = 'Roominvoice'
+          SkinData.CustomColor = False
+          SkinData.CustomFont = False
           ExplicitLeft = 0
           ExplicitTop = 0
           ExplicitWidth = 0
@@ -2167,6 +2170,8 @@ object frmRptResStats: TfrmRptResStats
         end
         object sTabSheet9: TsTabSheet
           Caption = 'Groupinvoice'
+          SkinData.CustomColor = False
+          SkinData.CustomFont = False
           ExplicitLeft = 0
           ExplicitTop = 0
           ExplicitWidth = 0
@@ -2852,6 +2857,7 @@ object frmRptResStats: TfrmRptResStats
     end
     object prLinkGrDrill: TdxGridReportLink
       Component = grDrill
+      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.GrayShading = True
@@ -2864,6 +2870,7 @@ object frmRptResStats: TfrmRptResStats
       PrinterPage.PageSize.Y = 297000
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
+      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       BuiltInReportLink = True
     end
   end

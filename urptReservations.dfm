@@ -16,6 +16,7 @@ object frmRptReservations: TfrmRptReservations
   Position = poOwnerFormCenter
   OnClose = FormClose
   OnCreate = FormCreate
+  OnKeyDown = FormKeyDown
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
@@ -545,6 +546,10 @@ object frmRptReservations: TfrmRptReservations
         Caption = 'Rooms'
         SkinData.CustomColor = False
         SkinData.CustomFont = False
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object grRooms: TcxGrid
           Left = 0
           Top = 44
@@ -1264,7 +1269,6 @@ object frmRptReservations: TfrmRptReservations
         ModalResult = 8
         TabOrder = 6
         OnClick = btnCloseClick
-        OnKeyDown = btnCloseKeyDown
         SkinData.SkinSection = 'BUTTON'
       end
     end
