@@ -65,7 +65,8 @@ uses
   dxSkinOffice2010Silver,
   dxSkinPumpkin, dxSkinSeven, dxSkinSevenClassic, dxSkinSharp, dxSkinSharpPlus, dxSkinSilver, dxSkinSpringTime,
   dxSkinStardust,
-  dxSkinSummer2008, dxSkinValentine, dxSkinVS2010, dxSkinWhiteprint, dxSkinXmas2008Blue, sScrollBox, acImage, AdvUtil
+  dxSkinSummer2008, dxSkinValentine, dxSkinVS2010, dxSkinWhiteprint, dxSkinXmas2008Blue, sScrollBox, acImage, AdvUtil,
+  uReservationStatusDefinitions
 
     ;
 

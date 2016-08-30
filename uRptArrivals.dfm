@@ -57,8 +57,8 @@ object frmArrivalsReport: TfrmArrivalsReport
       object rbToday: TsRadioButton
         Left = 4
         Top = 21
-        Width = 58
-        Height = 19
+        Width = 50
+        Height = 20
         Caption = 'Today'
         Checked = True
         TabOrder = 0
@@ -68,8 +68,8 @@ object frmArrivalsReport: TfrmArrivalsReport
       object rbTomorrow: TsRadioButton
         Left = 4
         Top = 46
-        Width = 76
-        Height = 19
+        Width = 68
+        Height = 20
         Caption = 'Tomorrow'
         TabOrder = 1
         OnClick = rbRadioButtonClick
@@ -77,8 +77,8 @@ object frmArrivalsReport: TfrmArrivalsReport
       object rbManualRange: TsRadioButton
         Left = 119
         Top = 21
-        Width = 122
-        Height = 19
+        Width = 114
+        Height = 20
         Caption = 'Manual date range:'
         TabOrder = 2
         OnClick = rbRadioButtonClick
@@ -163,7 +163,7 @@ object frmArrivalsReport: TfrmArrivalsReport
         Height = 37
         Align = alLeft
         Caption = 'Check in'
-        ImageIndex = 44
+        ImageIndex = 45
         Images = DImages.PngImageList1
         TabOrder = 1
         OnClick = btnCheckInClick

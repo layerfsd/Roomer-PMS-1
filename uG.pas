@@ -31,7 +31,7 @@ uses
   , uFileSystemUtils
   , uRegistryServices
   , uRoomerDefinitions
-  , System.Generics.Collections
+  , System.Generics.Collections, uReservationStatusDefinitions
   ;
 
 
