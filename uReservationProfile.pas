@@ -69,8 +69,9 @@ uses
   System.Types,
   uAlertEditPanel,
   uAlerts,
-  uDynamicRates, cxSpinEdit
-    ;
+  uDynamicRates
+  , cxSpinEdit
+  ;
 
 type
   TfrmReservationProfile = class(TForm)
@@ -82,8 +83,6 @@ type
     PageControl3: TsPageControl;
     TabSheet4: TsTabSheet;
     TabSheet5: TsTabSheet;
-    Label9: TsLabel;
-    edtCustomer: TsEdit;
     Label19: TsLabel;
     edtKennitala: TsEdit;
     Label6: TsLabel;
@@ -92,7 +91,6 @@ type
     edtAddress1: TsEdit;
     edtAddress2: TsEdit;
     edtAddress3: TsEdit;
-    Bevel4: TBevel;
     edtInvRefrence: TsEdit;
     Label4: TsLabel;
     mainPage: TsPageControl;
@@ -326,7 +324,6 @@ type
     mInvoiceHeadsRoom: TStringField;
     tvInvoiceHeadsRoom: TcxGridDBColumn;
     StoreMain: TcxPropertiesStore;
-    edGetCustomer: TsButton;
     mRoomsPriceCode: TWideStringField;
     tvRoomsPriceCode: TcxGridDBColumn;
     tvRoomsunPaidItems: TcxGridDBColumn;
@@ -347,14 +344,11 @@ type
     edtContactAddress1: TsEdit;
     edtContactAddress2: TsEdit;
     edtContactAddress3: TsEdit;
-    edtContactPhone: TsEdit;
-    edtContactPhone2: TsEdit;
     edtContactCountry: TsEdit;
     edtContactEmail: TsEdit;
     Label20: TsLabel;
     sLabel3: TsLabel;
     edtContact: TsLabel;
-    Label21: TsLabel;
     Label23: TsLabel;
     memPanel: TsPanel;
     cxSplitter2: TsSplitter;
@@ -408,7 +402,6 @@ type
     sButton4: TsButton;
     mRoomsPackage: TWideStringField;
     tvRoomsPackage: TcxGridDBColumn;
-    sLabel5: TsLabel;
     memRequestFromChannel: TsMemo;
     Label10: TsLabel;
     edtTel1: TsEdit;
@@ -547,6 +540,14 @@ type
     mRoomsinfantcount: TIntegerField;
     tvRoomschildrencount: TcxGridDBColumn;
     tvRoomsinfantcount: TcxGridDBColumn;
+    pnlCustomer: TsPanel;
+    Label9: TsLabel;
+    edtCustomer: TsEdit;
+    edGetCustomer: TsButton;
+    pnlTelephone: TsPanel;
+    Label21: TsLabel;
+    edtContactPhone: TsEdit;
+    edtContactPhone2: TsEdit;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -655,6 +656,9 @@ type
       const AMousePos: TPoint; var AHintText: TCaption; var AIsHintMultiLine: Boolean; var AHintTextRect: TRect);
     procedure tvRoomsStockItemsCountPropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
     procedure mRoomsBeforePost(DataSet: TDataSet);
+    procedure tvGetCurrencyProperties(Sender: TcxCustomGridTableItem; ARecord: TcxCustomGridRecord;
+      var AProperties: TcxCustomEditProperties);
+    procedure pnlTelephoneResize(Sender: TObject);
   private
     { Private declarations }
     vStartName: string;
@@ -765,6 +769,7 @@ uses
   uMain,
   uFrmNotepad,
   ufrmReservationExtras
+  , uCurrencyHandler
   ;
 
 {$R *.DFM}
@@ -889,6 +894,13 @@ procedure TfrmReservationProfile.PlacePnlDataWait;
 begin
   pnlDataWait.Left := (Width div 2) - (pnlDataWait.Width div 2);
   pnlDataWait.Top := (Height div 2) - (pnlDataWait.Height div 2);
+end;
+
+procedure TfrmReservationProfile.pnlTelephoneResize(Sender: TObject);
+begin
+  edtContactPhone.Width := (pnlTelephone.Width - edtContactPhone.left - 3) div 2;
+  edtContactPhone2.Left := edtContactPhone.Left + edtContactPhone.Width + 3;
+  edtContactPhone2.Width := edtContactPhone.Width;
 end;
 
 // **********************************************************************************
@@ -1393,8 +1405,6 @@ begin
 end;
 
 procedure TfrmReservationProfile.SetStatusItemindex(sStatus: string);
-var
-  ch: Char;
 begin
   cbxStatus.ItemIndex := 0;
 
@@ -3105,6 +3115,19 @@ begin
   end;
 
   AText := FormatFloat('#,##0.# per/night', r);
+end;
+
+procedure TfrmReservationProfile.tvGetCurrencyProperties(Sender: TcxCustomGridTableItem;
+  ARecord: TcxCustomGridRecord; var AProperties: TcxCustomEditProperties);
+var
+  lCurrencyHandler: TCurrencyHandler;
+begin
+  lCurrencyHandler := TCurrencyHandler.Create(mRoomsCurrency.AsString);
+  try
+    aProperties := lCurrencyHandler.GetcxEditProperties
+  finally
+    lCurrencyHandler.Free;
+  end;
 end;
 
 procedure TfrmReservationProfile.tvRoomsunpaidRentPricePropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);

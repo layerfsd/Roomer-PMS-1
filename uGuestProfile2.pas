@@ -340,22 +340,25 @@ function openGuestProfile(act : TActTableAction; var theData : recPersonHolder) 
 var
   rr : integer;
 begin
-  result := false;
+  result := true;
   frmGuestProfile2 := TfrmGuestProfile2.Create(frmGuestProfile2);
   try
     frmGuestProfile2.zData := theData;
     frmGuestProfile2.zAct := act;
     frmGuestProfile2.ShowModal;
-    if frmGuestProfile2.modalresult = mrOk then
-    begin
-      result := true;
-    end
-    else
-    begin
-      result := true;
-    end;
+//    if frmGuestProfile2.modalresult = mrOk then
+//    begin
+//      result := true;
+//    end
+//    else
+//    begin
+//      result := true;
+//    end;
     theData := frmGuestProfile2.zData;
-    if d.isGroup(thedata.RoomReservation) then rr := 0 else rr := thedata.RoomReservation;
+    if d.isGroup(thedata.RoomReservation) then
+      rr := 0
+    else
+      rr := thedata.RoomReservation;
     d.roomerMainDataSet.SystempackagesRecalcInvoice(rr, thedata.RoomReservation);
   finally
     freeandnil(frmGuestProfile2);

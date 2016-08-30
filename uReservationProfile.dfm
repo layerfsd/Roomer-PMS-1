@@ -615,24 +615,9 @@ object frmReservationProfile: TfrmReservationProfile
               Caption = 'Customer'
               SkinData.CustomColor = False
               SkinData.CustomFont = False
-              object Label9: TsLabel
-                Left = 2
-                Top = 3
-                Width = 50
-                Height = 11
-                Alignment = taRightJustify
-                AutoSize = False
-                Caption = 'Customer:'
-                ParentFont = False
-                Font.Charset = DEFAULT_CHARSET
-                Font.Color = clWindowText
-                Font.Height = -9
-                Font.Name = 'Tahoma'
-                Font.Style = []
-              end
               object Label19: TsLabel
                 Left = 1
-                Top = 24
+                Top = 32
                 Width = 51
                 Height = 11
                 Alignment = taRightJustify
@@ -647,7 +632,7 @@ object frmReservationProfile: TfrmReservationProfile
               end
               object Label6: TsLabel
                 Left = 1
-                Top = 45
+                Top = 53
                 Width = 51
                 Height = 11
                 Alignment = taRightJustify
@@ -662,7 +647,7 @@ object frmReservationProfile: TfrmReservationProfile
               end
               object Label7: TsLabel
                 Left = 1
-                Top = 66
+                Top = 76
                 Width = 51
                 Height = 11
                 Alignment = taRightJustify
@@ -675,21 +660,14 @@ object frmReservationProfile: TfrmReservationProfile
                 Font.Name = 'Tahoma'
                 Font.Style = []
               end
-              object Bevel4: TBevel
-                Left = 3
-                Top = 148
-                Width = 214
-                Height = 3
-                Shape = bsTopLine
-              end
               object Label4: TsLabel
                 Left = 1
-                Top = 129
+                Top = 145
                 Width = 51
                 Height = 11
                 Alignment = taRightJustify
                 AutoSize = False
-                Caption = 'Refrence:'
+                Caption = 'Reference:'
                 ParentFont = False
                 Font.Charset = DEFAULT_CHARSET
                 Font.Color = clWindowText
@@ -697,11 +675,16 @@ object frmReservationProfile: TfrmReservationProfile
                 Font.Name = 'Tahoma'
                 Font.Style = []
               end
-              object edtCustomer: TsEdit
+              object edtKennitala: TsEdit
+                AlignWithMargins = True
                 Left = 58
-                Top = 1
-                Width = 69
+                Top = 27
+                Width = 142
                 Height = 20
+                Margins.Left = 58
+                Margins.Top = 2
+                Margins.Bottom = 0
+                Align = alTop
                 Color = clWhite
                 Font.Charset = ANSI_CHARSET
                 Font.Color = clBlack
@@ -711,7 +694,6 @@ object frmReservationProfile: TfrmReservationProfile
                 MaxLength = 30
                 ParentFont = False
                 TabOrder = 0
-                OnDblClick = edGetCustomerClick
                 SkinData.SkinSection = 'EDIT'
                 BoundLabel.Font.Charset = DEFAULT_CHARSET
                 BoundLabel.Font.Color = clWindowText
@@ -719,11 +701,15 @@ object frmReservationProfile: TfrmReservationProfile
                 BoundLabel.Font.Name = 'Tahoma'
                 BoundLabel.Font.Style = []
               end
-              object edtKennitala: TsEdit
+              object edtName: TsEdit
+                AlignWithMargins = True
                 Left = 58
-                Top = 21
-                Width = 140
+                Top = 50
+                Width = 142
                 Height = 20
+                Margins.Left = 58
+                Margins.Bottom = 0
+                Align = alTop
                 Color = clWhite
                 Font.Charset = ANSI_CHARSET
                 Font.Color = clBlack
@@ -740,11 +726,15 @@ object frmReservationProfile: TfrmReservationProfile
                 BoundLabel.Font.Name = 'Tahoma'
                 BoundLabel.Font.Style = []
               end
-              object edtName: TsEdit
+              object edtAddress1: TsEdit
+                AlignWithMargins = True
                 Left = 58
-                Top = 42
-                Width = 140
+                Top = 73
+                Width = 142
                 Height = 20
+                Margins.Left = 58
+                Margins.Bottom = 0
+                Align = alTop
                 Color = clWhite
                 Font.Charset = ANSI_CHARSET
                 Font.Color = clBlack
@@ -761,11 +751,15 @@ object frmReservationProfile: TfrmReservationProfile
                 BoundLabel.Font.Name = 'Tahoma'
                 BoundLabel.Font.Style = []
               end
-              object edtAddress1: TsEdit
+              object edtAddress2: TsEdit
+                AlignWithMargins = True
                 Left = 58
-                Top = 63
-                Width = 140
+                Top = 119
+                Width = 142
                 Height = 20
+                Margins.Left = 58
+                Margins.Bottom = 0
+                Align = alTop
                 Color = clWhite
                 Font.Charset = ANSI_CHARSET
                 Font.Color = clBlack
@@ -782,11 +776,15 @@ object frmReservationProfile: TfrmReservationProfile
                 BoundLabel.Font.Name = 'Tahoma'
                 BoundLabel.Font.Style = []
               end
-              object edtAddress2: TsEdit
+              object edtAddress3: TsEdit
+                AlignWithMargins = True
                 Left = 58
-                Top = 84
-                Width = 140
+                Top = 96
+                Width = 142
                 Height = 20
+                Margins.Left = 58
+                Margins.Bottom = 0
+                Align = alTop
                 Color = clWhite
                 Font.Charset = ANSI_CHARSET
                 Font.Color = clBlack
@@ -803,18 +801,22 @@ object frmReservationProfile: TfrmReservationProfile
                 BoundLabel.Font.Name = 'Tahoma'
                 BoundLabel.Font.Style = []
               end
-              object edtAddress3: TsEdit
+              object edtInvRefrence: TsEdit
+                AlignWithMargins = True
                 Left = 58
-                Top = 105
-                Width = 140
+                Top = 142
+                Width = 142
                 Height = 20
+                Margins.Left = 58
+                Margins.Bottom = 0
+                Align = alTop
                 Color = clWhite
                 Font.Charset = ANSI_CHARSET
                 Font.Color = clBlack
                 Font.Height = -9
                 Font.Name = 'Arial'
                 Font.Style = []
-                MaxLength = 30
+                MaxLength = 100
                 ParentFont = False
                 TabOrder = 5
                 SkinData.SkinSection = 'EDIT'
@@ -824,36 +826,71 @@ object frmReservationProfile: TfrmReservationProfile
                 BoundLabel.Font.Name = 'Tahoma'
                 BoundLabel.Font.Style = []
               end
-              object edtInvRefrence: TsEdit
-                Left = 58
-                Top = 126
-                Width = 140
-                Height = 20
-                Color = clWhite
-                Font.Charset = ANSI_CHARSET
-                Font.Color = clBlack
-                Font.Height = -9
-                Font.Name = 'Arial'
-                Font.Style = []
-                MaxLength = 100
-                ParentFont = False
+              object pnlCustomer: TsPanel
+                AlignWithMargins = True
+                Left = 0
+                Top = 0
+                Width = 203
+                Height = 25
+                Margins.Left = 0
+                Margins.Top = 0
+                Margins.Right = 0
+                Margins.Bottom = 0
+                Align = alTop
+                BevelOuter = bvNone
                 TabOrder = 6
-                SkinData.SkinSection = 'EDIT'
-                BoundLabel.Font.Charset = DEFAULT_CHARSET
-                BoundLabel.Font.Color = clWindowText
-                BoundLabel.Font.Height = -13
-                BoundLabel.Font.Name = 'Tahoma'
-                BoundLabel.Font.Style = []
-              end
-              object edGetCustomer: TsButton
-                Left = 133
-                Top = 1
-                Width = 19
-                Height = 18
-                Caption = '..'
-                TabOrder = 7
-                OnClick = edGetCustomerClick
-                SkinData.SkinSection = 'BUTTON'
+                object Label9: TsLabel
+                  Left = 2
+                  Top = 6
+                  Width = 50
+                  Height = 11
+                  Alignment = taRightJustify
+                  AutoSize = False
+                  Caption = 'Customer:'
+                  ParentFont = False
+                  Font.Charset = DEFAULT_CHARSET
+                  Font.Color = clWindowText
+                  Font.Height = -9
+                  Font.Name = 'Tahoma'
+                  Font.Style = []
+                end
+                object edtCustomer: TsEdit
+                  AlignWithMargins = True
+                  Left = 58
+                  Top = 3
+                  Width = 115
+                  Height = 20
+                  Margins.Left = 58
+                  Margins.Right = 30
+                  Margins.Bottom = 0
+                  Align = alTop
+                  Color = clWhite
+                  Font.Charset = ANSI_CHARSET
+                  Font.Color = clBlack
+                  Font.Height = -9
+                  Font.Name = 'Arial'
+                  Font.Style = []
+                  MaxLength = 30
+                  ParentFont = False
+                  TabOrder = 0
+                  OnDblClick = edGetCustomerClick
+                  SkinData.SkinSection = 'EDIT'
+                  BoundLabel.Font.Charset = DEFAULT_CHARSET
+                  BoundLabel.Font.Color = clWindowText
+                  BoundLabel.Font.Height = -13
+                  BoundLabel.Font.Name = 'Tahoma'
+                  BoundLabel.Font.Style = []
+                end
+                object edGetCustomer: TsButton
+                  Left = 178
+                  Top = 4
+                  Width = 19
+                  Height = 18
+                  Caption = '..'
+                  TabOrder = 1
+                  OnClick = edGetCustomerClick
+                  SkinData.SkinSection = 'BUTTON'
+                end
               end
             end
             object TabSheet5: TsTabSheet
@@ -922,9 +959,9 @@ object frmReservationProfile: TfrmReservationProfile
                 Top = 12
                 Width = 75
                 Height = 20
-                Color = 3355443
+                Color = clWhite
                 Font.Charset = ANSI_CHARSET
-                Font.Color = 15724527
+                Font.Color = clBlack
                 Font.Height = -9
                 Font.Name = 'Arial'
                 Font.Style = []
@@ -943,9 +980,9 @@ object frmReservationProfile: TfrmReservationProfile
                 Top = 12
                 Width = 71
                 Height = 20
-                Color = 3355443
+                Color = clWhite
                 Font.Charset = ANSI_CHARSET
-                Font.Color = 15724527
+                Font.Color = clBlack
                 Font.Height = -9
                 Font.Name = 'Arial'
                 Font.Style = []
@@ -964,9 +1001,9 @@ object frmReservationProfile: TfrmReservationProfile
                 Top = 33
                 Width = 74
                 Height = 20
-                Color = 3355443
+                Color = clWhite
                 Font.Charset = ANSI_CHARSET
-                Font.Color = 15724527
+                Font.Color = clBlack
                 Font.Height = -9
                 Font.Name = 'Arial'
                 Font.Style = []
@@ -985,9 +1022,9 @@ object frmReservationProfile: TfrmReservationProfile
                 Top = 54
                 Width = 148
                 Height = 19
-                Color = 3355443
+                Color = clWhite
                 Font.Charset = DEFAULT_CHARSET
-                Font.Color = 15724527
+                Font.Color = clBlack
                 Font.Height = -9
                 Font.Name = 'Tahoma'
                 Font.Style = []
@@ -1006,9 +1043,9 @@ object frmReservationProfile: TfrmReservationProfile
                 Top = 74
                 Width = 148
                 Height = 19
-                Color = 3355443
+                Color = clWhite
                 Font.Charset = DEFAULT_CHARSET
-                Font.Color = 15724527
+                Font.Color = clBlack
                 Font.Height = -9
                 Font.Name = 'Tahoma'
                 Font.Style = []
@@ -1028,7 +1065,7 @@ object frmReservationProfile: TfrmReservationProfile
         object sGroupBox1: TsGroupBox
           Left = 214
           Top = 1
-          Width = 202
+          Width = 200
           Height = 190
           Align = alLeft
           Caption = 'Contact'
@@ -1037,7 +1074,7 @@ object frmReservationProfile: TfrmReservationProfile
           Checked = False
           object Label20: TsLabel
             Left = 21
-            Top = 16
+            Top = 18
             Width = 28
             Height = 11
             Alignment = taRightJustify
@@ -1051,7 +1088,7 @@ object frmReservationProfile: TfrmReservationProfile
           end
           object sLabel3: TsLabel
             Left = -1
-            Top = 36
+            Top = 39
             Width = 50
             Height = 11
             Alignment = taRightJustify
@@ -1066,7 +1103,7 @@ object frmReservationProfile: TfrmReservationProfile
           end
           object edtContact: TsLabel
             Left = -2
-            Top = 120
+            Top = 127
             Width = 51
             Height = 11
             Alignment = taRightJustify
@@ -1079,24 +1116,9 @@ object frmReservationProfile: TfrmReservationProfile
             Font.Name = 'Tahoma'
             Font.Style = []
           end
-          object Label21: TsLabel
-            Left = -8
-            Top = 141
-            Width = 57
-            Height = 11
-            Alignment = taRightJustify
-            AutoSize = False
-            Caption = 'Tel:'
-            ParentFont = False
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clWindowText
-            Font.Height = -9
-            Font.Name = 'Tahoma'
-            Font.Style = []
-          end
           object Label23: TsLabel
             Left = 23
-            Top = 162
+            Top = 149
             Width = 26
             Height = 11
             Alignment = taRightJustify
@@ -1110,7 +1132,7 @@ object frmReservationProfile: TfrmReservationProfile
           end
           object sLabel6: TsLabel
             Left = -1
-            Top = 78
+            Top = 83
             Width = 50
             Height = 11
             Alignment = taRightJustify
@@ -1125,7 +1147,7 @@ object frmReservationProfile: TfrmReservationProfile
           end
           object sLabel7: TsLabel
             Left = -1
-            Top = 99
+            Top = 105
             Width = 50
             Height = 11
             Alignment = taRightJustify
@@ -1138,11 +1160,88 @@ object frmReservationProfile: TfrmReservationProfile
             Font.Name = 'Tahoma'
             Font.Style = []
           end
+          object pnlTelephone: TsPanel
+            AlignWithMargins = True
+            Left = 2
+            Top = 165
+            Width = 196
+            Height = 26
+            Margins.Left = 0
+            Margins.Top = 0
+            Margins.Right = 0
+            Margins.Bottom = 0
+            Align = alTop
+            BevelOuter = bvNone
+            TabOrder = 7
+            OnResize = pnlTelephoneResize
+            object Label21: TsLabel
+              Left = -5
+              Top = 5
+              Width = 57
+              Height = 11
+              Alignment = taRightJustify
+              AutoSize = False
+              Caption = 'Tel:'
+              ParentFont = False
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clWindowText
+              Font.Height = -9
+              Font.Name = 'Tahoma'
+              Font.Style = []
+            end
+            object edtContactPhone: TsEdit
+              Left = 58
+              Top = 3
+              Width = 115
+              Height = 19
+              Color = clWhite
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clBlack
+              Font.Height = -9
+              Font.Name = 'Tahoma'
+              Font.Style = []
+              MaxLength = 40
+              ParentFont = False
+              TabOrder = 0
+              SkinData.SkinSection = 'EDIT'
+              BoundLabel.Font.Charset = DEFAULT_CHARSET
+              BoundLabel.Font.Color = clWindowText
+              BoundLabel.Font.Height = -13
+              BoundLabel.Font.Name = 'Tahoma'
+              BoundLabel.Font.Style = []
+            end
+            object edtContactPhone2: TsEdit
+              Left = 179
+              Top = 3
+              Width = 114
+              Height = 19
+              Color = clWhite
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clBlack
+              Font.Height = -9
+              Font.Name = 'Tahoma'
+              Font.Style = []
+              MaxLength = 40
+              ParentFont = False
+              TabOrder = 1
+              SkinData.SkinSection = 'EDIT'
+              BoundLabel.Font.Charset = DEFAULT_CHARSET
+              BoundLabel.Font.Color = clWindowText
+              BoundLabel.Font.Height = -13
+              BoundLabel.Font.Name = 'Tahoma'
+              BoundLabel.Font.Style = []
+            end
+          end
           object edtContactName: TsEdit
-            Left = 54
-            Top = 13
-            Width = 141
+            AlignWithMargins = True
+            Left = 60
+            Top = 15
+            Width = 135
             Height = 19
+            Margins.Left = 58
+            Margins.Top = 2
+            Margins.Bottom = 0
+            Align = alTop
             Color = clWhite
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clBlack
@@ -1160,10 +1259,15 @@ object frmReservationProfile: TfrmReservationProfile
             BoundLabel.Font.Style = []
           end
           object edtContactAddress1: TsEdit
-            Left = 54
-            Top = 33
-            Width = 141
+            AlignWithMargins = True
+            Left = 60
+            Top = 36
+            Width = 135
             Height = 20
+            Margins.Left = 58
+            Margins.Top = 2
+            Margins.Bottom = 0
+            Align = alTop
             Color = clWhite
             Font.Charset = ANSI_CHARSET
             Font.Color = clBlack
@@ -1181,10 +1285,15 @@ object frmReservationProfile: TfrmReservationProfile
             BoundLabel.Font.Style = []
           end
           object edtContactAddress2: TsEdit
-            Left = 54
-            Top = 54
-            Width = 141
+            AlignWithMargins = True
+            Left = 60
+            Top = 58
+            Width = 135
             Height = 20
+            Margins.Left = 58
+            Margins.Top = 2
+            Margins.Bottom = 0
+            Align = alTop
             Color = clWhite
             Font.Charset = ANSI_CHARSET
             Font.Color = clBlack
@@ -1202,10 +1311,15 @@ object frmReservationProfile: TfrmReservationProfile
             BoundLabel.Font.Style = []
           end
           object edtContactAddress3: TsEdit
-            Left = 54
-            Top = 75
-            Width = 141
+            AlignWithMargins = True
+            Left = 60
+            Top = 80
+            Width = 135
             Height = 20
+            Margins.Left = 58
+            Margins.Top = 2
+            Margins.Bottom = 0
+            Align = alTop
             Color = clWhite
             Font.Charset = ANSI_CHARSET
             Font.Color = clBlack
@@ -1222,54 +1336,18 @@ object frmReservationProfile: TfrmReservationProfile
             BoundLabel.Font.Name = 'Tahoma'
             BoundLabel.Font.Style = []
           end
-          object edtContactPhone: TsEdit
-            Left = 54
-            Top = 138
-            Width = 66
-            Height = 19
-            Color = clWhite
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clBlack
-            Font.Height = -9
-            Font.Name = 'Tahoma'
-            Font.Style = []
-            MaxLength = 40
-            ParentFont = False
-            TabOrder = 6
-            SkinData.SkinSection = 'EDIT'
-            BoundLabel.Font.Charset = DEFAULT_CHARSET
-            BoundLabel.Font.Color = clWindowText
-            BoundLabel.Font.Height = -13
-            BoundLabel.Font.Name = 'Tahoma'
-            BoundLabel.Font.Style = []
-          end
-          object edtContactPhone2: TsEdit
-            Left = 123
-            Top = 138
-            Width = 72
-            Height = 19
-            Color = clWhite
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clBlack
-            Font.Height = -9
-            Font.Name = 'Tahoma'
-            Font.Style = []
-            MaxLength = 40
-            ParentFont = False
-            TabOrder = 7
-            SkinData.SkinSection = 'EDIT'
-            BoundLabel.Font.Charset = DEFAULT_CHARSET
-            BoundLabel.Font.Color = clWindowText
-            BoundLabel.Font.Height = -13
-            BoundLabel.Font.Name = 'Tahoma'
-            BoundLabel.Font.Style = []
-          end
           object edtContactCountry: TsEdit
-            Left = 54
-            Top = 117
-            Width = 27
+            AlignWithMargins = True
+            Left = 60
+            Top = 124
+            Width = 135
             Height = 20
+            Margins.Left = 58
+            Margins.Top = 2
+            Margins.Bottom = 0
+            Align = alTop
             Color = clWhite
+            Constraints.MaxWidth = 135
             Font.Charset = ANSI_CHARSET
             Font.Color = clBlack
             Font.Height = -9
@@ -1286,10 +1364,15 @@ object frmReservationProfile: TfrmReservationProfile
             BoundLabel.Font.Style = []
           end
           object edtContactEmail: TsEdit
-            Left = 54
-            Top = 159
-            Width = 141
+            AlignWithMargins = True
+            Left = 60
+            Top = 146
+            Width = 135
             Height = 19
+            Margins.Left = 58
+            Margins.Top = 2
+            Margins.Bottom = 0
+            Align = alTop
             Color = clWhite
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clBlack
@@ -1298,7 +1381,7 @@ object frmReservationProfile: TfrmReservationProfile
             Font.Style = []
             MaxLength = 100
             ParentFont = False
-            TabOrder = 8
+            TabOrder = 6
             SkinData.SkinSection = 'EDIT'
             BoundLabel.Font.Charset = DEFAULT_CHARSET
             BoundLabel.Font.Color = clWindowText
@@ -1307,10 +1390,15 @@ object frmReservationProfile: TfrmReservationProfile
             BoundLabel.Font.Style = []
           end
           object edtContactAddress4: TsEdit
-            Left = 54
-            Top = 96
-            Width = 141
+            AlignWithMargins = True
+            Left = 60
+            Top = 102
+            Width = 135
             Height = 20
+            Margins.Left = 58
+            Margins.Top = 2
+            Margins.Bottom = 0
+            Align = alTop
             Color = clWhite
             Font.Charset = ANSI_CHARSET
             Font.Color = clBlack
@@ -1329,9 +1417,9 @@ object frmReservationProfile: TfrmReservationProfile
           end
         end
         object memPanel: TsPanel
-          Left = 424
+          Left = 422
           Top = 1
-          Width = 687
+          Width = 689
           Height = 190
           Margins.Left = 0
           Margins.Top = 0
@@ -1347,6 +1435,8 @@ object frmReservationProfile: TfrmReservationProfile
             Top = 6
             Width = 7
             Height = 142
+            Color = clGradientActiveCaption
+            ParentColor = False
             SkinData.SkinSection = 'SPLITTER'
             ExplicitLeft = 221
             ExplicitTop = 32
@@ -1427,7 +1517,7 @@ object frmReservationProfile: TfrmReservationProfile
           object Panel8: TsPanel
             Left = 6
             Top = 148
-            Width = 675
+            Width = 677
             Height = 36
             Margins.Left = 0
             Margins.Top = 0
@@ -1475,71 +1565,95 @@ object frmReservationProfile: TfrmReservationProfile
               SkinData.SkinSection = 'BUTTON'
             end
           end
-          object gbxRoomInformation: TsGroupBox
+          object pnlRoomInformation: TsPanel
             Left = 472
             Top = 6
-            Width = 209
+            Width = 211
             Height = 142
-            Align = alLeft
-            Caption = 'Notes for room : '
+            Align = alClient
+            BevelOuter = bvNone
             TabOrder = 3
-            SkinData.SkinSection = 'GROUPBOX'
-            Checked = False
-            object sLabel5: TsLabel
-              Left = 2
-              Top = 65
-              Width = 205
-              Height = 11
+            ExplicitLeft = 465
+            ExplicitWidth = 185
+            object gbxRoomInformation: TsGroupBox
+              Left = 0
+              Top = 0
+              Width = 211
+              Height = 72
               Align = alTop
-              Caption = 'Request from booking channel'
-              ExplicitWidth = 124
-            end
-            object memRoomNotes: TsMemo
-              Left = 2
-              Top = 13
-              Width = 205
-              Height = 52
-              Align = alTop
-              BevelInner = bvNone
-              BevelOuter = bvNone
-              BorderStyle = bsNone
-              Color = clWhite
-              Font.Charset = DEFAULT_CHARSET
-              Font.Color = clBlack
-              Font.Height = -9
-              Font.Name = 'Tahoma'
-              Font.Style = []
-              ParentFont = False
-              ScrollBars = ssVertical
+              Caption = 'Notes for room : '
               TabOrder = 0
-              OnExit = memRoomNotesExit
-              SkinData.SkinSection = 'EDIT'
+              SkinData.SkinSection = 'GROUPBOX'
+              Checked = False
+              ExplicitLeft = 4
+              ExplicitTop = -6
+              ExplicitWidth = 185
+              object memRoomNotes: TsMemo
+                Left = 2
+                Top = 13
+                Width = 207
+                Height = 52
+                Align = alTop
+                BevelInner = bvNone
+                BevelOuter = bvNone
+                BorderStyle = bsNone
+                Color = clWhite
+                Font.Charset = DEFAULT_CHARSET
+                Font.Color = clBlack
+                Font.Height = -9
+                Font.Name = 'Tahoma'
+                Font.Style = []
+                ParentFont = False
+                ScrollBars = ssVertical
+                TabOrder = 0
+                OnExit = memRoomNotesExit
+                SkinData.SkinSection = 'EDIT'
+                ExplicitWidth = 179
+              end
             end
-            object memRequestFromChannel: TsMemo
-              Left = 2
-              Top = 76
-              Width = 205
-              Height = 64
+            object gbChannelInformation: TsGroupBox
+              Left = 0
+              Top = 72
+              Width = 211
+              Height = 70
               Align = alClient
-              BevelInner = bvNone
-              BevelOuter = bvNone
-              BorderStyle = bsNone
-              Color = clWhite
-              Font.Charset = DEFAULT_CHARSET
-              Font.Color = clBlack
-              Font.Height = -9
-              Font.Name = 'Tahoma'
-              Font.Style = []
-              ParentFont = False
-              ReadOnly = True
-              ScrollBars = ssVertical
+              Caption = 'Requests from booking channel :'
               TabOrder = 1
-              SkinData.SkinSection = 'EDIT'
+              SkinData.SkinSection = 'GROUPBOX'
+              Checked = False
+              ExplicitLeft = 1
+              ExplicitTop = 141
+              ExplicitWidth = 183
+              ExplicitHeight = 0
+              object memRequestFromChannel: TsMemo
+                Left = 2
+                Top = 13
+                Width = 207
+                Height = 55
+                Align = alClient
+                BevelInner = bvNone
+                BevelOuter = bvNone
+                BorderStyle = bsNone
+                Color = clWhite
+                Font.Charset = DEFAULT_CHARSET
+                Font.Color = clBlack
+                Font.Height = -9
+                Font.Name = 'Tahoma'
+                Font.Style = []
+                ParentFont = False
+                ReadOnly = True
+                ScrollBars = ssVertical
+                TabOrder = 0
+                SkinData.SkinSection = 'EDIT'
+                ExplicitTop = 65
+                ExplicitWidth = 179
+                ExplicitHeight = 73
+              end
             end
           end
         end
         object cxSplitter1: TcxSplitter
-          Left = 416
+          Left = 414
           Top = 1
           Width = 8
           Height = 190
@@ -2079,6 +2193,7 @@ object frmReservationProfile: TfrmReservationProfile
             DataBinding.FieldName = 'unpaidRentPrice'
             PropertiesClassName = 'TcxCurrencyEditProperties'
             Properties.DisplayFormat = '0.00;0.00'
+            OnGetProperties = tvGetCurrencyProperties
             HeaderHint = 'Avrage price (Unpaid rent-discount)'
             Options.Editing = False
             Options.ShowEditButtons = isebAlways
@@ -2134,6 +2249,8 @@ object frmReservationProfile: TfrmReservationProfile
           object tvRoomsRateOrPackagePerDay: TcxGridDBColumn
             Caption = 'Nightly rate'
             DataBinding.FieldName = 'RateOrPackagePerDay'
+            PropertiesClassName = 'TcxCurrencyEditProperties'
+            OnGetProperties = tvGetCurrencyProperties
             Options.Editing = False
             Width = 57
           end
@@ -2200,6 +2317,7 @@ object frmReservationProfile: TfrmReservationProfile
             PropertiesClassName = 'TcxCurrencyEditProperties'
             Properties.DisplayFormat = ',0.00;-,0.00'
             Properties.ReadOnly = True
+            OnGetProperties = tvGetCurrencyProperties
             Options.Editing = False
             Width = 56
           end
@@ -2326,7 +2444,6 @@ object frmReservationProfile: TfrmReservationProfile
           TabOrder = 1
           OnClick = OpenthisRoom1Click
           SkinData.SkinSection = 'BUTTON'
-          ExplicitTop = 2
         end
         object btnAddRoom: TsButton
           AlignWithMargins = True
@@ -3460,15 +3577,15 @@ object frmReservationProfile: TfrmReservationProfile
     end
   end
   object pnlDataWait: TsPanel
-    Left = 434
-    Top = 135
+    Left = 384
+    Top = 310
     Width = 263
     Height = 90
     TabOrder = 3
     SkinData.SkinSection = 'PANEL'
     object sLabel2: TsLabel
       Left = 63
-      Top = 25
+      Top = 30
       Width = 137
       Height = 27
       Caption = 'Loading data'
