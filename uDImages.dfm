@@ -27654,7 +27654,7 @@ object DImages: TDImages
       end
       item
         Background = clWindow
-        Name = 'Calendar16x16'
+        Name = 'DayClosing'
         PngImage.Data = {
           89504E470D0A1A0A0000000D49484452000000100000001008060000001FF3FF
           61000000017352474200AECE1CE9000000097048597300000EC400000EC40195

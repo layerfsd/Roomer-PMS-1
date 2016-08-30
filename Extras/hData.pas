@@ -20,6 +20,7 @@ uses
   , kbmMemTable
   , dxMdaSet
   , System.Generics.Collections
+  , uReservationStatusDefinitions
   ;
 
 const
@@ -67,8 +68,8 @@ type
 
   TActReportAction = (ractNone, ractEdit, ractShow, ractDesign, ractClone);
 
-  TReservationStatus = (rsUnKnown, rsReservations, rsGuests, rsDeparting, rsDeparted, rsReserved, rsOverbooked, rsAll, rsCurrent, rsAlotment, rsNoShow,
-    rsBlocked, rsCanceled, rsTmp1, rsTmp2, rsDeleted); // *HJ 140206
+//  TReservationStatus = (rsUnKnown, rsReservations, rsGuests, rsDeparting, rsDeparted, rsReserved, rsOverbooked, rsAll, rsCurrent, rsAlotment, rsNoShow,
+//    rsBlocked, rsCanceled, rsTmp1, rsTmp2, rsDeleted); // *HJ 140206
 
   TReservationTypes = (rtUnknown, rtReservations, rtReserved);
 

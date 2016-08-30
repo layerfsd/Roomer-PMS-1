@@ -911,6 +911,12 @@ begin
                                           'Use RoomReservation Form - for each room to change ');
   constants.Add('shTx_ReservationProfile_AddRoomError', 'Add Room error : %s');
 
+  constants.Add('shTx_FrmReservationprofile_ReservationNumber', 'Reservation number');
+  constants.Add('shTx_FrmReservationprofile_Status', 'Status');
+  constants.Add('shTx_FrmReservationprofile_Balance', 'Balance');
+
+
+
   constants.Add('shTx_RoomPricesEdit_RoomType', 'Room Type must be specified');
   constants.Add('shTx_RoomPricesEdit_PriceTime', 'Price range must be specified');
   constants.Add('shTx_RoomPricesEdit_Invoice', 'Invoice must be specified');

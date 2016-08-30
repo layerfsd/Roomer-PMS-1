@@ -751,6 +751,7 @@
         <DCCReference Include="uDayClosingTimes.pas"/>
         <DCCReference Include="OpenAPI\uDayClosingTimesAPICaller.pas"/>
         <DCCReference Include="RoomerVCLs\Source\uRoomerHttpClient.pas"/>
+        <DCCReference Include="Definitions\uReservationStatusDefinitions.pas"/>
         <DCCReference Include="ufrmPaymentReqRoomtypeGroup.pas">
             <Form>frmPaymentReqRoomtypeGroup</Form>
         </DCCReference>

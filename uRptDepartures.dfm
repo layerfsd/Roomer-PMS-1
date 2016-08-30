@@ -57,8 +57,8 @@ object frmDeparturesReport: TfrmDeparturesReport
       object rbToday: TsRadioButton
         Left = 4
         Top = 21
-        Width = 58
-        Height = 19
+        Width = 50
+        Height = 20
         Caption = 'Today'
         Checked = True
         TabOrder = 0
@@ -68,8 +68,8 @@ object frmDeparturesReport: TfrmDeparturesReport
       object rbTomorrow: TsRadioButton
         Left = 4
         Top = 46
-        Width = 76
-        Height = 19
+        Width = 68
+        Height = 20
         Caption = 'Tomorrow'
         TabOrder = 1
         OnClick = rbRadioButtonClick
@@ -77,8 +77,8 @@ object frmDeparturesReport: TfrmDeparturesReport
       object rbManualRange: TsRadioButton
         Left = 119
         Top = 21
-        Width = 122
-        Height = 19
+        Width = 114
+        Height = 20
         Caption = 'Manual date range:'
         TabOrder = 2
         OnClick = rbRadioButtonClick
@@ -163,7 +163,7 @@ object frmDeparturesReport: TfrmDeparturesReport
         Height = 37
         Align = alLeft
         Caption = 'Check out'
-        ImageIndex = 44
+        ImageIndex = 46
         Images = DImages.PngImageList1
         TabOrder = 1
         OnClick = btnCheckOutClick
@@ -212,8 +212,6 @@ object frmDeparturesReport: TfrmDeparturesReport
     Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = []
-    ExplicitLeft = 1
-    ExplicitTop = 571
   end
   object grDeparturesList: TcxGrid
     Left = 0
@@ -224,7 +222,6 @@ object frmDeparturesReport: TfrmDeparturesReport
     PopupMenu = pnmuGridMenu
     TabOrder = 2
     LookAndFeel.NativeStyle = False
-    ExplicitTop = 146
     object tvDeparturesList: TcxGridDBTableView
       Navigator.Buttons.CustomButtons = <>
       DataController.DataSource = DeparturesListDS
