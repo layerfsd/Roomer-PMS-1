@@ -633,10 +633,10 @@ begin
   constants.Add('shTx_G_Reserved', 'Reserved');
   constants.Add('shTx_G_Overbooked', 'Overbooked');
   constants.Add('shTx_G_Departing', 'Departing');
-  constants.Add('shTx_G_Current', 'Current');
   constants.Add('shTx_G_Canceled', 'Canceled'); //*HJ 140206
   constants.Add('shTx_G_Tmp1', 'Tmp1'); //*HJ 140206
-  constants.Add('shTx_G_Tmp2', 'Tmp2'); //*HJ 140206
+  constants.Add('shTx_G_AwaitingPayment', 'Awaiting Payment'); //*HJ 140206
+  constants.Add('shTx_G_Deleted', 'Deleted'); //*HJ 140206
 
   constants.Add('shTx_GotoRoomAndDate_RoomNotFound', 'RoomReservation not Found');
   constants.Add('shTx_GotoRoomAndDate_ReservationNotFound', 'Reservation not Found');
