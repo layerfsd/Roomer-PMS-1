@@ -727,6 +727,8 @@ type
     btnRptDepartures: TdxBarLargeButton;
     dxRptStockitems: TdxBarLargeButton;
     btnHideCancelledBookings: TdxBarLargeButton;
+    barinnHousekeeping: TdxBar;
+    btnSimpleHouseKeeping: TdxBarLargeButton;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
@@ -1029,6 +1031,7 @@ type
       ABrush: TBrush; AFont: TFont);
     procedure dxRptStockitemsClick(Sender: TObject);
     procedure btnHideCancelledBookingsClick(Sender: TObject);
+    procedure btnSimpleHouseKeepingClick(Sender: TObject);
 
   private
     FReservationsModel: TReservationsModel;
@@ -1620,7 +1623,7 @@ uses
     , UITypes
     , Types
     , VCLTee.TeCanvas
-    , uRptStockItems;
+    , uRptStockItems, uRptHouseKeeping;
 
 {$R *.DFM}
 {$R Cursors.res}
@@ -12231,6 +12234,12 @@ begin
   pnlStatSlider.Left := Width;
   if assigned(Sender) then
     btnRefreshOneDay.Click;
+end;
+
+procedure TfrmMain.btnSimpleHouseKeepingClick(Sender: TObject);
+begin
+  UserClickedDxLargeButton(Sender);
+  ShowHouseKeepingreport(now);
 end;
 
 procedure TfrmMain.dxBarLargeButton4Click(Sender: TObject);

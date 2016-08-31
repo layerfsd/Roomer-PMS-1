@@ -11,7 +11,6 @@ program Roomer;
 uses
   {$ifdef UseFastMM}
   FastMM4 in 'FastMM\FastMM4.pas',
-  FastMM4Messages in 'FastMM\FastMM4Messages.pas',
   {$endif}
   Forms,
   uMain in 'uMain.pas' {frmMain},
@@ -231,7 +230,8 @@ uses
   uFloatUtils in 'RoomerVCLs\Source\uFloatUtils.pas',
   uRptStockItems in 'uRptStockItems.pas' {frmRptStockItems},
   uOpenAPICaller in 'OpenAPI\uOpenAPICaller.pas',
-  ufrmPaymentReqRoomtypeGroup in 'ufrmPaymentReqRoomtypeGroup.pas' {frmPaymentReqRoomtypeGroup};
+  ufrmPaymentReqRoomtypeGroup in 'ufrmPaymentReqRoomtypeGroup.pas' {frmPaymentReqRoomtypeGroup},
+  uRptHouseKeeping in 'uRptHouseKeeping.pas';
 
 {$R *.RES}
 
