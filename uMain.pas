@@ -3636,7 +3636,7 @@ begin
   case status of
     rsDeparted:
       letter := 'D';
-    rsReservations:
+    rsReservation:
       letter := 'P';
     rsGuests:
       letter := 'G';
@@ -3648,7 +3648,7 @@ begin
       letter := 'N';
     rsBlocked:
       letter := 'B';
-    rsCanceled:
+    rsCancelled:
       letter := 'C';
   else
     exit;
@@ -4118,7 +4118,7 @@ begin
         iOldRow := grOneDayRooms.row;
 
         lDate := dtDate.Date;
-        FReservationsModel.Execute(lDate, lDate + 1, rsAll, btnHideCancelledBookings.Down);
+        FReservationsModel.Execute(lDate, lDate + 1, btnHideCancelledBookings.Down);
 
         ziFreeRackRoomCount := 0;
 
@@ -4153,20 +4153,20 @@ begin
             dtDeparture := lRoom.Departure;
             daysToDeparture := trunc(dtDate.Date) - trunc(dtDeparture);
 
-            ResStatusChar := g.ResStatusToStatusStr(ResStatus);
+            ResStatusChar := ResStatus.AsStatusChar;
 
             if (daysToDeparture <> 0) AND (statLastRoomNumber <> RoomNumber) then
             begin
               if pos('<', RoomNumber) = 1 then
               begin
-                if ResStatus = rsCanceled then
+                if ResStatus = rsCancelled then
                   inc(statCancelledExt)
                 else
                   inc(statNumExternRooms);
               end
               else
               begin
-                if ResStatus = rsCanceled then
+                if ResStatus = rsCancelled then
                   inc(statCancelledRm)
                 else
                   inc(statTaken);
@@ -5188,16 +5188,16 @@ begin
 
     Execute := true;
     // Ef ekki P�ntun (P)
-    if _ResStatus <> rsReservations then
+    if _ResStatus <> rsReservation then
     begin
       if _ResStatus = rsAlotment then
-        _ResStatus := rsReservations
+        _ResStatus := rsReservation
       else if _ResStatus = rsOverbooked then
-        _ResStatus := rsReservations
+        _ResStatus := rsReservation
       else if _ResStatus = rsTmp1 then // *HJ 140206
-        _ResStatus := rsReservations
-      else if _ResStatus = rsTmp2 then // *HJ 140206
-        _ResStatus := rsReservations
+        _ResStatus := rsReservation
+      else if _ResStatus = rsAwaitingPayment then // *HJ 140206
+        _ResStatus := rsReservation
       else
         Execute := false;
     end;
@@ -5325,7 +5325,7 @@ begin
       sErr := sErr + { 1013 } GetTranslatedText('sh1013') + ' '
     else if _ResStatus = rsDeparted then
       sErr := sErr + { 1014 } GetTranslatedText('sh1014') + ' '
-    else if _ResStatus = rsReservations then
+    else if _ResStatus = rsReservation then
       sErr := sErr + { 1015 } GetTranslatedText('sh1015') + ' '
     else if _ResStatus = rsOverbooked then
       sErr := sErr + { 1016 } GetTranslatedText('sh1016') + ' '
@@ -5335,11 +5335,11 @@ begin
       sErr := sErr + { 1018 } GetTranslatedText('sh1018') + ' '
     else if _ResStatus = rsNoShow then
       sErr := sErr + { 1019 } GetTranslatedText('sh1019') + ' '
-    else if _ResStatus = rsCanceled then // *HJ 140206
+    else if _ResStatus = rsCancelled then // *HJ 140206
       sErr := sErr + { 1019 } GetTranslatedText('sh1020') + ' '
     else if _ResStatus = rsTmp1 then // *HJ 140206
       sErr := sErr + { 1019 } GetTranslatedText('sh1021') + ' '
-    else if _ResStatus = rsTmp2 then // *HJ 140206
+    else if _ResStatus = rsAwaitingPayment then // *HJ 140206
       sErr := sErr + { 1019 } GetTranslatedText('sh1022') + ' ';
 
     Execute := sErr = '';
@@ -5362,7 +5362,6 @@ function TfrmMain.GetSelectedRoomInformation: boolean;
 var
   rri: RecRRInfo;
   active: boolean;
-  status: String;
 begin
   result := false;
   if ViewMode = vmOneDay then
@@ -5388,8 +5387,7 @@ begin
     exit; // ===>>
 
   _Room := rri.Room;
-  status := rri.resFlag;
-  _ResStatus := g.StatusStrToResStatus(status);
+  _ResStatus := TReservationStatus.FromResStatus(rri.resFlag);
 
   _NoRoom := Copy(_Room, 1, 1) = '<';
 
@@ -5780,8 +5778,8 @@ begin
     for lRoom in FReservationsModel.AllRoomsEnumerator(function (aRoom: TRoomObject): boolean
                                                        begin
                                                           Result := aRoom.IsUnAssigned and (aRoom.Departure <> zOneDay_dtDate) and
-                                                                    not (aRoom.ResStatus in [rsDeparted, rsReservations, rsOverbooked,
-                                                                                              rsAlotment, rsNoShow, rsCanceled, rsTmp1, rsTmp2]);
+                                                                    not (aRoom.ResStatus in [rsDeparted, rsReservation, rsOverbooked,
+                                                                                              rsAlotment, rsNoShow, rsCancelled, rsTmp1, rsAwaitingPayment]);
                                                        end) do
     begin
       OneDay_AddToTaken(lRoom.RoomType);
@@ -5815,14 +5813,14 @@ begin
             for lRoom in FReservationsModel.AllRoomsEnumerator( function (aRoom: TRoomobject): boolean
                                                                 begin
                                                                   Result := FilteredData(aRoom) and
-                                                                            not ( (aRoom.ResStatus in [rsReservations, rsOverbooked, rsAlotment, rsNoShow, rsCanceled, rsTmp1, rsTmp2, rsBlocked, rsDeparted])
+                                                                            not ( (aRoom.ResStatus in [rsReservation, rsOverbooked, rsAlotment, rsNoShow, rsCancelled, rsTmp1, rsAwaitingPayment, rsBlocked, rsDeparted])
                                                                                   and (aRoom.Departure = zOneDay_dtDate));
                                                                 end) do
             begin
                 // -- See comments about the iRound cycle above...
                 //
-                if ((iRound = 2) and (lRoom.ResStatus = rsDeparting)) or
-                  ((iRound = 1) and not(lRoom.ResStatus = rsDeparting)) then
+                if ((iRound = 2) and (lRoom.IsDepartingOn(zOneDay_dtDate))) or
+                  ((iRound = 1) and not (lRoom.IsDepartingOn(zOneDay_dtDate))) then
                 begin
                   if  ((iRoomRound = 1) AND (not lRoom.IsUnAssigned AND (Copy(lRoom.RRNumber, 1, 1) <> '<')))
                     OR
@@ -5853,7 +5851,7 @@ begin
                       grOneDayRooms.cells[4, lRoomIndex] := DateToStr(lRoom.Departure);
                       grOneDayRooms.cells[5, lRoomIndex] := inttostr(lRoom.GuestCount);
 
-                      if lRoom.ResStatus = rsDeparting then
+                      if lRoom.IsDepartingOn(zOneDay_dtDate) then
                       begin
                         if frmMain.IsRoomReserved(lRoom.RoomNumber, zOneDayResPointers[lRoomIndex].ptrRooms[1, 1], zOneDayResPointers[lRoomIndex].ptrRooms[1, 2]) then
                           try
@@ -6569,7 +6567,7 @@ begin
           begin
             HintStr := { 1038 } '<b>' + GetTranslatedText('shBLOCKED') + '</b><br><br>';
           end;
-          if ro.ResStatus = rsCanceled then // *HJ 140206
+          if ro.ResStatus = rsCancelled then // *HJ 140206
           begin
             HintStr := { 1038 } '<b>' + GetTranslatedText('shCANCELED') + '</b><br><br>';
           end;
@@ -6577,7 +6575,7 @@ begin
           begin
             HintStr := { 1038 } '<b>' + GetTranslatedText('shTmp1') + '</b><br><br>';
           end;
-          if ro.ResStatus = rsTmp2 then // *HJ 140206
+          if ro.ResStatus = rsAwaitingPayment then // *HJ 140206
           begin
             HintStr := { 1038 } '<b>' + GetTranslatedText('shTmp2') + '</b><br><br>';
           end;
@@ -7310,18 +7308,19 @@ begin
           Brush.Color := FReservationsModel.Reservations[iRes].Rooms[iRoom].CodedColor;
           Font.Color := InverseColor(FReservationsModel.Reservations[iRes].Rooms[iRoom].CodedColor);
         end
+        else if FReservationsModel.Reservations[iRes].Rooms[iRoom].IsDepartingOn(zOneDay_dtDate) then
+          FormatToReservationAttrib(Grid.Canvas, g.qStatusAttr_Departing)
         else
           case FReservationsModel.Reservations[iRes].Rooms[iRoom].ResStatus of
-            rsReservations: FormatToReservationAttrib(Grid.Canvas, g.qStatusAttr_Order);
-            rsDeparting:    FormatToReservationAttrib(Grid.Canvas, g.qStatusAttr_Departing);
+            rsReservation: FormatToReservationAttrib(Grid.Canvas, g.qStatusAttr_Order);
             rsDeparted:     FormatToReservationAttrib(Grid.Canvas, g.qStatusAttr_Departed);
             rsOverbooked:   FormatToReservationAttrib(Grid.Canvas, g.qStatusAttr_Waitinglist);
             rsAlotment:     FormatToReservationAttrib(Grid.Canvas, g.qStatusAttr_Allotment);
             rsNoShow:       FormatToReservationAttrib(Grid.Canvas, g.qStatusAttr_NoShow);
             rsBlocked:      FormatToReservationAttrib(Grid.Canvas, g.qStatusAttr_Blocked);
-            rsCanceled:     FormatToReservationAttrib(Grid.Canvas, g.qStatusAttr_Canceled);
+            rsCancelled:     FormatToReservationAttrib(Grid.Canvas, g.qStatusAttr_Canceled);
             rsTmp1:         FormatToReservationAttrib(Grid.Canvas, g.qStatusAttr_Tmp1);
-            rsTmp2:         FormatToReservationAttrib(Grid.Canvas, g.qStatusAttr_Tmp2);
+            rsAwaitingPayment:         FormatToReservationAttrib(Grid.Canvas, g.qStatusAttr_Tmp2);
             rsGuests:       if (FReservationsModel.Reservations[iRes].Rooms[iRoom].Departure = zOneDay_dtDate + 1) then
                               FormatToReservationAttrib(Grid.Canvas, g.qStatusAttr_GuestLeavingNextDay)
                             else if (FReservationsModel.Reservations[iRes].Rooms[iRoom].Departure > zOneDay_dtDate + 1) then
@@ -9021,8 +9020,7 @@ begin
   result.Reservation := FReservationsModel.Reservations[iReservation].Reservation;
   result.RoomReservation := FReservationsModel.Reservations[iReservation].Rooms[iRoomReservation].RoomRes;
   result.Channel := FReservationsModel.Reservations[iReservation].Channel;
-  result.resFlag := RESERVATION_STATUS_CHARS[FReservationsModel.Reservations[iReservation].Rooms[iRoomReservation]
-    .ResStatus];
+  result.resFlag := FReservationsModel.Reservations[iReservation].Rooms[iRoomReservation].ResStatus.AsStatusChar;
   result.Date := FReservationsModel.Reservations[iReservation].ReservationDate;
   result.Room := FReservationsModel.Reservations[iReservation].Rooms[iRoomReservation].RoomNumber;
   result.RoomType := FReservationsModel.Reservations[iReservation].Rooms[iRoomReservation].RoomType;

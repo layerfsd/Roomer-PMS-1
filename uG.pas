@@ -437,8 +437,8 @@ type
     function OpenResProblem(var lst : TstringList) : integer;
     function OpenRoomDateProblem(var lst : TStringlist) : integer;
 
-    function StatusStrToResStatus(statusSTR : string) : TReservationStatus;
-    function ResStatusToStatusStr(ResStatus : TReservationStatus) : string;
+    function StatusStrToResStatus(statusSTR : string) : TReservationStatus; deprecated 'Use TReservationsStatus.FromResStatus';
+    function ResStatusToStatusStr(ResStatus : TReservationStatus) : string; deprecated 'Use TReservationStatus.AsReadableString';
 
     function OpenChangeRate(var Rate : double; Currency : string) : boolean;
 
@@ -1967,7 +1967,7 @@ begin
   result := rsUnKnown;
   statusSTR := trim(statusSTR);
   if statusSTR = 'P' then
-    result := rsReservations
+    result := rsReservation
   else if statusSTR = 'G' then
     result := rsGuests
   else if statusSTR = STATUS_CHECKED_OUT then
@@ -1983,11 +1983,11 @@ begin
   else if statusSTR = 'B' then
     result := rsBlocked
   else if statusSTR = 'C' then
-    result := rsCanceled
+    result := rsCancelled
   else if statusSTR = 'W' then  //*HJ 140206
     result := rsTmp1
   else if statusSTR = 'Z' then   //*HJ 140206
-    result := rsTmp2
+    result := rsAwaitingPayment
 
 
 
@@ -2006,7 +2006,7 @@ begin
   if ResStatus = rsBlocked then result := 'Blocked';
   if ResStatus = rsDeparting then result := 'Departing';
   if ResStatus = rsCurrent then result := 'Current'; *)
-  if ResStatus = rsReservations then result := GetTranslatedText('shTx_G_Reservation');
+  if ResStatus = rsReservation then result := GetTranslatedText('shTx_G_Reservation');
   if ResStatus = rsGuests then result := GetTranslatedText('shTx_G_Guest');
   if ResStatus = rsDeparted then result := GetTranslatedText('shTx_G_Departed');
   if ResStatus = rsReserved then result := GetTranslatedText('shTx_G_Reserved');
@@ -2014,11 +2014,9 @@ begin
   if ResStatus = rsAlotment then result := GetTranslatedText('shTx_G_Alotment');
   if ResStatus = rsNoShow then result := GetTranslatedText('shTx_G_NoShow');
   if ResStatus = rsBlocked then result := GetTranslatedText('shTx_G_Blocked');
-  if ResStatus = rsDeparting then result := GetTranslatedText('shTx_G_Departing');
-  if ResStatus = rsCurrent then result := GetTranslatedText('shTx_G_Current');
-  if ResStatus = rsCanceled then result := GetTranslatedText('shTx_G_Canceled'); //*HJ 140206
+  if ResStatus = rsCancelled then result := GetTranslatedText('shTx_G_Canceled'); //*HJ 140206
   if ResStatus = rsTmp1 then result := GetTranslatedText('shTx_G_Tmp1');  //*HJ 140206
-  if ResStatus = rsTmp2 then result := GetTranslatedText('shTx_G_Tmp2'); //*HJ 140206
+  if ResStatus = rsAwaitingPayment then result := GetTranslatedText('shTx_G_aWaitingPayment'); //*HJ 140206
 end;
 
 

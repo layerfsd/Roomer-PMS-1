@@ -365,6 +365,7 @@ type
     Label24: TsLabel;
     cbxBreakfast: TsComboBox;
     cbxPaymentdetails: TsComboBox;
+    cbxStatus: TsCombobox;
     cxSplitter1: TsSplitter;
     Panel1: TsPanel;
     sButton2: TsButton;
@@ -514,21 +515,15 @@ type
     btnDocuments: TsButton;
     lblMarket: TsLabel;
     pnlMarketSegment: TsPanel;
-    Label8: TsLabel;
-    edtType: TsEdit;
-    btnGetCustomerType: TsButton;
-    lblCustomerType: TsLabel;
     tsContact: TsTabSheet;
-    edtContact: TsLabel;
     edtContactAddress1: TsEdit;
     edtContactAddress2: TsEdit;
     edtContactAddress3: TsEdit;
     edtContactAddress4: TsEdit;
-    edtContactCountry: TsEdit;
     edtContactEmail: TsEdit;
     edtContactName: TsEdit;
-    Label20: TsLabel;
-    Label23: TsLabel;
+    lblContactName: TsLabel;
+    lblCOntactEmail: TsLabel;
     pnlTelephone: TsPanel;
     Label21: TsLabel;
     edtContactPhone: TsEdit;
@@ -540,8 +535,29 @@ type
     sLabel1: TsLabel;
     edtTel1: TsEdit;
     edtTel2: TsEdit;
-    btnGetContactCountry: TsButton;
+    sLabel9: TsLabel;
+    sLabel10: TsLabel;
+    sLabel11: TsLabel;
+    edtGuestName: TsEdit;
+    edtGuestAddress2: TsEdit;
+    edtGuestAddress3: TsEdit;
+    edtGuestAddress4: TsEdit;
+    edtGuestAddress1: TsEdit;
+    mAllGuestsMainName: TBooleanField;
+    sPanel2: TsPanel;
+    sLabel8: TsLabel;
+    edtGuestCountry: TsEdit;
+    lblGuestCountry: TsLabel;
+    sPanel3: TsPanel;
+    Label8: TsLabel;
+    lblCustomerType: TsLabel;
+    edtType: TsEdit;
+    btnGetCustomerType: TsButton;
+    sPanel4: TsPanel;
+    edtContact: TsLabel;
     lblContactCountry: TsLabel;
+    edtContactCountry: TsEdit;
+    btnGetContactCountry: TsButton;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -590,7 +606,7 @@ type
     procedure tvRoomsInitEdit(Sender: TcxCustomGridTableView;
       AItem: TcxCustomGridTableItem; AEdit: TcxCustomEdit);
     procedure edtTypeDblClick(Sender: TObject);
-    procedure edCountryClick(Sender: TObject);
+    procedure edtContactCountryClick(Sender: TObject);
     procedure edCountryKeyPress(Sender: TObject; var Key: Char);
     procedure mainPageChange(Sender: TObject);
     procedure edGetCustomerClick(Sender: TObject);
@@ -653,6 +669,7 @@ type
       var AProperties: TcxCustomEditProperties);
     procedure pnlTelephoneResize(Sender: TObject);
     procedure btnExcelClick(Sender: TObject);
+    procedure edtGuestCountryChange(Sender: TObject);
   private
     { Private declarations }
     vStartName: string;
@@ -667,6 +684,7 @@ type
     BlockReasons : TList<String>;
 
     FOrigCaption: string;
+    FgbxGuestOrigCaption: string;
 
     procedure Display;
     procedure Display_rGrid(gotoRoomReservation: longInt);
@@ -676,7 +694,7 @@ type
     procedure UpdatePaymentDetails;
     procedure UpdateStatus;
 
-    Function guestRoomsSQL(reservation: Integer): string;
+    Function MainGuestRoomsSQL(reservation: Integer): string;
     function getGuestData(gotoRoomReservation: Integer): Boolean;
 
     Function guestsSQL(reservation: Integer): string;
@@ -698,6 +716,7 @@ type
     procedure SetMarketItemIndex(const aMarket: string);
     function CheckForDirtyRooms(var aDirtyRoomList: String): boolean;
     procedure ConstructFormCaption;
+    procedure UpdateGuestDetails(gotoRoomReservation: integer);
 
     property OutOfOrderBlocking: Boolean read FOutOfOrderBlocking write SetOutOfOrderBlocking;
   public
@@ -772,22 +791,6 @@ uses
 {$R *.DFM}
 
 
-function strIsDiff(const s: string): Boolean;
-var
-  ch: Char;
-  i: Integer;
-begin
-  result := false;
-  if trim(s) = '' then
-    exit;
-
-  ch := s[1];
-  for i := 1 to length(s) do
-  begin
-    if s[i] <> ch then
-      result := true;
-  end;
-end;
 
 function EditReservation(reservation, roomReservation: longInt): Boolean;
 begin
@@ -824,6 +827,24 @@ begin
   end;
 end;
 
+function strIsDiff(const s: string): Boolean;
+var
+  ch: Char;
+  i: Integer;
+begin
+  result := false;
+  if trim(s) = '' then
+    exit;
+
+  ch := s[1];
+  for i := 1 to length(s) do
+  begin
+    if s[i] <> ch then
+      result := true;
+  end;
+end;
+
+
 
 // **********************************************************************
 //
@@ -851,8 +872,8 @@ begin
 
       lBuilder.AppendFormat('    -    %s: %s', [GetTranslatedText('shTx_FrmReservationprofile_Status'), FReservationStatus.AsReadableString ]);
 
-      lRoomInvoice := TInvoice.Create(ritRoom, -1, zReservation, 0, 0, -1, '', false);
-      lGroupInvoice := TInvoice.Create(ritGroup, -1, zReservation, 0, 0, -1, '', false);
+      lRoomInvoice := TInvoice.Create(ritRoom, -1, zReservation, zRoomReservation, 0, -1, '', false);
+      lGroupInvoice := TInvoice.Create(ritGroup, -1, zReservation, zRoomReservation, 0, -1, '', false);
       lCurrencyHandler := TCurrencyHandler.Create( g.qNativeCurrency);
       lBuilder.AppendFormat('    -    %s: %s', [GetTranslatedText('shTx_FrmReservationprofile_Balance'),
                                                 lCurrencyHandler.FormattedValue(lRoomInvoice.Balance + lGroupInvoice.Balance)]);
@@ -868,15 +889,15 @@ begin
 end;
 
 procedure TfrmReservationProfile.FormShow(Sender: TObject);
-var
-  i: Integer;
 begin
   _restoreForm(self);
   enabled := false;
 
-  TReservationStatus.AsStrings((tvRoomsStatusText.Properties AS TcxComboBoxProperties).Items);
+  TReservationStatus.AsStrings(cbxStatus.Items);
+  (tvRoomsStatusText.Properties AS TcxComboBoxProperties).Items.Assign(cbxStatus.items);
 
   FOrigCaption := Caption;
+  FgbxGuestOrigCaption := gbxGuest.Caption;
   PlacePnlDataWait;
   timStart.enabled := true;
   vStartName := frmReservationProfile.edtName.text;
@@ -1281,7 +1302,7 @@ begin
 
 end;
 
-procedure TfrmReservationProfile.edCountryClick(Sender: TObject);
+procedure TfrmReservationProfile.edtContactCountryClick(Sender: TObject);
 var
   oldCountry: string;
   oldCountryName: string;
@@ -1313,6 +1334,11 @@ begin
       countryValidate(edtContactCountry, lblContactCountry);
     end;
   end;
+end;
+
+procedure TfrmReservationProfile.edtGuestCountryChange(Sender: TObject);
+begin
+  CountryValidate(edtGuestCountry, lblGuestCountry);
 end;
 
 procedure TfrmReservationProfile.edCountryExit(Sender: TObject);
@@ -1432,27 +1458,40 @@ begin
 end;
 
 procedure TfrmReservationProfile.SetStatusItemindex(sStatus: string);
+
+  function strIsDiff(const s: string): Boolean;
+  var
+    ch: Char;
+    i: Integer;
+  begin
+    result := false;
+    if trim(s) = '' then
+      exit;
+
+    ch := s[1];
+    for i := 1 to length(s) do
+    begin
+      if s[i] <> ch then
+        result := true;
+    end;
+  end;
+
 begin
-//  cbxStatus.ItemIndex := 0;
-//
-//  if sStatus = '' then
-//  begin
-//    sStatus := d.isMixedStatus(zReservation);
-//  end;
-//
-//  if strIsDiff(sStatus) then
-//  begin
-//    cbxStatus.ItemIndex := 0;
-//    exit;
-//  end;
-//
-//  if sStatus = '' then
-//    exit;
-//
-//  FReservationStatus := TReservationStatus.FromResStatus(sStatus[1]);
-//  cbxStatus.ItemIndex := _StatusToIndex(FReservationStatus.AsStatusChar, true);
-//  cbxStatus.Update;
-//  cbxStatus.Invalidate;
+  cbxStatus.ItemIndex := -1;
+
+  if sStatus = '' then
+    sStatus := d.isMixedStatus(zReservation);
+
+  if strIsDiff(sStatus) then
+    exit;
+
+  if sStatus = '' then
+    exit;
+
+  FReservationStatus := TReservationStatus.FromResStatus(sStatus[1]);
+  cbxStatus.ItemIndex := FReservationStatus.ToItemIndex;
+  cbxStatus.Update;
+  cbxStatus.Invalidate;
 end;
 
 procedure TfrmReservationProfile.SetBreakfastItemindex(sStatus: string);
@@ -1846,7 +1885,7 @@ begin
       Address2 := edtAddress1.text;
       Address3 := edtAddress1.text;
       Address4 := edtAddress1.text;
-      Country := edCountry.text;
+      Country := edtContactCountry.text;
 
       Currency := mRoomsCurrency.asstring;
       isGroupInvoice := mRoomsisGroupAccount.AsBoolean;
@@ -2169,6 +2208,8 @@ begin
       gbxRoomInformation.caption := 'Notes for Room : ' + mRoomsRoom.asstring;
       memRoomNotes.Lines.text := HiddenInfo;
       memRequestFromChannel.Lines.text := ChannelRequest;
+
+      UpdateGuestDetails(zRoomReservation);
     end;
   end;
 end;
@@ -2541,6 +2582,8 @@ begin
 
     mRooms.Locate('RoomReservation', gotoRoomReservation, []);
 
+    UpdateGuestDetails(gotoRoomReservation);
+
   finally
     mRooms.AfterScroll := lSavedAfterScroll;
     mRooms.BeforePost := lSavedBeforePost;
@@ -2548,6 +2591,32 @@ begin
     rSet.Free;
     screen.Cursor := crDefault;
   end;
+end;
+
+procedure TfrmReservationProfile.UpdateGuestDetails(gotoRoomReservation: integer);
+begin
+  getGuestData(gotoRoomReservation);
+
+  gbxGuest.Caption := FgbxGuestOrigCaption + ' ' + mRoomsRoom.AsString;
+
+  if mAllGuests.Locate('Room;MainName', VarArrayOf([mROomsRoom.AsString, True]), []) then
+  begin
+    edtGuestName.Text := mAllGuestsGuestName.AsString;
+    edtGuestAddress1.Text := mAllGuestsAddress1.AsString;
+    edtGuestAddress2.Text := mAllGuestsAddress2.AsString;
+    edtGuestAddress3.Text := mAllGuestsAddress3.AsString;
+    edtGuestAddress4.Text := mAllGuestsAddress4.AsString;
+    edtGuestCountry.Text := mAllGuestsCountry.AsString;
+  end
+  else
+  begin
+    edtGuestName.Text := '';
+    edtGuestAddress1.Text := '';
+    edtGuestAddress2.Text := '';
+    edtGuestAddress3.Text := '';
+    edtGuestAddress4.Text := '';
+    edtGuestCountry.Text := '';
+  end
 end;
 
 procedure TfrmReservationProfile.tvRoomsaccountTypeTextPropertiesChange(Sender: TObject);
@@ -3150,7 +3219,7 @@ end;
 //
 // ***************************************************************************
 
-Function TfrmReservationProfile.guestRoomsSQL(reservation: longInt): string;
+Function TfrmReservationProfile.MainGuestRoomsSQL(reservation: longInt): string;
 begin
   result := format(select_ReservationProfile_guestRoomsSQL, [zReservation]);
 end;
@@ -3237,7 +3306,7 @@ begin
     mGuestRooms.DisableControls;
     screen.Cursor := crHourGlass;
     try
-      s := guestRoomsSQL(zReservation);
+      s := MainGuestRoomsSQL(zReservation);
       hData.rSet_bySQL(rSet, s);
 
       if mGuestRooms.Active then
@@ -3293,11 +3362,11 @@ begin
 
       mGuests.LoadFromDataSet(rSet);
 
-      mGuests.First;
-      while not mGuests.Eof do
-      begin
-        mGuests.Next;
-      end;
+//      mGuests.First;
+//      while not mGuests.Eof do
+//      begin
+//        mGuests.Next;
+//      end;
     finally
       screen.Cursor := crDefault;
       mGuests.EnableControls;
@@ -3583,23 +3652,23 @@ begin
   timBlink.Tag := timBlink.Tag + 1;
   if timBlink.Tag < 7 then
   begin
-    sButton1.SkinData.CustomColor := NOT(timBlink.Tag div 2 = timBlink.Tag / 2);
-    if sButton1.SkinData.CustomColor then
+    btnDocuments.SkinData.CustomColor := NOT(timBlink.Tag div 2 = timBlink.Tag / 2);
+    if btnDocuments.SkinData.CustomColor then
     begin
-      sButton1.SkinData.ColorTone := clRed;
+      btnDocuments.SkinData.ColorTone := clRed;
       timBlink.Interval := 500;
     end
     else
     begin
-      sButton1.SkinData.ColorTone := clNone;
+      btnDocuments.SkinData.ColorTone := clNone;
       timBlink.Interval := 250;
     end;
     timBlink.enabled := true;
   end
   else
   begin
-    sButton1.SkinData.ColorTone := clNone;
-    sButton1.SkinData.CustomColor := false;
+    btnDocuments.SkinData.ColorTone := clNone;
+    btnDocuments.SkinData.CustomColor := false;
   end;
 end;
 

@@ -10,20 +10,17 @@ uses
 type
   TReservationStatus = (
       rsUnKnown,
-      rsReservations,
+      rsReservation,
       rsGuests,
-      rsDeparting,
       rsDeparted,
       rsReserved,
       rsOverbooked,
-      rsAll,
-      rsCurrent,
       rsAlotment,
       rsNoShow,
       rsBlocked,
-      rsCanceled,
+      rsCancelled,
       rsTmp1,
-      rsTmp2,
+      rsAwaitingPayment,
       rsDeleted);
 
     TReservationStatusSet = set of TReservationStatus;
@@ -40,6 +37,10 @@ type
       ///   Fill a TStrings with translated descriptions in order of enumeration. Can by used to populate a TCombobox
       /// </summary>
       class procedure AsStrings(aItemList: TStrings); static;
+      /// <summary>
+      ///   Return the itemindex of TReservationstatus as it would have in the itemlist created by AsStrings
+      /// </summary>
+      function ToItemIndex: integer;
 
       /// <summary>
       ///   Return a single character statusstring
@@ -49,10 +50,6 @@ type
       ///   Return the translated displaystring for a reservationstatus
       /// </summary>
       function AsReadableString : string;
-      /// <summary>
-      ///   Return the translated displaystring for use in maingrid hints. Slightly different texts then AsReadableString
-      /// </summary>
-      function AsReadableHint: string;
       /// <summary>
       ///   Return the colors (back and front) set for hotel to be used for displaying reservation data
       /// </summary>
@@ -93,7 +90,7 @@ uses
 function TReservationStatusHelper.AsStatusChar: Char;
 const
   cReservationStatusChars : Array[TReservationStatus] of char =
-      ('P','P','G','G','D','P','O','P','G','A','N','B','C','W','Z','X');
+      ('P','P','G','D','P','O','A','N','B','C','W','Z','X');
 begin
   Result := cReservationStatusChars[Self]; 
 end;
@@ -104,7 +101,7 @@ var
   s: TReservationStatus;
 begin
   aItemList.Clear;
-  for s := low(s) to high(s) do
+  for s := TReservationStatus(1) to high(s) do // dont use rsUnkown
     aItemList.Add(s.AsReadableString);
 end;
 
@@ -119,52 +116,28 @@ end;
 function TReservationStatusHelper.AsReadableString : string;
 begin
   case Self of
-    rsReservations: result := GetTranslatedText('shTx_G_Reservation');
-    rsGuests:       result := GetTranslatedText('shTx_G_Guest');
-    rsDeparted:     result := GetTranslatedText('shTx_G_Departed');
-    rsReserved:     result := GetTranslatedText('shTx_G_Reserved');
-    rsOverbooked:   result := GetTranslatedText('shTx_G_Overbooked');
-    rsAlotment:     result := GetTranslatedText('shTx_G_Alotment');
-    rsNoShow:       result := GetTranslatedText('shTx_G_NoShow');
-    rsBlocked:      result := GetTranslatedText('shTx_G_Blocked');
-    rsDeparting:    result := GetTranslatedText('shTx_G_Departing');
-    rsCurrent:      result := GetTranslatedText('shTx_G_Current');
-    rsCanceled:     result := GetTranslatedText('shTx_G_Canceled');
-    rsTmp1:         result := GetTranslatedText('shTx_G_Tmp1');
-    rsTmp2:         result := GetTranslatedText('shTx_G_Tmp2');
+    rsReservation:      result := GetTranslatedText('shTx_G_Reservation');
+    rsGuests:           result := GetTranslatedText('shTx_G_CheckedIn');
+    rsDeparted:         result := GetTranslatedText('shTx_G_Departed');
+    rsReserved:         result := GetTranslatedText('shTx_G_Reserved');
+    rsOverbooked:       result := GetTranslatedText('shTx_G_Overbooked');
+    rsAlotment:         result := GetTranslatedText('shTx_G_Alotment');
+    rsNoShow:           result := GetTranslatedText('shTx_G_NoShow');
+    rsBlocked:          result := GetTranslatedText('shTx_G_Blocked');
+    rsCancelled:        result := GetTranslatedText('shTx_G_Canceled');
+    rsTmp1:             result := GetTranslatedText('shTx_G_Tmp1');
+    rsAwaitingPayment:  result := GetTranslatedText('shTx_G_AwaitingPayment');
+    rsDeleted:          result := GetTranslatedText('shTx_G_Deleted');
   else
     Result := '';
   end;
 end;
 
-function TReservationStatusHelper.AsReadableHint: string;
-begin
-  Result := '';
-  case Self of
-      rsReservations: result := GetTranslatedText('shTx_G_DueToArrive');
-      rsGuests:       result := GetTranslatedText('shTx_G_CheckedIn');
-//      rsDeparting,
-      rsDeparted:     result := GetTranslatedText('shTx_G_CheckedOut');
-//      rsReserved,
-      rsOverbooked:   result := GetTranslatedText('shTx_G_WaitingList');
-//      rsAll,
-//      rsCurrent,
-      rsAlotment:     result := GetTranslatedText('shTx_G_Alotment');
-      rsNoShow:       result := GetTranslatedText('shTx_G_NoShow');
-      rsBlocked:      result := GetTranslatedText('shTx_G_Blocked');
-      rsCanceled:     result := GetTranslatedText('shTx_G_Canceled');
-      rsTmp1:         result := GetTranslatedText('shTx_G_Tmp1');
-      rsTmp2:         result := GetTranslatedText('shTx_G_Tmp2');
-//      rsDeleted
-  end
-end;
-
-
 
 class function TReservationStatusHelper.FromResStatus(const statusChar : char) : TReservationStatus;
 begin
   case statusChar of
-    'P': result := rsReservations;
+    'P': result := rsReservation;
     'G': result := rsGuests;
     'D': result := rsDeparted;
     'R': result := rsReserved;
@@ -172,9 +145,9 @@ begin
     'A': result := rsAlotment;
     'N': result := rsNoShow;
     'B': result := rsBlocked;
-    'C': result := rsCanceled;
+    'C': result := rsCancelled;
     'W': result := rsTmp1;
-    'Z': result := rsTmp2;
+    'Z': result := rsAwaitingPayment;
   else
     result := rsUnKnown;
   end;
@@ -185,7 +158,7 @@ function TReservationStatusHelper.ToColor(var backColor, fontColor : TColor) : b
 begin
   result := false;
   case Self of
-    rsReservations :
+    rsReservation :
       begin
         backColor := g.qStatusAttr_Order.backgroundColor; //clRed;
         fontColor := g.qStatusAttr_Order.fontColor; //clWhite
@@ -227,7 +200,7 @@ begin
         fontColor := g.qStatusAttr_Blocked.fontColor;  //_tinyIntToColor(0);
         result := true;
       end;
-    rsCanceled :
+    rsCancelled :
       begin
         backColor := g.qStatusAttr_Canceled.backgroundColor; //;  //*HJ 140210
         fontColor := g.qStatusAttr_Canceled.fontColor;//;
@@ -239,7 +212,7 @@ begin
         fontColor := g.qStatusAttr_TMP1.fontColor;//;
         result := true;
       end;
-    rsTmp2 :
+    rsAwaitingPayment :
       begin
         backColor := g.qStatusAttr_TMP2.backgroundColor; //;   //*HJ 140210
         fontColor := g.qStatusAttr_TMP2.fontColor;//;
@@ -253,6 +226,14 @@ begin
     end;
 end;
 
+
+function TReservationStatusHelper.ToItemIndex: integer;
+begin
+  if Self = rsUnknown then
+    Result := -1
+  else
+    Result := ord(Self)-1;
+end;
 
 { TReservationStatusSetHelper }
 
