@@ -1628,8 +1628,11 @@ uses
     , UITypes
     , Types
     , VCLTee.TeCanvas
-    , uRptStockItems, uDayClosingTimes, uDayClosingTimesAPICaller, uDateTimeHelper;
-    , uRptStockItems, uRptHouseKeeping;
+    , uRptStockItems
+    , uDayClosingTimes
+    , uDayClosingTimesAPICaller
+    , uDateTimeHelper
+    , uRptHouseKeeping;
 
 {$R *.DFM}
 {$R Cursors.res}
