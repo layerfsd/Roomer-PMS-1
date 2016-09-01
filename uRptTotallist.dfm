@@ -2,8 +2,8 @@ object frmRptTotallist: TfrmRptTotallist
   Left = 0
   Top = 0
   Caption = 'Totallist'
-  ClientHeight = 586
-  ClientWidth = 963
+  ClientHeight = 633
+  ClientWidth = 1347
   Color = clBtnFace
   Constraints.MinWidth = 570
   Font.Charset = DEFAULT_CHARSET
@@ -23,7 +23,7 @@ object frmRptTotallist: TfrmRptTotallist
   object Panel3: TsPanel
     Left = 0
     Top = 0
-    Width = 963
+    Width = 1347
     Height = 97
     Align = alTop
     TabOrder = 0
@@ -214,7 +214,7 @@ object frmRptTotallist: TfrmRptTotallist
   object Panel5: TsPanel
     Left = 0
     Top = 97
-    Width = 963
+    Width = 1347
     Height = 43
     Align = alTop
     TabOrder = 1
@@ -236,8 +236,8 @@ object frmRptTotallist: TfrmRptTotallist
   end
   object dxStatusBar1: TdxStatusBar
     Left = 0
-    Top = 566
-    Width = 963
+    Top = 613
+    Width = 1347
     Height = 20
     Panels = <>
     Font.Charset = DEFAULT_CHARSET
@@ -249,8 +249,8 @@ object frmRptTotallist: TfrmRptTotallist
   object grTotallist: TcxGrid
     Left = 0
     Top = 140
-    Width = 963
-    Height = 426
+    Width = 1347
+    Height = 473
     Align = alClient
     TabOrder = 3
     LookAndFeel.NativeStyle = False
@@ -268,41 +268,49 @@ object frmRptTotallist: TfrmRptTotallist
       DataController.Summary.DefaultGroupSummaryItems = <>
       DataController.Summary.FooterSummaryItems = <
         item
+          Format = '0'
           Kind = skSum
           FieldName = 'paxDeparture'
           Column = lvTotallistpaxDeparture
         end
         item
+          Format = '0'
           Kind = skSum
           FieldName = 'paxAllotment'
           Column = lvTotallistpaxAllotment
         end
         item
+          Format = '0'
           Kind = skSum
-          FieldName = 'roomsInhouse'
+          FieldName = 'paxInhouse'
           Column = lvTotallistpaxInhouse
         end
         item
+          Format = '0'
           Kind = skSum
           FieldName = 'paxArrival'
           Column = lvTotallistpaxArrival
         end
         item
+          Format = '0'
           Kind = skSum
           FieldName = 'paxStay'
           Column = lvTotallistpaxStay
         end
         item
+          Format = '0'
           Kind = skSum
           FieldName = 'paxWaitinglist'
           Column = lvTotallistpaxWaitinglist
         end
         item
+          Format = '0'
           Kind = skSum
           FieldName = 'RoomsAllotment'
           Column = lvTotallistRoomsAllotment
         end
         item
+          Format = '0'
           Kind = skSum
           FieldName = 'roomsArrival'
           Column = lvTotallistroomsArrival
@@ -313,23 +321,40 @@ object frmRptTotallist: TfrmRptTotallist
           Column = lvTotallistdtDate
         end
         item
+          Format = '0'
           Kind = skSum
           FieldName = 'roomsDeparture'
           Column = lvTotallistroomsDeparture
         end
         item
+          Format = '0'
           Kind = skSum
           FieldName = 'roomsInhouse'
           Column = lvTotallistroomsInhouse
         end
         item
+          Format = '0'
+          Kind = skSum
           FieldName = 'roomsStay'
           Column = lvTotallistroomsStay
         end
         item
+          Format = '0'
           Kind = skSum
           FieldName = 'roomsWaitinglist'
           Column = lvTotallistroomsWaitinglist
+        end
+        item
+          Format = '0'
+          Kind = skSum
+          FieldName = 'roomsOutOfOrder'
+          Column = lvTotallistroomsOutOfOrder
+        end
+        item
+          Format = '0'
+          Kind = skSum
+          FieldName = 'paxOutOfOrder'
+          Column = lvTotallistpaxOutOfOrder
         end>
       DataController.Summary.SummaryGroups = <>
       OptionsData.CancelOnExit = False
