@@ -637,6 +637,7 @@ begin
   constants.Add('shTx_G_Tmp1', 'Tmp1'); //*HJ 140206
   constants.Add('shTx_G_AwaitingPayment', 'Awaiting Payment'); //*HJ 140206
   constants.Add('shTx_G_Deleted', 'Deleted'); //*HJ 140206
+  constants.Add('shTx_G_AwaitingPayConfirm', 'Awaiting Payment Confirmation'); //*HJ 140206
 
   constants.Add('shTx_GotoRoomAndDate_RoomNotFound', 'RoomReservation not Found');
   constants.Add('shTx_GotoRoomAndDate_ReservationNotFound', 'Reservation not Found');

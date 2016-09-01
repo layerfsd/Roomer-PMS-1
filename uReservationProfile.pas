@@ -670,6 +670,7 @@ type
     procedure pnlTelephoneResize(Sender: TObject);
     procedure btnExcelClick(Sender: TObject);
     procedure edtGuestCountryChange(Sender: TObject);
+    procedure cbxStatusDrawItem(Control: TWinControl; Index: Integer; Rect: TRect; State: TOwnerDrawState);
   private
     { Private declarations }
     vStartName: string;
@@ -706,7 +707,6 @@ type
     procedure PlacePnlDataWait;
 
     procedure SetStatusItemindex(sStatus: string);
-    function StatusToItemindex(sStatus: string): Integer;
 
     procedure SetBreakfastItemindex(sStatus: string);
     procedure SetPaymentDetailItemindex(sStatus: string);
@@ -1540,37 +1540,6 @@ begin
   cbxPaymentdetails.Invalidate;
 end;
 
-function TfrmReservationProfile.StatusToItemindex(sStatus: string): Integer;
-var
-  ch: Char;
-begin
-  // **
-  result := 0;
-  ch := sStatus[1];
-  case ch of
-    'P':
-      result := 1;
-    'G':
-      result := 2;
-    'D':
-      result := 3;
-    'O':
-      result := 4;
-    'A':
-      result := 5;
-    'N':
-      result := 6;
-    'B':
-      result := 7;
-    'C':
-      result := 8;
-    'W':
-      result := 9;
-    'Z':
-      result := 10;
-  end;
-end;
-
 function TfrmReservationProfile.CheckForDirtyRooms(var aDirtyRoomList: String): boolean;
 var
   bm: TBookmark;
@@ -1707,6 +1676,33 @@ end;
 procedure TfrmReservationProfile.cbxStatusCloseUp(Sender: TObject);
 begin
   UpdateStatus;
+end;
+
+procedure TfrmReservationProfile.cbxStatusDrawItem(Control: TWinControl; Index: Integer; Rect: TRect;
+  State: TOwnerDrawState);
+var
+  cbx: TCombobox;
+  lText: string;
+begin
+  cbx := TCombobox(Control);
+
+  if odSelected in State then begin
+    cbx.Canvas.Brush.Color := clHighlight;
+    cbx.Canvas.Font.Color := clHighlightText;
+  end else begin
+    cbx.Canvas.Brush.Color := cbx.Color;
+    cbx.Canvas.Font.Color := cbx.Font.Color;
+  end;
+
+  cbx.Canvas.FillRect(Rect);
+
+  if Index = -1 then
+    lText := 'Mixed'
+  else
+    lText := TReservationStatus(Index).AsReadableString;
+  cbx.Canvas.TextRect(Rect, Rect.Left+2, Rect.Top+2, lText);
+  if (State * [odFocused, odNoFocusRect]) = [odFocused] then
+    cbx.Canvas.DrawFocusRect(Rect);
 end;
 
 procedure TfrmReservationProfile.chkShowAllGuestsClick(Sender: TObject);
@@ -2352,7 +2348,7 @@ var
   arrival: TDateTime;
   departure: TDateTime;
   iNights: Integer;
-  status: string;
+  status: TReservationStatus;
   statusText: string;
   defGuestCount: Integer;
   RoomType: string;
@@ -2419,7 +2415,6 @@ var
   end;
 
 begin
-  status := '';
   rSet := nil;
   lSavedAfterScroll := mRooms.AfterScroll;
   lSavedBeforePost := mRooms.BeforePost;
@@ -2533,7 +2528,7 @@ begin
       arrival := mRoomsArrival.AsDateTime;
       iGuests := mRoomsGuestCount.asInteger;
       iNights := trunc(departure) - trunc(arrival);
-      status := mRoomsStatus.asstring;
+      status := TReservationStatus.FromResStatus(mRoomsStatus.asstring);
       RoomType := mRoomsRoomType.asstring;
       package := mRoomsPackage.asstring;
       RoomClass := mRoomsRoomClass.asstring;
@@ -2542,8 +2537,8 @@ begin
       PersonsProfilesId := mRoomsPersonsProfilesId.AsInteger;
       sPaymentdetails := sPaymentdetails + _GLOB._Bool2Str(isGroupAccount, 0);
 
-      statusText := _StatusToText(status);
-      sStatus := sStatus + status;
+      statusText := status.AsReadableString;
+      sStatus := sStatus + status.AsStatusChar;
 
       defGuestCount := glb.GET_RoomTypeNumberGuests_byRoomType(RoomType);
       accountTypeText := _AccountTypeToText(isGroupAccount);
@@ -2887,13 +2882,12 @@ end;
 
 procedure TfrmReservationProfile.tvRoomsStatusTextPropertiesChange(Sender: TObject);
 var
-  sTmp: string;
+  lNewStatus: TReservationStatus;
   lMsgText: string;
-  iTMP: Integer;
 begin
-  sTmp := _IndexToStatus(TcxComboBox(Sender).ItemIndex, true);
+  lNewStatus := TReservationStatus(TcxComboBox(Sender).ItemIndex);
 
-  if sTmp = 'G' then
+  if lNewStatus = rsGuests then
   begin
     if g.qWarnCheckInDirtyRoom AND g.oRooms.Room[mROoms['room']].IsDirty then
     begin
@@ -2909,16 +2903,12 @@ begin
   if mRoomsDS.State = dsEdit then
     mRooms.Post;
 
-  d.UpdateStatusSimple(zReservation, zRoomReservation, sTmp);
+  d.UpdateStatusSimple(zReservation, zRoomReservation, lNewStatus.AsStatusChar);
   frmMain.refreshGrid;
 
-  if cbxStatus.ItemIndex <> 0 then
+  if cbxStatus.ItemIndex <> TcxComboBox(Sender).ItemIndex then
   begin
-    iTMP := StatusToItemindex(sTmp);
-    if cbxStatus.ItemIndex <> iTMP then
-    begin
-      cbxStatus.ItemIndex := 0;
-    end;
+    cbxStatus.ItemIndex := -1;
     cbxStatus.Update;
     cbxStatus.Invalidate;
     Application.ProcessMessages;
@@ -3289,7 +3279,7 @@ var
   rSet: TRoomerDataSet;
   s: string;
 
-  status: string;
+  status: TReservationStatus;
   statusText: string;
 
   mainGuest: string;
@@ -3320,8 +3310,8 @@ begin
       begin
         roomReservation := mGuestRooms.fieldbyname('roomReservation').asInteger;
 
-        status := mGuestRooms.fieldbyname('status').asstring;
-        statusText := _StatusToText(status);
+        status := TReservationStatus.FromResStatus(mGuestRooms.fieldbyname('status').asstring);
+        statusText := Status.AsReadableString;
 
         mainGuest := d.RR_GetFirstGuestName(roomReservation);
         guestCount := d.RR_GetGuestCount(roomReservation);
@@ -3398,8 +3388,8 @@ begin
         mAllGuests.First;
         while not mAllGuests.Eof do
         begin
-          status := mAllGuests.fieldbyname('status').asstring;
-          statusText := _StatusToText(status);
+          status := TReservationStatus.FromResStatus(mAllGuests.fieldbyname('status').asstring);
+          statusText := Status.AsReadableString;
 
           mAllGuests.Edit;
           mAllGuests.fieldbyname('statusText').asstring := statusText;

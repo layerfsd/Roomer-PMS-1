@@ -21,7 +21,8 @@ type
       rsCancelled,
       rsTmp1,
       rsAwaitingPayment,
-      rsDeleted);
+      rsDeleted,
+      rsAwaitingPayConfirm);
 
     TReservationStatusSet = set of TReservationStatus;
 
@@ -90,9 +91,9 @@ uses
 function TReservationStatusHelper.AsStatusChar: Char;
 const
   cReservationStatusChars : Array[TReservationStatus] of char =
-      ('P','P','G','D','P','O','A','N','B','C','W','Z','X');
+      ('P','P','G','D','P','O','A','N','B','C','W','Z','X', 'Q');
 begin
-  Result := cReservationStatusChars[Self]; 
+  Result := cReservationStatusChars[Self];
 end;
 
 
@@ -116,18 +117,19 @@ end;
 function TReservationStatusHelper.AsReadableString : string;
 begin
   case Self of
-    rsReservation:      result := GetTranslatedText('shTx_G_Reservation');
-    rsGuests:           result := GetTranslatedText('shTx_G_CheckedIn');
-    rsDeparted:         result := GetTranslatedText('shTx_G_Departed');
-    rsReserved:         result := GetTranslatedText('shTx_G_Reserved');
-    rsOverbooked:       result := GetTranslatedText('shTx_G_Overbooked');
-    rsAlotment:         result := GetTranslatedText('shTx_G_Alotment');
-    rsNoShow:           result := GetTranslatedText('shTx_G_NoShow');
-    rsBlocked:          result := GetTranslatedText('shTx_G_Blocked');
-    rsCancelled:        result := GetTranslatedText('shTx_G_Canceled');
-    rsTmp1:             result := GetTranslatedText('shTx_G_Tmp1');
-    rsAwaitingPayment:  result := GetTranslatedText('shTx_G_AwaitingPayment');
-    rsDeleted:          result := GetTranslatedText('shTx_G_Deleted');
+    rsReservation:        result := GetTranslatedText('shTx_G_Reservation');
+    rsGuests:             result := GetTranslatedText('shTx_G_CheckedIn');
+    rsDeparted:           result := GetTranslatedText('shTx_G_Departed');
+    rsReserved:           result := GetTranslatedText('shTx_G_Reserved');
+    rsOverbooked:         result := GetTranslatedText('shTx_G_Overbooked');
+    rsAlotment:           result := GetTranslatedText('shTx_G_Alotment');
+    rsNoShow:             result := GetTranslatedText('shTx_G_NoShow');
+    rsBlocked:            result := GetTranslatedText('shTx_G_Blocked');
+    rsCancelled:          result := GetTranslatedText('shTx_G_Canceled');
+    rsTmp1:               result := GetTranslatedText('shTx_G_Tmp1');
+    rsAwaitingPayment:    result := GetTranslatedText('shTx_G_AwaitingPayment');
+    rsDeleted:            result := GetTranslatedText('shTx_G_Deleted');
+    rsAwaitingPayConfirm: result := GetTranslatedText('shTx_G_AwaitingPayConfirm');
   else
     Result := '';
   end;
@@ -136,7 +138,7 @@ end;
 
 class function TReservationStatusHelper.FromResStatus(const statusChar : char) : TReservationStatus;
 begin
-  case statusChar of
+  case UpperCase(statusChar)[1] of
     'P': result := rsReservation;
     'G': result := rsGuests;
     'D': result := rsDeparted;
@@ -148,6 +150,7 @@ begin
     'C': result := rsCancelled;
     'W': result := rsTmp1;
     'Z': result := rsAwaitingPayment;
+    'Q': result := rsAwaitingPayConfirm;
   else
     result := rsUnKnown;
   end;

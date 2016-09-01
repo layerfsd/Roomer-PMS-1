@@ -368,9 +368,6 @@ object frmReservationProfile: TfrmReservationProfile
         BevelOuter = bvNone
         TabOrder = 2
         OnResize = pnlTelephoneResize
-        ExplicitLeft = 2
-        ExplicitTop = 150
-        ExplicitWidth = 265
       end
     end
     object gbxStatus: TsGroupBox
@@ -479,12 +476,12 @@ object frmReservationProfile: TfrmReservationProfile
         Left = 144
         Top = 56
         Width = 154
-        Height = 19
+        Height = 22
         AutoCloseUp = True
         Alignment = taLeftJustify
         SkinData.SkinSection = 'COMBOBOX'
         VerticalAlignment = taAlignTop
-        Style = csDropDownList
+        Style = csOwnerDrawFixed
         Color = clWhite
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clBlack
@@ -495,6 +492,7 @@ object frmReservationProfile: TfrmReservationProfile
         ParentFont = False
         TabOrder = 0
         OnCloseUp = cbxStatusCloseUp
+        OnDrawItem = cbxStatusDrawItem
         Items.Strings = (
           'Mixed'
           'Not arrived'
@@ -765,7 +763,6 @@ object frmReservationProfile: TfrmReservationProfile
                 BoundLabel.Font.Height = -13
                 BoundLabel.Font.Name = 'Tahoma'
                 BoundLabel.Font.Style = []
-                ExplicitTop = 133
               end
               object edtContactName: TsEdit
                 AlignWithMargins = True
@@ -807,8 +804,6 @@ object frmReservationProfile: TfrmReservationProfile
                 BevelOuter = bvNone
                 TabOrder = 6
                 OnResize = pnlTelephoneResize
-                ExplicitLeft = 2
-                ExplicitTop = 150
                 object Label21: TsLabel
                   Left = -10
                   Top = 6
@@ -881,7 +876,6 @@ object frmReservationProfile: TfrmReservationProfile
                 BevelOuter = bvNone
                 TabOrder = 7
                 OnResize = pnlTelephoneResize
-                ExplicitTop = 100
                 object edtContact: TsLabel
                   Left = -2
                   Top = 7
@@ -1441,8 +1435,6 @@ object frmReservationProfile: TfrmReservationProfile
           TabOrder = 1
           SkinData.SkinSection = 'GROUPBOX'
           Checked = False
-          ExplicitLeft = 277
-          ExplicitTop = 0
           object lblGuestName: TsLabel
             Left = 25
             Top = 18
@@ -1651,8 +1643,6 @@ object frmReservationProfile: TfrmReservationProfile
             BevelOuter = bvNone
             TabOrder = 5
             OnResize = pnlTelephoneResize
-            ExplicitLeft = 1
-            ExplicitTop = 119
             object sLabel8: TsLabel
               Left = 1
               Top = 6
@@ -2913,8 +2903,8 @@ object frmReservationProfile: TfrmReservationProfile
         object chkShowAllGuests: TsCheckBox
           Left = 333
           Top = 11
-          Width = 93
-          Height = 18
+          Width = 85
+          Height = 20
           Caption = 'Show all guests'
           Anchors = [akLeft, akTop, akRight]
           TabOrder = 4
@@ -4338,8 +4328,8 @@ object frmReservationProfile: TfrmReservationProfile
   object mInvoiceLines: TdxMemData
     Indexes = <>
     SortOptions = []
-    Left = 752
-    Top = 456
+    Left = 744
+    Top = 544
     object mInvoiceLinesInvoiceNumber: TIntegerField
       FieldName = 'InvoiceNumber'
     end
