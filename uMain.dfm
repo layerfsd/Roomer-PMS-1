@@ -448,6 +448,7 @@ object frmMain: TfrmMain
           BevelOuter = bvNone
           TabOrder = 0
           SkinData.SkinSection = 'TRANSPARENT'
+          ExplicitWidth = 801
           object rgrGroupreportStayType: TsRadioGroup
             Left = 2
             Top = 4
@@ -590,6 +591,7 @@ object frmMain: TfrmMain
           PopupMenu = pupGroups
           TabOrder = 1
           LookAndFeel.NativeStyle = False
+          ExplicitHeight = 174
           object tvAllReservations: TcxGridDBTableView
             Navigator.Buttons.CustomButtons = <>
             Navigator.Buttons.First.Visible = True
@@ -863,6 +865,7 @@ object frmMain: TfrmMain
           BevelOuter = bvNone
           TabOrder = 0
           SkinData.SkinSection = 'PANEL'
+          ExplicitHeight = 124
           object lblLoading: TsLabel
             Left = 0
             Top = 0
@@ -1140,6 +1143,7 @@ object frmMain: TfrmMain
             BevelOuter = bvNone
             TabOrder = 2
             SkinData.SkinSection = 'TRANSPARENT'
+            ExplicitTop = 102
             object sPanel2: TsPanel
               Left = -64
               Top = 0
@@ -1309,6 +1313,8 @@ object frmMain: TfrmMain
           OnMoved = splitPeriodMoved
           Color = 6842472
           ParentColor = False
+          ExplicitTop = 159
+          ExplicitWidth = 801
         end
         object pnlPeriodNoRooms: TsPanel
           Left = 0
@@ -1319,6 +1325,7 @@ object frmMain: TfrmMain
           Align = alBottom
           TabOrder = 2
           SkinData.SkinSection = 'PANEL'
+          ExplicitTop = 165
           object grPeriodRooms_NO: TAdvStringGrid
             Tag = 2
             Left = 1
@@ -1465,6 +1472,7 @@ object frmMain: TfrmMain
           TabOrder = 3
           OnMouseEnter = pnlNoRoomButtonsMouseEnter
           SkinData.SkinSection = 'PANEL'
+          ExplicitTop = 132
           object pnlOccupancyViewButtons: TPanel
             Left = 546
             Top = 1
@@ -1635,6 +1643,10 @@ object frmMain: TfrmMain
         SkinData.CustomColor = False
         SkinData.CustomFont = False
         SkinData.SkinSection = 'TRANSPARENT'
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
       end
       object tabRateQuery: TsTabSheet
         Caption = 'tabRateQuery'
@@ -3094,6 +3106,7 @@ object frmMain: TfrmMain
       Index = 0
     end
     object rbTabReservation: TdxRibbonTab
+      Active = True
       Caption = 'Reservation'
       Groups = <
         item
@@ -3106,6 +3119,10 @@ object frmMain: TfrmMain
         end
         item
           ToolbarName = 'barinnRoomActions2'
+        end
+        item
+          Caption = 'Housekeeping'
+          ToolbarName = 'barinnHousekeeping'
         end>
       Index = 1
     end
@@ -4331,10 +4348,6 @@ object frmMain: TfrmMain
         end
         item
           Visible = True
-          ItemName = 'btnMaids'
-        end
-        item
-          Visible = True
           ItemName = 'btnReservationNotes'
         end
         item
@@ -4590,7 +4603,7 @@ object frmMain: TfrmMain
     object barinnCheckInOut: TdxBar
       Caption = 'Check in/out'
       CaptionButtons = <>
-      DockedLeft = 690
+      DockedLeft = 632
       DockedTop = 0
       FloatLeft = 1324
       FloatTop = 8
@@ -4618,7 +4631,7 @@ object frmMain: TfrmMain
     object barinnRoomActions2: TdxBar
       Caption = 'Room Actions'
       CaptionButtons = <>
-      DockedLeft = 810
+      DockedLeft = 752
       DockedTop = 0
       FloatLeft = 1324
       FloatTop = 8
@@ -4974,10 +4987,6 @@ object frmMain: TfrmMain
         item
           Visible = True
           ItemName = 'btnRepArrivals'
-        end
-        item
-          Visible = True
-          ItemName = 'btnRptDepartures'
         end
         item
           Visible = True
@@ -5346,6 +5355,30 @@ object frmMain: TfrmMain
         item
           Visible = True
           ItemName = 'btnCloseCurrentDay'
+        end>
+      OneOnRow = False
+      Row = 0
+      UseOwnFont = False
+      Visible = True
+      WholeRow = False
+    end
+    object barinnHousekeeping: TdxBar
+      Caption = 'Custom 1'
+      CaptionButtons = <>
+      DockedLeft = 966
+      DockedTop = 0
+      FloatLeft = 1284
+      FloatTop = 217
+      FloatClientWidth = 51
+      FloatClientHeight = 24
+      ItemLinks = <
+        item
+          Visible = True
+          ItemName = 'btnSimpleHouseKeeping'
+        end
+        item
+          Visible = True
+          ItemName = 'btnMaids'
         end>
       OneOnRow = False
       Row = 0
@@ -6208,6 +6241,16 @@ object frmMain: TfrmMain
       AutoGrayScale = False
       SyncImageIndex = False
       ImageIndex = 64
+    end
+    object btnSimpleHouseKeeping: TdxBarLargeButton
+      Caption = 'Simple List'
+      Category = 0
+      Hint = 'Simple List'
+      Visible = ivAlways
+      LargeImageIndex = 80
+      OnClick = btnSimpleHouseKeepingClick
+      SyncImageIndex = False
+      ImageIndex = 81
     end
     object mmnuFile: TdxBarSubItem
       Caption = '&File'

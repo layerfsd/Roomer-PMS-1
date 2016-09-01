@@ -230,11 +230,12 @@ uses
   uFloatUtils in 'RoomerVCLs\Source\uFloatUtils.pas',
   uRptStockItems in 'uRptStockItems.pas' {frmRptStockItems},
   uOpenAPICaller in 'OpenAPI\uOpenAPICaller.pas',
-  ufrmPaymentReqRoomtypeGroup in 'ufrmPaymentReqRoomtypeGroup.pas' {frmPaymentReqRoomtypeGroup},
   uDateTimeHelper in 'RoomerVCLs\Source\uDateTimeHelper.pas',
   uDayClosingTimes in 'uDayClosingTimes.pas',
   uDayClosingTimesAPICaller in 'OpenAPI\uDayClosingTimesAPICaller.pas',
   uRoomerHttpClient in 'RoomerVCLs\Source\uRoomerHttpClient.pas';
+  ufrmPaymentReqRoomtypeGroup in 'ufrmPaymentReqRoomtypeGroup.pas' {frmPaymentReqRoomtypeGroup},
+  uRptHouseKeeping in 'uRptHouseKeeping.pas';
 
 {$R *.RES}
 
