@@ -11,7 +11,12 @@ uses
   dxSkinscxPCPainter, cxCustomData, cxFilter, cxData, cxDataStorage, cxEdit, cxNavigator, cxDBData, cxGridLevel,
   cxGridCustomTableView, cxGridTableView, cxGridBandedTableView, cxGridDBBandedTableView, cxGridCustomView, cxGrid,
   dxStatusBar, cxGridDBTableView, Vcl.Grids, Vcl.DBGrids, Vcl.Menus, cxTimeEdit, ppParameter, ppDesignLayer, ppCtrls,
-  ppBands, ppVar, ppPrnabl, ppClass, ppCache, ppProd, ppReport, ppDB, ppComm, ppRelatv, ppDBPipe, sComboBox, cxTextEdit
+  ppBands, ppVar, ppPrnabl, ppClass, ppCache, ppProd, ppReport, ppDB, ppComm, ppRelatv, ppDBPipe, sComboBox, cxTextEdit,
+  dxPSGlbl, dxPSUtl, dxPSEngn, dxPrnPg, dxBkgnd, dxWrap, dxPrnDev, dxPSCompsProvider, dxPSFillPatterns,
+  dxPSEdgePatterns, dxPSPDFExportCore, dxPSPDFExport, cxDrawTextUtils, dxPSPrVwStd, dxPSPrVwAdv, dxPSPrVwRibbon,
+  dxPScxPageControlProducer, dxPScxEditorProducers, dxPScxExtEditorProducers, dxSkinsdxBarPainter,
+  dxSkinsdxRibbonPainter, dxServerModeData, dxServerModeDBXDataSource, dxPSCore, dxPScxGridLnk, dxPScxGridLayoutViewLnk,
+  dxPScxCommon
   ;
 
 type
@@ -67,7 +72,6 @@ type
     grHouseKeepingListDBTableView1room: TcxGridDBColumn;
     grHouseKeepingListDBTableView1roomtype: TcxGridDBColumn;
     grHouseKeepingListDBTableView1floor: TcxGridDBColumn;
-    grHouseKeepingListDBTableView1numberofguests: TcxGridDBColumn;
     grHouseKeepingListDBTableView1expectedcot: TcxGridDBColumn;
     grHouseKeepingListDBTableView1status: TcxGridDBColumn;
     kbmHouseKeepingReportroom: TStringField;
@@ -88,6 +92,29 @@ type
     ppLine1: TppLine;
     kbmHouseKeepingListlocation: TStringField;
     grHouseKeepingListDBTableView1location: TcxGridDBColumn;
+    kbmHouseKeepingReportlocation: TStringField;
+    grHouseKeepingListDBTableView1numguests: TcxGridDBColumn;
+    ppLabel10: TppLabel;
+    ppDBText7: TppDBText;
+    cxPropertiesStore1: TcxPropertiesStore;
+    gridPrinter: TdxComponentPrinter;
+    gridPrinterLink1: TdxGridReportLink;
+    btnPrintGrid: TsButton;
+    cxStyleRepository2: TcxStyleRepository;
+    dxGridReportLinkStyleSheet1: TdxGridReportLinkStyleSheet;
+    cxStyle2: TcxStyle;
+    cxStyle3: TcxStyle;
+    cxStyle4: TcxStyle;
+    cxStyle5: TcxStyle;
+    cxStyle6: TcxStyle;
+    cxStyle7: TcxStyle;
+    cxStyle8: TcxStyle;
+    cxStyle9: TcxStyle;
+    cxStyle10: TcxStyle;
+    cxStyle11: TcxStyle;
+    cxStyle12: TcxStyle;
+    cxStyle13: TcxStyle;
+    cxStyle14: TcxStyle;
     procedure FormCreate(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure FormShow(Sender: TObject);
@@ -96,6 +123,7 @@ type
     procedure kbmHouseKeepingListAfterScroll(DataSet: TDataSet);
    procedure btnReportClick(Sender: TObject);
     procedure ppHeaderBand1BeforePrint(Sender: TObject);
+    procedure btnPrintGridClick(Sender: TObject);
   private
     FRefreshingdata: boolean;
     { Private declarations }
@@ -147,21 +175,21 @@ const
     'r.roomtype,   '#10+
     'r.floor,      '#10+
     'l.description as location,    '#10+
-    'rt.NumberGuests, '#10+
+    '(select count(*) from persons p where p.roomreservation = rr.RoomReservation)  + rr.numChildren + rr.numInfants as NumGuests, '#10+
 //    'max(rr.arrival), '#10+
 //    'min(rr.departure), '#10+
     'max(rr.ExpectedCheckOutTime) as expectedCOT, '#10+
  //   'min(rr.ExpectedTimeOfArrival), '#10+
     ' case '#10+
-		'   when (departure = {probedate}) then ''Checkout'' '#10+
-    '   when (arrival < {probedate} and departure > {probedate}) then ''StayOver''  '#10+
+		'   when (departure = {probedate}) then {departure} '#10+
+    '   when (arrival < {probedate} and departure > {probedate}) then {stayover}  '#10+
 	  ' end as Status '#10+
     'from '#10+
 	  'rooms r '#10+
     '  JOIN roomtypes rt on rt.roomtype=r.roomtype '#10+
 	  '  JOIN roomsdate rd on rd.room = r.room and rd.resFlag  not in (''C'', ''D'') and rd.aDate between date_sub({probedate}, interval 1 day) and {probedate}  '#10+
     '  JOIN roomreservations rr on rd.roomreservation=rr.roomreservation '#10+
-    '  JOIN Locations l on l.Location=r.location '#10+
+    '  JOIN locations l on l.Location=r.location '#10+
     ' group by room, roomtype, floor, numberguests '#10+
     ' order by floor, room) x '#10+
     ' where not status is null ';
@@ -227,9 +255,10 @@ begin
 end;
 
 function TfrmHouseKeepingReport.ConstructSQL: string;
-var s : String;
 begin
   Result := ReplaceString(cSQL, '{probedate}', _db(dtDate.Date));
+  Result := ReplaceString(Result, '{departure}', _db(GetTranslatedText('shTx_Housekeepinglist_Departure')));
+  Result := ReplaceString(Result, '{stayover}', _db(GetTranslatedText('shTx_Housekeepinglist_Stayover')));
   if cbxLocations.ItemIndex >= 0 then
     Result := Result + ' AND location = ' + _db(cbxLocations.Text);
   CopyToClipboard(Result);
@@ -309,7 +338,7 @@ begin
       try
         s := ConstructSQL;
 
-        hData.rSet_bySQL(rSet1, s);
+        hData.rSet_bySQL(rSet1, s, false);
         rSet1.First;
         if not kbmHouseKeepingList.Active then
           kbmHouseKeepingList.Open;
@@ -330,6 +359,16 @@ begin
   end;
 end;
 
+
+procedure TfrmHouseKeepingReport.btnPrintGridClick(Sender: TObject);
+var
+  lTitle: string;
+begin
+  lTitle := Format('%s - %s %s', [Caption, dtDate.Text, cbxLocations.Text]);
+  gridPrinter.PrintTitle := lTitle;
+  gridPrinterLink1.ReportTitle.Text := lTitle;
+  gridPrinter.Print(True, nil, gridPrinterLink1);
+end;
 
 procedure TfrmHouseKeepingReport.UpdateControls;
 
@@ -355,7 +394,7 @@ begin
   glb.Locations.First;
   while not glb.Locations.Eof do
   begin
-    idx := cbxLocations.Items.Add(glb.Locations['Description']);
+    cbxLocations.Items.Add(glb.Locations['Description']);
     glb.Locations.Next;
   end;
 

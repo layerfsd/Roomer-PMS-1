@@ -1,7 +1,7 @@
 object frmHouseKeepingReport: TfrmHouseKeepingReport
   Left = 0
   Top = 0
-  Caption = 'HouseKeeping'
+  Caption = 'HouseKeeping list'
   ClientHeight = 586
   ClientWidth = 1123
   Color = clBtnFace
@@ -26,7 +26,6 @@ object frmHouseKeepingReport: TfrmHouseKeepingReport
     Align = alTop
     TabOrder = 0
     SkinData.SkinSection = 'PANEL'
-    ExplicitTop = -6
     object btnRefresh: TsButton
       Left = 242
       Top = 22
@@ -74,9 +73,23 @@ object frmHouseKeepingReport: TfrmHouseKeepingReport
         ImageIndex = 69
         Images = DImages.PngImageList1
         TabOrder = 1
+        Visible = False
         OnClick = btnReportClick
         SkinData.SkinSection = 'BUTTON'
-        ExplicitLeft = 993
+      end
+      object btnPrintGrid: TsButton
+        AlignWithMargins = True
+        Left = 856
+        Top = 3
+        Width = 128
+        Height = 37
+        Align = alRight
+        Caption = 'Report'
+        ImageIndex = 69
+        Images = DImages.PngImageList1
+        TabOrder = 2
+        OnClick = btnPrintGridClick
+        SkinData.SkinSection = 'BUTTON'
         ExplicitTop = 1
       end
     end
@@ -169,6 +182,7 @@ object frmHouseKeepingReport: TfrmHouseKeepingReport
     Align = alClient
     TabOrder = 2
     LookAndFeel.NativeStyle = False
+    ExplicitTop = 139
     object grHouseKeepingListDBTableView1: TcxGridDBTableView
       Navigator.Buttons.CustomButtons = <>
       DataController.DataSource = HouseKeepingListDS
@@ -187,6 +201,7 @@ object frmHouseKeepingReport: TfrmHouseKeepingReport
       object grHouseKeepingListDBTableView1location: TcxGridDBColumn
         Caption = 'Location'
         DataBinding.FieldName = 'location'
+        Options.Editing = False
         SortIndex = 0
         SortOrder = soAscending
       end
@@ -196,6 +211,7 @@ object frmHouseKeepingReport: TfrmHouseKeepingReport
         PropertiesClassName = 'TcxTextEditProperties'
         Properties.Alignment.Horz = taCenter
         HeaderAlignmentHorz = taCenter
+        Options.Editing = False
         SortIndex = 1
         SortOrder = soAscending
         Width = 67
@@ -203,7 +219,10 @@ object frmHouseKeepingReport: TfrmHouseKeepingReport
       object grHouseKeepingListDBTableView1room: TcxGridDBColumn
         Caption = 'Room'
         DataBinding.FieldName = 'room'
+        PropertiesClassName = 'TcxTextEditProperties'
+        Properties.Alignment.Horz = taCenter
         HeaderAlignmentHorz = taCenter
+        Options.Editing = False
         SortIndex = 2
         SortOrder = soAscending
         Width = 86
@@ -211,14 +230,18 @@ object frmHouseKeepingReport: TfrmHouseKeepingReport
       object grHouseKeepingListDBTableView1roomtype: TcxGridDBColumn
         Caption = 'RoomType'
         DataBinding.FieldName = 'roomtype'
+        PropertiesClassName = 'TcxTextEditProperties'
+        Properties.Alignment.Horz = taCenter
         HeaderAlignmentHorz = taCenter
+        Options.Editing = False
         Width = 88
       end
-      object grHouseKeepingListDBTableView1numberofguests: TcxGridDBColumn
-        Caption = 'Number of Guests'
-        DataBinding.FieldName = 'numberguests'
-        HeaderAlignmentHorz = taRightJustify
-        Width = 107
+      object grHouseKeepingListDBTableView1numguests: TcxGridDBColumn
+        Caption = 'Guests'
+        DataBinding.FieldName = 'numguests'
+        PropertiesClassName = 'TcxTextEditProperties'
+        Properties.Alignment.Horz = taCenter
+        HeaderAlignmentHorz = taCenter
       end
       object grHouseKeepingListDBTableView1expectedcot: TcxGridDBColumn
         Caption = 'Checkout time'
@@ -233,6 +256,7 @@ object frmHouseKeepingReport: TfrmHouseKeepingReport
         Caption = 'Status'
         DataBinding.FieldName = 'status'
         PropertiesClassName = 'TcxTextEditProperties'
+        Options.Editing = False
         Width = 666
       end
     end
@@ -315,7 +339,7 @@ object frmHouseKeepingReport: TfrmHouseKeepingReport
       FieldName = 'floor'
     end
     object kbmHouseKeepingListnumberofguests: TIntegerField
-      FieldName = 'numberguests'
+      FieldName = 'numguests'
     end
     object kbmHouseKeepingListexpectedcot: TTimeField
       FieldName = 'expectedcot'
@@ -354,8 +378,8 @@ object frmHouseKeepingReport: TfrmHouseKeepingReport
     object plHouseKeepingListppField1: TppField
       FieldAlias = 'room'
       FieldName = 'room'
-      FieldLength = 0
-      DisplayWidth = 0
+      FieldLength = 10
+      DisplayWidth = 10
       Position = 0
     end
     object plHouseKeepingListppField2: TppField
@@ -376,8 +400,8 @@ object frmHouseKeepingReport: TfrmHouseKeepingReport
     end
     object plHouseKeepingListppField4: TppField
       Alignment = taRightJustify
-      FieldAlias = 'numberguests'
-      FieldName = 'numberguests'
+      FieldAlias = 'numguests'
+      FieldName = 'numguests'
       FieldLength = 0
       DataType = dtInteger
       DisplayWidth = 10
@@ -392,11 +416,18 @@ object frmHouseKeepingReport: TfrmHouseKeepingReport
       Position = 4
     end
     object plHouseKeepingListppField6: TppField
+      FieldAlias = 'location'
+      FieldName = 'location'
+      FieldLength = 10
+      DisplayWidth = 10
+      Position = 5
+    end
+    object plHouseKeepingListppField7: TppField
       FieldAlias = 'status'
       FieldName = 'status'
       FieldLength = 20
       DisplayWidth = 20
-      Position = 5
+      Position = 6
     end
   end
   object rptHouseKeeping: TppReport
@@ -459,7 +490,7 @@ object frmHouseKeepingReport: TfrmHouseKeepingReport
       mmPrintPosition = 0
       object ppLabel4: TppLabel
         UserName = 'Label4'
-        Caption = 'HouseKeeping Report'
+        Caption = 'HouseKeeping List'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clBlack
         Font.Name = 'Arial'
@@ -469,7 +500,7 @@ object frmHouseKeepingReport: TfrmHouseKeepingReport
         mmHeight = 7535
         mmLeft = 2646
         mmTop = 529
-        mmWidth = 45508
+        mmWidth = 57531
         BandType = 0
         LayerName = Foreground
       end
@@ -578,7 +609,7 @@ object frmHouseKeepingReport: TfrmHouseKeepingReport
         Font.Style = []
         Transparent = True
         mmHeight = 4498
-        mmLeft = 19050
+        mmLeft = 43392
         mmTop = 23813
         mmWidth = 13758
         BandType = 0
@@ -595,7 +626,7 @@ object frmHouseKeepingReport: TfrmHouseKeepingReport
         Font.Style = []
         Transparent = True
         mmHeight = 4498
-        mmLeft = 34660
+        mmLeft = 59002
         mmTop = 23813
         mmWidth = 19844
         BandType = 0
@@ -612,7 +643,7 @@ object frmHouseKeepingReport: TfrmHouseKeepingReport
         Font.Style = []
         Transparent = True
         mmHeight = 4487
-        mmLeft = 2381
+        mmLeft = 27517
         mmTop = 23813
         mmWidth = 14552
         BandType = 0
@@ -620,8 +651,7 @@ object frmHouseKeepingReport: TfrmHouseKeepingReport
       end
       object ppLabel6: TppLabel
         UserName = 'Label6'
-        AutoSize = False
-        Caption = '# of Guests'
+        Caption = 'Guests'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clBlack
         Font.Name = 'Arial'
@@ -629,9 +659,9 @@ object frmHouseKeepingReport: TfrmHouseKeepingReport
         Font.Style = []
         Transparent = True
         mmHeight = 4487
-        mmLeft = 56621
+        mmLeft = 80963
         mmTop = 23813
-        mmWidth = 23019
+        mmWidth = 12361
         BandType = 0
         LayerName = Foreground
       end
@@ -646,7 +676,7 @@ object frmHouseKeepingReport: TfrmHouseKeepingReport
         Font.Style = []
         Transparent = True
         mmHeight = 4498
-        mmLeft = 81492
+        mmLeft = 95250
         mmTop = 23813
         mmWidth = 18256
         BandType = 0
@@ -663,7 +693,7 @@ object frmHouseKeepingReport: TfrmHouseKeepingReport
         Font.Style = []
         Transparent = True
         mmHeight = 4487
-        mmLeft = 102659
+        mmLeft = 116417
         mmTop = 23813
         mmWidth = 11906
         BandType = 0
@@ -677,6 +707,23 @@ object frmHouseKeepingReport: TfrmHouseKeepingReport
         mmLeft = 0
         mmTop = 29104
         mmWidth = 197380
+        BandType = 0
+        LayerName = Foreground
+      end
+      object ppLabel10: TppLabel
+        UserName = 'Label10'
+        AutoSize = False
+        Caption = 'Location'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clBlack
+        Font.Name = 'Arial'
+        Font.Size = 11
+        Font.Style = []
+        Transparent = True
+        mmHeight = 4498
+        mmLeft = 2910
+        mmTop = 23813
+        mmWidth = 14552
         BandType = 0
         LayerName = Foreground
       end
@@ -700,7 +747,7 @@ object frmHouseKeepingReport: TfrmHouseKeepingReport
         Transparent = True
         DataPipelineName = 'plHouseKeepingList'
         mmHeight = 4498
-        mmLeft = 19315
+        mmLeft = 43656
         mmTop = 794
         mmWidth = 13494
         BandType = 4
@@ -718,7 +765,7 @@ object frmHouseKeepingReport: TfrmHouseKeepingReport
         Transparent = True
         DataPipelineName = 'plHouseKeepingList'
         mmHeight = 4498
-        mmLeft = 34660
+        mmLeft = 59002
         mmTop = 794
         mmWidth = 19844
         BandType = 4
@@ -736,7 +783,7 @@ object frmHouseKeepingReport: TfrmHouseKeepingReport
         Transparent = True
         DataPipelineName = 'plHouseKeepingList'
         mmHeight = 4487
-        mmLeft = 2646
+        mmLeft = 27781
         mmTop = 794
         mmWidth = 14288
         BandType = 4
@@ -744,19 +791,20 @@ object frmHouseKeepingReport: TfrmHouseKeepingReport
       end
       object ppDBText4: TppDBText
         UserName = 'DBText4'
-        DataField = 'numberguests'
+        DataField = 'numguests'
         DataPipeline = plHouseKeepingList
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clBlack
         Font.Name = 'Arial'
         Font.Size = 11
         Font.Style = []
+        TextAlignment = taCentered
         Transparent = True
         DataPipelineName = 'plHouseKeepingList'
         mmHeight = 4487
-        mmLeft = 56621
+        mmLeft = 80963
         mmTop = 794
-        mmWidth = 23019
+        mmWidth = 12435
         BandType = 4
         LayerName = Foreground
       end
@@ -774,7 +822,7 @@ object frmHouseKeepingReport: TfrmHouseKeepingReport
         Transparent = True
         DataPipelineName = 'plHouseKeepingList'
         mmHeight = 4498
-        mmLeft = 81492
+        mmLeft = 95250
         mmTop = 794
         mmWidth = 18256
         BandType = 4
@@ -792,9 +840,27 @@ object frmHouseKeepingReport: TfrmHouseKeepingReport
         Transparent = True
         DataPipelineName = 'plHouseKeepingList'
         mmHeight = 4498
-        mmLeft = 102659
+        mmLeft = 116417
         mmTop = 794
-        mmWidth = 93134
+        mmWidth = 79375
+        BandType = 4
+        LayerName = Foreground
+      end
+      object ppDBText7: TppDBText
+        UserName = 'DBText7'
+        DataField = 'location'
+        DataPipeline = plHouseKeepingList
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clBlack
+        Font.Name = 'Arial'
+        Font.Size = 11
+        Font.Style = []
+        Transparent = True
+        DataPipelineName = 'plHouseKeepingList'
+        mmHeight = 4498
+        mmLeft = 2910
+        mmTop = 794
+        mmWidth = 22225
         BandType = 4
         LayerName = Foreground
       end
@@ -881,12 +947,17 @@ object frmHouseKeepingReport: TfrmHouseKeepingReport
         DataType = ftInteger
       end
       item
-        Name = 'numberguests'
+        Name = 'numguests'
         DataType = ftInteger
       end
       item
         Name = 'expectedcot'
         DataType = ftTime
+      end
+      item
+        Name = 'location'
+        DataType = ftString
+        Size = 10
       end
       item
         Name = 'status'
@@ -920,10 +991,14 @@ object frmHouseKeepingReport: TfrmHouseKeepingReport
       FieldName = 'floor'
     end
     object kbmHouseKeepingReportnumberguests: TIntegerField
-      FieldName = 'numberguests'
+      FieldName = 'numguests'
     end
     object kbmHouseKeepingReportexpectedcot: TTimeField
       FieldName = 'expectedcot'
+    end
+    object kbmHouseKeepingReportlocation: TStringField
+      FieldName = 'location'
+      Size = 10
     end
     object kbmHouseKeepingReportstatus: TStringField
       FieldName = 'status'
@@ -933,5 +1008,189 @@ object frmHouseKeepingReport: TfrmHouseKeepingReport
     DataSet = kbmHouseKeepingReport
     Left = 72
     Top = 383
+  end
+  object cxPropertiesStore1: TcxPropertiesStore
+    Components = <>
+    StorageName = 'cxPropertiesStore1'
+    Left = 424
+    Top = 312
+  end
+  object gridPrinter: TdxComponentPrinter
+    CurrentLink = gridPrinterLink1
+    Version = 0
+    Left = 680
+    Top = 328
+    object gridPrinterLink1: TdxGridReportLink
+      Active = True
+      Component = grHouseKeepingList
+      PageNumberFormat = pnfNumeral
+      PrinterPage.DMPaper = 9
+      PrinterPage.Footer = 6350
+      PrinterPage.Header = 6350
+      PrinterPage.Margins.Bottom = 12700
+      PrinterPage.Margins.Left = 12700
+      PrinterPage.Margins.Right = 12700
+      PrinterPage.Margins.Top = 12700
+      PrinterPage.PageSize.X = 210000
+      PrinterPage.PageSize.Y = 297000
+      PrinterPage.ScaleMode = smFit
+      PrinterPage._dxMeasurementUnits_ = 0
+      PrinterPage._dxLastMU_ = 2
+      ReportDocument.CreationDate = 42614.400140000000000000
+      ReportTitle.Font.Charset = DEFAULT_CHARSET
+      ReportTitle.Font.Color = clBlack
+      ReportTitle.Font.Height = -19
+      ReportTitle.Font.Name = 'Arial'
+      ReportTitle.Font.Style = [fsBold]
+      ShrinkToPageWidth = True
+      AssignedFormatValues = [fvTime, fvPageNumber]
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clBlack
+      Font.Height = -15
+      Font.Name = 'Arial'
+      Font.Style = []
+      OptionsFormatting.LookAndFeelKind = lfFlat
+      OptionsFormatting.UseNativeStyles = True
+      StyleRepository = cxStyleRepository2
+      Styles.StyleSheet = dxGridReportLinkStyleSheet1
+      BuiltInReportLink = True
+    end
+  end
+  object cxStyleRepository2: TcxStyleRepository
+    PixelsPerInch = 96
+    object cxStyle2: TcxStyle
+      AssignedValues = [svColor, svFont]
+      Color = clBtnFace
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clDefault
+      Font.Height = -16
+      Font.Name = 'Arial'
+      Font.Style = [fsBold]
+    end
+    object cxStyle3: TcxStyle
+      AssignedValues = [svColor, svFont]
+      Color = clBtnFace
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clDefault
+      Font.Height = -16
+      Font.Name = 'Arial'
+      Font.Style = []
+    end
+    object cxStyle4: TcxStyle
+      AssignedValues = [svColor, svFont]
+      Color = clBtnFace
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clDefault
+      Font.Height = -16
+      Font.Name = 'Arial'
+      Font.Style = []
+    end
+    object cxStyle5: TcxStyle
+      AssignedValues = [svColor, svFont]
+      Color = clBtnFace
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clDefault
+      Font.Height = -16
+      Font.Name = 'Arial'
+      Font.Style = []
+    end
+    object cxStyle6: TcxStyle
+      AssignedValues = [svColor, svFont]
+      Color = clWhite
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clDefault
+      Font.Height = -16
+      Font.Name = 'Arial'
+      Font.Style = []
+    end
+    object cxStyle7: TcxStyle
+      AssignedValues = [svColor, svFont]
+      Color = 16053492
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clDefault
+      Font.Height = -16
+      Font.Name = 'Arial'
+      Font.Style = []
+    end
+    object cxStyle8: TcxStyle
+      AssignedValues = [svColor, svFont]
+      Color = clWhite
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clDefault
+      Font.Height = -16
+      Font.Name = 'Arial'
+      Font.Style = []
+    end
+    object cxStyle9: TcxStyle
+      AssignedValues = [svColor, svFont]
+      Color = clBtnShadow
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clDefault
+      Font.Height = -16
+      Font.Name = 'Arial'
+      Font.Style = []
+    end
+    object cxStyle10: TcxStyle
+      AssignedValues = [svColor, svFont]
+      Color = clBtnFace
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clDefault
+      Font.Height = -16
+      Font.Name = 'Arial'
+      Font.Style = []
+    end
+    object cxStyle11: TcxStyle
+      AssignedValues = [svColor, svFont]
+      Color = clBtnFace
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clDefault
+      Font.Height = -16
+      Font.Name = 'Arial'
+      Font.Style = [fsBold]
+    end
+    object cxStyle12: TcxStyle
+      AssignedValues = [svColor, svFont]
+      Color = clBtnFace
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clDefault
+      Font.Height = -16
+      Font.Name = 'Arial'
+      Font.Style = [fsBold]
+    end
+    object cxStyle13: TcxStyle
+      AssignedValues = [svColor, svFont]
+      Color = clWhite
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clDefault
+      Font.Height = -16
+      Font.Name = 'Arial'
+      Font.Style = []
+    end
+    object cxStyle14: TcxStyle
+      AssignedValues = [svColor, svFont]
+      Color = clBtnFace
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clDefault
+      Font.Height = -16
+      Font.Name = 'Arial'
+      Font.Style = []
+    end
+    object dxGridReportLinkStyleSheet1: TdxGridReportLinkStyleSheet
+      Caption = 'Arial font'
+      Styles.BandHeader = cxStyle2
+      Styles.Caption = cxStyle3
+      Styles.CardCaptionRow = cxStyle4
+      Styles.CardRowCaption = cxStyle5
+      Styles.Content = cxStyle6
+      Styles.ContentEven = cxStyle7
+      Styles.ContentOdd = cxStyle8
+      Styles.FilterBar = cxStyle9
+      Styles.Footer = cxStyle10
+      Styles.Group = cxStyle11
+      Styles.Header = cxStyle12
+      Styles.Preview = cxStyle13
+      Styles.Selection = cxStyle14
+      BuiltIn = True
+    end
   end
 end

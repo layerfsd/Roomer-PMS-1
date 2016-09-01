@@ -712,6 +712,10 @@ begin
   constants.Add('shTx_HouseKeeping_DailyCleaningPlusBeds', '50% - Daily Cleaning + Beds.');
   constants.Add('shTx_HouseKeeping_SpecialRequirements', 'Special Requirements');
   constants.Add('shTx_HouseKeeping_RoomStatusDate', 'Room Status - Date : %s');
+
+  constants.Add('shTx_Housekeepinglist_Departure', 'Departure');
+  constants.Add('shTx_Housekeepinglist_StayOver', 'Stayover');
+
   constants.Add('shTx_Invoice_SaveInvoice', 'Save invoice and room price changes?');
   constants.Add('shTx_Invoice_SaveChanges', 'Save invoice changes?');
   constants.Add('shTx_Invoice_NotANumber', '%s is not a number');
