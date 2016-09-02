@@ -236,7 +236,8 @@ uses
   uRoomerHttpClient in 'RoomerVCLs\Source\uRoomerHttpClient.pas',
   uReservationStatusDefinitions in 'Definitions\uReservationStatusDefinitions.pas',
   ufrmPaymentReqRoomtypeGroup in 'ufrmPaymentReqRoomtypeGroup.pas' {frmPaymentReqRoomtypeGroup},
-  uRptHouseKeeping in 'uRptHouseKeeping.pas';
+  uRptHouseKeeping in 'uRptHouseKeeping.pas',
+  uReservationStateChangeHandler in 'uReservationStateChangeHandler.pas';
 
 {$R *.RES}
 

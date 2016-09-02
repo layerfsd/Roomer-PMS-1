@@ -34,6 +34,8 @@ type
       /// </summary>
       class function FromResStatus(const statusChar : char) : TReservationStatus; overload; static;
       class function FromResStatus(const statusStr : string) : TReservationStatus; overload; static;
+      class function FromItemIndex(aIndex: integer) : TReservationStatus; static;
+
       /// <summary>
       ///   Fill a TStrings with translated descriptions in order of enumeration. Can by used to populate a TCombobox
       /// </summary>
@@ -85,7 +87,7 @@ uses
     PrjConst
   , SysUtils
   , uG
-  ;
+  , uUtils;
 
 
 function TReservationStatusHelper.AsStatusChar: Char;
@@ -104,6 +106,14 @@ begin
   aItemList.Clear;
   for s := TReservationStatus(1) to high(s) do // dont use rsUnkown
     aItemList.Add(s.AsReadableString);
+end;
+
+class function TReservationStatusHelper.FromItemIndex(aIndex: integer): TReservationStatus;
+begin
+  if aIndex = -1 then
+    Result := rsUnKnown
+  else
+    Result := TReservationStatus(aIndex+1);
 end;
 
 class function TReservationStatusHelper.FromResStatus(const statusStr: string): TReservationStatus;

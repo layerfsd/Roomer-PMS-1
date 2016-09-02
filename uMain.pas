@@ -1483,7 +1483,7 @@ type
     procedure PerformFilterRefresh;
     procedure checkFilterStatuses;
     procedure SetRBEMode(const Value: boolean);
-    function CheckInARoom(const name: String; iRoomReservation: integer): boolean;
+    function CheckInARoom(const name: String; iReservation, iRoomReservation: integer): boolean;
     procedure CheckOutARoom(const Room: String; iRoomReservation, iReservation: integer);
     procedure SetDateWithoutEvents(aDate: TdateTime);
     procedure ActivateHint(HintPoint: TPoint; comp: TWinControl);
@@ -1633,7 +1633,7 @@ uses
     , uDayClosingTimes
     , uDayClosingTimesAPICaller
     , uDateTimeHelper
-    , uRptHouseKeeping;
+    , uRptHouseKeeping, uReservationStateChangeHandler;
 
 {$R *.DFM}
 {$R Cursors.res}
@@ -3101,7 +3101,7 @@ begin
       sNewRoom := rri.Room;
     if sNewRoom <> '' then
     begin
-      CheckInARoom(sNewRoom, rri.RoomReservation);
+      CheckInARoom(sNewRoom, rri.Reservation, rri.RoomReservation);
       RefreshGrid;
     end;
 
@@ -5018,11 +5018,13 @@ end;
 procedure TfrmMain.C4Click(Sender: TObject);
 var
   iRoomReservation: integer;
+  iReservation: integer;
   sText, status, Room, name: String;
 begin
   if mAllReservations.eof OR mAllReservations.BOF then
     exit;
   iRoomReservation := mAllReservations['RoomReservation'];
+  iReservation := mAllReservations['Reservation'];
   name := mAllReservations['ReservationName'];
   Room := mAllReservations['Room'];
   status := mAllReservations['Room'];
@@ -5034,7 +5036,7 @@ begin
       exit;
   end;
 
-  CheckInARoom(name, iRoomReservation);
+  CheckInARoom(name, iReservation, iRoomReservation);
 end;
 
 procedure TfrmMain.C5Click(Sender: TObject);
@@ -5246,19 +5248,20 @@ begin
   end
 end;
 
-function TfrmMain.CheckInARoom(const name: String; iRoomReservation: integer): boolean;
+function TfrmMain.CheckInARoom(const name: String; iReservation, iRoomReservation: integer): boolean;
+var
+  lResStateChanger: TReservationStateChangeHandler;
 begin
-  result := false;
-  if ctrlGetBoolean('CheckinWithDetailsDialog') OR
-    (MessageDlg(Format(GetTranslatedText('shCheckRoom'), [name]), mtConfirmation, [mbYes, mbNo], 0) = mrYes) then
-  begin
-    ShowAlertsForReservation(_iReservation, _iRoomReservation, atCHECK_IN);
-    if (NOT ctrlGetBoolean('CheckinWithDetailsDialog')) OR OpenGuestCheckInForm(iRoomReservation) then
-    begin
-      d.CheckInGuest(iRoomReservation);
-      RefreshGrid;
-    end;
+
+  lResStateChanger := TReservationStateChangeHandler.Create(iReservation, iRoomReservation) ;
+  try
+    Result := lResStateChanger.ChangeStateRoom(rsGuests);
+  finally
+    lResStateChanger.Free;
   end;
+  if Result then
+    RefreshGrid;
+
 end;
 
 // ------------------------------------------------------------------------------
@@ -5267,44 +5270,52 @@ end;
 // ------------------------------------------------------------------------------
 procedure TfrmMain.CheckInGroup;
 var
-  lstRoomReservations: TStringList;
-  lstRoomReservationsStatus: TStringList;
-  ReservationCount: integer;
-  i: integer;
+  lStateChanger: TReservationStateChangeHandler;
 begin
-  lstRoomReservations := TStringList.Create;
-  lstRoomReservationsStatus := TStringList.Create;
+
+  lStateChanger := TReservationStateChangeHandler.Create(_iReservation, 0);
   try
-    if GetSelectedRoomInformation then
-    begin
-
-      if _ResStatus = rsBlocked then
-        exit;
-
-      ReservationCount := GetReservationRRList(_iReservation, lstRoomReservations, lstRoomReservationsStatus);
-      if ReservationCount < 1 then
-        exit; // ==>
-      ShowAlertsForReservation(_iReservation, 0, atCHECK_IN);
-      if (MessageDlg(Format(GetTranslatedText('shCheckInGroupOfRoom'), [_Room]), mtConfirmation, [mbYes, mbNo], 0)
-        = mrYes) then
-      begin
-        for i := 0 to ReservationCount - 1 do
-        begin
-          if UpperCase(lstRoomReservationsStatus[i]) = 'P' then
-          begin
-            _iRoomReservation := StrToInt(lstRoomReservations[i]);
-            ShowAlertsForReservation(0, _iRoomReservation, atCHECK_IN);
-            d.CheckInGuest(_iRoomReservation)
-          end;
-        end;
-        if (ViewMode = vmOneDay) OR (ViewMode = vmPeriod) then
+    if lStateChanger.ChangeStateReservation(rsGuests) then
+      if (ViewMode = vmOneDay) OR (ViewMode = vmPeriod) then
           RefreshGrid;
-      end;
-    end;
   finally
-    lstRoomReservations.Free;
-    lstRoomReservationsStatus.Free;
+    lStateChanger.Free;
   end;
+
+
+//  lstRoomReservations := TStringList.Create;
+//  lstRoomReservationsStatus := TStringList.Create;
+//  try
+//    if GetSelectedRoomInformation then
+//    begin
+//
+//      if _ResStatus = rsBlocked then
+//        exit;
+//
+//      ReservationCount := GetReservationRRList(_iReservation, lstRoomReservations, lstRoomReservationsStatus);
+//      if ReservationCount < 1 then
+//        exit; // ==>
+//      ShowAlertsForReservation(_iReservation, 0, atCHECK_IN);
+//      if (MessageDlg(Format(GetTranslatedText('shCheckInGroupOfRoom'), [_Room]), mtConfirmation, [mbYes, mbNo], 0)
+//        = mrYes) then
+//      begin
+//        for i := 0 to ReservationCount - 1 do
+//        begin
+//          if UpperCase(lstRoomReservationsStatus[i]) = 'P' then
+//          begin
+//            _iRoomReservation := StrToInt(lstRoomReservations[i]);
+//            ShowAlertsForReservation(0, _iRoomReservation, atCHECK_IN);
+//            d.CheckInGuest(_iRoomReservation)
+//          end;
+//        end;
+//        if (ViewMode = vmOneDay) OR (ViewMode = vmPeriod) then
+//          RefreshGrid;
+//      end;
+//    end;
+//  finally
+//    lstRoomReservations.Free;
+//    lstRoomReservationsStatus.Free;
+//  end;
 end;
 
 // ------------------------------------------------------------------------------

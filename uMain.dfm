@@ -142,6 +142,8 @@ object frmMain: TfrmMain
           OnMouseUp = grOneDayRoomsMouseUp
           OnStartDrag = grOneDayRoomsStartDrag
           ActiveRowColor = clWhite
+          GridLineColor = 15527152
+          GridFixedLineColor = 13947601
           HoverRowCells = [hcNormal, hcSelected]
           OnGetCellPrintColor = grOneDayRoomsGetCellPrintColor
           OnGridHint = grOneDayRoomsGridHint
@@ -437,7 +439,6 @@ object frmMain: TfrmMain
         ImageIndex = 9
         SkinData.CustomColor = False
         SkinData.CustomFont = False
-        ExplicitWidth = 919
         object Panel3: TsPanel
           Left = 0
           Top = 0
@@ -447,7 +448,6 @@ object frmMain: TfrmMain
           BevelOuter = bvNone
           TabOrder = 0
           SkinData.SkinSection = 'TRANSPARENT'
-          ExplicitWidth = 919
           object rgrGroupreportStayType: TsRadioGroup
             Left = 2
             Top = 4
@@ -590,7 +590,6 @@ object frmMain: TfrmMain
           PopupMenu = pupGroups
           TabOrder = 1
           LookAndFeel.NativeStyle = False
-          ExplicitHeight = 174
           object tvAllReservations: TcxGridDBTableView
             Navigator.Buttons.CustomButtons = <>
             Navigator.Buttons.First.Visible = True
@@ -864,7 +863,6 @@ object frmMain: TfrmMain
           BevelOuter = bvNone
           TabOrder = 0
           SkinData.SkinSection = 'PANEL'
-          ExplicitHeight = 124
           object lblLoading: TsLabel
             Left = 0
             Top = 0
@@ -1142,7 +1140,6 @@ object frmMain: TfrmMain
             BevelOuter = bvNone
             TabOrder = 2
             SkinData.SkinSection = 'TRANSPARENT'
-            ExplicitTop = 102
             object sPanel2: TsPanel
               Left = -64
               Top = 0
@@ -1312,8 +1309,6 @@ object frmMain: TfrmMain
           OnMoved = splitPeriodMoved
           Color = 6842472
           ParentColor = False
-          ExplicitTop = 159
-          ExplicitWidth = 919
         end
         object pnlPeriodNoRooms: TsPanel
           Left = 0
@@ -1324,7 +1319,6 @@ object frmMain: TfrmMain
           Align = alBottom
           TabOrder = 2
           SkinData.SkinSection = 'PANEL'
-          ExplicitTop = 165
           object grPeriodRooms_NO: TAdvStringGrid
             Tag = 2
             Left = 1
@@ -1471,7 +1465,6 @@ object frmMain: TfrmMain
           TabOrder = 3
           OnMouseEnter = pnlNoRoomButtonsMouseEnter
           SkinData.SkinSection = 'PANEL'
-          ExplicitTop = 132
           object pnlOccupancyViewButtons: TPanel
             Left = 546
             Top = 1
@@ -1636,29 +1629,17 @@ object frmMain: TfrmMain
         Caption = 'tabFreeRooms'
         SkinData.CustomColor = False
         SkinData.CustomFont = False
-        ExplicitLeft = 0
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
       end
       object tabDashboard: TsTabSheet
         Caption = 'tabDashboard'
         SkinData.CustomColor = False
         SkinData.CustomFont = False
         SkinData.SkinSection = 'TRANSPARENT'
-        ExplicitLeft = 0
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
       end
       object tabRateQuery: TsTabSheet
         Caption = 'tabRateQuery'
         SkinData.CustomColor = False
         SkinData.CustomFont = False
-        ExplicitLeft = 0
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
       end
     end
     object panMainTop: TsPanel
@@ -4637,7 +4618,7 @@ object frmMain: TfrmMain
     object barinnRoomActions2: TdxBar
       Caption = 'Room Actions'
       CaptionButtons = <>
-      DockedLeft = 752
+      DockedLeft = 824
       DockedTop = 0
       FloatLeft = 1324
       FloatTop = 8
@@ -5371,7 +5352,7 @@ object frmMain: TfrmMain
     object barinnHousekeeping: TdxBar
       Caption = 'Custom 1'
       CaptionButtons = <>
-      DockedLeft = 966
+      DockedLeft = 1038
       DockedTop = 0
       FloatLeft = 1284
       FloatTop = 217

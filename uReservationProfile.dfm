@@ -34,16 +34,17 @@ object frmReservationProfile: TfrmReservationProfile
       Top = 4
       Width = 128
       Height = 35
+      Action = acCheckinReservation
       Align = alLeft
-      Caption = 'Check in'
+      DropDownMenu = ppmStatusChange
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -11
       Font.Name = 'Tahoma'
       Font.Style = []
-      ImageIndex = 44
       Images = DImages.PngImageList1
       ParentFont = False
+      Style = bsSplitButton
       TabOrder = 0
       SkinData.SkinSection = 'BUTTON'
     end
@@ -255,10 +256,9 @@ object frmReservationProfile: TfrmReservationProfile
         AlignWithMargins = True
         Left = 87
         Top = 16
-        Width = 124
+        Width = 181
         Height = 19
         Margins.Left = 80
-        Margins.Right = 60
         Margins.Bottom = 0
         Align = alTop
         Alignment = taLeftJustify
@@ -279,6 +279,7 @@ object frmReservationProfile: TfrmReservationProfile
         Items.Strings = (
           'Leisure'
           'Business')
+        ExplicitWidth = 124
       end
       object pnlMarketSegment: TsPanel
         Left = 7
@@ -410,12 +411,12 @@ object frmReservationProfile: TfrmReservationProfile
         Font.Style = []
       end
       object lblStatus: TsLabel
-        Left = 109
+        Left = 57
         Top = 59
-        Width = 29
+        Width = 81
         Height = 11
         Alignment = taRightJustify
-        Caption = 'Status:'
+        Caption = 'Reservation Status:'
         ParentFont = False
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
@@ -476,12 +477,12 @@ object frmReservationProfile: TfrmReservationProfile
         Left = 144
         Top = 56
         Width = 154
-        Height = 22
+        Height = 19
         AutoCloseUp = True
         Alignment = taLeftJustify
         SkinData.SkinSection = 'COMBOBOX'
         VerticalAlignment = taAlignTop
-        Style = csOwnerDrawFixed
+        Style = csDropDownList
         Color = clWhite
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clBlack
@@ -492,7 +493,6 @@ object frmReservationProfile: TfrmReservationProfile
         ParentFont = False
         TabOrder = 0
         OnCloseUp = cbxStatusCloseUp
-        OnDrawItem = cbxStatusDrawItem
         Items.Strings = (
           'Mixed'
           'Not arrived'
@@ -1431,7 +1431,7 @@ object frmReservationProfile: TfrmReservationProfile
           Width = 205
           Height = 204
           Align = alLeft
-          Caption = 'Guest for room :'
+          Caption = 'Main guest for room :'
           TabOrder = 1
           SkinData.SkinSection = 'GROUPBOX'
           Checked = False
@@ -4381,8 +4381,8 @@ object frmReservationProfile: TfrmReservationProfile
   object mInvoiceHeads: TdxMemData
     Indexes = <>
     SortOptions = []
-    Left = 608
-    Top = 448
+    Left = 616
+    Top = 512
     object mInvoiceHeadsInvoiceNumber: TIntegerField
       FieldName = 'InvoiceNumber'
     end
@@ -4556,5 +4556,32 @@ object frmReservationProfile: TfrmReservationProfile
     AfterScroll = mRoomsAfterScroll
     Left = 800
     Top = 64
+  end
+  object ppmStatusChange: TPopupMenu
+    Left = 584
+    Top = 8
+    object mnuCheckinReservation: TMenuItem
+      Action = acCheckinReservation
+    end
+    object mnuCheckinRoom: TMenuItem
+      Action = acCheckinRoom
+    end
+  end
+  object alReservation: TActionList
+    Left = 664
+    Top = 8
+    object acCheckinReservation: TAction
+      Category = 'checkin'
+      Caption = 'Checkin Reservation'
+      ImageIndex = 44
+      OnExecute = acCheckinReservationExecute
+    end
+    object acCheckinRoom: TAction
+      Category = 'checkin'
+      Caption = 'Checkin room'
+      ImageIndex = 44
+      OnExecute = acCheckinRoomExecute
+      OnUpdate = acCheckinRoomUpdate
+    end
   end
 end
