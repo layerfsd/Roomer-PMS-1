@@ -437,7 +437,6 @@ object frmMain: TfrmMain
         ImageIndex = 9
         SkinData.CustomColor = False
         SkinData.CustomFont = False
-        ExplicitWidth = 919
         object Panel3: TsPanel
           Left = 0
           Top = 0
@@ -447,7 +446,6 @@ object frmMain: TfrmMain
           BevelOuter = bvNone
           TabOrder = 0
           SkinData.SkinSection = 'TRANSPARENT'
-          ExplicitWidth = 919
           object rgrGroupreportStayType: TsRadioGroup
             Left = 2
             Top = 4
@@ -1309,8 +1307,6 @@ object frmMain: TfrmMain
           OnMoved = splitPeriodMoved
           Color = 6842472
           ParentColor = False
-          ExplicitTop = 159
-          ExplicitWidth = 919
         end
         object pnlPeriodNoRooms: TsPanel
           Left = 0
@@ -1629,25 +1625,17 @@ object frmMain: TfrmMain
       end
       object tabFreeRooms: TsTabSheet
         Caption = 'tabFreeRooms'
-        ExplicitLeft = 0
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
+        SkinData.CustomColor = False
+        SkinData.CustomFont = False
       end
       object tabDashboard: TsTabSheet
         Caption = 'tabDashboard'
         SkinData.SkinSection = 'TRANSPARENT'
-        ExplicitLeft = 0
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
       end
       object tabRateQuery: TsTabSheet
         Caption = 'tabRateQuery'
-        ExplicitLeft = 0
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
+        SkinData.CustomColor = False
+        SkinData.CustomFont = False
       end
     end
     object panMainTop: TsPanel
@@ -4625,7 +4613,7 @@ object frmMain: TfrmMain
     object barinnRoomActions2: TdxBar
       Caption = 'Room Actions'
       CaptionButtons = <>
-      DockedLeft = 752
+      DockedLeft = 824
       DockedTop = 0
       FloatLeft = 1324
       FloatTop = 8
@@ -5359,7 +5347,7 @@ object frmMain: TfrmMain
     object barinnHousekeeping: TdxBar
       Caption = 'Custom 1'
       CaptionButtons = <>
-      DockedLeft = 966
+      DockedLeft = 1038
       DockedTop = 0
       FloatLeft = 1284
       FloatTop = 217

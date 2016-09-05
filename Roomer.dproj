@@ -756,6 +756,7 @@
             <Form>frmPaymentReqRoomtypeGroup</Form>
         </DCCReference>
         <DCCReference Include="uRptHouseKeeping.pas"/>
+        <DCCReference Include="uReservationStateChangeHandler.pas"/>
         <None Include="Roomer.todo"/>
         <None Include="notes.txt"/>
         <None Include="Roomer.inc"/>

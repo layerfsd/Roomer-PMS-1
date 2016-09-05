@@ -198,10 +198,10 @@ function _WeekNum(const TDT:TDateTime) : Word;
 
 
 function _IndexToStatus(Index : Integer; MixedIncluded : Boolean = False) : string;
-function _StatusToIndex(Status : String; MixedIncluded : Boolean = False) : Integer;
+function _StatusToIndex(Status : String; MixedIncluded : Boolean = False) : Integer; deprecated 'Use ord(TReservationStatus)';
 
-function _StatusToText(status : string) : string;
-function _TextToStatus(text : string) : string;
+function _StatusToText(status : string) : string; deprecated 'Use TReservationStatus.AsReadableString';
+function _TextToStatus(text : string) : string; deprecated 'Use TReservationStatus';
 function _BreakfastToText(included : Boolean) : string;
 function _AccountTypeToText(isGroupAccount : Boolean) : string;
 
@@ -225,7 +225,8 @@ function GetGridsIniFilename : String;
 
 implementation
 
-uses uDateUtils, uRegistryServices, uUtils, uG, uStringUtils, uAppGlobal, uRoomerDefinitions, PrjConst, uFloatUtils;
+uses uDateUtils, uRegistryServices, uUtils, uG, uStringUtils, uAppGlobal, uRoomerDefinitions, PrjConst, uFloatUtils,
+  uReservationStatusDefinitions;
 
 function GetRoomerIniFilename : String;
 begin
@@ -2623,37 +2624,39 @@ function _WeekNum(const TDT:TDateTime) : Word;
  end;
 
 function _StatusToText(status : string) : string;
-var
-  ch : Char;
+//var
+//  ch : Char;
 begin
-  result := 'unknown';
-  if trim(status) = '' then
-    exit;
-  status := UpperCase(status);
-  ch := status[1];
-  case ch of
-    STATUS_NOT_ARRIVED :
-      result := GetTranslatedText('shTx_G_NotArrived'); // 'Not arrived';
-    STATUS_ARRIVED :
-      result := GetTranslatedText('shTx_G_CheckedIn'); // 'Checked in';
-    STATUS_CHECKED_OUT :
-      result := GetTranslatedText('shTx_G_CheckedOut'); // 'Departed';
-    STATUS_WAITING_LIST :
-      result := GetTranslatedText('shTx_G_WaitingList'); // 'Optional booking';
-    STATUS_ALLOTMENT :
-      result := GetTranslatedText('shTx_G_Alotment'); // 'Alotment';
-    STATUS_NO_SHOW :
-      result := GetTranslatedText('shTx_G_NoShow'); // 'No-show';
-    STATUS_BLOCKED :
-      result := GetTranslatedText('shTx_G_Blocked'); // 'Blocked';
-    STATUS_Canceled :
-      result := GetTranslatedText('shTx_G_Cancelled'); // 'Cancelled';
-    STATUS_Tmp1 :
-      result := '[N/A]';
-    STATUS_AWAITING_PAYMENT :
-      result := 'Awaiting payment';
+  Result := TReservationStatus.FromResStatus(status).asReadableString;
 
-  end;
+//  result := 'unknown';
+//  if trim(status) = '' then
+//    exit;
+//  status := UpperCase(status);
+//  ch := status[1];
+//  case ch of
+//    STATUS_NOT_ARRIVED :
+//      result := GetTranslatedText('shTx_G_NotArrived'); // 'Not arrived';
+//    STATUS_ARRIVED :
+//      result := GetTranslatedText('shTx_G_CheckedIn'); // 'Checked in';
+//    STATUS_CHECKED_OUT :
+//      result := GetTranslatedText('shTx_G_CheckedOut'); // 'Departed';
+//    STATUS_WAITING_LIST :
+//      result := GetTranslatedText('shTx_G_WaitingList'); // 'Optional booking';
+//    STATUS_ALLOTMENT :
+//      result := GetTranslatedText('shTx_G_Alotment'); // 'Alotment';
+//    STATUS_NO_SHOW :
+//      result := GetTranslatedText('shTx_G_NoShow'); // 'No-show';
+//    STATUS_BLOCKED :
+//      result := GetTranslatedText('shTx_G_Blocked'); // 'Blocked';
+//    STATUS_Canceled :
+//      result := GetTranslatedText('shTx_G_Cancelled'); // 'Cancelled';
+//    STATUS_Tmp1 :
+//      result := '[N/A]';
+//    STATUS_AWAITING_PAYMENT :
+//      result := 'Awaiting payment';
+//
+//  end;
 end;
 
 //  constants.Add('shTx_G_DueToArrive', 'Due to arrive');
@@ -2688,23 +2691,24 @@ begin
 end;
 
 function _StatusToIndex(Status : String; MixedIncluded : Boolean = False) : Integer;
-var ch : Char;
+//var ch : Char;
 begin
-  result := 0;
-  ch := UpCase(Status[1]);
-  case ch of
-    'G' : result := 0;
-    'P' : result := 1;
-    STATUS_CHECKED_OUT : result := 2;
-    'O' : result := 3;
-    'N' : result := 4;
-    'A' : result := 5;
-    'B' : result := 6;
-    'C' : result := 7;
-    'W' : result := 8;
-    'Z' : result := 9;
-  end;
-  result := ABS(ORD(MixedIncluded)) + result;
+  Result := ord(TReservationStatus.FromResStatus(Status));
+//  result := 0;
+//  ch := UpCase(Status[1]);
+//  case ch of
+//    'G' : result := 0;
+//    'P' : result := 1;
+//    STATUS_CHECKED_OUT : result := 2;
+//    'O' : result := 3;
+//    'N' : result := 4;
+//    'A' : result := 5;
+//    'B' : result := 6;
+//    'C' : result := 7;
+//    'W' : result := 8;
+//    'Z' : result := 9;
+//  end;
+//  result := ABS(ORD(MixedIncluded)) + result;
 end;
 
 function _TextToStatus(text : string) : string;
