@@ -1255,6 +1255,7 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
     end
     object prLinkGrDrill: TdxGridReportLink
       Component = grDrill
+      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.GrayShading = True
@@ -1267,6 +1268,7 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
       PrinterPage.PageSize.Y = 297000
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
+      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       BuiltInReportLink = True
     end
   end

@@ -613,8 +613,25 @@ object frmReservationProfile: TfrmReservationProfile
             SkinData.SkinSection = 'PAGECONTROL'
             object TabSheet4: TsTabSheet
               Caption = 'Customer'
-              SkinData.CustomColor = False
-              SkinData.CustomFont = False
+              ExplicitLeft = 0
+              ExplicitTop = 0
+              ExplicitWidth = 0
+              ExplicitHeight = 0
+              object Label9: TsLabel
+                Left = 2
+                Top = 3
+                Width = 50
+                Height = 11
+                Alignment = taRightJustify
+                AutoSize = False
+                Caption = 'Customer:'
+                ParentFont = False
+                Font.Charset = DEFAULT_CHARSET
+                Font.Color = clWindowText
+                Font.Height = -9
+                Font.Name = 'Tahoma'
+                Font.Style = []
+              end
               object Label19: TsLabel
                 Left = 1
                 Top = 32
@@ -3079,20 +3096,18 @@ object frmReservationProfile: TfrmReservationProfile
           object lblSpecialRequests: TsLabel
             Left = 2
             Top = 13
-            Width = 250
+            Width = 69
             Height = 11
             Align = alTop
             Caption = 'Special Requests'
-            ExplicitWidth = 69
           end
           object lblNotes: TsLabel
             Left = 2
             Top = 97
-            Width = 250
+            Width = 24
             Height = 11
             Align = alTop
             Caption = 'Notes'
-            ExplicitWidth = 24
           end
           object edtSpecialRequests: TMemo
             AlignWithMargins = True

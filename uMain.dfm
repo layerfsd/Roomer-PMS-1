@@ -285,7 +285,7 @@ object frmMain: TfrmMain
           SortSettings.HeaderColorTo = 16579058
           SortSettings.HeaderMirrorColor = 16380385
           SortSettings.HeaderMirrorColorTo = 16182488
-          Version = '7.9.1.0'
+          Version = '7.9.1.1'
           ColWidths = (
             47
             49
@@ -523,7 +523,7 @@ object frmMain: TfrmMain
               Left = 3
               Top = 15
               Width = 151
-              Height = 19
+              Height = 17
               Caption = 'Reservation on new page'
               Font.Charset = DEFAULT_CHARSET
               Font.Color = clWindowText
@@ -540,7 +540,7 @@ object frmMain: TfrmMain
               Left = 3
               Top = 36
               Width = 81
-              Height = 19
+              Height = 17
               Caption = 'Print memo'
               Font.Charset = DEFAULT_CHARSET
               Font.Color = clWindowText
@@ -594,7 +594,6 @@ object frmMain: TfrmMain
           PopupMenu = pupGroups
           TabOrder = 1
           LookAndFeel.NativeStyle = False
-          ExplicitHeight = 174
           object tvAllReservations: TcxGridDBTableView
             Navigator.Buttons.CustomButtons = <>
             Navigator.Buttons.First.Visible = True
@@ -850,12 +849,6 @@ object frmMain: TfrmMain
       object tabPeriod: TsTabSheet
         Caption = 'tabPeriod'
         ImageIndex = 2
-        SkinData.CustomColor = False
-        SkinData.CustomFont = False
-        ExplicitLeft = 0
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
         object sLabel2: TsLabel
           Left = 224
           Top = 400
@@ -872,7 +865,6 @@ object frmMain: TfrmMain
           BevelOuter = bvNone
           TabOrder = 0
           SkinData.SkinSection = 'PANEL'
-          ExplicitHeight = 124
           object lblLoading: TsLabel
             Left = 0
             Top = 0
@@ -1150,7 +1142,6 @@ object frmMain: TfrmMain
             BevelOuter = bvNone
             TabOrder = 2
             SkinData.SkinSection = 'TRANSPARENT'
-            ExplicitTop = 102
             object sPanel2: TsPanel
               Left = -64
               Top = 0
@@ -1332,7 +1323,6 @@ object frmMain: TfrmMain
           Align = alBottom
           TabOrder = 2
           SkinData.SkinSection = 'PANEL'
-          ExplicitTop = 165
           object grPeriodRooms_NO: TAdvStringGrid
             Tag = 2
             Left = 1
@@ -1461,7 +1451,7 @@ object frmMain: TfrmMain
             SearchFooter.HintHighlight = 'Highlight occurences'
             SearchFooter.MatchCaseCaption = 'Match case'
             SortSettings.DefaultFormat = ssAutomatic
-            Version = '7.9.1.0'
+            Version = '7.9.1.1'
             ColWidths = (
               64
               64
@@ -1479,7 +1469,6 @@ object frmMain: TfrmMain
           TabOrder = 3
           OnMouseEnter = pnlNoRoomButtonsMouseEnter
           SkinData.SkinSection = 'PANEL'
-          ExplicitTop = 132
           object pnlOccupancyViewButtons: TPanel
             Left = 546
             Top = 1
@@ -1642,8 +1631,6 @@ object frmMain: TfrmMain
       end
       object tabFreeRooms: TsTabSheet
         Caption = 'tabFreeRooms'
-        SkinData.CustomColor = False
-        SkinData.CustomFont = False
         ExplicitLeft = 0
         ExplicitTop = 0
         ExplicitWidth = 0
@@ -1651,8 +1638,6 @@ object frmMain: TfrmMain
       end
       object tabDashboard: TsTabSheet
         Caption = 'tabDashboard'
-        SkinData.CustomColor = False
-        SkinData.CustomFont = False
         SkinData.SkinSection = 'TRANSPARENT'
         ExplicitLeft = 0
         ExplicitTop = 0
@@ -1661,8 +1646,6 @@ object frmMain: TfrmMain
       end
       object tabRateQuery: TsTabSheet
         Caption = 'tabRateQuery'
-        SkinData.CustomColor = False
-        SkinData.CustomFont = False
         ExplicitLeft = 0
         ExplicitTop = 0
         ExplicitWidth = 0
@@ -2246,7 +2229,6 @@ object frmMain: TfrmMain
             EventMarkerColor = clYellow
             EventMarkerShape = evsCircle
             BackgroundPosition = bpTiled
-            BevelOuter = bvNone
             BorderWidth = 1
             CaptionColor = clNone
             CaptionTextColor = clBlack
@@ -2316,7 +2298,7 @@ object frmMain: TfrmMain
             HintPrevMonth = 'Previous Month'
             HintNextMonth = 'Next Month'
             HintNextYear = 'Next Year'
-            Version = '2.2.2.1'
+            Version = '2.3.0.0'
             TMSStyle = 0
           end
         end
@@ -2463,7 +2445,7 @@ object frmMain: TfrmMain
         ParentColor = False
         Transparent = True
         OnAnchorClick = mmoMessageAnchorClick
-        Version = '1.9.2.2'
+        Version = '1.9.2.3'
         ExplicitLeft = 87
         ExplicitWidth = 1019
       end
@@ -2798,7 +2780,7 @@ object frmMain: TfrmMain
           SelectionColor = 15790320
           SelectionColorTo = 15387318
           SortSettings.DefaultFormat = ssAutomatic
-          Version = '7.9.1.0'
+          Version = '7.9.1.1'
           ColWidths = (
             70
             12
@@ -2957,7 +2939,7 @@ object frmMain: TfrmMain
           SelectionColor = 15790320
           SelectionColorTo = 15387318
           SortSettings.DefaultFormat = ssAutomatic
-          Version = '7.9.1.0'
+          Version = '7.9.1.1'
           RowHeights = (
             19
             19
@@ -9482,7 +9464,6 @@ object frmMain: TfrmMain
     AddedTitle.Font.Name = 'Tahoma'
     AddedTitle.Font.Style = []
     AddedTitle.Text = 'Next Generation Hotel Management'
-    FormHeader.AdditionalHeight = 0
     SkinData.CustomColor = True
     SkinData.CustomFont = True
     SkinData.SkinManager = sSkinManager1
