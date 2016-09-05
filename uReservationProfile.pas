@@ -685,6 +685,7 @@ type
     procedure acCheckinReservationExecute(Sender: TObject);
     procedure acCheckinRoomExecute(Sender: TObject);
     procedure acCheckinRoomUpdate(Sender: TObject);
+    procedure acCheckinReservationUpdate(Sender: TObject);
   private
     { Private declarations }
     vStartName: string;
@@ -1718,23 +1719,40 @@ var
   lResChanger: TReservationStateChangeHandler;
 begin
 
-  lResChanger := TReservationStateChangeHandler.Create(mRoomsReservation.asInteger, mRoomsRoomReservation.AsInteger);
+  lResChanger := TReservationStateChangeHandler.Create(mRoomsReservation.asInteger);
   try
-    if lResChanger.ChangeStateReservation(rsGuests) then
+    if lResChanger.ChangeState(rsGuests) then
       Display;
   finally
     lResChanger.Free;
   end;
 end;
 
+procedure TfrmReservationProfile.acCheckinReservationUpdate(Sender: TObject);
+var
+  lResStateChanger: TReservationStateChangeHandler;
+begin
+  acCheckinReservation.Enabled := mRooms.Active and not mRooms.Eof;
+  if acCheckinReservation.Enabled then
+  begin
+    lResStateChanger := TReservationStateChangeHandler.Create(mRoomsReservation.asInteger);
+    try
+      acCheckinRoom.Enabled := lResStateChanger.ChangeIsAllowed(rsGuests);
+    finally
+      lResStateChanger.Free;
+    end;
+  end;
+
+end;
+
 procedure TfrmReservationProfile.acCheckinRoomExecute(Sender: TObject);
 var
-  lResChanger: TReservationStateChangeHandler;
+  lResChanger: TRoomReservationStateChangeHandler;
 begin
 
-  lResChanger := TReservationStateChangeHandler.Create(mRoomsReservation.asInteger, mRoomsRoomReservation.AsInteger);
+  lResChanger := TRoomReservationStateChangeHandler.Create(mRoomsReservation.asInteger, mRoomsRoomReservation.AsInteger);
   try
-    if lResChanger.ChangeStateRoom(rsGuests) then
+    if lResChanger.ChangeState(rsGuests) then
       Display_rGrid(mRoomsRoomReservation.AsInteger);
   finally
     lResChanger.Free;
@@ -1743,8 +1761,20 @@ begin
 end;
 
 procedure TfrmReservationProfile.acCheckinRoomUpdate(Sender: TObject);
+var
+  lRoomStateChanger: TRoomReservationStateChangeHandler;
 begin
   acCheckinRoom.Enabled := mRooms.Active and not mRooms.Eof;
+  if acCheckinRoom.Enabled then
+  begin
+    lRoomStateChanger := TRoomReservationStateChangeHandler.Create(mRoomsReservation.AsInteger, mRoomsRoomReservation.AsInteger);
+    try
+      acCheckinRoom.Enabled := lRoomStateChanger.ChangeIsAllowed(rsGuests);
+    finally
+      lRoomStateChanger.Free;
+    end;
+  end;
+
   if acCheckinRoom.Enabled then
     acCheckinRoom.Caption := FOrigAcCheckinRoomCaption + ' '+ mRoomsRoom.AsString
   else
@@ -2848,14 +2878,14 @@ end;
 
 procedure TfrmReservationProfile.tvRoomsStatusTextPropertiesChange(Sender: TObject);
 var
-  lStateChanger: TReservationStateChangeHandler;
+  lStateChanger: TRoomReservationStateChangeHandler;
   lNewStatus: TReservationStatus;
 begin
   lNewStatus := TReservationStatus.FromItemIndex(TcxComboBox(Sender).ItemIndex);
 
-  lStateChanger := TReservationStateChangeHandler.Create(zReservation, zRoomReservation);
+  lStateChanger := TRoomReservationStateChangeHandler.Create(zReservation, zRoomReservation);
   try
-    if lStateChanger.ChangeStateRoom(lNewStatus) then
+    if lStateChanger.ChangeState(lNewStatus) then
       mRooms.Post
     else
       mRooms.Cancel;

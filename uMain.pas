@@ -5250,12 +5250,12 @@ end;
 
 function TfrmMain.CheckInARoom(const name: String; iReservation, iRoomReservation: integer): boolean;
 var
-  lResStateChanger: TReservationStateChangeHandler;
+  lResStateChanger: TRoomReservationStateChangeHandler;
 begin
 
-  lResStateChanger := TReservationStateChangeHandler.Create(iReservation, iRoomReservation) ;
+  lResStateChanger := TRoomReservationStateChangeHandler.Create(iReservation, iRoomReservation) ;
   try
-    Result := lResStateChanger.ChangeStateRoom(rsGuests);
+    Result := lResStateChanger.ChangeState(rsGuests);
   finally
     lResStateChanger.Free;
   end;
@@ -5273,9 +5273,9 @@ var
   lStateChanger: TReservationStateChangeHandler;
 begin
 
-  lStateChanger := TReservationStateChangeHandler.Create(_iReservation, 0);
+  lStateChanger := TReservationStateChangeHandler.Create(_iReservation);
   try
-    if lStateChanger.ChangeStateReservation(rsGuests) then
+    if lStateChanger.ChangeState(rsGuests) then
       if (ViewMode = vmOneDay) OR (ViewMode = vmPeriod) then
           RefreshGrid;
   finally

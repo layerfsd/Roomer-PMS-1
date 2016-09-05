@@ -4573,6 +4573,7 @@ object frmReservationProfile: TfrmReservationProfile
       Caption = 'Checkin Reservation'
       ImageIndex = 44
       OnExecute = acCheckinReservationExecute
+      OnUpdate = acCheckinReservationUpdate
     end
     object acCheckinRoom: TAction
       Category = 'checkin'

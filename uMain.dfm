@@ -142,6 +142,8 @@ object frmMain: TfrmMain
           OnMouseUp = grOneDayRoomsMouseUp
           OnStartDrag = grOneDayRoomsStartDrag
           ActiveRowColor = clWhite
+          GridLineColor = 15527152
+          GridFixedLineColor = 13947601
           HoverRowCells = [hcNormal, hcSelected]
           OnGetCellPrintColor = grOneDayRoomsGetCellPrintColor
           OnGridHint = grOneDayRoomsGridHint
