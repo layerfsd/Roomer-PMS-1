@@ -709,7 +709,7 @@ end;
 procedure TfrmRptCashier.FormShow(Sender: TObject);
 begin
   // **
-  _restoreForm(frmRptCashier);
+  _restoreForm(self);
   UserSelectVisible(false);
   ShowData;
 end;
