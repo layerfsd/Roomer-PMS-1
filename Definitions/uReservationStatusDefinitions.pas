@@ -22,7 +22,8 @@ type
       rsTmp1,
       rsAwaitingPayment,
       rsDeleted,
-      rsAwaitingPayConfirm);
+      rsAwaitingPayConfirm,
+      rsMixed);
 
     TReservationStatusSet = set of TReservationStatus;
 
@@ -57,6 +58,10 @@ type
       ///   Return the colors (back and front) set for hotel to be used for displaying reservation data
       /// </summary>
       function ToColor(var backColor, fontColor : TColor) : boolean;
+      /// <summary>
+      ///   Return wether this state can be set by the user of PMS or only by backend
+      /// </summary>
+      function IsUserSelectable: boolean;
     end;
 
     TReservationStatusSetHelper = record helper for TReservationStatusSet
@@ -93,7 +98,7 @@ uses
 function TReservationStatusHelper.AsStatusChar: Char;
 const
   cReservationStatusChars : Array[TReservationStatus] of char =
-      ('P','P','G','D','P','O','A','N','B','C','W','Z','X', 'Q');
+      ('P','P','G','D','P','O','A','N','B','C','W','Z','X', 'Q', 'M');
 begin
   Result := cReservationStatusChars[Self];
 end;
@@ -124,6 +129,29 @@ begin
     Result := FromResStatus(statusStr[1]);
 end;
 
+function TReservationStatusHelper.IsUserSelectable: boolean;
+begin
+  case Self of
+    rsReservation:        result := True;
+    rsGuests:             result := True;
+    rsDeparted:           result := True;
+    rsReserved:           result := True;
+    rsOverbooked:         result := True;
+    rsAlotment:           result := True;
+    rsNoShow:             result := True;
+    rsBlocked:            result := False; // only selectable when creating a special type reservation
+    rsCancelled:          result := True;
+    rsTmp1:               result := True;
+    rsAwaitingPayment:    result := False;
+    rsDeleted:            result := False;
+    rsAwaitingPayConfirm: result := False;
+    rsMixed:              result := false;
+  else
+    Result := false;
+  end;
+
+end;
+
 function TReservationStatusHelper.AsReadableString : string;
 begin
   case Self of
@@ -140,6 +168,7 @@ begin
     rsAwaitingPayment:    result := GetTranslatedText('shTx_G_AwaitingPayment');
     rsDeleted:            result := GetTranslatedText('shTx_G_Deleted');
     rsAwaitingPayConfirm: result := GetTranslatedText('shTx_G_AwaitingPayConfirm');
+    rsMixed:              result := GetTranslatedText('shTx_G_Mixed');
   else
     Result := '';
   end;

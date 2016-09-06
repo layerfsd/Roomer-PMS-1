@@ -34,9 +34,9 @@ object frmReservationProfile: TfrmReservationProfile
       Top = 4
       Width = 128
       Height = 35
-      Action = acCheckinReservation
+      Action = acCheckinRoom
       Align = alLeft
-      DropDownMenu = ppmStatusChange
+      DropDownMenu = ppmCheckin
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -11
@@ -64,9 +64,10 @@ object frmReservationProfile: TfrmReservationProfile
       ImageIndex = 115
       Images = DImages.PngImageList1
       ParentFont = False
-      TabOrder = 1
+      TabOrder = 2
       OnClick = btnExcelClick
       SkinData.SkinSection = 'BUTTON'
+      ExplicitTop = 2
     end
     object btnCheckOut: TsButton
       AlignWithMargins = True
@@ -74,17 +75,16 @@ object frmReservationProfile: TfrmReservationProfile
       Top = 4
       Width = 128
       Height = 35
+      Action = acCheckoutRoom
       Align = alLeft
-      Caption = 'Check out'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -11
       Font.Name = 'Tahoma'
       Font.Style = []
-      ImageIndex = 46
       Images = DImages.PngImageList1
       ParentFont = False
-      TabOrder = 2
+      TabOrder = 1
       SkinData.SkinSection = 'BUTTON'
     end
     object btnDocuments: TsButton
@@ -93,18 +93,38 @@ object frmReservationProfile: TfrmReservationProfile
       Top = 4
       Width = 128
       Height = 35
+      Action = acShowDocuments
       Align = alLeft
-      Caption = 'Documents'
+      DropDownMenu = ppmDocuments
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -11
       Font.Name = 'Tahoma'
       Font.Style = []
-      ImageIndex = 21
       Images = DImages.PngImageList1
       ParentFont = False
+      Style = bsSplitButton
       TabOrder = 3
-      OnClick = btnDocumentsClick
+      SkinData.SkinSection = 'BUTTON'
+    end
+    object btnHiddenMemo: TsButton
+      AlignWithMargins = True
+      Left = 540
+      Top = 4
+      Width = 128
+      Height = 35
+      Action = acShowHiddenMemo
+      Align = alLeft
+      DropDownMenu = ppmHiddenMemo
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      Images = DImages.PngImageList1
+      ParentFont = False
+      Style = bsSplitButton
+      TabOrder = 4
       SkinData.SkinSection = 'BUTTON'
     end
   end
@@ -279,7 +299,6 @@ object frmReservationProfile: TfrmReservationProfile
         Items.Strings = (
           'Leisure'
           'Business')
-        ExplicitWidth = 124
       end
       object pnlMarketSegment: TsPanel
         Left = 7
@@ -410,20 +429,6 @@ object frmReservationProfile: TfrmReservationProfile
         Font.Name = 'Tahoma'
         Font.Style = []
       end
-      object lblStatus: TsLabel
-        Left = 57
-        Top = 59
-        Width = 81
-        Height = 11
-        Alignment = taRightJustify
-        Caption = 'Reservation Status:'
-        ParentFont = False
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -9
-        Font.Name = 'Tahoma'
-        Font.Style = []
-      end
       object cbxBreakfast: TsComboBox
         Left = 144
         Top = 33
@@ -441,7 +446,7 @@ object frmReservationProfile: TfrmReservationProfile
         Font.Style = []
         ItemIndex = 0
         ParentFont = False
-        TabOrder = 2
+        TabOrder = 1
         Text = 'Mixed'
         OnCloseUp = cbxBreakfastCloseUp
         Items.Strings = (
@@ -466,44 +471,12 @@ object frmReservationProfile: TfrmReservationProfile
         Font.Style = []
         ItemIndex = -1
         ParentFont = False
-        TabOrder = 1
+        TabOrder = 0
         OnCloseUp = cbxPaymentdetailsCloseUp
         Items.Strings = (
           'Mixed'
           'Room Account'
           'Group Account')
-      end
-      object cbxStatus: TsComboBox
-        Left = 144
-        Top = 56
-        Width = 154
-        Height = 19
-        AutoCloseUp = True
-        Alignment = taLeftJustify
-        SkinData.SkinSection = 'COMBOBOX'
-        VerticalAlignment = taAlignTop
-        Style = csDropDownList
-        Color = clWhite
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clBlack
-        Font.Height = -9
-        Font.Name = 'Tahoma'
-        Font.Style = []
-        ItemIndex = -1
-        ParentFont = False
-        TabOrder = 0
-        OnCloseUp = cbxStatusCloseUp
-        Items.Strings = (
-          'Mixed'
-          'Not arrived'
-          'Checked in'
-          'Departed'
-          'Waitinglist'
-          'Alotment'
-          'No-show'
-          'Blocked'
-          'Canceled'
-          '[Unused]')
       end
     end
   end
@@ -530,14 +503,16 @@ object frmReservationProfile: TfrmReservationProfile
         TabOrder = 0
         SkinData.SkinSection = 'PANEL'
         object cxSplitter1: TsSplitter
-          Left = 481
-          Top = 1
+          AlignWithMargins = True
+          Left = 484
+          Top = 4
           Width = 7
-          Height = 204
+          Height = 198
           Color = clGradientActiveCaption
           ParentColor = False
           SkinData.CustomColor = True
           ExplicitLeft = 414
+          ExplicitTop = 1
           ExplicitHeight = 190
         end
         object Panel4: TsPanel
@@ -794,16 +769,17 @@ object frmReservationProfile: TfrmReservationProfile
                 AlignWithMargins = True
                 Left = 0
                 Top = 153
-                Width = 265
+                Width = 263
                 Height = 23
                 Margins.Left = 0
                 Margins.Top = 0
-                Margins.Right = 0
+                Margins.Right = 2
                 Margins.Bottom = 0
                 Align = alTop
                 BevelOuter = bvNone
                 TabOrder = 6
                 OnResize = pnlTelephoneResize
+                ExplicitWidth = 265
                 object Label21: TsLabel
                   Left = -10
                   Top = 6
@@ -1540,7 +1516,7 @@ object frmReservationProfile: TfrmReservationProfile
             MaxLength = 100
             ParentFont = False
             ReadOnly = True
-            TabOrder = 1
+            TabOrder = 2
             SkinData.SkinSection = 'EDIT'
             BoundLabel.Font.Charset = DEFAULT_CHARSET
             BoundLabel.Font.Color = clWindowText
@@ -1567,7 +1543,7 @@ object frmReservationProfile: TfrmReservationProfile
             MaxLength = 100
             ParentFont = False
             ReadOnly = True
-            TabOrder = 2
+            TabOrder = 3
             SkinData.SkinSection = 'EDIT'
             BoundLabel.Font.Charset = DEFAULT_CHARSET
             BoundLabel.Font.Color = clWindowText
@@ -1594,7 +1570,7 @@ object frmReservationProfile: TfrmReservationProfile
             MaxLength = 2
             ParentFont = False
             ReadOnly = True
-            TabOrder = 3
+            TabOrder = 4
             SkinData.SkinSection = 'EDIT'
             BoundLabel.Font.Charset = DEFAULT_CHARSET
             BoundLabel.Font.Color = clWindowText
@@ -1621,7 +1597,7 @@ object frmReservationProfile: TfrmReservationProfile
             MaxLength = 100
             ParentFont = False
             ReadOnly = True
-            TabOrder = 4
+            TabOrder = 1
             SkinData.SkinSection = 'EDIT'
             BoundLabel.Font.Charset = DEFAULT_CHARSET
             BoundLabel.Font.Color = clWindowText
@@ -1702,9 +1678,9 @@ object frmReservationProfile: TfrmReservationProfile
           end
         end
         object memPanel: TsPanel
-          Left = 488
+          Left = 494
           Top = 1
-          Width = 639
+          Width = 633
           Height = 204
           Margins.Left = 0
           Margins.Top = 0
@@ -1715,23 +1691,28 @@ object frmReservationProfile: TfrmReservationProfile
           ParentBackground = False
           TabOrder = 2
           SkinData.SkinSection = 'PANEL'
+          ExplicitLeft = 488
+          ExplicitWidth = 639
           object sSplitter2: TsSplitter
-            Left = 203
-            Top = 6
+            AlignWithMargins = True
+            Left = 206
+            Top = 9
             Width = 7
-            Height = 156
+            Height = 186
             Color = clGradientActiveCaption
             ParentColor = False
             SkinData.CustomColor = True
             SkinData.SkinSection = 'SPLITTER'
             ExplicitLeft = 199
             ExplicitTop = 3
+            ExplicitHeight = 156
           end
           object sSplitter1: TsSplitter
-            Left = 393
-            Top = 6
+            AlignWithMargins = True
+            Left = 402
+            Top = 9
             Width = 7
-            Height = 156
+            Height = 186
             Color = clGradientActiveCaption
             ParentColor = False
             SkinData.CustomColor = True
@@ -1744,7 +1725,7 @@ object frmReservationProfile: TfrmReservationProfile
             Left = 6
             Top = 6
             Width = 197
-            Height = 156
+            Height = 192
             Align = alLeft
             Caption = 'General Information'
             TabOrder = 0
@@ -1754,7 +1735,7 @@ object frmReservationProfile: TfrmReservationProfile
               Left = 2
               Top = 13
               Width = 193
-              Height = 141
+              Height = 177
               Align = alClient
               BevelInner = bvNone
               BevelOuter = bvNone
@@ -1772,20 +1753,21 @@ object frmReservationProfile: TfrmReservationProfile
             end
           end
           object GroupBox2: TsGroupBox
-            Left = 210
+            Left = 216
             Top = 6
             Width = 183
-            Height = 156
+            Height = 192
             Align = alLeft
             Caption = 'Payment Information'
             TabOrder = 1
             SkinData.SkinSection = 'GROUPBOX'
             Checked = False
+            ExplicitLeft = 210
             object memPMInfo: TsMemo
               Left = 2
               Top = 13
               Width = 179
-              Height = 141
+              Height = 177
               Align = alClient
               BevelInner = bvNone
               BevelOuter = bvNone
@@ -1802,79 +1784,31 @@ object frmReservationProfile: TfrmReservationProfile
               SkinData.SkinSection = 'EDIT'
             end
           end
-          object Panel8: TsPanel
-            Left = 6
-            Top = 162
-            Width = 627
-            Height = 36
-            Margins.Left = 0
-            Margins.Top = 0
-            Margins.Right = 0
-            Margins.Bottom = 0
-            Align = alBottom
-            BevelOuter = bvNone
-            ParentBackground = False
-            TabOrder = 2
-            SkinData.SkinSection = 'PANEL'
-            object btnShowHiddenMemo: TsButton
-              AlignWithMargins = True
-              Left = 3
-              Top = 3
-              Width = 155
-              Height = 30
-              Align = alLeft
-              Caption = 'Show hidden memo'
-              TabOrder = 0
-              OnClick = btnShowHiddenMemoClick
-              SkinData.SkinSection = 'BUTTON'
-            end
-            object btnClipboardToHinndenMemo: TsButton
-              AlignWithMargins = True
-              Left = 164
-              Top = 3
-              Width = 155
-              Height = 30
-              Align = alLeft
-              Caption = 'Clipboard to hidden memo'
-              TabOrder = 1
-              OnClick = btnClipboardToHinndenMemoClick
-              SkinData.SkinSection = 'BUTTON'
-            end
-            object btnPasteFile: TsButton
-              AlignWithMargins = True
-              Left = 325
-              Top = 3
-              Width = 155
-              Height = 30
-              Align = alLeft
-              Caption = 'Paste files into documents'
-              TabOrder = 2
-              OnClick = btnPasteFileClick
-              SkinData.SkinSection = 'BUTTON'
-            end
-          end
           object pnlRoomInformation: TsPanel
-            Left = 400
+            Left = 412
             Top = 6
-            Width = 233
-            Height = 156
+            Width = 215
+            Height = 192
             Align = alClient
             BevelOuter = bvNone
-            TabOrder = 3
+            TabOrder = 2
+            ExplicitLeft = 400
+            ExplicitWidth = 233
             object gbxRoomInformation: TsGroupBox
               Left = 0
               Top = 0
-              Width = 233
+              Width = 215
               Height = 72
               Align = alTop
               Caption = 'Notes for room : '
               TabOrder = 0
               SkinData.SkinSection = 'GROUPBOX'
               Checked = False
+              ExplicitWidth = 233
               object memRoomNotes: TsMemo
                 Left = 2
                 Top = 13
-                Width = 229
+                Width = 211
                 Height = 52
                 Align = alTop
                 BevelInner = bvNone
@@ -1891,23 +1825,25 @@ object frmReservationProfile: TfrmReservationProfile
                 TabOrder = 0
                 OnExit = memRoomNotesExit
                 SkinData.SkinSection = 'EDIT'
+                ExplicitWidth = 229
               end
             end
             object gbChannelInformation: TsGroupBox
               Left = 0
               Top = 72
-              Width = 233
-              Height = 84
+              Width = 215
+              Height = 120
               Align = alClient
               Caption = 'Requests from booking channel :'
               TabOrder = 1
               SkinData.SkinSection = 'GROUPBOX'
               Checked = False
+              ExplicitWidth = 233
               object memRequestFromChannel: TsMemo
                 Left = 2
                 Top = 13
-                Width = 229
-                Height = 69
+                Width = 211
+                Height = 105
                 Align = alClient
                 BevelInner = bvNone
                 BevelOuter = bvNone
@@ -1923,6 +1859,7 @@ object frmReservationProfile: TfrmReservationProfile
                 ScrollBars = ssVertical
                 TabOrder = 0
                 SkinData.SkinSection = 'EDIT'
+                ExplicitWidth = 229
               end
             end
           end
@@ -1935,13 +1872,20 @@ object frmReservationProfile: TfrmReservationProfile
     Top = 369
     Width = 1136
     Height = 260
-    ActivePage = RoomsTab
+    ActivePage = GuestsTab
     Align = alClient
-    Style = tsButtons
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
     TabHeight = 25
     TabOrder = 2
     TabWidth = 100
     OnChange = mainPageChange
+    ActiveTabEnlarged = False
+    ActiveIsBold = True
     ShowFocus = False
     SkinData.SkinSection = 'PAGECONTROL'
     object RoomsTab: TsTabSheet
@@ -2903,8 +2847,8 @@ object frmReservationProfile: TfrmReservationProfile
         object chkShowAllGuests: TsCheckBox
           Left = 333
           Top = 11
-          Width = 85
-          Height = 20
+          Width = 102
+          Height = 19
           Caption = 'Show all guests'
           Anchors = [akLeft, akTop, akRight]
           TabOrder = 4
@@ -3328,24 +3272,27 @@ object frmReservationProfile: TfrmReservationProfile
           Checked = False
           object lblSpecialRequests: TsLabel
             Left = 2
-            Top = 13
-            Width = 69
-            Height = 11
+            Top = 15
+            Width = 250
+            Height = 13
             Align = alTop
             Caption = 'Special Requests'
+            ExplicitTop = 13
+            ExplicitWidth = 81
           end
           object lblNotes: TsLabel
             Left = 2
-            Top = 97
-            Width = 24
-            Height = 11
+            Top = 101
+            Width = 250
+            Height = 13
             Align = alTop
             Caption = 'Notes'
+            ExplicitWidth = 28
           end
           object edtSpecialRequests: TMemo
             AlignWithMargins = True
             Left = 7
-            Top = 29
+            Top = 33
             Width = 240
             Height = 63
             Margins.Left = 5
@@ -3363,11 +3310,12 @@ object frmReservationProfile: TfrmReservationProfile
             ReadOnly = True
             ScrollBars = ssVertical
             TabOrder = 0
+            ExplicitTop = 29
           end
           object edtNotes: TMemo
             AlignWithMargins = True
             Left = 7
-            Top = 113
+            Top = 119
             Width = 240
             Height = 66
             Margins.Left = 5
@@ -3385,27 +3333,29 @@ object frmReservationProfile: TfrmReservationProfile
             ReadOnly = True
             ScrollBars = ssVertical
             TabOrder = 1
+            ExplicitTop = 113
           end
           object gbxRoomAlert: TsGroupBox
             Left = 2
-            Top = 184
+            Top = 190
             Width = 250
             Height = 105
             Align = alTop
             TabOrder = 2
             Checked = False
+            ExplicitTop = 184
             object lblRoomType: TsLabel
               Left = 7
               Top = 43
-              Width = 46
-              Height = 11
+              Width = 52
+              Height = 13
               Caption = 'Room type'
             end
             object lblRoom: TsLabel
               Left = 7
               Top = 18
-              Width = 24
-              Height = 11
+              Width = 27
+              Height = 13
               Caption = 'Room'
             end
             object edtRoom: TsEdit
@@ -3445,7 +3395,7 @@ object frmReservationProfile: TfrmReservationProfile
       end
     end
     object sTabSheet2: TsTabSheet
-      Caption = 'ALERTS'
+      Caption = 'Alerts'
       SkinData.CustomColor = False
       SkinData.CustomFont = False
       object pnlAlertHolder: TsPanel
@@ -4555,32 +4505,92 @@ object frmReservationProfile: TfrmReservationProfile
     Left = 800
     Top = 64
   end
-  object ppmStatusChange: TPopupMenu
-    Left = 584
+  object ppmCheckin: TPopupMenu
+    Left = 32
     Top = 8
     object mnuCheckinReservation: TMenuItem
       Action = acCheckinReservation
     end
     object mnuCheckinRoom: TMenuItem
       Action = acCheckinRoom
+      Default = True
+    end
+    object N1: TMenuItem
+      Caption = '-'
+    end
+    object mnuChangeStateTo: TMenuItem
+      Caption = 'Change State for room'
     end
   end
   object alReservation: TActionList
-    Left = 664
+    Left = 1000
     Top = 8
     object acCheckinReservation: TAction
       Category = 'checkin'
       Caption = 'Checkin Reservation'
       ImageIndex = 44
       OnExecute = acCheckinReservationExecute
-      OnUpdate = acCheckinReservationUpdate
     end
     object acCheckinRoom: TAction
       Category = 'checkin'
       Caption = 'Checkin room'
       ImageIndex = 44
       OnExecute = acCheckinRoomExecute
-      OnUpdate = acCheckinRoomUpdate
+    end
+    object acCheckoutReservation: TAction
+      Category = 'checkout'
+      Caption = 'Checkout Reservation'
+      ImageIndex = 46
+      Visible = False
+      OnExecute = acCheckoutReservationExecute
+    end
+    object acCheckoutRoom: TAction
+      Category = 'checkout'
+      Caption = 'Checkout room'
+      ImageIndex = 46
+      OnExecute = acCheckoutRoomExecute
+    end
+    object acShowDocuments: TAction
+      Category = 'documents'
+      Caption = 'Documents'
+      OnExecute = acShowDocumentsExecute
+    end
+    object acPasteIntoDocuments: TAction
+      Category = 'documents'
+      Caption = 'Paste into Documents'
+      OnExecute = acPasteIntoDocumentsExecute
+    end
+    object acShowHiddenMemo: TAction
+      Category = 'hiddenmemo'
+      Caption = 'Hidden memo'
+      OnExecute = acShowHiddenMemoExecute
+    end
+    object acPasteIntoHiddenMemo: TAction
+      Category = 'hiddenmemo'
+      Caption = 'Clipboard to hidden memo'
+      OnExecute = acPasteIntoHiddenMemoExecute
+    end
+  end
+  object ppmDocuments: TPopupMenu
+    Left = 432
+    Top = 8
+    object ppmShowdocuments: TMenuItem
+      Action = acShowDocuments
+      Default = True
+    end
+    object ppmPasteIntoDocuments: TMenuItem
+      Action = acPasteIntoDocuments
+    end
+  end
+  object ppmHiddenMemo: TPopupMenu
+    Left = 616
+    Top = 16
+    object ShowHiddenMemo1: TMenuItem
+      Action = acShowHiddenMemo
+      Default = True
+    end
+    object Clipboardtohiddenmemo1: TMenuItem
+      Action = acPasteIntoHiddenMemo
     end
   end
 end

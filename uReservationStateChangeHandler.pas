@@ -6,6 +6,7 @@ uses
     Classes
   , SysUtils
   , uReservationStatusDefinitions
+  , Generics.Collections
   ;
 
 
@@ -21,6 +22,7 @@ type
     FNewState : TReservationStatus;
 
     function Checkin: boolean; virtual; abstract;
+    function CheckOut: boolean; virtual; abstract;
     function DispatchChangeHandler(aOldState, aNewState: TReservationStatus): THandlerFunc; virtual;
     function CatchAll: boolean; virtual;
     function GetReservationStatus: TReservationStatus; virtual; abstract;
@@ -30,7 +32,22 @@ type
     property CurrentState: TReservationStatus read GetReservationStatus;
   end;
 
+  TRoomReservationStateChangeHandler = class(TBaseReservationStateChangeHandler)
+  protected
+    FRoomReservation: integer;
+
+    function Checkin: boolean; override;
+    function CheckOut: boolean; override;
+    function CatchAll: boolean; override;
+    function GetReservationStatus: TReservationStatus; override;
+  public
+    constructor Create(aReservation, aRoomReservation: integer);
+  end;
+
   TReservationStateChangeHandler = class(TBaseReservationStateChangeHandler)
+  private
+    FRoomStateChangers: TObjectDictionary<integer, TRoomReservationStateChangeHandler>;
+    function GetRoomstateChangeHandler(aRoomRes: integer): TRoomReservationStateChangeHandler;
   protected
 
     function Checkin: boolean; override;
@@ -38,19 +55,12 @@ type
     function GetReservationStatus: TReservationStatus; override;
   public
     constructor Create(aReservation: integer);
+    destructor Destroy; override;
+    procedure AddRoomStateChangeHandler(aHandler: TRoomReservationStateChangeHandler);
+    procedure Clear;
+    property RoomStateChangeHandler[aRoomRes: integer]: TRoomReservationStateChangeHandler read GetRoomstateChangeHandler;
   end;
 
-
-  TRoomReservationStateChangeHandler = class(TBaseReservationStateChangeHandler)
-  protected
-    FRoomReservation: integer;
-
-    function Checkin: boolean; override;
-    function CatchAll: boolean; override;
-    function GetReservationStatus: TReservationStatus; override;
-  public
-    constructor Create(aReservation, aRoomReservation: integer); reintroduce;
-  end;
 
 implementation
 
@@ -62,29 +72,33 @@ uses
   , uAlerts
   , uGuestCheckinForm
   , UITypes
-  ;
+  , uFrmCheckOut, uProvideARoom2, uAppGlobal, uG;
 
 { TReservationStateChangeHandler }
 
 function TBaseReservationStateChangeHandler.ChangeIsAllowed(aNewState: TReservationStatus): boolean;
+var
+  lCurrentState: TReservationStatus;
 begin
-  Result := True;
-  case CurrentState of
-    rsUnKnown: ;
-    rsReservation: ;
-    rsGuests:       Result := (aNewState <> rsGuests);
-    rsDeparted: ;
-    rsReserved: ;
-    rsOverbooked: ;
-    rsAlotment: ;
-    rsNoShow: ;
-    rsBlocked:     Result := (aNewState <> rsGuests);
-    rsCancelled: ;
-    rsTmp1: ;
-    rsAwaitingPayment: ;
-    rsDeleted: ;
-    rsAwaitingPayConfirm: ;
-  end;
+  lCurrentState := CurrentState;
+  Result := (aNewState <> lCurrentState); // dont allow changing to same status
+  if Result then
+    case aNewState of
+      rsUnKnown:      Result := false;
+      rsReservation:  Result := lCurrentState in [rsUnknown, rsGuests, rsAlotment, rsOverbooked, rsTmp1, rsAwaitingPayment, rsAwaitingPayConfirm];
+      rsGuests:       Result := lCurrentState in [rsUnknown, rsReservation, rsAlotment, rsOverbooked, rsTmp1, rsAwaitingPayment];
+      rsDeparted:     Result := lCurrentState in [rsUnknown, rsGuests];
+      rsReserved:     Result := lCurrentState in [rsUnknown, rsReservation, rsAlotment, rsOverbooked, rsTmp1, rsAwaitingPayment];
+      rsOverbooked:   Result := lCurrentState in [rsUnknown, rsReservation, rsAlotment, rsReserved, rsTmp1, rsAwaitingPayment];
+      rsAlotment:     Result := lCurrentState in [rsUnknown, rsReservation, rsAlotment, rsOverbooked, rsTmp1, rsAwaitingPayment];
+      rsNoShow:       Result := lCurrentState in [rsUnknown, rsReservation, rsAlotment, rsOverbooked, rsTmp1, rsAwaitingPayment];
+      rsBlocked:      Result := False;
+      rsCancelled: ;
+      rsTmp1: ;
+      rsAwaitingPayment: ;
+      rsDeleted: ;
+      rsAwaitingPayConfirm: ;
+    end;
 end;
 
 function TBaseReservationStateChangeHandler.CatchAll: boolean;
@@ -100,7 +114,7 @@ begin
   result := false;
   FNewState := aNewState;
   lOldState := CurrentState;
-  if not ChangeIsAllowed(rsGuests) then
+  if not ChangeIsAllowed(aNewState) then
     raise EInvalidReservationStateChange.CreateFmt('Reservationstatus cannot be changed from [%s] to [%s]', [lOldState.AsReadableString, aNewState.AsReadableString]);
 
   lExecuteChangeFunc := DispatchChangeHandler(lOldState, aNewState);
@@ -153,15 +167,41 @@ begin
 
 end;
 
+procedure TReservationStateChangeHandler.Clear;
+begin
+  FRoomStateChangers.Clear;
+end;
+
 constructor TReservationStateChangeHandler.Create(aReservation: integer);
 begin
   FReservation := aReservation;
+  FRoomStateChangers:= TObjectDictionary<integer, TRoomReservationStateChangeHandler>.Create([doOwnsValues]);
+end;
+
+destructor TReservationStateChangeHandler.Destroy;
+begin
+  FRoomStateChangers.Free;
+  inherited;
 end;
 
 function TReservationStateChangeHandler.GetReservationStatus: TReservationStatus;
+var
+  lRoomHandler: TRoomReservationStateChangeHandler;
 begin
-  //TODO
-  Result := rsUnkown;
+  Result := rsUnKnown;
+  for lRoomHandler in FRoomStateChangers.Values do
+    if (Result = rsUnKnown) then
+      Result := lRoomhandler.CurrentState
+    else if (lRoomhandler.CurrentState <> result) then
+    begin
+      Result := rsMixed;
+      Break;
+    end;
+end;
+
+function TReservationStateChangeHandler.GetRoomstateChangeHandler(aRoomRes: Integer): TRoomReservationStateChangeHandler;
+begin
+  Result := FRoomStateChangers.Items[aRoomRes];
 end;
 
 function TRoomReservationStateChangeHandler.Checkin: boolean;
@@ -169,7 +209,19 @@ var
   lRoom: string;
 begin
   Result := false;
+  // Allocate room if needed
   lRoom := d.RR_GetRoomNr(FRoomReservation);
+  if lRoom.StartsWith('<') then
+    lRoom := ProvideARoom2(FRoomReservation);
+
+  if lRoom = '' then
+    Exit;
+
+  // warn dirty room
+  if g.qWarnCheckInDirtyRoom AND g.oRooms.Room[lRoom].IsDirty then
+    if MessageDlg(Format(GetTranslatedText('shTx_Various_RoomNotClean'), [lRoom]), mtWarning, [mbYes, mbCancel], 0) <> mrYes then
+      exit;
+  
   if ctrlGetBoolean('CheckinWithDetailsDialog') OR
     (MessageDlg(Format(GetTranslatedText('shCheckRoom'), [lRoom]), mtConfirmation, [mbYes, mbNo], 0) = mrYes) then
   begin
@@ -181,6 +233,25 @@ begin
     end;
   end;
 
+end;
+
+function TRoomReservationStateChangeHandler.CheckOut: boolean;
+var
+  lRoom: string;
+begin
+  Result := false;
+  lRoom := d.RR_GetRoomNr(FRoomReservation);
+  if ctrlGetBoolean('CheckOutWithPaymentsDialog') OR
+    (MessageDlg(Format(GetTranslatedText('shCheckOutSelectedRoom'), [lRoom]), mtConfirmation, [mbYes, mbNo], 0) = mrYes)
+  then
+  begin
+    ShowAlertsForReservation(FReservation, FRoomReservation, atCHECK_OUT);
+    if ctrlGetBoolean('CheckOutWithPaymentsDialog') then
+      CheckoutGuestNoDialog(FReservation, FRoomReservation, lRoom)
+    else
+      d.CheckOutGuest(FRoomReservation, lRoom);
+    Result := True;
+  end;
 end;
 
 constructor TRoomReservationStateChangeHandler.Create(aReservation, aRoomReservation: integer);
@@ -199,22 +270,28 @@ function TBaseReservationStateChangeHandler.DispatchChangeHandler(aOldState,
 begin
   Result := nil;
   case aNewState of
-    rsGuests: Result := Checkin;
+    rsGuests:   Result := Checkin;
+    rsDeparted: Result := Checkout;
   else
     Result := Catchall;
   end;
 end;
 
+procedure TReservationStateChangeHandler.AddRoomStateChangeHandler(aHandler: TRoomReservationStateChangeHandler);
+begin
+  FRoomStateChangers.AddOrSetValue(aHandler.FRoomReservation, aHandler);
+end;
+
 function TReservationStateChangeHandler.Catchall: boolean;
 begin
-  inherited;
+  Result := inherited;
 end;
 
 function TRoomreservationStateChangeHandler.Catchall: boolean;
 begin
   inherited;
   d.UpdateStatusSimple(FReservation, FRoomReservation, FNewState.AsStatusChar);
-  Result := TRUE;
+  Result := True;
 end;
 
 
