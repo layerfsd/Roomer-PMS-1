@@ -1303,6 +1303,7 @@ select_ReservationProfile_allGuestsSQL : string =
 '   , persons.Address4 '+
 '   , persons.Country '+
 '   , persons.PID '+
+'   , persons.MainName '+
 ' FROM '+
 '   persons '+
 '     LEFT OUTER JOIN '+

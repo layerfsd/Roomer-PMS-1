@@ -660,8 +660,6 @@ begin
     selLocation := '('+zLocationList+')';
   end;
 
-
-
   Arrival     := 1;
   Departure   := 1;
   Reservation := 0;

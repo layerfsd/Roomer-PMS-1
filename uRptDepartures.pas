@@ -116,7 +116,7 @@ uses
   , uGuestCheckInForm
   , uInvoice
   , uReservationProfile
-  ;
+  , uReservationStatusDefinitions, uReservationStateChangeHandler;
 
 
 const
@@ -345,18 +345,18 @@ begin
 end;
 
 procedure TfrmDeparturesReport.btnCheckOutClick(Sender: TObject);
-var s : String;
-    Room : String;
-    Reservation, RoomReservation : Integer;
-    NoRoom, bContinue : Boolean;
+var
+  lStateChangeHandler: TRoomReservationStateChangeHandler;
 begin
-  Room := kbmDeparturesList['Room'];
-  NoRoom := Copy(Room, 1, 1) = '<';
-  Reservation := kbmDeparturesList['RoomerReservationID'];
-  RoomReservation := kbmDeparturesList['RoomerRoomReservationID'];
-  ShowAlertsForReservation(Reservation, RoomReservation, atCHECK_OUT);
-  if d.CheckOutRoom(Reservation, RoomReservation, Room) then
-    postMessage(handle, WM_REFRESH_DATA, 0, 0);
+
+  lStateChangeHandler := TRoomReservationStateChangeHandler.Create(kbmDeparturesList['RoomerReservationID'], kbmDeparturesList['RoomerRoomReservationID']);
+  try
+    if lStateChangeHandler.ChangeState(rsDeparted) then
+       PostMessage(handle, WM_REFRESH_DATA, 0, 0);
+  finally
+    lStateChangeHandler.Free;
+  end;
+
 end;
 
 procedure TfrmDeparturesReport.btnExcelClick(Sender: TObject);

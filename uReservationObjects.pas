@@ -22,7 +22,7 @@ uses
   , ud
   , cmpRoomerDataSet
   , cmpRoomerConnection
-  , Generics.Collections
+  , Generics.Collections, uReservationStatusDefinitions
   ;
 
 type
@@ -135,6 +135,7 @@ type
     property Guests: TList<TGuestObject> read FGuests;
     property ReservationObject: TSingleReservations read FReservationObject write FReservationObject;
     function IsUnAssigned: boolean;
+    function IsDepartingOn(aDate: TDate): boolean;
 
   published
     property RoomRes : integer read FRoomRes write FRoomRes;
@@ -286,7 +287,7 @@ type
     constructor Create;
     destructor Destroy; override;
     procedure Clear;
-    procedure Execute(_FromDate, _ToDate : TDate; _ReservationStatus : TReservationStatus; SkipCancelled : Boolean = False);
+    procedure Execute(_FromDate, _ToDate : TDate; SkipCancelled : Boolean = False);
 
     /// <summary>Enumerate all rooms from all reservations </summary>
     function AllRoomsEnumerator(aFilter: TRoomFilterFunction = nil): TAllRoomsEnumerator;
@@ -395,6 +396,13 @@ begin
 end;
 
 
+function TRoomObject.IsDepartingOn(aDate: TDate): boolean;
+begin
+  Result := ((FDeparture < aDate) and (ResStatus = rsDeparted))
+            or
+            ((FDeparture = aDate) and (ResStatus = rsGuests))
+end;
+
 function TRoomObject.IsUnAssigned: boolean;
 begin
   Result := RoomNumber.StartsWith('<');
@@ -484,7 +492,7 @@ end;
 //  result := FReservationList[iIndex];
 //end;
 
-procedure TReservationsModel.Execute(_FromDate, _ToDate : TDate; _ReservationStatus : TReservationStatus; SkipCancelled : Boolean = False);
+procedure TReservationsModel.Execute(_FromDate, _ToDate : TDate; SkipCancelled : Boolean = False);
 var
 
   SingleReservations : TSingleReservations;
@@ -515,8 +523,7 @@ begin
     try
     rSet := nil;
 //    if NOT d.roomerMainDataSet.OfflineMode then
-      rSet := d.roomerMainDataSet.ActivateNewDataset(d.roomerMainDataSet.SystemGetDayGrid(_FromDate, _ToDate,
-              GetEnumName(TypeInfo(TReservationStatus), integer(_ReservationStatus)), SkipCancelled));
+      rSet := d.roomerMainDataSet.ActivateNewDataset(d.roomerMainDataSet.SystemGetDayGrid(_FromDate, _ToDate, '', SkipCancelled));
 //    else
 //      rSet := d.roomerMainDataSet.ActivateNewDataset(d.GetBackupTodaysGuests);
 
@@ -569,7 +576,7 @@ begin
             // SingleReservations.FResStatus := rsDeparting
             // else
             if Trim(FieldByName('Status').asString) = 'P' then
-              SingleReservations.FResStatus := rsReservations
+              SingleReservations.FResStatus := rsReservation
             else if Trim(FieldByName('Status').asString) = 'G' then
               SingleReservations.FResStatus := rsGuests
             else if Trim(FieldByName('Status').asString) = 'D' then
@@ -585,7 +592,7 @@ begin
             else if Trim(FieldByName('Status').asString) = 'B' then
               SingleReservations.FResStatus := rsBlocked
             else if Trim(FieldByName('Status').asString) = 'C' then
-              SingleReservations.FResStatus := rsCanceled
+              SingleReservations.FResStatus := rsCancelled
             else if Trim(FieldByName('Status').asString) = 'W' then
               SingleReservations.FResStatus := rsTmp1
             else if Trim(FieldByName('Status').asString) = 'Z' then
@@ -665,17 +672,9 @@ begin
               end;
 
             // --
-            if (RoomObject.FDeparture < _ToDate - 1) and (Trim(FieldByName('Status').asString) = 'D') then
+            if Trim(FieldByName('Status').asString) = 'P' then
             begin
-              RoomObject.FResStatus := rsDeparting
-            end
-            else if (RoomObject.FDeparture = _ToDate - 1) and (Trim(FieldByName('Status').asString) = 'G') then
-            begin
-              RoomObject.FResStatus := rsDeparting
-            end
-            else if Trim(FieldByName('Status').asString) = 'P' then
-            begin
-              RoomObject.FResStatus := rsReservations
+              RoomObject.FResStatus := rsReservation
             end
             else if Trim(FieldByName('Status').asString) = 'G' then
             begin
@@ -707,7 +706,7 @@ begin
             end
             else if Trim(FieldByName('Status').asString) = 'C' then
             begin
-              RoomObject.FResStatus := rsCanceled;
+              RoomObject.FResStatus := rsCancelled;
             end
             else if Trim(FieldByName('Status').asString) = 'W' then
             begin
@@ -715,7 +714,7 @@ begin
             end
             else if Trim(FieldByName('Status').asString) = 'Z' then
             begin
-              RoomObject.FResStatus := rsTmp2;
+              RoomObject.FResStatus := rsAwaitingPayment;
             end;
 
             SingleReservations.FRooms.add(RoomObject);

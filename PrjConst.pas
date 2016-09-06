@@ -633,10 +633,12 @@ begin
   constants.Add('shTx_G_Reserved', 'Reserved');
   constants.Add('shTx_G_Overbooked', 'Overbooked');
   constants.Add('shTx_G_Departing', 'Departing');
-  constants.Add('shTx_G_Current', 'Current');
   constants.Add('shTx_G_Canceled', 'Canceled'); //*HJ 140206
   constants.Add('shTx_G_Tmp1', 'Tmp1'); //*HJ 140206
-  constants.Add('shTx_G_Tmp2', 'Tmp2'); //*HJ 140206
+  constants.Add('shTx_G_AwaitingPayment', 'Awaiting Payment'); //*HJ 140206
+  constants.Add('shTx_G_Deleted', 'Deleted'); //*HJ 140206
+  constants.Add('shTx_G_AwaitingPayConfirm', 'Awaiting Payment Confirmation'); //*HJ 140206
+  constants.Add('shTx_G_Mixed', 'Mixed'); //*HJ 140206
 
   constants.Add('shTx_GotoRoomAndDate_RoomNotFound', 'RoomReservation not Found');
   constants.Add('shTx_GotoRoomAndDate_ReservationNotFound', 'Reservation not Found');
@@ -910,6 +912,13 @@ begin
   constants.Add('shTx_ReservationProfile_MoreThanOneRoomUseForm', 'More than one room in Reservation ' + #10 +
                                           'Use RoomReservation Form - for each room to change ');
   constants.Add('shTx_ReservationProfile_AddRoomError', 'Add Room error : %s');
+
+  constants.Add('shTx_FrmReservationprofile_ReservationNumber', 'Reservation number');
+  constants.Add('shTx_FrmReservationprofile_Status', 'Status');
+  constants.Add('shTx_FrmReservationprofile_ChangeStatus', 'Change Status');
+  constants.Add('shTx_FrmReservationprofile_Balance', 'Balance');
+
+
 
   constants.Add('shTx_RoomPricesEdit_RoomType', 'Room Type must be specified');
   constants.Add('shTx_RoomPricesEdit_PriceTime', 'Price range must be specified');

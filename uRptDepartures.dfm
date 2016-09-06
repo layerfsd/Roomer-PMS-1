@@ -163,7 +163,7 @@ object frmDeparturesReport: TfrmDeparturesReport
         Height = 37
         Align = alLeft
         Caption = 'Check out'
-        ImageIndex = 44
+        ImageIndex = 46
         Images = DImages.PngImageList1
         TabOrder = 1
         OnClick = btnCheckOutClick
@@ -212,8 +212,6 @@ object frmDeparturesReport: TfrmDeparturesReport
     Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = []
-    ExplicitLeft = 1
-    ExplicitTop = 571
   end
   object grDeparturesList: TcxGrid
     Left = 0
@@ -224,7 +222,6 @@ object frmDeparturesReport: TfrmDeparturesReport
     PopupMenu = pnmuGridMenu
     TabOrder = 2
     LookAndFeel.NativeStyle = False
-    ExplicitTop = 146
     object tvDeparturesList: TcxGridDBTableView
       Navigator.Buttons.CustomButtons = <>
       DataController.DataSource = DeparturesListDS
