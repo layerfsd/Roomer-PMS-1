@@ -10,8 +10,6 @@ uses
 type
 
   THintButtonClicked = (hbcLogin, hbcLogOut);
-  TOnLogInOutHandlerClick = procedure(rri: RecRRInfo; ButtonClicked : THintButtonClicked) of object;
-  TOnViewReservationHandlerClick = procedure(rri: RecRRInfo) of object;
 
 
   TFrmReservationHintHolder = class(TForm)
@@ -42,9 +40,6 @@ type
     clbNotes: TsLabel;
     clbTotal: TsLabel;
     clblDaily: TsLabel;
-
-    btnCheckInOut: TsButton;
-    btnReservationDetails: TsButton;
     timHide: TTimer;
     shpStatus: TShape;
     AdvShape1: TAdvShape;
@@ -67,8 +62,6 @@ type
     __labBlockNote: TsLabel;
     cbxBlocked: TsCheckBox;
     procedure timHideTimer(Sender: TObject);
-    procedure btnCheckInOutClick(Sender: TObject);
-    procedure btnReservationDetailsClick(Sender: TObject);
     procedure __lblHideClick(Sender: TObject);
     procedure C1Click(Sender: TObject);
     procedure pnlHintMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
@@ -78,12 +71,9 @@ type
   private
     currentControl : TObject;
     rri: RecRRInfo;
-    FOnViewReservationClick: TOnViewReservationHandlerClick;
-    FOnLogInOutClick: TOnLogInOutHandlerClick;
     procedure PlaceHint(X, Y, CellWidth, CellHeight: Integer);
     procedure ReadInfo(rri: RecRRInfo);
     procedure CM_MenuClosed(var msg: TMessage) ; message CM_MENU_CLOSED;
-    procedure CM_EnterMenuLoop(var msg: TMessage) ; message CM_ENTER_MENU_LOOP;
     procedure CM_ExitMenuLoop(var msg: TMessage) ; message CM_EXIT_MENU_LOOP;
      { Private declarations }
   public
@@ -94,10 +84,6 @@ type
 
     procedure ActivateHint(X, Y, CellWidth, CellHeight : Integer; rri: RecRRInfo);
 
-    procedure TranslateAll;
-
-    property OnLogInOutClick : TOnLogInOutHandlerClick read FOnLogInOutClick write FOnLogInOutClick;
-    property OnViewReservationClick : TOnViewReservationHandlerClick read FOnViewReservationClick write FOnViewReservationClick;
 
   end;
 
@@ -357,8 +343,6 @@ begin
   __lbNotes.Text := rri.Information;
   __lbPAymentNotes.Text := rri.PMInfo;
 
-  btnCheckInOut.Enabled := UpperCase(rri.resFlag)[1] IN ['P','G'];
-
   __labBlockNote.Caption := '';
   cbxBlocked.Checked := rri.BlockMove;
   cbxBlocked.Visible := rri.BlockMove;
@@ -366,26 +350,6 @@ begin
   if rri.BlockMove then
     __labBlockNote.Caption := rri.BlockMoveReason;
 
-  TranslateAll;
-end;
-
-procedure TFrmReservationHintHolder.TranslateAll;
-begin
-  btnCheckInOut.Caption := GetTranslatedText('shUI_Check_In');
-  if UpperCase(rri.resFlag)[1] IN ['G'] then
-    btnCheckInOut.Caption := GetTranslatedText('shUI_Check_Out');
-//  btnReservationDetails.Caption := GetTranslatedText('shUI_Reservation_Details');
-
-//  clbStatus.Caption := GetTranslatedText('shTx_Status');
-//  clbName.Caption := GetTranslatedText('shTx_G_Guest');
-//  clbGuests.Caption := GetTranslatedText('shTx_NumGuests');
-//  clbRoom.Caption := GetTranslatedText('shRoom');
-//  clbArrival.Caption := GetTranslatedText('shArrival');
-//  clbDeparture.Caption := GetTranslatedText('shDeparture');
-//  clbChannel.Caption := GetTranslatedText('shTx_ChannelAvailable');
-//  clbRatePlan.Caption := GetTranslatedText('shUI_Rate_Plan');
-//  clbRate.Caption := GetTranslatedText('shTx_ChannelAvailabilityManager_Rate');
-//  clbNotes.Caption := GetTranslatedText('shUI_Notes');
 end;
 
 procedure TFrmReservationHintHolder.PlaceHint(X, Y, CellWidth, CellHeight: Integer);
@@ -491,10 +455,6 @@ begin
   PopupMenu1.CloseMenu;
 end;
 
-procedure TFrmReservationHintHolder.CM_EnterMenuLoop(var msg: TMessage);
-begin
-  //
-end;
 
 procedure TFrmReservationHintHolder.CM_ExitMenuLoop(var msg: TMessage);
 begin
@@ -524,27 +484,6 @@ procedure TFrmReservationHintHolder.Release;
 begin
   pnlHint.Hide;
   pnlHint.Parent := self;
-end;
-
-procedure TFrmReservationHintHolder.btnReservationDetailsClick(Sender: TObject);
-begin
-  CancelHint;
-  if Assigned(FOnLogInOutClick) then
-    FOnViewReservationClick(rri);
-end;
-
-procedure TFrmReservationHintHolder.btnCheckInOutClick(Sender: TObject);
-var Btn : THintButtonClicked;
-begin
-  CancelHint;
-  if Assigned(FOnLogInOutClick) then
-  begin
-    if CharInSet(UpperCase(rri.resFlag)[1], ['P']) then
-      btn := hbcLogin
-    else
-      btn := hbcLogout;
-     FOnLogInOutClick(rri, btn);
-  end;
 end;
 
 procedure TFrmReservationHintHolder.timHideTimer(Sender: TObject);
