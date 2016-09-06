@@ -28,11 +28,17 @@ implementation
 
 uses
   SysUtils
+  , Windows
   , VCL.Forms
   , VCL.Controls
-  , uUtils;
+  ;
 
 { TRoomerHttpClient }
+function RunningInMainThread: boolean;
+begin
+  Result := (GetCurrentThreadId() = MainThreadID);
+end;
+
 
 procedure TRoomerHttpClient.AddAuthenticationHeaders(const aHotel, aUser, aPassword, aAppName, aAppVersion, aExtraBuild: String);
 begin
