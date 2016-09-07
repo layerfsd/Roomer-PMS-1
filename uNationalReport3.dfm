@@ -221,6 +221,10 @@ object frmNationalReport3: TfrmNationalReport3
       ImageIndex = 2
       SkinData.CustomColor = False
       SkinData.CustomFont = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Panel5: TsPanel
         Left = 0
         Top = 0

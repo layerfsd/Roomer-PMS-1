@@ -606,7 +606,7 @@ begin
     screen.Cursor := crHourGlass;
     try
       s := format(s, [zRoomReservationsList]);
-
+      CopyToCLipboard(s);
       hData.rSet_bySQL(rSet,s);
       if mNationalStatistics.Active then mNationalStatistics.Close;
       mNationalStatistics.open;
@@ -718,7 +718,7 @@ begin
     mAllGuests.DisableControls;
 
     s :=
-    ' SELECT '#10+
+    ' SELECT DISTINCT'#10+
     '     roomreservations.Reservation '#10+
     '   , roomreservations.RoomReservation '#10+
     '   , reservations.Customer '#10+
@@ -745,7 +745,7 @@ begin
     '     RIGHT OUTER JOIN '#10+
     '       roomreservations ON persons.RoomReservation = roomreservations.RoomReservation '#10+
 //    '     INNER JOIN rooms ro ON roomreservations.room=ro.room and ro.wildcard=0 and ro.active=1  '#10 +
-    '     INNER JOIN rooms ro ON roomreservations.room=ro.room and ro.active=1  '#10 +
+    '     INNER JOIN rooms ro ON (roomreservations.room=ro.room or roomreservations.room=concat(''<'', roomreservations.roomreservation, ''>'')) and ro.active=1  '#10 +
     '     RIGHT OUTER JOIN '#10+
     '       reservations ON roomreservations.Reservation = reservations.Reservation '#10+
     ' WHERE '#10+
@@ -758,7 +758,7 @@ begin
     try
 
       s := format(s , [zRoomReservationsList]);
-
+      CopyToClipboard(s);
       hData.rSet_bySQL(rSet,s);
 
       if not mAllGuests.Active then mAllGuests.Close;
