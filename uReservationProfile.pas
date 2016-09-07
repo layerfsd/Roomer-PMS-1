@@ -581,6 +581,8 @@ type
     ppmHiddenMemo: TPopupMenu;
     ShowHiddenMemo1: TMenuItem;
     Clipboardtohiddenmemo1: TMenuItem;
+    btnMainGuestSelectProfile: TsButton;
+    btnMainGuestEditProfile: TsButton;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -700,6 +702,8 @@ type
     procedure acShowDocumentsExecute(Sender: TObject);
     procedure acShowHiddenMemoExecute(Sender: TObject);
     procedure acPasteIntoHiddenMemoExecute(Sender: TObject);
+    procedure btnMainGuestSelectProfileClick(Sender: TObject);
+    procedure btnMainGuestEditProfileClick(Sender: TObject);
   private
     { Private declarations }
     vStartName: string;
@@ -754,6 +758,8 @@ type
     procedure UpdateStateActions;
     procedure ConstructOtherResStateMenu;
     procedure mnuOtherResStateChangeClick(Sender: TObject);
+    procedure SelectMainGuestProfile;
+    procedure ShowMainGuestProfile;
 //    function DetermineTotalBalance: double;
 
     property OutOfOrderBlocking: Boolean read FOutOfOrderBlocking write SetOutOfOrderBlocking;
@@ -2641,8 +2647,6 @@ begin
 
     mRooms.Locate('RoomReservation', gotoRoomReservation, []);
 
-    UpdateGuestDetails(gotoRoomReservation);
-
   finally
     mRooms.AfterScroll := lSavedAfterScroll;
     mRooms.BeforePost := lSavedBeforePost;
@@ -2817,14 +2821,11 @@ begin
 
 end;
 
-procedure TfrmReservationProfile.tvRoomsPersonsProfilesIdPropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
+procedure TfrmReservationProfile.SelectMainGuestProfile;
 var
   iGoto: Integer;
-  s,
-    s1, s2, s3: String;
+  s, s1, s2, s3: String;
 begin
-  if AButtonIndex = 0 then
-  begin
     iGoto := -1;
     if mRooms['PersonsProfilesId'] > 0 then
       iGoto := mRooms['PersonsProfilesId'];
@@ -2834,14 +2835,19 @@ begin
     begin
       mRooms.Edit;
 
-      mRooms['PersonsProfilesId'] := iGoto;
+      try
+        mRooms['PersonsProfilesId'] := iGoto;
 
-      glb.LocateSpecificRecordAndGetValue('personprofiles', 'ID', inttostr(iGoto), 'Firstname', s1);
-      glb.LocateSpecificRecordAndGetValue('personprofiles', 'ID', inttostr(iGoto), 'Lastname', s2);
-      s3 := trim(s1 + ' ' + s2);
-      mRooms['guestname'] := s3;
+        glb.LocateSpecificRecordAndGetValue('personprofiles', 'ID', inttostr(iGoto), 'Firstname', s1);
+        glb.LocateSpecificRecordAndGetValue('personprofiles', 'ID', inttostr(iGoto), 'Lastname', s2);
+        s3 := trim(s1 + ' ' + s2);
+        mRooms['guestname'] := s3;
 
-      mRooms.Post;
+        mRooms.Post;
+      except
+        mROoms.Cancel;
+        raise;
+      end;
 
       s := format('UPDATE persons pe, ' +
         'personprofiles pp ' +
@@ -2874,38 +2880,54 @@ begin
         'WHERE pp.Id=%d AND ' +
         'pe.MainName=1 AND pe.Reservation=%d AND pe.RoomReservation=%d',
         [
-        iGoto,
-        mRoomsReservation.asInteger,
-        mRoomsRoomReservation.asInteger
+          iGoto,
+          mRoomsReservation.asInteger,
+          mRoomsRoomReservation.asInteger
         ]);
       d.roomerMainDataSet.DoCommand(s);
+      UpdateGuestDetails(iGoto);
     end;
-  end
-  else
+end;
 
-    if AButtonIndex = 1 then
+procedure TfrmReservationProfile.ShowMainGuestProfile;
+var
+  iGoto: Integer;
+  s, s1, s2: string;
+begin
+  if mRooms['PersonsProfilesId'] = 0 then
+    SelectMainGuestProfile
+  else
   begin
-    if mRooms['PersonsProfilesId'] > 0 then
-      iGoto := mRooms['PersonsProfilesId']
-    else
-      exit;
+    iGoto := mRooms['PersonsProfilesId'];
+
     if OpenGuestPortfolioEdit(glb.PersonProfiles, iGoto, false) then
     begin
       mRooms.Edit;
-      if iGoto > 0 then
-      begin
-        mRooms['PersonsProfilesId'] := iGoto;
-        glb.LocateSpecificRecordAndGetValue('personprofiles', 'ID', inttostr(iGoto), 'Firstname', s1);
-        glb.LocateSpecificRecordAndGetValue('personprofiles', 'ID', inttostr(iGoto), 'Lastname', s2);
-        s3 := trim(s1 + ' ' + s2);
-        mRooms['guestname'] := s3;
-      end
-      else
-        mRooms['PersonsProfilesId'] := 0;
-      mRooms.Post;
+      try
+        if iGoto > 0 then
+        begin
+          mRooms['PersonsProfilesId'] := iGoto;
+          glb.LocateSpecificRecordAndGetValue('personprofiles', 'ID', inttostr(iGoto), 'Firstname', s1);
+          glb.LocateSpecificRecordAndGetValue('personprofiles', 'ID', inttostr(iGoto), 'Lastname', s2);
+          mRooms['guestname'] := trim(s1 + ' ' + s2);
+        end
+        else
+          mRooms['PersonsProfilesId'] := 0;
+        mRooms.Post;
+      except
+        mRooms.Cancel;
+        raise;
+      end;
     end;
   end;
+end;
 
+procedure TfrmReservationProfile.tvRoomsPersonsProfilesIdPropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
+begin
+  case aButtonIndex of
+    0: SelectMainGuestProfile;
+    1: ShowMainGuestProfile;
+  end;
 end;
 
 procedure TfrmReservationProfile.tvRoomsratePlanCodePropertiesCloseUp(Sender: TObject);
@@ -3405,11 +3427,6 @@ begin
 
       mGuests.LoadFromDataSet(rSet);
 
-//      mGuests.First;
-//      while not mGuests.Eof do
-//      begin
-//        mGuests.Next;
-//      end;
     finally
       screen.Cursor := crDefault;
       mGuests.EnableControls;
@@ -3677,6 +3694,16 @@ begin
   ExportGridToExcel(sFilename, Grid, false, true, true);
   ShellExecute(Handle, 'OPEN', PChar(sFilename + '.xls'), nil, nil,
     sw_shownormal);
+end;
+
+procedure TfrmReservationProfile.btnMainGuestEditProfileClick(Sender: TObject);
+begin
+  ShowMainGuestProfile;
+end;
+
+procedure TfrmReservationProfile.btnMainGuestSelectProfileClick(Sender: TObject);
+begin
+  SelectMainGuestProfile;
 end;
 
 procedure TfrmReservationProfile.PageNotesChange(Sender: TObject);

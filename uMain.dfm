@@ -439,7 +439,7 @@ object frmMain: TfrmMain
         ImageIndex = 9
         SkinData.CustomColor = False
         SkinData.CustomFont = False
-        ExplicitWidth = 801
+        ExplicitWidth = 919
         object Panel3: TsPanel
           Left = 0
           Top = 0
@@ -2240,7 +2240,6 @@ object frmMain: TfrmMain
             EventMarkerColor = clYellow
             EventMarkerShape = evsCircle
             BackgroundPosition = bpTiled
-            BevelOuter = bvNone
             BorderWidth = 1
             CaptionColor = clNone
             CaptionTextColor = clBlack
@@ -3114,7 +3113,6 @@ object frmMain: TfrmMain
       Index = 0
     end
     object rbTabReservation: TdxRibbonTab
-      Active = True
       Caption = 'Reservation'
       Groups = <
         item
@@ -5353,7 +5351,7 @@ object frmMain: TfrmMain
     object barinnFinancials: TdxBar
       Caption = 'Financials'
       CaptionButtons = <>
-      DockedLeft = 981
+      DockedLeft = 988
       DockedTop = 0
       FloatLeft = 1265
       FloatTop = 8
