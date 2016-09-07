@@ -21,8 +21,8 @@ type
     FReservation: integer;
     FNewState : TReservationStatus;
 
-    function Checkin: boolean; virtual; abstract;
-    function CheckOut: boolean; virtual; abstract;
+    function Checkin: boolean; virtual;
+    function CheckOut: boolean; virtual;
     function DispatchChangeHandler(aOldState, aNewState: TReservationStatus): THandlerFunc; virtual;
     function CatchAll: boolean; virtual;
     function GetReservationStatus: TReservationStatus; virtual; abstract;
@@ -121,6 +121,16 @@ begin
   if Assigned(lExecuteChangeFunc) then
     Result := lExecuteChangeFunc();
 
+end;
+
+function TBaseReservationStateChangeHandler.Checkin: boolean;
+begin
+  Result := False;
+end;
+
+function TBaseReservationStateChangeHandler.CheckOut: boolean;
+begin
+  Result := False;
 end;
 
 function TReservationStateChangeHandler.Checkin: boolean;
