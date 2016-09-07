@@ -9,8 +9,6 @@ object d: Td
     CommandText = 'SELECT * FROM Items'#13#10
     CommandType = cmdUnknown
     Parameters = <>
-    Sql.Strings = (
-      'SELECT * FROM Items')
     DataActive = False
     RoomerStoreUri = 'http://localhost:8080/services/'
     RoomerUri = 'http://localhost:8080/services/'
@@ -29,8 +27,6 @@ object d: Td
     CommandText = 'SELECT * FROM wRooms'#13#10
     CommandType = cmdUnknown
     Parameters = <>
-    Sql.Strings = (
-      'SELECT * FROM wRooms')
     DataActive = False
     RoomerStoreUri = 'http://localhost:8080/services/'
     RoomerUri = 'http://localhost:8080/services/'
@@ -45,8 +41,6 @@ object d: Td
     CommandText = 'SELECT * FROM viewRoomPrices1'#13#10
     CommandType = cmdUnknown
     Parameters = <>
-    Sql.Strings = (
-      'SELECT * FROM viewRoomPrices1')
     DataActive = False
     RoomerStoreUri = 'http://localhost:8080/services/'
     RoomerUri = 'http://localhost:8080/services/'
@@ -81,8 +75,6 @@ object d: Td
     Top = 591
     Datasets = <
       item
-        DataSet = rptDs1
-        DataSetName = 'rptDs1'
       end>
     Variables = <>
     Style = <>
@@ -208,38 +200,6 @@ object d: Td
     Left = 373
     Top = 592
   end
-  object rptDs1: TfrxDBDataset
-    UserName = 'rptDs1'
-    CloseDataSource = False
-    BCDToCurrency = False
-    Left = 104
-    Top = 636
-  end
-  object rptDS2: TfrxDBDataset
-    UserName = 'rptDs2'
-    CloseDataSource = False
-    BCDToCurrency = False
-    Left = 228
-    Top = 641
-  end
-  object rptDSHead: TfrxDBDataset
-    UserName = 'rptDSHead2'
-    CloseDataSource = False
-    BCDToCurrency = False
-    Left = 284
-    Top = 644
-  end
-  object rptDs3: TfrxDBDataset
-    UserName = 'rptDs3'
-    CloseDataSource = False
-    BCDToCurrency = False
-    Left = 172
-    Top = 641
-  end
-  object frxADOComponents1: TfrxADOComponents
-    Left = 268
-    Top = 588
-  end
   object swSystem_People_Places_Things_: TRoomerDataSet
     CursorType = ctStatic
     CommandText = ''
@@ -287,8 +247,6 @@ object d: Td
     CommandText = 'SELECT * FROM tblMaidActions'#13#10
     CommandType = cmdUnknown
     Parameters = <>
-    Sql.Strings = (
-      'SELECT * FROM tblMaidActions')
     DataActive = False
     RoomerStoreUri = 'http://localhost:8080/services/'
     RoomerUri = 'http://localhost:8080/services/'
@@ -518,8 +476,6 @@ object d: Td
     CommandText = 'SELECT * FROM tblImportLogs'#13#10
     CommandType = cmdUnknown
     Parameters = <>
-    Sql.Strings = (
-      'SELECT * FROM tblImportLogs')
     DataActive = False
     RoomerStoreUri = 'http://localhost:8080/services/'
     RoomerUri = 'http://localhost:8080/services/'
@@ -540,8 +496,6 @@ object d: Td
     CommandText = 'SELECT * FROM TelPriceGroups'#13#10
     CommandType = cmdUnknown
     Parameters = <>
-    Sql.Strings = (
-      'SELECT * FROM TelPriceGroups')
     DataActive = False
     RoomerStoreUri = 'http://localhost:8080/services/'
     RoomerUri = 'http://localhost:8080/services/'
@@ -623,8 +577,6 @@ object d: Td
     CommandText = 'SELECT * FROM TelPriceRules'#13#10
     CommandType = cmdUnknown
     Parameters = <>
-    Sql.Strings = (
-      'SELECT * FROM TelPriceRules')
     DataActive = False
     RoomerStoreUri = 'http://localhost:8080/services/'
     RoomerUri = 'http://localhost:8080/services/'

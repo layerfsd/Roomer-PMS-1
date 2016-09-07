@@ -640,6 +640,10 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
             Caption = 'Company'
             SkinData.CustomColor = False
             SkinData.CustomFont = False
+            ExplicitLeft = 0
+            ExplicitTop = 0
+            ExplicitWidth = 0
+            ExplicitHeight = 0
             object sLabel22: TsLabel
               Left = 11
               Top = 24
@@ -1185,6 +1189,10 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
             Caption = 'Credit card'
             SkinData.CustomColor = False
             SkinData.CustomFont = False
+            ExplicitLeft = 0
+            ExplicitTop = 0
+            ExplicitWidth = 0
+            ExplicitHeight = 0
             object sLabel12: TsLabel
               Left = 66
               Top = 69
@@ -1304,11 +1312,19 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
             Caption = 'None'
             SkinData.CustomColor = False
             SkinData.CustomFont = False
+            ExplicitLeft = 0
+            ExplicitTop = 0
+            ExplicitWidth = 0
+            ExplicitHeight = 0
           end
           object sTabSheet7: TsTabSheet
             Caption = 'Select'
             SkinData.CustomColor = False
             SkinData.CustomFont = False
+            ExplicitLeft = 0
+            ExplicitTop = 0
+            ExplicitWidth = 0
+            ExplicitHeight = 0
           end
         end
       end
@@ -1359,8 +1375,6 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
   end
   object rptForm: TfrxReport
     Version = '4.13.2'
-    DataSet = dsForm
-    DataSetName = 'frxDBDataset1'
     DotMatrixReport = False
     IniFile = '\Software\Fast Reports'
     PreviewOptions.Buttons = [pbPrint, pbLoad, pbSave, pbExport, pbZoom, pbFind, pbOutline, pbPageSetup, pbTools, pbEdit, pbNavigator, pbExportQuick]
@@ -1378,8 +1392,6 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
     Top = 520
     Datasets = <
       item
-        DataSet = dsForm
-        DataSetName = 'frxDBDataset1'
       end>
     Variables = <>
     Style = <>
@@ -33000,8 +33012,6 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
         Height = 18.897650000000000000
         ShowHint = False
         DataField = 'firstname'
-        DataSet = dsForm
-        DataSetName = 'frxDBDataset1'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clBlack
         Font.Height = -13
@@ -33040,8 +33050,6 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
         Height = 18.897650000000000000
         ShowHint = False
         DataField = 'lastname'
-        DataSet = dsForm
-        DataSetName = 'frxDBDataset1'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clBlack
         Font.Height = -13
@@ -33204,8 +33212,6 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
         Height = 18.897650000000000000
         ShowHint = False
         DataField = 'address1'
-        DataSet = dsForm
-        DataSetName = 'frxDBDataset1'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clBlack
         Font.Height = -13
@@ -33222,8 +33228,6 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
         Height = 18.897650000000000000
         ShowHint = False
         DataField = 'address2'
-        DataSet = dsForm
-        DataSetName = 'frxDBDataset1'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clBlack
         Font.Height = -13
@@ -33240,8 +33244,6 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
         Height = 18.897650000000000000
         ShowHint = False
         DataField = 'zipcode'
-        DataSet = dsForm
-        DataSetName = 'frxDBDataset1'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clBlack
         Font.Height = -13
@@ -33258,8 +33260,6 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
         Height = 18.897650000000000000
         ShowHint = False
         DataField = 'city'
-        DataSet = dsForm
-        DataSetName = 'frxDBDataset1'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clBlack
         Font.Height = -13
@@ -33298,8 +33298,6 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
         Height = 18.897650000000000000
         ShowHint = False
         DataField = 'country'
-        DataSet = dsForm
-        DataSetName = 'frxDBDataset1'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clBlack
         Font.Height = -13
@@ -33316,8 +33314,6 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
         Height = 18.897650000000000000
         ShowHint = False
         DataField = 'telephone'
-        DataSet = dsForm
-        DataSetName = 'frxDBDataset1'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clBlack
         Font.Height = -13
@@ -33334,8 +33330,6 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
         Height = 18.897650000000000000
         ShowHint = False
         DataField = 'mobilenumber'
-        DataSet = dsForm
-        DataSetName = 'frxDBDataset1'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clBlack
         Font.Height = -13
@@ -33352,8 +33346,6 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
         Height = 18.897650000000000000
         ShowHint = False
         DataField = 'guestemail'
-        DataSet = dsForm
-        DataSetName = 'frxDBDataset1'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clBlack
         Font.Height = -13
@@ -33392,8 +33384,6 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
         Height = 18.897650000000000000
         ShowHint = False
         DataField = 'title'
-        DataSet = dsForm
-        DataSetName = 'frxDBDataset1'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clBlack
         Font.Height = -13
@@ -33498,8 +33488,6 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
         Height = 16.000000000000000000
         ShowHint = False
         DataField = 'averageroomrate'
-        DataSet = dsForm
-        DataSetName = 'frxDBDataset1'
         DisplayFormat.FormatStr = '#.00'
         DisplayFormat.Kind = fkNumeric
         Font.Charset = DEFAULT_CHARSET
@@ -33518,8 +33506,6 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
         Height = 16.000000000000000000
         ShowHint = False
         DataField = 'numberofguests'
-        DataSet = dsForm
-        DataSetName = 'frxDBDataset1'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clBlack
         Font.Height = -13
@@ -33536,8 +33522,6 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
         Height = 16.000000000000000000
         ShowHint = False
         DataField = 'arrival'
-        DataSet = dsForm
-        DataSetName = 'frxDBDataset1'
         DisplayFormat.Kind = fkDateTime
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clBlack
@@ -33555,8 +33539,6 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
         Height = 16.000000000000000000
         ShowHint = False
         DataField = 'departure'
-        DataSet = dsForm
-        DataSetName = 'frxDBDataset1'
         DisplayFormat.Kind = fkDateTime
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clBlack
@@ -33939,8 +33921,6 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
         Height = 16.000000000000000000
         ShowHint = False
         DataField = 'maskedcreditcard'
-        DataSet = dsForm
-        DataSetName = 'frxDBDataset1'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clBlack
         Font.Height = -13
@@ -33957,8 +33937,6 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
         Height = 16.000000000000000000
         ShowHint = False
         DataField = 'creditcardexpiry'
-        DataSet = dsForm
-        DataSetName = 'frxDBDataset1'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clBlack
         Font.Height = -13
@@ -33969,13 +33947,6 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
         ParentFont = False
       end
     end
-  end
-  object dsForm: TfrxDBDataset
-    UserName = 'frxDBDataset1'
-    CloseDataSource = False
-    BCDToCurrency = False
-    Left = 496
-    Top = 408
   end
   object frxDesigner1: TfrxDesigner
     DefaultScriptLanguage = 'PascalScript'

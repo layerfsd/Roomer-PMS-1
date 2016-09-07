@@ -663,12 +663,6 @@ begin
           if Tax.TAX_BASE = TB_BOOKING then
             NumItems := 1;
 
-          lCurrencyHandler := TCurrencyHandler.Create(ctrlGetString('NativeCurrency'));
-          try
-            Amount := lCurrencyHandler.RoundedValue(Amount);
-          finally
-            lCurrencyHandler.Free;
-          end;
           result.Add(TInvoiceTaxEntity.Create(BookingItem, Description, NumItems, Amount, IncludedInPrice, Percentage));
         end;
       end;

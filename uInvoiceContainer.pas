@@ -85,6 +85,7 @@ type
     NumItems : Double;
     PriceNet : Double;
     PriceGross : Double;
+    FGrossAmount: double;
     Vat : Double;
 
     VatCode : String;
@@ -118,6 +119,7 @@ type
                        _NumItems : Double;
                        _PriceNet : Double;
                        _PriceGross : Double;
+                       _GrossAmount: Double;
                        _Vat : Double;
 
                        _VatCode : String;
@@ -240,7 +242,7 @@ type
                      _Description : String;
                      _NumItems : Double;
                      _Price : Double;
-
+                     _Amount: double;
                      _Nights : Integer = 0;
                      _Persons : Integer = 0;
                      _ID : Integer = 0;
@@ -302,6 +304,7 @@ function TInvoice.AddLine(_Type: TInvoiceLineType;
                           _Description: String;
                           _NumItems,
                           _Price: Double;
+                          _Amount: double;
                           _Nights : Integer = 0;
                           _Persons : Integer = 0;
                           _ID : Integer = 0;
@@ -328,6 +331,7 @@ begin
                        _NumItems,
                        _Price / (1 + vatPercentage / 100),
                        _Price,
+                       _Amount,
                        _Price - (_Price / (1 + vatPercentage / 100)), // VAT
 
                        vatCode,
@@ -838,7 +842,7 @@ constructor TInvoiceLine.Create(_Invoice : TInvoice;
                                 _Index: Integer;
                                 _PurchaseDate: TDate;
                                 _ItemCode, _AccountKey, _Description: String;
-                                _NumItems, _PriceNet, _PriceGross, _Vat: Double;
+                                _NumItems, _PriceNet, _PriceGross, _GrossAmount, _Vat: Double;
                                 _VatCode: String;
                                 _VatPercentage: Double;
                                 _Nights : Integer = 0;
@@ -855,6 +859,7 @@ begin
   NumItems := _NumItems;
   PriceNet := _PriceNet;
   PriceGross := _PriceGross;
+  FGRossAmount := _GrossAmount;
   Vat := _Vat;
 
   VatCode := _VatCode;
@@ -882,6 +887,7 @@ begin
   NumItems := InvoiceLine.NumItems;
   PriceNet := InvoiceLine.PriceNet;
   PriceGross := InvoiceLine.PriceGross;
+  FGrossAmount := InvoiceLine.FGrossAmount;
   Vat := InvoiceLine.Vat;
 
   VatCode := InvoiceLine.VatCode;
@@ -925,6 +931,9 @@ begin
     if node.childNodes[i].nodeName = 'itemGrossPrice' then
       PriceGross := LocalizedFloatValue(node.childNodes[i].Text, true, 0.00)
     else
+    if node.childNodes[i].nodeName = 'totalGrossAmount' then
+      FGrossAmount := LocalizedFloatValue(node.childNodes[i].Text, true, 0.00)
+    else
     if node.childNodes[i].nodeName = 'itemVatAmount' then
     begin
       Vat := LocalizedFloatValue(node.childNodes[i].Text, true, 0.00);
@@ -947,6 +956,7 @@ begin
     PriceNet := PriceNet * (OldRate / _CurrencyRate);
     PriceGross := PriceGross * (OldRate / _CurrencyRate);
     Vat := Vat * (OldRate / _CurrencyRate);
+    FGrossAmount := FGrossAmount  * (OldRate / _CurrencyRate);
 //  end;
 end;
 
@@ -962,6 +972,7 @@ begin
   NumItems := 1;
   PriceNet := 0.00;
   PriceGross := 0.00;
+  FGrossAmount := 0.00;
   Vat := 0.00;
 
   VatCode := '';
@@ -1008,7 +1019,8 @@ end;
 
 function TInvoiceLine.GetTotal: Double;
 begin
-  result := PriceGross * NumItems;
+//  result := PriceGross * NumItems;
+  Result := FGrossAmount;
 end;
 
 function TInvoiceLine.GetTotalNet: Double;
@@ -1025,6 +1037,7 @@ function TInvoiceLine.GetXml: String;
 var sId : String;
     PNet,
     PGross,
+    AGross,
     V: double;
 begin
   sId := inttostr(ID);
@@ -1032,6 +1045,7 @@ begin
     sId := '-1';
   PNet := PriceNet * FInvoice.CurrencyRate;
   PGross := PriceGross * FInvoice.CurrencyRate;
+  AGross := FGrossAmount * FInvoice.CurrencyRate;
   V := Vat * FInvoice.CurrencyRate;
 
   result := format('<product id="%s" index="%d" type="%s" roomerId="%s" accountKey="%s">' +     //1
@@ -1047,7 +1061,7 @@ begin
                     VatCode, FloatToXml(VatPercentage, 2), FloatToXml(V, 2),                  //4
                     FloatToXml(PGross, 2), FloatToXml(NumItems * PNet, 2),              //5
                     VatCode, FloatToXml(VatPercentage, 2), FloatToXml(NumItems * V, 2),       //6
-                    FloatToXml(NumItems * PGross, 2)]);
+                    FloatToXml(AGross, 2)]);
 end;
 
 procedure TInvoiceLine.SetXml(const Value: String);
