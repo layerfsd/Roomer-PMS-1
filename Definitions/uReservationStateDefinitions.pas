@@ -1,4 +1,4 @@
-﻿unit uReservationStatusDefinitions;
+﻿unit uReservationStateDefinitions;
 
 interface
 
@@ -8,7 +8,7 @@ uses
   ;
 
 type
-  TReservationStatus = (
+  TReservationState = (
       rsUnKnown,
       rsReservation,
       rsGuests,
@@ -25,24 +25,24 @@ type
       rsAwaitingPayConfirm,
       rsMixed);
 
-    TReservationStatusSet = set of TReservationStatus;
+    TReservationStateSet = set of TReservationState;
 
-    TReservationStatusHelper = record helper for TReservationStatus
+    TReservationStateHelper = record helper for TReservationState
     public
       // constructor
       /// <summary>
-      ///   Create a TReservationStatus from a single character or status string
+      ///   Create a TReservationState from a single character or status string
       /// </summary>
-      class function FromResStatus(const statusChar : char) : TReservationStatus; overload; static;
-      class function FromResStatus(const statusStr : string) : TReservationStatus; overload; static;
-      class function FromItemIndex(aIndex: integer) : TReservationStatus; static;
+      class function FromResStatus(const statusChar : char) : TReservationState; overload; static;
+      class function FromResStatus(const statusStr : string) : TReservationState; overload; static;
+      class function FromItemIndex(aIndex: integer) : TReservationState; static;
 
       /// <summary>
       ///   Fill a TStrings with translated descriptions in order of enumeration. Can by used to populate a TCombobox
       /// </summary>
       class procedure AsStrings(aItemList: TStrings); static;
       /// <summary>
-      ///   Return the itemindex of TReservationstatus as it would have in the itemlist created by AsStrings
+      ///   Return the itemindex of TReservationState as it would have in the itemlist created by AsStrings
       /// </summary>
       function ToItemIndex: integer;
 
@@ -51,7 +51,7 @@ type
       /// </summary>
       function AsStatusChar: Char;
       /// <summary>
-      ///   Return the translated displaystring for a reservationstatus
+      ///   Return the translated displaystring for a ReservationState
       /// </summary>
       function AsReadableString : string;
       /// <summary>
@@ -64,7 +64,7 @@ type
       function IsUserSelectable: boolean;
     end;
 
-    TReservationStatusSetHelper = record helper for TReservationStatusSet
+    TReservationStateSetHelper = record helper for TReservationStateSet
       /// <summary>
       ///   Returns a string containing a set definition as used in SQL statements, i.e. ['P, 'C']
       /// </summary>
@@ -95,33 +95,33 @@ uses
   , uUtils;
 
 
-function TReservationStatusHelper.AsStatusChar: Char;
+function TReservationStateHelper.AsStatusChar: Char;
 const
-  cReservationStatusChars : Array[TReservationStatus] of char =
+  cReservationStateChars : Array[TReservationState] of char =
       ('P','P','G','D','P','O','A','N','B','C','W','Z','X', 'Q', 'M');
 begin
-  Result := cReservationStatusChars[Self];
+  Result := cReservationStateChars[Self];
 end;
 
 
-class procedure TReservationStatusHelper.AsStrings(aItemList: TStrings);
+class procedure TReservationStateHelper.AsStrings(aItemList: TStrings);
 var
-  s: TReservationStatus;
+  s: TReservationState;
 begin
   aItemList.Clear;
-  for s := TReservationStatus(1) to high(s) do // dont use rsUnkown
+  for s := TReservationState(1) to high(s) do // dont use rsUnkown
     aItemList.Add(s.AsReadableString);
 end;
 
-class function TReservationStatusHelper.FromItemIndex(aIndex: integer): TReservationStatus;
+class function TReservationStateHelper.FromItemIndex(aIndex: integer): TReservationState;
 begin
   if aIndex = -1 then
     Result := rsUnKnown
   else
-    Result := TReservationStatus(aIndex+1);
+    Result := TReservationState(aIndex+1);
 end;
 
-class function TReservationStatusHelper.FromResStatus(const statusStr: string): TReservationStatus;
+class function TReservationStateHelper.FromResStatus(const statusStr: string): TReservationState;
 begin
   if statusStr.IsEmpty then
     Result := rsUnKnown
@@ -129,7 +129,7 @@ begin
     Result := FromResStatus(statusStr[1]);
 end;
 
-function TReservationStatusHelper.IsUserSelectable: boolean;
+function TReservationStateHelper.IsUserSelectable: boolean;
 begin
   case Self of
     rsReservation:        result := True;
@@ -152,7 +152,7 @@ begin
 
 end;
 
-function TReservationStatusHelper.AsReadableString : string;
+function TReservationStateHelper.AsReadableString : string;
 begin
   case Self of
     rsReservation:        result := GetTranslatedText('shTx_G_Reservation');
@@ -175,7 +175,7 @@ begin
 end;
 
 
-class function TReservationStatusHelper.FromResStatus(const statusChar : char) : TReservationStatus;
+class function TReservationStateHelper.FromResStatus(const statusChar : char) : TReservationState;
 begin
   case UpperCase(statusChar)[1] of
     'P': result := rsReservation;
@@ -196,7 +196,7 @@ begin
 end;
 
 
-function TReservationStatusHelper.ToColor(var backColor, fontColor : TColor) : boolean;
+function TReservationStateHelper.ToColor(var backColor, fontColor : TColor) : boolean;
 begin
   result := false;
   case Self of
@@ -269,7 +269,7 @@ begin
 end;
 
 
-function TReservationStatusHelper.ToItemIndex: integer;
+function TReservationStateHelper.ToItemIndex: integer;
 begin
   if Self = rsUnknown then
     Result := -1
@@ -277,12 +277,12 @@ begin
     Result := ord(Self)-1;
 end;
 
-{ TReservationStatusSetHelper }
+{ TReservationStateSetHelper }
 
-function TReservationStatusSetHelper.AsSQLString: string;
+function TReservationStateSetHelper.AsSQLString: string;
 var
   lStr: TStringList;
-  stat: TReservationStatus;
+  stat: TReservationState;
 begin
   lStr := TStringlist.Create;
   try

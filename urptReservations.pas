@@ -979,7 +979,7 @@ begin
     s := s+'   , rv.Tel1 '#10;
     s := s+'   , rv.Tel2 '#10;
     s := s+'   , rv.Fax '#10;
-    s := s+'   , rv.`Status` AS ReservationStatus'#10;
+    s := s+'   , rv.`Status` AS ReservationState'#10;
     s := s+'   , rv.Staff '#10;
     s := s+'   , rv.Information '#10;
     s := s+'   , rv.PMInfo '#10;

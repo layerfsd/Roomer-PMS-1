@@ -66,7 +66,7 @@ uses
   dxSkinPumpkin, dxSkinSeven, dxSkinSevenClassic, dxSkinSharp, dxSkinSharpPlus, dxSkinSilver, dxSkinSpringTime,
   dxSkinStardust,
   dxSkinSummer2008, dxSkinValentine, dxSkinVS2010, dxSkinWhiteprint, dxSkinXmas2008Blue, sScrollBox, acImage, AdvUtil,
-  uReservationStatusDefinitions
+  uReservationStateDefinitions
 
     ;
 
@@ -1063,7 +1063,7 @@ type
     _idxReservation, _idxRoomReservation: integer;
     _iReservation, _iRoomReservation: integer;
     _Arrival, _Departure: Tdate;
-    _ResStatus: TReservationStatus;
+    _ResStatus: TReservationState;
     _Guest, _Name, _Room: String;
     _NoRoom: boolean;
     _ColorId, _ColorValue: integer;
@@ -1476,8 +1476,8 @@ type
     procedure GetMnuFilterLocationsFromStore;
     procedure SetAllMnuFilterLocationsUnchecked;
     procedure EnterDashboardView;
-    function ReservationStatusFilter: boolean;
-    function ReservationStatusFiltered(status: TReservationStatus): boolean;
+    function ReservationStateFilter: boolean;
+    function ReservationStateFiltered(status: TReservationState): boolean;
     procedure _CancelAReservation;
     procedure CancelAReservation;
     procedure PerformFilterRefresh;
@@ -3530,7 +3530,7 @@ begin
   WriteStringValueToAppRegistry(d.roomerMainDataSet.userName, 'LocationSelected_' + g.qHotelCode + '_' +
     inttostr(TMenuItem(Sender).Tag),
     Bool2Str(TMenuItem(Sender).Checked));
-  btnFilter.ImageIndex := ABS(Ord(LocationFilter(false) OR GroupsFilterActive OR ReservationStatusFilter));
+  btnFilter.ImageIndex := ABS(Ord(LocationFilter(false) OR GroupsFilterActive OR ReservationStateFilter));
   // OR GroupsFilterActive));
 
   checkFilterStatuses;
@@ -3544,13 +3544,13 @@ end;
 
 function TfrmMain.SearchOrGroupFilterActive: boolean;
 begin
-  result := SearchActive OR ReservationStatusFilter OR GroupsFilterActive;
+  result := SearchActive OR ReservationStateFilter OR GroupsFilterActive;
   // OR FilterActive; // OR GroupsFilterActive;
 end;
 
 function TfrmMain.FilterActive: boolean;
 begin
-  result := LocationFilter OR ReservationStatusFilter; // OR FreeRoomsFiltered;
+  result := LocationFilter OR ReservationStateFilter; // OR FreeRoomsFiltered;
 end;
 
 function TfrmMain.LocationOrFloorFilterActive: boolean;
@@ -3601,7 +3601,7 @@ end;
 const
   RES_STATUS_FILTER_LOCATIONS: String = 'GPDONABC';
 
-function TfrmMain.ReservationStatusFiltered(status: TReservationStatus): boolean;
+function TfrmMain.ReservationStateFiltered(status: TReservationState): boolean;
 var
   i: integer;
   letter: Char;
@@ -3632,7 +3632,7 @@ begin
     result := (mnuItemStatus.Items[i].Checked);
 end;
 
-function TfrmMain.ReservationStatusFilter: boolean;
+function TfrmMain.ReservationStateFilter: boolean;
 var
   i: integer;
 begin
@@ -4050,7 +4050,7 @@ var
   iTopRow, iOldCol, iOldRow: integer;
 
   RoomNumber: string;
-  ResStatus: TReservationStatus;
+  ResStatus: TReservationState;
   ResStatusChar: string;
   sDate: string;
   dtDeparture: Tdate;
@@ -5391,7 +5391,7 @@ begin
     exit; // ===>>
 
   _Room := rri.Room;
-  _ResStatus := TReservationStatus.FromResStatus(rri.resFlag);
+  _ResStatus := TReservationState.FromResStatus(rri.resFlag);
 
   _NoRoom := Copy(_Room, 1, 1) = '<';
 
@@ -6037,10 +6037,10 @@ begin
       resultGroup := GroupFiltered(aRoom.Reservation);
     end;
 
-    resultStatus := NOT ReservationStatusFilter;
+    resultStatus := NOT ReservationStateFilter;
     if NOT resultStatus then
     begin
-      resultStatus := ReservationStatusFiltered(aRoom.ResStatus);
+      resultStatus := ReservationStateFiltered(aRoom.ResStatus);
     end;
 
     resultSearch := edtSearch.Text = '';

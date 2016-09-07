@@ -5,7 +5,7 @@ interface
 uses
     Classes
   , SysUtils
-  , uReservationStatusDefinitions
+  , uReservationStateDefinitions
   , Generics.Collections
   ;
 
@@ -19,17 +19,17 @@ type
   private
   protected
     FReservation: integer;
-    FNewState : TReservationStatus;
+    FNewState : TReservationState;
 
     function Checkin: boolean; virtual;
     function CheckOut: boolean; virtual;
-    function DispatchChangeHandler(aOldState, aNewState: TReservationStatus): THandlerFunc; virtual;
+    function DispatchChangeHandler(aOldState, aNewState: TReservationState): THandlerFunc; virtual;
     function CatchAll: boolean; virtual;
-    function GetReservationStatus: TReservationStatus; virtual; abstract;
+    function GetReservationState: TReservationState; virtual; abstract;
   public
-    function ChangeIsAllowed(aNewState: TReservationStatus): boolean;
-    function ChangeState(aNewState: TReservationStatus): boolean; virtual;
-    property CurrentState: TReservationStatus read GetReservationStatus;
+    function ChangeIsAllowed(aNewState: TReservationState): boolean;
+    function ChangeState(aNewState: TReservationState): boolean; virtual;
+    property CurrentState: TReservationState read GetReservationState;
   end;
 
   TRoomReservationStateChangeHandler = class(TBaseReservationStateChangeHandler)
@@ -39,7 +39,7 @@ type
     function Checkin: boolean; override;
     function CheckOut: boolean; override;
     function CatchAll: boolean; override;
-    function GetReservationStatus: TReservationStatus; override;
+    function GetReservationState: TReservationState; override;
   public
     constructor Create(aReservation, aRoomReservation: integer);
   end;
@@ -52,7 +52,7 @@ type
 
     function Checkin: boolean; override;
     function CatchAll: boolean; override;
-    function GetReservationStatus: TReservationStatus; override;
+    function GetReservationState: TReservationState; override;
   public
     constructor Create(aReservation: integer);
     destructor Destroy; override;
@@ -76,9 +76,9 @@ uses
 
 { TReservationStateChangeHandler }
 
-function TBaseReservationStateChangeHandler.ChangeIsAllowed(aNewState: TReservationStatus): boolean;
+function TBaseReservationStateChangeHandler.ChangeIsAllowed(aNewState: TReservationState): boolean;
 var
-  lCurrentState: TReservationStatus;
+  lCurrentState: TReservationState;
 begin
   lCurrentState := CurrentState;
   Result := (aNewState <> lCurrentState); // dont allow changing to same status
@@ -106,16 +106,16 @@ begin
   Result := false;
 end;
 
-function TBaseReservationStateChangeHandler.ChangeState(aNewState: TReservationStatus): boolean;
+function TBaseReservationStateChangeHandler.ChangeState(aNewState: TReservationState): boolean;
 var
   lExecuteChangeFunc: THandlerFunc;
-  lOldState: TReservationStatus;
+  lOldState: TReservationState;
 begin
   result := false;
   FNewState := aNewState;
   lOldState := CurrentState;
   if not ChangeIsAllowed(aNewState) then
-    raise EInvalidReservationStateChange.CreateFmt('Reservationstatus cannot be changed from [%s] to [%s]', [lOldState.AsReadableString, aNewState.AsReadableString]);
+    raise EInvalidReservationStateChange.CreateFmt('ReservationState cannot be changed from [%s] to [%s]', [lOldState.AsReadableString, aNewState.AsReadableString]);
 
   lExecuteChangeFunc := DispatchChangeHandler(lOldState, aNewState);
   if Assigned(lExecuteChangeFunc) then
@@ -194,7 +194,7 @@ begin
   inherited;
 end;
 
-function TReservationStateChangeHandler.GetReservationStatus: TReservationStatus;
+function TReservationStateChangeHandler.GetReservationState: TReservationState;
 var
   lRoomHandler: TRoomReservationStateChangeHandler;
 begin
@@ -270,13 +270,13 @@ begin
   FRoomReservation := aRoomReservation;
 end;
 
-function TRoomReservationStateChangeHandler.GetReservationStatus: TReservationStatus;
+function TRoomReservationStateChangeHandler.GetReservationState: TReservationState;
 begin
-  Result := TReservationStatus.FromResStatus( d.RR_GetStatus(FRoomReservation));
+  Result := TReservationState.FromResStatus( d.RR_GetStatus(FRoomReservation));
 end;
 
 function TBaseReservationStateChangeHandler.DispatchChangeHandler(aOldState,
-  aNewState: TReservationStatus): THandlerFunc;
+  aNewState: TReservationState): THandlerFunc;
 begin
   Result := nil;
   case aNewState of

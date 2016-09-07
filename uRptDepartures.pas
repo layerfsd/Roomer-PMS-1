@@ -116,7 +116,7 @@ uses
   , uGuestCheckInForm
   , uInvoice
   , uReservationProfile
-  , uReservationStatusDefinitions, uReservationStateChangeHandler;
+  , uReservationStateDefinitions, uReservationStateChangeHandler;
 
 
 const

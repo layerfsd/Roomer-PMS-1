@@ -189,7 +189,7 @@ uses
   , uInvoice
   , uReservationProfile
   , uRptbViewer
-  , uReservationStateChangeHandler, uReservationStatusDefinitions;
+  , uReservationStateChangeHandler, uReservationStateDefinitions;
 
 const
   cSQL = 'SELECT '+

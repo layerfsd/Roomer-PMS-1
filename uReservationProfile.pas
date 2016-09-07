@@ -72,7 +72,7 @@ uses
   uAlerts,
   uDynamicRates
   , cxSpinEdit
-  , uReservationStatusDefinitions, System.Actions, Vcl.ActnList
+  , uReservationStateDefinitions, System.Actions, Vcl.ActnList
   , uReservationStateChangeHandler
   ;
 
@@ -707,7 +707,7 @@ type
   private
     { Private declarations }
     vStartName: string;
-    FReservationStatus: TReservationStatus;
+    FReservationState: TReservationState;
     FOutOfOrderBlocking: Boolean;
     DynamicRates: TDynamicRates;
 
@@ -967,7 +967,7 @@ begin
   _restoreForm(self);
   enabled := false;
 
-  TReservationStatus.AsStrings((tvRoomsStatusText.Properties AS TcxComboBoxProperties).Items);
+  TReservationState.AsStrings((tvRoomsStatusText.Properties AS TcxComboBoxProperties).Items);
 
   ConstructOtherResStateMenu;
 
@@ -996,7 +996,7 @@ begin
   FOutOfOrderBlocking := false;
   mainPage.ActivePage := RoomsTab;
   zInt := 0;
-  FReservationStatus := rsUnKnown;
+  FReservationState := rsUnKnown;
 
   DynamicRates := TDynamicRates.Create;
   FReservationChangeStateHandler := nil;
@@ -1563,7 +1563,7 @@ end;
 //    cbxStatus.Text := 'Mixed';
 //  end
 //  else
-//    cbxStatus.ItemIndex := FReservationStatus.ToItemIndex;
+//    cbxStatus.ItemIndex := FReservationState.ToItemIndex;
 //
 //  cbxStatus.Update;
 //  cbxStatus.Invalidate;
@@ -1645,7 +1645,7 @@ end;
 //var
 //  s: string;
 //  lMsgText: string;
-//  lNewStatus: TReservationStatus;
+//  lNewStatus: TReservationState;
 //begin
 //  if cbxStatus.ItemIndex <= 0 then
 //  begin
@@ -1653,8 +1653,8 @@ end;
 //    exit;
 //  end;
 //
-//  lNewStatus :=TReservationStatus(cbxStatus.ItemIndex);
-//  if (lNewStatus = FReservationStatus) then
+//  lNewStatus :=TReservationState(cbxStatus.ItemIndex);
+//  if (lNewStatus = FReservationState) then
 //    Exit;
 //
 //  if (lNewStatus = rsGuests) and g.qWarnCheckInDirtyRoom AND CheckForDirtyRooms(s) then
@@ -1665,11 +1665,11 @@ end;
 //  if MessageDlg(lMsgText, mtConfirmation, [mbYes, mbNo], 0) = mrYes then
 //  begin
 //    d.UpdateStatusSimple(zReservation, 0, lNewStatus.asStatusChar);
-//    FReservationStatus := lNewStatus;
+//    FReservationState := lNewStatus;
 //    Display_rGrid(zRoomReservation);
 //  end
 //  else
-//    SetStatusItemindex(FReservationStatus.AsStatusChar);
+//    SetStatusItemindex(FReservationState.AsStatusChar);
 //end;
 
 procedure TfrmReservationProfile.cbxBreakfastCloseUp(Sender: TObject);
@@ -2414,7 +2414,7 @@ var
   arrival: TDateTime;
   departure: TDateTime;
   iNights: Integer;
-  status: TReservationStatus;
+  status: TReservationState;
   statusText: string;
   defGuestCount: Integer;
   RoomType: string;
@@ -2596,7 +2596,7 @@ begin
       arrival := mRoomsArrival.AsDateTime;
       iGuests := mRoomsGuestCount.asInteger;
       iNights := trunc(departure) - trunc(arrival);
-      status := TReservationStatus.FromResStatus(mRoomsStatus.asstring);
+      status := TReservationState.FromResStatus(mRoomsStatus.asstring);
       RoomType := mRoomsRoomType.asstring;
       package := mRoomsPackage.asstring;
       RoomClass := mRoomsRoomClass.asstring;
@@ -2969,9 +2969,9 @@ end;
 procedure TfrmReservationProfile.tvRoomsStatusTextPropertiesChange(Sender: TObject);
 var
   lStateChanger: TRoomReservationStateChangeHandler;
-  lNewStatus: TReservationStatus;
+  lNewStatus: TReservationState;
 begin
-  lNewStatus := TReservationStatus.FromItemIndex(TcxComboBox(Sender).ItemIndex);
+  lNewStatus := TReservationState.FromItemIndex(TcxComboBox(Sender).ItemIndex);
 
   lStateChanger := FReservationChangeStateHandler.RoomStateChangeHandler[zRoomReservation];
   if lStateChanger.ChangeState(lNewStatus) then
@@ -3354,7 +3354,7 @@ var
   rSet: TRoomerDataSet;
   s: string;
 
-  status: TReservationStatus;
+  status: TReservationState;
   statusText: string;
 
   mainGuest: string;
@@ -3385,7 +3385,7 @@ begin
       begin
         roomReservation := mGuestRooms.fieldbyname('roomReservation').asInteger;
 
-        status := TReservationStatus.FromResStatus(mGuestRooms.fieldbyname('status').asstring);
+        status := TReservationState.FromResStatus(mGuestRooms.fieldbyname('status').asstring);
         statusText := Status.AsReadableString;
 
         mainGuest := d.RR_GetFirstGuestName(roomReservation);
@@ -3458,7 +3458,7 @@ begin
         mAllGuests.First;
         while not mAllGuests.Eof do
         begin
-          status := TReservationStatus.FromResStatus(mAllGuests.fieldbyname('status').asstring);
+          status := TReservationState.FromResStatus(mAllGuests.fieldbyname('status').asstring);
           statusText := Status.AsReadableString;
 
           mAllGuests.Edit;
@@ -3908,7 +3908,7 @@ begin
   mnuChangeStateTo.Caption := FOrigmnuChangeStateToCaption + ' '+ mRoomsRoom.AsString;
 
   for i := 0 to mnuChangeStateTo.Count-1 do
-    mnuChangeStateTo.Items[i].Enabled := lRoomStateChanger.ChangeIsAllowed(TReservationStatus(mnuChangeStateTo.Items[i].tag));
+    mnuChangeStateTo.Items[i].Enabled := lRoomStateChanger.ChangeIsAllowed(TReservationState(mnuChangeStateTo.Items[i].tag));
 
   acCheckinReservation.Enabled := mRooms.Active and not mRooms.Eof and FReservationChangeStateHandler.ChangeIsAllowed(rsGuests);
 
@@ -3921,13 +3921,13 @@ var
 begin
   lMenu := TMenuItem(Sender);
   lRoomStateChanger := FReservationChangeStateHandler.RoomStateChangeHandler[mRoomsRoomReservation.AsInteger];
-  if lRoomStateChanger.ChangeState(TReservationStatus(lMenu.Tag)) then
+  if lRoomStateChanger.ChangeState(TReservationState(lMenu.Tag)) then
     Display_rGrid(mRoomsRoomReservation.ASInteger);
 end;
 
 procedure TfrmReservationProfile.ConstructOtherResStateMenu;
 var
-  lState: TReservationStatus;
+  lState: TReservationState;
   lMenu: TMenuItem;
 begin
   mnuChangeStateTo.Clear;

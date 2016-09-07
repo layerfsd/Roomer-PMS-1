@@ -22,7 +22,7 @@ uses
   , ud
   , cmpRoomerDataSet
   , cmpRoomerConnection
-  , Generics.Collections, uReservationStatusDefinitions
+  , Generics.Collections, uReservationStateDefinitions
   ;
 
 type
@@ -83,7 +83,7 @@ type
     FRoomRes : integer;
     FReservation : integer;
 
-    FResStatus : TReservationStatus;
+    FResStatus : TReservationState;
 
     FRoomNumber : string;
     FRRNumber : string;
@@ -152,7 +152,7 @@ type
     property ColorId : integer read FColorId write FColorId;
 
 
-    property ResStatus : TReservationStatus read FResStatus write FResStatus;
+    property ResStatus : TReservationState read FResStatus write FResStatus;
 
     property Currency : string read FCurrency write FCurrency;
     property Price : Double read FPrice write FPrice;
@@ -197,7 +197,7 @@ type
   TSingleReservations = class(TObject)
   private
     FReservation : integer;
-    FResStatus : TReservationStatus;
+    FResStatus : TReservationState;
     FRooms : TRoomList;
 
     FTel1, FTel2, FFax, FStaff, FCustomer : string;
@@ -230,7 +230,7 @@ type
   published
     property name : string read FName write FName;
     property Reservation : integer read FReservation write FReservation;
-    property ResStatus : TReservationStatus read FResStatus write FResStatus;
+    property ResStatus : TReservationState read FResStatus write FResStatus;
     property RoomCount : integer read GetRoomCount;
     property Channel : Integer read FChannel;
 
@@ -275,7 +275,7 @@ type
   { All Reservations on a specified daterange - can constist of multiple Reservations }
   TReservationsModel = class(TObject)
   private
-    FReservationStatus : TReservationStatus;
+    FReservationState : TReservationState;
     FWebRequest : Boolean;
     FFromDate : TDate;
     FToDate : TDate;
@@ -294,7 +294,7 @@ type
 
     property Reservations: TList<TSingleReservations> read FReservationList;
   published
-    property ReservationStatus : TReservationStatus read FReservationStatus write FReservationStatus;
+    property ReservationState : TReservationState read FReservationState write FReservationState;
 
     property WebRequest : Boolean read FWebRequest write FWebRequest;
 
@@ -458,7 +458,7 @@ end;
 constructor TReservationsModel.Create;
 begin
   inherited Create;
-  FReservationStatus := rsUnKnown;
+  FReservationState := rsUnKnown;
   FFromDate := Now;
   FToDate := Now;
   FReservationList := TList<TSingleReservations>.Create;

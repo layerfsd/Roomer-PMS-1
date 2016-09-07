@@ -31,7 +31,7 @@ uses
   , uFileSystemUtils
   , uRegistryServices
   , uRoomerDefinitions
-  , System.Generics.Collections, uReservationStatusDefinitions
+  , System.Generics.Collections, uReservationStateDefinitions
   ;
 
 
@@ -437,8 +437,8 @@ type
     function OpenResProblem(var lst : TstringList) : integer;
     function OpenRoomDateProblem(var lst : TStringlist) : integer;
 
-    function StatusStrToResStatus(statusSTR : string) : TReservationStatus; deprecated 'Use TReservationsStatus.FromResStatus';
-    function ResStatusToStatusStr(ResStatus : TReservationStatus) : string; deprecated 'Use TReservationStatus.AsReadableString';
+    function StatusStrToResStatus(statusSTR : string) : TReservationState; deprecated 'Use TReservationsStatus.FromResStatus';
+    function ResStatusToStatusStr(ResStatus : TReservationState) : string; deprecated 'Use TReservationState.AsReadableString';
 
     function OpenChangeRate(var Rate : double; Currency : string) : boolean;
 
@@ -1962,7 +1962,7 @@ begin
   end;
 end;
 
-function TGlobalApplication.StatusStrToResStatus(statusSTR : string) : TReservationStatus;
+function TGlobalApplication.StatusStrToResStatus(statusSTR : string) : TReservationState;
 begin
   result := rsUnKnown;
   statusSTR := trim(statusSTR);
@@ -1993,7 +1993,7 @@ begin
 
 end;
 
-function TGlobalApplication.ResStatusToStatusStr(ResStatus : TReservationStatus) : string;
+function TGlobalApplication.ResStatusToStatusStr(ResStatus : TReservationState) : string;
 begin
   result := '';
   (* if ResStatus = rsReservations then result := 'Reservation';

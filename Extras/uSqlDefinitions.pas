@@ -6578,7 +6578,7 @@ end;
 ///    s := s + '   or  ( rr.Departure = ' + _DateToDBDate(_ToDate - 1,true) + ')'+chr(10);
 ///    s := s + ' )'+chr(10);
 ///
-///    case _ReservationStatus of
+///    case _ReservationState of
 ///      rsUnKnown :
 ///        ;
 ///      rsReservations :

@@ -198,10 +198,10 @@ function _WeekNum(const TDT:TDateTime) : Word;
 
 
 function _IndexToStatus(Index : Integer; MixedIncluded : Boolean = False) : string;
-function _StatusToIndex(Status : String; MixedIncluded : Boolean = False) : Integer; deprecated 'Use ord(TReservationStatus)';
+function _StatusToIndex(Status : String; MixedIncluded : Boolean = False) : Integer; deprecated 'Use ord(TReservationState)';
 
-function _StatusToText(status : string) : string; deprecated 'Use TReservationStatus.AsReadableString';
-function _TextToStatus(text : string) : string; deprecated 'Use TReservationStatus';
+function _StatusToText(status : string) : string; deprecated 'Use TReservationState.AsReadableString';
+function _TextToStatus(text : string) : string; deprecated 'Use TReservationState';
 function _BreakfastToText(included : Boolean) : string;
 function _AccountTypeToText(isGroupAccount : Boolean) : string;
 
@@ -226,7 +226,7 @@ function GetGridsIniFilename : String;
 implementation
 
 uses uDateUtils, uRegistryServices, uUtils, uG, uStringUtils, uAppGlobal, uRoomerDefinitions, PrjConst, uFloatUtils,
-  uReservationStatusDefinitions;
+  uReservationStateDefinitions;
 
 function GetRoomerIniFilename : String;
 begin
@@ -2627,7 +2627,7 @@ function _StatusToText(status : string) : string;
 //var
 //  ch : Char;
 begin
-  Result := TReservationStatus.FromResStatus(status).asReadableString;
+  Result := TReservationState.FromResStatus(status).asReadableString;
 
 //  result := 'unknown';
 //  if trim(status) = '' then
@@ -2693,7 +2693,7 @@ end;
 function _StatusToIndex(Status : String; MixedIncluded : Boolean = False) : Integer;
 //var ch : Char;
 begin
-  Result := ord(TReservationStatus.FromResStatus(Status));
+  Result := ord(TReservationState.FromResStatus(Status));
 //  result := 0;
 //  ch := UpCase(Status[1]);
 //  case ch of

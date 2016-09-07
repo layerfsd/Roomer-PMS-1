@@ -96,14 +96,14 @@ uses
   , PrjConst
   , uRoomerDefinitions
   , uAvailabilityPerDay
-  , uReservationStatusDefinitions;
+  , uReservationStateDefinitions;
 {$R *.DFM}
 
 function ProvideARoom2(RoomReservation : Integer) : String;
 var
   btn : Word;
 
-  status : TReservationStatus;
+  status : TReservationState;
 
   rSet : TRoomerDataSet;
 
