@@ -75,8 +75,6 @@ object d: Td
     Top = 591
     Datasets = <
       item
-        DataSet = rptDs1
-        DataSetName = 'rptDs1'
       end>
     Variables = <>
     Style = <>
@@ -201,38 +199,6 @@ object d: Td
     DataOnly = False
     Left = 373
     Top = 592
-  end
-  object rptDs1: TfrxDBDataset
-    UserName = 'rptDs1'
-    CloseDataSource = False
-    BCDToCurrency = False
-    Left = 104
-    Top = 636
-  end
-  object rptDS2: TfrxDBDataset
-    UserName = 'rptDs2'
-    CloseDataSource = False
-    BCDToCurrency = False
-    Left = 228
-    Top = 641
-  end
-  object rptDSHead: TfrxDBDataset
-    UserName = 'rptDSHead2'
-    CloseDataSource = False
-    BCDToCurrency = False
-    Left = 284
-    Top = 644
-  end
-  object rptDs3: TfrxDBDataset
-    UserName = 'rptDs3'
-    CloseDataSource = False
-    BCDToCurrency = False
-    Left = 172
-    Top = 641
-  end
-  object frxADOComponents1: TfrxADOComponents
-    Left = 268
-    Top = 588
   end
   object swSystem_People_Places_Things_: TRoomerDataSet
     CursorType = ctStatic

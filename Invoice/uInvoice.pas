@@ -4647,7 +4647,8 @@ begin
         ItemPrice := 0;
         Discount := 0.00;
         taxChildren := 0;
-        sTmp := trim(agrLines.Cells[col_ItemPrice, i]);
+//        sTmp := trim(agrLines.Cells[col_ItemPrice, i]);
+        sTmp := trim(agrLines.Cells[col_TotalPrice, i]); // use total price because itemprice is rounded
         if sTmp <> '' then
         begin
           if agrLines.Objects[cRoomInfoAttachColumn, i] IS TRoomInfo then
@@ -4657,7 +4658,7 @@ begin
             Discount := RoomInfo.Discount;
           end;
 
-          ItemPrice := _StrToFloat(sTmp);
+          ItemPrice := _StrToFloat(sTmp) / taxNights;
         end;
 
         if ItemPrice <> 0 then
