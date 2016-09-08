@@ -449,7 +449,7 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
     Top = 127
     Width = 1165
     Height = 662
-    ActivePage = SheetMainResult
+    ActivePage = sTabSheet4
     Align = alClient
     TabOrder = 1
     SkinData.SkinSection = 'PAGECONTROL'
@@ -1207,6 +1207,9 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
           object tvRoomsDataoccRooms: TcxGridDBColumn
             DataBinding.FieldName = 'occRooms'
           end
+          object tvRoomsDataLocation: TcxGridDBColumn
+            DataBinding.FieldName = 'Location'
+          end
         end
         object lvRoomsData: TcxGridLevel
           GridView = tvRoomsData
@@ -1255,7 +1258,6 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
     end
     object prLinkGrDrill: TdxGridReportLink
       Component = grDrill
-      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.GrayShading = True
@@ -1268,7 +1270,6 @@ object frmRptResStatsRooms: TfrmRptResStatsRooms
       PrinterPage.PageSize.Y = 297000
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
-      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       BuiltInReportLink = True
     end
   end
