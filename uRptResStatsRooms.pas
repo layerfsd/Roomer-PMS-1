@@ -240,7 +240,6 @@ type
     procedure btnPivgrRequestsBestfitClick(Sender: TObject);
     procedure btnGrDrillExcelClick(Sender: TObject);
     procedure pg001OccPrCalculateCustomSummary(Sender: TcxPivotGridField; ASummary: TcxPivotGridCrossCellSummary);
-    procedure sButton4Click(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 
   private
