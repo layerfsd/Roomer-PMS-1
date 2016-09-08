@@ -732,7 +732,7 @@ type
     procedure UpdatePaymentDetails;
 
     Function MainGuestRoomsSQL(reservation: Integer): string;
-    function getGuestData(gotoRoomReservation: Integer): Boolean;
+    function getGuestData(gotoRoomReservation: Integer; aAllGuestsOnly: boolean = false): Boolean;
 
     Function guestsSQL(reservation: Integer): string;
     Function allGuestsSQL(reservation: Integer): string;
@@ -973,8 +973,15 @@ begin
 
   FReservationChangeStateHandler := TReservationStateChangeHandler.Create(zReservation);
 
-  PlacePnlDataWait;
-  timStart.enabled := true;
+  try
+    PlacePnlDataWait;
+    timStart.enabled := True;
+//    Display;
+//    mRooms.First;
+  finally
+    Enabled := true;
+  end;
+
   vStartName := frmReservationProfile.edtName.text;
 end;
 
@@ -1049,11 +1056,13 @@ var
 begin
   pnlDataWait.Show;
   ActiveControl := grRooms;
-  screen.Cursor := crHourGlass;
   Application.ProcessMessages;
 
+  mRooms.DisableControls;
+  screen.Cursor := crHourGlass;
   rSet := CreateNewDataSet;
   try
+
     s := format(select_ReservationProfile_Display, [zReservation]);
     hData.rSet_bySQL(rSet, s);
 
@@ -1122,6 +1131,7 @@ begin
     ConstructFormCaption;
   finally
     FreeAndNil(rSet);
+    mRooms.EnableControls;
     screen.Cursor := crDefault;
     pnlDataWait.Hide;
   end;
@@ -2543,7 +2553,7 @@ end;
 
 procedure TfrmReservationProfile.UpdateGuestDetails(gotoRoomReservation: integer);
 begin
-  getGuestData(gotoRoomReservation);
+  getGuestData(gotoRoomReservation, True);
 
   gbxGuest.Caption := FgbxGuestOrigCaption + ' ' + mRoomsRoom.AsString;
 
@@ -3254,8 +3264,7 @@ begin
   result := format(Sql, [zReservation]);
 end;
 
-function TfrmReservationProfile.getGuestData(gotoRoomReservation
-  : longInt): Boolean;
+function TfrmReservationProfile.getGuestData(gotoRoomReservation: longInt; aAllGuestsOnly: boolean = false): Boolean;
 var
   rSet: TRoomerDataSet;
   s: string;
@@ -3270,75 +3279,77 @@ var
 
 begin
   rSet := CreateNewDataSet;
-  try
-
-    rSet.CommandType := cmdText;
-
-    mGuestRooms.DisableControls;
-    screen.Cursor := crHourGlass;
+  if not aAllGuestsOnly then
+  begin
     try
-      s := MainGuestRoomsSQL(zReservation);
-      hData.rSet_bySQL(rSet, s);
+      rSet.CommandType := cmdText;
 
-      if mGuestRooms.Active then
-        mGuestRooms.Close;
-      mGuestRooms.Open;
+      mGuestRooms.DisableControls;
+      screen.Cursor := crHourGlass;
+      try
+        s := MainGuestRoomsSQL(zReservation);
+        hData.rSet_bySQL(rSet, s);
 
-      mGuestRooms.LoadFromDataSet(rSet);
+        if mGuestRooms.Active then
+          mGuestRooms.Close;
+        mGuestRooms.Open;
 
-      mGuestRooms.First;
-      while not mGuestRooms.Eof do
-      begin
-        roomReservation := mGuestRooms.fieldbyname('roomReservation').asInteger;
+        mGuestRooms.LoadFromDataSet(rSet);
 
-        status := TReservationState.FromResStatus(mGuestRooms.fieldbyname('status').asstring);
-        statusText := Status.AsReadableString;
+        mGuestRooms.First;
+        while not mGuestRooms.Eof do
+        begin
+          roomReservation := mGuestRooms.fieldbyname('roomReservation').asInteger;
 
-        mainGuest := d.RR_GetFirstGuestName(roomReservation);
-        guestCount := d.RR_GetGuestCount(roomReservation);
+          status := TReservationState.FromResStatus(mGuestRooms.fieldbyname('status').asstring);
+          statusText := Status.AsReadableString;
 
-        mGuestRooms.Edit;
-        mGuestRooms.fieldbyname('statusText').asstring := statusText;
-        mGuestRooms.fieldbyname('mainGuest').asstring := mainGuest;
-        mGuestRooms.fieldbyname('GuestCount').asInteger := guestCount;
-        mGuestRooms.Post;
-        mGuestRooms.Next;
+          mainGuest := d.RR_GetFirstGuestName(roomReservation);
+          guestCount := d.RR_GetGuestCount(roomReservation);
+
+          mGuestRooms.Edit;
+          mGuestRooms.fieldbyname('statusText').asstring := statusText;
+          mGuestRooms.fieldbyname('mainGuest').asstring := mainGuest;
+          mGuestRooms.fieldbyname('GuestCount').asInteger := guestCount;
+          mGuestRooms.Post;
+          mGuestRooms.Next;
+        end;
+
+        mGuestRooms.Locate('RoomReservation', gotoRoomReservation, []);
+
+     finally
+       screen.Cursor := crDefault;
+       mGuestRooms.EnableControls;
+     end;
+    finally
+      FreeAndNil(rSet);
+    end;
+
+    rSet := CreateNewDataSet;
+    try
+
+      rSet.CommandType := cmdText;
+
+      mGuests.DisableControls;
+      screen.Cursor := crHourGlass;
+      try
+        if rSet.Active then
+          rSet.Close;
+        s := guestsSQL(zReservation);
+        hData.rSet_bySQL(rSet, s);
+        if mGuests.Active then
+          mGuests.Close;
+        mGuests.Open;
+
+        mGuests.LoadFromDataSet(rSet);
+
+      finally
+        screen.Cursor := crDefault;
+        mGuests.EnableControls;
       end;
-
-      mGuestRooms.Locate('RoomReservation', gotoRoomReservation, []);
-
     finally
-      screen.Cursor := crDefault;
-      mGuestRooms.EnableControls;
+      FreeAndNil(rSet);
     end;
-  finally
-    FreeAndNil(rSet);
-  end;
-
-  rSet := CreateNewDataSet;
-  try
-
-    rSet.CommandType := cmdText;
-
-    mGuests.DisableControls;
-    screen.Cursor := crHourGlass;
-    try
-      if rSet.Active then
-        rSet.Close;
-      s := guestsSQL(zReservation);
-      hData.rSet_bySQL(rSet, s);
-      if mGuests.Active then
-        mGuests.Close;
-      mGuests.Open;
-
-      mGuests.LoadFromDataSet(rSet);
-
-    finally
-      screen.Cursor := crDefault;
-      mGuests.EnableControls;
-    end;
-  finally
-    FreeAndNil(rSet);
   end;
 
   rSet := CreateNewDataSet;
@@ -3649,15 +3660,25 @@ begin
 end;
 
 procedure TfrmReservationProfile.timStartTimer(Sender: TObject);
+var
+  lSavedAfterScroll: TDatasetNotifyEvent;
+  lSavedBeforePost: TDatasetNotifyEvent;
 begin
   timStart.enabled := false;
+  lSavedAfterScroll := mRooms.AfterScroll;
+  lSavedBeforePost := mRooms.BeforePost;
   try
-    pnlDataWait.Show;
+    mRooms.AfterScroll := nil;
     Display;
+    mRooms.First;
   finally
+    mRooms.AfterScroll := lSavedAfterScroll;
+    mRooms.BeforePost := lSavedBeforePost;
     Enabled := true;
   end;
 
+  if assigned(mRooms.AfterScroll) then
+    mRooms.AfterScroll(mRooms);
   ShowAlertsForReservation(zReservation, 0, atOPEN_RESERVATION);
   AlertList := CreateAlertsForRoomReservation(zReservation, 0, atUNKNOWN);
   FrmAlertPanel.PlaceEditPanel(pnlAlertHolder, AlertList);
