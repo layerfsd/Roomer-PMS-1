@@ -920,10 +920,6 @@ object frmReservationProfile: TfrmReservationProfile
               Caption = 'Customer'
               SkinData.CustomColor = False
               SkinData.CustomFont = False
-              ExplicitLeft = 0
-              ExplicitTop = 0
-              ExplicitWidth = 0
-              ExplicitHeight = 0
               object Label19: TsLabel
                 Left = 1
                 Top = 32
@@ -1211,10 +1207,6 @@ object frmReservationProfile: TfrmReservationProfile
               ImageIndex = 1
               SkinData.CustomColor = False
               SkinData.CustomFont = False
-              ExplicitLeft = 0
-              ExplicitTop = 0
-              ExplicitWidth = 0
-              ExplicitHeight = 0
               object Label11: TsLabel
                 Left = 29
                 Top = 32
@@ -2027,6 +2019,7 @@ object frmReservationProfile: TfrmReservationProfile
             end>
           DataController.Summary.SummaryGroups = <>
           OptionsBehavior.AlwaysShowEditor = True
+          OptionsBehavior.CellHints = True
           OptionsBehavior.FocusCellOnTab = True
           OptionsData.CancelOnExit = False
           OptionsData.Deleting = False
@@ -2057,6 +2050,7 @@ object frmReservationProfile: TfrmReservationProfile
             PropertiesClassName = 'TcxCheckBoxProperties'
             Properties.OnChange = tvRoomsblockMovePropertiesChange
             OnGetCellHint = tvRoomsblockMoveGetCellHint
+            OnGetDisplayText = FormatTextToShortFormat
           end
           object tvRoomsColumn1: TcxGridDBColumn
             Caption = 'FIL'
@@ -2636,6 +2630,7 @@ object frmReservationProfile: TfrmReservationProfile
           object tvRoomsblockMoveReason: TcxGridDBColumn
             Caption = 'Reason for move blocking'
             DataBinding.FieldName = 'blockMoveReason'
+            OnGetDisplayText = tvRoomsblockMoveReasonGetDisplayText
             Options.Editing = False
           end
         end
@@ -2816,10 +2811,6 @@ object frmReservationProfile: TfrmReservationProfile
       ImageIndex = 1
       SkinData.CustomColor = False
       SkinData.CustomFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Panel10: TsPanel
         Left = 0
         Top = 0
@@ -3306,18 +3297,20 @@ object frmReservationProfile: TfrmReservationProfile
           object lblSpecialRequests: TsLabel
             Left = 2
             Top = 15
-            Width = 81
+            Width = 250
             Height = 13
             Align = alTop
             Caption = 'Special Requests'
+            ExplicitWidth = 81
           end
           object lblNotes: TsLabel
             Left = 2
             Top = 101
-            Width = 28
+            Width = 250
             Height = 13
             Align = alTop
             Caption = 'Notes'
+            ExplicitWidth = 28
           end
           object edtSpecialRequests: TMemo
             AlignWithMargins = True
@@ -3425,10 +3418,6 @@ object frmReservationProfile: TfrmReservationProfile
       Caption = 'Alerts'
       SkinData.CustomColor = False
       SkinData.CustomFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object pnlAlertHolder: TsPanel
         Left = 0
         Top = 0
@@ -3445,10 +3434,6 @@ object frmReservationProfile: TfrmReservationProfile
       ImageIndex = 2
       SkinData.CustomColor = False
       SkinData.CustomFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Panel11: TsPanel
         Left = 0
         Top = 0
@@ -3838,6 +3823,8 @@ object frmReservationProfile: TfrmReservationProfile
     Align = alBottom
     TabOrder = 4
     SkinData.SkinSection = 'PANEL'
+    ExplicitLeft = -8
+    ExplicitTop = 621
     DesignSize = (
       1136
       33)

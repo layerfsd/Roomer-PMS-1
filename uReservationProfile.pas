@@ -588,7 +588,6 @@ type
     procedure FormShow(Sender: TObject);
     procedure cbxBreakfastCloseUp(Sender: TObject);
     procedure cbxPaymentdetailsCloseUp(Sender: TObject);
-//    procedure cbxStatusCloseUp(Sender: TObject);
     procedure memRoomNotesExit(Sender: TObject);
     procedure PageNotesChange(Sender: TObject);
     procedure btnRoomsRefreshClick(Sender: TObject);
@@ -704,6 +703,8 @@ type
     procedure acPasteIntoHiddenMemoExecute(Sender: TObject);
     procedure btnMainGuestSelectProfileClick(Sender: TObject);
     procedure btnMainGuestEditProfileClick(Sender: TObject);
+    procedure tvRoomsblockMoveReasonGetDisplayText(Sender: TcxCustomGridTableItem; ARecord: TcxCustomGridRecord;
+      var AText: string);
   private
     { Private declarations }
     vStartName: string;
@@ -714,8 +715,6 @@ type
     FrmAlertPanel: TFrmAlertPanel;
     AlertList: TAlertList;
     FValidating: Boolean;
-
-    BlockReasons : TList<String>;
 
     FReservationChangeStateHandler: TReservationStateChangeHandler;
 
@@ -731,7 +730,6 @@ type
     procedure MoveGuestToNewRoom2;
     procedure UpdateBreakfast;
     procedure UpdatePaymentDetails;
-//    procedure UpdateStatus;
 
     Function MainGuestRoomsSQL(reservation: Integer): string;
     function getGuestData(gotoRoomReservation: Integer): Boolean;
@@ -744,15 +742,12 @@ type
     procedure doRRDateChange(startIn: Integer);
     procedure PlacePnlDataWait;
 
-//    procedure SetStatusItemindex(sStatus: string);
-
     procedure SetBreakfastItemindex(sStatus: string);
     procedure SetPaymentDetailItemindex(sStatus: string);
     procedure SetOutOfOrderBlocking(const Value: Boolean);
     procedure SetProfileAlertVisibility;
     procedure UpdateMarket;
     procedure SetMarketItemIndex(const aMarket: string);
-    function CheckForDirtyRooms(var aDirtyRoomList: String): boolean;
     procedure ConstructFormCaption;
     procedure UpdateGuestDetails(gotoRoomReservation: integer);
     procedure UpdateStateActions;
@@ -760,7 +755,6 @@ type
     procedure mnuOtherResStateChangeClick(Sender: TObject);
     procedure SelectMainGuestProfile;
     procedure ShowMainGuestProfile;
-//    function DetermineTotalBalance: double;
 
     property OutOfOrderBlocking: Boolean read FOutOfOrderBlocking write SetOutOfOrderBlocking;
   public
@@ -992,7 +986,6 @@ begin
 
   FrmAlertPanel := TFrmAlertPanel.Create(self);
 
-  BlockReasons := TList<String>.Create;
   FOutOfOrderBlocking := false;
   mainPage.ActivePage := RoomsTab;
   zInt := 0;
@@ -1005,7 +998,6 @@ end;
 procedure TfrmReservationProfile.FormDestroy(Sender: TObject);
 begin
   DynamicRates.free;
-  BlockReasons.Free;
   if assigned(AlertList) then
   begin
     AlertList.postChanges;
@@ -1112,12 +1104,6 @@ begin
         lblCustomerType.caption := d.GET_CustomerTypesDescription_byCustomerType(edtType.text);
 
         edtInvRefrence.text := trim(fieldbyname('invRefrence').asstring);
-//        chkUseStayTax.checked := rSet['useStayTax'];
-
-        // labReserveDate.caption := DateToStr(_DBDateToDate(rSet.fieldbyname('ReservationDate').asString));
-//        __labReserveDate.caption := DateTimeToStr(rSet.fieldbyname('dtCreated').AsDateTime) + ' UTC';
-//        __labStaff.caption := rSet.fieldbyname('staff').asstring;
-
         OutOfOrderBlocking := fieldbyname('outOfOrderBlocking').AsBoolean;
 
         SetMarketItemIndex(fieldbyname('market').asString);
@@ -1319,7 +1305,6 @@ begin
       rSet.fieldbyname('ContactAddress4').asstring := edtContactAddress4.text;
       rSet.fieldbyname('ContactCountry').asstring := edtContactCountry.text;
       rSet.fieldbyname('invRefrence').asstring := edtInvRefrence.text;
-//      rSet['useStayTax'] := chkUseStayTax.checked;
       rSet.Post;
 
       d.roomerMainDataSet.SystemCommitTransaction;
@@ -1533,42 +1518,6 @@ begin
   ConstructFormCaption;
 end;
 
-//procedure TfrmReservationProfile.SetStatusItemindex(sStatus: string);
-//
-//  function strIsDiff(const s: string): Boolean;
-//  var
-//    ch: Char;
-//    i: Integer;
-//  begin
-//    result := false;
-//    if trim(s) = '' then
-//      exit;
-//
-//    ch := s[1];
-//    for i := 1 to length(s) do
-//    begin
-//      if s[i] <> ch then
-//        result := true;
-//    end;
-//  end;
-//
-//begin
-//
-//  if sStatus = '' then
-//    sStatus := d.isMixedStatus(zReservation);
-//
-//  if sStatus.IsEmpty or strIsDiff(sStatus) then
-//  begin
-//    cbxStatus.ItemIndex := -1;
-//    cbxStatus.Text := 'Mixed';
-//  end
-//  else
-//    cbxStatus.ItemIndex := FReservationState.ToItemIndex;
-//
-//  cbxStatus.Update;
-//  cbxStatus.Invalidate;
-//end;
-
 procedure TfrmReservationProfile.SetBreakfastItemindex(sStatus: string);
 var
   ch: Char;
@@ -1615,63 +1564,6 @@ begin
   cbxPaymentdetails.Invalidate;
 end;
 
-function TfrmReservationProfile.CheckForDirtyRooms(var aDirtyRoomList: String): boolean;
-var
-  bm: TBookmark;
-begin
-  Result := False;
-  aDirtyRoomList := '';
-  mRooms.DisableControls;
-  try
-    bm := mRooms.Bookmark;
-
-    mRooms.First;
-    while not mRooms.Eof do
-    begin
-      if g.oRooms.Room[mRooms['room']].IsDirty then
-      begin
-        aDirtyRoomList := aDirtyRoomList + ' ' + mRooms['room'];
-        Result := true;
-      end;
-      mRooms.Next;
-    end;
-  finally
-    mRooms.Bookmark := bm;
-    mRooms.EnableControls;
-  end;
-end;
-
-//procedure TfrmReservationProfile.UpdateStatus;
-//var
-//  s: string;
-//  lMsgText: string;
-//  lNewStatus: TReservationState;
-//begin
-//  if cbxStatus.ItemIndex <= 0 then
-//  begin
-//    Display_rGrid(zRoomReservation);
-//    exit;
-//  end;
-//
-//  lNewStatus :=TReservationState(cbxStatus.ItemIndex);
-//  if (lNewStatus = FReservationState) then
-//    Exit;
-//
-//  if (lNewStatus = rsGuests) and g.qWarnCheckInDirtyRoom AND CheckForDirtyRooms(s) then
-//    lMsgText := Format(GetTranslatedText('shTx_Various_RoomNotClean'), [s])
-//  else
-//    lMsgText := format(GetTranslatedText('shTx_ReservationProfile_ChangeStatus'), [cbxStatus.Text]);
-//
-//  if MessageDlg(lMsgText, mtConfirmation, [mbYes, mbNo], 0) = mrYes then
-//  begin
-//    d.UpdateStatusSimple(zReservation, 0, lNewStatus.asStatusChar);
-//    FReservationState := lNewStatus;
-//    Display_rGrid(zRoomReservation);
-//  end
-//  else
-//    SetStatusItemindex(FReservationState.AsStatusChar);
-//end;
-
 procedure TfrmReservationProfile.cbxBreakfastCloseUp(Sender: TObject);
 begin
   UpdateBreakfast;
@@ -1687,11 +1579,6 @@ procedure TfrmReservationProfile.cbxPaymentdetailsCloseUp(Sender: TObject);
 begin
   UpdatePaymentDetails
 end;
-
-//procedure TfrmReservationProfile.cbxStatusCloseUp(Sender: TObject);
-//begin
-//  UpdateStatus;
-//end;
 
 procedure TfrmReservationProfile.chkShowAllGuestsClick(Sender: TObject);
 begin
@@ -2590,7 +2477,6 @@ begin
     while not mRooms.Eof do
     begin
 
-      BlockReasons.Add(mRoomsblockMoveReason.AsString);
       Room := mRoomsRoom.asstring;
       departure := mRoomsDeparture.AsDateTime;
       arrival := mRoomsArrival.AsDateTime;
@@ -2641,7 +2527,6 @@ begin
       mRooms.Next;
     end;
 
-//    SetStatusItemindex(sStatus);
     SetBreakfastItemindex(sBreakfast);
     SetPaymentDetailItemindex(sPaymentdetails);
 
@@ -2892,7 +2777,7 @@ end;
 procedure TfrmReservationProfile.ShowMainGuestProfile;
 var
   iGoto: Integer;
-  s, s1, s2: string;
+  s1, s2: string;
 begin
   if mRooms['PersonsProfilesId'] = 0 then
     SelectMainGuestProfile
@@ -2979,25 +2864,15 @@ begin
   else
     mRooms.Cancel;
 
-//  frmMain.refreshGrid;
-
-//  if cbxStatus.ItemIndex <> TcxComboBox(Sender).ItemIndex then
-//  begin
-//    cbxStatus.ItemIndex := -1;
-//    cbxStatus.Update;
-//    cbxStatus.Invalidate;
-//    Application.ProcessMessages;
-//  end
-//  else
-//  begin
-//    SetStatusItemindex('');
-//  end;
 end;
 
 procedure TfrmReservationProfile.tvRoomsblockMoveGetCellHint(Sender: TcxCustomGridTableItem; ARecord: TcxCustomGridRecord;
   ACellViewInfo: TcxGridTableDataCellViewInfo; const AMousePos: TPoint; var AHintText: TCaption; var AIsHintMultiLine: Boolean; var AHintTextRect: TRect);
 begin
-  AHintText := BlockReasons[ARecord.RecordIndex];
+  if aRecord.Values[tvRoomsblockMove.Index] = True then
+    AHintText := aRecord.Values[tvRoomsblockMoveReason.Index]
+  else
+    AHintText := '';
   AIsHintMultiLine := True;
 end;
 
@@ -3029,21 +2904,46 @@ var
   Value: Integer;
   iRoomRes: Integer;
   sTmp: string;
+  lReason: string;
 begin
-  if mRoomsDS.State = dsEdit then
+  if mRoomsDS.State = dsBrowse then
+    mRooms.Edit;
+
+  lReason := mRoomsBlockMoveReason.AsString;
+  mRoomsblockMove.AsBoolean := TcxCheckBox(Sender).Checked;
+  Value := 0;
+  try
+    if mRoomsBlockMove.AsBoolean then
+      if EditText2(GetTranslatedText('shTx_FrmReservationprofile_BlockMoveReasonCaption') + mRoomsRoom.AsString, lReason) then
+      begin
+        Value := 1;
+        mRoomsBlockMoveReason.AsString := lReason;
+      end
+      else
+      begin
+        mRooms.Cancel;
+        Exit;
+      end;
+
     mRooms.Post;
 
-  iRoomRes := mRoomsRoomReservation.asInteger;
-  Value := 0;
-  if mRoomsBlockMove.AsBoolean then
-  begin
-    Value := 1;
-    mRooms.Edit;
-    mRoomsBlockMoveReason.AsString := EditText('Reason for blocking the move of ' + mRoomsRoom.AsString, mRoomsBlockMoveReason.AsString);
-    mRooms.Post;
+  except
+    mRooms.Cancel;
+    raise;
   end;
+
+  iRoomRes := mRoomsRoomReservation.asInteger;
   sTmp := format('UPDATE roomreservations SET blockMove=%d, blockMoveReason=%s WHERE RoomReservation=%d', [Value, _db(mRoomsBlockMoveReason.AsString), iRoomRes]);
   cmd_bySQL(sTmp);
+
+end;
+
+procedure TfrmReservationProfile.tvRoomsblockMoveReasonGetDisplayText(Sender: TcxCustomGridTableItem;
+  ARecord: TcxCustomGridRecord; var AText: string);
+begin
+  if aRecord.Values[tvRoomsblockMove.Index] = false then
+    aText := '';
+
 end;
 
 procedure TfrmReservationProfile.tvRoomsbreakfastTextPropertiesChange(Sender: TObject);
@@ -3230,6 +3130,7 @@ var
   price: double;
   Nights: Integer;
   r: double;
+  lCurrencyHandler: TCurrencyHandler;
 begin
   Nights := 0;
   price := 0.00;
@@ -3248,7 +3149,12 @@ begin
     r := price / Nights;
   end;
 
-  AText := FormatFloat('#,##0.# per/night', r);
+  lCurrencyHandler := TCurrencyHandler.Create(g.qNativeCurrency);
+  try
+    AText := lCurrencyhandler.FormattedValue(r) + ' ' + GetTranslatedText('shTx_FrmReservationprofile_PerNight');
+  finally
+    lCurrencyHandler.Free;
+  end;
 end;
 
 procedure TfrmReservationProfile.tvGetCurrencyProperties(Sender: TcxCustomGridTableItem;

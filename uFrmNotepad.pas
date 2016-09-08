@@ -23,13 +23,33 @@ type
 var
   FrmNotepad: TFrmNotepad;
 
-function EditText(Caption, text : String) : String;
+function EditText(Caption, text : String) : String; overload;
+function EditText2(const Caption: string; var aText: string) : boolean; overload;
 
 implementation
 
 {$R *.dfm}
 
 uses uRoomerLanguage, uUtils;
+
+function EditText2(const Caption: string; var aText: string) : boolean;
+var
+  FrmNotepad: TFrmNotepad;
+begin
+  FrmNotepad := TFrmNotepad.Create(nil);
+  try
+    result := False;
+    FrmNotepad.Caption := Caption;
+    FrmNotepad.sMemo1.Lines.Text := aText;
+    if FrmNotepad.ShowModal = mrOk then
+    begin
+      aText := FrmNotepad.sMemo1.Lines.Text;
+      result := True;
+    end;
+  finally
+    FrmNotepad.Free;
+  end
+end;
 
 function EditText(Caption, text : String) : String;
 var FrmNotepad: TFrmNotepad;

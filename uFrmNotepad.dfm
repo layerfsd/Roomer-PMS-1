@@ -24,13 +24,11 @@ object FrmNotepad: TFrmNotepad
     BevelOuter = bvNone
     TabOrder = 0
     SkinData.SkinSection = 'PANEL'
-    ExplicitTop = 350
-    ExplicitWidth = 440
     DesignSize = (
       781
       42)
     object btnClose: TsButton
-      Left = 692
+      Left = 686
       Top = 5
       Width = 79
       Height = 26
@@ -42,7 +40,6 @@ object FrmNotepad: TFrmNotepad
       ModalResult = 2
       TabOrder = 0
       SkinData.SkinSection = 'BUTTON'
-      ExplicitLeft = 351
     end
     object sButton1: TsButton
       Left = 601
@@ -57,7 +54,6 @@ object FrmNotepad: TFrmNotepad
       ModalResult = 1
       TabOrder = 1
       SkinData.SkinSection = 'BUTTON'
-      ExplicitLeft = 260
     end
   end
   object sMemo1: TsMemo
