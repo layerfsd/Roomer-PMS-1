@@ -4,6 +4,7 @@ interface
 
 uses
   VCL.Forms,
+  WinAPI.Messages,
   System.Generics.Collections,
   variants,
   cxGraphics,
@@ -69,10 +70,18 @@ uses
   System.Types,
   uAlertEditPanel,
   uAlerts,
-  uDynamicRates, cxSpinEdit
-    ;
+  uDynamicRates
+  , cxSpinEdit
+  , uReservationStateDefinitions, System.Actions, Vcl.ActnList
+  , uReservationStateChangeHandler
+  ;
 
 type
+  TsCombobox = class(sCombobox.TsComboBox)
+    procedure CMTextChanged(var Message: TMessage); message CM_TEXTCHANGED;
+  end;
+
+
   TfrmReservationProfile = class(TForm)
     Panel2: TsPanel;
     PageControl2: TsPageControl;
@@ -82,8 +91,6 @@ type
     PageControl3: TsPageControl;
     TabSheet4: TsTabSheet;
     TabSheet5: TsTabSheet;
-    Label9: TsLabel;
-    edtCustomer: TsEdit;
     Label19: TsLabel;
     edtKennitala: TsEdit;
     Label6: TsLabel;
@@ -92,7 +99,6 @@ type
     edtAddress1: TsEdit;
     edtAddress2: TsEdit;
     edtAddress3: TsEdit;
-    Bevel4: TBevel;
     edtInvRefrence: TsEdit;
     Label4: TsLabel;
     mainPage: TsPageControl;
@@ -168,7 +174,6 @@ type
     btnAddRoom: TsButton;
     btnRemoveRoom: TsButton;
     btnProvideRoom: TsButton;
-    btnRoomToExcel: TsButton;
     InvoicesTab: TsTabSheet;
     mGuests: TdxMemData;
     Panel10: TsPanel;
@@ -326,7 +331,6 @@ type
     mInvoiceHeadsRoom: TStringField;
     tvInvoiceHeadsRoom: TcxGridDBColumn;
     StoreMain: TcxPropertiesStore;
-    edGetCustomer: TsButton;
     mRoomsPriceCode: TWideStringField;
     tvRoomsPriceCode: TcxGridDBColumn;
     tvRoomsunPaidItems: TcxGridDBColumn;
@@ -342,30 +346,14 @@ type
     cxButton5: TsButton;
     cxButton6: TsButton;
     mInvoiceLinesQuantity: TFloatField;
-    sGroupBox1: TsGroupBox;
-    edtContactName: TsEdit;
-    edtContactAddress1: TsEdit;
-    edtContactAddress2: TsEdit;
-    edtContactAddress3: TsEdit;
-    edtContactPhone: TsEdit;
-    edtContactPhone2: TsEdit;
-    edtContactCountry: TsEdit;
-    edtContactEmail: TsEdit;
-    Label20: TsLabel;
-    sLabel3: TsLabel;
-    edtContact: TsLabel;
-    Label21: TsLabel;
-    Label23: TsLabel;
+    gbxGuest: TsGroupBox;
     memPanel: TsPanel;
-    cxSplitter2: TsSplitter;
+    sSplitter2: TsSplitter;
     sSplitter1: TsSplitter;
     GroupBox1: TsGroupBox;
     memInformation: TsMemo;
     GroupBox2: TsGroupBox;
     memPMInfo: TsMemo;
-    Panel8: TsPanel;
-    btnShowHiddenMemo: TsButton;
-    btnClipboardToHinndenMemo: TsButton;
     gbxRoomInformation: TsGroupBox;
     memRoomNotes: TsMemo;
     btnRoomsRefresh: TsButton;
@@ -376,43 +364,19 @@ type
     Label2: TsLabel;
     Label3: TsLabel;
     gbxResProperties: TsGroupBox;
-    Label8: TsLabel;
-    edtType: TsEdit;
-    btnGetCustomerType: TsButton;
-    lblCustomerType: TsLabel;
-    sLabel1: TsLabel;
-    edCountry: TsEdit;
-    btnGetCountry: TsButton;
-    labCountry: TsLabel;
-    gbxNumbers: TsGroupBox;
-    clabReserveDate: TsLabel;
-    __labReserveDate: TsLabel;
-    Label5: TsLabel;
-    __labStaff: TsLabel;
-    __labResNumbers: TsLabel;
-    sLabel4: TsLabel;
     gbxStatus: TsGroupBox;
     Label25: TsLabel;
     Label24: TsLabel;
-    Label26: TsLabel;
-    cbxStatus: TsComboBox;
     cbxBreakfast: TsComboBox;
     cbxPaymentdetails: TsComboBox;
-    Label61: TsLabel;
-    chkUseStayTax: TsCheckBox;
-    sButton1: TsButton;
-    cxSplitter1: TcxSplitter;
+    cxSplitter1: TsSplitter;
     Panel1: TsPanel;
     sButton2: TsButton;
     sButton3: TsButton;
     sButton4: TsButton;
     mRoomsPackage: TWideStringField;
     tvRoomsPackage: TcxGridDBColumn;
-    sLabel5: TsLabel;
     memRequestFromChannel: TsMemo;
-    Label10: TsLabel;
-    edtTel1: TsEdit;
-    edtTel2: TsEdit;
     edtFax: TsEdit;
     Label11: TsLabel;
     Label14: TsLabel;
@@ -434,10 +398,7 @@ type
     pnlAlertHolder: TsPanel;
     timBlink: TTimer;
     DropComboTarget1: TDropComboTarget;
-    btnPasteFile: TsButton;
     __PriceViewer: TcxGridDBColumn;
-    edtContactAddress4: TsEdit;
-    sLabel7: TsLabel;
     pnlGuests: TsPanel;
     grGuests: TcxGrid;
     tvGuestRooms: TcxGridDBTableView;
@@ -526,7 +487,6 @@ type
     tvRoomsExpectedTimeOfArrival: TcxGridDBColumn;
     tvRoomsExpectedCheckoutTime: TcxGridDBColumn;
     cbxMarket: TsComboBox;
-    lblMarket: TsLabel;
     mRoomsRateOrPackagePerDay: TFloatField;
     tvRoomsRateOrPackagePerDay: TcxGridDBColumn;
     mRoomsblockMoveReason: TWideStringField;
@@ -547,12 +507,88 @@ type
     mRoomsinfantcount: TIntegerField;
     tvRoomschildrencount: TcxGridDBColumn;
     tvRoomsinfantcount: TcxGridDBColumn;
+    pnlCustomer: TsPanel;
+    Label9: TsLabel;
+    edtCustomer: TsEdit;
+    edGetCustomer: TsButton;
+    btnCheckIn: TsButton;
+    btnExcel: TsButton;
+    btnCheckOut: TsButton;
+    btnDocuments: TsButton;
+    lblMarket: TsLabel;
+    pnlMarketSegment: TsPanel;
+    tsContact: TsTabSheet;
+    edtContactAddress1: TsEdit;
+    edtContactAddress2: TsEdit;
+    edtContactAddress3: TsEdit;
+    edtContactAddress4: TsEdit;
+    edtContactEmail: TsEdit;
+    edtContactName: TsEdit;
+    lblContactName: TsLabel;
+    lblCOntactEmail: TsLabel;
+    pnlTelephone: TsPanel;
+    Label21: TsLabel;
+    edtContactPhone: TsEdit;
+    edtContactPhone2: TsEdit;
+    sLabel3: TsLabel;
+    sLabel6: TsLabel;
+    sLabel7: TsLabel;
+    pnlCustomerTelephone: TsPanel;
+    sLabel1: TsLabel;
+    edtTel1: TsEdit;
+    edtTel2: TsEdit;
+    sLabel9: TsLabel;
+    sLabel10: TsLabel;
+    sLabel11: TsLabel;
+    edtGuestName: TsEdit;
+    edtGuestAddress2: TsEdit;
+    edtGuestAddress3: TsEdit;
+    edtGuestAddress4: TsEdit;
+    edtGuestAddress1: TsEdit;
+    mAllGuestsMainName: TBooleanField;
+    sPanel2: TsPanel;
+    sLabel8: TsLabel;
+    edtGuestCountry: TsEdit;
+    lblGuestCountry: TsLabel;
+    sPanel3: TsPanel;
+    Label8: TsLabel;
+    lblCustomerType: TsLabel;
+    edtType: TsEdit;
+    btnGetCustomerType: TsButton;
+    sPanel4: TsPanel;
+    edtContact: TsLabel;
+    lblContactCountry: TsLabel;
+    edtContactCountry: TsEdit;
+    btnGetContactCountry: TsButton;
+    ppmCheckin: TPopupMenu;
+    alReservation: TActionList;
+    acCheckinReservation: TAction;
+    acCheckinRoom: TAction;
+    mnuCheckinReservation: TMenuItem;
+    mnuCheckinRoom: TMenuItem;
+    acCheckoutReservation: TAction;
+    acCheckoutRoom: TAction;
+    N1: TMenuItem;
+    mnuChangeStateTo: TMenuItem;
+    ppmDocuments: TPopupMenu;
+    acShowDocuments: TAction;
+    acPasteIntoDocuments: TAction;
+    ppmShowdocuments: TMenuItem;
+    ppmPasteIntoDocuments: TMenuItem;
+    acShowHiddenMemo: TAction;
+    acPasteIntoHiddenMemo: TAction;
+    btnHiddenMemo: TsButton;
+    ppmHiddenMemo: TPopupMenu;
+    ShowHiddenMemo1: TMenuItem;
+    Clipboardtohiddenmemo1: TMenuItem;
+    btnMainGuestSelectProfile: TsButton;
+    btnMainGuestEditProfile: TsButton;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure cbxBreakfastCloseUp(Sender: TObject);
     procedure cbxPaymentdetailsCloseUp(Sender: TObject);
-    procedure cbxStatusCloseUp(Sender: TObject);
+//    procedure cbxStatusCloseUp(Sender: TObject);
     procedure memRoomNotesExit(Sender: TObject);
     procedure PageNotesChange(Sender: TObject);
     procedure btnRoomsRefreshClick(Sender: TObject);
@@ -574,7 +610,6 @@ type
     procedure OpenGroupInvoice1Click(Sender: TObject);
     procedure btnRemoveRoomClick(Sender: TObject);
     procedure btnShowPricesClick(Sender: TObject);
-    procedure btnRoomToExcelClick(Sender: TObject);
     procedure mnuThisRoomClick(Sender: TObject);
     procedure mnuThisreservationClick(Sender: TObject);
     procedure btnGuestsRefreshClick(Sender: TObject);
@@ -596,7 +631,7 @@ type
     procedure tvRoomsInitEdit(Sender: TcxCustomGridTableView;
       AItem: TcxCustomGridTableItem; AEdit: TcxCustomEdit);
     procedure edtTypeDblClick(Sender: TObject);
-    procedure edCountryDblClick(Sender: TObject);
+    procedure edtContactCountryClick(Sender: TObject);
     procedure edCountryKeyPress(Sender: TObject; var Key: Char);
     procedure mainPageChange(Sender: TObject);
     procedure edGetCustomerClick(Sender: TObject);
@@ -610,7 +645,6 @@ type
     procedure FormResize(Sender: TObject);
     procedure tvRoomsRoomTypePropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
     procedure tvRoomsColumn1PropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
-    procedure sButton1Click(Sender: TObject);
     procedure cxButton5Click(Sender: TObject);
     procedure cxButton6Click(Sender: TObject);
     procedure edCountryExit(Sender: TObject);
@@ -655,10 +689,25 @@ type
       const AMousePos: TPoint; var AHintText: TCaption; var AIsHintMultiLine: Boolean; var AHintTextRect: TRect);
     procedure tvRoomsStockItemsCountPropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
     procedure mRoomsBeforePost(DataSet: TDataSet);
+    procedure tvGetCurrencyProperties(Sender: TcxCustomGridTableItem; ARecord: TcxCustomGridRecord;
+      var AProperties: TcxCustomEditProperties);
+    procedure pnlTelephoneResize(Sender: TObject);
+    procedure btnExcelClick(Sender: TObject);
+    procedure edtGuestCountryChange(Sender: TObject);
+    procedure acCheckinReservationExecute(Sender: TObject);
+    procedure acCheckinRoomExecute(Sender: TObject);
+    procedure acCheckoutRoomExecute(Sender: TObject);
+    procedure acCheckoutReservationExecute(Sender: TObject);
+    procedure acPasteIntoDocumentsExecute(Sender: TObject);
+    procedure acShowDocumentsExecute(Sender: TObject);
+    procedure acShowHiddenMemoExecute(Sender: TObject);
+    procedure acPasteIntoHiddenMemoExecute(Sender: TObject);
+    procedure btnMainGuestSelectProfileClick(Sender: TObject);
+    procedure btnMainGuestEditProfileClick(Sender: TObject);
   private
     { Private declarations }
     vStartName: string;
-    vStatus: string;
+    FReservationState: TReservationState;
     FOutOfOrderBlocking: Boolean;
     DynamicRates: TDynamicRates;
 
@@ -668,15 +717,23 @@ type
 
     BlockReasons : TList<String>;
 
+    FReservationChangeStateHandler: TReservationStateChangeHandler;
+
+    FOrigCaption: string;
+    FgbxGuestOrigCaption: string;
+    FOrigAcCheckinRoomCaption: string;
+    FOrigAcCheckOutRoomCaption: string;
+    FOrigmnuChangeStateToCaption: string;
+
     procedure Display;
     procedure Display_rGrid(gotoRoomReservation: longInt);
     procedure AddNewRoom3;
     procedure MoveGuestToNewRoom2;
     procedure UpdateBreakfast;
     procedure UpdatePaymentDetails;
-    procedure UpdateStatus;
+//    procedure UpdateStatus;
 
-    Function guestRoomsSQL(reservation: Integer): string;
+    Function MainGuestRoomsSQL(reservation: Integer): string;
     function getGuestData(gotoRoomReservation: Integer): Boolean;
 
     Function guestsSQL(reservation: Integer): string;
@@ -686,10 +743,8 @@ type
     function getInvoiceData(gotoRoomReservation: Integer): Boolean;
     procedure doRRDateChange(startIn: Integer);
     procedure PlacePnlDataWait;
-    procedure SetLabNumbers;
 
-    procedure SetStatusItemindex(sStatus: string);
-    function StatusToItemindex(sStatus: string): Integer;
+//    procedure SetStatusItemindex(sStatus: string);
 
     procedure SetBreakfastItemindex(sStatus: string);
     procedure SetPaymentDetailItemindex(sStatus: string);
@@ -698,6 +753,14 @@ type
     procedure UpdateMarket;
     procedure SetMarketItemIndex(const aMarket: string);
     function CheckForDirtyRooms(var aDirtyRoomList: String): boolean;
+    procedure ConstructFormCaption;
+    procedure UpdateGuestDetails(gotoRoomReservation: integer);
+    procedure UpdateStateActions;
+    procedure ConstructOtherResStateMenu;
+    procedure mnuOtherResStateChangeClick(Sender: TObject);
+    procedure SelectMainGuestProfile;
+    procedure ShowMainGuestProfile;
+//    function DetermineTotalBalance: double;
 
     property OutOfOrderBlocking: Boolean read FOutOfOrderBlocking write SetOutOfOrderBlocking;
   public
@@ -765,27 +828,12 @@ uses
   uMain,
   uFrmNotepad,
   ufrmReservationExtras
+  , uInvoiceContainer
+  , uCurrencyHandler
   ;
 
 {$R *.DFM}
 
-
-function strIsDiff(const s: string): Boolean;
-var
-  ch: Char;
-  i: Integer;
-begin
-  result := false;
-  if trim(s) = '' then
-    exit;
-
-  ch := s[1];
-  for i := 1 to length(s) do
-  begin
-    if s[i] <> ch then
-      result := true;
-  end;
-end;
 
 function EditReservation(reservation, roomReservation: longInt): Boolean;
 begin
@@ -795,7 +843,6 @@ begin
   try
     frmReservationProfile.zReservation := reservation;
     frmReservationProfile.zRoomReservation := roomReservation;
-    frmReservationProfile.SetLabNumbers;
 
     if frmReservationProfile.ShowModal = mrOK then
     begin
@@ -823,6 +870,24 @@ begin
   end;
 end;
 
+function strIsDiff(const s: string): Boolean;
+var
+  ch: Char;
+  i: Integer;
+begin
+  result := false;
+  if trim(s) = '' then
+    exit;
+
+  ch := s[1];
+  for i := 1 to length(s) do
+  begin
+    if s[i] <> ch then
+      result := true;
+  end;
+end;
+
+
 
 // **********************************************************************
 //
@@ -830,16 +895,90 @@ end;
 //
 // **********************************************************************
 
-procedure TfrmReservationProfile.FormShow(Sender: TObject);
+(* {FUTURE EXTENSION, SHOULD BE RUN IN SEPARATE THREAD OR DEVELOP A NEW ENDPOINT}
+function TfrmReservationProfile.DetermineTotalBalance: double;
 var
-  i: Integer;
+  lInvoice: TInvoice;
+begin
+
+  lInvoice := TInvoice.Create(ritGroup, -1, mRoomsReservation.AsInteger, mRoomsRoomReservation.AsInteger, 0, -1, '', false);
+  try
+    Result := lInvoice.Balance;
+  finally
+    lInvoice.Free;
+  end;
+
+  mRooms.DisableControls;
+  try
+    while not mRooms.Eof do
+    begin
+      lInvoice := TInvoice.Create(ritRoom, -1, mRoomsReservation.AsInteger, mRoomsRoomReservation.AsInteger, 0, -1, '', false);
+      try
+        Result := Result + lInvoice.Balance;
+      finally
+        lInvoice.Free;
+      end;
+      mRooms.Next;
+    end;
+  finally
+    mROoms.EnableControls;
+  end;
+end;
+*)
+
+procedure TfrmReservationProfile.ConstructFormCaption;
+var
+  lBuilder: TStringBuilder;
+//  lRoomInvoice: TInvoice;
+//  lGroupInvoice: TInvoice;
+//  lCurrencyHandler: TCurrencyHandler;
+//  lBalance: double;
+begin
+
+//  lRoomInvoice := nil;
+//  lGroupInvoice := nil;
+//  lCurrencyHandler := nil;
+  lBuilder := TStringBuilder.Create;
+  try
+
+    lBuilder.Append(FOrigCaption);
+    if zReservation > 0 then
+    begin
+      lBuilder.AppendFormat('    -    %s: %d', [GetTranslatedText('shTx_FrmReservationprofile_ReservationNumber'), zReservation]);
+
+      lBuilder.AppendFormat('    -    %s: %s', [GetTranslatedText('shTx_FrmReservationprofile_Status'), FReservationChangeStateHandler.CurrentState.AsReadableString ]);
+
+//      lCurrencyHandler := TCurrencyHandler.Create( g.qNativeCurrency);
+//      lBuilder.AppendFormat('    -    %s: %s', [GetTranslatedText('shTx_FrmReservationprofile_Balance'),
+//                                                lCurrencyHandler.FormattedValue(DetermineTotalBalance)]);
+
+    end;
+    Caption := lBuilder.ToString;
+  finally
+    lBuilder.Free;
+//    lRoominvoice.Free;
+//    lGroupInvoice.Free;
+//    lCurrencyHandler.Free;
+  end;
+end;
+
+procedure TfrmReservationProfile.FormShow(Sender: TObject);
 begin
   _restoreForm(self);
   enabled := false;
-  (tvRoomsStatusText.Properties AS TcxComboBoxProperties).Items.Clear;
-  for i := 0 to cbxStatus.Items.Count - 1 do
-    (tvRoomsStatusText.Properties AS TcxComboBoxProperties).Items.Add(cbxStatus.Items[i]);
-  cbxStatus.ItemIndex := 0;
+
+  TReservationState.AsStrings((tvRoomsStatusText.Properties AS TcxComboBoxProperties).Items);
+
+  ConstructOtherResStateMenu;
+
+  FOrigCaption := Caption;
+  FgbxGuestOrigCaption := gbxGuest.Caption;
+  FOrigAcCheckinRoomCaption := acCheckinRoom.Caption;
+  FOrigAcCheckOutRoomCaption := acCheckoutRoom.Caption;
+  FOrigmnuChangeStateToCaption := mnuChangeStateTo.Caption;
+
+  FReservationChangeStateHandler := TReservationStateChangeHandler.Create(zReservation);
+
   PlacePnlDataWait;
   timStart.enabled := true;
   vStartName := frmReservationProfile.edtName.text;
@@ -857,10 +996,10 @@ begin
   FOutOfOrderBlocking := false;
   mainPage.ActivePage := RoomsTab;
   zInt := 0;
-  vStatus := '';
+  FReservationState := rsUnKnown;
 
   DynamicRates := TDynamicRates.Create;
-
+  FReservationChangeStateHandler := nil;
 end;
 
 procedure TfrmReservationProfile.FormDestroy(Sender: TObject);
@@ -872,6 +1011,7 @@ begin
     AlertList.postChanges;
     AlertList.free;
   end;
+  FReservationChangeStateHandler.Free;
 end;
 
 procedure TfrmReservationProfile.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -889,6 +1029,17 @@ procedure TfrmReservationProfile.PlacePnlDataWait;
 begin
   pnlDataWait.Left := (Width div 2) - (pnlDataWait.Width div 2);
   pnlDataWait.Top := (Height div 2) - (pnlDataWait.Height div 2);
+end;
+
+procedure TfrmReservationProfile.pnlTelephoneResize(Sender: TObject);
+begin
+  edtContactPhone.Width := (pnlTelephone.Width - edtContactPhone.left - 3) div 2;
+  edtContactPhone2.Left := edtContactPhone.Left + edtContactPhone.Width + 3;
+  edtContactPhone2.Width := edtContactPhone.Width;
+
+  edtTel1.Width := (pnlCustomerTelephone.Width - edtTel1.Left - 3) div 2;
+  edtTel2.Left := edtTel1.Left + edtTel1.Width + 3;
+  edtTel2.Width := edtTel1.Width;
 end;
 
 // **********************************************************************************
@@ -942,10 +1093,10 @@ begin
         edtAddress3.text := trim(fieldbyname('Address3').asstring);
         edtCustomerEmail.text := trim(fieldbyname('CustomerEmail').asstring);
         edtCustomerWebSite.text := trim(fieldbyname('CustomerWebSite').asstring);
-        edCountry.text := trim(fieldbyname('Country').asstring);
+        edtContactCountry.text := trim(fieldbyname('Country').asstring);
 
         // **TESTED**// lev3 ok
-        countryValidate(edCountry, labCountry);
+        countryValidate(edtContactCountry, lblContactCountry);
 
         edtTel1.text := trim(fieldbyname('Tel1').asstring);
         edtTel2.text := trim(fieldbyname('Tel2').asstring);
@@ -961,11 +1112,11 @@ begin
         lblCustomerType.caption := d.GET_CustomerTypesDescription_byCustomerType(edtType.text);
 
         edtInvRefrence.text := trim(fieldbyname('invRefrence').asstring);
-        chkUseStayTax.checked := rSet['useStayTax'];
+//        chkUseStayTax.checked := rSet['useStayTax'];
 
         // labReserveDate.caption := DateToStr(_DBDateToDate(rSet.fieldbyname('ReservationDate').asString));
-        __labReserveDate.caption := DateTimeToStr(rSet.fieldbyname('dtCreated').AsDateTime) + ' UTC';
-        __labStaff.caption := rSet.fieldbyname('staff').asstring;
+//        __labReserveDate.caption := DateTimeToStr(rSet.fieldbyname('dtCreated').AsDateTime) + ' UTC';
+//        __labStaff.caption := rSet.fieldbyname('staff').asstring;
 
         OutOfOrderBlocking := fieldbyname('outOfOrderBlocking').AsBoolean;
 
@@ -981,6 +1132,8 @@ begin
 
     zInitDateFrom := dtArrival.Date;
     zInitDateTo := dtDeparture.Date;
+
+    ConstructFormCaption;
   finally
     FreeAndNil(rSet);
     screen.Cursor := crDefault;
@@ -1013,13 +1166,6 @@ begin
         end;
       end;
   end;
-end;
-
-procedure TfrmReservationProfile.sButton1Click(Sender: TObject);
-begin
-  StaticResources('Reservation Resources',
-    format(BOOKING_STATIC_RESOURCES, [inttostr(zReservation)]),
-    ACCESS_RESTRICTED);
 end;
 
 procedure TfrmReservationProfile.sButton4Click(Sender: TObject);
@@ -1072,13 +1218,6 @@ begin
   end;
 end;
 
-procedure TfrmReservationProfile.SetLabNumbers;
-var
-  s: string;
-begin
-  s := inttostr(zReservation) + ' / ' + inttostr(zRoomReservation);
-  __labResNumbers.caption := s;
-end;
 
 procedure TfrmReservationProfile.SetOutOfOrderBlocking(const Value: Boolean);
 begin
@@ -1088,12 +1227,11 @@ begin
   Panel4.Visible := NOT FOutOfOrderBlocking;
   Panel9.Visible := NOT FOutOfOrderBlocking;
   cxSplitter1.Visible := NOT FOutOfOrderBlocking;
-  sGroupBox1.Visible := NOT FOutOfOrderBlocking;
+  gbxGuest.Visible := NOT FOutOfOrderBlocking;
   GroupBox2.Visible := NOT FOutOfOrderBlocking;
   gbxRoomInformation.Visible := NOT FOutOfOrderBlocking;
   gbxResProperties.Visible := NOT FOutOfOrderBlocking;
   gbxStatus.Visible := NOT FOutOfOrderBlocking;
-  Panel8.Visible := NOT FOutOfOrderBlocking;
   if FOutOfOrderBlocking then
   begin
     GuestsTab.Visible := NOT FOutOfOrderBlocking;
@@ -1162,7 +1300,7 @@ begin
       rSet.fieldbyname('Address3').asstring := edtAddress3.text;
       rSet.fieldbyname('CustomerWebSite').asstring := edtCustomerWebSite.text;
       rSet.fieldbyname('CustomerEmail').asstring := edtCustomerEmail.text;
-      rSet.fieldbyname('Country').asstring := edCountry.text;
+      rSet.fieldbyname('Country').asstring := edtContactCountry.text;
       rSet.fieldbyname('MarketSegment').asstring := edtType.text;
       rSet.fieldbyname('Tel1').asstring := edtTel1.text;
       rSet.fieldbyname('Fax').asstring := edtFax.text;
@@ -1181,7 +1319,7 @@ begin
       rSet.fieldbyname('ContactAddress4').asstring := edtContactAddress4.text;
       rSet.fieldbyname('ContactCountry').asstring := edtContactCountry.text;
       rSet.fieldbyname('invRefrence').asstring := edtInvRefrence.text;
-      rSet['useStayTax'] := chkUseStayTax.checked;
+//      rSet['useStayTax'] := chkUseStayTax.checked;
       rSet.Post;
 
       d.roomerMainDataSet.SystemCommitTransaction;
@@ -1219,7 +1357,7 @@ end;
 
 procedure TfrmReservationProfile.btnShowHiddenMemoClick(Sender: TObject);
 begin
-  g.openHiddenInfo(zReservation, 1);
+
 end;
 
 
@@ -1231,14 +1369,14 @@ end;
 
 procedure TfrmReservationProfile.edCountryChange(Sender: TObject);
 begin
-  if glb.LocateCountry(edCountry.text) then
-    labCountry.caption := glb.Countries['CountryName'] // GET_CountryName(sValue);
+  if glb.LocateCountry(edtContactCountry.text) then
+    lblContactCountry.caption := glb.Countries['CountryName'] // GET_CountryName(sValue);
   else
-    labCountry.caption := GetTranslatedText('shNotF_star');
+    lblContactCountry.caption := GetTranslatedText('shNotF_star');
 
 end;
 
-procedure TfrmReservationProfile.edCountryDblClick(Sender: TObject);
+procedure TfrmReservationProfile.edtContactCountryClick(Sender: TObject);
 var
   oldCountry: string;
   oldCountryName: string;
@@ -1248,17 +1386,17 @@ var
   s: string;
 begin
   // --
-  oldCountry := edCountry.text;
-  oldCountryName := labCountry.caption;
+  oldCountry := edtContactCountry.text;
+  oldCountryName := lblContactCountry.caption;
   // **TESTED**//  lev3 ok
-  if getCountry(edCountry, labCountry) then
+  if getCountry(edtContactCountry, lblContactCountry) then
   begin
     s := format(GetTranslatedText('shTx_ReservationProfile_ChangeNationalityConfirmation'),
-      [oldCountryName, labCountry.caption]);
+      [oldCountryName, lblContactCountry.caption]);
 
     if MessageDlg(s, mtConfirmation, [mbYes, mbNo], 0) = mrYes then
     begin
-      newCountry := edCountry.text;;
+      newCountry := edtContactCountry.text;;
       if not d.ChangeCountry(newCountry, zReservation, 0, 0, 2) then
       begin
         showmessage(GetTranslatedText('shTx_ReservationProfile_NationalityChangeFailed'));
@@ -1266,19 +1404,20 @@ begin
     end
     else
     begin
-      edCountry.text := oldCountry;
-      countryValidate(edCountry, labCountry);
+      edtContactCountry.text := oldCountry;
+      countryValidate(edtContactCountry, lblContactCountry);
     end;
   end;
 end;
 
+procedure TfrmReservationProfile.edtGuestCountryChange(Sender: TObject);
+begin
+  CountryValidate(edtGuestCountry, lblGuestCountry);
+end;
+
 procedure TfrmReservationProfile.edCountryExit(Sender: TObject);
 begin
-  // **
-  if countryValidate(edCountry, labCountry) then
-  begin
-
-  end;
+  countryValidate(edtContactCountry, lblContactCountry);
 end;
 
 procedure TfrmReservationProfile.edCountryKeyPress(Sender: TObject;
@@ -1390,33 +1529,45 @@ begin
     Display_rGrid(zRoomReservation);
     // frmMain.refreshGrid;
   end;
+
+  ConstructFormCaption;
 end;
 
-procedure TfrmReservationProfile.SetStatusItemindex(sStatus: string);
-var
-  ch: Char;
-begin
-  cbxStatus.ItemIndex := 0;
-
-  if sStatus = '' then
-  begin
-    sStatus := d.isMixedStatus(zReservation);
-  end;
-
-  if strIsDiff(sStatus) then
-  begin
-    cbxStatus.ItemIndex := 0;
-    exit;
-  end;
-
-  if sStatus = '' then
-    exit;
-
-  vStatus := sStatus[1];
-  cbxStatus.ItemIndex := _StatusToIndex(vStatus, true);
-  cbxStatus.Update;
-  cbxStatus.Invalidate;
-end;
+//procedure TfrmReservationProfile.SetStatusItemindex(sStatus: string);
+//
+//  function strIsDiff(const s: string): Boolean;
+//  var
+//    ch: Char;
+//    i: Integer;
+//  begin
+//    result := false;
+//    if trim(s) = '' then
+//      exit;
+//
+//    ch := s[1];
+//    for i := 1 to length(s) do
+//    begin
+//      if s[i] <> ch then
+//        result := true;
+//    end;
+//  end;
+//
+//begin
+//
+//  if sStatus = '' then
+//    sStatus := d.isMixedStatus(zReservation);
+//
+//  if sStatus.IsEmpty or strIsDiff(sStatus) then
+//  begin
+//    cbxStatus.ItemIndex := -1;
+//    cbxStatus.Text := 'Mixed';
+//  end
+//  else
+//    cbxStatus.ItemIndex := FReservationState.ToItemIndex;
+//
+//  cbxStatus.Update;
+//  cbxStatus.Invalidate;
+//end;
 
 procedure TfrmReservationProfile.SetBreakfastItemindex(sStatus: string);
 var
@@ -1464,37 +1615,6 @@ begin
   cbxPaymentdetails.Invalidate;
 end;
 
-function TfrmReservationProfile.StatusToItemindex(sStatus: string): Integer;
-var
-  ch: Char;
-begin
-  // **
-  result := 0;
-  ch := sStatus[1];
-  case ch of
-    'P':
-      result := 1;
-    'G':
-      result := 2;
-    'D':
-      result := 3;
-    'O':
-      result := 4;
-    'A':
-      result := 5;
-    'N':
-      result := 6;
-    'B':
-      result := 7;
-    'C':
-      result := 8;
-    'W':
-      result := 9;
-    'Z':
-      result := 10;
-  end;
-end;
-
 function TfrmReservationProfile.CheckForDirtyRooms(var aDirtyRoomList: String): boolean;
 var
   bm: TBookmark;
@@ -1521,96 +1641,36 @@ begin
   end;
 end;
 
-procedure TfrmReservationProfile.UpdateStatus;
-var
-  s: string;
-  lMsgText: string;
-  sChar: string;
-begin
-  if cbxStatus.ItemIndex = 0 then
-  begin
-    Display_rGrid(zRoomReservation);
-    exit;
-  end;
-
-  if cbxStatus.ItemIndex = 1 then
-  begin
-    sChar := 'G';
-    if g.qWarnCheckInDirtyRoom AND CheckForDirtyRooms(s) then
-      lMsgText := Format(GetTranslatedText('shTx_Various_RoomNotClean'), [s])
-    else
-      lMsgText := format(GetTranslatedText('shTx_ReservationProfile_ChangeStatus'), [GetTranslatedText('shTx_ReservationProfile_CheckedIn')]);
-  end
-  else
-    if cbxStatus.ItemIndex = 2 then
-  begin
-    sChar := 'P';
-    lMsgText := format(GetTranslatedText('shTx_ReservationProfile_ChangeStatus'), [GetTranslatedText('shTx_ReservationProfile_NotArrived')]);
-  end
-  else
-    if cbxStatus.ItemIndex = 3 then
-  begin
-    sChar := 'D';
-    lMsgText := format(GetTranslatedText('shTx_ReservationProfile_ChangeStatus'), [GetTranslatedText('shTx_ReservationProfile_Departed')]);
-  end
-  else
-    if cbxStatus.ItemIndex = 4 then
-  begin
-    sChar := 'O';
-    lMsgText := format(GetTranslatedText('shTx_ReservationProfile_ChangeStatus'), [GetTranslatedText('shTx_ReservationProfile_WaitingList')]);
-  end
-  else
-    if cbxStatus.ItemIndex = 5 then
-  begin
-    sChar := 'N';
-    lMsgText := format(GetTranslatedText('shTx_ReservationProfile_ChangeStatus'), [GetTranslatedText('shTx_ReservationProfile_NoShow')]);
-  end
-  else
-    if cbxStatus.ItemIndex = 6 then
-  begin
-    sChar := 'A';
-    lMsgText := format(GetTranslatedText('shTx_ReservationProfile_ChangeStatus'), [GetTranslatedText('shTx_ReservationProfile_Allotment')]);
-  end
-  else
-    if cbxStatus.ItemIndex = 7 then
-  begin
-    sChar := 'B';
-    lMsgText := format(GetTranslatedText('shTx_ReservationProfile_ChangeStatus'), [GetTranslatedText('shTx_ReservationProfile_Blocked')]);
-  end
-  else
-    if cbxStatus.ItemIndex = 8 then
-  begin
-    sChar := 'C';
-    lMsgText := format(GetTranslatedText('shTx_ReservationProfile_ChangeStatus'), [GetTranslatedText('shTx_ReservationProfile_Canceled')]);
-  end
-  else
-    if cbxStatus.ItemIndex = 9 then
-  begin
-    sChar := 'W';
-    lMsgText := format(GetTranslatedText('shTx_ReservationProfile_ChangeStatus'), [GetTranslatedText('shTx_ReservationProfile_Tmp1')]);
-  end
-  else
-    if cbxStatus.ItemIndex = 10 then
-  begin
-    sChar := 'Z';
-    lMsgText := format(GetTranslatedText('shTx_ReservationProfile_ChangeStatus'), [GetTranslatedText('shTx_ReservationProfile_Tmp2')]);
-  end;
-
-  if sChar = vStatus then
-    Exit;
-
-  if not lMsgtext.IsEmpty then
-  begin
-    if MessageDlg(lMsgText, mtConfirmation, [mbYes, mbNo], 0) = mrYes then
-    begin
-      d.UpdateStatusSimple(zReservation, 0, sChar);
-      vStatus := sChar;
-      Display_rGrid(zRoomReservation);
-    end
-    else
-      SetStatusItemindex(vStatus);
-  end;
-end;
+//procedure TfrmReservationProfile.UpdateStatus;
+//var
+//  s: string;
+//  lMsgText: string;
+//  lNewStatus: TReservationState;
+//begin
+//  if cbxStatus.ItemIndex <= 0 then
+//  begin
+//    Display_rGrid(zRoomReservation);
+//    exit;
+//  end;
+//
+//  lNewStatus :=TReservationState(cbxStatus.ItemIndex);
+//  if (lNewStatus = FReservationState) then
+//    Exit;
+//
+//  if (lNewStatus = rsGuests) and g.qWarnCheckInDirtyRoom AND CheckForDirtyRooms(s) then
+//    lMsgText := Format(GetTranslatedText('shTx_Various_RoomNotClean'), [s])
+//  else
+//    lMsgText := format(GetTranslatedText('shTx_ReservationProfile_ChangeStatus'), [cbxStatus.Text]);
+//
+//  if MessageDlg(lMsgText, mtConfirmation, [mbYes, mbNo], 0) = mrYes then
+//  begin
+//    d.UpdateStatusSimple(zReservation, 0, lNewStatus.asStatusChar);
+//    FReservationState := lNewStatus;
+//    Display_rGrid(zRoomReservation);
+//  end
+//  else
+//    SetStatusItemindex(FReservationState.AsStatusChar);
+//end;
 
 procedure TfrmReservationProfile.cbxBreakfastCloseUp(Sender: TObject);
 begin
@@ -1628,10 +1688,10 @@ begin
   UpdatePaymentDetails
 end;
 
-procedure TfrmReservationProfile.cbxStatusCloseUp(Sender: TObject);
-begin
-  UpdateStatus;
-end;
+//procedure TfrmReservationProfile.cbxStatusCloseUp(Sender: TObject);
+//begin
+//  UpdateStatus;
+//end;
 
 procedure TfrmReservationProfile.chkShowAllGuestsClick(Sender: TObject);
 begin
@@ -1712,6 +1772,82 @@ end;
 // ******************************************************************************
 // Room Functions
 // ******************************************************************************
+
+procedure TfrmReservationProfile.acCheckinReservationExecute(Sender: TObject);
+var
+  lResChanger: TReservationStateChangeHandler;
+begin
+
+  lResChanger := TReservationStateChangeHandler.Create(mRoomsReservation.asInteger);
+  try
+    if lResChanger.ChangeState(rsGuests) then
+      Display;
+  finally
+    lResChanger.Free;
+  end;
+end;
+
+procedure TfrmReservationProfile.acCheckinRoomExecute(Sender: TObject);
+var
+  lResChanger: TRoomReservationStateChangeHandler;
+begin
+
+  lResChanger := FReservationChangeStateHandler.RoomStateChangeHandler[mRoomsRoomReservation.AsInteger];
+  if lResChanger.ChangeState(rsGuests) then
+    Display_rGrid(mRoomsRoomReservation.AsInteger);
+
+end;
+
+procedure TfrmReservationProfile.acCheckoutReservationExecute(Sender: TObject);
+begin
+  acCheckinReservation.Enabled := mRooms.Active and not mRooms.Eof and FReservationChangeStateHandler.ChangeIsAllowed(rsDeparted);
+end;
+
+procedure TfrmReservationProfile.acCheckoutRoomExecute(Sender: TObject);
+var
+  lResChanger: TRoomReservationStateChangeHandler;
+begin
+
+  lResChanger := FReservationChangeStateHandler.RoomStateChangeHandler[mRoomsRoomReservation.AsInteger];
+  if lResChanger.ChangeState(rsDeparted) then
+     Display_rGrid(mRoomsRoomReservation.AsInteger);
+
+end;
+
+procedure TfrmReservationProfile.acPasteIntoDocumentsExecute(Sender: TObject);
+begin
+  if DropComboTarget1.CanPasteFromClipboard then
+    DropComboTarget1.PasteFromClipboard;
+end;
+
+procedure TfrmReservationProfile.acPasteIntoHiddenMemoExecute(Sender: TObject);
+var
+  s: string;
+  selection: string;
+  id: Integer;
+begin
+  selection := ClipBoardText;
+  if selection = '' then
+    exit;
+  s := GetTranslatedText('shTx_ReservationProfile_CopyHidden') + #10#10 + selection;
+  if MessageDlg(s, mtConfirmation, [mbYes, mbNo], 0) = mrYes then
+  begin
+    id := d.hiddenInfo_Exists(zReservation, 1);
+    d.hiddenInfo_Append(id, selection, zReservation);
+  end;
+end;
+
+procedure TfrmReservationProfile.acShowDocumentsExecute(Sender: TObject);
+begin
+  StaticResources('Reservation Resources',
+    format(BOOKING_STATIC_RESOURCES, [inttostr(zReservation)]),
+    ACCESS_RESTRICTED);
+end;
+
+procedure TfrmReservationProfile.acShowHiddenMemoExecute(Sender: TObject);
+begin
+  g.openHiddenInfo(zReservation, 1);
+end;
 
 procedure TfrmReservationProfile.AddNewRoom3;
 var
@@ -1809,7 +1945,7 @@ begin
       Address2 := edtAddress1.text;
       Address3 := edtAddress1.text;
       Address4 := edtAddress1.text;
-      Country := edCountry.text;
+      Country := edtContactCountry.text;
 
       Currency := mRoomsCurrency.asstring;
       isGroupInvoice := mRoomsisGroupAccount.AsBoolean;
@@ -2063,18 +2199,6 @@ begin
   end;
 end;
 
-procedure TfrmReservationProfile.btnRoomToExcelClick(Sender: TObject);
-var
-  sFilename: string;
-  s: string;
-begin
-  datetimeTostring(s, 'yyyymmddhhnn', now);
-  sFilename := g.qProgramPath + s + '_Res' + inttostr(zReservation);
-  ExportGridToExcel(sFilename, grRooms, false, true, true);
-  ShellExecute(Handle, 'OPEN', PChar(sFilename + '.xls'), nil, nil,
-    sw_shownormal);
-end;
-
 procedure TfrmReservationProfile.btnRoomsRefreshClick(Sender: TObject);
 begin
   Display_rGrid(zRoomReservation);
@@ -2144,7 +2268,10 @@ begin
       gbxRoomInformation.caption := 'Notes for Room : ' + mRoomsRoom.asstring;
       memRoomNotes.Lines.text := HiddenInfo;
       memRequestFromChannel.Lines.text := ChannelRequest;
-      SetLabNumbers;
+
+      UpdateGuestDetails(zRoomReservation);
+
+      UpdateStateActions;
     end;
   end;
 end;
@@ -2223,21 +2350,7 @@ begin
       d.RR_GetMemoBothTextForRoom(zRoomReservation, HiddenInfo, ChannelRequest);
       memRoomNotes.Lines.text := HiddenInfo;
       memRequestFromChannel.Lines.text := ChannelRequest;
-      SetLabNumbers;
     end;
-
-//    edtSpecialRequests.Text := '';
-//    edtNotes.Text := '';
-//    edtRoom.Text := '';
-//    edtRoomType.Text := '';
-//    if glb.LocateSpecificRecord('personprofiles', 'ID', DataSet.fieldbyname('PersonsProfilesId').asinteger) then
-//    begin
-//      edtSpecialRequests.Text := glb.PersonProfiles['Preparation'];
-//      edtNotes.Text := glb.PersonProfiles['Information'];
-//      edtRoom.Text := glb.PersonProfiles['Room'];
-//      edtRoomType.Text := glb.PersonProfiles['RoomType'];
-//    end;
-//    SetProfileAlertVisibility;
   end;
 end;
 
@@ -2301,7 +2414,7 @@ var
   arrival: TDateTime;
   departure: TDateTime;
   iNights: Integer;
-  status: string;
+  status: TReservationState;
   statusText: string;
   defGuestCount: Integer;
   RoomType: string;
@@ -2368,7 +2481,6 @@ var
   end;
 
 begin
-  status := '';
   rSet := nil;
   lSavedAfterScroll := mRooms.AfterScroll;
   lSavedBeforePost := mRooms.BeforePost;
@@ -2473,6 +2585,8 @@ begin
     sBreakfast := '';
     sStatus := '';
 
+    FReservationChangeStateHandler.Clear;
+
     while not mRooms.Eof do
     begin
 
@@ -2482,7 +2596,7 @@ begin
       arrival := mRoomsArrival.AsDateTime;
       iGuests := mRoomsGuestCount.asInteger;
       iNights := trunc(departure) - trunc(arrival);
-      status := mRoomsStatus.asstring;
+      status := TReservationState.FromResStatus(mRoomsStatus.asstring);
       RoomType := mRoomsRoomType.asstring;
       package := mRoomsPackage.asstring;
       RoomClass := mRoomsRoomClass.asstring;
@@ -2491,8 +2605,8 @@ begin
       PersonsProfilesId := mRoomsPersonsProfilesId.AsInteger;
       sPaymentdetails := sPaymentdetails + _GLOB._Bool2Str(isGroupAccount, 0);
 
-      statusText := _StatusToText(status);
-      sStatus := sStatus + status;
+      statusText := status.AsReadableString;
+      sStatus := sStatus + status.AsStatusChar;
 
       defGuestCount := glb.GET_RoomTypeNumberGuests_byRoomType(RoomType);
       accountTypeText := _AccountTypeToText(isGroupAccount);
@@ -2521,11 +2635,13 @@ begin
       if OutOfOrderBlocking then
         mRoomsGuestName.asstring := edtName.text;
 
+      FReservationChangeStateHandler.AddRoomStateChangeHandler(TRoomReservationStateChangeHandler.Create(zReservation, mRoomsRoomReservation.AsInteger));
+
       mRooms.Post;
       mRooms.Next;
     end;
 
-    SetStatusItemindex(sStatus);
+//    SetStatusItemindex(sStatus);
     SetBreakfastItemindex(sBreakfast);
     SetPaymentDetailItemindex(sPaymentdetails);
 
@@ -2538,6 +2654,32 @@ begin
     rSet.Free;
     screen.Cursor := crDefault;
   end;
+end;
+
+procedure TfrmReservationProfile.UpdateGuestDetails(gotoRoomReservation: integer);
+begin
+  getGuestData(gotoRoomReservation);
+
+  gbxGuest.Caption := FgbxGuestOrigCaption + ' ' + mRoomsRoom.AsString;
+
+  if mAllGuests.Locate('Room;MainName', VarArrayOf([mROomsRoom.AsString, True]), []) then
+  begin
+    edtGuestName.Text := mAllGuestsGuestName.AsString;
+    edtGuestAddress1.Text := mAllGuestsAddress1.AsString;
+    edtGuestAddress2.Text := mAllGuestsAddress2.AsString;
+    edtGuestAddress3.Text := mAllGuestsAddress3.AsString;
+    edtGuestAddress4.Text := mAllGuestsAddress4.AsString;
+    edtGuestCountry.Text := mAllGuestsCountry.AsString;
+  end
+  else
+  begin
+    edtGuestName.Text := '';
+    edtGuestAddress1.Text := '';
+    edtGuestAddress2.Text := '';
+    edtGuestAddress3.Text := '';
+    edtGuestAddress4.Text := '';
+    edtGuestCountry.Text := '';
+  end
 end;
 
 procedure TfrmReservationProfile.tvRoomsaccountTypeTextPropertiesChange(Sender: TObject);
@@ -2679,14 +2821,11 @@ begin
 
 end;
 
-procedure TfrmReservationProfile.tvRoomsPersonsProfilesIdPropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
+procedure TfrmReservationProfile.SelectMainGuestProfile;
 var
   iGoto: Integer;
-  s,
-    s1, s2, s3: String;
+  s, s1, s2, s3: String;
 begin
-  if AButtonIndex = 0 then
-  begin
     iGoto := -1;
     if mRooms['PersonsProfilesId'] > 0 then
       iGoto := mRooms['PersonsProfilesId'];
@@ -2696,14 +2835,19 @@ begin
     begin
       mRooms.Edit;
 
-      mRooms['PersonsProfilesId'] := iGoto;
+      try
+        mRooms['PersonsProfilesId'] := iGoto;
 
-      glb.LocateSpecificRecordAndGetValue('personprofiles', 'ID', inttostr(iGoto), 'Firstname', s1);
-      glb.LocateSpecificRecordAndGetValue('personprofiles', 'ID', inttostr(iGoto), 'Lastname', s2);
-      s3 := trim(s1 + ' ' + s2);
-      mRooms['guestname'] := s3;
+        glb.LocateSpecificRecordAndGetValue('personprofiles', 'ID', inttostr(iGoto), 'Firstname', s1);
+        glb.LocateSpecificRecordAndGetValue('personprofiles', 'ID', inttostr(iGoto), 'Lastname', s2);
+        s3 := trim(s1 + ' ' + s2);
+        mRooms['guestname'] := s3;
 
-      mRooms.Post;
+        mRooms.Post;
+      except
+        mROoms.Cancel;
+        raise;
+      end;
 
       s := format('UPDATE persons pe, ' +
         'personprofiles pp ' +
@@ -2736,38 +2880,54 @@ begin
         'WHERE pp.Id=%d AND ' +
         'pe.MainName=1 AND pe.Reservation=%d AND pe.RoomReservation=%d',
         [
-        iGoto,
-        mRoomsReservation.asInteger,
-        mRoomsRoomReservation.asInteger
+          iGoto,
+          mRoomsReservation.asInteger,
+          mRoomsRoomReservation.asInteger
         ]);
       d.roomerMainDataSet.DoCommand(s);
+      UpdateGuestDetails(iGoto);
     end;
-  end
-  else
+end;
 
-    if AButtonIndex = 1 then
+procedure TfrmReservationProfile.ShowMainGuestProfile;
+var
+  iGoto: Integer;
+  s, s1, s2: string;
+begin
+  if mRooms['PersonsProfilesId'] = 0 then
+    SelectMainGuestProfile
+  else
   begin
-    if mRooms['PersonsProfilesId'] > 0 then
-      iGoto := mRooms['PersonsProfilesId']
-    else
-      exit;
+    iGoto := mRooms['PersonsProfilesId'];
+
     if OpenGuestPortfolioEdit(glb.PersonProfiles, iGoto, false) then
     begin
       mRooms.Edit;
-      if iGoto > 0 then
-      begin
-        mRooms['PersonsProfilesId'] := iGoto;
-        glb.LocateSpecificRecordAndGetValue('personprofiles', 'ID', inttostr(iGoto), 'Firstname', s1);
-        glb.LocateSpecificRecordAndGetValue('personprofiles', 'ID', inttostr(iGoto), 'Lastname', s2);
-        s3 := trim(s1 + ' ' + s2);
-        mRooms['guestname'] := s3;
-      end
-      else
-        mRooms['PersonsProfilesId'] := 0;
-      mRooms.Post;
+      try
+        if iGoto > 0 then
+        begin
+          mRooms['PersonsProfilesId'] := iGoto;
+          glb.LocateSpecificRecordAndGetValue('personprofiles', 'ID', inttostr(iGoto), 'Firstname', s1);
+          glb.LocateSpecificRecordAndGetValue('personprofiles', 'ID', inttostr(iGoto), 'Lastname', s2);
+          mRooms['guestname'] := trim(s1 + ' ' + s2);
+        end
+        else
+          mRooms['PersonsProfilesId'] := 0;
+        mRooms.Post;
+      except
+        mRooms.Cancel;
+        raise;
+      end;
     end;
   end;
+end;
 
+procedure TfrmReservationProfile.tvRoomsPersonsProfilesIdPropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
+begin
+  case aButtonIndex of
+    0: SelectMainGuestProfile;
+    1: ShowMainGuestProfile;
+  end;
 end;
 
 procedure TfrmReservationProfile.tvRoomsratePlanCodePropertiesCloseUp(Sender: TObject);
@@ -2808,46 +2968,30 @@ end;
 
 procedure TfrmReservationProfile.tvRoomsStatusTextPropertiesChange(Sender: TObject);
 var
-  sTmp: string;
-  lMsgText: string;
-  iTMP: Integer;
+  lStateChanger: TRoomReservationStateChangeHandler;
+  lNewStatus: TReservationState;
 begin
-  sTmp := _IndexToStatus(TcxComboBox(Sender).ItemIndex, true);
+  lNewStatus := TReservationState.FromItemIndex(TcxComboBox(Sender).ItemIndex);
 
-  if sTmp = 'G' then
-  begin
-    if g.qWarnCheckInDirtyRoom AND g.oRooms.Room[mROoms['room']].IsDirty then
-    begin
-      lMsgText := Format(GetTranslatedText('shTx_Various_RoomNotClean'), [mROoms['room']]);
-      if MessageDlg(lMsgText, mtConfirmation, [mbYes, mbNo], 0) = mrNo then
-      begin
-        mRooms.Cancel;
-        Exit;
-      end;
-    end;
-  end;
-
-  if mRoomsDS.State = dsEdit then
-    mRooms.Post;
-
-  d.UpdateStatusSimple(zReservation, zRoomReservation, sTmp);
-  frmMain.refreshGrid;
-
-  if cbxStatus.ItemIndex <> 0 then
-  begin
-    iTMP := StatusToItemindex(sTmp);
-    if cbxStatus.ItemIndex <> iTMP then
-    begin
-      cbxStatus.ItemIndex := 0;
-    end;
-    cbxStatus.Update;
-    cbxStatus.Invalidate;
-    Application.ProcessMessages;
-  end
+  lStateChanger := FReservationChangeStateHandler.RoomStateChangeHandler[zRoomReservation];
+  if lStateChanger.ChangeState(lNewStatus) then
+    mRooms.Post
   else
-  begin
-    SetStatusItemindex('');
-  end;
+    mRooms.Cancel;
+
+//  frmMain.refreshGrid;
+
+//  if cbxStatus.ItemIndex <> TcxComboBox(Sender).ItemIndex then
+//  begin
+//    cbxStatus.ItemIndex := -1;
+//    cbxStatus.Update;
+//    cbxStatus.Invalidate;
+//    Application.ProcessMessages;
+//  end
+//  else
+//  begin
+//    SetStatusItemindex('');
+//  end;
 end;
 
 procedure TfrmReservationProfile.tvRoomsblockMoveGetCellHint(Sender: TcxCustomGridTableItem; ARecord: TcxCustomGridRecord;
@@ -3107,6 +3251,19 @@ begin
   AText := FormatFloat('#,##0.# per/night', r);
 end;
 
+procedure TfrmReservationProfile.tvGetCurrencyProperties(Sender: TcxCustomGridTableItem;
+  ARecord: TcxCustomGridRecord; var AProperties: TcxCustomEditProperties);
+var
+  lCurrencyHandler: TCurrencyHandler;
+begin
+  lCurrencyHandler := TCurrencyHandler.Create(mRoomsCurrency.AsString);
+  try
+    aProperties := lCurrencyHandler.GetcxEditProperties
+  finally
+    lCurrencyHandler.Free;
+  end;
+end;
+
 procedure TfrmReservationProfile.tvRoomsunpaidRentPricePropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
 begin
   if AButtonIndex = 0 then
@@ -3127,7 +3284,7 @@ end;
 //
 // ***************************************************************************
 
-Function TfrmReservationProfile.guestRoomsSQL(reservation: longInt): string;
+Function TfrmReservationProfile.MainGuestRoomsSQL(reservation: longInt): string;
 begin
   result := format(select_ReservationProfile_guestRoomsSQL, [zReservation]);
 end;
@@ -3197,7 +3354,7 @@ var
   rSet: TRoomerDataSet;
   s: string;
 
-  status: string;
+  status: TReservationState;
   statusText: string;
 
   mainGuest: string;
@@ -3214,7 +3371,7 @@ begin
     mGuestRooms.DisableControls;
     screen.Cursor := crHourGlass;
     try
-      s := guestRoomsSQL(zReservation);
+      s := MainGuestRoomsSQL(zReservation);
       hData.rSet_bySQL(rSet, s);
 
       if mGuestRooms.Active then
@@ -3228,8 +3385,8 @@ begin
       begin
         roomReservation := mGuestRooms.fieldbyname('roomReservation').asInteger;
 
-        status := mGuestRooms.fieldbyname('status').asstring;
-        statusText := _StatusToText(status);
+        status := TReservationState.FromResStatus(mGuestRooms.fieldbyname('status').asstring);
+        statusText := Status.AsReadableString;
 
         mainGuest := d.RR_GetFirstGuestName(roomReservation);
         guestCount := d.RR_GetGuestCount(roomReservation);
@@ -3270,11 +3427,6 @@ begin
 
       mGuests.LoadFromDataSet(rSet);
 
-      mGuests.First;
-      while not mGuests.Eof do
-      begin
-        mGuests.Next;
-      end;
     finally
       screen.Cursor := crDefault;
       mGuests.EnableControls;
@@ -3306,8 +3458,8 @@ begin
         mAllGuests.First;
         while not mAllGuests.Eof do
         begin
-          status := mAllGuests.fieldbyname('status').asstring;
-          statusText := _StatusToText(status);
+          status := TReservationState.FromResStatus(mAllGuests.fieldbyname('status').asstring);
+          statusText := Status.AsReadableString;
 
           mAllGuests.Edit;
           mAllGuests.fieldbyname('statusText').asstring := statusText;
@@ -3500,6 +3652,18 @@ begin
   getGuestData(zRoomReservation);
 end;
 
+procedure TfrmReservationProfile.btnExcelClick(Sender: TObject);
+var
+  sFilename: string;
+  s: string;
+begin
+  datetimeTostring(s, 'yyyymmddhhnn', now);
+  sFilename := g.qProgramPath + s + '_Res' + inttostr(zReservation);
+  ExportGridToExcel(sFilename, grRooms, false, true, true);
+  ShellExecute(Handle, 'OPEN', PChar(sFilename + '.xls'), nil, nil,
+    sw_shownormal);
+end;
+
 procedure TfrmReservationProfile.btnExpandClick(Sender: TObject);
 begin
   tvGuestRooms.BeginUpdate();
@@ -3532,6 +3696,16 @@ begin
     sw_shownormal);
 end;
 
+procedure TfrmReservationProfile.btnMainGuestEditProfileClick(Sender: TObject);
+begin
+  ShowMainGuestProfile;
+end;
+
+procedure TfrmReservationProfile.btnMainGuestSelectProfileClick(Sender: TObject);
+begin
+  SelectMainGuestProfile;
+end;
+
 procedure TfrmReservationProfile.PageNotesChange(Sender: TObject);
 var
   HiddenInfo: string;
@@ -3548,23 +3722,23 @@ begin
   timBlink.Tag := timBlink.Tag + 1;
   if timBlink.Tag < 7 then
   begin
-    sButton1.SkinData.CustomColor := NOT(timBlink.Tag div 2 = timBlink.Tag / 2);
-    if sButton1.SkinData.CustomColor then
+    btnDocuments.SkinData.CustomColor := NOT(timBlink.Tag div 2 = timBlink.Tag / 2);
+    if btnDocuments.SkinData.CustomColor then
     begin
-      sButton1.SkinData.ColorTone := clRed;
+      btnDocuments.SkinData.ColorTone := clRed;
       timBlink.Interval := 500;
     end
     else
     begin
-      sButton1.SkinData.ColorTone := clNone;
+      btnDocuments.SkinData.ColorTone := clNone;
       timBlink.Interval := 250;
     end;
     timBlink.enabled := true;
   end
   else
   begin
-    sButton1.SkinData.ColorTone := clNone;
-    sButton1.SkinData.CustomColor := false;
+    btnDocuments.SkinData.ColorTone := clNone;
+    btnDocuments.SkinData.CustomColor := false;
   end;
 end;
 
@@ -3602,7 +3776,6 @@ begin
       d.RR_GetMemoBothTextForRoom(zRoomReservation, HiddenInfo, ChannelRequest);
       memRoomNotes.Lines.text := HiddenInfo;
       memRequestFromChannel.Lines.text := ChannelRequest;
-      SetLabNumbers;
     end;
   end;
   zInt := rr;
@@ -3625,7 +3798,6 @@ begin
     d.RR_GetMemoBothTextForRoom(zRoomReservation, HiddenInfo, ChannelRequest);
     memRoomNotes.Lines.text := HiddenInfo;
     memRequestFromChannel.Lines.text := ChannelRequest;
-    SetLabNumbers;
   end;
 end;
 
@@ -3647,7 +3819,6 @@ begin
       d.RR_GetMemoBothTextForRoom(zRoomReservation, HiddenInfo, ChannelRequest);
       memRoomNotes.Lines.text := HiddenInfo;
       memRequestFromChannel.Lines.text := ChannelRequest;
-      SetLabNumbers;
     end;
   end;
 end;
@@ -3699,6 +3870,77 @@ procedure TfrmReservationProfile.tvInvoiceLinesPriceGetProperties(Sender: TcxCus
   var AProperties: TcxCustomEditProperties);
 begin
   AProperties := d.getCurrencyProperties(g.qNativeCurrency);
+end;
+
+{ TsCombobox }
+
+procedure TsCombobox.CMTextChanged(var Message: TMessage);
+begin
+  inherited;
+  if assigned(OnChange) then
+    OnChange(Self);
+end;
+
+procedure TfrmReservationProfile.UpdateStateActions;
+var
+  lRoomStateChanger: TRoomReservationStateChangeHandler;
+  i: integer;
+begin
+
+  lRoomStateChanger := FReservationChangeStateHandler.RoomStateChangeHandler[mRoomsRoomReservation.AsInteger];
+
+  acCheckOutRoom.Enabled := mRooms.Active and not mRooms.Eof and lRoomStateChanger.ChangeIsAllowed(rsDeparted);
+  acCheckOutRoom.Caption := FOrigAcCheckoutRoomCaption + ' '+ mRoomsRoom.AsString;
+
+  acCheckInRoom.Enabled := mRooms.Active and not mRooms.Eof and lRoomStateChanger.ChangeIsAllowed(rsGuests);
+  acCheckInRoom.Caption := FOrigAcCheckInRoomCaption + ' '+ mRoomsRoom.AsString;
+
+  if acCheckInROom.Enabled then
+    btnCheckIn.Action := acCheckinRoom
+  else
+  begin
+    btnCheckIn.Action := nil;
+    btnCheckIn.OnCLick := nil;
+    btnCheckin.Caption := GetTranslatedText('shTx_FrmReservationprofile_ChangeStatus');
+    btnCheckin.Enabled := true;
+  end;
+
+  mnuChangeStateTo.Caption := FOrigmnuChangeStateToCaption + ' '+ mRoomsRoom.AsString;
+
+  for i := 0 to mnuChangeStateTo.Count-1 do
+    mnuChangeStateTo.Items[i].Enabled := lRoomStateChanger.ChangeIsAllowed(TReservationState(mnuChangeStateTo.Items[i].tag));
+
+  acCheckinReservation.Enabled := mRooms.Active and not mRooms.Eof and FReservationChangeStateHandler.ChangeIsAllowed(rsGuests);
+
+end;
+
+procedure TfrmReservationProfile.mnuOtherResStateChangeClick(Sender: TObject);
+var
+  lMenu: TMenuItem;
+  lRoomStateChanger: TRoomReservationStateChangeHandler;
+begin
+  lMenu := TMenuItem(Sender);
+  lRoomStateChanger := FReservationChangeStateHandler.RoomStateChangeHandler[mRoomsRoomReservation.AsInteger];
+  if lRoomStateChanger.ChangeState(TReservationState(lMenu.Tag)) then
+    Display_rGrid(mRoomsRoomReservation.ASInteger);
+end;
+
+procedure TfrmReservationProfile.ConstructOtherResStateMenu;
+var
+  lState: TReservationState;
+  lMenu: TMenuItem;
+begin
+  mnuChangeStateTo.Clear;
+  for lState := low(lState) to High(lState) do
+    if lState.IsUserSelectable then
+    begin
+      lMenu := TMenuItem.Create(self);
+      mnuChangeStateTo.Add(lMenu);
+      lMenu.Caption := lState.AsReadableString;
+      lMenu.Tag := ord(lState);
+      lMenu.OnClick := mnuOtherResStateChangeClick;
+    end;
+
 end;
 
 end.

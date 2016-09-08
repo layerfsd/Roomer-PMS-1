@@ -732,8 +732,8 @@ var
   s: string;
 begin
   dateTimeToString(s, 'yyyymmddhhnn', now);
-  sFilename := g.qProgramPath + s + '_Tornover';
-  ExportGridToExcel(sFilename, grTurnover, true, true, true);
+  sFilename := g.qProgramPath + s + '_Turnover';
+  ExportGridToXLSX(sFilename, grTurnover, true, true, true);
   ShellExecute(Handle, 'OPEN', PChar(sFilename + '.xls'), nil, nil,
     sw_shownormal);
 end;
@@ -1007,7 +1007,7 @@ var
 begin
   dateTimeToString(s, 'yyyymmddhhnn', now);
   sFilename := g.qProgramPath + s + '_Payments';
-  ExportGridToExcel(sFilename, grPayments, true, true, true);
+  ExportGridToXLSX(sFilename, grPayments, true, true, true);
   ShellExecute(Handle, 'OPEN', PChar(sFilename + '.xls'), nil, nil,
     sw_shownormal);
 end;
@@ -1023,7 +1023,7 @@ begin
 
   dateTimeToString(s, 'yyyymmddhhnn', now);
   sFilename := g.qProgramPath + s + '_unInvoicedRoomRent';
-  ExportGridToExcel(sFilename, grRoomrentOnInvoice, true, true, true);
+  ExportGridToXLSX(sFilename, grRoomrentOnInvoice, true, true, true);
   ShellExecute(Handle, 'OPEN', PChar(sFilename + '.xls'), nil, nil,
     sw_shownormal);
 end;
@@ -1049,7 +1049,7 @@ begin
 
   dateTimeToString(s, 'yyyymmddhhnn', now);
   sFilename := g.qProgramPath + s + '_unpaidRoomTent';
-  ExportGridToExcel(sFilename, grRoomsDate, true, true, true);
+  ExportGridToXLSX(sFilename, grRoomsDate, true, true, true);
   ShellExecute(Handle, 'OPEN', PChar(sFilename + '.xls'), nil, nil,
     sw_shownormal);
 end;

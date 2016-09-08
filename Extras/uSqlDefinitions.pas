@@ -1303,6 +1303,7 @@ select_ReservationProfile_allGuestsSQL : string =
 '   , persons.Address4 '+
 '   , persons.Country '+
 '   , persons.PID '+
+'   , persons.MainName '+
 ' FROM '+
 '   persons '+
 '     LEFT OUTER JOIN '+
@@ -6577,7 +6578,7 @@ end;
 ///    s := s + '   or  ( rr.Departure = ' + _DateToDBDate(_ToDate - 1,true) + ')'+chr(10);
 ///    s := s + ' )'+chr(10);
 ///
-///    case _ReservationStatus of
+///    case _ReservationState of
 ///      rsUnKnown :
 ///        ;
 ///      rsReservations :

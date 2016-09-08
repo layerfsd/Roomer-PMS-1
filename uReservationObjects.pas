@@ -22,7 +22,7 @@ uses
   , ud
   , cmpRoomerDataSet
   , cmpRoomerConnection
-  , Generics.Collections
+  , Generics.Collections, uReservationStateDefinitions
   ;
 
 type
@@ -83,7 +83,7 @@ type
     FRoomRes : integer;
     FReservation : integer;
 
-    FResStatus : TReservationStatus;
+    FResStatus : TReservationState;
 
     FRoomNumber : string;
     FRRNumber : string;
@@ -135,6 +135,7 @@ type
     property Guests: TList<TGuestObject> read FGuests;
     property ReservationObject: TSingleReservations read FReservationObject write FReservationObject;
     function IsUnAssigned: boolean;
+    function IsDepartingOn(aDate: TDate): boolean;
 
   published
     property RoomRes : integer read FRoomRes write FRoomRes;
@@ -151,7 +152,7 @@ type
     property ColorId : integer read FColorId write FColorId;
 
 
-    property ResStatus : TReservationStatus read FResStatus write FResStatus;
+    property ResStatus : TReservationState read FResStatus write FResStatus;
 
     property Currency : string read FCurrency write FCurrency;
     property Price : Double read FPrice write FPrice;
@@ -196,7 +197,7 @@ type
   TSingleReservations = class(TObject)
   private
     FReservation : integer;
-    FResStatus : TReservationStatus;
+    FResStatus : TReservationState;
     FRooms : TRoomList;
 
     FTel1, FTel2, FFax, FStaff, FCustomer : string;
@@ -229,7 +230,7 @@ type
   published
     property name : string read FName write FName;
     property Reservation : integer read FReservation write FReservation;
-    property ResStatus : TReservationStatus read FResStatus write FResStatus;
+    property ResStatus : TReservationState read FResStatus write FResStatus;
     property RoomCount : integer read GetRoomCount;
     property Channel : Integer read FChannel;
 
@@ -274,7 +275,7 @@ type
   { All Reservations on a specified daterange - can constist of multiple Reservations }
   TReservationsModel = class(TObject)
   private
-    FReservationStatus : TReservationStatus;
+    FReservationState : TReservationState;
     FWebRequest : Boolean;
     FFromDate : TDate;
     FToDate : TDate;
@@ -286,14 +287,14 @@ type
     constructor Create;
     destructor Destroy; override;
     procedure Clear;
-    procedure Execute(_FromDate, _ToDate : TDate; _ReservationStatus : TReservationStatus; SkipCancelled : Boolean = False);
+    procedure Execute(_FromDate, _ToDate : TDate; SkipCancelled : Boolean = False);
 
     /// <summary>Enumerate all rooms from all reservations </summary>
     function AllRoomsEnumerator(aFilter: TRoomFilterFunction = nil): TAllRoomsEnumerator;
 
     property Reservations: TList<TSingleReservations> read FReservationList;
   published
-    property ReservationStatus : TReservationStatus read FReservationStatus write FReservationStatus;
+    property ReservationState : TReservationState read FReservationState write FReservationState;
 
     property WebRequest : Boolean read FWebRequest write FWebRequest;
 
@@ -395,6 +396,13 @@ begin
 end;
 
 
+function TRoomObject.IsDepartingOn(aDate: TDate): boolean;
+begin
+  Result := ((FDeparture < aDate) and (ResStatus = rsDeparted))
+            or
+            ((FDeparture = aDate) and (ResStatus = rsGuests))
+end;
+
 function TRoomObject.IsUnAssigned: boolean;
 begin
   Result := RoomNumber.StartsWith('<');
@@ -450,7 +458,7 @@ end;
 constructor TReservationsModel.Create;
 begin
   inherited Create;
-  FReservationStatus := rsUnKnown;
+  FReservationState := rsUnKnown;
   FFromDate := Now;
   FToDate := Now;
   FReservationList := TList<TSingleReservations>.Create;
@@ -484,7 +492,7 @@ end;
 //  result := FReservationList[iIndex];
 //end;
 
-procedure TReservationsModel.Execute(_FromDate, _ToDate : TDate; _ReservationStatus : TReservationStatus; SkipCancelled : Boolean = False);
+procedure TReservationsModel.Execute(_FromDate, _ToDate : TDate; SkipCancelled : Boolean = False);
 var
 
   SingleReservations : TSingleReservations;
@@ -515,8 +523,7 @@ begin
     try
     rSet := nil;
 //    if NOT d.roomerMainDataSet.OfflineMode then
-      rSet := d.roomerMainDataSet.ActivateNewDataset(d.roomerMainDataSet.SystemGetDayGrid(_FromDate, _ToDate,
-              GetEnumName(TypeInfo(TReservationStatus), integer(_ReservationStatus)), SkipCancelled));
+      rSet := d.roomerMainDataSet.ActivateNewDataset(d.roomerMainDataSet.SystemGetDayGrid(_FromDate, _ToDate, '', SkipCancelled));
 //    else
 //      rSet := d.roomerMainDataSet.ActivateNewDataset(d.GetBackupTodaysGuests);
 
@@ -569,7 +576,7 @@ begin
             // SingleReservations.FResStatus := rsDeparting
             // else
             if Trim(FieldByName('Status').asString) = 'P' then
-              SingleReservations.FResStatus := rsReservations
+              SingleReservations.FResStatus := rsReservation
             else if Trim(FieldByName('Status').asString) = 'G' then
               SingleReservations.FResStatus := rsGuests
             else if Trim(FieldByName('Status').asString) = 'D' then
@@ -585,7 +592,7 @@ begin
             else if Trim(FieldByName('Status').asString) = 'B' then
               SingleReservations.FResStatus := rsBlocked
             else if Trim(FieldByName('Status').asString) = 'C' then
-              SingleReservations.FResStatus := rsCanceled
+              SingleReservations.FResStatus := rsCancelled
             else if Trim(FieldByName('Status').asString) = 'W' then
               SingleReservations.FResStatus := rsTmp1
             else if Trim(FieldByName('Status').asString) = 'Z' then
@@ -665,17 +672,9 @@ begin
               end;
 
             // --
-            if (RoomObject.FDeparture < _ToDate - 1) and (Trim(FieldByName('Status').asString) = 'D') then
+            if Trim(FieldByName('Status').asString) = 'P' then
             begin
-              RoomObject.FResStatus := rsDeparting
-            end
-            else if (RoomObject.FDeparture = _ToDate - 1) and (Trim(FieldByName('Status').asString) = 'G') then
-            begin
-              RoomObject.FResStatus := rsDeparting
-            end
-            else if Trim(FieldByName('Status').asString) = 'P' then
-            begin
-              RoomObject.FResStatus := rsReservations
+              RoomObject.FResStatus := rsReservation
             end
             else if Trim(FieldByName('Status').asString) = 'G' then
             begin
@@ -707,7 +706,7 @@ begin
             end
             else if Trim(FieldByName('Status').asString) = 'C' then
             begin
-              RoomObject.FResStatus := rsCanceled;
+              RoomObject.FResStatus := rsCancelled;
             end
             else if Trim(FieldByName('Status').asString) = 'W' then
             begin
@@ -715,7 +714,7 @@ begin
             end
             else if Trim(FieldByName('Status').asString) = 'Z' then
             begin
-              RoomObject.FResStatus := rsTmp2;
+              RoomObject.FResStatus := rsAwaitingPayment;
             end;
 
             SingleReservations.FRooms.add(RoomObject);

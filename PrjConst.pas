@@ -633,10 +633,12 @@ begin
   constants.Add('shTx_G_Reserved', 'Reserved');
   constants.Add('shTx_G_Overbooked', 'Overbooked');
   constants.Add('shTx_G_Departing', 'Departing');
-  constants.Add('shTx_G_Current', 'Current');
   constants.Add('shTx_G_Canceled', 'Canceled'); //*HJ 140206
   constants.Add('shTx_G_Tmp1', 'Tmp1'); //*HJ 140206
-  constants.Add('shTx_G_Tmp2', 'Tmp2'); //*HJ 140206
+  constants.Add('shTx_G_AwaitingPayment', 'Awaiting Payment'); //*HJ 140206
+  constants.Add('shTx_G_Deleted', 'Deleted'); //*HJ 140206
+  constants.Add('shTx_G_AwaitingPayConfirm', 'Awaiting Payment Confirmation'); //*HJ 140206
+  constants.Add('shTx_G_Mixed', 'Mixed'); //*HJ 140206
 
   constants.Add('shTx_GotoRoomAndDate_RoomNotFound', 'RoomReservation not Found');
   constants.Add('shTx_GotoRoomAndDate_ReservationNotFound', 'Reservation not Found');
@@ -712,6 +714,10 @@ begin
   constants.Add('shTx_HouseKeeping_DailyCleaningPlusBeds', '50% - Daily Cleaning + Beds.');
   constants.Add('shTx_HouseKeeping_SpecialRequirements', 'Special Requirements');
   constants.Add('shTx_HouseKeeping_RoomStatusDate', 'Room Status - Date : %s');
+
+  constants.Add('shTx_Housekeepinglist_Departure', 'Departure');
+  constants.Add('shTx_Housekeepinglist_StayOver', 'Stayover');
+
   constants.Add('shTx_Invoice_SaveInvoice', 'Save invoice and room price changes?');
   constants.Add('shTx_Invoice_SaveChanges', 'Save invoice changes?');
   constants.Add('shTx_Invoice_NotANumber', '%s is not a number');
@@ -906,6 +912,13 @@ begin
   constants.Add('shTx_ReservationProfile_MoreThanOneRoomUseForm', 'More than one room in Reservation ' + #10 +
                                           'Use RoomReservation Form - for each room to change ');
   constants.Add('shTx_ReservationProfile_AddRoomError', 'Add Room error : %s');
+
+  constants.Add('shTx_FrmReservationprofile_ReservationNumber', 'Reservation number');
+  constants.Add('shTx_FrmReservationprofile_Status', 'Status');
+  constants.Add('shTx_FrmReservationprofile_ChangeStatus', 'Change Status');
+  constants.Add('shTx_FrmReservationprofile_Balance', 'Balance');
+
+
 
   constants.Add('shTx_RoomPricesEdit_RoomType', 'Room Type must be specified');
   constants.Add('shTx_RoomPricesEdit_PriceTime', 'Price range must be specified');
@@ -1499,6 +1512,7 @@ begin
 
   constants.Add('shTxThisConfirmAllottedBooking', 'This will change the full booking into a confirmed reservation.' + #10#10 + 'Do you want to continue?');
   constants.Add('shTx_CloseFinancialDay', 'This will close the current day for revenues and payments?' + #10#10 + 'Do you want to continue?');
+  constants.Add('shTx_CurrentFinancialDay',  'Current financial day: ');
 end;
 
 procedure AddConstants_7; // Baettu vid thennan ad vild
@@ -1532,6 +1546,7 @@ begin
   constants.Add('shTx_frmReservationExtras_AddedMoreThenAvailableInPeriod',
                 'The Extra(s) [%s] do not have enough available stock for the whole reservation period: '+ #13 +
                 'Do you want to continue anyway?');
+  constants.Add('shDeleteDayClosingTime', 'Delete DayClosingtime');
 end;
 
 procedure AddConstants_OfflineReports;

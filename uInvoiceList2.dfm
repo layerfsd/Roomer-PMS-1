@@ -1,7 +1,7 @@
 object frmInvoiceList2: TfrmInvoiceList2
   Left = 738
   Top = 198
-  Caption = 'Invoices'
+  Caption = 'Detailed Invoice List'
   ClientHeight = 616
   ClientWidth = 1133
   Color = clBtnFace

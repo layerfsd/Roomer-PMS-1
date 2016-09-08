@@ -75,7 +75,6 @@ var
   invoiceType : integer;
   iRefrence   : integer;
 begin
-  aDate := 1;
   aRoom := '';
   refrence := edRefrence.text;
 

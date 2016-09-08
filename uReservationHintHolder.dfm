@@ -674,34 +674,11 @@ object FrmReservationHintHolder: TFrmReservationHintHolder
       PopupMenu = PopupMenu1
       ReadOnly = True
       ScrollBars = ssVertical
-      TabOrder = 2
+      TabOrder = 0
       OnMouseDown = pnlHintMouseDown
       OnMouseUp = pnlHintMouseUp
       Text = 'Will arrive later. Needs a extra bed for the child.'
       SkinData.SkinSection = 'EDIT'
-    end
-    object btnCheckInOut: TsButton
-      Left = 23
-      Top = 480
-      Width = 143
-      Height = 25
-      Caption = 'Check in'
-      Default = True
-      TabOrder = 0
-      Visible = False
-      OnClick = btnCheckInOutClick
-      SkinData.SkinSection = 'BUTTON'
-    end
-    object btnReservationDetails: TsButton
-      Left = 172
-      Top = 480
-      Width = 218
-      Height = 25
-      Caption = 'Reservation details'
-      TabOrder = 1
-      Visible = False
-      OnClick = btnReservationDetailsClick
-      SkinData.SkinSection = 'BUTTON'
     end
     object __lbPAymentNotes: TsMemo
       Left = 230
@@ -722,7 +699,7 @@ object FrmReservationHintHolder: TFrmReservationHintHolder
       PopupMenu = PopupMenu1
       ReadOnly = True
       ScrollBars = ssVertical
-      TabOrder = 3
+      TabOrder = 1
       OnMouseDown = pnlHintMouseDown
       OnMouseUp = pnlHintMouseUp
       Text = 'Will arrive later. Needs a extra bed for the child.'
@@ -731,10 +708,10 @@ object FrmReservationHintHolder: TFrmReservationHintHolder
     object cbxBlocked: TsCheckBox
       Left = 19
       Top = 509
-      Width = 162
-      Height = 20
+      Width = 170
+      Height = 19
       Caption = 'Room is blocked from move'
-      TabOrder = 4
+      TabOrder = 2
       ImgChecked = 0
       ImgUnchecked = 0
       ReadOnly = True

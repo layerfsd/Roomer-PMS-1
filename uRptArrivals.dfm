@@ -26,7 +26,6 @@ object frmArrivalsReport: TfrmArrivalsReport
     Align = alTop
     TabOrder = 0
     SkinData.SkinSection = 'PANEL'
-    ExplicitTop = -6
     object btnRefresh: TsButton
       Left = 378
       Top = 14
@@ -58,8 +57,8 @@ object frmArrivalsReport: TfrmArrivalsReport
       object rbToday: TsRadioButton
         Left = 4
         Top = 21
-        Width = 58
-        Height = 19
+        Width = 50
+        Height = 20
         Caption = 'Today'
         Checked = True
         TabOrder = 0
@@ -69,8 +68,8 @@ object frmArrivalsReport: TfrmArrivalsReport
       object rbTomorrow: TsRadioButton
         Left = 4
         Top = 46
-        Width = 76
-        Height = 19
+        Width = 68
+        Height = 20
         Caption = 'Tomorrow'
         TabOrder = 1
         OnClick = rbRadioButtonClick
@@ -78,8 +77,8 @@ object frmArrivalsReport: TfrmArrivalsReport
       object rbManualRange: TsRadioButton
         Left = 119
         Top = 21
-        Width = 122
-        Height = 19
+        Width = 114
+        Height = 20
         Caption = 'Manual date range:'
         TabOrder = 2
         OnClick = rbRadioButtonClick
@@ -164,7 +163,7 @@ object frmArrivalsReport: TfrmArrivalsReport
         Height = 37
         Align = alLeft
         Caption = 'Check in'
-        ImageIndex = 44
+        ImageIndex = 45
         Images = DImages.PngImageList1
         TabOrder = 1
         OnClick = btnCheckInClick
@@ -183,9 +182,6 @@ object frmArrivalsReport: TfrmArrivalsReport
         TabOrder = 2
         OnClick = btnProfileClick
         SkinData.SkinSection = 'BUTTON'
-        ExplicitLeft = 307
-        ExplicitTop = 5
-        ExplicitHeight = 29
       end
       object btnInvoice: TsButton
         AlignWithMargins = True
@@ -200,6 +196,7 @@ object frmArrivalsReport: TfrmArrivalsReport
         Images = DImages.PngImageList1
         Style = bsSplitButton
         TabOrder = 3
+        OnClick = mnuRoomInvoiceClick
         SkinData.SkinSection = 'BUTTON'
       end
       object btnReport: TsButton
@@ -215,7 +212,6 @@ object frmArrivalsReport: TfrmArrivalsReport
         TabOrder = 4
         OnClick = btnReportClick
         SkinData.SkinSection = 'BUTTON'
-        ExplicitLeft = 1018
       end
     end
   end
@@ -245,11 +241,32 @@ object frmArrivalsReport: TfrmArrivalsReport
       OnCellDblClick = grArrivalsListDBTableView1CellDblClick
       DataController.DataSource = ArrivalsListDS
       DataController.Options = [dcoAssignGroupingValues, dcoAssignMasterDetailKeys, dcoSaveExpanding, dcoGroupsAlwaysExpanded]
-      DataController.Summary.DefaultGroupSummaryItems = <>
-      DataController.Summary.FooterSummaryItems = <>
+      DataController.Summary.DefaultGroupSummaryItems = <
+        item
+          Kind = skCount
+          Position = spFooter
+          Column = grArrivalsListDBTableView1Room
+        end
+        item
+          Kind = skSum
+          Position = spFooter
+          Column = grArrivalsListDBTableView1NumGuests
+        end>
+      DataController.Summary.FooterSummaryItems = <
+        item
+          Kind = skCount
+          Column = grArrivalsListDBTableView1Room
+        end
+        item
+          Format = '0'
+          Kind = skSum
+          Column = grArrivalsListDBTableView1NumGuests
+        end>
       DataController.Summary.SummaryGroups = <>
       FilterRow.Visible = True
       OptionsView.ColumnAutoWidth = True
+      OptionsView.Footer = True
+      OptionsView.GroupFooters = gfAlwaysVisible
       Styles.Group = cxStyle1
       Styles.GroupSummary = cxStyle1
       object grArrivalsListDBTableView1Room: TcxGridDBColumn
@@ -295,7 +312,7 @@ object frmArrivalsReport: TfrmArrivalsReport
       object grArrivalsListDBTableView1AverageRoomRate: TcxGridDBColumn
         Caption = 'Average Rate'
         DataBinding.FieldName = 'AverageRoomRate'
-        OnGetDisplayText = grArrivalsListDBTableView1AverageRoomRateGetDisplayText
+        OnGetProperties = grArrivalsListDBTableView1AverageRoomRateGetProperties
         Options.Editing = False
         Width = 82
       end

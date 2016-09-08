@@ -250,7 +250,7 @@ object frmRptTurnoverAndPayments: TfrmRptTurnoverAndPayments
     Top = 145
     Width = 1061
     Height = 481
-    ActivePage = sTabSheet7
+    ActivePage = sTabSheet1
     Align = alClient
     TabOrder = 2
     OnChange = sPageControl1Change
@@ -259,10 +259,6 @@ object frmRptTurnoverAndPayments: TfrmRptTurnoverAndPayments
       Caption = 'Sum Turnover'
       SkinData.CustomColor = False
       SkinData.CustomFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object sPanel1: TsPanel
         Left = 0
         Top = 0
@@ -306,7 +302,6 @@ object frmRptTurnoverAndPayments: TfrmRptTurnoverAndPayments
           Navigator.InfoPanel.Visible = True
           Navigator.InfoPanel.Width = 60
           Navigator.Visible = True
-          DataController.DataSource = d.TurnoverDS
           DataController.Summary.DefaultGroupSummaryItems = <>
           DataController.Summary.FooterSummaryItems = <
             item
@@ -396,10 +391,6 @@ object frmRptTurnoverAndPayments: TfrmRptTurnoverAndPayments
       Caption = 'Sum Payments'
       SkinData.CustomColor = False
       SkinData.CustomFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object grPayments: TcxGrid
         Left = 0
         Top = 43
@@ -420,7 +411,6 @@ object frmRptTurnoverAndPayments: TfrmRptTurnoverAndPayments
           Navigator.InfoPanel.Visible = True
           Navigator.InfoPanel.Width = 60
           Navigator.Visible = True
-          DataController.DataSource = d.PaymentsDS
           DataController.Summary.DefaultGroupSummaryItems = <>
           DataController.Summary.FooterSummaryItems = <
             item
@@ -504,10 +494,6 @@ object frmRptTurnoverAndPayments: TfrmRptTurnoverAndPayments
       Caption = 'List Unpaid roomrent'
       SkinData.CustomColor = False
       SkinData.CustomFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object sPanel4: TsPanel
         Left = 0
         Top = 0
@@ -569,7 +555,6 @@ object frmRptTurnoverAndPayments: TfrmRptTurnoverAndPayments
         LookAndFeel.NativeStyle = False
         object tvRoomsDate: TcxGridDBTableView
           Navigator.Buttons.CustomButtons = <>
-          DataController.DataSource = d.RoomsDateDS
           DataController.Summary.DefaultGroupSummaryItems = <>
           DataController.Summary.FooterSummaryItems = <
             item
@@ -665,10 +650,6 @@ object frmRptTurnoverAndPayments: TfrmRptTurnoverAndPayments
       Caption = 'List Invoiced Roomrent'
       SkinData.CustomColor = False
       SkinData.CustomFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object sPanel3: TsPanel
         Left = 0
         Top = 0
@@ -716,7 +697,6 @@ object frmRptTurnoverAndPayments: TfrmRptTurnoverAndPayments
         LookAndFeel.NativeStyle = False
         object tvRoomrentOnInvoice: TcxGridDBTableView
           Navigator.Buttons.CustomButtons = <>
-          DataController.DataSource = d.RoomRentOnInvoiceDS
           DataController.Summary.DefaultGroupSummaryItems = <>
           DataController.Summary.FooterSummaryItems = <
             item
@@ -835,10 +815,6 @@ object frmRptTurnoverAndPayments: TfrmRptTurnoverAndPayments
       Caption = 'List Invoices'
       SkinData.CustomColor = False
       SkinData.CustomFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object sPanel5: TsPanel
         Left = 0
         Top = 0
@@ -944,7 +920,6 @@ object frmRptTurnoverAndPayments: TfrmRptTurnoverAndPayments
           Navigator.Buttons.SaveBookmark.Visible = True
           Navigator.Buttons.GotoBookmark.Visible = True
           Navigator.Buttons.Filter.Visible = True
-          DataController.DataSource = d.mInvoiceHeadsDS
           DataController.DetailKeyFieldNames = 'InvoiceNumber'
           DataController.Summary.DefaultGroupSummaryItems = <>
           DataController.Summary.FooterSummaryItems = <
@@ -1199,7 +1174,6 @@ object frmRptTurnoverAndPayments: TfrmRptTurnoverAndPayments
           Navigator.Buttons.SaveBookmark.Visible = True
           Navigator.Buttons.GotoBookmark.Visible = True
           Navigator.Buttons.Filter.Visible = True
-          DataController.DataSource = d.mInvoiceLinesDS
           DataController.DetailKeyFieldNames = 'InvoiceNumber'
           DataController.KeyFieldNames = 'InvoiceNumber'
           DataController.MasterKeyFieldNames = 'InvoiceNumber'
@@ -1325,10 +1299,6 @@ object frmRptTurnoverAndPayments: TfrmRptTurnoverAndPayments
       Caption = 'Unconfirmed items'
       SkinData.CustomColor = False
       SkinData.CustomFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object sPanel7: TsPanel
         Left = 0
         Top = 0
@@ -1578,7 +1548,6 @@ object frmRptTurnoverAndPayments: TfrmRptTurnoverAndPayments
           Navigator.InfoPanel.Visible = True
           Navigator.InfoPanel.Width = 60
           Navigator.Visible = True
-          DataController.DataSource = d.kbmInvoiceLinePriceChangeDS
           DataController.Summary.DefaultGroupSummaryItems = <>
           DataController.Summary.FooterSummaryItems = <
             item
@@ -1702,10 +1671,6 @@ object frmRptTurnoverAndPayments: TfrmRptTurnoverAndPayments
       Caption = 'Confirmed Roomrent Pricechange'
       SkinData.CustomColor = False
       SkinData.CustomFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object sPanel9: TsPanel
         Left = 0
         Top = 0
@@ -1754,7 +1719,6 @@ object frmRptTurnoverAndPayments: TfrmRptTurnoverAndPayments
         LookAndFeel.NativeStyle = False
         object tvRoomsDateChange: TcxGridDBTableView
           Navigator.Buttons.CustomButtons = <>
-          DataController.DataSource = d.RoomsDateChangeDS
           DataController.Summary.DefaultGroupSummaryItems = <>
           DataController.Summary.FooterSummaryItems = <
             item
@@ -1882,10 +1846,6 @@ object frmRptTurnoverAndPayments: TfrmRptTurnoverAndPayments
       Caption = 'PaymentList'
       SkinData.CustomColor = False
       SkinData.CustomFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object sPanel6: TsPanel
         Left = 0
         Top = 0
@@ -1955,7 +1915,6 @@ object frmRptTurnoverAndPayments: TfrmRptTurnoverAndPayments
           Navigator.Buttons.Cancel.Enabled = False
           Navigator.InfoPanel.Visible = True
           Navigator.Visible = True
-          DataController.DataSource = d.PaymentListDS
           DataController.Summary.DefaultGroupSummaryItems = <>
           DataController.Summary.FooterSummaryItems = <
             item
@@ -2710,7 +2669,6 @@ object frmRptTurnoverAndPayments: TfrmRptTurnoverAndPayments
     end
   end
   object ppDBPPayments: TppDBPipeline
-    DataSource = d.PaymentsDS
     OpenDataSource = False
     UserName = 'DBPPayments'
     Left = 128
@@ -2756,7 +2714,6 @@ object frmRptTurnoverAndPayments: TfrmRptTurnoverAndPayments
     end
   end
   object ppDBPTurnover: TppDBPipeline
-    DataSource = d.TurnoverDS
     OpenDataSource = False
     UserName = 'DBPTurnover'
     Left = 120

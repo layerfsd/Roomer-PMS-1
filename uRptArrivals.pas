@@ -144,8 +144,8 @@ type
       ARecord: TcxCustomGridRecord; var AText: string);
     procedure btnReportClick(Sender: TObject);
     procedure ppHeaderBand1BeforePrint(Sender: TObject);
-    procedure grArrivalsListDBTableView1AverageRoomRateGetDisplayText(Sender: TcxCustomGridTableItem;
-      ARecord: TcxCustomGridRecord; var AText: string);
+    procedure grArrivalsListDBTableView1AverageRoomRateGetProperties(Sender: TcxCustomGridTableItem;
+      ARecord: TcxCustomGridRecord; var AProperties: TcxCustomEditProperties);
   private
     FRefreshingdata: boolean;
     FCurrencyhandler: TCurrencyHandler;
@@ -189,7 +189,7 @@ uses
   , uInvoice
   , uReservationProfile
   , uRptbViewer
-  ;
+  , uReservationStateChangeHandler, uReservationStateDefinitions;
 
 const
   cSQL = 'SELECT '+
@@ -251,40 +251,18 @@ begin
 end;
 
 procedure TfrmArrivalsReport.btnCheckInClick(Sender: TObject);
-var s : String;
-    Room : String;
-    Reservation, RoomReservation : Integer;
-    NoRoom, bContinue : Boolean;
+var
+  lStateChangeHandler: TRoomReservationStateChangeHandler;
 begin
-  Room := kbmArrivalsList['Room'];
-  NoRoom := Copy(Room, 1, 1) = '<';
-  Reservation := kbmArrivalsList['RoomerReservationID'];
-  RoomReservation := kbmArrivalsList['RoomerRoomReservationID'];
-  s := g.oRooms.FindRoomStatus(Room);
-  if g.qWarnCheckInDirtyRoom AND (NOT ((s = 'R') OR (s = 'C'))) then begin
-    s := format(getTranslatedText('shTx_Various_RoomNotClean'), [Room]);
-    if MessageDlg(s, mtWarning, [mbYes, mbCancel], 0) <> mrYes then exit;
+
+  lStateChangeHandler := TRoomReservationStateChangeHandler.Create(kbmArrivalsList['RoomerReservationID'], kbmArrivalsList['RoomerRoomReservationID']);
+  try
+    if lStateChangeHandler.ChangeState(rsGuests) then
+       PostMessage(handle, WM_REFRESH_DATA, 0, 0);
+  finally
+    lStateChangeHandler.Free;
   end;
 
-  if ctrlGetBoolean('CheckinWithDetailsDialog') OR (MessageDlg(Format(GetTranslatedText('shCheckRoom'), [kbmArrivalsList['GuestName']]), mtConfirmation, [mbYes, mbNo], 0) = mrYes) then
-  begin
-
-    ShowAlertsForReservation(Reservation, RoomReservation, atCHECK_IN);
-
-    bContinue := true;
-    if NoRoom then
-    begin
-      Room := ProvideARoom2(RoomReservation);
-      bContinue := Room <> '';
-    end;
-
-    if bContinue then
-    begin
-      if (NOT ctrlGetBoolean('CheckinWithDetailsDialog')) OR OpenGuestCheckInForm(RoomReservation) then
-        d.CheckInGuest(RoomReservation);
-      postMessage(handle, WM_REFRESH_DATA, 0, 0);
-    end;
-  end
 end;
 
 procedure TfrmArrivalsReport.btnExcelClick(Sender: TObject);
@@ -344,9 +322,7 @@ begin
     s := Format(cSqlForDateRange, [FormatDateTime('yyyy-mm-dd', dtDateFrom.Date),
                                    FormatDateTime('yyyy-mm-dd', dtDateTo.Date)]);
   Result := Format(cSQL, [s]);
-  {$ifdef DEBUG}
-    CopyToClipboard(Result);
-  {$endif}
+  CopyToClipboard(Result);
 end;
 
 constructor TfrmArrivalsReport.Create(aOwner: TComponent);
@@ -397,10 +373,10 @@ begin
   EditInvoice(kbmArrivalsList['RoomerReservationID'], 0, 0, 0, 0, 0, false, true,false);
 end;
 
-procedure TfrmArrivalsReport.grArrivalsListDBTableView1AverageRoomRateGetDisplayText(Sender: TcxCustomGridTableItem;
-  ARecord: TcxCustomGridRecord; var AText: string);
+procedure TfrmArrivalsReport.grArrivalsListDBTableView1AverageRoomRateGetProperties(Sender: TcxCustomGridTableItem;
+  ARecord: TcxCustomGridRecord; var AProperties: TcxCustomEditProperties);
 begin
-  aText := FCurrencyhandler.FormattedValue(kbmArrivalsListAverageRoomRate.AsFloat);
+  AProperties := FCurrencyhandler.GetcxEditProperties;
 end;
 
 procedure TfrmArrivalsReport.grArrivalsListDBTableView1CellDblClick(Sender: TcxCustomGridTableView; ACellViewInfo: TcxGridTableDataCellViewInfo;

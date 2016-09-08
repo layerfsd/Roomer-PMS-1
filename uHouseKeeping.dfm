@@ -125,10 +125,6 @@ object frmHouseKeeping: TfrmHouseKeeping
       Caption = 'List'
       SkinData.CustomColor = False
       SkinData.CustomFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object grCross: TAdvStringGrid
         Left = 0
         Top = 43
@@ -237,8 +233,6 @@ object frmHouseKeeping: TfrmHouseKeeping
         SearchFooter.MatchCaseCaption = 'Match case'
         SortSettings.DefaultFormat = ssAutomatic
         Version = '7.9.1.0'
-        ExplicitTop = 33
-        ExplicitHeight = 353
         RowHeights = (
           22
           22
@@ -272,7 +266,6 @@ object frmHouseKeeping: TfrmHouseKeeping
           TabOrder = 0
           OnClick = LMDSpeedButton6Click
           SkinData.SkinSection = 'BUTTON'
-          ExplicitHeight = 25
         end
         object LMDSpeedButton12: TsButton
           AlignWithMargins = True
@@ -287,7 +280,6 @@ object frmHouseKeeping: TfrmHouseKeeping
           TabOrder = 1
           OnClick = LMDSpeedButton12Click
           SkinData.SkinSection = 'BUTTON'
-          ExplicitHeight = 25
         end
         object Button1: TsButton
           AlignWithMargins = True
@@ -302,7 +294,6 @@ object frmHouseKeeping: TfrmHouseKeeping
           TabOrder = 2
           OnClick = Button1Click
           SkinData.SkinSection = 'BUTTON'
-          ExplicitHeight = 25
         end
       end
     end
@@ -310,10 +301,6 @@ object frmHouseKeeping: TfrmHouseKeeping
       Caption = 'Detailed'
       SkinData.CustomColor = False
       SkinData.CustomFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object grVar: TcxGrid
         Left = 0
         Top = 33

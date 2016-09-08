@@ -141,8 +141,8 @@ object frmRptTurnoverAndPayments2: TfrmRptTurnoverAndPayments2
       object chkGetUnconfirmed: TsCheckBox
         Left = 15
         Top = 18
-        Width = 107
-        Height = 19
+        Width = 99
+        Height = 20
         Caption = 'Get unconfirmed'
         TabOrder = 0
         OnClick = chkGetUnconfirmedClick
@@ -183,9 +183,6 @@ object frmRptTurnoverAndPayments2: TfrmRptTurnoverAndPayments2
       BevelOuter = bvNone
       TabOrder = 2
       SkinData.SkinSection = 'TRANSPARENT'
-      ExplicitLeft = 0
-      ExplicitTop = 104
-      ExplicitWidth = 977
       object btnGetOld: TsButton
         AlignWithMargins = True
         Left = 3
@@ -213,7 +210,6 @@ object frmRptTurnoverAndPayments2: TfrmRptTurnoverAndPayments2
         TabOrder = 1
         OnClick = btnRefreshClick
         SkinData.SkinSection = 'BUTTON'
-        ExplicitLeft = 135
       end
       object btnReportsReport: TsButton
         AlignWithMargins = True
@@ -228,8 +224,6 @@ object frmRptTurnoverAndPayments2: TfrmRptTurnoverAndPayments2
         TabOrder = 2
         OnClick = btnReportsReportClick
         SkinData.SkinSection = 'BUTTON'
-        ExplicitLeft = 845
-        ExplicitTop = 0
       end
     end
   end
@@ -248,12 +242,15 @@ object frmRptTurnoverAndPayments2: TfrmRptTurnoverAndPayments2
     ActivePage = sTabSheet5
     Align = alClient
     TabOrder = 2
-    OnChange = sPageControl1Change
     SkinData.SkinSection = 'PAGECONTROL'
     object sTabSheet1: TsTabSheet
       Caption = 'Sum Turnover'
       SkinData.CustomColor = False
       SkinData.CustomFont = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object sPanel1: TsPanel
         Left = 0
         Top = 0
@@ -410,6 +407,10 @@ object frmRptTurnoverAndPayments2: TfrmRptTurnoverAndPayments2
       Caption = 'Sum Payments'
       SkinData.CustomColor = False
       SkinData.CustomFont = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object grPayments: TcxGrid
         Left = 0
         Top = 43
@@ -516,6 +517,10 @@ object frmRptTurnoverAndPayments2: TfrmRptTurnoverAndPayments2
       Caption = 'List Unpaid roomrent'
       SkinData.CustomColor = False
       SkinData.CustomFont = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object sPanel4: TsPanel
         Left = 0
         Top = 0
@@ -682,6 +687,10 @@ object frmRptTurnoverAndPayments2: TfrmRptTurnoverAndPayments2
       Caption = 'List Invoiced Roomrent'
       SkinData.CustomColor = False
       SkinData.CustomFont = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object sPanel3: TsPanel
         Left = 0
         Top = 0
@@ -1338,6 +1347,10 @@ object frmRptTurnoverAndPayments2: TfrmRptTurnoverAndPayments2
       Caption = 'Unconfirmed items'
       SkinData.CustomColor = False
       SkinData.CustomFont = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object sPanel7: TsPanel
         Left = 0
         Top = 0
@@ -1520,6 +1533,10 @@ object frmRptTurnoverAndPayments2: TfrmRptTurnoverAndPayments2
       Caption = 'Confirmed Item Changed Price'
       SkinData.CustomColor = False
       SkinData.CustomFont = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object sPanel8: TsPanel
         Left = 0
         Top = 0
@@ -1703,6 +1720,10 @@ object frmRptTurnoverAndPayments2: TfrmRptTurnoverAndPayments2
       Caption = 'Confirmed Roomrent Pricechange'
       SkinData.CustomColor = False
       SkinData.CustomFont = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object sPanel9: TsPanel
         Left = 0
         Top = 0
@@ -1903,7 +1924,6 @@ object frmRptTurnoverAndPayments2: TfrmRptTurnoverAndPayments2
           TabOrder = 0
           OnClick = sButton3Click
           SkinData.SkinSection = 'BUTTON'
-          ExplicitLeft = 0
         end
         object sButton4: TsButton
           AlignWithMargins = True
@@ -1918,7 +1938,6 @@ object frmRptTurnoverAndPayments2: TfrmRptTurnoverAndPayments2
           TabOrder = 1
           OnClick = sButton4Click
           SkinData.SkinSection = 'BUTTON'
-          ExplicitLeft = 244
         end
         object sButton5: TsButton
           AlignWithMargins = True
@@ -1933,7 +1952,6 @@ object frmRptTurnoverAndPayments2: TfrmRptTurnoverAndPayments2
           TabOrder = 2
           OnClick = sButton5Click
           SkinData.SkinSection = 'BUTTON'
-          ExplicitLeft = 4
         end
       end
       object grPaymentList: TcxGrid
@@ -1944,8 +1962,6 @@ object frmRptTurnoverAndPayments2: TfrmRptTurnoverAndPayments2
         Align = alClient
         TabOrder = 1
         LookAndFeel.NativeStyle = False
-        ExplicitTop = 44
-        ExplicitHeight = 402
         object tvPaymentList: TcxGridDBTableView
           Navigator.Buttons.CustomButtons = <>
           Navigator.Buttons.Insert.Enabled = False

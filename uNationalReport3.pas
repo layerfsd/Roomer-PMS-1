@@ -450,7 +450,8 @@ begin
       s := s + '  ( '#10;
       s := s + '      (rooms.Bookable = 1) '#10;
       s := s + '  AND (rooms.useInNationalReport = 1) '#10;
-      s := s + '  AND (rooms.wildcard = 0 AND rooms.Statistics = 1 AND rooms.Active = 1) '#10;
+      s := s + '  AND (rooms.Active = 1) '#10;
+//      s := s + '  AND (rooms.wildcard = 0 AND rooms.Statistics = 1 AND rooms.Active = 1) '#10;
       if zLocationList <> '' then
       begin
         s := s + '  AND (rooms.Location in ('+zLocationList+') ) '#10;
@@ -561,7 +562,7 @@ begin
   ' WHERE '#10+
   '   (persons.RoomReservation IN %s )'#10+
   '      AND (((Resflag in (''G'',''P'',''D'',''O'',''A'')) AND (SUBSTR(roomsdate.room, 1, 1) != ''<'')) OR ((Resflag in (''G'',''D'')) AND (SUBSTR(roomsdate.room, 1, 1) = ''<''))) '#10+
-  '      AND (SUBSTR(roomsdate.room, 1, 1) = ''<'' OR NOT ISNULL((SELECT 1 FROM rooms r WHERE r.room=roomsdate.room and r.wildcard=0 and r.active=1 and statistics=1 and hidden=0 LIMIT 1))) '#10+
+//  '      AND (SUBSTR(roomsdate.room, 1, 1) = ''<'' OR NOT ISNULL((SELECT 1 FROM rooms r WHERE r.room=roomsdate.room and r.wildcard=0 and r.active=1 and statistics=1 and hidden=0 LIMIT 1))) '#10+
   ' GROUP BY '#10+
   '   countries.OrderIndex, '#10+
   '   countries.Country, '#10+
@@ -569,8 +570,6 @@ begin
   '   countries.CountryGroup, '#10+
   '   countrygroups.GroupName '#10+
   ' ORDER BY orderIndex DESC ';
-
-
 
 //  'SELECT '#10+
 //  'countries.Country, '#10+
@@ -607,7 +606,7 @@ begin
     screen.Cursor := crHourGlass;
     try
       s := format(s, [zRoomReservationsList]);
-
+      CopyToCLipboard(s);
       hData.rSet_bySQL(rSet,s);
       if mNationalStatistics.Active then mNationalStatistics.Close;
       mNationalStatistics.open;
@@ -719,7 +718,7 @@ begin
     mAllGuests.DisableControls;
 
     s :=
-    ' SELECT '#10+
+    ' SELECT DISTINCT'#10+
     '     roomreservations.Reservation '#10+
     '   , roomreservations.RoomReservation '#10+
     '   , reservations.Customer '#10+
@@ -745,7 +744,8 @@ begin
     '       countrygroups ON countries.CountryGroup = countrygroups.CountryGroup '#10+
     '     RIGHT OUTER JOIN '#10+
     '       roomreservations ON persons.RoomReservation = roomreservations.RoomReservation '#10+
-    '     INNER JOIN rooms ro ON roomreservations.room=ro.room and ro.wildcard=0 and ro.active=1  '#10 +
+//    '     INNER JOIN rooms ro ON roomreservations.room=ro.room and ro.wildcard=0 and ro.active=1  '#10 +
+    '     INNER JOIN rooms ro ON (roomreservations.room=ro.room or roomreservations.room=concat(''<'', roomreservations.roomreservation, ''>'')) and ro.active=1  '#10 +
     '     RIGHT OUTER JOIN '#10+
     '       reservations ON roomreservations.Reservation = reservations.Reservation '#10+
     ' WHERE '#10+
@@ -758,7 +758,7 @@ begin
     try
 
       s := format(s , [zRoomReservationsList]);
-
+      CopyToClipboard(s);
       hData.rSet_bySQL(rSet,s);
 
       if not mAllGuests.Active then mAllGuests.Close;

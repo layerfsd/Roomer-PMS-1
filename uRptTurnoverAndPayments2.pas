@@ -512,7 +512,6 @@ type
     procedure sButton3Click(Sender: TObject);
     procedure sButton4Click(Sender: TObject);
     procedure sButton5Click(Sender: TObject);
-    procedure sPageControl1Change(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure ppSummaryBand1BeforePrint(Sender: TObject);
     procedure tvRoomsDateChangeRentAmountGetProperties(Sender: TcxCustomGridTableItem; ARecord: TcxCustomGridRecord;
@@ -671,8 +670,8 @@ var
   s: string;
 begin
   dateTimeToString(s, 'yyyymmddhhnn', now);
-  sFilename := g.qProgramPath + s + '_Tornover';
-  ExportGridToExcel(sFilename, grTurnover, true, true, true);
+  sFilename := g.qProgramPath + s + '_Turnover';
+  ExportGridToXLSX(sFilename, grTurnover, true, true, true);
   ShellExecute(Handle, 'OPEN', PChar(sFilename + '.xls'), nil, nil,sw_shownormal);
 end;
 
@@ -918,7 +917,7 @@ var
 begin
   dateTimeToString(s, 'yyyymmddhhnn', now);
   sFilename := g.qProgramPath + s + '_Payments';
-  ExportGridToExcel(sFilename, grPayments, true, true, true);
+  ExportGridToXLSX(sFilename, grPayments, true, true, true);
   ShellExecute(Handle, 'OPEN', PChar(sFilename + '.xls'), nil, nil,
     sw_shownormal);
 end;
@@ -934,7 +933,7 @@ begin
 
   dateTimeToString(s, 'yyyymmddhhnn', now);
   sFilename := g.qProgramPath + s + '_unInvoicedRoomRent';
-  ExportGridToExcel(sFilename, grRoomrentOnInvoice, true, true, true);
+  ExportGridToXLSX(sFilename, grRoomrentOnInvoice, true, true, true);
   ShellExecute(Handle, 'OPEN', PChar(sFilename + '.xls'), nil, nil,
     sw_shownormal);
 end;
@@ -959,8 +958,8 @@ begin
   if d.kbmRoomsDate_.RecordCount = 0 then exit;
 
   dateTimeToString(s, 'yyyymmddhhnn', now);
-  sFilename := g.qProgramPath + s + '_unpaidRoomTent';
-  ExportGridToExcel(sFilename, grRoomsDate, true, true, true);
+  sFilename := g.qProgramPath + s + '_unpaidRoomRent';
+  ExportGridToXLSX(sFilename, grRoomsDate, true, true, true);
   ShellExecute(Handle, 'OPEN', PChar(sFilename + '.xls'), nil, nil,
     sw_shownormal);
 end;
@@ -1095,11 +1094,6 @@ begin
   if EditReservation(iReservation, iRoomReservation) then
   begin
   end;
-end;
-
-procedure TfrmRptTurnoverAndPayments2.sPageControl1Change(Sender: TObject);
-begin
-
 end;
 
 /// ///////////////////////////////////////////////////////////////////////////////

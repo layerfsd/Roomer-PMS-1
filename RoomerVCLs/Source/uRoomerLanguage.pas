@@ -17,6 +17,7 @@ uses
   , vcl.Menus
   , vcl.Buttons
   , vcl.Controls
+  , Vcl.ActnList
   , VCLTee.Chart
   , stdCtrls
   , comCtrls
@@ -153,6 +154,7 @@ type
     procedure TranslateThis(comp: TsRadioButton; key: String); overload;
     procedure TranslateThis(comp: TdxBarSubItem; key: String); overload;
     procedure TranslateThis(comp: TMenuItem; key: String); overload;
+    procedure TranslateThis(comp: TAction; key: String); overload;
     procedure TranslateThis(comp: TdxDockPanel; key: String); overload;
     procedure TranslateThis(comp: TsLabel; key: String); overload;
     procedure TranslateThis(comp: TLabel; key: String); overload;
@@ -1014,6 +1016,9 @@ begin
   if comp is TCheckBox then
     TranslateThis(comp AS TCheckBox, key)
   else
+  if comp is TAction then
+    TranslateThis(comp as TAction, key)
+  else
   if comp is TMenuItem then
     TranslateThis(comp AS TMenuItem, key)
   else
@@ -1129,14 +1134,20 @@ end;
 
 procedure TRoomerLanguage.TranslateThis(comp : TButton; key : String);
 begin
-  comp.Caption := GetTranslationOfSpecifiedKey(key + 'Caption', comp.Caption);
-  CheckHintComponentName(comp, GetTranslationOfSpecifiedKey(key + 'Hint', comp.Hint));
+  if comp.Action = nil then
+  begin
+    comp.Caption := GetTranslationOfSpecifiedKey(key + 'Caption', comp.Caption);
+    CheckHintComponentName(comp, GetTranslationOfSpecifiedKey(key + 'Hint', comp.Hint));
+  end;
 end;
 
 procedure TRoomerLanguage.TranslateThis(comp : TSpeedButton; key : String);
 begin
-  comp.Caption := GetTranslationOfSpecifiedKey(key + 'Caption', comp.Caption);
-  CheckHintComponentName(comp, GetTranslationOfSpecifiedKey(key + 'Hint', comp.Hint));
+  if comp.Action = nil then
+  begin
+    comp.Caption := GetTranslationOfSpecifiedKey(key + 'Caption', comp.Caption);
+    CheckHintComponentName(comp, GetTranslationOfSpecifiedKey(key + 'Hint', comp.Hint));
+  end;
 end;
 
 procedure TRoomerLanguage.TranslateThis(comp : TLabel; key : String);
@@ -1146,6 +1157,15 @@ begin
 end;
 
 procedure TRoomerLanguage.TranslateThis(comp : TMenuItem; key : String);
+begin
+  if comp.Action = nil then
+  begin
+    comp.Caption := GetTranslationOfSpecifiedKey(key + 'Caption', comp.Caption);
+    comp.Hint := AddNameOfComponentToHintIfNeeded(comp) + GetTranslationOfSpecifiedKey(key + 'Hint', comp.Hint);
+  end;
+end;
+
+procedure TRoomerLanguage.TranslateThis(comp : TAction; key : String);
 begin
   comp.Caption := GetTranslationOfSpecifiedKey(key + 'Caption', comp.Caption);
   comp.Hint := AddNameOfComponentToHintIfNeeded(comp) + GetTranslationOfSpecifiedKey(key + 'Hint', comp.Hint);
@@ -1209,8 +1229,11 @@ end;
 
 procedure TRoomerLanguage.TranslateThis(comp : TsButton; key : String);
 begin
-  comp.Caption := GetTranslationOfSpecifiedKey(key + 'Caption', comp.Caption);
-  CheckHintComponentName(comp, GetTranslationOfSpecifiedKey(key + 'Hint', comp.Hint));
+  if comp.Action = nil then
+  begin
+    comp.Caption := GetTranslationOfSpecifiedKey(key + 'Caption', comp.Caption);
+    CheckHintComponentName(comp, GetTranslationOfSpecifiedKey(key + 'Hint', comp.Hint));
+  end;
 end;
 
 procedure TRoomerLanguage.TranslateThis(comp : TsTreeView; key : String);
@@ -1233,8 +1256,11 @@ end;
 
 procedure TRoomerLanguage.TranslateThis(comp : TsSpeedButton; key : String);
 begin
-  comp.Caption := GetTranslationOfSpecifiedKey(key + 'Caption', comp.Caption);
-  CheckHintComponentName(comp, GetTranslationOfSpecifiedKey(key + 'Hint', comp.Hint));
+  if comp.Action = nil then
+  begin
+    comp.Caption := GetTranslationOfSpecifiedKey(key + 'Caption', comp.Caption);
+    CheckHintComponentName(comp, GetTranslationOfSpecifiedKey(key + 'Hint', comp.Hint));
+  end;
 end;
 
 procedure TRoomerLanguage.TranslateThis(comp : TsLabel; key : String);
@@ -1284,8 +1310,11 @@ end;
 
 procedure TRoomerLanguage.TranslateThis(comp : TcxButton; key : String);
 begin
-  comp.Caption := GetTranslationOfSpecifiedKey(key + 'Caption', comp.Caption);
-  CheckHintComponentName(comp, GetTranslationOfSpecifiedKey(key + 'Hint', comp.Hint));
+  if comp.Action = nil then
+  begin
+    comp.Caption := GetTranslationOfSpecifiedKey(key + 'Caption', comp.Caption);
+    CheckHintComponentName(comp, GetTranslationOfSpecifiedKey(key + 'Hint', comp.Hint));
+  end;
 end;
 
 procedure TRoomerLanguage.TranslateThis(comp : TcxGridDBColumn; key : String);

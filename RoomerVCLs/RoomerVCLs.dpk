@@ -109,7 +109,9 @@ contains
   uFileSystemUtils in '..\uFileSystemUtils.pas',
   UbuntuProgressColors in 'Source\UbuntuProgressColors.pas',
   FlatUtilitys in 'Source\FlatUtilitys.pas',
-  HSLUtils in 'Source\HSLUtils.pas';
+  HSLUtils in 'Source\HSLUtils.pas',
+  uRoomerHttpClient in 'Source\uRoomerHttpClient.pas',
+  uFloatUtils in 'Source\uFloatUtils.pas';
 
 end.
 

@@ -1771,7 +1771,7 @@ var
   s: string;
   rSet: TRoomerDataSet;
 begin
-  result := 'MIXED';
+  result := '';
 
   s := '';
   s := s + 'SELECT distinct resflag from roomsdate where reservation=%d ';

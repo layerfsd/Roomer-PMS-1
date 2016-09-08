@@ -57,8 +57,8 @@ object frmDeparturesReport: TfrmDeparturesReport
       object rbToday: TsRadioButton
         Left = 4
         Top = 21
-        Width = 50
-        Height = 20
+        Width = 58
+        Height = 19
         Caption = 'Today'
         Checked = True
         TabOrder = 0
@@ -68,8 +68,8 @@ object frmDeparturesReport: TfrmDeparturesReport
       object rbTomorrow: TsRadioButton
         Left = 4
         Top = 46
-        Width = 68
-        Height = 20
+        Width = 76
+        Height = 19
         Caption = 'Tomorrow'
         TabOrder = 1
         OnClick = rbRadioButtonClick
@@ -77,8 +77,8 @@ object frmDeparturesReport: TfrmDeparturesReport
       object rbManualRange: TsRadioButton
         Left = 119
         Top = 21
-        Width = 114
-        Height = 20
+        Width = 122
+        Height = 19
         Caption = 'Manual date range:'
         TabOrder = 2
         OnClick = rbRadioButtonClick
@@ -99,7 +99,7 @@ object frmDeparturesReport: TfrmDeparturesReport
         MaxLength = 10
         ParentFont = False
         TabOrder = 3
-        Text = '  .  .    '
+        Text = '  -  -    '
         CheckOnExit = True
         SkinData.SkinSection = 'EDIT'
         GlyphMode.Blend = 0
@@ -123,7 +123,7 @@ object frmDeparturesReport: TfrmDeparturesReport
         MaxLength = 10
         ParentFont = False
         TabOrder = 4
-        Text = '  .  .    '
+        Text = '  -  -    '
         CheckOnExit = True
         SkinData.SkinSection = 'EDIT'
         GlyphMode.Blend = 0
@@ -134,22 +134,19 @@ object frmDeparturesReport: TfrmDeparturesReport
     end
     object pnlExportButtons: TsPanel
       Left = 1
-      Top = 104
+      Top = 100
       Width = 1053
-      Height = 39
+      Height = 43
       Align = alBottom
       BevelOuter = bvNone
       TabOrder = 2
       SkinData.SkinSection = 'PANEL'
       object btnExcel: TsButton
         AlignWithMargins = True
-        Left = 15
-        Top = 5
+        Left = 3
+        Top = 3
         Width = 128
-        Height = 29
-        Margins.Left = 15
-        Margins.Top = 5
-        Margins.Bottom = 5
+        Height = 37
         Align = alLeft
         Caption = 'Excel'
         ImageIndex = 115
@@ -158,32 +155,26 @@ object frmDeparturesReport: TfrmDeparturesReport
         OnClick = btnExcelClick
         SkinData.SkinSection = 'BUTTON'
       end
-      object btnCheckIn: TsButton
+      object btnCheckOut: TsButton
         AlignWithMargins = True
-        Left = 161
-        Top = 5
+        Left = 137
+        Top = 3
         Width = 128
-        Height = 29
-        Margins.Left = 15
-        Margins.Top = 5
-        Margins.Bottom = 5
+        Height = 37
         Align = alLeft
         Caption = 'Check out'
-        ImageIndex = 44
+        ImageIndex = 46
         Images = DImages.PngImageList1
         TabOrder = 1
-        OnClick = btnCheckInClick
+        OnClick = btnCheckOutClick
         SkinData.SkinSection = 'BUTTON'
       end
       object btnProfile: TsButton
         AlignWithMargins = True
-        Left = 307
-        Top = 5
-        Width = 100
-        Height = 29
-        Margins.Left = 15
-        Margins.Top = 5
-        Margins.Bottom = 5
+        Left = 271
+        Top = 3
+        Width = 128
+        Height = 37
         Align = alLeft
         Caption = 'Profile'
         ImageIndex = 37
@@ -194,13 +185,10 @@ object frmDeparturesReport: TfrmDeparturesReport
       end
       object btnInvoice: TsButton
         AlignWithMargins = True
-        Left = 425
-        Top = 5
+        Left = 405
+        Top = 3
         Width = 128
-        Height = 29
-        Margins.Left = 15
-        Margins.Top = 5
-        Margins.Bottom = 5
+        Height = 37
         Align = alLeft
         Caption = 'Invoice'
         DropDownMenu = pmnuInvoiceMenu
@@ -208,6 +196,7 @@ object frmDeparturesReport: TfrmDeparturesReport
         Images = DImages.PngImageList1
         Style = bsSplitButton
         TabOrder = 3
+        OnClick = mnuRoomInvoiceClick
         SkinData.SkinSection = 'BUTTON'
       end
     end
@@ -230,167 +219,99 @@ object frmDeparturesReport: TfrmDeparturesReport
     Width = 1055
     Height = 421
     Align = alClient
+    PopupMenu = pnmuGridMenu
     TabOrder = 2
-    object tvDeparturesList: TcxGridDBBandedTableView
+    LookAndFeel.NativeStyle = False
+    object tvDeparturesList: TcxGridDBTableView
       Navigator.Buttons.CustomButtons = <>
       DataController.DataSource = DeparturesListDS
-      DataController.Summary.DefaultGroupSummaryItems = <>
-      DataController.Summary.FooterSummaryItems = <>
-      DataController.Summary.SummaryGroups = <>
-      Bands = <
+      DataController.Summary.DefaultGroupSummaryItems = <
         item
-          Caption = 'Guest'
-          FixedKind = fkLeft
+          Kind = skCount
+          Position = spFooter
+          Column = tvDeparturesListRoom
         end
         item
-          Caption = 'Customer'
-          Width = 271
-        end
-        item
-          Caption = 'Finance'
-        end
-        item
-          Caption = 'Other'
+          Kind = skSum
+          Position = spFooter
+          Column = tvDeparturesListNumGuests
         end>
-      object tvDeparturesListRoom: TcxGridDBBandedColumn
+      DataController.Summary.FooterSummaryItems = <
+        item
+          Kind = skCount
+          Column = tvDeparturesListRoom
+        end
+        item
+          Format = '0'
+          Kind = skSum
+          Column = tvDeparturesListNumGuests
+        end>
+      DataController.Summary.SummaryGroups = <>
+      FilterRow.Visible = True
+      OptionsData.CancelOnExit = False
+      OptionsData.Deleting = False
+      OptionsData.DeletingConfirmation = False
+      OptionsData.Editing = False
+      OptionsData.Inserting = False
+      OptionsView.ColumnAutoWidth = True
+      OptionsView.Footer = True
+      OptionsView.GroupFooters = gfAlwaysVisible
+      object tvDeparturesListRoom: TcxGridDBColumn
         DataBinding.FieldName = 'Room'
-        Width = 62
-        Position.BandIndex = 0
-        Position.ColIndex = 1
-        Position.RowIndex = 0
+        SortIndex = 0
+        SortOrder = soDescending
+        Width = 56
       end
-      object tvDeparturesListRoomType: TcxGridDBBandedColumn
-        DataBinding.FieldName = 'RoomType'
-        Width = 64
-        Position.BandIndex = 0
-        Position.ColIndex = 7
-        Position.RowIndex = 0
-      end
-      object tvDeparturesListGuestName: TcxGridDBBandedColumn
-        Caption = 'Main Guest'
+      object tvDeparturesListGuestName: TcxGridDBColumn
         DataBinding.FieldName = 'GuestName'
-        Width = 173
-        Position.BandIndex = 0
-        Position.ColIndex = 2
-        Position.RowIndex = 0
+        Width = 200
       end
-      object tvDeparturesListNumGuests: TcxGridDBBandedColumn
-        Caption = 'Guests'
-        DataBinding.FieldName = 'NumGuests'
-        Width = 44
-        Position.BandIndex = 0
-        Position.ColIndex = 6
-        Position.RowIndex = 0
+      object tvDeparturesListRoomerReservationId: TcxGridDBColumn
+        Caption = 'Res. Id'
+        DataBinding.FieldName = 'RoomerReservationId'
+        Width = 83
       end
-      object tvDeparturesListArrival: TcxGridDBBandedColumn
-        DataBinding.FieldName = 'Arrival'
-        Width = 69
-        Position.BandIndex = 0
-        Position.ColIndex = 3
-        Position.RowIndex = 0
-      end
-      object tvDeparturesListDeparture: TcxGridDBBandedColumn
-        DataBinding.FieldName = 'Departure'
-        Width = 59
-        Position.BandIndex = 0
-        Position.ColIndex = 4
-        Position.RowIndex = 0
-      end
-      object tvDeparturesListExpectedCheckOutTime: TcxGridDBBandedColumn
-        Caption = 'Exp. COT'
-        DataBinding.FieldName = 'ExpectedCheckOutTime'
-        Width = 54
-        Position.BandIndex = 0
-        Position.ColIndex = 5
-        Position.RowIndex = 0
-      end
-      object tvDeparturesListCustomer: TcxGridDBBandedColumn
-        DataBinding.FieldName = 'Customer'
-        Width = 108
-        Position.BandIndex = 1
-        Position.ColIndex = 0
-        Position.RowIndex = 0
-      end
-      object tvDeparturesListCompanyName: TcxGridDBBandedColumn
+      object tvDeparturesListCompanyName: TcxGridDBColumn
         Caption = 'Company Name'
         DataBinding.FieldName = 'CompanyName'
-        Width = 215
-        Position.BandIndex = 1
-        Position.ColIndex = 1
-        Position.RowIndex = 0
+        Width = 200
       end
-      object tvDeparturesListNumNights: TcxGridDBBandedColumn
-        Caption = 'Nights'
-        DataBinding.FieldName = 'NumNights'
-        Width = 70
-        Position.BandIndex = 2
-        Position.ColIndex = 0
-        Position.RowIndex = 0
+      object tvDeparturesListArrival: TcxGridDBColumn
+        DataBinding.FieldName = 'Arrival'
+        PropertiesClassName = 'TcxDateEditProperties'
+        Properties.ShowTime = False
       end
-      object tvDeparturesListAverageRatePerNight: TcxGridDBBandedColumn
-        Caption = 'Rate Per Night'
+      object tvDeparturesListDeparture: TcxGridDBColumn
+        DataBinding.FieldName = 'Departure'
+      end
+      object tvDeparturesListRoomType: TcxGridDBColumn
+        DataBinding.FieldName = 'RoomType'
+        Width = 64
+      end
+      object tvDeparturesListNumGuests: TcxGridDBColumn
+        Caption = 'Guests'
+        DataBinding.FieldName = 'NumGuests'
+        HeaderAlignmentHorz = taRightJustify
+        Width = 64
+      end
+      object tvDeparturesListAverageRatePerNight: TcxGridDBColumn
+        Caption = 'Rate Amount'
         DataBinding.FieldName = 'AverageRatePerNight'
-        PropertiesClassName = 'TcxCurrencyEditProperties'
-        OnGetProperties = tvDeparturesListAverageRatePerNightGetProperties
-        Width = 70
-        Position.BandIndex = 2
-        Position.ColIndex = 1
-        Position.RowIndex = 0
+        OnGetProperties = tvDeparturesList2AverageRatePerNightGetProperties
+        HeaderAlignmentHorz = taRightJustify
+        Width = 82
       end
-      object tvDeparturesListTotalRent: TcxGridDBBandedColumn
-        Caption = 'Total Rent'
-        DataBinding.FieldName = 'TotalRent'
-        Width = 70
-        Position.BandIndex = 2
-        Position.ColIndex = 2
-        Position.RowIndex = 0
-      end
-      object tvDeparturesListTotalSale: TcxGridDBBandedColumn
-        Caption = 'Total Sale'
-        DataBinding.FieldName = 'TotalSale'
-        Width = 70
-        Position.BandIndex = 2
-        Position.ColIndex = 3
-        Position.RowIndex = 0
-      end
-      object tvDeparturesListTotalPayments: TcxGridDBBandedColumn
-        Caption = 'Payments'
-        DataBinding.FieldName = 'TotalPayments'
-        Width = 70
-        Position.BandIndex = 2
-        Position.ColIndex = 4
-        Position.RowIndex = 0
-      end
-      object tvDeparturesListBalance: TcxGridDBBandedColumn
+      object tvDeparturesListBalance: TcxGridDBColumn
         DataBinding.FieldName = 'Balance'
-        Width = 70
-        Position.BandIndex = 2
-        Position.ColIndex = 5
-        Position.RowIndex = 0
+        OnGetProperties = tvDeparturesList2AverageRatePerNightGetProperties
+        HeaderAlignmentHorz = taRightJustify
       end
-      object tvDeparturesListRoomerReservationId: TcxGridDBBandedColumn
-        Caption = 'Roomer Res. Id'
-        DataBinding.FieldName = 'RoomerReservationId'
-        Width = 70
-        Position.BandIndex = 3
-        Position.ColIndex = 0
-        Position.RowIndex = 0
-      end
-      object tvDeparturesListRoomerRoomReservationId: TcxGridDBBandedColumn
-        Caption = 'Roomer RoomRes. Id'
-        DataBinding.FieldName = 'RoomerRoomReservationId'
-        Width = 70
-        Position.BandIndex = 3
-        Position.ColIndex = 1
-        Position.RowIndex = 0
-      end
-      object tvDeparturesListCheckOutDate: TcxGridDBBandedColumn
-        DataBinding.FieldName = 'CheckOutDate'
-        Visible = False
-        Width = 70
-        Position.BandIndex = 0
-        Position.ColIndex = 0
-        Position.RowIndex = 0
+      object tvDeparturesListExpectedCheckOutTime: TcxGridDBColumn
+        Caption = 'Expected COT'
+        DataBinding.FieldName = 'ExpectedCheckOutTime'
+        PropertiesClassName = 'TcxTimeEditProperties'
+        Properties.UseTimeFormatWhenUnfocused = False
+        Width = 79
       end
     end
     object lvDeparturesList: TcxGridLevel
@@ -425,10 +346,6 @@ object frmDeparturesReport: TfrmDeparturesReport
       end
       item
         Name = 'RoomerReservationId'
-        DataType = ftInteger
-      end
-      item
-        Name = 'RoomerRoomReservationId'
         DataType = ftInteger
       end
       item
@@ -482,20 +399,12 @@ object frmDeparturesReport: TfrmDeparturesReport
         DataType = ftFloat
       end
       item
-        Name = 'TotalRent'
-        DataType = ftFloat
-      end
-      item
-        Name = 'TotalSale'
-        DataType = ftFloat
-      end
-      item
-        Name = 'TotalPayments'
-        DataType = ftFloat
-      end
-      item
         Name = 'Balance'
         DataType = ftFloat
+      end
+      item
+        Name = 'RoomerRoomReservationID'
+        DataType = ftInteger
       end>
     IndexDefs = <>
     SortOptions = []
@@ -504,7 +413,7 @@ object frmDeparturesReport: TfrmDeparturesReport
     LoadedCompletely = False
     SavedCompletely = False
     FilterOptions = []
-    Version = '7.62.00 Standard Edition'
+    Version = '7.22.00 Standard Edition'
     LanguageID = 0
     SortID = 0
     SubLanguageID = 1
@@ -552,7 +461,7 @@ object frmDeparturesReport: TfrmDeparturesReport
     Top = 328
     object mnuCheckin: TMenuItem
       Caption = 'Check in'
-      OnClick = btnCheckInClick
+      OnClick = btnCheckOutClick
     end
     object mnuProfile: TMenuItem
       Caption = 'Profile'
