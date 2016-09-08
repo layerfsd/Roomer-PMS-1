@@ -2871,8 +2871,8 @@ object frmReservationProfile: TfrmReservationProfile
         object chkShowAllGuests: TsCheckBox
           Left = 333
           Top = 11
-          Width = 94
-          Height = 20
+          Width = 102
+          Height = 19
           Caption = 'Show all guests'
           Anchors = [akLeft, akTop, akRight]
           TabOrder = 4
@@ -3823,8 +3823,6 @@ object frmReservationProfile: TfrmReservationProfile
     Align = alBottom
     TabOrder = 4
     SkinData.SkinSection = 'PANEL'
-    ExplicitLeft = -8
-    ExplicitTop = 621
     DesignSize = (
       1136
       33)
