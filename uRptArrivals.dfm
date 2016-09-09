@@ -1,24 +1,14 @@
-object frmArrivalsReport: TfrmArrivalsReport
-  Left = 0
-  Top = 0
+inherited frmArrivalsReport: TfrmArrivalsReport
   Caption = 'Arrivals'
   ClientHeight = 586
   ClientWidth = 1123
-  Color = clBtnFace
-  Font.Charset = DEFAULT_CHARSET
-  Font.Color = clWindowText
   Font.Height = -11
-  Font.Name = 'Tahoma'
-  Font.Style = []
-  KeyPreview = True
-  OldCreateOrder = False
   Position = poOwnerFormCenter
-  OnCreate = FormCreate
-  OnKeyDown = FormKeyDown
-  OnShow = FormShow
+  ExplicitWidth = 1139
+  ExplicitHeight = 625
   PixelsPerInch = 96
   TextHeight = 13
-  object pnlFilter: TsPanel
+  object pnlFilter: TsPanel [0]
     Left = 0
     Top = 0
     Width = 1123
@@ -57,8 +47,8 @@ object frmArrivalsReport: TfrmArrivalsReport
       object rbToday: TsRadioButton
         Left = 4
         Top = 21
-        Width = 50
-        Height = 20
+        Width = 58
+        Height = 19
         Caption = 'Today'
         Checked = True
         TabOrder = 0
@@ -68,8 +58,8 @@ object frmArrivalsReport: TfrmArrivalsReport
       object rbTomorrow: TsRadioButton
         Left = 4
         Top = 46
-        Width = 68
-        Height = 20
+        Width = 76
+        Height = 19
         Caption = 'Tomorrow'
         TabOrder = 1
         OnClick = rbRadioButtonClick
@@ -77,8 +67,8 @@ object frmArrivalsReport: TfrmArrivalsReport
       object rbManualRange: TsRadioButton
         Left = 119
         Top = 21
-        Width = 114
-        Height = 20
+        Width = 122
+        Height = 19
         Caption = 'Manual date range:'
         TabOrder = 2
         OnClick = rbRadioButtonClick
@@ -215,26 +205,14 @@ object frmArrivalsReport: TfrmArrivalsReport
       end
     end
   end
-  object dxStatusBar: TdxStatusBar
-    Left = 0
-    Top = 566
-    Width = 1123
-    Height = 20
-    Panels = <>
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -11
-    Font.Name = 'Tahoma'
-    Font.Style = []
-  end
-  object grArrivalsList: TcxGrid
+  object grArrivalsList: TcxGrid [1]
     Left = 0
     Top = 144
     Width = 1123
     Height = 422
     Align = alClient
     PopupMenu = pnmuGridMenu
-    TabOrder = 2
+    TabOrder = 1
     LookAndFeel.NativeStyle = False
     object grArrivalsListDBTableView1: TcxGridDBTableView
       Navigator.Buttons.CustomButtons = <>
@@ -340,10 +318,15 @@ object frmArrivalsReport: TfrmArrivalsReport
       GridView = grArrivalsListDBTableView1
     end
   end
-  object FormStore: TcxPropertiesStore
+  inherited dxStatusBar: TdxStatusBar
+    Top = 566
+    Width = 1123
+    ExplicitTop = 566
+  end
+  inherited psRoomerBase: TcxPropertiesStore
     Components = <
       item
-        Component = Owner
+        Component = frmBaseRoomerForm.Owner
         Properties.Strings = (
           'Height'
           'Left'
@@ -351,10 +334,6 @@ object frmArrivalsReport: TfrmArrivalsReport
           'Top'
           'Width')
       end>
-    StorageName = 'Software\Roomer\FormStatus\frmRptArrivals'
-    StorageType = stRegistry
-    Left = 330
-    Top = 358
   end
   object kbmArrivalsList: TkbmMemTable
     Active = True

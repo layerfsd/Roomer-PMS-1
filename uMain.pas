@@ -723,15 +723,14 @@ type
     __TimingResult: TsLabel;
     mnuCancelRoomFromRoomReservation: TMenuItem;
     __N10: TMenuItem;
-    btnRepDepartures: TdxBarLargeButton;
     dxBarButton6: TdxBarButton;
-    btnRptDepartures: TdxBarLargeButton;
     dxRptStockitems: TdxBarLargeButton;
     btnHideCancelledBookings: TdxBarLargeButton;
     barinnFinancials: TdxBar;
     btnCloseCurrentDay: TdxBarLargeButton;
     barinnHousekeeping: TdxBar;
     btnSimpleHouseKeeping: TdxBarLargeButton;
+    btnRptDepartures: TdxBarLargeButton;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
@@ -4993,7 +4992,7 @@ procedure TfrmMain.C4Click(Sender: TObject);
 var
   iRoomReservation: integer;
   iReservation: integer;
-  sText, status, Room, name: String;
+//  sText, status, Room, name: String;
 begin
   if mAllReservations.eof OR mAllReservations.BOF then
     exit;

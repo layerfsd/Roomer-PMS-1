@@ -10,14 +10,14 @@ uses
   dxSkinDarkSide, dxSkinTheAsphaltWorld, dxSkinsDefaultPainters, dxSkinsdxStatusBarPainter, cxStyles,
   dxSkinscxPCPainter, cxCustomData, cxFilter, cxData, cxDataStorage, cxEdit, cxNavigator, cxDBData, cxGridLevel,
   cxGridCustomTableView, cxGridTableView, cxGridBandedTableView, cxGridDBBandedTableView, cxGridCustomView, cxGrid,
-  dxStatusBar, cxGridDBTableView, Vcl.Grids, Vcl.DBGrids, Vcl.Menus, cxTimeEdit, ppParameter, ppDesignLayer, ppCtrls,
+  cxGridDBTableView, Vcl.Grids, Vcl.DBGrids, Vcl.Menus, cxTimeEdit, ppParameter, ppDesignLayer, ppCtrls,
   ppBands, ppVar, ppPrnabl, ppClass, ppCache, ppProd, ppReport, ppDB, ppComm, ppRelatv, ppDBPipe
-  , uCurrencyHandler
+  , uCurrencyHandler,
+    uRoomerForm, dxStatusBar
   ;
 
 type
-  TfrmArrivalsReport = class(TForm)
-    FormStore: TcxPropertiesStore;
+  TfrmArrivalsReport = class(TfrmBaseRoomerForm)
     kbmArrivalsList: TkbmMemTable;
     ArrivalsListDS: TDataSource;
     pnlFilter: TsPanel;
@@ -30,7 +30,6 @@ type
     dtDateTo: TsDateEdit;
     pnlExportButtons: TsPanel;
     btnExcel: TsButton;
-    dxStatusBar: TdxStatusBar;
     grArrivalsList: TcxGrid;
     lvArrivalsListLevel1: TcxGridLevel;
     grArrivalsListDBTableView1: TcxGridDBTableView;
@@ -125,10 +124,7 @@ type
     StringField5: TStringField;
     IntegerField3: TIntegerField;
     dsArrivalsReport: TDataSource;
-    procedure FormCreate(Sender: TObject);
-    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure rbRadioButtonClick(Sender: TObject);
-    procedure FormShow(Sender: TObject);
     procedure btnExcelClick(Sender: TObject);
     procedure btnRefreshClick(Sender: TObject);
     procedure kbmArrivalsListAfterScroll(DataSet: TDataSet);
@@ -150,12 +146,11 @@ type
     FRefreshingdata: boolean;
     FCurrencyhandler: TCurrencyHandler;
     { Private declarations }
-    procedure UpdateControls;
     procedure SetManualDates(aFrom, aTo: TDate);
-    procedure RefreshData;
     function ConstructSQL: string;
   protected
-    procedure WndProc(var message: TMessage); override;
+    procedure RefreshData; override;
+    procedure UpdateControls; override;
   public
     constructor Create(aOwner: TComponent); override;
     destructor Destroy; override;
@@ -234,8 +229,6 @@ const
   cSqlForSingleDate = '      AND rd.ADate = ''%s'' ';
   cSqlForDateRange = '      AND rd.ADate >= ''%s'' AND rd.ADate <= ''%s'' ';
 
-  WM_REFRESH_DATA = WM_User + 51;
-
 
 function ShowArrivalsReport: boolean;
 var
@@ -258,7 +251,7 @@ begin
   lStateChangeHandler := TRoomReservationStateChangeHandler.Create(kbmArrivalsList['RoomerReservationID'], kbmArrivalsList['RoomerRoomReservationID']);
   try
     if lStateChangeHandler.ChangeState(rsGuests) then
-       PostMessage(handle, WM_REFRESH_DATA, 0, 0);
+       RefreshData;
   finally
     lStateChangeHandler.Free;
   end;
@@ -279,12 +272,12 @@ end;
 procedure TfrmArrivalsReport.btnProfileClick(Sender: TObject);
 begin
   if EditReservation(kbmArrivalsList['RoomerReservationID'], kbmArrivalsList['RoomerRoomReservationID']) then
-    postMessage(handle, WM_REFRESH_DATA, 0, 0);
+    RefreshData;
 end;
 
 procedure TfrmArrivalsReport.btnRefreshClick(Sender: TObject);
 begin
-  postMessage(handle, WM_REFRESH_DATA, 0, 0);
+  RefreshData;
 end;
 
 procedure TfrmArrivalsReport.btnReportClick(Sender: TObject);
@@ -347,25 +340,6 @@ procedure TfrmArrivalsReport.dtDateToCloseUp(Sender: TObject);
 begin
  if dtDateFrom.Date > dtDateTo.Date then
    dtDateFrom.Date := dtDateTo.Date;
-end;
-
-procedure TfrmArrivalsReport.FormCreate(Sender: TObject);
-begin
-  RoomerLanguage.TranslateThisForm(self);
-  glb.PerformAuthenticationAssertion(self);
-  PlaceFormOnVisibleMonitor(self);
-end;
-
-procedure TfrmArrivalsReport.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-begin
-  if Key = VK_ESCAPE then
-    Close;
-end;
-
-procedure TfrmArrivalsReport.FormShow(Sender: TObject);
-begin
-  UpdateControls;
-  postMessage(handle, WM_REFRESH_DATA, 0, 0);
 end;
 
 procedure TfrmArrivalsReport.mnuGroupInvoiceClick(Sender: TObject);
@@ -485,6 +459,8 @@ begin
   if FRefreshingData then
     Exit;
 
+  inherited;
+
   dtDateFrom.Enabled := rbManualRange.Checked;
   dtDateTo.Enabled := rbManualRange.Checked;
 
@@ -499,11 +475,5 @@ begin
   btnInvoice.Enabled := lDataAvailable;
 end;
 
-procedure TfrmArrivalsReport.WndProc(var message: TMessage);
-begin
-  if message.Msg = WM_REFRESH_DATA then
-    RefreshData;
-  inherited WndProc(message);
-end;
 
 end.

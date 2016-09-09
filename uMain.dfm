@@ -849,10 +849,6 @@ object frmMain: TfrmMain
         ImageIndex = 2
         SkinData.CustomColor = False
         SkinData.CustomFont = False
-        ExplicitLeft = 0
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
         object sLabel2: TsLabel
           Left = 224
           Top = 400
@@ -3133,7 +3129,6 @@ object frmMain: TfrmMain
       Index = 1
     end
     object rbTabInvoice: TdxRibbonTab
-      Active = True
       Caption = 'Invoice'
       Groups = <
         item
@@ -3152,6 +3147,7 @@ object frmMain: TfrmMain
       Index = 2
     end
     object rbTabReports: TdxRibbonTab
+      Active = True
       Caption = 'Reports'
       Groups = <
         item
@@ -4996,6 +4992,10 @@ object frmMain: TfrmMain
         end
         item
           Visible = True
+          ItemName = 'btnRptDepartures'
+        end
+        item
+          Visible = True
           ItemName = 'btnRptNotes'
         end
         item
@@ -5075,7 +5075,7 @@ object frmMain: TfrmMain
     object barinnReportsInvoices: TdxBar
       Caption = 'Invoices'
       CaptionButtons = <>
-      DockedLeft = 850
+      DockedLeft = 827
       DockedTop = 0
       FloatLeft = 1324
       FloatTop = 8
@@ -5331,7 +5331,7 @@ object frmMain: TfrmMain
     object barinnBar10: TdxBar
       Caption = 'Ledger'
       CaptionButtons = <>
-      DockedLeft = 1059
+      DockedLeft = 1036
       DockedTop = 0
       FloatLeft = -183
       FloatTop = 8
@@ -6209,17 +6209,6 @@ object frmMain: TfrmMain
       Hint = 'New Button'
       Visible = ivAlways
     end
-    object btnRptDepartures: TdxBarLargeButton
-      Caption = 'Departures'
-      Category = 0
-      Hint = 'Departures'
-      Visible = ivAlways
-      LargeImageIndex = 134
-      ShortCut = 16452
-      OnClick = btnRptDeparturesClick
-      SyncImageIndex = False
-      ImageIndex = 134
-    end
     object dxRptStockitems: TdxBarLargeButton
       Caption = 'Stockitems'
       Category = 0
@@ -6257,6 +6246,16 @@ object frmMain: TfrmMain
       OnClick = btnSimpleHouseKeepingClick
       SyncImageIndex = False
       ImageIndex = 81
+    end
+    object btnRptDepartures: TdxBarLargeButton
+      Caption = 'Departures'
+      Category = 0
+      Hint = 'Departures'
+      Visible = ivAlways
+      LargeImageIndex = 134
+      OnClick = btnRptDeparturesClick
+      SyncImageIndex = False
+      ImageIndex = 134
     end
     object mmnuFile: TdxBarSubItem
       Caption = '&File'
