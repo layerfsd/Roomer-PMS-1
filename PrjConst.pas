@@ -604,7 +604,7 @@ begin
   constants.Add('shTx_FormCustomInvoicesMD_OneDayDate', 'One Day - select date');
   constants.Add('shTx_FormCustomInvoicesMD_PeriodDate', 'Period - select dates');
   constants.Add('shTx_FormCustomInvoicesMD_WrongDate', 'Wrong date selection');
-  
+
  (* constants.Add('shTx_G_NotArrived', 'Ókominn');
   constants.Add('shTx_G_CheckedIn', 'Innskráður');
   constants.Add('shTx_G_CheckedOut', 'Farinn');
@@ -614,12 +614,13 @@ begin
   constants.Add('shTx_G_NotArrived', 'Not Arrived');
   constants.Add('shTx_G_CheckedIn', 'Checked In');
   constants.Add('shTx_G_CheckedOut', 'Checked Out');
-  constants.Add('shTx_G_WaitingList', 'Waiting List');
   constants.Add('shTx_G_Alotment', 'Allotment');
   constants.Add('shTx_G_NoShow', 'No show');
   constants.Add('shTx_G_Blocked', 'Blocked');
   constants.Add('shTx_G_DepartingToday', 'Due to check out');
   constants.Add('shTx_G_Cancelled', 'Cancelled');
+  constants.Add('shTx_G_WaitingList', 'Optional Booking');
+  constants.Add('shTx_G_WaitingList_NEW', 'Waiting list');
 
  // constants.Add('shTx_G_Downpayment', 'Downpayment/innágreiðsla');
   constants.Add('shTx_G_Downpayment', 'Downpayment');
@@ -631,7 +632,6 @@ begin
   constants.Add('shTx_G_Guest', 'Guest');
   constants.Add('shTx_G_Departed', 'Departed');
   constants.Add('shTx_G_Reserved', 'Reserved');
-  constants.Add('shTx_G_Overbooked', 'Overbooked');
   constants.Add('shTx_G_Departing', 'Departing');
   constants.Add('shTx_G_Canceled', 'Canceled'); //*HJ 140206
   constants.Add('shTx_G_Tmp1', 'Tmp1'); //*HJ 140206

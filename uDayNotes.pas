@@ -1011,6 +1011,7 @@ begin
   s := s+'        WHERE roomsdate.RoomType=roomtypes.RoomType '#10;
   s := s+'        AND roomsdate.ADate=predefineddates.date '#10;
   s := s+'        AND ((NOT control.ExcluteWaitingList) OR roomreservations.Status<>'+quotedStr('O')+') '#10;
+  s := s+'        AND ((NOT control.ExcludeWaitingList_NEW) OR roomreservations.Status<>'+quotedStr('L')+') '#10;
   s := s+'        AND ((NOT control.ExcluteAllotment) OR roomreservations.Status<>'+quotedStr('A')+') '#10;
   s := s+'        AND ((NOT control.ExcluteOrder) OR roomreservations.Status<>'+quotedStr('P')+') '#10;
   s := s+'        AND ((NOT control.ExcluteDeparted) OR roomreservations.Status<>'+quotedStr(STATUS_CHECKED_OUT)+') '#10;
@@ -1318,28 +1319,3 @@ end.
 
 
 
- SELECT predefineddates.date AS ResDate, '#10;
-        roomtypes.RoomType, '#10;
-        roomtypes.RoomTypeGroup, '#10;
-        roomtypes.description, '#10;
-        roomtypes.NumberGuests, '#10;
-        (SELECT COUNT(*) '#10;
-         FROM rooms '#10;
-         WHERE rooms.RoomType=roomtypes.RoomType) - '#10;
-        (SELECT COUNT(*) '#10;
-         FROM roomsdate '#10;
-            LEFT JOIN roomreservations ON roomreservations.roomreservation=roomsdate.roomreservation '#10;
-         WHERE roomsdate.RoomType=roomtypes.RoomType '#10;
-         AND roomsdate.ADate=predefineddates.date '#10;
-         AND ((NOT control.ExcluteWaitingList) OR roomreservations.Status<>'+quotedStr('O')+') '#10;
-         AND ((NOT control.ExcluteAllotment) OR roomreservations.Status<>'+quotedStr('A')+') '#10;
-         AND ((NOT control.ExcluteOrder) OR roomreservations.Status<>'+quotedStr('P')+') '#10;
-         AND ((NOT control.ExcluteDeparted) OR roomreservations.Status<>'+quotedStr(STATUS_CHECKED_OUT)+') '#10;
-         AND ((NOT control.ExcluteGuest) OR roomreservations.Status<>'+quotedStr('G')+') '#10;
-         AND ((NOT control.ExcluteBlocked) OR roomreservations.Status<>'+quotedStr('B')+') '#10;
-         AND ((NOT control.ExcluteNoShow) OR roomreservations.Status<>'+quotedStr('N')+') '#10;
-         ) AS available '#10;
- FROM predefineddates, roomtypes, control '#10;
- WHERE predefineddates.date>=%s AND predefineddates.date<=DATE_ADD(%s,INTERVAL %d DAY) ;
- GROUP BY predefineddates.date, roomtypes.RoomType
-

@@ -222,6 +222,8 @@ type
     labIsFiltered: TsLabel;
     pg001Location: TcxDBPivotGridField;
     tvRoomsDataLocation: TcxGridDBColumn;
+    chkExcludeWaitingList_NEW: TsCheckBox;
+    chkExcludeWaitingList_NEW_NoRooms: TsCheckBox;
 
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -571,6 +573,7 @@ begin
   result := '';
 
   if chkExcluteWaitingListNoRooms.checked then sNoRooms       := sNoRooms+_db('O')+',';
+  if chkExcludeWaitingList_NEW_NoRooms.checked then sNoRooms  := sNoRooms+_db('L')+',';
   if chkExcluteOrderNoRooms.checked then       sNoRooms       := sNoRooms+_db('P')+',';
   if chkExcluteGuestNoRooms.checked then       sNoRooms       := sNoRooms+_db('G')+',';
   if chkExcluteDepartedNoRooms.checked then    sNoRooms       := sNoRooms+_db('D')+',';
@@ -579,6 +582,7 @@ begin
   if chkExcluteNoshowNoRooms.checked then      sNoRooms       := sNoRooms+_db('N')+',';
 
   if chkExcluteWaitingList.checked then sRooms       := sRooms+_db('O')+',';
+  if chkExcludeWaitingList_NEW.checked then sRooms   := sRooms+_db('L')+',';
   if chkExcluteOrder.checked then       sRooms       := sRooms+_db('P')+',';
   if chkExcluteGuest.checked then       sRooms       := sRooms+_db('G')+',';
   if chkExcluteDeparted.checked then    sRooms       := sRooms+_db('D')+',';

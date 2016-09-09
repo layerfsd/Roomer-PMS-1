@@ -22,7 +22,8 @@ uses
   , ud
   , cmpRoomerDataSet
   , cmpRoomerConnection
-  , Generics.Collections, uReservationStateDefinitions
+  , Generics.Collections
+  , uReservationStateDefinitions
   ;
 
 type
@@ -575,28 +576,7 @@ begin
             // if SingleReservations.FDeparture = _ToDate - 1 then
             // SingleReservations.FResStatus := rsDeparting
             // else
-            if Trim(FieldByName('Status').asString) = 'P' then
-              SingleReservations.FResStatus := rsReservation
-            else if Trim(FieldByName('Status').asString) = 'G' then
-              SingleReservations.FResStatus := rsGuests
-            else if Trim(FieldByName('Status').asString) = 'D' then
-              SingleReservations.FResStatus := rsDeparted
-            else if Trim(FieldByName('Status').asString) = 'R' then
-              SingleReservations.FResStatus := rsReserved
-            else if Trim(FieldByName('Status').asString) = 'O' then
-              SingleReservations.FResStatus := rsOverbooked
-            else if Trim(FieldByName('Status').asString) = 'A' then
-              SingleReservations.FResStatus := rsAlotment
-            else if Trim(FieldByName('Status').asString) = 'N' then
-              SingleReservations.FResStatus := rsNoShow
-            else if Trim(FieldByName('Status').asString) = 'B' then
-              SingleReservations.FResStatus := rsBlocked
-            else if Trim(FieldByName('Status').asString) = 'C' then
-              SingleReservations.FResStatus := rsCancelled
-            else if Trim(FieldByName('Status').asString) = 'W' then
-              SingleReservations.FResStatus := rsTmp1
-            else if Trim(FieldByName('Status').asString) = 'Z' then
-              SingleReservations.FResStatus := rsTmp1;
+            SingleReservations.FResStatus := TReservationState.FromResStatus(FieldByName('Status').asString);
 
             FReservationList.add(SingleReservations);
           end;
@@ -672,51 +652,7 @@ begin
               end;
 
             // --
-            if Trim(FieldByName('Status').asString) = 'P' then
-            begin
-              RoomObject.FResStatus := rsReservation
-            end
-            else if Trim(FieldByName('Status').asString) = 'G' then
-            begin
-              RoomObject.FResStatus := rsGuests
-            end
-            else if Trim(FieldByName('Status').asString) = 'D' then
-            begin
-              RoomObject.FResStatus := rsDeparted
-            end
-            else if Trim(FieldByName('Status').asString) = 'R' then
-            begin
-              RoomObject.FResStatus := rsReserved
-            end
-            else if Trim(FieldByName('Status').asString) = 'O' then
-            begin
-              RoomObject.FResStatus := rsOverbooked
-            end
-            else if Trim(FieldByName('Status').asString) = 'A' then
-            begin
-              RoomObject.FResStatus := rsAlotment
-            end
-            else if Trim(FieldByName('Status').asString) = 'N' then
-            begin
-              RoomObject.FResStatus := rsNoShow;
-            end
-            else if Trim(FieldByName('Status').asString) = 'B' then
-            begin
-              RoomObject.FResStatus := rsBlocked;
-            end
-            else if Trim(FieldByName('Status').asString) = 'C' then
-            begin
-              RoomObject.FResStatus := rsCancelled;
-            end
-            else if Trim(FieldByName('Status').asString) = 'W' then
-            begin
-              RoomObject.FResStatus := rsTmp1;
-            end
-            else if Trim(FieldByName('Status').asString) = 'Z' then
-            begin
-              RoomObject.FResStatus := rsAwaitingPayment;
-            end;
-
+            RoomObject.FResStatus := TReservationState.FromResStatus(FieldByName('Status').asString);
             SingleReservations.FRooms.add(RoomObject);
           end;
 

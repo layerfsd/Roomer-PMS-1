@@ -113,6 +113,8 @@ type
     FormStore: TcxPropertiesStore;
     labLocationsList: TsLabel;
     labLocations: TsLabel;
+    lvTotallistroomsWaitinglist_NEW: TcxGridDBBandedColumn;
+    lvTotallistpaxWaitinglist_NEW: TcxGridDBBandedColumn;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -217,7 +219,8 @@ var
 
   sArrival     : string;
   sDeparture   : string;
-  sWaitingList : string;
+  sWaitingList : String;
+  sOptionalBookings : string;
   sInhouse     : string;
   sStay        : string;
   sTotal       : String;
@@ -245,6 +248,7 @@ begin
                     _db(STATUS_CHECKED_OUT)+','+
                     _db(STATUS_TMP1)+','+
                     _db(STATUS_AWAITING_PAYMENT)+','+
+                    _db(STATUS_OPTIONAL)+','+
                     _db(STATUS_WAITING_LIST)+','+
                     _db(STATUS_ALLOTMENT)+','+
                     _db(STATUS_BLOCKED);
@@ -272,6 +276,7 @@ begin
 
     sStay        := _db(STATUS_NOT_ARRIVED)+','+_db(STATUS_ARRIVED)+','+_db(STATUS_CHECKED_OUT)+','+_db(STATUS_TMP1)+','+_db(STATUS_AWAITING_PAYMENT);
 
+    sOptionalBookings := _db(STATUS_OPTIONAL);
     sWaitingList := _db(STATUS_WAITING_LIST);
     sOutOfOrder  := _db(STATUS_BLOCKED);
     sAllotment   := _db(STATUS_ALLOTMENT);
@@ -321,9 +326,13 @@ begin
                 ' -  ((SELECT sum(numGuests) FROM roomreservations rr LEFT JOIN rooms on (rooms.room=rr.room and rooms.wildcard=0 and rooms.active=1)' +
                 '      WHERE (rr.arrival = pd.Date) AND rr.status in ('+sArrival+'))) AS paxStay '#10;
 
-    s := s+'   ,(SELECT count(rd.id) FROM roomsdate rd WHERE date(rd.Adate)=pd.Date and rd.resflag in ('+sWaitingList+')) AS roomsWaitinglist '#10;
+    s := s+'   ,(SELECT count(rd.id) FROM roomsdate rd WHERE date(rd.Adate)=pd.Date and rd.resflag in ('+sOptionalBookings+')) AS roomsWaitinglist '#10;
 
-    s := s+'   ,(SELECT count(pe.id) FROM persons pe WHERE RoomReservation IN ((SELECT roomreservation FROM roomsdate rd WHERE date(rd.Adate)=pd.Date and rd.resflag in ('+sWaitingList+'))))  AS paxWaitinglist '#10;
+    s := s+'   ,(SELECT count(rd.id) FROM roomsdate rd WHERE date(rd.Adate)=pd.Date and rd.resflag in ('+sWaitingList+')) AS roomsWaitinglist_NEW '#10;
+
+    s := s+'   ,(SELECT count(pe.id) FROM persons pe WHERE RoomReservation IN ((SELECT roomreservation FROM roomsdate rd WHERE date(rd.Adate)=pd.Date and rd.resflag in ('+sOptionalBookings+'))))  AS paxWaitinglist '#10;
+
+    s := s+'   ,(SELECT count(pe.id) FROM persons pe WHERE RoomReservation IN ((SELECT roomreservation FROM roomsdate rd WHERE date(rd.Adate)=pd.Date and rd.resflag in ('+sWaitingList+'))))  AS paxWaitinglist_NEW '#10;
 
     s := s+'   ,(SELECT count(rd.id) FROM roomsdate rd WHERE date(rd.Adate)=pd.Date and rd.resflag in ('+sAllotment+')) AS roomsAllotmennt '#10;
 

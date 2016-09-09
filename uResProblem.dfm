@@ -215,7 +215,7 @@ object frmResProblem: TfrmResProblem
     SearchFooter.HintHighlight = 'Highlight occurences'
     SearchFooter.MatchCaseCaption = 'Match case'
     SortSettings.DefaultFormat = ssAutomatic
-    Version = '7.9.1.0'
+    Version = '7.9.1.1'
     ExplicitWidth = 524
     ExplicitHeight = 248
     ColWidths = (

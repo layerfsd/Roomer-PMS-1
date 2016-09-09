@@ -197,11 +197,7 @@ function _DaysPerMonth(AYear, AMonth: Integer): Integer;
 function _WeekNum(const TDT:TDateTime) : Word;
 
 
-function _IndexToStatus(Index : Integer; MixedIncluded : Boolean = False) : string;
-function _StatusToIndex(Status : String; MixedIncluded : Boolean = False) : Integer; deprecated 'Use ord(TReservationState)';
-
 function _StatusToText(status : string) : string; deprecated 'Use TReservationState.AsReadableString';
-function _TextToStatus(text : string) : string; deprecated 'Use TReservationState';
 function _BreakfastToText(included : Boolean) : string;
 function _AccountTypeToText(isGroupAccount : Boolean) : string;
 
@@ -2669,76 +2665,6 @@ end;
 //  constants.Add('shTx_G_Blocked', 'Blocked');
 //  constants.Add('shTx_G_DepartingToday', 'Due to check out');
 //  constants.Add('shTx_G_Cancelled', 'Cancelled');
-
-
-function _IndexToStatus(Index : Integer; MixedIncluded : Boolean = False) : string;
-begin
-  result := 'P';
-  if Index < 0 then
-    exit;
-  case Index - ABS(ORD(MixedIncluded)) of
-    0 : result := 'G';
-    1 : result := 'P';
-    2 : result := STATUS_CHECKED_OUT;
-    3 : result := 'O';
-    4 : result := 'N';
-    5 : result := 'A';
-    6 : result := 'B';
-    7 : result := 'C';
-    8 : result := 'W';
-    9 : result := 'Z';
-  end;
-end;
-
-function _StatusToIndex(Status : String; MixedIncluded : Boolean = False) : Integer;
-//var ch : Char;
-begin
-  Result := ord(TReservationState.FromResStatus(Status));
-//  result := 0;
-//  ch := UpCase(Status[1]);
-//  case ch of
-//    'G' : result := 0;
-//    'P' : result := 1;
-//    STATUS_CHECKED_OUT : result := 2;
-//    'O' : result := 3;
-//    'N' : result := 4;
-//    'A' : result := 5;
-//    'B' : result := 6;
-//    'C' : result := 7;
-//    'W' : result := 8;
-//    'Z' : result := 9;
-//  end;
-//  result := ABS(ORD(MixedIncluded)) + result;
-end;
-
-function _TextToStatus(text : string) : string;
-begin
-  result := 'P';
-  if trim(text) = '' then
-    exit;
-  text := lowerCase(text);
-  if text = lowercase(GetTranslatedText('shTx_G_NotArrived')) then // 'not arrived' then
-    result := 'P';
-  if text = lowercase(GetTranslatedText('shTx_G_CheckedIn')) then // 'checked in' then
-    result := 'G';
-  if text = lowercase(GetTranslatedText('shTx_G_CheckedOut')) then // 'departed' then
-    result := STATUS_CHECKED_OUT;
-  if text = lowercase(GetTranslatedText('shTx_G_WaitingList')) then // 'optional booking' then
-    result := 'O';
-  if text = lowercase(GetTranslatedText('shTx_G_Alotment')) then // 'alotment' then
-    result := 'A';
-  if text = lowercase(GetTranslatedText('shTx_G_NoShow')) then // 'no-show' then
-    result := 'N';
-  if text = lowercase(GetTranslatedText('shTx_G_Blocked')) then // 'blocked' then
-    result := 'B';
-  if text = lowercase(GetTranslatedText('shTx_G_Cancelled')) then // 'canceled' then
-    result := 'C';
-  if text = '[n/a]' then
-    result := 'W';
-  if text = 'awaiting payment' then
-    result := 'Z';
-
-end;
 
 //  constants.Add('shTx_G_DueToArrive', 'Due to arrive');
 //  constants.Add('shTx_G_NotArrived', 'Not Arrived');

@@ -10,6 +10,7 @@ uses
   uReservationHintHolder, uEmbOccupancyView, uEmbPeriodView, uGuestProfiles, uStaffCommunication
     , uAllotmentToRes
     , uRoomerContainerClasses
+    , uRoomerDefinitions
 
   // Roomer
     , PrjConst, uReservationObjects, uRoomDatesOBJ, objRoomList2, objDayFreeRooms, objRoomTypeRoomCount, _Glob, hData,
@@ -1618,7 +1619,6 @@ uses
   uInvoiceCompare,
   GoogleOTP256,
   uInvoiceController,
-  uRoomerDefinitions,
   Math
     , uOfflineReportGrid
     , uRptArrivals
@@ -3607,26 +3607,18 @@ var
   letter: Char;
 begin
   result := false;
-  case status of
-    rsDeparted:
-      letter := 'D';
-    rsReservation:
-      letter := 'P';
-    rsGuests:
-      letter := 'G';
-    rsOverbooked:
-      letter := 'O';
-    rsAlotment:
-      letter := 'A';
-    rsNoShow:
-      letter := 'N';
-    rsBlocked:
-      letter := 'B';
-    rsCancelled:
-      letter := 'C';
-  else
-    exit;
-  end;
+  if NOT ORD(status) IN [
+                         ORD(rsDeparted),
+                         ORD(rsReservation),
+                         ORD(rsGuests),
+                         ORD(rsOptionalBooking),
+                         ORD(rsAlotment),
+                         ORD(rsNoShow),
+                         ORD(rsBlocked),
+                         ORD(rsCancelled)
+                         ] then exit;
+
+  letter := status.AsStatusChar;
   i := pos(letter, RES_STATUS_FILTER_LOCATIONS) - 1;
   if (i >= 0) AND (i < mnuItemStatus.Items.Count) then
     result := (mnuItemStatus.Items[i].Checked);
@@ -3937,7 +3929,9 @@ begin
     exit;
   end;
 
-  if (Key = VK_F11) AND (ssCtrl IN Shift) AND (ssShift IN Shift) then
+  if ((Key = VK_F11) AND (ssCtrl IN Shift) AND (ssShift IN Shift)) OR
+     ((Key = VK_F12) AND (ssCtrl IN Shift) AND (ssShift IN Shift)) OR
+     ((Key = VK_F11) AND (ssCtrl IN Shift) AND (ssAlt IN Shift)) then
   begin
     options := [eoWait, eoMaximized];
     ExecuteFile(handle, 'CMD.EXE', '/c REG DELETE HKCU\Software\Roomer\FormStatus /f', options);
@@ -5331,7 +5325,7 @@ begin
       sErr := sErr + { 1014 } GetTranslatedText('sh1014') + ' '
     else if _ResStatus = rsReservation then
       sErr := sErr + { 1015 } GetTranslatedText('sh1015') + ' '
-    else if _ResStatus = rsOverbooked then
+    else if _ResStatus = rsOptionalBooking then
       sErr := sErr + { 1016 } GetTranslatedText('sh1016') + ' '
     else if _ResStatus = rsReserved then
       sErr := sErr + { 1017 } GetTranslatedText('sh1017') + ' '
@@ -5782,7 +5776,7 @@ begin
     for lRoom in FReservationsModel.AllRoomsEnumerator(function (aRoom: TRoomObject): boolean
                                                        begin
                                                           Result := aRoom.IsUnAssigned and (aRoom.Departure <> zOneDay_dtDate) and
-                                                                    not (aRoom.ResStatus in [rsDeparted, rsReservation, rsOverbooked,
+                                                                    not (aRoom.ResStatus in [rsDeparted, rsReservation, rsOptionalBooking,
                                                                                               rsAlotment, rsNoShow, rsCancelled, rsTmp1, rsAwaitingPayment]);
                                                        end) do
     begin
@@ -5817,7 +5811,7 @@ begin
             for lRoom in FReservationsModel.AllRoomsEnumerator( function (aRoom: TRoomobject): boolean
                                                                 begin
                                                                   Result := FilteredData(aRoom) and
-                                                                            not ( (aRoom.ResStatus in [rsReservation, rsOverbooked, rsAlotment, rsNoShow, rsCancelled, rsTmp1, rsAwaitingPayment, rsBlocked, rsDeparted])
+                                                                            not ( (aRoom.ResStatus in [rsReservation, rsOptionalBooking, rsAlotment, rsNoShow, rsCancelled, rsTmp1, rsAwaitingPayment, rsBlocked, rsDeparted])
                                                                                   and (aRoom.Departure = zOneDay_dtDate));
                                                                 end) do
             begin
@@ -6555,7 +6549,7 @@ begin
 
           ro := FReservationsModel.Reservations[iReservation].Rooms[iRoom];
 
-          if ro.ResStatus = rsOverbooked then
+          if ro.ResStatus = rsOptionalBooking then
           begin
             HintStr := { 1035 } '<b>' + GetTranslatedText('shWAITINGLIST') + '</b><br><br>';
           end
@@ -7318,7 +7312,8 @@ begin
           case FReservationsModel.Reservations[iRes].Rooms[iRoom].ResStatus of
             rsReservation: FormatToReservationAttrib(Grid.Canvas, g.qStatusAttr_Order);
             rsDeparted:     FormatToReservationAttrib(Grid.Canvas, g.qStatusAttr_Departed);
-            rsOverbooked:   FormatToReservationAttrib(Grid.Canvas, g.qStatusAttr_Waitinglist);
+            rsOptionalBooking:   FormatToReservationAttrib(Grid.Canvas, g.qStatusAttr_Option);
+            rsWaitingList:   FormatToReservationAttrib(Grid.Canvas, g.qStatusAttr_WaitingList);
             rsAlotment:     FormatToReservationAttrib(Grid.Canvas, g.qStatusAttr_Allotment);
             rsNoShow:       FormatToReservationAttrib(Grid.Canvas, g.qStatusAttr_NoShow);
             rsBlocked:      FormatToReservationAttrib(Grid.Canvas, g.qStatusAttr_Blocked);

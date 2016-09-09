@@ -64,15 +64,6 @@ type
     property Roomstatus : string read FRoomStatus write FRoomStatus;
   end;
 
-  recStatusAttr = record
-    backgroundColor : TColor;
-    fontColor	      : TColor;
-    isBold          : Boolean;
-    isItalic        : boolean;
-    isUnderline     : boolean;
-    isStrikeOut     : boolean;
-  end;
-
   recDownPayment = record
     Reservation     : Integer; //-
     RoomReservation : integer; //-
@@ -366,7 +357,7 @@ type
     qStatusAttr_Departing            : recStatusAttr;
     qStatusAttr_Departed             : recStatusAttr;
     qStatusAttr_Allotment            : recStatusAttr;
-    qStatusAttr_Waitinglist          : recStatusAttr;
+    qStatusAttr_Option               : recStatusAttr;
     qStatusAttr_NoShow               : recStatusAttr;
     qStatusAttr_Blocked              : recStatusAttr;
     qStatusAttr_ArrivingOtherLeaving : recStatusAttr;
@@ -374,6 +365,7 @@ type
     qStatusAttr_Canceled             : recStatusAttr;  //*HJ 140210
     qStatusAttr_Tmp1                 : recStatusAttr;  //*HJ 140210
     qStatusAttr_Tmp2                 : recStatusAttr;  //*HJ 140210
+    qStatusAttr_WaitingList          : recStatusAttr;
 
     qRackCustomer : string;
 
@@ -673,80 +665,19 @@ end;
 function ResStatusToColor(Status : string; var backColor, fontColor : TColor) : boolean;
 var
   ch : char;
+  state : TReservationState;
+  StatusAttr : recStatusAttr;
 begin
-  Status := trim(Status);
+  State := TReservationState.FromResStatus(Status);
   result := false;
   if length(Status) < 1 then
     exit;
   ch := Status[1];
 
-  case ch of
-    'P' :
-      begin
-        backColor := g.qStatusAttr_Order.backgroundColor; //clRed;
-        fontColor := g.qStatusAttr_Order.fontColor; //clWhite
-        result := true;
-      end;
-    'G' :
-      begin
-        backColor := g.qStatusAttr_GuestStaying.backgroundColor; //clGreen;
-        fontColor := g.qStatusAttr_GuestStaying.fontColor; //clWhite;
-        result := true;
-      end;
-    STATUS_CHECKED_OUT :
-      begin
-        backColor := g.qStatusAttr_Departed.backgroundColor;
-        fontColor := g.qStatusAttr_Departed.fontColor;  //clWhite;
-        result := true;
-      end;
-    'O' :
-      begin
-        backColor := g.qStatusAttr_Waitinglist.backgroundColor; //clYellow;
-        fontColor := g.qStatusAttr_Waitinglist.fontColor; //clBlack;
-        result := true;
-      end;
-    'N' :
-      begin
-        backColor := g.qStatusAttr_NoShow.backgroundColor; //clRed;
-        fontColor := g.qStatusAttr_NoShow.fontColor;//clYellow;
-        result := true;
-      end;
-    'A' :
-      begin
-        backColor := g.qStatusAttr_Allotment.backgroundColor; //clWhite;
-        fontColor := g.qStatusAttr_Allotment.fontColor;   //clRed;
-        result := true;
-      end;
-    'B' :
-      begin
-        backColor := g.qStatusAttr_Blocked.backgroundColor; //_tinyIntToColor(55);
-        fontColor := g.qStatusAttr_Blocked.fontColor;  //_tinyIntToColor(0);
-        result := true;
-      end;
-    'C' :
-      begin
-        backColor := g.qStatusAttr_Canceled.backgroundColor; //;  //*HJ 140210
-        fontColor := g.qStatusAttr_Canceled.fontColor;//;
-        result := true;
-      end;
-    'W' :
-      begin
-        backColor := g.qStatusAttr_TMP1.backgroundColor; //;  //*HJ 140210
-        fontColor := g.qStatusAttr_TMP1.fontColor;//;
-        result := true;
-      end;
-    'Z' :
-      begin
-        backColor := g.qStatusAttr_TMP2.backgroundColor; //;   //*HJ 140210
-        fontColor := g.qStatusAttr_TMP2.fontColor;//;
-        result := true;
-      end;
-    else
-      begin
-        backColor := g.qStatusAttr_GuestStaying.backgroundColor; //clBlue;
-        fontColor := g.qStatusAttr_GuestStaying.fontColor; // clYellow;
-      end;
-    end;
+  StatusAttr := state.AsStatusAttribute;
+  backColor := StatusAttr.backgroundColor; //clRed;
+  fontColor := StatusAttr.fontColor; //clWhite
+  result := true;
 end;
 
 function Status2StatusTextForHints(Status : string) : string;
@@ -771,6 +702,7 @@ end;
 function Status2StatusText(Status : string) : string;
 var
   ch : char;
+  state : TReservationState;
 begin
   result := '';
   Status := trim(Status);
@@ -778,40 +710,46 @@ begin
     exit;
 
   Status := UpperCase(Status);
+  State := TReservationState.FromResStatus(Status);
   ch := Status[1];
 
-  case ch of
-    'P' :
-    //  result := '�kominn';
-	  result := GetTranslatedText('shTx_G_NotArrived');
-    'G' :
-    //  result := 'Innskr��ur';
-	   result := GetTranslatedText('shTx_G_CheckedIn');
-    STATUS_CHECKED_OUT :
-    //  result := 'Farinn';
-     result := GetTranslatedText('shTx_G_CheckedOut');
-	'O' :
-    //  result := 'Bi�listi';
-	  result := GetTranslatedText('shTx_G_WaitingList');
-    'A' :
-    //  result := 'Alotment';
-	   result := GetTranslatedText('shTx_G_Alotment');
-    'N' :
-     // result := 'No show';
-	  result := GetTranslatedText('shTx_G_NoShow');
-    'B' :
-     // result := 'Blocked';
-	  result := GetTranslatedText('shTx_G_Blocked');
-    'C' :
-     // result := 'Canceled';
-	  result := GetTranslatedText('shTx_G_Canceled');
-    'W' :
-     // result := 'Other 1';
-	  result := GetTranslatedText('shTx_G_Tmp1'); //ATH 2
-    'Z' :
-     // result := 'Other 2';
-	  result := GetTranslatedText('shTx_G_Tmp2');
-  end;
+  result := state.AsStatusText;
+
+//  case ch of
+//    'P' :
+//    //  result := '�kominn';
+//	  result := GetTranslatedText('shTx_G_NotArrived');
+//    'G' :
+//    //  result := 'Innskr��ur';
+//	   result := GetTranslatedText('shTx_G_CheckedIn');
+//    STATUS_CHECKED_OUT :
+//    //  result := 'Farinn';
+//     result := GetTranslatedText('shTx_G_CheckedOut');
+//	  'O' :
+//    //  result := 'Bi�listi';
+//	  result := GetTranslatedText('shTx_G_WaitingList');
+// 	  'L' :
+//    //  result := 'Bi�listi';
+//	  result := GetTranslatedText('shTx_G_WaitingList_NEW');
+//    'A' :
+//    //  result := 'Alotment';
+//	   result := GetTranslatedText('shTx_G_Alotment');
+//    'N' :
+//     // result := 'No show';
+//	  result := GetTranslatedText('shTx_G_NoShow');
+//    'B' :
+//     // result := 'Blocked';
+//	  result := GetTranslatedText('shTx_G_Blocked');
+//    'C' :
+//     // result := 'Canceled';
+//	  result := GetTranslatedText('shTx_G_Canceled');
+//    'W' :
+//     // result := 'Other 1';
+//	  result := GetTranslatedText('shTx_G_Tmp1'); //ATH 2
+//    'Z' :
+//     // result := 'Other 2';
+//	  result := GetTranslatedText('shTx_G_Tmp2');
+//  end;
 end;
 
 
@@ -1964,33 +1902,31 @@ end;
 
 function TGlobalApplication.StatusStrToResStatus(statusSTR : string) : TReservationState;
 begin
-  result := rsUnKnown;
-  statusSTR := trim(statusSTR);
-  if statusSTR = 'P' then
-    result := rsReservation
-  else if statusSTR = 'G' then
-    result := rsGuests
-  else if statusSTR = STATUS_CHECKED_OUT then
-    result := rsDeparted
-  else if statusSTR = 'R' then
-    result := rsReserved
-  else if statusSTR = 'O' then
-    result := rsOverbooked
-  else if statusSTR = 'A' then
-    result := rsAlotment
-  else if statusSTR = 'N' then
-    result := rsNoShow
-  else if statusSTR = 'B' then
-    result := rsBlocked
-  else if statusSTR = 'C' then
-    result := rsCancelled
-  else if statusSTR = 'W' then  //*HJ 140206
-    result := rsTmp1
-  else if statusSTR = 'Z' then   //*HJ 140206
-    result := rsAwaitingPayment
-
-
-
+//  result := rsUnKnown;
+//  statusSTR := trim(statusSTR);
+  result := TReservationState.FromResStatus(statusStr);
+//  if statusSTR = 'P' then
+//    result := rsReservation
+//  else if statusSTR = 'G' then
+//    result := rsGuests
+//  else if statusSTR = STATUS_CHECKED_OUT then
+//    result := rsDeparted
+//  else if statusSTR = 'R' then
+//    result := rsReserved
+//  else if statusSTR = 'O' then
+//    result := rsOptionalBooking
+//  else if statusSTR = 'A' then
+//    result := rsAlotment
+//  else if statusSTR = 'N' then
+//    result := rsNoShow
+//  else if statusSTR = 'B' then
+//    result := rsBlocked
+//  else if statusSTR = 'C' then
+//    result := rsCancelled
+//  else if statusSTR = 'W' then  //*HJ 140206
+//    result := rsTmp1
+//  else if statusSTR = 'Z' then   //*HJ 140206
+//    result := rsAwaitingPayment
 end;
 
 function TGlobalApplication.ResStatusToStatusStr(ResStatus : TReservationState) : string;
@@ -2010,13 +1946,14 @@ begin
   if ResStatus = rsGuests then result := GetTranslatedText('shTx_G_Guest');
   if ResStatus = rsDeparted then result := GetTranslatedText('shTx_G_Departed');
   if ResStatus = rsReserved then result := GetTranslatedText('shTx_G_Reserved');
-  if ResStatus = rsOverbooked then result := GetTranslatedText('shTx_G_Overbooked');
+  if ResStatus = rsOptionalBooking then result := GetTranslatedText('shTx_G_WaitingList');
   if ResStatus = rsAlotment then result := GetTranslatedText('shTx_G_Alotment');
   if ResStatus = rsNoShow then result := GetTranslatedText('shTx_G_NoShow');
   if ResStatus = rsBlocked then result := GetTranslatedText('shTx_G_Blocked');
   if ResStatus = rsCancelled then result := GetTranslatedText('shTx_G_Canceled'); //*HJ 140206
   if ResStatus = rsTmp1 then result := GetTranslatedText('shTx_G_Tmp1');  //*HJ 140206
   if ResStatus = rsAwaitingPayment then result := GetTranslatedText('shTx_G_aWaitingPayment'); //*HJ 140206
+  if ResStatus = rsWaitingList then result := GetTranslatedText('shTx_G_WaitingList_NEW');
 end;
 
 

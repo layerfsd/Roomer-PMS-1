@@ -356,7 +356,7 @@ begin
   s := s + '				(SELECT COUNT(id) FROM rooms WHERE hidden=0 AND Active=1 AND Statistics=1 AND wildCard=0) AS totalRooms, '#10 ;
   s := s + '				SUM((SELECT COUNT(id) FROM persons WHERE RoomReservation=rd.RoomReservation)) AS totalGuests '#10 ;
   s := s + '		 FROM predefineddates pdd '#10 ;
-  s := s + '		 JOIN roomsdate rd on pdd.date=rd.ADate AND (NOT rd.ResFlag IN ('+_db(STATUS_DELETED)+','+_db(STATUS_CANCELLED)+','+_db(STATUS_WAITING_LIST)+','+_db(STATUS_NO_SHOW)+','+_db(STATUS_BLOCKED)+')) '#10 ;
+  s := s + '		 JOIN roomsdate rd on pdd.date=rd.ADate AND (NOT rd.ResFlag IN ('+_db(STATUS_DELETED)+','+_db(STATUS_CANCELLED)+','+_db(STATUS_OPTIONAL)+','+_db(STATUS_NO_SHOW)+','+_db(STATUS_BLOCKED)+')) '#10 ;
   s := s + '		 JOIN currencies curr on curr.Currency=rd.Currency '#10 ;
 //  s := s + '		 JOIN rooms r on rd.room = r.room and r.wildcard=0 and r.active=1 and statistics=1 and hidden=0 '#10 ;
   s := s + '		 WHERE '#10 ;

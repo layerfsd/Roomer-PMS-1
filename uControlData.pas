@@ -423,7 +423,7 @@ type
     panBlocked: TsPanel;
     panArrivingOtherLeaving: TsPanel;
     panNoShow: TsPanel;
-    panWaitingList: TsPanel;
+    panOptionalBooking: TsPanel;
     panAllotment: TsPanel;
     Panel1: TsPanel;
     btnUpdateOneColor: TsButton;
@@ -689,6 +689,7 @@ type
     cbxRequireExactClosingPayment: TsCheckBox;
     sLabel35: TsLabel;
     sLabel36: TsLabel;
+    panWaitinglist_NEW: TsPanel;
     procedure FormCreate(Sender : TObject);
     procedure FormClose(Sender : TObject; var Action : TCloseAction);
     procedure FormShow(Sender : TObject);
@@ -2479,6 +2480,7 @@ begin
   d.save_StatusAttr_canceled;
   d.save_StatusAttr_tmp1;
   d.save_StatusAttr_tmp2;
+  d.save_StatusAttr_Waitinglist_NEW;
 
 end;
 
@@ -2640,12 +2642,12 @@ begin
       end;
     5 :
       begin
-        g.qStatusAttr_Waitinglist.BackgroundColor := BackgroundColor;
-        g.qStatusAttr_Waitinglist.FontColor := FontColor;
-        g.qStatusAttr_Waitinglist.isBold := isBold;
-        g.qStatusAttr_Waitinglist.isItalic := isItalic;
-        g.qStatusAttr_Waitinglist.isUnderLine := isUnderLine;
-        g.qStatusAttr_Waitinglist.isStrikeOut := isStrikeOut;
+        g.qStatusAttr_Option.BackgroundColor := BackgroundColor;
+        g.qStatusAttr_Option.FontColor := FontColor;
+        g.qStatusAttr_Option.isBold := isBold;
+        g.qStatusAttr_Option.isItalic := isItalic;
+        g.qStatusAttr_Option.isUnderLine := isUnderLine;
+        g.qStatusAttr_Option.isStrikeOut := isStrikeOut;
       end;
     6 :
       begin
@@ -2709,6 +2711,15 @@ begin
         g.qStatusAttr_Tmp2.isItalic := isItalic;
         g.qStatusAttr_Tmp2.isUnderLine := isUnderLine;
         g.qStatusAttr_Tmp2.isStrikeOut := isStrikeOut;
+      end;
+    13 :
+      begin
+        g.qStatusAttr_WaitingList.BackgroundColor := BackgroundColor;
+        g.qStatusAttr_WaitingList.FontColor := FontColor;
+        g.qStatusAttr_WaitingList.isBold := isBold;
+        g.qStatusAttr_WaitingList.isItalic := isItalic;
+        g.qStatusAttr_WaitingList.isUnderLine := isUnderLine;
+        g.qStatusAttr_WaitingList.isStrikeOut := isStrikeOut;
       end;
 
   end;
@@ -2783,15 +2794,15 @@ begin
     g.qStatusAttr_Allotment.isStrikeOut := (fsStrikeOut in Style);
   end;
 
-  g.qStatusAttr_Waitinglist.BackgroundColor := panWaitingList.Color;
-  Font := panWaitingList.Font;
+  g.qStatusAttr_Option.BackgroundColor := panOptionalBooking.Color;
+  Font := panOptionalBooking.Font;
   with Font do
   begin
-    g.qStatusAttr_Waitinglist.FontColor := Color;
-    g.qStatusAttr_Waitinglist.isBold := (fsBold in Style);
-    g.qStatusAttr_Waitinglist.isItalic := (fsItalic in Style);
-    g.qStatusAttr_Waitinglist.isUnderLine := (fsUnderLine in Style);
-    g.qStatusAttr_Waitinglist.isStrikeOut := (fsStrikeOut in Style);
+    g.qStatusAttr_Option.FontColor := Color;
+    g.qStatusAttr_Option.isBold := (fsBold in Style);
+    g.qStatusAttr_Option.isItalic := (fsItalic in Style);
+    g.qStatusAttr_Option.isUnderLine := (fsUnderLine in Style);
+    g.qStatusAttr_Option.isStrikeOut := (fsStrikeOut in Style);
   end;
 
   g.qStatusAttr_ArrivingOtherLeaving.BackgroundColor := panArrivingOtherLeaving.Color;
@@ -2871,6 +2882,16 @@ begin
     g.qStatusAttr_Tmp2.isStrikeOut := (fsStrikeOut in Style);
   end;
 
+  g.qStatusAttr_WaitingList.BackgroundColor := panWaitinglist_NEW.Color;
+  Font := panWaitinglist_NEW.Font;
+  with Font do
+  begin
+    g.qStatusAttr_WaitingList.FontColor := Color;
+    g.qStatusAttr_WaitingList.isBold := (fsBold in Style);
+    g.qStatusAttr_WaitingList.isItalic := (fsItalic in Style);
+    g.qStatusAttr_WaitingList.isUnderLine := (fsUnderLine in Style);
+    g.qStatusAttr_WaitingList.isStrikeOut := (fsStrikeOut in Style);
+  end;
 
 end;
 
@@ -2884,7 +2905,8 @@ begin
   d.Default_StatusAttr_Departing;
   d.Default_StatusAttr_Order;
   d.Default_StatusAttr_Allotment;
-  d.Default_StatusAttr_Waitinglist;
+  d.Default_StatusAttr_Option;
+  d.Default_StatusAttr_WaitingList;
   d.Default_StatusAttr_ArrivingOtherLeaving;
   d.Default_StatusAttr_Departed;
   d.Default_StatusAttr_NoShow;
@@ -2931,7 +2953,7 @@ begin
       end;
     5 :
       begin
-        d.Default_StatusAttr_Waitinglist
+        d.Default_StatusAttr_Option
       end;
     6 :
       begin
@@ -2960,6 +2982,10 @@ begin
    12 :
       begin
         d.Default_StatusAttr_tmp2
+      end;
+   13 :
+      begin
+        d.Default_StatusAttr_WaitingList
       end;
   end;
   setColorControls;
@@ -3066,17 +3092,17 @@ begin
 
     5 :
       begin
-        panWaitingList.Color := BackgroundColor;
-        panWaitingList.Font.Color := FontColor;
-        panWaitingList.Font.Style := [];
+        panOptionalBooking.Color := BackgroundColor;
+        panOptionalBooking.Font.Color := FontColor;
+        panOptionalBooking.Font.Style := [];
         if isBold then
-          panWaitingList.Font.Style := panWaitingList.Font.Style + [fsBold];
+          panOptionalBooking.Font.Style := panOptionalBooking.Font.Style + [fsBold];
         if isItalic then
-          panWaitingList.Font.Style := panWaitingList.Font.Style + [fsItalic];
+          panOptionalBooking.Font.Style := panOptionalBooking.Font.Style + [fsItalic];
         if isUnderLine then
-          panWaitingList.Font.Style := panWaitingList.Font.Style + [fsUnderLine];
+          panOptionalBooking.Font.Style := panOptionalBooking.Font.Style + [fsUnderLine];
         if isStrikeOut then
-          panWaitingList.Font.Style := panWaitingList.Font.Style + [fsStrikeOut];
+          panOptionalBooking.Font.Style := panOptionalBooking.Font.Style + [fsStrikeOut];
       end;
 
     6 :
@@ -3179,6 +3205,20 @@ begin
           panTmp2.Font.Style := panTmp2.Font.Style + [fsUnderLine];
         if isStrikeOut then
           panTmp2.Font.Style := panTmp2.Font.Style + [fsStrikeOut];
+      end;
+    13 :
+      begin
+        panWaitinglist_NEW.Color := BackgroundColor;
+        panWaitinglist_NEW.Font.Color := FontColor;
+        panWaitinglist_NEW.Font.Style := [];
+        if isBold then
+          panWaitinglist_NEW.Font.Style := panWaitinglist_NEW.Font.Style + [fsBold];
+        if isItalic then
+          panWaitinglist_NEW.Font.Style := panWaitinglist_NEW.Font.Style + [fsItalic];
+        if isUnderLine then
+          panWaitinglist_NEW.Font.Style := panWaitinglist_NEW.Font.Style + [fsUnderLine];
+        if isStrikeOut then
+          panWaitinglist_NEW.Font.Style := panWaitinglist_NEW.Font.Style + [fsStrikeOut];
       end;
   end;
 
@@ -3507,12 +3547,12 @@ begin
       end;
     5 :
       begin
-        BackgroundColor := g.qStatusAttr_Waitinglist.BackgroundColor;
-        FontColor := g.qStatusAttr_Waitinglist.FontColor;
-        isBold := g.qStatusAttr_Waitinglist.isBold;
-        isItalic := g.qStatusAttr_Waitinglist.isItalic;
-        isUnderLine := g.qStatusAttr_Waitinglist.isUnderLine;
-        isStrikeOut := g.qStatusAttr_Waitinglist.isStrikeOut;
+        BackgroundColor := g.qStatusAttr_Option.BackgroundColor;
+        FontColor := g.qStatusAttr_Option.FontColor;
+        isBold := g.qStatusAttr_Option.isBold;
+        isItalic := g.qStatusAttr_Option.isItalic;
+        isUnderLine := g.qStatusAttr_Option.isUnderLine;
+        isStrikeOut := g.qStatusAttr_Option.isStrikeOut;
       end;
     6 :
       begin
@@ -3577,7 +3617,15 @@ begin
         isUnderLine := g.qStatusAttr_Tmp2.isUnderLine;
         isStrikeOut := g.qStatusAttr_Tmp2.isStrikeOut;
       end;
-
+    13:
+      begin
+        BackgroundColor := g.qStatusAttr_WaitingList.BackgroundColor;
+        FontColor := g.qStatusAttr_WaitingList.FontColor;
+        isBold := g.qStatusAttr_WaitingList.isBold;
+        isItalic := g.qStatusAttr_WaitingList.isItalic;
+        isUnderLine := g.qStatusAttr_WaitingList.isUnderLine;
+        isStrikeOut := g.qStatusAttr_WaitingList.isStrikeOut;
+      end;
   end;
 
   cbxBackColor.SelectedColor := BackgroundColor;
@@ -3718,22 +3766,22 @@ begin
   if isStrikeOut then
     panAllotment.Font.Style := panAllotment.Font.Style + [fsStrikeOut];
 
-  BackgroundColor := g.qStatusAttr_Waitinglist.BackgroundColor;
-  FontColor := g.qStatusAttr_Waitinglist.FontColor;
-  isBold := g.qStatusAttr_Waitinglist.isBold;
-  isItalic := g.qStatusAttr_Waitinglist.isItalic;
-  isUnderLine := g.qStatusAttr_Waitinglist.isUnderLine;
-  isStrikeOut := g.qStatusAttr_Waitinglist.isStrikeOut;
-  panWaitingList.Color := BackgroundColor;
-  panWaitingList.Font.Color := FontColor;
+  BackgroundColor := g.qStatusAttr_Option.BackgroundColor;
+  FontColor := g.qStatusAttr_Option.FontColor;
+  isBold := g.qStatusAttr_Option.isBold;
+  isItalic := g.qStatusAttr_Option.isItalic;
+  isUnderLine := g.qStatusAttr_Option.isUnderLine;
+  isStrikeOut := g.qStatusAttr_Option.isStrikeOut;
+  panOptionalBooking.Color := BackgroundColor;
+  panOptionalBooking.Font.Color := FontColor;
   if isBold then
-    panWaitingList.Font.Style := panWaitingList.Font.Style + [fsBold];
+    panOptionalBooking.Font.Style := panOptionalBooking.Font.Style + [fsBold];
   if isItalic then
-    panWaitingList.Font.Style := panWaitingList.Font.Style + [fsItalic];
+    panOptionalBooking.Font.Style := panOptionalBooking.Font.Style + [fsItalic];
   if isUnderLine then
-    panWaitingList.Font.Style := panWaitingList.Font.Style + [fsUnderLine];
+    panOptionalBooking.Font.Style := panOptionalBooking.Font.Style + [fsUnderLine];
   if isStrikeOut then
-    panWaitingList.Font.Style := panWaitingList.Font.Style + [fsStrikeOut];
+    panOptionalBooking.Font.Style := panOptionalBooking.Font.Style + [fsStrikeOut];
 
   BackgroundColor := g.qStatusAttr_ArrivingOtherLeaving.BackgroundColor;
   FontColor := g.qStatusAttr_ArrivingOtherLeaving.FontColor;
@@ -3855,11 +3903,28 @@ begin
     panTmp2.Font.Style := panTmp2.Font.Style + [fsUnderLine];
   if isStrikeOut then
     panTmp2.Font.Style := panTmp2.Font.Style + [fsStrikeOut];
+
+  BackgroundColor := g.qStatusAttr_WaitingList.BackgroundColor;
+  FontColor := g.qStatusAttr_WaitingList.FontColor;
+  isBold := g.qStatusAttr_WaitingList.isBold;
+  isItalic := g.qStatusAttr_WaitingList.isItalic;
+  isUnderLine := g.qStatusAttr_WaitingList.isUnderLine;
+  isStrikeOut := g.qStatusAttr_WaitingList.isStrikeOut;
+  panWaitinglist_NEW.Font.Style := [];
+  panWaitinglist_NEW.Color := BackgroundColor;
+  panWaitinglist_NEW.Font.Color := FontColor;
+  if isBold then
+    panWaitinglist_NEW.Font.Style := panWaitinglist_NEW.Font.Style + [fsBold];
+  if isItalic then
+    panWaitinglist_NEW.Font.Style := panWaitinglist_NEW.Font.Style + [fsItalic];
+  if isUnderLine then
+    panWaitinglist_NEW.Font.Style := panWaitinglist_NEW.Font.Style + [fsUnderLine];
+  if isStrikeOut then
+    panWaitinglist_NEW.Font.Style := panWaitinglist_NEW.Font.Style + [fsStrikeOut];
 end;
 
 procedure TfrmControlData.__Panel2Click(Sender: TObject);
 begin
-
 end;
 
 (*

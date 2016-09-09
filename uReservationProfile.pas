@@ -962,6 +962,7 @@ begin
   enabled := false;
 
   TReservationState.AsStrings((tvRoomsStatusText.Properties AS TcxComboBoxProperties).Items);
+  (tvRoomsStatusText.Properties AS TcxComboBoxProperties).DropDownRows := (tvRoomsStatusText.Properties AS TcxComboBoxProperties).Items.Count;
 
   ConstructOtherResStateMenu;
 

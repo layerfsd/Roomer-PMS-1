@@ -203,7 +203,7 @@ begin
     'B' : begin
             result := 'Blocked';
           end; *)
-	'P' : begin
+    'P' : begin
             result := GetTranslatedText('shTx_ResProblem_NotArrived');
           end;
     'G' : begin

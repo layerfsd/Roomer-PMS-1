@@ -561,7 +561,7 @@ begin
 //  '    INNER JOIN rooms on (rooms.room=roomsdate.room and rooms.wildcard=0 and rooms.active=1) '#10+
   ' WHERE '#10+
   '   (persons.RoomReservation IN %s )'#10+
-  '      AND (((Resflag in (''G'',''P'',''D'',''O'',''A'')) AND (SUBSTR(roomsdate.room, 1, 1) != ''<'')) OR ((Resflag in (''G'',''D'')) AND (SUBSTR(roomsdate.room, 1, 1) = ''<''))) '#10+
+  '      AND (((Resflag in (''G'',''P'',''L'',''D'',''O'',''A'')) AND (SUBSTR(roomsdate.room, 1, 1) != ''<'')) OR ((Resflag in (''G'',''D'')) AND (SUBSTR(roomsdate.room, 1, 1) = ''<''))) '#10+
 //  '      AND (SUBSTR(roomsdate.room, 1, 1) = ''<'' OR NOT ISNULL((SELECT 1 FROM rooms r WHERE r.room=roomsdate.room and r.wildcard=0 and r.active=1 and statistics=1 and hidden=0 LIMIT 1))) '#10+
   ' GROUP BY '#10+
   '   countries.OrderIndex, '#10+
@@ -750,7 +750,7 @@ begin
     '       reservations ON roomreservations.Reservation = reservations.Reservation '#10+
     ' WHERE '#10+
     '        ( roomreservations.RoomReservation in  %s ) '+  //zRoomReservationsLis#10+
-    '      AND (((roomreservations.Status in (''G'',''P'',''D'',''O'',''A'')) AND Left(roomreservations.Room,1) <> ''<'') OR ((roomreservations.Status in (''G'',''D'')) AND Left(roomreservations.Room,1) = ''<'')) '#10+
+    '      AND (((roomreservations.Status in (''G'',''P'',''L'',''D'',''O'',''A'')) AND Left(roomreservations.Room,1) <> ''<'') OR ((roomreservations.Status in (''G'',''D'')) AND Left(roomreservations.Room,1) = ''<'')) '#10+
     ' ORDER BY '#10+
     '   reservations.Reservation ';
 
@@ -808,7 +808,7 @@ begin
       '   roomreservations '#10+
       ' WHERE '#10+
       '     ( roomreservations.RoomReservation in  %s ) '+  //zRoomReservationsLis#10+
-      '      AND (((roomreservations.Status in (''G'',''P'',''D'',''O'',''A'')) AND Left(roomreservations.Room,1) <> ''<'') OR ((roomreservations.Status in (''G'',''D'')) AND Left(roomreservations.Room,1) = ''<'')) ';
+      '      AND (((roomreservations.Status in (''G'',''P'',''L'',''D'',''O'',''A'')) AND Left(roomreservations.Room,1) <> ''<'') OR ((roomreservations.Status in (''G'',''D'')) AND Left(roomreservations.Room,1) = ''<'')) ';
 
       s := format(s , [zRoomReservationsList]);
       hData.rSet_bySQL(rSet,s);

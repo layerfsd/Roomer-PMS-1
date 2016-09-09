@@ -646,6 +646,7 @@ type
     procedure save_StatusAttr_Blocked;
     procedure save_StatusAttr_NoShow;
     procedure save_StatusAttr_Waitinglist;
+    procedure save_StatusAttr_Waitinglist_NEW;
     procedure save_StatusAttr_Allotment;
     procedure save_StatusAttr_Departed;
     procedure save_StatusAttr_Departing;
@@ -659,7 +660,8 @@ type
 
     procedure Default_StatusAttr_Blocked;
     procedure Default_StatusAttr_NoShow;
-    procedure Default_StatusAttr_Waitinglist;
+    procedure Default_StatusAttr_Option;
+    procedure Default_StatusAttr_WaitingList;
     procedure Default_StatusAttr_Allotment;
     procedure Default_StatusAttr_Departed;
     procedure Default_StatusAttr_Departing; //
@@ -8442,14 +8444,24 @@ begin
   g.qStatusAttr_NoShow.isStrikeOut := False;
 end;
 
-procedure Td.Default_StatusAttr_Waitinglist;
+procedure Td.Default_StatusAttr_Option;
 begin
-  g.qStatusAttr_Waitinglist.backgroundColor := clYellow;
-  g.qStatusAttr_Waitinglist.fontColor := clBlack;
-  g.qStatusAttr_Waitinglist.isBold := False;
-  g.qStatusAttr_Waitinglist.isItalic := False;
-  g.qStatusAttr_Waitinglist.isUnderline := False;
-  g.qStatusAttr_Waitinglist.isStrikeOut := False;
+  g.qStatusAttr_Option.backgroundColor := clYellow;
+  g.qStatusAttr_Option.fontColor := clBlack;
+  g.qStatusAttr_Option.isBold := False;
+  g.qStatusAttr_Option.isItalic := False;
+  g.qStatusAttr_Option.isUnderline := False;
+  g.qStatusAttr_Option.isStrikeOut := False;
+end;
+
+procedure Td.Default_StatusAttr_WaitingList;
+begin
+  g.qStatusAttr_WaitingList.backgroundColor := clWhite;
+  g.qStatusAttr_WaitingList.fontColor := clBlue;
+  g.qStatusAttr_WaitingList.isBold := True;
+  g.qStatusAttr_WaitingList.isItalic := True;
+  g.qStatusAttr_WaitingList.isUnderline := False;
+  g.qStatusAttr_WaitingList.isStrikeOut := False;
 end;
 
 procedure Td.Default_StatusAttr_Allotment;
@@ -8562,7 +8574,7 @@ var
 begin
   sTmp := 'SELECT StatusAttr_Blocked, StatusAttr_GuestStaying, StatusAttr_GuestLeavingNextDay, ' +
     'StatusAttr_Departed, StatusAttr_Departing, StatusAttr_Allotment, StatusAttr_Waitinglist, ' +
-    'StatusAttr_NoShow, StatusAttr_ArrivingOtherLeaving, StatusAttr_Order, StatusAttr_Canceled, StatusAttr_Tmp1,StatusAttr_Tmp2 FROM control';
+    'StatusAttr_NoShow, StatusAttr_ArrivingOtherLeaving, StatusAttr_Order, StatusAttr_Canceled, StatusAttr_Tmp1,StatusAttr_Tmp2, StatusAttr_WaitingList_NEW FROM control';
   rSet := glb.ControlSet; // CreateNewDataSet;
   rSet.First;
   try
@@ -8575,7 +8587,7 @@ begin
     g.qStatusAttr_Departed := g.strToStatusAttr(trim(rSet.FieldByName('StatusAttr_Departed').Asstring));
     g.qStatusAttr_Departing := g.strToStatusAttr(trim(rSet.FieldByName('StatusAttr_Departing').Asstring));
     g.qStatusAttr_Allotment := g.strToStatusAttr(trim(rSet.FieldByName('StatusAttr_Allotment').Asstring));
-    g.qStatusAttr_Waitinglist := g.strToStatusAttr(trim(rSet.FieldByName('StatusAttr_Waitinglist').Asstring));
+    g.qStatusAttr_Option := g.strToStatusAttr(trim(rSet.FieldByName('StatusAttr_Waitinglist').Asstring));
     g.qStatusAttr_NoShow := g.strToStatusAttr(trim(rSet.FieldByName('StatusAttr_NoShow').Asstring));
     g.qStatusAttr_ArrivingOtherLeaving :=
       g.strToStatusAttr(trim(rSet.FieldByName('StatusAttr_ArrivingOtherLeaving').Asstring));
@@ -8583,6 +8595,11 @@ begin
     g.qStatusAttr_Canceled := g.strToStatusAttr(trim(rSet.FieldByName('StatusAttr_Canceled').Asstring));
     g.qStatusAttr_Tmp1 := g.strToStatusAttr(trim(rSet.FieldByName('StatusAttr_Tmp1').Asstring));
     g.qStatusAttr_Tmp2 := g.strToStatusAttr(trim(rSet.FieldByName('StatusAttr_Tmp2').Asstring));
+    sTmp := trim(rSet.FieldByName('StatusAttr_WaitingList_NEW').Asstring);
+    if sTmp = '' then
+      Default_StatusAttr_WaitingList
+    else
+      g.qStatusAttr_WaitingList := g.strToStatusAttr(sTmp);
 
     // end;
   finally
@@ -8627,11 +8644,26 @@ var
   s: string;
   sTmp: string;
 begin
-  sTmp := g.StatusAttrToStr(g.qStatusAttr_Waitinglist);
+  sTmp := g.StatusAttrToStr(g.qStatusAttr_Option);
   s := '';
   s := s + ' UPDATE control ' + chr(10);
   s := s + ' SET ' + chr(10);
   s := s + '  StatusAttr_WaitingList = ' + _db(sTmp) + chr(10);
+  if not cmd_bySQL(s) then
+  begin
+  end;
+end;
+
+procedure Td.save_StatusAttr_Waitinglist_NEW;
+var
+  s: string;
+  sTmp: string;
+begin
+  sTmp := g.StatusAttrToStr(g.qStatusAttr_WaitingList);
+  s := '';
+  s := s + ' UPDATE control ' + chr(10);
+  s := s + ' SET ' + chr(10);
+  s := s + '  StatusAttr_WaitingList_NEW = ' + _db(sTmp) + chr(10);
   if not cmd_bySQL(s) then
   begin
   end;

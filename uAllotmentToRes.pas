@@ -589,7 +589,7 @@ begin
     s := s+' FROM '#10;
     s := s+'   roomsdate rd '#10;
     s := s+' WHERE '#10;
-    s := s+'   (rd.resFlag not in ('+_db('A')+','+_db('P')+','+_db('X')+','+_db('O')+')) '#10; //**zxhj breytti
+    s := s+'   (rd.resFlag not in ('+_db('A')+','+_db('P')+','+_db('X')+','+_db('O')+','+_db('L')+')) '#10; //**zxhj breytti
     s := s+'   AND (rd.Reservation = %d ) '#10;
     s := s+' LIMIT 1 '#10;
 

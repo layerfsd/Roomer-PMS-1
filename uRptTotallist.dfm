@@ -28,7 +28,6 @@ object frmRptTotallist: TfrmRptTotallist
     Align = alTop
     TabOrder = 0
     SkinData.SkinSection = 'PANEL'
-    ExplicitWidth = 963
     object labLocationsList: TsLabel
       Left = 170
       Top = 80
@@ -220,7 +219,6 @@ object frmRptTotallist: TfrmRptTotallist
     Align = alTop
     TabOrder = 1
     SkinData.SkinSection = 'PANEL'
-    ExplicitWidth = 963
     object btnExcel: TsButton
       AlignWithMargins = True
       Left = 4
@@ -247,8 +245,6 @@ object frmRptTotallist: TfrmRptTotallist
     Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = []
-    ExplicitTop = 566
-    ExplicitWidth = 963
   end
   object grTotallist: TcxGrid
     Left = 0
@@ -258,8 +254,7 @@ object frmRptTotallist: TfrmRptTotallist
     Align = alClient
     TabOrder = 3
     LookAndFeel.NativeStyle = False
-    ExplicitWidth = 963
-    ExplicitHeight = 426
+    ExplicitTop = 142
     object lvTotallist: TcxGridDBBandedTableView
       Navigator.Buttons.CustomButtons = <>
       Navigator.Buttons.Insert.Visible = False
@@ -400,6 +395,9 @@ object frmRptTotallist: TfrmRptTotallist
         end
         item
           Caption = 'OutOfOrder'
+        end
+        item
+          Caption = 'Waiting list'
         end>
       object lvTotallistdtDate: TcxGridDBBandedColumn
         Caption = 'Date'
@@ -527,6 +525,20 @@ object frmRptTotallist: TfrmRptTotallist
         Position.ColIndex = 1
         Position.RowIndex = 0
       end
+      object lvTotallistroomsWaitinglist_NEW: TcxGridDBBandedColumn
+        Caption = 'Rooms'
+        DataBinding.FieldName = 'roomsWaitinglist_NEW'
+        Position.BandIndex = 9
+        Position.ColIndex = 0
+        Position.RowIndex = 0
+      end
+      object lvTotallistpaxWaitinglist_NEW: TcxGridDBBandedColumn
+        Caption = 'Guests'
+        DataBinding.FieldName = 'paxWaitinglist_NEW'
+        Position.BandIndex = 9
+        Position.ColIndex = 1
+        Position.RowIndex = 0
+      end
     end
     object lvTotallistLevel1: TcxGridLevel
       GridView = lvTotallist
@@ -608,6 +620,14 @@ object frmRptTotallist: TfrmRptTotallist
       end
       item
         Name = 'paxOutOfOrder'
+        DataType = ftInteger
+      end
+      item
+        Name = 'roomsWaitinglist_NEW'
+        DataType = ftInteger
+      end
+      item
+        Name = 'paxWaitinglist_NEW'
         DataType = ftInteger
       end>
     IndexDefs = <>

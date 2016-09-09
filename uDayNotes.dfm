@@ -25,9 +25,9 @@ object frmDayNotes: TfrmDayNotes
   object DateLabel1: TDateLabel
     Left = 480
     Top = 328
-    Width = 50
+    Width = 44
     Height = 13
-    Caption = '15-5-2016'
+    Caption = '9-9-2016'
     DateTimeFormat = 'd/m/yyyy'
     Version = '1.1.0.0'
     RefreshInterval = 0
@@ -579,7 +579,7 @@ object frmDayNotes: TfrmDayNotes
               Left = 255
               Top = 9
               Width = 59
-              Height = 24
+              Height = 21
               Color = clWhite
               Font.Charset = DEFAULT_CHARSET
               Font.Color = clBlack
@@ -827,6 +827,7 @@ object frmDayNotes: TfrmDayNotes
             HotZoneClassName = 'TcxMediaPlayer9Style'
             AlignSplitter = salTop
             Control = Panel7
+            ExplicitWidth = 8
           end
           object Panel8: TsPanel
             Left = 0
@@ -945,6 +946,10 @@ object frmDayNotes: TfrmDayNotes
     object tabCurrentGuests: TsTabSheet
       Caption = 'In house'
       ImageIndex = 3
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Panel2: TsPanel
         Left = 0
         Top = 0

@@ -5,6 +5,7 @@ interface
 uses
   Graphics
   , CLasses
+  , uRoomerDefinitions
   ;
 
 type
@@ -14,7 +15,7 @@ type
       rsGuests,
       rsDeparted,
       rsReserved,
-      rsOverbooked,
+      rsOptionalBooking,
       rsAlotment,
       rsNoShow,
       rsBlocked,
@@ -23,7 +24,8 @@ type
       rsAwaitingPayment,
       rsDeleted,
       rsAwaitingPayConfirm,
-      rsMixed);
+      rsMixed,
+      rsWaitingList);
 
     TReservationStateSet = set of TReservationState;
 
@@ -54,6 +56,7 @@ type
       ///   Return the translated displaystring for a ReservationState
       /// </summary>
       function AsReadableString : string;
+      function AsStatusText : string;
       /// <summary>
       ///   Return the colors (back and front) set for hotel to be used for displaying reservation data
       /// </summary>
@@ -62,6 +65,12 @@ type
       ///   Return wether this state can be set by the user of PMS or only by backend
       /// </summary>
       function IsUserSelectable: boolean;
+
+      /// <summary>
+      ///   Return the status attribute regarding colors and fonts.
+      /// </summary>
+      function AsStatusAttribute : recStatusAttr;
+
     end;
 
     TReservationStateSetHelper = record helper for TReservationStateSet
@@ -95,10 +104,33 @@ uses
   , uUtils;
 
 
+function TReservationStateHelper.AsStatusAttribute: recStatusAttr;
+begin
+  case Self of
+    rsReservation:        result := g.qStatusAttr_Order;
+    rsGuests:             result := g.qStatusAttr_GuestStaying;
+    rsDeparted:           result := g.qStatusAttr_Departed;
+    rsReserved:           result := g.qStatusAttr_Order;
+    rsOptionalBooking:    result := g.qStatusAttr_Option;
+    rsAlotment:           result := g.qStatusAttr_Allotment;
+    rsNoShow:             result := g.qStatusAttr_NoShow;
+    rsBlocked:            result := g.qStatusAttr_Blocked;
+    rsCancelled:          result := g.qStatusAttr_Canceled;
+    rsTmp1:               result := g.qStatusAttr_TMP1;
+    rsAwaitingPayment:    result := g.qStatusAttr_TMP2;
+    rsDeleted:            result := g.qStatusAttr_Canceled;
+    rsAwaitingPayConfirm: result := g.qStatusAttr_TMP2;
+    rsWaitingList:        result := g.qStatusAttr_WaitingList;
+    else
+        result := g.qStatusAttr_GuestStaying;
+    end;
+
+end;
+
 function TReservationStateHelper.AsStatusChar: Char;
 const
   cReservationStateChars : Array[TReservationState] of char =
-      ('P','P','G','D','P','O','A','N','B','C','W','Z','X', 'Q', 'M');
+      ('P','P','G','D','P','O','A','N','B','C','W','Z','X', 'Q', 'M', 'L');
 begin
   Result := cReservationStateChars[Self];
 end;
@@ -136,7 +168,7 @@ begin
     rsGuests:             result := True;
     rsDeparted:           result := True;
     rsReserved:           result := True;
-    rsOverbooked:         result := True;
+    rsOptionalBooking:         result := True;
     rsAlotment:           result := True;
     rsNoShow:             result := True;
     rsBlocked:            result := False; // only selectable when creating a special type reservation
@@ -146,6 +178,7 @@ begin
     rsDeleted:            result := False;
     rsAwaitingPayConfirm: result := False;
     rsMixed:              result := false;
+    rsWaitingList:        result := True;
   else
     Result := false;
   end;
@@ -159,7 +192,7 @@ begin
     rsGuests:             result := GetTranslatedText('shTx_G_CheckedIn');
     rsDeparted:           result := GetTranslatedText('shTx_G_Departed');
     rsReserved:           result := GetTranslatedText('shTx_G_Reserved');
-    rsOverbooked:         result := GetTranslatedText('shTx_G_Overbooked');
+    rsOptionalBooking:    result := GetTranslatedText('shTx_G_WaitingList');
     rsAlotment:           result := GetTranslatedText('shTx_G_Alotment');
     rsNoShow:             result := GetTranslatedText('shTx_G_NoShow');
     rsBlocked:            result := GetTranslatedText('shTx_G_Blocked');
@@ -169,11 +202,22 @@ begin
     rsDeleted:            result := GetTranslatedText('shTx_G_Deleted');
     rsAwaitingPayConfirm: result := GetTranslatedText('shTx_G_AwaitingPayConfirm');
     rsMixed:              result := GetTranslatedText('shTx_G_Mixed');
+    rsWaitingList:        result := GetTranslatedText('shTx_G_WaitingList_NEW');
   else
     Result := '';
   end;
 end;
 
+function TReservationStateHelper.AsStatusText : string;
+begin
+  case Self of
+    rsReservation:        result := GetTranslatedText('shTx_G_NotArrived');
+    rsDeparted:           result := GetTranslatedText('shTx_G_CheckedOut');
+    rsAwaitingPayment:    result := GetTranslatedText('shTx_G_Tmp2');
+  else
+    result := AsReadableString;
+  end;
+end;
 
 class function TReservationStateHelper.FromResStatus(const statusChar : char) : TReservationState;
 begin
@@ -182,7 +226,7 @@ begin
     'G': result := rsGuests;
     'D': result := rsDeparted;
     'R': result := rsReserved;
-    'O': result := rsOverbooked;
+    'O': result := rsOptionalBooking;
     'A': result := rsAlotment;
     'N': result := rsNoShow;
     'B': result := rsBlocked;
@@ -190,6 +234,7 @@ begin
     'W': result := rsTmp1;
     'Z': result := rsAwaitingPayment;
     'Q': result := rsAwaitingPayConfirm;
+    'L': result := rsWaitingList;
   else
     result := rsUnKnown;
   end;
@@ -199,6 +244,7 @@ end;
 function TReservationStateHelper.ToColor(var backColor, fontColor : TColor) : boolean;
 begin
   result := false;
+
   case Self of
     rsReservation :
       begin
@@ -218,10 +264,10 @@ begin
         fontColor := g.qStatusAttr_Departed.fontColor;  //clWhite;
         result := true;
       end;
-    rsOverbooked :
+    rsOptionalBooking :
       begin
-        backColor := g.qStatusAttr_Waitinglist.backgroundColor; //clYellow;
-        fontColor := g.qStatusAttr_Waitinglist.fontColor; //clBlack;
+        backColor := g.qStatusAttr_Option.backgroundColor; //clYellow;
+        fontColor := g.qStatusAttr_Option.fontColor; //clBlack;
         result := true;
       end;
     rsNoShow :
@@ -258,6 +304,12 @@ begin
       begin
         backColor := g.qStatusAttr_TMP2.backgroundColor; //;   //*HJ 140210
         fontColor := g.qStatusAttr_TMP2.fontColor;//;
+        result := true;
+      end;
+    rsWaitingList :
+      begin
+        backColor := g.qStatusAttr_WaitingList.backgroundColor;
+        fontColor := g.qStatusAttr_WaitingList.fontColor;
         result := true;
       end;
     else

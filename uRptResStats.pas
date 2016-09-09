@@ -335,6 +335,8 @@ type
     tvRoomsDatevatDiscountBilled: TcxGridDBColumn;
     tvRoomsDatevatDiscountUnbilled: TcxGridDBColumn;
     storeOld: TcxPropertiesStore;
+    chkExcludeWaitingList_NEW: TsCheckBox;
+    chkExcludeWaitingList_NEW_NoRooms: TsCheckBox;
 
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -1001,6 +1003,7 @@ begin
   result := '';
 
   if chkExcluteWaitingListNoRooms.checked then sNoRooms       := sNoRooms+_db('O')+',';
+  if chkExcludeWaitingList_NEW_NoRooms.checked then sNoRooms       := sNoRooms+_db('L')+',';
   if chkExcluteOrderNoRooms.checked then       sNoRooms       := sNoRooms+_db('P')+',';
   if chkExcluteGuestNoRooms.checked then       sNoRooms       := sNoRooms+_db('G')+',';
   if chkExcluteDepartedNoRooms.checked then    sNoRooms       := sNoRooms+_db('D')+',';
@@ -1009,6 +1012,7 @@ begin
   if chkExcluteNoshowNoRooms.checked then      sNoRooms       := sNoRooms+_db('N')+',';
 
   if chkExcluteWaitingList.checked then sRooms       := sRooms+_db('O')+',';
+  if chkExcludeWaitingList_NEW.checked then sRooms       := sRooms+_db('L')+',';
   if chkExcluteOrder.checked then       sRooms       := sRooms+_db('P')+',';
   if chkExcluteGuest.checked then       sRooms       := sRooms+_db('G')+',';
   if chkExcluteDeparted.checked then    sRooms       := sRooms+_db('D')+',';
@@ -2292,6 +2296,8 @@ begin
   boolChain := boolChain+_db(chkExcluteGuestNoRooms.Checked);
   boolChain := boolChain+_db(chkExcluteNoShowNoRooms.Checked);
   boolChain := boolChain+_db(chkExcluteOrderNoRooms.Checked);
+  boolChain := boolChain+_db(chkExcludeWaitingList_NEW.Checked);
+  boolChain := boolChain+_db(chkExcludeWaitingList_NEW_NoRooms.Checked);
 
   Description := 'Use roomStatus of';
   AccessLevel :=    1;
@@ -2424,7 +2430,9 @@ begin
       12 : chkExcluteGuestNoRooms.Checked := abool;
       13 : chkExcluteNoShowNoRooms.Checked := abool;
       14 : chkExcluteOrderNoRooms.Checked := abool;
-    end;
+      15 : chkExcludeWaitingList_NEW.Checked := abool;
+      16 : chkExcludeWaitingList_NEW_NoRooms.Checked := abool;
+    end;
   end;
 end;
 

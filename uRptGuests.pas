@@ -158,6 +158,7 @@ type
     tvGuestsReservation: TcxGridDBBandedColumn;
     tvGuestsRoomReservation: TcxGridDBBandedColumn;
     lvGuests: TcxGridLevel;
+    chkExcludeWaitingList_NEW: TsCheckBox;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure btnRefreshClick(Sender: TObject);
@@ -232,6 +233,7 @@ begin
 
   sRooms := '';
   if chkExcluteWaitingList.checked then sRooms       := sRooms+_db('O')+',';
+  if chkExcludeWaitingList_NEW.checked then sRooms   := sRooms+_db('L')+',';
   if chkExcluteOrder.checked then       sRooms       := sRooms+_db('P')+',';
   if chkExcluteGuest.checked then       sRooms       := sRooms+_db('G')+',';
   if chkExcluteDeparted.checked then    sRooms       := sRooms+_db('D')+',';
