@@ -918,6 +918,9 @@ begin
   constants.Add('shTx_FrmReservationprofile_ChangeStatus', 'Change Status');
   constants.Add('shTx_FrmReservationprofile_Balance', 'Balance');
 
+  constants.Add('shTx_FrmReservationprofile_BlockMoveReasonCaption', 'Reason for blocking the move of room ');
+  constants.Add('shTx_FrmReservationprofile_PerNight', 'per night');
+
 
 
   constants.Add('shTx_RoomPricesEdit_RoomType', 'Room Type must be specified');

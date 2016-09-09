@@ -221,6 +221,7 @@ type
     btnPivgrRequestsBestfit: TsButton;
     labIsFiltered: TsLabel;
     pg001Location: TcxDBPivotGridField;
+    tvRoomsDataLocation: TcxGridDBColumn;
 
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -239,7 +240,6 @@ type
     procedure btnPivgrRequestsBestfitClick(Sender: TObject);
     procedure btnGrDrillExcelClick(Sender: TObject);
     procedure pg001OccPrCalculateCustomSummary(Sender: TcxPivotGridField; ASummary: TcxPivotGridCrossCellSummary);
-    procedure sButton4Click(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 
   private
@@ -333,11 +333,6 @@ begin
   cbxMonth.ItemIndex := zMonth;
 
   cbxYear.ItemIndex := cbxYear.Items.IndexOf(inttostr(zYear));
-//  idx := zYear - 2010;
-//  if (idx < cbxYear.Items.Count - 1) and (idx > 0) then
-//  begin
-//    cbxYear.ItemIndex := idx;
-//  end;
 
   zDateFrom := encodeDate(y, m, 1);
   lastDay := _DaysPerMonth(y, m);
@@ -773,6 +768,7 @@ begin
           kbmRoomsData_.fieldbyname('MarketName').AsString           := rSet1.fieldbyname('MarketName').AsString;
           kbmRoomsData_.fieldbyname('Statistics').AsBoolean          := rSet1.fieldbyname('Statistics').AsBoolean;
           kbmRoomsData_.fieldbyname('totalNumberOfBeds').AsInteger   := rSet1.fieldbyname('totalNumberOfBeds').AsInteger;
+          kbmRoomsData_.fieldbyname('location').AsString             := rSet1.fieldbyname('location').AsString;
           kbmRoomsData_.fieldbyname('occRooms').AsInteger            := 1;
           kbmRoomsData_.fieldbyname('TotalRooms').AsInteger          := 0;
           kbmRoomsData_.fieldbyname('EmptyRooms').AsInteger          := 0;
@@ -823,6 +819,7 @@ begin
    s := s+'     pd.date AS dtDate '#10;
    s := s+'    ,ro.Room '#10;
    s := s+'    ,ro.RoomType '#10;
+   s := s+'    ,ro.Location '#10;
    s := s+'    ,(SELECT NumberGuests FROM roomtypes WHERE RoomType=ro.RoomType) AS totalNumberOfBeds '#10;
    s := s+'  FROM predefineddates pd, rooms ro '#10;
    s := s+'  WHERE ro.wildcard=0 AND '#10;
@@ -907,14 +904,6 @@ begin
   if aTotal <> 0 then
   ASummary.Custom := (AOcc / ATotal) * 100;
 end;
-
-
-procedure TfrmRptResStatsRooms.sButton4Click(Sender: TObject);
-begin
-
-end;
-
-//15
 
 
 

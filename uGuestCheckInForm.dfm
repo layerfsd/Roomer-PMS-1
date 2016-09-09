@@ -641,10 +641,6 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
             Caption = 'Company'
             SkinData.CustomColor = False
             SkinData.CustomFont = False
-            ExplicitLeft = 0
-            ExplicitTop = 0
-            ExplicitWidth = 0
-            ExplicitHeight = 0
             object sLabel22: TsLabel
               Left = 11
               Top = 24
@@ -1190,10 +1186,6 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
             Caption = 'Credit card'
             SkinData.CustomColor = False
             SkinData.CustomFont = False
-            ExplicitLeft = 0
-            ExplicitTop = 0
-            ExplicitWidth = 0
-            ExplicitHeight = 0
             object sLabel12: TsLabel
               Left = 66
               Top = 69
@@ -1313,19 +1305,11 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
             Caption = 'None'
             SkinData.CustomColor = False
             SkinData.CustomFont = False
-            ExplicitLeft = 0
-            ExplicitTop = 0
-            ExplicitWidth = 0
-            ExplicitHeight = 0
           end
           object sTabSheet7: TsTabSheet
             Caption = 'Select'
             SkinData.CustomColor = False
             SkinData.CustomFont = False
-            ExplicitLeft = 0
-            ExplicitTop = 0
-            ExplicitWidth = 0
-            ExplicitHeight = 0
           end
         end
       end
@@ -1376,6 +1360,8 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
   end
   object rptForm: TfrxReport
     Version = '4.13.2'
+    DataSet = dsForm
+    DataSetName = 'frxDBDataset1'
     DotMatrixReport = False
     IniFile = '\Software\Fast Reports'
     PreviewOptions.Buttons = [pbPrint, pbLoad, pbSave, pbExport, pbZoom, pbFind, pbOutline, pbPageSetup, pbTools, pbEdit, pbNavigator, pbExportQuick]
@@ -33970,5 +33956,12 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
     MemoParentFont = False
     Left = 496
     Top = 464
+  end
+  object dsForm: TfrxDBDataset
+    UserName = 'frxDBDataset1'
+    CloseDataSource = False
+    BCDToCurrency = False
+    Left = 560
+    Top = 520
   end
 end

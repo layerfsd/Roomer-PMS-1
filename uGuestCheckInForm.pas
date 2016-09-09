@@ -89,7 +89,6 @@ type
     sButton5: TsButton;
     lbPayment: TsLabel;
     rptForm: TfrxReport;
-    dsForm: TfrxDBDataset;
     frxDesigner1: TfrxDesigner;
     sLabel32: TsLabel;
     edTitle: TsEdit;
@@ -132,6 +131,7 @@ type
     lblMarket: TsLabel;
     cbxMarket: TsComboBox;
     shpMarket: TShape;
+    dsForm: TfrxDBDataset;
     procedure FormCreate(Sender: TObject);
     procedure cbxGuaranteeTypesCloseUp(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -357,9 +357,10 @@ function PrintRegistrationForm(_RoomReservations: IntegerArray): Boolean;
 var
   i: Integer;
   sRoomResList: String;
+  lForm: TFrmGuestCheckInForm;
 begin
   result := false;
-  FrmGuestCheckInForm := TFrmGuestCheckInForm.Create(FrmGuestCheckInForm);
+  lForm := TFrmGuestCheckInForm.Create(nil);
   try
     sRoomResList := '';
     for i := Low(_RoomReservations) to High(_RoomReservations) do
@@ -368,9 +369,9 @@ begin
       else
         sRoomResList := sRoomResList + ',' + inttostr(_RoomReservations[i]);
 
-      FrmGuestCheckInForm.PrintReportForRoomList(sRoomResList);
+      lForm.PrintReportForRoomList(sRoomResList);
   finally
-    FrmGuestCheckInForm.Free;
+    lForm.Free;
   end;
 end;
 
