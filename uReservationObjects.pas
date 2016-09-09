@@ -577,7 +577,6 @@ begin
             // SingleReservations.FResStatus := rsDeparting
             // else
             SingleReservations.FResStatus := TReservationState.FromResStatus(FieldByName('Status').asString);
-
             FReservationList.add(SingleReservations);
           end;
 

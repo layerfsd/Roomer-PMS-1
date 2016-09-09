@@ -11,11 +11,11 @@ uses
   dxSkinscxPCPainter, cxCustomData, cxFilter, cxData, cxDataStorage, cxEdit, cxNavigator, cxDBData, cxGridLevel,
   cxGridCustomTableView, cxGridTableView, cxGridBandedTableView, cxGridDBBandedTableView, cxGridCustomView, cxGrid,
   dxStatusBar, cxGridDBTableView, Vcl.Grids, Vcl.DBGrids, Vcl.Menus, _glob,
-  cxCurrencyEdit, uCurrencyHandler, cxCalendar, cxTimeEdit;
+  cxCurrencyEdit, uCurrencyHandler, cxCalendar, cxTimeEdit,
+  uRoomerForm;
 
 type
-  TfrmDeparturesReport = class(TForm)
-    FormStore: TcxPropertiesStore;
+  TfrmDeparturesReport = class(TfrmBaseRoomerForm)
     kbmDeparturesList: TkbmMemTable;
     DeparturesListDS: TDataSource;
     pnlFilter: TsPanel;
@@ -28,7 +28,6 @@ type
     dtDateTo: TsDateEdit;
     pnlExportButtons: TsPanel;
     btnExcel: TsButton;
-    dxStatusBar: TdxStatusBar;
     cxStyleRepository1: TcxStyleRepository;
     cxStyle1: TcxStyle;
     btnCheckOut: TsButton;
@@ -57,10 +56,7 @@ type
     tvDeparturesListCompanyName: TcxGridDBColumn;
     tvDeparturesListAverageRatePerNight: TcxGridDBColumn;
     tvDeparturesListBalance: TcxGridDBColumn;
-    procedure FormCreate(Sender: TObject);
-    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure rbRadioButtonClick(Sender: TObject);
-    procedure FormShow(Sender: TObject);
     procedure btnExcelClick(Sender: TObject);
     procedure btnRefreshClick(Sender: TObject);
     procedure kbmDeparturesListAfterScroll(DataSet: TDataSet);
@@ -78,12 +74,11 @@ type
     FRefreshingdata: boolean;
     FCurrencyhandler: TCurrencyHandler;
     { Private declarations }
-    procedure UpdateControls;
     procedure SetManualDates(aFrom, aTo: TDate);
-    procedure RefreshData;
     function getsql(DateFrom,DateTo : Tdate) : string;
   protected
-    procedure WndProc(var message: TMessage); override;
+    procedure UpdateControls; override;
+    procedure RefreshData; override;
   public
     constructor Create(aOwner: TComponent); override;
     destructor Destroy; override;
@@ -352,7 +347,7 @@ begin
   lStateChangeHandler := TRoomReservationStateChangeHandler.Create(kbmDeparturesList['RoomerReservationID'], kbmDeparturesList['RoomerRoomReservationID']);
   try
     if lStateChangeHandler.ChangeState(rsDeparted) then
-       PostMessage(handle, WM_REFRESH_DATA, 0, 0);
+       Refreshdata;
   finally
     lStateChangeHandler.Free;
   end;
@@ -373,19 +368,18 @@ end;
 procedure TfrmDeparturesReport.btnProfileClick(Sender: TObject);
 begin
   if EditReservation(kbmDeparturesList['RoomerReservationID'], kbmDeparturesList['RoomerRoomReservationID']) then
-    postMessage(handle, WM_REFRESH_DATA, 0, 0);
+    RefreshData;
 end;
 
 procedure TfrmDeparturesReport.btnRefreshClick(Sender: TObject);
 begin
-  postMessage(handle, WM_REFRESH_DATA, 0, 0);
+  RefreshData;
 end;
 
 constructor TfrmDeparturesReport.Create(aOwner: TComponent);
 begin
   FCurrencyhandler := TCurrencyHandler.Create(g.qNativeCurrency);
   inherited;
-
 end;
 
 destructor TfrmDeparturesReport.Destroy;
@@ -404,25 +398,6 @@ procedure TfrmDeparturesReport.dtDateToCloseUp(Sender: TObject);
 begin
  if dtDateFrom.Date > dtDateTo.Date then
    dtDateFrom.Date := dtDateTo.Date;
-end;
-
-procedure TfrmDeparturesReport.FormCreate(Sender: TObject);
-begin
-  RoomerLanguage.TranslateThisForm(self);
-  glb.PerformAuthenticationAssertion(self);
-  PlaceFormOnVisibleMonitor(self);
-end;
-
-procedure TfrmDeparturesReport.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-begin
-  if Key = VK_ESCAPE then
-    Close;
-end;
-
-procedure TfrmDeparturesReport.FormShow(Sender: TObject);
-begin
-  UpdateControls;
-  postMessage(handle, WM_REFRESH_DATA, 0, 0);
 end;
 
 procedure TfrmDeparturesReport.mnuGroupInvoiceClick(Sender: TObject);
@@ -456,6 +431,7 @@ var
   s    : string;
   rset1: TRoomerDataset;
 begin
+  inherited;
   if NOT btnRefresh.Enabled then exit;
 
   btnRefresh.Enabled := False;
@@ -512,6 +488,7 @@ begin
   if FRefreshingData then
     Exit;
 
+  inherited;
   dtDateFrom.Enabled := rbManualRange.Checked;
   dtDateTo.Enabled := rbManualRange.Checked;
 
@@ -524,13 +501,6 @@ begin
   btnCheckOut.Enabled := lDataAvailable;
   btnProfile.Enabled := lDataAvailable;
   btnInvoice.Enabled := lDataAvailable;
-end;
-
-procedure TfrmDeparturesReport.WndProc(var message: TMessage);
-begin
-  if message.Msg = WM_REFRESH_DATA then
-    RefreshData;
-  inherited WndProc(message);
 end;
 
 end.

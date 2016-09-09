@@ -1,26 +1,23 @@
-object frmRptTotallist: TfrmRptTotallist
-  Left = 0
-  Top = 0
+inherited frmRptTotallist: TfrmRptTotallist
   Caption = 'Totallist'
   ClientHeight = 633
   ClientWidth = 1347
-  Color = clBtnFace
   Constraints.MinWidth = 570
-  Font.Charset = DEFAULT_CHARSET
-  Font.Color = clWindowText
   Font.Height = -11
-  Font.Name = 'Tahoma'
-  Font.Style = []
-  KeyPreview = True
-  OldCreateOrder = False
   Position = poOwnerFormCenter
-  OnClose = FormClose
   OnCreate = FormCreate
-  OnKeyDown = FormKeyDown
   OnShow = FormShow
+  ExplicitWidth = 1363
+  ExplicitHeight = 672
   PixelsPerInch = 96
   TextHeight = 13
-  object Panel3: TsPanel
+  inherited dxStatusBar: TdxStatusBar
+    Top = 613
+    Width = 1347
+    ExplicitTop = 593
+    ExplicitWidth = 1347
+  end
+  object Panel3: TsPanel [1]
     Left = 0
     Top = 0
     Width = 1347
@@ -211,7 +208,7 @@ object frmRptTotallist: TfrmRptTotallist
       end
     end
   end
-  object Panel5: TsPanel
+  object Panel5: TsPanel [2]
     Left = 0
     Top = 97
     Width = 1347
@@ -234,19 +231,7 @@ object frmRptTotallist: TfrmRptTotallist
       SkinData.SkinSection = 'BUTTON'
     end
   end
-  object dxStatusBar1: TdxStatusBar
-    Left = 0
-    Top = 613
-    Width = 1347
-    Height = 20
-    Panels = <>
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -11
-    Font.Name = 'Tahoma'
-    Font.Style = []
-  end
-  object grTotallist: TcxGrid
+  object grTotallist: TcxGrid [3]
     Left = 0
     Top = 140
     Width = 1347
@@ -254,7 +239,7 @@ object frmRptTotallist: TfrmRptTotallist
     Align = alClient
     TabOrder = 3
     LookAndFeel.NativeStyle = False
-    ExplicitTop = 142
+    ExplicitHeight = 453
     object lvTotallist: TcxGridDBBandedTableView
       Navigator.Buttons.CustomButtons = <>
       Navigator.Buttons.Insert.Visible = False

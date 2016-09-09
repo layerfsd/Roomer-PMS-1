@@ -237,7 +237,8 @@ uses
   uReservationStateDefinitions in 'Definitions\uReservationStateDefinitions.pas',
   ufrmPaymentReqRoomtypeGroup in 'ufrmPaymentReqRoomtypeGroup.pas' {frmPaymentReqRoomtypeGroup},
   uRptHouseKeeping in 'uRptHouseKeeping.pas',
-  uReservationStateChangeHandler in 'uReservationStateChangeHandler.pas';
+  uReservationStateChangeHandler in 'uReservationStateChangeHandler.pas',
+  uRoomerForm in 'RoomerForm\uRoomerForm.pas' {frmBaseRoomerForm};
 
 {$R *.RES}
 

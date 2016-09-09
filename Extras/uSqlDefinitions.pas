@@ -1239,6 +1239,8 @@ select_ReservationProfile_guestRoomsSQL : string =
 '   , rooms.Location '+
 '   , locations.Description AS LocationDescription '+
 '   , persons.PersonsProfilesId '+
+'   , persons.Name as Mainguest '+
+'   , (SELECT count(Person) FROM persons p2 WHERE  p2.RoomReservation = roomreservations.Roomreservation) as GuestCount '+
 ' FROM '+
 '   locations '+
 '   RIGHT OUTER JOIN '+

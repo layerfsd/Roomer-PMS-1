@@ -723,6 +723,7 @@ type
     FOrigAcCheckinRoomCaption: string;
     FOrigAcCheckOutRoomCaption: string;
     FOrigmnuChangeStateToCaption: string;
+    FInitializingData: boolean;
 
     procedure Display;
     procedure Display_rGrid(gotoRoomReservation: longInt);
@@ -977,8 +978,6 @@ begin
   try
     PlacePnlDataWait;
     timStart.enabled := True;
-//    Display;
-//    mRooms.First;
   finally
     Enabled := true;
   end;
@@ -2532,7 +2531,7 @@ begin
       if OutOfOrderBlocking then
         mRoomsGuestName.asstring := edtName.text;
 
-      FReservationChangeStateHandler.AddRoomStateChangeHandler(TRoomReservationStateChangeHandler.Create(zReservation, mRoomsRoomReservation.AsInteger));
+      FReservationChangeStateHandler.AddRoomStateChangeHandler(TRoomReservationStateChangeHandler.Create(zReservation, mRoomsRoomReservation.AsInteger, Status));
 
       mRooms.Post;
       mRooms.Next;
@@ -3272,12 +3271,7 @@ var
 
   status: TReservationState;
   statusText: string;
-
-  mainGuest: string;
-  guestCount: Integer;
-
   roomReservation: longInt;
-
 begin
   rSet := CreateNewDataSet;
   if not aAllGuestsOnly then
@@ -3305,13 +3299,8 @@ begin
           status := TReservationState.FromResStatus(mGuestRooms.fieldbyname('status').asstring);
           statusText := Status.AsReadableString;
 
-          mainGuest := d.RR_GetFirstGuestName(roomReservation);
-          guestCount := d.RR_GetGuestCount(roomReservation);
-
           mGuestRooms.Edit;
           mGuestRooms.fieldbyname('statusText').asstring := statusText;
-          mGuestRooms.fieldbyname('mainGuest').asstring := mainGuest;
-          mGuestRooms.fieldbyname('GuestCount').asInteger := guestCount;
           mGuestRooms.Post;
           mGuestRooms.Next;
         end;
@@ -3670,11 +3659,14 @@ begin
   lSavedAfterScroll := mRooms.AfterScroll;
   lSavedBeforePost := mRooms.BeforePost;
   try
+    FInitializingData := True;
     mRooms.AfterScroll := nil;
+    mROoms.BeforePost := nil;
     Display;
     getGuestData(-1);
     mRooms.First;
   finally
+    FInitializingData := False;
     mRooms.AfterScroll := lSavedAfterScroll;
     mRooms.BeforePost := lSavedBeforePost;
     Enabled := true;

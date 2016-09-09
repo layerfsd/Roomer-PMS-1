@@ -1,24 +1,21 @@
-object frmDeparturesReport: TfrmDeparturesReport
-  Left = 0
-  Top = 0
+inherited frmDeparturesReport: TfrmDeparturesReport
   Caption = 'Departures'
   ClientHeight = 585
   ClientWidth = 1055
-  Color = clBtnFace
-  Font.Charset = DEFAULT_CHARSET
-  Font.Color = clWindowText
   Font.Height = -11
-  Font.Name = 'Tahoma'
-  Font.Style = []
-  KeyPreview = True
-  OldCreateOrder = False
   Position = poOwnerFormCenter
-  OnCreate = FormCreate
-  OnKeyDown = FormKeyDown
-  OnShow = FormShow
+  ExplicitWidth = 1071
+  ExplicitHeight = 624
   PixelsPerInch = 96
   TextHeight = 13
-  object pnlFilter: TsPanel
+  inherited dxStatusBar: TdxStatusBar
+    Top = 565
+    Width = 1055
+    ExplicitLeft = 0
+    ExplicitTop = 565
+    ExplicitWidth = 1055
+  end
+  object pnlFilter: TsPanel [1]
     Left = 0
     Top = 0
     Width = 1055
@@ -26,6 +23,7 @@ object frmDeparturesReport: TfrmDeparturesReport
     Align = alTop
     TabOrder = 0
     SkinData.SkinSection = 'PANEL'
+    ExplicitTop = -6
     object btnRefresh: TsButton
       Left = 398
       Top = 9
@@ -201,26 +199,14 @@ object frmDeparturesReport: TfrmDeparturesReport
       end
     end
   end
-  object dxStatusBar: TdxStatusBar
-    Left = 0
-    Top = 565
-    Width = 1055
-    Height = 20
-    Panels = <>
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -11
-    Font.Name = 'Tahoma'
-    Font.Style = []
-  end
-  object grDeparturesList: TcxGrid
+  object grDeparturesList: TcxGrid [2]
     Left = 0
     Top = 144
     Width = 1055
     Height = 421
     Align = alClient
     PopupMenu = pnmuGridMenu
-    TabOrder = 2
+    TabOrder = 1
     LookAndFeel.NativeStyle = False
     object tvDeparturesList: TcxGridDBTableView
       Navigator.Buttons.CustomButtons = <>
@@ -317,22 +303,6 @@ object frmDeparturesReport: TfrmDeparturesReport
     object lvDeparturesList: TcxGridLevel
       GridView = tvDeparturesList
     end
-  end
-  object FormStore: TcxPropertiesStore
-    Components = <
-      item
-        Component = Owner
-        Properties.Strings = (
-          'Height'
-          'Left'
-          'Position'
-          'Top'
-          'Width')
-      end>
-    StorageName = 'Software\Roomer\FormStatus\frmRptArrivals'
-    StorageType = stRegistry
-    Left = 330
-    Top = 358
   end
   object kbmDeparturesList: TkbmMemTable
     Active = True

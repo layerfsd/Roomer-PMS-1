@@ -75,7 +75,7 @@ type
 
     TReservationStateSetHelper = record helper for TReservationStateSet
       /// <summary>
-      ///   Returns a string containing a set definition as used in SQL statements, i.e. ['P, 'C']
+      ///   Returns a string containing a set definition as used in SQL statements, i.e. ('P, 'C')
       /// </summary>
       function AsSQLString: string;
     end;
@@ -276,7 +276,7 @@ begin
         fontColor := g.qStatusAttr_NoShow.fontColor;//clYellow;
         result := true;
       end;
-    rsAlotment :
+    rsAllotment :
       begin
         backColor := g.qStatusAttr_Allotment.backgroundColor; //clWhite;
         fontColor := g.qStatusAttr_Allotment.fontColor;   //clRed;
@@ -339,10 +339,10 @@ begin
   lStr := TStringlist.Create;
   try
     for stat in Self do
-      lStr.Add(stat.AsStatusChar);
+      lStr.Add(Quotedstr( stat.AsStatusChar));
 
     lStr.Delimiter := ',';
-    Result := '[' + lStr.DelimitedText +']';
+    Result := '(' + lStr.DelimitedText +')';
   finally
     lStr.Free;
   end;

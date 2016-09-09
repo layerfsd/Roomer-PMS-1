@@ -724,15 +724,14 @@ type
     __TimingResult: TsLabel;
     mnuCancelRoomFromRoomReservation: TMenuItem;
     __N10: TMenuItem;
-    btnRepDepartures: TdxBarLargeButton;
     dxBarButton6: TdxBarButton;
-    btnRptDepartures: TdxBarLargeButton;
     dxRptStockitems: TdxBarLargeButton;
     btnHideCancelledBookings: TdxBarLargeButton;
     barinnFinancials: TdxBar;
     btnCloseCurrentDay: TdxBarLargeButton;
     barinnHousekeeping: TdxBar;
     btnSimpleHouseKeeping: TdxBarLargeButton;
+    btnRptDepartures: TdxBarLargeButton;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
@@ -4411,7 +4410,7 @@ begin
   end;
   mnuItemPasteReservationFromClipboard.Enabled := ClipboardText.StartsWith(ROOMER_COPY_RESERVATION);
   if GetSelectedRoomInformation then
-    mnuConfirmBooking.Enabled := (_ResStatus = rsAlotment) AND mnuConfirmBooking.Enabled AND (NOT OffLineMode);
+    mnuConfirmBooking.Enabled := (_ResStatus = rsAllotment) AND mnuConfirmBooking.Enabled AND (NOT OffLineMode);
 
 end;
 
@@ -4987,7 +4986,7 @@ procedure TfrmMain.C4Click(Sender: TObject);
 var
   iRoomReservation: integer;
   iReservation: integer;
-  sText, status, Room, name: String;
+//  sText, status, Room, name: String;
 begin
   if mAllReservations.eof OR mAllReservations.BOF then
     exit;
@@ -5329,7 +5328,7 @@ begin
       sErr := sErr + { 1016 } GetTranslatedText('sh1016') + ' '
     else if _ResStatus = rsReserved then
       sErr := sErr + { 1017 } GetTranslatedText('sh1017') + ' '
-    else if _ResStatus = rsAlotment then
+    else if _ResStatus = rsAllotment then
       sErr := sErr + { 1018 } GetTranslatedText('sh1018') + ' '
     else if _ResStatus = rsNoShow then
       sErr := sErr + { 1019 } GetTranslatedText('sh1019') + ' '
@@ -6553,7 +6552,7 @@ begin
           begin
             HintStr := { 1035 } '<b>' + GetTranslatedText('shWAITINGLIST') + '</b><br><br>';
           end
-          else if ro.ResStatus = rsAlotment then
+          else if ro.ResStatus = rsAllotment then
           begin
             HintStr := { 1036 } '<b>' + GetTranslatedText('shALOTMENT') + '</b><br><br>';
           end

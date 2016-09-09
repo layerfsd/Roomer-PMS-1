@@ -47,16 +47,16 @@ const
           '  r.Customer AS CompanyCode, '+
           '  r.Name AS CompanyName, '+
           '  rr.AvrageRate AS AverageRoomRate, '+
-          '  ( SELECT rd1.ADate '+
+          '  CAST(( SELECT rd1.ADate '+
           '    FROM roomsdate rd1 '+
           '    WHERE rd1.RoomReservation=rd.RoomReservation '+
           '          AND (NOT rd1.ResFlag IN (''X'',''C'')) '+
-          '    ORDER BY rd1.ADate LIMIT 1) AS Arrival, '+
-          '  DATE_ADD((SELECT rd1.ADate '+
+          '    ORDER BY rd1.ADate LIMIT 1) as DATE) AS Arrival, '+
+          '  CAST(DATE_ADD((SELECT rd1.ADate '+
           '              FROM roomsdate rd1 '+
           '              WHERE rd1.RoomReservation=rd.RoomReservation AND (rd1.ResFlag = ''P'') '+
           '              ORDER BY rd1.ADate DESC LIMIT 1), '+
-          '            INTERVAL 1 DAY) AS Departure, '+
+          '            INTERVAL 1 DAY) as DATE) AS Departure, '+
           '  ( SELECT COUNT(id) '+
           '    FROM persons pe1 '+
           '    WHERE pe1.RoomReservation=rd.RoomReservation) AS NumGuests, '+

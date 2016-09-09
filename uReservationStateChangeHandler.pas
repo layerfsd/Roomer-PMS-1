@@ -20,12 +20,14 @@ type
   protected
     FReservation: integer;
     FNewState : TReservationState;
-
+    FCurrentState: TReservationState;
+    FCurrentStateDirty: boolean;
     function Checkin: boolean; virtual;
     function CheckOut: boolean; virtual;
     function DispatchChangeHandler(aOldState, aNewState: TReservationState): THandlerFunc; virtual;
     function CatchAll: boolean; virtual;
-    function GetReservationState: TReservationState; virtual; abstract;
+    function GetReservationState: TReservationState; virtual;
+    procedure UpdateCurrentState; virtual; abstract;
   public
     function ChangeIsAllowed(aNewState: TReservationState): boolean;
     function ChangeState(aNewState: TReservationState): boolean; virtual;
@@ -35,13 +37,13 @@ type
   TRoomReservationStateChangeHandler = class(TBaseReservationStateChangeHandler)
   protected
     FRoomReservation: integer;
-
     function Checkin: boolean; override;
     function CheckOut: boolean; override;
     function CatchAll: boolean; override;
-    function GetReservationState: TReservationState; override;
+    procedure UpdateCurrentState; override;
   public
-    constructor Create(aReservation, aRoomReservation: integer);
+    constructor Create(aReservation, aRoomReservation: integer); overload;
+    constructor Create(aReservation, aRoomReservation: integer; aCurrentState: TReservationState); overload;
   end;
 
   TReservationStateChangeHandler = class(TBaseReservationStateChangeHandler)
@@ -52,7 +54,7 @@ type
 
     function Checkin: boolean; override;
     function CatchAll: boolean; override;
-    function GetReservationState: TReservationState; override;
+    procedure UpdateCurrentState; override;
   public
     constructor Create(aReservation: integer);
     destructor Destroy; override;
@@ -121,6 +123,7 @@ begin
   if Assigned(lExecuteChangeFunc) then
     Result := lExecuteChangeFunc();
 
+  fCurrentStateDirty := Result;
 end;
 
 function TBaseReservationStateChangeHandler.Checkin: boolean;
@@ -194,17 +197,18 @@ begin
   inherited;
 end;
 
-function TReservationStateChangeHandler.GetReservationState: TReservationState;
+procedure TReservationStateChangeHandler.UpdateCurrentState;
 var
   lRoomHandler: TRoomReservationStateChangeHandler;
 begin
-  Result := rsUnKnown;
+  inherited;
+  FCurrentState := rsUnKnown;
   for lRoomHandler in FRoomStateChangers.Values do
-    if (Result = rsUnKnown) then
-      Result := lRoomhandler.CurrentState
-    else if (lRoomhandler.CurrentState <> result) then
+    if (FCurrentState = rsUnKnown) then
+      FCurrentState := lRoomhandler.CurrentState
+    else if (lRoomhandler.CurrentState <> FCurrentState ) then
     begin
-      Result := rsMixed;
+      FCurrentState := rsMixed;
       Break;
     end;
 end;
@@ -264,15 +268,25 @@ begin
   end;
 end;
 
+constructor TRoomReservationStateChangeHandler.Create(aReservation, aRoomReservation: integer;
+  aCurrentState: TReservationState);
+begin
+  Create(aReservation, aRoomReservation);
+  FCurrentState := aCurrentState;
+  FCurrentStateDirty := False;
+end;
+
 constructor TRoomReservationStateChangeHandler.Create(aReservation, aRoomReservation: integer);
 begin
   FReservation := aReservation;
   FRoomReservation := aRoomReservation;
+  FCurrentStateDirty := True;
 end;
 
-function TRoomReservationStateChangeHandler.GetReservationState: TReservationState;
+procedure TRoomReservationStateChangeHandler.UpdateCurrentState;
 begin
-  Result := TReservationState.FromResStatus( d.RR_GetStatus(FRoomReservation));
+  inherited;
+  FCurrentState := TReservationState.FromResStatus( d.RR_GetStatus(FRoomReservation));
 end;
 
 function TBaseReservationStateChangeHandler.DispatchChangeHandler(aOldState,
@@ -285,6 +299,14 @@ begin
   else
     Result := Catchall;
   end;
+end;
+
+function TBaseReservationStateChangeHandler.GetReservationState: TReservationState;
+begin
+  if FCurrentStateDirty then
+    UpdateCurrentState;
+
+  Result := FCurrentState;
 end;
 
 procedure TReservationStateChangeHandler.AddRoomStateChangeHandler(aHandler: TRoomReservationStateChangeHandler);
