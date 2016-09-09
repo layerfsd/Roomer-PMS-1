@@ -584,9 +584,9 @@ begin
             else if Trim(FieldByName('Status').asString) = 'R' then
               SingleReservations.FResStatus := rsReserved
             else if Trim(FieldByName('Status').asString) = 'O' then
-              SingleReservations.FResStatus := rsOverbooked
+              SingleReservations.FResStatus := rsWaitingList
             else if Trim(FieldByName('Status').asString) = 'A' then
-              SingleReservations.FResStatus := rsAlotment
+              SingleReservations.FResStatus := rsAllotment
             else if Trim(FieldByName('Status').asString) = 'N' then
               SingleReservations.FResStatus := rsNoShow
             else if Trim(FieldByName('Status').asString) = 'B' then
@@ -690,11 +690,11 @@ begin
             end
             else if Trim(FieldByName('Status').asString) = 'O' then
             begin
-              RoomObject.FResStatus := rsOverbooked
+              RoomObject.FResStatus := rsWaitingList
             end
             else if Trim(FieldByName('Status').asString) = 'A' then
             begin
-              RoomObject.FResStatus := rsAlotment
+              RoomObject.FResStatus := rsAllotment
             end
             else if Trim(FieldByName('Status').asString) = 'N' then
             begin

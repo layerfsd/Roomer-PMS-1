@@ -3613,9 +3613,9 @@ begin
       letter := 'P';
     rsGuests:
       letter := 'G';
-    rsOverbooked:
+    rsWaitingList:
       letter := 'O';
-    rsAlotment:
+    rsAllotment:
       letter := 'A';
     rsNoShow:
       letter := 'N';
@@ -4416,7 +4416,7 @@ begin
   end;
   mnuItemPasteReservationFromClipboard.Enabled := ClipboardText.StartsWith(ROOMER_COPY_RESERVATION);
   if GetSelectedRoomInformation then
-    mnuConfirmBooking.Enabled := (_ResStatus = rsAlotment) AND mnuConfirmBooking.Enabled AND (NOT OffLineMode);
+    mnuConfirmBooking.Enabled := (_ResStatus = rsAllotment) AND mnuConfirmBooking.Enabled AND (NOT OffLineMode);
 
 end;
 
@@ -5330,11 +5330,11 @@ begin
       sErr := sErr + { 1014 } GetTranslatedText('sh1014') + ' '
     else if _ResStatus = rsReservation then
       sErr := sErr + { 1015 } GetTranslatedText('sh1015') + ' '
-    else if _ResStatus = rsOverbooked then
+    else if _ResStatus = rsWaitingList then
       sErr := sErr + { 1016 } GetTranslatedText('sh1016') + ' '
     else if _ResStatus = rsReserved then
       sErr := sErr + { 1017 } GetTranslatedText('sh1017') + ' '
-    else if _ResStatus = rsAlotment then
+    else if _ResStatus = rsAllotment then
       sErr := sErr + { 1018 } GetTranslatedText('sh1018') + ' '
     else if _ResStatus = rsNoShow then
       sErr := sErr + { 1019 } GetTranslatedText('sh1019') + ' '
@@ -5781,8 +5781,8 @@ begin
     for lRoom in FReservationsModel.AllRoomsEnumerator(function (aRoom: TRoomObject): boolean
                                                        begin
                                                           Result := aRoom.IsUnAssigned and (aRoom.Departure <> zOneDay_dtDate) and
-                                                                    not (aRoom.ResStatus in [rsDeparted, rsReservation, rsOverbooked,
-                                                                                              rsAlotment, rsNoShow, rsCancelled, rsTmp1, rsAwaitingPayment]);
+                                                                    not (aRoom.ResStatus in [rsDeparted, rsReservation, rsWaitingList,
+                                                                                              rsAllotment, rsNoShow, rsCancelled, rsTmp1, rsAwaitingPayment]);
                                                        end) do
     begin
       OneDay_AddToTaken(lRoom.RoomType);
@@ -5816,7 +5816,7 @@ begin
             for lRoom in FReservationsModel.AllRoomsEnumerator( function (aRoom: TRoomobject): boolean
                                                                 begin
                                                                   Result := FilteredData(aRoom) and
-                                                                            not ( (aRoom.ResStatus in [rsReservation, rsOverbooked, rsAlotment, rsNoShow, rsCancelled, rsTmp1, rsAwaitingPayment, rsBlocked, rsDeparted])
+                                                                            not ( (aRoom.ResStatus in [rsReservation, rsWaitingList, rsAllotment, rsNoShow, rsCancelled, rsTmp1, rsAwaitingPayment, rsBlocked, rsDeparted])
                                                                                   and (aRoom.Departure = zOneDay_dtDate));
                                                                 end) do
             begin
@@ -6554,11 +6554,11 @@ begin
 
           ro := FReservationsModel.Reservations[iReservation].Rooms[iRoom];
 
-          if ro.ResStatus = rsOverbooked then
+          if ro.ResStatus = rsWaitingList then
           begin
             HintStr := { 1035 } '<b>' + GetTranslatedText('shWAITINGLIST') + '</b><br><br>';
           end
-          else if ro.ResStatus = rsAlotment then
+          else if ro.ResStatus = rsAllotment then
           begin
             HintStr := { 1036 } '<b>' + GetTranslatedText('shALOTMENT') + '</b><br><br>';
           end
@@ -7317,8 +7317,8 @@ begin
           case FReservationsModel.Reservations[iRes].Rooms[iRoom].ResStatus of
             rsReservation: FormatToReservationAttrib(Grid.Canvas, g.qStatusAttr_Order);
             rsDeparted:     FormatToReservationAttrib(Grid.Canvas, g.qStatusAttr_Departed);
-            rsOverbooked:   FormatToReservationAttrib(Grid.Canvas, g.qStatusAttr_Waitinglist);
-            rsAlotment:     FormatToReservationAttrib(Grid.Canvas, g.qStatusAttr_Allotment);
+            rsWaitingList:   FormatToReservationAttrib(Grid.Canvas, g.qStatusAttr_Waitinglist);
+            rsAllotment:     FormatToReservationAttrib(Grid.Canvas, g.qStatusAttr_Allotment);
             rsNoShow:       FormatToReservationAttrib(Grid.Canvas, g.qStatusAttr_NoShow);
             rsBlocked:      FormatToReservationAttrib(Grid.Canvas, g.qStatusAttr_Blocked);
             rsCancelled:     FormatToReservationAttrib(Grid.Canvas, g.qStatusAttr_Canceled);

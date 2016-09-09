@@ -1975,9 +1975,9 @@ begin
   else if statusSTR = 'R' then
     result := rsReserved
   else if statusSTR = 'O' then
-    result := rsOverbooked
+    result := rsWaitingList
   else if statusSTR = 'A' then
-    result := rsAlotment
+    result := rsAllotment
   else if statusSTR = 'N' then
     result := rsNoShow
   else if statusSTR = 'B' then
@@ -1995,28 +1995,30 @@ end;
 
 function TGlobalApplication.ResStatusToStatusStr(ResStatus : TReservationState) : string;
 begin
-  result := '';
-  (* if ResStatus = rsReservations then result := 'Reservation';
-  if ResStatus = rsGuests then result := 'Guest';
-  if ResStatus = rsDeparted then result := 'Departed';
-  if ResStatus = rsReserved then result := 'Reserved';
-  if ResStatus = rsOverbooked then result := 'Overbooked';
-  if ResStatus = rsAlotment then result := 'Allotment';
-  if ResStatus = rsNoShow then result := 'NoShow';
-  if ResStatus = rsBlocked then result := 'Blocked';
-  if ResStatus = rsDeparting then result := 'Departing';
-  if ResStatus = rsCurrent then result := 'Current'; *)
-  if ResStatus = rsReservation then result := GetTranslatedText('shTx_G_Reservation');
-  if ResStatus = rsGuests then result := GetTranslatedText('shTx_G_Guest');
-  if ResStatus = rsDeparted then result := GetTranslatedText('shTx_G_Departed');
-  if ResStatus = rsReserved then result := GetTranslatedText('shTx_G_Reserved');
-  if ResStatus = rsOverbooked then result := GetTranslatedText('shTx_G_Overbooked');
-  if ResStatus = rsAlotment then result := GetTranslatedText('shTx_G_Alotment');
-  if ResStatus = rsNoShow then result := GetTranslatedText('shTx_G_NoShow');
-  if ResStatus = rsBlocked then result := GetTranslatedText('shTx_G_Blocked');
-  if ResStatus = rsCancelled then result := GetTranslatedText('shTx_G_Canceled'); //*HJ 140206
-  if ResStatus = rsTmp1 then result := GetTranslatedText('shTx_G_Tmp1');  //*HJ 140206
-  if ResStatus = rsAwaitingPayment then result := GetTranslatedText('shTx_G_aWaitingPayment'); //*HJ 140206
+
+  Result := ResStatus.AsReadableString;
+//  result := '';
+//  (* if ResStatus = rsReservations then result := 'Reservation';
+//  if ResStatus = rsGuests then result := 'Guest';
+//  if ResStatus = rsDeparted then result := 'Departed';
+//  if ResStatus = rsReserved then result := 'Reserved';
+//  if ResStatus = rsOverbooked then result := 'Overbooked';
+//  if ResStatus = rsAlotment then result := 'Allotment';
+//  if ResStatus = rsNoShow then result := 'NoShow';
+//  if ResStatus = rsBlocked then result := 'Blocked';
+//  if ResStatus = rsDeparting then result := 'Departing';
+//  if ResStatus = rsCurrent then result := 'Current'; *)
+//  if ResStatus = rsReservation then result := GetTranslatedText('shTx_G_Reservation');
+//  if ResStatus = rsGuests then result := GetTranslatedText('shTx_G_Guest');
+//  if ResStatus = rsDeparted then result := GetTranslatedText('shTx_G_Departed');
+//  if ResStatus = rsReserved then result := GetTranslatedText('shTx_G_Reserved');
+//  if ResStatus = rsWaitingList then result := GetTranslatedText('shTx_G_Overbooked');
+//  if ResStatus = rsAllotment then result := GetTranslatedText('shTx_G_Alotment');
+//  if ResStatus = rsNoShow then result := GetTranslatedText('shTx_G_NoShow');
+//  if ResStatus = rsBlocked then result := GetTranslatedText('shTx_G_Blocked');
+//  if ResStatus = rsCancelled then result := GetTranslatedText('shTx_G_Canceled'); //*HJ 140206
+//  if ResStatus = rsTmp1 then result := GetTranslatedText('shTx_G_Tmp1');  //*HJ 140206
+//  if ResStatus = rsAwaitingPayment then result := GetTranslatedText('shTx_G_aWaitingPayment'); //*HJ 140206
 end;
 
 

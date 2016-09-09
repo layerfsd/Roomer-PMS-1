@@ -14,8 +14,8 @@ type
       rsGuests,
       rsDeparted,
       rsReserved,
-      rsOverbooked,
-      rsAlotment,
+      rsWaitingList,
+      rsAllotment,
       rsNoShow,
       rsBlocked,
       rsCancelled,
@@ -66,7 +66,7 @@ type
 
     TReservationStateSetHelper = record helper for TReservationStateSet
       /// <summary>
-      ///   Returns a string containing a set definition as used in SQL statements, i.e. ['P, 'C']
+      ///   Returns a string containing a set definition as used in SQL statements, i.e. ('P, 'C')
       /// </summary>
       function AsSQLString: string;
     end;
@@ -136,8 +136,8 @@ begin
     rsGuests:             result := True;
     rsDeparted:           result := True;
     rsReserved:           result := True;
-    rsOverbooked:         result := True;
-    rsAlotment:           result := True;
+    rsWaitingList:         result := True;
+    rsAllotment:           result := True;
     rsNoShow:             result := True;
     rsBlocked:            result := False; // only selectable when creating a special type reservation
     rsCancelled:          result := True;
@@ -159,8 +159,8 @@ begin
     rsGuests:             result := GetTranslatedText('shTx_G_CheckedIn');
     rsDeparted:           result := GetTranslatedText('shTx_G_Departed');
     rsReserved:           result := GetTranslatedText('shTx_G_Reserved');
-    rsOverbooked:         result := GetTranslatedText('shTx_G_Overbooked');
-    rsAlotment:           result := GetTranslatedText('shTx_G_Alotment');
+    rsWaitingList:         result := GetTranslatedText('shTx_G_Overbooked');
+    rsAllotment:           result := GetTranslatedText('shTx_G_Alotment');
     rsNoShow:             result := GetTranslatedText('shTx_G_NoShow');
     rsBlocked:            result := GetTranslatedText('shTx_G_Blocked');
     rsCancelled:          result := GetTranslatedText('shTx_G_Canceled');
@@ -182,8 +182,8 @@ begin
     'G': result := rsGuests;
     'D': result := rsDeparted;
     'R': result := rsReserved;
-    'O': result := rsOverbooked;
-    'A': result := rsAlotment;
+    'O': result := rsWaitingList;
+    'A': result := rsAllotment;
     'N': result := rsNoShow;
     'B': result := rsBlocked;
     'C': result := rsCancelled;
@@ -218,7 +218,7 @@ begin
         fontColor := g.qStatusAttr_Departed.fontColor;  //clWhite;
         result := true;
       end;
-    rsOverbooked :
+    rsWaitingList :
       begin
         backColor := g.qStatusAttr_Waitinglist.backgroundColor; //clYellow;
         fontColor := g.qStatusAttr_Waitinglist.fontColor; //clBlack;
@@ -230,7 +230,7 @@ begin
         fontColor := g.qStatusAttr_NoShow.fontColor;//clYellow;
         result := true;
       end;
-    rsAlotment :
+    rsAllotment :
       begin
         backColor := g.qStatusAttr_Allotment.backgroundColor; //clWhite;
         fontColor := g.qStatusAttr_Allotment.fontColor;   //clRed;
@@ -287,10 +287,10 @@ begin
   lStr := TStringlist.Create;
   try
     for stat in Self do
-      lStr.Add(stat.AsStatusChar);
+      lStr.Add(Quotedstr( stat.AsStatusChar));
 
     lStr.Delimiter := ',';
-    Result := '[' + lStr.DelimitedText +']';
+    Result := '(' + lStr.DelimitedText +')';
   finally
     lStr.Free;
   end;
