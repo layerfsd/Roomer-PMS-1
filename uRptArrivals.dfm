@@ -322,6 +322,7 @@ inherited frmArrivalsReport: TfrmArrivalsReport
     Top = 566
     Width = 1123
     ExplicitTop = 566
+    ExplicitWidth = 1123
   end
   inherited psRoomerBase: TcxPropertiesStore
     Components = <

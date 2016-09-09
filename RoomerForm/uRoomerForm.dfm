@@ -27,8 +27,6 @@ object frmBaseRoomerForm: TfrmBaseRoomerForm
     Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = []
-    ExplicitLeft = -488
-    ExplicitWidth = 1123
   end
   object psRoomerBase: TcxPropertiesStore
     Components = <

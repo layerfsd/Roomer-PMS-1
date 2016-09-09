@@ -14,7 +14,7 @@ uses
 type
   /// <summary>
   ///  Basic form used by all Roomer windows and dialogs. <br />
-  ///  Restores and Stores its dimensional properties in the registry based on the actual form classname
+  ///  Restores and Stores its dimensional properties and WindowState in the registry based on the actual form classname
   ///  </summary>
   TfrmBaseRoomerForm = class(TForm)
     psRoomerBase: TcxPropertiesStore;
