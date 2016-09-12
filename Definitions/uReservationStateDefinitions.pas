@@ -61,6 +61,10 @@ type
       /// </summary>
       class function FromResStatus(const statusChar : char) : TReservationState; overload; static;
       class function FromResStatus(const statusStr : string) : TReservationState; overload; static;
+      /// <summary>
+      ///   Return a TReservationState based in index. Note that this does now work with the itemlist returned by AsStrings as this
+      ///  list only contains UserSelectable TReservationStates
+      /// </summary>
       class function FromItemIndex(aIndex: integer) : TReservationState; static;
 
       /// <summary>
@@ -80,6 +84,10 @@ type
       ///   Return the translated displaystring for a ReservationState
       /// </summary>
       function AsReadableString : string;
+      /// <summary>
+      ///   Return the translated displaystring for a ReservationState, used in Reservation hint<br />
+      ///  Texts used in ReservationHint are slightly different than those use in AsReadableString
+      /// </summary>
       function AsStatusText : string;
       /// <summary>
       ///   Return the colors (back and front) set for hotel to be used for displaying reservation data
@@ -182,7 +190,7 @@ begin
   if statusStr.IsEmpty then
     Result := rsUnKnown
   else
-    Result := FromResStatus(statusStr[1]);
+    Result := FromResStatus(statusStr.Chars[1]);
 end;
 
 function TReservationStateHelper.IsUserSelectable: boolean;

@@ -193,13 +193,13 @@ function _GetComputerNetName: string;
 function _justOneSpace(aText : string) : string;
 function _justOneChar(aText : string; ch: char) : string;
 
-function _DaysPerMonth(AYear, AMonth: Integer): Integer;
-function _WeekNum(const TDT:TDateTime) : Word;
+function _DaysPerMonth(AYear, AMonth: Integer): Integer; deprecated 'Use DateUtils.DaysInMonth';
+function _WeekNum(const TDT:TDateTime) : Word; deprecated 'Use DateUtils.WeekOfTheYear()';
 
 
 function _StatusToText(status : string) : string; deprecated 'Use TReservationState.AsReadableString';
-function _BreakfastToText(included : Boolean) : string;
-function _AccountTypeToText(isGroupAccount : Boolean) : string;
+function _BreakfastToText(included : Boolean) : string; deprecated 'Use TBreakfastState.AsReadableString';
+function _AccountTypeToText(isGroupAccount : Boolean) : string; deprecated 'Use TAccountType.AsReadableString';
 
 Function _textAppend(aFileName : string; line : string; addDate : boolean = false) : boolean;
 
@@ -222,7 +222,7 @@ function GetGridsIniFilename : String;
 implementation
 
 uses uDateUtils, uRegistryServices, uUtils, uG, uStringUtils, uAppGlobal, uRoomerDefinitions, PrjConst, uFloatUtils,
-  uReservationStateDefinitions;
+  uReservationStateDefinitions, uBreakfastStateDefinitions, uAccountTypeDefinitions;
 
 function GetRoomerIniFilename : String;
 begin
@@ -2680,16 +2680,12 @@ end;
 
 function _BreakfastToText(included : Boolean) : string;
 begin
-  result := 'Included';
-  if not included then
-    result := 'Not ' + result;
+  Result := TBreakfastState.FromBool(included).AsReadableString;
 end;
 
 function _AccountTypeToText(isGroupAccount : Boolean) : string;
 begin
-  result := 'Group Account';
-  if not isGroupAccount then
-    result := 'Room Account';
+  Result := TAccountType.FromBool(IsGroupAccount).AsReadableString;
 end;
 
 function _TimeStrToSec(TimeStr : string) : integer;
