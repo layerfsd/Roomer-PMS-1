@@ -64,9 +64,6 @@ object frmGuestProfile2: TfrmGuestProfile2
         TabOrder = 0
         OnClick = btnInsertClick
         SkinData.SkinSection = 'BUTTON'
-        ExplicitLeft = 1
-        ExplicitTop = 1
-        ExplicitHeight = 38
       end
       object btnEdit: TsButton
         AlignWithMargins = True
@@ -84,9 +81,6 @@ object frmGuestProfile2: TfrmGuestProfile2
         TabOrder = 1
         OnClick = btnEditClick
         SkinData.SkinSection = 'BUTTON'
-        ExplicitLeft = 125
-        ExplicitTop = 1
-        ExplicitHeight = 38
       end
       object btnDelete: TsButton
         AlignWithMargins = True
@@ -104,9 +98,6 @@ object frmGuestProfile2: TfrmGuestProfile2
         TabOrder = 2
         OnClick = btnDeleteClick
         SkinData.SkinSection = 'BUTTON'
-        ExplicitLeft = 249
-        ExplicitTop = 1
-        ExplicitHeight = 38
       end
       object btnOther: TsButton
         AlignWithMargins = True
@@ -126,9 +117,6 @@ object frmGuestProfile2: TfrmGuestProfile2
         TabOrder = 3
         OnClick = btnOtherClick
         SkinData.SkinSection = 'BUTTON'
-        ExplicitLeft = 373
-        ExplicitTop = 1
-        ExplicitHeight = 38
       end
       object btnClearAddress: TsButton
         AlignWithMargins = True
@@ -143,9 +131,6 @@ object frmGuestProfile2: TfrmGuestProfile2
         TabOrder = 4
         OnClick = btnClearAddressClick
         SkinData.SkinSection = 'BUTTON'
-        ExplicitLeft = 515
-        ExplicitTop = 1
-        ExplicitHeight = 38
       end
     end
     object sPanel3: TsPanel
@@ -254,7 +239,7 @@ object frmGuestProfile2: TfrmGuestProfile2
         Left = 250
         Top = 109
         Width = 20
-        Height = 18
+        Height = 20
         TabOrder = 1
         SkinData.SkinSection = 'CHECKBOX'
         ImgChecked = 0
@@ -408,7 +393,7 @@ object frmGuestProfile2: TfrmGuestProfile2
         Left = 250
         Top = 131
         Width = 20
-        Height = 18
+        Height = 20
         TabOrder = 5
         SkinData.SkinSection = 'CHECKBOX'
         ImgChecked = 0
@@ -520,8 +505,6 @@ object frmGuestProfile2: TfrmGuestProfile2
     Align = alClient
     TabOrder = 2
     LookAndFeel.NativeStyle = False
-    ExplicitLeft = 1
-    ExplicitTop = 408
     object tvData: TcxGridDBTableView
       Navigator.Buttons.CustomButtons = <>
       Navigator.Buttons.First.Visible = True
@@ -909,7 +892,6 @@ object frmGuestProfile2: TfrmGuestProfile2
     object prLink_grData: TdxGridReportLink
       Active = True
       Component = grData
-      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.GrayShading = True
@@ -922,8 +904,7 @@ object frmGuestProfile2: TfrmGuestProfile2
       PrinterPage.PageSize.Y = 297000
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
-      ReportDocument.CreationDate = 42612.383393009260000000
-      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
+      ReportDocument.CreationDate = 42623.532374039350000000
       BuiltInReportLink = True
     end
   end

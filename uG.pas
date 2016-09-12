@@ -2024,6 +2024,12 @@ begin
         BorderColor := clBlack;
         result := true;
       end;
+    'L' :
+      begin
+        // backColor := clYellow;
+        BorderColor := clBlack;
+        result := true;
+      end;
     'N' :
       begin
         // backColor := clRed;

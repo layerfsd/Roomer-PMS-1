@@ -596,7 +596,7 @@ begin
         try
           if kbmGuests.active then kbmGuests.Close;
           kbmGuests.open;
-//          rSet1.First;
+          rSet1.First;
 //          while not rSet1.Eof do
 //          begin
 //            kbmGuests.Append;
@@ -605,16 +605,17 @@ begin
 //            kbmGuests.FieldByName('ReservationName').AsString := rSet1.FieldByName('ReservationName').AsString;
 //            kbmGuests.FieldByName('Arrival').AsDateTime := rSet1.FieldByName('Arrival').AsDateTime;
 //            kbmGuests.FieldByName('Departure').AsDateTime := rSet1.FieldByName('Departure').AsDateTime;
+//            kbmGuests.FieldByName('NumDays').AsInteger := rSet1.FieldByName('NumDays').AsInteger;
 //            kbmGuests.FieldByName('Room').AsString := rSet1.FieldByName('Room').AsString;
 //            kbmGuests.FieldByName('RoomType').AsString := rSet1.FieldByName('RoomType').AsString;
-//            kbmGuests.FieldByName('Status').AsString := rSet1.FieldByName('Status').AsString;
+////            kbmGuests.FieldByName('Status').AsString := rSet1.FieldByName('Status').AsString;
 //            kbmGuests.FieldByName('Breakfast').AsBoolean := rSet1.FieldByName('Breakfast').AsBoolean;
 //            kbmGuests.FieldByName('RoomDescription').AsString := rSet1.FieldByName('RoomDescription').AsString;
-//            kbmGuests.FieldByName('Location').AsString := rSet1.FieldByName('Location').AsString;
+////            kbmGuests.FieldByName('Location').AsString := rSet1.FieldByName('Location').AsString;
 //            kbmGuests.FieldByName('Floor').AsInteger := rSet1.FieldByName('Floor').AsInteger;
 //            kbmGuests.FieldByName('LocationDescription').AsString := rSet1.FieldByName('LocationDescription').AsString;
-//            kbmGuests.FieldByName('GroupAccount').AsBoolean := rSet1.FieldByName('GroupAccount').AsBoolean;
-//            kbmGuests.FieldByName('marketSegment').AsString := rSet1.FieldByName('marketSegment').AsString;
+////            kbmGuests.FieldByName('GroupAccount').AsBoolean := rSet1.FieldByName('GroupAccount').AsBoolean;
+////            kbmGuests.FieldByName('marketSegment').AsString := rSet1.FieldByName('marketSegment').AsString;
 //            kbmGuests.FieldByName('marketSegmentDescription').AsString := rSet1.FieldByName('marketSegmentDescription').AsString;
 //            kbmGuests.FieldByName('Email').AsString := rSet1.FieldByName('Email').AsString;
 //            kbmGuests.FieldByName('Customer').AsString := rSet1.FieldByName('Customer').AsString;
@@ -633,15 +634,16 @@ begin
 //            kbmGuests.FieldByName('Infants').AsInteger := rSet1.FieldByName('Infants').AsInteger;
 //            kbmGuests.FieldByName('AverageRate').AsFloat := rSet1.FieldByName('AverageRate').AsFloat;
 //            kbmGuests.FieldByName('TotalStayRate').AsFloat := rSet1.FieldByName('TotalStayRate').AsFloat;
+//            kbmGuests.FieldByName('TotalStayRateNative').AsFloat := rSet1.FieldByName('TotalStayRateNative').AsFloat;
 //            kbmGuests.FieldByName('Currency').AsString := rSet1.FieldByName('Currency').AsString;
 //            kbmGuests.FieldByName('CurrencyRate').AsFloat := rSet1.FieldByName('CurrencyRate').AsFloat;
+//            kbmGuests.FieldByName('BookingId').AsString := rSet1.FieldByName('BookingId').AsString;
 //            kbmGuests.Post;
 //
 //            rSet1.Next;
 //          end;
 
 //          kbmGuests.LoadFromDataSet(rset1, [mtcpoStructure]);
-
           LoadKbmMemtableFromDataSetQuiet(kbmGuests, rset1, []);
           kbmGuests.First;
         finally

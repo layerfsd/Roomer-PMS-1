@@ -183,6 +183,7 @@ uses
   , PrjConst
   , uDImages
   , uRoomerDefinitions
+  , uReservationStateDefinitions
   , UITypes
   ;
 {$R *.dfm}

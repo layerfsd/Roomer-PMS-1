@@ -72,6 +72,7 @@ uses
   , PrjConst
   , uDImages
   , uRoomerDefinitions
+  , uReservationStateDefinitions
   ;
 
 function StatusToColor(status : string;var backColor, fontColor : Tcolor ) : boolean;
@@ -214,6 +215,9 @@ begin
           end;
     'O' : begin
             result := GetTranslatedText('shTx_ResProblem_OverBooked');
+          end;
+    'L' : begin
+            result := GetTranslatedText('shTx_ResProblem_WaitingList_NEW');
           end;
     'N' : begin
             result := GetTranslatedText('shTx_ResProblem_NoShow');

@@ -125,8 +125,6 @@ object frmOpenInvoicesNew: TfrmOpenInvoicesNew
     object sTabSheet2: TsTabSheet
       Caption = 'Rent'
       TabVisible = False
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
       ExplicitLeft = 0
       ExplicitTop = 0
       ExplicitWidth = 0

@@ -323,6 +323,7 @@ uses
   , uGuestProfiles
   , uGuestPortfolioEdit
   , uRoomerDefinitions
+  , uReservationStateDefinitions
   , uCountries
   , uAlerts
   , uUtils

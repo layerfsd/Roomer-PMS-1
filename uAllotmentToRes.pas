@@ -376,8 +376,9 @@ uses
   uDImages,
   uMain,
   PrjConst,
-  uRoomerDefinitions
-  , Math;
+  uRoomerDefinitions,
+  uReservationStateDefinitions,
+  Math;
 
 { TfrmAllotmentToRes }
 

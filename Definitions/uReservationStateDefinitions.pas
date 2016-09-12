@@ -16,7 +16,7 @@ type
       rsDeparted,
       rsReserved,
       rsOptionalBooking,
-      rsAlotment,
+      rsAllotment,
       rsNoShow,
       rsBlocked,
       rsCancelled,
@@ -85,7 +85,7 @@ const
   STATUS_ARRIVED = 'G';
   STATUS_CHECKED_OUT = 'D';
   STATUS_CANCELLED = 'C';
-  STATUS_WAITING_LIST = 'O';
+  STATUS_OPTIONAL = 'O';
   STATUS_NO_SHOW = 'N';
   STATUS_ALLOTMENT = 'A';
   STATUS_BLOCKED = 'B';
@@ -93,7 +93,7 @@ const
   STATUS_TMP1 = 'W';  //*HJ 140210
   STATUS_AWAITING_PAYMENT = 'Z';  //*BG 140304
   STATUS_DELETED = 'X';  //*BG 140304
-
+  STATUS_WAITING_LIST = 'L';
 
 implementation
 
@@ -112,7 +112,7 @@ begin
     rsDeparted:           result := g.qStatusAttr_Departed;
     rsReserved:           result := g.qStatusAttr_Order;
     rsOptionalBooking:    result := g.qStatusAttr_Option;
-    rsAlotment:           result := g.qStatusAttr_Allotment;
+    rsAllotment:           result := g.qStatusAttr_Allotment;
     rsNoShow:             result := g.qStatusAttr_NoShow;
     rsBlocked:            result := g.qStatusAttr_Blocked;
     rsCancelled:          result := g.qStatusAttr_Canceled;
@@ -169,7 +169,7 @@ begin
     rsDeparted:           result := True;
     rsReserved:           result := True;
     rsOptionalBooking:         result := True;
-    rsAlotment:           result := True;
+    rsAllotment:           result := True;
     rsNoShow:             result := True;
     rsBlocked:            result := False; // only selectable when creating a special type reservation
     rsCancelled:          result := True;
@@ -193,7 +193,7 @@ begin
     rsDeparted:           result := GetTranslatedText('shTx_G_Departed');
     rsReserved:           result := GetTranslatedText('shTx_G_Reserved');
     rsOptionalBooking:    result := GetTranslatedText('shTx_G_WaitingList');
-    rsAlotment:           result := GetTranslatedText('shTx_G_Alotment');
+    rsAllotment:           result := GetTranslatedText('shTx_G_Alotment');
     rsNoShow:             result := GetTranslatedText('shTx_G_NoShow');
     rsBlocked:            result := GetTranslatedText('shTx_G_Blocked');
     rsCancelled:          result := GetTranslatedText('shTx_G_Canceled');
@@ -227,7 +227,7 @@ begin
     'D': result := rsDeparted;
     'R': result := rsReserved;
     'O': result := rsOptionalBooking;
-    'A': result := rsAlotment;
+    'A': result := rsAllotment;
     'N': result := rsNoShow;
     'B': result := rsBlocked;
     'C': result := rsCancelled;

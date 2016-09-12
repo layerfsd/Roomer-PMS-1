@@ -1147,9 +1147,10 @@ begin
   constants.Add('shTx_ResProblem_OverBooked', 'Yfirbókunn'); *)
   
   constants.Add('shTx_ResProblem_NotArrived', 'Not Arrived');
-  constants.Add('shTx_ResProblem_Guest', 'guest');
-  constants.Add('shTx_ResProblem_Gone', 'gone');
-  constants.Add('shTx_ResProblem_OverBooked', 'Over booked');
+  constants.Add('shTx_ResProblem_Guest', 'Guest');
+  constants.Add('shTx_ResProblem_Gone', 'Gone');
+  constants.Add('shTx_ResProblem_OverBooked', 'Optional booking');
+  constants.Add('shTx_ResProblem_WaitingList_NEW', 'Waiting list');
 
   constants.Add('shTx_ResProblem_NoShow', 'No Show');
   constants.Add('shTx_ResProblem_Allotment', 'Allotment');

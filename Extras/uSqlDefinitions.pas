@@ -1,7 +1,7 @@
 ﻿unit uSqlDefinitions;
 
 interface
-   uses hData, System.SysUtils, _Glob, PrjConst, uRoomerDefinitions, ud, uDateUtils, uUtils;
+   uses hData, System.SysUtils, _Glob, PrjConst, uRoomerDefinitions, ud, uDateUtils, uUtils, uReservationStateDefinitions;
 
 
 const HOTEL_PERFORMANCE_QUERY_BETWEEN_DATES = 'SELECT ADate, RoomsSold/RoomCount*100 AS OCC, ' +

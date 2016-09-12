@@ -233,7 +233,9 @@ uses
   uD,
   uRoomerLanguage,
   uDimages,
-  uRoomerDefinitions, uRptbViewer;
+  uRoomerDefinitions,
+  uReservationStateDefinitions,
+  uRptbViewer;
 
 function rptManagment : boolean;
 begin

@@ -56,6 +56,7 @@ uses
     , frxDesgn
 
     , uRoomerDefinitions
+    , uReservationStateDefinitions
     , cmpRoomerDataSet
     , cmpRoomerConnection
     , cxEditRepositoryItems, ALHttpClient, ALWininetHttpClient
@@ -134,11 +135,6 @@ type
     frxHTMLExport1: TfrxHTMLExport;
     frxRTFExport1: TfrxRTFExport;
     frxJPEGExport1: TfrxJPEGExport;
-    rptDs1: TfrxDBDataset;
-    rptDS2: TfrxDBDataset;
-    rptDSHead: TfrxDBDataset;
-    rptDs3: TfrxDBDataset;
-    frxADOComponents1: TfrxADOComponents;
     MaidActionsDS: TDataSource;
     mCompanyInfo_: TkbmMemTable;
     mtPayments_: TkbmMemTable;

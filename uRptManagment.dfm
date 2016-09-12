@@ -58,7 +58,7 @@ object frmRptManagment: TfrmRptManagment
         VerticalAlignment = taAlignTop
         Color = clWhite
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = clBlack
+        Font.Color = 4473924
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -97,7 +97,7 @@ object frmRptManagment: TfrmRptManagment
         VerticalAlignment = taAlignTop
         Color = clWhite
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = clBlack
+        Font.Color = 4473924
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -156,7 +156,7 @@ object frmRptManagment: TfrmRptManagment
         Color = clWhite
         EditMask = '!99/99/9999;1; '
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = clBlack
+        Font.Color = 4473924
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -179,7 +179,7 @@ object frmRptManagment: TfrmRptManagment
         Color = clWhite
         EditMask = '!99/99/9999;1; '
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = clBlack
+        Font.Color = 4473924
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -197,7 +197,7 @@ object frmRptManagment: TfrmRptManagment
     object chkCompareLasYear: TsCheckBox
       Left = 306
       Top = 56
-      Width = 116
+      Width = 113
       Height = 17
       Caption = 'Compare last year'
       TabOrder = 3
@@ -226,10 +226,6 @@ object frmRptManagment: TfrmRptManagment
     SkinData.SkinSection = 'PAGECONTROL'
     object tabStatGrid: TsTabSheet
       Caption = 'Data'
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object sPanel1: TsPanel
         Left = 0
         Top = 0

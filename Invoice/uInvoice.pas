@@ -824,6 +824,7 @@ uses
   uFrmHandleBookKeepingException,
   uFrmBackupInvoice,
   uRoomerDefinitions,
+  uReservationStateDefinitions,
   uActivityLogs,
   UITypes
     , uFloatUtils;

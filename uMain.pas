@@ -3611,7 +3611,7 @@ begin
                          ORD(rsReservation),
                          ORD(rsGuests),
                          ORD(rsOptionalBooking),
-                         ORD(rsAlotment),
+                         ORD(rsAllotment),
                          ORD(rsNoShow),
                          ORD(rsBlocked),
                          ORD(rsCancelled)
@@ -5776,7 +5776,7 @@ begin
                                                        begin
                                                           Result := aRoom.IsUnAssigned and (aRoom.Departure <> zOneDay_dtDate) and
                                                                     not (aRoom.ResStatus in [rsDeparted, rsReservation, rsOptionalBooking,
-                                                                                              rsAlotment, rsNoShow, rsCancelled, rsTmp1, rsAwaitingPayment]);
+                                                                                              rsAllotment, rsNoShow, rsCancelled, rsTmp1, rsAwaitingPayment]);
                                                        end) do
     begin
       OneDay_AddToTaken(lRoom.RoomType);
@@ -5810,7 +5810,7 @@ begin
             for lRoom in FReservationsModel.AllRoomsEnumerator( function (aRoom: TRoomobject): boolean
                                                                 begin
                                                                   Result := FilteredData(aRoom) and
-                                                                            not ( (aRoom.ResStatus in [rsReservation, rsOptionalBooking, rsAlotment, rsNoShow, rsCancelled, rsTmp1, rsAwaitingPayment, rsBlocked, rsDeparted])
+                                                                            not ( (aRoom.ResStatus in [rsReservation, rsOptionalBooking, rsAllotment, rsNoShow, rsCancelled, rsTmp1, rsAwaitingPayment, rsBlocked, rsDeparted])
                                                                                   and (aRoom.Departure = zOneDay_dtDate));
                                                                 end) do
             begin
@@ -7313,7 +7313,7 @@ begin
             rsDeparted:     FormatToReservationAttrib(Grid.Canvas, g.qStatusAttr_Departed);
             rsOptionalBooking:   FormatToReservationAttrib(Grid.Canvas, g.qStatusAttr_Option);
             rsWaitingList:   FormatToReservationAttrib(Grid.Canvas, g.qStatusAttr_WaitingList);
-            rsAlotment:     FormatToReservationAttrib(Grid.Canvas, g.qStatusAttr_Allotment);
+            rsAllotment:     FormatToReservationAttrib(Grid.Canvas, g.qStatusAttr_Allotment);
             rsNoShow:       FormatToReservationAttrib(Grid.Canvas, g.qStatusAttr_NoShow);
             rsBlocked:      FormatToReservationAttrib(Grid.Canvas, g.qStatusAttr_Blocked);
             rsCancelled:     FormatToReservationAttrib(Grid.Canvas, g.qStatusAttr_Canceled);

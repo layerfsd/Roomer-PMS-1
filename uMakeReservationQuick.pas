@@ -822,6 +822,7 @@ uses
   uPackages,
   uGuestProfiles,
   uRoomerDefinitions,
+  uReservationStateDefinitions,
   uDateUtils,
   uAvailabilityPerDay,
   uViewDailyRates

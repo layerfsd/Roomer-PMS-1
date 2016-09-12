@@ -168,6 +168,7 @@ uses
     , PrjConst
     , uDateUtils
     , uRoomerDefinitions
+    , uReservationStateDefinitions
     , uUtils
     , UITypes
     ;

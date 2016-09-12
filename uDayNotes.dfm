@@ -25,9 +25,9 @@ object frmDayNotes: TfrmDayNotes
   object DateLabel1: TDateLabel
     Left = 480
     Top = 328
-    Width = 44
+    Width = 50
     Height = 13
-    Caption = '9-9-2016'
+    Caption = '10-9-2016'
     DateTimeFormat = 'd/m/yyyy'
     Version = '1.1.0.0'
     RefreshInterval = 0
@@ -112,6 +112,10 @@ object frmDayNotes: TfrmDayNotes
     object tabStatus: TsTabSheet
       Caption = 'Availibility status'
       ImageIndex = 3
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Panel3: TsPanel
         Left = 0
         Top = 33
@@ -219,7 +223,7 @@ object frmDayNotes: TfrmDayNotes
           Height = 24
           Color = clWhite
           Font.Charset = DEFAULT_CHARSET
-          Font.Color = clBlack
+          Font.Color = 4473924
           Font.Height = -13
           Font.Name = 'Tahoma'
           Font.Style = []
@@ -342,6 +346,10 @@ object frmDayNotes: TfrmDayNotes
     object tabLog: TsTabSheet
       Caption = 'Log'
       ImageIndex = 1
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Panel1: TsPanel
         Left = 0
         Top = 0
@@ -466,6 +474,10 @@ object frmDayNotes: TfrmDayNotes
         object tabImportLog: TcxTabSheet
           Caption = 'Import'
           ImageIndex = 1
+          ExplicitLeft = 0
+          ExplicitTop = 0
+          ExplicitWidth = 0
+          ExplicitHeight = 0
           object Panel6: TsPanel
             Left = 0
             Top = 0
@@ -579,10 +591,10 @@ object frmDayNotes: TfrmDayNotes
               Left = 255
               Top = 9
               Width = 59
-              Height = 21
+              Height = 24
               Color = clWhite
               Font.Charset = DEFAULT_CHARSET
-              Font.Color = clBlack
+              Font.Color = 4473924
               Font.Height = -13
               Font.Name = 'Tahoma'
               Font.Style = []
