@@ -11,7 +11,6 @@ inherited frmDeparturesReport: TfrmDeparturesReport
   inherited dxStatusBar: TdxStatusBar
     Top = 565
     Width = 1055
-    ExplicitLeft = 0
     ExplicitTop = 565
     ExplicitWidth = 1055
   end
