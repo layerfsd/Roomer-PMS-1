@@ -7345,8 +7345,7 @@ begin
 
         result := True;
         try
-          ViewInvoice2(zInvoiceNumber, True, false, True,
-            chkShowPackage.checked, zEmailAddress);
+          ViewInvoice2(zInvoiceNumber, True, false, True, chkShowPackage.checked, zEmailAddress);
 
           if dkAutoTransfer then
           begin

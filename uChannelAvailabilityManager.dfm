@@ -1142,12 +1142,6 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           Margins.Right = 2
           Margins.Bottom = 2
           Caption = 'Availabilities'
-          SkinData.CustomColor = False
-          SkinData.CustomFont = False
-          ExplicitLeft = 0
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
           object Panel2: TsPanel
             Left = 0
             Top = 467
@@ -1377,7 +1371,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
               URLColor = clBlack
               ValidChars = '0123456789'
               VAlignment = vtaCenter
-              Version = '7.9.1.0'
+              Version = '7.9.1.1'
               WordWrap = False
               ColWidths = (
                 250
@@ -1430,12 +1424,6 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           Margins.Right = 2
           Margins.Bottom = 2
           Caption = 'Rates'
-          SkinData.CustomColor = False
-          SkinData.CustomFont = False
-          ExplicitLeft = 0
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
           object rateGrid: TAdvStringGrid
             Left = 0
             Top = 48
@@ -1611,8 +1599,10 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
             URLColor = clBlack
             ValidChars = '0123456789+-!%*/'
             VAlignment = vtaCenter
-            Version = '7.9.1.0'
+            Version = '7.9.1.1'
             WordWrap = False
+            ExplicitLeft = -1
+            ExplicitTop = 49
             ColWidths = (
               400
               80
@@ -2057,7 +2047,6 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
             EventMarkerColor = clYellow
             EventMarkerShape = evsCircle
             BackgroundPosition = bpTiled
-            BevelOuter = bvNone
             BorderWidth = 1
             CaptionColor = clNone
             CaptionTextColor = clBlack
@@ -2127,7 +2116,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
             HintPrevMonth = 'Previous Month'
             HintNextMonth = 'Next Month'
             HintNextYear = 'Next Year'
-            Version = '2.2.2.1'
+            Version = '2.3.0.0'
             TMSStyle = 0
           end
         end

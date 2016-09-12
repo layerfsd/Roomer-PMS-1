@@ -6916,7 +6916,7 @@ begin
       end;
     except
       on e: Exception do
-        MessageDlg('Unable to export finance data to POS:' + #13 + e.message, mtError, [mbOK], 0);
+        MessageDlg('Unable to export finance data to POS (either Stolpi or Snerta) as according to ' + #13 + '"System | Settings | POS Connection"', mtError, [mbOK], 0); // + #13 + e.message, mtError, [mbOK], 0);
     end;
 end;
 

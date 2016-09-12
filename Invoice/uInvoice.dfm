@@ -680,10 +680,6 @@ object frmInvoice: TfrmInvoice
         object tabInvoice: TTabSheet
           Caption = 'Invoice'
           TabVisible = False
-          ExplicitLeft = 0
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
           object Panel2: TsPanel
             Left = 0
             Top = 340
