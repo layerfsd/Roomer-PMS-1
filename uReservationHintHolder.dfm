@@ -406,7 +406,7 @@ object FrmReservationHintHolder: TFrmReservationHintHolder
       Transparent = True
       OnMouseDown = pnlHintMouseDown
       OnMouseUp = pnlHintMouseUp
-      Version = '1.9.2.2'
+      Version = '1.9.2.3'
     end
     object __hlblDaily: THTMLabel
       Left = 282
@@ -425,7 +425,7 @@ object FrmReservationHintHolder: TFrmReservationHintHolder
       ParentFont = False
       PopupMenu = PopupMenu1
       Transparent = True
-      Version = '1.9.2.2'
+      Version = '1.9.2.3'
     end
     object Shape1: TShape
       Left = 151
@@ -469,7 +469,7 @@ object FrmReservationHintHolder: TFrmReservationHintHolder
       Transparent = True
       OnMouseDown = pnlHintMouseDown
       OnMouseUp = pnlHintMouseUp
-      Version = '1.9.2.2'
+      Version = '1.9.2.3'
     end
     object Shape2: TShape
       Left = 18
@@ -553,7 +553,7 @@ object FrmReservationHintHolder: TFrmReservationHintHolder
       Transparent = True
       OnMouseDown = pnlHintMouseDown
       OnMouseUp = pnlHintMouseUp
-      Version = '1.9.2.2'
+      Version = '1.9.2.3'
     end
     object sLabel5: TsLabel
       Left = 297
@@ -587,7 +587,7 @@ object FrmReservationHintHolder: TFrmReservationHintHolder
       ParentFont = False
       PopupMenu = PopupMenu1
       Transparent = True
-      Version = '1.9.2.2'
+      Version = '1.9.2.3'
     end
     object clbRoomRentInvoice: TsLabel
       Left = 22
@@ -623,7 +623,7 @@ object FrmReservationHintHolder: TFrmReservationHintHolder
       Transparent = True
       OnMouseDown = pnlHintMouseDown
       OnMouseUp = pnlHintMouseUp
-      Version = '1.9.2.2'
+      Version = '1.9.2.3'
     end
     object sLabel3: TsLabel
       Left = 16
@@ -708,8 +708,8 @@ object FrmReservationHintHolder: TFrmReservationHintHolder
     object cbxBlocked: TsCheckBox
       Left = 19
       Top = 509
-      Width = 170
-      Height = 19
+      Width = 162
+      Height = 20
       Caption = 'Room is blocked from move'
       TabOrder = 2
       ImgChecked = 0

@@ -56,6 +56,7 @@ procedure parseFirstAndLastNameFromFullname(Fullname : String; var firstName : S
 
 function iifS(condition : Boolean; TrueResult : String; FalseResult : String) : String;
 function iif(condition : Boolean; TrueResult : Integer; FalseResult : Integer) : Integer;
+function iiff(condition : Boolean; TrueResult : Double; FalseResult : Double) : Double;
 //function iif(condition : Boolean; TrueResult : Double; FalseResult : Double) : Double; overload;
 //function iif(condition : Boolean; TrueResult : Char; FalseResult : Char) : Char; overload;
 //function iif(condition : Boolean; TrueResult : Boolean; FalseResult : Boolean) : Boolean; overload;
@@ -193,6 +194,14 @@ begin
 end;
 
 function iif(condition : Boolean; TrueResult : Integer; FalseResult : Integer) : Integer;
+begin
+  if condition then
+    result := TrueResult
+  else
+    result := FalseResult;
+end;
+
+function iiff(condition : Boolean; TrueResult : Double; FalseResult : Double) : Double;
 begin
   if condition then
     result := TrueResult

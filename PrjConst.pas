@@ -1286,6 +1286,7 @@ begin
   constants.Add('shUI_DownpaymentGuarantee', 'USE DOWN-PAYMENTS');
 
   constants.Add('shUI_NotAvailable', 'N/A');
+  constants.Add('shUI_OnGroupInvoice', '[Group Invoice]');
 
   constants.Add('shUI_InvoiceCaption', 'INVOICE');
   constants.Add('shUI_CreditInvoiceCaption', 'CREDIT INVOICE');
