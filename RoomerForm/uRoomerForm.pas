@@ -21,6 +21,7 @@ type
     dxStatusBar: TdxStatusBar;
   private
     FCloseOnEsc: boolean;
+    FUpdatingControls: boolean;
     procedure KeepOnVisibleMonitor;
   protected
     const
@@ -30,15 +31,24 @@ type
     procedure DoShow; override;
     procedure Loaded; override;
     procedure KeyDown(var Key: Word; Shift: TShiftState); override;
+    /// <summary>
+    ///   Update the contents and/or properties of visual components, like Enabled etc
+    /// </summary>
     procedure UpdateControls; virtual;
-    procedure RefreshData; virtual;
+    /// <summary>
+    ///   (Re)load data needed to display in the form
+    /// </summary>
+    procedure LoadData; virtual;
   public
     constructor Create(AOwner: TComponent); override;
-    destructor Destroy; override;
+    /// <summary>
+    ///   Signal form through Windows messaging system to reload data and update controls
+    /// </summary>
+    procedure RefreshData;
   published
     /// <summary>
     ///  Close the window when ESC is pressed by the user, Default = True
-    ///  </summary>
+    /// </summary>
     property CloseOnEsc: boolean read FCloseOnEsc write FCloseOnEsc;
   end;
 
@@ -65,18 +75,12 @@ begin
   FCloseOnEsc := True;
 end;
 
-destructor TfrmBaseRoomerForm.Destroy;
-begin
-
-  inherited;
-end;
 
 procedure TfrmBaseRoomerForm.DoShow;
 begin
   inherited; // Calls ShowForm event handler
   KeepOnVisibleMonitor;
-  postMessage(handle, WM_REFRESH_DATA, 0, 0);
-  UpdateControls;
+  Refreshdata;
 end;
 
 procedure TfrmBaseRoomerForm.KeyDown(var Key: Word; Shift: TShiftState);
@@ -88,29 +92,10 @@ end;
 
 procedure TfrmBaseRoomerForm.KeepOnVisibleMonitor;
 var
-  MonitorCount : integer;
-  maxLeft : integer;
-  i : integer;
   lMonitor: TMonitor;
 const
   MoveWinThreshold: Byte = 80;
 begin
-  MonitorCount := screen.MonitorCount;
-
-  maxLeft := 0;
-  for i := 0 to MonitorCount - 1 do
-  begin
-    maxLeft := maxLeft + screen.Width;
-  end;
-
-  maxLeft := maxLeft - 150;
-  if Left > maxLeft then
-    Left := maxLeft;
-
-  // ...
-  // 1. Some code to restore the last GUI position and dimension
-  // ...
-
   // 2. Detect the relevant monitor object
   lMonitor := Screen.MonitorFromWindow(Self.Handle);
   // 3. Now ensure the just positioned window is visible to the user
@@ -124,6 +109,11 @@ begin
 end;
 
 
+procedure TfrmBaseRoomerForm.LoadData;
+begin
+  //
+end;
+
 procedure TfrmBaseRoomerForm.Loaded;
 begin
   psRoomerBase.StorageName := 'Software\Roomer\FormStatus\' + classname;
@@ -133,7 +123,7 @@ end;
 
 procedure TfrmBaseRoomerForm.RefreshData;
 begin
-//
+  PostMessage(Handle, WM_REFRESH_DATA, 0, 0);
 end;
 
 procedure TfrmBaseRoomerForm.UpdateControls;
@@ -144,7 +134,10 @@ end;
 procedure TfrmBaseRoomerForm.WndProc(var message: TMessage);
 begin
   if message.Msg = WM_REFRESH_DATA then
-    RefreshData;
+  begin
+    LoadData;
+    UpdateControls
+  end;
   inherited WndProc(message);
 end;
 

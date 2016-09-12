@@ -135,7 +135,7 @@ type
 //    function LocationInString : string;
     procedure ShowData;
   protected
-    procedure RefreshData; override;
+    procedure LoadData; override;
   public
     { Public declarations }
   end;
@@ -201,7 +201,7 @@ begin
   ShellExecute(Handle, 'OPEN', PChar(sFilename + '.xls'), nil, nil, sw_shownormal);
 end;
 
-procedure TfrmRptTotallist.RefreshData;
+procedure TfrmRptTotallist.LoadData;
 var
   lExecutionPlan: TRoomerExecutionPlan;
   rSet1: TRoomerDataSet;
