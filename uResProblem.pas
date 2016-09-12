@@ -217,7 +217,7 @@ begin
             result := GetTranslatedText('shTx_ResProblem_OverBooked');
           end;
     'L' : begin
-            result := GetTranslatedText('shTx_ResProblem_WaitingList_NEW');
+            result := GetTranslatedText('shTx_ResProblem_WaitingListNonOptional');
           end;
     'N' : begin
             result := GetTranslatedText('shTx_ResProblem_NoShow');

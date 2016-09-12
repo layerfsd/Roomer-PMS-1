@@ -313,7 +313,7 @@ object frmRptResStats: TfrmRptResStats
           ImgChecked = 0
           ImgUnchecked = 0
         end
-        object chkExcludeWaitingList_NEW: TsCheckBox
+        object chkExcludeWaitingListNonOptional: TsCheckBox
           Left = 129
           Top = 51
           Width = 77
@@ -433,7 +433,7 @@ object frmRptResStats: TfrmRptResStats
           ImgChecked = 0
           ImgUnchecked = 0
         end
-        object chkExcludeWaitingList_NEW_NoRooms: TsCheckBox
+        object chkExcludeWaitingListNonOptional_NoRooms: TsCheckBox
           Left = 129
           Top = 51
           Width = 77
@@ -483,6 +483,10 @@ object frmRptResStats: TfrmRptResStats
     object SheetMainResult: TsTabSheet
       Caption = 'Result'
       OnShow = SheetMainResultShow
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Panel1: TPanel
         Left = 320
         Top = 0
@@ -509,6 +513,10 @@ object frmRptResStats: TfrmRptResStats
             object sTabSheet2: TsTabSheet
               Caption = 'Result'
               OnShow = sTabSheet2Show
+              ExplicitLeft = 0
+              ExplicitTop = 0
+              ExplicitWidth = 0
+              ExplicitHeight = 0
               object pg001: TcxDBPivotGrid
                 Left = 0
                 Top = 33
@@ -1174,6 +1182,10 @@ object frmRptResStats: TfrmRptResStats
             end
             object sTabSheet3: TsTabSheet
               Caption = 'Graph'
+              ExplicitLeft = 0
+              ExplicitTop = 0
+              ExplicitWidth = 0
+              ExplicitHeight = 0
               object cxGrid: TcxGrid
                 Left = 0
                 Top = 0
@@ -1209,6 +1221,7 @@ object frmRptResStats: TfrmRptResStats
           AlignSplitter = salTop
           NativeBackground = False
           Control = Panel5
+          ExplicitWidth = 8
         end
         object Panel6: TPanel
           Left = 1
@@ -1461,6 +1474,10 @@ object frmRptResStats: TfrmRptResStats
     end
     object sheetMainData: TsTabSheet
       Caption = 'Data'
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object pageData: TsPageControl
         Left = 0
         Top = 0
@@ -1472,6 +1489,10 @@ object frmRptResStats: TfrmRptResStats
         SkinData.SkinSection = 'PAGECONTROL'
         object sTabSheet7: TsTabSheet
           Caption = 'Reservations'
+          ExplicitLeft = 0
+          ExplicitTop = 0
+          ExplicitWidth = 0
+          ExplicitHeight = 0
           object Panel2: TsPanel
             Left = 0
             Top = 0
@@ -1994,6 +2015,10 @@ object frmRptResStats: TfrmRptResStats
         end
         object sTabSheet8: TsTabSheet
           Caption = 'Roominvoice'
+          ExplicitLeft = 0
+          ExplicitTop = 0
+          ExplicitWidth = 0
+          ExplicitHeight = 0
           object sPanel1: TsPanel
             Left = 0
             Top = 0
@@ -2168,6 +2193,10 @@ object frmRptResStats: TfrmRptResStats
         end
         object sTabSheet9: TsTabSheet
           Caption = 'Groupinvoice'
+          ExplicitLeft = 0
+          ExplicitTop = 0
+          ExplicitWidth = 0
+          ExplicitHeight = 0
           object sPanel3: TsPanel
             Left = 0
             Top = 0
@@ -2849,7 +2878,6 @@ object frmRptResStats: TfrmRptResStats
     end
     object prLinkGrDrill: TdxGridReportLink
       Component = grDrill
-      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.GrayShading = True
@@ -2862,7 +2890,6 @@ object frmRptResStats: TfrmRptResStats
       PrinterPage.PageSize.Y = 297000
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
-      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       BuiltInReportLink = True
     end
   end

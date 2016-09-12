@@ -1012,7 +1012,7 @@ begin
   s := s+'        WHERE roomsdate.RoomType=roomtypes.RoomType '#10;
   s := s+'        AND roomsdate.ADate=predefineddates.date '#10;
   s := s+'        AND ((NOT control.ExcluteWaitingList) OR roomreservations.Status<>'+quotedStr('O')+') '#10;
-  s := s+'        AND ((NOT control.ExcludeWaitingList_NEW) OR roomreservations.Status<>'+quotedStr('L')+') '#10;
+  s := s+'        AND ((NOT control.ExcludeWaitingListNonOptional) OR roomreservations.Status<>'+quotedStr('L')+') '#10;
   s := s+'        AND ((NOT control.ExcluteAllotment) OR roomreservations.Status<>'+quotedStr('A')+') '#10;
   s := s+'        AND ((NOT control.ExcluteOrder) OR roomreservations.Status<>'+quotedStr('P')+') '#10;
   s := s+'        AND ((NOT control.ExcluteDeparted) OR roomreservations.Status<>'+quotedStr(STATUS_CHECKED_OUT)+') '#10;

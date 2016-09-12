@@ -144,7 +144,7 @@ object frmRptGuests: TfrmRptGuests
         Color = clWhite
         EditMask = '!99/99/9999;1; '
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = clBlack
+        Font.Color = 4473924
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -167,7 +167,7 @@ object frmRptGuests: TfrmRptGuests
         Color = clWhite
         EditMask = '!99/99/9999;1; '
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = clBlack
+        Font.Color = 4473924
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -189,7 +189,7 @@ object frmRptGuests: TfrmRptGuests
       Height = 21
       Color = clWhite
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = clBlack
+      Font.Color = 4473924
       Font.Height = -11
       Font.Name = 'Tahoma'
       Font.Style = []
@@ -201,7 +201,7 @@ object frmRptGuests: TfrmRptGuests
     object chkOneday: TsCheckBox
       Left = 23
       Top = 59
-      Width = 69
+      Width = 66
       Height = 17
       Caption = 'One day'
       Checked = True
@@ -225,7 +225,7 @@ object frmRptGuests: TfrmRptGuests
       object chkExcluteWaitingList: TsCheckBox
         Left = 14
         Top = 17
-        Width = 77
+        Width = 74
         Height = 17
         Caption = 'Waitinglist'
         Checked = True
@@ -238,7 +238,7 @@ object frmRptGuests: TfrmRptGuests
       object chkExcluteAlotment: TsCheckBox
         Left = 14
         Top = 34
-        Width = 73
+        Width = 70
         Height = 17
         Caption = 'Allotment'
         Checked = True
@@ -251,7 +251,7 @@ object frmRptGuests: TfrmRptGuests
       object chkExcluteOrder: TsCheckBox
         Left = 134
         Top = 52
-        Width = 83
+        Width = 80
         Height = 17
         Caption = 'Not Arrived'
         Checked = True
@@ -264,7 +264,7 @@ object frmRptGuests: TfrmRptGuests
       object chkExcluteNoShow: TsCheckBox
         Left = 14
         Top = 52
-        Width = 69
+        Width = 66
         Height = 17
         Caption = 'No show'
         Checked = True
@@ -277,7 +277,7 @@ object frmRptGuests: TfrmRptGuests
       object chkExcluteDeparted: TsCheckBox
         Left = 134
         Top = 17
-        Width = 73
+        Width = 70
         Height = 17
         Caption = 'Departed'
         Checked = True
@@ -290,7 +290,7 @@ object frmRptGuests: TfrmRptGuests
       object chkExcluteBlocked: TsCheckBox
         Left = 228
         Top = 34
-        Width = 64
+        Width = 61
         Height = 17
         Caption = 'Blocked'
         TabOrder = 5
@@ -301,7 +301,7 @@ object frmRptGuests: TfrmRptGuests
       object chkExcluteGuest: TsCheckBox
         Left = 134
         Top = 34
-        Width = 56
+        Width = 53
         Height = 17
         Caption = 'Guest'
         Checked = True
@@ -314,7 +314,7 @@ object frmRptGuests: TfrmRptGuests
       object chkExcluteCANCELED: TsCheckBox
         Left = 228
         Top = 17
-        Width = 72
+        Width = 69
         Height = 17
         Caption = 'Canceled'
         TabOrder = 7
@@ -322,10 +322,10 @@ object frmRptGuests: TfrmRptGuests
         ImgChecked = 0
         ImgUnchecked = 0
       end
-      object chkExcludeWaitingList_NEW: TsCheckBox
+      object chkExcludeWaitingListNonOptional: TsCheckBox
         Left = 228
         Top = 52
-        Width = 77
+        Width = 74
         Height = 17
         Caption = 'Waitinglist'
         Checked = True
@@ -356,7 +356,7 @@ object frmRptGuests: TfrmRptGuests
     object chkGroup: TsCheckBox
       Left = 282
       Top = 66
-      Width = 130
+      Width = 127
       Height = 17
       Caption = 'Group by reservation'
       TabOrder = 6

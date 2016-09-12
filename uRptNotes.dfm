@@ -322,7 +322,7 @@ object frmRptNotes: TfrmRptNotes
         ImgChecked = 0
         ImgUnchecked = 0
       end
-      object chkExcludeWaitingList_NEW: TsCheckBox
+      object chkExcludeWaitingListNonOptional: TsCheckBox
         Left = 228
         Top = 52
         Width = 77

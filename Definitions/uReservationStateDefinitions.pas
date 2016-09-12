@@ -202,7 +202,7 @@ begin
     rsDeleted:            result := GetTranslatedText('shTx_G_Deleted');
     rsAwaitingPayConfirm: result := GetTranslatedText('shTx_G_AwaitingPayConfirm');
     rsMixed:              result := GetTranslatedText('shTx_G_Mixed');
-    rsWaitingList:        result := GetTranslatedText('shTx_G_WaitingList_NEW');
+    rsWaitingList:        result := GetTranslatedText('shTx_G_WaitingListNonOptional');
   else
     Result := '';
   end;

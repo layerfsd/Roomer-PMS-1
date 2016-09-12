@@ -610,7 +610,7 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
               Height = 21
               Color = clWhite
               Font.Charset = DEFAULT_CHARSET
-              Font.Color = 4473924
+              Font.Color = clBlack
               Font.Height = -11
               Font.Name = 'Tahoma'
               Font.Style = []
@@ -862,7 +862,7 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
               Height = 21
               Color = clWhite
               Font.Charset = DEFAULT_CHARSET
-              Font.Color = 4473924
+              Font.Color = clBlack
               Font.Height = -11
               Font.Name = 'Tahoma'
               Font.Style = []
@@ -973,6 +973,10 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
             Caption = 'Contact Details'
             ImageIndex = 2
             TabVisible = False
+            ExplicitLeft = 0
+            ExplicitTop = 0
+            ExplicitWidth = 0
+            ExplicitHeight = 0
             object sPanel3: TsPanel
               Left = 0
               Top = 0
@@ -1336,7 +1340,7 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
                   AutoComplete = False
                   Color = clWhite
                   Font.Charset = DEFAULT_CHARSET
-                  Font.Color = 4473924
+                  Font.Color = clBlack
                   Font.Height = -11
                   Font.Name = 'Tahoma'
                   Font.Style = []
@@ -1822,10 +1826,6 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
     object tabSelectType: TsTabSheet
       Caption = 'Select Types'
       ImageIndex = 1
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object panSelectTypesTop: TsPanel
         Left = 0
         Top = 0
@@ -1847,12 +1847,11 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
           TabOrder = 0
           SkinData.SkinSection = 'GROUPBOX'
           Checked = False
-          ExplicitLeft = 146
           object chkExcluteWaitingList: TsCheckBox
             Left = 14
             Top = 19
-            Width = 77
-            Height = 17
+            Width = 69
+            Height = 20
             Caption = 'Waitinglist'
             TabOrder = 0
             SkinData.SkinSection = 'CHECKBOX'
@@ -1862,8 +1861,8 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
           object chkExcluteAllotment: TsCheckBox
             Left = 14
             Top = 41
-            Width = 73
-            Height = 17
+            Width = 65
+            Height = 20
             Caption = 'Allotment'
             TabOrder = 1
             SkinData.SkinSection = 'CHECKBOX'
@@ -1873,8 +1872,8 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
           object chkExcluteOrder: TsCheckBox
             Left = 327
             Top = 19
-            Width = 56
-            Height = 17
+            Width = 48
+            Height = 20
             Caption = 'Order'
             TabOrder = 2
             SkinData.SkinSection = 'CHECKBOX'
@@ -1884,8 +1883,8 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
           object chkExcluteNoShow: TsCheckBox
             Left = 224
             Top = 41
-            Width = 69
-            Height = 17
+            Width = 61
+            Height = 20
             Caption = 'No show'
             TabOrder = 3
             SkinData.SkinSection = 'CHECKBOX'
@@ -1895,8 +1894,8 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
           object chkExcluteDeparted: TsCheckBox
             Left = 122
             Top = 19
-            Width = 73
-            Height = 17
+            Width = 65
+            Height = 20
             Caption = 'Departed'
             TabOrder = 4
             SkinData.SkinSection = 'CHECKBOX'
@@ -1906,8 +1905,8 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
           object chkExcluteBlocked: TsCheckBox
             Left = 224
             Top = 19
-            Width = 64
-            Height = 17
+            Width = 56
+            Height = 20
             Caption = 'Blocked'
             TabOrder = 5
             SkinData.SkinSection = 'CHECKBOX'
@@ -1917,19 +1916,19 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
           object chkExcluteGuest: TsCheckBox
             Left = 122
             Top = 41
-            Width = 56
-            Height = 17
+            Width = 48
+            Height = 20
             Caption = 'Guest'
             TabOrder = 6
             SkinData.SkinSection = 'CHECKBOX'
             ImgChecked = 0
             ImgUnchecked = 0
           end
-          object chkExcludeWaitingList_New: TsCheckBox
+          object chkExcludeWaitingListNonOptional: TsCheckBox
             Left = 327
             Top = 41
-            Width = 80
-            Height = 17
+            Width = 72
+            Height = 20
             Caption = 'Waiting list'
             TabOrder = 7
             SkinData.SkinSection = 'CHECKBOX'
@@ -2612,7 +2611,7 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
             Style = csDropDownList
             Color = clWhite
             Font.Charset = DEFAULT_CHARSET
-            Font.Color = 4473924
+            Font.Color = clBlack
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
@@ -3317,8 +3316,8 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
         object clabPaymentNotes: TsLabel
           Left = 1
           Top = 1
-          Width = 86
-          Height = 13
+          Width = 280
+          Height = 15
           Align = alClient
           Alignment = taCenter
           Caption = 'Payment Notes'
@@ -3328,6 +3327,8 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
           Font.Height = -11
           Font.Name = 'Tahoma'
           Font.Style = [fsBold]
+          ExplicitWidth = 86
+          ExplicitHeight = 13
         end
       end
       object memReservationPaymentInfo: TsMemo
@@ -3373,8 +3374,8 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
         object clabGeneralNotes: TsLabel
           Left = 1
           Top = 1
-          Width = 79
-          Height = 13
+          Width = 402
+          Height = 15
           Align = alClient
           Alignment = taCenter
           Caption = 'General Notes'
@@ -3387,6 +3388,8 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
           Font.Height = -11
           Font.Name = 'Tahoma'
           Font.Style = [fsBold]
+          ExplicitWidth = 79
+          ExplicitHeight = 13
         end
       end
       object memReservationGeneralInfo: TsMemo
@@ -3432,8 +3435,8 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
         object clabRoomNotes: TsLabel
           Left = 1
           Top = 1
-          Width = 68
-          Height = 13
+          Width = 412
+          Height = 15
           Align = alClient
           Alignment = taCenter
           Caption = 'Room Notes'
@@ -3446,6 +3449,8 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
           Font.Height = -11
           Font.Name = 'Tahoma'
           Font.Style = [fsBold]
+          ExplicitWidth = 68
+          ExplicitHeight = 13
         end
       end
       object btnClearLog: TsButton
@@ -4019,11 +4024,11 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
       FieldName = 'Description'
       Size = 30
     end
-    object m_nrWaitingList_NEW: TIntegerField
-      FieldName = 'nrWaitingList_NEW'
+    object m_nrWaitingListNonOptional: TIntegerField
+      FieldName = 'nrWaitingListNonOptional'
     end
-    object m_occWaitingList_NEW: TIntegerField
-      FieldName = 'occWaitingList_NEW'
+    object m_occWaitingListNonOptional: TIntegerField
+      FieldName = 'occWaitingListNonOptional'
     end
   end
   object StoreMain: TcxPropertiesStore

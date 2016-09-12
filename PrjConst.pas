@@ -620,7 +620,7 @@ begin
   constants.Add('shTx_G_DepartingToday', 'Due to check out');
   constants.Add('shTx_G_Cancelled', 'Cancelled');
   constants.Add('shTx_G_WaitingList', 'Optional Booking');
-  constants.Add('shTx_G_WaitingList_NEW', 'Waiting list');
+  constants.Add('shTx_G_WaitingListNonOptional', 'Waiting list');
 
  // constants.Add('shTx_G_Downpayment', 'Downpayment/innágreiðsla');
   constants.Add('shTx_G_Downpayment', 'Downpayment');
@@ -1150,7 +1150,7 @@ begin
   constants.Add('shTx_ResProblem_Guest', 'Guest');
   constants.Add('shTx_ResProblem_Gone', 'Gone');
   constants.Add('shTx_ResProblem_OverBooked', 'Optional booking');
-  constants.Add('shTx_ResProblem_WaitingList_NEW', 'Waiting list');
+  constants.Add('shTx_ResProblem_WaitingListNonOptional', 'Waiting list');
 
   constants.Add('shTx_ResProblem_NoShow', 'No Show');
   constants.Add('shTx_ResProblem_Allotment', 'Allotment');

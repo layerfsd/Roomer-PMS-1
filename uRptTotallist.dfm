@@ -14,7 +14,7 @@ inherited frmRptTotallist: TfrmRptTotallist
   inherited dxStatusBar: TdxStatusBar
     Top = 613
     Width = 1347
-    ExplicitTop = 593
+    ExplicitTop = 613
     ExplicitWidth = 1347
   end
   object Panel3: TsPanel [1]
@@ -239,7 +239,6 @@ inherited frmRptTotallist: TfrmRptTotallist
     Align = alClient
     TabOrder = 3
     LookAndFeel.NativeStyle = False
-    ExplicitHeight = 453
     object lvTotallist: TcxGridDBBandedTableView
       Navigator.Buttons.CustomButtons = <>
       Navigator.Buttons.Insert.Visible = False
@@ -510,16 +509,16 @@ inherited frmRptTotallist: TfrmRptTotallist
         Position.ColIndex = 1
         Position.RowIndex = 0
       end
-      object lvTotallistroomsWaitinglist_NEW: TcxGridDBBandedColumn
+      object lvTotallistroomsWaitinglistNonOptional: TcxGridDBBandedColumn
         Caption = 'Rooms'
-        DataBinding.FieldName = 'roomsWaitinglist_NEW'
+        DataBinding.FieldName = 'roomsWaitinglistNonOptional'
         Position.BandIndex = 9
         Position.ColIndex = 0
         Position.RowIndex = 0
       end
-      object lvTotallistpaxWaitinglist_NEW: TcxGridDBBandedColumn
+      object lvTotallistpaxWaitinglistNonOptional: TcxGridDBBandedColumn
         Caption = 'Guests'
-        DataBinding.FieldName = 'paxWaitinglist_NEW'
+        DataBinding.FieldName = 'paxWaitinglistNonOptional'
         Position.BandIndex = 9
         Position.ColIndex = 1
         Position.RowIndex = 0
@@ -608,11 +607,11 @@ inherited frmRptTotallist: TfrmRptTotallist
         DataType = ftInteger
       end
       item
-        Name = 'roomsWaitinglist_NEW'
+        Name = 'roomsWaitinglistNonOptional'
         DataType = ftInteger
       end
       item
-        Name = 'paxWaitinglist_NEW'
+        Name = 'paxWaitinglistNonOptional'
         DataType = ftInteger
       end>
     IndexDefs = <>

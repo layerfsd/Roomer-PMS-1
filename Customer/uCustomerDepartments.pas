@@ -432,7 +432,11 @@ end;
 
 function TCustomerDepartments.GetCount: Integer;
 begin
-  result := CustomerDepartments.Count;
+  try
+    result := CustomerDepartments.Count;
+  except
+    result := 0;
+  end;
 end;
 
 function TCustomerDepartments.GetITems(Index: Integer): TCustomerDepartment;
@@ -443,8 +447,13 @@ end;
 procedure TCustomerDepartments.PostChanges;
 var i: Integer;
 begin
+  try
   for i := 0 to Count - 1 do
     CustomerDepartments[i].PostChanges;
+  except
+    if Assigned(Self) then
+      raise;
+  end;
 end;
 
 procedure TCustomerDepartments.Remove(Item: TCustomerDepartment);
@@ -455,9 +464,13 @@ end;
 procedure TCustomerDepartments.SetCustomerId(const Value: Integer);
 var i : Integer;
 begin
+  try
   FCustomerId := Value;
   for i := 0 to Count - 1 do
     CustomerDepartments[i].CustomerId := CustomerId;
+  except
+
+  end;
 end;
 
 initialization

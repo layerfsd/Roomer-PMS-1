@@ -689,7 +689,7 @@ type
     cbxRequireExactClosingPayment: TsCheckBox;
     sLabel35: TsLabel;
     sLabel36: TsLabel;
-    panWaitinglist_NEW: TsPanel;
+    panWaitinglistNonOptional: TsPanel;
     procedure FormCreate(Sender : TObject);
     procedure FormClose(Sender : TObject; var Action : TCloseAction);
     procedure FormShow(Sender : TObject);
@@ -2480,7 +2480,7 @@ begin
   d.save_StatusAttr_canceled;
   d.save_StatusAttr_tmp1;
   d.save_StatusAttr_tmp2;
-  d.save_StatusAttr_Waitinglist_NEW;
+  d.save_StatusAttr_WaitinglistNonOptional;
 
 end;
 
@@ -2882,8 +2882,8 @@ begin
     g.qStatusAttr_Tmp2.isStrikeOut := (fsStrikeOut in Style);
   end;
 
-  g.qStatusAttr_WaitingList.BackgroundColor := panWaitinglist_NEW.Color;
-  Font := panWaitinglist_NEW.Font;
+  g.qStatusAttr_WaitingList.BackgroundColor := panWaitinglistNonOptional.Color;
+  Font := panWaitinglistNonOptional.Font;
   with Font do
   begin
     g.qStatusAttr_WaitingList.FontColor := Color;
@@ -3208,17 +3208,17 @@ begin
       end;
     13 :
       begin
-        panWaitinglist_NEW.Color := BackgroundColor;
-        panWaitinglist_NEW.Font.Color := FontColor;
-        panWaitinglist_NEW.Font.Style := [];
+        panWaitinglistNonOptional.Color := BackgroundColor;
+        panWaitinglistNonOptional.Font.Color := FontColor;
+        panWaitinglistNonOptional.Font.Style := [];
         if isBold then
-          panWaitinglist_NEW.Font.Style := panWaitinglist_NEW.Font.Style + [fsBold];
+          panWaitinglistNonOptional.Font.Style := panWaitinglistNonOptional.Font.Style + [fsBold];
         if isItalic then
-          panWaitinglist_NEW.Font.Style := panWaitinglist_NEW.Font.Style + [fsItalic];
+          panWaitinglistNonOptional.Font.Style := panWaitinglistNonOptional.Font.Style + [fsItalic];
         if isUnderLine then
-          panWaitinglist_NEW.Font.Style := panWaitinglist_NEW.Font.Style + [fsUnderLine];
+          panWaitinglistNonOptional.Font.Style := panWaitinglistNonOptional.Font.Style + [fsUnderLine];
         if isStrikeOut then
-          panWaitinglist_NEW.Font.Style := panWaitinglist_NEW.Font.Style + [fsStrikeOut];
+          panWaitinglistNonOptional.Font.Style := panWaitinglistNonOptional.Font.Style + [fsStrikeOut];
       end;
   end;
 
@@ -3910,17 +3910,17 @@ begin
   isItalic := g.qStatusAttr_WaitingList.isItalic;
   isUnderLine := g.qStatusAttr_WaitingList.isUnderLine;
   isStrikeOut := g.qStatusAttr_WaitingList.isStrikeOut;
-  panWaitinglist_NEW.Font.Style := [];
-  panWaitinglist_NEW.Color := BackgroundColor;
-  panWaitinglist_NEW.Font.Color := FontColor;
+  panWaitinglistNonOptional.Font.Style := [];
+  panWaitinglistNonOptional.Color := BackgroundColor;
+  panWaitinglistNonOptional.Font.Color := FontColor;
   if isBold then
-    panWaitinglist_NEW.Font.Style := panWaitinglist_NEW.Font.Style + [fsBold];
+    panWaitinglistNonOptional.Font.Style := panWaitinglistNonOptional.Font.Style + [fsBold];
   if isItalic then
-    panWaitinglist_NEW.Font.Style := panWaitinglist_NEW.Font.Style + [fsItalic];
+    panWaitinglistNonOptional.Font.Style := panWaitinglistNonOptional.Font.Style + [fsItalic];
   if isUnderLine then
-    panWaitinglist_NEW.Font.Style := panWaitinglist_NEW.Font.Style + [fsUnderLine];
+    panWaitinglistNonOptional.Font.Style := panWaitinglistNonOptional.Font.Style + [fsUnderLine];
   if isStrikeOut then
-    panWaitinglist_NEW.Font.Style := panWaitinglist_NEW.Font.Style + [fsStrikeOut];
+    panWaitinglistNonOptional.Font.Style := panWaitinglistNonOptional.Font.Style + [fsStrikeOut];
 end;
 
 procedure TfrmControlData.__Panel2Click(Sender: TObject);

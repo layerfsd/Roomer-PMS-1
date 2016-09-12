@@ -730,7 +730,7 @@ begin
 //	  result := GetTranslatedText('shTx_G_WaitingList');
 // 	  'L' :
 //    //  result := 'Bi�listi';
-//	  result := GetTranslatedText('shTx_G_WaitingList_NEW');
+//	  result := GetTranslatedText('shTx_G_WaitingListNonOptional');
 //    'A' :
 //    //  result := 'Alotment';
 //	   result := GetTranslatedText('shTx_G_Alotment');

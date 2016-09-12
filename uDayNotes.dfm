@@ -27,7 +27,7 @@ object frmDayNotes: TfrmDayNotes
     Top = 328
     Width = 50
     Height = 13
-    Caption = '10-9-2016'
+    Caption = '12-9-2016'
     DateTimeFormat = 'd/m/yyyy'
     Version = '1.1.0.0'
     RefreshInterval = 0
@@ -223,7 +223,7 @@ object frmDayNotes: TfrmDayNotes
           Height = 24
           Color = clWhite
           Font.Charset = DEFAULT_CHARSET
-          Font.Color = 4473924
+          Font.Color = clBlack
           Font.Height = -13
           Font.Name = 'Tahoma'
           Font.Style = []
@@ -594,7 +594,7 @@ object frmDayNotes: TfrmDayNotes
               Height = 24
               Color = clWhite
               Font.Charset = DEFAULT_CHARSET
-              Font.Color = 4473924
+              Font.Color = clBlack
               Font.Height = -13
               Font.Name = 'Tahoma'
               Font.Style = []

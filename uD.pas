@@ -642,7 +642,7 @@ type
     procedure save_StatusAttr_Blocked;
     procedure save_StatusAttr_NoShow;
     procedure save_StatusAttr_Waitinglist;
-    procedure save_StatusAttr_Waitinglist_NEW;
+    procedure save_StatusAttr_WaitinglistNonOptional;
     procedure save_StatusAttr_Allotment;
     procedure save_StatusAttr_Departed;
     procedure save_StatusAttr_Departing;
@@ -8570,7 +8570,7 @@ var
 begin
   sTmp := 'SELECT StatusAttr_Blocked, StatusAttr_GuestStaying, StatusAttr_GuestLeavingNextDay, ' +
     'StatusAttr_Departed, StatusAttr_Departing, StatusAttr_Allotment, StatusAttr_Waitinglist, ' +
-    'StatusAttr_NoShow, StatusAttr_ArrivingOtherLeaving, StatusAttr_Order, StatusAttr_Canceled, StatusAttr_Tmp1,StatusAttr_Tmp2, StatusAttr_WaitingList_NEW FROM control';
+    'StatusAttr_NoShow, StatusAttr_ArrivingOtherLeaving, StatusAttr_Order, StatusAttr_Canceled, StatusAttr_Tmp1,StatusAttr_Tmp2, StatusAttr_WaitingListNonOptional FROM control';
   rSet := glb.ControlSet; // CreateNewDataSet;
   rSet.First;
   try
@@ -8591,7 +8591,7 @@ begin
     g.qStatusAttr_Canceled := g.strToStatusAttr(trim(rSet.FieldByName('StatusAttr_Canceled').Asstring));
     g.qStatusAttr_Tmp1 := g.strToStatusAttr(trim(rSet.FieldByName('StatusAttr_Tmp1').Asstring));
     g.qStatusAttr_Tmp2 := g.strToStatusAttr(trim(rSet.FieldByName('StatusAttr_Tmp2').Asstring));
-    sTmp := trim(rSet.FieldByName('StatusAttr_WaitingList_NEW').Asstring);
+    sTmp := trim(rSet.FieldByName('StatusAttr_WaitingListNonOptional').Asstring);
     if sTmp = '' then
       Default_StatusAttr_WaitingList
     else
@@ -8650,7 +8650,7 @@ begin
   end;
 end;
 
-procedure Td.save_StatusAttr_Waitinglist_NEW;
+procedure Td.save_StatusAttr_WaitinglistNonOptional;
 var
   s: string;
   sTmp: string;
@@ -8659,7 +8659,7 @@ begin
   s := '';
   s := s + ' UPDATE control ' + chr(10);
   s := s + ' SET ' + chr(10);
-  s := s + '  StatusAttr_WaitingList_NEW = ' + _db(sTmp) + chr(10);
+  s := s + '  StatusAttr_WaitingListNonOptional = ' + _db(sTmp) + chr(10);
   if not cmd_bySQL(s) then
   begin
   end;

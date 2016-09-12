@@ -632,9 +632,9 @@ type
     mExtrasItem: TStringField;
     mExtrasDescription: TStringField;
     mExtrasTotalPrice: TFloatField;
-    m_nrWaitingList_NEW: TIntegerField;
-    m_occWaitingList_NEW: TIntegerField;
-    chkExcludeWaitingList_New: TsCheckBox;
+    m_nrWaitingListNonOptional: TIntegerField;
+    m_occWaitingListNonOptional: TIntegerField;
+    chkExcludeWaitingListNonOptional: TsCheckBox;
     procedure FormShow(Sender: TObject);
     procedure edCustomerDblClick(Sender: TObject);
     procedure edCustomerPropertiesEditValueChanged(Sender: TObject);
@@ -2857,7 +2857,7 @@ var
   TotalNotFree: integer;
 
   bExcluteWaitingList: boolean;
-  bExcluteWaitingList_NEW: boolean;
+  bExcluteWaitingListNonOptional: boolean;
   bExcluteAllotment: boolean;
   bExcluteOrder: boolean;
   bExcluteDeparted: boolean;
@@ -2971,7 +2971,7 @@ begin
               if Status = 'P' then
                 m_.FieldByName('nrOrder').AsInteger := m_.FieldByName('nrOrder').AsInteger + RoomCount;
               if Status = 'L' then
-                m_.FieldByName('nrWaitingList_NEW').AsInteger := m_.FieldByName('nrWaitingList_NEW').AsInteger + RoomCount;
+                m_.FieldByName('nrWaitingListNonOptional').AsInteger := m_.FieldByName('nrWaitingListNonOptional').AsInteger + RoomCount;
               if Status = 'G' then
                 m_.FieldByName('nrGuest').AsInteger := m_.FieldByName('nrGuest').AsInteger + RoomCount;
               if Status = 'D' then
@@ -2991,7 +2991,7 @@ begin
               if Status = 'P' then
                 m_.FieldByName('occOrder').AsInteger := m_.FieldByName('occOrder').AsInteger + RoomCount;
               if Status = 'L' then
-                m_.FieldByName('occWaitingList_NEW').AsInteger := m_.FieldByName('occWaitingList_NEW').AsInteger + RoomCount;
+                m_.FieldByName('occWaitingListNonOptional').AsInteger := m_.FieldByName('occWaitingListNonOptional').AsInteger + RoomCount;
               if Status = 'G' then
                 m_.FieldByName('occGuest').AsInteger := m_.FieldByName('occGuest').AsInteger + RoomCount;
               if Status = 'D' then
@@ -3015,7 +3015,7 @@ begin
       mOcc_.First;
 
       bExcluteWaitingList := chkExcluteWaitingList.Checked;
-      bExcluteWaitingList_NEW := chkExcludeWaitingList_NEW.Checked;
+      bExcluteWaitingListNonOptional := chkExcludeWaitingListNonOptional.Checked;
       bExcluteAllotment := chkExcluteAllotment.Checked;
       bExcluteOrder := chkExcluteOrder.Checked;
       bExcluteDeparted := chkExcluteDeparted.Checked;
@@ -3033,8 +3033,8 @@ begin
         TotalNotFree := MaxFree - OccTotal - nrTotal;
         if bExcluteWaitingList then
           TotalNotFree := TotalNotFree + m_.FieldByName('nrWaitingList').AsInteger;
-        if bExcluteWaitingList_NEW then
-          TotalNotFree := TotalNotFree + m_.FieldByName('nrWaitingList_NEW').AsInteger;
+        if bExcluteWaitingListNonOptional then
+          TotalNotFree := TotalNotFree + m_.FieldByName('nrWaitingListNonOptional').AsInteger;
         if bExcluteAllotment then
           TotalNotFree := TotalNotFree + m_.FieldByName('nrAllotment').AsInteger;
         if bExcluteOrder then
