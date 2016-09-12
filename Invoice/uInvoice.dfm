@@ -2316,7 +2316,7 @@ object frmInvoice: TfrmInvoice
       object N4: TMenuItem
         Caption = '-'
       end
-      object Setjahpreikning1: TMenuItem
+      object SendItemToGroupInvoice: TMenuItem
         Action = actItemToGroupInvoice
       end
     end

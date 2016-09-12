@@ -6308,7 +6308,10 @@ begin
   s := s+'  WHERE ' +#10;
   if iRoomReservation = 0 then   //FRoomReservation = 0  // GroupInvoice
   begin
-    s := Format(s, ['Reservation','Reservation']) + ' Reservation=%d AND InvoiceIndex=' + inttostr(InvoiceIndex) + ' ' +#10;    // inttostr(publicReservation) + ' '+chr(10);
+    if InvoiceIndex <> -1 then
+      s := Format(s, ['Reservation','Reservation']) + ' Reservation=%d AND InvoiceIndex=' + inttostr(InvoiceIndex) + ' ' +#10
+    else
+      s := Format(s, ['Reservation','Reservation']) + ' Reservation=%d ' +#10;
     if NOT FakeGroup then
       s := s + ' AND rr.GroupAccount=1 ';
   end else
@@ -6317,7 +6320,7 @@ begin
          ' RoomReservation IN (SELECT rd.RoomReservation ' +
          ' FROM roomsdate rd JOIN roomreservations rr ON rr.RoomReservation=rd.RoomReservation ' +
          ' WHERE (ResFlag NOT IN (''X'',''C'')) AND (rr.GroupAccount = 0 AND (PaidBy=%d OR (rd.RoomReservation=%d AND PaidBy=0))) ' +
-         ' AND rr.InvoiceIndex = ' + inttostr(InvoiceIndex) + ') ' + #13;
+         IIFS(InvoiceIndex <> -1, ' AND rr.InvoiceIndex = ' + inttostr(InvoiceIndex), '') + ') ' + #13;
   end;
   result := s;
 end;

@@ -160,7 +160,7 @@ type
     Downpayment1: TMenuItem;
     RemoveRoomRenttemporarity1: TMenuItem;
     N4: TMenuItem;
-    Setjahpreikning1: TMenuItem;
+    SendItemToGroupInvoice: TMenuItem;
     Panel1: TsPanel;
     clabCurrency: TsLabel;
     edtCurrency: TsEdit;
@@ -3570,6 +3570,7 @@ var
 var
   list: TStringList;
   zRoomRSet: TRoomerDataset;
+  sTemp : String;
 
 label
   Again;
@@ -3726,9 +3727,10 @@ begin
     if zrSet.active then
       zrSet.close;
 
+    sTemp := inttostr(InvoiceIndex);
     sql := ReplaceString(format(sql, [FReservation, FRoomReservation, FnewSplitNumber]),
       '{InvoiceIndex}',
-      inttostr(InvoiceIndex));
+      sTemp);
 
     copytoclipboard(sql);
 
@@ -3870,8 +3872,10 @@ begin
       // sPanel4.Visible := false;
     end;
 
-    sql := Select_Invoice_LoadInvoice3_WithInvoiceIndex(FRoomReservation, FReservation, FInvoiceIndex, edtCustomer.Text,
-      zFakeGroup);
+    if NOT zFakeGroup then
+      sql := Select_Invoice_LoadInvoice3_WithInvoiceIndex(FRoomReservation, FReservation, FInvoiceIndex, edtCustomer.Text, zFakeGroup)
+    else
+      sql := Select_Invoice_LoadInvoice3_WithInvoiceIndex(FRoomReservation, FReservation, -1, edtCustomer.Text, zFakeGroup);
     if FRoomReservation = 0 then // GroupInvoice
     begin
       sql := format(sql, [FReservation]);
@@ -4815,7 +4819,7 @@ begin
   btnReservationNotes.Enabled := btnRoomToTemp.Enabled;
   Removetemporarily1.Enabled := btnRoomToTemp.Enabled;
   RemoveRoomRenttemporarity1.Enabled := btnRoomToTemp.Enabled;
-  Setjahpreikning1.Enabled := btnRoomToTemp.Enabled;
+  SendItemToGroupInvoice.Enabled := btnRoomToTemp.Enabled;
 
 end;
 
