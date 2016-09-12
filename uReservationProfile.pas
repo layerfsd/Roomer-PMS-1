@@ -705,6 +705,7 @@ type
     procedure btnMainGuestEditProfileClick(Sender: TObject);
     procedure tvRoomsblockMoveReasonGetDisplayText(Sender: TcxCustomGridTableItem; ARecord: TcxCustomGridRecord;
       var AText: string);
+    procedure mRoomsAfterPost(DataSet: TDataSet);
   private
     { Private declarations }
     vStartName: string;
@@ -2150,6 +2151,11 @@ end;
 //
 // ***************************************************************************
 
+procedure TfrmReservationProfile.mRoomsAfterPost(DataSet: TDataSet);
+begin
+  ConstructFormCaption;
+end;
+
 procedure TfrmReservationProfile.mRoomsAfterScroll(DataSet: TDataSet);
 var
   HiddenInfo: string;
@@ -2531,7 +2537,7 @@ begin
       if OutOfOrderBlocking then
         mRoomsGuestName.asstring := edtName.text;
 
-      FReservationChangeStateHandler.AddRoomStateChangeHandler(TRoomReservationStateChangeHandler.Create(zReservation, mRoomsRoomReservation.AsInteger, Status));
+      FReservationChangeStateHandler.AddRoomStateChangeHandler(TRoomReservationStateChangeHandler.Create(zReservation, mRoomsRoomReservation.AsInteger));
 
       mRooms.Post;
       mRooms.Next;
@@ -3294,7 +3300,7 @@ begin
         mGuestRooms.First;
         while not mGuestRooms.Eof do
         begin
-          roomReservation := mGuestRooms.fieldbyname('roomReservation').asInteger;
+//          roomReservation := mGuestRooms.fieldbyname('roomReservation').asInteger;
 
           status := TReservationState.FromResStatus(mGuestRooms.fieldbyname('status').asstring);
           statusText := Status.AsReadableString;

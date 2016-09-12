@@ -9,23 +9,47 @@ uses
   ;
 
 type
+  ///	<summary>
+  ///	  Possible states of a reservation
+  ///	</summary>
+  ///	<remarks>
+  ///	  See
+  ///	  <see href="https://promoir.atlassian.net/wiki/display/RP1/Explanation+of+Reservation+States+used+in+Roomer" />
+  ///	   for a full explanation of the meaning of all states and the relation with states in the backend
+  ///	</remarks>
   TReservationState = (
-      rsUnKnown,
-      rsReservation,
-      rsGuests,
-      rsDeparted,
-      rsReserved,
-      rsOptionalBooking,
-      rsAllotment,
-      rsNoShow,
-      rsBlocked,
-      rsCancelled,
-      rsTmp1,
-      rsAwaitingPayment,
-      rsDeleted,
-      rsAwaitingPayConfirm,
-      rsMixed,
-      rsWaitingList);
+    rsUnKnown,
+
+    rsReservation,
+
+    rsGuests,
+
+    rsDeparted,
+
+    rsReserved,
+
+    rsOptionalBooking,
+
+    rsAllotment,
+
+    rsNoShow,
+
+    rsBlocked,
+
+    rsCancelled,
+
+    rsTmp1,
+
+    rsAwaitingPayment,
+
+    rsDeleted,
+
+    rsAwaitingPayConfirm,
+
+    rsMixed,
+
+    rsWaitingList
+  );
 
     TReservationStateSet = set of TReservationState;
 
@@ -168,8 +192,8 @@ begin
     rsGuests:             result := True;
     rsDeparted:           result := True;
     rsReserved:           result := True;
-    rsOptionalBooking:         result := True;
-    rsAllotment:           result := True;
+    rsOptionalBooking:    result := True;
+    rsAllotment:          result := True;
     rsNoShow:             result := True;
     rsBlocked:            result := False; // only selectable when creating a special type reservation
     rsCancelled:          result := True;
