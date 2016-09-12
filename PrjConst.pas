@@ -896,6 +896,8 @@ begin
   constants.Add('shTx_ReservationProfile_ChangeAllRooms', 'Change all rooms to ');
   constants.Add('shTx_ReservationProfile_BreakfastInc', 'Breakfast included ?');
   constants.Add('shTx_ReservationProfile_BreakfastNotInc', 'Breakfast NOT included ?');
+  constants.Add('shTx_ReservationProfile_Included', 'Included');
+  constants.Add('shTx_ReservationProfile_NotIncluded', 'Not included');
   constants.Add('shTx_ReservationProfile_GroupAccount', 'Group Account ?');
   constants.Add('shTx_ReservationProfile_RoomAccount', 'Room Account ?');
   constants.Add('shTx_ReservationProfile_NotArrived', 'Not arrived');

@@ -238,7 +238,9 @@ uses
   ufrmPaymentReqRoomtypeGroup in 'ufrmPaymentReqRoomtypeGroup.pas' {frmPaymentReqRoomtypeGroup},
   uRptHouseKeeping in 'uRptHouseKeeping.pas',
   uReservationStateChangeHandler in 'uReservationStateChangeHandler.pas',
-  uRoomerForm in 'RoomerForm\uRoomerForm.pas' {frmBaseRoomerForm};
+  uRoomerForm in 'RoomerForm\uRoomerForm.pas' {frmBaseRoomerForm},
+  uBreakfastStateDefinitions in 'Definitions\uBreakfastStateDefinitions.pas',
+  uAccountTypeDefinitions in 'Definitions\uAccountTypeDefinitions.pas';
 
 {$R *.RES}
 

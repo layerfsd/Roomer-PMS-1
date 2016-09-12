@@ -9,23 +9,47 @@ uses
   ;
 
 type
+  ///	<summary>
+  ///	  Possible states of a reservation
+  ///	</summary>
+  ///	<remarks>
+  ///	  See
+  ///	  <see href="https://promoir.atlassian.net/wiki/display/RP1/Explanation+of+Reservation+States+used+in+Roomer" />
+  ///	   for a full explanation of the meaning of all states and the relation with states in the backend
+  ///	</remarks>
   TReservationState = (
-      rsUnKnown,
-      rsReservation,
-      rsGuests,
-      rsDeparted,
-      rsReserved,
-      rsOptionalBooking,
-      rsAllotment,
-      rsNoShow,
-      rsBlocked,
-      rsCancelled,
-      rsTmp1,
-      rsAwaitingPayment,
-      rsDeleted,
-      rsAwaitingPayConfirm,
-      rsMixed,
-      rsWaitingList);
+    rsUnKnown,
+
+    rsReservation,
+
+    rsGuests,
+
+    rsDeparted,
+
+    rsReserved,
+
+    rsOptionalBooking,
+
+    rsAllotment,
+
+    rsNoShow,
+
+    rsBlocked,
+
+    rsCancelled,
+
+    rsTmp1,
+
+    rsAwaitingPayment,
+
+    rsDeleted,
+
+    rsAwaitingPayConfirm,
+
+    rsMixed,
+
+    rsWaitingList
+  );
 
     TReservationStateSet = set of TReservationState;
 
@@ -37,6 +61,10 @@ type
       /// </summary>
       class function FromResStatus(const statusChar : char) : TReservationState; overload; static;
       class function FromResStatus(const statusStr : string) : TReservationState; overload; static;
+      /// <summary>
+      ///   Return a TReservationState based in index. Note that this does now work with the itemlist returned by AsStrings as this
+      ///  list only contains UserSelectable TReservationStates
+      /// </summary>
       class function FromItemIndex(aIndex: integer) : TReservationState; static;
 
       /// <summary>
@@ -56,6 +84,10 @@ type
       ///   Return the translated displaystring for a ReservationState
       /// </summary>
       function AsReadableString : string;
+      /// <summary>
+      ///   Return the translated displaystring for a ReservationState, used in Reservation hint<br />
+      ///  Texts used in ReservationHint are slightly different than those use in AsReadableString
+      /// </summary>
       function AsStatusText : string;
       /// <summary>
       ///   Return the colors (back and front) set for hotel to be used for displaying reservation data
@@ -158,7 +190,7 @@ begin
   if statusStr.IsEmpty then
     Result := rsUnKnown
   else
-    Result := FromResStatus(statusStr[1]);
+    Result := FromResStatus(statusStr.Chars[1]);
 end;
 
 function TReservationStateHelper.IsUserSelectable: boolean;
@@ -168,8 +200,8 @@ begin
     rsGuests:             result := True;
     rsDeparted:           result := True;
     rsReserved:           result := True;
-    rsOptionalBooking:         result := True;
-    rsAllotment:           result := True;
+    rsOptionalBooking:    result := True;
+    rsAllotment:          result := True;
     rsNoShow:             result := True;
     rsBlocked:            result := False; // only selectable when creating a special type reservation
     rsCancelled:          result := True;

@@ -491,6 +491,8 @@ object frmReservationProfile: TfrmReservationProfile
     object TabSheet3: TsTabSheet
       Caption = 'Main'
       TabVisible = False
+      SkinData.CustomColor = False
+      SkinData.CustomFont = False
       object Panel3: TsPanel
         Left = 0
         Top = 0
@@ -531,6 +533,8 @@ object frmReservationProfile: TfrmReservationProfile
             SkinData.SkinSection = 'PAGECONTROL'
             object tsContact: TsTabSheet
               Caption = 'Contact'
+              SkinData.CustomColor = False
+              SkinData.CustomFont = False
               object lblContactName: TsLabel
                 Left = 21
                 Top = 5
@@ -914,6 +918,8 @@ object frmReservationProfile: TfrmReservationProfile
             end
             object TabSheet4: TsTabSheet
               Caption = 'Customer'
+              SkinData.CustomColor = False
+              SkinData.CustomFont = False
               object Label19: TsLabel
                 Left = 1
                 Top = 32
@@ -1199,6 +1205,8 @@ object frmReservationProfile: TfrmReservationProfile
             object TabSheet5: TsTabSheet
               Caption = 'Customer Tel / Email'
               ImageIndex = 1
+              SkinData.CustomColor = False
+              SkinData.CustomFont = False
               object Label11: TsLabel
                 Left = 29
                 Top = 32
@@ -2274,7 +2282,7 @@ object frmReservationProfile: TfrmReservationProfile
             Width = 79
           end
           object tvRoomsStatusText: TcxGridDBColumn
-            DataBinding.FieldName = 'StatusText'
+            DataBinding.FieldName = 'Status'
             PropertiesClassName = 'TcxComboBoxProperties'
             Properties.AutoSelect = False
             Properties.DropDownListStyle = lsFixedList
@@ -2292,12 +2300,6 @@ object frmReservationProfile: TfrmReservationProfile
               'Awaiting Payment')
             Properties.OnChange = tvRoomsStatusTextPropertiesChange
             Width = 97
-          end
-          object tvRoomsStatus: TcxGridDBColumn
-            DataBinding.FieldName = 'Status'
-            PropertiesClassName = 'TcxLabelProperties'
-            Visible = False
-            Options.Editing = False
           end
           object rgrProfiles: TcxGridDBColumn
             Caption = 'Profiles'
@@ -2502,14 +2504,9 @@ object frmReservationProfile: TfrmReservationProfile
             DataBinding.FieldName = 'RoomTypeAlias'
             Visible = False
           end
-          object tvRoomsBreakFast: TcxGridDBColumn
-            DataBinding.FieldName = 'BreakFast'
-            Visible = False
-            Width = 37
-          end
           object tvRoomsbreakfastText: TcxGridDBColumn
             Caption = 'Breakfast'
-            DataBinding.FieldName = 'breakfastText'
+            DataBinding.FieldName = 'breakfast'
             PropertiesClassName = 'TcxComboBoxProperties'
             Properties.DropDownListStyle = lsFixedList
             Properties.Items.Strings = (
@@ -2544,7 +2541,7 @@ object frmReservationProfile: TfrmReservationProfile
           end
           object tvRoomsaccountTypeText: TcxGridDBColumn
             Caption = 'Account'
-            DataBinding.FieldName = 'accountTypeText'
+            DataBinding.FieldName = 'isGroupAccount'
             PropertiesClassName = 'TcxComboBoxProperties'
             Properties.DropDownListStyle = lsFixedList
             Properties.Items.Strings = (
@@ -2799,6 +2796,8 @@ object frmReservationProfile: TfrmReservationProfile
     object GuestsTab: TsTabSheet
       Caption = 'Guests'
       ImageIndex = 1
+      SkinData.CustomColor = False
+      SkinData.CustomFont = False
       object Panel10: TsPanel
         Left = 0
         Top = 0
@@ -2859,8 +2858,8 @@ object frmReservationProfile: TfrmReservationProfile
         object chkShowAllGuests: TsCheckBox
           Left = 333
           Top = 11
-          Width = 94
-          Height = 20
+          Width = 102
+          Height = 19
           Caption = 'Show all guests'
           Anchors = [akLeft, akTop, akRight]
           TabOrder = 4
@@ -2957,8 +2956,7 @@ object frmReservationProfile: TfrmReservationProfile
               Width = 36
             end
             object tvGuestRoomsStatusText: TcxGridDBColumn
-              Caption = 'Status'
-              DataBinding.FieldName = 'StatusText'
+              DataBinding.FieldName = 'Status'
               Width = 120
             end
             object tvGuestRoomsRoomType: TcxGridDBColumn
@@ -3404,6 +3402,8 @@ object frmReservationProfile: TfrmReservationProfile
     end
     object sTabSheet2: TsTabSheet
       Caption = 'Alerts'
+      SkinData.CustomColor = False
+      SkinData.CustomFont = False
       object pnlAlertHolder: TsPanel
         Left = 0
         Top = 0
@@ -3418,6 +3418,8 @@ object frmReservationProfile: TfrmReservationProfile
     object InvoicesTab: TsTabSheet
       Caption = 'Afgehandelde facturen'
       ImageIndex = 2
+      SkinData.CustomColor = False
+      SkinData.CustomFont = False
       object Panel11: TsPanel
         Left = 0
         Top = 0
@@ -3848,7 +3850,9 @@ object frmReservationProfile: TfrmReservationProfile
     Indexes = <>
     SortOptions = []
     BeforePost = mRoomsBeforePost
+    AfterPost = mRoomsAfterPost
     AfterScroll = mRoomsAfterScroll
+    OnCalcFields = mRoomsCalcFields
     Left = 352
     Top = 448
     object mRoomsReservation: TIntegerField
@@ -3871,11 +3875,9 @@ object frmReservationProfile: TfrmReservationProfile
     object mRoomsDeparture: TDateTimeField
       FieldName = 'Departure'
     end
-    object mRoomsStatusText: TStringField
-      FieldName = 'StatusText'
-    end
     object mRoomsStatus: TWideStringField
       FieldName = 'Status'
+      OnGetText = mRoomsStatusGetText
       Size = 5
     end
     object mRoomsCurrency: TWideStringField
@@ -3884,6 +3886,7 @@ object frmReservationProfile: TfrmReservationProfile
     end
     object mRoomsisGroupAccount: TBooleanField
       FieldName = 'isGroupAccount'
+      OnGetText = mRoomsisGroupAccountGetText
     end
     object mRoomsisNoRoom: TBooleanField
       FieldName = 'isNoRoom'
@@ -3900,16 +3903,21 @@ object frmReservationProfile: TfrmReservationProfile
       Size = 5
     end
     object mRoomsdayCount: TIntegerField
+      FieldKind = fkCalculated
       FieldName = 'dayCount'
+      Calculated = True
     end
     object mRoomsBreakFast: TBooleanField
       FieldName = 'BreakFast'
+      OnGetText = mRoomsBreakFastGetText
     end
     object mRoomsGuestCount: TIntegerField
       FieldName = 'GuestCount'
     end
     object mRoomsdefGuestCount: TIntegerField
+      FieldKind = fkCalculated
       FieldName = 'defGuestCount'
+      Calculated = True
     end
     object mRoomsPersonsProfilesId: TIntegerField
       FieldName = 'PersonsProfilesId'
@@ -3918,12 +3926,6 @@ object frmReservationProfile: TfrmReservationProfile
       DisplayLabel = 'Guestname'
       FieldName = 'guestname'
       Size = 50
-    end
-    object mRoomsbreakfastText: TStringField
-      FieldName = 'breakfastText'
-    end
-    object mRoomsaccountTypeText: TStringField
-      FieldName = 'accountTypeText'
     end
     object mRoomsDiscountUnpaidRoomRent: TFloatField
       FieldName = 'DiscountUnpaidRoomRent'
@@ -3938,7 +3940,9 @@ object frmReservationProfile: TfrmReservationProfile
       FieldName = 'unPaidRentNights'
     end
     object mRoomsunpaidRentPrice: TFloatField
+      FieldKind = fkCalculated
       FieldName = 'unpaidRentPrice'
+      Calculated = True
     end
     object mRoomsunPaidItems: TFloatField
       FieldName = 'unPaidItems'
@@ -4147,11 +4151,8 @@ object frmReservationProfile: TfrmReservationProfile
     end
     object mGuestRoomsStatus: TWideStringField
       FieldName = 'Status'
+      OnGetText = mRoomsStatusGetText
       Size = 5
-    end
-    object mGuestRoomsStatusText: TWideStringField
-      FieldName = 'StatusText'
-      Size = 25
     end
     object mGuestRoomsPersonsProfilesId: TIntegerField
       FieldName = 'PersonsProfilesId'
@@ -4259,11 +4260,8 @@ object frmReservationProfile: TfrmReservationProfile
     end
     object mAllGuestsStatus: TWideStringField
       FieldName = 'Status'
+      OnGetText = mRoomsStatusGetText
       Size = 5
-    end
-    object mAllGuestsStatusText: TWideStringField
-      FieldName = 'StatusText'
-      Size = 25
     end
     object mAllGuestsPersonsProfilesId: TIntegerField
       FieldName = 'PersonsProfilesId'

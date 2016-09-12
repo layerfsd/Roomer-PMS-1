@@ -29,6 +29,8 @@ type
     function GetReservationState: TReservationState; virtual;
     procedure UpdateCurrentState; virtual; abstract;
   public
+    constructor Create;
+
     function ChangeIsAllowed(aNewState: TReservationState): boolean;
     function ChangeState(aNewState: TReservationState): boolean; virtual;
     property CurrentState: TReservationState read GetReservationState;
@@ -56,7 +58,7 @@ type
     function CatchAll: boolean; override;
     procedure UpdateCurrentState; override;
   public
-    constructor Create(aReservation: integer);
+    constructor Create(aReservation: integer); reintroduce;
     destructor Destroy; override;
     procedure AddRoomStateChangeHandler(aHandler: TRoomReservationStateChangeHandler);
     procedure Clear;
@@ -86,20 +88,21 @@ begin
   Result := (aNewState <> lCurrentState); // dont allow changing to same status
   if Result then
     case aNewState of
-      rsUnKnown:      Result := false;
-      rsReservation:  Result := lCurrentState in [rsUnknown, rsGuests, rsAllotment, rsOptionalBooking, rsTmp1, rsAwaitingPayment, rsAwaitingPayConfirm];
-      rsGuests:       Result := lCurrentState in [rsUnknown, rsReservation, rsAllotment, rsOptionalBooking, rsTmp1, rsAwaitingPayment];
-      rsDeparted:     Result := lCurrentState in [rsUnknown, rsGuests];
-      rsReserved:     Result := lCurrentState in [rsUnknown, rsReservation, rsAllotment, rsOptionalBooking, rsTmp1, rsAwaitingPayment];
-      rsOptionalBooking:   Result := lCurrentState in [rsUnknown, rsReservation, rsAllotment, rsReserved, rsTmp1, rsAwaitingPayment];
-      rsAllotment:     Result := lCurrentState in [rsUnknown, rsReservation, rsAllotment, rsOptionalBooking, rsTmp1, rsAwaitingPayment];
-      rsNoShow:       Result := lCurrentState in [rsUnknown, rsReservation, rsAllotment, rsOptionalBooking, rsTmp1, rsAwaitingPayment];
-      rsBlocked:      Result := False;
+      rsUnKnown:          Result := false;
+      rsReservation:      Result := lCurrentState in [rsUnknown, rsGuests, rsAllotment, rsOptionalBooking, rsTmp1, rsAwaitingPayment, rsAwaitingPayConfirm, rsWaitingList];
+      rsGuests:           Result := lCurrentState in [rsUnknown, rsReservation, rsAllotment, rsOptionalBooking, rsTmp1, rsAwaitingPayment, rsWaitingList];
+      rsDeparted:         Result := lCurrentState in [rsUnknown, rsGuests];
+      rsReserved:         Result := lCurrentState in [rsUnknown, rsReservation, rsAllotment, rsOptionalBooking, rsTmp1, rsAwaitingPayment, rsWaitingList];
+      rsOptionalBooking:  Result := lCurrentState in [rsUnknown, rsReservation, rsAllotment, rsReserved, rsTmp1, rsAwaitingPayment, rsWaitingList];
+      rsAllotment:        Result := lCurrentState in [rsUnknown, rsReservation, rsAllotment, rsOptionalBooking, rsTmp1, rsAwaitingPayment, rsWaitingList];
+      rsNoShow:           Result := lCurrentState in [rsUnknown, rsReservation, rsAllotment, rsOptionalBooking, rsTmp1, rsAwaitingPayment, rsWaitinglist];
+      rsBlocked:          Result := False;
       rsCancelled: ;
       rsTmp1: ;
       rsAwaitingPayment: ;
       rsDeleted: ;
       rsAwaitingPayConfirm: ;
+      rsWaitingList:      Result := lCurrentState in [rsUnknown, rsReservation, rsGuests, rsAllotment, rsOptionalBooking, rsTmp1, rsAwaitingPayment, rsAwaitingPayConfirm];
     end;
 end;
 
@@ -134,6 +137,11 @@ end;
 function TBaseReservationStateChangeHandler.CheckOut: boolean;
 begin
   Result := False;
+end;
+
+constructor TBaseReservationStateChangeHandler.Create;
+begin
+  FCurrentStateDirty := True;
 end;
 
 function TReservationStateChangeHandler.Checkin: boolean;
@@ -187,6 +195,7 @@ end;
 
 constructor TReservationStateChangeHandler.Create(aReservation: integer);
 begin
+  inherited Create;
   FReservation := aReservation;
   FRoomStateChangers:= TObjectDictionary<integer, TRoomReservationStateChangeHandler>.Create([doOwnsValues]);
 end;
@@ -278,9 +287,9 @@ end;
 
 constructor TRoomReservationStateChangeHandler.Create(aReservation, aRoomReservation: integer);
 begin
+  Create;
   FReservation := aReservation;
   FRoomReservation := aRoomReservation;
-  FCurrentStateDirty := True;
 end;
 
 procedure TRoomReservationStateChangeHandler.UpdateCurrentState;
