@@ -3749,7 +3749,7 @@ begin
       result := true;
       lblAuthStatus.Caption := GetTranslatedText('shTx_Authenticating');
       try
-        if (AutoLogin <> '') then
+        if (lTryAutoLogin <> '') then
         begin
           lHotelID := AutoLogin;
           // sleep(1000);
