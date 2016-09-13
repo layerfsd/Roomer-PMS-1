@@ -2720,6 +2720,10 @@ end;
 
 procedure TfrmMain.ExceptionHandler(Sender: TObject; E: Exception);
 begin
+  try
+    HideRoomerSplash;
+  except
+  end;
   // --
   if (E is EDivByZero) or (E is ERangeError) or (E is EStringListError) or (E is ERoomerOfflineAssertionException) or
     (E is EInvalidPointer) or

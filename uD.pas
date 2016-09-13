@@ -8568,9 +8568,11 @@ var
   sTmp: String;
   rSet: TRoomerDataSet;
 begin
-  sTmp := 'SELECT StatusAttr_Blocked, StatusAttr_GuestStaying, StatusAttr_GuestLeavingNextDay, ' +
-    'StatusAttr_Departed, StatusAttr_Departing, StatusAttr_Allotment, StatusAttr_Waitinglist, ' +
-    'StatusAttr_NoShow, StatusAttr_ArrivingOtherLeaving, StatusAttr_Order, StatusAttr_Canceled, StatusAttr_Tmp1,StatusAttr_Tmp2, StatusAttr_WaitingListNonOptional FROM control';
+//  sTmp := 'SELECT StatusAttr_Blocked, StatusAttr_GuestStaying, StatusAttr_GuestLeavingNextDay, ' +
+//    'StatusAttr_Departed, StatusAttr_Departing, StatusAttr_Allotment, StatusAttr_Waitinglist, ' +
+//    'StatusAttr_NoShow, StatusAttr_ArrivingOtherLeaving, StatusAttr_Order, StatusAttr_Canceled, StatusAttr_Tmp1,StatusAttr_Tmp2, StatusAttr_WaitingListNonOptional FROM control';
+
+  glb.RefreshTableByName('control');
   rSet := glb.ControlSet; // CreateNewDataSet;
   rSet.First;
   try
