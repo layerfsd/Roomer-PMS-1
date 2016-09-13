@@ -356,7 +356,7 @@ end;
 function _AddSlash(const S : string) : string;
 begin
   Result := S;
-  if Result[Length(Result)] <> '\' then
+  if not Result.EndsWith('\') then
     Result := Result + '\';
 end;
 
