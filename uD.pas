@@ -10596,7 +10596,8 @@ const
 
 procedure Td.GenerateOfflineReports;
 begin
-  TOfflineReportGenerator.ExecuteRegisteredReports;
+  if roomerMainDataSet.LoggedIn then
+    TOfflineReportGenerator.ExecuteRegisteredReports;
 end;
 
 Function Td.BreakFastInclutedCount(reservation: Integer): Integer;
