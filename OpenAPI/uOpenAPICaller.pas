@@ -59,7 +59,7 @@ begin
       lURI := lURI + '?includeUsage=true&usageFrom=' + dateToSqlString(aUsageFrom) + '&usageTo=' + dateToSqlString(aUsageTo);
     end;
 
-    lResponse := roomerClient.Get(lURI);
+    lResponse := String(roomerClient.Get(AnsiString(lURI)));
     aRSet.OpenDataset(lResponse);
   finally
     roomerClient.Free;

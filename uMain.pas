@@ -1502,7 +1502,6 @@ type
     function GetCaptText(Canvas: TCanvas; const OriginalText: String; MaxWidth: integer): String;
     procedure PlacePeriodViewTypePanel;
     procedure ApplicationCancelHint;
-    procedure OnViewReservationHandlerClick(rri: RecRRInfo);
     function OneDay_GetResInfo(ACol, ARow, iReservation, iRoomReservation: integer): RecRRInfo;
     procedure CorrectBottomPeriodInterface;
     // function GetSelectedRoomInformation(var iReservation, iRoomReservation: Integer; var Arrival, Departure: TDate): Boolean;
@@ -3089,11 +3088,6 @@ procedure TfrmMain.OnRefreshMessagesRequest(var Msg: TMessage);
 begin
   if ComponentRunning(Self) then
     RefreshMessagesOnUI;
-end;
-
-procedure TfrmMain.OnViewReservationHandlerClick(rri: RecRRInfo);
-begin
-  if EditReservation(rri.Reservation, rri.RoomReservation) then;
 end;
 
 procedure TfrmMain.SetExtraSkinColors;

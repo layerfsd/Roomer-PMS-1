@@ -382,7 +382,6 @@ end;
 procedure TfrmHouseKeepingReport.UpdateLocations;
 var
   lCurrentSelection: string;
-  idx: integer;
 begin
 
   lCurrentSelection := '';

@@ -664,7 +664,6 @@ end;
 
 function ResStatusToColor(Status : string; var backColor, fontColor : TColor) : boolean;
 var
-  ch : char;
   state : TReservationState;
   StatusAttr : recStatusAttr;
 begin
@@ -672,7 +671,6 @@ begin
   result := false;
   if length(Status) < 1 then
     exit;
-  ch := Status[1];
 
   StatusAttr := state.AsStatusAttribute;
   backColor := StatusAttr.backgroundColor; //clRed;
@@ -701,7 +699,6 @@ end;
 
 function Status2StatusText(Status : string) : string;
 var
-  ch : char;
   state : TReservationState;
 begin
   result := '';
@@ -711,45 +708,7 @@ begin
 
   Status := UpperCase(Status);
   State := TReservationState.FromResStatus(Status);
-  ch := Status[1];
-
   result := state.AsStatusText;
-
-//  case ch of
-//    'P' :
-//    //  result := '�kominn';
-//	  result := GetTranslatedText('shTx_G_NotArrived');
-//    'G' :
-//    //  result := 'Innskr��ur';
-//	   result := GetTranslatedText('shTx_G_CheckedIn');
-//    STATUS_CHECKED_OUT :
-//    //  result := 'Farinn';
-//     result := GetTranslatedText('shTx_G_CheckedOut');
-//	  'O' :
-//    //  result := 'Bi�listi';
-//	  result := GetTranslatedText('shTx_G_WaitingList');
-// 	  'L' :
-//    //  result := 'Bi�listi';
-//	  result := GetTranslatedText('shTx_G_WaitingListNonOptional');
-//    'A' :
-//    //  result := 'Alotment';
-//	   result := GetTranslatedText('shTx_G_Alotment');
-//    'N' :
-//     // result := 'No show';
-//	  result := GetTranslatedText('shTx_G_NoShow');
-//    'B' :
-//     // result := 'Blocked';
-//	  result := GetTranslatedText('shTx_G_Blocked');
-//    'C' :
-//     // result := 'Canceled';
-//	  result := GetTranslatedText('shTx_G_Canceled');
-//    'W' :
-//     // result := 'Other 1';
-//	  result := GetTranslatedText('shTx_G_Tmp1'); //ATH 2
-//    'Z' :
-//     // result := 'Other 2';
-//	  result := GetTranslatedText('shTx_G_Tmp2');
-//  end;
 end;
 
 

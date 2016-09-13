@@ -211,7 +211,9 @@ uses
    uD,
    uDImages,
    uBookKeepingCodes
-   , uUtils;
+   , uUtils
+   , UITypes
+    ;
 
 {$R *.dfm}
 
@@ -245,7 +247,6 @@ function getVatCode(ed : TAdvEdit; lab : TLabel) : boolean;
 var
   theData : recVatCodeHolder;
 begin
-  result := false;
   initVatCodeHolder(theData);
   theData.VatCode := trim(ed.text);
   result := VatCodes(actLookup,theData);
@@ -266,8 +267,6 @@ end;
 
 function vatCodeValidate(ed : TAdvEdit; lab : TLabel) : boolean;
 var
-  sValue : string;
-  pcCode : string;
   theData : recVatCodeHolder;
 begin
   initVatCodeHolder(theData);

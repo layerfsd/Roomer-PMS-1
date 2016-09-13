@@ -264,6 +264,7 @@ uses
   , uRoomTypesGroups2
   , uChannels
   , uChannelManager
+  , UITypes
 
   ;
 
@@ -274,7 +275,6 @@ uses
 
 function openDynamicRates(act: TActTableAction; chManCode, channelCode, RoomClass : String): Boolean;
 begin
-  result := false;
   frmDynamicPricing := TfrmDynamicPricing.Create(nil);
   try
     frmDynamicPricing.chManCode := chManCode;
@@ -296,7 +296,6 @@ Procedure TfrmDynamicPricing.fillGridFromDataset;
 var
   s: string;
   rSet: TRoomerDataSet;
-  rSetRoomClasses: TRoomerDataSet;
 begin
   zFirstTime := true;
   if zSortStr = '' then
@@ -628,8 +627,6 @@ begin
 end;
 
 procedure TfrmDynamicPricing.m_BeforePost(DataSet: TDataSet);
-var
-  nID: Integer;
 begin
   if zFirstTime then
     exit;
@@ -645,7 +642,6 @@ begin
 end;
 
 procedure TfrmDynamicPricing.m_NewRecord(DataSet: TDataSet);
-var tmp : Integer;
 begin
   DataSet['HOTEL_ID'] := d.roomerMainDataSet.hotelId;
   DataSet.FieldByName('ROOMTYPEGROUP_CODE').AsString := RoomClass;

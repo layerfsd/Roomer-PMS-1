@@ -1310,7 +1310,6 @@ begin
 end;
 
 function TInvoice.GetRoomRentPerDay(ADate : TDate; RoomReservation : Integer) : TRoomRentPerDay;
-var rrpd : TRoomRentPerDay;
 begin
   if NOT RoomRentsPerDay.TryGetValue(format('%s.%s', [DateToSqlString(ADate), inttostr(RoomReservation)]), result) then
     result := nil;
@@ -1329,7 +1328,6 @@ end;
 
 procedure TInvoice.ReadRoomRent(RecSet : TRoomerDataSet);
 var InvoiceLine : TInvoiceLine;
-    sTemp : String;
 begin
   RecSet.First;
   while NOT RecSet.Eof do

@@ -88,7 +88,7 @@ uses
   , cmpRoomerDataSet
   , cmpRoomerConnection, dxSkinsCore, dxSkinDarkSide, dxSkinDevExpressDarkStyle, dxSkinMcSkin, dxSkinOffice2013White,
   dxSkinsDefaultPainters, dxSkinscxPCPainter, cxButtonEdit, cxSpinEdit, cxCalc, dxSkinsdxBarPainter, dxSkinsdxRibbonPainter,
-  cxPropertiesStore, dxmdaset, sGroupBox, cxDropDownEdit
+  cxPropertiesStore, dxmdaset, sGroupBox, cxDropDownEdit, dxSkinCaramel, dxSkinCoffee, dxSkinTheAsphaltWorld
 
   ;
 
@@ -201,7 +201,6 @@ type
     { Private declarations }
     zFirstTime       : boolean;
     zAllowGridEdit   : boolean;
-    zFilterOn        : boolean;
     zSortStr         : string;
     zIsAddRow        : boolean;
 
@@ -210,7 +209,6 @@ type
     Procedure fillGridFromDataset(sGoto : string);
     procedure fillHolder;
     procedure changeAllowgridEdit;
-    function getPrevCode : string;
     Procedure chkFilter;
     procedure applyFilter;
 
@@ -501,10 +499,6 @@ end;
 ////////////////////////////////////////////////////////////////////////////////////////
 // memory table
 ////////////////////////////////////////////////////////////////////////////////////////
-function TfrmPackageItems.getPrevCode: string;
-begin
-end;
-
 procedure TfrmPackageItems.m_BeforeDelete(DataSet: TDataSet);
 var
   s : string;

@@ -61,7 +61,6 @@ type
     aHeader : string;
     isFirstTime : boolean;
     procedure SetBtnPos;
-    function GetGridFielNames(sFieldname : string) : string;
   public
     { Public declarations }
     zCode : string;
@@ -80,19 +79,10 @@ uses
   , uAppGlobal
   , PrjConst
   , uUtils
-  , uDImages;
+  , uDImages
+  , UITypes
+  ;
 {$R *.dfm}
-
-function TfrmMaidActions.GetGridFielNames(sFieldname : string) : string;
-var
-  i : integer;
-  line : string;
-  sFldName : string;
-  sColWidth : string;
-  sDisplName : string;
-
-begin
-end;
 
 procedure changeSortDir(var sCurrent : string);
 begin
@@ -285,8 +275,6 @@ begin
 end;
 
 procedure TfrmMaidActions.FormKeyPress(Sender : TObject; var Key : Char);
-var
-  s : string;
 begin
   if Key = chr(13) then
   begin

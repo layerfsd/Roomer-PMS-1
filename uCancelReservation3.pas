@@ -150,7 +150,7 @@ uses
   ,uD
   ,PrjConst
   ,uDimages
-  ;
+  , uReservationStateDefinitions;
 {$R *.dfm}
 
 
@@ -210,7 +210,7 @@ begin
       Room       := rSet.fieldbyname('room').asString;
       RoomType   := rSet.fieldbyname('roomType').asString;
       Status     := rSet.fieldbyname('Status').asString;
-      Status     := _StatusToText(status);
+      Status     := TReservationState.FromResStatus(status).AsReadableString;
       Guests     := d.RR_GetAllGuestNames(zRoomReservation, true, true);
 
       mRooms.Append;

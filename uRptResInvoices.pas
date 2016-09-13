@@ -278,7 +278,6 @@ type
     procedure ApplyFilter;
     procedure ShowData;
     function GetInvoicelist(customer : string) : string;
-    function GetUnpaidlist(customer : string) : string;
     procedure showdata2;
     function inString : string;
     procedure getTotal;
@@ -308,7 +307,8 @@ uses
   uAppGlobal,
   uRoomerLanguage,
   PrjConst
-  , uDImages;
+  , uDImages
+  , DateUtils;
 
 function RptResInvoices : boolean;
 begin
@@ -329,7 +329,6 @@ end;
 procedure TfrmRptResInvoices.ShowData;
 var
   y, m, d : word;
-  idx : integer;
   lastDay : integer;
 begin
 
@@ -346,7 +345,7 @@ begin
 //  end;
 
   zDateFrom := encodeDate(y, m, 1);
-  lastDay := _DaysPerMonth(y, m);
+  lastDay := DaysInAMonth(y, m);
   zDateTo := encodeDate(y, m, lastDay);
   dtDateFrom.Date := zDateFrom;
   dtDateTo.Date := zDateTo;
@@ -445,10 +444,8 @@ end;
 procedure TfrmRptResInvoices.brtGroupInvoiceClick(Sender: TObject);
 var
   Reservation : integer;
-  RoomReservation : integer;
 begin
   Reservation := kbmOpeninvoices.FieldByName('Reservation').AsInteger;
-  RoomReservation := kbmOpenInvoices.FieldByName('RoomReservation').AsInteger;
   EditInvoice(Reservation, 0, 0, 0, 0, 0, false, true,false);
 end;
 
@@ -456,10 +453,8 @@ end;
 procedure TfrmRptResInvoices.openGroupInvoice;
 var
   Reservation : integer;
-  RoomReservation : integer;
 begin
   Reservation := kbmOpeninvoices.FieldByName('Reservation').AsInteger;
-  RoomReservation := kbmOpenInvoices.FieldByName('RoomReservation').AsInteger;
   EditInvoice(Reservation, 0, 0, 0, 0, 0, false, true,false);
 end;
 
@@ -523,15 +518,10 @@ var
   s      : string;
   rset1 : TRoomerDataset;
   ExecutionPlan : TRoomerExecutionPlan;
-  inst : string;
   tmpCustomer : string;
   customer : string;
 
   roomCount  : integer;
-  totalDays  : integer;
-  daysPaid   : integer;
-  daysUnpaid : integer;
-
   FirstArrival : Tdate;
   LastDeparture  : TDate;
 
@@ -787,18 +777,9 @@ end;
 function TfrmRptResInvoices.GetInvoicelist(customer : string) : string;
 var
   s    : string;
-  rset1,
-  rset2,
-  rset3 : TRoomerDataset;
+  rset1 : TRoomerDataset;
   ExecutionPlan : TRoomerExecutionPlan;
 
-  startTick : integer;
-  stopTick  : integer;
-  SQLms     : integer;
-
-  statusIn : string;
-
-  dtTmp : TdateTime;
   invoicelist : string;
 
   lst : Tstringlist;
@@ -809,7 +790,6 @@ begin
     invoicelist := '';
     ExecutionPlan := d.roomerMainDataSet.CreateExecutionPlan;
     try
-      startTick := GetTickCount;
 
       s := s+'SELECT '#10;
       s := s+'  ih.invoicenumber '#10;
@@ -848,8 +828,6 @@ begin
         screen.cursor := crDefault;
         kbmTotal.EnableControls;
       end;
-      stopTick         := GetTickCount;
-      SQLms            := stopTick - startTick;
     finally
       ExecutionPlan.Free;
     end;
@@ -858,84 +836,6 @@ begin
   end;
   result := invoicelist;
 end;
-
-
-
-function TfrmRptResInvoices.GetUnpaidlist(customer : string) : string;
-var
-  s    : string;
-  rset1,
-  rset2,
-  rset3 : TRoomerDataset;
-  ExecutionPlan : TRoomerExecutionPlan;
-
-  startTick : integer;
-  stopTick  : integer;
-  SQLms     : integer;
-
-  statusIn : string;
-
-  dtTmp : TdateTime;
-  invoicelist : string;
-
-  lst : Tstringlist;
-
-begin
-  lst := TstringList.Create;
-  try
-    invoicelist := '';
-    ExecutionPlan := d.roomerMainDataSet.CreateExecutionPlan;
-    try
-      startTick := GetTickCount;
-
-      s := s+'SELECT '#10;
-      s := s+'  ih.invoicenumber '#10;
-      s := s+'FROM '#10;
-      s := s+'  invoiceheads ih '#10;
-      s := s+'WHERE '#10;
-      s := s+'  ih.roomreservation IN ( '+instring+')  '#10;
-      s := s+'   AND (invoicenumber > 0) '#10;
-      s := s+'   AND (customer = '+_db(customer)+') '#10;
-
-//      copytoclipboard(s);
-//      debugmessage(s);
-
-      ExecutionPlan.AddQuery(s);
-      //////////////////// Execute!
-
-      screen.Cursor := crHourGlass;
-      kbmTotal.DisableControls;
-      try
-        ExecutionPlan.Execute(ptQuery);
-
-        //////////////////// RoomsDate
-        rSet1 := ExecutionPlan.Results[0];
-
-        while not rset1.Eof  do
-        begin
-          invoicelist := invoicelist+rset1.FieldByName('invoicenumber').AsString+',';
-          rset1.Next;
-        end;
-        if length(invoicelist) > 1 then
-        begin
-          delete(invoicelist,length(invoicelist),1)
-        end;
-
-      finally
-        screen.cursor := crDefault;
-        kbmTotal.EnableControls;
-      end;
-      stopTick         := GetTickCount;
-      SQLms            := stopTick - startTick;
-    finally
-      ExecutionPlan.Free;
-    end;
-  finally
-    freeandnil(lst)
-  end;
-  result := invoicelist;
-end;
-
 
 
 
@@ -957,7 +857,7 @@ begin
   m := cbxMonth.ItemIndex;
 
   zDateFrom := encodeDate(y, m, 1);
-  lastDay := _DaysPerMonth(y, m);
+  lastDay := DaysInAMonth(y, m);
   zDateTo := encodeDate(y, m, lastDay);
   dtDateFrom.Date := zDateFrom;
   dtDateTo.Date := zDateTo;
@@ -1035,7 +935,6 @@ end;
 
 procedure TfrmRptResInvoices.GetPaymentsTypes(rSet : TRoomerDataSet; invoiceNumber : integer; var PayTypes, PayTypeDescription, payGroups, payGroupDescription : string);
 var
-  s : string;
   PayType : string;
   PayGroup : string;
   bookmark : TBookmark;
@@ -1184,13 +1083,9 @@ procedure TfrmRptResInvoices.openRoomInvoice;
 var
   Reservation : integer;
   RoomReservation : integer;
-  Arrival : Tdate;
-  Departure : Tdate;
 begin
   Reservation := kbmOpenInvoices.FieldByName('Reservation').AsInteger;
   RoomReservation := kbmOpenInvoices.FieldByName('RoomReservation').AsInteger;
-  Arrival := kbmOpenInvoices.FieldByName('Arrival').AsDateTime;
-  Departure := kbmOpenInvoices.FieldByName('departure').AsDateTime;
   EditInvoice(Reservation, RoomReservation, 0, 0, 0, 0, false, true,false);
 end;
 
@@ -1199,13 +1094,9 @@ procedure TfrmRptResInvoices.sButton5Click(Sender: TObject);
 var
   Reservation : integer;
   RoomReservation : integer;
-  Arrival : Tdate;
-  Departure : Tdate;
 begin
   Reservation := kbmOpenInvoices.FieldByName('Reservation').AsInteger;
   RoomReservation := kbmOpenInvoices.FieldByName('RoomReservation').AsInteger;
-  Arrival := kbmOpenInvoices.FieldByName('Arrival').AsDateTime;
-  Departure := kbmOpenInvoices.FieldByName('departure').AsDateTime;
   EditInvoice(Reservation, RoomReservation, 0, 0, 0, 0, false, true,false);
 end;
 
@@ -1225,7 +1116,6 @@ var
   rset2 : TRoomerDataSet;
   ExecutionPlan : TRoomerExecutionPlan;
   s     : string;
-  count : integer;
 
   InvoiceNumber     : integer ;
   SplitNumber       : integer ;
@@ -1342,8 +1232,6 @@ begin
 //      copytoclipboard(s);
 //      debugmessage(s);
 
-      count :=0;
-
       ExecutionPlan.AddQuery(s);
      //////////////////// Execute!
       s := '';
@@ -1379,8 +1267,6 @@ begin
       rSet.First;
       while not rSet.Eof do
       begin
-        inc(count);
-
         InvoiceNumber     :=  rSet.FieldByName('InvoiceNumber').asinteger ;
 
         if invoiceNumber <> lastInvoiceNumber then

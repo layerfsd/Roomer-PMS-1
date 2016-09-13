@@ -280,12 +280,6 @@ type
 
     bookingDataSet: TRoomerDataset;
 
-    zDateFrom: Tdate;
-    zDateTo: Tdate;
-    zYear: Integer;
-    zMonth: Integer;
-    zSetDates: boolean;
-
     zTotalSale: Double;
     zTotalInvoicePayments: Double;
     zTotalDownPayments: Double;
@@ -302,7 +296,6 @@ type
     procedure UserSelectVisible(MakeVisible: boolean);
     function GetUserAsNormalList: String;
     function AllUsersSelected: boolean;
-    function GetActiveUsersAsList: String;
     procedure SelectActiveUsers;
   public
     { Public declarations }
@@ -773,33 +766,6 @@ begin
   ShellExecute(Handle, 'OPEN', PChar(sFilename + '.xls'), nil, nil, sw_shownormal);
 end;
 
-function TfrmRptCashier.GetActiveUsersAsList: String;
-var
-  Data: TRoomerDataset;
-  i: Integer;
-begin
-  result := '';
-  Data := CreateNewDataset;
-  try
-    if hData.rSet_bySQL(Data, format('SELECT DISTINCT staff ' + 'FROM ( ' + 'SELECT DISTINCT staff ' + 'FROM invoiceheads ' +
-      'WHERE InvoiceNumber>0 AND InvoiceDate=%s ' + 'UNION ALL ' + 'SELECT DISTINCT staff ' + 'FROM payments ' + 'WHERE PayDate=%s) aaa ',
-      [_db(DateToSqlString(dtDateFrom.Date)), _db(DateToSqlString(dtDateFrom.Date))])) then
-    begin
-      Data.First;
-      while NOT Data.Eof do
-      begin
-        if result = '' then
-          result := UpperCase(Data['Staff'])
-        else
-          result := result + ', ' + UpperCase(Data['Staff']);
-        Data.Next;
-      end;
-    end;
-  finally
-    Data.Free;
-  end;
-
-end;
 
 procedure TfrmRptCashier.SelectActiveUsers;
 var
@@ -841,7 +807,6 @@ end;
 procedure TfrmRptCashier.FillUsers;
 var
   Data: TRoomerDataset;
-  i: Integer;
 begin
   cbxStaff.Items.Clear;
   Data := CreateNewDataset;
@@ -882,8 +847,6 @@ end;
 procedure TfrmRptCashier.btnPaymentReportClick(Sender: TObject);
 var
   aReport: TppReport;
-  sFilter: string;
-  s: string;
   sortField: string;
   isDescending: boolean;
 begin
@@ -894,7 +857,6 @@ begin
   // kbmReport.LoadFromDataSet(tvGET.DataController.DataSource.DataSet,[mtcpoStructure]);
 
   sortField := 'LineType';
-  isDescending := false;
   kbmReport.SortedField := sortField;
 //  if not isDescending then
 //  begin
@@ -963,10 +925,6 @@ var
   invoicenumber: Integer;
   iRoomReservation: Integer;
   iReservation: Integer;
-
-  Arrival: Tdate;
-  Departure: Tdate;
-
 begin
   iReservation := kbmGet.FieldByName('Reservation').asinteger;
   iRoomReservation := kbmGet.FieldByName('RoomReservation').asinteger;
@@ -1159,7 +1117,6 @@ begin
   grReport.RowCount := 1;
 
   subTotalDebet := 0.00;
-  subTotalCredit := 0.00;
   totalDebet := 0.00;
   lastLineType := '';
   lastNumber := 0;

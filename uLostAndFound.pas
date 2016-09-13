@@ -194,7 +194,6 @@ type
     { Private declarations }
     zFirstTime       : boolean;
     zAllowGridEdit   : boolean;
-    zFilterOn        : boolean;
     zSortStr         : string;
     zIsAddRow        : boolean;
 
@@ -573,8 +572,8 @@ end;
 
 procedure TfrmLostAndFound.tvDataDescriptionPropertiesValidate(Sender: TObject;
   var DisplayValue: Variant; var ErrorText: TCaption; var Error: Boolean);
-var
-  CurrValue : string;
+//var
+//  CurrValue : string;
 begin
 //  currValue := m_.fieldbyname('Description').asstring;
 //

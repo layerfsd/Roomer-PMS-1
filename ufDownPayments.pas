@@ -266,7 +266,6 @@ type
       var AProperties: TcxCustomEditProperties);
     procedure ppHeaderBand1BeforePrint(Sender: TObject);
     procedure sButton3Click(Sender: TObject);
-    procedure ppReport2InitializeParameters(Sender: TObject; var aCancel: Boolean);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     { Private declarations }
@@ -286,7 +285,6 @@ type
     isFirstTime : boolean;
 
     procedure ShowData;
-    Procedure fillLocationsChkBox;
     procedure GetData;
     function getSortField: string;
 
@@ -400,51 +398,6 @@ begin
     cbxYear.ItemIndex := 0;
     cbxMonth.ItemIndex := 0;
   end;
-end;
-
-Procedure TfrmRptDownPayments.fillLocationsChkBox;
-var
-  s    : string;
-  rSet : TRoomerDataSet;
-begin
-//  rSet := CreateNewDataSet;
-//  try
-//    s:=
-//    'SELECT '#10+
-//    '     locations.ID '#10+
-//    '    ,locations.Active '#10+
-//    '    ,locations.Description '#10+
-//    '    ,locations.location '#10+
-//    '    ,locations.channelManager '#10+
-//    '    ,channelmanagers.Description AS channelManagerName '#10+
-//    ' FROM '#10+
-//    '    locations '#10+
-//    '    LEFT JOIN channelmanagers ON channelmanagers.id=locations.channelManager '#10+
-//    ' ORDER BY '#10+
-//    '   %s ';
-//
-//    s := format(s, ['Location']);
-//    if rSet_bySQL(rSet,s) then
-//    begin
-//      rSet.First;
-//      while not rSet.eof do
-//      begin
-//        cbxLocations.Items.Add(rSet.FieldByName('Description').asstring);
-//        rSet.next;
-//      end;
-//    end;
-//  finally
-//    freeandnil(rSet);
-//  end;
-end;
-
-
-
-
-procedure TfrmRptDownPayments.ppReport2InitializeParameters(Sender: TObject; var aCancel: Boolean);
-begin
-//  aReport.Groups[0].
-
 end;
 
 procedure TfrmRptDownPayments.brnGuestsReservationClick(Sender: TObject);
@@ -588,20 +541,12 @@ end;
 procedure TfrmRptDownPayments.GetData;
 var
   s    : string;
-  rset1,
-  rset2,
-  rset3 : TRoomerDataset;
+  rset1 : TRoomerDataset;
   ExecutionPlan : TRoomerExecutionPlan;
 
   startTick : integer;
   stopTick  : integer;
   SQLms     : integer;
-
-  statusIn : string;
-
-  dtTmp : TdateTime;
-
-  rvList : string;
 
 begin
   kbmPayments_.DisableControls;
@@ -696,8 +641,6 @@ begin
       end;
 
       stopTick         := GetTickCount;
-      SQLms            := stopTick - startTick;
-  //    sLabTime.Caption := inttostr(SQLms);
     finally
       ExecutionPlan.Free;
     end;
@@ -774,8 +717,6 @@ var
   iRoomReservation : integer;
   iReservation     : integer;
 
-  Arrival   : Tdate;
-  Departure : Tdate;
 
 begin
   InvoiceNumber := kbmPayments_.FieldByName('InvoiceNumber').AsInteger;
@@ -784,10 +725,6 @@ begin
     ViewInvoice2(InvoiceNumber, false, false, false,false, '');
   end else
   begin
-    iRoomReservation := 0;
-    iReservation := 0;
-    Arrival := Date;
-    Departure := Date;
     iReservation := kbmPayments_.FieldByName('Reservation').AsInteger;
     iRoomReservation := kbmPayments_.FieldByName('RoomReservation').AsInteger;
     EditInvoice(iReservation, iRoomReservation, 0, 0, 0, 0, false, true,false);
@@ -894,7 +831,6 @@ end;
 
 procedure TfrmRptDownPayments.btnEditClick(Sender: TObject);
 var
-  Reservation,RoomReservation,invoicenumber : integer;
   paymentID : integer;
 begin
   //***

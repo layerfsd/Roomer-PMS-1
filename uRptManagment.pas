@@ -265,7 +265,7 @@ begin
   cbxYear.ItemIndex := cbxYear.Items.IndexOf(inttostr(zYear));
 
   zDateFrom := encodeDate(y, m, 1);
-  lastDay := _DaysPerMonth(y, m);
+  lastDay := DaysInMonth(y, m);
   zDateTo := encodeDate(y, m, lastDay);
   dtDateFrom.Date := zDateFrom;
   dtDateTo.Date := zDateTo;
@@ -478,7 +478,7 @@ begin
   m := cbxMonth.ItemIndex;
 
   zDateFrom := encodeDate(y, m, 1);
-  lastDay := _DaysPerMonth(y, m);
+  lastDay := DaysInMonth(y, m);
   zDateTo := encodeDate(y, m, lastDay);
   dtDateFrom.Date := zDateFrom;
   dtDateTo.Date := zDateTo;

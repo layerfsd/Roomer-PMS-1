@@ -247,7 +247,7 @@ uses
   uAppGlobal,
   PrjConst,
   uRoomerLanguage
-
+  , DateUtils
   , uDImages;
 
 function RptCustInvoices : boolean;
@@ -269,7 +269,6 @@ end;
 procedure TfrmRptCustInvoices.ShowData;
 var
   y, m, d : word;
-  idx : integer;
   lastDay : integer;
 begin
 
@@ -286,7 +285,7 @@ begin
 //  end;
 
   zDateFrom := encodeDate(y, m, 1);
-  lastDay := _DaysPerMonth(y, m);
+  lastDay := DaysInAMonth(y, m);
   zDateTo := encodeDate(y, m, lastDay);
   dtDateFrom.Date := zDateFrom;
   dtDateTo.Date := zDateTo;
@@ -364,18 +363,13 @@ end;
 procedure TfrmRptCustInvoices.refresh;
 var
   s    : string;
-  rset1,
-  rset2,
-  rset3 : TRoomerDataset;
+  rset1 : TRoomerDataset;
   ExecutionPlan : TRoomerExecutionPlan;
 
   startTick : integer;
   stopTick  : integer;
   SQLms     : integer;
 
-  statusIn : string;
-
-  dtTmp : TdateTime;
 begin
     mInvoiceHeads.Close;
     mInvoiceHeads.open;
@@ -431,8 +425,6 @@ begin
     end;
 
     stopTick         := GetTickCount;
-    SQLms            := stopTick - startTick;
-//    sLabTime.Caption := inttostr(SQLms);
   finally
     ExecutionPlan.Free;
   end;
@@ -473,18 +465,13 @@ end;
 function TfrmRptCustInvoices.GetInvoicelist(customer : string) : string;
 var
   s    : string;
-  rset1,
-  rset2,
-  rset3 : TRoomerDataset;
+  rset1 : TRoomerDataset;
   ExecutionPlan : TRoomerExecutionPlan;
 
   startTick : integer;
   stopTick  : integer;
   SQLms     : integer;
 
-  statusIn : string;
-
-  dtTmp : TdateTime;
   invoicelist : string;
 
   lst : Tstringlist;
@@ -535,7 +522,6 @@ begin
         kbmTotal.EnableControls;
       end;
       stopTick         := GetTickCount;
-      SQLms            := stopTick - startTick;
     finally
       ExecutionPlan.Free;
     end;
@@ -563,7 +549,7 @@ begin
   m := cbxMonth.ItemIndex;
 
   zDateFrom := encodeDate(y, m, 1);
-  lastDay := _DaysPerMonth(y, m);
+  lastDay := DaysInAMonth(y, m);
   zDateTo := encodeDate(y, m, lastDay);
   dtDateFrom.Date := zDateFrom;
   dtDateTo.Date := zDateTo;
@@ -640,7 +626,6 @@ end;
 
 procedure TfrmRptCustInvoices.GetPaymentsTypes(rSet : TRoomerDataSet; invoiceNumber : integer; var PayTypes, PayTypeDescription, payGroups, payGroupDescription : string);
 var
-  s : string;
   PayType : string;
   PayGroup : string;
   bookmark : TBookmark;
@@ -876,8 +861,6 @@ begin
 //      copytoclipboard(s);
 //      debugmessage(s);
 
-      count :=0;
-
       ExecutionPlan.AddQuery(s);
      //////////////////// Execute!
       s := '';
@@ -916,8 +899,6 @@ begin
       rSet.First;
       while not rSet.Eof do
       begin
-        inc(count);
-
         InvoiceNumber     :=  rSet.FieldByName('InvoiceNumber').asinteger ;
 
         if invoiceNumber <> lastInvoiceNumber then

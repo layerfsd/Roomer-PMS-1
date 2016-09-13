@@ -409,7 +409,6 @@ end;
 function getPaymentInformation(information : String) : TDictionary<TBookingConfirmationEmailItems, String>;
 var splittedInformation : TStrings;
     status : String;
-  i: Integer;
 begin
   result := TDictionary<TBookingConfirmationEmailItems, String>.Create;
 

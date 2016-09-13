@@ -23,7 +23,6 @@ function RoomerMessageDialog(Const Msg: String; DlgType: TMsgDlgType; Buttons: T
 var
   AMsgDialog: TForm;
   ACheckBox: TCheckBox;
-  dlgButton: TButton;
   iWidth, CaptionIndex: Integer;
 begin
   if GetMessageDlgBooleanRegistryValue(DialogId) then
@@ -38,7 +37,6 @@ begin
     try
 //      Caption := Title;
       Height := 170;
-      CaptionIndex := 0;
       with ACheckBox do
       begin
         Parent := AMsgDialog;

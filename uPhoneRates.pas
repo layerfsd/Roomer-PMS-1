@@ -252,9 +252,7 @@ Procedure TfrmPhoneRates.fillGridFromDataset(sGoto : Integer);
 var
   s    : string;
   rSet : TRoomerDataSet;
-  active : boolean;
 begin
-  active := chkActive.Checked;
   zFirstTime := true;
   if zSortStr = '' then zSortStr := 'Identification ';
 
