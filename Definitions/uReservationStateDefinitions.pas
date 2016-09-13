@@ -162,7 +162,7 @@ end;
 function TReservationStateHelper.AsStatusChar: Char;
 const
   cReservationStateChars : Array[TReservationState] of char =
-      ('P','P','G','D','P','O','A','N','B','C','W','Z','X', 'Q', 'M', 'L');
+      ('P','P','G','D','R','O','A','N','B','C','W','Z','X', 'Q', 'M', 'L');
 begin
   Result := cReservationStateChars[Self];
 end;
@@ -190,7 +190,7 @@ begin
   if statusStr.IsEmpty then
     Result := rsUnKnown
   else
-    Result := FromResStatus(statusStr.Chars[1]);
+    Result := FromResStatus(statusStr.Chars[0]);
 end;
 
 function TReservationStateHelper.IsUserSelectable: boolean;

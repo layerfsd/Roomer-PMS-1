@@ -818,7 +818,7 @@ uses
   ufrmReservationExtras
   , uInvoiceContainer
   , uCurrencyHandler
-  ;
+  , uAccountTypeDefinitions;
 
 {$R *.DFM}
 
@@ -933,6 +933,7 @@ begin
     if zReservation > 0 then
     begin
       lBuilder.AppendFormat('    -    %s: %d', [GetTranslatedText('shTx_FrmReservationprofile_ReservationNumber'), zReservation]);
+      lBuilder.AppendFormat('/%d', [zRoomReservation]);
 
       lBuilder.AppendFormat('    -    %s: %s', [GetTranslatedText('shTx_FrmReservationprofile_Status'), FReservationChangeStateHandler.CurrentState.AsReadableString ]);
 
@@ -2167,6 +2168,8 @@ begin
       UpdateGuestDetails(zRoomReservation);
 
       UpdateStateActions;
+
+      ConstructFormCaption;
     end;
   end;
 end;
@@ -2232,7 +2235,7 @@ end;
 
 procedure TfrmReservationProfile.mRoomsisGroupAccountGetText(Sender: TField; var Text: string; DisplayText: Boolean);
 begin
-  Text := _AccountTypeToText(mRoomsisGroupAccount.AsBoolean);
+  Text := TAccountType.FromBool(Sender.AsBoolean).AsReadableString;
 end;
 
 procedure TfrmReservationProfile.mRoomsStatusGetText(Sender: TField; var Text: string; DisplayText: Boolean);
@@ -2551,9 +2554,6 @@ begin
 end;
 
 procedure TfrmReservationProfile.tvRoomsaccountTypeTextPropertiesChange(Sender: TObject);
-var
-  aBool: Boolean;
-  Value: string;
 begin
   try
     mRoomsisGroupAccount.AsBoolean := (TcxComboBox(Sender).ItemIndex = 1); // pos('Not', mRoomsBreakfastText.asString) = 0;
@@ -2845,13 +2845,28 @@ begin
   lNewStatus := TReservationState.FromItemIndex(TcxComboBox(Sender).ItemIndex);
 
   lStateChanger := FReservationChangeStateHandler.RoomStateChangeHandler[zRoomReservation];
-  if lStateChanger.ChangeState(lNewStatus) then
-  begin
-    mRoomsStatus.AsString := lNewStatus.AsStatusChar;
-    mRooms.Post
-  end
-  else
-    mRooms.Cancel;
+  try
+    if lStateChanger.ChangeState(lNewStatus) then
+    begin
+      mRooms.DisableControls;
+      try
+        mRoomsStatus.AsString := lNewStatus.AsStatusChar;
+        mRooms.Post
+      finally
+        mRooms.EnableControls;
+      end;
+    end
+    else
+      mRooms.Cancel;
+  except
+    on E: EInvalidReservationStateChange do
+    begin
+      MessageDlg(E.Message, mtError, [mbOK], 0);
+      mRooms.Cancel;
+    end
+    else
+      mRooms.Cancel;
+  end;
 
 end;
 

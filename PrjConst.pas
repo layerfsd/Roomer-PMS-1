@@ -923,6 +923,8 @@ begin
   constants.Add('shTx_FrmReservationprofile_BlockMoveReasonCaption', 'Reason for blocking the move of room ');
   constants.Add('shTx_FrmReservationprofile_PerNight', 'per night');
 
+  constants.Add('shTx_AccountType_GroupAccount', 'Group Account');
+  constants.Add('shTx_AccountType_RoomAccount', 'Room Account');
 
 
   constants.Add('shTx_RoomPricesEdit_RoomType', 'Room Type must be specified');

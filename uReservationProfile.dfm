@@ -1911,6 +1911,8 @@ object frmReservationProfile: TfrmReservationProfile
     SkinData.SkinSection = 'PAGECONTROL'
     object RoomsTab: TsTabSheet
       Caption = 'Rooms'
+      SkinData.CustomColor = False
+      SkinData.CustomFont = False
       object grRooms: TcxGrid
         Left = 0
         Top = 86

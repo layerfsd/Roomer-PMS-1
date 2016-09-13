@@ -296,6 +296,7 @@ procedure TRoomReservationStateChangeHandler.UpdateCurrentState;
 begin
   inherited;
   FCurrentState := TReservationState.FromResStatus( d.RR_GetStatus(FRoomReservation));
+  FCurrentStateDirty := False;
 end;
 
 function TBaseReservationStateChangeHandler.DispatchChangeHandler(aOldState,

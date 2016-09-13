@@ -88,13 +88,12 @@ end;
 function TAccountTypeHelper.AsReadableString : string;
 begin
   case Self of
-    atRoomAccount:     Result := GetTranslatedText('shTx_ReservationProfile_RoomAccount');
-    atGroupAccount:  Result := GetTranslatedText('shTx_ReservationProfile_GroupAccount');
+    atRoomAccount:     Result := GetTranslatedText('shTx_AccountType_RoomAccount');
+    atGroupAccount:  Result := GetTranslatedText('shTx_AccountType_GroupAccount');
   else
     Result := '';
   end;
 end;
-
 
 function TAccountTypeHelper.ToItemIndex: integer;
 begin
