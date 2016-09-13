@@ -302,11 +302,11 @@ begin
                 g.qNativeCurrency,
                 trim(_floatToStr(rri.OngoingSale, 12, 2)),
 
-                IIFS(rri.GroupAccount, '', g.qNativeCurrency),
-                IIFS(rri.GroupAccount, '<FONT color="#FF0000"><I>' + GetTranslatedText('shUI_OnGroupInvoice') + '</I></FONT>', trim(_floatToStr(rri.OngoingTaxes, 12, 2))),
+                IIF(rri.GroupAccount, '', g.qNativeCurrency),
+                IIF(rri.GroupAccount, '<FONT color="#FF0000"><I>' + GetTranslatedText('shUI_OnGroupInvoice') + '</I></FONT>', trim(_floatToStr(rri.OngoingTaxes, 12, 2))),
 
-                IIFS(rri.GroupAccount, '', g.qNativeCurrency),
-                IIFS(rri.GroupAccount, '<FONT color="#FF0000"><I>' + GetTranslatedText('shUI_OnGroupInvoice') + '</I></FONT>', trim(_floatToStr(rri.OngoingRent, 12, 2))),
+                IIF(rri.GroupAccount, '', g.qNativeCurrency),
+                IIF(rri.GroupAccount, '<FONT color="#FF0000"><I>' + GetTranslatedText('shUI_OnGroupInvoice') + '</I></FONT>', trim(_floatToStr(rri.OngoingRent, 12, 2))),
 
                 g.qNativeCurrency,
                 trim(_floatToStr(rri.Payments, 12, 2)),
@@ -314,8 +314,8 @@ begin
                 sColor1,
                 g.qNativeCurrency,
                 trim(_floatToStr(rri.OngoingSale +
-                                 IIFF(rri.GroupAccount, 0.00, rri.OngoingTaxes) +
-                                 IIFF(rri.GroupAccount, 0.00, rri.OngoingRent) -
+                                 IIF(rri.GroupAccount, 0.00, rri.OngoingTaxes) +
+                                 IIF(rri.GroupAccount, 0.00, rri.OngoingRent) -
                                  rri.Payments, 12, 2)),
                 sColor2
               ]);

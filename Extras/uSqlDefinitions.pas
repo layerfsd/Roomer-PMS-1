@@ -6093,9 +6093,9 @@ begin
       'JOIN channelmanagers cm ON cm.code=dpr.CHANNEL_MANAGER_ID ' +
       format('WHERE HOTEL_ID = ''%s'' ', [d.roomerMainDataSet.hotelId]) +
       format('AND END_DATE_RANGE > %s ', [_db(dateToSqlString(now))]) +
-      iifS(TRIM(chManCode) = '', '', format('AND CHANNEL_MANAGER_ID = ''%s'' ', [chManCode])) +
-      iifS(TRIM(channelCode) = '', '', format('AND CHANNEL_ID = ''%s'' ', [channelCode]))+
-      iifS(TRIM(RoomClass) = '', '', format('AND ROOMTYPEGROUP_CODE = ''%s'' ', [RoomClass])) +
+      iif(TRIM(chManCode) = '', '', format('AND CHANNEL_MANAGER_ID = ''%s'' ', [chManCode])) +
+      iif(TRIM(channelCode) = '', '', format('AND CHANNEL_ID = ''%s'' ', [channelCode]))+
+      iif(TRIM(RoomClass) = '', '', format('AND ROOMTYPEGROUP_CODE = ''%s'' ', [RoomClass])) +
       'ORDER BY START_DATE_RANGE';
 end;
 
@@ -6320,7 +6320,7 @@ begin
          ' RoomReservation IN (SELECT rd.RoomReservation ' +
          ' FROM roomsdate rd JOIN roomreservations rr ON rr.RoomReservation=rd.RoomReservation ' +
          ' WHERE (ResFlag NOT IN (''X'',''C'')) AND (rr.GroupAccount = 0 AND (PaidBy=%d OR (rd.RoomReservation=%d AND PaidBy=0))) ' +
-         IIFS(InvoiceIndex <> -1, ' AND rr.InvoiceIndex = ' + inttostr(InvoiceIndex), '') + ') ' + #13;
+         IIF(InvoiceIndex <> -1, ' AND rr.InvoiceIndex = ' + inttostr(InvoiceIndex), '') + ') ' + #13;
   end;
   result := s;
 end;

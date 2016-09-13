@@ -169,15 +169,6 @@ function FindVolumeSerial(const Drive : PChar) : string;
 function _FontToStr(Font : TFont) : string;
 function _StrToFont(S : string) : TFont;
 
-// String value back in one line
-function IIF(Condition : Boolean; Alfa, Beta : string) : string; overload;
-// Integer value back in one line
-function IIF(Condition : Boolean; Alfa, Beta : integer) : integer; overload;
-// Font value back in one line
-function IIF(Condition : Boolean; Alfa, Beta : TFont) : TFont; overload;
-// DateTime value back in one line
-function IIF(Condition : Boolean; Alfa, Beta : TdateTime) : TdateTime; overload;
-
 function _GetCurrentTick : string;
 function _GetCurrentTick2 : string;
 
@@ -1713,42 +1704,6 @@ begin
   GetVolumeInformation(Drive, nil, 0, @VolumeSerialNumber, MaximumComponentLength, FileSystemFlags, nil, 0);
   SerialNumber := IntToHex(HiWord(VolumeSerialNumber), 4) + '-' + IntToHex(LoWord(VolumeSerialNumber), 4);
   Result := SerialNumber;
-end;
-
-// String value back in one line
-function IIF(Condition : Boolean; Alfa, Beta : string) : string;
-begin
-  if Condition then
-    Result := Alfa
-  else
-    Result := Beta;
-end;
-
-// Integer value back in one line
-function IIF(Condition : Boolean; Alfa, Beta : integer) : integer;
-begin
-  if Condition then
-    Result := Alfa
-  else
-    Result := Beta;
-end;
-
-// Font value back in one line
-function IIF(Condition : Boolean; Alfa, Beta : TFont) : TFont;
-begin
-  if Condition then
-    Result := Alfa
-  else
-    Result := Beta;
-end;
-
-// DateTime value back in one line
-function IIF(Condition : Boolean; Alfa, Beta : TdateTime) : TdateTime; overload;
-begin
-  if Condition then
-    Result := Alfa
-  else
-    Result := Beta;
 end;
 
 // Font conversion to String

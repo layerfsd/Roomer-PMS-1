@@ -54,12 +54,14 @@ function Split(Text : String; Delimiter : String) : TStringList;
 function SplitStringToTStrings(const aSeparator, aString: String; aMax: Integer = 0): TStringList;
 procedure parseFirstAndLastNameFromFullname(Fullname : String; var firstName : String; var lastName : String);
 
-function iifS(condition : Boolean; TrueResult : String; FalseResult : String) : String;
-function iif(condition : Boolean; TrueResult : Integer; FalseResult : Integer) : Integer;
-function iiff(condition : Boolean; TrueResult : Double; FalseResult : Double) : Double;
-//function iif(condition : Boolean; TrueResult : Double; FalseResult : Double) : Double; overload;
-//function iif(condition : Boolean; TrueResult : Char; FalseResult : Char) : Char; overload;
-//function iif(condition : Boolean; TrueResult : Boolean; FalseResult : Boolean) : Boolean; overload;
+function iif(condition : Boolean; TrueResult : String; FalseResult : String) : String; overload;
+function iif(condition : Boolean; TrueResult : Integer; FalseResult : Integer) : Integer; overload;
+function iif(condition : Boolean; TrueResult : Double; FalseResult : Double) : Double; overload;
+
+// Font value back in one line
+function IIF(Condition : Boolean; Alfa, Beta : TFont) : TFont; overload;
+// DateTime value back in one line
+function IIF(Condition : Boolean; Alfa, Beta : TdateTime) : TdateTime; overload;
 
 procedure DuplicateCurrentRow(Dataset:Tdataset);
 
@@ -185,7 +187,7 @@ begin
   list.DelimitedText := text;
 end;
 
-function iifS(condition : Boolean; TrueResult : String; FalseResult : String) : String;
+function iif(condition : Boolean; TrueResult : String; FalseResult : String) : String;
 begin
   if condition then
     result := TrueResult
@@ -201,7 +203,7 @@ begin
     result := FalseResult;
 end;
 
-function iiff(condition : Boolean; TrueResult : Double; FalseResult : Double) : Double;
+function iif(condition : Boolean; TrueResult : Double; FalseResult : Double) : Double;
 begin
   if condition then
     result := TrueResult
@@ -209,29 +211,23 @@ begin
     result := FalseResult;
 end;
 
-//function iif(condition : Boolean; TrueResult : Double; FalseResult : Double) : Double;
-//begin
-//  if condition then
-//    result := TrueResult
-//  else
-//    result := FalseResult;
-//end;
-//
-//function iif(condition : Boolean; TrueResult : Char; FalseResult : Char) : Char;
-//begin
-//  if condition then
-//    result := TrueResult
-//  else
-//    result := FalseResult;
-//end;
-//
-//function iif(condition : Boolean; TrueResult : Boolean; FalseResult : Boolean) : Boolean;
-//begin
-//  if condition then
-//    result := TrueResult
-//  else
-//    result := FalseResult;
-//end;
+// Font value back in one line
+function IIF(Condition : Boolean; Alfa, Beta : TFont) : TFont;
+begin
+  if Condition then
+    Result := Alfa
+  else
+    Result := Beta;
+end;
+
+// DateTime value back in one line
+function IIF(Condition : Boolean; Alfa, Beta : TdateTime) : TdateTime; overload;
+begin
+  if Condition then
+    Result := Alfa
+  else
+    Result := Beta;
+end;
 
 
 procedure LoadRichEditFromString(RichEdit : TsRichEdit; text : AnsiString);
