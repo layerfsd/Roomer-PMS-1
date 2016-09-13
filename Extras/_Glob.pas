@@ -346,9 +346,7 @@ end;
 
 function _AddSlash(const S : string) : string;
 begin
-  Result := S;
-  if not Result.EndsWith('\') then
-    Result := Result + '\';
+  Result := IncludeTrailingPathDelimiter(s);
 end;
 
 function _text2numText(aText : string) : string;
