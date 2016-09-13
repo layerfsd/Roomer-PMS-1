@@ -167,7 +167,7 @@ begin
   zDateInfo := format(GetTranslatedText('shTx_CancelReservation2_GuestArrivalDeparture'),
                   [dateTostr(Arrival), dateToStr(Departure)]);
 
-  zResStatus := getAttivalText(zRoomreservation);
+  zResStatus := GetArrivalText(zRoomreservation);
 
   labRoomInfo.Caption     := zRoomInfo;
   labGuestInfo.Caption    := zGuestInfo;

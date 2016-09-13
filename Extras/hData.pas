@@ -1843,7 +1843,7 @@ procedure ins_delRoomReservationInfo_NOT_USED_ANYMORE(RoomReservation: integer; 
 function Room_GetRec(Room: string): recRoomInfo;
 function Customer_GetHolder(Customer: string): recCustomerHolderEX;
 
-Function GetAttivalText(RoomReservation: integer): string;
+Function GetArrivalText(RoomReservation: integer): string;
 
 function GetTelRoomInfo(device: string; var Room, Description: string; var doCharge: boolean): boolean;
 
@@ -6466,7 +6466,7 @@ begin
   end;
 end;
 
-function GetAttivalText(RoomReservation: integer): string;
+function GetArrivalText(RoomReservation: integer): string;
 var
   s: string;
   rSet: TRoomerDataSet;
@@ -6528,7 +6528,7 @@ begin
       ArrivalText := 'Arrival was ' + inttostr(abs(CheckIn)) + ' daysago.' + #10;
     end;
 
-    StatusText := _StatusToText(guestStatus);
+    StatusText := TReservationState.FromResStatus(guestStatus).AsReadableString;
     result := StatusText + ' - ' + ArrivalText;
   finally
     freeandnil(rSet);
