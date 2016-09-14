@@ -12,6 +12,7 @@ object frmRoomerLoginForm: TfrmRoomerLoginForm
   Font.Height = -10
   Font.Name = 'Tahoma'
   Font.Style = []
+  FormStyle = fsStayOnTop
   KeyPreview = True
   OldCreateOrder = False
   Position = poScreenCenter

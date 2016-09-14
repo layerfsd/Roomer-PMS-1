@@ -1746,7 +1746,7 @@ begin
   ShowRoomerSplash;
   frmRoomerSplash.PrepareBusyNotificator;
   LoggedIn := true;
-  CloseAppSettings;
+//  CloseAppSettings;
   OpenAppSettings;
   g.RefreshRoomList;
   // ******
@@ -1840,7 +1840,9 @@ begin
     panelHide.Height := ClientHeight;
     panelHide.Show;
     panelHide.BringToFront;
+//    Self.Enabled := false
   end;
+  CloseAppSettings;
 end;
 
 procedure TfrmMain.ReEnableFiltersInPeriodGrid;
@@ -4082,7 +4084,7 @@ var
   lRoom: TRoomObject;
 
 begin
-  if AppIsClosing then exit;
+  if AppIsClosing or panelHide.Visible OR (NOT d.roomerMainDataSet.LoggedIn) then exit;
   lastDate := 0;
   grOneDayRooms.BeginUpdate;
   try
@@ -5717,7 +5719,7 @@ var
   ii: Integer;
 
 begin
-  if AppIsClosing then exit;
+  if AppIsClosing or panelHide.Visible then exit;
 
   FreeRoomsFilterOn := FreeRoomsFiltered;
   PrepareFilterOrSearchDisplay(FreeRoomsFilterOn);
@@ -6403,7 +6405,7 @@ var
   iReservation, iRoom: integer;
   Rect: TRect;
 begin
-  if AppIsClosing then exit;
+  if AppIsClosing  or panelHide.Visible then exit;
   Rect := grOneDayRooms.CellRect(ACol, ARow);
   X := Rect.Left + 10;
   Y := Rect.Top + 10;
@@ -7053,7 +7055,7 @@ var
 
 begin
 
-  if AppIsClosing then exit;
+  if AppIsClosing or panelHide.Visible then exit;
 
   if not(ACol in c_ALL) then
     exit;

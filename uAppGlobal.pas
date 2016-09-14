@@ -1026,6 +1026,7 @@ var
   s    : string;
   Key : String;
   table : TTableEntity;
+  bTemp : Boolean;
 begin
   for Key in tablesList.Keys do
   begin
@@ -1059,31 +1060,32 @@ begin
 
   if NOT d.roomerMainDataSet.OfflineMode then
   begin
-    rSetFLoors := CreateNewDataSet;
-    try
-      s := 'SELECT DISTINCT Floor FROM rooms ORDER BY Floor';
-      hData.rSet_bySQL(rSetFLoors,s);
-      rSetFLoors.First;
-      while not rSetFLoors.eof do
-      begin
-        FRoomFloors.Add(rSetFloors['Floor']);
-        rSetFLoors.next;
-      end;
-    finally
-      freeandnil(rSetFLoors);
+//    rSetFLoors := CreateNewDataSet;
+//    try
+//      s := 'SELECT DISTINCT Floor FROM rooms ORDER BY Floor';
+//      hData.rSet_bySQL(rSetFLoors,s);
+//      rSetFLoors.First;
+//      while not rSetFLoors.eof do
+//      begin
+//        FRoomFloors.Add(rSetFloors['Floor']);
+//        rSetFLoors.next;
+//      end;
+//    finally
+//      freeandnil(rSetFLoors);
+//    end;
+
+    RoomsSet.First;
+    while not RoomsSet.eof do
+    begin
+      FRoomFloors.Add(RoomsSet['Floor']);
+      RoomsSet.next;
     end;
+    FRoomFloors.Sort;
 
     rSet := CreateNewDataSet;
     try
       rSet.CommandType := cmdText;
-      s := '';
-  //    s := s+ ' SELECT rt.RoomType, rt.NumberGuests FROM RoomTypes rt, Rooms r '+#10 ;
-  //    s := s+ ' WHERE r.bookable=1 '+#10;
-  //    s := s+ '  AND r.RoomType = rt.RoomType'+#10 ;
-
       s := format(select_GlobalSettings_LoadStaticTables, []);
-  //    CopyToClipboard(s);
-  //    DebugMessage('select_GlobalSettings_LoadStaticTables'#10#10+s);
       hData.rSet_bySQL(rSet,s);
 
       rSet.First;
@@ -1095,6 +1097,21 @@ begin
     finally
       freeandnil(rSet);
     end;
+
+    RoomTypesSet.First;
+    while not RoomTypesSet.eof do
+    begin
+      if LocateSpecificRecordAndGetValue('rooms', 'RoomType', RoomTypesSet.FieldByName( 'RoomType' ).AsString, 'Bookable', bTemp) AND bTemp then
+        AddRoomType( RoomTypesSet.FieldByName( 'RoomType' ).AsString,
+                     1,
+                     RoomTypesSet.FieldByName( 'NumberGuests' ).AsInteger);
+       RoomTypesSet.next;
+    end;
+
+//  ' SELECT rt.RoomType, rt.NumberGuests FROM roomtypes rt, rooms r '+
+//  ' WHERE r.bookable<>0 '+
+//  '  AND r.RoomType = rt.RoomType' ;
+
   end;
 end;
 
