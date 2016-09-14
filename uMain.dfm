@@ -435,12 +435,6 @@ object frmMain: TfrmMain
       object tabGuestList: TsTabSheet
         Caption = 'tabGuestList'
         ImageIndex = 9
-<<<<<<< Updated upstream
-        SkinData.CustomColor = False
-        SkinData.CustomFont = False
-        ExplicitWidth = 801
-=======
->>>>>>> Stashed changes
         object Panel3: TsPanel
           Left = 0
           Top = 0
@@ -450,10 +444,6 @@ object frmMain: TfrmMain
           BevelOuter = bvNone
           TabOrder = 0
           SkinData.SkinSection = 'TRANSPARENT'
-<<<<<<< Updated upstream
-          ExplicitWidth = 801
-=======
->>>>>>> Stashed changes
           object rgrGroupreportStayType: TsRadioGroup
             Left = 2
             Top = 4
@@ -1313,11 +1303,6 @@ object frmMain: TfrmMain
           OnMoved = splitPeriodMoved
           Color = 6842472
           ParentColor = False
-<<<<<<< Updated upstream
-          ExplicitTop = 159
-          ExplicitWidth = 801
-=======
->>>>>>> Stashed changes
         end
         object pnlPeriodNoRooms: TsPanel
           Left = 0

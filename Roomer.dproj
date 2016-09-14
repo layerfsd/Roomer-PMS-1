@@ -114,7 +114,7 @@
         <Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1)'!=''">
-        <VerInfo_Keys>CompanyName=Promoir BV;FileDescription=Roomer PMS;FileVersion=1.9.7.4;InternalName=;LegalCopyright=(C) 2013, 2014, 2015, 2016 Promoir BV;LegalTrademarks=Roomer is a Registered Trademark of Promoir BV;OriginalFilename=Roomer.exe;ProductName=Roomer Open Hospitality Platform;ProductVersion=1.9.6.2;Comments=;ExtraBuild=160902;PrivateBuild=</VerInfo_Keys>
+        <VerInfo_Keys>CompanyName=Promoir BV;FileDescription=Roomer PMS;FileVersion=1.9.7.4;InternalName=;LegalCopyright=(C) 2013, 2014, 2015, 2016 Promoir BV;LegalTrademarks=Roomer is a Registered Trademark of Promoir BV;OriginalFilename=Roomer.exe;ProductName=Roomer Open Hospitality Platform;ProductVersion=1.9.7.4;Comments=;ExtraBuild=160914;PrivateBuild=</VerInfo_Keys>
         <VerInfo_AutoGenVersion>false</VerInfo_AutoGenVersion>
         <VerInfo_Build>4</VerInfo_Build>
         <VerInfo_Release>7</VerInfo_Release>
@@ -143,14 +143,9 @@
         <DCC_Define>DEBUG;TRANSLATION_ACTIVE;TRANSLATION_EXCEPTIONS_ACTIVE;$(DCC_Define)</DCC_Define>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
-<<<<<<< Updated upstream
-        <VerInfo_Keys>CompanyName=Promoir BV;FileDescription=Roomer PMS;FileVersion=1.8.6.23;InternalName=;LegalCopyright=(C) 2013, 2014, 2015, 2016 Promoir BV;LegalTrademarks=Roomer is a Registered Trademark of Promoir BV;OriginalFilename=Roomer.exe;ProductName=Roomer Open Hospitality Platform;ProductVersion=1.9.6.2;Comments=;ExtraBuild=160704;PrivateBuild=</VerInfo_Keys>
-        <VerInfo_Build>23</VerInfo_Build>
-=======
         <DCC_DebugDCUs>true</DCC_DebugDCUs>
         <VerInfo_Keys>CompanyName=Promoir BV;FileDescription=Roomer PMS;FileVersion=1.8.6.36;InternalName=;LegalCopyright=(C) 2013, 2014, 2015, 2016 Promoir BV;LegalTrademarks=Roomer is a Registered Trademark of Promoir BV;OriginalFilename=Roomer.exe;ProductName=Roomer Open Hospitality Platform;ProductVersion=1.9.6.2;Comments=;ExtraBuild=160704;PrivateBuild=</VerInfo_Keys>
         <VerInfo_Build>36</VerInfo_Build>
->>>>>>> Stashed changes
         <DCC_Define>ROOMERSSL;$(DCC_Define)</DCC_Define>
         <Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
         <DCC_SYMBOL_DEPRECATED>false</DCC_SYMBOL_DEPRECATED>
@@ -766,12 +761,7 @@
             <Form>frmPaymentReqRoomtypeGroup</Form>
             <FormType>dfm</FormType>
         </DCCReference>
-<<<<<<< Updated upstream
         <DCCReference Include="uRptHouseKeeping.pas"/>
-=======
-        <DCCReference Include="Definitions\uBreakfastStateDefinitions.pas"/>
-        <DCCReference Include="Definitions\uAccountTypeDefinitions.pas"/>
->>>>>>> Stashed changes
         <None Include="Roomer.todo"/>
         <None Include="notes.txt"/>
         <None Include="Roomer.inc"/>
