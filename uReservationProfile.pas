@@ -2165,13 +2165,15 @@ begin
       memRoomNotes.Lines.text := HiddenInfo;
       memRequestFromChannel.Lines.text := ChannelRequest;
 
-      UpdateGuestDetails(zRoomReservation);
-
-      UpdateStateActions;
-
-      ConstructFormCaption;
     end;
   end;
+  if not Dataset.ControlsDisabled then
+  begin
+    UpdateGuestDetails(zRoomReservation);
+    UpdateStateActions;
+    ConstructFormCaption;
+  end;
+
 end;
 
 
@@ -2517,16 +2519,16 @@ begin
 
     SetBreakfastItemindex(sBreakfast);
     SetPaymentDetailItemindex(sPaymentdetails);
-
     mRooms.Locate('RoomReservation', gotoRoomReservation, []);
-
   finally
+    mRooms.EnableControls;
     mRooms.AfterScroll := lSavedAfterScroll;
     mRooms.BeforePost := lSavedBeforePost;
-    mRooms.EnableControls;
     rSet.Free;
     screen.Cursor := crDefault;
   end;
+  if assigned (mRooms.AfterScroll) then
+    mRooms.AfterScroll(mRooms);
 end;
 
 procedure TfrmReservationProfile.UpdateGuestDetails(gotoRoomReservation: integer);
@@ -3573,7 +3575,7 @@ end;
 procedure TfrmReservationProfile.btnMainGuestSelectProfileClick(Sender: TObject);
 begin
   SelectMainGuestProfile;
-  Update;
+  UpdateGuestDetails(mRoomsRoomReservation.AsInteger);
 end;
 
 procedure TfrmReservationProfile.PageNotesChange(Sender: TObject);

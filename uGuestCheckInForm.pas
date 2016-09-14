@@ -151,6 +151,7 @@ type
     procedure edFirstnameKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure cbActiveLiveSearchClick(Sender: TObject);
     procedure cbxMarketChange(Sender: TObject);
+    procedure edCountryChange(Sender: TObject);
   private
     FisCheckIn: Boolean;
     FCurrencyhandler: TCurrencyHandler;
@@ -503,6 +504,15 @@ begin
         edCity.Text := glb.PreviousGuestsSet['Address4'];
     end;
   end;
+end;
+
+procedure TFrmGuestCheckInForm.edCountryChange(Sender: TObject);
+begin
+  if glb.LocateCountry(edCountry.Text) then
+    lbCountryName.Caption := glb.Countries['CountryName'] // GET_CountryName(sValue);
+  else
+    lbCountryName.Caption := GetTranslatedText('shNotF_star');
+  EnableOrDisableOKButton;
 end;
 
 procedure TFrmGuestCheckInForm.edFirstnameCloseUp(Sender: TObject);
