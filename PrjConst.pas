@@ -716,6 +716,7 @@ begin
   constants.Add('shTx_HouseKeeping_RoomStatusDate', 'Room Status - Date : %s');
 
   constants.Add('shTx_Housekeepinglist_Departure', 'Departure');
+  constants.Add('shTx_Housekeepinglist_Arriving', 'Arriving');
   constants.Add('shTx_Housekeepinglist_StayOver', 'Stayover');
 
   constants.Add('shTx_Invoice_SaveInvoice', 'Save invoice and room price changes?');

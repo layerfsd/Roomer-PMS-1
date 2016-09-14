@@ -1849,6 +1849,8 @@ object frmReservationProfile: TfrmReservationProfile
                 TabOrder = 0
                 OnExit = memRoomNotesExit
                 SkinData.SkinSection = 'EDIT'
+                ExplicitLeft = 3
+                ExplicitTop = 14
               end
             end
             object gbChannelInformation: TsGroupBox

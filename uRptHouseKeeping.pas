@@ -16,11 +16,12 @@ uses
   dxPSEdgePatterns, dxPSPDFExportCore, dxPSPDFExport, cxDrawTextUtils, dxPSPrVwStd, dxPSPrVwAdv, dxPSPrVwRibbon,
   dxPScxPageControlProducer, dxPScxEditorProducers, dxPScxExtEditorProducers, dxSkinsdxBarPainter,
   dxSkinsdxRibbonPainter, dxServerModeData, dxServerModeDBXDataSource, dxPSCore, dxPScxGridLnk, dxPScxGridLayoutViewLnk,
-  dxPScxCommon
+  dxPScxCommon, cxMemo, cxLabel, ppStrtch, ppMemo
+  , uRoomerForm, cxSpinEdit
   ;
 
 type
-  TfrmHouseKeepingReport = class(TForm)
+  TfrmHouseKeepingReport = class(TfrmBaseRoomerForm)
     FormStore: TcxPropertiesStore;
     kbmHouseKeepingList: TkbmMemTable;
     HouseKeepingListDS: TDataSource;
@@ -28,37 +29,9 @@ type
     btnRefresh: TsButton;
     pnlExportButtons: TsPanel;
     btnExcel: TsButton;
-    dxStatusBar: TdxStatusBar;
     grHouseKeepingList: TcxGrid;
     lvHouseKeepingListLevel1: TcxGridLevel;
     grHouseKeepingListDBTableView1: TcxGridDBTableView;
-    cxStyleRepository1: TcxStyleRepository;
-    cxStyle1: TcxStyle;
-    plHouseKeepingList: TppDBPipeline;
-    rptHouseKeeping: TppReport;
-    ppHeaderBand1: TppHeaderBand;
-    ppLabel4: TppLabel;
-    ppLabel5: TppLabel;
-    rlabFrom: TppLabel;
-    rLabHotelName: TppLabel;
-    rlabUser: TppLabel;
-    rLabTimeCreated: TppLabel;
-    ppLine11: TppLine;
-    ppDetailBand1: TppDetailBand;
-    ppLine2: TppLine;
-    ppFooterBand1: TppFooterBand;
-    ppSystemVariable1: TppSystemVariable;
-    ppLabel8: TppLabel;
-    ppDesignLayers1: TppDesignLayers;
-    ppDesignLayer1: TppDesignLayer;
-    ppParameterList1: TppParameterList;
-    btnReport: TsButton;
-    ppLabel1: TppLabel;
-    ppDBText1: TppDBText;
-    ppLabel2: TppLabel;
-    ppDBText2: TppDBText;
-    kbmHouseKeepingReport: TkbmMemTable;
-    dsHouseKeepingReport: TDataSource;
     gbxSelection: TsGroupBox;
     dtDate: TsDateEdit;
     cbxLocations: TsComboBox;
@@ -73,30 +46,9 @@ type
     grHouseKeepingListDBTableView1roomtype: TcxGridDBColumn;
     grHouseKeepingListDBTableView1floor: TcxGridDBColumn;
     grHouseKeepingListDBTableView1expectedcot: TcxGridDBColumn;
-    grHouseKeepingListDBTableView1status: TcxGridDBColumn;
-    kbmHouseKeepingReportroom: TStringField;
     kbmHouseKeepingListroom: TStringField;
-    kbmHouseKeepingReportroomtype: TStringField;
-    kbmHouseKeepingReportfloor: TIntegerField;
-    kbmHouseKeepingReportnumberguests: TIntegerField;
-    kbmHouseKeepingReportexpectedcot: TTimeField;
-    kbmHouseKeepingReportstatus: TStringField;
-    ppLabel3: TppLabel;
-    ppDBText3: TppDBText;
-    ppLabel6: TppLabel;
-    ppDBText4: TppDBText;
-    ppLabel7: TppLabel;
-    ppDBText5: TppDBText;
-    ppLabel9: TppLabel;
-    ppDBText6: TppDBText;
-    ppLine1: TppLine;
     kbmHouseKeepingListlocation: TStringField;
     grHouseKeepingListDBTableView1location: TcxGridDBColumn;
-    kbmHouseKeepingReportlocation: TStringField;
-    grHouseKeepingListDBTableView1numguests: TcxGridDBColumn;
-    ppLabel10: TppLabel;
-    ppDBText7: TppDBText;
-    cxPropertiesStore1: TcxPropertiesStore;
     gridPrinter: TdxComponentPrinter;
     gridPrinterLink1: TdxGridReportLink;
     btnPrintGrid: TsButton;
@@ -115,27 +67,29 @@ type
     cxStyle12: TcxStyle;
     cxStyle13: TcxStyle;
     cxStyle14: TcxStyle;
-    procedure FormCreate(Sender: TObject);
-    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-    procedure FormShow(Sender: TObject);
+    grHouseKeepingListDBTableView1Roomnotes: TcxGridDBColumn;
+    kbmHouseKeepingListRoomnotes: TMemoField;
+    kbmHouseKeepingListArrivingGuests: TIntegerField;
+    kbmHouseKeepingListexpectedtoa: TTimeField;
+    grHouseKeepingListDBTableView1LastGuests: TcxGridDBColumn;
+    grHouseKeepingListDBTableView1ArrivingGuests: TcxGridDBColumn;
+    grHouseKeepingListDBTableView1housekeepingstatus: TcxGridDBColumn;
+    grHouseKeepingListDBTableView1expectedtoa: TcxGridDBColumn;
     procedure btnExcelClick(Sender: TObject);
     procedure btnRefreshClick(Sender: TObject);
     procedure kbmHouseKeepingListAfterScroll(DataSet: TDataSet);
-   procedure btnReportClick(Sender: TObject);
-    procedure ppHeaderBand1BeforePrint(Sender: TObject);
     procedure btnPrintGridClick(Sender: TObject);
+    procedure grHouseKeepingListDBTableView1ArrivingGuestsGetDisplayText(Sender: TcxCustomGridTableItem;
+      ARecord: TcxCustomGridRecord; var AText: string);
   private
     FRefreshingdata: boolean;
-    { Private declarations }
-    procedure UpdateControls;
-    procedure RefreshData;
+   { Private declarations }
     function ConstructSQL: string;
     procedure UpdateLocations;
   protected
-    procedure WndProc(var message: TMessage); override;
+    procedure UpdateControls; override;
+    procedure LoadData; override;
   public
-    constructor Create(aOwner: TComponent); override;
-    destructor Destroy; override;
     { Public declarations }
   end;
 
@@ -169,33 +123,54 @@ uses
   , _Glob;
 
 const
-  cSQL = 'select * from '#10+
-    '(select '#10+
-	  'r.room,      '#10+
-    'r.roomtype,   '#10+
-    'r.floor,      '#10+
-    'l.description as location,    '#10+
-    '(select count(*) from persons p where p.roomreservation = rr.RoomReservation)  + rr.numChildren + rr.numInfants as NumGuests, '#10+
-//    'max(rr.arrival), '#10+
-//    'min(rr.departure), '#10+
-    'max(rr.ExpectedCheckOutTime) as expectedCOT, '#10+
- //   'min(rr.ExpectedTimeOfArrival), '#10+
-    ' case '#10+
-		'   when (departure = {probedate}) then {departure} '#10+
-    '   when (arrival < {probedate} and departure > {probedate}) then {stayover}  '#10+
-	  ' end as Status '#10+
-    'from '#10+
-	  'rooms r '#10+
-    '  JOIN roomtypes rt on rt.roomtype=r.roomtype '#10+
-	  '  JOIN roomsdate rd on rd.room = r.room and rd.resFlag  not in (''C'', ''D'') and rd.aDate between date_sub({probedate}, interval 1 day) and {probedate}  '#10+
-    '  JOIN roomreservations rr on rd.roomreservation=rr.roomreservation '#10+
-    '  JOIN locations l on l.Location=r.location '#10+
-    ' group by room, roomtype, floor, numberguests '#10+
-    ' order by floor, room) x '#10+
-    ' where not status is null ';
-
-
-  WM_REFRESH_DATA = WM_User + 53;
+  cSQL =
+      '	select * '#10+
+      '	from '#10+
+      '	( '#10+
+      '	select '#10+
+      '	 r.room, '#10+
+      '	 r.roomtype, '#10+
+      '	 r.floor, '#10+
+      '	 l.description as location, '#10+
+      '	 coalesce(departing.NumGuestsD, stayover.NumGuestsS) as LastGuests, '#10+
+      '	 arriving.NumGuestsA as ArrivingGuests, '#10+
+      '	 departing.ExpectedCheckOutTime as expectedCOT, '#10+
+      '	 arriving.ExpectedTimeOfArrival as expectedTOA, '#10+
+      '	 arriving.hiddeninfo as Roomnotes, '#10+
+      '	 case '#10+
+      '	   when (not IsNUll(departing.room) and not IsNull(arriving.room)) then CONCAT({departure}, '' + '', {arrival}) '#10+
+      '	   when (not IsNUll(departing.room)) then {departure} '#10+
+      '	   when (not IsNUll(arriving.room)) then {arrival} '#10+
+      '	   when (not IsnUll(stayover.room)) then {stayover} '#10+
+      '	 end as HousekeepingStatus '#10+
+      '	 -- , min(rdnext.aDate) as NextArrival '#10+
+      '	 -- , min(rrnext.arrival) as rrNextArrival '#10+
+      '	 -- , rdnext.roomreservation as NextRoomreservation '#10+
+      '	from '#10+
+      '	  rooms r '#10+
+      '	  JOIN roomtypes rt on rt.roomtype=r.roomtype '#10+
+      '	  JOIN locations l on l.Location=r.location '#10+
+      ' '#10+
+      '	  LEFT OUTER JOIN ( SELECT * '#10+
+      '			 , (select count(*) from persons p where p.roomreservation = rrd.RoomReservation)  + rrd.numChildren + rrd.numInfants as NumGuestsD '#10+
+      '	         FROM roomreservations rrd '#10+
+      '			 where rrd.status not in (''C'', ''D'') and rrd.departure = {probedate} '#10+
+      '			) departing on departing.room = r.room '#10+
+      ' '#10+
+      '		LEFT OUTER JOIN ( SELECT * '#10+
+      '			 , (select count(*) from persons p where p.roomreservation = rra.RoomReservation)  + rra.numChildren + rra.numInfants as NumGuestsA '#10+
+      '	         FROM roomreservations rra '#10+
+      '			 where rra.status not in (''C'', ''D'') and rra.arrival= {probedate} '#10+
+      '			) arriving on arriving.room = r.room '#10+
+      ' '#10+
+      '		LEFT OUTER JOIN ( SELECT * '#10+
+      '			 , (select count(*) from persons p where p.roomreservation = rrs.RoomReservation)  + rrs.numChildren + rrs.numInfants as NumGuestsS '#10+
+      '	         FROM roomreservations rrs '#10+
+      '			 where rrs.status not in (''C'', ''D'') and rrs.arrival < {probedate} and rrs.departure > {probedate} '#10+
+      '			) stayover on stayover.room=r.room '#10+
+      '	 group by room, roomtype, floor, numberguests '#10+
+      '	 order by floor, room ) x '#10+
+      '	 where not x.HousekeepingStatus is null ';
 
 
 function ShowHouseKeepingReport(aDate: TDateTime):  boolean;
@@ -225,74 +200,28 @@ end;
 
 procedure TfrmHouseKeepingReport.btnRefreshClick(Sender: TObject);
 begin
-  postMessage(handle, WM_REFRESH_DATA, 0, 0);
+  RefreshData;
 end;
 
-procedure TfrmHouseKeepingReport.btnReportClick(Sender: TObject);
-begin
-
-  kbmHouseKeepingReport.LoadFromDataSet(kbmHouseKeepingList, []);
-
-  if frmRptbViewer <> nil then
-    freeandNil(frmRptbViewer);
-  frmRptbViewer := TfrmRptbViewer.Create(frmRptbViewer);
-  try
-    screen.Cursor := crHourglass;
-    try
-      frmRptbViewer.ppViewer1.Reset;
-      frmRptbViewer.ppViewer1.Report := rptHouseKeeping;
-      frmRptbViewer.ppViewer1.GotoPage(1);
-      rptHouseKeeping.PrintToDevices;
-    finally
-      screen.Cursor := crDefault;
-    end;
-
-    frmRptbViewer.showmodal;
-
-  finally
-    FreeAndNil(frmRptbViewer);
-  end;
-end;
 
 function TfrmHouseKeepingReport.ConstructSQL: string;
 begin
   Result := ReplaceString(cSQL, '{probedate}', _db(dtDate.Date));
   Result := ReplaceString(Result, '{departure}', _db(GetTranslatedText('shTx_Housekeepinglist_Departure')));
+  Result := ReplaceString(Result, '{arrival}', _db(GetTranslatedText('shTx_Housekeepinglist_Arriving')));
   Result := ReplaceString(Result, '{stayover}', _db(GetTranslatedText('shTx_Housekeepinglist_Stayover')));
   if cbxLocations.ItemIndex >= 0 then
     Result := Result + ' AND location = ' + _db(cbxLocations.Text);
   CopyToClipboard(Result);
 end;
 
-constructor TfrmHouseKeepingReport.Create(aOwner: TComponent);
+
+procedure TfrmHouseKeepingReport.grHouseKeepingListDBTableView1ArrivingGuestsGetDisplayText(
+  Sender: TcxCustomGridTableItem; ARecord: TcxCustomGridRecord; var AText: string);
 begin
   inherited;
+  if aText = '0'then aText := '';
 end;
-
-destructor TfrmHouseKeepingReport.Destroy;
-begin
-  inherited;
-end;
-
-procedure TfrmHouseKeepingReport.FormCreate(Sender: TObject);
-begin
-  RoomerLanguage.TranslateThisForm(self);
-  glb.PerformAuthenticationAssertion(self);
-  PlaceFormOnVisibleMonitor(self);
-end;
-
-procedure TfrmHouseKeepingReport.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-begin
-  if Key = VK_ESCAPE then
-    Close;
-end;
-
-procedure TfrmHouseKeepingReport.FormShow(Sender: TObject);
-begin
-  UpdateControls;
-  postMessage(handle, WM_REFRESH_DATA, 0, 0);
-end;
-
 
 procedure TfrmHouseKeepingReport.kbmHouseKeepingListAfterScroll(DataSet: TDataSet);
 begin
@@ -300,31 +229,12 @@ begin
 end;
 
 
-procedure TfrmHouseKeepingReport.ppHeaderBand1BeforePrint(Sender: TObject);
-var
-  s : string;
-begin
-
-  rlabFrom.Caption := DateToStr(dtDate.Date);
-
-  s := g.qHotelName;
-  rLabHotelName.Caption := s;
-
-  s := DateTimeToStr(now);
-  s := GetTranslatedText('shTx_NationalReport_Created') + s;
-  rLabTimeCreated.Caption := s;
-
-  s := GetTranslatedText('shTx_NationalReport_User') + g.qUser;
-  if g.qusername <> '' then
-    s := s + ' - ' + g.qusername;
-  rlabUser.Caption := s;
-end;
-
-procedure TfrmHouseKeepingReport.RefreshData;
+procedure TfrmHouseKeepingReport.LoadData;
 var
   s    : string;
   rset1: TRoomerDataset;
 begin
+  inherited;
   if NOT btnRefresh.Enabled then exit;
 
   btnRefresh.Enabled := False;
@@ -371,10 +281,11 @@ begin
 end;
 
 procedure TfrmHouseKeepingReport.UpdateControls;
-
 begin
   if FRefreshingData then
     Exit;
+
+  inherited;
 
   UpdateLocations;
 end;
@@ -401,13 +312,6 @@ begin
     cbxLocations.ItemIndex := -1
   else
     cbxLocations.ItemIndex := cbxLocations.Items.IndexOf(lCurrentSelection);
-end;
-
-procedure TfrmHouseKeepingReport.WndProc(var message: TMessage);
-begin
-  if message.Msg = WM_REFRESH_DATA then
-    RefreshData;
-  inherited WndProc(message);
 end;
 
 end.
