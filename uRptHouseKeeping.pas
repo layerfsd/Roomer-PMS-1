@@ -75,6 +75,10 @@ type
     grHouseKeepingListDBTableView1ArrivingGuests: TcxGridDBColumn;
     grHouseKeepingListDBTableView1housekeepingstatus: TcxGridDBColumn;
     grHouseKeepingListDBTableView1expectedtoa: TcxGridDBColumn;
+    kbmHouseKeepingListmaintenancenotes: TMemoField;
+    kbmHouseKeepingListcleaningnotes: TMemoField;
+    grHouseKeepingListDBTableView1maintenancenotes: TcxGridDBColumn;
+    grHouseKeepingListDBTableView1cleaningnotes: TcxGridDBColumn;
     procedure btnExcelClick(Sender: TObject);
     procedure btnRefreshClick(Sender: TObject);
     procedure kbmHouseKeepingListAfterScroll(DataSet: TDataSet);
@@ -137,19 +141,20 @@ const
       '	 departing.ExpectedCheckOutTime as expectedCOT, '#10+
       '	 arriving.ExpectedTimeOfArrival as expectedTOA, '#10+
       '	 arriving.hiddeninfo as Roomnotes, '#10+
+      '	 rm.CleaningNotes, '#10+
+      '	 rm.MaintenanceNotes, '#10+
       '	 case '#10+
       '	   when (not IsNUll(departing.room) and not IsNull(arriving.room)) then CONCAT({departure}, '' + '', {arrival}) '#10+
       '	   when (not IsNUll(departing.room)) then {departure} '#10+
       '	   when (not IsNUll(arriving.room)) then {arrival} '#10+
       '	   when (not IsnUll(stayover.room)) then {stayover} '#10+
+      '    when (r.Status in (''U'', ''R'')) then (Select name from maintenancecodes mc where mc.code= r.Status) '#10+
       '	 end as HousekeepingStatus '#10+
-      '	 -- , min(rdnext.aDate) as NextArrival '#10+
-      '	 -- , min(rrnext.arrival) as rrNextArrival '#10+
-      '	 -- , rdnext.roomreservation as NextRoomreservation '#10+
       '	from '#10+
       '	  rooms r '#10+
       '	  JOIN roomtypes rt on rt.roomtype=r.roomtype '#10+
       '	  JOIN locations l on l.Location=r.location '#10+
+      '   LEFT JOIN maintenanceroomnotes rm ON rm.Room=r.Room '#10+
       ' '#10+
       '	  LEFT OUTER JOIN ( SELECT * '#10+
       '			 , (select count(*) from persons p where p.roomreservation = rrd.RoomReservation)  + rrd.numChildren + rrd.numInfants as NumGuestsD '#10+
