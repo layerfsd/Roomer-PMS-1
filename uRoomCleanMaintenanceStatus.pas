@@ -99,6 +99,9 @@ var
 begin
   // --
   result := false;
+  dsRoom := nil;
+  dsCodes := nil;
+  dsNotes := nil;
   Application.CreateForm(TfrmRoomCleanMaintenanceStatus, frmRoomCleanMaintenanceStatus);
   try
     dsRoom := createNewDataSet;
@@ -217,6 +220,9 @@ begin
 
 
   finally
+    dsRoom.Free;
+    dsCodes.Free;
+    dsNotes.Free;
     frmRoomCleanMaintenanceStatus.free;
   end;
 end;
