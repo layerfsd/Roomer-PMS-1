@@ -400,6 +400,8 @@ var
   '   ,Currency '+
   '   ,Description '+
   '   ,AValue '+
+  '   ,SellValue '+
+  '   ,CurrencySign '+
   '   ,Active '+
   '   ,displayFormat '+
   '   ,decimals '+

@@ -7258,7 +7258,7 @@ begin
   s := '';
   s := s + ' UPDATE currencies ' + #10;
   s := s + ' SET ' + #10;
-  s := s + '   , Description =' + _db(theData.Description) + ' ' + #10;
+  s := s + '     Description =' + _db(theData.Description) + ' ' + #10;
   s := s + '   , Avalue =' + _db(theData.Value) + ' ' + #10;
   s := s + '   , Decimals =' + _db(theData.Decimals) + ' ' + #10;
   s := s + '   , DisplayFormat=' + _db(theData.Displayformat) + ' ' + #10;
@@ -7290,12 +7290,12 @@ begin
   s := s + 'INSERT INTO currencies ' + #10;
   s := s + '   ( ' + #10;
   s := s + '   currency ' + #10;
-  s := s + '  ,description ' + #10;
-  s := s + '  ,AValue ' + #10;
+  s := s + '  ,Description ' + #10;
   s := s + '  ,AValue ' + #10;
   s := s + '  ,SellValue' + #10;
   s := s + '  ,Decimals ' + #10;
   s := s + '  ,DisplayFormat ' + #10;
+  s := s + '  ,Active ' + #10;
   s := s + '   ) ' + #10;
   s := s + '    VALUES ' + #10;
   s := s + '   ( ' + #10;

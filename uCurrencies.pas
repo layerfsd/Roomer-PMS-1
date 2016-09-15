@@ -168,6 +168,8 @@ type
     m_decimals: TIntegerField;
     tvDatadisplayformat: TcxGridDBColumn;
     tvDatadecimals: TcxGridDBColumn;
+    m_SellValue: TFloatField;
+    m_CurrencySign: TStringField;
     procedure FormCreate(Sender: TObject);
     procedure btnCancelClick(Sender: TObject);
     procedure btnInsertClick(Sender: TObject);
@@ -393,8 +395,8 @@ begin
   begin
     tvDataCurrency.Options.Editing       := false;
     tvDataDescription.Options.Editing    := false;
-    tvDataAValue.Options.Editing         := true;
-    tvDataActive.Options.Editing         := true;
+    tvDataAValue.Options.Editing         := false;
+    tvDataActive.Options.Editing         := false;
   end;
 end;
 
