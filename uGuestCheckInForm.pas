@@ -89,7 +89,6 @@ type
     sButton5: TsButton;
     lbPayment: TsLabel;
     rptForm: TfrxReport;
-    dsForm: TfrxDBDataset;
     frxDesigner1: TfrxDesigner;
     sLabel32: TsLabel;
     edTitle: TsEdit;
@@ -132,6 +131,7 @@ type
     lblMarket: TsLabel;
     cbxMarket: TsComboBox;
     shpMarket: TShape;
+    dsForm: TfrxDBDataset;
     procedure FormCreate(Sender: TObject);
     procedure cbxGuaranteeTypesCloseUp(Sender: TObject);
     procedure FormShow(Sender: TObject);
