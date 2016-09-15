@@ -1827,6 +1827,11 @@ begin
   end;
   LoggedIn := false;
   d.roomerMainDataSet.LoggedIn := False;
+  EmptyStringGrid(grPeriodRooms);
+  EmptyStringGrid(grOneDayRooms);
+  EmptyStringGrid(grdRoomStatusses);
+  EmptyStringGrid(grdRoomClasses);
+  EmptyStringGrid(grPeriodRooms_NO);
   try
     EnterDayView;
   except
@@ -3300,6 +3305,7 @@ begin
     RestoreCurrentFont
   except
   end;
+  panelHide.Hide;
   RefreshOneDayGrid;
 
   cbxNameOrder.ItemIndex := g.qNameOrder;
