@@ -7288,12 +7288,12 @@ begin
   s := s + 'INSERT INTO currencies ' + #10;
   s := s + '   ( ' + #10;
   s := s + '   currency ' + #10;
-  s := s + '  ,description ' + #10;
-  s := s + '  ,AValue ' + #10;
+  s := s + '  ,Description ' + #10;
   s := s + '  ,AValue ' + #10;
   s := s + '  ,SellValue' + #10;
   s := s + '  ,Decimals ' + #10;
   s := s + '  ,DisplayFormat ' + #10;
+  s := s + '  ,Active ' + #10;
   s := s + '   ) ' + #10;
   s := s + '    VALUES ' + #10;
   s := s + '   ( ' + #10;

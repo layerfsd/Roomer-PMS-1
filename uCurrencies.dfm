@@ -242,7 +242,6 @@ object frmCurrencies: TfrmCurrencies
       Align = alClient
       TabOrder = 3
       LookAndFeel.NativeStyle = False
-      ExplicitLeft = -3
       ExplicitTop = 88
       object tvData: TcxGridDBTableView
         OnDblClick = tvDataDblClick
@@ -292,7 +291,7 @@ object frmCurrencies: TfrmCurrencies
           DataBinding.FieldName = 'Currency'
           PropertiesClassName = 'TcxTextEditProperties'
           Properties.CharCase = ecUpperCase
-          Properties.ReadOnly = True
+          Properties.ReadOnly = False
           Properties.ValidateOnEnter = True
           Properties.OnValidate = tvDataCurrencyPropertiesValidate
           Width = 66
@@ -372,7 +371,7 @@ object frmCurrencies: TfrmCurrencies
     end
     object m_CurrencySign: TStringField
       FieldName = 'CurrencySign'
-      Size = 5
+      Size = 6
     end
   end
   object mnuOther: TPopupMenu

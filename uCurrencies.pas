@@ -395,8 +395,8 @@ begin
   begin
     tvDataCurrency.Options.Editing       := false;
     tvDataDescription.Options.Editing    := false;
-    tvDataAValue.Options.Editing         := true;
-    tvDataActive.Options.Editing         := true;
+    tvDataAValue.Options.Editing         := false;
+    tvDataActive.Options.Editing         := false;
   end;
 end;
 

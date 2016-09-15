@@ -404,6 +404,7 @@ var
   '   ,Description '+
   '   ,AValue '+
   '   ,SellValue '+
+  '   ,CurrencySign '+
   '   ,Active '+
   '   ,displayFormat '+
   '   ,decimals '+
