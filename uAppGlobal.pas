@@ -1022,7 +1022,7 @@ end;
 
 procedure TGlobalSettings.LoadStaticTables(startingUp : Boolean = False);
 var
-  rSet, rSetFLoors : TRoomerDataSet;
+  rSet: TRoomerDataSet;
   s    : string;
   Key : String;
   table : TTableEntity;

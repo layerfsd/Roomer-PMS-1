@@ -13,6 +13,11 @@ type
   THttpResultCode = integer;
 
   TRoomerHttpClient = class(TALWinInetHTTPClient)
+  private
+    function GetContentType: string;
+    procedure SetContentType(const Value: string);
+    function GetAcceptEncoding: string;
+    procedure SetAcceptEncoding(const Value: string);
   protected
   public
     constructor Create(aOwner: TComponent); override;
@@ -22,6 +27,9 @@ type
     function PostWithStatus(const aUrl:String; aPostDataStream: TStream; var aResponse: String): THttpResultCode;
     function PutWithStatus(const aURL: String; aPutDataStream: TStream; var aResponse: String): THttpResultCode;
     procedure Execute(const aRequestDataStream: TStream; aResponseContentStream: TStream; aResponseContentHeader: TALHTTPResponseHeader); override;
+
+    property ContentType: string read GetContentType write SetContentType;
+    property AcceptEncoding: string read GetAcceptEncoding write SetAcceptEncoding;
   end;
 
 implementation
@@ -45,13 +53,13 @@ begin
   with RequestHeader.CustomHeaders do
   begin
     Clear;
-    Add(format('%s: %s', ['hotel', ahotel]));
-    Add(format('%s: %s', ['Username', aUser]));
-    Add(format('%s: %s', ['Password', aPassword]));
-    Add(format('%s: %s', ['AppName', aAppName]));
-    Add(format('%s: %s', ['AppVersion', aAppVersion]));
-    Add(format('%s: %s', ['DatasetType', '0']));
-    Add(format('%s: %s', ['ExtraBuild', aExtraBuild]));
+    Add(AnsiString(format('%s: %s', ['hotel', ahotel])));
+    Add(AnsiString(format('%s: %s', ['Username', aUser])));
+    Add(AnsiString(format('%s: %s', ['Password', aPassword])));
+    Add(AnsiString(format('%s: %s', ['AppName', aAppName])));
+    Add(AnsiString(format('%s: %s', ['AppVersion', aAppVersion])));
+    Add(AnsiString(format('%s: %s', ['DatasetType', '0'])));
+    Add(AnsiString(format('%s: %s', ['ExtraBuild', aExtraBuild])));
   end;
 
 end;
@@ -73,7 +81,7 @@ function TRoomerHttpClient.DeleteWithStatus(const aURL: String; var aResponse: S
 begin
   Result := -1;
   try
-    aResponse := inherited Delete(aURL);
+    aResponse := String(inherited Delete(AnsiString(aURL)));
     Result := 200;
   except
     on E: EALHTTPClientException do
@@ -91,11 +99,11 @@ procedure TRoomerHttpClient.Execute(const aRequestDataStream: TStream; aResponse
 var
   lOldCursor: TCursor;
 begin
+  lOldCursor := SCreen.cursor;
+
   if RunningInMainThread then
-  begin
-    lOldCursor := SCreen.cursor;
     Screen.Cursor := crHourGlass;
-  end;
+
   try
     inherited;
   finally
@@ -104,11 +112,21 @@ begin
   end;
 end;
 
+function TRoomerHttpClient.GetAcceptEncoding: string;
+begin
+  Result := String(RequestHeader.AcceptEncoding);
+end;
+
+function TRoomerHttpClient.GetContentType: string;
+begin
+  Result := string(RequestHeader.ContentType);
+end;
+
 function TRoomerHttpClient.GetWithStatus(const aUrl: String; var aResponse: String): THttpResultCode;
 begin
   Result := -1;
   try
-    aResponse := inherited Get(aURL);
+    aResponse := String(inherited Get(AnsiString(aURL)));
     Result := 200;
   except
     on E: EALHTTPClientException do
@@ -126,7 +144,7 @@ function TRoomerHttpClient.PostWithStatus(const aUrl: String; aPostDataStream: T
 begin
   Result := -1;
   try
-    aResponse := inherited Post(aURL, aPostDataStream);
+    aResponse := String(inherited Post(AnsiString(aURL), aPostDataStream));
     Result := 200;
   except
     on E: EALHTTPClientException do
@@ -144,7 +162,7 @@ function TRoomerHttpClient.PutWithStatus(const aURL: string; aPutDataStream: TSt
 begin
   Result := -1;
   try
-    aResponse := inherited Put(aURL, aPutDataStream);
+    aResponse := String(inherited Put(AnsiString(aURL), aPutDataStream));
     Result := 200;
   except
     on E: EALHTTPClientException do
@@ -155,6 +173,16 @@ begin
     else
       raise;
   end;
+end;
+
+procedure TRoomerHttpClient.SetAcceptEncoding(const Value: string);
+begin
+  RequestHeader.AcceptEncoding := AnsiString(Value);
+end;
+
+procedure TRoomerHttpClient.SetContentType(const Value: string);
+begin
+  RequestHeader.ContentType := AnsiString(value);
 end;
 
 end.

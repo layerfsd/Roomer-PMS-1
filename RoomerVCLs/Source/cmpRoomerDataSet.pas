@@ -2,45 +2,20 @@ unit cmpRoomerDataSet;
 
 interface
 
-{$include roomer.inc}
+{$INCLUDE roomer.inc}
 
 uses
-  WinApi.Windows,
-  WinInet,
-  Vcl.Forms,
   System.SysUtils,
-
   System.Classes,
-  IdBaseComponent,
-  IdHeaderList,
-  IdComponent,
-  IdTCPConnection,
-  IdTCPClient,
-  IdGlobal,
-  IdHTTP,
-  IdIOHandler,
-  IdIOHandlerSocket,
-  IdIOHandlerStack,
   Data.DB,
   Data.Win.ADODB,
-  ADOInt,
-  Web.HTTPApp,
-  Variants,
   uAPIDataHandler,
-  RoomerMultipartFormData,
-  ALWininetHttpClient,
   AlHttpCommon,
-  ALHttpClient,
   MSXML2_TLB,
-  IdSSL,
-  IdSSLOpenSSL,
   RoomerCloudEntities,
   Generics.Collections,
-  Vcl.Dialogs,
-  ActiveX,
-  DateUtils,
-  uStringUtils,
-  uRoomerHttpClient;
+  uRoomerHttpClient
+  ;
 
 const
   ftTemplate = $0000;
@@ -57,7 +32,7 @@ type
   ERoomerExecutionPlanException = class(Exception);
 
   TRoomerDataSet = class;
-  TRoomerDatasetList = TObjectList<TRoomerDataset>;
+  TRoomerDatasetList = TObjectList<TRoomerDataSet>;
 
   SET_OF_TRoomerDataSet = Array OF TObject;
   SET_OF_String = Array OF String;
@@ -80,7 +55,7 @@ type
     constructor Create(_planType: Integer; _sql: String);
   end;
 
-  TRoomerPlanEntityList = TObjectlist<TRoomerPlanEntity>;
+  TRoomerPlanEntityList = TObjectList<TRoomerPlanEntity>;
 
   TRoomerHotelsEntity = class
   public
@@ -116,30 +91,27 @@ type
 
     procedure Clear;
 
-    function Execute(PlanType: Integer = ptAll; transaction: Boolean = false;
-      performRollBackOnException: Boolean = false): Boolean;
+    function Execute(PlanType: Integer = ptAll; transaction: boolean = false;
+      performRollBackOnException: boolean = false): boolean;
 
-    property Results[index: Integer]: TRoomerDataSet
-      read GetResultRoomerDataSet;
-    property RoomerDataSet: TRoomerDataSet read FRoomerDataSet
-      write FRoomerDataSet;
+    property Results[index: Integer]: TRoomerDataSet read GetResultRoomerDataSet;
+    property RoomerDataSet: TRoomerDataSet read FRoomerDataSet write FRoomerDataSet;
     property QueryCount: Integer read GetQueryCount;
     property ExecCount: Integer read GetExecCount;
     property Count: Integer read GetCount;
     property ExecException: String read FExecException;
   end;
 
-  THotelsEntityList =  TObjectList<TRoomerHotelsEntity>;
+  THotelsEntityList = TObjectList<TRoomerHotelsEntity>;
 
   TRoomerDataSet = class(TADODataSet)
   private
     FRoomerDataSet: TRoomerDataSet;
-    { Private declarations }
     FSavedLastResult: String;
     FSavedResult: _Recordset;
     FUri: String;
     FSql: TStringList;
-    FDataActive: Boolean;
+    FDataActive: boolean;
     FOpenApiUri: String;
     FRoomerEntitiesUri: String;
     FRoomerDatasetsUri: String;
@@ -147,7 +119,7 @@ type
 
     FroomerClient: TRoomerHttpClient;
 {$IFDEF USE_INDY}IdSSLIOHandlerSocketOpenSSL1: TIdSSLIOHandlerSocketOpenSSL;
-    {$ENDIF}
+{$ENDIF}
     FCommandType: TCommandType;
     FSessionLengthSeconds: Integer;
     FLastAccess: TDateTime;
@@ -157,79 +129,49 @@ type
     FApplicationID: String;
     FAppSecret: String;
     FAppKey: String;
-    FOfflineMode: Boolean;
-    FLoggedIn: Boolean;
+    FOfflineMode: boolean;
+    FLoggedIn: boolean;
     function GetCommandText: String;
     procedure SetCommandText(const Value: String);
     procedure SetCommandType(const Value: TCommandType);
     function GetUri: String;
     procedure SetUri(const Value: String);
-    procedure SetDataActive(const Value: Boolean);
-    function ProvideFieldValue(Field: TField; iMaxSize : Integer): String;
-    procedure SetSessionLengthInSeconds(xmlSource: String);
-    procedure GetFieldText(Sender: TField; var Text: string;
-      DisplayText: Boolean);
-    function loginViaPost(url, Data: String;
-      SetLastAccess: Boolean = true): String;
+    procedure SetDataActive(const Value: boolean);
+    function ProvideFieldValue(Field: TField; iMaxSize: Integer): String;
+    procedure SetSessionLengthInSeconds(const xmlSource: String);
+    procedure GetFieldText(Sender: TField; var Text: string; DisplayText: boolean);
+    function loginViaPost(const url, Data: String; SetLastAccess: boolean = true): String;
     function getHotelsList: THotelsEntityList;
-    procedure SetAuthHeaders(hdrs:
-      {$IFDEF USE_INDY}TIdHeaderList{$ELSE}TAlHttpRequestHeader{$ENDIF};
-      hotel, user, password: String);
+    function GetAsString(const url: String; const contentType: String = ''; force: boolean = false): String;
 
-    function GetAsString(roomerClient:
-      TRoomerHttpClient
-      ; url: String; contentType: String = ''; force : Boolean = False): String;
-
-    function PostAsString(roomerClient:
-      TRoomerHttpClient
-      ; url, Data: String; contentType: String = ''): String;
-    function PostAsStringAsync(roomerClient:
-      TRoomerHttpClient
-      ; url, Data: String; contentType: String = ''): String;
-    function DownloadFile(roomerClient:
-      TRoomerHttpClient
-      ; url, filename: String): Boolean;
-    procedure AddAuthenticationHeaders(roomerClient: TRoomerHttpClient ); deprecated 'Use TRoomerHttpClients.AddAuthenticationHeaders';
-    function UploadFile(roomerClient:
-      TRoomerHttpClient
-      ; url, filename: String): Boolean;
-//    function GetAsJSON(roomerClient:
-//      TRoomerHttpClient
-//      ; url: String): String;
-    function PostAsJSON(roomerClient:
-      TRoomerHttpClient
-      ; url, Data: String): String;
-    function PutAsJSON(roomerClient:
-      TRoomerHttpClient
-      ; url, Data: String): String;
-    function DeleteAsString(roomerClient:
-      TRoomerHttpClient
-      ; url: String): String;
+    function PostAsString(const url, Data: String; const contentType: String = ''): String;
+    function PostAsStringAsync(const url, Data: String; const contentType: String = ''): String;
+    function DownloadFile(aRoomerClient: TRoomerHttpClient; const url, filename: String): boolean;
+    procedure AddAuthenticationHeaders(aRoomerClient: TRoomerHttpClient);
+    function UploadFile(aRoomerClient: TRoomerHttpClient; const url, filename: String): boolean;
+    function PostAsJSON(const url, Data: String): String;
+    function PutAsJSON(const url, Data: String): String;
+    function DeleteAsString(const url: String): String;
     function GetOpenApiUri: String;
     procedure SetOpenApiUri(const Value: String);
-    function downloadUrlAsStringUsingPut(url: String; Data: String;
-      SetLastAccess: Boolean = true;
+    function downloadUrlAsStringUsingPut(const url: String; const Data: String; SetLastAccess: boolean = true;
       loggingInOut: Integer = 0 { 0/1/2 = neither/login/logout }
-      ; contentType: String = ''
-      ; retryOnError : Boolean = true): String;
-    function PutAsString(roomerClient:
-      TRoomerHttpClient
-      ; url, Data: String; contentType: String = ''
-      ; retryOnError : Boolean = true): String;
-    function PostStreamAsString(roomerClient:
-      TRoomerHttpClient
-      ; url: String; Data: TStream; contentType: String = ''): String;
+      ; const contentType: String = ''; retryOnError: boolean = true): String;
+    function PutAsString(const url, Data: String; const contentType: String = ''; retryOnError: boolean = true): String;
+    function PostStreamAsString(const url: String; Data: TStream; const contentType: String = ''): String;
     procedure SetOpenApiAuthHeaders(hdrs:
-      {$IFDEF USE_INDY}TIdHeaderList{$ELSE}TAlHttpRequestHeader{$ENDIF});
-//    function GetOpenAPIResourcePath(Endpoint, URI: String): String;
-    procedure SetOfflineMode(const Value: Boolean);
-    procedure AssertOnlineMode(param : TRoomerOfflineAssertonParameter = roapGet; aSql : String = '');
-    function GetFilenameFromParameter(param : TRoomerOfflineAssertonParameter) : String;
+{$IFDEF USE_INDY}TIdHeaderList{$ELSE}TAlHttpRequestHeader{$ENDIF});
+    // function GetOpenAPIResourcePath(Endpoint, URI: String): String;
+    procedure SetOfflineMode(const Value: boolean);
+    procedure AssertOnlineMode(param: TRoomerOfflineAssertonParameter = roapGet; const aSql: String = '');
+    function GetFilenameFromParameter(param: TRoomerOfflineAssertonParameter): String;
     function GetParameterTypeName(param: TRoomerOfflineAssertonParameter): String;
     procedure DoSessionExpired;
-    procedure SetSpecificOpenApiAuthHeaders(hdrs: TAlHttpRequestHeader; AppKey, ApplicationId, AppSecret: String; tim : Extended);
-    function downloadUrlAsStringUsingPostThreaded(url: String; Data: String; SetLastAccess: Boolean = true; loggingInOut: Integer = 0 { 0/1/2 = neither/login/logout }; contentType: String = ''): String;
-    function FreeQueryThreaded(query : String; SetLastAccess : boolean = true): String;
+    procedure SetSpecificOpenApiAuthHeaders(hdrs: TAlHttpRequestHeader; AppKey, ApplicationId, AppSecret: String;
+      tim: Extended);
+    function downloadUrlAsStringUsingPostThreaded(const url: String; const Data: String; SetLastAccess: boolean = true;
+      loggingInOut: Integer = 0 { 0/1/2 = neither/login/logout }; const contentType: String = ''): String;
+    function FreeQueryThreaded(const query: String; SetLastAccess: boolean = true): String;
   protected
     { Protected declarations }
     FUsername: String;
@@ -248,94 +190,83 @@ type
     function CreateRoomerClient(aAddAuthenticationHeader: boolean = false): TRoomerHttpClient;
     function GetFloatValue(Field: TField): Double;
     procedure Post; override;
-    procedure OpenDataset(SqlResult: String);
+    procedure OpenDataset(const SqlResult: String);
     procedure DoQuery(aSql: String);
-    function DoCommand(aSql: String; async : Boolean = false): Integer;
-    procedure Open(doLowerCase: Boolean = true; setLastAccess: Boolean = true; Threaded: Boolean = False);
+    function DoCommand(aSql: String; async: boolean = false): Integer;
+    procedure Open(doLowerCase: boolean = true; SetLastAccess: boolean = true; Threaded: boolean = false);
     procedure GetMessages;
-    function GetTableUpdateTimeStamps : boolean;
+    function GetTableUpdateTimeStamps: boolean;
 
-    function PutData(url, Data : String) : String;
-    function PostData(url, Data : String) : String;
+    function PutData(url, Data: String): String;
+    function PostData(url, Data: String): String;
     function DeleteData(url: String): String;
 
     function SplitMultipleResultIntoDatasets(res: String): TList<TRoomerDataSet>;
 
     procedure SetTimeZoneComparedToUTC(tz: String);
 
-    function IsConnectedToInternet: Boolean;
-    function RoomerPlatformAvailable: Boolean;
+    function IsConnectedToInternet: boolean;
+    function RoomerPlatformAvailable: boolean;
 
     procedure markMessageAsRead(id: Integer);
     function KeepSessionAlive: String;
 
-    function ReLogin: Boolean;
-    function Login(hotelId: String; username: String; password: String;
-      appName: String; appVersion: String; RightRangeMin: Integer = 90;
-      RightRangeMax: Integer = 100): Boolean;
-    function RoomerAdminLogin(username: String; password: String;
-      appName: String; appVersion: String): Boolean;
+    function ReLogin: boolean;
+    function Login(hotelId: String; username: String; password: String; appName: String; appVersion: String;
+      RightRangeMin: Integer = 90; RightRangeMax: Integer = 100): boolean;
+    function RoomerAdminLogin(username: String; password: String; appName: String; appVersion: String): boolean;
     procedure Logout;
     procedure LogoutUnaffected;
-    function MyIpAddress : String;
+    function MyIpAddress: String;
     function SyncFinanceTables: String;
-    function SwapHotel(hotelId: String; var username, password: String)
-      : Boolean;
+    function SwapHotel(hotelId: String; var username, password: String): boolean;
 
     function CreateExecutionPlan: TRoomerExecutionPlan;
 
     function SendConfirmationEmailOpenAPI(Reservation: Integer): String;
-    function SendEmailOpenAPI(subject : UTF8String; from, recipient, cc, bcc : String; _text, _htmlText : UTF8String; files : TStringList): String;
+    function SendEmailOpenAPI(subject: UTF8String; from, recipient, cc, bcc: String; _text, _htmlText: UTF8String;
+      files: TStringList): String;
 
     function HashedPassword(password: String): String;
-    function SystemDownloadFileFromURI(URI, filename: String): Boolean;
-    function SystemUploadFile(filename: String; FileType: word;
-      includeLastModified: Boolean = true): Boolean;
-    function SystemDownloadFile(FileType: word;
-      sourceFilename, destFilename: String): Boolean;
-    function SystemDownloadRoomerFile(sourceFilename,
-      destFilename: String): Boolean;
+    function SystemDownloadFileFromURI(URI, filename: String): boolean;
+    function SystemUploadFile(filename: String; FileType: word; includeLastModified: boolean = true): boolean;
+    function SystemDownloadFile(FileType: word; sourceFilename, destFilename: String): boolean;
+    function SystemDownloadRoomerFile(sourceFilename, destFilename: String): boolean;
 
     procedure SystemMarkReservationAsNotified(id: Integer);
-    function SystemDownloadRoomerBackup(destFilename: String): Boolean;
+    function SystemDownloadRoomerBackup(destFilename: String): boolean;
     function SystemRoomerFile(filename: String): TFileEntity;
     function SystemListFiles(FileType: word): TFileList;
-    function SystemDeleteFile(FileType: word; filename: String): Boolean;
-    function SystemRenameFile(FileType: word;
-      filename, newFilename: String): Boolean;
-    function SystemFileExists(FileType: word; filename: String): Boolean;
+    function SystemDeleteFile(FileType: word; filename: String): boolean;
+    function SystemRenameFile(FileType: word; filename, newFilename: String): boolean;
+    function SystemFileExists(FileType: word; filename: String): boolean;
     procedure SystemPrepareChannelRates;
 
     function PostOpenAPI(url: String; Data: TStream): String;
     function DeleteFileResourceOpenAPI(URI: String): String;
     function PostFileOpenAPI(url, filename, keyString: String; FileType: String;
-      privateResource: Boolean = true): String;
-    function DownloadFileResourceOpenAPI(URI, destFilename: String): Boolean;
+      privateResource: boolean = true): String;
+    function DownloadFileResourceOpenAPI(URI, destFilename: String): boolean;
     function HeadOfURI(URI: String): TALHTTPResponseHeader;
 
-    function queryRoomer(aSql: String; SetLastAccess: Boolean = true; Threaded : Boolean = False): String;
-    function downloadUrlAsString(url: String; loggingInOut: Integer = 0;
-      SetLastAccess: Boolean = true; contentType: String = ''; RaiseException : Boolean = False): String;
-    function downloadUrlAsStringUsingPost(url: String; Data: String;
-      SetLastAccess: Boolean = true;
+    function queryRoomer(aSql: String; SetLastAccess: boolean = true; Threaded: boolean = false): String;
+    function downloadUrlAsString(url: String; loggingInOut: Integer = 0; SetLastAccess: boolean = true;
+      contentType: String = ''; RaiseException: boolean = false): String;
+    function downloadUrlAsStringUsingPost(url: String; Data: String; SetLastAccess: boolean = true;
       loggingInOut: Integer = 0 { 0/1/2 = neither/login/logout }
       ; contentType: String = ''): String;
-    function downloadUrlAsStringUsingPostAsync(url: String; Data: String;
-      SetLastAccess: Boolean = true;
+    function downloadUrlAsStringUsingPostAsync(url: String; Data: String; SetLastAccess: boolean = true;
       loggingInOut: Integer = 0 { 0/1/2 = neither/login/logout }
       ; contentType: String = ''): String;
-    function downloadRoomerUrlAsString(url: String;
-      SetLastAccess: Boolean = true): String;
+    function downloadRoomerUrlAsString(url: String; SetLastAccess: boolean = true): String;
 
     function UrlEncode(source: string): string;
     procedure AssignToDataset(SqlResult: String; DataSet: TRoomerDataSet);
 
     function SecondsLeft: Integer;
-    function GetAttributeValue(Node: IXMLDomNode;
-      AttribName, defaultValue: String): String;
+    function GetAttributeValue(Node: IXMLDomNode; AttribName, defaultValue: String): String;
 
-    function RegisterApplication(hotelId, username, password,
-      appId: String): String;
+    function RegisterApplication(hotelId, username, password, appId: String): String;
 
     // ******************************************************
 
@@ -344,51 +275,43 @@ type
     function CreateNewDataset: TRoomerDataSet;
     procedure AssignPropertiesToDataSet(DataSet: TRoomerDataSet);
 
-    function CloneToRecordset: _RecordSet;
+    function CloneToRecordset: _Recordset;
 
-    function OfflineFilesAvailable(_hotelId : String = ''): Boolean;
+    function OfflineFilesAvailable(_hotelId: String = ''): boolean;
 
-   // For testing purposes...
-    function TestSpecificOpenApiAuthHeaders(AppKey, ApplicationId, AppSecret, url : String; tim : Extended = 0) : String;
+    // For testing purposes...
+    function TestSpecificOpenApiAuthHeaders(AppKey, ApplicationId, AppSecret, url: String; tim: Extended = 0): String;
 
     property hotels: THotelsEntityList read getHotelsList;
 
-    property OfflineMode : Boolean read FOfflineMode write SetOfflineMode;
-    property LoggedIn : Boolean read FLoggedIn write FLoggedIn;
+    property OfflineMode: boolean read FOfflineMode write SetOfflineMode;
+    property LoggedIn: boolean read FLoggedIn write FLoggedIn;
     property RoomerDataSet: TRoomerDataSet read FRoomerDataSet write FRoomerDataSet;
 
   published
     { Published declarations }
     property SavedLastResult: String read FSavedLastResult;
     property Sql: TStringList read FSql;
-    property DataActive: Boolean read FDataActive write SetDataActive;
+    property DataActive: boolean read FDataActive write SetDataActive;
     property RoomerStoreUri: String read FStoreUri write FStoreUri;
     property OpenApiUri: String read GetOpenApiUri write SetOpenApiUri;
     property RoomerUri: String read GetUri write SetUri;
-    property RoomerEntitiesUri: String read FRoomerEntitiesUri
-      write FRoomerEntitiesUri;
-    property RoomerDatasetsUri: String read FRoomerDatasetsUri
-      write FRoomerDatasetsUri;
+    property RoomerEntitiesUri: String read FRoomerEntitiesUri write FRoomerEntitiesUri;
+    property RoomerDatasetsUri: String read FRoomerDatasetsUri write FRoomerDatasetsUri;
 
-{$IFDEF USE_INDY}
-    property roomerClient: TIdHTTP read FroomerClient;
-{$ELSE}
     property roomerClient: TRoomerHttpClient read FroomerClient;
-{$ENDIF}
-    property OnSessionExpired: TNotifyEvent read FOnSessionExpired
-      write FOnSessionExpired;
+
+    property OnSessionExpired: TNotifyEvent read FOnSessionExpired write FOnSessionExpired;
     property CommandText: String read GetCommandText write SetCommandText;
     property CommandType: TCommandType read FCommandType write SetCommandType;
-    property SessionLengthSeconds: Integer read FSessionLengthSeconds
-      write FSessionLengthSeconds;
+    property SessionLengthSeconds: Integer read FSessionLengthSeconds write FSessionLengthSeconds;
     property NumberOfAffectedRows: Integer read FNumberOfAffectedRows;
-    property hotelId: String read FHotelId write FHotelID;
+    property hotelId: String read FHotelId write FHotelId;
     property username: String read FUsername write FUsername;
     property password: String read FPassword write FPassword;
-    property ParentRoomerDataSet: TRoomerDataSet read FRoomerDataSet
-      write FRoomerDataSet;
+    property ParentRoomerDataSet: TRoomerDataSet read FRoomerDataSet write FRoomerDataSet;
 
-    property ApplicationID: String read FApplicationID write FApplicationID;
+    property ApplicationId: String read FApplicationID write FApplicationID;
     property AppKey: String read FAppKey write FAppKey;
     property AppSecret: String read FAppSecret write FAppSecret;
 
@@ -396,25 +319,44 @@ type
 
   end;
 
-
 procedure Register;
 
 implementation
 
 uses
-  JSonManager, md5hash, ALfcnString, uDateUtils, idMultiPartFormData,
-  GoogleOTP256, uRoomerExceptions, IOUtils, uFileSystemUtils, uFloatUtils;
+  JSonManager,
+  md5hash,
+  uDateUtils,
+  idMultiPartFormData,
+  GoogleOTP256,
+  uRoomerExceptions,
+  IOUtils,
+  uFileSystemUtils,
+  uFloatUtils,
+   Vcl.Dialogs,
+  DateUtils,
+  uStringUtils,
+  WinApi.Windows,
+  WinInet,
+  Vcl.Forms,
+  IdHTTP,
+  ADOInt,
+  Variants,
+  RoomerMultipartFormData,
+  ALWininetHttpClient,
+  ALHttpClient,
+  IdSSLOpenSSL
+  ;
 
 resourcestring
   PROMOIR_ROOMER_HOTEL_IDENTIFIER = 'Promoir-Roomer-Hotel-Identifier';
   PROMOIR_ROOMER_HOTEL_SECRET = 'Promoir-Roomer-Hotel-Secret';
   PROMOIR_ROOMER_HOTEL_APPLICATION_ID = 'Promoir-Roomer-Hotel-ApplicationId';
-  PROMOIR_ROOMER_HOTEL_ADD_PRIVATE_RESOURCES =
-    'Promoir-Roomer-Hotel-Add-Private-Resources';
+  PROMOIR_ROOMER_HOTEL_ADD_PRIVATE_RESOURCES = 'Promoir-Roomer-Hotel-Add-Private-Resources';
   PROMOIR_ROOMER_HOTEL_PATH = 'Promoir-Roomer-Hotel-Add-Resources-Path';
 
 var
-  EXTRA_BUILD_ID : String;
+  EXTRA_BUILD_ID: String;
 
 procedure Register;
 begin
@@ -426,7 +368,7 @@ end;
 const
   ROOMER_SPLIT: String = '[\ROOMER-SPLIT\]';
 
-function TRoomerDataSet.CloneToRecordset: _RecordSet;
+function TRoomerDataSet.CloneToRecordset: _Recordset;
 var
   newRec: _Recordset;
   stm: Stream;
@@ -434,8 +376,7 @@ begin
   newRec := CoRecordset.Create as _Recordset;
   stm := CoStream.Create;
   Recordset.Save(stm, adPersistADTG);
-  newRec.Open(stm, EmptyParam, CursorTypeEnum(adOpenUnspecified),
-      LockTypeEnum(adLockUnspecified), 0);
+  newRec.Open(stm, EmptyParam, CursorTypeEnum(adOpenUnspecified), LockTypeEnum(adLockUnspecified), 0);
   Result := newRec;
 end;
 
@@ -443,7 +384,7 @@ constructor TRoomerDataSet.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
 
-  FLoggedIn := False;
+  FLoggedIn := false;
 
   FApplicationID := '';
   FAppSecret := '';
@@ -451,9 +392,9 @@ begin
 
   FRoomerDataSet := nil;
   FOnSessionExpired := nil;
-  FOfflineMode := False;
+  FOfflineMode := false;
   FSql := TStringList.Create;
-  hotelsList := THotelsEntityList.Create(True);
+  hotelsList := THotelsEntityList.Create(true);
   FDataActive := false;
 {$IFDEF rmUseLOCALRESOURCE}
   FStoreUri := 'http://localhost:8080/services/';
@@ -471,19 +412,20 @@ begin
 
 end;
 
-function TRoomerDataSet.CreateRoomerClient(aAddAuthenticationHeader: boolean = false):
-                          TRoomerHttpClient;
+function TRoomerDataSet.CreateRoomerClient(aAddAuthenticationHeader: boolean = false): TRoomerHttpClient;
 begin
-  result := TRoomerHttpClient.Create(nil);
+  Result := TRoomerHttpClient.Create(nil);
 
   if aAddAuthenticationHeader then
+  begin
     AddAuthenticationHeaders(Result);
+  end;
 end;
 
 function TRoomerDataSet.CreateExecutionPlan: TRoomerExecutionPlan;
 begin
-  result := TRoomerExecutionPlan.Create;
-  result.RoomerDataSet := self;
+  Result := TRoomerExecutionPlan.Create;
+  Result.RoomerDataSet := self;
 end;
 
 destructor TRoomerDataSet.Destroy;
@@ -496,22 +438,22 @@ end;
 
 function TRoomerDataSet.CreateNewDataset: TRoomerDataSet;
 begin
-  result := TRoomerDataSet.Create(Owner);
-  result.RoomerStoreUri := activeRoomerDataSet.RoomerStoreUri;
-  result.RoomerUri := activeRoomerDataSet.RoomerUri;
-  result.OpenApiUri := activeRoomerDataSet.OpenApiUri;
-  result.RoomerEntitiesUri := activeRoomerDataSet.RoomerEntitiesUri;
-  result.RoomerDatasetsUri := activeRoomerDataSet.RoomerDatasetsUri;
-  result.FRoomerDataSet := self;
-  result.OnSessionExpired := self.OnSessionExpired;
-  result.FHotelId := self.FHotelId;
-  result.FPassword := self.FPassword;
-  result.FUsername := self.FUsername;
-  result.FAppName := self.FAppName;
-  result.FAppVersion := self.FAppVersion;
-  result.AppKey := self.AppKey;
-  result.ApplicationID := self.ApplicationID;
-  result.AppSecret := self.AppSecret;
+  Result := TRoomerDataSet.Create(Owner);
+  Result.RoomerStoreUri := activeRoomerDataSet.RoomerStoreUri;
+  Result.RoomerUri := activeRoomerDataSet.RoomerUri;
+  Result.OpenApiUri := activeRoomerDataSet.OpenApiUri;
+  Result.RoomerEntitiesUri := activeRoomerDataSet.RoomerEntitiesUri;
+  Result.RoomerDatasetsUri := activeRoomerDataSet.RoomerDatasetsUri;
+  Result.FRoomerDataSet := self;
+  Result.OnSessionExpired := self.OnSessionExpired;
+  Result.FHotelId := self.FHotelId;
+  Result.FPassword := self.FPassword;
+  Result.FUsername := self.FUsername;
+  Result.FAppName := self.FAppName;
+  Result.FAppVersion := self.FAppVersion;
+  Result.AppKey := self.AppKey;
+  Result.ApplicationId := self.ApplicationId;
+  Result.AppSecret := self.AppSecret;
 end;
 
 procedure TRoomerDataSet.AssignPropertiesToDataSet(DataSet: TRoomerDataSet);
@@ -525,41 +467,30 @@ begin
   DataSet.OnSessionExpired := self.OnSessionExpired;
 end;
 
-function TRoomerDataSet.IsConnectedToInternet: Boolean;
+function TRoomerDataSet.IsConnectedToInternet: boolean;
 var
   dwConnectionTypes: DWORD;
 begin
-  dwConnectionTypes :=
-    INTERNET_CONNECTION_MODEM +
-    INTERNET_CONNECTION_LAN +
-    INTERNET_CONNECTION_PROXY;
+  dwConnectionTypes := INTERNET_CONNECTION_MODEM + INTERNET_CONNECTION_LAN + INTERNET_CONNECTION_PROXY;
 
-{$ifdef rmForceOffline}
+{$IFDEF rmForceOffline}
   Result := false;
-{$else}
+{$ELSE}
   Result := InternetGetConnectedState(@dwConnectionTypes, 0);
-{$endif rmForceOffline}
-
+{$ENDIF rmForceOffline}
 end;
 
-function TRoomerDataSet.RoomerPlatformAvailable: Boolean;
-var
-  lRoomerClient: TRoomerHttpClient;
+function TRoomerDataSet.RoomerPlatformAvailable: boolean;
 begin
-  result := True;
+  Result := true;
   try
-    lRoomerClient := CreateRoomerClient;
-    try
-      if GetAsString(lRoomerClient, RoomerUri + 'sessions/livecheck', '', true) = '' then;
-    finally
-      lRoomerClient.Free;
-    end;
+    if GetAsString(RoomerUri + 'sessions/livecheck', '', true) = '' then;
   except
-   on E: Exception do
-   begin
-    OutputDebugString(PChar('>>>>>Exception during RoomerPLatformAvailable: ' + E.Message));
-    result := False;
-   end;
+    on E: Exception do
+    begin
+      OutputDebugString(PChar('>>>>>Exception during RoomerPLatformAvailable: ' + E.Message));
+      Result := false;
+    end;
   end;
 end;
 
@@ -567,20 +498,20 @@ function TRoomerDataSet.UrlEncode(source: string): string;
 var
   i: Integer;
 begin
-  result := '';
+  Result := '';
   for i := 1 to length(source) do
     if CharInSet(source[i], ['+', '^', '&', '%', '?', '\', '`']) then
-      result := result + '%' + inttohex(ord(source[i]), 2)
+      Result := Result + '%' + inttohex(ord(source[i]), 2)
     else
-      result := result + source[i];
+      Result := Result + source[i];
 end;
 
 function TRoomerDataSet.activeRoomerDataSet: TRoomerDataSet;
 begin
   if assigned(FRoomerDataSet) then
-    result := FRoomerDataSet
+    Result := FRoomerDataSet
   else
-    result := self;
+    Result := self;
 end;
 
 procedure XSaveToFile(Text, filename: String);
@@ -596,7 +527,7 @@ begin
   end;
 end;
 
-procedure TRoomerDataSet.Open(doLowerCase: Boolean = true; setLastAccess: Boolean = true; Threaded: Boolean = False);
+procedure TRoomerDataSet.Open(doLowerCase: boolean = true; SetLastAccess: boolean = true; Threaded: boolean = false);
 var
   sqlCommand, SqlResult: String;
 begin
@@ -604,7 +535,7 @@ begin
     sqlCommand := LowerCase(Sql.Text)
   else
     sqlCommand := Sql.Text;
-  SqlResult := queryRoomer(sqlCommand, setLastAccess, Threaded);
+  SqlResult := queryRoomer(sqlCommand, SetLastAccess, Threaded);
   OpenDataset(SqlResult);
 end;
 
@@ -612,7 +543,7 @@ procedure TRoomerDataSet.GetMessages;
 begin
   try
     if NOT OfflineMode then
-      OpenDataset(downloadUrlAsString(RoomerUri + 'messaging/broadcastlist', 0, false, '', True));
+      OpenDataset(downloadUrlAsString(RoomerUri + 'messaging/broadcastlist', 0, false, '', true));
   except
     // Ignore ...
   end;
@@ -621,561 +552,528 @@ end;
 procedure TRoomerDataSet.SystemMarkReservationAsNotified(id: Integer);
 begin
   try
-    DoCommand('UPDATE reservations SET notificationRead=1 WHERE Reservation=' +
-      inttostr(id));
+    DoCommand('UPDATE reservations SET notificationRead=1 WHERE Reservation=' + inttostr(id));
   except
   end;
 end;
 
 function TRoomerDataSet.GetOpenApiUri: String;
 begin
-  result := FOpenApiUri;
+  Result := FOpenApiUri;
 end;
 
-function TRoomerDataSet.GetTableUpdateTimeStamps : boolean;
+function TRoomerDataSet.GetTableUpdateTimeStamps: boolean;
 begin
-  result := True;
+  Result := true;
   try
     if NOT OfflineMode then
       OpenDataset(downloadUrlAsString(RoomerUri + 'messaging/lastchanges', 0, false, '', true));
   except
     // Ignore ...
-     result := False;
+    Result := false;
   end;
 end;
 
-function TRoomerDataSet.RegisterApplication(hotelId, username, password,
-  appId: String): String;
+function TRoomerDataSet.RegisterApplication(hotelId, username, password, appId: String): String;
 begin
   try
-    result := downloadUrlAsStringUsingPost(OpenApiUri + 'credentials/register' +
-      format('?hotelId=%s&user=%s&password=%s&appId=%s',
-      [EncodeURIComponent(hotelId), EncodeURIComponent(username),
+    Result := downloadUrlAsStringUsingPost(OpenApiUri + 'credentials/register' +
+      format('?hotelId=%s&user=%s&password=%s&appId=%s', [EncodeURIComponent(hotelId), EncodeURIComponent(username),
       AnsiString(HashedPassword(password)), EncodeURIComponent(appId)]), '');
   except
-    result := '';
+    Result := '';
   end;
 end;
 
 procedure TRoomerDataSet.markMessageAsRead(id: Integer);
 begin
-  downloadUrlAsString(RoomerUri +
-    format('messaging/markbroadcastread?messageId=%d', [id]), 0, false);
+  downloadUrlAsString(RoomerUri + format('messaging/markbroadcastread?messageId=%d', [id]), 0, false);
 end;
 
 function TRoomerDataSet.KeepSessionAlive: String;
 begin
-  result := downloadUrlAsString(RoomerUri + 'sessions/pulse', 0, true);
+  Result := downloadUrlAsString(RoomerUri + 'sessions/pulse', 0, true);
 end;
 
-function TRoomerDataSet.FreeQueryThreaded(query : String; SetLastAccess : boolean = true): String;
-var res, setAccess : String;
+function TRoomerDataSet.FreeQueryThreaded(const query: String; SetLastAccess: boolean = true): String;
+var
+  res, setAccess: String;
 begin
-  if setLastAccess then
+  if SetLastAccess then
     setAccess := 'true'
   else
     setAccess := 'false';
-  res := downloadUrlAsStringUsingPostThreaded(RoomerUri + 'pms/business/query', format('query=%s&%s', [UrlEncode(query), setAccess]), SetLastAccess);
+  res := downloadUrlAsStringUsingPostThreaded(RoomerUri + 'pms/business/query',
+    format('query=%s&%s', [UrlEncode(query), setAccess]), SetLastAccess);
   Result := res;
 end;
 
-function TRoomerDataSet.queryRoomer(aSql: String; SetLastAccess: Boolean = true; Threaded : Boolean = False): String;
+function TRoomerDataSet.queryRoomer(aSql: String; SetLastAccess: boolean = true; Threaded: boolean = false): String;
 begin
   FLastSql := aSql;
   if NOT Threaded then
-    result := activeRoomerDataSet.SystemFreeQuery(aSql, SetLastAccess)
+    Result := activeRoomerDataSet.SystemFreeQuery(aSql, SetLastAccess)
   else
-    result := FreeQueryThreaded(aSql, SetLastAccess);
+    Result := FreeQueryThreaded(aSql, SetLastAccess);
 end;
 
-function TRoomerDataSet.ReLogin: Boolean;
+function TRoomerDataSet.ReLogin: boolean;
 begin
-  result := Login(hotelId, username, password, FAppName, FAppVersion);
+  Result := Login(hotelId, username, password, FAppName, FAppVersion);
 end;
 
-function TRoomerDataSet.RoomerAdminLogin(username, password, appName,
-  appVersion: String): Boolean;
+function TRoomerDataSet.RoomerAdminLogin(username, password, appName, appVersion: String): boolean;
 var
   pwmd5: String;
   res: String;
 begin
-  result := true;
+  Result := true;
   FUsername := username;
   FPassword := password;
   pwmd5 := HashedPassword(password);
 
   res := loginViaPost(RoomerUri + 'authentication/roomerlogin',
-    format('username=%s&pwencoded=%s&appname=%s&appversion=%s&datasettype=0',
-    [username, pwmd5, appName, appVersion]));
+    format('username=%s&pwencoded=%s&appname=%s&appversion=%s&datasettype=0', [username, pwmd5, appName, appVersion]));
   // {$ENDIF}
   SetSessionLengthInSeconds(res);
   FLastAccess := now;
-  FLoggedIn := True;
+  FLoggedIn := true;
 end;
 
-function TRoomerDataSet.GetParameterTypeName(param : TRoomerOfflineAssertonParameter) : String;
+function TRoomerDataSet.GetParameterTypeName(param: TRoomerOfflineAssertonParameter): String;
 begin
-  result := '(NA)';
+  Result := '(NA)';
   case param of
-    roapGet: result := 'GET';
-    roapPut: result := 'PUT';
-    roapDelete: result := 'DELETE';
-    roapPost: result := 'POST';
+    roapGet:
+      Result := 'GET';
+    roapPut:
+      Result := 'PUT';
+    roapDelete:
+      Result := 'DELETE';
+    roapPost:
+      Result := 'POST';
   end;
 end;
 
-function TRoomerDataSet.GetFilenameFromParameter(param : TRoomerOfflineAssertonParameter) : String;
-var sPath : String;
+function TRoomerDataSet.GetFilenameFromParameter(param: TRoomerOfflineAssertonParameter): String;
+var
+  sPath: String;
 begin
   sPath := TPath.Combine(uStringUtils.LocalAppDataPath, 'Roomer');
-  sPath := TPath.Combine(sPath, format('%s\backup',[hotelId]));
+  sPath := TPath.Combine(sPath, format('%s\backup', [hotelId]));
   forceDirectories(sPath);
-  result := TPath.Combine(sPath, format('Offline_%s_Commands.src', [GetParameterTypeName(param)]));
+  Result := TPath.Combine(sPath, format('Offline_%s_Commands.src', [GetParameterTypeName(param)]));
 end;
 
-procedure TRoomerDataSet.AssertOnlineMode(param : TRoomerOfflineAssertonParameter = roapGet; asql : String = '');
+procedure TRoomerDataSet.AssertOnlineMode(param: TRoomerOfflineAssertonParameter = roapGet; const aSql: String = '');
 begin
   if OfflineMode then
   begin
     case param of
-      roapGet: ;
-      roapPut: AddToTextFile(GetFilenameFromParameter(param), asql);
-      roapDelete: AddToTextFile(GetFilenameFromParameter(param), asql);
-      roapPost: AddToTextFile(GetFilenameFromParameter(param), asql);
+      roapGet:
+        ;
+      roapPut:
+        AddToTextFile(GetFilenameFromParameter(param), aSql);
+      roapDelete:
+        AddToTextFile(GetFilenameFromParameter(param), aSql);
+      roapPost:
+        AddToTextFile(GetFilenameFromParameter(param), aSql);
     end;
-    raise ERoomerOfflineAssertionException.CreateErrCode(
-              format('Roomer is in Off-line mode while trying %s mode SQL.', [GetParameterTypeName(param)]),
-              ORD(param));
+    raise ERoomerOfflineAssertionException.CreateErrCode(format('Roomer is in Off-line mode while trying %s mode SQL.',
+      [GetParameterTypeName(param)]), ord(param));
   end;
 end;
 
-function TRoomerDataSet.PutData(url, Data : String) : String;
+function TRoomerDataSet.PutData(url, Data: String): String;
 begin
-  result := PutAsString(activeRoomerDataSet.roomerClient, RoomerUri + url, Data);
+  Result := PutAsString(RoomerUri + url, Data);
 end;
 
-function TRoomerDataSet.PostData(url, Data : String) : String;
+function TRoomerDataSet.PostData(url, Data: String): String;
 begin
-  result := PostAsString(activeRoomerDataSet.roomerClient, RoomerUri + url, Data);
+  Result := PostAsString(RoomerUri + url, Data);
 end;
 
-function TRoomerDataSet.DeleteData(url : String) : String;
+function TRoomerDataSet.DeleteData(url: String): String;
 begin
-  result := DeleteAsString(activeRoomerDataSet.roomerClient, RoomerUri + url);
+  Result := DeleteAsString(RoomerUri + url);
 end;
 
-function TRoomerDataSet.downloadRoomerUrlAsString(url: String;
-  SetLastAccess: Boolean = true): String;
+function TRoomerDataSet.downloadRoomerUrlAsString(url: String; SetLastAccess: boolean = true): String;
 begin
-  result := downloadUrlAsString(RoomerUri + url, 0, SetLastAccess);
+  Result := downloadUrlAsString(RoomerUri + url, 0, SetLastAccess);
 end;
 
-procedure TRoomerDataSet.AddAuthenticationHeaders(roomerClient: TRoomerHttpClient);
+procedure TRoomerDataSet.AddAuthenticationHeaders(aRoomerClient: TRoomerHttpClient);
 begin
-  roomerClient.AddAuthenticationHeaders(HotelId, Username, Password, FAppName, FAppVersion, EXTRA_BUILD_ID);
-//  roomerClient.SendTimeout := 900000;
-//  roomerClient.ReceiveTimeout := 900000;
-//  roomerClient.ConnectTimeout := 10000;
-//  SetAuthHeaders( roomerClient.{$IFDEF USE_INDY}Request.CustomHeaders{$ELSE}RequestHeader{$ENDIF}, self.hotelId, self.username, self.password);
-  SetOpenApiAuthHeaders(roomerClient.RequestHeader);
+  aRoomerClient.AddAuthenticationHeaders(hotelId, username, password, FAppName, FAppVersion, EXTRA_BUILD_ID);
+  SetOpenApiAuthHeaders(aRoomerClient.RequestHeader);
 end;
 
 (*
-function TRoomerDataSet.GetAsJSON(roomerClient:
+  function TRoomerDataSet.GetAsJSON(roomerClient:
   TRoomerHttpClient
   ; url: String): String;
 
-var
+  var
   _roomerClient: TRoomerHttpClient;
 
-var retries : Integer;
-begin
+  var retries : Integer;
+  begin
   AssertOnlineMode;
   _roomerClient := CreateRoomerClient;
   try
-    AddAuthenticationHeaders(_roomerClient);
-    _roomerClient.RequestHeader.AcceptEncoding := 'UTF-8';
-    for retries := 1 to 3 do
-    begin
-      try
-        result := _roomerClient.Get(url);
-        Break;
-      except
-        if retries = 3 then
-          raise;
-      end;
-    end;
-  finally
-    FreeAndNil(_roomerClient);
+  AddAuthenticationHeaders(_roomerClient);
+  _roomerClient.RequestHeader.AcceptEncoding := 'UTF-8';
+  for retries := 1 to 3 do
+  begin
+  try
+  result := _roomerClient.Get(url);
+  Break;
+  except
+  if retries = 3 then
+  raise;
   end;
-end;
+  end;
+  finally
+  FreeAndNil(_roomerClient);
+  end;
+  end;
 
 *)
-function TRoomerDataSet.PostAsJSON(roomerClient:
-  TRoomerHttpClient
-  ; url, Data: String): String;
+function TRoomerDataSet.PostAsJSON(const url, Data: String): String;
 var
-  stream: TStringStream;
+  Stream: TStringStream;
   _roomerClient: TRoomerHttpClient;
 
-var retries : Integer;
+var
+  retries: Integer;
 begin
   AssertOnlineMode;
-  _roomerClient := CreateRoomerClient;
+  _roomerClient := CreateRoomerClient(true);
   try
 
-    _roomerClient.{$IFDEF USE_INDY}Request{$ELSE}RequestHeader{$ENDIF}.
-      contentType := 'application/json';
+    _roomerClient.contentType := 'application/json';
 
-    AddAuthenticationHeaders(_roomerClient);
-    stream := TStringStream.Create(Data, TEncoding.UTF8);
+    Stream := TStringStream.Create(Data, TEncoding.UTF8);
     try
-      stream.Position := 0;
+      Stream.Position := 0;
       for retries := 1 to 3 do
       begin
         try
-          result := String(_roomerClient.Post(AnsiString(url), stream));
-        Break;
-        except
-          if retries = 3 then
-            raise;
-        end;
-      end;
-    finally
-      stream.Free;
-    end;
-  finally
-    FreeAndNil(_roomerClient);
-  end;
-end;
-
-function TRoomerDataSet.PutAsJSON(roomerClient:
-  TRoomerHttpClient
-  ; url, Data: String): String;
-var
-  stream: TStringStream;
-  _roomerClient: TRoomerHttpClient;
-
-var retries : Integer;
-begin
-  AssertOnlineMode;
-  _roomerClient := CreateRoomerClient;
-  try
-
-    _roomerClient.{$IFDEF USE_INDY}Request{$ELSE}RequestHeader{$ENDIF}.
-      contentType := 'application/json';
-
-    AddAuthenticationHeaders(_roomerClient);
-    stream := TStringStream.Create(Data, TEncoding.UTF8);
-    try
-      stream.Position := 0;
-      for retries := 1 to 3 do
-      begin
-        try
-          result := String(_roomerClient.Put(AnsiString(url), stream));
-        Break;
-        except
-          if retries = 3 then
-            raise;
-        end;
-      end;
-    finally
-      stream.Free;
-    end;
-  finally
-    FreeAndNil(_roomerClient);
-  end;
-end;
-
-function TRoomerDataSet.GetAsString(roomerClient:
-  TRoomerHttpClient
-  ; url: String; contentType: String = ''; force : Boolean = False): String;
-var
-  _roomerClient: TRoomerHttpClient;
-
-var retries : Integer;
-begin
-  if NOT force then
-    AssertOnlineMode;
-  _roomerClient := CreateRoomerClient;
-  try
-    AddAuthenticationHeaders(_roomerClient);
-    if contentType = '' then
-      contentType := '*/*;charset=utf-8';
-    _roomerClient.{$IFDEF USE_INDY}Request{$ELSE}RequestHeader{$ENDIF}.
-      contentType := contentType;
-    _roomerClient.{$IFDEF USE_INDY}Request{$ELSE}RequestHeader{$ENDIF}.
-      AcceptEncoding := 'UTF-8';
-    for retries := 1 to 3 do
-    begin
-      try
-        result := _roomerClient.Get(url);
-        Break;
-      except
-        if retries = 3 then
-          raise;
-      end;
-    end;
-  finally
-    FreeAndNil(_roomerClient);
-  end;
-end;
-
-function TRoomerDataSet.PostAsString(roomerClient:
-  TRoomerHttpClient
-  ; url, Data: String; contentType: String = ''): String;
-
-var
-  stream: TStringStream;
-  _roomerClient: TRoomerHttpClient;
-
-begin
-  _roomerClient := CreateRoomerClient;
-  try
-    stream := TStringStream.Create(Data, TEncoding.UTF8);
-    try
-      stream.Position := 0;
-      AddAuthenticationHeaders(_roomerClient);
-      if contentType = '' then
-        contentType := 'application/x-www-form-urlencoded'; // '*/*;charset=utf-8';
-      _roomerClient.{$IFDEF USE_INDY}Request{$ELSE}RequestHeader{$ENDIF}.
-        contentType := contentType;
-        try
-          result := _roomerClient.Post(url, stream);
-        except
-          raise;
-        end;
-    finally
-      stream.Free;
-    end;
-  finally
-    FreeAndNil(_roomerClient);
-  end;
-end;
-
-function TRoomerDataSet.PostAsStringAsync(roomerClient: TRoomerHttpClient
-  ; url, Data: String; contentType: String = ''): String;
-
-var
-  stream: TStringStream;
-  _roomerClient: TRoomerHttpClient;
-
-begin
-  _roomerClient := CreateRoomerClient;
-  try
-    stream := TStringStream.Create(Data, TEncoding.UTF8);
-    try
-      stream.Position := 0;
-      AddAuthenticationHeaders(_roomerClient);
-      if contentType = '' then
-        contentType := 'application/x-www-form-urlencoded'; // '*/*;charset=utf-8';
-      _roomerClient.RequestHeader.contentType := contentType;
-        try
-          _roomerClient.InternetOptions := _roomerClient.InternetOptions + [wHttpIo_Async];
-          try
-            result := _roomerClient.Post(url, stream);
-          finally
-            _roomerClient.InternetOptions := _roomerClient.InternetOptions - [wHttpIo_Async];
-          end;
-        except
-            raise;
-        end;
-    finally
-      stream.Free;
-    end;
-  finally
-    FreeAndNil(_roomerClient);
-  end;
-end;
-
-function TRoomerDataSet.PostStreamAsString(roomerClient:
-  TRoomerHttpClient
-  ; url: String; Data: TStream; contentType: String = ''): String;
-
-var
-  _roomerClient: TRoomerHttpClient;
-
-begin
-  _roomerClient := CreateRoomerClient;
-  try
-    Data.Position := 0;
-    AddAuthenticationHeaders(_roomerClient);
-    if contentType = '' then
-      contentType := '*/*;charset=utf-8';
-    _roomerClient.{$IFDEF USE_INDY}Request{$ELSE}RequestHeader{$ENDIF}.
-      contentType := contentType;
-//    for retries := 1 to 3 do
-//    begin
-      try
-        result := _roomerClient.Post(url, Data);
-//        Break;
-      except
-//        if retries = 3 then
-          raise;
-      end;
-//    end;
-  finally
-    FreeAndNil(_roomerClient);
-  end;
-end;
-
-function TRoomerDataSet.PutAsString(roomerClient:
-  TRoomerHttpClient
-  ; url, Data: String; contentType: String = ''
-  ; retryOnError : Boolean = true): String;
-
-var
-  stream: TStringStream;
-  _roomerClient: TRoomerHttpClient;
-
-begin
-  _roomerClient := CreateRoomerClient;
-  try
-    stream := TStringStream.Create(Data, TEncoding.UTF8);
-    try
-      stream.Position := 0;
-      AddAuthenticationHeaders(_roomerClient);
-      if contentType = '' then
-        contentType := 'application/x-www-form-urlencoded'; // '*/*;charset=utf-8';
-      _roomerClient.{$IFDEF USE_INDY}Request{$ELSE}RequestHeader{$ENDIF}.contentType := contentType;
-      try
-        result := _roomerClient.Put(url, stream);
-      except
-        raise;
-      end;
-    finally
-      stream.Free;
-    end;
-  finally
-    FreeAndNil(_roomerClient);
-  end;
-end;
-
-function TRoomerDataSet.DeleteAsString(roomerClient:
-  TRoomerHttpClient
-  ; url: String): String;
-
-var
-  _roomerClient: TRoomerHttpClient;
-
-var retries : Integer;
-begin
-  _roomerClient := CreateRoomerClient;
-  try
-    AddAuthenticationHeaders(_roomerClient);
-    _roomerClient.{$IFDEF USE_INDY}Request{$ELSE}RequestHeader{$ENDIF}.
-      contentType := '';
-    for retries := 1 to 3 do
-    begin
-      try
-        result := String(_roomerClient.Delete(AnsiString(url)));
-        Break;
-      except
-        if retries = 3 then
-          raise;
-      end;
-    end;
-  finally
-    FreeAndNil(_roomerClient);
-  end;
-end;
-
-function TRoomerDataSet.DownloadFile(roomerClient:
-  TRoomerHttpClient
-  ; url, filename: String): Boolean;
-var
-  stream: TFileStream;
-  retries : Integer;
-{$IFNDEF USE_INDY}
-  aResponseContentHeader: TALHTTPResponseHeader;
-{$ENDIF}
-
-begin
-  {$IFNDEF USE_INDY}
-  aResponseContentHeader := TALHTTPResponseHeader.Create;
-  {$ENDIF}
-
-  result := false;
-  stream := TFileStream.Create(filename, fmCreate);
-  try
-    try
-      AddAuthenticationHeaders(roomerClient);
-      {$IFDEF USE_INDY}
-        roomerClient.handleRedirects := true; // Handle redirects
-        roomerClient.Get(url, stream);
-      {$ELSE}
-        for retries := 1 to 3 do
-        begin
-          try
-            roomerClient.Get(AnsiString(url), stream, aResponseContentHeader);
-            Break;
-          except
-            if retries = 3 then
-              raise;
-          end;
-        end;
-      {$ENDIF}
-      result := true;
-    except
-      result := false;
-    end;
-  finally
-    stream.Free;
-    {$IFNDEF USE_INDY}
-      aResponseContentHeader.Free;
-    {$ENDIF}
-  end;
-end;
-
-function TRoomerDataSet.UploadFile(roomerClient:
-  TRoomerHttpClient
-  ; url, filename: String): Boolean;
-var
-  stream: TMemoryStream;
-  contentType: String;
-var retries : Integer;
-begin
-  Result := false;
-  stream := TMemoryStream.Create;
-  try
-    try
-      stream.LoadFromFile(filename);
-      stream.Position := 0;
-      AddAuthenticationHeaders(roomerClient);
-      if contentType = '' then
-        contentType := 'application/octet-stream';
-      roomerClient.{$IFDEF USE_INDY}Request{$ELSE}RequestHeader{$ENDIF}.
-        contentType := contentType;
-      for retries := 1 to 3 do
-      begin
-        try
-          roomerClient.Post(url, stream);
+          Result := String(_roomerClient.Post(AnsiString(url), Stream));
           Break;
         except
           if retries = 3 then
             raise;
         end;
       end;
-      result := true;
-    except
-      result := false;
+    finally
+      Stream.Free;
     end;
   finally
-    stream.Free;
+    FreeAndNil(_roomerClient);
   end;
 end;
 
-function TRoomerDataSet.downloadUrlAsString(url: String;
-  loggingInOut: Integer = 0; { 0/1/2 = neither/login/logout }
-  SetLastAccess: Boolean = true; contentType: String = ''; RaiseException : Boolean = False): String;
+function TRoomerDataSet.PutAsJSON(const url, Data: String): String;
 var
-  doRetry: Boolean;
+  Stream: TStringStream;
+  _roomerClient: TRoomerHttpClient;
+
+var
+  retries: Integer;
+begin
+  AssertOnlineMode;
+  _roomerClient := CreateRoomerClient(true);
+  try
+
+    _roomerClient.contentType := 'application/json';
+
+    Stream := TStringStream.Create(Data, TEncoding.UTF8);
+    try
+      Stream.Position := 0;
+      for retries := 1 to 3 do
+      begin
+        try
+          Result := String(_roomerClient.Put(AnsiString(url), Stream));
+          Break;
+        except
+          if retries = 3 then
+            raise;
+        end;
+      end;
+    finally
+      Stream.Free;
+    end;
+  finally
+    FreeAndNil(_roomerClient);
+  end;
+end;
+
+function TRoomerDataSet.GetAsString(const url: String; const contentType: String = ''; force: boolean = false): String;
+var
+  _roomerClient: TRoomerHttpClient;
+
+var
+  retries: Integer;
+begin
+  if NOT force then
+    AssertOnlineMode;
+  _roomerClient := CreateRoomerClient(true);
+  try
+    if contentType = '' then
+      _roomerClient.contentType := '*/*;charset=utf-8'
+    else
+    _roomerClient.contentType := contentType;
+    _roomerClient.AcceptEncoding := 'UTF-8';
+    for retries := 1 to 3 do
+    begin
+      try
+        Result := String(_roomerClient.Get(AnsiString(url)));
+        Break;
+      except
+        if retries = 3 then
+          raise;
+      end;
+    end;
+  finally
+    FreeAndNil(_roomerClient);
+  end;
+end;
+
+function TRoomerDataSet.PostAsString(const url, Data: String; const contentType: String = ''): String;
+
+var
+  Stream: TStringStream;
+  _roomerClient: TRoomerHttpClient;
+
+begin
+  _roomerClient := CreateRoomerClient(true);
+  try
+    Stream := TStringStream.Create(Data, TEncoding.UTF8);
+    try
+      Stream.Position := 0;
+      if contentType = '' then
+        _roomerClient.contentType := 'application/x-www-form-urlencoded'
+      else
+        _roomerClient.contentType := contentType;
+      try
+        Result := String(_roomerClient.Post(AnsiString(url), Stream));
+      except
+        raise;
+      end;
+    finally
+      Stream.Free;
+    end;
+  finally
+    FreeAndNil(_roomerClient);
+  end;
+end;
+
+function TRoomerDataSet.PostAsStringAsync(const url, Data: String; const contentType: String = ''): String;
+
+var
+  Stream: TStringStream;
+  _roomerClient: TRoomerHttpClient;
+
+begin
+  _roomerClient := CreateRoomerClient(true);
+  try
+    Stream := TStringStream.Create(Data, TEncoding.UTF8);
+    try
+      Stream.Position := 0;
+      if contentType = '' then
+        _roomerClient.contentType := 'application/x-www-form-urlencoded'
+      else
+        _roomerClient.contentType := contentType;
+      try
+        _roomerClient.InternetOptions := _roomerClient.InternetOptions + [wHttpIo_Async];
+        try
+          Result := string(_roomerClient.Post(AnsiString(url), Stream));
+        finally
+          _roomerClient.InternetOptions := _roomerClient.InternetOptions - [wHttpIo_Async];
+        end;
+      except
+        raise;
+      end;
+    finally
+      Stream.Free;
+    end;
+  finally
+    FreeAndNil(_roomerClient);
+  end;
+end;
+
+function TRoomerDataSet.PostStreamAsString(const url: String; Data: TStream; const contentType: String = ''): String;
+
+var
+  _roomerClient: TRoomerHttpClient;
+
+begin
+  _roomerClient := CreateRoomerClient(true);
+  try
+    Data.Position := 0;
+    if contentType = '' then
+      _roomerClient.contentType := '*/*;charset=utf-8'
+    else
+      _roomerClient.contentType := contentType;
+    // for retries := 1 to 3 do
+    // begin
+    try
+      Result := string(_roomerClient.Post(AnsiString(url), Data));
+      // Break;
+    except
+      // if retries = 3 then
+      raise;
+    end;
+    // end;
+  finally
+    FreeAndNil(_roomerClient);
+  end;
+end;
+
+function TRoomerDataSet.PutAsString(const url, Data: String; const contentType: String = ''; retryOnError: boolean = true): String;
+
+var
+  Stream: TStringStream;
+  _roomerClient: TRoomerHttpClient;
+
+begin
+  _roomerClient := CreateRoomerClient(true);
+  try
+    Stream := TStringStream.Create(Data, TEncoding.UTF8);
+    try
+      Stream.Position := 0;
+      if contentType = '' then
+        _roomerClient.contentType := 'application/x-www-form-urlencoded'
+      else
+        _roomerClient.contentType := contentType;
+      try
+        Result := String(_roomerClient.Put(AnsiString(url), Stream));
+      except
+        raise;
+      end;
+    finally
+      Stream.Free;
+    end;
+  finally
+    FreeAndNil(_roomerClient);
+  end;
+end;
+
+function TRoomerDataSet.DeleteAsString(const url: String): String;
+var
+  _roomerClient: TRoomerHttpClient;
+  retries: Integer;
+begin
+  _roomerClient := CreateRoomerClient(true);
+  try
+    _roomerClient.contentType := '';
+    for retries := 1 to 3 do
+    begin
+      try
+        Result := String(_roomerClient.Delete(AnsiString(url)));
+        Break;
+      except
+        if retries = 3 then
+          raise;
+      end;
+    end;
+  finally
+    FreeAndNil(_roomerClient);
+  end;
+end;
+
+function TRoomerDataSet.DownloadFile(aRoomerClient: TRoomerHttpClient; const url, filename: String): boolean;
+var
+  Stream: TFileStream;
+  retries: Integer;
+{$IFNDEF USE_INDY}
+  aResponseContentHeader: TALHTTPResponseHeader;
+{$ENDIF}
+begin
+{$IFNDEF USE_INDY}
+  aResponseContentHeader := TALHTTPResponseHeader.Create;
+{$ENDIF}
+  Result := false;
+  Stream := TFileStream.Create(filename, fmCreate);
+  try
+    try
+      AddAuthenticationHeaders(aRoomerClient);
+{$IFDEF USE_INDY}
+      aRoomerClient.handleRedirects := true; // Handle redirects
+      aRoomerClient.Get(url, Stream);
+{$ELSE}
+      for retries := 1 to 3 do
+      begin
+        try
+          aRoomerClient.Get(AnsiString(url), Stream, aResponseContentHeader);
+          Break;
+        except
+          if retries = 3 then
+            raise;
+        end;
+      end;
+{$ENDIF}
+      Result := true;
+    except
+      Result := false;
+    end;
+  finally
+    Stream.Free;
+{$IFNDEF USE_INDY}
+    aResponseContentHeader.Free;
+{$ENDIF}
+  end;
+end;
+
+function TRoomerDataSet.UploadFile(aRoomerClient: TRoomerHttpClient; const url, filename: String): boolean;
+var
+  Stream: TMemoryStream;
+  contentType: String;
+var
+  retries: Integer;
+begin
+  Result := false;
+  Stream := TMemoryStream.Create;
+  try
+    try
+      Stream.LoadFromFile(filename);
+      Stream.Position := 0;
+      AddAuthenticationHeaders(aRoomerClient);
+      if contentType = '' then
+        contentType := 'application/octet-stream';
+      aRoomerClient.contentType := contentType;
+      for retries := 1 to 3 do
+      begin
+        try
+          aRoomerClient.Post(AnsiString(url), Stream);
+          Break;
+        except
+          if retries = 3 then
+            raise;
+        end;
+      end;
+      Result := true;
+    except
+      Result := false;
+    end;
+  finally
+    Stream.Free;
+  end;
+end;
+
+function TRoomerDataSet.downloadUrlAsString(url: String; loggingInOut: Integer = 0; { 0/1/2 = neither/login/logout }
+  SetLastAccess: boolean = true; contentType: String = ''; RaiseException: boolean = false): String;
+var
+  doRetry: boolean;
 begin
   doRetry := true;
   while doRetry do
     try
       doRetry := false;
-      result := GetAsString(activeRoomerDataSet.roomerClient, url, contentType);
+      Result := GetAsString(url, contentType);
       if SetLastAccess then
         FLastAccess := now;
       exit;
@@ -1216,17 +1114,17 @@ begin
 {$IFDEF DEBUG}
             ShowMessage('Error when communicating with Roomer backend: ' + inttostr(E.StatusCode) + ' - ' + E.Message);
 {$ENDIF}
-            raise Exception.Create
-              (format('Error during communication with server (GET): [%d] %s',
-              [E.StatusCode, E.Message]));
+          raise Exception.Create(format('Error during communication with server (GET): [%d] %s',
+            [E.StatusCode, E.Message]));
         end;
 {$ENDIF}
       end;
     end;
 end;
 
-procedure TRoomerDataSet.SetTimeZoneComparedToUTC(tz : String);
-var statements : TList<String>;
+procedure TRoomerDataSet.SetTimeZoneComparedToUTC(tz: String);
+var
+  statements: TList<String>;
 begin
   statements := TList<String>.Create;
   try
@@ -1243,39 +1141,23 @@ end;
 
 procedure TRoomerDataSet.DoSessionExpired;
 begin
-  LoggedIn := False;
+  LoggedIn := false;
   if NOT assigned(FOnSessionExpired) then
-    raise Exception.Create
-      ('401 - Not allowed. Is the session expired?');
+    raise Exception.Create('401 - Not allowed. Is the session expired?');
   FOnSessionExpired(self);
 end;
 
-procedure TRoomerDataSet.SetAuthHeaders(hdrs:
-  {$IFDEF USE_INDY}TIdHeaderList{$ELSE}TAlHttpRequestHeader{$ENDIF};
-  hotel, user, password: String);
-begin
-  hdrs.CustomHeaders.Clear;
-  hdrs.CustomHeaders.Add(format('%s: %s', ['hotel', hotel]));
-  hdrs.CustomHeaders.Add(format('%s: %s', ['Username', user]));
-  hdrs.CustomHeaders.Add(format('%s: %s', ['Password', password]));
-  hdrs.CustomHeaders.Add(format('%s: %s', ['AppName', FAppName]));
-  hdrs.CustomHeaders.Add(format('%s: %s', ['AppVersion', FAppVersion]));
-  hdrs.CustomHeaders.Add(format('%s: %s', ['DatasetType', '0']));
-  hdrs.CustomHeaders.Add(format('%s: %s', ['ExtraBuild', EXTRA_BUILD_ID]));
-end;
-
-function TRoomerDataSet.downloadUrlAsStringUsingPost(url: String; Data: String;
-  SetLastAccess: Boolean = true;
+function TRoomerDataSet.downloadUrlAsStringUsingPost(url: String; Data: String; SetLastAccess: boolean = true;
   loggingInOut: Integer = 0 { 0/1/2 = neither/login/logout }
   ; contentType: String = ''): String;
 var
-  doRetry: Boolean;
+  doRetry: boolean;
 begin
   doRetry := true;
   while doRetry do
     try
       doRetry := false;
-      result := PostAsString(activeRoomerDataSet.roomerClient, url, Data, contentType);
+      Result := PostAsString(url, Data, contentType);
       if SetLastAccess then
         FLastAccess := now;
       exit;
@@ -1314,33 +1196,29 @@ begin
 {$IFDEF DEBUG}
             ShowMessage('Error when communicating with Roomer backend: ' + inttostr(E.StatusCode) + ' - ' + E.Message);
 {$ENDIF}
-            raise Exception.Create
-              (format('Error during communication with server (GET): [%d] %s',
-              [E.StatusCode, E.Message]));
+          raise Exception.Create(format('Error during communication with server (GET): [%d] %s',
+            [E.StatusCode, E.Message]));
         end;
 {$ENDIF}
       end;
       on E: Exception do
       begin
-        raise Exception.Create
-          (format('Error during communication with server (POST): %s',
-          [E.Message]));
+        raise Exception.Create(format('Error during communication with server (POST): %s', [E.Message]));
       end;
     end;
 end;
 
-function TRoomerDataSet.downloadUrlAsStringUsingPostThreaded(url: String; Data: String;
-  SetLastAccess: Boolean = true;
+function TRoomerDataSet.downloadUrlAsStringUsingPostThreaded(const url: String; const Data: String; SetLastAccess: boolean = true;
   loggingInOut: Integer = 0 { 0/1/2 = neither/login/logout }
-  ; contentType: String = ''): String;
+  ; const contentType: String = ''): String;
 var
-  doRetry: Boolean;
+  doRetry: boolean;
 begin
   doRetry := true;
   while doRetry do
     try
       doRetry := false;
-      result := PostAsString(activeRoomerDataSet.roomerClient, url, Data, contentType);
+      Result := PostAsString(url, Data, contentType);
       if SetLastAccess then
         FLastAccess := now;
       exit;
@@ -1351,39 +1229,34 @@ begin
 {$ELSE}
         EALHTTPClientException
 {$ENDIF}
-      do
+        do
       begin
-        raise Exception.Create
-          (format('Error during communication with server (GET): [%d] %s',
+        raise Exception.Create(format('Error during communication with server (GET): [%d] %s',
           [E.StatusCode, E.Message]));
       end;
       on E: Exception do
       begin
-        raise Exception.Create
-          (format('Error during communication with server (POST): %s',
-          [E.Message]));
+        raise Exception.Create(format('Error during communication with server (POST): %s', [E.Message]));
       end;
     end;
 end;
 
-function TRoomerDataSet.downloadUrlAsStringUsingPostAsync(url: String; Data: String;
-  SetLastAccess: Boolean = true;
+function TRoomerDataSet.downloadUrlAsStringUsingPostAsync(url: String; Data: String; SetLastAccess: boolean = true;
   loggingInOut: Integer = 0 { 0/1/2 = neither/login/logout }
   ; contentType: String = ''): String;
 var
-  doRetry: Boolean;
+  doRetry: boolean;
 begin
   doRetry := true;
   while doRetry do
     try
       doRetry := false;
-      result := PostAsStringAsync(activeRoomerDataSet.roomerClient, url, Data, contentType);
+      Result := PostAsStringAsync(url, Data, contentType);
       if SetLastAccess then
         FLastAccess := now;
       exit;
     except
-      on E: EALHTTPClientException
-        do
+      on E: EALHTTPClientException do
       begin
         if (E.StatusCode = 0) OR (E.StatusCode = 401) then
         begin
@@ -1409,35 +1282,28 @@ begin
 {$IFDEF DEBUG}
             ShowMessage('Error when communicating with Roomer backend: ' + inttostr(E.StatusCode) + ' - ' + E.Message);
 {$ENDIF}
-            raise Exception.Create
-              (format('Error during communication with server (GET): [%d] %s',
-              [E.StatusCode, E.Message]));
+          raise Exception.Create(format('Error during communication with server (GET): [%d] %s',
+            [E.StatusCode, E.Message]));
         end;
       end;
       on E: Exception do
       begin
-        raise Exception.Create
-          (format('Error during communication with server (POST): %s',
-          [E.Message]));
+        raise Exception.Create(format('Error during communication with server (POST): %s', [E.Message]));
       end;
     end;
 end;
 
-function TRoomerDataSet.downloadUrlAsStringUsingPut(url: String; Data: String;
-  SetLastAccess: Boolean = true;
+function TRoomerDataSet.downloadUrlAsStringUsingPut(const url: String; const Data: String; SetLastAccess: boolean = true;
   loggingInOut: Integer = 0 { 0/1/2 = neither/login/logout }
-  ; contentType: String = ''
-  ; retryOnError : Boolean = true
-  ): String;
+  ; const contentType: String = ''; retryOnError: boolean = true): String;
 var
-  doRetry: Boolean;
+  doRetry: boolean;
 begin
   doRetry := true;
   while doRetry do
     try
       doRetry := false;
-      result := PutAsString(activeRoomerDataSet.roomerClient, url, Data,
-        contentType, retryOnError);
+      Result := PutAsString(url, Data, contentType, retryOnError);
       if SetLastAccess then
         FLastAccess := now;
       exit;
@@ -1476,26 +1342,22 @@ begin
 {$IFDEF DEBUG}
             ShowMessage('Error when communicating with Roomer backend: ' + inttostr(E.StatusCode) + ' - ' + E.Message);
 {$ENDIF}
-            raise Exception.Create
-              (format('Error during communication with server (GET): [%d] %s',
-              [E.StatusCode, E.Message]));
+          raise Exception.Create(format('Error during communication with server (GET): [%d] %s',
+            [E.StatusCode, E.Message]));
         end;
 {$ENDIF}
       end;
       on E: Exception do
       begin
-        raise Exception.Create
-          (format('Error during communication with server (POST): %s',
-          [E.Message]));
+        raise Exception.Create(format('Error during communication with server (POST): %s', [E.Message]));
       end;
     end;
 end;
 
-function TRoomerDataSet.loginViaPost(url: String; Data: String;
-  SetLastAccess: Boolean = true): String;
+function TRoomerDataSet.loginViaPost(const url: String; const Data: String; SetLastAccess: boolean = true): String;
 begin
   try
-    result := PostAsString(activeRoomerDataSet.roomerClient, url, Data);
+    Result := PostAsString(url, Data);
     if SetLastAccess then
       FLastAccess := now;
   except
@@ -1511,14 +1373,12 @@ begin
 {$ELSE}
       if (E.StatusCode = 401) then
       begin
-        raise Exception.Create
-          ('Unknown hotel, username and password combination');
+        raise Exception.Create('Unknown hotel, username and password combination');
       end
       else if (E.StatusCode DIV 100 = 5) then
       begin
         if POS('UNKNOWN DATABASE', Uppercase(E.Message)) > 0 then
-          raise Exception.Create
-            ('Unknown hotel, username and password combination')
+          raise Exception.Create('Unknown hotel, username and password combination')
         else
           raise Exception.Create('Internal Error ' + E.Message);
       end;
@@ -1530,82 +1390,79 @@ end;
 
 function TRoomerDataSet.PostOpenAPI(url: String; Data: TStream): String;
 begin
-  result := PostStreamAsString(activeRoomerDataSet.roomerClient, url, Data,
-    'multipart/form-data');
+  Result := PostStreamAsString(url, Data, 'multipart/form-data');
 end;
 
-procedure TRoomerDataSet.SetOfflineMode(const Value: Boolean);
+procedure TRoomerDataSet.SetOfflineMode(const Value: boolean);
 begin
   FOfflineMode := Value;
 end;
 
 procedure TRoomerDataSet.SetOpenApiAuthHeaders(hdrs:
-  {$IFDEF USE_INDY}TIdHeaderList{$ELSE}TAlHttpRequestHeader{$ENDIF});
+{$IFDEF USE_INDY}TIdHeaderList{$ELSE}TAlHttpRequestHeader{$ENDIF});
 begin
-  if TRIM(AppKey) = '' then exit;
+  if TRIM(AppKey) = '' then
+    exit;
 
-//  hdrs.CustomHeaders.Clear;
-  hdrs.CustomHeaders.Add(format('%s: %s', [PROMOIR_ROOMER_HOTEL_IDENTIFIER,
-    AppKey]));
-  hdrs.CustomHeaders.Add(format('%s: %s', [PROMOIR_ROOMER_HOTEL_APPLICATION_ID,
-    ApplicationID]));
-  hdrs.CustomHeaders.Add(format('%s: %s', [PROMOIR_ROOMER_HOTEL_SECRET,
-    CalculateOTP(AppSecret)]));
+  // hdrs.CustomHeaders.Clear;
+  hdrs.CustomHeaders.add(AnsiString(format('%s: %s', [PROMOIR_ROOMER_HOTEL_IDENTIFIER, AppKey])));
+  hdrs.CustomHeaders.add(AnsiString(format('%s: %s', [PROMOIR_ROOMER_HOTEL_APPLICATION_ID, ApplicationId])));
+  hdrs.CustomHeaders.add(AnsiString(format('%s: %s', [PROMOIR_ROOMER_HOTEL_SECRET, CalculateOTP(AppSecret)])));
 end;
 
 procedure TRoomerDataSet.SetSpecificOpenApiAuthHeaders(hdrs: TAlHttpRequestHeader;
-AppKey, ApplicationId, AppSecret : String; tim : Extended);
+  AppKey, ApplicationId, AppSecret: String; tim: Extended);
 begin
-  if TRIM(AppKey) = '' then exit;
+  if TRIM(AppKey) = '' then
+    exit;
 
-//  hdrs.CustomHeaders.Clear;
-  hdrs.CustomHeaders.Add(format('%s: %s', [PROMOIR_ROOMER_HOTEL_IDENTIFIER,
-    AppKey]));
-  hdrs.CustomHeaders.Add(format('%s: %s', [PROMOIR_ROOMER_HOTEL_APPLICATION_ID,
-    ApplicationID]));
-  hdrs.CustomHeaders.Add(format('%s: %s', [PROMOIR_ROOMER_HOTEL_SECRET,
-    CalculateOTPOnSpecifiedTime(AppSecret, tim)]));
+  // hdrs.CustomHeaders.Clear;
+  hdrs.CustomHeaders.add(AnsiString(format('%s: %s', [PROMOIR_ROOMER_HOTEL_IDENTIFIER, AppKey])));
+  hdrs.CustomHeaders.add(AnsiString(format('%s: %s', [PROMOIR_ROOMER_HOTEL_APPLICATION_ID, ApplicationId])));
+  hdrs.CustomHeaders.add(AnsiString(format('%s: %s', [PROMOIR_ROOMER_HOTEL_SECRET,
+    CalculateOTPOnSpecifiedTime(AppSecret, tim)])));
 
-// 2a0434bc
-// ORBIS
-// a02da62f9c6f941024e90d5828d9246c096fb5b1286946e1a63b14981d42f55e
-// https://api.roomercloud.net/roomer/openAPI/REST/bookings/roomassignments?roomNumber=004
+  // 2a0434bc
+  // ORBIS
+  // a02da62f9c6f941024e90d5828d9246c096fb5b1286946e1a63b14981d42f55e
+  // https://api.roomercloud.net/roomer/openAPI/REST/bookings/roomassignments?roomNumber=004
 end;
 
-function TRoomerDataSet.TestSpecificOpenApiAuthHeaders(AppKey, ApplicationId, AppSecret, url : String; tim : Extended = 0) : String;
+function TRoomerDataSet.TestSpecificOpenApiAuthHeaders(AppKey, ApplicationId, AppSecret, url: String;
+  tim: Extended = 0): String;
 begin
   SetSpecificOpenApiAuthHeaders(roomerClient.RequestHeader, AppKey, ApplicationId, AppSecret, tim);
   roomerClient.RequestHeader.AcceptEncoding := 'UTF-8';
-  result := roomerClient.Get(url);
+  Result := string(roomerClient.Get(AnsiString(url)));
 end;
 
-
-function TRoomerDataSet.OfflineFilesAvailable(_hotelId : String = ''): Boolean;
-var sPath, filePath : String;
+function TRoomerDataSet.OfflineFilesAvailable(_hotelId: String = ''): boolean;
+var
+  sPath, filePath: String;
 begin
-  result := False;
+  Result := false;
   if (_hotelId = '') AND (hotelId = '') then
     exit;
 
   if _hotelId = '' then
-     _hotelId := hotelId;
+    _hotelId := hotelId;
 
   sPath := TPath.Combine(uStringUtils.LocalAppDataPath, 'Roomer');
-  sPath := TPath.Combine(sPath, format('%s\backup',[_hotelId]));
+  sPath := TPath.Combine(sPath, format('%s\backup', [_hotelId]));
   filePath := TPath.Combine(sPath, 'Backup_TAXES.src');
   forceDirectories(sPath);
 
-  result := FileExists(filePath);
+  Result := FileExists(filePath);
 end;
 
 (*
-function TRoomerDataSet.GetOpenAPIResourcePath(Endpoint, URI: String): String;
-begin
+  function TRoomerDataSet.GetOpenAPIResourcePath(Endpoint, URI: String): String;
+  begin
   // https://dev1.roomerdev.net/openAPI/REST/sdsdsd/sdsdsd/sdsdsd.png
   // 1234567890123456789012345678901234567890123456789012345678901234567890
   // 1        11        21        31        41        51        61
   result := copy(URI, length(Endpoint) + 1, maxInt);
-end;
+  end;
 *)
 
 function TRoomerDataSet.DeleteFileResourceOpenAPI(URI: String): String;
@@ -1616,42 +1473,41 @@ begin
   try
     SetOpenApiAuthHeaders(_roomerClient.RequestHeader);
     // _roomerClient.Delete(OpenApiUri + 'staticresources/' + EncodeURIComponent(GetOpenAPIResourcePath(OpenApiUri, URI)));
-    _roomerClient.Delete(URI);
-    result := '';
+    _roomerClient.Delete(AnsiString(URI));
+    Result := '';
   finally
     FreeAndNil(_roomerClient);
   end;
 end;
 
-function TRoomerDataSet.DownloadFileResourceOpenAPI(URI,
-  destFilename: String): Boolean;
+function TRoomerDataSet.DownloadFileResourceOpenAPI(URI, destFilename: String): boolean;
 var
-  stream: TFileStream;
+  Stream: TFileStream;
 var
   _roomerClient: TRoomerHttpClient;
 {$IFNDEF USE_INDY}aResponseContentHeader: TALHTTPResponseHeader; {$ENDIF}
 begin
 {$IFNDEF USE_INDY}aResponseContentHeader := TALHTTPResponseHeader.Create;
-  {$ENDIF}
-  result := true;
+{$ENDIF}
+  Result := true;
   _roomerClient := CreateRoomerClient;
   try
     try
       SetOpenApiAuthHeaders(_roomerClient.RequestHeader);
       // SentUri := OpenApiUri + Path + '/' + EncodeURIComponent(Filename);
-      stream := TFileStream.Create(destFilename, fmCreate);
+      Stream := TFileStream.Create(destFilename, fmCreate);
       try
 {$IFDEF USE_INDY}
         _roomerClient.handleRedirects := true; // Handle redirects
-        _roomerClient.Get(URI, stream);
+        _roomerClient.Get(URI, Stream);
 {$ELSE}
-        _roomerClient.Get(AnsiString(URI), stream, aResponseContentHeader);
+        _roomerClient.Get(AnsiString(URI), Stream, aResponseContentHeader);
 {$ENDIF}
       finally
-        stream.Free;
+        Stream.Free;
       end;
     except
-      result := false;
+      Result := false;
       raise;
     end;
   finally
@@ -1660,14 +1516,13 @@ begin
   // result := PostStreamAsString(activeRoomerDataSet.roomerClient, Url, Data, 'multipart/form-data');
 end;
 
-function TRoomerDataSet.PostFileOpenAPI(url: String;
-  filename, keyString: String; FileType: String;
-  privateResource: Boolean = true): String;
+function TRoomerDataSet.PostFileOpenAPI(url: String; filename, keyString: String; FileType: String;
+  privateResource: boolean = true): String;
 var
   multi: TRoomerMultipartFormData;
   http: TIdHTTP;
   privRes: String;
-  IdSSLIOHandlerSocketOpenSSL1 : TIdSSLIOHandlerSocketOpenSSL;
+  IdSSLIOHandlerSocketOpenSSL1: TIdSSLIOHandlerSocketOpenSSL;
 begin
   multi := TRoomerMultipartFormData.Create;
   try
@@ -1688,10 +1543,10 @@ begin
       end;
 
       http.Request.CustomHeaders.AddValue(PROMOIR_ROOMER_HOTEL_IDENTIFIER, AppKey);
-      http.Request.CustomHeaders.AddValue(PROMOIR_ROOMER_HOTEL_APPLICATION_ID, ApplicationID);
+      http.Request.CustomHeaders.AddValue(PROMOIR_ROOMER_HOTEL_APPLICATION_ID, ApplicationId);
       http.Request.CustomHeaders.AddValue(PROMOIR_ROOMER_HOTEL_SECRET, CalculateOTP(AppSecret));
       http.Request.CustomHeaders.AddValue(PROMOIR_ROOMER_HOTEL_ADD_PRIVATE_RESOURCES, privRes);
-      result := http.Post(OpenApiUri + url + '/' + keyString, multi);
+      Result := http.Post(OpenApiUri + url + '/' + keyString, multi);
     finally
       IdSSLIOHandlerSocketOpenSSL1.Free;
       http.Free;
@@ -1702,12 +1557,12 @@ begin
   // result := PostStreamAsString(activeRoomerDataSet.roomerClient, Url, Data, 'multipart/form-data');
 end;
 
-function TRoomerDataSet.SendConfirmationEmailOpenAPI(Reservation : Integer): String;
+function TRoomerDataSet.SendConfirmationEmailOpenAPI(Reservation: Integer): String;
 var
   http: TIdHTTP;
-  URL : String;
-  stream : TStringStream;
-  IdSSLIOHandlerSocketOpenSSL1 : TIdSSLIOHandlerSocketOpenSSL;
+  url: String;
+  Stream: TStringStream;
+  IdSSLIOHandlerSocketOpenSSL1: TIdSSLIOHandlerSocketOpenSSL;
 begin
   IdSSLIOHandlerSocketOpenSSL1 := nil;
   http := TIdHTTP.Create(nil);
@@ -1719,16 +1574,16 @@ begin
     end;
 
     http.Request.CustomHeaders.AddValue(PROMOIR_ROOMER_HOTEL_IDENTIFIER, AppKey);
-    http.Request.CustomHeaders.AddValue(PROMOIR_ROOMER_HOTEL_APPLICATION_ID, ApplicationID);
+    http.Request.CustomHeaders.AddValue(PROMOIR_ROOMER_HOTEL_APPLICATION_ID, ApplicationId);
     http.Request.CustomHeaders.AddValue(PROMOIR_ROOMER_HOTEL_SECRET, CalculateOTP(AppSecret));
 
-    URL := format(OpenApiUri + 'bookings/%d?confirmedToGuest=true', [Reservation]);
+    url := format(OpenApiUri + 'bookings/%d?confirmedToGuest=true', [Reservation]);
 
-    stream := TStringStream.Create;
+    Stream := TStringStream.Create;
     try
-    result := http.PUT(URL, stream);
+      Result := http.Put(url, Stream);
     finally
-      stream.Free;
+      Stream.Free;
     end;
   finally
     IdSSLIOHandlerSocketOpenSSL1.Free;
@@ -1736,29 +1591,30 @@ begin
   end;
 end;
 
-function TRoomerDataSet.SendEmailOpenAPI(subject : UTF8String; from, recipient, cc, bcc : String; _text, _htmlText : UTF8String; files : TStringList): String;
+function TRoomerDataSet.SendEmailOpenAPI(subject: UTF8String; from, recipient, cc, bcc: String;
+  _text, _htmlText: UTF8String; files: TStringList): String;
 var
   multi: TIdMultipartFormDataStream;
   http: TIdHTTP;
   i: Integer;
-  filename, filePath : String;
-  att : TIdFormDataField;
-  IdSSLIOHandlerSocketOpenSSL1 : TIdSSLIOHandlerSocketOpenSSL;
+  filename, filePath: String;
+  att: TIdFormDataField;
+  IdSSLIOHandlerSocketOpenSSL1: TIdSSLIOHandlerSocketOpenSSL;
 begin
   multi := TIdMultipartFormDataStream.Create;
   try
     for i := 0 to files.Count - 1 do
     begin
-      filename := copy(files[i], pos('=', files[i]) + 1, maxint);
-      filePath := copy(files[i], 1, pos('=', files[i]) - 1);
+      filename := Copy(files[i], POS('=', files[i]) + 1, maxint);
+      filePath := Copy(files[i], 1, POS('=', files[i]) - 1);
       att := multi.AddFile('attachment', filePath, GetMIMEtype(filename));
-      att.FileName := extractFilename(filename);
+      att.filename := extractFilename(filename);
     end;
 
     multi.AddFormField('to', recipient, 'UTF-8');
-    if trim(cc) <> '' then
+    if TRIM(cc) <> '' then
       multi.AddFormField('cc', cc, 'UTF-8');
-    if trim(bcc) <> '' then
+    if TRIM(bcc) <> '' then
       multi.AddFormField('bcc', bcc, 'UTF-8');
     multi.AddFormField('from', from, 'UTF-8');
     multi.AddFormField('subject', subject, 'UTF-8');
@@ -1775,10 +1631,10 @@ begin
         http.IOHandler := IdSSLIOHandlerSocketOpenSSL1;
       end;
       http.Request.CustomHeaders.AddValue(PROMOIR_ROOMER_HOTEL_IDENTIFIER, AppKey);
-      http.Request.CustomHeaders.AddValue(PROMOIR_ROOMER_HOTEL_APPLICATION_ID, ApplicationID);
+      http.Request.CustomHeaders.AddValue(PROMOIR_ROOMER_HOTEL_APPLICATION_ID, ApplicationId);
       http.Request.CustomHeaders.AddValue(PROMOIR_ROOMER_HOTEL_SECRET, CalculateOTP(AppSecret));
 
-      result := http.Post(OpenApiUri + 'hotelservices/email', multi);
+      Result := http.Post(OpenApiUri + 'hotelservices/email', multi);
     finally
       IdSSLIOHandlerSocketOpenSSL1.Free;
       http.Free;
@@ -1789,18 +1645,17 @@ begin
   // result := PostStreamAsString(activeRoomerDataSet.roomerClient, Url, Data, 'multipart/form-data');
 end;
 
-procedure TRoomerDataSet.GetFieldText(Sender: TField; var Text: string;
-  DisplayText: Boolean);
+procedure TRoomerDataSet.GetFieldText(Sender: TField; var Text: string; DisplayText: boolean);
 begin
   Text := StringReplace(Sender.AsString, #10, #13#10, [rfReplaceAll]);
 end;
 
-procedure TRoomerDataSet.OpenDataset(SqlResult: String);
+procedure TRoomerDataSet.OpenDataset(const SqlResult: String);
 var
   i: Integer;
 begin
   if (SqlResult = '') then
-    Exit;
+    exit;
 
   try
     FSavedLastResult := SqlResult;
@@ -1808,8 +1663,8 @@ begin
     Close;
     CommandType := cmdFile;
     LockType := ltBatchOptimistic;
-//    CommandText := '';
-    RecordSet := ADOInt._Recordset(FSavedResult);
+    // CommandText := '';
+    Recordset := ADOInt._Recordset(FSavedResult);
 
     for i := 0 to FieldCount - 1 do
       if Fields[i].DataType IN [ftString, ftWideString, ftWideMemo] then
@@ -1824,7 +1679,7 @@ begin
     begin
 {$IFDEF DEBUG}
       CopyToClipboard(FLastSql + #13#10#13#10 + '-- ' + SqlResult + #13 + CommandText);
-      DebugMessage(e.Message);
+      DebugMessage(E.Message);
 {$ENDIF}
       raise;
     end;
@@ -1847,12 +1702,12 @@ procedure TRoomerDataSet.Post;
           Data := Unassigned;
           Data := FieldData[TField(Fields[i]).index];
           if not VarIsClear(Data) then
-            RecordSet.Fields[TField(Fields[i]).FieldNo - 1].Value := Data;
+            Recordset.Fields[TField(Fields[i]).FieldNo - 1].Value := Data;
         end;
       ReleaseLock;
     except
       CursorPosChanged;
-      RecordSet.CancelUpdate;
+      Recordset.CancelUpdate;
       raise;
     end;
   end;
@@ -1873,11 +1728,11 @@ procedure TRoomerDataSet.Post;
     i: Integer;
     tableName: String;
   begin
-    for i := 0 to RecordSet.Fields.Count - 1 do
+    for i := 0 to Recordset.Fields.Count - 1 do
     begin
-      tableName := RecordSet.Fields[i].Properties['BASETABLENAME'].Value;
+      tableName := Recordset.Fields[i].Properties['BASETABLENAME'].Value;
       if NOT list.Contains(tableName) then
-        list.Add(tableName);
+        list.add(tableName);
     end;
   end;
 
@@ -1885,8 +1740,7 @@ procedure TRoomerDataSet.Post;
   begin
     if aSql <> '' then
     begin
-      aSql := format('UPDATE %s SET %s WHERE id=%d',
-        [aTableName, aSql, FieldByName('id').AsInteger]);
+      aSql := format('UPDATE %s SET %s WHERE id=%d', [aTableName, aSql, FieldByName('id').AsInteger]);
       self.activeRoomerDataSet.SystemFreeExecute(aSql);
       GlueToRecordSet;
     end;
@@ -1901,16 +1755,16 @@ procedure TRoomerDataSet.Post;
 
   begin
     lSql := '';
-    for i := 0 to RecordSet.Fields.Count - 1 do
+    for i := 0 to Recordset.Fields.Count - 1 do
     begin
-      tableName := RecordSet.Fields[i].Properties['BASETABLENAME'].Value;
+      tableName := Recordset.Fields[i].Properties['BASETABLENAME'].Value;
       if table = tableName then
       begin
-        fieldName := RecordSet.Fields[i].Properties['BASECOLUMNNAME'].Value;
-        Field := FieldByName(RecordSet.Fields[i].Name);
+        fieldName := Recordset.Fields[i].Properties['BASECOLUMNNAME'].Value;
+        Field := FieldByName(Recordset.Fields[i].Name);
         if Field.OldValue <> Field.NewValue then
         begin
-          iFieldSize := RecordSet.Fields[i].DefinedSize;
+          iFieldSize := Recordset.Fields[i].DefinedSize;
           fieldValue := ProvideFieldValue(Field, iFieldSize);
           if fieldValue <> '' then
           begin
@@ -1929,8 +1783,7 @@ procedure TRoomerDataSet.Post;
   begin
     if aSql <> '' then
     begin
-      aSql := format('INSERT INTO %s (%s) VALUES(%s)',
-        [LowerCase(aTableName), aFields, aSql]);
+      aSql := format('INSERT INTO %s (%s) VALUES(%s)', [LowerCase(aTableName), aFields, aSql]);
       self.activeRoomerDataSet.SystemFreeExecute(aSql);
       GlueToRecordSet;
     end;
@@ -1945,14 +1798,14 @@ procedure TRoomerDataSet.Post;
   begin
     lSql := '';
     sFields := '';
-    for i := 0 to RecordSet.Fields.Count - 1 do
+    for i := 0 to Recordset.Fields.Count - 1 do
     begin
-      tableName := RecordSet.Fields[i].Properties['BASETABLENAME'].Value;
+      tableName := Recordset.Fields[i].Properties['BASETABLENAME'].Value;
       if table = tableName then
       begin
-        fieldName := RecordSet.Fields[i].Properties['BASECOLUMNNAME'].Value;
-        Field := FieldByName(RecordSet.Fields[i].Name);
-        iFieldSize := RecordSet.Fields[i].DefinedSize;
+        fieldName := Recordset.Fields[i].Properties['BASECOLUMNNAME'].Value;
+        Field := FieldByName(Recordset.Fields[i].Name);
+        iFieldSize := Recordset.Fields[i].DefinedSize;
         fieldValue := ProvideFieldValue(Field, iFieldSize);
         if fieldValue <> '' then
         begin
@@ -1977,7 +1830,10 @@ var
 begin
   if OfflineMode then
   begin
-    try inherited Post; except end;
+    try
+      inherited Post;
+    except
+    end;
     exit;
   end;
 
@@ -2004,20 +1860,19 @@ begin
 
 end;
 
-procedure TRoomerDataSet.AssignToDataset(SqlResult: String;
-  DataSet: TRoomerDataSet);
+procedure TRoomerDataSet.AssignToDataset(SqlResult: String; DataSet: TRoomerDataSet);
 begin
   FSavedLastResult := SqlResult;
   DataSet.Close;
   DataSet.CommandType := cmdFile;
   DataSet.LockType := ltBatchOptimistic;
   DataSet.CommandText := '';
-  DataSet.RecordSet := ADOInt._Recordset(SqlResult);
+  DataSet.Recordset := ADOInt._Recordset(SqlResult);
   if not(BOF and EOF) then
     First;
 end;
 
-function TRoomerDataSet.DoCommand(aSql: String; async : Boolean = false): Integer;
+function TRoomerDataSet.DoCommand(aSql: String; async: boolean = false): Integer;
 var
   sResult: String;
 begin
@@ -2025,10 +1880,10 @@ begin
     sResult := self.activeRoomerDataSet.SystemFreeExecuteAsync(aSql)
   else
     sResult := self.activeRoomerDataSet.SystemFreeExecute(aSql);
-  result := StrToIntDef(sResult, -99999999);
-  if result <= 0 then
+  Result := StrToIntDef(sResult, -99999999);
+  if Result <= 0 then
   begin
-    if result = -99999999 then
+    if Result = -99999999 then
     begin
 {$IFDEF DEBUG}
       CopyToClipboard(aSql + #13#10#13#10 + '-- ' + sResult);
@@ -2036,7 +1891,7 @@ begin
       raise Exception.Create('command execution failed:' + sResult);
     end;
   end;
-  FNumberOfAffectedRows := result;
+  FNumberOfAffectedRows := Result;
 end;
 
 procedure TRoomerDataSet.DoQuery(aSql: String);
@@ -2046,7 +1901,7 @@ end;
 
 function TRoomerDataSet.GetCommandText: String;
 begin
-  result := Sql.Text;
+  Result := Sql.Text;
 end;
 
 function SystemDecimalSeparator: string;
@@ -2055,27 +1910,26 @@ var
 begin
   Decimal := StrAlloc(10);
   GetLocaleInfo(LOCALE_SYSTEM_DEFAULT, LOCALE_SDECIMAL, Decimal, 10);
-  result := String(Decimal)[1];
+  Result := String(Decimal)[1];
 end;
 
 function TRoomerDataSet.GetFloatValue(Field: TField): Double;
 begin
-  result := LocalizedFloatValue(Field.Value);
+  Result := LocalizedFloatValue(Field.Value);
 end;
 
 function TRoomerDataSet.getHotelsList: THotelsEntityList;
 begin
-  result := hotelsList;
+  Result := hotelsList;
 end;
 
-function TRoomerDataSet.Login(hotelId: String; username, password: String;
-  appName: String; appVersion: String; RightRangeMin: Integer = 90;
-  RightRangeMax: Integer = 100): Boolean;
+function TRoomerDataSet.Login(hotelId: String; username, password: String; appName: String; appVersion: String;
+  RightRangeMin: Integer = 90; RightRangeMax: Integer = 100): boolean;
 var
   pwmd5: AnsiString;
   res: String;
 begin
-  result := true;
+  Result := true;
   FUsername := username;
   FPassword := password;
   FAppName := appName;
@@ -2088,16 +1942,15 @@ begin
     [hotelId, username, pwmd5, appName, appVersion, EXTRA_BUILD_ID]));
   SetSessionLengthInSeconds(res);
   FLastAccess := now;
-  FLoggedIn := True;
+  FLoggedIn := true;
 end;
 
-function TRoomerDataSet.SwapHotel(hotelId: String;
-  var username, password: String): Boolean;
+function TRoomerDataSet.SwapHotel(hotelId: String; var username, password: String): boolean;
 // var
 // res: String;
 begin
-  result := Login(hotelId, FUsername, FPassword, FAppName, FAppVersion);
-  if result then
+  Result := Login(hotelId, FUsername, FPassword, FAppName, FAppVersion);
+  if Result then
   begin
     username := FUsername;
     password := FPassword;
@@ -2112,7 +1965,7 @@ end;
 
 function TRoomerDataSet.HashedPassword(password: String): String;
 begin
-  result := md5(password);
+  Result := md5(password);
 end;
 
 function TRoomerDataSet.HeadOfURI(URI: String): TALHTTPResponseHeader;
@@ -2127,8 +1980,8 @@ begin
     // _roomerClient.Delete(OpenApiUri + 'staticresources/' + EncodeURIComponent(GetOpenAPIResourcePath(OpenApiUri, URI)));
     ResponseContentStream := TMemoryStream.Create;
     ResponseContentHeader := TALHTTPResponseHeader.Create;
-    _roomerClient.Head(URI, ResponseContentStream, ResponseContentHeader);
-    result := ResponseContentHeader;
+    _roomerClient.Head(AnsiString(URI), ResponseContentStream, ResponseContentHeader);
+    Result := ResponseContentHeader;
   finally
     FreeAndNil(_roomerClient);
   end;
@@ -2136,29 +1989,35 @@ end;
 
 procedure TRoomerDataSet.Logout;
 begin
-  FLoggedIn := False;
-  try downloadUrlAsString(RoomerUri + 'logout', 2, false); except end;
+  FLoggedIn := false;
+  try
+    downloadUrlAsString(RoomerUri + 'logout', 2, false);
+  except
+  end;
   AppKey := '';
 end;
 
 procedure TRoomerDataSet.LogoutUnaffected;
 begin
-  FLoggedIn := False;
-  try roomerClient.Get(RoomerUri + 'logout'); except end;
+  FLoggedIn := false;
+  try
+    roomerClient.Get(AnsiString(RoomerUri + 'logout'));
+  except
+  end;
   AppKey := '';
 end;
 
-function TRoomerDataSet.MyIpAddress : String;
+function TRoomerDataSet.MyIpAddress: String;
 begin
-  result := downloadUrlAsString(RoomerUri + 'authentication/myipaddress');
+  Result := downloadUrlAsString(RoomerUri + 'authentication/myipaddress');
 end;
 
-function TRoomerDataSet.SyncFinanceTables : String;
+function TRoomerDataSet.SyncFinanceTables: String;
 begin
-  result := downloadUrlAsString(RoomerUri + 'financekeys/reset');
+  Result := downloadUrlAsString(RoomerUri + 'financekeys/reset');
 end;
 
-procedure TRoomerDataSet.SetSessionLengthInSeconds(xmlSource: String);
+procedure TRoomerDataSet.SetSessionLengthInSeconds(const xmlSource: String);
 var
   xml: IXMLDOMDocument2;
   xmlTemp: IXMLDOMNodeList;
@@ -2167,9 +2026,7 @@ var
 begin
   xml := CreateXmlDocument;
   xml.LoadXML(xmlSource);
-  FSessionLengthSeconds :=
-    strtoint(GetAttributeValue(xml.documentElement.firstChild,
-    'sessionTimoutSeconds', '450'));
+  FSessionLengthSeconds := strtoint(GetAttributeValue(xml.documentElement.firstChild, 'sessionTimoutSeconds', '450'));
 
   hotelsList.Clear;
   xmlTemp := xml.selectNodes('//authentication/user/hotels/hotel');
@@ -2179,30 +2036,28 @@ begin
     xmlHotel := xmlTemp.item[i];
     if xmlHotel.nodeName = 'hotel' then
     begin
-      hotelsList.Add(TRoomerHotelsEntity.Create(GetAttributeValue(xmlHotel,
-        'hotelCode', hotelId), GetAttributeValue(xmlHotel, 'hotelName',
-        hotelId), strtoint(GetAttributeValue(xmlHotel, 'ownerID', '0'))));
+      hotelsList.add(TRoomerHotelsEntity.Create(GetAttributeValue(xmlHotel, 'hotelCode', hotelId),
+        GetAttributeValue(xmlHotel, 'hotelName', hotelId), strtoint(GetAttributeValue(xmlHotel, 'ownerID', '0'))));
     end;
   end;
 end;
 
-function TRoomerDataSet.GetAttributeValue(Node: IXMLDomNode;
-  AttribName, defaultValue: String): String;
+function TRoomerDataSet.GetAttributeValue(Node: IXMLDomNode; AttribName, defaultValue: String): String;
 var
   i: Integer;
 begin
-  result := defaultValue;
+  Result := defaultValue;
   for i := 0 to Node.Attributes.length - 1 do
     if Node.Attributes.item[i].nodeName = AttribName then
     begin
-      result := Node.Attributes.item[i].Text;
+      Result := Node.Attributes.item[i].Text;
       Break;
     end;
 end;
 
 function TRoomerDataSet.SecondsLeft: Integer;
 begin
-  result := SecondsBetween(IncSecond(FLastAccess, FSessionLengthSeconds), now);
+  Result := SecondsBetween(IncSecond(FLastAccess, FSessionLengthSeconds), now);
 end;
 
 procedure TRoomerDataSet.SetCommandText(const Value: String);
@@ -2219,14 +2074,14 @@ end;
 
 function TRoomerDataSet.ActivateNewDataset(const SqlResult: String): TRoomerDataSet;
 begin
-  result := CreateNewDataset;
-  result.OpenDataset(SqlResult);
+  Result := CreateNewDataset;
+  Result.OpenDataset(SqlResult);
   // AssignToDataset(SqlResult, result);
 end;
 
 // **********************************************************************
 
-procedure TRoomerDataSet.SetDataActive(const Value: Boolean);
+procedure TRoomerDataSet.SetDataActive(const Value: boolean);
 begin
   FDataActive := Value;
   if FDataActive then
@@ -2242,7 +2097,7 @@ end;
 
 function TRoomerDataSet.GetUri: String;
 begin
-  result := FUri;
+  Result := FUri;
 end;
 
 procedure TRoomerDataSet.SetUri(const Value: String);
@@ -2253,74 +2108,60 @@ end;
 function locationName(locationId: word): String;
 begin
   if locationId = ftTemplate then
-    result := 'templates'
+    Result := 'templates'
   else if locationId = ftImage then
-    result := 'images'
+    Result := 'images'
   else if locationId = ftDocument then
-    result := 'contracts'
+    Result := 'contracts'
   else if locationId = ftSystem then
-    result := 'system'
+    Result := 'system'
   else
-    result := 'templates';
+    Result := 'templates';
 end;
 
-function TRoomerDataSet.SystemDeleteFile(FileType: word;
-  filename: String): Boolean;
+function TRoomerDataSet.SystemDeleteFile(FileType: word; filename: String): boolean;
 begin
   try
-    GetAsString(roomerClient,
-      FStoreUri + format('store/delete?hotelId=%s&filename=%s&location=%s',
-      [FHotelId, EncodeURIComponent(extractFilename(filename)),
-      locationName(FileType)]));
-    result := true;
+    GetAsString(FStoreUri + format('store/delete?hotelId=%s&filename=%s&location=%s',
+      [FHotelId, EncodeURIComponent(extractFilename(filename)), locationName(FileType)]));
+    Result := true;
   except
-    result := false;
+    Result := false;
   end;
 end;
 
-function TRoomerDataSet.SystemRenameFile(FileType: word;
-  filename, newFilename: String): Boolean;
+function TRoomerDataSet.SystemRenameFile(FileType: word; filename, newFilename: String): boolean;
 begin
   try
-    GetAsString(roomerClient,
-      FStoreUri + format
-      ('store/rename?hotelId=%s&filename=%s&newname=%s&location=%s',
-      [FHotelId, EncodeURIComponent(extractFilename(filename)),
-      EncodeURIComponent(extractFilename(newFilename)),
+    GetAsString(FStoreUri + format('store/rename?hotelId=%s&filename=%s&newname=%s&location=%s',
+      [FHotelId, EncodeURIComponent(extractFilename(filename)), EncodeURIComponent(extractFilename(newFilename)),
       locationName(FileType)]));
-    result := true;
+    Result := true;
   except
-    result := false;
+    Result := false;
   end;
 end;
 
-function TRoomerDataSet.SystemDownloadFile(FileType: word;
-  sourceFilename, destFilename: String): Boolean;
+function TRoomerDataSet.SystemDownloadFile(FileType: word; sourceFilename, destFilename: String): boolean;
 begin
-  result := DownloadFile(roomerClient,
-    FStoreUri + format('store/get?hotelId=%s&filename=%s&location=%s',
-    [FHotelId, extractFilename(sourceFilename), locationName(FileType)]),
+  Result := DownloadFile(roomerClient, FStoreUri + format('store/get?hotelId=%s&filename=%s&location=%s',
+    [FHotelId, extractFilename(sourceFilename), locationName(FileType)]), destFilename);
+end;
+
+function TRoomerDataSet.SystemDownloadFileFromURI(URI, filename: String): boolean;
+begin
+  Result := DownloadFile(roomerClient, URI, filename);
+end;
+
+function TRoomerDataSet.SystemDownloadRoomerFile(sourceFilename, destFilename: String): boolean;
+begin
+  Result := DownloadFile(roomerClient, FStoreUri + format('store/roomer/%s', [extractFilename(sourceFilename)]),
     destFilename);
 end;
 
-function TRoomerDataSet.SystemDownloadFileFromURI(URI,
-  filename: String): Boolean;
+function TRoomerDataSet.SystemDownloadRoomerBackup(destFilename: String): boolean;
 begin
-  result := DownloadFile(roomerClient, URI, filename);
-end;
-
-function TRoomerDataSet.SystemDownloadRoomerFile(sourceFilename,
-  destFilename: String): Boolean;
-begin
-  result := DownloadFile(roomerClient, FStoreUri + format('store/roomer/%s',
-    [extractFilename(sourceFilename)]), destFilename);
-end;
-
-function TRoomerDataSet.SystemDownloadRoomerBackup(destFilename
-  : String): Boolean;
-begin
-  result := DownloadFile(roomerClient, FUri + 'pms/business/backup',
-    destFilename);
+  Result := DownloadFile(roomerClient, FUri + 'pms/business/backup', destFilename);
 end;
 
 function TRoomerDataSet.SystemRoomerFile(filename: String): TFileEntity;
@@ -2328,41 +2169,36 @@ var
   fileList: TFileList;
 begin
   try
-    fileList := TFileList.Create(String(GetAsString(roomerClient,
-      FStoreUri + format('store/roomerinfo?hotelId=%s&filename=%s',
+    fileList := TFileList.Create(String(GetAsString(FStoreUri + format('store/roomerinfo?hotelId=%s&filename=%s',
       [FHotelId, filename]))));
     if fileList.Count > 0 then
-      result := fileList.Files[0]
+      Result := fileList.files[0]
     else
-      result := nil;
+      Result := nil;
   except
-    result := nil;
+    Result := nil;
   end;
 end;
 
-function TRoomerDataSet.SystemFileExists(FileType: word;
-  filename: String): Boolean;
+function TRoomerDataSet.SystemFileExists(FileType: word; filename: String): boolean;
 var
   s: String;
 begin
-  s := String(GetAsString(roomerClient,
-    FStoreUri + format('store/exists?hotelId=%s&location=%s&filename=%s',
+  s := String(GetAsString(FStoreUri + format('store/exists?hotelId=%s&location=%s&filename=%s',
     [FHotelId, locationName(FileType), extractFilename(filename)])));
-  result := LowerCase(s) = 'true';
+  Result := LowerCase(s) = 'true';
 end;
 
 function TRoomerDataSet.SystemListFiles(FileType: word): TFileList;
 var
   s: String;
 begin
-  s := GetAsString(roomerClient,
-    FStoreUri + format('store/list?hotelId=%s&location=%s',
-    [FHotelId, locationName(FileType)]));
-  result := TFileList.Create(s); // SplitStringToTStrings(#10, s);
+  s := GetAsString(FStoreUri + format('store/list?hotelId=%s&location=%s', [FHotelId, locationName(FileType)]));
+  Result := TFileList.Create(s); // SplitStringToTStrings(#10, s);
 end;
 
-function TRoomerDataSet.SystemUploadFile(filename: String; FileType: word;
-  includeLastModified: Boolean = true): Boolean;
+function TRoomerDataSet.SystemUploadFile(filename: String; FileType: word; includeLastModified: boolean = true)
+  : boolean;
 var
   DateOfFile: TDateTime;
   sTimeStamp: String;
@@ -2374,28 +2210,26 @@ begin
     sTimeStamp := format('&timestamp=%s', [dateToJsonString(DateOfFile)]);
   end;
 
-  result := UploadFile(roomerClient,
-    AnsiString(FStoreUri +
-    format('store/save?hotelId=%s&filename=%s&location=%s%s',
-    [FHotelId, extractFilename(filename), locationName(FileType), sTimeStamp])),
-    filename);
+  Result := UploadFile(roomerClient, FStoreUri + format('store/save?hotelId=%s&filename=%s&location=%s%s',
+    [FHotelId, extractFilename(filename), locationName(FileType), sTimeStamp]), filename);
 end;
 
-function TRoomerDataSet.SplitMultipleResultIntoDatasets(res : String) : TList<TRoomerDataSet>;
-var list : TStrings;
-    I : Integer;
-    ds : TRoomerDataSet;
+function TRoomerDataSet.SplitMultipleResultIntoDatasets(res: String): TList<TRoomerDataSet>;
+var
+  list: TStrings;
+  i: Integer;
+  ds: TRoomerDataSet;
 begin
   list := SplitStringToTStrings(ROOMER_SPLIT, res);
   try
-    result := TList<TRoomerDataSet>.Create;
-    for I := 0 to list.Count - 1 do
+    Result := TList<TRoomerDataSet>.Create;
+    for i := 0 to list.Count - 1 do
     begin
       if list[i] <> '' then
       begin
         ds := CreateNewDataset;
-        ds.OpenDataset(list[I]);
-        result.add(ds);
+        ds.OpenDataset(list[i]);
+        Result.add(ds);
       end;
     end;
   finally
@@ -2405,48 +2239,42 @@ end;
 
 procedure TRoomerDataSet.SystemPrepareChannelRates;
 begin
-  downloadUrlAsString(  RoomerUri + 'pms/business/prepareChannelRates');
+  downloadUrlAsString(RoomerUri + 'pms/business/prepareChannelRates');
 end;
 
-
-function TRoomerDataSet.ProvideFieldValue(Field: TField; iMaxSize : Integer): String;
-var str : String;
+function TRoomerDataSet.ProvideFieldValue(Field: TField; iMaxSize: Integer): String;
+var
+  str: String;
 begin
   if Field.Value = null then
-    result := ''
+    Result := ''
   else
     case Field.DataType of
-      ftString, ftFixedChar, ftWideString, ftVariant, ftFixedWideChar, ftMemo,
-        ftWideMemo:
+      ftString, ftFixedChar, ftWideString, ftVariant, ftFixedWideChar, ftMemo, ftWideMemo:
         begin
           if iMaxSize > 0 then
-            str := copy(Field.Value, 1, iMaxSize)
+            str := Copy(Field.Value, 1, iMaxSize)
           else
             str := Field.Value;
-          result := format('''%s''', [StringReplace(str, '''', '\''',
-            [rfReplaceAll])]);
+          Result := format('''%s''', [StringReplace(str, '''', '\''', [rfReplaceAll])]);
         end;
-      ftSmallint, ftInteger, ftWord, ftLargeint, ftLongWord, ftShortint, ftByte,
-        ftExtended, ftSingle:
-        result := Field.Value;
+      ftSmallint, ftInteger, ftWord, ftLargeint, ftLongWord, ftShortint, ftByte, ftExtended, ftSingle:
+        Result := Field.Value;
       ftBoolean:
-        result := inttostr(ord(Field.AsBoolean));
+        Result := inttostr(ord(Field.AsBoolean));
       ftFloat, ftCurrency:
-        result := uStringUtils.FloatToDBString(Field.Value);
+        Result := uStringUtils.FloatToDBString(Field.Value);
       ftDate:
-        result := format('''%s''',
-          [FormatDateTime('yyyy-mm-dd', Field.AsDateTime)]);
+        Result := format('''%s''', [FormatDateTime('yyyy-mm-dd', Field.AsDateTime)]);
       ftTime:
-        result := format('''%s''',
-          [FormatDateTime('hh:nn:ss', Field.AsDateTime)]);
+        Result := format('''%s''', [FormatDateTime('hh:nn:ss', Field.AsDateTime)]);
       ftDateTime:
-        result := format('''%s''', [FormatDateTime('yyyy-mm-dd hh:nn:ss',
-          Field.AsDateTime)]);
+        Result := format('''%s''', [FormatDateTime('yyyy-mm-dd hh:nn:ss', Field.AsDateTime)]);
       ftAutoInc:
-        result := '';
+        Result := '';
 
     else
-      result := format('''%s''', [Field.Value]);
+      Result := format('''%s''', [Field.Value]);
     end;
 end;
 
@@ -2463,12 +2291,12 @@ end;
 
 function TRoomerExecutionPlan.AddExec(aSql: String): Integer;
 begin
-  result := sqlList.Add(TRoomerPlanEntity.Create(ptExec, aSql));
+  Result := sqlList.add(TRoomerPlanEntity.Create(ptExec, aSql));
 end;
 
 function TRoomerExecutionPlan.AddQuery(aSql: String): Integer;
 begin
-  result := sqlList.Add(TRoomerPlanEntity.Create(ptQuery, aSql));
+  Result := sqlList.add(TRoomerPlanEntity.Create(ptQuery, aSql));
 end;
 
 procedure TRoomerExecutionPlan.BeginTransaction;
@@ -2476,7 +2304,7 @@ begin
   if FInTransaction then
     raise ERoomerExecutionPlanException.Create('Nested transactions not allowed');
   FRoomerDataSet.SystemStartTransaction;
-  FInTransaction := True;
+  FInTransaction := true;
 end;
 
 procedure TRoomerExecutionPlan.Clear;
@@ -2488,35 +2316,34 @@ end;
 procedure TRoomerExecutionPlan.CommitTransaction;
 begin
   FRoomerDataSet.SystemCommitTransaction;
-  FInTransaction := False;
+  FInTransaction := false;
 end;
 
 constructor TRoomerExecutionPlan.Create(_RoomerDataSet: TRoomerDataSet = nil);
 begin
   inherited Create;
-  queryResults := TRoomerDatasetList.Create(True);
-  sqlList := TRoomerPlanEntityList.Create(True);
+  queryResults := TRoomerDatasetList.Create(true);
+  sqlList := TRoomerPlanEntityList.Create(true);
   FRoomerDataSet := _RoomerDataSet;
 end;
 
 destructor TRoomerExecutionPlan.Destroy;
 begin
   if FInTransaction then
-  try
-    CommitTransaction;
-  except
-    if FInTransaction then
-      RollbackTransaction;
-  end;
-  FRoomerDataset := nil;
+    try
+      CommitTransaction;
+    except
+      if FInTransaction then
+        RollbackTransaction;
+    end;
+  FRoomerDataSet := nil;
   queryResults.Free;
   sqlList.Free;
   inherited;
 end;
 
-function TRoomerExecutionPlan.Execute(PlanType: Integer = ptAll;
-  transaction: Boolean = false;
-  performRollBackOnException: Boolean = false): Boolean;
+function TRoomerExecutionPlan.Execute(PlanType: Integer = ptAll; transaction: boolean = false;
+  performRollBackOnException: boolean = false): boolean;
 var
   i: Integer;
   res: String;
@@ -2528,7 +2355,7 @@ begin
     if PlanType = ptQuery then
     begin
       for i := 0 to QueryCount - 1 do
-        queryResults.Add(FRoomerDataSet.CreateNewDataset);
+        queryResults.add(FRoomerDataSet.CreateNewDataset);
 
       lSQLList := getSqlsAsTList(PlanType);
       try
@@ -2550,47 +2377,46 @@ begin
 
     if transaction then
       CommitTransaction;
-    result := true;
+    Result := true;
   except
     on E: Exception do
     begin
       FExecException := E.Message;
       if transaction OR performRollBackOnException then
         RollbackTransaction;
-      result := false;
+      Result := false;
     end;
   end;
 end;
 
 function TRoomerExecutionPlan.GetCount: Integer;
 begin
-  result := sqlList.Count;
+  Result := sqlList.Count;
 end;
 
 function TRoomerExecutionPlan.GetExecCount: Integer;
 var
   i: Integer;
 begin
-  result := 0;
+  Result := 0;
   for i := 0 to sqlList.Count - 1 do
     if sqlList[i].PlanType = ptExec then
-      inc(result);
+      inc(Result);
 end;
 
 function TRoomerExecutionPlan.GetQueryCount: Integer;
 var
   i: Integer;
 begin
-  result := 0;
+  Result := 0;
   for i := 0 to sqlList.Count - 1 do
     if sqlList[i].PlanType = ptQuery then
-      inc(result);
+      inc(Result);
 end;
 
-function TRoomerExecutionPlan.GetResultRoomerDataSet(index: Integer)
-  : TRoomerDataSet;
+function TRoomerExecutionPlan.GetResultRoomerDataSet(index: Integer): TRoomerDataSet;
 begin
-  result := queryResults[index];
+  Result := queryResults[index];
 end;
 
 function TRoomerExecutionPlan.getSqlsAsTList(PlanType: Integer): TList<String>;
@@ -2600,26 +2426,26 @@ begin
   Result := TList<String>.Create;
   for i := 0 to sqlList.Count - 1 do
     if sqlList[i].PlanType = PlanType then
-      Result.Add(sqlList[i].Sql);
+      Result.add(sqlList[i].Sql);
 end;
 
 procedure TRoomerExecutionPlan.RollbackTransaction;
 begin
   FRoomerDataSet.SystemRollbackTransaction;
-  FInTransaction := False;
+  FInTransaction := false;
 end;
 
 { TRoomerHotelsEntity }
 
-constructor TRoomerHotelsEntity.Create(_hotelCode, _hotelName: String;
-  _ownerId: Integer);
+constructor TRoomerHotelsEntity.Create(_hotelCode, _hotelName: String; _ownerId: Integer);
 begin
   hotelCode := _hotelCode;
   hotelName := _hotelName;
   ownerId := _ownerId;
 end;
 
-var recVer: TEXEVersionData;
+var
+  recVer: TEXEVersionData;
 
 initialization
 

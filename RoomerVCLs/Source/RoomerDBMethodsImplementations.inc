@@ -961,7 +961,7 @@ end;
 
 function TRoomerDataSet.SystemDeleteStaticResource(id : Integer): String;
 begin
-  Result := DeleteAsString(activeRoomerDataSet.roomerClient, RoomerUri + 'resources/' + inttostr(id));
+  Result := DeleteAsString(RoomerUri + 'resources/' + inttostr(id));
 end;
 
 
@@ -1146,7 +1146,7 @@ function TRoomerDataSet.Cancellationdetails_Entities_SaveEntity(entity: TCancell
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'cancellationdetails'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'cancellationdetails'), entity.json);
   result := TCancellationdetailsEntity(processJson(src, 'TCancellationdetailsEntity')[0]);
   
 end;
@@ -1155,7 +1155,7 @@ function TRoomerDataSet.Cancellationdetails_Entities_UpdateEntity(entity: TCance
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'cancellationdetails/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'cancellationdetails/' + inttostr(entity.Id)), entity.json);
   result := TCancellationdetailsEntity(processJson(src, 'TCancellationdetailsEntity')[0]);
   
 end;
@@ -1164,7 +1164,6 @@ procedure TRoomerDataSet.Cancellationdetails_Entities_Delete(id: Integer);
 begin
   AddAuthenticationHeaders(roomerClient);
   roomerClient.Delete(AnsiString(FRoomerEntitiesUri + 'cancellationdetails/' + inttostr(id)));
-  
 end;
 
 function TRoomerDataSet.Cancellationdetails_DataSets_FindAll(): String;
@@ -1277,7 +1276,7 @@ function TRoomerDataSet.Channelclassrelations_Entities_SaveEntity(entity: TChann
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'channelclassrelations'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'channelclassrelations'), entity.json);
   result := TChannelclassrelationsEntity(processJson(src, 'TChannelclassrelationsEntity')[0]);
   
 end;
@@ -1286,7 +1285,7 @@ function TRoomerDataSet.Channelclassrelations_Entities_UpdateEntity(entity: TCha
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'channelclassrelations/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'channelclassrelations/' + inttostr(entity.Id)), entity.json);
   result := TChannelclassrelationsEntity(processJson(src, 'TChannelclassrelationsEntity')[0]);
   
 end;
@@ -1408,7 +1407,7 @@ function TRoomerDataSet.Channelmanagers_Entities_SaveEntity(entity: TChannelmana
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'channelmanagers'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'channelmanagers'), entity.json);
   result := TChannelmanagersEntity(processJson(src, 'TChannelmanagersEntity')[0]);
   
 end;
@@ -1417,7 +1416,7 @@ function TRoomerDataSet.Channelmanagers_Entities_UpdateEntity(entity: TChannelma
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'channelmanagers/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'channelmanagers/' + inttostr(entity.Id)), entity.json);
   result := TChannelmanagersEntity(processJson(src, 'TChannelmanagersEntity')[0]);
   
 end;
@@ -1539,7 +1538,7 @@ function TRoomerDataSet.Channelplancodes_Entities_SaveEntity(entity: TChannelpla
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'channelplancodes'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'channelplancodes'), entity.json);
   result := TChannelplancodesEntity(processJson(src, 'TChannelplancodesEntity')[0]);
   
 end;
@@ -1548,7 +1547,7 @@ function TRoomerDataSet.Channelplancodes_Entities_UpdateEntity(entity: TChannelp
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'channelplancodes/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'channelplancodes/' + inttostr(entity.Id)), entity.json);
   result := TChannelplancodesEntity(processJson(src, 'TChannelplancodesEntity')[0]);
   
 end;
@@ -1670,7 +1669,7 @@ function TRoomerDataSet.Channelrates_Entities_SaveEntity(entity: TChannelratesEn
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'channelrates'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'channelrates'), entity.json);
   result := TChannelratesEntity(processJson(src, 'TChannelratesEntity')[0]);
   
 end;
@@ -1679,7 +1678,7 @@ function TRoomerDataSet.Channelrates_Entities_UpdateEntity(entity: TChannelrates
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'channelrates/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'channelrates/' + inttostr(entity.Id)), entity.json);
   result := TChannelratesEntity(processJson(src, 'TChannelratesEntity')[0]);
   
 end;
@@ -1801,7 +1800,7 @@ function TRoomerDataSet.Channelratesavailabilities_Entities_SaveEntity(entity: T
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'channelratesavailabilities'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'channelratesavailabilities'), entity.json);
   result := TChannelratesavailabilitiesEntity(processJson(src, 'TChannelratesavailabilitiesEntity')[0]);
   
 end;
@@ -1810,7 +1809,7 @@ function TRoomerDataSet.Channelratesavailabilities_Entities_UpdateEntity(entity:
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'channelratesavailabilities/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'channelratesavailabilities/' + inttostr(entity.Id)), entity.json);
   result := TChannelratesavailabilitiesEntity(processJson(src, 'TChannelratesavailabilitiesEntity')[0]);
   
 end;
@@ -1932,7 +1931,7 @@ function TRoomerDataSet.Channels_Entities_SaveEntity(entity: TChannelsEntity): T
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'channels'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'channels'), entity.json);
   result := TChannelsEntity(processJson(src, 'TChannelsEntity')[0]);
   
 end;
@@ -1941,7 +1940,7 @@ function TRoomerDataSet.Channels_Entities_UpdateEntity(entity: TChannelsEntity):
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'channels/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'channels/' + inttostr(entity.Id)), entity.json);
   result := TChannelsEntity(processJson(src, 'TChannelsEntity')[0]);
   
 end;
@@ -2063,7 +2062,7 @@ function TRoomerDataSet.Channeltogglingrules_Entities_SaveEntity(entity: TChanne
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'channeltogglingrules'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'channeltogglingrules'), entity.json);
   result := TChanneltogglingrulesEntity(processJson(src, 'TChanneltogglingrulesEntity')[0]);
   
 end;
@@ -2072,7 +2071,7 @@ function TRoomerDataSet.Channeltogglingrules_Entities_UpdateEntity(entity: TChan
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'channeltogglingrules/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'channeltogglingrules/' + inttostr(entity.Id)), entity.json);
   result := TChanneltogglingrulesEntity(processJson(src, 'TChanneltogglingrulesEntity')[0]);
   
 end;
@@ -2194,7 +2193,7 @@ function TRoomerDataSet.Channeltogglingrulessplit_Entities_SaveEntity(entity: TC
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'channeltogglingrulessplit'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'channeltogglingrulessplit'), entity.json);
   result := TChanneltogglingrulessplitEntity(processJson(src, 'TChanneltogglingrulessplitEntity')[0]);
   
 end;
@@ -2203,7 +2202,7 @@ function TRoomerDataSet.Channeltogglingrulessplit_Entities_UpdateEntity(entity: 
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'channeltogglingrulessplit/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'channeltogglingrulessplit/' + inttostr(entity.Id)), entity.json);
   result := TChanneltogglingrulessplitEntity(processJson(src, 'TChanneltogglingrulessplitEntity')[0]);
   
 end;
@@ -2325,7 +2324,7 @@ function TRoomerDataSet.Colors_Entities_SaveEntity(entity: TColorsEntity): TColo
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'colors'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'colors'), entity.json);
   result := TColorsEntity(processJson(src, 'TColorsEntity')[0]);
   
 end;
@@ -2334,7 +2333,7 @@ function TRoomerDataSet.Colors_Entities_UpdateEntity(entity: TColorsEntity): TCo
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'colors/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'colors/' + inttostr(entity.Id)), entity.json);
   result := TColorsEntity(processJson(src, 'TColorsEntity')[0]);
   
 end;
@@ -2456,7 +2455,7 @@ function TRoomerDataSet.Control_Entities_SaveEntity(entity: TControlEntity): TCo
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'control'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'control'), entity.json);
   result := TControlEntity(processJson(src, 'TControlEntity')[0]);
   
 end;
@@ -2465,7 +2464,7 @@ function TRoomerDataSet.Control_Entities_UpdateEntity(entity: TControlEntity): T
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'control/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'control/' + inttostr(entity.Id)), entity.json);
   result := TControlEntity(processJson(src, 'TControlEntity')[0]);
   
 end;
@@ -2587,7 +2586,7 @@ function TRoomerDataSet.Countries_Entities_SaveEntity(entity: TCountriesEntity):
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'countries'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'countries'), entity.json);
   result := TCountriesEntity(processJson(src, 'TCountriesEntity')[0]);
   
 end;
@@ -2596,7 +2595,7 @@ function TRoomerDataSet.Countries_Entities_UpdateEntity(entity: TCountriesEntity
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'countries/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'countries/' + inttostr(entity.Id)), entity.json);
   result := TCountriesEntity(processJson(src, 'TCountriesEntity')[0]);
   
 end;
@@ -2718,7 +2717,7 @@ function TRoomerDataSet.Countrygroups_Entities_SaveEntity(entity: TCountrygroups
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'countrygroups'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'countrygroups'), entity.json);
   result := TCountrygroupsEntity(processJson(src, 'TCountrygroupsEntity')[0]);
   
 end;
@@ -2727,7 +2726,7 @@ function TRoomerDataSet.Countrygroups_Entities_UpdateEntity(entity: TCountrygrou
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'countrygroups/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'countrygroups/' + inttostr(entity.Id)), entity.json);
   result := TCountrygroupsEntity(processJson(src, 'TCountrygroupsEntity')[0]);
   
 end;
@@ -2849,7 +2848,7 @@ function TRoomerDataSet.Currencies_Entities_SaveEntity(entity: TCurrenciesEntity
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'currencies'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'currencies'), entity.json);
   result := TCurrenciesEntity(processJson(src, 'TCurrenciesEntity')[0]);
   
 end;
@@ -2858,7 +2857,7 @@ function TRoomerDataSet.Currencies_Entities_UpdateEntity(entity: TCurrenciesEnti
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'currencies/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'currencies/' + inttostr(entity.Id)), entity.json);
   result := TCurrenciesEntity(processJson(src, 'TCurrenciesEntity')[0]);
   
 end;
@@ -2980,7 +2979,7 @@ function TRoomerDataSet.Customerpreferences_Entities_SaveEntity(entity: TCustome
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'customerpreferences'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'customerpreferences'), entity.json);
   result := TCustomerpreferencesEntity(processJson(src, 'TCustomerpreferencesEntity')[0]);
   
 end;
@@ -2989,7 +2988,7 @@ function TRoomerDataSet.Customerpreferences_Entities_UpdateEntity(entity: TCusto
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'customerpreferences/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'customerpreferences/' + inttostr(entity.Id)), entity.json);
   result := TCustomerpreferencesEntity(processJson(src, 'TCustomerpreferencesEntity')[0]);
   
 end;
@@ -3111,7 +3110,7 @@ function TRoomerDataSet.Customers_Entities_SaveEntity(entity: TCustomersEntity):
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'customers'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'customers'), entity.json);
   result := TCustomersEntity(processJson(src, 'TCustomersEntity')[0]);
   
 end;
@@ -3120,7 +3119,7 @@ function TRoomerDataSet.Customers_Entities_UpdateEntity(entity: TCustomersEntity
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'customers/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'customers/' + inttostr(entity.Id)), entity.json);
   result := TCustomersEntity(processJson(src, 'TCustomersEntity')[0]);
   
 end;
@@ -3242,7 +3241,7 @@ function TRoomerDataSet.Customertypes_Entities_SaveEntity(entity: TCustomertypes
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'customertypes'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'customertypes'), entity.json);
   result := TCustomertypesEntity(processJson(src, 'TCustomertypesEntity')[0]);
   
 end;
@@ -3251,7 +3250,7 @@ function TRoomerDataSet.Customertypes_Entities_UpdateEntity(entity: TCustomertyp
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'customertypes/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'customertypes/' + inttostr(entity.Id)), entity.json);
   result := TCustomertypesEntity(processJson(src, 'TCustomertypesEntity')[0]);
   
 end;
@@ -3373,7 +3372,7 @@ function TRoomerDataSet.Dictionary_Entities_SaveEntity(entity: TDictionaryEntity
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'dictionary'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'dictionary'), entity.json);
   result := TDictionaryEntity(processJson(src, 'TDictionaryEntity')[0]);
   
 end;
@@ -3382,7 +3381,7 @@ function TRoomerDataSet.Dictionary_Entities_UpdateEntity(entity: TDictionaryEnti
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'dictionary/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'dictionary/' + inttostr(entity.Id)), entity.json);
   result := TDictionaryEntity(processJson(src, 'TDictionaryEntity')[0]);
   
 end;
@@ -3504,7 +3503,7 @@ function TRoomerDataSet.Facilityactiontypes_Entities_SaveEntity(entity: TFacilit
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'facilityactiontypes'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'facilityactiontypes'), entity.json);
   result := TFacilityactiontypesEntity(processJson(src, 'TFacilityactiontypesEntity')[0]);
   
 end;
@@ -3513,7 +3512,7 @@ function TRoomerDataSet.Facilityactiontypes_Entities_UpdateEntity(entity: TFacil
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'facilityactiontypes/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'facilityactiontypes/' + inttostr(entity.Id)), entity.json);
   result := TFacilityactiontypesEntity(processJson(src, 'TFacilityactiontypesEntity')[0]);
   
 end;
@@ -3635,7 +3634,7 @@ function TRoomerDataSet.Fakenames_Entities_SaveEntity(entity: TFakenamesEntity):
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'fakenames'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'fakenames'), entity.json);
   result := TFakenamesEntity(processJson(src, 'TFakenamesEntity')[0]);
   
 end;
@@ -3644,7 +3643,7 @@ function TRoomerDataSet.Fakenames_Entities_UpdateEntity(entity: TFakenamesEntity
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'fakenames/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'fakenames/' + inttostr(entity.Id)), entity.json);
   result := TFakenamesEntity(processJson(src, 'TFakenamesEntity')[0]);
   
 end;
@@ -3777,7 +3776,7 @@ function TRoomerDataSet.Hotelconfigurations_Entities_SaveEntity(entity: THotelco
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'hotelconfigurations'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'hotelconfigurations'), entity.json);
   result := THotelconfigurationsEntity(processJson(src, 'THotelconfigurationsEntity')[0]);
   
 end;
@@ -3786,7 +3785,7 @@ function TRoomerDataSet.Hotelconfigurations_Entities_UpdateEntity(entity: THotel
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'hotelconfigurations/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'hotelconfigurations/' + inttostr(entity.Id)), entity.json);
   result := THotelconfigurationsEntity(processJson(src, 'THotelconfigurationsEntity')[0]);
   
 end;
@@ -3908,7 +3907,7 @@ function TRoomerDataSet.Hotelcontacts_Entities_SaveEntity(entity: THotelcontacts
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'hotelcontacts'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'hotelcontacts'), entity.json);
   result := THotelcontactsEntity(processJson(src, 'THotelcontactsEntity')[0]);
   
 end;
@@ -3917,7 +3916,7 @@ function TRoomerDataSet.Hotelcontacts_Entities_UpdateEntity(entity: THotelcontac
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'hotelcontacts/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'hotelcontacts/' + inttostr(entity.Id)), entity.json);
   result := THotelcontactsEntity(processJson(src, 'THotelcontactsEntity')[0]);
   
 end;
@@ -4039,7 +4038,7 @@ function TRoomerDataSet.Hotelcounters_Entities_SaveEntity(entity: THotelcounters
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'hotelcounters'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'hotelcounters'), entity.json);
   result := THotelcountersEntity(processJson(src, 'THotelcountersEntity')[0]);
   
 end;
@@ -4048,7 +4047,7 @@ function TRoomerDataSet.Hotelcounters_Entities_UpdateEntity(entity: THotelcounte
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'hotelcounters/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'hotelcounters/' + inttostr(entity.Id)), entity.json);
   result := THotelcountersEntity(processJson(src, 'THotelcountersEntity')[0]);
   
 end;
@@ -4170,7 +4169,7 @@ function TRoomerDataSet.Hoteltasks_Entities_SaveEntity(entity: THoteltasksEntity
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'hoteltasks'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'hoteltasks'), entity.json);
   result := THoteltasksEntity(processJson(src, 'THoteltasksEntity')[0]);
   
 end;
@@ -4179,7 +4178,7 @@ function TRoomerDataSet.Hoteltasks_Entities_UpdateEntity(entity: THoteltasksEnti
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'hoteltasks/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'hoteltasks/' + inttostr(entity.Id)), entity.json);
   result := THoteltasksEntity(processJson(src, 'THoteltasksEntity')[0]);
   
 end;
@@ -4301,7 +4300,7 @@ function TRoomerDataSet.Idreferences_Entities_SaveEntity(entity: TIdreferencesEn
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'idreferences'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'idreferences'), entity.json);
   result := TIdreferencesEntity(processJson(src, 'TIdreferencesEntity')[0]);
   
 end;
@@ -4310,7 +4309,7 @@ function TRoomerDataSet.Idreferences_Entities_UpdateEntity(entity: TIdreferences
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'idreferences/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'idreferences/' + inttostr(entity.Id)), entity.json);
   result := TIdreferencesEntity(processJson(src, 'TIdreferencesEntity')[0]);
   
 end;
@@ -4432,7 +4431,7 @@ function TRoomerDataSet.Industries_Entities_SaveEntity(entity: TIndustriesEntity
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'industries'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'industries'), entity.json);
   result := TIndustriesEntity(processJson(src, 'TIndustriesEntity')[0]);
   
 end;
@@ -4441,7 +4440,7 @@ function TRoomerDataSet.Industries_Entities_UpdateEntity(entity: TIndustriesEnti
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'industries/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'industries/' + inttostr(entity.Id)), entity.json);
   result := TIndustriesEntity(processJson(src, 'TIndustriesEntity')[0]);
   
 end;
@@ -4563,7 +4562,7 @@ function TRoomerDataSet.Invoiceheads_Entities_SaveEntity(entity: TInvoiceheadsEn
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'invoiceheads'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'invoiceheads'), entity.json);
   result := TInvoiceheadsEntity(processJson(src, 'TInvoiceheadsEntity')[0]);
   
 end;
@@ -4572,7 +4571,7 @@ function TRoomerDataSet.Invoiceheads_Entities_UpdateEntity(entity: TInvoiceheads
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'invoiceheads/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'invoiceheads/' + inttostr(entity.Id)), entity.json);
   result := TInvoiceheadsEntity(processJson(src, 'TInvoiceheadsEntity')[0]);
   
 end;
@@ -4694,7 +4693,7 @@ function TRoomerDataSet.Invoicelines_Entities_SaveEntity(entity: TInvoicelinesEn
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'invoicelines'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'invoicelines'), entity.json);
   result := TInvoicelinesEntity(processJson(src, 'TInvoicelinesEntity')[0]);
   
 end;
@@ -4703,7 +4702,7 @@ function TRoomerDataSet.Invoicelines_Entities_UpdateEntity(entity: TInvoicelines
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'invoicelines/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'invoicelines/' + inttostr(entity.Id)), entity.json);
   result := TInvoicelinesEntity(processJson(src, 'TInvoicelinesEntity')[0]);
   
 end;
@@ -4825,7 +4824,7 @@ function TRoomerDataSet.Invoicelinestmp_Entities_SaveEntity(entity: TInvoiceline
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'invoicelinestmp'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'invoicelinestmp'), entity.json);
   result := TInvoicelinestmpEntity(processJson(src, 'TInvoicelinestmpEntity')[0]);
   
 end;
@@ -4834,7 +4833,7 @@ function TRoomerDataSet.Invoicelinestmp_Entities_UpdateEntity(entity: TInvoiceli
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'invoicelinestmp/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'invoicelinestmp/' + inttostr(entity.Id)), entity.json);
   result := TInvoicelinestmpEntity(processJson(src, 'TInvoicelinestmpEntity')[0]);
   
 end;
@@ -4956,7 +4955,7 @@ function TRoomerDataSet.Items_Entities_SaveEntity(entity: TItemsEntity): TItemsE
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'items'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'items'), entity.json);
   result := TItemsEntity(processJson(src, 'TItemsEntity')[0]);
   
 end;
@@ -4965,7 +4964,7 @@ function TRoomerDataSet.Items_Entities_UpdateEntity(entity: TItemsEntity): TItem
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'items/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'items/' + inttostr(entity.Id)), entity.json);
   result := TItemsEntity(processJson(src, 'TItemsEntity')[0]);
   
 end;
@@ -5087,7 +5086,7 @@ function TRoomerDataSet.Itemtypes_Entities_SaveEntity(entity: TItemtypesEntity):
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'itemtypes'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'itemtypes'), entity.json);
   result := TItemtypesEntity(processJson(src, 'TItemtypesEntity')[0]);
   
 end;
@@ -5096,7 +5095,7 @@ function TRoomerDataSet.Itemtypes_Entities_UpdateEntity(entity: TItemtypesEntity
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'itemtypes/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'itemtypes/' + inttostr(entity.Id)), entity.json);
   result := TItemtypesEntity(processJson(src, 'TItemtypesEntity')[0]);
   
 end;
@@ -5218,7 +5217,7 @@ function TRoomerDataSet.Locations_Entities_SaveEntity(entity: TLocationsEntity):
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'locations'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'locations'), entity.json);
   result := TLocationsEntity(processJson(src, 'TLocationsEntity')[0]);
   
 end;
@@ -5227,7 +5226,7 @@ function TRoomerDataSet.Locations_Entities_UpdateEntity(entity: TLocationsEntity
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'locations/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'locations/' + inttostr(entity.Id)), entity.json);
   result := TLocationsEntity(processJson(src, 'TLocationsEntity')[0]);
   
 end;
@@ -5349,7 +5348,7 @@ function TRoomerDataSet.Maintenancecodes_Entities_SaveEntity(entity: TMaintenanc
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'maintenancecodes'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'maintenancecodes'), entity.json);
   result := TMaintenancecodesEntity(processJson(src, 'TMaintenancecodesEntity')[0]);
   
 end;
@@ -5358,7 +5357,7 @@ function TRoomerDataSet.Maintenancecodes_Entities_UpdateEntity(entity: TMaintena
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'maintenancecodes/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'maintenancecodes/' + inttostr(entity.Id)), entity.json);
   result := TMaintenancecodesEntity(processJson(src, 'TMaintenancecodesEntity')[0]);
   
 end;
@@ -5480,7 +5479,7 @@ function TRoomerDataSet.Maintenanceroomnotes_Entities_SaveEntity(entity: TMainte
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'maintenanceroomnotes'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'maintenanceroomnotes'), entity.json);
   result := TMaintenanceroomnotesEntity(processJson(src, 'TMaintenanceroomnotesEntity')[0]);
   
 end;
@@ -5489,7 +5488,7 @@ function TRoomerDataSet.Maintenanceroomnotes_Entities_UpdateEntity(entity: TMain
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'maintenanceroomnotes/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'maintenanceroomnotes/' + inttostr(entity.Id)), entity.json);
   result := TMaintenanceroomnotesEntity(processJson(src, 'TMaintenanceroomnotesEntity')[0]);
   
 end;
@@ -5611,7 +5610,7 @@ function TRoomerDataSet.Packageclasses_Entities_SaveEntity(entity: TPackageclass
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'packageclasses'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'packageclasses'), entity.json);
   result := TPackageclassesEntity(processJson(src, 'TPackageclassesEntity')[0]);
   
 end;
@@ -5620,7 +5619,7 @@ function TRoomerDataSet.Packageclasses_Entities_UpdateEntity(entity: TPackagecla
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'packageclasses/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'packageclasses/' + inttostr(entity.Id)), entity.json);
   result := TPackageclassesEntity(processJson(src, 'TPackageclassesEntity')[0]);
   
 end;
@@ -5742,7 +5741,7 @@ function TRoomerDataSet.Packageitems_Entities_SaveEntity(entity: TPackageitemsEn
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'packageitems'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'packageitems'), entity.json);
   result := TPackageitemsEntity(processJson(src, 'TPackageitemsEntity')[0]);
   
 end;
@@ -5751,7 +5750,7 @@ function TRoomerDataSet.Packageitems_Entities_UpdateEntity(entity: TPackageitems
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'packageitems/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'packageitems/' + inttostr(entity.Id)), entity.json);
   result := TPackageitemsEntity(processJson(src, 'TPackageitemsEntity')[0]);
   
 end;
@@ -5873,7 +5872,7 @@ function TRoomerDataSet.Packages_Entities_SaveEntity(entity: TPackagesEntity): T
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'packages'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'packages'), entity.json);
   result := TPackagesEntity(processJson(src, 'TPackagesEntity')[0]);
   
 end;
@@ -5882,7 +5881,7 @@ function TRoomerDataSet.Packages_Entities_UpdateEntity(entity: TPackagesEntity):
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'packages/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'packages/' + inttostr(entity.Id)), entity.json);
   result := TPackagesEntity(processJson(src, 'TPackagesEntity')[0]);
   
 end;
@@ -6004,7 +6003,7 @@ function TRoomerDataSet.Packageusage_Entities_SaveEntity(entity: TPackageusageEn
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'packageusage'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'packageusage'), entity.json);
   result := TPackageusageEntity(processJson(src, 'TPackageusageEntity')[0]);
   
 end;
@@ -6013,7 +6012,7 @@ function TRoomerDataSet.Packageusage_Entities_UpdateEntity(entity: TPackageusage
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'packageusage/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'packageusage/' + inttostr(entity.Id)), entity.json);
   result := TPackageusageEntity(processJson(src, 'TPackageusageEntity')[0]);
   
 end;
@@ -6135,7 +6134,7 @@ function TRoomerDataSet.Paygroups_Entities_SaveEntity(entity: TPaygroupsEntity):
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'paygroups'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'paygroups'), entity.json);
   result := TPaygroupsEntity(processJson(src, 'TPaygroupsEntity')[0]);
   
 end;
@@ -6144,7 +6143,7 @@ function TRoomerDataSet.Paygroups_Entities_UpdateEntity(entity: TPaygroupsEntity
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'paygroups/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'paygroups/' + inttostr(entity.Id)), entity.json);
   result := TPaygroupsEntity(processJson(src, 'TPaygroupsEntity')[0]);
   
 end;
@@ -6266,7 +6265,7 @@ function TRoomerDataSet.Payments_Entities_SaveEntity(entity: TPaymentsEntity): T
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'payments'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'payments'), entity.json);
   result := TPaymentsEntity(processJson(src, 'TPaymentsEntity')[0]);
   
 end;
@@ -6275,7 +6274,7 @@ function TRoomerDataSet.Payments_Entities_UpdateEntity(entity: TPaymentsEntity):
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'payments/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'payments/' + inttostr(entity.Id)), entity.json);
   result := TPaymentsEntity(processJson(src, 'TPaymentsEntity')[0]);
   
 end;
@@ -6397,7 +6396,7 @@ function TRoomerDataSet.Paytypes_Entities_SaveEntity(entity: TPaytypesEntity): T
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'paytypes'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'paytypes'), entity.json);
   result := TPaytypesEntity(processJson(src, 'TPaytypesEntity')[0]);
   
 end;
@@ -6406,7 +6405,7 @@ function TRoomerDataSet.Paytypes_Entities_UpdateEntity(entity: TPaytypesEntity):
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'paytypes/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'paytypes/' + inttostr(entity.Id)), entity.json);
   result := TPaytypesEntity(processJson(src, 'TPaytypesEntity')[0]);
   
 end;
@@ -6528,7 +6527,7 @@ function TRoomerDataSet.Person_Entities_SaveEntity(entity: TPersonEntity): TPers
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'person'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'person'), entity.json);
   result := TPersonEntity(processJson(src, 'TPersonEntity')[0]);
   
 end;
@@ -6537,7 +6536,7 @@ function TRoomerDataSet.Person_Entities_UpdateEntity(entity: TPersonEntity): TPe
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'person/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'person/' + inttostr(entity.Id)), entity.json);
   result := TPersonEntity(processJson(src, 'TPersonEntity')[0]);
   
 end;
@@ -6659,7 +6658,7 @@ function TRoomerDataSet.Personaddress_Entities_SaveEntity(entity: TPersonaddress
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'personaddress'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'personaddress'), entity.json);
   result := TPersonaddressEntity(processJson(src, 'TPersonaddressEntity')[0]);
   
 end;
@@ -6668,7 +6667,7 @@ function TRoomerDataSet.Personaddress_Entities_UpdateEntity(entity: TPersonaddre
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'personaddress/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'personaddress/' + inttostr(entity.Id)), entity.json);
   result := TPersonaddressEntity(processJson(src, 'TPersonaddressEntity')[0]);
   
 end;
@@ -6790,7 +6789,7 @@ function TRoomerDataSet.Personchildren_Entities_SaveEntity(entity: TPersonchildr
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'personchildren'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'personchildren'), entity.json);
   result := TPersonchildrenEntity(processJson(src, 'TPersonchildrenEntity')[0]);
   
 end;
@@ -6799,7 +6798,7 @@ function TRoomerDataSet.Personchildren_Entities_UpdateEntity(entity: TPersonchil
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'personchildren/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'personchildren/' + inttostr(entity.Id)), entity.json);
   result := TPersonchildrenEntity(processJson(src, 'TPersonchildrenEntity')[0]);
   
 end;
@@ -6921,7 +6920,7 @@ function TRoomerDataSet.Personcontact_Entities_SaveEntity(entity: TPersoncontact
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'personcontact'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'personcontact'), entity.json);
   result := TPersoncontactEntity(processJson(src, 'TPersoncontactEntity')[0]);
   
 end;
@@ -6930,7 +6929,7 @@ function TRoomerDataSet.Personcontact_Entities_UpdateEntity(entity: TPersonconta
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'personcontact/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'personcontact/' + inttostr(entity.Id)), entity.json);
   result := TPersoncontactEntity(processJson(src, 'TPersoncontactEntity')[0]);
   
 end;
@@ -7052,7 +7051,7 @@ function TRoomerDataSet.Personcontacttype_Entities_SaveEntity(entity: TPersoncon
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'personcontacttype'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'personcontacttype'), entity.json);
   result := TPersoncontacttypeEntity(processJson(src, 'TPersoncontacttypeEntity')[0]);
   
 end;
@@ -7061,7 +7060,7 @@ function TRoomerDataSet.Personcontacttype_Entities_UpdateEntity(entity: TPersonc
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'personcontacttype/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'personcontacttype/' + inttostr(entity.Id)), entity.json);
   result := TPersoncontacttypeEntity(processJson(src, 'TPersoncontacttypeEntity')[0]);
   
 end;
@@ -7183,7 +7182,7 @@ function TRoomerDataSet.Personitems_Entities_SaveEntity(entity: TPersonitemsEnti
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'personitems'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'personitems'), entity.json);
   result := TPersonitemsEntity(processJson(src, 'TPersonitemsEntity')[0]);
   
 end;
@@ -7192,7 +7191,7 @@ function TRoomerDataSet.Personitems_Entities_UpdateEntity(entity: TPersonitemsEn
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'personitems/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'personitems/' + inttostr(entity.Id)), entity.json);
   result := TPersonitemsEntity(processJson(src, 'TPersonitemsEntity')[0]);
   
 end;
@@ -7314,7 +7313,7 @@ function TRoomerDataSet.Personprofile_Entities_SaveEntity(entity: TPersonprofile
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'personprofile'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'personprofile'), entity.json);
   result := TPersonprofileEntity(processJson(src, 'TPersonprofileEntity')[0]);
   
 end;
@@ -7323,7 +7322,7 @@ function TRoomerDataSet.Personprofile_Entities_UpdateEntity(entity: TPersonprofi
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'personprofile/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'personprofile/' + inttostr(entity.Id)), entity.json);
   result := TPersonprofileEntity(processJson(src, 'TPersonprofileEntity')[0]);
   
 end;
@@ -7445,7 +7444,7 @@ function TRoomerDataSet.Persons_Entities_SaveEntity(entity: TPersonsEntity): TPe
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'persons'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'persons'), entity.json);
   result := TPersonsEntity(processJson(src, 'TPersonsEntity')[0]);
   
 end;
@@ -7454,7 +7453,7 @@ function TRoomerDataSet.Persons_Entities_UpdateEntity(entity: TPersonsEntity): T
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'persons/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'persons/' + inttostr(entity.Id)), entity.json);
   result := TPersonsEntity(processJson(src, 'TPersonsEntity')[0]);
   
 end;
@@ -7576,7 +7575,7 @@ function TRoomerDataSet.Personviptypes_Entities_SaveEntity(entity: TPersonviptyp
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'personviptypes'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'personviptypes'), entity.json);
   result := TPersonviptypesEntity(processJson(src, 'TPersonviptypesEntity')[0]);
   
 end;
@@ -7585,7 +7584,7 @@ function TRoomerDataSet.Personviptypes_Entities_UpdateEntity(entity: TPersonvipt
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'personviptypes/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'personviptypes/' + inttostr(entity.Id)), entity.json);
   result := TPersonviptypesEntity(processJson(src, 'TPersonviptypesEntity')[0]);
   
 end;
@@ -7707,7 +7706,7 @@ function TRoomerDataSet.Predefineddates_Entities_SaveEntity(entity: TPredefinedd
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'predefineddates'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'predefineddates'), entity.json);
   result := TPredefineddatesEntity(processJson(src, 'TPredefineddatesEntity')[0]);
   
 end;
@@ -7716,7 +7715,7 @@ function TRoomerDataSet.Predefineddates_Entities_UpdateEntity(entity: TPredefine
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'predefineddates/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'predefineddates/' + inttostr(entity.Id)), entity.json);
   result := TPredefineddatesEntity(processJson(src, 'TPredefineddatesEntity')[0]);
   
 end;
@@ -7838,7 +7837,7 @@ function TRoomerDataSet.Pricerules_Entities_SaveEntity(entity: TPricerulesEntity
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'pricerules'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'pricerules'), entity.json);
   result := TPricerulesEntity(processJson(src, 'TPricerulesEntity')[0]);
   
 end;
@@ -7847,7 +7846,7 @@ function TRoomerDataSet.Pricerules_Entities_UpdateEntity(entity: TPricerulesEnti
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'pricerules/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'pricerules/' + inttostr(entity.Id)), entity.json);
   result := TPricerulesEntity(processJson(src, 'TPricerulesEntity')[0]);
   
 end;
@@ -7969,7 +7968,7 @@ function TRoomerDataSet.Pricerulespackages_Entities_SaveEntity(entity: TPricerul
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'pricerulespackages'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'pricerulespackages'), entity.json);
   result := TPricerulespackagesEntity(processJson(src, 'TPricerulespackagesEntity')[0]);
   
 end;
@@ -7978,7 +7977,7 @@ function TRoomerDataSet.Pricerulespackages_Entities_UpdateEntity(entity: TPricer
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'pricerulespackages/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'pricerulespackages/' + inttostr(entity.Id)), entity.json);
   result := TPricerulespackagesEntity(processJson(src, 'TPricerulespackagesEntity')[0]);
   
 end;
@@ -8100,7 +8099,7 @@ function TRoomerDataSet.Pricetypes_Entities_SaveEntity(entity: TPricetypesEntity
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'pricetypes'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'pricetypes'), entity.json);
   result := TPricetypesEntity(processJson(src, 'TPricetypesEntity')[0]);
   
 end;
@@ -8109,7 +8108,7 @@ function TRoomerDataSet.Pricetypes_Entities_UpdateEntity(entity: TPricetypesEnti
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'pricetypes/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'pricetypes/' + inttostr(entity.Id)), entity.json);
   result := TPricetypesEntity(processJson(src, 'TPricetypesEntity')[0]);
   
 end;
@@ -8231,7 +8230,7 @@ function TRoomerDataSet.Propertiesstore_Entities_SaveEntity(entity: TPropertiess
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'propertiesstore'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'propertiesstore'), entity.json);
   result := TPropertiesstoreEntity(processJson(src, 'TPropertiesstoreEntity')[0]);
   
 end;
@@ -8240,7 +8239,7 @@ function TRoomerDataSet.Propertiesstore_Entities_UpdateEntity(entity: TPropertie
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'propertiesstore/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'propertiesstore/' + inttostr(entity.Id)), entity.json);
   result := TPropertiesstoreEntity(processJson(src, 'TPropertiesstoreEntity')[0]);
   
 end;
@@ -8362,7 +8361,7 @@ function TRoomerDataSet.Rates_Entities_SaveEntity(entity: TRatesEntity): TRatesE
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'rates'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'rates'), entity.json);
   result := TRatesEntity(processJson(src, 'TRatesEntity')[0]);
   
 end;
@@ -8371,7 +8370,7 @@ function TRoomerDataSet.Rates_Entities_UpdateEntity(entity: TRatesEntity): TRate
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'rates/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'rates/' + inttostr(entity.Id)), entity.json);
   result := TRatesEntity(processJson(src, 'TRatesEntity')[0]);
   
 end;
@@ -8493,7 +8492,7 @@ function TRoomerDataSet.Reservations_Entities_SaveEntity(entity: TReservationsEn
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'reservations'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'reservations'), entity.json);
   result := TReservationsEntity(processJson(src, 'TReservationsEntity')[0]);
   
 end;
@@ -8502,7 +8501,7 @@ function TRoomerDataSet.Reservations_Entities_UpdateEntity(entity: TReservations
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'reservations/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'reservations/' + inttostr(entity.Id)), entity.json);
   result := TReservationsEntity(processJson(src, 'TReservationsEntity')[0]);
   
 end;
@@ -8624,7 +8623,7 @@ function TRoomerDataSet.Roomamenities_Entities_SaveEntity(entity: TRoomamenities
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'roomamenities'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'roomamenities'), entity.json);
   result := TRoomamenitiesEntity(processJson(src, 'TRoomamenitiesEntity')[0]);
   
 end;
@@ -8633,7 +8632,7 @@ function TRoomerDataSet.Roomamenities_Entities_UpdateEntity(entity: TRoomameniti
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'roomamenities/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'roomamenities/' + inttostr(entity.Id)), entity.json);
   result := TRoomamenitiesEntity(processJson(src, 'TRoomamenitiesEntity')[0]);
   
 end;
@@ -8755,7 +8754,7 @@ function TRoomerDataSet.Roomermessages_Entities_SaveEntity(entity: TRoomermessag
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'roomermessages'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'roomermessages'), entity.json);
   result := TRoomermessagesEntity(processJson(src, 'TRoomermessagesEntity')[0]);
   
 end;
@@ -8764,7 +8763,7 @@ function TRoomerDataSet.Roomermessages_Entities_UpdateEntity(entity: TRoomermess
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'roomermessages/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'roomermessages/' + inttostr(entity.Id)), entity.json);
   result := TRoomermessagesEntity(processJson(src, 'TRoomermessagesEntity')[0]);
   
 end;
@@ -8886,7 +8885,7 @@ function TRoomerDataSet.Roomrates_Entities_SaveEntity(entity: TRoomratesEntity):
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'roomrates'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'roomrates'), entity.json);
   result := TRoomratesEntity(processJson(src, 'TRoomratesEntity')[0]);
   
 end;
@@ -8895,7 +8894,7 @@ function TRoomerDataSet.Roomrates_Entities_UpdateEntity(entity: TRoomratesEntity
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'roomrates/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'roomrates/' + inttostr(entity.Id)), entity.json);
   result := TRoomratesEntity(processJson(src, 'TRoomratesEntity')[0]);
   
 end;
@@ -9017,7 +9016,7 @@ function TRoomerDataSet.Roomreservations_Entities_SaveEntity(entity: TRoomreserv
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'roomreservations'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'roomreservations'), entity.json);
   result := TRoomreservationsEntity(processJson(src, 'TRoomreservationsEntity')[0]);
   
 end;
@@ -9026,7 +9025,7 @@ function TRoomerDataSet.Roomreservations_Entities_UpdateEntity(entity: TRoomrese
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'roomreservations/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'roomreservations/' + inttostr(entity.Id)), entity.json);
   result := TRoomreservationsEntity(processJson(src, 'TRoomreservationsEntity')[0]);
   
 end;
@@ -9148,7 +9147,7 @@ function TRoomerDataSet.Roomroomamenities_Entities_SaveEntity(entity: TRoomrooma
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'roomroomamenities'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'roomroomamenities'), entity.json);
   result := TRoomroomamenitiesEntity(processJson(src, 'TRoomroomamenitiesEntity')[0]);
   
 end;
@@ -9157,7 +9156,7 @@ function TRoomerDataSet.Roomroomamenities_Entities_UpdateEntity(entity: TRoomroo
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'roomroomamenities/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'roomroomamenities/' + inttostr(entity.Id)), entity.json);
   result := TRoomroomamenitiesEntity(processJson(src, 'TRoomroomamenitiesEntity')[0]);
   
 end;
@@ -9279,7 +9278,7 @@ function TRoomerDataSet.Rooms_Entities_SaveEntity(entity: TRoomsEntity): TRoomsE
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'rooms'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'rooms'), entity.json);
   result := TRoomsEntity(processJson(src, 'TRoomsEntity')[0]);
   
 end;
@@ -9288,7 +9287,7 @@ function TRoomerDataSet.Rooms_Entities_UpdateEntity(entity: TRoomsEntity): TRoom
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'rooms/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'rooms/' + inttostr(entity.Id)), entity.json);
   result := TRoomsEntity(processJson(src, 'TRoomsEntity')[0]);
   
 end;
@@ -9410,7 +9409,7 @@ function TRoomerDataSet.Roomsdate_Entities_SaveEntity(entity: TRoomsdateEntity):
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'roomsdate'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'roomsdate'), entity.json);
   result := TRoomsdateEntity(processJson(src, 'TRoomsdateEntity')[0]);
   
 end;
@@ -9419,7 +9418,7 @@ function TRoomerDataSet.Roomsdate_Entities_UpdateEntity(entity: TRoomsdateEntity
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'roomsdate/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'roomsdate/' + inttostr(entity.Id)), entity.json);
   result := TRoomsdateEntity(processJson(src, 'TRoomsdateEntity')[0]);
   
 end;
@@ -9541,7 +9540,7 @@ function TRoomerDataSet.Roomsdatetemp_Entities_SaveEntity(entity: TRoomsdatetemp
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'roomsdatetemp'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'roomsdatetemp'), entity.json);
   result := TRoomsdatetempEntity(processJson(src, 'TRoomsdatetempEntity')[0]);
   
 end;
@@ -9550,7 +9549,7 @@ function TRoomerDataSet.Roomsdatetemp_Entities_UpdateEntity(entity: TRoomsdatete
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'roomsdatetemp/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'roomsdatetemp/' + inttostr(entity.Id)), entity.json);
   result := TRoomsdatetempEntity(processJson(src, 'TRoomsdatetempEntity')[0]);
   
 end;
@@ -9672,7 +9671,7 @@ function TRoomerDataSet.Roomtypegroups_Entities_SaveEntity(entity: TRoomtypegrou
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'roomtypegroups'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'roomtypegroups'), entity.json);
   result := TRoomtypegroupsEntity(processJson(src, 'TRoomtypegroupsEntity')[0]);
   
 end;
@@ -9681,7 +9680,7 @@ function TRoomerDataSet.Roomtypegroups_Entities_UpdateEntity(entity: TRoomtypegr
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'roomtypegroups/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'roomtypegroups/' + inttostr(entity.Id)), entity.json);
   result := TRoomtypegroupsEntity(processJson(src, 'TRoomtypegroupsEntity')[0]);
   
 end;
@@ -9803,7 +9802,7 @@ function TRoomerDataSet.Roomtyperules_Entities_SaveEntity(entity: TRoomtyperules
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'roomtyperules'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'roomtyperules'), entity.json);
   result := TRoomtyperulesEntity(processJson(src, 'TRoomtyperulesEntity')[0]);
   
 end;
@@ -9812,7 +9811,7 @@ function TRoomerDataSet.Roomtyperules_Entities_UpdateEntity(entity: TRoomtyperul
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'roomtyperules/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'roomtyperules/' + inttostr(entity.Id)), entity.json);
   result := TRoomtyperulesEntity(processJson(src, 'TRoomtyperulesEntity')[0]);
   
 end;
@@ -9934,7 +9933,7 @@ function TRoomerDataSet.Roomtypes_Entities_SaveEntity(entity: TRoomtypesEntity):
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'roomtypes'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'roomtypes'), entity.json);
   result := TRoomtypesEntity(processJson(src, 'TRoomtypesEntity')[0]);
   
 end;
@@ -9943,7 +9942,7 @@ function TRoomerDataSet.Roomtypes_Entities_UpdateEntity(entity: TRoomtypesEntity
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'roomtypes/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'roomtypes/' + inttostr(entity.Id)), entity.json);
   result := TRoomtypesEntity(processJson(src, 'TRoomtypesEntity')[0]);
   
 end;
@@ -10065,7 +10064,7 @@ function TRoomerDataSet.Staffmembers_Entities_SaveEntity(entity: TStaffmembersEn
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'staffmembers'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'staffmembers'), entity.json);
   result := TStaffmembersEntity(processJson(src, 'TStaffmembersEntity')[0]);
   
 end;
@@ -10074,7 +10073,7 @@ function TRoomerDataSet.Staffmembers_Entities_UpdateEntity(entity: TStaffmembers
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'staffmembers/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'staffmembers/' + inttostr(entity.Id)), entity.json);
   result := TStaffmembersEntity(processJson(src, 'TStaffmembersEntity')[0]);
   
 end;
@@ -10196,7 +10195,7 @@ function TRoomerDataSet.Stafftypes_Entities_SaveEntity(entity: TStafftypesEntity
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'stafftypes'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'stafftypes'), entity.json);
   result := TStafftypesEntity(processJson(src, 'TStafftypesEntity')[0]);
   
 end;
@@ -10205,7 +10204,7 @@ function TRoomerDataSet.Stafftypes_Entities_UpdateEntity(entity: TStafftypesEnti
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'stafftypes/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'stafftypes/' + inttostr(entity.Id)), entity.json);
   result := TStafftypesEntity(processJson(src, 'TStafftypesEntity')[0]);
   
 end;
@@ -10327,7 +10326,7 @@ function TRoomerDataSet.Systemactions_Entities_SaveEntity(entity: TSystemactions
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'systemactions'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'systemactions'), entity.json);
   result := TSystemactionsEntity(processJson(src, 'TSystemactionsEntity')[0]);
   
 end;
@@ -10336,7 +10335,7 @@ function TRoomerDataSet.Systemactions_Entities_UpdateEntity(entity: TSystemactio
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'systemactions/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'systemactions/' + inttostr(entity.Id)), entity.json);
   result := TSystemactionsEntity(processJson(src, 'TSystemactionsEntity')[0]);
   
 end;
@@ -10458,7 +10457,7 @@ function TRoomerDataSet.Systemservers_Entities_SaveEntity(entity: TSystemservers
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'systemservers'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'systemservers'), entity.json);
   result := TSystemserversEntity(processJson(src, 'TSystemserversEntity')[0]);
   
 end;
@@ -10467,7 +10466,7 @@ function TRoomerDataSet.Systemservers_Entities_UpdateEntity(entity: TSystemserve
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'systemservers/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'systemservers/' + inttostr(entity.Id)), entity.json);
   result := TSystemserversEntity(processJson(src, 'TSystemserversEntity')[0]);
   
 end;
@@ -10589,7 +10588,7 @@ function TRoomerDataSet.Systemtriggers_Entities_SaveEntity(entity: TSystemtrigge
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'systemtriggers'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'systemtriggers'), entity.json);
   result := TSystemtriggersEntity(processJson(src, 'TSystemtriggersEntity')[0]);
   
 end;
@@ -10598,7 +10597,7 @@ function TRoomerDataSet.Systemtriggers_Entities_UpdateEntity(entity: TSystemtrig
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'systemtriggers/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'systemtriggers/' + inttostr(entity.Id)), entity.json);
   result := TSystemtriggersEntity(processJson(src, 'TSystemtriggersEntity')[0]);
   
 end;
@@ -10720,7 +10719,7 @@ function TRoomerDataSet.Tblconvertgroups_Entities_SaveEntity(entity: TTblconvert
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'tblconvertgroups'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'tblconvertgroups'), entity.json);
   result := TTblconvertgroupsEntity(processJson(src, 'TTblconvertgroupsEntity')[0]);
   
 end;
@@ -10729,7 +10728,7 @@ function TRoomerDataSet.Tblconvertgroups_Entities_UpdateEntity(entity: TTblconve
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'tblconvertgroups/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'tblconvertgroups/' + inttostr(entity.Id)), entity.json);
   result := TTblconvertgroupsEntity(processJson(src, 'TTblconvertgroupsEntity')[0]);
   
 end;
@@ -10851,7 +10850,7 @@ function TRoomerDataSet.Tblconverts_Entities_SaveEntity(entity: TTblconvertsEnti
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'tblconverts'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'tblconverts'), entity.json);
   result := TTblconvertsEntity(processJson(src, 'TTblconvertsEntity')[0]);
   
 end;
@@ -10860,7 +10859,7 @@ function TRoomerDataSet.Tblconverts_Entities_UpdateEntity(entity: TTblconvertsEn
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'tblconverts/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'tblconverts/' + inttostr(entity.Id)), entity.json);
   result := TTblconvertsEntity(processJson(src, 'TTblconvertsEntity')[0]);
   
 end;
@@ -10982,7 +10981,7 @@ function TRoomerDataSet.Tbldelpersons_Entities_SaveEntity(entity: TTbldelpersons
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'tbldelpersons'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'tbldelpersons'), entity.json);
   result := TTbldelpersonsEntity(processJson(src, 'TTbldelpersonsEntity')[0]);
   
 end;
@@ -10991,7 +10990,7 @@ function TRoomerDataSet.Tbldelpersons_Entities_UpdateEntity(entity: TTbldelperso
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'tbldelpersons/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'tbldelpersons/' + inttostr(entity.Id)), entity.json);
   result := TTbldelpersonsEntity(processJson(src, 'TTbldelpersonsEntity')[0]);
   
 end;
@@ -11113,7 +11112,7 @@ function TRoomerDataSet.Tbldelreservations_Entities_SaveEntity(entity: TTbldelre
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'tbldelreservations'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'tbldelreservations'), entity.json);
   result := TTbldelreservationsEntity(processJson(src, 'TTbldelreservationsEntity')[0]);
   
 end;
@@ -11122,7 +11121,7 @@ function TRoomerDataSet.Tbldelreservations_Entities_UpdateEntity(entity: TTbldel
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'tbldelreservations/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'tbldelreservations/' + inttostr(entity.Id)), entity.json);
   result := TTbldelreservationsEntity(processJson(src, 'TTbldelreservationsEntity')[0]);
   
 end;
@@ -11244,7 +11243,7 @@ function TRoomerDataSet.Tbldelroomreservations_Entities_SaveEntity(entity: TTbld
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'tbldelroomreservations'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'tbldelroomreservations'), entity.json);
   result := TTbldelroomreservationsEntity(processJson(src, 'TTbldelroomreservationsEntity')[0]);
   
 end;
@@ -11253,7 +11252,7 @@ function TRoomerDataSet.Tbldelroomreservations_Entities_UpdateEntity(entity: TTb
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'tbldelroomreservations/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'tbldelroomreservations/' + inttostr(entity.Id)), entity.json);
   result := TTbldelroomreservationsEntity(processJson(src, 'TTbldelroomreservationsEntity')[0]);
   
 end;
@@ -11375,7 +11374,7 @@ function TRoomerDataSet.Tblhiddeninfo_Entities_SaveEntity(entity: TTblhiddeninfo
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'tblhiddeninfo'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'tblhiddeninfo'), entity.json);
   result := TTblhiddeninfoEntity(processJson(src, 'TTblhiddeninfoEntity')[0]);
   
 end;
@@ -11384,7 +11383,7 @@ function TRoomerDataSet.Tblhiddeninfo_Entities_UpdateEntity(entity: TTblhiddenin
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'tblhiddeninfo/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'tblhiddeninfo/' + inttostr(entity.Id)), entity.json);
   result := TTblhiddeninfoEntity(processJson(src, 'TTblhiddeninfoEntity')[0]);
   
 end;
@@ -11506,7 +11505,7 @@ function TRoomerDataSet.Tblimportlogs_Entities_SaveEntity(entity: TTblimportlogs
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'tblimportlogs'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'tblimportlogs'), entity.json);
   result := TTblimportlogsEntity(processJson(src, 'TTblimportlogsEntity')[0]);
   
 end;
@@ -11515,7 +11514,7 @@ function TRoomerDataSet.Tblimportlogs_Entities_UpdateEntity(entity: TTblimportlo
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'tblimportlogs/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'tblimportlogs/' + inttostr(entity.Id)), entity.json);
   result := TTblimportlogsEntity(processJson(src, 'TTblimportlogsEntity')[0]);
   
 end;
@@ -11637,7 +11636,7 @@ function TRoomerDataSet.Tblinc_Entities_SaveEntity(entity: TTblincEntity): TTbli
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'tblinc'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'tblinc'), entity.json);
   result := TTblincEntity(processJson(src, 'TTblincEntity')[0]);
   
 end;
@@ -11646,7 +11645,7 @@ function TRoomerDataSet.Tblinc_Entities_UpdateEntity(entity: TTblincEntity): TTb
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'tblinc/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'tblinc/' + inttostr(entity.Id)), entity.json);
   result := TTblincEntity(processJson(src, 'TTblincEntity')[0]);
   
 end;
@@ -11768,7 +11767,7 @@ function TRoomerDataSet.Tblinvoiceactions_Entities_SaveEntity(entity: TTblinvoic
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'tblinvoiceactions'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'tblinvoiceactions'), entity.json);
   result := TTblinvoiceactionsEntity(processJson(src, 'TTblinvoiceactionsEntity')[0]);
   
 end;
@@ -11777,7 +11776,7 @@ function TRoomerDataSet.Tblinvoiceactions_Entities_UpdateEntity(entity: TTblinvo
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'tblinvoiceactions/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'tblinvoiceactions/' + inttostr(entity.Id)), entity.json);
   result := TTblinvoiceactionsEntity(processJson(src, 'TTblinvoiceactionsEntity')[0]);
   
 end;
@@ -11899,7 +11898,7 @@ function TRoomerDataSet.Tblmaidactions_Entities_SaveEntity(entity: TTblmaidactio
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'tblmaidactions'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'tblmaidactions'), entity.json);
   result := TTblmaidactionsEntity(processJson(src, 'TTblmaidactionsEntity')[0]);
   
 end;
@@ -11908,7 +11907,7 @@ function TRoomerDataSet.Tblmaidactions_Entities_UpdateEntity(entity: TTblmaidact
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'tblmaidactions/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'tblmaidactions/' + inttostr(entity.Id)), entity.json);
   result := TTblmaidactionsEntity(processJson(src, 'TTblmaidactionsEntity')[0]);
   
 end;
@@ -12030,7 +12029,7 @@ function TRoomerDataSet.Tblmaidjobs_Entities_SaveEntity(entity: TTblmaidjobsEnti
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'tblmaidjobs'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'tblmaidjobs'), entity.json);
   result := TTblmaidjobsEntity(processJson(src, 'TTblmaidjobsEntity')[0]);
   
 end;
@@ -12039,7 +12038,7 @@ function TRoomerDataSet.Tblmaidjobs_Entities_UpdateEntity(entity: TTblmaidjobsEn
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'tblmaidjobs/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'tblmaidjobs/' + inttostr(entity.Id)), entity.json);
   result := TTblmaidjobsEntity(processJson(src, 'TTblmaidjobsEntity')[0]);
   
 end;
@@ -12161,7 +12160,7 @@ function TRoomerDataSet.Tblmaidlists_Entities_SaveEntity(entity: TTblmaidlistsEn
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'tblmaidlists'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'tblmaidlists'), entity.json);
   result := TTblmaidlistsEntity(processJson(src, 'TTblmaidlistsEntity')[0]);
   
 end;
@@ -12170,7 +12169,7 @@ function TRoomerDataSet.Tblmaidlists_Entities_UpdateEntity(entity: TTblmaidlists
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'tblmaidlists/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'tblmaidlists/' + inttostr(entity.Id)), entity.json);
   result := TTblmaidlistsEntity(processJson(src, 'TTblmaidlistsEntity')[0]);
   
 end;
@@ -12292,7 +12291,7 @@ function TRoomerDataSet.Tblpoxexport_Entities_SaveEntity(entity: TTblpoxexportEn
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'tblpoxexport'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'tblpoxexport'), entity.json);
   result := TTblpoxexportEntity(processJson(src, 'TTblpoxexportEntity')[0]);
   
 end;
@@ -12301,7 +12300,7 @@ function TRoomerDataSet.Tblpoxexport_Entities_UpdateEntity(entity: TTblpoxexport
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'tblpoxexport/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'tblpoxexport/' + inttostr(entity.Id)), entity.json);
   result := TTblpoxexportEntity(processJson(src, 'TTblpoxexportEntity')[0]);
   
 end;
@@ -12423,7 +12422,7 @@ function TRoomerDataSet.Tblpricecodes_Entities_SaveEntity(entity: TTblpricecodes
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'tblpricecodes'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'tblpricecodes'), entity.json);
   result := TTblpricecodesEntity(processJson(src, 'TTblpricecodesEntity')[0]);
   
 end;
@@ -12432,7 +12431,7 @@ function TRoomerDataSet.Tblpricecodes_Entities_UpdateEntity(entity: TTblpricecod
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'tblpricecodes/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'tblpricecodes/' + inttostr(entity.Id)), entity.json);
   result := TTblpricecodesEntity(processJson(src, 'TTblpricecodesEntity')[0]);
   
 end;
@@ -12554,7 +12553,7 @@ function TRoomerDataSet.Tblroomstatus_Entities_SaveEntity(entity: TTblroomstatus
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'tblroomstatus'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'tblroomstatus'), entity.json);
   result := TTblroomstatusEntity(processJson(src, 'TTblroomstatusEntity')[0]);
   
 end;
@@ -12563,7 +12562,7 @@ function TRoomerDataSet.Tblroomstatus_Entities_UpdateEntity(entity: TTblroomstat
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'tblroomstatus/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'tblroomstatus/' + inttostr(entity.Id)), entity.json);
   result := TTblroomstatusEntity(processJson(src, 'TTblroomstatusEntity')[0]);
   
 end;
@@ -12685,7 +12684,7 @@ function TRoomerDataSet.Tblseasons_Entities_SaveEntity(entity: TTblseasonsEntity
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'tblseasons'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'tblseasons'), entity.json);
   result := TTblseasonsEntity(processJson(src, 'TTblseasonsEntity')[0]);
   
 end;
@@ -12694,7 +12693,7 @@ function TRoomerDataSet.Tblseasons_Entities_UpdateEntity(entity: TTblseasonsEnti
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'tblseasons/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'tblseasons/' + inttostr(entity.Id)), entity.json);
   result := TTblseasonsEntity(processJson(src, 'TTblseasonsEntity')[0]);
   
 end;
@@ -12816,7 +12815,7 @@ function TRoomerDataSet.Teldevices_Entities_SaveEntity(entity: TTeldevicesEntity
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'teldevices'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'teldevices'), entity.json);
   result := TTeldevicesEntity(processJson(src, 'TTeldevicesEntity')[0]);
   
 end;
@@ -12825,7 +12824,7 @@ function TRoomerDataSet.Teldevices_Entities_UpdateEntity(entity: TTeldevicesEnti
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'teldevices/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'teldevices/' + inttostr(entity.Id)), entity.json);
   result := TTeldevicesEntity(processJson(src, 'TTeldevicesEntity')[0]);
   
 end;
@@ -12947,7 +12946,7 @@ function TRoomerDataSet.Tellog_Entities_SaveEntity(entity: TTellogEntity): TTell
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'tellog'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'tellog'), entity.json);
   result := TTellogEntity(processJson(src, 'TTellogEntity')[0]);
   
 end;
@@ -12956,7 +12955,7 @@ function TRoomerDataSet.Tellog_Entities_UpdateEntity(entity: TTellogEntity): TTe
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'tellog/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'tellog/' + inttostr(entity.Id)), entity.json);
   result := TTellogEntity(processJson(src, 'TTellogEntity')[0]);
   
 end;
@@ -13078,7 +13077,7 @@ function TRoomerDataSet.Telpricegroups_Entities_SaveEntity(entity: TTelpricegrou
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'telpricegroups'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'telpricegroups'), entity.json);
   result := TTelpricegroupsEntity(processJson(src, 'TTelpricegroupsEntity')[0]);
   
 end;
@@ -13087,7 +13086,7 @@ function TRoomerDataSet.Telpricegroups_Entities_UpdateEntity(entity: TTelpricegr
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'telpricegroups/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'telpricegroups/' + inttostr(entity.Id)), entity.json);
   result := TTelpricegroupsEntity(processJson(src, 'TTelpricegroupsEntity')[0]);
   
 end;
@@ -13209,7 +13208,7 @@ function TRoomerDataSet.Telpricerules_Entities_SaveEntity(entity: TTelpricerules
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'telpricerules'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'telpricerules'), entity.json);
   result := TTelpricerulesEntity(processJson(src, 'TTelpricerulesEntity')[0]);
   
 end;
@@ -13218,7 +13217,7 @@ function TRoomerDataSet.Telpricerules_Entities_UpdateEntity(entity: TTelpricerul
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'telpricerules/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'telpricerules/' + inttostr(entity.Id)), entity.json);
   result := TTelpricerulesEntity(processJson(src, 'TTelpricerulesEntity')[0]);
   
 end;
@@ -13340,7 +13339,7 @@ function TRoomerDataSet.Ttmp_Entities_SaveEntity(entity: TTtmpEntity): TTtmpEnti
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'ttmp'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'ttmp'), entity.json);
   result := TTtmpEntity(processJson(src, 'TTtmpEntity')[0]);
   
 end;
@@ -13349,7 +13348,7 @@ function TRoomerDataSet.Ttmp_Entities_UpdateEntity(entity: TTtmpEntity): TTtmpEn
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'ttmp/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'ttmp/' + inttostr(entity.Id)), entity.json);
   result := TTtmpEntity(processJson(src, 'TTtmpEntity')[0]);
   
 end;
@@ -13471,7 +13470,7 @@ function TRoomerDataSet.Vatcodes_Entities_SaveEntity(entity: TVatcodesEntity): T
 var src : String;
 begin
   UnMarshal(entity);
-  src := PostAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'vatcodes'), entity.json);
+  src := PostAsJSON(AnsiString(FRoomerEntitiesUri + 'vatcodes'), entity.json);
   result := TVatcodesEntity(processJson(src, 'TVatcodesEntity')[0]);
   
 end;
@@ -13480,7 +13479,7 @@ function TRoomerDataSet.Vatcodes_Entities_UpdateEntity(entity: TVatcodesEntity):
 var src : String;
 begin
   UnMarshal(entity);
-  src := PutAsJSON(roomerClient, AnsiString(FRoomerEntitiesUri + 'vatcodes/' + inttostr(entity.Id)), entity.json);
+  src := PutAsJSON(AnsiString(FRoomerEntitiesUri + 'vatcodes/' + inttostr(entity.Id)), entity.json);
   result := TVatcodesEntity(processJson(src, 'TVatcodesEntity')[0]);
   
 end;
