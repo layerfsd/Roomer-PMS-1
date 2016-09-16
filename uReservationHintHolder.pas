@@ -303,10 +303,10 @@ begin
                 trim(_floatToStr(rri.OngoingSale, 12, 2)),
 
                 IIF(rri.GroupAccount, '', g.qNativeCurrency),
-                IIF(rri.GroupAccount, '<FONT color="#FF0000"><I>' + GetTranslatedText('shUI_OnGroupInvoice') + '</I></FONT>', trim(_floatToStr(rri.OngoingTaxes, 12, 2))),
+                IIF(rri.GroupAccount, '<I>' + GetTranslatedText('shUI_OnGroupInvoice') + '</I>', trim(_floatToStr(rri.OngoingTaxes, 12, 2))),
 
                 IIF(rri.GroupAccount, '', g.qNativeCurrency),
-                IIF(rri.GroupAccount, '<FONT color="#FF0000"><I>' + GetTranslatedText('shUI_OnGroupInvoice') + '</I></FONT>', trim(_floatToStr(rri.OngoingRent, 12, 2))),
+                IIF(rri.GroupAccount, '<I>' + GetTranslatedText('shUI_OnGroupInvoice') + '</I>', trim(_floatToStr(rri.OngoingRent, 12, 2))),
 
                 g.qNativeCurrency,
                 trim(_floatToStr(rri.Payments, 12, 2)),

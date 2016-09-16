@@ -31,7 +31,7 @@ object FrmReservationHintHolder: TFrmReservationHintHolder
     Text = ''
     TextOffsetX = 0
     TextOffsetY = 0
-    Version = '1.2.0.0'
+    Version = '1.2.0.2'
   end
   object pnlHint: TsPanel
     Left = 200
@@ -50,6 +50,23 @@ object FrmReservationHintHolder: TFrmReservationHintHolder
     OnMouseEnter = pnlHintMouseEnter
     OnMouseUp = pnlHintMouseUp
     SkinData.SkinSection = 'PANEL_LOW'
+    object __hlblTotalInvoice: THTMLabel
+      Left = 258
+      Top = 258
+      Width = 154
+      Height = 94
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Segoe UI'
+      Font.Style = []
+      HTMLText.Strings = (
+        '<B><FONT color="#FF0000">NO PAYMENT GUARANTEE</FONT></B>')
+      ParentFont = False
+      PopupMenu = PopupMenu1
+      Transparent = True
+      Version = '1.9.2.6'
+    end
     object clbStatus: TsLabel
       Left = 16
       Top = 8
@@ -406,7 +423,7 @@ object FrmReservationHintHolder: TFrmReservationHintHolder
       Transparent = True
       OnMouseDown = pnlHintMouseDown
       OnMouseUp = pnlHintMouseUp
-      Version = '1.9.2.3'
+      Version = '1.9.2.6'
     end
     object __hlblDaily: THTMLabel
       Left = 282
@@ -425,7 +442,7 @@ object FrmReservationHintHolder: TFrmReservationHintHolder
       ParentFont = False
       PopupMenu = PopupMenu1
       Transparent = True
-      Version = '1.9.2.3'
+      Version = '1.9.2.6'
     end
     object Shape1: TShape
       Left = 151
@@ -469,7 +486,7 @@ object FrmReservationHintHolder: TFrmReservationHintHolder
       Transparent = True
       OnMouseDown = pnlHintMouseDown
       OnMouseUp = pnlHintMouseUp
-      Version = '1.9.2.3'
+      Version = '1.9.2.6'
     end
     object Shape2: TShape
       Left = 18
@@ -553,7 +570,7 @@ object FrmReservationHintHolder: TFrmReservationHintHolder
       Transparent = True
       OnMouseDown = pnlHintMouseDown
       OnMouseUp = pnlHintMouseUp
-      Version = '1.9.2.3'
+      Version = '1.9.2.6'
     end
     object sLabel5: TsLabel
       Left = 297
@@ -571,23 +588,6 @@ object FrmReservationHintHolder: TFrmReservationHintHolder
       Font.Height = -12
       Font.Name = 'Segoe UI'
       Font.Style = [fsBold]
-    end
-    object __hlblTotalInvoice: THTMLabel
-      Left = 258
-      Top = 258
-      Width = 154
-      Height = 94
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -13
-      Font.Name = 'Segoe UI'
-      Font.Style = []
-      HTMLText.Strings = (
-        '<B><FONT color="#FF0000">NO PAYMENT GUARANTEE</FONT></B>')
-      ParentFont = False
-      PopupMenu = PopupMenu1
-      Transparent = True
-      Version = '1.9.2.3'
     end
     object clbRoomRentInvoice: TsLabel
       Left = 22
@@ -623,7 +623,7 @@ object FrmReservationHintHolder: TFrmReservationHintHolder
       Transparent = True
       OnMouseDown = pnlHintMouseDown
       OnMouseUp = pnlHintMouseUp
-      Version = '1.9.2.3'
+      Version = '1.9.2.6'
     end
     object sLabel3: TsLabel
       Left = 16
