@@ -731,6 +731,7 @@ type
     btnCloseCurrentDay: TdxBarLargeButton;
     barinnHousekeeping: TdxBar;
     btnSimpleHouseKeeping: TdxBarLargeButton;
+    btnReRegisterPMS: TdxBarLargeButton;
     btnRptDepartures: TdxBarLargeButton;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -1037,6 +1038,7 @@ type
     procedure btnDayClosingTimesClick(Sender: TObject);
     procedure btnCloseCurrentDayClick(Sender: TObject);
     procedure btnSimpleHouseKeepingClick(Sender: TObject);
+    procedure btnReRegisterPMSClick(Sender: TObject);
 
   private
     FReservationsModel: TReservationsModel;
@@ -12285,6 +12287,12 @@ procedure TfrmMain.dxBarLargeButton4Click(Sender: TObject);
 begin
   UserClickedDxLargeButton(Sender);
   StaticResources('Files', ANY_FILE, ACCESS_RESTRICTED);
+end;
+
+procedure TfrmMain.btnReRegisterPMSClick(Sender: TObject);
+begin
+  g.RemoveCurrentSecretKey;
+  MessageDlg(GetTranslatedText('shTxRoomerReRegisterPMS'), mtInformation, [mbOK], 0);
 end;
 
 procedure TfrmMain.btnDynamicRateRulesClick(Sender: TObject);
