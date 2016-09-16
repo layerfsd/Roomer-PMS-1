@@ -635,7 +635,7 @@ type
     m_nrWaitingListNonOptional: TIntegerField;
     m_occWaitingListNonOptional: TIntegerField;
     chkExcludeWaitingListNonOptional: TsCheckBox;
-    cbxFilterSelectedTypes: TCheckBox;
+    cbxFilterSelectedTypes: TsCheckBox;
     procedure FormShow(Sender: TObject);
     procedure edCustomerDblClick(Sender: TObject);
     procedure edCustomerPropertiesEditValueChanged(Sender: TObject);
