@@ -1501,6 +1501,8 @@ begin
 
   constants.Add('shTxExtraBedInvoiceText', 'Extra bed');
 
+  constants.Add('shTxRoomerReRegisterPMS', 'ROOMER PMS has re-registered itself with the ROOMER backend.');
+
   constants.Add('shTxThisConfirmAllottedBooking', 'This will change the full booking into a confirmed reservation.' + #10#10 +                                                                                                'Do you want to continue?');
 end;
 

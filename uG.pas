@@ -416,6 +416,7 @@ type
     function StatusAttrToStr(const aValue : recStatusAttr) : string;
 
     procedure SetHotelToReportINI(dataname : string);
+    procedure RemoveCurrentSecretKey;
 
     /// /***********************
 
@@ -1141,13 +1142,25 @@ end;
 // ************************************************ \\
 // START init Rec
 
-procedure TGlobalApplication.ProcessAppIni(aMethod : integer; initialRead : Boolean = false);
 const
   secAppRegistration = 'AppReg';
   indApplicationID = 'Application_ID';
   indAppKey = 'Application_Key';
   indAppSecret = 'Application_Secret';
 
+procedure TGlobalApplication.RemoveCurrentSecretKey;
+var
+  AppRegGroup : String;
+begin
+  AppRegGroup := secAppRegistration;
+  if Assigned(d) AND Assigned(d.roomerMainDataSet) AND (d.roomerMainDataSet.OpenApiUri <> '') then
+     AppRegGroup := d.roomerMainDataSet.OpenApiUri;
+  DeleteRegistryLocation('Software\Roomer\PMS\' + GetHotelIniFilename + '\' + AppRegGroup);
+  RegisterApplication;
+end;
+
+procedure TGlobalApplication.ProcessAppIni(aMethod : integer; initialRead : Boolean = false);
+const
   secDiretories = 'Diretories';
   indLocalDataPath = 'Localdata_path';
   indGlobalDataPath = 'Networkdata_path';
