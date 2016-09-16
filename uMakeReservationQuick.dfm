@@ -2234,8 +2234,6 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
         Align = alClient
         TabOrder = 1
         LookAndFeel.NativeStyle = True
-        ExplicitTop = 65
-        ExplicitHeight = 479
         object tvSelectRooms: TcxGridDBBandedTableView
           Navigator.Buttons.CustomButtons = <>
           DataController.DataSource = mSelectRoomsDS
@@ -4045,6 +4043,11 @@ object frmMakeReservationQuick: TfrmMakeReservationQuick
           'Position'
           'Top'
           'Width')
+      end
+      item
+        Component = cbxFilterSelectedTypes
+        Properties.Strings = (
+          'checked')
       end>
     StorageName = 'Software\Roomer\FormStatus\QuickReservation'
     StorageType = stRegistry
