@@ -1,4 +1,4 @@
-unit uRptResStats;
+ï»¿unit uRptResStats;
 
 interface
 
@@ -467,6 +467,7 @@ uses
   , uDImages
   , cxPivotGridAdvancedCustomization
   , uFinanceForcastLayout
+  , DateUtils
   ;
 
 const WM_LOAD_LAYOUT = WM_User + 401;
@@ -532,7 +533,7 @@ end;
 //  StayTaxAmount    := 0.00;
 //  StayTaxUnitCount := 0.00;
 //
-//  //  ath sott í DB
+//  //  ath sott ï¿½ DB
 //  useStayTax := RV_useStayTax(reservation);
 //
 //  initCityTaxResultHolder(result);
@@ -715,7 +716,7 @@ begin
 //  end;
 
   zDateFrom := encodeDate(y, m, 1);
-  lastDay := _DaysPerMonth(y, m);
+  lastDay := DaysInAMonth(y, m);
   zDateTo := encodeDate(y, m, lastDay);
   dtDateFrom.Date := zDateFrom;
   dtDateTo.Date := zDateTo;
@@ -840,7 +841,7 @@ begin
   m := cbxMonth.ItemIndex;
 
   zDateFrom := encodeDate(y, m, 1);
-  lastDay := _DaysPerMonth(y, m);
+  lastDay := DaysInAMonth(y, m);
   zDateTo := encodeDate(y, m, lastDay);
   dtDateFrom.Date := zDateFrom;
   dtDateTo.Date := zDateTo;
@@ -1940,7 +1941,7 @@ begin
 
 //8959698
 
-  //Roomrent er roomrent án CityTax
+  //Roomrent er roomrent ï¿½n CityTax
   RoomRentTotal       := RoomRentBilled+RoomRentUnbilled;
   RoomRentTotalWoVAT  := RoomRentTotal-vatRentTotal;
 
@@ -2296,7 +2297,8 @@ begin
   boolChain := boolChain+_db(chkExcluteGuestNoRooms.Checked);
   boolChain := boolChain+_db(chkExcluteNoShowNoRooms.Checked);
   boolChain := boolChain+_db(chkExcluteOrderNoRooms.Checked);
-  boolChain := boolChain+_db(chkExcludeWaitingListNonOptional.Checked);
+
+  boolChain := boolChain+_db(chkExcludeWaitingListNonOptional.Checked);
   boolChain := boolChain+_db(chkExcludeWaitingListNonOptional_NoRooms.Checked);
 
   Description := 'Use roomStatus of';
@@ -2430,7 +2432,8 @@ begin
       12 : chkExcluteGuestNoRooms.Checked := abool;
       13 : chkExcluteNoShowNoRooms.Checked := abool;
       14 : chkExcluteOrderNoRooms.Checked := abool;
-      15 : chkExcludeWaitingListNonOptional.Checked := abool;
+
+      15 : chkExcludeWaitingListNonOptional.Checked := abool;
       16 : chkExcludeWaitingListNonOptional_NoRooms.Checked := abool;
     end;
   end;

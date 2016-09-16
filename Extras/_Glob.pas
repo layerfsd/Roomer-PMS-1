@@ -1,4 +1,4 @@
-unit _Glob;
+ï»¿unit _Glob;
 
 interface
 
@@ -184,7 +184,7 @@ function _GetComputerNetName: string;
 function _justOneSpace(aText : string) : string;
 function _justOneChar(aText : string; ch: char) : string;
 
-function _DaysPerMonth(AYear, AMonth: Integer): Integer; deprecated 'Use DateUtils.DaysInMonth';
+function _DaysPerMonth(AYear, AMonth: Integer): Integer; deprecated 'Use DateUtils.DaysInAMonth';
 function _WeekNum(const TDT:TDateTime) : Word; deprecated 'Use DateUtils.WeekOfTheYear()';
 
 
@@ -432,7 +432,7 @@ end;
 
 
 function _Bool2Str(const aBool : Boolean; Kind : integer) : string;
-// Tegund 0=0/1  1=False/True  2=No/Yes  3=Já/Nei
+// Tegund 0=0/1  1=False/True  2=No/Yes  3=Jï¿½/Nei
 begin
   Result := '';
   case Kind of
@@ -460,7 +460,7 @@ begin
     3 :
       begin
         if aBool then
-          Result := 'Já'
+          Result := 'Jï¿½'
         else
           Result := 'Nei';
       end;
@@ -969,7 +969,7 @@ begin
     exit; // ====>
   end;
 
-  if RoundUpStartAt = 0 then // ekki rúnað
+  if RoundUpStartAt = 0 then // ekki rï¿½naï¿½
   begin
     Result := Floatvalue;
     exit; // ====>
@@ -1749,7 +1749,7 @@ var
   iPos : integer;
 begin
   if S = '' then
-    S := cnsDefFont; // Üres a font
+    S := cnsDefFont; // ï¿½res a font
   Result := TFont.Create;
   iPos := pos(cnsSubSeparator, S);
   sTmp := copy(S, 1, iPos - 1);

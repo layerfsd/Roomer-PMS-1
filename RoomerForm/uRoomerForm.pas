@@ -22,7 +22,6 @@ type
     dxStatusBar: TdxStatusBar;
   private
     FCloseOnEsc: boolean;
-    FUpdatingControls: boolean;
     procedure KeepOnVisibleMonitor;
   protected
     const

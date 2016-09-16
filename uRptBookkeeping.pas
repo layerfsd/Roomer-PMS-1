@@ -134,6 +134,7 @@ uses
   uDimages,
   uFrmResources,
   uDateUtils,
+  DateUtils,
   PrjConst,
   uGridUtils;
 
@@ -233,7 +234,7 @@ begin
 //  end;
 
   zDateFrom := encodeDate(y, m, 1);
-  lastDay := _DaysPerMonth(y, m);
+  lastDay := DaysInAMonth(y, m);
   zDateTo := encodeDate(y, m, lastDay);
   dtDateFrom.Date := zDateFrom;
   dtDateTo.Date := zDateTo;
@@ -392,7 +393,7 @@ begin
 
 
   zDateFrom := encodeDate(y, m, 1);
-  lastDay := _DaysPerMonth(y, m);
+  lastDay := DaysInAMonth(y, m);
   zDateTo := encodeDate(y, m, lastDay);
   dtDateFrom.Date := zDateFrom;
   dtDateTo.Date := zDateTo;

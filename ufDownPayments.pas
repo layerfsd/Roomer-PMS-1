@@ -316,7 +316,7 @@ uses
   , uGuestProfile2
   , PrjConst
   , uAssignPayment
-
+  , DateUtils
   , uDImages;
 
 
@@ -381,7 +381,7 @@ begin
   m := cbxMonth.ItemIndex;
 
   zDateFrom := encodeDate(y, m, 1);
-  lastDay := _DaysPerMonth(y, m);
+  lastDay := DaysInAMonth(y, m);
   zDateTo := encodeDate(y, m, lastDay);
   dtDateFrom.Date := zDateFrom;
   dtDateTo.Date := zDateTo;
@@ -515,7 +515,7 @@ begin
   end;
 
   zDateFrom := encodeDate(y, m, 1);
-  lastDay := _DaysPerMonth(y, m);
+  lastDay := DaysInAMonth(y, m);
   zDateTo := encodeDate(y, m, lastDay);
   dtDateFrom.Date := zDateFrom;
   dtDateTo.Date := zDateTo;

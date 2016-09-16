@@ -283,6 +283,7 @@ uses
   , uFinishedInvoices2
   , uUtils
   , PrjConst
+  , DateUtils
   , uDImages;
 
 
@@ -337,7 +338,7 @@ begin
   cbxYear.ItemIndex := cbxYear.Items.IndexOf(inttostr(zYear));
 
   zDateFrom := encodeDate(y, m, 1);
-  lastDay := _DaysPerMonth(y, m);
+  lastDay := DaysInAMonth(y, m);
   zDateTo := encodeDate(y, m, lastDay);
   dtDateFrom.Date := zDateFrom;
   dtDateTo.Date := zDateTo;
@@ -410,7 +411,7 @@ begin
   m := cbxMonth.ItemIndex;
 
   zDateFrom := encodeDate(y, m, 1);
-  lastDay := _DaysPerMonth(y, m);
+  lastDay := DaysInAMonth(y, m);
   zDateTo := encodeDate(y, m, lastDay);
   dtDateFrom.Date := zDateFrom;
   dtDateTo.Date := zDateTo;
@@ -693,8 +694,10 @@ begin
 //    debugmessage(s);
 
     ExecutionPlan.AddQuery(s);
-    //////////////////// Execute!
-
+
+    //////////////////// Execute!
+
+
     screen.Cursor := crHourGlass;
     kbmRoomsData_.DisableControls;
     try
@@ -839,7 +842,8 @@ begin
 
     ExecutionPlan.AddQuery(s);
     //////////////////// Execute!
-
+
+
     screen.Cursor := crHourGlass;
     kbmRoomsData_.DisableControls;
     try
