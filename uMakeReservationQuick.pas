@@ -635,6 +635,7 @@ type
     m_nrWaitingListNonOptional: TIntegerField;
     m_occWaitingListNonOptional: TIntegerField;
     chkExcludeWaitingListNonOptional: TsCheckBox;
+    cbxFilterSelectedTypes: TCheckBox;
     procedure FormShow(Sender: TObject);
     procedure edCustomerDblClick(Sender: TObject);
     procedure edCustomerPropertiesEditValueChanged(Sender: TObject);
@@ -726,6 +727,8 @@ type
     procedure tvRoomResStockItemsCountPropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
     procedure mExtrasCalcFields(DataSet: TDataSet);
     procedure mRoomResDSDataChange(Sender: TObject; Field: TField);
+    procedure cbxFilterSelectedTypesClick(Sender: TObject);
+    procedure mSelectRoomsFilterRecord(DataSet: TDataSet; var Accept: Boolean);
   private
     { Private declarations }
     zCustomerChanged: boolean;
@@ -789,6 +792,7 @@ type
     procedure PopulateRatePlanCombo(clearAll : Boolean = True);
     function SetOnePrice(RoomReservation: Integer; rateId: String; channelId: Integer): boolean;
     procedure SetProfileAlertVisibility;
+    procedure SetRoomFilterOnlySelectedTypes(aOnlySelected: boolean);
     property OutOfOrderBlocking : Boolean read FOutOfOrderBlocking write SetOutOfOrderBlocking;
 
   public
@@ -2145,6 +2149,7 @@ begin
       FreeAndNil(rSetOcc);
     end;
     mSelectRooms.First;
+    cbxFilterSelectedTypesClick(cbxFilterSelectedTypes); // update filter
   finally
     mSelectRooms.EnableControls;
   end;
@@ -2633,6 +2638,17 @@ end;
 // Country
 //
 
+procedure TfrmMakeReservationQuick.cbxFilterSelectedTypesClick(Sender: TObject);
+begin
+  SetRoomFilterOnlySelectedTypes(TCheckbox(Sender).Checked);
+end;
+
+
+procedure TfrmMakeReservationQuick.SetRoomFilterOnlySelectedTypes(aOnlySelected: boolean);
+begin
+  mSelectRooms.Filtered := aOnlySelected;
+end;
+
 function TfrmMakeReservationQuick.CountryValidate: boolean;
 var
   sValue: string;
@@ -2656,6 +2672,23 @@ begin
       labCountryName.Caption := glb.Countries['CountryName']; // GET_CountryName(sValue);
   end;
 
+end;
+
+procedure TfrmMakeReservationQuick.mSelectRoomsFilterRecord(DataSet: TDataSet; var Accept: Boolean);
+var
+  bm: TBookmark;
+begin
+  if cbxFilterSelectedTypes.Checked then
+  begin
+    bm := mSelectTypes.Bookmark;
+    try
+      Accept := (zTotalSelected = 0) or (mSelectTypes.Locate('roomtype', mSelectRoomsRoomType.AsString, []) and (mSelectTypesSelected.AsInteger > 0));
+    finally
+      mSelectTypes.Bookmark := bm;
+    end;
+  end
+  else
+    Accept := True;
 end;
 
 procedure TfrmMakeReservationQuick.mSelectRoomsNewRecord(DataSet: TDataSet);
@@ -2727,39 +2760,11 @@ begin
 //    addAvailableRoomTypes;
   end
   else
-    if pgcMain.ActivePageIndex = 2 then
+  if pgcMain.ActivePageIndex = 2 then
   begin
-    if not FNewReservation.IsQuick then
-    begin
-      zTotalSelected := 0; // 0
-      zTotalRoomsSelected := 0; // 4
-      zTotalAvailable := 0; // 3
-      zTotalFree := 0; // 2
-      zTotalNoRooms := 0; // 1
-
-      zTotal := zTotalSelected + zTotalRoomsSelected + zTotalAvailable + zTotalFree + zTotalNoRooms;
-      labTotalSelected.Caption := inttostr(zTotalSelected);
-      labTotalRoomsSelected.Caption := inttostr(zTotalRoomsSelected);
-    end;
-
     btnCancel.Enabled := true;
     btnPrevius.Enabled := true;
     btnNext.Enabled := true;
-
-    if FNewReservation.IsQuick then
-    begin
-      btnFinish.Enabled := true;
-      memRoomNotes.Enabled := true;
-      clabRoomNotes.Visible := true;
-
-    end
-    else
-    begin
-      btnFinish.Enabled := false;
-      memRoomNotes.Enabled := false;
-      clabRoomNotes.Visible := false;
-      getSelectRooms;
-    end;
 
     zTotalSelected := tvSelectType.DataController.Summary.FooterSummaryValues[0];
     zTotalRoomsSelected := tvSelectType.DataController.Summary.FooterSummaryValues[4]; // 4
@@ -2769,6 +2774,22 @@ begin
 
     zTotal := zTotalSelected + zTotalRoomsSelected + zTotalAvailable + zTotalFree + zTotalNoRooms;
     labTotalSelected.Caption := inttostr(zTotalSelected);
+
+    labTotalRoomsSelected.Caption := inttostr(zTotalRoomsSelected);
+
+    if FNewReservation.IsQuick then
+    begin
+      btnFinish.Enabled := true;
+      memRoomNotes.Enabled := true;
+      clabRoomNotes.Visible := true;
+    end
+    else
+    begin
+      btnFinish.Enabled := false;
+      memRoomNotes.Enabled := false;
+      clabRoomNotes.Visible := false;
+      getSelectRooms;
+    end;
 
   end
   else
