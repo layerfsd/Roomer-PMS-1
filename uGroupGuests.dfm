@@ -41,8 +41,8 @@ object frmGroupGuests: TfrmGroupGuests
     object chkCompactView: TsCheckBox
       Left = 14
       Top = 84
-      Width = 92
-      Height = 19
+      Width = 87
+      Height = 20
       Caption = 'Compact view'
       Checked = True
       State = cbChecked
@@ -64,24 +64,9 @@ object frmGroupGuests: TfrmGroupGuests
     DesignSize = (
       1121
       33)
-    object btnCancel: TsButton
-      Left = 1033
-      Top = 4
-      Width = 85
-      Height = 25
-      Hint = 'Cancel and close'
-      Anchors = [akTop, akRight]
-      Cancel = True
-      Caption = 'Cancel'
-      ImageIndex = 4
-      Images = DImages.PngImageList1
-      ModalResult = 2
-      TabOrder = 0
-      SkinData.SkinSection = 'BUTTON'
-    end
     object BtnOk: TsButton
-      Left = 947
-      Top = 4
+      Left = 1029
+      Top = 3
       Width = 83
       Height = 25
       Hint = 'Apply and close'
@@ -90,7 +75,7 @@ object frmGroupGuests: TfrmGroupGuests
       ImageIndex = 82
       Images = DImages.PngImageList1
       ModalResult = 1
-      TabOrder = 1
+      TabOrder = 0
       OnClick = BtnOkClick
       SkinData.SkinSection = 'BUTTON'
     end
@@ -108,10 +93,6 @@ object frmGroupGuests: TfrmGroupGuests
       Caption = 'Guests'
       SkinData.CustomColor = False
       SkinData.CustomFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object sPanel2: TsPanel
         Left = 0
         Top = 0
@@ -227,12 +208,9 @@ object frmGroupGuests: TfrmGroupGuests
         Height = 445
         Align = alClient
         TabOrder = 1
-        ExplicitLeft = 1
-        ExplicitTop = 37
         object tvGuests: TcxGridDBBandedTableView
           Navigator.Buttons.CustomButtons = <>
           Navigator.InfoPanel.Visible = True
-          Navigator.Visible = True
           DataController.DataModeController.GridMode = True
           DataController.DataSource = kbmGuestsDS
           DataController.Summary.DefaultGroupSummaryItems = <>
@@ -1124,6 +1102,7 @@ object frmGroupGuests: TfrmGroupGuests
     Top = 384
     object grPrinterLink1: TdxGridReportLink
       Component = grGuests
+      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.GrayShading = True
@@ -1136,6 +1115,7 @@ object frmGroupGuests: TfrmGroupGuests
       PrinterPage.PageSize.Y = 297000
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
+      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       BuiltInReportLink = True
     end
   end
