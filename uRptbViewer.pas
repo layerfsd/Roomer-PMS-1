@@ -14,6 +14,7 @@ uses
   , Dialogs
   , ppViewr
   , ppTypes
+  , ppReport
   , Mask
   , ppForms
   , ppPrvDlg
@@ -65,10 +66,14 @@ type
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
   private
+    function GetReport: TppReport;
+    procedure SetReport(const Value: TppReport);
     { Private declarations }
   public
     { Public declarations }
+    property Report: TppReport read GetReport write SetReport;
   end;
+
 
 var
   frmRptbViewer : TfrmRptbViewer;
@@ -86,6 +91,11 @@ end;
 procedure TfrmRptbViewer.FormCreate(Sender: TObject);
 begin
   ppViewer1.Reset;
+end;
+
+function TfrmRptbViewer.GetReport: TppReport;
+begin
+  Result := ppViewer1.Report as TppReport;
 end;
 
 procedure TfrmRptbViewer.mskPreviewPageKeyPress(Sender: TObject; var Key: Char);
@@ -162,6 +172,17 @@ begin
 end; procedure TfrmRptbViewer.ppViewer1StatusChange(Sender: TObject);
 begin
   Status.Caption := ppViewer1.Status;
+end;
+
+procedure TfrmRptbViewer.SetReport(const Value: TppReport);
+begin
+  if assigned(ppViewer1.Report) and ppViewer1.Report.Printing then
+    ppViewer1.Cancel;
+
+  ppViewer1.Report := Value;
+  ppViewer1.Reset;
+  ppViewer1.GotoPage(1);
+  ppViewer1.Report.PrintToDevices;
 end;
 
 {procedure, ppViewer1PrintStateChange}

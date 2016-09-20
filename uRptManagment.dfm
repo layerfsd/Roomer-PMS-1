@@ -58,7 +58,7 @@ object frmRptManagment: TfrmRptManagment
         VerticalAlignment = taAlignTop
         Color = clWhite
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 4473924
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -97,7 +97,7 @@ object frmRptManagment: TfrmRptManagment
         VerticalAlignment = taAlignTop
         Color = clWhite
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 4473924
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -156,7 +156,7 @@ object frmRptManagment: TfrmRptManagment
         Color = clWhite
         EditMask = '!99/99/9999;1; '
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 4473924
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -179,7 +179,7 @@ object frmRptManagment: TfrmRptManagment
         Color = clWhite
         EditMask = '!99/99/9999;1; '
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 4473924
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -197,8 +197,8 @@ object frmRptManagment: TfrmRptManagment
     object chkCompareLasYear: TsCheckBox
       Left = 306
       Top = 56
-      Width = 113
-      Height = 17
+      Width = 116
+      Height = 19
       Caption = 'Compare last year'
       TabOrder = 3
       Visible = False
@@ -226,6 +226,8 @@ object frmRptManagment: TfrmRptManagment
     SkinData.SkinSection = 'PAGECONTROL'
     object tabStatGrid: TsTabSheet
       Caption = 'Data'
+      SkinData.CustomColor = False
+      SkinData.CustomFont = False
       object sPanel1: TsPanel
         Left = 0
         Top = 0
@@ -604,10 +606,8 @@ object frmRptManagment: TfrmRptManagment
     end
     object tabGraph: TsTabSheet
       Caption = 'Charts'
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
+      SkinData.CustomColor = False
+      SkinData.CustomFont = False
       object pageCharts: TsPageControl
         Left = 0
         Top = 0
@@ -619,10 +619,8 @@ object frmRptManagment: TfrmRptManagment
         SkinData.SkinSection = 'PAGECONTROL'
         object tabOcc: TsTabSheet
           Caption = 'OCC'
-          ExplicitLeft = 0
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
+          SkinData.CustomColor = False
+          SkinData.CustomFont = False
           object sPanel2: TsPanel
             Left = 0
             Top = 0
@@ -1138,6 +1136,7 @@ object frmRptManagment: TfrmRptManagment
     DefaultFileDeviceType = 'PDF'
     EmailSettings.ReportFormat = 'PDF'
     LanguageID = 'Default'
+    ModalCancelDialog = False
     OutlineSettings.CreateNode = True
     OutlineSettings.CreatePageNodes = True
     OutlineSettings.Enabled = True

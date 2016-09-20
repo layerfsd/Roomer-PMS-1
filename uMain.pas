@@ -14210,29 +14210,14 @@ begin
     m.Sort([mtcoDescending]);
   end;
 
-  (*
-    if m.Active then m.Close;
-    m.LoadFromDataSet(tvAllReservations.DataController.DataSource.DataSet,[mtcpoStructure]);
-    //  [mtcpoStructure]
-
-    mAllReservations.SortFields := 'GroupReservation:D;customer;room';
-    mAllReservations.Sort([]);
-  *)
-
   if frmRptbViewer <> nil then
     freeandNil(frmRptbViewer);
   frmRptbViewer := TfrmRptbViewer.Create(frmRptbViewer);
-  frmRptbViewer.Show;
-
-  Screen.Cursor := crHourglass;
   try
-    aReport := rptbGroups;
-    frmRptbViewer.ppViewer1.Reset;
-    frmRptbViewer.ppViewer1.Report := aReport;
-    frmRptbViewer.ppViewer1.GotoPage(1);
-    aReport.PrintToDevices;
+    frmRptbViewer.Report := rptbGroups;
+    frmRptbViewer.ShowModal;
   finally
-    Screen.Cursor := crDefault;
+    FreeAndNil(frmRptbViewer);
   end;
 
 end;

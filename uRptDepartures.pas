@@ -12,7 +12,10 @@ uses
   cxGridCustomTableView, cxGridTableView, cxGridBandedTableView, cxGridDBBandedTableView, cxGridCustomView, cxGrid,
   dxStatusBar, cxGridDBTableView, Vcl.Grids, Vcl.DBGrids, Vcl.Menus, _glob,
   cxCurrencyEdit, uCurrencyHandler, cxCalendar, cxTimeEdit,
-  uRoomerForm;
+  uRoomerForm, dxPSGlbl, dxPSUtl, dxPSEngn, dxPrnPg, dxBkgnd, dxWrap, dxPrnDev, dxPSCompsProvider, dxPSFillPatterns,
+  dxPSEdgePatterns, dxPSPDFExportCore, dxPSPDFExport, cxDrawTextUtils, dxPSPrVwStd, dxPSPrVwAdv, dxPSPrVwRibbon,
+  dxPScxPageControlProducer, dxPScxGridLnk, dxPScxGridLayoutViewLnk, dxPScxEditorProducers, dxPScxExtEditorProducers,
+  dxSkinsdxBarPainter, dxSkinsdxRibbonPainter, dxPScxCommon, dxPSCore, cxLabel;
 
 type
   TfrmDeparturesReport = class(TfrmBaseRoomerForm)
@@ -56,6 +59,24 @@ type
     tvDeparturesListCompanyName: TcxGridDBColumn;
     tvDeparturesListAverageRatePerNight: TcxGridDBColumn;
     tvDeparturesListBalance: TcxGridDBColumn;
+    grdPrinter: TdxComponentPrinter;
+    grdPrinterLink1: TdxGridReportLink;
+    cxStyleRepository2: TcxStyleRepository;
+    cxStyle2: TcxStyle;
+    cxStyle3: TcxStyle;
+    cxStyle4: TcxStyle;
+    cxStyle5: TcxStyle;
+    cxStyle6: TcxStyle;
+    cxStyle7: TcxStyle;
+    cxStyle8: TcxStyle;
+    cxStyle9: TcxStyle;
+    cxStyle10: TcxStyle;
+    cxStyle11: TcxStyle;
+    cxStyle12: TcxStyle;
+    cxStyle13: TcxStyle;
+    cxStyle14: TcxStyle;
+    dxGridReportLinkStyleSheet1: TdxGridReportLinkStyleSheet;
+    btnPrintGrid: TsButton;
     procedure rbRadioButtonClick(Sender: TObject);
     procedure btnExcelClick(Sender: TObject);
     procedure btnRefreshClick(Sender: TObject);
@@ -70,6 +91,7 @@ type
     procedure dtDateToCloseUp(Sender: TObject);
     procedure tvDeparturesList2AverageRatePerNightGetProperties(Sender: TcxCustomGridTableItem; ARecord: TcxCustomGridRecord;
       var AProperties: TcxCustomEditProperties);
+    procedure btnPrintGridClick(Sender: TObject);
   private
     FRefreshingdata: boolean;
     FCurrencyhandler: TCurrencyHandler;
@@ -363,6 +385,19 @@ begin
   sFilename := g.qProgramPath + s + '_DeparturesList';
   ExportGridToExcel(sFilename, grDeparturesList, true, true, true);
   ShellExecute(Handle, 'OPEN', PChar(sFilename + '.xls'), nil, nil, sw_shownormal);
+end;
+
+procedure TfrmDeparturesReport.btnPrintGridClick(Sender: TObject);
+var
+  lTitle: string;
+begin
+  if dtDateFrom.Date = dtDateTo.Date then
+    lTitle := Format('%s for %s', [Caption, dtDateFrom.Text])
+  else
+    lTitle := Format('%s from %s until %s', [Caption, dtDateFrom.Text, dtDateTo.text]);
+  grdPrinter.PrintTitle := lTitle;
+  grdPrinterLink1.ReportTitle.Text := lTitle;
+  grdPrinter.Print(True, nil, grdPrinterLink1);
 end;
 
 procedure TfrmDeparturesReport.btnProfileClick(Sender: TObject);

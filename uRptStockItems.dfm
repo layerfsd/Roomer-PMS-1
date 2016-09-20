@@ -56,8 +56,8 @@ object frmRptStockItems: TfrmRptStockItems
       object rbToday: TsRadioButton
         Left = 4
         Top = 21
-        Width = 50
-        Height = 20
+        Width = 58
+        Height = 19
         Caption = 'Today'
         Checked = True
         TabOrder = 0
@@ -67,8 +67,8 @@ object frmRptStockItems: TfrmRptStockItems
       object rbTomorrow: TsRadioButton
         Left = 4
         Top = 46
-        Width = 68
-        Height = 20
+        Width = 76
+        Height = 19
         Caption = 'Tomorrow'
         TabOrder = 1
         OnClick = rbRadioButtonClick
@@ -76,8 +76,8 @@ object frmRptStockItems: TfrmRptStockItems
       object rbManualRange: TsRadioButton
         Left = 119
         Top = 21
-        Width = 114
-        Height = 20
+        Width = 122
+        Height = 19
         Caption = 'Manual date range:'
         TabOrder = 2
         OnClick = rbRadioButtonClick
@@ -88,9 +88,10 @@ object frmRptStockItems: TfrmRptStockItems
         Width = 105
         Height = 21
         AutoSize = False
+        Color = clWhite
         EditMask = '!99/99/9999;1; '
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -111,9 +112,10 @@ object frmRptStockItems: TfrmRptStockItems
         Width = 105
         Height = 21
         AutoSize = False
+        Color = clWhite
         EditMask = '!99/99/9999;1; '
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -478,6 +480,7 @@ object frmRptStockItems: TfrmRptStockItems
     DefaultFileDeviceType = 'PDF'
     EmailSettings.ReportFormat = 'PDF'
     LanguageID = 'Default'
+    ModalCancelDialog = False
     OutlineSettings.CreateNode = True
     OutlineSettings.CreatePageNodes = True
     OutlineSettings.Enabled = True

@@ -95,7 +95,7 @@ object frmMain: TfrmMain
       Top = 173
       Width = 924
       Height = 304
-      ActivePage = tabOneDayView
+      ActivePage = tabGuestList
       Align = alClient
       TabOrder = 3
       OnChange = pageMainGridsChange
@@ -439,7 +439,6 @@ object frmMain: TfrmMain
         ImageIndex = 9
         SkinData.CustomColor = False
         SkinData.CustomFont = False
-        ExplicitWidth = 919
         object Panel3: TsPanel
           Left = 0
           Top = 0
@@ -449,7 +448,6 @@ object frmMain: TfrmMain
           BevelOuter = bvNone
           TabOrder = 0
           SkinData.SkinSection = 'TRANSPARENT'
-          ExplicitWidth = 919
           object rgrGroupreportStayType: TsRadioGroup
             Left = 2
             Top = 4
@@ -521,7 +519,7 @@ object frmMain: TfrmMain
               Left = 3
               Top = 15
               Width = 151
-              Height = 17
+              Height = 19
               Caption = 'Reservation on new page'
               Font.Charset = DEFAULT_CHARSET
               Font.Color = clWindowText
@@ -538,7 +536,7 @@ object frmMain: TfrmMain
               Left = 3
               Top = 36
               Width = 81
-              Height = 17
+              Height = 19
               Caption = 'Print memo'
               Font.Charset = DEFAULT_CHARSET
               Font.Color = clWindowText
@@ -849,10 +847,6 @@ object frmMain: TfrmMain
         ImageIndex = 2
         SkinData.CustomColor = False
         SkinData.CustomFont = False
-        ExplicitLeft = 0
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
         object sLabel2: TsLabel
           Left = 224
           Top = 400
@@ -1315,8 +1309,6 @@ object frmMain: TfrmMain
           OnMoved = splitPeriodMoved
           Color = 6842472
           ParentColor = False
-          ExplicitTop = 159
-          ExplicitWidth = 919
         end
         object pnlPeriodNoRooms: TsPanel
           Left = 0
@@ -1637,29 +1629,17 @@ object frmMain: TfrmMain
         Caption = 'tabFreeRooms'
         SkinData.CustomColor = False
         SkinData.CustomFont = False
-        ExplicitLeft = 0
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
       end
       object tabDashboard: TsTabSheet
         Caption = 'tabDashboard'
         SkinData.CustomColor = False
         SkinData.CustomFont = False
         SkinData.SkinSection = 'TRANSPARENT'
-        ExplicitLeft = 0
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
       end
       object tabRateQuery: TsTabSheet
         Caption = 'tabRateQuery'
         SkinData.CustomColor = False
         SkinData.CustomFont = False
-        ExplicitLeft = 0
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
       end
     end
     object panMainTop: TsPanel
@@ -1734,6 +1714,8 @@ object frmMain: TfrmMain
           OnMouseEnter = tabsViewMouseEnter
           SkinData.SkinSection = 'PAGECONTROL'
           SkinData.OuterEffects.Visibility = ovAlways
+          ExplicitLeft = -2
+          ExplicitTop = -3
         end
       end
       object __PanGridsHeader: TsPanel
@@ -8274,6 +8256,7 @@ object frmMain: TfrmMain
     DefaultFileDeviceType = 'PDF'
     EmailSettings.ReportFormat = 'PDF'
     LanguageID = 'Default'
+    ModalCancelDialog = False
     OutlineSettings.CreateNode = True
     OutlineSettings.CreatePageNodes = True
     OutlineSettings.Enabled = True

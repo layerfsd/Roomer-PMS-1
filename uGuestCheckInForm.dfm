@@ -26,12 +26,10 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
     Align = alClient
     TabOrder = 0
     SkinData.SkinSection = 'PAGECONTROL'
-    ExplicitHeight = 623
     object sTabSheet1: TsTabSheet
       Caption = 'Room 101'
       SkinData.CustomColor = False
       SkinData.CustomFont = False
-      ExplicitHeight = 595
       object sPanel1: TsPanel
         Left = 0
         Top = 0
@@ -44,7 +42,6 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
         Padding.Bottom = 5
         TabOrder = 0
         SkinData.SkinSection = 'TRANSPARENT'
-        ExplicitHeight = 595
         object sLabel7: TsLabel
           Left = 6
           Top = 6
@@ -69,13 +66,11 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
           Align = alClient
           TabOrder = 0
           SkinData.SkinSection = 'PAGECONTROL'
-          ExplicitHeight = 558
           object sTabSheet2: TsTabSheet
             Caption = 'Guest Info'
             SkinData.CustomColor = False
             SkinData.CustomFont = False
             SkinData.SkinSection = 'TRANSPARENT'
-            ExplicitHeight = 530
             object sLabel6: TsLabel
               Left = 97
               Top = 126
@@ -661,9 +656,12 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
             object chkCountryForAllGuests: TsCheckBox
               Left = 190
               Top = 532
-              Width = 248
+              Width = 252
               Height = 19
-              Caption = 'Set this country for all guests without country'
+              Hint = 
+                'When checked the selected country will be set for all guests of ' +
+                'this room that don'#39't already have a country set'
+              Caption = 'Set country for all roomguests without country'
               Checked = True
               State = cbChecked
               TabOrder = 18
@@ -675,7 +673,6 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
             Caption = 'Company'
             SkinData.CustomColor = False
             SkinData.CustomFont = False
-            ExplicitHeight = 530
             object sLabel22: TsLabel
               Left = 11
               Top = 24
@@ -999,7 +996,6 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
         TabOrder = 1
         OnDblClick = sPanel2DblClick
         SkinData.SkinSection = 'TRANSPARENT'
-        ExplicitHeight = 595
         object sLabel8: TsLabel
           Left = 6
           Top = 6
@@ -1361,7 +1357,6 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
     Align = alBottom
     TabOrder = 1
     SkinData.SkinSection = 'PANEL'
-    ExplicitTop = 623
     DesignSize = (
       842
       33)
