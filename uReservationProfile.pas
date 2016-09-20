@@ -698,6 +698,8 @@ type
     procedure mRoomsBreakFastGetText(Sender: TField; var Text: string; DisplayText: Boolean);
     procedure mRoomsStatusGetText(Sender: TField; var Text: string; DisplayText: Boolean);
     procedure mRoomsisGroupAccountGetText(Sender: TField; var Text: string; DisplayText: Boolean);
+    procedure tvRoomsStatusTextPropertiesDrawItem(AControl: TcxCustomComboBox; ACanvas: TcxCanvas; AIndex: Integer;
+      const ARect: TRect; AState: TOwnerDrawState);
   private
     { Private declarations }
     vStartName: string;
@@ -2838,12 +2840,14 @@ procedure TfrmReservationProfile.tvRoomsStatusTextPropertiesChange(Sender: TObje
 var
   lStateChanger: TRoomReservationStateChangeHandler;
   lNewStatus: TReservationState;
+  cbx: TcxCombobox;
 begin
-  lNewStatus := TReservationState.FromItemIndex(TcxComboBox(Sender).ItemIndex);
+  cbx := TcxComboBox(Sender);
+  lNewStatus :=  TReservationState(cbx.Properties.Items.Objects[cbx.ItemIndex]);
 
   lStateChanger := FReservationChangeStateHandler.RoomStateChangeHandler[zRoomReservation];
   try
-    if lStateChanger.ChangeState(lNewStatus) then
+    if lNewStatus.IsUserSelectable and lStateChanger.ChangeState(lNewStatus) then
     begin
       mRooms.DisableControls;
       try
@@ -2865,6 +2869,37 @@ begin
       mRooms.Cancel;
   end;
 
+end;
+
+procedure TfrmReservationProfile.tvRoomsStatusTextPropertiesDrawItem(AControl: TcxCustomComboBox; ACanvas: TcxCanvas;
+  AIndex: Integer; const ARect: TRect; AState: TOwnerDrawState);
+var
+  lState: TReservationState;
+  lRoomStateChanger: TRoomReservationStateChangeHandler;
+  ltext: string;
+  lDisabled: boolean;
+begin
+  lDisabled := false;
+  if aIndex = -1 then
+    ltext := ''
+  else
+  begin
+    lState := TReservationState(aControl.Properties.Items.Objects[aIndex]);
+    lRoomStateChanger := FReservationChangeStateHandler.RoomStateChangeHandler[mRoomsRoomReservation.AsInteger];
+    lText := aControl.Properties.Items[aIndex];
+    lDisabled := not lRoomStateChanger.ChangeIsAllowed(lState);
+  end;
+
+  with aCanvas do
+  begin
+    if lDisabled and not (odComboBoxEdit in aState) then
+      Font.Color := clMedGray
+    else
+      Font.Color := clWindowtext;
+
+    FillRect(aRect);
+    TextOut(aRect.Left, aRect.Top, lText);
+  end;
 end;
 
 procedure TfrmReservationProfile.tvRoomsblockMoveGetCellHint(Sender: TcxCustomGridTableItem; ARecord: TcxCustomGridRecord;
