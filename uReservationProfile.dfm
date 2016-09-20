@@ -4502,14 +4502,6 @@ object frmReservationProfile: TfrmReservationProfile
       Calculated = True
     end
   end
-  object mReservation: TdxMemData
-    Indexes = <>
-    SortOptions = []
-    BeforePost = mRoomsBeforePost
-    AfterScroll = mRoomsAfterScroll
-    Left = 800
-    Top = 64
-  end
   object ppmCheckin: TPopupMenu
     Left = 24
     Top = 32

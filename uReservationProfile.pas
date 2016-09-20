@@ -717,6 +717,7 @@ type
     FOrigAcCheckOutRoomCaption: string;
     FOrigmnuChangeStateToCaption: string;
     FInitializingData: boolean;
+    FCreatedBy: string;
 
     procedure Display;
     procedure Display_rGrid(gotoRoomReservation: longInt);
@@ -937,6 +938,8 @@ begin
 
       lBuilder.AppendFormat('    -    %s: %s', [GetTranslatedText('shTx_FrmReservationprofile_Status'), FReservationChangeStateHandler.CurrentState.AsReadableString ]);
 
+      lBuilder.AppendFormat('    -    %s: %s', [GetTranslatedText('shTx_FrmReservationprofile_CreatedBy'), FCreatedBy]);
+
 //      lCurrencyHandler := TCurrencyHandler.Create( g.qNativeCurrency);
 //      lBuilder.AppendFormat('    -    %s: %s', [GetTranslatedText('shTx_FrmReservationprofile_Balance'),
 //                                                lCurrencyHandler.FormattedValue(DetermineTotalBalance)]);
@@ -1110,6 +1113,8 @@ begin
         OutOfOrderBlocking := fieldbyname('outOfOrderBlocking').AsBoolean;
 
         SetMarketItemIndex(fieldbyname('market').asString);
+
+        FCreatedBy := fieldbyname('staff').asString;
       end;
     end;
 
