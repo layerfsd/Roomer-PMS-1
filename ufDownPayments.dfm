@@ -458,9 +458,6 @@ object frmRptDownPayments: TfrmRptDownPayments
           TabOrder = 0
           OnClick = btnGuestsExcelClick
           SkinData.SkinSection = 'BUTTON'
-          ExplicitLeft = 0
-          ExplicitTop = 1
-          ExplicitHeight = 41
         end
         object brnGuestsReservation: TsButton
           AlignWithMargins = True
@@ -475,8 +472,6 @@ object frmRptDownPayments: TfrmRptDownPayments
           TabOrder = 1
           OnClick = brnGuestsReservationClick
           SkinData.SkinSection = 'BUTTON'
-          ExplicitTop = 2
-          ExplicitHeight = 39
         end
         object btnGuestsRoom: TsButton
           AlignWithMargins = True
@@ -491,8 +486,6 @@ object frmRptDownPayments: TfrmRptDownPayments
           TabOrder = 2
           OnClick = btnGuestsRoomClick
           SkinData.SkinSection = 'BUTTON'
-          ExplicitTop = 2
-          ExplicitHeight = 39
         end
         object sButton2: TsButton
           AlignWithMargins = True
@@ -507,8 +500,6 @@ object frmRptDownPayments: TfrmRptDownPayments
           TabOrder = 3
           OnClick = sButton2Click
           SkinData.SkinSection = 'BUTTON'
-          ExplicitTop = 2
-          ExplicitHeight = 39
         end
         object btnEdit: TsButton
           AlignWithMargins = True
@@ -523,8 +514,6 @@ object frmRptDownPayments: TfrmRptDownPayments
           TabOrder = 5
           OnClick = btnEditClick
           SkinData.SkinSection = 'BUTTON'
-          ExplicitTop = 2
-          ExplicitHeight = 39
         end
         object sButton3: TsButton
           AlignWithMargins = True
@@ -539,8 +528,6 @@ object frmRptDownPayments: TfrmRptDownPayments
           TabOrder = 4
           OnClick = sButton3Click
           SkinData.SkinSection = 'BUTTON'
-          ExplicitTop = 2
-          ExplicitHeight = 39
         end
         object sCheckBox1: TsCheckBox
           Left = 700
@@ -938,6 +925,7 @@ object frmRptDownPayments: TfrmRptDownPayments
     DefaultFileDeviceType = 'PDF'
     EmailSettings.ReportFormat = 'PDF'
     LanguageID = 'Default'
+    ModalCancelDialog = False
     OnInitializeParameters = ppReport2InitializeParameters
     OutlineSettings.CreateNode = True
     OutlineSettings.CreatePageNodes = True
@@ -1636,6 +1624,7 @@ object frmRptDownPayments: TfrmRptDownPayments
     DefaultFileDeviceType = 'PDF'
     EmailSettings.ReportFormat = 'PDF'
     LanguageID = 'Default'
+    ModalCancelDialog = False
     OnInitializeParameters = ppReport2InitializeParameters
     OutlineSettings.CreateNode = True
     OutlineSettings.CreatePageNodes = True

@@ -141,8 +141,8 @@ object frmRptTurnoverAndPayments: TfrmRptTurnoverAndPayments
       object chkGetUnconfirmed: TsCheckBox
         Left = 15
         Top = 18
-        Width = 99
-        Height = 20
+        Width = 107
+        Height = 19
         Caption = 'Get unconfirmed'
         TabOrder = 0
         OnClick = chkGetUnconfirmedClick
@@ -2020,6 +2020,7 @@ object frmRptTurnoverAndPayments: TfrmRptTurnoverAndPayments
     DefaultFileDeviceType = 'PDF'
     EmailSettings.ReportFormat = 'PDF'
     LanguageID = 'Default'
+    ModalCancelDialog = False
     OutlineSettings.CreateNode = True
     OutlineSettings.CreatePageNodes = True
     OutlineSettings.Enabled = True

@@ -345,10 +345,8 @@ object frmRptCashier: TfrmRptCashier
     object tabStatGrid: TsTabSheet
       Caption = 'Data'
       TabVisible = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
+      SkinData.CustomColor = False
+      SkinData.CustomFont = False
       object sPanel1: TsPanel
         Left = 0
         Top = 0
@@ -495,16 +493,14 @@ object frmRptCashier: TfrmRptCashier
         SearchFooter.HintHighlight = 'Highlight occurrences'
         SearchFooter.MatchCaseCaption = 'Match case'
         SortSettings.DefaultFormat = ssAutomatic
-        Version = '7.9.1.1'
+        Version = '8.1.2.0'
         WordWrap = False
       end
     end
     object sTabSheet1: TsTabSheet
       Caption = 'Cashier functions'
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
+      SkinData.CustomColor = False
+      SkinData.CustomFont = False
       object grGet: TcxGrid
         Left = 0
         Top = 43
@@ -513,8 +509,6 @@ object frmRptCashier: TfrmRptCashier
         Align = alClient
         TabOrder = 0
         LookAndFeel.NativeStyle = False
-        ExplicitTop = 41
-        ExplicitHeight = 483
         object tvGet: TcxGridDBTableView
           Navigator.Buttons.CustomButtons = <>
           DataController.DataSource = kbmGetDS
@@ -647,7 +641,6 @@ object frmRptCashier: TfrmRptCashier
         Align = alTop
         TabOrder = 1
         SkinData.SkinSection = 'PANEL'
-        ExplicitTop = -6
         object btnExcel: TsButton
           AlignWithMargins = True
           Left = 4
@@ -675,7 +668,6 @@ object frmRptCashier: TfrmRptCashier
           TabOrder = 1
           OnClick = sButton6Click
           SkinData.SkinSection = 'BUTTON'
-          ExplicitLeft = 110
         end
         object sButton23: TsButton
           AlignWithMargins = True
@@ -690,7 +682,6 @@ object frmRptCashier: TfrmRptCashier
           TabOrder = 2
           OnClick = sButton23Click
           SkinData.SkinSection = 'BUTTON'
-          ExplicitLeft = 216
         end
         object chkGroup: TsCheckBox
           AlignWithMargins = True
@@ -707,8 +698,6 @@ object frmRptCashier: TfrmRptCashier
           SkinData.SkinSection = 'CHECKBOX'
           ImgChecked = 0
           ImgUnchecked = 0
-          ExplicitLeft = 322
-          ExplicitTop = 2
         end
         object btnExpand: TsButton
           AlignWithMargins = True
@@ -722,7 +711,6 @@ object frmRptCashier: TfrmRptCashier
           TabOrder = 4
           OnClick = btnExpandClick
           SkinData.SkinSection = 'BUTTON'
-          ExplicitLeft = 448
         end
         object btnCollapse: TsButton
           AlignWithMargins = True
@@ -736,16 +724,13 @@ object frmRptCashier: TfrmRptCashier
           TabOrder = 5
           OnClick = btnCollapseClick
           SkinData.SkinSection = 'BUTTON'
-          ExplicitLeft = 564
         end
       end
     end
     object sTabSheet2: TsTabSheet
       Caption = 'Received Payments'
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
+      SkinData.CustomColor = False
+      SkinData.CustomFont = False
       object sPanel2: TsPanel
         Left = 0
         Top = 0
@@ -767,7 +752,6 @@ object frmRptCashier: TfrmRptCashier
           TabOrder = 0
           OnClick = sButton3Click
           SkinData.SkinSection = 'BUTTON'
-          ExplicitTop = 2
         end
       end
       object grPayments: TcxGrid
@@ -778,8 +762,6 @@ object frmRptCashier: TfrmRptCashier
         Align = alClient
         TabOrder = 1
         LookAndFeel.NativeStyle = False
-        ExplicitTop = 41
-        ExplicitHeight = 483
         object tvPayments: TcxGridDBTableView
           Navigator.Buttons.CustomButtons = <>
           DataController.DataSource = kbmPaymentsDS
@@ -1017,6 +999,7 @@ object frmRptCashier: TfrmRptCashier
     DefaultFileDeviceType = 'PDF'
     EmailSettings.ReportFormat = 'PDF'
     LanguageID = 'Default'
+    ModalCancelDialog = False
     OutlineSettings.CreateNode = True
     OutlineSettings.CreatePageNodes = True
     OutlineSettings.Enabled = True

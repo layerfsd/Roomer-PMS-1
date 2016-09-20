@@ -2025,6 +2025,7 @@ object frmRptTurnoverAndPayments2: TfrmRptTurnoverAndPayments2
     DefaultFileDeviceType = 'PDF'
     EmailSettings.ReportFormat = 'PDF'
     LanguageID = 'Default'
+    ModalCancelDialog = False
     OutlineSettings.CreateNode = True
     OutlineSettings.CreatePageNodes = True
     OutlineSettings.Enabled = True
