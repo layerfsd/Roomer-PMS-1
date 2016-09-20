@@ -1,7 +1,7 @@
 object frmHouseKeeping: TfrmHouseKeeping
   Left = 0
   Top = 0
-  Caption = 'House keeping'
+  Caption = 'Detailed Housekeeping report'
   ClientHeight = 505
   ClientWidth = 900
   Color = clBtnFace
