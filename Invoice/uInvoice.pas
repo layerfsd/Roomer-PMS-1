@@ -6198,10 +6198,8 @@ begin
               [mbOk], 0);
             exit;
           end
-          else if glb.LocateSpecificRecordAndGetValue('items', 'Item',
-            theData[i].recHolder.Item, 'Itemtype', ItemType) AND
-            glb.LocateSpecificRecordAndGetValue('itemtypes', 'ItemType',
-            ItemType, 'VATCode', VATCode) then
+          else if glb.LocateSpecificRecordAndGetValue('items', 'Item', theData[i].recHolder.Item, 'Itemtype', ItemType) AND
+            glb.LocateSpecificRecordAndGetValue('itemtypes', 'ItemType', ItemType, 'VATCode', VATCode) then
           begin
             if glb.LocateSpecificRecord('vatcodes', 'VATCode', VATCode) then
             begin

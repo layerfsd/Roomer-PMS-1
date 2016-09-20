@@ -385,6 +385,7 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
               Width = 34
               Height = 21
               CharCase = ecUpperCase
+              Color = clWhite
               Font.Charset = DEFAULT_CHARSET
               Font.Color = clBlack
               Font.Height = -11
@@ -440,7 +441,7 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
             end
             object edCity: TsEdit
               Left = 190
-              Top = 482
+              Top = 481
               Width = 241
               Height = 21
               Color = clWhite
@@ -592,8 +593,8 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
             object cbActiveLiveSearch: TsCheckBox
               Left = 190
               Top = 47
-              Width = 74
-              Height = 20
+              Width = 82
+              Height = 17
               Caption = 'Live search'
               TabOrder = 20
               OnClick = cbActiveLiveSearchClick
@@ -651,8 +652,6 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
           end
           object sTabSheet6: TsTabSheet
             Caption = 'Company'
-            SkinData.CustomColor = False
-            SkinData.CustomFont = False
             object sLabel22: TsLabel
               Left = 11
               Top = 24
@@ -1197,8 +1196,6 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
           SkinData.SkinSection = 'PAGECONTROL'
           object sTabSheet3: TsTabSheet
             Caption = 'Credit card'
-            SkinData.CustomColor = False
-            SkinData.CustomFont = False
             object sLabel12: TsLabel
               Left = 66
               Top = 69
@@ -1315,13 +1312,9 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
           end
           object sTabSheet5: TsTabSheet
             Caption = 'None'
-            SkinData.CustomColor = False
-            SkinData.CustomFont = False
           end
           object sTabSheet7: TsTabSheet
             Caption = 'Select'
-            SkinData.CustomColor = False
-            SkinData.CustomFont = False
           end
         end
       end

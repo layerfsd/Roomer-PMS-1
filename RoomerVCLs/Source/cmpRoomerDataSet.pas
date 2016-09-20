@@ -1598,8 +1598,10 @@ var
   http: TIdHTTP;
   i: Integer;
   filename, filePath: String;
+
   att: TIdFormDataField;
   IdSSLIOHandlerSocketOpenSSL1: TIdSSLIOHandlerSocketOpenSSL;
+  contType : String;
 begin
   multi := TIdMultipartFormDataStream.Create;
   try
@@ -1607,7 +1609,11 @@ begin
     begin
       filename := Copy(files[i], POS('=', files[i]) + 1, maxint);
       filePath := Copy(files[i], 1, POS('=', files[i]) - 1);
-      att := multi.AddFile('attachment', filePath, GetMIMEtype(filename));
+      contType := '';
+//      contType := GetMIMEtype(filename);
+//      if LENGTH(contType) < 4 then
+//        contType := 'application/' + copy(LowerCase(ExtractFileExt(Filename)), 2, maxint);
+      att := multi.AddFile('attachment', filePath, contType);
       att.filename := extractFilename(filename);
     end;
 

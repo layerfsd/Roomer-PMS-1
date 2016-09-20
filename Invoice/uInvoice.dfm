@@ -639,8 +639,8 @@ object frmInvoice: TfrmInvoice
       object chkShowPackage: TsCheckBox
         Left = 906
         Top = 135
-        Width = 111
-        Height = 20
+        Width = 119
+        Height = 17
         Caption = 'Package on invoice'
         Anchors = [akTop, akRight]
         Checked = True
@@ -1425,8 +1425,8 @@ object frmInvoice: TfrmInvoice
               object chkReCalcPrices: TsCheckBox
                 Left = 9
                 Top = 20
-                Width = 195
-                Height = 20
+                Width = 203
+                Height = 17
                 Caption = 'Recalc price on guestcount  changes'
                 Checked = True
                 State = cbChecked
@@ -1438,8 +1438,8 @@ object frmInvoice: TfrmInvoice
               object chkAutoUpdateNullPrice: TsCheckBox
                 Left = 9
                 Top = 46
-                Width = 126
-                Height = 20
+                Width = 134
+                Height = 17
                 Caption = 'Auto update Null Price'
                 Checked = True
                 State = cbChecked
