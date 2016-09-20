@@ -298,8 +298,6 @@ object frmReservationProfile: TfrmReservationProfile
         Items.Strings = (
           'Leisure'
           'Business')
-        ExplicitLeft = 87
-        ExplicitWidth = 181
       end
       object pnlMarketSegment: TsPanel
         Left = 7
@@ -309,7 +307,6 @@ object frmReservationProfile: TfrmReservationProfile
         Align = alTop
         BevelOuter = bvNone
         TabOrder = 1
-        ExplicitWidth = 264
         object Label8: TsLabel
           Left = 21
           Top = 7
@@ -390,7 +387,6 @@ object frmReservationProfile: TfrmReservationProfile
         BevelOuter = bvNone
         TabOrder = 2
         OnResize = pnlTelephoneResize
-        ExplicitWidth = 264
       end
     end
     object gbxStatus: TsGroupBox
@@ -404,7 +400,6 @@ object frmReservationProfile: TfrmReservationProfile
       TabOrder = 2
       SkinData.SkinSection = 'GROUPBOX'
       Checked = False
-      ExplicitLeft = 481
       object Label25: TsLabel
         Left = 68
         Top = 13
@@ -1914,7 +1909,6 @@ object frmReservationProfile: TfrmReservationProfile
     ActiveIsBold = True
     ShowFocus = False
     SkinData.SkinSection = 'PAGECONTROL'
-    ExplicitTop = 372
     object RoomsTab: TsTabSheet
       Caption = 'Rooms'
       SkinData.CustomColor = False
@@ -2867,8 +2861,8 @@ object frmReservationProfile: TfrmReservationProfile
         object chkShowAllGuests: TsCheckBox
           Left = 333
           Top = 11
-          Width = 94
-          Height = 20
+          Width = 102
+          Height = 19
           Caption = 'Show all guests'
           Anchors = [akLeft, akTop, akRight]
           TabOrder = 4
@@ -2906,8 +2900,6 @@ object frmReservationProfile: TfrmReservationProfile
           TabOrder = 0
           LevelTabs.Style = 8
           LookAndFeel.NativeStyle = False
-          ExplicitLeft = 5
-          ExplicitTop = 0
           object tvGuestRooms: TcxGridDBTableView
             Navigator.Buttons.CustomButtons = <>
             Navigator.Buttons.First.Visible = True
@@ -4509,14 +4501,6 @@ object frmReservationProfile: TfrmReservationProfile
       FieldName = 'TotalPrice'
       Calculated = True
     end
-  end
-  object mReservation: TdxMemData
-    Indexes = <>
-    SortOptions = []
-    BeforePost = mRoomsBeforePost
-    AfterScroll = mRoomsAfterScroll
-    Left = 800
-    Top = 64
   end
   object ppmCheckin: TPopupMenu
     Left = 24

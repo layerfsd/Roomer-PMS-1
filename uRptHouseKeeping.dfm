@@ -1,5 +1,5 @@
 inherited frmHouseKeepingReport: TfrmHouseKeepingReport
-  Caption = 'HouseKeeping list'
+  Caption = 'Simple HouseKeeping report'
   ClientHeight = 586
   ClientWidth = 1123
   Font.Height = -11
@@ -150,7 +150,6 @@ inherited frmHouseKeepingReport: TfrmHouseKeepingReport
     Align = alClient
     TabOrder = 2
     LookAndFeel.NativeStyle = False
-    ExplicitTop = 139
     object grHouseKeepingListDBTableView1: TcxGridDBTableView
       Navigator.Buttons.CustomButtons = <>
       DataController.DataSource = HouseKeepingListDS
@@ -406,7 +405,6 @@ inherited frmHouseKeepingReport: TfrmHouseKeepingReport
     object gridPrinterLink1: TdxGridReportLink
       Active = True
       Component = grHouseKeepingList
-      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.Header = 6350
@@ -419,14 +417,13 @@ inherited frmHouseKeepingReport: TfrmHouseKeepingReport
       PrinterPage.ScaleMode = smFit
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
-      ReportDocument.CreationDate = 42628.411582847220000000
+      ReportDocument.CreationDate = 42633.421151863430000000
       ReportTitle.Font.Charset = DEFAULT_CHARSET
       ReportTitle.Font.Color = clBlack
       ReportTitle.Font.Height = -19
       ReportTitle.Font.Name = 'Arial'
       ReportTitle.Font.Style = [fsBold]
       ShrinkToPageWidth = True
-      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clBlack
       Font.Height = -15

@@ -3869,6 +3869,7 @@ begin
       btnExit.Enabled := false;
       btnInvoice.Enabled := false;
       btnProforma.Enabled := false;
+      sPAnel4.Visible := False;
       // sPanel4.Visible := false;
     end;
 
@@ -4947,7 +4948,7 @@ begin
   LoadInvoice;
   UpdateCaptions;
 
-  sPanel4.Visible := NOT(IsCashInvoice OR FCredit);
+  sPanel4.Visible := NOT(IsCashInvoice OR FCredit or zFakeGroup);
   Exit1.Enabled := True;
 end;
 

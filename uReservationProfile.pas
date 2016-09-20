@@ -717,10 +717,11 @@ type
     FOrigAcCheckOutRoomCaption: string;
     FOrigmnuChangeStateToCaption: string;
     FInitializingData: boolean;
+    FCreatedBy: string;
 
     procedure Display;
     procedure Display_rGrid(gotoRoomReservation: longInt);
-    procedure AddNewRoom3;
+    procedure AddNewRoom;
     procedure MoveGuestToNewRoom2;
     procedure UpdateBreakfast;
     procedure UpdatePaymentDetails;
@@ -937,6 +938,8 @@ begin
 
       lBuilder.AppendFormat('    -    %s: %s', [GetTranslatedText('shTx_FrmReservationprofile_Status'), FReservationChangeStateHandler.CurrentState.AsReadableString ]);
 
+      lBuilder.AppendFormat('    -    %s: %s', [GetTranslatedText('shTx_FrmReservationprofile_CreatedBy'), FCreatedBy]);
+
 //      lCurrencyHandler := TCurrencyHandler.Create( g.qNativeCurrency);
 //      lBuilder.AppendFormat('    -    %s: %s', [GetTranslatedText('shTx_FrmReservationprofile_Balance'),
 //                                                lCurrencyHandler.FormattedValue(DetermineTotalBalance)]);
@@ -1110,6 +1113,8 @@ begin
         OutOfOrderBlocking := fieldbyname('outOfOrderBlocking').AsBoolean;
 
         SetMarketItemIndex(fieldbyname('market').asString);
+
+        FCreatedBy := fieldbyname('staff').asString;
       end;
     end;
 
@@ -1740,7 +1745,7 @@ begin
   g.openHiddenInfo(zReservation, 1);
 end;
 
-procedure TfrmReservationProfile.AddNewRoom3;
+procedure TfrmReservationProfile.AddNewRoom;
 var
   Currency: string;
   RoomType: string;
@@ -1769,8 +1774,6 @@ var
 
   isGroupInvoice: Boolean;
   isBreckfastIncluted: Boolean;
-
-  roomStatus: string;
 
   RoomPMInfo: string;
   RoomHiddenInfo: string;
@@ -1867,7 +1870,6 @@ begin
 
       useInNationalReport := true;
       RoomNumber := '<' + inttostr(iRoomreservation) + '>';
-      roomStatus := mRoomsStatus.asstring;
       RoomPMInfo := '';
       RoomHiddenInfo := '';
 
@@ -1877,7 +1879,8 @@ begin
       roomReservationData.roomReservation := iRoomreservation;
       roomReservationData.Room := RoomNumber;
       roomReservationData.reservation := iReservation;
-      roomReservationData.status := roomStatus;
+      // new reservation  always start as a rsReservation
+      roomReservationData.status := rsReservation.AsStatusChar;
       roomReservationData.GroupAccount := isGroupInvoice;
       roomReservationData.invBreakfast := isBreckfastIncluted;
       roomReservationData.Currency := Currency;
@@ -1974,11 +1977,6 @@ begin
         tmpDate := tmpDate + 1;
       end;
 
-      if roomStatus = 'B' then
-      begin
-        numGuests := 1;
-      end;
-
       iPerson := PE_SetNewID();
 
       initPersonHolder(personData);
@@ -2018,13 +2016,10 @@ begin
         end;
       end;
 
-      if (roomStatus <> 'O') and (roomStatus <> 'N') and (roomStatus <> 'C') then
-      begin
-        temp := format
-          ('(AddNewRoom3) Add a room to reservation Reservation=%d, RoomReservation=%d, Room=%s, RoomType=%s, TO ArrDate=%s, DepDate=%s',
-          [iReservation, iRoomreservation, RoomNumber, RoomType, DateToSqlString(arrival), DateToSqlString(departure)]);
-        d.roomerMainDataSet.SystemChangeAvailability(RoomType, arrival, departure - 1, true, temp); // minnka frambo�
-      end;
+      temp := format
+        ('(AddNewRoom3) Add a room to reservation Reservation=%d, RoomReservation=%d, Room=%s, RoomType=%s, TO ArrDate=%s, DepDate=%s',
+        [iReservation, iRoomreservation, RoomNumber, RoomType, DateToSqlString(arrival), DateToSqlString(departure)]);
+      d.roomerMainDataSet.SystemChangeAvailability(RoomType, arrival, departure - 1, true, temp); // minnka frambo�
 
       if ExecutionPlan.Execute(ptExec, false, true) then
         ExecutionPlan.CommitTransaction
@@ -2055,7 +2050,7 @@ end;
 
 procedure TfrmReservationProfile.btnAddRoomClick(Sender: TObject);
 begin
-  AddNewRoom3;
+  AddNewRoom;
 end;
 
 procedure TfrmReservationProfile.btnRemoveRoomClick(Sender: TObject);
