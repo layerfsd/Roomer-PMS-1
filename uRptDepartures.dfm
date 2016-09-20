@@ -22,7 +22,6 @@ inherited frmDeparturesReport: TfrmDeparturesReport
     Align = alTop
     TabOrder = 0
     SkinData.SkinSection = 'PANEL'
-    ExplicitTop = -6
     object btnRefresh: TsButton
       Left = 398
       Top = 9
@@ -54,8 +53,8 @@ inherited frmDeparturesReport: TfrmDeparturesReport
       object rbToday: TsRadioButton
         Left = 4
         Top = 21
-        Width = 58
-        Height = 19
+        Width = 50
+        Height = 20
         Caption = 'Today'
         Checked = True
         TabOrder = 0
@@ -65,8 +64,8 @@ inherited frmDeparturesReport: TfrmDeparturesReport
       object rbTomorrow: TsRadioButton
         Left = 4
         Top = 46
-        Width = 76
-        Height = 19
+        Width = 68
+        Height = 20
         Caption = 'Tomorrow'
         TabOrder = 1
         OnClick = rbRadioButtonClick
@@ -74,8 +73,8 @@ inherited frmDeparturesReport: TfrmDeparturesReport
       object rbManualRange: TsRadioButton
         Left = 119
         Top = 21
-        Width = 122
-        Height = 19
+        Width = 114
+        Height = 20
         Caption = 'Manual date range:'
         TabOrder = 2
         OnClick = rbRadioButtonClick
@@ -196,6 +195,20 @@ inherited frmDeparturesReport: TfrmDeparturesReport
         OnClick = mnuRoomInvoiceClick
         SkinData.SkinSection = 'BUTTON'
       end
+      object btnPrintGrid: TsButton
+        AlignWithMargins = True
+        Left = 922
+        Top = 3
+        Width = 128
+        Height = 37
+        Align = alRight
+        Caption = 'Report'
+        ImageIndex = 69
+        Images = DImages.PngImageList1
+        TabOrder = 4
+        OnClick = btnPrintGridClick
+        SkinData.SkinSection = 'BUTTON'
+      end
     end
   end
   object grDeparturesList: TcxGrid [2]
@@ -207,22 +220,27 @@ inherited frmDeparturesReport: TfrmDeparturesReport
     PopupMenu = pnmuGridMenu
     TabOrder = 1
     LookAndFeel.NativeStyle = False
+    ExplicitLeft = -1
+    ExplicitTop = 138
     object tvDeparturesList: TcxGridDBTableView
       Navigator.Buttons.CustomButtons = <>
       DataController.DataSource = DeparturesListDS
       DataController.Summary.DefaultGroupSummaryItems = <
         item
+          Format = '0'
           Kind = skCount
           Position = spFooter
           Column = tvDeparturesListRoom
         end
         item
+          Format = '0'
           Kind = skSum
           Position = spFooter
           Column = tvDeparturesListNumGuests
         end>
       DataController.Summary.FooterSummaryItems = <
         item
+          Format = '0'
           Kind = skCount
           Column = tvDeparturesListRoom
         end
@@ -252,8 +270,10 @@ inherited frmDeparturesReport: TfrmDeparturesReport
         Width = 200
       end
       object tvDeparturesListRoomerReservationId: TcxGridDBColumn
-        Caption = 'Res. Id'
+        Caption = 'Reservation ID'
         DataBinding.FieldName = 'RoomerReservationId'
+        PropertiesClassName = 'TcxLabelProperties'
+        Properties.Alignment.Horz = taCenter
         Width = 83
       end
       object tvDeparturesListCompanyName: TcxGridDBColumn
@@ -271,6 +291,8 @@ inherited frmDeparturesReport: TfrmDeparturesReport
       end
       object tvDeparturesListRoomType: TcxGridDBColumn
         DataBinding.FieldName = 'RoomType'
+        PropertiesClassName = 'TcxLabelProperties'
+        Properties.Alignment.Horz = taCenter
         Width = 64
       end
       object tvDeparturesListNumGuests: TcxGridDBColumn
@@ -446,6 +468,189 @@ inherited frmDeparturesReport: TfrmDeparturesReport
         Caption = 'Group invoice'
         OnClick = mnuGroupInvoiceClick
       end
+    end
+  end
+  object grdPrinter: TdxComponentPrinter
+    CurrentLink = grdPrinterLink1
+    Version = 0
+    Left = 672
+    Top = 320
+    object grdPrinterLink1: TdxGridReportLink
+      Active = True
+      Component = grDeparturesList
+      PrinterPage.DMPaper = 9
+      PrinterPage.Footer = 6350
+      PrinterPage.Header = 6350
+      PrinterPage.Margins.Bottom = 6350
+      PrinterPage.Margins.Left = 5000
+      PrinterPage.Margins.Right = 5000
+      PrinterPage.Margins.Top = 12700
+      PrinterPage.Orientation = poLandscape
+      PrinterPage.PageSize.X = 210000
+      PrinterPage.PageSize.Y = 297000
+      PrinterPage.ScaleMode = smFit
+      PrinterPage._dxMeasurementUnits_ = 2
+      PrinterPage._dxLastMU_ = 2
+      ReportDocument.CreationDate = 42633.593918784730000000
+      ReportTitle.Font.Charset = DEFAULT_CHARSET
+      ReportTitle.Font.Color = clBlack
+      ReportTitle.Font.Height = -19
+      ReportTitle.Font.Name = 'Arial'
+      ReportTitle.Font.Style = [fsBold]
+      ShrinkToPageWidth = True
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clBlack
+      Font.Height = -11
+      Font.Name = 'Arial'
+      Font.Style = []
+      OptionsExpanding.ExpandGroupRows = True
+      OptionsFormatting.LookAndFeelKind = lfFlat
+      OptionsFormatting.UseNativeStyles = True
+      OptionsOnEveryPage.Footers = False
+      OptionsOnEveryPage.FilterBar = False
+      OptionsView.FilterBar = False
+      StyleRepository = cxStyleRepository2
+      Styles.StyleSheet = dxGridReportLinkStyleSheet1
+      BuiltInReportLink = True
+    end
+  end
+  object cxStyleRepository2: TcxStyleRepository
+    Left = 744
+    Top = 320
+    PixelsPerInch = 96
+    object cxStyle2: TcxStyle
+      AssignedValues = [svColor, svFont]
+      Color = clBtnFace
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clDefault
+      Font.Height = -9
+      Font.Name = 'Arial'
+      Font.Style = [fsBold]
+    end
+    object cxStyle3: TcxStyle
+      AssignedValues = [svColor, svFont]
+      Color = clBtnFace
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clDefault
+      Font.Height = -9
+      Font.Name = 'Arial'
+      Font.Style = [fsBold]
+    end
+    object cxStyle4: TcxStyle
+      AssignedValues = [svColor, svFont]
+      Color = clBtnFace
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clDefault
+      Font.Height = -9
+      Font.Name = 'Arial'
+      Font.Style = []
+    end
+    object cxStyle5: TcxStyle
+      AssignedValues = [svColor, svFont]
+      Color = clBtnFace
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clDefault
+      Font.Height = -9
+      Font.Name = 'Arial'
+      Font.Style = []
+    end
+    object cxStyle6: TcxStyle
+      AssignedValues = [svColor, svFont]
+      Color = clWhite
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clDefault
+      Font.Height = -7
+      Font.Name = 'Arial'
+      Font.Style = []
+    end
+    object cxStyle7: TcxStyle
+      AssignedValues = [svColor, svFont]
+      Color = 16053492
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clDefault
+      Font.Height = -7
+      Font.Name = 'Arial'
+      Font.Style = []
+    end
+    object cxStyle8: TcxStyle
+      AssignedValues = [svColor, svFont]
+      Color = clWhite
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clDefault
+      Font.Height = -7
+      Font.Name = 'Arial'
+      Font.Style = []
+    end
+    object cxStyle9: TcxStyle
+      AssignedValues = [svColor, svFont]
+      Color = clBtnShadow
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clDefault
+      Font.Height = -9
+      Font.Name = 'Arial'
+      Font.Style = []
+    end
+    object cxStyle10: TcxStyle
+      AssignedValues = [svColor, svFont]
+      Color = clBtnFace
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clDefault
+      Font.Height = -7
+      Font.Name = 'Arial'
+      Font.Style = []
+    end
+    object cxStyle11: TcxStyle
+      AssignedValues = [svColor, svFont]
+      Color = clBtnFace
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clDefault
+      Font.Height = -9
+      Font.Name = 'Arial'
+      Font.Style = []
+    end
+    object cxStyle12: TcxStyle
+      AssignedValues = [svColor, svFont]
+      Color = clBtnFace
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clDefault
+      Font.Height = -7
+      Font.Name = 'Arial Black'
+      Font.Style = [fsBold]
+    end
+    object cxStyle13: TcxStyle
+      AssignedValues = [svColor, svFont]
+      Color = clWhite
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clDefault
+      Font.Height = -9
+      Font.Name = 'Arial'
+      Font.Style = []
+    end
+    object cxStyle14: TcxStyle
+      AssignedValues = [svColor, svFont]
+      Color = clBtnFace
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clDefault
+      Font.Height = -9
+      Font.Name = 'Arial'
+      Font.Style = []
+    end
+    object dxGridReportLinkStyleSheet1: TdxGridReportLinkStyleSheet
+      Caption = 'Arial font'
+      Styles.BandHeader = cxStyle2
+      Styles.Caption = cxStyle3
+      Styles.CardCaptionRow = cxStyle4
+      Styles.CardRowCaption = cxStyle5
+      Styles.Content = cxStyle6
+      Styles.ContentEven = cxStyle7
+      Styles.ContentOdd = cxStyle8
+      Styles.FilterBar = cxStyle9
+      Styles.Footer = cxStyle10
+      Styles.Group = cxStyle11
+      Styles.Header = cxStyle12
+      Styles.Preview = cxStyle13
+      Styles.Selection = cxStyle14
+      BuiltIn = True
     end
   end
 end
