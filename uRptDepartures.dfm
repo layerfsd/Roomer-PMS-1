@@ -221,7 +221,7 @@ inherited frmDeparturesReport: TfrmDeparturesReport
     TabOrder = 1
     LookAndFeel.NativeStyle = False
     ExplicitLeft = -1
-    ExplicitTop = 138
+    ExplicitTop = 146
     object tvDeparturesList: TcxGridDBTableView
       Navigator.Buttons.CustomButtons = <>
       DataController.DataSource = DeparturesListDS
@@ -478,6 +478,7 @@ inherited frmDeparturesReport: TfrmDeparturesReport
     object grdPrinterLink1: TdxGridReportLink
       Active = True
       Component = grDeparturesList
+      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.Header = 6350
@@ -486,18 +487,26 @@ inherited frmDeparturesReport: TfrmDeparturesReport
       PrinterPage.Margins.Right = 5000
       PrinterPage.Margins.Top = 12700
       PrinterPage.Orientation = poLandscape
+      PrinterPage.PageFooter.Font.Charset = ANSI_CHARSET
+      PrinterPage.PageFooter.Font.Color = clBlack
+      PrinterPage.PageFooter.Font.Height = -7
+      PrinterPage.PageFooter.Font.Name = 'Arial'
+      PrinterPage.PageFooter.Font.Style = []
+      PrinterPage.PageFooter.RightTitle.Strings = (
+        '[Page # of Pages #]')
       PrinterPage.PageSize.X = 210000
       PrinterPage.PageSize.Y = 297000
       PrinterPage.ScaleMode = smFit
       PrinterPage._dxMeasurementUnits_ = 2
       PrinterPage._dxLastMU_ = 2
-      ReportDocument.CreationDate = 42633.593918784730000000
+      ReportDocument.CreationDate = 42633.605280162040000000
       ReportTitle.Font.Charset = DEFAULT_CHARSET
       ReportTitle.Font.Color = clBlack
       ReportTitle.Font.Height = -19
       ReportTitle.Font.Name = 'Arial'
       ReportTitle.Font.Style = [fsBold]
       ShrinkToPageWidth = True
+      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clBlack
       Font.Height = -11

@@ -214,7 +214,6 @@ inherited frmArrivalsReport: TfrmArrivalsReport
     PopupMenu = pnmuGridMenu
     TabOrder = 1
     LookAndFeel.NativeStyle = False
-    ExplicitTop = 146
     object grArrivalsListDBTableView1: TcxGridDBTableView
       Navigator.Buttons.CustomButtons = <>
       OnCellDblClick = grArrivalsListDBTableView1CellDblClick
@@ -513,7 +512,6 @@ inherited frmArrivalsReport: TfrmArrivalsReport
     object grdPrinterLink1: TdxGridReportLink
       Active = True
       Component = grArrivalsList
-      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.Header = 6350
@@ -522,19 +520,25 @@ inherited frmArrivalsReport: TfrmArrivalsReport
       PrinterPage.Margins.Right = 5000
       PrinterPage.Margins.Top = 12700
       PrinterPage.Orientation = poLandscape
+      PrinterPage.PageFooter.Font.Charset = ANSI_CHARSET
+      PrinterPage.PageFooter.Font.Color = clBlack
+      PrinterPage.PageFooter.Font.Height = -7
+      PrinterPage.PageFooter.Font.Name = 'Arial'
+      PrinterPage.PageFooter.Font.Style = []
+      PrinterPage.PageFooter.RightTitle.Strings = (
+        '[Page # of Pages #]')
       PrinterPage.PageSize.X = 210000
       PrinterPage.PageSize.Y = 297000
       PrinterPage.ScaleMode = smFit
       PrinterPage._dxMeasurementUnits_ = 2
       PrinterPage._dxLastMU_ = 2
-      ReportDocument.CreationDate = 42633.590688449080000000
+      ReportDocument.CreationDate = 42633.601057037030000000
       ReportTitle.Font.Charset = DEFAULT_CHARSET
       ReportTitle.Font.Color = clBlack
       ReportTitle.Font.Height = -19
       ReportTitle.Font.Name = 'Arial'
       ReportTitle.Font.Style = [fsBold]
       ShrinkToPageWidth = True
-      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clBlack
       Font.Height = -11
