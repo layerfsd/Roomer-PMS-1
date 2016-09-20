@@ -2,7 +2,7 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
   Left = 0
   Top = 0
   Caption = 'Guest Check In'
-  ClientHeight = 656
+  ClientHeight = 680
   ClientWidth = 842
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -21,18 +21,22 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
     Left = 0
     Top = 0
     Width = 842
-    Height = 623
+    Height = 647
     ActivePage = sTabSheet1
     Align = alClient
     TabOrder = 0
     SkinData.SkinSection = 'PAGECONTROL'
+    ExplicitHeight = 623
     object sTabSheet1: TsTabSheet
       Caption = 'Room 101'
+      SkinData.CustomColor = False
+      SkinData.CustomFont = False
+      ExplicitHeight = 595
       object sPanel1: TsPanel
         Left = 0
         Top = 0
         Width = 473
-        Height = 595
+        Height = 619
         Align = alLeft
         Padding.Left = 5
         Padding.Top = 5
@@ -40,6 +44,7 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
         Padding.Bottom = 5
         TabOrder = 0
         SkinData.SkinSection = 'TRANSPARENT'
+        ExplicitHeight = 595
         object sLabel7: TsLabel
           Left = 6
           Top = 6
@@ -59,14 +64,18 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
           Left = 6
           Top = 31
           Width = 461
-          Height = 558
+          Height = 582
           ActivePage = sTabSheet2
           Align = alClient
           TabOrder = 0
           SkinData.SkinSection = 'PAGECONTROL'
+          ExplicitHeight = 558
           object sTabSheet2: TsTabSheet
             Caption = 'Guest Info'
+            SkinData.CustomColor = False
+            SkinData.CustomFont = False
             SkinData.SkinSection = 'TRANSPARENT'
+            ExplicitHeight = 530
             object sLabel6: TsLabel
               Left = 97
               Top = 126
@@ -385,6 +394,7 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
               Width = 34
               Height = 21
               CharCase = ecUpperCase
+              Color = clWhite
               Font.Charset = DEFAULT_CHARSET
               Font.Color = clBlack
               Font.Height = -11
@@ -557,7 +567,7 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
               Width = 130
               Height = 41
               Caption = 'Guest portfolio'
-              TabOrder = 18
+              TabOrder = 19
               OnClick = btnPortfolioClick
               SkinData.SkinSection = 'BUTTON'
             end
@@ -567,7 +577,7 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
               Width = 105
               Height = 41
               Caption = 'Remove from guest portfolio'
-              TabOrder = 19
+              TabOrder = 20
               Visible = False
               OnClick = btNoPortfolioClick
               SkinData.SkinSection = 'BUTTON'
@@ -592,10 +602,10 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
             object cbActiveLiveSearch: TsCheckBox
               Left = 190
               Top = 47
-              Width = 74
-              Height = 20
+              Width = 82
+              Height = 19
               Caption = 'Live search'
-              TabOrder = 20
+              TabOrder = 21
               OnClick = cbActiveLiveSearchClick
               SkinData.SkinSection = 'CHECKBOX'
               ImgChecked = 0
@@ -648,11 +658,24 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
                 'Leisure'
                 'Business')
             end
+            object chkCountryForAllGuests: TsCheckBox
+              Left = 190
+              Top = 532
+              Width = 248
+              Height = 19
+              Caption = 'Set this country for all guests without country'
+              Checked = True
+              State = cbChecked
+              TabOrder = 18
+              ImgChecked = 0
+              ImgUnchecked = 0
+            end
           end
           object sTabSheet6: TsTabSheet
             Caption = 'Company'
             SkinData.CustomColor = False
             SkinData.CustomFont = False
+            ExplicitHeight = 530
             object sLabel22: TsLabel
               Left = 11
               Top = 24
@@ -967,7 +990,7 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
         Left = 473
         Top = 0
         Width = 361
-        Height = 595
+        Height = 619
         Align = alClient
         Padding.Left = 5
         Padding.Top = 5
@@ -976,6 +999,7 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
         TabOrder = 1
         OnDblClick = sPanel2DblClick
         SkinData.SkinSection = 'TRANSPARENT'
+        ExplicitHeight = 595
         object sLabel8: TsLabel
           Left = 6
           Top = 6
@@ -1237,6 +1261,8 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
           end
           object sTabSheet4: TsTabSheet
             Caption = 'Cash'
+            SkinData.CustomColor = False
+            SkinData.CustomFont = False
             object sLabel16: TsLabel
               Left = 38
               Top = 21
@@ -1329,12 +1355,13 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
   end
   object panBtn: TsPanel
     Left = 0
-    Top = 623
+    Top = 647
     Width = 842
     Height = 33
     Align = alBottom
     TabOrder = 1
     SkinData.SkinSection = 'PANEL'
+    ExplicitTop = 623
     DesignSize = (
       842
       33)

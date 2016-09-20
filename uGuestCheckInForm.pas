@@ -132,6 +132,7 @@ type
     cbxMarket: TsComboBox;
     shpMarket: TShape;
     dsForm: TfrxDBDataset;
+    chkCountryForAllGuests: TsCheckBox;
     procedure FormCreate(Sender: TObject);
     procedure cbxGuaranteeTypesCloseUp(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -255,7 +256,8 @@ const
     'PersonalIdentificationId, ' + 'DateOfBirth ' + 'FROM persons ' + 'WHERE RoomReservation IN (%s) ' +
     'AND ID=(SELECT ID FROM persons pe WHERE pe.RoomReservation=persons.RoomReservation ORDER BY MainName DESC, ID LIMIT 1) ' + 'GROUP BY RoomReservation';
 
-  PUT_GUEST_CHECKIN_CHECKOUT = 'UPDATE persons p, roomreservations r ' + 'SET Title=%s, ' + ' p.Name=%s, ' + '	p.Address1=%s, ' + '	p.Address2=%s, ' + '	p.Address3=%s, ' +
+  PUT_GUEST_CHECKIN_CHECKOUT = 'UPDATE persons p, roomreservations r ' +
+    ' SET Title=%s, ' + ' p.Name=%s, ' + '	p.Address1=%s, ' + '	p.Address2=%s, ' + '	p.Address3=%s, ' +
     '	p.Address4=%s, ' + '	p.Country=%s, ' +
 
     '	p.Tel1=%s, ' + '	p.Tel2=%s, ' + '	p.Email=%s, ' +
@@ -270,6 +272,9 @@ const
     '	p.PersonalIdentificationId=%s, ' + '	p.DateOfBirth=%s, ' + '	r.PaymentGuaranteeType=%s ' +
     'WHERE p.ID=%d AND r.RoomReservation=p.RoomReservation ';
 
+  PUT_GUESTsCOUNTRY_CHECKIN_CHECKOUT = 'UPDATE persons p ' +
+    ' SET p.Country=%s ' +
+    ' WHERE p.roomreservation=%d AND p.Country=''00'' ';
 
   UPDATE_PROFILE_FROM_PERSON = 'UPDATE persons pe ' +
                   'JOIN personprofiles pp ON pp.Id = pe.PersonsProfilesId ' +
@@ -723,7 +728,6 @@ begin
 
     _DB(PAYMENT_GUARANTEE_TYPE[cbxGuaranteeTypes.ItemIndex]), PersonId]);
 
-  d.UpdateReservationMarket(Reservation, TReservationmarketType(cbxMarket.itemIndex));
 
   CopyToClipboard(s);
   if NOT cmd_bySQL(s, false) then
@@ -733,6 +737,16 @@ begin
   CopyToClipboard(s);
   if NOT cmd_bySQL(s, false) then
     raise Exception.Create('Unable to save changes to guest''s profile.');
+
+  d.UpdateReservationMarket(Reservation, TReservationmarketType(cbxMarket.itemIndex));
+
+  if chkCountryForAllGuests.Checked then
+  begin
+    s := format(PUT_GUESTsCOUNTRY_CHECKIN_CHECKOUT, [_db(edCountry.text), RoomReservation]);
+    CopyToClipboard(s);
+    if NOT cmd_bySQL(s, false) then
+      raise Exception.Create('Unable to update country for other guests.');
+  end;
 
   if (cbxGuaranteeTypes.ItemIndex = 1) AND (StrToFloatDef(edAmount.Text, -99999) <> -99999) then
   begin
