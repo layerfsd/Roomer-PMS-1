@@ -2,7 +2,7 @@
     <PropertyGroup>
         <ProjectGuid>{436E2CCE-115E-475F-9C3E-19C03F70A4D0}</ProjectGuid>
         <MainSource>Roomer.dpr</MainSource>
-        <Config Condition="'$(Config)'==''">Debug</Config>
+        <Config Condition="'$(Config)'==''">DebugBas</Config>
         <DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
         <ProjectVersion>14.3</ProjectVersion>
         <FrameworkType>VCL</FrameworkType>
@@ -215,13 +215,10 @@
         <DCC_AssertionsAtRuntime>false</DCC_AssertionsAtRuntime>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_4_Win32)'!=''">
-        <VerInfo_AutoGenVersion>false</VerInfo_AutoGenVersion>
-        <VerInfo_Release>7</VerInfo_Release>
-        <VerInfo_Keys>CompanyName=Promoir BV;FileDescription=Roomer PMS;FileVersion=1.9.7.4;InternalName=;LegalCopyright=(C) 2013, 2014, 2015, 2016 Promoir BV;LegalTrademarks=Roomer is a Registered Trademark of Promoir BV;OriginalFilename=Roomer.exe;ProductName=Roomer Open Hospitality Platform;ProductVersion=1.9.7.4;Comments=;ExtraBuild=160907;PrivateBuild=</VerInfo_Keys>
+        <VerInfo_Keys>CompanyName=Promoir BV;FileDescription=Roomer PMS;FileVersion=1.9.8.0;InternalName=;LegalCopyright=(C) 2013, 2014, 2015, 2016 Promoir BV;LegalTrademarks=Roomer is a Registered Trademark of Promoir BV;OriginalFilename=Roomer.exe;ProductName=Roomer Open Hospitality Platform;ProductVersion=1.9.8.0;Comments=;ExtraBuild=160920;PrivateBuild=</VerInfo_Keys>
         <VerInfo_Private>true</VerInfo_Private>
         <Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
         <VerInfo_PreRelease>true</VerInfo_PreRelease>
-        <VerInfo_Build>4</VerInfo_Build>
         <VerInfo_Locale>1033</VerInfo_Locale>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_6)'!=''">

@@ -102,6 +102,8 @@ object frmMain: TfrmMain
       object tabOneDayView: TsTabSheet
         Caption = 'tabOneDayView'
         ImageIndex = 8
+        SkinData.CustomColor = False
+        SkinData.CustomFont = False
         ExplicitLeft = 0
         ExplicitTop = 0
         ExplicitWidth = 0
@@ -1631,17 +1633,29 @@ object frmMain: TfrmMain
         Caption = 'tabFreeRooms'
         SkinData.CustomColor = False
         SkinData.CustomFont = False
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
       end
       object tabDashboard: TsTabSheet
         Caption = 'tabDashboard'
         SkinData.CustomColor = False
         SkinData.CustomFont = False
         SkinData.SkinSection = 'TRANSPARENT'
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
       end
       object tabRateQuery: TsTabSheet
         Caption = 'tabRateQuery'
         SkinData.CustomColor = False
         SkinData.CustomFont = False
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
       end
     end
     object panMainTop: TsPanel
@@ -1716,8 +1730,6 @@ object frmMain: TfrmMain
           OnMouseEnter = tabsViewMouseEnter
           SkinData.SkinSection = 'PAGECONTROL'
           SkinData.OuterEffects.Visibility = ovAlways
-          ExplicitLeft = -2
-          ExplicitTop = -3
         end
       end
       object __PanGridsHeader: TsPanel
@@ -3073,6 +3085,7 @@ object frmMain: TfrmMain
     TabOrder = 3
     TabStop = False
     object rbTabHome: TdxRibbonTab
+      Active = True
       Caption = 'Roomer'
       Groups = <
         item
@@ -3183,7 +3196,6 @@ object frmMain: TfrmMain
       Index = 4
     end
     object System: TdxRibbonTab
-      Active = True
       Caption = 'System'
       Groups = <
         item
