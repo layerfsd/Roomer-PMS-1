@@ -416,6 +416,7 @@ type
     procedure __cbxVisibleDaysCloseUp(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
   private
     { Private declarations }
     RoomerDataSet: TRoomerDataSet;

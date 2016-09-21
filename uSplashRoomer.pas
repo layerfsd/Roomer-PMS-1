@@ -3,77 +3,64 @@ unit uSplashRoomer;
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls, acPNG, sSkinManager, sSkinProvider, W7Classes, W7ProgressBars, Vcl.ComCtrls, AdvProgr,
-  UbuntuProgress, IdComponent, IdBaseComponent, IdThreadComponent, dxGDIPlusClasses, IdTCPConnection, IdTCPClient, IdHTTP;
+  Vcl.StdCtrls, System.Classes, Vcl.Controls, Vcl.ExtCtrls,
+  Vcl.Forms,
+  dxGDIPlusClasses, AdvSmoothProgressBar
+  ;
 
 type
   TfrmRoomerSplash = class(TForm)
     Image1: TImage;
     LMDSimpleLabel1: TLabel;
-    UbuntuProgress1: TUbuntuProgress;
+    lblMessage: TLabel;
+    AdvSmoothProgressBar1: TAdvSmoothProgressBar;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
-    procedure FormShow(Sender: TObject);
     procedure FormHide(Sender: TObject);
-    procedure IdHTTP1Work(ASender: TObject; AWorkMode: TWorkMode; AWorkCount: Int64);
-    procedure IdHTTP1Redirect(Sender: TObject; var dest: string; var NumRedirect: Integer; var Handled: Boolean; var VMethod: string);
   private
-    procedure DownloadProgress(sender: TObject; Read, Total: Integer);
-    procedure RedirectEvent(sender: Tobject; const NewURL: AnsiString);
+    procedure DownloadProgress(Sender: TObject; Read, Total: Integer);
     { Private declarations }
   public
     { Public declarations }
     procedure PrepareBusyNotificator;
-    procedure UpdateBusySignal;
     procedure NilInternetEvents;
   end;
 
-var
-  frmRoomerSplash: TfrmRoomerSplash;
 
-procedure HideRoomerSplash;
-procedure ShowRoomerSplash;
+  /// <summary>
+  ///   SplashForm manager and implicit factory
+  /// </summary>
+  TSplashFormManager = class(TObject)
+  private
+    class var frmInstance: TfrmRoomerSplash;
+    class function frmSplash: TfrmRoomerSplash;
+    class procedure ShowSplashForm; static;
+  public
+    class procedure Show;
+    class procedure Close;
+    /// <summary>
+    ///   If the form is created then hide it. Result is true is form was created and visible
+    /// </summary>
+    class function TryHideForm: boolean;
+    class procedure UpdateProgress(const aMsg:string=''; aIncProgress: integer = 1);
+  end;
 
 implementation
 
 {$R *.dfm}
 
-uses uAboutRoomer, ud, uUtils;
-
-procedure HideRoomerSplash;
-begin
-  if Assigned(frmRoomerSplash) then
-  begin
-     frmRoomerSplash.Hide;
-     frmRoomerSplash.close;
-  end;
-  frmRoomerSplash := nil;
-end;
-
-procedure ShowRoomerSplash;
-begin
-  frmRoomerSplash := TfrmRoomerSplash.Create(Application);
-//  frmRoomerSplash.progressBar.State := pbsNormal;
-  frmRoomerSplash.Show;
-  frmRoomerSplash.Update;
-//  frmRoomerSplash.LMDSimpleLabel1.Caption := d.fvFileVersion.FileVersion;
-  Application.processmessages;
-end;
+uses
+  uAboutRoomer,
+  ud,
+  uUtils;
 
 procedure TfrmRoomerSplash.NilInternetEvents;
 begin
-  if assigned(d.roomerMainDataSet.roomerClient) then
-  begin
-{$IFDEF USE_INDY}
-     d.roomerMainDataSet.roomerClient.OnWork := nil;
-     d.roomerMainDataSet.roomerClient.OnRedirect := nil;
-{$ELSE}
-     d.roomerMainDataSet.roomerClient.OnDownloadProgress := nil;
-     d.roomerMainDataSet.roomerClient.OnUploadProgress := nil;
-     d.roomerMainDataSet.roomerClient.OnRedirect := nil;
-{$ENDIF}
-  end;
+//  if Assigned(d.roomerMainDataSet.roomerClient) then
+//  begin
+//    d.roomerMainDataSet.roomerClient.OnDownloadProgress := nil;
+//    d.roomerMainDataSet.roomerClient.OnUploadProgress := nil;
+//  end;
 end;
 
 procedure TfrmRoomerSplash.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -92,51 +79,70 @@ begin
   NilInternetEvents;
 end;
 
-procedure TfrmRoomerSplash.FormShow(Sender: TObject);
-begin
-  //
-end;
-
-procedure TfrmRoomerSplash.IdHTTP1Redirect(Sender: TObject; var dest: string; var NumRedirect: Integer; var Handled: Boolean; var VMethod: string);
-begin
-  RedirectEvent(sender, dest);
-end;
-
-procedure TfrmRoomerSplash.IdHTTP1Work(ASender: TObject; AWorkMode: TWorkMode; AWorkCount: Int64);
-begin
-  DownloadProgress(ASender, AWorkCount, AWorkCount);
-end;
-
 procedure TfrmRoomerSplash.PrepareBusyNotificator;
 begin
-  //
-{$IFDEF USE_INDY}
-   d.roomerMainDataSet.roomerClient.OnWork := IdHTTP1Work;
-   d.roomerMainDataSet.roomerClient.OnRedirect := IdHTTP1Redirect;
-{$ELSE}
-   d.roomerMainDataSet.roomerClient.OnUploadProgress := DownloadProgress;
-   d.roomerMainDataSet.roomerClient.OnDownloadProgress := DownloadProgress;
-   d.roomerMainDataSet.roomerClient.OnRedirect := RedirectEvent;
-{$ENDIF}
+//  d.roomerMainDataSet.roomerClient.OnUploadProgress := DownloadProgress;
+//  d.roomerMainDataSet.roomerClient.OnDownloadProgress := DownloadProgress;
 end;
 
-//  TALHTTPClientUploadProgressEvent   = procedure(sender: Tobject; Sent: Integer; Total: Integer) of object;
-//  TAlHTTPClientRedirectEvent         = procedure(sender: Tobject; const NewURL: AnsiString) of object;
-procedure TfrmRoomerSplash.RedirectEvent(sender: Tobject; const NewURL: AnsiString);
+
+procedure TfrmRoomerSplash.DownloadProgress(Sender: TObject; Read, Total: Integer);
 begin
-  UpdateBusySignal;
+//  Update;
 end;
 
-procedure TfrmRoomerSplash.UpdateBusySignal;
+
+class procedure TSplashFormManager.Close;
 begin
-  try DownloadProgress(nil, 0, 0); except end;
+  if assigned(frmInstance) then
+  begin
+    frmInstance.Close;
+    frmInstance := nil;
+  end;
 end;
 
-procedure TfrmRoomerSplash.DownloadProgress(sender: TObject; Read, Total: Integer);
+class function TSplashFormManager.frmSplash: TfrmRoomerSplash;
 begin
-  Update;
-  UbuntuProgress1.Update;
-  UbuntuProgress1.Invalidate;
+  if not assigned(frmInstance) then
+    frmInstance := TfrmRoomerSplash.Create(Application);
+
+  result := frmInstance;
+end;
+
+class procedure TSplashFormManager.Show;
+begin
+  frmSplash.Show;
+end;
+
+class procedure TSplashFormManager.ShowSplashForm;
+begin
+  if not assigned(frmInstance) then
+    frmInstance := TfrmRoomerSplash.Create(Application);
+
+  frmInstance.Show;
+end;
+
+class function TSplashFormManager.TryHideForm: boolean;
+begin
+  Result := assigned(frmInstance) and frmInstance.Visible;
+  if assigned(frmInstance) then
+  begin
+    frmInstance.Hide;
+    frmInstance.Close;
+    frmInstance := nil;
+  end;
+end;
+
+
+class procedure TSplashFormManager.UpdateProgress(const aMsg:string=''; aIncProgress: integer = 1);
+begin
+  with frmSplash do
+  begin
+    Visible := true;
+    lblMessage.Caption := aMsg;
+    AdvSmoothProgressBar1.Next;
+    Update;
+  end;
 end;
 
 end.

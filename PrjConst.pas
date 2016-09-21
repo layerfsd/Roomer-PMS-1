@@ -1661,7 +1661,7 @@ begin
   frmVatCodes := TfrmVatCodes.Create(nil); frmVatCodes.Free; frmVatCodes := nil;
   frmRebuildReservationStats := TfrmRebuildReservationStats.Create(nil); frmRebuildReservationStats.Free; frmRebuildReservationStats := nil;
   frmMakeReservationQuick := TfrmMakeReservationQuick.Create(nil); frmMakeReservationQuick.Free; frmMakeReservationQuick := nil;
-  frmRoomerSplash := TfrmRoomerSplash.Create(nil); frmRoomerSplash.Free; frmRoomerSplash := nil;
+  TfrmRoomerSplash.Create(nil).Free;
 
   // No need for global variable
   //  frmRoomerLoginForm := TfrmRoomerLoginForm.Create(nil); frmRoomerLoginForm.Free; frmRoomerLoginForm := nil;

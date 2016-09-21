@@ -1765,18 +1765,12 @@ end;
 
 procedure TfrmMain.PostLoginProcess(prepareLanguages: boolean);
 begin
-  ShowRoomerSplash;
-  frmRoomerSplash.PrepareBusyNotificator;
   LoggedIn := true;
-//  CloseAppSettings;
   OpenAppSettings;
   g.RefreshRoomList;
   // ******
   glb.PerformAuthenticationAssertion(self);
   PlaceFormOnVisibleMonitor(self);
-
-  // if (NOT OffLineMode) then
-  // d.BackupsSubmitChanges;
 
   if prepareLanguages then
   begin
@@ -2743,7 +2737,7 @@ end;
 procedure TfrmMain.ExceptionHandler(Sender: TObject; E: Exception);
 begin
   try
-    HideRoomerSplash;
+    TSplashFormManager.TryHideForm;
   except
   end;
   // --
@@ -3191,9 +3185,6 @@ begin
   if not aFirstLogin then
     g.ProcessAppIni(1);
 
-  if aFirstLogin then
-    HideRoomerSplash;
-
   userName := g.qUser;
   password := '';
   WrongLoginMessage := '';
@@ -3201,6 +3192,8 @@ begin
 
   okLogin := false;
   tries := 0;
+
+  TSplashFormManager.TryHideForm;
   repeat
     inc(tries);
     if tries > 1 then
@@ -3279,81 +3272,98 @@ begin
   ViewMode := vmOneDay;
 
   try
-//    FileDependencymanager.prepareDependencyManager;
-    UpdateHotelsList;
+    try
+      TSplashFormManager.UpdateProgress('Updating hotellist...');
+  //    FileDependencymanager.prepareDependencyManager;
+      UpdateHotelsList;
 
-    InitializeTaxes;
-    PostLoginProcess(AutoLogin = '');
+      TSplashFormManager.UpdateProgress('Initialize taxes..');
+      InitializeTaxes;
 
-  except
-    on E: Exception do
-      MessageDlg(E.message, mtError, [mbOk], 0);
+      TSplashFormManager.UpdateProgress('Post login process..');
+      PostLoginProcess(AutoLogin = '');
+
+    except
+      on E: Exception do
+        MessageDlg(E.message, mtError, [mbOk], 0);
+    end;
+
+    result := true;
+    lblHotelName.Caption := g.qHotelName;
+    timMessagesTimer(timMessages);
+    timMessages.Enabled := true;
+
+    TSplashFormManager.UpdateProgress('Preparing datacache...');
+    d.PrepareFixedTables;
+
+    if g.qUserLanguage <> tmpUserLang then
+    begin
+      TSplashFormManager.UpdateProgress('Setting language...');
+      g.ChangeLang(g.qUserLanguage, false);
+    end;
+
+    TSplashFormManager.UpdateProgress('Preparing statusattributes...');
+    d.Get_All_StatusAttributes;
+
+    g.qUser := userName;
+
+    pageMainGrids.ActivePage := tabOneDayView;
+
+    TSplashFormManager.UpdateProgress('Loading global settings...');
+    d.ctrlGetGlobalValues;
+
+    cbxNameOrder.ItemIndex := g.qNameOrder;
+    cbxNameOrderPeriod.ItemIndex := g.qNameOrderPeriod;
+
+    d.chkInPosMonitor;
+    d.chkConfirmMonitor;
+
+    try
+      RestoreCurrentFont
+    except
+    end;
+    panelHide.Hide;
+
+    TSplashFormManager.UpdateProgress('Refreshing main grid...');
+    RefreshOneDayGrid;
+
+    cbxNameOrder.ItemIndex := g.qNameOrder;
+    grOneDayRooms.DefaultRowHeight := g.qOneDayRowHeight;
+    TSplashFormManager.UpdateProgress('Updating current guests list...');
+    g.updateCurrentGuestlist;
+
+  //  HideRoomerSplash;
+  // not needed,already done when destroying splashform
+  //  frmRoomerSplash.NilInternetEvents;
+
+    if NOT OffLineMode then
+      rgrGroupreportStayType.ItemIndex := 2;
+
+    zNights := g.qPeriodColCount;;
+    zDateTo := zDateFrom + zNights;
+
+    TSplashFormManager.UpdateProgress('Refreshing periodview...');
+    Period_Init;
+    Period_GetRooms;
+
+    grNoRooms_Init;
+
+    InitializeViews;
+    SetWindowTitle;
+
+    btnCheckInRoom.Enabled := true;
+
+    oldDock1.Visible := g.qShowSideBar;
+
+    FRBEMode := false;
+    RBEMode := (g.qUserPriv1 = 50) OR (g.qUserPriv2 = 50) OR (g.qUserPriv3 = 50) OR (g.qUserPriv4 = 50) OR
+      (g.qUserPriv5 = 50);
+
+    SetExplanationColors;
+
+  finally
+      TSplashFormManager.Close;
   end;
-
-  result := true;
-  lblHotelName.Caption := g.qHotelName;
-  timMessagesTimer(timMessages);
-  timMessages.Enabled := true;
-
-  d.PrepareFixedTables;
-
-  if g.qUserLanguage <> tmpUserLang then
-  begin
-    g.ChangeLang(g.qUserLanguage, false);
-  end;
-
-  d.Get_All_StatusAttributes;
-
-  g.qUser := userName;
-
-  pageMainGrids.ActivePage := tabOneDayView;
-
-  d.ctrlGetGlobalValues;
-
-  cbxNameOrder.ItemIndex := g.qNameOrder;
-  cbxNameOrderPeriod.ItemIndex := g.qNameOrderPeriod;
-
-  d.chkInPosMonitor;
-  d.chkConfirmMonitor;
-
-  try
-    RestoreCurrentFont
-  except
-  end;
-  panelHide.Hide;
-  RefreshOneDayGrid;
-
-  cbxNameOrder.ItemIndex := g.qNameOrder;
-  grOneDayRooms.DefaultRowHeight := g.qOneDayRowHeight;
-  g.updateCurrentGuestlist;
-
-  HideRoomerSplash;
-
-  frmRoomerSplash.NilInternetEvents;
-
-  if NOT OffLineMode then
-    rgrGroupreportStayType.ItemIndex := 2;
-
-  zNights := g.qPeriodColCount;;
-  zDateTo := zDateFrom + zNights;
-
-  Period_Init;
-  Period_GetRooms;
-
-  grNoRooms_Init;
-
-  InitializeViews;
-  SetWindowTitle;
-
-  btnCheckInRoom.Enabled := true;
-
-  oldDock1.Visible := g.qShowSideBar;
-
-  FRBEMode := false;
-  RBEMode := (g.qUserPriv1 = 50) OR (g.qUserPriv2 = 50) OR (g.qUserPriv3 = 50) OR (g.qUserPriv4 = 50) OR
-    (g.qUserPriv5 = 50);
-
-  SetExplanationColors;
 end;
 
 procedure TfrmMain.SetShapeColor(Shape: TShape; const ResStatus: String);
@@ -11483,7 +11493,7 @@ begin
     try
       d.roomerMainDataSet.SystemDownloadRoomerBackup(dlgSave.FileName);
     finally
-      frmRoomerSplash.NilInternetEvents;
+//      frmRoomerSplash.NilInternetEvents;
       // lblBusyDownloading.Caption := 'Ready.';
       lblBusyDownloading.Caption := GetTranslatedText('shTx_Main_Ready');
       lblBusyDownloading.Update;

@@ -145,6 +145,8 @@ object frmMain: TfrmMain
           OnMouseUp = grOneDayRoomsMouseUp
           OnStartDrag = grOneDayRoomsStartDrag
           ActiveRowColor = clWhite
+          GridLineColor = 15527152
+          GridFixedLineColor = 13947601
           HoverRowCells = [hcNormal, hcSelected]
           OnGetCellPrintColor = grOneDayRoomsGetCellPrintColor
           OnGridHint = grOneDayRoomsGridHint
@@ -437,6 +439,8 @@ object frmMain: TfrmMain
       object tabGuestList: TsTabSheet
         Caption = 'tabGuestList'
         ImageIndex = 9
+        SkinData.CustomColor = False
+        SkinData.CustomFont = False
         ExplicitWidth = 919
         object Panel3: TsPanel
           Left = 0
@@ -845,6 +849,8 @@ object frmMain: TfrmMain
       object tabPeriod: TsTabSheet
         Caption = 'tabPeriod'
         ImageIndex = 2
+        SkinData.CustomColor = False
+        SkinData.CustomFont = False
         ExplicitLeft = 0
         ExplicitTop = 0
         ExplicitWidth = 0

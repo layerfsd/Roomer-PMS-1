@@ -2,7 +2,7 @@ object frmRoomerSplash: TfrmRoomerSplash
   Left = 0
   Top = 0
   BorderStyle = bsNone
-  ClientHeight = 86
+  ClientHeight = 108
   ClientWidth = 350
   Color = clBlack
   Font.Charset = DEFAULT_CHARSET
@@ -16,7 +16,6 @@ object frmRoomerSplash: TfrmRoomerSplash
   OnClose = FormClose
   OnCreate = FormCreate
   OnHide = FormHide
-  OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 12
   object Image1: TImage
@@ -276,25 +275,62 @@ object frmRoomerSplash: TfrmRoomerSplash
     Font.Style = []
     ParentFont = False
   end
-  object UbuntuProgress1: TUbuntuProgress
+  object lblMessage: TLabel
     Left = 11
-    Top = 63
-    Width = 328
-    Height = 19
+    Top = 85
+    Width = 57
+    Height = 13
     Margins.Left = 2
     Margins.Top = 2
     Margins.Right = 2
     Margins.Bottom = 2
-    ColorSet = csBlue
-    ProgressDividers = True
-    BackgroundDividers = True
-    MarqueeWidth = 50
-    Max = 100
-    Mode = pmMarquee
-    Position = 50
-    Shadow = True
-    Speed = msSlow
-    Step = 1
-    Visible = True
+    Caption = 'Intializing...'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 16238986
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+  end
+  object AdvSmoothProgressBar1: TAdvSmoothProgressBar
+    Left = 11
+    Top = 63
+    Width = 331
+    Height = 17
+    Step = 10.000000000000000000
+    Maximum = 100.000000000000000000
+    Appearance.BackGroundFill.Color = clInactiveBorder
+    Appearance.BackGroundFill.ColorTo = clGradientActiveCaption
+    Appearance.BackGroundFill.ColorMirror = clNone
+    Appearance.BackGroundFill.ColorMirrorTo = clNone
+    Appearance.BackGroundFill.GradientType = gtVertical
+    Appearance.BackGroundFill.GradientMirrorType = gtSolid
+    Appearance.BackGroundFill.BorderColor = clSilver
+    Appearance.BackGroundFill.Rounding = 0
+    Appearance.BackGroundFill.ShadowOffset = 0
+    Appearance.BackGroundFill.Glow = gmNone
+    Appearance.ProgressFill.Color = clBlue
+    Appearance.ProgressFill.ColorTo = 16768452
+    Appearance.ProgressFill.ColorMirror = 16765357
+    Appearance.ProgressFill.ColorMirrorTo = 16767936
+    Appearance.ProgressFill.GradientType = gtVertical
+    Appearance.ProgressFill.GradientMirrorType = gtVertical
+    Appearance.ProgressFill.BorderColor = 16765357
+    Appearance.ProgressFill.Rounding = 0
+    Appearance.ProgressFill.ShadowOffset = 0
+    Appearance.ProgressFill.Glow = gmNone
+    Appearance.Font.Charset = DEFAULT_CHARSET
+    Appearance.Font.Color = clWindowText
+    Appearance.Font.Height = -11
+    Appearance.Font.Name = 'Tahoma'
+    Appearance.Font.Style = []
+    Appearance.ProgressFont.Charset = DEFAULT_CHARSET
+    Appearance.ProgressFont.Color = clWindowText
+    Appearance.ProgressFont.Height = -11
+    Appearance.ProgressFont.Name = 'Tahoma'
+    Appearance.ProgressFont.Style = []
+    Appearance.ValueFormat = '%.0f%%'
+    Version = '1.9.0.2'
+    TMSStyle = 4
   end
 end
