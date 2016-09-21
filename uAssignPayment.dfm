@@ -196,7 +196,7 @@ object frmAssignPayment: TfrmAssignPayment
         TabOrder = 1
         SkinData.SkinSection = 'EDIT'
       end
-      object cbxPaymentType: TsComboBox
+      object __cbxPaymentType: TsComboBox
         Left = 137
         Top = 113
         Width = 300
@@ -214,7 +214,7 @@ object frmAssignPayment: TfrmAssignPayment
         ParentFont = False
         TabOrder = 2
         Text = 'Select one'
-        OnCloseUp = cbxRoomSelectCloseUp
+        OnCloseUp = __cbxRoomSelectCloseUp
         Items.Strings = (
           '')
       end
@@ -269,7 +269,7 @@ object frmAssignPayment: TfrmAssignPayment
         TabOrder = 1
         SkinData.SkinSection = 'GROUPBOX'
         Checked = False
-        object cbxRoomSelect: TsComboBox
+        object __cbxRoomSelect: TsComboBox
           Left = 8
           Top = 24
           Width = 345
@@ -287,7 +287,7 @@ object frmAssignPayment: TfrmAssignPayment
           ParentFont = False
           TabOrder = 0
           Text = 'Select one'
-          OnCloseUp = cbxRoomSelectCloseUp
+          OnCloseUp = __cbxRoomSelectCloseUp
           Items.Strings = (
             'Select one'
             '')

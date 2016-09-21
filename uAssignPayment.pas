@@ -53,7 +53,7 @@ type
     sTabSheet1: TsTabSheet;
     btnSetToGroupAccount: TsButton;
     sGroupBox1: TsGroupBox;
-    cbxRoomSelect: TsComboBox;
+    __cbxRoomSelect: TsComboBox;
     sTabSheet2: TsTabSheet;
     sGroupBox3: TsGroupBox;
     sLabel1: TsLabel;
@@ -85,7 +85,7 @@ type
     btnExecuteRoomReservation: TsButton;
     btnExecureReservation: TsButton;
     Panel1: TsPanel;
-    cbxPaymentType: TsComboBox;
+    __cbxPaymentType: TsComboBox;
     edAmount: TsCalcEdit;
     FormStore: TcxPropertiesStore;
     sButton1: TsButton;
@@ -100,7 +100,7 @@ type
     procedure btnExceuteAssingToroomClick(Sender: TObject);
     procedure btnExecuteRoomReservationClick(Sender: TObject);
     procedure btnExecureReservationClick(Sender: TObject);
-    procedure cbxRoomSelectCloseUp(Sender: TObject);
+    procedure __cbxRoomSelectCloseUp(Sender: TObject);
     procedure btnOKClick(Sender: TObject);
   private
     { Private declarations }
@@ -189,14 +189,14 @@ begin
 
   rSet := CreateNewDataSet;
   try
-    cbxPaymentType.clear;
+    __cbxPaymentType.clear;
 		s := '';
     s := s+'Select paytype,description,paygroup From paytypes where (active=true) and PayGroup <> '+_db(g.qInvPriceGroup)+' order by paygroup ';
     if rSet_bySQL(rSet,s) then
     begin
       while not rSet.Eof do
       begin
-        cbxPaymentType.items.add(rSet.fieldbyname('Paytype').AsString+' - '+rSet.fieldbyname('description').AsString);
+        __cbxPaymentType.items.add(rSet.fieldbyname('Paytype').AsString+' - '+rSet.fieldbyname('description').AsString);
         rSet.Next;
       end;
     end;
@@ -277,14 +277,14 @@ begin
         edAmount.Value := rSet.GetFloatValue(rSet.FieldByName('Amount'));
 
         itemIndex := -1;
-        for i  := 0 to cbxPaymentType.items.count-1 do
+        for i  := 0 to __cbxPaymentType.items.count-1 do
         begin
-          sTmp := cbxPaymentType.items[i];
+          sTmp := __cbxPaymentType.items[i];
           p := pos(' - ',sTmp);
           paytype := _trimlower(copy(sTmp,1,p));
           if _trimLower(rec.payType) = payType then itemindex := i;
         end;
-        cbxPaymentType.Itemindex := itemindex;
+        __cbxPaymentType.Itemindex := itemindex;
         edDescription.Text := rSet.FieldByName('description').asString;
         edNotes.Text := rSet.FieldByName('Notes').Text;
       end;
@@ -314,7 +314,7 @@ begin
         zGroupAvailable := true;
 
       end;
-      cbxRoomSelect.ItemIndex := 0;
+      __cbxRoomSelect.ItemIndex := 0;
     end;
   finally
     freeandnil(rSet);
@@ -340,23 +340,23 @@ begin
 
     if rSet_bySQL(rSet,s) then
     begin
-      cbxRoomSelect.Clear;
-      cbxRoomSelect.items.add('None');
+      __cbxRoomSelect.Clear;
+      __cbxRoomSelect.items.add('None');
       rSet.First;
       while not rSet.eof do
       begin
-        cbxRoomSelect.Items.Add(rSet.FieldByName('room').asstring+' - '+rSet.FieldByName('Guestname').asstring);
+        __cbxRoomSelect.Items.Add(rSet.FieldByName('room').asstring+' - '+rSet.FieldByName('Guestname').asstring);
         rSet.Next;
       end;
-      cbxRoomSelect.ItemIndex := 0;
-      cbxRoomSelect.visible := cbxRoomSelect.Items.Count > 2;
+      __cbxRoomSelect.ItemIndex := 0;
+      __cbxRoomSelect.visible := __cbxRoomSelect.Items.Count > 2;
     end;
   finally
     freeandnil(rSet);
   end;
 
   sPageControl1.ActivePageIndex := 0;
-  if (cbxRoomSelect.visible=false) and (btnSetToGroupAccount.visible=false) then
+  if (__cbxRoomSelect.visible=false) and (btnSetToGroupAccount.visible=false) then
   begin
     sTabSheet1.TabVisible := false;
     sPageControl1.ActivePageIndex := 1;
@@ -425,8 +425,8 @@ var
   p : integer;
   payType : string;
 begin
-  p := pos(' - ',cbxPaymentType.items[cbxPaymentType.itemIndex]);
-  paytype := trim(copy(cbxPaymentType.items[cbxPaymentType.itemIndex],1,p));
+  p := pos(' - ',__cbxPaymentType.items[__cbxPaymentType.itemIndex]);
+  paytype := trim(copy(__cbxPaymentType.items[__cbxPaymentType.itemIndex],1,p));
 
   newRoomReservation := strToInt(edSetToRoomReservation.text);
   newReservation := -1;
@@ -546,8 +546,8 @@ var
   p : integer;
   payType : string;
 begin
-  p := pos(' - ',cbxPaymentType.items[cbxPaymentType.itemIndex]);
-  paytype := trim(copy(cbxPaymentType.items[cbxPaymentType.itemIndex],1,p));
+  p := pos(' - ',__cbxPaymentType.items[__cbxPaymentType.itemIndex]);
+  paytype := trim(copy(__cbxPaymentType.items[__cbxPaymentType.itemIndex],1,p));
 
 
   if MessageDlg('Set payment to groupinvoice', mtConfirmation, [mbYes, mbNo], 0) = mrYes then
@@ -586,9 +586,9 @@ end;
 
 
 
-procedure TfrmAssignPayment.cbxRoomSelectCloseUp(Sender: TObject);
+procedure TfrmAssignPayment.__cbxRoomSelectCloseUp(Sender: TObject);
 begin
-  btnExceuteAssingToRoom.enabled := cbxRoomSelect.ItemIndex > 0;
+  btnExceuteAssingToRoom.enabled := __cbxRoomSelect.ItemIndex > 0;
 end;
 
 procedure TfrmAssignPayment.btnExceuteAssingToroomClick(Sender: TObject);
@@ -602,11 +602,11 @@ var
   p : integer;
   payType : string;
 begin
-  p := pos(' - ',cbxPaymentType.items[cbxPaymentType.itemIndex]);
-  paytype := trim(copy(cbxPaymentType.items[cbxPaymentType.itemIndex],1,p));
+  p := pos(' - ',__cbxPaymentType.items[__cbxPaymentType.itemIndex]);
+  paytype := trim(copy(__cbxPaymentType.items[__cbxPaymentType.itemIndex],1,p));
 
 
-  sTmp := cbxRoomselect.Items[cbxRoomselect.Itemindex];
+  sTmp := __cbxRoomselect.Items[__cbxRoomselect.Itemindex];
   p := pos(' - ',sTmp);
   room := trim(copy(sTmp,1,p));
 
@@ -677,8 +677,8 @@ var
   p : integer;
   payType : string;
 begin
-  p := pos(' - ',cbxPaymentType.items[cbxPaymentType.itemIndex]);
-  paytype := trim(copy(cbxPaymentType.items[cbxPaymentType.itemIndex],1,p));
+  p := pos(' - ',__cbxPaymentType.items[__cbxPaymentType.itemIndex]);
+  paytype := trim(copy(__cbxPaymentType.items[__cbxPaymentType.itemIndex],1,p));
 
   newReservation := strToInt(edSetToGroupReservation.text);
   newRoomReservation := 0;
@@ -724,8 +724,8 @@ var
   p : integer;
   payType : string;
 begin
-  p := pos(' - ',cbxPaymentType.items[cbxPaymentType.itemIndex]);
-  paytype := trim(copy(cbxPaymentType.items[cbxPaymentType.itemIndex],1,p));
+  p := pos(' - ',__cbxPaymentType.items[__cbxPaymentType.itemIndex]);
+  paytype := trim(copy(__cbxPaymentType.items[__cbxPaymentType.itemIndex],1,p));
 
   s := '';
   s := s+' UPDATE payments '+#10;
