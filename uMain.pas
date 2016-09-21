@@ -1215,9 +1215,22 @@ type
     procedure CheckInGroup;
     procedure RemoveAReservation;
 
-    // FILE
-    // Procedure Logout;
+    /// <summary>
+    /// Start using roomer with a certain hotel. <br />
+    ///  This includes getting the hotelcode and credentials for logging in to that hotel
+    /// </summary>
+    /// <param name="aFirstLogin">
+    ///   If true than this is the first login since roomer started, if false than a switch to a different hotel-location is made.
+    /// </param>
+    /// <param name="ForceFulRestart">
+    ///
+    /// </param>
+    ///  <param name="Autologin">
+    ///   if not empty then this will contain a hotelcode to which the system will attempt to login with the
+    ///   crededentials already saved from the last login. This is used when switching hotel locations
+    ///  </param>
     function StartHotel(aFirstLogin: boolean; ForcefulRestart: boolean = false; const AutoLogin: String = ''): boolean;
+
     procedure SaveGridFont(OneDayFont, PeriodFont: TFont);
 
     function doLogin(var userName, password, WrongLoginMessage, ExpiredMessage: string; var pressedEsc: boolean;
@@ -14197,29 +14210,14 @@ begin
     m.Sort([mtcoDescending]);
   end;
 
-  (*
-    if m.Active then m.Close;
-    m.LoadFromDataSet(tvAllReservations.DataController.DataSource.DataSet,[mtcpoStructure]);
-    //  [mtcpoStructure]
-
-    mAllReservations.SortFields := 'GroupReservation:D;customer;room';
-    mAllReservations.Sort([]);
-  *)
-
   if frmRptbViewer <> nil then
     freeandNil(frmRptbViewer);
   frmRptbViewer := TfrmRptbViewer.Create(frmRptbViewer);
-  frmRptbViewer.Show;
-
-  Screen.Cursor := crHourglass;
   try
-    aReport := rptbGroups;
-    frmRptbViewer.ppViewer1.Reset;
-    frmRptbViewer.ppViewer1.Report := aReport;
-    frmRptbViewer.ppViewer1.GotoPage(1);
-    aReport.PrintToDevices;
+    frmRptbViewer.Report := rptbGroups;
+    frmRptbViewer.ShowModal;
   finally
-    Screen.Cursor := crDefault;
+    FreeAndNil(frmRptbViewer);
   end;
 
 end;

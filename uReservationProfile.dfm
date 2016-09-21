@@ -298,8 +298,6 @@ object frmReservationProfile: TfrmReservationProfile
         Items.Strings = (
           'Leisure'
           'Business')
-        ExplicitLeft = 87
-        ExplicitWidth = 181
       end
       object pnlMarketSegment: TsPanel
         Left = 7
@@ -309,7 +307,6 @@ object frmReservationProfile: TfrmReservationProfile
         Align = alTop
         BevelOuter = bvNone
         TabOrder = 1
-        ExplicitWidth = 264
         object Label8: TsLabel
           Left = 21
           Top = 7
@@ -390,7 +387,6 @@ object frmReservationProfile: TfrmReservationProfile
         BevelOuter = bvNone
         TabOrder = 2
         OnResize = pnlTelephoneResize
-        ExplicitWidth = 264
       end
     end
     object gbxStatus: TsGroupBox
@@ -404,7 +400,6 @@ object frmReservationProfile: TfrmReservationProfile
       TabOrder = 2
       SkinData.SkinSection = 'GROUPBOX'
       Checked = False
-      ExplicitLeft = 481
       object Label25: TsLabel
         Left = 68
         Top = 13
@@ -496,8 +491,6 @@ object frmReservationProfile: TfrmReservationProfile
     object TabSheet3: TsTabSheet
       Caption = 'Main'
       TabVisible = False
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
       object Panel3: TsPanel
         Left = 0
         Top = 0
@@ -538,8 +531,6 @@ object frmReservationProfile: TfrmReservationProfile
             SkinData.SkinSection = 'PAGECONTROL'
             object tsContact: TsTabSheet
               Caption = 'Contact'
-              SkinData.CustomColor = False
-              SkinData.CustomFont = False
               object lblContactName: TsLabel
                 Left = 21
                 Top = 5
@@ -923,8 +914,6 @@ object frmReservationProfile: TfrmReservationProfile
             end
             object TabSheet4: TsTabSheet
               Caption = 'Customer'
-              SkinData.CustomColor = False
-              SkinData.CustomFont = False
               object Label19: TsLabel
                 Left = 1
                 Top = 32
@@ -1210,8 +1199,6 @@ object frmReservationProfile: TfrmReservationProfile
             object TabSheet5: TsTabSheet
               Caption = 'Customer Tel / Email'
               ImageIndex = 1
-              SkinData.CustomColor = False
-              SkinData.CustomFont = False
               object Label11: TsLabel
                 Left = 29
                 Top = 32
@@ -1914,11 +1901,8 @@ object frmReservationProfile: TfrmReservationProfile
     ActiveIsBold = True
     ShowFocus = False
     SkinData.SkinSection = 'PAGECONTROL'
-    ExplicitTop = 372
     object RoomsTab: TsTabSheet
       Caption = 'Rooms'
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
       object grRooms: TcxGrid
         Left = 0
         Top = 86
@@ -2307,6 +2291,7 @@ object frmReservationProfile: TfrmReservationProfile
               '[Unused]'
               'Awaiting Payment')
             Properties.OnChange = tvRoomsStatusTextPropertiesChange
+            Properties.OnDrawItem = tvRoomsStatusTextPropertiesDrawItem
             Width = 97
           end
           object rgrProfiles: TcxGridDBColumn
@@ -2805,8 +2790,6 @@ object frmReservationProfile: TfrmReservationProfile
     object GuestsTab: TsTabSheet
       Caption = 'Guests'
       ImageIndex = 1
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
       object Panel10: TsPanel
         Left = 0
         Top = 0
@@ -2867,8 +2850,8 @@ object frmReservationProfile: TfrmReservationProfile
         object chkShowAllGuests: TsCheckBox
           Left = 333
           Top = 11
-          Width = 94
-          Height = 20
+          Width = 102
+          Height = 17
           Caption = 'Show all guests'
           Anchors = [akLeft, akTop, akRight]
           TabOrder = 4
@@ -2906,8 +2889,6 @@ object frmReservationProfile: TfrmReservationProfile
           TabOrder = 0
           LevelTabs.Style = 8
           LookAndFeel.NativeStyle = False
-          ExplicitLeft = 5
-          ExplicitTop = 0
           object tvGuestRooms: TcxGridDBTableView
             Navigator.Buttons.CustomButtons = <>
             Navigator.Buttons.First.Visible = True
@@ -3413,8 +3394,6 @@ object frmReservationProfile: TfrmReservationProfile
     end
     object sTabSheet2: TsTabSheet
       Caption = 'Alerts'
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
       object pnlAlertHolder: TsPanel
         Left = 0
         Top = 0
@@ -3429,8 +3408,6 @@ object frmReservationProfile: TfrmReservationProfile
     object InvoicesTab: TsTabSheet
       Caption = 'Afgehandelde facturen'
       ImageIndex = 2
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
       object Panel11: TsPanel
         Left = 0
         Top = 0
@@ -4510,14 +4487,6 @@ object frmReservationProfile: TfrmReservationProfile
       Calculated = True
     end
   end
-  object mReservation: TdxMemData
-    Indexes = <>
-    SortOptions = []
-    BeforePost = mRoomsBeforePost
-    AfterScroll = mRoomsAfterScroll
-    Left = 800
-    Top = 64
-  end
   object ppmCheckin: TPopupMenu
     Left = 24
     Top = 32
@@ -4586,7 +4555,7 @@ object frmReservationProfile: TfrmReservationProfile
   end
   object ppmDocuments: TPopupMenu
     Left = 456
-    Top = 32
+    Top = 24
     object ppmShowdocuments: TMenuItem
       Action = acShowDocuments
       Default = True
@@ -4597,7 +4566,7 @@ object frmReservationProfile: TfrmReservationProfile
   end
   object ppmHiddenMemo: TPopupMenu
     Left = 584
-    Top = 32
+    Top = 24
     object ShowHiddenMemo1: TMenuItem
       Action = acShowHiddenMemo
       Default = True

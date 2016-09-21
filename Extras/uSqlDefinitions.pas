@@ -408,7 +408,6 @@ var
   '   ,Active '+
   '   ,displayFormat '+
   '   ,decimals '+
-  '   ,CurrencySign '+
   ' FROM '+
   '   currencies '+
   ' WHERE '+

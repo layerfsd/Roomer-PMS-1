@@ -13,6 +13,7 @@ uses
   FastMM4 in 'FastMM\FastMM4.pas',
   {$endif}
   Forms,
+  Dialogs,
   uMain in 'uMain.pas' {frmMain},
   uReservationObjects in 'uReservationObjects.pas',
   uAppGlobal in 'uAppGlobal.pas',
@@ -284,7 +285,7 @@ begin
   end
   else
   begin
-
+    ShowMessage('Rommer is unable to access the internet and needs to close.');
   end;
 
   Application.Run;

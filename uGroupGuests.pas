@@ -78,7 +78,6 @@ type
   TfrmGroupGuests = class(TForm)
     sPanel1: TsPanel;
     panBtn: TsPanel;
-    btnCancel: TsButton;
     BtnOk: TsButton;
     sPageControl1: TsPageControl;
     sTabSheet1: TsTabSheet;
@@ -444,23 +443,22 @@ end;
 
 procedure TfrmGroupGuests.rgrShowClick(Sender: TObject);
 begin
-  getReservation(zreservation);
-
   screen.Cursor := crHourglass;
   try
-     btnCollapse.visible  := rgrShow.ItemIndex = 0; // chkGroup.Checked;
-     btnExpand.visible    := rgrShow.ItemIndex = 0;
-     tvGuestsroom.Visible := rgrShow.ItemIndex = 1;
+    doupdate;
+    getReservation(zreservation);
 
+    btnCollapse.visible  := rgrShow.ItemIndex = 0; // chkGroup.Checked;
+    btnExpand.visible    := rgrShow.ItemIndex = 0;
+    tvGuestsroom.Visible := rgrShow.ItemIndex = 1;
 
-     if rgrShow.ItemIndex = 0 then
-     begin
-       tvGuestsroomDetails.GroupIndex := 1;
-       tvGuests.DataController.Groups.FullExpand;
-     end else
-     begin
-       tvGuestsroomDetails.GroupIndex := -1;
-     end;
+    if rgrShow.ItemIndex = 0 then
+    begin
+      tvGuestsroomDetails.GroupIndex := 1;
+      tvGuests.DataController.Groups.FullExpand;
+    end else
+      tvGuestsroomDetails.GroupIndex := -1;
+
   finally
     screen.cursor := crdefault;
   end;
@@ -740,10 +738,12 @@ var
   diff : boolean;
   ExecutionPlan: TRoomerExecutionPlan;
 begin
+  if tvGuests.DataController.DataSet.State = dsInActive then
+    Exit;
+
   if tvGuests.DataController.DataSet.State = dsEdit then
-  begin
     tvGuests.DataController.Post;
-  end;
+
   ExecutionPlan := d.roomerMainDataSet.CreateExecutionPlan;
   try
     ExecutionPlan.BeginTransaction;

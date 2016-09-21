@@ -853,7 +853,7 @@ begin
   for i := 0 to FRoomFloors.Count - 1 do
   begin
     item := TMenuItem.Create(nil);
-    item.Caption := format('%s %d', ['Floor', FRoomFloors[i]]);
+    item.Caption := format('%s %d', [GetTranslatedText('shTx_Floor'), FRoomFloors[i]]);
     item.Tag := FRoomFloors[i];
     item.OnClick := event;
     mnu.Items.Add(item);
@@ -1034,50 +1034,14 @@ begin
       ReadTableByName(table.FTableName, startingUp);
   end;
 
-//  ReadTableByName('rooms');
-//  ReadTableByName('locations');
-//  ReadTableByName('roomtyperules');
-//  ReadTableByName('vatcodes');
-//  ReadTableByName('items');
-//  ReadTableByName('itemtypes');
-//  ReadTableByName('roomtypegroups');
-//  ReadTableByName('roomtypes');
-//  ReadTableByName('channels');
-//  ReadTableByName('currencies');
-//  ReadTableByName('control');
-//  ReadTableByName('countries');
-//  ReadTableByName('countrygroups');
-//
-//  ReadTableByName('tblconverts');
-//  ReadTableByName('tblconvertgroups');
-//  ReadTableByName('paygroups');
-//  ReadTableByName('paytypes');
-//  ReadTableByName('tblseasons');
-//
-//  ReadTableByName('tblpricecodes');
-//  ReadTableByName('customertypes');
-
-
   if NOT d.roomerMainDataSet.OfflineMode then
   begin
-//    rSetFLoors := CreateNewDataSet;
-//    try
-//      s := 'SELECT DISTINCT Floor FROM rooms ORDER BY Floor';
-//      hData.rSet_bySQL(rSetFLoors,s);
-//      rSetFLoors.First;
-//      while not rSetFLoors.eof do
-//      begin
-//        FRoomFloors.Add(rSetFloors['Floor']);
-//        rSetFLoors.next;
-//      end;
-//    finally
-//      freeandnil(rSetFLoors);
-//    end;
-
+    FRoomFloors.Clear;
     RoomsSet.First;
     while not RoomsSet.eof do
     begin
-      FRoomFloors.Add(RoomsSet['Floor']);
+      if not FRoomFloors.Contains(RoomsSet['Floor']) then
+        FRoomFloors.Add(RoomsSet['Floor']);
       RoomsSet.next;
     end;
     FRoomFloors.Sort;

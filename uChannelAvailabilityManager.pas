@@ -415,9 +415,11 @@ type
     procedure timBringToFrontTimer(Sender: TObject);
     procedure __cbxVisibleDaysCloseUp(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
   private
     { Private declarations }
     RoomerDataSet: TRoomerDataSet;
+    MaxDate : Integer;
     Halting: Boolean;
     FCurrentNumDays: integer;
     AvailDict: TDictItemObjectDictionary;
@@ -528,6 +530,10 @@ type
     procedure BlinkCombo;
     function buildSetStatementMinMax(var oldResultValue: String; minDirty, maxDirty: Boolean; minValue, maxValue: Integer): String;
     procedure CleanUpRedundantRoomClassesInAvailbilities;
+    function PerformForcedRatesUpdate: Boolean;
+    function PerformForcedAvailabilityUpdate: Boolean;
+    procedure ReloadSelectedPeriod;
+    function AnyRateOrRestrictionsChanges: Boolean;
   protected
     procedure CreateParams(var Params: TCreateParams); override;
   public
@@ -968,6 +974,13 @@ begin
 
   action := caFree;
   CHANNELMANAGER_IS_OPEN := False;
+end;
+
+procedure TfrmChannelAvailabilityManager.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+begin
+  CanClose := True;
+  if AnyRateOrRestrictionsChanges then
+    CanClose :=  MessageDLG(GetTranslatedText('shTx_ChannelAvailabilityManager_ChangesContinue'), mtWarning, [mbYes, mbCancel], 0) = mrYes;
 end;
 
 procedure TfrmChannelAvailabilityManager.FormCreate(Sender: TObject);
@@ -1514,6 +1527,40 @@ begin
     oldResultValue := oldResultValue + ',' + #10 + S;
 end;
 
+function TfrmChannelAvailabilityManager.AnyRateOrRestrictionsChanges : Boolean;
+var iMaster, iRow, iCol : Integer;
+    PriceData: TPriceData;
+begin
+  result := False;
+  for iMaster := 0 to 1 do
+  begin
+    for iRow := 1 to rateGrid.RowCount - 1 do
+    begin
+      for iCol := 1 to rateGrid.ColCount - 1 do
+      begin
+        if isPriceCell(iCol, iRow) then
+        begin
+          PriceData := getPriceDataOfRow(iCol, iRow);
+          if ((PriceData.channelId > -1) AND (iMaster=0)) OR
+             ((PriceData.channelId < 0) AND (iMaster=1)) then
+          begin
+            result := PriceData.FPriceDirty OR
+//                      PriceData.FAvailabilityDirty
+                      PriceData.FStopSellDirty OR
+                      PriceData.FMaxStayDirty OR
+                      PriceData.FMinStayDirty OR
+                      PriceData.FCOADirty OR
+                      PriceData.FCODDirty OR
+                      PriceData.FLOSArrivalDateBasedDirty OR
+                      PriceData.FSingleUsePriceDirty;
+            if result then exit;
+          end;
+        end;
+      end;
+    end;
+  end;
+end;
+
 procedure TfrmChannelAvailabilityManager.PublishSheet(OnlyCreateExcel: Boolean; AllowEditAndSendEmail : Boolean);
 var
   list: TList<String>;
@@ -1988,6 +2035,12 @@ begin
     0 : ForceFullAvailability;
     1 : ForceFullRates;
   end;
+  ReloadSelectedPeriod;
+end;
+
+procedure TfrmChannelAvailabilityManager.ReloadSelectedPeriod;
+begin
+  cbxChannelManagersChange(cbxChannelManagers);
 end;
 
 procedure TfrmChannelAvailabilityManager.RefreshScreen;
@@ -2364,6 +2417,7 @@ procedure TfrmChannelAvailabilityManager.cbxChannelManagersChange(Sender: TObjec
 var
   cmIndex: integer;
 begin
+  MaxDate := trunc(now) + NUMBER_OF_DAYS_DISPLAYED;
   cmIndex := cbxChannelManagers.ItemIndex;
   if cmIndex < 0 then
     exit;
@@ -2386,12 +2440,17 @@ begin
     end;
 
     dateEdit.MinDate := TRUNC(now);
-    dateEdit.MaxDate := TRUNC(now) + CurrentChannelMan.FNumDays;
+    dateEdit.MaxDate := MaxDate; // TRUNC(now) + CurrentChannelMan.FNumDays;
+
 
     dtBulkFrom.MinDate := startDate;
     dtBulkFrom.MaxDate := startDate + NUMBER_OF_DAYS_DISPLAYED;
+    if dtBulkFrom.MaxDate > MaxDate then
+      dtBulkFrom.MaxDate := MaxDate;
     dtBulkTo.MinDate := startDate;
     dtBulkTo.MaxDate := startDate + NUMBER_OF_DAYS_DISPLAYED;
+    if dtBulkTo.MaxDate > MaxDate then
+      dtBulkTo.MaxDate := MaxDate;
     Screen.Cursor := crHourglass;
     try
       RemoveData;
@@ -2519,7 +2578,7 @@ begin
   end;
   result := cbxChannelManagers.Items.Count > 0;
   if result then
-    cbxChannelManagersChange(cbxChannelManagers)
+    ReloadSelectedPeriod
   else
   begin
     MessageDLG(GetTranslatedText('shTx_ChannelAvailabilityManager_NoChannelManagersDefined'), mtError, [mbOk], 0);
@@ -3886,8 +3945,8 @@ end;
 procedure TfrmChannelAvailabilityManager.sButton1Click(Sender: TObject);
 begin
   // if MessageDLG('All changes will be lost. Continue?', mtConfirmation, [mbYes, mbNo], 0) = mrYes then
-  if MessageDLG(GetTranslatedText('shTx_ChannelAvailabilityManager_ChangesContinue'), mtConfirmation, [mbYes, mbNo], 0) = mrYes then
-    cbxChannelManagersChange(cbxChannelManagers);
+  if (NOT AnyRateOrRestrictionsChanges) OR (MessageDLG(GetTranslatedText('shTx_ChannelAvailabilityManager_ChangesContinue'), mtConfirmation, [mbYes, mbNo], 0) = mrYes) then
+    ReloadSelectedPeriod;
 end;
 
 procedure TfrmChannelAvailabilityManager.sButton2Click(Sender: TObject);
@@ -3903,33 +3962,40 @@ begin
   begin
     cmId := TChannelManagerValue(cbxChannelManagers.Items.Objects[cbxChannelManagers.ItemIndex]).FId;
     RoomerDataSet.DoCommand(format('DELETE FROM channelrates WHERE channelManager=%d', [cmId]));
-    cbxChannelManagersChange(cbxChannelManagers);
+    ReloadSelectedPeriod;
   end;
 end;
 
 procedure TfrmChannelAvailabilityManager.ForceFullAvailability;
 begin
-  ForceAvailabilityForCurrentPeriod;
-  CleanUpRedundantRoomClassesInAvailbilities;
-  d.roomerMainDataSet.DoCommand('UPDATE channelrates cr SET cr.availabilityDirty=1 WHERE cr.date>=CURRENT_DATE');
-  d.roomerMainDataSet.DoCommand('UPDATE channelratesavailabilities cra SET cra.dirty=1 WHERE cra.date>=CURRENT_DATE');
+  if PerformForcedAvailabilityUpdate then
+  begin
+    CleanUpRedundantRoomClassesInAvailbilities;
+    d.roomerMainDataSet.DoCommand('UPDATE channelrates cr SET cr.availabilityDirty=1 WHERE cr.date>=CURRENT_DATE');
+    d.roomerMainDataSet.DoCommand('UPDATE channelratesavailabilities cra SET cra.dirty=1 WHERE cra.date>=CURRENT_DATE');
+  end;
 end;
 
 procedure TfrmChannelAvailabilityManager.ForceFullRates;
 begin
-  ForceRateUpdateForCurrentPeriod;
-  d.roomerMainDataSet.DoCommand('UPDATE channelrates cr SET dirty=1, minStayDirty=(minStay<=maxStay), maxStayDirty=(maxStay>=minStay), closedOnArrivalDirty=1, ' +
-                                'closedOnDepartureDirty=1, stopDirty=1, lengthOfStayArrivalDateBasedDirty=1, singleUsePriceDirty=1 ' +
-                                'WHERE cr.date>=CURRENT_DATE');
+  if PerformForcedRatesUpdate then
+    d.roomerMainDataSet.DoCommand('UPDATE channelrates cr SET dirty=1, minStayDirty=((minStay<=maxStay) OR (maxStay=0)), maxStayDirty=(maxStay>=minStay), closedOnArrivalDirty=1, ' +
+                                  'closedOnDepartureDirty=1, stopDirty=1, lengthOfStayArrivalDateBasedDirty=1, singleUsePriceDirty=1 ' +
+                                  'WHERE cr.date>=CURRENT_DATE');
+end;
+
+function TfrmChannelAvailabilityManager.PerformForcedAvailabilityUpdate : Boolean;
+begin
+  result := MessageDLG(GetTranslatedText('shTx_ChannelAvailabilityManager_ForceUpdateAvailability1') + #10 +
+                       GetTranslatedText('shTx_ChannelAvailabilityManager_ForceUpdate2') + #10 +
+                       GetTranslatedText('shTx_ChannelAvailabilityManager_ForceUpdate3'), mtWarning, [mbYes, mbNo], 0) = mrYes;
 end;
 
 procedure TfrmChannelAvailabilityManager.ForceAvailabilityForCurrentPeriod;
 var
   iRow, iCol: integer;
 begin
-  if MessageDLG(GetTranslatedText('shTx_ChannelAvailabilityManager_ForceUpdateAvailability1') + #10 +
-    GetTranslatedText('shTx_ChannelAvailabilityManager_ForceUpdate2') + #10 + GetTranslatedText('shTx_ChannelAvailabilityManager_ForceUpdate3'), mtWarning,
-    [mbYes, mbNo], 0) = mrYes then
+  if PerformForcedAvailabilityUpdate then
   begin
     BeginProject(RealNumberOfAvailabilityObjects);
     try
@@ -3955,13 +4021,19 @@ begin
   ForceAvailabilityForCurrentPeriod;
 end;
 
+function TfrmChannelAvailabilityManager.PerformForcedRatesUpdate : Boolean;
+begin
+  result := MessageDLG(GetTranslatedText('shTx_ChannelAvailabilityManager_ForceUpdateRates1') + #10 +
+                       GetTranslatedText('shTx_ChannelAvailabilityManager_ForceUpdate2') + #10 +
+                       GetTranslatedText('shTx_ChannelAvailabilityManager_ForceUpdate3'), mtWarning, [mbYes, mbNo], 0) = mrYes;
+end;
+
 procedure TfrmChannelAvailabilityManager.ForceRateUpdateForCurrentPeriod;
 var
   iRow, iCol: integer;
   PriceData: TPriceData;
 begin
-  if MessageDLG(GetTranslatedText('shTx_ChannelAvailabilityManager_ForceUpdateRates1') + #10 + GetTranslatedText('shTx_ChannelAvailabilityManager_ForceUpdate2')
-    + #10 + GetTranslatedText('shTx_ChannelAvailabilityManager_ForceUpdate3'), mtWarning, [mbYes, mbNo], 0) = mrYes then
+  if PerformForcedRatesUpdate then
   begin
     BeginProject(RealNumberOfRateObjects);
     for iRow := 1 to rateGrid.RowCount - 1 do

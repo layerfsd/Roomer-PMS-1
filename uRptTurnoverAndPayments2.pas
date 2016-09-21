@@ -672,7 +672,7 @@ begin
   dateTimeToString(s, 'yyyymmddhhnn', now);
   sFilename := g.qProgramPath + s + '_Turnover';
   ExportGridToXLSX(sFilename, grTurnover, true, true, true);
-  ShellExecute(Handle, 'OPEN', PChar(sFilename + '.xls'), nil, nil,sw_shownormal);
+  ShellExecute(Handle, 'OPEN', PChar(sFilename + '.xlsx'), nil, nil,sw_shownormal);
 end;
 
 procedure TfrmRptTurnoverAndPayments2.btnGetOldClick(Sender: TObject);
@@ -918,7 +918,7 @@ begin
   dateTimeToString(s, 'yyyymmddhhnn', now);
   sFilename := g.qProgramPath + s + '_Payments';
   ExportGridToXLSX(sFilename, grPayments, true, true, true);
-  ShellExecute(Handle, 'OPEN', PChar(sFilename + '.xls'), nil, nil,
+  ShellExecute(Handle, 'OPEN', PChar(sFilename + '.xlsx'), nil, nil,
     sw_shownormal);
 end;
 
@@ -934,7 +934,7 @@ begin
   dateTimeToString(s, 'yyyymmddhhnn', now);
   sFilename := g.qProgramPath + s + '_unInvoicedRoomRent';
   ExportGridToXLSX(sFilename, grRoomrentOnInvoice, true, true, true);
-  ShellExecute(Handle, 'OPEN', PChar(sFilename + '.xls'), nil, nil,
+  ShellExecute(Handle, 'OPEN', PChar(sFilename + '.xlsx'), nil, nil,
     sw_shownormal);
 end;
 
@@ -960,7 +960,7 @@ begin
   dateTimeToString(s, 'yyyymmddhhnn', now);
   sFilename := g.qProgramPath + s + '_unpaidRoomRent';
   ExportGridToXLSX(sFilename, grRoomsDate, true, true, true);
-  ShellExecute(Handle, 'OPEN', PChar(sFilename + '.xls'), nil, nil,
+  ShellExecute(Handle, 'OPEN', PChar(sFilename + '.xlsx'), nil, nil,
     sw_shownormal);
 end;
 

@@ -68,7 +68,8 @@ type
       class function FromItemIndex(aIndex: integer) : TReservationState; static;
 
       /// <summary>
-      ///   Fill a TStrings with translated descriptions in order of enumeration. Can by used to populate a TCombobox
+      ///   Fill a TStrings with translated descriptions in order of enumeration. Can by used to populate a TCombobox.<br />
+      ///  The objects list of aItemList will contain the ord() of the state cast to an TObject
       /// </summary>
       class procedure AsStrings(aItemList: TStrings); static;
       /// <summary>
@@ -174,7 +175,7 @@ var
 begin
   aItemList.Clear;
   for s := TReservationState(1) to high(s) do // dont use rsUnkown
-    aItemList.Add(s.AsReadableString);
+    aItemList.AddObject(s.AsReadableString, TObject(ord(s)));
 end;
 
 class function TReservationStateHelper.FromItemIndex(aIndex: integer): TReservationState;
@@ -205,7 +206,7 @@ begin
     rsNoShow:             result := True;
     rsBlocked:            result := False; // only selectable when creating a special type reservation
     rsCancelled:          result := True;
-    rsTmp1:               result := True;
+    rsTmp1:               result := False;
     rsAwaitingPayment:    result := False;
     rsDeleted:            result := False;
     rsAwaitingPayConfirm: result := False;

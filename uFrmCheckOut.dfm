@@ -20,9 +20,9 @@ object FrmCheckOut: TFrmCheckOut
   TextHeight = 13
   object sLabel1: TsLabel
     AlignWithMargins = True
-    Left = 316
+    Left = 16
     Top = 100
-    Width = 323
+    Width = 585
     Height = 25
     Margins.Top = 100
     Alignment = taCenter
@@ -81,8 +81,8 @@ object FrmCheckOut: TFrmCheckOut
     object cbxForce: TsCheckBox
       Left = 348
       Top = 6
-      Width = 235
-      Height = 20
+      Width = 243
+      Height = 17
       Caption = 'Allow checkout in spite of open group invoice'
       TabOrder = 2
       Visible = False
@@ -453,7 +453,7 @@ object FrmCheckOut: TFrmCheckOut
           'Top'
           'Width')
       end>
-    StorageName = 'Software\Roomer\FormStatus\GuestCheckout2'
+    StorageName = 'Software\Roomer\FormStatus\CheckoutDialog'
     StorageType = stRegistry
     Left = 352
     Top = 120

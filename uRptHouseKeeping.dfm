@@ -1,5 +1,5 @@
 inherited frmHouseKeepingReport: TfrmHouseKeepingReport
-  Caption = 'HouseKeeping list'
+  Caption = 'Simple HouseKeeping report'
   ClientHeight = 586
   ClientWidth = 1123
   Font.Height = -11
@@ -150,7 +150,6 @@ inherited frmHouseKeepingReport: TfrmHouseKeepingReport
     Align = alClient
     TabOrder = 2
     LookAndFeel.NativeStyle = False
-    ExplicitTop = 139
     object grHouseKeepingListDBTableView1: TcxGridDBTableView
       Navigator.Buttons.CustomButtons = <>
       DataController.DataSource = HouseKeepingListDS
@@ -410,30 +409,36 @@ inherited frmHouseKeepingReport: TfrmHouseKeepingReport
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.Header = 6350
-      PrinterPage.Margins.Bottom = 12700
-      PrinterPage.Margins.Left = 12700
-      PrinterPage.Margins.Right = 12700
+      PrinterPage.Margins.Bottom = 6350
+      PrinterPage.Margins.Left = 5000
+      PrinterPage.Margins.Right = 5000
       PrinterPage.Margins.Top = 12700
+      PrinterPage.PageFooter.RightTitle.Strings = (
+        '[Page # of Pages #]')
       PrinterPage.PageSize.X = 210000
       PrinterPage.PageSize.Y = 297000
       PrinterPage.ScaleMode = smFit
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
-      ReportDocument.CreationDate = 42628.411582847220000000
+      ReportDocument.CreationDate = 42633.603041921300000000
       ReportTitle.Font.Charset = DEFAULT_CHARSET
       ReportTitle.Font.Color = clBlack
       ReportTitle.Font.Height = -19
       ReportTitle.Font.Name = 'Arial'
       ReportTitle.Font.Style = [fsBold]
       ShrinkToPageWidth = True
-      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
+      AssignedFormatValues = [fvTime, fvPageNumber]
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clBlack
       Font.Height = -15
       Font.Name = 'Arial'
       Font.Style = []
+      OptionsExpanding.ExpandGroupRows = True
       OptionsFormatting.LookAndFeelKind = lfFlat
       OptionsFormatting.UseNativeStyles = True
+      OptionsOnEveryPage.Footers = False
+      OptionsOnEveryPage.FilterBar = False
+      OptionsView.FilterBar = False
       StyleRepository = cxStyleRepository2
       Styles.StyleSheet = dxGridReportLinkStyleSheet1
       BuiltInReportLink = True

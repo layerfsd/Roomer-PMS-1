@@ -9,6 +9,8 @@ object d: Td
     CommandText = 'SELECT * FROM Items'#13#10
     CommandType = cmdUnknown
     Parameters = <>
+    Sql.Strings = (
+      'SELECT * FROM Items')
     DataActive = False
     RoomerStoreUri = 'http://localhost:8080/services/'
     RoomerUri = 'http://localhost:8080/services/'
@@ -27,6 +29,8 @@ object d: Td
     CommandText = 'SELECT * FROM wRooms'#13#10
     CommandType = cmdUnknown
     Parameters = <>
+    Sql.Strings = (
+      'SELECT * FROM wRooms')
     DataActive = False
     RoomerStoreUri = 'http://localhost:8080/services/'
     RoomerUri = 'http://localhost:8080/services/'
@@ -41,6 +45,8 @@ object d: Td
     CommandText = 'SELECT * FROM viewRoomPrices1'#13#10
     CommandType = cmdUnknown
     Parameters = <>
+    Sql.Strings = (
+      'SELECT * FROM viewRoomPrices1')
     DataActive = False
     RoomerStoreUri = 'http://localhost:8080/services/'
     RoomerUri = 'http://localhost:8080/services/'
@@ -247,6 +253,8 @@ object d: Td
     CommandText = 'SELECT * FROM tblMaidActions'#13#10
     CommandType = cmdUnknown
     Parameters = <>
+    Sql.Strings = (
+      'SELECT * FROM tblMaidActions')
     DataActive = False
     RoomerStoreUri = 'http://localhost:8080/services/'
     RoomerUri = 'http://localhost:8080/services/'
@@ -476,6 +484,8 @@ object d: Td
     CommandText = 'SELECT * FROM tblImportLogs'#13#10
     CommandType = cmdUnknown
     Parameters = <>
+    Sql.Strings = (
+      'SELECT * FROM tblImportLogs')
     DataActive = False
     RoomerStoreUri = 'http://localhost:8080/services/'
     RoomerUri = 'http://localhost:8080/services/'
@@ -496,6 +506,8 @@ object d: Td
     CommandText = 'SELECT * FROM TelPriceGroups'#13#10
     CommandType = cmdUnknown
     Parameters = <>
+    Sql.Strings = (
+      'SELECT * FROM TelPriceGroups')
     DataActive = False
     RoomerStoreUri = 'http://localhost:8080/services/'
     RoomerUri = 'http://localhost:8080/services/'
@@ -577,6 +589,8 @@ object d: Td
     CommandText = 'SELECT * FROM TelPriceRules'#13#10
     CommandType = cmdUnknown
     Parameters = <>
+    Sql.Strings = (
+      'SELECT * FROM TelPriceRules')
     DataActive = False
     RoomerStoreUri = 'http://localhost:8080/services/'
     RoomerUri = 'http://localhost:8080/services/'

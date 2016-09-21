@@ -33,10 +33,6 @@ object frmLodgingTaxReport2: TfrmLodgingTaxReport2
       TabVisible = False
       SkinData.CustomColor = False
       SkinData.CustomFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Panel1: TsPanel
         Left = 0
         Top = 0
@@ -92,7 +88,6 @@ object frmLodgingTaxReport2: TfrmLodgingTaxReport2
           SkinData.SkinSection = 'CHECKBOX'
           ImgChecked = 0
           ImgUnchecked = 0
-          ExplicitLeft = 800
         end
         object btnShowReservation: TsButton
           AlignWithMargins = True
@@ -107,7 +102,6 @@ object frmLodgingTaxReport2: TfrmLodgingTaxReport2
           TabOrder = 3
           OnClick = btnShowReservationClick
           SkinData.SkinSection = 'BUTTON'
-          ExplicitLeft = 700
         end
         object btnShowGuests: TsButton
           AlignWithMargins = True
@@ -122,7 +116,6 @@ object frmLodgingTaxReport2: TfrmLodgingTaxReport2
           TabOrder = 4
           OnClick = btnShowGuestsClick
           SkinData.SkinSection = 'BUTTON'
-          ExplicitLeft = 488
         end
         object btnShowInvoice: TsButton
           AlignWithMargins = True
@@ -138,7 +131,6 @@ object frmLodgingTaxReport2: TfrmLodgingTaxReport2
           Style = bsSplitButton
           TabOrder = 5
           SkinData.SkinSection = 'BUTTON'
-          ExplicitLeft = 622
         end
       end
       object gInvoiceHeads: TcxGrid
@@ -151,8 +143,6 @@ object frmLodgingTaxReport2: TfrmLodgingTaxReport2
         BorderStyle = cxcbsNone
         TabOrder = 1
         LookAndFeel.NativeStyle = False
-        ExplicitTop = 45
-        ExplicitHeight = 469
         object tvInvoiceHeads: TcxGridDBTableView
           OnDblClick = tvInvoiceHeadsDblClick
           Navigator.Buttons.CustomButtons = <>
@@ -622,6 +612,7 @@ object frmLodgingTaxReport2: TfrmLodgingTaxReport2
     DefaultFileDeviceType = 'PDF'
     EmailSettings.ReportFormat = 'PDF'
     LanguageID = 'Default'
+    ModalCancelDialog = False
     OutlineSettings.CreateNode = True
     OutlineSettings.CreatePageNodes = True
     OutlineSettings.Enabled = True

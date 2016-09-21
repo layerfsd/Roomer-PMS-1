@@ -2,7 +2,7 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
   Left = 0
   Top = 0
   Caption = 'Guest Check In'
-  ClientHeight = 656
+  ClientHeight = 680
   ClientWidth = 842
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -21,18 +21,20 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
     Left = 0
     Top = 0
     Width = 842
-    Height = 623
+    Height = 647
     ActivePage = sTabSheet1
     Align = alClient
     TabOrder = 0
     SkinData.SkinSection = 'PAGECONTROL'
     object sTabSheet1: TsTabSheet
       Caption = 'Room 101'
+      SkinData.CustomColor = False
+      SkinData.CustomFont = False
       object sPanel1: TsPanel
         Left = 0
         Top = 0
         Width = 473
-        Height = 595
+        Height = 619
         Align = alLeft
         Padding.Left = 5
         Padding.Top = 5
@@ -59,13 +61,15 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
           Left = 6
           Top = 31
           Width = 461
-          Height = 558
+          Height = 582
           ActivePage = sTabSheet2
           Align = alClient
           TabOrder = 0
           SkinData.SkinSection = 'PAGECONTROL'
           object sTabSheet2: TsTabSheet
             Caption = 'Guest Info'
+            SkinData.CustomColor = False
+            SkinData.CustomFont = False
             SkinData.SkinSection = 'TRANSPARENT'
             object sLabel6: TsLabel
               Left = 97
@@ -558,7 +562,7 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
               Width = 130
               Height = 41
               Caption = 'Guest portfolio'
-              TabOrder = 18
+              TabOrder = 19
               OnClick = btnPortfolioClick
               SkinData.SkinSection = 'BUTTON'
             end
@@ -568,7 +572,7 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
               Width = 105
               Height = 41
               Caption = 'Remove from guest portfolio'
-              TabOrder = 19
+              TabOrder = 20
               Visible = False
               OnClick = btNoPortfolioClick
               SkinData.SkinSection = 'BUTTON'
@@ -594,9 +598,9 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
               Left = 190
               Top = 47
               Width = 82
-              Height = 17
+              Height = 19
               Caption = 'Live search'
-              TabOrder = 20
+              TabOrder = 21
               OnClick = cbActiveLiveSearchClick
               SkinData.SkinSection = 'CHECKBOX'
               ImgChecked = 0
@@ -648,6 +652,21 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
               Items.Strings = (
                 'Leisure'
                 'Business')
+            end
+            object chkCountryForAllGuests: TsCheckBox
+              Left = 190
+              Top = 532
+              Width = 252
+              Height = 19
+              Hint = 
+                'When checked the selected country will be set for all guests of ' +
+                'this room that don'#39't already have a country set'
+              Caption = 'Set country for all roomguests without country'
+              Checked = True
+              State = cbChecked
+              TabOrder = 18
+              ImgChecked = 0
+              ImgUnchecked = 0
             end
           end
           object sTabSheet6: TsTabSheet
@@ -966,7 +985,7 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
         Left = 473
         Top = 0
         Width = 361
-        Height = 595
+        Height = 619
         Align = alClient
         Padding.Left = 5
         Padding.Top = 5
@@ -1234,6 +1253,8 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
           end
           object sTabSheet4: TsTabSheet
             Caption = 'Cash'
+            SkinData.CustomColor = False
+            SkinData.CustomFont = False
             object sLabel16: TsLabel
               Left = 38
               Top = 21
@@ -1322,7 +1343,7 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
   end
   object panBtn: TsPanel
     Left = 0
-    Top = 623
+    Top = 647
     Width = 842
     Height = 33
     Align = alBottom

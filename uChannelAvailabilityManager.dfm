@@ -14,6 +14,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
   OldCreateOrder = False
   Scaled = False
   OnClose = FormClose
+  OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   PixelsPerInch = 96
@@ -1601,8 +1602,6 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
             VAlignment = vtaCenter
             Version = '7.9.1.1'
             WordWrap = False
-            ExplicitLeft = -1
-            ExplicitTop = 49
             ColWidths = (
               400
               80
