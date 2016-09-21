@@ -245,6 +245,7 @@ type
     procedure btnInsertClick(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure tvDataactivePlanCodePropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     { Private declarations }
     zFirstTime: Boolean;
@@ -591,6 +592,12 @@ begin
   cmd_bySQL(s);
   s := 'DELETE FROM channelratesavailabilities WHERE NOT roomClassId IN (SELECT id FROM roomtypegroups WHERE Active)';
   cmd_bySQL(s);
+end;
+
+procedure TfrmChannels.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then
+    Close;
 end;
 
 procedure TfrmChannels.FormKeyPress(Sender: TObject; var Key: Char);

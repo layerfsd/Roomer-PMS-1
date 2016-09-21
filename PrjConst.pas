@@ -917,8 +917,8 @@ begin
   constants.Add('shTx_ReservationProfile_AddRoomError', 'Add Room error : %s');
 
   constants.Add('shTx_FrmReservationprofile_ReservationNumber', 'Reservation number');
-  constants.Add('shTx_FrmReservationprofile_Status', 'Status');
-  constants.Add('shTx_FrmReservationprofile_ChangeStatus', 'Change Status');
+  constants.Add('shTx_FrmReservationprofile_Status', 'State');
+  constants.Add('shTx_FrmReservationprofile_ChangeStatus', 'Change State');
   constants.Add('shTx_FrmReservationprofile_Balance', 'Balance');
   constants.Add('shTx_FrmReservationprofile_CreatedBy', 'Created by');
 
@@ -927,7 +927,6 @@ begin
 
   constants.Add('shTx_AccountType_GroupAccount', 'Group Account');
   constants.Add('shTx_AccountType_RoomAccount', 'Room Account');
-
 
   constants.Add('shTx_RoomPricesEdit_RoomType', 'Room Type must be specified');
   constants.Add('shTx_RoomPricesEdit_PriceTime', 'Price range must be specified');

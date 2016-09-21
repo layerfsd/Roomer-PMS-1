@@ -26,8 +26,6 @@ type
 
     rsDeparted,
 
-    rsReserved,
-
     rsOptionalBooking,
 
     rsAllotment,
@@ -41,8 +39,6 @@ type
     rsTmp1,
 
     rsAwaitingPayment,
-
-    rsDeleted,
 
     rsAwaitingPayConfirm,
 
@@ -143,7 +139,6 @@ begin
     rsReservation:        result := g.qStatusAttr_Order;
     rsGuests:             result := g.qStatusAttr_GuestStaying;
     rsDeparted:           result := g.qStatusAttr_Departed;
-    rsReserved:           result := g.qStatusAttr_Order;
     rsOptionalBooking:    result := g.qStatusAttr_Option;
     rsAllotment:           result := g.qStatusAttr_Allotment;
     rsNoShow:             result := g.qStatusAttr_NoShow;
@@ -151,7 +146,6 @@ begin
     rsCancelled:          result := g.qStatusAttr_Canceled;
     rsTmp1:               result := g.qStatusAttr_TMP1;
     rsAwaitingPayment:    result := g.qStatusAttr_TMP2;
-    rsDeleted:            result := g.qStatusAttr_Canceled;
     rsAwaitingPayConfirm: result := g.qStatusAttr_TMP2;
     rsWaitingList:        result := g.qStatusAttr_WaitingList;
     else
@@ -163,7 +157,7 @@ end;
 function TReservationStateHelper.AsStatusChar: Char;
 const
   cReservationStateChars : Array[TReservationState] of char =
-      ('P','P','G','D','R','O','A','N','B','C','W','Z','X', 'Q', 'M', 'L');
+      ('P','P','G','D','O','A','N','B','C','W','Z','Q', 'M', 'L');
 begin
   Result := cReservationStateChars[Self];
 end;
@@ -174,8 +168,9 @@ var
   s: TReservationState;
 begin
   aItemList.Clear;
-  for s := TReservationState(1) to high(s) do // dont use rsUnkown
-    aItemList.AddObject(s.AsReadableString, TObject(ord(s)));
+  for s := TReservationState(1) to high(s) do // dont use rsUnkown and rsMixed
+    if s <> rsMixed then
+      aItemList.AddObject(s.AsReadableString, TObject(ord(s)));
 end;
 
 class function TReservationStateHelper.FromItemIndex(aIndex: integer): TReservationState;
@@ -200,7 +195,6 @@ begin
     rsReservation:        result := True;
     rsGuests:             result := True;
     rsDeparted:           result := True;
-    rsReserved:           result := True;
     rsOptionalBooking:    result := True;
     rsAllotment:          result := True;
     rsNoShow:             result := True;
@@ -208,7 +202,6 @@ begin
     rsCancelled:          result := True;
     rsTmp1:               result := False;
     rsAwaitingPayment:    result := False;
-    rsDeleted:            result := False;
     rsAwaitingPayConfirm: result := False;
     rsMixed:              result := false;
     rsWaitingList:        result := True;
@@ -224,7 +217,6 @@ begin
     rsReservation:        result := GetTranslatedText('shTx_G_Reservation');
     rsGuests:             result := GetTranslatedText('shTx_G_CheckedIn');
     rsDeparted:           result := GetTranslatedText('shTx_G_Departed');
-    rsReserved:           result := GetTranslatedText('shTx_G_Reserved');
     rsOptionalBooking:    result := GetTranslatedText('shTx_G_WaitingList');
     rsAllotment:           result := GetTranslatedText('shTx_G_Alotment');
     rsNoShow:             result := GetTranslatedText('shTx_G_NoShow');
@@ -232,7 +224,6 @@ begin
     rsCancelled:          result := GetTranslatedText('shTx_G_Canceled');
     rsTmp1:               result := GetTranslatedText('shTx_G_Tmp1');
     rsAwaitingPayment:    result := GetTranslatedText('shTx_G_AwaitingPayment');
-    rsDeleted:            result := GetTranslatedText('shTx_G_Deleted');
     rsAwaitingPayConfirm: result := GetTranslatedText('shTx_G_AwaitingPayConfirm');
     rsMixed:              result := GetTranslatedText('shTx_G_Mixed');
     rsWaitingList:        result := GetTranslatedText('shTx_G_WaitingListNonOptional');
@@ -258,7 +249,6 @@ begin
     'P': result := rsReservation;
     'G': result := rsGuests;
     'D': result := rsDeparted;
-    'R': result := rsReserved;
     'O': result := rsOptionalBooking;
     'A': result := rsAllotment;
     'N': result := rsNoShow;

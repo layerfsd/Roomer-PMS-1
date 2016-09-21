@@ -415,6 +415,7 @@ type
     procedure timBringToFrontTimer(Sender: TObject);
     procedure __cbxVisibleDaysCloseUp(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     { Private declarations }
     RoomerDataSet: TRoomerDataSet;
@@ -1016,6 +1017,12 @@ begin
     if assigned(obj) and (obj is TPlanCodeValue) then
       cbxPlanCodes.Items.Objects[i].Free;
   end;
+end;
+
+procedure TfrmChannelAvailabilityManager.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if (Key = VK_ESCAPE) then
+    Close;
 end;
 
 procedure TfrmChannelAvailabilityManager.timRecalcTimer(Sender: TObject);
@@ -2475,7 +2482,8 @@ end;
 
 procedure TfrmChannelAvailabilityManager.PrepareUserInterface;
 begin
-  btnPrepareExcel.Visible := g.qRatesManagedByRoomer;
+  // 2016-9-21: Disabled for now as no hotel uses it and it can raise an AV
+  btnPrepareExcel.Visible := False; //g.qRatesManagedByRoomer;
   cbxChannelManagers.Visible := NOT frmMain.RBEMode;
   cbxPlanCodes.Visible := NOT frmMain.RBEMode;
 end;

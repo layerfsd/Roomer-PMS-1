@@ -92,15 +92,13 @@ begin
       rsReservation:      Result := lCurrentState in [rsUnknown, rsGuests, rsAllotment, rsOptionalBooking, rsTmp1, rsAwaitingPayment, rsCancelled, rsAwaitingPayConfirm, rsWaitingList];
       rsGuests:           Result := lCurrentState in [rsUnknown, rsReservation, rsAllotment, rsOptionalBooking, rsTmp1, rsAwaitingPayment, rsWaitingList];
       rsDeparted:         Result := lCurrentState in [rsUnknown, rsGuests];
-      rsReserved:         Result := lCurrentState in [rsUnknown, rsReservation, rsAllotment, rsOptionalBooking, rsTmp1, rsAwaitingPayment, rsWaitingList];
-      rsOptionalBooking:  Result := lCurrentState in [rsUnknown, rsReservation, rsAllotment, rsReserved, rsTmp1, rsAwaitingPayment, rsWaitingList];
+      rsOptionalBooking:  Result := lCurrentState in [rsUnknown, rsReservation, rsAllotment, rsTmp1, rsAwaitingPayment, rsWaitingList];
       rsAllotment:        Result := lCurrentState in [rsUnknown, rsReservation, rsAllotment, rsOptionalBooking, rsTmp1, rsAwaitingPayment, rsWaitingList];
       rsNoShow:           Result := lCurrentState in [rsUnknown, rsReservation, rsAllotment, rsOptionalBooking, rsTmp1, rsAwaitingPayment, rsWaitinglist];
       rsBlocked:          Result := False;
-      rsCancelled:        ;
+      rsCancelled:        Result := lCurrentState in [rsUnknown, rsReservation, rsAllotment, rsOptionalBooking, rsTmp1, rsWaitinglist];
       rsTmp1:             Result := False;
       rsAwaitingPayment:  Result := False;
-      rsDeleted:          Result := False;
       rsAwaitingPayConfirm: Result := False;
       rsWaitingList:      Result := lCurrentState in [rsUnknown, rsReservation, rsGuests, rsAllotment, rsOptionalBooking, rsTmp1, rsAwaitingPayment, rsAwaitingPayConfirm];
       rsMixed:            Result := False;
