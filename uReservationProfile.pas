@@ -82,7 +82,7 @@ type
     PageControl2: TsPageControl;
     TabSheet3: TsTabSheet;
     Panel3: TsPanel;
-    Panel4: TsPanel;
+    pnlContact: TsPanel;
     PageControl3: TsPageControl;
     TabSheet4: TsTabSheet;
     TabSheet5: TsTabSheet;
@@ -571,6 +571,7 @@ type
     Clipboardtohiddenmemo1: TMenuItem;
     btnMainGuestSelectProfile: TsButton;
     btnMainGuestEditProfile: TsButton;
+    sSplitter3: TsSplitter;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -1221,7 +1222,7 @@ begin
   FOutOfOrderBlocking := Value;
 
   sPanel1.Visible := FOutOfOrderBlocking;
-  Panel4.Visible := NOT FOutOfOrderBlocking;
+  pnlContact.Visible := NOT FOutOfOrderBlocking;
   Panel9.Visible := NOT FOutOfOrderBlocking;
   cxSplitter1.Visible := NOT FOutOfOrderBlocking;
   gbxGuest.Visible := NOT FOutOfOrderBlocking;

@@ -163,7 +163,7 @@ object frmReservationProfile: TfrmReservationProfile
       end
       object Label3: TsLabel
         Left = 20
-        Top = 43
+        Top = 42
         Width = 44
         Height = 11
         Alignment = taRightJustify
@@ -243,6 +243,7 @@ object frmReservationProfile: TfrmReservationProfile
         SkinData.SkinSection = 'EDIT'
         GlyphMode.Blend = 0
         GlyphMode.Grayed = False
+        ExplicitLeft = 74
       end
     end
     object gbxResProperties: TsGroupBox
@@ -298,6 +299,8 @@ object frmReservationProfile: TfrmReservationProfile
         Items.Strings = (
           'Leisure'
           'Business')
+        ExplicitLeft = 109
+        ExplicitTop = 13
       end
       object pnlMarketSegment: TsPanel
         Left = 7
@@ -401,8 +404,8 @@ object frmReservationProfile: TfrmReservationProfile
       SkinData.SkinSection = 'GROUPBOX'
       Checked = False
       object Label25: TsLabel
-        Left = 68
-        Top = 13
+        Left = 27
+        Top = 19
         Width = 70
         Height = 11
         Alignment = taRightJustify
@@ -415,8 +418,8 @@ object frmReservationProfile: TfrmReservationProfile
         Font.Style = []
       end
       object Label24: TsLabel
-        Left = 98
-        Top = 36
+        Left = 55
+        Top = 39
         Width = 42
         Height = 11
         Alignment = taRightJustify
@@ -429,10 +432,14 @@ object frmReservationProfile: TfrmReservationProfile
         Font.Style = []
       end
       object cbxBreakfast: TsComboBox
-        Left = 144
-        Top = 33
-        Width = 154
+        AlignWithMargins = True
+        Left = 102
+        Top = 38
+        Width = 198
         Height = 19
+        Margins.Left = 100
+        Margins.Bottom = 0
+        Align = alTop
         Alignment = taLeftJustify
         SkinData.SkinSection = 'COMBOBOX'
         VerticalAlignment = taAlignTop
@@ -452,12 +459,19 @@ object frmReservationProfile: TfrmReservationProfile
           'Mixed'
           'Included'
           'Not Included')
+        ExplicitLeft = 69
+        ExplicitTop = 37
+        ExplicitWidth = 233
       end
       object cbxPaymentdetails: TsComboBox
-        Left = 144
-        Top = 10
-        Width = 154
+        AlignWithMargins = True
+        Left = 102
+        Top = 16
+        Width = 198
         Height = 19
+        Margins.Left = 100
+        Margins.Bottom = 0
+        Align = alTop
         Alignment = taLeftJustify
         SkinData.SkinSection = 'COMBOBOX'
         VerticalAlignment = taAlignTop
@@ -476,6 +490,7 @@ object frmReservationProfile: TfrmReservationProfile
           'Mixed'
           'Room Account'
           'Group Account')
+        ExplicitLeft = 104
       end
     end
   end
@@ -503,7 +518,7 @@ object frmReservationProfile: TfrmReservationProfile
         SkinData.SkinSection = 'PANEL'
         object cxSplitter1: TsSplitter
           AlignWithMargins = True
-          Left = 484
+          Left = 497
           Top = 4
           Width = 7
           Height = 198
@@ -514,10 +529,22 @@ object frmReservationProfile: TfrmReservationProfile
           ExplicitTop = 1
           ExplicitHeight = 190
         end
-        object Panel4: TsPanel
+        object sSplitter3: TsSplitter
+          AlignWithMargins = True
+          Left = 254
+          Top = 4
+          Width = 7
+          Height = 198
+          Color = clGradientActiveCaption
+          ParentColor = False
+          SkinData.CustomColor = True
+          ExplicitLeft = 274
+          ExplicitTop = 0
+        end
+        object pnlContact: TsPanel
           Left = 1
           Top = 1
-          Width = 275
+          Width = 250
           Height = 204
           Align = alLeft
           TabOrder = 0
@@ -525,9 +552,9 @@ object frmReservationProfile: TfrmReservationProfile
           object PageControl3: TsPageControl
             Left = 1
             Top = 1
-            Width = 273
+            Width = 248
             Height = 202
-            ActivePage = tsContact
+            ActivePage = TabSheet4
             Align = alClient
             TabOrder = 0
             SkinData.SkinSection = 'PAGECONTROL'
@@ -536,7 +563,7 @@ object frmReservationProfile: TfrmReservationProfile
               SkinData.CustomColor = False
               SkinData.CustomFont = False
               object lblContactName: TsLabel
-                Left = 21
+                Left = 32
                 Top = 5
                 Width = 28
                 Height = 11
@@ -550,8 +577,8 @@ object frmReservationProfile: TfrmReservationProfile
                 Font.Style = []
               end
               object lblCOntactEmail: TsLabel
-                Left = 23
-                Top = 136
+                Left = 34
+                Top = 137
                 Width = 26
                 Height = 11
                 Alignment = taRightJustify
@@ -564,7 +591,7 @@ object frmReservationProfile: TfrmReservationProfile
                 Font.Style = []
               end
               object sLabel3: TsLabel
-                Left = -1
+                Left = 10
                 Top = 27
                 Width = 50
                 Height = 11
@@ -579,7 +606,7 @@ object frmReservationProfile: TfrmReservationProfile
                 Font.Style = []
               end
               object sLabel6: TsLabel
-                Left = 0
+                Left = 11
                 Top = 71
                 Width = 50
                 Height = 11
@@ -594,7 +621,7 @@ object frmReservationProfile: TfrmReservationProfile
                 Font.Style = []
               end
               object sLabel7: TsLabel
-                Left = 0
+                Left = 10
                 Top = 92
                 Width = 50
                 Height = 11
@@ -610,11 +637,11 @@ object frmReservationProfile: TfrmReservationProfile
               end
               object edtContactAddress1: TsEdit
                 AlignWithMargins = True
-                Left = 58
+                Left = 65
                 Top = 23
-                Width = 204
+                Width = 172
                 Height = 20
-                Margins.Left = 58
+                Margins.Left = 65
                 Margins.Top = 2
                 Margins.Bottom = 0
                 Align = alTop
@@ -636,11 +663,11 @@ object frmReservationProfile: TfrmReservationProfile
               end
               object edtContactAddress2: TsEdit
                 AlignWithMargins = True
-                Left = 58
+                Left = 65
                 Top = 45
-                Width = 204
+                Width = 172
                 Height = 20
-                Margins.Left = 58
+                Margins.Left = 65
                 Margins.Top = 2
                 Margins.Bottom = 0
                 Align = alTop
@@ -662,11 +689,11 @@ object frmReservationProfile: TfrmReservationProfile
               end
               object edtContactAddress3: TsEdit
                 AlignWithMargins = True
-                Left = 58
+                Left = 65
                 Top = 67
-                Width = 204
+                Width = 172
                 Height = 20
-                Margins.Left = 58
+                Margins.Left = 65
                 Margins.Top = 2
                 Margins.Bottom = 0
                 Align = alTop
@@ -688,11 +715,11 @@ object frmReservationProfile: TfrmReservationProfile
               end
               object edtContactAddress4: TsEdit
                 AlignWithMargins = True
-                Left = 58
+                Left = 65
                 Top = 89
-                Width = 204
+                Width = 172
                 Height = 20
-                Margins.Left = 58
+                Margins.Left = 65
                 Margins.Top = 2
                 Margins.Bottom = 0
                 Align = alTop
@@ -714,11 +741,11 @@ object frmReservationProfile: TfrmReservationProfile
               end
               object edtContactEmail: TsEdit
                 AlignWithMargins = True
-                Left = 58
+                Left = 65
                 Top = 134
-                Width = 204
+                Width = 172
                 Height = 19
-                Margins.Left = 58
+                Margins.Left = 65
                 Margins.Top = 2
                 Margins.Bottom = 0
                 Align = alTop
@@ -740,11 +767,11 @@ object frmReservationProfile: TfrmReservationProfile
               end
               object edtContactName: TsEdit
                 AlignWithMargins = True
-                Left = 58
+                Left = 65
                 Top = 2
-                Width = 204
+                Width = 172
                 Height = 19
-                Margins.Left = 58
+                Margins.Left = 65
                 Margins.Top = 2
                 Margins.Bottom = 0
                 Align = alTop
@@ -768,7 +795,7 @@ object frmReservationProfile: TfrmReservationProfile
                 AlignWithMargins = True
                 Left = 0
                 Top = 153
-                Width = 263
+                Width = 238
                 Height = 23
                 Margins.Left = 0
                 Margins.Top = 0
@@ -779,7 +806,7 @@ object frmReservationProfile: TfrmReservationProfile
                 TabOrder = 6
                 OnResize = pnlTelephoneResize
                 object Label21: TsLabel
-                  Left = -10
+                  Left = 3
                   Top = 6
                   Width = 57
                   Height = 11
@@ -794,9 +821,9 @@ object frmReservationProfile: TfrmReservationProfile
                   Font.Style = []
                 end
                 object edtContactPhone: TsEdit
-                  Left = 58
+                  Left = 65
                   Top = 3
-                  Width = 62
+                  Width = 97
                   Height = 19
                   Color = clWhite
                   Font.Charset = DEFAULT_CHARSET
@@ -815,9 +842,9 @@ object frmReservationProfile: TfrmReservationProfile
                   BoundLabel.Font.Style = []
                 end
                 object edtContactPhone2: TsEdit
-                  Left = 131
+                  Left = 168
                   Top = 3
-                  Width = 62
+                  Width = 94
                   Height = 19
                   Color = clWhite
                   Font.Charset = DEFAULT_CHARSET
@@ -840,7 +867,7 @@ object frmReservationProfile: TfrmReservationProfile
                 AlignWithMargins = True
                 Left = 0
                 Top = 109
-                Width = 265
+                Width = 240
                 Height = 23
                 Margins.Left = 0
                 Margins.Top = 0
@@ -851,8 +878,8 @@ object frmReservationProfile: TfrmReservationProfile
                 TabOrder = 7
                 OnResize = pnlTelephoneResize
                 object edtContact: TsLabel
-                  Left = -2
-                  Top = 7
+                  Left = 9
+                  Top = 6
                   Width = 51
                   Height = 11
                   Alignment = taRightJustify
@@ -866,7 +893,7 @@ object frmReservationProfile: TfrmReservationProfile
                   Font.Style = []
                 end
                 object lblContactCountry: TsLabel
-                  Left = 126
+                  Left = 133
                   Top = 6
                   Width = 3
                   Height = 11
@@ -880,11 +907,11 @@ object frmReservationProfile: TfrmReservationProfile
                 end
                 object edtContactCountry: TsEdit
                   AlignWithMargins = True
-                  Left = 58
+                  Left = 65
                   Top = 3
                   Width = 35
                   Height = 20
-                  Margins.Left = 58
+                  Margins.Left = 65
                   Margins.Top = 2
                   Margins.Bottom = 0
                   Color = clWhite
@@ -905,7 +932,7 @@ object frmReservationProfile: TfrmReservationProfile
                   BoundLabel.Font.Style = []
                 end
                 object btnGetContactCountry: TsButton
-                  Left = 99
+                  Left = 106
                   Top = 3
                   Width = 19
                   Height = 19
@@ -921,7 +948,7 @@ object frmReservationProfile: TfrmReservationProfile
               SkinData.CustomColor = False
               SkinData.CustomFont = False
               object Label19: TsLabel
-                Left = 1
+                Left = 12
                 Top = 32
                 Width = 51
                 Height = 11
@@ -936,7 +963,7 @@ object frmReservationProfile: TfrmReservationProfile
                 Font.Style = []
               end
               object Label6: TsLabel
-                Left = 1
+                Left = 12
                 Top = 53
                 Width = 51
                 Height = 11
@@ -951,7 +978,7 @@ object frmReservationProfile: TfrmReservationProfile
                 Font.Style = []
               end
               object Label7: TsLabel
-                Left = 1
+                Left = 12
                 Top = 76
                 Width = 51
                 Height = 11
@@ -966,7 +993,7 @@ object frmReservationProfile: TfrmReservationProfile
                 Font.Style = []
               end
               object Label4: TsLabel
-                Left = 1
+                Left = 12
                 Top = 145
                 Width = 51
                 Height = 11
@@ -982,11 +1009,11 @@ object frmReservationProfile: TfrmReservationProfile
               end
               object edtKennitala: TsEdit
                 AlignWithMargins = True
-                Left = 58
+                Left = 65
                 Top = 27
-                Width = 204
+                Width = 172
                 Height = 20
-                Margins.Left = 58
+                Margins.Left = 65
                 Margins.Top = 2
                 Margins.Bottom = 0
                 Align = alTop
@@ -1008,11 +1035,11 @@ object frmReservationProfile: TfrmReservationProfile
               end
               object edtName: TsEdit
                 AlignWithMargins = True
-                Left = 58
+                Left = 65
                 Top = 50
-                Width = 204
+                Width = 172
                 Height = 20
-                Margins.Left = 58
+                Margins.Left = 65
                 Margins.Bottom = 0
                 Align = alTop
                 Color = clWhite
@@ -1033,11 +1060,11 @@ object frmReservationProfile: TfrmReservationProfile
               end
               object edtAddress1: TsEdit
                 AlignWithMargins = True
-                Left = 58
+                Left = 65
                 Top = 73
-                Width = 204
+                Width = 172
                 Height = 20
-                Margins.Left = 58
+                Margins.Left = 65
                 Margins.Bottom = 0
                 Align = alTop
                 Color = clWhite
@@ -1058,11 +1085,11 @@ object frmReservationProfile: TfrmReservationProfile
               end
               object edtAddress2: TsEdit
                 AlignWithMargins = True
-                Left = 58
+                Left = 65
                 Top = 119
-                Width = 204
+                Width = 172
                 Height = 20
-                Margins.Left = 58
+                Margins.Left = 65
                 Margins.Bottom = 0
                 Align = alTop
                 Color = clWhite
@@ -1083,11 +1110,11 @@ object frmReservationProfile: TfrmReservationProfile
               end
               object edtAddress3: TsEdit
                 AlignWithMargins = True
-                Left = 58
+                Left = 65
                 Top = 96
-                Width = 204
+                Width = 172
                 Height = 20
-                Margins.Left = 58
+                Margins.Left = 65
                 Margins.Bottom = 0
                 Align = alTop
                 Color = clWhite
@@ -1108,11 +1135,11 @@ object frmReservationProfile: TfrmReservationProfile
               end
               object edtInvRefrence: TsEdit
                 AlignWithMargins = True
-                Left = 58
+                Left = 65
                 Top = 142
-                Width = 204
+                Width = 172
                 Height = 20
-                Margins.Left = 58
+                Margins.Left = 65
                 Margins.Bottom = 0
                 Align = alTop
                 Color = clWhite
@@ -1135,7 +1162,7 @@ object frmReservationProfile: TfrmReservationProfile
                 AlignWithMargins = True
                 Left = 0
                 Top = 0
-                Width = 265
+                Width = 240
                 Height = 25
                 Margins.Left = 0
                 Margins.Top = 0
@@ -1145,10 +1172,10 @@ object frmReservationProfile: TfrmReservationProfile
                 BevelOuter = bvNone
                 TabOrder = 6
                 DesignSize = (
-                  265
+                  240
                   25)
                 object Label9: TsLabel
-                  Left = 2
+                  Left = 13
                   Top = 6
                   Width = 50
                   Height = 11
@@ -1164,11 +1191,11 @@ object frmReservationProfile: TfrmReservationProfile
                 end
                 object edtCustomer: TsEdit
                   AlignWithMargins = True
-                  Left = 58
+                  Left = 65
                   Top = 3
-                  Width = 177
+                  Width = 145
                   Height = 20
-                  Margins.Left = 58
+                  Margins.Left = 65
                   Margins.Right = 30
                   Margins.Bottom = 0
                   Align = alTop
@@ -1190,7 +1217,7 @@ object frmReservationProfile: TfrmReservationProfile
                   BoundLabel.Font.Style = []
                 end
                 object edGetCustomer: TsButton
-                  Left = 239
+                  Left = 214
                   Top = 4
                   Width = 19
                   Height = 18
@@ -1207,13 +1234,9 @@ object frmReservationProfile: TfrmReservationProfile
               ImageIndex = 1
               SkinData.CustomColor = False
               SkinData.CustomFont = False
-              ExplicitLeft = 0
-              ExplicitTop = 0
-              ExplicitWidth = 0
-              ExplicitHeight = 0
               object Label11: TsLabel
-                Left = 29
-                Top = 32
+                Left = 45
+                Top = 29
                 Width = 18
                 Height = 11
                 Alignment = taRightJustify
@@ -1226,8 +1249,8 @@ object frmReservationProfile: TfrmReservationProfile
                 Font.Style = []
               end
               object Label14: TsLabel
-                Left = 21
-                Top = 55
+                Left = 37
+                Top = 52
                 Width = 26
                 Height = 11
                 Alignment = taRightJustify
@@ -1240,8 +1263,8 @@ object frmReservationProfile: TfrmReservationProfile
                 Font.Style = []
               end
               object Label15: TsLabel
-                Left = 9
-                Top = 77
+                Left = 25
+                Top = 71
                 Width = 38
                 Height = 11
                 Alignment = taRightJustify
@@ -1255,11 +1278,11 @@ object frmReservationProfile: TfrmReservationProfile
               end
               object edtFax: TsEdit
                 AlignWithMargins = True
-                Left = 58
+                Left = 65
                 Top = 26
-                Width = 204
+                Width = 172
                 Height = 20
-                Margins.Left = 58
+                Margins.Left = 65
                 Margins.Bottom = 0
                 Align = alTop
                 Color = clWhite
@@ -1280,11 +1303,11 @@ object frmReservationProfile: TfrmReservationProfile
               end
               object edtCustomerEmail: TsEdit
                 AlignWithMargins = True
-                Left = 58
+                Left = 65
                 Top = 49
-                Width = 204
+                Width = 172
                 Height = 19
-                Margins.Left = 58
+                Margins.Left = 65
                 Margins.Bottom = 0
                 Align = alTop
                 Color = clWhite
@@ -1305,11 +1328,11 @@ object frmReservationProfile: TfrmReservationProfile
               end
               object edtCustomerWebSite: TsEdit
                 AlignWithMargins = True
-                Left = 58
+                Left = 65
                 Top = 71
-                Width = 204
+                Width = 172
                 Height = 19
-                Margins.Left = 58
+                Margins.Left = 65
                 Margins.Bottom = 0
                 Align = alTop
                 Color = clWhite
@@ -1332,7 +1355,7 @@ object frmReservationProfile: TfrmReservationProfile
                 AlignWithMargins = True
                 Left = 0
                 Top = 0
-                Width = 265
+                Width = 240
                 Height = 23
                 Margins.Left = 0
                 Margins.Top = 0
@@ -1343,7 +1366,7 @@ object frmReservationProfile: TfrmReservationProfile
                 TabOrder = 3
                 OnResize = pnlTelephoneResize
                 object sLabel1: TsLabel
-                  Left = -10
+                  Left = 6
                   Top = 6
                   Width = 57
                   Height = 11
@@ -1358,7 +1381,7 @@ object frmReservationProfile: TfrmReservationProfile
                   Font.Style = []
                 end
                 object edtTel1: TsEdit
-                  Left = 58
+                  Left = 65
                   Top = 3
                   Width = 62
                   Height = 19
@@ -1379,7 +1402,7 @@ object frmReservationProfile: TfrmReservationProfile
                   BoundLabel.Font.Style = []
                 end
                 object edtTel2: TsEdit
-                  Left = 126
+                  Left = 133
                   Top = 3
                   Width = 62
                   Height = 19
@@ -1404,9 +1427,9 @@ object frmReservationProfile: TfrmReservationProfile
           end
         end
         object gbxGuest: TsGroupBox
-          Left = 276
+          Left = 264
           Top = 1
-          Width = 205
+          Width = 230
           Height = 204
           Align = alLeft
           Caption = 'Main guest for room :'
@@ -1414,11 +1437,11 @@ object frmReservationProfile: TfrmReservationProfile
           SkinData.SkinSection = 'GROUPBOX'
           Checked = False
           DesignSize = (
-            205
+            230
             204)
           object lblGuestName: TsLabel
-            Left = 25
-            Top = 18
+            Left = 35
+            Top = 21
             Width = 28
             Height = 11
             Alignment = taRightJustify
@@ -1431,7 +1454,7 @@ object frmReservationProfile: TfrmReservationProfile
             Font.Style = []
           end
           object sLabel9: TsLabel
-            Left = 3
+            Left = 13
             Top = 40
             Width = 50
             Height = 11
@@ -1446,7 +1469,7 @@ object frmReservationProfile: TfrmReservationProfile
             Font.Style = []
           end
           object sLabel10: TsLabel
-            Left = 4
+            Left = 14
             Top = 83
             Width = 50
             Height = 11
@@ -1461,7 +1484,7 @@ object frmReservationProfile: TfrmReservationProfile
             Font.Style = []
           end
           object sLabel11: TsLabel
-            Left = 4
+            Left = 14
             Top = 105
             Width = 50
             Height = 11
@@ -1477,11 +1500,11 @@ object frmReservationProfile: TfrmReservationProfile
           end
           object edtGuestName: TsEdit
             AlignWithMargins = True
-            Left = 60
+            Left = 67
             Top = 15
-            Width = 93
+            Width = 111
             Height = 20
-            Margins.Left = 58
+            Margins.Left = 65
             Margins.Top = 2
             Margins.Right = 50
             Margins.Bottom = 0
@@ -1505,11 +1528,11 @@ object frmReservationProfile: TfrmReservationProfile
           end
           object edtGuestAddress2: TsEdit
             AlignWithMargins = True
-            Left = 60
+            Left = 67
             Top = 58
-            Width = 140
+            Width = 158
             Height = 20
-            Margins.Left = 58
+            Margins.Left = 65
             Margins.Top = 2
             Margins.Bottom = 0
             Align = alTop
@@ -1532,11 +1555,11 @@ object frmReservationProfile: TfrmReservationProfile
           end
           object edtGuestAddress3: TsEdit
             AlignWithMargins = True
-            Left = 60
+            Left = 67
             Top = 80
-            Width = 140
+            Width = 158
             Height = 20
-            Margins.Left = 58
+            Margins.Left = 65
             Margins.Top = 2
             Margins.Bottom = 0
             Align = alTop
@@ -1559,11 +1582,11 @@ object frmReservationProfile: TfrmReservationProfile
           end
           object edtGuestAddress4: TsEdit
             AlignWithMargins = True
-            Left = 60
+            Left = 67
             Top = 102
-            Width = 140
+            Width = 158
             Height = 20
-            Margins.Left = 58
+            Margins.Left = 65
             Margins.Top = 2
             Margins.Bottom = 0
             Align = alTop
@@ -1586,11 +1609,11 @@ object frmReservationProfile: TfrmReservationProfile
           end
           object edtGuestAddress1: TsEdit
             AlignWithMargins = True
-            Left = 60
+            Left = 67
             Top = 37
-            Width = 140
+            Width = 158
             Height = 19
-            Margins.Left = 58
+            Margins.Left = 65
             Margins.Top = 2
             Margins.Bottom = 0
             Align = alTop
@@ -1615,7 +1638,7 @@ object frmReservationProfile: TfrmReservationProfile
             AlignWithMargins = True
             Left = 2
             Top = 122
-            Width = 201
+            Width = 226
             Height = 23
             Margins.Left = 0
             Margins.Top = 0
@@ -1626,7 +1649,7 @@ object frmReservationProfile: TfrmReservationProfile
             TabOrder = 7
             OnResize = pnlTelephoneResize
             object sLabel8: TsLabel
-              Left = 1
+              Left = 10
               Top = 6
               Width = 51
               Height = 11
@@ -1641,7 +1664,7 @@ object frmReservationProfile: TfrmReservationProfile
               Font.Style = []
             end
             object lblGuestCountry: TsLabel
-              Left = 100
+              Left = 109
               Top = 7
               Width = 3
               Height = 11
@@ -1655,7 +1678,7 @@ object frmReservationProfile: TfrmReservationProfile
             end
             object edtGuestCountry: TsEdit
               AlignWithMargins = True
-              Left = 58
+              Left = 65
               Top = 3
               Width = 35
               Height = 20
@@ -1683,7 +1706,7 @@ object frmReservationProfile: TfrmReservationProfile
             end
           end
           object btnMainGuestSelectProfile: TsButton
-            Left = 155
+            Left = 180
             Top = 13
             Width = 23
             Height = 23
@@ -1697,7 +1720,7 @@ object frmReservationProfile: TfrmReservationProfile
             SkinData.SkinSection = 'BUTTON'
           end
           object btnMainGuestEditProfile: TsButton
-            Left = 179
+            Left = 204
             Top = 13
             Width = 23
             Height = 23
@@ -1712,9 +1735,9 @@ object frmReservationProfile: TfrmReservationProfile
           end
         end
         object memPanel: TsPanel
-          Left = 494
+          Left = 507
           Top = 1
-          Width = 633
+          Width = 620
           Height = 204
           Margins.Left = 0
           Margins.Top = 0
@@ -1727,7 +1750,7 @@ object frmReservationProfile: TfrmReservationProfile
           SkinData.SkinSection = 'PANEL'
           object sSplitter2: TsSplitter
             AlignWithMargins = True
-            Left = 206
+            Left = 219
             Top = 9
             Width = 7
             Height = 186
@@ -1741,7 +1764,7 @@ object frmReservationProfile: TfrmReservationProfile
           end
           object sSplitter1: TsSplitter
             AlignWithMargins = True
-            Left = 402
+            Left = 415
             Top = 9
             Width = 7
             Height = 186
@@ -1756,7 +1779,7 @@ object frmReservationProfile: TfrmReservationProfile
           object GroupBox1: TsGroupBox
             Left = 6
             Top = 6
-            Width = 197
+            Width = 210
             Height = 192
             Align = alLeft
             Caption = 'General Information'
@@ -1766,7 +1789,7 @@ object frmReservationProfile: TfrmReservationProfile
             object memInformation: TsMemo
               Left = 2
               Top = 13
-              Width = 193
+              Width = 206
               Height = 177
               Align = alClient
               BevelInner = bvNone
@@ -1785,7 +1808,7 @@ object frmReservationProfile: TfrmReservationProfile
             end
           end
           object GroupBox2: TsGroupBox
-            Left = 216
+            Left = 229
             Top = 6
             Width = 183
             Height = 192
@@ -1816,9 +1839,9 @@ object frmReservationProfile: TfrmReservationProfile
             end
           end
           object pnlRoomInformation: TsPanel
-            Left = 412
+            Left = 425
             Top = 6
-            Width = 215
+            Width = 189
             Height = 192
             Align = alClient
             BevelOuter = bvNone
@@ -1826,7 +1849,7 @@ object frmReservationProfile: TfrmReservationProfile
             object gbxRoomInformation: TsGroupBox
               Left = 0
               Top = 0
-              Width = 215
+              Width = 189
               Height = 72
               Align = alTop
               Caption = 'Notes for room : '
@@ -1836,7 +1859,7 @@ object frmReservationProfile: TfrmReservationProfile
               object memRoomNotes: TsMemo
                 Left = 2
                 Top = 13
-                Width = 211
+                Width = 185
                 Height = 52
                 Align = alTop
                 BevelInner = bvNone
@@ -1858,7 +1881,7 @@ object frmReservationProfile: TfrmReservationProfile
             object gbChannelInformation: TsGroupBox
               Left = 0
               Top = 72
-              Width = 215
+              Width = 189
               Height = 120
               Align = alClient
               Caption = 'Requests from booking channel :'
@@ -1868,7 +1891,7 @@ object frmReservationProfile: TfrmReservationProfile
               object memRequestFromChannel: TsMemo
                 Left = 2
                 Top = 13
-                Width = 211
+                Width = 185
                 Height = 105
                 Align = alClient
                 BevelInner = bvNone
@@ -2866,8 +2889,8 @@ object frmReservationProfile: TfrmReservationProfile
         object chkShowAllGuests: TsCheckBox
           Left = 333
           Top = 11
-          Width = 102
-          Height = 19
+          Width = 94
+          Height = 20
           Caption = 'Show all guests'
           Anchors = [akLeft, akTop, akRight]
           TabOrder = 4
@@ -3291,18 +3314,20 @@ object frmReservationProfile: TfrmReservationProfile
           object lblSpecialRequests: TsLabel
             Left = 2
             Top = 15
-            Width = 81
+            Width = 250
             Height = 13
             Align = alTop
             Caption = 'Special Requests'
+            ExplicitWidth = 81
           end
           object lblNotes: TsLabel
             Left = 2
             Top = 101
-            Width = 28
+            Width = 250
             Height = 13
             Align = alTop
             Caption = 'Notes'
+            ExplicitWidth = 28
           end
           object edtSpecialRequests: TMemo
             AlignWithMargins = True
@@ -3410,10 +3435,6 @@ object frmReservationProfile: TfrmReservationProfile
       Caption = 'Alerts'
       SkinData.CustomColor = False
       SkinData.CustomFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object pnlAlertHolder: TsPanel
         Left = 0
         Top = 0
@@ -4445,6 +4466,26 @@ object frmReservationProfile: TfrmReservationProfile
           'Position'
           'Top'
           'Width')
+      end
+      item
+        Component = gbxGuest
+        Properties.Strings = (
+          'Width')
+      end
+      item
+        Component = GroupBox1
+        Properties.Strings = (
+          'Width')
+      end
+      item
+        Component = GroupBox2
+        Properties.Strings = (
+          'Width')
+      end
+      item
+        Component = pnlContact
+        Properties.Strings = (
+          'Width')
       end>
     StorageName = 'Software\Roomer\FormStatus\ReservationProfile2'
     StorageType = stRegistry
@@ -4510,8 +4551,8 @@ object frmReservationProfile: TfrmReservationProfile
     end
   end
   object ppmCheckin: TPopupMenu
-    Left = 24
-    Top = 32
+    Left = 720
+    Top = 16
     object mnuCheckinReservation: TMenuItem
       Action = acCheckinReservation
     end
@@ -4587,8 +4628,8 @@ object frmReservationProfile: TfrmReservationProfile
     end
   end
   object ppmHiddenMemo: TPopupMenu
-    Left = 584
-    Top = 32
+    Left = 824
+    Top = 8
     object ShowHiddenMemo1: TMenuItem
       Action = acShowHiddenMemo
       Default = True

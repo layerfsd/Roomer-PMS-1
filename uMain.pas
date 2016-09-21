@@ -5334,8 +5334,6 @@ begin
       sErr := sErr + { 1015 } GetTranslatedText('sh1015') + ' '
     else if _ResStatus = rsOptionalBooking then
       sErr := sErr + { 1016 } GetTranslatedText('sh1016') + ' '
-    else if _ResStatus = rsReserved then
-      sErr := sErr + { 1017 } GetTranslatedText('sh1017') + ' '
     else if _ResStatus = rsAllotment then
       sErr := sErr + { 1018 } GetTranslatedText('sh1018') + ' '
     else if _ResStatus = rsNoShow then
