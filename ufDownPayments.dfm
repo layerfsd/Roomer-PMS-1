@@ -532,8 +532,8 @@ object frmRptDownPayments: TfrmRptDownPayments
         object sCheckBox1: TsCheckBox
           Left = 700
           Top = 4
-          Width = 115
-          Height = 19
+          Width = 107
+          Height = 20
           Caption = 'Group on paytype'
           TabOrder = 6
           SkinData.SkinSection = 'CHECKBOX'
@@ -926,7 +926,6 @@ object frmRptDownPayments: TfrmRptDownPayments
     EmailSettings.ReportFormat = 'PDF'
     LanguageID = 'Default'
     ModalCancelDialog = False
-    OnInitializeParameters = ppReport2InitializeParameters
     OutlineSettings.CreateNode = True
     OutlineSettings.CreatePageNodes = True
     OutlineSettings.Enabled = True
@@ -1625,7 +1624,6 @@ object frmRptDownPayments: TfrmRptDownPayments
     EmailSettings.ReportFormat = 'PDF'
     LanguageID = 'Default'
     ModalCancelDialog = False
-    OnInitializeParameters = ppReport2InitializeParameters
     OutlineSettings.CreateNode = True
     OutlineSettings.CreatePageNodes = True
     OutlineSettings.Enabled = True
