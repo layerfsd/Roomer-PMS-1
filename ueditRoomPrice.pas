@@ -101,8 +101,6 @@ type
     btnCancel: TsButton;
     btnOK: TsButton;
     gbxForAllDates: TsGroupBox;
-    clabSelectRateRule: TsLabel;
-    cxComboBox1: TsComboBox;
     clabRate: TsLabel;
     clabPriceCode: TsLabel;
     clabDiscount: TsLabel;
@@ -113,7 +111,6 @@ type
     edRate: TsCalcEdit;
     btnApplyRate: TsButton;
     btnApplyPriceCode: TsButton;
-    btnApplyRule: TsButton;
     sGroupBox1: TsGroupBox;
     clabRoom: TsLabel;
     clabRomType: TsLabel;
@@ -156,8 +153,9 @@ type
     procedure btnOKClick(Sender: TObject);
     procedure sButton1Click(Sender: TObject);
     procedure sButton2Click(Sender: TObject);
-    procedure edPcCodeDblClick(Sender: TObject);
+    procedure btnSelectPriceCodeClick(Sender: TObject);
     procedure mRoomRatesBeforePost(DataSet: TDataSet);
+    procedure btnApplyRuleClick(Sender: TObject);
   private
     { Private declarations }
     function getPriceFromPriceCode(priceCode : string; aDate : Tdate) : double;
@@ -515,12 +513,17 @@ begin
   end;
 end;
 
+procedure TfrmEditRoomPrice.btnApplyRuleClick(Sender: TObject);
+begin
+//
+end;
+
 procedure TfrmEditRoomPrice.btnOKClick(Sender: TObject);
 begin
   ApplyType := 1;
 end;
 
-procedure TfrmEditRoomPrice.edPcCodeDblClick(Sender: TObject);
+procedure TfrmEditRoomPrice.btnSelectPriceCodeClick(Sender: TObject);
 var
   theData : recPriceCodeHolder;
 begin
