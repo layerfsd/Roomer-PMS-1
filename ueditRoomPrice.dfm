@@ -44,24 +44,9 @@ object frmEditRoomPrice: TfrmEditRoomPrice
       DesignSize = (
         410
         126)
-      object clabSelectRateRule: TsLabel
-        Left = 4
-        Top = 18
-        Width = 99
-        Height = 13
-        Alignment = taRightJustify
-        AutoSize = False
-        Caption = 'Select rate rule : '
-        ParentFont = False
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clBlack
-        Font.Height = -11
-        Font.Name = 'Tahoma'
-        Font.Style = []
-      end
       object clabRate: TsLabel
         Left = 4
-        Top = 65
+        Top = 44
         Width = 99
         Height = 13
         Alignment = taRightJustify
@@ -76,7 +61,7 @@ object frmEditRoomPrice: TfrmEditRoomPrice
       end
       object clabPriceCode: TsLabel
         Left = 4
-        Top = 42
+        Top = 21
         Width = 99
         Height = 13
         Alignment = taRightJustify
@@ -91,7 +76,7 @@ object frmEditRoomPrice: TfrmEditRoomPrice
       end
       object clabDiscount: TsLabel
         Left = 4
-        Top = 86
+        Top = 65
         Width = 99
         Height = 13
         Alignment = taRightJustify
@@ -105,12 +90,12 @@ object frmEditRoomPrice: TfrmEditRoomPrice
         Font.Style = []
       end
       object sSpeedButton2: TsSpeedButton
-        Left = 254
-        Top = 40
+        Left = 256
+        Top = 19
         Width = 23
         Height = 20
         Caption = '...'
-        OnDblClick = edPcCodeDblClick
+        OnClick = btnSelectPriceCodeClick
         SkinData.SkinSection = 'SPEEDBUTTON'
       end
       object labRecs: TsLabel
@@ -120,38 +105,9 @@ object frmEditRoomPrice: TfrmEditRoomPrice
         Height = 13
         Caption = '-'
       end
-      object cxComboBox1: TsComboBox
-        Left = 109
-        Top = 15
-        Width = 171
-        Height = 21
-        Alignment = taLeftJustify
-        BoundLabel.Font.Charset = DEFAULT_CHARSET
-        BoundLabel.Font.Color = clWindowText
-        BoundLabel.Font.Height = -13
-        BoundLabel.Font.Name = 'Tahoma'
-        BoundLabel.Font.Style = []
-        SkinData.SkinSection = 'COMBOBOX'
-        VerticalAlignment = taAlignTop
-        Color = 3355443
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = 15724527
-        Font.Height = -11
-        Font.Name = 'Tahoma'
-        Font.Style = []
-        ItemIndex = -1
-        ParentFont = False
-        TabOrder = 0
-        Text = 'No Rule'
-        Items.Strings = (
-          'No Rule'
-          'rule 1'
-          'rule 2'
-          'rule 3')
-      end
       object edPcCode: TsEdit
         Left = 109
-        Top = 41
+        Top = 20
         Width = 141
         Height = 21
         Color = 3355443
@@ -161,14 +117,14 @@ object frmEditRoomPrice: TfrmEditRoomPrice
         Font.Name = 'Tahoma'
         Font.Style = []
         ParentFont = False
-        TabOrder = 1
+        TabOrder = 0
         TextHint = 'dbl click to select from list'
-        OnDblClick = edPcCodeDblClick
+        OnDblClick = btnSelectPriceCodeClick
         SkinData.SkinSection = 'EDIT'
       end
       object edRoomResDiscount: TsSpinEdit
         Left = 109
-        Top = 84
+        Top = 63
         Width = 109
         Height = 21
         Color = clWhite
@@ -178,7 +134,7 @@ object frmEditRoomPrice: TfrmEditRoomPrice
         Font.Name = 'Tahoma'
         Font.Style = []
         ParentFont = False
-        TabOrder = 2
+        TabOrder = 4
         SkinData.SkinSection = 'EDIT'
         BoundLabel.Font.Charset = DEFAULT_CHARSET
         BoundLabel.Font.Color = clWindowText
@@ -191,7 +147,7 @@ object frmEditRoomPrice: TfrmEditRoomPrice
       end
       object cbxIsRoomResDiscountPrec: TsComboBox
         Left = 224
-        Top = 84
+        Top = 63
         Width = 56
         Height = 21
         Alignment = taLeftJustify
@@ -210,25 +166,25 @@ object frmEditRoomPrice: TfrmEditRoomPrice
         Font.Style = []
         ItemIndex = -1
         ParentFont = False
-        TabOrder = 3
+        TabOrder = 5
         Text = 'cbxIsRoomResDiscountPrec'
         Items.Strings = (
           '%')
       end
       object ApplyDiscount: TsButton
         Left = 286
-        Top = 84
+        Top = 63
         Width = 99
         Height = 21
         Anchors = [akTop, akRight]
         Caption = 'Apply for all dates'
-        TabOrder = 4
+        TabOrder = 6
         OnClick = ApplyDiscountClick
         SkinData.SkinSection = 'BUTTON'
       end
       object edRate: TsCalcEdit
         Left = 109
-        Top = 64
+        Top = 43
         Width = 171
         Height = 21
         AutoSize = False
@@ -239,42 +195,31 @@ object frmEditRoomPrice: TfrmEditRoomPrice
         Font.Name = 'Tahoma'
         Font.Style = []
         ParentFont = False
-        TabOrder = 5
+        TabOrder = 2
         SkinData.SkinSection = 'EDIT'
         GlyphMode.Blend = 0
         GlyphMode.Grayed = False
       end
       object btnApplyRate: TsButton
         Left = 286
-        Top = 62
+        Top = 41
         Width = 99
         Height = 21
         Anchors = [akTop, akRight]
         Caption = 'Apply for all dates'
-        TabOrder = 6
+        TabOrder = 3
         OnClick = btnApplyRateClick
         SkinData.SkinSection = 'BUTTON'
       end
       object btnApplyPriceCode: TsButton
         Left = 286
-        Top = 39
+        Top = 18
         Width = 99
         Height = 21
         Anchors = [akTop, akRight]
         Caption = 'Apply for all dates'
-        TabOrder = 7
+        TabOrder = 1
         OnClick = btnApplyPriceCodeClick
-        SkinData.SkinSection = 'BUTTON'
-      end
-      object btnApplyRule: TsButton
-        Left = 287
-        Top = 15
-        Width = 99
-        Height = 21
-        Anchors = [akTop, akRight]
-        Caption = 'Apply for all dates'
-        Enabled = False
-        TabOrder = 8
         SkinData.SkinSection = 'BUTTON'
       end
     end

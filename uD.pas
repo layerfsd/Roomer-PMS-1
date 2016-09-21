@@ -1012,7 +1012,7 @@ begin
       begin
         lfile := SelectConfigurationEnvironment(files);
         if lFile.IsEmpty then
-          ExitProcess(0) // Application.Terminate
+          ExitProcess(0)
         else
           SetCloudConfigByFile(lFile);
       end;
