@@ -289,7 +289,7 @@ end;
 
 
 function checkNewVersion(Handle : THandle; RoomerDataSet : TRoomerDataSet) : boolean;
-{$IFNDEF DEBUG}
+//{$IFNDEF DEBUG}
 var sTempName : String;
     xml: IXMLDOMDocument2;
     node : IXMLDomNode;
@@ -383,7 +383,7 @@ begin
   except
 
   end;
-{$ENDIF}
+//{$ENDIF}
 end;
 
 function findVersionOfRoomerOnServer(xml: IXMLDOMDocument2; RoomerDataSet : TRoomerDataSet) : String;
