@@ -289,7 +289,7 @@ end;
 
 
 function checkNewVersion(Handle : THandle; RoomerDataSet : TRoomerDataSet) : boolean;
-{$IFNDEF DEBUG}
+//{$IFNDEF DEBUG}
 var sTempName : String;
     xml: IXMLDOMDocument2;
     node : IXMLDomNode;
@@ -300,6 +300,8 @@ var sTempName : String;
     NumDialogShown : Integer;
     s : String;
     Buttons: TMsgDlgButtons;
+    lButton: TButton;
+    lMSgResult: integer;
 {$ENDIF}
 begin
   result := false;
@@ -348,7 +350,23 @@ begin
         Buttons := [mbOK,mbCancel];
       end;
 
-      if MessageDlg(s, mtConfirmation, Buttons, 0) = mrOk then
+      lMsgResult := mrCancel;
+      with CreateMessageDialog(s, mtConfirmation, Buttons) do
+      try
+        lButton := TButton(FindComponent('OK'));
+        if lButton <> nil then
+          lButton.Caption := GetTranslatedText('shTx_AboutRoomer_NewVersionAvailableUpdateNow');
+
+        lButton := TButton(FindComponent('Cancel'));
+        if lButton <> nil then
+          lButton.Caption := GetTranslatedText('shTx_AboutRoomer_NewVersionAvailableUpdateLater');
+        Position := poScreenCenter;
+        lMsgResult := ShowModal;
+      finally
+        Free;
+      end;
+
+      if lMsgResult = mrOk then
       begin
         downloadCurrentVersion(Handle, RoomerDataSet);
         result := true;
@@ -365,7 +383,7 @@ begin
   except
 
   end;
-{$ENDIF}
+//{$ENDIF}
 end;
 
 function findVersionOfRoomerOnServer(xml: IXMLDOMDocument2; RoomerDataSet : TRoomerDataSet) : String;
