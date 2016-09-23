@@ -722,6 +722,7 @@ type
     FInitializingData: boolean;
     FCreatedBy: string;
 
+    FCreatedOn: string;
     procedure Display;
     procedure Display_rGrid(gotoRoomReservation: longInt);
     procedure AddNewRoom;
@@ -942,6 +943,7 @@ begin
       lBuilder.AppendFormat('    -    %s: %s', [GetTranslatedText('shTx_FrmReservationprofile_Status'), FReservationChangeStateHandler.CurrentState.AsReadableString ]);
 
       lBuilder.AppendFormat('    -    %s: %s', [GetTranslatedText('shTx_FrmReservationprofile_CreatedBy'), FCreatedBy]);
+      lBuilder.AppendFormat('    -    %s: %s on %s', [GetTranslatedText('shTx_FrmReservationprofile_CreatedBy'), FCreatedBy, FCreatedOn]);
 
 //      lCurrencyHandler := TCurrencyHandler.Create( g.qNativeCurrency);
 //      lBuilder.AppendFormat('    -    %s: %s', [GetTranslatedText('shTx_FrmReservationprofile_Balance'),
@@ -1118,6 +1120,7 @@ begin
         SetMarketItemIndex(fieldbyname('market').asString);
 
         FCreatedBy := fieldbyname('staff').asString;
+        FCreatedOn := DateTimeToStr(rSet.fieldbyname('dtCreated').AsDateTime) + ' UTC';
       end;
     end;
 
