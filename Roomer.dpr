@@ -13,7 +13,6 @@ uses
   FastMM4 in 'FastMM\FastMM4.pas',
   {$endif}
   Forms,
-  Dialogs,
   uMain in 'uMain.pas' {frmMain},
   uReservationObjects in 'uReservationObjects.pas',
   uAppGlobal in 'uAppGlobal.pas',
@@ -267,16 +266,23 @@ begin
   begin
     Application.CreateForm(TfrmDaysStatistics, frmDaysStatistics);
     Application.CreateForm(TfrmRateQuery, frmRateQuery);
+
     Application.CreateForm(TfrmHomedate, frmHomedate);
+
     Application.CreateForm(TfrmDayNotes, frmDayNotes);
+
     Application.CreateForm(TfrmGoToRoomandDate, frmGoToRoomandDate);
+
     Application.CreateForm(TFrmReservationHintHolder, FrmReservationHintHolder);
+
     Application.CreateForm(TembPeriodView, embPeriodView);
+
     Application.CreateForm(TembOccupancyView, embOccupancyView);
+
   end
   else
   begin
-    ShowMessage('Rommer is unable to access the internet and needs to close.');
+
   end;
 
   Application.Run;

@@ -93,7 +93,7 @@ begin
       rsGuests:           Result := lCurrentState in [rsUnknown, rsReservation, rsAllotment, rsOptionalBooking, rsTmp1, rsAwaitingPayment, rsWaitingList];
       rsDeparted:         Result := lCurrentState in [rsUnknown, rsGuests];
       rsOptionalBooking:  Result := lCurrentState in [rsUnknown, rsReservation, rsAllotment, rsTmp1, rsAwaitingPayment, rsWaitingList, rsBlocked];
-      rsAllotment:        Result := lCurrentState in [rsUnknown, rsReservation, rsAllotment, rsOptionalBooking, rsTmp1, rsAwaitingPayment, rsWaitingList, rsBlocked];
+      rsAllotment:        Result := lCurrentState in [rsUnknown, rsReservation, rsOptionalBooking, rsTmp1, rsAwaitingPayment, rsWaitingList, rsBlocked];
       rsNoShow:           Result := lCurrentState in [rsUnknown, rsReservation, rsAllotment, rsOptionalBooking, rsTmp1, rsAwaitingPayment, rsWaitinglist];
       rsBlocked:          Result := lCurrentState in [rsUnknown, rsReservation, rsAllotment, rsOptionalBooking, rsWaitingList];
       rsCancelled:        Result := lCurrentState in [rsUnknown, rsReservation, rsAllotment, rsOptionalBooking, rsTmp1, rsWaitinglist, rsBlocked];
