@@ -3662,7 +3662,6 @@ begin
     mROoms.BeforePost := nil;
     Display;
     getGuestData(-1);
-    mRooms.First;
   finally
     FInitializingData := False;
     mRooms.AfterScroll := lSavedAfterScroll;
