@@ -1212,7 +1212,7 @@ begin
   begin
     ShowAlertsForReservation(reservation, RoomReservation, atCHECK_OUT);
     if ctrlGetBoolean('CheckOutWithPaymentsDialog') then
-      CheckoutGuestNoDialog(reservation, RoomReservation, Room)
+      CheckoutGuestWithDialog(reservation, RoomReservation, Room)
     else
       d.CheckOutGuest(RoomReservation, Room);
     result := True;

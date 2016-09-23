@@ -557,7 +557,7 @@ type
     acCheckoutReservation: TAction;
     acCheckoutRoom: TAction;
     N1: TMenuItem;
-    mnuChangeStateTo: TMenuItem;
+    mnuChangeRoomStateTo: TMenuItem;
     ppmDocuments: TPopupMenu;
     acShowDocuments: TAction;
     acPasteIntoDocuments: TAction;
@@ -572,6 +572,7 @@ type
     btnMainGuestSelectProfile: TsButton;
     btnMainGuestEditProfile: TsButton;
     sSplitter3: TsSplitter;
+    mnuChangeResStateTo: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -718,10 +719,10 @@ type
     FgbxGuestOrigCaption: string;
     FOrigAcCheckinRoomCaption: string;
     FOrigAcCheckOutRoomCaption: string;
-    FOrigmnuChangeStateToCaption: string;
+    FOrigmnuChangeRoomStateToCaption: string;
+    FOrigmnuChangeResStateToCaption: string;
     FInitializingData: boolean;
     FCreatedBy: string;
-
     FCreatedOn: string;
     procedure Display;
     procedure Display_rGrid(gotoRoomReservation: longInt);
@@ -751,9 +752,10 @@ type
     procedure UpdateGuestDetails(gotoRoomReservation: integer);
     procedure UpdateStateActions;
     procedure ConstructOtherResStateMenu;
-    procedure mnuOtherResStateChangeClick(Sender: TObject);
+    procedure mnuOtherRoomStateChangeClick(Sender: TObject);
     procedure SelectMainGuestProfile;
     procedure ShowMainGuestProfile;
+    procedure mnuOtherResStateChangeClick(Sender: TObject);
 
     property OutOfOrderBlocking: Boolean read FOutOfOrderBlocking write SetOutOfOrderBlocking;
   public
@@ -942,7 +944,6 @@ begin
 
       lBuilder.AppendFormat('    -    %s: %s', [GetTranslatedText('shTx_FrmReservationprofile_Status'), FReservationChangeStateHandler.CurrentState.AsReadableString ]);
 
-      lBuilder.AppendFormat('    -    %s: %s', [GetTranslatedText('shTx_FrmReservationprofile_CreatedBy'), FCreatedBy]);
       lBuilder.AppendFormat('    -    %s: %s on %s', [GetTranslatedText('shTx_FrmReservationprofile_CreatedBy'), FCreatedBy, FCreatedOn]);
 
 //      lCurrencyHandler := TCurrencyHandler.Create( g.qNativeCurrency);
@@ -973,7 +974,8 @@ begin
   FgbxGuestOrigCaption := gbxGuest.Caption;
   FOrigAcCheckinRoomCaption := acCheckinRoom.Caption;
   FOrigAcCheckOutRoomCaption := acCheckoutRoom.Caption;
-  FOrigmnuChangeStateToCaption := mnuChangeStateTo.Caption;
+  FOrigmnuChangeRoomStateToCaption := mnuChangeRoomStateTo.Caption;
+  FOrigmnuChangeResStateToCaption := mnuChangeResStateTo.Caption;
 
   FReservationChangeStateHandler := TReservationStateChangeHandler.Create(zReservation);
 
@@ -3817,16 +3819,18 @@ begin
     btnCheckin.Enabled := true;
   end;
 
-  mnuChangeStateTo.Caption := FOrigmnuChangeStateToCaption + ' '+ mRoomsRoom.AsString;
+  mnuChangeRoomStateTo.Caption := FOrigmnuChangeRoomStateToCaption + ' '+ mRoomsRoom.AsString;
+  for i := 0 to mnuChangeRoomStateTo.Count-1 do
+    mnuChangeRoomStateTo.Items[i].Enabled := lRoomStateChanger.ChangeIsAllowed(TReservationState(mnuChangeRoomStateTo.Items[i].tag));
 
-  for i := 0 to mnuChangeStateTo.Count-1 do
-    mnuChangeStateTo.Items[i].Enabled := lRoomStateChanger.ChangeIsAllowed(TReservationState(mnuChangeStateTo.Items[i].tag));
+  for i := 0 to mnuChangeResStateTo.Count-1 do
+    mnuChangeResStateTo.Items[i].Enabled := FReservationChangeStateHandler.ChangeIsAllowed(TReservationState(mnuChangeResStateTo.Items[i].tag));
 
   acCheckinReservation.Enabled := mRooms.Active and not mRooms.Eof and FReservationChangeStateHandler.ChangeIsAllowed(rsGuests);
 
 end;
 
-procedure TfrmReservationProfile.mnuOtherResStateChangeClick(Sender: TObject);
+procedure TfrmReservationProfile.mnuOtherRoomStateChangeClick(Sender: TObject);
 var
   lMenu: TMenuItem;
   lRoomStateChanger: TRoomReservationStateChangeHandler;
@@ -3837,22 +3841,38 @@ begin
     Display_rGrid(mRoomsRoomReservation.ASInteger);
 end;
 
-procedure TfrmReservationProfile.ConstructOtherResStateMenu;
+procedure TfrmReservationProfile.mnuOtherResStateChangeClick(Sender: TObject);
 var
-  lState: TReservationState;
   lMenu: TMenuItem;
 begin
-  mnuChangeStateTo.Clear;
-  for lState := low(lState) to High(lState) do
-    if lState.IsUserSelectable then
-    begin
-      lMenu := TMenuItem.Create(self);
-      mnuChangeStateTo.Add(lMenu);
-      lMenu.Caption := lState.AsReadableString;
-      lMenu.Tag := ord(lState);
-      lMenu.OnClick := mnuOtherResStateChangeClick;
-    end;
+  lMenu := TMenuItem(Sender);
+  if FReservationChangeStateHandler.ChangeState(TReservationState(lMenu.Tag)) then
+    Display_rGrid(mRoomsRoomReservation.ASInteger);
+end;
 
+
+procedure TfrmReservationProfile.ConstructOtherResStateMenu;
+
+  procedure lclAddMenuitemsTo(aParentMenu: TMenuItem; aHandler: TNotifyEvent);
+  var
+    lState: TReservationState;
+    lMenu: TMenuItem;
+  begin
+    aParentMenu.Clear;
+    for lState := low(lState) to High(lState) do
+      if lState.IsUserSelectable then
+      begin
+        lMenu := TMenuItem.Create(self);
+        aParentMenu.Add(lMenu);
+        lMenu.Caption := lState.AsReadableString;
+        lMenu.Tag := ord(lState);
+        lMenu.OnClick := aHandler;
+      end;
+  end;
+
+begin
+  lclAddMenuitemsto(mnuChangeRoomStateTo, mnuOtherRoomStateChangeClick);
+  lclAddMenuitemsTo(mnuChangeResStateTo, mnuOtherResStateChangeClick);
 end;
 
 end.

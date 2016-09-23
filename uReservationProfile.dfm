@@ -243,7 +243,6 @@ object frmReservationProfile: TfrmReservationProfile
         SkinData.SkinSection = 'EDIT'
         GlyphMode.Blend = 0
         GlyphMode.Grayed = False
-        ExplicitLeft = 74
       end
     end
     object gbxResProperties: TsGroupBox
@@ -299,8 +298,6 @@ object frmReservationProfile: TfrmReservationProfile
         Items.Strings = (
           'Leisure'
           'Business')
-        ExplicitLeft = 109
-        ExplicitTop = 13
       end
       object pnlMarketSegment: TsPanel
         Left = 7
@@ -459,9 +456,6 @@ object frmReservationProfile: TfrmReservationProfile
           'Mixed'
           'Included'
           'Not Included')
-        ExplicitLeft = 69
-        ExplicitTop = 37
-        ExplicitWidth = 233
       end
       object cbxPaymentdetails: TsComboBox
         AlignWithMargins = True
@@ -490,7 +484,6 @@ object frmReservationProfile: TfrmReservationProfile
           'Mixed'
           'Room Account'
           'Group Account')
-        ExplicitLeft = 104
       end
     end
   end
@@ -2889,8 +2882,8 @@ object frmReservationProfile: TfrmReservationProfile
         object chkShowAllGuests: TsCheckBox
           Left = 333
           Top = 11
-          Width = 94
-          Height = 20
+          Width = 102
+          Height = 19
           Caption = 'Show all guests'
           Anchors = [akLeft, akTop, akRight]
           TabOrder = 4
@@ -4563,8 +4556,11 @@ object frmReservationProfile: TfrmReservationProfile
     object N1: TMenuItem
       Caption = '-'
     end
-    object mnuChangeStateTo: TMenuItem
+    object mnuChangeRoomStateTo: TMenuItem
       Caption = 'Change State for room'
+    end
+    object mnuChangeResStateTo: TMenuItem
+      Caption = 'Change Reservation State'
     end
   end
   object alReservation: TActionList
