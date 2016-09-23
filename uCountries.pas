@@ -375,7 +375,8 @@ begin
   Result := countryValidateCode(ed.Text, lab);
   if NOT Result then
   begin
-    ed.SetFocus;
+    if ed.Showing then
+      ed.SetFocus;
     lab.Color := clRed;
     lab.caption := GetTranslatedText('shNotF_star');
   end;
@@ -389,7 +390,8 @@ begin
   Result := countryValidateCode(ed.Text, lab);
   if NOT Result then
   begin
-    ed.SetFocus;
+    if ed.Showing then
+      ed.SetFocus;
     lab.Color := clRed;
     lab.caption := GetTranslatedText('shNotF_star');
   end;
