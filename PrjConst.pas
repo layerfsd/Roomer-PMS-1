@@ -214,6 +214,10 @@ begin
   constants.Add('sh1008', 'Can not access from period view');
   constants.Add('sh1010', 'Room status is Checked-in');
   constants.Add('shCheckInGroupOfRoom', 'Check in the group that this room [%s] belongs to?');
+  constants.Add('shCheckOutGroupOfRoom', 'Check Out the group that this room [%s] belongs to?');
+  constants.Add('shChangeStateOfFullReservation', 'Change state of all rooms of reservation [%d] into [%s]?');
+  constants.Add('shChangeStateReservationFailedSomeROoms',  'Changing the state of the reservation failed for some rooms.' + #10 +
+                                                            'Check individual states in the reservation profile.');
   constants.Add('sh1013', 'Room status is blocked and check in or check out is not possible');
   constants.Add('sh1014', 'Room status is checked-out');
   constants.Add('sh1015', 'Room status is reserved (not checked-in)');

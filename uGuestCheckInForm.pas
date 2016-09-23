@@ -559,7 +559,7 @@ begin
   shpFirstname.Visible := Trim(edFirstname.Text) = '';
   shpLastname.Visible := Trim(edLastName.Text) = '';
   shpCity.Visible := Trim(edCity.Text) = '';
-  shpCountry.Visible := ((Trim(edCountry.Text) = '') or (edCountry.Text = '00'));
+  shpCountry.Visible := (Trim(edCountry.Text) = '') or (SameText(lbCountryName.Caption, GetTranslatedText('shNotF_star')));
   shpMarket.Visible := g.qStayd3pActive and (cbxMarket.ItemIndex < 0);
 
   shpGuarantee.Visible := NOT(((cbxGuaranteeTypes.ItemIndex = 0) AND cbCreditCard.Checked) OR

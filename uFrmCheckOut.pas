@@ -81,7 +81,7 @@ type
 var
   FrmCheckOut: TFrmCheckOut;
 
-procedure CheckoutGuestNoDialog(Reservation, RoomReservation: Integer; RoomNumber: String);
+procedure CheckoutGuestWithDialog(Reservation, RoomReservation: Integer; RoomNumber: String);
 
 implementation
 
@@ -99,7 +99,7 @@ uses
   , Math
   ;
 
-procedure CheckoutGuestNoDialog(Reservation, RoomReservation: Integer; RoomNumber: String);
+procedure CheckoutGuestWithDialog(Reservation, RoomReservation: Integer; RoomNumber: String);
 var
   _FrmCheckOut: TFrmCheckOut;
 begin
