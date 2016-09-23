@@ -290,13 +290,11 @@ inherited frmRptTotallist: TfrmRptTotallist
         end
         item
           Format = '0'
-          Kind = skSum
           FieldName = 'RoomsAllotment'
           Column = lvTotallistRoomsAllotment
         end
         item
           Format = '0'
-          Kind = skSum
           FieldName = 'roomsArrival'
           Column = lvTotallistroomsArrival
         end
@@ -307,31 +305,26 @@ inherited frmRptTotallist: TfrmRptTotallist
         end
         item
           Format = '0'
-          Kind = skSum
           FieldName = 'roomsDeparture'
           Column = lvTotallistroomsDeparture
         end
         item
           Format = '0'
-          Kind = skSum
           FieldName = 'roomsInhouse'
           Column = lvTotallistroomsInhouse
         end
         item
           Format = '0'
-          Kind = skSum
           FieldName = 'roomsStay'
           Column = lvTotallistroomsStay
         end
         item
           Format = '0'
-          Kind = skSum
           FieldName = 'roomsWaitinglist'
           Column = lvTotallistroomsWaitinglist
         end
         item
           Format = '0'
-          Kind = skSum
           FieldName = 'roomsOutOfOrder'
           Column = lvTotallistroomsOutOfOrder
         end
