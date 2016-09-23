@@ -198,7 +198,8 @@ begin
     rsOptionalBooking:    result := True;
     rsAllotment:          result := True;
     rsNoShow:             result := True;
-    rsBlocked:            result := False; // only selectable when creating a special type reservation
+    rsBlocked:            result := True; // only selectable when creating a special type reservation -
+                                          // NO! This has never been accepted and will not be accepted on the short term. (BH)
     rsCancelled:          result := True;
     rsTmp1:               result := False;
     rsAwaitingPayment:    result := False;
