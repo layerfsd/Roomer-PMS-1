@@ -96,7 +96,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
         end
         object Label3: TsLabel
           Left = 15
-          Top = 165
+          Top = 166
           Width = 36
           Height = 13
           Margins.Left = 2
@@ -113,7 +113,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
         end
         object Label4: TsLabel
           Left = 238
-          Top = 165
+          Top = 166
           Width = 12
           Height = 13
           Margins.Left = 2
@@ -290,7 +290,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
         end
         object dtBulkFrom: TsDateEdit
           Left = 114
-          Top = 162
+          Top = 163
           Width = 115
           Height = 20
           Margins.Left = 2
@@ -316,9 +316,11 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           BoundLabel.Font.Height = -13
           BoundLabel.Font.Name = 'Tahoma'
           BoundLabel.Font.Style = []
+          DisabledKind = [dkGrayed]
           SkinData.SkinSection = 'EDIT'
           GlyphMode.Blend = 0
           GlyphMode.Grayed = False
+          DialogTitle = 'Period from'
         end
         object dtBulkTo: TsDateEdit
           Left = 303
@@ -351,12 +353,13 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           SkinData.SkinSection = 'EDIT'
           GlyphMode.Blend = 0
           GlyphMode.Grayed = False
+          DialogTitle = 'Period to'
         end
         object cbMon: TsCheckBox
           Left = 96
           Top = 383
           Width = 65
-          Height = 18
+          Height = 16
           Margins.Left = 2
           Margins.Top = 2
           Margins.Right = 2
@@ -373,7 +376,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           Left = 96
           Top = 400
           Width = 66
-          Height = 18
+          Height = 16
           Margins.Left = 2
           Margins.Top = 2
           Margins.Right = 2
@@ -390,7 +393,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           Left = 96
           Top = 417
           Width = 81
-          Height = 18
+          Height = 16
           Margins.Left = 2
           Margins.Top = 2
           Margins.Right = 2
@@ -407,7 +410,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           Left = 96
           Top = 435
           Width = 71
-          Height = 18
+          Height = 16
           Margins.Left = 2
           Margins.Top = 2
           Margins.Right = 2
@@ -424,7 +427,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           Left = 216
           Top = 383
           Width = 57
-          Height = 18
+          Height = 16
           Margins.Left = 2
           Margins.Top = 2
           Margins.Right = 2
@@ -441,7 +444,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           Left = 216
           Top = 400
           Width = 69
-          Height = 18
+          Height = 16
           Margins.Left = 2
           Margins.Top = 2
           Margins.Right = 2
@@ -458,7 +461,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           Left = 216
           Top = 417
           Width = 63
-          Height = 18
+          Height = 16
           Margins.Left = 2
           Margins.Top = 2
           Margins.Right = 2
@@ -626,7 +629,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           Left = 114
           Top = 62
           Width = 20
-          Height = 18
+          Height = 16
           Margins.Left = 2
           Margins.Top = 2
           Margins.Right = 2
@@ -641,7 +644,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           Left = 114
           Top = 112
           Width = 20
-          Height = 18
+          Height = 16
           Margins.Left = 2
           Margins.Top = 2
           Margins.Right = 2
@@ -766,7 +769,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
             Left = 13
             Top = 28
             Width = 20
-            Height = 18
+            Height = 16
             Margins.Left = 2
             Margins.Top = 2
             Margins.Right = 2
@@ -940,7 +943,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
             Left = 222
             Top = 26
             Width = 20
-            Height = 18
+            Height = 16
             Enabled = False
             TabOrder = 3
             SkinData.SkinSection = 'CHECKBOX'
@@ -951,7 +954,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
             Left = 336
             Top = 25
             Width = 20
-            Height = 18
+            Height = 16
             Enabled = False
             TabOrder = 4
             SkinData.SkinSection = 'CHECKBOX'
@@ -992,7 +995,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           Left = 114
           Top = 87
           Width = 20
-          Height = 18
+          Height = 16
           Hint = 'Enable Single Use Price settings'
           Margins.Left = 2
           Margins.Top = 2
@@ -1144,12 +1147,6 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           Margins.Right = 2
           Margins.Bottom = 2
           Caption = 'Availabilities'
-          ExplicitLeft = 0
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
-          SkinData.CustomColor = False
-          SkinData.CustomFont = False
           object Panel2: TsPanel
             Left = 0
             Top = 467
@@ -1379,7 +1376,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
               URLColor = clBlack
               ValidChars = '0123456789'
               VAlignment = vtaCenter
-              Version = '8.1.2.0'
+              Version = '7.9.1.1'
               WordWrap = False
               ColWidths = (
                 250
@@ -1411,7 +1408,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
                 Left = 5
                 Top = 2
                 Width = 121
-                Height = 19
+                Height = 17
                 Margins.Left = 2
                 Margins.Top = 2
                 Margins.Right = 2
@@ -1432,8 +1429,6 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           Margins.Right = 2
           Margins.Bottom = 2
           Caption = 'Rates'
-          SkinData.CustomColor = False
-          SkinData.CustomFont = False
           object rateGrid: TAdvStringGrid
             Left = 0
             Top = 48
@@ -1609,7 +1604,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
             URLColor = clBlack
             ValidChars = '0123456789+-!%*/'
             VAlignment = vtaCenter
-            Version = '8.1.2.0'
+            Version = '7.9.1.1'
             WordWrap = False
             ColWidths = (
               400
@@ -1856,7 +1851,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
               Left = 5
               Top = 4
               Width = 263
-              Height = 19
+              Height = 17
               Margins.Left = 2
               Margins.Top = 2
               Margins.Right = 2
@@ -1872,7 +1867,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
               Left = 319
               Top = 4
               Width = 145
-              Height = 19
+              Height = 17
               Margins.Left = 2
               Margins.Top = 2
               Margins.Right = 2
@@ -1907,7 +1902,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
               Left = 319
               Top = 24
               Width = 103
-              Height = 19
+              Height = 17
               Margins.Left = 2
               Margins.Top = 2
               Margins.Right = 2
@@ -2125,7 +2120,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
             HintPrevMonth = 'Previous Month'
             HintNextMonth = 'Next Month'
             HintNextYear = 'Next Year'
-            Version = '2.3.1.1'
+            Version = '2.3.0.0'
             TMSStyle = 0
           end
         end
