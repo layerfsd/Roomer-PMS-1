@@ -6232,7 +6232,75 @@ var
 begin
   s := '';
   s := s+' SELECT '+#10;
-  s := s+' rr.*, '+#10;
+  s := s+' rr.RoomReservation, '+#10;
+  s := s+' rr.Room, '+#10;
+  s := s+' rr.Reservation, '+#10;
+  s := s+' rr.Status, '+#10;
+  s := s+' rr.GroupAccount, '+#10;
+  s := s+' rr.invBreakfast, '+#10;
+  s := s+' rr.RoomPrice1, '+#10;
+  s := s+' rr.Price1From, '+#10;
+  s := s+' rr.Price1To, '+#10;
+  s := s+' rr.RoomPrice2, '+#10;
+  s := s+' rr.Price2From, '+#10;
+  s := s+' rr.Price2To, '+#10;
+  s := s+' rr.RoomPrice3, '+#10;
+  s := s+' rr.Price3From, '+#10;
+  s := s+' rr.Price3To, '+#10;
+  s := s+' rr.Currency, '+#10;
+  s := s+' rr.Discount, '+#10;
+  s := s+' rr.Percentage, '+#10;
+  s := s+' rr.PriceType, '+#10;
+  s := s+' rr.Arrival, '+#10;
+  s := s+' rr.Departure, '+#10;
+  s := s+' rr.RoomType, '+#10;
+  s := s+' rr.PMInfo, '+#10;
+  s := s+' rr.HiddenInfo, '+#10;
+  s := s+' rr.RoomRentPaid1, '+#10;
+  s := s+' rr.RoomRentPaid2, '+#10;
+  s := s+' rr.RoomRentPaid3, '+#10;
+  s := s+' rr.RoomRentPaymentInvoice, '+#10;
+  s := s+' rr.Hallres, '+#10;
+  s := s+' rr.rrTmp, '+#10;
+  s := s+' rr.ID, '+#10;
+  s := s+' rr.rrDescription, '+#10;
+  s := s+' rr.rrIsNoRoom, '+#10;
+  s := s+' rr.rrDeparture, '+#10;
+  s := s+' rr.rrArrival, '+#10;
+  s := s+' rr.rrRoomTypeAlias, '+#10;
+  s := s+' rr.rrRoomAlias, '+#10;
+  s := s+' rr.useStayTax, '+#10;
+  s := s+' rr.useinNationalReport, '+#10;
+  s := s+' (SELECT COUNT(id) FROM persons WHERE RoomReservation=rr.RoomReservation) AS numGuests, '+#10;
+//  s := s+' rr.numGuests, '+#10;
+  s := s+' rr.numChildren, '+#10;
+  s := s+' rr.numInfants, '+#10;
+  s := s+' rr.AvrageRate, '+#10;
+  s := s+' rr.RateCount, '+#10;
+  s := s+' rr.dtCreated, '+#10;
+  s := s+' rr.RoomClass, '+#10;
+  s := s+' rr.colorId, '+#10;
+  s := s+' rr.ratePlanCode, '+#10;
+  s := s+' rr.percentageDeposit, '+#10;
+  s := s+' rr.fixedDeposit, '+#10;
+  s := s+' rr.depositsInfo, '+#10;
+  s := s+' rr.penaltiesInfo, '+#10;
+  s := s+' rr.checkoutEventProcessed, '+#10;
+  s := s+' rr.COMMISSION, '+#10;
+  s := s+' rr.COMMISSION_CURRENCY, '+#10;
+  s := s+' rr.CHANNEL_ROOM_RES_ID, '+#10;
+  s := s+' rr.Package, '+#10;
+  s := s+' rr.blockMove, '+#10;
+  s := s+' rr.PaymentGuaranteeType, '+#10;
+  s := s+' rr.CCMaskedCreditCard, '+#10;
+  s := s+' rr.CCExpiry, '+#10;
+  s := s+' rr.CCNameOnCard, '+#10;
+  s := s+' rr.CCCardType, '+#10;
+  s := s+' rr.ManualChannelId, '+#10;
+  s := s+' rr.InvoiceIndex, '+#10;
+  s := s+' rr.ExpectedTimeOfArrival, '+#10;
+  s := s+' rr.ExpectedCheckOutTime, '+#10;
+  s := s+' rr.blockMoveReason, '+#10;
 
   s := s+' (SELECT ContactEmail FROM reservations WHERE reservations.Reservation=rr.Reservation) AS ContactEmail, '+#10;
 
@@ -6273,7 +6341,74 @@ var
 begin
   s := '';
   s := s+' SELECT '+#10;
-  s := s+' rr.*, '+#10;
+  s := s+' rr.RoomReservation, '+#10; //
+  s := s+' rr.Room, '+#10; //
+//  s := s+' rr.Reservation, '+#10;
+  s := s+' rr.Status, '+#10; //
+  s := s+' rr.GroupAccount, '+#10; //
+//  s := s+' rr.invBreakfast, '+#10;
+//  s := s+' rr.RoomPrice1, '+#10;
+//  s := s+' rr.Price1From, '+#10;
+//  s := s+' rr.Price1To, '+#10;
+//  s := s+' rr.RoomPrice2, '+#10;
+//  s := s+' rr.Price2From, '+#10;
+//  s := s+' rr.Price2To, '+#10;
+//  s := s+' rr.RoomPrice3, '+#10;
+//  s := s+' rr.Price3From, '+#10;
+//  s := s+' rr.Price3To, '+#10;
+//  s := s+' rr.Currency, '+#10;
+  s := s+' rr.Discount, '+#10; //
+  s := s+' rr.Percentage, '+#10; //
+  s := s+' rr.PriceType, '+#10; //
+//  s := s+' rr.Arrival, '+#10;
+//  s := s+' rr.Departure, '+#10;
+  s := s+' rr.RoomType, '+#10; //
+//  s := s+' rr.PMInfo, '+#10;
+//  s := s+' rr.HiddenInfo, '+#10;
+//  s := s+' rr.RoomRentPaid1, '+#10;
+//  s := s+' rr.RoomRentPaid2, '+#10;
+//  s := s+' rr.RoomRentPaid3, '+#10;
+//  s := s+' rr.RoomRentPaymentInvoice, '+#10;
+//  s := s+' rr.Hallres, '+#10;
+//  s := s+' rr.rrTmp, '+#10;
+//  s := s+' rr.ID, '+#10;
+  s := s+' rr.rrDescription, '+#10; //
+//  s := s+' rr.rrIsNoRoom, '+#10;
+  s := s+' rr.rrDeparture, '+#10; //
+  s := s+' rr.rrArrival, '+#10; //
+//  s := s+' rr.rrRoomTypeAlias, '+#10;
+//  s := s+' rr.rrRoomAlias, '+#10;
+//  s := s+' rr.useStayTax, '+#10;
+//  s := s+' rr.useinNationalReport, '+#10;
+  s := s+' (SELECT COUNT(id) FROM persons WHERE RoomReservation=rr.RoomReservation) AS numGuests, '+#10; //
+  s := s+' rr.numChildren, '+#10; //
+  s := s+' rr.numInfants, '+#10; //
+  s := s+' rr.AvrageRate, '+#10; //
+  s := s+' rr.RateCount, '+#10; //
+//  s := s+' rr.dtCreated, '+#10;
+//  s := s+' rr.RoomClass, '+#10;
+//  s := s+' rr.colorId, '+#10;
+//  s := s+' rr.ratePlanCode, '+#10;
+//  s := s+' rr.percentageDeposit, '+#10;
+//  s := s+' rr.fixedDeposit, '+#10;
+//  s := s+' rr.depositsInfo, '+#10;
+//  s := s+' rr.penaltiesInfo, '+#10;
+//  s := s+' rr.checkoutEventProcessed, '+#10;
+//  s := s+' rr.COMMISSION, '+#10;
+//  s := s+' rr.COMMISSION_CURRENCY, '+#10;
+//  s := s+' rr.CHANNEL_ROOM_RES_ID, '+#10;
+  s := s+' rr.Package, '+#10; //
+//  s := s+' rr.blockMove, '+#10;
+//  s := s+' rr.PaymentGuaranteeType, '+#10;
+//  s := s+' rr.CCMaskedCreditCard, '+#10;
+//  s := s+' rr.CCExpiry, '+#10;
+//  s := s+' rr.CCNameOnCard, '+#10;
+//  s := s+' rr.CCCardType, '+#10;
+//  s := s+' rr.ManualChannelId, '+#10;
+//  s := s+' rr.InvoiceIndex, '+#10;
+//  s := s+' rr.ExpectedTimeOfArrival, '+#10;
+//  s := s+' rr.ExpectedCheckOutTime, '+#10;
+//  s := s+' rr.blockMoveReason, '+#10;
 
   s := s+'(SELECT GROUP_CONCAT(DISTINCT Email SEPARATOR '';'') ' +
          ' FROM (SELECT Email FROM persons WHERE EMail <>'''' AND %s=%d ' +
@@ -6283,11 +6418,11 @@ begin
          ' SELECT ContactEmail FROM reservations WHERE ContactEmail <>'''' AND Reservation=%d ' +
          ' UNION ALL ' +
          ' SELECT CustomerEmail FROM reservations WHERE CustomerEmail <>'''' AND Reservation=%d ' +
-         ' ) xxx) AS ContactEmail,';
-  s := s+' (SELECT Email FROM persons p WHERE p.RoomReservation=rr.RoomReservation AND p.MainName=1 LIMIT 1) AS GuestEmail, '+#10;
+         ' ) xxx) AS ContactEmail,'; //
+  s := s+' (SELECT Email FROM persons p WHERE p.RoomReservation=rr.RoomReservation AND p.MainName=1 LIMIT 1) AS GuestEmail, '+#10; //
 
-  s := s+' r.Description AS RoomDescription, '+#10;
-  s := s+' rt.Description AS RoomTypeDescription, '+#10;
+  s := s+' r.Description AS RoomDescription, '+#10; //
+  s := s+' rt.Description AS RoomTypeDescription, '+#10; //
 
   if iRoomReservation = 0 then   //FRoomReservation = 0  // GroupInvoice
   begin

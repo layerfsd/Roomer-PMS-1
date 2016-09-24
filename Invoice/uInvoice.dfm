@@ -639,8 +639,8 @@ object frmInvoice: TfrmInvoice
       object chkShowPackage: TsCheckBox
         Left = 906
         Top = 135
-        Width = 111
-        Height = 20
+        Width = 119
+        Height = 17
         Caption = 'Package on invoice'
         Anchors = [akTop, akRight]
         Checked = True

@@ -316,10 +316,10 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           BoundLabel.Font.Height = -13
           BoundLabel.Font.Name = 'Tahoma'
           BoundLabel.Font.Style = []
-          DisabledKind = [dkGrayed]
           SkinData.SkinSection = 'EDIT'
           GlyphMode.Blend = 0
           GlyphMode.Grayed = False
+          ShowWeeks = True
           DialogTitle = 'Period from'
         end
         object dtBulkTo: TsDateEdit
@@ -353,6 +353,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           SkinData.SkinSection = 'EDIT'
           GlyphMode.Blend = 0
           GlyphMode.Grayed = False
+          ShowWeeks = True
           DialogTitle = 'Period to'
         end
         object cbMon: TsCheckBox
@@ -2229,6 +2230,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           SkinData.SkinSection = 'EDIT'
           GlyphMode.Blend = 0
           GlyphMode.Grayed = False
+          ShowWeeks = True
           OnAcceptDate = dateEditAcceptDate
         end
         object __cbxVisibleDays: TsComboBox
