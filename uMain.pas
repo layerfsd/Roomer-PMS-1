@@ -733,6 +733,7 @@ type
     btnSimpleHouseKeeping: TdxBarLargeButton;
     btnReRegisterPMS: TdxBarLargeButton;
     btnRptDepartures: TdxBarLargeButton;
+    shpMessageTimerOn: TShape;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
@@ -1007,12 +1008,7 @@ type
     procedure tvAllReservationsTotalStayRateGetProperties(Sender: TcxCustomGridTableItem; ARecord: TcxCustomGridRecord;
       var AProperties: TcxCustomEditProperties);
     procedure lblLogoutClick(Sender: TObject);
-    procedure ApplicationEvents1Idle(Sender: TObject; var Done: boolean);
     procedure ApplicationEvents1Message(var Msg: tagMSG; var Handled: boolean);
-    procedure ApplicationEvents1Deactivate(Sender: TObject);
-    procedure ApplicationEvents1Activate(Sender: TObject);
-    procedure ApplicationEvents1Minimize(Sender: TObject);
-    procedure ApplicationEvents1Restore(Sender: TObject);
     procedure btnWebAccessibleFilesClick(Sender: TObject);
     procedure P5Click(Sender: TObject);
     procedure btnReDownloadRoomerClick(Sender: TObject);
@@ -1530,6 +1526,7 @@ type
     procedure FormatToReservationAttrib(aCanvas: TCanvas; const aAttrib: recStatusAttr);
     procedure ClearObjectsFromGrid(aGrid: TAdvStringGrid);
     procedure DayClosingTimes;
+    procedure DeActivateMessageTimerIfActive;
 {$IFDEF USE_JCL}
     procedure LogException(ExceptObj: TObject; ExceptAddr: Pointer; IsOS: boolean);
 {$ENDIF}
@@ -2484,7 +2481,7 @@ begin
   RoomerMessage := RoomerMessages.MessageById(mmoMessage.Tag);
   if RoomerMessage <> nil then
     RoomerMessage.MarkedAsRead := true;
-  timMessagesTimer(timMessages);
+  timMessagesTimer(nil);
 end;
 
 procedure TfrmMain.btnBackForwardClick(Sender: TObject);
@@ -3086,11 +3083,12 @@ begin
     Application.ShowHint := true; // definitions for hints
 
     // First time wait a few minutes for initialization to complete
-    with timOfflineReports do
-    begin
-      Interval := TIM_MINUTE; // 1 minute
-      Enabled := true;
-    end;
+    timOfflineReportsTimer(nil);
+//    with timOfflineReports do
+//    begin
+//      Interval := TIM_MINUTE; // 1 minute
+//      Enabled := true;
+//    end;
   end
   else
     ExitProcess(0);
@@ -3279,8 +3277,9 @@ begin
 
   result := true;
   lblHotelName.Caption := g.qHotelName;
-  timMessagesTimer(timMessages);
-  timMessages.Enabled := true;
+  timMessagesTimer(nil);
+  ActivateMessagesIfApplicable;
+//  timMessages.Enabled := true; BHG: 25-09-2016
 
   d.PrepareFixedTables;
 
@@ -7604,7 +7603,7 @@ begin
   finally
     lblCacheNotification.Visible := false;
     FMessagesBeingDownloaded := false;
-    timMessages.Enabled := true;
+    timMessages.Enabled := Assigned(Sender);
   end;
 end;
 
@@ -7691,17 +7690,17 @@ end;
 
 procedure TfrmMain.timOfflineReportsTimer(Sender: TObject);
 begin
-  TTimer(Sender).Enabled := false;
+  timOfflineReports.Enabled := false;
   try
     d.GenerateOfflineReports;
 
 {$IFDEF Debug}
-    TTimer(Sender).Interval := 3 * TIM_MINUTE; // 3 min for debugging
+    timOfflineReports.Interval := 3 * TIM_MINUTE; // 3 min for debugging
 {$ELSE}
-    TTimer(Sender).Interval := TIM_HALF_HOUR; // 30 min normal
+    timOfflineReports.Interval := TIM_10_MINUTES; // 10 minutes... // OLD: TIM_HALF_HOUR; // 30 min normal
 {$ENDIF}
   finally
-    TTimer(Sender).Enabled := true;
+    timOfflineReports.Enabled := Assigned(Sender);
   end;
 end;
 
@@ -10132,6 +10131,7 @@ begin
   FrmReservationHintHolder.CancelHint;
 end;
 
+
 procedure TfrmMain.ActivateMessagesIfApplicable;
 begin
   // if the timer has been enabled means the idle duration is already counting.
@@ -10143,56 +10143,29 @@ begin
   // FStartIdle := GetTickCount;
 
   // enable the timer
+  timMessages.Interval := 120000;
   timMessages.Enabled := true;
+  timOfflineReports.Enabled := true;
+  shpMessageTimerOn.Brush.Color := clGreen;
 end;
 
-procedure TfrmMain.ApplicationEvents1Activate(Sender: TObject);
+procedure TfrmMain.DeActivateMessageTimerIfActive;
 begin
-  // if NOT timMessages.Enabled then
-  // exit;
-  // timMessages.Enabled := false;
-end;
+  if NOT timMessages.Enabled then exit;
 
-procedure TfrmMain.ApplicationEvents1Deactivate(Sender: TObject);
-begin
-  ActivateMessagesIfApplicable;
-end;
-
-procedure TfrmMain.ApplicationEvents1Idle(Sender: TObject; var Done: boolean);
-begin
-  ActivateMessagesIfApplicable;
+  timMessages.Enabled := false;
+  timOfflineReports.Enabled := false;
+  shpMessageTimerOn.Brush.Color := clRed;
 end;
 
 procedure TfrmMain.ApplicationEvents1Message(var Msg: tagMSG; var Handled: boolean);
 begin
-  // Handled := false;
-  // if NOT timMessages.Enabled then
-  // exit;
-  //
-  // case Msg.message of
-  // WM_KEYDOWN:
-  // timMessages.Enabled := false;
-  // WM_MBUTTONDOWN, WM_MBUTTONUP, WM_MBUTTONDBLCLK:
-  // timMessages.Enabled := false;
-  // WM_MOUSEWHEEL:
-  // timMessages.Enabled := false;
-  // WM_LBUTTONDOWN:
-  // timMessages.Enabled := false;
-  // WM_RBUTTONDOWN:
-  // timMessages.Enabled := false;
-  // end;
-end;
-
-procedure TfrmMain.ApplicationEvents1Minimize(Sender: TObject);
-begin
-  ActivateMessagesIfApplicable;
-end;
-
-procedure TfrmMain.ApplicationEvents1Restore(Sender: TObject);
-begin
-  // if NOT timMessages.Enabled then
-  // exit;
-  // timMessages.Enabled := false;
+  Handled := false;
+  if (Msg.message = WM_LBUTTONDOWN) OR (Msg.message = WM_RBUTTONDOWN) OR (Msg.message = WM_KEYDOWN) then
+    DeActivateMessageTimerIfActive
+  else
+  if (Msg.message = WM_LBUTTONUP) OR (Msg.message = WM_RBUTTONUP) OR (Msg.message = WM_KEYUP) then
+    ActivateMessagesIfApplicable;
 end;
 
 procedure TfrmMain.ApplicationCancelGuestHint;
