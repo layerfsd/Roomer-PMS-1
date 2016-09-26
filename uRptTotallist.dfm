@@ -7,6 +7,7 @@ inherited frmRptTotallist: TfrmRptTotallist
   Position = poOwnerFormCenter
   OnCreate = FormCreate
   OnShow = FormShow
+  ExplicitLeft = -202
   ExplicitWidth = 1363
   ExplicitHeight = 672
   PixelsPerInch = 96
@@ -365,7 +366,7 @@ inherited frmRptTotallist: TfrmRptTotallist
           Caption = 'Stay'
         end
         item
-          Caption = 'Waitinglist'
+          Caption = 'Optional Booking'
         end
         item
           Caption = 'Allotments'
