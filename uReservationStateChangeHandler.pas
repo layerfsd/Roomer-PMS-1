@@ -96,9 +96,9 @@ begin
   if Result then
     case aNewState of
       rsUnKnown:          Result := false;
-      rsReservation:      Result := lCurrentState in [rsUnknown, rsGuests, rsAllotment, rsOptionalBooking, rsTmp1, rsAwaitingPayment, rsCancelled, rsAwaitingPayConfirm, rsWaitingList, rsBlocked, rsNoShow];
-      rsGuests:           Result := lCurrentState in [rsUnknown, rsDeparted, rsReservation, rsAllotment, rsOptionalBooking, rsTmp1, rsAwaitingPayment, rsWaitingList];
-      rsDeparted:         Result := lCurrentState in [rsUnknown, rsReservation];
+      rsReservation:      Result := lCurrentState in [rsUnknown, rsGuests, rsDeparted, rsAllotment, rsOptionalBooking, rsTmp1, rsAwaitingPayment, rsCancelled, rsAwaitingPayConfirm, rsWaitingList, rsBlocked, rsNoShow];
+      rsGuests:           Result := lCurrentState in [rsUnknown, rsReservation, rsAllotment, rsOptionalBooking, rsTmp1, rsAwaitingPayment, rsWaitingList];
+      rsDeparted:         Result := lCurrentState in [rsUnknown, rsGuests];
       rsOptionalBooking:  Result := lCurrentState in [rsUnknown, rsReservation, rsAllotment, rsTmp1, rsAwaitingPayment, rsWaitingList, rsBlocked];
       rsAllotment:        Result := lCurrentState in [rsUnknown, rsReservation, rsAllotment, rsOptionalBooking, rsTmp1, rsAwaitingPayment, rsWaitingList, rsBlocked, rsNoShow];
       rsNoShow:           Result := lCurrentState in [rsUnknown, rsReservation, rsAllotment, rsOptionalBooking, rsTmp1, rsAwaitingPayment, rsWaitinglist];
