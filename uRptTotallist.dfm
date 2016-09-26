@@ -7,7 +7,6 @@ inherited frmRptTotallist: TfrmRptTotallist
   Position = poOwnerFormCenter
   OnCreate = FormCreate
   OnShow = FormShow
-  ExplicitLeft = -202
   ExplicitWidth = 1363
   ExplicitHeight = 672
   PixelsPerInch = 96

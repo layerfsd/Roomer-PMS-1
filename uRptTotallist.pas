@@ -309,8 +309,8 @@ begin
       s := s+'                    AND ((SUBSTRING(rr.room, 1, 1) = ''<'') '#10;
       s := s+'                    OR (rooms.active = 1))) xx '#10;
       s := s+'        WHERE '#10;
-      s := s+'            (xx.arrival < pd.date) '#10;
-      s := s+'            AND (xx.departure >= pd.date)) AS roomsInHouse, '#10;
+      s := s+'            (xx.arrival <= pd.date) '#10;
+      s := s+'            AND (xx.departure > pd.date)) AS roomsInHouse, '#10;
 
       s := s+'    (SELECT '#10;
       s := s+'            SUM(xx.numGuests) '#10;
@@ -327,7 +327,7 @@ begin
       s := s+'                    AND ((SUBSTRING(rr.room, 1, 1) = ''<'') '#10;
       s := s+'                    OR (rooms.active = 1))) xx '#10;
       s := s+'        WHERE '#10;
-      s := s+'            (xx.arrival < pd.date) AND (xx.departure >= pd.date)) AS paxinhouse, '#10;
+      s := s+'            (xx.arrival <= pd.date) AND (xx.departure > pd.date)) AS paxinhouse, '#10;
 
       s := s+'    (SELECT '#10;
       s := s+'            COUNT(xx.id) '#10;

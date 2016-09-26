@@ -319,8 +319,8 @@ begin
 
     version := findVersionOfRoomerOnServer(xml, RoomerDataSet);
     DebugMEssage('Server: ' + version + '  Local: ' + currentVersion);
-    if CompareVersionStrings(version, currentVersion) > 0 then
-//    if version <> currentVersion then
+//    if CompareVersionStrings(version, currentVersion) > 0 then
+    if version <> currentVersion then
     begin
     (*  if MessageDlg('There is a new version of ROOMER (' + version + ').' + #13#10 +
                     'ROOMER needs to be updated.' + #13#10#13#10 +
