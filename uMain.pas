@@ -733,7 +733,6 @@ type
     btnSimpleHouseKeeping: TdxBarLargeButton;
     btnReRegisterPMS: TdxBarLargeButton;
     btnRptDepartures: TdxBarLargeButton;
-    shpMessageTimerOn: TShape;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
@@ -3082,13 +3081,8 @@ begin
 
     Application.ShowHint := true; // definitions for hints
 
-    // First time wait a few minutes for initialization to complete
-    timOfflineReportsTimer(nil);
-//    with timOfflineReports do
-//    begin
-//      Interval := TIM_MINUTE; // 1 minute
-//      Enabled := true;
-//    end;
+//    timOfflineReportsTimer(nil);
+
   end
   else
     ExitProcess(0);
@@ -10145,8 +10139,9 @@ begin
   // enable the timer
   timMessages.Interval := 120000;
   timMessages.Enabled := true;
-  timOfflineReports.Enabled := true;
-  shpMessageTimerOn.Brush.Color := clGreen;
+
+  // Offline reports are disabled, awating reimplementation in the backend
+//  timOfflineReports.Enabled := true;
 end;
 
 procedure TfrmMain.DeActivateMessageTimerIfActive;
@@ -10155,7 +10150,6 @@ begin
 
   timMessages.Enabled := false;
   timOfflineReports.Enabled := false;
-  shpMessageTimerOn.Brush.Color := clRed;
 end;
 
 procedure TfrmMain.ApplicationEvents1Message(var Msg: tagMSG; var Handled: boolean);
