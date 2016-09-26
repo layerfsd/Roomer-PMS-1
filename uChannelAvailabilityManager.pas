@@ -420,7 +420,6 @@ type
   private
     { Private declarations }
     RoomerDataSet: TRoomerDataSet;
-    MaxDate : Integer;
     Halting: Boolean;
     FCurrentNumDays: integer;
     AvailDict: TDictItemObjectDictionary;
@@ -2424,7 +2423,6 @@ procedure TfrmChannelAvailabilityManager.cbxChannelManagersChange(Sender: TObjec
 var
   cmIndex: integer;
 begin
-  MaxDate := trunc(now) + NUMBER_OF_DAYS_DISPLAYED;
   cmIndex := cbxChannelManagers.ItemIndex;
   if cmIndex < 0 then
     exit;
@@ -2435,6 +2433,7 @@ begin
 end;
 
 procedure TfrmChannelAvailabilityManager.RefreshGridsData;
+var MaxDate : Integer;
 begin
   try
     if __cbxVisibleDays.ItemIndex = -1 then
@@ -2446,8 +2445,9 @@ begin
       exit;
     end;
 
+    MaxDate := TRUNC(now) + CurrentChannelMan.FNumDays;
     dateEdit.MinDate := TRUNC(now);
-    dateEdit.MaxDate := MaxDate; // TRUNC(now) + CurrentChannelMan.FNumDays;
+    dateEdit.MaxDate := MaxDate;
 
 
     dtBulkFrom.MinDate := startDate;
