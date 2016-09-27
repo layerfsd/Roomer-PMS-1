@@ -100,6 +100,11 @@ type
       /// </summary>
       function AsStatusAttribute : recStatusAttr;
 
+      /// <summary>
+      ///   Can the current state be changed into aNewState
+      /// </summary>
+      function CanChangeTo(aNewState: TReservationState): boolean;
+
     end;
 
     TReservationStateSetHelper = record helper for TReservationStateSet
@@ -171,6 +176,31 @@ begin
   for s := TReservationState(1) to high(s) do // dont use rsUnkown and rsMixed
     if s <> rsMixed then
       aItemList.AddObject(s.AsReadableString, TObject(ord(s)));
+end;
+
+function TReservationStateHelper.CanChangeTo(aNewState: TReservationState): boolean;
+begin
+  //This is the implementation of the change-state matrix in https://promoir.atlassian.net/wiki/display/RP1/Explanation+of+Reservation+States+used+in+Roomer
+  Result := Self <> aNewState;
+  if Result then
+    case Self of
+      rsUnknown:            Result := aNewState in [rsReservation, rsGuests, rsOptionalBooking, rsAllotment, rsNoShow, rsBlocked, rsCancelled, rsWaitingList];
+      rsReservation:        Result := aNewState in [rsGuests, rsOptionalBooking, rsAllotment, rsNoShow, rsBlocked, rsCancelled, rsWaitingList];
+      rsGuests:             Result := aNewState in [rsReservation, rsDeparted, rsWaitingList];
+      rsDeparted:           Result := aNewState in [rsGuests];
+      rsOptionalBooking:    Result := aNewState in [rsReservation, rsGuests, rsAllotment, rsNoShow, rsBlocked, rsCancelled, rsWaitingList];
+      rsAllotment:          Result := aNewState in [rsReservation, rsGuests, rsOptionalBooking, rsNoShow, rsBlocked, rsCancelled, rsWaitingList];
+      rsNoShow:             Result := aNewState in [rsReservation, rsCancelled];
+      rsBlocked:            Result := aNewState in [rsReservation, rsOptionalBooking, rsBlocked, rsWaitingList];
+      rsCancelled:          Result := aNewState in [rsReservation];
+      rsTmp1:               Result := aNewState in [rsReservation, rsGuests, rsOptionalBooking, rsAllotment, rsNoShow, rsBlocked, rsCancelled, rsWaitingList];
+      rsAwaitingPayment:    result := False;
+      rsAwaitingPayConfirm: result := False;
+      rsMixed:              result := false;
+      rsWaitingList:        Result := aNewState in [rsReservation, rsGuests, rsOptionalBooking, rsAllotment, rsNoShow, rsBlocked, rsCancelled];
+    else
+      Result := false;
+    end;
 end;
 
 class function TReservationStateHelper.FromItemIndex(aIndex: integer): TReservationState;

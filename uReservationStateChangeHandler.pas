@@ -91,25 +91,7 @@ function TBaseReservationStateChangeHandler.ChangeIsAllowed(aNewState: TReservat
 var
   lCurrentState: TReservationState;
 begin
-  lCurrentState := CurrentState;
-  Result := (aNewState <> lCurrentState); // dont allow changing to same status
-  if Result then
-    case aNewState of
-      rsUnKnown:          Result := false;
-      rsReservation:      Result := lCurrentState in [rsUnknown, rsGuests, rsDeparted, rsAllotment, rsOptionalBooking, rsTmp1, rsAwaitingPayment, rsCancelled, rsAwaitingPayConfirm, rsWaitingList, rsBlocked, rsNoShow];
-      rsGuests:           Result := lCurrentState in [rsUnknown, rsReservation, rsAllotment, rsOptionalBooking, rsTmp1, rsAwaitingPayment, rsWaitingList];
-      rsDeparted:         Result := lCurrentState in [rsUnknown, rsGuests];
-      rsOptionalBooking:  Result := lCurrentState in [rsUnknown, rsReservation, rsAllotment, rsTmp1, rsAwaitingPayment, rsWaitingList, rsBlocked];
-      rsAllotment:        Result := lCurrentState in [rsUnknown, rsReservation, rsOptionalBooking, rsTmp1, rsAwaitingPayment, rsWaitingList, rsBlocked, rsNoShow];
-      rsNoShow:           Result := lCurrentState in [rsUnknown, rsReservation, rsAllotment, rsOptionalBooking, rsTmp1, rsAwaitingPayment, rsWaitinglist];
-      rsBlocked:          Result := lCurrentState in [rsUnknown, rsReservation, rsAllotment, rsOptionalBooking, rsWaitingList];
-      rsCancelled:        Result := lCurrentState in [rsUnknown, rsReservation, rsAllotment, rsOptionalBooking, rsTmp1, rsWaitinglist, rsBlocked];
-      rsTmp1:             Result := False;
-      rsAwaitingPayment:  Result := False;
-      rsAwaitingPayConfirm: Result := False;
-      rsWaitingList:      Result := lCurrentState in [rsUnknown, rsReservation, rsGuests, rsAllotment, rsOptionalBooking, rsTmp1, rsAwaitingPayment, rsAwaitingPayConfirm, rsBlocked, rsNoShow];
-      rsMixed:            Result := False;
-    end;
+  Result := CurrentState.CanChangeTo(aNewState);
 end;
 
 function TBaseReservationStateChangeHandler.ChangeState(aNewState: TReservationState): boolean;
@@ -139,6 +121,7 @@ function TReservationStateChangeHandler.ChangeIsAllowed(aNewState: TReservationS
 var
   lRoomHandler: TRoomReservationStateChangeHandler;
 begin
+  // inherited; // no call to inherited!
   Result := false;
   for lRoomHandler in FRoomStateChangers.Values do
     if lRoomHandler.ChangeIsAllowed(aNewState) then
