@@ -595,7 +595,12 @@ end;
 procedure TfrmRooms3.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
   if Key = VK_ESCAPE then
-    btnCancel.Click;
+  begin
+    if m_.State in [dsEdit, dsInsert] then
+      m_.Cancel
+    else
+      btnCancel.Click;
+  end;
 end;
 
 procedure TfrmRooms3.FormKeyPress(Sender: TObject; var Key: Char);
@@ -715,6 +720,7 @@ var
 begin
   if zFirstTime then exit;
 
+  dataset.FieldByName('Room').asString := TrimLeft(Trim(dataset.FieldByName('Room').asString));
   if tvData.DataController.DataSource.State = dsEdit then
   begin
     oldType := dataset.FieldByName('RoomType').OldValue;
@@ -828,7 +834,7 @@ begin
     end;
     if ins_room(zData,nID) then
     begin
-     //
+      glb.ForceTableRefresh;
     end else
     begin
       abort;
@@ -938,7 +944,7 @@ begin
   if trim(displayValue) = '' then
   begin
     error := true;
-    errortext := 'Room '+' - '+'is required - Use ESC to cancel';
+    errortext := 'Room '+' - '+'is required';
 //	  errortext := GetTranslatedText('shTx_Currencies_CodeIsRequired');
     exit;
   end;
@@ -950,17 +956,6 @@ begin
     errortext := displayvalue + ' ' + GetTranslatedText('shNewValueExistInAnotherRecor');
     exit
   end;
-
-//  if tvData.DataController.DataSource.State = dsEdit then
-//  begin
-//    if hdata.roomExistsInOther(currValue) then
-//    begin
-//      error := true;
-//      // errortext := displayvalue+'Eldra gildi fannst í tengdri færslu ekki hægt að breyta - Notið 'ESC-hnappin til að hætta við';
-//      errortext := displayvalue+GetTranslatedText('shOldValueUsedInRelatedDataC');
-//      exit;
-//    end;
-//  end;
 end;
 
 

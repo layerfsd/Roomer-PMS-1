@@ -1189,18 +1189,19 @@ end;
 function TGlobalSettings.LocateSpecificRecord(table, field, value : String) : Boolean;
 var dataSet : TRoomerDataSet;
 begin
-  result := false;
+//  result := false;
   dataset := GetDataSetFromDictionary(table);
-  dataSet.First;
-  while not dataSet.eof do
-  begin
-    if LowerCase(dataSet[field]) = LowerCase(value) then
-    begin
-      result := true;
-      Break;
-    end;
-    dataSet.next;
-  end;
+  result := dataset.Locate(field, value, []);
+//  dataSet.First;
+//  while not dataSet.eof do
+//  begin
+//    if LowerCase(dataSet[field]) = LowerCase(value) then
+//    begin
+//      result := true;
+//      Break;
+//    end;
+//    dataSet.next;
+//  end;
 end;
 
 function TGlobalSettings.KeyAlreadyExistsInAnotherRecord(table, field, value : String; ID : Integer) : Boolean;
@@ -1222,51 +1223,54 @@ end;
 
 function TGlobalSettings.LocateSpecificRecord(dataSet : TRoomerDataSet; field : String;  value : Variant) : Boolean;
 begin
-  result := false;
-  dataSet.First;
-  while not dataSet.eof do
-  begin
-    if dataSet[field] = value then
-    begin
-      result := true;
-      Break;
-    end;
-    dataSet.next;
-  end;
+//  result := false;
+  result := dataset.Locate(field, value, []);
+//  dataSet.First;
+//  while not dataSet.eof do
+//  begin
+//    if dataSet[field] = value then
+//    begin
+//      result := true;
+//      Break;
+//    end;
+//    dataSet.next;
+//  end;
 end;
 
 function TGlobalSettings.LocateSpecificRecord(table, field : String;  value : Integer) : Boolean;
 var dataSet : TRoomerDataSet;
 begin
-  result := false;
+//  result := false;
   dataset := GetDataSetFromDictionary(table);
-  dataSet.First;
-  while not dataSet.eof do
-  begin
-    if dataSet[field] = value then
-    begin
-      result := true;
-      Break;
-    end;
-    dataSet.next;
-  end;
+  result := dataset.Locate(field, value, []);
+//  dataSet.First;
+//  while not dataSet.eof do
+//  begin
+//    if dataSet[field] = value then
+//    begin
+//      result := true;
+//      Break;
+//    end;
+//    dataSet.next;
+//  end;
 end;
 
 function TGlobalSettings.LocateSpecificRecord(table, field : String;  value : Boolean) : Boolean;
 var dataSet : TRoomerDataSet;
 begin
-  result := false;
+//  result := false;
   dataset := GetDataSetFromDictionary(table);
-  dataSet.First;
-  while not dataSet.eof do
-  begin
-    if dataSet[field] = value then
-    begin
-      result := true;
-      Break;
-    end;
-    dataSet.next;
-  end;
+  result := dataset.Locate(field, value, []);
+//  dataSet.First;
+//  while not dataSet.eof do
+//  begin
+//    if dataSet[field] = value then
+//    begin
+//      result := true;
+//      Break;
+//    end;
+//    dataSet.next;
+//  end;
 end;
 
 function TGlobalSettings.LocateSpecificRecordAndGetValue(table, field, value, fieldToGet: String; var resultingValue: Integer): Boolean;
