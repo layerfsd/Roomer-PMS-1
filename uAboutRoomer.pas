@@ -118,8 +118,12 @@ function TfrmAboutRoomer.getSpecialVersionInfo(filename, StringName : String) : 
 var verInfo : TVersionInfo;
 begin
   verInfo := TVersionInfo.Create(nil);
+  try
   verInfo.FileName := filename;
   result := verInfo.StringFileInfo[StringName];
+  finally
+    FreeAndNil(verInfo);
+  end;
 end;
 
 procedure TfrmAboutRoomer.FormShow(Sender: TObject);
