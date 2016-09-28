@@ -7643,31 +7643,34 @@ begin
         for i := RoomerMessages.Count - 1 downto 0 do
         begin
           RoomerMessage := RoomerMessages.ActiveRoomerMessage[i];
-          systemMessage := RoomerMessage.RoomerMessageType = 'SYSTEM_MESSAGE';
-          if systemMessage AND NOT anySystemMessage then
+          if Assigned(RoomerMessage) then
           begin
-            mmoMessage.HtmlText.Text := RoomerMessage.TheMessage;
-            mmoMessage.Tag := RoomerMessage.id;
-          end
-          else if NOT systemMessage then
-          begin
-            if RoomerMessage.RoomerMessageType = 'RESERVATION_MESSAGE' then
+            systemMessage := RoomerMessage.RoomerMessageType = 'SYSTEM_MESSAGE';
+            if systemMessage AND NOT anySystemMessage then
             begin
-              ResList.Add(inttostr(RoomerMessage.id));
-              RoomerMessageType := rmtNewBooking;
+              mmoMessage.HtmlText.Text := RoomerMessage.TheMessage;
+              mmoMessage.Tag := RoomerMessage.id;
             end
-            else if RoomerMessage.RoomerMessageType = 'CANCELLATION_MESSAGE' then
+            else if NOT systemMessage then
             begin
-              CancelList.Add(inttostr(RoomerMessage.id));
-              RoomerMessageType := rmtCancellation;
-            end
-            else
-              RoomerMessageType := rmtUnknown;
-            if RoomerMessageType <> rmtUnknown then
-            begin
-              FrmMessagesTemplates.AddMessage(RoomerMessageType, RoomerMessage.TheMessage, '',
-                inttostr(RoomerMessage.id));
-              RoomerMessages.Delete(i);
+              if RoomerMessage.RoomerMessageType = 'RESERVATION_MESSAGE' then
+              begin
+                ResList.Add(inttostr(RoomerMessage.id));
+                RoomerMessageType := rmtNewBooking;
+              end
+              else if RoomerMessage.RoomerMessageType = 'CANCELLATION_MESSAGE' then
+              begin
+                CancelList.Add(inttostr(RoomerMessage.id));
+                RoomerMessageType := rmtCancellation;
+              end
+              else
+                RoomerMessageType := rmtUnknown;
+              if RoomerMessageType <> rmtUnknown then
+              begin
+                FrmMessagesTemplates.AddMessage(RoomerMessageType, RoomerMessage.TheMessage, '',
+                  inttostr(RoomerMessage.id));
+                RoomerMessages.Delete(i);
+              end;
             end;
           end;
           anySystemMessage := anySystemMessage OR systemMessage;
