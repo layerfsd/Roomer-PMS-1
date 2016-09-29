@@ -26,7 +26,6 @@ type
     kbmHouseKeepingList: TkbmMemTable;
     HouseKeepingListDS: TDataSource;
     pnlFilter: TsPanel;
-    btnRefresh: TsButton;
     pnlExportButtons: TsPanel;
     btnExcel: TsButton;
     grHouseKeepingList: TcxGrid;
@@ -79,6 +78,7 @@ type
     kbmHouseKeepingListcleaningnotes: TMemoField;
     grHouseKeepingListDBTableView1maintenancenotes: TcxGridDBColumn;
     grHouseKeepingListDBTableView1cleaningnotes: TcxGridDBColumn;
+    btnRefresh: TsButton;
     procedure btnExcelClick(Sender: TObject);
     procedure btnRefreshClick(Sender: TObject);
     procedure kbmHouseKeepingListAfterScroll(DataSet: TDataSet);
@@ -93,6 +93,7 @@ type
   protected
     procedure UpdateControls; override;
     procedure LoadData; override;
+    procedure DoShow; override;
   public
     { Public declarations }
   end;
@@ -220,6 +221,12 @@ begin
   CopyToClipboard(Result);
 end;
 
+
+procedure TfrmHouseKeepingReport.DoShow;
+begin
+  inherited;
+  RefreshData;
+end;
 
 procedure TfrmHouseKeepingReport.grHouseKeepingListDBTableView1ArrivingGuestsGetDisplayText(
   Sender: TcxCustomGridTableItem; ARecord: TcxCustomGridRecord; var AText: string);

@@ -240,7 +240,9 @@ uses
   uReservationStateChangeHandler in 'uReservationStateChangeHandler.pas',
   uRoomerForm in 'RoomerForm\uRoomerForm.pas' {frmBaseRoomerForm},
   uBreakfastStateDefinitions in 'Definitions\uBreakfastStateDefinitions.pas',
-  uAccountTypeDefinitions in 'Definitions\uAccountTypeDefinitions.pas';
+  uAccountTypeDefinitions in 'Definitions\uAccountTypeDefinitions.pas',
+  uFinancialReportsAPICaller in 'OpenAPI\uFinancialReportsAPICaller.pas',
+  uRptDailyRevenues in 'Financials\uRptDailyRevenues.pas' {frmRptDailyRevenues};
 
 {$R *.RES}
 

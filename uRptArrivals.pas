@@ -114,6 +114,7 @@ type
   protected
     procedure LoadData; override;
     procedure UpdateControls; override;
+    procedure DoShow; override;
   public
     constructor Create(aOwner: TComponent); override;
     destructor Destroy; override;
@@ -278,6 +279,12 @@ destructor TfrmArrivalsReport.Destroy;
 begin
   inherited;
   FCurrencyhandler.Free;
+end;
+
+procedure TfrmArrivalsReport.DoShow;
+begin
+  inherited;
+  RefreshData;
 end;
 
 procedure TfrmArrivalsReport.dtDateFromCloseUp(Sender: TObject);

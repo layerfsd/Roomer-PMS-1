@@ -22,19 +22,7 @@ inherited frmHouseKeepingReport: TfrmHouseKeepingReport
     Align = alTop
     TabOrder = 0
     SkinData.SkinSection = 'PANEL'
-    object btnRefresh: TsButton
-      Left = 242
-      Top = 22
-      Width = 118
-      Height = 26
-      Caption = 'Refresh'
-      Default = True
-      ImageIndex = 28
-      Images = DImages.PngImageList1
-      TabOrder = 0
-      OnClick = btnRefreshClick
-      SkinData.SkinSection = 'BUTTON'
-    end
+    ExplicitTop = -6
     object pnlExportButtons: TsPanel
       Left = 1
       Top = 93
@@ -42,21 +30,24 @@ inherited frmHouseKeepingReport: TfrmHouseKeepingReport
       Height = 43
       Align = alBottom
       BevelOuter = bvNone
-      TabOrder = 1
+      TabOrder = 0
       SkinData.SkinSection = 'PANEL'
+      ExplicitLeft = 2
+      ExplicitTop = 88
       object btnExcel: TsButton
         AlignWithMargins = True
-        Left = 3
+        Left = 856
         Top = 3
         Width = 128
         Height = 37
-        Align = alLeft
+        Align = alRight
         Caption = 'Excel'
         ImageIndex = 115
         Images = DImages.PngImageList1
         TabOrder = 0
         OnClick = btnExcelClick
         SkinData.SkinSection = 'BUTTON'
+        ExplicitTop = 1
       end
       object btnPrintGrid: TsButton
         AlignWithMargins = True
@@ -72,6 +63,20 @@ inherited frmHouseKeepingReport: TfrmHouseKeepingReport
         OnClick = btnPrintGridClick
         SkinData.SkinSection = 'BUTTON'
       end
+      object btnRefresh: TsButton
+        Left = 0
+        Top = 0
+        Width = 128
+        Height = 43
+        Align = alLeft
+        Caption = 'Refresh'
+        Default = True
+        ImageIndex = 28
+        Images = DImages.PngImageList1
+        TabOrder = 2
+        OnClick = btnRefreshClick
+        SkinData.SkinSection = 'BUTTON'
+      end
     end
     object gbxSelection: TsGroupBox
       AlignWithMargins = True
@@ -81,7 +86,7 @@ inherited frmHouseKeepingReport: TfrmHouseKeepingReport
       Height = 86
       Align = alLeft
       Caption = 'Select date and location'
-      TabOrder = 2
+      TabOrder = 1
       Checked = False
       object lblDate: TsLabel
         Left = 47
@@ -105,10 +110,9 @@ inherited frmHouseKeepingReport: TfrmHouseKeepingReport
         Width = 105
         Height = 21
         AutoSize = False
-        Color = clWhite
         EditMask = '!99/99/9999;1; '
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = clBlack
+        Font.Color = clWindowText
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -130,9 +134,8 @@ inherited frmHouseKeepingReport: TfrmHouseKeepingReport
         Alignment = taLeftJustify
         VerticalAlignment = taAlignTop
         Style = csDropDownList
-        Color = clWhite
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = clBlack
+        Font.Color = clWindowText
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -150,6 +153,7 @@ inherited frmHouseKeepingReport: TfrmHouseKeepingReport
     Align = alClient
     TabOrder = 2
     LookAndFeel.NativeStyle = False
+    ExplicitTop = 139
     object grHouseKeepingListDBTableView1: TcxGridDBTableView
       Navigator.Buttons.CustomButtons = <>
       DataController.DataSource = HouseKeepingListDS
@@ -405,7 +409,6 @@ inherited frmHouseKeepingReport: TfrmHouseKeepingReport
     object gridPrinterLink1: TdxGridReportLink
       Active = True
       Component = grHouseKeepingList
-      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.Header = 6350
@@ -420,14 +423,13 @@ inherited frmHouseKeepingReport: TfrmHouseKeepingReport
       PrinterPage.ScaleMode = smFit
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
-      ReportDocument.CreationDate = 42633.603041921300000000
+      ReportDocument.CreationDate = 42642.446795381950000000
       ReportTitle.Font.Charset = DEFAULT_CHARSET
       ReportTitle.Font.Color = clBlack
       ReportTitle.Font.Height = -19
       ReportTitle.Font.Name = 'Arial'
       ReportTitle.Font.Style = [fsBold]
       ShrinkToPageWidth = True
-      AssignedFormatValues = [fvTime, fvPageNumber]
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clBlack
       Font.Height = -15

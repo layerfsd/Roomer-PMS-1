@@ -80,7 +80,7 @@ procedure TfrmBaseRoomerForm.DoShow;
 begin
   inherited; // Calls ShowForm event handler
   KeepOnVisibleMonitor;
-  Refreshdata;
+  UpdateControls;
 end;
 
 procedure TfrmBaseRoomerForm.KeyDown(var Key: Word; Shift: TShiftState);
