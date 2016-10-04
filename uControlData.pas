@@ -690,6 +690,13 @@ type
     sLabel35: TsLabel;
     sLabel36: TsLabel;
     panWaitinglistNonOptional: TsPanel;
+    sGroupBox19: TsGroupBox;
+    sLabel37: TsLabel;
+    sLabel38: TsLabel;
+    sSpeedButton3: TsSpeedButton;
+    sSpeedButton4: TsSpeedButton;
+    edtEndOfDayCustomer: TsEdit;
+    edtEndOfDayUser: TsEdit;
     procedure FormCreate(Sender : TObject);
     procedure FormClose(Sender : TObject; var Action : TCloseAction);
     procedure FormShow(Sender : TObject);
@@ -748,6 +755,8 @@ type
     procedure btnInvoiceTemplateResourcesClick(Sender: TObject);
     procedure panGuestStayingClick(Sender: TObject);
     procedure panGuestStayingDblClick(Sender: TObject);
+    procedure sSpeedButton3Click(Sender: TObject);
+    procedure sSpeedButton4Click(Sender: TObject);
 
   private
     { private declarations }
@@ -800,6 +809,7 @@ uses
   , uCustomers2
   , uFrmResources
   , uResourceManagement
+  , uStaffMembers2
 
   ;
 {$R *.DFM}
@@ -1378,6 +1388,18 @@ begin
     chkforceExternalCustomerIdCorrectness.Checked := rSethotelconfigurations.FieldByName('forceExternalCustomerIdCorrectness').AsBoolean;
   except
     chkforceExternalCustomerIdCorrectness.Checked := false;
+  end;
+
+  try
+    edtEndOfDayCustomer.Text := rSethotelconfigurations.FieldByName('CustomerOfExternalSales').AsString;
+  except
+    edtEndOfDayCustomer.Text := edRackCustomer.Text;
+  end;
+
+  try
+    edtEndOfDayUser.Text := rSethotelconfigurations.FieldByName('UserOfExternalSales').AsString;
+  except
+    edtEndOfDayUser.Text := '';
   end;
 
   try
@@ -1992,6 +2014,16 @@ begin
 
   try
     rSethotelconfigurations.FieldByName('forceExternalCustomerIdCorrectness').AsBoolean := chkforceExternalCustomerIdCorrectness.Checked;
+  except
+  end;
+
+  try
+    rSethotelconfigurations.FieldByName('CustomerOfExternalSales').AsString := edtEndOfDayCustomer.Text;
+  except
+  end;
+
+  try
+    rSethotelconfigurations.FieldByName('UserOfExternalSales').AsString := edtEndOfDayUser.Text;
   except
   end;
 
@@ -3266,6 +3298,38 @@ begin
   finally
     Screen.Cursor := CursorWas; Application.ProcessMessages;
   end;
+end;
+
+procedure TfrmControlData.sSpeedButton3Click(Sender: TObject);
+var
+  s : string;
+  theData : recCustomerHolder;
+begin
+  initCustomerHolder(theData);
+  theData.Customer := edtEndOfDayCustomer.text;
+  OpenCustomers(actLookup, true, theData);
+  s := theData.Customer;
+  if s = '' then
+    exit;
+
+  if s <> edtEndOfDayCustomer.Text then
+    edtEndOfDayCustomer.Text := s;
+end;
+
+procedure TfrmControlData.sSpeedButton4Click(Sender: TObject);
+var
+  s : string;
+  theData : recStaffMemberHolder;
+begin
+  initStaffMemberHolder(theData);
+  theData.Initials := edtEndOfDayUser.text;
+  openStaffMembers(actLookup, theData);
+  s := theData.Initials;
+  if s = '' then
+    exit;
+
+  if s <> edtEndOfDayUser.Text then
+    edtEndOfDayUser.Text := s;
 end;
 
 procedure TfrmControlData.LoadColors(ExecutionPlan : TRoomerExecutionPlan);

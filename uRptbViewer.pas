@@ -241,4 +241,9 @@ begin
   pnlPreviewBar.SetFocus;
 end;
 
+initialization
+
+finalization
+  FreeAndNil(frmRptbViewer);
+
 end.
