@@ -112,7 +112,7 @@ type
     procedure SetManualDates(aFrom, aTo: TDate);
     function ConstructSQL: string;
   protected
-    procedure LoadData; override;
+    procedure DoLoadData; override;
     procedure UpdateControls; override;
     procedure DoShow; override;
   public
@@ -341,7 +341,7 @@ begin
   UpdateControls;
 end;
 
-procedure TfrmArrivalsReport.LoadData;
+procedure TfrmArrivalsReport.DoLoadData;
 var
   s    : string;
   rset1: TRoomerDataset;

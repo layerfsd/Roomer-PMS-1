@@ -9,9 +9,11 @@ uses
   , cxPropertiesStore
   , Winapi.Messages, cxGraphics, cxControls, cxLookAndFeels, cxLookAndFeelPainters, dxSkinsCore, dxSkinCaramel,
   dxSkinCoffee, dxSkinDarkSide, dxSkinTheAsphaltWorld, dxSkinsDefaultPainters, dxSkinsdxStatusBarPainter, Vcl.Controls,
-  dxStatusBar;
+  dxStatusBar, cxGridTableView, cxStyles, dxPScxCommon, dxPScxGridLnk;
 
 type
+  TRoomerFormState = (fsIdle, fsLoadingData, fsPrinting);
+
   /// <summary>
   ///  Basic form used by all Roomer windows and dialogs. <br />
   ///  Restores and Stores its dimensional properties and WindowState in the registry based on the actual form classname <br />
@@ -20,9 +22,16 @@ type
   TfrmBaseRoomerForm = class(TForm)
     psRoomerBase: TcxPropertiesStore;
     dxStatusBar: TdxStatusBar;
+    cxsrRoomerStyleRepository: TcxStyleRepository;
   private
     FCloseOnEsc: boolean;
+    FFormState: TRoomerFormState;
     procedure KeepOnVisibleMonitor;
+    procedure LoadData;
+    function GetStateIndicator: TdxStatusBarStateIndicatorItem;
+    function GetStateTextPanel: TdxStatusBarpanel;
+    function GetFormState: TRoomerFormState;
+    procedure SetFormState(const Value: TRoomerFormState);
   protected
     const
       WM_REFRESH_DATA = WM_User + 51;
@@ -38,7 +47,9 @@ type
     /// <summary>
     ///   (Re)load data needed to display in the form
     /// </summary>
-    procedure LoadData; virtual;
+    procedure DoLoadData; virtual; abstract;
+    property StateIndicator: TdxStatusBarStateIndicatorItem read GetStateIndicator;
+    property StateTextPanel: TdxStatusBarpanel read GetStateTextPanel;
   public
     constructor Create(AOwner: TComponent); override;
     /// <summary>
@@ -50,6 +61,8 @@ type
     ///  Close the window when ESC is pressed by the user, Default = True
     /// </summary>
     property CloseOnEsc: boolean read FCloseOnEsc write FCloseOnEsc;
+
+    property FormState: TRoomerFormState read GetFormState write SetFormState;
   end;
 
 implementation
@@ -60,8 +73,14 @@ uses
   uAppGlobal
   , Windows
   , uUtils
-  ;
+  , PrjConst;
 
+type
+  TRoomerFormStateHelper = record helper for TRoomerFormState
+  public
+    function StatusMessage: String;
+    function Indicator: TdxStatusBarStateIndicatorType;
+  end;
 
 { TfrmBaseRoomerForm }
 
@@ -81,6 +100,21 @@ begin
   inherited; // Calls ShowForm event handler
   KeepOnVisibleMonitor;
   UpdateControls;
+end;
+
+function TfrmBaseRoomerForm.GetFormState: TRoomerFormState;
+begin
+  Result := FFormState;
+end;
+
+function TfrmBaseRoomerForm.GetStateIndicator: TdxStatusBarStateIndicatorItem;
+begin
+  Result := TdxStatusBarStateIndicatorPanelStyle(dxStatusBar.Panels[0].PanelStyle).Indicators[0];
+end;
+
+function TfrmBaseRoomerForm.GetStateTextPanel: TdxStatusBarpanel;
+begin
+  Result := dxStatusBar.Panels[1];
 end;
 
 procedure TfrmBaseRoomerForm.KeyDown(var Key: Word; Shift: TShiftState);
@@ -111,19 +145,37 @@ end;
 
 procedure TfrmBaseRoomerForm.LoadData;
 begin
-  //
+  try
+    FormState := fsLoadingData;
+    DoLoadData;
+  finally
+    FormState := fsIdle;
+  end;
 end;
 
 procedure TfrmBaseRoomerForm.Loaded;
 begin
   psRoomerBase.StorageName := 'Software\Roomer\FormStatus\' + classname;
   psRoomerBase.Components[0].Component := Self;
+
   inherited;
+  FormState := fsIdle;
 end;
 
 procedure TfrmBaseRoomerForm.RefreshData;
 begin
   PostMessage(Handle, WM_REFRESH_DATA, 0, 0);
+end;
+
+procedure TfrmBaseRoomerForm.SetFormState(const Value: TRoomerFormState);
+begin
+  if Value <> FFormState then
+  begin
+    FFormState := Value;
+    StateTextPanel.Text := FFormState.StatusMessage;
+    StateIndicator.IndicatorType := FFOrmState.Indicator;
+    dxStatusBar.Repaint;
+  end;
 end;
 
 procedure TfrmBaseRoomerForm.UpdateControls;
@@ -139,6 +191,31 @@ begin
     UpdateControls
   end;
   inherited WndProc(message);
+end;
+
+{ TRoomerFormStateHelper }
+
+function TRoomerFormStateHelper.Indicator: TdxStatusBarStateIndicatorType;
+begin
+  case Self of
+    fsIdle:         Result := sitGreen;
+    fsLoadingData:  Result := sitYellow;
+    fsPrinting:     Result := sitBlue;
+  else
+    Result := sitOff;
+  end;
+end;
+
+function TRoomerFormStateHelper.StatusMessage: String;
+begin
+  case Self of
+    fsIdle:         Result := GetTranslatedText('shRoomerFormStateIdle');
+    fsLoadingData:  Result := GetTranslatedText('shRoomerFormStateLoadingData');
+    fsPrinting:     Result := GetTranslatedText('shRoomerFormStatePrinting');
+  else
+    Result := '';
+  end;
+
 end;
 
 end.

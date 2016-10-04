@@ -92,7 +92,7 @@ type
     procedure UpdateLocations;
   protected
     procedure UpdateControls; override;
-    procedure LoadData; override;
+    procedure DoLoadData; override;
     procedure DoShow; override;
   public
     { Public declarations }
@@ -241,7 +241,7 @@ begin
 end;
 
 
-procedure TfrmHouseKeepingReport.LoadData;
+procedure TfrmHouseKeepingReport.DoLoadData;
 var
   s    : string;
   rset1: TRoomerDataset;

@@ -734,6 +734,8 @@ type
     btnReRegisterPMS: TdxBarLargeButton;
     btnRptDepartures: TdxBarLargeButton;
     btnDailyRevenues: TdxBarLargeButton;
+    dxBarButton7: TdxBarButton;
+    btnDayCLosingTimes: TdxBarLargeButton;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);

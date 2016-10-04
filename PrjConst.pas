@@ -1566,6 +1566,9 @@ begin
                 'The Extra(s) [%s] do not have enough available stock for the whole reservation period: '+ #13 +
                 'Do you want to continue anyway?');
   constants.Add('shDeleteDayClosingTime', 'Delete DayClosingtime');
+  constants.Add('shRoomerFormStateIdle', 'Ready');
+  constants.Add('shRoomerFormStateLoadingData', 'Loading data...');
+  constants.Add('shRoomerFormStatePrinting', 'Printing ...');
 end;
 
 procedure AddConstants_OfflineReports;

@@ -1562,7 +1562,7 @@ begin
 //            glb.LocateSpecificRecordAndGetValue('items', 'Item', ItemId, 'Description', itemDescription);
             ItemTypeInfo := d.Item_Get_ItemTypeInfo(Item);
             Price        := FnewRoomReservations.FRoomList[i].FExtraBedCost;
-            numItems     := 1.00; // numGuests;
+            numItems     := 1.00; // numGuests.;
             Total        := price*numItems;
 
             fTmp           := Total / (1 + (ItemTypeInfo.VATPercentage / 100));

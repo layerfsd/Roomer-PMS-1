@@ -3135,7 +3135,6 @@ object frmMain: TfrmMain
       Index = 1
     end
     object rbTabInvoice: TdxRibbonTab
-      Active = True
       Caption = 'Invoice'
       Groups = <
         item
@@ -3154,6 +3153,7 @@ object frmMain: TfrmMain
       Index = 2
     end
     object rbTabReports: TdxRibbonTab
+      Active = True
       Caption = 'Reports'
       Groups = <
         item
@@ -3197,9 +3197,6 @@ object frmMain: TfrmMain
         item
           Caption = 'Sale / payments'
           ToolbarName = 'barinnBar8'
-        end
-        item
-          Caption = 'Book keeping'
         end>
       Index = 4
     end
@@ -4835,6 +4832,10 @@ object frmMain: TfrmMain
         item
           Visible = True
           ItemName = 'btnBookKeepingCodes'
+        end
+        item
+          Visible = True
+          ItemName = 'btnDayCLosingTimes'
         end>
       OneOnRow = False
       Row = 0
@@ -6050,16 +6051,6 @@ object frmMain: TfrmMain
       LargeImageIndex = 70
       OnClick = btnBookKeepingCodesClick
     end
-    object btnDayClosingTimes: TdxBarLargeButton
-      Caption = 'Day Closing Times'
-      Category = 0
-      Hint = 'Edit day closing timestamps'
-      Visible = ivNever
-      LargeImageIndex = 135
-      OnClick = btnDayClosingTimesClick
-      SyncImageIndex = False
-      ImageIndex = 135
-    end
     object btnHotelSpecificSqlQueries: TdxBarLargeButton
       Caption = 'Hotel specific SQL Queries'
       Category = 0
@@ -6282,6 +6273,22 @@ object frmMain: TfrmMain
       Visible = ivAlways
       LargeImageIndex = 118
       OnClick = btnDailyRevenuesClick
+    end
+    object dxBarButton7: TdxBarButton
+      Caption = 'New Button'
+      Category = 0
+      Hint = 'New Button'
+      Visible = ivAlways
+    end
+    object btnDayCLosingTimes: TdxBarLargeButton
+      Caption = 'Dayclosing times'
+      Category = 0
+      Hint = 'Dayclosing times'
+      Visible = ivAlways
+      LargeImageIndex = 135
+      OnClick = btnDayClosingTimesClick
+      SyncImageIndex = False
+      ImageIndex = 135
     end
     object mmnuFile: TdxBarSubItem
       Caption = '&File'

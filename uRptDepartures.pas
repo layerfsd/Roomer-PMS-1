@@ -100,7 +100,7 @@ type
     function getsql(DateFrom,DateTo : Tdate) : string;
   protected
     procedure UpdateControls; override;
-    procedure LoadData; override;
+    procedure DoLoadData; override;
   public
     constructor Create(aOwner: TComponent); override;
     destructor Destroy; override;
@@ -461,7 +461,7 @@ begin
   UpdateControls;
 end;
 
-procedure TfrmDeparturesReport.LoadData;
+procedure TfrmDeparturesReport.DoLoadData;
 var
   s    : string;
   rset1: TRoomerDataset;

@@ -36,31 +36,15 @@ type
     rbYesterday: TsRadioButton;
     rbToday: TsRadioButton;
     rbOther: TsRadioButton;
-    cxStyleRepository2: TcxStyleRepository;
-    cxStyle2: TcxStyle;
-    cxStyle3: TcxStyle;
-    cxStyle4: TcxStyle;
-    cxStyle5: TcxStyle;
-    cxStyle6: TcxStyle;
-    cxStyle7: TcxStyle;
-    cxStyle8: TcxStyle;
-    cxStyle9: TcxStyle;
-    cxStyle10: TcxStyle;
-    cxStyle11: TcxStyle;
-    cxStyle12: TcxStyle;
-    cxStyle13: TcxStyle;
-    cxStyle14: TcxStyle;
-    dxGridReportLinkStyleSheet1: TdxGridReportLinkStyleSheet;
     gridPrinter: TdxComponentPrinter;
     grdPrinterLinkPayments: TdxGridReportLink;
     m_PaymentsDate: TDateField;
     m_Paymentspaytype: TWideStringField;
     m_Paymentsdescription: TWideStringField;
     m_PaymentsTotalAmount: TFloatField;
-    cxStyle1: TcxStyle;
     dsRevenues: TDataSource;
     m_Revenues: TdxMemData;
-    m_Revenuesdate: TDateField;
+    m_RevenuesRevenuedate: TDateField;
     m_Revenuesdescription: TWideStringField;
     m_Revenuesitemtype: TWideStringField;
     m_Revenuesvattype: TWideStringField;
@@ -90,19 +74,36 @@ type
     sSplitter1: TsSplitter;
     grdPrinterLinkRevenues: TdxGridReportLink;
     grdPrinterLinkAll: TdxCompositionReportLink;
+    sSplitter2: TsSplitter;
+    grBalance: TcxGrid;
+    tvBalance: TcxGridDBTableView;
+    lvBalance: TcxGridLevel;
+    m_Balance: TdxMemData;
+    m_BalanceRevenueDate: TDateField;
+    dsBalance: TDataSource;
+    m_Balancetotalrevenues: TFloatField;
+    m_Balancetotalpayments: TFloatField;
+    tvBalancerevenuedate: TcxGridDBColumn;
+    tvBalancetotalrevenues: TcxGridDBColumn;
+    tvBalancetotalpayments: TcxGridDBColumn;
+    m_Balancebalance: TFloatField;
+    tvBalancebalance: TcxGridDBColumn;
+    gridPrinterLinkBalance: TdxGridReportLink;
     procedure btnRefreshClick(Sender: TObject);
     procedure btnPrintGridClick(Sender: TObject);
     procedure rbPresetDateClick(Sender: TObject);
     procedure tvPaymentsTotalAmountGetProperties(Sender: TcxCustomGridTableItem; ARecord: TcxCustomGridRecord;
       var AProperties: TcxCustomEditProperties);
+    procedure m_BalanceCalcFields(DataSet: TDataSet);
   private
     FRefreshingData: Boolean;
     FRecordSet: TRoomerDataSet;
     FCurrencyhandler: TCurrencyHandler;
     procedure ShowError(const aOperation: string);
+    procedure UpdateBalanceData;
     { Private declarations }
   protected
-    procedure LoadData; override;
+    procedure DoLoadData; override;
     procedure UpdateControls; override;
   public
     { Public declarations }
@@ -132,6 +133,7 @@ uses
   , uD
   , uFinancialReportsAPICaller
   , cxEditRepositoryItems
+  , Math
   ;
 
 procedure ShowDailyRevenuesReport;
@@ -174,6 +176,13 @@ begin
   tvRevenuestotalamount.Summary.GroupFooterFormat := FCurrencyhandler.GetcxEditProperties.DisplayFormat;
   tvRevenuestotalwovat.Summary.GroupFooterFormat := FCurrencyhandler.GetcxEditProperties.DisplayFormat;
   tvRevenuestotalvat.Summary.GroupFooterFormat := FCurrencyhandler.GetcxEditProperties.DisplayFormat;
+
+  tvBalancetotalrevenues.Summary.FooterFormat := FCurrencyhandler.GetcxEditProperties.DisplayFormat;
+  tvBalancetotalrevenues.Summary.GroupFooterFormat := FCurrencyhandler.GetcxEditProperties.DisplayFormat;
+  tvBalancetotalpayments.Summary.FooterFormat := FCurrencyhandler.GetcxEditProperties.DisplayFormat;
+  tvBalancetotalpayments.Summary.GroupFooterFormat := FCurrencyhandler.GetcxEditProperties.DisplayFormat;
+  tvBalancebalance.Summary.FooterFormat := FCurrencyhandler.GetcxEditProperties.DisplayFormat;
+  tvBalancebalance.Summary.GroupFooterFormat := FCurrencyhandler.GetcxEditProperties.DisplayFormat;
 end;
 
 destructor TfrmRptDailyRevenues.Destroy;
@@ -183,7 +192,7 @@ begin
   FCurrencyhandler.Free;
 end;
 
-procedure TfrmRptDailyRevenues.LoadData;
+procedure TfrmRptDailyRevenues.DoLoadData;
 var
   lCaller: TFinancialReportsAPICaller;
 begin
@@ -197,8 +206,7 @@ begin
       try
         if lCaller.GetPaymentsReportAsDataset(FRecordSet, dtFromDate.Date, dtToDate.Date) then
         begin
-          if m_Payments.active then m_Payments.Close;
-          m_Payments.LoadFromDataSet(FRecordSet);
+          m_Payments.CopyFromDataSet(FRecordSet);
           m_Payments.Open;
         end
         else
@@ -206,12 +214,30 @@ begin
 
         if lCaller.GetRevenuesReportAsDataset(FRecordSet, dtFromDate.Date, dtToDate.Date) then
         begin
-          if m_Revenues.active then m_Revenues.Close;
-          m_Revenues.LoadFromDataSet(FRecordSet);
+          m_Revenues.CopyFromDataSet(FRecordSet);
           m_Revenues.Open;
         end
         else
           ShowError('reading of DailyRevenuesReport revenues data');
+
+        if lCaller.GetRoomrentReportAsDataset(FRecordSet, dtFromDate.Date, dtToDate.Date) then
+        begin
+          // Append roomrent revenue records
+          m_Revenues.LoadFromDataSet(FRecordSet);
+          m_Revenues.Open;
+        end
+        else
+          ShowError('reading of DailyRevenuesReport roomrent data');
+
+        UpdateBalanceData;
+
+        m_Payments.First;
+        m_Revenues.First;
+        m_Balance.First;
+
+        tvPayments.DataController.Groups.FullExpand;
+        tvRevenues.DataController.Groups.FullExpand;
+        tvBalance.DataController.Groups.FullExpand;
 
       finally
         lCaller.Free;
@@ -224,6 +250,84 @@ begin
   end;
 end;
 
+procedure TfrmRptDailyRevenues.UpdateBalanceData;
+var
+  bmRevenues: TBookmark;
+  bmPayments: TBookmark;
+  lCurrentDate: TDate;
+  lTotRev: Double;
+  lTotPay: Double;
+begin
+  m_Balance.DisableControls;
+  m_Revenues.DisableControls;
+  m_Payments.DisableControls;
+  try
+    bmPayments := m_Payments.Bookmark;
+    bmRevenues := m_Revenues.Bookmark;
+    m_balance.Close;
+    m_Balance.Open;
+
+    m_Payments.SortedField := 'Date';
+    m_Revenues.SortedField := 'RevenueDate';
+    m_Payments.First;
+    m_Revenues.First;
+    while not m_Payments.Eof and not m_Revenues.Eof do
+    begin
+      if m_Payments.Eof then
+        lCurrentDate := m_Revenues.fieldbyname('Revenuedate').AsDateTime
+      else if m_Revenues.Eof then
+        lCurrentDate := m_Payments.fieldbyname('Date').AsDateTime
+      else
+        lCurrentDate := Min(m_Payments.fieldbyname('Date').AsDateTime, m_Revenues.fieldbyname('Revenuedate').AsDateTime);
+
+      lTotRev := 0;
+      while not m_Revenues.Eof and (m_Revenues.fieldbyname('RevenueDate').AsDateTime = lCurrentDate) do
+      begin
+        lTotRev := lTotRev + m_Revenues.fieldbyname('TotalAmount').AsFloat;
+        m_Revenues.Next;
+      end;
+
+      lTotPay := 0;
+      while not m_Payments.Eof and (m_Payments.fieldbyname('Date').AsDateTime = lCurrentDate) do
+      begin
+        lTotPay := lTotPay + m_Payments.fieldbyname('TotalAmount').AsFloat;
+        m_Payments.Next;
+      end;
+
+      m_Balance.Append;
+      try
+        m_BalanceRevenueDate.AsDateTime := lCurrentDate;
+        m_Balancetotalrevenues.AsFloat := lTotRev;
+        m_Balancetotalpayments.AsFloat := lTotPay;
+        m_Balance.Post;
+      except
+        m_balance.Cancel;
+        raise;
+      end;
+
+    end;
+
+
+
+  finally
+    if m_Payments.BookmarkValid(bmPayments) then
+      m_Payments.Bookmark := bmPayments;
+
+    if m_Revenues.BookmarkValid(bmRevenues) then
+      m_Revenues.Bookmark := bmRevenues;
+
+    m_Balance.EnableControls;
+    m_Revenues.EnableControls;
+    m_Payments.EnableControls;
+  end;
+end;
+
+
+procedure TfrmRptDailyRevenues.m_BalanceCalcFields(DataSet: TDataSet);
+begin
+  inherited;
+  m_Balancebalance.AsFloat := m_Balancetotalrevenues.AsFloat - m_Balancetotalpayments.AsFloat;
+end;
 
 procedure TfrmRptDailyRevenues.rbPresetDateClick(Sender: TObject);
 begin

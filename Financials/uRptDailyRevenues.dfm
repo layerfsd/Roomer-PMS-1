@@ -1,23 +1,23 @@
 inherited frmRptDailyRevenues: TfrmRptDailyRevenues
   Caption = 'Daily Revenues and Payments'
   ClientHeight = 644
-  ClientWidth = 1128
+  ClientWidth = 1390
   Font.Height = -11
   Position = poOwnerFormCenter
-  ExplicitWidth = 1144
+  ExplicitWidth = 1406
   ExplicitHeight = 683
   PixelsPerInch = 96
   TextHeight = 13
   inherited dxStatusBar: TdxStatusBar
     Top = 624
-    Width = 1128
+    Width = 1390
     ExplicitTop = 624
-    ExplicitWidth = 1128
+    ExplicitWidth = 1390
   end
   object pnlHolder: TsPanel [1]
     Left = 0
     Top = 0
-    Width = 1128
+    Width = 1390
     Height = 624
     Margins.Left = 2
     Margins.Top = 2
@@ -28,9 +28,9 @@ inherited frmRptDailyRevenues: TfrmRptDailyRevenues
     TabOrder = 0
     SkinData.SkinSection = 'PANEL'
     object sSplitter1: TsSplitter
-      Left = 441
+      Left = 393
       Top = 147
-      Height = 413
+      Height = 445
       Color = clGradientActiveCaption
       ParentColor = False
       SkinData.CustomColor = True
@@ -41,15 +41,17 @@ inherited frmRptDailyRevenues: TfrmRptDailyRevenues
     object pnlFilter: TsPanel
       Left = 0
       Top = 0
-      Width = 1128
+      Width = 1390
       Height = 147
       Align = alTop
       TabOrder = 0
       SkinData.SkinSection = 'PANEL'
+      ExplicitLeft = 1
+      ExplicitTop = -5
       object pnlExportButtons: TsPanel
         Left = 1
         Top = 103
-        Width = 1126
+        Width = 1388
         Height = 43
         Align = alBottom
         BevelOuter = bvNone
@@ -57,7 +59,7 @@ inherited frmRptDailyRevenues: TfrmRptDailyRevenues
         SkinData.SkinSection = 'PANEL'
         object btnExcel: TsButton
           AlignWithMargins = True
-          Left = 861
+          Left = 1123
           Top = 3
           Width = 128
           Height = 37
@@ -70,7 +72,7 @@ inherited frmRptDailyRevenues: TfrmRptDailyRevenues
         end
         object btnPrintGrid: TsButton
           AlignWithMargins = True
-          Left = 995
+          Left = 1257
           Top = 3
           Width = 128
           Height = 37
@@ -172,8 +174,8 @@ inherited frmRptDailyRevenues: TfrmRptDailyRevenues
         object rbYesterday: TsRadioButton
           Left = 16
           Top = 21
-          Width = 77
-          Height = 19
+          Width = 69
+          Height = 20
           Caption = 'Yesterday'
           Checked = True
           TabOrder = 0
@@ -184,8 +186,8 @@ inherited frmRptDailyRevenues: TfrmRptDailyRevenues
         object rbToday: TsRadioButton
           Left = 16
           Top = 43
-          Width = 58
-          Height = 19
+          Width = 50
+          Height = 20
           Caption = 'Today'
           TabOrder = 1
           OnClick = rbPresetDateClick
@@ -194,8 +196,8 @@ inherited frmRptDailyRevenues: TfrmRptDailyRevenues
         object rbOther: TsRadioButton
           Left = 16
           Top = 64
-          Width = 56
-          Height = 19
+          Width = 48
+          Height = 20
           Caption = 'Other'
           TabOrder = 2
           OnClick = rbPresetDateClick
@@ -206,15 +208,15 @@ inherited frmRptDailyRevenues: TfrmRptDailyRevenues
     object pnlLeft: TsPanel
       Left = 0
       Top = 147
-      Width = 441
-      Height = 413
+      Width = 393
+      Height = 445
       Align = alLeft
       TabOrder = 1
       object grDataPayments: TcxGrid
         Left = 1
         Top = 1
-        Width = 439
-        Height = 411
+        Width = 391
+        Height = 443
         Align = alClient
         TabOrder = 0
         LookAndFeel.NativeStyle = False
@@ -248,8 +250,9 @@ inherited frmRptDailyRevenues: TfrmRptDailyRevenues
           OptionsView.GroupByBox = False
           OptionsView.GroupFooters = gfAlwaysVisible
           OptionsView.Indicator = True
-          Styles.Group = cxStyle1
-          Styles.Header = cxStyle1
+          Styles.Group = cxstGroup
+          Styles.Header = cxstHeader
+          Styles.StyleSheet = cxssRoomerGridTableView
           object tvPaymentsDate: TcxGridDBColumn
             DataBinding.FieldName = 'Date'
             PropertiesClassName = 'TcxDateEditProperties'
@@ -279,25 +282,38 @@ inherited frmRptDailyRevenues: TfrmRptDailyRevenues
           Caption = 'Payments'
           GridView = tvPayments
           Options.DetailTabsPosition = dtpTop
+          Styles.Tab = cxstGroup
         end
       end
     end
     object pnlRight: TsPanel
-      Left = 447
+      Left = 399
       Top = 147
-      Width = 681
-      Height = 413
+      Width = 991
+      Height = 445
       Align = alClient
       TabOrder = 2
+      object sSplitter2: TsSplitter
+        Left = 641
+        Top = 1
+        Height = 443
+        Color = clGradientActiveCaption
+        ParentColor = False
+        SkinData.CustomColor = True
+        ExplicitLeft = 9
+        ExplicitTop = 2
+        ExplicitHeight = 411
+      end
       object grDataRevenues: TcxGrid
         Left = 1
         Top = 1
-        Width = 679
-        Height = 411
-        Align = alClient
+        Width = 640
+        Height = 443
+        Align = alLeft
         TabOrder = 0
         LookAndFeel.NativeStyle = False
         RootLevelOptions.DetailTabsPosition = dtpTop
+        ExplicitTop = -4
         object tvRevenues: TcxGridDBTableView
           Navigator.Buttons.CustomButtons = <>
           DataController.DataSource = dsRevenues
@@ -352,11 +368,12 @@ inherited frmRptDailyRevenues: TfrmRptDailyRevenues
           OptionsView.GroupByBox = False
           OptionsView.GroupFooters = gfAlwaysVisible
           OptionsView.Indicator = True
-          Styles.Group = cxStyle1
-          Styles.Header = cxStyle1
+          Styles.Group = cxstGroup
+          Styles.Header = cxstHeader
+          Styles.StyleSheet = cxssRoomerGridTableView
           object tvRevenuesdate: TcxGridDBColumn
             Caption = 'Date'
-            DataBinding.FieldName = 'date'
+            DataBinding.FieldName = 'revenuedate'
             PropertiesClassName = 'TcxDateEditProperties'
             DateTimeGrouping = dtgByMonth
             GroupIndex = 0
@@ -388,7 +405,7 @@ inherited frmRptDailyRevenues: TfrmRptDailyRevenues
             Width = 111
           end
           object tvRevenuestotalwovat: TcxGridDBColumn
-            Caption = 'Total without VAT'
+            Caption = 'Total w/o VAT'
             DataBinding.FieldName = 'totalwovat'
             OnGetProperties = tvPaymentsTotalAmountGetProperties
             HeaderAlignmentHorz = taRightJustify
@@ -410,12 +427,112 @@ inherited frmRptDailyRevenues: TfrmRptDailyRevenues
           Options.DetailTabsPosition = dtpTop
         end
       end
+      object grBalance: TcxGrid
+        Left = 647
+        Top = 1
+        Width = 343
+        Height = 443
+        Align = alClient
+        TabOrder = 1
+        LookAndFeel.NativeStyle = False
+        RootLevelOptions.DetailTabsPosition = dtpTop
+        object tvBalance: TcxGridDBTableView
+          Navigator.Buttons.CustomButtons = <>
+          DataController.DataSource = dsBalance
+          DataController.Summary.DefaultGroupSummaryItems = <
+            item
+              Kind = skSum
+              Position = spFooter
+            end
+            item
+              Kind = skSum
+              Position = spFooter
+              Column = tvBalancetotalrevenues
+            end
+            item
+              Kind = skSum
+              Position = spFooter
+              Column = tvBalancetotalpayments
+            end
+            item
+              Kind = skSum
+              Position = spFooter
+              Column = tvBalancebalance
+            end>
+          DataController.Summary.FooterSummaryItems = <
+            item
+              Kind = skSum
+            end
+            item
+              Kind = skSum
+              Column = tvBalancetotalrevenues
+            end
+            item
+              Kind = skSum
+              Column = tvBalancetotalpayments
+            end
+            item
+              Kind = skSum
+              Column = tvBalancebalance
+            end>
+          DataController.Summary.SummaryGroups = <>
+          OptionsBehavior.AlwaysShowEditor = True
+          OptionsBehavior.FocusCellOnTab = True
+          OptionsBehavior.IncSearch = True
+          OptionsCustomize.ColumnHidingOnGrouping = False
+          OptionsData.CancelOnExit = False
+          OptionsData.Deleting = False
+          OptionsData.DeletingConfirmation = False
+          OptionsData.Editing = False
+          OptionsData.Inserting = False
+          OptionsView.ColumnAutoWidth = True
+          OptionsView.Footer = True
+          OptionsView.GroupByBox = False
+          OptionsView.GroupFooters = gfAlwaysVisible
+          OptionsView.Indicator = True
+          Styles.Group = cxstGroup
+          Styles.Header = cxstHeader
+          Styles.StyleSheet = cxssRoomerGridTableView
+          object tvBalancerevenuedate: TcxGridDBColumn
+            Caption = 'Date'
+            DataBinding.FieldName = 'revenuedate'
+            PropertiesClassName = 'TcxDateEditProperties'
+            DateTimeGrouping = dtgByMonth
+            GroupIndex = 0
+            SortIndex = 0
+            SortOrder = soAscending
+          end
+          object tvBalancetotalrevenues: TcxGridDBColumn
+            Caption = 'Revenues'
+            DataBinding.FieldName = 'totalrevenues'
+            OnGetProperties = tvPaymentsTotalAmountGetProperties
+            HeaderAlignmentHorz = taRightJustify
+          end
+          object tvBalancetotalpayments: TcxGridDBColumn
+            Caption = 'Payments'
+            DataBinding.FieldName = 'totalpayments'
+            OnGetProperties = tvPaymentsTotalAmountGetProperties
+            HeaderAlignmentHorz = taRightJustify
+          end
+          object tvBalancebalance: TcxGridDBColumn
+            Caption = 'Balance'
+            DataBinding.FieldName = 'balance'
+            OnGetProperties = tvPaymentsTotalAmountGetProperties
+            HeaderAlignmentHorz = taRightJustify
+          end
+        end
+        object lvBalance: TcxGridLevel
+          Caption = 'Balance'
+          GridView = tvBalance
+          Options.DetailTabsPosition = dtpTop
+        end
+      end
     end
     object pnlBottom: TsPanel
       Left = 0
-      Top = 560
-      Width = 1128
-      Height = 64
+      Top = 592
+      Width = 1390
+      Height = 32
       Align = alBottom
       TabOrder = 3
     end
@@ -423,12 +540,9 @@ inherited frmRptDailyRevenues: TfrmRptDailyRevenues
   inherited psRoomerBase: TcxPropertiesStore
     Components = <
       item
+        Component = grDataRevenues
         Properties.Strings = (
-          'Height'
-          'Left'
-          'Top'
-          'Width'
-          'WindowState')
+          'Width')
       end
       item
         Component = pnlLeft
@@ -436,8 +550,30 @@ inherited frmRptDailyRevenues: TfrmRptDailyRevenues
           'Width')
       end>
   end
+  inherited cxsrRoomerStyleRepository: TcxStyleRepository
+    Left = 456
+    Top = 24
+    PixelsPerInch = 96
+    inherited cxstCaption: TcxStyle
+      Font.Height = -15
+      Font.Style = [fsBold]
+    end
+    inherited cxstReportCaption: TcxStyle
+      Font.Height = -15
+    end
+    inherited dxssRoomerGridReportLink: TdxGridReportLinkStyleSheet
+      BuiltIn = True
+    end
+    inherited cxssRoomerGridTableView: TcxGridTableViewStyleSheet
+      BuiltIn = True
+    end
+  end
   object m_Payments: TdxMemData
-    Indexes = <>
+    Indexes = <
+      item
+        FieldName = 'Date'
+        SortOptions = []
+      end>
     SortOptions = []
     Left = 208
     Top = 192
@@ -461,199 +597,11 @@ inherited frmRptDailyRevenues: TfrmRptDailyRevenues
     Left = 152
     Top = 192
   end
-  object cxStyleRepository2: TcxStyleRepository
-    Left = 152
-    Top = 256
-    PixelsPerInch = 96
-    object cxStyle2: TcxStyle
-      AssignedValues = [svColor, svFont]
-      Color = clBtnFace
-      Font.Charset = ANSI_CHARSET
-      Font.Color = clDefault
-      Font.Height = -13
-      Font.Name = 'Arial'
-      Font.Style = [fsBold]
-    end
-    object cxStyle3: TcxStyle
-      AssignedValues = [svColor, svFont]
-      Color = clBtnFace
-      Font.Charset = ANSI_CHARSET
-      Font.Color = clDefault
-      Font.Height = -13
-      Font.Name = 'Arial'
-      Font.Style = []
-    end
-    object cxStyle4: TcxStyle
-      AssignedValues = [svColor, svFont]
-      Color = clBtnFace
-      Font.Charset = ANSI_CHARSET
-      Font.Color = clDefault
-      Font.Height = -13
-      Font.Name = 'Arial'
-      Font.Style = []
-    end
-    object cxStyle5: TcxStyle
-      AssignedValues = [svColor, svFont]
-      Color = clBtnFace
-      Font.Charset = ANSI_CHARSET
-      Font.Color = clDefault
-      Font.Height = -13
-      Font.Name = 'Arial'
-      Font.Style = []
-    end
-    object cxStyle6: TcxStyle
-      AssignedValues = [svColor, svFont]
-      Color = clWhite
-      Font.Charset = ANSI_CHARSET
-      Font.Color = clDefault
-      Font.Height = -13
-      Font.Name = 'Arial'
-      Font.Style = []
-    end
-    object cxStyle7: TcxStyle
-      AssignedValues = [svColor, svFont]
-      Color = 16053492
-      Font.Charset = ANSI_CHARSET
-      Font.Color = clDefault
-      Font.Height = -13
-      Font.Name = 'Arial'
-      Font.Style = []
-    end
-    object cxStyle8: TcxStyle
-      AssignedValues = [svColor, svFont]
-      Color = clWhite
-      Font.Charset = ANSI_CHARSET
-      Font.Color = clDefault
-      Font.Height = -13
-      Font.Name = 'Arial'
-      Font.Style = []
-    end
-    object cxStyle9: TcxStyle
-      AssignedValues = [svColor, svFont]
-      Color = clBtnShadow
-      Font.Charset = ANSI_CHARSET
-      Font.Color = clDefault
-      Font.Height = -13
-      Font.Name = 'Arial'
-      Font.Style = []
-    end
-    object cxStyle10: TcxStyle
-      AssignedValues = [svColor, svFont]
-      Color = clBtnFace
-      Font.Charset = ANSI_CHARSET
-      Font.Color = clDefault
-      Font.Height = -13
-      Font.Name = 'Arial'
-      Font.Style = []
-    end
-    object cxStyle11: TcxStyle
-      AssignedValues = [svColor, svFont]
-      Color = clBtnFace
-      Font.Charset = ANSI_CHARSET
-      Font.Color = clDefault
-      Font.Height = -13
-      Font.Name = 'Arial'
-      Font.Style = [fsBold]
-    end
-    object cxStyle12: TcxStyle
-      AssignedValues = [svColor, svFont]
-      Color = clBtnFace
-      Font.Charset = ANSI_CHARSET
-      Font.Color = clDefault
-      Font.Height = -13
-      Font.Name = 'Arial'
-      Font.Style = [fsBold]
-    end
-    object cxStyle13: TcxStyle
-      AssignedValues = [svColor, svFont]
-      Color = clWhite
-      Font.Charset = ANSI_CHARSET
-      Font.Color = clDefault
-      Font.Height = -13
-      Font.Name = 'Arial'
-      Font.Style = []
-    end
-    object cxStyle14: TcxStyle
-      AssignedValues = [svColor, svFont]
-      Color = clBtnFace
-      Font.Charset = ANSI_CHARSET
-      Font.Color = clDefault
-      Font.Height = -13
-      Font.Name = 'Arial'
-      Font.Style = []
-    end
-    object cxStyle1: TcxStyle
-      AssignedValues = [svFont]
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -11
-      Font.Name = 'Tahoma'
-      Font.Style = [fsBold]
-    end
-    object dxGridReportLinkStyleSheet1: TdxGridReportLinkStyleSheet
-      Caption = 'Arial font'
-      Styles.BandHeader = cxStyle2
-      Styles.Caption = cxStyle3
-      Styles.CardCaptionRow = cxStyle4
-      Styles.CardRowCaption = cxStyle5
-      Styles.Content = cxStyle6
-      Styles.ContentEven = cxStyle7
-      Styles.ContentOdd = cxStyle8
-      Styles.FilterBar = cxStyle9
-      Styles.Footer = cxStyle10
-      Styles.Group = cxStyle11
-      Styles.Header = cxStyle12
-      Styles.Preview = cxStyle13
-      Styles.Selection = cxStyle14
-      BuiltIn = True
-    end
-  end
   object gridPrinter: TdxComponentPrinter
-    CurrentLink = grdPrinterLinkPayments
+    CurrentLink = grdPrinterLinkAll
     Version = 0
     Left = 240
     Top = 248
-    object grdPrinterLinkPayments: TdxGridReportLink
-      Active = True
-      Component = grDataPayments
-      PageNumberFormat = pnfNumeral
-      PrinterPage.DMPaper = 9
-      PrinterPage.Footer = 6350
-      PrinterPage.Header = 6350
-      PrinterPage.Margins.Bottom = 6350
-      PrinterPage.Margins.Left = 5000
-      PrinterPage.Margins.Right = 5000
-      PrinterPage.Margins.Top = 12700
-      PrinterPage.PageFooter.RightTitle.Strings = (
-        '[Page # of Pages #]')
-      PrinterPage.PageSize.X = 210000
-      PrinterPage.PageSize.Y = 297000
-      PrinterPage.ScaleMode = smFit
-      PrinterPage._dxMeasurementUnits_ = 0
-      PrinterPage._dxLastMU_ = 2
-      ReportDocument.CreationDate = 42642.699096053240000000
-      ReportTitle.Font.Charset = DEFAULT_CHARSET
-      ReportTitle.Font.Color = clBlack
-      ReportTitle.Font.Height = -19
-      ReportTitle.Font.Name = 'Arial'
-      ReportTitle.Font.Style = [fsBold]
-      ShrinkToPageWidth = True
-      AssignedFormatValues = [fvTime, fvPageNumber]
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clBlack
-      Font.Height = -13
-      Font.Name = 'Arial'
-      Font.Style = []
-      OptionsExpanding.ExpandGroupRows = True
-      OptionsFormatting.LookAndFeelKind = lfFlat
-      OptionsFormatting.UseNativeStyles = True
-      OptionsOnEveryPage.Footers = False
-      OptionsOnEveryPage.FilterBar = False
-      OptionsView.FilterBar = False
-      StyleRepository = cxStyleRepository2
-      Styles.StyleSheet = dxGridReportLinkStyleSheet1
-      BuiltInReportLink = True
-    end
     object grdPrinterLinkRevenues: TdxGridReportLink
       Active = True
       Component = grDataRevenues
@@ -672,7 +620,50 @@ inherited frmRptDailyRevenues: TfrmRptDailyRevenues
       PrinterPage.ScaleMode = smFit
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
-      ReportDocument.CreationDate = 42642.695390497680000000
+      ReportDocument.CreationDate = 42647.623439340280000000
+      ReportTitle.Font.Charset = DEFAULT_CHARSET
+      ReportTitle.Font.Color = clBlack
+      ReportTitle.Font.Height = -19
+      ReportTitle.Font.Name = 'Arial'
+      ReportTitle.Font.Style = [fsBold]
+      ShrinkToPageWidth = True
+      AssignedFormatValues = [fvTime, fvPageNumber]
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clBlack
+      Font.Height = -12
+      Font.Name = 'Arial'
+      Font.Style = []
+      OptionsExpanding.ExpandGroupRows = True
+      OptionsFormatting.LookAndFeelKind = lfFlat
+      OptionsFormatting.UseNativeStyles = True
+      OptionsOnEveryPage.Footers = False
+      OptionsOnEveryPage.FilterBar = False
+      OptionsView.FilterBar = False
+      ScaleFonts = False
+      StyleRepository = cxsrRoomerStyleRepository
+      Styles.StyleSheet = dxssRoomerGridReportLink
+      BuiltInReportLink = True
+    end
+    object grdPrinterLinkPayments: TdxGridReportLink
+      Active = True
+      Component = grDataPayments
+      PageNumberFormat = pnfNumeral
+      PrinterPage.DMPaper = 9
+      PrinterPage.Footer = 6350
+      PrinterPage.Header = 6350
+      PrinterPage.Margins.Bottom = 6350
+      PrinterPage.Margins.Left = 5000
+      PrinterPage.Margins.Right = 5000
+      PrinterPage.Margins.Top = 12700
+      PrinterPage.PageFooter.RightTitle.Strings = (
+        '[Page # of Pages #]')
+      PrinterPage.PageSize.X = 210000
+      PrinterPage.PageSize.Y = 297000
+      PrinterPage.ScaleMode = smFit
+      PrinterPage._dxMeasurementUnits_ = 0
+      PrinterPage._dxLastMU_ = 2
+      ReportDocument.CreationDate = 42647.623439317130000000
+      ReportFootnotes.Text = 'voetnoot'
       ReportTitle.Font.Charset = DEFAULT_CHARSET
       ReportTitle.Font.Color = clBlack
       ReportTitle.Font.Height = -19
@@ -682,7 +673,7 @@ inherited frmRptDailyRevenues: TfrmRptDailyRevenues
       AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clBlack
-      Font.Height = -15
+      Font.Height = -12
       Font.Name = 'Arial'
       Font.Style = []
       OptionsExpanding.ExpandGroupRows = True
@@ -691,11 +682,55 @@ inherited frmRptDailyRevenues: TfrmRptDailyRevenues
       OptionsOnEveryPage.Footers = False
       OptionsOnEveryPage.FilterBar = False
       OptionsView.FilterBar = False
-      StyleRepository = cxStyleRepository2
-      Styles.StyleSheet = dxGridReportLinkStyleSheet1
+      ScaleFonts = False
+      StyleRepository = cxsrRoomerStyleRepository
+      Styles.StyleSheet = dxssRoomerGridReportLink
+      BuiltInReportLink = True
+    end
+    object gridPrinterLinkBalance: TdxGridReportLink
+      Active = True
+      Component = grBalance
+      PageNumberFormat = pnfNumeral
+      PrinterPage.DMPaper = 9
+      PrinterPage.Footer = 6350
+      PrinterPage.Header = 6350
+      PrinterPage.Margins.Bottom = 6350
+      PrinterPage.Margins.Left = 5000
+      PrinterPage.Margins.Right = 5000
+      PrinterPage.Margins.Top = 12700
+      PrinterPage.PageFooter.RightTitle.Strings = (
+        '[Page # of Pages #]')
+      PrinterPage.PageSize.X = 210000
+      PrinterPage.PageSize.Y = 297000
+      PrinterPage.ScaleMode = smFit
+      PrinterPage._dxMeasurementUnits_ = 0
+      PrinterPage._dxLastMU_ = 2
+      ReportDocument.CreationDate = 42647.623439363430000000
+      ReportTitle.Font.Charset = DEFAULT_CHARSET
+      ReportTitle.Font.Color = clBlack
+      ReportTitle.Font.Height = -19
+      ReportTitle.Font.Name = 'Arial'
+      ReportTitle.Font.Style = [fsBold]
+      ShrinkToPageWidth = True
+      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clBlack
+      Font.Height = -12
+      Font.Name = 'Arial'
+      Font.Style = []
+      OptionsExpanding.ExpandGroupRows = True
+      OptionsFormatting.LookAndFeelKind = lfFlat
+      OptionsFormatting.UseNativeStyles = True
+      OptionsOnEveryPage.Footers = False
+      OptionsOnEveryPage.FilterBar = False
+      OptionsView.FilterBar = False
+      ScaleFonts = False
+      StyleRepository = cxsrRoomerStyleRepository
+      Styles.StyleSheet = dxssRoomerGridReportLink
       BuiltInReportLink = True
     end
     object grdPrinterLinkAll: TdxCompositionReportLink
+      Active = True
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.Header = 6350
@@ -709,15 +744,19 @@ inherited frmRptDailyRevenues: TfrmRptDailyRevenues
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
       ReportDocument.Caption = 'grdPrinterLinkAll'
-      ReportDocument.CreationDate = 42642.693297916670000000
+      ReportDocument.CreationDate = 42647.623439398150000000
       ShrinkToPageWidth = True
       Items = <
+        item
+          ReportLink = grdPrinterLinkRevenues
+          BuiltInCompositionItem = True
+        end
         item
           ReportLink = grdPrinterLinkPayments
           BuiltInCompositionItem = True
         end
         item
-          ReportLink = grdPrinterLinkRevenues
+          ReportLink = gridPrinterLinkBalance
           BuiltInCompositionItem = True
         end>
       StartEachItemFromNewPage = False
@@ -730,12 +769,16 @@ inherited frmRptDailyRevenues: TfrmRptDailyRevenues
     Top = 272
   end
   object m_Revenues: TdxMemData
-    Indexes = <>
+    Indexes = <
+      item
+        FieldName = 'revenuedate'
+        SortOptions = []
+      end>
     SortOptions = []
     Left = 512
     Top = 264
-    object m_Revenuesdate: TDateField
-      FieldName = 'date'
+    object m_RevenuesRevenuedate: TDateField
+      FieldName = 'revenuedate'
     end
     object m_Revenuesitemtype: TWideStringField
       FieldName = 'itemtype'
@@ -757,5 +800,35 @@ inherited frmRptDailyRevenues: TfrmRptDailyRevenues
     object m_Revenuestotalvat: TFloatField
       FieldName = 'totalvat'
     end
+  end
+  object m_Balance: TdxMemData
+    Indexes = <
+      item
+        FieldName = 'revenuedate'
+        SortOptions = []
+      end>
+    SortOptions = []
+    OnCalcFields = m_BalanceCalcFields
+    Left = 1152
+    Top = 240
+    object m_BalanceRevenueDate: TDateField
+      FieldName = 'revenuedate'
+    end
+    object m_Balancetotalrevenues: TFloatField
+      FieldName = 'totalrevenues'
+    end
+    object m_Balancetotalpayments: TFloatField
+      FieldName = 'totalpayments'
+    end
+    object m_Balancebalance: TFloatField
+      FieldKind = fkCalculated
+      FieldName = 'balance'
+      Calculated = True
+    end
+  end
+  object dsBalance: TDataSource
+    DataSet = m_Balance
+    Left = 1080
+    Top = 248
   end
 end
