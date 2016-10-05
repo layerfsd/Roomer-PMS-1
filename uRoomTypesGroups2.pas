@@ -331,6 +331,7 @@ uses
   , uResourceManagement
   , uDynamicPricing
   , UITypes
+  , uActivityLogs
 
   , ufrmPaymentReqRoomtypeGroup;
 
@@ -848,7 +849,9 @@ begin
     if not Del_RoomTypeGroup(zData) then
     begin
       abort;
-    end
+      exit;
+    end;
+    glb.LogChanges(DataSet, 'roomtypegroups', DELETE_RECORD, '');
   end else
   begin
     abort
@@ -893,6 +896,7 @@ begin
 //        if OldCode <> zData.Code then
 //          CorrectRoomTypeGroups(OldCode, zData.Code);
 //        d.roomerMainDataSet.SystemCommitTransaction;
+        glb.LogChanges(DataSet, 'roomtypegroups', CHANGE_FIELD, '');
         if oldCode <> zData.Code then
           UpdateRoomTypeGroupCode(oldCode, zData.Code);
         if oldTop <> zData.TopClass then
@@ -930,6 +934,7 @@ begin
     if ins_roomTypeGroup(zData,nID) then
     begin
       m_.fieldByName('ID').AsInteger := nID;
+      glb.LogChanges(DataSet, 'roomtypegroups', ADD_RECORD, '');
       glb.ForceTableRefresh;
     end else
     begin
