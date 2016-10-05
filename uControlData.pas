@@ -690,11 +690,11 @@ type
     sLabel35: TsLabel;
     sLabel36: TsLabel;
     panWaitinglistNonOptional: TsPanel;
-    sGroupBox19: TsGroupBox;
-    sLabel37: TsLabel;
-    sLabel38: TsLabel;
-    sSpeedButton3: TsSpeedButton;
-    sSpeedButton4: TsSpeedButton;
+    gbxExternalPOS: TsGroupBox;
+    lblCustomer: TsLabel;
+    lblUser: TsLabel;
+    btnSelectEndOfDayCustomer: TsSpeedButton;
+    btnSelectEndOfDayUser: TsSpeedButton;
     edtEndOfDayCustomer: TsEdit;
     edtEndOfDayUser: TsEdit;
     procedure FormCreate(Sender : TObject);
@@ -755,8 +755,8 @@ type
     procedure btnInvoiceTemplateResourcesClick(Sender: TObject);
     procedure panGuestStayingClick(Sender: TObject);
     procedure panGuestStayingDblClick(Sender: TObject);
-    procedure sSpeedButton3Click(Sender: TObject);
-    procedure sSpeedButton4Click(Sender: TObject);
+    procedure btnSelectEndOfDayCustomerClick(Sender: TObject);
+    procedure btnSelectEndOfDayUserClick(Sender: TObject);
 
   private
     { private declarations }
@@ -3300,36 +3300,24 @@ begin
   end;
 end;
 
-procedure TfrmControlData.sSpeedButton3Click(Sender: TObject);
+procedure TfrmControlData.btnSelectEndOfDayCustomerClick(Sender: TObject);
 var
-  s : string;
   theData : recCustomerHolder;
 begin
   initCustomerHolder(theData);
   theData.Customer := edtEndOfDayCustomer.text;
-  OpenCustomers(actLookup, true, theData);
-  s := theData.Customer;
-  if s = '' then
-    exit;
-
-  if s <> edtEndOfDayCustomer.Text then
-    edtEndOfDayCustomer.Text := s;
+  if OpenCustomers(actLookup, true, theData) and (theData.Customer <> '') then
+    edtEndOfDayCustomer.Text := theData.Customer;
 end;
 
-procedure TfrmControlData.sSpeedButton4Click(Sender: TObject);
+procedure TfrmControlData.btnSelectEndOfDayUserClick(Sender: TObject);
 var
-  s : string;
   theData : recStaffMemberHolder;
 begin
   initStaffMemberHolder(theData);
   theData.Initials := edtEndOfDayUser.text;
-  openStaffMembers(actLookup, theData);
-  s := theData.Initials;
-  if s = '' then
-    exit;
-
-  if s <> edtEndOfDayUser.Text then
-    edtEndOfDayUser.Text := s;
+  if openStaffMembers(actLookup, theData) and (theData.Initials <> '') then
+    edtEndOfDayUser.Text := theData.Initials;
 end;
 
 procedure TfrmControlData.LoadColors(ExecutionPlan : TRoomerExecutionPlan);
