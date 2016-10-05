@@ -1566,6 +1566,8 @@ begin
                 'The Extra(s) [%s] do not have enough available stock for the whole reservation period: '+ #13 +
                 'Do you want to continue anyway?');
   constants.Add('shDeleteDayClosingTime', 'Delete DayClosingtime');
+
+  constants.Add('shChangesToRomClassDoNotChangeTheBookingSiteOTA', 'Please NOTE:'#13'Changing these settings does not affect the settings in the OTA (booking site).'#13'You will need to apply these settings there yourself, manually.');
 end;
 
 procedure AddConstants_OfflineReports;

@@ -789,6 +789,9 @@
         </DCCReference>
         <DCCReference Include="Definitions\uBreakfastStateDefinitions.pas"/>
         <DCCReference Include="Definitions\uAccountTypeDefinitions.pas"/>
+        <DCCReference Include="uCleaningNotes.pas">
+            <Form>frmCleaningNotes</Form>
+        </DCCReference>
         <None Include="Roomer.todo"/>
         <None Include="notes.txt"/>
         <None Include="Roomer.inc"/>

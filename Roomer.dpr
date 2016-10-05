@@ -240,7 +240,8 @@ uses
   uReservationStateChangeHandler in 'uReservationStateChangeHandler.pas',
   uRoomerForm in 'RoomerForm\uRoomerForm.pas' {frmBaseRoomerForm},
   uBreakfastStateDefinitions in 'Definitions\uBreakfastStateDefinitions.pas',
-  uAccountTypeDefinitions in 'Definitions\uAccountTypeDefinitions.pas';
+  uAccountTypeDefinitions in 'Definitions\uAccountTypeDefinitions.pas',
+  uCleaningNotes in 'uCleaningNotes.pas' {frmCleaningNotes};
 
 {$R *.RES}
 

@@ -116,7 +116,7 @@ object frmRoomTypesGroups2: TfrmRoomTypesGroups2
         Height = 21
         Color = clWhite
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = clBlack
+        Font.Color = 4473924
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -225,6 +225,7 @@ object frmRoomTypesGroups2: TfrmRoomTypesGroups2
       Align = alClient
       TabOrder = 3
       LookAndFeel.NativeStyle = False
+      ExplicitTop = 87
       object tvData: TcxGridDBTableView
         OnDblClick = tvDataDblClick
         Navigator.Buttons.CustomButtons = <>
@@ -399,6 +400,8 @@ object frmRoomTypesGroups2: TfrmRoomTypesGroups2
         object tvDataBreakfastIncluded: TcxGridDBColumn
           Caption = 'Breakfast Incl'
           DataBinding.FieldName = 'BreakfastIncluded'
+          PropertiesClassName = 'TcxCheckBoxProperties'
+          Properties.OnEditValueChanged = tvDataBreakfastIncludedPropertiesEditValueChanged
           Width = 90
         end
         object tvDataHalfBoard: TcxGridDBColumn
@@ -680,7 +683,6 @@ object frmRoomTypesGroups2: TfrmRoomTypesGroups2
     Left = 96
     Top = 192
     object prLink_grData: TdxGridReportLink
-      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.GrayShading = True
@@ -694,7 +696,6 @@ object frmRoomTypesGroups2: TfrmRoomTypesGroups2
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
       ReportDocument.CreationDate = 41334.495374884260000000
-      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       BuiltInReportLink = True
     end
   end
