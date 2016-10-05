@@ -1569,6 +1569,8 @@ begin
   constants.Add('shRoomerFormStateIdle', 'Ready');
   constants.Add('shRoomerFormStateLoadingData', 'Loading data...');
   constants.Add('shRoomerFormStatePrinting', 'Printing ...');
+
+  constants.Add('shChangesToRomClassDoNotChangeTheBookingSiteOTA', 'Please NOTE:'#13'Changing these settings does not affect the settings in the OTA (booking site).'#13'You will need to apply these settings there yourself, manually.');
 end;
 
 procedure AddConstants_OfflineReports;

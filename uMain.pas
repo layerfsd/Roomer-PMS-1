@@ -734,8 +734,8 @@ type
     btnReRegisterPMS: TdxBarLargeButton;
     btnRptDepartures: TdxBarLargeButton;
     btnDailyRevenues: TdxBarLargeButton;
-    dxBarButton7: TdxBarButton;
     btnDayCLosingTimes: TdxBarLargeButton;
+    btnCleaningNotes: TdxBarLargeButton;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
@@ -1038,6 +1038,7 @@ type
     procedure btnSimpleHouseKeepingClick(Sender: TObject);
     procedure btnReRegisterPMSClick(Sender: TObject);
     procedure btnDailyRevenuesClick(Sender: TObject);
+    procedure btnCleaningNotesClick(Sender: TObject);
 
   private
     FReservationsModel: TReservationsModel;
@@ -1632,6 +1633,7 @@ uses
   uInvoiceCompare,
   GoogleOTP256,
   uInvoiceController,
+  uCleaningNotes,
   Math
     , uOfflineReportGrid
     , uRptArrivals
@@ -11581,6 +11583,12 @@ procedure TfrmMain.btnCheckOutRoomClick(Sender: TObject);
 begin
   UserClickedDxLargeButton(Sender);
   _CheckOutRoom;
+end;
+
+procedure TfrmMain.btnCleaningNotesClick(Sender: TObject);
+begin
+  UserClickedDxLargeButton(Sender);
+
 end;
 
 procedure TfrmMain.btnClearSearchClick(Sender: TObject);

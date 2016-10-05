@@ -793,6 +793,9 @@
         <DCCReference Include="Financials\uRptDailyRevenues.pas">
             <Form>frmRptDailyRevenues</Form>
         </DCCReference>
+        <DCCReference Include="uCleaningNotes.pas">
+            <Form>frmCleaningNotes</Form>
+        </DCCReference>
         <None Include="Roomer.todo"/>
         <None Include="notes.txt"/>
         <None Include="Roomer.inc"/>

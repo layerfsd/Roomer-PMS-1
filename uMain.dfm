@@ -422,7 +422,7 @@ object frmMain: TfrmMain
             object lblNoRoom: TsLabel
               Left = 3
               Top = 59
-              Width = 50
+              Width = 76
               Height = 13
               Align = alBottom
               Alignment = taCenter
@@ -433,6 +433,7 @@ object frmMain: TfrmMain
               Font.Height = -11
               Font.Name = 'Tahoma'
               Font.Style = [fsBold]
+              ExplicitWidth = 50
             end
           end
         end
@@ -593,6 +594,8 @@ object frmMain: TfrmMain
           PopupMenu = pupGroups
           TabOrder = 1
           LookAndFeel.NativeStyle = False
+          ExplicitLeft = 1
+          ExplicitTop = 101
           object tvAllReservations: TcxGridDBTableView
             Navigator.Buttons.CustomButtons = <>
             Navigator.Buttons.First.Visible = True
@@ -1123,7 +1126,7 @@ object frmMain: TfrmMain
               Style = csDropDownList
               Color = clWhite
               Font.Charset = DEFAULT_CHARSET
-              Font.Color = clBlack
+              Font.Color = 4473924
               Font.Height = -11
               Font.Name = 'Tahoma'
               Font.Style = []
@@ -1316,8 +1319,6 @@ object frmMain: TfrmMain
           OnMoved = splitPeriodMoved
           Color = 6842472
           ParentColor = False
-          ExplicitTop = 159
-          ExplicitWidth = 919
         end
         object pnlPeriodNoRooms: TsPanel
           Left = 0
@@ -1648,10 +1649,6 @@ object frmMain: TfrmMain
         SkinData.CustomColor = False
         SkinData.CustomFont = False
         SkinData.SkinSection = 'TRANSPARENT'
-        ExplicitLeft = 0
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
       end
       object tabRateQuery: TsTabSheet
         Caption = 'tabRateQuery'
@@ -1963,7 +1960,7 @@ object frmMain: TfrmMain
             Color = clWhite
             EditMask = '!99/99/9999;1; '
             Font.Charset = DEFAULT_CHARSET
-            Font.Color = clBlack
+            Font.Color = 4473924
             Font.Height = -13
             Font.Name = 'Segoe UI'
             Font.Style = [fsBold]
@@ -3201,6 +3198,7 @@ object frmMain: TfrmMain
       Index = 4
     end
     object System: TdxRibbonTab
+      Active = True
       Caption = 'System'
       Groups = <
         item
@@ -3565,7 +3563,7 @@ object frmMain: TfrmMain
       Caption = '  Authentication needed...  '
       ParentFont = False
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = clBlack
+      Font.Color = 4473924
       Font.Height = -11
       Font.Name = 'Segoe UI'
       Font.Style = []
@@ -3630,10 +3628,10 @@ object frmMain: TfrmMain
       SkinData.SkinSection = 'ALPHACOMBOBOX'
       VerticalAlignment = taAlignTop
       Style = csDropDownList
-      Color = clWhite
+      Color = 16645629
       Ctl3D = True
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = clBlack
+      Font.Color = 4473924
       Font.Height = -11
       Font.Name = 'Segoe UI'
       Font.Style = []
@@ -4900,6 +4898,10 @@ object frmMain: TfrmMain
         item
           Visible = True
           ItemName = 'btnContactTypes'
+        end
+        item
+          Visible = True
+          ItemName = 'btnCleaningNotes'
         end>
       OneOnRow = False
       Row = 0
@@ -4910,7 +4912,7 @@ object frmMain: TfrmMain
     object barinnUsers: TdxBar
       Caption = 'Users'
       CaptionButtons = <>
-      DockedLeft = 544
+      DockedLeft = 607
       DockedTop = 0
       FloatLeft = 1324
       FloatTop = 8
@@ -5278,7 +5280,7 @@ object frmMain: TfrmMain
     object barinnBar5: TdxBar
       Caption = 'System Actions'
       CaptionButtons = <>
-      DockedLeft = 692
+      DockedLeft = 755
       DockedTop = 0
       FloatLeft = 1337
       FloatTop = 8
@@ -5314,7 +5316,7 @@ object frmMain: TfrmMain
     object barinnBar9: TdxBar
       Caption = 'Templates'
       CaptionButtons = <>
-      DockedLeft = 989
+      DockedLeft = 1052
       DockedTop = 0
       FloatLeft = 1278
       FloatTop = 8
@@ -6274,21 +6276,21 @@ object frmMain: TfrmMain
       LargeImageIndex = 118
       OnClick = btnDailyRevenuesClick
     end
-    object dxBarButton7: TdxBarButton
-      Caption = 'New Button'
-      Category = 0
-      Hint = 'New Button'
-      Visible = ivAlways
-    end
     object btnDayCLosingTimes: TdxBarLargeButton
       Caption = 'Dayclosing times'
-      Category = 0
       Hint = 'Dayclosing times'
+      Category = 0
       Visible = ivAlways
       LargeImageIndex = 135
       OnClick = btnDayClosingTimesClick
       SyncImageIndex = False
       ImageIndex = 135
+    object btnCleaningNotes: TdxBarLargeButton
+      Caption = 'Cleaning notes'
+      Category = 0
+      Hint = 'Cleaning notes'
+      Visible = ivAlways
+      OnClick = btnCleaningNotesClick
     end
     object mmnuFile: TdxBarSubItem
       Caption = '&File'
@@ -9484,10 +9486,8 @@ object frmMain: TfrmMain
         Properties.Strings = (
           'Height'
           'Left'
-          'Position'
           'Top'
-          'Width'
-          'WindowState')
+          'Width')
       end
       item
         Component = pnlPeriodNoRooms
@@ -9527,6 +9527,7 @@ object frmMain: TfrmMain
   object sSkinManager1: TsSkinManager
     Effects.AllowAeroBluring = False
     Effects.AllowGlowing = False
+    IsDefault = False
     InternalSkins = <
       item
         Name = 'RoomerUI'

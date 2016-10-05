@@ -275,6 +275,7 @@ type
     procedure tvDataColumn2PropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure tvDataPAYMENTS_REQUIREDPropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
+    procedure tvDataBreakfastIncludedPropertiesEditValueChanged(Sender: TObject);
   private
     { Private declarations }
     zFirstTime       : boolean;
@@ -291,6 +292,7 @@ type
     procedure SetEditedValuesIn_M_Dataset;
     procedure FetchRatePlanTypes;
     procedure FillDataHolderFromDataSet(dataset : TDataSet);
+    procedure NotifyDoesNotChangeOTAs;
 
   public
     { Public declarations }
@@ -331,6 +333,7 @@ uses
   , uResourceManagement
   , uDynamicPricing
   , UITypes
+  , uActivityLogs
 
   , ufrmPaymentReqRoomtypeGroup;
 
@@ -848,7 +851,9 @@ begin
     if not Del_RoomTypeGroup(zData) then
     begin
       abort;
-    end
+      exit;
+    end;
+    glb.LogChanges(DataSet, 'roomtypegroups', DELETE_RECORD, '');
   end else
   begin
     abort
@@ -883,6 +888,7 @@ begin
 //          abort;
 //          exit;
 //        end;
+      glb.LogChanges(DataSet, 'roomtypegroups', CHANGE_FIELD, '');
       oldTop := dataSet.FieldByName('TopClass').OldValue;
       oldCode := dataSet.FieldByName('Code').OldValue;
       if oldCode <> zData.Code then
@@ -930,6 +936,7 @@ begin
     if ins_roomTypeGroup(zData,nID) then
     begin
       m_.fieldByName('ID').AsInteger := nID;
+      glb.LogChanges(DataSet, 'roomtypegroups', ADD_RECORD, '');
       glb.ForceTableRefresh;
     end else
     begin
@@ -1125,6 +1132,16 @@ begin
                     m_,
                     'AvailabilityTypes');
 
+end;
+
+procedure TfrmRoomTypesGroups2.NotifyDoesNotChangeOTAs;
+begin
+  MessageDlg(GetTranslatedText('shChangesToRomClassDoNotChangeTheBookingSiteOTA'), mtWarning, [mbOk], 0);
+end;
+
+procedure TfrmRoomTypesGroups2.tvDataBreakfastIncludedPropertiesEditValueChanged(Sender: TObject);
+begin
+  NotifyDoesNotChangeOTAs;
 end;
 
 procedure TfrmRoomTypesGroups2.tvDataCodePropertiesValidate(Sender: TObject; var DisplayValue: Variant; var ErrorText: TCaption;

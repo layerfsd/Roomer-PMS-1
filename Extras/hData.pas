@@ -1223,6 +1223,16 @@ type
     tmp: integer;
   end;
 
+  recCleaningNotesHolder = record
+    id: integer;
+    active: boolean;
+    serviceType: string;
+    onceType: string;
+    interval: Integer;
+    minimumDays: Integer;
+    smessage: String;
+  end;
+
   recItemHolder = record
     id: integer;
     active: boolean;

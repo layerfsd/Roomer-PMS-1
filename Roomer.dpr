@@ -243,6 +243,7 @@ uses
   uAccountTypeDefinitions in 'Definitions\uAccountTypeDefinitions.pas',
   uFinancialReportsAPICaller in 'OpenAPI\uFinancialReportsAPICaller.pas',
   uRptDailyRevenues in 'Financials\uRptDailyRevenues.pas' {frmRptDailyRevenues};
+  uCleaningNotes in 'uCleaningNotes.pas' {frmCleaningNotes};
 
 {$R *.RES}
 
