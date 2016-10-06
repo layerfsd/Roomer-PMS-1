@@ -103,6 +103,10 @@ object frmMain: TfrmMain
       object tabOneDayView: TsTabSheet
         Caption = 'tabOneDayView'
         ImageIndex = 8
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object grOneDayRooms: TAdvStringGrid
           Left = 0
           Top = 0
@@ -416,7 +420,7 @@ object frmMain: TfrmMain
             object lblNoRoom: TsLabel
               Left = 3
               Top = 59
-              Width = 76
+              Width = 50
               Height = 13
               Align = alBottom
               Alignment = taCenter
@@ -427,7 +431,6 @@ object frmMain: TfrmMain
               Font.Height = -11
               Font.Name = 'Tahoma'
               Font.Style = [fsBold]
-              ExplicitWidth = 50
             end
           end
         end
@@ -514,7 +517,7 @@ object frmMain: TfrmMain
             object chkNewPage: TsCheckBox
               Left = 3
               Top = 15
-              Width = 148
+              Width = 151
               Height = 17
               Caption = 'Reservation on new page'
               Font.Charset = DEFAULT_CHARSET
@@ -531,7 +534,7 @@ object frmMain: TfrmMain
             object chkPrintMemo: TsCheckBox
               Left = 3
               Top = 36
-              Width = 78
+              Width = 81
               Height = 17
               Caption = 'Print memo'
               Font.Charset = DEFAULT_CHARSET
@@ -586,8 +589,6 @@ object frmMain: TfrmMain
           PopupMenu = pupGroups
           TabOrder = 1
           LookAndFeel.NativeStyle = False
-          ExplicitLeft = 1
-          ExplicitTop = 101
           object tvAllReservations: TcxGridDBTableView
             Navigator.Buttons.CustomButtons = <>
             Navigator.Buttons.First.Visible = True
@@ -843,6 +844,10 @@ object frmMain: TfrmMain
       object tabPeriod: TsTabSheet
         Caption = 'tabPeriod'
         ImageIndex = 2
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object sLabel2: TsLabel
           Left = 224
           Top = 400
@@ -1305,6 +1310,8 @@ object frmMain: TfrmMain
           OnMoved = splitPeriodMoved
           Color = 6842472
           ParentColor = False
+          ExplicitTop = 159
+          ExplicitWidth = 919
         end
         object pnlPeriodNoRooms: TsPanel
           Left = 0
@@ -1623,13 +1630,25 @@ object frmMain: TfrmMain
       end
       object tabFreeRooms: TsTabSheet
         Caption = 'tabFreeRooms'
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
       end
       object tabDashboard: TsTabSheet
         Caption = 'tabDashboard'
         SkinData.SkinSection = 'TRANSPARENT'
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
       end
       object tabRateQuery: TsTabSheet
         Caption = 'tabRateQuery'
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
       end
     end
     object panMainTop: TsPanel
@@ -1932,7 +1951,7 @@ object frmMain: TfrmMain
             Color = clWhite
             EditMask = '!99/99/9999;1; '
             Font.Charset = DEFAULT_CHARSET
-            Font.Color = 4473924
+            Font.Color = clBlack
             Font.Height = -13
             Font.Name = 'Segoe UI'
             Font.Style = [fsBold]
@@ -3148,6 +3167,7 @@ object frmMain: TfrmMain
       Index = 3
     end
     object rbTabData: TdxRibbonTab
+      Active = True
       Caption = 'Data'
       Groups = <
         item
@@ -3172,7 +3192,6 @@ object frmMain: TfrmMain
       Index = 4
     end
     object System: TdxRibbonTab
-      Active = True
       Caption = 'System'
       Groups = <
         item
@@ -3537,7 +3556,7 @@ object frmMain: TfrmMain
       Caption = '  Authentication needed...  '
       ParentFont = False
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = 4473924
+      Font.Color = clBlack
       Font.Height = -11
       Font.Name = 'Segoe UI'
       Font.Style = []
@@ -3602,10 +3621,10 @@ object frmMain: TfrmMain
       SkinData.SkinSection = 'ALPHACOMBOBOX'
       VerticalAlignment = taAlignTop
       Style = csDropDownList
-      Color = 16645629
+      Color = clWhite
       Ctl3D = True
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = 4473924
+      Font.Color = clBlack
       Font.Height = -11
       Font.Name = 'Segoe UI'
       Font.Style = []
@@ -9486,7 +9505,6 @@ object frmMain: TfrmMain
   object sSkinManager1: TsSkinManager
     Effects.AllowAeroBluring = False
     Effects.AllowGlowing = False
-    IsDefault = False
     InternalSkins = <
       item
         Name = 'RoomerUI'
