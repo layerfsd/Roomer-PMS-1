@@ -899,6 +899,7 @@ begin
 //        if OldCode <> zData.Code then
 //          CorrectRoomTypeGroups(OldCode, zData.Code);
 //        d.roomerMainDataSet.SystemCommitTransaction;
+        glb.LogChanges(DataSet, 'roomtypegroups', CHANGE_FIELD, '');
         if oldCode <> zData.Code then
           UpdateRoomTypeGroupCode(oldCode, zData.Code);
         if oldTop <> zData.TopClass then
