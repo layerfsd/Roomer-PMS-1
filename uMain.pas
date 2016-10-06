@@ -736,6 +736,7 @@ type
     btnDailyRevenues: TdxBarLargeButton;
     btnDayCLosingTimes: TdxBarLargeButton;
     btnCleaningNotes: TdxBarLargeButton;
+    btnDailyrev: TdxBarLargeButton;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
