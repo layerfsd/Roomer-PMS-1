@@ -11586,9 +11586,11 @@ begin
 end;
 
 procedure TfrmMain.btnCleaningNotesClick(Sender: TObject);
+var
+  theData: recCleaningNotesHolder;
 begin
   UserClickedDxLargeButton(Sender);
-
+  if openCleaningNotes(actNone, false, theData) then;
 end;
 
 procedure TfrmMain.btnClearSearchClick(Sender: TObject);

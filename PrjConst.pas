@@ -185,7 +185,9 @@ uses uAppGlobal,
   , uHotelStatusOfflineReport
   , uHotelArrivalsOfflineReport
   , uRptArrivals
-  , uFrmRoomReservationCancellationDialog;
+  , uFrmRoomReservationCancellationDialog
+  , uCleaningNotes
+  ;
 
 
 Type
@@ -1570,6 +1572,9 @@ begin
   constants.Add('shRoomerFormStateLoadingData', 'Loading data...');
   constants.Add('shRoomerFormStatePrinting', 'Printing ...');
 
+  constants.Add('shServiceTypeNeeded', 'Please provide the service type.');
+  constants.Add('shOnceTypeNeeded', 'Please provide the once type.');
+
   constants.Add('shChangesToRomClassDoNotChangeTheBookingSiteOTA', 'Please NOTE:'#13'Changing these settings does not affect the settings in the OTA (booking site).'#13'You will need to apply these settings there yourself, manually.');
 end;
 
@@ -1808,6 +1813,8 @@ begin
   TfrmDeparturesReport.Create(nil).Free;
   TfrmRptStockItems.Create(nil).Free;
   TfrmPaymentReqRoomtypeGroup.Create(nil).Free;
+
+  TfrmCleaningNotes.Create(nil).Free;
 
 end;
 

@@ -500,6 +500,10 @@ begin
                 end;
               end;
             end;
+
+            s := ' DELETE FROM roomsdate where ResFlag =' + _db(STATUS_DELETED) + ' AND RoomReservation = ' + _db(RoomReservation) + #10;
+            ExePlan.AddExec(s);
+            
             ExePlan.Execute(ptExec, false, false);
             if (status <> 'O') and (status <> 'N') then
             begin
