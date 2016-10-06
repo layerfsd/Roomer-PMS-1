@@ -34,7 +34,6 @@ type
     lblTodate: TsLabel;
     dtToDate: TsDateEdit;
     rbYesterday: TsRadioButton;
-    rbToday: TsRadioButton;
     rbOther: TsRadioButton;
     gridPrinter: TdxComponentPrinter;
     grdPrinterLinkPayments: TdxGridReportLink;
@@ -53,7 +52,6 @@ type
     m_Revenuestotalvat: TFloatField;
     pnlLeft: TsPanel;
     pnlRight: TsPanel;
-    pnlBottom: TsPanel;
     grDataPayments: TcxGrid;
     tvPayments: TcxGridDBTableView;
     tvPaymentsDate: TcxGridDBColumn;
@@ -237,10 +235,6 @@ begin
         m_Revenues.First;
         m_Balance.First;
 
-        tvPayments.DataController.Groups.FullExpand;
-        tvRevenues.DataController.Groups.FullExpand;
-        tvBalance.DataController.Groups.FullExpand;
-
       finally
         lCaller.Free;
       end;
@@ -249,6 +243,11 @@ begin
       m_Revenues.EnableControls;
       FRefreshingData := False;
     end;
+
+    tvPayments.DataController.Groups.FullExpand;
+    tvRevenues.DataController.Groups.FullExpand;
+    tvBalance.DataController.Groups.FullExpand;
+
   end;
 end;
 
@@ -273,7 +272,7 @@ begin
     m_Revenues.SortedField := 'RevenueDate';
     m_Payments.First;
     m_Revenues.First;
-    while not m_Payments.Eof and not m_Revenues.Eof do
+    while not m_Payments.Eof or not m_Revenues.Eof do
     begin
       if m_Payments.Eof then
         lCurrentDate := m_Revenues.fieldbyname('Revenuedate').AsDateTime
@@ -358,12 +357,6 @@ begin
 
   dtFromDate.Enabled := rbOther.Checked;
   dtToDate.Enabled := rbOther.Checked;
-
-  if rbToday.Checked then
-  begin
-    dtFromDate.Date := TDateTime.Today;
-    dtTodate.Date := TDateTime.Today;
-  end;
 
   if rbYesterday.Checked then
   begin

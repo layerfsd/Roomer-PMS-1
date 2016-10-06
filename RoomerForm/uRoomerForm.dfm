@@ -49,7 +49,7 @@ object frmBaseRoomerForm: TfrmBaseRoomerForm
           'Left'
           'Top'
           'Width'
-          'WindowState')
+          '')
       end>
     StorageName = 'cxPropertiesStore1'
     StorageType = stRegistry

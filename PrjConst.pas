@@ -1568,9 +1568,9 @@ begin
                 'The Extra(s) [%s] do not have enough available stock for the whole reservation period: '+ #13 +
                 'Do you want to continue anyway?');
   constants.Add('shDeleteDayClosingTime', 'Delete DayClosingtime');
-  constants.Add('shRoomerFormStateIdle', 'Ready');
-  constants.Add('shRoomerFormStateLoadingData', 'Loading data...');
-  constants.Add('shRoomerFormStatePrinting', 'Printing ...');
+  constants.Add('shRoomerFormBusyStateIdle', 'Ready');
+  constants.Add('shRoomerFormBusyStateLoadingData', 'Loading data...');
+  constants.Add('shRoomerFormBusyStatePrinting', 'Printing ...');
 
   constants.Add('shServiceTypeNeeded', 'Please provide the service type.');
   constants.Add('shOnceTypeNeeded', 'Please provide the once type.');

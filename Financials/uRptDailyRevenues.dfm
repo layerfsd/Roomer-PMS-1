@@ -29,8 +29,8 @@ inherited frmRptDailyRevenues: TfrmRptDailyRevenues
     SkinData.SkinSection = 'PANEL'
     object sSplitter1: TsSplitter
       Left = 393
-      Top = 147
-      Height = 445
+      Top = 129
+      Height = 495
       Color = clGradientActiveCaption
       ParentColor = False
       SkinData.CustomColor = True
@@ -42,15 +42,13 @@ inherited frmRptDailyRevenues: TfrmRptDailyRevenues
       Left = 0
       Top = 0
       Width = 1390
-      Height = 147
+      Height = 129
       Align = alTop
       TabOrder = 0
       SkinData.SkinSection = 'PANEL'
-      ExplicitLeft = 1
-      ExplicitTop = -5
       object pnlExportButtons: TsPanel
         Left = 1
-        Top = 103
+        Top = 85
         Width = 1388
         Height = 43
         Align = alBottom
@@ -104,7 +102,7 @@ inherited frmRptDailyRevenues: TfrmRptDailyRevenues
         Left = 4
         Top = 4
         Width = 349
-        Height = 96
+        Height = 78
         Align = alLeft
         Caption = 'Select date or range'
         TabOrder = 0
@@ -140,13 +138,14 @@ inherited frmRptDailyRevenues: TfrmRptDailyRevenues
           Font.Style = []
           MaxLength = 10
           ParentFont = False
-          TabOrder = 3
+          TabOrder = 2
           CheckOnExit = True
           SkinData.SkinSection = 'EDIT'
           GlyphMode.Blend = 0
           GlyphMode.Grayed = False
           DefaultToday = True
           DialogTitle = 'From date'
+          Weekends = [dowSaturday, dowSunday]
         end
         object dtToDate: TsDateEdit
           Left = 211
@@ -163,7 +162,7 @@ inherited frmRptDailyRevenues: TfrmRptDailyRevenues
           Font.Style = []
           MaxLength = 10
           ParentFont = False
-          TabOrder = 4
+          TabOrder = 3
           CheckOnExit = True
           SkinData.SkinSection = 'EDIT'
           GlyphMode.Blend = 0
@@ -183,23 +182,13 @@ inherited frmRptDailyRevenues: TfrmRptDailyRevenues
           OnClick = rbPresetDateClick
           SkinData.SkinSection = 'CHECKBOX'
         end
-        object rbToday: TsRadioButton
-          Left = 16
-          Top = 43
-          Width = 50
-          Height = 20
-          Caption = 'Today'
-          TabOrder = 1
-          OnClick = rbPresetDateClick
-          SkinData.SkinSection = 'CHECKBOX'
-        end
         object rbOther: TsRadioButton
           Left = 16
-          Top = 64
+          Top = 48
           Width = 48
           Height = 20
           Caption = 'Other'
-          TabOrder = 2
+          TabOrder = 1
           OnClick = rbPresetDateClick
           SkinData.SkinSection = 'CHECKBOX'
         end
@@ -207,16 +196,16 @@ inherited frmRptDailyRevenues: TfrmRptDailyRevenues
     end
     object pnlLeft: TsPanel
       Left = 0
-      Top = 147
+      Top = 129
       Width = 393
-      Height = 445
+      Height = 495
       Align = alLeft
       TabOrder = 1
       object grDataPayments: TcxGrid
         Left = 1
         Top = 1
         Width = 391
-        Height = 443
+        Height = 493
         Align = alClient
         TabOrder = 0
         LookAndFeel.NativeStyle = False
@@ -247,7 +236,6 @@ inherited frmRptDailyRevenues: TfrmRptDailyRevenues
           OptionsData.Inserting = False
           OptionsView.ColumnAutoWidth = True
           OptionsView.Footer = True
-          OptionsView.GroupByBox = False
           OptionsView.GroupFooters = gfAlwaysVisible
           OptionsView.Indicator = True
           Styles.Group = cxstGroup
@@ -288,15 +276,15 @@ inherited frmRptDailyRevenues: TfrmRptDailyRevenues
     end
     object pnlRight: TsPanel
       Left = 399
-      Top = 147
+      Top = 129
       Width = 991
-      Height = 445
+      Height = 495
       Align = alClient
       TabOrder = 2
       object sSplitter2: TsSplitter
         Left = 641
         Top = 1
-        Height = 443
+        Height = 493
         Color = clGradientActiveCaption
         ParentColor = False
         SkinData.CustomColor = True
@@ -308,12 +296,11 @@ inherited frmRptDailyRevenues: TfrmRptDailyRevenues
         Left = 1
         Top = 1
         Width = 640
-        Height = 443
+        Height = 493
         Align = alLeft
         TabOrder = 0
         LookAndFeel.NativeStyle = False
         RootLevelOptions.DetailTabsPosition = dtpTop
-        ExplicitTop = -4
         object tvRevenues: TcxGridDBTableView
           Navigator.Buttons.CustomButtons = <>
           DataController.DataSource = dsRevenues
@@ -431,7 +418,7 @@ inherited frmRptDailyRevenues: TfrmRptDailyRevenues
         Left = 647
         Top = 1
         Width = 343
-        Height = 443
+        Height = 493
         Align = alClient
         TabOrder = 1
         LookAndFeel.NativeStyle = False
@@ -528,14 +515,6 @@ inherited frmRptDailyRevenues: TfrmRptDailyRevenues
         end
       end
     end
-    object pnlBottom: TsPanel
-      Left = 0
-      Top = 592
-      Width = 1390
-      Height = 32
-      Align = alBottom
-      TabOrder = 3
-    end
   end
   inherited psRoomerBase: TcxPropertiesStore
     Components = <
@@ -605,11 +584,12 @@ inherited frmRptDailyRevenues: TfrmRptDailyRevenues
     object grdPrinterLinkRevenues: TdxGridReportLink
       Active = True
       Component = grDataRevenues
+      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.Header = 6350
       PrinterPage.Margins.Bottom = 6350
-      PrinterPage.Margins.Left = 5000
+      PrinterPage.Margins.Left = 10000
       PrinterPage.Margins.Right = 5000
       PrinterPage.Margins.Top = 12700
       PrinterPage.PageFooter.RightTitle.Strings = (
@@ -619,13 +599,13 @@ inherited frmRptDailyRevenues: TfrmRptDailyRevenues
       PrinterPage.ScaleMode = smFit
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
-      ReportDocument.CreationDate = 42649.498281886570000000
+      ReportDocument.CreationDate = 42649.700511099540000000
       ReportTitle.Font.Charset = DEFAULT_CHARSET
       ReportTitle.Font.Color = clBlack
       ReportTitle.Font.Height = -19
       ReportTitle.Font.Name = 'Arial'
       ReportTitle.Font.Style = [fsBold]
-      ShrinkToPageWidth = True
+      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clBlack
       Font.Height = -12
@@ -636,6 +616,7 @@ inherited frmRptDailyRevenues: TfrmRptDailyRevenues
       OptionsFormatting.UseNativeStyles = True
       OptionsOnEveryPage.Footers = False
       OptionsOnEveryPage.FilterBar = False
+      OptionsSize.AutoWidth = True
       OptionsView.FilterBar = False
       ScaleFonts = False
       StyleRepository = cxsrRoomerStyleRepository
@@ -645,11 +626,12 @@ inherited frmRptDailyRevenues: TfrmRptDailyRevenues
     object grdPrinterLinkPayments: TdxGridReportLink
       Active = True
       Component = grDataPayments
+      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.Header = 6350
       PrinterPage.Margins.Bottom = 6350
-      PrinterPage.Margins.Left = 5000
+      PrinterPage.Margins.Left = 10000
       PrinterPage.Margins.Right = 5000
       PrinterPage.Margins.Top = 12700
       PrinterPage.PageFooter.RightTitle.Strings = (
@@ -659,24 +641,25 @@ inherited frmRptDailyRevenues: TfrmRptDailyRevenues
       PrinterPage.ScaleMode = smFit
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
-      ReportDocument.CreationDate = 42649.498281979170000000
-      ReportFootnotes.Text = 'voetnoot'
+      ReportDocument.CreationDate = 42649.700511111110000000
       ReportTitle.Font.Charset = DEFAULT_CHARSET
       ReportTitle.Font.Color = clBlack
       ReportTitle.Font.Height = -19
       ReportTitle.Font.Name = 'Arial'
       ReportTitle.Font.Style = [fsBold]
-      ShrinkToPageWidth = True
+      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clBlack
       Font.Height = -12
       Font.Name = 'Arial'
       Font.Style = []
+      OptionsCards.KeepSameHeight = False
       OptionsExpanding.ExpandGroupRows = True
       OptionsFormatting.LookAndFeelKind = lfFlat
       OptionsFormatting.UseNativeStyles = True
       OptionsOnEveryPage.Footers = False
       OptionsOnEveryPage.FilterBar = False
+      OptionsSize.AutoWidth = True
       OptionsView.FilterBar = False
       ScaleFonts = False
       StyleRepository = cxsrRoomerStyleRepository
@@ -686,11 +669,12 @@ inherited frmRptDailyRevenues: TfrmRptDailyRevenues
     object gridPrinterLinkBalance: TdxGridReportLink
       Active = True
       Component = grBalance
+      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.Header = 6350
       PrinterPage.Margins.Bottom = 6350
-      PrinterPage.Margins.Left = 5000
+      PrinterPage.Margins.Left = 10000
       PrinterPage.Margins.Right = 5000
       PrinterPage.Margins.Top = 12700
       PrinterPage.PageFooter.RightTitle.Strings = (
@@ -700,13 +684,13 @@ inherited frmRptDailyRevenues: TfrmRptDailyRevenues
       PrinterPage.ScaleMode = smFit
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
-      ReportDocument.CreationDate = 42649.498281990740000000
+      ReportDocument.CreationDate = 42649.700511134260000000
       ReportTitle.Font.Charset = DEFAULT_CHARSET
       ReportTitle.Font.Color = clBlack
       ReportTitle.Font.Height = -19
       ReportTitle.Font.Name = 'Arial'
       ReportTitle.Font.Style = [fsBold]
-      ShrinkToPageWidth = True
+      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clBlack
       Font.Height = -12
@@ -717,6 +701,7 @@ inherited frmRptDailyRevenues: TfrmRptDailyRevenues
       OptionsFormatting.UseNativeStyles = True
       OptionsOnEveryPage.Footers = False
       OptionsOnEveryPage.FilterBar = False
+      OptionsSize.AutoWidth = True
       OptionsView.FilterBar = False
       ScaleFonts = False
       StyleRepository = cxsrRoomerStyleRepository
@@ -724,6 +709,7 @@ inherited frmRptDailyRevenues: TfrmRptDailyRevenues
       BuiltInReportLink = True
     end
     object grdPrinterLinkAll: TdxCompositionReportLink
+      Active = True
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.Header = 6350
@@ -731,14 +717,30 @@ inherited frmRptDailyRevenues: TfrmRptDailyRevenues
       PrinterPage.Margins.Left = 12700
       PrinterPage.Margins.Right = 12700
       PrinterPage.Margins.Top = 12700
+      PrinterPage.PageFooter.Font.Charset = ANSI_CHARSET
+      PrinterPage.PageFooter.Font.Color = clBlack
+      PrinterPage.PageFooter.Font.Height = -11
+      PrinterPage.PageFooter.Font.Name = 'Arial Narrow'
+      PrinterPage.PageFooter.Font.Style = []
+      PrinterPage.PageFooter.LeftTitle.Strings = (
+        '[Date & Time Printed]')
+      PrinterPage.PageFooter.RightTitle.Strings = (
+        '[Page # of Pages #]')
+      PrinterPage.PageHeader.CenterTitle.Strings = (
+        'Daily Revenues and Payments')
+      PrinterPage.PageHeader.Font.Charset = ANSI_CHARSET
+      PrinterPage.PageHeader.Font.Color = clBlack
+      PrinterPage.PageHeader.Font.Height = -16
+      PrinterPage.PageHeader.Font.Name = 'Arial'
+      PrinterPage.PageHeader.Font.Style = []
       PrinterPage.PageSize.X = 210000
       PrinterPage.PageSize.Y = 297000
-      PrinterPage.ScaleMode = smFit
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
       ReportDocument.Caption = 'grdPrinterLinkAll'
-      ReportDocument.CreationDate = 42647.623439398150000000
-      ShrinkToPageWidth = True
+      ReportDocument.CreationDate = 42649.700511134260000000
+      TimeFormat = 2
+      AssignedFormatValues = [fvTime]
       Items = <
         item
           ReportLink = grdPrinterLinkRevenues
