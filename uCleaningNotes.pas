@@ -1,0 +1,811 @@
+unit uCleaningNotes;
+
+interface
+
+// unit added 2013-02-28 HJ
+
+uses
+    Winapi.Windows
+  , Winapi.Messages
+  , System.SysUtils
+  , System.Variants
+  , System.Classes
+  , Vcl.Graphics
+  , Vcl.Controls
+  , Vcl.Forms
+  , Vcl.Dialogs
+  , Vcl.Buttons
+  , Vcl.StdCtrls
+  , Vcl.ComCtrls
+  , Vcl.Menus
+  , Vcl.ExtCtrls
+  , Generics.Collections
+  , Data.DB
+  , shellapi
+  , _glob
+  , Hdata
+  , ug
+  , uD
+  , uFrmKeyPairSelector
+  , RoomerCloudEntities
+
+  , uManageFilesOnServer
+  , kbmMemTable
+
+  , sSkinProvider
+  , sSpeedButton
+  , sEdit
+  , sPageControl
+  , sStatusBar
+  , sLabel
+  , sButton
+  , sPanel
+
+  , dxCore
+  , cxGridExportLink
+  , cxGraphics
+  , cxControls
+  , cxLookAndFeels
+  , cxLookAndFeelPainters
+  , cxStyles
+  , cxCustomData
+  , cxFilter
+  , cxData
+  , cxDataStorage
+  , cxEdit
+  , cxNavigator
+  , cxDBData
+  , cxGridCustomTableView
+  , cxGridTableView
+  , cxGridDBTableView
+  , cxGridLevel
+  , cxClasses
+  , cxGridCustomView
+  , cxGrid
+  , cxTextEdit
+  , dxPSGlbl
+  , dxPSUtl
+  , dxPSEngn
+  , dxPrnPg
+  , dxBkgnd
+  , dxWrap
+  , dxPrnDev
+  , dxPSCompsProvider
+  , dxPSFillPatterns
+  , dxPSEdgePatterns
+  , dxPSPDFExportCore
+  , dxPSPDFExport
+  , cxDrawTextUtils
+  , dxPSPrVwStd
+  , dxPSPrVwAdv
+  , dxPSPrVwRibbon
+  , dxPScxPageControlProducer
+  , dxPScxGridLnk
+  , dxPScxGridLayoutViewLnk
+  , dxPScxEditorProducers
+  , dxPScxExtEditorProducers
+  , dxPSCore
+  , dxPScxCommon
+
+  , cmpRoomerDataSet
+  , cmpRoomerConnection, dxSkinsCore, dxSkinDarkSide, dxSkinDevExpressDarkStyle, dxSkinMcSkin, dxSkinOffice2013White,
+  dxSkinsDefaultPainters, dxSkinscxPCPainter, cxCalc, cxButtonEdit, dxSkinsdxBarPainter, dxSkinsdxRibbonPainter, cxPropertiesStore, dxmdaset,
+  dxPScxPivotGridLnk, dxSkinCaramel, dxSkinCoffee, dxSkinTheAsphaltWorld, sCheckBox, dxSkinBlack, dxSkinBlue, dxSkinBlueprint,
+  dxSkinDarkRoom, dxSkinDevExpressStyle, dxSkinFoggy, dxSkinGlassOceans, dxSkinHighContrast, dxSkiniMaginary, dxSkinLilian, dxSkinLiquidSky,
+  dxSkinLondonLiquidSky, dxSkinMoneyTwins, dxSkinOffice2007Black, dxSkinOffice2007Blue, dxSkinOffice2007Green, dxSkinOffice2007Pink,
+  dxSkinOffice2007Silver, dxSkinOffice2010Black, dxSkinOffice2010Blue, dxSkinOffice2010Silver, dxSkinPumpkin, dxSkinSeven,
+  dxSkinSevenClassic, dxSkinSharp, dxSkinSharpPlus, dxSkinSilver, dxSkinSpringTime, dxSkinStardust, dxSkinSummer2008, dxSkinValentine,
+  dxSkinVS2010, dxSkinWhiteprint, dxSkinXmas2008Blue, cxDropDownEdit, cxCheckBox, cxCalendar, cxCurrencyEdit,
+  uCurrencyHandler
+
+  ;
+
+type
+  {$SCOPEDENUMS ON}
+  TfrmCleaningNotes = class(TForm)
+    sPanel1: TsPanel;
+    btnDelete: TsButton;
+    btnOther: TsButton;
+    mnuOther: TPopupMenu;
+    mnuiPrint: TMenuItem;
+    mnuiAllowGridEdit: TMenuItem;
+    N2: TMenuItem;
+    Export1: TMenuItem;
+    mnuiGridToExcel: TMenuItem;
+    mnuiGridToHtml: TMenuItem;
+    mnuiGridToText: TMenuItem;
+    mnuiGridToXml: TMenuItem;
+    sbMain: TsStatusBar;
+    edFilter: TsEdit;
+    cLabFilter: TsLabel;
+    btnClear: TsSpeedButton;
+    panBtn: TsPanel;
+    btnCancel: TsButton;
+    BtnOk: TsButton;
+    dsCleaningNotes: TDataSource;
+    grPrinter: TdxComponentPrinter;
+    prLink_grData: TdxGridReportLink;
+    m_CleaningNotes: TdxMemData;
+    grData: TcxGrid;
+    tvData: TcxGridDBTableView;
+    lvData: TcxGridLevel;
+    m_CleaningNotesID: TIntegerField;
+    m_CleaningNotesActive: TBooleanField;
+    btnInsert: TsButton;
+    btnEdit: TsButton;
+    FormStore: TcxPropertiesStore;
+    chkActive: TsCheckBox;
+    timFilter: TTimer;
+    sLabel3: TsLabel;
+    sLabel4: TsLabel;
+    m_CleaningNotesinterval: TIntegerField;
+    m_CleaningNotesminimumDays: TIntegerField;
+    m_CleaningNotesserviceType: TWideStringField;
+    m_CleaningNotesmessage: TWideStringField;
+    m_CleaningNotesonceType: TWideStringField;
+    tvDataRecId: TcxGridDBColumn;
+    tvDataID: TcxGridDBColumn;
+    tvDataactive: TcxGridDBColumn;
+    tvDataserviceType: TcxGridDBColumn;
+    tvDataonceType: TcxGridDBColumn;
+    tvDatainterval: TcxGridDBColumn;
+    tvDataminimumDays: TcxGridDBColumn;
+    tvDatamessage: TcxGridDBColumn;
+
+    procedure FormCreate(Sender: TObject);
+    procedure FormShow(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure FormKeyPress(Sender: TObject; var Key: Char);
+    procedure m_CleaningNotesBeforeDelete(DataSet: TDataSet);
+    procedure m_CleaningNotesBeforeInsert(DataSet: TDataSet);
+    procedure m_CleaningNotesBeforePost(DataSet: TDataSet);
+    procedure m_CleaningNotesNewRecord(DataSet: TDataSet);
+    procedure tvDataDblClick(Sender: TObject);
+    procedure BtnOkClick(Sender: TObject);
+    procedure btnCancelClick(Sender: TObject);
+    procedure tvDataDataControllerFilterChanged(Sender: TObject);
+    procedure tvDataDataControllerSortingChanged(Sender: TObject);
+    procedure btnDeleteClick(Sender: TObject);
+    procedure mnuiPrintClick(Sender: TObject);
+    procedure mnuiAllowGridEditClick(Sender: TObject);
+    procedure mnuiGridToExcelClick(Sender: TObject);
+    procedure mnuiGridToHtmlClick(Sender: TObject);
+    procedure mnuiGridToTextClick(Sender: TObject);
+    procedure mnuiGridToXmlClick(Sender: TObject);
+    procedure btnEditClick(Sender: TObject);
+    procedure btnClearClick(Sender: TObject);
+    procedure edFilterChange(Sender: TObject);
+    procedure tvDataItemPropertiesValidate(Sender: TObject; var DisplayValue: Variant; var ErrorText: TCaption; var Error: Boolean);
+    procedure btnInsertClick(Sender: TObject);
+    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure chkActiveClick(Sender: TObject);
+    procedure m_CleaningNotesFilterRecord(DataSet: TDataSet; var Accept: Boolean);
+    procedure timFilterTimer(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure m_CleaningNotesAfterPost(DataSet: TDataSet);
+    procedure FormDestroy(Sender: TObject);
+  private
+    { Private declarations }
+    financeLookupList : TKeyPairList;
+    zFirstTime       : boolean;
+    FAllowGridEdit   : boolean;
+    zFilterOn        : boolean;
+
+    zSortStr         : string;
+    FAvailSet: TRoomerDataset;
+
+    FLocateAfterPost: integer;
+    FCurrencyhandler: TCurrencyHandler;
+
+    Procedure fillGridFromDataset;
+    procedure fillHolder;
+    Procedure chkFilter;
+    procedure applyFilter;
+    procedure StopFilter;
+    function CopyDatasetToRecCleaningNote:recCleaningNotesHolder;
+    procedure SetAllowGridEdit(const Value: boolean);
+    procedure SetFilterForDataset(aRSet: TRoomerDataset);
+    function ConstructSQL: string;
+  protected
+    Lookup : Boolean;
+    zAct: TActTableAction;
+    zData: recCleaningNotesHolder;
+    /// <summary>
+    ///   Add recCleaningNotesHolders to recCleaningNotesHolderslist for each price-period of selected stockitem. <br />
+    ///  zData is used to determine requested peroid of use
+    /// </summary>
+    property AllowGridEdit: boolean read FAllowGridEdit write SetAllowGridEdit;
+  end;
+
+function openCleaningNotes(act : TActTableAction; Lookup : Boolean; var theData : recCleaningNotesHolder) : boolean;
+
+implementation
+
+{$R *.dfm}
+
+uses
+  prjConst
+  , uSqlDefinitions
+  , uItemTypes2
+  , uMessageList
+  , uAppGlobal
+  , uDimages
+  , uFrmTaxItemLink
+  , uBookKeepingCodes
+  , uUtils
+  , UITypes
+  , uDateUtils
+  , DateUtils
+  , Math
+  ;
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+//  unit global functions
+//////////////////////////////////////////////////////////////////////////////////////////////
+
+function openCleaningNotes(act : TActTableAction; Lookup : Boolean; var theData : recCleaningNotesHolder) : boolean;
+var _frmCleaningNotes : TfrmCleaningNotes;
+begin
+  result := false;
+  _frmCleaningNotes := TfrmCleaningNotes.Create(nil);
+  try
+    _frmCleaningNotes.zData := theData;
+    _frmCleaningNotes.Lookup := Lookup;
+    _frmCleaningNotes.zAct := act;
+    _frmCleaningNotes.ShowModal;
+    if _frmCleaningNotes.modalresult = mrOk then
+    begin
+      theData := _frmCleaningNotes.zData;
+      result := true;
+    end
+    else
+    begin
+      initCleaningNoteHolder(theData);
+    end;
+  finally
+    freeandnil(_frmCleaningNotes);
+  end;
+end;
+
+///////////////////////////////////////////////////////////////////////
+                    { Private declarations }
+///////////////////////////////////////////////////////////////////////
+
+function TfrmCleaningNotes.CopyDatasetToRecCleaningNote:recCleaningNotesHolder;
+begin
+  Result.ID                    := m_CleaningNotesID.AsInteger;
+  Result.Active                := m_CleaningNotesActive.AsBoolean;
+  Result.serviceType           := m_CleaningNotesserviceType.AsString;
+  Result.onceType              := m_CleaningNotesonceType.asString;
+  Result.interval              := m_CleaningNotesinterval.AsInteger;
+  Result.minimumDays           := m_CleaningNotesminimumDays.AsInteger;
+  Result.smessage              := m_CleaningNotesmessage.AsString;
+end;
+
+
+procedure TfrmCleaningNotes.SetFilterForDataset(aRSet: TRoomerDataset);
+var
+  lFilterExpr: TStringbuilder;
+begin
+  lFilterExpr := TStringbuilder.Create;
+  try
+    if chkActive.Checked then
+      lFilterExpr.Append('(active=1) ')
+    else
+      lFilterExpr.Append('(active=0) ');
+
+    aRSet.Filter := lFilterExpr.ToString;
+    aRSet.Filtered := aRSet.Filter <> '';
+  finally
+    lFilterExpr.Free;
+  end;
+
+end;
+
+function TfrmCleaningNotes.ConstructSQL: string;
+const
+  cSQL = 'select * FROM cleaningnotes';
+begin
+  Result := cSQL;
+end;
+
+Procedure TfrmCleaningNotes.fillGridFromDataset;
+var
+  rSet : TRoomerDataSet;
+begin
+  zFirstTime := true;
+
+  if zSortStr = '' then zSortStr := 'id';
+
+  rSet := CreateNewDataSet;
+  rSet_bySQL(rSet, ConstructSQL);
+  try
+    rSet.Sort := zSortStr;
+
+    SetFilterForDataset(rSet);
+
+    m_CleaningNotes.Close;
+    m_CleaningNotes.Open;
+
+    rSet.First;
+    if NOT rSet.Eof then
+    begin
+      m_CleaningNotes.DisableControls;
+      try
+        m_CleaningNotes.LoadFromDataSet(rSet);
+      finally
+        m_CleaningNotes.EnableControls;
+      end;
+    end;
+  finally
+    rSet.Free;
+  end;
+
+end;
+
+
+
+procedure TfrmCleaningNotes.fillHolder;
+begin
+  zData := CopyDatasetToRecCleaningNote;
+end;
+
+procedure TfrmCleaningNotes.chkActiveClick(Sender: TObject);
+begin
+  zFirstTime := false;
+  if tvdata.DataController.DataSet.State = dsEdit then
+  begin
+    tvdata.DataController.Post;
+  end;
+  fillGridFromDataset;
+  zFirstTime := false;
+end;
+
+procedure TfrmCleaningNotes.chkFilter;
+var
+  sFilter : string;
+  rC1,rc2   : integer;
+begin
+  sFilter := edFilter.text;
+  rc1 := tvData.DataController.RecordCount;
+  rc2 := tvData.DataController.FilteredRecordCount;
+  zFilterON := rc1 <> rc2;
+end;
+
+procedure TfrmCleaningNotes.SetAllowGridEdit(const Value: boolean);
+begin
+  FAllowGridEdit := Value;
+  tvData.OptionsData.Editing := FAllowGridEdit;
+  tvDataID.Options.Editing := false;
+
+  mnuiAllowGridEdit.Checked := FAllowGridEdit;
+  btnDelete.Enabled := FAllowGridEdit;
+  btnEdit.Enabled := FAllowGridEdit;
+  btnInsert.Enabled := FAllowGridEdit;
+end;
+
+procedure TfrmCleaningNotes.StopFilter;
+begin
+  if tvData.DataController.Filter.AutoDataSetFilter then
+  begin
+    timFilter.Enabled := False;
+    m_CleaningNotes.filtered := False;
+    tvData.DataController.Filter.Active := False;
+    tvData.DataController.Filter.Changed;
+  end else
+  begin
+    tvData.DataController.Filter.Root.Clear;
+    tvData.DataController.Filter.Active := false;
+    grData.Invalidate(true);
+  end;
+end;
+
+procedure TfrmCleaningNotes.edFilterChange(Sender: TObject);
+begin
+  if edFilter.Text = '' then
+  begin
+    StopFilter;
+  end else
+  begin
+    applyFilter;
+  end;
+end;
+
+procedure TfrmCleaningNotes.applyFilter;
+var i : Integer;
+
+    procedure RestartTimer;
+    begin
+      timFilter.Enabled := False;
+      timFilter.Interval := 500;
+      timFilter.Interval := 30;
+      timFilter.Enabled := True;
+    end;
+begin
+  if tvData.DataController.Filter.AutoDataSetFilter then
+  begin
+    m_CleaningNotes.filtered := False;
+    RestartTimer;
+  end else
+  begin
+    tvData.DataController.Filter.Options := [fcoCaseInsensitive];
+    tvData.DataController.Filter.Root.BoolOperatorKind := fboOr;
+    tvData.DataController.Filter.Root.Clear;
+    for i := 0 to tvData.ColumnCount - 1 do
+      if tvData.Columns[i].DataBinding.ValueType = 'String' then
+        tvData.DataController.Filter.Root.AddItem(tvData.Columns[i], foLike, '%'+edFilter.Text+'%', '%'+edFilter.Text+'%');
+    tvData.DataController.Filter.Active := True;
+  end;
+end;
+
+
+/////////////////////////////////////////////////////////////
+// Form actions
+/////////////////////////////////////////////////////////////
+
+procedure TfrmCleaningNotes.FormCreate(Sender: TObject);
+begin
+  RoomerLanguage.TranslateThisForm(self);
+  glb.PerformAuthenticationAssertion(self);
+  PlaceFormOnVisibleMonitor(self);
+  Lookup := False;
+  financeLookupList := nil;
+  //**
+  zFirstTime  := true;
+  zAct        := actNone;
+  FAvailSet := TRoomerDataSet.Create(self);
+  FCurrencyhandler := TCurrencyHandler.Create(g.qNativeCurrency);
+end;
+
+procedure TfrmCleaningNotes.FormDestroy(Sender: TObject);
+begin
+  FCurrencyHandler.Free;
+end;
+
+procedure TfrmCleaningNotes.FormShow(Sender: TObject);
+begin
+  zFirstTime := true;
+  glb.EnableOrDisableTableRefresh('items', False);
+//**
+  panBtn.Visible := False;
+  sbMain.Visible := false;
+
+  chkActive.Checked := True;
+
+  fillGridFromDataset;
+
+  sbMain.SimpleText := zSortStr;
+
+  AllowGridEdit := (ZAct <> actLookup);
+  panBtn.Visible := (Zact = actLookup);
+  sbMain.Visible := (Zact = actLookup);
+
+  chkFilter;
+  zFirstTime := false;
+
+  tvData.DataController.DataModeController.GridMode := (ZAct = actLookup);
+  tvData.DataController.Filter.AutoDataSetFilter := tvData.DataController.DataModeController.GridMode;
+  tvData.DataController.MultiSelect := true;
+
+  grData.SetFocus;
+end;
+
+procedure TfrmCleaningNotes.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+  if tvdata.DataController.DataSet.State = dsInsert then
+  begin
+    tvdata.DataController.Post;
+  end;
+  if tvdata.DataController.DataSet.State = dsEdit then
+  begin
+    tvdata.DataController.Post;
+  end;
+  glb.EnableOrDisableTableRefresh('items', True);
+end;
+
+procedure TfrmCleaningNotes.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+begin
+  CanClose := True;
+end;
+
+procedure TfrmCleaningNotes.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then
+  begin
+    if m_CleaningNotes.State in [dsInsert, dsEdit] then
+      m_CleaningNotes.Cancel
+    else
+      btnCancel.Click;
+  end;
+end;
+
+procedure TfrmCleaningNotes.FormKeyPress(Sender: TObject; var Key: Char);
+begin
+  if (ZAct = actLookup) and (ActiveControl <> edFilter) then
+  begin
+    if key = chr(13) then
+      btnOk.click
+    else if key = chr(27) then
+      btnCancel.click;
+  end;
+end;
+
+
+////////////////////////////////////////////////////////////////////////////////////////
+// memory table
+////////////////////////////////////////////////////////////////////////////////////////
+
+procedure TfrmCleaningNotes.m_CleaningNotesAfterPost(DataSet: TDataSet);
+begin
+  if zFirstTime then Exit;
+
+  RoomerMessages.RefreshLists;
+  glb.RefreshTablesWhenNeeded;
+end;
+
+procedure TfrmCleaningNotes.m_CleaningNotesBeforeDelete(DataSet: TDataSet);
+var
+  s : string;
+begin
+  fillHolder;
+  s := '';
+  s := s+GetTranslatedText('shDeleteItem')+' '+zData.smessage+' '+chr(10);
+  s := s+GetTranslatedText('shContinue');
+
+  if (MessageDlg(s,mtConfirmation, [mbYes, mbNo], 0) = mrNo) or not Del_CleaningNote(zData) then
+    abort;
+end;
+
+procedure TfrmCleaningNotes.m_CleaningNotesBeforeInsert(DataSet: TDataSet);
+begin
+  if zFirstTime then exit;
+  tvData.GetColumnByFieldName('serviceType').Focused := True;
+end;
+
+procedure TfrmCleaningNotes.m_CleaningNotesBeforePost(DataSet: TDataSet);
+var
+ nID : integer;
+ oldCode : String;
+begin
+  if zFirstTime then exit;
+  initCleaningNoteHolder(zData);
+
+  zData := CopyDatasetToRecCleaningNote;
+
+  if tvData.DataController.DataSource.State = dsEdit then
+  begin
+    if UPD_CleaningNote(zData) then
+    begin
+       glb.ForceTableRefresh;
+    end else
+    begin
+      abort;
+      exit;
+    end;
+  end;
+  if tvData.DataController.DataSource.State = dsInsert then
+  begin
+    if m_CleaningNotesserviceType.AsString = ''  then
+    begin
+    //  showmessage('Item type is requierd - set value or use [ESC] to cancel ');
+	    showmessage(GetTranslatedText('shServiceTypeNeeded'));
+      tvData.GetColumnByFieldName('serviceType').Focused := True;
+      abort;
+      exit;
+    end;
+    if m_CleaningNotesonceType.AsString = ''  then
+    begin
+    //  showmessage('Item is requierd - set value or use [ESC] to cancel ');
+	    showmessage(GetTranslatedText('shOnceTypeNeeded'));
+      tvData.GetColumnByFieldName('onceType').Focused := True;
+      abort;
+      exit;
+    end;
+    if ins_CleaningNote(zData,nID) then
+      m_CleaningNotesID.AsInteger := nID
+    else
+      abort;
+  end;
+end;
+
+
+
+procedure TfrmCleaningNotes.m_CleaningNotesFilterRecord(DataSet: TDataSet; var Accept: Boolean);
+begin
+  if tvData.DataController.Filter.AutoDataSetFilter AND (edFilter.Text <> '') then
+    Accept := pos(Lowercase(edFilter.Text), LowerCase(dataset['Description'])) > 0;
+end;
+
+procedure TfrmCleaningNotes.m_CleaningNotesNewRecord(DataSet: TDataSet);
+begin
+  if zFirstTime then exit;
+  dataset['Active']          := true;
+  dataset['Description']     := '';
+  dataset['Item']            := '';
+  dataset['Price']           := 0;
+  dataset['Itemtype']        := '';
+  dataset['AccountKey']      := '';
+  dataset['MinibarItem']     := false ;
+  dataset['SystemItem']      := false ;
+  dataset['RoomRentitem']    := false ;
+  dataset['ReservationItem'] := false ;
+  dataset['Hide']            := false ;
+  dataset['Currency']        := ctrlGetString('NativeCurrency'); // nvarchar(5); //
+  dataset['BookKeepCode']    := ''; // nvarchar(5); //
+  dataset['NumberBase']      := 'USER_EDIT'; // nvarchar(5); //
+  dataset['StocKitem']       := false;
+  dataset['TotalStock']      := 0;
+end;
+
+////////////////////////////////////////////////////////////////////////////////////////
+//  table View Functions
+////////////////////////////////////////////////////////////////////////////////////////
+
+procedure TfrmCleaningNotes.tvDataItemPropertiesValidate(Sender: TObject; var DisplayValue: Variant; var ErrorText: TCaption; var Error: Boolean);
+var
+  CurrValue : string;
+begin
+  DisplayValue := TRIM(DisplayValue);
+  currValue := m_CleaningNotes.fieldbyname('Item').asstring;
+
+  error := false;
+  if trim(displayValue) = '' then
+  begin
+    error := true;
+	  errortext := GetTranslatedText('shTx_Items2_ItemCodeIsRequired');
+    exit;
+  end;
+
+  if hdata.itemExist(displayValue) then
+  begin
+    error := true;
+    errortext := displayvalue+'  '+GetTranslatedText('shNewValueExistInAnotherRecor');
+    exit
+  end;
+end;
+
+procedure TfrmCleaningNotes.tvDataDblClick(Sender: TObject);
+begin
+  if ZAct = actLookup then
+  begin
+    btnOK.Click
+  end;
+end;
+
+
+////////////////////////////////////////////////////////////////////////////
+//  Filter
+/////////////////////////////////////////////////////////////////////////////
+
+procedure TfrmCleaningNotes.timFilterTimer(Sender: TObject);
+begin
+  timFilter.Enabled := False;
+  m_CleaningNotes.filtered := True;
+  tvData.DataController.Filter.Refresh;
+end;
+
+procedure TfrmCleaningNotes.tvDataDataControllerFilterChanged(Sender: TObject);
+begin
+  chkFilter;
+end;
+
+procedure TfrmCleaningNotes.tvDataDataControllerSortingChanged(Sender: TObject);
+var
+  i : integer;
+  s : string;
+  serval : boolean;
+begin
+  s := '';
+  serval := false;
+  for i :=  0 to tvData.SortedItemCount - 1 do
+  begin
+    if serval then s := s+', ';
+    s := s+TcxGridDBColumn(tvData.SortedItems[I]).DataBinding.FieldName;
+    serval := true;
+    if tvData.SortedItems[i].SortOrder = soDescending then
+    s := s + ' DESC';
+  end;
+  zSortStr := s;
+  sbMain.SimpleText := s;
+end;
+
+//////////////////////////////////////////////////////////////////////////
+//  Buttons
+//////////////////////////////////////////////////////////////////////////
+
+
+procedure TfrmCleaningNotes.BtnOkClick(Sender: TObject);
+begin
+  fillHolder;
+end;
+
+procedure TfrmCleaningNotes.btnCancelClick(Sender: TObject);
+begin
+  initCleaningNoteHolder(zData);
+end;
+
+procedure TfrmCleaningNotes.btnClearClick(Sender: TObject);
+begin
+  edFilter.Text := '';
+end;
+
+procedure TfrmCleaningNotes.btnDeleteClick(Sender: TObject);
+begin
+  m_CleaningNotes.Delete;
+end;
+
+procedure TfrmCleaningNotes.btnEditClick(Sender: TObject);
+begin
+  AllowGridEdit := True;
+  grData.SetFocus;
+  tvData.GetColumnByFieldName('Description').Focused := True;
+ // showmessage('Edit in grid');
+  showmessage(GetTranslatedText('shTx_Items2_EditInGrid'));
+end;
+
+procedure TfrmCleaningNotes.btnInsertClick(Sender: TObject);
+begin
+  AllowGridEdit := True;
+
+  if m_CleaningNotes.Active = false then m_CleaningNotes.Open;
+  grData.SetFocus;
+  m_CleaningNotes.Insert;
+  tvData.GetColumnByFieldName('Item').Focused := True;
+end;
+
+//---------------------------------------------------------------------------
+// Menu in other actions
+//-----------------------------------------------------------------------------
+
+procedure TfrmCleaningNotes.mnuiAllowGridEditClick(Sender: TObject);
+begin
+  if zFirstTime then exit;
+  AllowGridEdit := not mnuiAllowGridEdit.Checked;
+end;
+
+
+procedure TfrmCleaningNotes.mnuiPrintClick(Sender: TObject);
+begin
+  grPrinter.PrintTitle := caption;
+  prLink_grData.ReportTitle.Text := caption;
+  grPrinter.Preview(true, prLink_grData);
+end;
+
+procedure TfrmCleaningNotes.mnuiGridToExcelClick(Sender: TObject);
+var
+  sFilename : string;
+begin
+  sFilename := g.qProgramPath + caption;
+  ExportGridToExcel(sFilename, grData, true, true, true);
+  ShellExecute(Handle, 'OPEN', PChar(sFilename + '.xls'), nil, nil, sw_shownormal);
+end;
+
+procedure TfrmCleaningNotes.mnuiGridToHtmlClick(Sender: TObject);
+var
+  sFilename : string;
+begin
+  sFilename := g.qProgramPath + caption;
+  ExportGridToHtml(sFilename, grData, true, true);
+  ShellExecute(Handle, 'OPEN', PChar(sFilename + '.html'), nil, nil, sw_shownormal);
+end;
+
+procedure TfrmCleaningNotes.mnuiGridToTextClick(Sender: TObject);
+var
+  sFilename : string;
+begin
+  sFilename := g.qProgramPath + caption;
+  ExportGridToText(sFilename, grData, true, true,';','','','txt');
+  ShellExecute(Handle, 'OPEN', PChar(sFilename + '.txt'), nil, nil, sw_shownormal);
+end;
+
+procedure TfrmCleaningNotes.mnuiGridToXmlClick(Sender: TObject);
+var
+  sFilename : string;
+begin
+  sFilename := g.qProgramPath + caption;
+  ExportGridToXml(sFilename, grData, true, true);
+  ShellExecute(Handle, 'OPEN', PChar(sFilename + '.xml'), nil, nil, sw_shownormal);
+end;
+
+end.
+
