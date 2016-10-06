@@ -73,7 +73,9 @@ uses
   uAppGlobal
   , Windows
   , uUtils
-  , PrjConst;
+  , PrjConst
+  , UITypes
+  ;
 
 type
   TRoomerFormStateHelper = record helper for TRoomerFormState
@@ -144,12 +146,17 @@ end;
 
 
 procedure TfrmBaseRoomerForm.LoadData;
+var
+  lCursor: TCursor;
 begin
+  lCursor := Screen.Cursor;
+  Screen.Cursor := crHourGlass;
   try
     FormState := fsLoadingData;
     DoLoadData;
   finally
     FormState := fsIdle;
+    Screen.Cursor := lCursor;
   end;
 end;
 

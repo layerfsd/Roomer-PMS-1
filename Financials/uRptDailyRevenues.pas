@@ -196,6 +196,8 @@ procedure TfrmRptDailyRevenues.DoLoadData;
 var
   lCaller: TFinancialReportsAPICaller;
 begin
+  inherited;
+
   if ComponentRunning(Self) then
   begin
     FRefreshingData := true;
