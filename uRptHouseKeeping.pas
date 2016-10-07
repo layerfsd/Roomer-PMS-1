@@ -22,7 +22,6 @@ uses
 
 type
   TfrmHouseKeepingReport = class(TfrmBaseRoomerForm)
-    FormStore: TcxPropertiesStore;
     kbmHouseKeepingList: TkbmMemTable;
     HouseKeepingListDS: TDataSource;
     btnRefresh: TsButton;
@@ -262,7 +261,6 @@ begin
     try
       s := ConstructSQL;
       CopyToClipboard(s);
-      DebugMessage(s);
       hData.rSet_bySQL(rSet1, s, false);
       rSet1.First;
       if not kbmHouseKeepingList.Active then
