@@ -1,7 +1,7 @@
 inherited frmCleaningNotes: TfrmCleaningNotes
   Caption = 'Cleaning notes'
   ClientHeight = 458
-  ClientWidth = 869
+  ClientWidth = 975
   Constraints.MinWidth = 450
   Font.Height = -11
   Position = poOwnerFormCenter
@@ -12,24 +12,25 @@ inherited frmCleaningNotes: TfrmCleaningNotes
   OnKeyDown = FormKeyDown
   OnKeyPress = FormKeyPress
   OnShow = FormShow
-  ExplicitWidth = 885
+  ExplicitWidth = 991
   ExplicitHeight = 497
   PixelsPerInch = 96
   TextHeight = 13
   inherited dxStatusBar: TdxStatusBar
-    Top = 387
-    Width = 869
-    ExplicitTop = 387
-    ExplicitWidth = 869
+    Top = 438
+    Width = 975
+    ExplicitTop = 800
+    ExplicitWidth = 975
   end
   object sPanel1: TsPanel [1]
     Left = 0
     Top = 0
-    Width = 869
+    Width = 975
     Height = 89
     Align = alTop
     TabOrder = 0
     SkinData.SkinSection = 'PANEL'
+    ExplicitWidth = 869
     object cLabFilter: TsLabel
       Left = 19
       Top = 41
@@ -141,27 +142,21 @@ inherited frmCleaningNotes: TfrmCleaningNotes
       ImgUnchecked = 0
     end
   end
-  object sbMain: TsStatusBar [2]
+  object panBtn: TsPanel [2]
     Left = 0
-    Top = 439
-    Width = 869
-    Height = 19
-    Panels = <>
-    SkinData.SkinSection = 'STATUSBAR'
-  end
-  object panBtn: TsPanel [3]
-    Left = 0
-    Top = 407
-    Width = 869
+    Top = 406
+    Width = 975
     Height = 32
     Align = alBottom
     TabOrder = 2
     SkinData.SkinSection = 'PANEL'
+    ExplicitTop = 407
+    ExplicitWidth = 869
     DesignSize = (
-      869
+      975
       32)
     object btnCancel: TsButton
-      Left = 790
+      Left = 896
       Top = 4
       Width = 75
       Height = 25
@@ -175,9 +170,10 @@ inherited frmCleaningNotes: TfrmCleaningNotes
       TabOrder = 0
       OnClick = btnCancelClick
       SkinData.SkinSection = 'BUTTON'
+      ExplicitLeft = 790
     end
     object BtnOk: TsButton
-      Left = 712
+      Left = 818
       Top = 4
       Width = 75
       Height = 25
@@ -190,17 +186,20 @@ inherited frmCleaningNotes: TfrmCleaningNotes
       TabOrder = 1
       OnClick = BtnOkClick
       SkinData.SkinSection = 'BUTTON'
+      ExplicitLeft = 712
     end
   end
-  object grData: TcxGrid [4]
+  object grData: TcxGrid [3]
     Left = 0
     Top = 89
-    Width = 869
-    Height = 298
+    Width = 975
+    Height = 317
     Align = alClient
     Constraints.MinWidth = 440
     TabOrder = 3
     LookAndFeel.NativeStyle = False
+    ExplicitWidth = 869
+    ExplicitHeight = 298
     object tvData: TcxGridDBTableView
       OnDblClick = tvDataDblClick
       Navigator.Buttons.CustomButtons = <>
@@ -257,43 +256,56 @@ inherited frmCleaningNotes: TfrmCleaningNotes
       OptionsData.CancelOnExit = False
       OptionsData.DeletingConfirmation = False
       OptionsView.GroupByBox = False
+      OptionsView.HeaderAutoHeight = True
       OptionsView.Indicator = True
+      Styles.StyleSheet = cxssRoomerGridTableView
       object tvDataRecId: TcxGridDBColumn
         DataBinding.FieldName = 'RecId'
         Visible = False
       end
       object tvDataID: TcxGridDBColumn
         DataBinding.FieldName = 'ID'
+        MinWidth = 50
+        Width = 50
       end
       object tvDataactive: TcxGridDBColumn
         Caption = 'Active'
         DataBinding.FieldName = 'active'
-        Width = 39
+        MinWidth = 50
+        Width = 52
       end
       object tvDataonlyWhenRoomIsDirty: TcxGridDBColumn
+        Caption = 'Only when dirty'
         DataBinding.FieldName = 'onlyWhenRoomIsDirty'
+        HeaderAlignmentHorz = taCenter
+        MinWidth = 50
+        Width = 55
       end
       object tvDataserviceType: TcxGridDBColumn
         Caption = 'Service type'
         DataBinding.FieldName = 'serviceType'
+        MinWidth = 50
         Width = 82
       end
       object tvDataonceType: TcxGridDBColumn
-        Caption = 'Once type'
+        Caption = 'When'
         DataBinding.FieldName = 'onceType'
         OnCustomDrawCell = tvDataonceTypeCustomDrawCell
+        MinWidth = 50
       end
       object tvDatainterval: TcxGridDBColumn
         Caption = 'Days'
         DataBinding.FieldName = 'interval'
         OnCustomDrawCell = tvDataintervalCustomDrawCell
         HeaderAlignmentHorz = taRightJustify
+        MinWidth = 50
         Width = 71
       end
       object tvDataminimumDays: TcxGridDBColumn
-        Caption = 'Min days'
+        Caption = 'Min stay'
         DataBinding.FieldName = 'minimumDays'
         HeaderAlignmentHorz = taRightJustify
+        MinWidth = 50
         Width = 63
       end
       object tvDatamessage: TcxGridDBColumn
@@ -303,6 +315,15 @@ inherited frmCleaningNotes: TfrmCleaningNotes
     end
     object lvData: TcxGridLevel
       GridView = tvData
+    end
+  end
+  inherited cxsrRoomerStyleRepository: TcxStyleRepository
+    PixelsPerInch = 96
+    inherited dxssRoomerGridReportLink: TdxGridReportLinkStyleSheet
+      BuiltIn = True
+    end
+    inherited cxssRoomerGridTableView: TcxGridTableViewStyleSheet
+      BuiltIn = True
     end
   end
   object mnuOther: TPopupMenu
@@ -353,19 +374,31 @@ inherited frmCleaningNotes: TfrmCleaningNotes
     Left = 80
     Top = 136
     object prLink_grData: TdxGridReportLink
+      Active = True
+      Component = grData
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 5080
       PrinterPage.GrayShading = True
-      PrinterPage.Header = 2540
+      PrinterPage.Header = 3303
       PrinterPage.Margins.Bottom = 12700
       PrinterPage.Margins.Left = 12700
       PrinterPage.Margins.Right = 12700
       PrinterPage.Margins.Top = 12700
+      PrinterPage.Orientation = poLandscape
       PrinterPage.PageSize.X = 210820
       PrinterPage.PageSize.Y = 297180
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
-      ReportDocument.CreationDate = 41334.495374884260000000
+      ReportDocument.CreationDate = 42650.600135138890000000
+      ReportTitle.Font.Charset = DEFAULT_CHARSET
+      ReportTitle.Font.Color = clBlack
+      ReportTitle.Font.Height = -19
+      ReportTitle.Font.Name = 'Arial'
+      ReportTitle.Font.Style = [fsBold]
+      OptionsSize.AutoWidth = True
+      ScaleFonts = False
+      StyleRepository = cxsrRoomerStyleRepository
+      Styles.StyleSheet = dxssRoomerGridReportLink
       BuiltInReportLink = True
     end
   end
@@ -375,10 +408,10 @@ inherited frmCleaningNotes: TfrmCleaningNotes
         SortOptions = []
       end>
     SortOptions = [soCaseInsensitive]
-    BeforeInsert = m_CleaningNotesBeforeInsert
     BeforePost = m_CleaningNotesBeforePost
     AfterPost = m_CleaningNotesAfterPost
     BeforeDelete = m_CleaningNotesBeforeDelete
+    AfterScroll = m_CleaningNotesAfterScroll
     OnNewRecord = m_CleaningNotesNewRecord
     OnFilterRecord = m_CleaningNotesFilterRecord
     Left = 168

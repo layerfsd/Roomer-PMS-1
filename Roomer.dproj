@@ -2,7 +2,7 @@
     <PropertyGroup>
         <ProjectGuid>{436E2CCE-115E-475F-9C3E-19C03F70A4D0}</ProjectGuid>
         <MainSource>Roomer.dpr</MainSource>
-        <Config Condition="'$(Config)'==''">Debug</Config>
+        <Config Condition="'$(Config)'==''">DebugBas</Config>
         <DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
         <ProjectVersion>14.3</ProjectVersion>
         <FrameworkType>VCL</FrameworkType>
@@ -790,6 +790,10 @@
         </DCCReference>
         <DCCReference Include="Definitions\uBreakfastStateDefinitions.pas"/>
         <DCCReference Include="Definitions\uAccountTypeDefinitions.pas"/>
+        <DCCReference Include="OpenAPI\uFinancialReportsAPICaller.pas"/>
+        <DCCReference Include="Financials\uRptDailyRevenues.pas">
+            <Form>frmRptDailyRevenues</Form>
+        </DCCReference>
         <DCCReference Include="uCleaningNotes.pas">
             <Form>frmCleaningNotes</Form>
         </DCCReference>

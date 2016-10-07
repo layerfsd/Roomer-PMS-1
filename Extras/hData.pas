@@ -11270,7 +11270,7 @@ begin
   s := s + '   VALUES ' + #10;
   s := s + '   ( ' + #10;
   s := s + '    ' + _db(theData.active) + #10;
-  s := s + '    ' + _db(theData.onlyWhenRoomIsDirty) + #10;
+  s := s + '  , ' + _db(theData.onlyWhenRoomIsDirty) + #10;
   s := s + '  , ' + _db(theData.serviceType) + #10;
   s := s + '  , ' + _db(theData.onceType) + #10;
   s := s + '  , ' + _db(theData.interval) + #10;
@@ -11279,6 +11279,8 @@ begin
   s := s + '   ) ';
 
   Result := cmd_bySQL(s);
+  if Result then
+    NewID := GetLastID('cleaningnotes')
 end;
 
 // Items
