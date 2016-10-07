@@ -51,7 +51,7 @@ inherited frmCleaningNotesEdit: TfrmCleaningNotesEdit
   inherited dxStatusBar: TdxStatusBar
     Top = 428
     Width = 610
-    ExplicitTop = 800
+    ExplicitTop = 428
     ExplicitWidth = 610
   end
   object panBtn: TsPanel [6]
@@ -62,7 +62,6 @@ inherited frmCleaningNotesEdit: TfrmCleaningNotesEdit
     Align = alBottom
     TabOrder = 6
     SkinData.SkinSection = 'PANEL'
-    ExplicitTop = 401
     DesignSize = (
       610
       33)
@@ -149,8 +148,8 @@ inherited frmCleaningNotesEdit: TfrmCleaningNotesEdit
   object cbxActive: TsCheckBox [9]
     Left = 187
     Top = 18
-    Width = 50
-    Height = 20
+    Width = 58
+    Height = 17
     Caption = 'Active'
     TabOrder = 7
     ImgChecked = 0
@@ -205,12 +204,18 @@ inherited frmCleaningNotesEdit: TfrmCleaningNotesEdit
   object cbxOnlyWhenRoomIsDirty: TsCheckBox [13]
     Left = 187
     Top = 151
-    Width = 155
-    Height = 20
+    Width = 163
+    Height = 17
     Caption = 'Only when room is not clean'
+    Checked = True
+    State = cbChecked
     TabOrder = 4
     ImgChecked = 0
     ImgUnchecked = 0
+  end
+  inherited psRoomerBase: TcxPropertiesStore
+    Left = 536
+    Top = 80
   end
   inherited cxsrRoomerStyleRepository: TcxStyleRepository
     PixelsPerInch = 96

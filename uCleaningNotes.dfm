@@ -7,8 +7,6 @@ inherited frmCleaningNotes: TfrmCleaningNotes
   Position = poOwnerFormCenter
   OnClose = FormClose
   OnCloseQuery = FormCloseQuery
-  OnCreate = FormCreate
-  OnDestroy = FormDestroy
   OnKeyDown = FormKeyDown
   OnKeyPress = FormKeyPress
   OnShow = FormShow
@@ -19,7 +17,7 @@ inherited frmCleaningNotes: TfrmCleaningNotes
   inherited dxStatusBar: TdxStatusBar
     Top = 438
     Width = 975
-    ExplicitTop = 800
+    ExplicitTop = 438
     ExplicitWidth = 975
   end
   object sPanel1: TsPanel [1]
@@ -30,7 +28,6 @@ inherited frmCleaningNotes: TfrmCleaningNotes
     Align = alTop
     TabOrder = 0
     SkinData.SkinSection = 'PANEL'
-    ExplicitWidth = 869
     object cLabFilter: TsLabel
       Left = 19
       Top = 41
@@ -130,8 +127,8 @@ inherited frmCleaningNotes: TfrmCleaningNotes
     object chkActive: TsCheckBox
       Left = 55
       Top = 63
-      Width = 238
-      Height = 20
+      Width = 246
+      Height = 17
       Caption = 'Active (if checked then just active are visible)'
       Checked = True
       State = cbChecked
@@ -150,8 +147,6 @@ inherited frmCleaningNotes: TfrmCleaningNotes
     Align = alBottom
     TabOrder = 2
     SkinData.SkinSection = 'PANEL'
-    ExplicitTop = 407
-    ExplicitWidth = 869
     DesignSize = (
       975
       32)
@@ -170,7 +165,6 @@ inherited frmCleaningNotes: TfrmCleaningNotes
       TabOrder = 0
       OnClick = btnCancelClick
       SkinData.SkinSection = 'BUTTON'
-      ExplicitLeft = 790
     end
     object BtnOk: TsButton
       Left = 818
@@ -186,7 +180,6 @@ inherited frmCleaningNotes: TfrmCleaningNotes
       TabOrder = 1
       OnClick = BtnOkClick
       SkinData.SkinSection = 'BUTTON'
-      ExplicitLeft = 712
     end
   end
   object grData: TcxGrid [3]
@@ -198,8 +191,6 @@ inherited frmCleaningNotes: TfrmCleaningNotes
     Constraints.MinWidth = 440
     TabOrder = 3
     LookAndFeel.NativeStyle = False
-    ExplicitWidth = 869
-    ExplicitHeight = 298
     object tvData: TcxGridDBTableView
       OnDblClick = tvDataDblClick
       Navigator.Buttons.CustomButtons = <>
@@ -376,6 +367,7 @@ inherited frmCleaningNotes: TfrmCleaningNotes
     object prLink_grData: TdxGridReportLink
       Active = True
       Component = grData
+      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 5080
       PrinterPage.GrayShading = True
@@ -389,12 +381,13 @@ inherited frmCleaningNotes: TfrmCleaningNotes
       PrinterPage.PageSize.Y = 297180
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
-      ReportDocument.CreationDate = 42650.600135138890000000
+      ReportDocument.CreationDate = 42650.665394074070000000
       ReportTitle.Font.Charset = DEFAULT_CHARSET
       ReportTitle.Font.Color = clBlack
       ReportTitle.Font.Height = -19
       ReportTitle.Font.Name = 'Arial'
       ReportTitle.Font.Style = [fsBold]
+      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       OptionsSize.AutoWidth = True
       ScaleFonts = False
       StyleRepository = cxsrRoomerStyleRepository

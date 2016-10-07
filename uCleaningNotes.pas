@@ -2,8 +2,6 @@ unit uCleaningNotes;
 
 interface
 
-// unit added 2013-02-28 HJ
-
 uses
     Winapi.Windows
   , Winapi.Messages
@@ -150,7 +148,6 @@ type
     m_CleaningNotesonlyWhenRoomIsDirty: TBooleanField;
     tvDataonlyWhenRoomIsDirty: TcxGridDBColumn;
 
-    procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormKeyPress(Sender: TObject; var Key: Char);
@@ -177,7 +174,6 @@ type
     procedure timFilterTimer(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure m_CleaningNotesAfterPost(DataSet: TDataSet);
-    procedure FormDestroy(Sender: TObject);
     procedure tvDataCellDblClick(Sender: TcxCustomGridTableView; ACellViewInfo: TcxGridTableDataCellViewInfo; AButton: TMouseButton; AShift: TShiftState;
       var AHandled: Boolean);
     procedure tvDataonceTypeCustomDrawCell(Sender: TcxCustomGridTableView; ACanvas: TcxCanvas; AViewInfo: TcxGridTableDataCellViewInfo; var ADone: Boolean);
@@ -186,11 +182,6 @@ type
   private
     { Private declarations }
     financeLookupList : TKeyPairList;
-    FAllowGridEdit   : boolean;
-
-    zSortStr         : string;
-
-    FCurrencyhandler: TCurrencyHandler;
 
     procedure applyFilter;
     procedure StopFilter;
@@ -203,6 +194,7 @@ type
     Lookup : Boolean;
     zAct: TActTableAction;
     zData: recCleaningNotesHolder;
+    FAllowGridEdit : Boolean;
     /// <summary>
     ///   Add recCleaningNotesHolders to recCleaningNotesHolderslist for each price-period of selected stockitem. <br />
     ///  zData is used to determine requested peroid of use
@@ -312,12 +304,9 @@ var
 begin
   inherited;
 
-  if zSortStr = '' then zSortStr := 'id';
-
   rSet := CreateNewDataSet;
   rSet_bySQL(rSet, ConstructSQL);
   try
-    rSet.Sort := zSortStr;
 
     SetFilterForDataset(rSet);
 
@@ -424,23 +413,8 @@ end;
 // Form actions
 /////////////////////////////////////////////////////////////
 
-procedure TfrmCleaningNotes.FormCreate(Sender: TObject);
-begin
-  Lookup := False;
-  financeLookupList := nil;
-  //**
-  zAct        := actNone;
-  FCurrencyhandler := TCurrencyHandler.Create(g.qNativeCurrency);
-end;
-
-procedure TfrmCleaningNotes.FormDestroy(Sender: TObject);
-begin
-  FCurrencyHandler.Free;
-end;
-
 procedure TfrmCleaningNotes.FormShow(Sender: TObject);
 begin
-
   chkActive.Checked := True;
 
   AllowGridEdit := False; // (ZAct <> actLookup);
@@ -463,7 +437,6 @@ begin
   begin
     tvdata.DataController.Post;
   end;
-  glb.EnableOrDisableTableRefresh('cleaningnotes', True);
 end;
 
 procedure TfrmCleaningNotes.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -649,8 +622,6 @@ begin
     if tvData.SortedItems[i].SortOrder = soDescending then
     s := s + ' DESC';
   end;
-  zSortStr := s;
-
 end;
 
 //////////////////////////////////////////////////////////////////////////
