@@ -5,10 +5,11 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, uDImages, hData, Vcl.StdCtrls, sButton, Vcl.ExtCtrls, sPanel, cxClasses, cxPropertiesStore, sMemo, sEdit, sCheckBox,
-  sComboBox, sLabel;
+  sComboBox, sLabel, uRoomerForm, cxGraphics, cxControls, cxLookAndFeels, cxLookAndFeelPainters, dxSkinsCore, dxSkinCaramel, dxSkinCoffee, dxSkinDarkSide,
+  dxSkinTheAsphaltWorld, dxSkinsDefaultPainters, dxSkinsdxStatusBarPainter, dxStatusBar;
 
 type
-  TfrmCleaningNotesEdit = class(TForm)
+  TfrmCleaningNotesEdit = class(TfrmBaseRoomerForm)
     panBtn: TsPanel;
     btnCancel: TsButton;
     BtnOk: TsButton;
@@ -23,7 +24,6 @@ type
     edtMinimumDays: TsEdit;
     sLabel5: TsLabel;
     edtMessage: TsMemo;
-    FormStore: TcxPropertiesStore;
     cbxOnlyWhenRoomIsDirty: TsCheckBox;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -91,9 +91,9 @@ end;
 
 procedure TfrmCleaningNotesEdit.FormCreate(Sender: TObject);
 begin
-  RoomerLanguage.TranslateThisForm(self);
-  glb.PerformAuthenticationAssertion(self);
-  PlaceFormOnVisibleMonitor(self);
+//  RoomerLanguage.TranslateThisForm(self);
+//  glb.PerformAuthenticationAssertion(self);
+//  PlaceFormOnVisibleMonitor(self);
 end;
 
 procedure TfrmCleaningNotesEdit.FormShow(Sender: TObject);

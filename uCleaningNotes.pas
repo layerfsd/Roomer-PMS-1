@@ -2,8 +2,6 @@ unit uCleaningNotes;
 
 interface
 
-// unit added 2013-02-28 HJ
-
 uses
     Winapi.Windows
   , Winapi.Messages
@@ -181,22 +179,17 @@ type
     procedure timFilterTimer(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure m_CleaningNotesAfterPost(DataSet: TDataSet);
-    procedure FormDestroy(Sender: TObject);
     procedure tvDataCellDblClick(Sender: TcxCustomGridTableView; ACellViewInfo: TcxGridTableDataCellViewInfo; AButton: TMouseButton; AShift: TShiftState;
       var AHandled: Boolean);
     procedure tvDataonceTypeCustomDrawCell(Sender: TcxCustomGridTableView; ACanvas: TcxCanvas; AViewInfo: TcxGridTableDataCellViewInfo; var ADone: Boolean);
     procedure tvDataintervalCustomDrawCell(Sender: TcxCustomGridTableView; ACanvas: TcxCanvas; AViewInfo: TcxGridTableDataCellViewInfo; var ADone: Boolean);
   private
     { Private declarations }
-    financeLookupList : TKeyPairList;
     zFirstTime       : boolean;
     FAllowGridEdit   : boolean;
     zFilterOn        : boolean;
 
     zSortStr         : string;
-    FAvailSet: TRoomerDataset;
-
-    FCurrencyhandler: TCurrencyHandler;
 
     procedure fillHolder;
     Procedure chkFilter;
@@ -457,23 +450,14 @@ end;
 procedure TfrmCleaningNotes.FormCreate(Sender: TObject);
 begin
   Lookup := False;
-  financeLookupList := nil;
   //**
   zFirstTime  := true;
   zAct        := actNone;
-  FAvailSet := TRoomerDataSet.Create(self);
-  FCurrencyhandler := TCurrencyHandler.Create(g.qNativeCurrency);
-end;
-
-procedure TfrmCleaningNotes.FormDestroy(Sender: TObject);
-begin
-  FCurrencyHandler.Free;
 end;
 
 procedure TfrmCleaningNotes.FormShow(Sender: TObject);
 begin
   zFirstTime := true;
-  glb.EnableOrDisableTableRefresh('items', False);
 //**
   panBtn.Visible := False;
   sbMain.Visible := false;
@@ -507,7 +491,6 @@ begin
   begin
     tvdata.DataController.Post;
   end;
-  glb.EnableOrDisableTableRefresh('items', True);
 end;
 
 procedure TfrmCleaningNotes.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -593,7 +576,6 @@ begin
   begin
     if m_CleaningNotesserviceType.AsString = ''  then
     begin
-    //  showmessage('Item type is requierd - set value or use [ESC] to cancel ');
 	    showmessage(GetTranslatedText('shServiceTypeNeeded'));
       tvData.GetColumnByFieldName('serviceType').Focused := True;
       abort;
@@ -601,7 +583,6 @@ begin
     end;
     if m_CleaningNotesonceType.AsString = ''  then
     begin
-    //  showmessage('Item is requierd - set value or use [ESC] to cancel ');
 	    showmessage(GetTranslatedText('shOnceTypeNeeded'));
       tvData.GetColumnByFieldName('onceType').Focused := True;
       abort;

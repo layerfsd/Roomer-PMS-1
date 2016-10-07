@@ -1,22 +1,15 @@
-object frmCleaningNotesEdit: TfrmCleaningNotesEdit
-  Left = 0
-  Top = 0
+inherited frmCleaningNotesEdit: TfrmCleaningNotesEdit
   Caption = 'Edit Cleaning Note Rule'
-  ClientHeight = 434
+  ClientHeight = 466
   ClientWidth = 610
-  Color = clBtnFace
-  Font.Charset = DEFAULT_CHARSET
-  Font.Color = clWindowText
   Font.Height = -11
-  Font.Name = 'Tahoma'
-  Font.Style = []
-  OldCreateOrder = False
-  Position = poMainFormCenter
   OnCreate = FormCreate
   OnShow = FormShow
+  ExplicitWidth = 626
+  ExplicitHeight = 505
   PixelsPerInch = 96
   TextHeight = 13
-  object sLabel1: TsLabel
+  object sLabel1: TsLabel [0]
     Left = 105
     Top = 44
     Width = 66
@@ -24,7 +17,7 @@ object frmCleaningNotesEdit: TfrmCleaningNotesEdit
     Alignment = taRightJustify
     Caption = 'Service Type:'
   end
-  object lblOnceType: TsLabel
+  object lblOnceType: TsLabel [1]
     Left = 139
     Top = 71
     Width = 32
@@ -32,7 +25,7 @@ object frmCleaningNotesEdit: TfrmCleaningNotesEdit
     Alignment = taRightJustify
     Caption = 'When:'
   end
-  object __lblInterval: TsLabel
+  object __lblInterval: TsLabel [2]
     Left = 104
     Top = 98
     Width = 67
@@ -40,7 +33,7 @@ object frmCleaningNotesEdit: TfrmCleaningNotesEdit
     Alignment = taRightJustify
     Caption = 'Days interval:'
   end
-  object lblMinimumDays: TsLabel
+  object lblMinimumDays: TsLabel [3]
     Left = 66
     Top = 125
     Width = 105
@@ -48,7 +41,7 @@ object frmCleaningNotesEdit: TfrmCleaningNotesEdit
     Alignment = taRightJustify
     Caption = 'Minimum stay in days:'
   end
-  object sLabel5: TsLabel
+  object sLabel5: TsLabel [4]
     Left = 144
     Top = 178
     Width = 27
@@ -56,14 +49,21 @@ object frmCleaningNotesEdit: TfrmCleaningNotesEdit
     Alignment = taRightJustify
     Caption = 'Note:'
   end
-  object panBtn: TsPanel
+  inherited dxStatusBar: TdxStatusBar
+    Top = 413
+    Width = 610
+    ExplicitTop = 411
+    ExplicitWidth = 610
+  end
+  object panBtn: TsPanel [6]
     Left = 0
-    Top = 401
+    Top = 433
     Width = 610
     Height = 33
     Align = alBottom
     TabOrder = 6
     SkinData.SkinSection = 'PANEL'
+    ExplicitTop = 401
     DesignSize = (
       610
       33)
@@ -98,7 +98,7 @@ object frmCleaningNotesEdit: TfrmCleaningNotesEdit
       SkinData.SkinSection = 'BUTTON'
     end
   end
-  object __cbxServiceType: TsComboBox
+  object __cbxServiceType: TsComboBox [7]
     Left = 187
     Top = 41
     Width = 145
@@ -121,7 +121,7 @@ object frmCleaningNotesEdit: TfrmCleaningNotesEdit
       'INTERVAL'
       'ONCE')
   end
-  object __cbxOnceType: TsComboBox
+  object __cbxOnceType: TsComboBox [8]
     Left = 187
     Top = 68
     Width = 145
@@ -147,17 +147,17 @@ object frmCleaningNotesEdit: TfrmCleaningNotesEdit
       'XTH_DAY'
       'X_DAYS_AFTER_CHECK_OUT')
   end
-  object cbxActive: TsCheckBox
+  object cbxActive: TsCheckBox [9]
     Left = 187
     Top = 18
-    Width = 50
-    Height = 20
+    Width = 58
+    Height = 17
     Caption = 'Active'
     TabOrder = 7
     ImgChecked = 0
     ImgUnchecked = 0
   end
-  object edtInterval: TsEdit
+  object edtInterval: TsEdit [10]
     Left = 187
     Top = 95
     Width = 58
@@ -173,7 +173,7 @@ object frmCleaningNotesEdit: TfrmCleaningNotesEdit
     TabOrder = 2
     Text = '3'
   end
-  object edtMinimumDays: TsEdit
+  object edtMinimumDays: TsEdit [11]
     Left = 187
     Top = 122
     Width = 58
@@ -189,7 +189,7 @@ object frmCleaningNotesEdit: TfrmCleaningNotesEdit
     TabOrder = 3
     Text = '3'
   end
-  object edtMessage: TsMemo
+  object edtMessage: TsMemo [12]
     Left = 187
     Top = 177
     Width = 324
@@ -203,30 +203,20 @@ object frmCleaningNotesEdit: TfrmCleaningNotesEdit
     ParentFont = False
     TabOrder = 5
   end
-  object cbxOnlyWhenRoomIsDirty: TsCheckBox
+  object cbxOnlyWhenRoomIsDirty: TsCheckBox [13]
     Left = 187
     Top = 151
-    Width = 155
-    Height = 20
+    Width = 163
+    Height = 17
     Caption = 'Only when room is not clean'
+    Checked = True
+    State = cbChecked
     TabOrder = 4
     ImgChecked = 0
     ImgUnchecked = 0
   end
-  object FormStore: TcxPropertiesStore
-    Components = <
-      item
-        Component = Owner
-        Properties.Strings = (
-          'Height'
-          'Left'
-          'Position'
-          'Top'
-          'Width')
-      end>
-    StorageName = 'Software\Roomer\FormStatus\CleaningNotesEdit'
-    StorageType = stRegistry
-    Left = 539
-    Top = 208
+  inherited psRoomerBase: TcxPropertiesStore
+    Left = 536
+    Top = 24
   end
 end

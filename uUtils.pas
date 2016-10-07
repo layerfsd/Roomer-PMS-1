@@ -468,20 +468,29 @@ var
   ans:String;
   ext:string;
 begin
-  ans:='';
-  reg:=TRegistry.Create;
-  try
-    ext:=ExtractFileExt(Filename);
+  if LowerCase(ExtractFileExt(FileName)) = '.pdf' then
+  begin
+    result := 'application/pdf';
+    exit;
+  end;
 
-    reg.RootKey := HKEY_LOCAL_MACHINE;
-    if reg.OpenKeyReadOnly('\SOFTWARE\Classes\'+ext+'\') then
-      ans:=reg.ReadString('Content Type');
+  ans := '';
+  reg := TRegistry.Create;
+  try
+    ext := ExtractFileExt(FileName);
+    if ext <> '' then
+    begin
+      reg.RootKey := HKEY_LOCAL_MACHINE;
+      if reg.OpenKeyReadOnly('\SOFTWARE\Classes\' + ext + '\') then
+        ans := reg.ReadString('Content Type');
+    end;
   finally
     reg.Free;
   end;
 
-  if ans='' then ans:='application/octet-stream';
-  result:=ans;
+  if ans = '' then
+    ans := 'application/octet-stream';
+  result := ans;
 end;
 
 function Capitalize(const s: string): string;
