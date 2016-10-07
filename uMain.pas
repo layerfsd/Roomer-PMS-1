@@ -5258,15 +5258,33 @@ end;
 procedure TfrmMain.CheckInGroup;
 var
   lStateChanger: TReservationStateChangeHandler;
+  i : Integer;
+  lstRoomReservations : TStringList;
+  lstRoomReservationsStatus : TStringList;
+  ReservationCount : Integer;
 begin
 
-  lStateChanger := TReservationStateChangeHandler.Create(_iReservation);
-  try
-    if lStateChanger.ChangeState(rsGuests) then
-      if (ViewMode = vmOneDay) OR (ViewMode = vmPeriod) then
-          RefreshGrid;
-  finally
-    lStateChanger.Free;
+  if GetSelectedRoomInformation then
+  begin
+    lStateChanger := TReservationStateChangeHandler.Create(_iReservation);
+    try
+      lstRoomReservations := TStringList.Create;
+      lstRoomReservationsStatus := TStringList.Create;
+      ReservationCount := GetReservationRRList(_iReservation, lstRoomReservations, lstRoomReservationsStatus);
+      for i := 0 to ReservationCount - 1 do
+      begin
+        if UpperCase(lstRoomReservationsStatus[i]) = 'P' then
+        begin
+          _iRoomReservation := StrToInt(lstRoomReservations[i]);
+          lStateChanger.AddRoomStateChangeHandler(TRoomReservationStateChangeHandler.Create(_iReservation, _iRoomReservation));
+        end;
+        if lStateChanger.ChangeState(rsGuests) then
+          if (ViewMode = vmOneDay) OR (ViewMode = vmPeriod) then
+              RefreshGrid;
+      end;
+    finally
+      lStateChanger.Free;
+    end;
   end;
 
 
