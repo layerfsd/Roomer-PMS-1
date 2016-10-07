@@ -797,6 +797,10 @@
         <DCCReference Include="uCleaningNotes.pas">
             <Form>frmCleaningNotes</Form>
         </DCCReference>
+        <DCCReference Include="uCleaningNotesEdit.pas">
+            <Form>frmCleaningNotesEdit</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
         <None Include="Roomer.todo"/>
         <None Include="notes.txt"/>
         <None Include="Roomer.inc"/>

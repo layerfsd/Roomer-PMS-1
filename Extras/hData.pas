@@ -1226,6 +1226,7 @@ type
   recCleaningNotesHolder = record
     id: integer;
     active: boolean;
+    onlyWhenRoomIsDirty : Boolean;
     serviceType: string;
     onceType: string;
     interval: Integer;
@@ -11238,9 +11239,10 @@ begin
   s := s + ' UPDATE cleaningnotes ' + #10;
   s := s + ' SET ' + #10;
   s := s + '    Active = ' + _db(theData.active) + ' ' + #10;
+  s := s + '   ,onlyWhenRoomIsDirty = ' + _db(theData.onlyWhenRoomIsDirty) + ' ' + #10;
   s := s + '   ,serviceType = ' + _db(theData.serviceType) + ' ' + #10;
   s := s + '   ,onceType = ' + _db(theData.onceType) + ' ' + #10;
-  s := s + '   ,interval = ' + _db(theData.interval) + ' ' + #10;
+  s := s + '   ,`interval` = ' + _db(theData.interval) + ' ' + #10;
   s := s + '   ,minimumDays = ' + _db(theData.minimumDays) + ' ' + #10;
   s := s + '   ,message = ' + _db(theData.smessage) + ' ' + #10;
   s := s + ' WHERE ' + #10;
@@ -11258,15 +11260,17 @@ begin
   s := s + 'INSERT INTO cleaningnotes ' + #10;
   s := s + '   ( ' + #10;
   s := s + '     Active ' + #10;
+  s := s + '    ,onlyWhenRoomIsDirty ' + #10;
   s := s + '    ,serviceType ' + #10;
   s := s + '    ,onceType ' + #10;
-  s := s + '    ,interval ' + #10;
+  s := s + '    ,`interval` ' + #10;
   s := s + '    ,minimumDays ' + #10;
   s := s + '    ,message ' + #10;
   s := s + '   ) ' + #10;
   s := s + '   VALUES ' + #10;
   s := s + '   ( ' + #10;
   s := s + '    ' + _db(theData.active) + #10;
+  s := s + '  , ' + _db(theData.onlyWhenRoomIsDirty) + #10;
   s := s + '  , ' + _db(theData.serviceType) + #10;
   s := s + '  , ' + _db(theData.onceType) + #10;
   s := s + '  , ' + _db(theData.interval) + #10;
@@ -11275,6 +11279,8 @@ begin
   s := s + '   ) ';
 
   Result := cmd_bySQL(s);
+  if Result then
+    NewID := GetLastID('cleaningnotes')
 end;
 
 // Items

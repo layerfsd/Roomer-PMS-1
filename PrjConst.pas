@@ -187,6 +187,7 @@ uses uAppGlobal,
   , uRptArrivals
   , uFrmRoomReservationCancellationDialog
   , uCleaningNotes
+  , uCleaningNotesEdit
   ;
 
 
@@ -1576,6 +1577,10 @@ begin
   constants.Add('shOnceTypeNeeded', 'Please provide the once type.');
 
   constants.Add('shChangesToRomClassDoNotChangeTheBookingSiteOTA', 'Please NOTE:'#13'Changing these settings does not affect the settings in the OTA (booking site).'#13'You will need to apply these settings there yourself, manually.');
+
+  constants.Add('shCleaningNotesIntervalLabel', 'Days interval:');
+  constants.Add('shCleaningNotesOnceLabel', 'Day in question:');
+
 end;
 
 procedure AddConstants_OfflineReports;
@@ -1815,6 +1820,8 @@ begin
   TfrmPaymentReqRoomtypeGroup.Create(nil).Free;
 
   TfrmCleaningNotes.Create(nil).Free;
+  TfrmCleaningNotesEdit.Create(nil).Free;
+
 
 end;
 
