@@ -1,18 +1,9 @@
-object frmCleaningNotes: TfrmCleaningNotes
-  Left = 0
-  Top = 0
+inherited frmCleaningNotes: TfrmCleaningNotes
   Caption = 'Cleaning notes'
   ClientHeight = 458
   ClientWidth = 869
-  Color = clBtnFace
   Constraints.MinWidth = 450
-  Font.Charset = DEFAULT_CHARSET
-  Font.Color = clWindowText
   Font.Height = -11
-  Font.Name = 'Tahoma'
-  Font.Style = []
-  KeyPreview = True
-  OldCreateOrder = False
   Position = poOwnerFormCenter
   OnClose = FormClose
   OnCloseQuery = FormCloseQuery
@@ -21,37 +12,17 @@ object frmCleaningNotes: TfrmCleaningNotes
   OnKeyDown = FormKeyDown
   OnKeyPress = FormKeyPress
   OnShow = FormShow
+  ExplicitWidth = 885
+  ExplicitHeight = 497
   PixelsPerInch = 96
   TextHeight = 13
-  object sLabel3: TsLabel
-    Left = 85
-    Top = 28
-    Width = 83
-    Height = 13
-    Alignment = taRightJustify
-    AutoSize = False
-    Caption = 'Adults : '
-    ParentFont = False
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clBlack
-    Font.Height = -11
-    Font.Name = 'Tahoma'
-    Font.Style = []
+  inherited dxStatusBar: TdxStatusBar
+    Top = 387
+    Width = 869
+    ExplicitTop = 387
+    ExplicitWidth = 869
   end
-  object sLabel4: TsLabel
-    Left = 164
-    Top = 28
-    Width = 4
-    Height = 13
-    Caption = '-'
-    ParentFont = False
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clBlack
-    Font.Height = -11
-    Font.Name = 'Tahoma'
-    Font.Style = []
-  end
-  object sPanel1: TsPanel
+  object sPanel1: TsPanel [1]
     Left = 0
     Top = 0
     Width = 869
@@ -158,8 +129,8 @@ object frmCleaningNotes: TfrmCleaningNotes
     object chkActive: TsCheckBox
       Left = 55
       Top = 63
-      Width = 246
-      Height = 17
+      Width = 238
+      Height = 20
       Caption = 'Active (if checked then just active are visible)'
       Checked = True
       State = cbChecked
@@ -170,7 +141,7 @@ object frmCleaningNotes: TfrmCleaningNotes
       ImgUnchecked = 0
     end
   end
-  object sbMain: TsStatusBar
+  object sbMain: TsStatusBar [2]
     Left = 0
     Top = 439
     Width = 869
@@ -178,7 +149,7 @@ object frmCleaningNotes: TfrmCleaningNotes
     Panels = <>
     SkinData.SkinSection = 'STATUSBAR'
   end
-  object panBtn: TsPanel
+  object panBtn: TsPanel [3]
     Left = 0
     Top = 407
     Width = 869
@@ -221,11 +192,11 @@ object frmCleaningNotes: TfrmCleaningNotes
       SkinData.SkinSection = 'BUTTON'
     end
   end
-  object grData: TcxGrid
+  object grData: TcxGrid [4]
     Left = 0
     Top = 89
     Width = 869
-    Height = 318
+    Height = 298
     Align = alClient
     Constraints.MinWidth = 440
     TabOrder = 3
@@ -382,7 +353,6 @@ object frmCleaningNotes: TfrmCleaningNotes
     Left = 80
     Top = 136
     object prLink_grData: TdxGridReportLink
-      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 5080
       PrinterPage.GrayShading = True
@@ -396,7 +366,6 @@ object frmCleaningNotes: TfrmCleaningNotes
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
       ReportDocument.CreationDate = 41334.495374884260000000
-      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       BuiltInReportLink = True
     end
   end
@@ -441,22 +410,6 @@ object frmCleaningNotes: TfrmCleaningNotes
     object m_CleaningNotesonlyWhenRoomIsDirty: TBooleanField
       FieldName = 'onlyWhenRoomIsDirty'
     end
-  end
-  object FormStore: TcxPropertiesStore
-    Components = <
-      item
-        Component = Owner
-        Properties.Strings = (
-          'Height'
-          'Left'
-          'Position'
-          'Top'
-          'Width')
-      end>
-    StorageName = 'Software\Roomer\FormStatus\CleaningNotes'
-    StorageType = stRegistry
-    Left = 371
-    Top = 264
   end
   object timFilter: TTimer
     Enabled = False

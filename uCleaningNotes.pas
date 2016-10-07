@@ -97,12 +97,13 @@ uses
   dxSkinSevenClassic, dxSkinSharp, dxSkinSharpPlus, dxSkinSilver, dxSkinSpringTime, dxSkinStardust, dxSkinSummer2008, dxSkinValentine,
   dxSkinVS2010, dxSkinWhiteprint, dxSkinXmas2008Blue, cxDropDownEdit, cxCheckBox, cxCalendar, cxCurrencyEdit,
   uCurrencyHandler
+  , uRoomerForm, dxSkinsdxStatusBarPainter, dxStatusBar
 
   ;
 
 type
   {$SCOPEDENUMS ON}
-  TfrmCleaningNotes = class(TForm)
+  TfrmCleaningNotes = class(TfrmBaseRoomerForm)
     sPanel1: TsPanel;
     btnDelete: TsButton;
     btnOther: TsButton;
@@ -132,11 +133,8 @@ type
     m_CleaningNotesActive: TBooleanField;
     btnInsert: TsButton;
     btnEdit: TsButton;
-    FormStore: TcxPropertiesStore;
     chkActive: TsCheckBox;
     timFilter: TTimer;
-    sLabel3: TsLabel;
-    sLabel4: TsLabel;
     m_CleaningNotesinterval: TIntegerField;
     m_CleaningNotesminimumDays: TIntegerField;
     m_CleaningNotesserviceType: TWideStringField;
@@ -198,10 +196,8 @@ type
     zSortStr         : string;
     FAvailSet: TRoomerDataset;
 
-    FLocateAfterPost: integer;
     FCurrencyhandler: TCurrencyHandler;
 
-    Procedure fillGridFromDataset;
     procedure fillHolder;
     Procedure chkFilter;
     procedure applyFilter;
@@ -220,6 +216,7 @@ type
     ///  zData is used to determine requested peroid of use
     /// </summary>
     property AllowGridEdit: boolean read FAllowGridEdit write SetAllowGridEdit;
+    procedure LoadData; override;
   end;
 
 function openCleaningNotes(act : TActTableAction; Lookup : Boolean; var theData : recCleaningNotesHolder) : boolean;
@@ -316,10 +313,12 @@ begin
   Result := cSQL;
 end;
 
-Procedure TfrmCleaningNotes.fillGridFromDataset;
+Procedure TfrmCleaningNotes.LoadData;
 var
   rSet : TRoomerDataSet;
 begin
+  inherited;
+
   zFirstTime := true;
 
   if zSortStr = '' then zSortStr := 'id';
@@ -364,7 +363,9 @@ begin
   begin
     tvdata.DataController.Post;
   end;
-  fillGridFromDataset;
+
+  RefreshData;
+
   zFirstTime := false;
 end;
 
@@ -392,9 +393,6 @@ begin
   tvDatainterval.Options.Editing      := AllowGridEdit;
   tvDataminimumDays.Options.Editing   := AllowGridEdit;
   tvDatamessage.Options.Editing       := AllowGridEdit;
-//  btnDelete.Enabled := FAllowGridEdit;
-//  btnEdit.Enabled := FAllowGridEdit;
-//  btnInsert.Enabled := FAllowGridEdit;
 end;
 
 procedure TfrmCleaningNotes.StopFilter;
@@ -458,9 +456,6 @@ end;
 
 procedure TfrmCleaningNotes.FormCreate(Sender: TObject);
 begin
-  RoomerLanguage.TranslateThisForm(self);
-  glb.PerformAuthenticationAssertion(self);
-  PlaceFormOnVisibleMonitor(self);
   Lookup := False;
   financeLookupList := nil;
   //**
@@ -484,8 +479,6 @@ begin
   sbMain.Visible := false;
 
   chkActive.Checked := True;
-
-  fillGridFromDataset;
 
   sbMain.SimpleText := zSortStr;
 
@@ -579,7 +572,6 @@ end;
 procedure TfrmCleaningNotes.m_CleaningNotesBeforePost(DataSet: TDataSet);
 var
  nID : integer;
- oldCode : String;
 begin
   if zFirstTime then exit;
   initCleaningNoteHolder(zData);

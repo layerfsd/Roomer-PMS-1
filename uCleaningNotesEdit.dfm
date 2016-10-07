@@ -64,7 +64,6 @@ object frmCleaningNotesEdit: TfrmCleaningNotesEdit
     Align = alBottom
     TabOrder = 6
     SkinData.SkinSection = 'PANEL'
-    ExplicitTop = 390
     DesignSize = (
       610
       33)
@@ -151,8 +150,8 @@ object frmCleaningNotesEdit: TfrmCleaningNotesEdit
   object cbxActive: TsCheckBox
     Left = 187
     Top = 18
-    Width = 58
-    Height = 17
+    Width = 50
+    Height = 20
     Caption = 'Active'
     TabOrder = 7
     ImgChecked = 0
@@ -192,7 +191,7 @@ object frmCleaningNotesEdit: TfrmCleaningNotesEdit
   end
   object edtMessage: TsMemo
     Left = 187
-    Top = 175
+    Top = 177
     Width = 324
     Height = 207
     Color = clWhite
@@ -207,8 +206,8 @@ object frmCleaningNotesEdit: TfrmCleaningNotesEdit
   object cbxOnlyWhenRoomIsDirty: TsCheckBox
     Left = 187
     Top = 151
-    Width = 163
-    Height = 17
+    Width = 155
+    Height = 20
     Caption = 'Only when room is not clean'
     TabOrder = 4
     ImgChecked = 0
