@@ -108,7 +108,6 @@ type
     btnOther: TsButton;
     mnuOther: TPopupMenu;
     mnuiPrint: TMenuItem;
-    mnuiAllowGridEdit: TMenuItem;
     N2: TMenuItem;
     Export1: TMenuItem;
     mnuiGridToExcel: TMenuItem;
@@ -151,6 +150,8 @@ type
     tvDatainterval: TcxGridDBColumn;
     tvDataminimumDays: TcxGridDBColumn;
     tvDatamessage: TcxGridDBColumn;
+    m_CleaningNotesonlyWhenRoomIsDirty: TBooleanField;
+    tvDataonlyWhenRoomIsDirty: TcxGridDBColumn;
 
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -167,7 +168,6 @@ type
     procedure tvDataDataControllerSortingChanged(Sender: TObject);
     procedure btnDeleteClick(Sender: TObject);
     procedure mnuiPrintClick(Sender: TObject);
-    procedure mnuiAllowGridEditClick(Sender: TObject);
     procedure mnuiGridToExcelClick(Sender: TObject);
     procedure mnuiGridToHtmlClick(Sender: TObject);
     procedure mnuiGridToTextClick(Sender: TObject);
@@ -184,6 +184,10 @@ type
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure m_CleaningNotesAfterPost(DataSet: TDataSet);
     procedure FormDestroy(Sender: TObject);
+    procedure tvDataCellDblClick(Sender: TcxCustomGridTableView; ACellViewInfo: TcxGridTableDataCellViewInfo; AButton: TMouseButton; AShift: TShiftState;
+      var AHandled: Boolean);
+    procedure tvDataonceTypeCustomDrawCell(Sender: TcxCustomGridTableView; ACanvas: TcxCanvas; AViewInfo: TcxGridTableDataCellViewInfo; var ADone: Boolean);
+    procedure tvDataintervalCustomDrawCell(Sender: TcxCustomGridTableView; ACanvas: TcxCanvas; AViewInfo: TcxGridTableDataCellViewInfo; var ADone: Boolean);
   private
     { Private declarations }
     financeLookupList : TKeyPairList;
@@ -206,6 +210,7 @@ type
     procedure SetAllowGridEdit(const Value: boolean);
     procedure SetFilterForDataset(aRSet: TRoomerDataset);
     function ConstructSQL: string;
+    procedure SetEditedValuesIn_M_Dataset;
   protected
     Lookup : Boolean;
     zAct: TActTableAction;
@@ -237,6 +242,7 @@ uses
   , uDateUtils
   , DateUtils
   , Math
+  , uCleaningNotesEdit
   ;
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -275,6 +281,7 @@ function TfrmCleaningNotes.CopyDatasetToRecCleaningNote:recCleaningNotesHolder;
 begin
   Result.ID                    := m_CleaningNotesID.AsInteger;
   Result.Active                := m_CleaningNotesActive.AsBoolean;
+  Result.onlyWhenRoomIsDirty   := m_CleaningNotesonlyWhenRoomIsDirty.AsBoolean;
   Result.serviceType           := m_CleaningNotesserviceType.AsString;
   Result.onceType              := m_CleaningNotesonceType.asString;
   Result.interval              := m_CleaningNotesinterval.AsInteger;
@@ -375,13 +382,19 @@ end;
 procedure TfrmCleaningNotes.SetAllowGridEdit(const Value: boolean);
 begin
   FAllowGridEdit := Value;
-  tvData.OptionsData.Editing := FAllowGridEdit;
-  tvDataID.Options.Editing := false;
 
-  mnuiAllowGridEdit.Checked := FAllowGridEdit;
-  btnDelete.Enabled := FAllowGridEdit;
-  btnEdit.Enabled := FAllowGridEdit;
-  btnInsert.Enabled := FAllowGridEdit;
+  tvDataID.Options.Editing            := false;
+  tvDataactive.Options.Editing        := AllowGridEdit;
+
+  tvDataRecId.Options.Editing         := AllowGridEdit;
+  tvDataserviceType.Options.Editing   := AllowGridEdit;
+  tvDataonceType.Options.Editing      := AllowGridEdit;
+  tvDatainterval.Options.Editing      := AllowGridEdit;
+  tvDataminimumDays.Options.Editing   := AllowGridEdit;
+  tvDatamessage.Options.Editing       := AllowGridEdit;
+//  btnDelete.Enabled := FAllowGridEdit;
+//  btnEdit.Enabled := FAllowGridEdit;
+//  btnInsert.Enabled := FAllowGridEdit;
 end;
 
 procedure TfrmCleaningNotes.StopFilter;
@@ -476,9 +489,10 @@ begin
 
   sbMain.SimpleText := zSortStr;
 
-  AllowGridEdit := (ZAct <> actLookup);
+  AllowGridEdit := False; // (ZAct <> actLookup);
   panBtn.Visible := (Zact = actLookup);
   sbMain.Visible := (Zact = actLookup);
+  tvData.OptionsData.Editing := FAllowGridEdit;
 
   chkFilter;
   zFirstTime := false;
@@ -620,21 +634,11 @@ procedure TfrmCleaningNotes.m_CleaningNotesNewRecord(DataSet: TDataSet);
 begin
   if zFirstTime then exit;
   dataset['Active']          := true;
-  dataset['Description']     := '';
-  dataset['Item']            := '';
-  dataset['Price']           := 0;
-  dataset['Itemtype']        := '';
-  dataset['AccountKey']      := '';
-  dataset['MinibarItem']     := false ;
-  dataset['SystemItem']      := false ;
-  dataset['RoomRentitem']    := false ;
-  dataset['ReservationItem'] := false ;
-  dataset['Hide']            := false ;
-  dataset['Currency']        := ctrlGetString('NativeCurrency'); // nvarchar(5); //
-  dataset['BookKeepCode']    := ''; // nvarchar(5); //
-  dataset['NumberBase']      := 'USER_EDIT'; // nvarchar(5); //
-  dataset['StocKitem']       := false;
-  dataset['TotalStock']      := 0;
+  dataset['serviceType']     := 'INTERVAL';
+  dataset['onceType']            := 'CHECK_IN_DAY';
+  dataset['interval']        := 3;
+  dataset['minimumDays']        := 3;
+  dataset['message']      := '';
 end;
 
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -642,11 +646,8 @@ end;
 ////////////////////////////////////////////////////////////////////////////////////////
 
 procedure TfrmCleaningNotes.tvDataItemPropertiesValidate(Sender: TObject; var DisplayValue: Variant; var ErrorText: TCaption; var Error: Boolean);
-var
-  CurrValue : string;
 begin
   DisplayValue := TRIM(DisplayValue);
-  currValue := m_CleaningNotes.fieldbyname('Item').asstring;
 
   error := false;
   if trim(displayValue) = '' then
@@ -664,6 +665,14 @@ begin
   end;
 end;
 
+procedure TfrmCleaningNotes.tvDataonceTypeCustomDrawCell(Sender: TcxCustomGridTableView; ACanvas: TcxCanvas; AViewInfo: TcxGridTableDataCellViewInfo;
+  var ADone: Boolean);
+begin
+  with TcxGridDBTableView(Sender).DataController do
+    if  AViewInfo.GridRecord.Values[tvDataserviceType.Index] = 'INTERVAL' then
+      aCanvas.Font.Color := aCanvas.Brush.Color;
+end;
+
 procedure TfrmCleaningNotes.tvDataDblClick(Sender: TObject);
 begin
   if ZAct = actLookup then
@@ -672,6 +681,16 @@ begin
   end;
 end;
 
+
+procedure TfrmCleaningNotes.tvDataintervalCustomDrawCell(Sender: TcxCustomGridTableView; ACanvas: TcxCanvas; AViewInfo: TcxGridTableDataCellViewInfo;
+  var ADone: Boolean);
+begin
+  with TcxGridDBTableView(Sender).DataController do
+    if AViewInfo.GridRecord.Values[tvDataserviceType.Index] = 'ONCE' then
+      if NOT ((AViewInfo.GridRecord.Values[tvDataonceType.Index] = 'XTH_DAY') OR
+              (AViewInfo.GridRecord.Values[tvDataonceType.Index] = 'X_DAYS_AFTER_CHECK_OUT')) then
+        aCanvas.Font.Color := aCanvas.Brush.Color;
+end;
 
 ////////////////////////////////////////////////////////////////////////////
 //  Filter
@@ -682,6 +701,12 @@ begin
   timFilter.Enabled := False;
   m_CleaningNotes.filtered := True;
   tvData.DataController.Filter.Refresh;
+end;
+
+procedure TfrmCleaningNotes.tvDataCellDblClick(Sender: TcxCustomGridTableView; ACellViewInfo: TcxGridTableDataCellViewInfo; AButton: TMouseButton;
+  AShift: TShiftState; var AHandled: Boolean);
+begin
+  btnEdit.Click;
 end;
 
 procedure TfrmCleaningNotes.tvDataDataControllerFilterChanged(Sender: TObject);
@@ -736,33 +761,41 @@ end;
 
 procedure TfrmCleaningNotes.btnEditClick(Sender: TObject);
 begin
-  AllowGridEdit := True;
-  grData.SetFocus;
-  tvData.GetColumnByFieldName('Description').Focused := True;
- // showmessage('Edit in grid');
-  showmessage(GetTranslatedText('shTx_Items2_EditInGrid'));
+  fillHolder;
+  if openCleaningNotesEdit(zData, false) then
+  begin
+      m_CleaningNotes.edit;
+      SetEditedValuesIn_M_Dataset;
+      m_CleaningNotes.Post;
+  end;
 end;
+
+procedure TfrmCleaningNotes.SetEditedValuesIn_M_Dataset;
+begin
+  m_CleaningNotes['Active']       := zData.active;
+  m_CleaningNotes['onlyWhenRoomIsDirty'] := zData.onlyWhenRoomIsDirty;
+  m_CleaningNotes['serviceType']  := zData.serviceType;
+  m_CleaningNotes['onceType']     := zData.onceType;
+  m_CleaningNotes['interval']     := zData.interval;
+  m_CleaningNotes['minimumDays']  := zData.minimumDays;
+  m_CleaningNotes['message']      := zData.smessage;
+end;
+
 
 procedure TfrmCleaningNotes.btnInsertClick(Sender: TObject);
 begin
-  AllowGridEdit := True;
-
-  if m_CleaningNotes.Active = false then m_CleaningNotes.Open;
-  grData.SetFocus;
-  m_CleaningNotes.Insert;
-  tvData.GetColumnByFieldName('Item').Focused := True;
+  fillHolder;
+  if openCleaningNotesEdit(zData, true) then
+  begin
+      m_CleaningNotes.insert;
+      SetEditedValuesIn_M_Dataset;
+      m_CleaningNotes.Post;
+  end;
 end;
 
 //---------------------------------------------------------------------------
 // Menu in other actions
 //-----------------------------------------------------------------------------
-
-procedure TfrmCleaningNotes.mnuiAllowGridEditClick(Sender: TObject);
-begin
-  if zFirstTime then exit;
-  AllowGridEdit := not mnuiAllowGridEdit.Checked;
-end;
-
 
 procedure TfrmCleaningNotes.mnuiPrintClick(Sender: TObject);
 begin

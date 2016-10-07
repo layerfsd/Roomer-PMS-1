@@ -241,7 +241,8 @@ uses
   uRoomerForm in 'RoomerForm\uRoomerForm.pas' {frmBaseRoomerForm},
   uBreakfastStateDefinitions in 'Definitions\uBreakfastStateDefinitions.pas',
   uAccountTypeDefinitions in 'Definitions\uAccountTypeDefinitions.pas',
-  uCleaningNotes in 'uCleaningNotes.pas' {frmCleaningNotes};
+  uCleaningNotes in 'uCleaningNotes.pas' {frmCleaningNotes},
+  uCleaningNotesEdit in 'uCleaningNotesEdit.pas' {frmCleaningNotesEdit};
 
 {$R *.RES}
 

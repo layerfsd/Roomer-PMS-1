@@ -2,8 +2,8 @@ object frmCleaningNotes: TfrmCleaningNotes
   Left = 0
   Top = 0
   Caption = 'Cleaning notes'
-  ClientHeight = 663
-  ClientWidth = 1145
+  ClientHeight = 458
+  ClientWidth = 869
   Color = clBtnFace
   Constraints.MinWidth = 450
   Font.Charset = DEFAULT_CHARSET
@@ -54,7 +54,7 @@ object frmCleaningNotes: TfrmCleaningNotes
   object sPanel1: TsPanel
     Left = 0
     Top = 0
-    Width = 1145
+    Width = 869
     Height = 89
     Align = alTop
     TabOrder = 0
@@ -172,25 +172,25 @@ object frmCleaningNotes: TfrmCleaningNotes
   end
   object sbMain: TsStatusBar
     Left = 0
-    Top = 644
-    Width = 1145
+    Top = 439
+    Width = 869
     Height = 19
     Panels = <>
     SkinData.SkinSection = 'STATUSBAR'
   end
   object panBtn: TsPanel
     Left = 0
-    Top = 612
-    Width = 1145
+    Top = 407
+    Width = 869
     Height = 32
     Align = alBottom
     TabOrder = 2
     SkinData.SkinSection = 'PANEL'
     DesignSize = (
-      1145
+      869
       32)
     object btnCancel: TsButton
-      Left = 1066
+      Left = 790
       Top = 4
       Width = 75
       Height = 25
@@ -206,7 +206,7 @@ object frmCleaningNotes: TfrmCleaningNotes
       SkinData.SkinSection = 'BUTTON'
     end
     object BtnOk: TsButton
-      Left = 988
+      Left = 712
       Top = 4
       Width = 75
       Height = 25
@@ -224,13 +224,12 @@ object frmCleaningNotes: TfrmCleaningNotes
   object grData: TcxGrid
     Left = 0
     Top = 89
-    Width = 1145
-    Height = 523
+    Width = 869
+    Height = 318
     Align = alClient
     Constraints.MinWidth = 440
     TabOrder = 3
     LookAndFeel.NativeStyle = False
-    ExplicitTop = 87
     object tvData: TcxGridDBTableView
       OnDblClick = tvDataDblClick
       Navigator.Buttons.CustomButtons = <>
@@ -272,6 +271,7 @@ object frmCleaningNotes: TfrmCleaningNotes
       Navigator.Buttons.Filter.Visible = True
       Navigator.InfoPanel.Visible = True
       Navigator.Visible = True
+      OnCellDblClick = tvDataCellDblClick
       DataController.DataSource = dsCleaningNotes
       DataController.Filter.AutoDataSetFilter = True
       DataController.KeyFieldNames = 'ID'
@@ -297,22 +297,33 @@ object frmCleaningNotes: TfrmCleaningNotes
       object tvDataactive: TcxGridDBColumn
         Caption = 'Active'
         DataBinding.FieldName = 'active'
+        Width = 39
+      end
+      object tvDataonlyWhenRoomIsDirty: TcxGridDBColumn
+        DataBinding.FieldName = 'onlyWhenRoomIsDirty'
       end
       object tvDataserviceType: TcxGridDBColumn
         Caption = 'Service type'
         DataBinding.FieldName = 'serviceType'
+        Width = 82
       end
       object tvDataonceType: TcxGridDBColumn
         Caption = 'Once type'
         DataBinding.FieldName = 'onceType'
+        OnCustomDrawCell = tvDataonceTypeCustomDrawCell
       end
       object tvDatainterval: TcxGridDBColumn
-        Caption = 'Interval'
+        Caption = 'Days'
         DataBinding.FieldName = 'interval'
+        OnCustomDrawCell = tvDataintervalCustomDrawCell
+        HeaderAlignmentHorz = taRightJustify
+        Width = 71
       end
       object tvDataminimumDays: TcxGridDBColumn
         Caption = 'Min days'
         DataBinding.FieldName = 'minimumDays'
+        HeaderAlignmentHorz = taRightJustify
+        Width = 63
       end
       object tvDatamessage: TcxGridDBColumn
         Caption = 'Cleaning note'
@@ -325,17 +336,12 @@ object frmCleaningNotes: TfrmCleaningNotes
   end
   object mnuOther: TPopupMenu
     Images = DImages.PngImageList1
-    Left = 22
-    Top = 160
+    Left = 382
+    Top = 24
     object mnuiPrint: TMenuItem
       Caption = 'Print'
       ImageIndex = 3
       OnClick = mnuiPrintClick
-    end
-    object mnuiAllowGridEdit: TMenuItem
-      Caption = 'Allow grid edit'
-      Checked = True
-      OnClick = mnuiAllowGridEditClick
     end
     object N2: TMenuItem
       Caption = '-'
@@ -376,6 +382,7 @@ object frmCleaningNotes: TfrmCleaningNotes
     Left = 80
     Top = 136
     object prLink_grData: TdxGridReportLink
+      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 5080
       PrinterPage.GrayShading = True
@@ -389,6 +396,7 @@ object frmCleaningNotes: TfrmCleaningNotes
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
       ReportDocument.CreationDate = 41334.495374884260000000
+      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       BuiltInReportLink = True
     end
   end
@@ -430,6 +438,9 @@ object frmCleaningNotes: TfrmCleaningNotes
       FieldName = 'message'
       Size = 255
     end
+    object m_CleaningNotesonlyWhenRoomIsDirty: TBooleanField
+      FieldName = 'onlyWhenRoomIsDirty'
+    end
   end
   object FormStore: TcxPropertiesStore
     Components = <
@@ -442,7 +453,7 @@ object frmCleaningNotes: TfrmCleaningNotes
           'Top'
           'Width')
       end>
-    StorageName = 'Software\Roomer\FormStatus\Items'
+    StorageName = 'Software\Roomer\FormStatus\CleaningNotes'
     StorageType = stRegistry
     Left = 371
     Top = 264

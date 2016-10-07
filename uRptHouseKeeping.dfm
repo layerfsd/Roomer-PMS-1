@@ -174,7 +174,7 @@ inherited frmHouseKeepingReport: TfrmHouseKeepingReport
         Options.Editing = False
         SortIndex = 0
         SortOrder = soAscending
-        Width = 54
+        Width = 39
       end
       object grHouseKeepingListDBTableView1floor: TcxGridDBColumn
         Caption = 'Floor'
@@ -186,7 +186,7 @@ inherited frmHouseKeepingReport: TfrmHouseKeepingReport
         Options.Editing = False
         SortIndex = 1
         SortOrder = soAscending
-        Width = 57
+        Width = 41
       end
       object grHouseKeepingListDBTableView1room: TcxGridDBColumn
         Caption = 'Room'
@@ -198,7 +198,7 @@ inherited frmHouseKeepingReport: TfrmHouseKeepingReport
         Options.Editing = False
         SortIndex = 2
         SortOrder = soAscending
-        Width = 72
+        Width = 50
       end
       object grHouseKeepingListDBTableView1roomtype: TcxGridDBColumn
         Caption = 'RoomType'
@@ -208,7 +208,7 @@ inherited frmHouseKeepingReport: TfrmHouseKeepingReport
         Properties.Alignment.Vert = taTopJustify
         HeaderAlignmentHorz = taCenter
         Options.Editing = False
-        Width = 74
+        Width = 53
       end
       object grHouseKeepingListDBTableView1LastGuests: TcxGridDBColumn
         Caption = 'Guests'
@@ -219,7 +219,7 @@ inherited frmHouseKeepingReport: TfrmHouseKeepingReport
         OnGetDisplayText = grHouseKeepingListDBTableView1ArrivingGuestsGetDisplayText
         HeaderAlignmentHorz = taCenter
         Options.Editing = False
-        Width = 58
+        Width = 42
       end
       object grHouseKeepingListDBTableView1expectedcot: TcxGridDBColumn
         Caption = 'Checkout time'
@@ -229,7 +229,7 @@ inherited frmHouseKeepingReport: TfrmHouseKeepingReport
         Properties.Alignment.Vert = taTopJustify
         Properties.TimeFormat = tfHourMin
         HeaderAlignmentHorz = taCenter
-        Width = 89
+        Width = 63
       end
       object grHouseKeepingListDBTableView1housekeepingstatus: TcxGridDBColumn
         Caption = 'Status'
@@ -237,7 +237,7 @@ inherited frmHouseKeepingReport: TfrmHouseKeepingReport
         PropertiesClassName = 'TcxLabelProperties'
         Properties.Alignment.Horz = taLeftJustify
         Options.Editing = False
-        Width = 112
+        Width = 81
       end
       object grHouseKeepingListDBTableView1ArrivingGuests: TcxGridDBColumn
         Caption = 'Arriving Guests'
@@ -248,7 +248,7 @@ inherited frmHouseKeepingReport: TfrmHouseKeepingReport
         OnGetDisplayText = grHouseKeepingListDBTableView1ArrivingGuestsGetDisplayText
         HeaderAlignmentHorz = taCenter
         Options.Editing = False
-        Width = 96
+        Width = 68
       end
       object grHouseKeepingListDBTableView1expectedtoa: TcxGridDBColumn
         Caption = 'Arrival time'
@@ -258,14 +258,19 @@ inherited frmHouseKeepingReport: TfrmHouseKeepingReport
         Properties.TimeFormat = tfHourMin
         HeaderAlignmentHorz = taCenter
         Options.Editing = False
-        Width = 66
+        Width = 47
+      end
+      object grHouseKeepingListDBTableView1LiveNote: TcxGridDBColumn
+        Caption = 'Cleaning note'
+        DataBinding.FieldName = 'LiveNote'
+        Width = 320
       end
       object grHouseKeepingListDBTableView1Roomnotes: TcxGridDBColumn
         Caption = 'Room Notes'
         DataBinding.FieldName = 'roomnotes'
         PropertiesClassName = 'TcxMemoProperties'
         Options.Editing = False
-        Width = 441
+        Width = 315
       end
       object grHouseKeepingListDBTableView1maintenancenotes: TcxGridDBColumn
         Caption = 'Maintenance Notes'
@@ -324,7 +329,11 @@ inherited frmHouseKeepingReport: TfrmHouseKeepingReport
         DataType = ftInteger
       end
       item
-        Name = 'numberofguests'
+        Name = 'LastGuests'
+        DataType = ftInteger
+      end
+      item
+        Name = 'ArrivingGuests'
         DataType = ftInteger
       end
       item
@@ -332,9 +341,30 @@ inherited frmHouseKeepingReport: TfrmHouseKeepingReport
         DataType = ftTime
       end
       item
-        Name = 'status'
+        Name = 'housekeepingstatus'
         DataType = ftString
         Size = 20
+      end
+      item
+        Name = 'location'
+        DataType = ftString
+        Size = 10
+      end
+      item
+        Name = 'expectedtoa'
+        DataType = ftTime
+      end
+      item
+        Name = 'Roomnotes'
+        DataType = ftMemo
+      end
+      item
+        Name = 'maintenancenotes'
+        DataType = ftMemo
+      end
+      item
+        Name = 'cleaningnotes'
+        DataType = ftMemo
       end>
     IndexDefs = <>
     SortOptions = []
@@ -393,6 +423,10 @@ inherited frmHouseKeepingReport: TfrmHouseKeepingReport
       FieldName = 'cleaningnotes'
       BlobType = ftMemo
     end
+    object kbmHouseKeepingListLiveNote: TWideStringField
+      FieldName = 'LiveNote'
+      Size = 255
+    end
   end
   object HouseKeepingListDS: TDataSource
     DataSet = kbmHouseKeepingList
@@ -421,7 +455,7 @@ inherited frmHouseKeepingReport: TfrmHouseKeepingReport
       PrinterPage.ScaleMode = smFit
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
-      ReportDocument.CreationDate = 42649.422821932870000000
+      ReportDocument.CreationDate = 42649.681261493060000000
       ReportTitle.Font.Charset = DEFAULT_CHARSET
       ReportTitle.Font.Color = clBlack
       ReportTitle.Font.Height = -19

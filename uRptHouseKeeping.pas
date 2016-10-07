@@ -79,6 +79,8 @@ type
     kbmHouseKeepingListcleaningnotes: TMemoField;
     grHouseKeepingListDBTableView1maintenancenotes: TcxGridDBColumn;
     grHouseKeepingListDBTableView1cleaningnotes: TcxGridDBColumn;
+    kbmHouseKeepingListLiveNote: TWideStringField;
+    grHouseKeepingListDBTableView1LiveNote: TcxGridDBColumn;
     procedure btnExcelClick(Sender: TObject);
     procedure btnRefreshClick(Sender: TObject);
     procedure kbmHouseKeepingListAfterScroll(DataSet: TDataSet);
@@ -141,6 +143,7 @@ const
       '	 departing.ExpectedCheckOutTime as expectedCOT, '#10+
       '	 arriving.ExpectedTimeOfArrival as expectedTOA, '#10+
       '	 arriving.hiddeninfo as Roomnotes, '#10+
+      '	 LiveNotes.Note AS LiveNote, '#10+
       '	 rm.CleaningNotes, '#10+
       '	 rm.MaintenanceNotes, '#10+
       '	 case '#10+
@@ -155,6 +158,26 @@ const
       '	  JOIN roomtypes rt on rt.roomtype=r.roomtype '#10+
       '	  JOIN locations l on l.Location=r.location '#10+
       '   LEFT JOIN maintenanceroomnotes rm ON rm.Room=r.Room '#10+
+      '   LEFT JOIN (SELECT xxx.Room, xxx.CleanStatus, GROUP_CONCAT(DISTINCT cn.Message SEPARATOR ''\n'') AS Note FROM cleaningnotes cn ' +
+      '	JOIN (SELECT Room, (SELECT Status FROM rooms WHERE Room=rr.Room LIMIT 1) AS CleanStatus, RoomReservation, Reservation, ' +
+      '       DATE((SELECT ADate FROM roomsdate WHERE RoomReservation=rr.RoomReservation AND rr.Status=ResFlag ORDER BY ADate LIMIT 1)) AS Arrival, ' +
+      '	   DATE_ADD((SELECT ADate FROM roomsdate WHERE RoomReservation=rr.RoomReservation AND rr.Status=ResFlag ORDER BY ADate DESC LIMIT 1), INTERVAL 1 DAY) AS Departure, ' +
+      '	   DATEDIFF(DATE_ADD((SELECT ADate FROM roomsdate WHERE RoomReservation=rr.RoomReservation AND rr.Status=ResFlag ORDER BY ADate DESC LIMIT 1), INTERVAL 1 DAY), ' +
+      '       DATE((SELECT ADate FROM roomsdate WHERE RoomReservation=rr.RoomReservation AND rr.Status=ResFlag ORDER BY ADate LIMIT 1))) AS numberOfDays, ' +
+      '	   DATEDIFF({probedate}, DATE((SELECT ADate FROM roomsdate WHERE RoomReservation=rr.RoomReservation AND rr.Status=ResFlag ORDER BY ADate LIMIT 1))) AS numberOfDaysStayed, ' +
+      '       DATE_ADD((SELECT ADate FROM roomsdate WHERE RoomReservation=rr.RoomReservation AND rr.Status=ResFlag ORDER BY ADate DESC LIMIT 1), INTERVAL 1 DAY)={probedate} AS isDepartureDate, ' +
+      '       rr.Status=''D'' AS isDeparted ' +
+      'FROM roomreservations rr ' +
+      'WHERE rr.roomreservation IN (SELECT roomreservation FROM roomsdate WHERE (Adate={probedate} OR DATE_ADD(ADate, INTERVAL 1 DAY)={probedate}) AND resflag in (''P'',''G'',''D'')) ' +
+      ') xxx ON ' +
+      '((NOT xxx.isDepartureDate) ' +
+      'AND (NOT cn.onlyWhenRoomIsDirty OR CleanStatus IN (''C'',''R'')) ' +
+      'AND cn.serviceType=''INTERVAL'' AND (xxx.numberOfDaysStayed > 0 AND MOD(xxx.numberOfDaysStayed, cn.`interval`)=0) AND xxx.numberOfDays>=cn.minimumDays) ' +
+      'OR ((NOT xxx.isDepartureDate) AND cn.serviceType=''ONCE'' AND cn.onceType=''CHECK_IN_DAY'' AND xxx.Arrival={probedate} AND xxx.numberOfDays>=cn.minimumDays) ' +
+      'OR ((NOT xxx.isDepartureDate) AND cn.serviceType=''ONCE'' AND cn.onceType=''XTH_DAY'' AND xxx.numberOfDaysStayed=cn.`interval` AND xxx.numberOfDays>=cn.minimumDays) ' +
+      'OR (xxx.isDepartureDate AND cn.serviceType=''ONCE'' AND cn.onceType=''CHECK_OUT_DAY'' AND xxx.Departure={probedate} AND xxx.numberOfDays>=cn.minimumDays) ' +
+      'OR ((xxx.isDepartureDate AND NOT xxx.isDeparted) AND cn.serviceType=''ONCE'' AND cn.onceType=''BEFORE_CHECK_OUT'' AND xxx.Departure={probedate} AND xxx.numberOfDays>=cn.minimumDays) ' +
+      'GROUP BY xxx.Room) LiveNotes ON LiveNotes.Room=r.Room '#10 +
       ' '#10+
       '	  LEFT OUTER JOIN ( SELECT * '#10+
       '			 , (select count(*) from persons p where p.roomreservation = rrd.RoomReservation)  + rrd.numChildren + rrd.numInfants as NumGuestsD '#10+
@@ -252,7 +275,8 @@ begin
       rSet1 := CreateNewDataSet;
       try
         s := ConstructSQL;
-
+        CopyToClipboard(s);
+        DebugMessage(s);
         hData.rSet_bySQL(rSet1, s, false);
         rSet1.First;
         if not kbmHouseKeepingList.Active then
