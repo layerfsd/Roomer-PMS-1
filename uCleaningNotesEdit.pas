@@ -5,8 +5,10 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, uDImages, hData, Vcl.StdCtrls, sButton, Vcl.ExtCtrls, sPanel, cxClasses, cxPropertiesStore, sMemo, sEdit, sCheckBox,
-  sComboBox, sLabel, uRoomerForm, cxGraphics, cxControls, cxLookAndFeels, cxLookAndFeelPainters, dxSkinsCore, dxSkinCaramel, dxSkinCoffee, dxSkinDarkSide,
-  dxSkinTheAsphaltWorld, dxSkinsDefaultPainters, dxSkinsdxStatusBarPainter, dxStatusBar;
+  sComboBox, sLabel
+  , uRoomerForm, cxGraphics, cxControls, cxLookAndFeels, cxLookAndFeelPainters, dxSkinsCore, dxSkinCaramel,
+  dxSkinCoffee, dxSkinDarkSide, dxSkinTheAsphaltWorld, dxSkinsDefaultPainters, dxSkinsdxStatusBarPainter,
+  cxGridTableView, cxStyles, dxPScxCommon, dxPScxGridLnk, dxStatusBar;
 
 type
   TfrmCleaningNotesEdit = class(TfrmBaseRoomerForm)
@@ -25,26 +27,21 @@ type
     sLabel5: TsLabel;
     edtMessage: TsMemo;
     cbxOnlyWhenRoomIsDirty: TsCheckBox;
-    procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure __cbxOnceTypeCloseUp(Sender: TObject);
     procedure __cbxServiceTypeCloseUp(Sender: TObject);
   private
-    procedure OrganizeInputs;
-    procedure PrepareInputs;
-    { Private declarations }
+  protected
+    procedure UpdateControls; override;
+    procedure DoLoadData; override;
   public
     { Public declarations }
     zData : recCleaningNotesHolder;
-    zInsert : boolean;
 
     procedure EditsToRecordHolder;
   end;
 
-var
-  frmCleaningNotesEdit: TfrmCleaningNotesEdit;
-
-function openCleaningNotesEdit(var theData : recCleaningNotesHolder; isInsert : boolean) : boolean;
+function openCleaningNotesEdit(var theData : recCleaningNotesHolder) : boolean;
 
 implementation
 
@@ -57,7 +54,7 @@ uses PrjConst,
      ;
 
 
-function openCleaningNotesEdit(var theData : recCleaningNotesHolder; isInsert : boolean) : boolean;
+function openCleaningNotesEdit(var theData : recCleaningNotesHolder) : boolean;
 var
   _FrmCleaningNotesEdit: TFrmCleaningNotesEdit;
 begin
@@ -65,7 +62,6 @@ begin
   _FrmCleaningNotesEdit := TFrmCleaningNotesEdit.Create(nil);
   try
     _FrmCleaningNotesEdit.zData := theData;
-    _FrmCleaningNotesEdit.zInsert := isInsert;
     _FrmCleaningNotesEdit.ShowModal;
     if _FrmCleaningNotesEdit.modalresult = mrOk then
     begin
@@ -76,6 +72,18 @@ begin
   finally
     freeandnil(_FrmCleaningNotesEdit);
   end;
+end;
+
+procedure TfrmCleaningNotesEdit.DoLoadData;
+begin
+  inherited;
+  cbxActive.Checked := zData.active;
+  __cbxServiceType.ItemIndex := __cbxServiceType.Items.IndexOf(zData.serviceType);
+  __cbxOnceType.ItemIndex := __cbxOnceType.Items.IndexOf(zData.onceType);
+  edtInterval.Text := InttoStr(zData.interval);
+  edtMinimumDays.Text := InttoStr(zData.minimumDays);
+  cbxOnlyWhenRoomIsDirty.Checked := zData.onlyWhenRoomIsDirty;
+  edtMessage.Text := zData.smessage;
 end;
 
 procedure TFrmCleaningNotesEdit.EditsToRecordHolder;
@@ -89,46 +97,24 @@ begin
   zData.smessage := edtMessage.Text;
 end;
 
-procedure TfrmCleaningNotesEdit.FormCreate(Sender: TObject);
-begin
-//  RoomerLanguage.TranslateThisForm(self);
-//  glb.PerformAuthenticationAssertion(self);
-//  PlaceFormOnVisibleMonitor(self);
-end;
-
 procedure TfrmCleaningNotesEdit.FormShow(Sender: TObject);
 begin
-  PrepareInputs;
-end;
-
-procedure TFrmCleaningNotesEdit.PrepareInputs;
-begin
-  if NOT zInsert then
-  begin
-    cbxActive.Checked := zData.active;
-    __cbxServiceType.ItemIndex := __cbxServiceType.Items.IndexOf(zData.serviceType);
-    __cbxOnceType.ItemIndex := __cbxOnceType.Items.IndexOf(zData.onceType);
-    edtInterval.Text := InttoStr(zData.interval);
-    edtMinimumDays.Text := InttoStr(zData.minimumDays);
-    cbxOnlyWhenRoomIsDirty.Checked := zData.onlyWhenRoomIsDirty;
-    edtMessage.Text := zData.smessage;
-  end;
-
-  OrganizeInputs;
+  RefreshData;
 end;
 
 procedure TfrmCleaningNotesEdit.__cbxOnceTypeCloseUp(Sender: TObject);
 begin
-  OrganizeInputs;
+  UpdateControls;
 end;
 
 procedure TfrmCleaningNotesEdit.__cbxServiceTypeCloseUp(Sender: TObject);
 begin
-  OrganizeInputs;
+  UpdateControls;
 end;
 
-procedure TFrmCleaningNotesEdit.OrganizeInputs;
+procedure TFrmCleaningNotesEdit.UpdateControls;
 begin
+  inherited;
   __cbxOnceType.Visible := __cbxServiceType.ItemIndex > 0;
   if __cbxServiceType.ItemIndex = 0 then
   begin

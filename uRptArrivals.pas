@@ -112,8 +112,9 @@ type
     procedure SetManualDates(aFrom, aTo: TDate);
     function ConstructSQL: string;
   protected
-    procedure LoadData; override;
+    procedure DoLoadData; override;
     procedure UpdateControls; override;
+    procedure DoShow; override;
   public
     constructor Create(aOwner: TComponent); override;
     destructor Destroy; override;
@@ -280,6 +281,12 @@ begin
   FCurrencyhandler.Free;
 end;
 
+procedure TfrmArrivalsReport.DoShow;
+begin
+  inherited;
+  RefreshData;
+end;
+
 procedure TfrmArrivalsReport.dtDateFromCloseUp(Sender: TObject);
 begin
  if dtDateFrom.Date > dtDateTo.Date then
@@ -334,7 +341,7 @@ begin
   UpdateControls;
 end;
 
-procedure TfrmArrivalsReport.LoadData;
+procedure TfrmArrivalsReport.DoLoadData;
 var
   s    : string;
   rset1: TRoomerDataset;

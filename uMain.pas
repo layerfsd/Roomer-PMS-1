@@ -733,7 +733,10 @@ type
     btnSimpleHouseKeeping: TdxBarLargeButton;
     btnReRegisterPMS: TdxBarLargeButton;
     btnRptDepartures: TdxBarLargeButton;
+    btnDailyRevenues: TdxBarLargeButton;
+    btnDayCLosingTimes: TdxBarLargeButton;
     btnCleaningNotes: TdxBarLargeButton;
+    btnDailyrev: TdxBarLargeButton;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
@@ -1035,6 +1038,7 @@ type
     procedure btnCloseCurrentDayClick(Sender: TObject);
     procedure btnSimpleHouseKeepingClick(Sender: TObject);
     procedure btnReRegisterPMSClick(Sender: TObject);
+    procedure btnDailyRevenuesClick(Sender: TObject);
     procedure btnCleaningNotesClick(Sender: TObject);
 
   private
@@ -1644,7 +1648,7 @@ uses
     , uDayClosingTimes
     , uDayClosingTimesAPICaller
     , uDateTimeHelper
-    , uRptHouseKeeping, uReservationStateChangeHandler;
+    , uRptHouseKeeping, uReservationStateChangeHandler, uRptDailyRevenues;
 
 {$R *.DFM}
 {$R Cursors.res}
@@ -12040,6 +12044,12 @@ procedure TfrmMain.btnCustomerTypeListClick(Sender: TObject);
 begin
   UserClickedDxLargeButton(Sender);
   _CustomerTypeList;
+end;
+
+procedure TfrmMain.btnDailyRevenuesClick(Sender: TObject);
+begin
+  UserClickedDxLargeButton(Sender);
+  ShowDailyRevenuesReport;
 end;
 
 procedure TfrmMain.btnDashboardClick(Sender: TObject);

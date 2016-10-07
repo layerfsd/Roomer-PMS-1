@@ -1,12 +1,11 @@
 inherited frmCleaningNotesEdit: TfrmCleaningNotesEdit
   Caption = 'Edit Cleaning Note Rule'
-  ClientHeight = 466
+  ClientHeight = 448
   ClientWidth = 610
   Font.Height = -11
-  OnCreate = FormCreate
   OnShow = FormShow
   ExplicitWidth = 626
-  ExplicitHeight = 505
+  ExplicitHeight = 487
   PixelsPerInch = 96
   TextHeight = 13
   object sLabel1: TsLabel [0]
@@ -50,20 +49,19 @@ inherited frmCleaningNotesEdit: TfrmCleaningNotesEdit
     Caption = 'Note:'
   end
   inherited dxStatusBar: TdxStatusBar
-    Top = 413
+    Top = 428
     Width = 610
-    ExplicitTop = 411
+    ExplicitTop = 428
     ExplicitWidth = 610
   end
   object panBtn: TsPanel [6]
     Left = 0
-    Top = 433
+    Top = 395
     Width = 610
     Height = 33
     Align = alBottom
     TabOrder = 6
     SkinData.SkinSection = 'PANEL'
-    ExplicitTop = 401
     DesignSize = (
       610
       33)
@@ -217,6 +215,15 @@ inherited frmCleaningNotesEdit: TfrmCleaningNotesEdit
   end
   inherited psRoomerBase: TcxPropertiesStore
     Left = 536
-    Top = 24
+    Top = 80
+  end
+  inherited cxsrRoomerStyleRepository: TcxStyleRepository
+    PixelsPerInch = 96
+    inherited dxssRoomerGridReportLink: TdxGridReportLinkStyleSheet
+      BuiltIn = True
+    end
+    inherited cxssRoomerGridTableView: TcxGridTableViewStyleSheet
+      BuiltIn = True
+    end
   end
 end

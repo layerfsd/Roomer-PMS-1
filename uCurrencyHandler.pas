@@ -5,7 +5,7 @@ interface
 uses
     hData
   , SysUtils
-  , cxEdit
+  , cxCurrencyEdit
   ;
 
 type
@@ -49,7 +49,7 @@ type
     /// <summary>
     ///   Get the CustomEditProperties component defined in uD , based on currencycode
     /// </summary>
-    function GetcxEditProperties: TcxCustomEditProperties;
+    function GetcxEditProperties: TcxCurrencyEditProperties;
   end;
 
 
@@ -96,9 +96,9 @@ begin
   Result := FCurrencyRec.Currency;
 end;
 
-function TCurrencyHandler.GetcxEditProperties: TcxCustomEditProperties;
+function TCurrencyHandler.GetcxEditProperties: TcxCurrencyEditProperties;
 begin
-  Result := d.getCurrencyProperties(FCurrencyRec.Currency);
+  Result := TcxCurrencyEditProperties(d.getCurrencyProperties(FCurrencyRec.Currency));
 end;
 
 function TCurrencyHandler.GetRate: double;

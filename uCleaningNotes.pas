@@ -113,7 +113,6 @@ type
     mnuiGridToHtml: TMenuItem;
     mnuiGridToText: TMenuItem;
     mnuiGridToXml: TMenuItem;
-    sbMain: TsStatusBar;
     edFilter: TsEdit;
     cLabFilter: TsLabel;
     btnClear: TsSpeedButton;
@@ -149,18 +148,15 @@ type
     m_CleaningNotesonlyWhenRoomIsDirty: TBooleanField;
     tvDataonlyWhenRoomIsDirty: TcxGridDBColumn;
 
-    procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormKeyPress(Sender: TObject; var Key: Char);
     procedure m_CleaningNotesBeforeDelete(DataSet: TDataSet);
-    procedure m_CleaningNotesBeforeInsert(DataSet: TDataSet);
     procedure m_CleaningNotesBeforePost(DataSet: TDataSet);
     procedure m_CleaningNotesNewRecord(DataSet: TDataSet);
     procedure tvDataDblClick(Sender: TObject);
     procedure BtnOkClick(Sender: TObject);
     procedure btnCancelClick(Sender: TObject);
-    procedure tvDataDataControllerFilterChanged(Sender: TObject);
     procedure tvDataDataControllerSortingChanged(Sender: TObject);
     procedure btnDeleteClick(Sender: TObject);
     procedure mnuiPrintClick(Sender: TObject);
@@ -171,7 +167,6 @@ type
     procedure btnEditClick(Sender: TObject);
     procedure btnClearClick(Sender: TObject);
     procedure edFilterChange(Sender: TObject);
-    procedure tvDataItemPropertiesValidate(Sender: TObject; var DisplayValue: Variant; var ErrorText: TCaption; var Error: Boolean);
     procedure btnInsertClick(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure chkActiveClick(Sender: TObject);
@@ -183,19 +178,14 @@ type
       var AHandled: Boolean);
     procedure tvDataonceTypeCustomDrawCell(Sender: TcxCustomGridTableView; ACanvas: TcxCanvas; AViewInfo: TcxGridTableDataCellViewInfo; var ADone: Boolean);
     procedure tvDataintervalCustomDrawCell(Sender: TcxCustomGridTableView; ACanvas: TcxCanvas; AViewInfo: TcxGridTableDataCellViewInfo; var ADone: Boolean);
+    procedure m_CleaningNotesAfterScroll(DataSet: TDataSet);
   private
     { Private declarations }
-    zFirstTime       : boolean;
-    FAllowGridEdit   : boolean;
-    zFilterOn        : boolean;
+    financeLookupList : TKeyPairList;
 
-    zSortStr         : string;
-
-    procedure fillHolder;
-    Procedure chkFilter;
     procedure applyFilter;
     procedure StopFilter;
-    function CopyDatasetToRecCleaningNote:recCleaningNotesHolder;
+    function CopyDatasetToRecCleaningNote: recCleaningNotesHolder;
     procedure SetAllowGridEdit(const Value: boolean);
     procedure SetFilterForDataset(aRSet: TRoomerDataset);
     function ConstructSQL: string;
@@ -204,12 +194,14 @@ type
     Lookup : Boolean;
     zAct: TActTableAction;
     zData: recCleaningNotesHolder;
+    FAllowGridEdit : Boolean;
     /// <summary>
     ///   Add recCleaningNotesHolders to recCleaningNotesHolderslist for each price-period of selected stockitem. <br />
     ///  zData is used to determine requested peroid of use
     /// </summary>
     property AllowGridEdit: boolean read FAllowGridEdit write SetAllowGridEdit;
-    procedure LoadData; override;
+    procedure DoLoadData; override;
+    procedure UpdateControls; override;
   end;
 
 function openCleaningNotes(act : TActTableAction; Lookup : Boolean; var theData : recCleaningNotesHolder) : boolean;
@@ -306,20 +298,15 @@ begin
   Result := cSQL;
 end;
 
-Procedure TfrmCleaningNotes.LoadData;
+Procedure TfrmCleaningNotes.DoLoadData;
 var
   rSet : TRoomerDataSet;
 begin
   inherited;
 
-  zFirstTime := true;
-
-  if zSortStr = '' then zSortStr := 'id';
-
   rSet := CreateNewDataSet;
   rSet_bySQL(rSet, ConstructSQL);
   try
-    rSet.Sort := zSortStr;
 
     SetFilterForDataset(rSet);
 
@@ -342,35 +329,14 @@ begin
 
 end;
 
-
-
-procedure TfrmCleaningNotes.fillHolder;
-begin
-  zData := CopyDatasetToRecCleaningNote;
-end;
-
 procedure TfrmCleaningNotes.chkActiveClick(Sender: TObject);
 begin
-  zFirstTime := false;
   if tvdata.DataController.DataSet.State = dsEdit then
   begin
     tvdata.DataController.Post;
   end;
 
   RefreshData;
-
-  zFirstTime := false;
-end;
-
-procedure TfrmCleaningNotes.chkFilter;
-var
-  sFilter : string;
-  rC1,rc2   : integer;
-begin
-  sFilter := edFilter.text;
-  rc1 := tvData.DataController.RecordCount;
-  rc2 := tvData.DataController.FilteredRecordCount;
-  zFilterON := rc1 <> rc2;
 end;
 
 procedure TfrmCleaningNotes.SetAllowGridEdit(const Value: boolean);
@@ -447,32 +413,12 @@ end;
 // Form actions
 /////////////////////////////////////////////////////////////
 
-procedure TfrmCleaningNotes.FormCreate(Sender: TObject);
-begin
-  Lookup := False;
-  //**
-  zFirstTime  := true;
-  zAct        := actNone;
-end;
-
 procedure TfrmCleaningNotes.FormShow(Sender: TObject);
 begin
-  zFirstTime := true;
-//**
-  panBtn.Visible := False;
-  sbMain.Visible := false;
-
   chkActive.Checked := True;
 
-  sbMain.SimpleText := zSortStr;
-
   AllowGridEdit := False; // (ZAct <> actLookup);
-  panBtn.Visible := (Zact = actLookup);
-  sbMain.Visible := (Zact = actLookup);
-  tvData.OptionsData.Editing := FAllowGridEdit;
-
-  chkFilter;
-  zFirstTime := false;
+  RefreshData;
 
   tvData.DataController.DataModeController.GridMode := (ZAct = actLookup);
   tvData.DataController.Filter.AutoDataSetFilter := tvData.DataController.DataModeController.GridMode;
@@ -501,12 +447,11 @@ end;
 procedure TfrmCleaningNotes.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
   if Key = VK_ESCAPE then
-  begin
     if m_CleaningNotes.State in [dsInsert, dsEdit] then
-      m_CleaningNotes.Cancel
-    else
-      btnCancel.Click;
-  end;
+    begin
+      m_CleaningNotes.Cancel;
+      Key := 0;
+    end;
 end;
 
 procedure TfrmCleaningNotes.FormKeyPress(Sender: TObject; var Key: Char);
@@ -514,9 +459,7 @@ begin
   if (ZAct = actLookup) and (ActiveControl <> edFilter) then
   begin
     if key = chr(13) then
-      btnOk.click
-    else if key = chr(27) then
-      btnCancel.click;
+      btnOk.click;
   end;
 end;
 
@@ -527,17 +470,21 @@ end;
 
 procedure TfrmCleaningNotes.m_CleaningNotesAfterPost(DataSet: TDataSet);
 begin
-  if zFirstTime then Exit;
-
   RoomerMessages.RefreshLists;
   glb.RefreshTablesWhenNeeded;
+end;
+
+procedure TfrmCleaningNotes.m_CleaningNotesAfterScroll(DataSet: TDataSet);
+begin
+  inherited;
+//
 end;
 
 procedure TfrmCleaningNotes.m_CleaningNotesBeforeDelete(DataSet: TDataSet);
 var
   s : string;
 begin
-  fillHolder;
+  zData := CopyDatasetToRecCleaningNote;
   s := '';
   s := s+GetTranslatedText('shDeleteItem')+' '+zData.smessage+' '+chr(10);
   s := s+GetTranslatedText('shContinue');
@@ -546,17 +493,10 @@ begin
     abort;
 end;
 
-procedure TfrmCleaningNotes.m_CleaningNotesBeforeInsert(DataSet: TDataSet);
-begin
-  if zFirstTime then exit;
-  tvData.GetColumnByFieldName('serviceType').Focused := True;
-end;
-
 procedure TfrmCleaningNotes.m_CleaningNotesBeforePost(DataSet: TDataSet);
 var
  nID : integer;
 begin
-  if zFirstTime then exit;
   initCleaningNoteHolder(zData);
 
   zData := CopyDatasetToRecCleaningNote;
@@ -605,53 +545,38 @@ end;
 
 procedure TfrmCleaningNotes.m_CleaningNotesNewRecord(DataSet: TDataSet);
 begin
-  if zFirstTime then exit;
-  dataset['Active']          := true;
-  dataset['serviceType']     := 'INTERVAL';
-  dataset['onceType']            := 'CHECK_IN_DAY';
-  dataset['interval']        := 3;
-  dataset['minimumDays']        := 3;
-  dataset['message']      := '';
+  dataset['Active']         := true;
+  dataset['serviceType']    := 'INTERVAL';
+  dataset['onceType']       := 'CHECK_IN_DAY';
+  dataset['interval']       := 3;
+  dataset['minimumDays']    := 3;
+  dataset['message']        := '';
 end;
 
 ////////////////////////////////////////////////////////////////////////////////////////
 //  table View Functions
 ////////////////////////////////////////////////////////////////////////////////////////
 
-procedure TfrmCleaningNotes.tvDataItemPropertiesValidate(Sender: TObject; var DisplayValue: Variant; var ErrorText: TCaption; var Error: Boolean);
-begin
-  DisplayValue := TRIM(DisplayValue);
-
-  error := false;
-  if trim(displayValue) = '' then
-  begin
-    error := true;
-	  errortext := GetTranslatedText('shTx_Items2_ItemCodeIsRequired');
-    exit;
-  end;
-
-  if hdata.itemExist(displayValue) then
-  begin
-    error := true;
-    errortext := displayvalue+'  '+GetTranslatedText('shNewValueExistInAnotherRecor');
-    exit
-  end;
-end;
-
 procedure TfrmCleaningNotes.tvDataonceTypeCustomDrawCell(Sender: TcxCustomGridTableView; ACanvas: TcxCanvas; AViewInfo: TcxGridTableDataCellViewInfo;
   var ADone: Boolean);
 begin
   with TcxGridDBTableView(Sender).DataController do
-    if  AViewInfo.GridRecord.Values[tvDataserviceType.Index] = 'INTERVAL' then
-      aCanvas.Font.Color := aCanvas.Brush.Color;
+    aDone := AViewInfo.GridRecord.Values[tvDataserviceType.Index] = 'INTERVAL';
+end;
+
+procedure TfrmCleaningNotes.UpdateControls;
+begin
+  inherited;
+
+  panBtn.Visible := (Zact = actLookup);
+  tvData.OptionsData.Editing := FAllowGridEdit;
+
 end;
 
 procedure TfrmCleaningNotes.tvDataDblClick(Sender: TObject);
 begin
   if ZAct = actLookup then
-  begin
     btnOK.Click
-  end;
 end;
 
 
@@ -659,10 +584,9 @@ procedure TfrmCleaningNotes.tvDataintervalCustomDrawCell(Sender: TcxCustomGridTa
   var ADone: Boolean);
 begin
   with TcxGridDBTableView(Sender).DataController do
-    if AViewInfo.GridRecord.Values[tvDataserviceType.Index] = 'ONCE' then
-      if NOT ((AViewInfo.GridRecord.Values[tvDataonceType.Index] = 'XTH_DAY') OR
-              (AViewInfo.GridRecord.Values[tvDataonceType.Index] = 'X_DAYS_AFTER_CHECK_OUT')) then
-        aCanvas.Font.Color := aCanvas.Brush.Color;
+    aDone := (AViewInfo.GridRecord.Values[tvDataserviceType.Index] = 'ONCE') and
+             NOT ((AViewInfo.GridRecord.Values[tvDataonceType.Index] = 'XTH_DAY') OR
+                  (AViewInfo.GridRecord.Values[tvDataonceType.Index] = 'X_DAYS_AFTER_CHECK_OUT'));
 end;
 
 ////////////////////////////////////////////////////////////////////////////
@@ -682,11 +606,6 @@ begin
   btnEdit.Click;
 end;
 
-procedure TfrmCleaningNotes.tvDataDataControllerFilterChanged(Sender: TObject);
-begin
-  chkFilter;
-end;
-
 procedure TfrmCleaningNotes.tvDataDataControllerSortingChanged(Sender: TObject);
 var
   i : integer;
@@ -703,8 +622,6 @@ begin
     if tvData.SortedItems[i].SortOrder = soDescending then
     s := s + ' DESC';
   end;
-  zSortStr := s;
-  sbMain.SimpleText := s;
 end;
 
 //////////////////////////////////////////////////////////////////////////
@@ -714,7 +631,7 @@ end;
 
 procedure TfrmCleaningNotes.BtnOkClick(Sender: TObject);
 begin
-  fillHolder;
+  zData := CopyDatasetToRecCleaningNote;
 end;
 
 procedure TfrmCleaningNotes.btnCancelClick(Sender: TObject);
@@ -734,8 +651,8 @@ end;
 
 procedure TfrmCleaningNotes.btnEditClick(Sender: TObject);
 begin
-  fillHolder;
-  if openCleaningNotesEdit(zData, false) then
+  zData := CopyDatasetToRecCleaningNote;
+  if openCleaningNotesEdit(zData) then
   begin
       m_CleaningNotes.edit;
       SetEditedValuesIn_M_Dataset;
@@ -757,12 +674,19 @@ end;
 
 procedure TfrmCleaningNotes.btnInsertClick(Sender: TObject);
 begin
-  fillHolder;
-  if openCleaningNotesEdit(zData, true) then
-  begin
-      m_CleaningNotes.insert;
+  m_CleaningNotes.insert;
+  try
+    zData := CopyDatasetToRecCleaningNote;
+    if openCleaningNotesEdit(zData) then
+    begin
       SetEditedValuesIn_M_Dataset;
       m_CleaningNotes.Post;
+    end
+    else
+      m_CleaningNotes.Cancel;
+  except
+    m_CleaningNotes.Cancel;
+    raise;
   end;
 end;
 

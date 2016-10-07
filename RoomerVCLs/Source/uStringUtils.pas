@@ -71,7 +71,6 @@ begin
     result := 'application/pdf';
     exit;
   end;
-
   ans := '';
   reg := TRegistry.Create;
   try

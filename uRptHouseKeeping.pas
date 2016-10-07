@@ -22,11 +22,10 @@ uses
 
 type
   TfrmHouseKeepingReport = class(TfrmBaseRoomerForm)
-    FormStore: TcxPropertiesStore;
     kbmHouseKeepingList: TkbmMemTable;
     HouseKeepingListDS: TDataSource;
-    pnlFilter: TsPanel;
     btnRefresh: TsButton;
+    pnlFilter: TsPanel;
     pnlExportButtons: TsPanel;
     btnExcel: TsButton;
     grHouseKeepingList: TcxGrid;
@@ -50,23 +49,8 @@ type
     kbmHouseKeepingListlocation: TStringField;
     grHouseKeepingListDBTableView1location: TcxGridDBColumn;
     gridPrinter: TdxComponentPrinter;
-    gridPrinterLink1: TdxGridReportLink;
+    gridPrinterLink: TdxGridReportLink;
     btnPrintGrid: TsButton;
-    cxStyleRepository2: TcxStyleRepository;
-    dxGridReportLinkStyleSheet1: TdxGridReportLinkStyleSheet;
-    cxStyle2: TcxStyle;
-    cxStyle3: TcxStyle;
-    cxStyle4: TcxStyle;
-    cxStyle5: TcxStyle;
-    cxStyle6: TcxStyle;
-    cxStyle7: TcxStyle;
-    cxStyle8: TcxStyle;
-    cxStyle9: TcxStyle;
-    cxStyle10: TcxStyle;
-    cxStyle11: TcxStyle;
-    cxStyle12: TcxStyle;
-    cxStyle13: TcxStyle;
-    cxStyle14: TcxStyle;
     grHouseKeepingListDBTableView1Roomnotes: TcxGridDBColumn;
     kbmHouseKeepingListRoomnotes: TMemoField;
     kbmHouseKeepingListArrivingGuests: TIntegerField;
@@ -79,7 +63,7 @@ type
     kbmHouseKeepingListcleaningnotes: TMemoField;
     grHouseKeepingListDBTableView1maintenancenotes: TcxGridDBColumn;
     grHouseKeepingListDBTableView1cleaningnotes: TcxGridDBColumn;
-    kbmHouseKeepingListLiveNote: TWideStringField;
+    kbmHouseKeepingListLiveNote: TMemoField;
     grHouseKeepingListDBTableView1LiveNote: TcxGridDBColumn;
     procedure btnExcelClick(Sender: TObject);
     procedure btnRefreshClick(Sender: TObject);
@@ -94,7 +78,8 @@ type
     procedure UpdateLocations;
   protected
     procedure UpdateControls; override;
-    procedure LoadData; override;
+    procedure DoLoadData; override;
+    procedure DoShow; override;
   public
     { Public declarations }
   end;
@@ -244,6 +229,12 @@ begin
 end;
 
 
+procedure TfrmHouseKeepingReport.DoShow;
+begin
+  inherited;
+  RefreshData;
+end;
+
 procedure TfrmHouseKeepingReport.grHouseKeepingListDBTableView1ArrivingGuestsGetDisplayText(
   Sender: TcxCustomGridTableItem; ARecord: TcxCustomGridRecord; var AText: string);
 begin
@@ -257,44 +248,33 @@ begin
 end;
 
 
-procedure TfrmHouseKeepingReport.LoadData;
+procedure TfrmHouseKeepingReport.DoLoadData;
 var
   s    : string;
   rset1: TRoomerDataset;
 begin
   inherited;
-  if NOT btnRefresh.Enabled then exit;
-
-  btnRefresh.Enabled := False;
-  Screen.Cursor := crHourglass;
+  kbmHouseKeepingList.DisableControls;
   try
-
-    kbmHouseKeepingList.DisableControls;
+    FRefreshingdata := True; // UpdateControls still called when updating dataset, despite DisableControls
+    rSet1 := CreateNewDataSet;
     try
-      FRefreshingdata := True; // UpdateControls still called when updating dataset, despite DisableControls
-      rSet1 := CreateNewDataSet;
-      try
-        s := ConstructSQL;
-        CopyToClipboard(s);
-        DebugMessage(s);
-        hData.rSet_bySQL(rSet1, s, false);
-        rSet1.First;
-        if not kbmHouseKeepingList.Active then
-          kbmHouseKeepingList.Open;
-        LoadKbmMemtableFromDataSetQuiet(kbmHouseKeepingList,rSet1,[]);
-      finally
-        FreeAndNil(rSet1);
-      end;
-
-      kbmHouseKeepingList.First;
-
+      s := ConstructSQL;
+      CopyToClipboard(s);
+      hData.rSet_bySQL(rSet1, s, false);
+      rSet1.First;
+      if not kbmHouseKeepingList.Active then
+        kbmHouseKeepingList.Open;
+      LoadKbmMemtableFromDataSetQuiet(kbmHouseKeepingList,rSet1,[]);
     finally
-      FRefreshingdata := False;
-      kbmHouseKeepingList.EnableControls;
+      FreeAndNil(rSet1);
     end;
+
+    kbmHouseKeepingList.First;
+
   finally
-    btnRefresh.Enabled := True;
-    Screen.Cursor := crDefault;
+    FRefreshingdata := False;
+    kbmHouseKeepingList.EnableControls;
   end;
 end;
 
@@ -305,8 +285,8 @@ var
 begin
   lTitle := Format('%s - %s %s', [Caption, dtDate.Text, cbxLocations.Text]);
   gridPrinter.PrintTitle := lTitle;
-  gridPrinterLink1.ReportTitle.Text := lTitle;
-  gridPrinter.Print(True, nil, gridPrinterLink1);
+  gridPrinterLink.ReportTitle.Text := lTitle;
+  gridPrinter.Print(True, nil, gridPrinterLink);
 end;
 
 procedure TfrmHouseKeepingReport.UpdateControls;
