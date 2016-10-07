@@ -66,14 +66,21 @@ var
   ans: String;
   ext: string;
 begin
+  if LowerCase(ExtractFileExt(FileName)) = '.pdf' then
+  begin
+    result := 'application/pdf';
+    exit;
+  end;
   ans := '';
   reg := TRegistry.Create;
   try
     ext := ExtractFileExt(FileName);
-
-    reg.RootKey := HKEY_LOCAL_MACHINE;
-    if reg.OpenKeyReadOnly('\SOFTWARE\Classes\' + ext + '\') then
-      ans := reg.ReadString('Content Type');
+    if ext <> '' then
+    begin
+      reg.RootKey := HKEY_LOCAL_MACHINE;
+      if reg.OpenKeyReadOnly('\SOFTWARE\Classes\' + ext + '\') then
+        ans := reg.ReadString('Content Type');
+    end;
   finally
     reg.Free;
   end;
