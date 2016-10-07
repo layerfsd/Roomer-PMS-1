@@ -573,6 +573,17 @@ type
     btnMainGuestEditProfile: TsButton;
     sSplitter3: TsSplitter;
     mnuChangeResStateTo: TMenuItem;
+    mnuGrid: TPopupMenu;
+    R1: TMenuItem;
+    G1: TMenuItem;
+    P1: TMenuItem;
+    J1: TMenuItem;
+    R2: TMenuItem;
+    I1: TMenuItem;
+    G2: TMenuItem;
+    R3: TMenuItem;
+    R4: TMenuItem;
+    N2: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -702,6 +713,7 @@ type
     procedure mRoomsisGroupAccountGetText(Sender: TField; var Text: string; DisplayText: Boolean);
     procedure tvRoomsStatusTextPropertiesDrawItem(AControl: TcxCustomComboBox; ACanvas: TcxCanvas; AIndex: Integer;
       const ARect: TRect; AState: TOwnerDrawState);
+    procedure R4Click(Sender: TObject);
   private
     { Private declarations }
     vStartName: string;
@@ -1043,6 +1055,12 @@ begin
   edtTel1.Width := (pnlCustomerTelephone.Width - edtTel1.Left - 3) div 2;
   edtTel2.Left := edtTel1.Left + edtTel1.Width + 3;
   edtTel2.Width := edtTel1.Width;
+end;
+
+procedure TfrmReservationProfile.R4Click(Sender: TObject);
+begin
+  d.roomerMainDataSet.DoCommand('UPDATE roomsdate SET Paid=0 WHERE RoomReservation=' + inttostr(zRoomReservation));
+//  btnShowInvoice.Click;
 end;
 
 // **********************************************************************************

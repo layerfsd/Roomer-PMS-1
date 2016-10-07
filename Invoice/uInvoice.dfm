@@ -674,7 +674,7 @@ object frmInvoice: TfrmInvoice
         Top = 0
         Width = 1018
         Height = 502
-        ActivePage = tabInvoice
+        ActivePage = tabRoomPrice
         Align = alClient
         TabOrder = 0
         object tabInvoice: TTabSheet
@@ -1565,7 +1565,7 @@ object frmInvoice: TfrmInvoice
                 Caption = 'Description'
                 DataBinding.FieldName = 'RoomDescription'
                 Options.Editing = False
-                Width = 137
+                Width = 95
               end
               object tvRoomResRoomType: TcxGridDBColumn
                 Caption = 'Type'
@@ -1578,6 +1578,11 @@ object frmInvoice: TfrmInvoice
                 Visible = False
                 Options.Editing = False
                 Width = 111
+              end
+              object tvRoomResGuestName: TcxGridDBColumn
+                Caption = 'Guest name'
+                DataBinding.FieldName = 'GuestName'
+                Width = 172
               end
               object tvRoomResArrival: TcxGridDBColumn
                 DataBinding.FieldName = 'Arrival'
@@ -2616,18 +2621,6 @@ object frmInvoice: TfrmInvoice
     Left = 296
     Top = 304
   end
-  object MemData1: TdxMemData
-    Indexes = <>
-    SortOptions = []
-    Left = 176
-    Top = 384
-  end
-  object MemData2: TdxMemData
-    Indexes = <>
-    SortOptions = []
-    Left = 256
-    Top = 376
-  end
   object mRoomRates: TdxMemData
     Indexes = <>
     SortOptions = []
@@ -2673,6 +2666,10 @@ object frmInvoice: TfrmInvoice
     end
     object mRoomRatesNativeAmount: TFloatField
       FieldName = 'NativeAmount'
+    end
+    object mRoomRatesGuestName: TWideStringField
+      FieldName = 'GuestName'
+      Size = 60
     end
   end
   object mRoomRatesTmp: TdxMemData
@@ -2792,6 +2789,10 @@ object frmInvoice: TfrmInvoice
     end
     object mRoomResGroupAccount: TBooleanField
       FieldName = 'GroupAccount'
+    end
+    object mRoomResGuestName: TWideStringField
+      FieldName = 'GuestName'
+      Size = 60
     end
   end
   object mPayments: TdxMemData

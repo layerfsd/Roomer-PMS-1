@@ -310,8 +310,6 @@ type
     labLodgingTaxNights: TsLabel;
     labTaxNights: TsLabel;
     ClabLodgingTaxCurrency: TsLabel;
-    MemData1: TdxMemData;
-    MemData2: TdxMemData;
     actAddPackage: TAction;
     Action2: TAction;
     tvRoomResPackage: TcxGridDBColumn;
@@ -448,6 +446,9 @@ type
     mnuMoveItemToAnyOtherRoomAndInvoiceIndex: TMenuItem;
     N7: TMenuItem;
     mnuTransferRoomRentToDifferentRoom: TMenuItem;
+    mRoomRatesGuestName: TWideStringField;
+    mRoomResGuestName: TWideStringField;
+    tvRoomResGuestName: TcxGridDBColumn;
     procedure FormCreate(Sender: TObject);
     procedure agrLinesMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: integer);
@@ -2122,9 +2123,6 @@ begin
   mRoomRatesTmp.Open;
   mRoomRatesTmp.LoadFromDataSet(mRoomRates);
 
-  // mRoomRatesTmp.Filter := '(Roomreservation=' + inttostr(RoomReservation) + ')';
-  // mRoomRatesTmp.Filtered := true;
-
   // apply to same roomtype
   mRoomRates.DisableControls;
   mRoomRes.DisableControls;
@@ -3044,6 +3042,8 @@ begin
 
     if editRoomPrice(actNone, theData, mRR_, applyType) then
     begin
+      mRoomRates.DisableControls;
+      try
       mRR_.first;
       while not mRR_.eof do
       begin
@@ -3088,7 +3088,9 @@ begin
         end;
         mRR_.Next;
       end;
-
+      finally
+        mRoomRates.EnableControls;
+      end;
       if mRoomRes.Locate('RoomReservation', RoomReservation, []) then
       begin
         if AmountCount <> 0 then
@@ -4059,6 +4061,7 @@ begin
             if mRoomRes.State IN [dsEdit, dsInsert] then
             begin
               mRoomRes.FieldByName('Guests').asinteger := NumberGuests;
+              mRoomRes.FieldByName('GuestName').asString := GuestName;
               mRoomRes.post;
             end;
             for i := 1 to dayCount do

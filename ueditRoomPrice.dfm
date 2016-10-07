@@ -110,9 +110,9 @@ object frmEditRoomPrice: TfrmEditRoomPrice
         Top = 20
         Width = 141
         Height = 21
-        Color = 3355443
+        Color = clWhite
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 15724527
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -158,9 +158,9 @@ object frmEditRoomPrice: TfrmEditRoomPrice
         BoundLabel.Font.Style = []
         SkinData.SkinSection = 'COMBOBOX'
         VerticalAlignment = taAlignTop
-        Color = 3355443
+        Color = clWhite
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 15724527
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -188,9 +188,9 @@ object frmEditRoomPrice: TfrmEditRoomPrice
         Width = 171
         Height = 21
         AutoSize = False
-        Color = 3355443
+        Color = clWhite
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = 15724527
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -581,7 +581,7 @@ object frmEditRoomPrice: TfrmEditRoomPrice
       SkinData.SkinSection = 'BUTTON'
     end
     object sButton2: TsButton
-      Left = 333
+      Left = 338
       Top = 6
       Width = 157
       Height = 43
