@@ -66,7 +66,8 @@ type
     destructor Destroy; override;
     procedure AddRoomStateChangeHandler(aHandler: TRoomReservationStateChangeHandler);
     procedure Clear;
-    /// <summary>
+    function ChangeState(aNewState: TReservationState): boolean; override;
+/// <summary>
     ///   For a full reservation the change is allowed if for at least one of the rooms the change is allowed
     /// </summary>
     function ChangeIsAllowed(aNewState: TReservationState): boolean; override;
@@ -355,6 +356,12 @@ begin
     d.UpdateStatusSimple(FReservation, FRoomReservation, FNewState.AsStatusChar);
     Result := True;
   end;
+end;
+
+function TReservationStateChangeHandler.ChangeState(aNewState: TReservationState): boolean;
+begin
+  FConfirmed := False;
+  inherited;
 end;
 
 end.
