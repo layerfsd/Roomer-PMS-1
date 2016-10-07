@@ -138,7 +138,7 @@ object frmBaseRoomerForm: TfrmBaseRoomerForm
       Font.Color = clDefault
       Font.Height = -11
       Font.Name = 'Tahoma'
-      Font.Style = []
+      Font.Style = [fsBold]
     end
     object cxstGroup: TcxStyle
       AssignedValues = [svColor, svFont]
@@ -168,13 +168,6 @@ object frmBaseRoomerForm: TfrmBaseRoomerForm
       Font.Style = []
     end
     object cxstSelection: TcxStyle
-      AssignedValues = [svColor, svFont]
-      Color = clBtnFace
-      Font.Charset = ANSI_CHARSET
-      Font.Color = clDefault
-      Font.Height = -11
-      Font.Name = 'Tahoma'
-      Font.Style = []
     end
     object cxstReportBandHeader: TcxStyle
       AssignedValues = [svColor, svFont]
@@ -190,7 +183,7 @@ object frmBaseRoomerForm: TfrmBaseRoomerForm
       Color = clBtnFace
       Font.Charset = ANSI_CHARSET
       Font.Color = clDefault
-      Font.Height = -11
+      Font.Height = -16
       Font.Name = 'Arial'
       Font.Style = []
     end
@@ -255,7 +248,7 @@ object frmBaseRoomerForm: TfrmBaseRoomerForm
       Font.Color = clDefault
       Font.Height = -11
       Font.Name = 'Arial'
-      Font.Style = []
+      Font.Style = [fsBold]
     end
     object cxstReportGroup: TcxStyle
       AssignedValues = [svColor, svFont]
@@ -318,6 +311,7 @@ object frmBaseRoomerForm: TfrmBaseRoomerForm
       Styles.Selection = cxstSelection
       Styles.Footer = cxstFooter
       Styles.Group = cxstGroup
+      Styles.GroupSummary = cxstGroup
       Styles.Header = cxstHeader
       Styles.Preview = cxstPreview
       BuiltIn = True
