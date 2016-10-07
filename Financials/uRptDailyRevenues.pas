@@ -93,6 +93,11 @@ type
     procedure tvPaymentsTotalAmountGetProperties(Sender: TcxCustomGridTableItem; ARecord: TcxCustomGridRecord;
       var AProperties: TcxCustomEditProperties);
     procedure m_BalanceCalcFields(DataSet: TDataSet);
+    procedure tvPaymentsCustomDrawGroupCell(Sender: TcxCustomGridTableView; ACanvas: TcxCanvas;
+      AViewInfo: TcxGridTableCellViewInfo; var ADone: Boolean);
+    procedure tvPaymentsCustomDrawGroupSummaryCell(Sender: TObject; ACanvas: TcxCanvas; ARow: TcxGridGroupRow;
+      AColumn: TcxGridColumn; ASummaryItem: TcxDataSummaryItem; AViewInfo: TcxCustomGridViewCellViewInfo;
+      var ADone: Boolean);
   private
     FRefreshingData: Boolean;
     FRecordSet: TRoomerDataSet;
@@ -339,6 +344,21 @@ end;
 procedure TfrmRptDailyRevenues.ShowError(const aOperation: string);
 begin
   raise Exception.CreateFmt('Error occured during %s.'+ #10 + 'Operation is cancelled', [aOperation]);
+end;
+
+procedure TfrmRptDailyRevenues.tvPaymentsCustomDrawGroupCell(Sender: TcxCustomGridTableView; ACanvas: TcxCanvas;
+  AViewInfo: TcxGridTableCellViewInfo; var ADone: Boolean);
+begin
+  inherited;
+//
+end;
+
+procedure TfrmRptDailyRevenues.tvPaymentsCustomDrawGroupSummaryCell(Sender: TObject; ACanvas: TcxCanvas;
+  ARow: TcxGridGroupRow; AColumn: TcxGridColumn; ASummaryItem: TcxDataSummaryItem;
+  AViewInfo: TcxCustomGridViewCellViewInfo; var ADone: Boolean);
+begin
+  inherited;
+//
 end;
 
 procedure TfrmRptDailyRevenues.tvPaymentsTotalAmountGetProperties(Sender: TcxCustomGridTableItem;

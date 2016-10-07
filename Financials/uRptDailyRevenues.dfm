@@ -46,6 +46,7 @@ inherited frmRptDailyRevenues: TfrmRptDailyRevenues
       Align = alTop
       TabOrder = 0
       SkinData.SkinSection = 'PANEL'
+      ExplicitTop = -5
       object pnlExportButtons: TsPanel
         Left = 1
         Top = 85
@@ -225,7 +226,6 @@ inherited frmRptDailyRevenues: TfrmRptDailyRevenues
               Column = tvPaymentsTotalAmount
             end>
           DataController.Summary.SummaryGroups = <>
-          OptionsBehavior.AlwaysShowEditor = True
           OptionsBehavior.FocusCellOnTab = True
           OptionsBehavior.IncSearch = True
           OptionsCustomize.ColumnHidingOnGrouping = False
@@ -241,6 +241,8 @@ inherited frmRptDailyRevenues: TfrmRptDailyRevenues
           Styles.Group = cxstGroup
           Styles.Header = cxstHeader
           Styles.StyleSheet = cxssRoomerGridTableView
+          OnCustomDrawGroupCell = tvPaymentsCustomDrawGroupCell
+          OnCustomDrawGroupSummaryCell = tvPaymentsCustomDrawGroupSummaryCell
           object tvPaymentsDate: TcxGridDBColumn
             DataBinding.FieldName = 'Date'
             PropertiesClassName = 'TcxDateEditProperties'
@@ -301,6 +303,8 @@ inherited frmRptDailyRevenues: TfrmRptDailyRevenues
         TabOrder = 0
         LookAndFeel.NativeStyle = False
         RootLevelOptions.DetailTabsPosition = dtpTop
+        ExplicitLeft = 0
+        ExplicitTop = -4
         object tvRevenues: TcxGridDBTableView
           Navigator.Buttons.CustomButtons = <>
           DataController.DataSource = dsRevenues
@@ -352,7 +356,6 @@ inherited frmRptDailyRevenues: TfrmRptDailyRevenues
           OptionsData.Inserting = False
           OptionsView.ColumnAutoWidth = True
           OptionsView.Footer = True
-          OptionsView.GroupByBox = False
           OptionsView.GroupFooters = gfAlwaysVisible
           OptionsView.Indicator = True
           Styles.Group = cxstGroup
@@ -474,7 +477,6 @@ inherited frmRptDailyRevenues: TfrmRptDailyRevenues
           OptionsData.Inserting = False
           OptionsView.ColumnAutoWidth = True
           OptionsView.Footer = True
-          OptionsView.GroupByBox = False
           OptionsView.GroupFooters = gfAlwaysVisible
           OptionsView.Indicator = True
           Styles.Group = cxstGroup
@@ -584,7 +586,6 @@ inherited frmRptDailyRevenues: TfrmRptDailyRevenues
     object grdPrinterLinkRevenues: TdxGridReportLink
       Active = True
       Component = grDataRevenues
-      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.Header = 6350
@@ -599,19 +600,17 @@ inherited frmRptDailyRevenues: TfrmRptDailyRevenues
       PrinterPage.ScaleMode = smFit
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
-      ReportDocument.CreationDate = 42649.700511099540000000
+      ReportDocument.CreationDate = 42650.391407800930000000
       ReportTitle.Font.Charset = DEFAULT_CHARSET
       ReportTitle.Font.Color = clBlack
       ReportTitle.Font.Height = -19
       ReportTitle.Font.Name = 'Arial'
       ReportTitle.Font.Style = [fsBold]
-      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clBlack
       Font.Height = -12
       Font.Name = 'Arial'
       Font.Style = []
-      OptionsExpanding.ExpandGroupRows = True
       OptionsFormatting.LookAndFeelKind = lfFlat
       OptionsFormatting.UseNativeStyles = True
       OptionsOnEveryPage.Footers = False
@@ -626,7 +625,6 @@ inherited frmRptDailyRevenues: TfrmRptDailyRevenues
     object grdPrinterLinkPayments: TdxGridReportLink
       Active = True
       Component = grDataPayments
-      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.Header = 6350
@@ -641,20 +639,18 @@ inherited frmRptDailyRevenues: TfrmRptDailyRevenues
       PrinterPage.ScaleMode = smFit
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
-      ReportDocument.CreationDate = 42649.700511111110000000
+      ReportDocument.CreationDate = 42650.391407812500000000
       ReportTitle.Font.Charset = DEFAULT_CHARSET
       ReportTitle.Font.Color = clBlack
       ReportTitle.Font.Height = -19
       ReportTitle.Font.Name = 'Arial'
       ReportTitle.Font.Style = [fsBold]
-      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clBlack
       Font.Height = -12
       Font.Name = 'Arial'
       Font.Style = []
       OptionsCards.KeepSameHeight = False
-      OptionsExpanding.ExpandGroupRows = True
       OptionsFormatting.LookAndFeelKind = lfFlat
       OptionsFormatting.UseNativeStyles = True
       OptionsOnEveryPage.Footers = False
@@ -669,7 +665,6 @@ inherited frmRptDailyRevenues: TfrmRptDailyRevenues
     object gridPrinterLinkBalance: TdxGridReportLink
       Active = True
       Component = grBalance
-      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.Header = 6350
@@ -684,19 +679,17 @@ inherited frmRptDailyRevenues: TfrmRptDailyRevenues
       PrinterPage.ScaleMode = smFit
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
-      ReportDocument.CreationDate = 42649.700511134260000000
+      ReportDocument.CreationDate = 42650.391407835650000000
       ReportTitle.Font.Charset = DEFAULT_CHARSET
       ReportTitle.Font.Color = clBlack
       ReportTitle.Font.Height = -19
       ReportTitle.Font.Name = 'Arial'
       ReportTitle.Font.Style = [fsBold]
-      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clBlack
       Font.Height = -12
       Font.Name = 'Arial'
       Font.Style = []
-      OptionsExpanding.ExpandGroupRows = True
       OptionsFormatting.LookAndFeelKind = lfFlat
       OptionsFormatting.UseNativeStyles = True
       OptionsOnEveryPage.Footers = False
@@ -709,7 +702,6 @@ inherited frmRptDailyRevenues: TfrmRptDailyRevenues
       BuiltInReportLink = True
     end
     object grdPrinterLinkAll: TdxCompositionReportLink
-      Active = True
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.Header = 6350
