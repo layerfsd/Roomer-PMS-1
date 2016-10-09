@@ -244,7 +244,8 @@ uses
   uFinancialReportsAPICaller in 'OpenAPI\uFinancialReportsAPICaller.pas',
   uRptDailyRevenues in 'Financials\uRptDailyRevenues.pas' {frmRptDailyRevenues},
   uCleaningNotes in 'uCleaningNotes.pas' {frmCleaningNotes},
-  uCleaningNotesEdit in 'uCleaningNotesEdit.pas' {frmCleaningNotesEdit};
+  uCleaningNotesEdit in 'uCleaningNotesEdit.pas' {frmCleaningNotesEdit},
+  uMandatoryFieldDefinitions in 'Definitions\uMandatoryFieldDefinitions.pas';
 
 {$R *.RES}
 

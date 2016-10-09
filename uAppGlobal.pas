@@ -57,6 +57,8 @@ uses
 
 Type
 
+  RoomerKeyValueNotFound = class(Exception);
+
   RecRRInfo = record
     RoomReservation: integer;
     Reservation: integer;
@@ -207,6 +209,7 @@ Type
     function GetBookKeepingCodes: TRoomerDataSet;
     function GetChannelManagersSet: TRoomerDataSet;
     procedure PreviousGuestsReloadFetchHandler(Sender: TObject);
+    procedure PutPmsSettingsValue(Key, Value: String; CreateIfNotExists : Boolean = False);
    public
       constructor Create;
       destructor Destroy; override;
@@ -236,6 +239,13 @@ Type
       function LocateSpecificRecordAndGetValue(table, field, value: String; fieldToGet : String; var resultingValue : Boolean): Boolean; overload;
       function LocateSpecificRecordAndGetValue(table, field, value: String; fieldToGet : String; var resultingValue : Double): Boolean; overload;
       function LocateSpecificRecordAndGetValue(table, field : String; value : Integer; fieldToGet: String; var resultingValue: Double): Boolean; overload;
+
+      function GetPmsSettingsAsBoolean(Key : String; ExceptionOnNotFound : Boolean; Default : Boolean = False) : Boolean;
+      procedure SetPmsSettingsAsBoolean(Key: String; Value : Boolean; CreateIfNotExists: Boolean = False);
+      function GetPmsSettingsAsInteger(Key : String; ExceptionOnNotFound : Boolean; Default : Integer = 0) : Integer;
+      procedure SetPmsSettingsAsInteger(Key : String; Value : Integer; CreateIfNotExists : Boolean = False);
+      function GetPmsSettingsAsString(Key : String; ExceptionOnNotFound : Boolean; Default : String = '') : String;
+      procedure SetPmsSettingsAsString(Key : String; Value : String; CreateIfNotExists : Boolean = False);
 
       function GetDataSetFromDictionary(table: String): TRoomerDataSet;
 
@@ -447,6 +457,7 @@ begin
   tablesList.Add('customertypes', TTableEntity.Create('customertypes'));
 
   tablesList.Add('channelplancodes', TTableEntity.Create('channelplancodes', true));
+  tablesList.Add('pms_settings', TTableEntity.Create('pms_settings'));
 
   FPreviousGuestsReload := TGetThreadedData.Create;
   FPreviousGuestsSet := nil;
@@ -578,6 +589,77 @@ begin
     end;
     rSet.Next;
   end;
+end;
+
+procedure TGlobalSettings.PutPmsSettingsValue(Key, Value : String; CreateIfNotExists : Boolean = False);
+var DataSet : TRoomerDataSet;
+begin
+  Dataset := GetDataSetFromDictionary('pms_settings');
+  if Dataset.Locate('key', Key, []) then
+  begin
+    DataSet.Edit;
+    DataSet['value'] := Value;
+    DataSet.Post;
+  end else
+  if CreateIfNotExists then
+  begin
+    DataSet.Insert;
+    DataSet['value'] := Value;
+    DataSet.Post;
+  end;
+end;
+
+function TGlobalSettings.GetPmsSettingsAsBoolean(Key : String; ExceptionOnNotFound : Boolean; Default : Boolean = False) : Boolean;
+var KeyValue : String;
+begin
+  result := Default;
+  if LocateSpecificRecordAndGetValue('pms_settings', 'key', Key, 'value', KeyValue) then
+    result := KeyValue = 'TRUE'
+  else
+    if ExceptionOnNotFound then
+      raise RoomerKeyValueNotFound.Create('Key ' + Key + ' was not found in settings.');
+end;
+
+procedure TGlobalSettings.SetPmsSettingsAsBoolean(Key : String; Value : Boolean; CreateIfNotExists : Boolean = False);
+var KeyValue : String;
+begin
+  KeyValue := IIF(Value, 'TRUE', 'FALSE');
+  PutPmsSettingsValue(Key, KeyValue, CreateIfNotExists);
+end;
+
+function TGlobalSettings.GetPmsSettingsAsInteger(Key : String; ExceptionOnNotFound : Boolean; Default : Integer = 0) : Integer;
+var KeyValue : String;
+begin
+  result := Default;
+  if LocateSpecificRecordAndGetValue('pms_settings', 'key', Key, 'value', KeyValue) then
+    result := StrToIntDef(KeyValue, Default)
+  else
+    if ExceptionOnNotFound then
+      raise RoomerKeyValueNotFound.Create('Key ' + Key + ' was not found in settings.');
+end;
+
+procedure TGlobalSettings.SetPmsSettingsAsInteger(Key : String; Value : Integer; CreateIfNotExists : Boolean = False);
+var KeyValue : String;
+begin
+  KeyValue := IntToStr(Value);
+  PutPmsSettingsValue(Key, KeyValue, CreateIfNotExists);
+end;
+
+
+function TGlobalSettings.GetPmsSettingsAsString(Key : String; ExceptionOnNotFound : Boolean; Default : String = '') : String;
+var KeyValue : String;
+begin
+  result := Default;
+  if LocateSpecificRecordAndGetValue('pms_settings', 'key', Key, 'value', KeyValue) then
+    result := KeyValue
+  else
+    if ExceptionOnNotFound then
+      raise RoomerKeyValueNotFound.Create('Key ' + Key + ' was not found in settings.');
+end;
+
+procedure TGlobalSettings.SetPmsSettingsAsString(Key : String; Value : String; CreateIfNotExists : Boolean = False);
+begin
+  PutPmsSettingsValue(Key, Value, CreateIfNotExists);
 end;
 
 function TGlobalSettings.GetRateInclusive(channelId : Integer; Item : String; Rate : Double) : Double;

@@ -160,6 +160,8 @@ function RunningInMainThread: boolean;
 
 var SystemDecimalSeparator : char;
 
+function StringIndexInSet(Selector : string; CaseList: array of string): Integer;
+
 
 implementation
 
@@ -168,6 +170,20 @@ uses System.SysUtils, clipbrd{$IFNDEF RBE_BUILD}, PrjConst{$ENDIF};
 function linuxLFCRToWindows(source : String) : String;
 begin
   result := ReplaceString(ReplaceString(source, '\n', #10), '\r', #13);
+end;
+
+function StringIndexInSet(Selector : string; CaseList: array of string): Integer;
+var cnt: integer;
+begin
+  Result:=-1;
+  for cnt := 0 to Length(CaseList)-1 do
+  begin
+    if CompareText(Selector, CaseList[cnt]) = 0 then
+    begin
+      Result:=cnt;
+      Break;
+    end;
+  end;
 end;
 
 function JoinStrings(list : TStrings; Delimiter : Char; QuoteChar : Char = '''') : String;

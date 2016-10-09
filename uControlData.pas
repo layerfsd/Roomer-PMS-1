@@ -101,7 +101,8 @@ uses
   dxSkinLondonLiquidSky, dxSkinMoneyTwins, dxSkinOffice2007Black, dxSkinOffice2007Blue, dxSkinOffice2007Green, dxSkinOffice2007Pink,
   dxSkinOffice2007Silver, dxSkinOffice2010Black, dxSkinOffice2010Blue, dxSkinOffice2010Silver, dxSkinPumpkin, dxSkinSeven,
   dxSkinSevenClassic, dxSkinSharp, dxSkinSharpPlus, dxSkinSilver, dxSkinSpringTime, dxSkinStardust, dxSkinSummer2008, dxSkinValentine,
-  dxSkinVS2010, dxSkinWhiteprint, dxSkinXmas2008Blue, AdvDropDown, AdvColorPickerDropDown, AdvGlowButton, AdvOfficeSelectors, AsgCombo, ColorCombo, dxGalleryControl, dxColorGallery, dxColorEdit
+  dxSkinVS2010, dxSkinWhiteprint, dxSkinXmas2008Blue, AdvDropDown, AdvColorPickerDropDown, AdvGlowButton, AdvOfficeSelectors, AsgCombo, ColorCombo, dxGalleryControl, dxColorGallery, dxColorEdit,
+  sListBox, sCheckListBox
 
 
 
@@ -364,7 +365,6 @@ type
     AdvTabSheet11: TsTabSheet;
     clabNoAccontConnection: TsLabel;
     LMDSimpleLabel71: TsLabel;
-    r1_ : TRoomerDataSet;
     LMDSimplePanel3: TsPanel;
     LMDGroupBox22: TsGroupBox;
     LMDSimpleLabel67: TsLabel;
@@ -697,6 +697,13 @@ type
     btnSelectEndOfDayUser: TsSpeedButton;
     edtEndOfDayCustomer: TsEdit;
     edtEndOfDayUser: TsEdit;
+    tabMandatory: TsTabSheet;
+    sPageControl1: TsPageControl;
+    tabGuestInformation: TsTabSheet;
+    clbMandatoryFields: TsCheckListBox;
+    sPanel2: TsPanel;
+    btnMFSelectNone: TsButton;
+    btnMFSelectAll: TsButton;
     procedure FormCreate(Sender : TObject);
     procedure FormClose(Sender : TObject; var Action : TCloseAction);
     procedure FormShow(Sender : TObject);
@@ -757,6 +764,8 @@ type
     procedure panGuestStayingDblClick(Sender: TObject);
     procedure btnSelectEndOfDayCustomerClick(Sender: TObject);
     procedure btnSelectEndOfDayUserClick(Sender: TObject);
+    procedure btnMFSelectAllClick(Sender: TObject);
+    procedure btnMFSelectNoneClick(Sender: TObject);
 
   private
     { private declarations }
@@ -781,6 +790,7 @@ type
     procedure itemLookup(edit : TsComboEdit; lab : TsLabel);
     procedure calcRequestInterval;
     function  customerValidate : boolean;
+    procedure SetCheckStatus(True_or_False: Boolean; box : TsCheckListBox);
   public
     { public declarations }
     gridFont : TFont;
@@ -810,6 +820,7 @@ uses
   , uFrmResources
   , uResourceManagement
   , uStaffMembers2
+  , uMandatoryFieldDefinitions
 
   ;
 {$R *.DFM}
@@ -883,9 +894,7 @@ var
   autumnStartsDay : integer;
   winterStartsDay : integer;
 
-
-
-
+  ManadatoryFields: TManadatoryFields;
 begin
   g.ProcessAppIni(0);
   edInvoiceFormFileISL.Text := g.qInvoiceFormFileISL;
@@ -982,6 +991,10 @@ begin
     else
       printerName := cbxReportPrinter.Items[idx];
   end;
+
+  TManadatoryFields.AsStrings(clbMandatoryFields.Items);
+  for ManadatoryFields := Low(TManadatoryFields) to High(TManadatoryFields) do
+    clbMandatoryFields.Checked[ManadatoryFields.ToItemIndex] := ManadatoryFields.IsCurrenclyOn;
 
   cbxReportPrinter.ItemIndex := idx;
 
@@ -1601,8 +1614,13 @@ var
   sTmp : string;
   iTmp : integer;
 
+  ManadatoryFields : TManadatoryFields;
 
 begin
+
+  for ManadatoryFields := Low(TManadatoryFields) to High(TManadatoryFields) do
+    ManadatoryFields.SetOnOrOff(clbMandatoryFields.Checked[ManadatoryFields.ToItemIndex]);
+
   rSet.edit;
   // tsCompany
   rSet.fieldbyname('CompanyID').AsString := editCompanyID.Text;
@@ -2193,6 +2211,24 @@ begin
   g.ProcessAppIni(1);
 end;
 
+
+procedure TfrmControlData.btnMFSelectNoneClick(Sender: TObject);
+begin
+  SetCheckStatus(False, clbMandatoryFields);
+end;
+
+procedure TfrmControlData.btnMFSelectAllClick(Sender: TObject);
+begin
+  SetCheckStatus(True, clbMandatoryFields);
+end;
+
+procedure TfrmControlData.SetCheckStatus(True_or_False : Boolean; box : TsCheckListBox);
+var
+  i: Integer;
+begin
+  for i := 0 to box.Items.Count do
+    box.Checked[i] := True_or_False;
+end;
 
 procedure TfrmControlData.btnInvoiceTemplateResourcesClick(Sender: TObject);
 var idx : Integer;

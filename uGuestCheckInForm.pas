@@ -133,6 +133,7 @@ type
     shpMarket: TShape;
     dsForm: TfrxDBDataset;
     chkCountryForAllGuests: TsCheckBox;
+    Shape3: TShape;
     procedure FormCreate(Sender: TObject);
     procedure cbxGuaranteeTypesCloseUp(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -167,6 +168,9 @@ type
     procedure SetIsCheckIn(const Value: Boolean);
     procedure FillQuickFind;
     function GetGuestInfoRSet(aRSet: TROomerDataset; aRoomReservation: integer; const  aRoomNumberList: string=''): boolean;
+    procedure CheckMandatoryFields;
+    procedure SetShapeStatus(Tag : Integer; VisibleStatus: Boolean);
+    function AnyTShapeVisible: Boolean;
     { Private declarations }
   public
     { Public declarations }
@@ -327,7 +331,9 @@ uses uRoomerLanguage,
   uStringUtils,
   uTaxCalc,
   DateUtils,
-  uRoomerDefinitions, uInvoiceContainer;
+  uRoomerDefinitions,
+  uInvoiceContainer,
+  uMandatoryFieldDefinitions;
 
 const
   WM_SET_COMBO_TEXT = WM_User + 101;
@@ -389,6 +395,20 @@ end;
 procedure TFrmGuestCheckInForm.cbxGuaranteeTypesCloseUp(Sender: TObject);
 begin
   pgGuaranteeTypes.ActivePageIndex := cbxGuaranteeTypes.ItemIndex;
+  if cbxGuaranteeTypes.ItemIndex = 1 then
+  begin
+    shpCash.Tag := 16; edAmount.Tag := 16;
+  end else
+  begin
+    shpCash.Tag := 0; edAmount.Tag := 0;
+  end;
+  if cbxGuaranteeTypes.ItemIndex = 0 then
+  begin
+    shpCC.Tag := 16; cbCreditCard.Tag := 16;
+  end else
+  begin
+    shpCC.Tag := 0; cbCreditCard.Tag := 0;
+  end;
   EnableOrDisableOKButton;
 end;
 
@@ -552,26 +572,35 @@ begin
 end;
 
 procedure TFrmGuestCheckInForm.EnableOrDisableOKButton;
-var
-  lErrors: boolean;
-  lErrorsForCheckIn: boolean;
+//var
+//  lErrors: boolean;
+//  lErrorsForCheckIn: boolean;
 begin
-  shpFirstname.Visible := Trim(edFirstname.Text) = '';
-  shpLastname.Visible := Trim(edLastName.Text) = '';
-  shpCity.Visible := Trim(edCity.Text) = '';
-  shpCountry.Visible := (Trim(edCountry.Text) = '') or (SameText(lbCountryName.Caption, GetTranslatedText('shNotF_star')));
-  shpMarket.Visible := g.qStayd3pActive and (cbxMarket.ItemIndex < 0);
+  CheckMandatoryFields;
+//  shpFirstname.Visible := Trim(edFirstname.Text) = '';
+//  shpLastname.Visible := Trim(edLastName.Text) = '';
+//  shpCity.Visible := Trim(edCity.Text) = '';
+//  shpCountry.Visible := (Trim(edCountry.Text) = '') or (SameText(lbCountryName.Caption, GetTranslatedText('shNotF_star')));
+//  shpMarket.Visible := g.qStayd3pActive and (cbxMarket.ItemIndex < 0);
+//
+//  shpGuarantee.Visible := NOT(((cbxGuaranteeTypes.ItemIndex = 0) AND cbCreditCard.Checked) OR
+//                              ((cbxGuaranteeTypes.ItemIndex = 1) AND (StrToFloatDef(edAmount.Text, -99999) <> -99999)) OR
+//                              ((cbxGuaranteeTypes.ItemIndex = 2))
+//                             );
+//  shpCC.Visible := shpGuarantee.Visible;
+//  shpCash.Visible := shpGuarantee.Visible;
+//
+//  lErrors := shpFirstname.Visible or shpLastname.Visible or shpCity.Visible or shpCountry.Visible or shpMarket.Visible;
+//  lErrorsForCheckin := shpGuarantee.Visible;
+//  btnOK.Enabled := not lErrors and not (isCheckIn and lErrorsForCheckIn);
 
-  shpGuarantee.Visible := NOT(((cbxGuaranteeTypes.ItemIndex = 0) AND cbCreditCard.Checked) OR
-                              ((cbxGuaranteeTypes.ItemIndex = 1) AND (StrToFloatDef(edAmount.Text, -99999) <> -99999)) OR
-                              ((cbxGuaranteeTypes.ItemIndex = 2))
-                             );
-  shpCC.Visible := shpGuarantee.Visible;
-  shpCash.Visible := shpGuarantee.Visible;
-
-  lErrors := shpFirstname.Visible or shpLastname.Visible or shpCity.Visible or shpCountry.Visible or shpMarket.Visible;
-  lErrorsForCheckin := shpGuarantee.Visible;
-  btnOK.Enabled := not lErrors and not (isCheckIn and lErrorsForCheckIn);
+  // Overriden by 3P connection? (Amsterdam Gemeente)
+  if g.qStayd3pActive then
+  begin
+    shpMarket.Visible := (cbxMarket.ItemIndex < 0);
+    shpCountry.Visible := (Trim(edCountry.Text) = '') OR (Trim(edCountry.Text) = '00') OR (SameText(lbCountryName.Caption, GetTranslatedText('shNotF_star')));
+  end;
+  BtnOk.Enabled := NOT AnyTShapeVisible;
 end;
 
 procedure TFrmGuestCheckInForm.FormCreate(Sender: TObject);
@@ -1022,6 +1051,60 @@ begin
   cbxGuaranteeTypes.ItemIndex := 3;
   pgGuaranteeTypes.ActivePageIndex := cbxGuaranteeTypes.ItemIndex;
   ResSetGuest := CreateNewDataset;
+end;
+
+procedure TFrmGuestCheckInForm.CheckMandatoryFields;
+var
+  i: Integer;
+begin
+  for i := 0 to ComponentCount - 1 do
+  begin
+    if Components[i] IS TComponent then
+      if TComponent(Components[i]).Tag > 10 then
+      begin
+        if ((Components[i] IS TsEdit) AND
+           ((Components[i] AS TsEdit).Text = '')) OR
+           ((Components[i] IS TRoomerFilterComboBox) AND
+           ((Components[i] AS TRoomerFilterComboBox).Text = '')) OR
+           ((Components[i] IS TsCheckBox) AND
+           (NOT (Components[i] AS TsCheckBox).Checked)) OR
+           ((Components[i] IS TsComboBox) AND
+           ((Components[i] AS TsComboBox).Showing AND ((Components[i] AS TsComboBox).Text = '') AND ((Components[i] AS TsComboBox).ItemIndex < 1))) then
+             SetShapeStatus(TComponent(Components[i]).Tag, TManadatoryFields.FromTagId(TComponent(Components[i]).Tag).IsCurrenclyOn)
+        else
+          SetShapeStatus(TComponent(Components[i]).Tag, False);
+      end;
+
+  end;
+end;
+
+procedure TFrmGuestCheckInForm.SetShapeStatus(Tag : Integer; VisibleStatus : Boolean);
+var
+  i: Integer;
+begin
+  for i := 0 to ComponentCount - 1 do
+  begin
+    if Components[i] IS TShape then
+      if TShape(Components[i]).Tag = Tag then
+        TShape(Components[i]).Visible :=  VisibleStatus;
+  end;
+end;
+
+function TFrmGuestCheckInForm.AnyTShapeVisible : Boolean;
+var
+  i: Integer;
+begin
+  result := False;
+  for i := 0 to ComponentCount - 1 do
+  begin
+    if Components[i] IS TShape then
+      if (TShape(Components[i]).Tag > 10) AND
+         TShape(Components[i]).Visible then
+      begin
+        result := True;
+        Break;
+      end;
+  end;
 end;
 
 end.

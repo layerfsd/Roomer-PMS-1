@@ -1581,6 +1581,14 @@ begin
   constants.Add('shCleaningNotesIntervalLabel', 'Days interval:');
   constants.Add('shCleaningNotesOnceLabel', 'Day in question:');
 
+  constants.Add('shTx_MandatoryFields_City', 'City');
+  constants.Add('shTx_MandatoryFields_Country', 'Country of origin');
+  constants.Add('shTx_MandatoryFields_FirstName', 'First name');
+  constants.Add('shTx_MandatoryFields_Surname', 'Surname');
+  constants.Add('shTx_MandatoryFields_Market', 'Visitation type (Leisure/Business)');
+  constants.Add('shTx_MandatoryFields_Nationality', 'Nationality');
+  constants.Add('shTx_MandatoryFields_Guarantee', 'Guarantee');
+
 end;
 
 procedure AddConstants_OfflineReports;
