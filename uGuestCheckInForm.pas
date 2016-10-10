@@ -1086,13 +1086,13 @@ var
 begin
   for i := 0 to ComponentCount - 1 do
   begin
-      if (Components[i] is TWinControl) and (Components[i].Tag >= TManadatoryCheckinField.MinimumTagId) then
+      if (Components[i] is TWinControl) and (Components[i].Tag >= TMandatoryCheckinField.MinimumTagId) then
       begin
         if ((Components[i] IS TCustomEdit) AND ((Components[i] AS TCustomEdit).Text = '')) OR
            ((Components[i] IS TRoomerFilterComboBox) AND ((Components[i] AS TRoomerFilterComboBox).Text = '')) OR
            ((Components[i] IS TsCheckBox) AND (NOT (Components[i] AS TsCheckBox).Checked)) OR
            ((Components[i] IS TsComboBox) AND ((Components[i] AS TsComboBox).Showing AND ((Components[i] AS TsComboBox).Text = '') AND ((Components[i] AS TsComboBox).ItemIndex < 1))) then
-             SetShapeStatus(Components[i].Tag, TManadatoryCheckinField.FromTagId(Components[i].Tag).IsCurrentlyOn)
+             SetShapeStatus(Components[i].Tag, TMandatoryCheckinField.FromTagId(Components[i].Tag).IsCurrentlyOn)
         else
           SetShapeStatus(Components[i].Tag, False);
       end;

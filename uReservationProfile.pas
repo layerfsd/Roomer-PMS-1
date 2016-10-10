@@ -1696,17 +1696,9 @@ end;
 // ******************************************************************************
 
 procedure TfrmReservationProfile.acCheckinReservationExecute(Sender: TObject);
-var
-  lResChanger: TReservationStateChangeHandler;
 begin
-
-  lResChanger := TReservationStateChangeHandler.Create(mRoomsReservation.asInteger);
-  try
-    if lResChanger.ChangeState(rsGuests) then
-      Display;
-  finally
-    lResChanger.Free;
-  end;
+  if FReservationChangeStateHandler.ChangeState(rsGuests) then
+    Display;
 end;
 
 procedure TfrmReservationProfile.acCheckinRoomExecute(Sender: TObject);
@@ -2516,7 +2508,7 @@ begin
     sBreakfast := '';
     sStatus := '';
 
-    FReservationChangeStateHandler.Clear;
+    FReservationChangeStateHandler.UpdateRoomResStateChangeHandlers;
 
     while not mRooms.Eof do
     begin
@@ -2532,8 +2524,6 @@ begin
 
       if OutOfOrderBlocking then
         mRoomsGuestName.asstring := edtName.text;
-
-      FReservationChangeStateHandler.AddRoomStateChangeHandler(TRoomReservationStateChangeHandler.Create(zReservation, mRoomsRoomReservation.AsInteger));
 
       mRooms.Next;
     end;

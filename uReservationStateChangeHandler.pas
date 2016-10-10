@@ -56,6 +56,7 @@ type
     FConfirmed : Boolean;
     FRoomStateChangers: TObjectDictionary<integer, TRoomReservationStateChangeHandler>;
     function GetRoomstateChangeHandler(aRoomRes: integer): TRoomReservationStateChangeHandler;
+    procedure AddRoomResChangeSetHandlers;
   protected
     function Checkin: boolean; override;
     function CheckOut: boolean; override;
@@ -65,6 +66,7 @@ type
     constructor Create(aReservation: integer); reintroduce;
     destructor Destroy; override;
     procedure AddRoomStateChangeHandler(aHandler: TRoomReservationStateChangeHandler);
+    procedure UpdateRoomResStateChangeHandlers;
     procedure Clear;
     function ChangeState(aNewState: TReservationState): boolean; override;
     /// <summary>
@@ -206,6 +208,24 @@ begin
   FConfirmed := False;
   FReservation := aReservation;
   FRoomStateChangers:= TObjectDictionary<integer, TRoomReservationStateChangeHandler>.Create([doOwnsValues]);
+  AddRoomResChangeSetHandlers;
+end;
+
+procedure TReservationStateChangehandler.AddRoomResChangeSetHandlers;
+var
+  lRoomResList: TStringlist;
+  lDummy: TStringlist;
+  lRoomres: string;
+begin
+  lDummy := nil;
+  lRoomResList := TStringList.Create;
+  try
+    GetReservationRRList(FReservation, lRoomResList, lDummy);
+    for lRoomRes in lRoomResList do
+      AddRoomStateChangeHandler(TRoomReservationStateChangeHandler.Create(FReservation, StrToInt(lRoomRes)));
+  finally
+    lRoomResList.Free;
+  end;
 end;
 
 destructor TReservationStateChangeHandler.Destroy;
@@ -228,6 +248,12 @@ begin
       FCurrentState := rsMixed;
       Break;
     end;
+end;
+
+procedure TReservationStateChangeHandler.UpdateRoomResStateChangeHandlers;
+begin
+  FRoomStateChangers.Clear;
+  AddRoomResChangeSetHandlers;
 end;
 
 function TReservationStateChangeHandler.GetRoomstateChangeHandler(aRoomRes: Integer): TRoomReservationStateChangeHandler;
