@@ -640,7 +640,7 @@ object frmInvoice: TfrmInvoice
         Left = 906
         Top = 135
         Width = 119
-        Height = 17
+        Height = 19
         Caption = 'Package on invoice'
         Anchors = [akTop, akRight]
         Checked = True
@@ -1346,7 +1346,7 @@ object frmInvoice: TfrmInvoice
               SearchFooter.HintHighlight = 'Highlight occurrences'
               SearchFooter.MatchCaseCaption = 'Match case'
               SortSettings.DefaultFormat = ssAutomatic
-              Version = '7.9.1.1'
+              Version = '8.1.2.0'
               ColWidths = (
                 24
                 91
@@ -1426,7 +1426,7 @@ object frmInvoice: TfrmInvoice
                 Left = 9
                 Top = 20
                 Width = 203
-                Height = 17
+                Height = 19
                 Caption = 'Recalc price on guestcount  changes'
                 Checked = True
                 State = cbChecked
@@ -1439,7 +1439,7 @@ object frmInvoice: TfrmInvoice
                 Left = 9
                 Top = 46
                 Width = 134
-                Height = 17
+                Height = 19
                 Caption = 'Auto update Null Price'
                 Checked = True
                 State = cbChecked

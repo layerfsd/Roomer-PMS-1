@@ -51,9 +51,10 @@ type
     Price: Double;
     Vat: Double;
     Discount: Double;
+    BreakfastIncluded: boolean;
   public
     constructor Create(_RoomItem: String; _Guests: Integer; _Children: Integer; _Nights: Double; _Price: Double;
-      _Vat: Double; _Discount: Double);
+      _Vat: Double; _Discount: Double; _BreakfastIncluded: boolean);
   end;
 
   TInvoiceItemEntity = class
@@ -837,7 +838,7 @@ end;
 { TRoomTaxEntity }
 
 constructor TInvoiceRoomEntity.Create(_RoomItem: String; _Guests: Integer; _Children: Integer; _Nights: Double;
-  _Price, _Vat, _Discount: Double);
+  _Price, _Vat, _Discount: Double; _BreakFastIncluded: boolean);
 begin
   RoomItem := _RoomItem;
   Guests := _Guests;
@@ -846,6 +847,7 @@ begin
   Price := _Price;
   Discount := _Discount;
   Vat := _Vat;
+  BreakFastIncluded := _BreakFastIncluded;
 end;
 
 function TInvoiceTaxEntity.GetTotal: Double;

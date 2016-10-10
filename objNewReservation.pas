@@ -1485,13 +1485,24 @@ begin
             end;
           end;
 
-          if FnewRoomReservations.FRoomList[i].FBreakfast AND (NOT FnewRoomReservations.FRoomList[i].FBreakfastIncluded) then
+          if FnewRoomReservations.FRoomList[i].FBreakfast then //AND (NOT FnewRoomReservations.FRoomList[i].FBreakfastIncluded) then
           begin
             initInvoiceLineHolderRec(InvoicelineData);
             Item := ctrlGetString('BreakFastItem');
-            glb.LocateSpecificRecordAndGetValue('items', 'Item', Item, 'Description', itemDescription);
+//            glb.LocateSpecificRecordAndGetValue('items', 'Item', Item, 'Description', itemDescription);
+
             ItemTypeInfo := d.Item_Get_ItemTypeInfo(Item);
-            Price        := FnewRoomReservations.FRoomList[i].FBreakfastCost;
+
+            if FnewRoomReservations.FRoomList[i].FBreakfastIncluded then
+            begin
+              Price           := 0.0;
+              itemDescription := ItemTypeInfo.Description +  ' (' + GetTranslatedText('shTx_ReservationProfile_Included') + ')'
+            end
+            else
+            begin
+              Price           := FnewRoomReservations.FRoomList[i].FBreakfastCost;
+              itemDescription := ItemTypeInfo.Description;
+            end;
             numItems     := numGuests * iDayCount;
             Total        := price*numItems;
 

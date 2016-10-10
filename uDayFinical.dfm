@@ -331,7 +331,7 @@ object frmDayFinical: TfrmDayFinical
     Top = 135
     Width = 1011
     Height = 556
-    ActivePage = sheetSums
+    ActivePage = sheetItemSale
     Align = alClient
     Style = tsFlatButtons
     TabHeight = 25
@@ -384,7 +384,6 @@ object frmDayFinical: TfrmDayFinical
               Align = alClient
               TabOrder = 0
               LookAndFeel.NativeStyle = False
-              ExplicitTop = 3
               object tvSums2: TcxGridDBTableView
                 Navigator.Buttons.CustomButtons = <>
                 Navigator.Buttons.First.Visible = True
@@ -2342,7 +2341,6 @@ object frmDayFinical: TfrmDayFinical
     object grPrinterSums2: TdxGridReportLink
       Active = True
       Component = grSums2
-      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.GrayShading = True
@@ -2364,15 +2362,13 @@ object frmDayFinical: TfrmDayFinical
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
       ReportDocument.Caption = 'Sums2'
-      ReportDocument.CreationDate = 42633.560119571760000000
+      ReportDocument.CreationDate = 42653.467543206020000000
       ReportTitle.TextAlignX = taLeft
-      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       BuiltInReportLink = True
     end
     object grPrinterSums: TdxGridReportLink
       Active = True
       Component = grSums
-      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.GrayShading = True
@@ -2385,13 +2381,11 @@ object frmDayFinical: TfrmDayFinical
       PrinterPage.PageSize.Y = 297000
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
-      ReportDocument.CreationDate = 42633.560119571760000000
-      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
+      ReportDocument.CreationDate = 42653.467543217590000000
       BuiltInReportLink = True
     end
     object grPrinterInvoicelist: TdxGridReportLink
       Component = grInvoicelist
-      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.GrayShading = True
@@ -2405,13 +2399,11 @@ object frmDayFinical: TfrmDayFinical
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
       ReportDocument.Caption = 'Sums2'
-      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       BuiltInReportLink = True
     end
     object grPrinterItemSale: TdxGridReportLink
       Active = True
       Component = grItemSale
-      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.GrayShading = True
@@ -2425,14 +2417,12 @@ object frmDayFinical: TfrmDayFinical
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
       ReportDocument.Caption = 'Sums2'
-      ReportDocument.CreationDate = 42633.560119594910000000
-      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
+      ReportDocument.CreationDate = 42653.467543229170000000
       BuiltInReportLink = True
     end
     object grPrinterItemTypeSale: TdxGridReportLink
       Active = True
       Component = grItemTypeSale
-      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.GrayShading = True
@@ -2446,14 +2436,12 @@ object frmDayFinical: TfrmDayFinical
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
       ReportDocument.Caption = 'Sums2'
-      ReportDocument.CreationDate = 42633.560119606480000000
-      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
+      ReportDocument.CreationDate = 42653.467543240740000000
       BuiltInReportLink = True
     end
     object grPrinterItemVATsale: TdxGridReportLink
       Active = True
       Component = grItemVATsale
-      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.GrayShading = True
@@ -2467,14 +2455,12 @@ object frmDayFinical: TfrmDayFinical
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
       ReportDocument.Caption = 'Sums2'
-      ReportDocument.CreationDate = 42633.560119618060000000
-      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
+      ReportDocument.CreationDate = 42653.467543252310000000
       BuiltInReportLink = True
     end
     object grPrinterPaymentGroups: TdxGridReportLink
       Active = True
       Component = grPaymentGroups
-      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.GrayShading = True
@@ -2488,13 +2474,11 @@ object frmDayFinical: TfrmDayFinical
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
       ReportDocument.Caption = 'Sums2'
-      ReportDocument.CreationDate = 42633.560119629630000000
-      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
+      ReportDocument.CreationDate = 42653.467543263890000000
       BuiltInReportLink = True
     end
     object grPrinterPayments: TdxGridReportLink
       Component = grPayments
-      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.GrayShading = True
@@ -2508,13 +2492,11 @@ object frmDayFinical: TfrmDayFinical
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
       ReportDocument.Caption = 'Sums2'
-      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       BuiltInReportLink = True
     end
     object grPrinterPaymentType: TdxGridReportLink
       Active = True
       Component = grPaymentType
-      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.GrayShading = True
@@ -2528,8 +2510,7 @@ object frmDayFinical: TfrmDayFinical
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
       ReportDocument.Caption = 'Sums2'
-      ReportDocument.CreationDate = 42633.560119641200000000
-      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
+      ReportDocument.CreationDate = 42653.467543287040000000
       BuiltInReportLink = True
     end
     object grPrinterLink1: TdxCompositionReportLink
