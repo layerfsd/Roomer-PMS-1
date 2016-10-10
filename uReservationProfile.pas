@@ -2508,7 +2508,7 @@ begin
     sBreakfast := '';
     sStatus := '';
 
-    FReservationChangeStateHandler.Clear;
+    FReservationChangeStateHandler.UpdateRoomResStateChangeHandlers;
 
     while not mRooms.Eof do
     begin
@@ -2524,8 +2524,6 @@ begin
 
       if OutOfOrderBlocking then
         mRoomsGuestName.asstring := edtName.text;
-
-      FReservationChangeStateHandler.AddRoomStateChangeHandler(TRoomReservationStateChangeHandler.Create(zReservation, mRoomsRoomReservation.AsInteger));
 
       mRooms.Next;
     end;

@@ -5099,7 +5099,8 @@ begin
   // **
   result := 0;
   RRlist.clear;
-  lstRoomReservationsStatus.Clear;
+  if assigned(lstRoomReservationsStatus) then
+    lstRoomReservationsStatus.Clear;
 
   rSet := CreateNewDataSet;
   try
@@ -5120,7 +5121,8 @@ begin
         while not rSet.Eof do
         begin
           RRlist.Add(rSet.fieldbyname('RoomReservation').asString);
-          lstRoomReservationsStatus.Add(rSet.fieldbyname('Status').asString);
+          if assigned(lstRoomReservationsStatus) then
+            lstRoomReservationsStatus.Add(rSet.fieldbyname('Status').asString);
           rSet.Next;
         end;
       end;
