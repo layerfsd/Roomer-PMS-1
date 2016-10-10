@@ -1696,17 +1696,9 @@ end;
 // ******************************************************************************
 
 procedure TfrmReservationProfile.acCheckinReservationExecute(Sender: TObject);
-var
-  lResChanger: TReservationStateChangeHandler;
 begin
-
-  lResChanger := TReservationStateChangeHandler.Create(mRoomsReservation.asInteger);
-  try
-    if lResChanger.ChangeState(rsGuests) then
-      Display;
-  finally
-    lResChanger.Free;
-  end;
+  if FReservationChangeStateHandler.ChangeState(rsGuests) then
+    Display;
 end;
 
 procedure TfrmReservationProfile.acCheckinRoomExecute(Sender: TObject);
