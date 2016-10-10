@@ -133,7 +133,7 @@ type
     shpMarket: TShape;
     dsForm: TfrxDBDataset;
     chkCountryForAllGuests: TsCheckBox;
-    Shape3: TShape;
+    shpNationality: TShape;
     procedure FormCreate(Sender: TObject);
     procedure cbxGuaranteeTypesCloseUp(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -154,6 +154,7 @@ type
     procedure cbActiveLiveSearchClick(Sender: TObject);
     procedure cbxMarketChange(Sender: TObject);
     procedure edCountryChange(Sender: TObject);
+    procedure cbxMarketKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     FisCheckIn: Boolean;
     FCurrencyhandler: TCurrencyHandler;
@@ -171,6 +172,7 @@ type
     procedure CheckMandatoryFields;
     procedure SetShapeStatus(Tag : Integer; VisibleStatus: Boolean);
     function AnyTShapeVisible: Boolean;
+    procedure UpdateGuaranteeTags;
     { Private declarations }
   public
     { Public declarations }
@@ -392,29 +394,49 @@ begin
   EnableOrDisableOKButton;
 end;
 
-procedure TFrmGuestCheckInForm.cbxGuaranteeTypesCloseUp(Sender: TObject);
+
+procedure TFrmGuestCheckInForm.UpdateGuaranteeTags;
 begin
-  pgGuaranteeTypes.ActivePageIndex := cbxGuaranteeTypes.ItemIndex;
   if cbxGuaranteeTypes.ItemIndex = 1 then
   begin
-    shpCash.Tag := 16; edAmount.Tag := 16;
+    shpCash.Tag := mfGuarantee.AsTagid;
+    edAmount.Tag := mfGuarantee.AsTagid;
   end else
   begin
-    shpCash.Tag := 0; edAmount.Tag := 0;
+    shpCash.Tag := 0;
+    edAmount.Tag := 0;
   end;
   if cbxGuaranteeTypes.ItemIndex = 0 then
   begin
-    shpCC.Tag := 16; cbCreditCard.Tag := 16;
+    shpCC.Tag := mfGuarantee.AsTagid;
+    cbCreditCard.Tag := mfGuarantee.AsTagid;
   end else
   begin
-    shpCC.Tag := 0; cbCreditCard.Tag := 0;
+    shpCC.Tag := 0;
+    cbCreditCard.Tag := 0;
   end;
+end;
+
+procedure TFrmGuestCheckInForm.cbxGuaranteeTypesCloseUp(Sender: TObject);
+begin
+  pgGuaranteeTypes.ActivePageIndex := cbxGuaranteeTypes.ItemIndex;
+
+  UpdateGuaranteeTags;
   EnableOrDisableOKButton;
 end;
 
 procedure TFrmGuestCheckInForm.cbxMarketChange(Sender: TObject);
 begin
   EnableOrDisableOKButton;
+end;
+
+procedure TFrmGuestCheckInForm.cbxMarketKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key = VK_DELETE then
+  begin
+    cbxMarket.ItemIndex := -1;
+    EnableOrDisableOKButton;
+  end;
 end;
 
 procedure TFrmGuestCheckInForm.FillQuickFind;
@@ -572,27 +594,8 @@ begin
 end;
 
 procedure TFrmGuestCheckInForm.EnableOrDisableOKButton;
-//var
-//  lErrors: boolean;
-//  lErrorsForCheckIn: boolean;
 begin
   CheckMandatoryFields;
-//  shpFirstname.Visible := Trim(edFirstname.Text) = '';
-//  shpLastname.Visible := Trim(edLastName.Text) = '';
-//  shpCity.Visible := Trim(edCity.Text) = '';
-//  shpCountry.Visible := (Trim(edCountry.Text) = '') or (SameText(lbCountryName.Caption, GetTranslatedText('shNotF_star')));
-//  shpMarket.Visible := g.qStayd3pActive and (cbxMarket.ItemIndex < 0);
-//
-//  shpGuarantee.Visible := NOT(((cbxGuaranteeTypes.ItemIndex = 0) AND cbCreditCard.Checked) OR
-//                              ((cbxGuaranteeTypes.ItemIndex = 1) AND (StrToFloatDef(edAmount.Text, -99999) <> -99999)) OR
-//                              ((cbxGuaranteeTypes.ItemIndex = 2))
-//                             );
-//  shpCC.Visible := shpGuarantee.Visible;
-//  shpCash.Visible := shpGuarantee.Visible;
-//
-//  lErrors := shpFirstname.Visible or shpLastname.Visible or shpCity.Visible or shpCountry.Visible or shpMarket.Visible;
-//  lErrorsForCheckin := shpGuarantee.Visible;
-//  btnOK.Enabled := not lErrors and not (isCheckIn and lErrorsForCheckIn);
 
   // Overriden by 3P connection? (Amsterdam Gemeente)
   if g.qStayd3pActive then
@@ -1051,6 +1054,30 @@ begin
   cbxGuaranteeTypes.ItemIndex := 3;
   pgGuaranteeTypes.ActivePageIndex := cbxGuaranteeTypes.ItemIndex;
   ResSetGuest := CreateNewDataset;
+
+  // Set tags for components that could be set as mandatory and for shapes that are made visible when component is not filled
+  edFirstname.Tag := mfFirstName.AsTagId;
+  shpFirstname.Tag := mfFirstName.AsTagId;
+
+  edLastName.Tag := mfSurName.AsTagId;
+  shpLastname.Tag := mfSurName.AsTagId;
+
+  edNationality.Tag := mfNationality.AsTagId;
+  shpNationality.Tag := mfNationality.AsTagId;
+
+  cbxMarket.Tag := mfMarket.AsTagid;
+  shpMarket.Tag := mfMarket.AsTagid;
+
+  edCity.Tag := mfCity.AsTagId;
+  shpCity.Tag := mfCity.AsTagId;
+
+  edCountry.Tag := mfCountry.AsTagid;
+  shpCountry.Tag := mfCountry.AsTagid;
+
+  cbxGuaranteeTypes.Tag := mfGuarantee.AsTagId;
+  shpGuarantee.Tag := mfGuarantee.AsTagId;
+
+  UpdateGuaranteeTags;
 end;
 
 procedure TFrmGuestCheckInForm.CheckMandatoryFields;
@@ -1059,20 +1086,15 @@ var
 begin
   for i := 0 to ComponentCount - 1 do
   begin
-    if Components[i] IS TComponent then
-      if TComponent(Components[i]).Tag > 10 then
+      if (Components[i] is TWinControl) and (Components[i].Tag >= TManadatoryCheckinField.MinimumTagId) then
       begin
-        if ((Components[i] IS TsEdit) AND
-           ((Components[i] AS TsEdit).Text = '')) OR
-           ((Components[i] IS TRoomerFilterComboBox) AND
-           ((Components[i] AS TRoomerFilterComboBox).Text = '')) OR
-           ((Components[i] IS TsCheckBox) AND
-           (NOT (Components[i] AS TsCheckBox).Checked)) OR
-           ((Components[i] IS TsComboBox) AND
-           ((Components[i] AS TsComboBox).Showing AND ((Components[i] AS TsComboBox).Text = '') AND ((Components[i] AS TsComboBox).ItemIndex < 1))) then
-             SetShapeStatus(TComponent(Components[i]).Tag, TManadatoryFields.FromTagId(TComponent(Components[i]).Tag).IsCurrenclyOn)
+        if ((Components[i] IS TCustomEdit) AND ((Components[i] AS TCustomEdit).Text = '')) OR
+           ((Components[i] IS TRoomerFilterComboBox) AND ((Components[i] AS TRoomerFilterComboBox).Text = '')) OR
+           ((Components[i] IS TsCheckBox) AND (NOT (Components[i] AS TsCheckBox).Checked)) OR
+           ((Components[i] IS TsComboBox) AND ((Components[i] AS TsComboBox).Showing AND ((Components[i] AS TsComboBox).Text = '') AND ((Components[i] AS TsComboBox).ItemIndex < 1))) then
+             SetShapeStatus(Components[i].Tag, TManadatoryCheckinField.FromTagId(Components[i].Tag).IsCurrentlyOn)
         else
-          SetShapeStatus(TComponent(Components[i]).Tag, False);
+          SetShapeStatus(Components[i].Tag, False);
       end;
 
   end;

@@ -7,7 +7,10 @@ uses Classes
 
 type
 
-  TManadatoryFields = (
+  /// <summary>
+  ///   Fields on the checking form that can be set as Mandatory in the global settings
+  /// </summary>
+  TManadatoryCheckinField = (
     mfCity,
     mfCountry,
     mfFirstName,
@@ -17,41 +20,53 @@ type
     mfGuarantee
   );
 
-  TManadatoryFieldsSet = set of TManadatoryFields;
+  TManadatoryCheckInFieldet = set of TManadatoryCheckinField;
 
-  TManadatoryFieldsHelper = record helper for TManadatoryFields
+  TManadatoryFieldHelper = record helper for TManadatoryCheckinField
+  private
+    function PMSSettingName: String;
+      /// <summary>
+      ///   Create a TManadatoryCheckinField from a PMSSettingName
+      /// </summary>
+      class function FromPMSSettingName(const aName: string): TManadatoryCheckinField; static;
+
+      /// <summary>
+      ///   Return a TManadatoryCheckinField based in index
+      /// </summary>
+      class function FromItemIndex(aIndex: integer) : TManadatoryCheckinField; static;
+
+      /// <summary>
+      ///   Return the translated displaystring for a TManadatoryFieldsSet
+      /// </summary>
+      function AsReadableString : string;
+
+
   public
-      // constructor
-      /// <summary>
-      ///   Create a TReservationState from a single character or status string
-      /// </summary>
-      class function FromFieldName(const statusStr : string) : TManadatoryFields; overload; static;
-      /// <summary>
-      ///   Return a TReservationState based in index. Note that this does now work with the itemlist returned by AsStrings as this
-      ///  list only contains UserSelectable TReservationStates
-      /// </summary>
-      class function FromItemIndex(aIndex: integer) : TManadatoryFields; static;
-
       /// <summary>
       ///   Fill a TStrings with translated descriptions in order of enumeration. Can by used to populate a TCombobox.<br />
-      ///  The objects list of aItemList will contain the ord() of the state cast to an TObject
+      ///  The objects list of aItemList will contain the ord() of the TManadatoryFieldsSet cast to an TObject
       /// </summary>
       class procedure AsStrings(aItemList: TStrings); static;
       /// <summary>
-      ///   Return the itemindex of TReservationState as it would have in the itemlist created by AsStrings
+      ///   Return the itemindex of TManadatoryFieldsSet as it would have in the itemlist created by AsStrings
       /// </summary>
       function ToItemIndex: integer;
 
-      function IsCurrenclyOn : Boolean;
+      /// <summary>
+      ///   Returns true if Self is currently set as mandatory in the global settings
+      /// </summary>
+      function IsCurrentlyOn : Boolean;
+      /// <summary>
+      ///   Set Self  as manditory in the global settings
+      /// </summary>
       procedure SetOnOrOff(TRUE_OR_FALSE : Boolean);
-      class function FromTagId(aTag: integer) : TManadatoryFields; static;
-
-      function FieldName : String;
 
       /// <summary>
-      ///   Return the translated displaystring for a ReservationState
+      ///   Return a tagid larger than MinimumTagId to link a control to a certain mandatoryField setting.
       /// </summary>
-      function AsReadableString : string;
+      function AsTagid: integer;
+      class function MinimumTagid: integer; static; inline;
+      class function FromTagId(aTag: integer) : TManadatoryCheckinField; static;
 
     end;
 
@@ -63,7 +78,7 @@ implementation
 uses PrjConst, SysUtils, uUtils, uAppGlobal
      ;
 
-const MF_FIELD_NAMES : Array[low(TManadatoryFields)..high(TManadatoryFields)] of String =
+const MF_PMSSETTING_NAMES : Array[low(TManadatoryCheckinField)..high(TManadatoryCheckinField)] of String =
      ('CITY_MANDATORY',
       'COUNTRY_MANDATORY',
       'FIRST_NAME_MANDATORY',
@@ -72,7 +87,13 @@ const MF_FIELD_NAMES : Array[low(TManadatoryFields)..high(TManadatoryFields)] of
       'NATIONALITY_MANDATORY',
       'PAYMENT_GUARANTEE_MANDATORY');
 
-function TManadatoryFieldsHelper.AsReadableString: string;
+     /// <summary>
+     ///   Offset used to map a TMandatoryField to a integer used as Tag of a component. This is the
+     ///  MinimumTagid
+     /// </summary>
+     cAsTagOffset = 100;
+
+function TManadatoryFieldHelper.AsReadableString: string;
 begin
   case Self of
     mfCity          : result := GetTranslatedText('shTx_MandatoryFields_City');
@@ -87,46 +108,56 @@ begin
   end;
 end;
 
-class procedure TManadatoryFieldsHelper.AsStrings(aItemList: TStrings);
+class procedure TManadatoryFieldHelper.AsStrings(aItemList: TStrings);
 var
-  s: TManadatoryFields;
+  s: TManadatoryCheckinField;
 begin
   aItemList.Clear;
-  for s := low(TManadatoryFields) to high(s) do
+  for s := low(TManadatoryCheckinField) to high(s) do
     aItemList.AddObject(s.AsReadableString, TObject(ord(s)));
 end;
 
-class function TManadatoryFieldsHelper.FromItemIndex(aIndex: integer): TManadatoryFields;
+function TManadatoryFieldHelper.AsTagid: integer;
 begin
-    Result := TManadatoryFields(aIndex);
+  Result := ord(Self) + cAsTagOffset;
 end;
 
-class function TManadatoryFieldsHelper.FromTagId(aTag: integer): TManadatoryFields;
+class function TManadatoryFieldHelper.FromItemIndex(aIndex: integer): TManadatoryCheckinField;
 begin
-  result :=  FromItemIndex(aTag - 10);
+    Result := TManadatoryCheckinField(aIndex);
 end;
 
-function TManadatoryFieldsHelper.isCurrenclyOn: Boolean;
+class function TManadatoryFieldHelper.FromTagId(aTag: integer): TManadatoryCheckinField;
 begin
-  result := glb.GetPmsSettingsAsBoolean(FieldName, False, True)
+  result :=  FromItemIndex(aTag - cAsTagOffset);
 end;
 
-procedure TManadatoryFieldsHelper.SetOnOrOff(TRUE_OR_FALSE: Boolean);
+function TManadatoryFieldHelper.isCurrentlyOn: Boolean;
 begin
-  glb.SetPmsSettingsAsBoolean(FieldName, TRUE_OR_FALSE);
+  result := glb.GetPmsSettingsAsBoolean(PMSSettingName, False, True)
 end;
 
-function TManadatoryFieldsHelper.FieldName: String;
+class function TManadatoryFieldHelper.MinimumTagid: integer;
 begin
-  result := MF_FIELD_NAMES[self];
+  Result := cAsTagOffset;
 end;
 
-class function TManadatoryFieldsHelper.FromFieldName(const statusStr: string): TManadatoryFields;
+procedure TManadatoryFieldHelper.SetOnOrOff(TRUE_OR_FALSE: Boolean);
 begin
-  result := TManadatoryFields(StringIndexInSet(UpperCase(statusStr), MF_FIELD_NAMES));
+  glb.SetPmsSettingsAsBoolean(PMSSettingName, TRUE_OR_FALSE);
 end;
 
-function TManadatoryFieldsHelper.ToItemIndex: integer;
+function TManadatoryFieldHelper.PMSSettingName: String;
+begin
+  result := MF_PMSSETTING_NAMES[self];
+end;
+
+class function TManadatoryFieldHelper.FromPMSSettingName(const aName: string): TManadatoryCheckinField;
+begin
+  result := TManadatoryCheckinField(StringIndexInSet(UpperCase(aName), MF_PMSSETTING_NAMES));
+end;
+
+function TManadatoryFieldHelper.ToItemIndex: integer;
 begin
   Result := ord(Self);
 end;

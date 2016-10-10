@@ -698,10 +698,10 @@ type
     edtEndOfDayCustomer: TsEdit;
     edtEndOfDayUser: TsEdit;
     tabMandatory: TsTabSheet;
-    sPageControl1: TsPageControl;
+    pcMandatoryInfo: TsPageControl;
     tabGuestInformation: TsTabSheet;
     clbMandatoryFields: TsCheckListBox;
-    sPanel2: TsPanel;
+    pnlManInfoButtons: TsPanel;
     btnMFSelectNone: TsButton;
     btnMFSelectAll: TsButton;
     procedure FormCreate(Sender : TObject);
@@ -894,7 +894,7 @@ var
   autumnStartsDay : integer;
   winterStartsDay : integer;
 
-  ManadatoryFields: TManadatoryFields;
+  ManadatoryFields: TManadatoryCheckinField;
 begin
   g.ProcessAppIni(0);
   edInvoiceFormFileISL.Text := g.qInvoiceFormFileISL;
@@ -992,9 +992,9 @@ begin
       printerName := cbxReportPrinter.Items[idx];
   end;
 
-  TManadatoryFields.AsStrings(clbMandatoryFields.Items);
-  for ManadatoryFields := Low(TManadatoryFields) to High(TManadatoryFields) do
-    clbMandatoryFields.Checked[ManadatoryFields.ToItemIndex] := ManadatoryFields.IsCurrenclyOn;
+  TManadatoryCheckinField.AsStrings(clbMandatoryFields.Items);
+  for ManadatoryFields := Low(TManadatoryCheckinField) to High(TManadatoryCheckinField) do
+    clbMandatoryFields.Checked[ManadatoryFields.ToItemIndex] := ManadatoryFields.IsCurrentlyOn;
 
   cbxReportPrinter.ItemIndex := idx;
 
@@ -1614,11 +1614,11 @@ var
   sTmp : string;
   iTmp : integer;
 
-  ManadatoryFields : TManadatoryFields;
+  ManadatoryFields : TManadatoryCheckinField;
 
 begin
 
-  for ManadatoryFields := Low(TManadatoryFields) to High(TManadatoryFields) do
+  for ManadatoryFields := Low(TManadatoryCheckinField) to High(TManadatoryCheckinField) do
     ManadatoryFields.SetOnOrOff(clbMandatoryFields.Checked[ManadatoryFields.ToItemIndex]);
 
   rSet.edit;
