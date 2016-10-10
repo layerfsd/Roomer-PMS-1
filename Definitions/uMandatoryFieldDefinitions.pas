@@ -10,7 +10,7 @@ type
   /// <summary>
   ///   Fields on the checking form that can be set as Mandatory in the global settings
   /// </summary>
-  TManadatoryCheckinField = (
+  TMandatoryCheckinField = (
     mfCity,
     mfCountry,
     mfFirstName,
@@ -20,20 +20,20 @@ type
     mfGuarantee
   );
 
-  TManadatoryCheckInFieldet = set of TManadatoryCheckinField;
+  TMandatoryCheckInFieldet = set of TMandatoryCheckinField;
 
-  TManadatoryFieldHelper = record helper for TManadatoryCheckinField
+  TMandatoryFieldHelper = record helper for TMandatoryCheckinField
   private
     function PMSSettingName: String;
       /// <summary>
       ///   Create a TManadatoryCheckinField from a PMSSettingName
       /// </summary>
-      class function FromPMSSettingName(const aName: string): TManadatoryCheckinField; static;
+      class function FromPMSSettingName(const aName: string): TMandatoryCheckinField; static;
 
       /// <summary>
       ///   Return a TManadatoryCheckinField based in index
       /// </summary>
-      class function FromItemIndex(aIndex: integer) : TManadatoryCheckinField; static;
+      class function FromItemIndex(aIndex: integer) : TMandatoryCheckinField; static;
 
       /// <summary>
       ///   Return the translated displaystring for a TManadatoryFieldsSet
@@ -66,7 +66,7 @@ type
       /// </summary>
       function AsTagid: integer;
       class function MinimumTagid: integer; static; inline;
-      class function FromTagId(aTag: integer) : TManadatoryCheckinField; static;
+      class function FromTagId(aTag: integer) : TMandatoryCheckinField; static;
 
     end;
 
@@ -78,7 +78,7 @@ implementation
 uses PrjConst, SysUtils, uUtils, uAppGlobal
      ;
 
-const MF_PMSSETTING_NAMES : Array[low(TManadatoryCheckinField)..high(TManadatoryCheckinField)] of String =
+const MF_PMSSETTING_NAMES : Array[low(TMandatoryCheckinField)..high(TMandatoryCheckinField)] of String =
      ('CITY_MANDATORY',
       'COUNTRY_MANDATORY',
       'FIRST_NAME_MANDATORY',
@@ -93,7 +93,7 @@ const MF_PMSSETTING_NAMES : Array[low(TManadatoryCheckinField)..high(TManadatory
      /// </summary>
      cAsTagOffset = 100;
 
-function TManadatoryFieldHelper.AsReadableString: string;
+function TMandatoryFieldHelper.AsReadableString: string;
 begin
   case Self of
     mfCity          : result := GetTranslatedText('shTx_MandatoryFields_City');
@@ -108,56 +108,56 @@ begin
   end;
 end;
 
-class procedure TManadatoryFieldHelper.AsStrings(aItemList: TStrings);
+class procedure TMandatoryFieldHelper.AsStrings(aItemList: TStrings);
 var
-  s: TManadatoryCheckinField;
+  s: TMandatoryCheckinField;
 begin
   aItemList.Clear;
-  for s := low(TManadatoryCheckinField) to high(s) do
+  for s := low(TMandatoryCheckinField) to high(s) do
     aItemList.AddObject(s.AsReadableString, TObject(ord(s)));
 end;
 
-function TManadatoryFieldHelper.AsTagid: integer;
+function TMandatoryFieldHelper.AsTagid: integer;
 begin
   Result := ord(Self) + cAsTagOffset;
 end;
 
-class function TManadatoryFieldHelper.FromItemIndex(aIndex: integer): TManadatoryCheckinField;
+class function TMandatoryFieldHelper.FromItemIndex(aIndex: integer): TMandatoryCheckinField;
 begin
-    Result := TManadatoryCheckinField(aIndex);
+    Result := TMandatoryCheckinField(aIndex);
 end;
 
-class function TManadatoryFieldHelper.FromTagId(aTag: integer): TManadatoryCheckinField;
+class function TMandatoryFieldHelper.FromTagId(aTag: integer): TMandatoryCheckinField;
 begin
   result :=  FromItemIndex(aTag - cAsTagOffset);
 end;
 
-function TManadatoryFieldHelper.isCurrentlyOn: Boolean;
+function TMandatoryFieldHelper.isCurrentlyOn: Boolean;
 begin
   result := glb.GetPmsSettingsAsBoolean(PMSSettingName, False, True)
 end;
 
-class function TManadatoryFieldHelper.MinimumTagid: integer;
+class function TMandatoryFieldHelper.MinimumTagid: integer;
 begin
   Result := cAsTagOffset;
 end;
 
-procedure TManadatoryFieldHelper.SetOnOrOff(TRUE_OR_FALSE: Boolean);
+procedure TMandatoryFieldHelper.SetOnOrOff(TRUE_OR_FALSE: Boolean);
 begin
   glb.SetPmsSettingsAsBoolean(PMSSettingName, TRUE_OR_FALSE);
 end;
 
-function TManadatoryFieldHelper.PMSSettingName: String;
+function TMandatoryFieldHelper.PMSSettingName: String;
 begin
   result := MF_PMSSETTING_NAMES[self];
 end;
 
-class function TManadatoryFieldHelper.FromPMSSettingName(const aName: string): TManadatoryCheckinField;
+class function TMandatoryFieldHelper.FromPMSSettingName(const aName: string): TMandatoryCheckinField;
 begin
-  result := TManadatoryCheckinField(StringIndexInSet(UpperCase(aName), MF_PMSSETTING_NAMES));
+  result := TMandatoryCheckinField(StringIndexInSet(UpperCase(aName), MF_PMSSETTING_NAMES));
 end;
 
-function TManadatoryFieldHelper.ToItemIndex: integer;
+function TMandatoryFieldHelper.ToItemIndex: integer;
 begin
   Result := ord(Self);
 end;

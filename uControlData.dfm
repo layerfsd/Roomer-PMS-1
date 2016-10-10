@@ -23,7 +23,6 @@ object frmControlData: TfrmControlData
     Align = alClient
     TabOrder = 1
     OnClick = __Panel2Click
-    ExplicitHeight = 644
     object sLabel4: TsLabel
       Left = 248
       Top = 120
@@ -76,7 +75,6 @@ object frmControlData: TfrmControlData
       Align = alLeft
       TabOrder = 1
       SkinData.SkinSection = 'PANEL'
-      ExplicitHeight = 614
       object tvSelection: TsTreeView
         Left = 1
         Top = 1
@@ -122,7 +120,6 @@ object frmControlData: TfrmControlData
           000000000000000000000001154D0061006E006400610074006F007200790020
           0069006E0066006F0072006D006100740069006F006E00}
         SkinData.SkinSection = 'EDIT'
-        ExplicitHeight = 612
       end
     end
     object __LMDBackPanel3: TsPanel
@@ -133,7 +130,6 @@ object frmControlData: TfrmControlData
       Align = alClient
       TabOrder = 2
       SkinData.SkinSection = 'PANEL'
-      ExplicitHeight = 614
       object mainPage: TsPageControl
         Left = 1
         Top = 1
@@ -149,18 +145,19 @@ object frmControlData: TfrmControlData
         ParentFont = False
         TabOrder = 0
         SkinData.SkinSection = 'PAGECONTROL'
-        ExplicitHeight = 612
         object tsNull: TsTabSheet
           Caption = 'tsNull'
-          SkinData.CustomColor = False
-          SkinData.CustomFont = False
           SkinData.SkinSection = 'FORM'
+          ExplicitLeft = 0
+          ExplicitTop = 0
+          ExplicitWidth = 0
           ExplicitHeight = 583
         end
         object tsCompany: TsTabSheet
           Caption = 'Company'
-          SkinData.CustomColor = False
-          SkinData.CustomFont = False
+          ExplicitLeft = 0
+          ExplicitTop = 0
+          ExplicitWidth = 0
           ExplicitHeight = 583
           object gbxCompany: TsGroupBox
             Left = 3
@@ -890,8 +887,9 @@ object frmControlData: TfrmControlData
         end
         object tsSystemItemIDs: TsTabSheet
           Caption = 'ID Numbers'
-          SkinData.CustomColor = False
-          SkinData.CustomFont = False
+          ExplicitLeft = 0
+          ExplicitTop = 0
+          ExplicitWidth = 0
           ExplicitHeight = 583
           object cbxIdNumbers: TsGroupBox
             AlignWithMargins = True
@@ -1199,8 +1197,9 @@ object frmControlData: TfrmControlData
         end
         object tsInvoiceTexts: TsTabSheet
           Caption = 'Invoice texts'
-          SkinData.CustomColor = False
-          SkinData.CustomFont = False
+          ExplicitLeft = 0
+          ExplicitTop = 0
+          ExplicitWidth = 0
           ExplicitHeight = 583
           object AdvPageControl2: TsPageControl
             Left = 0
@@ -1217,11 +1216,11 @@ object frmControlData: TfrmControlData
             ParentFont = False
             TabOrder = 0
             SkinData.SkinSection = 'PAGECONTROL'
-            ExplicitHeight = 583
             object tsInvTexts_Laser1: TsTabSheet
               Caption = '1'
-              SkinData.CustomColor = False
-              SkinData.CustomFont = False
+              ExplicitLeft = 0
+              ExplicitTop = 0
+              ExplicitWidth = 0
               ExplicitHeight = 554
               object gbxInvoiceHead: TsGroupBox
                 Left = 4
@@ -2212,8 +2211,9 @@ object frmControlData: TfrmControlData
             end
             object tsInvTexts_Laser2: TsTabSheet
               Caption = '2'
-              SkinData.CustomColor = False
-              SkinData.CustomFont = False
+              ExplicitLeft = 0
+              ExplicitTop = 0
+              ExplicitWidth = 0
               ExplicitHeight = 554
               object gbxVATlist: TsGroupBox
                 Left = 440
@@ -2998,8 +2998,9 @@ object frmControlData: TfrmControlData
             end
             object AdvTabSheet15: TsTabSheet
               Caption = '3'
-              SkinData.CustomColor = False
-              SkinData.CustomFont = False
+              ExplicitLeft = 0
+              ExplicitTop = 0
+              ExplicitWidth = 0
               ExplicitHeight = 554
               object GroupBox3: TsGroupBox
                 Left = 4
@@ -3316,8 +3317,9 @@ object frmControlData: TfrmControlData
         end
         object tsInvoiceSystem: TsTabSheet
           Caption = 'Sales Properties'
-          SkinData.CustomColor = False
-          SkinData.CustomFont = False
+          ExplicitLeft = 0
+          ExplicitTop = 0
+          ExplicitWidth = 0
           ExplicitHeight = 583
           object LMDGroupBox5: TsGroupBox
             Left = 3
@@ -4321,8 +4323,9 @@ object frmControlData: TfrmControlData
         end
         object tsInvoiceRouting: TsTabSheet
           Caption = 'Invoice Routing'
-          SkinData.CustomColor = False
-          SkinData.CustomFont = False
+          ExplicitLeft = 0
+          ExplicitTop = 0
+          ExplicitWidth = 0
           ExplicitHeight = 583
           object sGroupBox15: TsGroupBox
             Left = 3
@@ -4525,8 +4528,9 @@ object frmControlData: TfrmControlData
         end
         object tsRoomStatusColors: TsTabSheet
           Caption = 'Room Status Texts'
-          SkinData.CustomColor = False
-          SkinData.CustomFont = False
+          ExplicitLeft = 0
+          ExplicitTop = 0
+          ExplicitWidth = 0
           ExplicitHeight = 583
           object LMDGroupBox3: TsGroupBox
             Left = 659
@@ -4841,8 +4845,9 @@ object frmControlData: TfrmControlData
         object tsMail: TsTabSheet
           Caption = 'Mail'
           TabVisible = False
-          SkinData.CustomColor = False
-          SkinData.CustomFont = False
+          ExplicitLeft = 0
+          ExplicitTop = 0
+          ExplicitWidth = 0
           ExplicitHeight = 583
           object sLabel5: TsLabel
             Left = 24
@@ -5085,8 +5090,9 @@ object frmControlData: TfrmControlData
         end
         object tsLookMainScreen: TsTabSheet
           Caption = 'tsLookMainScreen'
-          SkinData.CustomColor = False
-          SkinData.CustomFont = False
+          ExplicitLeft = 0
+          ExplicitTop = 0
+          ExplicitWidth = 0
           ExplicitHeight = 583
           object Label63: TsLabel
             Left = 20
@@ -5480,8 +5486,9 @@ object frmControlData: TfrmControlData
         end
         object tsInvoiceMain: TsTabSheet
           Caption = 'tsInvoiceMain'
-          SkinData.CustomColor = False
-          SkinData.CustomFont = False
+          ExplicitLeft = 0
+          ExplicitTop = 0
+          ExplicitWidth = 0
           ExplicitHeight = 583
           DesignSize = (
             1093
@@ -5641,8 +5648,9 @@ object frmControlData: TfrmControlData
         end
         object tsInvEmail: TsTabSheet
           Caption = 'Reservations'
-          SkinData.CustomColor = False
-          SkinData.CustomFont = False
+          ExplicitLeft = 0
+          ExplicitTop = 0
+          ExplicitWidth = 0
           ExplicitHeight = 583
           object LMDGroupBox25: TsGroupBox
             Left = 12
@@ -5800,8 +5808,9 @@ object frmControlData: TfrmControlData
         end
         object AdvTabSheet3: TsTabSheet
           Caption = 'Channelmanager'
-          SkinData.CustomColor = False
-          SkinData.CustomFont = False
+          ExplicitLeft = 0
+          ExplicitTop = 0
+          ExplicitWidth = 0
           ExplicitHeight = 583
           object sGroupBox1: TsGroupBox
             Left = 7
@@ -6237,14 +6246,16 @@ object frmControlData: TfrmControlData
         end
         object AdvTabSheet5: TsTabSheet
           Caption = '-'
-          SkinData.CustomColor = False
-          SkinData.CustomFont = False
+          ExplicitLeft = 0
+          ExplicitTop = 0
+          ExplicitWidth = 0
           ExplicitHeight = 583
         end
         object AdvTabSheet6: TsTabSheet
           Caption = 'Accounting'
-          SkinData.CustomColor = False
-          SkinData.CustomFont = False
+          ExplicitLeft = 0
+          ExplicitTop = 0
+          ExplicitWidth = 0
           ExplicitHeight = 583
           object gbxForceExternalIdCorrectness: TsGroupBox
             Left = 3
@@ -6623,8 +6634,9 @@ object frmControlData: TfrmControlData
         end
         object AdvTabSheet7: TsTabSheet
           Caption = 'Pos'
-          SkinData.CustomColor = False
-          SkinData.CustomFont = False
+          ExplicitLeft = 0
+          ExplicitTop = 0
+          ExplicitWidth = 0
           ExplicitHeight = 583
           object LMDSimplePanel2: TsPanel
             Left = 0
@@ -6724,11 +6736,11 @@ object frmControlData: TfrmControlData
             Align = alClient
             TabOrder = 1
             SkinData.SkinSection = 'PAGECONTROL'
-            ExplicitHeight = 522
             object AdvTabSheet8: TsTabSheet
               Caption = 'Nothing'
-              SkinData.CustomColor = False
-              SkinData.CustomFont = False
+              ExplicitLeft = 0
+              ExplicitTop = 0
+              ExplicitWidth = 0
               ExplicitHeight = 493
               object clabNoAccontConnection: TsLabel
                 Left = 8
@@ -6746,8 +6758,9 @@ object frmControlData: TfrmControlData
             end
             object AdvTabSheet9: TsTabSheet
               Caption = 'poster'
-              SkinData.CustomColor = False
-              SkinData.CustomFont = False
+              ExplicitLeft = 0
+              ExplicitTop = 0
+              ExplicitWidth = 0
               ExplicitHeight = 493
               object LMDSimplePanel3: TsPanel
                 Left = 0
@@ -6831,11 +6844,11 @@ object frmControlData: TfrmControlData
                 Align = alClient
                 TabOrder = 1
                 SkinData.SkinSection = 'PAGECONTROL'
-                ExplicitHeight = 437
                 object AdvTabSheet12: TsTabSheet
                   Caption = '-'
-                  SkinData.CustomColor = False
-                  SkinData.CustomFont = False
+                  ExplicitLeft = 0
+                  ExplicitTop = 0
+                  ExplicitWidth = 0
                   ExplicitHeight = 408
                   object LMDSimpleLabel70: TsLabel
                     Left = 6
@@ -7103,7 +7116,7 @@ object frmControlData: TfrmControlData
                     Width = 145
                     Height = 22
                     Color = clWindow
-                    Version = '1.5.0.1'
+                    Version = '1.5.0.0'
                     Visible = True
                     Ctl3D = True
                     Columns = <
@@ -7160,7 +7173,7 @@ object frmControlData: TfrmControlData
                     Width = 145
                     Height = 22
                     Color = clWindow
-                    Version = '1.5.0.1'
+                    Version = '1.5.0.0'
                     Visible = True
                     Ctl3D = True
                     Columns = <
@@ -7306,8 +7319,9 @@ object frmControlData: TfrmControlData
             end
             object AdvTabSheet10: TsTabSheet
               Caption = 'Touch Text Entries'
-              SkinData.CustomColor = False
-              SkinData.CustomFont = False
+              ExplicitLeft = 0
+              ExplicitTop = 0
+              ExplicitWidth = 0
               ExplicitHeight = 493
               object LMDSimpleLabel71: TsLabel
                 Left = 26
@@ -7395,9 +7409,6 @@ object frmControlData: TfrmControlData
             end
             object tabTouchStoreXML: TsTabSheet
               Caption = 'Touch XML'
-              SkinData.CustomColor = False
-              SkinData.CustomFont = False
-              ExplicitHeight = 493
               object LMDSimpleLabel81: TsLabel
                 Left = 3
                 Top = 21
@@ -7521,28 +7532,32 @@ object frmControlData: TfrmControlData
             end
             object AdvTabSheet11: TsTabSheet
               Caption = 'TOK Windows'
-              SkinData.CustomColor = False
-              SkinData.CustomFont = False
+              ExplicitLeft = 0
+              ExplicitTop = 0
+              ExplicitWidth = 0
               ExplicitHeight = 493
             end
           end
         end
         object AdvTabSheet13: TsTabSheet
           Caption = 'AdvTabSheet13'
-          SkinData.CustomColor = False
-          SkinData.CustomFont = False
+          ExplicitLeft = 0
+          ExplicitTop = 0
+          ExplicitWidth = 0
           ExplicitHeight = 583
         end
         object AdvTabSheet14: TsTabSheet
           Caption = 'Quick Booking'
-          SkinData.CustomColor = False
-          SkinData.CustomFont = False
+          ExplicitLeft = 0
+          ExplicitTop = 0
+          ExplicitWidth = 0
           ExplicitHeight = 583
         end
         object tsIncomingMonitor: TsTabSheet
           Caption = 'Incoming Monitor'#13#10
-          SkinData.CustomColor = False
-          SkinData.CustomFont = False
+          ExplicitLeft = 0
+          ExplicitTop = 0
+          ExplicitWidth = 0
           ExplicitHeight = 583
           object LMDGroupBox23: TsGroupBox
             Left = 4
@@ -7694,8 +7709,9 @@ object frmControlData: TfrmControlData
         end
         object tsColors: TsTabSheet
           Caption = 'tsColors'
-          SkinData.CustomColor = False
-          SkinData.CustomFont = False
+          ExplicitLeft = 0
+          ExplicitTop = 0
+          ExplicitWidth = 0
           ExplicitHeight = 583
           object Panel4: TsPanel
             Left = 0
@@ -8962,9 +8978,6 @@ object frmControlData: TfrmControlData
         end
         object tabMandatory: TsTabSheet
           Caption = 'Mandatory info'
-          SkinData.CustomColor = False
-          SkinData.CustomFont = False
-          ExplicitHeight = 583
           object pcMandatoryInfo: TsPageControl
             AlignWithMargins = True
             Left = 20
@@ -8978,12 +8991,8 @@ object frmControlData: TfrmControlData
             ActivePage = tabGuestInformation
             Align = alClient
             TabOrder = 0
-            ExplicitHeight = 543
             object tabGuestInformation: TsTabSheet
               Caption = 'Mandatory Guest information'
-              SkinData.CustomColor = False
-              SkinData.CustomFont = False
-              ExplicitHeight = 514
               object clbMandatoryFields: TsCheckListBox
                 AlignWithMargins = True
                 Left = 20
@@ -9005,7 +9014,6 @@ object frmControlData: TfrmControlData
                 ParentFont = False
                 TabOrder = 0
                 SkinData.SkinSection = 'EDIT'
-                ExplicitHeight = 451
               end
               object pnlManInfoButtons: TsPanel
                 Left = 0
@@ -9067,7 +9075,6 @@ object frmControlData: TfrmControlData
     BevelOuter = bvNone
     TabOrder = 2
     SkinData.SkinSection = 'PANEL'
-    ExplicitTop = 647
     DesignSize = (
       1261
       33)
