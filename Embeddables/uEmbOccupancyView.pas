@@ -124,6 +124,9 @@ begin
           dateToSqlString(ToDate),
 
           dateToSqlString(FromDate),
+          dateToSqlString(ToDate),
+
+          dateToSqlString(FromDate),
           dateToSqlString(ToDate)
          ]);
 
