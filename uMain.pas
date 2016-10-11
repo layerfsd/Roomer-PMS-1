@@ -4285,6 +4285,9 @@ begin
       dateToSqlString(now + cbxStatDay.ItemIndex),
 
       dateToSqlString(now + cbxStatDay.ItemIndex),
+      dateToSqlString(now + cbxStatDay.ItemIndex),
+
+      dateToSqlString(now + cbxStatDay.ItemIndex),
       dateToSqlString(now + cbxStatDay.ItemIndex)
       ]);
     // CopyToClipboard(s);
