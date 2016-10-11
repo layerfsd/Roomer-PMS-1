@@ -767,14 +767,9 @@ begin
   constants.Add('shTx_Invoice_SaleNotSelected', 'Sale item not selected !');
   constants.Add('shTx_Invoice_TakeItemFromInvoice', 'Take [%s] from invoice?');
   constants.Add('shTx_Invoice_CanNotDelete', 'System item can not delete ');
+  constants.Add('shTx_InvoiceUnableToSave', 'We are unable to save the invoice. Select [Retry] to try again or [Cancel] '
+            + #13 + 'to temporarily stop the work with this invoice');
 
- (* constants.Add('shTx_Invoice_BlankLine', 'Auð lína');
-  constants.Add('shTx_Invoice_ErrorInTotal', 'villa í upphæð %s');
-  constants.Add('shTx_Invoice_MoveItemToGroupInvoice', 'Viltu færa %s: %s' + #10 +
-                                             'á hópreikning ');
-  constants.Add('shTx_Invoice_FailedGroupInvoice', 'Ekki tókst að uppfæra Hópreikning - Hætt við ' + #10 +
-                                             'Villa : %s'); *)
-											 
   constants.Add('shTx_Invoice_BlankLine', 'Blank Line');
   constants.Add('shTx_Invoice_ErrorInTotal', 'Error in total %s');
   constants.Add('shTx_Invoice_MoveItemToGroupInvoice', 'Move item %s: %s' + #10 +

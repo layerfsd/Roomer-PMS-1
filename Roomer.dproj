@@ -802,6 +802,7 @@
             <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="Definitions\uMandatoryFieldDefinitions.pas"/>
+        <DCCReference Include="Invoice\uInvoiceEntities.pas"/>
         <None Include="Roomer.todo"/>
         <None Include="notes.txt"/>
         <None Include="Roomer.inc"/>

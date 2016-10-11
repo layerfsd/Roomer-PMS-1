@@ -271,7 +271,6 @@ object frmInvoice: TfrmInvoice
         ParentFont = False
         ReadOnly = True
         TabOrder = 10
-        OnChange = edtCurrencyChange
         OnDblClick = edtCurrencyDblClick
         SkinData.SkinSection = 'EDIT'
         BoundLabel.Font.Charset = DEFAULT_CHARSET
@@ -674,7 +673,7 @@ object frmInvoice: TfrmInvoice
         Top = 0
         Width = 1018
         Height = 502
-        ActivePage = tabRoomPrice
+        ActivePage = tabInvoice
         Align = alClient
         TabOrder = 0
         object tabInvoice: TTabSheet
@@ -1347,6 +1346,7 @@ object frmInvoice: TfrmInvoice
               SearchFooter.MatchCaseCaption = 'Match case'
               SortSettings.DefaultFormat = ssAutomatic
               Version = '8.1.2.0'
+              ExplicitTop = 4
               ColWidths = (
                 24
                 91
@@ -2537,7 +2537,6 @@ object frmInvoice: TfrmInvoice
     end
     object actAddPackage: TAction
       Caption = 'Add Package'
-      OnExecute = actAddPackageExecute
     end
     object Action2: TAction
       Category = 'Lines'

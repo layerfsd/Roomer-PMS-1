@@ -937,6 +937,7 @@ var
   ExpTOA: string;
   ExpCOT: string;
   newRoomReservationItem: TnewRoomReservationItem;
+  lBreakfastPrice: Double;
 
   procedure init;
   begin
@@ -1138,7 +1139,6 @@ var
   roomnotes : string;
   packageID : integer;
 
-  ItemTypeInfo : TItemTypeInfo;
   Item       : string;
   Price        : double;
   numItems     : double;
@@ -1159,6 +1159,7 @@ var
   iProfileId : Integer;
 
   CurrencyRate : Double;
+  ItemInfo: recItemPlusHolder;
 
 
 begin
@@ -1489,24 +1490,24 @@ begin
           begin
             initInvoiceLineHolderRec(InvoicelineData);
             Item := ctrlGetString('BreakFastItem');
-//            glb.LocateSpecificRecordAndGetValue('items', 'Item', Item, 'Description', itemDescription);
-
-            ItemTypeInfo := d.Item_Get_ItemTypeInfo(Item);
+            ItemInfo := d.Item_Get_Data(Item);
 
             if FnewRoomReservations.FRoomList[i].FBreakfastIncluded then
             begin
-              Price           := 0.0;
-              itemDescription := ItemTypeInfo.Description +  ' (' + GetTranslatedText('shTx_ReservationProfile_Included') + ')'
+              lBreakfastPrice  := ItemInfo.Price;
+              Price           := 0;
+              itemDescription := ItemInfo.Description +  ' (' + GetTranslatedText('shTx_ReservationProfile_Included') + ')'
             end
             else
             begin
+              lBreakfastPrice  := 0;
               Price           := FnewRoomReservations.FRoomList[i].FBreakfastCost;
-              itemDescription := ItemTypeInfo.Description;
+              itemDescription := ItemInfo.Description;
             end;
             numItems     := numGuests * iDayCount;
             Total        := price*numItems;
 
-            fTmp           := Total / (1 + (ItemTypeInfo.VATPercentage / 100));
+            fTmp           := Total / (1 + (ItemInfo.VATPercentage / 100));
             Vat            := Total - ftmp;
             TotalWOVat     := Total - VAT;
 
@@ -1523,7 +1524,7 @@ begin
             invoiceLineData.Description     := itemDescription;
             invoiceLineData.Price           := Price;
             invoiceLineData.Number          := numItems;
-            invoiceLineData.VATType         := ItemTypeInfo.VATCode;
+            invoiceLineData.VATType         := ItemInfo.VATCode;
             invoiceLineData.Total           := Total;
             invoiceLineData.TotalWOVAT      := totalWOVat;
             invoiceLineData.Vat             := VAT;
@@ -1533,7 +1534,7 @@ begin
             invoiceLineData.ReportTime      := '00:00';
             invoiceLineData.Persons         := 0;
             invoiceLineData.Nights          := 0;
-            invoiceLineData.BreakfastPrice  := 0.00;
+            invoiceLineData.BreakfastPrice  := lBreakFastPrice;
             invoiceLineData.AYear           := aYear;
             invoiceLineData.AMon            := aMon;
             invoiceLineData.ADay            := aDay;
@@ -1571,12 +1572,14 @@ begin
             Item := g.qRoomRentItem;
             itemDescription := GetTranslatedText('shTxExtraBedInvoiceText');
 //            glb.LocateSpecificRecordAndGetValue('items', 'Item', ItemId, 'Description', itemDescription);
-            ItemTypeInfo := d.Item_Get_ItemTypeInfo(Item);
+
+
+            ItemInfo := d.Item_Get_Data(Item);
             Price        := FnewRoomReservations.FRoomList[i].FExtraBedCost;
             numItems     := 1.00; // numGuests.;
             Total        := price*numItems;
 
-            fTmp           := Total / (1 + (ItemTypeInfo.VATPercentage / 100));
+            fTmp           := Total / (1 + (ItemInfo.VATPercentage / 100));
             Vat            := Total - ftmp;
             TotalWOVat     := Total - VAT;
 
@@ -1593,7 +1596,7 @@ begin
             invoiceLineData.Description     := itemDescription;
             invoiceLineData.Price           := Price;
             invoiceLineData.Number          := numItems;
-            invoiceLineData.VATType         := ItemTypeInfo.VATCode;
+            invoiceLineData.VATType         := ItemInfo.VATCode;
             invoiceLineData.Total           := Total;
             invoiceLineData.TotalWOVAT      := totalWOVat;
             invoiceLineData.Vat             := VAT;

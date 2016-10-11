@@ -245,7 +245,8 @@ uses
   uRptDailyRevenues in 'Financials\uRptDailyRevenues.pas' {frmRptDailyRevenues},
   uCleaningNotes in 'uCleaningNotes.pas' {frmCleaningNotes},
   uCleaningNotesEdit in 'uCleaningNotesEdit.pas' {frmCleaningNotesEdit},
-  uMandatoryFieldDefinitions in 'Definitions\uMandatoryFieldDefinitions.pas';
+  uMandatoryFieldDefinitions in 'Definitions\uMandatoryFieldDefinitions.pas',
+  uInvoiceEntities in 'Invoice\uInvoiceEntities.pas';
 
 {$R *.RES}
 

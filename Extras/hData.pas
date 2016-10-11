@@ -54,7 +54,7 @@ type
 
     ikRoomRentDiscount,
 
-    ikBrekfastInc,
+    ikBreakfast,
 
     ikPhoneUse,
 
@@ -4841,7 +4841,7 @@ begin
   // ctrlGetString('BreakFastItem', Connection,loglevel,logpath));
   if s = sItem then
   begin
-    result := ikBrekfastInc;
+    result := ikBreakfast;
     exit;
   end;
 
