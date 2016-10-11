@@ -95,7 +95,7 @@ object frmMain: TfrmMain
       Top = 173
       Width = 981
       Height = 304
-      ActivePage = tabGuestList
+      ActivePage = tabPeriod
       Align = alClient
       TabOrder = 3
       OnChange = pageMainGridsChange
@@ -1453,6 +1453,7 @@ object frmMain: TfrmMain
             SearchFooter.MatchCaseCaption = 'Match case'
             SortSettings.DefaultFormat = ssAutomatic
             Version = '7.9.1.1'
+            ExplicitLeft = 2
             ColWidths = (
               64
               64
@@ -1605,7 +1606,7 @@ object frmMain: TfrmMain
               ParentFont = False
               OnClick = btnOccupancyViewClick
               OnMouseMove = btnOccupancyViewMouseMove
-              ExplicitTop = 4
+              ExplicitTop = 2
             end
             object btnUnassignedReservations: TSpeedButton
               AlignWithMargins = True
