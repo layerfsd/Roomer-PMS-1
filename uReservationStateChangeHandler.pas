@@ -207,7 +207,7 @@ begin
   inherited Create;
   FConfirmed := False;
   FReservation := aReservation;
-  Confirmed := False;
+  FConfirmed := False;
   FRoomStateChangers:= TObjectDictionary<integer, TRoomReservationStateChangeHandler>.Create([doOwnsValues]);
   AddRoomResChangeSetHandlers;
 end;
