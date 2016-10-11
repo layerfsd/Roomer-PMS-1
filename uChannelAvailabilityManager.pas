@@ -1727,6 +1727,7 @@ var
 var
     compensationPercentage : Double;
     PriceToHotel : Double;
+    iTypeIndex : Integer;
 
 begin
   ExcelP := NIL;
@@ -1763,7 +1764,7 @@ begin
                 if PriceData.FPriceDirty then LogChanges(PriceData, RATE_EDIT);
 
                 if PriceData.FMaxStayDirty AND (PriceData.FMinStay > PriceData.FMaxStay) then
-                   PriceData.FMaxStayDirty := False;
+                  PriceData.FMaxStayDirty := False;
 
                 buildSetStatementMinMax(sql,
                                         PriceData.FMinStayDirty OR (PriceData.ForcingUpdate AND (PriceData.FMinStay >= 0)),
@@ -1781,6 +1782,16 @@ begin
 
                 buildSetStatement(PriceData.ForcingUpdate OR PriceData.FStopSellDirty, sql, 'stopDirty', 'stop', BoolToString_0_1(PriceData.FStopSell));
                 if PriceData.FStopSellDirty then LogChanges(PriceData, STOP_EDIT);
+
+                if PriceData.FLOSArrivalDateBased AND (PriceData.FMinStay <= 1) ANd (PriceData.FMaxStay < 1) then
+                begin
+                  PriceData.FLOSArrivalDateBased := False;
+                  PriceData.FLOSArrivalDateBasedDirty := True;
+                  iTypeIndex := findRowTypeIndex(iRow, 7);
+                  if iTypeIndex > -1 then
+                    SetCheckBoxCellValue(iCol, iTypeIndex, PriceData.LOSArrivalDateBased);
+                end;
+
 
                 buildSetStatement(PriceData.FLOSArrivalDateBasedDirty OR
                          (PriceData.FLOSArrivalDateBased AND ((PriceData.FMinStayDirty OR (PriceData.ForcingUpdate AND (PriceData.FMinStay > 0))) OR
