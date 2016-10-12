@@ -4,7 +4,18 @@ interface
    uses hData, System.SysUtils, _Glob, PrjConst, uRoomerDefinitions, ud, uDateUtils, uUtils, uReservationStateDefinitions;
 
 
-const HOTEL_PERFORMANCE_QUERY_BETWEEN_DATES = 'SELECT ADate, RoomsSold/RoomCount*100 AS OCC, ' +
+const HOTEL_PERFORMANCE_QUERY_BETWEEN_DATES = 'SELECT IFNULL(ADate, pdd.date) AS ADate, ' +
+         '    IFNULL(RoomsSold / RoomCount * 100, 0.0) AS OCC, ' +
+         '    IFNULL(ADR, 0.0) AS ADR, ' +
+         '    IFNULL(RevPar, 0.0) AS RevPar, ' +
+         '    IFNULL(Revenue, 0.0) AS Revenue, ' +
+         '    IFNULL(RoomCount - RoomsSold, (SELECT COUNT(id) FROM rooms r WHERE WildCard = 0 AND Hidden = 0 AND Active = 1 AND Statistics = 1)) AS Availability, ' +
+         '    IFNULL(RoomCount, (SELECT COUNT(id) FROM rooms r WHERE WildCard = 0 AND Hidden = 0 AND Active = 1 AND Statistics = 1)) AS RoomCount, ' +
+         '    IFNULL(RoomsSold, 0) AS RoomsSold, ' +
+         '    IFNULL(OOO, 0) AS OOO ' +
+         'FROM predefineddates pdd ' +
+         'LEFT JOIN ( ' +
+         'SELECT ADate, RoomsSold/RoomCount*100 AS OCC, ' +
          '       ADR, ' +
          '       RevPar, ' +
          '       Revenue, ' +
@@ -68,6 +79,8 @@ const HOTEL_PERFORMANCE_QUERY_BETWEEN_DATES = 'SELECT ADate, RoomsSold/RoomCount
          '  AND ISNULL(ex.ADate) ' +
          'GROUP BY pdd.date) totals ' +
 
+         ') xxx ON pdd.date = ADate ' +
+         'WHERE pdd.date>=''%s'' AND pdd.date <= ''%s'' ' +
          'ORDER BY ADate';
 
 const GET_ALL_ROOMRESERVATIONS_ARRIVING_ON_SPECIFIED_DATE=

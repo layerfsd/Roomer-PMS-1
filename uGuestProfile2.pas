@@ -657,10 +657,44 @@ end;
 ////////////////////////////////////////////////////////////////////////////////////////
 // memory table
 ////////////////////////////////////////////////////////////////////////////////////////
-
+var SETTING_MAIN_NAME : Boolean = False;
 procedure TfrmGuestProfile2.m_AfterPost(DataSet: TDataSet);
+var
+  Bookmark: TBookmark;
+  AnyMainName : Boolean;
 begin
-  //**
+  if SETTING_MAIN_NAME then exit;
+
+  SETTING_MAIN_NAME := True;
+  try
+    Bookmark := m_.GetBookmark; { Allocate memory and assign a value }
+    m_.DisableControls; { Turn off display of records in data controls }
+    try
+      AnyMainName := False;
+      m_.First; { Go to first record in table }
+      while not m_.Eof do {Iterate through each record in table }
+      begin
+        { Do your processing here }
+        AnyMainName := m_['MainName'];
+        if AnyMainName then
+          Break;
+
+        m_.Next;
+      end;
+      if NOT AnyMainName then
+      begin
+        m_.First;
+        m_.Edit;
+        m_['MainName'] := True;
+        m_.Post;
+      end;
+    finally
+      m_.GotoBookmark(Bookmark);
+      m_.EnableControls; { Turn on display of records in data controls, if necessary }
+    end;
+  finally
+    SETTING_MAIN_NAME := False;
+  end;
 end;
 
 

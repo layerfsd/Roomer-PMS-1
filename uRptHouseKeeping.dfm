@@ -106,9 +106,10 @@ inherited frmHouseKeepingReport: TfrmHouseKeepingReport
         Width = 105
         Height = 21
         AutoSize = False
+        Color = clWhite
         EditMask = '!99/99/9999;1; '
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
@@ -149,7 +150,6 @@ inherited frmHouseKeepingReport: TfrmHouseKeepingReport
     Align = alClient
     TabOrder = 2
     LookAndFeel.NativeStyle = False
-    ExplicitTop = 139
     object grHouseKeepingListDBTableView1: TcxGridDBTableView
       Navigator.Buttons.CustomButtons = <>
       DataController.DataSource = HouseKeepingListDS
@@ -438,7 +438,6 @@ inherited frmHouseKeepingReport: TfrmHouseKeepingReport
     object gridPrinterLink: TdxGridReportLink
       Active = True
       Component = grHouseKeepingList
-      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.Header = 6350
@@ -466,14 +465,13 @@ inherited frmHouseKeepingReport: TfrmHouseKeepingReport
       PrinterPage.ScaleMode = smFit
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
-      ReportDocument.CreationDate = 42650.629568275460000000
+      ReportDocument.CreationDate = 42653.619124699070000000
       ReportTitle.Font.Charset = DEFAULT_CHARSET
       ReportTitle.Font.Color = clBlack
       ReportTitle.Font.Height = -19
       ReportTitle.Font.Name = 'Arial'
       ReportTitle.Font.Style = [fsBold]
       ShrinkToPageWidth = True
-      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clBlack
       Font.Height = -15
