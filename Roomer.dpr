@@ -246,7 +246,8 @@ uses
   uCleaningNotes in 'uCleaningNotes.pas' {frmCleaningNotes},
   uCleaningNotesEdit in 'uCleaningNotesEdit.pas' {frmCleaningNotesEdit},
   uMandatoryFieldDefinitions in 'Definitions\uMandatoryFieldDefinitions.pas',
-  uInvoiceEntities in 'Invoice\uInvoiceEntities.pas';
+  uInvoiceEntities in 'Invoice\uInvoiceEntities.pas',
+  uVatCalculator in 'uVatCalculator.pas';
 
 {$R *.RES}
 
