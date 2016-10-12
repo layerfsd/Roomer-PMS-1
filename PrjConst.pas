@@ -931,7 +931,8 @@ begin
 
   constants.Add('shTx_FrmReservationprofile_BlockMoveReasonCaption', 'Reason for blocking the move of room ');
   constants.Add('shTx_FrmReservationprofile_PerNight', 'per night');
-
+  constants.Add('shTx_FrmReservationprofile_UpdateExclBreakfast', 'The number of guest and/or nights has changed. Update the number of breakfasts in the invoice?');
+  constants.Add('shFailedUpdateBreakfastCount', 'Failed to update number of breakfasts. Please review the relevant invoicelines.');
   constants.Add('shTx_AccountType_GroupAccount', 'Group Account');
   constants.Add('shTx_AccountType_RoomAccount', 'Room Account');
 
