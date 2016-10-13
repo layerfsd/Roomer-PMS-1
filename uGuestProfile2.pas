@@ -347,14 +347,6 @@ begin
     frmGuestProfile2.zData := theData;
     frmGuestProfile2.zAct := act;
     frmGuestProfile2.ShowModal;
-//    if frmGuestProfile2.modalresult = mrOk then
-//    begin
-//      result := true;
-//    end
-//    else
-//    begin
-//      result := true;
-//    end;
     theData := frmGuestProfile2.zData;
     if d.isGroup(thedata.RoomReservation) then
       rr := 0

@@ -844,7 +844,7 @@ uses
   UITypes
   , uFloatUtils
   , Math
-    ;
+    , uVatCalculator;
 
 {$R *.DFM}
 
@@ -1359,14 +1359,11 @@ begin
             begin
               try
                 if (editCol = col_ItemCount) AND (editRow = i) then
-                  itemAmount := Value *
-                    _StrToFloat(agrLines.Cells[col_ItemPrice, i])
+                  itemAmount := Value * _StrToFloat(agrLines.Cells[col_ItemPrice, i])
                 else if (editCol = col_ItemPrice) AND (editRow = i) then
-                  itemAmount := Value *
-                    _StrToFloat(agrLines.Cells[col_ItemCount, i])
+                  itemAmount := Value * _StrToFloat(agrLines.Cells[col_ItemCount, i])
                 else
-                  itemAmount :=
-                    _StrToFloat(agrLines.Cells[col_TotalPrice, i]);
+                  itemAmount := _StrToFloat(agrLines.Cells[col_TotalPrice, i]);
               except
                 itemAmount := 0;
               end;
@@ -1385,17 +1382,12 @@ begin
               end;
               agrLines.Cells[col_Vat, i] :=
                 trim(_floattostr(dVat, vWidth, 3));
-              // end;
-              // Formula
-              // dWork := itemAmount / (1 + (ItemTypeInfo.VATPercentage / 100));
-              // dVat := itemAmount - dWork;
               ttItemAmount := ttItemAmount + itemAmount;
               ttItemVat := ttItemVat + dVat;
             end
             else if ((ItemKind = ikStayTax)) then
             begin
-              ItemTypeInfo := d.Item_Get_ItemTypeInfo(ItemId,
-                agrLines.Cells[col_Source, i]);
+              ItemTypeInfo := d.Item_Get_ItemTypeInfo(ItemId, agrLines.Cells[col_Source, i]);
               try
                 taxAmount := _StrToFloat(agrLines.Cells[col_TotalPrice, i]);
               except
@@ -1411,8 +1403,8 @@ begin
               finally
                 lInvRoom.free;
               end;
-              agrLines.Cells[col_Vat, i] :=
-                trim(_floattostr(dVat, vWidth, 3));
+              agrLines.Cells[col_Vat, i] := trim(_floattostr(dVat, vWidth, 3));
+              ttTaxVat := ttTaxVat + dVat;
             end
             else
             begin
@@ -1777,6 +1769,8 @@ begin
           qry := qry + ', confirmdate ' + #10;
           qry := qry + ', confirmAmount ' + #10;
           qry := qry + ', staffCreated ' + #10;
+          qry := qry + ', revenueCorrection' + #10;
+          qry := qry + ', revenueCorrectionVat' + #10;
 
           qry := qry + ')' + #10;
           qry := qry + 'Values' + #10;
@@ -1813,6 +1807,8 @@ begin
           qry := qry + ', ' + _db(confirmDate);
           qry := qry + ', ' + _db(confirmAmount);
           qry := qry + ', ' + _db(d.roomerMainDataSet.username);
+          qry := qry + ', ' + _db(rSet.FieldByName('revenueCorrection').asFloat);
+          qry := qry + ', ' + _db(rSet.FieldByName('revenueCorrectionVat').asFloat);
 
           qry := qry + ')' + #10;
 
@@ -5489,7 +5485,7 @@ var
   fItemTotalVAT: Double;
   fItemTotalWOVat: Double;
 
-  iMultiplier: integer;
+  iCreditinvoiceMultiplier: integer;
 
   iPersons: integer;
   iNights: integer;
@@ -5530,7 +5526,8 @@ var
   lInvRoom: TInvoiceRoomEntity;
 
   invoiceLine: TInvoiceLine;
-  BreakFastPrice: Extended;
+  lRevenueCorrection: double;
+  lRevenueCorrectionVat: double;
 
 begin
 
@@ -5552,11 +5549,11 @@ begin
 
     try
       // --
-      iMultiplier := 1;
+      iCreditinvoiceMultiplier := 1;
 
       if FCredit then
       begin
-        iMultiplier := -1;
+        iCreditinvoiceMultiplier := -1;
       end;
 
       fItems := 0.00;
@@ -5569,8 +5566,12 @@ begin
         aItem := trim(agrLines.Cells[col_Item, i]);
         // debugmessage(aItem+'/'+booltostr(isSystemLine(i)));
         // -- is this an empty line ?
-        if (trim(agrLines.Cells[col_Description, i]) = '') and (aItem = '')
-        then
+
+        if (trim(agrLines.Cells[col_Description, i]) = '') and (aItem = '') then
+          continue;
+
+        // Dont add automatically generated lines when invoice is not definitive
+        if (isSystemLine(i)) and (iInvoiceNumber <= 0) {and (aItem <> g.qBreakFastItem)} then
         begin
           continue;
         end;
@@ -5582,14 +5583,7 @@ begin
           iPersons := strToInt(agrLines.Cells[col_NoGuests, i])
         end;
 
-        // Dont add automatically generated lines when invoice is not definitive
-        if (isSystemLine(i)) and (iInvoiceNumber <= 0) {and (aItem <> g.qBreakFastItem)} then
-        begin
-          continue;
-        end;
-
-        ItemTypeInfo := d.Item_Get_ItemTypeInfo(agrLines.Cells[col_Item, i],
-          agrLines.Cells[col_Source, i]);
+        ItemTypeInfo := d.Item_Get_ItemTypeInfo(agrLines.Cells[col_Item, i], agrLines.Cells[col_Source, i]);
 
         // --
         // RoomRentItem
@@ -5603,8 +5597,7 @@ begin
           agrLines.Objects[col_Description, i] := TObject(trunc(now));
 
           try
-            fItemTotal := _CurrencyValueSell *
-              _StrToFloat(agrLines.Cells[col_TotalPrice, i]);
+            fItemTotal := _CurrencyValueSell * _StrToFloat(agrLines.Cells[col_TotalPrice, i]);
           except
             fItemTotal := 0;
           end;
@@ -5639,14 +5632,8 @@ begin
 
         confirmAmount := _StrToFloat(agrLines.Cells[col_confirmAmount, i]);
 
-        isPackage := false;
-        try
-          sTmp := trim(agrLines.Cells[col_isPackage, i]);
-          if sTmp = 'Yes' then
-            isPackage := True;
-        except
-          // not raise
-        end;
+        sTmp := trim(agrLines.Cells[col_isPackage, i]);
+        isPackage := (sTmp = 'Yes');
 
         // --
         lInvRoom := TInvoiceRoomEntity.create(agrLines.Cells[col_Item, i], 1, 0, _StrToFloat(agrLines.Cells[col_ItemCount, i]), fItemTotal, 0, 0, false);
@@ -5737,7 +5724,8 @@ begin
           s := s + ', ' + 'confirmAmount ' + #10;
           s := s + ', ' + 'RoomReservationAlias ' + #10;
           s := s + ', ' + 'InvoiceIndex ' + #10;
-          s := s + ', ' + 'staffCreated ' + #10;
+          s := s + ', ' + 'revenueCorrection ' + #10;
+          s := s + ', ' + 'revenueCorrectionVat ' + #10;
           s := s + ')' + #10;
           s := s + 'Values' + #10;
           s := s + '(' + #10;
@@ -5754,31 +5742,40 @@ begin
 
           if isSystemLine(i) or (ItemKindOnRow(i) in [ikRoomRent, ikRoomRentDiscount]) then
             // -- Auto-Maintained lines are displayed in foreign currency...
-            s := s + ', ' + _CommaToDot(floattostr(iMultiplier * _CurrencyValueSell * _StrToFloat(agrLines.Cells[col_ItemPrice, i])))
+            s := s + ', ' + _db(iCreditinvoiceMultiplier * _CurrencyValueSell * _StrToFloat(agrLines.Cells[col_ItemPrice, i]))
           else // -- ...The others are not...
-            s := s + ', ' + _CommaToDot(floattostr(iMultiplier * _StrToFloat(agrLines.Cells[col_ItemPrice, i])));
+            s := s + ', ' + _db(iCreditinvoiceMultiplier * _StrToFloat(agrLines.Cells[col_ItemPrice, i]));
 
           s := s + ', ' + _db(ItemTypeInfo.VATCode);
 
-          if isSystemLine(i) or (ItemKindOnRow(i) in [ikRoomRent, ikRoomRentDiscount]) then
-            s := s + ', ' + _CommaToDot(floattostr(iMultiplier * _CurrencyValueSell * _StrToFloat(agrLines.Cells[col_TotalPrice, i])))
-          else
-            s := s + ', ' + _CommaToDot(floattostr(iMultiplier * _StrToFloat(agrLines.Cells[col_TotalPrice, i])));
+          s := s + ', ' + _db(iCreditInvoiceMultiplier * fItemTotal);
+//          if isSystemLine(i) or (ItemKindOnRow(i) in [ikRoomRent, ikRoomRentDiscount]) then
+//            s := s + ', ' + _db(iCreditinvoiceMultiplier * _CurrencyValueSell * _StrToFloat(agrLines.Cells[col_TotalPrice, i]))
+//          else
+//            s := s + ', ' + _db(iCreditinvoiceMultiplier * _StrToFloat(agrLines.Cells[col_TotalPrice, i]));
 
-          s := s + ', ' + _CommaToDot(floattostr(iMultiplier * fItemTotalWOVat));
-          s := s + ', ' + _CommaToDot(floattostr(iMultiplier * fItemTotalVAT));
-          s := s + ', ' + _CommaToDot(floattostr(zCurrencyRate));
+          s := s + ', ' + _db(iCreditinvoiceMultiplier * fItemTotalWOVat);
+          s := s + ', ' + _db(iCreditinvoiceMultiplier * fItemTotalVAT);
+          s := s + ', ' + _db(zCurrencyRate);
           s := s + ', ' + _db(edtCurrency.Text);
           s := s + ', ' + inttostr(iPersons);
           s := s + ', ' + inttostr(iNights);
 
-          BreakFastPrice := 0.00;
+          lRevenueCorrection := 0.00;
+          lRevenueCorrectionVat := 0.00;
           if (ItemKindOnRow(i) = ikRoomRent) and TInvoiceRoomEntity(agrLines.Objects[cRoomInfoAttachColumn, i]).BreakfastIncluded then
           begin
-            BreakFastPrice := d.Item_Get_Data(g.qBreakFastItem).Price;
+            lRevenueCorrection := iCreditinvoiceMultiplier * -1 * d.Item_Get_Data(g.qBreakFastItem).Price * iPersons * iNights;
+            lRevenueCorrectionVat := iCreditinvoiceMultiplier * -1 * TVatCalculator.CalcVATforItem(g.qBreakFastItem) * iPersons * iNights;
           end;
 
-          s := s + ', ' + _CommaToDot(floattostr(BreakFastPrice));
+          if isSystemLine(i) and (ItemKindOnRow(i) = ikBreakfast) and TInvoiceRoomEntity(agrLines.Objects[cRoomInfoAttachColumn, i]).BreakfastIncluded then
+          begin
+            lRevenueCorrection := iCreditinvoiceMultiplier * d.Item_Get_Data(g.qBreakFastItem).Price * ItemCount;
+            lRevenueCorrectionVat := iCreditinvoiceMultiplier *  TVatCalculator.CalcVATforItem(g.qBreakFastItem) * ItemCount;
+          end;
+
+          s := s + ', ' + _db(0);
           s := s + ', ' + _db(false);
 
           s := s + ', ' + inttostr(AYear);
@@ -5794,22 +5791,24 @@ begin
           s := s + ', ' + _db(irrAlias);
           s := s + ', ' + _db(FInvoiceIndex);
           s := s + ', ' + _db(d.roomerMainDataSet.username);
+          s := s + ', ' + _db(lRevenueCorrection);
+          s := s + ', ' + _db(lRevenueCorrectionVat);
 
           s := s + ')' + #10;
         end
         else
         begin
-          if NOT IsLineChanged(i, iMultiplier) then
+          if NOT IsLineChanged(i, iCreditinvoiceMultiplier) then
             continue;
 
           s := 'UPDATE invoicelines' +
             ' Set ItemNumber= ' + _db(i) +
             ' , InvoiceNumber= ' + _db(iInvoiceNumber) +
             ' , Number= ' + _db(ItemCount) +
-            ' , Price= ' + _CommaToDot(floattostr(iMultiplier * _StrToFloat(agrLines.Cells[col_ItemPrice, i]))) +
-            ' , Total= ' + _CommaToDot(floattostr(iMultiplier * _StrToFloat(agrLines.Cells[col_TotalPrice, i]))) +
-            ' , TotalWOVat= ' + _CommaToDot(floattostr(iMultiplier * fItemTotalWOVat)) +
-            ' , VAT= ' + _CommaToDot(floattostr(iMultiplier * fItemTotalVAT)) +
+            ' , Price= ' + _CommaToDot(floattostr(iCreditinvoiceMultiplier * _StrToFloat(agrLines.Cells[col_ItemPrice, i]))) +
+            ' , Total= ' + _CommaToDot(floattostr(iCreditinvoiceMultiplier * _StrToFloat(agrLines.Cells[col_TotalPrice, i]))) +
+            ' , TotalWOVat= ' + _CommaToDot(floattostr(iCreditinvoiceMultiplier * fItemTotalWOVat)) +
+            ' , VAT= ' + _CommaToDot(floattostr(iCreditinvoiceMultiplier * fItemTotalVAT)) +
             ' , CurrencyRate= ' + _CommaToDot(floattostr(zCurrencyRate)) +
             ' , Currency= ' + _db(edtCurrency.Text) +
             ' , Persons= ' + inttostr(iPersons) +
@@ -6512,6 +6511,8 @@ var
   lInvRoom: TInvoiceRoomEntity;
 
   invoiceLine: TInvoiceLine;
+  lRevenueCorrection: double;
+  lRevenueCorrectionVat: double;
 
 Label
   TryAgain;
@@ -6694,12 +6695,9 @@ begin
             lInvRoom.free;
           end;
 
-          if NOT(Item_GetKind(agrLines.Cells[col_Item, i]) IN [ikRoomRent, ikRoomRentDiscount]) then
-            agrLines.Cells[col_Vat, i] :=
-              trim(_floattostr(dLineVAT, vWidth, 3));
-          // Formula
-          // dTmp := dLineTotal / (1 + (ItemTypeInfo.VATPercentage / 100));
-          // dLineVAT := dLineTotal - dTmp;
+          if NOT(ItemKindOnRow(i) IN [ikRoomRent, ikRoomRentDiscount]) then
+            agrLines.Cells[col_Vat, i] := trim(_floattostr(dLineVAT, vWidth, 3));
+
 
           // og �n VSK
           dLineTotalWOVat := dLineTotal - dLineVAT;
@@ -6710,8 +6708,16 @@ begin
           dLineVAT := iMultiplier * dLineVAT;
           dLineTotalWOVat := iMultiplier * dLineTotalWOVat;
 
-          // Ef � gjaldmi�li �� uppreikna
-          // RoomRent v�rul�nur � ISK
+          try
+            ItemCount := _StrToFloat(agrLines.Cells[col_ItemCount, i]); // -96
+          Except
+            ItemCount := 0;
+          end;
+
+          lRevenueCorrection := 0.0;
+          lRevenueCorrectionVat := 0.0;
+
+          // roomrent, ctax and roomrentdiscount
           if Item_isRoomRent(sItemID) then
           begin
             dLinePrice := _CurrencyValueSell * dLinePrice;
@@ -6719,6 +6725,20 @@ begin
             dLineVAT := _CurrencyValueSell * dLineVAT;
             dLineTotalWOVat := _CurrencyValueSell * dLineTotalWOVat;
             RoomRentPaid := True;
+          end;
+
+          if isSystemLine(i) and (ItemKindOnRow(i) = ikRoomRent) then
+            if TInvoiceRoomEntity(agrLines.Objects[cRoomInfoAttachColumn, i]).BreakfastIncluded then
+            begin
+              lRevenueCorrection := -1 * d.Item_Get_Data(g.qBreakFastItem).Price * iPersons * iNights;
+              lRevenueCorrectionVat := -1 * TVatCalculator.CalcVATforItem(g.qBreakFastItem) * iPersons * iNights;
+            end;
+
+          if isSystemLine(i) and (ItemKindOnRow(i) = ikBreakfast) then
+          begin
+            // Is Systemline so must be an included breakfast
+            lRevenueCorrection := d.Item_Get_Data(g.qBreakFastItem).Price * ItemCount;
+            lRevenueCorrectionVat := TVatCalculator.CalcVATforItem(g.qBreakFastItem) * ItemCount;
           end;
 
           // og aftur � texta
@@ -6745,12 +6765,6 @@ begin
             decodedate(integer(agrLines.Objects[col_Description, i]), AYear, AMon, ADay);
           except
             decodedate(now, AYear, AMon, ADay);
-          end;
-
-          try
-            ItemCount := _StrToFloat(agrLines.Cells[col_ItemCount, i]); // -96
-          Except
-            ItemCount := 0;
           end;
 
           sAccountKey := d.Item_Get_AccountKey(sItemID);
@@ -6796,6 +6810,8 @@ begin
             s := s + ', ' + 'RoomReservationAlias ' + #10;
             s := s + ', ' + 'InvoiceIndex ' + #10;
             s := s + ', ' + 'staffCreated ' + #10;
+            s := s + ', ' + 'revenueCorrection' + #10;
+            s := s + ', ' + 'revenueCorrectionVat' + #10;
             s := s + ')' + #10;
             s := s + 'Values' + #10;
             s := s + '(' + #10;
@@ -6836,6 +6852,8 @@ begin
             s := s + ', ' + _db(irrAlias);
             s := s + ', ' + _db(FInvoiceIndex);
             s := s + ', ' + _db(d.roomerMainDataSet.username);
+            s := s + ', ' + _db(lRevenueCorrection);
+            s := s + ', ' + _db(lRevenueCorrectionVat);
 
             s := s + ')' + #10;
           end

@@ -803,6 +803,7 @@
         </DCCReference>
         <DCCReference Include="Definitions\uMandatoryFieldDefinitions.pas"/>
         <DCCReference Include="Invoice\uInvoiceEntities.pas"/>
+        <DCCReference Include="VAT\uVatCalculator.pas"/>
         <None Include="Roomer.todo"/>
         <None Include="notes.txt"/>
         <None Include="Roomer.inc"/>

@@ -239,7 +239,7 @@ object frmGuestProfile2: TfrmGuestProfile2
         Left = 250
         Top = 109
         Width = 20
-        Height = 16
+        Height = 18
         TabOrder = 1
         SkinData.SkinSection = 'CHECKBOX'
         ImgChecked = 0
@@ -393,7 +393,7 @@ object frmGuestProfile2: TfrmGuestProfile2
         Left = 250
         Top = 131
         Width = 20
-        Height = 16
+        Height = 18
         TabOrder = 5
         SkinData.SkinSection = 'CHECKBOX'
         ImgChecked = 0
@@ -892,7 +892,6 @@ object frmGuestProfile2: TfrmGuestProfile2
     object prLink_grData: TdxGridReportLink
       Active = True
       Component = grData
-      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.GrayShading = True
@@ -905,8 +904,7 @@ object frmGuestProfile2: TfrmGuestProfile2
       PrinterPage.PageSize.Y = 297000
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
-      ReportDocument.CreationDate = 42653.891623576390000000
-      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
+      ReportDocument.CreationDate = 42655.491569722220000000
       BuiltInReportLink = True
     end
   end

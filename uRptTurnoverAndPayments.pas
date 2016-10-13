@@ -1469,9 +1469,9 @@ begin
     s := s + '   , il.Description ' + #10;
     s := s + '   , il.Price ' + #10;
     s := s + '   , il.VATType ' + #10;
-    s := s + '   , il.Total AS ilAmountWithTax ' + #10;
-    s := s + '   , il.TotalWOVat AS ilAmountNoTax ' + #10;
-    s := s + '   , il.Vat as ilAmountTax' + #10;
+    s := s + '   , (il.Total + il.revenueCorrection) AS ilAmountWithTax ' + #10;
+    s := s + '   , (il.Total + il.revenueCorrection) - (il.Vat + il.revenueCorrectionVAT) AS ilAmountNoTax ' + #10;
+    s := s + '   , (il.Vat + il.revenueCorrectionVAT) as ilAmountTax' + #10;
     s := s + '   , il.Currency ' + #10;
     s := s + '   , il.CurrencyRate ' + #10;
     s := s + '   , il.ImportRefrence ' + #10;

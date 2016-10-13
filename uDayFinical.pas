@@ -963,7 +963,7 @@ begin
         ' SELECT ' +
         '     invoicelines.ItemID AS Item ' +
         '   , SUM(invoicelines.Number) AS ItemCount ' +
-        '   , SUM(invoicelines.Total) AS Total ' +
+        '   , SUM(invoicelines.Total + invoicelines.revenueCorrection) AS Total ' +
         '   , SUM(invoicelines.TotalWOVat) AS TotalWoVat ' +
         '   , SUM(invoicelines.Vat) AS TotalVat ' +
         '   , items.Description ' +
@@ -1017,19 +1017,19 @@ begin
     try
       sql :=
         ' SELECT ' +
-        '      SUM(invoicelines.Number) AS ItemCount ' +
-        '    , SUM(invoicelines.Total) AS Total ' +
-        '    , SUM(invoicelines.TotalWOVat) AS TotalWoVat ' +
-        '    , SUM(invoicelines.Vat) AS TotalVat ' +
+        '      SUM(il.Number) AS ItemCount ' +
+        '    , SUM(il.Total + il.revenueCorrection) AS Total ' +
+        '    , SUM(il.Total + il.revenueCorrection - (il.Vat + il.revenueCorrectionVat)) AS TotalWoVat ' +
+        '    , SUM(il.Vat + il.revenueCorrectionVat) AS TotalVat ' +
         '    , itemtypes.Itemtype ' +
         '    , itemtypes.Description AS ItemTypeDescription ' +
         '    , itemtypes.VATCode ' +
         ' FROM ' +
         '    itemtypes ' +
         '       INNER JOIN items ON itemtypes.Itemtype = items.Itemtype ' +
-        '       RIGHT OUTER JOIN invoicelines ON items.Item = invoicelines.ItemID ' +
+        '       RIGHT OUTER JOIN invoicelines il ON items.Item = il.ItemID ' +
         ' WHERE ' +
-        '   (invoicelines.InvoiceNumber IN  %s ) ' +
+        '   (il.InvoiceNumber IN  %s ) ' +
         ' GROUP BY ' +
         '     itemtypes.Itemtype ' +
         '  ,  itemtypes.Description ' +
@@ -1067,23 +1067,18 @@ begin
     try
       sql :=
         ' SELECT ' +
-        '     SUM(invoicelines.Number) AS ItemCount ' +
-        '   , SUM(invoicelines.Total) AS Total ' +
-        '   , SUM(invoicelines.TotalWOVat) AS TotalWoVat ' +
-        '   , SUM(invoicelines.Vat) AS TotalVat ' +
+        '     SUM(il.Number) AS ItemCount ' +
+        '   , SUM(il.Total + il.revenueCorrection) AS Total ' +
+        '   , SUM(il.Total + il.revenueCorrection - (il.Vat + il.revenueCorrectionVat)) AS TotalWoVat ' +
+        '   , SUM(il.Vat + il.revenueCorrectionVat) AS TotalVat ' +
         '   , vatcodes.VATCode ' +
         '   , vatcodes.Description ' +
         '   , vatcodes.VATPercentage ' +
         ' FROM ' +
-        '     invoicelines ' +
-        '     LEFT OUTER JOIN vatcodes ON invoicelines.VATType = vatcodes.VATCode ' +
-
-      // '   itemtypes '+
-      // '     RIGHT OUTER JOIN items ON itemtypes.Itemtype = items.Itemtype '+
-      // '     LEFT OUTER JOIN vatcodes ON itemtypes.VATCode = vatcodes.VATCode '+
-      // '     RIGHT OUTER JOIN invoicelines ON items.Item = invoicelines.ItemID '+
+        '     invoicelines il' +
+        '     LEFT OUTER JOIN vatcodes ON il.VATType = vatcodes.VATCode ' +
         ' WHERE ' +
-        '   (invoicelines.InvoiceNumber IN  %s ) ' +
+        '   (il.InvoiceNumber IN  %s ) ' +
         ' GROUP BY ' +
         '   vatcodes.VATCode ' +
         ' , vatcodes.Description ' +
@@ -1149,24 +1144,24 @@ begin
 
       sql :=
         ' SELECT ' +
-        '     invoicelines.InvoiceNumber ' +
-        '   , invoicelines.PurchaseDate ' +
-        '   , invoicelines.ItemID as Item' +
-        '   , invoicelines.Number as Quantity' +
-        '   , invoicelines.Description ' +
-        '   , invoicelines.Price ' +
-        '   , invoicelines.VATType ' +
-        '   , invoicelines.Total AS ilAmountWithTax ' +
-        '   , invoicelines.TotalWOVat AS ilAmountNoTax ' +
-        '   , invoicelines.Vat as ilAmountTax' +
-        '   , invoicelines.Currency ' +
-        '   , invoicelines.CurrencyRate ' +
-        '   , invoicelines.ImportRefrence ' +
-        '   , invoicelines.ImportSource ' +
+        '     il.InvoiceNumber ' +
+        '   , il.PurchaseDate ' +
+        '   , il.ItemID as Item' +
+        '   , il.Number as Quantity' +
+        '   , il.Description ' +
+        '   , il.Price ' +
+        '   , il.VATType ' +
+        '   , il.Total + il.revenueCorrection AS AmountWithTax ' +
+        '   , il.Total + il.revenueCorrection - (il.Vat + il.revenueCorrectionVat) AS AmountNoTax ' +
+        '   , il.Vat + il.revenueCorrectionVat as AmountTax' +
+        '   , il.Currency ' +
+        '   , il.CurrencyRate ' +
+        '   , il.ImportRefrence ' +
+        '   , il.ImportSource ' +
         ' FROM ' +
-        '   invoicelines ' +
+        '   invoicelines il' +
         ' WHERE ' +
-        '   (invoicelines.InvoiceNumber IN  %s ) '; // zSqlInText
+        '   (il.InvoiceNumber IN  %s ) '; // zSqlInText
 
       s := format(sql, [zSQLInText]);
       hData.rSet_bySQL(rSet, s);
@@ -1800,32 +1795,6 @@ begin
 
 end;
 
-(*
-
-  grSums2
-  grSums
-  grInvoicelist
-  grItemSale
-  grItemTypeSale
-  grItemVATsale
-  grPayments
-  grPaymentType
-  grPaymentGroups
-
-  tvInvoiceHeads.
-  tvInvoiceLines.
-  tvItemSale.
-  tvItemVATsale.
-  tvItemSale.
-  tvPayments.
-  tvPaymentType.
-  tvPaymentGroups.
-  tvSums.
-  tvSums2.
-
-
-
-*)
 
 procedure TfrmDayFinical.GridLayoutRestoreAll;
 begin

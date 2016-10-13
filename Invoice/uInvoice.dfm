@@ -559,7 +559,7 @@ object frmInvoice: TfrmInvoice
       end
       object btnExit: TcxButton
         Left = 907
-        Top = 2
+        Top = -3
         Width = 161
         Height = 44
         Hint = 'Close form'
@@ -595,7 +595,7 @@ object frmInvoice: TfrmInvoice
       end
       object btnProforma: TcxButton
         Left = 907
-        Top = 48
+        Top = 44
         Width = 161
         Height = 41
         Action = actPrintProforma
@@ -638,8 +638,8 @@ object frmInvoice: TfrmInvoice
       object chkShowPackage: TsCheckBox
         Left = 906
         Top = 135
-        Width = 119
-        Height = 19
+        Width = 111
+        Height = 20
         Caption = 'Package on invoice'
         Anchors = [akTop, akRight]
         Checked = True
@@ -1346,7 +1346,6 @@ object frmInvoice: TfrmInvoice
               SearchFooter.MatchCaseCaption = 'Match case'
               SortSettings.DefaultFormat = ssAutomatic
               Version = '8.1.2.0'
-              ExplicitTop = 4
               ColWidths = (
                 24
                 91
@@ -1425,8 +1424,8 @@ object frmInvoice: TfrmInvoice
               object chkReCalcPrices: TsCheckBox
                 Left = 9
                 Top = 20
-                Width = 203
-                Height = 19
+                Width = 195
+                Height = 20
                 Caption = 'Recalc price on guestcount  changes'
                 Checked = True
                 State = cbChecked
@@ -1438,8 +1437,8 @@ object frmInvoice: TfrmInvoice
               object chkAutoUpdateNullPrice: TsCheckBox
                 Left = 9
                 Top = 46
-                Width = 134
-                Height = 19
+                Width = 126
+                Height = 20
                 Caption = 'Auto update Null Price'
                 Checked = True
                 State = cbChecked
@@ -2270,7 +2269,6 @@ object frmInvoice: TfrmInvoice
       end
       object Exit1: TMenuItem
         Caption = 'Close'
-        ShortCut = 27
         OnClick = Exit1Click
       end
       object N1: TMenuItem

@@ -88,8 +88,8 @@ object frmDayFinical: TfrmDayFinical
       object chkGetUnconfirmed: TsCheckBox
         Left = 21
         Top = 18
-        Width = 107
-        Height = 19
+        Width = 99
+        Height = 20
         Caption = 'Get unconfirmed'
         TabOrder = 0
         OnClick = chkGetUnconfirmedClick
@@ -217,8 +217,8 @@ object frmDayFinical: TfrmDayFinical
       object chkOneday: TsCheckBox
         Left = 3
         Top = 60
-        Width = 69
-        Height = 19
+        Width = 61
+        Height = 20
         Caption = 'One day'
         Checked = True
         State = cbChecked
@@ -331,7 +331,7 @@ object frmDayFinical: TfrmDayFinical
     Top = 135
     Width = 1011
     Height = 556
-    ActivePage = sheetItemSale
+    ActivePage = SheetInvoicelist
     Align = alClient
     Style = tsFlatButtons
     TabHeight = 25
@@ -1217,19 +1217,19 @@ object frmDayFinical: TfrmDayFinical
             DataBinding.FieldName = 'VATType'
           end
           object tvInvoiceLinesilAmountWithTax: TcxGridDBColumn
-            DataBinding.FieldName = 'ilAmountWithTax'
+            DataBinding.FieldName = 'AmountWithTax'
             PropertiesClassName = 'TcxCurrencyEditProperties'
             Properties.DisplayFormat = ',0.00;-,0.00'
             OnGetProperties = GetNativeCurrencyProperties
           end
           object tvInvoiceLinesilAmountNoTax: TcxGridDBColumn
-            DataBinding.FieldName = 'ilAmountNoTax'
+            DataBinding.FieldName = 'AmountNoTax'
             PropertiesClassName = 'TcxCurrencyEditProperties'
             Properties.DisplayFormat = ',0.00;-,0.00'
             OnGetProperties = GetNativeCurrencyProperties
           end
           object tvInvoiceLinesilAmountTax: TcxGridDBColumn
-            DataBinding.FieldName = 'ilAmountTax'
+            DataBinding.FieldName = 'AmountTax'
             PropertiesClassName = 'TcxCurrencyEditProperties'
             Properties.DisplayFormat = ',0.00;-,0.00'
             OnGetProperties = GetNativeCurrencyProperties
@@ -2137,13 +2137,13 @@ object frmDayFinical: TfrmDayFinical
       Size = 10
     end
     object mInvoiceLinesilAmountWithTax: TFloatField
-      FieldName = 'ilAmountWithTax'
+      FieldName = 'AmountWithTax'
     end
     object mInvoiceLinesilAmountNoTax: TFloatField
-      FieldName = 'ilAmountNoTax'
+      FieldName = 'AmountNoTax'
     end
     object mInvoiceLinesilAmountTax: TFloatField
-      FieldName = 'ilAmountTax'
+      FieldName = 'AmountTax'
     end
     object mInvoiceLinesCurrency: TWideStringField
       FieldName = 'Currency'
@@ -2362,7 +2362,7 @@ object frmDayFinical: TfrmDayFinical
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
       ReportDocument.Caption = 'Sums2'
-      ReportDocument.CreationDate = 42653.467543206020000000
+      ReportDocument.CreationDate = 42655.583263449070000000
       ReportTitle.TextAlignX = taLeft
       BuiltInReportLink = True
     end
@@ -2381,7 +2381,7 @@ object frmDayFinical: TfrmDayFinical
       PrinterPage.PageSize.Y = 297000
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
-      ReportDocument.CreationDate = 42653.467543217590000000
+      ReportDocument.CreationDate = 42655.583263460650000000
       BuiltInReportLink = True
     end
     object grPrinterInvoicelist: TdxGridReportLink
@@ -2417,7 +2417,7 @@ object frmDayFinical: TfrmDayFinical
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
       ReportDocument.Caption = 'Sums2'
-      ReportDocument.CreationDate = 42653.467543229170000000
+      ReportDocument.CreationDate = 42655.583263472220000000
       BuiltInReportLink = True
     end
     object grPrinterItemTypeSale: TdxGridReportLink
@@ -2436,7 +2436,7 @@ object frmDayFinical: TfrmDayFinical
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
       ReportDocument.Caption = 'Sums2'
-      ReportDocument.CreationDate = 42653.467543240740000000
+      ReportDocument.CreationDate = 42655.583263483790000000
       BuiltInReportLink = True
     end
     object grPrinterItemVATsale: TdxGridReportLink
@@ -2455,7 +2455,7 @@ object frmDayFinical: TfrmDayFinical
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
       ReportDocument.Caption = 'Sums2'
-      ReportDocument.CreationDate = 42653.467543252310000000
+      ReportDocument.CreationDate = 42655.583263483790000000
       BuiltInReportLink = True
     end
     object grPrinterPaymentGroups: TdxGridReportLink
@@ -2474,7 +2474,7 @@ object frmDayFinical: TfrmDayFinical
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
       ReportDocument.Caption = 'Sums2'
-      ReportDocument.CreationDate = 42653.467543263890000000
+      ReportDocument.CreationDate = 42655.583263506950000000
       BuiltInReportLink = True
     end
     object grPrinterPayments: TdxGridReportLink
@@ -2510,7 +2510,7 @@ object frmDayFinical: TfrmDayFinical
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
       ReportDocument.Caption = 'Sums2'
-      ReportDocument.CreationDate = 42653.467543287040000000
+      ReportDocument.CreationDate = 42655.583263506950000000
       BuiltInReportLink = True
     end
     object grPrinterLink1: TdxCompositionReportLink

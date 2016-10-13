@@ -483,6 +483,8 @@ object frmRptResStats: TfrmRptResStats
     object SheetMainResult: TsTabSheet
       Caption = 'Result'
       OnShow = SheetMainResultShow
+      SkinData.CustomColor = False
+      SkinData.CustomFont = False
       ExplicitLeft = 0
       ExplicitTop = 0
       ExplicitWidth = 0
@@ -513,6 +515,8 @@ object frmRptResStats: TfrmRptResStats
             object sTabSheet2: TsTabSheet
               Caption = 'Result'
               OnShow = sTabSheet2Show
+              SkinData.CustomColor = False
+              SkinData.CustomFont = False
               ExplicitLeft = 0
               ExplicitTop = 0
               ExplicitWidth = 0
@@ -1182,6 +1186,8 @@ object frmRptResStats: TfrmRptResStats
             end
             object sTabSheet3: TsTabSheet
               Caption = 'Graph'
+              SkinData.CustomColor = False
+              SkinData.CustomFont = False
               ExplicitLeft = 0
               ExplicitTop = 0
               ExplicitWidth = 0
@@ -1438,7 +1444,6 @@ object frmRptResStats: TfrmRptResStats
             Images = DImages.PngImageList1
             TabOrder = 3
             Visible = False
-            OnClick = btnUpdateLayoutClick
             SkinData.SkinSection = 'BUTTON'
           end
           object cxButton1: TsButton
@@ -1474,6 +1479,8 @@ object frmRptResStats: TfrmRptResStats
     end
     object sheetMainData: TsTabSheet
       Caption = 'Data'
+      SkinData.CustomColor = False
+      SkinData.CustomFont = False
       ExplicitLeft = 0
       ExplicitTop = 0
       ExplicitWidth = 0
@@ -1489,6 +1496,8 @@ object frmRptResStats: TfrmRptResStats
         SkinData.SkinSection = 'PAGECONTROL'
         object sTabSheet7: TsTabSheet
           Caption = 'Reservations'
+          SkinData.CustomColor = False
+          SkinData.CustomFont = False
           ExplicitLeft = 0
           ExplicitTop = 0
           ExplicitWidth = 0
@@ -2015,6 +2024,8 @@ object frmRptResStats: TfrmRptResStats
         end
         object sTabSheet8: TsTabSheet
           Caption = 'Roominvoice'
+          SkinData.CustomColor = False
+          SkinData.CustomFont = False
           ExplicitLeft = 0
           ExplicitTop = 0
           ExplicitWidth = 0
@@ -2193,6 +2204,8 @@ object frmRptResStats: TfrmRptResStats
         end
         object sTabSheet9: TsTabSheet
           Caption = 'Groupinvoice'
+          SkinData.CustomColor = False
+          SkinData.CustomFont = False
           ExplicitLeft = 0
           ExplicitTop = 0
           ExplicitWidth = 0
@@ -2878,6 +2891,7 @@ object frmRptResStats: TfrmRptResStats
     end
     object prLinkGrDrill: TdxGridReportLink
       Component = grDrill
+      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.GrayShading = True
@@ -2890,6 +2904,7 @@ object frmRptResStats: TfrmRptResStats
       PrinterPage.PageSize.Y = 297000
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
+      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       BuiltInReportLink = True
     end
   end

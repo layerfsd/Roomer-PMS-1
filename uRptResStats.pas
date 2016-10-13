@@ -373,7 +373,6 @@ type
     procedure btnGrdrillPrintClick(Sender: TObject);
     procedure btnSaveLayoutClick(Sender: TObject);
     procedure cxButton1Click(Sender: TObject);
-    procedure btnUpdateLayoutClick(Sender: TObject);
     procedure btnSetDefaultLayoutClick(Sender: TObject);
     procedure cbxSelCloseUp(Sender: TObject);
     procedure btnsetUseStatusAsDefaultClick(Sender: TObject);
@@ -498,116 +497,6 @@ begin
     freeandnil(rSet);
   end;
 end;
-
-//function TfrmRptResStats.calcStayTax(Taxholder : recTaxesHolder; rentAmount : double; currency : string; Customer : string; taxnights,taxguests : integer; Reservation : integer): recCityTaxResultHolder;
-//var
-//  i                : integer;
-//  currencyRate     : double;
-//  useStayTax       : boolean;
-//  StayTaxUnitCount : double;
-//
-//  TaxesItem : string;
-//
-//  isIncluted : boolean;
-//  isStayTaxPerCustomer : boolean;
-//  isStayTaxIncluted : boolean;
-//  isStayTaxPercentage : boolean;
-//
-//  numItems : double;
-//  taxAmount : double;
-//  StayTaxAmount : double;
-//
-//  RentVAT : double;
-//  CtaxVAT : double;
-//
-//  CTaxWoVAT : double;
-//
-//  nettoRent : double; // Rent minus incluted cititax;
-//  nettoRentWoVAT : double; // NettoRent minus incluted VAT
-//
-//  dTmp : double;
-//
-//begin
-//  CurrencyRate := GetRate(Currency);
-//
-//  StayTaxAmount    := 0.00;
-//  StayTaxUnitCount := 0.00;
-//
-//  //  ath sott � DB
-//  useStayTax := RV_useStayTax(reservation);
-//
-//  initCityTaxResultHolder(result);
-//
-//  if rentAmount <> 0 then
-//  begin
-//    if useStayTax then
-//    begin
-//      TaxesItem := trim(uppercase(zTaxesHolder.Booking_Item));
-//
-//      if trim(uppercase(zTaxesHolder.tax_base)) = 'ROOM_NIGHT' then
-//        NumItems := 1
-//      else
-//      if trim(uppercase(zTaxesHolder.tax_base)) = 'GUEST_NIGHT' then
-//        NumItems := taxguests
-//      else
-//      if trim(uppercase(zTaxesHolder.tax_base)) = 'ROOM' then
-//        NumItems := 1
-//      else
-//      if trim(uppercase(zTaxesHolder.tax_base)) = 'GUEST' then
-//        NumItems := taxguests
-//      else
-//      if trim(uppercase(zTaxesHolder.tax_base)) = 'BOOKING' then
-//        NumItems := 1;
-//
-//      taxAmount := zTaxesHolder.Amount;
-//
-//      isStayTaxPercentage   := trim(uppercase(zTaxesHolder.Tax_Type))  = 'PERCENTAGE';
-//      isStayTaxPerCustomer  := trim(uppercase(zTaxesHolder.tax_base))  = 'PER_CUSTOMER'; // isStayTaxPerCustomer;
-//
-//      if isStayTaxPerCustomer then
-//      begin
-//        isStayTaxIncluted     := cust_isTaxIncluted(Customer)
-//      end else
-//      begin
-//        isStayTaxIncluted     := trim(uppercase(zTaxesHolder.Incl_Excl)) = 'INCLUDED';
-//      end;
-//
-//      if isStayTaxIncluted then
-//      begin
-//        if isStayTaxPercentage then
-//        begin
-//
-//
-//        end else
-//        begin
-//          stayTaxAmount := taxAmount*NumItems;
-//        end;
-//        nettoRent      := RentAmount-stayTaxAmount;
-//        RentVAT        := _calcVAT(nettoRent,zItemTypeInfoRent.VATPercentage);
-//        CtaxVAT        := _calcVAT(stayTaxAmount,zItemTypeInfoTax.VATPercentage);
-//
-//        nettoRentWoVAT := nettoRent-RentVAT;
-//        CtaxWoVat      := stayTaxAmount-CtaxVat;
-//      end else
-//      begin
-//        if isStayTaxPercentage then
-//        begin
-//
-//        end else
-//        begin
-//
-//        end;
-//      end;
-//    end;
-//  end;
-//
-//  result.CityTax       := StayTaxAmount;
-//  result.Incluted      := isStayTaxIncluted;
-//  result.RentAmount    := RentAmount;
-//  result.RentAmountVAT := RentVAT;
-//  result.CityTaxVAT    := CtaxVAT;
-//
-//end;
 
 
 procedure TfrmRptResStats.WndProc(var message: TMessage);
@@ -896,39 +785,6 @@ var
   sRooms   : string;
   i : integer;
 begin
-//  if chkExcluteWaitingListNoRooms.checked then sNoRooms       := sNoRooms+'O';
-//  if chkExcluteOrderNoRooms.checked then       sNoRooms       := sNoRooms+'P';
-//  if chkExcluteGuestNoRooms.checked then       sNoRooms       := sNoRooms+'G';
-//  if chkExcluteDepartedNoRooms.checked then    sNoRooms       := sNoRooms+'D';
-//  if chkExcluteAlotmentNoRooms.checked then    sNoRooms       := sNoRooms+'A';
-//  if chkExcluteBlockedNoRooms.checked then     sNoRooms       := sNoRooms+'B';
-//  if chkExcluteNoshowNoRooms.checked then      sNoRooms       := sNoRooms+'N';
-//
-//  if chkExcluteWaitingList.checked then sRooms       := sRooms+'O';
-//  if chkExcluteOrder.checked then       sRooms       := sRooms+'P';
-//  if chkExcluteGuest.checked then       sRooms       := sRooms+'G';
-//  if chkExcluteDeparted.checked then    sRooms       := sRooms+'D';
-//  if chkExcluteAlotment.checked then    sRooms       := sRooms+'A';
-//  if chkExcluteBlocked.checked then     sRooms       := sRooms+'B';
-//  if chkExcluteNoshow.checked then      sRooms       := sRooms+'N';
-//
-//  if length(sNoRooms)+length(sRooms) > 0 then
-//  begin
-//    tvRoomsDate.DataController.Filter.Options := [fcoCaseInsensitive];
-//    tvRoomsDate.DataController.Filter.Root.BoolOperatorKind := fboOr;
-//    tvRoomsDate.DataController.Filter.Root.Clear;
-//    for i := 1 to length(sNoRooms) do
-//    begin
-//      tvRoomsDate.DataController.Filter.Root.AddItem(tvRoomsDateFilterFlag,foEqual,sNoRooms[i]+'N',sNoRooms[i]+'N');
-//    end;
-//    for i := 1 to length(sRooms) do
-//    begin
-//      tvRoomsDate.DataController.Filter.Root.AddItem(tvRoomsDateFilterFlag,foEqual,sRooms[i]+'R',sRooms[i]+'R');
-//    end;
-//
-//    if tvRoomsDate.DataController.Filter.Root.Count > 0 then
-//      tvRoomsDate.DataController.Filter.Active := True;
-//  end;
 end;
 
 
@@ -1434,61 +1290,6 @@ begin
           end;
 
           kbmRoomsDate_.FieldByName('Invoicenumbers').AsString := kbmRoomsDate_.FieldByName('Invoicenumbers').AsString+inttostr(Invoicenumber)+';';
-
-//          if VAT <> 0 then
-//          begin
-//            if invoicenumber > 1 then
-//            begin
-//              kbmRoomsDate_.FieldByName('TaxesBilled').AsFloat := kbmRoomsDate_.FieldByName('TaxesBilled').AsFloat+avrVAT;
-//            end else
-//            begin
-//              kbmRoomsDate_.FieldByName('TaxesUnBilled').AsFloat := kbmRoomsDate_.FieldByName('TaxesUnBilled').AsFloat+avrVAT;
-//            end;
-//          end;
-//
-//          if itemID = zRoomRentItem then
-//          begin
-//            if invoicenumber > 1 then
-//            begin
-//              kbmRoomsDate_.FieldByName('RoomRentBilled').AsFloat := kbmRoomsDate_.FieldByName('RoomRentBilled').AsFloat+avr;
-//              kbmRoomsDate_.FieldByName('VatRentBilled').AsFloat := kbmRoomsDate_.FieldByName('VatRentBilled').AsFloat+AvrVAT;
-//            end else
-//            begin
-//              kbmRoomsDate_.FieldByName('RoomRentUnBilled').AsFloat := kbmRoomsDate_.FieldByName('RoomRentUnBilled').AsFloat+avr;
-//              kbmRoomsDate_.FieldByName('VatRentUnBilled').AsFloat := kbmRoomsDate_.FieldByName('VatRentUnBilled').AsFloat+AvrVAT;
-//            end;
-//          end else
-//          if itemID =zDiscountItem then
-//          begin
-//            if invoicenumber > 1 then
-//            begin
-//              kbmRoomsDate_.FieldByName('RoomDiscountBilled').AsFloat := kbmRoomsDate_.FieldByName('RoomDiscountBilled').AsFloat+avr;
-//              kbmRoomsDate_.FieldByName('VatRentBilled').AsFloat := kbmRoomsDate_.FieldByName('VatRentBilled').AsFloat+AvrVAT;
-//            end else
-//            begin
-//              kbmRoomsDate_.FieldByName('RoomDiscountUnBilled').AsFloat := kbmRoomsDate_.FieldByName('RoomDiscountUnBilled').AsFloat+avr;
-//              kbmRoomsDate_.FieldByName('VatRentUnBilled').AsFloat := kbmRoomsDate_.FieldByName('VatRentUnBilled').AsFloat+AvrVAT;
-//            end;
-//          end else
-//          if itemID = zTaxesItem then
-//          begin
-//            if invoicenumber > 1 then
-//            begin
-//              kbmRoomsDate_.FieldByName('CtaxBilled').AsFloat := kbmRoomsDate_.FieldByName('CtaxBilled').AsFloat+avr;
-//              kbmRoomsDate_.FieldByName('TaxesBilled').AsFloat := kbmRoomsDate_.FieldByName('TaxesBilled').AsFloat+avr;
-//            end else
-//            begin
-//              kbmRoomsDate_.FieldByName('CtaxUnBilled').AsFloat := kbmRoomsDate_.FieldByName('CtaxUnBilled').AsFloat+avr;
-//              kbmRoomsDate_.FieldByName('TaxesUnBilled').AsFloat := kbmRoomsDate_.FieldByName('TaxesUnBilled').AsFloat+avr;
-//            end;
-//          end else
-//          begin
-//            if invoicenumber > 1 then
-//              kbmRoomsDate_.FieldByName('ItemsBilled').AsFloat := kbmRoomsDate_.FieldByName('ItemsBilled').AsFloat+avr
-//
-//               else kbmRoomsDate_.FieldByName('ItemsUnBilled').AsFloat := kbmRoomsDate_.FieldByName('ItemsUnBilled').AsFloat+avr
-//          end;
-//          kbmRoomsDate_.FieldByName('Invoicenumbers').AsString := kbmRoomsDate_.FieldByName('Invoicenumbers').AsString+inttostr(Invoicenumber)+';';
 
           kbmRoomsDate_.post;
           kbmRoomsDate_.Next;
@@ -2222,40 +2023,6 @@ begin
 end;
 
 
-procedure TfrmRptResStats.btnUpdateLayoutClick(Sender: TObject);
-var
-  TextContainer1   : string;
-  Description      : string;
-  s : string;
-  Id : integer;
-begin
-//  if cbxSel.Items.Count = 0 then exit;
-//  Description := trim(EdlayoutName.text);
-//
-//  Store1.StorageStream := TMemoryStream.Create;
-//  Store1.StoreTo(false);
-//  Store1.StorageStream.Position := 0;
-//  TextContainer1 := Bin2Hex(Store1.StorageStream AS TMemoryStream);
-//
-//  s := '';
-//  s := s + ' UPDATE propertiesstore '+#10;
-//  s := s + '   SET '+#10;
-//  s := s+ '     TextContainer1 =' + _db(TextContainer1)+#10;
-//  s := s+ '    ,TextContainer2 =' + _db(memLayoutNotes.text)+#10;
-//  s := s + ' WHERE '+#10;
-//  s := s + '   description = ' + _db(description);
-//
-//  if cmd_bySQL(s) then
-//  begin
-//  end;
-end;
-
-
-
-
-
-
-
 procedure TfrmRptResStats.btnsetUseStatusAsDefaultClick(Sender: TObject);
 begin
   setUseStatusDefault;
@@ -2608,9 +2375,9 @@ begin
     s := s+' ,il.Description '#10;
     s := s+' ,il.Price '#10;
     s := s+' ,il.VATType '#10;
-    s := s+' ,il.Total '#10;
-    s := s+' ,il.TotalWOVat '#10;
-    s := s+' ,il.Vat '#10;
+    s := s+' ,(il.Total + il.revenueCorrection) as Total '#10;
+    s := s+' ,(il.Total + il.revenueCorrection) - (il.Vat + il.revenueCorrectionVAT) as TotalWOVat '#10;
+    s := s+' ,(il.Vat + il.revenueCorrectionVAT) as Vat '#10;
     s := s+' ,it.description AS ItemDescription '#10;
     s := s+' ,it.ItemType '#10;
     s := s+' ,ity.Description AS ItemTypeDescription '#10;
@@ -2637,9 +2404,9 @@ begin
     s := s+' ,count(il.InvoiceNumber) AS noInvoices '#10;
     s := s+' ,SUM(il.`number`) AS noItems '#10;
     s := s+' ,AVG(il.Price) AS avragePrice '#10;
-    s := s+' ,SUM(il.Total) AS Total '#10;
-    s := s+' ,SUM(il.TotalWOVat) AS TotalWOVat '#10;
-    s := s+' ,SUM(il.Vat) TotalVAT '#10;
+    s := s+' ,SUM(il.Total + il.revenueCorrection) AS Total '#10;
+    s := s+' ,SUM(il.Total + il.revenueCorrection -  (il.Vat + il.revenueCorrectionVAT)) AS TotalWOVat '#10;
+    s := s+' ,SUM(il.Vat + il.revenueCorrectionVAT) as TotalVAT '#10;
     s := s+' ,(SELECT count(id) FROM roomreservations rr WHERE rr.reservation = il.reservation) As RoomCount '#10;
     s := s+'FROM '#10;
     s := s+'  invoicelines il '#10;

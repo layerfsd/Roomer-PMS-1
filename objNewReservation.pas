@@ -937,7 +937,7 @@ var
   ExpTOA: string;
   ExpCOT: string;
   newRoomReservationItem: TnewRoomReservationItem;
-  lBreakfastPrice: Double;
+  lRevenueCorrection: Double;
 
   procedure init;
   begin
@@ -1486,25 +1486,26 @@ begin
             end;
           end;
 
-          if FnewRoomReservations.FRoomList[i].FBreakfast then //AND (NOT FnewRoomReservations.FRoomList[i].FBreakfastIncluded) then
+          if FnewRoomReservations.FRoomList[i].FBreakfast AND (NOT FnewRoomReservations.FRoomList[i].FBreakfastIncluded) then
           begin
             initInvoiceLineHolderRec(InvoicelineData);
             Item := ctrlGetString('BreakFastItem');
             ItemInfo := d.Item_Get_Data(Item);
 
-            if FnewRoomReservations.FRoomList[i].FBreakfastIncluded then
-            begin
-              lBreakfastPrice  := ItemInfo.Price;
-              Price           := 0;
-              itemDescription := ItemInfo.Description +  ' (' + GetTranslatedText('shTx_ReservationProfile_Included') + ')'
-            end
-            else
-            begin
-              lBreakfastPrice  := 0;
-              Price           := FnewRoomReservations.FRoomList[i].FBreakfastCost;
-              itemDescription := ItemInfo.Description;
-            end;
             numItems     := numGuests * iDayCount;
+//            if FnewRoomReservations.FRoomList[i].FBreakfastIncluded then
+//            begin
+//              Price                 := 0;
+//              lRevenueCorrection    := ItemInfo.Price * numItems;
+//              itemDescription       := ItemInfo.Description +  ' (' + GetTranslatedText('shTx_ReservationProfile_Included') + ')'
+//            end
+//            else
+//            begin
+              Price                 := FnewRoomReservations.FRoomList[i].FBreakfastCost;
+              lRevenueCorrection    := 0;
+              itemDescription       := ItemInfo.Description;
+//            end;
+
             Total        := price*numItems;
 
             fTmp           := Total / (1 + (ItemInfo.VATPercentage / 100));
@@ -1534,7 +1535,6 @@ begin
             invoiceLineData.ReportTime      := '00:00';
             invoiceLineData.Persons         := 0;
             invoiceLineData.Nights          := 0;
-            invoiceLineData.BreakfastPrice  := lBreakFastPrice;
             invoiceLineData.AYear           := aYear;
             invoiceLineData.AMon            := aMon;
             invoiceLineData.ADay            := aDay;
@@ -1546,6 +1546,7 @@ begin
             invoiceLineData.ImportSource       := '';
             invoiceLineData.Ispackage          := false;
             invoiceLineData.InvoiceIndex          := 0;
+            invoiceLineData.RevenueCorrection  := lRevenueCorrection;
             ExecutionPlan.AddExec(SQL_INS_InvoiceLine(invoiceLineData));
             //***Add invoice log here
             try

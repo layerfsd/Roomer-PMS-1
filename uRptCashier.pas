@@ -315,124 +315,121 @@ uses
     ;
 
 CONST
-  FINANCE_QUERY = 'SELECT ' + #10 + 'LineType, ' + #10 + 'LineTypeInt, ' + #10 + 'TypeIndex, ' + #10 + 'Staff, ' + #10 + 'name, ' + #10 +
-    'IF(ISNULL(guestname), ' + #10 +
-    '     IF((roomreservation = 0) AND (Reservation > 0), (SELECT text FROM home100.dictionary where languageid=1 and extraidentity=''shUI_Reports_MultipleRooms'' LIMIT 1), '
-    + #10 + '         IF((roomreservation = 0) AND (Reservation = 0), (SELECT text FROM home100.dictionary where languageid=1 and extraidentity=''shUI_Reports_CashInvoice'' LIMIT 1), '''') '
-    + #10 + '      ), GuestName ' + #10 + '	) AS guestname, ' + #10 + 'Reservation, ' + #10 + 'RoomReservation, ' + #10 + 'LineIndex, ' + #10 +
-
-    'InvoiceNumber, ' + #10 + 'TxDate, ' + #10 + 'dtCreated AS Created, ' + #10 + 'Room, ' + #10 + 'BookingId, ' + #10 + 'Arrival, ' + #10 + 'Departure, ' + #10
-    + 'Product, ' + #10 + 'ProductDescription, ' + #10 + 'NumberOfItems, ' + #10 + 'Description, ' + #10 + 'NativeTotalPrice ' + #10 + 'FROM ' + #10 + '( ' +
-    #10 + 'SELECT * FROM ' + #10 + '( ' + #10 +
-
-    '   SELECT "ÖÖSALEITEMS" AS LineType, ' + #10 + '          2 AS LineTypeInt, ' + #10 + '          0 AS TypeIndex, ' + #10 + '          ih.Staff, ' + #10 +
-    '          ih.Name AS name, ' + #10 + '          (SELECT Name FROM persons WHERE (RoomReservation=IF(il.RoomReservationAlias>0,il.RoomReservationAlias,il.RoomReservation) OR (il.RoomReservation=0 AND Reservation=il.Reservation)) AND MainName=1 LIMIT 1) AS GuestName, '
-    + #10 + '          ih.Reservation, ' + #10 + '          ih.roomReservation, ' + #10 + '          ItemNumber AS LineIndex, ' + #10 +
-
-    '          il.InvoiceNumber AS InvoiceNumber, ' + #10 + '          DATE(PurchaseDate) AS TxDate, ' + #10 +
-    '          (SELECT dtCreated FROM payments WHERE InvoiceNumber=ih.InvoiceNumber ORDER BY dtCreated DESC LIMIT 1) AS dtCreated, ' + #10 +
-
-    '          IF(ISNULL((SELECT Room FROM roomreservations WHERE (RoomReservation=IF(il.RoomReservationAlias>0,il.RoomReservationAlias,il.RoomReservation) OR (il.RoomReservation=0 AND Reservation=il.Reservation)) LIMIT 1)), "", ' +
-              '(SELECT Room FROM roomreservations WHERE (RoomReservation=IF(il.RoomReservationAlias>0,il.RoomReservationAlias,il.RoomReservation) OR (il.RoomReservation=0 AND Reservation=il.Reservation)) LIMIT 1)) AS Room, '
-    + #10 + '          IF(ISNULL((SELECT InvRefrence FROM reservations WHERE Reservation=il.Reservation LIMIT 1)), "", (SELECT InvRefrence FROM reservations WHERE Reservation=il.Reservation LIMIT 1)) AS BookingId, '
-    + #10 + '          IF(ISNULL((SELECT Arrival FROM roomreservations WHERE (RoomReservation=IF(il.RoomReservationAlias>0,il.RoomReservationAlias,il.RoomReservation) OR (il.RoomReservation=0 AND Reservation=il.Reservation)) LIMIT 1)), ' +
-            '"", (SELECT Arrival FROM roomreservations WHERE (RoomReservation=IF(il.RoomReservationAlias>0,il.RoomReservationAlias,il.RoomReservation) OR (il.RoomReservation=0 AND Reservation=il.Reservation)) LIMIT 1)) AS Arrival, '
-    + #10 + '          IF(ISNULL((SELECT Departure FROM roomreservations WHERE (RoomReservation=IF(il.RoomReservationAlias>0,il.RoomReservationAlias,il.RoomReservation) OR (il.RoomReservation=0 AND Reservation=il.Reservation)) LIMIT 1)), ' +
-            '"", (SELECT Departure FROM roomreservations WHERE (RoomReservation=IF(il.RoomReservationAlias>0,il.RoomReservationAlias,il.RoomReservation) OR (il.RoomReservation=0 AND Reservation=il.Reservation)) LIMIT 1)) AS Departure, '
-    + #10 + '          ItemId AS Product, ' + #10 + '          il.Description AS ProductDescription, ' + #10 + '          Number AS NumberOfItems, ' + #10 +
-    '          CONCAT((SELECT text FROM home100.dictionary WHERE LanguageID=1 AND extraIdentity=IF(ih.SplitNumber=1, ''shUI_CreditInvoiceCaption'' ,''shUI_InvoiceCaption'') LIMIT 1), '' '', ih.InvoiceNumber) AS  Description, '
-    + #10 + '          il.Total AS NativeTotalPrice ' + #10 + '   FROM invoicelines il ' + #10 +
-    '        INNER JOIN invoiceheads ih ON ih.InvoiceNumber=il.InvoiceNumber AND ih.InvoiceNumber>0 AND InvoiceDate={date} AND staff IN ({staff}) ' + #10 +
-
-    '        INNER JOIN items i ON Item=il.ItemId ' + #10 + '        INNER JOIN itemtypes it ON it.ItemType=i.ItemType ' + #10 +
-    '        INNER JOIN vatcodes vc ON vc.VatCode=it.VatCode, ' + #10 + '        control c ' + #10 +
-    '        INNER JOIN currencies cu ON cu.Currency=(SELECT NativeCurrency FROM control LIMIT 1) ' + #10 +
-
-  // 'UNION ALL' + #10 +
-  //
-  // '   SELECT "ÖÖSALE" AS LineType, ' + #10 +
-  // '          3 AS LineTypeInt, ' + #10 +
-  // '          0 AS TypeIndex, ' + #10 +
-  // '          ih.Staff, ' + #10 +
-  // '          ih.Name AS name, ' + #10 +
-  // '          (SELECT Name FROM persons WHERE RoomReservation=IF(il.RoomReservationAlias>0,il.RoomReservationAlias,il.RoomReservation) AND MainName=1 LIMIT 1) AS GuestName, '
-  // + #10 + '          ih.Reservation, ' + #10 +
-  // '          ih.roomReservation, ' + #10 +
-  // '          ItemNumber AS LineIndex, ' + #10 +
-  // '          il.InvoiceNumber AS InvoiceNumber, ' + #10 +
-  // '          DATE(PurchaseDate) AS TxDate, ' + #10 +
-  // '          (SELECT dtCreated FROM payments WHERE InvoiceNumber=ih.InvoiceNumber ORDER BY dtCreated DESC LIMIT 1) AS dtCreated, ' + #10 +
-  //
-  // '          IF(ISNULL((SELECT Room FROM roomreservations WHERE RoomReservation=IF(il.RoomReservationAlias>0,il.RoomReservationAlias,il.RoomReservation) LIMIT 1)), "", (SELECT Room FROM roomreservations WHERE RoomReservation=IF(il.RoomReservationAlias>0,il.RoomReservationAlias,il.RoomReservation) LIMIT 1)) AS Room, '
-  // + #10 + '          IF(ISNULL((SELECT InvRefrence FROM reservations WHERE Reservation=il.Reservation LIMIT 1)), "", (SELECT InvRefrence FROM reservations WHERE Reservation=il.Reservation LIMIT 1)) AS BookingId, '
-  // + #10 + '          ItemId AS Product, ' + #10 +
-  // '          (SELECT Surname FROM customers WHERE Customer=ih.customer LIMIT 1) AS ProductDescription, ' + #10
-  // + '          Number AS NumberOfItems, ' + #10 +
-  // '          CONCAT((SELECT text FROM home100.dictionary WHERE LanguageID={langId} AND extraIdentity=IF(ih.SplitNumber=1, ''shUI_CreditInvoiceCaption'' ,''shUI_InvoiceCaption'') LIMIT 1), '' '', ih.InvoiceNumber) AS  Description, '
-  // + #10 +
-  //
-  // '          SUM(il.Total) AS NativeTotalPrice ' + #10 +
-  //
-  //
-  // '   FROM invoicelines il ' + #10 +
-  // '        INNER JOIN invoiceheads ih ON ih.InvoiceNumber=il.InvoiceNumber AND ih.InvoiceNumber>0 AND InvoiceDate={date} AND staff IN ({staff}) ' + #10 +
-  //
-  // '        INNER JOIN items i ON Item=il.ItemId ' + #10 +
-  // '        INNER JOIN itemtypes it ON it.ItemType=i.ItemType ' + #10 +
-  // '        INNER JOIN vatcodes vc ON vc.VatCode=it.VatCode, ' + #10 +
-  // '        control c ' + #10 +
-  // '        INNER JOIN currencies cu ON cu.Currency=(SELECT NativeCurrency FROM control LIMIT 1) ' + #10 +
-  // '   GROUP BY il.InvoiceNumber ' + #10 +
-
-    'UNION ALL ' + #10 +
-
-    '   SELECT "PAYMENT" AS LineType, ' + #10 + '          0 AS LineTypeInt, ' + #10 + '          TypeIndex, ' + #10 + '          il.Staff, ' + #10 +
-    '          (SELECT Name FROM invoiceheads WHERE Reservation=il.Reservation AND RoomReservation=il.RoomReservation AND InvoiceNumber=il.InvoiceNumber LIMIT 1) AS Name, '
-    + #10 + '          (SELECT Name FROM persons WHERE RoomReservation=il.RoomReservation AND MainName=1 LIMIT 1) AS GuestName, ' + #10 +
-
-    '          Reservation, ' + #10 + '          roomReservation, ' + #10 + '          il.ID AS LineIndex, ' + #10 +
-    '          il.InvoiceNumber AS InvoiceNumber, ' + #10 + '          il.dtCreated AS TxDate, ' + #10 + '          il.dtCreated AS dtCreated, ' + #10 +
-    '          IF(ISNULL((SELECT Room FROM roomreservations WHERE RoomReservation=il.RoomReservation LIMIT 1)), ' +
-            '"", (SELECT Room FROM roomreservations WHERE RoomReservation=il.RoomReservation LIMIT 1)) AS Room, '
-    + #10 + '          IF(ISNULL((SELECT InvRefrence FROM reservations WHERE Reservation=il.Reservation LIMIT 1)), "", (SELECT InvRefrence FROM reservations WHERE Reservation=il.Reservation LIMIT 1)) AS BookingId, '
-    + #10 + '          IF(ISNULL((SELECT Arrival FROM roomreservations WHERE RoomReservation=il.RoomReservation LIMIT 1)), ' +
-            '"", (SELECT Arrival FROM roomreservations WHERE RoomReservation=il.RoomReservation LIMIT 1)) AS Arrival, '
-    + #10 + '          IF(ISNULL((SELECT Departure FROM roomreservations WHERE RoomReservation=il.RoomReservation LIMIT 1)), ' +
-            '"", (SELECT Departure FROM roomreservations WHERE RoomReservation=il.RoomReservation LIMIT 1)) AS Departure, '
-    + #10 + '          il.PayType AS Product, ' + #10 + '          pt.Description AS ProductDescription, ' + #10 + '          1 AS NumberOfItems, ' + #10 +
-    '          il.Description, ' + #10 +
-
-    '          Amount AS PricePerItem ' + #10 +
-
-    '   FROM payments il ' + #10 + '        INNER JOIN paytypes pt ON pt.PayType = il.PayType, ' + #10 + '        control c ' + #10 +
-    '        INNER JOIN currencies cu ON cu.Currency=(SELECT NativeCurrency FROM control LIMIT 1) ' + #10 +
-    '   WHERE TypeIndex = 0 AND PayDate={date} AND staff IN ({staff}) ' + #10 +
-
-    'UNION ALL ' + #10 +
-
-    '   SELECT "DOWNPAYMENT" AS LineType, ' + #10 + '          1 AS LineTypeInt, ' + #10 + '          TypeIndex, ' + #10 + '          il.Staff, ' + #10 +
-    '          (SELECT Name FROM invoiceheads WHERE Reservation=il.Reservation AND RoomReservation=il.RoomReservation AND InvoiceNumber=il.InvoiceNumber LIMIT 1) AS Name, '
-    + #10 + '          (SELECT Name FROM persons WHERE RoomReservation=il.RoomReservation AND MainName=1 LIMIT 1) AS GuestName, ' + #10 +
-
-    '          Reservation, ' + #10 + '          roomReservation, ' + #10 + '          il.ID AS LineIndex, ' + #10 +
-    '          il.InvoiceNumber AS InvoiceNumber, ' + #10 + '          il.dtCreated AS TxDate, ' + #10 + '          il.dtCreated AS dtCreated, ' + #10 +
-    '          IF(ISNULL((SELECT Room FROM roomreservations WHERE RoomReservation=il.RoomReservation LIMIT 1)), ' +
-            '"", (SELECT Room FROM roomreservations WHERE RoomReservation=il.RoomReservation LIMIT 1)) AS Room, '
-    + #10 + '          IF(ISNULL((SELECT InvRefrence FROM reservations WHERE Reservation=il.Reservation LIMIT 1)), "", (SELECT InvRefrence FROM reservations WHERE Reservation=il.Reservation LIMIT 1)) AS BookingId, '
-    + #10 + '          IF(ISNULL((SELECT Arrival FROM roomreservations WHERE RoomReservation=il.RoomReservation LIMIT 1)), ' +
-            '"", (SELECT Arrival FROM roomreservations WHERE RoomReservation=il.RoomReservation LIMIT 1)) AS Arrival, '
-    + #10 + '          IF(ISNULL((SELECT Departure FROM roomreservations WHERE RoomReservation=il.RoomReservation LIMIT 1)), ' +
-            '"", (SELECT Departure FROM roomreservations WHERE RoomReservation=il.RoomReservation LIMIT 1)) AS Departure, '
-    + #10 + '          il.PayType AS Product, ' + #10 + '          pt.Description AS ProductDescription, ' + #10 + '          1 AS NumberOfItems, ' + #10 +
-    '          il.Description, ' + #10 +
-
-    '          Amount AS PricePerItem ' + #10 +
-
-    '   FROM payments il ' + #10 + '        INNER JOIN paytypes pt ON pt.PayType = il.PayType, ' + #10 + '        control c ' + #10 +
-    '        INNER JOIN currencies cu ON cu.Currency=(SELECT NativeCurrency FROM control LIMIT 1) ' + #10 +
-    '   WHERE TypeIndex = 1 AND PayDate={date} AND staff IN ({staff}) ' + #10 +
-
-    ') InvoiceInfo ' + #10 + ') aaa ' + #10 + 'ORDER BY LineType, InvoiceNumber, TxDate, LineIndex ' + #10 + '';
+  FINANCE_QUERY = 'SELECT ' + #10
+  + 'LineType, ' + #10
+  + 'LineTypeInt, ' + #10
+  + 'TypeIndex, ' + #10
+  + 'Staff, ' + #10
+  + 'name, ' + #10
+  + 'IF(ISNULL(guestname), ' + #10
+  + '   IF((roomreservation = 0) AND (Reservation > 0), (SELECT text FROM home100.dictionary where languageid=1 and extraidentity=''shUI_Reports_MultipleRooms'' LIMIT 1), '    + #10
+  + '       IF((roomreservation = 0) AND (Reservation = 0), (SELECT text FROM home100.dictionary where languageid=1 and extraidentity=''shUI_Reports_CashInvoice'' LIMIT 1), '''') '    + #10
+  + '      ), GuestName ' + #10
+  + '	) AS guestname, ' + #10
+  + 'Reservation, ' + #10
+  + 'RoomReservation, ' + #10
+  + 'LineIndex, ' + #10
+  + 'InvoiceNumber, ' + #10
+  + 'TxDate, ' + #10
+  + 'dtCreated AS Created, ' + #10
+  + 'Room, ' + #10
+  + 'BookingId, ' + #10
+  + 'Arrival, ' + #10
+  + 'Departure, ' + #10
+  + 'Product, ' + #10
+  + 'ProductDescription, ' + #10
+  + 'NumberOfItems, ' + #10
+  + 'Description, ' + #10
+  + 'NativeTotalPrice ' + #10
+  + 'FROM ' + #10
+  + '( ' +  #10
+  + 'SELECT * FROM ' + #10
+  + '( ' + #10
+  + '   SELECT "SALEITEMS" AS LineType, ' + #10
+  + '          2 AS LineTypeInt, ' + #10
+  + '          0 AS TypeIndex, ' + #10
+  + '          ih.Staff, ' + #10
+  + '          ih.Name AS name, ' + #10
+  + '          (SELECT Name FROM persons WHERE (RoomReservation=IF(il.RoomReservationAlias>0,il.RoomReservationAlias,il.RoomReservation) OR (il.RoomReservation=0 AND Reservation=il.Reservation)) AND MainName=1 LIMIT 1) AS GuestName, ' + #10
+  + '          ih.Reservation, ' + #10
+  + '          ih.roomReservation, ' + #10
+  + '          ItemNumber AS LineIndex, ' + #10
+  + '          il.InvoiceNumber AS InvoiceNumber, ' + #10
+  + '          DATE(PurchaseDate) AS TxDate, ' + #10
+  + '          (SELECT dtCreated FROM payments WHERE InvoiceNumber=ih.InvoiceNumber ORDER BY dtCreated DESC LIMIT 1) AS dtCreated, ' + #10
+  + '          IF(ISNULL((SELECT Room FROM roomreservations WHERE (RoomReservation=IF(il.RoomReservationAlias>0,il.RoomReservationAlias,il.RoomReservation) OR (il.RoomReservation=0 AND Reservation=il.Reservation)) LIMIT 1)), "", ' + #10
+  + '          (SELECT Room FROM roomreservations WHERE (RoomReservation=IF(il.RoomReservationAlias>0,il.RoomReservationAlias,il.RoomReservation) OR (il.RoomReservation=0 AND Reservation=il.Reservation)) LIMIT 1)) AS Room, '    + #10
+  + '          IF(ISNULL((SELECT InvRefrence FROM reservations WHERE Reservation=il.Reservation LIMIT 1)), "", (SELECT InvRefrence FROM reservations WHERE Reservation=il.Reservation LIMIT 1)) AS BookingId, '    + #10
+  + '          IF(ISNULL((SELECT Arrival FROM roomreservations WHERE (RoomReservation=IF(il.RoomReservationAlias>0,il.RoomReservationAlias,il.RoomReservation) OR (il.RoomReservation=0 AND Reservation=il.Reservation)) LIMIT 1)), "", '+ #10
+  + '             (SELECT Arrival FROM roomreservations WHERE (RoomReservation=IF(il.RoomReservationAlias>0,il.RoomReservationAlias,il.RoomReservation) OR (il.RoomReservation=0 AND Reservation=il.Reservation)) LIMIT 1)) AS Arrival, '    + #10
+  + '          IF(ISNULL((SELECT Departure FROM roomreservations WHERE (RoomReservation=IF(il.RoomReservationAlias>0,il.RoomReservationAlias,il.RoomReservation) OR (il.RoomReservation=0 AND Reservation=il.Reservation)) LIMIT 1)), "", '+ #10
+  + '             (SELECT Departure FROM roomreservations WHERE (RoomReservation=IF(il.RoomReservationAlias>0,il.RoomReservationAlias,il.RoomReservation) OR (il.RoomReservation=0 AND Reservation=il.Reservation)) LIMIT 1)) AS Departure, ' + #10
+  + '          il.ItemId AS Product, ' + #10
+  + '          il.Description AS ProductDescription, ' + #10
+  + '          il.Number AS NumberOfItems, ' + #10
+  + '          CONCAT((SELECT text FROM home100.dictionary WHERE LanguageID=1 AND extraIdentity=IF(ih.SplitNumber=1, ''shUI_CreditInvoiceCaption'' ,''shUI_InvoiceCaption'') LIMIT 1), '' '', ih.InvoiceNumber) AS  Description, ' + #10
+  + '          (il.Total + il.revenueCorrection) AS NativeTotalPrice ' + #10
+  + '   FROM invoicelines il ' + #10
+  + '        INNER JOIN invoiceheads ih ON ih.InvoiceNumber=il.InvoiceNumber AND ih.InvoiceNumber>0 AND InvoiceDate={date} AND staff IN ({staff}) ' + #10
+  + '        INNER JOIN items i ON Item=il.ItemId ' + #10
+  + '        INNER JOIN itemtypes it ON it.ItemType=i.ItemType ' + #10
+  + '        INNER JOIN vatcodes vc ON vc.VatCode=it.VatCode, ' + #10
+  + '        control c ' + #10
+  + '        INNER JOIN currencies cu ON cu.Currency=(SELECT NativeCurrency FROM control LIMIT 1) ' + #10
+  + 'UNION ALL ' + #10
+  + '   SELECT "PAYMENT" AS LineType, ' + #10
+  + '          0 AS LineTypeInt, ' + #10
+  + '          TypeIndex, ' + #10
+  + '          il.Staff, ' + #10
+  + '          (SELECT Name FROM invoiceheads WHERE Reservation=il.Reservation AND RoomReservation=il.RoomReservation AND InvoiceNumber=il.InvoiceNumber LIMIT 1) AS Name, ' + #10
+  + '          (SELECT Name FROM persons WHERE RoomReservation=il.RoomReservation AND MainName=1 LIMIT 1) AS GuestName, ' + #10
+  + '          Reservation, ' + #10 + '          roomReservation, ' + #10 + '          il.ID AS LineIndex, ' + #10
+  + '          il.InvoiceNumber AS InvoiceNumber, ' + #10 + '          il.dtCreated AS TxDate, ' + #10 + '          il.dtCreated AS dtCreated, ' + #10
+  + '          IF(ISNULL((SELECT Room FROM roomreservations WHERE RoomReservation=il.RoomReservation LIMIT 1)), "", '+ #10
+  + '             (SELECT Room FROM roomreservations WHERE RoomReservation=il.RoomReservation LIMIT 1)) AS Room, ' + #10
+  + '          IF(ISNULL((SELECT InvRefrence FROM reservations WHERE Reservation=il.Reservation LIMIT 1)), "", (SELECT InvRefrence FROM reservations WHERE Reservation=il.Reservation LIMIT 1)) AS BookingId, ' + #10
+  + '          IF(ISNULL((SELECT Arrival FROM roomreservations WHERE RoomReservation=il.RoomReservation LIMIT 1)), "", (SELECT Arrival FROM roomreservations WHERE RoomReservation=il.RoomReservation LIMIT 1)) AS Arrival, ' + #10
+  + '          IF(ISNULL((SELECT Departure FROM roomreservations WHERE RoomReservation=il.RoomReservation LIMIT 1)), "", (SELECT Departure FROM roomreservations WHERE RoomReservation=il.RoomReservation LIMIT 1)) AS Departure, ' + #10
+  + '          il.PayType AS Product, ' + #10
+  + '          pt.Description AS ProductDescription, ' + #10
+  + '          1 AS NumberOfItems, ' + #10
+  + '          il.Description, ' + #10
+  + '          Amount AS PricePerItem ' + #10
+  + '   FROM payments il ' + #10
+  + '        INNER JOIN paytypes pt ON pt.PayType = il.PayType, ' + #10
+  + '        control c ' + #10
+  + '        INNER JOIN currencies cu ON cu.Currency=(SELECT NativeCurrency FROM control LIMIT 1) ' + #10
+  + '   WHERE TypeIndex = 0 AND PayDate={date} AND staff IN ({staff}) ' + #10
+  + 'UNION ALL ' + #10
+  + '   SELECT "DOWNPAYMENT" AS LineType, ' + #10
+  + '          1 AS LineTypeInt, ' + #10
+  + '          TypeIndex, ' + #10
+  + '          il.Staff, ' + #10
+  + '          (SELECT Name FROM invoiceheads WHERE Reservation=il.Reservation AND RoomReservation=il.RoomReservation AND InvoiceNumber=il.InvoiceNumber LIMIT 1) AS Name, ' + #10
+  + '          (SELECT Name FROM persons WHERE RoomReservation=il.RoomReservation AND MainName=1 LIMIT 1) AS GuestName, ' + #10
+  + '          Reservation, ' + #10
+  + '          roomReservation, ' + #10
+  + '          il.ID AS LineIndex, ' + #10
+  + '          il.InvoiceNumber AS InvoiceNumber, ' + #10
+  + '          il.dtCreated AS TxDate, ' + #10
+  + '          il.dtCreated AS dtCreated, ' + #10
+  + '          IF(ISNULL((SELECT Room FROM roomreservations WHERE RoomReservation=il.RoomReservation LIMIT 1)), "", (SELECT Room FROM roomreservations WHERE RoomReservation=il.RoomReservation LIMIT 1)) AS Room, ' + #10
+  + '          IF(ISNULL((SELECT InvRefrence FROM reservations WHERE Reservation=il.Reservation LIMIT 1)), "", (SELECT InvRefrence FROM reservations WHERE Reservation=il.Reservation LIMIT 1)) AS BookingId, ' + #10
+  + '          IF(ISNULL((SELECT Arrival FROM roomreservations WHERE RoomReservation=il.RoomReservation LIMIT 1)), "", (SELECT Arrival FROM roomreservations WHERE RoomReservation=il.RoomReservation LIMIT 1)) AS Arrival, '  + #10
+  + '          IF(ISNULL((SELECT Departure FROM roomreservations WHERE RoomReservation=il.RoomReservation LIMIT 1)), "", (SELECT Departure FROM roomreservations WHERE RoomReservation=il.RoomReservation LIMIT 1)) AS Departure, ' + #10
+  + '          il.PayType AS Product, ' + #10
+  + '          pt.Description AS ProductDescription, ' + #10
+  + '          1 AS NumberOfItems, ' + #10
+  + '          il.Description, ' + #10
+  + '          Amount AS PricePerItem ' + #10
+  + '   FROM payments il ' + #10
+  + '        INNER JOIN paytypes pt ON pt.PayType = il.PayType, ' + #10
+  + '        control c ' + #10
+  + '        INNER JOIN currencies cu ON cu.Currency=(SELECT NativeCurrency FROM control LIMIT 1) ' + #10
+  + '   WHERE TypeIndex = 1 AND PayDate={date} AND staff IN ({staff}) ' + #10
+  + ') InvoiceInfo ' + #10
+  + ') aaa ' + #10
+  + 'ORDER BY LineType, InvoiceNumber, TxDate, LineIndex ' + #10;
 
   // CONST FINANCE_QUERY = 'SELECT ' + #10 +
   // 'LineType, ' + #10 +
@@ -848,24 +845,13 @@ procedure TfrmRptCashier.btnPaymentReportClick(Sender: TObject);
 var
   aReport: TppReport;
   sortField: string;
-  isDescending: boolean;
 begin
-//  pagemain.ActivePageIndex := 0;
 
   kbmReport.Close;
   kbmReport.LoadFromDataSet(kbmGet);
-  // kbmReport.LoadFromDataSet(tvGET.DataController.DataSource.DataSet,[mtcpoStructure]);
 
   sortField := 'LineType';
   kbmReport.SortedField := sortField;
-//  if not isDescending then
-//  begin
-//    kbmReport.sort([]);
-//  end
-//  else
-//  begin
-//    kbmReport.sort([mtcoDescending]);
-//  end;
 
   if frmRptbViewer <> nil then
     freeandnil(frmRptbViewer);
@@ -884,9 +870,6 @@ begin
   end;
 
   frmRptbViewer.showModal;
-
-  // Refresh;
-
 end;
 
 procedure TfrmRptCashier.sButton23Click(Sender: TObject);
@@ -1016,13 +999,8 @@ end;
 
 procedure TfrmRptCashier.dtDateFromCloseUp(Sender: TObject);
 begin
-  // GetAndSelectActiveUsers;
   SetReportVisiblitity(false);
   EnableDisableButtons;
-  // if GetUserSqlList <> '' then
-  // refresh
-  // else
-  // ShowMessage(GetTranslatedText('shUI_Reports_NoCashierReportsForThatDay'));
 end;
 
 /// /////////////////////////////////////////////////////////////////////////////
@@ -1507,13 +1485,6 @@ begin
   end;
 end;
 
-{ procedure TfrmRptCashier.sButton23Click(Sender: TObject);
-
-  begin
-
-  end;
-
-  TPaymentTotal }
 
 procedure TPaymentTotal.Add(_Amount: Double);
 begin
@@ -1657,28 +1628,15 @@ end;
 
 procedure TfrmRptCashier.ppGroupHeaderBand1BeforePrint(Sender: TObject);
 begin
-  // grReport.Cells[0, 0] := GetTranslatedText('shUI_Reports_Action');
-  // grReport.Cells[1, 0] := GetTranslatedText('shUI_Reports_Staff');
-  // grReport.Cells[2, 0] := GetTranslatedText('shUI_Reports_Invoice');
-  // grReport.Cells[3, 0] := GetTranslatedText('shUI_Reports_Date');
-  // grReport.Cells[4, 0] := GetTranslatedText('shUI_Reports_Room');
-  // grReport.Cells[5, 0] := GetTranslatedText('shUI_Reports_Name');
-  // grReport.Cells[6, 0] := GetTranslatedText('shUI_Reports_Description');
-  // grReport.Cells[7, 0] := GetTranslatedText('shUI_Reports_Total');
-  // grReport.Cells[8, 0] := GetTranslatedText('shUI_Reports_PaymentType');
-
   ppLabStaff.Caption := GetTranslatedText('shUI_Reports_Staff');
   ppLabtxDate.Caption := GetTranslatedText('shUI_Reports_Date');
   ppLabtxRoom.Caption := GetTranslatedText('shUI_Reports_Room');
-//  LabTxBookingId.Caption := GetTranslatedText('shUI_Reports_BookingId');
   LabTxResId.Caption := GetTranslatedText('shUI_Reports_ResId');
   LabGuestName.Caption := GetTranslatedText('shUI_Reports_GuestName');
   pplabName.Caption := GetTranslatedText('shUI_Reports_CustomerName');
   pplabDescription.Caption := GetTranslatedText('shUI_Reports_Description');
   ppLabNativeTotalPrice.Caption := GetTranslatedText('shUI_Reports_Total');
-  // **Trancelation - Change - to Type
   pplabType.Caption := GetTranslatedText('shUI_Reports_PaymentType');
-  // **Trancelation - ADD
   pplabnumberofitems.Caption := 'Items';
 end;
 

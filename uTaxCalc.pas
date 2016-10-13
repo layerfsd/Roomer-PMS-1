@@ -434,11 +434,15 @@ begin
         if (trim(formula) <> '') then
         begin
           parser := TRoomerMathParser.Create(nil);
-          parser.Expression := formula;
-          if parser.Parse then
-            result := parser.ParserResult * NumItems
-          else
-            result := _calcVAT(Price, ItemTypeInfo.VATPercentage)
+          try
+            parser.Expression := formula;
+            if parser.Parse then
+              result := parser.ParserResult * NumItems
+            else
+              result := _calcVAT(Price, ItemTypeInfo.VATPercentage)
+          finally
+            parser.Free;
+          end;
         end;
 //      finally
 //        map.Free;
