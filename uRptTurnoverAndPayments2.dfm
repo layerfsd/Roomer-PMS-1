@@ -398,6 +398,10 @@ object frmRptTurnoverAndPayments2: TfrmRptTurnoverAndPayments2
       Caption = 'Sum Payments'
       SkinData.CustomColor = False
       SkinData.CustomFont = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object grPayments: TcxGrid
         Left = 0
         Top = 43
@@ -502,6 +506,10 @@ object frmRptTurnoverAndPayments2: TfrmRptTurnoverAndPayments2
       Caption = 'List Unpaid roomrent'
       SkinData.CustomColor = False
       SkinData.CustomFont = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object sPanel4: TsPanel
         Left = 0
         Top = 0
@@ -659,6 +667,10 @@ object frmRptTurnoverAndPayments2: TfrmRptTurnoverAndPayments2
       Caption = 'List Invoiced Roomrent'
       SkinData.CustomColor = False
       SkinData.CustomFont = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object sPanel3: TsPanel
         Left = 0
         Top = 0
@@ -830,6 +842,10 @@ object frmRptTurnoverAndPayments2: TfrmRptTurnoverAndPayments2
       TabVisible = False
       SkinData.CustomColor = False
       SkinData.CustomFont = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object sPanel5: TsPanel
         Left = 0
         Top = 0
@@ -1312,6 +1328,10 @@ object frmRptTurnoverAndPayments2: TfrmRptTurnoverAndPayments2
       Caption = 'Unconfirmed items'
       SkinData.CustomColor = False
       SkinData.CustomFont = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object sPanel7: TsPanel
         Left = 0
         Top = 0
@@ -1492,6 +1512,10 @@ object frmRptTurnoverAndPayments2: TfrmRptTurnoverAndPayments2
       Caption = 'Confirmed Item Changed Price'
       SkinData.CustomColor = False
       SkinData.CustomFont = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object sPanel8: TsPanel
         Left = 0
         Top = 0
@@ -1673,6 +1697,10 @@ object frmRptTurnoverAndPayments2: TfrmRptTurnoverAndPayments2
       Caption = 'Confirmed Roomrent Pricechange'
       SkinData.CustomColor = False
       SkinData.CustomFont = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object sPanel9: TsPanel
         Left = 0
         Top = 0
@@ -1849,6 +1877,10 @@ object frmRptTurnoverAndPayments2: TfrmRptTurnoverAndPayments2
       Caption = 'PaymentList'
       SkinData.CustomColor = False
       SkinData.CustomFont = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object sPanel6: TsPanel
         Left = 0
         Top = 0

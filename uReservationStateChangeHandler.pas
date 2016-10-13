@@ -69,7 +69,7 @@ type
     procedure UpdateRoomResStateChangeHandlers;
     procedure Clear;
     function ChangeState(aNewState: TReservationState): boolean; override;
-/// <summary>
+    /// <summary>
     ///   For a full reservation the change is allowed if for at least one of the rooms the change is allowed
     /// </summary>
     function ChangeIsAllowed(aNewState: TReservationState): boolean; override;

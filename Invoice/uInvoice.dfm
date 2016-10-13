@@ -271,7 +271,6 @@ object frmInvoice: TfrmInvoice
         ParentFont = False
         ReadOnly = True
         TabOrder = 10
-        OnChange = edtCurrencyChange
         OnDblClick = edtCurrencyDblClick
         SkinData.SkinSection = 'EDIT'
         BoundLabel.Font.Charset = DEFAULT_CHARSET
@@ -560,7 +559,7 @@ object frmInvoice: TfrmInvoice
       end
       object btnExit: TcxButton
         Left = 907
-        Top = 2
+        Top = -3
         Width = 161
         Height = 44
         Hint = 'Close form'
@@ -596,7 +595,7 @@ object frmInvoice: TfrmInvoice
       end
       object btnProforma: TcxButton
         Left = 907
-        Top = 48
+        Top = 44
         Width = 161
         Height = 41
         Action = actPrintProforma
@@ -639,8 +638,8 @@ object frmInvoice: TfrmInvoice
       object chkShowPackage: TsCheckBox
         Left = 906
         Top = 135
-        Width = 119
-        Height = 17
+        Width = 111
+        Height = 20
         Caption = 'Package on invoice'
         Anchors = [akTop, akRight]
         Checked = True
@@ -674,7 +673,7 @@ object frmInvoice: TfrmInvoice
         Top = 0
         Width = 1018
         Height = 502
-        ActivePage = tabRoomPrice
+        ActivePage = tabInvoice
         Align = alClient
         TabOrder = 0
         object tabInvoice: TTabSheet
@@ -1346,7 +1345,7 @@ object frmInvoice: TfrmInvoice
               SearchFooter.HintHighlight = 'Highlight occurrences'
               SearchFooter.MatchCaseCaption = 'Match case'
               SortSettings.DefaultFormat = ssAutomatic
-              Version = '7.9.1.1'
+              Version = '8.1.2.0'
               ColWidths = (
                 24
                 91
@@ -1425,8 +1424,8 @@ object frmInvoice: TfrmInvoice
               object chkReCalcPrices: TsCheckBox
                 Left = 9
                 Top = 20
-                Width = 203
-                Height = 17
+                Width = 195
+                Height = 20
                 Caption = 'Recalc price on guestcount  changes'
                 Checked = True
                 State = cbChecked
@@ -1438,8 +1437,8 @@ object frmInvoice: TfrmInvoice
               object chkAutoUpdateNullPrice: TsCheckBox
                 Left = 9
                 Top = 46
-                Width = 134
-                Height = 17
+                Width = 126
+                Height = 20
                 Caption = 'Auto update Null Price'
                 Checked = True
                 State = cbChecked
@@ -2270,7 +2269,6 @@ object frmInvoice: TfrmInvoice
       end
       object Exit1: TMenuItem
         Caption = 'Close'
-        ShortCut = 27
         OnClick = Exit1Click
       end
       object N1: TMenuItem
@@ -2537,7 +2535,6 @@ object frmInvoice: TfrmInvoice
     end
     object actAddPackage: TAction
       Caption = 'Add Package'
-      OnExecute = actAddPackageExecute
     end
     object Action2: TAction
       Category = 'Lines'

@@ -860,7 +860,7 @@ uses
     , uAlerts
     , uFrmCheckOut
     , UITypes
-    ;
+    , uVatCalculator;
 
 {$R *.dfm}
 
@@ -2841,6 +2841,7 @@ begin
         result.VATCode := rSet.FieldByName('VATCode').Asstring;
         result.VATCodeDescription := rSet.FieldByName('VATCodeDescription').Asstring;
         result.VATPercentage := LocalFloatValue(rSet.FieldByName('VATPercentage').Asstring);
+        result.VATformula := rSet.FieldByName('valueformula').asString;
         result.ItemKind := Item_GetKind(aItem)
       end;
     end;
@@ -9974,10 +9975,6 @@ procedure Td.INV_UpdateBreakfastGuests(aReservation, aRoomReservation, aNewNumbe
 var
   s: string;
   rSet: TRoomerDataSet;
-  listItem: Integer;
-  lTotal: double;
-  lVat: double;
-  lTotalWOVat: double;
   lRRparam: integer;
 begin
   rSet := CreateNewDataSet;

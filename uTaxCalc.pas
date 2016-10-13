@@ -16,6 +16,7 @@ uses
   uUtils,
   IOUtils,
   RoomerMathParser
+  , uInvoiceEntities
   ;
 
 type
@@ -42,35 +43,6 @@ type
   end;
 
   TInvoiceTaxEntityList = TObjectList<TInvoiceTaxEntity>;
-
-  TInvoiceRoomEntity = class
-    RoomItem: String;
-    Guests: Integer;
-    Children: Integer;
-    Nights: Double;
-    Price: Double;
-    Vat: Double;
-    Discount: Double;
-  public
-    constructor Create(_RoomItem: String; _Guests: Integer; _Children: Integer; _Nights: Double; _Price: Double;
-      _Vat: Double; _Discount: Double);
-  end;
-
-  TInvoiceItemEntity = class
-    Item: String;
-    NumItems, Price, Vat: Double;
-  private
-    function GetPriceExcl: Double;
-
-  public
-    constructor Create(_Item: String; _NumItems, _Price, _Vat: Double);
-
-    property TotalWOVat: Double read GetPriceExcl;
-  end;
-
-  TInvoiceItemEntityDictionary = TObjectDictionary<String, TInvoiceItemEntity>;
-  TInvoiceRoomEntityList = TObjectList<TInvoiceRoomEntity>;
-  TInvoiceItemEntityList = TObjectList<TInvoiceItemEntity>;
 
   TTax = class
     ID: Integer;
@@ -329,33 +301,33 @@ begin
   end;
 end;
 
-function FillHashMapWithValues(ItemTaxEntities: TInvoiceItemEntityList): TInvoiceItemEntityDictionary;
-var
-  i: Integer;
-  Item: TInvoiceItemEntity;
-begin
-  result := TInvoiceItemEntityDictionary.Create([doOwnsValues]);
-  if Assigned(ItemTaxEntities) then
-  begin
-    for i := 0 to ItemTaxEntities.Count - 1 do
-    begin
-      if NOT result.TryGetValue(ItemTaxEntities[i].Item, Item) then
-      begin
-        Item := TInvoiceItemEntity.Create(ItemTaxEntities[i].Item, 0, ItemTaxEntities[i].Price * ItemTaxEntities[i]
-          .NumItems, ItemTaxEntities[i].Vat * ItemTaxEntities[i].NumItems);
-        result.Add(Item.Item, Item);
-      end
-      else
-      begin
-        Item.Price := Item.Price + (ItemTaxEntities[i].Price * ItemTaxEntities[i].NumItems);
-        Item.Vat := Item.Vat + (ItemTaxEntities[i].Vat * ItemTaxEntities[i].NumItems);
-      end;
-    end;
-  end;
-end;
+//function FillHashMapWithValues(ItemTaxEntities: TInvoiceItemEntityList): TInvoiceItemEntityDictionary;
+//var
+//  i: Integer;
+//  Item: TInvoiceItemEntity;
+//begin
+//  result := TInvoiceItemEntityDictionary.Create([doOwnsValues]);
+//  if Assigned(ItemTaxEntities) then
+//  begin
+//    for i := 0 to ItemTaxEntities.Count - 1 do
+//    begin
+//      if NOT result.TryGetValue(ItemTaxEntities[i].Item, Item) then
+//      begin
+//        Item := TInvoiceItemEntity.Create(ItemTaxEntities[i].Item, 0, ItemTaxEntities[i].Price * ItemTaxEntities[i]
+//          .NumItems, ItemTaxEntities[i].Vat * ItemTaxEntities[i].NumItems);
+//        result.Add(Item.Item, Item);
+//      end
+//      else
+//      begin
+//        Item.Price := Item.Price + (ItemTaxEntities[i].Price * ItemTaxEntities[i].NumItems);
+//        Item.Vat := Item.Vat + (ItemTaxEntities[i].Vat * ItemTaxEntities[i].NumItems);
+//      end;
+//    end;
+//  end;
+//end;
 
 function GetFilledInFormula(formula: String; RoomTaxEntity: TInvoiceRoomEntity;
-  map: TInvoiceItemEntityDictionary): String;
+  map: TInvoiceItemEntityList): String;
 var
   excl, incl, key: String;
   Item: TInvoiceItemEntity;
@@ -369,15 +341,13 @@ begin
       [rfReplaceAll, rfIgnoreCase]);
     result := StringReplace(result, incl, FloatToStr(RoomTaxEntity.Price), [rfReplaceAll, rfIgnoreCase]);
 
-    for key in map.Keys do
+    for Item in map do
     begin
-      excl := format('{%s.excl}', [key]);
-      incl := format('{%s.incl}', [key]);
-      if map.TryGetValue(key, Item) then
-      begin
-        result := StringReplace(result, excl, FloatToStr(Item.Price - Item.Vat), [rfReplaceAll, rfIgnoreCase]);
-        result := StringReplace(result, incl, FloatToStr(Item.Price), [rfReplaceAll, rfIgnoreCase]);
-      end;
+      excl := format('{%s.excl}', [Item.Item]);
+      incl := format('{%s.incl}', [Item.Item]);
+
+      result := StringReplace(result, excl, FloatToStr(Item.Price - Item.Vat), [rfReplaceAll, rfIgnoreCase]);
+      result := StringReplace(result, incl, FloatToStr(Item.Price), [rfReplaceAll, rfIgnoreCase]);
     end;
 
     glb.items.First;
@@ -443,7 +413,7 @@ function GetVATForItemEx(Item: String; Price: Double; NumItems: Double; RoomTaxE
   ItemTaxEntities: TInvoiceItemEntityList; ItemTypeInfo: TItemTypeInfo; custIncluded: Boolean = False): Double;
 var
   parser: TRoomerMathParser;
-  map: TInvoiceItemEntityDictionary;
+//  map: TInvoiceItemEntityDictionary;
   formula: String;
 
   Percentage, Value: Double;
@@ -458,21 +428,25 @@ begin
   begin
     if trim(ItemTypeInfo.valueFormula) <> '' then
     begin
-      map := FillHashMapWithValues(ItemTaxEntities);
-      try
-        formula := GetFilledInFormula(ItemTypeInfo.valueFormula, RoomTaxEntity, map);
+//      map := FillHashMapWithValues(ItemTaxEntities);
+//      try
+        formula := GetFilledInFormula(ItemTypeInfo.valueFormula, RoomTaxEntity, ItemTaxEntities);
         if (trim(formula) <> '') then
         begin
           parser := TRoomerMathParser.Create(nil);
-          parser.Expression := formula;
-          if parser.Parse then
-            result := parser.ParserResult * NumItems
-          else
-            result := _calcVAT(Price, ItemTypeInfo.VATPercentage)
+          try
+            parser.Expression := formula;
+            if parser.Parse then
+              result := parser.ParserResult * NumItems
+            else
+              result := _calcVAT(Price, ItemTypeInfo.VATPercentage)
+          finally
+            parser.Free;
+          end;
         end;
-      finally
-        map.Free;
-      end;
+//      finally
+//        map.Free;
+//      end;
     end
     else
     begin
@@ -522,8 +496,6 @@ var
   Amount, baseAmount: Double;
   IncludedInPrice: TEnumTaxIncl_Excl;
 
-  map: TInvoiceItemEntityDictionary;
-
   Percentage: Boolean;
   taxGuests: Integer;
 
@@ -531,93 +503,75 @@ begin
   //
   result := TInvoiceTaxEntityList.Create(True);
 
-  map := FillHashMapWithValues(ItemTaxEntities);
-  try
-
-    for l := 0 to TaxList.Count - 1 do
+  for l := 0 to TaxList.Count - 1 do
+  begin
+    Tax := TaxList[l];
+    if TaxsIsCurrentlyValid(Tax) then
     begin
-      Tax := TaxList[l];
-      if TaxsIsCurrentlyValid(Tax) then
+      Description := Tax.Description;
+      BookingItem := Tax.BOOKING_ITEM;
+      IncludedInPrice := Tax.INCL_EXCL;
+      for i := 0 to RoomTaxEntities.Count - 1 do
       begin
-        Description := Tax.Description;
-        BookingItem := Tax.BOOKING_ITEM;
-        IncludedInPrice := Tax.INCL_EXCL;
-        for i := 0 to RoomTaxEntities.Count - 1 do
+        Room := RoomTaxEntities[i];
+
+        taxGuests := Room.NumGuests;
+        if Tax.TAXCHILDREN then
+          taxGuests := taxGuests + Room.NumChildren;
+
+        if Tax.TAX_TYPE = TT_FIXED_AMOUNT then
         begin
-          Room := RoomTaxEntities[i];
-          // formula := GetFilledInFormula(Tax.VALUE_FORMULA, Room, map);
-          // if (trim(formula) <> '') then
-          // begin
-          // parser := TRoomerMathParser.Create(nil);
-          // parser.Expression := formula;
-          // if parser.Parse then
-          // Amount := parser.ParserResult
-          // else
-          // Amount := Tax.AMOUNT;
-          // end
-          // else
-          // Amount := Tax.AMOUNT;
-
-          taxGuests := Room.Guests;
-          if Tax.TAXCHILDREN then
-            taxGuests := taxGuests + Room.Children;
-
-          if Tax.TAX_TYPE = TT_FIXED_AMOUNT then
+          Amount := Tax.Amount;
+          Percentage := False;
+        end
+        else
+        begin
+          Percentage := True;
+          if Tax.NETTO_AMOUNT_BASED then
           begin
-            Amount := Tax.Amount;
-            Percentage := False;
-          end
-          else
-          begin
-            Percentage := True;
-            if Tax.NETTO_AMOUNT_BASED then
+            if TaxIsIncluded(Tax, customerIncludeDefault) then
             begin
-              if TaxIsIncluded(Tax, customerIncludeDefault) then
-              begin
-                baseAmount := Room.Price / (1 + ((Tax.Amount + ItemTypeInfo.VATPercentage) / 100));
-                // (Room.Price - Room.Vat)
-                Amount := baseAmount * Tax.Amount / 100;
-              end
-              else
-              begin
-                baseAmount := (Room.Price - Room.Vat);
-                Amount := baseAmount * Tax.Amount / 100;
-              end;
+              baseAmount := Room.Price / (1 + ((Tax.Amount + ItemTypeInfo.VATPercentage) / 100));
+              // (Room.Price - Room.Vat)
+              Amount := baseAmount * Tax.Amount / 100;
             end
             else
             begin
-              if TaxIsIncluded(Tax, customerIncludeDefault) then
-              begin
-                baseAmount := Room.Price / (1 + (Tax.Amount / 100)); // (Room.Price - Room.Vat)
-                Amount := baseAmount * Tax.Amount / 100;
-              end
-              else
-              begin
-                baseAmount := Room.Price;
-                Amount := baseAmount * Tax.Amount / 100;
-              end;
+              baseAmount := (Room.Price - Room.Vat);
+              Amount := baseAmount * Tax.Amount / 100;
             end;
-            Description := Description + format(' (%n %% of %m)', [Tax.Amount, baseAmount]);
+          end
+          else
+          begin
+            if TaxIsIncluded(Tax, customerIncludeDefault) then
+            begin
+              baseAmount := Room.Price / (1 + (Tax.Amount / 100)); // (Room.Price - Room.Vat)
+              Amount := baseAmount * Tax.Amount / 100;
+            end
+            else
+            begin
+              baseAmount := Room.Price;
+              Amount := baseAmount * Tax.Amount / 100;
+            end;
           end;
-
-          NumItems := 0;
-          if Tax.TAX_BASE = TB_ROOM_NIGHT then
-            NumItems := Room.Nights
-          else if Tax.TAX_BASE = TB_GUEST_NIGHT then
-            NumItems := Room.Nights * taxGuests
-          else if Tax.TAX_BASE = TB_ROOM then
-            NumItems := 1
-          else if Tax.TAX_BASE = TB_GUEST then
-            NumItems := taxGuests
-          else if Tax.TAX_BASE = TB_BOOKING then
-            NumItems := 1;
-
-          result.Add(TInvoiceTaxEntity.Create(BookingItem, Description, NumItems, Amount, IncludedInPrice, Percentage));
+          Description := Description + format(' (%n %% of %m)', [Tax.Amount, baseAmount]);
         end;
+
+        NumItems := 0;
+        if Tax.TAX_BASE = TB_ROOM_NIGHT then
+          NumItems := Room.Nights
+        else if Tax.TAX_BASE = TB_GUEST_NIGHT then
+          NumItems := Room.Nights * taxGuests
+        else if Tax.TAX_BASE = TB_ROOM then
+          NumItems := 1
+        else if Tax.TAX_BASE = TB_GUEST then
+          NumItems := taxGuests
+        else if Tax.TAX_BASE = TB_BOOKING then
+          NumItems := 1;
+
+        result.Add(TInvoiceTaxEntity.Create(BookingItem, Description, NumItems, Amount, IncludedInPrice, Percentage));
       end;
     end;
-  finally
-    map.Free;
   end;
 end;
 
@@ -822,6 +776,12 @@ end;
 // TEnumTaxIncl_Excl = (TIE_INCLUDED, TIE_EXCLUDED);
 
 { TTaxEntity }
+function TInvoiceTaxEntity.GetTotal: Double;
+begin
+  result := NumItems * Amount;
+end;
+
+
 
 constructor TInvoiceTaxEntity.Create(_BookingItem, _Description: String; _NumItems, _Amount: Double;
   _IncludedInPrice: TEnumTaxIncl_Excl; _Percentage: Boolean);
@@ -836,37 +796,6 @@ end;
 
 { TRoomTaxEntity }
 
-constructor TInvoiceRoomEntity.Create(_RoomItem: String; _Guests: Integer; _Children: Integer; _Nights: Double;
-  _Price, _Vat, _Discount: Double);
-begin
-  RoomItem := _RoomItem;
-  Guests := _Guests;
-  Children := _Children;
-  Nights := _Nights;
-  Price := _Price;
-  Discount := _Discount;
-  Vat := _Vat;
-end;
-
-function TInvoiceTaxEntity.GetTotal: Double;
-begin
-  result := NumItems * Amount;
-end;
-
-{ TInvoiceItemEntity }
-
-constructor TInvoiceItemEntity.Create(_Item: String; _NumItems, _Price, _Vat: Double);
-begin
-  Item := _Item;
-  NumItems := _NumItems;
-  Price := _Price;
-  Vat := _Vat;
-end;
-
-function TInvoiceItemEntity.GetPriceExcl: Double;
-begin
-  result := Price - Vat;
-end;
 
 initialization
 

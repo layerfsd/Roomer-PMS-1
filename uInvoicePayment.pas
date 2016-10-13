@@ -167,7 +167,7 @@ begin
       selected := lst[0];
       for i := 0 to frmInvoicePayment.cbxLocation.Items.Count-1 do
       begin
-        if frmInvoicePayment.cbxLocation.Items[i] = selected then break;
+        if frmInvoicePayment.cbxLocation.Items[i].ToLower.Equals(selected.ToLower) then break;
       end;
       frmInvoicePayment.cbxLocation.ItemIndex := i;
     end else
