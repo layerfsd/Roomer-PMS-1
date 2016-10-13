@@ -442,7 +442,7 @@ type
     function UpdateInfantCount(aReservation, aRoomReservation: Integer; const aInfants: integer): boolean;
 
     function isAllRRSameCurrency(reservation: Integer): boolean;
-    // Er Allar herbergisbókanir innan bókunnar í sama gjaldmiðli
+    // Er Allar herbergisbï¿½kanir innan bï¿½kunnar ï¿½ sama gjaldmiï¿½li
 
     function GetBreakfastIncluted(reservation, RoomReservation: Integer): boolean;
     function GetGroupAccount(reservation, RoomReservation: Integer): boolean;
@@ -622,7 +622,7 @@ type
     procedure UpdPaymentsWhenChangingReservationToGroup(reservation, RoomReservation: Integer);
     procedure UpdPaymentsWhenChangingReservationToRoom(reservation, RoomReservation: Integer);
 
-
+    procedure INV_UpdateBreakfastGuests(aReservation, aRoomReservation: integer; aNewNumberOfBreakfast: integer);
 
     // *************************************************************************
     // Control functions
@@ -2452,7 +2452,7 @@ begin
   result := tstringList.Create;
   rSet := CreateNewDataSet;
   try
-    // **zxhj þarf ekki að breyta hér   //Checket ok
+    // **zxhj ï¿½arf ekki aï¿½ breyta hï¿½r   //Checket ok
 
     sql :=
       ' SELECT ' +
@@ -2498,7 +2498,7 @@ begin
   aDate := date;
   rSet := CreateNewDataSet;
   try
-    // **zxhj þarf ekki að breyta hér  //  checked ok
+    // **zxhj ï¿½arf ekki aï¿½ breyta hï¿½r  //  checked ok
     sql :=
       ' SELECT ' +
       '     roomsdate.ADate ' +
@@ -3594,7 +3594,7 @@ begin
       ' FROM '#10 +
       '   roomsdate '#10 +
       ' WHERE '#10 +
-      '       (ADate <  %s )'#10 + // zxhj breytti hér var >
+      '       (ADate <  %s )'#10 + // zxhj breytti hï¿½r var >
       '   AND (Room =  %s )'#10 +
       '   AND (RoomReservation <>  %d ) '#10 +
       '   AND (NOT ResFlag IN (''X'',''C'')) '#10 + // zxhj Added - checked ok
@@ -3706,7 +3706,7 @@ begin
 end;
 
 function Td.isAllRRSameCurrency(reservation: Integer): boolean;
-// Eru allar Herbergisbókanir í sama gjaldmiðli
+// Eru allar Herbergisbï¿½kanir ï¿½ sama gjaldmiï¿½li
 var
   rSet: TRoomerDataSet;
   s: string;
@@ -4175,7 +4175,7 @@ begin
     s := s + '    AND (RoomReservation <> %d ) ' + #10; // ' + inttostr(RoomReservation) + '
   end;
   s := s + '    AND (subString(Room,1,1) <> ''<'') ' + #10;
-  s := s + '    AND (ResFlag <> ' + _db(STATUS_DELETED) + ' )'#10; // **zxhj línu bætt við
+  s := s + '    AND (ResFlag <> ' + _db(STATUS_DELETED) + ' )'#10; // **zxhj lï¿½nu bï¿½tt viï¿½
   s := s + '  ORDER BY Room '#10;
 
   // s := select_GetRoomList_Occupied(iRoomreservation);
@@ -4276,7 +4276,7 @@ begin
   // s := s + ' delete FROM roomsdate '+chr(10);
   // s := s + ' WHERE RoomReservation = ' + inttostr(iRoomReservation)+chr(10);
 
-  // *zxhj Breytti status hér í 'X'
+  // *zxhj Breytti status hï¿½r ï¿½ 'X'
   s := '';
   s := 'UPDATE roomsdate SET ResFlag =' + _db(STATUS_DELETED) + ' '#10;
   s := s + ' WHERE RoomReservation = ' + inttostr(iRoomReservation) + chr(10);
@@ -4362,7 +4362,7 @@ begin
 
   if sInvoices <> '' then
   begin
-    // if MessageDlg('Bókaðir reikningar eru á þessari pöntunn - Viltu hætta við ?', mtConfirmation, [mbYes, mbNo], 0) = mrYes then
+    // if MessageDlg('Bï¿½kaï¿½ir reikningar eru ï¿½ ï¿½essari pï¿½ntunn - Viltu hï¿½tta viï¿½ ?', mtConfirmation, [mbYes, mbNo], 0) = mrYes then
     if MessageDlg(GetTranslatedText('shTx_D_Cancel'), mtConfirmation, [mbYes, mbNo], 0) = mrYes then
     begin
       exit;
@@ -4385,11 +4385,11 @@ var
   s: string;
   reservation: Integer;
 begin
-  // sPrompt := 'Villtu örugglega setja þetta þessa herbergjapöntunn utan herbergja ?';
+  // sPrompt := 'Villtu ï¿½rugglega setja ï¿½etta ï¿½essa herbergjapï¿½ntunn utan herbergja ?';
   sPrompt := GetTranslatedText('shTx_D_OrderConfirm');
 
   if AllReservations then
-    // sPrompt := 'Viltu örugglega setja ÖLL herbergi pöntunnar ' + #13 + 'utan herbergja ?';
+    // sPrompt := 'Viltu ï¿½rugglega setja ï¿½LL herbergi pï¿½ntunnar ' + #13 + 'utan herbergja ?';
     sPrompt := GetTranslatedText('shTx_D_AllRoomsToNoRoom');
 
   if MessageDlg(sPrompt, mtConfirmation, [mbYes, mbNo], 0) = mrYes then
@@ -5010,7 +5010,7 @@ function Td.qryGetRoomPrices_1(Orderstr: string; priceCodeID, seasonId: Integer;
 var
   s: string;
 begin
-  // ATH  EKKI HÆGT !!!!!! CREATE FUNCTION
+  // ATH  EKKI Hï¿½GT !!!!!! CREATE FUNCTION
   s := '';
   s := s + 'SELECT ' + chr(10);
   s := s + '* ' + chr(10);
@@ -5021,29 +5021,29 @@ begin
 
   if priceCodeID > -1 then
     s := s + ' AND (pcID=' + inttostr(priceCodeID) + ') ' + chr(10);
-  // ooOO TímabilsAfmörkunn BYRJAR
+  // ooOO Tï¿½mabilsAfmï¿½rkunn BYRJAR
   if seasonId > -1 then
-  begin // nákvæmlega ákveðið tímabil
+  begin // nï¿½kvï¿½mlega ï¿½kveï¿½iï¿½ tï¿½mabil
     s := s + ' AND (seID=' + inttostr(seasonId) + ') ' + chr(10);
   end
   else if seasonId = -2 then
-  begin // núverandi +
+  begin // nï¿½verandi +
     s := s + ' AND (seEndDate>' + _DateToDBDate(date, True) + ') ' + chr(10);
   end
   else if seasonId = -3 then
-  begin // Núverandi =
+  begin // Nï¿½verandi =
     s := s + ' AND ((seStartDate<=' + _DateToDBDate(date, True) + ') AND (seEndDate>' + _DateToDBDate(date + 1, True) +
       ')) ' + chr(10);
   end
   else if seasonId = -4 then
-  begin // liðinn
+  begin // liï¿½inn
     s := s + ' AND (seEndDate<' + _DateToDBDate(date + 1, True) + ') ' + chr(10);
   end
   else if seEndDate > 1 then //
   begin
     s := s + ' AND (seEndDate>' + _DateToDBDate(seEndDate, True) + ') ' + chr(10);
   end;
-  // xxXX TímabilsAfmörkunn Endar
+  // xxXX Tï¿½mabilsAfmï¿½rkunn Endar
 
   if RoomType <> '' then
     s := s + ' AND (RoomType=' + _db(RoomType) + ') ' + chr(10);
@@ -5822,7 +5822,7 @@ begin
 end;
 
 { **
-  Vinnslur vegna tengingar við stólpa
+  Vinnslur vegna tengingar viï¿½ stï¿½lpa
   ** }
 
 procedure Td.exportToSnertaTextRec(silent: boolean);
@@ -5980,8 +5980,8 @@ begin
     if not silent then
       if counter > 0 then
       begin
-        // if MessageDlg('Það er þegar búið að útlesa reikning ' + sInvoiceNumber + ' ' + inttostr(counter) + ' sinnum ' + chr(10)
-        // + 'Halda áfram með útlestur ??', mtConfirmation, [mbYes, mbNo], 0) = mrNo then
+        // if MessageDlg('ï¿½aï¿½ er ï¿½egar bï¿½iï¿½ aï¿½ ï¿½tlesa reikning ' + sInvoiceNumber + ' ' + inttostr(counter) + ' sinnum ' + chr(10)
+        // + 'Halda ï¿½fram meï¿½ ï¿½tlestur ??', mtConfirmation, [mbYes, mbNo], 0) = mrNo then
         if MessageDlg(format(GetTranslatedText('shTx_D_AccountReadContinue'), [sInvoiceNumber, counter]),
           mtConfirmation, [mbYes, mbNo], 0) = mrNo then
           exit;
@@ -6032,7 +6032,7 @@ begin
 
     sMemo := d.mtHead_.FieldByName('ExtraText').Asstring;
 
-    // dagsetning útlesturs og dagsetning reiknings
+    // dagsetning ï¿½tlesturs og dagsetning reiknings
     datetimetostring(s, 'dd.mm.yyyy hh:nn', now);
     sTmp := '';
     sTmp := sTmp + s;
@@ -6367,8 +6367,8 @@ begin
       begin
         if iOutCounter > 0 then
         begin
-          // if MessageDlg('Það er þegar búið að útlesa reikning ' + sInvoiceNumber + ' ' + inttostr(iOutCounter) + ' sinnum ' + chr(10)
-          // + 'Halda áfram með útlestur ??', mtConfirmation, [mbYes, mbNo], 0) = mrNo then
+          // if MessageDlg('ï¿½aï¿½ er ï¿½egar bï¿½iï¿½ aï¿½ ï¿½tlesa reikning ' + sInvoiceNumber + ' ' + inttostr(iOutCounter) + ' sinnum ' + chr(10)
+          // + 'Halda ï¿½fram meï¿½ ï¿½tlestur ??', mtConfirmation, [mbYes, mbNo], 0) = mrNo then
           if MessageDlg(format(GetTranslatedText('shTx_D_AccountReadContinue'), [sInvoiceNumber, iOutCounter]),
             mtConfirmation, [mbYes, mbNo], 0) = mrNo then
             exit;
@@ -6462,7 +6462,7 @@ begin
       sMemo := d.mtHead_.FieldByName('ExtraText').Asstring;
       sInvoiceRefrence := d.mtHead_.FieldByName('invRefrence').Asstring;
 
-      // dagsetning útlesturs og dagsetning reiknings
+      // dagsetning ï¿½tlesturs og dagsetning reiknings
       datetimetostring(s, 'yyyy-mm-dd hh:nn:ss', now);
       sDateTime := s;
 
@@ -7148,7 +7148,7 @@ begin
 
         if ctrlGetInteger('AccountType') = 1 then
         begin
-          // Showmessage('Yfirfærsla í Stólpa ');
+          // Showmessage('Yfirfï¿½rsla ï¿½ Stï¿½lpa ');
           // InvoiceToStolpiTilbod(silent);
         end;
 
@@ -8066,7 +8066,7 @@ begin
     end;
   end
   else
-  begin // setja í gagnagrunn
+  begin // setja ï¿½ gagnagrunn
     if g.qHomeExportPOSType = peExportLogFile then
     begin
       // **
@@ -9139,7 +9139,7 @@ begin
       '  roomsdate '#10 +
       'WHERE '#10 +
       '  (paid=0) AND (roomreservation=%d) and (aDate=%s) '#10 +
-      '   AND (ResFlag <> ' + _db(STATUS_DELETED) + ' ) '#10; // **zxhj bætt við
+      '   AND (ResFlag <> ' + _db(STATUS_DELETED) + ' ) '#10; // **zxhj bï¿½tt viï¿½
 
     s := format(sql, [iRoomReservation, _db(aDate)]);
     if hData.rSet_bySQL(rSet, s) then
@@ -9164,7 +9164,7 @@ begin
         s := s + '   (RoomReservation = ' + inttostr(iRoomReservation) + ') '#10;
         s := s + ' AND (Adate=' + _db(aDate) + ') ';
         s := s + ' AND (ResFlag <> ' + _db(STATUS_DELETED) + ' ) '#10;
-        /// /**zxhj bætt við
+        /// /**zxhj bï¿½tt viï¿½
 
         if not cmd_bySQL(s) then
         begin
@@ -9669,7 +9669,7 @@ end;
 function Td.RR_Upd_GuestCount(iRoomReservation, NewCount: Integer): boolean;
 var
   oldCount: Integer;
-  addCount: Integer; // +tala Bæta við -Tala eyða
+  addCount: Integer; // +tala Bï¿½ta viï¿½ -Tala eyï¿½a
   sCountry: string;
 
   i: Integer;
@@ -9955,16 +9955,63 @@ begin
       else
         if reservation <> 0 then
       begin
-        // Hópreikningur
+        // Hï¿½preikningur
         InvoiceKind := 2;
         result := RV_FirstDayAndRoom(reservation, Room);
       end
       else
       begin
-        // staðgreiðslureikningur
+        // staï¿½greiï¿½slureikningur
         InvoiceKind := 3;
       end;
     end;
+  finally
+    freeandnil(rSet);
+  end;
+end;
+
+procedure Td.INV_UpdateBreakfastGuests(aReservation, aRoomReservation, aNewNumberOfBreakFast: integer);
+var
+  s: string;
+  rSet: TRoomerDataSet;
+  listItem: Integer;
+  lTotal: double;
+  lVat: double;
+  lTotalWOVat: double;
+  lRRparam: integer;
+begin
+  rSet := CreateNewDataSet;
+  try
+
+    s := s + '  UPDATE invoicelines SET' + #10;
+    s := s + '    Number = %s ' + #10;
+    s := s + '  , Total = Price * Number ' + #10;
+    s := s + '  , VAT = %s * Number ' + #10;
+    s := s + '  , TotalWOVat = Total - VAT ' + #10;
+    s := s + '   WHERE Reservation = %s AND Roomreservation = %s AND ItemID = %s ' + #10;
+
+    lRRParam := aRoomReservation;
+    if RR_GetIsGroopAccount(aRoomReservation) then
+    begin
+      lRRParam := 0;
+      s := s + '   AND Description LIKE "%%' + RR_GetRoomNr(aRoomReservation) + ')%%"' + #10 ;
+    end;
+
+    s := format(s, [  _db(aNewNumberOfBreakfast),
+                      _db(TVatCalculator.CalcVATforItem(g.qBreakFastItem)),
+                      _db(aReservation),
+                      _db(lRRparam),
+                      _db(g.qBreakFastItem)]);
+
+    // debugmessage(s);
+    copytoclipboard(s);
+
+    try
+      cmd_bySQL(s);
+    except
+      raise Exception.create(getTranslatedText('shFailedUpdateBreakfastCount'));
+    end;
+
   finally
     freeandnil(rSet);
   end;
@@ -11569,7 +11616,7 @@ begin
   // s := s + ' DELETE FROM roomsdate '+chr(10);
   // s := s + ' WHERE Reservation = ' + inttostr(iReservation)+chr(10);
 
-  // **zxhj Breytti hér
+  // **zxhj Breytti hï¿½r
   s := 'UPDATE roomsdate SET ResFlag =' + _db(STATUS_DELETED) + ' '#10;
   s := s + ' WHERE Reservation = ' + inttostr(iReservation) + chr(10);
   if not cmd_bySQL(s) then
@@ -14068,7 +14115,7 @@ begin
     s := s + '   , il.confirmAmount '#10;
     s := s + '   , ih.Customer '#10;
 
-    // *2 finna total útfrá
+    // *2 finna total ï¿½tfrï¿½
     //
 
     s := s + '   , (SELECT stayTaxIncluted FROM customers WHERE customer = ih.customer) AS isTaxIncluted '#10;

@@ -2581,6 +2581,7 @@ end;
 
 procedure TfrmReservationProfile.tvRoomsGuestCountPropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
 var
+  lOrigCount: integer;
   theData: recPersonHolder;
   s: string;
 begin
@@ -2589,25 +2590,32 @@ begin
     mRooms.Post;
   end;
 
+  lOrigCount := mRoomsGuestCount.asInteger;
   s := mRoomsGuestname.asstring;
   initPersonHolder(theData);
   theData.reservation := mRoomsReservation.asInteger;
   theData.roomReservation := mRoomsRoomReservation.asInteger;
   theData.name := s;
 
-  if openGuestProfile(actNone, theData) then
-  begin
-  end;
+  openGuestProfile(actNone, theData);
 
   screen.Cursor := crHourGlass;
   mRooms.DisableControls;
   try
     mRooms.Edit;
-    mRoomsGuestName.asstring :=
-      d.RR_GetFirstGuestName(mRoomsRoomReservation.asInteger);
-    mRoomsGuestCount.asInteger :=
-      d.RR_GetGuestCount(zRoomReservation);
-    mRooms.Post;
+    try
+      mRoomsGuestName.asstring := d.RR_GetFirstGuestName(mRoomsRoomReservation.asInteger);
+      mRoomsGuestCount.asInteger := d.RR_GetGuestCount(zRoomReservation);
+      mRooms.Post;
+    except
+      mRooms.Cancel;
+      raise;
+    end;
+
+    if (lOrigCount <> mRoomsGuestCount.asInteger) and not mRoomsBreakFast.AsBoolean then
+      if (MessageDlg(GetTranslatedText('shTx_FrmReservationprofile_UpdateExclBreakfast'), mtConfirmation, mbYesNo, 0) = mrYes) then
+         d.INV_UpdateBreakfastGuests(zReservation, zRoomReservation, mRoomsGuestCount.AsInteger * mRoomsdayCount.AsInteger);
+
     Display_rGrid(mRoomsRoomReservation.asInteger);
   finally
     screen.Cursor := crDefault;
@@ -3075,11 +3083,13 @@ var
   RoomType: String;
 
   temp: String;
+  lOrgNightCount: integer;
 begin
   roomReservation := mRoomsRoomReservation.asInteger;
   reservation := mRoomsReservation.asInteger;
   Room := mRoomsRoom.asstring;
   RoomType := mRoomsRoomType.asstring;
+  lOrgNightCount := mRoomsdayCount.AsInteger;
 
   if mRoomsDS.State = dsEdit then
   begin
@@ -3098,16 +3108,32 @@ begin
 
   iNights := trunc(departure) - trunc(arrival);
 
-  mRooms.Edit;
-  mRoomsArrival.AsDateTime := arrival;
-  mRoomsDeparture.AsDateTime := departure;
-  mRoomsDayCount.asInteger := iNights;
-  mRooms.Post;
+  mRooms.DisableControls;
+  try
+    mRooms.Edit;
+    try
+      mRoomsArrival.AsDateTime := arrival;
+      mRoomsDeparture.AsDateTime := departure;
+      mRoomsDayCount.asInteger := iNights;
+      mRooms.Post;
+
+      if (lOrgNightCount <> mRoomsdayCount.AsInteger) and not mRoomsBreakFast.AsBoolean then
+        if (MessageDlg(GetTranslatedText('shTx_FrmReservationprofile_UpdateExclBreakfast'), mtConfirmation, mbYesNo, 0) = mrYes) then
+           d.INV_UpdateBreakfastGuests(zReservation, zRoomReservation, mRoomsGuestCount.AsInteger * mRoomsdayCount.AsInteger);
+
+    except
+      mRooms.Cancel;
+      raise;
+    end;
+  finally
+    mRooms.EnableControls;
+  end;
 
   temp := format
     ('(doRRDateChange 2) Availability made dirty for Reservation=%d, RoomReservation=%d, Room=%s, RoomType=%s, FOR ArrDate=%s, DepDate=%s',
     [reservation, roomReservation, Room, RoomType, DateToSqlString(arrival), DateToSqlString(departure)]);
   d.roomerMainDataSet.SystemMakeAvailabilityDirtyFromRoomReservation(roomReservation, temp);
+
 end;
 
 procedure TfrmReservationProfile.DropComboTarget1DragOver(Sender: TObject; ShiftState: TShiftState; APoint: TPoint;
