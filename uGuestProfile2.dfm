@@ -505,6 +505,8 @@ object frmGuestProfile2: TfrmGuestProfile2
     Align = alClient
     TabOrder = 2
     LookAndFeel.NativeStyle = False
+    ExplicitLeft = 1
+    ExplicitTop = 411
     object tvData: TcxGridDBTableView
       Navigator.Buttons.CustomButtons = <>
       Navigator.Buttons.First.Visible = True
@@ -892,7 +894,6 @@ object frmGuestProfile2: TfrmGuestProfile2
     object prLink_grData: TdxGridReportLink
       Active = True
       Component = grData
-      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.GrayShading = True
@@ -905,8 +906,7 @@ object frmGuestProfile2: TfrmGuestProfile2
       PrinterPage.PageSize.Y = 297000
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
-      ReportDocument.CreationDate = 42653.891623576390000000
-      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
+      ReportDocument.CreationDate = 42654.711505879630000000
       BuiltInReportLink = True
     end
   end

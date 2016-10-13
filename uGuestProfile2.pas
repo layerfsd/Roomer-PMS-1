@@ -277,6 +277,7 @@ type
 
   private
     { Private declarations }
+    SettingMainName : Boolean;
     zFirstTime       : boolean;
     zAllowGridEdit   : boolean;
     zFilterOn        : boolean;
@@ -334,8 +335,6 @@ uses
 //////////////////////////////////////////////////////////////////////////////////////////////
 //  unit global functions
 //////////////////////////////////////////////////////////////////////////////////////////////
-
-var iiii : integer;
 
 function openGuestProfile(act : TActTableAction; var theData : recPersonHolder) : boolean;
 var
@@ -566,13 +565,12 @@ end;
 
 procedure TfrmGuestProfile2.FormCreate(Sender: TObject);
 begin
-  iiii := 0;
-
   RoomerLanguage.TranslateThisForm(self);
   glb.PerformAuthenticationAssertion(self);
   PlaceFormOnVisibleMonitor(self);
   zFirstTime  := true;
   zAct        := actNone;
+  SettingMainName := False;
 //  D.LoadTcxGridColumnOrder(self, grData);
 end;
 
@@ -657,15 +655,14 @@ end;
 ////////////////////////////////////////////////////////////////////////////////////////
 // memory table
 ////////////////////////////////////////////////////////////////////////////////////////
-var SETTING_MAIN_NAME : Boolean = False;
 procedure TfrmGuestProfile2.m_AfterPost(DataSet: TDataSet);
 var
   Bookmark: TBookmark;
   AnyMainName : Boolean;
 begin
-  if SETTING_MAIN_NAME then exit;
+  if SettingMainName then exit;
 
-  SETTING_MAIN_NAME := True;
+  SettingMainName := True;
   try
     Bookmark := m_.GetBookmark; { Allocate memory and assign a value }
     m_.DisableControls; { Turn off display of records in data controls }
@@ -693,7 +690,7 @@ begin
       m_.EnableControls; { Turn on display of records in data controls, if necessary }
     end;
   finally
-    SETTING_MAIN_NAME := False;
+    SettingMainName := False;
   end;
 end;
 
@@ -1492,53 +1489,5 @@ end;
 
 
 end.
-
-
-
-procedure TfrmGuestProfile2.tvDataPersonsProfilesIdGetProperties(Sender: TcxCustomGridTableItem; ARecord: TcxCustomGridRecord; var AProperties: TcxCustomEditProperties);
-var
-  PersonsProfilesId : integer;
-  isMainName : boolean;
-begin
-//  if zfirsttime then exit;
-////
-//  if arecord.Index >=0  then
-//  begin
-//    try
-//      isMainname := Arecord.Values[tvDataMainName.index];
-//      PersonsProfilesId := Arecord.Values[tvDataPersonsProfilesId.index];
-//      eriProfile.Properties.Buttons[0].Visible := isMainName;
-//      eriProfile.Properties.Buttons[1].Visible := PersonsProfilesId > 0;
-//      eriProfile.Properties.Buttons[2].Visible := (isMainName) AND (PersonsProfilesId <= 0);
-//      eriProfile.Properties.Buttons[0].enabled := true;
-//      eriProfile.Properties.Buttons[1].enabled := true;
-//      eriProfile.Properties.Buttons[2].enabled := true;
-//      eriProfile.Properties.ReadOnly := false;
-//    except
-////      on ex: Exception do begin
-////        showmessage(ex.ClassName + #13#10 + ex.Message);
-////      end;
-//    end;
-//  end;
-
-
-  // 0 = Select from list  (Edit current)
-  // 1 = Edit current profile
-  // 2 = Create new from m_
-
-//  if NOT m_.Eof then
-//  begin
-////    inc(iiii);
-//    rgrPersonsProfile.Properties.Buttons[0].Visible := m_['MainName'];
-//    rgrPersonsProfile.Properties.Buttons[1].Visible := m_['PersonsProfilesId'] > 0;
-//    rgrPersonsProfile.Properties.Buttons[2].Visible := m_['MainName'] AND (m_['PersonsProfilesId'] <= 0);
-//    rgrPersonsProfile.Properties.Buttons[0].Enabled := m_['MainName'];
-//    rgrPersonsProfile.Properties.Buttons[1].Enabled := m_['PersonsProfilesId'] > 0;
-//    rgrPersonsProfile.Properties.Buttons[2].Enabled := m_['MainName'] AND (m_['PersonsProfilesId'] <= 0);
-////    label1.Caption := inttostr(iiii)+' / '+inttostr(aRecord.Index);
-////     label2.Caption := booltostr(isMainName)+' - '+inttostr(PersonsProfilesId);
-//  end;
-end;
-
 
 

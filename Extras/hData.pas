@@ -13680,6 +13680,7 @@ end;
 function Package_getRoomDescription(Code: string; Room: String; Arrival, Departure: TdateTime; guestname : string=''): string;
 var
   RoomRentItem: string;
+  InvoiceText, PacketDescription : String;
 begin
   result := '';
 
@@ -13690,7 +13691,9 @@ begin
   if not glb.Items.Locate('Item', RoomRentItem, []) then
     Exit;
 
-  result := glb.Packages['invoiceText'];
+  InvoiceText := glb.Packages['invoiceText'];
+  PacketDescription := glb.Packages['Description'];
+  result := IIF(InvoiceText='', PacketDescription, InvoiceText);
   result := StringReplace(result, '{room}', Room, [rfReplaceAll, rfIgnoreCase]);
   result := StringReplace(result, '{arrival}', FormatDateTime('dd.mm', Arrival), [rfReplaceAll, rfIgnoreCase]);
   result := StringReplace(result, '{departure}', FormatDateTime('dd.mm', Departure), [rfReplaceAll, rfIgnoreCase]);
