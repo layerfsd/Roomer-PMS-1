@@ -209,7 +209,8 @@ Type
     function GetBookKeepingCodes: TRoomerDataSet;
     function GetChannelManagersSet: TRoomerDataSet;
     procedure PreviousGuestsReloadFetchHandler(Sender: TObject);
-    procedure PutPmsSettingsValue(Key, Value: String; CreateIfNotExists : Boolean = False);
+    procedure PutPmsSettingsValue(KeyGroup, Key, Value: String; CreateIfNotExists : Boolean = False);
+    function GetPmsSettingsSet: TRoomerDataSet;
    public
       constructor Create;
       destructor Destroy; override;
@@ -240,12 +241,12 @@ Type
       function LocateSpecificRecordAndGetValue(table, field, value: String; fieldToGet : String; var resultingValue : Double): Boolean; overload;
       function LocateSpecificRecordAndGetValue(table, field : String; value : Integer; fieldToGet: String; var resultingValue: Double): Boolean; overload;
 
-      function GetPmsSettingsAsBoolean(Key : String; ExceptionOnNotFound : Boolean; Default : Boolean = False) : Boolean;
-      procedure SetPmsSettingsAsBoolean(Key: String; Value : Boolean; CreateIfNotExists: Boolean = False);
-      function GetPmsSettingsAsInteger(Key : String; ExceptionOnNotFound : Boolean; Default : Integer = 0) : Integer;
-      procedure SetPmsSettingsAsInteger(Key : String; Value : Integer; CreateIfNotExists : Boolean = False);
-      function GetPmsSettingsAsString(Key : String; ExceptionOnNotFound : Boolean; Default : String = '') : String;
-      procedure SetPmsSettingsAsString(Key : String; Value : String; CreateIfNotExists : Boolean = False);
+      function GetPmsSettingsAsBoolean(KeyGroup, Key : String; ExceptionOnNotFound : Boolean; Default : Boolean = False) : Boolean;
+      procedure SetPmsSettingsAsBoolean(KeyGroup, Key: String; Value : Boolean; CreateIfNotExists: Boolean = False);
+      function GetPmsSettingsAsInteger(KeyGroup, Key : String; ExceptionOnNotFound : Boolean; Default : Integer = 0) : Integer;
+      procedure SetPmsSettingsAsInteger(KeyGroup, Key : String; Value : Integer; CreateIfNotExists : Boolean = False);
+      function GetPmsSettingsAsString(KeyGroup, Key : String; ExceptionOnNotFound : Boolean; Default : String = '') : String;
+      procedure SetPmsSettingsAsString(KeyGroup, Key : String; Value : String; CreateIfNotExists : Boolean = False);
 
       function GetDataSetFromDictionary(table: String): TRoomerDataSet;
 
@@ -325,6 +326,7 @@ Type
       property RoomTypeRulesSet: TRoomerDataSet read GetRoomTypeRulesSet;
       property RoomTypesSet    : TRoomerDataSet read GetRoomTypesSet;
       property ChannelsSet     : TRoomerDataSet read GetChannelsSet;
+      property PmsSettingsSet     : TRoomerDataSet read GetPmsSettingsSet;
       property ChannelManagersSet : TRoomerDataSet read GetChannelManagersSet;
       property CurrenciesSet   : TRoomerDataSet read GetCurrenciesSet;
       property ControlSet      : TRoomerDataSet read GetControlSet;
@@ -591,11 +593,11 @@ begin
   end;
 end;
 
-procedure TGlobalSettings.PutPmsSettingsValue(Key, Value : String; CreateIfNotExists : Boolean = False);
+procedure TGlobalSettings.PutPmsSettingsValue(KeyGroup, Key, Value : String; CreateIfNotExists : Boolean = False);
 var DataSet : TRoomerDataSet;
 begin
   Dataset := GetDataSetFromDictionary('pms_settings');
-  if Dataset.Locate('key', Key, []) then
+  if Dataset.Locate('KeyGroup;key', VarArrayOf([KeyGroup, Key]), []) then
   begin
     DataSet.Edit;
     DataSet['value'] := Value;
@@ -609,57 +611,57 @@ begin
   end;
 end;
 
-function TGlobalSettings.GetPmsSettingsAsBoolean(Key : String; ExceptionOnNotFound : Boolean; Default : Boolean = False) : Boolean;
-var KeyValue : String;
+function TGlobalSettings.GetPmsSettingsAsBoolean(KeyGroup, Key : String; ExceptionOnNotFound : Boolean; Default : Boolean = False) : Boolean;
+//var KeyValue : String;
 begin
   result := Default;
-  if LocateSpecificRecordAndGetValue('pms_settings', 'key', Key, 'value', KeyValue) then
-    result := KeyValue = 'TRUE'
+  if PmsSettingsSet.Locate('KeyGroup;key', VarArrayOf([KeyGroup, Key]), []) then
+    result := PmsSettingsSet['value'] = 'TRUE'
   else
     if ExceptionOnNotFound then
       raise RoomerKeyValueNotFound.Create('Key ' + Key + ' was not found in settings.');
 end;
 
-procedure TGlobalSettings.SetPmsSettingsAsBoolean(Key : String; Value : Boolean; CreateIfNotExists : Boolean = False);
+procedure TGlobalSettings.SetPmsSettingsAsBoolean(KeyGroup, Key : String; Value : Boolean; CreateIfNotExists : Boolean = False);
 var KeyValue : String;
 begin
   KeyValue := IIF(Value, 'TRUE', 'FALSE');
-  PutPmsSettingsValue(Key, KeyValue, CreateIfNotExists);
+  PutPmsSettingsValue(KeyGroup, Key, KeyValue, CreateIfNotExists);
 end;
 
-function TGlobalSettings.GetPmsSettingsAsInteger(Key : String; ExceptionOnNotFound : Boolean; Default : Integer = 0) : Integer;
-var KeyValue : String;
+function TGlobalSettings.GetPmsSettingsAsInteger(KeyGroup, Key : String; ExceptionOnNotFound : Boolean; Default : Integer = 0) : Integer;
+//var KeyValue : String;
 begin
   result := Default;
-  if LocateSpecificRecordAndGetValue('pms_settings', 'key', Key, 'value', KeyValue) then
-    result := StrToIntDef(KeyValue, Default)
+  if PmsSettingsSet.Locate('KeyGroup;key', VarArrayOf([KeyGroup, Key]), []) then
+    result := StrToIntDef(PmsSettingsSet['value'], Default)
   else
     if ExceptionOnNotFound then
       raise RoomerKeyValueNotFound.Create('Key ' + Key + ' was not found in settings.');
 end;
 
-procedure TGlobalSettings.SetPmsSettingsAsInteger(Key : String; Value : Integer; CreateIfNotExists : Boolean = False);
+procedure TGlobalSettings.SetPmsSettingsAsInteger(KeyGroup, Key : String; Value : Integer; CreateIfNotExists : Boolean = False);
 var KeyValue : String;
 begin
   KeyValue := IntToStr(Value);
-  PutPmsSettingsValue(Key, KeyValue, CreateIfNotExists);
+  PutPmsSettingsValue(KeyGroup, Key, KeyValue, CreateIfNotExists);
 end;
 
 
-function TGlobalSettings.GetPmsSettingsAsString(Key : String; ExceptionOnNotFound : Boolean; Default : String = '') : String;
-var KeyValue : String;
+function TGlobalSettings.GetPmsSettingsAsString(KeyGroup, Key : String; ExceptionOnNotFound : Boolean; Default : String = '') : String;
+//var KeyValue : String;
 begin
   result := Default;
-  if LocateSpecificRecordAndGetValue('pms_settings', 'key', Key, 'value', KeyValue) then
-    result := KeyValue
+  if PmsSettingsSet.Locate('KeyGroup;key', VarArrayOf([KeyGroup, Key]), []) then
+    result := PmsSettingsSet['value']
   else
     if ExceptionOnNotFound then
       raise RoomerKeyValueNotFound.Create('Key ' + Key + ' was not found in settings.');
 end;
 
-procedure TGlobalSettings.SetPmsSettingsAsString(Key : String; Value : String; CreateIfNotExists : Boolean = False);
+procedure TGlobalSettings.SetPmsSettingsAsString(KeyGroup, Key : String; Value : String; CreateIfNotExists : Boolean = False);
 begin
-  PutPmsSettingsValue(Key, Value, CreateIfNotExists);
+  PutPmsSettingsValue(KeyGroup, Key, Value, CreateIfNotExists);
 end;
 
 function TGlobalSettings.GetRateInclusive(channelId : Integer; Item : String; Rate : Double) : Double;
@@ -1194,6 +1196,11 @@ begin
   result := nil;
   if tablesList.TryGetValue(table, entity) then
     result := entity.RSet;
+end;
+
+function TGlobalSettings.GetPmsSettingsSet: TRoomerDataSet;
+begin
+  result := GetDataSetFromDictionary('pms_settings');
 end;
 
 function TGlobalSettings.GetChannelsSet: TRoomerDataSet;

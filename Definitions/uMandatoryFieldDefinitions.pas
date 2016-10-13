@@ -86,6 +86,7 @@ const MF_PMSSETTING_NAMES : Array[low(TMandatoryCheckinField)..high(TMandatoryCh
       'MARKET_MANDATORY',
       'NATIONALITY_MANDATORY',
       'PAYMENT_GUARANTEE_MANDATORY');
+      MF_KEY_GROUP = 'MANDATORY_CHECK_IN_FIELDS';
 
      /// <summary>
      ///   Offset used to map a TMandatoryField to a integer used as Tag of a component. This is the
@@ -134,7 +135,7 @@ end;
 
 function TMandatoryFieldHelper.isCurrentlyOn: Boolean;
 begin
-  result := glb.GetPmsSettingsAsBoolean(PMSSettingName, False, True)
+  result := glb.GetPmsSettingsAsBoolean(MF_KEY_GROUP, PMSSettingName, False, True)
 end;
 
 class function TMandatoryFieldHelper.MinimumTagid: integer;
@@ -144,7 +145,7 @@ end;
 
 procedure TMandatoryFieldHelper.SetOnOrOff(TRUE_OR_FALSE: Boolean);
 begin
-  glb.SetPmsSettingsAsBoolean(PMSSettingName, TRUE_OR_FALSE);
+  glb.SetPmsSettingsAsBoolean(MF_KEY_GROUP, PMSSettingName, TRUE_OR_FALSE);
 end;
 
 function TMandatoryFieldHelper.PMSSettingName: String;
