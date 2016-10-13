@@ -1280,20 +1280,20 @@ begin
 //    s := 'Select SplitNumber, reservation, roomreservation, to_bool(EXISTS (SELECT * FROM invoicelines WHERE invoiceNumber=invoiceheads.InvoiceNumber AND ImportSource<>'''')) AS hasPackage from invoiceheads where invoicenumber = %d ';
     s := 'Select SplitNumber, reservation, roomreservation, ' +
          'to_bool(EXISTS (SELECT * FROM invoicelines WHERE invoiceNumber=xxx.InvoiceNumber AND ItemId=c.RoomRentItem)) AS hasRooms, ' +
-         '       to_int(IF(NOT FIND_IN_SET(''9'', InvoiceIndexes), 9, ' +
-         '         IF(NOT FIND_IN_SET(''8'', InvoiceIndexes), 8, ' +
-         '           IF(NOT FIND_IN_SET(''7'', InvoiceIndexes), 7, ' +
-         '             IF(NOT FIND_IN_SET(''6'', InvoiceIndexes), 6, ' +
-         '               IF(NOT FIND_IN_SET(''5'', InvoiceIndexes), 5, ' +
-         '                 IF(NOT FIND_IN_SET(''4'', InvoiceIndexes), 4, ' +
-         '                   IF(NOT FIND_IN_SET(''3'', InvoiceIndexes), 3, ' +
-         '                     IF(NOT FIND_IN_SET(''2'', InvoiceIndexes), 2, ' +
-         '                       IF(NOT FIND_IN_SET(''1'', InvoiceIndexes), 1, ' +
-         '                         0)))))))))) AS SelectedInvoiceIndex ' +
+         '       to_int(IF(NOT FIND_IN_SET(''0'', InvoiceIndexes), 0, ' +
+         '         IF(NOT FIND_IN_SET(''1'', InvoiceIndexes), 1, ' +
+         '           IF(NOT FIND_IN_SET(''2'', InvoiceIndexes), 2, ' +
+         '             IF(NOT FIND_IN_SET(''3'', InvoiceIndexes), 3, ' +
+         '               IF(NOT FIND_IN_SET(''4'', InvoiceIndexes), 4, ' +
+         '                 IF(NOT FIND_IN_SET(''5'', InvoiceIndexes), 5, ' +
+         '                   IF(NOT FIND_IN_SET(''6'', InvoiceIndexes), 6, ' +
+         '                     IF(NOT FIND_IN_SET(''7'', InvoiceIndexes), 7, ' +
+         '                       IF(NOT FIND_IN_SET(''8'', InvoiceIndexes), 8, ' +
+         '                         9)))))))))) AS SelectedInvoiceIndex ' +
 
          'FROM ( ' +
          'Select ih.SplitNumber, ih.reservation, ih.roomreservation, ih.InvoiceNumber, '  +
-         '(SELECT GROUP_CONCAT(DISTINCT InvoiceIndex) FROM invoicelines WHERE RoomReservation=ih.RoomReservation AND Reservation=ih.Reservation AND InvoiceNumber<0) AS InvoiceIndexes ' +
+         '(SELECT IFNULL((SELECT GROUP_CONCAT(DISTINCT InvoiceIndex) FROM invoicelines WHERE RoomReservation=ih.RoomReservation AND Reservation=ih.Reservation AND InvoiceNumber<0), '''')) AS InvoiceIndexes ' +
          'from invoiceheads ih where invoicenumber = %d) xxx, control c ';
     s := format(s, [Invoice]);
     CopyToClipboard(s);
