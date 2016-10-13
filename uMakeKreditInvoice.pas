@@ -476,6 +476,8 @@ var
   OrginalInvoice : integer;
   Reservation : integer;
   RoomReservation : integer;
+  hasPackage : Boolean;
+  SelectedInvoiceIndex : Integer;
   Showpackage : boolean;
   EmailAddress : string;
 
@@ -502,8 +504,9 @@ begin
     ViewInvoice2(zKeditInvoiceNumber, true, false, true, ShowPackage, EmailAddress);
     if zdoRestore then
     begin
-      d.copyInvoiceToInvoiceLinesTmp(OrginalInvoice, true);
-      EditInvoice(Reservation, Roomreservation, 0, 0, 0, 0, false,false,false,true);
+      SelectedInvoiceIndex := 0;
+      d.copyInvoiceToInvoiceLinesTmp(OrginalInvoice, true, hasPackage, SelectedInvoiceIndex);
+      EditInvoice(Reservation, Roomreservation, 0, SelectedInvoiceIndex, 0, 0, false,false,false,NOT hasPackage);
     end;
   end else
   begin

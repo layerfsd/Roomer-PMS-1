@@ -314,7 +314,8 @@ type
     procedure LoadTcxGridColumnOrder(form: TForm; grid: TcxGrid);
 
     function colorCodeOfStatus(status: String): TColor;
-    procedure CopyInvoiceToInvoiceLinesTmp(Invoice: Integer; FromKredit: boolean);
+    procedure CopyInvoiceToInvoiceLinesTmp(Invoice: Integer; FromKredit: boolean); overload;
+    procedure CopyInvoiceToInvoiceLinesTmp(Invoice: Integer; FromKredit: boolean; var hasPackage : Boolean; var SelectedInvoiceIndex : Integer); overload;
 
     function GetCustomerCurrency(sCustomer: string): string;
     function GetCustomerName(customer: string): string;
@@ -1220,6 +1221,13 @@ begin
 end;
 
 procedure Td.CopyInvoiceToInvoiceLinesTmp(Invoice: Integer; FromKredit: boolean);
+var hasPackage : Boolean;
+    SelectedInvoiceIndex : Integer;
+begin
+  CopyInvoiceToInvoiceLinesTmp(Invoice, FromKredit, hasPackage, SelectedInvoiceIndex);
+end;
+
+procedure Td.CopyInvoiceToInvoiceLinesTmp(Invoice: Integer; FromKredit: boolean; var hasPackage : Boolean; var SelectedInvoiceIndex : Integer);
 var
   reservation: Integer;
   RoomReservation: Integer;
@@ -1244,11 +1252,16 @@ var
   ImportRefrence: string;
   ImportSource: string;
   IsPackage: boolean;
+  hasRooms : Boolean;
+
+//  hasPackage : Boolean;
 
   s: string;
   rSet: TRoomerDataSet;
 
   sql: string;
+
+  lExecutionPlan : TRoomerExecutionPlan;
 
 begin
   // Empty it
@@ -1260,15 +1273,37 @@ begin
 
   qRes := -1;
   qRres := -1;
+  hasPackage := False;
 
   rSet := CreateNewDataSet;
   try
-    s := 'Select reservation, roomreservation from invoiceheads where invoicenumber = %d ';
+//    s := 'Select SplitNumber, reservation, roomreservation, to_bool(EXISTS (SELECT * FROM invoicelines WHERE invoiceNumber=invoiceheads.InvoiceNumber AND ImportSource<>'''')) AS hasPackage from invoiceheads where invoicenumber = %d ';
+    s := 'Select SplitNumber, reservation, roomreservation, ' +
+         'to_bool(EXISTS (SELECT * FROM invoicelines WHERE invoiceNumber=xxx.InvoiceNumber AND ItemId=c.RoomRentItem)) AS hasRooms, ' +
+         '       to_int(IF(NOT FIND_IN_SET(''9'', InvoiceIndexes), 9, ' +
+         '         IF(NOT FIND_IN_SET(''8'', InvoiceIndexes), 8, ' +
+         '           IF(NOT FIND_IN_SET(''7'', InvoiceIndexes), 7, ' +
+         '             IF(NOT FIND_IN_SET(''6'', InvoiceIndexes), 6, ' +
+         '               IF(NOT FIND_IN_SET(''5'', InvoiceIndexes), 5, ' +
+         '                 IF(NOT FIND_IN_SET(''4'', InvoiceIndexes), 4, ' +
+         '                   IF(NOT FIND_IN_SET(''3'', InvoiceIndexes), 3, ' +
+         '                     IF(NOT FIND_IN_SET(''2'', InvoiceIndexes), 2, ' +
+         '                       IF(NOT FIND_IN_SET(''1'', InvoiceIndexes), 1, ' +
+         '                         0)))))))))) AS SelectedInvoiceIndex ' +
+
+         'FROM ( ' +
+         'Select ih.SplitNumber, ih.reservation, ih.roomreservation, ih.InvoiceNumber, '  +
+         '(SELECT GROUP_CONCAT(DISTINCT InvoiceIndex) FROM invoicelines WHERE RoomReservation=ih.RoomReservation AND Reservation=ih.Reservation AND InvoiceNumber<0) AS InvoiceIndexes ' +
+         'from invoiceheads ih where invoicenumber = %d) xxx, control c ';
     s := format(s, [Invoice]);
+    CopyToClipboard(s);
     if hData.rSet_bySQL(rSet, s) then
     begin
       qRes := rSet.FieldByName('Reservation').AsInteger;
-      qRres := rSet.FieldByName('RoomReservation').AsInteger;;
+      qRres := rSet.FieldByName('RoomReservation').AsInteger;
+      hasRooms := rSet.FieldByName('hasRooms').AsBoolean;
+      SplitNumber := rSet.FieldByName('SplitNumber').AsInteger;
+      SelectedInvoiceIndex := rSet.FieldByName('SelectedInvoiceIndex').AsInteger;
 
       if not FromKredit then
       begin
@@ -1296,117 +1331,333 @@ begin
     freeandnil(rSet);
   end;
 
-  rSet := CreateNewDataSet;
-  try
+//  if ((NOT fromKredit) OR (NOT hasPackage)) AND (SplitNumber = 0) then
+  if ((NOT fromKredit) OR (NOT hasRooms)) AND (SplitNumber <> 0) then
+  begin
+    hasPackage := False;
 
-    sql :=
-      ' SELECT ' +
-      '     Reservation ' +
-      '   , RoomReservation ' +
-      '   , SplitNumber ' +
-      '   , ItemNumber ' +
-      '   , PurchaseDate ' +
-      '   , InvoiceNumber ' +
-      '   , ItemID ' +
-      '   , Number ' +
-      '   , Description ' +
-      '   , Price ' +
-      '   , VATType ' +
-      '   , Total ' +
-      '   , TotalWOVat ' +
-      '   , Vat ' +
-      '   , CurrencyRate ' +
-      '   , Currency ' +
-      '   , persons ' +
-      '   , Nights ' +
-      '   , BreakfastPrice ' +
-      '   , importRefrence ' +
-      '   , ImportSource ' +
-      '   , isPackage ' +
-      ' FROM ' +
-      '   invoicelines ' +
-      ' WHERE ' +
-      '   (InvoiceNumber = %d ) ' +
-      ' ORDER BY itemNumber ';
+    rSet := CreateNewDataSet;
+    try
 
-    s := format(sql, [Invoice]);
-    if hData.rSet_bySQL(rSet, s) then
-    begin
-      RoomReservation := 0;
-      reservation := 0;
-      while not rSet.eof do
+      sql :=
+        ' SELECT ' +
+        '     Reservation ' +
+        '   , RoomReservation ' +
+        '   , SplitNumber ' +
+        '   , ItemNumber ' +
+        '   , PurchaseDate ' +
+        '   , InvoiceNumber ' +
+        '   , ItemID ' +
+        '   , Number ' +
+        '   , Description ' +
+        '   , Price ' +
+        '   , VATType ' +
+        '   , Total ' +
+        '   , TotalWOVat ' +
+        '   , Vat ' +
+        '   , CurrencyRate ' +
+        '   , Currency ' +
+        '   , persons ' +
+        '   , Nights ' +
+        '   , BreakfastPrice ' +
+        '   , importRefrence ' +
+        '   , ImportSource ' +
+        '   , isPackage ' +
+        ' FROM ' +
+        '   invoicelines ' +
+        ' WHERE ' +
+        '   (InvoiceNumber = %d ) ' +
+        ' ORDER BY itemNumber ';
+
+      s := format(sql, [Invoice]);
+      if hData.rSet_bySQL(rSet, s) then
       begin
-        reservation := rSet.FieldByName('Reservation').AsInteger;
-        RoomReservation := rSet.FieldByName('RoomReservation').AsInteger;;
-        SplitNumber := rSet.FieldByName('Splitnumber').AsInteger;
-        ItemNumber := rSet.FieldByName('ItemNumber').AsInteger;
-        PurchaseDate := rSet.FieldByName('PurchaseDate').Asstring;
-        InvoiceNumber := rSet.FieldByName('InvoiceNumber').AsInteger;
-        ItemID := rSet.FieldByName('ItemId').Asstring;
-        Number := rSet.FieldByName('number').asFloat; // -96
-        Description := rSet.FieldByName('Description').Asstring;
-        Price := LocalFloatValue(rSet.FieldByName('Price').Asstring);
-        VATType := rSet.FieldByName('VATType').Asstring;
-        Total := LocalFloatValue(rSet.FieldByName('Total').Asstring);
-        TotalWOVAT := LocalFloatValue(rSet.FieldByName('TotalWOVat').Asstring);
-        Vat := LocalFloatValue(rSet.FieldByName('Vat').Asstring);
-        CurrencyRate := LocalFloatValue(rSet.FieldByName('CurrencyRate').Asstring);
-        Currency := rSet.FieldByName('Currency').Asstring;
-        persons := rSet.FieldByName('Persons').AsInteger;
-        Nights := rSet.FieldByName('Nights').AsInteger;
-        ImportSource := rSet.FieldByName('ImportSource').Asstring;
-        ImportRefrence := rSet.FieldByName('importRefrence').Asstring;
-        IsPackage := rSet['isPackage'];
-
-        d.kbmInvoiceLines.Insert;
-        d.kbmInvoiceLines.FieldByName('Reservation').AsInteger := reservation;
-        d.kbmInvoiceLines.FieldByName('RoomReservation').AsInteger := RoomReservation;
-        d.kbmInvoiceLines.FieldByName('SplitNumber').AsInteger := SplitNumber;;
-        d.kbmInvoiceLines.FieldByName('ItemNumber').AsInteger := ItemNumber;
-        d.kbmInvoiceLines.FieldByName('PurchaseDate').asDateTime := _dbdateToDate(PurchaseDate);
-        d.kbmInvoiceLines.FieldByName('InvoiceNumber').AsInteger := InvoiceNumber;
-        d.kbmInvoiceLines.FieldByName('ItemId').Asstring := ItemID;
-        d.kbmInvoiceLines.FieldByName('Number').asFloat := Number; // -96
-        d.kbmInvoiceLines.FieldByName('Description').Asstring := Description;
-        d.kbmInvoiceLines.FieldByName('Price').asFloat := Price;
-        d.kbmInvoiceLines.FieldByName('VATType').Asstring := VATType;
-        d.kbmInvoiceLines.FieldByName('Total').asFloat := Total;
-        d.kbmInvoiceLines.FieldByName('TotalWOVat').asFloat := TotalWOVAT;
-        d.kbmInvoiceLines.FieldByName('VAT').asFloat := Vat;
-        d.kbmInvoiceLines.FieldByName('CurrencyRate').asFloat := CurrencyRate;
-        d.kbmInvoiceLines.FieldByName('Currency').Asstring := Currency;
-        d.kbmInvoiceLines.FieldByName('Persons').AsInteger := persons;
-        d.kbmInvoiceLines.FieldByName('Nights').AsInteger := Nights;
-
-        d.kbmInvoiceLines.FieldByName('BreakfastPrice').asFloat := 0.00;
-
-        d.kbmInvoiceLines.FieldByName('ImportSource').Asstring := ImportSource;
-        d.kbmInvoiceLines.FieldByName('importRefrence').Asstring := ImportRefrence;
-        d.kbmInvoiceLines.FieldByName('isPackage').asBoolean := IsPackage;
-        d.kbmInvoiceLines.FieldByName('confirmdate').asDateTime := 2;
-        d.kbmInvoiceLines.post;
-
-        rSet.next;
-      end;
-
-      if (reservation <> 0) then
-        d.AddInvoiceLinesTMP(0, reservation);
-
-      if not FromKredit then
-      begin
-        if RoomReservation = 0 then
+        RoomReservation := 0;
+        reservation := 0;
+        while not rSet.eof do
         begin
-          EditInvoice(reservation, 0, 0, 0, 0, 0, False, True, False);
-        end
-        else
+          reservation := rSet.FieldByName('Reservation').AsInteger;
+          RoomReservation := rSet.FieldByName('RoomReservation').AsInteger;;
+          SplitNumber := rSet.FieldByName('Splitnumber').AsInteger;
+          ItemNumber := rSet.FieldByName('ItemNumber').AsInteger;
+          PurchaseDate := rSet.FieldByName('PurchaseDate').Asstring;
+          InvoiceNumber := rSet.FieldByName('InvoiceNumber').AsInteger;
+          ItemID := rSet.FieldByName('ItemId').Asstring;
+          Number := rSet.FieldByName('number').asFloat; // -96
+          Description := rSet.FieldByName('Description').Asstring;
+          Price := LocalFloatValue(rSet.FieldByName('Price').Asstring);
+          VATType := rSet.FieldByName('VATType').Asstring;
+          Total := LocalFloatValue(rSet.FieldByName('Total').Asstring);
+          TotalWOVAT := LocalFloatValue(rSet.FieldByName('TotalWOVat').Asstring);
+          Vat := LocalFloatValue(rSet.FieldByName('Vat').Asstring);
+          CurrencyRate := LocalFloatValue(rSet.FieldByName('CurrencyRate').Asstring);
+          Currency := rSet.FieldByName('Currency').Asstring;
+          persons := rSet.FieldByName('Persons').AsInteger;
+          Nights := rSet.FieldByName('Nights').AsInteger;
+          ImportSource := rSet.FieldByName('ImportSource').Asstring;
+          ImportRefrence := rSet.FieldByName('importRefrence').Asstring;
+          IsPackage := rSet['isPackage'];
+
+          d.kbmInvoiceLines.Insert;
+          d.kbmInvoiceLines.FieldByName('Reservation').AsInteger := reservation;
+          d.kbmInvoiceLines.FieldByName('RoomReservation').AsInteger := RoomReservation;
+          d.kbmInvoiceLines.FieldByName('SplitNumber').AsInteger := SplitNumber;;
+          d.kbmInvoiceLines.FieldByName('ItemNumber').AsInteger := ItemNumber;
+          d.kbmInvoiceLines.FieldByName('PurchaseDate').asDateTime := _dbdateToDate(PurchaseDate);
+          d.kbmInvoiceLines.FieldByName('InvoiceNumber').AsInteger := InvoiceNumber;
+          d.kbmInvoiceLines.FieldByName('ItemId').Asstring := ItemID;
+          d.kbmInvoiceLines.FieldByName('Number').asFloat := Number; // -96
+          d.kbmInvoiceLines.FieldByName('Description').Asstring := Description;
+          d.kbmInvoiceLines.FieldByName('Price').asFloat := Price;
+          d.kbmInvoiceLines.FieldByName('VATType').Asstring := VATType;
+          d.kbmInvoiceLines.FieldByName('Total').asFloat := Total;
+          d.kbmInvoiceLines.FieldByName('TotalWOVat').asFloat := TotalWOVAT;
+          d.kbmInvoiceLines.FieldByName('VAT').asFloat := Vat;
+          d.kbmInvoiceLines.FieldByName('CurrencyRate').asFloat := CurrencyRate;
+          d.kbmInvoiceLines.FieldByName('Currency').Asstring := Currency;
+          d.kbmInvoiceLines.FieldByName('Persons').AsInteger := persons;
+          d.kbmInvoiceLines.FieldByName('Nights').AsInteger := Nights;
+
+          d.kbmInvoiceLines.FieldByName('BreakfastPrice').asFloat := 0.00;
+
+          d.kbmInvoiceLines.FieldByName('ImportSource').Asstring := ImportSource;
+          d.kbmInvoiceLines.FieldByName('importRefrence').Asstring := ImportRefrence;
+          d.kbmInvoiceLines.FieldByName('isPackage').asBoolean := IsPackage;
+          d.kbmInvoiceLines.FieldByName('confirmdate').asDateTime := 2;
+          d.kbmInvoiceLines.post;
+
+          rSet.next;
+        end;
+
+        if (reservation <> 0) then
+          d.AddInvoiceLinesTMP(0, reservation);
+
+        if not FromKredit then
         begin
-          // This is not groupinvoice
-          EditInvoice(reservation, RoomReservation, 0, 0, 0, 0, False, True, False);
+          if RoomReservation = 0 then
+          begin
+            EditInvoice(reservation, 0, 0, 0, 0, 0, False, True, False);
+          end
+          else
+          begin
+            // This is not groupinvoice
+            EditInvoice(reservation, RoomReservation, 0, 0, 0, 0, False, True, False);
+          end;
         end;
       end;
+    finally
+      freeandnil(rSet);
     end;
-  finally
-    freeandnil(rSet);
+  end else
+  begin
+      hasPackage := True;
+      lExecutionPlan := d.roomerMainDataSet.CreateExecutionPlan;
+      try
+        sql := format('INSERT INTO invoicelines ' +
+                      '( ' +
+                      'AutoGen, ' +
+                      'Reservation, ' +
+                      'RoomReservation, ' +
+                      'SplitNumber, ' +
+                      'ItemNumber, ' +
+                      'PurchaseDate, ' +
+                      'InvoiceNumber, ' +
+                      'ItemID, ' +
+                      'Number, ' +
+                      'Description, ' +
+                      'Price, ' +
+                      'VATType, ' +
+                      'Total, ' +
+                      'TotalWOVat, ' +
+                      'Vat, ' +
+                      'AutoGenerated, ' +
+                      'CurrencyRate, ' +
+                      'Currency, ' +
+                      'ReportDate, ' +
+                      'ReportTime, ' +
+                      'Persons, ' +
+                      'Nights, ' +
+                      'BreakfastPrice, ' +
+                      'Ayear, ' +
+                      'Amon, ' +
+                      'Aday, ' +
+                      'ilAccountKey, ' +
+                      'ItemCurrency, ' +
+                      'ItemCurrencyRate, ' +
+                      'Discount, ' +
+                      'Discount_isprecent, ' +
+                      'ImportRefrence, ' +
+                      'ImportSource, ' +
+                      'isPackage, ' +
+                      'RoomReservationAlias, ' +
+                      'ItemSource, ' +
+                      'InvoiceIndex, ' +
+                      'staffCreated, ' +
+                      'staffLastEdit, ' +
+                      'itemAdded ' +
+                      ') ' +
+                      ' ' +
+                      'SELECT ' +
+                      'UUID(), ' +
+                      'Reservation, ' +
+                      'RoomReservation, ' +
+                      'SplitNumber, ' +
+                      'ItemNumber, ' +
+                      'PurchaseDate, ' +
+                      '-1, ' +
+                      'ItemID, ' +
+                      'Number, ' +
+                      'Description, ' +
+                      'Price, ' +
+                      'VATType, ' +
+                      'Total, ' +
+                      'TotalWOVat, ' +
+                      'Vat, ' +
+                      'AutoGenerated, ' +
+                      'CurrencyRate, ' +
+                      'Currency, ' +
+                      'ReportDate, ' +
+                      'ReportTime, ' +
+                      'Persons, ' +
+                      'Nights, ' +
+                      'BreakfastPrice, ' +
+                      'Ayear, ' +
+                      'Amon, ' +
+                      'Aday, ' +
+                      'ilAccountKey, ' +
+                      'ItemCurrency, ' +
+                      'ItemCurrencyRate, ' +
+                      'Discount, ' +
+                      'Discount_isprecent, ' +
+                      'ImportRefrence, ' +
+                      'ImportSource, ' +
+                      'isPackage, ' +
+                      'RoomReservationAlias, ' +
+                      'ItemSource, ' +
+                      '%d, ' +
+                      'staffCreated, ' +
+                      'staffLastEdit, ' +
+                      'itemAdded ' +
+                      'FROM invoicelines, ' +
+                      '     control c ' +
+                      'WHERE InvoiceNumber=%d AND (NOT ItemId IN (c.RoomRentItem, ' +
+                      '(SELECT Item FROM items WHERE ID=(SELECT BOOKING_ITEM_ID FROM home100.TAXES WHERE HOTEL_ID=SUBSTR(database(), 9, 10) AND PurchaseDate >= VALID_FROM AND PurchaseDate <= VALID_TO LIMIT 1) LIMIT 1)))',
+                      [SelectedInvoiceIndex, Invoice]);
+        CopyToClipboard(sql);
+        lExecutionPlan.AddExec(sql);
+
+        sql := format('INSERT INTO invoiceheads ' +
+                      '(Reservation, ' +
+                      'RoomReservation, ' +
+                      'SplitNumber, ' +
+                      'InvoiceNumber, ' +
+                      'InvoiceDate, ' +
+                      'Customer, ' +
+                      'Name, ' +
+                      'Address1, ' +
+                      'Address2, ' +
+                      'Address3, ' +
+                      'Address4, ' +
+                      'Country, ' +
+                      'Total, ' +
+                      'TotalWOVAT, ' +
+                      'TotalVAT, ' +
+                      'TotalBreakFast, ' +
+                      'ExtraText, ' +
+                      'Finished, ' +
+                      'InvoiceType, ' +
+                      'ihDate, ' +
+                      'ihStaff, ' +
+                      'ihPayDate, ' +
+                      'ihConfirmDate, ' +
+                      'ihInvoiceDate, ' +
+                      'ihCurrency, ' +
+                      'ihCurrencyRate, ' +
+                      'invRefrence, ' +
+                      'TotalStayTax, ' +
+                      'TotalStayTaxNights, ' +
+                      'showPackage, ' +
+                      'location, ' +
+                      'staff, ' +
+                      'externalInvoiceId, ' +
+                      'InvoiceFinalized, ' +
+                      'externalIdentifier ' +
+                      ') ' +
+                      'SELECT Reservation, ' +
+                      'RoomReservation, ' +
+                      'SplitNumber, ' +
+                      '-1, ' +
+                      'CURRENT_DATE, ' +
+                      'Customer, ' +
+                      'Name, ' +
+                      'Address1, ' +
+                      'Address2, ' +
+                      'Address3, ' +
+                      'Address4, ' +
+                      'Country, ' +
+                      'Total, ' +
+                      'TotalWOVAT, ' +
+                      'TotalVAT, ' +
+                      'TotalBreakFast, ' +
+                      'ExtraText, ' +
+                      '0, ' +
+                      'InvoiceType, ' +
+                      'CURRENT_DATE, ' +
+                      'ihStaff, ' +
+                      'CURRENT_DATE, ' +
+                      '''1900-01-01 00:00:00'', ' +
+                      'CURRENT_DATE, ' +
+                      'ihCurrency, ' +
+                      'ihCurrencyRate, ' +
+                      'invRefrence, ' +
+                      'TotalStayTax, ' +
+                      'TotalStayTaxNights, ' +
+                      'showPackage, ' +
+                      'location, ' +
+                      'staff, ' +
+                      'NULL, ' +
+                      'NULL, ' +
+                      ''''' ' +
+                      ' ' +
+                      'FROM invoiceheads WHERE InvoiceNumber=%d', [Invoice]);
+        CopyToClipboard(sql);
+        lExecutionPlan.AddExec(sql);
+
+        sql := format('UPDATE roomreservations rr, ' +
+                      '       control c ' +
+                      'Set AvrageRate=(SELECT SUM(RoomRate * Paid) FROM roomsdate rd WHERE rd.RoomReservation=rr.RoomReservation AND rd.ResFlag=rr.Status) ' +
+                      IIF(hasRooms, ', InvoiceIndex=' + inttostr(SelectedInvoiceIndex), '') + ' ' +
+                      'WHERE RoomReservation IN (SELECT DISTINCT RoomReservationAlias FROM invoicelines WHERE InvoiceNumber=%d AND ItemId=c.RoomRentItem) ', [Invoice]);
+        CopyToClipboard(sql);
+        lExecutionPlan.AddExec(sql);
+
+        sql := format('UPDATE roomsdate rd, ' +
+                      '       control c ' +
+                      'Set Paid=0 ' +
+                      'WHERE RoomReservation IN (SELECT DISTINCT RoomReservationAlias FROM invoicelines WHERE InvoiceNumber=%d AND ItemId=c.RoomRentItem) ', [Invoice]);
+        CopyToClipboard(sql);
+        lExecutionPlan.AddExec(sql);
+
+        lExecutionPlan.Execute(ptExec);
+
+        if hasRooms then
+        begin
+          MessageDlg(format(GetTranslatedText('shTx_D_SaveToSpecifiedInvoiceIndex'), [SelectedInvoiceIndex + 1]), mtInformation, [mbOK], 0);
+        end;
+
+//        if RoomReservation = 0 then
+//        begin
+//          EditInvoice(reservation, 0, 0, 0, 0, 0, False, True, False);
+//        end
+//        else
+//        begin
+//          // This is not groupinvoice
+//          EditInvoice(reservation, RoomReservation, 0, 0, 0, 0, False, True, False);
+//        end;
+
+      finally
+        lExecutionPlan.Free;
+      end;
   end;
 end;
 

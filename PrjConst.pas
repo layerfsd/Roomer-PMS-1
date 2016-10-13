@@ -1563,6 +1563,8 @@ begin
                 'The Extra(s) [%s] do not have enough available stock for the whole reservation period: '+ #13 +
                 'Do you want to continue anyway?');
   constants.Add('shDeleteDayClosingTime', 'Delete DayClosingtime');
+
+  constants.Add('shTx_D_SaveToSpecifiedInvoiceIndex', 'Saved invoice as number %d');
 end;
 
 procedure AddConstants_OfflineReports;
