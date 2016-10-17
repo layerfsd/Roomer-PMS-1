@@ -2505,24 +2505,31 @@ begin
   if OffLineMode then
     exit;
 
-  if (Sender = btnBack) then
-    iMPly := -1
-  else
-    iMPly := 1;
+  btnBack.Enabled := false;
+  btnForward.Enabled := false;
+  try
+    if (Sender = btnBack) then
+      iMPly := -1
+    else
+      iMPly := 1;
 
-  // Ctrl means a week forward or backward
-  if IsControlKeyPressed then
-  begin
-    lNewDate := dtDate.Date + 7 * iMPly;
+    // Ctrl means a week forward or backward
+    if IsControlKeyPressed then
+    begin
+      lNewDate := dtDate.Date + 7 * iMPly;
 
-    // Ctrl-Alt means a month forward or backwork
-    if IsAltKeyPressed then
-      lNewDate := IncMonth(dtDate.Date, iMPly)
-  end
-  else
-    lNewDate := dtDate.Date + 1 * iMPly;
+      // Ctrl-Alt means a month forward or backwork
+      if IsAltKeyPressed then
+        lNewDate := IncMonth(dtDate.Date, iMPly)
+    end
+    else
+      lNewDate := dtDate.Date + 1 * iMPly;
 
-  dtDate.Date := lNewDate;
+    dtDate.Date := lNewDate;
+  finally
+    btnBack.Enabled := True;
+    btnForward.Enabled := True;
+  end;
 end;
 
 procedure TfrmMain.btnBreakfastGuestsClick(Sender: TObject);
