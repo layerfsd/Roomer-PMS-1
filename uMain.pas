@@ -7871,6 +7871,7 @@ begin
   zDateFrom := trunc(dtDate.Date);
   zDateTo := zDateFrom + zNights;
   PostMessage(handle, WM_REFRESH_DATE, 0, 0);
+  PostMessage(handle, WM_REFRESH_STAFF_COMM_NOTIFIER, 0, 0);
 end;
 
 procedure TfrmMain.grPeriodRoomsEnter(Sender: TObject);
