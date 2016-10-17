@@ -456,16 +456,12 @@ begin
 
   glb.ForceTableRefresh;
 
-// BHG
-    maintNotes := glb.GetDataSetFromDictionary('maintenanceroomnotes');
-    maintCodes := glb.GetDataSetFromDictionary('maintenancecodes');
-    maintStaff := glb.GetDataSetFromDictionary('staffmembers');
-//  s := format(select_objRoomList2_FillList,[]);
-//
-//  rSet := CreateNewDataSet;
+    maintNotes := glb.Maintenanceroomnotes;
+    maintCodes := glb.MaintenanceCodes;
+    maintStaff := glb.Staffmembers;
+
     rSet := glb.RoomsSet;
-//  try
-//    hData.rSet_bySQL(rSet,s);
+
     Rset.First;
     While not rSet.Eof do
     begin

@@ -51,6 +51,7 @@ object frmCountries: TfrmCountries
       BevelOuter = bvNone
       TabOrder = 1
       SkinData.SkinSection = 'PANEL'
+      ExplicitTop = -6
       DesignSize = (
         620
         88)
@@ -133,7 +134,7 @@ object frmCountries: TfrmCountries
       end
       object btnOther: TsButton
         Left = 314
-        Top = 7
+        Top = 9
         Width = 165
         Height = 24
         Hint = 'Other actions - Select from menu'
@@ -145,7 +146,6 @@ object frmCountries: TfrmCountries
         ShowHint = True
         Style = bsSplitButton
         TabOrder = 3
-        OnClick = btnOtherClick
         SkinData.SkinSection = 'BUTTON'
       end
       object btnClose: TsButton
@@ -169,7 +169,7 @@ object frmCountries: TfrmCountries
         Left = 55
         Top = 63
         Width = 242
-        Height = 17
+        Height = 19
         Caption = 'Active (if checked then just active are visible'
         Checked = True
         State = cbChecked
@@ -267,7 +267,6 @@ object frmCountries: TfrmCountries
         Navigator.InfoPanel.Visible = True
         Navigator.Visible = True
         OnCellDblClick = tvDataCellDblClick
-        OnInitEdit = tvDataInitEdit
         DataController.DataSource = DS
         DataController.Summary.DefaultGroupSummaryItems = <>
         DataController.Summary.FooterSummaryItems = <>
@@ -477,6 +476,7 @@ object frmCountries: TfrmCountries
     SortOptions = []
     BeforeInsert = m_BeforeInsert
     BeforePost = m_BeforePost
+    AfterPost = m_AfterPost
     BeforeDelete = m_BeforeDelete
     OnNewRecord = m_NewRecord
     Left = 376
@@ -526,6 +526,7 @@ object frmCountries: TfrmCountries
     Top = 184
     object prLink_grData: TdxGridReportLink
       Component = grData
+      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.GrayShading = True
@@ -538,6 +539,7 @@ object frmCountries: TfrmCountries
       PrinterPage.PageSize.Y = 297000
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
+      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       BuiltInReportLink = True
     end
   end

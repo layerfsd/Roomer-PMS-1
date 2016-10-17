@@ -20,11 +20,10 @@ type
     mfGuarantee
   );
 
-  TMandatoryCheckInFieldet = set of TMandatoryCheckinField;
+  TMandatoryCheckInFieldSet = set of TMandatoryCheckinField;
 
   TMandatoryFieldHelper = record helper for TMandatoryCheckinField
   private
-    function PMSSettingName: String;
       /// <summary>
       ///   Create a TManadatoryCheckinField from a PMSSettingName
       /// </summary>
@@ -42,6 +41,8 @@ type
 
 
   public
+      class function PMSSettingGroup: string; static;
+      function PMSSettingName: String;
       /// <summary>
       ///   Fill a TStrings with translated descriptions in order of enumeration. Can by used to populate a TCombobox.<br />
       ///  The objects list of aItemList will contain the ord() of the TManadatoryFieldsSet cast to an TObject
@@ -59,7 +60,7 @@ type
       /// <summary>
       ///   Set Self  as manditory in the global settings
       /// </summary>
-      procedure SetOnOrOff(TRUE_OR_FALSE : Boolean);
+      procedure SetOnOrOff(aSetOn: Boolean);
 
       /// <summary>
       ///   Return a tagid larger than MinimumTagId to link a control to a certain mandatoryField setting.
@@ -135,7 +136,8 @@ end;
 
 function TMandatoryFieldHelper.isCurrentlyOn: Boolean;
 begin
-  result := glb.GetPmsSettingsAsBoolean(MF_KEY_GROUP, PMSSettingName, False, True)
+//  result := glb.GetPmsSettingsAsBoolean(MF_KEY_GROUP, PMSSettingName, False, True)
+  Result := Self in glb.PMSSettings.MandatoryCheckinFields;
 end;
 
 class function TMandatoryFieldHelper.MinimumTagid: integer;
@@ -143,9 +145,20 @@ begin
   Result := cAsTagOffset;
 end;
 
-procedure TMandatoryFieldHelper.SetOnOrOff(TRUE_OR_FALSE: Boolean);
+procedure TMandatoryFieldHelper.SetOnOrOff(aSetOn: Boolean);
+var
+  lMandatoryCheckinFields: TMandatoryCheckInFieldSet;
 begin
-  glb.SetPmsSettingsAsBoolean(MF_KEY_GROUP, PMSSettingName, TRUE_OR_FALSE);
+  lMandatoryCheckinFields := glb.PMSSettings.MandatoryCheckinFields;
+  if aSetOn and not (Self in lMandatoryCheckinFields) then
+    glb.PMSSettings.MandatoryCheckinFields := lMandatoryCheckinFields + [self]
+  else if not aSetOn and (Self in lMandatoryCheckinFields) then
+    glb.PMSSettings.MandatoryCheckinFields := lMandatoryCheckinFields - [Self];
+end;
+
+class function TMandatoryFieldHelper.PMSSettingGroup: string;
+begin
+  Result := MF_KEY_GROUP;
 end;
 
 function TMandatoryFieldHelper.PMSSettingName: String;

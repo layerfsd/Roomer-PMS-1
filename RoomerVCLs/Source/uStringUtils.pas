@@ -44,13 +44,8 @@ function DelChars(const S: string; Chr: char): string;
 function FormattedStringToFloat(value: String): Double;
 function GetWindowClassName(Window: HWND): string;
 function _dbString(const aString: string): string; Overload;
-function LocalAppDataPath: string;
 function EncodeBase64(S: string): string;
 function DecodeBase64(S: string): string;
-procedure SaveToTextFile(FileName, data: String);
-procedure AppendToTextFile(FileName, data: String);
-procedure AddToTextFile(FileName, data: String);
-function ReadFromTextFile(FileName: String): String;
 
 implementation
 
@@ -569,16 +564,6 @@ begin
   result := RoomerQuotedString(StringReplace(aString, #39, '\' + #39, [rfReplaceAll]));
 end;
 
-function LocalAppDataPath: string;
-const
-  SHGFP_TYPE_CURRENT = 0;
-var
-  path: array [0 .. 4012] of char;
-begin
-  SHGetFolderPath(0, CSIDL_LOCAL_APPDATA, 0, SHGFP_TYPE_CURRENT, @path[0]);
-  result := StrPas(path);
-end;
-
 function GenerateRandomString(SLen: Integer): string;
 var
   Str: string;
@@ -647,66 +632,5 @@ begin
     end;
   end;
 
-  procedure SaveToTextFile(FileName, data: String);
-  var
-    stl: TStringList;
-  begin
-    stl := TStringList.Create;
-    try
-      stl.text := data;
-      stl.SaveToFile(FileName);
-    finally
-      stl.Free;
-    end;
-  end;
-
-  procedure AppendToTextFile(FileName, data: String);
-  var
-    myFile: TextFile;
-  begin
-    AssignFile(myFile, FileName);
-    if fileExists(FileName) then
-      Append(myFile)
-    else
-      ReWrite(myFile);
-    try
-      Write(myFile, data);
-    finally
-      // Close the file
-      CloseFile(myFile);
-    end;
-  end;
-
-  procedure AddToTextFile(FileName, data: String);
-  var
-    stl: TStringList;
-  begin
-    stl := TStringList.Create;
-    try
-      if fileExists(FileName) then
-        stl.LoadFromFile(FileName);
-      stl.Add(data);
-      stl.SaveToFile(FileName);
-    finally
-      stl.Free;
-    end;
-  end;
-
-  function ReadFromTextFile(FileName: String): String;
-  var
-    stl: TStringList;
-  begin
-    result := '';
-    if fileExists(FileName) then
-    begin
-      stl := TStringList.Create;
-      try
-        stl.LoadFromFile(FileName);
-        result := stl.text;
-      finally
-        stl.Free;
-      end;
-    end;
-  end;
 
 end.

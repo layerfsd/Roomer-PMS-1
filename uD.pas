@@ -860,7 +860,7 @@ uses
     , uAlerts
     , uFrmCheckOut
     , UITypes
-    , uVatCalculator;
+    , uVatCalculator, uTableEntityList;
 
 {$R *.dfm}
 
@@ -3460,7 +3460,7 @@ begin
 
     sPath := glb.GetDataCacheLocation;
     rSet := d.roomerMainDataSet.ActivateNewDataset
-      (ReadFromTextFile(TPath.Combine(sPath, format(RoomerTableFileName, ['staffmembers']))));
+      (ReadFromTextFile(TPath.Combine(sPath, format(cRoomerTableFileName, ['staffmembers']))));
     try
       if LocateRecord(rSet, 'initials', login) then
         result := LowerCase(rSet['Password']) = LowerCase(password);
@@ -11184,7 +11184,7 @@ var
   tempSet: TRoomerDataSet;
   iTemp: Integer;
 begin
-  tempSet := glb.GetDataSetFromDictionary('maintenancecodes');
+  tempSet := glb.Maintenancecodes;
   // tempSet.CommandText := 'SELECT * FROM maintenancecodes';
   // tempSet.Open;
   tempSet.First;

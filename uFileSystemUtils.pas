@@ -34,10 +34,19 @@ function CreateNewFileName(BaseFileName: String; Ext: String; AlwaysUseNumber: B
 function IsFileInUse(fName : string) : boolean;
 function _GetEXEVersionData(const FileName : string) : TEXEVersionData;
 
+procedure SaveToTextFile(const FileName, data: String);
+procedure AddToTextFile(const FileName, data: String);
+function ReadFromTextFile(const FileName: String): String;
+
 
 implementation
 
-uses ShlObj, Masks, StrUtils;
+uses
+  ShlObj
+  , Masks
+  , StrUtils
+  , Classes
+  ;
 
 const
   _K  = 1024; //byte
@@ -423,6 +432,51 @@ begin
   HFileRes := CreateFile(pchar(fName), GENERIC_READ or GENERIC_WRITE, 0, nil, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0) ;
   Result := (HFileRes = INVALID_HANDLE_VALUE) ;
   if not Result then CloseHandle(HFileRes) ;
+end;
+
+procedure SaveToTextFile(const FileName, data: String);
+var
+  stl: TStringList;
+begin
+  stl := TStringList.Create;
+  try
+    stl.text := data;
+    stl.SaveToFile(FileName);
+  finally
+    stl.Free;
+  end;
+end;
+
+procedure AddToTextFile(const FileName, data: String);
+var
+  stl: TStringList;
+begin
+  stl := TStringList.Create;
+  try
+    if fileExists(FileName) then
+      stl.LoadFromFile(FileName);
+    stl.Add(data);
+    stl.SaveToFile(FileName);
+  finally
+    stl.Free;
+  end;
+end;
+
+function ReadFromTextFile(const FileName: String): String;
+var
+  stl: TStringList;
+begin
+  result := '';
+  if fileExists(FileName) then
+  begin
+    stl := TStringList.Create;
+    try
+      stl.LoadFromFile(FileName);
+      result := stl.text;
+    finally
+      stl.Free;
+    end;
+  end;
 end;
 
 // ====================================================================================

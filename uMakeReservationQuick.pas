@@ -1280,7 +1280,7 @@ var
 begin
   edtRatePlans.Items.Clear;
   edtRatePlans.Items.AddObject('<none>', nil);
-  res := glb.GetDataSetFromDictionary('channels');
+  res := glb.ChannelsSet;
   res.First;
   while NOT res.eof do
   begin

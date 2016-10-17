@@ -79,7 +79,6 @@ object frmMaidActions: TfrmMaidActions
     Height = 19
     Panels = <>
     SimplePanel = True
-    ExplicitTop = 423
   end
   object PanTop: TsPanel
     Left = 0

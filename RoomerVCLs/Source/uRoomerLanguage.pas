@@ -254,7 +254,7 @@ procedure Register;
 
 implementation
 
-uses uFormCreateHook;
+uses uFormCreateHook, uFileSystemUtils;
 
 resourcestring
   RoomerLanguageFileName = 'RoomerLanguage_%s(%d).src';
