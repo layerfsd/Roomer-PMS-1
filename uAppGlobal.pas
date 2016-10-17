@@ -53,11 +53,11 @@ uses
   , Variants
   , Vcl.Buttons
   , uRoomerThreadedRequest
+  , uPMSSettings
+  , uTableEntityList
   ;
 
 Type
-
-  RoomerKeyValueNotFound = class(Exception);
 
   RecRRInfo = record
     RoomReservation: integer;
@@ -117,30 +117,6 @@ Type
      FCount     : integer;
      FNumGuests : integer;
    public
-     constructor Create;
-     destructor Destroy; override;
-   end;
-
-   TTableEntity = class
-   private
-    FTableName: String;
-    FSql: String;
-    FRSet: TRoomerDataSet;
-    FForceRefreshed : Boolean;
-    FRefreshEnabled : Boolean;
-    function GetFilename: String;
-    function ReadFromFile: String;
-    procedure SaveToFile(data: String);
-    function FileTimeStamp: TDateTime;
-   public
-     constructor Create(tableName : String; baseTableAlwaysRefresh : Boolean = false; sqlExtension : String = '');
-     destructor Destroy; override;
-     procedure Refresh;
-     procedure RefreshLocally(ForceRefresh : Boolean = true);
-     property TableName : String read FTableName;
-     property sql : String read FSql write FSql;
-     property RSet : TRoomerDataSet read FRSet;
-     property RefreshEnabled : Boolean read FRefreshEnabled write FRefreshEnabled;
    end;
 
    TSet_Of_Integer = class
@@ -159,8 +135,6 @@ Type
    end;
 
 {$M+}
-  TTableDictionary = TObjectDictionary<String, TTableEntity>;
-
    TGlobalSettings = class( TObject )
    private
 
@@ -171,10 +145,10 @@ Type
     tablesList : TTableDictionary;
     FPreviousGuestsSet: TRoomerDataSet;
     FPreviousGuestsReload : TGetThreadedData;
+    FPmsSettings: TPmsSettings;
 
       procedure AddRoomType( sType : string; iNumber, NumGuests : integer );
       procedure Clear;
-    procedure ClearTables;
     procedure ClearRoomFloors;
 //    procedure ClearSingleTable(Table: TRoomerDataSet);
     function GetChannelsSet: TRoomerDataSet;
@@ -199,7 +173,6 @@ Type
     function GetTblpricecodes: TRoomerDataSet;
     function GetTblseasons: TRoomerDataSet;
     function GetCustomersSet: TRoomerDataSet;
-    procedure ReadTableByName(table: String; startingUp : Boolean = False);
     procedure AssertComponent(Comp: TComponent);
     function ValidateHelpContext(ctx: Integer): Boolean;
 //    Function ValidateHelpContext2(ctx : Integer) : Boolean;
@@ -209,8 +182,13 @@ Type
     function GetBookKeepingCodes: TRoomerDataSet;
     function GetChannelManagersSet: TRoomerDataSet;
     procedure PreviousGuestsReloadFetchHandler(Sender: TObject);
-    procedure PutPmsSettingsValue(KeyGroup, Key, Value: String; CreateIfNotExists : Boolean = False);
+
     function GetPmsSettingsSet: TRoomerDataSet;
+
+    function GetMaintenanceCodes: TRoomerDataSet;
+    function GetMaintenanceRoomNotes: TRoomerDataSet;
+    function GetStaffMembers: TRoomerDataset;
+
    public
       constructor Create;
       destructor Destroy; override;
@@ -225,13 +203,12 @@ Type
                                     zOneDay_dtDate : TDateTime = 0;
                                     numDays : integer = 0);
 
-      function TableEntityByTableName(table: String): TTableEntity;
       procedure ReloadPreviousGuests;
       procedure ForceTableRefresh;
-      procedure RefreshTableIfNeeded(table: String);
+      procedure RefreshTableByName(const aTable: string);
       function KeyAlreadyExistsInAnotherRecord(table, field, value: String; ID: Integer): Boolean;
       function LocateSpecificRecord(table, field, value: String): Boolean; overload;
-      function LocateSpecificRecord(dataSet : TRoomerDataSet; field : String;  value : Variant) : Boolean; overload;
+      function LocateSpecificRecord(dataSet : TRoomerDataSet; field : String;  value : Variant) : Boolean; overload; inline;
       function LocateSpecificRecord(table, field: String; value: Integer): Boolean; overload;
       function LocateSpecificRecord(table, field: String; value: Boolean): Boolean; overload;
       function LocateSpecificRecordAndGetValue(table, field, value: String; fieldToGet : String; var resultingValue : String): Boolean; overload;
@@ -241,24 +218,12 @@ Type
       function LocateSpecificRecordAndGetValue(table, field, value: String; fieldToGet : String; var resultingValue : Double): Boolean; overload;
       function LocateSpecificRecordAndGetValue(table, field : String; value : Integer; fieldToGet: String; var resultingValue: Double): Boolean; overload;
 
-      function GetPmsSettingsAsBoolean(KeyGroup, Key : String; ExceptionOnNotFound : Boolean; Default : Boolean = False) : Boolean;
-      procedure SetPmsSettingsAsBoolean(KeyGroup, Key: String; Value : Boolean; CreateIfNotExists: Boolean = False);
-      function GetPmsSettingsAsInteger(KeyGroup, Key : String; ExceptionOnNotFound : Boolean; Default : Integer = 0) : Integer;
-      procedure SetPmsSettingsAsInteger(KeyGroup, Key : String; Value : Integer; CreateIfNotExists : Boolean = False);
-      function GetPmsSettingsAsString(KeyGroup, Key : String; ExceptionOnNotFound : Boolean; Default : String = '') : String;
-      procedure SetPmsSettingsAsString(KeyGroup, Key : String; Value : String; CreateIfNotExists : Boolean = False);
-
-      function GetDataSetFromDictionary(table: String): TRoomerDataSet;
-
       function IsValidInList(list: TSet_Of_Integer; intValue : Integer): Boolean;
 
-      procedure RefreshTableByName(table: String);
-      procedure RefreshTablesWhenNeeded;
       procedure LoadStaticTables(startingUp : Boolean = False);
-
+      procedure RefreshTablesWhenNeeded;
       procedure FillRoomAndTypeGridNew(agrRooms : TStringGrid );
       procedure FillLocationsMenu(mnu : TPopupMenu; event : TNotifyEvent);
-      procedure LoadTables;
 
       function GetRoomLocation(Room: String): String;
       function LocateRoom(Room : String) : Boolean;
@@ -320,20 +285,20 @@ Type
       function GetIntegerValueOfFieldFromId(tableName : String; fieldName : String; id: Integer): Integer;
       function GetBooleanValueOfFieldFromId(tableName : String; fieldName : String; id: Integer): boolean;
 
+      property PMSSettings: TPmsSettings read FPmsSettings;
+
    published
       property PreviousGuestsSet : TRoomerDataSet read FPreviousGuestsSet;
       property RoomsSet        : TRoomerDataSet read GetRoomsSet;
       property RoomTypeRulesSet: TRoomerDataSet read GetRoomTypeRulesSet;
       property RoomTypesSet    : TRoomerDataSet read GetRoomTypesSet;
       property ChannelsSet     : TRoomerDataSet read GetChannelsSet;
-      property PmsSettingsSet     : TRoomerDataSet read GetPmsSettingsSet;
       property ChannelManagersSet : TRoomerDataSet read GetChannelManagersSet;
       property CurrenciesSet   : TRoomerDataSet read GetCurrenciesSet;
       property ControlSet      : TRoomerDataSet read GetControlSet;
       property CustomersSet    : TRoomerDataSet read GetCustomersSet;
       property RoomTypeGroups  : TRoomerDataSet read GetRoomTypeGroups;
       property ChannelPlanCodes: TRoomerDataSet read GetChannelPlanCodes;
-      property NumAvailType    : TStringList read FNumAvailType      write FNumAvailType;
       property Items           : TRoomerDataSet read GetItems;
       property ItemTypes       : TRoomerDataSet read GetItemTypes;
       property CountryGroups   : TRoomerDataSet read GetCountryGroups;
@@ -344,7 +309,6 @@ Type
       property PackageItems    : TRoomerDataSet read GetPackageItems;
       property PersonProfiles  : TRoomerDataSet read GetPersonProfiles;
       property BookKeepingCodes  : TRoomerDataSet read GetBookKeepingCodes;
-
       property TblconvertsSet      : TRoomerDataSet read GetTblconverts;
       property TblconvertgroupsSet : TRoomerDataSet read GetTblconvertgroups;
       property PaygroupsSet        : TRoomerDataSet read GetPaygroups;
@@ -352,6 +316,11 @@ Type
       property TblseasonsSet       : TRoomerDataSet read GetTblseasons;
       property TblpricecodesSet    : TRoomerDataSet read GetTblpricecodes;
       property CustomertypesSet    : TRoomerDataSet read GetCustomertypes;
+      property MaintenanceCodes     : TRoomerDataSet read GetMaintenanceCodes;
+      property Maintenanceroomnotes : TRoomerDataSet read GetMaintenanceRoomNotes;
+      property Staffmembers         : TRoomerDataset read GetStaffMembers;
+
+      property NumAvailType    : TStringList read FNumAvailType      write FNumAvailType;
 
    end;
 
@@ -378,9 +347,6 @@ procedure OpenAppSettings;
 procedure CloseAppSettings;
 procedure FilterRoom( RoomNumber : string );
 
-resourcestring
-  RoomerTableFileName = 'RoomerTable_%s.src';
-
 implementation
 
 uses   dbTables
@@ -392,7 +358,7 @@ uses   dbTables
      , ug
      , uUtils
      , PrjConst
-      ;
+      , uFileSystemUtils;
 
 procedure FilterRoom( RoomNumber : string );
 begin
@@ -403,70 +369,27 @@ begin
   end;
 end;
 
-{ TRoomTypesHolder }
-constructor TRoomTypesHolder.Create;
-begin
-  inherited create;
-end;
-
-destructor TRoomTypesHolder.destroy;
-begin
-  inherited destroy;
-end;
-
+{
 { TGlobalSettings }
 
 constructor TGlobalSettings.Create;
 begin
   tablesList := TTableDictionary.Create([doOwnsValues]);
+  tablesList.InitializeTables;
 
   FRoomFloors := TList<Integer>.Create;
 
   FRoomTypes    := TList.Create;
   FNumAvailType := TStringlist.create;
 
-  tablesList.Add('rooms', TTableEntity.Create('rooms', true, 'ORDER BY OrderIndex Desc, Room ASC'));
-
-  tablesList.Add('maintenancecodes', TTableEntity.Create('maintenancecodes'));
-  tablesList.Add('maintenanceroomnotes', TTableEntity.Create('maintenanceroomnotes'));
-  tablesList.Add('staffmembers', TTableEntity.Create('staffmembers', true));
-
-  tablesList.Add('locations', TTableEntity.Create('locations'));
-  tablesList.Add('packages', TTableEntity.Create('packages'));
-  tablesList.Add('packageitems', TTableEntity.Create('packageitems'));
-  tablesList.Add('roomtyperules', TTableEntity.Create('roomtyperules'));
-  tablesList.Add('vatcodes', TTableEntity.Create('vatcodes'));
-  tablesList.Add('items', TTableEntity.Create('items'));
-  tablesList.Add('itemtypes', TTableEntity.Create('itemtypes'));
-  tablesList.Add('roomtypegroups', TTableEntity.Create('roomtypegroups', true));
-  tablesList.Add('roomtypes', TTableEntity.Create('roomtypes', true));
-  tablesList.Add('channels', TTableEntity.Create('channels'));
-  tablesList.Add('channelmanagers', TTableEntity.Create('channelmanagers'));
-  tablesList.Add('currencies', TTableEntity.Create('currencies'));
-  tablesList.Add('control', TTableEntity.Create('control', true, ' LIMIT 1'));
-  tablesList.Add('countries', TTableEntity.Create('countries'));
-  tablesList.Add('countrygroups', TTableEntity.Create('countrygroups'));
-  tablesList.Add('customers', TTableEntity.Create('customers'));
-
-  tablesList.Add('tblconverts', TTableEntity.Create('tblconverts'));
-  tablesList.Add('tblconvertgroups', TTableEntity.Create('tblconvertgroups'));
-  tablesList.Add('paygroups', TTableEntity.Create('paygroups'));
-  tablesList.Add('paytypes', TTableEntity.Create('paytypes'));
-  tablesList.Add('personprofiles', TTableEntity.Create('personprofiles'));
-  tablesList.Add('bookkeepingcodes', TTableEntity.Create('bookkeepingcodes'));
-  tablesList.Add('tblseasons', TTableEntity.Create('tblseasons'));
-  tablesList.Add('tblpricecodes', TTableEntity.Create('tblpricecodes'));
-  tablesList.Add('customertypes', TTableEntity.Create('customertypes'));
-
-  tablesList.Add('channelplancodes', TTableEntity.Create('channelplancodes', true));
-  tablesList.Add('pms_settings', TTableEntity.Create('pms_settings'));
+  FPMSSettings := TPmsSettings.Create(GetPmsSettingsSet);
 
   FPreviousGuestsReload := TGetThreadedData.Create;
   FPreviousGuestsSet := nil;
   ReloadPreviousGuests;
 
   LoadStaticTables(true);
-  LoadTables;
+
 end;
 
 destructor TGlobalSettings.Destroy;
@@ -477,9 +400,9 @@ begin
   FRoomtypes.Free;
   FRoomFloors.free;
   FPreviousGuestsReload.Free;
-  ClearTables;
   tablesList.Clear;
   FreeAndNil(tablesList);
+  FPmsSettings.Free;
 end;
 
 procedure TGlobalSettings.LogChanges(DataSet: TDataSet; tableName : String; action : TTableAction; descriptor : String);
@@ -593,77 +516,6 @@ begin
   end;
 end;
 
-procedure TGlobalSettings.PutPmsSettingsValue(KeyGroup, Key, Value : String; CreateIfNotExists : Boolean = False);
-var DataSet : TRoomerDataSet;
-begin
-  Dataset := GetDataSetFromDictionary('pms_settings');
-  if Dataset.Locate('KeyGroup;key', VarArrayOf([KeyGroup, Key]), []) then
-  begin
-    DataSet.Edit;
-    DataSet['value'] := Value;
-    DataSet.Post;
-  end else
-  if CreateIfNotExists then
-  begin
-    DataSet.Insert;
-    DataSet['value'] := Value;
-    DataSet.Post;
-  end;
-end;
-
-function TGlobalSettings.GetPmsSettingsAsBoolean(KeyGroup, Key : String; ExceptionOnNotFound : Boolean; Default : Boolean = False) : Boolean;
-//var KeyValue : String;
-begin
-  result := Default;
-  if PmsSettingsSet.Locate('KeyGroup;key', VarArrayOf([KeyGroup, Key]), []) then
-    result := PmsSettingsSet['value'] = 'TRUE'
-  else
-    if ExceptionOnNotFound then
-      raise RoomerKeyValueNotFound.Create('Key ' + Key + ' was not found in settings.');
-end;
-
-procedure TGlobalSettings.SetPmsSettingsAsBoolean(KeyGroup, Key : String; Value : Boolean; CreateIfNotExists : Boolean = False);
-var KeyValue : String;
-begin
-  KeyValue := IIF(Value, 'TRUE', 'FALSE');
-  PutPmsSettingsValue(KeyGroup, Key, KeyValue, CreateIfNotExists);
-end;
-
-function TGlobalSettings.GetPmsSettingsAsInteger(KeyGroup, Key : String; ExceptionOnNotFound : Boolean; Default : Integer = 0) : Integer;
-//var KeyValue : String;
-begin
-  result := Default;
-  if PmsSettingsSet.Locate('KeyGroup;key', VarArrayOf([KeyGroup, Key]), []) then
-    result := StrToIntDef(PmsSettingsSet['value'], Default)
-  else
-    if ExceptionOnNotFound then
-      raise RoomerKeyValueNotFound.Create('Key ' + Key + ' was not found in settings.');
-end;
-
-procedure TGlobalSettings.SetPmsSettingsAsInteger(KeyGroup, Key : String; Value : Integer; CreateIfNotExists : Boolean = False);
-var KeyValue : String;
-begin
-  KeyValue := IntToStr(Value);
-  PutPmsSettingsValue(KeyGroup, Key, KeyValue, CreateIfNotExists);
-end;
-
-
-function TGlobalSettings.GetPmsSettingsAsString(KeyGroup, Key : String; ExceptionOnNotFound : Boolean; Default : String = '') : String;
-//var KeyValue : String;
-begin
-  result := Default;
-  if PmsSettingsSet.Locate('KeyGroup;key', VarArrayOf([KeyGroup, Key]), []) then
-    result := PmsSettingsSet['value']
-  else
-    if ExceptionOnNotFound then
-      raise RoomerKeyValueNotFound.Create('Key ' + Key + ' was not found in settings.');
-end;
-
-procedure TGlobalSettings.SetPmsSettingsAsString(KeyGroup, Key : String; Value : String; CreateIfNotExists : Boolean = False);
-begin
-  PutPmsSettingsValue(KeyGroup, Key, Value, CreateIfNotExists);
-end;
-
 function TGlobalSettings.GetRateInclusive(channelId : Integer; Item : String; Rate : Double) : Double;
 begin
   result := Rate;
@@ -688,7 +540,7 @@ end;
 function TGlobalSettings.GetIntegerValueOfFieldFromId(tableName : String; fieldName : String; id : Integer) : Integer;
 var dataSet : TRoomerDataSet;
 begin
-  dataset := GetDataSetFromDictionary(tableName);
+  dataset := tablesList.Dataset[tableName];
   if locateId(dataset, id) then
   begin
     result := dataset[fieldName];
@@ -699,7 +551,7 @@ end;
 function TGlobalSettings.GetBooleanValueOfFieldFromId(tableName : String; fieldName : String; id : Integer) : boolean;
 var dataSet : TRoomerDataSet;
 begin
-  dataset := GetDataSetFromDictionary(tableName);
+  dataset := tablesList.Dataset[tableName];
   if locateId(dataset, id) then
   begin
     result := dataset[fieldName];
@@ -736,12 +588,12 @@ end;
 procedure TGlobalSettings.EnableOrDisableTableRefresh(tablename : String; enable: Boolean);
 var tableEntity : TTableEntity;
 begin
-  tableEntity := TableEntityByTableName(tableName);
+  tableEntity := tablesList[tableName];
   if assigned(tableEntity) then
   begin
     tableEntity.RefreshEnabled := enable;
     if enable then
-      tableEntity.Refresh;
+      tableEntity.RefreshFromServer;
   end;
 end;
 
@@ -788,119 +640,6 @@ begin
   end;
 end;
 
-procedure TGlobalSettings.LoadTables;
-begin
-
-//  if RoomerMessages.TableNeedsRefresh('vatcodes') then
-//  begin
-//    ClearSingleTable(FVAT);
-//    FVAT := CreateNewDataSet;
-//    FVAT.CommandText := 'SELECT * FROM vatcodes';
-//    FVAT.Open;
-//    FVAT.First;
-//  end;
-//
-//  if RoomerMessages.TableNeedsRefresh('vatcodes') then
-//  begin
-//    ClearSingleTable(FVAT);
-//  FItems := CreateNewDataSet;
-//  FItems.CommandText := 'SELECT * FROM items';
-//  FItems.Open;
-//  FItems.First;
-//
-//  if RoomerMessages.TableNeedsRefresh('vatcodes') then
-//  begin
-//    ClearSingleTable(FVAT);
-//  FItemTypes := CreateNewDataSet;
-//  FItemTypes.CommandText := 'SELECT * FROM itemtypes';
-//  FItemTypes.Open;
-//  FItemTypes.First;
-//
-//  if RoomerMessages.TableNeedsRefresh('vatcodes') then
-//  begin
-//    ClearSingleTable(FVAT);
-//  FRoomTypeGroups := CreateNewDataSet;
-//  FRoomTypeGroups.CommandText := 'SELECT * FROM roomtypegroups';
-//  FRoomTypeGroups.Open;
-//  FRoomTypeGroups.First;
-//
-//  if RoomerMessages.TableNeedsRefresh('vatcodes') then
-//  begin
-//    ClearSingleTable(FVAT);
-//  FRoomTypesSet := CreateNewDataSet;
-//  FRoomTypesSet.CommandText := 'SELECT * FROM roomtypes';
-//  FRoomTypesSet.Open;
-//  FRoomTypesSet.First;
-//
-//  if RoomerMessages.TableNeedsRefresh('vatcodes') then
-//  begin
-//    ClearSingleTable(FVAT);
-//  FChannelsSet := CreateNewDataSet;
-//  FChannelsSet.CommandText := 'SELECT * FROM channels';
-//  FChannelsSet.Open;
-//  FChannelsSet.First;
-//
-//  if RoomerMessages.TableNeedsRefresh('vatcodes') then
-//  begin
-//    ClearSingleTable(FVAT);
-//  FCurrenciesSet := CreateNewDataSet;
-//  FCurrenciesSet.CommandText := 'SELECT * FROM currencies';
-//  FCurrenciesSet.Open;
-//  FCurrenciesSet.First;
-//
-//  if RoomerMessages.TableNeedsRefresh('vatcodes') then
-//  begin
-//    ClearSingleTable(FVAT);
-//  FControlSet := CreateNewDataSet;
-//  FControlSet.CommandText := 'SELECT * FROM control LIMIT 1';
-//  FControlSet.Open;
-//
-//  if RoomerMessages.TableNeedsRefresh('vatcodes') then
-//  begin
-//    ClearSingleTable(FVAT);
-//  FCountries := CreateNewDataSet;
-//  FCountries.CommandText := 'SELECT * FROM countries';
-//  FCountries.Open;
-//  FCountries.First;
-//
-//  if RoomerMessages.TableNeedsRefresh('vatcodes') then
-//  begin
-//    ClearSingleTable(FVAT);
-//  FCountryGroups := CreateNewDataSet;
-//  FCountryGroups.CommandText := 'SELECT * FROM countrygroups';
-//  FCountryGroups.Open;
-//  FCountryGroups.First;
-//
-//  if RoomerMessages.TableNeedsRefresh('vatcodes') then
-//  begin
-//    ClearSingleTable(FVAT);
-//  FLocations := CreateNewDataSet;
-//  FLocations.CommandText := 'SELECT * FROM locations';
-//  FLocations.Open;
-//  FLocations.First;
-//
-end;
-(*
-procedure TGlobalSettings.ClearSingleTable(Table : TRoomerDataSet);
-begin
-  If Table <> nil then
-    try Table.free; except end;
-end;
-*)
-procedure TGlobalSettings.ClearTables;
-begin
-//  ClearSingleTable(FVAT);
-//  ClearSingleTable(FItems);
-//  ClearSingleTable(FItemTypes);
-//  ClearSingleTable(FRoomTypesSet);
-//  ClearSingleTable(FChannelsSet);
-//  ClearSingleTable(FCurrenciesSet);
-//  ClearSingleTable(FControlSet);
-//  ClearSingleTable(FCountries);
-//  ClearSingleTable(FLocations);
-//  ClearSingleTable(FCountryGroups);
-//  ClearSingleTable(FRoomTypeGroups);
-end;
 
 procedure TGlobalSettings.Clear;
 var
@@ -1039,84 +778,31 @@ begin
   end;
 end;
 
-function TGlobalSettings.TableEntityByTableName(table : String) : TTableEntity;
-begin
-  if NOT tablesList.TryGetValue(table, result) then
-    result := nil;
-end;
 
-procedure TGlobalSettings.ReadTableByName(table : String; startingUp : Boolean = False);
+procedure TGlobalSettings.RefreshTablesWhenNeeded;
 begin
-  TableEntityByTableName(table).RefreshLocally(NOT startingUp);
-end;
-
-procedure TGlobalSettings.RefreshTableByName(table : String);
-begin
-  TableEntityByTableName(table).Refresh;
+  tablesList.RefreshAllIfNeeded;
 end;
 
 procedure TGlobalSettings.ForceTableRefresh;
 begin
-  RoomerMessages.RefreshLists;
-  RefreshTablesWhenNeeded;
+  RoomerMessages.RefreshTabelStateList;
+  tablesList.RefreshAllIfNeeded;
 end;
 
-procedure TGlobalSettings.RefreshTablesWhenNeeded;
-var Key : String;
-    table : TTableEntity;
+procedure TGlobalSettings.RefreshTableByName(const aTable: string);
 begin
-  for Key in tablesList.Keys do
-  begin
-    if tablesList.TryGetValue(Key, table) then
-      RefreshTableIfNeeded(table.FTableName);
-  end;
-
-//  RefreshTableIfNeeded('rooms');
-//  RefreshTableIfNeeded('locations');
-//  RefreshTableIfNeeded('roomtyperules');
-//  RefreshTableIfNeeded('vatcodes');
-//  RefreshTableIfNeeded('items');
-//  RefreshTableIfNeeded('itemtypes');
-//  RefreshTableIfNeeded('roomtypegroups');
-//  RefreshTableIfNeeded('roomtypes');
-//  RefreshTableIfNeeded('channels');
-//  RefreshTableIfNeeded('currencies');
-//  RefreshTableIfNeeded('control');
-//  RefreshTableIfNeeded('countries');
-//  RefreshTableIfNeeded('countrygroups');
-//
-//  RefreshTableIfNeeded('tblconverts');
-//  RefreshTableIfNeeded('tblconvertgroups');
-//  RefreshTableIfNeeded('paygroups');
-//  RefreshTableIfNeeded('paytypes');
-//  RefreshTableIfNeeded('tblseasons');
-//
-//  RefreshTableIfNeeded('tblpricecodes');
-//  RefreshTableIfNeeded('customertypes');
-
-end;
-
-procedure TGlobalSettings.RefreshTableIfNeeded(table : String);
-begin
-  if d.roomerMainDataSet.OfflineMode OR (NOT d.roomerMainDataSet.LoggedIn) then
-    exit;
-  if (NOT FileExists(TableEntityByTableName(table).GetFilename)) OR (RoomerMessages.TableNeedsRefresh(table)) then
-    TableEntityByTableName(table).Refresh;
+  tablesList.TableEntity[aTable].RefreshFromServer;
 end;
 
 procedure TGlobalSettings.LoadStaticTables(startingUp : Boolean = False);
 var
   rSet: TRoomerDataSet;
   s    : string;
-  Key : String;
-  table : TTableEntity;
   bTemp : Boolean;
 begin
-  for Key in tablesList.Keys do
-  begin
-    if tablesList.TryGetValue(Key, table) then
-      ReadTableByName(table.FTableName, startingUp);
-  end;
+
+  tableslist.RefreshAllLocally(startingUp);
 
   if NOT d.roomerMainDataSet.OfflineMode then
   begin
@@ -1155,11 +841,6 @@ begin
                      RoomTypesSet.FieldByName( 'NumberGuests' ).AsInteger);
        RoomTypesSet.next;
     end;
-
-//  ' SELECT rt.RoomType, rt.NumberGuests FROM roomtypes rt, rooms r '+
-//  ' WHERE r.bookable<>0 '+
-//  '  AND r.RoomType = rt.RoomType' ;
-
   end;
 end;
 
@@ -1167,7 +848,7 @@ function TGlobalSettings.GetDataCacheLocation: String;
 var AppDataPath : String;
     DataCache: String;
 begin
-  AppDataPath := TPath.Combine(uStringUtils.LocalAppDataPath, 'Roomer');
+  AppDataPath := TPath.Combine(LocalAppDataPath, 'Roomer');
   DataCache := format('%s\' + cDatacachefoldername, [d.roomerMainDataSet.hotelId]);
   result := TPath.Combine(AppDataPath, DataCache);
   forceDirectories(result);
@@ -1176,7 +857,7 @@ end;
 function TGlobalSettings.GetOfflineReportLocation: string;
 var AppDataPath : String;
 begin
-  AppDataPath := TPath.Combine(uStringUtils.LocalAppDataPath, 'Roomer');
+  AppDataPath := TPath.Combine(LocalAppDataPath, 'Roomer');
   result := format('%s\' + cofflinefoldername,[d.roomerMainDataSet.hotelId]);
   result := TPath.Combine(AppDataPath, Result);
   forceDirectories(result);
@@ -1185,42 +866,34 @@ end;
 
 function TGlobalSettings.GetLanguageLocation: String;
 begin
-  result := TPath.Combine(uStringUtils.LocalAppDataPath, 'Roomer');
+  result := TPath.Combine(LocalAppDataPath, 'Roomer');
   result := TPath.Combine(result, 'Languages');
   forceDirectories(result);
 end;
 
-function TGlobalSettings.GetDataSetFromDictionary(table : String): TRoomerDataSet;
-var entity : TTableEntity;
-begin
-  result := nil;
-  if tablesList.TryGetValue(table, entity) then
-    result := entity.RSet;
-end;
-
 function TGlobalSettings.GetPmsSettingsSet: TRoomerDataSet;
 begin
-  result := GetDataSetFromDictionary('pms_settings');
+  result := tableslist.Dataset['pms_settings'];
 end;
 
 function TGlobalSettings.GetChannelsSet: TRoomerDataSet;
 begin
-  result := GetDataSetFromDictionary('channels');
+  result := tableslist.Dataset['channels'];
 end;
 
 function TGlobalSettings.GetControlSet: TRoomerDataSet;
 begin
-  result := GetDataSetFromDictionary('control');
+  result := tableslist.Dataset['control'];
 end;
 
 function TGlobalSettings.GetCountries: TRoomerDataSet;
 begin
-  result := GetDataSetFromDictionary('countries');
+  result := tableslist.Dataset['countries'];
 end;
 
 function TGlobalSettings.GetCountryGroups: TRoomerDataSet;
 begin
-  result := GetDataSetFromDictionary('countrygroups');
+  result := tableslist.Dataset['countrygroups'];
 end;
 
 function TGlobalSettings.GetCountryName(Country: String): String;
@@ -1232,27 +905,27 @@ end;
 
 function TGlobalSettings.GetCurrenciesSet: TRoomerDataSet;
 begin
-  result := GetDataSetFromDictionary('currencies');
+  result := tableslist.Dataset['currencies'];
 end;
 
 function TGlobalSettings.GetCustomersSet: TRoomerDataSet;
 begin
-  result := GetDataSetFromDictionary('customers');
+  result := tableslist.Dataset['customers'];
 end;
 
 function TGlobalSettings.GetCustomertypes: TRoomerDataSet;
 begin
-  result := GetDataSetFromDictionary('customertypes');
+  result := tableslist.Dataset['customertypes'];
 end;
 
 function TGlobalSettings.GetItems: TRoomerDataSet;
 begin
-  result := GetDataSetFromDictionary('items');
+  result := tableslist.Dataset['items'];
 end;
 
 function TGlobalSettings.GetItemTypes: TRoomerDataSet;
 begin
-  result := GetDataSetFromDictionary('itemtypes');
+  result := tableslist.Dataset['itemtypes'];
 end;
 
 function TGlobalSettings.GetLocationId(Location : String) : integer;
@@ -1272,32 +945,33 @@ end;
 
 function TGlobalSettings.GetLocations: TRoomerDataSet;
 begin
-  result := GetDataSetFromDictionary('locations');
+  result := tableslist.Dataset['locations'];
+end;
+
+function TGlobalSettings.GetMaintenanceCodes: TRoomerDataSet;
+begin
+  Result := tablesList.Dataset['maintenancecodes'];
+end;
+
+function TGlobalSettings.GetMaintenanceRoomNotes: TRoomerDataSet;
+begin
+  Result := TablesList.Dataset['maintenanceroomnotes'];
 end;
 
 function TGlobalSettings.LocateSpecificRecord(table, field, value : String) : Boolean;
 var dataSet : TRoomerDataSet;
 begin
-//  result := false;
-  dataset := GetDataSetFromDictionary(table);
-  result := dataset.Locate(field, value, []);
-//  dataSet.First;
-//  while not dataSet.eof do
-//  begin
-//    if LowerCase(dataSet[field]) = LowerCase(value) then
-//    begin
-//      result := true;
-//      Break;
-//    end;
-//    dataSet.next;
-//  end;
+  Result := false;
+  dataset := tableslist.Dataset[table];
+  if assigned(Dataset) then
+    result := dataset.Locate(field, value, []);
 end;
 
 function TGlobalSettings.KeyAlreadyExistsInAnotherRecord(table, field, value : String; ID : Integer) : Boolean;
 var dataSet : TRoomerDataSet;
 begin
   result := false;
-  dataset := GetDataSetFromDictionary(table);
+  dataset := tableslist.Dataset[table];
   dataSet.First;
   while not dataSet.eof do
   begin
@@ -1312,89 +986,56 @@ end;
 
 function TGlobalSettings.LocateSpecificRecord(dataSet : TRoomerDataSet; field : String;  value : Variant) : Boolean;
 begin
-//  result := false;
   result := dataset.Locate(field, value, []);
-//  dataSet.First;
-//  while not dataSet.eof do
-//  begin
-//    if dataSet[field] = value then
-//    begin
-//      result := true;
-//      Break;
-//    end;
-//    dataSet.next;
-//  end;
 end;
 
 function TGlobalSettings.LocateSpecificRecord(table, field : String;  value : Integer) : Boolean;
 var dataSet : TRoomerDataSet;
 begin
-//  result := false;
-  dataset := GetDataSetFromDictionary(table);
+  dataset := tableslist.Dataset[table];
   result := dataset.Locate(field, value, []);
-//  dataSet.First;
-//  while not dataSet.eof do
-//  begin
-//    if dataSet[field] = value then
-//    begin
-//      result := true;
-//      Break;
-//    end;
-//    dataSet.next;
-//  end;
 end;
 
 function TGlobalSettings.LocateSpecificRecord(table, field : String;  value : Boolean) : Boolean;
 var dataSet : TRoomerDataSet;
 begin
-//  result := false;
-  dataset := GetDataSetFromDictionary(table);
+  dataset := tableslist.Dataset[table];
   result := dataset.Locate(field, value, []);
-//  dataSet.First;
-//  while not dataSet.eof do
-//  begin
-//    if dataSet[field] = value then
-//    begin
-//      result := true;
-//      Break;
-//    end;
-//    dataSet.next;
-//  end;
 end;
 
 function TGlobalSettings.LocateSpecificRecordAndGetValue(table, field, value, fieldToGet: String; var resultingValue: Integer): Boolean;
 begin
   result := LocateSpecificRecord(table, field, value);
   if result then
-     resultingValue := GetDataSetFromDictionary(table)[fieldToGet];
+     resultingValue := tableslist.Dataset[table][fieldToGet];
 end;
 
 function TGlobalSettings.LocateSpecificRecordAndGetValue(table, field, value, fieldToGet: String; var resultingValue: String): Boolean;
 begin
   result := LocateSpecificRecord(table, field, value);
   if result then
-     resultingValue := GetDataSetFromDictionary(table)[fieldToGet];
+     resultingValue := tableslist.Dataset[table][fieldToGet];
 end;
 
 function TGlobalSettings.LocateSpecificRecordAndGetValue(table, field : String; value : Integer; fieldToGet: String; var resultingValue: String): Boolean;
 begin
   result := LocateSpecificRecord(table, field, value);
   if result then
-     resultingValue := GetDataSetFromDictionary(table)[fieldToGet];
+     resultingValue := tableslist.Dataset[table][fieldToGet];
 end;
 
 function TGlobalSettings.LocateSpecificRecordAndGetValue(table, field, value, fieldToGet: String; var resultingValue: Double): Boolean;
 begin
   result := LocateSpecificRecord(table, field, value);
   if result then
-     resultingValue := GetDataSetFromDictionary(table).GetFloatValue(GetDataSetFromDictionary(table).FieldByName(fieldToGet))
+     resultingValue := tableslist.Dataset[table].GetFloatValue(tableslist.Dataset[table].FieldByName(fieldToGet))
 end;
 
 function TGlobalSettings.LocateSpecificRecordAndGetValue(table, field : String; value : Integer; fieldToGet: String; var resultingValue: Double): Boolean;
 begin
   result := LocateSpecificRecord(table, field, value);
   if result then
-     resultingValue := GetDataSetFromDictionary(table).GetFloatValue(GetDataSetFromDictionary(table).FieldByName(fieldToGet))
+     resultingValue := tableslist.Dataset[table].GetFloatValue(tableslist.Dataset[table].FieldByName(fieldToGet))
 end;
 
 procedure TGlobalSettings.PerformAuthenticationAssertion(Form: TForm);
@@ -1426,22 +1067,8 @@ begin
       AssertComponent(Form.Components[i]);
 
 end;
-(*
-Function TGlobalSettings.ValidateHelpContext2(ctx : Integer) : Boolean;
-begin
-  result := (ctx = 0) OR
-            ((g.qUserAuthValue1 = 100000) OR
-             (g.qUserAuthValue2 = 100000) OR
-             (g.qUserAuthValue3 = 100000) OR
-             (g.qUserAuthValue4 = 100000) OR
-             (g.qUserAuthValue5 = 100000)) OR
-            (ctx = g.qUserAuthValue1) OR
-            (ctx = g.qUserAuthValue2) OR
-            (ctx = g.qUserAuthValue3) OR
-            (ctx = g.qUserAuthValue4) OR
-            (ctx = g.qUserAuthValue5);
-end;
-*)
+
+
 Function TGlobalSettings.ValidateHelpContext(ctx : Integer) : Boolean;
 var
   s1,s2,s3,s4,s5 : string;
@@ -1544,7 +1171,7 @@ function TGlobalSettings.LocateSpecificRecordAndGetValue(table, field, value, fi
 begin
   result := LocateSpecificRecord(table, field, value);
   if result then
-     resultingValue := GetDataSetFromDictionary(table)[fieldToGet];
+     resultingValue := tableslist.Dataset[table][fieldToGet];
 end;
 
 function TGlobalSettings.GetRoomLocation(Room : String) : String;
@@ -1552,21 +1179,11 @@ begin
   result := '';
   if LocateSpecificRecord('rooms', 'Room', Room) then
     result := RoomsSet['Location'];
-//  RoomsSet.First;
-//  while not RoomsSet.eof do
-//  begin
-//    if LowerCase(RoomsSet['Room']) = LowerCase(Room) then
-//    begin
-//      result := RoomsSet['Location'];
-//      Break;
-//    end;
-//    RoomsSet.next;
-//  end;
 end;
 
 function TGlobalSettings.GetRoomsSet: TRoomerDataSet;
 begin
-  result := GetDataSetFromDictionary('rooms');
+  result := tableslist.Dataset['rooms'];
 end;
 
 function TGlobalSettings.GetRoomStatistics(Room : String) : Boolean;
@@ -1574,82 +1191,28 @@ begin
   result := false;
   if LocateSpecificRecord('rooms', 'Room', Room) then
     result := RoomsSet['Statistics'];
-//  RoomsSet.First;
-//  while not RoomsSet.eof do
-//  begin
-//    if LowerCase(RoomsSet['Room']) = LowerCase(Room) then
-//    begin
-//      result := RoomsSet['Statistics'];
-//      Break;
-//    end;
-//    RoomsSet.next;
-//  end;
 end;
 
 function TGlobalSettings.LocateRoom(Room : String) : Boolean;
 begin
   result := LocateSpecificRecord('rooms', 'Room', Room);
-//  result := false;
-//  RoomsSet.First;
-//  while not RoomsSet.eof do
-//  begin
-//    if LowerCase(RoomsSet['Room']) = LowerCase(Room) then
-//    begin
-//      result := true;
-//      Break;
-//    end;
-//    RoomsSet.next;
-//  end;
 end;
 
 
 function TGlobalSettings.LocateRoomType(RoomType: String): Boolean;
 begin
   result := LocateSpecificRecord('roomtypes', 'RoomType', RoomType);
-//  result := false;
-//  RoomTypesSet.First;
-//  while not RoomTypesSet.eof do
-//  begin
-//    if LowerCase(RoomTypesSet['RoomType']) = LowerCase(RoomType) then
-//    begin
-//      result := true;
-//      Break;
-//    end;
-//    RoomTypesSet.next;
-//  end;
 end;
 
 function TGlobalSettings.LocateCurrency(Currency: String): Boolean;
 begin
   result := LocateSpecificRecord('currencies', 'Currency', Currency);
-//  result := false;
-//  CurrenciesSet.First;
-//  while not CurrenciesSet.eof do
-//  begin
-//    if LowerCase(CurrenciesSet['Currency']) = LowerCase(Currency) then
-//    begin
-//      result := true;
-//      Break;
-//    end;
-//    CurrenciesSet.next;
-//  end;
 end;
 
 
 function TGlobalSettings.LocateChannelById(id : Integer): Boolean;
 begin
   result := LocateSpecificRecord('channels', 'id', id);
-//  result := false;
-//  ChannelsSet.First;
-//  while not ChannelsSet.eof do
-//  begin
-//    if ChannelsSet['id'] = id then
-//    begin
-//      result := true;
-//      Break;
-//    end;
-//    ChannelsSet.next;
-//  end;
 end;
 
 function TGlobalSettings.LocateChannelColorById(id : Integer): Integer;
@@ -1658,17 +1221,6 @@ begin
   if LocateSpecificRecord('channels', 'id', id) then
     if TRIM(ChannelsSet.FieldByName('color').AsString) <> '' then
       result := strtointdef(ChannelsSet['color'], -1);
-//  ChannelsSet.First;
-//  while not ChannelsSet.eof do
-//  begin
-//    if ChannelsSet['id'] = id then
-//    begin
-//      if TRIM(ChannelsSet.FieldByName('color').AsString) <> '' then
-//        result := strtointdef(ChannelsSet['color'], -1);
-//      Break;
-//    end;
-//    ChannelsSet.next;
-//  end;
 end;
 
 function TGlobalSettings.LocateRoomTypeColor(RoomType: String): Integer;
@@ -1677,17 +1229,6 @@ begin
   if LocateSpecificRecord('roomtypes', 'RoomType', RoomType) then
     if TRIM(RoomTypesSet.FieldByName('color').AsString) <> '' then
       result := strtointdef(RoomTypesSet['color'], -1);
-//  RoomTypesSet.First;
-//  while not RoomTypesSet.eof do
-//  begin
-//    if LowerCase(RoomTypesSet['RoomType']) = LowerCase(RoomType) then
-//    begin
-//      if TRIM(RoomTypesSet.FieldByName('color').AsString) <> '' then
-//        result := strtointdef(RoomTypesSet['color'], -1);
-//      Break;
-//    end;
-//    RoomTypesSet.next;
-//  end;
 end;
 
 function TGlobalSettings.LocateRoomTypeGroup(RoomTypeGroup: String): Boolean;
@@ -1778,7 +1319,7 @@ end;
 
 function TGlobalSettings.GetPackageItems: TRoomerDataSet;
 begin
-  result := GetDataSetFromDictionary('packageitems');
+  result := tableslist.Dataset['packageitems'];
 end;
 
 function TGlobalSettings.getPackageNameByPackageCode(packageCode: String): String;
@@ -1788,27 +1329,27 @@ end;
 
 function TGlobalSettings.GetPackages: TRoomerDataSet;
 begin
-  result := GetDataSetFromDictionary('packages');
+  result := tableslist.Dataset['packages'];
 end;
 
 function TGlobalSettings.GetPaygroups: TRoomerDataSet;
 begin
-  result := GetDataSetFromDictionary('paygroups');
+  result := tableslist.Dataset['paygroups'];
 end;
 
 function TGlobalSettings.GetPaytypes: TRoomerDataSet;
 begin
-  result := GetDataSetFromDictionary('paytypes');
+  result := tableslist.Dataset['paytypes'];
 end;
 
 function TGlobalSettings.GetPersonProfiles: TRoomerDataSet;
 begin
-  result := GetDataSetFromDictionary('personprofiles');
+  result := tableslist.Dataset['personprofiles'];
 end;
 
 function TGlobalSettings.GetBookKeepingCodes: TRoomerDataSet;
 begin
-  result := GetDataSetFromDictionary('bookkeepingcodes');
+  result := tableslist.Dataset['bookkeepingcodes'];
 end;
 
 function TGlobalSettings.RoomTypeCount : integer;
@@ -1847,17 +1388,17 @@ end;
 
 function TGlobalSettings.GetRoomTypeGroups: TRoomerDataSet;
 begin
-  result := GetDataSetFromDictionary('roomtypegroups');
+  result := tableslist.Dataset['roomtypegroups'];
 end;
 
 function TGlobalSettings.GetChannelManagersSet: TRoomerDataSet;
 begin
-  result := GetDataSetFromDictionary('channelmanagers');
+  result := tableslist.Dataset['channelmanagers'];
 end;
 
 function TGlobalSettings.GetChannelPlanCodes: TRoomerDataSet;
 begin
-  result := GetDataSetFromDictionary('channelplancodes');
+  result := tableslist.Dataset['channelplancodes'];
 end;
 
 function TGlobalSettings.GET_RoomTypeNumberGuests_byRoom(Room : String) : integer;
@@ -1908,53 +1449,47 @@ end;
 
 function TGlobalSettings.GetRoomTypeRulesSet: TRoomerDataSet;
 begin
-  result := GetDataSetFromDictionary('roomtyperules');
+  result := tableslist.Dataset['roomtyperules'];
 end;
 
 function TGlobalSettings.GetRoomTypesSet: TRoomerDataSet;
 begin
-  result := GetDataSetFromDictionary('roomtypes');
+  result := tableslist.Dataset['roomtypes'];
+end;
+
+function TGlobalSettings.GetStaffMembers: TRoomerDataset;
+begin
+  result := tablesList.Dataset['staffmembers'];
 end;
 
 function TGlobalSettings.GetTblconvertgroups: TRoomerDataSet;
 begin
-  result := GetDataSetFromDictionary('tblconvertgroups');
+  result := tableslist.Dataset['tblconvertgroups'];
 end;
 
 function TGlobalSettings.GetTblconverts: TRoomerDataSet;
 begin
-  result := GetDataSetFromDictionary('tblconverts');
+  result := tableslist.Dataset['tblconverts'];
 end;
 
 function TGlobalSettings.GetTblpricecodes: TRoomerDataSet;
 begin
-  result := GetDataSetFromDictionary('tblpricecodes');
+  result := tableslist.Dataset['tblpricecodes'];
 end;
 
 function TGlobalSettings.GetTblseasons: TRoomerDataSet;
 begin
-  result := GetDataSetFromDictionary('tblseasons');
+  result := tableslist.Dataset['tblseasons'];
 end;
 
 function TGlobalSettings.GetVAT: TRoomerDataSet;
 begin
-  result := GetDataSetFromDictionary('vatcodes');
+  result := tableslist.Dataset['vatcodes'];
 end;
 
 function TGlobalSettings.LocateCountry(Country: String): Boolean;
 begin
   result := LocateSpecificRecord('countries', 'Country', Country);
-//  result := False;
-//  Countries.First;
-//  while not Countries.eof do
-//  begin
-//    if LowerCase(Countries['Country']) = LowerCase(Country) then
-//    begin
-//      result := true;
-//      Break;
-//    end;
-//    Countries.next;
-//  end;
 end;
 
 procedure TGlobalSettings.InitAvailability;
@@ -2075,90 +1610,6 @@ begin
       Break;
     end;
 end;
-
-
-
-
-{ TTableEntity }
-
-constructor TTableEntity.Create(tableName : String; baseTableAlwaysRefresh : Boolean = false; sqlExtension: String = '');
-begin
-  FSql := format('SELECT * FROM %s %s', [tableName, sqlExtension]);
-  FTableName := tableName;
-  FRSet := CreateNewDataSet;
-  FRSet.CommandType := cmdText;
-  FForceRefreshed := baseTableAlwaysRefresh;
-  FRefreshEnabled := True;
-end;
-
-destructor TTableEntity.Destroy;
-begin
-  FRSet.Free;
-  inherited;
-end;
-
-procedure TTableEntity.Refresh;
-begin
-  if NOT FRefreshEnabled then
-    exit;
-
-  FRSet.Close;
-
-  FRSet.CommandText := FSql;
-  try
-    FRSet.Open(true, false, True); // Open(doLowerCase: Boolean = true; setLastAccess: Boolean = true; Threaded: Boolean = False);
-    SaveToFile(FRSet.SavedLastResult);
-    FRSet.First;
-    RoomerMessages.MarkTableAsRefreshed(FTableName);
-  except
-    // Ignore...
-  end;
-end;
-
-procedure TTableEntity.RefreshLocally(ForceRefresh : Boolean = true);
-var localData : STring;
-begin
-  if NOT FRefreshEnabled then
-    exit;
-  if FRSet.Active then FRSet.Close;
-  FRSet.CommandText := FSql;
-  localData := ReadFromFile;
-  if localData <> '' then
-  try
-    FRSet.OpenDataset(localData);
-    RoomerMessages.MarkTableAsRefreshed(FTableName, FileTimeStamp);
-    exit;
-  except
-  end;
-  Refresh;
-end;
-
-procedure TTableEntity.SaveToFile(data : String);
-begin
-  SaveToTextFile(GetFilename, data);
-  SetFileDateTime(GetFilename, RoomerMessages.CurrentTableDate(FTableName));
-end;
-
-function TTableEntity.ReadFromFile : String;
-begin
-  result := ReadFromTextFile(GetFilename);
-end;
-
-function TTableEntity.FileTimeStamp : TDateTime;
-begin
-  result := GetFileTimeStamp(GetFilename);
-end;
-
-function TTableEntity.GetFilename : String;
-var sPath : String;
-begin
-  sPath := TPath.Combine(uStringUtils.LocalAppDataPath, 'Roomer');
-  sPath := TPath.Combine(sPath, format('%s\datacache',[d.roomerMainDataSet.hotelId]));
-  forceDirectories(sPath);
-
-  result := TPath.Combine(sPath, format(RoomerTableFileName, [FTableName]));
-end;
-
 
 
 

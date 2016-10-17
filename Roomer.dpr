@@ -247,7 +247,10 @@ uses
   uCleaningNotesEdit in 'uCleaningNotesEdit.pas' {frmCleaningNotesEdit},
   uMandatoryFieldDefinitions in 'Definitions\uMandatoryFieldDefinitions.pas',
   uInvoiceEntities in 'Invoice\uInvoiceEntities.pas',
-  uVatCalculator in 'VAT\uVatCalculator.pas';
+  uVatCalculator in 'VAT\uVatCalculator.pas',
+  uPMSSettings in 'PMSSettings\uPMSSettings.pas',
+  uTableEntityList in 'TableCache\uTableEntityList.pas',
+  uMessageList in 'uMessageList.pas';
 
 {$R *.RES}
 

@@ -49,8 +49,8 @@ object frmConverts: TfrmConverts
       Caption = 'Clear'
       OnClick = edFilterClickBtn
       SkinData.SkinSection = 'SPEEDBUTTON'
-      ImageIndex = 4
       Images = DImages.PngImageList1
+      ImageIndex = 4
     end
     object labFilterWarning: TsLabel
       Left = 1
@@ -140,15 +140,6 @@ object frmConverts: TfrmConverts
       TabOrder = 4
       OnChange = edFilterChange
       SkinData.SkinSection = 'EDIT'
-      BoundLabel.Indent = 0
-      BoundLabel.Font.Charset = DEFAULT_CHARSET
-      BoundLabel.Font.Color = clWindowText
-      BoundLabel.Font.Height = -11
-      BoundLabel.Font.Name = 'Tahoma'
-      BoundLabel.Font.Style = []
-      BoundLabel.Layout = sclLeft
-      BoundLabel.MaxWidth = 0
-      BoundLabel.UseSkinColor = True
     end
     object chkActive: TsCheckBox
       Left = 56
@@ -400,7 +391,6 @@ object frmConverts: TfrmConverts
     object prLink_grData: TdxGridReportLink
       Active = True
       Component = grData
-      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.GrayShading = True
@@ -413,8 +403,7 @@ object frmConverts: TfrmConverts
       PrinterPage.PageSize.Y = 297000
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
-      ReportDocument.CreationDate = 41942.820805104170000000
-      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
+      ReportDocument.CreationDate = 42657.581022581020000000
       BuiltInReportLink = True
     end
   end

@@ -72,6 +72,9 @@ type
 var
   frmMaidActions : TfrmMaidActions;
 
+
+function OpenMaidActionsEdit(act : TActTableAction; var code : string) : boolean;
+
 implementation
 
 uses
@@ -81,8 +84,35 @@ uses
   , uUtils
   , uDImages
   , UITypes
-  ;
+  , uMaidActionsEdit;
 {$R *.dfm}
+
+
+
+function OpenMaidActionsEdit(act : TActTableAction; var code : string) : boolean;
+var
+  frmMaidActionsEdit: TfrmMaidActionsEdit;
+begin
+  result := false;
+  frmMaidActionsEdit := TfrmMaidActionsEdit.Create(frmMaidActionsEdit);
+  try
+    frmMaidActionsEdit.zAct := act;
+    frmMaidActionsEdit.ShowModal;
+    if frmMaidActionsEdit.modalresult = mrOk then
+    begin
+      code := frmMaidActionsEdit.zCode;
+      result := true;
+    end
+    else
+    begin
+      code := frmMaidActionsEdit.zCode;
+    end;
+  finally
+    frmMaidActionsEdit.free;
+    frmMaidActionsEdit := nil;
+  end;
+end;
+
 
 procedure changeSortDir(var sCurrent : string);
 begin
@@ -165,7 +195,7 @@ begin
 
   // **
   Code := '';
-  if g.OpenMaidActionsEdit(actInsert, Code) then
+  if OpenMaidActionsEdit(actInsert, Code) then
   begin
     d.OpenMaidActionsQuery(d.zMaidActionsSortField, d.zMaidActionsSortDir);
     if d.MaidActions_.Locate('maAction', Code, []) then
@@ -182,22 +212,14 @@ begin
   end;
 end;
 
+
+
 procedure TfrmMaidActions.btnEditClick(Sender : TObject);
 var
   Code : string;
 begin
-
-
-  // **
   Code := '';
-  if g.OpenMaidActionsEdit(actEdit, Code) then
-  begin
-
-  end
-  else
-  begin
-
-  end;
+  OpenMaidActionsEdit(actEdit, Code);
 end;
 
 procedure TfrmMaidActions.btnDeleteClick(Sender : TObject);

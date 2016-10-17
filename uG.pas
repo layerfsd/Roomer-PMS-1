@@ -413,8 +413,8 @@ type
     /// /***********************
 
     function OpenDownPayment(act : TActTableAction; var rec : recDownPayment) : boolean;
-    function OpenMaidActions(act : TActTableAction; var code, Description : string) : boolean;
-    function OpenMaidActionsEdit(act : TActTableAction; var code : string) : boolean;
+//    function OpenMaidActions(act : TActTableAction; var code, Description : string) : boolean;
+//    function OpenMaidActionsEdit(act : TActTableAction; var code : string) : boolean;
 
     function OpenResMemo(reservation : integer) : boolean;
     function AddAccommodation(var Persons,rooms,nights : integer; var roomPrice : double) : boolean;
@@ -1628,7 +1628,7 @@ begin
 end;
 
 
-function TGlobalApplication.OpenMaidActions(act : TActTableAction; var code, Description : string) : boolean;
+{function TGlobalApplication.OpenMaidActions(act : TActTableAction; var code, Description : string) : boolean;
 begin
 
   result := false;
@@ -1675,7 +1675,7 @@ begin
     frmMaidActionsEdit := nil;
   end;
 end;
-
+ }
 
 
 function TGlobalApplication.strToStatusAttr(const aValue : string) : recStatusAttr;

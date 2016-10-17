@@ -192,7 +192,6 @@ type
     procedure FormKeyPress(Sender: TObject; var Key: Char);
     procedure BtnOkClick(Sender: TObject);
     procedure btnCloseClick(Sender: TObject);
-    procedure btnOtherClick(Sender: TObject);
     procedure tvDataCellDblClick(Sender: TcxCustomGridTableView; ACellViewInfo: TcxGridTableDataCellViewInfo; AButton: TMouseButton;
       AShift: TShiftState; var AHandled: Boolean);
     procedure tvDataDataControllerSortingChanged(Sender: TObject);
@@ -204,7 +203,6 @@ type
     procedure mnuiGridToHtmlClick(Sender: TObject);
     procedure mnuiGridToTextClick(Sender: TObject);
     procedure mnuiGridToXmlClick(Sender: TObject);
-    procedure tvDataInitEdit(Sender: TcxCustomGridTableView; AItem: TcxCustomGridTableItem; AEdit: TcxCustomEdit);
     procedure tvDataCurrencyPropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
     procedure tvDataCountryGroupPropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
     procedure m_BeforePost(DataSet: TDataSet);
@@ -217,6 +215,7 @@ type
     procedure btnInsertClick(Sender: TObject);
     procedure btnEditClick(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure m_AfterPost(DataSet: TDataSet);
 
   private
     { Private declarations }
@@ -605,6 +604,11 @@ end;
 
 
 
+procedure TfrmCountries.m_AfterPost(DataSet: TDataSet);
+begin
+  glb.RefreshTableByName('country');
+end;
+
 procedure TfrmCountries.m_BeforeDelete(DataSet: TDataSet);
 var
   s : string;
@@ -655,38 +659,24 @@ begin
   zData.OrderIndex          := dataset['OrderIndex'];
   zData.Active              := dataset['Active'];
 
-  if tvData.DataController.DataSource.State = dsEdit then
+  if Dataset.State = dsEdit then
   begin
-    if UPD_country(zData) then
-    begin
-       glb.ForceTableRefresh;
-    end else
-    begin
+    if not UPD_country(zData) then
       abort;
-      exit;
-    end;
   end;
-  if tvData.DataController.DataSource.State = dsInsert then
+  if Dataset.State = dsInsert then
   begin
     if dataset.FieldByName('Country').AsString = ''  then
     begin
 	    showmessage(GetTranslatedText('shTx_Countries_CodeRequired'));
       tvData.GetColumnByFieldName('country').Focused := True;
       abort;
-      exit;
-    end;
-    if ins_Country(zData,nID) then
-    begin
-      m_.FieldByName('ID').AsInteger := nID;
-      glb.ForceTableRefresh;
-    end else
-    begin
+    end
+    else if ins_Country(zData,nID) then
+      m_.FieldByName('ID').AsInteger := nID
+    else
       abort;
-      exit;
-    end;
   end;
-  RoomerMessages.RefreshLists;
-  glb.RefreshTablesWhenNeeded;
 end;
 
 procedure TfrmCountries.m_NewRecord(DataSet: TDataSet);
@@ -834,11 +824,6 @@ begin
   sbMain.SimpleText := s;
 end;
 
-procedure TfrmCountries.tvDataInitEdit(Sender: TcxCustomGridTableView; AItem: TcxCustomGridTableItem; AEdit: TcxCustomEdit);
-begin
-
-end;
-
 //**************************************************************************
 //  Filter
 //***************************************************************************
@@ -902,10 +887,6 @@ begin
   tvData.GetColumnByFieldName('country').Focused := True;
 end;
 
-procedure TfrmCountries.btnOtherClick(Sender: TObject);
-begin
-  //**
-end;
 
 ////---------------------------------------------------------------------------
 /// Menu in other actions

@@ -28,10 +28,8 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
     SkinData.SkinSection = 'PAGECONTROL'
     object sTabSheet1: TsTabSheet
       Caption = 'Room 101'
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
+      SkinData.CustomColor = False
+      SkinData.CustomFont = False
       object sPanel1: TsPanel
         Left = 0
         Top = 0
@@ -70,11 +68,9 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
           SkinData.SkinSection = 'PAGECONTROL'
           object sTabSheet2: TsTabSheet
             Caption = 'Guest Info'
+            SkinData.CustomColor = False
+            SkinData.CustomFont = False
             SkinData.SkinSection = 'TRANSPARENT'
-            ExplicitLeft = 0
-            ExplicitTop = 0
-            ExplicitWidth = 0
-            ExplicitHeight = 0
             object sLabel6: TsLabel
               Left = 97
               Top = 126
@@ -699,10 +695,8 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
           end
           object sTabSheet6: TsTabSheet
             Caption = 'Company'
-            ExplicitLeft = 0
-            ExplicitTop = 0
-            ExplicitWidth = 0
-            ExplicitHeight = 0
+            SkinData.CustomColor = False
+            SkinData.CustomFont = False
             object sLabel22: TsLabel
               Left = 11
               Top = 24
@@ -1249,10 +1243,8 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
           SkinData.SkinSection = 'PAGECONTROL'
           object sTabSheet3: TsTabSheet
             Caption = 'Credit card'
-            ExplicitLeft = 0
-            ExplicitTop = 0
-            ExplicitWidth = 0
-            ExplicitHeight = 0
+            SkinData.CustomColor = False
+            SkinData.CustomFont = False
             object sLabel12: TsLabel
               Left = 66
               Top = 69
@@ -1291,10 +1283,8 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
           end
           object sTabSheet4: TsTabSheet
             Caption = 'Cash'
-            ExplicitLeft = 0
-            ExplicitTop = 0
-            ExplicitWidth = 0
-            ExplicitHeight = 0
+            SkinData.CustomColor = False
+            SkinData.CustomFont = False
             object sLabel16: TsLabel
               Left = 38
               Top = 21
@@ -1375,17 +1365,13 @@ object FrmGuestCheckInForm: TFrmGuestCheckInForm
           end
           object sTabSheet5: TsTabSheet
             Caption = 'None'
-            ExplicitLeft = 0
-            ExplicitTop = 0
-            ExplicitWidth = 0
-            ExplicitHeight = 0
+            SkinData.CustomColor = False
+            SkinData.CustomFont = False
           end
           object sTabSheet7: TsTabSheet
             Caption = 'Select'
-            ExplicitLeft = 0
-            ExplicitTop = 0
-            ExplicitWidth = 0
-            ExplicitHeight = 0
+            SkinData.CustomColor = False
+            SkinData.CustomFont = False
           end
         end
       end
