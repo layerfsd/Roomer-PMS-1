@@ -88,18 +88,22 @@ type
     m_Balancebalance: TFloatField;
     tvBalancebalance: TcxGridDBColumn;
     gridPrinterLinkBalance: TdxGridReportLink;
+    btnCloseCurrentDay: TsButton;
     procedure btnRefreshClick(Sender: TObject);
     procedure btnPrintGridClick(Sender: TObject);
     procedure rbPresetDateClick(Sender: TObject);
     procedure tvPaymentsTotalAmountGetProperties(Sender: TcxCustomGridTableItem; ARecord: TcxCustomGridRecord;
       var AProperties: TcxCustomEditProperties);
     procedure m_BalanceCalcFields(DataSet: TDataSet);
+    procedure btnExcelClick(Sender: TObject);
+    procedure btnCloseCurrentDayClick(Sender: TObject);
   private
     FRefreshingData: Boolean;
     FRecordSet: TRoomerDataSet;
     FCurrencyhandler: TCurrencyHandler;
     procedure ShowError(const aOperation: string);
     procedure UpdateBalanceData;
+    procedure SetSummaryDisplayFormat(aView: TcxGridDBTableView; const aFormat: string);
     { Private declarations }
   protected
     procedure DoLoadData; override;
@@ -133,7 +137,7 @@ uses
   , uFinancialReportsAPICaller
   , cxEditRepositoryItems
   , Math
-  ;
+  , uDayClosingTimesAPICaller;
 
 procedure ShowDailyRevenuesReport;
 begin
@@ -143,6 +147,37 @@ begin
   finally
     Free;
   end;
+end;
+
+procedure TfrmRptDailyRevenues.btnCloseCurrentDayClick(Sender: TObject);
+var
+  lCaller: TDayClosingTimesAPICaller;
+begin
+  lCaller := TDayClosingTimesAPICaller.Create;
+  try
+    lCaller.CloseRunningDayGuarded;
+  finally
+    lCaller.Free;
+  end;
+end;
+
+procedure TfrmRptDailyRevenues.btnExcelClick(Sender: TObject);
+var
+  sFilename : string;
+  s         : string;
+begin
+  dateTimeToString(s, 'yyyymmddhhnn', now);
+  sFilename := g.qProgramPath + s + '_Payments';
+  ExportGridToXLSX(sFilename, grDataPayments, true, true, true);
+  ShellExecute(Handle, 'OPEN', PChar(sFilename + '.xls'), nil, nil, sw_shownormal);
+
+  sFilename := g.qProgramPath + s + '_Revenues';
+  ExportGridToXLSX(sFilename, grDataRevenues, true, true, true);
+  ShellExecute(Handle, 'OPEN', PChar(sFilename + '.xls'), nil, nil, sw_shownormal);
+
+  sFilename := g.qProgramPath + s + '_Balance';
+  ExportGridToXLSX(sFilename, grBalance, true, true, true);
+  ShellExecute(Handle, 'OPEN', PChar(sFilename + '.xls'), nil, nil, sw_shownormal);
 end;
 
 procedure TfrmRptDailyRevenues.btnPrintGridClick(Sender: TObject);
@@ -160,28 +195,29 @@ begin
   RefreshData;
 end;
 
+procedure TfrmRptDailyRevenues.SetSummaryDisplayFormat(aView: TcxGridDBTableView; const aFormat: string);
+var
+  i: integer;
+begin
+  for i := 0 to aView.ColumnCount-1 do
+    with aView.Columns[i].Summary do
+    begin
+      if FooterKind <> skNone then
+        FooterFormat := aFormat;
+      if GroupFooterKind <> skNone then
+        GroupFooterFormat := aFormat;
+    end;
+end;
+
 constructor TfrmRptDailyRevenues.Create(Owner: TComponent);
 begin
   FRecordSet := d.roomerMainDataSet.CreateNewDataset;
   FCurrencyhandler := TCurrencyHandler.Create(g.qNativeCurrency);
   inherited;
 
-  tvPaymentsTotalAmount.Summary.FooterFormat := FCurrencyhandler.GetcxEditProperties.DisplayFormat;
-  tvPaymentsTotalAmount.Summary.GroupFooterFormat := FCurrencyhandler.GetcxEditProperties.DisplayFormat;
-
-  tvRevenuestotalamount.Summary.FooterFormat := FCurrencyhandler.GetcxEditProperties.DisplayFormat;
-  tvRevenuestotalwovat.Summary.FooterFormat := FCurrencyhandler.GetcxEditProperties.DisplayFormat;
-  tvRevenuestotalvat.Summary.FooterFormat := FCurrencyhandler.GetcxEditProperties.DisplayFormat;
-  tvRevenuestotalamount.Summary.GroupFooterFormat := FCurrencyhandler.GetcxEditProperties.DisplayFormat;
-  tvRevenuestotalwovat.Summary.GroupFooterFormat := FCurrencyhandler.GetcxEditProperties.DisplayFormat;
-  tvRevenuestotalvat.Summary.GroupFooterFormat := FCurrencyhandler.GetcxEditProperties.DisplayFormat;
-
-  tvBalancetotalrevenues.Summary.FooterFormat := FCurrencyhandler.GetcxEditProperties.DisplayFormat;
-  tvBalancetotalrevenues.Summary.GroupFooterFormat := FCurrencyhandler.GetcxEditProperties.DisplayFormat;
-  tvBalancetotalpayments.Summary.FooterFormat := FCurrencyhandler.GetcxEditProperties.DisplayFormat;
-  tvBalancetotalpayments.Summary.GroupFooterFormat := FCurrencyhandler.GetcxEditProperties.DisplayFormat;
-  tvBalancebalance.Summary.FooterFormat := FCurrencyhandler.GetcxEditProperties.DisplayFormat;
-  tvBalancebalance.Summary.GroupFooterFormat := FCurrencyhandler.GetcxEditProperties.DisplayFormat;
+  SetSummaryDisplayFormat(tvPayments, FCurrencyhandler.GetcxEditProperties.DisplayFormat);
+  SetSummaryDisplayFormat(tvRevenues, FCurrencyhandler.GetcxEditProperties.DisplayFormat);
+  SetSummaryDisplayFormat(tvBalance, FCurrencyhandler.GetcxEditProperties.DisplayFormat);
 end;
 
 destructor TfrmRptDailyRevenues.Destroy;

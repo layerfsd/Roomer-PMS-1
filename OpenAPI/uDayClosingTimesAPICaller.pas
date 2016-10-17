@@ -25,7 +25,15 @@ type
     function InsertDayClosingTime(aDay: TDateTime; aClosingTime: TDateTime): boolean;
     function DeleteDayClosingTime(aDay: TDateTime): boolean;
     function GetRunningDay: TDateTime;
+    /// <summary>
+    ///   Registers the current timestamp as the closing time of the current day, no questions asked
+    /// </summary>
     function CloseRunningDay: boolean;
+    /// <summary>
+    ///   Registers the current timestamp as the closing time of the current day, after comfirmation by the user. <br />
+    ///  If the currentday is beyond today then a timestamp for today is already registered and dayclosing is not allowed.
+    /// </summary>
+    procedure CloseRunningDayGuarded;
   end;
 
 implementation
@@ -39,7 +47,10 @@ uses
   , uD
   , Classes
   , SysUtils
-  , uUtils;
+  , uUtils
+  , Dialogs
+  , UITypes
+  , PrjConst;
 
 function TDayClosingTimesAPICaller.DeleteDayClosingTime(aDay: TDateTime): boolean;
 var
@@ -140,6 +151,27 @@ begin
     end;
   finally
     roomerClient.Free;
+  end;
+end;
+
+
+procedure TDayClosingTimesAPICaller.CloseRunningDayGuarded;
+var
+  lCaller: TDayClosingTimesAPICaller;
+  lCurrentDay: TdateTime;
+begin
+  lCaller := TDayClosingTimesAPICaller.Create;
+  try
+    lCurrentDay := lCaller.GetRunningDay;
+
+    if lCurrentDay > TDateTime.Today then
+      MessageDlg(Format(GetTranslatedText('shTx_FinancialDayAlreadyClosed'), [lCurrentDay.ToString]), mtInformation, [mbOK], 0)
+    else
+      if MessageDlg(GetTranslatedText('shTx_CloseFinancialDay') + #10 +
+                    GetTranslatedText('shTx_CurrentFinancialDay') + lCurrentDay.ToString, mtConfirmation, [mbYes, mbCancel], 0) = mrYes then
+        lCaller.CloseRunningDay;
+  finally
+    lCaller.Free;
   end;
 end;
 

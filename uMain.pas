@@ -11510,14 +11510,10 @@ end;
 procedure CloseFinancialDay;
 var
   lCaller: TDayClosingTimesAPICaller;
-  lCurrentDay: TdateTime;
 begin
   lCaller := TDayClosingTimesAPICaller.Create;
   try
-    lCurrentDay := lCaller.GetRunningDay;
-    if MessageDlg(GetTranslatedText('shTx_CloseFinancialDay') + #10 +
-                  GetTranslatedText('shTx_CurrentFinancialDay') + lCurrentDay.ToString, mtConfirmation, [mbYes, mbCancel], 0) = mrYes then
-      lCaller.CloseRunningDay;
+    lCaller.CloseRunningDayGuarded;
   finally
     lCaller.Free;
   end;

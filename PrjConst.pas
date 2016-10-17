@@ -1531,6 +1531,8 @@ begin
   constants.Add('shTxThisConfirmAllottedBooking', 'This will change the full booking into a confirmed reservation.' + #10#10 + 'Do you want to continue?');
   constants.Add('shTx_CloseFinancialDay', 'This will close the current day for revenues and payments?' + #10#10 + 'Do you want to continue?');
   constants.Add('shTx_CurrentFinancialDay',  'Current financial day: ');
+  constants.Add('shTx_FinancialDayAlreadyClosed', 'The current financial [%s] day is already closed. Use "Day Closing times" button to change if needed.');
+
 end;
 
 procedure AddConstants_7; // Baettu vid thennan ad vild

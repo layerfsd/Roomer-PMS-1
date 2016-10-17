@@ -182,7 +182,7 @@ begin
     try
       lCaller := TDayClosingTimesAPICaller.Create;
       try
-        if lCaller.GetDayClosingTimesAsDataset(FRecordSet, edtLastDate.Date.AddYears(-1), edtLastDate.Date) then
+        if lCaller.GetDayClosingTimesAsDataset(FRecordSet, edtLastDate.Date.AddYears(-1), edtLastDate.Date+1) then
         begin
           if m_.active then m_.Close;
           m_.LoadFromDataSet(FRecordSet);
@@ -304,7 +304,7 @@ begin
     end
     else if tvData.DataController.DataSource.State = dsInsert then
       if not lCaller.InsertDayClosingTime(Dataset['day'], Dataset['closingtimestamp']) then
-        ShowError('insert of DayCLosing Timestamp');
+        ShowError('insert of DayCLosing Timestamp. Cannot enter multiple closing times for the same day');
 //        Abort;
   finally
     lCaller.Free;
