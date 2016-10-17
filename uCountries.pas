@@ -740,7 +740,7 @@ begin
   if hdata.CountryExists(displayValue) then
   begin
     error := true;
-    //errortext := displayvalue+'Nýtt gildi er til í annari færslu. Notið ESC-hnappin til að hætta við';
+    //errortext := displayvalue+'Nï¿½tt gildi er til ï¿½ annari fï¿½rslu. Notiï¿½ ESC-hnappin til aï¿½ hï¿½tta viï¿½';
     errortext := displayvalue+' - '+GetTranslatedText('shNewValueExistInAnotherRecor');
     exit;
   end;
@@ -750,7 +750,7 @@ begin
     if hdata.CountryExistsInOther(currValue) then
     begin
       error := true;
-      // errortext := displayvalue+'Eldra gildi fannst í tengdri færslu ekki hægt að breyta - Notið 'ESC-hnappin til að hætta við';
+      // errortext := displayvalue+'Eldra gildi fannst ï¿½ tengdri fï¿½rslu ekki hï¿½gt aï¿½ breyta - Notiï¿½ 'ESC-hnappin til aï¿½ hï¿½tta viï¿½';
       errortext := displayvalue+' - '+GetTranslatedText('shOldValueUsedInRelatedDataC');
       exit;
     end;
@@ -843,6 +843,11 @@ procedure TfrmCountries.BtnOkClick(Sender: TObject);
 begin
   //
   fillHolder;
+end;
+
+procedure TfrmCountries.btnOtherClick(Sender: TObject);
+begin
+  btnOther.DropDownMenu.
 end;
 
 procedure TfrmCountries.BringWindowToFront;
