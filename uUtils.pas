@@ -84,6 +84,7 @@ function Str2Bool(s : String) : Boolean;
 function Bool2Str(b : Boolean) : String;
 procedure DebugMessage(const Str: string);
 procedure CopyToClipboard(const Str: string; iDelayMs: integer = 500);
+procedure TextToClipboard(const Str: string; iDelayMs: integer = 500);
 function ClipboardText : String;
 function ClipboardHasFormat(format : Word) : Boolean;
 function LoadImageToBitmap(Filename : String) : TBitmap;
@@ -1156,6 +1157,26 @@ begin
     end;
   end;
 {$ENDIF}
+end;
+
+procedure TextToClipboard(const Str: string; iDelayMs: integer = 500);
+const MaxRetries= 5;
+var   RetryCount: Integer;
+begin
+  for RetryCount:= 1 to MaxRetries do
+  try
+    Clipboard.AsText:= Str;
+    Break;
+  except
+    on Exception do
+    begin
+      if RetryCount = MaxRetries then
+      //  raise Exception.Create('Cannot set clipboard')
+		    raise Exception.Create({$IFNDEF RBE_BUILD}GetTranslatedText('shTx_Utils_CannotClipboard'){$ELSE}'Cannot Copy To Clipboard'{$ENDIF})
+      else
+        Sleep(iDelayMs)
+    end;
+  end;
 end;
 
 function ClipboardText : String;
