@@ -20,46 +20,42 @@ uses
   , DB
   , Mask
   , DBTables
-  , DBCtrls, sButton, sLabel, sPanel
-
-  //FIX  wwdbedit
-  //FIX  wwcheckbox
-
+  , DBCtrls, sButton, sLabel, sPanel, sMemo, sEdit
+  , hData
   ;
 
 type
   TfrmMaidActionsEdit = class(TForm)
     PanBtn: TsPanel;
     panTop: TsPanel;
-    LMDSimpleLabel2: TsLabel;
-    BDECountry: TDBEdit;
-    DBECountryName: TDBEdit;
-    DBMemo1: TDBMemo;
-    wwCheckBox1: TDBCheckBox;
+    cbActive: TDBCheckBox;
     BtnOk: TsButton;
     btnCancel: TsButton;
+    edDescription: TsEdit;
+    sLabel1: TsLabel;
+    sLabel2: TsLabel;
+    edAction: TsEdit;
+    sLabel3: TsLabel;
+    edRule: TsMemo;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure FormClose(Sender: TObject; var Action: TCloseAction);
-    procedure FormDestroy(Sender: TObject);
     procedure btnOkClick(Sender: TObject);
     procedure btnCancelClick(Sender: TObject);
-    procedure PanBtnResize(Sender: TObject);
-    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
   private
     { Private declarations }
 
     CloseOK : boolean;
-    procedure SetBtnPos;
+    procedure UpdateControls;
 
   public
     { Public declarations }
-    zAct   : TActTableAction;
-    zCode  : string;
+    zData: recMaidActionHolder;
+    zInsert: boolean;
+
+    procedure EditsToRecordHolder;
   end;
 
-var
-  frmMaidActionsEdit: TfrmMaidActionsEdit;
+function openMaidActionEdit(var theData : recMaidActionHolder; isInsert : boolean) : boolean;
 
 implementation
 
@@ -71,12 +67,26 @@ uses uD
 
 {$R *.dfm}
 
-procedure TfrmMaidActionsEdit.SetBtnPos;
+function openMaidActionEdit(var theData : recMaidActionHolder; isInsert : boolean): boolean;
+var
+  frm: TfrmMaidActionsEdit;
 begin
-  btnCancel.Left := PanBtn.Width-btnCancel.width-5;
-  btnOK.Left := btnCancel.Left-BtnOk.Width-5;
+  result := false;
+  frm := TfrmMaidActionsEdit.Create(nil);
+  try
+    frm.zData := theData;
+    frm.zInsert := isInsert;
+    frm.ShowModal;
+    if frm.modalresult = mrOk then
+    begin
+      frm.EditsToRecordHolder;
+      theData := frm.zData;
+      result := true;
+    end
+  finally
+    freeandnil(frm);
+  end;
 end;
-
 
 procedure TfrmMaidActionsEdit.FormCreate(Sender: TObject);
 begin
@@ -84,95 +94,74 @@ begin
   glb.PerformAuthenticationAssertion(self);
   PlaceFormOnVisibleMonitor(self);
   //**
-  zAct  := ActNone;
-  zCode := '';
-  SetBtnPos;
   closeOK := false;
 end;
 
 procedure TfrmMaidActionsEdit.FormShow(Sender: TObject);
 begin
   //**
-  if zAct = actInsert then
+  if zInsert then
   begin
-    activecontrol := BDECountry;
-    d.maidActions_.Insert;
+    activecontrol := edAction;
   end else
-  if zAct = actEdit then
   begin
-    BDECountry.Enabled := false;
-    activecontrol := DBECountryName;
-    d.maidActions_.Edit;
+    edAction.Enabled := false;
+    activecontrol := edDescription;
   end;
+
+  UpdateControls;
 end;
 
-procedure TfrmMaidActionsEdit.FormClose(Sender: TObject;
-  var Action: TCloseAction);
+procedure TfrmMaidActionsEdit.UpdateControls;
 begin
-  //**
-end;
-
-procedure TfrmMaidActionsEdit.FormDestroy(Sender: TObject);
-begin
-  //**
-end;
-
-procedure TfrmMaidActionsEdit.btnOkClick(Sender: TObject);
-begin
-  if trim(BDECountry.text) = '' then
-  begin
-	  showmessage(GetTranslatedText('shTx_MaidActionsEdit_CodeMaidAction'));
-    closeOk := false;
-    BDECountry.SetFocus;
-    exit;
-  end;
-
-  //**TESTED// lev3 ok
-  if zAct = actInsert then
-  if d.MaidActionExist(BDECountry.text) then
-  begin
-	  showmessage(GetTranslatedText('shTx_MainActionsEdit_MaidActionAvailable'));
-    closeOk := false;
-    BDECountry.SetFocus;
-    exit;
-  end;
-
-  if trim(DBECountryName.text) = '' then
-  begin
-	  showmessage(GetTranslatedText('shTx_MainActionsEdit_NameMaid'));
-    closeOk := false;
-    DBECountryName.SetFocus;
-    exit;
-  end;
-
-  if (d.MaidActionsDS.State = dsEdit) or (d.MaidActionsDS.State = dsInsert) then
-  begin
-    d.maidActions_.post;
-    zCode := d.maidActions_.fieldbyName('maAction').asString;
-  end;
-  closeok := true;
+  cbActive.Checked := zData.active;
+  edAction.Text := zData.action;
+  edDescription.Text := zData.Description;
+  edRule.Text := zData.Rule;
 end;
 
 procedure TfrmMaidActionsEdit.btnCancelClick(Sender: TObject);
 begin
-  //**
-  if (d.MaidActionsDS.State = dsEdit) or (d.MaidActionsDS.State = dsInsert) then
+  Close;
+end;
+
+procedure TfrmMaidActionsEdit.btnOkClick(Sender: TObject);
+begin
+  if trim(edAction.text) = '' then
   begin
-    d.maidActions_.Cancel;
+	  showmessage(GetTranslatedText('shTx_MaidActionsEdit_CodeMaidAction'));
+    closeOk := false;
+    edAction.SetFocus;
+    exit;
   end;
-  zCode := d.maidActions_.fieldbyName('maAction').asString;
+
+  if zInsert then
+    if d.MaidActionExist(edAction.Text) then
+    begin
+      showmessage(GetTranslatedText('shTx_MainActionsEdit_MaidActionAvailable'));
+      closeOk := false;
+      edAction.SetFocus;
+      exit;
+    end;
+
+  if trim(edDescription.text) = '' then
+  begin
+	  showmessage(GetTranslatedText('shTx_MainActionsEdit_NameMaid'));
+    closeOk := false;
+    edDescription.SetFocus;
+    exit;
+  end;
+
+  if CloseOK then
+    Close;
 end;
 
-procedure TfrmMaidActionsEdit.PanBtnResize(Sender: TObject);
+procedure TfrmMaidActionsEdit.EditsToRecordHolder;
 begin
-  SetBtnPos;
-end;
-
-procedure TfrmMaidActionsEdit.FormCloseQuery(Sender: TObject;
-  var CanClose: Boolean);
-begin
-  CanClose := CloseOk;
-  CloseOk  := true;
+  zData.active := cbActive.Checked;
+  zData.action := edAction.Text;
+  zdata.Description := edDescription.Text;
+  zData.Rule := edRule.Text;
 end;
 
 end.

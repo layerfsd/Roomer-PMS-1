@@ -26,298 +26,583 @@ uses
   DBCtrls,
   ComCtrls,
 
-  _glob,
-  ug, DBGrids, cxPropertiesStore, cxClasses, sButton, sPanel
+  _glob, dxCore,
+  ug, DBGrids, cxPropertiesStore, cxClasses, sButton, sPanel, cxGraphics, cxControls, cxLookAndFeels,
+  cxLookAndFeelPainters, cxStyles, dxSkinsCore, dxSkinCaramel, dxSkinCoffee, dxSkinDarkSide, dxSkinTheAsphaltWorld,
+  dxSkinsDefaultPainters, dxSkinscxPCPainter, cxCustomData, cxFilter, cxData, cxDataStorage, cxEdit, cxNavigator,
+  cxDBData, dxPSGlbl, dxPSUtl, dxPSEngn, dxPrnPg, dxBkgnd, dxWrap, dxPrnDev, dxPSCompsProvider, dxPSFillPatterns,
+  dxPSEdgePatterns, dxPSPDFExportCore, dxPSPDFExport, cxDrawTextUtils, dxPSPrVwStd, dxPSPrVwAdv, dxPSPrVwRibbon,
+  dxPScxPageControlProducer, dxPScxGridLnk, dxPScxGridLayoutViewLnk, dxPScxEditorProducers, dxPScxExtEditorProducers,
+  dxSkinsdxBarPainter, dxSkinsdxRibbonPainter, cxGridCustomTableView, cxGridTableView, cxGridDBTableView, dxmdaset,
+  dxPSCore, dxPScxCommon, cxGridLevel, cxGridCustomView, cxGrid, sStatusBar, sEdit, sSpeedButton, sLabel, hData, cxMemo
 
   ;
 
 type
   TfrmMaidActions = class(TForm)
-    wwDBGrid1: TDBGrid;
-    LMDStatusBar1: TStatusBar;
-    PanTop: TsPanel;
-    panBtn: TsPanel;
-    BtnOk: TsButton;
-    btnCancel: TsButton;
-    FormStore: TcxPropertiesStore;
-    btnInsert: TsButton;
-    btnEdit: TsButton;
+    sPanel1: TsPanel;
     btnDelete: TsButton;
-    btnClose: TsButton;
-    procedure FormCreate(Sender : TObject);
-    procedure FormShow(Sender : TObject);
-    procedure btnCancelClick(Sender : TObject);
-    procedure btnInsertClick(Sender : TObject);
-    procedure btnEditClick(Sender : TObject);
-    procedure btnDeleteClick(Sender : TObject);
-    procedure panBtnResize(Sender : TObject);
-    procedure FormKeyPress(Sender : TObject; var Key : Char);
-    procedure BtnOkClick(Sender : TObject);
-    procedure wwDBGrid1DblClick(Sender : TObject);
-    procedure btnCloseClick(Sender : TObject);
-
+    btnOther: TsButton;
+    mnuOther: TPopupMenu;
+    mnuiPrint: TMenuItem;
+    mnuiAllowGridEdit: TMenuItem;
+    N2: TMenuItem;
+    Export1: TMenuItem;
+    mnuiGridToExcel: TMenuItem;
+    mnuiGridToHtml: TMenuItem;
+    mnuiGridToText: TMenuItem;
+    mnuiGridToXml: TMenuItem;
+    sbMain: TsStatusBar;
+    edFilter: TsEdit;
+    cLabFilter: TsLabel;
+    btnClear: TsSpeedButton;
+    panBtn: TsPanel;
+    btnCancel: TsButton;
+    BtnOk: TsButton;
+    DS: TDataSource;
+    grPrinter: TdxComponentPrinter;
+    prLink_grData: TdxGridReportLink;
+    m_: TdxMemData;
+    grData: TcxGrid;
+    tvData: TcxGridDBTableView;
+    lvData: TcxGridLevel;
+    tvDataRecId: TcxGridDBColumn;
+    btnEdit: TsButton;
+    btnInsert: TsButton;
+    FormStore: TcxPropertiesStore;
+    tvDatamaAction: TcxGridDBColumn;
+    tvDatamaDescription: TcxGridDBColumn;
+    tvDatamaRule: TcxGridDBColumn;
+    tvDatamaUSe: TcxGridDBColumn;
+    tvDatamaCross: TcxGridDBColumn;
+    tvDatamaActive: TcxGridDBColumn;
+    tvDataID: TcxGridDBColumn;
+    m_ID: TIntegerField;
+    m_maAction: TWideStringField;
+    m_maDescription: TWideStringField;
+    m_maRule: TWideMemoField;
+    m_maUSe: TBooleanField;
+    m_maCross: TBooleanField;
+    m_maActive: TBooleanField;
+    procedure FormCreate(Sender: TObject);
+    procedure FormShow(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure FormKeyPress(Sender: TObject; var Key: Char);
+    procedure m_BeforeDelete(DataSet: TDataSet);
+    procedure tvDataDescriptionPropertiesValidate(Sender: TObject;
+      var DisplayValue: Variant; var ErrorText: TCaption; var Error: Boolean);
+    procedure tvDataDblClick(Sender: TObject);
+    procedure BtnOkClick(Sender: TObject);
+    procedure btnCancelClick(Sender: TObject);
+    procedure tvDataFocusedRecordChanged(Sender: TcxCustomGridTableView;
+      APrevFocusedRecord, AFocusedRecord: TcxCustomGridRecord;
+      ANewItemRecordFocusingChanged: Boolean);
+    procedure tvDataDataControllerFilterChanged(Sender: TObject);
+    procedure tvDataDataControllerSortingChanged(Sender: TObject);
+    procedure btnDeleteClick(Sender: TObject);
+    procedure mnuiPrintClick(Sender: TObject);
+    procedure mnuiAllowGridEditClick(Sender: TObject);
+    procedure mnuiGridToExcelClick(Sender: TObject);
+    procedure mnuiGridToHtmlClick(Sender: TObject);
+    procedure mnuiGridToTextClick(Sender: TObject);
+    procedure mnuiGridToXmlClick(Sender: TObject);
+    procedure btnClearClick(Sender: TObject);
+    procedure edFilterChange(Sender: TObject);
+    procedure tvDataItemtypePropertiesValidate(Sender: TObject; var DisplayValue: Variant; var ErrorText: TCaption; var Error: Boolean);
+    procedure btnInsertClick(Sender: TObject);
+    procedure btnEditClick(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     { Private declarations }
-    aHeader : string;
-    isFirstTime : boolean;
-    procedure SetBtnPos;
+    zFirstTime       : boolean;
+    zAllowGridEdit   : boolean;
+    zFilterOn        : boolean;
+    zSortStr         : string;
+    zIsAddRow        : boolean;
+
+    Procedure fillGridFromDataset(sGoto : string);
+    procedure fillHolder;
+    procedure changeAllowgridEdit;
+    Procedure chkFilter;
+    procedure applyFilter;
+
+
   public
     { Public declarations }
-    zCode : string;
-    zDescription : string;
-    zAct : TActTableAction;
-
+    zAct   : TActTableAction;
+    zData  : recMaidActionHolder;
   end;
 
-var
-  frmMaidActions : TfrmMaidActions;
-
-
-function OpenMaidActionsEdit(act : TActTableAction; var code : string) : boolean;
+function openMaidAction(act : TActTableAction; var theData : recmaidActionHolder) : boolean;
 
 implementation
 
-uses
-  uD
-  , uAppGlobal
-  , PrjConst
-  , uUtils
-  , uDImages
-  , UITypes
-  , uMaidActionsEdit;
 {$R *.dfm}
 
+uses
+    uD
+  , prjConst
+  , uSqlDefinitions
+  , uVatCodes
+  , uUtils
+  , cmpRoomerDataset
+  , uAppGlobal
+  , cxGridExportLink
+  , UITypes
+  , uMaidActionsEdit;
 
 
-function OpenMaidActionsEdit(act : TActTableAction; var code : string) : boolean;
+//////////////////////////////////////////////////////////////////////////////////////////////
+//  unit global functions
+//////////////////////////////////////////////////////////////////////////////////////////////
+
+function openMaidAction(act : TActTableAction; var theData : recmaidActionHolder) : boolean;
 var
-  frmMaidActionsEdit: TfrmMaidActionsEdit;
+  frmMaidAction: TfrmMaidActions;
 begin
   result := false;
-  frmMaidActionsEdit := TfrmMaidActionsEdit.Create(frmMaidActionsEdit);
+  frmMaidAction := TfrmMaidActions.Create(nil);
   try
-    frmMaidActionsEdit.zAct := act;
-    frmMaidActionsEdit.ShowModal;
-    if frmMaidActionsEdit.modalresult = mrOk then
+    frmMaidAction.zData := theData;
+    frmMaidAction.zAct := act;
+    frmMaidAction.ShowModal;
+    if frmMaidAction.modalresult = mrOk then
     begin
-      code := frmMaidActionsEdit.zCode;
+      theData := frmMaidAction.zData;
       result := true;
     end
     else
     begin
-      code := frmMaidActionsEdit.zCode;
+      initMaidActionHolder(theData);
     end;
   finally
-    frmMaidActionsEdit.free;
-    frmMaidActionsEdit := nil;
+    freeandnil(frmMaidAction);
   end;
 end;
 
 
-procedure changeSortDir(var sCurrent : string);
+///////////////////////////////////////////////////////////////////////
+                    { Private declarations }
+///////////////////////////////////////////////////////////////////////
+
+
+Procedure TfrmMaidActions.fillGridFromDataset(sGoto : string);
+var
+  s    : string;
+  rSet : TRoomerDataSet;
 begin
-  sCurrent := trim(Uppercase(sCurrent));
-  if (sCurrent = '') or (sCurrent = 'ASC') then
-  begin
-    sCurrent := ' DESC';
-  end
-  else
-  begin
-    sCurrent := ' ';
+  zFirstTime := true;
+  if zSortStr = '' then zSortStr := 'maAction';
+  rSet := CreateNewDataSet;
+  try
+    s := format(select_MaidList_FormShow, [zSortStr]);
+    if rSet_bySQL(rSet,s) then
+    begin
+      if m_.active then m_.Close;
+      m_.LoadFromDataSet(rSet);
+      if sGoto = '' then
+      begin
+        m_.First;
+      end else
+      begin
+        try
+          m_.Locate('maAction',sGoto,[]);
+        except
+        end;
+      end;
+    end;
+  finally
+    freeandnil(rSet);
   end;
 end;
 
-procedure TfrmMaidActions.SetBtnPos;
+
+procedure TfrmMaidActions.fillHolder;
 begin
-  btnCancel.Left := panBtn.Width - btnCancel.Width - 5;
-  BtnOk.Left := btnCancel.Left - BtnOk.Width - 5;
+  initMaidActionHolder(zData);
+  zData.ID           := m_.FieldByName('ID').AsInteger;
+  zData.Active       := m_['Active'];
+  zData.Description  := m_['maDescription'];
+  zData.Action       := m_['maAction'];
+  zData.Rule         := m_['maRule'];
+  zData.Cross        := m_['maCross'];
+  zData.Use          := m_['maUse'];
 end;
 
-procedure TfrmMaidActions.FormCreate(Sender : TObject);
+procedure TfrmMaidActions.changeAllowgridEdit;
+begin
+  tvDataID.Options.Editing             := false;
+  tvDatamaActive.Options.Editing         := zAllowGridEdit;
+  tvDatamaDescription.Options.Editing    := zAllowGridEdit;
+  tvDatamaRule.Options.Editing       := zAllowGridEdit;
+  tvDatamaUSe.Options.Editing        := zAllowGridEdit;
+  tvDatamaCross.Options.Editing    := zAllowGridEdit;
+end;
+
+
+procedure TfrmMaidActions.chkFilter;
+var
+  sFilter : string;
+  rC1,rc2   : integer;
+begin
+  sFilter := edFilter.text;
+  rc1 := tvData.DataController.RecordCount;
+  rc2 := tvData.DataController.FilteredRecordCount;
+  zFilterON := rc1 <> rc2;
+end;
+
+
+procedure TfrmMaidActions.edFilterChange(Sender: TObject);
+begin
+  if edFilter.Text = '' then
+  begin
+    tvData.DataController.Filter.Root.Clear;
+    tvData.DataController.Filter.Active := false;
+  end else
+  begin
+    applyFilter;
+  end;
+
+end;
+
+procedure TfrmMaidActions.applyFilter;
+begin
+  tvData.DataController.Filter.Options := [fcoCaseInsensitive];
+  tvData.DataController.Filter.Root.BoolOperatorKind := fboOr;
+  tvData.DataController.Filter.Root.Clear;
+  tvData.DataController.Filter.Root.AddItem(tvDatamaDescription,foLike,'%'+edFilter.Text+'%','%'+edFilter.Text+'%');
+  tvData.DataController.Filter.Active := True;
+end;
+
+
+/////////////////////////////////////////////////////////////
+// Form actions
+/////////////////////////////////////////////////////////////
+
+procedure TfrmMaidActions.FormCreate(Sender: TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
   glb.PerformAuthenticationAssertion(self);
   PlaceFormOnVisibleMonitor(self);
-  isFirstTime := true;
-  zCode := '';
-  zAct := actNone;
-  zDescription := '';
-  SetBtnPos;
-  aHeader := 'Lönd';
+  //**
+  zFirstTime  := true;
+  zAct        := actNone;
+  zisAddrow   := false;
 end;
 
-procedure TfrmMaidActions.FormShow(Sender : TObject);
+procedure TfrmMaidActions.FormShow(Sender: TObject);
 begin
-  // **
-  panBtn.Visible := false;
-  LMDStatusBar1.Visible := false;
-  btnClose.Visible := false;
+  glb.EnableOrDisableTableRefresh('tblMaidActions', False);
+//**
+  panBtn.Visible := False;
+  sbMain.Visible := false;
 
-  if zAct = actLookup then
+  fillGridFromDataset(zData.Action);
+  zFirstTime := true;
+  sbMain.SimpleText := zSortStr;
+
+  if ZAct = actLookup then
   begin
-    if zCode <> '' then
-    begin
-      if d.MaidActions_.Locate('maAction', zCode, []) then
-      begin
-      end
-      else
-      begin
-      end;
-    end;
+    mnuiAllowGridEdit.Checked := false;
     panBtn.Visible := true;
-  end
-  else
+  end else
   begin
-    btnClose.Visible := true;
-    LMDStatusBar1.Visible := true;
+    mnuiAllowGridEdit.Checked := true;
+    sbMain.Visible := true;
   end;
-
-  isFirstTime := false;
+  //-C
+  zAllowGridEdit := mnuiAllowGridEdit.Checked;
+  changeAllowGridEdit;
+  chkFilter;
+  zFirstTime := false;
 end;
 
-procedure TfrmMaidActions.btnCancelClick(Sender : TObject);
+procedure TfrmMaidActions.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
-  // **
-  zCode := '';
-  zDescription := '';
-end;
-
-
-// ***********************************************
-// Table Actons
-// ***********************************************
-
-procedure TfrmMaidActions.btnInsertClick(Sender : TObject);
-var
-  Code : string;
-begin
-
-
-  // **
-  Code := '';
-  if OpenMaidActionsEdit(actInsert, Code) then
-  begin
-    d.OpenMaidActionsQuery(d.zMaidActionsSortField, d.zMaidActionsSortDir);
-    if d.MaidActions_.Locate('maAction', Code, []) then
+  try
+    fillHolder;
+    if tvdata.DataController.DataSet.State = dsInsert then
     begin
-    end
-    else
+      tvdata.DataController.Post;
+    end;
+    if tvdata.DataController.DataSet.State = dsEdit then
     begin
-  	  Showmessage(GetTranslatedText('shTx_MainActions_RegisterNotFound'));
-    end
-  end
-  else
-  begin
-
+      tvdata.DataController.Post;
+    end;
+  except
   end;
+  glb.EnableOrDisableTableRefresh('tblMaidActions', True);
 end;
 
-
-
-procedure TfrmMaidActions.btnEditClick(Sender : TObject);
-var
-  Code : string;
+procedure TfrmMaidActions.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
-  Code := '';
-  OpenMaidActionsEdit(actEdit, Code);
+  if Key = VK_ESCAPE then
+    btnCancel.Click;
+
 end;
 
-procedure TfrmMaidActions.btnDeleteClick(Sender : TObject);
-var
-  cNumber : string;
-  cDescription : string;
-  s : string;
-  sTmp : string;
-  sTmp2 : string;
-
+procedure TfrmMaidActions.FormKeyPress(Sender: TObject; var Key: Char);
 begin
-
-  cNumber := d.MaidActions_.fieldbyname('maAction').asstring;
-  cDescription := d.MaidActions_.fieldbyname('maDescription').asstring;
-
- //s := s + 'Eyða Þernuaðgerð ' + cNumber + ' ' + cDescription + chr(10);
- //s := s + 'ertu viss ??';
-  s := format(GetTranslatedText('shTx_MaidActions_DeleteMaidAction'), [cNumber, cDescription]);
-
-  if MessageDlg(s, mtConfirmation, [mbYes, mbNo], 0) = mrYes then
+  if ZAct = actLookup then
   begin
-    screen.Cursor := crHourGlass;
-    try
-      sTmp2 := d.MaidActions_.fieldbyname('maAction').asstring;
-      if not d.MaidActions_.BOF then
+    if key = chr(13) then
+    begin
+      if activecontrol = edFilter then
       begin
-        d.MaidActions_.Prior;
-        sTmp := d.MaidActions_.fieldbyname('maAction').asstring;
+      end else
+      begin
+        btnOk.click;
       end;
+    end;
 
-      if d.Del_MaidActionByMaidAction(cNumber) then
+    if key = chr(27) then
+    begin
+      if activecontrol = edFilter then
       begin
-        try
-          if d.zMaidActionsFilter <> '' then
-          begin
-          end
-          else
-          begin
-            d.OpenMaidActionsQuery(d.zMaidActionsSortField, d.zMaidActionsSortDir);
-          end;
-          d.MaidActions_.Locate('maAction', sTmp, []);
-        except
-        end;
-      end
-      else
+      end else
       begin
-        d.MaidActions_.Locate('maAction', sTmp2, []);
+        btnCancel.click;
       end;
-
-    finally
-      screen.Cursor := crDefault;
     end;
   end;
 end;
 
-procedure TfrmMaidActions.wwDBGrid1DblClick(Sender : TObject);
+
+////////////////////////////////////////////////////////////////////////////////////////
+// memory table
+////////////////////////////////////////////////////////////////////////////////////////
+procedure TfrmMaidActions.m_BeforeDelete(DataSet: TDataSet);
+var
+  s : string;
 begin
-  // **
-  if zAct = actLookup then
+  fillHolder;
+  if hdata.maidActionExistsInOther(zData.Action) then
   begin
-    BtnOk.click;
-  end
-  else
+    Showmessage(format(GetTranslatedText('shExistsInRelatedDataCannotDelete'), ['Housekeeping rule', zData.Description]));
+    Abort;
+    exit;
+  end;
+
+  s := '';
+  s := s+GetTranslatedText('shDeleteItemType')+' '+zData.Description+' '+chr(10);
+  s := s+GetTranslatedText('shContinue');
+
+  if MessageDlg(s,mtConfirmation, [mbYes, mbNo], 0) = mrYes then
   begin
-    btnEdit.click;
+    if not Del_MaidAction(zData) then
+      Abort
+    else
+      glb.ForceTableRefresh;
+      fillGridFromDataset('');
+  end;
+    Abort;
+end;
+
+
+////////////////////////////////////////////////////////////////////////////////////////
+//  table View Functions
+////////////////////////////////////////////////////////////////////////////////////////
+
+procedure TfrmMaidActions.tvDataDescriptionPropertiesValidate(Sender: TObject;
+  var DisplayValue: Variant; var ErrorText: TCaption; var Error: Boolean);
+var
+  CurrValue : string;
+begin
+  currValue := m_.fieldbyname('maDescription').asstring;
+
+  error := false;
+  if trim(displayValue) = '' then
+  begin
+    error := true;
+    errortext := 'Description '+' - '+'is required - Use ESC to cancel';
+    exit;
+  end;
+
+end;
+
+procedure TfrmMaidActions.tvDataFocusedRecordChanged(
+  Sender: TcxCustomGridTableView; APrevFocusedRecord,
+  AFocusedRecord: TcxCustomGridRecord; ANewItemRecordFocusingChanged: Boolean);
+begin
+  if AFocusedRecord = nil then
+  begin
+    zIsAddrow := true;
+  end else
+  begin
+    zIsAddrow := false;
   end;
 end;
 
-// **********************************************************
-
-
-procedure TfrmMaidActions.panBtnResize(Sender : TObject);
+procedure TfrmMaidActions.tvDataItemtypePropertiesValidate(Sender: TObject; var DisplayValue: Variant; var ErrorText: TCaption;
+  var Error: Boolean);
+var
+  CurrValue : string;
 begin
-  SetBtnPos;
-end;
+  currValue := m_.fieldbyname('maAction').asstring;
 
-procedure TfrmMaidActions.FormKeyPress(Sender : TObject; var Key : Char);
-begin
-  if Key = chr(13) then
+  error := false;
+  if trim(displayValue) = '' then
   begin
-    modalresult := mrOk;
+    error := true;
+    errortext := 'Action '+' - '+'is required - Use ESC to cancel';
+    exit;
   end;
 
-  if Key = chr(27) then
+  if hdata.MaidActionMaidActionExist(displayValue) then
   begin
-    modalresult := mrCancel;
+    error := true;
+    errortext := displayvalue+'  '+GetTranslatedText('shNewValueExistInAnotherRecor');
+    exit
+  end;
+
+  if tvData.DataController.DataSource.State = dsEdit then
+  begin
+    if hdata.MaidActionMaidActionExist(currValue) then
+    begin
+      error := true;
+      errortext := displayvalue+' - '+GetTranslatedText('shOldValueUsedInRelatedDataC');
+      exit;
+    end;
   end;
 end;
 
-procedure TfrmMaidActions.BtnOkClick(Sender : TObject);
+
+procedure TfrmMaidActions.tvDataDblClick(Sender: TObject);
 begin
-  zCode := d.MaidActions_.fieldbyname('maAction').asstring;
-  zDescription := d.MaidActions_.fieldbyname('maDescription').asstring;
+  btnEdit.Click;
 end;
 
-procedure TfrmMaidActions.btnCloseClick(Sender : TObject);
+procedure TfrmMaidActions.tvDataDataControllerFilterChanged(Sender: TObject);
 begin
-  Close;
+  chkFilter;
+end;
+
+
+procedure TfrmMaidActions.tvDataDataControllerSortingChanged(Sender: TObject);
+var
+  i : integer;
+  s : string;
+  serval : boolean;
+begin
+  s := '';
+  serval := false;
+  for i :=  0 to tvData.SortedItemCount - 1 do
+  begin
+    if serval then s := s+', ';
+    s := s+TcxGridDBColumn(tvData.SortedItems[I]).DataBinding.FieldName;
+    serval := true;
+    if tvData.SortedItems[i].SortOrder = soDescending then
+    s := s + ' DESC';
+  end;
+  zSortStr := s;
+  sbMain.SimpleText := s;
+end;
+
+//////////////////////////////////////////////////////////////////////////
+//  Buttons
+//////////////////////////////////////////////////////////////////////////
+
+
+procedure TfrmMaidActions.BtnOkClick(Sender: TObject);
+begin
+  fillHolder;
+end;
+
+procedure TfrmMaidActions.btnCancelClick(Sender: TObject);
+begin
+  initMaidActionHolder(zData);
+end;
+
+procedure TfrmMaidActions.btnClearClick(Sender: TObject);
+begin
+  edFilter.Text := '';
+end;
+
+procedure TfrmMaidActions.btnDeleteClick(Sender: TObject);
+begin
+  m_.Delete;
+end;
+
+procedure TfrmMaidActions.btnEditClick(Sender: TObject);
+begin
+  fillHolder;
+  if OpenMaidActionEdit(zData, false) then
+  begin
+    UPD_MaidAction(zData);
+    glb.ForceTableRefresh;
+    fillGridFromDataset(zData.action);
+  end;
+end;
+
+procedure TfrmMaidActions.btnInsertClick(Sender: TObject);
+var
+  lData: recMaidActionHolder;
+  lNewID: integer;
+begin
+  initMaidActionHolder(lData);
+  if OpenMaidActionEdit(lData, True) then
+  begin
+    INS_MaidAction(lData, lNewId);
+    glb.ForceTableRefresh;
+    fillGridFromDataset(lData.action);
+  end;
+end;
+
+//---------------------------------------------------------------------------
+// Menu in other actions
+//-----------------------------------------------------------------------------
+
+procedure TfrmMaidActions.mnuiAllowGridEditClick(Sender: TObject);
+begin
+  if zFirstTime then exit;
+  mnuiAllowGridEdit.Checked := not mnuiAllowGridEdit.Checked;
+  zAllowGridEdit := mnuiAllowGridEdit.Checked;
+  changeAllowGridEdit;
+end;
+
+
+procedure TfrmMaidActions.mnuiPrintClick(Sender: TObject);
+begin
+  grPrinter.PrintTitle := caption;
+  prLink_grData.ReportTitle.Text := caption;
+  grPrinter.Preview(true, prLink_grData);
+end;
+
+procedure TfrmMaidActions.mnuiGridToExcelClick(Sender: TObject);
+var
+  sFilename : string;
+begin
+  sFilename := g.qProgramPath + caption;
+  ExportGridToExcel(sFilename, grData, true, true, true);
+  ShellExecute(Handle, 'OPEN', PChar(sFilename + '.xls'), nil, nil, sw_shownormal);
+end;
+
+procedure TfrmMaidActions.mnuiGridToHtmlClick(Sender: TObject);
+var
+  sFilename : string;
+begin
+  sFilename := g.qProgramPath + caption;
+  ExportGridToHtml(sFilename, grData, true, true);
+  ShellExecute(Handle, 'OPEN', PChar(sFilename + '.html'), nil, nil, sw_shownormal);
+end;
+
+procedure TfrmMaidActions.mnuiGridToTextClick(Sender: TObject);
+var
+  sFilename : string;
+begin
+  sFilename := g.qProgramPath + caption;
+  ExportGridToText(sFilename, grData, true, true,';','','','txt');
+  ShellExecute(Handle, 'OPEN', PChar(sFilename + '.txt'), nil, nil, sw_shownormal);
+end;
+
+procedure TfrmMaidActions.mnuiGridToXmlClick(Sender: TObject);
+var
+  sFilename : string;
+begin
+  sFilename := g.qProgramPath + caption;
+  ExportGridToXml(sFilename, grData, true, true);
+  ShellExecute(Handle, 'OPEN', PChar(sFilename + '.xml'), nil, nil, sw_shownormal);
 end;
 
 end.
+

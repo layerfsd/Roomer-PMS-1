@@ -1214,6 +1214,16 @@ type
     seEndDate: TdateTime;
   end;
 
+  recMaidActionHolder = record
+    id: integer;
+    active: boolean;
+    cross: boolean;
+    Use: boolean;
+    Description: string; // MAX 30
+    action: string;
+    Rule: string;
+  end;
+
   recItemTypeHolder = record
     id: integer;
     active: boolean;
@@ -1941,6 +1951,13 @@ function UPD_itemtype(theData: recItemTypeHolder): boolean;
 function INS_itemtype(theData: recItemTypeHolder; var NewID: integer): boolean;
 function itemtypesItemtypeExist(sItemType: string): boolean;
 function itemTypeExistsInOther(sCode: string): boolean;
+
+procedure initMaidActionHolder(var rec: recMaidActionHolder);
+function Del_MaidAction(theData: recMaidActionHolder): boolean;
+function UPD_MaidAction(theData: recMaidActionHolder): boolean;
+function INS_MaidAction(theData: recMaidActionHolder; var NewID: integer): boolean;
+function MaidActionMaidActionExist(sMaidAction: string): boolean;
+function MaidActionExistsInOther(sCode: string): boolean;
 
 procedure initDayNotes(var rec: recDayNotesHolder);
 function UPD_DayNotes(var rec: recDayNotesHolder) : Boolean;
@@ -10923,6 +10940,119 @@ end;
 
 
 
+procedure initMaidActionHolder(var rec: recMaidActionHolder);
+begin
+  with rec do
+  begin
+    active := true;
+    Action:= '';
+    Description := '';
+    Rule := '';
+    Cross := true;
+    Use := True;
+  end;
+end;
+
+function Del_MaidAction(theData: recMaidActionHolder): boolean;
+var
+  s: string;
+begin
+  s := '';
+  s := s + ' DELETE ' + chr(10);
+  s := s + '   FROM tblMaidActions' + chr(10);
+  s := s + ' WHERE  ' + chr(10);
+  s := s + '   (ID =' + _db(theData.id) + ') ';
+  result := cmd_bySQL(s);
+end;
+
+function UPD_MaidAction(theData: recMaidActionHolder): boolean;
+var
+  s: string;
+begin
+  s := '';
+  s := s + ' UPDATE tblmaidactions' + #10;
+  s := s + ' SET ' + #10;
+  s := s + '    Active  = ' + _db(theData.active) + ' ' + #10;
+  s := s + '   ,maDescription  = ' + _db(theData.Description) + ' ' + #10;
+  s := s + '   ,maRule= ' + _db(theData.Rule) + ' ' + #10;
+  s := s + '   ,maCross  = ' + _db(theData.Cross) + ' ' + #10;
+  s := s + '   ,maUse  = ' + _db(theData.Use) + ' ' + #10;
+  s := s + '   ,maAction  = ' + _db(theData.Action) + ' ' + #10;
+  s := s + ' WHERE ' + #10;
+  s := s + '   (ID = ' + _db(theData.id) + ') ';
+  result := cmd_bySQL(s);
+end;
+
+function INS_MaidAction(theData: recMaidActionHolder; var NewID: integer): boolean;
+var
+  s: string;
+begin
+  s := '';
+  s := s + 'INSERT INTO tblmaidactions ' + #10;
+  s := s + '   ( ' + #10;
+  s := s + '     [maAction] ' + #10;
+  s := s + '    ,[maDescription] ' + #10;
+  s := s + '    ,[maRule] ' + #10;
+  s := s + '    ,[maCross] ' + #10;
+  s := s + '    ,[Active] ' + #10;
+  s := s + '    ,[maUse] ' + #10;
+  s := s + '   ) ' + #10;
+  s := s + '   VALUES ' + #10;
+  s := s + '   ( ' + #10;
+  s := s + '  ' + _db(theData.Action) + #10;
+  s := s + '  , ' + _db(theData.Description) + #10;
+  s := s + '  , ' + _db(theData.Rule) + #10;
+  s := s + '  , ' + _db(theData.Cross) + #10;
+  s := s + '  , ' + _db(theData.active) + #10;
+  s := s + '  , ' + _db(theData.Use) + #10;
+  s := s + '   ) ';
+
+  result := cmd_bySQL(s);
+  if result then
+  begin
+    NewID := GetLastID('tblMaidActions');
+  end;
+
+end;
+
+function MaidActionMaidActionExist(sMaidAction: string): boolean;
+var
+  s: string;
+  rSet: TRoomerDataSet;
+begin
+  s := '';
+  s := s + ' SELECT ' + chr(10);
+  s := s + '   Action' + chr(10);
+  s := s + ' FROM ' + chr(10);
+  s := s + '   tblMaidActions ' + chr(10);
+  s := s + ' WHERE ' + chr(10);
+  s := s + '   Action = %s ';
+  rSet := CreateNewDataSet;
+  try
+    s := format(s, [_db(sMaidAction)]);
+    result := rSet_bySQL(rSet, s);
+  finally
+    freeandnil(rSet);
+  end;
+
+end;
+
+function MaidActionExistsInOther(sCode: string): boolean;
+var
+  s: string;
+  rSet: TRoomerDataSet;
+begin
+  s := s + ' SELECT Action FROM tblMaidActions' + chr(10);
+  s := s + ' WHERE (action=  %s ) ' + chr(10);
+  s := s + ' LIMIT 0,1 ' + chr(10);
+  rSet := CreateNewDataSet;
+  try
+    s := format(s, [_db(sCode)]);
+    result := rSet_bySQL(rSet, s);
+  finally
+    freeandnil(rSet);
+  end;
+end;
 
 
 //

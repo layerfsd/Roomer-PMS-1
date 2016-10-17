@@ -1,4 +1,4 @@
-unit uCountries;
+﻿unit uCountries;
 
 interface
 
@@ -845,10 +845,6 @@ begin
   fillHolder;
 end;
 
-procedure TfrmCountries.btnOtherClick(Sender: TObject);
-begin
-  btnOther.DropDownMenu.
-end;
 
 procedure TfrmCountries.BringWindowToFront;
 begin

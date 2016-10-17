@@ -120,6 +120,7 @@ begin
 
   Add('channelplancodes', TTableEntity.Create('channelplancodes', true));
   Add('pms_settings', TTableEntity.Create('pms_settings'));
+  Add('tblMaidActions', TTableEntity.Create('tblMaidActions'));
 end;
 
 procedure TTableDictionary.RefreshAllLocally(ForceRefresh: Boolean);

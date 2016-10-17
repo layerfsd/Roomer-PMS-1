@@ -13330,15 +13330,10 @@ begin
 end;
 
 procedure TfrmMain._MaidJobScripts;
+var
+  theData: recMaidActionHolder;
 begin
-  Application.CreateForm(TfrmMaidActions, frmMaidActions);
-  try
-    if frmMaidActions.ShowModal = mrOK then
-    begin
-    end;
-  finally
-    frmMaidActions.Free;
-  end;
+  openMaidAction(actNone, theData);
 end;
 
 procedure TfrmMain._RoomRates;

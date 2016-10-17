@@ -1655,8 +1655,8 @@ begin
   frmSelLang := TfrmSelLang.Create(nil); frmSelLang.Free; frmSelLang := nil;
 //frmUDL := TfrmUDL.Create(nil); frmUDL.Free; frmUDL := nil;
 //frmHotelListMissing := TfrmHotelListMissing.Create(nil); frmHotelListMissing.Free; frmHotelListMissing := nil;
-  frmMaidActions := TfrmMaidActions.Create(nil); frmMaidActions.Free; frmMaidActions := nil;
-  frmMaidActionsEdit := TfrmMaidActionsEdit.Create(nil); frmMaidActionsEdit.Free; frmMaidActionsEdit := nil;
+  TfrmMaidActions.Create(nil).Free;
+  TfrmMaidActionsEdit.Create(nil).Free;
 // Empty?  frmMakeReservation := TfrmMakeReservation.Create(nil); frmMakeReservation.Free; frmMakeReservation := nil;
   frmRoomDateProblem := TfrmRoomDateProblem.Create(nil); frmRoomDateProblem.Free; frmRoomDateProblem := nil;
   frmResProblem := TfrmResProblem.Create(nil); frmResProblem.Free; frmResProblem := nil;

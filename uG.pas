@@ -413,8 +413,6 @@ type
     /// /***********************
 
     function OpenDownPayment(act : TActTableAction; var rec : recDownPayment) : boolean;
-//    function OpenMaidActions(act : TActTableAction; var code, Description : string) : boolean;
-//    function OpenMaidActionsEdit(act : TActTableAction; var code : string) : boolean;
 
     function OpenResMemo(reservation : integer) : boolean;
     function AddAccommodation(var Persons,rooms,nights : integer; var roomPrice : double) : boolean;
@@ -1626,57 +1624,6 @@ begin
     frmHiddenInfo := nil;
   end;
 end;
-
-
-{function TGlobalApplication.OpenMaidActions(act : TActTableAction; var code, Description : string) : boolean;
-begin
-
-  result := false;
-  frmMaidActions := TfrmMaidActions.Create(frmMaidActions);
-  try
-    frmMaidActions.zCode := code;
-    frmMaidActions.zAct := act;
-
-    frmMaidActions.ShowModal;
-    if frmMaidActions.modalresult = mrOk then
-    begin
-      code := frmMaidActions.zCode;
-      Description := frmMaidActions.zDescription;
-      result := true;
-    end
-    else
-    begin
-      code := '';
-    end;
-  finally
-    frmMaidActions.free;
-    frmMaidActions := nil;
-  end;
-end;
-
-function TGlobalApplication.OpenMaidActionsEdit(act : TActTableAction; var code : string) : boolean;
-begin
-  result := false;
-  frmMaidActionsEdit := TfrmMaidActionsEdit.Create(frmMaidActionsEdit);
-  try
-    frmMaidActionsEdit.zAct := act;
-    frmMaidActionsEdit.ShowModal;
-    if frmMaidActionsEdit.modalresult = mrOk then
-    begin
-      code := frmMaidActionsEdit.zCode;
-      result := true;
-    end
-    else
-    begin
-      code := frmMaidActionsEdit.zCode;
-    end;
-  finally
-    frmMaidActionsEdit.free;
-    frmMaidActionsEdit := nil;
-  end;
-end;
- }
-
 
 function TGlobalApplication.strToStatusAttr(const aValue : string) : recStatusAttr;
 var
