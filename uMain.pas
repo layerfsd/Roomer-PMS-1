@@ -1648,7 +1648,8 @@ uses
     , uDayClosingTimes
     , uDayClosingTimesAPICaller
     , uDateTimeHelper
-    , uRptHouseKeeping, uReservationStateChangeHandler, uRptDailyRevenues;
+    , uRptHouseKeeping, uReservationStateChangeHandler, uRptDailyRevenues
+    ;
 
 {$R *.DFM}
 {$R Cursors.res}
@@ -2221,7 +2222,7 @@ begin
   else
     s := 'Roomer Booking Engine - ';
 
-  s := s + { 0070 } ' - ' + GetTranslatedText('sh0070') + ':' + recVer.FileVersion; // ProductVersion;
+  s := s + { 0070 } ' - ' + GetTranslatedText('sh0070') + ': ' + recVer.FileVersion; // ProductVersion;
   Caption := s;
 end;
 
@@ -2933,7 +2934,7 @@ begin
   PlaceFormOnVisibleMonitor(self);
   try
     recVer := _GetEXEVersionData(Paramstr(0));
-    __VER.Caption := { 1081 } ANSIUpperCase(GetTranslatedText('sh0080')) + ': ' + recVer.FileVersion;
+    __VER.Caption := GetTranslatedText('sh0080') + ': ' + recVer.FileVersion;
   except
   end;
 

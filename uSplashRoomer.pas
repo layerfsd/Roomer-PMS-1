@@ -52,7 +52,9 @@ implementation
 uses
   uAboutRoomer,
   ud,
-  uUtils;
+  uUtils,
+  uFileSystemUtils,
+  PrjConst;
 
 procedure TfrmRoomerSplash.NilInternetEvents;
 begin
@@ -69,8 +71,11 @@ begin
 end;
 
 procedure TfrmRoomerSplash.FormCreate(Sender: TObject);
+var
+  recVer: TEXEVersionData;
 begin
-  LMDSimpleLabel1.Caption := 'Version ' + getVersion(Application.ExeName);
+  recVer := _GetEXEVersionData(Paramstr(0));
+  LMDSimpleLabel1.Caption := GetTranslatedText('sh0080') + ': ' + recVer.FileVersion + ' [' + recVer.ExtraBuild + ']';
 end;
 
 procedure TfrmRoomerSplash.FormHide(Sender: TObject);
