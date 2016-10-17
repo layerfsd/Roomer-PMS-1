@@ -183,7 +183,7 @@ const
       '			) stayover on stayover.room=r.room '#10+
       '	 group by room, roomtype, floor, numberguests '#10+
       '	 order by floor, room ) x '#10+
-      '	 where r.active=0 AND not x.HousekeepingStatus is null ';
+      '	 where not x.HousekeepingStatus is null ';
 
 
 function ShowHouseKeepingReport(aDate: TDateTime):  boolean;
