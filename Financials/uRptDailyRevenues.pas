@@ -168,15 +168,15 @@ var
 begin
   dateTimeToString(s, 'yyyymmddhhnn', now);
   sFilename := g.qProgramPath + s + '_Payments';
-  ExportGridToXLSX(sFilename, grDataPayments, true, true, true);
+  ExportGridToExcel(sFilename, grDataPayments, true, true, true);
   ShellExecute(Handle, 'OPEN', PChar(sFilename + '.xls'), nil, nil, sw_shownormal);
 
   sFilename := g.qProgramPath + s + '_Revenues';
-  ExportGridToXLSX(sFilename, grDataRevenues, true, true, true);
+  ExportGridToExcel(sFilename, grDataRevenues, true, true, true);
   ShellExecute(Handle, 'OPEN', PChar(sFilename + '.xls'), nil, nil, sw_shownormal);
 
   sFilename := g.qProgramPath + s + '_Balance';
-  ExportGridToXLSX(sFilename, grBalance, true, true, true);
+  ExportGridToExcel(sFilename, grBalance, true, true, true);
   ShellExecute(Handle, 'OPEN', PChar(sFilename + '.xls'), nil, nil, sw_shownormal);
 end;
 

@@ -4,6 +4,7 @@ inherited frmRptDailyRevenues: TfrmRptDailyRevenues
   ClientWidth = 1390
   Font.Height = -11
   Position = poOwnerFormCenter
+  ExplicitLeft = -279
   ExplicitWidth = 1406
   ExplicitHeight = 683
   PixelsPerInch = 96
