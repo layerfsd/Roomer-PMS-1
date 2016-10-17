@@ -102,7 +102,7 @@ uses
 
   , sLabel
   , sPanel
-  , sStatusBar
+  , sStatusBar, dxSkinCaramel, dxSkinCoffee, dxSkinTheAsphaltWorld
 
   ;
 
@@ -529,8 +529,7 @@ begin
       exit;
     end;
   end;
-  RoomerMessages.RefreshLists;
-  glb.RefreshTablesWhenNeeded;
+  glb.ForceTableRefresh;
 end;
 
 procedure TfrmConverts.m_NewRecord(DataSet: TDataSet);

@@ -12943,7 +12943,7 @@ var
   rSet: TRoomerDataSet;
 begin
   result := '';
-  rSet := glb.GetDataSetFromDictionary('channelmanagers');
+  rSet := glb.ChannelManagersSet;
   rSet.First;
   if glb.ChannelsSet.Locate('active', 1, []) then
   begin

@@ -953,8 +953,7 @@ procedure TfrmItems2.m_ItemsAfterPost(DataSet: TDataSet);
 begin
   if zFirstTime then Exit;
 
-  RoomerMessages.RefreshLists;
-  glb.RefreshTablesWhenNeeded;
+  glb.ForceTableRefresh;
 end;
 
 procedure TfrmItems2.m_ItemsBeforeDelete(DataSet: TDataSet);

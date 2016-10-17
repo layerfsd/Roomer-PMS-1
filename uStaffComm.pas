@@ -531,8 +531,7 @@ begin
       exit;
     end;
   end;
-  RoomerMessages.RefreshLists;
-  glb.RefreshTablesWhenNeeded;
+  glb.ForceTableRefresh;
 end;
 
 

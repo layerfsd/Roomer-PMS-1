@@ -99,7 +99,7 @@ uses
   , cxGridDBTableView
   , cxClasses
   , cxGridCustomView
-  , cxGrid
+  , cxGrid, dxSkinCaramel, dxSkinCoffee, dxSkinTheAsphaltWorld
   ;
 
 type
@@ -533,8 +533,7 @@ begin
       exit;
     end;
   end;
-  RoomerMessages.RefreshLists;
-  glb.RefreshTablesWhenNeeded;
+  glb.ForceTableRefresh;
 end;
 
 procedure TfrmConvertGroups.m_NewRecord(DataSet: TDataSet);

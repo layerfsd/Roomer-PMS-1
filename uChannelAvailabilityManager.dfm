@@ -1148,6 +1148,12 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           Margins.Right = 2
           Margins.Bottom = 2
           Caption = 'Availabilities'
+          SkinData.CustomColor = False
+          SkinData.CustomFont = False
+          ExplicitLeft = 0
+          ExplicitTop = 0
+          ExplicitWidth = 0
+          ExplicitHeight = 0
           object Panel2: TsPanel
             Left = 0
             Top = 467
@@ -1377,7 +1383,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
               URLColor = clBlack
               ValidChars = '0123456789'
               VAlignment = vtaCenter
-              Version = '7.9.1.1'
+              Version = '8.1.2.0'
               WordWrap = False
               ColWidths = (
                 250
@@ -1430,6 +1436,12 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
           Margins.Right = 2
           Margins.Bottom = 2
           Caption = 'Rates'
+          SkinData.CustomColor = False
+          SkinData.CustomFont = False
+          ExplicitLeft = 0
+          ExplicitTop = 0
+          ExplicitWidth = 0
+          ExplicitHeight = 0
           object rateGrid: TAdvStringGrid
             Left = 0
             Top = 48
@@ -1605,7 +1617,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
             URLColor = clBlack
             ValidChars = '0123456789+-!%*/'
             VAlignment = vtaCenter
-            Version = '7.9.1.1'
+            Version = '8.1.2.0'
             WordWrap = False
             ExplicitLeft = 1
             ExplicitTop = 50
@@ -2123,7 +2135,7 @@ object frmChannelAvailabilityManager: TfrmChannelAvailabilityManager
             HintPrevMonth = 'Previous Month'
             HintNextMonth = 'Next Month'
             HintNextYear = 'Next Year'
-            Version = '2.3.0.0'
+            Version = '2.3.1.1'
             TMSStyle = 0
           end
         end

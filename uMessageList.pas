@@ -62,6 +62,8 @@ Type
       function getCount: integer;
     function GetMessage(index: integer): TRoomerMessage;
     function GetActiveMessage(index: integer): TRoomerMessage;
+    procedure GetMessages(aRSet: TROomerDataset);
+    function GetTableUpdateTimeStamps(aRSet: TRoomerDataset): boolean;
     public
       constructor Create;
       destructor Destroy; override;
@@ -74,7 +76,7 @@ Type
       function CurrentTableDate(TableName: String): TDateTime;
       procedure Clear;
       procedure Refresh;
-      procedure RefreshLists;
+      procedure RefreshTabelStateList;
       property Count : integer read getCount;
       property ActiveCount : integer read getActiveCount;
       property RoomerMessage[index : integer] : TRoomerMessage read GetMessage;
@@ -201,6 +203,17 @@ begin
     end;
 end;
 
+
+procedure TMessageList.GetMessages(aRSet: TROomerDataset);
+begin
+  try
+    if NOT aRSet.OfflineMode then
+      aRSet.OpenDatasetFromUrlAsString('messaging/broadcastlist', false, 0, '');
+  except
+    // Ignore ...
+  end;
+end;
+
 procedure TMessageList.Refresh;
 var rSet : TRoomerDataset;
 
@@ -213,7 +226,7 @@ begin
   try
     MessageList.Clear;
     rSet.RoomerDataSet := nil;
-    rset.GetMessages;
+    GetMessages(rSet);
     rset.First;
     while not rset.Eof do
     begin
@@ -240,10 +253,23 @@ begin
     freeandnil(rset);
   end;
 
-  RefreshLists;
+  RefreshTabelStateList;
 end;
 
-procedure TMessageList.RefreshLists;
+function TMessageList.GetTableUpdateTimeStamps(aRSet: TRoomerDataset): boolean;
+begin
+  Result := true;
+  try
+    if NOT aRSet.OfflineMode then
+      aRSet.OpenDatasetFromUrlAsString('messaging/lastchanges', false, 0, '');
+  except
+    // Ignore ...
+    Result := false;
+  end;
+end;
+
+
+procedure TMessageList.RefreshTabelStateList;
 var TableRefreshSet : TRoomerDataset;
 
     i : integer;
@@ -255,7 +281,7 @@ begin
   TableRefreshSet := CreateNewDataSet;
   try
     TableRefreshSet.RoomerDataSet := nil;
-    if TableRefreshSet.GetTableUpdateTimeStamps then
+    if GetTableUpdateTimeStamps(TableRefreshSet) then
     begin
       TableRefreshSet.First;
       if not TableRefreshSet.Eof then
@@ -268,7 +294,8 @@ begin
             TableStatusses.TryGetValue(key, datePair);
             datePair.newDate := TableRefreshSet.fieldByName(key).AsDateTime;
           end
-          else begin
+          else
+          begin
             datePair := TDatePair.Create;
             datePair.oldDate := TableRefreshSet.fieldByName(key).AsDateTime;
             datePair.newDate := TableRefreshSet.fieldByName(key).AsDateTime;

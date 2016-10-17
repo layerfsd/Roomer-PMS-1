@@ -191,11 +191,10 @@ type
     function GetFloatValue(Field: TField): Double;
     procedure Post; override;
     procedure OpenDataset(const SqlResult: String);
+    procedure OpenDatasetFromUrlAsString(aEndPoint: String; SetLastAccess: boolean = true; loggingInOut: Integer = 0;contentType: String = '');
     procedure DoQuery(aSql: String);
     function DoCommand(aSql: String; async: boolean = false): Integer;
     procedure Open(doLowerCase: boolean = true; SetLastAccess: boolean = true; Threaded: boolean = false);
-    procedure GetMessages;
-    function GetTableUpdateTimeStamps: boolean;
 
     function PutData(url, Data: String): String;
     function PostData(url, Data: String): String;
@@ -539,15 +538,6 @@ begin
   OpenDataset(SqlResult);
 end;
 
-procedure TRoomerDataSet.GetMessages;
-begin
-  try
-    if NOT OfflineMode then
-      OpenDataset(downloadUrlAsString(RoomerUri + 'messaging/broadcastlist', 0, false, '', true));
-  except
-    // Ignore ...
-  end;
-end;
 
 procedure TRoomerDataSet.SystemMarkReservationAsNotified(id: Integer);
 begin
@@ -560,18 +550,6 @@ end;
 function TRoomerDataSet.GetOpenApiUri: String;
 begin
   Result := FOpenApiUri;
-end;
-
-function TRoomerDataSet.GetTableUpdateTimeStamps: boolean;
-begin
-  Result := true;
-  try
-    if NOT OfflineMode then
-      OpenDataset(downloadUrlAsString(RoomerUri + 'messaging/lastchanges', 0, false, '', true));
-  except
-    // Ignore ...
-    Result := false;
-  end;
 end;
 
 function TRoomerDataSet.RegisterApplication(hotelId, username, password, appId: String): String;
@@ -659,7 +637,7 @@ function TRoomerDataSet.GetFilenameFromParameter(param: TRoomerOfflineAssertonPa
 var
   sPath: String;
 begin
-  sPath := TPath.Combine(uStringUtils.LocalAppDataPath, 'Roomer');
+  sPath := TPath.Combine(LocalAppDataPath, 'Roomer');
   sPath := TPath.Combine(sPath, format('%s\backup', [hotelId]));
   forceDirectories(sPath);
   Result := TPath.Combine(sPath, format('Offline_%s_Commands.src', [GetParameterTypeName(param)]));
@@ -1447,7 +1425,7 @@ begin
   if _hotelId = '' then
     _hotelId := hotelId;
 
-  sPath := TPath.Combine(uStringUtils.LocalAppDataPath, 'Roomer');
+  sPath := TPath.Combine(LocalAppDataPath, 'Roomer');
   sPath := TPath.Combine(sPath, format('%s\backup', [_hotelId]));
   filePath := TPath.Combine(sPath, 'Backup_TAXES.src');
   forceDirectories(sPath);
@@ -1654,6 +1632,11 @@ end;
 procedure TRoomerDataSet.GetFieldText(Sender: TField; var Text: string; DisplayText: boolean);
 begin
   Text := StringReplace(Sender.AsString, #10, #13#10, [rfReplaceAll]);
+end;
+
+procedure TRoomerDataSet.OpenDatasetFromUrlAsString(aEndPoint: String; SetLastAccess: boolean = true; loggingInOut: Integer = 0;contentType: String = '');
+begin
+  OpenDataset(downloadUrlAsString(RoomerUri + aEndPoint, loggingInOut,SetLastAccess, contentType, False));
 end;
 
 procedure TRoomerDataSet.OpenDataset(const SqlResult: String);

@@ -178,7 +178,6 @@ type
       var AHandled: Boolean);
     procedure tvDataonceTypeCustomDrawCell(Sender: TcxCustomGridTableView; ACanvas: TcxCanvas; AViewInfo: TcxGridTableDataCellViewInfo; var ADone: Boolean);
     procedure tvDataintervalCustomDrawCell(Sender: TcxCustomGridTableView; ACanvas: TcxCanvas; AViewInfo: TcxGridTableDataCellViewInfo; var ADone: Boolean);
-    procedure m_CleaningNotesAfterScroll(DataSet: TDataSet);
   private
     { Private declarations }
     financeLookupList : TKeyPairList;
@@ -470,14 +469,7 @@ end;
 
 procedure TfrmCleaningNotes.m_CleaningNotesAfterPost(DataSet: TDataSet);
 begin
-  RoomerMessages.RefreshLists;
-  glb.RefreshTablesWhenNeeded;
-end;
-
-procedure TfrmCleaningNotes.m_CleaningNotesAfterScroll(DataSet: TDataSet);
-begin
-  inherited;
-//
+  glb.ForceTableRefresh;
 end;
 
 procedure TfrmCleaningNotes.m_CleaningNotesBeforeDelete(DataSet: TDataSet);
