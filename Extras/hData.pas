@@ -2397,7 +2397,7 @@ begin
   rSet := CreateNewDataSet;
   try
     s := format(s, [tableName]);
-    if rSet_bySQL(rSet, s) then
+    if rSet_bySQL(rSet, s, doLowerCase) then
     begin
       result := rSet.fieldbyname('id').asInteger;
     end;

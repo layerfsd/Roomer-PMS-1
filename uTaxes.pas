@@ -564,22 +564,27 @@ var
 begin
   if zFirstTime then exit;
   initTaxesHolder(zData);
-  zData.ID                := dataset.FieldByName('ID').AsInteger;
-  zData.Description       := dataset['Description'];
-  zData.Amount       := dataset['Amount'];
-  zData.Hotel_Id      := dataset['Hotel_Id'];
-  zData.Tax_Type      := dataset['Tax_Type'];
-  zData.Tax_Base      := dataset['Tax_Base'];
-  zData.Time_Due      := dataset['Time_Due'];
-  zData.ReTaxable      := dataset['ReTaxable'];
-  zData.TaxChildren    := dataset['TaxChildren'];
-  zData.Booking_Item_Id      := dataset['Booking_Item_Id'];
-  zData.Booking_Item   := dataset['Booking_Item'];
-  zData.Incl_Excl      := dataset['Incl_Excl'];
-  zData.NETTO_AMOUNT_BASED    := dataset['NETTO_AMOUNT_BASED'];
-  zData.VALUE_FORMULA    := dataset['VALUE_FORMULA'];
-  zData.VALID_FROM    := dataset['VALID_FROM'];
-  zData.VALID_TO    := dataset['VALID_TO'];
+  try
+    zData.ID                := m_ID.AsInteger;
+    zData.Description       := m_Description.AsString;
+    zData.Amount            := m_Amount.AsFloat;
+    zData.Hotel_Id          := m_Hotel_Id.AsString;
+    zData.Tax_Type          := m_Tax_Type.AsString;
+    zData.Tax_Base          := m_Tax_Base.AsString;
+    zData.Time_Due          := m_Time_Due.AsString;
+    zData.ReTaxable         := m_ReTaxable.AsString;
+    zData.TaxChildren       := m_TaxChildren.AsString;
+    zData.Booking_Item_Id   := m_Booking_Item_Id.AsInteger;
+    zData.Booking_Item      := m_Booking_Item.AsString;
+    zData.Incl_Excl         := m_Incl_Excl.AsString;
+    zData.NETTO_AMOUNT_BASED := m_Netto_Amount_Based.AsString;
+    zData.VALUE_FORMULA     := m_Value_Formula.AsString;
+    zData.VALID_FROM        := m_Valid_From.AsDateTime;
+    zData.VALID_TO          := m_Valid_To.AsDateTime;
+  except
+    Abort;
+    Exit;
+  end;
 
   if tvData.DataController.DataSource.State = dsEdit then
   begin
