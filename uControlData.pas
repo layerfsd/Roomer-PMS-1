@@ -349,7 +349,6 @@ type
     LMDGroupBox10: TsGroupBox;
     tsInvEmail: TsTabSheet;
     AdvTabSheet3: TsTabSheet;
-    AdvTabSheet5: TsTabSheet;
     AdvTabSheet6: TsTabSheet;
     LMDGroupBox21: TsGroupBox;
     cbxInvoicePrinter: TComboBox;
@@ -398,8 +397,6 @@ type
     Label57: TsLabel;
     tabTouchStoreXML: TsTabSheet;
     LMDSimpleLabel81: TsLabel;
-    AdvTabSheet13: TsTabSheet;
-    AdvTabSheet14: TsTabSheet;
     tsIncomingMonitor: TsTabSheet;
     LMDGroupBox23: TsGroupBox;
     labSec: TsLabel;

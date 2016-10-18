@@ -5724,6 +5724,7 @@ begin
           s := s + ', ' + 'confirmAmount ' + #10;
           s := s + ', ' + 'RoomReservationAlias ' + #10;
           s := s + ', ' + 'InvoiceIndex ' + #10;
+          s := s + ', ' + 'staffCreated ' + #10;
           s := s + ', ' + 'revenueCorrection ' + #10;
           s := s + ', ' + 'revenueCorrectionVat ' + #10;
           s := s + ')' + #10;

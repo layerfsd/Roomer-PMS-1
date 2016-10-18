@@ -729,6 +729,8 @@ type
     procedure mRoomResDSDataChange(Sender: TObject; Field: TField);
     procedure cbxFilterSelectedTypesClick(Sender: TObject);
     procedure mSelectRoomsFilterRecord(DataSet: TDataSet; var Accept: Boolean);
+    procedure edPcCodeChange(Sender: TObject);
+    procedure edPackageChange(Sender: TObject);
   private
     { Private declarations }
     zCustomerChanged: boolean;
@@ -4398,6 +4400,11 @@ begin
   frmdayNotes.memLog.Perform(EM_LINESCROLL, 0, -10)
 end;
 
+procedure TfrmMakeReservationQuick.edPackageChange(Sender: TObject);
+begin
+  PackageValidate(edPackage, clabPcCode, labPackageDescription);
+end;
+
 procedure TfrmMakeReservationQuick.edPackageDblClick(Sender: TObject);
 var
   theData: recPackageHolder;
@@ -4831,6 +4838,11 @@ end;
 /// ////////////////////////
 // edPcCode
 
+procedure TfrmMakeReservationQuick.edPcCodeChange(Sender: TObject);
+begin
+  PriceCodeValidate(edPcCode, clabPcCode, labPcCodeName);
+end;
+
 procedure TfrmMakeReservationQuick.edPcCodeDblClick(Sender: TObject);
 var
   theData: recPriceCodeHolder;
@@ -4844,9 +4856,7 @@ end;
 
 procedure TfrmMakeReservationQuick.edPcCodeExit(Sender: TObject);
 begin
-  if PriceCodeValidate(edPcCode, clabPcCode, labPcCodeName) then
-  begin
-  end;
+  PriceCodeValidate(edPcCode, clabPcCode, labPcCodeName);
 end;
 
 procedure TfrmMakeReservationQuick.edPcCodeKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
