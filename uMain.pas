@@ -1649,7 +1649,7 @@ uses
     , uDayClosingTimesAPICaller
     , uDateTimeHelper
     , uRptHouseKeeping, uReservationStateChangeHandler, uRptDailyRevenues
-    ;
+    , uRoomerVersionInfo;
 
 {$R *.DFM}
 {$R Cursors.res}
@@ -2213,17 +2213,13 @@ end;
 procedure TfrmMain.SetWindowTitle;
 var
   s: string;
-  recVer: TEXEVersionData;
 begin
-  recVer := _GetEXEVersionData(Paramstr(0));
-
   if NOT RBEMode then
     s := 'ROOMER PMS'
   else
     s := 'Roomer Booking Engine - ';
 
-  s := s + { 0070 } ' - ' + GetTranslatedText('sh0070') + ': ' + recVer.FileVersion; // ProductVersion;
-  Caption := s;
+  Caption := s + TRoomerVersionInfo.ShortVersionString;
 end;
 
 procedure TfrmMain.sPanel3DblClick(Sender: TObject);
@@ -2855,7 +2851,6 @@ end;
 
 procedure TfrmMain.FormCreate(Sender: TObject);
 var
-  recVer: TEXEVersionData;
   temp: String;
 begin
   FormShowing := false;
@@ -2933,8 +2928,7 @@ begin
   StoreMain.RestoreFrom;
   PlaceFormOnVisibleMonitor(self);
   try
-    recVer := _GetEXEVersionData(Paramstr(0));
-    __VER.Caption := GetTranslatedText('sh0080') + ': ' + recVer.FileVersion;
+    __VER.Caption := TRoomerVersionInfo.LongVersionString;
   except
   end;
 
@@ -3798,7 +3792,7 @@ begin
         else if (lLoginFormResult = lrLogin) and (NOT OffLineMode) AND d.roomerMainDataSet.IsConnectedToInternet AND
           d.roomerMainDataSet.RoomerPlatformAvailable then
         begin
-          d.roomerMainDataSet.LOGIN(lHotelID, userName, password, 'ROOMERPMS', GetVersion(Application.ExeName));
+          d.roomerMainDataSet.LOGIN(lHotelID, userName, password, 'ROOMERPMS', TRoomerVersionInfo.FileVersion);
           FOffLineMode := false;
         end
         else

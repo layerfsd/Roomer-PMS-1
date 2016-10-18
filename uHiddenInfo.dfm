@@ -109,10 +109,6 @@ object frmHiddenInfo: TfrmHiddenInfo
       Caption = 'Information'
       SkinData.CustomColor = False
       SkinData.CustomFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object panInformation: TsPanel
         Left = 0
         Top = 0
@@ -167,10 +163,6 @@ object frmHiddenInfo: TfrmHiddenInfo
       ImageIndex = 1
       SkinData.CustomColor = False
       SkinData.CustomFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object panViewLog: TsPanel
         Left = 0
         Top = 0

@@ -70,7 +70,6 @@ function GetCursorPosForControl(AControl: TWinControl): TPoint;
 procedure DeleteFileWithWildcard(Path: string; files : String);
 procedure GetFileList(FileList: TStrings; Path: string; files : String = '*.*');
 
-function GetVersion(sFileName:string): string;
 function DoubleQuoteIfNeeded(s : String) : String;
 function CorrectDecimalSeparator(s : String) : String;
 function RoomerStrToFloat(s : String) : Double;
@@ -1500,28 +1499,6 @@ begin
   GetCursorPos(P);
   ScreenToClient(AControl.Handle, P );
   result := P;
-end;
-
-function GetVersion(sFileName:string): string;
-var
-  VerInfoSize: DWORD;
-  VerInfo: Pointer;
-  VerValueSize: DWORD;
-  VerValue: PVSFixedFileInfo;
-  Dummy: DWORD;
-begin
-  VerInfoSize := GetFileVersionInfoSize(PChar(sFileName), Dummy);
-  GetMem(VerInfo, VerInfoSize);
-  GetFileVersionInfo(PChar(sFileName), 0, VerInfoSize, VerInfo);
-  VerQueryValue(VerInfo, '\', Pointer(VerValue), VerValueSize);
-  with VerValue^ do
-  begin
-    Result := IntToStr(dwFileVersionMS shr 16);
-    Result := Result + '.' + IntToStr(dwFileVersionMS and $FFFF);
-    Result := Result + '.' + IntToStr(dwFileVersionLS shr 16);
-    Result := Result + '.' + IntToStr(dwFileVersionLS and $FFFF);
-  end;
-  FreeMem(VerInfo, VerInfoSize);
 end;
 
 type

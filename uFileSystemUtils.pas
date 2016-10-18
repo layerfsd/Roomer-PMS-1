@@ -3,15 +3,6 @@ interface
 
 uses Types, System.SysUtils, Registry, Winapi.Windows, System.IOUtils, Controls, ShellAPI;
 
-type
-  TEXEVersionData = record
-    CompanyName, FileDescription, FileVersion, InternalName, LegalCopyright, LegalTrademarks, OriginalFileName, ProductName,
-      ProductVersion, Comments, PrivateBuild, SpecialBuild,
-
-      DBversion, ExtraBuild : string;
-  end;
-
-
 function LocalAppDataPath : string;
 Function GetTempFileName(const ext: string): string;
 function GetTempDir: string;
@@ -32,7 +23,6 @@ function DeleteAllFiles(FilesOrDir: string): boolean;
 function GetFileSize(FilePathAndName: string): LongInt;
 function CreateNewFileName(BaseFileName: String; Ext: String; AlwaysUseNumber: Boolean = True): String;
 function IsFileInUse(fName : string) : boolean;
-function _GetEXEVersionData(const FileName : string) : TEXEVersionData;
 
 procedure SaveToTextFile(const FileName, data: String);
 procedure AddToTextFile(const FileName, data: String);
@@ -58,65 +48,6 @@ const
 var
   SystemSmallImageList : TImageList;
   SystemLargeImageList : TImageList;
-
-function _GetEXEVersionData(const FileName : string) : TEXEVersionData;
-type
-  PLandCodepage = ^TLandCodepage;
-
-  TLandCodepage = record
-    wLanguage, wCodePage : word;
-  end;
-var
-  Dummy, len : Cardinal;
-  buf, pntr : Pointer;
-  lang : string;
-begin
-  len := GetFileVersionInfoSize(PChar(FileName), Dummy);
-  if len = 0 then
-    RaiseLastOSError;
-  GetMem(buf, len);
-  try
-    if not GetFileVersionInfo(PChar(FileName), 0, len, buf) then
-      RaiseLastOSError;
-
-    if not VerQueryValue(buf, '\VarFileInfo\Translation\', pntr, len) then
-      RaiseLastOSError;
-
-    lang := Format('%.4x%.4x', [PLandCodepage(pntr)^.wLanguage, PLandCodepage(pntr)^.wCodePage]);
-
-    if VerQueryValue(buf, PChar('\StringFileInfo\' + lang + '\CompanyName'), pntr, len) { and (@len <> nil) } then
-      Result.CompanyName := PChar(pntr);
-    if VerQueryValue(buf, PChar('\StringFileInfo\' + lang + '\FileDescription'), pntr, len) { and (@len <> nil) } then
-      Result.FileDescription := PChar(pntr);
-    if VerQueryValue(buf, PChar('\StringFileInfo\' + lang + '\FileVersion'), pntr, len) { and (@len <> nil) } then
-      Result.FileVersion := PChar(pntr);
-    if VerQueryValue(buf, PChar('\StringFileInfo\' + lang + '\InternalName'), pntr, len) { and (@len <> nil) } then
-      Result.InternalName := PChar(pntr);
-    if VerQueryValue(buf, PChar('\StringFileInfo\' + lang + '\LegalCopyright'), pntr, len) { and (@len <> nil) } then
-      Result.LegalCopyright := PChar(pntr);
-    if VerQueryValue(buf, PChar('\StringFileInfo\' + lang + '\LegalTrademarks'), pntr, len) { and (@len <> nil) } then
-      Result.LegalTrademarks := PChar(pntr);
-    if VerQueryValue(buf, PChar('\StringFileInfo\' + lang + '\OriginalFileName'), pntr, len) { and (@len <> nil) } then
-      Result.OriginalFileName := PChar(pntr);
-    if VerQueryValue(buf, PChar('\StringFileInfo\' + lang + '\ProductName'), pntr, len) { and (@len <> nil) } then
-      Result.ProductName := PChar(pntr);
-    if VerQueryValue(buf, PChar('\StringFileInfo\' + lang + '\ProductVersion'), pntr, len) { and (@len <> nil) } then
-      Result.ProductVersion := PChar(pntr);
-    if VerQueryValue(buf, PChar('\StringFileInfo\' + lang + '\Comments'), pntr, len) { and (@len <> nil) } then
-      Result.Comments := PChar(pntr);
-    if VerQueryValue(buf, PChar('\StringFileInfo\' + lang + '\PrivateBuild'), pntr, len) { and (@len <> nil) } then
-      Result.PrivateBuild := PChar(pntr);
-    if VerQueryValue(buf, PChar('\StringFileInfo\' + lang + '\SpecialBuild'), pntr, len) { and (@len <> nil) } then
-      Result.SpecialBuild := PChar(pntr);
-
-    if VerQueryValue(buf, PChar('\StringFileInfo\' + lang + '\DBversion'), pntr, len) { and (@len <> nil) } then
-      Result.DBversion := PChar(pntr);
-    if VerQueryValue(buf, PChar('\StringFileInfo\' + lang + '\ExtraBuild'), pntr, len) { and (@len <> nil) } then
-      Result.ExtraBuild := PChar(pntr);
-  finally
-    FreeMem(buf);
-  end;
-end;
 
 
 function CreateNewFileName(BaseFileName: String; Ext: String;

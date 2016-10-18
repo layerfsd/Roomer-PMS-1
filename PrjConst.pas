@@ -9,11 +9,6 @@ resourcestring
   SVersion = 'Version ';
   SDatabase = 'Database ';
 
-  //uMain
-  sh0070 = 'Version';
-  sh0080 = 'Ver';
-
-
 function GetTranslatedText(nameOfConstant : String) : String;
 procedure GenerateTranslateTextTableForConstants;
 procedure GenerateTranslateTextTableForAllForms;

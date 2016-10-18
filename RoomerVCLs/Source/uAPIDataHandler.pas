@@ -50,7 +50,6 @@ type
     property Files[_index : integer] : TFileEntity read GetFiles;
   end;
 
-function CreateXmlDocument : IXMLDOMDocument2;
 function getXmlFromJavaEntity(recordSet: string): string;
 function getXmlFromRecordSet(rs: _Recordset): string;
 //function getXmlFromRecord(rec: _RecordSet): string;
@@ -64,7 +63,8 @@ function SQLToXML(const aConnection: TAdoConnection;
 implementation
 
 uses ComObj, ActiveX, ADOInt, uStringUtils, uDateUtils, SysUtils, ExtCtrls,
-     StdCtrls, Controls, Classes;
+     StdCtrls, Controls, Classes
+     , XMLUtils;
 
 const
   RECORDSET_SCHEMA_HEADER
@@ -98,20 +98,6 @@ const
 
 const
   RECORDSET_DATA_VALUE: string = '%s="%s" ';
-
-function CreateXmlDocument : IXMLDOMDocument2;
-begin
-  CoInitialize(nil);
-  try
-    try
-      result := MSXML2_TLB.CoDOMDocument60.Create;
-    except // Not registered? Try version 6...
-      result := CoDOMDocument60.Create;
-    end;
-  finally
-    CoUninitialize;
-  end;
-end;
 
 function getXmlFromRecordSet(rs: _Recordset): string;
 var

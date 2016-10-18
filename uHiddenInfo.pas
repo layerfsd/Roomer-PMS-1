@@ -103,7 +103,7 @@ uses
   PrjConst
   , uDImages
   , UITypes
-  ;
+  , uRoomerVersionInfo;
 {$R *.dfm}
 
 
@@ -120,7 +120,7 @@ begin
   if (AskUserForCredentials(userName, password, hotelId, lastMessage)  in cLoginFormSuccesfull) then
   begin
       try
-        d.roomerMainDataSet.Login(hotelId, username, password, 'ROOMERPMS', GetVersion(Application.ExeName));
+        d.roomerMainDataSet.Login(hotelId, username, password, 'ROOMERPMS', TRoomerVersionInfo.FileVersion);
         result := true;
       except
         result := false;

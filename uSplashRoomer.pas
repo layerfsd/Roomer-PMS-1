@@ -54,7 +54,7 @@ uses
   ud,
   uUtils,
   uFileSystemUtils,
-  PrjConst;
+  PrjConst, uRoomerVersionInfo;
 
 procedure TfrmRoomerSplash.NilInternetEvents;
 begin
@@ -71,11 +71,8 @@ begin
 end;
 
 procedure TfrmRoomerSplash.FormCreate(Sender: TObject);
-var
-  recVer: TEXEVersionData;
 begin
-  recVer := _GetEXEVersionData(Paramstr(0));
-  LMDSimpleLabel1.Caption := GetTranslatedText('sh0080') + ': ' + recVer.FileVersion + ' [' + recVer.ExtraBuild + ']';
+  LMDSimpleLabel1.Caption := TRoomerVersionInfo.LongVersionString;
 end;
 
 procedure TfrmRoomerSplash.FormHide(Sender: TObject);

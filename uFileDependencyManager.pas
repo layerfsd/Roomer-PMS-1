@@ -294,16 +294,20 @@ begin
     FileAge(toFile, DateOfFile);
 
   RemoteFile := getFileInfoViaHead(sFullFilename);
-  if RemoteFile = nil then
-    Result := ''
-  else
-  begin
-    if DateTimeToComparableString(DateOfFile) <> DateTimeToComparableString(RemoteFile.Timestamp) then
+  try
+    if RemoteFile = nil then
+      Result := ''
+    else
     begin
-      d.roomerMainDataSet.SystemDownloadFileFromURI(RemoteFile.URI, toFile);
-      TouchFile(toFile, RemoteFile.Timestamp);
+      if DateTimeToComparableString(DateOfFile) <> DateTimeToComparableString(RemoteFile.Timestamp) then
+      begin
+        d.roomerMainDataSet.SystemDownloadFileFromURI(RemoteFile.URI, toFile);
+        TouchFile(toFile, RemoteFile.Timestamp);
+      end;
+      Result := toFile;
     end;
-    Result := toFile;
+  finally
+    RemoteFile.Free;
   end;
 end;
 
@@ -394,7 +398,6 @@ end;
 initialization
 
 finalization
-
-gFileDependencyMgr.Free;
+  gFileDependencyMgr.Free;
 
 end.

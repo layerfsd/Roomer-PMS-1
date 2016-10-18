@@ -210,7 +210,6 @@ uses
   uRoomerContainerClasses in 'uRoomerContainerClasses.pas',
   uAvailabilityPerDay in 'AvailabilityManagement\uAvailabilityPerDay.pas',
   uInvoiceController in 'Invoice\uInvoiceController.pas',
-  VersionInfo in 'Extras\VersionInfo.pas',
   uOfflineReportGenerator in 'OfflineReports\uOfflineReportGenerator.pas',
   uOffLineReport in 'OfflineReports\uOffLineReport.pas',
   uHotelStatusOfflineReport in 'OfflineReports\uHotelStatusOfflineReport.pas',
@@ -250,7 +249,8 @@ uses
   uVatCalculator in 'VAT\uVatCalculator.pas',
   uPMSSettings in 'PMSSettings\uPMSSettings.pas',
   uTableEntityList in 'TableCache\uTableEntityList.pas',
-  uMessageList in 'uMessageList.pas';
+  uMessageList in 'uMessageList.pas',
+  uRoomerVersionInfo in 'Extras\uRoomerVersionInfo.pas';
 
 {$R *.RES}
 

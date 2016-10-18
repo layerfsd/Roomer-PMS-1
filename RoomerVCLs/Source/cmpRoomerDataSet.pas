@@ -9,9 +9,9 @@ uses
   System.Classes,
   Data.DB,
   Data.Win.ADODB,
+  MSXML2_TLB,
   uAPIDataHandler,
   AlHttpCommon,
-  MSXML2_TLB,
   RoomerCloudEntities,
   Generics.Collections,
   uRoomerHttpClient
@@ -263,7 +263,6 @@ type
     procedure AssignToDataset(SqlResult: String; DataSet: TRoomerDataSet);
 
     function SecondsLeft: Integer;
-    function GetAttributeValue(Node: IXMLDomNode; AttribName, defaultValue: String): String;
 
     function RegisterApplication(hotelId, username, password, appId: String): String;
 
@@ -345,6 +344,7 @@ uses
   ALWininetHttpClient,
   ALHttpClient,
   IdSSLOpenSSL
+  , XMLUtils
   ;
 
 resourcestring
@@ -2031,18 +2031,6 @@ begin
   end;
 end;
 
-function TRoomerDataSet.GetAttributeValue(Node: IXMLDomNode; AttribName, defaultValue: String): String;
-var
-  i: Integer;
-begin
-  Result := defaultValue;
-  for i := 0 to Node.Attributes.length - 1 do
-    if Node.Attributes.item[i].nodeName = AttribName then
-    begin
-      Result := Node.Attributes.item[i].Text;
-      Break;
-    end;
-end;
 
 function TRoomerDataSet.SecondsLeft: Integer;
 begin
@@ -2433,14 +2421,14 @@ begin
   ownerId := _ownerId;
 end;
 
-var
-  recVer: TEXEVersionData;
-
+//var
+//  recVer: TEXEVersionData;
+//
 initialization
 
 begin
-  recVer := _GetEXEVersionData(Paramstr(0));
-  EXTRA_BUILD_ID := recVer.ExtraBuild;
+//  recVer := _GetEXEVersionData(Paramstr(0));
+//  EXTRA_BUILD_ID := recVer.ExtraBuild;
 end;
 
 end.
