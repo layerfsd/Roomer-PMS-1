@@ -606,7 +606,8 @@ end;
 
 procedure TfrmCountries.m_AfterPost(DataSet: TDataSet);
 begin
-  glb.RefreshTableByName('country');
+  if not m_.ControlsDisabled then
+    glb.RefreshTableByName('countries');
 end;
 
 procedure TfrmCountries.m_BeforeDelete(DataSet: TDataSet);

@@ -961,7 +961,6 @@ type
     procedure I1Click(Sender: TObject);
     procedure G4Click(Sender: TObject);
     procedure sSpeedButton1Click(Sender: TObject);
-    procedure lblPropertyStatusDblClick(Sender: TObject);
     procedure btnManagmentStatClick(Sender: TObject);
     procedure pmnuReservationRoomListClick(Sender: TObject);
     procedure mnuRoomListForReservationClick(Sender: TObject);
@@ -992,7 +991,6 @@ type
     procedure F1Click(Sender: TObject);
     procedure grOneDayRoomsDblClickCell(Sender: TObject; ARow, ACol: integer);
     procedure btnClearWindowCacheClick(Sender: TObject);
-    procedure __lblUsernameDblClick(Sender: TObject);
     procedure btnGuestProfilesClick(Sender: TObject);
     procedure btnBookKeepingCodesClick(Sender: TObject);
     procedure btnHotelSpecificSqlQueriesClick(Sender: TObject);
@@ -1019,7 +1017,6 @@ type
     procedure btnSetNoroomClick(Sender: TObject);
     procedure btnConfirmAllottedBookingClick(Sender: TObject);
     procedure sSkinManager1SkinLoading(Sender: TObject);
-    procedure sPanel3DblClick(Sender: TObject);
     procedure timOfflineReportsTimer(Sender: TObject);
     procedure btnDynamicRateRulesClick(Sender: TObject);
     procedure __cbxHotelsCloseUp(Sender: TObject);
@@ -1970,7 +1967,6 @@ end;
 
 procedure TfrmMain.AssignSkinColorsToComponents;
 begin
-  DebugLog('Starting AssignSkinColorsToComponents');
   Chart1.Color := sSkinManager1.GetGlobalColor;
   Chart1.LeftAxis.LabelsFont.Color := sSkinManager1.GetGlobalFontColor;
   Chart1.BottomAxis.LabelsFont.Color := sSkinManager1.GetGlobalFontColor;
@@ -2003,7 +1999,6 @@ begin
   __REVPAR.Font.Color := cbxStatDay.Font.Color;
   lblStatRoomsSold.Font.Color := cbxStatDay.Font.Color;
   __ROOMSSOLD.Font.Color := cbxStatDay.Font.Color;
-  DebugLog('Ending AssignSkinColorsToComponents');
   if cbxStatDay.ItemIndex < 0 then
     cbxStatDay.ItemIndex := 0;
   cbxStatDay.Update;
@@ -2215,25 +2210,11 @@ var
   s: string;
 begin
   if NOT RBEMode then
-    s := 'ROOMER PMS'
+    s := 'ROOMER PMS '
   else
     s := 'Roomer Booking Engine - ';
 
   Caption := s + TRoomerVersionInfo.ShortVersionString;
-end;
-
-procedure TfrmMain.sPanel3DblClick(Sender: TObject);
-begin
-{$IFDEF DEBUG}
-  ShowMessage(d.roomerMainDataSet.TestSpecificOpenApiAuthHeaders(
-    '2a0434bc',
-    'ORBIS',
-    'a02da62f9c6f941024e90d5828d9246c096fb5b1286946e1a63b14981d42f55e',
-    'https://api.roomercloud.net/roomer/openAPI/REST/bookings/roomassignments?roomNumber=004',
-    now));
-  ShowMessage(CalculateOTPOnSpecifiedTime('a02da62f9c6f941024e90d5828d9246c096fb5b1286946e1a63b14981d42f55e',
-    StrToDateTime('05-01-2016 12:00:00')));
-{$ENDIF}
 end;
 
 procedure TfrmMain.splitPeriodMoved(Sender: TObject);
@@ -2245,7 +2226,6 @@ procedure TfrmMain.sSkinManager1SkinLoading(Sender: TObject);
 var
   skinName: String;
 begin
-  DebugLog('Starting sSkinManager1AfterChange');
   skinName := LowerCase(trim(sSkinManager1.skinName));
   if (pos(skinName, 'office2007 black,tv-b') > 0) then
     dxRibbon1.ColorSchemeName := 'DarkSide'
@@ -2262,13 +2242,6 @@ begin
   WriteStringValueToAnyRegistry('Software\Roomer\FormStatus\StoreMainV2\sSkinManager1', 'SkinName',
     sSkinManager1.skinName);
 
-  DebugLog('Ending sSkinManager1AfterChange');
-  // TsSkinManager.GetGlobalColor
-  // TsSkinManager.GetGlobalFontColor
-  // TsSkinManager.GetActiveEditColor
-  // TsSkinManager.GetActiveEditFontColor
-  // TsSkinManager.GetHighLightColor
-  // TsSkinManager.GetHighLightFontColor
 end;
 
 procedure TfrmMain.sSpeedButton1Click(Sender: TObject);
@@ -2308,45 +2281,6 @@ begin
   result := true;
   if ViewMode <> vmOneDay then
     exit;
-end;
-
-procedure TfrmMain.lblPropertyStatusDblClick(Sender: TObject);
-begin
-{$IFDEF DEBUG}
-  RoomerLanguage.PerformDBUpdatesWhenUnknownEntitiesFound := true;
-  try
-    GenerateTranslateTextTableForConstants;
-    GenerateTranslateTextTableForAllForms;
-    TranslateOpenForms;
-    try
-      frmHomedate.Show;
-      RoomerLanguage.TranslateThisForm(frmRptManagment);
-      frmHomedate.Hide;
-    except
-    end;
-  finally
-    RoomerLanguage.PerformDBUpdatesWhenUnknownEntitiesFound := false;
-  end;
-{$ENDIF}
-end;
-
-procedure TfrmMain.__lblUsernameDblClick(Sender: TObject);
-var
-  Invoice: TInvoice;
-begin
-  { IFDEF DEBUG }
-  // PushActivityLogs;
-  if GetSelectedRoomInformation then
-  begin
-    if IsControlKeyPressed then
-      _iRoomReservation := 0;
-
-    Invoice := TInvoice.Create(_iReservation, _iRoomReservation, 0, -1, 0);
-    DebugMessage(FloatToStr(Invoice.Total) + #10 + FloatToStr(Invoice.TotalPayments) + #10 +
-      FloatToStr(Invoice.Balance));
-    Invoice.Free;
-  end;
-  { ENDIF }
 end;
 
 procedure TfrmMain.__lblSearchDblClick(Sender: TObject);
@@ -7580,10 +7514,6 @@ begin
         if OffLineMode then
           OffLineMode := false;
       except
-{$IFDEF DEBUG}
-        // if NOT OffLineMode then
-        // raise Exception.Create('Message Retrieval failed');
-{$ENDIF}
       end;
     finally
       ResList.Free;
@@ -13663,24 +13593,15 @@ procedure TfrmMain.HandleSkinManagerChange;
 var
   skin: String;
 begin
-  DebugLog('Starting __dxBarCombo1CloseUp');
   sSkinManager1.active := false;
   try
-    DebugLog('Selecting Skin __dxBarCombo1CloseUp');
     skin := __dxBarCombo1.Items[__dxBarCombo1.CurItemIndex];
-    DebugLog('Selected Skin __dxBarCombo1CloseUp - ' + skin);
     sSkinManager1.skinName := DelChars(skin, '&');
-    DebugLog('Assigned Skin __dxBarCombo1CloseUp - ' + sSkinManager1.skinName);
   finally
-    DebugLog('Activating Skinmanager __dxBarCombo1CloseUp');
     sSkinManager1.active := true;
-    DebugLog('Skinmanager activated __dxBarCombo1CloseUp');
   end;
-  DebugLog('Loaded __dxBarCombo1CloseUp');
   sSkinManager1.Loaded;
-  DebugLog('Loaded done __dxBarCombo1CloseUp');
   SetExtraSkinColors;
-  DebugLog('Ending __dxBarCombo1CloseUp');
 end;
 
 procedure TfrmMain.dxBarLargeButton2Click(Sender: TObject);

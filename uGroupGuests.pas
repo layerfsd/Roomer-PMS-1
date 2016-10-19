@@ -251,6 +251,7 @@ type
     procedure tvGuestsNationalityPropertiesValidate(Sender: TObject; var DisplayValue: Variant; var ErrorText: TCaption;
       var Error: Boolean);
     procedure btnEditClick(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     { Private declarations }
     zReservation : integer;
@@ -313,6 +314,12 @@ procedure TfrmGroupGuests.FormCreate(Sender: TObject);
 begin
   RoomerLanguage.TranslateThisForm(self);
   glb.PerformAuthenticationAssertion(self); PlaceFormOnVisibleMonitor(self);
+end;
+
+procedure TfrmGroupGuests.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then
+    Close;
 end;
 
 procedure TfrmGroupGuests.FormShow(Sender: TObject);

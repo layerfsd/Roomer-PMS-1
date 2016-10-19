@@ -185,7 +185,7 @@ begin
   begin
     sLabel1.Left := 5;
     sLabel1.Top := (Height - panBtn.Height) div 2;
-//    Width := sLabel1.Width + 20;
+    Width := sLabel1.Width + 20;
   end;
 end;
 

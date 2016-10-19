@@ -22,7 +22,7 @@ object FrmCheckOut: TFrmCheckOut
     AlignWithMargins = True
     Left = 16
     Top = 100
-    Width = 585
+    Width = 323
     Height = 25
     Margins.Top = 100
     Alignment = taCenter
@@ -81,8 +81,8 @@ object FrmCheckOut: TFrmCheckOut
     object cbxForce: TsCheckBox
       Left = 348
       Top = 6
-      Width = 243
-      Height = 17
+      Width = 235
+      Height = 20
       Caption = 'Allow checkout in spite of open group invoice'
       TabOrder = 2
       Visible = False

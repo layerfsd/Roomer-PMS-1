@@ -360,7 +360,6 @@ type
     cxSplitter1: TsSplitter;
     Panel1: TsPanel;
     sButton2: TsButton;
-    sButton3: TsButton;
     sButton4: TsButton;
     mRoomsPackage: TWideStringField;
     tvRoomsPackage: TcxGridDBColumn;

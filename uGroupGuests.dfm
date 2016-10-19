@@ -10,8 +10,10 @@ object frmGroupGuests: TfrmGroupGuests
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
+  KeyPreview = True
   OldCreateOrder = False
   OnCreate = FormCreate
+  OnKeyDown = FormKeyDown
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
@@ -208,6 +210,7 @@ object frmGroupGuests: TfrmGroupGuests
         Height = 445
         Align = alClient
         TabOrder = 1
+        ExplicitTop = 33
         object tvGuests: TcxGridDBBandedTableView
           Navigator.Buttons.CustomButtons = <>
           Navigator.InfoPanel.Visible = True
@@ -216,6 +219,7 @@ object frmGroupGuests: TfrmGroupGuests
           DataController.Summary.DefaultGroupSummaryItems = <>
           DataController.Summary.FooterSummaryItems = <>
           DataController.Summary.SummaryGroups = <>
+          OptionsBehavior.FocusCellOnTab = True
           OptionsBehavior.GoToNextCellOnEnter = True
           OptionsData.Deleting = False
           OptionsData.DeletingConfirmation = False
@@ -1102,7 +1106,6 @@ object frmGroupGuests: TfrmGroupGuests
     Top = 384
     object grPrinterLink1: TdxGridReportLink
       Component = grGuests
-      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 6350
       PrinterPage.GrayShading = True
@@ -1115,7 +1118,6 @@ object frmGroupGuests: TfrmGroupGuests
       PrinterPage.PageSize.Y = 297000
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
-      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       BuiltInReportLink = True
     end
   end
