@@ -127,8 +127,8 @@ inherited frmCleaningNotes: TfrmCleaningNotes
     object chkActive: TsCheckBox
       Left = 55
       Top = 63
-      Width = 246
-      Height = 17
+      Width = 238
+      Height = 20
       Caption = 'Active (if checked then just active are visible)'
       Checked = True
       State = cbChecked
@@ -246,6 +246,7 @@ inherited frmCleaningNotes: TfrmCleaningNotes
       OptionsData.Appending = True
       OptionsData.CancelOnExit = False
       OptionsData.DeletingConfirmation = False
+      OptionsView.ColumnAutoWidth = True
       OptionsView.GroupByBox = False
       OptionsView.HeaderAutoHeight = True
       OptionsView.Indicator = True
@@ -262,46 +263,49 @@ inherited frmCleaningNotes: TfrmCleaningNotes
       object tvDataactive: TcxGridDBColumn
         Caption = 'Active'
         DataBinding.FieldName = 'active'
-        MinWidth = 50
+        MinWidth = 52
         Width = 52
       end
       object tvDataonlyWhenRoomIsDirty: TcxGridDBColumn
         Caption = 'Only when dirty'
         DataBinding.FieldName = 'onlyWhenRoomIsDirty'
         HeaderAlignmentHorz = taCenter
-        MinWidth = 50
+        MinWidth = 55
         Width = 55
       end
       object tvDataserviceType: TcxGridDBColumn
         Caption = 'Service type'
         DataBinding.FieldName = 'serviceType'
-        MinWidth = 50
+        OnGetDisplayText = tvDataserviceTypeGetDisplayText
+        MinWidth = 82
         Width = 82
       end
       object tvDataonceType: TcxGridDBColumn
         Caption = 'When'
         DataBinding.FieldName = 'onceType'
         OnCustomDrawCell = tvDataonceTypeCustomDrawCell
-        MinWidth = 50
+        OnGetDisplayText = tvDataonceTypeGetDisplayText
+        MinWidth = 154
       end
       object tvDatainterval: TcxGridDBColumn
         Caption = 'Days'
         DataBinding.FieldName = 'interval'
         OnCustomDrawCell = tvDataintervalCustomDrawCell
         HeaderAlignmentHorz = taRightJustify
-        MinWidth = 50
+        MinWidth = 71
         Width = 71
       end
       object tvDataminimumDays: TcxGridDBColumn
         Caption = 'Min stay'
         DataBinding.FieldName = 'minimumDays'
         HeaderAlignmentHorz = taRightJustify
-        MinWidth = 50
+        MinWidth = 63
         Width = 63
       end
       object tvDatamessage: TcxGridDBColumn
         Caption = 'Cleaning note'
         DataBinding.FieldName = 'message'
+        Width = 300
       end
     end
     object lvData: TcxGridLevel
@@ -367,6 +371,7 @@ inherited frmCleaningNotes: TfrmCleaningNotes
     object prLink_grData: TdxGridReportLink
       Active = True
       Component = grData
+      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 5080
       PrinterPage.GrayShading = True
@@ -380,12 +385,13 @@ inherited frmCleaningNotes: TfrmCleaningNotes
       PrinterPage.PageSize.Y = 297180
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
-      ReportDocument.CreationDate = 42657.581351678250000000
+      ReportDocument.CreationDate = 42662.431614386570000000
       ReportTitle.Font.Charset = DEFAULT_CHARSET
       ReportTitle.Font.Color = clBlack
       ReportTitle.Font.Height = -19
       ReportTitle.Font.Name = 'Arial'
       ReportTitle.Font.Style = [fsBold]
+      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       OptionsSize.AutoWidth = True
       ScaleFonts = False
       StyleRepository = cxsrRoomerStyleRepository

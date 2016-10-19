@@ -148,8 +148,8 @@ inherited frmCleaningNotesEdit: TfrmCleaningNotesEdit
   object cbxActive: TsCheckBox [9]
     Left = 187
     Top = 18
-    Width = 58
-    Height = 17
+    Width = 50
+    Height = 20
     Caption = 'Active'
     TabOrder = 7
     ImgChecked = 0
@@ -204,8 +204,8 @@ inherited frmCleaningNotesEdit: TfrmCleaningNotesEdit
   object cbxOnlyWhenRoomIsDirty: TsCheckBox [13]
     Left = 187
     Top = 151
-    Width = 163
-    Height = 17
+    Width = 155
+    Height = 20
     Caption = 'Only when room is not clean'
     Checked = True
     State = cbChecked

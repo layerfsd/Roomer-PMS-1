@@ -178,6 +178,10 @@ type
       var AHandled: Boolean);
     procedure tvDataonceTypeCustomDrawCell(Sender: TcxCustomGridTableView; ACanvas: TcxCanvas; AViewInfo: TcxGridTableDataCellViewInfo; var ADone: Boolean);
     procedure tvDataintervalCustomDrawCell(Sender: TcxCustomGridTableView; ACanvas: TcxCanvas; AViewInfo: TcxGridTableDataCellViewInfo; var ADone: Boolean);
+    procedure tvDataserviceTypeGetDisplayText(Sender: TcxCustomGridTableItem; ARecord: TcxCustomGridRecord;
+      var AText: string);
+    procedure tvDataonceTypeGetDisplayText(Sender: TcxCustomGridTableItem; ARecord: TcxCustomGridRecord;
+      var AText: string);
   private
     { Private declarations }
     financeLookupList : TKeyPairList;
@@ -194,10 +198,6 @@ type
     zAct: TActTableAction;
     zData: recCleaningNotesHolder;
     FAllowGridEdit : Boolean;
-    /// <summary>
-    ///   Add recCleaningNotesHolders to recCleaningNotesHolderslist for each price-period of selected stockitem. <br />
-    ///  zData is used to determine requested peroid of use
-    /// </summary>
     property AllowGridEdit: boolean read FAllowGridEdit write SetAllowGridEdit;
     procedure DoLoadData; override;
     procedure UpdateControls; override;
@@ -224,7 +224,7 @@ uses
   , DateUtils
   , Math
   , uCleaningNotesEdit
-  ;
+  , uCleaningNotesDefinitions;
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 //  unit global functions
@@ -330,7 +330,7 @@ end;
 
 procedure TfrmCleaningNotes.chkActiveClick(Sender: TObject);
 begin
-  if tvdata.DataController.DataSet.State = dsEdit then
+  if tvdata.DataController.DataSet.State in [dsEdit, dsInsert] then
   begin
     tvdata.DataController.Post;
   end;
@@ -428,14 +428,8 @@ end;
 
 procedure TfrmCleaningNotes.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
-  if tvdata.DataController.DataSet.State = dsInsert then
-  begin
+  if tvdata.DataController.DataSet.State in [dsInsert, dsEdit] then
     tvdata.DataController.Post;
-  end;
-  if tvdata.DataController.DataSet.State = dsEdit then
-  begin
-    tvdata.DataController.Post;
-  end;
 end;
 
 procedure TfrmCleaningNotes.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -538,8 +532,8 @@ end;
 procedure TfrmCleaningNotes.m_CleaningNotesNewRecord(DataSet: TDataSet);
 begin
   dataset['Active']         := true;
-  dataset['serviceType']    := 'INTERVAL';
-  dataset['onceType']       := 'CHECK_IN_DAY';
+  dataset['serviceType']    := TCleaningNoteServiceType.ctInterval.ToDatabaseString;
+  dataset['onceType']       := TCleaningNoteOnceType.coCheck_In_Day.ToDatabaseString;
   dataset['interval']       := 3;
   dataset['minimumDays']    := 3;
   dataset['message']        := '';
@@ -553,7 +547,21 @@ procedure TfrmCleaningNotes.tvDataonceTypeCustomDrawCell(Sender: TcxCustomGridTa
   var ADone: Boolean);
 begin
   with TcxGridDBTableView(Sender).DataController do
-    aDone := AViewInfo.GridRecord.Values[tvDataserviceType.Index] = 'INTERVAL';
+    aDone := AViewInfo.GridRecord.Values[tvDataserviceType.Index] = TCleaningNoteServiceType.ctInterval.ToDatabaseString;
+end;
+
+procedure TfrmCleaningNotes.tvDataonceTypeGetDisplayText(Sender: TcxCustomGridTableItem; ARecord: TcxCustomGridRecord;
+  var AText: string);
+begin
+  inherited;
+  aText := TCleaningNoteOnceType.FromString(aText).AsReadableString;
+end;
+
+procedure TfrmCleaningNotes.tvDataserviceTypeGetDisplayText(Sender: TcxCustomGridTableItem;
+  ARecord: TcxCustomGridRecord; var AText: string);
+begin
+  inherited;
+  aText := TCleaningNoteServiceType.FromString(aText).AsReadableString;
 end;
 
 procedure TfrmCleaningNotes.UpdateControls;
@@ -576,9 +584,9 @@ procedure TfrmCleaningNotes.tvDataintervalCustomDrawCell(Sender: TcxCustomGridTa
   var ADone: Boolean);
 begin
   with TcxGridDBTableView(Sender).DataController do
-    aDone := (AViewInfo.GridRecord.Values[tvDataserviceType.Index] = 'ONCE') and
-             NOT ((AViewInfo.GridRecord.Values[tvDataonceType.Index] = 'XTH_DAY') OR
-                  (AViewInfo.GridRecord.Values[tvDataonceType.Index] = 'X_DAYS_AFTER_CHECK_OUT'));
+    aDone := (AViewInfo.GridRecord.Values[tvDataserviceType.Index] = TCleaningNoteServiceType.ctOnce.ToDatabaseString) and
+             NOT ((AViewInfo.GridRecord.Values[tvDataonceType.Index] = TCleaningNoteOnceType.coXth_Day.ToDatabaseString) OR
+                  (AViewInfo.GridRecord.Values[tvDataonceType.Index] = TCleaningNoteOnceType.coX_Days_After_Check_Out.ToDatabaseString));
 end;
 
 ////////////////////////////////////////////////////////////////////////////

@@ -363,6 +363,14 @@ begin
   constants.Add('shTx_NumGuests', 'Num guests');
   constants.Add('shTx_ReportedBy', 'Reported by');
   constants.Add('shTx_CleaningNotes', 'Cleaning notes');
+  constants.Add('shTx_CleaningNoteServiceType_Interval', 'Interval');
+  constants.Add('shTx_CleaningNoteServiceType_Once', 'Once');
+  constants.Add('shTx_CleaningNoteintervalType_Checkin', 'Checkin');
+  constants.Add('shTx_CleaningNoteintervalType_BeforeCheckout', 'Before Checkout');
+  constants.Add('shTx_CleaningNoteintervalType_CheckOut', 'At Checkout');
+  constants.Add('shTx_CleaningNoteintervalType_XthDay', 'On Xth day of stay');
+  constants.Add('shTx_CleaningNoteintervalType_XdaysAfterCheckout', 'X days after checkout');
+
  // constants.Add('shTx_MaintenanceNotes', 'Mainteance notes');
   constants.Add('shTx_MaintenanceNotes', 'Maintenance notes');
   constants.Add('shTx_LostAndFount', 'Lost and found');

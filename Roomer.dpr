@@ -250,7 +250,8 @@ uses
   uPMSSettings in 'PMSSettings\uPMSSettings.pas',
   uTableEntityList in 'TableCache\uTableEntityList.pas',
   uMessageList in 'uMessageList.pas',
-  uRoomerVersionInfo in 'Extras\uRoomerVersionInfo.pas';
+  uRoomerVersionInfo in 'Extras\uRoomerVersionInfo.pas',
+  uCleaningNotesDefinitions in 'Definitions\uCleaningNotesDefinitions.pas';
 
 {$R *.RES}
 

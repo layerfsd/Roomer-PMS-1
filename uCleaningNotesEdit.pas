@@ -51,7 +51,7 @@ uses PrjConst,
      uRoomerLanguage,
      uAppGlobal,
      uUtils
-     ;
+     , uCleaningNotesDefinitions;
 
 
 function openCleaningNotesEdit(var theData : recCleaningNotesHolder) : boolean;
@@ -78,8 +78,8 @@ procedure TfrmCleaningNotesEdit.DoLoadData;
 begin
   inherited;
   cbxActive.Checked := zData.active;
-  __cbxServiceType.ItemIndex := __cbxServiceType.Items.IndexOf(zData.serviceType);
-  __cbxOnceType.ItemIndex := __cbxOnceType.Items.IndexOf(zData.onceType);
+  __cbxServiceType.ItemIndex := TCleaningNoteServiceType.FromString(zData.serviceType).ToItemIndex;
+  __cbxOnceType.ItemIndex := TCleaningNoteOnceType.FromString(zData.onceType).ToItemIndex;
   edtInterval.Text := InttoStr(zData.interval);
   edtMinimumDays.Text := InttoStr(zData.minimumDays);
   cbxOnlyWhenRoomIsDirty.Checked := zData.onlyWhenRoomIsDirty;
@@ -89,9 +89,9 @@ end;
 procedure TFrmCleaningNotesEdit.EditsToRecordHolder;
 begin
   zData.active := cbxActive.Checked;
-  zData.serviceType := __cbxServiceType.Text;
+  zData.serviceType := TCleaningNoteServiceType.FromItemIndex(__cbxServiceType.itemIndex).ToDatabaseString;
   zData.onlyWhenRoomIsDirty := cbxOnlyWhenRoomIsDirty.Checked;
-  zData.onceType := __cbxOnceType.Text;
+  zData.onceType := TCleaningNoteOnceType.FromItemIndex(__cbxOnceType.ItemIndex).ToDatabaseString;
   zData.interval := StrToIntDef(edtInterval.Text, 3);
   zData.minimumDays := StrToIntDef(edtMinimumDays.Text, 1);
   zData.smessage := edtMessage.Text;
@@ -99,6 +99,9 @@ end;
 
 procedure TfrmCleaningNotesEdit.FormShow(Sender: TObject);
 begin
+  TCleaningNoteServiceType.AsStrings(__cbxServiceType.Items);
+  TCleaningNoteOnceType.AsStrings(__cbxOnceType.items);
+
   RefreshData;
 end;
 
