@@ -7,11 +7,13 @@ object frmControlData: TfrmControlData
   ClientWidth = 1261
   Color = clBtnFace
   ParentFont = True
+  KeyPreview = True
   OldCreateOrder = True
   Position = poOwnerFormCenter
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  OnKeyDown = FormKeyDown
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
@@ -22,7 +24,6 @@ object frmControlData: TfrmControlData
     Height = 671
     Align = alClient
     TabOrder = 1
-    OnClick = __Panel2Click
     object sLabel4: TsLabel
       Left = 248
       Top = 120
@@ -136,7 +137,7 @@ object frmControlData: TfrmControlData
         Top = 1
         Width = 1101
         Height = 639
-        ActivePage = tsInvoiceTexts
+        ActivePage = AdvTabSheet5
         Align = alClient
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
@@ -865,7 +866,6 @@ object frmControlData: TfrmControlData
               Height = 22
               Alignment = taLeftJustify
               VerticalAlignment = taAlignTop
-              Style = csDropDownList
               Color = clWhite
               Font.Charset = DEFAULT_CHARSET
               Font.Color = clBlack
@@ -1200,7 +1200,7 @@ object frmControlData: TfrmControlData
             Top = 0
             Width = 1093
             Height = 610
-            ActivePage = AdvTabSheet15
+            ActivePage = tsInvTexts_Laser1
             Align = alClient
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
@@ -5784,8 +5784,6 @@ object frmControlData: TfrmControlData
           Caption = 'Channelmanager'
           SkinData.CustomColor = False
           SkinData.CustomFont = False
-          ExplicitLeft = 5
-          ExplicitTop = 26
           object sGroupBox1: TsGroupBox
             Left = 7
             Top = 13
@@ -6217,6 +6215,11 @@ object frmControlData: TfrmControlData
               ImgUnchecked = 0
             end
           end
+        end
+        object AdvTabSheet5: TsTabSheet
+          Caption = '-'
+          SkinData.CustomColor = False
+          SkinData.CustomFont = False
         end
         object AdvTabSheet6: TsTabSheet
           Caption = 'Accounting'
@@ -7493,6 +7496,16 @@ object frmControlData: TfrmControlData
               SkinData.CustomFont = False
             end
           end
+        end
+        object AdvTabSheet13: TsTabSheet
+          Caption = 'AdvTabSheet13'
+          SkinData.CustomColor = False
+          SkinData.CustomFont = False
+        end
+        object AdvTabSheet14: TsTabSheet
+          Caption = 'Quick Booking'
+          SkinData.CustomColor = False
+          SkinData.CustomFont = False
         end
         object tsIncomingMonitor: TsTabSheet
           Caption = 'Incoming Monitor'#13#10
