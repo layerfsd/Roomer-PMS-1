@@ -65,6 +65,8 @@ type
     grHouseKeepingListDBTableView1cleaningnotes: TcxGridDBColumn;
     kbmHouseKeepingListLiveNote: TMemoField;
     grHouseKeepingListDBTableView1LiveNote: TcxGridDBColumn;
+    kbmHouseKeepingListroomstatus: TStringField;
+    grHouseKeepingListDBTableView1roomstatus: TcxGridDBColumn;
     procedure btnExcelClick(Sender: TObject);
     procedure btnRefreshClick(Sender: TObject);
     procedure kbmHouseKeepingListAfterScroll(DataSet: TDataSet);
@@ -136,21 +138,22 @@ const
       '	   when (not IsNUll(departing.room)) then {departure} '#10+
       '	   when (not IsNUll(arriving.room)) then {arrival} '#10+
       '	   when (not IsnUll(stayover.room)) then {stayover} '#10+
-      '    when (r.Status in (''U'', ''R'')) then (Select name from maintenancecodes mc where mc.code= r.Status) '#10+
-      '	 end as HousekeepingStatus '#10+
+      '	 end as HousekeepingStatus, '#10+
+      '  mc.Name as Roomstatus '#10 +
       '	from '#10+
       '	  rooms r '#10+
       '	  JOIN roomtypes rt on rt.roomtype=r.roomtype '#10+
       '	  JOIN locations l on l.Location=r.location '#10+
       '   LEFT JOIN maintenanceroomnotes rm ON rm.Room=r.Room '#10+
+      '   LEFT JOIN maintenancecodes mc on mc.code=r.Status '#10 +
       '   LEFT JOIN (SELECT xxx.Room, xxx.CleanStatus, GROUP_CONCAT(DISTINCT cn.Message SEPARATOR ''\n'') AS Note FROM cleaningnotes cn ' +
-      '	JOIN (SELECT Room, (SELECT Status FROM rooms WHERE Room=rr.Room LIMIT 1) AS CleanStatus, RoomReservation, Reservation, ' +
-      '       DATE((SELECT ADate FROM roomsdate WHERE RoomReservation=rr.RoomReservation AND rr.Status=ResFlag ORDER BY ADate LIMIT 1)) AS Arrival, ' +
-      '	   DATE_ADD((SELECT ADate FROM roomsdate WHERE RoomReservation=rr.RoomReservation AND rr.Status=ResFlag ORDER BY ADate DESC LIMIT 1), INTERVAL 1 DAY) AS Departure, ' +
-      '	   DATEDIFF(DATE_ADD((SELECT ADate FROM roomsdate WHERE RoomReservation=rr.RoomReservation AND rr.Status=ResFlag ORDER BY ADate DESC LIMIT 1), INTERVAL 1 DAY), ' +
-      '       DATE((SELECT ADate FROM roomsdate WHERE RoomReservation=rr.RoomReservation AND rr.Status=ResFlag ORDER BY ADate LIMIT 1))) AS numberOfDays, ' +
-      '	   DATEDIFF({probedate}, DATE((SELECT ADate FROM roomsdate WHERE RoomReservation=rr.RoomReservation AND rr.Status=ResFlag ORDER BY ADate LIMIT 1))) AS numberOfDaysStayed, ' +
-      '       DATE_ADD((SELECT ADate FROM roomsdate WHERE RoomReservation=rr.RoomReservation AND rr.Status=ResFlag ORDER BY ADate DESC LIMIT 1), INTERVAL 1 DAY)={probedate} AS isDepartureDate, ' +
+      '	  JOIN (SELECT Room, (SELECT Status FROM rooms WHERE Room=rr.Room LIMIT 1) AS CleanStatus, RoomReservation, Reservation, ' +
+      '                 DATE((SELECT ADate FROM roomsdate WHERE RoomReservation=rr.RoomReservation AND rr.Status=ResFlag ORDER BY ADate LIMIT 1)) AS Arrival, ' +
+      '	                DATE_ADD((SELECT ADate FROM roomsdate WHERE RoomReservation=rr.RoomReservation AND rr.Status=ResFlag ORDER BY ADate DESC LIMIT 1), INTERVAL 1 DAY) AS Departure, ' +
+      '	                DATEDIFF(DATE_ADD((SELECT ADate FROM roomsdate WHERE RoomReservation=rr.RoomReservation AND rr.Status=ResFlag ORDER BY ADate DESC LIMIT 1), INTERVAL 1 DAY), ' +
+      '                 DATE((SELECT ADate FROM roomsdate WHERE RoomReservation=rr.RoomReservation AND rr.Status=ResFlag ORDER BY ADate LIMIT 1))) AS numberOfDays, ' +
+      '	                DATEDIFF({probedate}, DATE((SELECT ADate FROM roomsdate WHERE RoomReservation=rr.RoomReservation AND rr.Status=ResFlag ORDER BY ADate LIMIT 1))) AS numberOfDaysStayed, ' +
+      '                 DATE_ADD((SELECT ADate FROM roomsdate WHERE RoomReservation=rr.RoomReservation AND rr.Status=ResFlag ORDER BY ADate DESC LIMIT 1), INTERVAL 1 DAY)={probedate} AS isDepartureDate, ' +
       '       rr.Status=''D'' AS isDeparted ' +
       'FROM roomreservations rr ' +
       'WHERE rr.roomreservation IN (SELECT roomreservation FROM roomsdate WHERE (Adate={probedate} OR DATE_ADD(ADate, INTERVAL 1 DAY)={probedate}) AND resflag in (''P'',''G'',''D'')) ' +
