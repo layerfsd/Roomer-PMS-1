@@ -35,7 +35,7 @@ uses
   , sGroupBox
   , sBitBtn
   , sPanel
-  , sLabel, sButton, AdvUtil
+  , sLabel, sButton, AdvUtil, sCheckBox
   ;
 
 type
@@ -43,7 +43,6 @@ type
     agrRooms : TAdvStringGrid;
     Panel2: TsPanel;
     rgrOptions: TsRadioGroup;
-    labInfo: TsLabel;
     sGroupBox1: TsGroupBox;
     sLabel1: TsLabel;
     lblArrival: TsLabel;
@@ -53,6 +52,7 @@ type
     btnCancel: TsButton;
     BtnOk: TsButton;
     btnRemoveRoomNumber: TsBitBtn;
+    cbIncludeNonCleanRooms: TsCheckBox;
     procedure FormShow(Sender : TObject);
     procedure FormCreate(Sender : TObject);
     procedure FormClose(Sender : TObject; var Action : TCloseAction);
@@ -61,6 +61,7 @@ type
     procedure rgrOptionsClick(Sender: TObject);
     procedure agrRoomsDblClickCell(Sender: TObject; ARow, ACol: Integer);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure cbIncludeNonCleanRoomsClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -124,22 +125,6 @@ begin
   result := '';
   rSet := CreateNewDataSet;
   try
-
-//select_ProvideARoom2_MoveToRoomEnh2 : string =
-//' SELECT '+
-//'    RoomReservation '+
-//'  , Reservation '+
-//'  , Room '+
-//'  , RoomType '+
-//'  , Status '+
-//'  , rrArrival '+
-//'  , rrDeparture '+
-//' FROM '+
-//'   roomreservations '+
-//' WHERE '+
-//'   RoomReservation = %d ' ;
-
-
     s := format(select_ProvideARoom2_MoveToRoomEnh2 , [RoomReservation]);
     hData.rSet_bySQL(rSet,s);
     rSet.First;
@@ -174,24 +159,13 @@ begin
   end;
 
   // -- Check if the status allows for a move without interference...
-  status := g.StatusStrToResStatus(sStatus);
+  status := TReservationState.fromResStatus(sStatus);
 
-  if (status = rsGuests) then
-  begin
-  //  if MEssageDlg('Staða herbergis er innskráð' + #13#13 + 'viltu örugglega færa þennan gest ?', mtConfirmation, [mbYes, mbNo], 0)
-	if MEssageDlg(GetTranslatedText('shTx_ProvideARoom_RoomCheckedin'), mtConfirmation, [mbYes, mbNo], 0)
-      <> mrYes then
+  if (status = rsGuests) and (MessageDlg(GetTranslatedText('shTx_ProvideARoom_RoomCheckedin'), mtConfirmation, [mbYes, mbNo], 0) <> mrYes) then
       exit;
-  end;
 
-  if (status = rsDeparted) then
-  begin
-   // if MEssageDlg('Staða herbergis er farinn (útskráð)' + #13#13 + 'Viltu örugglega færa þennan gest ?', mtConfirmation, [mbYes, mbNo],
-	    if MEssageDlg(GetTranslatedText('shTx_ProvideARoom_RoomCheckedout'), mtConfirmation, [mbYes, mbNo],
-      0) <> mrYes then
+  if (status = rsDeparted) and (MessageDlg(GetTranslatedText('shTx_ProvideARoom_RoomCheckedout'), mtConfirmation, [mbYes, mbNo], 0) <> mrYes) then
       exit;
-  end;
-
 
   Application.CreateForm(TfrmProvideARoom2, frmProvideARoom2);
   try
@@ -211,13 +185,9 @@ begin
     if (btn in [mrOK, mrYes]) then
     begin
       if btn = mrYes then
-      begin
-        newRoom := ''; // setja utan herbergja
-      end
+        newRoom := ''
       else
-      begin
         newRoom := frmProvideARoom2.agrRooms.Cells[1, frmProvideARoom2.agrRooms.Row];
-      end;
       if MoveToRoomEnh2(RoomReservation, newRoom) then
         result := newRoom;
     end;
@@ -274,7 +244,6 @@ begin
     agrRooms.Cells[25, 0] := GetTranslatedText('shTxProvideRoom_Status1');
     agrRooms.Cells[26, 0] := GetTranslatedText('shTxProvideRoom_Status');
 
-//  labInfo.Caption := 'Herbergi : ' + zRoom + ' - ' + zRoomType + ' Koma:' + DateToStr(zDateFrom) + ' Brottför:' + DateToStr(zDateTo);
     lblArrival.Caption := DateToStr(zDateFrom);
     lblDeparture.Caption := DateToStr(zDateTo);
 
@@ -282,31 +251,25 @@ begin
     begin
       for i := 0 to zOpList.Count - 1 do
       begin
-        orStr := orStr + '(room <> ' + _db(zOpList[i]) + ') AND ';
+        orStr := orStr + ' AND (room <> ' + _db(zOpList[i]) + ') '#10;
       end;
-      delete(orStr, length(orStr) - 4, 5);
     end;
 
     case rgrOptions.itemIndex of
-      0 :
-        begin
-          roomType := zRoomType;
-        end;
-      1 :
-        begin
-          roomType := '';
-        end;
-      2 :
-        begin
-          roomType := zRoomType;
-          orStr := '';
-        end;
-      3 :
-        begin
-          roomType := '';
-          orStr := '';
-        end;
+      0 : roomType := zRoomType;
+      1 : roomType := '';
+      2 : begin
+            roomType := zRoomType;
+            orStr := '';
+          end;
+      3 : begin
+            roomType := '';
+            orStr := '';
+          end;
     end;
+
+    if not cbIncludeNonCleanRooms.Checked then
+      orStr := orStr + ' AND (rooms.status = ''C'') '#10;
 
     s := '';
 
@@ -366,7 +329,7 @@ begin
         if rSet['Hairdryer'] then
           agrRooms.Cells[24, agrRooms.RowCount - 1] := 'X';
 
-        agrRooms.Cells[25, agrRooms.RowCount - 1] := '';//StatusToString(rSet.fieldbyname('Status').AsString);
+        agrRooms.Cells[25, agrRooms.RowCount - 1] := '';
         agrRooms.Cells[26, agrRooms.RowCount - 1] := rSet.fieldbyname('Status').AsString;
 
         rSet.Next;
@@ -624,11 +587,6 @@ begin
       ABrush.Color := frmMain.sSkinManager1.GetActiveEditColor; // GetHighLightColor; // clGreen;
       AFont.Color := frmMain.sSkinManager1.GetActiveEditFontColor; // GetHighLightFontColor; // clYellow;
     end
-    else
-    begin
-//      ABrush.Color := clMoneyGreen;
-//      AFont.Color := clYellow;
-    end;
   end;
 
 end;
@@ -645,123 +603,6 @@ begin
 
     isWith := agrRooms.Cells[ACol, ARow] = 'X';
 
-	(* if isWith then
-      sHint := 'Herbergi með '
-    else
-      sHint := 'Herbergi án ';
-
-    case ACol of
-      09 :
-        begin
-          if isWith then
-            hintstr := sHint + 'baði '
-          else
-            hintstr := sHint + 'baðs ';
-        end;
-      10 :
-        begin
-          if isWith then
-            hintstr := sHint + 'sturtu '
-          else
-            hintstr := sHint + 'sturtu ';
-        end;
-      11 :
-        begin
-          if isWith then
-            hintstr := sHint + 'öryggisskáp '
-          else
-            hintstr := sHint + 'öryggisskáp ';
-        end;
-      12 :
-        begin
-          if isWith then
-            hintstr := sHint + 'sjónvarpi '
-          else
-            hintstr := sHint + 'sjónvarps ';
-        end;
-      13 :
-        begin
-          if isWith then
-            hintstr := sHint + 'myndbandstæki '
-          else
-            hintstr := sHint + 'myndbandstækis ';
-        end;
-      14 :
-        begin
-          if isWith then
-            hintstr := sHint + 'útvarpi '
-          else
-            hintstr := sHint + 'útvarps ';
-        end;
-      15 :
-        begin
-          if isWith then
-            hintstr := sHint + 'CD spilara '
-          else
-            hintstr := sHint + 'CD spilara ';
-        end;
-      16 :
-        begin
-          if isWith then
-            hintstr := sHint + 'síma '
-          else
-            hintstr := sHint + 'síma ';
-        end;
-      17 :
-        begin
-          if isWith then
-            hintstr := sHint + 'faxi '
-          else
-            hintstr := sHint + 'faxs ';
-        end;
-      18 :
-        begin
-          if isWith then
-            hintstr := sHint + 'internettengingu '
-          else
-            hintstr := sHint + 'internettengingar ';
-        end;
-      19 :
-        begin
-          if isWith then
-            hintstr := sHint + 'eldhúsi '
-          else
-            hintstr := sHint + 'eldhúss ';
-        end;
-      20 :
-        begin
-          if isWith then
-            hintstr := sHint + 'Smábar '
-          else
-            hintstr := sHint + 'Smábars ';
-        end;
-      21 :
-        begin
-          if isWith then
-            hintstr := sHint + 'ísskáp '
-          else
-            hintstr := sHint + 'ísskáps ';
-        end;
-      22 :
-        begin
-          if isWith then
-            hintstr := sHint + 'kaffivél '
-          else
-            hintstr := sHint + 'kafffivélar ';
-        end;
-      23 :
-        begin
-          if isWith then
-            hintstr := sHint + 'fatapressu '
-          else
-            hintstr := sHint + 'fatapressu ';
-        end;
-      24 :
-        begin
-          if isWith then
-            hintstr := sHint + 'hárþurkara '
-          else
-            hintstr := sHint + 'hárþurkara '; *)
     if isWith then
       sHint := GetTranslatedText('shTx_ProvideARoom_RoomWith')
     else
@@ -882,6 +723,11 @@ begin
         end;
     end;
   end;
+end;
+
+procedure TfrmProvideARoom2.cbIncludeNonCleanRoomsClick(Sender: TObject);
+begin
+  Display;
 end;
 
 end.

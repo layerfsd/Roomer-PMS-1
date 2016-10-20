@@ -6561,7 +6561,7 @@ end;
       s:= s+'    ,  rooms.BedSize '#10;
       s:= s+'    ,  rooms.Equipments '#10;
       s:= s+'    ,  rooms.Bookable '#10;
-      s:= s+'    ,  rooms.Status '#10;
+      s:= s+'    ,  maintenancecodes.name as Status '#10;
       s:= s+'    ,  rooms.OrderIndex '#10;
       s:= s+'    ,  rooms.hidden '#10;
       s:= s+'    ,  rooms.Location '#10;
@@ -6582,19 +6582,17 @@ end;
       s:= s+'    ,  rooms.Hairdryer '#10;
       s:= s+'    ,  rooms.InternetPlug '#10;
       s:= s+'    ,  rooms.Fax '#10;
-//      s:= s+'    ,  maintenancecodes.name '#10;
       s:= s+'  FROM  '#10;
       s:= s+'     rooms  '#10;
       s:= s+'      LEFT OUTER JOIN locations ON  rooms.Location = locations.Location '#10;
       s:= s+'      LEFT OUTER JOIN roomtypes ON  rooms.RoomType = roomtypes.RoomType '#10;
-//      s:= s+'      LEFT OUTER JOIN maintenancecodes ON  rooms.status = maintenancecodes.code '#10;
+      s:= s+'      LEFT OUTER JOIN maintenancecodes ON  rooms.status = maintenancecodes.code '#10;
       s:= s+'  WHERE '#10;
       s:= s+'    (hidden = 0) '#10;
-//      s:= s+'    AND NOT ISNULL(maintenancecodes.code)'#10;
       s:= s+' AND (rooms.Room <>  %s ) '#10; //quotedstr(zRoom)
 
       if orStr <> '' then
-        s := s+'    AND ' + orStr + ' '+chr(10);
+        s := s+  orStr + ' '+chr(10);
 
       if roomType <> '' then
         s := s + '    AND (rooms.RoomType = %s ) '#10;  //quotedstr(roomType)

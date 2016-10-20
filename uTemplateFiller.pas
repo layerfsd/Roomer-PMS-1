@@ -307,83 +307,87 @@ begin
     bookingGuestsRoomsPrices := bookingGuestsRoomsPrices + '</table>';
 
     paymentInformation := getPaymentInformation(Information);
+    try
 
-    result := ReplaceString(template, GetCorrectedEnumName(_channelId), ChannelId);
-    result := ReplaceString(result, GetCorrectedEnumName(_channelName), ChannelName);
-    result := ReplaceString(result, GetCorrectedEnumName(_bookingChannelId), BookingId);
-    result := ReplaceString(result, GetCorrectedEnumName(_bookingRoomerId), inttostr(booking));
-    result := ReplaceString(result, GetCorrectedEnumName(_bookingArrival), RoomerDateToString(Arrival));
-    result := ReplaceString(result, GetCorrectedEnumName(_bookingDeparture), RoomerDateToString(Departure));
-    result := ReplaceString(result, GetCorrectedEnumName(_bookingNights), InttoStr(bookingNights));
-    result := ReplaceString(result, GetCorrectedEnumName(_bookingGuestName), ContactName);
+      result := ReplaceString(template, GetCorrectedEnumName(_channelId), ChannelId);
+      result := ReplaceString(result, GetCorrectedEnumName(_channelName), ChannelName);
+      result := ReplaceString(result, GetCorrectedEnumName(_bookingChannelId), BookingId);
+      result := ReplaceString(result, GetCorrectedEnumName(_bookingRoomerId), inttostr(booking));
+      result := ReplaceString(result, GetCorrectedEnumName(_bookingArrival), RoomerDateToString(Arrival));
+      result := ReplaceString(result, GetCorrectedEnumName(_bookingDeparture), RoomerDateToString(Departure));
+      result := ReplaceString(result, GetCorrectedEnumName(_bookingNights), InttoStr(bookingNights));
+      result := ReplaceString(result, GetCorrectedEnumName(_bookingGuestName), ContactName);
 
-    result := ReplaceString(result, GetCorrectedEnumName(_bookingNumberOfGuest), bookingNumberOfGuest);
-    result := ReplaceString(result, GetCorrectedEnumName(_bookingNumberOfRooms), bookingNumberOfRooms);
+      result := ReplaceString(result, GetCorrectedEnumName(_bookingNumberOfGuest), bookingNumberOfGuest);
+      result := ReplaceString(result, GetCorrectedEnumName(_bookingNumberOfRooms), bookingNumberOfRooms);
 
-    result := ReplaceString(result, GetCorrectedEnumName(_profileGuestname), GuestName);
-    result := ReplaceString(result, GetCorrectedEnumName(_bookingGuestAddress1), bookingGuestAddress1);
-    result := ReplaceString(result, GetCorrectedEnumName(_bookingGuestAddress2), bookingGuestAddress2);
-    result := ReplaceString(result, GetCorrectedEnumName(_bookingGuestZip), bookingGuestZip);
-    result := ReplaceString(result, GetCorrectedEnumName(_bookingGuestCity), bookingGuestCity);
-    result := ReplaceString(result, GetCorrectedEnumName(_bookingGuestCountryCode), bookingGuestCountryCode);
-    result := ReplaceString(result, GetCorrectedEnumName(_bookingGuestCountryName), bookingGuestCountryName);
+      result := ReplaceString(result, GetCorrectedEnumName(_profileGuestname), GuestName);
+      result := ReplaceString(result, GetCorrectedEnumName(_bookingGuestAddress1), bookingGuestAddress1);
+      result := ReplaceString(result, GetCorrectedEnumName(_bookingGuestAddress2), bookingGuestAddress2);
+      result := ReplaceString(result, GetCorrectedEnumName(_bookingGuestZip), bookingGuestZip);
+      result := ReplaceString(result, GetCorrectedEnumName(_bookingGuestCity), bookingGuestCity);
+      result := ReplaceString(result, GetCorrectedEnumName(_bookingGuestCountryCode), bookingGuestCountryCode);
+      result := ReplaceString(result, GetCorrectedEnumName(_bookingGuestCountryName), bookingGuestCountryName);
 
-    result := ReplaceString(result, GetCorrectedEnumName(_customerId), customerId);
-    result := ReplaceString(result, GetCorrectedEnumName(_customerName), customerName);
-    result := ReplaceString(result, GetCorrectedEnumName(_customerAddress1), customerAddress1);
-    result := ReplaceString(result, GetCorrectedEnumName(_customerAddress2), customerAddress2);
-    result := ReplaceString(result, GetCorrectedEnumName(_customerZip), customerZip);
-    result := ReplaceString(result, GetCorrectedEnumName(_customerCity), customerCity);
-    result := ReplaceString(result, GetCorrectedEnumName(_customerCountryCode), customerCountryCode);
-    result := ReplaceString(result, GetCorrectedEnumName(_customerCountryName), customerCountryName);
+      result := ReplaceString(result, GetCorrectedEnumName(_customerId), customerId);
+      result := ReplaceString(result, GetCorrectedEnumName(_customerName), customerName);
+      result := ReplaceString(result, GetCorrectedEnumName(_customerAddress1), customerAddress1);
+      result := ReplaceString(result, GetCorrectedEnumName(_customerAddress2), customerAddress2);
+      result := ReplaceString(result, GetCorrectedEnumName(_customerZip), customerZip);
+      result := ReplaceString(result, GetCorrectedEnumName(_customerCity), customerCity);
+      result := ReplaceString(result, GetCorrectedEnumName(_customerCountryCode), customerCountryCode);
+      result := ReplaceString(result, GetCorrectedEnumName(_customerCountryName), customerCountryName);
 
-    result := ReplaceString(result, GetCorrectedEnumName(_bookingGuestsRoomsPrices), bookingGuestsRoomsPrices);
-    result := ReplaceString(result, GetCorrectedEnumName(_bookingTotalPrice), Trim(_floattostr(totalBookingPrice, 12, 2)));
-    result := ReplaceString(result, GetCorrectedEnumName(_bookingDateTime), RoomerDateTimeToString(CreatedAt));
-    result := ReplaceString(result, GetCorrectedEnumName(_bookingPaymentType), GetPaymentInfoFromDict(paymentInformation, _bookingPaymentType));
-    result := ReplaceString(result, GetCorrectedEnumName(_bookingPaymentStatus), GetPaymentInfoFromDict(paymentInformation, _bookingPaymentStatus));
-    result := ReplaceString(result, GetCorrectedEnumName(_bookingPaymentAmount), GetPaymentInfoFromDict(paymentInformation, _bookingPaymentAmount));
-    result := ReplaceString(result, GetCorrectedEnumName(_bookingPaymentCreditCard), GetPaymentInfoFromDict(paymentInformation, _bookingPaymentCreditCard));
-    result := ReplaceString(result, GetCorrectedEnumName(_CurrentDateTime), RoomerDateTimeToString(now));
+      result := ReplaceString(result, GetCorrectedEnumName(_bookingGuestsRoomsPrices), bookingGuestsRoomsPrices);
+      result := ReplaceString(result, GetCorrectedEnumName(_bookingTotalPrice), Trim(_floattostr(totalBookingPrice, 12, 2)));
+      result := ReplaceString(result, GetCorrectedEnumName(_bookingDateTime), RoomerDateTimeToString(CreatedAt));
+      result := ReplaceString(result, GetCorrectedEnumName(_bookingPaymentType), GetPaymentInfoFromDict(paymentInformation, _bookingPaymentType));
+      result := ReplaceString(result, GetCorrectedEnumName(_bookingPaymentStatus), GetPaymentInfoFromDict(paymentInformation, _bookingPaymentStatus));
+      result := ReplaceString(result, GetCorrectedEnumName(_bookingPaymentAmount), GetPaymentInfoFromDict(paymentInformation, _bookingPaymentAmount));
+      result := ReplaceString(result, GetCorrectedEnumName(_bookingPaymentCreditCard), GetPaymentInfoFromDict(paymentInformation, _bookingPaymentCreditCard));
+      result := ReplaceString(result, GetCorrectedEnumName(_CurrentDateTime), RoomerDateTimeToString(now));
 
-    Subject := ReplaceString(Subject, GetCorrectedEnumName(_channelId), ChannelId);
-    Subject := ReplaceString(Subject, GetCorrectedEnumName(_channelName), ChannelName);
-    Subject := ReplaceString(Subject, GetCorrectedEnumName(_bookingChannelId), BookingId);
-    Subject := ReplaceString(Subject, GetCorrectedEnumName(_bookingRoomerId), inttostr(booking));
-    Subject := ReplaceString(Subject, GetCorrectedEnumName(_bookingArrival), RoomerDateToString(Arrival));
-    Subject := ReplaceString(Subject, GetCorrectedEnumName(_bookingDeparture), RoomerDateToString(Departure));
-    Subject := ReplaceString(Subject, GetCorrectedEnumName(_bookingNights), InttoStr(bookingNights));
-    Subject := ReplaceString(Subject, GetCorrectedEnumName(_bookingGuestName), ContactName);
-    Subject := ReplaceString(Subject, GetCorrectedEnumName(_profileGuestname), GuestName);
+      Subject := ReplaceString(Subject, GetCorrectedEnumName(_channelId), ChannelId);
+      Subject := ReplaceString(Subject, GetCorrectedEnumName(_channelName), ChannelName);
+      Subject := ReplaceString(Subject, GetCorrectedEnumName(_bookingChannelId), BookingId);
+      Subject := ReplaceString(Subject, GetCorrectedEnumName(_bookingRoomerId), inttostr(booking));
+      Subject := ReplaceString(Subject, GetCorrectedEnumName(_bookingArrival), RoomerDateToString(Arrival));
+      Subject := ReplaceString(Subject, GetCorrectedEnumName(_bookingDeparture), RoomerDateToString(Departure));
+      Subject := ReplaceString(Subject, GetCorrectedEnumName(_bookingNights), InttoStr(bookingNights));
+      Subject := ReplaceString(Subject, GetCorrectedEnumName(_bookingGuestName), ContactName);
+      Subject := ReplaceString(Subject, GetCorrectedEnumName(_profileGuestname), GuestName);
 
-    Subject := ReplaceString(Subject, GetCorrectedEnumName(_profileGuestname), GuestName);
-    Subject := ReplaceString(Subject, GetCorrectedEnumName(_bookingGuestAddress1), bookingGuestAddress1);
-    Subject := ReplaceString(Subject, GetCorrectedEnumName(_bookingGuestAddress2), bookingGuestAddress2);
-    Subject := ReplaceString(Subject, GetCorrectedEnumName(_bookingGuestZip), bookingGuestZip);
-    Subject := ReplaceString(Subject, GetCorrectedEnumName(_bookingGuestCity), bookingGuestCity);
-    Subject := ReplaceString(Subject, GetCorrectedEnumName(_bookingGuestCountryCode), bookingGuestCountryCode);
-    Subject := ReplaceString(Subject, GetCorrectedEnumName(_bookingGuestCountryName), bookingGuestCountryName);
+      Subject := ReplaceString(Subject, GetCorrectedEnumName(_profileGuestname), GuestName);
+      Subject := ReplaceString(Subject, GetCorrectedEnumName(_bookingGuestAddress1), bookingGuestAddress1);
+      Subject := ReplaceString(Subject, GetCorrectedEnumName(_bookingGuestAddress2), bookingGuestAddress2);
+      Subject := ReplaceString(Subject, GetCorrectedEnumName(_bookingGuestZip), bookingGuestZip);
+      Subject := ReplaceString(Subject, GetCorrectedEnumName(_bookingGuestCity), bookingGuestCity);
+      Subject := ReplaceString(Subject, GetCorrectedEnumName(_bookingGuestCountryCode), bookingGuestCountryCode);
+      Subject := ReplaceString(Subject, GetCorrectedEnumName(_bookingGuestCountryName), bookingGuestCountryName);
 
-    Subject := ReplaceString(Subject, GetCorrectedEnumName(_customerId), customerId);
-    Subject := ReplaceString(Subject, GetCorrectedEnumName(_customerName), customerName);
-    Subject := ReplaceString(Subject, GetCorrectedEnumName(_customerAddress1), customerAddress1);
-    Subject := ReplaceString(Subject, GetCorrectedEnumName(_customerAddress2), customerAddress2);
-    Subject := ReplaceString(Subject, GetCorrectedEnumName(_customerZip), customerZip);
-    Subject := ReplaceString(Subject, GetCorrectedEnumName(_customerCity), customerCity);
-    Subject := ReplaceString(Subject, GetCorrectedEnumName(_customerCountryCode), customerCountryCode);
-    Subject := ReplaceString(Subject, GetCorrectedEnumName(_customerCountryName), customerCountryName);
+      Subject := ReplaceString(Subject, GetCorrectedEnumName(_customerId), customerId);
+      Subject := ReplaceString(Subject, GetCorrectedEnumName(_customerName), customerName);
+      Subject := ReplaceString(Subject, GetCorrectedEnumName(_customerAddress1), customerAddress1);
+      Subject := ReplaceString(Subject, GetCorrectedEnumName(_customerAddress2), customerAddress2);
+      Subject := ReplaceString(Subject, GetCorrectedEnumName(_customerZip), customerZip);
+      Subject := ReplaceString(Subject, GetCorrectedEnumName(_customerCity), customerCity);
+      Subject := ReplaceString(Subject, GetCorrectedEnumName(_customerCountryCode), customerCountryCode);
+      Subject := ReplaceString(Subject, GetCorrectedEnumName(_customerCountryName), customerCountryName);
 
-    Subject := ReplaceString(Subject, GetCorrectedEnumName(_bookingNumberOfGuest), bookingNumberOfGuest);
-    Subject := ReplaceString(Subject, GetCorrectedEnumName(_bookingNumberOfRooms), bookingNumberOfRooms);
+      Subject := ReplaceString(Subject, GetCorrectedEnumName(_bookingNumberOfGuest), bookingNumberOfGuest);
+      Subject := ReplaceString(Subject, GetCorrectedEnumName(_bookingNumberOfRooms), bookingNumberOfRooms);
 
-    Subject := ReplaceString(Subject, GetCorrectedEnumName(_bookingGuestsRoomsPrices), bookingGuestsRoomsPrices);
-    Subject := ReplaceString(Subject, GetCorrectedEnumName(_bookingTotalPrice), Trim(_floattostr(totalBookingPrice, 12, 2)));
-    Subject := ReplaceString(Subject, GetCorrectedEnumName(_bookingDateTime), RoomerDateTimeToString(CreatedAt));
-    Subject := ReplaceString(Subject, GetCorrectedEnumName(_bookingPaymentType), GetPaymentInfoFromDict(paymentInformation, _bookingPaymentType));
-    Subject := ReplaceString(Subject, GetCorrectedEnumName(_bookingPaymentStatus), GetPaymentInfoFromDict(paymentInformation, _bookingPaymentStatus));
-    Subject := ReplaceString(Subject, GetCorrectedEnumName(_bookingPaymentAmount), GetPaymentInfoFromDict(paymentInformation, _bookingPaymentAmount));
-    Subject := ReplaceString(Subject, GetCorrectedEnumName(_bookingPaymentCreditCard), GetPaymentInfoFromDict(paymentInformation, _bookingPaymentCreditCard));
-    Subject := ReplaceString(Subject, GetCorrectedEnumName(_CurrentDateTime), RoomerDateTimeToString(now));
+      Subject := ReplaceString(Subject, GetCorrectedEnumName(_bookingGuestsRoomsPrices), bookingGuestsRoomsPrices);
+      Subject := ReplaceString(Subject, GetCorrectedEnumName(_bookingTotalPrice), Trim(_floattostr(totalBookingPrice, 12, 2)));
+      Subject := ReplaceString(Subject, GetCorrectedEnumName(_bookingDateTime), RoomerDateTimeToString(CreatedAt));
+      Subject := ReplaceString(Subject, GetCorrectedEnumName(_bookingPaymentType), GetPaymentInfoFromDict(paymentInformation, _bookingPaymentType));
+      Subject := ReplaceString(Subject, GetCorrectedEnumName(_bookingPaymentStatus), GetPaymentInfoFromDict(paymentInformation, _bookingPaymentStatus));
+      Subject := ReplaceString(Subject, GetCorrectedEnumName(_bookingPaymentAmount), GetPaymentInfoFromDict(paymentInformation, _bookingPaymentAmount));
+      Subject := ReplaceString(Subject, GetCorrectedEnumName(_bookingPaymentCreditCard), GetPaymentInfoFromDict(paymentInformation, _bookingPaymentCreditCard));
+      Subject := ReplaceString(Subject, GetCorrectedEnumName(_CurrentDateTime), RoomerDateTimeToString(now));
+    finally
+      paymentInformation.Free;
+    end;
   finally
     FreeAndNil(rSetRoomsDate);
   end;
@@ -411,7 +415,6 @@ var splittedInformation : TStrings;
     status : String;
 begin
   result := TDictionary<TBookingConfirmationEmailItems, String>.Create;
-
   if Trim(information)<>'' then
   begin
     if (POS(CC_PAYMENT, information) > 0) then
