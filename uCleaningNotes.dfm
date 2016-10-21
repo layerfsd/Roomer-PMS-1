@@ -371,7 +371,6 @@ inherited frmCleaningNotes: TfrmCleaningNotes
     object prLink_grData: TdxGridReportLink
       Active = True
       Component = grData
-      PageNumberFormat = pnfNumeral
       PrinterPage.DMPaper = 9
       PrinterPage.Footer = 5080
       PrinterPage.GrayShading = True
@@ -385,13 +384,12 @@ inherited frmCleaningNotes: TfrmCleaningNotes
       PrinterPage.PageSize.Y = 297180
       PrinterPage._dxMeasurementUnits_ = 0
       PrinterPage._dxLastMU_ = 2
-      ReportDocument.CreationDate = 42662.431614386570000000
+      ReportDocument.CreationDate = 42664.497753344910000000
       ReportTitle.Font.Charset = DEFAULT_CHARSET
       ReportTitle.Font.Color = clBlack
       ReportTitle.Font.Height = -19
       ReportTitle.Font.Name = 'Arial'
       ReportTitle.Font.Style = [fsBold]
-      AssignedFormatValues = [fvDate, fvTime, fvPageNumber]
       OptionsSize.AutoWidth = True
       ScaleFonts = False
       StyleRepository = cxsrRoomerStyleRepository

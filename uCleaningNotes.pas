@@ -183,9 +183,8 @@ type
     procedure tvDataonceTypeGetDisplayText(Sender: TcxCustomGridTableItem; ARecord: TcxCustomGridRecord;
       var AText: string);
   private
+    FAllowGridEdit : Boolean;
     { Private declarations }
-    financeLookupList : TKeyPairList;
-
     procedure applyFilter;
     procedure StopFilter;
     function CopyDatasetToRecCleaningNote: recCleaningNotesHolder;
@@ -197,7 +196,6 @@ type
     Lookup : Boolean;
     zAct: TActTableAction;
     zData: recCleaningNotesHolder;
-    FAllowGridEdit : Boolean;
     property AllowGridEdit: boolean read FAllowGridEdit write SetAllowGridEdit;
     procedure DoLoadData; override;
     procedure UpdateControls; override;
@@ -532,8 +530,8 @@ end;
 procedure TfrmCleaningNotes.m_CleaningNotesNewRecord(DataSet: TDataSet);
 begin
   dataset['Active']         := true;
-  dataset['serviceType']    := TCleaningNoteServiceType.ctInterval.ToDatabaseString;
-  dataset['onceType']       := TCleaningNoteOnceType.coCheck_In_Day.ToDatabaseString;
+  dataset['serviceType']    := TCleaningNoteServiceType.ctInterval.ToDB;
+  dataset['onceType']       := TCleaningNoteOnceType.coCheck_In_Day.ToDB;
   dataset['interval']       := 3;
   dataset['minimumDays']    := 3;
   dataset['message']        := '';
@@ -547,7 +545,7 @@ procedure TfrmCleaningNotes.tvDataonceTypeCustomDrawCell(Sender: TcxCustomGridTa
   var ADone: Boolean);
 begin
   with TcxGridDBTableView(Sender).DataController do
-    aDone := AViewInfo.GridRecord.Values[tvDataserviceType.Index] = TCleaningNoteServiceType.ctInterval.ToDatabaseString;
+    aDone := AViewInfo.GridRecord.Values[tvDataserviceType.Index] = TCleaningNoteServiceType.ctInterval.ToDB;
 end;
 
 procedure TfrmCleaningNotes.tvDataonceTypeGetDisplayText(Sender: TcxCustomGridTableItem; ARecord: TcxCustomGridRecord;
@@ -584,9 +582,9 @@ procedure TfrmCleaningNotes.tvDataintervalCustomDrawCell(Sender: TcxCustomGridTa
   var ADone: Boolean);
 begin
   with TcxGridDBTableView(Sender).DataController do
-    aDone := (AViewInfo.GridRecord.Values[tvDataserviceType.Index] = TCleaningNoteServiceType.ctOnce.ToDatabaseString) and
-             NOT ((AViewInfo.GridRecord.Values[tvDataonceType.Index] = TCleaningNoteOnceType.coXth_Day.ToDatabaseString) OR
-                  (AViewInfo.GridRecord.Values[tvDataonceType.Index] = TCleaningNoteOnceType.coX_Days_After_Check_Out.ToDatabaseString));
+    aDone := (AViewInfo.GridRecord.Values[tvDataserviceType.Index] = TCleaningNoteServiceType.ctOnce.ToDB) and
+             NOT ((AViewInfo.GridRecord.Values[tvDataonceType.Index] = TCleaningNoteOnceType.coXth_Day.ToDB) OR
+                  (AViewInfo.GridRecord.Values[tvDataonceType.Index] = TCleaningNoteOnceType.coX_Days_After_Check_Out.ToDB));
 end;
 
 ////////////////////////////////////////////////////////////////////////////

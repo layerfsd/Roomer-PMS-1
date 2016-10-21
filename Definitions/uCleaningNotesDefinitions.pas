@@ -57,7 +57,7 @@ type
     /// </summary>
     function ToItemIndex: integer;
 
-    function ToDatabaseString: string;
+    function ToDB: string;
 
     /// <summary>
     ///   Return the translated displaystring for a TAccountType
@@ -99,7 +99,7 @@ type
     ///   Return the translated displaystring for a TAccountType
     /// </summary>
     function AsReadableString : string;
-    function ToDatabaseString: string;
+    function ToDB: string;
 
   end;
 
@@ -142,7 +142,7 @@ begin
   end;
 end;
 
-function TCleaningNoteServiceTypeHelper.ToDatabaseString: string;
+function TCleaningNoteServiceTypeHelper.ToDB: string;
 begin
   Result := cCleaningNoteServiceTypeStrings[Self];
 end;
@@ -192,7 +192,7 @@ begin
   Result := ord(Self);
 end;
 
-function TCleaningNoteOnceTypeHelper.ToDatabaseString: string;
+function TCleaningNoteOnceTypeHelper.ToDB: string;
 begin
   Result := cCleaningNoteOnceTypeStrings[Self];
 end;

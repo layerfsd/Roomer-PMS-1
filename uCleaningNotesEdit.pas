@@ -89,9 +89,9 @@ end;
 procedure TFrmCleaningNotesEdit.EditsToRecordHolder;
 begin
   zData.active := cbxActive.Checked;
-  zData.serviceType := TCleaningNoteServiceType.FromItemIndex(__cbxServiceType.itemIndex).ToDatabaseString;
+  zData.serviceType := TCleaningNoteServiceType.FromItemIndex(__cbxServiceType.itemIndex).ToDb;
   zData.onlyWhenRoomIsDirty := cbxOnlyWhenRoomIsDirty.Checked;
-  zData.onceType := TCleaningNoteOnceType.FromItemIndex(__cbxOnceType.ItemIndex).ToDatabaseString;
+  zData.onceType := TCleaningNoteOnceType.FromItemIndex(__cbxOnceType.ItemIndex).ToDb;
   zData.interval := StrToIntDef(edtInterval.Text, 3);
   zData.minimumDays := StrToIntDef(edtMinimumDays.Text, 1);
   zData.smessage := edtMessage.Text;
