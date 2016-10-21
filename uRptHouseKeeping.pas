@@ -113,80 +113,7 @@ uses
   , uInvoice
   , uReservationProfile
   , uRptbViewer
-  , _Glob;
-
-const
-  cSQL =
-      '	select * '#10+
-      '	from '#10+
-      '	( '#10+
-      '	select '#10+
-      '	 r.room, '#10+
-      '	 r.roomtype, '#10+
-      '	 r.floor, '#10+
-      '	 l.description as location, '#10+
-      '	 coalesce(departing.NumGuestsD, stayover.NumGuestsS) as LastGuests, '#10+
-      '	 arriving.NumGuestsA as ArrivingGuests, '#10+
-      '	 departing.ExpectedCheckOutTime as expectedCOT, '#10+
-      '	 arriving.ExpectedTimeOfArrival as expectedTOA, '#10+
-      '	 arriving.hiddeninfo as Roomnotes, '#10+
-      '	 LiveNotes.Note AS LiveNote, '#10+
-      '	 rm.CleaningNotes, '#10+
-      '	 rm.MaintenanceNotes, '#10+
-      '	 case '#10+
-      '	   when (not IsNUll(departing.room) and not IsNull(arriving.room)) then CONCAT({departure}, '' + '', {arrival}) '#10+
-      '	   when (not IsNUll(departing.room)) then {departure} '#10+
-      '	   when (not IsNUll(arriving.room)) then {arrival} '#10+
-      '	   when (not IsnUll(stayover.room)) then {stayover} '#10+
-      '	 end as HousekeepingStatus, '#10+
-      '  mc.Name as Roomstatus '#10 +
-      '	from '#10+
-      '	  rooms r '#10+
-      '	  JOIN roomtypes rt on rt.roomtype=r.roomtype '#10+
-      '	  JOIN locations l on l.Location=r.location '#10+
-      '   LEFT JOIN maintenanceroomnotes rm ON rm.Room=r.Room '#10+
-      '   LEFT JOIN maintenancecodes mc on mc.code=r.Status '#10 +
-      '   LEFT JOIN (SELECT xxx.Room, xxx.CleanStatus, GROUP_CONCAT(DISTINCT cn.Message SEPARATOR ''\n'') AS Note FROM cleaningnotes cn ' +
-      '	  JOIN (SELECT Room, (SELECT Status FROM rooms WHERE Room=rr.Room LIMIT 1) AS CleanStatus, RoomReservation, Reservation, ' +
-      '                 DATE((SELECT ADate FROM roomsdate WHERE RoomReservation=rr.RoomReservation AND rr.Status=ResFlag ORDER BY ADate LIMIT 1)) AS Arrival, ' +
-      '	                DATE_ADD((SELECT ADate FROM roomsdate WHERE RoomReservation=rr.RoomReservation AND rr.Status=ResFlag ORDER BY ADate DESC LIMIT 1), INTERVAL 1 DAY) AS Departure, ' +
-      '	                DATEDIFF(DATE_ADD((SELECT ADate FROM roomsdate WHERE RoomReservation=rr.RoomReservation AND rr.Status=ResFlag ORDER BY ADate DESC LIMIT 1), INTERVAL 1 DAY), ' +
-      '                 DATE((SELECT ADate FROM roomsdate WHERE RoomReservation=rr.RoomReservation AND rr.Status=ResFlag ORDER BY ADate LIMIT 1))) AS numberOfDays, ' +
-      '	                DATEDIFF({probedate}, DATE((SELECT ADate FROM roomsdate WHERE RoomReservation=rr.RoomReservation AND rr.Status=ResFlag ORDER BY ADate LIMIT 1))) AS numberOfDaysStayed, ' +
-      '                 DATE_ADD((SELECT ADate FROM roomsdate WHERE RoomReservation=rr.RoomReservation AND rr.Status=ResFlag ORDER BY ADate DESC LIMIT 1), INTERVAL 1 DAY)={probedate} AS isDepartureDate, ' +
-      '       rr.Status=''D'' AS isDeparted ' +
-      'FROM roomreservations rr ' +
-      'WHERE rr.roomreservation IN (SELECT roomreservation FROM roomsdate WHERE (Adate={probedate} OR DATE_ADD(ADate, INTERVAL 1 DAY)={probedate}) AND resflag in (''P'',''G'',''D'')) ' +
-      ') xxx ON ' +
-      '((NOT xxx.isDepartureDate) ' +
-      'AND (NOT cn.onlyWhenRoomIsDirty OR CleanStatus IN (''C'',''R'')) ' +
-      'AND cn.serviceType=''INTERVAL'' AND (xxx.numberOfDaysStayed > 0 AND MOD(xxx.numberOfDaysStayed, cn.`interval`)=0) AND xxx.numberOfDays>=cn.minimumDays) ' +
-      'OR ((NOT xxx.isDepartureDate) AND cn.serviceType=''ONCE'' AND cn.onceType=''CHECK_IN_DAY'' AND xxx.Arrival={probedate} AND xxx.numberOfDays>=cn.minimumDays) ' +
-      'OR ((NOT xxx.isDepartureDate) AND cn.serviceType=''ONCE'' AND cn.onceType=''XTH_DAY'' AND xxx.numberOfDaysStayed=cn.`interval` AND xxx.numberOfDays>=cn.minimumDays) ' +
-      'OR (xxx.isDepartureDate AND cn.serviceType=''ONCE'' AND cn.onceType=''CHECK_OUT_DAY'' AND xxx.Departure={probedate} AND xxx.numberOfDays>=cn.minimumDays) ' +
-      'OR ((xxx.isDepartureDate AND NOT xxx.isDeparted) AND cn.serviceType=''ONCE'' AND cn.onceType=''BEFORE_CHECK_OUT'' AND xxx.Departure={probedate} AND xxx.numberOfDays>=cn.minimumDays) ' +
-      'GROUP BY xxx.Room) LiveNotes ON LiveNotes.Room=r.Room '#10 +
-      ' '#10+
-      '	  LEFT OUTER JOIN ( SELECT * '#10+
-      '			 , (select count(*) from persons p where p.roomreservation = rrd.RoomReservation)  + rrd.numChildren + rrd.numInfants as NumGuestsD '#10+
-      '	         FROM roomreservations rrd '#10+
-      '			 where rrd.status not in (''C'', ''D'') and rrd.departure = {probedate} '#10+
-      '			) departing on departing.room = r.room '#10+
-      ' '#10+
-      '		LEFT OUTER JOIN ( SELECT * '#10+
-      '			 , (select count(*) from persons p where p.roomreservation = rra.RoomReservation)  + rra.numChildren + rra.numInfants as NumGuestsA '#10+
-      '	         FROM roomreservations rra '#10+
-      '			 where rra.status not in (''C'', ''D'') and rra.arrival= {probedate} '#10+
-      '			) arriving on arriving.room = r.room '#10+
-      ' '#10+
-      '		LEFT OUTER JOIN ( SELECT * '#10+
-      '			 , (select count(*) from persons p where p.roomreservation = rrs.RoomReservation)  + rrs.numChildren + rrs.numInfants as NumGuestsS '#10+
-      '	         FROM roomreservations rrs '#10+
-      '			 where rrs.status not in (''C'', ''D'') and rrs.arrival < {probedate} and rrs.departure > {probedate} '#10+
-      '			) stayover on stayover.room=r.room '#10+
-      '	 group by room, roomtype, floor, numberguests '#10+
-      '	 order by floor, room ) x '#10+
-      '	 where not x.HousekeepingStatus is null ';
+  , _Glob, uCleaningNotesDefinitions;
 
 
 function ShowHouseKeepingReport(aDate: TDateTime):  boolean;
@@ -222,12 +149,101 @@ end;
 
 function TfrmHouseKeepingReport.ConstructSQL: string;
 begin
-  Result := ReplaceString(cSQL, '{probedate}', _db(dtDate.Date));
+
+  Result :=
+      '	select '#10+
+      '	 r.room, '#10+
+      '	 r.roomtype, '#10+
+      '	 r.floor, '#10+
+      '	 l.description as location, '#10+
+      '	 coalesce(departing.NumGuestsD, stayover.NumGuestsS) as LastGuests, '#10+
+      '	 arriving.NumGuestsA as ArrivingGuests, '#10+
+      '	 departing.ExpectedCheckOutTime as expectedCOT, '#10+
+      '	 arriving.ExpectedTimeOfArrival as expectedTOA, '#10+
+      '	 arriving.hiddeninfo as Roomnotes, '#10+
+      '	 LiveNotes.Note AS LiveNote, '#10+
+      '	 rm.CleaningNotes, '#10+
+      '	 rm.MaintenanceNotes, '#10+
+      '	 case '#10+
+      '	   when (not IsNUll(departing.room) and not IsNull(arriving.room)) then CONCAT({departure}, '' + '', {arrival}) '#10+
+      '	   when (not IsNUll(departing.room)) then {departure} '#10+
+      '	   when (not IsNUll(arriving.room)) then {arrival} '#10+
+      '	   when (not IsnUll(stayover.room)) then {stayover} '#10+
+      '	 end as HousekeepingStatus, '#10+
+      '  mc.Name as Roomstatus '#10 +
+      '	from '#10+
+      '	  rooms r '#10+
+      '	  JOIN roomtypes rt on rt.roomtype=r.roomtype '#10+
+      '	  JOIN locations l on l.Location=r.location '#10+
+      '   LEFT JOIN maintenanceroomnotes rm ON rm.Room=r.Room '#10+
+      '   LEFT JOIN maintenancecodes mc on mc.code=r.Status '#10 +
+      '   LEFT JOIN (SELECT xxx.Room, '#10+
+      '                     xxx.CleanStatus, '#10 +
+      '                     GROUP_CONCAT(DISTINCT cn.Message SEPARATOR ''\n'') AS Note '#10+
+      '             FROM cleaningnotes cn '#10 +
+      '	  JOIN (  '#10 +
+      '     SELECT -- get all roomreservations with rooms occupied today or yesterday '#10 +
+      '       rr.Room, '#10+
+      '       r.Status as CleanStatus, '#10+
+      '       rr.Arrival AS Arrival, '#10+
+      '       rr.Departure AS Departure, '#10+
+      '       DATEDIFF(rr.Departure, rr.Arrival) as numberOfDays, '#10+
+      '       DATEDIFF({probedate}, rr.Arrival) AS daysInHouse, '#10+
+      '       ({probedate} = rr.Departure) as IsDeparting, '#10+
+      '       (rr.Status=''D'') AS isDeparted '#10 +
+      '     FROM roomreservations rr '#10 +
+      '     JOIN rooms r on r.room=rr.room '#10 +
+      '     WHERE rr.roomreservation IN '#10 +
+      '         (SELECT roomreservation FROM roomsdate WHERE (Adate={probedate} OR DATE_ADD(ADate, INTERVAL 1 DAY)={probedate}) AND resflag in (''P'',''G'',''D'')) '#10 +
+      '     ) xxx ON '#10 +
+      '            (NOT cn.onlyWhenRoomIsDirty OR CleanStatus IN (''U'')) AND '#10 +
+      '          ( (   -- Interval notes, '#10 +
+			'	      		  	cn.serviceType=' + _db(ctInterval.ToDB) + ' AND   '#10 +
+			'		      	  	(NOT xxx.isDeparting) '#10 +
+			'		      	  	AND (xxx.daysInHouse > 0 AND MOD(xxx.daysInHouse, cn.`interval`)=0) '#10 +
+			'			      		AND xxx.numberOfDays>=cn.minimumDays '#10 +
+			'		         ) '#10 +
+      '                OR '#10 +
+      '                  (cn.serviceType=' + _db(ctOnce.ToDB) + ' AND cn.onceType=' + _db(coCheck_In_Day.ToDB) + ' AND xxx.Arrival={probedate} AND xxx.numberOfDays>=cn.minimumDays) '#10 +
+      '                OR '#10 +
+      '                  ((NOT xxx.isDeparting) AND cn.serviceType=' + _db(ctOnce.ToDB) + ' AND cn.onceType=' + _db(coXth_Day.ToDB) + ' AND xxx.daysInHouse=cn.`interval` AND xxx.numberOfDays>=cn.minimumDays) '#10 +
+      '                OR '#10 +
+      '                  (xxx.isDeparting AND cn.serviceType=' + _db(ctOnce.ToDB) + ' AND cn.onceType=' + _db(coCheck_Out_Day.ToDB) + ' AND xxx.Departure={probedate} AND xxx.numberOfDays>=cn.minimumDays) '#10 +
+      '                OR '#10 +
+      '                  (NOT xxx.isDeparted AND cn.serviceType=' + _db(ctOnce.ToDB) + ' AND cn.onceType=' + _db(coDay_Before_Check_Out.ToDB) + ' AND xxx.Departure=DATE_ADD({probedate}, INTERVAL 1 DAY) AND xxx.numberOfDays>=cn.minimumDays) '#10 +
+      '           ) '#10 +
+      'GROUP BY xxx.Room) LiveNotes ON LiveNotes.Room=r.Room '#10 +
+      ' '#10+
+      '	  LEFT OUTER JOIN ( SELECT * '#10+
+      '			 , (select count(*) from persons p where p.roomreservation = rrd.RoomReservation)  + rrd.numChildren + rrd.numInfants as NumGuestsD '#10+
+      '	         FROM roomreservations rrd '#10+
+      '			 where rrd.status not in (''C'', ''D'') and rrd.departure = {probedate} '#10+
+      '			) departing on departing.room = r.room '#10+
+      ' '#10+
+      '		LEFT OUTER JOIN ( SELECT * '#10+
+      '			 , (select count(*) from persons p where p.roomreservation = rra.RoomReservation)  + rra.numChildren + rra.numInfants as NumGuestsA '#10+
+      '	         FROM roomreservations rra '#10+
+      '			 where rra.status not in (''C'', ''D'') and rra.arrival= {probedate} '#10+
+      '			) arriving on arriving.room = r.room '#10+
+      ' '#10+
+      '		LEFT OUTER JOIN ( SELECT * '#10+
+      '			 , (select count(*) from persons p where p.roomreservation = rrs.RoomReservation)  + rrs.numChildren + rrs.numInfants as NumGuestsS '#10+
+      '	         FROM roomreservations rrs '#10+
+      '			 where rrs.status not in (''C'', ''D'') and rrs.arrival < {probedate} and rrs.departure > {probedate} '#10+
+      '			) stayover on stayover.room=r.room '#10+
+      '	 group by room, roomtype, floor, numberguests '#10+
+      '	 having ((not HousekeepingStatus is null ) or (not LiveNote is null)) '#10+
+      '	 {locationclause}  '#10+
+      '	 order by floor, room '#10;
+
+  Result := ReplaceString(Result, '{probedate}', _db(dtDate.Date));
   Result := ReplaceString(Result, '{departure}', _db(GetTranslatedText('shTx_Housekeepinglist_Departure')));
   Result := ReplaceString(Result, '{arrival}', _db(GetTranslatedText('shTx_Housekeepinglist_Arriving')));
   Result := ReplaceString(Result, '{stayover}', _db(GetTranslatedText('shTx_Housekeepinglist_Stayover')));
   if cbxLocations.ItemIndex >= 0 then
-    Result := Result + ' AND location = ' + _db(cbxLocations.Text);
+    Result := ReplaceString(Result, '{locationclause}', ' AND location = ' + _db(cbxLocations.Text))
+  else
+    Result := ReplaceString(Result, '{locationclause}', '');
   CopyToClipboard(Result);
 end;
 
