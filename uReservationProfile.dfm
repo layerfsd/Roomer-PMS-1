@@ -2729,6 +2729,7 @@ object frmReservationProfile: TfrmReservationProfile
           TabOrder = 4
           OnClick = btnProvideRoomClick
           SkinData.SkinSection = 'BUTTON'
+          ExplicitTop = 2
         end
         object cxButton5: TsButton
           AlignWithMargins = True
@@ -3849,8 +3850,6 @@ object frmReservationProfile: TfrmReservationProfile
       ShowHint = False
       TabOrder = 0
       SkinData.SkinSection = 'BUTTON'
-      ExplicitLeft = 966
-      ExplicitTop = 6
     end
   end
   object mRooms: TdxMemData

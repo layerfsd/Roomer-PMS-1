@@ -2059,9 +2059,9 @@ end;
 
 procedure TfrmReservationProfile.MoveGuestToNewRoom2;
 begin
-  if ProvideARoom2(zRoomReservation) <> '' then
+  if ProvideARoom2(mRoomsRoomReservation.AsInteger) <> '' then
   begin
-    Display_rGrid(zRoomReservation);
+    Display_rGrid(mRoomsRoomReservation.AsInteger);
   end;
 end;
 
@@ -2529,7 +2529,10 @@ begin
 
     SetBreakfastItemindex(sBreakfast);
     SetPaymentDetailItemindex(sPaymentdetails);
-    mRooms.Locate('RoomReservation', gotoRoomReservation, []);
+    if gotoRoomReservation <> 0 then
+      mRooms.Locate('RoomReservation', gotoRoomReservation, [])
+    else
+      mROoms.First;
   finally
     mRooms.EnableControls;
     mRooms.AfterScroll := lSavedAfterScroll;

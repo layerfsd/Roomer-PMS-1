@@ -3126,6 +3126,7 @@ object frmMain: TfrmMain
       Index = 2
     end
     object rbTabReports: TdxRibbonTab
+      Active = True
       Caption = 'Reports'
       Groups = <
         item
@@ -3150,7 +3151,6 @@ object frmMain: TfrmMain
       Index = 3
     end
     object rbTabData: TdxRibbonTab
-      Active = True
       Caption = 'Data'
       Groups = <
         item
