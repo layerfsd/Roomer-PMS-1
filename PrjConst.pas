@@ -366,7 +366,7 @@ begin
   constants.Add('shTx_CleaningNoteServiceType_Interval', 'Interval');
   constants.Add('shTx_CleaningNoteServiceType_Once', 'Once');
   constants.Add('shTx_CleaningNoteintervalType_Checkin', 'Checkin');
-  constants.Add('shTx_CleaningNoteintervalType_BeforeCheckout', 'Before Checkout');
+  constants.Add('shTx_CleaningNoteintervalType_BeforeCheckout', 'Day Before Checkout');
   constants.Add('shTx_CleaningNoteintervalType_CheckOut', 'At Checkout');
   constants.Add('shTx_CleaningNoteintervalType_XthDay', 'On Xth day of stay');
   constants.Add('shTx_CleaningNoteintervalType_XdaysAfterCheckout', 'X days after checkout');

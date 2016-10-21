@@ -44,7 +44,7 @@ type
     /// </summary>
     class function FromString(const aType: string) : TCleaningNoteServiceType; static;
     /// <summary>
-    ///   Return a TAccountType based in index.
+    ///   Return a TCleaningNoteServiceType based in index.
     /// </summary>
     class function FromItemIndex(aIndex: integer) : TCleaningNoteServiceType; static;
 
@@ -53,14 +53,17 @@ type
     /// </summary>
     class procedure AsStrings(aItemList: TStrings); static;
     /// <summary>
-    ///   Return the itemindex of TReservationState as it would have in the itemlist created by AsStrings
+    ///   Return the itemindex of TCleaningNoteServiceType as it would have in the itemlist created by AsStrings
     /// </summary>
     function ToItemIndex: integer;
 
+    /// <summary>
+    ///   Return the string as this TCleaningNoteServiceType is stored in the database
+    /// </summary>
     function ToDB: string;
 
     /// <summary>
-    ///   Return the translated displaystring for a TAccountType
+    ///   Return the translated displaystring for a TCleaningNoteServiceType
     /// </summary>
     function AsReadableString : string;
 
@@ -83,7 +86,7 @@ type
     /// </summary>
     class function FromString(const aType: string) : TCleaningNoteOnceType; static;
     /// <summary>
-    ///   Return a TAccountType based in index.
+    ///   Return a TCleaningNoteOnceType based in index.
     /// </summary>
     class function FromItemIndex(aIndex: integer) : TCleaningNoteOnceType; static;
 
@@ -92,14 +95,17 @@ type
     /// </summary>
     class procedure AsStrings(aItemList: TStrings); static;
     /// <summary>
-    ///   Return the itemindex of TReservationState as it would have in the itemlist created by AsStrings
+    ///   Return the itemindex of TCleaningNoteOnceType as it would have in the itemlist created by AsStrings
     /// </summary>
     function ToItemIndex: integer;
     /// <summary>
-    ///   Return the translated displaystring for a TAccountType
+    ///   Return the string as this TCleaningNoteOnceType is stored in the database
+    /// </summary>
+    function ToDB: string;
+    /// <summary>
+    ///   Return the translated displaystring for a TCleaningNoteOnceType
     /// </summary>
     function AsReadableString : string;
-    function ToDB: string;
 
   end;
 
