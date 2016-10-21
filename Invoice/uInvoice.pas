@@ -4055,8 +4055,8 @@ begin
                   sText := '';
                 sText := tmp + sText;
 
-                AddRoom(Room, 0, Arrival, Departure, UnpaidDays, sText, (FRoomReservation = 0), RoomReservation, 0, false, '', '',
-                        NumberGuests, ChildrenCount, isPackage, RoomReservation, zRoomRSet.FieldByName('invBreakFast').AsBoolean );
+                AddRoom(Room, 0, Arrival, Departure, UnpaidDays, sText, (lRoomReservation = 0), lRoomReservation, 0, false, '', '',
+                        NumberGuests, ChildrenCount, isPackage, lRoomReservation, zRoomRSet.FieldByName('invBreakFast').AsBoolean );
               end;
             end;
 
