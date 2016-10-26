@@ -964,7 +964,7 @@ begin
   Result := false;
   dataset := tableslist.Dataset[table];
   if assigned(Dataset) then
-    result := dataset.Locate(field, value, []);
+    result := LocateSpecificRecord(dataset, field, value);
 end;
 
 function TGlobalSettings.KeyAlreadyExistsInAnotherRecord(table, field, value : String; ID : Integer) : Boolean;
@@ -985,22 +985,41 @@ begin
 end;
 
 function TGlobalSettings.LocateSpecificRecord(dataSet : TRoomerDataSet; field : String;  value : Variant) : Boolean;
+var
+  lFld: TField;
 begin
-  result := dataset.Locate(field, value, []);
+  //result := dataset.Locate(field, value, [loCaseInsensitive]); -- strange things happening ..
+  Result := false;
+  dataset.First;
+  lFld := dataset.FieldByName(field);
+  if assigned(lFld) then
+    while not dataset.Eof do
+    begin
+      if lFld.Value = Value then
+      begin
+        Result := true;
+        Break;
+      end;
+      dataset.Next;
+    end;
 end;
 
 function TGlobalSettings.LocateSpecificRecord(table, field : String;  value : Integer) : Boolean;
 var dataSet : TRoomerDataSet;
 begin
+  Result := false;
   dataset := tableslist.Dataset[table];
-  result := dataset.Locate(field, value, []);
+  if assigned(dataset) then
+    result := LocateSpecificRecord(dataset, field, value);
 end;
 
 function TGlobalSettings.LocateSpecificRecord(table, field : String;  value : Boolean) : Boolean;
 var dataSet : TRoomerDataSet;
 begin
+  Result := false;
   dataset := tableslist.Dataset[table];
-  result := dataset.Locate(field, value, []);
+  if assigned(dataset) then
+    result := LocateSpecificRecord(dataset, field, value);
 end;
 
 function TGlobalSettings.LocateSpecificRecordAndGetValue(table, field, value, fieldToGet: String; var resultingValue: Integer): Boolean;

@@ -314,27 +314,7 @@ begin
     FpriceCodeId        :=  glb.CustomersSet.FieldByName('pcID').AsInteger;
     FCustomerRatePlanId :=  glb.CustomersSet.FieldByName('RatePlanId').AsInteger;
 
-
-//    glb.TblpricecodesSet.First;
-//    while not glb.TblpricecodesSet.eof do
-//    begin
-//      debugmessage(glb.TblpricecodesSet.fieldbyname('ID').AsString+' / '+glb.TblpricecodesSet.fieldbyname('pcCode').AsString);
-//      glb.TblpricecodesSet.Next;
-//    end;
-//    glb.TblpricecodesSet.First;
-
-//    LocateSpecificRecordAndGetValue(table, field, value: String; fieldToGet : String; var resultingValue : String): Boolean; overload;
-//
-//    if glb.LocateSpecificRecordAndGetValue('Tblpricecodes','ID',FpriceCodeId,'pcCode',FPcCode) then
-//    begin
-//      debugmessage(FPcCode);
-//    end;
-
-
-    if glb.LocateSpecificRecord(glb.TblpricecodesSet, 'ID', FpriceCodeId) then
-    begin
-      FpcCode :=  glb.TblpricecodesSet.FieldByName('pcCode').AsString;
-    end;
+    FpcCode := PriceCode_Code(FPriceCodeId);
 
     if glb.CustomertypesSet.Locate('CustomerType',FMarketSegmentCode,[]) then
     begin
@@ -346,49 +326,7 @@ begin
     begin
        FCountryName       :=   glb.Countries.FieldByName('CountryName').AsString;
     end;
-
-
   end;
-
-
-
-
-  //DOOPT
-//  s := format(select_objHomeCustomer_Customer_Get,[_db(FCustomer)]);
-//  rSet := CreateNewDataSet;
-//  try
-//    hData.rSet_bySQL(rSet,s);
-//    rSet.First;
-//    if not rSet.Eof then
-//    begin
-//      FCustomer          :=  rSet.FieldByName('Customer').AsString;
-//      FCustomerID        :=  rSet.FieldByName('ID').AsInteger;
-//      FCustomerName      :=  rSet.FieldByName('CustomerName').AsString;
-//      FDisplayName       :=  rSet.FieldByName('DisplayName').AsString;
-//      FPID               :=  rSet.FieldByName('PID').AsString;
-//      FAddress1          :=  rSet.FieldByName('Address1').AsString;
-//      FAddress2          :=  rSet.FieldByName('Address2').AsString;
-//      FAddress3          :=  rSet.FieldByName('Address3').AsString;
-//      FAddress4          :=  rSet.FieldByName('Address4').AsString;
-//      FTel1              :=  rSet.FieldByName('Tel1').AsString;
-//      FTel2              :=  rSet.FieldByName('Tel2').AsString;
-//      FFax               :=  rSet.FieldByName('Fax').AsString;
-//      FCountryName       :=  rSet.FieldByName('CountryName').AsString;
-//      FCountry           :=  rSet.FieldByName('Country').AsString;
-//      FMarketSegmentName :=  rSet.FieldByName('MarketSegmentName').AsString;
-//      FMarketSegmentCode :=  rSet.FieldByName('MarketSegmentCode').AsString;
-//      FDiscountPerc      :=  LocalFloatValue(rSet.FieldByName('DiscountPerc').AsString);
-//      FEmailAddress      :=  rSet.FieldByName('EmailAddress').AsString;
-//      FHomePage          :=  rSet.FieldByName('Homepage').AsString;
-//      FContactPerson     :=  rSet.FieldByName('ContactPerson').AsString;
-//      FisTravelAgency    :=  rSet['isTravelAgency'];
-//      FCurrency          :=  rSet.FieldByName('Currency').AsString;
-//      FpriceCodeId       :=  rSet.FieldByName('pcID').AsInteger;
-//      FpcCode            :=  rSet.FieldByName('pcCode').AsString;
-//    end;
-//  finally
-//    freeandnil(rSet);
-//  end;
 end;
 
 

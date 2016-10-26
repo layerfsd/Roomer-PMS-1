@@ -731,6 +731,7 @@ type
     procedure mSelectRoomsFilterRecord(DataSet: TDataSet; var Accept: Boolean);
     procedure edPcCodeChange(Sender: TObject);
     procedure edPackageChange(Sender: TObject);
+    procedure edMarketSegmentCodeChange(Sender: TObject);
   private
     { Private declarations }
     zCustomerChanged: boolean;
@@ -1837,10 +1838,8 @@ begin
   memCustomerAlert.Text := d.GetCustomerPreferences(Customer);
 
   customerValidate;
-  CountryValidate;
-  MarketSegmentValidate;
-  CurrencyValidate(edCurrency, clabCurrency, labCurrencyName);
-  PriceCodeValidate(edPcCode, clabPcCode, labPcCodeName);
+//  MarketSegmentValidate;
+//  CurrencyValidate(edCurrency, clabCurrency, labCurrencyName);
 
   if glb.LocateSpecificRecordAndGetValue('channels', 'id', FNewReservation.HomeCustomer.CustomerRatePlanId,
     'channelManagerId', ChannelCode) then
@@ -4457,14 +4456,11 @@ function TfrmMakeReservationQuick.PriceCodeValidate(ed: TsEdit; lab, labName: Ts
 var
   sValue: string;
   priceID: integer;
-  Currency: string;
 begin
   sValue := Trim(ed.Text);
   Result := PriceCodeExist(sValue);
 
   priceID := PriceCode_ID(sValue);
-  Currency := Trim(edCurrency.Text);
-
   if not Result then
   begin
     ed.SetFocus;
@@ -4651,6 +4647,8 @@ begin
     if (s <> '') and (s <> Trim(edCustomer.Text)) then
     begin
       edCustomer.Text := s;
+      edPcCode.Text := theData.pcCode;
+      edCurrency.Text := theData.Currency;
     end;
   end;
 end;
@@ -4671,18 +4669,18 @@ end;
 /// ///////////////////////////
 // edMarketSegmentCode
 
+procedure TfrmMakeReservationQuick.edMarketSegmentCodeChange(Sender: TObject);
+begin
+  MarketSegmentValidate;
+end;
+
 procedure TfrmMakeReservationQuick.edMarketSegmentCodeDblClick(Sender: TObject);
 var
   theData: recCustomerTypeHolder;
 begin
   theData.customerType := edMarketSegmentCode.Text;
   if openCustomerTypes(actLookup, theData) then
-  begin
     edMarketSegmentCode.Text := theData.customerType;
-    if MarketSegmentValidate then
-    begin
-    end;
-  end;
 end;
 
 procedure TfrmMakeReservationQuick.edMarketSegmentCodeKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -4756,10 +4754,7 @@ end;
 
 procedure TfrmMakeReservationQuick.edCountryChange(Sender: TObject);
 begin
-  if glb.LocateCountry(edCountry.Text) then
-    labCountryName.Caption := glb.Countries['CountryName'] // GET_CountryName(sValue);
-  else
-    labCountryName.Caption := GetTranslatedText('shNotF_star');
+  CountryValidate;
 end;
 
 procedure TfrmMakeReservationQuick.edCountryDblClick(Sender: TObject);
@@ -4776,9 +4771,7 @@ end;
 
 procedure TfrmMakeReservationQuick.edCountryExit(Sender: TObject);
 begin
-  if CountryValidate then
-  begin
-  end;
+  CountryValidate;
 end;
 
 procedure TfrmMakeReservationQuick.edCountryKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
