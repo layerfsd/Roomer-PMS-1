@@ -122,6 +122,7 @@ object frmControlData: TfrmControlData
           000000000000000000000001154D0061006E006400610074006F007200790020
           0069006E0066006F0072006D006100740069006F006E00}
         SkinData.SkinSection = 'EDIT'
+        ExplicitTop = -2
       end
     end
     object __LMDBackPanel3: TsPanel
@@ -137,7 +138,7 @@ object frmControlData: TfrmControlData
         Top = 1
         Width = 1101
         Height = 639
-        ActivePage = AdvTabSheet5
+        ActivePage = tsInvEmail
         Align = alClient
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
@@ -795,7 +796,7 @@ object frmControlData: TfrmControlData
             object cbxBackupMachine: TsCheckBox
               Left = 239
               Top = 72
-              Width = 132
+              Width = 140
               Height = 20
               Caption = 'Offline Backup Client'
               TabOrder = 2
@@ -816,7 +817,7 @@ object frmControlData: TfrmControlData
             object cbxLocationPerRoomType: TsCheckBox
               Left = 68
               Top = 24
-              Width = 249
+              Width = 257
               Height = 20
               Caption = 'Room Location determined by Room type'
               TabOrder = 0
@@ -827,7 +828,7 @@ object frmControlData: TfrmControlData
             object cbxDefaultSendCCEmailToHotel: TsCheckBox
               Left = 68
               Top = 47
-              Width = 362
+              Width = 370
               Height = 20
               Caption = 'Always send a blind copy of emails to the hotel'#39's email address'
               TabOrder = 1
@@ -1260,7 +1261,7 @@ object frmControlData: TfrmControlData
                   Height = 22
                   Color = clWhite
                   Font.Charset = DEFAULT_CHARSET
-                  Font.Color = 4473924
+                  Font.Color = clBlack
                   Font.Height = -12
                   Font.Name = 'Tahoma'
                   Font.Style = []
@@ -1275,7 +1276,7 @@ object frmControlData: TfrmControlData
                   Height = 22
                   Color = clWhite
                   Font.Charset = DEFAULT_CHARSET
-                  Font.Color = 4473924
+                  Font.Color = clBlack
                   Font.Height = -12
                   Font.Name = 'Tahoma'
                   Font.Style = []
@@ -1495,7 +1496,7 @@ object frmControlData: TfrmControlData
                   Height = 22
                   Color = clWhite
                   Font.Charset = DEFAULT_CHARSET
-                  Font.Color = 4473924
+                  Font.Color = clBlack
                   Font.Height = -12
                   Font.Name = 'Tahoma'
                   Font.Style = []
@@ -1510,7 +1511,7 @@ object frmControlData: TfrmControlData
                   Height = 22
                   Color = clWhite
                   Font.Charset = DEFAULT_CHARSET
-                  Font.Color = 4473924
+                  Font.Color = clBlack
                   Font.Height = -12
                   Font.Name = 'Tahoma'
                   Font.Style = []
@@ -1525,7 +1526,7 @@ object frmControlData: TfrmControlData
                   Height = 22
                   Color = clWhite
                   Font.Charset = DEFAULT_CHARSET
-                  Font.Color = 4473924
+                  Font.Color = clBlack
                   Font.Height = -12
                   Font.Name = 'Tahoma'
                   Font.Style = []
@@ -1540,7 +1541,7 @@ object frmControlData: TfrmControlData
                   Height = 22
                   Color = clWhite
                   Font.Charset = DEFAULT_CHARSET
-                  Font.Color = 4473924
+                  Font.Color = clBlack
                   Font.Height = -12
                   Font.Name = 'Tahoma'
                   Font.Style = []
@@ -1555,7 +1556,7 @@ object frmControlData: TfrmControlData
                   Height = 22
                   Color = clWhite
                   Font.Charset = DEFAULT_CHARSET
-                  Font.Color = 4473924
+                  Font.Color = clBlack
                   Font.Height = -12
                   Font.Name = 'Tahoma'
                   Font.Style = []
@@ -1570,7 +1571,7 @@ object frmControlData: TfrmControlData
                   Height = 22
                   Color = clWhite
                   Font.Charset = DEFAULT_CHARSET
-                  Font.Color = 4473924
+                  Font.Color = clBlack
                   Font.Height = -12
                   Font.Name = 'Tahoma'
                   Font.Style = []
@@ -1585,7 +1586,7 @@ object frmControlData: TfrmControlData
                   Height = 22
                   Color = clWhite
                   Font.Charset = DEFAULT_CHARSET
-                  Font.Color = 4473924
+                  Font.Color = clBlack
                   Font.Height = -12
                   Font.Name = 'Tahoma'
                   Font.Style = []
@@ -1600,7 +1601,7 @@ object frmControlData: TfrmControlData
                   Height = 22
                   Color = clWhite
                   Font.Charset = DEFAULT_CHARSET
-                  Font.Color = 4473924
+                  Font.Color = clBlack
                   Font.Height = -12
                   Font.Name = 'Tahoma'
                   Font.Style = []
@@ -1615,7 +1616,7 @@ object frmControlData: TfrmControlData
                   Height = 22
                   Color = clWhite
                   Font.Charset = DEFAULT_CHARSET
-                  Font.Color = 4473924
+                  Font.Color = clBlack
                   Font.Height = -12
                   Font.Name = 'Tahoma'
                   Font.Style = []
@@ -1630,7 +1631,7 @@ object frmControlData: TfrmControlData
                   Height = 22
                   Color = clWhite
                   Font.Charset = DEFAULT_CHARSET
-                  Font.Color = 4473924
+                  Font.Color = clBlack
                   Font.Height = -12
                   Font.Name = 'Tahoma'
                   Font.Style = []
@@ -1645,7 +1646,7 @@ object frmControlData: TfrmControlData
                   Height = 22
                   Color = clWhite
                   Font.Charset = DEFAULT_CHARSET
-                  Font.Color = 4473924
+                  Font.Color = clBlack
                   Font.Height = -12
                   Font.Name = 'Tahoma'
                   Font.Style = []
@@ -1660,7 +1661,7 @@ object frmControlData: TfrmControlData
                   Height = 22
                   Color = clWhite
                   Font.Charset = DEFAULT_CHARSET
-                  Font.Color = 4473924
+                  Font.Color = clBlack
                   Font.Height = -12
                   Font.Name = 'Tahoma'
                   Font.Style = []
@@ -1675,7 +1676,7 @@ object frmControlData: TfrmControlData
                   Height = 22
                   Color = clWhite
                   Font.Charset = DEFAULT_CHARSET
-                  Font.Color = 4473924
+                  Font.Color = clBlack
                   Font.Height = -12
                   Font.Name = 'Tahoma'
                   Font.Style = []
@@ -1790,7 +1791,7 @@ object frmControlData: TfrmControlData
                   Height = 22
                   Color = clWhite
                   Font.Charset = DEFAULT_CHARSET
-                  Font.Color = 4473924
+                  Font.Color = clBlack
                   Font.Height = -12
                   Font.Name = 'Tahoma'
                   Font.Style = []
@@ -1805,7 +1806,7 @@ object frmControlData: TfrmControlData
                   Height = 22
                   Color = clWhite
                   Font.Charset = DEFAULT_CHARSET
-                  Font.Color = 4473924
+                  Font.Color = clBlack
                   Font.Height = -12
                   Font.Name = 'Tahoma'
                   Font.Style = []
@@ -1820,7 +1821,7 @@ object frmControlData: TfrmControlData
                   Height = 22
                   Color = clWhite
                   Font.Charset = DEFAULT_CHARSET
-                  Font.Color = 4473924
+                  Font.Color = clBlack
                   Font.Height = -12
                   Font.Name = 'Tahoma'
                   Font.Style = []
@@ -1835,7 +1836,7 @@ object frmControlData: TfrmControlData
                   Height = 22
                   Color = clWhite
                   Font.Charset = DEFAULT_CHARSET
-                  Font.Color = 4473924
+                  Font.Color = clBlack
                   Font.Height = -12
                   Font.Name = 'Tahoma'
                   Font.Style = []
@@ -1850,7 +1851,7 @@ object frmControlData: TfrmControlData
                   Height = 22
                   Color = clWhite
                   Font.Charset = DEFAULT_CHARSET
-                  Font.Color = 4473924
+                  Font.Color = clBlack
                   Font.Height = -12
                   Font.Name = 'Tahoma'
                   Font.Style = []
@@ -1865,7 +1866,7 @@ object frmControlData: TfrmControlData
                   Height = 22
                   Color = clWhite
                   Font.Charset = DEFAULT_CHARSET
-                  Font.Color = 4473924
+                  Font.Color = clBlack
                   Font.Height = -12
                   Font.Name = 'Tahoma'
                   Font.Style = []
@@ -2001,7 +2002,7 @@ object frmControlData: TfrmControlData
                   Height = 22
                   Color = clWhite
                   Font.Charset = DEFAULT_CHARSET
-                  Font.Color = 4473924
+                  Font.Color = clBlack
                   Font.Height = -12
                   Font.Name = 'Tahoma'
                   Font.Style = []
@@ -2016,7 +2017,7 @@ object frmControlData: TfrmControlData
                   Height = 22
                   Color = clWhite
                   Font.Charset = DEFAULT_CHARSET
-                  Font.Color = 4473924
+                  Font.Color = clBlack
                   Font.Height = -12
                   Font.Name = 'Tahoma'
                   Font.Style = []
@@ -2031,7 +2032,7 @@ object frmControlData: TfrmControlData
                   Height = 22
                   Color = clWhite
                   Font.Charset = DEFAULT_CHARSET
-                  Font.Color = 4473924
+                  Font.Color = clBlack
                   Font.Height = -12
                   Font.Name = 'Tahoma'
                   Font.Style = []
@@ -2046,7 +2047,7 @@ object frmControlData: TfrmControlData
                   Height = 22
                   Color = clWhite
                   Font.Charset = DEFAULT_CHARSET
-                  Font.Color = 4473924
+                  Font.Color = clBlack
                   Font.Height = -12
                   Font.Name = 'Tahoma'
                   Font.Style = []
@@ -2061,7 +2062,7 @@ object frmControlData: TfrmControlData
                   Height = 22
                   Color = clWhite
                   Font.Charset = DEFAULT_CHARSET
-                  Font.Color = 4473924
+                  Font.Color = clBlack
                   Font.Height = -12
                   Font.Name = 'Tahoma'
                   Font.Style = []
@@ -2076,7 +2077,7 @@ object frmControlData: TfrmControlData
                   Height = 22
                   Color = clWhite
                   Font.Charset = DEFAULT_CHARSET
-                  Font.Color = 4473924
+                  Font.Color = clBlack
                   Font.Height = -12
                   Font.Name = 'Tahoma'
                   Font.Style = []
@@ -2091,7 +2092,7 @@ object frmControlData: TfrmControlData
                   Height = 22
                   Color = clWhite
                   Font.Charset = DEFAULT_CHARSET
-                  Font.Color = 4473924
+                  Font.Color = clBlack
                   Font.Height = -12
                   Font.Name = 'Tahoma'
                   Font.Style = []
@@ -2161,7 +2162,7 @@ object frmControlData: TfrmControlData
                   Height = 22
                   Color = clWhite
                   Font.Charset = DEFAULT_CHARSET
-                  Font.Color = 4473924
+                  Font.Color = clBlack
                   Font.Height = -12
                   Font.Name = 'Tahoma'
                   Font.Style = []
@@ -2176,7 +2177,7 @@ object frmControlData: TfrmControlData
                   Height = 22
                   Color = clWhite
                   Font.Charset = DEFAULT_CHARSET
-                  Font.Color = 4473924
+                  Font.Color = clBlack
                   Font.Height = -12
                   Font.Name = 'Tahoma'
                   Font.Style = []
@@ -2191,7 +2192,7 @@ object frmControlData: TfrmControlData
                   Height = 22
                   Color = clWhite
                   Font.Charset = DEFAULT_CHARSET
-                  Font.Color = 4473924
+                  Font.Color = clBlack
                   Font.Height = -12
                   Font.Name = 'Tahoma'
                   Font.Style = []
@@ -3493,7 +3494,7 @@ object frmControlData: TfrmControlData
               Color = clWhite
               Ctl3D = True
               Font.Charset = DEFAULT_CHARSET
-              Font.Color = 4473924
+              Font.Color = clBlack
               Font.Height = -12
               Font.Name = 'Tahoma'
               Font.Style = []
@@ -3518,7 +3519,7 @@ object frmControlData: TfrmControlData
               AutoSize = False
               Color = clWhite
               Font.Charset = DEFAULT_CHARSET
-              Font.Color = 4473924
+              Font.Color = clBlack
               Font.Height = -12
               Font.Name = 'Tahoma'
               Font.Style = []
@@ -3542,7 +3543,7 @@ object frmControlData: TfrmControlData
               AutoSize = False
               Color = clWhite
               Font.Charset = DEFAULT_CHARSET
-              Font.Color = 4473924
+              Font.Color = clBlack
               Font.Height = -12
               Font.Name = 'Tahoma'
               Font.Style = []
@@ -3566,7 +3567,7 @@ object frmControlData: TfrmControlData
               AutoSize = False
               Color = clWhite
               Font.Charset = DEFAULT_CHARSET
-              Font.Color = 4473924
+              Font.Color = clBlack
               Font.Height = -12
               Font.Name = 'Tahoma'
               Font.Style = []
@@ -3590,7 +3591,7 @@ object frmControlData: TfrmControlData
               AutoSize = False
               Color = clWhite
               Font.Charset = DEFAULT_CHARSET
-              Font.Color = 4473924
+              Font.Color = clBlack
               Font.Height = -12
               Font.Name = 'Tahoma'
               Font.Style = []
@@ -3614,7 +3615,7 @@ object frmControlData: TfrmControlData
               AutoSize = False
               Color = clWhite
               Font.Charset = DEFAULT_CHARSET
-              Font.Color = 4473924
+              Font.Color = clBlack
               Font.Height = -12
               Font.Name = 'Tahoma'
               Font.Style = []
@@ -3674,7 +3675,7 @@ object frmControlData: TfrmControlData
               Left = 249
               Top = 20
               Width = 20
-              Height = 20
+              Height = 18
               TabOrder = 0
               SkinData.SkinSection = 'CHECKBOX'
               ImgChecked = 0
@@ -3684,7 +3685,7 @@ object frmControlData: TfrmControlData
               Left = 249
               Top = 40
               Width = 20
-              Height = 20
+              Height = 18
               TabOrder = 1
               SkinData.SkinSection = 'CHECKBOX'
               ImgChecked = 0
@@ -3791,7 +3792,7 @@ object frmControlData: TfrmControlData
               AutoSize = False
               Color = clWhite
               Font.Charset = DEFAULT_CHARSET
-              Font.Color = 4473924
+              Font.Color = clBlack
               Font.Height = -12
               Font.Name = 'Tahoma'
               Font.Style = []
@@ -3809,7 +3810,7 @@ object frmControlData: TfrmControlData
               Left = 447
               Top = 42
               Width = 20
-              Height = 20
+              Height = 18
               TabOrder = 1
               SkinData.SkinSection = 'CHECKBOX'
               ImgChecked = 0
@@ -3819,7 +3820,7 @@ object frmControlData: TfrmControlData
               Left = 447
               Top = 62
               Width = 20
-              Height = 20
+              Height = 18
               TabOrder = 2
               SkinData.SkinSection = 'CHECKBOX'
               ImgChecked = 0
@@ -3832,7 +3833,7 @@ object frmControlData: TfrmControlData
               Height = 22
               Color = clWhite
               Font.Charset = DEFAULT_CHARSET
-              Font.Color = 4473924
+              Font.Color = clBlack
               Font.Height = -12
               Font.Name = 'Tahoma'
               Font.Style = []
@@ -3844,7 +3845,7 @@ object frmControlData: TfrmControlData
               Left = 447
               Top = 82
               Width = 20
-              Height = 20
+              Height = 18
               TabOrder = 4
               SkinData.SkinSection = 'CHECKBOX'
               ImgChecked = 0
@@ -3854,7 +3855,7 @@ object frmControlData: TfrmControlData
               Left = 447
               Top = 102
               Width = 20
-              Height = 20
+              Height = 18
               TabOrder = 5
               SkinData.SkinSection = 'CHECKBOX'
               ImgChecked = 0
@@ -3906,7 +3907,7 @@ object frmControlData: TfrmControlData
               AutoSize = False
               Color = clWhite
               Font.Charset = DEFAULT_CHARSET
-              Font.Color = 4473924
+              Font.Color = clBlack
               Font.Height = -12
               Font.Name = 'Tahoma'
               Font.Style = []
@@ -3984,7 +3985,7 @@ object frmControlData: TfrmControlData
               Left = 139
               Top = 41
               Width = 20
-              Height = 20
+              Height = 18
               TabOrder = 0
               SkinData.SkinSection = 'CHECKBOX'
               ImgChecked = 0
@@ -4121,7 +4122,7 @@ object frmControlData: TfrmControlData
               AutoSize = False
               Color = clWhite
               Font.Charset = DEFAULT_CHARSET
-              Font.Color = 4473924
+              Font.Color = clBlack
               Font.Height = -12
               Font.Name = 'Tahoma'
               Font.Style = []
@@ -4140,7 +4141,7 @@ object frmControlData: TfrmControlData
               AutoSize = False
               Color = clWhite
               Font.Charset = DEFAULT_CHARSET
-              Font.Color = 4473924
+              Font.Color = clBlack
               Font.Height = -12
               Font.Name = 'Tahoma'
               Font.Style = []
@@ -4225,7 +4226,7 @@ object frmControlData: TfrmControlData
               Left = 256
               Top = 37
               Width = 20
-              Height = 20
+              Height = 18
               TabOrder = 0
               SkinData.SkinSection = 'CHECKBOX'
               ImgChecked = 0
@@ -4235,7 +4236,7 @@ object frmControlData: TfrmControlData
               Left = 256
               Top = 15
               Width = 20
-              Height = 20
+              Height = 18
               TabOrder = 1
               SkinData.SkinSection = 'CHECKBOX'
               ImgChecked = 0
@@ -4245,7 +4246,7 @@ object frmControlData: TfrmControlData
               Left = 256
               Top = 58
               Width = 20
-              Height = 20
+              Height = 18
               Margins.Left = 2
               Margins.Top = 2
               Margins.Right = 2
@@ -4259,7 +4260,7 @@ object frmControlData: TfrmControlData
               Left = 256
               Top = 78
               Width = 20
-              Height = 20
+              Height = 18
               Margins.Left = 2
               Margins.Top = 2
               Margins.Right = 2
@@ -4299,7 +4300,7 @@ object frmControlData: TfrmControlData
               Left = 192
               Top = 21
               Width = 20
-              Height = 20
+              Height = 18
               TabOrder = 0
               SkinData.SkinSection = 'CHECKBOX'
               ImgChecked = 0
@@ -4661,7 +4662,7 @@ object frmControlData: TfrmControlData
               Left = 432
               Top = 23
               Width = 20
-              Height = 20
+              Height = 18
               TabOrder = 0
               SkinData.SkinSection = 'CHECKBOX'
               ImgChecked = 0
@@ -4671,7 +4672,7 @@ object frmControlData: TfrmControlData
               Left = 432
               Top = 45
               Width = 20
-              Height = 20
+              Height = 18
               TabOrder = 1
               SkinData.SkinSection = 'CHECKBOX'
               ImgChecked = 0
@@ -4721,7 +4722,7 @@ object frmControlData: TfrmControlData
               Left = 432
               Top = 19
               Width = 20
-              Height = 20
+              Height = 18
               TabOrder = 0
               SkinData.SkinSection = 'CHECKBOX'
               ImgChecked = 0
@@ -4731,7 +4732,7 @@ object frmControlData: TfrmControlData
               Left = 432
               Top = 41
               Width = 20
-              Height = 20
+              Height = 18
               TabOrder = 1
               SkinData.SkinSection = 'CHECKBOX'
               ImgChecked = 0
@@ -4796,7 +4797,7 @@ object frmControlData: TfrmControlData
               Left = 432
               Top = 23
               Width = 20
-              Height = 20
+              Height = 18
               TabOrder = 0
               SkinData.SkinSection = 'CHECKBOX'
               ImgChecked = 0
@@ -4806,7 +4807,7 @@ object frmControlData: TfrmControlData
               Left = 432
               Top = 45
               Width = 20
-              Height = 20
+              Height = 18
               TabOrder = 1
               SkinData.SkinSection = 'CHECKBOX'
               ImgChecked = 0
@@ -4816,7 +4817,7 @@ object frmControlData: TfrmControlData
               Left = 432
               Top = 67
               Width = 20
-              Height = 20
+              Height = 18
               TabOrder = 2
               SkinData.SkinSection = 'CHECKBOX'
               ImgChecked = 0
@@ -5060,7 +5061,7 @@ object frmControlData: TfrmControlData
               Left = 124
               Top = 108
               Width = 20
-              Height = 20
+              Height = 18
               TabOrder = 4
               SkinData.SkinSection = 'CHECKBOX'
               ImgChecked = 0
@@ -5092,7 +5093,7 @@ object frmControlData: TfrmControlData
             Left = 112
             Top = 285
             Width = 20
-            Height = 20
+            Height = 18
             TabOrder = 0
             Visible = False
             SkinData.SkinSection = 'CHECKBOX'
@@ -5400,7 +5401,7 @@ object frmControlData: TfrmControlData
                 Height = 22
                 Color = clWhite
                 Font.Charset = DEFAULT_CHARSET
-                Font.Color = 4473924
+                Font.Color = clBlack
                 Font.Height = -12
                 Font.Name = 'Tahoma'
                 Font.Style = []
@@ -5415,7 +5416,7 @@ object frmControlData: TfrmControlData
                 Height = 22
                 Color = clWhite
                 Font.Charset = DEFAULT_CHARSET
-                Font.Color = 4473924
+                Font.Color = clBlack
                 Font.Height = -12
                 Font.Name = 'Tahoma'
                 Font.Style = []
@@ -5626,6 +5627,7 @@ object frmControlData: TfrmControlData
           Caption = 'Reservations'
           SkinData.CustomColor = False
           SkinData.CustomFont = False
+          ExplicitTop = 26
           object LMDGroupBox25: TsGroupBox
             Left = 12
             Top = 12
@@ -5679,7 +5681,7 @@ object frmControlData: TfrmControlData
               Height = 21
               Color = clWhite
               Font.Charset = DEFAULT_CHARSET
-              Font.Color = 4473924
+              Font.Color = clBlack
               Font.Height = -11
               Font.Name = 'Tahoma'
               Font.Style = []
@@ -5704,7 +5706,7 @@ object frmControlData: TfrmControlData
             object chkExcluteWaitingList: TsCheckBox
               Left = 14
               Top = 21
-              Width = 75
+              Width = 83
               Height = 20
               Caption = 'Waitinglist'
               TabOrder = 0
@@ -5715,7 +5717,7 @@ object frmControlData: TfrmControlData
             object chkExcluteAllotment: TsCheckBox
               Left = 14
               Top = 41
-              Width = 73
+              Width = 81
               Height = 20
               Caption = 'Allotment'
               TabOrder = 1
@@ -5726,7 +5728,7 @@ object frmControlData: TfrmControlData
             object chkExcluteOrder: TsCheckBox
               Left = 14
               Top = 61
-              Width = 51
+              Width = 59
               Height = 20
               Caption = 'Order'
               TabOrder = 2
@@ -5737,7 +5739,7 @@ object frmControlData: TfrmControlData
             object chkExcluteNoShow: TsCheckBox
               Left = 276
               Top = 41
-              Width = 68
+              Width = 76
               Height = 20
               Caption = 'No show'
               TabOrder = 3
@@ -5748,7 +5750,7 @@ object frmControlData: TfrmControlData
             object chkExcluteDeparted: TsCheckBox
               Left = 141
               Top = 21
-              Width = 71
+              Width = 79
               Height = 20
               Caption = 'Departed'
               TabOrder = 4
@@ -5759,7 +5761,7 @@ object frmControlData: TfrmControlData
             object chkExcluteBlocked: TsCheckBox
               Left = 276
               Top = 21
-              Width = 62
+              Width = 70
               Height = 20
               Caption = 'Blocked'
               TabOrder = 5
@@ -5770,10 +5772,31 @@ object frmControlData: TfrmControlData
             object chkExcluteGuest: TsCheckBox
               Left = 141
               Top = 41
-              Width = 52
+              Width = 60
               Height = 20
               Caption = 'Guest'
               TabOrder = 6
+              SkinData.SkinSection = 'CHECKBOX'
+              ImgChecked = 0
+              ImgUnchecked = 0
+            end
+          end
+          object gbxReservationProfileFunctionality: TsGroupBox
+            Left = 12
+            Top = 182
+            Width = 453
+            Height = 91
+            Caption = 'ReservationProfile functionality'
+            TabOrder = 2
+            SkinData.SkinSection = 'GROUPBOX'
+            Checked = False
+            object cbxChangeNationality: TsCheckBox
+              Left = 14
+              Top = 21
+              Width = 197
+              Height = 20
+              Caption = 'Change nationality of all guests'
+              TabOrder = 0
               SkinData.SkinSection = 'CHECKBOX'
               ImgChecked = 0
               ImgUnchecked = 0
@@ -6198,7 +6221,7 @@ object frmControlData: TfrmControlData
               Left = 539
               Top = 18
               Width = 20
-              Height = 20
+              Height = 18
               TabOrder = 0
               SkinData.SkinSection = 'CHECKBOX'
               ImgChecked = 0
@@ -6208,7 +6231,7 @@ object frmControlData: TfrmControlData
               Left = 539
               Top = 40
               Width = 20
-              Height = 20
+              Height = 18
               TabOrder = 1
               SkinData.SkinSection = 'CHECKBOX'
               ImgChecked = 0
@@ -6290,7 +6313,7 @@ object frmControlData: TfrmControlData
               Left = 219
               Top = 34
               Width = 20
-              Height = 20
+              Height = 18
               TabOrder = 0
               SkinData.SkinSection = 'CHECKBOX'
               ImgChecked = 0
@@ -6300,7 +6323,7 @@ object frmControlData: TfrmControlData
               Left = 219
               Top = 56
               Width = 20
-              Height = 20
+              Height = 18
               TabOrder = 1
               SkinData.SkinSection = 'CHECKBOX'
               ImgChecked = 0
@@ -6310,7 +6333,7 @@ object frmControlData: TfrmControlData
               Left = 219
               Top = 79
               Width = 20
-              Height = 20
+              Height = 18
               TabOrder = 2
               SkinData.SkinSection = 'CHECKBOX'
               ImgChecked = 0
@@ -6448,7 +6471,7 @@ object frmControlData: TfrmControlData
               Left = 219
               Top = 34
               Width = 20
-              Height = 20
+              Height = 18
               TabOrder = 0
               SkinData.SkinSection = 'CHECKBOX'
               ImgChecked = 0
@@ -6676,7 +6699,7 @@ object frmControlData: TfrmControlData
               Left = 338
               Top = 8
               Width = 20
-              Height = 20
+              Height = 18
               TabOrder = 1
               SkinData.SkinSection = 'CHECKBOX'
               ImgChecked = 0
@@ -6686,7 +6709,7 @@ object frmControlData: TfrmControlData
               Left = 122
               Top = 8
               Width = 20
-              Height = 20
+              Height = 18
               TabOrder = 2
               SkinData.SkinSection = 'CHECKBOX'
               ImgChecked = 0
@@ -7550,7 +7573,7 @@ object frmControlData: TfrmControlData
             object ChkinPosMonitorUse: TsCheckBox
               Left = 16
               Top = 24
-              Width = 97
+              Width = 105
               Height = 20
               Caption = 'Monitor active'
               Font.Charset = DEFAULT_CHARSET
@@ -7623,7 +7646,7 @@ object frmControlData: TfrmControlData
             object chkConfirmAuto: TsCheckBox
               Left = 17
               Top = 25
-              Width = 54
+              Width = 62
               Height = 20
               Caption = 'Active'
               Font.Charset = DEFAULT_CHARSET
@@ -7717,7 +7740,7 @@ object frmControlData: TfrmControlData
               object chkBold: TsCheckBox
                 Left = 119
                 Top = 111
-                Width = 43
+                Width = 51
                 Height = 20
                 Caption = 'Bold'
                 Font.Charset = DEFAULT_CHARSET
@@ -7734,7 +7757,7 @@ object frmControlData: TfrmControlData
               object chkItalic: TsCheckBox
                 Left = 119
                 Top = 129
-                Width = 45
+                Width = 53
                 Height = 20
                 Caption = 'Italic'
                 Font.Charset = DEFAULT_CHARSET
@@ -7751,7 +7774,7 @@ object frmControlData: TfrmControlData
               object chkUnderline: TsCheckBox
                 Left = 237
                 Top = 111
-                Width = 71
+                Width = 79
                 Height = 20
                 Caption = 'Underline'
                 Font.Charset = DEFAULT_CHARSET
@@ -7768,7 +7791,7 @@ object frmControlData: TfrmControlData
               object chkStrikeOut: TsCheckBox
                 Left = 237
                 Top = 129
-                Width = 70
+                Width = 78
                 Height = 20
                 Caption = 'Strikeout'
                 Font.Charset = DEFAULT_CHARSET
@@ -9026,6 +9049,7 @@ object frmControlData: TfrmControlData
     BevelOuter = bvNone
     TabOrder = 2
     SkinData.SkinSection = 'PANEL'
+    ExplicitTop = 673
     DesignSize = (
       1261
       33)

@@ -31,6 +31,8 @@ type
     procedure SetMandatoryCheckinFields(const Value: TMandatoryCheckInFieldSet);
     function GetBetaFunctionsAvailable: boolean;
     procedure SetBetaFunctionsAvailable(const Value: boolean);
+    function GetEditAllGuestsNationality: boolean;
+    procedure SetEditAllGuestsNationality(const Value: boolean);
 
   public
     constructor Create(aPMSDataset: TRoomerDataset);
@@ -43,6 +45,10 @@ type
     ///   If true then functions marked as Beta are available in the PMS
     /// </summary>
     property BetaFunctionsAvailable: boolean read GetBetaFunctionsAvailable write SetBetaFunctionsAvailable;
+    /// <summary>
+    ///   If true then the reservation profile window contains function to change nationality of all guests
+    /// </summary>
+    property EditAllGuestsNationality: boolean read GetEditAllGuestsNationality write SetEditAllGuestsNationality;
   end;
 
 implementation
@@ -55,7 +61,8 @@ uses
 const
   cBetaFunctionsGroup = 'BETA_FUNCTIONS';
   cBetaFunctionsAvailableName = 'BETA_FUNCTIONS_AVAILABLE';
-
+  cAllGuestsNationalityGroup = 'RESERVATIONPROFILE_FUNCTIONS';
+  cAllGuestsNationality = 'EDIT_ALLGUESTS_NATIONALITY';
 
 procedure TPmsSettings.PutSettingsValue(KeyGroup, Key, Value : String; CreateIfNotExists : Boolean = False);
 begin
@@ -142,6 +149,11 @@ begin
   SetSettingsAsBoolean(cBetaFunctionsGroup, cBetaFunctionsAvailableName, Value, True);
 end;
 
+procedure TPMSSettings.SetEditAllGuestsNationality(const Value: boolean);
+begin
+  SetSettingsAsBoolean(cAllGuestsNationalityGroup, cAllGuestsNationality, Value, True);
+end;
+
 procedure TPmsSettings.SetMandatoryCheckinFields(const Value: TMandatoryCheckInFieldSet);
 var
   lMF: TMandatoryCheckinField;
@@ -153,6 +165,11 @@ end;
 function TPmsSettings.GetBetaFunctionsAvailable: boolean;
 begin
   Result := GetSettingsAsBoolean(cBetaFunctionsGroup , cBetaFunctionsAvailableName, );
+end;
+
+function TPMSSettings.GetEditAllGuestsNationality: boolean;
+begin
+  Result := GetSettingsAsBoolean(cAllGuestsNationalityGroup, cAllGuestsNationality, );
 end;
 
 function TPmsSettings.GetMandatoryCheckinFields: TMandatoryCheckInFieldSet;
