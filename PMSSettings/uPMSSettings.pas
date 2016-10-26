@@ -75,6 +75,7 @@ begin
     FPMSDataset.Insert;
     try
       FPMSDataset['KeyGroup'] := KeyGroup;
+      FPMSDataset['Key'] := Key;
       FPMSDataset['value'] := Value;
       FPMSDataset.Post;
     except

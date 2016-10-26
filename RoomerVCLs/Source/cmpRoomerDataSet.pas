@@ -1726,11 +1726,16 @@ procedure TRoomerDataSet.Post;
   end;
 
   procedure PerformUpdate(aTableName: String; aSql: String);
+  var
+    res: string;
+    lID: integer;
   begin
     if aSql <> '' then
     begin
-      aSql := format('UPDATE %s SET %s WHERE id=%d', [aTableName, aSql, FieldByName('id').AsInteger]);
-      self.activeRoomerDataSet.SystemFreeExecute(aSql);
+      aSql := format('UPDATE `%s` SET %s WHERE id=%d', [aTableName, aSql, FieldByName('id').AsInteger]);
+      res := self.activeRoomerDataSet.SystemFreeExecute(aSql);
+      if not TryStrToInt(res, lID) then
+        raise Exception.CreateFmt('Error updating %s, [%s]', [aTableName, res]);
       GlueToRecordSet;
     end;
   end;
@@ -1758,9 +1763,9 @@ procedure TRoomerDataSet.Post;
           if fieldValue <> '' then
           begin
             if lSql = '' then
-              lSql := format('%s=%s', [fieldName, fieldValue])
+              lSql := format('`%s`=%s', [fieldName, fieldValue])
             else
-              lSql := lSql + format(',%s=%s', [fieldName, fieldValue]);
+              lSql := lSql + format(',`%s`=%s', [fieldName, fieldValue]);
           end;
         end;
       end;
@@ -1769,11 +1774,18 @@ procedure TRoomerDataSet.Post;
   end;
 
   procedure PerformInsert(aTableName: String; aFields, aSql: String);
+  var
+    res: string;
+    newID: integer;
   begin
     if aSql <> '' then
     begin
-      aSql := format('INSERT INTO %s (%s) VALUES(%s)', [LowerCase(aTableName), aFields, aSql]);
-      self.activeRoomerDataSet.SystemFreeExecute(aSql);
+      aSql := format('INSERT INTO `%s` (%s) VALUES (%s)', [LowerCase(aTableName), aFields, aSql]);
+      res := self.activeRoomerDataSet.SystemFreeExecute(aSql);
+      if not TryStrToInt(res, newID) then
+        raise Exception.CreateFmt('Error inserting into %s, [%s]', [aTableName, res]);
+
+      FieldByName('ID').AsInteger := newID;
       GlueToRecordSet;
     end;
   end;
@@ -1799,9 +1811,9 @@ procedure TRoomerDataSet.Post;
         if fieldValue <> '' then
         begin
           if sFields = '' then
-            sFields := format('%s', [fieldName])
+            sFields := format('`%s`', [fieldName])
           else
-            sFields := sFields + format(',%s', [fieldName]);
+            sFields := sFields + format(',`%s`', [fieldName]);
 
           if lSql = '' then
             lSql := format('%s', [fieldValue])
