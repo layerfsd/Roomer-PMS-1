@@ -352,11 +352,6 @@ type
     Label2: TsLabel;
     Label3: TsLabel;
     gbxResProperties: TsGroupBox;
-    gbxStatus: TsGroupBox;
-    Label25: TsLabel;
-    Label24: TsLabel;
-    cbxBreakfast: TsComboBox;
-    cbxPaymentdetails: TsComboBox;
     cxSplitter1: TsSplitter;
     Panel1: TsPanel;
     sButton2: TsButton;
@@ -583,6 +578,16 @@ type
     R3: TMenuItem;
     R4: TMenuItem;
     N2: TMenuItem;
+    gbxStatus: TsGroupBox;
+    label25: TsLabel;
+    label24: TsLabel;
+    cbxBreakfast: TsComboBox;
+    cbxPaymentDetails: TsComboBox;
+    gbxInfo: TsGroupBox;
+    lblReservationNumber: TsLabel;
+    edtReservationNumber: TsEdit;
+    gbxAllGuestsNationality: TsGroupBox;
+    btnChangeNationality: TsButton;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -713,6 +718,7 @@ type
     procedure tvRoomsStatusTextPropertiesDrawItem(AControl: TcxCustomComboBox; ACanvas: TcxCanvas; AIndex: Integer;
       const ARect: TRect; AState: TOwnerDrawState);
     procedure R4Click(Sender: TObject);
+    procedure btnChangeNationalityClick(Sender: TObject);
   private
     { Private declarations }
     vStartName: string;
@@ -759,7 +765,7 @@ type
     procedure SetProfileAlertVisibility;
     procedure UpdateMarket;
     procedure SetMarketItemIndex(const aMarket: string);
-    procedure ConstructFormCaption;
+    procedure UpdateInfoLabels;
     procedure UpdateGuestDetails(gotoRoomReservation: integer);
     procedure UpdateStateActions;
     procedure ConstructOtherResStateMenu;
@@ -767,6 +773,7 @@ type
     procedure SelectMainGuestProfile;
     procedure ShowMainGuestProfile;
     procedure mnuOtherResStateChangeClick(Sender: TObject);
+    procedure ChangeCountryAllGuests(const aNewCountry: string; const aOldCountryName, aNewCountryName: string);
 
     property OutOfOrderBlocking: Boolean read FOutOfOrderBlocking write SetOutOfOrderBlocking;
   public
@@ -932,18 +939,11 @@ begin
 end;
 *)
 
-procedure TfrmReservationProfile.ConstructFormCaption;
+procedure TfrmReservationProfile.UpdateInfoLabels;
 var
   lBuilder: TStringBuilder;
-//  lRoomInvoice: TInvoice;
-//  lGroupInvoice: TInvoice;
-//  lCurrencyHandler: TCurrencyHandler;
-//  lBalance: double;
 begin
 
-//  lRoomInvoice := nil;
-//  lGroupInvoice := nil;
-//  lCurrencyHandler := nil;
   lBuilder := TStringBuilder.Create;
   try
 
@@ -957,17 +957,12 @@ begin
 
       lBuilder.AppendFormat('    -    %s: %s on %s', [GetTranslatedText('shTx_FrmReservationprofile_CreatedBy'), FCreatedBy, FCreatedOn]);
 
-//      lCurrencyHandler := TCurrencyHandler.Create( g.qNativeCurrency);
-//      lBuilder.AppendFormat('    -    %s: %s', [GetTranslatedText('shTx_FrmReservationprofile_Balance'),
-//                                                lCurrencyHandler.FormattedValue(DetermineTotalBalance)]);
-
     end;
     Caption := lBuilder.ToString;
+
+    edtReservationNumber.Text := Format('%d / %d', [zReservation, zRoomReservation]);
   finally
     lBuilder.Free;
-//    lRoominvoice.Free;
-//    lGroupInvoice.Free;
-//    lCurrencyHandler.Free;
   end;
 end;
 
@@ -998,6 +993,8 @@ begin
   end;
 
   vStartName := frmReservationProfile.edtName.text;
+
+  gbxAllGuestsNationality.Visible := glb.PMSSettings.EditAllGuestsNationality;
 end;
 
 procedure TfrmReservationProfile.FormCreate(Sender: TObject);
@@ -1152,7 +1149,7 @@ begin
     zInitDateFrom := dtArrival.Date;
     zInitDateTo := dtDeparture.Date;
 
-    ConstructFormCaption;
+    UpdateInfoLabels;
   finally
     FreeAndNil(rSet);
     mRooms.EnableControls;
@@ -1357,6 +1354,29 @@ end;
 //
 // ************************************************************************************
 
+procedure TfrmReservationProfile.btnChangeNationalityClick(Sender: TObject);
+var
+  lData: recCountryHolder;
+  lOldCountryName: string;
+begin
+//
+  lData.Country := edtContactCountry.Text;
+  lOldCountryName := lblContactCountry.Caption;
+  if Countries(actLookup, lData) then
+    ChangeCountryAllGuests(lData.Country, lOldCountryName, lData.CountryName);
+end;
+
+procedure TfrmReservationProfile.ChangeCountryAllGuests(const aNewCountry: string; const aOldCountryName, aNewCountryName: string);
+var
+  s: string;
+begin
+  s := format(GetTranslatedText('shTx_ReservationProfile_ChangeNationalityConfirmation'), [aOldCountryName, aNewCountryName]);
+  if (MessageDlg(s, mtConfirmation, [mbYes, mbNo], 0) = mrYes) then
+    if not d.ChangeCountry(aNewCountry, zReservation, 0, 0, 2) then
+      showmessage(GetTranslatedText('shTx_ReservationProfile_NationalityChangeFailed'));
+end;
+
+
 procedure TfrmReservationProfile.btnClipboardToHinndenMemoClick(Sender: TObject);
 var
   s: string;
@@ -1397,36 +1417,11 @@ end;
 
 procedure TfrmReservationProfile.edtContactCountryClick(Sender: TObject);
 var
-  oldCountry: string;
-  oldCountryName: string;
-
-  newCountry: string;
-
-  s: string;
+  lOldCountryName: string;
 begin
-  // --
-  oldCountry := edtContactCountry.text;
-  oldCountryName := lblContactCountry.caption;
-  // **TESTED**//  lev3 ok
+  loldCOuntryName := lblContactCountry.Caption;
   if getCountry(edtContactCountry, lblContactCountry) then
-  begin
-    s := format(GetTranslatedText('shTx_ReservationProfile_ChangeNationalityConfirmation'),
-      [oldCountryName, lblContactCountry.caption]);
-
-    if MessageDlg(s, mtConfirmation, [mbYes, mbNo], 0) = mrYes then
-    begin
-      newCountry := edtContactCountry.text;;
-      if not d.ChangeCountry(newCountry, zReservation, 0, 0, 2) then
-      begin
-        showmessage(GetTranslatedText('shTx_ReservationProfile_NationalityChangeFailed'));
-      end;
-    end
-    else
-    begin
-      edtContactCountry.text := oldCountry;
-      countryValidate(edtContactCountry, lblContactCountry);
-    end;
-  end;
+    ChangeCountryAllGuests(edtContactCountry.Text, lOldCountryName, lblContactCountry.Caption);
 end;
 
 procedure TfrmReservationProfile.edtGuestCountryChange(Sender: TObject);
@@ -1549,7 +1544,7 @@ begin
     // frmMain.refreshGrid;
   end;
 
-  ConstructFormCaption;
+  UpdateInfoLabels;
 end;
 
 procedure TfrmReservationProfile.SetBreakfastItemindex(sStatus: string);
@@ -2158,7 +2153,7 @@ end;
 
 procedure TfrmReservationProfile.mRoomsAfterPost(DataSet: TDataSet);
 begin
-  ConstructFormCaption;
+  UpdateInfoLabels;
 end;
 
 procedure TfrmReservationProfile.mRoomsAfterScroll(DataSet: TDataSet);
@@ -2183,7 +2178,7 @@ begin
   begin
     UpdateGuestDetails(zRoomReservation);
     UpdateStateActions;
-    ConstructFormCaption;
+    UpdateInfoLabels;
   end;
 
 end;
