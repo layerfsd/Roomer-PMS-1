@@ -1639,11 +1639,7 @@ begin
         end; // for 0 to roomcount
 
 
-        if ExecutionPlan.Execute(ptExec, False, True) then
-        begin
-          if Transactional then
-            ExecutionPlan.CommitTransaction
-        end else
+        if not ExecutionPlan.Execute(ptExec, False, True) then
           raise Exception.Create(ExecutionPlan.ExecException);
 
 
@@ -1714,13 +1710,17 @@ begin
             end;
           end;
         end;
+
+        if Transactional then
+          ExecutionPlan.CommitTransaction;
+
         result := true
       except
         on e: exception do
         begin
           if Transactional then
             ExecutionPlan.RollbackTransaction;
-          showMessage('proc CreateReservations_Roomlist //: '+dateToStr(Arrival)+'//'+MainGuestName+'//'+e.message);
+          showMessage('Error creating reservation for ' + MainGuestName + ' on ' + dateToStr(Arrival)+ '#10' + e.message);
           isOk := True;
           result := false;
         end;
