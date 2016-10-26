@@ -964,8 +964,8 @@ begin
         '     invoicelines.ItemID AS Item ' +
         '   , SUM(invoicelines.Number) AS ItemCount ' +
         '   , SUM(invoicelines.Total + invoicelines.revenueCorrection) AS Total ' +
-        '   , SUM(invoicelines.TotalWOVat) AS TotalWoVat ' +
-        '   , SUM(invoicelines.Vat) AS TotalVat ' +
+        '   , SUM(invoicelines.Total  + invoicelines.revenueCorrection - (invoicelines.Vat + invoicelines.revenueCorrectionVAT)) AS TotalWoVat ' +
+        '   , SUM(invoicelines.Vat + invoicelines.revenueCorrectionVAT) AS TotalVat ' +
         '   , items.Description ' +
         '   , items.AccountKey ' +
         '   , itemtypes.Itemtype ' +
