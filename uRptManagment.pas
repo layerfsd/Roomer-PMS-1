@@ -326,9 +326,9 @@ begin
   s := s + 'LEFT OUTER JOIN '#10 ;
   s := s + ' ( '#10 ;
   s := s + '	 SELECT baseData1.*, '#10 ;
-  s := s + '			CAST(soldRooms/totalRooms*100 AS DECIMAL) AS occ, '#10 ;
-  s := s + '			CAST(revenue/soldRooms AS DECIMAL) AS adr, '#10 ;
-  s := s + '			CAST(revenue/totalRooms AS DECIMAL) AS revPar '#10 ;
+  s := s + '			soldRooms/totalRooms*100 AS occ, '#10 ;
+  s := s + '			revenue/soldRooms AS adr, '#10 ;
+  s := s + '			revenue/totalRooms as RevPar '#10 ;
   s := s + '	 FROM ( '#10 ;
   s := s + '		 SELECT DATE(pdd.date) AS ADate, '#10 ;
   s := s + '				COUNT(rd.id) AS soldRooms, '#10 ;
