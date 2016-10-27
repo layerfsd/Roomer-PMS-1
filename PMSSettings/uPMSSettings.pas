@@ -52,7 +52,7 @@ type
     /// </summary>
     property EditAllGuestsNationality: boolean read GetEditAllGuestsNationality write SetEditAllGuestsNationality;
     /// <summary>
-    ///   If true then the reservation profile window contains function to change nationality of all guests
+    ///   If true then the room will appear as paid in the main-window of Roomer when the invoice balance for the Room-rent is zero
     /// </summary>
     property ShowInvoiceAsPaidWhenStatusIsZero: boolean read GetShowInvoiceAsPaidWhenStatusIsZero write SetShowInvoiceAsPaidWhenStatusIsZero;
   end;
