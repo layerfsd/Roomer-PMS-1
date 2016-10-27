@@ -2269,82 +2269,89 @@ begin
   // Apply changes and return
   Currency := zCurrentCurrency;
 
-  mRoomRes.first;
-  while not mRoomRes.eof do
-  begin
-    // update values
-    // reservation   := mRoomRes.FieldByName('Reservation').Asinteger;
-    RoomReservation := mRoomRes.FieldByName('roomreservation').asinteger;
-    AvragePrice := mRoomRes.FieldByName('avragePrice').asfloat;
-    RateCount := mRoomRes.FieldByName('rateCount').asinteger;
-    Guests := mRoomRes.FieldByName('guests').asinteger;
-    ChildrenCount := mRoomRes.FieldByName('childrenCount').asinteger;
-    infantCount := mRoomRes.FieldByName('infantCount').asinteger;
-    PriceCode := mRoomRes.FieldByName('priceCode').asString;
-    AvrageDiscount := mRoomRes.FieldByName('avrageDiscount').asfloat;
-    isPercentage := mRoomRes.FieldByName('isPercentage').asBoolean;
-
-    s := '';
-    s := s + 'UPDATE `roomreservations` '#10;
-    s := s + 'SET '#10;
-    s := s + ' `Currency`    = ' + _db(Currency) + ' '#10;
-    s := s + ',`PriceType`   = ' + _db(PriceCode) + ' '#10;
-    s := s + ',`numGuests`   = ' + _db(Guests) + ' '#10;
-    s := s + ',`numChildren` = ' + _db(ChildrenCount) + ' '#10;
-    s := s + ',`numInfants`  = ' + _db(infantCount) + ' '#10;
-    s := s + ',`AvrageRate`  = ' + _db(AvragePrice) + ' '#10;
-    s := s + ',`RateCount`   = ' + _db(RateCount) + ' '#10;
-    s := s + ',`Discount`    = ' + _db(AvrageDiscount) + ' '#10;
-    s := s + ',`Percentage`  = ' + _db(isPercentage) + ' '#10;
-    s := s + 'WHERE `roomreservation` = %d ';
-    s := format(s, [RoomReservation]);
-    if cmd_bySQL(s) then
+  mRoomRes.DisableControls;
+  mRoomRates.DisableControls;
+  try
+    mRoomRes.first;
+    while not mRoomRes.eof do
     begin
-{$IFDEF DEBUG}
-      frmdayNotes.memLog.Lines.add(s);
-      frmdayNotes.memLog.Lines.add('----');
-{$ENDIF}
+      // update values
+      // reservation   := mRoomRes.FieldByName('Reservation').Asinteger;
+      RoomReservation := mRoomRes.FieldByName('roomreservation').asinteger;
+      AvragePrice := mRoomRes.FieldByName('avragePrice').asfloat;
+      RateCount := mRoomRes.FieldByName('rateCount').asinteger;
+      Guests := mRoomRes.FieldByName('guests').asinteger;
+      ChildrenCount := mRoomRes.FieldByName('childrenCount').asinteger;
+      infantCount := mRoomRes.FieldByName('infantCount').asinteger;
+      PriceCode := mRoomRes.FieldByName('priceCode').asString;
+      AvrageDiscount := mRoomRes.FieldByName('avrageDiscount').asfloat;
+      isPercentage := mRoomRes.FieldByName('isPercentage').asBoolean;
+
+      s := '';
+      s := s + 'UPDATE `roomreservations` '#10;
+      s := s + 'SET '#10;
+      s := s + ' `Currency`    = ' + _db(Currency) + ' '#10;
+      s := s + ',`PriceType`   = ' + _db(PriceCode) + ' '#10;
+      s := s + ',`numGuests`   = ' + _db(Guests) + ' '#10;
+      s := s + ',`numChildren` = ' + _db(ChildrenCount) + ' '#10;
+      s := s + ',`numInfants`  = ' + _db(infantCount) + ' '#10;
+      s := s + ',`AvrageRate`  = ' + _db(AvragePrice) + ' '#10;
+      s := s + ',`RateCount`   = ' + _db(RateCount) + ' '#10;
+      s := s + ',`Discount`    = ' + _db(AvrageDiscount) + ' '#10;
+      s := s + ',`Percentage`  = ' + _db(isPercentage) + ' '#10;
+      s := s + 'WHERE `roomreservation` = %d ';
+      s := format(s, [RoomReservation]);
+      if cmd_bySQL(s) then
+      begin
+  {$IFDEF DEBUG}
+        frmdayNotes.memLog.Lines.add(s);
+        frmdayNotes.memLog.Lines.add('----');
+  {$ENDIF}
+      end;
+      mRoomRes.Next;
     end;
-    mRoomRes.Next;
-  end;
 
-  mRoomRates.first;
-  while not mRoomRates.eof do
-  begin
-    RoomReservation := mRoomRates.FieldByName('roomreservation').asinteger;
-    PriceCode := mRoomRates.FieldByName('PriceCode').asString;
-    RoomRate := mRoomRates.FieldByName('Rate').asfloat;
-    Discount := mRoomRates.FieldByName('Discount').asfloat;
-    isPercentage := mRoomRates.FieldByName('isPercentage').asBoolean;
-    ShowDiscount := mRoomRates.FieldByName('showDiscount').asBoolean;
-    RateDate := mRoomRates.FieldByName('RateDate').asdateTime;
-
-    sDate := _DateToDbDate(RateDate, True);
-
-    s := '';
-    s := s + 'UPDATE `roomsdate` '#10;
-    s := s + 'SET '#10;
-    s := s + '`PriceCode`     =' + _db(PriceCode) + ' '#10;
-    s := s + ',`RoomRate`     =' + _db(RoomRate) + ' '#10;
-    s := s + ',`Currency`     =' + _db(Currency) + ' '#10;
-    s := s + ',`Discount`     =' + _db(Discount) + ' '#10;
-    s := s + ',`isPercentage` =' + _db(isPercentage) + ' '#10;
-    s := s + ',`showDiscount` =' + _db(ShowDiscount) + ' '#10;
-    s := s + 'WHERE '#10;
-    s := s + ' (aDate = %s) '#10;
-    s := s + 'AND (roomreservation = %d) '#10;
-    s := s + '   AND (ResFlag <> ' + _db(STATUS_DELETED) + ' ) ';
-    // **zxhj B�tti vi�
-
-    s := format(s, [sDate, RoomReservation]);
-    if cmd_bySQL(s) then
+    mRoomRates.first;
+    while not mRoomRates.eof do
     begin
-{$IFDEF DEBUG}
-      frmdayNotes.memLog.Lines.add(s);
-      frmdayNotes.memLog.Lines.add('----');
-{$ENDIF}
+      RoomReservation := mRoomRates.FieldByName('roomreservation').asinteger;
+      PriceCode := mRoomRates.FieldByName('PriceCode').asString;
+      RoomRate := mRoomRates.FieldByName('Rate').asfloat;
+      Discount := mRoomRates.FieldByName('Discount').asfloat;
+      isPercentage := mRoomRates.FieldByName('isPercentage').asBoolean;
+      ShowDiscount := mRoomRates.FieldByName('showDiscount').asBoolean;
+      RateDate := mRoomRates.FieldByName('RateDate').asdateTime;
+
+      sDate := _DateToDbDate(RateDate, True);
+
+      s := '';
+      s := s + 'UPDATE `roomsdate` '#10;
+      s := s + 'SET '#10;
+      s := s + '`PriceCode`     =' + _db(PriceCode) + ' '#10;
+      s := s + ',`RoomRate`     =' + _db(RoomRate) + ' '#10;
+      s := s + ',`Currency`     =' + _db(Currency) + ' '#10;
+      s := s + ',`Discount`     =' + _db(Discount) + ' '#10;
+      s := s + ',`isPercentage` =' + _db(isPercentage) + ' '#10;
+      s := s + ',`showDiscount` =' + _db(ShowDiscount) + ' '#10;
+      s := s + 'WHERE '#10;
+      s := s + ' (aDate = %s) '#10;
+      s := s + 'AND (roomreservation = %d) '#10;
+      s := s + '   AND (ResFlag <> ' + _db(STATUS_DELETED) + ' ) ';
+      // **zxhj B�tti vi�
+
+      s := format(s, [sDate, RoomReservation]);
+      if cmd_bySQL(s) then
+      begin
+  {$IFDEF DEBUG}
+        frmdayNotes.memLog.Lines.add(s);
+        frmdayNotes.memLog.Lines.add('----');
+  {$ENDIF}
+      end;
+      mRoomRates.Next;
     end;
-    mRoomRates.Next;
+  finally
+    mRoomRates.EnableControls;
+    mRoomRes.EnableControls;
   end;
 end;
 

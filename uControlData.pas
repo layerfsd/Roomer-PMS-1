@@ -706,6 +706,8 @@ type
     btnMFSelectAll: TsButton;
     gbxReservationProfileFunctionality: TsGroupBox;
     cbxChangeNationality: TsCheckBox;
+    lblShowRoomAsPaidWhenZero: TsLabel;
+    cbxShowRoomAsPaidWhenZero: TsCheckBox;
     procedure FormCreate(Sender : TObject);
     procedure FormClose(Sender : TObject; var Action : TCloseAction);
     procedure FormShow(Sender : TObject);
@@ -1585,6 +1587,7 @@ begin
   edWinterStartsday.Value := WinterStartsDay;
 
   cbxChangeNationality.Checked := glb.PMSSettings.EditAllGuestsNationality;
+  cbxShowRoomAsPaidWhenZero.Checked := glb.PMSSettings.ShowInvoiceAsPaidWhenStatusIsZero;
 end;
 
 procedure TfrmControlData.SaveTable;
@@ -2209,6 +2212,7 @@ begin
     end;
 
     glb.PMSSettings.EditAllGuestsNationality := cbxChangeNationality.Checked;
+    glb.PMSSettings.ShowInvoiceAsPaidWhenStatusIsZero := cbxShowRoomAsPaidWhenZero.Checked;
 
     g.ProcessAppIni(1);
   except

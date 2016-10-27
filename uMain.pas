@@ -1164,6 +1164,8 @@ type
 
     AppIsClosing : Boolean;
 
+    ShowInvoiceAsPaidWhenStatusIsZero : Boolean;
+
     procedure OnRefreshMessagesRequest(var Msg: TMessage); message WM_REFRESH_MESSAGES;
     procedure Open_RR_EdForm(_grid: TAdvStringGrid);
     procedure Open_RES_edForm(_grid: TAdvStringGrid);
@@ -3260,6 +3262,8 @@ begin
     panelHide.Hide;
 
     TSplashFormManager.UpdateProgress('Refreshing main grid...');
+    if Assigned(glb) ANd Assigned(glb.PMSSettings) then
+      ShowInvoiceAsPaidWhenStatusIsZero := glb.PMSSettings.ShowInvoiceAsPaidWhenStatusIsZero;
     RefreshOneDayGrid;
 
     cbxNameOrder.ItemIndex := g.qNameOrder;
@@ -4264,6 +4268,10 @@ begin
     exit;
   end;
   StartTimeMeasure;
+
+  if Assigned(glb) ANd Assigned(glb.PMSSettings) then
+    ShowInvoiceAsPaidWhenStatusIsZero := glb.PMSSettings.ShowInvoiceAsPaidWhenStatusIsZero;
+
   BusyRefreshingTodaysGrid := true;
   Screen.Cursor := crHourGlass;
   try
@@ -5939,16 +5947,16 @@ function TfrmMain.getInvoiceMadeColor(PaymentInvoice: integer; NoRent: boolean;
   offColor, onColor, onGroupColor: integer; GroupAccount: boolean): integer;
 begin
   result := offColor;
-  case PaymentInvoice of
-    - 1:
-      result := onColor;
-    -2:
-      result := onColor;
+  if (NoRent AND ShowInvoiceAsPaidWhenStatusIsZero) then
+  begin
+    result := offColor;
+    exit;
   end;
-  if (result = onColor) OR NoRent then
-    result := onColor;
-  if (result = onColor) AND GroupAccount then
-    result := onGroupColor;
+
+  case PaymentInvoice of
+    -1, -2:
+      result := IIF(GroupAccount, onGroupColor, onColor);
+  end;
 end;
 
 function TfrmMain.getUnpaidItemsColor(Value: boolean; defaultColor: integer): integer;
@@ -7068,7 +7076,7 @@ begin
                 chRect.Bottom := myRect.Bottom - 3;
                 chRect.Right := chRect.Left + iRectangleSpaceForInvoiceMade;
                 iTempColor := getInvoiceMadeColor(FReservationsModel.Reservations[iRes].Rooms[iRoom].PaymentInvoice,
-                  (round(FReservationsModel.Reservations[iRes].Rooms[iRoom].OngoingRent) <> 0), Brush.Color, clWhite,
+                  (round(FReservationsModel.Reservations[iRes].Rooms[iRoom].OngoingRent) = 0), Brush.Color, clWhite,
                   clAqua,
                   FReservationsModel.Reservations[iRes].Rooms[iRoom].GroupAccount);
                 DrawRectanglOnCanvas(Grid.Canvas, iTempColor, chRect);
@@ -7143,7 +7151,7 @@ begin
               chRect.Bottom := myRect.Bottom - 3;
               chRect.Right := chRect.Left + iRectangleSpaceForInvoiceMade;
               iTempColor := getInvoiceMadeColor(FReservationsModel.Reservations[iRes].Rooms[iRoom].PaymentInvoice,
-                round(FReservationsModel.Reservations[iRes].Rooms[iRoom].OngoingRent) <> 0, Brush.Color, clWhite, clAqua,
+                round(FReservationsModel.Reservations[iRes].Rooms[iRoom].OngoingRent) = 0, Brush.Color, clWhite, clAqua,
                 FReservationsModel.Reservations[iRes].Rooms[iRoom].GroupAccount);
               DrawRectanglOnCanvas(Grid.Canvas, iTempColor, chRect);
             end;
@@ -7251,7 +7259,7 @@ begin
           chRect.Bottom := Rect.Bottom - 3;
           chRect.Right := chRect.Left + iRectangleSpaceForInvoiceMade;
           iTempColor := getInvoiceMadeColor(FReservationsModel.Reservations[iRes].Rooms[iRoom].PaymentInvoice,
-            round(FReservationsModel.Reservations[iRes].Rooms[iRoom].OngoingRent) <> 0, Brush.Color, clWhite, clAqua,
+            round(FReservationsModel.Reservations[iRes].Rooms[iRoom].OngoingRent) = 0, Brush.Color, clWhite, clAqua,
             FReservationsModel.Reservations[iRes].Rooms[iRoom].GroupAccount);
           DrawRectanglOnCanvas(Grid.Canvas, iTempColor, chRect);
         end;
@@ -10527,7 +10535,7 @@ begin
             chRect.Top := Rect.Top + 3;
             chRect.Bottom := Rect.Bottom - 3;
             chRect.Right := chRect.Left + iExtraSpace;
-            iTempColor := getInvoiceMadeColor(rri.PaymentInvoice, round(rri.OngoingRent) <> 0, Brush.Color, clWhite,
+            iTempColor := getInvoiceMadeColor(rri.PaymentInvoice, round(rri.OngoingRent) = 0, Brush.Color, clWhite,
               clAqua, rri.GroupAccount);
             DrawRectanglOnCanvas(TAdvStringGrid(Sender).Canvas, iTempColor, chRect);
           end;

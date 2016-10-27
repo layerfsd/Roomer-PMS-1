@@ -33,6 +33,8 @@ type
     procedure SetBetaFunctionsAvailable(const Value: boolean);
     function GetEditAllGuestsNationality: boolean;
     procedure SetEditAllGuestsNationality(const Value: boolean);
+    function GetShowInvoiceAsPaidWhenStatusIsZero: boolean;
+    procedure SetShowInvoiceAsPaidWhenStatusIsZero(const Value: boolean);
 
   public
     constructor Create(aPMSDataset: TRoomerDataset);
@@ -49,6 +51,10 @@ type
     ///   If true then the reservation profile window contains function to change nationality of all guests
     /// </summary>
     property EditAllGuestsNationality: boolean read GetEditAllGuestsNationality write SetEditAllGuestsNationality;
+    /// <summary>
+    ///   If true then the reservation profile window contains function to change nationality of all guests
+    /// </summary>
+    property ShowInvoiceAsPaidWhenStatusIsZero: boolean read GetShowInvoiceAsPaidWhenStatusIsZero write SetShowInvoiceAsPaidWhenStatusIsZero;
   end;
 
 implementation
@@ -63,6 +69,8 @@ const
   cBetaFunctionsAvailableName = 'BETA_FUNCTIONS_AVAILABLE';
   cAllGuestsNationalityGroup = 'RESERVATIONPROFILE_FUNCTIONS';
   cAllGuestsNationality = 'EDIT_ALLGUESTS_NATIONALITY';
+  cInvoiceHandlingGroup = 'INVOICE_HANDLING_FUNCTIONS';
+  cInvoiceHandlingShowAsPaidWhenZero = 'SHOW_AS_PAID_WHEN_ZERO';
 
 procedure TPmsSettings.PutSettingsValue(KeyGroup, Key, Value : String; CreateIfNotExists : Boolean = False);
 begin
@@ -154,6 +162,11 @@ begin
   SetSettingsAsBoolean(cAllGuestsNationalityGroup, cAllGuestsNationality, Value, True);
 end;
 
+procedure TPMSSettings.SetShowInvoiceAsPaidWhenStatusIsZero(const Value: boolean);
+begin
+  SetSettingsAsBoolean(cInvoiceHandlingGroup, cInvoiceHandlingShowAsPaidWhenZero, Value, True);
+end;
+
 procedure TPmsSettings.SetMandatoryCheckinFields(const Value: TMandatoryCheckInFieldSet);
 var
   lMF: TMandatoryCheckinField;
@@ -170,6 +183,11 @@ end;
 function TPMSSettings.GetEditAllGuestsNationality: boolean;
 begin
   Result := GetSettingsAsBoolean(cAllGuestsNationalityGroup, cAllGuestsNationality, );
+end;
+
+function TPMSSettings.GetShowInvoiceAsPaidWhenStatusIsZero: boolean;
+begin
+  Result := GetSettingsAsBoolean(cInvoiceHandlingGroup, cInvoiceHandlingShowAsPaidWhenZero, );
 end;
 
 function TPmsSettings.GetMandatoryCheckinFields: TMandatoryCheckInFieldSet;
