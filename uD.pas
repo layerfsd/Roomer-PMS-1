@@ -1493,8 +1493,7 @@ begin
                       'InvoiceIndex, ' +
                       'staffCreated, ' +
                       'staffLastEdit, ' +
-                      'itemAdded, ' +
-                      'lineid ' +
+                      'itemAdded ' +
                       ') ' +
                       ' ' +
                       'SELECT ' +
@@ -1537,8 +1536,7 @@ begin
                       '%d, ' +
                       'staffCreated, ' +
                       'staffLastEdit, ' +
-                      'itemAdded, ' +
-                      'lineid ' +
+                      'itemAdded ' +
                       'FROM invoicelines, ' +
                       '     control c ' +
                       'WHERE InvoiceNumber=%d AND (NOT ItemId IN (c.RoomRentItem, ' +
