@@ -442,8 +442,6 @@ type
     Label59: TsLabel;
     editStayTaxItem: TsComboEdit;
     labStayTaxItemDescription: TsLabel;
-    Label63: TsLabel;
-    chkShowSideBar: TsCheckBox;
     LMDGroupBox26: TsGroupBox;
     Label65: TsLabel;
     labInvPriceGroup: TsLabel;
@@ -706,8 +704,8 @@ type
     btnMFSelectAll: TsButton;
     gbxReservationProfileFunctionality: TsGroupBox;
     cbxChangeNationality: TsCheckBox;
-    lblShowRoomAsPaidWhenZero: TsLabel;
     cbxShowRoomAsPaidWhenZero: TsCheckBox;
+    lblShowRoomAsPaidWhenZero: TsLabel;
     procedure FormCreate(Sender : TObject);
     procedure FormClose(Sender : TObject; var Action : TCloseAction);
     procedure FormShow(Sender : TObject);
@@ -899,16 +897,7 @@ var
 begin
   g.ProcessAppIni(0);
   edInvoiceFormFileISL.Text := g.qInvoiceFormFileISL;
-  chkShowSideBar.checked := g.qShowSideBar;
-
-//  try
-    defFile := FileDependencyManager.getLocalInvoiceFilePath(false);
-//  Except
-//  end;
-
-
-//  ReadFileList(d.roomerMainDataSet, rftTemplates);
-//  defFile := getFilePath('islInvoice.fr3');
+  defFile := FileDependencyManager.getLocalInvoiceFilePath(false);
 
   if (defFile <> '') AND fileexists(defFile) then
   begin
@@ -2189,7 +2178,6 @@ begin
 
     g.qInvoiceFormFileISL := edInvoiceFormFileISL.Text;
     g.qInvoiceFormFileERL := edInvoiceFormFileERL.Text;
-    g.qShowSideBar := chkShowSideBar.checked;
 
     idx := cbxInvoicePrinter.ItemIndex;
     if idx = 0 then

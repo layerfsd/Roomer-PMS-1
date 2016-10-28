@@ -298,7 +298,6 @@ type
     btnResStat: TdxBarLargeButton;
     btnQuicReservation: TdxBarLargeButton;
     Panel2: TsPanel;
-    oldDock1: TdxBarDockControl;
     btnShowHideHint: TdxBarLargeButton;
     btnReservationNotes: TdxBarLargeButton;
     btnRptCustInvoices2: TdxBarLargeButton;
@@ -3287,8 +3286,6 @@ begin
     SetWindowTitle;
 
     btnCheckInRoom.Enabled := true;
-
-    oldDock1.Visible := g.qShowSideBar;
 
     FRBEMode := false;
     RBEMode := (g.qUserPriv1 = 50) OR (g.qUserPriv2 = 50) OR (g.qUserPriv3 = 50) OR (g.qUserPriv4 = 50) OR
@@ -13191,8 +13188,6 @@ begin
       cbxNameOrderPeriod.ItemIndex := g.qNameOrderPeriod;
 
       RefreshGrid;
-      oldDock1.Visible := g.qShowSideBar;
-
       Period_Init;
       Period_GetRooms;
     end;

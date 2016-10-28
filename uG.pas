@@ -221,7 +221,6 @@ type
     FqInPosMonitorUse    : boolean;
     FqInPosMonitorChkSec : integer;
 
-    FqShowSideBar : boolean;
     FqTempPath: string;
     FqApplicationID: string;
     FqAppSecret: string;
@@ -503,8 +502,6 @@ type
 
     property qSnPathXML  : string read FqSnPathXML  write FqSnPathXML;
     property qSnPathCurrentGuestsXML  : string read FqSnPathCurrentGuestsXML  write FqSnPathCurrentGuestsXML;
-
-    property qShowSideBar  : boolean read FqShowSideBar  write FqShowSideBar;
 
     property BackupMachine  : boolean read FBackupMachine  write FBackupMachine;
 
@@ -1141,7 +1138,6 @@ begin
             // [misc]
             FBackupMachine := ReadBool(secMisc, indBackupMaschine, false);
             qLangID := ReadInteger(secMisc, indLangID, 0);
-            qShowSideBar := ReadBool(secMisc, indShowSideBar, false);
             qLogLevel := ReadInteger(secMisc, indLogLevel, 0);
 
             // [FileWatch]
@@ -1191,7 +1187,6 @@ begin
             WriteBool(secMisc, indBackupMaschine, FBackupMachine);
             WriteInteger(secMisc, indLangID, qLangID);
             WriteInteger(secMisc, indLogLevel, qLogLevel);
-            WriteBool(secMisc, indShowSideBar, qShowSideBar);
 
             // [Data]
 //            Writestring(secDATA, indCommandtext, qCommandText);
