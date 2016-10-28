@@ -1164,8 +1164,6 @@ type
 
     AppIsClosing : Boolean;
 
-    ShowInvoiceAsPaidWhenStatusIsZero : Boolean;
-
     procedure OnRefreshMessagesRequest(var Msg: TMessage); message WM_REFRESH_MESSAGES;
     procedure Open_RR_EdForm(_grid: TAdvStringGrid);
     procedure Open_RES_edForm(_grid: TAdvStringGrid);
@@ -3262,8 +3260,6 @@ begin
     panelHide.Hide;
 
     TSplashFormManager.UpdateProgress('Refreshing main grid...');
-    if Assigned(glb) ANd Assigned(glb.PMSSettings) then
-      ShowInvoiceAsPaidWhenStatusIsZero := glb.PMSSettings.ShowInvoiceAsPaidWhenStatusIsZero;
     RefreshOneDayGrid;
 
     cbxNameOrder.ItemIndex := g.qNameOrder;
@@ -4268,9 +4264,6 @@ begin
     exit;
   end;
   StartTimeMeasure;
-
-  if Assigned(glb) ANd Assigned(glb.PMSSettings) then
-    ShowInvoiceAsPaidWhenStatusIsZero := glb.PMSSettings.ShowInvoiceAsPaidWhenStatusIsZero;
 
   BusyRefreshingTodaysGrid := true;
   Screen.Cursor := crHourGlass;
@@ -5947,11 +5940,8 @@ function TfrmMain.getInvoiceMadeColor(PaymentInvoice: integer; NoRent: boolean;
   offColor, onColor, onGroupColor: integer; GroupAccount: boolean): integer;
 begin
   result := offColor;
-  if (NoRent AND ShowInvoiceAsPaidWhenStatusIsZero) then
-  begin
-    result := offColor;
+  if (NoRent AND glb.PMSSettings.ShowInvoiceAsPaidWhenStatusIsZero) then
     exit;
-  end;
 
   case PaymentInvoice of
     -1, -2:
