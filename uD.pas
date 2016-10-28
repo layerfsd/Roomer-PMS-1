@@ -504,7 +504,9 @@ type
     procedure UpdateUsersLanguage(Staff: string; iLanguage: Integer);
 
     procedure CheckInGuest(RoomReservation: Integer);
+    procedure CheckinReservation(aReservation: integer);
     procedure CheckOutGuest(RoomReservation: Integer; Room: String);
+    procedure CheckoutReservation(aReservation: integer);
 
     function GetCustomerPreferences(CustomerID: string): string;
 
@@ -11587,16 +11589,25 @@ begin
   end;
 end;
 
+procedure Td.CheckinReservation(aReservation: integer);
+begin
+   d.roomerMaindataset.SystemSetRoomStatusOfReservation(aReservation, rsGuests.AsStatusChar);
+end;
+
+procedure Td.CheckoutReservation(aReservation: integer);
+begin
+   d.roomerMaindataset.SystemSetRoomStatusOfReservation(aReservation, rsDeparted.AsStatusChar);
+end;
+
 procedure Td.CheckInGuest(RoomReservation: Integer);
 begin
-  d.roomerMainDataSet.SystemSetRoomStatus(RoomReservation, STATUS_ARRIVED);
-  g.updateCurrentGuestlist;
+  d.roomerMainDataSet.SystemSetRoomStatus(RoomReservation, rsGuests.AsStatusChar);
 end;
 
 procedure Td.CheckOutGuest(RoomReservation: Integer; Room: String);
 begin
 
-  d.roomerMainDataSet.SystemSetRoomStatus(RoomReservation, STATUS_CHECKED_OUT);
+  d.roomerMainDataSet.SystemSetRoomStatus(RoomReservation, rsDeparted.AsStatusChar);
   SetUnclean(Room);
   g.updateCurrentGuestlist;
 end;

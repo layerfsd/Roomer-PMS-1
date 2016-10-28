@@ -1153,6 +1153,7 @@ begin
   finally
     FreeAndNil(rSet);
     mRooms.EnableControls;
+    UpdateStateActions;
     screen.Cursor := crDefault;
     pnlDataWait.Hide;
   end;
@@ -1708,7 +1709,9 @@ end;
 
 procedure TfrmReservationProfile.acCheckoutReservationExecute(Sender: TObject);
 begin
-  acCheckinReservation.Enabled := mRooms.Active and not mRooms.Eof and FReservationChangeStateHandler.ChangeIsAllowed(rsDeparted);
+  if FReservationChangeStateHandler.ChangeState(rsDeparted) then
+    Display;
+//  acCheckinReservation.Enabled := mRooms.Active and not mRooms.Eof and FReservationChangeStateHandler.ChangeIsAllowed(rsDeparted);
 end;
 
 procedure TfrmReservationProfile.acCheckoutRoomExecute(Sender: TObject);
@@ -3858,6 +3861,7 @@ begin
     mnuChangeResStateTo.Items[i].Enabled := FReservationChangeStateHandler.ChangeIsAllowed(TReservationState(mnuChangeResStateTo.Items[i].tag));
 
   acCheckinReservation.Enabled := mRooms.Active and not mRooms.Eof and FReservationChangeStateHandler.ChangeIsAllowed(rsGuests);
+  acCheckOutReservation.Enabled := mRooms.Active and not mRooms.Eof and FReservationChangeStateHandler.ChangeIsAllowed(rsDeparted);
 
 end;
 

@@ -105,6 +105,10 @@ type
       /// </summary>
       function CanChangeTo(aNewState: TReservationState): boolean;
 
+      /// <summary>
+      ///   Returns a TReservationState set with all states that are allowed to change into the Self state
+      /// </summary>
+      function StatesAllowedToChangeIntoThis: TReservationStateSet;
     end;
 
     TReservationStateSetHelper = record helper for TReservationStateSet
@@ -186,7 +190,7 @@ begin
     case Self of
       rsUnknown:            Result := aNewState in [rsReservation, rsGuests, rsOptionalBooking, rsAllotment, rsNoShow, rsBlocked, rsCancelled, rsWaitingList];
       rsReservation:        Result := aNewState in [rsGuests, rsOptionalBooking, rsAllotment, rsNoShow, rsBlocked, rsCancelled, rsWaitingList];
-      rsGuests:             Result := aNewState in [rsReservation, rsDeparted, rsWaitingList];
+      rsGuests:             Result := aNewState in [rsReservation, rsDeparted];
       rsDeparted:           Result := aNewState in [rsGuests];
       rsOptionalBooking:    Result := aNewState in [rsReservation, rsGuests, rsAllotment, rsNoShow, rsBlocked, rsCancelled, rsWaitingList];
       rsAllotment:          Result := aNewState in [rsReservation, rsGuests, rsOptionalBooking, rsNoShow, rsBlocked, rsCancelled, rsWaitingList];
@@ -239,6 +243,16 @@ begin
     Result := false;
   end;
 
+end;
+
+function TReservationStateHelper.StatesAllowedToChangeIntoThis: TReservationStateSet;
+var
+  lState: TReservationState;
+begin
+  Result := [];
+  for lState := low(TReservationstate) to high(TReservationState) do
+    if lState.CanChangeTo(Self) then
+      include(Result, lState);
 end;
 
 function TReservationStateHelper.AsReadableString : string;

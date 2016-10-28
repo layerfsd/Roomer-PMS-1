@@ -87,13 +87,17 @@ uses
   , uAlerts
   , uGuestCheckinForm
   , UITypes
-  , uFrmCheckOut, uProvideARoom2, uAppGlobal, uG;
+  , uFrmCheckOut
+  , uProvideARoom2
+  , uAppGlobal
+  , uG
+  , otlParallel
+  , Windows
+  ;
 
 { TReservationStateChangeHandler }
 
 function TBaseReservationStateChangeHandler.ChangeIsAllowed(aNewState: TReservationState): boolean;
-var
-  lCurrentState: TReservationState;
 begin
   Result := CurrentState.CanChangeTo(aNewState);
 end;
@@ -139,9 +143,10 @@ function TReservationStateChangeHandler.Checkin: boolean;
 var
   lRoom: string;
   lRoomHandler: TRoomReservationStateChangeHandler;
+  s: cardinal;
 begin
   Result := false;
-  if FRoomStateChangers.Count < 1 then
+  if FRoomStateChangers.Count = 0 then
     Result := true
   else
   begin
@@ -151,16 +156,22 @@ begin
     lRoom := FRoomStateChangers.Values.ToArray[0].Room;
     if FConfirmed OR (MessageDlg(Format(GetTranslatedText('shCheckInGroupOfRoom'), [lRoom]), mtConfirmation, [mbYes, mbNo], 0) = mrYes) then
     begin
-      FConfirmed := True;
+
+s:=GetTickCOunt;
+
       for lRoomHandler in FRoomStateChangers.Values do
       begin
         if lRoomHandler.ChangeIsAllowed(rsGuests) then
         begin
           ShowAlertsForReservation(0, lRoomhandler.FRoomReservation, atCHECK_IN);
-          d.CheckInGuest(lRoomhandler.FRoomReservation);
           lRoomHandler.FCurrentStateDirty := True;
         end;
       end;
+      d.CheckInReservation(FReservation);
+
+  OutputDebugString(PChar('time:  ' + IntToStr(trunc((GetTickCount - s) /1000))));
+
+      g.updateCurrentGuestlist;
       Result := True;
     end;
   end;
@@ -188,10 +199,11 @@ begin
         if lRoomHandler.ChangeIsAllowed(rsDeparted) then
         begin
           ShowAlertsForReservation(0, lRoomhandler.FRoomReservation, atCHECK_OUT);
-          d.CheckOutGuest(lRoomhandler.FRoomReservation, lRoomHandler.Room);
           lRoomHandler.FCurrentStateDirty := True;
         end;
       end;
+      d.CheckOutReservation(FReservation);
+      g.updateCurrentGuestlist;
       Result := True;
     end;
   end;
@@ -284,6 +296,7 @@ begin
     if (NOT ctrlGetBoolean('CheckinWithDetailsDialog')) OR OpenGuestCheckInForm(FRoomReservation) then
     begin
       d.CheckInGuest(FRoomReservation);
+      g.updateCurrentGuestlist;
       Result := true;
     end;
   end;
@@ -357,22 +370,15 @@ end;
 function TReservationStateChangeHandler.Catchall: boolean;
 var
   lRoomHandler: TRoomReservationStateChangeHandler;
-  lFailedRooms: boolean;
 begin
-  lFailedROoms := False;
+  Result := False;
   if MessageDlg(Format(GetTranslatedtext('shChangeStateOfFullReservation'), [FReservation, FNewState.AsReadableString]), mtConfirmation, mbOKCancel, 0) = mrOK then
   begin
-    for lRoomHandler in FRoomStateChangers.Values do
-      if lRoomHandler.ChangeIsAllowed(FNewState) then
-        lFailedRooms := not lRoomHandler.ChangeState(FNewState) or lFailedRooms
-      else
-        lFailedRooms := True;
+     d.roomerMaindataset.SystemSetRoomStatusOfReservation(FReservation, FNewstate.AsStatusChar);
+     for lRoomHandler in FRoomStateChangers.Values do
+        lRoomHandler.FCurrentStateDirty := True;
+     Result := True;
   end;
-
-  if lFailedRooms then
-    MessageDlg(GetTranslatedText('shChangeStateReservationFailedSomeRooms'), mtWarning, [mbOK], 0);
-
-  Result := True;
 end;
 
 function TRoomreservationStateChangeHandler.Catchall: boolean;
@@ -381,6 +387,7 @@ begin
   if ChangeIsAllowed(FNewState) then
   begin
     d.UpdateStatusSimple(FReservation, FRoomReservation, FNewState.AsStatusChar);
+    FCurrentStateDirty := True;
     Result := True;
   end;
 end;
@@ -388,7 +395,7 @@ end;
 function TReservationStateChangeHandler.ChangeState(aNewState: TReservationState): boolean;
 begin
   FConfirmed := False;
-  inherited;
+  Result := inherited;
 end;
 
 end.
