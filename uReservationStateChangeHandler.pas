@@ -91,7 +91,6 @@ uses
   , uProvideARoom2
   , uAppGlobal
   , uG
-  , otlParallel
   , Windows
   ;
 
