@@ -578,7 +578,7 @@ type
     sGroupBox4: TsGroupBox;
     sLabel7: TsLabel;
     sCheckBox1: TsCheckBox;
-    cbxTaxPerPerson: TsCheckBox;
+    __cbxTaxPerPerson: TsCheckBox;
     gbxBottomLines: TsGroupBox;
     LMDSimpleLabel21: TsLabel;
     LMDSimpleLabel22: TsLabel;
@@ -598,7 +598,7 @@ type
     chkConfirmAuto: TsCheckBox;
     edConfirmMinuteOfTheDay: TsSpinEdit;
     sLabel10: TsLabel;
-    cbxTaxPercentage: TsCheckBox;
+    __cbxTaxPercentage: TsCheckBox;
     edinPosMonitorChkSec: TsSpinEdit;
     sLabel12: TsLabel;
     chkNegInvoice: TsCheckBox;
@@ -1034,8 +1034,8 @@ begin
   try
     editStayTaxItem.Text := rControlData.fieldbyname('stayTaxItem').AsString;
     labStayTaxItemDescription.Caption := Item_GetDescription(editStayTaxItem.Text);
-    cbxTaxPerPerson.Checked := rControlData['stayTaxPerPerson'];
-    g.qStayTaxPerPerson := cbxTaxPerPerson.Checked;
+    __cbxTaxPerPerson.Checked := rControlData['stayTaxPerPerson'];
+    g.qStayTaxPerPerson := __cbxTaxPerPerson.Checked;
   except
     on E : Exception do
       showmessage(E.message);
@@ -1639,8 +1639,8 @@ begin
       rControlData.fieldbyname('BreakFastItem').AsString := editBreakFastItem.Text;
       rControlData.fieldbyname('RoomRentItem').AsString := editRoomRentItem.Text;
       rControlData.fieldbyname('StayTaxItem').AsString := editStayTaxItem.Text;
-      rControlData['stayTaxPerPerson'] := cbxTaxPerPerson.Checked;
-      g.qStayTaxPerPerson := cbxTaxPerPerson.Checked;
+      rControlData['stayTaxPerPerson'] := __cbxTaxPerPerson.Checked;
+      g.qStayTaxPerPerson := __cbxTaxPerPerson.Checked;
 
       rControlData.fieldbyname('PaymentItem').AsString := editPaymentItem.Text;
       rControlData.fieldbyname('PhoneUseItem').AsString := editPhoneUseItem.Text;
