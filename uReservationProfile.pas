@@ -843,7 +843,7 @@ uses
   ufrmReservationExtras
   , uInvoiceContainer
   , uCurrencyHandler
-  , uAccountTypeDefinitions;
+  , uAccountTypeDefinitions, uBreakfastStateDefinitions;
 
 {$R *.DFM}
 
@@ -2218,7 +2218,7 @@ end;
 
 procedure TfrmReservationProfile.mRoomsBreakFastGetText(Sender: TField; var Text: string; DisplayText: Boolean);
 begin
-  Text := _BreakfastToText(mRoomsBreakFast.asBoolean);
+  Text := TBreakfastState(mRoomsBreakFast.asBoolean).AsReadableString;
 end;
 
 procedure TfrmReservationProfile.mRoomsCalcFields(DataSet: TDataSet);
@@ -2411,17 +2411,17 @@ begin
     mRooms.BeforePost := nil;
 
     s :=     ' SELECT '#10;
-    s := s + '      Reservation '#10;
-    s := s + '    , RoomReservation '#10;
-    s := s + '    , Room '#10;
-    s := s + '    , RoomType '#10;
-    s := s + '    , package '#10;
+    s := s + '      rr.Reservation '#10;
+    s := s + '    , rr.RoomReservation '#10;
+    s := s + '    , rr.Room '#10;
+    s := s + '    , rr.RoomType '#10;
+    s := s + '    , rr.package '#10;
     s := s + '    , rrArrival as Arrival'#10;
     s := s + '    , rrDeparture as Departure'#10;
     s := s + '    , ExpectedTimeOfArrival'#10;
     s := s + '    , ExpectedCheckoutTime'#10;
-    s := s + '    , Status '#10;
-    s := s + '    , Currency '#10;
+    s := s + '    , rr.Status '#10;
+    s := s + '    , rr.Currency '#10;
     s := s + '    , invBreakfast as Breakfast '#10;
     s := s + '    , GroupAccount as isGroupAccount '#10;
     s := s + '    , rrIsNoRoom as isNoRoom '#10;
@@ -2437,9 +2437,9 @@ begin
              '       JOIN currencies cu ON cu.currency = rd.currency ' +
              '       WHERE rd.roomreservation = rr.roomreservation ' +
              '       AND resflag NOT IN (''X'' , ''C'')) AS RateOrPackagePerDay'#10;
-    s := s + '    , useStayTax '#10;
-    s := s + '    , ratePlanCode '#10;
-    s := s + '    , IF(ISNULL(ManualChannelId) OR ManualChannelId < 1, (SELECT channel FROM reservations WHERE reservations.Reservation=rr.Reservation LIMIT 1), ManualChannelId) AS ManualChannelId '#10;
+    s := s + '    , rr.useStayTax '#10;
+    s := s + '    , rr.ratePlanCode '#10;
+    s := s + '    , IF(ISNULL(ManualChannelId) OR ManualChannelId < 1, r.channel, ManualChannelId) AS ManualChannelId '#10;
     s := s + '    , RoomClass '#10;
     s := s + '    , blockMove '#10;
     s := s + '    , blockMoveReason '#10;
@@ -2447,7 +2447,7 @@ begin
     s := s + '    , rrRoomTypeAlias as RoomTypeAlias '#10;
     s := s + '    , (SELECT count(ID) FROM roomsdate WHERE (roomsdate.roomreservation=rr.roomreservation) AND (roomsdate.ResFlag <> '
                     + _db(STATUS_DELETED) + ' )) AS unPaidRentNights '#10;
-    s := s + '    , (SELECT name FROM persons WHERE persons.roomreservation=rr.roomreservation ORDER BY MainName DESC LIMIT 1) AS GuestName '#10;
+    s := s + '    , IF(r.OutofOrderBlocking, r.name, (SELECT name FROM persons WHERE persons.roomreservation=rr.roomreservation ORDER BY MainName DESC LIMIT 1)) AS GuestName '#10;
     s := s + '    , numChildren as childrencount '#10;
     s := s + '    , numInfants as Infantcount '#10;
     s := s + '    , (SELECT PersonsProfilesId FROM persons WHERE persons.roomreservation=rr.roomreservation ORDER BY MainName DESC LIMIT 1) AS PersonsProfilesId '#10;
@@ -2464,7 +2464,8 @@ begin
     s := s + '    , rrs.StockitemsCount ';
     s := s + '    , rrs.StockitemsPrice ';
     s := s + ' FROM '#10;
-    s := s + '   roomreservations rr'#10;
+    s := s + '   roomreservations rr '#10;
+    s := s + '  JOIN reservations r on r.reservation=rr.reservation '#10;
     s := s + '  LEFT OUTER JOIN -- Add stockitem totalcount and total price per roomreservation '#10;
     s := s + '      (select '#10;
     s := s + '      	roomreservation as tmp_roomres, '#10;
@@ -2481,7 +2482,7 @@ begin
     s := s + '      	  group by rrs2.StockItem, rrs2.count, rrs2.Price) rtmp '#10;
     s := s + '       group by rtmp.roomreservation) rrs on rrs.tmp_roomres= rr.RoomReservation '#10;
     s := s + ' WHERE '#10;
-    s := s + '   (Reservation = %d) '#10;
+    s := s + '   (rr.Reservation = %d) '#10;
     s := s + ' ORDER BY '#10;
     s := s + '  Room ';
 
@@ -2519,8 +2520,7 @@ begin
 
       sBreakfast := sBreakfast + _GLOB._Bool2Str(breakfastIncluted, 0);
 
-      if OutOfOrderBlocking then
-        mRoomsGuestName.asstring := edtName.text;
+      FReservationChangeStateHandler.AddRoomStateChangeHandler(TRoomReservationStateChangeHandler.Create(zReservation, mRoomsRoomReservation.AsInteger));
 
       mRooms.Next;
     end;

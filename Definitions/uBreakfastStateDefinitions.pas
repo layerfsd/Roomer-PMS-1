@@ -19,15 +19,12 @@ type
 
     TBreakfastStateHelper = record helper for TBreakfastState
     public
-      // constructor
-      /// <summary>
-      ///   Create a TBreakfastState from a boolean
-      /// </summary>
-      class function FromBool(const aBreakfast: boolean) : TBreakfastState; static;
+      class function implicit(const aBreakfast: boolean): TBreakfastState; overload; static;
+
       /// <summary>
       ///   Return a TBreakfastState based in index.
       /// </summary>
-      class function FromItemIndex(aIndex: integer) : TBreakfastState; static;
+      class function Implicit(aIndex: integer) : TBreakfastState; overload; static;
 
       /// <summary>
       ///   Fill a TStrings with translated descriptions in order of enumeration. Can by used to populate a TCombobox
@@ -67,17 +64,17 @@ begin
     aItemList.Add(s.AsReadableString);
 end;
 
-class function TBreakfastStateHelper.FromBool(const aBreakfast: boolean): TBreakfastState;
+class function TBreakfastStateHelper.Implicit(aIndex: integer): TBreakfastState;
+begin
+  Result := TBreakfastState(aIndex);
+end;
+
+class function TBreakfastStateHelper.implicit(const aBreakfast: boolean): TBreakfastState;
 begin
   if aBreakfast then
     Result := bsIncluded
   else
     Result := bsNotIncluded;
-end;
-
-class function TBreakfastStateHelper.FromItemIndex(aIndex: integer): TBreakfastState;
-begin
-  Result := TBreakfastState(aIndex);
 end;
 
 function TBreakfastStateHelper.AsBoolean: boolean;
