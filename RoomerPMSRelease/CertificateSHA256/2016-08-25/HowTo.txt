@@ -1,0 +1,2 @@
+openssl pkcs12 -inkey privateKey.key -in 3f992c99079b90d6-SHA2.pem -certfile 3f992c99079b90d6-SHA2.spc -export -out roomerpms.pfx
+

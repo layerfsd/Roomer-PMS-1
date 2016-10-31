@@ -1,0 +1,4 @@
+REM NOT WORKING: openssl pkcs12 -inkey privateKey.key -in a62a530a11d5f151-SHA2.pem -certfile a62a530a11d5f151-SHA2.spc -export -out roomerpms.pfx
+REM THIS WORKS: 
+openssl pkcs12 -inkey privateKey.key -in a62a530a11d5f151-SHA2.pem -export -out roomerpms.pfx
+
