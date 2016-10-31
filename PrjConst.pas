@@ -183,6 +183,9 @@ uses uAppGlobal,
   , uFrmRoomReservationCancellationDialog
   , uCleaningNotes
   , uCleaningNotesEdit
+  , uRptDailyRevenues
+  , uRptHouseKeeping
+  , uDayClosingTimes
   ;
 
 
@@ -1832,6 +1835,10 @@ begin
 
   TfrmCleaningNotes.Create(nil).Free;
   TfrmCleaningNotesEdit.Create(nil).Free;
+
+  TfrmRptDailyRevenues.Create(nil).Free;
+  TfrmHouseKeepingReport.Create(nil).Free;
+  TfrmDayClosingTimes.Create(nil).Free;
 
 
 end;

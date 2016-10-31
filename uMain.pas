@@ -1036,6 +1036,7 @@ type
     procedure btnReRegisterPMSClick(Sender: TObject);
     procedure btnDailyRevenuesClick(Sender: TObject);
     procedure btnCleaningNotesClick(Sender: TObject);
+    procedure lblPropertyStatusDblClick(Sender: TObject);
 
   private
     FReservationsModel: TReservationsModel;
@@ -11451,6 +11452,26 @@ begin
     lblAuthStatus.Caption := GetTranslatedText('shTx_Main_LoggedOut');
   end;
   _Logout;
+end;
+
+procedure TfrmMain.lblPropertyStatusDblClick(Sender: TObject);
+begin
+{$IFDEF DEBUG}
+  RoomerLanguage.PerformDBUpdatesWhenUnknownEntitiesFound := true;
+  try
+    GenerateTranslateTextTableForConstants;
+    GenerateTranslateTextTableForAllForms;
+    TranslateOpenForms;
+    try
+      frmHomedate.Show;
+      RoomerLanguage.TranslateThisForm(frmRptManagment);
+      frmHomedate.Hide;
+    except
+    end;
+  finally
+    RoomerLanguage.PerformDBUpdatesWhenUnknownEntitiesFound := false;
+  end;
+{$ENDIF}
 end;
 
 procedure TfrmMain.btnLostAndFoundClick(Sender: TObject);
