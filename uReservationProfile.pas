@@ -2218,7 +2218,7 @@ end;
 
 procedure TfrmReservationProfile.mRoomsBreakFastGetText(Sender: TField; var Text: string; DisplayText: Boolean);
 begin
-  Text := TBreakfastState(mRoomsBreakFast.asBoolean).AsReadableString;
+  Text := TBreakfastState.FromBool(mRoomsBreakFast.asBoolean).AsReadableString;
 end;
 
 procedure TfrmReservationProfile.mRoomsCalcFields(DataSet: TDataSet);

@@ -2607,7 +2607,7 @@ end;
 
 function _BreakfastToText(included : Boolean) : string;
 begin
-  Result := TBreakfastState(included).AsReadableString;
+  Result := TBreakfastState.FromBool(included).AsReadableString;
 end;
 
 function _AccountTypeToText(isGroupAccount : Boolean) : string;
