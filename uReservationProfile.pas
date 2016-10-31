@@ -493,6 +493,7 @@ type
     Label9: TsLabel;
     edtCustomer: TsEdit;
     edGetCustomer: TsButton;
+    pnlTopButtons : TsPanel;
     btnCheckIn: TsButton;
     btnExcel: TsButton;
     btnCheckOut: TsButton;
@@ -1243,6 +1244,10 @@ begin
 
   sPanel1.Visible := FOutOfOrderBlocking;
   pnlContact.Visible := NOT FOutOfOrderBlocking;
+  pnlTopButtons.Visible := NOT FOutOfOrderBlocking;
+  GuestsTab.TabVisible := NOT FOutOfOrderBlocking;
+  sTabSheet2.TabVisible := NOT FOutOfOrderBlocking;
+  InvoicesTab.TabVisible := NOT FOutOfOrderBlocking;
   Panel9.Visible := NOT FOutOfOrderBlocking;
   cxSplitter1.Visible := NOT FOutOfOrderBlocking;
   gbxGuest.Visible := NOT FOutOfOrderBlocking;
@@ -1250,11 +1255,6 @@ begin
   gbxRoomInformation.Visible := NOT FOutOfOrderBlocking;
   gbxResProperties.Visible := NOT FOutOfOrderBlocking;
   gbxStatus.Visible := NOT FOutOfOrderBlocking;
-  if FOutOfOrderBlocking then
-  begin
-    GuestsTab.Visible := NOT FOutOfOrderBlocking;
-    InvoicesTab.Visible := NOT FOutOfOrderBlocking;
-  end;
 
   if FOutOfOrderBlocking then
   begin
