@@ -4361,7 +4361,7 @@ begin
       begin
         lInvRoom := TInvoiceRoomEntity.create(Item, taxGuests, 0, taxNights, ItemPrice, 0, 0, false);
         try
-          itemVAT := GetVATForItem(Item, ItemPrice, 1, lInvRoom, nil, ItemTypeInfo, edtCustomer.Text);
+          itemVAT := GetVATForItem(Item, ItemPrice, 1, lInvRoom, tempInvoiceItemList, ItemTypeInfo, edtCustomer.Text);  // BHG
         finally
           lInvRoom.free;
         end;
@@ -6701,8 +6701,8 @@ begin
           lInvRoom := TInvoiceRoomEntity.create(agrLines.Cells[col_Item, i], 1, 0,
             _StrToFloat(agrLines.Cells[col_ItemCount, i]), dLineTotal, 0, 0, false);
           try
-            dLineVAT := GetVATForItem(agrLines.Cells[col_Item, i], dLineTotal, dNumItems, lInvRoom, nil, ItemTypeInfo,
-              edtCustomer.Text);
+            dLineVAT := GetVATForItem(agrLines.Cells[col_Item, i], dLineTotal, dNumItems, lInvRoom, tempInvoiceItemList, ItemTypeInfo,
+              edtCustomer.Text); // BHG
           finally
             lInvRoom.free;
           end;
@@ -8876,8 +8876,8 @@ begin
     _StrToFloat(agrLines.Cells[col_ItemCount, CurrentRow]), CurrentRow, 0, 0, false);
   try
     TotalVAT := GetVATForItem(agrLines.Cells[col_Item, CurrentRow], Total,
-      _StrToFloat(agrLines.Cells[col_ItemCount, CurrentRow]), lInvRoom, nil,
-      ItemTypeInfo, edtCustomer.Text);
+      _StrToFloat(agrLines.Cells[col_ItemCount, CurrentRow]), lInvRoom, tempInvoiceItemList,
+      ItemTypeInfo, edtCustomer.Text); // BHG
   finally
     lInvRoom.free;
   end;
@@ -9185,8 +9185,8 @@ begin
           _StrToFloat(agrLines.Cells[col_ItemCount, CurrentRow]), CurrentRow, 0, 0, false);
         try
           TotalVAT := GetVATForItem(agrLines.Cells[col_Item, CurrentRow], Total,
-            _StrToFloat(agrLines.Cells[col_ItemCount, CurrentRow]), lInvRoom, nil,
-            ItemTypeInfo, edtCustomer.Text);
+            _StrToFloat(agrLines.Cells[col_ItemCount, CurrentRow]), lInvRoom, tempInvoiceItemList,
+            ItemTypeInfo, edtCustomer.Text); // BHG
         finally
           lInvRoom.free;
         end;
