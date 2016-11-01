@@ -142,7 +142,9 @@
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win32)'!=''">
         <DCC_AssertionsAtRuntime>false</DCC_AssertionsAtRuntime>
-        <VerInfo_Keys>CompanyName=Promoir BV;FileDescription=Roomer PMS;FileVersion=1.9.9.0;InternalName=;LegalCopyright=(C) 2013, 2014, 2015, 2016 Promoir BV;LegalTrademarks=Roomer is a Registered Trademark of Promoir BV;OriginalFilename=Roomer.exe;ProductName=Roomer Open Hospitality Platform;ProductVersion=1.9.9.0;Comments=;ExtraBuild=161101a</VerInfo_Keys>
+        <VerInfo_Build>1</VerInfo_Build>
+        <DCC_DcuOutput>_dcu</DCC_DcuOutput>
+        <VerInfo_Keys>CompanyName=Promoir BV;FileDescription=Roomer PMS;FileVersion=1.9.9.1;InternalName=;LegalCopyright=(C) 2013, 2014, 2015, 2016 Promoir BV;LegalTrademarks=Roomer is a Registered Trademark of Promoir BV;OriginalFilename=Roomer.exe;ProductName=Roomer Open Hospitality Platform;ProductVersion=1.9.9.1;Comments=;ExtraBuild=161101b</VerInfo_Keys>
         <DCC_ExeOutput>ROomerPMSRelease</DCC_ExeOutput>
         <Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
         <DCC_Define>RELEASE;$(DCC_Define)</DCC_Define>
@@ -182,12 +184,13 @@
         <DCC_DcuOutput>_dcu</DCC_DcuOutput>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_3_Win32)'!=''">
+        <VerInfo_Debug>true</VerInfo_Debug>
+        <VerInfo_PreRelease>true</VerInfo_PreRelease>
         <VerInfo_MajorVer>2</VerInfo_MajorVer>
         <VerInfo_Release>0</VerInfo_Release>
         <VerInfo_AutoGenVersion>false</VerInfo_AutoGenVersion>
         <VerInfo_Keys>CompanyName=Promoir BV;FileDescription=Roomer PMS;FileVersion=2.0.0.0;InternalName=;LegalCopyright=(C) 2013, 2014, 2015, 2016 Promoir BV;LegalTrademarks=Roomer is a Registered Trademark of Promoir BV;OriginalFilename=Roomer.exe;ProductName=Roomer Open Hospitality Platform;ProductVersion=2.0.0.0;Comments=;ExtraBuild=161018;PrivateBuild=</VerInfo_Keys>
         <VerInfo_MinorVer>0</VerInfo_MinorVer>
-        <DCC_DebugDCUs>true</DCC_DebugDCUs>
         <DCC_SYMBOL_PLATFORM>false</DCC_SYMBOL_PLATFORM>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
