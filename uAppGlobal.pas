@@ -993,14 +993,18 @@ begin
   dataset.First;
   lFld := dataset.FieldByName(field);
   if assigned(lFld) then
-    while not dataset.Eof do
-    begin
-      if lFld.Value = Value then
+    try
+      while not dataset.Eof do
       begin
-        Result := true;
-        Break;
+        if lFld.Value = Value then
+        begin
+          Result := true;
+          Break;
+        end;
+        dataset.Next;
       end;
-      dataset.Next;
+    except
+      Result := false;
     end;
 end;
 

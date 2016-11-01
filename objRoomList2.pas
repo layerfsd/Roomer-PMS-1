@@ -456,78 +456,70 @@ begin
 
   glb.ForceTableRefresh;
 
-    maintNotes := glb.Maintenanceroomnotes;
-    maintCodes := glb.MaintenanceCodes;
-    maintStaff := glb.Staffmembers;
+  maintNotes := glb.Maintenanceroomnotes;
+  maintCodes := glb.MaintenanceCodes;
+  maintStaff := glb.Staffmembers;
 
-    rSet := glb.RoomsSet;
+  rSet := glb.RoomsSet;
 
-    Rset.First;
-    While not rSet.Eof do
+  Rset.First;
+  While not rSet.Eof do
+  begin
+    Room                 := Rset.fieldbyname('Room').asString;
+    RoomDescription      := Rset.fieldbyname('Description').asString;
+    RoomType             := Rset.fieldbyname('RoomType').asString;
+    RoomEquipments       := Rset.fieldbyname('Equipments').asString;
+    Location             := Rset.fieldbyname('Location').asString;
+    Floor                := Rset.fieldbyname('Floor').asInteger;
+    Bookable             := Rset['Bookable'];
+    useinResStatistics   := Rset['Statistics'];
+    hidden               := Rset['hidden'];
+    useInNationalReport  := Rset['useInNationalReport'];
+    Status               := Rset.fieldbyname('Status').asString;
+    OrderIndex           := Rset.fieldbyname('OrderIndex').asInteger;
+
+    if not hidden then
     begin
-      Room                 := Rset.fieldbyname('Room').asString;
-      RoomDescription      := Rset.fieldbyname('Description').asString;
-      RoomType             := Rset.fieldbyname('RoomType').asString;
-      RoomEquipments       := Rset.fieldbyname('Equipments').asString;
-      Location             := Rset.fieldbyname('Location').asString;
-      Floor                := Rset.fieldbyname('Floor').asInteger;
-      Bookable             := Rset['Bookable'];
-      useinResStatistics   := Rset['Statistics'];
-      hidden               := Rset['hidden'];
-      useInNationalReport  := Rset['useInNationalReport'];
-      Status               := Rset.fieldbyname('Status').asString;
-      OrderIndex           := Rset.fieldbyname('OrderIndex').asInteger;
+      RoomItem := TRoomItem.Create;
+      try
+        RoomItem.SetRoom(Room);
+        RoomItem.SetRoomDescription(RoomDescription);
+        RoomItem.SetRoomType(RoomType);
+        RoomItem.SetRoomEquipments(RoomEquipments);
+        RoomItem.SetBookable(Bookable);
+        RoomItem.SetUseInResStatistics(UseInResStatistics);
+        RoomItem.SetStatus(Status);
+        RoomItem.SetOrderIndex(OrderIndex);
+        RoomItem.Sethidden(hidden);
+        RoomItem.SetLocation(Location);
+        RoomItem.SetFloor(Floor);
+        RoomItem.SetUseInNationalReport(UseInNationalReport);
 
-      if not hidden then
-      begin
-        RoomItem := TRoomItem.Create;
-        try
-          if glb.LocateSpecificRecord('maintenancecodes', 'Code', Status) then
+        if glb.LocateSpecificRecord('maintenanceroomnotes', 'Room', Room) then
+        begin
+          RoomItem.CleaningNotes := maintNotes['CleaningNotes'];
+          RoomItem.MaintenanceNotes := maintNotes['MaintenanceNotes'];
+          RoomItem.LostAndFound := maintNotes['LostAndFound'];
+
+          if glb.LocateSpecificRecord('staffmembers', 'id', maintNotes.FieldByName('StaffIdReported').AsInteger) then
           begin
-            glb.LocateSpecificRecord('maintenanceroomnotes', 'Room', Room);
-            glb.LocateSpecificRecord('staffmembers', 'id', maintNotes.FieldByName('StaffIdReported').AsString);
-            RoomItem.SetRoom(Room);
-  //          RoomItem.FRoom := Room;
-            RoomItem.SetRoomDescription(RoomDescription);
-            RoomItem.SetRoomType(RoomType);
-            RoomItem.SetRoomEquipments(RoomEquipments);
-            RoomItem.SetBookable(Bookable);
-            RoomItem.SetUseInResStatistics(UseInResStatistics);
-            RoomItem.SetStatus(Status);
-            RoomItem.SetOrderIndex(OrderIndex);
-            RoomItem.Sethidden(hidden);
-            RoomItem.SetLocation(Location);
-            RoomItem.SetFloor(Floor);
-            RoomItem.SetUseInNationalReport(UseInNationalReport);
-
-            if NOT maintNotes.Eof then
-            begin
-              RoomItem.CleaningNotes := maintNotes['CleaningNotes'];
-              RoomItem.MaintenanceNotes := maintNotes['MaintenanceNotes'];
-              RoomItem.LostAndFound := maintNotes['LostAndFound'];
-            end;
-            if NOT maintStaff.Eof then
-            begin
-              RoomItem.ReportUser := maintStaff['Initials'];
-              RoomItem.ReportUserName := maintStaff['Name'];
-            end;
-
-            if NOT maintCodes.Eof then
-              RoomItem.StatusDescripton := maintCodes['name'];
-
-            FRoomList.Add(RoomItem);
+            RoomItem.ReportUser := maintStaff['Initials'];
+            RoomItem.ReportUserName := maintStaff['Name'];
           end;
-        except
-          // logga
+
+          if glb.LocateSpecificRecord('maintenancecodes', 'Code', Status) then
+            RoomItem.StatusDescripton := maintCodes['name'];
         end;
+
+        FRoomList.Add(RoomItem);
+      except
+//          on E: Exception do
+//            MessageDlg('Exception:' + e.message, mtError, mbOKCancel, 0);
       end;
-      rSet.Next;
     end;
-    RoomCount := FRoomList.Count;
-//  finally
-//    freeandNil(rSet);
-//  end;
-// BHG
+    rSet.Next;
+  end;
+  RoomCount := FRoomList.Count;
 end;
 
 function TRooms.FindRoomFromRoomNumber(RoomNumber: string; StartAt: integer = 0; caseSensitive: Boolean = false): integer;
