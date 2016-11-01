@@ -1069,6 +1069,7 @@ begin
   constants.Add('shTx_ProvideARoom_Bath', 'bath ');
   constants.Add('shTx_ProvideARoom_RoomWithout', 'Room without');
   constants.Add('shTx_ProvideARoom_RoomWith', 'Room with');
+  constants.Add('shProvideaRoomCleanToo', 'No clean rooms available, show unclean rooms?');
   
   constants.Add('shTx_StaffTypes2_UpdateNotOK', 'UPDATE NOT OK');
   constants.Add('shTx_StaffTypes2_InsertNotOK', 'INSERT NOT OK');

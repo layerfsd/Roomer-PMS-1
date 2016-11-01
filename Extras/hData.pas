@@ -2218,7 +2218,7 @@ begin
     on e: exception do
     begin
       DebugMessage(e.Message);
-      // uStringUtils.CopyToClipboard(Rset.CommandText);
+       uStringUtils.CopyToClipboard(Rset.CommandText);
       // result := false;
       // errMsg := e.message;
       raise;

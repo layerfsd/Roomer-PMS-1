@@ -278,7 +278,7 @@ begin
   Result := false;
   // Allocate room if needed
   if FRoom.StartsWith('<') then
-    FRoom := ProvideARoom2(FRoomReservation);
+    FRoom := ProvideARoom2(FRoomReservation, False); // clean rooms only
 
   if FRoom = '' then
     Exit;
