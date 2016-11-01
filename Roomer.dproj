@@ -2,7 +2,7 @@
     <PropertyGroup>
         <ProjectGuid>{436E2CCE-115E-475F-9C3E-19C03F70A4D0}</ProjectGuid>
         <MainSource>Roomer.dpr</MainSource>
-        <Config Condition="'$(Config)'==''">Debug</Config>
+        <Config Condition="'$(Config)'==''">Release</Config>
         <DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
         <ProjectVersion>14.3</ProjectVersion>
         <FrameworkType>VCL</FrameworkType>
@@ -144,7 +144,7 @@
         <DCC_AssertionsAtRuntime>false</DCC_AssertionsAtRuntime>
         <VerInfo_Build>1</VerInfo_Build>
         <DCC_DcuOutput>_dcu</DCC_DcuOutput>
-        <VerInfo_Keys>CompanyName=Promoir BV;FileDescription=Roomer PMS;FileVersion=1.9.9.1;InternalName=;LegalCopyright=(C) 2013, 2014, 2015, 2016 Promoir BV;LegalTrademarks=Roomer is a Registered Trademark of Promoir BV;OriginalFilename=Roomer.exe;ProductName=Roomer Open Hospitality Platform;ProductVersion=1.9.9.1;Comments=;ExtraBuild=161101b</VerInfo_Keys>
+        <VerInfo_Keys>CompanyName=Promoir BV;FileDescription=Roomer PMS;FileVersion=1.9.9.1;InternalName=;LegalCopyright=(C) 2013, 2014, 2015, 2016 Promoir BV;LegalTrademarks=Roomer is a Registered Trademark of Promoir BV;OriginalFilename=Roomer.exe;ProductName=Roomer Open Hospitality Platform;ProductVersion=1.9.9.1;Comments=;ExtraBuild=161101c</VerInfo_Keys>
         <DCC_ExeOutput>ROomerPMSRelease</DCC_ExeOutput>
         <Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
         <DCC_Define>RELEASE;$(DCC_Define)</DCC_Define>
