@@ -83,7 +83,7 @@ type
 var
   frmProvideARoom2 : TfrmProvideARoom2;
 
-function ProvideARoom2(RoomReservation : Integer) : String;
+function ProvideARoom2(RoomReservation : Integer; aShowUncleanRooms: boolean = true): String;
 function MoveToRoomEnh2(RoomReservation : Integer; newRoom : string) : boolean;
 
 implementation
@@ -100,7 +100,7 @@ uses
   , uReservationStateDefinitions;
 {$R *.DFM}
 
-function ProvideARoom2(RoomReservation : Integer) : String;
+function ProvideARoom2(RoomReservation : Integer; aShowUncleanRooms: boolean = True) : String;
 var
   btn : Word;
 
@@ -180,6 +180,7 @@ begin
     frmProvideARoom2.zStatus := sStatus;
 
     frmProvideARoom2.btnRemoveRoomNumber.enabled := not isNoRoom;
+    frmProvideaRoom2.cbIncludeNonCleanRooms.Checked := aShowUncleanRooms;
 
     btn := frmProvideARoom2.ShowModal;
     if (btn in [mrOK, mrYes]) then
@@ -338,6 +339,8 @@ begin
       end;
       agrRooms.AutoSizeColumns(true, 1);
 
+      if rSet.IsEmpty and not cbIncludeNonCleanRooms.Checked and (MessageDlg(GetTranslatedText('shProvideaRoomCleanToo'), mtConfirmation, mbYesNo, 0)=mrYes) then
+        cbIncludeNonCleanRooms.Checked := True;
     finally
       freeandnil(rSet);
     end;

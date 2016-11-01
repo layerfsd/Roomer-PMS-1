@@ -988,24 +988,11 @@ function TGlobalSettings.LocateSpecificRecord(dataSet : TRoomerDataSet; field : 
 var
   lFld: TField;
 begin
-  //result := dataset.Locate(field, value, [loCaseInsensitive]); -- strange things happening ..
-  Result := false;
-  dataset.First;
-  lFld := dataset.FieldByName(field);
-  if assigned(lFld) then
-    try
-      while not dataset.Eof do
-      begin
-        if lFld.Value = Value then
-        begin
-          Result := true;
-          Break;
-        end;
-        dataset.Next;
-      end;
-    except
-      Result := false;
-    end;
+  try
+    result := dataset.Locate(field, value, [loCaseInsensitive]);
+  except
+    result := false;
+  end;
 end;
 
 function TGlobalSettings.LocateSpecificRecord(table, field : String;  value : Integer) : Boolean;

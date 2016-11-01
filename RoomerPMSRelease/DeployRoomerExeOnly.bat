@@ -9,5 +9,12 @@ if errorlevel 1 (
   goto :EOF
 )
 
-%AWSCMD% s3 cp Roomer.exe s3://roomerstore.com/Roomer.exe
-%AWSCMD% s3 cp s3://roomerstore.com/Roomer.exe s3://roomerstore.com/roomer.exe
+echo .
+set answer=
+set /p answer="Type yes to start copying to s3://roomerstore ..."
+if "%answer%"=="yes" (
+  %AWSCMD% s3 cp Roomer.exe s3://roomerstore.com/Roomer.exe
+  %AWSCMD% s3 cp s3://roomerstore.com/Roomer.exe s3://roomerstore.com/roomer.exe
+) else (
+  echo Upload cancelled
+)
