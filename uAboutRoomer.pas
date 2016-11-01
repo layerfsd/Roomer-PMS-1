@@ -206,8 +206,7 @@ procedure SetIgnoresToZero(RoomerDataSet : TRoomerDataSet);
 var
   version : String;
 begin
-  version := TRoomerVersionInfo.FileVersionOnServer;
-  if version <> TRoomerVersionInfo.FileVersion then
+  if TRoomerVersionInfo.FileVersionOnServer(version) and (version <> TRoomerVersionInfo.FileVersion) then
   begin
   (*  if MessageDlg('There is a new version of ROOMER (' + version + ').' + #13#10 +
                   'ROOMER needs to be updated.' + #13#10#13#10 +
@@ -236,8 +235,8 @@ var
   lMSgResult: integer;
 begin
 
-  version := TRoomerVersionInfo.FileVersionOnServer;
-  if not (TRoomerVersionInfo.IsPreRelease or TRoomerVersionInfo.IsDebug) and (version <> TROomerVersionInfo.FileVersion) then
+
+  if TRoomerVersionInfo.FileVersionOnServer(version) and not (TRoomerVersionInfo.IsPreRelease or TRoomerVersionInfo.IsDebug) and (version <> TROomerVersionInfo.FileVersion) then
   begin
     with TRoomerRegistryIniFile.Create(GetRoomerIniFilename) do
     try

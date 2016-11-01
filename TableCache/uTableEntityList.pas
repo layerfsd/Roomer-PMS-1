@@ -188,8 +188,10 @@ begin
     FRSet.OpenDataset(localData);
     RoomerMessages.MarkTableAsRefreshed(FTableName, FileTimeStamp);
   except
-    raise ERefreshTableException.CreateFmt('Error while refreshing table [%s] locally', [FTableName]);
-  end;
+    RefreshFromServer;
+  end
+  else
+    RefreshFromServer;
 end;
 
 procedure TTableEntity.SaveToFile(data : String);
