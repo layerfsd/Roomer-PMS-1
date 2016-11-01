@@ -345,6 +345,7 @@ uses
   ALHttpClient,
   IdSSLOpenSSL
   , XMLUtils
+  , uStandaloneRoomerVersionInfo
   ;
 
 resourcestring
@@ -2433,14 +2434,14 @@ begin
   ownerId := _ownerId;
 end;
 
-//var
-//  recVer: TEXEVersionData;
-//
+var
+  recVer: TRoomerVersionInfo;
+
 initialization
 
 begin
-//  recVer := _GetEXEVersionData(Paramstr(0));
-//  EXTRA_BUILD_ID := recVer.ExtraBuild;
+  recVer := TRoomerVersionInfo.Create;
+  EXTRA_BUILD_ID := recVer.ExtraBuild;
 end;
 
 end.

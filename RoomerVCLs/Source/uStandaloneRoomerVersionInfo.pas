@@ -1,4 +1,4 @@
-unit uRoomerVersionInfo;
+unit uStandaloneRoomerVersionInfo;
 
 interface
 
@@ -51,10 +51,6 @@ type
     class property IsDebug: boolean read GetDebug;
 
     /// <summary>
-    ///   Return the lastest published fileversion of roomer.exe on the server
-    /// </summary>
-    class function FileVersionOnServer(var aVersion: string): boolean; static;
-    /// <summary>
     ///   Returns version string containing 'Version ' + fileversion appended with ExtraBuild, and IsPreRelease or IsDebug options
     /// </summary>
     class function LongVersionString: string; static;
@@ -71,10 +67,6 @@ uses
   Windows
   , Classes
   , SysUtils
-  , MSXML2_TLB
-  , uApiDataHandler
-  , uFileDependencyManager
-  , XMLUtils
   , IOUtils
   ;
 
@@ -102,37 +94,6 @@ begin
   Result := VersionData.FileVersion;
 end;
 
-class function TRoomerVersionInfo.FileVersionOnServer(var aVersion: string): boolean;
-var
-  sTempName : String;
-  XML: IXMLDOMDocument2;
-  node: IXMLDOmNode;
-begin
-  Result := false;
-  aVersion := '<version not found>';
-  sTempName := TPath.Combine(TPath.GetTempPath, 'roomerversion.xml');
-
-  try
-    FileDependencymanager.getRoomerVersionXmlFilePath(sTempName);
-  except
-    exit;
-  end;
-
-  xml := CreateXmlDocument; // CoDOMDocument40.Create;
-  xml.Load(sTempName);
-
-  node := xml.documentElement.firstChild;
-  while node <> nil do
-  begin
-    if GetAttributeValue(node, 'filename', '') = 'Roomer.exe' then
-    begin
-      Result := true;
-      aVersion := GetAttributeValue(node, 'version', aVersion);
-      Break;
-    end;
-    node := node.nextSibling;
-  end;
-end;
 
 class function TRoomerVersionInfo.GetPreRelease: boolean;
 begin

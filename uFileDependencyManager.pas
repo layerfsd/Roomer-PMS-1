@@ -69,7 +69,6 @@ uses
   , IdSSLOpenSSL
   , uFileSystemUtils
   , uD
-  , PrjConst
   , uDateUtils
   , uFrmResources
   ;
@@ -165,7 +164,7 @@ begin
   Result := '';
   try
     if FFileList.Count = 0 then
-      raise EFileDependencyManagerException.Create(GetTranslatedText('shTx_ManageFiles_RetrieveList'));
+      raise EFileDependencyManagerException.Create('Please first retrieve the list of files to be worked with (ReadFileList)'); // GetTranslatedText('shTx_ManageFiles_RetrieveList'));
     sFullFilename := ExtractFileName(Filename);
     sFullFilename := TPath.Combine(GetCurrenctRoomerPath, sFullFilename);
     if uFileSystemUtils.GetFileSize(sFullFilename) = 0 then
