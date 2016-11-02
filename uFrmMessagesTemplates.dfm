@@ -65,6 +65,7 @@ object FrmMessagesTemplates: TFrmMessagesTemplates
       SkinData.CustomColor = True
       SkinData.CustomFont = True
       SkinData.SkinSection = 'PANEL_LOW'
+      ExplicitTop = 20
       object pnlDesignTime: TsPanel
         Left = 0
         Top = 0
@@ -108,7 +109,7 @@ object FrmMessagesTemplates: TFrmMessagesTemplates
           OnClick = HTMLabel2Click
           OnMouseLeave = MessageAreaMouseLeave
           OnMouseEnter = MessageAreaMouseEnter
-          Version = '1.9.2.2'
+          Version = '1.9.2.3'
           ExplicitWidth = 164
         end
         object sPanel1: TsPanel
@@ -142,6 +143,8 @@ object FrmMessagesTemplates: TFrmMessagesTemplates
             SkinData.CustomColor = True
             SkinData.CustomFont = True
             SkinData.SkinSection = 'BUTTON'
+            ExplicitLeft = 4
+            ExplicitTop = 4
           end
         end
         object sPanel2: TsPanel

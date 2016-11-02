@@ -6,7 +6,7 @@ object DImages: TDImages
     Height = 32
     Width = 32
     FormatVersion = 1
-    DesignInfo = 1572912
+    DesignInfo = 2097200
     ImageInfo = <
       item
         Image.Data = {
@@ -23345,7 +23345,7 @@ object DImages: TDImages
     Height = 25
     Width = 25
     FormatVersion = 1
-    DesignInfo = 1573024
+    DesignInfo = 2097304
     ImageInfo = <
       item
         Image.Data = {

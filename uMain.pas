@@ -3898,7 +3898,8 @@ begin
   begin
     options := [eoWait, eoMaximized];
     ExecuteFile(handle, 'CMD.EXE', '/c REG DELETE HKCU\Software\Roomer\FormStatus /f', options);
-    ExecuteFile(handle, 'CMD.EXE', '/c taskkill /f /im Roomer.exe', options);
+//    ExecuteFile(handle, 'CMD.EXE', '/c taskkill /f /im Roomer.exe', options);
+    KillTask('Roomer.exe');
     exit;
   end;
 

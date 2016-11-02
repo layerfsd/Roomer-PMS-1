@@ -3710,6 +3710,8 @@ begin
   ShowAlertsForReservation(zReservation, 0, atOPEN_RESERVATION);
   AlertList := CreateAlertsForRoomReservation(zReservation, 0, atUNKNOWN);
   FrmAlertPanel.PlaceEditPanel(pnlAlertHolder, AlertList);
+  if zRoomReservation = 0 then
+    mRooms.First;
 end;
 
 procedure TfrmReservationProfile.tvAllGuestsCanFocusRecord
