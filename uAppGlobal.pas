@@ -208,7 +208,7 @@ Type
       procedure RefreshTableByName(const aTable: string);
       function KeyAlreadyExistsInAnotherRecord(table, field, value: String; ID: Integer): Boolean;
       function LocateSpecificRecord(table, field, value: String): Boolean; overload;
-      function LocateSpecificRecord(dataSet : TRoomerDataSet; field : String;  value : Variant) : Boolean; overload; inline;
+      function LocateSpecificRecord(dataSet : TRoomerDataSet; const field : String;  value : Variant) : Boolean; overload;
       function LocateSpecificRecord(table, field: String; value: Integer): Boolean; overload;
       function LocateSpecificRecord(table, field: String; value: Boolean): Boolean; overload;
       function LocateSpecificRecordAndGetValue(table, field, value: String; fieldToGet : String; var resultingValue : String): Boolean; overload;
@@ -984,24 +984,66 @@ begin
   end;
 end;
 
-function TGlobalSettings.LocateSpecificRecord(dataSet : TRoomerDataSet; field : String;  value : Variant) : Boolean;
+function TGlobalSettings.LocateSpecificRecord(dataSet : TRoomerDataSet; const field : String;  value : Variant) : Boolean;
 var
   lFld: TField;
+
+  function lclSameValue: boolean;
+  begin
+    if lFld.DataType in [ftString, ftWideString, ftMemo, ftWideMemo] then
+      Result := (CompareText(lFld.ASString, Value) = 0)
+    else
+      Result := (lFld.Value = Value);
+  end;
+
 begin
+  // BS 2016-11-02 This locate functionality is overriden from dataset.locate because for some reason searching for integers
+  // did not find anything
+
+  // Possible enhancements:
+  // - Binary search
+  result := false;
+  lFld := dataset.FindField(field);
+  if assigned(lFld) then
   try
-    result := dataset.Locate(field, value, [loCaseInsensitive]);
-  except
-    result := false;
+    // Already on the right record?
+    result := lclSameValue;
+    if not Result then
+    begin
+      dataset.DisableControls;
+      try
+        dataset.First;
+        while not dataset.Eof do
+        begin
+          if lclSameValue then
+          begin
+            Result := true;
+            Break;
+          end;
+          dataset.Next;
+        end;
+      finally
+        dataset.EnableControls;
+      end;
+    end;
+  except on E: Exception do
+    begin
+      {$ifdef DEBUG}
+      MessageDlg('Error ' + E.Message, mterror, mbOKCancel, 0);
+      {$endif}
+      result := false;
+    end;
   end;
 end;
 
 function TGlobalSettings.LocateSpecificRecord(table, field : String;  value : Integer) : Boolean;
-var dataSet : TRoomerDataSet;
+var
+  ds : TRoomerDataset;
 begin
   Result := false;
-  dataset := tableslist.Dataset[table];
-  if assigned(dataset) then
-    result := LocateSpecificRecord(dataset, field, value);
+  ds := tableslist.Dataset[table];
+  if assigned(ds) then
+    result := LocateSpecificRecord(ds, field, value);
 end;
 
 function TGlobalSettings.LocateSpecificRecord(table, field : String;  value : Boolean) : Boolean;
