@@ -706,6 +706,8 @@ type
     cbxChangeNationality: TsCheckBox;
     cbxShowRoomAsPaidWhenZero: TsCheckBox;
     lblShowRoomAsPaidWhenZero: TsLabel;
+    lbShowIncludedBreakfastOnInvoice: TsLabel;
+    cbShowIncludedBreakfastOnInvoice: TsCheckBox;
     procedure FormCreate(Sender : TObject);
     procedure FormClose(Sender : TObject; var Action : TCloseAction);
     procedure FormShow(Sender : TObject);
@@ -778,6 +780,7 @@ type
 
     financeCustomerList : TKeyPairList;
     financeLookupList : TKeyPairList;
+    FUpdatingControls: boolean;
 
     procedure LoadTable;
     procedure SaveTable;
@@ -895,688 +898,698 @@ var
 
   ManadatoryFields: TMandatoryCheckinField;
 begin
-  g.ProcessAppIni(0);
-  edInvoiceFormFileISL.Text := g.qInvoiceFormFileISL;
-  defFile := FileDependencyManager.getLocalInvoiceFilePath(false);
+  try
+    FUpdatingCOntrols := True;
 
-  if (defFile <> '') AND fileexists(defFile) then
-  begin
-    g.qInvoiceFormFileISL := defFile;
+g.ProcessAppIni(0);
     edInvoiceFormFileISL.Text := g.qInvoiceFormFileISL;
-  end;
+    defFile := FileDependencyManager.getLocalInvoiceFilePath(false);
 
-  if not fileexists(g.qInvoiceFormFileISL) then
-  begin
-    s := '';
-    //s := s + 'Formskr� reiknings fannst ekki'#10'undir li�num Reikningur er reitur '#10'til a� sta�setja skr�nna '#10'Upphafsnafn (default name) hennar '#10'er islInvoice.fr3 ';
-    s := s + GetTranslatedText('shTx_ControlData_NoAccount');
-    showmessage(s);
-    edInvoiceFormFileISL.InitialDir := g.qProgramExePath;
-  end;
+    if (defFile <> '') AND fileexists(defFile) then
+    begin
+      g.qInvoiceFormFileISL := defFile;
+      edInvoiceFormFileISL.Text := g.qInvoiceFormFileISL;
+    end;
+
+    if not fileexists(g.qInvoiceFormFileISL) then
+    begin
+      s := '';
+      //s := s + 'Formskr� reiknings fannst ekki'#10'undir li�num Reikningur er reitur '#10'til a� sta�setja skr�nna '#10'Upphafsnafn (default name) hennar '#10'er islInvoice.fr3 ';
+      s := s + GetTranslatedText('shTx_ControlData_NoAccount');
+      showmessage(s);
+      edInvoiceFormFileISL.InitialDir := g.qProgramExePath;
+    end;
 
 
-  edInvoiceFormFileISL.InitialDir := extractFilePath(g.qInvoiceFormFileISL);
-  edInvoiceFormFileISL.filter := '*.fr3';
+    edInvoiceFormFileISL.InitialDir := extractFilePath(g.qInvoiceFormFileISL);
+    edInvoiceFormFileISL.filter := '*.fr3';
 
-  edInvoiceFormFileERL.Text := g.qInvoiceFormFileERL;
-  defFile := FileDependencyManager.getForeignInvoiceFilePath(false);
-
-  if (defFile <> '') AND fileexists(defFile) then
-  begin
-    g.qInvoiceFormFileERL := defFile;
     edInvoiceFormFileERL.Text := g.qInvoiceFormFileERL;
-  end;
+    defFile := FileDependencyManager.getForeignInvoiceFilePath(false);
 
-  if not fileexists(g.qInvoiceFormFileERL) then
-  begin
-    s := '';
-   // s := s + 'Formskr� reiknings fannst ekki'#10'undir li�num Reikningur er reitur '#10'til a� sta�setja skr�nna '#10'Upphafsnafn (default name) hennar '#10'er islInvoice.fr3 ';
-    s := s + GetTranslatedText('shTx_ControlData_NoAccount');
-    showmessage(s);
-    edInvoiceFormFileERL.InitialDir := g.qProgramExePath;
-  end;
-
-  edInvoiceFormFileERL.InitialDir := extractFilePath(g.qInvoiceFormFileERL);
-  edInvoiceFormFileERL.filter := '*.fr3';
-
-  idx := 0;
-  printerName := trim(g.qInvoicePrinter);
-  if printerName = '' then
-  begin
-    printerName := _GetDefaultPrinterName;
-  end
-  else
-  begin
-    idx := cbxInvoicePrinter.Items.IndexOf(printerName);
-    // vRef V10B001  FIX
-    if (idx < 0) then
+    if (defFile <> '') AND fileexists(defFile) then
     begin
-      idx := 0;
+      g.qInvoiceFormFileERL := defFile;
+      edInvoiceFormFileERL.Text := g.qInvoiceFormFileERL;
+    end;
+
+    if not fileexists(g.qInvoiceFormFileERL) then
+    begin
+      s := '';
+     // s := s + 'Formskr� reiknings fannst ekki'#10'undir li�num Reikningur er reitur '#10'til a� sta�setja skr�nna '#10'Upphafsnafn (default name) hennar '#10'er islInvoice.fr3 ';
+      s := s + GetTranslatedText('shTx_ControlData_NoAccount');
+      showmessage(s);
+      edInvoiceFormFileERL.InitialDir := g.qProgramExePath;
+    end;
+
+    edInvoiceFormFileERL.InitialDir := extractFilePath(g.qInvoiceFormFileERL);
+    edInvoiceFormFileERL.filter := '*.fr3';
+
+    idx := 0;
+    printerName := trim(g.qInvoicePrinter);
+    if printerName = '' then
+    begin
       printerName := _GetDefaultPrinterName;
     end
     else
-      printerName := cbxReportPrinter.Items[idx];
-  end;
-
-  cbxInvoicePrinter.ItemIndex := idx;
-
-  idx := 0;
-  printerName := trim(g.qReportPrinter);
-  if printerName = '' then
-  begin
-    printerName := _GetDefaultPrinterName;
-  end
-  else
-  begin
-    idx := cbxReportPrinter.Items.IndexOf(printerName);
-    // vRef V10B001  FIX
-    if (idx < 0) then
     begin
-      idx := 0;
+      idx := cbxInvoicePrinter.Items.IndexOf(printerName);
+      // vRef V10B001  FIX
+      if (idx < 0) then
+      begin
+        idx := 0;
+        printerName := _GetDefaultPrinterName;
+      end
+      else
+        printerName := cbxReportPrinter.Items[idx];
+    end;
+
+    cbxInvoicePrinter.ItemIndex := idx;
+
+    idx := 0;
+    printerName := trim(g.qReportPrinter);
+    if printerName = '' then
+    begin
       printerName := _GetDefaultPrinterName;
     end
     else
-      printerName := cbxReportPrinter.Items[idx];
-  end;
+    begin
+      idx := cbxReportPrinter.Items.IndexOf(printerName);
+      // vRef V10B001  FIX
+      if (idx < 0) then
+      begin
+        idx := 0;
+        printerName := _GetDefaultPrinterName;
+      end
+      else
+        printerName := cbxReportPrinter.Items[idx];
+    end;
 
-  TMandatoryCheckinField.AsStrings(clbMandatoryFields.Items);
-  for ManadatoryFields := Low(TMandatoryCheckinField) to High(TMandatoryCheckinField) do
-    clbMandatoryFields.Checked[ManadatoryFields.ToItemIndex] := ManadatoryFields.IsCurrentlyOn;
+    TMandatoryCheckinField.AsStrings(clbMandatoryFields.Items);
+    for ManadatoryFields := Low(TMandatoryCheckinField) to High(TMandatoryCheckinField) do
+      clbMandatoryFields.Checked[ManadatoryFields.ToItemIndex] := ManadatoryFields.IsCurrentlyOn;
 
-  cbxReportPrinter.ItemIndex := idx;
+    cbxReportPrinter.ItemIndex := idx;
 
-  // tsCompany
-  editCompanyID.Text := rControlData.fieldbyname('CompanyID').AsString;
-  editCompanyName.Text := rControlData.fieldbyname('CompanyName').AsString;
-  editCompanyPID.Text := rControlData.fieldbyname('CompanyPID').AsString;
-  // --
-  editAddress1.Text := rControlData.fieldbyname('Address1').AsString;
-  editAddress2.Text := rControlData.fieldbyname('Address2').AsString;
-  editAddress3.Text := rControlData.fieldbyname('Address3').AsString;
-  editAddress4.Text := rControlData.fieldbyname('Address4').AsString;
-  edCountry.Text := rControlData.fieldbyname('Country').AsString;
+    // tsCompany
+    editCompanyID.Text := rControlData.fieldbyname('CompanyID').AsString;
+    editCompanyName.Text := rControlData.fieldbyname('CompanyName').AsString;
+    editCompanyPID.Text := rControlData.fieldbyname('CompanyPID').AsString;
+    // --
+    editAddress1.Text := rControlData.fieldbyname('Address1').AsString;
+    editAddress2.Text := rControlData.fieldbyname('Address2').AsString;
+    editAddress3.Text := rControlData.fieldbyname('Address3').AsString;
+    editAddress4.Text := rControlData.fieldbyname('Address4').AsString;
+    edCountry.Text := rControlData.fieldbyname('Country').AsString;
 
-  //**TESTED**// lev3 ok
-  countryValidate(edCountry,labCountry);
+    //**TESTED**// lev3 ok
+    countryValidate(edCountry,labCountry);
 
 
-  editTelephone1.Text := rControlData.fieldbyname('Telephone1').AsString;
-  editTelephone2.Text := rControlData.fieldbyname('Telephone2').AsString;
-  editFax.Text := rControlData.fieldbyname('Fax').AsString;
-  editCompanyEmail.Text := rControlData.fieldbyname('CompanyEmail').AsString;
-  editCompanyHomePage.Text := rControlData.fieldbyname('CompanyHomePage').AsString;
+    editTelephone1.Text := rControlData.fieldbyname('Telephone1').AsString;
+    editTelephone2.Text := rControlData.fieldbyname('Telephone2').AsString;
+    editFax.Text := rControlData.fieldbyname('Fax').AsString;
+    editCompanyEmail.Text := rControlData.fieldbyname('CompanyEmail').AsString;
+    editCompanyHomePage.Text := rControlData.fieldbyname('CompanyHomePage').AsString;
 
-  editCompanyVATNo.Text := rControlData.fieldbyname('CompanyVATNo').AsString;
-  editCompanyBankInfo.Text := rControlData.fieldbyname('CompanyBankInfo').AsString;
+    editCompanyVATNo.Text := rControlData.fieldbyname('CompanyVATNo').AsString;
+    editCompanyBankInfo.Text := rControlData.fieldbyname('CompanyBankInfo').AsString;
 
-  // tsSystemIDs
-  EditLastInvoice.value := rControlData.fieldbyname('LastInvoice').AsInteger;
-  EditLastReservation.value := rControlData.fieldbyname('LastReservation').AsInteger;
-  EditLastPerson.value := rControlData.fieldbyname('LastPerson').AsInteger;
-  EditLastRoomRes.value := rControlData.fieldbyname('LastRoomRes').AsInteger;
+    // tsSystemIDs
+    EditLastInvoice.value := rControlData.fieldbyname('LastInvoice').AsInteger;
+    EditLastReservation.value := rControlData.fieldbyname('LastReservation').AsInteger;
+    EditLastPerson.value := rControlData.fieldbyname('LastPerson').AsInteger;
+    EditLastRoomRes.value := rControlData.fieldbyname('LastRoomRes').AsInteger;
 
-  // tsMail
-  editMailHost.Text := rControlData.fieldbyname('MailHost').AsString;
-  editSmtpHost.Text := rControlData.fieldbyname('SmtpHost').AsString;
-  editEmailAddress.Text := rControlData.fieldbyname('EmailAddress').AsString;
-  editMailUser.Text := rControlData.fieldbyname('MailUser').AsString;
-  editMailPassword.Text := rControlData.fieldbyname('MailPassword').AsString;
-  editMailMachineName.Text := rControlData.fieldbyname('MailMachineName').AsString;
-  CheckBoxMailActive.checked := rControlData['MailActive'];
+    // tsMail
+    editMailHost.Text := rControlData.fieldbyname('MailHost').AsString;
+    editSmtpHost.Text := rControlData.fieldbyname('SmtpHost').AsString;
+    editEmailAddress.Text := rControlData.fieldbyname('EmailAddress').AsString;
+    editMailUser.Text := rControlData.fieldbyname('MailUser').AsString;
+    editMailPassword.Text := rControlData.fieldbyname('MailPassword').AsString;
+    editMailMachineName.Text := rControlData.fieldbyname('MailMachineName').AsString;
+    CheckBoxMailActive.checked := rControlData['MailActive'];
 
-  // tsInvoiceSystem
-  editBreakFastItem.Text := rControlData.fieldbyname('BreakFastItem').AsString;
-  labBreakFastItemDescription.Caption := Item_GetDescription(editBreakFastItem.Text);
+    // tsInvoiceSystem
+    editBreakFastItem.Text := rControlData.fieldbyname('BreakFastItem').AsString;
+    labBreakFastItemDescription.Caption := Item_GetDescription(editBreakFastItem.Text);
 
-  editRoomRentItem.Text := rControlData.fieldbyname('RoomRentItem').AsString;
-  labRoomRentItemDescription.Caption := Item_GetDescription(editRoomRentItem.Text);
+    editRoomRentItem.Text := rControlData.fieldbyname('RoomRentItem').AsString;
+    labRoomRentItemDescription.Caption := Item_GetDescription(editRoomRentItem.Text);
 
-  try
-    editStayTaxItem.Text := rControlData.fieldbyname('stayTaxItem').AsString;
-    labStayTaxItemDescription.Caption := Item_GetDescription(editStayTaxItem.Text);
-    __cbxTaxPerPerson.Checked := rControlData['stayTaxPerPerson'];
-    g.qStayTaxPerPerson := __cbxTaxPerPerson.Checked;
-  except
-    on E : Exception do
-      showmessage(E.message);
-  end;
+    try
+      editStayTaxItem.Text := rControlData.fieldbyname('stayTaxItem').AsString;
+      labStayTaxItemDescription.Caption := Item_GetDescription(editStayTaxItem.Text);
+      __cbxTaxPerPerson.Checked := rControlData['stayTaxPerPerson'];
+      g.qStayTaxPerPerson := __cbxTaxPerPerson.Checked;
+    except
+      on E : Exception do
+        showmessage(E.message);
+    end;
 
-  if trim(editStayTaxItem.Text) = '' then
-  begin
-	  showmessage(GetTranslatedText('shTx_ControlData_Tax'));
-  end;
+    if trim(editStayTaxItem.Text) = '' then
+    begin
+      showmessage(GetTranslatedText('shTx_ControlData_Tax'));
+    end;
 
-  editPaymentItem.Text := rControlData.fieldbyname('PaymentItem').AsString;
-  labPaymentItemDescription.Caption := Item_GetDescription(editPaymentItem.Text);
+    editPaymentItem.Text := rControlData.fieldbyname('PaymentItem').AsString;
+    labPaymentItemDescription.Caption := Item_GetDescription(editPaymentItem.Text);
 
-  editPhoneUseItem.Text := rControlData.fieldbyname('PhoneUseItem').AsString;
-  labPhoneUseItemDescription.Caption := Item_GetDescription(editPhoneUseItem.Text);
+    editPhoneUseItem.Text := rControlData.fieldbyname('PhoneUseItem').AsString;
+    labPhoneUseItemDescription.Caption := Item_GetDescription(editPhoneUseItem.Text);
 
-  editDiscountItem.Text := rControlData.fieldbyname('DiscountItem').AsString;
-  labDiscountItemDescription.Caption := Item_GetDescription(editDiscountItem.Text);
+    editDiscountItem.Text := rControlData.fieldbyname('DiscountItem').AsString;
+    labDiscountItemDescription.Caption := Item_GetDescription(editDiscountItem.Text);
 
-  edNativeCurrency.Text := rControlData.fieldbyname('NativeCurrency').AsString;
-  if CurrencyValidate(edNativeCurrency, labNativeCurrency) then
-  begin
-    //
-  end;
-
-  try
-    edChannelManager.Text := inttostr(rControlData.fieldbyname('DefaultChannelManager').AsInteger);
-  EXCEPT
-    edChannelManager.Text := '1';
-  end;
-
-  try
-    if ChannelManagerValidate(edChannelManager, labChannelManager) then
+    edNativeCurrency.Text := rControlData.fieldbyname('NativeCurrency').AsString;
+    if CurrencyValidate(edNativeCurrency, labNativeCurrency) then
     begin
       //
     end;
-  Except
-  end;
 
-  try
-    edRackCustomer.Text := rControlData.fieldbyname('RackCustomer').AsString;
-  Except
-    edRackCustomer.Text := '0';
-  end;
-
-  labRackCustomerName.Caption := d.GetCustomerName(edRackCustomer.Text);
-
-  CheckBoxBreakfastInclDefault.checked := rControlData['BreakfastInclDefault'];
-  CheckBoxArrivalDateRulesPrice.checked := rControlData['ArrivalDateRulesPrice'];
-
-  // tsRoomStatusColors
-  EditGreenColor.Text := rControlData.fieldbyname('GreenColor').AsString;
-  EditPurpleColor.Text := rControlData.fieldbyname('PurpleColor').AsString;
-  EditFuchsiaColor.Text := rControlData.fieldbyname('FuchsiaColor').AsString;
-
-  // tsInvoice System
-
-  // tsInvoiceTexts / tsDotPrinterTexts
-
-  // tsInvoiceTexts
-  edinvTxtHeadDebit.Text := rControlData.fieldbyname('invTxtHeadDebit').AsString;
-  edinvTxtHeadKredit.Text := rControlData.fieldbyname('invTxtHeadKredit').AsString;
-  edinvTxtHeadInfoNumber.Text := rControlData.fieldbyname('invTxtHeadInfoNumber').AsString;
-  edinvTxtHeadInfoDate.Text := rControlData.fieldbyname('invTxtHeadInfoDate').AsString;
-  edinvTxtHeadInfoCustomerNo.Text := rControlData.fieldbyname('invTxtHeadInfoCustomerNo').AsString;
-  edinvTxtHeadInfoGjalddagi.Text := rControlData.fieldbyname('invTxtHeadInfoGjalddagi').AsString;
-  edinvTxtHeadInfoEindagi.Text := rControlData.fieldbyname('invTxtHeadInfoEindagi').AsString;
-  edinvTxtHeadInfoLocalCurrency.Text := rControlData.fieldbyname('invTxtHeadInfoLocalCurrency').AsString;
-  edinvTxtHeadInfoCurrency.Text := rControlData.fieldbyname('invTxtHeadInfoCurrency').AsString;
-  edinvTxtHeadInfoCurrencyRate.Text := rControlData.fieldbyname('invTxtHeadInfoCurrencyRate').AsString;
-  edinvTxtHeadInfoReservation.Text := rControlData.fieldbyname('invTxtHeadInfoReservation').AsString;
-  edinvTxtHeadInfoCreditInvoice.Text := rControlData.fieldbyname('invTxtHeadInfoCreditInvoice').AsString;
-  edinvTxtHeadInfoOrginalInfo.Text := rControlData.fieldbyname('invTxtHeadInfoOrginalInfo').AsString;
-  edinvTxtHeadInfoGuest.Text := rControlData.fieldbyname('invTxtHeadInfoGuest').AsString;
-  edinvTxtHeadInfoRoom.Text := rControlData.fieldbyname('invTxtHeadInfoRoom').AsString;
-  edinvTxtLinesItemNo.Text := rControlData.fieldbyname('invTxtLinesItemNo').AsString;
-  edinvTxtLinesItemText.Text := rControlData.fieldbyname('invTxtLinesItemText').AsString;
-  edinvTxtLinesItemCount.Text := rControlData.fieldbyname('invTxtLinesItemCount').AsString;
-  edinvTxtLinesItemPrice.Text := rControlData.fieldbyname('invTxtLinesItemPrice').AsString;
-
-  edinvTxtPaymentListDescription.Text := rControlData.fieldbyname('invTxtPaymentListDescription').AsString;
-  edinvTxtHeadPrePaid.Text := rControlData.fieldbyname('invTxtHeadPrePaid').AsString;
-  edinvTxtHeadBalance.Text := rControlData.fieldbyname('invTxtHeadBalance').AsString;
-
-  edinvTxtLinesItemAmount.Text := rControlData.fieldbyname('invTxtLinesItemAmount').AsString;
-  edinvTxtLinesItemTotal.Text := rControlData.fieldbyname('invTxtLinesItemTotal').AsString;
-  edinvTxtExtra1.Text := rControlData.fieldbyname('invTxtExtra1').AsString;
-  edinvTxtExtra2.Text := rControlData.fieldbyname('invTxtExtra2').AsString;
-  edinvTxtFooterLine1.Text := rControlData.fieldbyname('invTxtFooterLine1').AsString;
-  edinvTxtFooterLine2.Text := rControlData.fieldbyname('invTxtFooterLine2').AsString;
-  edinvTxtFooterLine3.Text := rControlData.fieldbyname('invTxtFooterLine3').AsString;
-  edinvTxtFooterLine4.Text := rControlData.fieldbyname('invTxtFooterLine4').AsString;
-  edinvTxtPaymentListHead.Text := rControlData.fieldbyname('invTxtPaymentListHead').AsString;
-  edinvTxtPaymentListCode.Text := rControlData.fieldbyname('invTxtPaymentListCode').AsString;
-  edinvTxtPaymentListAmount.Text := rControlData.fieldbyname('invTxtPaymentListAmount').AsString;
-  edinvTxtPaymentListDate.Text := rControlData.fieldbyname('invTxtPaymentListDate').AsString;
-  edinvTxtPaymentListTotal.Text := rControlData.fieldbyname('invTxtPaymentListTotal').AsString;
-  edinvTxtPaymentLineHead.Text := rControlData.fieldbyname('invTxtPaymentLineHead').AsString;
-  edinvTxtPaymentLineSeperator.Text := rControlData.fieldbyname('invTxtPaymentLineSeperator').AsString;
-  edinvTxtVATListHead.Text := rControlData.fieldbyname('invTxtVATListHead').AsString;
-  edinvTxtVATListDescription.Text := rControlData.fieldbyname('invTxtVATListDescription').AsString;
-  edinvTxtVATListwoVAT.Text := rControlData.fieldbyname('invTxtVATListwoVAT').AsString;
-  edinvTxtVATListwVAT.Text := rControlData.fieldbyname('invTxtVATListwVAT').AsString;
-  edinvTxtVATListVATpr.Text := rControlData.fieldbyname('invTxtVATListVATpr').AsString;
-  edinvTxtVATListVATAmount.Text := rControlData.fieldbyname('invTxtVATListVATAmount').AsString;
-  edinvTxtVATListTotal.Text := rControlData.fieldbyname('invTxtVATListTotal').AsString;
-  edinvTxtVATLineHead.Text := rControlData.fieldbyname('invTxtVATLineHead').AsString;
-  edinvTxtVATLineSeperator.Text := rControlData.fieldbyname('invTxtVATLineSeperator').AsString;
-  edinvTxtTotalwoVAT.Text := rControlData.fieldbyname('invTxtTotalwoVAT').AsString;
-  edinvTxtTotalVATAmount.Text := rControlData.fieldbyname('invTxtTotalVATAmount').AsString;
-  edinvTxtTotalTotal.Text := rControlData.fieldbyname('invTxtTotalTotal').AsString;
-
-  edinvTxtCompanyName.Text := rControlData.fieldbyname('invTxtCompanyName').AsString;
-  edinvTxtCompanyAddress.Text := rControlData.fieldbyname('invTxtCompanyAddress').AsString;
-  edinvTxtCompanyTel1.Text := rControlData.fieldbyname('invTxtCompanyTel1').AsString;
-  edinvTxtCompanyTel2.Text := rControlData.fieldbyname('invTxtCompanyTel2').AsString;
-  edinvTxtCompanyFax.Text := rControlData.fieldbyname('invTxtCompanyFax').AsString;
-  edinvTxtCompanyEmail.Text := rControlData.fieldbyname('invTxtCompanyEmail').AsString;
-  edinvTxtCompanyHomePage.Text := rControlData.fieldbyname('invTxtCompanyHomePage').AsString;
-  edinvTxtCompanyPID.Text := rControlData.fieldbyname('invTxtCompanyPID').AsString;
-  edinvTxtCompanyBankInfo.Text := rControlData.fieldbyname('invTxtCompanyBankInfo').AsString;
-  edinvTxtCompanyVATId.Text := rControlData.fieldbyname('invTxtCompanyVATId').AsString;
-
-  edFiveDayRowHeight.value := rControlData.fieldbyname('FiveDayRowHeight').AsInteger;
-  edFiveDayColWidth.value := rControlData.fieldbyname('FiveDayColWidth').AsInteger;
-  edFiveDayColCount.value := rControlData.fieldbyname('FiveDayColCount').AsInteger;
-
-  try
-    edFiveDayDateFormat1.Text := rControlData.fieldbyname('FiveDayDateFormat1').AsString;
-  except
-    edFiveDayDateFormat1.Text := 'MMM YY';
-  end;
-
-  try
-    edFiveDayDateFormat2.Text := rControlData.fieldbyname('FiveDayDateFormat2').AsString;
-  except
-    edFiveDayDateFormat2.Text := 'DD ddd';
-  end;
-
-  edGrandRowHeight.value := rControlData.fieldbyname('GrandRowHeight').AsInteger;
-
-  edCustIdLast.value   := d.getTblINC_Last;
-  edCustIdLength.value := d.getTblINC_Length;
-  edCustIdFill.Text    := d.getTblINC_Fill;
-
-  try
-    edSessionTimeoutSeconds.value := rControlData.fieldbyname('SessionTimeoutSeconds').AsInteger;
-  except
-    edSessionTimeoutSeconds.value := 900;
-  end;
-
-
-  try
-    edInvPriceGroup.Text := rControlData.fieldbyname('InvPriceGroup').AsString;
-  except
-    edInvPriceGroup.Text := '';
-  end;
-
-  try
-    rgrNameOrder.ItemIndex := rControlData.fieldbyname('NameOrder').AsInteger except rgrNameOrder.ItemIndex := 0;
-  end;
-
-  try
-    rgrNameOrderPeriod.ItemIndex := rControlData.fieldbyname('NameOrderPeriod').AsInteger except rgrNameOrderPeriod.ItemIndex := 0;
-  end;
-
-
-  try
-    cbxAccountType.ItemIndex := rControlData.fieldbyname('AccountType').AsInteger;
-    PageAccount.ActivePageIndex := cbxAccountType.ItemIndex;
-
-    // ef tenging er st�lpi
-    if rControlData.fieldbyname('AccountType').AsInteger = 1 then
-    begin
+    try
+      edChannelManager.Text := inttostr(rControlData.fieldbyname('DefaultChannelManager').AsInteger);
+    EXCEPT
+      edChannelManager.Text := '1';
     end;
-  except
+
+    try
+      if ChannelManagerValidate(edChannelManager, labChannelManager) then
+      begin
+        //
+      end;
+    Except
+    end;
+
+    try
+      edRackCustomer.Text := rControlData.fieldbyname('RackCustomer').AsString;
+    Except
+      edRackCustomer.Text := '0';
+    end;
+
+    labRackCustomerName.Caption := d.GetCustomerName(edRackCustomer.Text);
+
+    CheckBoxBreakfastInclDefault.checked := rControlData['BreakfastInclDefault'];
+    CheckBoxArrivalDateRulesPrice.checked := rControlData['ArrivalDateRulesPrice'];
+
+    // tsRoomStatusColors
+    EditGreenColor.Text := rControlData.fieldbyname('GreenColor').AsString;
+    EditPurpleColor.Text := rControlData.fieldbyname('PurpleColor').AsString;
+    EditFuchsiaColor.Text := rControlData.fieldbyname('FuchsiaColor').AsString;
+
+    // tsInvoice System
+
+    // tsInvoiceTexts / tsDotPrinterTexts
+
+    // tsInvoiceTexts
+    edinvTxtHeadDebit.Text := rControlData.fieldbyname('invTxtHeadDebit').AsString;
+    edinvTxtHeadKredit.Text := rControlData.fieldbyname('invTxtHeadKredit').AsString;
+    edinvTxtHeadInfoNumber.Text := rControlData.fieldbyname('invTxtHeadInfoNumber').AsString;
+    edinvTxtHeadInfoDate.Text := rControlData.fieldbyname('invTxtHeadInfoDate').AsString;
+    edinvTxtHeadInfoCustomerNo.Text := rControlData.fieldbyname('invTxtHeadInfoCustomerNo').AsString;
+    edinvTxtHeadInfoGjalddagi.Text := rControlData.fieldbyname('invTxtHeadInfoGjalddagi').AsString;
+    edinvTxtHeadInfoEindagi.Text := rControlData.fieldbyname('invTxtHeadInfoEindagi').AsString;
+    edinvTxtHeadInfoLocalCurrency.Text := rControlData.fieldbyname('invTxtHeadInfoLocalCurrency').AsString;
+    edinvTxtHeadInfoCurrency.Text := rControlData.fieldbyname('invTxtHeadInfoCurrency').AsString;
+    edinvTxtHeadInfoCurrencyRate.Text := rControlData.fieldbyname('invTxtHeadInfoCurrencyRate').AsString;
+    edinvTxtHeadInfoReservation.Text := rControlData.fieldbyname('invTxtHeadInfoReservation').AsString;
+    edinvTxtHeadInfoCreditInvoice.Text := rControlData.fieldbyname('invTxtHeadInfoCreditInvoice').AsString;
+    edinvTxtHeadInfoOrginalInfo.Text := rControlData.fieldbyname('invTxtHeadInfoOrginalInfo').AsString;
+    edinvTxtHeadInfoGuest.Text := rControlData.fieldbyname('invTxtHeadInfoGuest').AsString;
+    edinvTxtHeadInfoRoom.Text := rControlData.fieldbyname('invTxtHeadInfoRoom').AsString;
+    edinvTxtLinesItemNo.Text := rControlData.fieldbyname('invTxtLinesItemNo').AsString;
+    edinvTxtLinesItemText.Text := rControlData.fieldbyname('invTxtLinesItemText').AsString;
+    edinvTxtLinesItemCount.Text := rControlData.fieldbyname('invTxtLinesItemCount').AsString;
+    edinvTxtLinesItemPrice.Text := rControlData.fieldbyname('invTxtLinesItemPrice').AsString;
+
+    edinvTxtPaymentListDescription.Text := rControlData.fieldbyname('invTxtPaymentListDescription').AsString;
+    edinvTxtHeadPrePaid.Text := rControlData.fieldbyname('invTxtHeadPrePaid').AsString;
+    edinvTxtHeadBalance.Text := rControlData.fieldbyname('invTxtHeadBalance').AsString;
+
+    edinvTxtLinesItemAmount.Text := rControlData.fieldbyname('invTxtLinesItemAmount').AsString;
+    edinvTxtLinesItemTotal.Text := rControlData.fieldbyname('invTxtLinesItemTotal').AsString;
+    edinvTxtExtra1.Text := rControlData.fieldbyname('invTxtExtra1').AsString;
+    edinvTxtExtra2.Text := rControlData.fieldbyname('invTxtExtra2').AsString;
+    edinvTxtFooterLine1.Text := rControlData.fieldbyname('invTxtFooterLine1').AsString;
+    edinvTxtFooterLine2.Text := rControlData.fieldbyname('invTxtFooterLine2').AsString;
+    edinvTxtFooterLine3.Text := rControlData.fieldbyname('invTxtFooterLine3').AsString;
+    edinvTxtFooterLine4.Text := rControlData.fieldbyname('invTxtFooterLine4').AsString;
+    edinvTxtPaymentListHead.Text := rControlData.fieldbyname('invTxtPaymentListHead').AsString;
+    edinvTxtPaymentListCode.Text := rControlData.fieldbyname('invTxtPaymentListCode').AsString;
+    edinvTxtPaymentListAmount.Text := rControlData.fieldbyname('invTxtPaymentListAmount').AsString;
+    edinvTxtPaymentListDate.Text := rControlData.fieldbyname('invTxtPaymentListDate').AsString;
+    edinvTxtPaymentListTotal.Text := rControlData.fieldbyname('invTxtPaymentListTotal').AsString;
+    edinvTxtPaymentLineHead.Text := rControlData.fieldbyname('invTxtPaymentLineHead').AsString;
+    edinvTxtPaymentLineSeperator.Text := rControlData.fieldbyname('invTxtPaymentLineSeperator').AsString;
+    edinvTxtVATListHead.Text := rControlData.fieldbyname('invTxtVATListHead').AsString;
+    edinvTxtVATListDescription.Text := rControlData.fieldbyname('invTxtVATListDescription').AsString;
+    edinvTxtVATListwoVAT.Text := rControlData.fieldbyname('invTxtVATListwoVAT').AsString;
+    edinvTxtVATListwVAT.Text := rControlData.fieldbyname('invTxtVATListwVAT').AsString;
+    edinvTxtVATListVATpr.Text := rControlData.fieldbyname('invTxtVATListVATpr').AsString;
+    edinvTxtVATListVATAmount.Text := rControlData.fieldbyname('invTxtVATListVATAmount').AsString;
+    edinvTxtVATListTotal.Text := rControlData.fieldbyname('invTxtVATListTotal').AsString;
+    edinvTxtVATLineHead.Text := rControlData.fieldbyname('invTxtVATLineHead').AsString;
+    edinvTxtVATLineSeperator.Text := rControlData.fieldbyname('invTxtVATLineSeperator').AsString;
+    edinvTxtTotalwoVAT.Text := rControlData.fieldbyname('invTxtTotalwoVAT').AsString;
+    edinvTxtTotalVATAmount.Text := rControlData.fieldbyname('invTxtTotalVATAmount').AsString;
+    edinvTxtTotalTotal.Text := rControlData.fieldbyname('invTxtTotalTotal').AsString;
+
+    edinvTxtCompanyName.Text := rControlData.fieldbyname('invTxtCompanyName').AsString;
+    edinvTxtCompanyAddress.Text := rControlData.fieldbyname('invTxtCompanyAddress').AsString;
+    edinvTxtCompanyTel1.Text := rControlData.fieldbyname('invTxtCompanyTel1').AsString;
+    edinvTxtCompanyTel2.Text := rControlData.fieldbyname('invTxtCompanyTel2').AsString;
+    edinvTxtCompanyFax.Text := rControlData.fieldbyname('invTxtCompanyFax').AsString;
+    edinvTxtCompanyEmail.Text := rControlData.fieldbyname('invTxtCompanyEmail').AsString;
+    edinvTxtCompanyHomePage.Text := rControlData.fieldbyname('invTxtCompanyHomePage').AsString;
+    edinvTxtCompanyPID.Text := rControlData.fieldbyname('invTxtCompanyPID').AsString;
+    edinvTxtCompanyBankInfo.Text := rControlData.fieldbyname('invTxtCompanyBankInfo').AsString;
+    edinvTxtCompanyVATId.Text := rControlData.fieldbyname('invTxtCompanyVATId').AsString;
+
+    edFiveDayRowHeight.value := rControlData.fieldbyname('FiveDayRowHeight').AsInteger;
+    edFiveDayColWidth.value := rControlData.fieldbyname('FiveDayColWidth').AsInteger;
+    edFiveDayColCount.value := rControlData.fieldbyname('FiveDayColCount').AsInteger;
+
+    try
+      edFiveDayDateFormat1.Text := rControlData.fieldbyname('FiveDayDateFormat1').AsString;
+    except
+      edFiveDayDateFormat1.Text := 'MMM YY';
+    end;
+
+    try
+      edFiveDayDateFormat2.Text := rControlData.fieldbyname('FiveDayDateFormat2').AsString;
+    except
+      edFiveDayDateFormat2.Text := 'DD ddd';
+    end;
+
+    edGrandRowHeight.value := rControlData.fieldbyname('GrandRowHeight').AsInteger;
+
+    edCustIdLast.value   := d.getTblINC_Last;
+    edCustIdLength.value := d.getTblINC_Length;
+    edCustIdFill.Text    := d.getTblINC_Fill;
+
+    try
+      edSessionTimeoutSeconds.value := rControlData.fieldbyname('SessionTimeoutSeconds').AsInteger;
+    except
+      edSessionTimeoutSeconds.value := 900;
+    end;
+
+
+    try
+      edInvPriceGroup.Text := rControlData.fieldbyname('InvPriceGroup').AsString;
+    except
+      edInvPriceGroup.Text := '';
+    end;
+
+    try
+      rgrNameOrder.ItemIndex := rControlData.fieldbyname('NameOrder').AsInteger except rgrNameOrder.ItemIndex := 0;
+    end;
+
+    try
+      rgrNameOrderPeriod.ItemIndex := rControlData.fieldbyname('NameOrderPeriod').AsInteger except rgrNameOrderPeriod.ItemIndex := 0;
+    end;
+
+
+    try
+      cbxAccountType.ItemIndex := rControlData.fieldbyname('AccountType').AsInteger;
+      PageAccount.ActivePageIndex := cbxAccountType.ItemIndex;
+
+      // ef tenging er st�lpi
+      if rControlData.fieldbyname('AccountType').AsInteger = 1 then
+      begin
+      end;
+    except
+    end;
+
+    try
+      chkXmlDoExportInLocalCurrency.checked := rControlData['XmlDoExportInLocalCurrency'];
+    except
+    end;
+
+    try
+      chkUseStayTax.checked := rControlData['UseStayTax'];
+    except
+    end;
+
+    try
+      chkNegInvoice.checked := rControlData['AllowNegativeInvoice'];
+    except
+    end;
+
+    try
+      chkStayTaxIncluted.checked := rControlData['StayTaxIncluted'];
+    except
+    end;
+
+    try
+      chkXmlDoExport.checked := rControlData['XmlDoExport'];
+    except
+    end;
+
+    try
+      edxmlPath_invoice.Text := rControlData.fieldbyname('xmlPath_invoice').AsString;
+    except
+    end;
+
+    try
+      edswCust_CompanyID.value := rControlData.fieldbyname('swCust_CompanyID').AsInteger;
+      LabswCust_GL_numberID.Caption := rControlData.fieldbyname('swCust_GL_numberID').AsString;
+
+      LABswCust_iAccountFK.Caption := rControlData.fieldbyname('swCust_iAccountFK').AsString;
+
+      LabswCust_SalesPersonID.Caption := rControlData.fieldbyname('swCust_SalesPersonID').AsString;
+      edswCust_iLanguage.value := rControlData.fieldbyname('swCust_iLanguage').AsInteger;
+      edswCust_CreditTerms.value := rControlData.fieldbyname('swCust_CreditTerms').AsInteger;
+      LabswCust_lDeliveryTermsFK.Caption := rControlData.fieldbyname('swCust_lDeliveryTermsFK').AsString;
+      edswCust_iPriceType.value := rControlData.fieldbyname('swCust_iPriceType').AsInteger;
+      edswCust_sCurrCode.Text := rControlData.fieldbyname('swCust_sCurrCode').AsString;
+    except
+    end;
+
+    chkUseSetUnclean.checked := rControlData['UseSetUnclean'];
+
+    try
+      edSnPath.Text := rControlData.fieldbyname('snPath').AsString;
+    except
+    end;
+
+    try
+      edSnFieldSeparator.Text := rControlData.fieldbyname('SnFieldSeparator').AsString;
+    except
+    end;
+
+    try
+      edSnXMLEncoding.Text := rControlData.fieldbyname('snXMLEncoding').AsString;
+    except
+    end;
+
+    if edSnXMLEncoding.Text = '' then
+      edSnXMLEncoding.Text := 'UTF-8';
+
+    try
+      edSnPathXML.Text := g.qSnPathXML;
+    except
+    end;
+
+    try
+      edSnPathCurrentGuestsXML.Text := g.qSnPathCurrentGuestsXML;
+    except
+    end;
+
+    try
+      edinvTxtOriginal.Text := rControlData.fieldbyname('invTxtOriginal').AsString;
+      edinvTxtCopy.Text := rControlData.fieldbyname('invTxtCopy').AsString;
+    except
+    end;
+
+    try
+      edIvhTxtTotalStayTax.Text := rControlData.fieldbyname('ivhTxtTotalStayTax').AsString;
+      edIvhTxtTotalStayTaxNights.Text := rControlData.fieldbyname('ivhTxtTotalStayTaxNights').AsString;
+    except
+    end;
+
+    ChkinPosMonitorUse.checked := g.qInPosMonitorUse;
+    edinPosMonitorChkSec.value := g.qInPosMonitorChkSec;
+    rgHomeExportPOSType.ItemIndex := g.qHomeExportPOSType;
+    edHomeComputerName.Text := g.qHomeComputerName;
+    cbxBackupMachine.Checked := g.BackupMachine;
+    cbxLocationPerRoomType.Checked := g.qLocationPerRoomType;
+    cbxWithdrawalWithoutGuarantee.Checked := NOT g.qRestrictWithdrawalWithoutGuarantee;
+    cbxExpandRoomRent.Checked := g.qExpandRoomRentOnInvoice;
+
+
+
+    chkConfirmAuto.checked := g.qConfirmAuto;
+    edConfirmMinuteOfTheDay.value  := g.qConfirmMinuteOfTheDay;
+
+
+    try
+      cbxCallType.ItemIndex := rControlData.fieldbyname('callType').AsInteger except cbxCallType.ItemIndex := 3;
+    end;
+
+    try
+      chkCallLogInternal.checked := rControlData['callLogInternal'] except chkCallLogInternal.checked := false;
+    end;
+
+    try
+      edCallMinSec.value := rControlData.fieldbyname('callMinSec').AsInteger;
+    except
+      edCallMinSec.value := 0;
+    end;
+
+    try
+      edCallStartPrice.value := LocalFloatValue(rControlData.fieldbyname('callStartPrice').asString);
+    except
+      edCallStartPrice.value := 0;
+    end;
+
+    try
+      edCallMinUnits.value := rControlData.fieldbyname('callMinUnits').AsInteger;
+    except
+      edCallMinUnits.value := 0;
+    end;
+
+    try
+      edCallMinPrice.value := LocalFloatValue(rControlData.fieldbyname('callMinPrice').asString);
+    except
+      edCallMinPrice.value := 0;
+    end;
+
+    try
+      chkExcluteWaitingList.checked := rControlData.fieldbyname('ExcluteWaitingList').AsBoolean;
+    except
+      chkExcluteWaitingList.checked := false;
+    end;
+    try
+      chkExcluteAllotment.checked := rControlData.fieldbyname('ExcluteAllotment').AsBoolean;
+    except
+      chkExcluteAllotment.checked := false;
+    end;
+    try
+      chkExcluteOrder.checked := rControlData.fieldbyname('ExcluteOrder').AsBoolean;
+    except
+      chkExcluteOrder.checked := false;
+    end;
+    try
+      chkExcluteDeparted.checked := rControlData.fieldbyname('ExcluteDeparted').AsBoolean;
+    except
+      chkExcluteDeparted.checked := false;
+    end;
+    try
+      chkExcluteGuest.checked  := rControlData.fieldbyname('ExcluteGuest').AsBoolean;
+    except
+      chkExcluteGuest.checked := false;
+    end;
+    try
+      chkExcluteBlocked.checked := rControlData.fieldbyname('ExcluteBlocked').AsBoolean;
+    except
+      chkExcluteBlocked.checked := false;
+    end;
+    try
+      chkExcluteNoshow.checked := rControlData.fieldbyname('ExcluteNoshow').AsBoolean;
+    except
+      chkExcluteNoshow.checked := false;
+    end;
+
+    try
+      chkforceExternalCustomerIdCorrectness.Checked := rSethotelconfigurations.FieldByName('forceExternalCustomerIdCorrectness').AsBoolean;
+    except
+      chkforceExternalCustomerIdCorrectness.Checked := false;
+    end;
+
+    try
+      edtEndOfDayCustomer.Text := rSethotelconfigurations.FieldByName('CustomerOfExternalSales').AsString;
+    except
+      edtEndOfDayCustomer.Text := edRackCustomer.Text;
+    end;
+
+    try
+      edtEndOfDayUser.Text := rSethotelconfigurations.FieldByName('UserOfExternalSales').AsString;
+    except
+      edtEndOfDayUser.Text := '';
+    end;
+
+    try
+      chkAutoInvoiceTransfer.Checked := rSethotelconfigurations.FieldByName('AutoInvoiceTransfer').AsBoolean;
+    except
+      chkAutoInvoiceTransfer.Checked := true;
+    end;
+
+
+    try
+      __editTZ.ItemIndex := __editTZ.Items.IndexOf(rSethotelconfigurations.FieldByName('UTCTimeZoneOffset').AsString);
+    except
+      __editTZ.ItemIndex := -1;
+    end;
+    if __editTZ.ItemIndex = -1 then
+    begin
+      iTmp := __editTZ.Items.IndexOf('UTC');
+      __editTZ.ItemIndex := iif((itmp >= 0), iTmp, 12);
+    end;
+
+
+    try
+      edtNumShifts.Text := inttostr(rSethotelconfigurations.FieldByName('NumberOfShifts').AsInteger);
+    except
+      edtNumShifts.Text := '3';
+    end;
+
+    try
+      edtWarnCheckInDirtyRoom.Checked := rSethotelconfigurations.FieldByName('WarnCheckInDirtyRoom').AsBoolean;
+    except
+      edtWarnCheckInDirtyRoom.Checked := False;
+    end;
+    try
+      edtWarnWhenOverbooking.Checked := rSethotelconfigurations.FieldByName('WarnWhenOverbooking').AsBoolean;
+    except
+      edtWarnWhenOverbooking.Checked := False;
+    end;
+    try
+      edtWarnMoveRoomToNewRoomtype.Checked := rSethotelconfigurations.FieldByName('WarnMoveRoomToNewRoomtype').AsBoolean;
+    except
+      edtWarnMoveRoomToNewRoomtype.Checked := False;
+    end;
+
+
+    try
+      cbxDefaultSendCCEmailToHotel.Checked := rSethotelconfigurations.FieldByName('DefaultSendCCEmailToHotel').AsBoolean;
+    except
+    end;
+
+    try
+      cbxMasterRateActive.Checked := rSethotelconfigurations.FieldByName('masterRatesActive').AsBoolean;
+    except
+    end;
+
+
+    edtInvoiceSystemCustomerTemplate.Text := rSethotelconfigurations['invoiceSystemTemplateCustomer'];
+    try
+      edtInvoiceSystemProductTemplate.Text := rSethotelconfigurations['invoiceSystemTemplateArticle'];
+    Except
+      edtInvoiceSystemProductTemplate.Text := '0';
+    end;
+
+    try
+      ChkMakeRoomsDirtyOvernight.Checked := rSethotelconfigurations.FieldByName('MakeRoomsDirtyOvernight').AsBoolean;
+    except
+      ChkMakeRoomsDirtyOvernight.Checked := false;
+    end;
+
+    try
+      cbxCheckInDetailsDialog.Checked := rControlData.FieldByName('CheckinWithDetailsDialog').AsBoolean;
+    except
+      cbxCheckInDetailsDialog.Checked := false;
+    end;
+
+    try
+      cbxCheckOutPaymentsDialog.Checked := rControlData.FieldByName('CheckOutWithPaymentsDialog').AsBoolean;
+    except
+      cbxCheckOutPaymentsDialog.Checked := false;
+    end;
+
+    try
+      edProformaheader.text := rSethotelconfigurations.FieldByName('ProformaHeader').AsString;
+    except
+      edProformaheader.text := 'Proforma';
+    end;
+
+    try
+      cbxQuery.ItemIndex := cbxQuery.IndexOf(rSethotelconfigurations.FieldByName('DefaultChannelConfirmationEmail').AsString);
+    except
+      cbxQuery.ItemIndex := -1;
+    end;
+
+    try
+      cbxInvoiceExport.ItemIndex := cbxInvoiceExport.IndexOf(rSethotelconfigurations.FieldByName('InvoiceExportFilename').AsString);
+    except
+      cbxInvoiceExport.ItemIndex := -1;
+    end;
+
+    try
+      chkforceExternalProductIdCorrectness.Checked := rSethotelconfigurations.FieldByName('forceExternalProductIdCorrectness').AsBoolean;
+    except
+      chkforceExternalProductIdCorrectness.Checked := false;
+    end;
+
+    try
+      chkForceExternalPaymentTypeIdCorrectness.Checked :=  rSethotelconfigurations.FieldByName('ForceExternalPaymentTypeIdCorrectness').AsBoolean;
+    except
+      chkForceExternalPaymentTypeIdCorrectness.Checked := false;
+    end;
+
+    edexpensiveChannelsLevelFrom.value := trunc(rSethotelconfigurations.FieldByName('expensiveChannelsLevelFrom').asFloat);
+
+
+    try
+      edCurrencySymbol.text := rControlData.FieldByName('CurrencySymbol').AsString;
+    except
+    end;
+
+    try
+      cbxAutoAddToGuestPortfolio.Checked := rSethotelconfigurations.fieldbyname('AutoAddGuestsToProfilesFromChannels').AsBoolean;
+    except
+    end;
+
+    try
+      cbxRequireExactClosingPayment.Checked := rSethotelconfigurations.fieldbyname('RequireExactClosingPayment').AsBoolean;
+    except
+    end;
+
+    cbShowIncludedBreakfastOnInvoice.Checked := glb.PMSSettings.ShowIncludedBreakfastOnInvoice;
+
+    edtRIIndexRoomRent.Value := rSethotelconfigurations.FieldByName('RoomInvoiceRoomRentIndex').AsInteger + 1;
+    edtRIIndexPosItems.Value := rSethotelconfigurations.FieldByName('RoomInvoicePosItemIndex').AsInteger + 1;
+    edtGIIndexRoomRent.Value := rSethotelconfigurations.FieldByName('GroupInvoiceRoomRentIndex').AsInteger + 1;
+    edtGIIndexPosItems.Value := rSethotelconfigurations.FieldByName('GroupInvoicePosItemIndex').AsInteger + 1;
+
+    __CurrencySyncSource.ItemIndex := __CurrencySyncSource.Items.IndexOf(rSethotelconfigurations['CurrencyFeedSource']);
+    if __CurrencySyncSource.ItemIndex < 0 then
+      __CurrencySyncSource.ItemIndex := 0;
+
+
+
+    sTmp := rSethotelconfigurations.FieldByName('SpringStarts').AsString;
+    springStartsMonth := strToInt(copy(stmp,4,2));
+    springStartsDay := strToInt(copy(stmp,1,2));
+    __cbxSpringStartsMonth.ItemIndex := SpringStartsMonth-1;
+    iTmp := DaysInAMonth(2001, SpringStartsMonth);
+    edspringStartsday.MaxValue := iTmp;
+    edspringStartsday.Value := SpringStartsDay;
+
+
+    sTmp := rSethotelconfigurations.FieldByName('SummerStarts').AsString;
+    SummerStartsMonth := strToInt(copy(stmp,4,2));
+    SummerStartsDay := strToInt(copy(stmp,1,2));
+    __cbxsummerStartsMonth.ItemIndex := SummerStartsMonth-1;
+    iTmp := DaysInAMonth(2001, SummerStartsMonth);
+    edSummerStartsday.MaxValue := iTmp;
+    edSummerStartsday.Value := SummerStartsDay;
+
+
+
+    sTmp := rSethotelconfigurations.FieldByName('AutumnStarts').AsString;
+    autumnStartsMonth := strToInt(copy(stmp,4,2));
+    autumnStartsDay := strToInt(copy(stmp,1,2));
+    __cbxAutumnStartsMonth.ItemIndex := autumnStartsMonth-1;
+    iTmp := DaysInAMonth(2001, autumnStartsMonth);
+    edautumnStartsday.MaxValue := iTmp;
+    edautumnStartsday.Value := autumnStartsDay;
+
+
+    sTmp := rSethotelconfigurations.FieldByName('winterStarts').AsString;
+    winterStartsMonth := strToInt(copy(stmp,4,2));;
+    winterStartsDay := strToInt(copy(stmp,1,2));;
+    __cbxWinterStartsMonth.ItemIndex := WinterStartsMonth-1;
+    iTmp := DaysInAMonth(2001, WinterStartsMonth);
+    edWinterStartsday.MaxValue := iTmp;
+    edWinterStartsday.Value := WinterStartsDay;
+
+    cbxChangeNationality.Checked := glb.PMSSettings.EditAllGuestsNationality;
+    cbxShowRoomAsPaidWhenZero.Checked := glb.PMSSettings.ShowInvoiceAsPaidWhenStatusIsZero;
+
+  finally
+    FUpdatingCOntrols := False;
   end;
 
-  try
-    chkXmlDoExportInLocalCurrency.checked := rControlData['XmlDoExportInLocalCurrency'];
-  except
-  end;
-
-  try
-    chkUseStayTax.checked := rControlData['UseStayTax'];
-  except
-  end;
-
-  try
-    chkNegInvoice.checked := rControlData['AllowNegativeInvoice'];
-  except
-  end;
-
-  try
-    chkStayTaxIncluted.checked := rControlData['StayTaxIncluted'];
-  except
-  end;
-
-  try
-    chkXmlDoExport.checked := rControlData['XmlDoExport'];
-  except
-  end;
-
-  try
-    edxmlPath_invoice.Text := rControlData.fieldbyname('xmlPath_invoice').AsString;
-  except
-  end;
-
-  try
-    edswCust_CompanyID.value := rControlData.fieldbyname('swCust_CompanyID').AsInteger;
-    LabswCust_GL_numberID.Caption := rControlData.fieldbyname('swCust_GL_numberID').AsString;
-
-    LABswCust_iAccountFK.Caption := rControlData.fieldbyname('swCust_iAccountFK').AsString;
-
-    LabswCust_SalesPersonID.Caption := rControlData.fieldbyname('swCust_SalesPersonID').AsString;
-    edswCust_iLanguage.value := rControlData.fieldbyname('swCust_iLanguage').AsInteger;
-    edswCust_CreditTerms.value := rControlData.fieldbyname('swCust_CreditTerms').AsInteger;
-    LabswCust_lDeliveryTermsFK.Caption := rControlData.fieldbyname('swCust_lDeliveryTermsFK').AsString;
-    edswCust_iPriceType.value := rControlData.fieldbyname('swCust_iPriceType').AsInteger;
-    edswCust_sCurrCode.Text := rControlData.fieldbyname('swCust_sCurrCode').AsString;
-  except
-  end;
-
-  chkUseSetUnclean.checked := rControlData['UseSetUnclean'];
-
-  try
-    edSnPath.Text := rControlData.fieldbyname('snPath').AsString;
-  except
-  end;
-
-  try
-    edSnFieldSeparator.Text := rControlData.fieldbyname('SnFieldSeparator').AsString;
-  except
-  end;
-
-  try
-    edSnXMLEncoding.Text := rControlData.fieldbyname('snXMLEncoding').AsString;
-  except
-  end;
-
-  if edSnXMLEncoding.Text = '' then
-    edSnXMLEncoding.Text := 'UTF-8';
-
-  try
-    edSnPathXML.Text := g.qSnPathXML;
-  except
-  end;
-
-  try
-    edSnPathCurrentGuestsXML.Text := g.qSnPathCurrentGuestsXML;
-  except
-  end;
-
-  try
-    edinvTxtOriginal.Text := rControlData.fieldbyname('invTxtOriginal').AsString;
-    edinvTxtCopy.Text := rControlData.fieldbyname('invTxtCopy').AsString;
-  except
-  end;
-
-  try
-    edIvhTxtTotalStayTax.Text := rControlData.fieldbyname('ivhTxtTotalStayTax').AsString;
-    edIvhTxtTotalStayTaxNights.Text := rControlData.fieldbyname('ivhTxtTotalStayTaxNights').AsString;
-  except
-  end;
-
-  ChkinPosMonitorUse.checked := g.qInPosMonitorUse;
-  edinPosMonitorChkSec.value := g.qInPosMonitorChkSec;
-  rgHomeExportPOSType.ItemIndex := g.qHomeExportPOSType;
-  edHomeComputerName.Text := g.qHomeComputerName;
-  cbxBackupMachine.Checked := g.BackupMachine;
-  cbxLocationPerRoomType.Checked := g.qLocationPerRoomType;
-  cbxWithdrawalWithoutGuarantee.Checked := NOT g.qRestrictWithdrawalWithoutGuarantee;
-  cbxExpandRoomRent.Checked := g.qExpandRoomRentOnInvoice;
-
-
-
-  chkConfirmAuto.checked := g.qConfirmAuto;
-  edConfirmMinuteOfTheDay.value  := g.qConfirmMinuteOfTheDay;
-
-
-  try
-    cbxCallType.ItemIndex := rControlData.fieldbyname('callType').AsInteger except cbxCallType.ItemIndex := 3;
-  end;
-
-  try
-    chkCallLogInternal.checked := rControlData['callLogInternal'] except chkCallLogInternal.checked := false;
-  end;
-
-  try
-    edCallMinSec.value := rControlData.fieldbyname('callMinSec').AsInteger;
-  except
-    edCallMinSec.value := 0;
-  end;
-
-  try
-    edCallStartPrice.value := LocalFloatValue(rControlData.fieldbyname('callStartPrice').asString);
-  except
-    edCallStartPrice.value := 0;
-  end;
-
-  try
-    edCallMinUnits.value := rControlData.fieldbyname('callMinUnits').AsInteger;
-  except
-    edCallMinUnits.value := 0;
-  end;
-
-  try
-    edCallMinPrice.value := LocalFloatValue(rControlData.fieldbyname('callMinPrice').asString);
-  except
-    edCallMinPrice.value := 0;
-  end;
-
-  try
-    chkExcluteWaitingList.checked := rControlData.fieldbyname('ExcluteWaitingList').AsBoolean;
-  except
-    chkExcluteWaitingList.checked := false;
-  end;
-  try
-    chkExcluteAllotment.checked := rControlData.fieldbyname('ExcluteAllotment').AsBoolean;
-  except
-    chkExcluteAllotment.checked := false;
-  end;
-  try
-    chkExcluteOrder.checked := rControlData.fieldbyname('ExcluteOrder').AsBoolean;
-  except
-    chkExcluteOrder.checked := false;
-  end;
-  try
-    chkExcluteDeparted.checked := rControlData.fieldbyname('ExcluteDeparted').AsBoolean;
-  except
-    chkExcluteDeparted.checked := false;
-  end;
-  try
-    chkExcluteGuest.checked  := rControlData.fieldbyname('ExcluteGuest').AsBoolean;
-  except
-    chkExcluteGuest.checked := false;
-  end;
-  try
-    chkExcluteBlocked.checked := rControlData.fieldbyname('ExcluteBlocked').AsBoolean;
-  except
-    chkExcluteBlocked.checked := false;
-  end;
-  try
-    chkExcluteNoshow.checked := rControlData.fieldbyname('ExcluteNoshow').AsBoolean;
-  except
-    chkExcluteNoshow.checked := false;
-  end;
-
-  try
-    chkforceExternalCustomerIdCorrectness.Checked := rSethotelconfigurations.FieldByName('forceExternalCustomerIdCorrectness').AsBoolean;
-  except
-    chkforceExternalCustomerIdCorrectness.Checked := false;
-  end;
-
-  try
-    edtEndOfDayCustomer.Text := rSethotelconfigurations.FieldByName('CustomerOfExternalSales').AsString;
-  except
-    edtEndOfDayCustomer.Text := edRackCustomer.Text;
-  end;
-
-  try
-    edtEndOfDayUser.Text := rSethotelconfigurations.FieldByName('UserOfExternalSales').AsString;
-  except
-    edtEndOfDayUser.Text := '';
-  end;
-
-  try
-    chkAutoInvoiceTransfer.Checked := rSethotelconfigurations.FieldByName('AutoInvoiceTransfer').AsBoolean;
-  except
-    chkAutoInvoiceTransfer.Checked := true;
-  end;
-
-
-  try
-    __editTZ.ItemIndex := __editTZ.Items.IndexOf(rSethotelconfigurations.FieldByName('UTCTimeZoneOffset').AsString);
-  except
-    __editTZ.ItemIndex := -1;
-  end;
-  if __editTZ.ItemIndex = -1 then
-  begin
-    iTmp := __editTZ.Items.IndexOf('UTC');
-    __editTZ.ItemIndex := iif((itmp >= 0), iTmp, 12);
-  end;
-
-
-  try
-    edtNumShifts.Text := inttostr(rSethotelconfigurations.FieldByName('NumberOfShifts').AsInteger);
-  except
-    edtNumShifts.Text := '3';
-  end;
-
-  try
-    edtWarnCheckInDirtyRoom.Checked := rSethotelconfigurations.FieldByName('WarnCheckInDirtyRoom').AsBoolean;
-  except
-    edtWarnCheckInDirtyRoom.Checked := False;
-  end;
-  try
-    edtWarnWhenOverbooking.Checked := rSethotelconfigurations.FieldByName('WarnWhenOverbooking').AsBoolean;
-  except
-    edtWarnWhenOverbooking.Checked := False;
-  end;
-  try
-    edtWarnMoveRoomToNewRoomtype.Checked := rSethotelconfigurations.FieldByName('WarnMoveRoomToNewRoomtype').AsBoolean;
-  except
-    edtWarnMoveRoomToNewRoomtype.Checked := False;
-  end;
-
-
-  try
-    cbxDefaultSendCCEmailToHotel.Checked := rSethotelconfigurations.FieldByName('DefaultSendCCEmailToHotel').AsBoolean;
-  except
-  end;
-
-  try
-    cbxMasterRateActive.Checked := rSethotelconfigurations.FieldByName('masterRatesActive').AsBoolean;
-  except
-  end;
-
-
-  edtInvoiceSystemCustomerTemplate.Text := rSethotelconfigurations['invoiceSystemTemplateCustomer'];
-  try
-    edtInvoiceSystemProductTemplate.Text := rSethotelconfigurations['invoiceSystemTemplateArticle'];
-  Except
-    edtInvoiceSystemProductTemplate.Text := '0';
-  end;
-
-  try
-    ChkMakeRoomsDirtyOvernight.Checked := rSethotelconfigurations.FieldByName('MakeRoomsDirtyOvernight').AsBoolean;
-  except
-    ChkMakeRoomsDirtyOvernight.Checked := false;
-  end;
-
-  try
-    cbxCheckInDetailsDialog.Checked := rControlData.FieldByName('CheckinWithDetailsDialog').AsBoolean;
-  except
-    cbxCheckInDetailsDialog.Checked := false;
-  end;
-
-  try
-    cbxCheckOutPaymentsDialog.Checked := rControlData.FieldByName('CheckOutWithPaymentsDialog').AsBoolean;
-  except
-    cbxCheckOutPaymentsDialog.Checked := false;
-  end;
-
-  try
-    edProformaheader.text := rSethotelconfigurations.FieldByName('ProformaHeader').AsString;
-  except
-    edProformaheader.text := 'Proforma';
-  end;
-
-  try
-    cbxQuery.ItemIndex := cbxQuery.IndexOf(rSethotelconfigurations.FieldByName('DefaultChannelConfirmationEmail').AsString);
-  except
-    cbxQuery.ItemIndex := -1;
-  end;
-
-  try
-    cbxInvoiceExport.ItemIndex := cbxInvoiceExport.IndexOf(rSethotelconfigurations.FieldByName('InvoiceExportFilename').AsString);
-  except
-    cbxInvoiceExport.ItemIndex := -1;
-  end;
-
-  try
-    chkforceExternalProductIdCorrectness.Checked := rSethotelconfigurations.FieldByName('forceExternalProductIdCorrectness').AsBoolean;
-  except
-    chkforceExternalProductIdCorrectness.Checked := false;
-  end;
-
-  try
-    chkForceExternalPaymentTypeIdCorrectness.Checked :=  rSethotelconfigurations.FieldByName('ForceExternalPaymentTypeIdCorrectness').AsBoolean;
-  except
-    chkForceExternalPaymentTypeIdCorrectness.Checked := false;
-  end;
-
-  edexpensiveChannelsLevelFrom.value := trunc(rSethotelconfigurations.FieldByName('expensiveChannelsLevelFrom').asFloat);
-
-
-  try
-    edCurrencySymbol.text := rControlData.FieldByName('CurrencySymbol').AsString;
-  except
-  end;
-
-  try
-    cbxAutoAddToGuestPortfolio.Checked := rSethotelconfigurations.fieldbyname('AutoAddGuestsToProfilesFromChannels').AsBoolean;
-  except
-  end;
-
-  try
-    cbxRequireExactClosingPayment.Checked := rSethotelconfigurations.fieldbyname('RequireExactClosingPayment').AsBoolean;
-  except
-  end;
-
-  edtRIIndexRoomRent.Value := rSethotelconfigurations.FieldByName('RoomInvoiceRoomRentIndex').AsInteger + 1;
-  edtRIIndexPosItems.Value := rSethotelconfigurations.FieldByName('RoomInvoicePosItemIndex').AsInteger + 1;
-  edtGIIndexRoomRent.Value := rSethotelconfigurations.FieldByName('GroupInvoiceRoomRentIndex').AsInteger + 1;
-  edtGIIndexPosItems.Value := rSethotelconfigurations.FieldByName('GroupInvoicePosItemIndex').AsInteger + 1;
-
-  __CurrencySyncSource.ItemIndex := __CurrencySyncSource.Items.IndexOf(rSethotelconfigurations['CurrencyFeedSource']);
-  if __CurrencySyncSource.ItemIndex < 0 then
-    __CurrencySyncSource.ItemIndex := 0;
-
-
-
-  sTmp := rSethotelconfigurations.FieldByName('SpringStarts').AsString;
-  springStartsMonth := strToInt(copy(stmp,4,2));
-  springStartsDay := strToInt(copy(stmp,1,2));
-  __cbxSpringStartsMonth.ItemIndex := SpringStartsMonth-1;
-  iTmp := DaysInAMonth(2001, SpringStartsMonth);
-  edspringStartsday.MaxValue := iTmp;
-  edspringStartsday.Value := SpringStartsDay;
-
-
-  sTmp := rSethotelconfigurations.FieldByName('SummerStarts').AsString;
-  SummerStartsMonth := strToInt(copy(stmp,4,2));
-  SummerStartsDay := strToInt(copy(stmp,1,2));
-  __cbxsummerStartsMonth.ItemIndex := SummerStartsMonth-1;
-  iTmp := DaysInAMonth(2001, SummerStartsMonth);
-  edSummerStartsday.MaxValue := iTmp;
-  edSummerStartsday.Value := SummerStartsDay;
-
-
-
-  sTmp := rSethotelconfigurations.FieldByName('AutumnStarts').AsString;
-  autumnStartsMonth := strToInt(copy(stmp,4,2));
-  autumnStartsDay := strToInt(copy(stmp,1,2));
-  __cbxAutumnStartsMonth.ItemIndex := autumnStartsMonth-1;
-  iTmp := DaysInAMonth(2001, autumnStartsMonth);
-  edautumnStartsday.MaxValue := iTmp;
-  edautumnStartsday.Value := autumnStartsDay;
-
-
-  sTmp := rSethotelconfigurations.FieldByName('winterStarts').AsString;
-  winterStartsMonth := strToInt(copy(stmp,4,2));;
-  winterStartsDay := strToInt(copy(stmp,1,2));;
-  __cbxWinterStartsMonth.ItemIndex := WinterStartsMonth-1;
-  iTmp := DaysInAMonth(2001, WinterStartsMonth);
-  edWinterStartsday.MaxValue := iTmp;
-  edWinterStartsday.Value := WinterStartsDay;
-
-  cbxChangeNationality.Checked := glb.PMSSettings.EditAllGuestsNationality;
-  cbxShowRoomAsPaidWhenZero.Checked := glb.PMSSettings.ShowInvoiceAsPaidWhenStatusIsZero;
 end;
 
 procedure TfrmControlData.SaveTable;
@@ -2011,7 +2024,7 @@ begin
       except
       end;
 
-      // RequireExactClosingPayment
+      glb.PMSSettings.ShowIncludedBreakfastOnInvoice := cbShowIncludedBreakfastOnInvoice.Checked;
 
       try
         rSethotelconfigurations.FieldByName('forceExternalCustomerIdCorrectness').AsBoolean := chkforceExternalCustomerIdCorrectness.Checked;
@@ -3380,7 +3393,8 @@ end;
 
 procedure TfrmControlData.edRackCustomerChange(Sender: TObject);
 begin
- customerValidate;
+  if not FUpdatingControls then
+   customerValidate;
 end;
 
 procedure TfrmControlData.edRackCustomerDblClick(Sender : TObject);
@@ -3424,25 +3438,31 @@ end;
 
 procedure TfrmControlData.edinPosMonitorChkSecChange(Sender: TObject);
 begin
-calcRequestInterval;
+  calcRequestInterval;
 end;
 
 procedure TfrmControlData.edInvoiceFormFileERLChange(Sender: TObject);
 begin
-  if extractFileExt(edInvoiceFormFileERL.Filename) <> '.fr3' then
+  if not FUpdatingControls then
   begin
-	  showmessage(format(GetTranslatedText('shTx_ControlData_NotAForm'), [edInvoiceFormFileERL.Filename]));
-    edInvoiceFormFileERL.Filename := g.qInvoiceFormFileERL;
+    if extractFileExt(edInvoiceFormFileERL.Filename) <> '.fr3' then
+    begin
+      showmessage(format(GetTranslatedText('shTx_ControlData_NotAForm'), [edInvoiceFormFileERL.Filename]));
+      edInvoiceFormFileERL.Filename := g.qInvoiceFormFileERL;
+    end;
   end;
 end;
 
 
 procedure TfrmControlData.edInvoiceFormFileISLChange(Sender: TObject);
 begin
-  if extractFileExt(edInvoiceFormFileISL.Filename) <> '.fr3' then
+  if not FUpdatingControls then
   begin
-	  showmessage(format(GetTranslatedText('shTx_ControlData_NotAForm'), [edInvoiceFormFileISL.Filename]));
-    edInvoiceFormFileISL.Filename := g.qInvoiceFormFileISL;
+    if extractFileExt(edInvoiceFormFileISL.Filename) <> '.fr3' then
+    begin
+      showmessage(format(GetTranslatedText('shTx_ControlData_NotAForm'), [edInvoiceFormFileISL.Filename]));
+      edInvoiceFormFileISL.Filename := g.qInvoiceFormFileISL;
+    end;
   end;
 end;
 

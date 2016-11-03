@@ -35,6 +35,8 @@ type
     procedure SetEditAllGuestsNationality(const Value: boolean);
     function GetShowInvoiceAsPaidWhenStatusIsZero: boolean;
     procedure SetShowInvoiceAsPaidWhenStatusIsZero(const Value: boolean);
+    function GetShowIncludedBreakfastOnInvoice: boolean;
+    procedure SetShowIncludedBreakfastOnInvoice(const Value: boolean);
 
   public
     constructor Create(aPMSDataset: TRoomerDataset);
@@ -55,6 +57,7 @@ type
     ///   If true then the room will appear as paid in the main-window of Roomer when the invoice balance for the Room-rent is zero
     /// </summary>
     property ShowInvoiceAsPaidWhenStatusIsZero: boolean read GetShowInvoiceAsPaidWhenStatusIsZero write SetShowInvoiceAsPaidWhenStatusIsZero;
+    property ShowIncludedBreakfastOnInvoice: boolean read GetShowIncludedBreakfastOnInvoice write SetShowIncludedBreakfastOnInvoice;
   end;
 
 implementation
@@ -71,6 +74,7 @@ const
   cAllGuestsNationality = 'EDIT_ALLGUESTS_NATIONALITY';
   cInvoiceHandlingGroup = 'INVOICE_HANDLING_FUNCTIONS';
   cInvoiceHandlingShowAsPaidWhenZero = 'SHOW_AS_PAID_WHEN_ZERO';
+  cShowIncludedBreakfastOnInvoice = 'SHOW_INCLUDED_BREAKFAST_ON_INVOICE';
 
 procedure TPmsSettings.PutSettingsValue(KeyGroup, Key, Value : String; CreateIfNotExists : Boolean = False);
 begin
@@ -162,6 +166,11 @@ begin
   SetSettingsAsBoolean(cAllGuestsNationalityGroup, cAllGuestsNationality, Value, True);
 end;
 
+procedure TPMSSettings.SetShowIncludedBreakfastOnInvoice(const Value: boolean);
+begin
+  SetSettingsAsBoolean(cInvoiceHandlingGroup, cShowIncludedBreakfastOnInvoice, Value, True);
+end;
+
 procedure TPMSSettings.SetShowInvoiceAsPaidWhenStatusIsZero(const Value: boolean);
 begin
   SetSettingsAsBoolean(cInvoiceHandlingGroup, cInvoiceHandlingShowAsPaidWhenZero, Value, True);
@@ -177,17 +186,22 @@ end;
 
 function TPmsSettings.GetBetaFunctionsAvailable: boolean;
 begin
-  Result := GetSettingsAsBoolean(cBetaFunctionsGroup , cBetaFunctionsAvailableName, );
+  Result := GetSettingsAsBoolean(cBetaFunctionsGroup , cBetaFunctionsAvailableName, False );
 end;
 
 function TPMSSettings.GetEditAllGuestsNationality: boolean;
 begin
-  Result := GetSettingsAsBoolean(cAllGuestsNationalityGroup, cAllGuestsNationality, );
+  Result := GetSettingsAsBoolean(cAllGuestsNationalityGroup, cAllGuestsNationality, False );
+end;
+
+function TPMSSettings.GetShowIncludedBreakfastOnInvoice: boolean;
+begin
+  Result := GetSettingsAsBoolean(cInvoiceHandlingGroup, cShowIncludedBreakfastOnInvoice, False);
 end;
 
 function TPMSSettings.GetShowInvoiceAsPaidWhenStatusIsZero: boolean;
 begin
-  Result := GetSettingsAsBoolean(cInvoiceHandlingGroup, cInvoiceHandlingShowAsPaidWhenZero, );
+  Result := GetSettingsAsBoolean(cInvoiceHandlingGroup, cInvoiceHandlingShowAsPaidWhenZero, False);
 end;
 
 function TPmsSettings.GetMandatoryCheckinFields: TMandatoryCheckInFieldSet;

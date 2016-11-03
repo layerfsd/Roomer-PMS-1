@@ -2434,14 +2434,7 @@ begin
   ownerId := _ownerId;
 end;
 
-var
-  recVer: TRoomerVersionInfo;
-
 initialization
-
-begin
-  recVer := TRoomerVersionInfo.Create;
-  EXTRA_BUILD_ID := recVer.ExtraBuild;
-end;
+  EXTRA_BUILD_ID := TRoomerVersionInfo.ExtraBuild;
 
 end.
