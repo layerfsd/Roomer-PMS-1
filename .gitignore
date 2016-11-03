@@ -55,6 +55,6 @@ Thumbs.db
 *.dsk
 Roomer.res
 AQTime/*_Results/
-RoomerPMSRelease/Roomer*.exe
+RoomerPMSRelease/*.exe
 RoomerPMSRelease/Deployment/
 
